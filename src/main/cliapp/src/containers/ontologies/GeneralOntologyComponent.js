@@ -34,7 +34,7 @@ export const GeneralOntologyComponent = ({ name, endpoint, showNamespace, showAb
 		field: 'curie',
 		header: 'Curie',
 		sortable: true,
-		body: (rowData) => <IdTemplate id={rowData.curie}/>,
+		body: (rowData) => <IdTemplate id={rowData.curie} />,
 		filterConfig: FILTER_CONFIGS.curieFilterConfig,
 	});
 	columns.push({
@@ -74,7 +74,7 @@ export const GeneralOntologyComponent = ({ name, endpoint, showNamespace, showAb
 	columns.push({
 		field: 'synonyms.name',
 		header: 'Synonyms',
-		body: (rowData) => <StringListTemplate list={rowData.synonyms?.map((synonym) => synonym?.name)}/>,
+		body: (rowData) => <StringListTemplate list={rowData.synonyms?.map((synonym) => synonym?.name)} />,
 		sortable: true,
 		filterConfig: FILTER_CONFIGS.ontologySynonymsFilterConfig,
 	});
@@ -82,7 +82,7 @@ export const GeneralOntologyComponent = ({ name, endpoint, showNamespace, showAb
 		field: 'secondaryIdentifiers',
 		header: 'Secondary IDs',
 		sortable: true,
-		body: (rowData) => <StringListTemplate list={rowData.secondaryIdentifiers}/>,
+		body: (rowData) => <StringListTemplate list={rowData.secondaryIdentifiers} />,
 		filterConfig: FILTER_CONFIGS.secondaryIdsFilterConfig,
 	});
 	columns.push({

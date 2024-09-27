@@ -3,7 +3,6 @@ import { ListTableCell } from '../ListTableCell';
 import { Tooltip } from 'primereact/tooltip';
 import 'primeflex/primeflex.css';
 
-
 export const StringListTemplate = ({ list }) => {
 	if (!list || list.length === 0) return null;
 
@@ -23,7 +22,7 @@ export const StringListTemplate = ({ list }) => {
 			<div className={`-my-2 p-1 ${targetClass}`}>
 				<ListTableCell template={listTemplate} listData={sortedList} />
 			</div>
-			<Tooltip target={`.${targetClass}`} className='w-3' mouseTrack position="bottom">
+			<Tooltip target={`.${targetClass}`} className="w-3" mouseTrack position="bottom">
 				<ListTableCell template={listTemplate} listData={sortedList} />
 			</Tooltip>
 		</>

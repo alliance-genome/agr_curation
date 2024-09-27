@@ -28,7 +28,7 @@ export const MoleculesTable = () => {
 			header: 'Curie',
 			sortable: true,
 			filter: true,
-			body: (rowData) => <IdTemplate id={rowData.curie}/>,
+			body: (rowData) => <IdTemplate id={rowData.curie} />,
 			filterConfig: FILTER_CONFIGS.curieFilterConfig,
 		},
 		{
@@ -36,7 +36,7 @@ export const MoleculesTable = () => {
 			header: 'Name',
 			sortable: true,
 			filter: true,
-			body: (rowData) => <StringTemplate string={rowData.name}/>,
+			body: (rowData) => <StringTemplate string={rowData.name} />,
 			filterConfig: FILTER_CONFIGS.nameFilterConfig,
 		},
 		{
@@ -44,7 +44,7 @@ export const MoleculesTable = () => {
 			header: 'InChi',
 			sortable: true,
 			filter: true,
-			body: (rowData) => <StringTemplate string={rowData.inchi}/>,
+			body: (rowData) => <StringTemplate string={rowData.inchi} />,
 			filterConfig: FILTER_CONFIGS.inchiFilterConfig,
 		},
 		{
@@ -52,7 +52,7 @@ export const MoleculesTable = () => {
 			header: 'InChiKey',
 			sortable: true,
 			filter: true,
-			body: (rowData) => <StringTemplate string={rowData.inchiKey}/>,
+			body: (rowData) => <StringTemplate string={rowData.inchiKey} />,
 			filterConfig: FILTER_CONFIGS.inchiKeyFilterConfig,
 		},
 		{
@@ -60,7 +60,7 @@ export const MoleculesTable = () => {
 			header: 'IUPAC',
 			sortable: true,
 			filter: true,
-			body: (rowData) => <StringTemplate string={rowData.iupac}/>,
+			body: (rowData) => <StringTemplate string={rowData.iupac} />,
 			filterConfig: FILTER_CONFIGS.iupacFilterConfig,
 		},
 		{
@@ -68,7 +68,7 @@ export const MoleculesTable = () => {
 			header: 'Formula',
 			sortable: true,
 			filter: true,
-			body: (rowData) => <StringTemplate string={rowData.formula}/>,
+			body: (rowData) => <StringTemplate string={rowData.formula} />,
 			filterConfig: FILTER_CONFIGS.formulaFilterConfig,
 		},
 		{
@@ -76,7 +76,7 @@ export const MoleculesTable = () => {
 			header: 'SMILES',
 			sortable: true,
 			filter: true,
-			body: (rowData) => <StringTemplate string={rowData.smiles}/>,
+			body: (rowData) => <StringTemplate string={rowData.smiles} />,
 			filterConfig: FILTER_CONFIGS.smilesFilterConfig,
 		},
 	];

@@ -19,7 +19,6 @@ import { setNewEntity } from '../../utils/utils';
 import { StringTemplate } from '../../components/Templates/StringTemplate';
 import { BooleanTemplate } from '../../components/Templates/BooleanTemplate';
 
-
 export const VocabulariesTable = () => {
 	const [isInEditMode, setIsInEditMode] = useState(false);
 	const [totalRecords, setTotalRecords] = useState(0);
@@ -81,7 +80,7 @@ export const VocabulariesTable = () => {
 			field: 'name',
 			header: 'Name',
 			sortable: true,
-			body: (rowData) => <StringTemplate string={rowData.name}/>,
+			body: (rowData) => <StringTemplate string={rowData.name} />,
 			filterConfig: FILTER_CONFIGS.nameFilterConfig,
 			editor: (props) => stringEditor(props, 'name'),
 		},
@@ -89,7 +88,7 @@ export const VocabulariesTable = () => {
 			field: 'vocabularyDescription',
 			header: 'Description',
 			sortable: true,
-			body: (rowData) => <StringTemplate string={rowData.vocabularyDescription}/>,
+			body: (rowData) => <StringTemplate string={rowData.vocabularyDescription} />,
 			filterConfig: FILTER_CONFIGS.vocabularyDescriptionFilterConfig,
 			editor: (props) => stringEditor(props, 'vocabularyDescription'),
 		},
@@ -105,7 +104,7 @@ export const VocabulariesTable = () => {
 			field: 'vocabularyLabel',
 			header: 'Label',
 			sortable: true,
-			body: (rowData) => <StringTemplate string={rowData.vocabularyLabel}/>,
+			body: (rowData) => <StringTemplate string={rowData.vocabularyLabel} />,
 			filterConfig: FILTER_CONFIGS.vocabularyLabelFilterConfig,
 		},
 	];
