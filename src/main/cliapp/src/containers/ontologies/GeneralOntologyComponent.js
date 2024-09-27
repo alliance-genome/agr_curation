@@ -74,7 +74,7 @@ export const GeneralOntologyComponent = ({ name, endpoint, showNamespace, showAb
 	columns.push({
 		field: 'synonyms.name',
 		header: 'Synonyms',
-		body: (rowData) => <StringListTemplate list={rowData.synonyms?.map((synonym) => synonym.name)}/>,
+		body: (rowData) => <StringListTemplate list={rowData.synonyms?.map((synonym) => synonym?.name)}/>,
 		sortable: true,
 		filterConfig: FILTER_CONFIGS.ontologySynonymsFilterConfig,
 	});
