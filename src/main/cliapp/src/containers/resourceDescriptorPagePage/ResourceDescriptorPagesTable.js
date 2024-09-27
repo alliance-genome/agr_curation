@@ -26,7 +26,9 @@ export const ResourceDescriptorPagesTable = () => {
 			field: 'resourceDescriptor.prefix',
 			header: 'Resource Descriptor',
 			sortable: true,
-			body: (rowData) => <StringTemplate string={rowData.resourceDescriptor?.prefix} />,
+			body: (rowData) => (
+				<StringTemplate string={`${rowData.resourceDescriptor?.prefix} (${rowData.resourceDescriptor.name})`} />
+			),
 			filterConfig: FILTER_CONFIGS.resourceDescriptorFilterConfig,
 		},
 		{
