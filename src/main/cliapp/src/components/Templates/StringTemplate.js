@@ -10,7 +10,7 @@ export const StringTemplate = ({ string }) => {
 				className={`overflow-hidden text-overflow-ellipsis ${targetClass}`}
 				dangerouslySetInnerHTML={{ __html: string }}
 			/>
-			<Tooltip target={`.${targetClass}`} style={{ maxWidth: '450px' }} mouseTrack position="bottom">
+			<Tooltip target={`.${targetClass}`} className='w-3' mouseTrack position="bottom">
 				<div dangerouslySetInnerHTML={{ __html: string }} />
 			</Tooltip>
 		</>
