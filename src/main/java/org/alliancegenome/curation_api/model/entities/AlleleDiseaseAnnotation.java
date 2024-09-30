@@ -37,23 +37,6 @@ import lombok.EqualsAndHashCode;
 @AGRCurationSchemaVersion(min = "2.2.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { DiseaseAnnotation.class })
 
 @Table(indexes = {
-	@Index(name = "AlleleDiseaseAnnotation_internal_index", columnList = "internal"),
-	@Index(name = "AlleleDiseaseAnnotation_obsolete_index", columnList = "obsolete"),
-	@Index(name = "AlleleDiseaseAnnotation_curie_index", columnList = "curie"),
-	@Index(name = "AlleleDiseaseAnnotation_modEntityId_index", columnList = "modEntityId"),
-	@Index(name = "AlleleDiseaseAnnotation_modInternalId_index", columnList = "modInternalId"),
-	@Index(name = "AlleleDiseaseAnnotation_uniqueId_index", columnList = "uniqueId"),
-	@Index(name = "AlleleDiseaseAnnotation_negated_index", columnList = "negated"),
-	@Index(name = "AlleleDiseaseAnnotation_createdBy_index", columnList = "createdBy_id"),
-	@Index(name = "AlleleDiseaseAnnotation_updatedBy_index", columnList = "updatedBy_id"),
-	@Index(name = "AlleleDiseaseAnnotation_singleReference_index", columnList = "singleReference_id"),
-	@Index(name = "AlleleDiseaseAnnotation_dataProvider_index", columnList = "dataProvider_id"),
-	@Index(name = "AlleleDiseaseAnnotation_annotationType_index", columnList = "annotationType_id"),
-	@Index(name = "AlleleDiseaseAnnotation_diseaseAnnotationObject_index", columnList = "diseaseAnnotationObject_id"),
-	@Index(name = "AlleleDiseaseAnnotation_diseaseGeneticModifierRelation_index", columnList = "diseaseGeneticModifierRelation_id"),
-	@Index(name = "AlleleDiseaseAnnotation_geneticSex_index", columnList = "geneticSex_id"),
-	@Index(name = "AlleleDiseaseAnnotation_relation_index", columnList = "relation_id"),
-	@Index(name = "AlleleDiseaseAnnotation_secondaryDataProvider_index", columnList = "secondaryDataProvider_id"),
 	@Index(name = "AlleleDiseaseAnnotation_diseaseAnnotationSubject_index", columnList = "diseaseAnnotationSubject_id"),
 	@Index(name = "AlleleDiseaseAnnotation_inferredGene_index", columnList = "inferredGene_id")
 })
@@ -101,11 +84,11 @@ public class AlleleDiseaseAnnotation extends DiseaseAnnotation {
 	@Fetch(FetchMode.SELECT)
 	@JsonView({ View.FieldsAndLists.class, View.DiseaseAnnotation.class, View.ForPublic.class })
 	@JoinTable(
-		joinColumns = @JoinColumn(name = "association_id"),
+		joinColumns = @JoinColumn(name = "allelediseaseannotation_id"),
 		inverseJoinColumns = @JoinColumn(name = "assertedgenes_id"),
 		indexes = {
-			@Index(columnList = "association_id"),
-			@Index(columnList = "assertedgenes_id")
+			@Index(name = "allelediseaseannotation_gene_alleleda_index", columnList = "allelediseaseannotation_id"),
+			@Index(name = "allelediseaseannotation_gene_assertedgenes_index", columnList = "assertedgenes_id")
 		}
 	)
 	private List<Gene> assertedGenes;

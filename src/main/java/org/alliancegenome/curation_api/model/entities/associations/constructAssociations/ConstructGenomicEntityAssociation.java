@@ -86,11 +86,11 @@ public class ConstructGenomicEntityAssociation extends EvidenceAssociation {
 	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonView({ View.FieldsAndLists.class, View.ConstructView.class })
 	@JoinTable(
-		joinColumns = @JoinColumn(name = "association_id"),
+		joinColumns = @JoinColumn(name = "constructgenomicentityassociation_id"),
 		inverseJoinColumns = @JoinColumn(name = "relatedNotes_id"),
 		indexes = {
-			@Index(columnList = "association_id"),
-			@Index(columnList = "relatedNotes_id")
+			@Index(name = "constructgeassociation_note_cgea_index", columnList = "constructgenomicentityassociation_id"),
+			@Index(name = "constructgeassociation_note_relatednotes_index", columnList = "relatedNotes_id")
 		}
 	)
 	private List<Note> relatedNotes;

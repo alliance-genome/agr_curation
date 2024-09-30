@@ -1,186 +1,39 @@
 CREATE TABLE agmdiseaseannotation (
 	id bigint PRIMARY KEY,
-	datecreated timestamp(6) with time zone,
-	dateupdated timestamp(6) with time zone,
-	dbdatecreated timestamp(6) with time zone,
-	dbdateupdated timestamp(6) with time zone,
-	internal boolean DEFAULT false NOT NULL,
-	obsolete boolean DEFAULT false NOT NULL,
-	curie character varying(255),
-	modentityid character varying(255),
-	modinternalid character varying(255),
-	uniqueid character varying(3500),
-	negated boolean DEFAULT false NOT NULL,
-	createdby_id bigint,
-	updatedby_id bigint,
-	singlereference_id bigint,
-	dataprovider_id bigint,
-	annotationtype_id bigint,
 	diseaseannotationobject_id bigint,
-	diseasegeneticmodifierrelation_id bigint,
-	geneticsex_id bigint,
-	relation_id bigint,
-	secondarydataprovider_id bigint,
 	assertedallele_id bigint,
 	diseaseannotationsubject_id bigint,
 	inferredallele_id bigint,
 	inferredgene_id bigint
 );
 
-CREATE TABLE agmdiseaseannotation_biologicalentity (
-	association_id bigint NOT NULL,
-	diseasegeneticmodifiers_id bigint NOT NULL
-);
-
-CREATE TABLE agmdiseaseannotation_conditionrelation (
-	association_id bigint NOT NULL,
-	conditionrelations_id bigint NOT NULL
-);
-
 CREATE TABLE agmdiseaseannotation_gene (
-	association_id bigint NOT NULL,
-	assertedgenes_id bigint,
-	with_id bigint
-);
-
-CREATE TABLE agmdiseaseannotation_note (
-	association_id bigint NOT NULL,
-	relatednotes_id bigint NOT NULL
-);
-
-CREATE TABLE agmdiseaseannotation_ontologyterm (
-	association_id bigint NOT NULL,
-	evidencecodes_id bigint NOT NULL
-);
-
-CREATE SEQUENCE agmdiseaseannotation_seq
-	START WITH 1
-	INCREMENT BY 50
-	NO MINVALUE
-	NO MAXVALUE
-	CACHE 1;
-
-CREATE TABLE agmdiseaseannotation_vocabularyterm (
-	association_id bigint NOT NULL,
-	diseasequalifiers_id bigint NOT NULL
-);
+	agmdiseaseannotation_id bigint NOT NULL,
+	assertedgenes_id bigint
+	);
 
 CREATE TABLE agmphenotypeannotation (
 	id bigint PRIMARY KEY,
-	datecreated timestamp(6) with time zone,
-	dateupdated timestamp(6) with time zone,
-	dbdatecreated timestamp(6) with time zone,
-	dbdateupdated timestamp(6) with time zone,
-	internal boolean DEFAULT false NOT NULL,
-	obsolete boolean DEFAULT false NOT NULL,
-	curie character varying(255),
-	modentityid character varying(255),
-	modinternalid character varying(255),
-	uniqueid character varying(3500),
-	phenotypeannotationobject character varying(255),
-	createdby_id bigint,
-	updatedby_id bigint,
-	singlereference_id bigint,
-	dataprovider_id bigint,
-	crossreference_id bigint,
-	relation_id bigint,
 	assertedallele_id bigint,
 	inferredallele_id bigint,
 	inferredgene_id bigint,
 	phenotypeannotationsubject_id bigint
 );
 
-CREATE TABLE agmphenotypeannotation_conditionrelation (
-	association_id bigint NOT NULL,
-	conditionrelations_id bigint NOT NULL
-);
-
 CREATE TABLE agmphenotypeannotation_gene (
-	association_id bigint NOT NULL,
+	agmphenotypeannotation_id bigint NOT NULL,
 	assertedgenes_id bigint NOT NULL
 );
 
-
-CREATE TABLE agmphenotypeannotation_note (
-	association_id bigint NOT NULL,
-	relatednotes_id bigint NOT NULL
-);
-
-CREATE TABLE agmphenotypeannotation_ontologyterm (
-	association_id bigint NOT NULL,
-	phenotypeterms_id bigint NOT NULL
-);
-
-CREATE SEQUENCE agmphenotypeannotation_seq
-	START WITH 1
-	INCREMENT BY 50
-	NO MINVALUE
-	NO MAXVALUE
-	CACHE 1;
-
 CREATE TABLE allelediseaseannotation (
 	id bigint PRIMARY KEY,
-	datecreated timestamp(6) with time zone,
-	dateupdated timestamp(6) with time zone,
-	dbdatecreated timestamp(6) with time zone,
-	dbdateupdated timestamp(6) with time zone,
-	internal boolean DEFAULT false NOT NULL,
-	obsolete boolean DEFAULT false NOT NULL,
-	curie character varying(255),
-	modentityid character varying(255),
-	modinternalid character varying(255),
-	uniqueid character varying(3500),
-	negated boolean DEFAULT false NOT NULL,
-	createdby_id bigint,
-	updatedby_id bigint,
-	singlereference_id bigint,
-	dataprovider_id bigint,
-	annotationtype_id bigint,
-	diseaseannotationobject_id bigint,
-	diseasegeneticmodifierrelation_id bigint,
-	geneticsex_id bigint,
-	relation_id bigint,
-	secondarydataprovider_id bigint,
 	diseaseannotationsubject_id bigint,
 	inferredgene_id bigint
 );
 
-CREATE TABLE allelediseaseannotation_biologicalentity (
-	association_id bigint NOT NULL,
-	diseasegeneticmodifiers_id bigint NOT NULL
-);
-
-CREATE TABLE allelediseaseannotation_conditionrelation (
-	association_id bigint NOT NULL,
-	conditionrelations_id bigint NOT NULL
-);
-
 CREATE TABLE allelediseaseannotation_gene (
-	association_id bigint NOT NULL,
-	assertedgenes_id bigint,
-	with_id bigint
-);
-
-CREATE TABLE allelediseaseannotation_note (
-	association_id bigint NOT NULL,
-	relatednotes_id bigint NOT NULL
-);
-
-CREATE TABLE allelediseaseannotation_ontologyterm (
-	association_id bigint NOT NULL,
-	evidencecodes_id bigint NOT NULL
-);
-
-CREATE SEQUENCE allelediseaseannotation_seq
-	START WITH 1
-	INCREMENT BY 50
-	NO MINVALUE
-	NO MAXVALUE
-	CACHE 1;
-
-CREATE TABLE allelediseaseannotation_vocabularyterm (
-	association_id bigint NOT NULL,
-	diseasequalifiers_id bigint NOT NULL
+	allelediseaseannotation_id bigint NOT NULL,
+	assertedgenes_id bigint
 );
 
 CREATE TABLE allelegeneassociation (
@@ -214,53 +67,14 @@ CREATE SEQUENCE allelegeneassociation_seq
 
 CREATE TABLE allelephenotypeannotation (
 	id bigint PRIMARY KEY,
-	datecreated timestamp(6) with time zone,
-	dateupdated timestamp(6) with time zone,
-	dbdatecreated timestamp(6) with time zone,
-	dbdateupdated timestamp(6) with time zone,
-	internal boolean DEFAULT false NOT NULL,
-	obsolete boolean DEFAULT false NOT NULL,
-	curie character varying(255),
-	modentityid character varying(255),
-	modinternalid character varying(255),
-	uniqueid character varying(3500),
-	phenotypeannotationobject character varying(255),
-	createdby_id bigint,
-	updatedby_id bigint,
-	singlereference_id bigint,
-	dataprovider_id bigint,
-	crossreference_id bigint,
-	relation_id bigint,
 	inferredgene_id bigint,
 	phenotypeannotationsubject_id bigint
 );
 
-CREATE TABLE allelephenotypeannotation_conditionrelation (
-	association_id bigint NOT NULL,
-	conditionrelations_id bigint NOT NULL
-);
-
 CREATE TABLE allelephenotypeannotation_gene (
-	association_id bigint NOT NULL,
+	allelephenotypeannotation_id bigint NOT NULL,
 	assertedgenes_id bigint NOT NULL
 );
-
-CREATE TABLE allelephenotypeannotation_note (
-	association_id bigint NOT NULL,
-	relatednotes_id bigint NOT NULL
-);
-
-CREATE TABLE allelephenotypeannotation_ontologyterm (
-	association_id bigint NOT NULL,
-	phenotypeterms_id bigint NOT NULL
-);
-
-CREATE SEQUENCE allelephenotypeannotation_seq
-	START WITH 1
-	INCREMENT BY 50
-	NO MINVALUE
-	NO MAXVALUE
-	CACHE 1;
 
 CREATE TABLE codingsequencegenomiclocationassociation (
 	id bigint PRIMARY KEY,
@@ -314,7 +128,7 @@ CREATE TABLE constructgenomicentityassociation_informationcontententity (
 );
 
 CREATE TABLE constructgenomicentityassociation_note (
-	association_id bigint NOT NULL,
+	constructgenomicentityassociation_id bigint NOT NULL,
 	relatednotes_id bigint NOT NULL
 );
 
@@ -355,7 +169,7 @@ CREATE SEQUENCE exongenomiclocationassociation_seq
 	NO MAXVALUE
 	CACHE 1;
 
-CREATE TABLE genediseaseannotation (
+CREATE TABLE diseaseannotation (
 	id bigint PRIMARY KEY,
 	datecreated timestamp(6) with time zone,
 	dateupdated timestamp(6) with time zone,
@@ -367,55 +181,59 @@ CREATE TABLE genediseaseannotation (
 	modentityid character varying(255),
 	modinternalid character varying(255),
 	uniqueid character varying(3500),
+	diseaseannotationobject_id bigint,
 	negated boolean DEFAULT false NOT NULL,
 	createdby_id bigint,
 	updatedby_id bigint,
 	singlereference_id bigint,
 	dataprovider_id bigint,
 	annotationtype_id bigint,
-	diseaseannotationobject_id bigint,
 	diseasegeneticmodifierrelation_id bigint,
 	geneticsex_id bigint,
 	relation_id bigint,
-	secondarydataprovider_id bigint,
+	secondarydataprovider_id bigint
+);
+
+CREATE TABLE genediseaseannotation (
+	id bigint PRIMARY KEY,
 	diseaseannotationsubject_id bigint,
 	sgdstrainbackground_id bigint
 );
 
-CREATE TABLE genediseaseannotation_biologicalentity (
-	association_id bigint NOT NULL,
+CREATE TABLE diseaseannotation_biologicalentity (
+	diseaseannotation_id bigint NOT NULL,
 	diseasegeneticmodifiers_id bigint NOT NULL
 );
 
-CREATE TABLE genediseaseannotation_conditionrelation (
-	association_id bigint NOT NULL,
+CREATE TABLE diseaseannotation_conditionrelation (
+	annotation_id bigint NOT NULL,
 	conditionrelations_id bigint NOT NULL
 );
 
-CREATE TABLE genediseaseannotation_gene (
-	association_id bigint NOT NULL,
+CREATE TABLE diseaseannotation_gene (
+	diseaseannotation_id bigint NOT NULL,
 	with_id bigint NOT NULL
 );
 
-CREATE TABLE genediseaseannotation_note (
-	association_id bigint NOT NULL,
+CREATE TABLE diseaseannotation_note (
+	annotation_id bigint NOT NULL,
 	relatednotes_id bigint NOT NULL
 );
 
-CREATE TABLE genediseaseannotation_ontologyterm (
-	association_id bigint NOT NULL,
+CREATE TABLE diseaseannotation_ontologyterm (
+	diseaseannotation_id bigint NOT NULL,
 	evidencecodes_id bigint NOT NULL
 );
 
-CREATE SEQUENCE genediseaseannotation_seq
+CREATE SEQUENCE diseaseannotation_seq
 	START WITH 1
 	INCREMENT BY 50
 	NO MINVALUE
 	NO MAXVALUE
 	CACHE 1;
 
-CREATE TABLE genediseaseannotation_vocabularyterm (
-	association_id bigint NOT NULL,
+CREATE TABLE diseaseannotation_vocabularyterm (
+	diseaseannotation_id bigint NOT NULL,
 	diseasequalifiers_id bigint NOT NULL
 );
 
@@ -444,12 +262,12 @@ CREATE TABLE geneexpressionannotation (
 );
 
 CREATE TABLE geneexpressionannotation_conditionrelation (
-	association_id bigint NOT NULL,
+	annotation_id bigint NOT NULL,
 	conditionrelations_id bigint NOT NULL
 );
 
 CREATE TABLE geneexpressionannotation_note (
-	association_id bigint NOT NULL,
+	annotation_id bigint NOT NULL,
 	relatednotes_id bigint NOT NULL
 );
 
@@ -479,7 +297,7 @@ CREATE TABLE genegeneticinteraction (
 );
 
 CREATE TABLE genegeneticinteraction_crossreference (
-	association_id bigint NOT NULL,
+	geneinteraction_id bigint NOT NULL,
 	crossreferences_id bigint NOT NULL
 );
 
@@ -491,7 +309,7 @@ CREATE TABLE genegeneticinteraction_informationcontententity (
 DROP TABLE IF EXISTS genegeneticinteraction_phenotypesortraits;
 
 CREATE TABLE genegeneticinteraction_phenotypesortraits (
-	association_id bigint NOT NULL,
+	genegeneticinteraction_id bigint NOT NULL,
 	phenotypesortraits character varying(255)
 );
 
@@ -528,7 +346,7 @@ CREATE TABLE genemolecularinteraction (
 );
 
 CREATE TABLE genemolecularinteraction_crossreference (
-	association_id bigint NOT NULL,
+	geneinteraction_id bigint NOT NULL,
 	crossreferences_id bigint NOT NULL
 );
 
@@ -544,7 +362,7 @@ CREATE SEQUENCE genemolecularinteraction_seq
 	NO MAXVALUE
 	CACHE 1;
 
-CREATE TABLE genephenotypeannotation (
+CREATE TABLE phenotypeannotation (
 	id bigint PRIMARY KEY,
 	datecreated timestamp(6) with time zone,
 	dateupdated timestamp(6) with time zone,
@@ -562,27 +380,31 @@ CREATE TABLE genephenotypeannotation (
 	singlereference_id bigint,
 	dataprovider_id bigint,
 	crossreference_id bigint,
-	relation_id bigint,
+	relation_id bigint
+);
+
+CREATE TABLE genephenotypeannotation (
+	id bigint PRIMARY KEY,
 	phenotypeannotationsubject_id bigint,
 	sgdstrainbackground_id bigint
 );
 
-CREATE TABLE genephenotypeannotation_conditionrelation (
-	association_id bigint NOT NULL,
+CREATE TABLE phenotypeannotation_conditionrelation (
+	annotation_id bigint NOT NULL,
 	conditionrelations_id bigint NOT NULL
 );
 
-CREATE TABLE genephenotypeannotation_note (
-	association_id bigint NOT NULL,
+CREATE TABLE phenotypeannotation_note (
+	annotation_id bigint NOT NULL,
 	relatednotes_id bigint NOT NULL
 );
 
-CREATE TABLE genephenotypeannotation_ontologyterm (
-	association_id bigint NOT NULL,
+CREATE TABLE phenotypeannotation_ontologyterm (
+	phenotypeannotation_id bigint NOT NULL,
 	phenotypeterms_id bigint NOT NULL
 );
 
-CREATE SEQUENCE genephenotypeannotation_seq
+CREATE SEQUENCE phenotypeannotation_seq
 	START WITH 1
 	INCREMENT BY 50
 	NO MINVALUE

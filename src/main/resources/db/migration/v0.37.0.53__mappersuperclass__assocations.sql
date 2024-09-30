@@ -1,4 +1,4 @@
-INSERT INTO agmdiseaseannotation
+INSERT INTO diseaseannotation
 	SELECT id,
 		datecreated,
 		dateupdated,
@@ -20,27 +20,31 @@ INSERT INTO agmdiseaseannotation
 		diseasegeneticmodifierrelation_id,
 		geneticsex_id,
 		relation_id,
-		secondarydataprovider_id,
+		secondarydataprovider_id FROM Association WHERE AssociationType = 'AGMDiseaseAnnotation';
+
+
+INSERT INTO agmdiseaseannotation
+	SELECT id,
 		assertedallele_id,
 		diseaseannotationsubject_id,
 		inferredallele_id,
 		inferredgene_id FROM Association WHERE AssociationType = 'AGMDiseaseAnnotation';
 
-INSERT INTO agmdiseaseannotation_biologicalentity
+INSERT INTO diseaseannotation_biologicalentity
 	SELECT ab.diseaseannotation_id, ab.diseasegeneticmodifiers_id
 		FROM association_biologicalentity ab, Association a
 		WHERE ab.diseaseannotation_id = a.id AND a.associationtype = 'AGMDiseaseAnnotation';
 
 DELETE FROM association_biologicalentity WHERE diseaseannotation_id IN (SELECT id FROM agmdiseaseannotation);
 
-INSERT INTO agmdiseaseannotation_conditionrelation
+INSERT INTO diseaseannotation_conditionrelation
 	SELECT ac.annotation_id, ac.conditionrelations_id
 	FROM association_conditionrelation ac, Association a
 	WHERE ac.annotation_id = a.id AND a.associationtype = 'AGMDiseaseAnnotation';
 
 DELETE FROM association_conditionrelation WHERE annotation_id IN (SELECT id FROM agmdiseaseannotation);
 
-INSERT INTO agmdiseaseannotation_gene (association_id, assertedgenes_id)
+INSERT INTO agmdiseaseannotation_gene (agmdiseaseannotation_id, assertedgenes_id)
 	SELECT
 		agmdiseaseannotation_id,
 		assertedgenes_id
@@ -48,21 +52,21 @@ INSERT INTO agmdiseaseannotation_gene (association_id, assertedgenes_id)
 
 DELETE from association_gene WHERE agmdiseaseannotation_id IN (SELECT id FROM agmdiseaseannotation);
 
-INSERT INTO agmdiseaseannotation_note
+INSERT INTO diseaseannotation_note
 	SELECT an.annotation_id, an.relatednotes_id
 	FROM association_note an, Association a
 	WHERE an.annotation_id = a.id AND a.associationtype = 'AGMDiseaseAnnotation';
 
 DELETE FROM association_note WHERE annotation_id IN (SELECT id FROM agmdiseaseannotation);
 
-INSERT INTO agmdiseaseannotation_ontologyterm
+INSERT INTO diseaseannotation_ontologyterm
 	SELECT ao.diseaseannotation_id, ao.evidencecodes_id
 	FROM association_ontologyterm ao, Association a
 	WHERE ao.diseaseannotation_id = a.id AND a.associationtype = 'AGMDiseaseAnnotation';
 
 DELETE FROM association_ontologyterm WHERE diseaseannotation_id IN (SELECT id FROM agmdiseaseannotation);
 
-INSERT INTO agmdiseaseannotation_vocabularyterm
+INSERT INTO diseaseannotation_vocabularyterm
 	SELECT av.diseaseannotation_id, av.diseasequalifiers_id
 	FROM association_vocabularyterm av, Association a
 	WHERE av.diseaseannotation_id = a.id AND a.associationtype = 'AGMDiseaseAnnotation';
@@ -71,7 +75,7 @@ DELETE FROM association_vocabularyterm WHERE diseaseannotation_id IN (SELECT id 
 
 DELETE FROM Association WHERE AssociationType = 'AGMDiseaseAnnotation';
 
-INSERT INTO agmphenotypeannotation
+INSERT INTO phenotypeannotation
 	SELECT 
 		id,
 		datecreated,
@@ -90,13 +94,17 @@ INSERT INTO agmphenotypeannotation
 		singlereference_id,
 		dataprovider_id,
 		crossreference_id,
-		relation_id,
+		relation_id FROM Association WHERE AssociationType = 'AGMPhenotypeAnnotation';
+
+INSERT INTO agmphenotypeannotation
+	SELECT 
+		id,
 		assertedallele_id,
 		inferredallele_id,
 		inferredgene_id,
 		phenotypeannotationsubject_id FROM Association WHERE AssociationType = 'AGMPhenotypeAnnotation';
 
-INSERT INTO agmphenotypeannotation_conditionrelation
+INSERT INTO phenotypeannotation_conditionrelation
    SELECT ac.annotation_id, ac.conditionrelations_id
    FROM association_conditionrelation ac, Association a
    WHERE ac.annotation_id = a.id AND a.associationtype = 'AGMPhenotypeAnnotation';
@@ -111,14 +119,14 @@ INSERT INTO agmphenotypeannotation_gene
 
 DELETE from association_gene WHERE agmphenotypeannotation_id IN (SELECT id FROM agmphenotypeannotation);
 
-INSERT INTO agmphenotypeannotation_note
+INSERT INTO phenotypeannotation_note
 	SELECT an.annotation_id, an.relatednotes_id
 	FROM association_note an, Association a
 	WHERE an.annotation_id = a.id AND a.associationtype = 'AGMPhenotypeAnnotation';
 
 DELETE FROM association_note WHERE annotation_id IN (SELECT id FROM agmphenotypeannotation);
 
-INSERT INTO agmphenotypeannotation_ontologyterm
+INSERT INTO phenotypeannotation_ontologyterm
    SELECT ao.phenotypeannotation_id, ao.phenotypeterms_id
    FROM association_ontologyterm ao, Association a
    WHERE ao.phenotypeannotation_id = a.id AND a.associationtype = 'AGMPhenotypeAnnotation';
@@ -127,7 +135,7 @@ DELETE FROM association_ontologyterm WHERE phenotypeannotation_id IN (SELECT id 
 
 DELETE FROM Association WHERE AssociationType = 'AGMPhenotypeAnnotation';
 
-INSERT INTO allelediseaseannotation
+INSERT INTO diseaseannotation
 	SELECT
 		id,
 		datecreated,
@@ -150,25 +158,29 @@ INSERT INTO allelediseaseannotation
 		diseasegeneticmodifierrelation_id,
 		geneticsex_id,
 		relation_id,
-		secondarydataprovider_id,
+		secondarydataprovider_id FROM Association WHERE AssociationType = 'AlleleDiseaseAnnotation';
+		
+INSERT INTO allelediseaseannotation
+	SELECT
+		id,
 		diseaseannotationsubject_id,
 		inferredgene_id FROM Association WHERE AssociationType = 'AlleleDiseaseAnnotation';
 
-INSERT INTO allelediseaseannotation_biologicalentity
+INSERT INTO diseaseannotation_biologicalentity
 	SELECT ab.diseaseannotation_id, ab.diseasegeneticmodifiers_id
 	FROM association_biologicalentity ab, Association a
 	WHERE ab.diseaseannotation_id = a.id AND a.associationtype = 'AlleleDiseaseAnnotation';
 
 DELETE FROM association_biologicalentity WHERE diseaseannotation_id IN (SELECT id FROM allelediseaseannotation);
 
-INSERT INTO allelediseaseannotation_conditionrelation
+INSERT INTO diseaseannotation_conditionrelation
 	SELECT ac.annotation_id, ac.conditionrelations_id
 	FROM association_conditionrelation ac, Association a
 	WHERE ac.annotation_id = a.id AND a.associationtype = 'AlleleDiseaseAnnotation';
 
 DELETE FROM association_conditionrelation WHERE annotation_id IN (SELECT id FROM allelediseaseannotation);
 
-INSERT INTO allelediseaseannotation_gene (association_id, assertedgenes_id)
+INSERT INTO allelediseaseannotation_gene (allelediseaseannotation_id, assertedgenes_id)
 	SELECT
 		allelediseaseannotation_id,
 		assertedgenes_id
@@ -176,21 +188,21 @@ INSERT INTO allelediseaseannotation_gene (association_id, assertedgenes_id)
 
 DELETE from association_gene WHERE allelediseaseannotation_id IN (SELECT id FROM allelediseaseannotation);
 
-INSERT INTO allelediseaseannotation_note
+INSERT INTO diseaseannotation_note
 	SELECT an.annotation_id, an.relatednotes_id
 	FROM association_note an, Association a
 	WHERE an.annotation_id = a.id AND a.associationtype = 'AlleleDiseaseAnnotation';
 
 DELETE FROM association_note WHERE annotation_id IN (SELECT id FROM allelediseaseannotation);
 
-INSERT INTO allelediseaseannotation_ontologyterm
+INSERT INTO diseaseannotation_ontologyterm
 	SELECT ao.diseaseannotation_id, ao.evidencecodes_id
 	FROM association_ontologyterm ao, Association a
 	WHERE ao.diseaseannotation_id = a.id AND a.associationtype = 'AlleleDiseaseAnnotation';
 
 DELETE FROM association_ontologyterm WHERE diseaseannotation_id IN (SELECT id FROM allelediseaseannotation);
 
-INSERT INTO allelediseaseannotation_vocabularyterm
+INSERT INTO diseaseannotation_vocabularyterm
 	SELECT av.diseaseannotation_id, av.diseasequalifiers_id
 	FROM association_vocabularyterm av, Association a
 	WHERE av.diseaseannotation_id = a.id AND a.associationtype = 'AlleleDiseaseAnnotation';
@@ -225,7 +237,7 @@ DELETE FROM association_informationcontententity WHERE evidenceassociation_id IN
 
 DELETE FROM Association WHERE AssociationType = 'AlleleGeneAssociation';
 
-INSERT INTO allelephenotypeannotation
+INSERT INTO phenotypeannotation
 	SELECT
 		id,
 		datecreated,
@@ -244,11 +256,15 @@ INSERT INTO allelephenotypeannotation
 		singlereference_id,
 		dataprovider_id,
 		crossreference_id,
-		relation_id,
+		relation_id FROM Association WHERE AssociationType = 'AllelePhenotypeAnnotation';
+
+INSERT INTO allelephenotypeannotation
+	SELECT
+		id,
 		inferredgene_id,
 		phenotypeannotationsubject_id FROM Association WHERE AssociationType = 'AllelePhenotypeAnnotation';
 
-INSERT INTO allelephenotypeannotation_conditionrelation
+INSERT INTO phenotypeannotation_conditionrelation
    SELECT ac.annotation_id, ac.conditionrelations_id
    FROM association_conditionrelation ac, Association a
    WHERE ac.annotation_id = a.id AND a.associationtype = 'AllelePhenotypeAnnotation';
@@ -263,14 +279,14 @@ INSERT INTO allelephenotypeannotation_gene
 
 DELETE from association_gene WHERE allelephenotypeannotation_id IN (SELECT id FROM allelephenotypeannotation);
 
-INSERT INTO allelephenotypeannotation_note
+INSERT INTO phenotypeannotation_note
 	SELECT an.annotation_id, an.relatednotes_id
 	FROM association_note an, Association a
 	WHERE an.annotation_id = a.id AND a.associationtype = 'AllelePhenotypeAnnotation';
 
 DELETE FROM association_note WHERE annotation_id IN (SELECT id FROM allelephenotypeannotation);
 
-INSERT INTO allelephenotypeannotation_ontologyterm
+INSERT INTO phenotypeannotation_ontologyterm
    SELECT ao.phenotypeannotation_id, ao.phenotypeterms_id
    FROM association_ontologyterm ao, Association a
    WHERE ao.phenotypeannotation_id = a.id AND a.associationtype = 'AllelePhenotypeAnnotation';
@@ -388,25 +404,29 @@ INSERT INTO genediseaseannotation
 		diseasegeneticmodifierrelation_id,
 		geneticsex_id,
 		relation_id,
-		secondarydataprovider_id,
+		secondarydataprovider_id FROM Association WHERE AssociationType = 'GeneDiseaseAnnotation';
+
+INSERT INTO genediseaseannotation
+	SELECT
+		id,
 		diseaseannotationsubject_id,
 		sgdstrainbackground_id FROM Association WHERE AssociationType = 'GeneDiseaseAnnotation';
 
-INSERT INTO genediseaseannotation_biologicalentity
+INSERT INTO diseaseannotation_biologicalentity
 	SELECT ab.diseaseannotation_id, ab.diseasegeneticmodifiers_id
 	FROM association_biologicalentity ab, Association a
 	WHERE ab.diseaseannotation_id = a.id AND a.associationtype = 'GeneDiseaseAnnotation';
 
 DELETE FROM association_biologicalentity WHERE diseaseannotation_id IN (SELECT id FROM genediseaseannotation);
 
-INSERT INTO genediseaseannotation_conditionrelation
+INSERT INTO diseaseannotation_conditionrelation
 	SELECT ac.annotation_id, ac.conditionrelations_id
 	FROM association_conditionrelation ac, Association a
 	WHERE ac.annotation_id = a.id AND a.associationtype = 'GeneDiseaseAnnotation';
 
 DELETE FROM association_conditionrelation WHERE annotation_id IN (SELECT id FROM genediseaseannotation);
 
-INSERT INTO genediseaseannotation_gene (association_id, with_id)
+INSERT INTO diseaseannotation_gene (diseaseannotation_id, with_id)
 	SELECT
 		diseaseannotation_id,
 		with_id
@@ -414,21 +434,21 @@ INSERT INTO genediseaseannotation_gene (association_id, with_id)
 
 DELETE from association_gene WHERE diseaseannotation_id IN (SELECT id FROM genediseaseannotation);
 
-INSERT INTO genediseaseannotation_note
+INSERT INTO diseaseannotation_note
 	SELECT an.annotation_id, an.relatednotes_id
 	FROM association_note an, Association a
 	WHERE an.annotation_id = a.id AND a.associationtype = 'GeneDiseaseAnnotation';
 
 DELETE FROM association_note WHERE annotation_id IN (SELECT id FROM genediseaseannotation);
 
-INSERT INTO genediseaseannotation_ontologyterm
+INSERT INTO diseaseannotation_ontologyterm
 	SELECT ao.diseaseannotation_id, ao.evidencecodes_id
 	FROM association_ontologyterm ao, Association a
 	WHERE ao.diseaseannotation_id = a.id AND a.associationtype = 'GeneDiseaseAnnotation';
 
 DELETE FROM association_ontologyterm WHERE diseaseannotation_id IN (SELECT id FROM genediseaseannotation);
 
-INSERT INTO genediseaseannotation_vocabularyterm
+INSERT INTO diseaseannotation_vocabularyterm
 	SELECT av.diseaseannotation_id, av.diseasequalifiers_id
 	FROM association_vocabularyterm av, Association a
 	WHERE av.diseaseannotation_id = a.id AND a.associationtype = 'GeneDiseaseAnnotation';
@@ -559,7 +579,7 @@ DELETE FROM association_informationcontententity WHERE evidenceassociation_id IN
 
 DELETE FROM Association WHERE AssociationType = 'GeneMolecularInteraction';
 
-INSERT INTO genephenotypeannotation
+INSERT INTO phenotypeannotation
 	SELECT
 		id,
 		datecreated,
@@ -578,25 +598,29 @@ INSERT INTO genephenotypeannotation
 		singlereference_id,
 		dataprovider_id,
 		crossreference_id,
-		relation_id,
+		relation_id FROM Association WHERE AssociationType = 'GenePhenotypeAnnotation';
+
+INSERT INTO genephenotypeannotation
+	SELECT
+		id,
 		phenotypeannotationsubject_id,
 		sgdstrainbackground_id FROM Association WHERE AssociationType = 'GenePhenotypeAnnotation';
 
-INSERT INTO genephenotypeannotation_conditionrelation
+INSERT INTO phenotypeannotation_conditionrelation
 	SELECT ac.annotation_id, ac.conditionrelations_id
 	FROM association_conditionrelation ac, Association a
 	WHERE ac.annotation_id = a.id AND a.associationtype = 'GenePhenotypeAnnotation';
 
 DELETE FROM association_conditionrelation WHERE annotation_id IN (SELECT id FROM genephenotypeannotation);
 
-INSERT INTO genephenotypeannotation_note
+INSERT INTO phenotypeannotation_note
 	SELECT an.annotation_id, an.relatednotes_id
 	FROM association_note an, Association a
 	WHERE an.annotation_id = a.id AND a.associationtype = 'GenePhenotypeAnnotation';
 
 DELETE FROM association_note WHERE annotation_id IN (SELECT id FROM genephenotypeannotation);
 
-INSERT INTO genephenotypeannotation_ontologyterm
+INSERT INTO phenotypeannotation_ontologyterm
    SELECT ao.phenotypeannotation_id, ao.phenotypeterms_id
    FROM association_ontologyterm ao, Association a
    WHERE ao.phenotypeannotation_id = a.id AND a.associationtype = 'GenePhenotypeAnnotation';

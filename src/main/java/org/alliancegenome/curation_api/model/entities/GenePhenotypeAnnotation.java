@@ -29,18 +29,6 @@ import lombok.EqualsAndHashCode;
 @AGRCurationSchemaVersion(min = "2.2.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { PhenotypeAnnotation.class })
 
 @Table(indexes = {
-	@Index(name = "GenePhenotypeAnnotation_internal_index", columnList = "internal"),
-	@Index(name = "GenePhenotypeAnnotation_obsolete_index", columnList = "obsolete"),
-	@Index(name = "GenePhenotypeAnnotation_curie_index", columnList = "curie"),
-	@Index(name = "GenePhenotypeAnnotation_modEntityId_index", columnList = "modEntityId"),
-	@Index(name = "GenePhenotypeAnnotation_modInternalId_index", columnList = "modInternalId"),
-	@Index(name = "GenePhenotypeAnnotation_uniqueId_index", columnList = "uniqueId"),
-	@Index(name = "GenePhenotypeAnnotation_createdBy_index", columnList = "createdBy_id"),
-	@Index(name = "GenePhenotypeAnnotation_updatedBy_index", columnList = "updatedBy_id"),
-	@Index(name = "GenePhenotypeAnnotation_singleReference_index", columnList = "singleReference_id"),
-	@Index(name = "GenePhenotypeAnnotation_dataProvider_index", columnList = "dataProvider_id"),
-	@Index(name = "GenePhenotypeAnnotation_crossReference_index", columnList = "crossReference_id"),
-	@Index(name = "GenePhenotypeAnnotation_relation_index", columnList = "relation_id"),
 	@Index(name = "GenePhenotypeAnnotation_phenotypeAnnotationSubject_index", columnList = "phenotypeAnnotationSubject_id"),
 	@Index(name = "GenePhenotypeAnnotation_sgdStrainBackground_index", columnList = "sgdStrainBackground_id")
 })

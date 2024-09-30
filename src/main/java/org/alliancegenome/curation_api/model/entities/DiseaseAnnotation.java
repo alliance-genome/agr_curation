@@ -26,12 +26,13 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonView;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
 import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -42,11 +43,30 @@ import lombok.EqualsAndHashCode;
 	@Type(value = AlleleDiseaseAnnotation.class, name = "AlleleDiseaseAnnotation"),
 	@Type(value = GeneDiseaseAnnotation.class, name = "GeneDiseaseAnnotation")
 })
-@MappedSuperclass
+@Entity
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @AGRCurationSchemaVersion(min = "2.2.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { Annotation.class })
 @Schema(name = "Disease_Annotation", description = "Annotation class representing a disease annotation")
+@Table(indexes = {
+	@Index(name = "DiseaseAnnotation_internal_index", columnList = "internal"),
+	@Index(name = "DiseaseAnnotation_obsolete_index", columnList = "obsolete"),
+	@Index(name = "DiseaseAnnotation_curie_index", columnList = "curie"),
+	@Index(name = "DiseaseAnnotation_modEntityId_index", columnList = "modEntityId"),
+	@Index(name = "DiseaseAnnotation_modInternalId_index", columnList = "modInternalId"),
+	@Index(name = "DiseaseAnnotation_uniqueId_index", columnList = "uniqueId"),
+	@Index(name = "DiseaseAnnotation_diseaseAnnotationObject_index", columnList = "diseaseAnnotationObject_id"),
+	@Index(name = "DiseaseAnnotation_negated_index", columnList = "negated"),
+	@Index(name = "DiseaseAnnotation_createdBy_index", columnList = "createdBy_id"),
+	@Index(name = "DiseaseAnnotation_updatedBy_index", columnList = "updatedBy_id"),
+	@Index(name = "DiseaseAnnotation_singleReference_index", columnList = "singleReference_id"),
+	@Index(name = "DiseaseAnnotation_dataProvider_index", columnList = "dataProvider_id"),
+	@Index(name = "DiseaseAnnotation_annotationType_index", columnList = "annotationType_id"),
+	@Index(name = "DiseaseAnnotation_diseaseGeneticModifierRelation_index", columnList = "diseaseGeneticModifierRelation_id"),
+	@Index(name = "DiseaseAnnotation_geneticSex_index", columnList = "geneticSex_id"),
+	@Index(name = "DiseaseAnnotation_relation_index", columnList = "relation_id"),
+	@Index(name = "DiseaseAnnotation_secondaryDataProvider_index", columnList = "secondaryDataProvider_id")
+})
 public abstract class DiseaseAnnotation extends Annotation {
 
 	@IndexedEmbedded(includePaths = {"curie", "name", "secondaryIdentifiers", "synonyms.name", "namespace",
@@ -74,11 +94,11 @@ public abstract class DiseaseAnnotation extends Annotation {
 	@ManyToMany
 	@JsonView({ View.FieldsAndLists.class, View.DiseaseAnnotation.class, View.ForPublic.class })
 	@JoinTable(
-		joinColumns = @JoinColumn(name = "association_id"),
+		joinColumns = @JoinColumn(name = "diseaseannotation_id"),
 		inverseJoinColumns = @JoinColumn(name = "evidencecodes_id"),
 		indexes = {
-			@Index(columnList = "association_id"),
-			@Index(columnList = "evidencecodes_id")
+			@Index(name = "diseaseannotation_ontologyterm_da_index", columnList = "diseaseannotation_id"),
+			@Index(name = "diseaseannotation_ontologyterm_evidencecodes_index", columnList = "evidencecodes_id")
 		}
 	)
 	private List<ECOTerm> evidenceCodes;
@@ -95,11 +115,11 @@ public abstract class DiseaseAnnotation extends Annotation {
 	@ManyToMany
 	@JsonView({ View.FieldsAndLists.class, View.DiseaseAnnotation.class, View.ForPublic.class })
 	@JoinTable(
-		joinColumns = @JoinColumn(name = "association_id"),
+		joinColumns = @JoinColumn(name = "diseaseannotation_id"),
 		inverseJoinColumns = @JoinColumn(name = "with_id"),
 		indexes = {
-			@Index(columnList = "association_id"),
-			@Index(columnList = "with_id")
+			@Index(name = "diseaseannotation_gene_da_index", columnList = "diseaseannotation_id"),
+			@Index(name = "diseaseannotation_gene_with_index", columnList = "with_id")
 		}
 	)
 	private List<Gene> with;
@@ -115,11 +135,11 @@ public abstract class DiseaseAnnotation extends Annotation {
 	@ManyToMany
 	@JsonView({ View.FieldsAndLists.class, View.DiseaseAnnotation.class, View.ForPublic.class })
 	@JoinTable(
-		joinColumns = @JoinColumn(name = "association_id"),
+		joinColumns = @JoinColumn(name = "diseaseannotation_id"),
 		inverseJoinColumns = @JoinColumn(name = "diseasequalifiers_id"),
 		indexes = {
-			@Index(columnList = "association_id"),
-			@Index(columnList = "diseasequalifiers_id")
+			@Index(name = "diseaseannotation_vocabularyterm_da_index", columnList = "diseaseannotation_id"),
+			@Index(name = "diseaseannotation_vocabularyterm_dq_index", columnList = "diseasequalifiers_id")
 		}
 	)
 	private List<VocabularyTerm> diseaseQualifiers;
@@ -142,11 +162,11 @@ public abstract class DiseaseAnnotation extends Annotation {
 	@ManyToMany
 	@JsonView({ View.FieldsAndLists.class, View.DiseaseAnnotation.class, View.ForPublic.class })
 	@JoinTable(
-		joinColumns = @JoinColumn(name = "association_id"),
+		joinColumns = @JoinColumn(name = "diseaseannotation_id"),
 		inverseJoinColumns = @JoinColumn(name = "diseasegeneticmodifiers_id"),
 		indexes = {
-			@Index(columnList = "association_id"),
-			@Index(columnList = "diseasegeneticmodifiers_id")
+			@Index(name = "diseaseannotation_biologicalentity_da_index", columnList = "diseaseannotation_id"),
+			@Index(name = "diseaseannotation_biologicalentity_dgm_index", columnList = "diseasegeneticmodifiers_id")
 		}
 	)
 	private List<BiologicalEntity> diseaseGeneticModifiers;

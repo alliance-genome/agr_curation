@@ -36,18 +36,6 @@ import lombok.EqualsAndHashCode;
 @AGRCurationSchemaVersion(min = "2.2.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { PhenotypeAnnotation.class })
 
 @Table(indexes = {
-	@Index(name = "AllelePhenotypeAnnotation_internal_index", columnList = "internal"),
-	@Index(name = "AllelePhenotypeAnnotation_obsolete_index", columnList = "obsolete"),
-	@Index(name = "AllelePhenotypeAnnotation_curie_index", columnList = "curie"),
-	@Index(name = "AllelePhenotypeAnnotation_modEntityId_index", columnList = "modEntityId"),
-	@Index(name = "AllelePhenotypeAnnotation_modInternalId_index", columnList = "modInternalId"),
-	@Index(name = "AllelePhenotypeAnnotation_uniqueId_index", columnList = "uniqueId"),
-	@Index(name = "AllelePhenotypeAnnotation_createdBy_index", columnList = "createdBy_id"),
-	@Index(name = "AllelePhenotypeAnnotation_updatedBy_index", columnList = "updatedBy_id"),
-	@Index(name = "AllelePhenotypeAnnotation_singleReference_index", columnList = "singleReference_id"),
-	@Index(name = "AllelePhenotypeAnnotation_dataProvider_index", columnList = "dataProvider_id"),
-	@Index(name = "AllelePhenotypeAnnotation_crossReference_index", columnList = "crossReference_id"),
-	@Index(name = "AllelePhenotypeAnnotation_relation_index", columnList = "relation_id"),
 	@Index(name = "AllelePhenotypeAnnotation_inferredGene_index", columnList = "inferredGene_id"),
 	@Index(name = "AllelePhenotypeAnnotation_phenotypeAnnotationSubject_index", columnList = "phenotypeAnnotationSubject_id")
 })
@@ -95,11 +83,11 @@ public class AllelePhenotypeAnnotation extends PhenotypeAnnotation {
 	@Fetch(FetchMode.SELECT)
 	@JsonView({ View.FieldsAndLists.class, View.PhenotypeAnnotationView.class, View.ForPublic.class })
 	@JoinTable(
-		joinColumns = @JoinColumn(name = "association_id"),
+		joinColumns = @JoinColumn(name = "allelephenotypeannotation_id"),
 		inverseJoinColumns = @JoinColumn(name = "assertedgenes_id"),
 		indexes = {
-			@Index(columnList = "association_id"),
-			@Index(columnList = "assertedgenes_id")
+			@Index(name = "allelephenotypeannotation_gene_allelepa_index", columnList = "allelephenotypeannotation_id"),
+			@Index(name = "allelephenotypeannotation_gene_assertedgenes_index", columnList = "assertedgenes_id")
 		}
 	)
 	private List<Gene> assertedGenes;

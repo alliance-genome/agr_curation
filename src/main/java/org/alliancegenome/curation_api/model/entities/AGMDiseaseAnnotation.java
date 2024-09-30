@@ -37,24 +37,6 @@ import lombok.EqualsAndHashCode;
 @AGRCurationSchemaVersion(min = "2.2.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { DiseaseAnnotation.class })
 
 @Table(indexes = {
-	@Index(name = "AGMDiseaseAnnotation_internal_index", columnList = "internal"),
-	@Index(name = "AGMDiseaseAnnotation_obsolete_index", columnList = "obsolete"),
-	@Index(name = "AGMDiseaseAnnotation_curie_index", columnList = "curie"),
-	@Index(name = "AGMDiseaseAnnotation_modEntityId_index", columnList = "modEntityId"),
-	@Index(name = "AGMDiseaseAnnotation_modInternalId_index", columnList = "modInternalId"),
-	@Index(name = "AGMDiseaseAnnotation_uniqueId_index", columnList = "uniqueId"),
-	@Index(name = "AGMDiseaseAnnotation_negated_index", columnList = "negated"),
-	@Index(name = "AGMDiseaseAnnotation_createdBy_index", columnList = "createdBy_id"),
-	@Index(name = "AGMDiseaseAnnotation_updatedBy_index", columnList = "updatedBy_id"),
-	@Index(name = "AGMDiseaseAnnotation_singleReference_index", columnList = "singleReference_id"),
-	@Index(name = "AGMDiseaseAnnotation_dataProvider_index", columnList = "dataProvider_id"),
-	@Index(name = "AGMDiseaseAnnotation_annotationType_index", columnList = "annotationType_id"),
-	@Index(name = "AGMDiseaseAnnotation_diseaseAnnotationObject_index", columnList = "diseaseAnnotationObject_id"),
-	@Index(name = "AGMDiseaseAnnotation_diseaseGeneticModifierRelation_index", columnList = "diseaseGeneticModifierRelation_id"),
-	@Index(name = "AGMDiseaseAnnotation_geneticSex_index", columnList = "geneticSex_id"),
-	@Index(name = "AGMDiseaseAnnotation_relation_index", columnList = "relation_id"),
-	@Index(name = "AGMDiseaseAnnotation_secondaryDataProvider_index", columnList = "secondaryDataProvider_id"),
-	@Index(name = "AGMDiseaseAnnotation_assertedAllele_index", columnList = "assertedAllele_id"),
 	@Index(name = "AGMDiseaseAnnotation_diseaseAnnotationSubject_index", columnList = "diseaseAnnotationSubject_id"),
 	@Index(name = "AGMDiseaseAnnotation_inferredAllele_index", columnList = "inferredAllele_id"),
 	@Index(name = "AGMDiseaseAnnotation_inferredGene_index", columnList = "inferredGene_id")
@@ -104,11 +86,11 @@ public class AGMDiseaseAnnotation extends DiseaseAnnotation {
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
 	@JoinTable(
-		joinColumns = @JoinColumn(name = "association_id"),
+		joinColumns = @JoinColumn(name = "agmdiseaseannotation_id"),
 		inverseJoinColumns = @JoinColumn(name = "assertedgenes_id"),
 		indexes = {
-			@Index(columnList = "association_id"),
-			@Index(columnList = "assertedgenes_id")
+			@Index(name = "agmdiseaseannotation_gene_agmda_index", columnList = "agmdiseaseannotation_id"),
+			@Index(name = "agmdiseaseannotation_gene_assertedgenes_index", columnList = "assertedgenes_id")
 		}
 	)
 	@JsonView({ View.FieldsAndLists.class, View.DiseaseAnnotation.class, View.ForPublic.class })

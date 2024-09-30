@@ -72,10 +72,10 @@ public class Annotation extends SingleReferenceAssociation {
 	@ManyToMany
 	@JsonView({ View.FieldsAndLists.class, View.DiseaseAnnotation.class, View.PhenotypeAnnotationView.class, View.ForPublic.class })
 	@JoinTable(
-		joinColumns = @JoinColumn(name = "association_id"),
+		joinColumns = @JoinColumn(name = "annotation_id"),
 		inverseJoinColumns = @JoinColumn(name = "conditionRelations_id"),
 		indexes = {
-			@Index(columnList = "association_id"),
+			@Index(columnList = "annotation_id"),
 			@Index(columnList = "conditionRelations_id")
 		}
 	)
@@ -89,10 +89,10 @@ public class Annotation extends SingleReferenceAssociation {
 	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonView({ View.FieldsAndLists.class, View.DiseaseAnnotation.class, View.ForPublic.class })
 	@JoinTable(
-		joinColumns = @JoinColumn(name = "association_id"),
+		joinColumns = @JoinColumn(name = "annotation_id"),
 		inverseJoinColumns = @JoinColumn(name = "relatedNotes_id"),
 		indexes = {
-			@Index(columnList = "association_id"),
+			@Index(columnList = "annotation_id"),
 			@Index(columnList = "relatedNotes_id")
 		}
 	)

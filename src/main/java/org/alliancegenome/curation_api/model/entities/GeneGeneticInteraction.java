@@ -94,10 +94,10 @@ public class GeneGeneticInteraction extends GeneInteraction {
 	@ElementCollection
 	@JsonView({View.FieldsAndLists.class, View.GeneInteractionView.class})
 	@JoinTable(
-		joinColumns = @JoinColumn(name = "association_id"),
+		joinColumns = @JoinColumn(name = "genegeneticinteraction_id"),
 		indexes = {
-			@Index(columnList = "association_id"),
-			@Index(columnList = "phenotypesOrTraits")
+			@Index(name = "genegeneticinteraction_phenotypesortraits_interaction_index", columnList = "genegeneticinteraction_id"),
+			@Index(name = "genegeneticinteraction_phenotypesortraits_pt_index", columnList = "phenotypesOrTraits")
 		}
 	)
 	private List<String> phenotypesOrTraits;

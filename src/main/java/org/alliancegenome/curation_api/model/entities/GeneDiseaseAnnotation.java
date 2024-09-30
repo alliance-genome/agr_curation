@@ -30,23 +30,6 @@ import lombok.EqualsAndHashCode;
 @AGRCurationSchemaVersion(min = "2.2.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { DiseaseAnnotation.class })
 
 @Table(indexes = {
-	@Index(name = "GeneDiseaseAnnotation_internal_index", columnList = "internal"),
-	@Index(name = "GeneDiseaseAnnotation_obsolete_index", columnList = "obsolete"),
-	@Index(name = "GeneDiseaseAnnotation_curie_index", columnList = "curie"),
-	@Index(name = "GeneDiseaseAnnotation_modEntityId_index", columnList = "modEntityId"),
-	@Index(name = "GeneDiseaseAnnotation_modInternalId_index", columnList = "modInternalId"),
-	@Index(name = "GeneDiseaseAnnotation_uniqueId_index", columnList = "uniqueId"),
-	@Index(name = "GeneDiseaseAnnotation_negated_index", columnList = "negated"),
-	@Index(name = "GeneDiseaseAnnotation_createdBy_index", columnList = "createdBy_id"),
-	@Index(name = "GeneDiseaseAnnotation_updatedBy_index", columnList = "updatedBy_id"),
-	@Index(name = "GeneDiseaseAnnotation_singleReference_index", columnList = "singleReference_id"),
-	@Index(name = "GeneDiseaseAnnotation_dataProvider_index", columnList = "dataProvider_id"),
-	@Index(name = "GeneDiseaseAnnotation_annotationType_index", columnList = "annotationType_id"),
-	@Index(name = "GeneDiseaseAnnotation_diseaseAnnotationObject_index", columnList = "diseaseAnnotationObject_id"),
-	@Index(name = "GeneDiseaseAnnotation_diseaseGeneticModifierRelation_index", columnList = "diseaseGeneticModifierRelation_id"),
-	@Index(name = "GeneDiseaseAnnotation_geneticSex_index", columnList = "geneticSex_id"),
-	@Index(name = "GeneDiseaseAnnotation_relation_index", columnList = "relation_id"),
-	@Index(name = "GeneDiseaseAnnotation_secondaryDataProvider_index", columnList = "secondaryDataProvider_id"),
 	@Index(name = "GeneDiseaseAnnotation_diseaseAnnotationSubject_index", columnList = "diseaseAnnotationSubject_id"),
 	@Index(name = "GeneDiseaseAnnotation_sgdStrainBackground_index", columnList = "sgdStrainBackground_id")
 })

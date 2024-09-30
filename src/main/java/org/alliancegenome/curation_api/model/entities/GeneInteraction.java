@@ -58,10 +58,10 @@ public abstract class GeneInteraction extends GeneGeneAssociation {
 	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonView({ View.FieldsAndLists.class, View.GeneInteractionView.class })
 	@JoinTable(
-		joinColumns = @JoinColumn(name = "association_id"),
+		joinColumns = @JoinColumn(name = "geneinteraction_id"),
 		inverseJoinColumns = @JoinColumn(name = "crossReferences_id"),
 		indexes = {
-			@Index(columnList = "association_id"),
+			@Index(columnList = "geneinteraction_id"),
 			@Index(columnList = "crossReferences_id")
 		}
 	)
