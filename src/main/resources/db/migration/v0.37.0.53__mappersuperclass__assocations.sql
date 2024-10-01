@@ -381,7 +381,7 @@ DELETE FROM association_informationcontententity WHERE evidenceassociation_id IN
 
 DELETE FROM Association WHERE AssociationType = 'ExonGenomicLocationAssociation';
 
-INSERT INTO genediseaseannotation
+INSERT INTO diseaseannotation
 	SELECT
 		id,
 		datecreated,
