@@ -45,11 +45,27 @@ export const EntityCountsComponent = () => {
 		return <a href={rowData.link}>{rowData.name}</a>;
 	};
 
+	const ROW_HIGHLIGHT_IGNORE = ['Disease Annotations', 'Literature References', 'Bulk Loads / Failed Loads'];
+
+	const getRowClass = (rowData) => {
+		if (ROW_HIGHLIGHT_IGNORE.includes(rowData.name)) return;
+
+		if (rowData?.dbCount !== rowData.esCount) {
+			return 'bg-gray-500 text-white';
+		}
+	};
+
 	return (
 		<>
 			<div className="grid nested dashboard">
 				<div className="col-4">
-					<DataTable header="Entities" value={tableData.entity} sortField="name" sortOrder={1}>
+					<DataTable
+						header="Entities"
+						value={tableData.entity}
+						sortField="name"
+						sortOrder={1}
+						rowClassName={(rowData) => getRowClass(rowData)}
+					>
 						<Column field="name" header="Entity Name" body={nameHyperlinkTemplate} />
 						<Column
 							field="dbCount"
@@ -64,7 +80,13 @@ export const EntityCountsComponent = () => {
 					</DataTable>
 				</div>
 				<div className="col-4">
-					<DataTable header="Ontologies" value={tableData.ontology} sortField="name" sortOrder={1}>
+					<DataTable
+						header="Ontologies"
+						value={tableData.ontology}
+						sortField="name"
+						sortOrder={1}
+						rowClassName={(rowData) => getRowClass(rowData)}
+					>
 						<Column field="name" header="Ontology Name" body={nameHyperlinkTemplate} />
 						<Column
 							field="dbCount"
@@ -79,7 +101,13 @@ export const EntityCountsComponent = () => {
 					</DataTable>
 				</div>
 				<div className="col-4">
-					<DataTable header="System" value={tableData.system} sortField="name" sortOrder={1}>
+					<DataTable
+						header="System"
+						value={tableData.system}
+						sortField="name"
+						sortOrder={1}
+						rowClassName={(rowData) => getRowClass(rowData)}
+					>
 						<Column field="name" header="System Name" body={nameHyperlinkTemplate} />
 						<Column
 							field="dbCount"
