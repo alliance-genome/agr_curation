@@ -19,9 +19,11 @@ import com.fasterxml.jackson.annotation.JsonView;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Index;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -33,6 +35,12 @@ import lombok.EqualsAndHashCode;
 @Schema(name = "Allele_Disease_Annotation", description = "Annotation class representing a allele disease annotation")
 @JsonTypeName("AlleleDiseaseAnnotation")
 @AGRCurationSchemaVersion(min = "2.2.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { DiseaseAnnotation.class })
+
+@Table(indexes = {
+	@Index(name = "AlleleDiseaseAnnotation_diseaseAnnotationSubject_index", columnList = "diseaseAnnotationSubject_id"),
+	@Index(name = "AlleleDiseaseAnnotation_inferredGene_index", columnList = "inferredGene_id")
+})
+
 public class AlleleDiseaseAnnotation extends DiseaseAnnotation {
 
 	@IndexedEmbedded(includePaths = {
@@ -74,11 +82,15 @@ public class AlleleDiseaseAnnotation extends DiseaseAnnotation {
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
 	@Fetch(FetchMode.SELECT)
-	@JoinTable(indexes = {
-		@Index(name = "association_allelediseaseannotation_index", columnList = "allelediseaseannotation_id"),
-		@Index(name = "association_assertedgenes_index", columnList = "assertedgenes_id")
-	})
 	@JsonView({ View.FieldsAndLists.class, View.DiseaseAnnotation.class, View.ForPublic.class })
+	@JoinTable(
+		joinColumns = @JoinColumn(name = "allelediseaseannotation_id"),
+		inverseJoinColumns = @JoinColumn(name = "assertedgenes_id"),
+		indexes = {
+			@Index(name = "allelediseaseannotation_gene_alleleda_index", columnList = "allelediseaseannotation_id"),
+			@Index(name = "allelediseaseannotation_gene_assertedgenes_index", columnList = "assertedgenes_id")
+		}
+	)
 	private List<Gene> assertedGenes;
 
 	@Transient

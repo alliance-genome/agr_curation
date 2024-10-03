@@ -49,7 +49,7 @@ public class BulkLoadFileHistory extends AuditedObject {
 
 	@JsonView({ View.FieldsOnly.class })
 	@JdbcTypeCode(SqlTypes.JSON)
-	private Map<String, ProcessCount> counts = new HashMap<String, ProcessCount>();
+	private Map<String, ProcessCount> counts = new HashMap<>();
 
 	@JsonView({ View.FieldsOnly.class })
 	@Enumerated(EnumType.STRING)

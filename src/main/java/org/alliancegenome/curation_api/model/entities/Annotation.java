@@ -7,8 +7,6 @@ import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.entities.base.AuditedObject;
 import org.alliancegenome.curation_api.view.View;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
 import org.hibernate.search.engine.backend.types.Aggregable;
 import org.hibernate.search.engine.backend.types.Searchable;
 import org.hibernate.search.engine.backend.types.Sortable;
@@ -22,17 +20,18 @@ import com.fasterxml.jackson.annotation.JsonView;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
 import jakarta.persistence.Index;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.MappedSuperclass;
 import jakarta.persistence.OneToMany;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
-@Entity
+@MappedSuperclass
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(callSuper = true)
@@ -72,10 +71,14 @@ public class Annotation extends SingleReferenceAssociation {
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
 	@JsonView({ View.FieldsAndLists.class, View.DiseaseAnnotation.class, View.PhenotypeAnnotationView.class, View.ForPublic.class })
-	@JoinTable(indexes = {
-		@Index(name = "association_annotation_conditionrelation_index", columnList = "annotation_id"),
-		@Index(name = "association_annotation_conditionrelations_index", columnList = "conditionrelations_id")
-	})
+	@JoinTable(
+		joinColumns = @JoinColumn(name = "annotation_id"),
+		inverseJoinColumns = @JoinColumn(name = "conditionRelations_id"),
+		indexes = {
+			@Index(columnList = "annotation_id"),
+			@Index(columnList = "conditionRelations_id")
+		}
+	)
 	private List<ConditionRelation> conditionRelations;
 
 	@IndexedEmbedded(includePaths = {"freeText", "noteType.name", "references.curie",
@@ -85,17 +88,20 @@ public class Annotation extends SingleReferenceAssociation {
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonView({ View.FieldsAndLists.class, View.DiseaseAnnotation.class, View.ForPublic.class })
-	@JoinTable(indexes = {
-		@Index(name = "association_annotation_annotation_index", columnList = "annotation_id"),
-		@Index(name = "association_relatednotes_index", columnList = "relatednotes_id")
-	})
+	@JoinTable(
+		joinColumns = @JoinColumn(name = "annotation_id"),
+		inverseJoinColumns = @JoinColumn(name = "relatedNotes_id"),
+		indexes = {
+			@Index(columnList = "annotation_id"),
+			@Index(columnList = "relatedNotes_id")
+		}
+	)
 	private List<Note> relatedNotes;
 
 	@IndexedEmbedded(includePaths = {"sourceOrganization.abbreviation", "sourceOrganization.fullName", "sourceOrganization.shortName", "crossReference.displayName", "crossReference.referencedCurie",
 			"sourceOrganization.abbreviation_keyword", "sourceOrganization.fullName_keyword", "sourceOrganization.shortName_keyword", "crossReference.displayName_keyword", "crossReference.referencedCurie_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@Fetch(FetchMode.SELECT)
 	@JsonView({ View.FieldsOnly.class, View.ForPublic.class })
 	protected DataProvider dataProvider;
 

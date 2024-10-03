@@ -23,16 +23,17 @@ import com.fasterxml.jackson.annotation.JsonView;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
 import jakarta.persistence.Index;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.MappedSuperclass;
 import jakarta.persistence.OneToMany;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
-@Entity
+@MappedSuperclass
 @Data
 @EqualsAndHashCode(callSuper = true)
 @AGRCurationSchemaVersion(min = "2.2.2", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { Annotation.class })
@@ -55,12 +56,15 @@ public abstract class GeneInteraction extends GeneGeneAssociation {
 	@IndexedEmbedded(includePaths = {"referencedCurie", "displayName", "referencedCurie_keyword", "displayName_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-	@JoinTable(indexes = {
-		@Index(columnList = "geneinteraction_id, crossreferences_id", name = "association_geneinteraction_crossreference_index"),
-		@Index(columnList = "geneinteraction_id", name = "association_geneinteraction_geneinteraction_index"),
-		@Index(columnList = "crossreferences_id", name = "association_geneinteraction_crossreferences_index")
-	})
 	@JsonView({ View.FieldsAndLists.class, View.GeneInteractionView.class })
+	@JoinTable(
+		joinColumns = @JoinColumn(name = "geneinteraction_id"),
+		inverseJoinColumns = @JoinColumn(name = "crossReferences_id"),
+		indexes = {
+			@Index(columnList = "geneinteraction_id"),
+			@Index(columnList = "crossReferences_id")
+		}
+	)
 	private List<CrossReference> crossReferences;
 	
 	@IndexedEmbedded(includePaths = {"curie", "name", "secondaryIdentifiers", "synonyms.name", "namespace",

@@ -74,7 +74,6 @@ public class ExpressionBulkUploadFmsITCase extends BaseITCase {
 			.statusCode(200)
 			.body("totalResults", is(1))
 			.body("results", hasSize(1))
-			.body("results[0].type", is("GeneExpressionAnnotation"))
 			.body("results[0].dateCreated", is("2024-01-17T15:31:34Z"))
 			.body("results[0].dataProvider.sourceOrganization.abbreviation", is("ZFIN"))
 			.body("results[0].expressionAnnotationSubject.modEntityId", is(gene))

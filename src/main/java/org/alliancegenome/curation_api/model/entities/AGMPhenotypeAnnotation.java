@@ -18,9 +18,11 @@ import com.fasterxml.jackson.annotation.JsonView;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Index;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -32,6 +34,14 @@ import lombok.EqualsAndHashCode;
 @Schema(name = "AGM_Phenotype_Annotation", description = "Annotation class representing a agm phenotype annotation")
 @JsonTypeName("AGMPhenotypeAnnotation")
 @AGRCurationSchemaVersion(min = "2.2.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { PhenotypeAnnotation.class })
+
+@Table(indexes = {
+	@Index(name = "AGMPhenotypeAnnotation_assertedAllele_index", columnList = "assertedAllele_id"),
+	@Index(name = "AGMPhenotypeAnnotation_inferredAllele_index", columnList = "inferredAllele_id"),
+	@Index(name = "AGMPhenotypeAnnotation_inferredGene_index", columnList = "inferredGene_id"),
+	@Index(name = "AGMPhenotypeAnnotation_phenotypeAnnotationSubject_index", columnList = "phenotypeAnnotationSubject_id")
+})
+
 public class AGMPhenotypeAnnotation extends PhenotypeAnnotation {
 
 	@IndexedEmbedded(includePaths = {"name", "name_keyword", "curie", "curie_keyword", "modEntityId", "modEntityId_keyword", "modInternalId", "modInternalId_keyword"})
@@ -80,11 +90,15 @@ public class AGMPhenotypeAnnotation extends PhenotypeAnnotation {
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
 	@Fetch(FetchMode.SELECT)
-	@JoinTable(indexes = {
-		@Index(name = "association_agmphenotypeannotation_index", columnList = "agmphenotypeannotation_id"),
-		@Index(name = "association_assertedgenes_index", columnList = "assertedgenes_id")
-	})
 	@JsonView({ View.FieldsAndLists.class, View.PhenotypeAnnotationView.class, View.ForPublic.class })
+	@JoinTable(
+		joinColumns = @JoinColumn(name = "agmphenotypeannotation_id"),
+		inverseJoinColumns = @JoinColumn(name = "assertedgenes_id"),
+		indexes = {
+			@Index(name = "agmphenotypeannotation_gene_agmpa_index", columnList = "agmphenotypeannotation_id"),
+			@Index(name = "agmphenotypeannotation_gene_assertedgenes_index", columnList = "assertedgenes_id")
+		}
+	)
 	private List<Gene> assertedGenes;
 
 	@IndexedEmbedded(includePaths = {

@@ -18,7 +18,9 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonView;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.Index;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -30,6 +32,19 @@ import lombok.ToString;
 @ToString(callSuper = true)
 @AGRCurationSchemaVersion(min = "2.3.1", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { EvidenceAssociation.class })
 @Schema(name = "SequenceTargetingReagentGeneAssociation", description = "POJO representing an association between an SQTR and a gene")
+
+@Table(
+	indexes = {
+		@Index(name = "SQTRGeneAssociation_internal_index", columnList = "internal"),
+		@Index(name = "SQTRGeneAssociation_obsolete_index", columnList = "obsolete"),
+		@Index(name = "SQTRGeneAssociation_createdBy_index", columnList = "createdBy_id"),
+		@Index(name = "SQTRGeneAssociation_updatedBy_index", columnList = "updatedBy_id"),
+		@Index(name = "SQTRGeneAssociation_relation_index", columnList = "relation_id"),
+		@Index(name = "SQTRGeneAssociation_sqtrAssociationSubject_index", columnList = "sequencetargetingreagentassociationsubject_id"),
+		@Index(name = "SQTRGeneAssociation_sqtrGeneAssociationObject_index", columnList = "sequencetargetingreagentgeneassociationobject_id")
+	}, name = "SQTRGeneAssociation"
+	)
+
 public class SequenceTargetingReagentGeneAssociation extends EvidenceAssociation {
 	
 	@IndexedEmbedded(includePaths = {"name", "synonyms", "secondaryIdentifiers"})
