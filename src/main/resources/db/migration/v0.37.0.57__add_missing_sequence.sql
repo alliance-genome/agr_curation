@@ -1,4 +1,4 @@
-CREATE SEQUENCE geneexpressionannotation_seq
+CREATE SEQUENCE IF NOT EXISTS geneexpressionannotation_seq
 	START WITH 1
 	INCREMENT BY 50
 	NO MINVALUE
