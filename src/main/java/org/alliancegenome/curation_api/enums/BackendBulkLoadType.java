@@ -32,6 +32,7 @@ public enum BackendBulkLoadType {
 	SEQUENCE_TARGETING_REAGENT("json"),
 	EXPRESSION("json"),
 	HTPDATASET("json"),
+	HTPDATASAMPLE("json"),
 	;
 
 	public String fileExtension;
