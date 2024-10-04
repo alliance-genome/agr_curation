@@ -6,12 +6,13 @@ import java.util.List;
 
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.model.entities.base.AuditedObject;
-import org.alliancegenome.curation_api.model.entities.base.SubmittedObject;
 import org.alliancegenome.curation_api.model.entities.ontology.MMOTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.OBITerm;
 import org.alliancegenome.curation_api.view.View;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.hibernate.search.engine.backend.types.Aggregable;
 import org.hibernate.search.engine.backend.types.Searchable;
 import org.hibernate.search.engine.backend.types.Sortable;
@@ -33,35 +34,54 @@ import lombok.ToString;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(callSuper = true)
 @Schema(name = "HTPExpressionDatasetSampleAnnotation", description = "POJO that represents the HighThroughputExpressionDatasetSampleAnnotation")
-@AGRCurationSchemaVersion(min = "2.6.2", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AuditedObject.class })
+@AGRCurationSchemaVersion(min = "2.7.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AuditedObject.class })
+@Table(indexes = {
+	@Index(name = "htpdatasetsampleannotation_htpExpressionSample_index", columnList = "htpExpressionSample_id"),
+	@Index(name = "htpdatasetsampleannotation_dataprovider_index", columnList = "dataprovider_id"),
+	@Index(name = "htpdatasetsampleannotation_createdby_index", columnList = "createdby_id"),
+	@Index(name = "htpdatasetsampleannotation_updatedby_index", columnList = "updatedby_id")
+})
 public class HTPExpressionDatasetSampleAnnotation extends AuditedObject {
 
-    @IndexedEmbedded(includeDepth = 1)
+	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonView({ View.FieldsOnly.class })
-    private ExternalDataBaseEntity htpExpressionSample;
+	private ExternalDataBaseEntity htpExpressionSample;
+	
+	@IndexedEmbedded(includePaths = {"curie", "name", "secondaryIdentifiers", "synonyms.name", "abbreviation",
+	"curie_keyword", "name_keyword", "secondaryIdentifiers_keyword", "synonyms.name_keyword", "abbreviation_keyword" })
+	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
+	@ManyToOne
+	@JsonView(View.FieldsOnly.class)
+	private OBITerm htpExpressionSampleType;
 
-    @JsonView({ View.FieldsOnly.class })
-	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
-	@KeywordField(name = "name_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-    private String htpExpressionSampleTitle;
+	@IndexedEmbedded(includePaths = {"curie", "name", "secondaryIdentifiers", "synonyms.name", "abbreviation",
+	"curie_keyword", "name_keyword", "secondaryIdentifiers_keyword", "synonyms.name_keyword", "abbreviation_keyword" })
+	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
+	@ManyToOne
+	@JsonView(View.FieldsAndLists.class)
+	private MMOTerm expressionAssayUsed;
 
-    @IndexedEmbedded(includePaths = {"curie", "name", "secondaryIdentifiers", "synonyms.name", "abbreviation",
-    "curie_keyword", "name_keyword", "secondaryIdentifiers_keyword", "synonyms.name_keyword", "abbreviation_keyword" })
-    @IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
-    @ManyToOne
-    @JsonView(View.FieldsAndLists.class)
-    private OBITerm htpExpressionSampleType;
+	@IndexedEmbedded(includeDepth = 1)
+	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
+	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+	@JsonView({ View.FieldsOnly.class })
+	private BioSampleAge htpExpressionSampleAge;
 
-    @IndexedEmbedded(includePaths = {"curie", "name", "secondaryIdentifiers", "synonyms.name", "abbreviation",
-    "curie_keyword", "name_keyword", "secondaryIdentifiers_keyword", "synonyms.name_keyword", "abbreviation_keyword" })
-    @IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
-    @ManyToOne
-    @JsonView(View.FieldsAndLists.class)
-    private MMOTerm expressionAssayUsed;
+	@IndexedEmbedded(includeDepth = 1)
+	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
+	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+	@JsonView({ View.FieldsOnly.class })
+	private BioSampleGenomicInformation genomicInformation;
 
-    @IndexedEmbedded(includePaths = {
+	@IndexedEmbedded(includeDepth = 1)
+	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
+	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+	@JsonView({ View.FieldsOnly.class })
+	private MicroarraySampleDetails microarraySampleDetails;
+
+	@IndexedEmbedded(includePaths = {
 		"sourceOrganization.abbreviation", "sourceOrganization.fullName", "sourceOrganization.shortName", "crossReference.displayName", "crossReference.referencedCurie",
 		"sourceOrganization.abbreviation_keyword", "sourceOrganization.fullName_keyword", "sourceOrganization.shortName_keyword", "crossReference.displayName_keyword", "crossReference.referencedCurie_keyword"
 	})
@@ -70,20 +90,69 @@ public class HTPExpressionDatasetSampleAnnotation extends AuditedObject {
 	@JsonView({ View.FieldsOnly.class })
 	DataProvider dataProvider;
 
-    private VocabularyTerm geneticSex;
+	@IndexedEmbedded(includeDepth = 1)
+	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
+	@ManyToOne
+	@JsonView({ View.FieldsOnly.class })
+	private VocabularyTerm geneticSex;
 
-    private List<AnatomicalSite> htpExpressionSampleLocations;
+	@IndexedEmbedded(includeDepth = 1)
+	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
+	@ManyToOne
+	@JsonView({ View.FieldsOnly.class })
+	private VocabularyTerm sequencingFormat;
 
-    private Note relatedNotes;
+	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
+	@ManyToMany
+	@JoinTable(indexes = {
+		@Index(name = "htpdatasample_anatomicalsite_htpdatasample_index", columnList = "htpexpressiondatasetsampleannotation_id"),
+		@Index(name = "htpdatasample_anatomicalsite_samplelocations_index", columnList = "htpexpressionsamplelocations_id")
+	})
+	@JsonView({ View.FieldsAndLists.class })
+	@Fetch(FetchMode.JOIN)
+	private List<AnatomicalSite> htpExpressionSampleLocations;
 
-    private VocabularyTerm sequencingFormat;
+	@IndexedEmbedded(includePaths = {"freeText", "freeText_keyword"})
+	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
+	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+	@JsonView({ View.FieldsAndLists.class, View.AlleleView.class })
+	@JoinTable(indexes = {
+		@Index(name = "htpdatasample_note_htpdatasample_index", columnList = "htpexpressiondatasetsampleannotation_id"),
+		@Index(name = "htpdatasample_note_relatednotes_index", columnList = "relatednotes_id")})
+	private List<Note> relatedNotes;
 
-    private NCBITaxonTerm taxon;
+	@IndexedEmbedded(includeDepth = 1)
+	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
+	@ManyToOne
+	@JsonView({ View.FieldsOnly.class })
+	private NCBITaxonTerm taxon;
 
-    private String abundance;
+	@JsonView({ View.FieldsOnly.class })
+	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
+	@KeywordField(name = "htpexpressionsampletitle_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
+	private String htpExpressionSampleTitle;
 
-    private String assemblyVersions;
+	@JsonView({ View.FieldsOnly.class })
+	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
+	@KeywordField(name = "abundance_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
+	private String abundance;
 
-    private List<ExternalDataBaseEntity> datasetIds;
-    
+	@JsonView({ View.FieldsOnly.class })
+	@ElementCollection
+	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
+	@KeywordField(name = "assemblyversions_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
+	@JoinTable(indexes = @Index(name = "htpdatasample_assemblyversions_htpdatasample_index", columnList = "htpexpressiondatasetsampleannotation_id"))
+	private List<String> assemblyVersions;
+
+	@IndexedEmbedded(includeDepth = 1)
+	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
+	@ManyToMany
+	@Fetch(FetchMode.JOIN)
+	@JoinTable(indexes = {
+		@Index(name = "htpdatasample_externaldatabaseentity_htpdatasample_index", columnList = "htpexpressiondatasetsampleannotation_id"),
+		@Index(name = "htpdatasample_externaldatabaseentity_datasetids_index", columnList = "datasetids_id")
+	})
+	@JsonView({ View.FieldsAndLists.class })
+	private List<ExternalDataBaseEntity> datasetIds;
+
 }
