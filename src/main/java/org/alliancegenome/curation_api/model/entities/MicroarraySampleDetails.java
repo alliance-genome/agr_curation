@@ -30,13 +30,13 @@ import lombok.ToString;
 @Indexed
 public class MicroarraySampleDetails extends AuditedObject {
 
-    @JsonView({ View.FieldsOnly.class })
-    @FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
+	@JsonView({ View.FieldsOnly.class })
+	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "channelid_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-    private String channelId;
+	private String channelId;
 
-    @JsonView({ View.FieldsOnly.class })
-    @GenericField(projectable = Projectable.YES, sortable = Sortable.YES)
-    private Integer channelNumber;
+	@JsonView({ View.FieldsOnly.class })
+	@GenericField(projectable = Projectable.YES, sortable = Sortable.YES)
+	private Integer channelNumber;
 
 }
