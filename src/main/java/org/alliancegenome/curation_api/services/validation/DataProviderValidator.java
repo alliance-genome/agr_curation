@@ -111,4 +111,9 @@ public class DataProviderValidator extends AuditedObjectValidator<DataProvider> 
 
 		return sourceOrganization;
 	}
+
+	public ObjectResponse<DataProvider> validateDataProvider(DataProvider entity) {
+
+		return null;
+	}
 }
