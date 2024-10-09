@@ -9,6 +9,8 @@ import org.alliancegenome.curation_api.view.View;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import org.hibernate.search.engine.backend.types.Aggregable;
 import org.hibernate.search.engine.backend.types.Projectable;
 import org.hibernate.search.engine.backend.types.Searchable;
@@ -87,6 +89,7 @@ public class HTPExpressionDatasetAnnotation extends AuditedObject {
 	@IndexedEmbedded(includePaths = {"name", "name_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
+	@OnDelete(action = OnDeleteAction.CASCADE)
 	@JsonView({ View.FieldsAndLists.class })
 	@JoinTable(name = "htpexpressiondatasetannotation_categorytags", indexes = { @Index(name = "htpdatasetannotation_htpdatasetid_index", columnList = "htpexpressiondatasetannotation_id"), @Index(name = "htpdatasetannotation_categorytags_index", columnList = "categorytags_id")})
 	List<VocabularyTerm> categoryTags;
