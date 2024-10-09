@@ -28,9 +28,6 @@ import org.alliancegenome.curation_api.services.VocabularyTermService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -121,58 +118,33 @@ public class HTPExpressionDatasetAnnotationFmsDTOValidator {
 		}
 
 		if (CollectionUtils.isNotEmpty(dto.getCategoryTags())) {
-			List<VocabularyTerm> categoryTags = new ArrayList<>();
-			ObjectMapper mapper = new ObjectMapper();
+			Map<String, VocabularyTerm> categoryTags = new HashMap<>();
 			for (String categoryTag : dto.getCategoryTags()) {
 				if (StringUtils.isNotEmpty(categoryTag)) {
-					String query = """
-						{
-							"searchFilters": {
-								"vocabularyNameFilter": {
-									"vocabulary.name": {
-										"queryString": "%s",
-										"useKeywordFields": true,
-										"queryType": "matchQuery"
-									}
-								},
-								"synonymsOrNameFilter": {
-									"synonyms": {
-										"queryString": "%s",
-										"useKeywordFields": true,
-										"queryType": "matchQuery"
-									},
-									"name": {
-										"queryString": "%s",
-										"useKeywordFields": true,
-										"queryType": "matchQuery"
-									}
+					Map<String, Object> params = new HashMap<>();
+					params.put("name", categoryTag);
+					params.put("query_operator", "or");
+					params.put("synonyms", categoryTag);
+					SearchResponse<VocabularyTerm> searchResponse = vocabularyTermService.findByParams(new Pagination(), params);
+					boolean added = false;
+					if (searchResponse.getTotalResults() > 0) {
+						for(VocabularyTerm tag : searchResponse.getResults()) {
+							if(tag.getVocabulary().getName().equals("Data Set Category Tags") && (tag.getName().equals(categoryTag) || tag.getSynonyms().contains(categoryTag))) {
+								if(categoryTags.containsKey(categoryTag)) {
+									htpAnnotationResponse.addErrorMessage("categoryTags", ValidationConstants.INVALID_MESSAGE + " Multiple Tags found in the Vocabulary " + " (" + categoryTag + ")");
+								} else {
+									categoryTags.put(categoryTag, tag);
+									added = true;
 								}
 							}
 						}
-					""".formatted("Data Set Category Tags", categoryTag, categoryTag);
-					Map<String, Object> params = new HashMap<>();
-					try {
-						params = mapper.readValue(query, new TypeReference<Map<String, Object>>() { });
-					} catch (Exception e) {
-						e.printStackTrace();
-						break;
 					}
-					SearchResponse<VocabularyTerm> searchResponse = vocabularyTermService.searchByParams(new Pagination(), params);
-					if (searchResponse.getTotalResults() == 1) {
-						VocabularyTerm tag = searchResponse.getSingleResult();
-						if (tag == null) {
-							htpAnnotationResponse.addErrorMessage("categoryTags", ValidationConstants.INVALID_MESSAGE + " (" + categoryTag + ")");
-						} else {
-							categoryTags.add(tag);
-						}
-					} else if (searchResponse.getTotalResults() > 1) {
-						htpAnnotationResponse.addErrorMessage("categoryTags", ValidationConstants.INVALID_MESSAGE + " Multiple Tags found in the Vocabulary " + " (" + categoryTag + ")");
-					} else {
+					if(!added) {
 						htpAnnotationResponse.addErrorMessage("categoryTags", ValidationConstants.INVALID_MESSAGE + " (" + categoryTag + ")");
 					}
 				}
 			}
-			htpannotation.setCategoryTags(categoryTags);
+			htpannotation.setCategoryTags(new ArrayList<>(categoryTags.values()));
 		} else {
 			htpAnnotationResponse.addErrorMessage("categoryTags", ValidationConstants.REQUIRED_MESSAGE);
 		}
