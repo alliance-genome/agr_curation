@@ -32,7 +32,7 @@ import lombok.ToString;
 })
 public class BioSampleAge extends AuditedObject {
 
-	@IndexedEmbedded(includePaths = {"age","age_keyword"})
+	@IndexedEmbedded(includePaths = {"age", "age_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
 	@JsonView({ View.FieldsOnly.class })
