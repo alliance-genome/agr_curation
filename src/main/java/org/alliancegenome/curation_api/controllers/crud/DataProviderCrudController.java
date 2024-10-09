@@ -25,12 +25,12 @@ public class DataProviderCrudController extends BaseEntityCrudController<DataPro
 
 	@Override
 	public ObjectResponse<DataProvider> update(DataProvider entity) {
-		return dataProviderService.upsert(entity);
+		return dataProviderService.insertExpressionAtlasDataProvider(entity);
 	}
 
 	@Override
 	public ObjectResponse<DataProvider> create(DataProvider entity) {
-		return dataProviderService.upsert(entity);
+		return dataProviderService.insertExpressionAtlasDataProvider(entity);
 	}
 
 	public ObjectResponse<DataProvider> validate(DataProvider entity) {

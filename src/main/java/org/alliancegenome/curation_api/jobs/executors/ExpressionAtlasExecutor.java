@@ -5,18 +5,17 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import lombok.extern.jbosslog.JBossLog;
-import org.alliancegenome.curation_api.dao.CrossReferenceDAO;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.DataProvider;
 import org.alliancegenome.curation_api.model.entities.Organization;
 import org.alliancegenome.curation_api.model.entities.ResourceDescriptorPage;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkURLLoad;
-import org.alliancegenome.curation_api.services.CrossReferenceService;
 import org.alliancegenome.curation_api.services.DataProviderService;
 import org.alliancegenome.curation_api.services.OrganizationService;
 import org.alliancegenome.curation_api.services.ResourceDescriptorPageService;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.net.URL;
@@ -33,13 +32,9 @@ public class ExpressionAtlasExecutor extends LoadFileExecutor {
 	@Inject
 	DataProviderService service;
 	@Inject
-	CrossReferenceService crossReferenceService;
-	@Inject
 	ResourceDescriptorPageService resourceDescriptorPageService;
 	@Inject
 	OrganizationService organizationService;
-	@Inject
-	CrossReferenceDAO crossReferenceDAO;
 
 	public void execLoad(BulkLoadFileHistory bulkLoadFileHistory) throws IOException {
 
@@ -52,10 +47,6 @@ public class ExpressionAtlasExecutor extends LoadFileExecutor {
 		List<String> accessions = accessionUrlList.stream()
 			.map(sUrl -> sUrl.substring(sUrl.lastIndexOf("/") + 1))
 			.toList();
-/*
-		String loc = accessionUrlList.get(0);
-		String defaultUrlTemplate = loc.substring(0, loc.lastIndexOf("/"));
-*/
 
 		String name = bulkLoadFileHistory.getBulkLoad().getName();
 		String dataProviderName = name.substring(0, name.indexOf(" "));
@@ -72,14 +63,11 @@ public class ExpressionAtlasExecutor extends LoadFileExecutor {
 		ph.addDisplayHandler(loadProcessDisplayService);
 		ph.startProcess(name, accessions.size());
 		accessions.forEach(accession -> {
-			CrossReference reference = new CrossReference();
-			reference.setReferencedCurie(getFullReferencedCurie(accession));
-			reference.setDisplayName(accession);
-			reference.setResourceDescriptorPage(ensemblGenePage);
+			CrossReference reference = getCrossReference(ensemblGenePage, accession, organization);
 			DataProvider provider = new DataProvider();
 			provider.setSourceOrganization(organization);
 			provider.setCrossReference(reference);
-			DataProvider entity = service.upsert(provider).getEntity();
+			DataProvider entity = service.insertExpressionAtlasDataProvider(provider).getEntity();
 			if (entity != null) {
 				dataProviderIdsLoaded.add(entity.getId());
 				bulkLoadFileHistory.incrementCompleted();
@@ -96,6 +84,19 @@ public class ExpressionAtlasExecutor extends LoadFileExecutor {
 		bulkLoadFileHistory.finishLoad();
 		updateHistory(bulkLoadFileHistory);
 		updateExceptions(bulkLoadFileHistory);
+	}
+
+	@NotNull
+	private static CrossReference getCrossReference(ResourceDescriptorPage ensemblGenePage, String accession, Organization organization) {
+		CrossReference reference = new CrossReference();
+		if (organization.getAbbreviation().equals("FB")) {
+			reference.setReferencedCurie(accession);
+		} else {
+			reference.setReferencedCurie(getFullReferencedCurie(accession));
+		}
+		reference.setDisplayName(accession);
+		reference.setResourceDescriptorPage(ensemblGenePage);
+		return reference;
 	}
 
 }

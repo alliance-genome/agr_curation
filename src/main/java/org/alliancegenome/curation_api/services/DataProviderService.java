@@ -5,9 +5,7 @@ import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import org.alliancegenome.curation_api.auth.AuthenticatedUser;
-import org.alliancegenome.curation_api.dao.CrossReferenceDAO;
-import org.alliancegenome.curation_api.dao.DataProviderDAO;
-import org.alliancegenome.curation_api.dao.OrganizationDAO;
+import org.alliancegenome.curation_api.dao.*;
 import org.alliancegenome.curation_api.model.entities.*;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
@@ -26,7 +24,7 @@ public class DataProviderService extends BaseEntityCrudService<DataProvider, Dat
 	@AuthenticatedUser
 	protected Person authenticatedPerson;
 	@Inject
-	PersonService personService;
+	SpeciesDAO speciesDAO;
 	@Inject
 	DataProviderDAO dataProviderDAO;
 	@Inject
@@ -35,6 +33,8 @@ public class DataProviderService extends BaseEntityCrudService<DataProvider, Dat
 	ResourceDescriptorPageService resourceDescriptorPageService;
 	@Inject
 	OrganizationDAO organizationDAO;
+	@Inject
+	GeneDAO geneDAO;
 	@Inject
 	DataProviderValidator dataProviderValidator;
 
@@ -64,10 +64,10 @@ public class DataProviderService extends BaseEntityCrudService<DataProvider, Dat
 	}
 
 	@Transactional
-	public ObjectResponse<DataProvider> upsert(DataProvider entity) {
+	public ObjectResponse<DataProvider> insertExpressionAtlasDataProvider(DataProvider entity) {
 		String referencedCurie = entity.getCrossReference().getReferencedCurie();
 		// find associated gene
-		Long geneID = getAssociatedGeneId(referencedCurie);
+		Long geneID = getAssociatedGeneId(referencedCurie, entity.getSourceOrganization());
 		// if no gene found skip (= don't import) the accession
 		if (geneID == null) {
 			return new ObjectResponse<>();
@@ -76,7 +76,9 @@ public class DataProviderService extends BaseEntityCrudService<DataProvider, Dat
 		DataProvider dbEntity = getDataProvider(entity.getSourceOrganization(), referencedCurie, entity.getCrossReference().getResourceDescriptorPage());
 		if (dbEntity == null) {
 			dataProviderDAO.persist(entity);
-			Integer update = crossReferenceDAO.persistAccessionGeneAssociated(entity.getCrossReference().getId(), geneID);
+			if (!entity.getSourceOrganization().getAbbreviation().equals("FB")) {
+				Integer update = crossReferenceDAO.persistAccessionGeneAssociated(entity.getCrossReference().getId(), geneID);
+			}
 			return new ObjectResponse<>(entity);
 		}
 		return new ObjectResponse<>(dbEntity);
@@ -89,11 +91,21 @@ public class DataProviderService extends BaseEntityCrudService<DataProvider, Dat
 
 	Map<String, Long> accessionGeneMap = new HashMap<>();
 	public static String RESOURCE_DESCRIPTOR_PREFIX = "ENSEMBL";
+	public static final String RESOURCE_DESCRIPTOR_PAGE_NAME = "default";
 
-	private Long getAssociatedGeneId(String fullReferencedCurie) {
+	private Long getAssociatedGeneId(String fullReferencedCurie, Organization sourceOrganization) {
 		if (accessionGeneMap.size() == 0) {
-			ResourceDescriptorPage page = resourceDescriptorPageService.getPageForResourceDescriptor(RESOURCE_DESCRIPTOR_PREFIX, "default");
-			accessionGeneMap = crossReferenceDAO.getGenesWithCrossRefs(page);
+			if (sourceOrganization.getAbbreviation().equals("FB")) {
+				Map<String, Object> map = new HashMap<>();
+				map.put("displayName", sourceOrganization.getAbbreviation());
+				Species species = speciesDAO.findByParams(map).getSingleResult();
+				accessionGeneMap = geneDAO.getAllGeneIdsPerSpecies(species);
+				fullReferencedCurie = "FB:" + fullReferencedCurie;
+				return accessionGeneMap.get(fullReferencedCurie);
+			} else {
+				ResourceDescriptorPage page = resourceDescriptorPageService.getPageForResourceDescriptor(RESOURCE_DESCRIPTOR_PREFIX, RESOURCE_DESCRIPTOR_PAGE_NAME);
+				accessionGeneMap = crossReferenceDAO.getGenesWithCrossRefs(page);
+			}
 		}
 		return accessionGeneMap.get(fullReferencedCurie);
 	}
