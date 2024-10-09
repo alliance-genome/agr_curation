@@ -5,15 +5,18 @@ import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import org.alliancegenome.curation_api.auth.AuthenticatedUser;
+import org.alliancegenome.curation_api.dao.CrossReferenceDAO;
 import org.alliancegenome.curation_api.dao.DataProviderDAO;
 import org.alliancegenome.curation_api.dao.OrganizationDAO;
 import org.alliancegenome.curation_api.model.entities.*;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
 import org.alliancegenome.curation_api.services.validation.DataProviderValidator;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 @RequestScoped
@@ -26,6 +29,10 @@ public class DataProviderService extends BaseEntityCrudService<DataProvider, Dat
 	PersonService personService;
 	@Inject
 	DataProviderDAO dataProviderDAO;
+	@Inject
+	CrossReferenceDAO crossReferenceDAO;
+	@Inject
+	ResourceDescriptorPageService resourceDescriptorPageService;
 	@Inject
 	OrganizationDAO organizationDAO;
 	@Inject
@@ -58,13 +65,37 @@ public class DataProviderService extends BaseEntityCrudService<DataProvider, Dat
 
 	@Transactional
 	public ObjectResponse<DataProvider> upsert(DataProvider entity) {
-		DataProvider dbEntity = getDataProvider(entity.getSourceOrganization(), entity.getCrossReference().getReferencedCurie(), entity.getCrossReference().getResourceDescriptorPage());
-		//ObjectResponse<DataProvider> response = dataProviderValidator.validateDataProvider(entity);
+		String referencedCurie = entity.getCrossReference().getReferencedCurie();
+		// find associated gene
+		Long geneID = getAssociatedGeneId(referencedCurie);
+		// if no gene found skip (= don't import) the accession
+		if (geneID == null) {
+			return new ObjectResponse<>();
+		}
+
+		DataProvider dbEntity = getDataProvider(entity.getSourceOrganization(), referencedCurie, entity.getCrossReference().getResourceDescriptorPage());
 		if (dbEntity == null) {
 			dataProviderDAO.persist(entity);
+			Integer update = crossReferenceDAO.persistAccessionGeneAssociated(entity.getCrossReference().getId(), geneID);
 			return new ObjectResponse<>(entity);
 		}
 		return new ObjectResponse<>(dbEntity);
+	}
+
+	@NotNull
+	public static String getFullReferencedCurie(String localReferencedCurie) {
+		return RESOURCE_DESCRIPTOR_PREFIX + ":" + localReferencedCurie;
+	}
+
+	Map<String, Long> accessionGeneMap = new HashMap<>();
+	public static String RESOURCE_DESCRIPTOR_PREFIX = "ENSEMBL";
+
+	private Long getAssociatedGeneId(String fullReferencedCurie) {
+		if (accessionGeneMap.size() == 0) {
+			ResourceDescriptorPage page = resourceDescriptorPageService.getPageForResourceDescriptor(RESOURCE_DESCRIPTOR_PREFIX, "default");
+			accessionGeneMap = crossReferenceDAO.getGenesWithCrossRefs(page);
+		}
+		return accessionGeneMap.get(fullReferencedCurie);
 	}
 
 	// <crossReference.referencedCurie, DataProvider>

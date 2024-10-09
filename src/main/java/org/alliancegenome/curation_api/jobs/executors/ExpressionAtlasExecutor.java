@@ -5,17 +5,17 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import lombok.extern.jbosslog.JBossLog;
-import org.alliancegenome.curation_api.dao.AGMDiseaseAnnotationDAO;
+import org.alliancegenome.curation_api.dao.CrossReferenceDAO;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.DataProvider;
 import org.alliancegenome.curation_api.model.entities.Organization;
 import org.alliancegenome.curation_api.model.entities.ResourceDescriptorPage;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkURLLoad;
+import org.alliancegenome.curation_api.services.CrossReferenceService;
 import org.alliancegenome.curation_api.services.DataProviderService;
 import org.alliancegenome.curation_api.services.OrganizationService;
 import org.alliancegenome.curation_api.services.ResourceDescriptorPageService;
-import org.alliancegenome.curation_api.services.ResourceDescriptorService;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
 
 import java.io.IOException;
@@ -24,20 +24,22 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import static org.alliancegenome.curation_api.services.DataProviderService.getFullReferencedCurie;
+
 @JBossLog
 @ApplicationScoped
 public class ExpressionAtlasExecutor extends LoadFileExecutor {
 
 	@Inject
-	AGMDiseaseAnnotationDAO agmDiseaseAnnotationDAO;
-	@Inject
 	DataProviderService service;
+	@Inject
+	CrossReferenceService crossReferenceService;
 	@Inject
 	ResourceDescriptorPageService resourceDescriptorPageService;
 	@Inject
-	ResourceDescriptorService resourceDescriptorService;
-	@Inject
 	OrganizationService organizationService;
+	@Inject
+	CrossReferenceDAO crossReferenceDAO;
 
 	public void execLoad(BulkLoadFileHistory bulkLoadFileHistory) throws IOException {
 
@@ -47,7 +49,9 @@ public class ExpressionAtlasExecutor extends LoadFileExecutor {
 		URL src = new URL(url);
 		Urlset urlset = mapper.readValue(src, Urlset.class);
 		List<String> accessionUrlList = urlset.url.stream().map(UrlElement::getLoc).toList();
-		List<String> accessions = accessionUrlList.stream().map(sUrl -> sUrl.substring(sUrl.lastIndexOf("/") + 1)).toList();
+		List<String> accessions = accessionUrlList.stream()
+			.map(sUrl -> sUrl.substring(sUrl.lastIndexOf("/") + 1))
+			.toList();
 /*
 		String loc = accessionUrlList.get(0);
 		String defaultUrlTemplate = loc.substring(0, loc.lastIndexOf("/"));
@@ -57,10 +61,10 @@ public class ExpressionAtlasExecutor extends LoadFileExecutor {
 		String dataProviderName = name.substring(0, name.indexOf(" "));
 
 		Organization organization = organizationService.getByAbbr(dataProviderName).getEntity();
-		ResourceDescriptorPage page = resourceDescriptorPageService.getPageForResourceDescriptor("ENSEMBL", "expression_atlas");
+		ResourceDescriptorPage ensemblGenePage = resourceDescriptorPageService.getPageForResourceDescriptor("ENSEMBL", "expression_atlas");
 
-		List<Long> dataProviderIdsBefore = new ArrayList<>();
-		dataProviderIdsBefore.addAll(service.getDataProviderMap(organization, page).values().stream().map(DataProvider::getId).toList());
+		List<Long> dataProviderIdsBefore =
+			new ArrayList<>(service.getDataProviderMap(organization, ensemblGenePage).values().stream().map(DataProvider::getId).toList());
 		dataProviderIdsBefore.removeIf(Objects::isNull);
 
 		List<Long> dataProviderIdsLoaded = new ArrayList<>();
@@ -69,17 +73,24 @@ public class ExpressionAtlasExecutor extends LoadFileExecutor {
 		ph.startProcess(name, accessions.size());
 		accessions.forEach(accession -> {
 			CrossReference reference = new CrossReference();
-			reference.setReferencedCurie(accession);
-			reference.setResourceDescriptorPage(page);
+			reference.setReferencedCurie(getFullReferencedCurie(accession));
+			reference.setDisplayName(accession);
+			reference.setResourceDescriptorPage(ensemblGenePage);
 			DataProvider provider = new DataProvider();
 			provider.setSourceOrganization(organization);
 			provider.setCrossReference(reference);
-			dataProviderIdsLoaded.add(service.upsert(provider).getEntity().getId());
+			DataProvider entity = service.upsert(provider).getEntity();
+			if (entity != null) {
+				dataProviderIdsLoaded.add(entity.getId());
+				bulkLoadFileHistory.incrementCompleted();
+			} else {
+				bulkLoadFileHistory.incrementSkipped();
+			}
 			ph.progressProcess();
 		});
+		bulkLoadFileHistory.setTotalCount(accessions.size());
 		runCleanup(service, bulkLoadFileHistory, dataProviderName, dataProviderIdsBefore, dataProviderIdsLoaded, "Atlas Load Type");
 		ph.finishProcess();
-		bulkLoadFileHistory.setCount(accessions.size());
 		updateHistory(bulkLoadFileHistory);
 
 		bulkLoadFileHistory.finishLoad();
