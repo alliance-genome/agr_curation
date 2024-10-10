@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import static org.alliancegenome.curation_api.services.DataProviderService.getFullReferencedCurie;
+import static org.alliancegenome.curation_api.services.DataProviderService.RESOURCE_DESCRIPTOR_PREFIX;
 
 @JBossLog
 @ApplicationScoped
@@ -92,7 +92,7 @@ public class ExpressionAtlasExecutor extends LoadFileExecutor {
 		if (List.of("FB", "SGD").contains(organization.getAbbreviation())) {
 			reference.setReferencedCurie(accession);
 		} else {
-			reference.setReferencedCurie(getFullReferencedCurie(accession));
+			reference.setReferencedCurie(RESOURCE_DESCRIPTOR_PREFIX + ":" + accession);
 		}
 		reference.setDisplayName(accession);
 		reference.setResourceDescriptorPage(ensemblGenePage);

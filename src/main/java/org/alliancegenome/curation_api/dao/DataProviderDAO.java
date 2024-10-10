@@ -7,6 +7,7 @@ import org.alliancegenome.curation_api.dao.base.BaseSQLDAO;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.DataProvider;
 import org.alliancegenome.curation_api.model.entities.Organization;
+import org.alliancegenome.curation_api.model.entities.ResourceDescriptorPage;
 import org.alliancegenome.curation_api.model.input.Pagination;
 import org.alliancegenome.curation_api.response.SearchResponse;
 
@@ -61,7 +62,10 @@ public class DataProviderDAO extends BaseSQLDAO<DataProvider> {
 		return null;
 	}
 
-	public List<DataProvider> getAllDataProvider(HashMap<String, Object> params) {
+	public List<DataProvider> getAllDataProvider(Organization sourceOrganization, ResourceDescriptorPage page) {
+		HashMap<String, Object> params = new HashMap<>();
+		params.put("sourceOrganization.abbreviation", sourceOrganization.getAbbreviation());
+		params.put("crossReference.resourceDescriptorPage.name", page.getName());
 		Pagination pagination = new Pagination();
 		pagination.setLimit(10_000_000);
 		SearchResponse<DataProvider> orgResponse = findByParams(pagination, params);

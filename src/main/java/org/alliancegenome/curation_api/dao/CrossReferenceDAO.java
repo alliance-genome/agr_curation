@@ -34,18 +34,6 @@ public class CrossReferenceDAO extends BaseSQLDAO<CrossReference> {
 		return ensemblGeneMap;
 	}
 
-	public Gene getGeneByCrossRef(String referencedCurie) {
-		String sql = """
-			select distinct gene from Gene gene, CrossReference as cc
-			where cc member of gene.crossReferences AND cc.referencedCurie = :refCurie
-			""";
-		TypedQuery<Gene> query = entityManager.createQuery(sql, Gene.class);
-		query.setParameter("refCurie", referencedCurie);
-		return query.getSingleResult();
-
-	}
-
-
 	public Integer persistAccessionGeneAssociated(Long crossReferenceID, Long geneID) {
 		String sql = """
 			insert into genomicentity_crossreference (crossreferences_id,genomicentity_id)

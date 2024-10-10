@@ -20,6 +20,13 @@ import java.util.Objects;
 @RequestScoped
 public class DataProviderService extends BaseEntityCrudService<DataProvider, DataProviderDAO> {
 
+	public static final String RESOURCE_DESCRIPTOR_PREFIX = "ENSEMBL";
+	public static final String RESOURCE_DESCRIPTOR_PAGE_NAME = "default";
+	// <crossReference.referencedCurie, DataProvider>
+	Map<String, Long> accessionGeneMap = new HashMap<>();
+	HashMap<String, DataProvider> dataProviderMap = new HashMap<>();
+
+
 	@Inject
 	@AuthenticatedUser
 	protected Person authenticatedPerson;
@@ -90,10 +97,6 @@ public class DataProviderService extends BaseEntityCrudService<DataProvider, Dat
 		return RESOURCE_DESCRIPTOR_PREFIX + ":" + localReferencedCurie;
 	}
 
-	Map<String, Long> accessionGeneMap = new HashMap<>();
-	public static final String RESOURCE_DESCRIPTOR_PREFIX = "ENSEMBL";
-	public static final String RESOURCE_DESCRIPTOR_PAGE_NAME = "default";
-
 	private Long getAssociatedGeneId(String fullReferencedCurie, Organization sourceOrganization) {
 		String orgAbbreviation = sourceOrganization.getAbbreviation();
 		if (orgAbbreviation.equals("FB")) {
@@ -113,9 +116,6 @@ public class DataProviderService extends BaseEntityCrudService<DataProvider, Dat
 		return accessionGeneMap.get(fullReferencedCurie);
 	}
 
-	// <crossReference.referencedCurie, DataProvider>
-	HashMap<String, DataProvider> dataProviderMap = new HashMap<>();
-
 	private DataProvider getDataProvider(Organization sourceOrganization, String crossReferenceCurie, ResourceDescriptorPage page) {
 		if (dataProviderMap.size() > 0) {
 			return dataProviderMap.get(crossReferenceCurie);
@@ -125,10 +125,7 @@ public class DataProviderService extends BaseEntityCrudService<DataProvider, Dat
 	}
 
 	private void populateDataProviderMap(Organization sourceOrganization, ResourceDescriptorPage page) {
-		HashMap<String, Object> params = new HashMap<>();
-		params.put("sourceOrganization.abbreviation", sourceOrganization.getAbbreviation());
-		params.put("crossReference.resourceDescriptorPage.name", page.getName());
-		List<DataProvider> allOrgProvider = dataProviderDAO.getAllDataProvider(params);
+		List<DataProvider> allOrgProvider = dataProviderDAO.getAllDataProvider(sourceOrganization, page);
 		allOrgProvider.stream()
 			.filter(dataProvider -> dataProvider.getCrossReference() != null && Objects.equals(dataProvider.getCrossReference().getResourceDescriptorPage().getId(), page.getId()))
 			.forEach(dataProvider -> {
