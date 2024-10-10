@@ -87,7 +87,7 @@ export class DataLoadService extends BaseAuthService {
 				'GFF_CDS',
 				'GFF_TRANSCRIPT',
 				'HTPDATASET',
-				'HTPDATASETSAMPLE',
+				'HTPDATASAMPLE',
 				'INTERACTION-GEN',
 				'INTERACTION-MOL',
 				'MOLECULE',

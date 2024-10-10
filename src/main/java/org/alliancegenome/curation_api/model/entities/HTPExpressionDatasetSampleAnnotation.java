@@ -43,7 +43,8 @@ import lombok.ToString;
 })
 public class HTPExpressionDatasetSampleAnnotation extends AuditedObject {
 
-	@IndexedEmbedded(includeDepth = 1)
+	@IndexedEmbedded( includePaths = {"curie", "preferredCrossReference.referencedCurie", "secondaryIdentifiers",
+	"curie_keyword", "preferredCrossReference.referencedCurie_keyword", "secondaryIdentifiers_keyword" })
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonView({ View.FieldsOnly.class })
@@ -147,7 +148,8 @@ public class HTPExpressionDatasetSampleAnnotation extends AuditedObject {
 	@JoinTable(indexes = @Index(name = "htpdatasample_assemblyversions_htpdatasample_index", columnList = "htpexpressiondatasetsampleannotation_id"))
 	private List<String> assemblyVersions;
 
-	@IndexedEmbedded(includeDepth = 1)
+	@IndexedEmbedded( includePaths = {"curie", "preferredCrossReference.referencedCurie", "secondaryIdentifiers",
+	"curie_keyword", "preferredCrossReference.referencedCurie_keyword", "secondaryIdentifiers_keyword" })
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
 	@Fetch(FetchMode.JOIN)
