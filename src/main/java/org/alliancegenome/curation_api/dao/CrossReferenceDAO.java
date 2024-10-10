@@ -37,7 +37,7 @@ public class CrossReferenceDAO extends BaseSQLDAO<CrossReference> {
 	public Gene getGeneByCrossRef(String referencedCurie) {
 		String sql = """
 			select distinct gene from Gene gene, CrossReference as cc
-			 where cc member of gene.crossReferences AND cc.referencedCurie = :refCurie
+			where cc member of gene.crossReferences AND cc.referencedCurie = :refCurie
 			""";
 		TypedQuery<Gene> query = entityManager.createQuery(sql, Gene.class);
 		query.setParameter("refCurie", referencedCurie);
