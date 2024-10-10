@@ -2,10 +2,8 @@ package org.alliancegenome.curation_api.dao;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.Query;
-import jakarta.persistence.TypedQuery;
 import org.alliancegenome.curation_api.dao.base.BaseSQLDAO;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
-import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.ResourceDescriptorPage;
 
 import java.util.HashMap;
