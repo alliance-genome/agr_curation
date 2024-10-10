@@ -74,10 +74,11 @@ public class DataProviderService extends BaseEntityCrudService<DataProvider, Dat
 		}
 
 		DataProvider dbEntity = getDataProvider(entity.getSourceOrganization(), referencedCurie, entity.getCrossReference().getResourceDescriptorPage());
+		// we only create new records, no updates
 		if (dbEntity == null) {
 			dataProviderDAO.persist(entity);
-			if (!entity.getSourceOrganization().getAbbreviation().equals("FB")) {
-				Integer update = crossReferenceDAO.persistAccessionGeneAssociated(entity.getCrossReference().getId(), geneID);
+			if (!List.of("FB", "SGD").contains(entity.getSourceOrganization().getAbbreviation())) {
+				crossReferenceDAO.persistAccessionGeneAssociated(entity.getCrossReference().getId(), geneID);
 			}
 			return new ObjectResponse<>(entity);
 		}
@@ -94,14 +95,16 @@ public class DataProviderService extends BaseEntityCrudService<DataProvider, Dat
 	public static final String RESOURCE_DESCRIPTOR_PAGE_NAME = "default";
 
 	private Long getAssociatedGeneId(String fullReferencedCurie, Organization sourceOrganization) {
+		String orgAbbreviation = sourceOrganization.getAbbreviation();
+		if (orgAbbreviation.equals("FB")) {
+			fullReferencedCurie = orgAbbreviation + ":" + fullReferencedCurie;
+		}
 		if (accessionGeneMap.size() == 0) {
-			if (sourceOrganization.getAbbreviation().equals("FB")) {
+			if (List.of("FB", "SGD").contains(orgAbbreviation)) {
 				Map<String, Object> map = new HashMap<>();
-				map.put("displayName", sourceOrganization.getAbbreviation());
+				map.put("displayName", orgAbbreviation);
 				Species species = speciesDAO.findByParams(map).getSingleResult();
 				accessionGeneMap = geneDAO.getAllGeneIdsPerSpecies(species);
-				fullReferencedCurie = "FB:" + fullReferencedCurie;
-				return accessionGeneMap.get(fullReferencedCurie);
 			} else {
 				ResourceDescriptorPage page = resourceDescriptorPageService.getPageForResourceDescriptor(RESOURCE_DESCRIPTOR_PREFIX, RESOURCE_DESCRIPTOR_PAGE_NAME);
 				accessionGeneMap = crossReferenceDAO.getGenesWithCrossRefs(page);

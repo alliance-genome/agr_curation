@@ -89,7 +89,7 @@ public class ExpressionAtlasExecutor extends LoadFileExecutor {
 	@NotNull
 	private static CrossReference getCrossReference(ResourceDescriptorPage ensemblGenePage, String accession, Organization organization) {
 		CrossReference reference = new CrossReference();
-		if (organization.getAbbreviation().equals("FB")) {
+		if (List.of("FB", "SGD").contains(organization.getAbbreviation())) {
 			reference.setReferencedCurie(accession);
 		} else {
 			reference.setReferencedCurie(getFullReferencedCurie(accession));
