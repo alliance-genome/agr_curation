@@ -21,8 +21,8 @@ public class CrossReferenceDAO extends BaseSQLDAO<CrossReference> {
 
 	public Map<String, Long> getGenesWithCrossRefs(ResourceDescriptorPage page) {
 		String sql = """
-						select gc.genomicentity_id, cr.referencedcurie from genomicentity_crossreference as gc, crossreference as cr
-						 where gc.crossreferences_id = cr.id AND cr.resourcedescriptorpage_id = :pageID
+			select gc.genomicentity_id, cr.referencedcurie from genomicentity_crossreference as gc, crossreference as cr
+			where gc.crossreferences_id = cr.id AND cr.resourcedescriptorpage_id = :pageID
 			""";
 		Query query = entityManager.createNativeQuery(sql);
 		query.setParameter("pageID", page.getId());
@@ -36,8 +36,8 @@ public class CrossReferenceDAO extends BaseSQLDAO<CrossReference> {
 
 	public Gene getGeneByCrossRef(String referencedCurie) {
 		String sql = """
-						select distinct gene from Gene gene, CrossReference as cc
-						 where cc member of gene.crossReferences AND cc.referencedCurie = :refCurie
+			select distinct gene from Gene gene, CrossReference as cc
+			 where cc member of gene.crossReferences AND cc.referencedCurie = :refCurie
 			""";
 		TypedQuery<Gene> query = entityManager.createQuery(sql, Gene.class);
 		query.setParameter("refCurie", referencedCurie);

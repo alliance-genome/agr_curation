@@ -91,7 +91,7 @@ public class DataProviderService extends BaseEntityCrudService<DataProvider, Dat
 	}
 
 	Map<String, Long> accessionGeneMap = new HashMap<>();
-	public static String RESOURCE_DESCRIPTOR_PREFIX = "ENSEMBL";
+	public static final String RESOURCE_DESCRIPTOR_PREFIX = "ENSEMBL";
 	public static final String RESOURCE_DESCRIPTOR_PAGE_NAME = "default";
 
 	private Long getAssociatedGeneId(String fullReferencedCurie, Organization sourceOrganization) {
@@ -144,6 +144,14 @@ public class DataProviderService extends BaseEntityCrudService<DataProvider, Dat
 		return dataProviderMap;
 	}
 
+	@Transactional
+	public ObjectResponse<DataProvider> upsert(DataProvider uiEntity) {
+		ObjectResponse<DataProvider> response = dataProviderValidator.validateDataProvider(uiEntity, null, true);
+		if (response.getEntity() == null) {
+			return response;
+		}
+		return new ObjectResponse<>(response.getEntity());
+	}
 
 	public ObjectResponse<DataProvider> validate(DataProvider uiEntity) {
 		return dataProviderValidator.validateDataProvider(uiEntity, null, true);
