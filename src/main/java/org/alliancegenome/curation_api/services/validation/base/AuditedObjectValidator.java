@@ -1,6 +1,8 @@
 package org.alliancegenome.curation_api.services.validation.base;
 
-import jakarta.inject.Inject;
+import java.time.OffsetDateTime;
+import java.util.List;
+
 import org.alliancegenome.curation_api.auth.AuthenticatedUser;
 import org.alliancegenome.curation_api.model.entities.Note;
 import org.alliancegenome.curation_api.model.entities.Person;
@@ -10,17 +12,14 @@ import org.alliancegenome.curation_api.services.PersonService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import java.time.OffsetDateTime;
-import java.util.List;
+import jakarta.inject.Inject;
 
 public class AuditedObjectValidator<E extends AuditedObject> {
 
 	@Inject
-	@AuthenticatedUser
-	protected Person authenticatedPerson;
+	@AuthenticatedUser protected Person authenticatedPerson;
 
-	@Inject
-	PersonService personService;
+	@Inject PersonService personService;
 
 	public ObjectResponse<E> response;
 
@@ -42,24 +41,21 @@ public class AuditedObjectValidator<E extends AuditedObject> {
 			dbEntity.setDateCreated(uiEntity.getDateCreated());
 		}
 
-		String oktaEmail = authenticatedPerson.getOktaEmail();
 		if (uiEntity.getCreatedBy() != null) {
 			Person createdBy = personService.fetchByUniqueIdOrCreate(uiEntity.getCreatedBy().getUniqueId());
 			createdBy.getEmails().size();
 			createdBy.getOldEmails().size();
 			dbEntity.setCreatedBy(createdBy);
 		} else if (newEntity) {
-			if (oktaEmail != null) {
-				Person createdBy = personService.findPersonByOktaEmail(oktaEmail);
-				createdBy.getEmails().size();
-				createdBy.getOldEmails().size();
-				dbEntity.setCreatedBy(createdBy);
-			}
+			Person createdBy = personService.findPersonByOktaEmail(authenticatedPerson.getOktaEmail());
+			createdBy.getEmails().size();
+			createdBy.getOldEmails().size();
+			dbEntity.setCreatedBy(createdBy);
 		}
 
-		if (oktaEmail != null) {
-			dbEntity.setUpdatedBy(authenticatedPerson);
-		}
+		Person updatedBy = personService.findPersonByOktaEmail(authenticatedPerson.getOktaEmail());
+		dbEntity.setUpdatedBy(updatedBy);
+
 		dbEntity.setDateUpdated(OffsetDateTime.now());
 
 		return dbEntity;
