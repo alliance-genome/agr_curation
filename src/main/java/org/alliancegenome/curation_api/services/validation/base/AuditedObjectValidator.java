@@ -58,8 +58,7 @@ public class AuditedObjectValidator<E extends AuditedObject> {
 		}
 
 		if (oktaEmail != null) {
-			Person updatedBy = personService.findPersonByOktaEmail(authenticatedPerson.getOktaEmail());
-			dbEntity.setUpdatedBy(updatedBy);
+			dbEntity.setUpdatedBy(authenticatedPerson);
 		}
 		dbEntity.setDateUpdated(OffsetDateTime.now());
 

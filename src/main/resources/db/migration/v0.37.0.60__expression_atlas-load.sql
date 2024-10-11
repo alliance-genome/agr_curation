@@ -78,10 +78,5 @@ insert into bulkurlload (id, bulkloadurl)
 select id, 'https://www.ebi.ac.uk/gxa/species/Homo_sapiens/sitemap.xml?allEntries=true'
 from bulkload where name = 'HUMAN Expression Atlas';
 
-
-insert into resourcedescriptorpage (id, name, urltemplate, pagedescription, resourcedescriptor_id)
-select nextval('resourcedescriptorpage_seq'), 'expression_atlas', 'http://www.ebi.ac.uk/gxa/genes/[%s]', 'Expression Atlas', id
-from resourcedescriptor where prefix = 'ENSEMBL';
-
 insert into organization (id, abbreviation, fullname)
 VALUES (nextval('organization_seq'),'HUMAN','Human');
