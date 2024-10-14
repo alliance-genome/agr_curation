@@ -28,12 +28,13 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
+
 @Entity
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(callSuper = true)
 @Schema(name = "HTPExpressionDatasetAnnotation", description = "POJO that represents the HighThroughputExpressionDatasetAnnotation")
-@AGRCurationSchemaVersion(min = "2.6.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AuditedObject.class })
+@AGRCurationSchemaVersion(min = "2.6.2", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AuditedObject.class })
 @Table(indexes = {
 	@Index(name = "htpdatasetannotation_htpExpressionDataset_index", columnList = "htpExpressionDataset_id"),
 	@Index(name = "htpdatasetannotation_relatednote_index", columnList = "relatednote_id"),
