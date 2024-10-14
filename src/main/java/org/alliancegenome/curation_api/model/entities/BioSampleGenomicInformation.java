@@ -29,6 +29,11 @@ import lombok.ToString;
 @Schema(name = "BioSampleGenomicInformation", description = "POJO that represents the BioSampleGenomicInformation")
 @AGRCurationSchemaVersion(min = "2.7.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AuditedObject.class })
 @Indexed
+@Table(indexes = {
+	@Index(name = "biosamplegenomicinfo_bioSampleAllele", columnList = "bioSampleAllele_id"),
+	@Index(name = "biosamplegenomicinfo_bioSampleAgm", columnList = "bioSampleAgm_id"),
+	@Index(name = "biosamplegenomicinfo_bioSampleAgmType", columnList = "bioSampleAgmType_id")
+})
 public class BioSampleGenomicInformation extends AuditedObject {
 
 	@IndexedEmbedded(includePaths = {
