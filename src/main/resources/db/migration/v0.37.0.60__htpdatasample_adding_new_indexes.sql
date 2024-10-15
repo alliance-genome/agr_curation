@@ -14,9 +14,9 @@ CREATE INDEX htpdatasample_geneticSex_index ON htpexpressiondatasetsampleannotat
 CREATE INDEX htpdatasample_sequencingFormat_index ON htpexpressiondatasetsampleannotation USING btree (sequencingFormat_id);
 CREATE INDEX htpdatasample_taxon_index ON htpexpressiondatasetsampleannotation USING btree (taxon_id);
 
-CREATE INDEX biosamplegenomicinfo_bioSampleAllele ON biosamplegenomicinformation USING btree (bioSampleAllele_id);
-CREATE INDEX biosamplegenomicinfo_bioSampleAgm ON biosamplegenomicinformation USING btree (bioSampleAgm_id);
-CREATE INDEX biosamplegenomicinfo_bioSampleAgmType ON biosamplegenomicinformation USING btree (bioSampleAgmType_id);
+CREATE INDEX biosamplegenomicinfo_bioSampleAllele_index ON biosamplegenomicinformation USING btree (bioSampleAllele_id);
+CREATE INDEX biosamplegenomicinfo_bioSampleAgm_index ON biosamplegenomicinformation USING btree (bioSampleAgm_id);
+CREATE INDEX biosamplegenomicinfo_bioSampleAgmType_index ON biosamplegenomicinformation USING btree (bioSampleAgmType_id);
 
 --Adding 3 new htp category tags
 INSERT INTO vocabularyterm (id, name, vocabulary_id) SELECT nextval('vocabularyterm_seq'), 'bulk RNA-seq', id FROM vocabulary WHERE vocabularylabel = 'data_set_category_tags';
