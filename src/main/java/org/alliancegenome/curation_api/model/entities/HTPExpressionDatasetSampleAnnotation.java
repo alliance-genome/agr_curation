@@ -36,10 +36,18 @@ import lombok.ToString;
 @Schema(name = "HTPExpressionDatasetSampleAnnotation", description = "POJO that represents the HighThroughputExpressionDatasetSampleAnnotation")
 @AGRCurationSchemaVersion(min = "2.7.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AuditedObject.class })
 @Table(indexes = {
-	@Index(name = "htpdatasetsampleannotation_htpExpressionSample_index", columnList = "htpExpressionSample_id"),
-	@Index(name = "htpdatasetsampleannotation_dataprovider_index", columnList = "dataprovider_id"),
-	@Index(name = "htpdatasetsampleannotation_createdby_index", columnList = "createdby_id"),
-	@Index(name = "htpdatasetsampleannotation_updatedby_index", columnList = "updatedby_id")
+	@Index(name = "htpdatasample_htpExpressionSample_index", columnList = "htpExpressionSample_id"),
+	@Index(name = "htpdatasample_htpExpressionSampleType_index", columnList = "htpExpressionSampleType_id"),
+	@Index(name = "htpdatasample_expressionAssayUsed_index", columnList = "expressionAssayUsed_id"),
+	@Index(name = "htpdatasample_htpExpressionSampleAge_index", columnList = "htpExpressionSampleAge_id"),
+	@Index(name = "htpdatasample_genomicInformation_index", columnList = "genomicInformation_id"),
+	@Index(name = "htpdatasample_microarraySampleDetails_index", columnList = "microarraySampleDetails_id"),
+	@Index(name = "htpdatasample_geneticSex_index", columnList = "geneticSex_id"),
+	@Index(name = "htpdatasample_sequencingFormat_index", columnList = "sequencingFormat_id"),
+	@Index(name = "htpdatasample_taxon_index", columnList = "taxon_id"),
+	@Index(name = "htpdatasample_dataprovider_index", columnList = "dataprovider_id"),
+	@Index(name = "htpdatasample_createdby_index", columnList = "createdby_id"),
+	@Index(name = "htpdatasample_updatedby_index", columnList = "updatedby_id")
 })
 public class HTPExpressionDatasetSampleAnnotation extends AuditedObject {
 
