@@ -54,12 +54,13 @@ public class BulkLoadJobExecutor {
 	@Inject ParalogyExecutor paralogyExecutor;
 	@Inject GeneExpressionExecutor geneExpressionExecutor;
 	@Inject SequenceTargetingReagentExecutor sqtrExecutor;
-	
+	@Inject HTPExpressionDatasetAnnotationExecutor htpExpressionDatasetAnnotationExecutor;
+	@Inject HTPExpressionDatasetSampleAnnotationExecutor htpExpressionDatasetSampleAnnotationExecutor;
+
 	@Inject Gff3ExonExecutor gff3ExonExecutor;
 	@Inject Gff3CDSExecutor gff3CDSExecutor;
 	@Inject Gff3TranscriptExecutor gff3TranscriptExecutor;
 	
-	@Inject HTPExpressionDatasetAnnotationExecutor htpExpressionDatasetAnnotationExecutor;
 
 	public void process(BulkLoadFileHistory bulkLoadFileHistory, Boolean cleanUp) throws Exception {
 
@@ -129,7 +130,10 @@ public class BulkLoadJobExecutor {
 			gff3TranscriptExecutor.execLoad(bulkLoadFileHistory);
 		} else if (bulkLoadFileHistory.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.HTPDATASET) {
 			htpExpressionDatasetAnnotationExecutor.execLoad(bulkLoadFileHistory);
-		} else {
+		} else if(bulkLoadFileHistory.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.HTPDATASAMPLE) {
+			htpExpressionDatasetSampleAnnotationExecutor.execLoad(bulkLoadFileHistory);
+		}
+		 else {
 			log.info("Load: " + bulkLoadFileHistory.getBulkLoad().getName() + " for type " + bulkLoadFileHistory.getBulkLoad().getBackendBulkLoadType() + " not implemented");
 			throw new Exception("Load: " + bulkLoadFileHistory.getBulkLoad().getName() + " for type " + bulkLoadFileHistory.getBulkLoad().getBackendBulkLoadType() + " not implemented");
 		}
