@@ -96,7 +96,15 @@ export class DataLoadService extends BaseAuthService {
 				'PARALOGY',
 				'SEQUENCE_TARGETING_REAGENT',
 			],
-			BulkURLLoad: ['ONTOLOGY', 'GENE', 'ALLELE', 'AGM', 'DISEASE_ANNOTATION', 'RESOURCE_DESCRIPTOR', 'EXPRESSION_ATLAS'],
+			BulkURLLoad: [
+				'ONTOLOGY',
+				'GENE',
+				'ALLELE',
+				'AGM',
+				'DISEASE_ANNOTATION',
+				'RESOURCE_DESCRIPTOR',
+				'EXPRESSION_ATLAS',
+			],
 			BulkManualLoad: [
 				'FULL_INGEST',
 				'DISEASE_ANNOTATION',
