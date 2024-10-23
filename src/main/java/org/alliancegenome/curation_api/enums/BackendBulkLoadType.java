@@ -28,6 +28,7 @@ public enum BackendBulkLoadType {
 	
 	INTERACTION_MOL("tsv"),
 	EXPRESSION_ATLAS("tsv"),
+	GAF("tsv"),
 	INTERACTION_GEN("tsv"),
 	PARALOGY("json"),
 	SEQUENCE_TARGETING_REAGENT("json"),
