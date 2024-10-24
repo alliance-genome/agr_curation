@@ -201,8 +201,8 @@ public class DiseaseAnnotationBulkUploadITCase extends BaseITCase {
 			body("entity.createdBy.uniqueId", is("DATEST:Person0001")).
 			body("entity.dateUpdated", is(OffsetDateTime.parse("2022-03-10T22:10:12Z").toString())).
 			body("entity.dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").toString())).
-			body("entity.uniqueId",
-					is("DATEST:Gene0001|is_implicated_in|true|DATEST:Disease0001|AGRKB:000000002|DATEST:Evidence0001|HGNC:0001|exacerbated_by|DATEST:ExpCondTerm0001|DATEST:ExpCondTerm0002|DATEST:AnatomyTerm0001|DATEST:ChemicalTerm0001|DATEST:GOTerm0001|NCBITaxon:6239|Some amount|Free text|susceptibility|ameliorated_by|DATEST:AGM0002|DATEST:Allele0002|DATEST:Gene0002|SGD:AGM0001")).
+			body("entity.uniqueId", is("DATEST:Gene0001|is_implicated_in|true|DATEST:Disease0001|AGRKB:000000002|DATEST:Evidence0001|HGNC:0001|"
+					+ "exacerbated_by|DATEST:ExpCondTerm0001|DATEST:ExpCondTerm0002|DATEST:AnatomyTerm0001|DATEST:ChemicalTerm0001|DATEST:GOTerm0001|NCBITaxon:6239|Some amount|Free text|susceptibility|ameliorated_by|DATEST:AGM0002|DATEST:Allele0002|DATEST:Gene0002|SGD:AGM0001")).
 			body("entity.diseaseAnnotationSubject.modEntityId", is(gene)).
 			body("entity.diseaseAnnotationObject.curie", is(doTerm)).
 			body("entity.relation.name", is(alleleAndGeneRelation)).
