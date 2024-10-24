@@ -632,13 +632,7 @@ export const DiseaseAnnotationsTable = () => {
 	};
 
 	const geneticModifierAgmsSearch = (event, setFiltered, setInputValue) => {
-		const autocompleteFields = [
-			'name',
-			'curie',
-			'modEntityId',
-			'modInternalId',
-			'crossReferences.referencedCurie',
-		];
+		const autocompleteFields = ['name', 'curie', 'modEntityId', 'modInternalId', 'crossReferences.referencedCurie'];
 		const endpoint = 'agm';
 		const filterName = 'geneticModifierAgmsFilter';
 		const filter = buildAutocompleteFilter(event, autocompleteFields);

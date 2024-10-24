@@ -237,13 +237,7 @@ export const NewAnnotationForm = ({
 	};
 
 	const geneticModifierAgmsSearch = (event, setFiltered, setQuery) => {
-		const autocompleteFields = [
-			'modEntityId',
-			'modInternalId',
-			'name',
-			'curie',
-			'crossReferences.referencedCurie',
-		];
+		const autocompleteFields = ['modEntityId', 'modInternalId', 'name', 'curie', 'crossReferences.referencedCurie'];
 		const endpoint = 'agm';
 		const filterName = 'geneticModifierAgmsFilter';
 		const filter = buildAutocompleteFilter(event, autocompleteFields);
@@ -1085,7 +1079,10 @@ export const NewAnnotationForm = ({
 										/>
 									</div>
 									<div className={fieldDetailsColumnSize}>
-										<FormErrorMessageComponent errorMessages={errorMessages} errorField={'diseaseGeneticModifierAgms'} />
+										<FormErrorMessageComponent
+											errorMessages={errorMessages}
+											errorField={'diseaseGeneticModifierAgms'}
+										/>
 										<GeneticModifierAgmsAdditionalFieldData fieldData={newAnnotation.diseaseGeneticModifierAgms} />
 									</div>
 								</div>
@@ -1118,8 +1115,13 @@ export const NewAnnotationForm = ({
 										/>
 									</div>
 									<div className={fieldDetailsColumnSize}>
-										<FormErrorMessageComponent errorMessages={errorMessages} errorField={'diseaseGeneticModifierAlleles'} />
-										<GeneticModifierAllelesAdditionalFieldData fieldData={newAnnotation.diseaseGeneticModifierAlleles} />
+										<FormErrorMessageComponent
+											errorMessages={errorMessages}
+											errorField={'diseaseGeneticModifierAlleles'}
+										/>
+										<GeneticModifierAllelesAdditionalFieldData
+											fieldData={newAnnotation.diseaseGeneticModifierAlleles}
+										/>
 									</div>
 								</div>
 							</>
@@ -1151,7 +1153,10 @@ export const NewAnnotationForm = ({
 										/>
 									</div>
 									<div className={fieldDetailsColumnSize}>
-										<FormErrorMessageComponent errorMessages={errorMessages} errorField={'diseaseGeneticModifierGenes'} />
+										<FormErrorMessageComponent
+											errorMessages={errorMessages}
+											errorField={'diseaseGeneticModifierGenes'}
+										/>
 										<GeneticModifierGenesAdditionalFieldData fieldData={newAnnotation.diseaseGeneticModifierGenes} />
 									</div>
 								</div>

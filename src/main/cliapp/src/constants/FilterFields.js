@@ -812,9 +812,18 @@ export const FILTER_CONFIGS = Object.freeze({
 	geneSynonymsFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.geneSynonymsFieldSet] },
 	geneSystematicNameFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.geneSystematicNameFieldSet] },
 	geneTypeFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.geneTypeFieldSet] },
-	geneticModifierAgmsFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.geneticModifierAgmsFieldSet] },
-	geneticModifierAllelesFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.geneticModifierAllelesFieldSet] },
-	geneticModifierGenesFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.geneticModifierGenesFieldSet] },
+	geneticModifierAgmsFilterConfig: {
+		filterComponentType: 'input',
+		fieldSets: [FIELD_SETS.geneticModifierAgmsFieldSet],
+	},
+	geneticModifierAllelesFilterConfig: {
+		filterComponentType: 'input',
+		fieldSets: [FIELD_SETS.geneticModifierAllelesFieldSet],
+	},
+	geneticModifierGenesFilterConfig: {
+		filterComponentType: 'input',
+		fieldSets: [FIELD_SETS.geneticModifierGenesFieldSet],
+	},
 	idExampleFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.idExampleFieldSet] },
 	idPatternFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.idPatternFieldSet] },
 	inchiFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.inchiFieldSet] },
