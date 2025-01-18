@@ -40,10 +40,20 @@ public class AffectedGenomicModelDTOValidator extends GenomicEntityDTOValidator<
 	@Inject
 	AgmSecondaryIdSlotAnnotationDTOValidator agmSecondaryIdDtoValidator;
 
+	private ObjectResponse<AffectedGenomicModel> agmResponse = new ObjectResponse<>();
+
 	public AffectedGenomicModel validateAffectedGenomicModelDTO(AffectedGenomicModelDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
-		response = new ObjectResponse<AffectedGenomicModel>();
-		
-		AffectedGenomicModel agm = findDatabaseObject(affectedGenomicModelDAO, "primaryExternalId", "primary_external_id", dto.getPrimaryExternalId());
+		agmResponse = new ObjectResponse<>();
+		AffectedGenomicModel agm = null;
+		if (StringUtils.isNotBlank(dto.getPrimaryExternalId())) {
+			SearchResponse<AffectedGenomicModel> response = affectedGenomicModelDAO.findByField("primaryExternalId", dto.getPrimaryExternalId());
+			if (response != null && response.getSingleResult() != null) {
+				agm = response.getSingleResult();
+			}
+		} else {
+			agmResponse.addErrorMessage("primaryExternalId", ValidationConstants.REQUIRED_MESSAGE);
+		}
+
 		if (agm == null) {
 			agm = new AffectedGenomicModel();
 		}
