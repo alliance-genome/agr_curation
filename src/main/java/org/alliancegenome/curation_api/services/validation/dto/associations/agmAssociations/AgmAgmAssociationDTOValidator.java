@@ -25,12 +25,9 @@ import java.util.List;
 @RequestScoped
 public class AgmAgmAssociationDTOValidator extends BaseDTOValidator {
 
-	@Inject
-	AgmAgmAssociationDAO agmStrAssociationDAO;
-	@Inject
-	AffectedGenomicModelService agmService;
-	@Inject
-	VocabularyTermService vocabularyTermService;
+	@Inject AgmAgmAssociationDAO agmStrAssociationDAO;
+	@Inject AffectedGenomicModelService agmService;
+	@Inject VocabularyTermService vocabularyTermService;
 
 	public AgmAgmAssociation validateAgmAgmAssociationDTO(AgmAgmAssociationDTO dto, BackendBulkDataProvider beDataProvider) throws ValidationException {
 		ObjectResponse<AgmAgmAssociation> asaResponse = new ObjectResponse<>();
@@ -63,7 +60,7 @@ public class AgmAgmAssociationDTOValidator extends BaseDTOValidator {
 			params.put("relation.name", dto.getRelationName());
 			params.put("agmAssociationObject.id", objectIds.get(0));
 
-			SearchResponse<AgmAgmAssociation> searchResponse = agmStrAssociationDAO.findByParams(params);
+			SearchResponse<AgmAgmAssociation> searchResponse = agmAgmAssociationDAO.findByParams(params);
 			if (searchResponse != null && searchResponse.getResults().size() == 1) {
 				association = searchResponse.getSingleResult();
 			}
@@ -114,7 +111,7 @@ public class AgmAgmAssociationDTOValidator extends BaseDTOValidator {
 			throw new ObjectValidationException(dto, asaResponse.errorMessagesString());
 		}
 
-		association = agmStrAssociationDAO.persist(association);
+		association = agmAgmAssociationDAO.persist(association);
 		return association;
 	}
 }
