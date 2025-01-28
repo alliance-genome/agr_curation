@@ -21,6 +21,7 @@ const oktaSignInConfig = {
 	clientId: clientId,
 	redirectUri: window.location.origin + '/login/callback',
 	scopes: ['openid', 'profile', 'email'],
+	useClassicEngine:true,
 	authParams: {
 		pkce: true,
 	},
