@@ -39,6 +39,9 @@ public class AffectedGenomicModel extends GenomicEntity {
 	@OneToMany(mappedBy = "diseaseAnnotationSubject", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<AGMDiseaseAnnotation> agmDiseaseAnnotations;
 
+	@OneToMany(mappedBy = "phenotypeAnnotationSubject", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<AGMPhenotypeAnnotation> agmPhenotypeAnnotations;
+
 	@IndexedEmbedded(includePaths = {"name", "name_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
@@ -93,6 +96,7 @@ public class AffectedGenomicModel extends GenomicEntity {
 	@OneToMany(mappedBy = "agmAssociationSubject", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonView({View.FieldsAndLists.class, View.AffectedGenomicModelDetailView.class})
 	private List<AgmAlleleAssociation> components;
+
 	@IndexedEmbedded(includePaths = {
 		"agmAssociationSubject.name",
 		"agmAssociationSubject.name_keyword",
