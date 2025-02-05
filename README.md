@@ -761,7 +761,7 @@ This is a grouping mechanism to group files together
 
 ### Submit data with post-load clean up turned off
 
-After each data load into the persistent store database, a clean up procedure is run to discard outstanding duplicate entities and deprecate (mark obsolete = true) any entities that are no longer to be considered valid. When this clean up runs, it marks any entities obsolete if they are not present in the latest file, which is presumed to be the complete and up-to-date source of truth. If a DQM wishes to submit a small update or test file without requiring an entire run of the (potentially large, time-consuming) file load and clean up process, the ?cleanUp boolean parameter may be passed in the API command. To turn off the post-load clean up process, submit the API parameter ?cleanUp=false such as in this command:
+After each data load into the persistent store database, a clean up procedure is run to deprecate (mark obsolete = true) any entities that are no longer to be considered valid. When this clean up runs, it marks any entities obsolete if they are not present in the latest file, which is presumed to be the complete and up-to-date source of truth. If a DQM wishes to submit a small update or test file without requiring an entire run of the (potentially large, time-consuming) file load and clean up process, the ?cleanUp boolean parameter may be passed in the API command. To turn off the post-load clean up process, submit the API parameter ?cleanUp=false such as in this command:
 
 ```bash
 curl \
