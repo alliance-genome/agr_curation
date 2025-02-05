@@ -13,7 +13,7 @@ import java.util.List;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-@AGRCurationSchemaVersion(min = "1.5.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = {GenomicEntityDTO.class}, submitted = true)
+@AGRCurationSchemaVersion(min = "2.9.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = {GenomicEntityDTO.class}, submitted = true)
 public class AffectedGenomicModelDTO extends GenomicEntityDTO {
 	@JsonView({View.FieldsOnly.class})
 	private String name;
