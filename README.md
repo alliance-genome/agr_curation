@@ -759,6 +759,20 @@ This is a grouping mechanism to group files together
 | WB    | Worm Base |
 | ZFIN  | Zebrafish Information Network |
 
+### Submit data with post-load clean up turned off
+
+After each data load into the persistent store database, a clean up procedure is run to discard outstanding duplicate entities and deprecate (mark obsolete = true) any entities that are no longer to be considered valid. When this clean up runs, it marks any entities obsolete if they are not present in the latest file, which is presumed to be the complete and up-to-date source of truth. If a DQM wishes to submit a small update or test file without requiring an entire run of the (potentially large, time-consuming) file load and clean up process, the ?cleanUp boolean parameter may be passed in the API command. To turn off the post-load clean up process, submit the API parameter ?cleanUp=false such as in this command:
+
+```bash
+curl \
+   -H "Authorization: Bearer 2C07D715..." \
+   -X POST "https://${Curation_System}.alliancegenome.org/api/data/submit?cleanUp=false" \
+   -F "LoadType_SubType=@/full/path/to/file1.json" \
+   -F "LoadType_SubType=@/full/path/to/file2.json"
+```
+
+Please note that running a file load without clean up repeatedly without a full data refresh may lead to unstable data. It is good practice to run a full load with clean up turned ON to tidy up the data set, at least once per (or just before a) data release.
+
 ### Including corresponding LinkML version in the JSON file submission header
 
 The LinkML version for which the file is being submitted now needs to be added to the JSON file header, for example:
