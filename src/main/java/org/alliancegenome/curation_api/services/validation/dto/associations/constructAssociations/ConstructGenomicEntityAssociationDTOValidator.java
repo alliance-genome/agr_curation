@@ -20,9 +20,6 @@ import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.ConstructService;
 import org.alliancegenome.curation_api.services.GenomicEntityService;
-import org.alliancegenome.curation_api.services.VocabularyTermService;
-import org.alliancegenome.curation_api.services.helpers.notes.NoteIdentityHelper;
-import org.alliancegenome.curation_api.services.validation.dto.NoteDTOValidator;
 import org.alliancegenome.curation_api.services.validation.dto.associations.EvidenceAssociationDTOValidator;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -31,44 +28,39 @@ import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 
 @RequestScoped
-public class ConstructGenomicEntityAssociationDTOValidator extends EvidenceAssociationDTOValidator {
+public class ConstructGenomicEntityAssociationDTOValidator extends EvidenceAssociationDTOValidator<ConstructGenomicEntityAssociation, ConstructGenomicEntityAssociationDTO> {
 
 	@Inject ConstructService constructService;
 	@Inject GenomicEntityService genomicEntityService;
-	@Inject NoteDTOValidator noteDtoValidator;
-	@Inject VocabularyTermService vocabularyTermService;
 	@Inject ConstructGenomicEntityAssociationDAO constructGenomicEntityAssociationDAO;
 
-	private ObjectResponse<ConstructGenomicEntityAssociation> assocResponse;
-
 	public ConstructGenomicEntityAssociation validateConstructGenomicEntityAssociationDTO(ConstructGenomicEntityAssociationDTO dto, BackendBulkDataProvider beDataProvider) throws ValidationException {
-
-		assocResponse = new ObjectResponse<>();
-
+		response = new ObjectResponse<ConstructGenomicEntityAssociation>();
+		
 		Construct construct = null;
 		if (StringUtils.isNotBlank(dto.getConstructIdentifier())) {
 			construct = constructService.getShallowEntity(constructService.getIdByModID(dto.getConstructIdentifier()));
 			if (construct == null) {
-				assocResponse.addErrorMessage("construct_identifier", ValidationConstants.INVALID_MESSAGE);
+				response.addErrorMessage("construct_identifier", ValidationConstants.INVALID_MESSAGE);
 			} else {
-				if (beDataProvider != null && !construct.getDataProvider().getSourceOrganization().getAbbreviation().equals(beDataProvider.sourceOrganization)) {
-					assocResponse.addErrorMessage("construct_identifier", ValidationConstants.INVALID_MESSAGE + " for " + beDataProvider.name() + " load");
+				if (beDataProvider != null && !construct.getDataProvider().getAbbreviation().equals(beDataProvider.sourceOrganization)) {
+					response.addErrorMessage("construct_identifier", ValidationConstants.INVALID_MESSAGE + " for " + beDataProvider.name() + " load");
+					return null;
 				}
 			}
 		} else {
-			assocResponse.addErrorMessage("construct_identifier", ValidationConstants.REQUIRED_MESSAGE);
+			response.addErrorMessage("construct_identifier", ValidationConstants.REQUIRED_MESSAGE);
 		}
 
 		GenomicEntity genomicEntity = null;
 		if (StringUtils.isBlank(dto.getGenomicEntityIdentifier())) {
-			assocResponse.addErrorMessage("genomic_entity_identifier", ValidationConstants.REQUIRED_MESSAGE);
+			response.addErrorMessage("genomic_entity_identifier", ValidationConstants.REQUIRED_MESSAGE);
 		} else {
 			genomicEntity = genomicEntityService.getShallowEntity(genomicEntityService.getIdByModID(dto.getGenomicEntityIdentifier()));
 			if (genomicEntity == null) {
-				assocResponse.addErrorMessage("genomic_entity_identifier", ValidationConstants.INVALID_MESSAGE + " (" + dto.getGenomicEntityIdentifier() + ")");
+				response.addErrorMessage("genomic_entity_identifier", ValidationConstants.INVALID_MESSAGE + " (" + dto.getGenomicEntityIdentifier() + ")");
 			}
 		}
-
 		ConstructGenomicEntityAssociation association = null;
 		if (construct != null && StringUtils.isNotBlank(dto.getGenomicEntityRelationName()) && genomicEntity != null) {
 			HashMap<String, Object> params = new HashMap<>();
@@ -88,72 +80,27 @@ public class ConstructGenomicEntityAssociationDTOValidator extends EvidenceAssoc
 		association.setConstructAssociationSubject(construct);
 		association.setConstructGenomicEntityAssociationObject(genomicEntity);
 
-		ObjectResponse<ConstructGenomicEntityAssociation> eviResponse = validateEvidenceAssociationDTO(association, dto);
-		assocResponse.addErrorMessages(eviResponse.getErrorMessages());
-		association = eviResponse.getEntity();
+		association = validateEvidenceAssociationDTO(association, dto);
 
-		if (StringUtils.isNotEmpty(dto.getGenomicEntityRelationName())) {
-			VocabularyTerm relation = vocabularyTermService.getTermInVocabularyTermSet(VocabularyConstants.CONSTRUCT_GENOMIC_ENTITY_RELATION_VOCABULARY_TERM_SET, dto.getGenomicEntityRelationName()).getEntity();
-			if (relation == null) {
-				assocResponse.addErrorMessage("genomic_entity_relation_name", ValidationConstants.INVALID_MESSAGE + " (" + dto.getGenomicEntityRelationName() + ")");
-			}
-			association.setRelation(relation);
-		} else {
-			assocResponse.addErrorMessage("genomic_entity_relation_name", ValidationConstants.REQUIRED_MESSAGE);
-		}
-
-		List<Note> relatedNotes = validateRelatedNotes(association, dto);
-		if (relatedNotes != null) {
-			if (association.getRelatedNotes() == null) {
-				association.setRelatedNotes(new ArrayList<>());
-			}
-			association.getRelatedNotes().addAll(relatedNotes);
-		}
-
-		if (assocResponse.hasErrors()) {
-			throw new ObjectValidationException(dto, assocResponse.errorMessagesString());
-		}
-
-		association = constructGenomicEntityAssociationDAO.persist(association);
-
-		return association;
-	}
-
-	private List<Note> validateRelatedNotes(ConstructGenomicEntityAssociation association, ConstructGenomicEntityAssociationDTO dto) {
-		String field = "relatedNotes";
+		VocabularyTerm relation = validateRequiredTermInVocabularyTermSet("genomic_entity_relation_name", dto.getGenomicEntityRelationName(), VocabularyConstants.CONSTRUCT_GENOMIC_ENTITY_RELATION_VOCABULARY_TERM_SET);
+		association.setRelation(relation);
 
 		if (association.getRelatedNotes() != null) {
 			association.getRelatedNotes().clear();
 		}
 
-		List<Note> validatedNotes = new ArrayList<Note>();
-		List<String> noteIdentities = new ArrayList<String>();
-		Boolean allValid = true;
-		if (CollectionUtils.isNotEmpty(dto.getNoteDtos())) {
-			for (int ix = 0; ix < dto.getNoteDtos().size(); ix++) {
-				ObjectResponse<Note> noteResponse = noteDtoValidator.validateNoteDTO(dto.getNoteDtos().get(ix), VocabularyConstants.CONSTRUCT_COMPONENT_NOTE_TYPES_VOCABULARY_TERM_SET);
-				if (noteResponse.hasErrors()) {
-					allValid = false;
-					assocResponse.addErrorMessages(field, ix, noteResponse.getErrorMessages());
-				} else {
-					String noteIdentity = NoteIdentityHelper.noteDtoIdentity(dto.getNoteDtos().get(ix));
-					if (!noteIdentities.contains(noteIdentity)) {
-						noteIdentities.add(noteIdentity);
-						validatedNotes.add(noteResponse.getEntity());
-					}
-				}
+		List<Note> validatedNotes = validateNotes(dto.getNoteDtos(), VocabularyConstants.CONSTRUCT_COMPONENT_NOTE_TYPES_VOCABULARY_TERM_SET);
+		if (CollectionUtils.isNotEmpty(validatedNotes)) {
+			if (association.getRelatedNotes() == null) {
+				association.setRelatedNotes(new ArrayList<>());
 			}
+			association.getRelatedNotes().addAll(validatedNotes);
 		}
 
-		if (!allValid) {
-			assocResponse.convertMapToErrorMessages(field);
-			return null;
+		if (response.hasErrors()) {
+			throw new ObjectValidationException(dto, response.errorMessagesString());
 		}
 
-		if (CollectionUtils.isEmpty(validatedNotes)) {
-			return null;
-		}
-
-		return validatedNotes;
+		return constructGenomicEntityAssociationDAO.persist(association);
 	}
 }

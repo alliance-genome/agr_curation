@@ -22,6 +22,8 @@ import { SiteContext } from '../layout/SiteContext';
 import { LoadingOverlay } from '../../components/LoadingOverlay';
 import moment from 'moment-timezone';
 import { NumberTemplate } from '../../components/Templates/NumberTemplate';
+import { StickyHeader } from '../../components/StickyHeader';
+import { Splitter, SplitterPanel } from 'primereact/splitter';
 
 export const DataLoadsComponent = () => {
 	const { authState } = useOktaAuth();
@@ -99,6 +101,7 @@ export const DataLoadsComponent = () => {
 		['AGM', ['AffectedGenomicModelDTO']],
 		// ['VARIANT', ['VariantDTO']],
 		['CONSTRUCT', ['ConstructDTO']],
+		['AGM_ASSOCIATION', ['AgmAgmAssociationDTO', 'AgmAlleleAssociationDTO', 'AgmStrAssociationDTO']],
 		['ALLELE_ASSOCIATION', ['AlleleGeneAssociationDTO']],
 		['CONSTRUCT_ASSOCIATION', ['ConstructGenomicEntityAssociationDTO']],
 	]);
@@ -190,6 +193,14 @@ export const DataLoadsComponent = () => {
 			});
 	};
 
+	const stopHistoryLoad = (rowData) => {
+		getService()
+			.stopHistoryLoad(rowData.id)
+			.then((response) => {
+				queryClient.invalidateQueries(['bulkloadtable']);
+			});
+	};
+
 	const editLoad = (rowData) => {
 		bulkLoadDispatch({ type: 'EDIT', editBulkLoad: rowData });
 		setBulkLoadDialog(true);
@@ -230,6 +241,7 @@ export const DataLoadsComponent = () => {
 			<nobr>
 				<Button
 					icon="pi pi-search-plus"
+					tooltip="Show file exceptions"
 					className="p-button-rounded p-button-info mr-2"
 					onClick={() => showHistory(rowData)}
 				/>
@@ -244,7 +256,11 @@ export const DataLoadsComponent = () => {
 
 				{rowData.counts &&
 					Object.values(rowData.counts).some((field) => field.failed !== undefined && field.failed > 0) && (
-						<Button className="p-button-rounded p-button-warning" onClick={() => downloadFileExceptions(rowData.id)}>
+						<Button
+							tooltip="Download file exceptions"
+							className="p-button-rounded p-button-warning"
+							onClick={() => downloadFileExceptions(rowData.id)}
+						>
 							<i className="pi pi-exclamation-triangle"></i>
 							<i className="pi pi-download ml-1"></i>
 						</Button>
@@ -299,12 +315,23 @@ export const DataLoadsComponent = () => {
 				ret.push(
 					<Button
 						key="run"
+						tooltip="Rerun this Load"
 						icon="pi pi-play"
 						className="p-button-rounded p-button-success mr-2"
 						onClick={() => runHistoryLoad(rowData)}
 					/>
 				);
 			}
+		} else {
+			ret.push(
+				<Button
+					key="stop"
+					tooltip="Stop this Load"
+					icon="pi pi-stop"
+					className="p-button-rounded p-button-help mr-2"
+					onClick={() => stopHistoryLoad(rowData)}
+				/>
+			);
 		}
 		if (
 			!rowData.bulkloadStatus ||
@@ -315,6 +342,7 @@ export const DataLoadsComponent = () => {
 			ret.push(
 				<Button
 					key="delete"
+					tooltip="Delete this history"
 					icon="pi pi-trash"
 					className="p-button-rounded p-button-danger mr-2"
 					onClick={() => deleteLoadFileHistory(rowData)}
@@ -331,6 +359,7 @@ export const DataLoadsComponent = () => {
 		ret.push(
 			<Button
 				key="edit"
+				tooltip="Edit this Load"
 				icon="pi pi-pencil"
 				className="p-button-rounded p-button-warning mr-2"
 				onClick={() => editLoad(rowData)}
@@ -347,6 +376,7 @@ export const DataLoadsComponent = () => {
 				ret.push(
 					<Button
 						key="run"
+						tooltip="Run this Load"
 						icon="pi pi-play"
 						className="p-button-rounded p-button-success mr-2"
 						onClick={() => runLoad(rowData)}
@@ -357,6 +387,7 @@ export const DataLoadsComponent = () => {
 			ret.push(
 				<Button
 					key="fileUpload"
+					tooltip="Upload new file and run"
 					icon="pi pi-upload"
 					label="Upload"
 					className="p-button-rounded p-button-info mr-2"
@@ -369,6 +400,7 @@ export const DataLoadsComponent = () => {
 			ret.push(
 				<Button
 					key="delete"
+					tooltip="Delete this load"
 					icon="pi pi-trash"
 					className="p-button-rounded p-button-danger mr-2"
 					onClick={() => deleteLoad(rowData)}
@@ -384,6 +416,7 @@ export const DataLoadsComponent = () => {
 			return (
 				<Button
 					icon="pi pi-trash"
+					tooltip="Delete this group"
 					className="p-button-rounded p-button-danger mr-2"
 					onClick={() => deleteGroup(rowData)}
 				/>
@@ -417,7 +450,7 @@ export const DataLoadsComponent = () => {
 		if (load.backendBulkLoadType === 'RESOURCE_DESCRIPTOR' || load.backendBulkLoadType === 'ONTOLOGY') {
 			return null;
 		}
-		return <Column field="allianceMemberReleaseVersion" header="MOD Release" />;
+		return <Column field="bulkLoadFile.allianceMemberReleaseVersion" header="MOD Release" />;
 	};
 
 	const dynamicColumns = (loads) => {
@@ -599,8 +632,8 @@ export const DataLoadsComponent = () => {
 		let filesWithoutDates = [];
 		files.forEach((file) => {
 			if (file.bulkloadStatus === 'FINISHED' || file.bulkloadStatus === 'STOPPED' || file.bulkloadStatus === 'FAILED') {
-				if (file.dateLastLoaded) {
-					lastLoadedDates.set(file.dateLastLoaded, file);
+				if (file.loadStarted) {
+					lastLoadedDates.set(file.loadStarted, file);
 				} else {
 					filesWithoutDates.push(file);
 				}
@@ -708,7 +741,9 @@ export const DataLoadsComponent = () => {
 	};
 
 	const exemptTypes = (loadType) => {
-		return loadType === 'GFF_EXON' || loadType === 'GFF_TRANSCRIPT' || loadType === 'GFF_CDS';
+		return (
+			loadType === 'GFF_EXON' || loadType === 'GFF_TRANSCRIPT' || loadType === 'GFF_CDS' || loadType === 'GFF_GENE'
+		);
 	};
 
 	const fileWithinSchemaRange = (fileVersion, loadType) => {
@@ -850,20 +885,26 @@ export const DataLoadsComponent = () => {
 		<>
 			<Toast ref={toast}></Toast>
 			<LoadingOverlay isLoading={isLoading} />
+			<StickyHeader>
+				<Splitter className="bg-primary-reverse border-none lg:h-5rem" gutterSize={0}>
+					<SplitterPanel size={1} className="flex justify-content-start py-3">
+						<Button
+							label="New Group"
+							icon="pi pi-plus"
+							className="p-button-success mr-2"
+							onClick={handleNewBulkLoadGroupOpen}
+						/>
+						<Button
+							label="New Bulk Load"
+							icon="pi pi-plus"
+							className="p-button-success mr-2"
+							onClick={handleNewBulkLoadOpen}
+						/>
+						<Button label="Refresh Data" icon="pi pi-plus" className="p-button-success mr-2" onClick={refresh} />
+					</SplitterPanel>
+				</Splitter>
+			</StickyHeader>
 			<div className="card">
-				<Button
-					label="New Group"
-					icon="pi pi-plus"
-					className="p-button-success mr-2"
-					onClick={handleNewBulkLoadGroupOpen}
-				/>
-				<Button
-					label="New Bulk Load"
-					icon="pi pi-plus"
-					className="p-button-success mr-2"
-					onClick={handleNewBulkLoadOpen}
-				/>
-				<Button label="Refresh Data" icon="pi pi-plus" className="p-button-success mr-2" onClick={refresh} />
 				<Messages ref={errorMessage} />
 				{errorLoads.length > 0 && (
 					<div>

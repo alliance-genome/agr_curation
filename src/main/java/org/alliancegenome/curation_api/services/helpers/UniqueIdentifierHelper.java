@@ -14,8 +14,8 @@ public class UniqueIdentifierHelper {
 	}
 
 	public static <E extends AnnotationDTO> String getIdentifyingField(E annotationDTO) {
-		if (StringUtils.isNotBlank(annotationDTO.getModEntityId())) {
-			return "modEntityId";
+		if (StringUtils.isNotBlank(annotationDTO.getPrimaryExternalId())) {
+			return "primaryExternalId";
 		} else if (StringUtils.isNotBlank(annotationDTO.getModInternalId())) {
 			return "modInternalId";
 		} else {
@@ -30,12 +30,14 @@ public class UniqueIdentifierHelper {
 		annotation.setInternal(dto.getInternal() != null && dto.getInternal());
 	}
 
-	public static <E extends AnnotationDTO, F extends Annotation> String setAnnotationID(E annotationDTO, F annotation, String uniqueId) {
-		if (StringUtils.isNotBlank(annotationDTO.getModEntityId())) {
-			annotation.setModEntityId(annotationDTO.getModEntityId());
-			return annotationDTO.getModEntityId();
+	public static <E extends AnnotationDTO, F extends Annotation> String setAnnotationIdentifiers(E annotationDTO, F annotation, String uniqueId) {
+		if (StringUtils.isNotBlank(annotationDTO.getPrimaryExternalId())) {
+			annotation.setPrimaryExternalId(annotationDTO.getPrimaryExternalId());
+			annotation.setModInternalId(null);
+			return annotationDTO.getPrimaryExternalId();
 		} else if (StringUtils.isNotBlank(annotationDTO.getModInternalId())) {
 			annotation.setModInternalId(annotationDTO.getModInternalId());
+			annotation.setPrimaryExternalId(null);
 			return annotationDTO.getModInternalId();
 		} else {
 			return uniqueId;
@@ -44,8 +46,8 @@ public class UniqueIdentifierHelper {
 
 
 	public static <E extends SubmittedObjectDTO> String getIdentifyingField(E submittedObjectDto) {
-		if (StringUtils.isNotBlank(submittedObjectDto.getModEntityId())) {
-			return "modEntityId";
+		if (StringUtils.isNotBlank(submittedObjectDto.getPrimaryExternalId())) {
+			return "primaryExternalId";
 		} else if (StringUtils.isNotBlank(submittedObjectDto.getModInternalId())) {
 			return "modInternalId";
 		} else {
@@ -60,12 +62,14 @@ public class UniqueIdentifierHelper {
 		submittedObject.setInternal(dto.getInternal() != null && dto.getInternal());
 	}
 
-	public static <E extends SubmittedObjectDTO, F extends SubmittedObject> String setAnnotationID(E submittedObjectDTO, F submittedObject, String uniqueId) {
-		if (StringUtils.isNotBlank(submittedObjectDTO.getModEntityId())) {
-			submittedObject.setModEntityId(submittedObjectDTO.getModEntityId());
-			return submittedObjectDTO.getModEntityId();
+	public static <E extends SubmittedObjectDTO, F extends SubmittedObject> String setSubmittedObjectIdentifiers(E submittedObjectDTO, F submittedObject, String uniqueId) {
+		if (StringUtils.isNotBlank(submittedObjectDTO.getPrimaryExternalId())) {
+			submittedObject.setPrimaryExternalId(submittedObjectDTO.getPrimaryExternalId());
+			submittedObject.setModInternalId(null);
+			return submittedObjectDTO.getPrimaryExternalId();
 		} else if (StringUtils.isNotBlank(submittedObjectDTO.getModInternalId())) {
 			submittedObject.setModInternalId(submittedObjectDTO.getModInternalId());
+			submittedObject.setPrimaryExternalId(null);
 			return submittedObjectDTO.getModInternalId();
 		} else {
 			return uniqueId;
