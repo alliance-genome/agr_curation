@@ -101,6 +101,7 @@ export const DataLoadsComponent = () => {
 		['AGM', ['AffectedGenomicModelDTO']],
 		// ['VARIANT', ['VariantDTO']],
 		['CONSTRUCT', ['ConstructDTO']],
+		['AGM_ASSOCIATION', ['AgmAgmAssociationDTO', 'AgmAlleleAssociationDTO', 'AgmStrAssociationDTO']],
 		['ALLELE_ASSOCIATION', ['AlleleGeneAssociationDTO']],
 		['CONSTRUCT_ASSOCIATION', ['ConstructGenomicEntityAssociationDTO']],
 	]);
@@ -449,7 +450,7 @@ export const DataLoadsComponent = () => {
 		if (load.backendBulkLoadType === 'RESOURCE_DESCRIPTOR' || load.backendBulkLoadType === 'ONTOLOGY') {
 			return null;
 		}
-		return <Column field="allianceMemberReleaseVersion" header="MOD Release" />;
+		return <Column field="bulkLoadFile.allianceMemberReleaseVersion" header="MOD Release" />;
 	};
 
 	const dynamicColumns = (loads) => {
