@@ -32,7 +32,7 @@ public class GeoXrefExecutor extends LoadFileExecutor {
 
 	public void execLoad(BulkLoadFileHistory bulkLoadFileHistory) throws IOException {
 
-		BulkFMSLoad fms = ((BulkFMSLoad) bulkLoadFileHistory.getBulkLoad());
+		BulkFMSLoad fms = (BulkFMSLoad) bulkLoadFileHistory.getBulkLoad();
 
 		XmlMapper mapper = new XmlMapper();
 		List<String> entrezIds = mapper.readValue(new GZIPInputStream(new FileInputStream(bulkLoadFileHistory.getBulkLoadFile().getLocalFilePath())), ESearchResult.class).getIdList().getIds();
