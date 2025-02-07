@@ -1,2 +1,30 @@
-CREATE INDEX agmagmassociation_agmassocobject_in ON public.agmagmassociation USING btree (agmAgmAssociationObject_id);
-ALTER TABLE ONLY public.agmagmassociation ADD CONSTRAINT agmagmassociation_agmassociationobject_fk FOREIGN KEY (agmAgmAssociationObject_id) REFERENCES public.affectedgenomicmodel(id);
+ALTER TABLE agmagmassociation
+    add column
+        agmAgmAssociationObject_id bigint
+;
+
+alter table agmagmassociation
+    DROP agmassociationobject_id
+;
+
+delete
+from bulkscheduledload
+where id in (SELECT id
+             FROM bulkload
+             WHERE backendbulkloadtype = 'AGM_AGM_ASSOCIATION');
+
+delete
+from bulkmanualload
+where id in (SELECT id
+             FROM bulkload
+             WHERE backendbulkloadtype = 'AGM_AGM_ASSOCIATION');
+
+delete
+from bulkload
+WHERE group_id in (select id from bulkloadgroup where name = 'Direct (LinkML) AGM AGM Association Loads');
+
+delete
+from bulkloadgroup
+where name = 'Direct (LinkML) AGM AGM Association Loads';
+
+
