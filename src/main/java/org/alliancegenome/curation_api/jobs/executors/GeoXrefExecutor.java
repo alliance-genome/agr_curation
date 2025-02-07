@@ -1,15 +1,16 @@
 package org.alliancegenome.curation_api.jobs.executors;
 
+import java.io.FileInputStream;
 import java.io.IOException;
-import java.net.URL;
 import java.util.List;
+import java.util.zip.GZIPInputStream;
 
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.KnownIssueValidationException;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException.ObjectUpdateExceptionData;
+import org.alliancegenome.curation_api.model.entities.bulkloads.BulkFMSLoad;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
-import org.alliancegenome.curation_api.model.entities.bulkloads.BulkURLLoad;
 import org.alliancegenome.curation_api.services.GeneService;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
 import org.apache.commons.collections.CollectionUtils;
@@ -31,11 +32,10 @@ public class GeoXrefExecutor extends LoadFileExecutor {
 
 	public void execLoad(BulkLoadFileHistory bulkLoadFileHistory) throws IOException {
 
-		String url = ((BulkURLLoad) bulkLoadFileHistory.getBulkLoad()).getBulkloadUrl();
+		BulkFMSLoad fms = ((BulkFMSLoad) bulkLoadFileHistory.getBulkLoad());
 
 		XmlMapper mapper = new XmlMapper();
-		URL src = new URL(url);
-		List<String> entrezIds = mapper.readValue(src, ESearchResult.class).getIdList().getIds();
+		List<String> entrezIds = mapper.readValue(new GZIPInputStream(new FileInputStream(bulkLoadFileHistory.getBulkLoadFile().getLocalFilePath())), ESearchResult.class).getIdList().getIds();
 		
 		bulkLoadFileHistory.getBulkLoadFile().setRecordCount(entrezIds.size() + bulkLoadFileHistory.getBulkLoadFile().getRecordCount());
 		bulkLoadFileDAO.merge(bulkLoadFileHistory.getBulkLoadFile());
@@ -43,10 +43,7 @@ public class GeoXrefExecutor extends LoadFileExecutor {
 		bulkLoadFileHistory.setCount(entrezIds.size());
 		updateHistory(bulkLoadFileHistory);
 
-		String name = bulkLoadFileHistory.getBulkLoad().getName();
-		String dataProviderName = name.substring(0, name.indexOf(" "));
-		
-		BackendBulkDataProvider dataProvider = BackendBulkDataProvider.valueOf(dataProviderName);
+		BackendBulkDataProvider dataProvider = BackendBulkDataProvider.valueOf(fms.getFmsDataSubType());
 
 		runLoad(bulkLoadFileHistory, dataProvider, entrezIds);
 
