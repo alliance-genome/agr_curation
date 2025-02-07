@@ -60,8 +60,6 @@ public class AlleleGeneAssociationService extends BaseAssociationDTOCrudService<
 			return null;
 		}
 		dbEntity = alleleGeneAssociationDAO.persist(dbEntity);
-		addAssociationToAllele(dbEntity);
-		addAssociationToGene(dbEntity);
 		return new ObjectResponse<AlleleGeneAssociation>(dbEntity);
 	}
 
@@ -74,11 +72,6 @@ public class AlleleGeneAssociationService extends BaseAssociationDTOCrudService<
 	@Transactional
 	public AlleleGeneAssociation upsert(AlleleGeneAssociationDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
 		AlleleGeneAssociation association = alleleGeneAssociationDtoValidator.validateAlleleGeneAssociationDTO(dto, dataProvider);
-		if (association != null) {
-			addAssociationToAllele(association);
-			addAssociationToGene(association);
-		}
-
 		return association;
 	}
 
