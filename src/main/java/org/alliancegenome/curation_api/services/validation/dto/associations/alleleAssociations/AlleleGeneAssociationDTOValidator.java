@@ -11,6 +11,7 @@ import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
 import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.Gene;
+import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.associations.alleleAssociations.AlleleGeneAssociation;
 import org.alliancegenome.curation_api.model.ingest.dto.associations.alleleAssociations.AlleleGeneAssociationDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
@@ -62,6 +63,7 @@ public class AlleleGeneAssociationDTOValidator extends AlleleGenomicEntityAssoci
 			SearchResponse<AlleleGeneAssociation> searchResponse = alleleGeneAssociationDAO.findByParams(params);
 			if (searchResponse != null && searchResponse.getResults().size() == 1) {
 				association = searchResponse.getSingleResult();
+				return association;
 			}
 		}
 
@@ -69,7 +71,8 @@ public class AlleleGeneAssociationDTOValidator extends AlleleGenomicEntityAssoci
 			association = new AlleleGeneAssociation();
 		}
 
-		association = validateAlleleGenomicEntityAssociationDTO(association, dto, VocabularyConstants.ALLELE_GENE_RELATION_VOCABULARY_TERM_SET);
+		VocabularyTerm relation = validateRequiredTermInVocabularyTermSet("relation_name", dto.getRelationName(), VocabularyConstants.ALLELE_GENE_RELATION_VOCABULARY_TERM_SET);
+		association.setRelation(relation);
 		
 		if (association.getAlleleAssociationSubject() == null && !StringUtils.isBlank(dto.getAlleleIdentifier())) {
 
