@@ -62,7 +62,6 @@ public class AlleleGeneAssociationDTOValidator extends AlleleGenomicEntityAssoci
 			SearchResponse<AlleleGeneAssociation> searchResponse = alleleGeneAssociationDAO.findByParams(params);
 			if (searchResponse != null && searchResponse.getResults().size() == 1) {
 				association = searchResponse.getSingleResult();
-				return association;
 			}
 		}
 
