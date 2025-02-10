@@ -56,11 +56,6 @@ public class AgmAgmAssociationService extends BaseAssociationDTOCrudService<AgmA
 	@Transactional
 	public AgmAgmAssociation upsert(AgmAgmAssociationDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
 		AgmAgmAssociation association = agmAgmAssociationDtoValidator.validateAgmAgmAssociationDTO(dto, dataProvider);
-		if (association != null) {
-			addAssociationToAgm(association);
-			addAssociationToStr(association);
-		}
-
 		return association;
 	}
 
