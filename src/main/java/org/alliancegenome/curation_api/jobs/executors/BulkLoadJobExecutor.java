@@ -75,6 +75,7 @@ public class BulkLoadJobExecutor {
 
 			if (loadType == AGM || loadType == FULL_INGEST) {
 				agmExecutor.execLoad(bulkLoadFileHistory, cleanUp);
+				agmAgmAssociationExecutor.execLoad(bulkLoadFileHistory, cleanUp);
 			}
 			if (loadType == ALLELE || loadType == FULL_INGEST) {
 				alleleExecutor.execLoad(bulkLoadFileHistory, cleanUp);
