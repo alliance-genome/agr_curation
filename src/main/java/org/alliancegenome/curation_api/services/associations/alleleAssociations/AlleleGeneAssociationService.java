@@ -1,7 +1,6 @@
 package org.alliancegenome.curation_api.services.associations.alleleAssociations;
 
 import java.time.OffsetDateTime;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,8 +16,6 @@ import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.interfaces.crud.BaseUpsertServiceInterface;
-import org.alliancegenome.curation_api.model.entities.Allele;
-import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.associations.alleleAssociations.AlleleGeneAssociation;
 import org.alliancegenome.curation_api.model.ingest.dto.associations.alleleAssociations.AlleleGeneAssociationDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
@@ -142,42 +139,5 @@ public class AlleleGeneAssociationService extends BaseAssociationDTOCrudService<
 		response.setEntity(association);
 
 		return response;
-	}
-
-	private void addAssociationToAllele(AlleleGeneAssociation association) {
-		Allele allele = association.getAlleleAssociationSubject();
-		List<AlleleGeneAssociation> currentAssociations = allele.getAlleleGeneAssociations();
-		if (currentAssociations == null) {
-			currentAssociations = new ArrayList<>();
-			allele.setAlleleGeneAssociations(currentAssociations);
-		}
-
-		List<Long> currentAssociationIds = new ArrayList<>();
-		for (AlleleGeneAssociation aga : currentAssociations) {
-			currentAssociationIds.add(aga.getId());
-		}
-
-		if (!currentAssociationIds.contains(association.getId())) {
-			currentAssociations.add(association);
-		}
-	}
-
-	private void addAssociationToGene(AlleleGeneAssociation association) {
-		Gene gene = association.getAlleleGeneAssociationObject();
-		List<AlleleGeneAssociation> currentAssociations = gene.getAlleleGeneAssociations();
-		if (currentAssociations == null) {
-			currentAssociations = new ArrayList<>();
-			gene.setAlleleGeneAssociations(currentAssociations);
-		}
-
-		List<Long> currentAssociationIds = new ArrayList<>();
-		for (AlleleGeneAssociation aga : currentAssociations) {
-			currentAssociationIds.add(aga.getId());
-		}
-
-		if (!currentAssociationIds.contains(association.getId())) {
-			currentAssociations.add(association);
-		}
-		
 	}
 }
