@@ -51,7 +51,7 @@ public class AlleleConstructAssociationCrudController extends
 	}
 
 	public ObjectResponse<AlleleConstructAssociation> getAssociation(Long alleleId, String relationName,
-			Long ConstructId) {
-		return alleleConstructAssociationService.getAssociation(alleleId, relationName, ConstructId);
+			Long constructId) {
+		return alleleConstructAssociationService.getAssociation(alleleId, relationName, constructId);
 	}
 }

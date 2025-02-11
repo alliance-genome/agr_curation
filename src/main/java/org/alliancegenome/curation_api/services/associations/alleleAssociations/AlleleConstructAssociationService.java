@@ -1,7 +1,6 @@
 package org.alliancegenome.curation_api.services.associations.alleleAssociations;
 
 import java.time.OffsetDateTime;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -9,7 +8,6 @@ import java.util.Objects;
 
 import org.alliancegenome.curation_api.constants.EntityFieldConstants;
 import org.alliancegenome.curation_api.dao.AlleleDAO;
-import org.alliancegenome.curation_api.dao.ConstructDAO;
 import org.alliancegenome.curation_api.dao.NoteDAO;
 import org.alliancegenome.curation_api.dao.PersonDAO;
 import org.alliancegenome.curation_api.dao.associations.alleleAssociations.AlleleConstructAssociationDAO;
@@ -17,8 +15,6 @@ import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.interfaces.crud.BaseUpsertServiceInterface;
-import org.alliancegenome.curation_api.model.entities.Allele;
-import org.alliancegenome.curation_api.model.entities.Construct;
 import org.alliancegenome.curation_api.model.entities.associations.alleleAssociations.AlleleConstructAssociation;
 import org.alliancegenome.curation_api.model.ingest.dto.associations.alleleAssociations.AlleleConstructAssociationDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
@@ -43,7 +39,6 @@ public class AlleleConstructAssociationService extends BaseAssociationDTOCrudSer
 	@Inject AlleleConstructAssociationDTOValidator alleleConstructAssociationDtoValidator;
 	@Inject AlleleDAO alleleDAO;
 	@Inject NoteDAO noteDAO;
-	@Inject ConstructDAO ConstructDAO;
 	@Inject PersonService personService;
 	@Inject PersonDAO personDAO;
 

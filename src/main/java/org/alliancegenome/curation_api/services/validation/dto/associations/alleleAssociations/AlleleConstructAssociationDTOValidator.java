@@ -39,8 +39,8 @@ public class AlleleConstructAssociationDTOValidator extends AlleleGenomicEntityA
 			if (CollectionUtils.isNotEmpty(subject.getAlleleConstructAssociations())) {
 				for (AlleleConstructAssociation existingAssociation : subject.getAlleleConstructAssociations()) {
 					if (existingAssociation.getRelation().getId().equals(relation.getId())) {
-						if (Objects.equals(existingAssociation.getAlleleConstructAssociationObject().getPrimaryExternalId(), dto.getConstructIdentifier()) ||
-								Objects.equals(existingAssociation.getAlleleConstructAssociationObject().getModInternalId(), dto.getConstructIdentifier())) {
+						if (Objects.equals(existingAssociation.getAlleleConstructAssociationObject().getPrimaryExternalId(), dto.getConstructIdentifier())
+								|| Objects.equals(existingAssociation.getAlleleConstructAssociationObject().getModInternalId(), dto.getConstructIdentifier())) {
 							association = existingAssociation;
 							break;
 						}
