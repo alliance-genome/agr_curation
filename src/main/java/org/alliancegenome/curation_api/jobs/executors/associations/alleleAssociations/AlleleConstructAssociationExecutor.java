@@ -51,9 +51,10 @@ public class AlleleConstructAssociationExecutor extends LoadFileExecutor {
 		bulkLoadFileHistory.setCount(associations.size());
 		updateHistory(bulkLoadFileHistory);
 		
-		boolean success = runLoad(alleleConstructAssociationService, bulkLoadFileHistory, dataProvider, associations, associationIdsLoaded);
+		String countType = "Allele Construct Associations";
+		boolean success = runLoad(alleleConstructAssociationService, bulkLoadFileHistory, dataProvider, associations, associationIdsLoaded, countType);
 		if (success && cleanUp) {
-			runCleanup(alleleConstructAssociationService, bulkLoadFileHistory, dataProvider.name(), associationIdsBefore, associationIdsLoaded, "allele Construct association");
+			runCleanup(alleleConstructAssociationService, bulkLoadFileHistory, dataProvider.name(), associationIdsBefore, associationIdsLoaded, "allele construct association");
 		}
 		bulkLoadFileHistory.finishLoad();
 		updateHistory(bulkLoadFileHistory);
