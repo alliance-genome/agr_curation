@@ -38,7 +38,7 @@ import lombok.ToString;
 	@Index(name = "AlleleConstructAssociation_relatedNote_index", columnList = "relatedNote_id"),
 	@Index(name = "AlleleConstructAssociation_relation_index", columnList = "relation_id"),
 	@Index(name = "AlleleConstructAssociation_alleleAssociationSubject_index", columnList = "alleleAssociationSubject_id"),
-	@Index(name = "AlleleConstructAssociation_alleleConstructAssociationObject_index", columnList = "alleleConstructAssociationObject_id")
+	@Index(name = "AlleleConstructAssociation_alleleConstructAssocObject_index", columnList = "alleleConstructAssociationObject_id")
 })
 
 public class AlleleConstructAssociation extends AlleleGenomicEntityAssociation {
