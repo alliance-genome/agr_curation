@@ -32,6 +32,7 @@ public final class VocabularyConstants {
 	public static final String ALLELE_NOMENCLATURE_EVENT_VOCABULARY = "allele_nomenclature_event";
 
 	public static final String ALLELE_RELATION_VOCABULARY = "allele_relation";
+	public static final String ALLELE_CONSTRUCT_RELATION_VOCABULARY_TERM_SET = "allele_construct_relation";
 	public static final String ALLELE_GENE_RELATION_VOCABULARY_TERM_SET = "allele_gene_relation";
 	public static final String ALLELE_VARIANT_RELATION_VOCABULARY_TERM_SET = "allele_variant_relation";
 	
