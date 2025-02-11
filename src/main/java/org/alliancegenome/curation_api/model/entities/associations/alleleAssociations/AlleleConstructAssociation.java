@@ -47,7 +47,7 @@ public class AlleleConstructAssociation extends AlleleGenomicEntityAssociation {
 		"curie", "alleleSymbol.displayText", "alleleSymbol.formatText", "alleleFullName.displayText", "alleleFullName.formatText",
 		"curie_keyword", "alleleSymbol.displayText_keyword", "alleleSymbol.formatText_keyword", "alleleFullName.displayText_keyword",
 		"alleleFullName.formatText_keyword", "primaryExternalId", "primaryExternalId_keyword", "modInternalId", "modInternalId_keyword" })
-	@ManyToOne(fetch=FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JsonView({ View.FieldsOnly.class })
 	@JsonIgnoreProperties({"alleleGeneAssociations", "alleleVariantAssociations", "alleleConstructAssociations"})
 	@Fetch(FetchMode.JOIN)
@@ -60,7 +60,7 @@ public class AlleleConstructAssociation extends AlleleGenomicEntityAssociation {
 			"constructFullName.displayText_keyword", "constructFullName.formatText_keyword", "primaryExternalId_keyword", "modInternalId_keyword"
 	})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
-	@ManyToOne(fetch=FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JsonView({ View.FieldsOnly.class, View.AlleleView.class })
 	@JsonIgnoreProperties({ "constructGenomicEntityAssociations" })
 	private Construct alleleConstructAssociationObject;
