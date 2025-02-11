@@ -6,11 +6,14 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 
 import java.time.OffsetDateTime;
+import java.util.List;
 
 import org.alliancegenome.curation_api.base.BaseITCase;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.Construct;
+import org.alliancegenome.curation_api.model.entities.Vocabulary;
+import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.resources.TestContainerResource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -63,7 +66,9 @@ public class AlleleConstructAssociationBulkUploadITCase extends BaseITCase {
 	private void loadRequiredEntities() throws Exception {
 		allele = getAllele(alleleCurie);
 		construct = getConstruct(constructCurie);
-		addVocabularyTermToSet(VocabularyConstants.ALLELE_CONSTRUCT_RELATION_VOCABULARY_TERM_SET, relationName, getVocabulary(VocabularyConstants.ALLELE_RELATION_VOCABULARY), false);
+		Vocabulary alleleRelationVocabulary = getVocabulary(VocabularyConstants.ALLELE_RELATION_VOCABULARY);
+		VocabularyTerm contains = createVocabularyTerm(alleleRelationVocabulary, "contains", false);
+		createVocabularyTermSet(VocabularyConstants.ALLELE_CONSTRUCT_RELATION_VOCABULARY_TERM_SET, alleleRelationVocabulary, List.of(contains));
 	}
 	
 	@Test
@@ -114,8 +119,6 @@ public class AlleleConstructAssociationBulkUploadITCase extends BaseITCase {
 	@Test
 	@Order(2)
 	public void alleleConstructAssociationBulkUploadUpdateCheckFields() throws Exception {
-		loadRequiredEntities();
-		
 		checkSuccessfulBulkLoad(alleleConstructAssociationBulkPostEndpoint, alleleConstructAssociationTestFilePath + "UD_01_update_all_except_default_fields.json");
 	
 		RestAssured.given().
