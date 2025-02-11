@@ -1,11 +1,27 @@
 package org.alliancegenome.curation_api.jobs.executors;
 
+import static org.alliancegenome.curation_api.enums.BackendBulkLoadType.AGM;
+import static org.alliancegenome.curation_api.enums.BackendBulkLoadType.AGM_AGM_ASSOCIATION;
+import static org.alliancegenome.curation_api.enums.BackendBulkLoadType.AGM_ASSOCIATION;
+import static org.alliancegenome.curation_api.enums.BackendBulkLoadType.AGM_DISEASE_ANNOTATION;
+import static org.alliancegenome.curation_api.enums.BackendBulkLoadType.ALLELE;
+import static org.alliancegenome.curation_api.enums.BackendBulkLoadType.ALLELE_ASSOCIATION;
+import static org.alliancegenome.curation_api.enums.BackendBulkLoadType.ALLELE_DISEASE_ANNOTATION;
+import static org.alliancegenome.curation_api.enums.BackendBulkLoadType.CONSTRUCT;
+import static org.alliancegenome.curation_api.enums.BackendBulkLoadType.CONSTRUCT_ASSOCIATION;
+import static org.alliancegenome.curation_api.enums.BackendBulkLoadType.DISEASE_ANNOTATION;
+import static org.alliancegenome.curation_api.enums.BackendBulkLoadType.FULL_INGEST;
+import static org.alliancegenome.curation_api.enums.BackendBulkLoadType.GENE;
+import static org.alliancegenome.curation_api.enums.BackendBulkLoadType.GENE_DISEASE_ANNOTATION;
+import static org.alliancegenome.curation_api.enums.BackendBulkLoadType.VARIANT;
+
 import java.util.List;
 
 import org.alliancegenome.curation_api.enums.BackendBulkLoadType;
-import org.alliancegenome.curation_api.jobs.executors.associations.agmAssociations.AgmAlleleAssociationExecutor;
 import org.alliancegenome.curation_api.jobs.executors.associations.agmAssociations.AgmAgmAssociationExecutor;
+import org.alliancegenome.curation_api.jobs.executors.associations.agmAssociations.AgmAlleleAssociationExecutor;
 import org.alliancegenome.curation_api.jobs.executors.associations.agmAssociations.AgmStrAssociationExecutor;
+import org.alliancegenome.curation_api.jobs.executors.associations.alleleAssociations.AlleleConstructAssociationExecutor;
 import org.alliancegenome.curation_api.jobs.executors.associations.alleleAssociations.AlleleGeneAssociationExecutor;
 import org.alliancegenome.curation_api.jobs.executors.associations.constructAssociations.ConstructGenomicEntityAssociationExecutor;
 import org.alliancegenome.curation_api.jobs.executors.gff.Gff3CDSExecutor;
@@ -17,8 +33,6 @@ import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHist
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import lombok.extern.jbosslog.JBossLog;
-
-import static org.alliancegenome.curation_api.enums.BackendBulkLoadType.*;
 
 @JBossLog
 @ApplicationScoped
@@ -36,6 +50,7 @@ public class BulkLoadJobExecutor {
 	@Inject OntologyExecutor ontologyExecutor;
 	@Inject ConstructExecutor constructExecutor;
 	@Inject AlleleGeneAssociationExecutor alleleGeneAssociationExecutor;
+	@Inject AlleleConstructAssociationExecutor alleleConstructAssociationExecutor;
 	@Inject ConstructGenomicEntityAssociationExecutor constructGenomicEntityAssociationExecutor;
 	@Inject AgmStrAssociationExecutor agmStrAssociationExecutor;
 	@Inject AgmAlleleAssociationExecutor agmAlleleAssociationExecutor;
@@ -100,6 +115,7 @@ public class BulkLoadJobExecutor {
 			}
 			if (loadType == ALLELE_ASSOCIATION || loadType == FULL_INGEST) {
 				alleleGeneAssociationExecutor.execLoad(bulkLoadFileHistory, cleanUp);
+				alleleConstructAssociationExecutor.execLoad(bulkLoadFileHistory, cleanUp);
 			}
 			if (loadType == CONSTRUCT_ASSOCIATION || loadType == FULL_INGEST) {
 				constructGenomicEntityAssociationExecutor.execLoad(bulkLoadFileHistory, cleanUp);

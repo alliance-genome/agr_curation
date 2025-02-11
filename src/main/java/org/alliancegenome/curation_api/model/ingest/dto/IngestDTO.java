@@ -1,17 +1,20 @@
 package org.alliancegenome.curation_api.model.ingest.dto;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonView;
-import lombok.Data;
+import java.util.List;
+
 import org.alliancegenome.curation_api.model.ingest.dto.associations.agmAssociations.AgmAgmAssociationDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.associations.agmAssociations.AgmAlleleAssociationDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.associations.agmAssociations.AgmSequenceTargetingReagentAssociationDTO;
+import org.alliancegenome.curation_api.model.ingest.dto.associations.alleleAssociations.AlleleConstructAssociationDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.associations.alleleAssociations.AlleleGeneAssociationDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.associations.alleleAssociations.AlleleVariantAssociationDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.associations.constructAssociations.ConstructGenomicEntityAssociationDTO;
 import org.alliancegenome.curation_api.view.View;
 
-import java.util.List;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonView;
+
+import lombok.Data;
 
 @Data
 public class IngestDTO {
@@ -57,6 +60,10 @@ public class IngestDTO {
 	private List<VariantDTO> variantIngestSet;
 
 	@JsonView({View.FieldsAndLists.class})
+	@JsonProperty("allele_construct_association_ingest_set")
+	private List<AlleleConstructAssociationDTO> alleleConstructAssociationIngestSet;
+
+	@JsonView({View.FieldsAndLists.class})
 	@JsonProperty("allele_gene_association_ingest_set")
 	private List<AlleleGeneAssociationDTO> alleleGeneAssociationIngestSet;
 
@@ -75,6 +82,8 @@ public class IngestDTO {
 	@JsonView({View.FieldsAndLists.class})
 	@JsonProperty("agm_allele_association_ingest_set")
 	private List<AgmAlleleAssociationDTO> agmAlleleAssociationIngestSet;
+	
+	@JsonView({View.FieldsAndLists.class})
 	@JsonProperty("agm_agm_association_ingest_set")
 	private List<AgmAgmAssociationDTO> agmAgmAssociationIngestSet;
 }

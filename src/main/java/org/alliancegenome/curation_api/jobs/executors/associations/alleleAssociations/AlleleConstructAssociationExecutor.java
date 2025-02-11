@@ -1,4 +1,4 @@
-package org.alliancegenome.curation_api.jobs.executors.associations.agmAssociations;
+package org.alliancegenome.curation_api.jobs.executors.associations.alleleAssociations;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,8 +9,8 @@ import org.alliancegenome.curation_api.jobs.executors.LoadFileExecutor;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkManualLoad;
 import org.alliancegenome.curation_api.model.ingest.dto.IngestDTO;
-import org.alliancegenome.curation_api.model.ingest.dto.associations.agmAssociations.AgmSequenceTargetingReagentAssociationDTO;
-import org.alliancegenome.curation_api.services.associations.agmAssociations.AgmStrAssociationService;
+import org.alliancegenome.curation_api.model.ingest.dto.associations.alleleAssociations.AlleleConstructAssociationDTO;
+import org.alliancegenome.curation_api.services.associations.alleleAssociations.AlleleConstructAssociationService;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -18,9 +18,9 @@ import lombok.extern.jbosslog.JBossLog;
 
 @JBossLog
 @ApplicationScoped
-public class AgmStrAssociationExecutor extends LoadFileExecutor {
+public class AlleleConstructAssociationExecutor extends LoadFileExecutor {
 
-	@Inject AgmStrAssociationService agmStrAssociationService;
+	@Inject AlleleConstructAssociationService alleleConstructAssociationService;
 
 	public void execLoad(BulkLoadFileHistory bulkLoadFileHistory, Boolean cleanUp) {
 
@@ -28,12 +28,12 @@ public class AgmStrAssociationExecutor extends LoadFileExecutor {
 		BackendBulkDataProvider dataProvider = manual.getDataProvider();
 		log.info("Running with dataProvider: " + dataProvider.name());
 
-		IngestDTO ingestDto = readIngestFile(bulkLoadFileHistory, AgmSequenceTargetingReagentAssociationDTO.class);
+		IngestDTO ingestDto = readIngestFile(bulkLoadFileHistory, AlleleConstructAssociationDTO.class);
 		if (ingestDto == null) {
 			return;
 		}
 
-		List<AgmSequenceTargetingReagentAssociationDTO> associations = ingestDto.getAgmStrAssociationIngestSet();
+		List<AlleleConstructAssociationDTO> associations = ingestDto.getAlleleConstructAssociationIngestSet();
 		if (associations == null) {
 			associations = new ArrayList<>();
 		}
@@ -41,20 +41,20 @@ public class AgmStrAssociationExecutor extends LoadFileExecutor {
 		List<Long> associationIdsLoaded = new ArrayList<>();
 		List<Long> associationIdsBefore = new ArrayList<>();
 		if (cleanUp) {
-			associationIdsBefore.addAll(agmStrAssociationService.getAssociationsByDataProvider(dataProvider));
+			associationIdsBefore.addAll(alleleConstructAssociationService.getAssociationsByDataProvider(dataProvider));
 			associationIdsBefore.removeIf(Objects::isNull);
 		}
 
 		bulkLoadFileHistory.getBulkLoadFile().setRecordCount(associations.size() + bulkLoadFileHistory.getBulkLoadFile().getRecordCount());
 		bulkLoadFileDAO.merge(bulkLoadFileHistory.getBulkLoadFile());
 
-		String countType = "AGM STR Associations";
+		String countType = "Allele Construct Associations";
 		bulkLoadFileHistory.setCount(countType, associations.size());
 		updateHistory(bulkLoadFileHistory);
 		
-		boolean success = runLoad(agmStrAssociationService, bulkLoadFileHistory, dataProvider, associations, associationIdsLoaded, countType);
+		boolean success = runLoad(alleleConstructAssociationService, bulkLoadFileHistory, dataProvider, associations, associationIdsLoaded, countType);
 		if (success && cleanUp) {
-			runCleanup(agmStrAssociationService, bulkLoadFileHistory, dataProvider.name(), associationIdsBefore, associationIdsLoaded, countType);
+			runCleanup(alleleConstructAssociationService, bulkLoadFileHistory, dataProvider.name(), associationIdsBefore, associationIdsLoaded, countType);
 		}
 		bulkLoadFileHistory.finishLoad();
 		updateHistory(bulkLoadFileHistory);
