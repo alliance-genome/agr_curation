@@ -298,6 +298,7 @@ public class BaseDTOValidator<E extends Object> {
 			
 			ontologyTerm.getSecondaryIdentifiers().size();
 			ontologyTerm.getSynonyms().size();
+			ontologyTerm.getDefinitionUrls().size();
 			ontologyTermCache.get(service.getClass().getName()).put(curie, ontologyTerm);
 		}
 		
