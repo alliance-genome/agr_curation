@@ -120,13 +120,13 @@ public class AlleleConstructAssociationService extends BaseAssociationDTOCrudSer
 		return null;
 	}
 
-	public ObjectResponse<AlleleConstructAssociation> getAssociation(Long alleleId, String relationName, Long ConstructId) {
+	public ObjectResponse<AlleleConstructAssociation> getAssociation(Long alleleId, String relationName, Long constructId) {
 		AlleleConstructAssociation association = null;
 
 		Map<String, Object> params = new HashMap<>();
 		params.put("alleleAssociationSubject.id", alleleId);
 		params.put("relation.name", relationName);
-		params.put("alleleConstructAssociationObject.id", ConstructId);
+		params.put("alleleConstructAssociationObject.id", constructId);
 
 		SearchResponse<AlleleConstructAssociation> resp = alleleConstructAssociationDAO.findByParams(params);
 		if (resp != null && resp.getSingleResult() != null) {
