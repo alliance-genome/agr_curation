@@ -37,8 +37,8 @@ ALTER TABLE ONLY public.agmagmassociation ADD CONSTRAINT agmstrassociation_agmas
 ALTER TABLE ONLY public.agmagmassociation ADD CONSTRAINT agmstrassociation_createdby_fk FOREIGN KEY (createdby_id) REFERENCES public.person(id);
 
 --create vocabulary
-
-INSERT INTO vocabularyterm (id, name, vocabulary_id) SELECT nextval('vocabularyterm_seq'), 'has_parental_population', id FROM vocabulary WHERE vocabulary.vocabularylabel = 'agm_relation';
+ALTER TABLE vocabularyterm ADD CONSTRAINT vocabularyterm_name_vocabulary_id_uk UNIQUE (name, vocabulary_id);
+INSERT INTO vocabularyterm (id, name, vocabulary_id) SELECT nextval('vocabularyterm_seq'), 'has_parental_population', id FROM vocabulary WHERE vocabulary.vocabularylabel = 'agm_relation' ON CONFLICT (name, vocabulary_id) DO NOTHING;
 
 INSERT INTO vocabularytermset(id, name, vocabularylabel, vocabularytermsetvocabulary_id) SELECT nextval('vocabularytermset_seq'), 'AGM AGM Association Relation', 'agm_agm_relation', id FROM vocabulary WHERE vocabulary.vocabularylabel = 'agm_relation';
 
