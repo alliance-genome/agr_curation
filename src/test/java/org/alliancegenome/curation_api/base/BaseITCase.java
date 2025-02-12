@@ -78,7 +78,12 @@ public class BaseITCase {
 
 	public VocabularyTerm addVocabularyTermToSet(String setName, String termName, Vocabulary vocabulary, Boolean obsolete) {
 		VocabularyTermSet set = getVocabularyTermSet(setName);
-		VocabularyTerm term = createVocabularyTerm(vocabulary, termName, false);
+		VocabularyTerm term = getVocabularyTerm(vocabulary, termName);
+		if (term == null) {
+			term = createVocabularyTerm(vocabulary, termName, false);
+		} else if (term.getObsolete()) {
+			term.setObsolete(false);
+		}
 
 		if (CollectionUtils.isEmpty(set.getMemberTerms())) {
 			set.setMemberTerms(new ArrayList<>());
@@ -94,7 +99,7 @@ public class BaseITCase {
 			statusCode(200);
 
 		term.setObsolete(obsolete);
-
+		
 		ObjectResponse<VocabularyTerm> response = RestAssured.given().
 			contentType("application/json").
 			body(term).
@@ -1521,10 +1526,11 @@ public class BaseITCase {
 				statusCode(200).
 				extract().body().as(getObjectListResponseTypeRefVocabularyTerm());
 
-		List<VocabularyTerm> vocabularyTerms = response.getEntities();
-		for (VocabularyTerm vocabularyTerm : vocabularyTerms) {
-			if (vocabularyTerm.getName().equals(name)) {
-				return vocabularyTerm;
+		if (CollectionUtils.isNotEmpty(response.getEntities())) {
+			for (VocabularyTerm vocabularyTerm : response.getEntities()) {
+				if (vocabularyTerm.getName().equals(name)) {
+					return vocabularyTerm;
+				}
 			}
 		}
 
