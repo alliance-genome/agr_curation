@@ -38,7 +38,7 @@ ALTER TABLE ONLY public.agmsequencetargetingreagentassociation ADD CONSTRAINT ag
 
 --create vocabulary
 
-INSERT INTO vocabulary (id, name, vocabularylabel) VALUES (nextval('vocabulary_seq'), 'AGM Relation', 'agm_relation');
+INSERT INTO vocabulary (id, name, vocabularylabel) VALUES (nextval('vocabulary_seq'), 'AGM Relation', 'agm_relation') ON CONFLICT(vocabularylabel) DO NOTHING;
 
 INSERT INTO vocabularyterm (id, name, vocabulary_id) SELECT nextval('vocabularyterm_seq'), 'contains', id FROM vocabulary WHERE vocabulary.vocabularylabel = 'agm_relation';
 
