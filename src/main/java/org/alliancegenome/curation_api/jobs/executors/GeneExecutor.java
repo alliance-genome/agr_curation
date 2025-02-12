@@ -11,6 +11,7 @@ import org.alliancegenome.curation_api.model.ingest.dto.GeneDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.IngestDTO;
 import org.alliancegenome.curation_api.services.GeneService;
 import org.alliancegenome.curation_api.services.ontology.NcbiTaxonTermService;
+import org.apache.commons.collections.CollectionUtils;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -38,8 +39,8 @@ public class GeneExecutor extends LoadFileExecutor {
 		}
 
 		List<GeneDTO> genes = ingestDto.getGeneIngestSet();
-		if (genes == null) {
-			genes = new ArrayList<>();
+		if (CollectionUtils.isEmpty(genes)) {
+			return;
 		}
 
 		List<Long> geneIdsLoaded = new ArrayList<>();

@@ -11,6 +11,7 @@ import org.alliancegenome.curation_api.model.entities.bulkloads.BulkManualLoad;
 import org.alliancegenome.curation_api.model.ingest.dto.IngestDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.associations.agmAssociations.AgmAlleleAssociationDTO;
 import org.alliancegenome.curation_api.services.associations.agmAssociations.AgmAlleleAssociationService;
+import org.apache.commons.collections.CollectionUtils;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -34,8 +35,8 @@ public class AgmAlleleAssociationExecutor extends LoadFileExecutor {
 		}
 
 		List<AgmAlleleAssociationDTO> associations = ingestDto.getAgmAlleleAssociationIngestSet();
-		if (associations == null) {
-			associations = new ArrayList<>();
+		if (CollectionUtils.isEmpty(associations)) {
+			return;
 		}
 
 		List<Long> associationIdsLoaded = new ArrayList<>();
