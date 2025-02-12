@@ -215,6 +215,26 @@ export const CLASSES = Object.freeze({
 		isIndexed: false,
 	},
 
+	AgmAgmTargetingReagentAssociation: {
+		name: 'AGM AGM Associations',
+		type: 'association',
+		hasTable: false,
+	},
+	AgmAlleleTargetingReagentAssociation: {
+		name: 'AGM Allele Associations',
+		type: 'association',
+		hasTable: false,
+	},
+	AgmSequenceTargetingReagentAssociation: {
+		name: 'AGM STR Associations',
+		type: 'association',
+		hasTable: false,
+	},
+	AlleleConstructAssociation: {
+		name: 'Allele Construct Associations',
+		type: 'association',
+		hasTable: false,
+	},
 	AlleleGeneAssociation: {
 		name: 'Allele Gene Associations',
 		type: 'association',
