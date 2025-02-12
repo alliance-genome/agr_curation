@@ -215,7 +215,6 @@ export const CLASSES = Object.freeze({
 		isIndexed: false,
 	},
 
-	
 	AgmAgmTargetingReagentAssociation: {
 		name: 'AGM AGM Associations',
 		type: 'association',
