@@ -38,6 +38,7 @@ import org.alliancegenome.curation_api.model.entities.Variant;
 import org.alliancegenome.curation_api.model.entities.Vocabulary;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.VocabularyTermSet;
+import org.alliancegenome.curation_api.model.entities.associations.alleleAssociations.AlleleConstructAssociation;
 import org.alliancegenome.curation_api.model.entities.associations.alleleAssociations.AlleleGeneAssociation;
 import org.alliancegenome.curation_api.model.entities.associations.constructAssociations.ConstructGenomicEntityAssociation;
 import org.alliancegenome.curation_api.model.entities.ontology.AnatomicalTerm;
@@ -46,12 +47,13 @@ import org.alliancegenome.curation_api.model.entities.ontology.ChemicalTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.DOTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.ECOTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.ExperimentalConditionOntologyTerm;
+import org.alliancegenome.curation_api.model.entities.ontology.GENOTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.GOTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.MITerm;
 import org.alliancegenome.curation_api.model.entities.ontology.MMOTerm;
-import org.alliancegenome.curation_api.model.entities.ontology.OBITerm;
 import org.alliancegenome.curation_api.model.entities.ontology.MPTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
+import org.alliancegenome.curation_api.model.entities.ontology.OBITerm;
 import org.alliancegenome.curation_api.model.entities.ontology.OntologyTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.SOTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.StageTerm;
@@ -65,6 +67,7 @@ import org.alliancegenome.curation_api.model.entities.slotAnnotations.geneSlotAn
 import org.alliancegenome.curation_api.response.ObjectListResponse;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import io.restassured.RestAssured;
@@ -77,9 +80,10 @@ public class BaseITCase {
 		VocabularyTermSet set = getVocabularyTermSet(setName);
 		VocabularyTerm term = createVocabularyTerm(vocabulary, termName, false);
 
-		List<VocabularyTerm> setTerms = set.getMemberTerms();
-		setTerms.add(term);
-		set.setMemberTerms(setTerms);
+		if (CollectionUtils.isEmpty(set.getMemberTerms())) {
+			set.setMemberTerms(new ArrayList<>());
+		}
+		set.getMemberTerms().add(term);
 
 		RestAssured.given().
 			contentType("application/json").
@@ -583,6 +587,25 @@ public class BaseITCase {
 		return response.getEntity();
 	}
 
+	public GENOTerm createGenoTerm(String curie, String name) {
+		GENOTerm genoTerm = new GENOTerm();
+		genoTerm.setCurie(curie);
+		genoTerm.setName(name);
+		genoTerm.setObsolete(false);
+		genoTerm.setSecondaryIdentifiers(List.of(curie + "secondary"));
+
+		ObjectResponse<GENOTerm> response = RestAssured.given().
+			contentType("application/json").
+			body(genoTerm).
+			when().
+			put("/api/genoterm").
+			then().
+			statusCode(200).
+			extract().body().as(getObjectResponseTypeRefGENOTerm());
+
+		return response.getEntity();
+	}
+
 	public OBITerm createObiTerm(String curie, String name) throws Exception {
 		OBITerm obiTerm = new OBITerm();
 		obiTerm.setCurie(curie);
@@ -1018,6 +1041,17 @@ public class BaseITCase {
 		return res.getEntity();
 	}
 
+	public AlleleConstructAssociation getAlleleConstructAssociation(Long alleleId, String relationName, Long constructId) {
+		ObjectResponse<AlleleConstructAssociation> res = RestAssured.given().
+			when().
+			get("/api/alleleconstructassociation/findBy" + "?alleleId=" + alleleId + "&relationName=" + relationName + "&constructId=" + constructId).
+			then().
+			statusCode(200).
+			extract().body().as(getObjectResponseTypeRefAlleleConstructAssociation());
+
+		return res.getEntity();
+	}
+
 	public AlleleDiseaseAnnotation getAlleleDiseaseAnnotation(String uniqueId) {
 		ObjectResponse<AlleleDiseaseAnnotation> res = RestAssured.given().
 				when().
@@ -1186,6 +1220,11 @@ public class BaseITCase {
 		};
 	}
 
+	private TypeRef<ObjectResponse<AlleleConstructAssociation>> getObjectResponseTypeRefAlleleConstructAssociation() {
+		return new TypeRef<ObjectResponse<AlleleConstructAssociation>>() {
+		};
+	}
+
 	private TypeRef<ObjectResponse<AlleleDiseaseAnnotation>> getObjectResponseTypeRefAlleleDiseaseAnnotation() {
 		return new TypeRef<ObjectResponse<AlleleDiseaseAnnotation>>() {
 		};
@@ -1298,6 +1337,11 @@ public class BaseITCase {
 
 	private TypeRef<ObjectResponse<MMOTerm>> getObjectResponseTypeRefMMOTerm() {
 		return new TypeRef<ObjectResponse<MMOTerm>>() {
+		};
+	}
+
+	private TypeRef<ObjectResponse<GENOTerm>> getObjectResponseTypeRefGENOTerm() {
+		return new TypeRef<ObjectResponse<GENOTerm>>() {
 		};
 	}
 
