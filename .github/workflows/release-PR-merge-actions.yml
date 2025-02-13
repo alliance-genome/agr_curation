@@ -8,7 +8,7 @@ on:
 jobs:
   shared-variables:
     if: github.event.pull_request.merged == true && !contains(github.event.pull_request.labels.*.name, 'no-deploy')
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     outputs:
       tagname: ${{ steps.tagname.outputs.tagname }}
       prerelease: ${{ steps.releaseflags.outputs.prerelease }}
@@ -43,7 +43,7 @@ jobs:
         run: |
           echo "Variable prerelease is empty. Failing step." && false
   tag-and-release:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     needs: [shared-variables]
     permissions:
       contents: write
@@ -76,7 +76,7 @@ jobs:
           skipIfReleaseExists: true
           token: ${{ secrets.GH_PAT }}
   open-mergeback-PR-to-alpha:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     needs: [shared-variables, tag-and-release]
     permissions:
       contents: write
