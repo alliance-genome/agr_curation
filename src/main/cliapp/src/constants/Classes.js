@@ -215,12 +215,12 @@ export const CLASSES = Object.freeze({
 		isIndexed: false,
 	},
 
-	AgmAgmTargetingReagentAssociation: {
+	AgmAgmAssociation: {
 		name: 'AGM AGM Associations',
 		type: 'association',
 		hasTable: false,
 	},
-	AgmAlleleTargetingReagentAssociation: {
+	AgmAlleleAssociation: {
 		name: 'AGM Allele Associations',
 		type: 'association',
 		hasTable: false,
