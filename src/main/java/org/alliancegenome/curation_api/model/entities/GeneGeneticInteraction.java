@@ -92,7 +92,7 @@ public class GeneGeneticInteraction extends GeneInteraction {
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "phenotypesOrTraits_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
 	@ElementCollection
-	@JsonView({View.FieldsAndLists.class, View.GeneInteractionView.class})
+	@JsonView({ View.FieldsAndLists.class, View.GeneInteractionView.class, View.ForPublic.class })
 	@JoinTable(
 		joinColumns = @JoinColumn(name = "genegeneticinteraction_id"),
 		indexes = {
