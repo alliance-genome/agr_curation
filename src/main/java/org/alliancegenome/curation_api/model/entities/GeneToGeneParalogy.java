@@ -52,33 +52,33 @@ public class GeneToGeneParalogy extends AuditedObject {
 	@IndexedEmbedded(includePaths = {"name", "name_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
-	@JsonView({ View.FieldsAndLists.class })
+	@JsonView({ View.FieldsAndLists.class, View.ForPublic.class })
 	@JoinTable(name = "genetogeneparalogy_predictionmethodsmatched", indexes = { @Index(name = "g2gparalogypmm_paralogyid_index", columnList = "genetogeneparalogy_id"), @Index(name = "g2gparalogypmm_pmmid_index", columnList = "predictionmethodsmatched_id")})
 	private List<VocabularyTerm> predictionMethodsMatched;
 
 	@IndexedEmbedded(includePaths = {"name", "name_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
-	@JsonView({ View.FieldsAndLists.class })
+	@JsonView({ View.FieldsAndLists.class, View.ForPublic.class })
 	@JoinTable(name = "genetogeneparalogy_predictionmethodsnotmatched", indexes = { @Index(name = "g2gparalogypmnm_orthid_index", columnList = "genetogeneparalogy_id"), @Index(name = "g2gparalogypmnm_pmnmid_index", columnList = "predictionmethodsnotmatched_id")})
 	private List<VocabularyTerm> predictionMethodsNotMatched;
 
 	@IndexedEmbedded(includePaths = {"name", "name_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
-	@JsonView({ View.FieldsAndLists.class })
+	@JsonView({ View.FieldsAndLists.class, View.ForPublic.class })
 	@JoinTable(name = "genetogeneparalogy_predictionmethodsnotcalled", indexes = { @Index(name = "g2gparalogypmnc_orthid_index", columnList = "genetogeneparalogy_id"), @Index(name = "g2gparalogypmnc_pmncid_index", columnList = "predictionmethodsnotcalled_id")})
 	private List<VocabularyTerm> predictionMethodsNotCalled;
 
-	@JsonView({ View.FieldsOnly.class })
+	@JsonView({ View.FieldsOnly.class, View.ForPublic.class })
 	private Integer rank;
 
-	@JsonView({ View.FieldsOnly.class })
+	@JsonView({ View.FieldsOnly.class, View.ForPublic.class })
 	private Integer length;
 
-	@JsonView({ View.FieldsOnly.class })
+	@JsonView({ View.FieldsOnly.class, View.ForPublic.class })
 	private Integer similarity;
 
-	@JsonView({ View.FieldsOnly.class })
+	@JsonView({ View.FieldsOnly.class, View.ForPublic.class })
 	private Integer identity;
 }

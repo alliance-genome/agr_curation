@@ -72,7 +72,7 @@ public class GeneGeneticInteraction extends GeneInteraction {
 	@ManyToOne
 	@Fetch(FetchMode.SELECT)
 	@org.hibernate.annotations.OnDelete(action = org.hibernate.annotations.OnDeleteAction.CASCADE)
-	@JsonView({ View.FieldsOnly.class })
+	@JsonView({ View.FieldsOnly.class, View.ForPublic.class })
 	private Allele interactorAGeneticPerturbation;
 	
 	@IndexedEmbedded(includePaths = {
@@ -86,13 +86,13 @@ public class GeneGeneticInteraction extends GeneInteraction {
 	@ManyToOne
 	@Fetch(FetchMode.SELECT)
 	@org.hibernate.annotations.OnDelete(action = org.hibernate.annotations.OnDeleteAction.CASCADE)
-	@JsonView({ View.FieldsOnly.class })
+	@JsonView({ View.FieldsOnly.class, View.ForPublic.class })
 	private Allele interactorBGeneticPerturbation;
 	
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "phenotypesOrTraits_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
 	@ElementCollection
-	@JsonView({View.FieldsAndLists.class, View.GeneInteractionView.class})
+	@JsonView({ View.FieldsAndLists.class, View.GeneInteractionView.class, View.ForPublic.class })
 	@JoinTable(
 		joinColumns = @JoinColumn(name = "genegeneticinteraction_id"),
 		indexes = {
