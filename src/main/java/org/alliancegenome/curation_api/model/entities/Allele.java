@@ -2,10 +2,10 @@ package org.alliancegenome.curation_api.model.entities;
 
 import java.util.List;
 
-import jakarta.persistence.*;
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.bridges.BooleanAndNullValueBridge;
+import org.alliancegenome.curation_api.model.entities.associations.alleleAssociations.AlleleConstructAssociation;
 import org.alliancegenome.curation_api.model.entities.associations.alleleAssociations.AlleleGeneAssociation;
 import org.alliancegenome.curation_api.model.entities.associations.alleleAssociations.AlleleVariantAssociation;
 import org.alliancegenome.curation_api.model.entities.associations.constructAssociations.ConstructGenomicEntityAssociation;
@@ -36,6 +36,15 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.KeywordFie
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
 
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Index;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -48,7 +57,7 @@ import lombok.ToString;
 	exclude = {
 		"alleleGeneAssociations", "alleleVariantAssociations", "alleleDiseaseAnnotations", "alleleMutationTypes", "alleleSymbol", "alleleFullName", "alleleSynonyms",
 		"alleleSecondaryIds", "alleleInheritanceModes", "alleleFunctionalImpacts", "alleleGermlineTransmissionStatus", "alleleDatabaseStatus",
-		"alleleNomenclatureEvents", "constructGenomicEntityAssociations"
+		"alleleNomenclatureEvents", "constructGenomicEntityAssociations", "alleleConstructAssociations"
 	},
 	callSuper = true
 )
@@ -205,7 +214,17 @@ public class Allele extends GenomicEntity {
 		@Index(name = "allele_note_relatednotes_index", columnList = "relatedNotes_id")})
 	private List<Note> relatedNotes;
 
-
+	@IndexedEmbedded(includePaths = {
+		"alleleConstructAssociationObject.curie", "alleleConstructAssociationObject.constructSymbol.displayText", "alleleConstructAssociationObject.constructSymbol.formatText",
+		"alleleConstructAssociationObject.constructFullName.displayText", "alleleConstructAssociationObject.constructFullName.formatText", "alleleConstructAssociationObject.primaryExternalId",
+		"alleleConstructAssociationObject.curie_keyword", "alleleConstructAssociationObject.constructSymbol.displayText_keyword", "alleleConstructAssociationObject.constructSymbol.formatText_keyword",
+		"alleleConstructAssociationObject.constructFullName.displayText_keyword", "alleleConstructAssociationObject.constructFullName.formatText_keyword", "alleleConstructAssociationObject.primaryExternalId_keyword"
+	})
+	@OneToMany(mappedBy = "alleleAssociationSubject", cascade = CascadeType.ALL, orphanRemoval = true)
+	@Fetch(FetchMode.SUBSELECT)
+	@JsonView({ View.FieldsAndLists.class, View.AlleleDetailView.class })
+	private List<AlleleConstructAssociation> alleleConstructAssociations;
+	
 	@IndexedEmbedded(includePaths = {
 		"constructAssociationSubject.curie", "constructAssociationSubject.constructSymbol.displayText", "constructAssociationSubject.constructSymbol.formatText",
 		"constructAssociationSubject.constructFullName.displayText", "constructAssociationSubject.constructFullName.formatText", "constructAssociationSubject.primaryExternalId",

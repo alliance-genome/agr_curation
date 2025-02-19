@@ -55,11 +55,6 @@ public class AgmStrAssociationService extends BaseAssociationDTOCrudService<AgmS
 	@Transactional
 	public AgmSequenceTargetingReagentAssociation upsert(AgmSequenceTargetingReagentAssociationDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
 		AgmSequenceTargetingReagentAssociation association = agmStrAssociationDtoValidator.validateAgmSequenceTargetingReagentAssociationDTO(dto, dataProvider);
-		if (association != null) {
-			addAssociationToAgm(association);
-			addAssociationToStr(association);
-		}
-
 		return association;
 	}
 
