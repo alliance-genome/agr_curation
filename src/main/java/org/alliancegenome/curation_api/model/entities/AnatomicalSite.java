@@ -42,26 +42,26 @@ public class AnatomicalSite extends AuditedObject {
 	@IndexedEmbedded(includePaths = {"name", "name_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@JsonView({View.FieldsOnly.class})
+	@JsonView({View.FieldsOnly.class, View.ForPublic.class})
 	private AnatomicalTerm anatomicalStructure;
 
 	@IndexedEmbedded(includePaths = {"name", "name_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@JsonView({View.FieldsOnly.class})
+	@JsonView({View.FieldsOnly.class, View.ForPublic.class})
 	private AnatomicalTerm anatomicalSubstructure;
 
 	@IndexedEmbedded(includePaths = {"name", "name_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@JsonView({View.FieldsOnly.class})
+	@JsonView({View.FieldsOnly.class, View.ForPublic.class})
 	private GOTerm cellularComponentTerm;
 
 	//celullar compoent ribbon -- slim
 	@IndexedEmbedded(includePaths = {"name", "name_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@JsonView({View.FieldsOnly.class})
+	@JsonView({View.FieldsOnly.class, View.ForPublic.class})
 	private GOTerm cellularComponentRibbonTerm;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer", valueBridge = @ValueBridgeRef(type = BooleanValueBridge.class))
@@ -73,7 +73,7 @@ public class AnatomicalSite extends AuditedObject {
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "anatomicalstructurequalifiers_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
 	@ManyToMany
-	@JsonView({View.FieldsOnly.class})
+	@JsonView({View.FieldsOnly.class, View.ForPublic.class})
 	@JoinTable(
 		name = "anatomicalsite_anatomicalstructurequalifiers",
 		indexes = {
@@ -85,7 +85,7 @@ public class AnatomicalSite extends AuditedObject {
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "anatomicalsubstructurequalifiers_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
 	@ManyToMany
-	@JsonView({View.FieldsOnly.class})
+	@JsonView({View.FieldsOnly.class, View.ForPublic.class})
 	@JoinTable(
 		name = "anatomicalsite_anatomicalsubstructurequalifiers",
 		indexes = {
@@ -97,7 +97,7 @@ public class AnatomicalSite extends AuditedObject {
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "cellularcomponentqualifiers_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
 	@ManyToMany
-	@JsonView({View.FieldsOnly.class})
+	@JsonView({View.FieldsOnly.class, View.ForPublic.class})
 	@JoinTable(
 		name = "anatomicalsite_cellularcomponentqualifiers",
 		indexes = {
@@ -109,7 +109,7 @@ public class AnatomicalSite extends AuditedObject {
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "anatomicalstructureuberonterms_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
 	@ManyToMany
-	@JsonView({View.FieldsOnly.class})
+	@JsonView({View.FieldsOnly.class, View.ForPublic.class})
 	@JoinTable(
 		name = "anatomicalsite_anatomicalstructureuberonterms",
 		indexes = {
@@ -121,7 +121,7 @@ public class AnatomicalSite extends AuditedObject {
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "anatomicalsubstructureuberonterms_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
 	@ManyToMany
-	@JsonView({View.FieldsOnly.class})
+	@JsonView({View.FieldsOnly.class, View.ForPublic.class})
 	@JoinTable(
 		name = "anatomicalsite_anatomicalsubstructureuberonterms",
 		indexes = {
