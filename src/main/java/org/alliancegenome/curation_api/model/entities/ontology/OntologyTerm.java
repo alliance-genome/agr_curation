@@ -76,7 +76,7 @@ public class OntologyTerm extends CurieObject {
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "definition_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
 	@Column(columnDefinition = "TEXT")
-	@JsonView(View.FieldsOnly.class)
+	@JsonView({View.FieldsOnly.class, View.ForPublic.class})
 	private String definition;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")

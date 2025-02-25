@@ -45,6 +45,7 @@ public class GeneInteractionFmsDTOValidator extends BaseDTOValidator {
 	@Inject NcbiTaxonTermService ncbiTaxonTermService;
 
 	private HashMap<String, Gene> geneCache = new HashMap<String, Gene>();
+	protected static final String DEFAULT_MI_TERM_CURIE = "psi-mi:\"MI:0499\"(unspecified role)";
 
 	public <E extends GeneInteraction> ObjectResponse<E> validateGeneInteraction(E interaction, PsiMiTabDTO dto, List<Reference> references) {
 
@@ -67,21 +68,19 @@ public class GeneInteractionFmsDTOValidator extends BaseDTOValidator {
 		}
 
 		MITerm interactorARole = null;
-		if (StringUtils.isNotBlank(dto.getExperimentalRoleA())) {
-			interactorARole = getTermFromCache(getCurieFromCache(dto.getExperimentalRoleA()));
-			if (interactorARole == null) {
-				giResponse.addErrorMessage("experimentalRoleA", ValidationConstants.INVALID_MESSAGE + " (" + dto.getExperimentalRoleA() + ")");
-			}
+		String interactorARoleCurie = StringUtils.isBlank(dto.getExperimentalRoleA()) ? DEFAULT_MI_TERM_CURIE : dto.getExperimentalRoleA();
+		interactorARole = getTermFromCache(getCurieFromCache(interactorARoleCurie));
+		if (interactorARole == null) {
+			giResponse.addErrorMessage("experimentalRoleA", ValidationConstants.INVALID_MESSAGE + " (" + interactorARoleCurie + ")");
 		}
 		interaction.setInteractorARole(interactorARole);
 
 		MITerm interactorBRole = null;
-		if (StringUtils.isNotBlank(dto.getExperimentalRoleB())) {
-			interactorBRole = getTermFromCache(getCurieFromCache(dto.getExperimentalRoleB()));
-			if (interactorBRole == null) {
-				giResponse.addErrorMessage("experimentalRoleB", ValidationConstants.INVALID_MESSAGE + " (" + dto.getExperimentalRoleB() + ")");
-			}
-		}
+		String interactorBRoleCurie = StringUtils.isBlank(dto.getExperimentalRoleB()) ? DEFAULT_MI_TERM_CURIE : dto.getExperimentalRoleB();
+		interactorBRole = getTermFromCache(getCurieFromCache(interactorBRoleCurie));
+		if (interactorBRole == null) {
+			giResponse.addErrorMessage("experimentalRoleB", ValidationConstants.INVALID_MESSAGE + " (" + interactorBRoleCurie + ")");
+		}	
 		interaction.setInteractorBRole(interactorBRole);
 
 		MITerm interactorAType = null;

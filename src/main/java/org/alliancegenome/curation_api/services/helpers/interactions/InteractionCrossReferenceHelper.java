@@ -20,24 +20,23 @@ public class InteractionCrossReferenceHelper {
 
 	public List<CrossReference> createAllianceXrefs(PsiMiTabDTO dto) {
 		List<CrossReference> xrefs = new ArrayList<>();
-		List<String> xrefStrings = new ArrayList<>();
-		if (CollectionUtils.isNotEmpty(dto.getInteractionIds())) {
-			xrefStrings.addAll(dto.getInteractionIds());
-		}
-		if (CollectionUtils.isNotEmpty(dto.getInteractionXrefs())) {
-			xrefStrings.addAll(dto.getInteractionXrefs());
-		}
-
-		if (CollectionUtils.isEmpty(xrefStrings)) {
+		
+		if (CollectionUtils.isEmpty(dto.getInteractionIds())) {
 			return null;
 		}
-
-		for (String xrefString : xrefStrings) {
-			String xrefCurie = PsiMiTabPrefixEnum.getAllianceIdentifier(xrefString);
-			if (xrefCurie != null) {
-				CrossReference xref = createAllianceXref(xrefCurie);
-				if (xref != null) {
-					xrefs.add(xref);
+		
+		for (String interactionId : dto.getInteractionIds()) {
+			String displayName = PsiMiTabPrefixEnum.getAllianceIdentifier(interactionId);
+			if (displayName != null) {
+				if (CollectionUtils.isEmpty(dto.getInteractionXrefs())) {
+					xrefs.add(createAllianceXref(displayName, displayName));
+				} else {
+					for (String xrefCurie : dto.getInteractionXrefs()) {
+						String referencedCurie = PsiMiTabPrefixEnum.getAllianceIdentifier(xrefCurie);
+						if (referencedCurie != null) {
+							xrefs.add(createAllianceXref(displayName, referencedCurie));
+						}
+					}
 				}
 			}
 		}
@@ -49,19 +48,19 @@ public class InteractionCrossReferenceHelper {
 		return xrefs;
 	}
 
-	private CrossReference createAllianceXref(String curie) {
-		String[] curieParts = curie.split(":");
+	private CrossReference createAllianceXref(String displayName, String referencedCurie) {
+		String[] curieParts = referencedCurie.split(":");
 		if (curieParts.length != 2) {
 			return null;
 		}
-		ResourceDescriptorPage rdp = rdpService.getPageForResourceDescriptor(curieParts[0], "gene/interactions");
+		ResourceDescriptorPage rdp = rdpService.getPageForResourceDescriptor(curieParts[0].toUpperCase(), "gene/interactions");
 		if (rdp == null) {
 			return null;
 		}
 
 		CrossReference xref = new CrossReference();
-		xref.setDisplayName(curie);
-		xref.setReferencedCurie(curie);
+		xref.setDisplayName(displayName);
+		xref.setReferencedCurie(referencedCurie);
 		xref.setResourceDescriptorPage(rdp);
 
 		return xref;

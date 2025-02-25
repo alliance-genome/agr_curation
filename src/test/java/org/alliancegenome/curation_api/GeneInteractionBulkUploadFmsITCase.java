@@ -68,6 +68,7 @@ public class GeneInteractionBulkUploadFmsITCase extends BaseITCase {
 	private final String miTerm5 = "MI:Test0005";
 	private final String miTerm6 = "MI:Test0006";
 	private final String miTerm7 = "MI:Test0007";
+	private final String defaultMiTerm = "MI:0499";
 	private final String defaultAggregationDbTerm = "MI:0670";
 	private final String allele1 = "WB:WBVar11111111";
 	private final String allele2 = "WB:WBVar22222222";
@@ -90,6 +91,7 @@ public class GeneInteractionBulkUploadFmsITCase extends BaseITCase {
 		createMiTerm(miTerm5, "Test MITerm 5");
 		createMiTerm(miTerm6, "Test MITerm 6");
 		createMiTerm(miTerm7, "Test MITerm 7");
+		createMiTerm(defaultMiTerm, "unspecified role");
 		createMiTerm(defaultAggregationDbTerm, "IMEX");
 		createWbPhenotypeTerm(wbPhenotypeTerm, "Test WBPhenotype term");
 		ResourceDescriptor rd = createResourceDescriptor("WB");
@@ -261,8 +263,8 @@ public class GeneInteractionBulkUploadFmsITCase extends BaseITCase {
 			body("entity", not(hasKey("dateCreated"))).
 			body("entity", not(hasKey("dateUpdated"))).
 			body("entity", not(hasKey("evidence"))).
-			body("entity", not(hasKey("interactorARole"))).
-			body("entity", not(hasKey("interactorBRole"))).
+			body("entity.interactorARole.curie", is(defaultMiTerm)).
+			body("entity.interactorBRole.curie", is(defaultMiTerm)).
 			body("entity", not(hasKey("detectionMethod")));
 	}
 	
@@ -282,8 +284,8 @@ public class GeneInteractionBulkUploadFmsITCase extends BaseITCase {
 			body("entity", not(hasKey("dateCreated"))).
 			body("entity", not(hasKey("dateUpdated"))).
 			body("entity", not(hasKey("evidence"))).
-			body("entity", not(hasKey("interactorARole"))).
-			body("entity", not(hasKey("interactorBRole"))).
+			body("entity.interactorARole.curie", is(defaultMiTerm)).
+			body("entity.interactorBRole.curie", is(defaultMiTerm)).
 			body("entity", not(hasKey("detectionMethod")));
 	}
 	

@@ -12,7 +12,8 @@ public enum PsiMiTabPrefixEnum {
 	doi("DOI", false),
 	mi("MI", false),
 	ensembl("ENSEMBL", false),
-	refseq("RefSeq", false);
+	refseq("RefSeq", false),
+	biogrid("biogrid", false);
 
 	public String alliancePrefix;
 	public Boolean isModPrefix;
