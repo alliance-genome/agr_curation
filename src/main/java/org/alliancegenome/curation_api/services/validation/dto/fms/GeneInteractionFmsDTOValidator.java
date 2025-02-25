@@ -80,7 +80,7 @@ public class GeneInteractionFmsDTOValidator extends BaseDTOValidator {
 		interactorBRole = getTermFromCache(getCurieFromCache(interactorBRoleCurie));
 		if (interactorBRole == null) {
 			giResponse.addErrorMessage("experimentalRoleB", ValidationConstants.INVALID_MESSAGE + " (" + interactorBRoleCurie + ")");
-		}	
+		}
 		interaction.setInteractorBRole(interactorBRole);
 
 		MITerm interactorAType = null;
