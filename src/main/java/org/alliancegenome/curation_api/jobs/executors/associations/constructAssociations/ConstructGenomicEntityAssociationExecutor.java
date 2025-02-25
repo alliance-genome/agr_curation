@@ -12,6 +12,7 @@ import org.alliancegenome.curation_api.model.entities.bulkloads.BulkManualLoad;
 import org.alliancegenome.curation_api.model.ingest.dto.IngestDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.associations.constructAssociations.ConstructGenomicEntityAssociationDTO;
 import org.alliancegenome.curation_api.services.associations.constructAssociations.ConstructGenomicEntityAssociationService;
+import org.apache.commons.collections.CollectionUtils;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -36,8 +37,8 @@ public class ConstructGenomicEntityAssociationExecutor extends LoadFileExecutor 
 		}
 
 		List<ConstructGenomicEntityAssociationDTO> associations = ingestDto.getConstructGenomicEntityAssociationIngestSet();
-		if (associations == null) {
-			associations = new ArrayList<>();
+		if (CollectionUtils.isEmpty(associations)) {
+			return;
 		}
 
 		List<Long> associationIdsLoaded = new ArrayList<>();
