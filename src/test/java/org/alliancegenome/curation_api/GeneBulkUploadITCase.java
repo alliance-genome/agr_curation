@@ -71,7 +71,7 @@ public class GeneBulkUploadITCase extends BaseITCase {
 		createSoTerm(soTerm, "protein_coding_gene", false);
 		createSoTerm(soTerm2, "pseudogene", false);
 		Vocabulary noteTypeVocab = getVocabulary("note_type");
-		noteTypeVocabTerm = createVocabularyTerm(noteTypeVocab, noteType, false);
+		noteTypeVocabTerm = getVocabularyTerm(noteTypeVocab, noteType);
 		createVocabularyTermSet(VocabularyConstants.GENE_NOTE_TYPES_VOCABULARY_TERM_SET, noteTypeVocab, List.of(noteTypeVocabTerm));
 	}
 
