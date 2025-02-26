@@ -55,6 +55,8 @@ public class Gene extends GenomicEntity {
 	@JsonView({ View.FieldsOnly.class })
 	private SOTerm geneType;
 
+	@JsonManagedReference
+	@JsonView({ View.ForPublic.class })
 	@OneToMany(mappedBy = "diseaseAnnotationSubject", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<GeneDiseaseAnnotation> geneDiseaseAnnotations;
 	
