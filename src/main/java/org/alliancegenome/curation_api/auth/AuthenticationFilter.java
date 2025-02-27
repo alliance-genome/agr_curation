@@ -23,6 +23,7 @@ import com.okta.sdk.resource.group.GroupList;
 import com.okta.sdk.resource.user.User;
 
 import io.quarkus.logging.Log;
+import io.quarkus.scheduler.Scheduled;
 import jakarta.annotation.Priority;
 import jakarta.enterprise.event.Event;
 import jakarta.enterprise.inject.Instance;
@@ -217,6 +218,12 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 		Client client = Clients.builder().setOrgUrl(oktaUrl.get()).setClientId(clientId.get()).setClientCredentials(new TokenClientCredentials(apiToken.get())).build();
 		return client.getUser(oktaId);
 	}
+	
+	@Scheduled(cron = "0 0 2 ? * SUN")
+	public void rotateAPIKey() {
+		Application oktaApp = getOktaClient(clientId.get());
+		log.info("Rotating Okta App API Key: " + oktaApp.getName() + " " + oktaApp.getLabel());
+	}
 
 	private Application getOktaClient(String applicationId) {
 		Client client = Clients.builder().setOrgUrl(oktaUrl.get()).setClientId(clientId.get()).setClientCredentials(new TokenClientCredentials(apiToken.get())).build();
@@ -227,7 +234,7 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 		for (Group group : groupList) {
 			String allianceMember = (String) group.getProfile().get("affiliated_alliance_member");
 			if (allianceMember != null) {
-				SearchResponse<AllianceMember> res = allianceMemberDAO.findByField("uniqueId", allianceMember);
+				SearchResponse<AllianceMember> res = allianceMemberDAO.findByField("abbreviation", allianceMember);
 				if (res.getResults().size() == 1) {
 					AllianceMember member = res.getResults().get(0);
 					return member;
