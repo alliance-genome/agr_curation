@@ -220,7 +220,7 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 	}
 	
 	@Scheduled(cron = "0 0 2 ? * SUN")
-	private void rotateAPIKey() {
+	public void rotateAPIKey() {
 		Application oktaApp = getOktaClient(clientId.get());
 		log.info("Rotating Okta App API Key: " + oktaApp.getName() + " " + oktaApp.getLabel());
 	}
