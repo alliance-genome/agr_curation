@@ -234,7 +234,7 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 		for (Group group : groupList) {
 			String allianceMember = (String) group.getProfile().get("affiliated_alliance_member");
 			if (allianceMember != null) {
-				SearchResponse<AllianceMember> res = allianceMemberDAO.findByField("uniqueId", allianceMember);
+				SearchResponse<AllianceMember> res = allianceMemberDAO.findByField("abbreviation", allianceMember);
 				if (res.getResults().size() == 1) {
 					AllianceMember member = res.getResults().get(0);
 					return member;
