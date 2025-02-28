@@ -126,6 +126,8 @@ public class View {
 	public static class ForPublic {
 	}
 
+	public static class GeneToGeneOrthologyForPublic  {
+	}
 	public static class DiseaseAnnotationForPublic extends ForPublic {
 	}
 
