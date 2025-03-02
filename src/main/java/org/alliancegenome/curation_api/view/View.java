@@ -133,4 +133,13 @@ public class View {
 
 	public static class BulkLoadFileHistoryView extends FieldsOnly {
 	}
+	
+	public static Class<?> viewLookup(String name) {
+		for (Class<?> innerClass : View.class.getDeclaredClasses()) {
+			if (innerClass.getSimpleName().equals(name)) {
+				return innerClass;
+			}
+		}
+		return ForPublic.class;
+	}
 }
