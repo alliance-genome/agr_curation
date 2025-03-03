@@ -1235,12 +1235,12 @@ export const AllelesTable = () => {
 			field: 'crossReferences.displayName',
 			header: 'Cross References',
 			sortable: true,
-			filterConfig: FILTER_CONFIGS.crossReferencesFilterConfig,
+			filterConfig: FILTER_CONFIGS.alleleCrossReferencesFieldSet,
 			body: (rowData) => (
 				<ObjectListTemplate
 					list={rowData.crossReferences}
 					sortMethod={crossReferencesSort}
-					stringTemplate={(item) => `${item.displayName} (${item.resourceDescriptorPage.name})`}
+					stringTemplate={(item) => `${item.displayName === item.referencedCurie? item.displayName : item.displayName + ` (${item.referencedCurie})`} (${item.resourceDescriptorPage.name})`}
 				/>
 			),
 		},
