@@ -8,6 +8,7 @@ import org.alliancegenome.curation_api.view.View;
 import org.apache.commons.collections.CollectionUtils;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
 
 import lombok.Data;
@@ -41,6 +42,7 @@ public class SearchResponse<E> extends APIResponse {
 		}
 	}
 
+	@JsonIgnore
 	public E getSingleResult() {
 		return (results == null || CollectionUtils.isEmpty(results)) ? null : results.get(0);
 	}
