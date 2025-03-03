@@ -14,29 +14,17 @@ import lombok.Data;
 
 @Data
 @Schema(name = "SearchResponse", description = "POJO that represents the SearchResponse")
+@JsonView({ View.FieldsOnly.class, View.ForPublic.class, View.GeneToGeneOrthologyForIndexer.class })
 public class SearchResponse<E> extends APIResponse {
 
-	@JsonView({ View.FieldsOnly.class, View.ForPublic.class, View.GeneToGeneOrthologyForIndexer.class })
 	private List<E> results = new ArrayList<E>();
-
-	@JsonView({ View.FieldsOnly.class, View.ForPublic.class, View.GeneToGeneOrthologyForIndexer.class })
 	private Long totalResults;
-
-	@JsonView({ View.FieldsOnly.class, View.ForPublic.class, View.GeneToGeneOrthologyForIndexer.class })
 	private Integer returnedRecords;
-
-	@JsonView({ View.FieldsOnly.class, View.ForPublic.class, View.GeneToGeneOrthologyForIndexer.class })
 	private Map<String, Map<String, Long>> aggregations;
-
-	@JsonView({ View.FieldsOnly.class, View.ForPublic.class, View.GeneToGeneOrthologyForIndexer.class })
 	private String debug;
-
-	@JsonView({ View.FieldsOnly.class, View.ForPublic.class })
 	private String esQuery;
-	
-	@JsonView({ View.FieldsOnly.class })
 	private String dbQuery;
-
+	
 	public SearchResponse() {
 	}
 
