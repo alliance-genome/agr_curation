@@ -24,7 +24,6 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmb
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexingDependency;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.KeywordField;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
@@ -126,7 +125,6 @@ public abstract class DiseaseAnnotation extends Annotation {
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
 	@JsonView({View.FieldsAndLists.class, View.DiseaseAnnotation.class, View.ForPublic.class})
-	@JsonBackReference
 	@JoinTable(
 		joinColumns = @JoinColumn(name = "diseaseannotation_id"),
 		inverseJoinColumns = @JoinColumn(name = "with_id"),
@@ -191,7 +189,6 @@ public abstract class DiseaseAnnotation extends Annotation {
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
 	@JsonView({View.FieldsAndLists.class, View.DiseaseAnnotation.class, View.ForPublic.class})
-	@JsonBackReference
 	@JoinTable(
 		name = "diseaseannotation_modifiergene",
 		joinColumns = @JoinColumn(name = "diseaseannotation_id"),

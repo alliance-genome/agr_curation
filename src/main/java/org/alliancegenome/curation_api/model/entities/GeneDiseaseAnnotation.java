@@ -9,7 +9,6 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmbedded;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexingDependency;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonView;
@@ -47,7 +46,6 @@ public class GeneDiseaseAnnotation extends DiseaseAnnotation {
 	})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@JsonBackReference
 	@org.hibernate.annotations.OnDelete(action = org.hibernate.annotations.OnDeleteAction.CASCADE)
 	@JsonView({ View.FieldsOnly.class, View.ForPublic.class })
 	private Gene diseaseAnnotationSubject;
@@ -55,7 +53,6 @@ public class GeneDiseaseAnnotation extends DiseaseAnnotation {
 	@IndexedEmbedded(includePaths = {"name", "name_keyword", "curie", "curie_keyword", "primaryExternalId", "primaryExternalId_keyword", "modInternalId", "modInternalId_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@JsonBackReference
 	@JsonView({ View.FieldsOnly.class, View.ForPublic.class })
 	private AffectedGenomicModel sgdStrainBackground;
 

@@ -55,13 +55,11 @@ public class Gene extends GenomicEntity {
 	@JsonView({ View.FieldsOnly.class })
 	private SOTerm geneType;
 
-	@JsonManagedReference
-	@JsonView({ View.ForPublic.class })
+	@JsonView({ View.ForPublic.class, View.GeneToGeneOrthologyForIndexer.class })
 	@OneToMany(mappedBy = "diseaseAnnotationSubject", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<GeneDiseaseAnnotation> geneDiseaseAnnotations;
 
-	@JsonManagedReference
-	@JsonView({ View.ForPublic.class })
+	@JsonView({ View.ForPublic.class, View.GeneToGeneOrthologyForIndexer.class })
 	@OneToMany(mappedBy = "expressionAnnotationSubject", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<GeneExpressionAnnotation> geneExpressionAnnotations;
 	
@@ -71,7 +69,7 @@ public class Gene extends GenomicEntity {
 	@IndexedEmbedded(includePaths = { "displayText", "formatText", "nameType.name", "synonymScope.name", "evidence.curie", "displayText_keyword", "formatText_keyword", "nameType.name_keyword", "synonymScope.name_keyword", "evidence.curie_keyword"})
 	@OneToOne(mappedBy = "singleGene", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonManagedReference
-	@JsonView({ View.FieldsOnly.class, View.ForPublic.class })
+	@JsonView({ View.FieldsOnly.class, View.ForPublic.class, View.GeneToGeneOrthologyForIndexer.class })
 	private GeneSymbolSlotAnnotation geneSymbol;
 
 	@IndexedEmbedded(includePaths = { "displayText", "formatText", "nameType.name", "synonymScope.name", "evidence.curie", "displayText_keyword", "formatText_keyword", "nameType.name_keyword", "synonymScope.name_keyword", "evidence.curie_keyword"})
