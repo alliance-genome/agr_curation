@@ -49,7 +49,7 @@ public abstract class NameSlotAnnotation extends SlotAnnotation {
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "displayText_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({ View.FieldsOnly.class, View.ForPublic.class })
+	@JsonView({ View.FieldsOnly.class, View.ForPublic.class, View.GeneToGeneOrthologyForIndexer.class })
 	@EqualsAndHashCode.Include
 	@Column(columnDefinition = "TEXT")
 	protected String displayText;

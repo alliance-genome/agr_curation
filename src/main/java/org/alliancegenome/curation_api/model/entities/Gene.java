@@ -41,7 +41,7 @@ import lombok.ToString;
 @Entity
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
-@ToString(exclude = { "geneDiseaseAnnotations", "geneGeneAssociations", "geneSymbol", "geneFullName", "geneSystematicName", "geneSynonyms", "geneSecondaryIds",
+@ToString(exclude = { "geneDiseaseAnnotations", "geneExpressionAnnotations", "geneGeneAssociations", "geneSymbol", "geneFullName", "geneSystematicName", "geneSynonyms", "geneSecondaryIds",
 		"geneGenomicLocationAssociations", "alleleGeneAssociations", "sequenceTargetingReagentGeneAssociations", "transcriptGeneAssociations", "constructGenomicEntityAssociations" }, callSuper = true)
 @Schema(name = "Gene", description = "POJO that represents the Gene")
 @AGRCurationSchemaVersion(min = "1.5.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { GenomicEntity.class }, partial = true)
@@ -55,8 +55,13 @@ public class Gene extends GenomicEntity {
 	@JsonView({ View.FieldsOnly.class })
 	private SOTerm geneType;
 
+	@JsonView({ View.GeneToGeneOrthologyForIndexer.class })
 	@OneToMany(mappedBy = "diseaseAnnotationSubject", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<GeneDiseaseAnnotation> geneDiseaseAnnotations;
+
+	@JsonView({ View.GeneToGeneOrthologyForIndexer.class })
+	@OneToMany(mappedBy = "expressionAnnotationSubject", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<GeneExpressionAnnotation> geneExpressionAnnotations;
 	
 	//@OneToMany(mappedBy = "geneAssociationSubject", cascade = CascadeType.ALL, orphanRemoval = true)
 	//private List<GeneGeneAssociation> geneGeneAssociations;
@@ -64,7 +69,7 @@ public class Gene extends GenomicEntity {
 	@IndexedEmbedded(includePaths = { "displayText", "formatText", "nameType.name", "synonymScope.name", "evidence.curie", "displayText_keyword", "formatText_keyword", "nameType.name_keyword", "synonymScope.name_keyword", "evidence.curie_keyword"})
 	@OneToOne(mappedBy = "singleGene", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonManagedReference
-	@JsonView({ View.FieldsOnly.class, View.ForPublic.class })
+	@JsonView({ View.FieldsOnly.class, View.ForPublic.class, View.GeneToGeneOrthologyForIndexer.class })
 	private GeneSymbolSlotAnnotation geneSymbol;
 
 	@IndexedEmbedded(includePaths = { "displayText", "formatText", "nameType.name", "synonymScope.name", "evidence.curie", "displayText_keyword", "formatText_keyword", "nameType.name_keyword", "synonymScope.name_keyword", "evidence.curie_keyword"})

@@ -22,6 +22,7 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
@@ -30,7 +31,6 @@ public interface BaseFindControllerInterface<E extends AuditedObject> {
 	@POST
 	@Path("/findForPublic")
 	@Tag(name = "Public Web API Database Searching Endpoints")
-	@JsonView(View.ForPublic.class)
 	@RequestBody(
 		description = "Post Request",
 		content = @Content(
@@ -47,7 +47,11 @@ public interface BaseFindControllerInterface<E extends AuditedObject> {
 			)
 		)
 	)
-	SearchResponse<E> findForPublic(@DefaultValue("0") @QueryParam("page") Integer page, @DefaultValue("10") @QueryParam("limit") Integer limit, @RequestBody HashMap<String, Object> params);
+	Response findForPublic(
+		@DefaultValue("0") @QueryParam("page") Integer page,
+		@DefaultValue("10") @QueryParam("limit") Integer limit,
+		@DefaultValue("ForPublic") @QueryParam("view") String view,
+		@RequestBody HashMap<String, Object> params);
 	
 	@POST
 	@Path("/find")
