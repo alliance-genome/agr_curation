@@ -126,9 +126,20 @@ public class View {
 	public static class ForPublic {
 	}
 
+	public static class GeneToGeneOrthologyForIndexer {
+	}
 	public static class DiseaseAnnotationForPublic extends ForPublic {
 	}
 
 	public static class BulkLoadFileHistoryView extends FieldsOnly {
+	}
+	
+	public static Class<?> viewLookup(String name) {
+		for (Class<?> innerClass : View.class.getDeclaredClasses()) {
+			if (innerClass.getSimpleName().equals(name)) {
+				return innerClass;
+			}
+		}
+		return ForPublic.class;
 	}
 }
