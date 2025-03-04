@@ -43,7 +43,7 @@ import jakarta.inject.Inject;
 
 public class LoadFileExecutor {
 
-	private static ObjectMapper mapper = new RestDefaultObjectMapper().getMapper();
+	protected static ObjectMapper mapper = new RestDefaultObjectMapper().getMapper();
 	
 	@Inject protected LoadProcessDisplayService loadProcessDisplayService;
 	@Inject protected BulkLoadFileDAO bulkLoadFileDAO;
