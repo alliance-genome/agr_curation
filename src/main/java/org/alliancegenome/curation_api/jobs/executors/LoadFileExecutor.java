@@ -9,6 +9,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.zip.GZIPInputStream;
 
+import org.alliancegenome.curation_api.config.RestDefaultObjectMapper;
 import org.alliancegenome.curation_api.dao.loads.BulkLoadFileDAO;
 import org.alliancegenome.curation_api.dao.loads.BulkLoadFileExceptionDAO;
 import org.alliancegenome.curation_api.dao.loads.BulkLoadFileHistoryDAO;
@@ -42,7 +43,8 @@ import jakarta.inject.Inject;
 
 public class LoadFileExecutor {
 
-	@Inject protected ObjectMapper mapper;
+	protected static ObjectMapper mapper = new RestDefaultObjectMapper().getMapper();
+	
 	@Inject protected LoadProcessDisplayService loadProcessDisplayService;
 	@Inject protected BulkLoadFileDAO bulkLoadFileDAO;
 	@Inject protected BulkLoadFileHistoryDAO bulkLoadFileHistoryDAO;

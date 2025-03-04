@@ -3,6 +3,7 @@ package org.alliancegenome.curation_api.controllers.base;
 import java.util.HashMap;
 import java.util.List;
 
+import org.alliancegenome.curation_api.config.RestDefaultObjectMapper;
 import org.alliancegenome.curation_api.dao.base.BaseEntityDAO;
 import org.alliancegenome.curation_api.interfaces.base.BaseIdCrudInterface;
 import org.alliancegenome.curation_api.model.entities.base.AuditedObject;
@@ -16,13 +17,11 @@ import org.alliancegenome.curation_api.view.View;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import jakarta.inject.Inject;
 import jakarta.ws.rs.core.Response;
 
 public abstract class BaseEntityCrudController<S extends BaseEntityCrudService<E, D>, E extends AuditedObject, D extends BaseEntityDAO<E>> implements BaseIdCrudInterface<E> {
 
-	@Inject
-	private ObjectMapper mapper;
+	private static ObjectMapper mapper = new RestDefaultObjectMapper().getMapper();
 	
 	protected BaseEntityCrudService<E, D> service;
 
