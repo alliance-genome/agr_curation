@@ -1,5 +1,6 @@
 package org.alliancegenome.curation_api.healthcheck;
 
+import org.alliancegenome.curation_api.config.RestDefaultObjectMapper;
 import org.alliancegenome.curation_api.model.event.index.EndIndexProcessingEvent;
 import org.alliancegenome.curation_api.model.event.index.IndexProcessingEvent;
 import org.alliancegenome.curation_api.model.event.index.ProgressIndexProcessingEvent;
@@ -20,7 +21,7 @@ import jakarta.inject.Inject;
 @ApplicationScoped
 public class IndexingHealthCheck implements HealthCheck {
 
-	@Inject ObjectMapper mapper;
+	private static ObjectMapper mapper = new RestDefaultObjectMapper().getMapper();
 	@Inject IndexProcessingWebsocket indexProcessingWebsocket;
 
 	@Override
