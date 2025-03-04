@@ -6,7 +6,7 @@ jobs:
   build-release-image:
     permissions:
       id-token: write # This is required for requesting the JWT for gaining permissions to assume the IAM role to perform AWS actions
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     steps:
     - name: Check out repository code
       uses: actions/checkout@v3
@@ -31,7 +31,7 @@ jobs:
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$ENV_TAG
   build-deploy-maven-central-package:
     needs: [build-release-image]
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     steps:
       - name: Check out repository code
         uses: actions/checkout@v3
@@ -57,7 +57,7 @@ jobs:
           MAVEN_PASSWORD: ${{ secrets.OSSRH_TOKEN }}
   generate-deployment-package:
     needs: [build-release-image]
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     steps:
     - name: Check out repository code
       uses: actions/checkout@v3
@@ -78,7 +78,7 @@ jobs:
     permissions:
       id-token: write # This is required for requesting the JWT for gaining permissions to assume the IAM role to perform AWS actions
     needs: [generate-deployment-package]
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     steps:
     - name: Fetch deployment package from cache
       uses: actions/cache@v4
@@ -114,7 +114,7 @@ jobs:
     needs: [generate-deployment-package]
     permissions:
       id-token: write # This is required for requesting the JWT for gaining permissions to assume the IAM role to perform AWS actions
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     steps:
     - name: Fetch deployment package from cache
       uses: actions/cache@v4

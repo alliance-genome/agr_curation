@@ -9,7 +9,7 @@ on:
 jobs:
   check-branching-rules:
     name: Check Branching Rules
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     steps:
       - name: Check out repository code
         uses: actions/checkout@v3
@@ -21,7 +21,7 @@ jobs:
 
   checkstyle-api:
     name: Checkstyle API
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     steps:
       - name: Report workflow details
         run: |
@@ -52,7 +52,7 @@ jobs:
 
   verify-api:
     name: Verify API
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     steps:
       - name: Report workflow details
         run: |
@@ -88,7 +88,7 @@ jobs:
 
   test-api:
     name: Test API
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     steps:
       - name: Report workflow details
         run: |
@@ -118,7 +118,7 @@ jobs:
 
   package-api:
     name: Package API
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     steps:
       - name: Report workflow details
         run: |
@@ -149,7 +149,7 @@ jobs:
 
   integration-test-api:
     name: Integration Test API
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     steps:
       - name: Report workflow details
         run: |
@@ -182,7 +182,7 @@ jobs:
 
   verify-test-ui:
     name: Verify Test UI
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     steps:
       - name: Report workflow details
         run: |
@@ -210,7 +210,7 @@ jobs:
           npm run build
   test-build-docker-image:
       name: Test Build Docker Image
-      runs-on: ubuntu-20.04
+      runs-on: ubuntu-24.04
       steps:
         - name: Check out repository code
           uses: actions/checkout@v3

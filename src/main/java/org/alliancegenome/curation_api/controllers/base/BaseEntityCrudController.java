@@ -11,9 +11,19 @@ import org.alliancegenome.curation_api.response.ObjectListResponse;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
+import org.alliancegenome.curation_api.view.View;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import jakarta.inject.Inject;
+import jakarta.ws.rs.core.Response;
 
 public abstract class BaseEntityCrudController<S extends BaseEntityCrudService<E, D>, E extends AuditedObject, D extends BaseEntityDAO<E>> implements BaseIdCrudInterface<E> {
 
+	@Inject
+	private ObjectMapper mapper;
+	
 	protected BaseEntityCrudService<E, D> service;
 
 	protected void setService(S service) {
@@ -69,8 +79,15 @@ public abstract class BaseEntityCrudController<S extends BaseEntityCrudService<E
 	}
 
 	@Override
-	public SearchResponse<E> findForPublic(Integer page, Integer limit, HashMap<String, Object> params) {
-		return find(page, limit, params);
+	public Response findForPublic(Integer page, Integer limit, String view, HashMap<String, Object> params) {
+		SearchResponse<E> resp = find(page, limit, params);
+		Class<?> viewClass = View.viewLookup(view);
+		try {
+			String json = mapper.writerWithView(viewClass).writeValueAsString(resp);
+			return Response.ok(json).build();
+		} catch (JsonProcessingException e) {
+			return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Error processing JSON").build();
+		}
 	}
 
 	@Override
