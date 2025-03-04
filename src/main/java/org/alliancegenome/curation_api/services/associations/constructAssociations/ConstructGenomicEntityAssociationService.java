@@ -59,10 +59,6 @@ public class ConstructGenomicEntityAssociationService extends BaseAssociationDTO
 			return null;
 		}
 		dbEntity = constructGenomicEntityAssociationDAO.persist(dbEntity);
-/*
-		addAssociationToConstruct(dbEntity);
-		addAssociationToGenomicEntity(dbEntity);
-*/
 		return new ObjectResponse<>(dbEntity);
 	}
 
