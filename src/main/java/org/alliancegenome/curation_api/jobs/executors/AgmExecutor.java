@@ -11,6 +11,7 @@ import org.alliancegenome.curation_api.model.ingest.dto.AffectedGenomicModelDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.IngestDTO;
 import org.alliancegenome.curation_api.services.AffectedGenomicModelService;
 import org.alliancegenome.curation_api.services.ontology.NcbiTaxonTermService;
+import org.apache.commons.collections.CollectionUtils;
 
 import io.quarkus.logging.Log;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -36,8 +37,8 @@ public class AgmExecutor extends LoadFileExecutor {
 		}
 
 		List<AffectedGenomicModelDTO> agms = ingestDto.getAgmIngestSet();
-		if (agms == null) {
-			agms = new ArrayList<>();
+		if (CollectionUtils.isEmpty(agms)) {
+			return;
 		}
 
 		BackendBulkDataProvider dataProvider = manual.getDataProvider();
