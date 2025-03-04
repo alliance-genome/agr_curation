@@ -203,7 +203,7 @@ public class DiseaseAnnotationValidator extends AnnotationValidator {
 		dbEntity.setSecondaryDataProvider(secondaryDataProvider);
 		
 		CrossReference secondaryDataProviderCrossReference = validateDataProviderCrossReference(uiEntity.getSecondaryDataProviderCrossReference(), dbEntity.getSecondaryDataProviderCrossReference(), true);
-		dbEntity.setDataProviderCrossReference(secondaryDataProviderCrossReference);
+		dbEntity.setSecondaryDataProviderCrossReference(secondaryDataProviderCrossReference);
 		
 		List<Gene> diseaseGeneticModifierGenes = validateDiseaseGeneticModifierGenes(uiEntity, dbEntity);
 		List<Allele> diseaseGeneticModifierAlleles = validateDiseaseGeneticModifierAlleles(uiEntity, dbEntity);
