@@ -198,16 +198,18 @@ public class GeneInteractionFmsDTOValidator extends BaseDTOValidator {
 
 			SearchResponse<Gene> searchResponse = geneService.findByField("crossReferences.referencedCurie", convertedCurie);
 			if (searchResponse != null) {
-				// Need to check that returned gene belongs to MOD corresponding to taxon
+				// Need to check that returned gene is non-obsolete and belongs to MOD corresponding to taxon
 				for (Gene searchResult : searchResponse.getResults()) {
-					String resultDataProviderCoreGenus = BackendBulkDataProvider.getCoreGenus(searchResult.getDataProvider().getAbbreviation());
-					if (taxon.getName().startsWith(resultDataProviderCoreGenus + " ")) {
-						allianceGene = searchResult;
-						break;
-					}
-					if (StringUtils.equals(taxonCurie, "NCBITaxon:9606") && StringUtils.equals(searchResult.getDataProvider().getAbbreviation(), "RGD")) {
-						allianceGene = searchResult;
-						break;
+					if (!searchResult.getObsolete()) {
+						String resultDataProviderCoreGenus = BackendBulkDataProvider.getCoreGenus(searchResult.getDataProvider().getAbbreviation());
+						if (taxon.getName().startsWith(resultDataProviderCoreGenus + " ")) {
+							allianceGene = searchResult;
+							break;
+						}
+						if (StringUtils.equals(taxonCurie, "NCBITaxon:9606") && StringUtils.equals(searchResult.getDataProvider().getAbbreviation(), "RGD")) {
+							allianceGene = searchResult;
+							break;
+						}
 					}
 				}
 			}
