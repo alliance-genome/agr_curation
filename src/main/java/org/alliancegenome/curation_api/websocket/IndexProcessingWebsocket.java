@@ -4,13 +4,13 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.alliancegenome.curation_api.config.RestDefaultObjectMapper;
 import org.alliancegenome.curation_api.model.event.index.IndexProcessingEvent;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.ObservesAsync;
-import jakarta.inject.Inject;
 import jakarta.websocket.OnClose;
 import jakarta.websocket.OnError;
 import jakarta.websocket.OnMessage;
@@ -23,8 +23,7 @@ import lombok.Getter;
 @ApplicationScoped
 public class IndexProcessingWebsocket {
 
-	@Inject
-	ObjectMapper mapper;
+	private static ObjectMapper mapper = new RestDefaultObjectMapper().getMapper();
 
 	Map<String, Session> sessions = new HashMap<>();
 
