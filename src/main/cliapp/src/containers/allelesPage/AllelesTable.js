@@ -1240,7 +1240,9 @@ export const AllelesTable = () => {
 				<ObjectListTemplate
 					list={rowData.crossReferences}
 					sortMethod={crossReferencesSort}
-					stringTemplate={(item) => `${item.displayName === item.referencedCurie? item.displayName : item.displayName + ` (${item.referencedCurie})`} (${item.resourceDescriptorPage.name})`}
+					stringTemplate={(item) =>
+						`${item.displayName === item.referencedCurie ? item.displayName : item.displayName + ` (${item.referencedCurie})`} (${item.resourceDescriptorPage.name})`
+					}
 				/>
 			),
 		},

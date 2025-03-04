@@ -203,7 +203,11 @@ export const FIELD_SETS = Object.freeze({
 	},
 	alleleCrossReferencesFieldSet: {
 		filterName: 'alleleCrossReferencesFilter',
-		fields: ['crossReferences.displayName', 'crossReferences.resourceDescriptorPage.name', 'crossReferences.referencedCurie'],
+		fields: [
+			'crossReferences.displayName',
+			'crossReferences.resourceDescriptorPage.name',
+			'crossReferences.referencedCurie',
+		],
 	},
 	daConditionRelationsHandleFieldSet: {
 		filterName: 'daConditionRelationHandleFilter',
@@ -775,7 +779,10 @@ export const FILTER_CONFIGS = Object.freeze({
 	createdByFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.createdByFieldSet] },
 	crossReferenceFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.crossReferenceFieldSet] },
 	crossReferencesFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.crossReferencesFieldSet] },
-	alleleCrossReferencesFieldSet: { filterComponentType: 'input', fieldSets: [FIELD_SETS.alleleCrossReferencesFieldSet] },
+	alleleCrossReferencesFieldSet: {
+		filterComponentType: 'input',
+		fieldSets: [FIELD_SETS.alleleCrossReferencesFieldSet],
+	},
 	curieFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.curieFieldSet] },
 
 	daConditionRelationsHandleFilterConfig: {
