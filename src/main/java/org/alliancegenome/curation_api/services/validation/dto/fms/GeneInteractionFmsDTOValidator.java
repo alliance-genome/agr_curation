@@ -198,16 +198,18 @@ public class GeneInteractionFmsDTOValidator extends BaseDTOValidator {
 
 			SearchResponse<Gene> searchResponse = geneService.findByField("crossReferences.referencedCurie", convertedCurie);
 			if (searchResponse != null) {
-				// Need to check that returned gene belongs to MOD corresponding to taxon
+				// Need to check that returned gene is non-obsolete and belongs to MOD corresponding to taxon
 				for (Gene searchResult : searchResponse.getResults()) {
-					String resultDataProviderCoreGenus = BackendBulkDataProvider.getCoreGenus(searchResult.getDataProvider().getAbbreviation());
-					if (taxon.getName().startsWith(resultDataProviderCoreGenus + " ")) {
-						allianceGene = searchResult;
-						break;
-					}
-					if (StringUtils.equals(taxonCurie, "NCBITaxon:9606") && StringUtils.equals(searchResult.getDataProvider().getAbbreviation(), "RGD")) {
-						allianceGene = searchResult;
-						break;
+					if (!searchResult.getObsolete()) {
+						String resultDataProviderCoreGenus = BackendBulkDataProvider.getCoreGenus(searchResult.getDataProvider().getAbbreviation());
+						if (taxon.getName().startsWith(resultDataProviderCoreGenus + " ")) {
+							allianceGene = searchResult;
+							break;
+						}
+						if (StringUtils.equals(taxonCurie, "NCBITaxon:9606") && StringUtils.equals(searchResult.getDataProvider().getAbbreviation(), "RGD")) {
+							allianceGene = searchResult;
+							break;
+						}
 					}
 				}
 			}
@@ -237,7 +239,8 @@ public class GeneInteractionFmsDTOValidator extends BaseDTOValidator {
 		List<Reference> validatedReferences = new ArrayList<>();
 		List<Long> validatedReferenceIds = new ArrayList<>();
 		if (CollectionUtils.isNotEmpty(dto.getPublicationIds())) {
-			for (String publicationId : dto.getPublicationIds()) {
+			List<String> filteredReferences = getFilteredReferenceList(dto.getPublicationIds());
+			for (String publicationId : filteredReferences) {
 				Reference reference = null;
 				String alliancePubXrefCurie = PsiMiTabPrefixEnum.getAllianceIdentifier(publicationId);
 				if (alliancePubXrefCurie != null) {
@@ -258,6 +261,24 @@ public class GeneInteractionFmsDTOValidator extends BaseDTOValidator {
 		}
 
 		return refResponse;
+	}
+	
+	private List<String> getFilteredReferenceList(List<String> psiMiTabReferenceCuries) {
+		if (CollectionUtils.isEmpty(psiMiTabReferenceCuries)) {
+			return null;
+		}
+		List<String> filteredNonPubmedCuries = new ArrayList<>();
+		for (String psiMiTabCurie : psiMiTabReferenceCuries) {
+			if (psiMiTabCurie.startsWith("pubmed")) {
+				return List.of(psiMiTabCurie);
+			}
+			if (psiMiTabCurie.startsWith("imex")) {
+				continue;
+			}
+			filteredNonPubmedCuries.add(psiMiTabCurie);
+		}
+		
+		return filteredNonPubmedCuries;
 	}
 
 	private List<CrossReference> updateInteractionXrefs(List<CrossReference> existingXrefs, PsiMiTabDTO dto) {
