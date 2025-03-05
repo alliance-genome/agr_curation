@@ -19,7 +19,7 @@ import lombok.Data;
 @JsonView({ View.FieldsOnly.class, View.ForPublic.class, View.GeneToGeneOrthologyForIndexer.class })
 public class SearchResponse<E> extends APIResponse {
 
-	@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
+	//@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
 	private List<E> results = new ArrayList<E>();
 
 	private Long totalResults;
