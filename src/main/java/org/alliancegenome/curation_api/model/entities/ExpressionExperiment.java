@@ -32,14 +32,14 @@ public abstract class ExpressionExperiment extends SubmittedObject {
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "uniqueId_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
 	@Column(length = 3500)
-	@JsonView({ View.FieldsOnly.class })
+	@JsonView({ View.FieldsOnly.class, View.ForPublic.class })
 	@EqualsAndHashCode.Include
 	private String uniqueId;
 
 	@IndexedEmbedded(includePaths = {"geneSymbol.displayText", "geneSymbol.formatText", "geneSymbol.displayText_keyword", "geneSymbol.formatText_keyword", "curie", "curie_keyword", "taxon.curie", "taxon.name", "taxon.curie_keyword", "taxon.name_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@JsonView({View.FieldsOnly.class })
+	@JsonView({ View.FieldsOnly.class, View.ForPublic.class })
 	private Gene entityAssayed;
 
 	@IndexedEmbedded(includePaths = {"curie", "primaryCrossReferenceCurie", "crossReferences.referencedCurie", "curie_keyword", "primaryCrossReferenceCurie_keyword", "crossReferences.referencedCurie_keyword"})
@@ -51,11 +51,11 @@ public abstract class ExpressionExperiment extends SubmittedObject {
 	@IndexedEmbedded(includePaths = {"name", "name_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@JsonView({View.FieldsOnly.class})
+	@JsonView({ View.FieldsOnly.class, View.ForPublic.class })
 	private MMOTerm expressionAssayUsed;
 
 	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-	@JsonView({View.FieldsAndLists.class})
+	@JsonView({ View.FieldsAndLists.class, View.ForPublic.class })
 	private Set<GeneExpressionAnnotation> expressionAnnotations;
 
 	@Transient private Allele specimenGenomicModel;
