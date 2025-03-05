@@ -10,6 +10,7 @@ import org.alliancegenome.curation_api.model.entities.bulkloads.BulkManualLoad;
 import org.alliancegenome.curation_api.model.ingest.dto.AlleleDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.IngestDTO;
 import org.alliancegenome.curation_api.services.AlleleService;
+import org.apache.commons.collections.CollectionUtils;
 
 import io.quarkus.logging.Log;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -32,8 +33,8 @@ public class AlleleExecutor extends LoadFileExecutor {
 		}
 
 		List<AlleleDTO> alleles = ingestDto.getAlleleIngestSet();
-		if (alleles == null) {
-			alleles = new ArrayList<>();
+		if (CollectionUtils.isEmpty(alleles)) {
+			return;
 		}
 
 		BackendBulkDataProvider dataProvider = manual.getDataProvider();
@@ -53,7 +54,7 @@ public class AlleleExecutor extends LoadFileExecutor {
 		
 		boolean success = runLoad(alleleService, bulkLoadFileHistory, dataProvider, alleles, alleleIdsLoaded);
 		if (success && cleanUp) {
-			runCleanup(alleleService, bulkLoadFileHistory, dataProvider.name(), alleleIdsBefore, alleleIdsLoaded, "allele");
+			runCleanup(alleleService, bulkLoadFileHistory, dataProvider.name(), alleleIdsBefore, alleleIdsLoaded, "Allele");
 		}
 		bulkLoadFileHistory.finishLoad();
 		updateHistory(bulkLoadFileHistory);

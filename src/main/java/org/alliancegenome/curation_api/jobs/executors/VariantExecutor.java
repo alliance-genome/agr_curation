@@ -10,6 +10,7 @@ import org.alliancegenome.curation_api.model.entities.bulkloads.BulkManualLoad;
 import org.alliancegenome.curation_api.model.ingest.dto.IngestDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.VariantDTO;
 import org.alliancegenome.curation_api.services.VariantService;
+import org.apache.commons.collections.CollectionUtils;
 
 import io.quarkus.logging.Log;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -32,8 +33,8 @@ public class VariantExecutor extends LoadFileExecutor {
 		}
 
 		List<VariantDTO> variants = ingestDto.getVariantIngestSet();
-		if (variants == null) {
-			variants = new ArrayList<>();
+		if (CollectionUtils.isEmpty(variants)) {
+			return;
 		}
 
 		BackendBulkDataProvider dataProvider = manual.getDataProvider();
