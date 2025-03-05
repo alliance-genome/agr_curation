@@ -239,7 +239,8 @@ public class GeneInteractionFmsDTOValidator extends BaseDTOValidator {
 		List<Reference> validatedReferences = new ArrayList<>();
 		List<Long> validatedReferenceIds = new ArrayList<>();
 		if (CollectionUtils.isNotEmpty(dto.getPublicationIds())) {
-			for (String publicationId : dto.getPublicationIds()) {
+			List<String> filteredReferences = getFilteredReferenceList(dto.getPublicationIds());
+			for (String publicationId : filteredReferences) {
 				Reference reference = null;
 				String alliancePubXrefCurie = PsiMiTabPrefixEnum.getAllianceIdentifier(publicationId);
 				if (alliancePubXrefCurie != null) {
@@ -260,6 +261,24 @@ public class GeneInteractionFmsDTOValidator extends BaseDTOValidator {
 		}
 
 		return refResponse;
+	}
+	
+	private List<String> getFilteredReferenceList(List<String> psiMiTabReferenceCuries) {
+		if (CollectionUtils.isEmpty(psiMiTabReferenceCuries)) {
+			return null;
+		}
+		List<String> filteredNonPubmedCuries = new ArrayList<>();
+		for (String psiMiTabCurie : psiMiTabReferenceCuries) {
+			if (psiMiTabCurie.startsWith("pubmed")) {
+				return List.of(psiMiTabCurie);
+			}
+			if (psiMiTabCurie.startsWith("imex")) {
+				continue;
+			}
+			filteredNonPubmedCuries.add(psiMiTabCurie);
+		}
+		
+		return filteredNonPubmedCuries;
 	}
 
 	private List<CrossReference> updateInteractionXrefs(List<CrossReference> existingXrefs, PsiMiTabDTO dto) {
