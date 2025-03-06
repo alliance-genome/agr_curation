@@ -72,6 +72,8 @@ public class BaseDTOValidator {
 			if (curie != null) {
 				MITerm miTerm = miTermService.findByCurie(curie);
 				if (miTerm != null) {
+					miTerm.getSecondaryIdentifiers().size();
+					miTerm.getSynonyms().size();
 					miTermCache.put(curie, miTerm);
 					return miTerm;
 				}
