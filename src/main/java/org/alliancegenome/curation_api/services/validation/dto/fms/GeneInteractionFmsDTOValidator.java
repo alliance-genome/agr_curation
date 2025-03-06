@@ -210,6 +210,10 @@ public class GeneInteractionFmsDTOValidator extends BaseDTOValidator {
 							allianceGene = searchResult;
 							break;
 						}
+						if (StringUtils.equals(taxonCurie, "NCBITaxon:2697049") && StringUtils.equals(searchResult.getDataProvider().getAbbreviation(), "Alliance")) {
+							allianceGene = searchResult;
+							break;
+						}
 					}
 				}
 			}
