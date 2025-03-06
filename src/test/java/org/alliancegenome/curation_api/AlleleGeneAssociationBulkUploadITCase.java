@@ -127,8 +127,6 @@ public class AlleleGeneAssociationBulkUploadITCase extends BaseITCase {
 	@Test
 	@Order(2)
 	public void alleleGeneAssociationBulkUploadUpdateCheckFields() throws Exception {
-		loadRequiredEntities();
-		
 		checkSuccessfulBulkLoad(alleleGeneAssociationBulkPostEndpoint, alleleGeneAssociationTestFilePath + "UD_01_update_all_except_default_fields.json");
 	
 		RestAssured.given().
