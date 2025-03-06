@@ -11,6 +11,7 @@ import org.alliancegenome.curation_api.model.entities.bulkloads.BulkManualLoad;
 import org.alliancegenome.curation_api.model.ingest.dto.IngestDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.associations.agmAssociations.AgmSequenceTargetingReagentAssociationDTO;
 import org.alliancegenome.curation_api.services.associations.agmAssociations.AgmStrAssociationService;
+import org.apache.commons.collections.CollectionUtils;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -34,8 +35,8 @@ public class AgmStrAssociationExecutor extends LoadFileExecutor {
 		}
 
 		List<AgmSequenceTargetingReagentAssociationDTO> associations = ingestDto.getAgmStrAssociationIngestSet();
-		if (associations == null) {
-			associations = new ArrayList<>();
+		if (CollectionUtils.isEmpty(associations)) {
+			return;
 		}
 
 		List<Long> associationIdsLoaded = new ArrayList<>();
@@ -48,12 +49,13 @@ public class AgmStrAssociationExecutor extends LoadFileExecutor {
 		bulkLoadFileHistory.getBulkLoadFile().setRecordCount(associations.size() + bulkLoadFileHistory.getBulkLoadFile().getRecordCount());
 		bulkLoadFileDAO.merge(bulkLoadFileHistory.getBulkLoadFile());
 
-		bulkLoadFileHistory.setCount(associations.size());
+		String countType = "AGM STR Associations";
+		bulkLoadFileHistory.setCount(countType, associations.size());
 		updateHistory(bulkLoadFileHistory);
 		
-		boolean success = runLoad(agmStrAssociationService, bulkLoadFileHistory, dataProvider, associations, associationIdsLoaded);
+		boolean success = runLoad(agmStrAssociationService, bulkLoadFileHistory, dataProvider, associations, associationIdsLoaded, countType);
 		if (success && cleanUp) {
-			runCleanup(agmStrAssociationService, bulkLoadFileHistory, dataProvider.name(), associationIdsBefore, associationIdsLoaded, "agm str association");
+			runCleanup(agmStrAssociationService, bulkLoadFileHistory, dataProvider.name(), associationIdsBefore, associationIdsLoaded, countType);
 		}
 		bulkLoadFileHistory.finishLoad();
 		updateHistory(bulkLoadFileHistory);
