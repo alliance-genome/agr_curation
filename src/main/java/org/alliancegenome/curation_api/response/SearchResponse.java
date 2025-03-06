@@ -4,11 +4,19 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.alliancegenome.curation_api.main.TestSerialization.Cat;
+import org.alliancegenome.curation_api.main.TestSerialization.Dog;
+import org.alliancegenome.curation_api.model.entities.AGMDiseaseAnnotation;
+import org.alliancegenome.curation_api.model.entities.AlleleDiseaseAnnotation;
+import org.alliancegenome.curation_api.model.entities.GeneDiseaseAnnotation;
 import org.alliancegenome.curation_api.view.View;
 import org.apache.commons.collections.CollectionUtils;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonView;
 
 import lombok.Data;
@@ -18,7 +26,12 @@ import lombok.Data;
 @JsonView({ View.FieldsOnly.class, View.ForPublic.class, View.GeneToGeneOrthologyForIndexer.class })
 public class SearchResponse<E> extends APIResponse {
 
-	//@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
+	@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
+	@JsonSubTypes({
+		@Type(value = GeneDiseaseAnnotation.class, name = "GeneDiseaseAnnotation"),
+		@Type(value = AlleleDiseaseAnnotation.class, name = "AlleleDiseaseAnnotation"),
+		@Type(value = AGMDiseaseAnnotation.class, name = "AGMDiseaseAnnotation")
+	})
 	private List<E> results = new ArrayList<E>();
 
 	private Long totalResults;
