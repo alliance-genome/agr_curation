@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.alliancegenome.curation_api.main.TestSerialization.Cat;
-import org.alliancegenome.curation_api.main.TestSerialization.Dog;
 import org.alliancegenome.curation_api.model.entities.AGMDiseaseAnnotation;
 import org.alliancegenome.curation_api.model.entities.AlleleDiseaseAnnotation;
 import org.alliancegenome.curation_api.model.entities.GeneDiseaseAnnotation;
@@ -27,9 +25,11 @@ import lombok.Data;
 public class SearchResponse<E> extends APIResponse {
 
 	@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
-	@JsonSubTypes({ @Type(value = GeneDiseaseAnnotation.class, name = "GeneDiseaseAnnotation"),
-			@Type(value = AlleleDiseaseAnnotation.class, name = "AlleleDiseaseAnnotation"),
-			@Type(value = AGMDiseaseAnnotation.class, name = "AGMDiseaseAnnotation") })
+	@JsonSubTypes({
+		@Type(value = GeneDiseaseAnnotation.class, name = "GeneDiseaseAnnotation"),
+		@Type(value = AlleleDiseaseAnnotation.class, name = "AlleleDiseaseAnnotation"),
+		@Type(value = AGMDiseaseAnnotation.class, name = "AGMDiseaseAnnotation")
+	})
 	private List<E> results = new ArrayList<E>();
 
 	private Long totalResults;
