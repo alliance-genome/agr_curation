@@ -330,7 +330,11 @@ export const GenesTable = () => {
 				<ObjectListTemplate
 					list={rowData.crossReferences}
 					sortMethod={crossReferencesSort}
-					stringTemplate={(item) => item.resourceDescriptorPage ? `${item.displayName} (${item.resourceDescriptorPage?.name})` : `${item.displayName}`}
+					stringTemplate={(item) =>
+						item.resourceDescriptorPage
+							? `${item.displayName} (${item.resourceDescriptorPage?.name})`
+							: `${item.displayName}`
+					}
 				/>
 			),
 		},
