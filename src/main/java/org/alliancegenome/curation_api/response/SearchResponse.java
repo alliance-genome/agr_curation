@@ -27,11 +27,9 @@ import lombok.Data;
 public class SearchResponse<E> extends APIResponse {
 
 	@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
-	@JsonSubTypes({
-		@Type(value = GeneDiseaseAnnotation.class, name = "GeneDiseaseAnnotation"),
-		@Type(value = AlleleDiseaseAnnotation.class, name = "AlleleDiseaseAnnotation"),
-		@Type(value = AGMDiseaseAnnotation.class, name = "AGMDiseaseAnnotation")
-	})
+	@JsonSubTypes({ @Type(value = GeneDiseaseAnnotation.class, name = "GeneDiseaseAnnotation"),
+			@Type(value = AlleleDiseaseAnnotation.class, name = "AlleleDiseaseAnnotation"),
+			@Type(value = AGMDiseaseAnnotation.class, name = "AGMDiseaseAnnotation") })
 	private List<E> results = new ArrayList<E>();
 
 	private Long totalResults;
@@ -40,7 +38,7 @@ public class SearchResponse<E> extends APIResponse {
 	private String debug;
 	private String esQuery;
 	private String dbQuery;
-	
+
 	public SearchResponse() {
 	}
 
