@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.alliancegenome.curation_api.model.entities.AGMDiseaseAnnotation;
 import org.alliancegenome.curation_api.model.entities.AlleleDiseaseAnnotation;
+import org.alliancegenome.curation_api.model.entities.AllianceMember;
 import org.alliancegenome.curation_api.model.entities.GeneDiseaseAnnotation;
 import org.alliancegenome.curation_api.view.View;
 import org.apache.commons.collections.CollectionUtils;
@@ -28,7 +29,8 @@ public class SearchResponse<E> extends APIResponse {
 	@JsonSubTypes({
 		@Type(value = GeneDiseaseAnnotation.class, name = "GeneDiseaseAnnotation"),
 		@Type(value = AlleleDiseaseAnnotation.class, name = "AlleleDiseaseAnnotation"),
-		@Type(value = AGMDiseaseAnnotation.class, name = "AGMDiseaseAnnotation")
+		@Type(value = AGMDiseaseAnnotation.class, name = "AGMDiseaseAnnotation"),
+		@Type(value = AllianceMember.class, name = "AllianceMember")
 	})
 	private List<E> results = new ArrayList<E>();
 
