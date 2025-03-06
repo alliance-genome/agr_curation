@@ -20,8 +20,10 @@ import org.alliancegenome.curation_api.model.entities.Person;
 import org.alliancegenome.curation_api.model.entities.Reference;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.base.AuditedObject;
+import org.alliancegenome.curation_api.model.entities.base.CurieObject;
 import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
 import org.alliancegenome.curation_api.response.ObjectResponse;
+import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.CrossReferenceService;
 import org.alliancegenome.curation_api.services.OrganizationService;
 import org.alliancegenome.curation_api.services.PersonService;
@@ -163,6 +165,15 @@ public class BaseValidator<E extends Object> {
 		N entity = null;
 		if (uiEntity.getId() != null) {
 			entity = dao.find(uiEntity.getId());
+		}
+		if (entity == null && uiEntity instanceof CurieObject) {
+			CurieObject searchEntity = (CurieObject) uiEntity;
+			if (searchEntity.getCurie() != null) {
+				SearchResponse<N> response = dao.findByField("curie", searchEntity.getCurie());
+				if (response != null && response.getSingleResult() != null) {
+					entity = response.getSingleResult();
+				}
+			}
 		}
 		if (entity == null) {
 			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
