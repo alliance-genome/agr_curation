@@ -90,19 +90,6 @@ public class PhenotypeAnnotationFmsDTOValidator {
 		annotation.setDataProvider(organizationService.getByAbbr(beDataProvider.sourceOrganization).getEntity());
 		annotation.setRelation(vocabularyTermService.getTermInVocabulary(VocabularyConstants.PHENOTYPE_RELATION_VOCABULARY, "has_phenotype").getEntity());
 
-		CrossReference evidenceXref = null;
-		if (dto.getEvidence() != null && dto.getEvidence().getPublicationId() != null) {
-			if (annotation.getCrossReference() != null && Objects.equals(annotation.getCrossReference().getDisplayName(), dto.getEvidence().getPublicationId())) {
-				evidenceXref = annotation.getCrossReference();
-			} else {
-				evidenceXref = createXrefFromPublicationId(dto.getEvidence().getPublicationId());
-				if (evidenceXref == null) {
-					paResponse.addErrorMessage("evidence - publicationId", ValidationConstants.INVALID_MESSAGE + " for generating cross reference (" + dto.getEvidence().getPublicationId() + ")");
-				}
-			}
-		}
-		annotation.setCrossReference(evidenceXref);
-
 		OffsetDateTime creationDate = null;
 		if (StringUtils.isNotBlank(dto.getDateAssigned())) {
 			try {
@@ -149,24 +136,6 @@ public class PhenotypeAnnotationFmsDTOValidator {
 		return refResponse;
 	}
 
-	private CrossReference createXrefFromPublicationId(String curie) {
-		CrossReference xref = new CrossReference();
-
-		xref.setReferencedCurie(curie);
-		xref.setDisplayName(curie);
-
-		String[] curieParts = curie.split(":");
-		String prefix = curieParts[0];
-
-		ResourceDescriptorPage page = resourceDescriptorPageService.getPageForResourceDescriptor(prefix, "default");
-		if (page == null) {
-			return null;
-		}
-		xref.setResourceDescriptorPage(page);
-
-		return xref;
-	}
-	
 	protected <D extends BaseSQLDAO<E>, E extends PhenotypeAnnotation> List<E> findPrimaryAnnotations(D dao, PhenotypeFmsDTO dto, String primaryAnnotationSubjectprimaryExternalId, String refString) {
 		HashMap<String, Object> params = new HashMap<>();
 		params.put("phenotypeAnnotationSubject.primaryExternalId", primaryAnnotationSubjectprimaryExternalId);
