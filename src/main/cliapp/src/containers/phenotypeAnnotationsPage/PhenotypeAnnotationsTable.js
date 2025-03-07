@@ -13,7 +13,6 @@ import { FILTER_CONFIGS } from '../../constants/FilterFields';
 import { useGetTableData } from '../../service/useGetTableData';
 import { useGetUserSettings } from '../../service/useGetUserSettings';
 import { CrossReferencesTemplate } from '../../components/Templates/CrossReferencesTemplate';
-import { crossReferencesSort } from '../../components/Templates/utils/sortMethods';
 
 import { SearchService } from '../../service/SearchService';
 

@@ -37,7 +37,6 @@ import { Button } from 'primereact/button';
 import { EditMessageTooltip } from '../../components/EditMessageTooltip';
 import { getDefaultTableState } from '../../service/TableStateService';
 import { FILTER_CONFIGS } from '../../constants/FilterFields';
-import { crossReferencesSort } from '../../components/Templates/utils/sortMethods';
 import { StringTemplate } from '../../components/Templates/StringTemplate';
 import { OntologyTermTemplate } from '../../components/Templates/OntologyTermTemplate';
 

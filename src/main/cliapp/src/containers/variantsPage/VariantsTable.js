@@ -27,7 +27,6 @@ import { StringListTemplate } from '../../components/Templates/StringListTemplat
 
 import { useGetTableData } from '../../service/useGetTableData';
 import { useGetUserSettings } from '../../service/useGetUserSettings';
-import { crossReferencesSort } from '../../components/Templates/utils/sortMethods';
 import { TruncatedReferencesTemplate } from '../../components/Templates/reference/TruncatedReferencesTemplate';
 
 import { SearchService } from '../../service/SearchService';
