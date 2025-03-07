@@ -17,7 +17,7 @@ import { FILTER_CONFIGS } from '../../constants/FilterFields';
 import { useControlledVocabularyService } from '../../service/useControlledVocabularyService';
 import { ControlledVocabularyDropdown } from '../../components/ControlledVocabularySelector';
 
-import { ObjectListTemplate } from '../../components/Templates/ObjectListTemplate';
+import { CrossReferencesTemplate } from '../../components/Templates/CrossReferencesTemplate';
 import { StringTemplate } from '../../components/Templates/StringTemplate';
 import { OntologyTermTemplate } from '../../components/Templates/OntologyTermTemplate';
 import { CountDialogTemplate } from '../../components/Templates/dialog/CountDialogTemplate';
@@ -256,13 +256,7 @@ export const VariantsTable = () => {
 			header: 'Cross References',
 			sortable: true,
 			filterConfig: FILTER_CONFIGS.crossReferencesFilterConfig,
-			body: (rowData) => (
-				<ObjectListTemplate
-					list={rowData.crossReferences}
-					sortMethod={crossReferencesSort}
-					stringTemplate={(item) => `${item.displayName} (${item.resourceDescriptorPage.name})`}
-				/>
-			),
+			body: (rowData) => <CrossReferencesTemplate list={rowData.crossReferences} />,
 		},
 		{
 			field: 'updatedBy.uniqueId',

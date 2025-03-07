@@ -29,7 +29,7 @@ import { TextDialogTemplate } from '../../components/Templates/dialog/TextDialog
 import { ListDialogTemplate } from '../../components/Templates/dialog/ListDialogTemplate';
 import { NestedListDialogTemplate } from '../../components/Templates/dialog/NestedListDialogTemplate';
 import { CountDialogTemplate } from '../../components/Templates/dialog/CountDialogTemplate';
-import { ObjectListTemplate } from '../../components/Templates/ObjectListTemplate';
+import { CrossReferencesTemplate } from '../../components/Templates/CrossReferencesTemplate';
 
 import { Tooltip } from 'primereact/tooltip';
 import { Toast } from 'primereact/toast';
@@ -1236,15 +1236,7 @@ export const AllelesTable = () => {
 			header: 'Cross References',
 			sortable: true,
 			filterConfig: FILTER_CONFIGS.alleleCrossReferencesFieldSet,
-			body: (rowData) => (
-				<ObjectListTemplate
-					list={rowData.crossReferences}
-					sortMethod={crossReferencesSort}
-					stringTemplate={(item) =>
-						`${item.displayName === item.referencedCurie ? item.displayName : item.displayName + ` (${item.referencedCurie})`} (${item.resourceDescriptorPage.name})`
-					}
-				/>
-			),
+			body: (rowData) => <CrossReferencesTemplate list={rowData.crossReferences} />,
 		},
 		{
 			field: 'updatedBy.uniqueId',
