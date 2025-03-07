@@ -1235,7 +1235,7 @@ export const AllelesTable = () => {
 			field: 'crossReferences.displayName',
 			header: 'Cross References',
 			sortable: true,
-			filterConfig: FILTER_CONFIGS.alleleCrossReferencesFieldSet,
+			filterConfig: FILTER_CONFIGS.crossReferencesFilterConfig,
 			body: (rowData) => <CrossReferencesTemplate list={rowData.crossReferences} />,
 		},
 		{
