@@ -26,7 +26,7 @@ public class ReferenceService extends BaseEntityCrudService<Reference, Reference
 	@Inject
 	ReferenceSynchronisationHelper refSyncHelper;
 
-	Date referenceRequest;
+	Integer referenceRequest = 0;
 	Date referenceRequestShallow;
 	HashMap<String, Reference> referenceCacheMap = new HashMap<>();
 	HashMap<String, Reference> shallowReferenceCacheMap = new HashMap<>();
@@ -55,7 +55,9 @@ public class ReferenceService extends BaseEntityCrudService<Reference, Reference
 	@Transactional
 	public Reference retrieveFromDbOrLiteratureService(String curieOrXref) {
 		Reference reference = null;
-		if (referenceRequest != null) {
+		// Currently 3/10/2025 there is 1 allele with ~3200 references
+		// TODO come up with a better caching solution than this
+		if (referenceRequest > 3500) {
 			if (referenceCacheMap.isEmpty()) {
 				referenceCacheMap = referenceDAO.getReferenceMap(true);
 			}
@@ -68,7 +70,7 @@ public class ReferenceService extends BaseEntityCrudService<Reference, Reference
 			}
 		} else {
 			reference = findOrCreateReference(curieOrXref);
-			referenceRequest = new Date();
+			referenceRequest++;
 		}
 		return reference;
 	}

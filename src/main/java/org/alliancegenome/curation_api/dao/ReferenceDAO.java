@@ -1,6 +1,7 @@
 package org.alliancegenome.curation_api.dao;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -9,6 +10,7 @@ import java.util.stream.Collectors;
 
 import org.alliancegenome.curation_api.dao.base.BaseSQLDAO;
 import org.alliancegenome.curation_api.model.entities.Reference;
+import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
 
 import io.quarkus.logging.Log;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -45,6 +47,8 @@ public class ReferenceDAO extends BaseSQLDAO<Reference> {
 
 	public HashMap<String, Reference> getReferenceMap(boolean withCrossReferences) {
 		HashMap<String, Reference> referenceIdMap = new HashMap<>();
+		Log.info("Starting Reference Cache: ");
+		Date start = new Date();
 		Query q = entityManager.createNativeQuery("""
 					SELECT ref.id, cr.referencedcurie
 					FROM Reference as ref, reference_crossreference as assoc, Crossreference as cr
@@ -55,8 +59,9 @@ public class ReferenceDAO extends BaseSQLDAO<Reference> {
 		Set<Long> refIDs = ids.stream().map(object -> (Long) object[0]).collect(Collectors.toSet());
 		Map<Long, List<Object[]>> idMap = ids.stream().collect(Collectors.groupingBy(o -> (Long) o[0]));
 		List<Reference> refs = new ArrayList<>();
-		Log.info("Caching: " + refIDs.size() + " references into memory");
-		for (Long id: refIDs) {
+		ProcessDisplayHelper ph = new ProcessDisplayHelper();
+		ph.startProcess("Fetching References from the database", refIDs.size());
+		for (Long id : refIDs) {
 			Reference reference = getShallowEntity(Reference.class, id);
 			if (withCrossReferences) {
 				reference.getCrossReferences().size();
@@ -64,12 +69,16 @@ public class ReferenceDAO extends BaseSQLDAO<Reference> {
 			refs.add(reference);
 			referenceIdMap.put(String.valueOf(id), reference);
 			if (idMap.get(id) != null) {
-				idMap.get(id).forEach(objects -> {
+				for (Object[] objects : idMap.get(id)) {
 					referenceIdMap.put((String) objects[1], reference);
-				});
+				}
 			}
+			ph.progressProcess();
 		}
-		Log.info("Caching references finished");
+		ph.finishProcess();
+
+		Date end = new Date();
+		Log.info("Finishing Reference Cache: " + (end.getTime() - start.getTime()) + "ms");
 		return referenceIdMap;
 	}
 
