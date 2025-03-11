@@ -29,7 +29,7 @@ import { TextDialogTemplate } from '../../components/Templates/dialog/TextDialog
 import { ListDialogTemplate } from '../../components/Templates/dialog/ListDialogTemplate';
 import { NestedListDialogTemplate } from '../../components/Templates/dialog/NestedListDialogTemplate';
 import { CountDialogTemplate } from '../../components/Templates/dialog/CountDialogTemplate';
-import { ObjectListTemplate } from '../../components/Templates/ObjectListTemplate';
+import { CrossReferencesTemplate } from '../../components/Templates/CrossReferencesTemplate';
 
 import { Tooltip } from 'primereact/tooltip';
 import { Toast } from 'primereact/toast';
@@ -37,7 +37,6 @@ import { Button } from 'primereact/button';
 import { EditMessageTooltip } from '../../components/EditMessageTooltip';
 import { getDefaultTableState } from '../../service/TableStateService';
 import { FILTER_CONFIGS } from '../../constants/FilterFields';
-import { crossReferencesSort } from '../../components/Templates/utils/sortMethods';
 import { StringTemplate } from '../../components/Templates/StringTemplate';
 import { OntologyTermTemplate } from '../../components/Templates/OntologyTermTemplate';
 
@@ -1236,13 +1235,7 @@ export const AllelesTable = () => {
 			header: 'Cross References',
 			sortable: true,
 			filterConfig: FILTER_CONFIGS.crossReferencesFilterConfig,
-			body: (rowData) => (
-				<ObjectListTemplate
-					list={rowData.crossReferences}
-					sortMethod={crossReferencesSort}
-					stringTemplate={(item) => `${item.displayName} (${item.resourceDescriptorPage.name})`}
-				/>
-			),
+			body: (rowData) => <CrossReferencesTemplate list={rowData.crossReferences} />,
 		},
 		{
 			field: 'updatedBy.uniqueId',

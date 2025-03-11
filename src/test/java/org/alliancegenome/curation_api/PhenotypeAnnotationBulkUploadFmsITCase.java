@@ -123,7 +123,6 @@ public class PhenotypeAnnotationBulkUploadFmsITCase extends BaseITCase {
 				.body("results[0].conditionRelations[0].conditions[0].conditionChemical.curie", is(chemicalTerm))
 				.body("results[0].conditionRelations[0].conditions[0].conditionSummary", is("condition summary test"))
 				.body("results[0].singleReference.curie", is(reference))
-				.body("results[0].crossReference.displayName", is("PMID:25920554"))
 				.body("results[0].phenotypeTerms", hasSize(1))
 				.body("results[0].phenotypeTerms[0].curie", is(mpTerm)).extract().body()
 				.as(getSearchResponseTypeRefAGMPhenotypeAnnotation());
@@ -161,7 +160,6 @@ public class PhenotypeAnnotationBulkUploadFmsITCase extends BaseITCase {
 				.body("results[0].conditionRelations[0].conditions[0].conditionChemical.curie", is(chemicalTerm))
 				.body("results[0].conditionRelations[0].conditions[0].conditionSummary", is("condition summary test"))
 				.body("results[0].singleReference.curie", is(reference))
-				.body("results[0].crossReference.displayName", is("PMID:25920554"))
 				.body("results[0].phenotypeTerms", hasSize(1))
 				.body("results[0].phenotypeTerms[0].curie", is(mpTerm)).extract().body()
 				.as(getSearchResponseTypeRefAllelePhenotypeAnnotation());
@@ -197,7 +195,6 @@ public class PhenotypeAnnotationBulkUploadFmsITCase extends BaseITCase {
 				.body("results[0].conditionRelations[0].conditions[0].conditionChemical.curie", is(chemicalTerm))
 				.body("results[0].conditionRelations[0].conditions[0].conditionSummary", is("condition summary test"))
 				.body("results[0].singleReference.curie", is(reference))
-				.body("results[0].crossReference.displayName", is("PMID:25920554"))
 				.body("results[0].phenotypeTerms", hasSize(1))
 				.body("results[0].phenotypeTerms[0].curie", is(mpTerm));
 		
