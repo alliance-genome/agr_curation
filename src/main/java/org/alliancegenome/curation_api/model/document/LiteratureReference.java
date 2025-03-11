@@ -7,6 +7,7 @@ import org.alliancegenome.curation_api.view.View;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonView;
 
 import lombok.AllArgsConstructor;
@@ -21,6 +22,7 @@ import lombok.ToString;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = false)
 @ToString(callSuper = true)
 @JsonPropertyOrder({"curie", "title", "volume", "citation", "short_citation", "cross_references", "abstract"})
+@JsonTypeName("Reference")
 public class LiteratureReference extends BaseDocument {
 
 	@JsonView({ View.FieldsOnly.class })
