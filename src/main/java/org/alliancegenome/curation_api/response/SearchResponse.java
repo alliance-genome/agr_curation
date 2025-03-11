@@ -9,6 +9,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonView;
 
 import lombok.Data;
@@ -18,14 +19,16 @@ import lombok.Data;
 @JsonView({ View.FieldsOnly.class, View.ForPublic.class, View.GeneToGeneOrthologyForIndexer.class })
 public class SearchResponse<E> extends APIResponse {
 
+	@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
 	private List<E> results = new ArrayList<E>();
+
 	private Long totalResults;
 	private Integer returnedRecords;
 	private Map<String, Map<String, Long>> aggregations;
 	private String debug;
 	private String esQuery;
 	private String dbQuery;
-	
+
 	public SearchResponse() {
 	}
 

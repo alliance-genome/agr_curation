@@ -6,7 +6,7 @@ public enum PsiMiTabPrefixEnum {
 	wormbase("WB", true),
 	flybase("FB", true),
 	uniprotkb("UniProtKB", false),
-	intact("INTACT", false),
+	intact("intact", false),
 	entrez_gene_locuslink("NCBI_Gene", false),
 	pubmed("PMID", false),
 	doi("DOI", false),

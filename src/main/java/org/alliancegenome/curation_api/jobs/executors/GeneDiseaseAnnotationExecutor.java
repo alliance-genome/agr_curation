@@ -12,6 +12,7 @@ import org.alliancegenome.curation_api.model.ingest.dto.GeneDiseaseAnnotationDTO
 import org.alliancegenome.curation_api.model.ingest.dto.IngestDTO;
 import org.alliancegenome.curation_api.services.DiseaseAnnotationService;
 import org.alliancegenome.curation_api.services.GeneDiseaseAnnotationService;
+import org.apache.commons.collections.CollectionUtils;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -37,8 +38,8 @@ public class GeneDiseaseAnnotationExecutor extends LoadFileExecutor {
 		}
 
 		List<GeneDiseaseAnnotationDTO> annotations = ingestDto.getDiseaseGeneIngestSet();
-		if (annotations == null) {
-			annotations = new ArrayList<>();
+		if (CollectionUtils.isEmpty(annotations)) {
+			return;
 		}
 
 		List<Long> annotationIdsLoaded = new ArrayList<>();
