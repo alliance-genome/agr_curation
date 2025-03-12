@@ -25,7 +25,10 @@ import lombok.ToString;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @ToString(callSuper = true)
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
-@JsonSubTypes({ @JsonSubTypes.Type(value = Reference.class, name = "Reference") })
+@JsonSubTypes({ 
+	@JsonSubTypes.Type(value = Reference.class, name = "Reference"), 
+	@JsonSubTypes.Type(value = Reference.class, name = "LiteratureReference") 
+})
 @AGRCurationSchemaVersion(min = "1.4.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { CurieObject.class })
 @Table(
 	indexes = {
