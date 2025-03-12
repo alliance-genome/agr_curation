@@ -6,8 +6,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.dao.CrossReferenceDAO;
@@ -294,11 +292,16 @@ public class GeneInteractionFmsDTOValidator extends BaseDTOValidator {
 			return newXrefs;
 		}
 
-		Map<String, CrossReference> existingXrefMap = existingXrefs.stream().collect(Collectors.toMap(CrossReference::getReferencedCurie, Function.identity()));
+		Map<String, CrossReference> existingXrefMap = new HashMap<>();
+		for (CrossReference existingXref : existingXrefs) {
+			existingXrefMap.put(existingXref.getDisplayName() + "|" + existingXref.getReferencedCurie(), existingXref);
+		}
+		
 		List<CrossReference> updatedXrefs = new ArrayList<>();
 		for (CrossReference newXref : newXrefs) {
-			if (existingXrefMap.containsKey(newXref.getReferencedCurie())) {
-				updatedXrefs.add(existingXrefMap.get(newXref.getReferencedCurie()));
+			String xrefKey = newXref.getDisplayName() + "|" + newXref.getReferencedCurie();
+			if (existingXrefMap.containsKey(xrefKey)) {
+				updatedXrefs.add(existingXrefMap.get(xrefKey));
 			} else {
 				updatedXrefs.add(crossReferenceDAO.persist(newXref));
 			}
