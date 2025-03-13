@@ -35,6 +35,7 @@ public class InteractionCrossReferenceHelper {
 						String referencedCurie = PsiMiTabPrefixEnum.getAllianceIdentifier(xrefCurie);
 						if (referencedCurie != null) {
 							xrefs.add(createAllianceXref(displayName, referencedCurie));
+							break;
 						}
 					}
 				}
