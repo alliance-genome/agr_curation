@@ -1,14 +1,15 @@
 package org.alliancegenome.curation_api.dao.base;
 
-import io.quarkus.logging.Log;
-import jakarta.inject.Inject;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceException;
-import jakarta.persistence.TypedQuery;
-import jakarta.persistence.criteria.*;
-import jakarta.persistence.metamodel.IdentifiableType;
-import jakarta.persistence.metamodel.Metamodel;
-import jakarta.transaction.Transactional;
+import static org.reflections.scanners.Scanners.TypesAnnotated;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
+
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.base.AuditedObject;
 import org.alliancegenome.curation_api.model.input.Pagination;
@@ -38,11 +39,21 @@ import org.jboss.logging.Logger;
 import org.jboss.logging.Logger.Level;
 import org.reflections.Reflections;
 
-import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
-
-import static org.reflections.scanners.Scanners.TypesAnnotated;
+import io.quarkus.logging.Log;
+import jakarta.inject.Inject;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceException;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.Path;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.metamodel.IdentifiableType;
+import jakarta.persistence.metamodel.Metamodel;
+import jakarta.transaction.Transactional;
 
 public class BaseSQLDAO<E extends AuditedObject> extends BaseEntityDAO<E> {
 
@@ -283,7 +294,11 @@ public class BaseSQLDAO<E extends AuditedObject> extends BaseEntityDAO<E> {
 
 		CriteriaQuery<Long> countQuery = cb.createQuery(Long.class);
 		countQuery.select(cb.count(countQuery.from(myClass)));
-		Long totalResults = entityManager.createQuery(countQuery).getSingleResult();
+		
+		Long totalResults = 0L;
+		if (pagination != null && pagination.getPage() == 0 && pagination.getLimit() == 0) {
+			totalResults = entityManager.createQuery(countQuery).getSingleResult();
+		}
 
 		TypedQuery<E> allQuery = entityManager.createQuery(all);
 		if (pagination != null && pagination.getLimit() != null && pagination.getPage() != null) {
@@ -683,9 +698,7 @@ public class BaseSQLDAO<E extends AuditedObject> extends BaseEntityDAO<E> {
 		Log.log(level, allQuery);
 		Log.log(level, countQuery);
 
-		List<E> dbResults = allQuery.getResultList();
 		SearchResponse<E> results = new SearchResponse<E>();
-		results.setResults(dbResults);
 
 		if (level == Level.INFO) {
 			results.setDebug("true");
@@ -693,9 +706,12 @@ public class BaseSQLDAO<E extends AuditedObject> extends BaseEntityDAO<E> {
 			results.setDbQuery(((SqmSelectStatement) query).toHqlString());
 		}
 
-		if (pagination != null) { // If pagination is null then there is no point in getting the total results
+		if (pagination != null && pagination.getPage() == 0 && pagination.getLimit() == 0) { // If pagination is null then there is no point in getting the total results
 			Long totalResults = entityManager.createQuery(countQuery).getSingleResult();
 			results.setTotalResults(totalResults);
+		} else {
+			List<E> dbResults = allQuery.getResultList();
+			results.setResults(dbResults);
 		}
 
 		return results;

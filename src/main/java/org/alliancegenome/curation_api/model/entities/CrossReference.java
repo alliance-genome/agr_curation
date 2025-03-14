@@ -1,5 +1,7 @@
 package org.alliancegenome.curation_api.model.entities;
 
+import java.beans.Transient;
+
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.entities.base.AuditedObject;
@@ -59,6 +61,7 @@ public class CrossReference extends AuditedObject {
 	@Fetch(FetchMode.SELECT)
 	private ResourceDescriptorPage resourceDescriptorPage;
 
+	@Transient
 	public String getPrefix() {
 		if (!referencedCurie.contains(":")) {
 			return referencedCurie;

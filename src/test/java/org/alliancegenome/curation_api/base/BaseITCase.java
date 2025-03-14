@@ -47,11 +47,12 @@ import org.alliancegenome.curation_api.model.entities.ontology.DOTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.ECOTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.ExperimentalConditionOntologyTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.GOTerm;
+import org.alliancegenome.curation_api.model.entities.ontology.MATerm;
 import org.alliancegenome.curation_api.model.entities.ontology.MITerm;
 import org.alliancegenome.curation_api.model.entities.ontology.MMOTerm;
-import org.alliancegenome.curation_api.model.entities.ontology.OBITerm;
 import org.alliancegenome.curation_api.model.entities.ontology.MPTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
+import org.alliancegenome.curation_api.model.entities.ontology.OBITerm;
 import org.alliancegenome.curation_api.model.entities.ontology.OntologyTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.SOTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.StageTerm;
@@ -225,7 +226,7 @@ public class BaseITCase {
 	}
 
 	public AnatomicalTerm createAnatomicalTerm(String curie, String name) throws Exception {
-		AnatomicalTerm anatomicalTerm = new AnatomicalTerm();
+		AnatomicalTerm anatomicalTerm = new MATerm();
 		anatomicalTerm.setCurie(curie);
 		anatomicalTerm.setName(name);
 		anatomicalTerm.setObsolete(false);

@@ -17,7 +17,7 @@ import org.alliancegenome.curation_api.model.ingest.dto.fms.VepTxtDTO;
 import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
 import org.alliancegenome.curation_api.services.validation.dto.fms.VepGeneFmsDTOValidator;
 import org.alliancegenome.curation_api.services.validation.dto.fms.VepTranscriptFmsDTOValidator;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import io.quarkus.logging.Log;
 import jakarta.annotation.PostConstruct;
