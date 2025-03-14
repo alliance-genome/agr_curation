@@ -76,9 +76,9 @@ public class GeneDocumentBuilder {
 		if (gene.getGeneFullName() != null) {
 			doc.setName(gene.getGeneFullName().getFormatText());
 			if (gene.getTaxon() != null && gene.getTaxon().getSpecies() != null && gene.getTaxon().getSpecies().size() > 0) {
-				doc.setName_key(gene.getGeneFullName().getFormatText() + " (" + gene.getTaxon().getSpecies().get(0).getAbbreviation() + ")");
+				doc.setNameKey(gene.getGeneFullName().getFormatText() + " (" + gene.getTaxon().getSpecies().get(0).getAbbreviation() + ")");
 			} else {
-				doc.setName_key(gene.getGeneFullName().getFormatText());
+				doc.setNameKey(gene.getGeneFullName().getFormatText());
 			}
 		}
 
