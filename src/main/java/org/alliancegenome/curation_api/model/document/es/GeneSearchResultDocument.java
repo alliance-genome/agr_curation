@@ -6,6 +6,7 @@ import org.alliancegenome.curation_api.view.View;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
+import jakarta.json.bind.annotation.JsonbProperty;
 import lombok.Data;
 
 @Data
@@ -20,7 +21,8 @@ public class GeneSearchResultDocument extends ESDocument {
 	private String automatedGeneDescription;
 	private String geneDescription;
 	private String name;
-	private String name_key;
+	@JsonbProperty("name_key")
+	private String nameKey;
 	private String species;
 	private String symbol;
 
