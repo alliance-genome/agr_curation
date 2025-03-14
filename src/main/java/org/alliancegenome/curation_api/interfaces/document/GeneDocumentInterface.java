@@ -28,10 +28,6 @@ public interface GeneDocumentInterface {
 	@Path("/find")
 	@Tag(name = "Public Document Endpoints")
 	@JsonView(View.GeneSearchResultIndexer.class)
-	SearchResponse<GeneSearchResultDocument> find(
-		@DefaultValue("0") @QueryParam("page") Integer page,
-		@DefaultValue("10") @QueryParam("limit") Integer limit,
-		@RequestBody HashMap<String, Object> params
-	);
+	SearchResponse<GeneSearchResultDocument> find(@DefaultValue("0") @QueryParam("page") Integer page, @DefaultValue("10") @QueryParam("limit") Integer limit, @RequestBody HashMap<String, Object> params);
 
 }

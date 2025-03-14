@@ -16,25 +16,25 @@ import jakarta.inject.Inject;
 public class GeneDocumentController implements GeneDocumentInterface {
 
 	@Inject GeneService geneService;
-	
+
 	@Override
 	public SearchResponse<GeneSearchResultDocument> find(Integer page, Integer limit, HashMap<String, Object> params) {
 		if (params == null) {
 			params = new HashMap<>();
 		}
-		
+
 		Pagination pagination = new Pagination(page, limit);
 		SearchResponse<Gene> resp = geneService.findByParams(pagination, params);
-		
+
 		ArrayList<GeneSearchResultDocument> list = new ArrayList<>();
-		if(resp.getResults() != null) {
+		if (resp.getResults() != null) {
 			GeneDocumentBuilder builder = new GeneDocumentBuilder();
-			for(Gene gene: resp.getResults()) {
+			for (Gene gene : resp.getResults()) {
 				GeneSearchResultDocument doc = builder.buildDocument(gene);
 				list.add(doc);
 			}
 		}
-		
+
 		SearchResponse<GeneSearchResultDocument> ret = new SearchResponse<GeneSearchResultDocument>(list);
 		ret.setTotalResults(resp.getTotalResults());
 		return ret;
