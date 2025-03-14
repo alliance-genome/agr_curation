@@ -13,7 +13,7 @@ import org.alliancegenome.curation_api.model.entities.orthology.GeneToGeneOrthol
 import org.alliancegenome.curation_api.model.ingest.dto.fms.OrthologyFmsDTO;
 import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
 import org.alliancegenome.curation_api.services.validation.dto.fms.OrthologyFmsDTOValidator;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.RequestScoped;
@@ -31,6 +31,7 @@ public class GeneToGeneOrthologyGeneratedService extends BaseEntityCrudService<G
 		setSQLDao(geneToGeneOrthologyGeneratedDAO);
 	}
 
+	@Override
 	public GeneToGeneOrthologyGenerated upsert(OrthologyFmsDTO orthoPair, BackendBulkDataProvider backendBulkDataProvider) throws ValidationException {
 		return orthologyFmsDtoValidator.validateOrthologyFmsDTO(orthoPair);
 	}

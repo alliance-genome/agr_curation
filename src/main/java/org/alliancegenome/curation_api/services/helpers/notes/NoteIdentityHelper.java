@@ -11,7 +11,7 @@ import org.alliancegenome.curation_api.model.ingest.dto.NoteDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.PublicationRefFmsDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.VariantNoteFmsDTO;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 public class NoteIdentityHelper {
 	private NoteIdentityHelper() {

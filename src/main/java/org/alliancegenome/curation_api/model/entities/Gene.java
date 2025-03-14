@@ -10,6 +10,7 @@ import org.alliancegenome.curation_api.model.entities.associations.geneAssociati
 import org.alliancegenome.curation_api.model.entities.associations.sequenceTargetingReagentAssociations.SequenceTargetingReagentGeneAssociation;
 import org.alliancegenome.curation_api.model.entities.associations.transcriptAssociations.TranscriptGeneAssociation;
 import org.alliancegenome.curation_api.model.entities.ontology.SOTerm;
+import org.alliancegenome.curation_api.model.entities.orthology.GeneToGeneOrthologyGenerated;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.geneSlotAnnotations.GeneFullNameSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.geneSlotAnnotations.GeneSecondaryIdSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.geneSlotAnnotations.GeneSymbolSlotAnnotation;
@@ -29,6 +30,7 @@ import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Index;
 import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
@@ -54,14 +56,30 @@ public class Gene extends GenomicEntity {
 	@ManyToOne
 	@JsonView({ View.FieldsOnly.class })
 	private SOTerm geneType;
-
+	
 	@JsonView({ View.GeneToGeneOrthologyForIndexer.class })
 	@OneToMany(mappedBy = "diseaseAnnotationSubject", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<GeneDiseaseAnnotation> geneDiseaseAnnotations;
-
+	
 	@JsonView({ View.GeneToGeneOrthologyForIndexer.class })
 	@OneToMany(mappedBy = "expressionAnnotationSubject", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<GeneExpressionAnnotation> geneExpressionAnnotations;
+	
+	// Back references to all classes for ES documents
+	@OneToMany(mappedBy = "phenotypeAnnotationSubject", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<GenePhenotypeAnnotation> genePhenotypeAnnotations;
+	@OneToMany(mappedBy = "inferredGene", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<AllelePhenotypeAnnotation> allelePhenotypeInferredGeneAnnotations;
+	@OneToMany(mappedBy = "inferredGene", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<AGMPhenotypeAnnotation> agmPhenotypeInferredGeneAnnotations;
+	@ManyToMany(mappedBy = "assertedGenes", cascade = CascadeType.ALL)
+	private List<AllelePhenotypeAnnotation> allelePhenotypeAssertedGeneAnnotations;
+	@ManyToMany(mappedBy = "assertedGenes", cascade = CascadeType.ALL)
+	private List<AGMPhenotypeAnnotation> agmPhenotypeAssertedGeneAnnotations;
+	@OneToMany(mappedBy = "singleGene", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<GeneOntologyAnnotation> geneOntologyAnnotations;
+	@OneToMany(mappedBy = "subjectGene", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<GeneToGeneOrthologyGenerated> geneToGeneOrthologyGenerateds;
 	
 	//@OneToMany(mappedBy = "geneAssociationSubject", cascade = CascadeType.ALL, orphanRemoval = true)
 	//private List<GeneGeneAssociation> geneGeneAssociations;

@@ -28,8 +28,8 @@ import org.alliancegenome.curation_api.services.ontology.MmoTermService;
 import org.alliancegenome.curation_api.services.ontology.OntologyTermService;
 import org.alliancegenome.curation_api.services.ontology.StageTermService;
 import org.alliancegenome.curation_api.services.ontology.UberonTermService;
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;

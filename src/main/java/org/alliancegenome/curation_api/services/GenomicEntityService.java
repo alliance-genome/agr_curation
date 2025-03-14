@@ -1,8 +1,8 @@
 package org.alliancegenome.curation_api.services;
 
-import jakarta.annotation.PostConstruct;
-import jakarta.enterprise.context.RequestScoped;
-import jakarta.inject.Inject;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.alliancegenome.curation_api.dao.GenomicEntityDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ValidationException;
@@ -10,8 +10,9 @@ import org.alliancegenome.curation_api.model.entities.GenomicEntity;
 import org.alliancegenome.curation_api.model.ingest.dto.GenomicEntityDTO;
 import org.alliancegenome.curation_api.services.base.SubmittedObjectCrudService;
 
-import java.util.HashMap;
-import java.util.Map;
+import jakarta.annotation.PostConstruct;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
 
 @RequestScoped
 public class GenomicEntityService extends SubmittedObjectCrudService<GenomicEntity, GenomicEntityDTO, GenomicEntityDAO> {

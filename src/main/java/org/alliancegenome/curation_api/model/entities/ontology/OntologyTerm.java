@@ -59,7 +59,7 @@ public class OntologyTerm extends CurieObject {
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "name_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({View.FieldsOnly.class, View.ForPublic.class, View.GeneToGeneOrthologyForIndexer.class})
+	@JsonView({View.FieldsOnly.class, View.ForPublic.class, View.GeneToGeneOrthologyForIndexer.class })
 	@Column(length = 2000)
 	protected String name;
 
@@ -70,7 +70,7 @@ public class OntologyTerm extends CurieObject {
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "namespace_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView(View.FieldsOnly.class)
+	@JsonView({ View.FieldsOnly.class })
 	private String namespace;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
@@ -90,7 +90,7 @@ public class OntologyTerm extends CurieObject {
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "subsets_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
 	@ElementCollection
-	@JsonView(View.FieldsAndLists.class)
+	@JsonView({ View.FieldsAndLists.class })
 	@JoinTable(indexes = @Index(name = "ontologyterm_subsets_ontologyterm_index", columnList = "ontologyterm_id"))
 	private List<String> subsets;
 
@@ -120,7 +120,6 @@ public class OntologyTerm extends CurieObject {
 	private List<CrossReference> crossReferences;
 
 	@ManyToMany
-	// @JsonView(View.OntologyTermView.class)
 	@JoinTable(name = "ontologyterm_isa_parent_children", indexes = {
 		@Index(name = "ontologyterm_isa_parent_children_isaparents_index", columnList = "isaparents_id"),
 		@Index(name = "ontologyterm_isa_parent_children_isachildren_index", columnList = "isachildren_id")
@@ -128,7 +127,6 @@ public class OntologyTerm extends CurieObject {
 	private Set<OntologyTerm> isaParents;
 
 	@ManyToMany(mappedBy = "isaParents")
-	// @JsonView(View.OntologyTermView.class)
 	private Set<OntologyTerm> isaChildren;
 
 	@ManyToMany
