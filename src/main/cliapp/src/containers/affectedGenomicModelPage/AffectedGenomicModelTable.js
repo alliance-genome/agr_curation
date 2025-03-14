@@ -6,12 +6,11 @@ import { FILTER_CONFIGS } from '../../constants/FilterFields';
 import { StringTemplate } from '../../components/Templates/StringTemplate';
 import { IdTemplate } from '../../components/Templates/IdTemplate';
 import { BooleanTemplate } from '../../components/Templates/BooleanTemplate';
-import { ObjectListTemplate } from '../../components/Templates/ObjectListTemplate';
+import { CrossReferencesTemplate } from '../../components/Templates/CrossReferencesTemplate';
 import { useGetTableData } from '../../service/useGetTableData';
 import { useGetUserSettings } from '../../service/useGetUserSettings';
 
 import { SearchService } from '../../service/SearchService';
-import { crossReferencesSort } from '../../components/Templates/utils/sortMethods';
 import { OntologyTermTemplate } from '../../components/Templates/OntologyTermTemplate';
 import { StringListTemplate } from '../../components/Templates/StringListTemplate';
 import { ListDialogTemplate } from '../../components/Templates/dialog/ListDialogTemplate';
@@ -117,13 +116,7 @@ export const AffectedGenomicModelTable = () => {
 			header: 'Cross References',
 			sortable: true,
 			filterConfig: FILTER_CONFIGS.crossReferencesFilterConfig,
-			body: (rowData) => (
-				<ObjectListTemplate
-					list={rowData.crossReferences}
-					sortMethod={crossReferencesSort}
-					stringTemplate={(item) => `${item.displayName} (${item.resourceDescriptorPage.name})`}
-				/>
-			),
+			body: (rowData) => <CrossReferencesTemplate list={rowData.crossReferences} />,
 		},
 		{
 			field: 'updatedBy.uniqueId',
