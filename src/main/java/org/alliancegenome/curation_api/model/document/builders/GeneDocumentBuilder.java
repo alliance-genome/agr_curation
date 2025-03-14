@@ -30,12 +30,42 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class GeneDocumentBuilder {
 
-	private final static Set<String> biotypeLevel0 = Set.of("protein_coding_gene", "pseudogene", "ncRNA_gene", "other_gene");
+	private final static Set<String> biotypeLevel0 = Set.of(
+		"protein_coding_gene",
+		"pseudogene",
+		"ncRNA_gene",
+		"other_gene"
+	);
 
-	private final static Set<String> biotypeLevel1 = Set.of("unclassified_ncRNA_gene", "lncRNA_gene", "piRNA_gene", "miRNA_gene", "snoRNA_gene", "tRNA_gene", "snRNA_gene", "rRNA_gene", "enzymatic_RNA_gene", "SRP_RNA_gene", "scRNA_gene", "RNase_P_RNA_gene", "telomerase_RNA_gene",
-		"RNase_MRP_RNA_gene", "unclassified_gene", "heritable_phenotypic_marker", "gene_segment", "pseudogenic_gene_segment", "transposable_element_gene", "blocked_reading_frame");
+	private final static Set<String> biotypeLevel1 = Set.of(
+		"unclassified_ncRNA_gene",
+		"lncRNA_gene",
+		"piRNA_gene",
+		"miRNA_gene",
+		"snoRNA_gene",
+		"tRNA_gene",
+		"snRNA_gene",
+		"rRNA_gene",
+		"enzymatic_RNA_gene",
+		"SRP_RNA_gene",
+		"scRNA_gene",
+		"RNase_P_RNA_gene",
+		"telomerase_RNA_gene",
+		"RNase_MRP_RNA_gene",
+		"unclassified_gene",
+		"heritable_phenotypic_marker",
+		"gene_segment",
+		"pseudogenic_gene_segment",
+		"transposable_element_gene",
+		"blocked_reading_frame");
 
-	private final static Set<String> biotypeLevel2 = Set.of("unclassified_lncRNA_gene", "lncRNA_gene", "antisense_lncRNA_gene", "sense_intronic_ncRNA_gene", "bidirectional_promoter_lncRNA", "sense_overlap_ncRNA_gene");
+	private final static Set<String> biotypeLevel2 = Set.of(
+		"unclassified_lncRNA_gene",
+		"lncRNA_gene",
+		"antisense_lncRNA_gene",
+		"sense_intronic_ncRNA_gene",
+		"bidirectional_promoter_lncRNA",
+		"sense_overlap_ncRNA_gene");
 
 	public static GeneSearchResultDocument buildDocument(Gene gene) {
 
