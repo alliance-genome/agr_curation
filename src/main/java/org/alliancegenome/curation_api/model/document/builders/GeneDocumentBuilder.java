@@ -314,10 +314,10 @@ public class GeneDocumentBuilder {
 			doc.getBiotypes().add("other_gene");
 			doc.getBiotype0().add("other_gene");
 
-			if (doc.getSoTermName() == "gene") {
+			if (doc.getSoTermName().equals("gene")) {
 				doc.getBiotype1().add("unclassified gene");
 			}
-			if (doc.getSoTermName() == "biological_region") {
+			if (doc.getSoTermName().equals("biological_region")) {
 				doc.getBiotype1().add("unclassified biological region");
 			}
 
