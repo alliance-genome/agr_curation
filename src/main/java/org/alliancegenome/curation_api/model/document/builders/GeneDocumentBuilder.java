@@ -30,22 +30,12 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class GeneDocumentBuilder {
 
-	private final static Set<String> biotypeLevel0 = Set.of(
-		"protein_coding_gene", "pseudogene",
-		"ncRNA_gene", "other_gene");
+	private final static Set<String> biotypeLevel0 = Set.of("protein_coding_gene", "pseudogene", "ncRNA_gene", "other_gene");
 
-	private final static Set<String> biotypeLevel1 = Set.of(
-		"unclassified_ncRNA_gene", "lncRNA_gene", "piRNA_gene", "miRNA_gene",
-		"snoRNA_gene", "tRNA_gene", "snRNA_gene", "rRNA_gene", "enzymatic_RNA_gene",
-		"SRP_RNA_gene", "scRNA_gene", "RNase_P_RNA_gene", "telomerase_RNA_gene",
-		"RNase_MRP_RNA_gene", "unclassified_gene", "heritable_phenotypic_marker",
-		"gene_segment", "pseudogenic_gene_segment", "transposable_element_gene",
-		"blocked_reading_frame");
+	private final static Set<String> biotypeLevel1 = Set.of("unclassified_ncRNA_gene", "lncRNA_gene", "piRNA_gene", "miRNA_gene", "snoRNA_gene", "tRNA_gene", "snRNA_gene", "rRNA_gene", "enzymatic_RNA_gene", "SRP_RNA_gene", "scRNA_gene", "RNase_P_RNA_gene", "telomerase_RNA_gene",
+		"RNase_MRP_RNA_gene", "unclassified_gene", "heritable_phenotypic_marker", "gene_segment", "pseudogenic_gene_segment", "transposable_element_gene", "blocked_reading_frame");
 
-	private final static Set<String> biotypeLevel2 = Set.of(
-		"unclassified_lncRNA_gene", "lncRNA_gene", "antisense_lncRNA_gene",
-		"sense_intronic_ncRNA_gene", "bidirectional_promoter_lncRNA",
-		"sense_overlap_ncRNA_gene");
+	private final static Set<String> biotypeLevel2 = Set.of("unclassified_lncRNA_gene", "lncRNA_gene", "antisense_lncRNA_gene", "sense_intronic_ncRNA_gene", "bidirectional_promoter_lncRNA", "sense_overlap_ncRNA_gene");
 
 	public static GeneSearchResultDocument buildDocument(Gene gene) {
 
@@ -105,37 +95,38 @@ public class GeneDocumentBuilder {
 			for (AlleleGeneAssociation association : gene.getAlleleGeneAssociations()) {
 				if (association.getAlleleAssociationSubject() != null && association.getRelation().getName().equals("is_allele_of")) {
 					doc.getAlleles().add(association.getAlleleAssociationSubject().getAlleleSymbol().getFormatText());
-					
-					//if(association.getAlleleAssociationSubject().getAgm) {
-						// TODO: Once the code for AgmAllele Associations comes thorugh will be able to pick up this field
-					//}
+
+					// if(association.getAlleleAssociationSubject().getAgm) {
+					// TODO: Once the code for AgmAllele Associations comes thorugh will be able to
+					// pick up this field
+					// }
 				}
 			}
 		}
-		
+
 		doc.setPhenotypeStatements(new HashSet<>());
-		if(gene.getGenePhenotypeAnnotations() != null) {
-			for(GenePhenotypeAnnotation annotation: gene.getGenePhenotypeAnnotations()) {
+		if (gene.getGenePhenotypeAnnotations() != null) {
+			for (GenePhenotypeAnnotation annotation : gene.getGenePhenotypeAnnotations()) {
 				doc.getPhenotypeStatements().add(annotation.getPhenotypeAnnotationObject());
 			}
 		}
-		if(gene.getAllelePhenotypeInferredGeneAnnotations() != null) {
-			for(AllelePhenotypeAnnotation annotation: gene.getAllelePhenotypeInferredGeneAnnotations()) {
+		if (gene.getAllelePhenotypeInferredGeneAnnotations() != null) {
+			for (AllelePhenotypeAnnotation annotation : gene.getAllelePhenotypeInferredGeneAnnotations()) {
 				doc.getPhenotypeStatements().add(annotation.getPhenotypeAnnotationObject());
 			}
 		}
-		if(gene.getAllelePhenotypeAssertedGeneAnnotations() != null) {
-			for(AllelePhenotypeAnnotation annotation: gene.getAllelePhenotypeAssertedGeneAnnotations()) {
+		if (gene.getAllelePhenotypeAssertedGeneAnnotations() != null) {
+			for (AllelePhenotypeAnnotation annotation : gene.getAllelePhenotypeAssertedGeneAnnotations()) {
 				doc.getPhenotypeStatements().add(annotation.getPhenotypeAnnotationObject());
 			}
 		}
 		if (gene.getAgmPhenotypeInferredGeneAnnotations() != null) {
-			for(AGMPhenotypeAnnotation annotation: gene.getAgmPhenotypeInferredGeneAnnotations()) {
+			for (AGMPhenotypeAnnotation annotation : gene.getAgmPhenotypeInferredGeneAnnotations()) {
 				doc.getPhenotypeStatements().add(annotation.getPhenotypeAnnotationObject());
 			}
 		}
 		if (gene.getAgmPhenotypeAssertedGeneAnnotations() != null) {
-			for(AGMPhenotypeAnnotation annotation: gene.getAgmPhenotypeAssertedGeneAnnotations()) {
+			for (AGMPhenotypeAnnotation annotation : gene.getAgmPhenotypeAssertedGeneAnnotations()) {
 				doc.getPhenotypeStatements().add(annotation.getPhenotypeAnnotationObject());
 			}
 		}
@@ -153,12 +144,12 @@ public class GeneDocumentBuilder {
 				}
 			}
 		}
-		
-		if(gene.getGeneToGeneOrthologyGenerateds() != null) {
+
+		if (gene.getGeneToGeneOrthologyGenerateds() != null) {
 			doc.setStrictOrthologySymbols(new HashSet<>());
-			for(GeneToGeneOrthologyGenerated ortho: gene.getGeneToGeneOrthologyGenerateds()) {
-				if(ortho.getObjectGene().getGeneDiseaseAnnotations() != null) {
-					for(GeneDiseaseAnnotation annotation: ortho.getObjectGene().getGeneDiseaseAnnotations()) {
+			for (GeneToGeneOrthologyGenerated ortho : gene.getGeneToGeneOrthologyGenerateds()) {
+				if (ortho.getObjectGene().getGeneDiseaseAnnotations() != null) {
+					for (GeneDiseaseAnnotation annotation : ortho.getObjectGene().getGeneDiseaseAnnotations()) {
 						DOTerm term = annotation.getDiseaseAnnotationObject();
 						for (OntologyTerm ontologyTerm : term.getIsaAncestors()) {
 							doc.getDiseasesWithParents().add(ontologyTerm.getName());
@@ -166,7 +157,7 @@ public class GeneDocumentBuilder {
 						doc.getDiseases().add(term.getName());
 					}
 				}
-				if(ortho.getStrictFilter()) {
+				if (ortho.getStrictFilter()) {
 					doc.getStrictOrthologySymbols().add(ortho.getObjectGene().getGeneSymbol().getDisplayText());
 				}
 			}
@@ -246,8 +237,8 @@ public class GeneDocumentBuilder {
 
 				if (annotation.getExpressionPattern() != null && annotation.getExpressionPattern().getWhereExpressed() != null && annotation.getExpressionPattern().getWhereExpressed().getAnatomicalStructure() != null) {
 					AnatomicalTerm anatomicalTerm = annotation.getExpressionPattern().getWhereExpressed().getAnatomicalStructure();
-					// TODO add slims to this 
-					if(anatomicalTerm != null) {
+					// TODO add slims to this
+					if (anatomicalTerm != null) {
 						doc.getAnatomicalExpressionWithParents().add(anatomicalTerm.getName());
 						for (OntologyTerm ontologyTerm : anatomicalTerm.getIsaAncestors()) {
 							doc.getAnatomicalExpressionWithParents().add(ontologyTerm.getName());
