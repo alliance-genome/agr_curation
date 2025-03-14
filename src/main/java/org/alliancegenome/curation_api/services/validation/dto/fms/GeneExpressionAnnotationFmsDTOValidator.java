@@ -2,11 +2,7 @@ package org.alliancegenome.curation_api.services.validation.dto.fms;
 
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeParseException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
@@ -14,29 +10,17 @@ import org.alliancegenome.curation_api.dao.GeneExpressionAnnotationDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
 import org.alliancegenome.curation_api.exceptions.ValidationException;
-import org.alliancegenome.curation_api.model.entities.AnatomicalSite;
-import org.alliancegenome.curation_api.model.entities.ExpressionPattern;
-import org.alliancegenome.curation_api.model.entities.Gene;
-import org.alliancegenome.curation_api.model.entities.GeneExpressionAnnotation;
-import org.alliancegenome.curation_api.model.entities.Reference;
-import org.alliancegenome.curation_api.model.entities.TemporalContext;
-import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
+import org.alliancegenome.curation_api.model.entities.*;
 import org.alliancegenome.curation_api.model.entities.ontology.AnatomicalTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.GOTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.MMOTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.OntologyTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.StageTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.UBERONTerm;
-import org.alliancegenome.curation_api.model.ingest.dto.fms.GeneExpressionFmsDTO;
-import org.alliancegenome.curation_api.model.ingest.dto.fms.UberonSlimTermDTO;
-import org.alliancegenome.curation_api.model.ingest.dto.fms.WhenExpressedFmsDTO;
-import org.alliancegenome.curation_api.model.ingest.dto.fms.WhereExpressedFmsDTO;
+import org.alliancegenome.curation_api.model.ingest.dto.fms.*;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
-import org.alliancegenome.curation_api.services.GeneService;
-import org.alliancegenome.curation_api.services.OrganizationService;
-import org.alliancegenome.curation_api.services.ReferenceService;
-import org.alliancegenome.curation_api.services.VocabularyTermService;
+import org.alliancegenome.curation_api.services.*;
 import org.alliancegenome.curation_api.services.helpers.annotations.GeneExpressionAnnotationUniqueIdHelper;
 import org.alliancegenome.curation_api.services.ontology.AnatomicalTermService;
 import org.alliancegenome.curation_api.services.ontology.GoTermService;
@@ -65,6 +49,7 @@ public class GeneExpressionAnnotationFmsDTOValidator {
 	@Inject UberonTermService uberonTermService;
 	@Inject StageTermService stageTermService;
 	@Inject OntologyTermService ontologyTermService;
+	@Inject CrossReferenceFmsDTOValidator crossReferenceFmsDTOValidator;
 
 	public GeneExpressionAnnotation validateAnnotation(GeneExpressionFmsDTO geneExpressionFmsDTO, BackendBulkDataProvider dataProvider, Map<String, Set<String>> experiments) throws ValidationException {
 		ObjectResponse<GeneExpressionAnnotation> response = new ObjectResponse<>();
@@ -89,6 +74,17 @@ public class GeneExpressionAnnotationFmsDTOValidator {
 
 		if (geneExpressionAnnotation.getExpressionPattern() == null) {
 			geneExpressionAnnotation.setExpressionPattern(new ExpressionPattern());
+		}
+
+		if (ObjectUtils.isNotEmpty(geneExpressionFmsDTO.getCrossReference())) {
+			ObjectResponse<List<CrossReference>> crossRefResponse = crossReferenceFmsDTOValidator.validateCrossReferenceFmsDTO(geneExpressionFmsDTO.getCrossReference());
+			if (crossRefResponse.hasErrors()) {
+				response.addErrorMessage("crossReference", crossRefResponse.errorMessagesString());
+			} else {
+				geneExpressionAnnotation.setDataProviderCrossReference(crossRefResponse.getEntity().get(0));
+			}
+		} else {
+			geneExpressionAnnotation.setDataProviderCrossReference(null);
 		}
 
 		if (ObjectUtils.isEmpty(geneExpressionFmsDTO.getGeneId())) {
