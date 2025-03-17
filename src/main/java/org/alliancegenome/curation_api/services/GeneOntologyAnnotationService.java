@@ -12,7 +12,6 @@ import org.alliancegenome.curation_api.dao.SpeciesDAO;
 import org.alliancegenome.curation_api.dao.ontology.GoTermDAO;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.GeneOntologyAnnotation;
-import org.alliancegenome.curation_api.model.entities.Organization;
 import org.alliancegenome.curation_api.model.entities.Person;
 import org.alliancegenome.curation_api.model.entities.Species;
 import org.alliancegenome.curation_api.model.entities.ontology.GOTerm;
@@ -136,6 +135,7 @@ public class GeneOntologyAnnotationService extends BaseEntityCrudService<GeneOnt
 		return gafMap;
 	}
 
+	@Override
 	@Transactional
 	public GeneOntologyAnnotation deprecateOrDelete(Long id, Boolean throwApiError, String requestSource, Boolean deprecate) {
 		return gafDAO.remove(id);
