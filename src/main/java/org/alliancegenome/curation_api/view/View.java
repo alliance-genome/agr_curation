@@ -129,6 +129,8 @@ public class View {
 	public static class GeneSearchResultDocument { }
 	public static class GeneSummaryDocument { }
 
+	public static class GOSearchResultDocument { }
+
 	public static class GeneToGeneOrthologyForIndexer {
 	}
 	public static class DiseaseAnnotationForPublic extends ForPublic {
