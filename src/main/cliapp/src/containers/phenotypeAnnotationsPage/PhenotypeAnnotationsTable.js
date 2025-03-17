@@ -12,6 +12,7 @@ import { getDefaultTableState } from '../../service/TableStateService';
 import { FILTER_CONFIGS } from '../../constants/FilterFields';
 import { useGetTableData } from '../../service/useGetTableData';
 import { useGetUserSettings } from '../../service/useGetUserSettings';
+import { CrossReferencesTemplate } from '../../components/Templates/CrossReferencesTemplate';
 
 import { SearchService } from '../../service/SearchService';
 
@@ -113,6 +114,7 @@ export const PhenotypeAnnotationsTable = () => {
 			header: 'Cross Reference',
 			sortable: true,
 			filterConfig: FILTER_CONFIGS.crossReferenceFilterConfig,
+			body: (rowData) => <CrossReferencesTemplate list={rowData.crossReference} />,
 		},
 		{
 			field: 'conditionRelations.uniqueId',

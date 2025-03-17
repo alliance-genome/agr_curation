@@ -195,11 +195,19 @@ export const FIELD_SETS = Object.freeze({
 	},
 	crossReferenceFieldSet: {
 		filterName: 'crossReferenceFilter',
-		fields: ['crossReference.displayName'],
+		fields: [
+			'crossReference.displayName',
+			'crossReferences.resourceDescriptorPage.name',
+			'crossReferences.referencedCurie',
+		],
 	},
 	crossReferencesFieldSet: {
 		filterName: 'crossReferencesFilter',
-		fields: ['crossReferences.displayName', 'crossReferences.resourceDescriptorPage.name'],
+		fields: [
+			'crossReferences.displayName',
+			'crossReferences.resourceDescriptorPage.name',
+			'crossReferences.referencedCurie',
+		],
 	},
 	daConditionRelationsHandleFieldSet: {
 		filterName: 'daConditionRelationHandleFilter',
