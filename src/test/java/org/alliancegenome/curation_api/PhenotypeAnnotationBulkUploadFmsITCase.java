@@ -102,7 +102,7 @@ public class PhenotypeAnnotationBulkUploadFmsITCase extends BaseITCase {
 
 		SearchResponse<AGMPhenotypeAnnotation> response = RestAssured.given().when()
 				.header("Content-Type", "application/json").body("{}").post(agmPhenotypeAnnotationFindEndpoint).then()
-				.statusCode(200).body("totalResults", is(1)).body("results", hasSize(1))
+				.statusCode(200).body("returnedRecords", is(1)).body("results", hasSize(1))
 				.body("results[0].phenotypeAnnotationSubject.primaryExternalId", is(agm))
 				.body("results[0].phenotypeAnnotationObject", is(phenotypeStatement))
 				.body("results[0].relation.name", is("has_phenotype"))
@@ -140,7 +140,7 @@ public class PhenotypeAnnotationBulkUploadFmsITCase extends BaseITCase {
 
 		SearchResponse<AllelePhenotypeAnnotation> response = RestAssured.given().when()
 				.header("Content-Type", "application/json").body("{}").post(allelePhenotypeAnnotationFindEndpoint)
-				.then().statusCode(200).body("totalResults", is(1)).body("results", hasSize(1))
+				.then().statusCode(200).body("returnedRecords", is(1)).body("results", hasSize(1))
 				.body("results[0].phenotypeAnnotationSubject.primaryExternalId", is(allele))
 				.body("results[0].phenotypeAnnotationObject", is(phenotypeStatement))
 				.body("results[0].relation.name", is("has_phenotype"))
@@ -176,7 +176,7 @@ public class PhenotypeAnnotationBulkUploadFmsITCase extends BaseITCase {
 				phenotypeAnnotationTestFilePath + "AF_03_all_fields_primary_gene_annotation.json");
 
 		RestAssured.given().when().header("Content-Type", "application/json").body("{}")
-				.post(genePhenotypeAnnotationFindEndpoint).then().statusCode(200).body("totalResults", is(1))
+				.post(genePhenotypeAnnotationFindEndpoint).then().statusCode(200).body("returnedRecords", is(1))
 				.body("results", hasSize(1)).body("results[0].phenotypeAnnotationSubject.primaryExternalId", is(gene))
 				.body("results[0].phenotypeAnnotationObject", is(phenotypeStatement))
 				.body("results[0].relation.name", is("has_phenotype"))
@@ -272,7 +272,7 @@ public class PhenotypeAnnotationBulkUploadFmsITCase extends BaseITCase {
 
 		RestAssured.given().when().header("Content-Type", "application/json")
 				.body("{\"phenotypeAnnotationSubject.primaryExternalId\" : \"" + agm2 + "\"}")
-				.post(agmPhenotypeAnnotationFindEndpoint).then().statusCode(200).body("totalResults", is(1))
+				.post(agmPhenotypeAnnotationFindEndpoint).then().statusCode(200).body("returnedRecords", is(1))
 				.body("results", hasSize(1)).body("results[0].phenotypeAnnotationSubject.primaryExternalId", is(agm2))
 				.body("results[0].phenotypeAnnotationObject", is(phenotypeStatement))
 				.body("results[0].relation.name", is("has_phenotype"))
@@ -303,7 +303,7 @@ public class PhenotypeAnnotationBulkUploadFmsITCase extends BaseITCase {
 
 		RestAssured.given().when().header("Content-Type", "application/json")
 				.body("{\"phenotypeAnnotationSubject.primaryExternalId\" : \"" + allele2 + "\"}")
-				.post(allelePhenotypeAnnotationFindEndpoint).then().statusCode(200).body("totalResults", is(1))
+				.post(allelePhenotypeAnnotationFindEndpoint).then().statusCode(200).body("returnedRecords", is(1))
 				.body("results", hasSize(1)).body("results[0].phenotypeAnnotationSubject.primaryExternalId", is(allele2))
 				.body("results[0].phenotypeAnnotationObject", is(phenotypeStatement))
 				.body("results[0].relation.name", is("has_phenotype"))
