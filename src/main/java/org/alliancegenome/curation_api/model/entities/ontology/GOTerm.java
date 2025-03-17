@@ -21,8 +21,4 @@ import lombok.ToString;
 @AGRCurationSchemaVersion(min = LinkMLSchemaConstants.MIN_ONTOLOGY_RELEASE, max = LinkMLSchemaConstants.MAX_ONTOLOGY_RELEASE, dependencies = { OntologyTerm.class })
 public class GOTerm extends OntologyTerm {
 
-	
-	@OneToMany(mappedBy = "singleGene")
-	private List<GeneOntologyAnnotation> geneOntologyAnnotations;
-	
 }
