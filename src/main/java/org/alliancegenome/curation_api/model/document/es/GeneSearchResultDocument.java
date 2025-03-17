@@ -10,7 +10,7 @@ import jakarta.json.bind.annotation.JsonbProperty;
 import lombok.Data;
 
 @Data
-@JsonView(View.GeneSearchResultIndexer.class)
+@JsonView(View.GeneSearchResultDocument.class)
 public class GeneSearchResultDocument extends ESDocument {
 
 	{

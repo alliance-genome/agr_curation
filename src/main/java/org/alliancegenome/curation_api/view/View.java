@@ -126,7 +126,8 @@ public class View {
 	public static class ForPublic {
 	}
 	
-	public static class GeneSearchResultIndexer { }
+	public static class GeneSearchResultDocument { }
+	public static class GeneSummaryDocument { }
 
 	public static class GeneToGeneOrthologyForIndexer {
 	}

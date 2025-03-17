@@ -94,11 +94,12 @@ public class Gene extends GenomicEntity {
 	private List<AllelePhenotypeAnnotation> allelePhenotypeAssertedGeneAnnotations;
 	@ManyToMany(mappedBy = "assertedGenes", cascade = CascadeType.ALL)
 	private List<AGMPhenotypeAnnotation> agmPhenotypeAssertedGeneAnnotations;
+	
 	@OneToMany(mappedBy = "singleGene", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<GeneOntologyAnnotation> geneOntologyAnnotations;
 	@OneToMany(mappedBy = "subjectGene", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<GeneToGeneOrthologyGenerated> geneToGeneOrthologyGenerateds;
-	
+
 	//@OneToMany(mappedBy = "geneAssociationSubject", cascade = CascadeType.ALL, orphanRemoval = true)
 	//private List<GeneGeneAssociation> geneGeneAssociations;
 

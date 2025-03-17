@@ -6,6 +6,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.alliancegenome.curation_api.model.document.es.GeneSearchResultDocument;
+import org.alliancegenome.curation_api.model.document.es.GeneSummaryDocument;
 import org.alliancegenome.curation_api.model.entities.AGMPhenotypeAnnotation;
 import org.alliancegenome.curation_api.model.entities.AllelePhenotypeAnnotation;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
@@ -67,7 +68,7 @@ public class GeneDocumentBuilder {
 		"bidirectional_promoter_lncRNA",
 		"sense_overlap_ncRNA_gene");
 
-	public static GeneSearchResultDocument buildDocument(Gene gene) {
+	public static GeneSearchResultDocument buildSearchResultDocument(Gene gene) {
 
 		GeneSearchResultDocument doc = new GeneSearchResultDocument();
 
@@ -323,6 +324,10 @@ public class GeneDocumentBuilder {
 
 			doc.getBiotypes().addAll(doc.getBiotype1());
 		}
+	}
+
+	public GeneSummaryDocument buildSummaryDocument(Gene gene) {
+		return new GeneSummaryDocument();
 	}
 
 }
