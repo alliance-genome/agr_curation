@@ -54,7 +54,7 @@ public class OrthologyBulkUploadFmsITCase extends BaseITCase {
 				post(orthologyFindEndpoint).
 				then().
 				statusCode(200).
-				body("totalResults", is(1)).
+				body("returnedRecords", is(1)).
 				body("results", hasSize(1)).
 				body("results[0].subjectGene.primaryExternalId", is("GENETEST:Gene0001")).
 				body("results[0].objectGene.primaryExternalId", is("HGNC:0001")).
@@ -129,7 +129,7 @@ public class OrthologyBulkUploadFmsITCase extends BaseITCase {
 			post(orthologyFindEndpoint).
 			then().
 			statusCode(200).
-			body("totalResults", is(1)).
+			body("returnedRecords", is(1)).
 			body("results", hasSize(1)).
 			body("results[0]", not(hasKey("predictionMethodsMatched"))).
 			body("results[0]", not(hasKey("predictionMethodsNotMatched"))).
@@ -151,7 +151,7 @@ public class OrthologyBulkUploadFmsITCase extends BaseITCase {
 			post(orthologyFindEndpoint).
 			then().
 			statusCode(200).
-			body("totalResults", is(1)).
+			body("returnedRecords", is(1)).
 			body("results", hasSize(1)).
 			body("results[0]", hasKey("predictionMethodsMatched")).
 			body("results[0]", hasKey("predictionMethodsNotMatched")).
@@ -168,7 +168,7 @@ public class OrthologyBulkUploadFmsITCase extends BaseITCase {
 			post(orthologyFindEndpoint).
 			then().
 			statusCode(200).
-			body("totalResults", is(1)).
+			body("returnedRecords", is(1)).
 			body("results", hasSize(1)).
 			body("results[0]", not(hasKey("predictionMethodsMatched"))).
 			body("results[0]", not(hasKey("predictionMethodsNotMatched"))).
