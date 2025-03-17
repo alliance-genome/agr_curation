@@ -2,6 +2,19 @@
  
 https://agr-jira.atlassian.net/wiki/spaces/ATEAM/overview
 
+## v0.37.0
+* New Features:
+  * Implement AGM Parental Populations, SCRUM-4667
+  * ZFIN: Create Load File for AGM STR associations, SCRUM-4708
+  * Load allele construct associations (test data, enable loading by DQMs) into the persistent store, SCRUM-4834
+  * Add entity counts to Entity Counts page for: AGM-AGM associations, AGM-Allele associations, Allele-Construct associations, SCRUM-4851
+  * Establish default mechanism in data file loads to turn off clean up for any empty (or not submitted) ingest sets, SCRUM-4856
+
+* Fixes and maintainance:
+  * Repeated errors reported for GEO gene cross reference loads, SCRUM-4766
+  * Curation - Deprecate use of Ubuntu-20.04 workers in github actions workflows, SCRUM-4861
+  * User-specific problems accessing curation system data, SCRUM-4888
+
 ## v0.36.0
 * New Features:
   * Update to LinkML version V.2.9.1
