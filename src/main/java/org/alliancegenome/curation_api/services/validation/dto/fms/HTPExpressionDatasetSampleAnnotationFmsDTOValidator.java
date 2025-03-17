@@ -187,7 +187,7 @@ public class HTPExpressionDatasetSampleAnnotationFmsDTOValidator {
 			params.put("synonyms", dto.getSex());
 			SearchResponse<VocabularyTerm> searchResponse = vocabularyTermService.findByParams(new Pagination(), params);
 			boolean added = false;
-			if (searchResponse.getTotalResults() > 0) {
+			if (searchResponse.getReturnedRecords() > 0) {
 				for (VocabularyTerm tag : searchResponse.getResults()) {
 					if (tag.getVocabulary().getVocabularyLabel().equals("genetic_sex") && (tag.getName().equals(dto.getSex()) || tag.getSynonyms().contains(dto.getSex()))) {
 						htpSampleAnnotation.setGeneticSex(tag);
