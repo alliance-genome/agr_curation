@@ -69,7 +69,7 @@ public class BiogridOrcBulkUploadFmsITCase extends BaseITCase {
 				.body("{\"referencedCurie\": \"NCBI_Gene:108101\", \"displayName\": \"BioGRID CRISPR Screen Cell Line Phenotypes\"}")
 				.post(biogridOrcFindEndpoint)
 				.then().statusCode(200)
-				.body("totalResults", is(1))
+				.body("returnedRecords", is(1))
 				.body("results", hasSize(1));
 	}
 
@@ -84,7 +84,7 @@ public class BiogridOrcBulkUploadFmsITCase extends BaseITCase {
 				.body("{\"referencedCurie\": \"NCBI_Gene:100001\", \"displayName\": \"BioGRID CRISPR Screen Cell Line Phenotypes\"}")
 				.post(biogridOrcFindEndpoint)
 				.then().statusCode(200)
-				.body("totalResults", is(1))
+				.body("returnedRecords", is(1))
 				.body("results", hasSize(1));
 	}
 
