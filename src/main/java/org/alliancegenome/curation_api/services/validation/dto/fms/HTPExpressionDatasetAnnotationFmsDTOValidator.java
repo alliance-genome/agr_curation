@@ -127,7 +127,7 @@ public class HTPExpressionDatasetAnnotationFmsDTOValidator {
 					params.put("synonyms", categoryTag);
 					SearchResponse<VocabularyTerm> searchResponse = vocabularyTermService.findByParams(new Pagination(), params);
 					boolean added = false;
-					if (searchResponse.getTotalResults() > 0) {
+					if (searchResponse.getReturnedRecords() > 0) {
 						for (VocabularyTerm tag : searchResponse.getResults()) {
 							if (tag.getVocabulary().getName().equals("Data Set Category Tags") && (tag.getName().equals(categoryTag) || tag.getSynonyms().contains(categoryTag))) {
 								if (categoryTags.containsKey(categoryTag)) {
