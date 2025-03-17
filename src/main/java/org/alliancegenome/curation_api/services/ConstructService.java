@@ -1,10 +1,11 @@
 package org.alliancegenome.curation_api.services;
 
-import io.quarkus.logging.Log;
-import jakarta.annotation.PostConstruct;
-import jakarta.enterprise.context.RequestScoped;
-import jakarta.inject.Inject;
-import jakarta.transaction.Transactional;
+import java.time.OffsetDateTime;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+
 import org.alliancegenome.curation_api.constants.EntityFieldConstants;
 import org.alliancegenome.curation_api.dao.ConstructDAO;
 import org.alliancegenome.curation_api.dao.slotAnnotations.constructSlotAnnotations.ConstructComponentSlotAnnotationDAO;
@@ -22,11 +23,11 @@ import org.alliancegenome.curation_api.services.validation.ConstructValidator;
 import org.alliancegenome.curation_api.services.validation.dto.ConstructDTOValidator;
 import org.apache.commons.collections.CollectionUtils;
 
-import java.time.OffsetDateTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import io.quarkus.logging.Log;
+import jakarta.annotation.PostConstruct;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 
 @RequestScoped
 public class ConstructService extends SubmittedObjectCrudService<Construct, ConstructDTO, ConstructDAO> {

@@ -6,10 +6,10 @@ import java.util.Map;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.utility.DockerImageName;
 
-import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.common.QuarkusTestResourceLifecycleManager;
+import io.quarkus.test.common.WithTestResource;
 
-@QuarkusTestResource(TestContainerResource.Initializer.class)
+@WithTestResource(TestContainerResource.Initializer.class)
 public class TestContainerResource {
 
 	public static class Initializer implements QuarkusTestResourceLifecycleManager {

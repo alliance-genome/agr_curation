@@ -79,7 +79,9 @@ public abstract class BaseEntityCrudController<S extends BaseEntityCrudService<E
 
 	@Override
 	public Response findForPublic(Integer page, Integer limit, String view, HashMap<String, Object> params) {
-		SearchResponse<E> resp = find(page, limit, params);
+		Pagination pagination = new Pagination(page, limit);
+		SearchResponse<E> resp = service.findByParams(pagination, params);
+
 		Class<?> viewClass = View.viewLookup(view);
 		try {
 			String json = mapper.writerWithView(viewClass).writeValueAsString(resp);

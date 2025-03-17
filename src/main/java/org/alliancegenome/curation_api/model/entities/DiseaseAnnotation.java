@@ -84,7 +84,7 @@ public abstract class DiseaseAnnotation extends Annotation {
 		"curie_keyword", "name_keyword", "secondaryIdentifiers_keyword", "synonyms.name_keyword", "namespace_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@JsonView({View.FieldsOnly.class, View.ForPublic.class})
+	@JsonView({View.FieldsOnly.class, View.ForPublic.class })
 	private DOTerm diseaseAnnotationObject;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer", valueBridge = @ValueBridgeRef(type = BooleanValueBridge.class))

@@ -64,7 +64,7 @@ public class ParalogyBulkUploadFmsITCase extends BaseITCase {
 		checkSuccessfulBulkLoad(paralogyBulkPostEndpoint, paralogyTestFilePath + "AF_01_all_fields.json");
 
 		RestAssured.given().when().header("Content-Type", "application/json").body("{}").post(paralogyFindEndpoint)
-				.then().statusCode(200).body("totalResults", is(1)).body("results", hasSize(1))
+				.then().statusCode(200).body("returnedRecords", is(1)).body("results", hasSize(1))
 				.body("results[0].confidence.name", is("moderate"))
 				.body("results[0].subjectGene.primaryExternalId", is("PARATEST:Gene000100"))
 				.body("results[0].objectGene.primaryExternalId", is("PARATEST:Gene000200"))
@@ -130,7 +130,7 @@ public class ParalogyBulkUploadFmsITCase extends BaseITCase {
 			post(paralogyFindEndpoint).
 			then().
 			statusCode(200).
-			body("totalResults", is(1)).
+			body("returnedRecords", is(1)).
 			body("results", hasSize(1)).
 			body("results[0]", not(hasKey("predictionMethodsMatched"))).
 			body("results[0]", not(hasKey("predictionMethodsNotMatched"))).
@@ -150,7 +150,7 @@ public class ParalogyBulkUploadFmsITCase extends BaseITCase {
 			post(paralogyFindEndpoint).
 			then().
 			statusCode(200).
-			body("totalResults", is(1)).
+			body("returnedRecords", is(1)).
 			body("results", hasSize(1)).
 			body("results[0]", hasKey("predictionMethodsMatched")).
 			body("results[0]", hasKey("predictionMethodsNotMatched")).
@@ -165,7 +165,7 @@ public class ParalogyBulkUploadFmsITCase extends BaseITCase {
 			post(paralogyFindEndpoint).
 			then().
 			statusCode(200).
-			body("totalResults", is(1)).
+			body("returnedRecords", is(1)).
 			body("results", hasSize(1)).
 			body("results[0]", not(hasKey("predictionMethodsMatched"))).
 			body("results[0]", not(hasKey("predictionMethodsNotMatched"))).

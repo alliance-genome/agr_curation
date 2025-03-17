@@ -13,7 +13,7 @@ import org.alliancegenome.curation_api.model.entities.GeneToGeneParalogy;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.ParalogyFmsDTO;
 import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
 import org.alliancegenome.curation_api.services.validation.dto.fms.ParalogyFmsDTOValidator;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.RequestScoped;
@@ -31,6 +31,7 @@ public class GeneToGeneParalogyService extends BaseEntityCrudService<GeneToGeneP
 		setSQLDao(geneToGeneParalogyDAO);
 	}
 
+	@Override
 	public GeneToGeneParalogy upsert(ParalogyFmsDTO paralogyData, BackendBulkDataProvider backendBulkDataProvider) throws ValidationException {
 		return paralogyFmsDtoValidator.validateParalogyFmsDTO(paralogyData);
 	}
