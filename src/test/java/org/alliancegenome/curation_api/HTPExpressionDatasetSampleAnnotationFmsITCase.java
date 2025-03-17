@@ -57,7 +57,7 @@ public class HTPExpressionDatasetSampleAnnotationFmsITCase extends BaseITCase {
 
 		RestAssured.given().when().header("Content-Type", "application/json").body("{}")
 				.post(htpDatasetSampleFindEndpoint)
-				.then().statusCode(200).body("totalResults", is(1)).body("results", hasSize(1))
+				.then().statusCode(200).body("returnedRecords", is(1)).body("results", hasSize(1))
 				.body("results[0].htpExpressionSample.curie", is("GEO:GSE38764"))
 				.body("results[0].datasetIds", hasSize(1))
 				.body("results[0].datasetIds[0].curie", is("GEO:GSE38764"))
@@ -119,7 +119,7 @@ public class HTPExpressionDatasetSampleAnnotationFmsITCase extends BaseITCase {
 		checkSuccessfulBulkLoad(htpDatasetSampleBulkPostEndpoint, htpDatasetSampleTestFilePath + "UM_01_update_no_non_required_fields.json");
 
 		RestAssured.given().when().header("Content-Type", "application/json").body("{}")
-				.post(htpDatasetSampleFindEndpoint).then().statusCode(200).body("totalResults", is(2))
+				.post(htpDatasetSampleFindEndpoint).then().statusCode(200).body("returnedRecords", is(2))
 				.body("results[2]", not(hasKey("abundance")))
 				.body("results[2]", not(hasKey("htpExpressionSampleTitle")))
 				.body("results[2]", not(hasKey("taxon")))
@@ -136,7 +136,7 @@ public class HTPExpressionDatasetSampleAnnotationFmsITCase extends BaseITCase {
 		checkSuccessfulBulkLoad(htpDatasetSampleBulkPostEndpoint, htpDatasetSampleTestFilePath + "UE_01_update_empty_non_required_fields.json");
 
 		RestAssured.given().when().header("Content-Type", "application/json").body("{}")
-				.post(htpDatasetSampleFindEndpoint).then().statusCode(200).body("totalResults", is(3))
+				.post(htpDatasetSampleFindEndpoint).then().statusCode(200).body("returnedRecords", is(3))
 				.body("results", hasSize(3))
 				.body("results[2]", not(hasKey("htpExpressionSampleAge")))
 				.body("results[2]", not(hasKey("abundance")))

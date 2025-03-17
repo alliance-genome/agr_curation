@@ -28,7 +28,7 @@ import org.alliancegenome.curation_api.services.orthology.GeneToGeneOrthologySer
 import org.alliancegenome.curation_api.services.validation.GeneValidator;
 import org.alliancegenome.curation_api.services.validation.dto.GeneDTOValidator;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import io.quarkus.logging.Log;
 import jakarta.annotation.PostConstruct;

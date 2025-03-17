@@ -54,7 +54,7 @@ public class SequenceTargetingReagentBulkUploadFmsITCase extends BaseITCase {
 				post(sqtrFindEndpoint).
 				then().
 				statusCode(200).
-				body("totalResults", is(1)).
+				body("returnedRecords", is(1)).
 				body("results", hasSize(1)).
 				body("results[0].primaryExternalId", is("ZFIN:ZDB-TALEN-180503-1")).
 				body("results[0].name", is("TALEN-inhbaa")).
@@ -93,7 +93,7 @@ public class SequenceTargetingReagentBulkUploadFmsITCase extends BaseITCase {
 			post(sqtrFindEndpoint).
 			then().
 			statusCode(200).
-			body("totalResults", is(1)).
+			body("returnedRecords", is(1)).
 			body("results", hasSize(1)).
 			body("results[0]", not(hasKey("soTermId"))).
 			body("results[0]", not(hasKey("synonyms"))).
@@ -113,7 +113,7 @@ public class SequenceTargetingReagentBulkUploadFmsITCase extends BaseITCase {
 			post(sqtrFindEndpoint).
 			then().
 			statusCode(200).
-			body("totalResults", is(1)).
+			body("returnedRecords", is(1)).
 			body("results", hasSize(1)).
 			body("results", hasSize(1)).
 			body("results[0]" , hasKey("primaryExternalId")).
@@ -131,7 +131,7 @@ public class SequenceTargetingReagentBulkUploadFmsITCase extends BaseITCase {
 			post(sqtrFindEndpoint).
 			then().
 			statusCode(200).
-			body("totalResults", is(1)).
+			body("returnedRecords", is(1)).
 			body("results", hasSize(1)).
 			body("results[0]", not(hasKey("soTerm"))).
 			body("results[0]", not(hasKey("synonyms"))).
