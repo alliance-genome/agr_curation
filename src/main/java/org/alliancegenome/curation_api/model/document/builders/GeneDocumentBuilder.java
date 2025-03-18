@@ -327,7 +327,9 @@ public class GeneDocumentBuilder {
 	}
 
 	public GeneSummaryDocument buildSummaryDocument(Gene gene) {
-		return new GeneSummaryDocument();
+		GeneSummaryDocument doc = new GeneSummaryDocument();
+		doc.setGene(gene);
+		return doc;
 	}
 
 }
