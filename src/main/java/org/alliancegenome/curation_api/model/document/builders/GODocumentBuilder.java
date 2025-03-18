@@ -27,8 +27,14 @@ public class GODocumentBuilder {
 			Set<String> genes = new HashSet<>();
 			Set<String> associatedSpecies = new HashSet<>();
 			for (GeneOntologyAnnotation goAnnotation : goAnnotations) {
-				genes.add(goAnnotation.getSingleGene().getIdentifier());
-				associatedSpecies.add(goAnnotation.getSingleGene().getTaxon().getName());
+				String geneSymbol = goAnnotation.getSingleGene().getGeneSymbol().getDisplayText();
+				String abbreviation = goAnnotation.getSingleGene().getDataProvider().getAbbreviation();
+				String geneDisplayString = geneSymbol + " (" + abbreviation + ")";
+
+				String taxonName = goAnnotation.getSingleGene().getTaxon().getName();
+
+				genes.add(geneDisplayString);
+				associatedSpecies.add(taxonName);
 			}
 			doc.setGenes(genes);
 			doc.setAssociatedSpecies(associatedSpecies);
