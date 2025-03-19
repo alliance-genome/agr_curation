@@ -20,7 +20,6 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.KeywordFie
 
 import com.fasterxml.jackson.annotation.JsonView;
 
-import io.quarkus.logging.Log;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Index;
 import jakarta.persistence.ManyToOne;
@@ -73,9 +72,6 @@ public class CrossReference extends AuditedObject {
 
 	@Transient
 	public String getUrlFromResourceDescriptorPage(String curie) {
-
-		Log.info("CURIE:"+ curie);
-		Log.info("RDP"+ resourceDescriptorPage);
 		if (resourceDescriptorPage != null) {
 			return resourceDescriptorPage.getUrlTemplate().replace("[%s]", curie);
 		}
