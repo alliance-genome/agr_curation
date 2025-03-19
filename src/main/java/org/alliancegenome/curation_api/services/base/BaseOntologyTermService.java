@@ -13,11 +13,13 @@ import org.alliancegenome.curation_api.dao.SynonymDAO;
 import org.alliancegenome.curation_api.dao.base.BaseEntityDAO;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.Person;
+import org.alliancegenome.curation_api.model.entities.ResourceDescriptorPage;
 import org.alliancegenome.curation_api.model.entities.Synonym;
 import org.alliancegenome.curation_api.model.entities.ontology.OntologyTerm;
 import org.alliancegenome.curation_api.response.ObjectListResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.CrossReferenceService;
+import org.alliancegenome.curation_api.services.ResourceDescriptorPageService;
 
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -27,6 +29,7 @@ public abstract class BaseOntologyTermService<E extends OntologyTerm, D extends 
 	@Inject CrossReferenceDAO crossReferenceDAO;
 	@Inject SynonymDAO synonymDAO;
 	@Inject CrossReferenceService crossReferenceService;
+	@Inject ResourceDescriptorPageService resourceDescriptorPageService;
 
 	@Inject
 	@AuthenticatedUser Person authenticatedPerson;
@@ -289,6 +292,10 @@ public abstract class BaseOntologyTermService<E extends OntologyTerm, D extends 
 		} else {
 			List<CrossReference> mergedCrossReferences = crossReferenceService.getUpdatedXrefList(incomingTerm.getCrossReferences(), dbTerm.getCrossReferences());
 			mergedIds = mergedCrossReferences.stream().map(CrossReference::getId).collect(Collectors.toList());
+			for(CrossReference xref: mergedCrossReferences) {
+				String prefix = dbTerm.getCurie().substring(0, dbTerm.getCurie().indexOf(":"));
+				xref.setResourceDescriptorPage(resourceDescriptorPageService.getPageForResourceDescriptor(prefix, "ontology_provided_cross_reference"));
+			}
 			dbTerm.setCrossReferences(mergedCrossReferences);
 		}
 

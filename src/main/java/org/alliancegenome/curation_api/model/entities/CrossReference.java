@@ -20,6 +20,7 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.KeywordFie
 
 import com.fasterxml.jackson.annotation.JsonView;
 
+import io.quarkus.logging.Log;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Index;
 import jakarta.persistence.ManyToOne;
@@ -57,7 +58,7 @@ public class CrossReference extends AuditedObject {
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@JsonView({ View.FieldsOnly.class, View.ForPublic.class })
+	@JsonView({ View.FieldsOnly.class, View.ForPublic.class, View.DiseaseSummaryDocument.class })
 	@Fetch(FetchMode.SELECT)
 	private ResourceDescriptorPage resourceDescriptorPage;
 
@@ -68,6 +69,17 @@ public class CrossReference extends AuditedObject {
 		}
 		
 		return referencedCurie.substring(0, referencedCurie.indexOf(":"));
+	}
+
+	@Transient
+	public String getUrlFromResourceDescriptorPage(String curie) {
+
+		Log.info("CURIE:"+ curie);
+		Log.info("RDP"+ resourceDescriptorPage);
+		if (resourceDescriptorPage != null) {
+			return resourceDescriptorPage.getUrlTemplate().replace("[%s]", curie);
+		}
+		return null;
 	}
 
 }
