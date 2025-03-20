@@ -131,6 +131,8 @@ public class View {
 
 	public static class GOSearchResultDocument { }
 
+	public static class DiseaseSummaryDocument { }
+
 	public static class GeneToGeneOrthologyForIndexer {
 	}
 	public static class DiseaseAnnotationForPublic extends ForPublic {

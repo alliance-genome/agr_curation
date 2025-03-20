@@ -7,4 +7,5 @@ import lombok.Data;
 @Data
 public abstract class ESDocument implements Serializable {
 	protected String category;
+	protected Boolean searchable = false;
 }
