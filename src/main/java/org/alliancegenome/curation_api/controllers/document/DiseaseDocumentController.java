@@ -31,7 +31,7 @@ public class DiseaseDocumentController implements DiseaseDocumentInterface {
 		Pagination pagination = new Pagination(page, limit);
 		SearchResponse<DOTerm> resp = doTermService.findByParams(pagination, params);
 
-		List<String> sources = List.of("RGD","MGI","ZFIN","FB","WB","SGD","Xenbase");
+		List<String> sources = List.of("RGD", "MGI", "ZFIN", "FB", "WB", "SGD", "Xenbase");
 		ArrayList<DiseaseSummaryDocument> list = new ArrayList<>();
 		if (resp.getResults() != null) {
 			DiseaseSummaryDocumentBuilder builder = new DiseaseSummaryDocumentBuilder();

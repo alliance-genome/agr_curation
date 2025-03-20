@@ -293,10 +293,10 @@ public abstract class BaseOntologyTermService<E extends OntologyTerm, D extends 
 		} else {
 			List<CrossReference> mergedCrossReferences = crossReferenceService.getUpdatedXrefList(incomingTerm.getCrossReferences(), dbTerm.getCrossReferences());
 			mergedIds = mergedCrossReferences.stream().map(CrossReference::getId).collect(Collectors.toList());
-			for(CrossReference xref: mergedCrossReferences) {
+			for (CrossReference xref: mergedCrossReferences) {
 				String prefix = xref.getReferencedCurie().substring(0, xref.getReferencedCurie().indexOf(":"));
 				ResourceDescriptorPage page = resourceDescriptorPageService.getPageForResourceDescriptor(prefix, "ontology_provided_cross_reference");
-				if(page == null) {
+				if (page == null) {
 					Log.warn(dbTerm);
 					Log.warn("Unable to find ResourceDescriptorPage for (prefix, page): (" + prefix + ", " + page + ")");
 				}
