@@ -8,6 +8,7 @@ import java.util.regex.Pattern;
 import org.alliancegenome.curation_api.model.entities.ontology.WBPhenotypeTerm;
 import org.alliancegenome.curation_api.services.ontology.WbPhenotypeTermService;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import io.quarkus.logging.Log;
 import jakarta.enterprise.context.RequestScoped;
@@ -75,7 +76,9 @@ public class InteractionAnnotationsHelper {
 							Log.error("Unrecognised annotation type " + annotationPart);
 					}
 				} else {
-					statementParts.add(nonWbMatcher.group(2));
+					for (String statementPart : StringUtils.substringsBetween(annotationPart, "(", ")")) {
+						statementParts.add(statementPart);
+					}
 				}
 			}
 		}
