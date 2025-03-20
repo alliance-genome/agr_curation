@@ -57,7 +57,7 @@ public class CrossReference extends AuditedObject {
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@JsonView({ View.FieldsOnly.class, View.ForPublic.class })
+	@JsonView({ View.FieldsOnly.class, View.ForPublic.class, View.DiseaseSummaryDocument.class })
 	@Fetch(FetchMode.SELECT)
 	private ResourceDescriptorPage resourceDescriptorPage;
 
@@ -68,6 +68,14 @@ public class CrossReference extends AuditedObject {
 		}
 		
 		return referencedCurie.substring(0, referencedCurie.indexOf(":"));
+	}
+
+	@Transient
+	public String getUrlFromResourceDescriptorPage(String curie) {
+		if (resourceDescriptorPage != null) {
+			return resourceDescriptorPage.getUrlTemplate().replace("[%s]", curie);
+		}
+		return null;
 	}
 
 }
