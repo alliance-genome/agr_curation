@@ -88,7 +88,11 @@ public class BaseValidator<E extends Object> {
 
 		if (uiDataProvider == null) {
 			if (newEntity) {
-				return organizationDAO.getOrCreateOrganization("Alliance");
+				String modAbbreviation = "Alliance";
+				if (authenticatedPerson.getAllianceMember() != null && authenticatedPerson.getAllianceMember().getAbbreviation() != null) {
+					modAbbreviation = authenticatedPerson.getAllianceMember().getAbbreviation();
+				}
+				return organizationDAO.getOrCreateOrganization(modAbbreviation);
 			} else {
 				addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
 				return null;
