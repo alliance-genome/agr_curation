@@ -46,7 +46,7 @@ public class AssemblyComponent extends GenomicEntity {
 	@IndexedEmbedded(includePaths = {"name", "name_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@JsonView({ View.FieldsOnly.class, View.GeneSummaryDocument.class })
+	@JsonView({ View.FieldsOnly.class })
 	private Chromosome mapsToChromosome;
 
 }
