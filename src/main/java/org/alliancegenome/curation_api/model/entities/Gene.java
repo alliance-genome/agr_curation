@@ -161,7 +161,7 @@ public class Gene extends GenomicEntity {
 		}
 	)
 	@OneToMany(mappedBy = "geneAssociationSubject", cascade = CascadeType.ALL, orphanRemoval = true)
-	@JsonView({ View.FieldsAndLists.class, View.GeneDetailView.class })
+	@JsonView({ View.FieldsAndLists.class, View.GeneDetailView.class, View.GeneSummaryDocument.class })
 	private List<GeneGenomicLocationAssociation> geneGenomicLocationAssociations;
 
 
