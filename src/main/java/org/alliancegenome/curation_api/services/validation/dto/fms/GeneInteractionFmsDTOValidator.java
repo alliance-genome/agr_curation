@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.dao.CrossReferenceDAO;
@@ -180,6 +181,9 @@ public class GeneInteractionFmsDTOValidator extends BaseDTOValidator {
 
 		Gene allianceGene = null;
 		String convertedCurie = prefix.alliancePrefix + ":" + psiMiTabIdParts[1];
+		if (Objects.equals(prefix.alliancePrefix, "UniProtKB")) {
+			convertedCurie.replaceAll("\\-\\d+$", "");
+		}
 		if (prefix.isModPrefix) {
 			allianceGene = getGeneFromCache(convertedCurie);
 		} else {
