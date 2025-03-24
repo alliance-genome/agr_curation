@@ -21,6 +21,7 @@ public class GOSearchResultDocument extends ESDocument {
 	private String branch;
 	private String definition;
 	private String name;
+	private String href;
 	@JsonbProperty("name_key")
 	private String nameKey;
 	private Set<String> associatedSpecies;
