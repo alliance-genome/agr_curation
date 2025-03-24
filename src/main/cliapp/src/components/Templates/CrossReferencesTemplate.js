@@ -21,7 +21,7 @@ export const CrossReferencesTemplate = ({ list }) => {
 						{item.displayName} <i> references </i> {item.referencedCurie}{' '}
 					</>
 				)}{' '}
-				({item.resourceDescriptorPage.name}){' '}
+				{item.resourceDescriptorPage ? '(' + item.resourceDescriptorPage.name + ')' : ''}{' '}
 			</EllipsisTableCell>
 		);
 	};
