@@ -9,6 +9,7 @@ export const CrossReferencesTemplate = ({ list }) => {
 	const targetClass = `a${global.crypto.randomUUID()}`;
 
 	const listTemplate = (item) => {
+		console.log(item)
 		if (!item) return null;
 		return (
 			<EllipsisTableCell>
@@ -21,7 +22,7 @@ export const CrossReferencesTemplate = ({ list }) => {
 						{item.displayName} <i> references </i> {item.referencedCurie}{' '}
 					</>
 				)}{' '}
-				({item.resourceDescriptorPage.name}){' '}
+				{item.resourceDescriptorPage ? '(' + item.resourceDescriptorPage.name + ')' : ''}{' '}
 			</EllipsisTableCell>
 		);
 	};
