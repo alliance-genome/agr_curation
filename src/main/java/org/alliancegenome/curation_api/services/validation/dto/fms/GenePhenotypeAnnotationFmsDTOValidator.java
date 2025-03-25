@@ -12,8 +12,8 @@ import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.GenomicEntityService;
 import org.alliancegenome.curation_api.services.PhenotypeAnnotationService;
+import org.alliancegenome.curation_api.services.helpers.GenePhenotypeAnnotationXrefHelper;
 import org.alliancegenome.curation_api.services.helpers.annotations.AnnotationUniqueIdHelper;
-import org.alliancegenome.curation_api.services.helpers.crossReferences.GenePhenotypeAnnotationXrefHelper;
 
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;

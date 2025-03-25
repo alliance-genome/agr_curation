@@ -28,7 +28,7 @@ import org.alliancegenome.curation_api.services.CrossReferenceService;
 import org.alliancegenome.curation_api.services.OrganizationService;
 import org.alliancegenome.curation_api.services.PersonService;
 import org.alliancegenome.curation_api.services.VocabularyTermService;
-import org.alliancegenome.curation_api.services.helpers.notes.NoteIdentityHelper;
+import org.alliancegenome.curation_api.services.helpers.NoteIdentityHelper;
 import org.alliancegenome.curation_api.services.ontology.NcbiTaxonTermService;
 import org.alliancegenome.curation_api.services.validation.CrossReferenceValidator;
 import org.alliancegenome.curation_api.services.validation.NoteValidator;
