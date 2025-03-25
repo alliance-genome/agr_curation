@@ -2,7 +2,6 @@ package org.alliancegenome.curation_api.model.document.builders;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.alliancegenome.curation_api.model.document.es.DiseaseSummaryDocument;
