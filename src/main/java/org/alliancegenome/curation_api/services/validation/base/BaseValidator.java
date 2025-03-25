@@ -28,7 +28,7 @@ import org.alliancegenome.curation_api.services.CrossReferenceService;
 import org.alliancegenome.curation_api.services.OrganizationService;
 import org.alliancegenome.curation_api.services.PersonService;
 import org.alliancegenome.curation_api.services.VocabularyTermService;
-import org.alliancegenome.curation_api.services.helpers.notes.NoteIdentityHelper;
+import org.alliancegenome.curation_api.services.helpers.NoteIdentityHelper;
 import org.alliancegenome.curation_api.services.ontology.NcbiTaxonTermService;
 import org.alliancegenome.curation_api.services.validation.CrossReferenceValidator;
 import org.alliancegenome.curation_api.services.validation.NoteValidator;
@@ -88,7 +88,11 @@ public class BaseValidator<E extends Object> {
 
 		if (uiDataProvider == null) {
 			if (newEntity) {
-				return organizationDAO.getOrCreateOrganization("Alliance");
+				String modAbbreviation = "Alliance";
+				if (authenticatedPerson.getAllianceMember() != null && authenticatedPerson.getAllianceMember().getAbbreviation() != null) {
+					modAbbreviation = authenticatedPerson.getAllianceMember().getAbbreviation();
+				}
+				return organizationDAO.getOrCreateOrganization(modAbbreviation);
 			} else {
 				addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
 				return null;
