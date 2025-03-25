@@ -1,6 +1,8 @@
 package org.alliancegenome.curation_api.model.document.builders;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 import org.alliancegenome.curation_api.model.document.es.DiseaseSummaryDocument;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
@@ -18,9 +20,12 @@ public class DiseaseSummaryDocumentBuilder {
 		doc.setDoTerm(doTerm);
 		doc.setParents(doTerm.getIsaParents());
 		doc.setChildren(doTerm.getIsaChildren());
-		doc.setCrossReferenceLinkUrls(new HashMap<>());
+		doc.setCrossReferenceLinkUrls(new ArrayList<Map<String, String>>());
 		for (CrossReference cr : doTerm.getCrossReferences()) {
-			doc.getCrossReferenceLinkUrls().put(cr.getReferencedCurie(), cr.getUrlFromResourceDescriptorPage(doTerm.getCurie()));
+			Map<String, String> map = new HashMap<>();
+			map.put("referencedCurie", cr.getReferencedCurie());
+			map.put("url", cr.getUrlFromResourceDescriptorPage(doTerm.getCurie()));
+			doc.getCrossReferenceLinkUrls().add(map);
 		}
 
 		return doc;
