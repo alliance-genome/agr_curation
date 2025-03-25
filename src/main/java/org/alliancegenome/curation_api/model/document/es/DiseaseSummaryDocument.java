@@ -1,6 +1,7 @@
 package org.alliancegenome.curation_api.model.document.es;
 
-import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.alliancegenome.curation_api.model.entities.ontology.DOTerm;
@@ -22,6 +23,6 @@ public class DiseaseSummaryDocument extends ESDocument {
 	private DOTerm doTerm;
 	private Set<OntologyTerm> parents;
 	private Set<OntologyTerm> children;
-	private HashMap<String, String> crossReferenceLinkUrls;
-	private HashMap<String, String> sourceReferenceLinkUrls;
+	private List<Map<String, String>> crossReferenceLinkUrls;
+	private List<Map<String, String>> sourceReferenceLinkUrls;
 }
