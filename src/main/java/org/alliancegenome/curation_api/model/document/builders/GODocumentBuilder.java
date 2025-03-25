@@ -6,6 +6,7 @@ import java.util.Set;
 
 import org.alliancegenome.curation_api.model.document.es.GOSearchResultDocument;
 import org.alliancegenome.curation_api.model.entities.GeneOntologyAnnotation;
+import org.alliancegenome.curation_api.model.entities.ResourceDescriptorPage;
 import org.alliancegenome.curation_api.model.entities.Synonym;
 import org.alliancegenome.curation_api.model.entities.ontology.GOTerm;
 
@@ -14,7 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class GODocumentBuilder {
 
-	public static GOSearchResultDocument buildSearchResultDocument(GOTerm goTerm) {
+	public static GOSearchResultDocument buildSearchResultDocument(GOTerm goTerm, ResourceDescriptorPage resourceDescriptorPage) {
 		GOSearchResultDocument doc = new GOSearchResultDocument();
 		doc.setCurie(goTerm.getCurie());
 		doc.setBranch(goTerm.getNamespace());
@@ -22,14 +23,17 @@ public class GODocumentBuilder {
 		doc.setName(goTerm.getName());
 		doc.setNameKey(goTerm.getName());
 
+		String href = resourceDescriptorPage.getUrlTemplate().replace("[%s]", goTerm.getCurie());
+		doc.setHref(href);
+
 		List<GeneOntologyAnnotation> goAnnotations = goTerm.getGeneOntologyAnnotations();
 		if (goAnnotations != null) {
 			Set<String> genes = new HashSet<>();
 			Set<String> associatedSpecies = new HashSet<>();
 			for (GeneOntologyAnnotation goAnnotation : goAnnotations) {
 				String geneSymbol = goAnnotation.getSingleGene().getGeneSymbol().getDisplayText();
-				String abbreviation = goAnnotation.getSingleGene().getDataProvider().getAbbreviation();
-				String geneDisplayString = geneSymbol + " (" + abbreviation + ")";
+				String speciesAbbreviation = goAnnotation.getSingleGene().getTaxon().getSpecies().get(0).getAbbreviation();
+				String geneDisplayString = geneSymbol + " (" + speciesAbbreviation + ")";
 
 				String taxonName = goAnnotation.getSingleGene().getTaxon().getName();
 
