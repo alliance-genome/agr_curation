@@ -4,7 +4,7 @@ import org.alliancegenome.curation_api.controllers.base.BaseEntityCrudController
 import org.alliancegenome.curation_api.dao.associations.SequenceTargetingReagentGeneAssociationDAO;
 import org.alliancegenome.curation_api.interfaces.crud.associations.SequenceTargetingReagentGeneAssociationCrudInterface;
 import org.alliancegenome.curation_api.jobs.executors.SequenceTargetingReagentExecutor;
-import org.alliancegenome.curation_api.model.entities.associations.sequenceTargetingReagentAssociations.SequenceTargetingReagentGeneAssociation;
+import org.alliancegenome.curation_api.model.entities.associations.SequenceTargetingReagentGeneAssociation;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.associations.SequenceTargetingReagentGeneAssociationService;
 

@@ -9,7 +9,7 @@ import org.alliancegenome.curation_api.model.entities.AllianceMember;
 import org.alliancegenome.curation_api.model.entities.Person;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.PersonService;
-import org.alliancegenome.curation_api.services.helpers.persons.PersonUniqueIdHelper;
+import org.alliancegenome.curation_api.services.helpers.PersonUniqueIdHelper;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import com.okta.jwt.Jwt;
