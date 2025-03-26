@@ -130,12 +130,12 @@ public class View {
 	public static class GeneSummaryDocument { }
 
 	public static class GOSearchResultDocument { }
-
+	
 	public static class DiseaseSummaryDocument { }
 	public static class DiseaseSearchResultDocument { }
 
-	public static class GeneToGeneOrthologyForIndexer {
-	}
+	public static class GeneToGeneOrthologyDocument { }
+	
 	public static class DiseaseAnnotationForPublic extends ForPublic {
 	}
 
