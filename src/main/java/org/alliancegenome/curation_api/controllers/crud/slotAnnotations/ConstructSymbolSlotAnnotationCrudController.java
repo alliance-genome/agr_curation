@@ -1,0 +1,40 @@
+package org.alliancegenome.curation_api.controllers.crud.slotAnnotations;
+
+import org.alliancegenome.curation_api.controllers.base.BaseEntityCrudController;
+import org.alliancegenome.curation_api.dao.slotAnnotations.ConstructSymbolSlotAnnotationDAO;
+import org.alliancegenome.curation_api.interfaces.crud.slotAnnotations.ConstructSymbolSlotAnnotationCrudInterface;
+import org.alliancegenome.curation_api.model.entities.slotAnnotations.ConstructSymbolSlotAnnotation;
+import org.alliancegenome.curation_api.response.ObjectResponse;
+import org.alliancegenome.curation_api.services.slotAnnotations.ConstructSymbolSlotAnnotationService;
+
+import jakarta.annotation.PostConstruct;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
+
+@RequestScoped
+public class ConstructSymbolSlotAnnotationCrudController extends
+	BaseEntityCrudController<ConstructSymbolSlotAnnotationService, ConstructSymbolSlotAnnotation, ConstructSymbolSlotAnnotationDAO> implements ConstructSymbolSlotAnnotationCrudInterface {
+
+	@Inject
+	ConstructSymbolSlotAnnotationService constructSymbolService;
+
+	@Override
+	@PostConstruct
+	protected void init() {
+		setService(constructSymbolService);
+	}
+
+	@Override
+	public ObjectResponse<ConstructSymbolSlotAnnotation> update(ConstructSymbolSlotAnnotation entity) {
+		return constructSymbolService.upsert(entity);
+	}
+
+	@Override
+	public ObjectResponse<ConstructSymbolSlotAnnotation> create(ConstructSymbolSlotAnnotation entity) {
+		return constructSymbolService.upsert(entity);
+	}
+
+	public ObjectResponse<ConstructSymbolSlotAnnotation> validate(ConstructSymbolSlotAnnotation entity) {
+		return constructSymbolService.validate(entity);
+	}
+}

@@ -15,7 +15,7 @@ import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
 import org.alliancegenome.curation_api.model.ingest.dto.AffectedGenomicModelDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
-import org.alliancegenome.curation_api.services.associations.constructAssociations.ConstructGenomicEntityAssociationService;
+import org.alliancegenome.curation_api.services.associations.ConstructGenomicEntityAssociationService;
 import org.alliancegenome.curation_api.services.base.SubmittedObjectCrudService;
 import org.alliancegenome.curation_api.services.validation.AffectedGenomicModelValidator;
 import org.alliancegenome.curation_api.services.validation.dto.AffectedGenomicModelDTOValidator;
