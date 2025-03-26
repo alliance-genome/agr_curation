@@ -182,7 +182,7 @@ public class GeneInteractionFmsDTOValidator extends BaseDTOValidator {
 		Gene allianceGene = null;
 		String convertedCurie = prefix.alliancePrefix + ":" + psiMiTabIdParts[1];
 		if (Objects.equals(prefix.alliancePrefix, "UniProtKB")) {
-			convertedCurie.replaceAll("\\-\\d+$", "");
+			convertedCurie = convertedCurie.replaceAll("\\-\\d+$", "");
 		}
 		if (prefix.isModPrefix) {
 			allianceGene = getGeneFromCache(convertedCurie);
