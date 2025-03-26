@@ -2,7 +2,9 @@ package org.alliancegenome.curation_api.interfaces.document;
 
 import java.util.HashMap;
 
+import org.alliancegenome.curation_api.model.document.es.DiseaseSearchResultDocument;
 import org.alliancegenome.curation_api.model.document.es.DiseaseSummaryDocument;
+import org.alliancegenome.curation_api.model.document.es.GeneSearchResultDocument;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.view.View;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
@@ -27,5 +29,11 @@ public interface DiseaseDocumentInterface {
 	@Path("/summary")
 	@JsonView(View.DiseaseSummaryDocument.class)
 	SearchResponse<DiseaseSummaryDocument> findSummary(@DefaultValue("0") @QueryParam("page") Integer page, @DefaultValue("10") @QueryParam("limit") Integer limit, @RequestBody HashMap<String, Object> params);
+
+	@POST
+	@Path("/searchresult")
+	@JsonView(View.DiseaseSearchResultDocument.class)
+	SearchResponse<DiseaseSearchResultDocument> findSearchResult(@DefaultValue("0") @QueryParam("page") Integer page, @DefaultValue("10") @QueryParam("limit") Integer limit, @RequestBody HashMap<String, Object> params);
+
 
 }

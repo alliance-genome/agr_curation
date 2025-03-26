@@ -1,22 +1,20 @@
 package org.alliancegenome.curation_api.response;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.JsonView;
+import lombok.Data;
 import org.alliancegenome.curation_api.view.View;
 import org.apache.commons.collections.CollectionUtils;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.fasterxml.jackson.annotation.JsonView;
-
-import lombok.Data;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 @Data
 @Schema(name = "SearchResponse", description = "POJO that represents the SearchResponse")
-@JsonView({ View.FieldsOnly.class, View.ForPublic.class, View.GeneToGeneOrthologyForIndexer.class, View.GOSearchResultDocument.class, View.GeneSummaryDocument.class, View.GeneSearchResultDocument.class, View.DiseaseSummaryDocument.class })
+@JsonView({View.FieldsOnly.class, View.ForPublic.class, View.GeneToGeneOrthologyForIndexer.class, View.GOSearchResultDocument.class, View.GeneSummaryDocument.class, View.GeneSearchResultDocument.class, View.DiseaseSummaryDocument.class, View.DiseaseSearchResultDocument.class})
 public class SearchResponse<E> extends APIResponse {
 
 	@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
