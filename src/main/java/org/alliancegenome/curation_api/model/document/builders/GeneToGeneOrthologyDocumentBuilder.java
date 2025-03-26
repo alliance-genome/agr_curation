@@ -19,11 +19,8 @@ public class GeneToGeneOrthologyDocumentBuilder {
 	public static GeneToGeneOrthologyDocument buildSearchResultDocument(GeneToGeneOrthologyGenerated g2gOrtho) {
 		GeneToGeneOrthologyDocument doc = new GeneToGeneOrthologyDocument();
 		doc.setGeneToGeneOrthologyGenerated(g2gOrtho);
-		
 		createStringencyFilter(g2gOrtho, doc);
 		createGeneAnnotations(g2gOrtho, doc);
-		removeAnnotationLists(doc);
-
 		return doc;
 
 	}
@@ -46,24 +43,9 @@ public class GeneToGeneOrthologyDocumentBuilder {
 	private static void putGeneInfo(List<Map<String, Object>> list, Gene gene) {
 		Map<String, Object> data = new HashMap<>();
 		data.put("geneIdentifier", gene.getIdentifier());
-		data.put("hasExpressionAnnotations", hasExpressionAnnotations(gene));
-		data.put("hasDiseaseAnnotations", hasDiseaseAnnotations(gene));
+		data.put("hasExpressionAnnotations", gene.getGeneExpressionAnnotations().size() > 0);
+		data.put("hasDiseaseAnnotations", gene.getGeneDiseaseAnnotations().size() > 0);
 		list.add(data);
-	}
-
-	private static boolean hasDiseaseAnnotations(Gene gene) {
-		return CollectionUtils.isNotEmpty(gene.getGeneDiseaseAnnotations());
-	}
-
-	private static boolean hasExpressionAnnotations(Gene gene) {
-		return CollectionUtils.isNotEmpty(gene.getGeneExpressionAnnotations());
-	}
-
-	private static void removeAnnotationLists(GeneToGeneOrthologyDocument document) {
-		document.getGeneToGeneOrthologyGenerated().getSubjectGene().setGeneDiseaseAnnotations(null);
-		document.getGeneToGeneOrthologyGenerated().getSubjectGene().setGeneExpressionAnnotations(null);
-		document.getGeneToGeneOrthologyGenerated().getObjectGene().setGeneDiseaseAnnotations(null);
-		document.getGeneToGeneOrthologyGenerated().getObjectGene().setGeneExpressionAnnotations(null);
 	}
 
 }
