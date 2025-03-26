@@ -40,7 +40,6 @@ public interface PhenotypeAnnotationCrudInterface extends BaseIdCrudInterface<Ph
 	@POST
 	@Path("/search")
 	@JsonView(View.PhenotypeAnnotationView.class)
-	@Tag(name = "Elastic Search Phenotype Annotations")
 	SearchResponse<PhenotypeAnnotation> search(@DefaultValue("0") @QueryParam("page") Integer page, @DefaultValue("10") @QueryParam("limit") Integer limit, @RequestBody HashMap<String, Object> params);
 
 	@POST
