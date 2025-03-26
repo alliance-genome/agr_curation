@@ -76,13 +76,13 @@ public class OntologyTerm extends CurieObject {
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "definition_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
 	@Column(columnDefinition = "TEXT")
-	@JsonView({View.FieldsOnly.class, View.ForPublic.class, View.DiseaseSummaryDocument.class})
+	@JsonView({ View.FieldsOnly.class, View.ForPublic.class, View.DiseaseSummaryDocument.class })
 	private String definition;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "definitionUrls_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
 	@ElementCollection
-	@JsonView(View.FieldsAndLists.class)
+	@JsonView({ View.FieldsAndLists.class, View.DiseaseSummaryDocument.class })
 	@Column(columnDefinition = "TEXT")
 	@JoinTable(indexes = @Index(name = "ontologyterm_definitionurls_ontologyterm_index", columnList = "ontologyterm_id"))
 	private List<String> definitionUrls;
@@ -138,10 +138,10 @@ public class OntologyTerm extends CurieObject {
 
 	@ManyToMany(mappedBy = "isaAncestors")
 	private Set<OntologyTerm> isaDescendants;
-	
+
 	@JsonView(View.FieldsOnly.class)
 	private Integer childCount = 0;
-	
+
 	@JsonView(View.FieldsOnly.class)
 	private Integer descendantCount = 0;
 
