@@ -63,8 +63,7 @@ public class DiseaseDocumentController implements DiseaseDocumentInterface {
 			}
 		}
 
-		SearchResponse<DiseaseSummaryDocument> ret = new SearchResponse<DiseaseSummaryDocument>(list);
-
+		SearchResponse<DiseaseSummaryDocument> ret = new SearchResponse<>(list);
 		ret.setTotalResults(resp.getTotalResults());
 		return ret;
 	}

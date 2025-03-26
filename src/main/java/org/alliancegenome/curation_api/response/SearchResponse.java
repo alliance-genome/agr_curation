@@ -17,8 +17,8 @@ import java.util.Map;
 @JsonView({View.FieldsOnly.class, View.ForPublic.class, View.GeneToGeneOrthologyForIndexer.class, View.GOSearchResultDocument.class, View.GeneSummaryDocument.class, View.GeneSearchResultDocument.class, View.DiseaseSummaryDocument.class, View.DiseaseSearchResultDocument.class})
 public class SearchResponse<E> extends APIResponse {
 
-	@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
-	private List<E> results = new ArrayList<E>();
+	@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
+	private List<E> results = new ArrayList<>();
 
 	private Long totalResults;
 	private Integer returnedRecords;
@@ -39,7 +39,7 @@ public class SearchResponse<E> extends APIResponse {
 		if (results != null) {
 			returnedRecords = results.size();
 		} else {
-			this.results = new ArrayList<E>();
+			this.results = new ArrayList<>();
 		}
 	}
 

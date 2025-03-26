@@ -2,7 +2,6 @@ package org.alliancegenome.curation_api.model.document.es;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
-import jakarta.json.bind.annotation.JsonbProperty;
 import lombok.Data;
 import org.alliancegenome.curation_api.view.View;
 

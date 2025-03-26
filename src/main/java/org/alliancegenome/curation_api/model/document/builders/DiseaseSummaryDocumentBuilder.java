@@ -8,6 +8,7 @@ import org.alliancegenome.curation_api.model.document.es.DiseaseSummaryDocument;
 import org.alliancegenome.curation_api.model.entities.*;
 import org.alliancegenome.curation_api.model.entities.ontology.DOTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.OntologyTerm;
+import org.alliancegenome.curation_api.model.input.Pagination;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.AGMDiseaseAnnotationService;
 import org.alliancegenome.curation_api.services.AlleleDiseaseAnnotationService;
@@ -65,10 +66,18 @@ public class DiseaseSummaryDocumentBuilder {
 		doc.setAssociatedSpecies(response.getResults().stream().map(geneDiseaseAnnotation -> geneDiseaseAnnotation.getDiseaseAnnotationSubject().getTaxon().getGenusSpecies()).collect(Collectors.toSet()));
 
 		// collect all the involved genes: direct genes, inferred genes, and asserted genes
+		// Needed to retrieve the orthologous genes
 		Set<Gene> allInvolvedGenes = response.getResults().stream().map(GeneDiseaseAnnotation::getDiseaseAnnotationSubject).collect(Collectors.toSet());
 
+		HashMap<String, Object> params = new HashMap<>();
+		params.put("internal", false);
+		params.put("obsolete", false);
+		params.put("diseaseAnnotationObject.curie", doTerm.getCurie());
+		Pagination pagination = new Pagination();
+		pagination.setLimit(1_000_000);
+
 		// loop over AGMDiseaseAnnotation
-		SearchResponse<AGMDiseaseAnnotation> responseAgm = agmService.findByField("diseaseAnnotationObject.curie", doTerm.getCurie());
+		SearchResponse<AGMDiseaseAnnotation> responseAgm = agmService.findByParams(pagination, params);
 		if (responseAgm != null) {
 			Set<Gene> inferredGene = getSingleGenes(responseAgm, AGMDiseaseAnnotation::getInferredGene);
 			allInvolvedGenes.addAll(inferredGene);
@@ -84,7 +93,7 @@ public class DiseaseSummaryDocumentBuilder {
 			doc.setModels(responseAgm.getResults().stream().map(agmDiseaseAnnotation -> agmDiseaseAnnotation.getDiseaseAnnotationSubject().getName()).collect(Collectors.toSet()));
 		}
 		// loop over AlleleDiseaseAnnotations
-		SearchResponse<AlleleDiseaseAnnotation> responseAllele = alleleService.findByField("diseaseAnnotationObject.curie", doTerm.getCurie());
+		SearchResponse<AlleleDiseaseAnnotation> responseAllele = alleleService.findByParams(pagination, params);
 		if (responseAllele != null) {
 			Set<Gene> inferredGenes = getSingleAlleles(responseAllele, AlleleDiseaseAnnotation::getInferredGene);
 			allInvolvedGenes.addAll(inferredGenes);
@@ -100,12 +109,10 @@ public class DiseaseSummaryDocumentBuilder {
 		}
 
 		// add orthologous genes for the all-involved genes
-		allInvolvedGenes.forEach(gene -> {
-			gene.getGeneToGeneOrthologyGenerateds().forEach(orthology -> {
-				doc.getGenes().add(getGeneName(orthology.getObjectGene()));
-				doc.getAssociatedSpecies().add(orthology.getObjectGene().getTaxon().getGenusSpecies());
-			});
-		});
+		allInvolvedGenes.forEach(gene -> gene.getGeneToGeneOrthologyGenerateds().forEach(orthology -> {
+			doc.getGenes().add(getGeneName(orthology.getObjectGene()));
+			doc.getAssociatedSpecies().add(orthology.getObjectGene().getTaxon().getGenusSpecies());
+		}));
 		doc.setParentDiseaseNames(doTerm.getIsaAncestors().stream().map(OntologyTerm::getName).collect(Collectors.toSet()));
 
 		// calculate diseaseGroup, ie parents with subset DO_AGR_slim
