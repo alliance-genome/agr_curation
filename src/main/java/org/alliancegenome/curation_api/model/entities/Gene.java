@@ -75,11 +75,9 @@ public class Gene extends GenomicEntity {
 	@JsonView({ View.FieldsOnly.class, View.GeneSummaryDocument.class })
 	private SOTerm geneType;
 	
-	@JsonView({ View.GeneToGeneOrthologyDocument.class })
 	@OneToMany(mappedBy = "diseaseAnnotationSubject", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<GeneDiseaseAnnotation> geneDiseaseAnnotations;
 	
-	@JsonView({ View.GeneToGeneOrthologyDocument.class })
 	@OneToMany(mappedBy = "expressionAnnotationSubject", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<GeneExpressionAnnotation> geneExpressionAnnotations;
 	
