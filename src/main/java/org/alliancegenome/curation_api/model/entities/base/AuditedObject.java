@@ -54,15 +54,15 @@ public class AuditedObject implements Serializable {
 	@JsonView({ View.FieldsOnly.class, View.PersonSettingView.class, VocabularyTermSetView.class })
 	@EqualsAndHashCode.Include
 	protected Long id;
-	
-	@IndexedEmbedded(includePaths = {"uniqueId", "uniqueId_keyword"})
+
+	@IndexedEmbedded(includePaths = { "uniqueId", "uniqueId_keyword" })
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
 	@Fetch(FetchMode.SELECT)
 	@JsonView(View.FieldsOnly.class)
 	private Person createdBy;
 
-	@IndexedEmbedded(includePaths = {"uniqueId", "uniqueId_keyword"})
+	@IndexedEmbedded(includePaths = { "uniqueId", "uniqueId_keyword" })
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
 	@Fetch(FetchMode.SELECT)
@@ -71,7 +71,7 @@ public class AuditedObject implements Serializable {
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer", valueBridge = @ValueBridgeRef(type = OffsetDateTimeValueBridge.class))
 	@KeywordField(name = "dateCreated_keyword", sortable = Sortable.YES, searchable = Searchable.YES, aggregable = Aggregable.YES, valueBridge = @ValueBridgeRef(type = OffsetDateTimeValueBridge.class))
-	@JsonView({View.FieldsOnly.class, View.ForPublic.class})
+	@JsonView({ View.FieldsOnly.class, View.ForPublic.class })
 	private OffsetDateTime dateCreated;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer", valueBridge = @ValueBridgeRef(type = OffsetDateTimeValueBridge.class))
@@ -102,4 +102,9 @@ public class AuditedObject implements Serializable {
 	@JsonView(View.FieldsOnly.class)
 	@UpdateTimestamp
 	private OffsetDateTime dbDateUpdated;
+
+	public boolean isNotInternalOrObsolete() {
+		return !internal && !obsolete;
+	}
+
 }

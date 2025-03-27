@@ -148,7 +148,7 @@ public class OntologyTerm extends CurieObject {
 	@Transient
 	public void addIsaChild(OntologyTerm term) {
 		if (isaChildren == null) {
-			isaChildren = new HashSet<OntologyTerm>();
+			isaChildren = new HashSet<>();
 		}
 		isaChildren.add(term);
 	}
@@ -156,7 +156,7 @@ public class OntologyTerm extends CurieObject {
 	@Transient
 	public void addIsaParent(OntologyTerm term) {
 		if (isaParents == null) {
-			isaParents = new HashSet<OntologyTerm>();
+			isaParents = new HashSet<>();
 		}
 		isaParents.add(term);
 	}
