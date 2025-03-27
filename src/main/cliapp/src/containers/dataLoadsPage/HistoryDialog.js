@@ -157,12 +157,14 @@ export const HistoryDialog = ({ historyDialog, setHistoryDialog, history, dataLo
 		for (let count in history.counts) {
 			if (!count.endsWith('Deleted')) {
 				let completedCount =
-					history.counts[count].completed +
-					' of ' +
-					history.counts[count].total +
-					' = ' +
-					Math.round((history.counts[count].completed / history.counts[count].total) * 1000) / 10 +
-					'%';
+					history.counts[count].total === 0
+						? '0%'
+						: history.counts[count].completed +
+							' of ' +
+							history.counts[count].total +
+							' = ' +
+							Math.round((history.counts[count].completed / history.counts[count].total) * 1000) / 10 +
+							'%';
 				completedCounts.push({ name: count, completed: completedCount });
 			}
 		}
