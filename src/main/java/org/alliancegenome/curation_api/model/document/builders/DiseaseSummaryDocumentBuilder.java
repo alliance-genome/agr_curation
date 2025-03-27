@@ -61,7 +61,7 @@ public class DiseaseSummaryDocumentBuilder {
 		doc.setSecondaryIds(new HashSet<>(doTerm.getSecondaryIdentifiers()));
 
 		// add genes from GeneDiseaseAnnotations
-		List<GeneDiseaseAnnotation> geneDiseaseAnnotations = doTerm.getNonObsoletedGeneDiseaseAnnotations();
+		List<GeneDiseaseAnnotation> geneDiseaseAnnotations = doTerm.getPublicGeneDiseaseAnnotations();
 		doc.setGenes(geneDiseaseAnnotations.stream().map(geneDiseaseAnnotation -> geneDiseaseAnnotation.getDiseaseAnnotationSubject().getGeneSymbol().getDisplayText()).collect(Collectors.toSet()));
 		doc.setAssociatedSpecies(geneDiseaseAnnotations.stream().map(geneDiseaseAnnotation -> geneDiseaseAnnotation.getDiseaseAnnotationSubject().getTaxon().getGenusSpecies()).collect(Collectors.toSet()));
 
@@ -71,7 +71,7 @@ public class DiseaseSummaryDocumentBuilder {
 		Set<Gene> allInvolvedGenes = geneDiseaseAnnotations.stream().map(GeneDiseaseAnnotation::getDiseaseAnnotationSubject).collect(Collectors.toSet());
 
 		// loop over AGMDiseaseAnnotation
-		List<AGMDiseaseAnnotation> agmDiseaseAnnotations = doTerm.getNonObsoletedAGMDiseaseAnnotations();
+		List<AGMDiseaseAnnotation> agmDiseaseAnnotations = doTerm.getPublicAGMDiseaseAnnotations();
 		if (agmDiseaseAnnotations != null) {
 			Set<Gene> inferredGene = getSingleGenes(agmDiseaseAnnotations, AGMDiseaseAnnotation::getInferredGene);
 			allInvolvedGenes.addAll(inferredGene);
@@ -83,7 +83,7 @@ public class DiseaseSummaryDocumentBuilder {
 			doc.setModels(agmDiseaseAnnotations.stream().map(agmDiseaseAnnotation -> agmDiseaseAnnotation.getDiseaseAnnotationSubject().getName()).collect(Collectors.toSet()));
 		}
 		// loop over AlleleDiseaseAnnotations
-		List<AlleleDiseaseAnnotation> alleleDiseaseAnnotations = doTerm.getNonObsoletedAlleleDiseaseAnnotations();
+		List<AlleleDiseaseAnnotation> alleleDiseaseAnnotations = doTerm.getPublicAlleleDiseaseAnnotations();
 		if (alleleDiseaseAnnotations != null) {
 			Set<Gene> inferredGenes = getSingleGenes(alleleDiseaseAnnotations, AlleleDiseaseAnnotation::getInferredGene);
 			allInvolvedGenes.addAll(inferredGenes);
