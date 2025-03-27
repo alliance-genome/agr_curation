@@ -65,7 +65,8 @@ public class DiseaseSummaryDocumentBuilder {
 		doc.setGenes(geneDiseaseAnnotations.stream().map(geneDiseaseAnnotation -> geneDiseaseAnnotation.getDiseaseAnnotationSubject().getGeneSymbol().getDisplayText()).collect(Collectors.toSet()));
 		doc.setAssociatedSpecies(geneDiseaseAnnotations.stream().map(geneDiseaseAnnotation -> geneDiseaseAnnotation.getDiseaseAnnotationSubject().getTaxon().getGenusSpecies()).collect(Collectors.toSet()));
 
-		// collect all the involved genes: direct genes, inferred genes, and asserted genes
+		// collect all the involved genes: direct genes, inferred genes, and asserted
+		// genes
 		// Needed to retrieve the orthologous genes
 		Set<Gene> allInvolvedGenes = geneDiseaseAnnotations.stream().map(GeneDiseaseAnnotation::getDiseaseAnnotationSubject).collect(Collectors.toSet());
 
@@ -78,11 +79,7 @@ public class DiseaseSummaryDocumentBuilder {
 			Collection<Gene> assertedGenes = getMultipleGenes(agmDiseaseAnnotations, AGMDiseaseAnnotation::getAssertedGenes);
 			doc.getGenes().addAll(assertedGenes.stream().map(this::getGeneName).collect(Collectors.toSet()));
 			allInvolvedGenes.addAll(assertedGenes);
-			doc.getAlleles().addAll(
-				agmDiseaseAnnotations.stream()
-					.filter(agmDiseaseAnnotation -> agmDiseaseAnnotation.getInferredAllele() != null)
-					.map(alleleDiseaseAnnotation -> getAlleleName(alleleDiseaseAnnotation.getInferredAllele()))
-					.collect(Collectors.toSet()));
+			doc.getAlleles().addAll(agmDiseaseAnnotations.stream().filter(agmDiseaseAnnotation -> agmDiseaseAnnotation.getInferredAllele() != null).map(alleleDiseaseAnnotation -> getAlleleName(alleleDiseaseAnnotation.getInferredAllele())).collect(Collectors.toSet()));
 			doc.setModels(agmDiseaseAnnotations.stream().map(agmDiseaseAnnotation -> agmDiseaseAnnotation.getDiseaseAnnotationSubject().getName()).collect(Collectors.toSet()));
 		}
 		// loop over AlleleDiseaseAnnotations
@@ -95,10 +92,7 @@ public class DiseaseSummaryDocumentBuilder {
 			Set<Gene> assertedGenes = getMultipleAlleles(alleleDiseaseAnnotations, AlleleDiseaseAnnotation::getAssertedGenes);
 			allInvolvedGenes.addAll(assertedGenes);
 			doc.getGenes().addAll(assertedGenes.stream().map(this::getGeneName).collect(Collectors.toSet()));
-			doc.setAlleles(alleleDiseaseAnnotations.stream()
-				.filter(alleleDiseaseAnnotation -> alleleDiseaseAnnotation.getDiseaseAnnotationSubject().getAlleleSymbol() != null)
-				.map(alleleDiseaseAnnotation -> getAlleleName(alleleDiseaseAnnotation.getDiseaseAnnotationSubject()))
-				.collect(Collectors.toSet()));
+			doc.setAlleles(alleleDiseaseAnnotations.stream().filter(alleleDiseaseAnnotation -> alleleDiseaseAnnotation.getDiseaseAnnotationSubject().getAlleleSymbol() != null).map(alleleDiseaseAnnotation -> getAlleleName(alleleDiseaseAnnotation.getDiseaseAnnotationSubject())).collect(Collectors.toSet()));
 		}
 
 		// add orthologous genes for the all-involved genes
@@ -109,10 +103,7 @@ public class DiseaseSummaryDocumentBuilder {
 		doc.setParentDiseaseNames(doTerm.getIsaAncestors().stream().map(OntologyTerm::getName).collect(Collectors.toSet()));
 
 		// calculate diseaseGroup, ie parents with subset DO_AGR_slim
-		doc.setDiseaseGroup(doTerm.getIsaAncestors().stream()
-			.filter(ontologyTerm -> ontologyTerm.getSubsets().contains("DO_AGR_slim"))
-			.map(OntologyTerm::getName)
-			.collect(Collectors.toSet()));
+		doc.setDiseaseGroup(doTerm.getIsaAncestors().stream().filter(ontologyTerm -> ontologyTerm.getSubsets().contains("DO_AGR_slim")).map(OntologyTerm::getName).collect(Collectors.toSet()));
 		return doc;
 	}
 
@@ -129,34 +120,18 @@ public class DiseaseSummaryDocumentBuilder {
 	}
 
 	public Set<Gene> getSingleGenes(Collection<AGMDiseaseAnnotation> annotations, Function<AGMDiseaseAnnotation, Gene> function) {
-		return annotations.stream()
-			.filter(agmDiseaseAnnotation -> function.apply(agmDiseaseAnnotation) != null)
-			.map(function)
-			.collect(Collectors.toSet());
+		return annotations.stream().filter(agmDiseaseAnnotation -> function.apply(agmDiseaseAnnotation) != null).map(function).collect(Collectors.toSet());
 	}
 
 	public Set<Gene> getMultipleGenes(List<AGMDiseaseAnnotation> annotations, Function<AGMDiseaseAnnotation, List<Gene>> function) {
-		return annotations.stream()
-			.filter(agmDiseaseAnnotation -> function.apply(agmDiseaseAnnotation) != null)
-			.map(geneDiseaseAnnotation -> function.apply(geneDiseaseAnnotation).stream()
-				.toList())
-			.flatMap(Collection::stream)
-			.collect(Collectors.toSet());
+		return annotations.stream().filter(agmDiseaseAnnotation -> function.apply(agmDiseaseAnnotation) != null).map(geneDiseaseAnnotation -> function.apply(geneDiseaseAnnotation).stream().toList()).flatMap(Collection::stream).collect(Collectors.toSet());
 	}
 
 	public Set<Gene> getSingleGenes(List<AlleleDiseaseAnnotation> annotations, Function<AlleleDiseaseAnnotation, Gene> function) {
-		return annotations.stream()
-			.filter(agmDiseaseAnnotation -> function.apply(agmDiseaseAnnotation) != null)
-			.map(function)
-			.collect(Collectors.toSet());
+		return annotations.stream().filter(agmDiseaseAnnotation -> function.apply(agmDiseaseAnnotation) != null).map(function).collect(Collectors.toSet());
 	}
 
 	public Set<Gene> getMultipleAlleles(List<AlleleDiseaseAnnotation> annotations, Function<AlleleDiseaseAnnotation, List<Gene>> function) {
-		return annotations.stream()
-			.filter(agmDiseaseAnnotation -> function.apply(agmDiseaseAnnotation) != null)
-			.map(geneDiseaseAnnotation -> function.apply(geneDiseaseAnnotation).stream()
-				.toList())
-			.flatMap(Collection::stream)
-			.collect(Collectors.toSet());
+		return annotations.stream().filter(agmDiseaseAnnotation -> function.apply(agmDiseaseAnnotation) != null).map(geneDiseaseAnnotation -> function.apply(geneDiseaseAnnotation).stream().toList()).flatMap(Collection::stream).collect(Collectors.toSet());
 	}
 }
