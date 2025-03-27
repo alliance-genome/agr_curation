@@ -14,7 +14,16 @@ import java.util.Map;
 
 @Data
 @Schema(name = "SearchResponse", description = "POJO that represents the SearchResponse")
-@JsonView({View.FieldsOnly.class, View.ForPublic.class, View.GeneToGeneOrthologyForIndexer.class, View.GOSearchResultDocument.class, View.GeneSummaryDocument.class, View.GeneSearchResultDocument.class, View.DiseaseSummaryDocument.class, View.DiseaseSearchResultDocument.class})
+@JsonView({
+	View.FieldsOnly.class,
+	View.ForPublic.class,
+	View.GeneToGeneOrthologyDocument.class,
+	View.GOSearchResultDocument.class,
+	View.GeneSummaryDocument.class,
+	View.GeneSearchResultDocument.class,
+	View.DiseaseSummaryDocument.class,
+	View.DiseaseSearchResultDocument.class
+})
 public class SearchResponse<E> extends APIResponse {
 
 	@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
