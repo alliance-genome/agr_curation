@@ -8,8 +8,6 @@ import java.util.Map;
 import org.alliancegenome.curation_api.model.document.es.GeneToGeneOrthologyDocument;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.orthology.GeneToGeneOrthologyGenerated;
-import org.apache.commons.collections4.CollectionUtils;
-
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -22,7 +20,6 @@ public class GeneToGeneOrthologyDocumentBuilder {
 		createStringencyFilter(g2gOrtho, doc);
 		createGeneAnnotations(g2gOrtho, doc);
 		return doc;
-
 	}
 
 	private static void createStringencyFilter(GeneToGeneOrthologyGenerated g2gOrtho, GeneToGeneOrthologyDocument document) {
