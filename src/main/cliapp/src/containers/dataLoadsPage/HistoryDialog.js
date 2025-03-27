@@ -41,6 +41,21 @@ export const HistoryDialog = ({ historyDialog, setHistoryDialog, history, dataLo
 	});
 
 	useQuery(
+		['bulkLoadHistoryExceptionsTotalResults', [history]],
+		() => dataLoadService.getHistoryExceptions(history.id, 0, 0),
+		{
+			onSuccess: (res) => {
+				setTotalRecords(res.data.totalResults);
+			},
+			onError: (error) => {
+				console.log(error);
+			},
+			keepPreviousData: true,
+			refetchOnWindowFocus: false,
+		}
+	);
+
+	useQuery(
 		['bulkLoadHistoryExceptions', [history, tableState]],
 		() => dataLoadService.getHistoryExceptions(history.id, tableState.rows, tableState.page),
 		{
@@ -50,7 +65,6 @@ export const HistoryDialog = ({ historyDialog, setHistoryDialog, history, dataLo
 				} else {
 					setHistoryExceptions([]);
 				}
-				setTotalRecords(res.data.totalResults);
 			},
 			onError: (error) => {
 				console.log(error);
