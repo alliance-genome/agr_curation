@@ -112,6 +112,59 @@ export const HistoryDialog = ({ historyDialog, setHistoryDialog, history, dataLo
 		setTableState(_tableState);
 	};
 
+	const rateTemplate = (history) => {
+		let countRates = [];
+		for (let count in history.counts) {
+			if (!count.endsWith('Deleted')) {
+				let rate =
+					Math.round(
+						(history.counts[count].completed / (moment(history.loadFinished) - moment(history.loadStarted))) * 10000
+					) /
+						10 +
+					' r/s';
+				countRates.push({ name: count, rate: rate });
+			}
+		}
+
+		if (countRates.length === 1) {
+			return countRates[0].rate;
+		}
+
+		return (
+			<DataTable key="rateTable" value={countRates}>
+				<Column field="name" />
+				<Column field="rate" />
+			</DataTable>
+		);
+	};
+
+	const completedTemplate = (history) => {
+		let completedCounts = [];
+		for (let count in history.counts) {
+			if (!count.endsWith('Deleted')) {
+				let completedCount =
+					history.counts[count].completed +
+					' of ' +
+					history.counts[count].total +
+					' = ' +
+					Math.round((history.counts[count].completed / history.counts[count].total) * 1000) / 10 +
+					'%';
+				completedCounts.push({ name: count, completed: completedCount });
+			}
+		}
+
+		if (completedCounts.length === 1) {
+			return completedCounts[0].completed;
+		}
+
+		return (
+			<DataTable key="completedTable" value={completedCounts} showHeaders={false}>
+				<Column field="name" />
+				<Column field="completed" />
+			</DataTable>
+		);
+	};
+
 	return (
 		<div>
 			<Dialog
@@ -138,14 +191,7 @@ export const HistoryDialog = ({ historyDialog, setHistoryDialog, history, dataLo
 						<div className="card mb-0">
 							<div>
 								<span className="block text-500 font-medium mb-3">Rate</span>
-								<div className="text-900 font-medium text-xl">
-									{Math.round(
-										(fullHistory.completedRecords /
-											(moment(fullHistory.loadFinished) - moment(fullHistory.loadStarted))) *
-											10000
-									) / 10}{' '}
-									r/s
-								</div>
+								<div className="text-900 font-medium text-xl">{rateTemplate(fullHistory)}</div>
 							</div>
 							<span className="text-500">How many records per second to the database</span>
 						</div>
@@ -154,10 +200,7 @@ export const HistoryDialog = ({ historyDialog, setHistoryDialog, history, dataLo
 						<div className="card mb-0">
 							<div>
 								<span className="block text-500 font-medium mb-3">Completed</span>
-								<div className="text-900 font-medium text-xl">
-									{fullHistory.completedRecords} of {fullHistory.totalRecords} ={' '}
-									{Math.round((fullHistory.completedRecords / fullHistory.totalRecords) * 1000) / 10}%
-								</div>
+								<div className="text-900 font-medium text-xl">{completedTemplate(fullHistory)}</div>
 							</div>
 							<span className="text-500">How much of the load was successful</span>
 						</div>
