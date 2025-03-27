@@ -102,4 +102,9 @@ public class AuditedObject implements Serializable {
 	@JsonView(View.FieldsOnly.class)
 	@UpdateTimestamp
 	private OffsetDateTime dbDateUpdated;
+
+	public boolean isNotInternalOrObsolete(){
+		return !internal && !obsolete;
+	}
+
 }

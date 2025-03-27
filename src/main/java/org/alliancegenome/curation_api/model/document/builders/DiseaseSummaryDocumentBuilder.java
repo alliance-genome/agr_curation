@@ -8,8 +8,6 @@ import org.alliancegenome.curation_api.model.document.es.DiseaseSummaryDocument;
 import org.alliancegenome.curation_api.model.entities.*;
 import org.alliancegenome.curation_api.model.entities.ontology.DOTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.OntologyTerm;
-import org.alliancegenome.curation_api.model.input.Pagination;
-import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.AGMDiseaseAnnotationService;
 import org.alliancegenome.curation_api.services.AlleleDiseaseAnnotationService;
 import org.alliancegenome.curation_api.services.GeneDiseaseAnnotationService;
@@ -60,49 +58,43 @@ public class DiseaseSummaryDocumentBuilder {
 		doc.setSynonyms(doTerm.getSynonyms().stream().map(Synonym::getName).collect(Collectors.toSet()));
 		doc.setCrossReferences(doTerm.getCrossReferences().stream().map(CrossReference::getDisplayName).collect(Collectors.toSet()));
 		doc.setSecondaryIds(new HashSet<>(doTerm.getSecondaryIdentifiers()));
+
 		// add genes from GeneDiseaseAnnotations
-		SearchResponse<GeneDiseaseAnnotation> response = service.findByField("diseaseAnnotationObject.curie", doTerm.getCurie());
-		doc.setGenes(response.getResults().stream().map(geneDiseaseAnnotation -> geneDiseaseAnnotation.getDiseaseAnnotationSubject().getGeneSymbol().getDisplayText()).collect(Collectors.toSet()));
-		doc.setAssociatedSpecies(response.getResults().stream().map(geneDiseaseAnnotation -> geneDiseaseAnnotation.getDiseaseAnnotationSubject().getTaxon().getGenusSpecies()).collect(Collectors.toSet()));
+		List<GeneDiseaseAnnotation> geneDiseaseAnnotations = doTerm.getGeneDiseaseAnnotations();
+		doc.setGenes(geneDiseaseAnnotations.stream().map(geneDiseaseAnnotation -> geneDiseaseAnnotation.getDiseaseAnnotationSubject().getGeneSymbol().getDisplayText()).collect(Collectors.toSet()));
+		doc.setAssociatedSpecies(geneDiseaseAnnotations.stream().map(geneDiseaseAnnotation -> geneDiseaseAnnotation.getDiseaseAnnotationSubject().getTaxon().getGenusSpecies()).collect(Collectors.toSet()));
 
 		// collect all the involved genes: direct genes, inferred genes, and asserted genes
 		// Needed to retrieve the orthologous genes
-		Set<Gene> allInvolvedGenes = response.getResults().stream().map(GeneDiseaseAnnotation::getDiseaseAnnotationSubject).collect(Collectors.toSet());
-
-		HashMap<String, Object> params = new HashMap<>();
-		params.put("internal", false);
-		params.put("obsolete", false);
-		params.put("diseaseAnnotationObject.curie", doTerm.getCurie());
-		Pagination pagination = new Pagination();
-		pagination.setLimit(1_000_000);
+		Set<Gene> allInvolvedGenes = geneDiseaseAnnotations.stream().map(GeneDiseaseAnnotation::getDiseaseAnnotationSubject).collect(Collectors.toSet());
 
 		// loop over AGMDiseaseAnnotation
-		SearchResponse<AGMDiseaseAnnotation> responseAgm = agmService.findByParams(pagination, params);
-		if (responseAgm != null) {
-			Set<Gene> inferredGene = getSingleGenes(responseAgm, AGMDiseaseAnnotation::getInferredGene);
+		List<AGMDiseaseAnnotation> agmDiseaseAnnotations = doTerm.getAGMDiseaseAnnotations();
+		if (agmDiseaseAnnotations != null) {
+			Set<Gene> inferredGene = getSingleGenes(agmDiseaseAnnotations, AGMDiseaseAnnotation::getInferredGene);
 			allInvolvedGenes.addAll(inferredGene);
 			doc.getGenes().addAll(inferredGene.stream().map(this::getGeneName).collect(Collectors.toSet()));
-			Collection<Gene> assertedGenes = getMultipleGenes(responseAgm, AGMDiseaseAnnotation::getAssertedGenes);
+			Collection<Gene> assertedGenes = getMultipleGenes(agmDiseaseAnnotations, AGMDiseaseAnnotation::getAssertedGenes);
 			doc.getGenes().addAll(assertedGenes.stream().map(this::getGeneName).collect(Collectors.toSet()));
 			allInvolvedGenes.addAll(assertedGenes);
 			doc.getAlleles().addAll(
-				responseAgm.getResults().stream()
+				agmDiseaseAnnotations.stream()
 					.filter(agmDiseaseAnnotation -> agmDiseaseAnnotation.getInferredAllele() != null)
 					.map(alleleDiseaseAnnotation -> getAlleleName(alleleDiseaseAnnotation.getInferredAllele()))
 					.collect(Collectors.toSet()));
-			doc.setModels(responseAgm.getResults().stream().map(agmDiseaseAnnotation -> agmDiseaseAnnotation.getDiseaseAnnotationSubject().getName()).collect(Collectors.toSet()));
+			doc.setModels(agmDiseaseAnnotations.stream().map(agmDiseaseAnnotation -> agmDiseaseAnnotation.getDiseaseAnnotationSubject().getName()).collect(Collectors.toSet()));
 		}
 		// loop over AlleleDiseaseAnnotations
-		SearchResponse<AlleleDiseaseAnnotation> responseAllele = alleleService.findByParams(pagination, params);
-		if (responseAllele != null) {
-			Set<Gene> inferredGenes = getSingleAlleles(responseAllele, AlleleDiseaseAnnotation::getInferredGene);
+		List<AlleleDiseaseAnnotation> alleleDiseaseAnnotations = doTerm.getAlleleDiseaseAnnotations();
+		if (alleleDiseaseAnnotations != null) {
+			Set<Gene> inferredGenes = getSingleGenes(alleleDiseaseAnnotations, AlleleDiseaseAnnotation::getInferredGene);
 			allInvolvedGenes.addAll(inferredGenes);
 			doc.getGenes().addAll(inferredGenes.stream().map(this::getGeneName).collect(Collectors.toSet()));
 
-			Set<Gene> assertedGenes = getMultipleAlleles(responseAllele, AlleleDiseaseAnnotation::getAssertedGenes);
+			Set<Gene> assertedGenes = getMultipleAlleles(alleleDiseaseAnnotations, AlleleDiseaseAnnotation::getAssertedGenes);
 			allInvolvedGenes.addAll(assertedGenes);
 			doc.getGenes().addAll(assertedGenes.stream().map(this::getGeneName).collect(Collectors.toSet()));
-			doc.setAlleles(responseAllele.getResults().stream()
+			doc.setAlleles(alleleDiseaseAnnotations.stream()
 				.filter(alleleDiseaseAnnotation -> alleleDiseaseAnnotation.getDiseaseAnnotationSubject().getAlleleSymbol() != null)
 				.map(alleleDiseaseAnnotation -> getAlleleName(alleleDiseaseAnnotation.getDiseaseAnnotationSubject()))
 				.collect(Collectors.toSet()));
@@ -135,15 +127,15 @@ public class DiseaseSummaryDocumentBuilder {
 		return " (" + genomicEntity.getTaxon().getSpecies().get(0).getAbbreviation() + ")";
 	}
 
-	public Set<Gene> getSingleGenes(SearchResponse<AGMDiseaseAnnotation> response, Function<AGMDiseaseAnnotation, Gene> function) {
-		return response.getResults().stream()
+	public Set<Gene> getSingleGenes(Collection<AGMDiseaseAnnotation> annotations, Function<AGMDiseaseAnnotation, Gene> function) {
+		return annotations.stream()
 			.filter(agmDiseaseAnnotation -> function.apply(agmDiseaseAnnotation) != null)
 			.map(function)
 			.collect(Collectors.toSet());
 	}
 
-	public Set<Gene> getMultipleGenes(SearchResponse<AGMDiseaseAnnotation> response, Function<AGMDiseaseAnnotation, List<Gene>> function) {
-		return response.getResults().stream()
+	public Set<Gene> getMultipleGenes(List<AGMDiseaseAnnotation> annotations, Function<AGMDiseaseAnnotation, List<Gene>> function) {
+		return annotations.stream()
 			.filter(agmDiseaseAnnotation -> function.apply(agmDiseaseAnnotation) != null)
 			.map(geneDiseaseAnnotation -> function.apply(geneDiseaseAnnotation).stream()
 				.toList())
@@ -151,15 +143,15 @@ public class DiseaseSummaryDocumentBuilder {
 			.collect(Collectors.toSet());
 	}
 
-	public Set<Gene> getSingleAlleles(SearchResponse<AlleleDiseaseAnnotation> response, Function<AlleleDiseaseAnnotation, Gene> function) {
-		return response.getResults().stream()
+	public Set<Gene> getSingleGenes(List<AlleleDiseaseAnnotation> annotations, Function<AlleleDiseaseAnnotation, Gene> function) {
+		return annotations.stream()
 			.filter(agmDiseaseAnnotation -> function.apply(agmDiseaseAnnotation) != null)
 			.map(function)
 			.collect(Collectors.toSet());
 	}
 
-	public Set<Gene> getMultipleAlleles(SearchResponse<AlleleDiseaseAnnotation> response, Function<AlleleDiseaseAnnotation, List<Gene>> function) {
-		return response.getResults().stream()
+	public Set<Gene> getMultipleAlleles(List<AlleleDiseaseAnnotation> annotations, Function<AlleleDiseaseAnnotation, List<Gene>> function) {
+		return annotations.stream()
 			.filter(agmDiseaseAnnotation -> function.apply(agmDiseaseAnnotation) != null)
 			.map(geneDiseaseAnnotation -> function.apply(geneDiseaseAnnotation).stream()
 				.toList())
