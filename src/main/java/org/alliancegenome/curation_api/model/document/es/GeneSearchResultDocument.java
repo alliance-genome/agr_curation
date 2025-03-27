@@ -1,13 +1,11 @@
 package org.alliancegenome.curation_api.model.document.es;
 
-import java.util.Set;
-
-import org.alliancegenome.curation_api.view.View;
-
 import com.fasterxml.jackson.annotation.JsonView;
-
 import jakarta.json.bind.annotation.JsonbProperty;
 import lombok.Data;
+import org.alliancegenome.curation_api.view.View;
+
+import java.util.Set;
 
 @Data
 @JsonView(View.GeneSearchResultDocument.class)

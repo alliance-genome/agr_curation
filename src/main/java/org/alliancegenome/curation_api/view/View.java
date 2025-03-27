@@ -132,6 +132,7 @@ public class View {
 	public static class GOSearchResultDocument { }
 
 	public static class DiseaseSummaryDocument { }
+	public static class DiseaseSearchResultDocument { }
 
 	public static class GeneToGeneOrthologyForIndexer {
 	}
