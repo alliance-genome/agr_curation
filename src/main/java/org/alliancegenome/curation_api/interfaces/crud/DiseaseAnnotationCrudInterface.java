@@ -37,7 +37,6 @@ public interface DiseaseAnnotationCrudInterface extends BaseIdCrudInterface<Dise
 	@POST
 	@Path("/search")
 	@JsonView(View.DiseaseAnnotation.class)
-	@Tag(name = "Elastic Search Disease Annotations")
 	SearchResponse<DiseaseAnnotation> search(@DefaultValue("0") @QueryParam("page") Integer page, @DefaultValue("10") @QueryParam("limit") Integer limit, @RequestBody HashMap<String, Object> params);
 
 }
