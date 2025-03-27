@@ -35,22 +35,22 @@ public class DOTerm extends OntologyTerm {
 	@OneToMany(mappedBy = "diseaseAnnotationObject")
 	private List<AGMDiseaseAnnotation> agmDiseaseAnnotations;
 
-	public  List<GeneDiseaseAnnotation> getGeneDiseaseAnnotations() {
-		if(CollectionUtils.isEmpty(geneDiseaseAnnotations)) {
+	public List<GeneDiseaseAnnotation> getGeneDiseaseAnnotations() {
+		if (CollectionUtils.isEmpty(geneDiseaseAnnotations)) {
 			return null;
 		}
 		return geneDiseaseAnnotations.stream().filter(AuditedObject::isNotInternalOrObsolete).toList();
 	}
 
-	public  List<AlleleDiseaseAnnotation> getAlleleDiseaseAnnotations() {
-		if(CollectionUtils.isEmpty(alleleDiseaseAnnotations)) {
+	public List<AlleleDiseaseAnnotation> getAlleleDiseaseAnnotations() {
+		if (CollectionUtils.isEmpty(alleleDiseaseAnnotations)) {
 			return null;
 		}
 		return alleleDiseaseAnnotations.stream().filter(AuditedObject::isNotInternalOrObsolete).toList();
 	}
 
-	public  List<AGMDiseaseAnnotation> getAGMDiseaseAnnotations() {
-		if(CollectionUtils.isEmpty(agmDiseaseAnnotations)) {
+	public List<AGMDiseaseAnnotation> getAGMDiseaseAnnotations() {
+		if (CollectionUtils.isEmpty(agmDiseaseAnnotations)) {
 			return null;
 		}
 		return agmDiseaseAnnotations.stream().filter(AuditedObject::isNotInternalOrObsolete).toList();
