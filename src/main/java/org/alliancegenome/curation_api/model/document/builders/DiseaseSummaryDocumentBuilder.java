@@ -1,31 +1,32 @@
 package org.alliancegenome.curation_api.model.document.builders;
 
-import jakarta.enterprise.context.RequestScoped;
-import jakarta.inject.Inject;
-import lombok.extern.slf4j.Slf4j;
-import org.alliancegenome.curation_api.model.document.es.DiseaseSearchResultDocument;
-import org.alliancegenome.curation_api.model.document.es.DiseaseSummaryDocument;
-import org.alliancegenome.curation_api.model.entities.*;
-import org.alliancegenome.curation_api.model.entities.ontology.DOTerm;
-import org.alliancegenome.curation_api.model.entities.ontology.OntologyTerm;
-import org.alliancegenome.curation_api.services.AGMDiseaseAnnotationService;
-import org.alliancegenome.curation_api.services.AlleleDiseaseAnnotationService;
-import org.alliancegenome.curation_api.services.GeneDiseaseAnnotationService;
-
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-@Slf4j
-@RequestScoped
-public class DiseaseSummaryDocumentBuilder {
+import org.alliancegenome.curation_api.model.document.es.DiseaseSearchResultDocument;
+import org.alliancegenome.curation_api.model.document.es.DiseaseSummaryDocument;
+import org.alliancegenome.curation_api.model.entities.AGMDiseaseAnnotation;
+import org.alliancegenome.curation_api.model.entities.Allele;
+import org.alliancegenome.curation_api.model.entities.AlleleDiseaseAnnotation;
+import org.alliancegenome.curation_api.model.entities.CrossReference;
+import org.alliancegenome.curation_api.model.entities.Gene;
+import org.alliancegenome.curation_api.model.entities.GeneDiseaseAnnotation;
+import org.alliancegenome.curation_api.model.entities.GenomicEntity;
+import org.alliancegenome.curation_api.model.entities.Synonym;
+import org.alliancegenome.curation_api.model.entities.ontology.DOTerm;
+import org.alliancegenome.curation_api.model.entities.ontology.OntologyTerm;
 
-	@Inject
-	GeneDiseaseAnnotationService service;
-	@Inject
-	AGMDiseaseAnnotationService agmService;
-	@Inject
-	AlleleDiseaseAnnotationService alleleService;
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
+public class DiseaseSummaryDocumentBuilder {
 
 	public DiseaseSummaryDocument buildSummaryDocument(DOTerm doTerm) {
 

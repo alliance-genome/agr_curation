@@ -23,8 +23,6 @@ public class DiseaseDocumentController implements DiseaseDocumentInterface {
 	DoTermService doTermService;
 	@Inject
 	ResourceDescriptorPageService resourceDescriptorPageService;
-	@Inject
-	DiseaseSummaryDocumentBuilder builder;
 
 	@Override
 	public SearchResponse<DiseaseSummaryDocument> findSummary(Integer page, Integer limit, HashMap<String, Object> params) {
@@ -79,6 +77,7 @@ public class DiseaseDocumentController implements DiseaseDocumentInterface {
 
 		ArrayList<DiseaseSearchResultDocument> list = new ArrayList<>();
 		if (resp.getResults() != null) {
+			DiseaseSummaryDocumentBuilder builder = new DiseaseSummaryDocumentBuilder();
 			for (DOTerm doTerm : resp.getResults()) {
 				DiseaseSearchResultDocument doc = builder.buildSearchResultDocument(doTerm);
 				list.add(doc);
