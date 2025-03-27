@@ -35,7 +35,7 @@ public class DiseaseSummaryDocumentBuilder {
 		doc.setDoTerm(doTerm);
 		doc.setParents(doTerm.getIsaParents());
 		doc.setChildren(doTerm.getIsaChildren());
-		doc.setCrossReferenceLinkUrls(new ArrayList<Map<String, String>>());
+		doc.setCrossReferenceLinkUrls(new ArrayList<>());
 		for (CrossReference cr : doTerm.getCrossReferences()) {
 			Map<String, String> map = new HashMap<>();
 			map.put("referencedCurie", cr.getReferencedCurie());
@@ -61,7 +61,7 @@ public class DiseaseSummaryDocumentBuilder {
 		doc.setSecondaryIds(new HashSet<>(doTerm.getSecondaryIdentifiers()));
 
 		// add genes from GeneDiseaseAnnotations
-		List<GeneDiseaseAnnotation> geneDiseaseAnnotations = doTerm.getGeneDiseaseAnnotations();
+		List<GeneDiseaseAnnotation> geneDiseaseAnnotations = doTerm.getNonObsoletedGeneDiseaseAnnotations();
 		doc.setGenes(geneDiseaseAnnotations.stream().map(geneDiseaseAnnotation -> geneDiseaseAnnotation.getDiseaseAnnotationSubject().getGeneSymbol().getDisplayText()).collect(Collectors.toSet()));
 		doc.setAssociatedSpecies(geneDiseaseAnnotations.stream().map(geneDiseaseAnnotation -> geneDiseaseAnnotation.getDiseaseAnnotationSubject().getTaxon().getGenusSpecies()).collect(Collectors.toSet()));
 
@@ -71,7 +71,7 @@ public class DiseaseSummaryDocumentBuilder {
 		Set<Gene> allInvolvedGenes = geneDiseaseAnnotations.stream().map(GeneDiseaseAnnotation::getDiseaseAnnotationSubject).collect(Collectors.toSet());
 
 		// loop over AGMDiseaseAnnotation
-		List<AGMDiseaseAnnotation> agmDiseaseAnnotations = doTerm.getAGMDiseaseAnnotations();
+		List<AGMDiseaseAnnotation> agmDiseaseAnnotations = doTerm.getNonObsoletedAGMDiseaseAnnotations();
 		if (agmDiseaseAnnotations != null) {
 			Set<Gene> inferredGene = getSingleGenes(agmDiseaseAnnotations, AGMDiseaseAnnotation::getInferredGene);
 			allInvolvedGenes.addAll(inferredGene);
@@ -83,7 +83,7 @@ public class DiseaseSummaryDocumentBuilder {
 			doc.setModels(agmDiseaseAnnotations.stream().map(agmDiseaseAnnotation -> agmDiseaseAnnotation.getDiseaseAnnotationSubject().getName()).collect(Collectors.toSet()));
 		}
 		// loop over AlleleDiseaseAnnotations
-		List<AlleleDiseaseAnnotation> alleleDiseaseAnnotations = doTerm.getAlleleDiseaseAnnotations();
+		List<AlleleDiseaseAnnotation> alleleDiseaseAnnotations = doTerm.getNonObsoletedAlleleDiseaseAnnotations();
 		if (alleleDiseaseAnnotations != null) {
 			Set<Gene> inferredGenes = getSingleGenes(alleleDiseaseAnnotations, AlleleDiseaseAnnotation::getInferredGene);
 			allInvolvedGenes.addAll(inferredGenes);
