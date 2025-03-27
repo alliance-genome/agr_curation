@@ -12,7 +12,7 @@ import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 
 @Path("/data")
-@Tag(name = "Bulk Import")
+@Tag(name = "System Endpoints")
 @Produces(MediaType.APPLICATION_JSON)
 public interface DQMSubmissionInterface {
 

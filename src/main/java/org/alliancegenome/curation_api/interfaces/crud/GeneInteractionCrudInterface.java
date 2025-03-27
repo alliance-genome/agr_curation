@@ -37,7 +37,6 @@ public interface GeneInteractionCrudInterface extends BaseIdCrudInterface<GeneIn
 	@POST
 	@Path("/search")
 	@JsonView(View.GeneInteractionView.class)
-	@Tag(name = "Elastic Search Gene Interactions")
 	SearchResponse<GeneInteraction> search(@DefaultValue("0") @QueryParam("page") Integer page, @DefaultValue("10") @QueryParam("limit") Integer limit, @RequestBody HashMap<String, Object> params);
 
 }
