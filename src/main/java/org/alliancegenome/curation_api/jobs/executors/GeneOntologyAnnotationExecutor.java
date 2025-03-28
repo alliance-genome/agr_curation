@@ -79,7 +79,7 @@ public class GeneOntologyAnnotationExecutor extends LoadFileExecutor {
 				if (abbr.equalsIgnoreCase("XB")) {
 					prefix = "Xenbase";
 				}
-				if (abbr.equalsIgnoreCase("HUMAN")) {
+				if (abbr.equalsIgnoreCase("HUMAN") || abbr.equalsIgnoreCase("MGI")) {
 					prefix = null;
 				}
 				String geneIdentifier = prefix != null ? prefix + ":" + entry.getKey() : entry.getKey();
