@@ -47,13 +47,13 @@ public class CrossReference extends AuditedObject {
 	@JsonView({ View.FieldsOnly.class, View.ForPublic.class, View.GeneSummaryDocument.class })
 	@EqualsAndHashCode.Include
 	private String referencedCurie;
-	
+
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "displayName_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
 	@JsonView({ View.FieldsOnly.class, View.ForPublic.class, View.GeneSummaryDocument.class })
 	@EqualsAndHashCode.Include
 	private String displayName;
-	
+
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
@@ -66,14 +66,16 @@ public class CrossReference extends AuditedObject {
 		if (!referencedCurie.contains(":")) {
 			return referencedCurie;
 		}
-		
+
 		return referencedCurie.substring(0, referencedCurie.indexOf(":"));
 	}
 
 	@Transient
 	public String getUrlFromResourceDescriptorPage(String curie) {
 		if (resourceDescriptorPage != null) {
-			return resourceDescriptorPage.getUrlTemplate().replace("[%s]", curie);
+			String[] array = curie.split(":");
+			String localId = array[1];
+			return resourceDescriptorPage.getUrlTemplate().replace("[%s]", localId);
 		}
 		return null;
 	}

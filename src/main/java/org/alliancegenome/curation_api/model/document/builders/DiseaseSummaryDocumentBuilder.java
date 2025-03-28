@@ -39,7 +39,7 @@ public class DiseaseSummaryDocumentBuilder {
 		for (CrossReference cr : doTerm.getCrossReferences()) {
 			Map<String, String> map = new HashMap<>();
 			map.put("referencedCurie", cr.getReferencedCurie());
-			map.put("url", cr.getUrlFromResourceDescriptorPage(doTerm.getCurie()));
+			map.put("url", cr.getUrlFromResourceDescriptorPage(cr.getReferencedCurie()));
 			doc.getCrossReferenceLinkUrls().add(map);
 		}
 
