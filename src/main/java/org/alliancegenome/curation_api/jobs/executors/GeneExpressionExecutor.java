@@ -122,13 +122,13 @@ public class GeneExpressionExecutor extends LoadFileExecutor {
 		Map<String, ConsolidatedGeneExpressionFmsDTO> consolidationDictionary = new HashMap<>();
 
 		for (GeneExpressionFmsDTO geneExpressionFmsDTO : geneExpressionFmsDTOS) {
-			if (ObjectUtils.isNotEmpty(geneExpressionFmsDTO.getCrossReference())) {
-				String key = geneExpressionAnnotationUniqueIdHelper.generateHash(geneExpressionFmsDTO);
-				if (consolidationDictionary.containsKey(key)) {
+			String key = geneExpressionAnnotationUniqueIdHelper.generateHash(geneExpressionFmsDTO);
+			if (consolidationDictionary.containsKey(key)) {
+				if (geneExpressionFmsDTO.getCrossReference() != null) {
 					consolidationDictionary.get(key).getCrossReferences().add(geneExpressionFmsDTO.getCrossReference());
-				} else {
-					consolidationDictionary.put(key, adaptDTO(geneExpressionFmsDTO));
 				}
+			} else {
+				consolidationDictionary.put(key, adaptDTO(geneExpressionFmsDTO));
 			}
 		}
 
