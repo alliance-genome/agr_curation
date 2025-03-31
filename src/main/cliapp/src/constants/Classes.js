@@ -205,6 +205,8 @@ export const CLASSES = Object.freeze({
 	CMOTerm: { name: 'CMO', link: '/#/ontology/cmo', type: 'ontology', hasTable: true, isIndexed: true },
 	BSPOTerm: { name: 'BSPO', link: '/#/ontology/bspo', type: 'ontology', hasTable: true, isIndexed: true },
 	GENOTerm: { name: 'GENO', link: '/#/ontology/geno', type: 'ontology', hasTable: true, isIndexed: true },
+	BTOTerm: { name: 'BTO', link: '/#/ontology/bto', type: 'ontology', hasTable: true, isIndexed: true },
+	
 
 	CurationReport: { name: 'Curation Reports', link: '/#/reports', type: 'system', hasTable: true, isIndexed: false },
 	BulkLoad: {

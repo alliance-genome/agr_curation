@@ -15,6 +15,7 @@ import org.alliancegenome.curation_api.services.helpers.GenericOntologyLoadHelpe
 import org.alliancegenome.curation_api.services.ontology.ApoTermService;
 import org.alliancegenome.curation_api.services.ontology.AtpTermService;
 import org.alliancegenome.curation_api.services.ontology.BspoTermService;
+import org.alliancegenome.curation_api.services.ontology.BtoTermService;
 import org.alliancegenome.curation_api.services.ontology.CHEBITermService;
 import org.alliancegenome.curation_api.services.ontology.ClTermService;
 import org.alliancegenome.curation_api.services.ontology.CmoTermService;
@@ -107,6 +108,7 @@ public class OntologyExecutor {
 	@Inject CmoTermService cmoTermService;
 	@Inject BspoTermService bspoTermService;
 	@Inject GenoTermService genoTermService;
+	@Inject BtoTermService btoTermService;
 
 	@Inject BulkLoadFileDAO bulkLoadFileDAO;
 	@Inject LoadProcessDisplayService loadProcessDisplayService;
@@ -237,6 +239,7 @@ public class OntologyExecutor {
 				config.setLoadOnlyIRIPrefix("GENO");
 				processTerms(bulkLoadFileHistory, genoTermService, config);
 			}
+			case BTO -> processTerms(bulkLoadFileHistory, btoTermService, config);
 			default -> {
 				log.info("Ontology Load: " + bulkLoadFileHistory.getBulkLoad().getName() + " for OT: " + ontologyType + " not implemented");
 				throw new Exception("Ontology Load: " + bulkLoadFileHistory.getBulkLoad().getName() + " for OT: " + ontologyType + " not implemented");
