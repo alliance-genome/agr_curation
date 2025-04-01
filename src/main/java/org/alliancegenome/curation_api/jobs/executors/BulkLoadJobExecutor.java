@@ -18,12 +18,12 @@ import static org.alliancegenome.curation_api.enums.BackendBulkLoadType.VARIANT;
 import java.util.List;
 
 import org.alliancegenome.curation_api.enums.BackendBulkLoadType;
-import org.alliancegenome.curation_api.jobs.executors.associations.agmAssociations.AgmAgmAssociationExecutor;
-import org.alliancegenome.curation_api.jobs.executors.associations.agmAssociations.AgmAlleleAssociationExecutor;
-import org.alliancegenome.curation_api.jobs.executors.associations.agmAssociations.AgmStrAssociationExecutor;
-import org.alliancegenome.curation_api.jobs.executors.associations.alleleAssociations.AlleleConstructAssociationExecutor;
-import org.alliancegenome.curation_api.jobs.executors.associations.alleleAssociations.AlleleGeneAssociationExecutor;
-import org.alliancegenome.curation_api.jobs.executors.associations.constructAssociations.ConstructGenomicEntityAssociationExecutor;
+import org.alliancegenome.curation_api.jobs.executors.associations.AgmAgmAssociationExecutor;
+import org.alliancegenome.curation_api.jobs.executors.associations.AgmAlleleAssociationExecutor;
+import org.alliancegenome.curation_api.jobs.executors.associations.AgmStrAssociationExecutor;
+import org.alliancegenome.curation_api.jobs.executors.associations.AlleleConstructAssociationExecutor;
+import org.alliancegenome.curation_api.jobs.executors.associations.AlleleGeneAssociationExecutor;
+import org.alliancegenome.curation_api.jobs.executors.associations.ConstructGenomicEntityAssociationExecutor;
 import org.alliancegenome.curation_api.jobs.executors.gff.Gff3CDSExecutor;
 import org.alliancegenome.curation_api.jobs.executors.gff.Gff3ExonExecutor;
 import org.alliancegenome.curation_api.jobs.executors.gff.Gff3GeneExecutor;
