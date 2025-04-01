@@ -50,7 +50,7 @@ public class AnnotationDTOValidator<E extends Annotation, D extends AnnotationDT
 			annotation.getRelatedNotes().clear();
 		}
 
-		List<Note> validatedNotes = validateNotes(dto.getNoteDtos(), noteTypeSet, dto.getReferenceCurie());
+		List<Note> validatedNotes = validateNotes(dto.getNoteDtos(), noteTypeSet, dto.getEvidenceCurie());
 		if (CollectionUtils.isNotEmpty(validatedNotes)) {
 			if (annotation.getRelatedNotes() == null) {
 				annotation.setRelatedNotes(new ArrayList<>());
@@ -62,7 +62,7 @@ public class AnnotationDTOValidator<E extends Annotation, D extends AnnotationDT
 			List<ConditionRelation> relations = new ArrayList<>();
 			for (ConditionRelationDTO conditionRelationDTO : dto.getConditionRelationDtos()) {
 				if (StringUtils.isNotBlank(conditionRelationDTO.getHandle())) {
-					if (!StringUtils.equals(conditionRelationDTO.getReferenceCurie(), dto.getReferenceCurie())) {
+					if (!StringUtils.equals(conditionRelationDTO.getReferenceCurie(), dto.getEvidenceCurie())) {
 						response.addErrorMessage("condition_relation_dtos - reference_curie", ValidationConstants.INVALID_MESSAGE + " (" + conditionRelationDTO.getReferenceCurie() + ")");
 					}
 				}

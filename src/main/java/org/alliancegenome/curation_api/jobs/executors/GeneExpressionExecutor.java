@@ -118,10 +118,10 @@ public class GeneExpressionExecutor extends LoadFileExecutor {
 		ph.finishProcess();
 	}
 
-	private List<ConsolidatedGeneExpressionFmsDTO> consolidateFMSDTOs(List<GeneExpressionFmsDTO> geneExpressionFmsDTOS) {
+	private List<ConsolidatedGeneExpressionFmsDTO> consolidateFMSDTOs(List<GeneExpressionFmsDTO> geneExpressionFmsDTOs) {
 		Map<String, ConsolidatedGeneExpressionFmsDTO> consolidationDictionary = new HashMap<>();
 
-		for (GeneExpressionFmsDTO geneExpressionFmsDTO : geneExpressionFmsDTOS) {
+		for (GeneExpressionFmsDTO geneExpressionFmsDTO : geneExpressionFmsDTOs) {
 			String key = geneExpressionAnnotationUniqueIdHelper.generateHash(geneExpressionFmsDTO);
 			if (consolidationDictionary.containsKey(key)) {
 				if (geneExpressionFmsDTO.getCrossReference() != null) {

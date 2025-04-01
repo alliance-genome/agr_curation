@@ -106,8 +106,8 @@ public abstract class AnnotationUniqueIdHelper {
 		if (annotation.getDiseaseAnnotationObject() != null) {
 			uniqueId.add(annotation.getDiseaseAnnotationObject().getCurie());
 		}
-		if (annotation.getSingleReference() != null) {
-			uniqueId.add(annotation.getSingleReference().getCurie());
+		if (annotation.getEvidenceItem() != null) {
+			uniqueId.add(annotation.getEvidenceItem().getCurie());
 		}
 		if (CollectionUtils.isNotEmpty(annotation.getEvidenceCodes())) {
 			uniqueId.addList(annotation.getEvidenceCodes().stream().map(ECOTerm::getCurie).collect(Collectors.toList()));
@@ -191,8 +191,8 @@ public abstract class AnnotationUniqueIdHelper {
 			uniqueId.add(annotation.getPhenotypeAnnotationObject());
 		}
 		uniqueId.add(annotation.getRelation().getName());
-		if (annotation.getSingleReference() != null) {
-			uniqueId.add(annotation.getSingleReference().getCurie());
+		if (annotation.getEvidenceItem() != null) {
+			uniqueId.add(annotation.getEvidenceItem().getCurie());
 		}
 		if (CollectionUtils.isNotEmpty(annotation.getConditionRelations())) {
 			uniqueId.addList(annotation.getConditionRelations().stream().map(condition -> {
