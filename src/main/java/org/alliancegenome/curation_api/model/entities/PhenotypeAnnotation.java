@@ -55,7 +55,7 @@ import lombok.EqualsAndHashCode;
 	@Index(name = "PhenotypeAnnotation_uniqueId_index", columnList = "uniqueId"),
 	@Index(name = "PhenotypeAnnotation_createdBy_index", columnList = "createdBy_id"),
 	@Index(name = "PhenotypeAnnotation_updatedBy_index", columnList = "updatedBy_id"),
-	@Index(name = "PhenotypeAnnotation_singleReference_index", columnList = "singleReference_id"),
+	@Index(name = "PhenotypeAnnotation_evidenceItem_index", columnList = "evidenceItem_id"),
 	@Index(name = "PhenotypeAnnotation_dataProvider_index", columnList = "dataProvider_id"),
 	@Index(name = "PhenotypeAnnotation_dataProviderCrossReference_index", columnList = "dataProviderCrossReference_id"),
 	@Index(name = "PhenotypeAnnotation_crossReference_index", columnList = "crossReference_id"),

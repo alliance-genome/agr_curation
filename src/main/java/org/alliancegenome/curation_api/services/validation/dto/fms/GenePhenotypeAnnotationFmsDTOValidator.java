@@ -48,7 +48,7 @@ public class GenePhenotypeAnnotationFmsDTOValidator extends PhenotypeAnnotationF
 		subject = xrefHelper.addGenePhenotypeCrossReference(dataProvider, subject);
 		
 		annotation.setUniqueId(uniqueId);
-		annotation.setSingleReference(reference);
+		annotation.setEvidenceItem(reference);
 		annotation.setPhenotypeAnnotationSubject(subject);
 
 		ObjectResponse<GenePhenotypeAnnotation> paResponse = validatePhenotypeAnnotation(annotation, dto, dataProvider);

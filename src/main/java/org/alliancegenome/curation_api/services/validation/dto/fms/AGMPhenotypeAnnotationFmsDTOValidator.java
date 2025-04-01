@@ -54,7 +54,7 @@ public class AGMPhenotypeAnnotationFmsDTOValidator extends PhenotypeAnnotationFm
 		}
 
 		annotation.setUniqueId(uniqueId);
-		annotation.setSingleReference(reference);
+		annotation.setEvidenceItem(reference);
 		annotation.setPhenotypeAnnotationSubject(subject);
 
 		// Reset implied/asserted fields as secondary annotations loaded separately
