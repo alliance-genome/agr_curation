@@ -1,29 +1,15 @@
 package org.alliancegenome.curation_api.model.document.builders;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-
+import lombok.extern.slf4j.Slf4j;
 import org.alliancegenome.curation_api.model.document.es.DiseaseSearchResultDocument;
 import org.alliancegenome.curation_api.model.document.es.DiseaseSummaryDocument;
-import org.alliancegenome.curation_api.model.entities.AGMDiseaseAnnotation;
-import org.alliancegenome.curation_api.model.entities.Allele;
-import org.alliancegenome.curation_api.model.entities.AlleleDiseaseAnnotation;
-import org.alliancegenome.curation_api.model.entities.CrossReference;
-import org.alliancegenome.curation_api.model.entities.Gene;
-import org.alliancegenome.curation_api.model.entities.GeneDiseaseAnnotation;
-import org.alliancegenome.curation_api.model.entities.GenomicEntity;
-import org.alliancegenome.curation_api.model.entities.Synonym;
+import org.alliancegenome.curation_api.model.entities.*;
 import org.alliancegenome.curation_api.model.entities.ontology.DOTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.OntologyTerm;
 
-import lombok.extern.slf4j.Slf4j;
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Slf4j
 public class DiseaseSummaryDocumentBuilder {
@@ -62,7 +48,7 @@ public class DiseaseSummaryDocumentBuilder {
 
 		// add genes from GeneDiseaseAnnotations
 		List<GeneDiseaseAnnotation> geneDiseaseAnnotations = doTerm.getPublicGeneDiseaseAnnotations();
-		doc.setGenes(geneDiseaseAnnotations.stream().map(geneDiseaseAnnotation -> geneDiseaseAnnotation.getDiseaseAnnotationSubject().getGeneSymbol().getDisplayText()).collect(Collectors.toSet()));
+		doc.setGenes(geneDiseaseAnnotations.stream().map(geneDiseaseAnnotation -> getGeneName(geneDiseaseAnnotation.getDiseaseAnnotationSubject())).collect(Collectors.toSet()));
 		doc.setAssociatedSpecies(geneDiseaseAnnotations.stream().map(geneDiseaseAnnotation -> geneDiseaseAnnotation.getDiseaseAnnotationSubject().getTaxon().getGenusSpecies()).collect(Collectors.toSet()));
 
 		// collect all the involved genes: direct genes, inferred genes, and asserted
@@ -80,7 +66,7 @@ public class DiseaseSummaryDocumentBuilder {
 			doc.getGenes().addAll(assertedGenes.stream().map(this::getGeneName).collect(Collectors.toSet()));
 			allInvolvedGenes.addAll(assertedGenes);
 			doc.getAlleles().addAll(agmDiseaseAnnotations.stream().filter(agmDiseaseAnnotation -> agmDiseaseAnnotation.getInferredAllele() != null).map(alleleDiseaseAnnotation -> getAlleleName(alleleDiseaseAnnotation.getInferredAllele())).collect(Collectors.toSet()));
-			doc.setModels(agmDiseaseAnnotations.stream().map(agmDiseaseAnnotation -> agmDiseaseAnnotation.getDiseaseAnnotationSubject().getName()).collect(Collectors.toSet()));
+			doc.setModels(agmDiseaseAnnotations.stream().map(agmDiseaseAnnotation -> getModelName(agmDiseaseAnnotation.getDiseaseAnnotationSubject())).collect(Collectors.toSet()));
 		}
 		// loop over AlleleDiseaseAnnotations
 		List<AlleleDiseaseAnnotation> alleleDiseaseAnnotations = doTerm.getPublicAlleleDiseaseAnnotations();
@@ -92,7 +78,7 @@ public class DiseaseSummaryDocumentBuilder {
 			Set<Gene> assertedGenes = getMultipleAlleles(alleleDiseaseAnnotations, AlleleDiseaseAnnotation::getAssertedGenes);
 			allInvolvedGenes.addAll(assertedGenes);
 			doc.getGenes().addAll(assertedGenes.stream().map(this::getGeneName).collect(Collectors.toSet()));
-			doc.setAlleles(alleleDiseaseAnnotations.stream().filter(alleleDiseaseAnnotation -> alleleDiseaseAnnotation.getDiseaseAnnotationSubject().getAlleleSymbol() != null).map(alleleDiseaseAnnotation -> getAlleleName(alleleDiseaseAnnotation.getDiseaseAnnotationSubject())).collect(Collectors.toSet()));
+			doc.getAlleles().addAll(alleleDiseaseAnnotations.stream().filter(alleleDiseaseAnnotation -> alleleDiseaseAnnotation.getDiseaseAnnotationSubject().getAlleleSymbol() != null).map(alleleDiseaseAnnotation -> getAlleleName(alleleDiseaseAnnotation.getDiseaseAnnotationSubject())).collect(Collectors.toSet()));
 		}
 
 		// add orthologous genes for the all-involved genes
@@ -109,6 +95,10 @@ public class DiseaseSummaryDocumentBuilder {
 
 	private String getAlleleName(Allele allele) {
 		return allele.getAlleleSymbol().getDisplayText() + getSpeciesAbbrev(allele);
+	}
+
+	private String getModelName(AffectedGenomicModel model) {
+		return model.getName() + getSpeciesAbbrev(model);
 	}
 
 	private String getGeneName(Gene gene) {
