@@ -15,6 +15,7 @@ import org.alliancegenome.curation_api.dao.loads.BulkLoadFileDAO;
 import org.alliancegenome.curation_api.dao.loads.BulkLoadFileExceptionDAO;
 import org.alliancegenome.curation_api.dao.loads.BulkLoadFileHistoryDAO;
 import org.alliancegenome.curation_api.dao.loads.BulkLoadGroupDAO;
+import org.alliancegenome.curation_api.dao.loads.BulkScheduledLoadDAO;
 import org.alliancegenome.curation_api.enums.JobStatus;
 import org.alliancegenome.curation_api.jobs.events.PendingBulkLoadJobEvent;
 import org.alliancegenome.curation_api.jobs.events.PendingLoadJobEvent;
@@ -60,6 +61,9 @@ public class JobScheduler {
 	@Inject BulkLoadFileDAO bulkLoadFileDAO;
 	@Inject BulkLoadFileHistoryDAO bulkLoadFileHistoryDAO;
 	@Inject BulkLoadGroupDAO groupDAO;
+	@Inject BulkScheduledLoadDAO bulkScheduledLoadDAO;
+	
+	
 	@Inject BulkLoadDAO bulkLoadDAO;
 	@Inject BulkLoadFileExceptionDAO bulkLoadFileExceptionDAO;
 	@Inject SlackNotifier slackNotifier;
@@ -115,50 +119,45 @@ public class JobScheduler {
 		}
 	}
 
-	@Scheduled(every = "1s")
-	public void scheduleCronGroupJobs() {
+	@Scheduled(every = "1m")
+	public void scheduleCronJobs() {
 		if (loadSchedulingEnabled) {
 			if (sem.tryAcquire()) {
 				ZonedDateTime start = ZonedDateTime.now();
 				// Log.info("scheduleGroupJobs: Scheduling Enabled: " + loadSchedulingEnabled);
-				SearchResponse<BulkLoadGroup> groups = groupDAO.findAll();
-				for (BulkLoadGroup g : groups.getResults()) {
-					if (g.getLoads().size() > 0) {
-						for (BulkLoad b : g.getLoads()) {
-							if (b instanceof BulkScheduledLoad bsl) {
-								if (bsl.getScheduleActive() != null && bsl.getScheduleActive() && bsl.getCronSchedule() != null && !bsl.getBulkloadStatus().isRunning()) {
+				SearchResponse<BulkScheduledLoad> loads = bulkScheduledLoadDAO.findAll();
+				for(BulkScheduledLoad bsl: loads.getResults()) {
+					if (bsl.getScheduleActive() != null && bsl.getScheduleActive() && bsl.getCronSchedule() != null && !bsl.getBulkloadStatus().isRunning()) {
 
-									CronDefinition cronDefinition = CronDefinitionBuilder.instanceDefinitionFor(CronType.QUARTZ);
-									CronParser parser = new CronParser(cronDefinition);
-									try {
-										Cron unixCron = parser.parse(bsl.getCronSchedule());
-										unixCron.validate();
+						CronDefinition cronDefinition = CronDefinitionBuilder.instanceDefinitionFor(CronType.QUARTZ);
+						CronParser parser = new CronParser(cronDefinition);
+						try {
+							Cron unixCron = parser.parse(bsl.getCronSchedule());
+							unixCron.validate();
 
-										if (lastCheck != null) {
-											ExecutionTime executionTime = ExecutionTime.forCron(unixCron);
-											ZonedDateTime nextExecution = executionTime.nextExecution(lastCheck).get();
+							if (lastCheck != null) {
+								ExecutionTime executionTime = ExecutionTime.forCron(unixCron);
+								ZonedDateTime nextExecution = executionTime.nextExecution(lastCheck).get();
 
-											if (lastCheck.isBefore(nextExecution) && start.isAfter(nextExecution)) {
-												Log.info("Need to run Cron: " + bsl.getName());
-												bsl.setSchedulingErrorMessage(null);
-												bsl.setBulkloadStatus(JobStatus.SCHEDULED_PENDING);
-												bulkLoadDAO.merge(bsl);
-												pendingJobEvents.fireAsync(new PendingBulkLoadJobEvent(bsl.getId()));
-											}
-										}
-									} catch (Exception e) {
-										bsl.setSchedulingErrorMessage(e.getLocalizedMessage());
-										bsl.setErrorMessage(e.getLocalizedMessage());
-										bsl.setBulkloadStatus(JobStatus.FAILED);
-										slackNotifier.slackalert(bsl);
-										Log.error(e.getLocalizedMessage());
-										bulkLoadDAO.merge(bsl);
-									}
+								if (lastCheck.isBefore(nextExecution) && start.isAfter(nextExecution)) {
+									Log.info("Need to run Cron: " + bsl.getName());
+									bsl.setSchedulingErrorMessage(null);
+									bsl.setBulkloadStatus(JobStatus.SCHEDULED_PENDING);
+									bulkLoadDAO.merge(bsl);
+									pendingJobEvents.fireAsync(new PendingBulkLoadJobEvent(bsl.getId()));
 								}
 							}
+						} catch (Exception e) {
+							bsl.setSchedulingErrorMessage(e.getLocalizedMessage());
+							bsl.setErrorMessage(e.getLocalizedMessage());
+							bsl.setBulkloadStatus(JobStatus.FAILED);
+							slackNotifier.slackalert(bsl);
+							Log.error(e.getLocalizedMessage());
+							bulkLoadDAO.merge(bsl);
 						}
 					}
 				}
+
 				lastCheck = start;
 				sem.release();
 			} else {
