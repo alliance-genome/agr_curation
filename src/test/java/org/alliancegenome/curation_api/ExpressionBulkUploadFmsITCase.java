@@ -122,7 +122,7 @@ public class ExpressionBulkUploadFmsITCase extends BaseITCase {
 			.body("results[0].expressionAssayUsed.curie", is(mmoTerm))
 			.body("results[0].whereExpressedStatement", is("trunk"))
 			.body("results[0].whenExpressedStageName", is("stage1"))
-			.body("results[0].singleReference.crossReferences[0].referencedCurie", is(publicationId))
+			.body("results[0].evidenceItem.crossReferences[0].referencedCurie", is(publicationId))
 			.body("results[0].crossReferences[0].referencedCurie", is(in(List.of(crossReferenceId1, crossReferenceId2))))
 			.body("results[0].crossReferences[1].referencedCurie", is(in(List.of(crossReferenceId1, crossReferenceId2))))
 			.body("results[0].relation.name", is(VocabularyConstants.GENE_EXPRESSION_RELATION_TERM))

@@ -68,7 +68,7 @@ import lombok.EqualsAndHashCode;
 	@Index(name = "DiseaseAnnotation_negated_index", columnList = "negated"),
 	@Index(name = "DiseaseAnnotation_createdBy_index", columnList = "createdBy_id"),
 	@Index(name = "DiseaseAnnotation_updatedBy_index", columnList = "updatedBy_id"),
-	@Index(name = "DiseaseAnnotation_singleReference_index", columnList = "singleReference_id"),
+	@Index(name = "DiseaseAnnotation_evidenceItem_index", columnList = "evidenceItem_id"),
 	@Index(name = "DiseaseAnnotation_dataProvider_index", columnList = "dataProvider_id"),
 	@Index(name = "DiseaseAnnotation_dataProviderCrossReference_index", columnList = "dataProviderCrossReference_id"),
 	@Index(name = "DiseaseAnnotation_annotationType_index", columnList = "annotationType_id"),

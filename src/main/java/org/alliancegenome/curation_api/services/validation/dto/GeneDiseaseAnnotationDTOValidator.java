@@ -33,7 +33,7 @@ public class GeneDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOValid
 		GeneDiseaseAnnotation annotation = new GeneDiseaseAnnotation();
 		Gene gene = validateRequiredIdentifier(geneService, "gene_identifier", dto.getGeneIdentifier());
 		
-		Reference reference = validateRequiredReference(dto.getReferenceCurie());
+		Reference reference = validateRequiredReference(dto.getEvidenceCurie());
 		String refCurie = reference == null ? null : reference.getCurie();
 
 		if (gene != null) {
@@ -53,7 +53,7 @@ public class GeneDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOValid
 				response.addErrorMessage("allele_identifier", ValidationConstants.INVALID_MESSAGE + " (" + dto.getGeneIdentifier() + ") for " + dataProvider.name() + " load");
 			}
 		}
-		annotation.setSingleReference(reference);
+		annotation.setEvidenceItem(reference);
 
 		annotation = validateDiseaseAnnotationDTO(annotation, dto);
 

@@ -14,7 +14,7 @@ const DEFAULT_ANNOTATION = {
 	diseaseAnnotationObject: {
 		curie: '',
 	},
-	singleReference: {
+	evidenceItem: {
 		curie: '',
 	},
 	evidenceCodes: [],
@@ -57,7 +57,7 @@ const buildAnnotation = (rowData) => {
 		negated: rowData.negated || DEFAULT_ANNOTATION.negated,
 		diseaseAnnotationObject:
 			global.structuredClone(rowData.diseaseAnnotationObject) || DEFAULT_ANNOTATION.diseaseAnnotationObject,
-		singleReference: global.structuredClone(rowData.singleReference) || DEFAULT_ANNOTATION.singleReference,
+		evidenceItem: global.structuredClone(rowData.evidenceItem) || DEFAULT_ANNOTATION.evidenceItem,
 		evidenceCodes: global.structuredClone(rowData.evidenceCodes) || DEFAULT_ANNOTATION.subject,
 		with: global.structuredClone(rowData.with) || DEFAULT_ANNOTATION.with,
 		relatedNotes:

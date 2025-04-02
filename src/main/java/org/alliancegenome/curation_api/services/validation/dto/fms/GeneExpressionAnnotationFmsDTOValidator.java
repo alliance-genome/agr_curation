@@ -69,7 +69,7 @@ public class GeneExpressionAnnotationFmsDTOValidator {
 			} else {
 				geneExpressionAnnotation.setUniqueId(uniqueId);
 			}
-			geneExpressionAnnotation.setSingleReference(singleReferenceResponse.getEntity());
+			geneExpressionAnnotation.setEvidenceItem(singleReferenceResponse.getEntity());
 		}
 
 		if (geneExpressionAnnotation.getExpressionPattern() == null) {

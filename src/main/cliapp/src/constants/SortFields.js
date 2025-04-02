@@ -13,6 +13,7 @@ export const SORT_FIELDS = Object.freeze([
 	'negated',
 	'diseaseAnnotationObject.name',
 	'singleReference.primaryCrossReferenceCurie',
+	'evidenceItem.primaryCrossReferenceCurie',
 	'evidenceCodes.abbreviation',
 	'with.geneSymbol.displayText',
 	'relatedNotes.freeText',

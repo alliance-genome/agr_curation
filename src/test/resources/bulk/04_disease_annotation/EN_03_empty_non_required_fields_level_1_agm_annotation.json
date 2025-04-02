@@ -27,7 +27,7 @@
     "disease_genetic_modifier_identifiers": [],
     "disease_genetic_modifier_relation_name": "",
     "with_gene_identifiers": [],
-    "reference_curie": "PMID:25920554",
+    "evidence_curie": "PMID:25920554",
     "note_dtos": [],
     "annotation_type_name": "",
     "disease_qualifier_names": [],

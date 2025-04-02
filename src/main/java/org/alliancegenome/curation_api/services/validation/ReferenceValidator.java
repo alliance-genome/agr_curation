@@ -1,11 +1,9 @@
 package org.alliancegenome.curation_api.services.validation;
 
 import org.alliancegenome.curation_api.constants.ValidationConstants;
-import org.alliancegenome.curation_api.dao.ReferenceDAO;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.Reference;
 import org.alliancegenome.curation_api.response.ObjectResponse;
-import org.alliancegenome.curation_api.services.PersonService;
 import org.alliancegenome.curation_api.services.ReferenceService;
 import org.alliancegenome.curation_api.services.validation.base.AuditedObjectValidator;
 
@@ -16,9 +14,6 @@ import jakarta.inject.Inject;
 public class ReferenceValidator extends AuditedObjectValidator<Reference> {
 
 	@Inject ReferenceService referenceService;
-	@Inject ReferenceDAO referenceDAO;
-
-	@Inject PersonService personService;
 
 	public ObjectResponse<Reference> validateReference(Reference uiEntity) {
 		Reference reference = validateReference(uiEntity, false);
