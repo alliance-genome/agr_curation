@@ -102,7 +102,7 @@ public class ExpressionBulkUploadFmsITCase extends BaseITCase {
 			.body("results[0].uniqueId", is(experimentUniqueIdExpected))
 			.body("results[0].expressionAnnotations.size()", is(1))
 			.body("results[0].entityAssayed.primaryExternalId", is(gene))
-			.body("results[0].evidenceItem.crossReferences[0].referencedCurie", is(publicationId))
+			.body("results[0].singleReference.crossReferences[0].referencedCurie", is(publicationId))
 			.body("results[0].expressionAssayUsed.curie", is(mmoTerm))
 			.body("results[0].obsolete", is(false))
 			.body("results[0].internal", is(false))

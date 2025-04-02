@@ -13,7 +13,7 @@ import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.AllelePhenotypeAnnotation;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.GenomicEntity;
-import org.alliancegenome.curation_api.model.entities.Reference;
+import org.alliancegenome.curation_api.model.entities.InformationContentEntity;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.PhenotypeFmsDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
@@ -40,10 +40,10 @@ public class AllelePhenotypeAnnotationFmsDTOValidator extends PhenotypeAnnotatio
 		ObjectResponse<AllelePhenotypeAnnotation> apaResponse = new ObjectResponse<AllelePhenotypeAnnotation>();
 		AllelePhenotypeAnnotation annotation = new AllelePhenotypeAnnotation();
 
-		ObjectResponse<Reference> refResponse = validateReference(dto);
+		ObjectResponse<InformationContentEntity> refResponse = validateReference(dto);
 		apaResponse.addErrorMessages(refResponse.getErrorMessages());
 
-		Reference reference = refResponse.getEntity();
+		InformationContentEntity reference = refResponse.getEntity();
 		String refString = reference == null ? null : reference.getCurie();
 
 		String uniqueId = AnnotationUniqueIdHelper.getPhenotypeAnnotationUniqueId(dto, subject.getIdentifier(), refString);
@@ -75,10 +75,10 @@ public class AllelePhenotypeAnnotationFmsDTOValidator extends PhenotypeAnnotatio
 	public List<AllelePhenotypeAnnotation> validateInferredOrAssertedEntities(Allele primaryAnnotationSubject, PhenotypeFmsDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
 		ObjectResponse<AllelePhenotypeAnnotation> apaResponse = new ObjectResponse<AllelePhenotypeAnnotation>();
 
-		ObjectResponse<Reference> refResponse = validateReference(dto);
+		ObjectResponse<InformationContentEntity> refResponse = validateReference(dto);
 		apaResponse.addErrorMessages(refResponse.getErrorMessages());
 
-		Reference reference = refResponse.getEntity();
+		InformationContentEntity reference = refResponse.getEntity();
 		String refString = reference == null ? null : reference.getCurie();
 		
 		List<AllelePhenotypeAnnotation> primaryAnnotations = findPrimaryAnnotations(allelePhenotypeAnnotationDAO, dto, primaryAnnotationSubject.getPrimaryExternalId(), refString);

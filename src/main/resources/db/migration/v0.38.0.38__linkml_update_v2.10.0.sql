@@ -8,9 +8,13 @@ ALTER TABLE diseaseannotation RENAME COLUMN singlereference_id TO evidenceitem_i
 ALTER TABLE geneexpressionannotation RENAME COLUMN singlereference_id TO evidenceitem_id;
 ALTER TABLE phenotypeannotation RENAME COLUMN singlereference_id TO evidenceitem_id;
 
-ALTER TABLE diseaseannotation RENAME CONSTRAINT diseaseannotation_singlereference_id_fk TO diseaseannotation_evidenceitem_id_fk;
-ALTER TABLE geneexpressionannotation RENAME CONSTRAINT geneexpressionannotation_singlereference_id_fk TO geneexpressionannotation_evidenceitem_id_fk;
-ALTER TABLE phenotypeannotation RENAME CONSTRAINT phenotypeannotation_singlereference_id_fk TO phenotypeannotation_evidenceitem_id_fk;
+ALTER TABLE diseaseannotation DROP CONSTRAINT diseaseannotation_singlereference_id_fk;
+ALTER TABLE geneexpressionannotation DROP CONSTRAINT geneexpressionannotation_singlereference_id_fk;
+ALTER TABLE phenotypeannotation DROP CONSTRAINT phenotypeannotation_singlereference_id_fk;
+
+ALTER TABLE diseaseannotation ADD CONSTRAINT diseaseannotation_evidenceitem_id_fk FOREIGN KEY (evidenceitem_id) REFERENCES informationcontententity (id);
+ALTER TABLE geneexpressionannotation ADD CONSTRAINT geneexpressionannotation_evidenceitem_id_fk FOREIGN KEY (evidenceitem_id) REFERENCES informationcontententity (id);
+ALTER TABLE phenotypeannotation ADD CONSTRAINT phenotypeannotation_evidenceitem_id_fk FOREIGN KEY (evidenceitem_id) REFERENCES informationcontententity (id);
 
 ALTER INDEX diseaseannotation_singlereference_index RENAME TO diseaseannotation_evidenceitem_index;
 ALTER INDEX geneexpressionannotation_singlereference_index RENAME TO geneexpressionannotation_evidenceitem_index;
