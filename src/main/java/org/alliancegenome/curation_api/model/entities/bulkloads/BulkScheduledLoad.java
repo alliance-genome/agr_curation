@@ -27,7 +27,7 @@ import lombok.ToString;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(callSuper = true)
 @AGRCurationSchemaVersion(min = "1.2.4", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { BulkLoad.class })
-public abstract class BulkScheduledLoad extends BulkLoad {
+public class BulkScheduledLoad extends BulkLoad {
 
 	@JsonView({ View.FieldsOnly.class })
 	private Boolean scheduleActive;
@@ -55,9 +55,6 @@ public abstract class BulkScheduledLoad extends BulkLoad {
 		} catch (Exception e) {
 			return "";
 		}
-	}
-
-	public void setNextRun(String nextRun) {
 	}
 
 }
