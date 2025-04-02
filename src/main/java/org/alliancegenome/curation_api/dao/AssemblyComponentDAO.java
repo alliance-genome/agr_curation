@@ -4,9 +4,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.alliancegenome.curation_api.dao.associations.codingSequenceAssociations.CodingSequenceGenomicLocationAssociationDAO;
-import org.alliancegenome.curation_api.dao.associations.exonAssociations.ExonGenomicLocationAssociationDAO;
-import org.alliancegenome.curation_api.dao.associations.transcriptAssociations.TranscriptGenomicLocationAssociationDAO;
+import org.alliancegenome.curation_api.dao.associations.CodingSequenceGenomicLocationAssociationDAO;
+import org.alliancegenome.curation_api.dao.associations.ExonGenomicLocationAssociationDAO;
+import org.alliancegenome.curation_api.dao.associations.TranscriptGenomicLocationAssociationDAO;
 import org.alliancegenome.curation_api.dao.base.BaseSQLDAO;
 import org.alliancegenome.curation_api.model.entities.AssemblyComponent;
 import org.apache.commons.collections.CollectionUtils;
