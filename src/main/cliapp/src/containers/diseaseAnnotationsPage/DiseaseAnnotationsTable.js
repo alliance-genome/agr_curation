@@ -1092,10 +1092,7 @@ export const DiseaseAnnotationsTable = () => {
 					)}
 					onValueChangeHandler={onReferenceValueChange}
 				/>
-				<ErrorMessageComponent
-					errorMessages={errorMessagesRef.current[props.rowIndex]}
-					errorField={'evidenceItem'}
-				/>
+				<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={'evidenceItem'} />
 			</>
 		);
 	};

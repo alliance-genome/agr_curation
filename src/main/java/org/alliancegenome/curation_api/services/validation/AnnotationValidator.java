@@ -40,7 +40,7 @@ public class AnnotationValidator extends AuditedObjectValidator<Annotation> {
 		}
 
 		for (ConditionRelation conditionRelation : uiEntity.getConditionRelations()) {
-			if (uiEntity.getEvidenceItem()!= null && !StringUtils.isBlank(uiEntity.getEvidenceItem().getCurie()) && conditionRelation.getSingleReference() != null && !StringUtils.isBlank(conditionRelation.getSingleReference().getCurie())
+			if (uiEntity.getEvidenceItem() != null && !StringUtils.isBlank(uiEntity.getEvidenceItem().getCurie()) && conditionRelation.getSingleReference() != null && !StringUtils.isBlank(conditionRelation.getSingleReference().getCurie())
 				&& !conditionRelation.getSingleReference().getCurie().equals(uiEntity.getEvidenceItem().getCurie())) {
 				addMessageResponse("conditionRelations", "singleReference - " + ValidationConstants.INVALID_MESSAGE);
 			}
