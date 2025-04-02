@@ -8,7 +8,7 @@ export const data = {
 			obsolete: false,
 			dbDateCreated: '2024-03-05T10:31:10.220795Z',
 			dbDateUpdated: '2024-03-05T10:31:10.22081Z',
-			singleReference: {
+			evidenceItem: {
 				id: 268175,
 				internal: false,
 				obsolete: false,

@@ -404,8 +404,8 @@ export const NewAnnotationForm = ({
 	const isExperimentEnabled = () => {
 		return (
 			//only enabled if a reference is selected from suggestions and condition relation table isn't visible
-			typeof newAnnotation.singleReference === 'object' &&
-			newAnnotation.singleReference.curie !== '' &&
+			typeof newAnnotation.evidenceItem === 'object' &&
+			newAnnotation.evidenceItem.curie !== '' &&
 			!showConditionRelations
 		);
 	};
@@ -756,17 +756,17 @@ export const NewAnnotationForm = ({
 
 						<div className="grid">
 							<div className={labelColumnSize}>
-								<label htmlFor="singleReference">
+								<label htmlFor="evidenceItem">
 									<font color={'red'}>*</font>Reference
 								</label>
 							</div>
 							<div className={widgetColumnSize}>
 								<AutocompleteFormEditor
 									search={referenceSearch}
-									name="singleReference"
+									name="evidenceItem"
 									label="Reference"
-									fieldName="singleReference"
-									initialValue={newAnnotation.singleReference}
+									fieldName="evidenceItem"
+									initialValue={newAnnotation.evidenceItem}
 									onValueChangeHandler={onSingleReferenceChange}
 									valueDisplay={(item, setAutocompleteHoverItem, op, query) => (
 										<LiteratureAutocompleteTemplate
@@ -776,13 +776,13 @@ export const NewAnnotationForm = ({
 											query={query}
 										/>
 									)}
-									classNames={classNames({ 'p-invalid': submitted && errorMessages.singleReference })}
+									classNames={classNames({ 'p-invalid': submitted && errorMessages.evidenceItem })}
 								/>
 							</div>
 							<div className={fieldDetailsColumnSize}>
-								<FormErrorMessageComponent errorMessages={errorMessages} errorField={'singleReference'} />
-								<FormErrorMessageComponent errorMessages={uiErrorMessages} errorField={'singleReference'} />
-								<SingleReferenceAdditionalFieldData fieldData={newAnnotation.singleReference} />
+								<FormErrorMessageComponent errorMessages={errorMessages} errorField={'evidenceItem'} />
+								<FormErrorMessageComponent errorMessages={uiErrorMessages} errorField={'evidenceItem'} />
+								<SingleReferenceAdditionalFieldData fieldData={newAnnotation.evidenceItem} />
 							</div>
 						</div>
 
@@ -914,7 +914,7 @@ export const NewAnnotationForm = ({
 											name="experiments"
 											customRef={experimentsRef}
 											editorChange={onDropdownExperimentsFieldChange}
-											referenceCurie={newAnnotation.singleReference?.curie}
+											referenceCurie={newAnnotation.evidenceItem?.curie}
 											value={newAnnotation.conditionRelations?.[0]?.handle}
 											showClear={true}
 											placeholderText={newAnnotation.conditionRelations?.[0]?.handle}

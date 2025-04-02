@@ -129,7 +129,7 @@ export const data = {
 					abbreviation: 'TAS',
 				},
 			],
-			singleReference: {
+			evidenceItem: {
 				internal: false,
 				obsolete: false,
 				dbDateUpdated: '2022-11-18T16:33:21.46375Z',

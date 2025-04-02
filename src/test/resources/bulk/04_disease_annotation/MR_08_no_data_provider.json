@@ -62,7 +62,7 @@
     "with_gene_identifiers": [
       "HGNC:0001"
     ],
-    "reference_curie": "PMID:25920554",
+    "evidence_curie": "PMID:25920554",
     "disease_annotation_summary": "Test summary",
     "disease_annotation_note": "Test note",
     "created_by_curie": "DATEST:Person0001",

@@ -21,9 +21,9 @@ public class InformationContentEntityService extends BaseEntityCrudService<Infor
 	}
 
 	public InformationContentEntity retrieveFromDbOrLiteratureService(String curieOrXref) {
-		InformationContentEntity ice = findByCurie(curieOrXref);
+		InformationContentEntity ice = referenceService.retrieveFromDbOrLiteratureService(curieOrXref);
 		if (ice == null) {
-			ice = referenceService.retrieveFromDbOrLiteratureService(curieOrXref);
+			ice = findByCurie(curieOrXref);
 		}
 
 		return ice;

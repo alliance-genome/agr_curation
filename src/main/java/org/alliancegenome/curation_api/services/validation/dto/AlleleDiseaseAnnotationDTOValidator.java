@@ -38,7 +38,7 @@ public class AlleleDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOVal
 		AlleleDiseaseAnnotation annotation = new AlleleDiseaseAnnotation();
 		Allele allele = validateRequiredIdentifier(alleleService, "allele_identifier", dto.getAlleleIdentifier());
 		
-		Reference reference = validateRequiredReference(dto.getReferenceCurie());
+		Reference reference = validateRequiredReference(dto.getEvidenceCurie());
 		String refCurie = reference == null ? null : reference.getCurie();
 
 		if (allele != null) {
@@ -58,7 +58,7 @@ public class AlleleDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOVal
 				response.addErrorMessage("allele_identifier", ValidationConstants.INVALID_MESSAGE + " (" + dto.getAlleleIdentifier() + ") for " + dataProvider.name() + " load");
 			}
 		}
-		annotation.setSingleReference(reference);
+		annotation.setEvidenceItem(reference);
 
 		annotation = validateDiseaseAnnotationDTO(annotation, dto);
 		

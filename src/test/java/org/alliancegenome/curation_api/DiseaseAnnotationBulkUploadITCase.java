@@ -240,7 +240,7 @@ public class DiseaseAnnotationBulkUploadITCase extends BaseITCase {
 			body("entity.diseaseGeneticModifierRelation.name", is(diseaseGeneticModifierRelation)).
 			body("entity.with", hasSize(1)).
 			body("entity.with[0].primaryExternalId", is(withGene)).
-			body("entity.singleReference.curie", is(reference)).
+			body("entity.evidenceItem.curie", is(reference)).
 			body("entity.relatedNotes", hasSize(1)).
 			body("entity.relatedNotes[0].internal", is(false)).
 			body("entity.relatedNotes[0].obsolete", is(true)).
@@ -323,7 +323,7 @@ public class DiseaseAnnotationBulkUploadITCase extends BaseITCase {
 			body("entity.diseaseGeneticModifierRelation.name", is(diseaseGeneticModifierRelation)).
 			body("entity.with", hasSize(1)).
 			body("entity.with[0].primaryExternalId", is(withGene)).
-			body("entity.singleReference.curie", is(reference)).
+			body("entity.evidenceItem.curie", is(reference)).
 			body("entity.relatedNotes", hasSize(1)).
 			body("entity.relatedNotes[0].internal", is(false)).
 			body("entity.relatedNotes[0].obsolete", is(true)).
@@ -406,7 +406,7 @@ public class DiseaseAnnotationBulkUploadITCase extends BaseITCase {
 			body("entity.diseaseGeneticModifierRelation.name", is(diseaseGeneticModifierRelation)).
 			body("entity.with", hasSize(1)).
 			body("entity.with[0].primaryExternalId", is(withGene)).
-			body("entity.singleReference.curie", is(reference)).
+			body("entity.evidenceItem.curie", is(reference)).
 			body("entity.relatedNotes", hasSize(1)).
 			body("entity.relatedNotes[0].internal", is(false)).
 			body("entity.relatedNotes[0].obsolete", is(true)).
@@ -492,7 +492,7 @@ public class DiseaseAnnotationBulkUploadITCase extends BaseITCase {
 			body("entity.diseaseGeneticModifierRelation.name", is(diseaseGeneticModifierRelation2)).
 			body("entity.with", hasSize(1)).
 			body("entity.with[0].primaryExternalId", is(withGene2)).
-			body("entity.singleReference.curie", is(reference2)).
+			body("entity.evidenceItem.curie", is(reference2)).
 			body("entity.relatedNotes", hasSize(1)).
 			body("entity.relatedNotes[0].internal", is(true)).
 			body("entity.relatedNotes[0].obsolete", is(false)).
@@ -574,7 +574,7 @@ public class DiseaseAnnotationBulkUploadITCase extends BaseITCase {
 			body("entity.diseaseGeneticModifierRelation.name", is(diseaseGeneticModifierRelation2)).
 			body("entity.with", hasSize(1)).
 			body("entity.with[0].primaryExternalId", is(withGene2)).
-			body("entity.singleReference.curie", is(reference2)).
+			body("entity.evidenceItem.curie", is(reference2)).
 			body("entity.relatedNotes", hasSize(1)).
 			body("entity.relatedNotes[0].internal", is(true)).
 			body("entity.relatedNotes[0].obsolete", is(false)).
@@ -658,7 +658,7 @@ public class DiseaseAnnotationBulkUploadITCase extends BaseITCase {
 			body("entity.diseaseGeneticModifierRelation.name", is(diseaseGeneticModifierRelation2)).
 			body("entity.with", hasSize(1)).
 			body("entity.with[0].primaryExternalId", is(withGene2)).
-			body("entity.singleReference.curie", is(reference2)).
+			body("entity.evidenceItem.curie", is(reference2)).
 			body("entity.relatedNotes", hasSize(1)).
 			body("entity.relatedNotes[0].internal", is(true)).
 			body("entity.relatedNotes[0].obsolete", is(false)).
