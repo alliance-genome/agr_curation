@@ -62,8 +62,7 @@ public class JobScheduler {
 	@Inject BulkLoadFileHistoryDAO bulkLoadFileHistoryDAO;
 	@Inject BulkLoadGroupDAO groupDAO;
 	@Inject BulkScheduledLoadDAO bulkScheduledLoadDAO;
-	
-	
+
 	@Inject BulkLoadDAO bulkLoadDAO;
 	@Inject BulkLoadFileExceptionDAO bulkLoadFileExceptionDAO;
 	@Inject SlackNotifier slackNotifier;
@@ -126,7 +125,7 @@ public class JobScheduler {
 				ZonedDateTime start = ZonedDateTime.now();
 				// Log.info("scheduleGroupJobs: Scheduling Enabled: " + loadSchedulingEnabled);
 				SearchResponse<BulkScheduledLoad> loads = bulkScheduledLoadDAO.findAll();
-				for(BulkScheduledLoad bsl: loads.getResults()) {
+				for (BulkScheduledLoad bsl : loads.getResults()) {
 					if (bsl.getScheduleActive() != null && bsl.getScheduleActive() && bsl.getCronSchedule() != null && !bsl.getBulkloadStatus().isRunning()) {
 
 						CronDefinition cronDefinition = CronDefinitionBuilder.instanceDefinitionFor(CronType.QUARTZ);
@@ -201,23 +200,12 @@ public class JobScheduler {
 		for (BulkLoad bulkLoad : bulkLoads) {
 			List<BulkLoadFileHistory> histories = bulkLoad.getHistory();
 
-			Map<String, List<BulkLoadFileHistory>> groupedByFile = histories.stream()
-				.collect(Collectors.groupingBy(history -> history.getBulkLoadFile().getMd5Sum()));
+			Map<String, List<BulkLoadFileHistory>> groupedByFile = histories.stream().collect(Collectors.groupingBy(history -> history.getBulkLoadFile().getMd5Sum()));
 
 			Map<String, List<BulkLoadFileHistory>> limitedGroups = groupedByFile.entrySet().stream()
-				.collect(Collectors.toMap(
-					Map.Entry::getKey,
-					e -> e.getValue().stream()
-						.sorted((o1, o2) -> o2.getLoadStarted().compareTo(o1.getLoadStarted()))
-						.filter(history -> !history.getCounts().isEmpty())
-						.limit(2)
-						.collect(Collectors.toList())
-			));
+				.collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().stream().sorted((o1, o2) -> o2.getLoadStarted().compareTo(o1.getLoadStarted())).filter(history -> !history.getCounts().isEmpty()).limit(2).collect(Collectors.toList())));
 
-			List<BulkLoadFileHistory> sortedList = limitedGroups.values().stream()
-				.flatMap(List::stream)
-				.sorted((o1, o2) -> o2.getLoadStarted().compareTo(o1.getLoadStarted()))
-				.collect(Collectors.toList());
+			List<BulkLoadFileHistory> sortedList = limitedGroups.values().stream().flatMap(List::stream).sorted((o1, o2) -> o2.getLoadStarted().compareTo(o1.getLoadStarted())).collect(Collectors.toList());
 
 			Set<String> selectedFiles = new HashSet<>();
 			List<BulkLoadFileHistory> historiesToKeep = new ArrayList<>();
@@ -237,7 +225,7 @@ public class JobScheduler {
 		}
 	}
 
-	//@Scheduled(cron = "0 0 0 ? * SUN")
+	// @Scheduled(cron = "0 0 0 ? * SUN")
 	public void runMassIndexerEverything() {
 		// Not sure what is going to happen when this time's out but should run anyway
 		// Defaults taken from the API endpoint

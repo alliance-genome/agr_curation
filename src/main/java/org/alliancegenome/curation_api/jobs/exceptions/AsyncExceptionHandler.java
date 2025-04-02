@@ -22,19 +22,19 @@ public class AsyncExceptionHandler implements AsyncObserverExceptionHandler {
 	@Inject BulkLoadFileHistoryDAO bulkLoadFileHistoryDAO;
 	@Inject BulkLoadFMSProcessor bulkLoadFMSProcessor;
 	@Inject BulkLoadURLProcessor bulkLoadURLProcessor;
-	
+
 	@Override
 	public void handle(Throwable throwable, ObserverMethod<?> observerMethod, EventContext<?> eventContext) {
 
-		if(eventContext.getEvent() instanceof StartedLoadJobEvent) {
-			StartedLoadJobEvent event = (StartedLoadJobEvent)eventContext.getEvent();
+		if (eventContext.getEvent() instanceof StartedLoadJobEvent) {
+			StartedLoadJobEvent event = (StartedLoadJobEvent) eventContext.getEvent();
 			BulkLoadFileHistory bulkLoadFileHistory = bulkLoadFileHistoryDAO.find(event.getId());
 
-			if(bulkLoadFileHistory.getBulkLoad() instanceof BulkFMSLoad bulkFMSLoad) {
+			if (bulkLoadFileHistory.getBulkLoad() instanceof BulkFMSLoad bulkFMSLoad) {
 				bulkLoadFMSProcessor.endLoad(bulkLoadFileHistory, "Failed loading: " + bulkFMSLoad.getName() + " please check the logs for more info. " + bulkLoadFileHistory.getErrorMessage(), JobStatus.FAILED);
 			}
-			
-			if(bulkLoadFileHistory.getBulkLoad() instanceof BulkURLLoad bulkURLLoad) {
+
+			if (bulkLoadFileHistory.getBulkLoad() instanceof BulkURLLoad bulkURLLoad) {
 				bulkLoadURLProcessor.endLoad(bulkLoadFileHistory, "Failed loading: " + bulkURLLoad.getName() + " please check the logs for more info. " + bulkLoadFileHistory.getErrorMessage(), JobStatus.FAILED);
 			}
 
@@ -44,9 +44,7 @@ public class AsyncExceptionHandler implements AsyncObserverExceptionHandler {
 		} else {
 			Log.error("Error handling missing for error type: " + observerMethod);
 		}
-		
+
 	}
 
 }
-
-
