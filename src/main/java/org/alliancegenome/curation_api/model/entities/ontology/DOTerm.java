@@ -1,10 +1,7 @@
 package org.alliancegenome.curation_api.model.entities.ontology;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.OneToMany;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
+import java.util.List;
+
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.entities.AGMDiseaseAnnotation;
@@ -14,7 +11,11 @@ import org.alliancegenome.curation_api.model.entities.base.AuditedObject;
 import org.apache.commons.collections4.CollectionUtils;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
 
-import java.util.List;
+import jakarta.persistence.Entity;
+import jakarta.persistence.OneToMany;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 @Indexed
 @Entity
@@ -27,9 +28,11 @@ public class DOTerm extends OntologyTerm {
 	@ToString.Exclude
 	@OneToMany(mappedBy = "diseaseAnnotationObject")
 	private List<GeneDiseaseAnnotation> geneDiseaseAnnotations;
+	
 	@ToString.Exclude
 	@OneToMany(mappedBy = "diseaseAnnotationObject")
 	private List<AlleleDiseaseAnnotation> alleleDiseaseAnnotations;
+	
 	@ToString.Exclude
 	@OneToMany(mappedBy = "diseaseAnnotationObject")
 	private List<AGMDiseaseAnnotation> agmDiseaseAnnotations;

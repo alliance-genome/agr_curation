@@ -21,7 +21,6 @@ import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.CrossReferenceService;
 import org.alliancegenome.curation_api.services.ResourceDescriptorPageService;
 
-import io.quarkus.logging.Log;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 
@@ -297,8 +296,9 @@ public abstract class BaseOntologyTermService<E extends OntologyTerm, D extends 
 				String prefix = xref.getReferencedCurie().substring(0, xref.getReferencedCurie().indexOf(":"));
 				ResourceDescriptorPage page = resourceDescriptorPageService.getPageForResourceDescriptor(prefix, "ontology_provided_cross_reference");
 				if (page == null) {
-					Log.warn(dbTerm);
-					Log.warn("Unable to find ResourceDescriptorPage for (prefix, page): (" + prefix + ", " + page + ")");
+					// TODO: some how figure out how to make this less verbose by adding more resource descriptors
+					//Log.warn(dbTerm);
+					//Log.warn("Unable to find ResourceDescriptorPage for (prefix, page): (" + prefix + ", " + page + ")");
 				}
 				xref.setResourceDescriptorPage(page);
 			}
