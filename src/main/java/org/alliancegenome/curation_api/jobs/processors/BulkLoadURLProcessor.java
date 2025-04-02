@@ -4,6 +4,7 @@ import org.alliancegenome.curation_api.dao.loads.BulkLoadDAO;
 import org.alliancegenome.curation_api.enums.JobStatus;
 import org.alliancegenome.curation_api.jobs.events.StartedBulkLoadJobEvent;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoad;
+import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkURLLoad;
 
 import io.quarkus.logging.Log;
@@ -43,5 +44,11 @@ public class BulkLoadURLProcessor extends BulkLoadProcessor {
 				endLoad(bulkURLLoad, "Load: " + bulkURLLoad.getName() + " failed: URL is missing", JobStatus.FAILED);
 			}
 		}
+	}
+	
+	
+	@Override
+	public void endLoad(BulkLoadFileHistory bulkLoadFileHistory, String message, JobStatus status) {
+		super.endLoad(bulkLoadFileHistory, message, status);
 	}
 }

@@ -94,7 +94,7 @@ public class DiseaseSummaryDocumentBuilder {
 	}
 
 	private String getAlleleName(Allele allele) {
-		return allele.getAlleleSymbol().getDisplayText() + getSpeciesAbbrev(allele);
+		return allele.getAlleleSymbol().getFormatText() + getSpeciesAbbrev(allele);
 	}
 
 	private String getModelName(AffectedGenomicModel model) {
