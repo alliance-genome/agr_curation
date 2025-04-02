@@ -1,6 +1,5 @@
 package org.alliancegenome.curation_api.model.bridges;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
