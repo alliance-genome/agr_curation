@@ -221,7 +221,7 @@ public class PhenotypeAnnotationBulkUploadFmsITCase extends BaseITCase {
 		RestAssured.given().when().get(phenotypeAnnotationGetEndpoint + agmPaId).then().statusCode(200)
 				.body("entity.phenotypeAnnotationSubject.primaryExternalId", is(agm))
 				.body("entity.inferredGene.primaryExternalId", is(gene))
-				.body("entity.assertedAllele.primaryExternalId", is(allele));
+				.body("entity.assertedAlleles[0].primaryExternalId", is(allele));
 	}
 
 	@Test

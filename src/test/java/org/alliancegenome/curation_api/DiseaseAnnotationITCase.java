@@ -396,7 +396,7 @@ public class DiseaseAnnotationITCase extends BaseITCase {
 		diseaseAnnotation.setInferredGene(gene);
 		diseaseAnnotation.setAssertedGenes(List.of(gene2));
 		diseaseAnnotation.setInferredAllele(allele);
-		diseaseAnnotation.setAssertedAllele(allele2);
+		diseaseAnnotation.setAssertedAlleles(List.of(allele2));
 
 		RestAssured.given().
 			contentType("application/json").
@@ -447,7 +447,7 @@ public class DiseaseAnnotationITCase extends BaseITCase {
 			body("entity.assertedGenes", hasSize(1)).
 			body("entity.assertedGenes[0].primaryExternalId", is(gene2.getPrimaryExternalId())).
 			body("entity.inferredAllele.primaryExternalId", is(allele.getPrimaryExternalId())).
-			body("entity.assertedAllele.primaryExternalId", is(allele2.getPrimaryExternalId()));
+			body("entity.assertedAlleles[0].primaryExternalId", is(allele2.getPrimaryExternalId()));
 	}
 	
 	@Test
@@ -655,7 +655,7 @@ public class DiseaseAnnotationITCase extends BaseITCase {
 		diseaseAnnotation.setInferredGene(gene2);
 		diseaseAnnotation.setAssertedGenes(List.of(gene));
 		diseaseAnnotation.setInferredAllele(allele2);
-		diseaseAnnotation.setAssertedAllele(allele);
+		diseaseAnnotation.setAssertedAlleles(List.of(allele));
 		
 		Note editedNote = diseaseAnnotation.getRelatedNotes().get(0);
 		editedNote.setNoteType(noteType2);
@@ -720,7 +720,7 @@ public class DiseaseAnnotationITCase extends BaseITCase {
 			body("entity.assertedGenes", hasSize(1)).
 			body("entity.assertedGenes[0].primaryExternalId", is(gene.getPrimaryExternalId())).
 			body("entity.inferredAllele.primaryExternalId", is(allele2.getPrimaryExternalId())).
-			body("entity.assertedAllele.primaryExternalId", is(allele.getPrimaryExternalId()));
+			body("entity.assertedAlleles[0].primaryExternalId", is(allele.getPrimaryExternalId()));
 	}
 	
 	@Test
@@ -1354,7 +1354,7 @@ public class DiseaseAnnotationITCase extends BaseITCase {
 		diseaseAnnotation.setInferredGene(nonPersistedGene);
 		diseaseAnnotation.setAssertedGenes(List.of(nonPersistedGene));
 		diseaseAnnotation.setInferredAllele(nonPersistedAllele);
-		diseaseAnnotation.setAssertedAllele(nonPersistedAllele);
+		diseaseAnnotation.setAssertedAlleles(List.of(nonPersistedAllele));
 		
 		ConditionRelation newRelation = new ConditionRelation();
 		newRelation.setConditionRelationType(geneticSex);
@@ -1394,7 +1394,7 @@ public class DiseaseAnnotationITCase extends BaseITCase {
 			body("errorMessages.inferredGene", is(ValidationConstants.INVALID_MESSAGE)).
 			body("errorMessages.assertedGenes", is(ValidationConstants.INVALID_MESSAGE)).
 			body("errorMessages.inferredAllele", is(ValidationConstants.INVALID_MESSAGE)).
-			body("errorMessages.assertedAllele", is(ValidationConstants.INVALID_MESSAGE)).
+			body("errorMessages.assertedAlleles", is(ValidationConstants.INVALID_MESSAGE)).
 			body("errorMessages.conditionRelations", is(String.join(" | ", List.of(
 					"conditionRelationType - " + ValidationConstants.INVALID_MESSAGE,
 					"conditions - " + ValidationConstants.INVALID_MESSAGE,
@@ -1558,7 +1558,7 @@ public class DiseaseAnnotationITCase extends BaseITCase {
 		diseaseAnnotation.setInferredGene(nonPersistedGene);
 		diseaseAnnotation.setAssertedGenes(List.of(nonPersistedGene));
 		diseaseAnnotation.setInferredAllele(nonPersistedAllele);
-		diseaseAnnotation.setAssertedAllele(nonPersistedAllele);
+		diseaseAnnotation.setAssertedAlleles(List.of(nonPersistedAllele));
 		
 		ConditionRelation editedRelation = diseaseAnnotation.getConditionRelations().get(0);
 		editedRelation.setConditionRelationType(geneticSex);
@@ -1597,7 +1597,7 @@ public class DiseaseAnnotationITCase extends BaseITCase {
 			body("errorMessages.inferredGene", is(ValidationConstants.INVALID_MESSAGE)).
 			body("errorMessages.assertedGenes", is(ValidationConstants.INVALID_MESSAGE)).
 			body("errorMessages.inferredAllele", is(ValidationConstants.INVALID_MESSAGE)).
-			body("errorMessages.assertedAllele", is(ValidationConstants.INVALID_MESSAGE)).
+			body("errorMessages.assertedAlleles", is(ValidationConstants.INVALID_MESSAGE)).
 			body("errorMessages.conditionRelations", is(String.join(" | ", List.of(
 					"conditionRelationType - " + ValidationConstants.INVALID_MESSAGE,
 					"conditions - " + ValidationConstants.INVALID_MESSAGE,
@@ -1762,7 +1762,7 @@ public class DiseaseAnnotationITCase extends BaseITCase {
 		diseaseAnnotation.setInferredGene(obsoleteGene);
 		diseaseAnnotation.setAssertedGenes(List.of(obsoleteGene));
 		diseaseAnnotation.setInferredAllele(obsoleteAllele);
-		diseaseAnnotation.setAssertedAllele(obsoleteAllele);
+		diseaseAnnotation.setAssertedAlleles(List.of(obsoleteAllele));
 		
 		ConditionRelation newRelation = new ConditionRelation();
 		newRelation.setConditionRelationType(obsoleteConditionRelationType);
@@ -1802,7 +1802,7 @@ public class DiseaseAnnotationITCase extends BaseITCase {
 			body("errorMessages.inferredGene", is(ValidationConstants.OBSOLETE_MESSAGE)).
 			body("errorMessages.assertedGenes", is(ValidationConstants.OBSOLETE_MESSAGE)).
 			body("errorMessages.inferredAllele", is(ValidationConstants.OBSOLETE_MESSAGE)).
-			body("errorMessages.assertedAllele", is(ValidationConstants.OBSOLETE_MESSAGE)).
+			body("errorMessages.assertedAlleles", is(ValidationConstants.OBSOLETE_MESSAGE)).
 			body("errorMessages.conditionRelations", is(String.join(" | ", List.of(
 					"conditionRelationType - " + ValidationConstants.OBSOLETE_MESSAGE,
 					"singleReference - " + ValidationConstants.OBSOLETE_MESSAGE)))).
@@ -1963,7 +1963,7 @@ public class DiseaseAnnotationITCase extends BaseITCase {
 		diseaseAnnotation.setInferredGene(obsoleteGene);
 		diseaseAnnotation.setAssertedGenes(List.of(obsoleteGene));
 		diseaseAnnotation.setInferredAllele(obsoleteAllele);
-		diseaseAnnotation.setAssertedAllele(obsoleteAllele);
+		diseaseAnnotation.setAssertedAlleles(List.of(obsoleteAllele));
 		
 		ConditionRelation editedRelation = diseaseAnnotation.getConditionRelations().get(0);
 		editedRelation.setConditionRelationType(obsoleteConditionRelationType);
@@ -2001,7 +2001,7 @@ public class DiseaseAnnotationITCase extends BaseITCase {
 			body("errorMessages.inferredGene", is(ValidationConstants.OBSOLETE_MESSAGE)).
 			body("errorMessages.assertedGenes", is(ValidationConstants.OBSOLETE_MESSAGE)).
 			body("errorMessages.inferredAllele", is(ValidationConstants.OBSOLETE_MESSAGE)).
-			body("errorMessages.assertedAllele", is(ValidationConstants.OBSOLETE_MESSAGE)).
+			body("errorMessages.assertedAlleles", is(ValidationConstants.OBSOLETE_MESSAGE)).
 			body("errorMessages.conditionRelations", is(String.join(" | ", List.of(
 					"conditionRelationType - " + ValidationConstants.OBSOLETE_MESSAGE,
 					"singleReference - " + ValidationConstants.OBSOLETE_MESSAGE)))).
@@ -2366,7 +2366,7 @@ public class DiseaseAnnotationITCase extends BaseITCase {
 		diseaseAnnotation.setInferredGene(null);
 		diseaseAnnotation.setAssertedGenes(null);
 		diseaseAnnotation.setInferredAllele(null);
-		diseaseAnnotation.setAssertedAllele(null);
+		diseaseAnnotation.setAssertedAlleles(null);
 		diseaseAnnotation.setDataProviderCrossReference(null);
 		diseaseAnnotation.setSecondaryDataProviderCrossReference(null);
 		
@@ -2398,7 +2398,7 @@ public class DiseaseAnnotationITCase extends BaseITCase {
 			body("entity", not(hasKey("inferredGene"))).
 			body("entity", not(hasKey("assertedGenes"))).
 			body("entity", not(hasKey("inferredAllele"))).
-			body("entity", not(hasKey("assertedAllele"))).
+			body("entity", not(hasKey("assertedAlleles"))).
 			body("entity", not(hasKey("dataProviderCrossReference"))).
 			body("entity", not(hasKey("secondaryDataProviderCrossReference")));
 	}
