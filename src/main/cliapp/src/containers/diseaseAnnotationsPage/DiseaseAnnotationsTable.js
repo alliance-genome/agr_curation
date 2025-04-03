@@ -1062,7 +1062,7 @@ export const DiseaseAnnotationsTable = () => {
 	};
 
 	const onReferenceValueChange = (event, setFieldValue, props) => {
-		defaultAutocompleteOnChange(props, event, 'singleReference', setFieldValue);
+		defaultAutocompleteOnChange(props, event, 'evidenceItem', setFieldValue);
 	};
 
 	const referenceSearch = (event, setFiltered, setQuery) => {
@@ -1079,9 +1079,9 @@ export const DiseaseAnnotationsTable = () => {
 			<>
 				<AutocompleteEditor
 					search={referenceSearch}
-					initialValue={() => getRefString(props.rowData.singleReference)}
+					initialValue={() => getRefString(props.rowData.evidenceItem)}
 					rowProps={props}
-					fieldName="singleReference"
+					fieldName="evidenceItem"
 					valueDisplay={(item, setAutocompleteHoverItem, op, query) => (
 						<LiteratureAutocompleteTemplate
 							item={item}
@@ -1094,7 +1094,7 @@ export const DiseaseAnnotationsTable = () => {
 				/>
 				<ErrorMessageComponent
 					errorMessages={errorMessagesRef.current[props.rowIndex]}
-					errorField={'singleReference'}
+					errorField={'evidenceItem'}
 				/>
 			</>
 		);
@@ -1172,11 +1172,11 @@ export const DiseaseAnnotationsTable = () => {
 			editor: (props) => diseaseEditorTemplate(props),
 		},
 		{
-			field: 'singleReference.primaryCrossReferenceCurie',
+			field: 'evidenceItem.primaryCrossReferenceCurie',
 			header: 'Reference',
-			body: (rowData) => <SingleReferenceTemplate singleReference={rowData.singleReference} />,
+			body: (rowData) => <SingleReferenceTemplate singleReference={rowData.evidenceItem} />,
 			sortable: true,
-			filterConfig: FILTER_CONFIGS.singleReferenceFilterConfig,
+			filterConfig: FILTER_CONFIGS.evidenceItemFilterConfig,
 			editor: (props) => referenceEditorTemplate(props),
 		},
 		{

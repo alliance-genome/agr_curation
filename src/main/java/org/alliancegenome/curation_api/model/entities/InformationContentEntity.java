@@ -2,7 +2,10 @@ package org.alliancegenome.curation_api.model.entities;
 
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
+import org.alliancegenome.curation_api.model.bridges.InformationContentEntityTypeBridge;
 import org.alliancegenome.curation_api.model.entities.base.CurieObject;
+import org.hibernate.search.mapper.pojo.bridge.mapping.annotation.TypeBinderRef;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.TypeBinding;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
@@ -21,11 +24,16 @@ import lombok.ToString;
 @Inheritance(strategy = InheritanceType.JOINED)
 @Entity
 @Data
+@TypeBinding(binder = @TypeBinderRef(type = InformationContentEntityTypeBridge.class))
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @ToString(callSuper = true)
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
-@JsonSubTypes({ @JsonSubTypes.Type(value = Reference.class, name = "Reference") })
+@JsonSubTypes({
+	@JsonSubTypes.Type(value = Reference.class, name = "Reference"),
+	@JsonSubTypes.Type(value = Reference.class, name = "LiteratureReference"),
+	@JsonSubTypes.Type(value = ExternalDatabaseReference.class, name = "ExternalDatabaseReference")
+})
 @AGRCurationSchemaVersion(min = "1.4.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { CurieObject.class })
 @Table(
 	indexes = {

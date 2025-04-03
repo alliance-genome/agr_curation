@@ -2,7 +2,7 @@ package org.alliancegenome.curation_api.model.entities;
 
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
-import org.alliancegenome.curation_api.model.bridges.ReferenceTypeBridge;
+import org.alliancegenome.curation_api.model.bridges.InformationContentEntityTypeBridge;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.hibernate.search.mapper.pojo.bridge.mapping.annotation.TypeBinderRef;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.TypeBinding;
@@ -13,7 +13,7 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 @Entity
-@TypeBinding(binder = @TypeBinderRef(type = ReferenceTypeBridge.class))
+@TypeBinding(binder = @TypeBinderRef(type = InformationContentEntityTypeBridge.class))
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(callSuper = true)

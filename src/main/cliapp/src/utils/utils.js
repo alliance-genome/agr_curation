@@ -415,7 +415,7 @@ export function validateBioEntityFields(
 }
 
 export function validateRequiredFields(newAnnotationForm, uiErrorMessages, setUiErrorMessages, areUiErrors, mod) {
-	const fields = ['relation', 'diseaseAnnotationObject', 'singleReference', 'evidenceCodes'];
+	const fields = ['relation', 'diseaseAnnotationObject', 'evidenceItem', 'evidenceCodes'];
 
 	const isEmptyObject = (field) => {
 		if (Object.keys(newAnnotationForm[field]).length !== 0) {

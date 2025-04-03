@@ -67,7 +67,7 @@
     "with_gene_identifiers": [
       "HGNC:0001"
     ],
-    "refereevidence_curience_curie": "PMID:25920554",
+    "evidence_curie": "PMID:25920554",
     "note_dtos": [
       {
         "free_text": "Test note",
