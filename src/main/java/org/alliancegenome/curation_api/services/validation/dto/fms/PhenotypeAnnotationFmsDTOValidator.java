@@ -134,7 +134,7 @@ public class PhenotypeAnnotationFmsDTOValidator {
 						externalDbRef.setCurie(refCurie);
 						reference = externalDatabaseReferenceDAO.persist(externalDbRef);
 					} else {
-						refResponse.addErrorMessage("evidence - publicationId", ValidationConstants.INVALID_MESSAGE);
+						refResponse.addErrorMessage("evidence - publicationId", ValidationConstants.INVALID_MESSAGE + " (" + refCurie + ")");
 					}
 				}
 			}
