@@ -28,7 +28,7 @@ import org.alliancegenome.curation_api.services.CrossReferenceService;
 import org.alliancegenome.curation_api.services.OrganizationService;
 import org.alliancegenome.curation_api.services.PersonService;
 import org.alliancegenome.curation_api.services.VocabularyTermService;
-import org.alliancegenome.curation_api.services.helpers.notes.NoteIdentityHelper;
+import org.alliancegenome.curation_api.services.helpers.NoteIdentityHelper;
 import org.alliancegenome.curation_api.services.ontology.NcbiTaxonTermService;
 import org.alliancegenome.curation_api.services.validation.CrossReferenceValidator;
 import org.alliancegenome.curation_api.services.validation.NoteValidator;
@@ -88,7 +88,11 @@ public class BaseValidator<E extends Object> {
 
 		if (uiDataProvider == null) {
 			if (newEntity) {
-				return organizationDAO.getOrCreateOrganization("Alliance");
+				String modAbbreviation = "Alliance";
+				if (authenticatedPerson.getAllianceMember() != null && authenticatedPerson.getAllianceMember().getAbbreviation() != null) {
+					modAbbreviation = authenticatedPerson.getAllianceMember().getAbbreviation();
+				}
+				return organizationDAO.getOrCreateOrganization(modAbbreviation);
 			} else {
 				addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
 				return null;
@@ -387,7 +391,7 @@ public class BaseValidator<E extends Object> {
 		return validateRelatedNotes(uiNotes, noteTypeVocabularyTermSet, null);
 	}
 	
-	protected List<Note> validateRelatedNotes(List<Note> uiNotes, String noteTypeVocabularyTermSet, Reference expectedReference) {
+	protected List<Note> validateRelatedNotes(List<Note> uiNotes, String noteTypeVocabularyTermSet, String expectedReferenceCurie) {
 		String field = "relatedNotes";
 
 		List<Note> validatedNotes = new ArrayList<Note>();
@@ -411,9 +415,9 @@ public class BaseValidator<E extends Object> {
 						response.addErrorMessages(field, ix, duplicateError);
 					} else {
 						boolean expectedRefs = true;
-						if (expectedReference != null && expectedReference.getCurie() != null && CollectionUtils.isNotEmpty(note.getReferences())) {
+						if (StringUtils.isNotBlank(expectedReferenceCurie) && CollectionUtils.isNotEmpty(note.getReferences())) {
 							for (Reference noteRef : note.getReferences()) {
-								if (!Objects.equal(noteRef.getCurie(), expectedReference.getCurie())) {
+								if (!Objects.equal(noteRef.getCurie(), expectedReferenceCurie)) {
 									Map<String, String> noteRefErrorMessages = new HashMap<>();
 									noteRefErrorMessages.put("references", ValidationConstants.INVALID_MESSAGE + " (" + noteRef + ")");
 									response.addErrorMessages("relatedNotes", ix, noteRefErrorMessages);

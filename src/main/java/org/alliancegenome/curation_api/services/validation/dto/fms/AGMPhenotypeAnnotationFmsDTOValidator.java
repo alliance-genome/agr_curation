@@ -14,14 +14,14 @@ import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
 import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.GenomicEntity;
-import org.alliancegenome.curation_api.model.entities.Reference;
+import org.alliancegenome.curation_api.model.entities.InformationContentEntity;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.PhenotypeFmsDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.GenomicEntityService;
 import org.alliancegenome.curation_api.services.PhenotypeAnnotationService;
+import org.alliancegenome.curation_api.services.helpers.GenePhenotypeAnnotationXrefHelper;
 import org.alliancegenome.curation_api.services.helpers.annotations.AnnotationUniqueIdHelper;
-import org.alliancegenome.curation_api.services.helpers.crossReferences.GenePhenotypeAnnotationXrefHelper;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -41,10 +41,10 @@ public class AGMPhenotypeAnnotationFmsDTOValidator extends PhenotypeAnnotationFm
 		ObjectResponse<AGMPhenotypeAnnotation> apaResponse = new ObjectResponse<AGMPhenotypeAnnotation>();
 		AGMPhenotypeAnnotation annotation = new AGMPhenotypeAnnotation();
 
-		ObjectResponse<Reference> refResponse = validateReference(dto);
+		ObjectResponse<InformationContentEntity> refResponse = validateReference(dto);
 		apaResponse.addErrorMessages(refResponse.getErrorMessages());
 
-		Reference reference = refResponse.getEntity();
+		InformationContentEntity reference = refResponse.getEntity();
 		String refString = reference == null ? null : reference.getCurie();
 
 		String uniqueId = AnnotationUniqueIdHelper.getPhenotypeAnnotationUniqueId(dto, subject.getIdentifier(), refString);
@@ -54,7 +54,7 @@ public class AGMPhenotypeAnnotationFmsDTOValidator extends PhenotypeAnnotationFm
 		}
 
 		annotation.setUniqueId(uniqueId);
-		annotation.setSingleReference(reference);
+		annotation.setEvidenceItem(reference);
 		annotation.setPhenotypeAnnotationSubject(subject);
 
 		// Reset implied/asserted fields as secondary annotations loaded separately
@@ -78,10 +78,10 @@ public class AGMPhenotypeAnnotationFmsDTOValidator extends PhenotypeAnnotationFm
 	public List<AGMPhenotypeAnnotation> validateInferredOrAssertedEntities(AffectedGenomicModel primaryAnnotationSubject, PhenotypeFmsDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
 		ObjectResponse<AGMPhenotypeAnnotation> apaResponse = new ObjectResponse<AGMPhenotypeAnnotation>();
 
-		ObjectResponse<Reference> refResponse = validateReference(dto);
+		ObjectResponse<InformationContentEntity> refResponse = validateReference(dto);
 		apaResponse.addErrorMessages(refResponse.getErrorMessages());
 
-		Reference reference = refResponse.getEntity();
+		InformationContentEntity reference = refResponse.getEntity();
 		String refString = reference == null ? null : reference.getCurie();
 		
 		List<AGMPhenotypeAnnotation> primaryAnnotations = findPrimaryAnnotations(agmPhenotypeAnnotationDAO, dto, primaryAnnotationSubject.getPrimaryExternalId(), refString);

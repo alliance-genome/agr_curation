@@ -10,9 +10,9 @@ import org.alliancegenome.curation_api.dao.ConditionRelationDAO;
 import org.alliancegenome.curation_api.model.entities.Annotation;
 import org.alliancegenome.curation_api.model.entities.ConditionRelation;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
+import org.alliancegenome.curation_api.model.entities.InformationContentEntity;
 import org.alliancegenome.curation_api.model.entities.Note;
 import org.alliancegenome.curation_api.model.entities.Organization;
-import org.alliancegenome.curation_api.model.entities.Reference;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.validation.base.AuditedObjectValidator;
@@ -23,7 +23,7 @@ import jakarta.inject.Inject;
 
 public class AnnotationValidator extends AuditedObjectValidator<Annotation> {
 
-	@Inject ReferenceValidator referenceValidator;
+	@Inject InformationContentEntityValidator informationContentEntityValidator;
 	@Inject ConditionRelationValidator conditionRelationValidator;
 	@Inject ConditionRelationDAO conditionRelationDAO;
 	@Inject AnnotationDAO annotationDAO;
@@ -40,8 +40,8 @@ public class AnnotationValidator extends AuditedObjectValidator<Annotation> {
 		}
 
 		for (ConditionRelation conditionRelation : uiEntity.getConditionRelations()) {
-			if (uiEntity.getSingleReference() != null && !StringUtils.isBlank(uiEntity.getSingleReference().getCurie()) && conditionRelation.getSingleReference() != null && !StringUtils.isBlank(conditionRelation.getSingleReference().getCurie())
-				&& !conditionRelation.getSingleReference().getCurie().equals(uiEntity.getSingleReference().getCurie())) {
+			if (uiEntity.getEvidenceItem() != null && !StringUtils.isBlank(uiEntity.getEvidenceItem().getCurie()) && conditionRelation.getSingleReference() != null && !StringUtils.isBlank(conditionRelation.getSingleReference().getCurie())
+				&& !conditionRelation.getSingleReference().getCurie().equals(uiEntity.getEvidenceItem().getCurie())) {
 				addMessageResponse("conditionRelations", "singleReference - " + ValidationConstants.INVALID_MESSAGE);
 			}
 
@@ -69,25 +69,25 @@ public class AnnotationValidator extends AuditedObjectValidator<Annotation> {
 		return validatedConditionRelations;
 	}
 
-	public Reference validateSingleReference(Annotation uiEntity, Annotation dbEntity) {
-		String field = "singleReference";
-		if (uiEntity.getSingleReference() == null || StringUtils.isBlank(uiEntity.getSingleReference().getCurie())) {
+	public InformationContentEntity validateEvidenceItem(Annotation uiEntity, Annotation dbEntity) {
+		String field = "evidenceItem";
+		if (uiEntity.getEvidenceItem() == null || StringUtils.isBlank(uiEntity.getEvidenceItem().getCurie())) {
 			addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
 			return null;
 		}
 
-		ObjectResponse<Reference> singleRefResponse = referenceValidator.validateReference(uiEntity.getSingleReference());
-		if (singleRefResponse.getEntity() == null) {
+		ObjectResponse<InformationContentEntity> evidenceItemResponse = informationContentEntityValidator.validateInformationContentEntity(uiEntity.getEvidenceItem());
+		if (evidenceItemResponse.getEntity() == null) {
 			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
 			return null;
 		}
 
-		if (singleRefResponse.getEntity().getObsolete() && (dbEntity.getSingleReference() == null || !singleRefResponse.getEntity().getCurie().equals(dbEntity.getSingleReference().getCurie()))) {
+		if (evidenceItemResponse.getEntity().getObsolete() && (dbEntity.getEvidenceItem() == null || !evidenceItemResponse.getEntity().getCurie().equals(dbEntity.getEvidenceItem().getCurie()))) {
 			addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
 			return null;
 		}
 
-		return singleRefResponse.getEntity();
+		return evidenceItemResponse.getEntity();
 	}
 
 	public Annotation validateCommonAnnotationFields(Annotation uiEntity, Annotation dbEntity, String noteTypeSet) {
@@ -103,8 +103,8 @@ public class AnnotationValidator extends AuditedObjectValidator<Annotation> {
 		String modInternalId = handleStringField(uiEntity.getModInternalId());
 		dbEntity.setModInternalId(modInternalId);
 
-		Reference singleReference = validateSingleReference(uiEntity, dbEntity);
-		dbEntity.setSingleReference(singleReference);
+		InformationContentEntity evidenceItem = validateEvidenceItem(uiEntity, dbEntity);
+		dbEntity.setEvidenceItem(evidenceItem);
 
 		Organization dataProvider = validateDataProvider(uiEntity.getDataProvider(), dbEntity.getDataProvider(), newEntity);
 		dbEntity.setDataProvider(dataProvider);
@@ -115,7 +115,8 @@ public class AnnotationValidator extends AuditedObjectValidator<Annotation> {
 		List<ConditionRelation> conditionRelations = validateConditionRelations(uiEntity, dbEntity);
 		dbEntity.setConditionRelations(conditionRelations);
 
-		List<Note> relatedNotes = validateRelatedNotes(uiEntity.getRelatedNotes(), noteTypeSet, dbEntity.getSingleReference());
+		String evidenceItemCurie = dbEntity.getEvidenceItem() == null ? null : dbEntity.getEvidenceItem().getCurie();
+		List<Note> relatedNotes = validateRelatedNotes(uiEntity.getRelatedNotes(), noteTypeSet, evidenceItemCurie);
 		if (dbEntity.getRelatedNotes() != null) {
 			dbEntity.getRelatedNotes().clear();
 		}
