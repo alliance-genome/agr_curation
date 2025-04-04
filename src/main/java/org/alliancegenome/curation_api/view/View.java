@@ -108,7 +108,7 @@ public class View {
 
 	public static class VariantCreate extends GeneView {
 	}
-	
+
 	public static class VariantDetailView extends VariantView {
 	}
 
@@ -125,23 +125,24 @@ public class View {
 
 	public static class ForPublic {
 	}
-	
+
 	public static class GeneSearchResultDocument { }
 	public static class GeneSummaryDocument { }
 
 	public static class GOSearchResultDocument { }
-	
+	public static class HTPDatasetSearchResultDocument { }
+
 	public static class DiseaseSummaryDocument { }
 	public static class DiseaseSearchResultDocument { }
 
 	public static class GeneToGeneOrthologyDocument { }
-	
+
 	public static class DiseaseAnnotationForPublic extends ForPublic {
 	}
 
 	public static class BulkLoadFileHistoryView extends FieldsOnly {
 	}
-	
+
 	public static Class<?> viewLookup(String name) {
 		for (Class<?> innerClass : View.class.getDeclaredClasses()) {
 			if (innerClass.getSimpleName().equals(name)) {
