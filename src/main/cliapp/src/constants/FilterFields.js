@@ -276,7 +276,7 @@ export const FIELD_SETS = Object.freeze({
 	},
 	evidenceFieldSet: {
 		filterName: 'evidenceFilter',
-		fields: ['evidence.curie'],
+		fields: ['evidence.curie', 'evidence.crossReferenceCuries'],
 	},
 	evidenceCodesFieldSet: {
 		filterName: 'evidenceCodesFilter',

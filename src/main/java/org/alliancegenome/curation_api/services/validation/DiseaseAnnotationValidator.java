@@ -77,6 +77,9 @@ public class DiseaseAnnotationValidator extends AnnotationValidator {
 
 		if (uiEntity.getSecondaryDataProvider() == null) {
 			if (dbEntity.getId() == null) {
+				if (authenticatedPerson.getAllianceMember() == null || authenticatedPerson.getAllianceMember().getAbbreviation() == null) {
+					return null;
+				}
 				return organizationDAO.getOrCreateOrganization("Alliance");
 			} else {
 				return null;

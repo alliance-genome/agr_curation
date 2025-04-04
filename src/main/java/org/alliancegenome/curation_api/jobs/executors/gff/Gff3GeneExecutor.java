@@ -16,8 +16,8 @@ import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHist
 import org.alliancegenome.curation_api.model.ingest.dto.fms.Gff3DTO;
 import org.alliancegenome.curation_api.response.APIResponse;
 import org.alliancegenome.curation_api.response.LoadHistoryResponce;
-import org.alliancegenome.curation_api.services.associations.geneAssociations.GeneGenomicLocationAssociationService;
-import org.alliancegenome.curation_api.services.helpers.gff3.Gff3AttributesHelper;
+import org.alliancegenome.curation_api.services.associations.GeneGenomicLocationAssociationService;
+import org.alliancegenome.curation_api.services.helpers.Gff3AttributesHelper;
 import org.alliancegenome.curation_api.services.validation.dto.Gff3DtoValidator;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
 import org.apache.commons.lang3.tuple.ImmutablePair;
