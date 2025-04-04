@@ -86,14 +86,14 @@ export const FIELD_SETS = Object.freeze({
 		filterName: 'annotationTypeFilter',
 		fields: ['annotationType.name'],
 	},
-	assertedAlleleFieldSet: {
-		filterName: 'assertedAlleleFilter',
+	assertedAllelesFieldSet: {
+		filterName: 'assertedAllelesFilter',
 		fields: [
-			'assertedAllele.alleleSymbol.displayText',
-			'assertedAllele.alleleSymbol.formatText',
-			'assertedAllele.curie',
-			'assertedAllele.primaryExternalId',
-			'assertedAllele.modInternalId',
+			'assertedAlleles.alleleSymbol.displayText',
+			'assertedAlleles.alleleSymbol.formatText',
+			'assertedAlleles.curie',
+			'assertedAlleles.primaryExternalId',
+			'assertedAlleles.modInternalId',
 		],
 	},
 	assertedGenesFieldSet: {
@@ -746,7 +746,7 @@ export const FILTER_CONFIGS = Object.freeze({
 	agmSecondaryIdsFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.agmSecondaryIdsFieldSet] },
 	alleleSymbolFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.alleleSymbolFieldSet] },
 	alleleSynonymsFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.alleleSynonymsFieldSet] },
-	assertedAlleleFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.assertedAlleleFieldSet] },
+	assertedAllelesFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.assertedAllelesFieldSet] },
 	assertedGenesFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.assertedGenesFieldSet] },
 	citationFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.citationFieldSet] },
 	literatureShortCitationFilterConfig: {

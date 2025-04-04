@@ -520,7 +520,7 @@ export const data = {
 					},
 				},
 			],
-			assertedAllele: {
+			assertedAlleles: [{
 				type: 'Allele',
 				id: 4234652,
 				createdBy: {
@@ -647,7 +647,7 @@ export const data = {
 						name: 'approved',
 					},
 				},
-			},
+			}],
 		},
 	],
 	totalResults: 1,
