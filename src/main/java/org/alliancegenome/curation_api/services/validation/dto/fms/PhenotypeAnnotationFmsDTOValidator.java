@@ -8,23 +8,24 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.alliancegenome.curation_api.constants.ReferenceConstants;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.ConditionRelationDAO;
+import org.alliancegenome.curation_api.dao.ExternalDatabaseReferenceDAO;
 import org.alliancegenome.curation_api.dao.base.BaseSQLDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.model.entities.ConditionRelation;
+import org.alliancegenome.curation_api.model.entities.ExternalDatabaseReference;
+import org.alliancegenome.curation_api.model.entities.InformationContentEntity;
 import org.alliancegenome.curation_api.model.entities.PhenotypeAnnotation;
-import org.alliancegenome.curation_api.model.entities.Reference;
 import org.alliancegenome.curation_api.model.entities.ontology.PhenotypeTerm;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.ConditionRelationFmsDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.PhenotypeFmsDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.PhenotypeTermIdentifierFmsDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
+import org.alliancegenome.curation_api.services.InformationContentEntityService;
 import org.alliancegenome.curation_api.services.OrganizationService;
-import org.alliancegenome.curation_api.services.ReferenceService;
 import org.alliancegenome.curation_api.services.ResourceDescriptorPageService;
 import org.alliancegenome.curation_api.services.VocabularyTermService;
 import org.alliancegenome.curation_api.services.ontology.PhenotypeTermService;
@@ -33,17 +34,19 @@ import org.apache.commons.lang3.StringUtils;
 
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 
 @RequestScoped
 public class PhenotypeAnnotationFmsDTOValidator {
 
-	@Inject ReferenceService referenceService;
+	@Inject InformationContentEntityService iceService;
 	@Inject PhenotypeTermService phenotypeTermService;
 	@Inject ConditionRelationFmsDTOValidator conditionRelationFmsDtoValidator;
 	@Inject ConditionRelationDAO conditionRelationDAO;
 	@Inject OrganizationService organizationService;
 	@Inject VocabularyTermService vocabularyTermService;
 	@Inject ResourceDescriptorPageService resourceDescriptorPageService;
+	@Inject ExternalDatabaseReferenceDAO externalDatabaseReferenceDAO;
 
 	public <E extends PhenotypeAnnotation> ObjectResponse<E> validatePhenotypeAnnotation(E annotation, PhenotypeFmsDTO dto, BackendBulkDataProvider beDataProvider) {
 
@@ -108,9 +111,10 @@ public class PhenotypeAnnotationFmsDTOValidator {
 
 	}
 
-	public ObjectResponse<Reference> validateReference(PhenotypeFmsDTO dto) {
-		ObjectResponse<Reference> refResponse = new ObjectResponse<>();
-		Reference reference = null;
+	@Transactional
+	public ObjectResponse<InformationContentEntity> validateReference(PhenotypeFmsDTO dto) {
+		ObjectResponse<InformationContentEntity> refResponse = new ObjectResponse<>();
+		InformationContentEntity reference = null;
 
 		if (dto.getEvidence() == null) {
 			refResponse.addErrorMessage("evidence", ValidationConstants.REQUIRED_MESSAGE);
@@ -119,12 +123,19 @@ public class PhenotypeAnnotationFmsDTOValidator {
 				refResponse.addErrorMessage("evidence - publicationId", ValidationConstants.REQUIRED_MESSAGE);
 			} else {
 				String refCurie = dto.getEvidence().getPublicationId();
-				if (refCurie.startsWith("OMIM:") || refCurie.startsWith("MIM:") || refCurie.startsWith("ORPHA:")) {
-					refCurie = ReferenceConstants.RGD_OMIM_ORPHANET_REFERENCE;
+				if (refCurie.startsWith("OMIM:")) {
+					refCurie = refCurie.substring(1);
 				}
-				reference = referenceService.retrieveFromDbOrLiteratureService(refCurie);
+				reference = iceService.retrieveFromDbOrLiteratureService(refCurie);
+				
 				if (reference == null) {
-					refResponse.addErrorMessage("evidence - publicationId", ValidationConstants.INVALID_MESSAGE);
+					if (refCurie.startsWith("MIM:") || refCurie.startsWith("ORPHA:")) {
+						ExternalDatabaseReference externalDbRef = new ExternalDatabaseReference();
+						externalDbRef.setCurie(refCurie);
+						reference = externalDatabaseReferenceDAO.persist(externalDbRef);
+					} else {
+						refResponse.addErrorMessage("evidence - publicationId", ValidationConstants.INVALID_MESSAGE + " (" + refCurie + ")");
+					}
 				}
 			}
 		}
@@ -142,7 +153,7 @@ public class PhenotypeAnnotationFmsDTOValidator {
 			return null;
 		}
 		if (StringUtils.isNotBlank(refString)) {
-			params.put("singleReference.curie", refString);
+			params.put("evidenceItem.curie", refString);
 		} else {
 			return null;
 		}

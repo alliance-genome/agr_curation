@@ -121,7 +121,7 @@ public class ExpressionBulkUploadFmsITCase extends BaseITCase {
 			.body("results[0].expressionAssayUsed.curie", is(mmoTerm))
 			.body("results[0].whereExpressedStatement", is("trunk"))
 			.body("results[0].whenExpressedStageName", is("stage1"))
-			.body("results[0].singleReference.crossReferences[0].referencedCurie", is(publicationId))
+			.body("results[0].evidenceItem.crossReferences[0].referencedCurie", is(publicationId))
 			.body("results[0].relation.name", is(VocabularyConstants.GENE_EXPRESSION_RELATION_TERM))
 			.body("results[0].expressionPattern.whenExpressed.developmentalStageStart.curie", is(stageTermId))
 			.body("results[0].expressionPattern.whenExpressed.stageUberonSlimTerms[0].name", is(stageUberonTermId))

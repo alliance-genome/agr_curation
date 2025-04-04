@@ -45,7 +45,7 @@ public class AGMDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOValida
 		AGMDiseaseAnnotation annotation = new AGMDiseaseAnnotation();
 		AffectedGenomicModel agm = validateRequiredIdentifier(agmService, "agm_identifier", dto.getAgmIdentifier());
 
-		Reference reference = validateRequiredReference(dto.getReferenceCurie());
+		Reference reference = validateRequiredReference(dto.getEvidenceCurie());
 		String refCurie = reference == null ? null : reference.getCurie();
 
 		
@@ -66,7 +66,7 @@ public class AGMDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOValida
 				response.addErrorMessage("agm_identifier", ValidationConstants.INVALID_MESSAGE + " (" + dto.getAgmIdentifier() + ") for " + dataProvider.name() + " load");
 			}
 		}
-		annotation.setSingleReference(reference);
+		annotation.setEvidenceItem(reference);
 
 		annotation = validateDiseaseAnnotationDTO(annotation, dto);
 	

@@ -601,6 +601,10 @@ export const FIELD_SETS = Object.freeze({
 		filterName: 'singleReferenceFilter',
 		fields: ['singleReference.curie', 'singleReference.crossReferences.referencedCurie'],
 	},
+	evidenceItemFieldSet: {
+		filterName: 'evidenceItemFilter',
+		fields: ['evidenceItem.curie', 'evidenceItem.crossReferenceCuries'],
+	},
 	smilesFieldSet: {
 		filterName: 'smilesFilter',
 		fields: ['smiles'],
@@ -897,6 +901,7 @@ export const FILTER_CONFIGS = Object.freeze({
 		fieldSets: [FIELD_SETS.sgdStrainBackgroundFieldSet],
 	},
 	singleReferenceFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.singleReferenceFieldSet] },
+	evidenceItemFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.evidenceItemFieldSet] },
 	smilesFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.smilesFieldSet] },
 	sourceGeneralConsequenceFilterConfig: {
 		filterComponentType: 'input',
