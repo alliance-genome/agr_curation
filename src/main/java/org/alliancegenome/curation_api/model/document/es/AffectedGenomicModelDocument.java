@@ -14,9 +14,9 @@ import java.util.*;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @JsonView(View.ModelDocumentView.class)
-public class ModelDocument extends ESDocument {
+public class AffectedGenomicModelDocument extends ESDocument {
 	{
-		category = "gene_model_annotation";
+		category = "affected_genomic_model_annotation";
 	}
 
 	private AffectedGenomicModel model;

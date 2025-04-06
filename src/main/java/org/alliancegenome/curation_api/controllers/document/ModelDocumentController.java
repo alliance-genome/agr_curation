@@ -3,7 +3,7 @@ package org.alliancegenome.curation_api.controllers.document;
 import jakarta.inject.Inject;
 import org.alliancegenome.curation_api.interfaces.document.ModelDocumentInterface;
 import org.alliancegenome.curation_api.model.document.builders.ModelDocumentBuilder;
-import org.alliancegenome.curation_api.model.document.es.ModelDocument;
+import org.alliancegenome.curation_api.model.document.es.AffectedGenomicModelDocument;
 import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
 import org.alliancegenome.curation_api.model.input.Pagination;
 import org.alliancegenome.curation_api.response.SearchResponse;
@@ -18,7 +18,7 @@ public class ModelDocumentController implements ModelDocumentInterface {
 	AffectedGenomicModelService service;
 
 	@Override
-	public SearchResponse<ModelDocument> findDocuments(Integer page, Integer limit, HashMap<String, Object> params) {
+	public SearchResponse<AffectedGenomicModelDocument> findDocuments(Integer page, Integer limit, HashMap<String, Object> params) {
 		if (params == null) {
 			params = new HashMap<>();
 		}
@@ -26,16 +26,16 @@ public class ModelDocumentController implements ModelDocumentInterface {
 		Pagination pagination = new Pagination(page, limit);
 		SearchResponse<AffectedGenomicModel> resp = service.findByParams(pagination, params);
 
-		ArrayList<ModelDocument> list = new ArrayList<>();
+		ArrayList<AffectedGenomicModelDocument> list = new ArrayList<>();
 		if (resp.getResults() != null) {
 			ModelDocumentBuilder builder = new ModelDocumentBuilder();
 			for (AffectedGenomicModel gene : resp.getResults()) {
-				ModelDocument doc = builder.buildModelDocument(gene);
+				AffectedGenomicModelDocument doc = builder.buildModelDocument(gene);
 				list.add(doc);
 			}
 		}
 
-		SearchResponse<ModelDocument> ret = new SearchResponse<>(list);
+		SearchResponse<AffectedGenomicModelDocument> ret = new SearchResponse<>(list);
 		ret.setTotalResults(resp.getTotalResults());
 		return ret;
 	}

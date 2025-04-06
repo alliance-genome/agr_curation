@@ -1,7 +1,7 @@
 package org.alliancegenome.curation_api.model.document.builders;
 
 import lombok.extern.slf4j.Slf4j;
-import org.alliancegenome.curation_api.model.document.es.ModelDocument;
+import org.alliancegenome.curation_api.model.document.es.AffectedGenomicModelDocument;
 import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
 import org.alliancegenome.curation_api.model.entities.Annotation;
 import org.alliancegenome.curation_api.model.entities.ConditionRelation;
@@ -13,8 +13,8 @@ import java.util.List;
 public class ModelDocumentBuilder {
 
 
-	public ModelDocument buildModelDocument(AffectedGenomicModel model) {
-		ModelDocument doc = new ModelDocument();
+	public AffectedGenomicModelDocument buildModelDocument(AffectedGenomicModel model) {
+		AffectedGenomicModelDocument doc = new AffectedGenomicModelDocument();
 		doc.setModel(model);
 		model.getAgmPhenotypeAnnotations()
 			.forEach(phenotypeAnnotation -> {
