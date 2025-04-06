@@ -6,6 +6,7 @@ import org.alliancegenome.curation_api.model.document.es.DiseaseSummaryDocument;
 import org.alliancegenome.curation_api.model.entities.*;
 import org.alliancegenome.curation_api.model.entities.ontology.DOTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.OntologyTerm;
+import org.alliancegenome.curation_api.model.entities.orthology.GeneToGeneOrthologyGenerated;
 
 import java.util.*;
 import java.util.function.Function;
@@ -81,12 +82,15 @@ public class DiseaseSummaryDocumentBuilder {
 			doc.getAlleles().addAll(alleleDiseaseAnnotations.stream().filter(alleleDiseaseAnnotation -> alleleDiseaseAnnotation.getDiseaseAnnotationSubject().getAlleleSymbol() != null).map(alleleDiseaseAnnotation -> getAlleleName(alleleDiseaseAnnotation.getDiseaseAnnotationSubject())).collect(Collectors.toSet()));
 		}
 
-		// add orthologous genes for the all-involved genes
-		allInvolvedGenes.forEach(gene -> gene.getGeneToGeneOrthologyGenerateds().forEach(orthology -> {
+		// add orthologous genes for the all-involved genes (only
+		allInvolvedGenes.forEach(gene -> gene.getGeneToGeneOrthologyGenerateds()
+			.stream().filter(GeneToGeneOrthologyGenerated::getStrictFilter).forEach(orthology -> {
 			doc.getGenes().add(getGeneName(orthology.getObjectGene()));
 			doc.getAssociatedSpecies().add(orthology.getObjectGene().getTaxon().getGenusSpecies());
 		}));
 		doc.setParentDiseaseNames(doTerm.getIsaAncestors().stream().map(OntologyTerm::getName).collect(Collectors.toSet()));
+		// add self to the list
+		doc.getParentDiseaseNames().add(doTerm.getName());
 
 		// calculate diseaseGroup, ie parents with subset DO_AGR_slim
 		doc.setDiseaseGroup(doTerm.getIsaAncestors().stream().filter(ontologyTerm -> ontologyTerm.getSubsets().contains("DO_AGR_slim")).map(OntologyTerm::getName).collect(Collectors.toSet()));
