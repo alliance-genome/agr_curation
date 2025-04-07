@@ -20,35 +20,35 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class HTPDatasetDocumentBuilder {
 
-	public static HTPDatasetSearchResultDocument buildSearchResultDocument(HTPExpressionDatasetAnnotation htpDataset, List<HTPExpressionDatasetSampleAnnotation> sampleAnnots) {
+	public static HTPDatasetSearchResultDocument buildSearchResultDocument(HTPExpressionDatasetAnnotation htpDatasetAnnotation, List<HTPExpressionDatasetSampleAnnotation> sampleAnnots) {
 		HTPDatasetSearchResultDocument doc = new HTPDatasetSearchResultDocument();
 
-		if(htpDataset.getDataProvider() != null){
-			String dataProvider = htpDataset.getDataProvider().getAbbreviation();
+		if(htpDatasetAnnotation.getDataProvider() != null){
+			String dataProvider = htpDatasetAnnotation.getDataProvider().getAbbreviation();
 			doc.setDataProvider(dataProvider);
 		}
 
-		if(htpDataset.getName() != null){
-			doc.setName(htpDataset.getName());
-			doc.setNameKey(htpDataset.getName());
+		if(htpDatasetAnnotation.getName() != null){
+			doc.setName(htpDatasetAnnotation.getName());
+			doc.setNameKey(htpDatasetAnnotation.getName());
 		}
 
-		if(htpDataset.getHtpExpressionDataset() != null){
-			String curie = htpDataset.getHtpExpressionDataset().getCurie();
+		if(htpDatasetAnnotation.getHtpExpressionDataset() != null){
+			String curie = htpDatasetAnnotation.getHtpExpressionDataset().getCurie();
 			doc.setCurie(curie);
 		}
 
-		if(htpDataset.getRelatedNote() != null){
-			String summary = htpDataset.getRelatedNote().getFreeText();
+		if(htpDatasetAnnotation.getRelatedNote() != null){
+			String summary = htpDatasetAnnotation.getRelatedNote().getFreeText();
 			doc.setSummary(summary);
 		}
 
 		//TODO: clean this up
-		if(htpDataset.getHtpExpressionDataset() != null){
-			if(htpDataset.getHtpExpressionDataset().getPreferredCrossReference() != null){
-				if(htpDataset.getHtpExpressionDataset().getPreferredCrossReference().getResourceDescriptorPage() != null){
-					if(htpDataset.getHtpExpressionDataset().getPreferredCrossReference().getResourceDescriptorPage().getUrlTemplate() != null){
-						String href = htpDataset.getHtpExpressionDataset()
+		if(htpDatasetAnnotation.getHtpExpressionDataset() != null){
+			if(htpDatasetAnnotation.getHtpExpressionDataset().getPreferredCrossReference() != null){
+				if(htpDatasetAnnotation.getHtpExpressionDataset().getPreferredCrossReference().getResourceDescriptorPage() != null){
+					if(htpDatasetAnnotation.getHtpExpressionDataset().getPreferredCrossReference().getResourceDescriptorPage().getUrlTemplate() != null){
+						String href = htpDatasetAnnotation.getHtpExpressionDataset()
 						.getPreferredCrossReference()
 						.getUrlFromResourceDescriptorPage(doc.getCurie());
 						doc.setHref(href);
@@ -57,11 +57,25 @@ public class HTPDatasetDocumentBuilder {
 			}
 		}
 
-		if(htpDataset.getCategoryTags() != null){
-			Set<String> tags = new HashSet<>(htpDataset.getCategoryTags()
+		if(htpDatasetAnnotation.getCategoryTags() != null){
+			Set<String> tags = new HashSet<>(htpDatasetAnnotation.getCategoryTags()
 				.stream().map( term -> term.getName()).collect(Collectors.toList()));
 
 			doc.setTags(tags);
+		}
+
+		if(htpDatasetAnnotation.getReferences() != null){
+			Set<String> crossReferences = new HashSet<>();
+
+			crossReferences.addAll(
+				htpDatasetAnnotation.getHtpExpressionDataset()
+				.getCrossReferences()
+				.stream()
+				.map(xref -> xref.getReferencedCurie())
+				.collect(Collectors.toList())
+			);
+
+			doc.setCrossReferences(crossReferences);
 		}
 
 		if(!Collections.isEmpty(sampleAnnots)){
@@ -69,8 +83,16 @@ public class HTPDatasetDocumentBuilder {
 			Set<String> anatomicalExpression = new HashSet<>();
 			Set<String> anatomicalExpressionWithParents = new HashSet<>();
 			Set<String> sampleIds = new HashSet<>();
+			Set<String> assays = new HashSet<>();
+			Set<String> sex = new HashSet<>();
+			String species = new String();
 
 			for(HTPExpressionDatasetSampleAnnotation sampleAnnot : sampleAnnots){
+				species = sampleAnnot.getTaxon().getName();
+
+				if (sampleAnnot.getGeneticSex() != null) {
+					sex.add(sampleAnnot.getGeneticSex().getName());
+				}
 
 				whereExpressed.addAll(
 					sampleAnnot
@@ -78,8 +100,7 @@ public class HTPDatasetDocumentBuilder {
 						.stream()
 						.map((site) -> {
 							return site.getAnatomicalStructure().getName();
-						})
-						.collect(Collectors.toList())
+						}).collect(Collectors.toList())
 				);
 
 				anatomicalExpression.addAll(
@@ -88,8 +109,7 @@ public class HTPDatasetDocumentBuilder {
 						.stream()
 						.flatMap((site) -> {
 							return site.getAnatomicalStructureUberonTerms().stream().map(term -> term.getName());
-						})
-						.collect(Collectors.toList())
+						}).collect(Collectors.toList())
 				);
 
 				anatomicalExpressionWithParents.addAll(
@@ -98,17 +118,31 @@ public class HTPDatasetDocumentBuilder {
 						.stream()
 						.flatMap((site) -> {
 							return site.getAnatomicalStructure().getIsaAncestors().stream().map(parent -> parent.getName());
-						})
-						.collect(Collectors.toList())
+						}).collect(Collectors.toList())
 				);
 
-				sampleIds.add(sampleAnnot.getHtpExpressionSample().getCurie());
+				if(sampleAnnot.getHtpExpressionSample() != null){
+					sampleIds.add(sampleAnnot.getHtpExpressionSample().getCurie());
+				}
+
+				assays.addAll(
+					sampleAnnot
+						.getExpressionAssayUsed()
+						.getSynonyms()
+						.stream()
+						.map((synonym) -> {
+							return synonym.getName();
+						}).collect(Collectors.toList())
+				);
 			}
 
 			doc.setWhereExpressed(whereExpressed);
 			doc.setAnatomicalExpression(anatomicalExpression);
 			doc.setAnatomicalExpressionWithParents(anatomicalExpressionWithParents);
 			doc.setSampleIds(sampleIds);
+			doc.setAssays(assays);
+			doc.setSpecies(species);
+			doc.setSex(sex);
 		}
 
 		return doc;
