@@ -33,7 +33,7 @@ import java.util.List;
 public class AffectedGenomicModel extends GenomicEntity {
 
 	@Column(columnDefinition = "TEXT")
-	@JsonView({View.FieldsOnly.class, View.ForPublic.class})
+	@JsonView({View.FieldsOnly.class, View.ForPublic.class, View.ModelDocumentView.class})
 	private String name;
 
 	@OneToMany(mappedBy = "diseaseAnnotationSubject", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -45,7 +45,7 @@ public class AffectedGenomicModel extends GenomicEntity {
 	@IndexedEmbedded(includePaths = {"name", "name_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@JsonView({View.FieldsOnly.class, View.ForPublic.class})
+	@JsonView({View.FieldsOnly.class, View.ForPublic.class, View.ModelDocumentView.class})
 	private VocabularyTerm subtype;
 
 	@IndexedEmbedded(includePaths = {"secondaryId", "evidence.curie", "secondaryId_keyword", "evidence.curie_keyword"})
