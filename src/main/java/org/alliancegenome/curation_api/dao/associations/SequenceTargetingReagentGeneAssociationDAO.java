@@ -1,7 +1,7 @@
 package org.alliancegenome.curation_api.dao.associations;
 
 import org.alliancegenome.curation_api.dao.base.BaseSQLDAO;
-import org.alliancegenome.curation_api.model.entities.associations.sequenceTargetingReagentAssociations.SequenceTargetingReagentGeneAssociation;
+import org.alliancegenome.curation_api.model.entities.associations.SequenceTargetingReagentGeneAssociation;
 
 import jakarta.enterprise.context.ApplicationScoped;
 

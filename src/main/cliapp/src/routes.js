@@ -560,6 +560,14 @@ export default (
 			)}
 		/>
 		<SecureRoute
+			path="/ontology/bto"
+			render={() => (
+				<ErrorBoundary>
+					<GeneralOntologyComponent name="BTO" endpoint="btoterm" />
+				</ErrorBoundary>
+			)}
+		/>
+		<SecureRoute
 			path="/ontology/bspo"
 			render={() => (
 				<ErrorBoundary>

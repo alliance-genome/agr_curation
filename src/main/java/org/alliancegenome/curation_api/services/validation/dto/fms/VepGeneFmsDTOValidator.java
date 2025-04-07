@@ -7,12 +7,12 @@ import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
 import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.model.entities.PredictedVariantConsequence;
 import org.alliancegenome.curation_api.model.entities.Transcript;
-import org.alliancegenome.curation_api.model.entities.associations.variantAssociations.CuratedVariantGenomicLocationAssociation;
+import org.alliancegenome.curation_api.model.entities.associations.CuratedVariantGenomicLocationAssociation;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.VepTxtDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.TranscriptService;
-import org.alliancegenome.curation_api.services.associations.variantAssociations.CuratedVariantGenomicLocationAssociationService;
+import org.alliancegenome.curation_api.services.associations.CuratedVariantGenomicLocationAssociationService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
