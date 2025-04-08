@@ -55,8 +55,6 @@ public class StartLoadProcessor extends BulkLoadProcessor {
 		StringWriter stringWriter = new StringWriter();
 		PrintWriter printWriter = new PrintWriter(stringWriter);
 		throwable.printStackTrace(printWriter);
-		Log.info("Are we here?");
-		System.out.println(printWriter.toString());
 		return "\n" + stringWriter.toString();
 	}
 }
