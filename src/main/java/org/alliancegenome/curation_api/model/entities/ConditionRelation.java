@@ -1,8 +1,10 @@
 package org.alliancegenome.curation_api.model.entities;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import com.fasterxml.jackson.annotation.JsonView;
+import jakarta.persistence.*;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.entities.base.UniqueIdAuditedObject;
@@ -14,22 +16,10 @@ import org.hibernate.search.engine.backend.types.Aggregable;
 import org.hibernate.search.engine.backend.types.Searchable;
 import org.hibernate.search.engine.backend.types.Sortable;
 import org.hibernate.search.mapper.pojo.automaticindexing.ReindexOnUpdate;
-import org.hibernate.search.mapper.pojo.mapping.definition.annotation.FullTextField;
-import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
-import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmbedded;
-import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexingDependency;
-import org.hibernate.search.mapper.pojo.mapping.definition.annotation.KeywordField;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.*;
 
-import com.fasterxml.jackson.annotation.JsonView;
-
-import jakarta.persistence.Entity;
-import jakarta.persistence.Index;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Data
@@ -38,35 +28,35 @@ import lombok.ToString;
 @ToString(callSuper = true)
 @Schema(name = "ConditionRelation", description = "POJO that describes the Condition Relation")
 @Table(indexes = {
-		@Index(name = "conditionrelation_createdby_index", columnList = "createdBy_id"),
-		@Index(name = "conditionrelation_updatedby_index", columnList = "updatedBy_id")
+	@Index(name = "conditionrelation_createdby_index", columnList = "createdBy_id"),
+	@Index(name = "conditionrelation_updatedby_index", columnList = "updatedBy_id")
 })
-@AGRCurationSchemaVersion(min = "1.2.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { ExperimentalCondition.class })
+@AGRCurationSchemaVersion(min = "1.2.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = {ExperimentalCondition.class})
 public class ConditionRelation extends UniqueIdAuditedObject {
 
 
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@JsonView({ View.FieldsOnly.class, View.ForPublic.class })
+	@JsonView({View.FieldsOnly.class, View.ForPublic.class, View.ModelDocumentView.class})
 	private VocabularyTerm conditionRelationType;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "handle_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({ View.FieldsOnly.class })
+	@JsonView({View.FieldsOnly.class})
 	private String handle;
 
 	@IndexedEmbedded(includeDepth = 2)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
 	@Fetch(FetchMode.SELECT)
-	@JsonView({ View.FieldsOnly.class })
+	@JsonView({View.FieldsOnly.class})
 	private Reference singleReference;
 
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
-	@JsonView({ View.FieldsAndLists.class, View.DiseaseAnnotation.class, View.PhenotypeAnnotationView.class, View.ConditionRelationView.class, View.ForPublic.class })
+	@JsonView({View.FieldsAndLists.class, View.DiseaseAnnotation.class, View.PhenotypeAnnotationView.class, View.ConditionRelationView.class, View.ForPublic.class, View.ModelDocumentView.class})
 	private List<ExperimentalCondition> conditions;
 
 	public void addExperimentCondition(ExperimentalCondition experimentalCondition) {

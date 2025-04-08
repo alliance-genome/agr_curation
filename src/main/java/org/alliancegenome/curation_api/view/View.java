@@ -150,4 +150,7 @@ public class View {
 		}
 		return ForPublic.class;
 	}
+
+	public class ModelDocumentView {
+	}
 }
