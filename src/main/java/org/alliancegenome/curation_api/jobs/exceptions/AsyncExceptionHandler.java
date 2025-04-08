@@ -1,5 +1,8 @@
 package org.alliancegenome.curation_api.jobs.exceptions;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+
 import org.alliancegenome.curation_api.dao.loads.BulkLoadFileHistoryDAO;
 import org.alliancegenome.curation_api.enums.JobStatus;
 import org.alliancegenome.curation_api.jobs.events.StartedLoadJobEvent;
@@ -25,10 +28,12 @@ public class AsyncExceptionHandler implements AsyncObserverExceptionHandler {
 
 	@Override
 	public void handle(Throwable throwable, ObserverMethod<?> observerMethod, EventContext<?> eventContext) {
-
+		// This gets run when quarkus is in Prod Mode
 		if (eventContext.getEvent() instanceof StartedLoadJobEvent) {
 			StartedLoadJobEvent event = (StartedLoadJobEvent) eventContext.getEvent();
 			BulkLoadFileHistory bulkLoadFileHistory = bulkLoadFileHistoryDAO.find(event.getId());
+
+			bulkLoadFileHistory.setErrorMessage(formatStackTrace(throwable));
 
 			if (bulkLoadFileHistory.getBulkLoad() instanceof BulkFMSLoad bulkFMSLoad) {
 				bulkLoadFMSProcessor.endLoad(bulkLoadFileHistory, "Failed loading: " + bulkFMSLoad.getName() + " please check the logs for more info. " + bulkLoadFileHistory.getErrorMessage(), JobStatus.FAILED);
@@ -38,13 +43,22 @@ public class AsyncExceptionHandler implements AsyncObserverExceptionHandler {
 				bulkLoadURLProcessor.endLoad(bulkLoadFileHistory, "Failed loading: " + bulkURLLoad.getName() + " please check the logs for more info. " + bulkLoadFileHistory.getErrorMessage(), JobStatus.FAILED);
 			}
 
-			Log.error("Load File: " + bulkLoadFileHistory.getBulkLoad().getName() + " is failed");
+			Log.info("Load File: " + bulkLoadFileHistory.getBulkLoad().getName() + " is failed");
 			throwable.printStackTrace();
 
 		} else {
 			Log.error("Error handling missing for error type: " + observerMethod);
 		}
 
+	}
+
+	public static String formatStackTrace(Throwable throwable) {
+		StringWriter stringWriter = new StringWriter();
+		PrintWriter printWriter = new PrintWriter(stringWriter);
+		throwable.printStackTrace(printWriter);
+		Log.info("Are we here?");
+		System.out.println(printWriter.toString());
+		return "\n" + stringWriter.toString();
 	}
 
 }
