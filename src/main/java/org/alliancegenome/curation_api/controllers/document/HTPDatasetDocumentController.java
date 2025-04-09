@@ -10,14 +10,12 @@ import org.alliancegenome.curation_api.model.entities.HTPExpressionDatasetAnnota
 import org.alliancegenome.curation_api.model.input.Pagination;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.HTPExpressionDatasetAnnotationService;
-import org.alliancegenome.curation_api.services.HTPExpressionDatasetSampleAnnotationService;
 
 import jakarta.inject.Inject;
 
 public class HTPDatasetDocumentController implements HTPDatasetDocumentInterface {
 
 	@Inject HTPExpressionDatasetAnnotationService htpDatasetService;
-	@Inject HTPExpressionDatasetSampleAnnotationService htpDatasetSampleService;
 
 	@Override
 	public SearchResponse<HTPDatasetSearchResultDocument> findSearchResult(Integer page, Integer limit, HashMap<String, Object> params) {

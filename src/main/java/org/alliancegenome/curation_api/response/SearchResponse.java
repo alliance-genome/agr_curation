@@ -23,7 +23,7 @@ import java.util.Map;
 	View.GeneSearchResultDocument.class,
 	View.DiseaseSummaryDocument.class,
 	View.DiseaseSearchResultDocument.class,
-	View.ModelDocumentView.class
+	View.ModelDocumentView.class,
 	View.HTPDatasetSearchResultDocument.class
 })
 public class SearchResponse<E> extends APIResponse {

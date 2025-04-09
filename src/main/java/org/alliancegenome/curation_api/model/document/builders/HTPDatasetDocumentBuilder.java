@@ -6,8 +6,11 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.alliancegenome.curation_api.model.document.es.HTPDatasetSearchResultDocument;
+import org.alliancegenome.curation_api.model.entities.CrossReference;
+import org.alliancegenome.curation_api.model.entities.ExternalDataBaseEntity;
 import org.alliancegenome.curation_api.model.entities.HTPExpressionDatasetAnnotation;
 import org.alliancegenome.curation_api.model.entities.HTPExpressionDatasetSampleAnnotation;
+import org.alliancegenome.curation_api.model.entities.ResourceDescriptorPage;
 
 import com.okta.commons.lang.Collections;
 
@@ -42,16 +45,10 @@ public class HTPDatasetDocumentBuilder {
 			doc.setSummary(summary);
 		}
 
-		//TODO: clean this up
 		if(htpDatasetAnnotation.getHtpExpressionDataset() != null){
 			if(htpDatasetAnnotation.getHtpExpressionDataset().getPreferredCrossReference() != null){
-				if(htpDatasetAnnotation.getHtpExpressionDataset().getPreferredCrossReference().getResourceDescriptorPage() != null){
-					if(htpDatasetAnnotation.getHtpExpressionDataset().getPreferredCrossReference().getResourceDescriptorPage().getUrlTemplate() != null){
-						String href = htpDatasetAnnotation.getHtpExpressionDataset()
-						.getPreferredCrossReference()
-						.getUrlFromResourceDescriptorPage(doc.getCurie());
-						doc.setHref(href);
-					}
+				if(htpDatasetAnnotation.getHtpExpressionDataset().getPreferredCrossReference().getUrlFromResourceDescriptorPage(doc.getCurie()) != null){
+					doc.setHref(htpDatasetAnnotation.getHtpExpressionDataset().getPreferredCrossReference().getUrlFromResourceDescriptorPage(doc.getCurie()));
 				}
 			}
 		}
