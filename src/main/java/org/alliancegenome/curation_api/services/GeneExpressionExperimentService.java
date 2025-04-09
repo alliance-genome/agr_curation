@@ -20,7 +20,6 @@ import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
-import org.semanticweb.owlapi.model.providers.DatatypeProvider;
 
 @RequestScoped
 public class GeneExpressionExperimentService extends BaseEntityCrudService<GeneExpressionExperiment, GeneExpressionExperimentDAO> {
@@ -51,7 +50,7 @@ public class GeneExpressionExperimentService extends BaseEntityCrudService<GeneE
 	public GeneExpressionExperiment upsert(String experimentId, Set<String> geneExpressionAnnotationIds, BackendBulkDataProvider dataProvider) throws ValidationException {
 		GeneExpressionExperiment geneExpressionExperiment;
 		Set<GeneExpressionAnnotation> annotations;
-		Map<String,CrossReference> crossReferences = new HashMap<>();
+		Map<String, CrossReference> crossReferences = new HashMap<>();
 
 		//	example of experimentId: Xenbase:XB-GENE-972235|AGRKB:101000000874667|MMO:0000658
 		String[] definingFields = experimentId.split("\\|", 3);
@@ -65,7 +64,7 @@ public class GeneExpressionExperimentService extends BaseEntityCrudService<GeneE
 			geneExpressionExperiment = new GeneExpressionExperiment();
 			geneExpressionExperiment.setUniqueId(experimentId);
 		}
-		Organization organization =	organizationService.getByAbbr(dataProvider.sourceOrganization).getEntity();
+		Organization organization = organizationService.getByAbbr(dataProvider.sourceOrganization).getEntity();
 		geneExpressionExperiment.setDataProvider(organization);
 		geneExpressionExperiment.setEntityAssayed(geneService.findByIdentifierString(geneId));
 		geneExpressionExperiment.setSingleReference(referenceService.getByCurie(referenceId).getEntity());
