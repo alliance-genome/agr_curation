@@ -6,22 +6,21 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.alliancegenome.curation_api.model.document.es.HTPDatasetSearchResultDocument;
-import org.alliancegenome.curation_api.model.entities.AnatomicalSite;
-import org.alliancegenome.curation_api.model.entities.ExternalDataBaseEntity;
 import org.alliancegenome.curation_api.model.entities.HTPExpressionDatasetAnnotation;
 import org.alliancegenome.curation_api.model.entities.HTPExpressionDatasetSampleAnnotation;
-import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 
 import com.okta.commons.lang.Collections;
 
-import io.quarkus.logging.Log;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class HTPDatasetDocumentBuilder {
 
-	public static HTPDatasetSearchResultDocument buildSearchResultDocument(HTPExpressionDatasetAnnotation htpDatasetAnnotation, List<HTPExpressionDatasetSampleAnnotation> sampleAnnots) {
+	public static HTPDatasetSearchResultDocument buildSearchResultDocument(HTPExpressionDatasetAnnotation htpDatasetAnnotation) {
 		HTPDatasetSearchResultDocument doc = new HTPDatasetSearchResultDocument();
+
+		List<HTPExpressionDatasetSampleAnnotation> sampleAnnots =
+			htpDatasetAnnotation.getHtpExpressionDataset().getHtpExpressionDatasetSampleAnnotation();
 
 		if(htpDatasetAnnotation.getDataProvider() != null){
 			String dataProvider = htpDatasetAnnotation.getDataProvider().getAbbreviation();

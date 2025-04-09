@@ -7,7 +7,6 @@ import org.alliancegenome.curation_api.interfaces.document.HTPDatasetDocumentInt
 import org.alliancegenome.curation_api.model.document.builders.HTPDatasetDocumentBuilder;
 import org.alliancegenome.curation_api.model.document.es.HTPDatasetSearchResultDocument;
 import org.alliancegenome.curation_api.model.entities.HTPExpressionDatasetAnnotation;
-import org.alliancegenome.curation_api.model.entities.HTPExpressionDatasetSampleAnnotation;
 import org.alliancegenome.curation_api.model.input.Pagination;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.HTPExpressionDatasetAnnotationService;
@@ -32,11 +31,7 @@ public class HTPDatasetDocumentController implements HTPDatasetDocumentInterface
 		ArrayList<HTPDatasetSearchResultDocument> list = new ArrayList<>();
 		if (resp.getResults() != null) {
 			for (HTPExpressionDatasetAnnotation datasetAnnotation : resp.getResults()) {
-				HashMap<String, Object> sampleParams = new HashMap<>();
-				String datasetCurie = datasetAnnotation.getHtpExpressionDataset().getCurie();
-				sampleParams.put("datasetIds.curie", datasetCurie);
-				SearchResponse<HTPExpressionDatasetSampleAnnotation> sampleResp = htpDatasetSampleService.findByParams(pagination, sampleParams);
-				HTPDatasetSearchResultDocument doc = HTPDatasetDocumentBuilder.buildSearchResultDocument(datasetAnnotation, sampleResp.getResults());
+				HTPDatasetSearchResultDocument doc = HTPDatasetDocumentBuilder.buildSearchResultDocument(datasetAnnotation);
 				list.add(doc);
 			}
 		}

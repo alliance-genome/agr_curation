@@ -7,6 +7,7 @@ import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.entities.base.CurieObject;
 import org.alliancegenome.curation_api.view.View;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
+import jakarta.persistence.CascadeType;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 import org.hibernate.search.engine.backend.types.Aggregable;
@@ -66,4 +67,7 @@ public class ExternalDataBaseEntity extends CurieObject {
 	@JsonView({ View.FieldsAndLists.class })
 	private List<CrossReference> crossReferences;
 
+	@ToString.Exclude
+	@ManyToMany(mappedBy = "datasetIds")
+	private List<HTPExpressionDatasetSampleAnnotation> htpExpressionDatasetSampleAnnotation;
 }
