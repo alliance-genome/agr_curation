@@ -106,7 +106,9 @@ public class ExpressionBulkUploadFmsITCase extends BaseITCase {
 			.body("results[0].expressionAssayUsed.curie", is(mmoTerm))
 			.body("results[0].obsolete", is(false))
 			.body("results[0].internal", is(false))
-			.body("results[0].expressionAnnotations[0].uniqueId", is(annotationUniqueIdExpected));
+			.body("results[0].expressionAnnotations[0].uniqueId", is(annotationUniqueIdExpected))
+			.body("results[0].crossReferences[0].referencedCurie", is(in(List.of(crossReferenceId1, crossReferenceId2))))
+			.body("results[0].crossReferences[1].referencedCurie", is(in(List.of(crossReferenceId1, crossReferenceId2))));
 
 		RestAssured.given().when()
 			.header("Content-Type", "application/json")
