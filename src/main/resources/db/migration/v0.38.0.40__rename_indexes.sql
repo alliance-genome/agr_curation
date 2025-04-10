@@ -12,4 +12,17 @@ ALTER INDEX htpexpressiondatasetsampleannotation_dataproviderxref_index RENAME T
 ALTER INDEX htpexpressiondatasetannotation_dataprovider_index RENAME TO htpdatasetannotation_dataprovider_index
 ALTER INDEX htpexpressiondatasetannotation_dataprovidercrossreference_index RENAME TO htpdatasetannotation_dataprovidercrossreference_index;
 
+CREATE INDEX idxk04don501qvjx3gsreq6i4eo ON public.curatedvariantgenomiclocation_informationcontententity USING btree (association_id);
+CREATE INDEX idxk1mxuc2w5565d95qkk9uk2kdh ON public.curatedvariantgenomiclocation_informationcontententity USING btree (evidence_id);
+CREATE INDEX idxq4tedx1fjnyjiyrn11oaixypi ON public.affectedgenomicmodel_synonyms USING btree (affectedgenomicmodel_id);
 
+ALTER TABLE ONLY public.genegenomiclocationassociation_informationcontententity
+	ADD CONSTRAINT fk3ibv1mt9ehmawfb232m77adfa FOREIGN KEY (evidence_id) REFERENCES public.informationcontententity(id);
+
+ALTER TABLE ONLY public.genediseaseannotation     ADD CONSTRAINT fk3j5deigrhrwln0srh51vtw3m8 FOREIGN KEY (id) REFERENCES public.diseaseannotation(id);
+ALTER TABLE ONLY public.allelediseaseannotation   ADD CONSTRAINT fk3unb0kaxocbodllqe35hu4w0c FOREIGN KEY (id) REFERENCES public.diseaseannotation(id);
+ALTER TABLE ONLY public.geneontologyannotation    ADD CONSTRAINT fk5fj1cx27kutwc3gg4nfgt9tc0 FOREIGN KEY (singlegene_id) REFERENCES public.gene(id);
+ALTER TABLE ONLY public.allelephenotypeannotation ADD CONSTRAINT fke1pme5isgq73km4sakb00ke0p FOREIGN KEY (id) REFERENCES public.phenotypeannotation(id);
+ALTER TABLE ONLY public.genephenotypeannotation   ADD CONSTRAINT fkf2daag5p16ps0d9jbgys9q8wn FOREIGN KEY (id) REFERENCES public.phenotypeannotation(id);
+ALTER TABLE ONLY public.agmdiseaseannotation      ADD CONSTRAINT fkp1rktcpoyvnr2f756ncdb8k24 FOREIGN KEY (id) REFERENCES public.diseaseannotation(id);
+ALTER TABLE ONLY public.agmphenotypeannotation    ADD CONSTRAINT fkpfm2mj21xe7sk0yolm5gmsmlo FOREIGN KEY (id) REFERENCES public.phenotypeannotation(id);
