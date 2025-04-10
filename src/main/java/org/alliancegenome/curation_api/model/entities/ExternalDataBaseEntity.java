@@ -7,7 +7,6 @@ import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.entities.base.CurieObject;
 import org.alliancegenome.curation_api.view.View;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
-import jakarta.persistence.CascadeType;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 import org.hibernate.search.engine.backend.types.Aggregable;
@@ -39,7 +38,8 @@ import lombok.ToString;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(callSuper = true)
 @Schema(name = "ExternalDataBaseEntity", description = "POJO that represents the ExternalDataBaseEntity")
-@AGRCurationSchemaVersion(min = "2.6.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { CurieObject.class })
+@AGRCurationSchemaVersion(min = "2.6.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = {
+		CurieObject.class })
 public class ExternalDataBaseEntity extends CurieObject {
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
@@ -61,8 +61,8 @@ public class ExternalDataBaseEntity extends CurieObject {
 	@ManyToMany
 	@OnDelete(action = OnDeleteAction.CASCADE)
 	@JoinTable(indexes = {
-		@Index(columnList = "externaldatabaseentity_id", name = "externaldbentity_crossreference_externaldbentity_index"),
-		@Index(columnList = "crossreferences_id", name = "externaldbentity_crossreference_crossreferences_index")
+			@Index(columnList = "externaldatabaseentity_id", name = "externaldbentity_crossreference_externaldbentity_index"),
+			@Index(columnList = "crossreferences_id", name = "externaldbentity_crossreference_crossreferences_index")
 	})
 	@JsonView({ View.FieldsAndLists.class })
 	private List<CrossReference> crossReferences;
