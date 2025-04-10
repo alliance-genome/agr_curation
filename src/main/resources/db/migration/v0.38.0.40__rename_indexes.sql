@@ -26,3 +26,5 @@ ALTER TABLE ONLY public.allelephenotypeannotation ADD CONSTRAINT fke1pme5isgq73k
 ALTER TABLE ONLY public.genephenotypeannotation   ADD CONSTRAINT fkf2daag5p16ps0d9jbgys9q8wn FOREIGN KEY (id) REFERENCES public.phenotypeannotation(id);
 ALTER TABLE ONLY public.agmdiseaseannotation      ADD CONSTRAINT fkp1rktcpoyvnr2f756ncdb8k24 FOREIGN KEY (id) REFERENCES public.diseaseannotation(id);
 ALTER TABLE ONLY public.agmphenotypeannotation    ADD CONSTRAINT fkpfm2mj21xe7sk0yolm5gmsmlo FOREIGN KEY (id) REFERENCES public.phenotypeannotation(id);
+
+DELETE from bulkscheduledload where id IN (select id from bulkmanualload);
