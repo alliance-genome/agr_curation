@@ -262,16 +262,16 @@ public class OntologyExecutor {
 
 		bulkLoadFileDAO.merge(bulkLoadFileHistory.getBulkLoadFile());
 
-		bulkLoadFileHistory.setCount("Terms", termMap.size());
-		bulkLoadFileHistory.setCount("Closure", termMap.size());
-		bulkLoadFileHistory.setCount("Counts", termMap.size());
+		bulkLoadFileHistory.setCount(ontologyType + " Terms", termMap.size());
+		bulkLoadFileHistory.setCount(ontologyType + " Closure", termMap.size());
+		bulkLoadFileHistory.setCount(ontologyType + " Counts", termMap.size());
 		
 		String countType = null;
 
 		ProcessDisplayHelper ph = new ProcessDisplayHelper();
 		ph.addDisplayHandler(loadProcessDisplayService);
 		ph.startProcess(bulkLoadFileHistory.getBulkLoad().getName() + ": " + ontologyType.getClazz().getSimpleName() + " Terms", termMap.size());
-		countType = "Terms";
+		countType = ontologyType + " Terms";
 		for (Entry<String, ? extends OntologyTerm> entry : termMap.entrySet()) {
 			service.processUpdate(entry.getValue());
 			bulkLoadFileHistory.incrementCompleted(countType);
@@ -286,7 +286,7 @@ public class OntologyExecutor {
 		ProcessDisplayHelper ph1 = new ProcessDisplayHelper();
 		ph.addDisplayHandler(loadProcessDisplayService);
 		ph1.startProcess(bulkLoadFileHistory.getBulkLoad().getName() + ": " + ontologyType.getClazz().getSimpleName() + " Closure", termMap.size());
-		countType = "Closure";
+		countType = ontologyType + " Closure";
 		for (Entry<String, ? extends OntologyTerm> entry : termMap.entrySet()) {
 			service.processUpdateRelationships(entry.getValue());
 			bulkLoadFileHistory.incrementCompleted(countType);
@@ -301,7 +301,7 @@ public class OntologyExecutor {
 		ProcessDisplayHelper ph2 = new ProcessDisplayHelper();
 		ph.addDisplayHandler(loadProcessDisplayService);
 		ph2.startProcess(bulkLoadFileHistory.getBulkLoad().getName() + ": " + ontologyType.getClazz().getSimpleName() + " Counts", termMap.size());
-		countType = "Counts";
+		countType = ontologyType + " Counts";
 		for (Entry<String, ? extends OntologyTerm> entry : termMap.entrySet()) {
 			service.processCounts(entry.getValue());
 			bulkLoadFileHistory.incrementCompleted(countType);
