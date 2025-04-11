@@ -3,14 +3,15 @@ package org.alliancegenome.curation_api.enums;
 import org.alliancegenome.curation_api.model.entities.ontology.APOTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.ATPTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.BSPOTerm;
+import org.alliancegenome.curation_api.model.entities.ontology.BTOTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.CHEBITerm;
 import org.alliancegenome.curation_api.model.entities.ontology.CLTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.CMOTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.DAOTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.DOTerm;
-import org.alliancegenome.curation_api.model.entities.ontology.FBCVTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.ECOTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.EMAPATerm;
+import org.alliancegenome.curation_api.model.entities.ontology.FBCVTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.FBDVTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.GENOTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.GOTerm;
@@ -87,7 +88,8 @@ public enum OntologyBulkLoadType {
 	CL(CLTerm.class),
 	CMO(CMOTerm.class),
 	BSPO(BSPOTerm.class),
-	GENO(GENOTerm.class);
+	GENO(GENOTerm.class),
+	BTO(BTOTerm.class);
 
 	private Class<? extends OntologyTerm> clazz;
 

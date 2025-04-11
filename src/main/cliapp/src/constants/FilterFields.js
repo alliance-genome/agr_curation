@@ -276,7 +276,7 @@ export const FIELD_SETS = Object.freeze({
 	},
 	evidenceFieldSet: {
 		filterName: 'evidenceFilter',
-		fields: ['evidence.curie'],
+		fields: ['evidence.curie', 'evidence.crossReferenceCuries'],
 	},
 	evidenceCodesFieldSet: {
 		filterName: 'evidenceCodesFilter',
@@ -583,6 +583,10 @@ export const FIELD_SETS = Object.freeze({
 	secondaryDataProviderFieldSet: {
 		filterName: 'secondaryDataProviderFilter',
 		fields: ['secondaryDataProvider.abbreviation', 'secondaryDataProvider.fullName', 'secondaryDataProvider.shortName'],
+	},
+	subsetsFieldSet: {
+		filterName: 'subsetsFilter',
+		fields: ['subsets'],
 	},
 	secondaryIdsFieldSet: {
 		filterName: 'secondaryIdsFilter',
@@ -895,6 +899,7 @@ export const FILTER_CONFIGS = Object.freeze({
 	referencesFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.referencesFieldSet] },
 	relatedNotesFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.relatedNotesFieldSet] },
 	resourceDescriptorFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.resourceDescriptorFieldSet] },
+	subsetsFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.subsetsFieldSet] },
 	secondaryIdsFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.secondaryIdsFieldSet] },
 	sgdStrainBackgroundFilterConfig: {
 		filterComponentType: 'input',
