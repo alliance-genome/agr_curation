@@ -80,7 +80,7 @@ export const GeneralOntologyComponent = ({ name, endpoint, showNamespace, showAb
 	});
 	columns.push({
 		field: 'subsets',
-		header: 'Subnets',
+		header: 'Subsets',
 		body: (rowData) => <StringListTemplate list={rowData.subsets} />,
 		sortable: true,
 		filterConfig: FILTER_CONFIGS.subsetsFilterConfig,
