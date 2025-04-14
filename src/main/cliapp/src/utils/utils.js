@@ -157,6 +157,13 @@ export const getGenomicEntityText = (genomicEntity) => {
 	return null;
 };
 
+export const getGenomicEntityName = (genomicEntity) => {
+	if (genomicEntity.geneFullName) return genomicEntity.geneFullName.displayText;
+	if (genomicEntity.alleleFullName) return genomicEntity.alleleFullName.displayText;
+	if (genomicEntity.name) return genomicEntity.name;
+	return null;
+};
+
 export function getRefStrings(referenceItems) {
 	if (!referenceItems) return;
 
