@@ -1,9 +1,7 @@
 package org.alliancegenome.curation_api.model.ingest.dto.fms;
 
-
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-
 import org.alliancegenome.curation_api.model.ingest.dto.base.BaseDTO;
 
 @Data
@@ -16,5 +14,4 @@ public class GeneExpressionFmsDTO extends BaseDTO {
 	private CrossReferenceFmsDTO crossReference;
 	private WhenExpressedFmsDTO whenExpressed;
 	private WhereExpressedFmsDTO whereExpressed;
-
 }

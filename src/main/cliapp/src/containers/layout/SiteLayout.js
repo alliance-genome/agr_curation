@@ -240,6 +240,7 @@ export const SiteLayout = (props) => {
 							label: 'Anatomical Ontologies',
 							icon: 'pi pi-fw pi-sitemap',
 							items: [
+								{ label: 'Brenda Tissue Ontology (BTO)', icon: 'pi pi-fw pi-home', to: '/ontology/bto' },
 								{ label: 'C. elegans Gross Anatomy Ontology (WBbt)', icon: 'pi pi-fw pi-home', to: '/ontology/wbbt' },
 								{ label: 'Cell Ontology (CL)', icon: 'pi pi-fw pi-home', to: '/ontology/cl' },
 								{ label: 'Drosophila Anatomy Ontology (DAO)', icon: 'pi pi-fw pi-home', to: '/ontology/dao' },

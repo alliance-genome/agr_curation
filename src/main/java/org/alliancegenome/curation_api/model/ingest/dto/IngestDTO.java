@@ -2,13 +2,13 @@ package org.alliancegenome.curation_api.model.ingest.dto;
 
 import java.util.List;
 
-import org.alliancegenome.curation_api.model.ingest.dto.associations.agmAssociations.AgmAgmAssociationDTO;
-import org.alliancegenome.curation_api.model.ingest.dto.associations.agmAssociations.AgmAlleleAssociationDTO;
-import org.alliancegenome.curation_api.model.ingest.dto.associations.agmAssociations.AgmSequenceTargetingReagentAssociationDTO;
-import org.alliancegenome.curation_api.model.ingest.dto.associations.alleleAssociations.AlleleConstructAssociationDTO;
-import org.alliancegenome.curation_api.model.ingest.dto.associations.alleleAssociations.AlleleGeneAssociationDTO;
-import org.alliancegenome.curation_api.model.ingest.dto.associations.alleleAssociations.AlleleVariantAssociationDTO;
-import org.alliancegenome.curation_api.model.ingest.dto.associations.constructAssociations.ConstructGenomicEntityAssociationDTO;
+import org.alliancegenome.curation_api.model.ingest.dto.associations.AgmAgmAssociationDTO;
+import org.alliancegenome.curation_api.model.ingest.dto.associations.AgmAlleleAssociationDTO;
+import org.alliancegenome.curation_api.model.ingest.dto.associations.AgmSequenceTargetingReagentAssociationDTO;
+import org.alliancegenome.curation_api.model.ingest.dto.associations.AlleleConstructAssociationDTO;
+import org.alliancegenome.curation_api.model.ingest.dto.associations.AlleleGeneAssociationDTO;
+import org.alliancegenome.curation_api.model.ingest.dto.associations.AlleleVariantAssociationDTO;
+import org.alliancegenome.curation_api.model.ingest.dto.associations.ConstructGenomicEntityAssociationDTO;
 import org.alliancegenome.curation_api.view.View;
 
 import com.fasterxml.jackson.annotation.JsonProperty;

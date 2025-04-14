@@ -142,6 +142,7 @@ export class DataLoadService extends BaseAuthService {
 			'APO',
 			'ATP',
 			'BSPO',
+			'BTO',
 			'CHEBI',
 			'CL',
 			'CMO',

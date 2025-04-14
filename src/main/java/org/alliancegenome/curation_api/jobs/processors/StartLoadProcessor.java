@@ -1,5 +1,8 @@
 package org.alliancegenome.curation_api.jobs.processors;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+
 import org.alliancegenome.curation_api.dao.loads.BulkLoadFileHistoryDAO;
 import org.alliancegenome.curation_api.enums.BulkLoadCleanUp;
 import org.alliancegenome.curation_api.enums.JobStatus;
@@ -16,7 +19,8 @@ public class StartLoadProcessor extends BulkLoadProcessor {
 
 	@Inject BulkLoadFileHistoryDAO bulkLoadFileHistoryDAO;
 
-	public void bulkLoadFile(@ObservesAsync StartedLoadJobEvent event) { // An @Observes method should not be in a super class as then it gets run for every child class
+	public void bulkLoadFile(@ObservesAsync StartedLoadJobEvent event) { // An @Observes method should not be in a super class as then it gets run for
+																			// every child class
 		BulkLoadFileHistory bulkLoadFileHistory = bulkLoadFileHistoryDAO.find(event.getId());
 
 		if (!bulkLoadFileHistory.getBulkloadStatus().isStarted()) {
@@ -35,6 +39,9 @@ public class StartLoadProcessor extends BulkLoadProcessor {
 			endLoad(bulkLoadFileHistory, bulkLoadFileHistory.getErrorMessage(), status);
 
 		} catch (Exception e) {
+			// This gets run when quarkus is in Dev Mode
+			bulkLoadFileHistory.setErrorMessage(formatStackTrace(e));
+
 			endLoad(bulkLoadFileHistory, "Failed loading: " + bulkLoadFileHistory.getBulkLoad().getName() + " please check the logs for more info. " + bulkLoadFileHistory.getErrorMessage(), JobStatus.FAILED);
 			Log.error("Load File: " + bulkLoadFileHistory.getBulkLoad().getName() + " is failed");
 			if (!bulkLoadFileHistory.getErrorMessage().equals("Thread isInterrupted")) {
@@ -42,5 +49,12 @@ public class StartLoadProcessor extends BulkLoadProcessor {
 			}
 		}
 
+	}
+
+	public static String formatStackTrace(Throwable throwable) {
+		StringWriter stringWriter = new StringWriter();
+		PrintWriter printWriter = new PrintWriter(stringWriter);
+		throwable.printStackTrace(printWriter);
+		return "\n" + stringWriter.toString();
 	}
 }

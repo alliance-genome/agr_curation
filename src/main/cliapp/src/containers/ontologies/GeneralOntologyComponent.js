@@ -79,6 +79,13 @@ export const GeneralOntologyComponent = ({ name, endpoint, showNamespace, showAb
 		filterConfig: FILTER_CONFIGS.ontologySynonymsFilterConfig,
 	});
 	columns.push({
+		field: 'subsets',
+		header: 'Subsets',
+		body: (rowData) => <StringListTemplate list={rowData.subsets} />,
+		sortable: true,
+		filterConfig: FILTER_CONFIGS.subsetsFilterConfig,
+	});
+	columns.push({
 		field: 'secondaryIdentifiers',
 		header: 'Secondary IDs',
 		sortable: true,
