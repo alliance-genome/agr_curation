@@ -7,6 +7,7 @@ import org.alliancegenome.curation_api.model.entities.*;
 import org.alliancegenome.curation_api.model.entities.ontology.DOTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.OntologyTerm;
 import org.alliancegenome.curation_api.model.entities.orthology.GeneToGeneOrthologyGenerated;
+import org.apache.commons.collections.CollectionUtils;
 
 import java.util.*;
 import java.util.function.Function;
@@ -47,15 +48,19 @@ public class DiseaseSummaryDocumentBuilder {
 		doc.setCrossReferences(doTerm.getCrossReferences().stream().map(CrossReference::getDisplayName).collect(Collectors.toSet()));
 		doc.setSecondaryIds(new HashSet<>(doTerm.getSecondaryIdentifiers()));
 
+		Set<Gene> allInvolvedGenes = new HashSet<>();
 		// add genes from GeneDiseaseAnnotations
 		List<GeneDiseaseAnnotation> geneDiseaseAnnotations = doTerm.getPublicGeneDiseaseAnnotations();
-		doc.setGenes(geneDiseaseAnnotations.stream().map(geneDiseaseAnnotation -> getGeneName(geneDiseaseAnnotation.getDiseaseAnnotationSubject())).collect(Collectors.toSet()));
-		doc.setAssociatedSpecies(geneDiseaseAnnotations.stream().map(geneDiseaseAnnotation -> geneDiseaseAnnotation.getDiseaseAnnotationSubject().getTaxon().getGenusSpecies()).collect(Collectors.toSet()));
+		if (CollectionUtils.isNotEmpty(geneDiseaseAnnotations)) {
+			doc.setGenes(geneDiseaseAnnotations.stream().map(geneDiseaseAnnotation -> getGeneName(geneDiseaseAnnotation.getDiseaseAnnotationSubject())).collect(Collectors.toSet()));
+			doc.setAssociatedSpecies(geneDiseaseAnnotations.stream().map(geneDiseaseAnnotation -> geneDiseaseAnnotation.getDiseaseAnnotationSubject().getTaxon().getGenusSpecies()).collect(Collectors.toSet()));
 
-		// collect all the involved genes: direct genes, inferred genes, and asserted
-		// genes
-		// Needed to retrieve the orthologous genes
-		Set<Gene> allInvolvedGenes = geneDiseaseAnnotations.stream().map(GeneDiseaseAnnotation::getDiseaseAnnotationSubject).collect(Collectors.toSet());
+			// collect all the involved genes: direct genes, inferred genes, and asserted
+			// genes
+			// Needed to retrieve the orthologous genes
+			allInvolvedGenes = geneDiseaseAnnotations.stream().map(GeneDiseaseAnnotation::getDiseaseAnnotationSubject).collect(Collectors.toSet());
+		}
+
 
 		// loop over AGMDiseaseAnnotation
 		List<AGMDiseaseAnnotation> agmDiseaseAnnotations = doTerm.getPublicAGMDiseaseAnnotations();
@@ -85,9 +90,9 @@ public class DiseaseSummaryDocumentBuilder {
 		// add orthologous genes for the all-involved genes (only
 		allInvolvedGenes.forEach(gene -> gene.getGeneToGeneOrthologyGenerateds()
 			.stream().filter(GeneToGeneOrthologyGenerated::getStrictFilter).forEach(orthology -> {
-			doc.getGenes().add(getGeneName(orthology.getObjectGene()));
-			doc.getAssociatedSpecies().add(orthology.getObjectGene().getTaxon().getGenusSpecies());
-		}));
+				doc.getGenes().add(getGeneName(orthology.getObjectGene()));
+				doc.getAssociatedSpecies().add(orthology.getObjectGene().getTaxon().getGenusSpecies());
+			}));
 		doc.setParentDiseaseNames(doTerm.getIsaAncestors().stream().map(OntologyTerm::getName).collect(Collectors.toSet()));
 		// add self to the list
 		doc.getParentDiseaseNames().add(doTerm.getName());
