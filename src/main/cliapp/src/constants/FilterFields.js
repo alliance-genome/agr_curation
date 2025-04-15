@@ -268,7 +268,11 @@ export const FIELD_SETS = Object.freeze({
 	},
 	diseaseAnnotationSubjectFieldSet: {
 		filterName: 'diseaseAnnotationSubjectFilter',
-		fields: ['diseaseAnnotationSubject.symbol', 'diseaseAnnotationSubject.primaryExternalId'],
+		fields: [
+			'diseaseAnnotationSubject.primaryExternalId',
+			'diseaseAnnotationSubject.symbol',
+			'diseaseAnnotationSubject.name',
+		],
 	},
 	diseaseQualifiersFieldSet: {
 		filterName: 'diseaseQualifiersFilter',
