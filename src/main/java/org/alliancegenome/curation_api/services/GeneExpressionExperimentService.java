@@ -78,6 +78,8 @@ public class GeneExpressionExperimentService extends BaseEntityCrudService<GeneE
 		}
 		if (geneExpressionExperiment.getCrossReferences() != null) {
 			geneExpressionExperiment.getCrossReferences().clear();
+		} else {
+			geneExpressionExperiment.setCrossReferences(new ArrayList<>());
 		}
 		for (String geneExpressionAnnotationId: geneExpressionAnnotationIds) {
 			GeneExpressionAnnotation geneExpressionAnnotation = geneExpressionAnnotationDAO.findByField("uniqueId", geneExpressionAnnotationId).getSingleResult();
@@ -89,7 +91,7 @@ public class GeneExpressionExperimentService extends BaseEntityCrudService<GeneE
 			}
 		}
 		geneExpressionExperiment.setExpressionAnnotations(annotations);
-		geneExpressionExperiment.setCrossReferences(crossReferences.values().stream().toList());
+		geneExpressionExperiment.getCrossReferences().addAll(crossReferences.values());
 
 		return geneExpressionExperimentDAO.persist(geneExpressionExperiment);
 	}
