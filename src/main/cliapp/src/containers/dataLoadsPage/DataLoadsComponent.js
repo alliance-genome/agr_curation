@@ -102,7 +102,10 @@ export const DataLoadsComponent = () => {
 		['AGM', ['AffectedGenomicModelDTO']],
 		// ['VARIANT', ['VariantDTO']],
 		['CONSTRUCT', ['ConstructDTO']],
-		['AGM_ASSOCIATION', ['AgmAgmAssociationDTO', 'AgmAlleleAssociationDTO', 'AgmSequenceTargetingReagentAssociationDTO']],
+		[
+			'AGM_ASSOCIATION',
+			['AgmAgmAssociationDTO', 'AgmAlleleAssociationDTO', 'AgmSequenceTargetingReagentAssociationDTO'],
+		],
 		['ALLELE_ASSOCIATION', ['AlleleGeneAssociationDTO']],
 		['CONSTRUCT_ASSOCIATION', ['ConstructGenomicEntityAssociationDTO']],
 	]);
@@ -310,10 +313,7 @@ export const DataLoadsComponent = () => {
 			rowData.bulkloadStatus === 'STOPPED'
 		) {
 			let retVal = fileWithinSchemaRange(rowData.bulkLoadFile.linkMLSchemaVersion, bulkload.backendBulkLoadType);
-			if (
-				retVal.status ||
-				exemptTypes(bulkload.backendBulkLoadType)
-			) {
+			if (retVal.status || exemptTypes(bulkload.backendBulkLoadType)) {
 				ret.push(
 					<Button
 						key="run"
@@ -805,29 +805,47 @@ export const DataLoadsComponent = () => {
 			const maxVersionParts = minMaxVersionParts[1];
 			// check not lower than min version
 			if (fileVersionParts[0] < minVersionParts[0]) {
-				return { status: false, reason: 'Version miss match: ' + fileVersion + ' not in range (' + classVersionRange + ') ' };
+				return {
+					status: false,
+					reason: 'Version miss match: ' + fileVersion + ' not in range (' + classVersionRange + ') ',
+				};
 			}
 			if (fileVersionParts[0] === minVersionParts[0]) {
 				if (fileVersionParts[1] < minVersionParts[1]) {
-					return { status: false, reason: 'Version miss match: ' + fileVersion + ' not in range (' + classVersionRange + ') ' };
+					return {
+						status: false,
+						reason: 'Version miss match: ' + fileVersion + ' not in range (' + classVersionRange + ') ',
+					};
 				}
 				if (fileVersionParts[1] === minVersionParts[1]) {
 					if (fileVersionParts[2] < minVersionParts[2]) {
-						return { status: false, reason: 'Version miss match: ' + fileVersion + ' not in range (' + classVersionRange + ') ' };
+						return {
+							status: false,
+							reason: 'Version miss match: ' + fileVersion + ' not in range (' + classVersionRange + ') ',
+						};
 					}
 				}
 			}
 			// check not higher than max version
 			if (fileVersionParts[0] > maxVersionParts[0]) {
-				return { status: false, reason: 'Version miss match: ' + fileVersion + ' not in range (' + classVersionRange + ') ' };
+				return {
+					status: false,
+					reason: 'Version miss match: ' + fileVersion + ' not in range (' + classVersionRange + ') ',
+				};
 			}
 			if (fileVersionParts[0] === maxVersionParts[0]) {
 				if (fileVersionParts[1] > maxVersionParts[1]) {
-					return { status: false, reason: 'Version miss match: ' + fileVersion + ' not in range (' + classVersionRange + ') ' };
+					return {
+						status: false,
+						reason: 'Version miss match: ' + fileVersion + ' not in range (' + classVersionRange + ') ',
+					};
 				}
 				if (fileVersionParts[1] === maxVersionParts[1]) {
 					if (fileVersionParts[2] > maxVersionParts[2]) {
-						return { status: false, reason: 'Version miss match: ' + fileVersion + ' not in range (' + classVersionRange + ') ' };
+						return {
+							status: false,
+							reason: 'Version miss match: ' + fileVersion + ' not in range (' + classVersionRange + ') ',
+						};
 					}
 				}
 			}
