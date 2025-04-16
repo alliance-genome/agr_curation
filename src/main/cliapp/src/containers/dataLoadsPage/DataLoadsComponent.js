@@ -759,11 +759,11 @@ export const DataLoadsComponent = () => {
 
 	const fileWithinSchemaRange = (fileVersion, loadType) => {
 		if (!fileVersion) {
-			return { status: false, reason: 'No File Version' };
+			return { status: false, reason: 'No File Version sent to method: fileWithinSchemaRange' };
 		}
 		const classVersions = apiVersion?.agrCurationSchemaVersions;
 		if (!classVersions) {
-			return { status: false, reason: 'No Class Version' };
+			return { status: false, reason: 'No Class Version sent to method: fileWithinSchemaRange' };
 		}
 
 		const fileVersionParts = parseVersionString(fileVersion);
