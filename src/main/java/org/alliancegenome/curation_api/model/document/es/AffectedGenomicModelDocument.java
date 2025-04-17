@@ -22,7 +22,7 @@ public class AffectedGenomicModelDocument extends ESDocument {
 	private AffectedGenomicModel model;
 	private List<String> associatedPhenotype = new ArrayList<>();
 
-	private Set<DOTerm> diseaseTerms;
+	private Set<DOTerm> diseaseTerms = new HashSet<>();
 	private Organization dataProvider;
 	private Set<ConditionRelation> conditionRelations;
 
