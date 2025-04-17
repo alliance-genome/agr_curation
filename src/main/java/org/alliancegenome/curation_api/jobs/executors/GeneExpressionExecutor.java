@@ -1,10 +1,7 @@
 package org.alliancegenome.curation_api.jobs.executors;
 
 import java.io.FileInputStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.zip.GZIPInputStream;
 
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
@@ -14,13 +11,14 @@ import org.alliancegenome.curation_api.model.entities.GeneExpressionAnnotation;
 import org.alliancegenome.curation_api.model.entities.GeneExpressionExperiment;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkFMSLoad;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
-import org.alliancegenome.curation_api.model.ingest.dto.fms.GeneExpressionFmsDTO;
-import org.alliancegenome.curation_api.model.ingest.dto.fms.GeneExpressionIngestFmsDTO;
+import org.alliancegenome.curation_api.model.ingest.dto.fms.*;
 import org.alliancegenome.curation_api.response.APIResponse;
 import org.alliancegenome.curation_api.response.LoadHistoryResponce;
 import org.alliancegenome.curation_api.services.GeneExpressionAnnotationService;
 import org.alliancegenome.curation_api.services.GeneExpressionExperimentService;
+import org.alliancegenome.curation_api.services.helpers.annotations.GeneExpressionAnnotationUniqueIdHelper;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import jakarta.enterprise.context.ApplicationScoped;
@@ -30,6 +28,7 @@ import jakarta.inject.Inject;
 public class GeneExpressionExecutor extends LoadFileExecutor {
 	@Inject GeneExpressionAnnotationService geneExpressionAnnotationService;
 	@Inject GeneExpressionExperimentService geneExpressionExperimentService;
+	@Inject GeneExpressionAnnotationUniqueIdHelper geneExpressionAnnotationUniqueIdHelper;
 	static final String ANNOTATIONS = "Annotations";
 	static final String EXPERIMENTS = "Experiments";
 
@@ -55,7 +54,7 @@ public class GeneExpressionExecutor extends LoadFileExecutor {
 			List<Long> experimentIdsLoaded = new ArrayList<>();
 			List<Long> experimentIdsBefore = geneExpressionExperimentService.getExperimentIdsByDataProvider(dataProvider);
 
-			boolean success = runLoad(geneExpressionAnnotationService, bulkLoadFileHistory, dataProvider, geneExpressionIngestFmsDTO.getData(), annotationIdsLoaded, ANNOTATIONS);
+			boolean success = runLoad(geneExpressionAnnotationService, bulkLoadFileHistory, dataProvider, consolidateFMSDTOs(geneExpressionIngestFmsDTO.getData()), annotationIdsLoaded, ANNOTATIONS);
 
 			if (success) {
 				runCleanup(geneExpressionAnnotationService, bulkLoadFileHistory, dataProvider.name(), annotationIdsBefore, annotationIdsLoaded, ANNOTATIONS);
@@ -81,7 +80,7 @@ public class GeneExpressionExecutor extends LoadFileExecutor {
 		if (dataProviderName != null) {
 			dataProvider = BackendBulkDataProvider.valueOf(dataProviderName);
 		}
-		boolean success = runLoad(service, history, dataProvider, objectList, idsLoaded, true, ANNOTATIONS);
+		boolean success = runLoad(service, history, dataProvider, consolidateFMSDTOs(objectList), idsLoaded, true, ANNOTATIONS);
 		if (success) {
 			loadExperiments(history, dataProvider, new ArrayList<>());
 		}
@@ -119,4 +118,39 @@ public class GeneExpressionExecutor extends LoadFileExecutor {
 		ph.finishProcess();
 	}
 
+	private List<ConsolidatedGeneExpressionFmsDTO> consolidateFMSDTOs(List<GeneExpressionFmsDTO> geneExpressionFmsDTOs) {
+		Map<String, ConsolidatedGeneExpressionFmsDTO> consolidationDictionary = new HashMap<>();
+
+		for (GeneExpressionFmsDTO geneExpressionFmsDTO : geneExpressionFmsDTOs) {
+			String key = geneExpressionAnnotationUniqueIdHelper.generateHash(geneExpressionFmsDTO);
+			if (consolidationDictionary.containsKey(key)) {
+				if (geneExpressionFmsDTO.getCrossReference() != null) {
+					consolidationDictionary.get(key).getCrossReferences().add(geneExpressionFmsDTO.getCrossReference());
+				}
+			} else {
+				consolidationDictionary.put(key, adaptDTO(geneExpressionFmsDTO));
+			}
+		}
+
+		return new ArrayList<ConsolidatedGeneExpressionFmsDTO>(consolidationDictionary.values());
+	}
+
+	private ConsolidatedGeneExpressionFmsDTO adaptDTO(GeneExpressionFmsDTO geneExpressionFmsDTO) {
+		ConsolidatedGeneExpressionFmsDTO consolidatedGeneExpressionFmsDTO = new ConsolidatedGeneExpressionFmsDTO();
+
+		consolidatedGeneExpressionFmsDTO.setGeneId(geneExpressionFmsDTO.getGeneId());
+		consolidatedGeneExpressionFmsDTO.setAssay(geneExpressionFmsDTO.getAssay());
+		consolidatedGeneExpressionFmsDTO.setDateAssigned(geneExpressionFmsDTO.getDateAssigned());
+		consolidatedGeneExpressionFmsDTO.setEvidence(geneExpressionFmsDTO.getEvidence());
+		consolidatedGeneExpressionFmsDTO.setWhenExpressed(geneExpressionFmsDTO.getWhenExpressed());
+		consolidatedGeneExpressionFmsDTO.setWhereExpressed(geneExpressionFmsDTO.getWhereExpressed());
+		if (ObjectUtils.isNotEmpty(geneExpressionFmsDTO.getCrossReference())) {
+			consolidatedGeneExpressionFmsDTO.setCrossReferences(new ArrayList<>(List.of(geneExpressionFmsDTO.getCrossReference())));
+		} else {
+			consolidatedGeneExpressionFmsDTO.setCrossReferences(new ArrayList<>());
+		}
+		return consolidatedGeneExpressionFmsDTO;
+	}
+
 }
+
