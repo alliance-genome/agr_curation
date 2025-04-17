@@ -77,6 +77,7 @@ export const DataLoadsComponent = () => {
 	};
 
 	const loadTypeClasses = new Map([
+		// All these DTO class names need to match the class name in java
 		[
 			'FULL_INGEST',
 			[
@@ -101,7 +102,10 @@ export const DataLoadsComponent = () => {
 		['AGM', ['AffectedGenomicModelDTO']],
 		// ['VARIANT', ['VariantDTO']],
 		['CONSTRUCT', ['ConstructDTO']],
-		['AGM_ASSOCIATION', ['AgmAgmAssociationDTO', 'AgmAlleleAssociationDTO', 'AgmStrAssociationDTO']],
+		[
+			'AGM_ASSOCIATION',
+			['AgmAgmAssociationDTO', 'AgmAlleleAssociationDTO', 'AgmSequenceTargetingReagentAssociationDTO'],
+		],
 		['ALLELE_ASSOCIATION', ['AlleleGeneAssociationDTO']],
 		['CONSTRUCT_ASSOCIATION', ['ConstructGenomicEntityAssociationDTO']],
 	]);
@@ -308,10 +312,8 @@ export const DataLoadsComponent = () => {
 			rowData.bulkloadStatus === 'FAILED' ||
 			rowData.bulkloadStatus === 'STOPPED'
 		) {
-			if (
-				fileWithinSchemaRange(rowData.bulkLoadFile.linkMLSchemaVersion, bulkload.backendBulkLoadType) ||
-				exemptTypes(bulkload.backendBulkLoadType)
-			) {
+			let retVal = fileWithinSchemaRange(rowData.bulkLoadFile.linkMLSchemaVersion, bulkload.backendBulkLoadType);
+			if (retVal.status || exemptTypes(bulkload.backendBulkLoadType)) {
 				ret.push(
 					<Button
 						key="run"
@@ -319,6 +321,15 @@ export const DataLoadsComponent = () => {
 						icon="pi pi-play"
 						className="p-button-rounded p-button-success mr-2"
 						onClick={() => runHistoryLoad(rowData)}
+					/>
+				);
+			} else {
+				ret.push(
+					<Button
+						key="run"
+						tooltip={'Can not run load: ' + retVal.reason}
+						icon="pi pi-play"
+						className="p-button-rounded p-button-secondary mr-2"
 					/>
 				);
 			}
@@ -747,9 +758,13 @@ export const DataLoadsComponent = () => {
 	};
 
 	const fileWithinSchemaRange = (fileVersion, loadType) => {
-		if (!fileVersion) return false;
+		if (!fileVersion) {
+			return { status: false, reason: 'No File Version sent to method: fileWithinSchemaRange' };
+		}
 		const classVersions = apiVersion?.agrCurationSchemaVersions;
-		if (!classVersions) return false;
+		if (!classVersions) {
+			return { status: false, reason: 'No Class Version sent to method: fileWithinSchemaRange' };
+		}
 
 		const fileVersionParts = parseVersionString(fileVersion);
 
@@ -762,12 +777,16 @@ export const DataLoadsComponent = () => {
 
 		for (const loadedClass of loadedClasses) {
 			const classVersionRange = classVersions[loadedClass];
-			if (!classVersionRange) return false;
+			if (!classVersionRange) {
+				return { status: false, reason: 'No Java Class Version found for: ' + loadedClass };
+			}
 
 			let minMaxVersions = classVersionRange.includes('-')
 				? classVersionRange.split(' - ')
 				: [classVersionRange, classVersionRange];
-			if (minMaxVersions.length === 0 || minMaxVersions.length > 2) return false;
+			if (minMaxVersions.length === 0 || minMaxVersions.length > 2) {
+				return { status: false, reason: 'No Java Class Version Range for: ' + loadedClass };
+			}
 			let minMaxVersionParts = [];
 			minMaxVersions.forEach((version, ix) => {
 				minMaxVersionParts[ix] = parseVersionString(version);
@@ -780,28 +799,58 @@ export const DataLoadsComponent = () => {
 					minVersionParts[1] !== fileVersionParts[1] ||
 					minVersionParts[2] !== fileVersionParts[2]
 				) {
-					return false;
+					return { status: false, reason: 'Version miss match: ' + fileVersion + ' != ' + classVersionRange };
 				}
 			}
 			const maxVersionParts = minMaxVersionParts[1];
 			// check not lower than min version
-			if (fileVersionParts[0] < minVersionParts[0]) return false;
+			if (fileVersionParts[0] < minVersionParts[0]) {
+				return {
+					status: false,
+					reason: 'Version miss match: ' + fileVersion + ' not in range (' + classVersionRange + ') ',
+				};
+			}
 			if (fileVersionParts[0] === minVersionParts[0]) {
-				if (fileVersionParts[1] < minVersionParts[1]) return false;
+				if (fileVersionParts[1] < minVersionParts[1]) {
+					return {
+						status: false,
+						reason: 'Version miss match: ' + fileVersion + ' not in range (' + classVersionRange + ') ',
+					};
+				}
 				if (fileVersionParts[1] === minVersionParts[1]) {
-					if (fileVersionParts[2] < minVersionParts[2]) return false;
+					if (fileVersionParts[2] < minVersionParts[2]) {
+						return {
+							status: false,
+							reason: 'Version miss match: ' + fileVersion + ' not in range (' + classVersionRange + ') ',
+						};
+					}
 				}
 			}
 			// check not higher than max version
-			if (fileVersionParts[0] > maxVersionParts[0]) return false;
+			if (fileVersionParts[0] > maxVersionParts[0]) {
+				return {
+					status: false,
+					reason: 'Version miss match: ' + fileVersion + ' not in range (' + classVersionRange + ') ',
+				};
+			}
 			if (fileVersionParts[0] === maxVersionParts[0]) {
-				if (fileVersionParts[1] > maxVersionParts[1]) return false;
+				if (fileVersionParts[1] > maxVersionParts[1]) {
+					return {
+						status: false,
+						reason: 'Version miss match: ' + fileVersion + ' not in range (' + classVersionRange + ') ',
+					};
+				}
 				if (fileVersionParts[1] === maxVersionParts[1]) {
-					if (fileVersionParts[2] > maxVersionParts[2]) return false;
+					if (fileVersionParts[2] > maxVersionParts[2]) {
+						return {
+							status: false,
+							reason: 'Version miss match: ' + fileVersion + ' not in range (' + classVersionRange + ') ',
+						};
+					}
 				}
 			}
 		}
-		return true;
+		return { status: true, reason: 'Success' };
 	};
 
 	const parseVersionString = (version) => {

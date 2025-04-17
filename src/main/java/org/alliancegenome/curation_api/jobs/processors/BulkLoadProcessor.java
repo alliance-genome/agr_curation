@@ -111,6 +111,7 @@ public class BulkLoadProcessor {
 		if (bulkLoadFiles == null || bulkLoadFiles.getResults().size() == 0) {
 			Log.info("Bulk File does not exist creating it");
 			bulkLoadFile = new BulkLoadFile();
+			bulkLoadFile.setRecordCount(0);
 			bulkLoadFile.setMd5Sum(md5Sum);
 			bulkLoadFile.setFileSize(inputFile.length());
 			
