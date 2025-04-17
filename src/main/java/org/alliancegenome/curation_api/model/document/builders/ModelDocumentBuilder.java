@@ -20,7 +20,8 @@ public class ModelDocumentBuilder {
 
 	public List<AffectedGenomicModelDocument> buildModelDocument(AffectedGenomicModel model) {
 		List<AffectedGenomicModelDocument> returnList = new ArrayList<>();
-		record ConditionRelationAnnotation(ConditionRelation relation, List<AGMDiseaseAnnotation> diseaseAnnotations, List<AGMPhenotypeAnnotation> phenotypeAnnotations) {};
+		record ConditionRelationAnnotation(ConditionRelation relation, List<AGMDiseaseAnnotation> diseaseAnnotations, List<AGMPhenotypeAnnotation> phenotypeAnnotations) { }
+
 		Map<ConditionRelation, ConditionRelationAnnotation> allConditionRels = new HashMap<>();
 
 		model.getAgmDiseaseAnnotations().forEach(agmDiseaseAnnotation -> {
