@@ -20,9 +20,7 @@ public class ModelDocumentBuilder {
 
 	public List<AffectedGenomicModelDocument> buildModelDocument(AffectedGenomicModel model) {
 		List<AffectedGenomicModelDocument> returnList = new ArrayList<>();
-		record ConditionRelationAnnotation(ConditionRelation relation, List<AGMDiseaseAnnotation> diseaseAnnotations, List<AGMPhenotypeAnnotation> phenotypeAnnotations) {
-		}
-		;
+		record ConditionRelationAnnotation(ConditionRelation relation, List<AGMDiseaseAnnotation> diseaseAnnotations, List<AGMPhenotypeAnnotation> phenotypeAnnotations) {};
 		Map<ConditionRelation, ConditionRelationAnnotation> allConditionRels = new HashMap<>();
 
 		model.getAgmDiseaseAnnotations().forEach(agmDiseaseAnnotation -> {
@@ -56,7 +54,7 @@ public class ModelDocumentBuilder {
 				doc.getAssociatedPhenotype().addAll(conditionRelation.phenotypeAnnotations.stream().map(AGMPhenotypeAnnotation::getPhenotypeAnnotationObject).toList());
 			}
 			if (CollectionUtils.isNotEmpty(conditionRelation.diseaseAnnotations)) {
-				doc.getDiseaseTerms().addAll(conditionRelation.diseaseAnnotations.stream().map(AGMDiseaseAnnotation::getDiseaseAnnotationObject).toList());
+				conditionRelation.diseaseAnnotations.forEach(agmDiseaseAnnotation -> doc.addDiseaseTerm(agmDiseaseAnnotation.getDiseaseAnnotationObject()));
 			}
 			returnList.add(doc);
 		});
