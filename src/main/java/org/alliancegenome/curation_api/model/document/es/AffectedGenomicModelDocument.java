@@ -26,7 +26,7 @@ public class AffectedGenomicModelDocument extends ESDocument {
 	private Organization dataProvider;
 	private Set<ConditionRelation> conditionRelations;
 
-	public void addDiseaseTerms(DOTerm diseaseAnnotationObject) {
+	public void addDiseaseTerm(DOTerm diseaseAnnotationObject) {
 		if (diseaseTerms == null) {
 			diseaseTerms = new HashSet<>();
 		}
