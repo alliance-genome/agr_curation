@@ -11,6 +11,7 @@ import org.alliancegenome.curation_api.services.AffectedGenomicModelService;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class ModelDocumentController implements ModelDocumentInterface {
 
@@ -29,9 +30,9 @@ public class ModelDocumentController implements ModelDocumentInterface {
 		ArrayList<AffectedGenomicModelDocument> list = new ArrayList<>();
 		if (resp.getResults() != null) {
 			ModelDocumentBuilder builder = new ModelDocumentBuilder();
-			for (AffectedGenomicModel gene : resp.getResults()) {
-				AffectedGenomicModelDocument doc = builder.buildModelDocument(gene);
-				list.add(doc);
+			for (AffectedGenomicModel model : resp.getResults()) {
+				List<AffectedGenomicModelDocument> docs = builder.buildModelDocument(model);
+				list.addAll(docs);
 			}
 		}
 
