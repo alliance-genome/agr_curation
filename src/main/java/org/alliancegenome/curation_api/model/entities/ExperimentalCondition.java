@@ -84,7 +84,4 @@ public class ExperimentalCondition extends UniqueIdAuditedObject {
 	@Column(columnDefinition = "TEXT")
 	private String conditionFreeText;
 
-	public String getUniqueExperimentId() {
-		return conditionSummary;
-	}
 }

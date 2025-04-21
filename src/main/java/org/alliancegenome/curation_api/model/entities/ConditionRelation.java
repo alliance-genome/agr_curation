@@ -72,7 +72,7 @@ public class ConditionRelation extends UniqueIdAuditedObject {
 		if (CollectionUtils.isEmpty(conditions)) {
 			return "";
 		}
-		return conditions.stream().map(experimentalCondition -> conditionRelationType.getName() + ":" + experimentalCondition.getUniqueExperimentId()).collect(Collectors.joining(", "));
+		return conditions.stream().map(experimentalCondition -> conditionRelationType.getName() + ":" + experimentalCondition.getConditionSummary()).collect(Collectors.joining(", "));
 	}
 
 	public static class Constant {
