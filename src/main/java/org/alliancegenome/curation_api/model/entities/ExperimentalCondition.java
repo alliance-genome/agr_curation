@@ -83,4 +83,8 @@ public class ExperimentalCondition extends UniqueIdAuditedObject {
 	@JsonView({View.FieldsOnly.class})
 	@Column(columnDefinition = "TEXT")
 	private String conditionFreeText;
+
+	public String getUniqueExperimentId() {
+		return conditionSummary;
+	}
 }

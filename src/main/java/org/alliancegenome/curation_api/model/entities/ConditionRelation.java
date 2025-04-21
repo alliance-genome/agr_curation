@@ -9,6 +9,7 @@ import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.entities.base.UniqueIdAuditedObject;
 import org.alliancegenome.curation_api.view.View;
+import org.apache.commons.collections4.CollectionUtils;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
@@ -20,6 +21,7 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Entity
 @Data
@@ -64,6 +66,13 @@ public class ConditionRelation extends UniqueIdAuditedObject {
 			conditions = new ArrayList<>();
 		}
 		conditions.add(experimentalCondition);
+	}
+
+	public String getUniqueExperimentConditionId() {
+		if (CollectionUtils.isEmpty(conditions)) {
+			return "";
+		}
+		return conditions.stream().map(experimentalCondition -> conditionRelationType.getName() + ":" + experimentalCondition.getUniqueExperimentId()).collect(Collectors.joining(", "));
 	}
 
 	public static class Constant {
