@@ -1,5 +1,7 @@
 package org.alliancegenome.curation_api.services.validation;
 
+import java.util.Objects;
+
 import org.alliancegenome.curation_api.constants.OntologyConstants;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.dao.ExperimentalConditionDAO;
@@ -52,10 +54,22 @@ public class ExperimentalConditionValidator extends AuditedObjectValidator<Exper
 			addMessageResponse("Could not find ExperimentalCondition with ID: [" + id + "]");
 			throw new ApiErrorException(response);
 		}
+		
+		if (isUneditableFmsEntry(dbEntity)) {
+			addMessageResponse("This is an FMS-derived entry, editing is disabled");
+			throw new ApiErrorException(response);
+		}
 
 		dbEntity = (ExperimentalCondition) validateAuditedObjectFields(uiEntity, dbEntity, false);
 
 		return validateExperimentalCondition(uiEntity, dbEntity);
+	}
+
+	private boolean isUneditableFmsEntry(ExperimentalCondition dbEntity) {
+		if (Objects.equals(dbEntity.getConditionSummary(), ExperimentalConditionSummary.getConditionSummary(dbEntity))) {
+			return false;
+		}
+		return true;
 	}
 
 	public ExperimentalCondition validateExperimentalConditionCreate(ExperimentalCondition uiEntity) {

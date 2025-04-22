@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.alliancegenome.curation_api.model.entities.CrossReference;
@@ -23,12 +24,15 @@ import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAnnotation;
 import org.semanticweb.owlapi.model.OWLAnnotationValue;
 import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLLiteral;
 import org.semanticweb.owlapi.model.OWLObjectProperty;
 import org.semanticweb.owlapi.model.OWLObjectPropertyExpression;
+import org.semanticweb.owlapi.model.OWLObjectSomeValuesFrom;
 import org.semanticweb.owlapi.model.OWLObjectVisitor;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
+import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
 import org.semanticweb.owlapi.search.EntitySearcher;
 
@@ -38,6 +42,9 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
 
 	private ElkReasonerFactory reasonerFactory = new ElkReasonerFactory();
 	private OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
+	private OWLObjectProperty partOfProperty = manager.getOWLDataFactory().getOWLObjectProperty(IRI.create("http://purl.obolibrary.org/obo/BFO_0000050"));
+	
+	
 	private OWLReasoner reasoner;
 	private OWLOntology ontology;
 
@@ -198,7 +205,20 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
 	}
 
 	private void traverseToRoot(OWLClass currentTreeNode, int depth, HashSet<String> requiredNamespaces, HashSet<OntologyTerm> ancestors) throws Exception {
-		List<OWLClass> parents = reasoner.getSuperClasses(currentTreeNode, true).entities().collect(Collectors.toList());
+		List<OWLClass> parents = new ArrayList<>();
+
+		Set<OWLSubClassOfAxiom> parentsAxioms = ontology.getSubClassAxiomsForSubClass(currentTreeNode);
+		for (OWLSubClassOfAxiom sub : parentsAxioms) {
+			OWLClassExpression exp = sub.getSuperClass();
+			if (!exp.isAnonymous()) {
+				parents.add(exp.asOWLClass());
+			} else if (exp instanceof OWLObjectSomeValuesFrom) {
+				OWLObjectSomeValuesFrom restriction = (OWLObjectSomeValuesFrom) exp;
+				if (restriction.getProperty().equals(partOfProperty) && !restriction.getFiller().isAnonymous()) {
+					parents.add(restriction.getFiller().asOWLClass());
+				}
+			}
+		}
 
 		T currentTerm = null;
 

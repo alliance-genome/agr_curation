@@ -1,27 +1,42 @@
 import { Tooltip } from 'primereact/tooltip';
-import { getGenomicEntityText, getIdentifier } from '../../../utils/utils';
+import { getGenomicEntityName, getGenomicEntityText, getIdentifier } from '../../../utils/utils';
 
 export const GenomicEntityTemplate = ({ genomicEntity }) => {
 	if (!genomicEntity) return null;
 
 	const targetClass = `a${global.crypto.randomUUID()}`;
 	const subjectText = getGenomicEntityText(genomicEntity);
-	const indentifier = getIdentifier(genomicEntity);
+	const identifier = getIdentifier(genomicEntity);
+	const subjectName = getGenomicEntityName(genomicEntity);
 
-	if (!subjectText) return <div className="overflow-hidden text-overflow-ellipsis">{indentifier}</div>;
+	const tooltipTemplate = `Identifier: ${identifier} ${subjectName ? `<br/> Name: ${subjectName}` : null}`;
+
+	if (!subjectText)
+		return (
+			<>
+				<div className="overflow-hidden text-overflow-ellipsis">{identifier}</div>
+				<Tooltip target={`.${targetClass}`} mouseTrack position="bottom">
+					<div
+						dangerouslySetInnerHTML={{
+							__html: tooltipTemplate,
+						}}
+					/>
+				</Tooltip>
+			</>
+		);
 
 	return (
 		<>
 			<div
 				className={`overflow-hidden text-overflow-ellipsis ${targetClass}`}
 				dangerouslySetInnerHTML={{
-					__html: `${subjectText} (${indentifier})`,
+					__html: `${subjectText} (${identifier})`,
 				}}
 			/>
 			<Tooltip target={`.${targetClass}`} mouseTrack position="bottom">
 				<div
 					dangerouslySetInnerHTML={{
-						__html: `${subjectText} (${indentifier})`,
+						__html: tooltipTemplate,
 					}}
 				/>
 			</Tooltip>
