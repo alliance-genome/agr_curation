@@ -27,6 +27,7 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmb
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexingDependency;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.KeywordField;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
 
 import jakarta.persistence.Column;
@@ -103,6 +104,7 @@ public class AuditedObject implements Serializable {
 	@UpdateTimestamp
 	private OffsetDateTime dbDateUpdated;
 
+	@JsonIgnore
 	public boolean isNotInternalOrObsolete() {
 		return !internal && !obsolete;
 	}
