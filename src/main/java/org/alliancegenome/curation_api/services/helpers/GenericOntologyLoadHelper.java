@@ -42,7 +42,7 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
 
 	private ElkReasonerFactory reasonerFactory = new ElkReasonerFactory();
 	private OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
-	private OWLObjectProperty partOfProperty = null;
+	private OWLObjectProperty partOfProperty;
 
 	private OWLReasoner reasoner;
 	private OWLOntology ontology;
@@ -107,7 +107,7 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
 		reasoner = reasonerFactory.createReasoner(ontology);
 
 		OWLObjectProperty rootProperty = manager.getOWLDataFactory().getOWLTopObjectProperty();
-		
+
 		if (config.getLoadObjectProperties()) {
 			Log.info("Traversing Object Properties");
 			traverseProperties(rootProperty, 0);
@@ -211,7 +211,7 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
 	private void traverseToRoot(OWLClass currentTreeNode, int depth, HashSet<String> requiredNamespaces, HashSet<OntologyTerm> ancestors) throws Exception {
 		List<OWLClass> parents = new ArrayList<>();
 
-		if(partOfProperty != null) {
+		if (partOfProperty != null) {
 			Set<OWLSubClassOfAxiom> parentsAxioms = ontology.getSubClassAxiomsForSubClass(currentTreeNode);
 			for (OWLSubClassOfAxiom sub : parentsAxioms) {
 				OWLClassExpression exp = sub.getSuperClass();
@@ -263,9 +263,9 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
 		boolean condition5 = !config.getIgnoreEntitiesWithChebiXref();
 		boolean condition6 = !hasChebiXref(currentTerm);
 
-		//CHECKSTYLE:OFF: UnnecessaryParentheses
+		// CHECKSTYLE:OFF: UnnecessaryParentheses
 		return ((condition1 && condition2 && !condition3) || (condition3 && condition4)) && (condition5 || condition6);
-		//CHECKSTYLE:ON: UnnecessaryParentheses
+		// CHECKSTYLE:ON: UnnecessaryParentheses
 	}
 
 	public void printDepthMessage(int depth, String message) {
@@ -376,26 +376,26 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
 
 		return term;
 	}
-	
+
 	public OWLObjectProperty traverseSearchProperties(OWLObjectProperty rootTreeProperty, String searchString) {
 
-		for(OWLAnnotation annotation: EntitySearcher.getAnnotationObjects(rootTreeProperty.getNamedProperty(), ontology).toList()) {
+		for (OWLAnnotation annotation : EntitySearcher.getAnnotationObjects(rootTreeProperty.getNamedProperty(), ontology).toList()) {
 			String key = annotation.getProperty().getIRI().getShortForm();
-			if(key.equals("id")) {
+			if (key.equals("id")) {
 				String id = getString(annotation.getValue());
-				if(id.equals(searchString)) {
+				if (id.equals(searchString)) {
 					return rootTreeProperty;
 				}
 			}
 		}
-		
+
 		for (OWLObjectPropertyExpression childTermPropertyExpression : reasoner.getSubObjectProperties(rootTreeProperty, true).entities().collect(Collectors.toList())) {
 			OWLObjectProperty childProperty = traverseSearchProperties(childTermPropertyExpression.getNamedProperty(), searchString);
-			if(childProperty != null) {
+			if (childProperty != null) {
 				return childProperty;
 			}
 		}
-		
+
 		return null;
 	}
 
