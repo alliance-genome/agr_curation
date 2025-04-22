@@ -211,22 +211,21 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
 	private void traverseToRoot(OWLClass currentTreeNode, int depth, HashSet<String> requiredNamespaces, HashSet<OntologyTerm> ancestors) throws Exception {
 		List<OWLClass> parents = new ArrayList<>();
 
-		if (partOfProperty != null) {
-			Set<OWLSubClassOfAxiom> parentsAxioms = ontology.getSubClassAxiomsForSubClass(currentTreeNode);
-			for (OWLSubClassOfAxiom sub : parentsAxioms) {
-				OWLClassExpression exp = sub.getSuperClass();
-				if (!exp.isAnonymous()) {
-					parents.add(exp.asOWLClass());
-				} else if (exp instanceof OWLObjectSomeValuesFrom) {
-					OWLObjectSomeValuesFrom restriction = (OWLObjectSomeValuesFrom) exp;
-					if (restriction.getProperty().equals(partOfProperty) && !restriction.getFiller().isAnonymous()) {
-						parents.add(restriction.getFiller().asOWLClass());
-					}
+		Set<OWLSubClassOfAxiom> parentsAxioms = ontology.getSubClassAxiomsForSubClass(currentTreeNode);
+		for (OWLSubClassOfAxiom sub : parentsAxioms) {
+			OWLClassExpression exp = sub.getSuperClass();
+			if (!exp.isAnonymous()) {
+				// is_a
+				parents.add(exp.asOWLClass());
+			} else if (exp instanceof OWLObjectSomeValuesFrom) {
+				OWLObjectSomeValuesFrom restriction = (OWLObjectSomeValuesFrom) exp;
+				// part_of and or other ones could be added here
+				if (partOfProperty != null && restriction.getProperty().equals(partOfProperty) && !restriction.getFiller().isAnonymous()) {
+					parents.add(restriction.getFiller().asOWLClass());
 				}
 			}
-		} else {
-			parents = reasoner.getSuperClasses(currentTreeNode, true).entities().collect(Collectors.toList());
 		}
+
 
 		T currentTerm = null;
 
