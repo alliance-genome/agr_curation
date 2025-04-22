@@ -47,8 +47,15 @@ public class HTPDatasetDocumentBuilder {
 			if (htpDatasetAnnotation.getHtpExpressionDataset().getPreferredCrossReference() != null) {
 				if (htpDatasetAnnotation.getHtpExpressionDataset().getPreferredCrossReference()
 						.getUrlFromResourceDescriptorPage(doc.getCurie()) != null) {
+					String identifier;
+					if (doc.getDataProvider().equals("ZFIN")) {
+						identifier = htpDatasetAnnotation.getHtpExpressionDataset().getPreferredCrossReference()
+								.getReferencedCurie();
+					} else {
+						identifier = doc.getCurie();
+					}
 					doc.setHref(htpDatasetAnnotation.getHtpExpressionDataset().getPreferredCrossReference()
-							.getUrlFromResourceDescriptorPage(doc.getCurie()));
+							.getUrlFromResourceDescriptorPage(identifier));
 				}
 			}
 		}
