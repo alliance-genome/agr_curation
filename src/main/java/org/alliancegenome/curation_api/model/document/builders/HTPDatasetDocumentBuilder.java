@@ -130,7 +130,9 @@ public class HTPDatasetDocumentBuilder {
 								.getExpressionAssayUsed()
 								.getSynonyms()
 								.stream()
-								.map(synonym -> {
+								.filter(synonym -> {
+									return synonym.getIsDisplaySynonym();
+								}).map(synonym -> {
 									return synonym.getName();
 								}).collect(Collectors.toList()));
 			}

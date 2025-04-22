@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -22,9 +23,11 @@ import org.semanticweb.elk.owlapi.ElkReasonerFactory;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAnnotation;
+import org.semanticweb.owlapi.model.OWLAnnotationProperty;
 import org.semanticweb.owlapi.model.OWLAnnotationValue;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLDataProperty;
 import org.semanticweb.owlapi.model.OWLLiteral;
 import org.semanticweb.owlapi.model.OWLObjectProperty;
 import org.semanticweb.owlapi.model.OWLObjectPropertyExpression;
@@ -67,7 +70,8 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
 	}
 
 	public Map<String, T> load(String fullText) throws Exception {
-		File outfile = new File("tmp.file2.owl"); // TODO fix so multiple loads do not overwrite each other Generate random name
+		File outfile = new File("tmp.file2.owl"); // TODO fix so multiple loads do not overwrite each other Generate
+																// random name
 		Log.info("Input data size: " + fullText.length());
 		BufferedWriter writer = new BufferedWriter(new FileWriter(outfile));
 		writer.append(fullText);
@@ -187,7 +191,8 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
 				// + "]");
 			}
 
-			for (OWLClass childTermNode : reasoner.getSubClasses(currentTreeNode, true).entities().collect(Collectors.toList())) {
+			for (OWLClass childTermNode : reasoner.getSubClasses(currentTreeNode, true).entities()
+					.collect(Collectors.toList())) {
 
 				if (!childTermNode.equals(currentTreeNode)) {
 					try {
@@ -208,7 +213,8 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
 
 	}
 
-	private void traverseToRoot(OWLClass currentTreeNode, int depth, HashSet<String> requiredNamespaces, HashSet<OntologyTerm> ancestors) throws Exception {
+	private void traverseToRoot(OWLClass currentTreeNode, int depth, HashSet<String> requiredNamespaces,
+			HashSet<OntologyTerm> ancestors) throws Exception {
 		List<OWLClass> parents = new ArrayList<>();
 
 		Set<OWLSubClassOfAxiom> parentsAxioms = ontology.getSubClassAxiomsForSubClass(currentTreeNode);
@@ -220,12 +226,12 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
 			} else if (exp instanceof OWLObjectSomeValuesFrom) {
 				OWLObjectSomeValuesFrom restriction = (OWLObjectSomeValuesFrom) exp;
 				// part_of and or other ones could be added here
-				if (partOfProperty != null && restriction.getProperty().equals(partOfProperty) && !restriction.getFiller().isAnonymous()) {
+				if (partOfProperty != null && restriction.getProperty().equals(partOfProperty)
+						&& !restriction.getFiller().isAnonymous()) {
 					parents.add(restriction.getFiller().asOWLClass());
 				}
 			}
 		}
-
 
 		T currentTerm = null;
 
@@ -344,12 +350,53 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
 			term.setObsolete(getBoolean(annotation.getValue()));
 		} else if (key.equals("hasOBONamespace")) {
 			term.setNamespace(getString(annotation.getValue()));
-		} else if (key.equals("hasExactSynonym") || key.equals("hasRelatedSynonym") || key.equals("hasNarrowSynonym") || key.equals("hasBroadSynonym")) {
+		} else if (key.equals("hasExactSynonym")) {
+			if (term.getSynonyms() == null) {
+				term.setSynonyms(new ArrayList<>());
+			}
+			Synonym synonym = new Synonym();
+
+			if (node != null) {
+				ontology.annotationAssertionAxioms(node.getIRI()).forEach(annot -> {
+					if (annot.isAnnotated()) {
+						annot.annotations().forEach(an -> {
+							String inkey = an.getProperty().getIRI().getShortForm();
+							if (inkey.equals("hasSynonymType")) {
+								String shortForm = getIRIShortForm(an.getValue());
+								if (shortForm.equals("DISPLAY_SYNONYM")) {
+									synonym.setIsDisplaySynonym(true);
+								}
+							}
+						});
+					}
+				});
+			}
+			synonym.setName(getString(annotation.getValue()));
+			synonym.setHasExactSynonym(true);
+			term.getSynonyms().add(synonym);
+		} else if (key.equals("hasRelatedSynonym")) {
 			if (term.getSynonyms() == null) {
 				term.setSynonyms(new ArrayList<>());
 			}
 			Synonym synonym = new Synonym();
 			synonym.setName(getString(annotation.getValue()));
+			synonym.setHasRelatedSynonym(true);
+			term.getSynonyms().add(synonym);
+		} else if (key.equals("hasNarrowSynonym")) {
+			if (term.getSynonyms() == null) {
+				term.setSynonyms(new ArrayList<>());
+			}
+			Synonym synonym = new Synonym();
+			synonym.setName(getString(annotation.getValue()));
+			synonym.setHasNarrowSynonym(true);
+			term.getSynonyms().add(synonym);
+		} else if (key.equals("hasBroadSynonym")) {
+			if (term.getSynonyms() == null) {
+				term.setSynonyms(new ArrayList<>());
+			}
+			Synonym synonym = new Synonym();
+			synonym.setName(getString(annotation.getValue()));
+			synonym.setHasBroadSynonym(true);
 			term.getSynonyms().add(synonym);
 		} else if (key.equals("hasAlternativeId")) {
 			if (term.getSecondaryIdentifiers() == null) {
@@ -378,7 +425,8 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
 
 	public OWLObjectProperty traverseSearchProperties(OWLObjectProperty rootTreeProperty, String searchString) {
 
-		for (OWLAnnotation annotation : EntitySearcher.getAnnotationObjects(rootTreeProperty.getNamedProperty(), ontology).toList()) {
+		for (OWLAnnotation annotation : EntitySearcher.getAnnotationObjects(rootTreeProperty.getNamedProperty(), ontology)
+				.toList()) {
 			String key = annotation.getProperty().getIRI().getShortForm();
 			if (key.equals("id")) {
 				String id = getString(annotation.getValue());
@@ -388,8 +436,10 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
 			}
 		}
 
-		for (OWLObjectPropertyExpression childTermPropertyExpression : reasoner.getSubObjectProperties(rootTreeProperty, true).entities().collect(Collectors.toList())) {
-			OWLObjectProperty childProperty = traverseSearchProperties(childTermPropertyExpression.getNamedProperty(), searchString);
+		for (OWLObjectPropertyExpression childTermPropertyExpression : reasoner
+				.getSubObjectProperties(rootTreeProperty, true).entities().collect(Collectors.toList())) {
+			OWLObjectProperty childProperty = traverseSearchProperties(childTermPropertyExpression.getNamedProperty(),
+					searchString);
 			if (childProperty != null) {
 				return childProperty;
 			}
@@ -428,7 +478,8 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
 			currentTerm.setIsaAncestors(new HashSet<>(ancestors));
 		}
 
-		for (OWLObjectPropertyExpression childTermPropertyExpression : reasoner.getSubObjectProperties(currentTreeProperty, true).entities().collect(Collectors.toList())) {
+		for (OWLObjectPropertyExpression childTermPropertyExpression : reasoner
+				.getSubObjectProperties(currentTreeProperty, true).entities().collect(Collectors.toList())) {
 			if (!childTermPropertyExpression.getNamedProperty().toString().equals(currentTreeProperty.toString())) {
 				try {
 					T childTerm = traverseProperties(childTermPropertyExpression.getNamedProperty(), depth + 1);
@@ -461,8 +512,10 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
 
 	}
 
-	private void traverseToRootProperty(OWLObjectProperty currentTreeProperty, int depth, HashSet<OntologyTerm> ancestors) throws Exception {
-		List<OWLObjectPropertyExpression> parents = reasoner.getSuperObjectProperties(currentTreeProperty, true).entities().collect(Collectors.toList());
+	private void traverseToRootProperty(OWLObjectProperty currentTreeProperty, int depth,
+			HashSet<OntologyTerm> ancestors) throws Exception {
+		List<OWLObjectPropertyExpression> parents = reasoner.getSuperObjectProperties(currentTreeProperty, true)
+				.entities().collect(Collectors.toList());
 
 		T currentTerm = null;
 
