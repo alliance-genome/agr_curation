@@ -18,8 +18,8 @@ ALTER TABLE agmdiseaseannotation_allele ADD CONSTRAINT agmdiseaseannotation_alle
 CREATE INDEX agmdiseaseannotation_allele_agmdiseaseannotation_index ON agmdiseaseannotation_allele USING btree (agmdiseaseannotation_id);
 CREATE INDEX agmdiseaseannotation_allele_assertedalleles_index ON agmdiseaseannotation_allele USING btree (assertedalleles_id);
 
-INSERT INTO agmphenotypeannotation_allele (agmphenotypeannotation_id, assertedalleles_id) SELECT id, assertedallele_id FROM agmphenotypeannotation;
-INSERT INTO agmdiseaseannotation_allele (agmdiseaseannotation_id, assertedalleles_id) SELECT id, assertedallele_id FROM agmdiseaseannotation;
+INSERT INTO agmphenotypeannotation_allele (agmphenotypeannotation_id, assertedalleles_id) SELECT id, assertedallele_id FROM agmphenotypeannotation WHERE assertedallele_id IS NOT NULL;
+INSERT INTO agmdiseaseannotation_allele (agmdiseaseannotation_id, assertedalleles_id) SELECT id, assertedallele_id FROM agmdiseaseannotation WHERE assertedallele_id IS NOT NULL;
 
 ALTER TABLE agmphenotypeannotation DROP COLUMN assertedallele_id;
 ALTER TABLE agmdiseaseannotation DROP COLUMN assertedallele_id;

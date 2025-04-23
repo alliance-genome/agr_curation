@@ -37,7 +37,6 @@ import lombok.EqualsAndHashCode;
 @AGRCurationSchemaVersion(min = "2.11.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { PhenotypeAnnotation.class })
 
 @Table(indexes = {
-	@Index(name = "AGMPhenotypeAnnotation_assertedAllele_index", columnList = "assertedAllele_id"),
 	@Index(name = "AGMPhenotypeAnnotation_inferredAllele_index", columnList = "inferredAllele_id"),
 	@Index(name = "AGMPhenotypeAnnotation_inferredGene_index", columnList = "inferredGene_id"),
 	@Index(name = "AGMPhenotypeAnnotation_phenotypeAnnotationSubject_index", columnList = "phenotypeAnnotationSubject_id")

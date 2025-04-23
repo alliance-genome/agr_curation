@@ -85,7 +85,7 @@ export const NewAnnotationForm = ({
 	const areUiErrors = useRef(false);
 	let newAnnotationOptionalFields = [
 		'Asserted Genes',
-		'Asserted Allele',
+		'Asserted Alleles',
 		'NOT',
 		'With',
 		'Related Notes',
