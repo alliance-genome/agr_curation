@@ -796,7 +796,7 @@ export const DiseaseAnnotationsTable = () => {
 		multipleAutocompleteOnChange(props, event, 'assertedAlleles', setFieldValue);
 	};
 
-	const assertedAllelesSearch = (event, setFiltered, setQuery) => {
+	const assertedAllelesSearch = (event, setFiltered, setInputValue) => {
 		const autocompleteFields = [
 			'alleleSymbol.formatText',
 			'alleleSymbol.displayText',
