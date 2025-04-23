@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -246,9 +245,7 @@ public abstract class BaseOntologyTermService<E extends OntologyTerm, D extends 
 				dbTerm.getSynonyms().add(synonym);
 			} else {
 				Synonym dbSynonym = response.getSingleResult();
-				if (!sameSynonym(dbSynonym, syn)) {
-					updateSynonym(dbSynonym, syn);
-				}
+				updateSynonym(dbSynonym, syn);
 			}
 		}
 		for (Synonym syn : currentSynonyms) {
@@ -336,15 +333,6 @@ public abstract class BaseOntologyTermService<E extends OntologyTerm, D extends 
 			}
 		}
 		return null;
-	}
-
-	private boolean sameSynonym(Synonym oldSyn, Synonym newSyn) {
-		return Objects.equals(oldSyn.getName(), newSyn.getName())
-				&& Objects.equals(oldSyn.getIsDisplaySynonym(), newSyn.getIsDisplaySynonym())
-				&& Objects.equals(oldSyn.getHasBroadSynonym(), newSyn.getHasBroadSynonym())
-				&& Objects.equals(oldSyn.getHasExactSynonym(), newSyn.getHasExactSynonym())
-				&& Objects.equals(oldSyn.getHasNarrowSynonym(), newSyn.getHasNarrowSynonym())
-				&& Objects.equals(oldSyn.getHasRelatedSynonym(), newSyn.getHasRelatedSynonym());
 	}
 
 	private void updateSynonym(Synonym oldSyn, Synonym newSyn) {
