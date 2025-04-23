@@ -31,7 +31,7 @@ export const SORT_FIELDS = Object.freeze([
 	'inferredGene.geneSymbol.displayText',
 	'assertedGenes.geneSymbol.displayText',
 	'inferredAllele.alleleSymbol.displayText',
-	'assertedAllele.alleleSymbol.displayText',
+	'assertedAlleles.alleleSymbol.displayText',
 	'dataProvider.abbreviation',
 	'secondaryDataProvider.abbreviation',
 	'updatedBy.uniqueId',

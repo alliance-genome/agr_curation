@@ -82,8 +82,8 @@ public class AGMDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOValida
 		List<Gene> assertedGenes = validateIdentifiers(geneService, "asserted_gene_identifiers", dto.getAssertedGeneIdentifiers());
 		annotation.setAssertedGenes(assertedGenes);
 		
-		Allele assertedAllele = validateIdentifier(alleleService, "asserted_allele_identifier", dto.getAssertedAlleleIdentifier());
-		annotation.setAssertedAllele(assertedAllele);
+		List<Allele> assertedAlleles = validateIdentifiers(alleleService, "asserted_allele_identifiers", dto.getAssertedAlleleIdentifiers());
+		annotation.setAssertedAlleles(assertedAlleles);
 		
 		if (response.hasErrors()) {
 			throw new ObjectValidationException(dto, response.errorMessagesString());

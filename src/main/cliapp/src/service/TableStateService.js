@@ -18,7 +18,7 @@ const modTableSettings = {
 				'Inferred Gene',
 				'Asserted Genes',
 				'Inferred Allele',
-				'Asserted Allele',
+				'Asserted Alleles',
 				'Data Provider',
 				'Secondary Data Provider',
 				'Updated By',
@@ -39,7 +39,7 @@ const modTableSettings = {
 				'Experimental Conditions',
 				'Disease Qualifiers',
 				'Asserted Genes',
-				'Asserted Allele',
+				'Asserted Alleles',
 			],
 			filters: {
 				dataProviderFilter: {
@@ -374,7 +374,7 @@ const modTableSettings = {
 				'Inferred Gene',
 				'Asserted Genes',
 				'Inferred Allele',
-				'Asserted Allele',
+				'Asserted Alleles',
 				'Data Provider',
 				'Secondary Data Provider',
 				'Updated By',
@@ -386,7 +386,7 @@ const modTableSettings = {
 			],
 			selectedFormFields: [
 				'Asserted Genes',
-				'Asserted Allele',
+				'Asserted Alleles',
 				'NOT',
 				'With',
 				'Related Notes',

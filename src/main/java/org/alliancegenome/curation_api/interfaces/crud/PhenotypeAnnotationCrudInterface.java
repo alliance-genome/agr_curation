@@ -37,6 +37,12 @@ public interface PhenotypeAnnotationCrudInterface extends BaseIdCrudInterface<Ph
 	ObjectResponse<PhenotypeAnnotation> getByIdentifier(@PathParam("identifier") String identifier);
 
 	@Override
+	@GET
+	@Path("/{id}")
+	@JsonView(View.FieldsAndLists.class)
+	ObjectResponse<PhenotypeAnnotation> getById(@PathParam("id") Long id);
+
+	@Override
 	@POST
 	@Path("/search")
 	@JsonView(View.PhenotypeAnnotationView.class)

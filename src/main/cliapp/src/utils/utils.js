@@ -394,7 +394,7 @@ export function validateBioEntityFields(
 	closeRowRef,
 	areUiErrors
 ) {
-	const bioEntityFieldNames = ['diseaseAnnotationSubject', 'sgdStrainBackground', 'assertedAllele'];
+	const bioEntityFieldNames = ['diseaseAnnotationSubject', 'sgdStrainBackground'];
 
 	bioEntityFieldNames.forEach((field) => {
 		if (updatedRow[field] && Object.keys(updatedRow[field]).length === 1) {
@@ -454,7 +454,7 @@ export function validateRequiredFields(newAnnotationForm, uiErrorMessages, setUi
 }
 
 export function validateFormBioEntityFields(newAnnotationForm, uiErrorMessages, setUiErrorMessages, areUiErrors) {
-	const bioEntityFieldNames = ['diseaseAnnotationSubject', 'sgdStrainBackground', 'assertedAllele'];
+	const bioEntityFieldNames = ['diseaseAnnotationSubject', 'sgdStrainBackground'];
 
 	bioEntityFieldNames.forEach((field) => {
 		if (
