@@ -426,7 +426,7 @@ public class DiseaseAnnotationBulkUploadITCase extends BaseITCase {
 			body("entity.inferredGene.primaryExternalId", is(gene)).
 			body("entity.assertedGenes[0].primaryExternalId", is(gene2)).
 			body("entity.inferredAllele.primaryExternalId", is(allele)).
-			body("entity.assertedAllele.primaryExternalId", is(allele2)).
+			body("entity.assertedAlleles[0].primaryExternalId", is(allele2)).
 			body("entity.dataProviderCrossReference.referencedCurie", is("TEST:0001")).
 			body("entity.dataProviderCrossReference.displayName", is("TEST:0001")).
 			body("entity.dataProviderCrossReference.resourceDescriptorPage.name", is("homepage")).
@@ -678,7 +678,7 @@ public class DiseaseAnnotationBulkUploadITCase extends BaseITCase {
 			body("entity.inferredGene.primaryExternalId", is(gene2)).
 			body("entity.assertedGenes[0].primaryExternalId", is(gene)).
 			body("entity.inferredAllele.primaryExternalId", is(allele2)).
-			body("entity.assertedAllele.primaryExternalId", is(allele)).
+			body("entity.assertedAlleles[0].primaryExternalId", is(allele)).
 			body("entity.dataProviderCrossReference.referencedCurie", is("TEST:0002")).
 			body("entity.dataProviderCrossReference.displayName", is("TEST:0002")).
 			body("entity.dataProviderCrossReference.resourceDescriptorPage.name", is("homepage")).
@@ -905,7 +905,7 @@ public class DiseaseAnnotationBulkUploadITCase extends BaseITCase {
 			body("entity", not(hasKey("inferredGene"))).
 			body("entity", not(hasKey("assertedGenes"))).
 			body("entity", not(hasKey("inferredAllele"))).
-			body("entity", not(hasKey("assertedAllele")));
+			body("entity", not(hasKey("assertedAlleles")));
 	}
 	
 	@Test
@@ -1037,7 +1037,7 @@ public class DiseaseAnnotationBulkUploadITCase extends BaseITCase {
 			body("entity", not(hasKey("inferredGene"))).
 			body("entity", not(hasKey("assertedGenes"))).
 			body("entity", not(hasKey("inferredAllele"))).
-			body("entity", not(hasKey("assertedAllele")));
+			body("entity", not(hasKey("assertedAlleles")));
 	}
 	
 	@Test

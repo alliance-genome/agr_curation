@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.alliancegenome.curation_api.model.entities.CrossReference;
@@ -23,12 +24,15 @@ import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAnnotation;
 import org.semanticweb.owlapi.model.OWLAnnotationValue;
 import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLLiteral;
 import org.semanticweb.owlapi.model.OWLObjectProperty;
 import org.semanticweb.owlapi.model.OWLObjectPropertyExpression;
+import org.semanticweb.owlapi.model.OWLObjectSomeValuesFrom;
 import org.semanticweb.owlapi.model.OWLObjectVisitor;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
+import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
 import org.semanticweb.owlapi.search.EntitySearcher;
 
@@ -38,6 +42,8 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
 
 	private ElkReasonerFactory reasonerFactory = new ElkReasonerFactory();
 	private OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
+	private OWLObjectProperty partOfProperty;
+
 	private OWLReasoner reasoner;
 	private OWLOntology ontology;
 
@@ -100,12 +106,17 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
 
 		reasoner = reasonerFactory.createReasoner(ontology);
 
+		OWLObjectProperty rootProperty = manager.getOWLDataFactory().getOWLTopObjectProperty();
+
 		if (config.getLoadObjectProperties()) {
 			Log.info("Traversing Object Properties");
-			OWLObjectProperty rootProperty = manager.getOWLDataFactory().getOWLTopObjectProperty();
 			traverseProperties(rootProperty, 0);
 			Log.info("Finished Traversing Object Properties: " + allNodes.size());
 			return allNodes;
+		} else {
+			Log.info("Looking for Part_Of object property: ");
+			partOfProperty = traverseSearchProperties(rootProperty, "part_of");
+			Log.info("Part of Found? : " + partOfProperty);
 		}
 
 		OWLClass root = manager.getOWLDataFactory().getOWLThing();
@@ -198,7 +209,23 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
 	}
 
 	private void traverseToRoot(OWLClass currentTreeNode, int depth, HashSet<String> requiredNamespaces, HashSet<OntologyTerm> ancestors) throws Exception {
-		List<OWLClass> parents = reasoner.getSuperClasses(currentTreeNode, true).entities().collect(Collectors.toList());
+		List<OWLClass> parents = new ArrayList<>();
+
+		Set<OWLSubClassOfAxiom> parentsAxioms = ontology.getSubClassAxiomsForSubClass(currentTreeNode);
+		for (OWLSubClassOfAxiom sub : parentsAxioms) {
+			OWLClassExpression exp = sub.getSuperClass();
+			if (!exp.isAnonymous()) {
+				// is_a
+				parents.add(exp.asOWLClass());
+			} else if (exp instanceof OWLObjectSomeValuesFrom) {
+				OWLObjectSomeValuesFrom restriction = (OWLObjectSomeValuesFrom) exp;
+				// part_of and or other ones could be added here
+				if (partOfProperty != null && restriction.getProperty().equals(partOfProperty) && !restriction.getFiller().isAnonymous()) {
+					parents.add(restriction.getFiller().asOWLClass());
+				}
+			}
+		}
+
 
 		T currentTerm = null;
 
@@ -235,9 +262,9 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
 		boolean condition5 = !config.getIgnoreEntitiesWithChebiXref();
 		boolean condition6 = !hasChebiXref(currentTerm);
 
-		//CHECKSTYLE:OFF: UnnecessaryParentheses
+		// CHECKSTYLE:OFF: UnnecessaryParentheses
 		return ((condition1 && condition2 && !condition3) || (condition3 && condition4)) && (condition5 || condition6);
-		//CHECKSTYLE:ON: UnnecessaryParentheses
+		// CHECKSTYLE:ON: UnnecessaryParentheses
 	}
 
 	public void printDepthMessage(int depth, String message) {
@@ -300,9 +327,9 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
 					if (annot.isAnnotated()) {
 						annot.annotations().forEach(an -> {
 							String inkey = an.getProperty().getIRI().getShortForm();
-							// System.out.println(inkey);
+							// Log.info(inkey);
 							if (inkey.equals("hasDbXref")) {
-								// System.out.println("Adding: " + an.getValue().toString());
+								// Log.info("Adding: " + an.getValue().toString());
 								if (term.getDefinitionUrls() == null) {
 									term.setDefinitionUrls(new ArrayList<>());
 								}
@@ -347,6 +374,28 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
 		}
 
 		return term;
+	}
+
+	public OWLObjectProperty traverseSearchProperties(OWLObjectProperty rootTreeProperty, String searchString) {
+
+		for (OWLAnnotation annotation : EntitySearcher.getAnnotationObjects(rootTreeProperty.getNamedProperty(), ontology).toList()) {
+			String key = annotation.getProperty().getIRI().getShortForm();
+			if (key.equals("id")) {
+				String id = getString(annotation.getValue());
+				if (id.equals(searchString)) {
+					return rootTreeProperty;
+				}
+			}
+		}
+
+		for (OWLObjectPropertyExpression childTermPropertyExpression : reasoner.getSubObjectProperties(rootTreeProperty, true).entities().collect(Collectors.toList())) {
+			OWLObjectProperty childProperty = traverseSearchProperties(childTermPropertyExpression.getNamedProperty(), searchString);
+			if (childProperty != null) {
+				return childProperty;
+			}
+		}
+
+		return null;
 	}
 
 	public T traverseProperties(OWLObjectProperty currentTreeProperty, int depth) throws Exception {

@@ -90,6 +90,8 @@
     "inferred_gene_identifier": "INVALID:Gene0001",
     "asserted_gene": "DATEST:Gene0001",
     "inferred_allele_identifier": "DATEST:Allele0001",
-    "asserted_allele_identifier": "DATEST:Allele0001"
+    "asserted_allele_identifiers": [
+      "DATEST:Allele0001"
+    ]
   }
 ]

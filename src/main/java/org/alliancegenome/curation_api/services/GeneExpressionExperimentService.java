@@ -1,18 +1,16 @@
 package org.alliancegenome.curation_api.services;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import org.alliancegenome.curation_api.constants.EntityFieldConstants;
 import org.alliancegenome.curation_api.dao.GeneExpressionAnnotationDAO;
 import org.alliancegenome.curation_api.dao.GeneExpressionExperimentDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ValidationException;
+import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.GeneExpressionAnnotation;
 import org.alliancegenome.curation_api.model.entities.GeneExpressionExperiment;
+import org.alliancegenome.curation_api.model.entities.Organization;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
 import org.alliancegenome.curation_api.services.ontology.MmoTermService;
@@ -52,6 +50,7 @@ public class GeneExpressionExperimentService extends BaseEntityCrudService<GeneE
 	public GeneExpressionExperiment upsert(String experimentId, Set<String> geneExpressionAnnotationIds, BackendBulkDataProvider dataProvider) throws ValidationException {
 		GeneExpressionExperiment geneExpressionExperiment;
 		Set<GeneExpressionAnnotation> annotations;
+		Map<String, CrossReference> crossReferences = new HashMap<>();
 
 		//	example of experimentId: Xenbase:XB-GENE-972235|AGRKB:101000000874667|MMO:0000658
 		String[] definingFields = experimentId.split("\\|", 3);
@@ -65,7 +64,8 @@ public class GeneExpressionExperimentService extends BaseEntityCrudService<GeneE
 			geneExpressionExperiment = new GeneExpressionExperiment();
 			geneExpressionExperiment.setUniqueId(experimentId);
 		}
-		geneExpressionExperiment.setDataProvider(organizationService.getByAbbr(dataProvider.sourceOrganization).getEntity());
+		Organization organization = organizationService.getByAbbr(dataProvider.sourceOrganization).getEntity();
+		geneExpressionExperiment.setDataProvider(organization);
 		geneExpressionExperiment.setEntityAssayed(geneService.findByIdentifierString(geneId));
 		geneExpressionExperiment.setSingleReference(referenceService.getByCurie(referenceId).getEntity());
 		geneExpressionExperiment.setExpressionAssayUsed(mmoTermService.findByCurie(assayId));
@@ -76,10 +76,22 @@ public class GeneExpressionExperimentService extends BaseEntityCrudService<GeneE
 		if (annotations == null) {
 			annotations = new HashSet<>();
 		}
+		if (geneExpressionExperiment.getCrossReferences() != null) {
+			geneExpressionExperiment.getCrossReferences().clear();
+		} else {
+			geneExpressionExperiment.setCrossReferences(new ArrayList<>());
+		}
 		for (String geneExpressionAnnotationId: geneExpressionAnnotationIds) {
-			annotations.add(geneExpressionAnnotationDAO.findByField("uniqueId", geneExpressionAnnotationId).getSingleResult());
+			GeneExpressionAnnotation geneExpressionAnnotation = geneExpressionAnnotationDAO.findByField("uniqueId", geneExpressionAnnotationId).getSingleResult();
+			annotations.add(geneExpressionAnnotation);
+			if (geneExpressionAnnotation.getCrossReferences() != null) {
+				for (CrossReference ref: geneExpressionAnnotation.getCrossReferences()) {
+					crossReferences.put(ref.getReferencedCurie(), ref);
+				}
+			}
 		}
 		geneExpressionExperiment.setExpressionAnnotations(annotations);
+		geneExpressionExperiment.getCrossReferences().addAll(crossReferences.values());
 
 		return geneExpressionExperimentDAO.persist(geneExpressionExperiment);
 	}

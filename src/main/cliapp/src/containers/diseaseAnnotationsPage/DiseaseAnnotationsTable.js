@@ -793,10 +793,10 @@ export const DiseaseAnnotationsTable = () => {
 	};
 
 	const onAssertedAlleleValueChange = (event, setFieldValue, props) => {
-		defaultAutocompleteOnChange(props, event, 'assertedAllele', setFieldValue, 'primaryExternalId');
+		multipleAutocompleteOnChange(props, event, 'assertedAlleles', setFieldValue);
 	};
 
-	const assertedAlleleSearch = (event, setFiltered, setQuery) => {
+	const assertedAllelesSearch = (event, setFiltered, setInputValue) => {
 		const autocompleteFields = [
 			'alleleSymbol.formatText',
 			'alleleSymbol.displayText',
@@ -811,21 +811,21 @@ export const DiseaseAnnotationsTable = () => {
 			'alleleSynonyms.displayText',
 		];
 		const endpoint = 'allele';
-		const filterName = 'assertedAlleleFilter';
+		const filterName = 'assertedAllelesFilter';
 		const filter = buildAutocompleteFilter(event, autocompleteFields);
-		setQuery(event.query);
+		setInputValue(event.query);
 		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered);
 	};
 
-	const assertedAlleleEditorTemplate = (props) => {
+	const assertedAllelesEditorTemplate = (props) => {
 		if (props.rowData.type === 'AGMDiseaseAnnotation') {
 			return (
 				<>
-					<AutocompleteEditor
-						search={assertedAlleleSearch}
-						initialValue={getIdentifier(props.rowData.assertedAllele)}
+					<AutocompleteMultiEditor
+						search={assertedAllelesSearch}
+						initialValue={props.rowData.assertedAlleles}
 						rowProps={props}
-						fieldName="assertedAllele"
+						fieldName="assertedAlleles"
 						subField="primaryExternalId"
 						valueDisplay={(item, setAutocompleteHoverItem, op, query) => (
 							<SubjectAutocompleteTemplate
@@ -839,11 +839,7 @@ export const DiseaseAnnotationsTable = () => {
 					/>
 					<ErrorMessageComponent
 						errorMessages={errorMessagesRef.current[props.rowIndex]}
-						errorField={'assertedAllele'}
-					/>
-					<ErrorMessageComponent
-						errorMessages={uiErrorMessagesRef.current[props.rowIndex]}
-						errorField={'assertedAllele'}
+						errorField={'assertedAlleles'}
 					/>
 				</>
 			);
@@ -1333,12 +1329,12 @@ export const DiseaseAnnotationsTable = () => {
 			filterConfig: FILTER_CONFIGS.inferredAlleleFilterConfig,
 		},
 		{
-			field: 'assertedAllele.alleleSymbol.displayText',
-			header: 'Asserted Allele',
-			body: (rowData) => <GenomicEntityTemplate genomicEntity={rowData.assertedAllele} />,
+			field: 'assertedAlleles.alleleSymbol.displayText',
+			header: 'Asserted Alleles',
+			body: (rowData) => <GenomicEntityListTemplate genomicEntities={rowData.assertedAlleles} />,
 			sortable: true,
-			filterConfig: FILTER_CONFIGS.assertedAlleleFilterConfig,
-			editor: (props) => assertedAlleleEditorTemplate(props),
+			filterConfig: FILTER_CONFIGS.assertedAllelesFilterConfig,
+			editor: (props) => assertedAllelesEditorTemplate(props),
 		},
 		{
 			field: 'dataProvider.abbreviation',

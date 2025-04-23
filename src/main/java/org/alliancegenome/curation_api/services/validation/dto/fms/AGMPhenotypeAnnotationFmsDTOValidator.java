@@ -20,8 +20,8 @@ import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.GenomicEntityService;
 import org.alliancegenome.curation_api.services.PhenotypeAnnotationService;
+import org.alliancegenome.curation_api.services.helpers.GenePhenotypeAnnotationXrefHelper;
 import org.alliancegenome.curation_api.services.helpers.annotations.AnnotationUniqueIdHelper;
-import org.alliancegenome.curation_api.services.helpers.crossReferences.GenePhenotypeAnnotationXrefHelper;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -58,7 +58,7 @@ public class AGMPhenotypeAnnotationFmsDTOValidator extends PhenotypeAnnotationFm
 		annotation.setPhenotypeAnnotationSubject(subject);
 
 		// Reset implied/asserted fields as secondary annotations loaded separately
-		annotation.setAssertedAllele(null);
+		annotation.setAssertedAlleles(null);
 		annotation.setAssertedGenes(null);
 		annotation.setInferredAllele(null);
 		annotation.setInferredGene(null);
@@ -123,10 +123,16 @@ public class AGMPhenotypeAnnotationFmsDTOValidator extends PhenotypeAnnotationFm
 				}
 			} else if (inferredOrAssertedEntity instanceof Allele) {
 				for (AGMPhenotypeAnnotation primaryAnnotation : primaryAnnotations) {
+					Allele inferredOrInsertedAllele = (Allele) inferredOrAssertedEntity;
 					if (dataProvider.hasInferredAllelePhenotypeAnnotations) {
-						primaryAnnotation.setInferredAllele((Allele) inferredOrAssertedEntity);
+						primaryAnnotation.setInferredAllele(inferredOrInsertedAllele);
 					} else if (dataProvider.hasAssertedAllelePhenotypeAnnotations) {
-						primaryAnnotation.setAssertedAllele((Allele) inferredOrAssertedEntity);
+						List<Allele> assertedAlleles = primaryAnnotation.getAssertedAlleles();
+						if (assertedAlleles == null) {
+							assertedAlleles = new ArrayList<>();
+						}
+						assertedAlleles.add(inferredOrInsertedAllele);
+						primaryAnnotation.setAssertedAlleles(assertedAlleles);
 					} else {
 						apaResponse.addErrorMessage("objectId", ValidationConstants.INVALID_MESSAGE + " (" + dto.getObjectId() + ")");
 					}

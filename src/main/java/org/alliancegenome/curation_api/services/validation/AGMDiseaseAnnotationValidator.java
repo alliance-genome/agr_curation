@@ -71,8 +71,8 @@ public class AGMDiseaseAnnotationValidator extends DiseaseAnnotationValidator {
 		Allele inferredAllele = validateEntity(alleleDAO, "inferredAllele", uiEntity.getInferredAllele(), dbEntity.getInferredAllele());
 		dbEntity.setInferredAllele(inferredAllele);
 
-		Allele assertedAllele = validateEntity(alleleDAO, "assertedAllele", uiEntity.getAssertedAllele(), dbEntity.getAssertedAllele());
-		dbEntity.setAssertedAllele(assertedAllele);
+		List<Allele> assertedAlleles = validateEntities(alleleDAO, "assertedAlleles", uiEntity.getAssertedAlleles(), dbEntity.getAssertedAlleles());
+		dbEntity.setAssertedAlleles(assertedAlleles);
 
 		VocabularyTerm relation = validateRequiredTermInVocabularyTermSet("relation", VocabularyConstants.AGM_DISEASE_RELATION_VOCABULARY_TERM_SET, uiEntity.getRelation(), dbEntity.getRelation());
 		dbEntity.setRelation(relation);
