@@ -109,4 +109,10 @@ public class AffectedGenomicModel extends GenomicEntity {
 	@JsonView({View.FieldsAndLists.class, View.AffectedGenomicModelDetailView.class})
 	private List<AgmAgmAssociation> parentalPopulations;
 
+	public String getFormatText() {
+		return name.replaceAll("<i>", "")
+			.replaceAll("</i>", "")
+			.replaceAll("<sup>", "[")
+			.replaceAll("</sup>", "]");
+	}
 }

@@ -18,7 +18,6 @@ public class DiseaseSearchResultDocument extends ESDocument {
 
 	private String curie;
 	private String definition;
-	String symbol;
 	String name;
 	Set<String> synonyms;
 	String primaryKey;
