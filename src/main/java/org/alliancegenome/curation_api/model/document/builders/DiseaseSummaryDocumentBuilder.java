@@ -109,7 +109,7 @@ public class DiseaseSummaryDocumentBuilder {
 	}
 
 	private String getModelName(AffectedGenomicModel model) {
-		return model.getFormatText() + getSpeciesAbbrev(model);
+		return model.getNameFormatText() + getSpeciesAbbrev(model);
 	}
 
 	private String getGeneName(Gene gene) {
