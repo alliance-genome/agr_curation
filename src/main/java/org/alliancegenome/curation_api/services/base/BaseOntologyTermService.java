@@ -339,12 +339,12 @@ public abstract class BaseOntologyTermService<E extends OntologyTerm, D extends 
 	}
 
 	private boolean sameSynonym(Synonym oldSyn, Synonym newSyn) {
-		return Objects.equals(oldSyn.getName(), newSyn.getName()) &&
-				Objects.equals(oldSyn.getIsDisplaySynonym(), newSyn.getIsDisplaySynonym()) &&
-				Objects.equals(oldSyn.getHasBroadSynonym(), newSyn.getHasBroadSynonym()) &&
-				Objects.equals(oldSyn.getHasExactSynonym(), newSyn.getHasExactSynonym()) &&
-				Objects.equals(oldSyn.getHasNarrowSynonym(), newSyn.getHasNarrowSynonym()) &&
-				Objects.equals(oldSyn.getHasRelatedSynonym(), newSyn.getHasRelatedSynonym());
+		return Objects.equals(oldSyn.getName(), newSyn.getName())
+				&& Objects.equals(oldSyn.getIsDisplaySynonym(), newSyn.getIsDisplaySynonym())
+				&& Objects.equals(oldSyn.getHasBroadSynonym(), newSyn.getHasBroadSynonym())
+				&& Objects.equals(oldSyn.getHasExactSynonym(), newSyn.getHasExactSynonym())
+				&& Objects.equals(oldSyn.getHasNarrowSynonym(), newSyn.getHasNarrowSynonym())
+				&& Objects.equals(oldSyn.getHasRelatedSynonym(), newSyn.getHasRelatedSynonym());
 	}
 
 	private void updateSynonym(Synonym oldSyn, Synonym newSyn) {
