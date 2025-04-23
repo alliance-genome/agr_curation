@@ -40,6 +40,8 @@ public class UniqueIdentifierHelper {
 			annotation.setPrimaryExternalId(null);
 			return annotationDTO.getModInternalId();
 		} else {
+			annotation.setPrimaryExternalId(null);
+			annotation.setModInternalId(null);
 			return uniqueId;
 		}
 	}
