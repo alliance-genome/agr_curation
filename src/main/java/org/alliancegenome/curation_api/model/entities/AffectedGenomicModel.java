@@ -110,7 +110,7 @@ public class AffectedGenomicModel extends GenomicEntity {
 	private List<AgmAgmAssociation> parentalPopulations;
 
 	public String getNameFormatText() {
-		if(name == null){
+		if (name == null) {
 			return null;
 		}
 		return name.replaceAll("<i>", "")
