@@ -41,7 +41,6 @@ public class DiseaseSummaryDocumentBuilder {
 		doc.setPrimaryKey(doTerm.getCurie());
 		doc.setSearchable(false);
 		doc.setDefinition(doTerm.getDefinition());
-		doc.setSymbol(doTerm.getName());
 		doc.setName(doTerm.getName());
 		doc.setNameKey(doTerm.getName());
 		doc.setSynonyms(doTerm.getSynonyms().stream().map(Synonym::getName).collect(Collectors.toSet()));
@@ -84,7 +83,10 @@ public class DiseaseSummaryDocumentBuilder {
 			Set<Gene> assertedGenes = getMultipleAlleles(alleleDiseaseAnnotations, AlleleDiseaseAnnotation::getAssertedGenes);
 			allInvolvedGenes.addAll(assertedGenes);
 			doc.getGenes().addAll(assertedGenes.stream().map(this::getGeneName).collect(Collectors.toSet()));
-			doc.getAlleles().addAll(alleleDiseaseAnnotations.stream().filter(alleleDiseaseAnnotation -> alleleDiseaseAnnotation.getDiseaseAnnotationSubject().getAlleleSymbol() != null).map(alleleDiseaseAnnotation -> getAlleleName(alleleDiseaseAnnotation.getDiseaseAnnotationSubject())).collect(Collectors.toSet()));
+			doc.getAlleles().addAll(alleleDiseaseAnnotations.stream()
+				.filter(alleleDiseaseAnnotation -> alleleDiseaseAnnotation.getDiseaseAnnotationSubject().getAlleleSymbol() != null)
+				.map(alleleDiseaseAnnotation -> getAlleleName(alleleDiseaseAnnotation.getDiseaseAnnotationSubject())).collect(Collectors.toSet())
+			);
 		}
 
 		// add orthologous genes for the all-involved genes (only
@@ -107,7 +109,7 @@ public class DiseaseSummaryDocumentBuilder {
 	}
 
 	private String getModelName(AffectedGenomicModel model) {
-		return model.getName() + getSpeciesAbbrev(model);
+		return model.getNameFormatText() + getSpeciesAbbrev(model);
 	}
 
 	private String getGeneName(Gene gene) {
