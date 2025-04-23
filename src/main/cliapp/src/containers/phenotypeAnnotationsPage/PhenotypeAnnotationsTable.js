@@ -152,11 +152,11 @@ export const PhenotypeAnnotationsTable = () => {
 			filterConfig: FILTER_CONFIGS.inferredAlleleFilterConfig,
 		},
 		{
-			field: 'assertedAllele.alleleSymbol.displayText',
-			header: 'Asserted Allele',
-			body: (rowData) => <GenomicEntityTemplate genomicEntity={rowData.assertedAllele} />,
+			field: 'assertedAlleles.alleleSymbol.displayText',
+			header: 'Asserted Alleles',
+			body: (rowData) => <GenomicEntityListTemplate genomicEntities={rowData.assertedAlleles} />,
 			sortable: true,
-			filterConfig: FILTER_CONFIGS.assertedAlleleFilterConfig,
+			filterConfig: FILTER_CONFIGS.assertedAllelesFilterConfig,
 		},
 		{
 			field: 'dataProvider.abbreviation',

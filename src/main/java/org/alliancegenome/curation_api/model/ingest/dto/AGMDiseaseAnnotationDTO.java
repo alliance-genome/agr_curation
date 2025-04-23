@@ -14,7 +14,7 @@ import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-@AGRCurationSchemaVersion(min = "2.0.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { DiseaseAnnotationDTO.class }, submitted = true)
+@AGRCurationSchemaVersion(min = "2.11.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { DiseaseAnnotationDTO.class }, submitted = true)
 public class AGMDiseaseAnnotationDTO extends DiseaseAnnotationDTO {
 
 	@JsonView({ View.FieldsOnly.class })
@@ -34,7 +34,7 @@ public class AGMDiseaseAnnotationDTO extends DiseaseAnnotationDTO {
 	private List<String> assertedGeneIdentifiers;
 
 	@JsonView({ View.FieldsOnly.class })
-	@JsonProperty("asserted_allele_identifier")
-	private String assertedAlleleIdentifier;
+	@JsonProperty("asserted_allele_identifiers")
+	private List<String> assertedAlleleIdentifiers;
 
 }

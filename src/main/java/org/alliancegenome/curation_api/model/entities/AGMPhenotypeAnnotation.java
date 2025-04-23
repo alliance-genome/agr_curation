@@ -34,10 +34,9 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @Schema(name = "AGM_Phenotype_Annotation", description = "Annotation class representing a agm phenotype annotation")
 @JsonTypeName("AGMPhenotypeAnnotation")
-@AGRCurationSchemaVersion(min = "2.2.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { PhenotypeAnnotation.class })
+@AGRCurationSchemaVersion(min = "2.11.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { PhenotypeAnnotation.class })
 
 @Table(indexes = {
-	@Index(name = "AGMPhenotypeAnnotation_assertedAllele_index", columnList = "assertedAllele_id"),
 	@Index(name = "AGMPhenotypeAnnotation_inferredAllele_index", columnList = "inferredAllele_id"),
 	@Index(name = "AGMPhenotypeAnnotation_inferredGene_index", columnList = "inferredGene_id"),
 	@Index(name = "AGMPhenotypeAnnotation_phenotypeAnnotationSubject_index", columnList = "phenotypeAnnotationSubject_id")
@@ -110,10 +109,18 @@ public class AGMPhenotypeAnnotation extends PhenotypeAnnotation {
 			"alleleSecondaryIds.secondaryId", "alleleSecondaryIds.secondaryId_keyword"
 	})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
-	@ManyToOne
+	@ManyToMany
 	@Fetch(FetchMode.SELECT)
-	@JsonView({ View.FieldsOnly.class, View.ForPublic.class })
-	private Allele assertedAllele;
+	@JsonView({ View.FieldsAndLists.class, View.PhenotypeAnnotationView.class, View.ForPublic.class })
+	@JoinTable(
+		joinColumns = @JoinColumn(name = "agmphenotypeannotation_id"),
+		inverseJoinColumns = @JoinColumn(name = "assertedalleles_id"),
+		indexes = {
+			@Index(name = "agmphenotypeannotation_allele_agmpa_index", columnList = "agmphenotypeannotation_id"),
+			@Index(name = "agmphenotypeannotation_allele_assertedalleles_index", columnList = "assertedalleles_id")
+		}
+	)
+	private List<Allele> assertedAlleles;
 
 	@Transient
 	@Override
