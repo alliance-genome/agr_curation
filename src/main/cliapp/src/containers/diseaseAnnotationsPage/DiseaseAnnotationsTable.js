@@ -823,7 +823,7 @@ export const DiseaseAnnotationsTable = () => {
 				<>
 					<AutocompleteMultiEditor
 						search={assertedAllelesSearch}
-						initialValue={getIdentifier(props.rowData.assertedAlleles)}
+						initialValue={props.rowData.assertedAlleles}
 						rowProps={props}
 						fieldName="assertedAlleles"
 						subField="primaryExternalId"
@@ -1331,7 +1331,7 @@ export const DiseaseAnnotationsTable = () => {
 		{
 			field: 'assertedAlleles.alleleSymbol.displayText',
 			header: 'Asserted Alleles',
-			body: (rowData) => <GenomicEntityListTemplate genomicEntity={rowData.assertedAlleles} />,
+			body: (rowData) => <GenomicEntityListTemplate genomicEntities={rowData.assertedAlleles} />,
 			sortable: true,
 			filterConfig: FILTER_CONFIGS.assertedAllelesFilterConfig,
 			editor: (props) => assertedAllelesEditorTemplate(props),

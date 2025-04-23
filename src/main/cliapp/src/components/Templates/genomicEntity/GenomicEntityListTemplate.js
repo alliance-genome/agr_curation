@@ -3,6 +3,7 @@ import { getGenomicEntityText, getIdentifier } from '../../../utils/utils';
 import { Tooltip } from 'primereact/tooltip';
 
 export const GenomicEntityListTemplate = ({ genomicEntities }) => {
+	console.log(genomicEntities)
 	if (!genomicEntities || genomicEntities.length === 0) return null;
 
 	const targetClass = `a${global.crypto.randomUUID()}`;
