@@ -30,7 +30,8 @@ import lombok.ToString;
 		@Index(name = "synonym_createdby_index", columnList = "createdBy_id"),
 		@Index(name = "synonym_updatedby_index", columnList = "updatedBy_id")
 })
-@AGRCurationSchemaVersion(min = "1.2.4", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AuditedObject.class })
+@AGRCurationSchemaVersion(min = "1.2.4", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = {
+		AuditedObject.class })
 public class Synonym extends AuditedObject {
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
@@ -38,4 +39,19 @@ public class Synonym extends AuditedObject {
 	@JsonView({ View.FieldsOnly.class, View.DiseaseSummaryDocument.class })
 	@Column(columnDefinition = "TEXT")
 	private String name;
+
+	@JsonView({ View.FieldsOnly.class })
+	private Boolean isDisplaySynonym = false;
+
+	@JsonView({ View.FieldsOnly.class })
+	private Boolean hasExactSynonym = false;
+
+	@JsonView({ View.FieldsOnly.class })
+	private Boolean hasRelatedSynonym = false;
+
+	@JsonView({ View.FieldsOnly.class })
+	private Boolean hasNarrowSynonym = false;
+
+	@JsonView({ View.FieldsOnly.class })
+	private Boolean hasBroadSynonym = false;
 }
