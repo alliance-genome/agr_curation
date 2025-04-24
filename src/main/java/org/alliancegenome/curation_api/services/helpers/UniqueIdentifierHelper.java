@@ -23,6 +23,16 @@ public class UniqueIdentifierHelper {
 		}
 	}
 
+	public static <E extends AnnotationDTO> String getAnnotationIdentifier(E annotationDTO, String uniqueId) {
+		if (StringUtils.isNotBlank(annotationDTO.getPrimaryExternalId())) {
+			return annotationDTO.getPrimaryExternalId();
+		} else if (StringUtils.isNotBlank(annotationDTO.getModInternalId())) {
+			return annotationDTO.getModInternalId();
+		} else {
+			return uniqueId;
+		}
+	}
+
 	public static void setObsoleteAndInternal(DiseaseAnnotationDTO dto, AuditedObject annotation) {
 		// default obsolete value: false
 		annotation.setObsolete(dto.getObsolete() != null && dto.getObsolete());
@@ -30,19 +40,17 @@ public class UniqueIdentifierHelper {
 		annotation.setInternal(dto.getInternal() != null && dto.getInternal());
 	}
 
-	public static <E extends AnnotationDTO, F extends Annotation> String setAnnotationIdentifiers(E annotationDTO, F annotation, String uniqueId) {
+	public static <E extends AnnotationDTO, F extends Annotation> void setAnnotationIdentifiers(E annotationDTO, F annotation, String uniqueId) {
+		annotation.setUniqueId(uniqueId);
 		if (StringUtils.isNotBlank(annotationDTO.getPrimaryExternalId())) {
 			annotation.setPrimaryExternalId(annotationDTO.getPrimaryExternalId());
 			annotation.setModInternalId(null);
-			return annotationDTO.getPrimaryExternalId();
 		} else if (StringUtils.isNotBlank(annotationDTO.getModInternalId())) {
 			annotation.setModInternalId(annotationDTO.getModInternalId());
 			annotation.setPrimaryExternalId(null);
-			return annotationDTO.getModInternalId();
 		} else {
 			annotation.setPrimaryExternalId(null);
 			annotation.setModInternalId(null);
-			return uniqueId;
 		}
 	}
 
