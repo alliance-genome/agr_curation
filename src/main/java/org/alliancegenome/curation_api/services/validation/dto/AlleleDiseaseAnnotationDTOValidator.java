@@ -43,12 +43,10 @@ public class AlleleDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOVal
 
 		if (allele != null) {
 			String uniqueId = AnnotationUniqueIdHelper.getDiseaseAnnotationUniqueId(dto, dto.getAlleleIdentifier(), refCurie);
-			String annotationId = UniqueIdentifierHelper.setAnnotationIdentifiers(dto, annotation, uniqueId);
-			String identifyingField = UniqueIdentifierHelper.getIdentifyingField(dto);
-
-			SearchResponse<AlleleDiseaseAnnotation> annotationList = alleleDiseaseAnnotationDAO.findByField(identifyingField, annotationId);
+			
+			SearchResponse<AlleleDiseaseAnnotation> annotationList = alleleDiseaseAnnotationDAO.findByField(UniqueIdentifierHelper.getIdentifyingField(dto), UniqueIdentifierHelper.getAnnotationIdentifier(dto, uniqueId));
 			annotation = AnnotationRetrievalHelper.getCurrentAnnotation(annotation, annotationList);
-			annotation.setUniqueId(uniqueId);
+			UniqueIdentifierHelper.setAnnotationIdentifiers(dto, annotation, uniqueId);
 			annotation.setDiseaseAnnotationSubject(allele);
 			UniqueIdentifierHelper.setObsoleteAndInternal(dto, annotation);
 
