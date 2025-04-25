@@ -22,7 +22,7 @@ export const data = {
 					id: 20308691,
 					name: 'full_name',
 					definition: 'The full length name of an entity: e.g., broad angular dumpy.',
-				}
+				},
 			},
 			agmSynonyms: [
 				{
@@ -40,7 +40,7 @@ export const data = {
 					},
 					formatText: 'VC-4532a',
 					displayText: 'VC-4532a',
-				}
+				},
 			],
 			agmSecondaryIds: [
 				{
@@ -77,7 +77,7 @@ export const data = {
 					id: 20308691,
 					name: 'full_name',
 					definition: 'The full length name of an entity: e.g., broad angular dumpy.',
-				}
+				},
 			},
 			subtype: { internal: false, obsolete: false, id: 25575353, name: 'strain' },
 		},
@@ -105,7 +105,7 @@ export const data = {
 					id: 20308691,
 					name: 'full_name',
 					definition: 'The full length name of an entity: e.g., broad angular dumpy.',
-				}
+				},
 			},
 			subtype: { internal: false, obsolete: false, id: 25575353, name: 'strain' },
 		},

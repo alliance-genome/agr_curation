@@ -32,7 +32,7 @@ export const AffectedGenomicModelTable = () => {
 		rowIndex: null,
 		mainRowProps: {},
 	});
-	
+
 	const [symbolData, setSymbolData] = useState({
 		dialog: false,
 	});
