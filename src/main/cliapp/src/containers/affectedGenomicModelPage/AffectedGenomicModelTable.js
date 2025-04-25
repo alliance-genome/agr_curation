@@ -12,8 +12,8 @@ import { useGetUserSettings } from '../../service/useGetUserSettings';
 
 import { SearchService } from '../../service/SearchService';
 import { OntologyTermTemplate } from '../../components/Templates/OntologyTermTemplate';
-import { StringListTemplate } from '../../components/Templates/StringListTemplate';
 import { ListDialogTemplate } from '../../components/Templates/dialog/ListDialogTemplate';
+import { TextDialogTemplate } from '../../components/Templates/dialog/TextDialogTemplate';
 import { SecondaryIdsDialog } from '../allelesPage/secondaryIds/SecondaryIdsDialog';
 
 export const AffectedGenomicModelTable = () => {
@@ -32,6 +32,32 @@ export const AffectedGenomicModelTable = () => {
 		rowIndex: null,
 		mainRowProps: {},
 	});
+	
+	const [symbolData, setSymbolData] = useState({
+		dialog: false,
+	});
+
+	const [fullNameData, setFullNameData] = useState({
+		dialog: false,
+	});
+
+	const handleFullNameOpen = (agmFullName) => {
+		let _fullNameData = {};
+		_fullNameData['originalFullNames'] = [agmFullName];
+		_fullNameData['dialog'] = true;
+		setFullNameData(() => ({
+			..._fullNameData,
+		}));
+	};
+
+	const handleSynonymsOpen = (agmSynonyms) => {
+		let _synonymsData = {};
+		_synonymsData['originalSynonyms'] = agmSynonyms;
+		_synonymsData['dialog'] = true;
+		setSynonymsData(() => ({
+			..._synonymsData,
+		}));
+	};
 
 	const handleSecondaryIdsOpen = (alleleSecondaryIds) => {
 		let _secondaryIdsData = {};
@@ -65,18 +91,33 @@ export const AffectedGenomicModelTable = () => {
 			filterConfig: FILTER_CONFIGS.modinternalidFilterConfig,
 		},
 		{
-			field: 'name',
+			field: 'agmFullName.displayText',
 			header: 'Name',
-			body: (rowData) => <StringTemplate string={rowData.name} />,
 			sortable: true,
-			filterConfig: FILTER_CONFIGS.nameFilterConfig,
+			filter: true,
+			body: (rowData) => (
+				<TextDialogTemplate
+					entity={rowData.agmFullName}
+					handleOpen={handleFullNameOpen}
+					text={rowData.agmFullName?.displayText}
+					underline={false}
+				/>
+			),
+			filterConfig: FILTER_CONFIGS.agmNameFilterConfig,
 		},
 		{
-			field: 'synonyms',
+			field: 'agmSynonyms.displayText',
 			header: 'Synonyms',
 			sortable: true,
-			filterConfig: FILTER_CONFIGS.synonymsFilterConfig,
-			body: (rowData) => <StringListTemplate list={rowData.synonyms} />,
+			body: (rowData) => (
+				<ListDialogTemplate
+					entities={rowData.agmSynonyms}
+					handleOpen={handleSynonymsOpen}
+					getTextField={(entity) => entity?.displayText}
+					underline={false}
+				/>
+			),
+			filterConfig: FILTER_CONFIGS.agmSynonymsFilterConfig,
 		},
 		{
 			field: 'agmSecondaryIds.secondaryId',

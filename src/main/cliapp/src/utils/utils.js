@@ -153,6 +153,7 @@ export const getGenomicEntityText = (genomicEntity) => {
 	if (genomicEntity.alleleSymbol) return genomicEntity.alleleSymbol.displayText;
 	if (genomicEntity.geneFullName) return genomicEntity.geneFullName.displayText;
 	if (genomicEntity.alleleFullName) return genomicEntity.alleleFullName.displayText;
+	if (genomicEntity.agmFullName) return genomicEntity.agmFullName.displayText;
 	if (genomicEntity.name) return genomicEntity.name;
 	return null;
 };
@@ -160,6 +161,7 @@ export const getGenomicEntityText = (genomicEntity) => {
 export const getGenomicEntityName = (genomicEntity) => {
 	if (genomicEntity.geneFullName) return genomicEntity.geneFullName.displayText;
 	if (genomicEntity.alleleFullName) return genomicEntity.alleleFullName.displayText;
+	if (genomicEntity.agmFullName) return genomicEntity.agmFullName.displayText;
 	if (genomicEntity.name) return genomicEntity.name;
 	return null;
 };

@@ -21,6 +21,12 @@ export const EditorTooltip = ({ op, autocompleteHoverItem }) => {
 						dangerouslySetInnerHTML={{ __html: 'Name: ' + autocompleteHoverItem.name }}
 					/>
 				)}
+				{autocompleteHoverItem.agmFullName?.displayText && (
+					<div
+						key={`agmfullname${autocompleteHoverItem.agmFullName.displayText.replace(/[^a-z0-9]/gi, '')}`}
+						dangerouslySetInnerHTML={{ __html: 'Name: ' + autocompleteHoverItem.agmFullName.displayText }}
+					/>
+				)}
 				{autocompleteHoverItem.geneFullName?.displayText && (
 					<div
 						key={`genefullname${autocompleteHoverItem.geneFullName.displayText.replace(/[^a-z0-9]/gi, '')}`}
@@ -70,6 +76,13 @@ export const EditorTooltip = ({ op, autocompleteHoverItem }) => {
 							Synonym: {syn.name ? syn.name : syn}
 						</div>
 					))}
+				{autocompleteHoverItem.agmSynonyms &&
+					autocompleteHoverItem.agmSynonyms.map((syn) => (
+						<div
+							key={`agmsynonyms${syn.displayText.replace(/[^a-z0-9]/gi, '')}`}
+							dangerouslySetInnerHTML={{ __html: 'Synonym: ' + syn.displayText }}
+						/>
+					))}
 				{autocompleteHoverItem.geneSynonyms &&
 					autocompleteHoverItem.geneSynonyms.map((syn) => (
 						<div
@@ -82,6 +95,13 @@ export const EditorTooltip = ({ op, autocompleteHoverItem }) => {
 						<div
 							key={`allelesynonyms${syn.displayText.replace(/[^a-z0-9]/gi, '')}`}
 							dangerouslySetInnerHTML={{ __html: 'Synonym: ' + syn.displayText }}
+						/>
+					))}
+				{autocompleteHoverItem.agmSecondaryIds &&
+					autocompleteHoverItem.agmSecondaryIds.map((sid) => (
+						<div
+							key={`agmsecondaryIds${sid.secondaryId.replace(/[^a-z0-9]/gi, '')}`}
+							dangerouslySetInnerHTML={{ __html: 'Secondary ID: ' + sid.secondaryId }}
 						/>
 					))}
 				{autocompleteHoverItem.alleleSecondaryIds &&

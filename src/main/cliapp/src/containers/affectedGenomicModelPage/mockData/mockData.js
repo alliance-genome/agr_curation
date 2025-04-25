@@ -8,7 +8,50 @@ export const data = {
 			dbDateUpdated: '2022-12-22T15:16:30.834738Z',
 			primaryExternalId: 'WB:WBStrain00051221',
 			taxon: { internal: false, obsolete: false, curie: 'NCBITaxon:6239', name: 'Caenorhabditis elegans' },
-			name: 'VC4532',
+			agmFullName: {
+				displayText: 'VC4532',
+				formatText: 'VC4532',
+				internal: false,
+				obsolete: false,
+				dbDateCreated: '2023-01-31T00:25:54.894681Z',
+				dbDateUpdated: '2023-05-16T12:31:21.971837Z',
+				id: 27221302,
+				nameType: {
+					internal: false,
+					obsolete: false,
+					id: 20308691,
+					name: 'full_name',
+					definition: 'The full length name of an entity: e.g., broad angular dumpy.',
+				}
+			},
+			agmSynonyms: [
+				{
+					internal: false,
+					obsolete: false,
+					dbDateCreated: '2023-01-31T00:25:54.895616Z',
+					dbDateUpdated: '2023-05-16T12:31:21.973794Z',
+					id: 27221304,
+					nameType: {
+						internal: false,
+						obsolete: false,
+						id: 20308697,
+						name: 'unspecified',
+						definition: 'Unclassified name',
+					},
+					formatText: 'VC-4532a',
+					displayText: 'VC-4532a',
+				}
+			],
+			agmSecondaryIds: [
+				{
+					internal: false,
+					obsolete: false,
+					dbDateCreated: '2023-05-16T12:31:21.970332Z',
+					dbDateUpdated: '2023-05-16T12:31:21.970334Z',
+					id: 79690914,
+					secondaryId: 'WB:WBStrain10051221',
+				},
+			],
 			subtype: { internal: false, obsolete: false, id: 25575353, name: 'strain' },
 		},
 		{
@@ -20,7 +63,22 @@ export const data = {
 			dbDateUpdated: '2022-12-22T15:10:00.706858Z',
 			primaryExternalId: 'RGD:1581633',
 			taxon: { internal: false, obsolete: false, curie: 'NCBITaxon:10116', name: 'Rattus norvegicus' },
-			name: 'DA.ACI-(<i>D15Rat6-D15Rat71</i>)/Kini',
+			agmFullName: {
+				displayText: 'DA.ACI-(<i>D15Rat6-D15Rat71</i>)/Kini',
+				formatText: 'DA.ACI-(D15Rat6-D15Rat71)/Kini',
+				internal: false,
+				obsolete: false,
+				dbDateCreated: '2023-01-31T00:25:54.894681Z',
+				dbDateUpdated: '2023-05-16T12:31:21.971837Z',
+				id: 27221303,
+				nameType: {
+					internal: false,
+					obsolete: false,
+					id: 20308691,
+					name: 'full_name',
+					definition: 'The full length name of an entity: e.g., broad angular dumpy.',
+				}
+			},
 			subtype: { internal: false, obsolete: false, id: 25575353, name: 'strain' },
 		},
 		{
@@ -33,6 +91,22 @@ export const data = {
 			primaryExternalId: 'RGD:150404267',
 			taxon: { internal: false, obsolete: false, curie: 'NCBITaxon:10116', name: 'Rattus norvegicus' },
 			name: 'LEW-<i>Myo15a<sup>ci2</sup></i>/Ztm',
+			agmFullName: {
+				displayText: 'LEW-<i>Myo15a<sup>ci2</sup></i>/Ztm',
+				formatText: 'LEW-Myo15a[ci2]/Ztm',
+				internal: false,
+				obsolete: false,
+				dbDateCreated: '2023-01-31T00:25:54.894681Z',
+				dbDateUpdated: '2023-05-16T12:31:21.971837Z',
+				id: 27221304,
+				nameType: {
+					internal: false,
+					obsolete: false,
+					id: 20308691,
+					name: 'full_name',
+					definition: 'The full length name of an entity: e.g., broad angular dumpy.',
+				}
+			},
 			subtype: { internal: false, obsolete: false, id: 25575353, name: 'strain' },
 		},
 	],
