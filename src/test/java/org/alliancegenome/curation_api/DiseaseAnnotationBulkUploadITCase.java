@@ -144,12 +144,12 @@ public class DiseaseAnnotationBulkUploadITCase extends BaseITCase {
 		createAllele(allele2, "TestAllele2", "NCBITaxon:6239", symbolTerm, false, dataProvider);
 		createAllele(ratAllele, "TestAllele3", "NCBITaxon:10116", symbolTerm, false, ratDataProvider);
 		createAllele(humanAllele, "TestAllele4", "NCBITaxon:9606", symbolTerm, false, ratDataProvider);
-		createAffectedGenomicModel(agm, "Test AGM", "NCBITaxon:6239", "fish", false, dataProvider);
-		createAffectedGenomicModel(agm2, "Test AGM2", "NCBITaxon:6239", "genotype", false, dataProvider);
-		createAffectedGenomicModel(ratAgm, "TestAGM3", "NCBITaxon:10116", "genotype", false, ratDataProvider);
-		createAffectedGenomicModel(humanAgm, "TestAGM4", "NCBITaxon:9606", "genotype", false, ratDataProvider);
-		createAffectedGenomicModel(sgdBackgroundStrain, "Test SGD AGM", "NCBITaxon:559292", "strain", false, dataProvider);
-		createAffectedGenomicModel(sgdBackgroundStrain2, "Test SGD AGM2", "NCBITaxon:559292", "strain", false, dataProvider);
+		createAffectedGenomicModel(agm, "NCBITaxon:6239", "fish", false, dataProvider);
+		createAffectedGenomicModel(agm2, "NCBITaxon:6239", "genotype", false, dataProvider);
+		createAffectedGenomicModel(ratAgm, "NCBITaxon:10116", "genotype", false, ratDataProvider);
+		createAffectedGenomicModel(humanAgm, "NCBITaxon:9606", "genotype", false, ratDataProvider);
+		createAffectedGenomicModel(sgdBackgroundStrain, "NCBITaxon:559292", "strain", false, dataProvider);
+		createAffectedGenomicModel(sgdBackgroundStrain2, "NCBITaxon:559292", "strain", false, dataProvider);
 		createReference(reference, referenceXref);
 		
 		Vocabulary noteTypeVocabulary = getVocabulary(VocabularyConstants.NOTE_TYPE_VOCABULARY);

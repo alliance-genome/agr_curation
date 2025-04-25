@@ -89,8 +89,6 @@ public class Variant extends GenomicEntity {
 	private List<AlleleVariantAssociation> alleleVariantAssociations;
 
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
-	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
-	@KeywordField(name = "synonyms_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
 	@ElementCollection
 	@JoinTable(indexes = @Index(name = "variant_synonyms_variant_index", columnList = "variant_id"))
 	@JsonView({ View.FieldsAndLists.class, View.VariantView.class })
