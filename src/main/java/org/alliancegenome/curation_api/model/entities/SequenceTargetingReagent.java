@@ -57,8 +57,6 @@ public class SequenceTargetingReagent extends GenomicEntity {
 	@JsonView({ View.FieldsAndLists.class, View.SequenceTargetingReagentView.class })
 	private List<Reference> references;
 
-	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
-	@KeywordField(name = "synonyms_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
 	@ElementCollection
 	@JoinTable(indexes = @Index(name = "sqtr_synonyms_sqtr_index", columnList = "sequencetargetingreagent_id"))
 	@JsonView({ View.FieldsAndLists.class, View.SequenceTargetingReagentView.class })

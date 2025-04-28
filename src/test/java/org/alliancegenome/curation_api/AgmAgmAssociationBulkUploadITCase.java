@@ -45,8 +45,8 @@ public class AgmAgmAssociationBulkUploadITCase extends BaseITCase {
 
 	private void loadRequiredEntities() {
 		Organization dataProvider = getOrganization("ZFIN");
-		agmSubject = createAffectedGenomicModel(agmSubjectCurie, "test name subject", "NCBITaxon:7955", "fish", false, dataProvider);
-		agmObject = createAffectedGenomicModel(agmObjectCurie, "test name object", "NCBITaxon:7955", "fish", false, dataProvider);
+		agmSubject = createAffectedGenomicModel(agmSubjectCurie, "NCBITaxon:7955", "fish", false, dataProvider);
+		agmObject = createAffectedGenomicModel(agmObjectCurie, "NCBITaxon:7955", "fish", false, dataProvider);
 	}
 	
 	@Test

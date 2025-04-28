@@ -545,7 +545,13 @@ export const DiseaseAnnotationsTable = () => {
 	const getSubjectAutocompleteFields = (props) => {
 		let subjectFields = ['curie', 'primaryExternalId', 'modInternalId', 'crossReferences.referencedCurie'];
 		if (props.rowData.type === 'AGMDiseaseAnnotation') {
-			subjectFields.push('name');
+			subjectFields.push(
+				'agmFullName.formatText',
+				'agmFullName.displayText',
+				'agmSynonyms.formatText',
+				'agmSynonyms.displayText',
+				'agmSecondaryIds.secondaryId'
+			);
 		} else if (props.rowData.type === 'AlleleDiseaseAnnotation') {
 			subjectFields.push(
 				'alleleFullName.formatText',
