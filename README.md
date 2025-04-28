@@ -861,4 +861,3 @@ Current maintainers:
 *  [Manuel Luypaert](https://github.com/mluypaert)
 *  [Olin Blodgett](https://github.com/oblodgett)
 
-
