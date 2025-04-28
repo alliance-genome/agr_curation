@@ -10,6 +10,7 @@ import org.alliancegenome.curation_api.model.entities.associations.geneAssociati
 import org.alliancegenome.curation_api.model.entities.associations.sequenceTargetingReagentAssociations.SequenceTargetingReagentGeneAssociation;
 import org.alliancegenome.curation_api.model.entities.associations.transcriptAssociations.TranscriptGeneAssociation;
 import org.alliancegenome.curation_api.model.entities.ontology.SOTerm;
+import org.alliancegenome.curation_api.model.entities.orthology.GeneToGeneOrthologyGenerated;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.geneSlotAnnotations.GeneFullNameSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.geneSlotAnnotations.GeneSecondaryIdSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.geneSlotAnnotations.GeneSymbolSlotAnnotation;
@@ -29,6 +30,7 @@ import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Index;
 import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
@@ -41,8 +43,26 @@ import lombok.ToString;
 @Entity
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
-@ToString(exclude = { "geneDiseaseAnnotations", "geneExpressionAnnotations", "geneGeneAssociations", "geneSymbol", "geneFullName", "geneSystematicName", "geneSynonyms", "geneSecondaryIds",
-		"geneGenomicLocationAssociations", "alleleGeneAssociations", "sequenceTargetingReagentGeneAssociations", "transcriptGeneAssociations", "constructGenomicEntityAssociations" }, callSuper = true)
+@ToString(exclude = {
+		"geneDiseaseAnnotations",
+		"geneExpressionAnnotations",
+		"genePhenotypeAnnotations",
+		"allelePhenotypeInferredGeneAnnotations",
+		"agmPhenotypeInferredGeneAnnotations",
+		"allelePhenotypeAssertedGeneAnnotations",
+		"agmPhenotypeAssertedGeneAnnotations",
+		"geneOntologyAnnotations",
+		"geneToGeneOrthologyGenerateds",
+		"geneSymbol",
+		"geneFullName",
+		"geneSystematicName",
+		"geneSynonyms",
+		"geneSecondaryIds",
+		"geneGenomicLocationAssociations",
+		"alleleGeneAssociations",
+		"sequenceTargetingReagentGeneAssociations",
+		"transcriptGeneAssociations",
+		"constructGenomicEntityAssociations" }, callSuper = true)
 @Schema(name = "Gene", description = "POJO that represents the Gene")
 @AGRCurationSchemaVersion(min = "1.5.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { GenomicEntity.class }, partial = true)
 @Table(indexes = { @Index(name = "gene_genetype_index", columnList = "geneType_id") })
@@ -52,48 +72,63 @@ public class Gene extends GenomicEntity {
 			"curie_keyword", "name_keyword", "secondaryIdentifiers_keyword", "synonyms.name_keyword", "namespace_keyword" })
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@JsonView({ View.FieldsOnly.class })
+	@JsonView({ View.FieldsOnly.class, View.GeneSummaryDocument.class })
 	private SOTerm geneType;
-
-	@JsonView({ View.GeneToGeneOrthologyForIndexer.class })
+	
 	@OneToMany(mappedBy = "diseaseAnnotationSubject", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<GeneDiseaseAnnotation> geneDiseaseAnnotations;
-
-	@JsonView({ View.GeneToGeneOrthologyForIndexer.class })
+	
 	@OneToMany(mappedBy = "expressionAnnotationSubject", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<GeneExpressionAnnotation> geneExpressionAnnotations;
 	
+	// Back references to all classes for ES documents
+	@OneToMany(mappedBy = "phenotypeAnnotationSubject", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<GenePhenotypeAnnotation> genePhenotypeAnnotations;
+	@OneToMany(mappedBy = "inferredGene", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<AllelePhenotypeAnnotation> allelePhenotypeInferredGeneAnnotations;
+	@OneToMany(mappedBy = "inferredGene", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<AGMPhenotypeAnnotation> agmPhenotypeInferredGeneAnnotations;
+	@ManyToMany(mappedBy = "assertedGenes", cascade = CascadeType.ALL)
+	private List<AllelePhenotypeAnnotation> allelePhenotypeAssertedGeneAnnotations;
+	@ManyToMany(mappedBy = "assertedGenes", cascade = CascadeType.ALL)
+	private List<AGMPhenotypeAnnotation> agmPhenotypeAssertedGeneAnnotations;
+	
+	@OneToMany(mappedBy = "singleGene", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<GeneOntologyAnnotation> geneOntologyAnnotations;
+	@OneToMany(mappedBy = "subjectGene", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<GeneToGeneOrthologyGenerated> geneToGeneOrthologyGenerateds;
+
 	//@OneToMany(mappedBy = "geneAssociationSubject", cascade = CascadeType.ALL, orphanRemoval = true)
 	//private List<GeneGeneAssociation> geneGeneAssociations;
 
 	@IndexedEmbedded(includePaths = { "displayText", "formatText", "nameType.name", "synonymScope.name", "evidence.curie", "displayText_keyword", "formatText_keyword", "nameType.name_keyword", "synonymScope.name_keyword", "evidence.curie_keyword"})
 	@OneToOne(mappedBy = "singleGene", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonManagedReference
-	@JsonView({ View.FieldsOnly.class, View.ForPublic.class, View.GeneToGeneOrthologyForIndexer.class })
+	@JsonView({ View.FieldsOnly.class, View.ForPublic.class, View.GeneToGeneOrthologyDocument.class, View.GeneSummaryDocument.class })
 	private GeneSymbolSlotAnnotation geneSymbol;
 
 	@IndexedEmbedded(includePaths = { "displayText", "formatText", "nameType.name", "synonymScope.name", "evidence.curie", "displayText_keyword", "formatText_keyword", "nameType.name_keyword", "synonymScope.name_keyword", "evidence.curie_keyword"})
 	@OneToOne(mappedBy = "singleGene", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonManagedReference
-	@JsonView({ View.FieldsOnly.class, View.ForPublic.class })
+	@JsonView({ View.FieldsOnly.class, View.ForPublic.class, View.GeneSummaryDocument.class })
 	private GeneFullNameSlotAnnotation geneFullName;
 
 	@IndexedEmbedded(includePaths = { "displayText", "formatText", "nameType.name", "synonymScope.name", "evidence.curie", "displayText_keyword", "formatText_keyword", "nameType.name_keyword", "synonymScope.name_keyword", "evidence.curie_keyword"})
 	@OneToOne(mappedBy = "singleGene", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonManagedReference
-	@JsonView({ View.FieldsOnly.class })
+	@JsonView({ View.FieldsOnly.class, View.GeneSummaryDocument.class })
 	private GeneSystematicNameSlotAnnotation geneSystematicName;
 
 	@IndexedEmbedded(includePaths = { "displayText", "formatText", "nameType.name", "synonymScope.name", "evidence.curie", "displayText_keyword", "formatText_keyword", "nameType.name_keyword", "synonymScope.name_keyword", "evidence.curie_keyword"})
 	@OneToMany(mappedBy = "singleGene", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonManagedReference
-	@JsonView({ View.FieldsAndLists.class, View.GeneView.class })
+	@JsonView({ View.FieldsAndLists.class, View.GeneView.class, View.GeneSummaryDocument.class })
 	private List<GeneSynonymSlotAnnotation> geneSynonyms;
 	
 	@IndexedEmbedded(includePaths = { "secondaryId", "evidence.curie", "secondaryId_keyword", "evidence.curie_keyword"})
 	@OneToMany(mappedBy = "singleGene", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonManagedReference
-	@JsonView({ View.FieldsAndLists.class, View.GeneView.class })
+	@JsonView({ View.FieldsAndLists.class, View.GeneView.class, View.GeneSummaryDocument.class })
 	private List<GeneSecondaryIdSlotAnnotation> geneSecondaryIds;
 	
 	@IndexedEmbedded(
@@ -124,7 +159,7 @@ public class Gene extends GenomicEntity {
 		}
 	)
 	@OneToMany(mappedBy = "geneAssociationSubject", cascade = CascadeType.ALL, orphanRemoval = true)
-	@JsonView({ View.FieldsAndLists.class, View.GeneDetailView.class })
+	@JsonView({ View.FieldsAndLists.class, View.GeneDetailView.class, View.GeneSummaryDocument.class })
 	private List<GeneGenomicLocationAssociation> geneGenomicLocationAssociations;
 
 

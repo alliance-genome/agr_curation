@@ -6,6 +6,7 @@ import org.alliancegenome.curation_api.enums.JobStatus;
 import org.alliancegenome.curation_api.jobs.events.StartedBulkLoadJobEvent;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkFMSLoad;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoad;
+import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
 import org.alliancegenome.curation_api.model.fms.DataFile;
 
 import io.quarkus.logging.Log;
@@ -45,6 +46,11 @@ public class BulkLoadFMSProcessor extends BulkLoadProcessor {
 				endLoad(bulkFMSLoad, "Load: " + bulkFMSLoad.getName() + " failed: FMS Params are missing", JobStatus.FAILED);
 			}
 		}
+	}
+	
+	@Override
+	public void endLoad(BulkLoadFileHistory bulkLoadFileHistory, String message, JobStatus status) {
+		super.endLoad(bulkLoadFileHistory, message, status);
 	}
 
 }

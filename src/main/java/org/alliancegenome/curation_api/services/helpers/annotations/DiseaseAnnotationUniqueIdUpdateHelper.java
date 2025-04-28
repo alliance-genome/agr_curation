@@ -18,7 +18,7 @@ public class DiseaseAnnotationUniqueIdUpdateHelper {
 		ProcessDisplayHelper pdh = new ProcessDisplayHelper();
 
 		SearchResponse<Long> response = diseaseAnnotationDAO.findAllIds();
-		pdh.startProcess("DiseaseAnnotation uniqueId update", response.getTotalResults());
+		pdh.startProcess("DiseaseAnnotation uniqueId update", response.getReturnedRecords());
 		for (Long daId : response.getResults()) {
 			updateDiseaseAnnotationUniqueId(daId);
 			pdh.progressProcess();

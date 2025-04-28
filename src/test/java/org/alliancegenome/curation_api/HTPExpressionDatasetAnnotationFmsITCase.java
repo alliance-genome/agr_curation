@@ -46,7 +46,7 @@ public class HTPExpressionDatasetAnnotationFmsITCase extends BaseITCase {
 		checkSuccessfulBulkLoad(htpDatasetBulkPostEndpoint, htpDatasetTestFilePath + "AF_01_all_fields.json");
 
 		RestAssured.given().when().header("Content-Type", "application/json").body("{}").post(htpDatasetFindEndpoint)
-			.then().statusCode(200).body("totalResults", is(1)).body("results", hasSize(1))
+			.then().statusCode(200).body("returnedRecords", is(1)).body("results", hasSize(1))
 			.body("results[0].htpExpressionDataset.curie", is("FB:FBlc0003342"))
 			.body("results[0].htpExpressionDataset.crossReferences", hasSize(2))
 			.body("results[0].htpExpressionDataset.crossReferences[0].referencedCurie", is("TEST:TestMol00000001"))
@@ -107,7 +107,7 @@ public class HTPExpressionDatasetAnnotationFmsITCase extends BaseITCase {
 			post(htpDatasetFindEndpoint).
 			then().
 			statusCode(200).
-			body("totalResults", is(1)).
+			body("returnedRecords", is(1)).
 			body("results", hasSize(1)).
 			body("results[0]", not(hasKey("references"))).
 			body("results[0]", not(hasKey("subSeries"))).
@@ -128,7 +128,7 @@ public class HTPExpressionDatasetAnnotationFmsITCase extends BaseITCase {
 			post(htpDatasetFindEndpoint).
 			then().
 			statusCode(200).
-			body("totalResults", is(1)).
+			body("returnedRecords", is(1)).
 			body("results", hasSize(1)).
 			body("results[0]", not(hasKey("references"))).
 			body("results[0]", not(hasKey("subSeries"))).

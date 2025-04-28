@@ -6,7 +6,6 @@ import java.util.Optional;
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.constants.ReferenceConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
-import org.alliancegenome.curation_api.model.bridges.ReferenceTypeBridge;
 import org.alliancegenome.curation_api.view.View;
 import org.apache.commons.collections.CollectionUtils;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
@@ -16,12 +15,10 @@ import org.hibernate.search.engine.backend.types.Aggregable;
 import org.hibernate.search.engine.backend.types.Searchable;
 import org.hibernate.search.engine.backend.types.Sortable;
 import org.hibernate.search.mapper.pojo.automaticindexing.ReindexOnUpdate;
-import org.hibernate.search.mapper.pojo.bridge.mapping.annotation.TypeBinderRef;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.FullTextField;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmbedded;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexingDependency;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.KeywordField;
-import org.hibernate.search.mapper.pojo.mapping.definition.annotation.TypeBinding;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
@@ -36,7 +33,6 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 @Entity
-@TypeBinding(binder = @TypeBinderRef(type = ReferenceTypeBridge.class))
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(callSuper = true)

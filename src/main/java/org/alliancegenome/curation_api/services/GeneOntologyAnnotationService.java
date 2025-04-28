@@ -1,25 +1,29 @@
 package org.alliancegenome.curation_api.services;
 
-import jakarta.annotation.PostConstruct;
-import jakarta.enterprise.context.RequestScoped;
-import jakarta.inject.Inject;
-import jakarta.transaction.Transactional;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.alliancegenome.curation_api.auth.AuthenticatedUser;
 import org.alliancegenome.curation_api.dao.GeneDAO;
 import org.alliancegenome.curation_api.dao.GeneOntologyAnnotationDAO;
 import org.alliancegenome.curation_api.dao.SpeciesDAO;
 import org.alliancegenome.curation_api.dao.ontology.GoTermDAO;
-import org.alliancegenome.curation_api.model.entities.*;
+import org.alliancegenome.curation_api.model.entities.Gene;
+import org.alliancegenome.curation_api.model.entities.GeneOntologyAnnotation;
+import org.alliancegenome.curation_api.model.entities.Person;
+import org.alliancegenome.curation_api.model.entities.Species;
 import org.alliancegenome.curation_api.model.entities.ontology.GOTerm;
 import org.alliancegenome.curation_api.model.ingest.dto.GeneOntologyAnnotationDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
 import org.apache.commons.collections.CollectionUtils;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import jakarta.annotation.PostConstruct;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 
 @RequestScoped
 public class GeneOntologyAnnotationService extends BaseEntityCrudService<GeneOntologyAnnotation, GeneOntologyAnnotationDAO> {
@@ -131,6 +135,7 @@ public class GeneOntologyAnnotationService extends BaseEntityCrudService<GeneOnt
 		return gafMap;
 	}
 
+	@Override
 	@Transactional
 	public GeneOntologyAnnotation deprecateOrDelete(Long id, Boolean throwApiError, String requestSource, Boolean deprecate) {
 		return gafDAO.remove(id);

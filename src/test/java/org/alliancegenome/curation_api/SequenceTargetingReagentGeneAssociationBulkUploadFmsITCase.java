@@ -9,7 +9,6 @@ import org.alliancegenome.curation_api.base.BaseITCase;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.SequenceTargetingReagent;
 import org.alliancegenome.curation_api.model.entities.Vocabulary;
-import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.resources.TestContainerResource;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.MethodOrderer;
@@ -32,7 +31,6 @@ public class SequenceTargetingReagentGeneAssociationBulkUploadFmsITCase extends 
 	
 	private Gene gene;
 	private SequenceTargetingReagent sqtr;
-	private VocabularyTerm relation;
 	private String relationName = "targets";
 	private String geneCurie = "GENETEST:Gene0001";
 	private String sqtrPrimaryExternalId = "ZFIN:ZDB-TALEN-180503-1";
@@ -46,7 +44,7 @@ public class SequenceTargetingReagentGeneAssociationBulkUploadFmsITCase extends 
 
 	private void loadRequiredEntities() throws Exception {
 		Vocabulary noteTypeVocab = getVocabulary("construct_relation");
-		relation = getVocabularyTerm(noteTypeVocab, relationName);
+		getVocabularyTerm(noteTypeVocab, relationName);
 		gene = getGene(geneCurie);
 		sqtr = getSequenceTargetingReagent(sqtrPrimaryExternalId);
 	}

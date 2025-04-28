@@ -55,10 +55,10 @@ public class DOTermBulkUploadITCase {
 			when().
 			contentType("application/json").
 			body("{\"namespace\":\"disease_ontology\"}").
-			post("/api/doterm/find?limit=10&page=0").
+			post("/api/doterm/find?limit=30&page=0").
 			then().
 			statusCode(200).
-			body("totalResults", is(28));
+			body("returnedRecords", is(28));
 	}
 	
 	@Test

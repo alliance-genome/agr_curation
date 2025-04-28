@@ -41,7 +41,7 @@ import org.alliancegenome.curation_api.services.ontology.MmoTermService;
 import org.alliancegenome.curation_api.services.ontology.NcbiTaxonTermService;
 import org.alliancegenome.curation_api.services.ontology.ObiTermService;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
@@ -187,7 +187,7 @@ public class HTPExpressionDatasetSampleAnnotationFmsDTOValidator {
 			params.put("synonyms", dto.getSex());
 			SearchResponse<VocabularyTerm> searchResponse = vocabularyTermService.findByParams(new Pagination(), params);
 			boolean added = false;
-			if (searchResponse.getTotalResults() > 0) {
+			if (searchResponse.getReturnedRecords() > 0) {
 				for (VocabularyTerm tag : searchResponse.getResults()) {
 					if (tag.getVocabulary().getVocabularyLabel().equals("genetic_sex") && (tag.getName().equals(dto.getSex()) || tag.getSynonyms().contains(dto.getSex()))) {
 						htpSampleAnnotation.setGeneticSex(tag);

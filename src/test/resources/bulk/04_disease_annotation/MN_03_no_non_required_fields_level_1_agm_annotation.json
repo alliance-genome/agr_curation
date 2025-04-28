@@ -18,6 +18,6 @@
     "evidence_code_curies": [
       "DATEST:Evidence0001"
     ],
-    "reference_curie": "PMID:25920554"
+    "evidence_curie": "PMID:25920554"
   }
 ]

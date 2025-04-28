@@ -68,7 +68,7 @@ import lombok.EqualsAndHashCode;
 	@Index(name = "DiseaseAnnotation_negated_index", columnList = "negated"),
 	@Index(name = "DiseaseAnnotation_createdBy_index", columnList = "createdBy_id"),
 	@Index(name = "DiseaseAnnotation_updatedBy_index", columnList = "updatedBy_id"),
-	@Index(name = "DiseaseAnnotation_singleReference_index", columnList = "singleReference_id"),
+	@Index(name = "DiseaseAnnotation_evidenceItem_index", columnList = "evidenceItem_id"),
 	@Index(name = "DiseaseAnnotation_dataProvider_index", columnList = "dataProvider_id"),
 	@Index(name = "DiseaseAnnotation_dataProviderCrossReference_index", columnList = "dataProviderCrossReference_id"),
 	@Index(name = "DiseaseAnnotation_annotationType_index", columnList = "annotationType_id"),
@@ -84,7 +84,7 @@ public abstract class DiseaseAnnotation extends Annotation {
 		"curie_keyword", "name_keyword", "secondaryIdentifiers_keyword", "synonyms.name_keyword", "namespace_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@JsonView({View.FieldsOnly.class, View.ForPublic.class})
+	@JsonView({View.FieldsOnly.class, View.ForPublic.class })
 	private DOTerm diseaseAnnotationObject;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer", valueBridge = @ValueBridgeRef(type = BooleanValueBridge.class))

@@ -103,11 +103,11 @@ export const PhenotypeAnnotationsTable = () => {
 			filterConfig: FILTER_CONFIGS.phenotypeAnnotationObjectFilterConfig,
 		},
 		{
-			field: 'singleReference.primaryCrossReferenceCurie',
+			field: 'evidenceItem.primaryCrossReferenceCurie',
 			header: 'Reference',
-			body: (rowData) => <SingleReferenceTemplate singleReference={rowData.singleReference} />,
+			body: (rowData) => <SingleReferenceTemplate singleReference={rowData.evidenceItem} />,
 			sortable: true,
-			filterConfig: FILTER_CONFIGS.singleReferenceFilterConfig,
+			filterConfig: FILTER_CONFIGS.evidenceItemFilterConfig,
 		},
 		{
 			field: 'crossReference.displayName',

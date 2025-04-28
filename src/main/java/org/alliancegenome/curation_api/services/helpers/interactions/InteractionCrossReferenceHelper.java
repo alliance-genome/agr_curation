@@ -28,13 +28,16 @@ public class InteractionCrossReferenceHelper {
 		for (String interactionId : dto.getInteractionIds()) {
 			String displayName = PsiMiTabPrefixEnum.getAllianceIdentifier(interactionId);
 			if (displayName != null) {
-				if (CollectionUtils.isEmpty(dto.getInteractionXrefs())) {
+				if (!displayName.startsWith("FB:")) {
 					xrefs.add(createAllianceXref(displayName, displayName));
-				} else {
+				} else if (CollectionUtils.isNotEmpty(dto.getInteractionXrefs())) {
 					for (String xrefCurie : dto.getInteractionXrefs()) {
-						String referencedCurie = PsiMiTabPrefixEnum.getAllianceIdentifier(xrefCurie);
-						if (referencedCurie != null) {
-							xrefs.add(createAllianceXref(displayName, referencedCurie));
+						if (xrefCurie.startsWith("flybase:FBig")) {
+							String referencedCurie = PsiMiTabPrefixEnum.getAllianceIdentifier(xrefCurie);
+							if (referencedCurie != null) {
+								xrefs.add(createAllianceXref(displayName, referencedCurie));
+								break;
+							}
 						}
 					}
 				}

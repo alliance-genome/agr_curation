@@ -59,7 +59,7 @@ public class OntologyTerm extends CurieObject {
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "name_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({View.FieldsOnly.class, View.ForPublic.class, View.GeneToGeneOrthologyForIndexer.class})
+	@JsonView({View.FieldsOnly.class, View.ForPublic.class, View.GeneToGeneOrthologyDocument.class, View.GeneSummaryDocument.class, View.DiseaseSummaryDocument.class, View.ModelDocumentView.class})
 	@Column(length = 2000)
 	protected String name;
 
@@ -70,19 +70,19 @@ public class OntologyTerm extends CurieObject {
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "namespace_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView(View.FieldsOnly.class)
+	@JsonView({ View.FieldsOnly.class })
 	private String namespace;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "definition_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
 	@Column(columnDefinition = "TEXT")
-	@JsonView({View.FieldsOnly.class, View.ForPublic.class})
+	@JsonView({ View.FieldsOnly.class, View.ForPublic.class, View.DiseaseSummaryDocument.class })
 	private String definition;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "definitionUrls_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
 	@ElementCollection
-	@JsonView(View.FieldsAndLists.class)
+	@JsonView({ View.FieldsAndLists.class, View.DiseaseSummaryDocument.class })
 	@Column(columnDefinition = "TEXT")
 	@JoinTable(indexes = @Index(name = "ontologyterm_definitionurls_ontologyterm_index", columnList = "ontologyterm_id"))
 	private List<String> definitionUrls;
@@ -90,7 +90,7 @@ public class OntologyTerm extends CurieObject {
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "subsets_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
 	@ElementCollection
-	@JsonView(View.FieldsAndLists.class)
+	@JsonView({ View.FieldsAndLists.class })
 	@JoinTable(indexes = @Index(name = "ontologyterm_subsets_ontologyterm_index", columnList = "ontologyterm_id"))
 	private List<String> subsets;
 
@@ -105,7 +105,7 @@ public class OntologyTerm extends CurieObject {
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
 	@JoinTable(indexes = @Index(columnList = "ontologyterm_id", name = "ontologyterm_synonym_ontologyterm_index"))
-	@JsonView({ View.FieldsAndLists.class })
+	@JsonView({ View.FieldsAndLists.class, View.DiseaseSummaryDocument.class})
 	private List<Synonym> synonyms;
 
 	@IndexedEmbedded(includeDepth = 1)
@@ -120,7 +120,6 @@ public class OntologyTerm extends CurieObject {
 	private List<CrossReference> crossReferences;
 
 	@ManyToMany
-	// @JsonView(View.OntologyTermView.class)
 	@JoinTable(name = "ontologyterm_isa_parent_children", indexes = {
 		@Index(name = "ontologyterm_isa_parent_children_isaparents_index", columnList = "isaparents_id"),
 		@Index(name = "ontologyterm_isa_parent_children_isachildren_index", columnList = "isachildren_id")
@@ -128,7 +127,6 @@ public class OntologyTerm extends CurieObject {
 	private Set<OntologyTerm> isaParents;
 
 	@ManyToMany(mappedBy = "isaParents")
-	// @JsonView(View.OntologyTermView.class)
 	private Set<OntologyTerm> isaChildren;
 
 	@ManyToMany
@@ -140,17 +138,17 @@ public class OntologyTerm extends CurieObject {
 
 	@ManyToMany(mappedBy = "isaAncestors")
 	private Set<OntologyTerm> isaDescendants;
-	
+
 	@JsonView(View.FieldsOnly.class)
 	private Integer childCount = 0;
-	
+
 	@JsonView(View.FieldsOnly.class)
 	private Integer descendantCount = 0;
 
 	@Transient
 	public void addIsaChild(OntologyTerm term) {
 		if (isaChildren == null) {
-			isaChildren = new HashSet<OntologyTerm>();
+			isaChildren = new HashSet<>();
 		}
 		isaChildren.add(term);
 	}
@@ -158,7 +156,7 @@ public class OntologyTerm extends CurieObject {
 	@Transient
 	public void addIsaParent(OntologyTerm term) {
 		if (isaParents == null) {
-			isaParents = new HashSet<OntologyTerm>();
+			isaParents = new HashSet<>();
 		}
 		isaParents.add(term);
 	}

@@ -67,6 +67,8 @@ public class ExpressionBulkUploadFmsITCase extends BaseITCase {
 	private final String anatomicalSubstructureUberonTermId2 = "UBERON:007";
 	private final String annotationUniqueIdExpected = String.join(pipe, mmoTerm, gene, agrPublicationId, stageTermId,
 		"stage1", "trunk", anatomicalStructureTermId, cellularComponentTermId);
+	private final String crossReferenceId = "ZFIN:ZDB-FIG-170413-34";
+	private final String pages = "gene/expression/annotation/detail";
 
 	@BeforeEach
 	public void init() {
@@ -80,7 +82,7 @@ public class ExpressionBulkUploadFmsITCase extends BaseITCase {
 	@Order(1)
 	public void expressionBulkUploadAllFields() throws Exception {
 		loadRequiredEntities();
-		
+
 		HashMap<String, HashMap<String, Integer>> params = new HashMap<>();
 		params.put("Annotations", createCountParams(1, 0, 1, 0));
 		params.put("Experiments", createCountParams(1, 0, 1, 0));
@@ -93,7 +95,7 @@ public class ExpressionBulkUploadFmsITCase extends BaseITCase {
 			.post(experimentFindEndpoint)
 			.then()
 			.statusCode(200)
-			.body("totalResults", is(1))
+			.body("returnedRecords", is(1))
 			.body("results", hasSize(1))
 			.body("results[0].dataProvider.abbreviation", is("ZFIN"))
 			.body("results[0].uniqueId", is(experimentUniqueIdExpected))
@@ -111,7 +113,7 @@ public class ExpressionBulkUploadFmsITCase extends BaseITCase {
 			.post(expressionFindEndpoint)
 			.then()
 			.statusCode(200)
-			.body("totalResults", is(1))
+			.body("returnedRecords", is(1))
 			.body("results", hasSize(1))
 			.body("results[0].dateCreated", is("2024-01-17T15:31:34Z"))
 			.body("results[0].dataProvider.abbreviation", is("ZFIN"))
@@ -119,7 +121,7 @@ public class ExpressionBulkUploadFmsITCase extends BaseITCase {
 			.body("results[0].expressionAssayUsed.curie", is(mmoTerm))
 			.body("results[0].whereExpressedStatement", is("trunk"))
 			.body("results[0].whenExpressedStageName", is("stage1"))
-			.body("results[0].singleReference.crossReferences[0].referencedCurie", is(publicationId))
+			.body("results[0].evidenceItem.crossReferences[0].referencedCurie", is(publicationId))
 			.body("results[0].relation.name", is(VocabularyConstants.GENE_EXPRESSION_RELATION_TERM))
 			.body("results[0].expressionPattern.whenExpressed.developmentalStageStart.curie", is(stageTermId))
 			.body("results[0].expressionPattern.whenExpressed.stageUberonSlimTerms[0].name", is(stageUberonTermId))
@@ -197,8 +199,10 @@ public class ExpressionBulkUploadFmsITCase extends BaseITCase {
 		ResourceDescriptor rd1 = createResourceDescriptor("ZFIN");
 		createResourceDescriptorPage("homepage", "https://zfin.org/", rd1);
 		createResourceDescriptorPage("reference", "https://zfin.org/[%s]", rd1);
+		createResourceDescriptorPage(pages, "https://zfin.org/expr[%s]", rd1);
 		createReference(agrPublicationId, publicationId);
 		createReference(agrReferenceId, referenceId);
+		createReference(crossReferenceId, "crossReference");
 		Vocabulary vocabulary2 = createVocabulary(VocabularyConstants.GENE_EXPRESSION_VOCABULARY, false);
 		createVocabularyTerm(vocabulary2, VocabularyConstants.GENE_EXPRESSION_RELATION_TERM, false);
 		Vocabulary stageUberonTermVocabulary = getVocabulary(VocabularyConstants.STAGE_UBERON_SLIM_TERMS);

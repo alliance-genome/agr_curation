@@ -1,5 +1,7 @@
 package org.alliancegenome.curation_api.model.entities;
 
+import java.beans.Transient;
+
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.entities.base.AuditedObject;
@@ -42,29 +44,40 @@ public class CrossReference extends AuditedObject {
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "referencedCurie_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({ View.FieldsOnly.class, View.ForPublic.class })
+	@JsonView({ View.FieldsOnly.class, View.ForPublic.class, View.GeneSummaryDocument.class })
 	@EqualsAndHashCode.Include
 	private String referencedCurie;
-	
+
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "displayName_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({ View.FieldsOnly.class, View.ForPublic.class })
+	@JsonView({ View.FieldsOnly.class, View.ForPublic.class, View.GeneSummaryDocument.class })
 	@EqualsAndHashCode.Include
 	private String displayName;
-	
+
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@JsonView({ View.FieldsOnly.class, View.ForPublic.class })
+	@JsonView({ View.FieldsOnly.class, View.ForPublic.class, View.DiseaseSummaryDocument.class, View.GeneSummaryDocument.class })
 	@Fetch(FetchMode.SELECT)
 	private ResourceDescriptorPage resourceDescriptorPage;
 
+	@Transient
 	public String getPrefix() {
 		if (!referencedCurie.contains(":")) {
 			return referencedCurie;
 		}
-		
+
 		return referencedCurie.substring(0, referencedCurie.indexOf(":"));
+	}
+
+	@Transient
+	public String getUrlFromResourceDescriptorPage(String curie) {
+		if (resourceDescriptorPage != null) {
+			String[] array = curie.split(":");
+			String localId = array[1];
+			return resourceDescriptorPage.getUrlTemplate().replace("[%s]", localId);
+		}
+		return null;
 	}
 
 }

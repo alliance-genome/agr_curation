@@ -59,7 +59,7 @@ public class MoleculeBulkUploadFmsITCase {
 				post("/api/molecule/find?limit=20&page=0").
 				then().
 				statusCode(200).
-				body("totalResults", is(1)).
+				body("returnedRecords", is(1)).
 				body("results", hasSize(1)).
 				body("results[0].curie", is("TEST:TestMol00000001")).
 				body("results[0].name", is("Test molecule 1")).
@@ -97,7 +97,7 @@ public class MoleculeBulkUploadFmsITCase {
 				post("/api/molecule/find?limit=20&page=0").
 				then().
 				statusCode(200).
-				body("totalResults", is(1));
+				body("returnedRecords", is(1));
 	}
 
 	@Test
@@ -121,7 +121,7 @@ public class MoleculeBulkUploadFmsITCase {
 				post("/api/molecule/find?limit=20&page=0").
 				then().
 				statusCode(200).
-				body("totalResults", is(1));
+				body("returnedRecords", is(1));
 	}
 	
 	@Test
@@ -146,7 +146,7 @@ public class MoleculeBulkUploadFmsITCase {
 				post("/api/molecule/find?limit=20&page=0").
 				then().
 				statusCode(200).
-				body("totalResults", is(2));
+				body("returnedRecords", is(2));
 	}
 	
 	@Test
@@ -171,7 +171,7 @@ public class MoleculeBulkUploadFmsITCase {
 				post("/api/molecule/find?limit=20&page=0").
 				then().
 				statusCode(200).
-				body("totalResults", is(3));
+				body("returnedRecords", is(3));
 	}
 	
 	@Test
@@ -196,7 +196,7 @@ public class MoleculeBulkUploadFmsITCase {
 				post("/api/molecule/find?limit=20&page=0").
 				then().
 				statusCode(200).
-				body("totalResults", is(4));
+				body("returnedRecords", is(4));
 	}
 	
 	@Test
@@ -221,7 +221,7 @@ public class MoleculeBulkUploadFmsITCase {
 				post("/api/molecule/find?limit=20&page=0").
 				then().
 				statusCode(200).
-				body("totalResults", is(5));
+				body("returnedRecords", is(5));
 	}
 	
 	@Test
@@ -246,7 +246,7 @@ public class MoleculeBulkUploadFmsITCase {
 				post("/api/molecule/find?limit=20&page=0").
 				then().
 				statusCode(200).
-				body("totalResults", is(6));
+				body("returnedRecords", is(6));
 	}
 	
 	@Test
@@ -271,7 +271,7 @@ public class MoleculeBulkUploadFmsITCase {
 				post("/api/molecule/find?limit=20&page=0").
 				then().
 				statusCode(200).
-				body("totalResults", is(7));
+				body("returnedRecords", is(7));
 	}
 	
 	@Test
@@ -296,7 +296,7 @@ public class MoleculeBulkUploadFmsITCase {
 				post("/api/molecule/find?limit=20&page=0").
 				then().
 				statusCode(200).
-				body("totalResults", is(8));
+				body("returnedRecords", is(8));
 	}
 	
 	@Test
@@ -321,7 +321,7 @@ public class MoleculeBulkUploadFmsITCase {
 				post("/api/molecule/find?limit=20&page=0").
 				then().
 				statusCode(200).
-				body("totalResults", is(9));
+				body("returnedRecords", is(9));
 	}
 	
 	@Test
@@ -346,7 +346,7 @@ public class MoleculeBulkUploadFmsITCase {
 				post("/api/molecule/find?limit=20&page=0").
 				then().
 				statusCode(200).
-				body("totalResults", is(9));
+				body("returnedRecords", is(9));
 	}
 	
 	@Test
@@ -371,7 +371,7 @@ public class MoleculeBulkUploadFmsITCase {
 				post("/api/molecule/find?limit=20&page=0").
 				then().
 				statusCode(200).
-				body("totalResults", is(10));
+				body("returnedRecords", is(10));
 	}
 	
 	@Test
@@ -396,7 +396,7 @@ public class MoleculeBulkUploadFmsITCase {
 				post("/api/molecule/find?limit=20&page=0").
 				then().
 				statusCode(200).
-				body("totalResults", is(11));
+				body("returnedRecords", is(11));
 	}
 	
 	@Test
@@ -421,7 +421,7 @@ public class MoleculeBulkUploadFmsITCase {
 				post("/api/molecule/find?limit=20&page=0").
 				then().
 				statusCode(200).
-				body("totalResults", is(11));
+				body("returnedRecords", is(11));
 	}
 	
 	@Test
@@ -446,7 +446,7 @@ public class MoleculeBulkUploadFmsITCase {
 				post("/api/molecule/find?limit=20&page=0").
 				then().
 				statusCode(200).
-				body("totalResults", is(12));
+				body("returnedRecords", is(12));
 	}
 	
 	@Test
@@ -471,7 +471,7 @@ public class MoleculeBulkUploadFmsITCase {
 				post("/api/molecule/find?limit=20&page=0").
 				then().
 				statusCode(200).
-				body("totalResults", is(13));
+				body("returnedRecords", is(13));
 	}
 	
 	@Test
@@ -496,7 +496,7 @@ public class MoleculeBulkUploadFmsITCase {
 				post("/api/molecule/find?limit=20&page=0").
 				then().
 				statusCode(200).
-				body("totalResults", is(14));
+				body("returnedRecords", is(14));
 	}
 	
 	@Test
@@ -521,6 +521,6 @@ public class MoleculeBulkUploadFmsITCase {
 				post("/api/molecule/find?limit=20&page=0").
 				then().
 				statusCode(200).
-				body("totalResults", is(15));
+				body("returnedRecords", is(15));
 	}
 }

@@ -1,26 +1,35 @@
 package org.alliancegenome.curation_api.response;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.JsonView;
+import lombok.Data;
 import org.alliancegenome.curation_api.view.View;
 import org.apache.commons.collections.CollectionUtils;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.fasterxml.jackson.annotation.JsonView;
-
-import lombok.Data;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 @Data
 @Schema(name = "SearchResponse", description = "POJO that represents the SearchResponse")
-@JsonView({ View.FieldsOnly.class, View.ForPublic.class, View.GeneToGeneOrthologyForIndexer.class })
+@JsonView({
+	View.FieldsOnly.class,
+	View.ForPublic.class,
+	View.GeneToGeneOrthologyDocument.class,
+	View.GOSearchResultDocument.class,
+	View.GeneSummaryDocument.class,
+	View.GeneSearchResultDocument.class,
+	View.DiseaseSummaryDocument.class,
+	View.DiseaseSearchResultDocument.class,
+	View.ModelDocumentView.class,
+	View.HTPDatasetSearchResultDocument.class
+})
 public class SearchResponse<E> extends APIResponse {
 
-	@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
-	private List<E> results = new ArrayList<E>();
+	@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
+	private List<E> results = new ArrayList<>();
 
 	private Long totalResults;
 	private Integer returnedRecords;
@@ -41,7 +50,7 @@ public class SearchResponse<E> extends APIResponse {
 		if (results != null) {
 			returnedRecords = results.size();
 		} else {
-			this.results = new ArrayList<E>();
+			this.results = new ArrayList<>();
 		}
 	}
 
