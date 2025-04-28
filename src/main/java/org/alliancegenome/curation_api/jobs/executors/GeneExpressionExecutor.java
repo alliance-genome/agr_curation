@@ -91,11 +91,12 @@ public class GeneExpressionExecutor extends LoadFileExecutor {
 	private void loadExperiments(BulkLoadFileHistory history, BackendBulkDataProvider dataProvider, List<Long> experimentIdsLoaded) {
 		ProcessDisplayHelper ph = new ProcessDisplayHelper();
 		Map<String, Set<String>> experiments = geneExpressionAnnotationService.getExperiments();
+		Map<String, Set<CrossReferenceFmsDTO>> crossReferences = geneExpressionAnnotationService.getCrossReferences();
 		ph.startProcess("Saving gene expression experiments: ", experiments.size());
 		history.setCount(EXPERIMENTS, geneExpressionAnnotationService.getExperiments().size());
 		for (String experimentId: experiments.keySet()) {
 			try {
-				GeneExpressionExperiment experiment = geneExpressionExperimentService.upsert(experimentId, experiments.get(experimentId), dataProvider);
+				GeneExpressionExperiment experiment = geneExpressionExperimentService.upsert(experimentId, experiments.get(experimentId), dataProvider, crossReferences.get(experimentId));
 				if (experiment != null) {
 					experimentIdsLoaded.add(experiment.getId());
 					history.incrementCompleted(EXPERIMENTS);
