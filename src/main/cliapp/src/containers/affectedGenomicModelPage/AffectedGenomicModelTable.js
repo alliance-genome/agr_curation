@@ -14,6 +14,8 @@ import { SearchService } from '../../service/SearchService';
 import { OntologyTermTemplate } from '../../components/Templates/OntologyTermTemplate';
 import { ListDialogTemplate } from '../../components/Templates/dialog/ListDialogTemplate';
 import { TextDialogTemplate } from '../../components/Templates/dialog/TextDialogTemplate';
+import { FullNameDialog } from '../nameSlotAnnotations/dialogs/FullNameDialog';
+import { SynonymsDialog } from '../nameSlotAnnotations/dialogs/SynonymsDialog';
 import { SecondaryIdsDialog } from '../allelesPage/secondaryIds/SecondaryIdsDialog';
 
 export const AffectedGenomicModelTable = () => {
@@ -33,7 +35,7 @@ export const AffectedGenomicModelTable = () => {
 		mainRowProps: {},
 	});
 
-	const [symbolData, setSymbolData] = useState({
+	const [synonymsData, setSynonymsData] = useState({
 		dialog: false,
 	});
 
@@ -252,6 +254,20 @@ export const AffectedGenomicModelTable = () => {
 					fetching={isFetching || isLoading}
 				/>
 			</div>
+			<FullNameDialog
+				name="AGM Name"
+				field="agmFullName"
+				endpoint="agmfullnameslotannotation"
+				originalFullNameData={fullNameData}
+				setOriginalFullNameData={setFullNameData}
+			/>
+			<SynonymsDialog
+				name="AGM Synonym"
+				field="agmSynonyms"
+				endpoint="agmsynonymslotannotation"
+				originalSynonymsData={synonymsData}
+				setOriginalSynonymsData={setSynonymsData}
+			/>
 			<SecondaryIdsDialog
 				originalSecondaryIdsData={secondaryIdsData}
 				setOriginalSecondaryIdsData={setSecondaryIdsData}
