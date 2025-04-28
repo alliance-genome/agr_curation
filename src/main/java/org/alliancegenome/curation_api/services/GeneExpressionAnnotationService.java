@@ -12,6 +12,7 @@ import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.interfaces.crud.BaseUpsertServiceInterface;
 import org.alliancegenome.curation_api.model.entities.GeneExpressionAnnotation;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.ConsolidatedGeneExpressionFmsDTO;
+import org.alliancegenome.curation_api.model.ingest.dto.fms.CrossReferenceFmsDTO;
 import org.alliancegenome.curation_api.services.base.BaseAnnotationCrudService;
 import org.alliancegenome.curation_api.services.validation.dto.fms.GeneExpressionAnnotationFmsDTOValidator;
 import org.apache.commons.lang3.StringUtils;
@@ -29,12 +30,15 @@ public class GeneExpressionAnnotationService extends BaseAnnotationCrudService<G
 	@Inject GeneExpressionAnnotationFmsDTOValidator geneExpressionAnnotationFmsDTOValidator;
 	@Getter
 	private Map<String, Set<String>> experiments;
+	@Getter
+	private Map<String, Set<CrossReferenceFmsDTO>> crossReferences;
 
 	@Override
 	@PostConstruct
 	protected void init() {
 		setSQLDao(geneExpressionAnnotationDAO);
 		experiments = new HashMap<>();
+		crossReferences = new HashMap<>();
 	}
 
 	public List<Long> getAnnotationIdsByDataProvider(BackendBulkDataProvider dataProvider) {
@@ -50,7 +54,7 @@ public class GeneExpressionAnnotationService extends BaseAnnotationCrudService<G
 	@Transactional
 	@Override
 	public GeneExpressionAnnotation upsert(ConsolidatedGeneExpressionFmsDTO consolidatedGeneExpressionFmsDTO, BackendBulkDataProvider dataProvider) throws ValidationException {
-		GeneExpressionAnnotation geneExpressionAnnotation = geneExpressionAnnotationFmsDTOValidator.validateAnnotation(consolidatedGeneExpressionFmsDTO, dataProvider, experiments);
+		GeneExpressionAnnotation geneExpressionAnnotation = geneExpressionAnnotationFmsDTOValidator.validateAnnotation(consolidatedGeneExpressionFmsDTO, dataProvider, experiments, crossReferences);
 		return geneExpressionAnnotationDAO.persist(geneExpressionAnnotation);
 	}
 }
