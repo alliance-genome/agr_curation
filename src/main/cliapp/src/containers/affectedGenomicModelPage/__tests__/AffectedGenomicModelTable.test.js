@@ -2,6 +2,7 @@ import React from 'react';
 import { waitFor } from '@testing-library/react';
 import { renderWithClient } from '../../../tools/jest/utils';
 import { AffectedGenomicModelTable } from '../AffectedGenomicModelTable';
+import { setLocalStorage } from '../../../tools/jest/setupTests';
 import {
 	setupSettingsHandler,
 	setupFindHandler,
