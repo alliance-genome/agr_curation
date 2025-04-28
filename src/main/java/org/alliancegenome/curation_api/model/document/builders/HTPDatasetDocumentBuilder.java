@@ -47,8 +47,15 @@ public class HTPDatasetDocumentBuilder {
 			if (htpDatasetAnnotation.getHtpExpressionDataset().getPreferredCrossReference() != null) {
 				if (htpDatasetAnnotation.getHtpExpressionDataset().getPreferredCrossReference()
 						.getUrlFromResourceDescriptorPage(doc.getCurie()) != null) {
+					String identifier;
+					if (doc.getDataProvider().equals("ZFIN")) {
+						identifier = htpDatasetAnnotation.getHtpExpressionDataset().getPreferredCrossReference()
+								.getReferencedCurie();
+					} else {
+						identifier = doc.getCurie();
+					}
 					doc.setHref(htpDatasetAnnotation.getHtpExpressionDataset().getPreferredCrossReference()
-							.getUrlFromResourceDescriptorPage(doc.getCurie()));
+							.getUrlFromResourceDescriptorPage(identifier));
 				}
 			}
 		}
@@ -123,7 +130,9 @@ public class HTPDatasetDocumentBuilder {
 								.getExpressionAssayUsed()
 								.getSynonyms()
 								.stream()
-								.map(synonym -> {
+								.filter(synonym -> {
+									return synonym.getIsDisplaySynonym();
+								}).map(synonym -> {
 									return synonym.getName();
 								}).collect(Collectors.toList()));
 			}

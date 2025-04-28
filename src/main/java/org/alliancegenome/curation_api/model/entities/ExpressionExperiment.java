@@ -58,6 +58,16 @@ public abstract class ExpressionExperiment extends SubmittedObject {
 	@JsonView({ View.FieldsAndLists.class, View.ForPublic.class })
 	private Set<GeneExpressionAnnotation> expressionAnnotations;
 
+	@IndexedEmbedded(includePaths = {"referencedCurie", "displayName", "resourceDescriptorPage.name", "referencedCurie_keyword", "displayName_keyword", "resourceDescriptorPage.name_keyword"})
+	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
+	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+	@JoinTable(indexes = {
+		@Index(columnList = "geneexpressionexperiment_id", name = "gee_crossreference_geneexpressionexperiment_index"),
+		@Index(columnList = "crossreferences_id", name = "gee_crossreference_crossreferences_index")
+	})
+	@JsonView({ View.FieldsAndLists.class, View.ForPublic.class })
+	private List<CrossReference> crossReferences;
+
 	@Transient private Allele specimenGenomicModel;
 	@Transient private List<Reagent> detectionReagents;
 	@Transient private List<Allele> specimenAlleles;

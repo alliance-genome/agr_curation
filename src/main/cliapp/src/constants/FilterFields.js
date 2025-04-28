@@ -86,14 +86,14 @@ export const FIELD_SETS = Object.freeze({
 		filterName: 'annotationTypeFilter',
 		fields: ['annotationType.name'],
 	},
-	assertedAlleleFieldSet: {
-		filterName: 'assertedAlleleFilter',
+	assertedAllelesFieldSet: {
+		filterName: 'assertedAllelesFilter',
 		fields: [
-			'assertedAllele.alleleSymbol.displayText',
-			'assertedAllele.alleleSymbol.formatText',
-			'assertedAllele.curie',
-			'assertedAllele.primaryExternalId',
-			'assertedAllele.modInternalId',
+			'assertedAlleles.alleleSymbol.displayText',
+			'assertedAlleles.alleleSymbol.formatText',
+			'assertedAlleles.curie',
+			'assertedAlleles.primaryExternalId',
+			'assertedAlleles.modInternalId',
 		],
 	},
 	assertedGenesFieldSet: {
@@ -268,7 +268,11 @@ export const FIELD_SETS = Object.freeze({
 	},
 	diseaseAnnotationSubjectFieldSet: {
 		filterName: 'diseaseAnnotationSubjectFilter',
-		fields: ['diseaseAnnotationSubject.symbol', 'diseaseAnnotationSubject.primaryExternalId'],
+		fields: [
+			'diseaseAnnotationSubject.primaryExternalId',
+			'diseaseAnnotationSubject.symbol',
+			'diseaseAnnotationSubject.name',
+		],
 	},
 	diseaseQualifiersFieldSet: {
 		filterName: 'diseaseQualifiersFilter',
@@ -276,7 +280,7 @@ export const FIELD_SETS = Object.freeze({
 	},
 	evidenceFieldSet: {
 		filterName: 'evidenceFilter',
-		fields: ['evidence.curie'],
+		fields: ['evidence.curie', 'evidence.crossReferenceCuries'],
 	},
 	evidenceCodesFieldSet: {
 		filterName: 'evidenceCodesFilter',
@@ -584,6 +588,10 @@ export const FIELD_SETS = Object.freeze({
 		filterName: 'secondaryDataProviderFilter',
 		fields: ['secondaryDataProvider.abbreviation', 'secondaryDataProvider.fullName', 'secondaryDataProvider.shortName'],
 	},
+	subsetsFieldSet: {
+		filterName: 'subsetsFilter',
+		fields: ['subsets'],
+	},
 	secondaryIdsFieldSet: {
 		filterName: 'secondaryIdsFilter',
 		fields: ['secondaryIdentifiers'],
@@ -746,7 +754,7 @@ export const FILTER_CONFIGS = Object.freeze({
 	agmSecondaryIdsFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.agmSecondaryIdsFieldSet] },
 	alleleSymbolFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.alleleSymbolFieldSet] },
 	alleleSynonymsFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.alleleSynonymsFieldSet] },
-	assertedAlleleFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.assertedAlleleFieldSet] },
+	assertedAllelesFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.assertedAllelesFieldSet] },
 	assertedGenesFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.assertedGenesFieldSet] },
 	citationFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.citationFieldSet] },
 	literatureShortCitationFilterConfig: {
@@ -895,6 +903,7 @@ export const FILTER_CONFIGS = Object.freeze({
 	referencesFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.referencesFieldSet] },
 	relatedNotesFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.relatedNotesFieldSet] },
 	resourceDescriptorFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.resourceDescriptorFieldSet] },
+	subsetsFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.subsetsFieldSet] },
 	secondaryIdsFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.secondaryIdsFieldSet] },
 	sgdStrainBackgroundFilterConfig: {
 		filterComponentType: 'input',

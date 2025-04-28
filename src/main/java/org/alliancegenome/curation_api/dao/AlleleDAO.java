@@ -37,7 +37,7 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 
 		Map<String, Object> agmDaParams = new HashMap<>();
 		agmDaParams.put("query_operator", "or");
-		agmDaParams.put("assertedAllele.id", alleleId);
+		agmDaParams.put("assertedAlleles.id", alleleId);
 		agmDaParams.put("inferredAllele.id", alleleId);
 		agmDaParams.put("diseaseGeneticModifiers.id", alleleId);
 		results = agmDiseaseAnnotationDAO.findIdsByParams(agmDaParams);
@@ -63,7 +63,7 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 
 		Map<String, Object> agmPaParams = new HashMap<>();
 		agmPaParams.put("query_operator", "or");
-		agmPaParams.put("assertedAllele.id", alleleId);
+		agmPaParams.put("assertedAlleles.id", alleleId);
 		agmPaParams.put("inferredAllele.id", alleleId);
 		results = agmPhenotypeAnnotationDAO.findIdsByParams(agmPaParams);
 		return CollectionUtils.isNotEmpty(results);

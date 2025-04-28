@@ -1,5 +1,6 @@
 package org.alliancegenome.curation_api.interfaces.base.crud;
 
+import org.alliancegenome.curation_api.model.Null;
 import org.alliancegenome.curation_api.model.entities.base.AuditedObject;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.view.View;
@@ -10,7 +11,6 @@ import org.eclipse.microprofile.openapi.annotations.responses.APIResponses;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
-import jakarta.validation.constraints.Null;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.Path;
