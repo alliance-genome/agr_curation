@@ -2,7 +2,6 @@
   {
     "primary_external_id": "AGMTEST:Agm0001",
     "subtype_name": "fish",
-    "name": "",
     "taxon_curie": "NCBITaxon:6239",
     "created_by_curie": "",
     "updated_by_curie": "",
@@ -19,7 +18,7 @@
         "prefix": "TEST"
       }
     },
-    "synonyms": [],
+    "agm_synonym_dtos": [],
     "agm_secondary_id_dtos": []
   }
 ]

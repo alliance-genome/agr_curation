@@ -51,7 +51,7 @@ public class GeneExpressionAnnotationFmsDTOValidator {
 	@Inject OntologyTermService ontologyTermService;
 	@Inject CrossReferenceFmsDTOValidator crossReferenceFmsDTOValidator;
 
-	public GeneExpressionAnnotation validateAnnotation(ConsolidatedGeneExpressionFmsDTO consolidatedGeneExpressionFmsDTO, BackendBulkDataProvider dataProvider, Map<String, Set<String>> experiments) throws ValidationException {
+	public GeneExpressionAnnotation validateAnnotation(ConsolidatedGeneExpressionFmsDTO consolidatedGeneExpressionFmsDTO, BackendBulkDataProvider dataProvider, Map<String, Set<String>> experiments, Map<String, Set<CrossReferenceFmsDTO>> crossReferences) throws ValidationException {
 		ObjectResponse<GeneExpressionAnnotation> response = new ObjectResponse<>();
 		GeneExpressionAnnotation geneExpressionAnnotation = new GeneExpressionAnnotation();
 		String uniqueId = "empty";
@@ -76,22 +76,24 @@ public class GeneExpressionAnnotationFmsDTOValidator {
 			geneExpressionAnnotation.setExpressionPattern(new ExpressionPattern());
 		}
 
-		if (ObjectUtils.isNotEmpty(consolidatedGeneExpressionFmsDTO.getCrossReferences())) {
-			Set<CrossReference> validatedCrossRefs = new HashSet<>();
-			for (CrossReferenceFmsDTO crossRefDto : consolidatedGeneExpressionFmsDTO.getCrossReferences()) {
-				ObjectResponse<List<CrossReference>> crossRefResponse = crossReferenceFmsDTOValidator.validateCrossReferenceFmsDTO(crossRefDto);
-				if (crossRefResponse.hasErrors()) {
-					response.addErrorMessage("cross_references", crossRefResponse.errorMessagesString());
-					break;
-				} else {
-					validatedCrossRefs.addAll(crossRefResponse.getEntity());
+		if (dataProvider.name().equals("ZFIN")) {
+			if (ObjectUtils.isNotEmpty(consolidatedGeneExpressionFmsDTO.getCrossReferences())) {
+				Set<CrossReference> validatedCrossRefs = new HashSet<>();
+				for (CrossReferenceFmsDTO crossRefDto : consolidatedGeneExpressionFmsDTO.getCrossReferences()) {
+					ObjectResponse<List<CrossReference>> crossRefResponse = crossReferenceFmsDTOValidator.validateCrossReferenceFmsDTO(crossRefDto);
+					if (crossRefResponse.hasErrors()) {
+						response.addErrorMessage("cross_references", crossRefResponse.errorMessagesString());
+						break;
+					} else {
+						validatedCrossRefs.addAll(crossRefResponse.getEntity());
+					}
 				}
-			}
-			if (geneExpressionAnnotation.getCrossReferences() == null) {
-				geneExpressionAnnotation.setCrossReferences(validatedCrossRefs.stream().toList());
-			} else {
-				geneExpressionAnnotation.getCrossReferences().clear();
-				geneExpressionAnnotation.getCrossReferences().addAll(validatedCrossRefs);
+				if (geneExpressionAnnotation.getCrossReferences() == null) {
+					geneExpressionAnnotation.setCrossReferences(validatedCrossRefs.stream().toList());
+				} else {
+					geneExpressionAnnotation.getCrossReferences().clear();
+					geneExpressionAnnotation.getCrossReferences().addAll(validatedCrossRefs);
+				}
 			}
 		}
 
@@ -162,6 +164,14 @@ public class GeneExpressionAnnotationFmsDTOValidator {
 			Set<String> expressionIds = new HashSet<>();
 			expressionIds.add(uniqueId);
 			experiments.put(experimentId, expressionIds);
+		}
+		if (dataProvider.name().equals("WB") || dataProvider.name().equals("MGI")) {
+			if (crossReferences.containsKey(experimentId)) {
+				crossReferences.get(experimentId).addAll(consolidatedGeneExpressionFmsDTO.getCrossReferences());
+			} else {
+				Set<CrossReferenceFmsDTO> experimentCrossReferences = new HashSet<>(consolidatedGeneExpressionFmsDTO.getCrossReferences());
+				crossReferences.put(experimentId, experimentCrossReferences);
+			}
 		}
 		return geneExpressionAnnotation;
 	}
