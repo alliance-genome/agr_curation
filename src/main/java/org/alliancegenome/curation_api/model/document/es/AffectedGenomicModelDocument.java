@@ -6,7 +6,6 @@ import lombok.EqualsAndHashCode;
 import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
 import org.alliancegenome.curation_api.model.entities.ConditionRelation;
 import org.alliancegenome.curation_api.model.entities.Gene;
-import org.alliancegenome.curation_api.model.entities.Organization;
 import org.alliancegenome.curation_api.model.entities.ontology.DOTerm;
 import org.alliancegenome.curation_api.view.View;
 

@@ -35,8 +35,7 @@ public class ModelDocumentBuilder {
 		Map<String, ConditionRelationAnnotation> allConditionRels = new HashMap<>();
 		Map<String, Set<Gene>> geneConditionMap = new HashMap<>();
 
-		model.getAgmDiseaseAnnotations().forEach(agmDiseaseAnnotation ->
-		{
+		model.getAgmDiseaseAnnotations().forEach(agmDiseaseAnnotation -> {
 			String uniqueConditionRelations = agmDiseaseAnnotation.getConditionRelations().stream().map(ConditionRelation::getUniqueExperimentConditionId).reduce((a, b) -> a + "," + b).orElse("");
 			ConditionRelationAnnotation annot = allConditionRels.computeIfAbsent(uniqueConditionRelations, k -> new ConditionRelationAnnotation(agmDiseaseAnnotation.getConditionRelations(), new ArrayList<>(), new ArrayList<>()));
 			annot.diseaseAnnotations.add(agmDiseaseAnnotation);
@@ -50,8 +49,7 @@ public class ModelDocumentBuilder {
 			genes.addAll(associatedGenes);
 		});
 
-		model.getAgmPhenotypeAnnotations().forEach(agmPhenotypeAnnotation ->
-		{
+		model.getAgmPhenotypeAnnotations().forEach(agmPhenotypeAnnotation -> {
 			String uniqueConditionRelations = agmPhenotypeAnnotation.getConditionRelations().stream().map(ConditionRelation::getUniqueExperimentConditionId).reduce((a, b) -> a + "," + b).orElse("");
 			ConditionRelationAnnotation annot = allConditionRels.computeIfAbsent(uniqueConditionRelations, k -> new ConditionRelationAnnotation(agmPhenotypeAnnotation.getConditionRelations(), new ArrayList<>(), new ArrayList<>()));
 			annot.phenotypeAnnotations.add(agmPhenotypeAnnotation);
