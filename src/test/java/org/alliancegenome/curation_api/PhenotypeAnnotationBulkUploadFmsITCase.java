@@ -83,8 +83,8 @@ public class PhenotypeAnnotationBulkUploadFmsITCase extends BaseITCase {
 		createGene(gene, "NCBITaxon:6239", symbolTerm, false, dataProvider);
 		createAllele(allele, "TestAllele", "NCBITaxon:6239", symbolTerm, false, dataProvider);
 		createAllele(allele2, "TestAllele2", "NCBITaxon:6239", symbolTerm, false, dataProvider);
-		createAffectedGenomicModel(agm, "Test AGM", "NCBITaxon:6239", "strain", false, dataProvider);
-		createAffectedGenomicModel(agm2, "Test AGM2", "NCBITaxon:6239", "strain", false, dataProvider);
+		createAffectedGenomicModel(agm, "NCBITaxon:6239", "strain", false, dataProvider);
+		createAffectedGenomicModel(agm2, "NCBITaxon:6239", "strain", false, dataProvider);
 		createMpTerm(mpTerm, "Test PhenotypeTerm");
 		ResourceDescriptor rd = createResourceDescriptor("PMID");
 		createResourceDescriptorPage("default", "https://www.ncbi.nlm.nih.gov/pubmed/[%s]", rd);

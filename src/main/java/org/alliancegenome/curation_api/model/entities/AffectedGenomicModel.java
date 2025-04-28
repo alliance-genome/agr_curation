@@ -1,40 +1,52 @@
 package org.alliancegenome.curation_api.model.entities;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.fasterxml.jackson.annotation.JsonView;
-import jakarta.persistence.*;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
+import java.util.List;
+
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.entities.associations.AgmAgmAssociation;
 import org.alliancegenome.curation_api.model.entities.associations.AgmAlleleAssociation;
 import org.alliancegenome.curation_api.model.entities.associations.AgmSequenceTargetingReagentAssociation;
 import org.alliancegenome.curation_api.model.entities.associations.ConstructGenomicEntityAssociation;
+import org.alliancegenome.curation_api.model.entities.slotAnnotations.AgmFullNameSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.AgmSecondaryIdSlotAnnotation;
+import org.alliancegenome.curation_api.model.entities.slotAnnotations.AgmSynonymSlotAnnotation;
 import org.alliancegenome.curation_api.view.View;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
-import org.hibernate.search.engine.backend.types.Aggregable;
-import org.hibernate.search.engine.backend.types.Searchable;
-import org.hibernate.search.engine.backend.types.Sortable;
 import org.hibernate.search.mapper.pojo.automaticindexing.ReindexOnUpdate;
-import org.hibernate.search.mapper.pojo.mapping.definition.annotation.*;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmbedded;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexingDependency;
 
-import java.util.List;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonView;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 @Indexed
 @Entity
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
-@ToString(exclude = {"agmDiseaseAnnotations", "agmPhenotypeAnnotations", "constructGenomicEntityAssociations", "agmSecondaryIds", "agmSequenceTargetingReagentAssociations", "components", "parentalPopulations"}, callSuper = true)
+@ToString(exclude = {
+		"agmDiseaseAnnotations",
+		"agmPhenotypeAnnotations",
+		"constructGenomicEntityAssociations",
+		"agmFullName",
+		"agmSynonyms",
+		"agmSecondaryIds",
+		"agmSequenceTargetingReagentAssociations",
+		"components",
+		"parentalPopulations" }, callSuper = true)
 @Schema(name = "AffectedGenomicModel", description = "POJO that represents the AGM")
-@AGRCurationSchemaVersion(min = "1.5.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = {GenomicEntity.class}, partial = true)
+@AGRCurationSchemaVersion(min = "2.12.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = {GenomicEntity.class}, partial = true)
 public class AffectedGenomicModel extends GenomicEntity {
-
-	@Column(columnDefinition = "TEXT")
-	@JsonView({View.FieldsOnly.class, View.ForPublic.class, View.ModelDocumentView.class})
-	private String name;
 
 	@OneToMany(mappedBy = "diseaseAnnotationSubject", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<AGMDiseaseAnnotation> agmDiseaseAnnotations;
@@ -65,14 +77,17 @@ public class AffectedGenomicModel extends GenomicEntity {
 	@JsonView({View.FieldsAndLists.class, View.GeneDetailView.class})
 	private List<ConstructGenomicEntityAssociation> constructGenomicEntityAssociations;
 
-	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
-	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
-	@KeywordField(name = "synonyms_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({View.FieldsAndLists.class, View.AffectedGenomicModelView.class})
-	@ElementCollection
-	@JoinTable(indexes = @Index(columnList = "affectedgenomicmodel_id"))
-	@Column(columnDefinition = "TEXT")
-	private List<String> synonyms;
+	@IndexedEmbedded(includePaths = { "displayText", "formatText", "nameType.name", "synonymScope.name", "evidence.curie", "displayText_keyword", "formatText_keyword", "nameType.name_keyword", "synonymScope.name_keyword", "evidence.curie_keyword"})
+	@OneToOne(mappedBy = "singleAgm", cascade = CascadeType.ALL, orphanRemoval = true)
+	@JsonManagedReference
+	@JsonView({ View.FieldsOnly.class, View.AffectedGenomicModelView.class })
+	private AgmFullNameSlotAnnotation agmFullName;
+	
+	@IndexedEmbedded(includePaths = { "displayText", "formatText", "nameType.name", "synonymScope.name", "evidence.curie", "displayText_keyword", "formatText_keyword", "nameType.name_keyword", "synonymScope.name_keyword", "evidence.curie_keyword"})
+	@OneToMany(mappedBy = "singleAgm", cascade = CascadeType.ALL, orphanRemoval = true)
+	@JsonManagedReference
+	@JsonView({ View.FieldsAndLists.class, View.AffectedGenomicModelView.class })
+	private List<AgmSynonymSlotAnnotation> agmSynonyms;
 
 	@IndexedEmbedded(includePaths = {
 		"agmSequenceTargetingReagentAssociationObject.name",
@@ -108,14 +123,4 @@ public class AffectedGenomicModel extends GenomicEntity {
 	@OneToMany(mappedBy = "agmAssociationSubject", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonView({View.FieldsAndLists.class, View.AffectedGenomicModelDetailView.class})
 	private List<AgmAgmAssociation> parentalPopulations;
-
-	public String getNameFormatText() {
-		if (name == null) {
-			return null;
-		}
-		return name.replaceAll("<i>", "")
-			.replaceAll("</i>", "")
-			.replaceAll("<sup>", "[")
-			.replaceAll("</sup>", "]");
-	}
 }

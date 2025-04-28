@@ -5,7 +5,6 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 
 import java.time.OffsetDateTime;
-import java.util.List;
 
 import org.alliancegenome.curation_api.base.BaseITCase;
 import org.alliancegenome.curation_api.resources.TestContainerResource;
@@ -61,14 +60,22 @@ public class AgmBulkUploadITCase extends BaseITCase {
 			then().
 			statusCode(200).
 			body("entity.primaryExternalId", is("AGMTEST:Agm0001")).
-			body("entity.name", is("TestAgm1")).
+			body("entity.agmFullName.formatText", is("AGM[test1]")).
+			body("entity.agmFullName.displayText", is("AGM<sup>test1</sup>")).
+			body("entity.agmFullName.internal", is(true)).
+			body("entity.agmFullName.obsolete", is(true)).
+			body("entity.agmFullName.nameType.name", is("full_name")).
 			body("entity.taxon.curie", is("NCBITaxon:6239")).
 			body("entity.subtype.name", is("fish")).
 			body("entity.internal", is(true)).
 			body("entity.obsolete", is(true)).
 			body("entity.createdBy.uniqueId", is("AGMTEST:Person0001")).
 			body("entity.updatedBy.uniqueId", is("AGMTEST:Person0002")).
-			body("entity.synonyms", is(List.of("Syn 1", "Syn 2"))).
+			body("entity.agmSynonyms[0].formatText", is("AGM[t1]")).
+			body("entity.agmSynonyms[0].displayText", is("AGM<sup>t1</sup>")).
+			body("entity.agmSynonyms[0].internal", is(true)).
+			body("entity.agmSynonyms[0].nameType.name", is("unspecified")).
+			body("entity.agmSynonyms[0].obsolete", is(true)).
 			body("entity.agmSecondaryIds[0].secondaryId", is("TEST:Secondary")).
 			body("entity.agmSecondaryIds[0].internal", is(true)).
 			body("entity.agmSecondaryIds[0].obsolete", is(true)).
@@ -91,7 +98,10 @@ public class AgmBulkUploadITCase extends BaseITCase {
 			then().
 			statusCode(200).
 			body("entity.primaryExternalId", is("AGMTEST:Agm0001")).
-			body("entity.name", is("TestAgm1a")).
+			body("entity.agmFullName.formatText", is("AGM[test2]")).
+			body("entity.agmFullName.displayText", is("AGM<sup>test2</sup>")).
+			body("entity.agmFullName.internal", is(false)).
+			body("entity.agmFullName.obsolete", is(false)).
 			body("entity.taxon.curie", is("NCBITaxon:10116")).
 			body("entity.subtype.name", is("genotype")).
 			body("entity.internal", is(false)).
@@ -100,7 +110,11 @@ public class AgmBulkUploadITCase extends BaseITCase {
 			body("entity.updatedBy.uniqueId", is("AGMTEST:Person0001")).
 			body("entity.dateCreated", is(OffsetDateTime.parse("2022-03-19T22:10:12Z").toString())).
 			body("entity.dateUpdated", is(OffsetDateTime.parse("2022-03-20T22:10:12Z").toString())).
-			body("entity.synonyms", is(List.of("Syn 1", "Syn 2"))).
+			body("entity.agmSynonyms[0].formatText", is("AGM[t2]")).
+			body("entity.agmSynonyms[0].displayText", is("AGM<sup>t2</sup>")).
+			body("entity.agmSynonyms[0].internal", is(false)).
+			body("entity.agmSynonyms[0].obsolete", is(false)).
+			body("entity.agmSynonyms[0].nameType.name", is("retired_name")).
 			body("entity.dataProvider.abbreviation", is(dataProviderRGD)).
 			body("entity.dataProviderCrossReference.referencedCurie", is("TEST2:0001")).
 			body("entity.dataProviderCrossReference.displayName", is("TEST2:0001")).
@@ -158,7 +172,8 @@ public class AgmBulkUploadITCase extends BaseITCase {
 			then().
 			statusCode(200).
 			body("entity.primaryExternalId", is("AGMTEST:Agm0001")).
-			body("entity", not(hasKey("name"))).
+			body("entity", not(hasKey("agmFullName"))).
+			body("entity", not(hasKey("agmSynonyms"))).
 			body("entity", not(hasKey("createdBy"))).
 			body("entity", not(hasKey("updatedBy"))).
 			body("entity", not(hasKey("dateCreated"))).
@@ -180,11 +195,11 @@ public class AgmBulkUploadITCase extends BaseITCase {
 			then().
 			statusCode(200).
 			body("entity.primaryExternalId", is("AGMTEST:Agm0001")).
-			body("entity", not(hasKey("name"))).
 			body("entity", not(hasKey("createdBy"))).
 			body("entity", not(hasKey("updatedBy"))).
 			body("entity", not(hasKey("dateCreated"))).
 			body("entity", not(hasKey("synonyms"))).
+			body("entity", not(hasKey("agmSynonyms"))).
 			body("entity", not(hasKey("agmSecondaryIds"))).
 			body("entity", not(hasKey("dateUpdated")));
 	}

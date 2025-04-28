@@ -1,4 +1,6 @@
 export const SORT_FIELDS = Object.freeze([
+	'agmSynonyms.displayText',
+	'agmFullName.displayText',
 	'geneSynonyms.displayText',
 	'geneAssociationSubject.geneSymbol.displayText',
 	'geneGeneAssociationObject.geneSymbol.displayText',

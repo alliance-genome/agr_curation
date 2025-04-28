@@ -37,6 +37,12 @@ describe('<AffectedGenomicModelTable />', () => {
 	it('Contains Correct Table Data', async () => {
 		let result = await renderWithClient(<AffectedGenomicModelTable />);
 		const primaryExternalId = await result.findByText(/WB:WBStrain00051221/i);
+		const name1 = await result.findByText('VC4532');
+		const synonym = await result.findByText('VC-4532a');
+		const secondaryId = await result.findByText(/WB:WBStrain10051221/i);
 		expect(primaryExternalId).toBeInTheDocument();
+		expect(name1).toBeInTheDocument();
+		expect(synonym).toBeInTheDocument();
+		expect(secondaryId).toBeInTheDocument();
 	});
 });

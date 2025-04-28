@@ -176,11 +176,11 @@ public class BaseITCase {
 		return map;
 	}
 
-	public AffectedGenomicModel createAffectedGenomicModel(String primaryExternalId, String name, String taxonCurie, String subtypeName, Boolean obsolete) throws Exception {
-		return createAffectedGenomicModel(primaryExternalId, name, taxonCurie, subtypeName, obsolete, null);
+	public AffectedGenomicModel createAffectedGenomicModel(String primaryExternalId, String taxonCurie, String subtypeName, Boolean obsolete) throws Exception {
+		return createAffectedGenomicModel(primaryExternalId, taxonCurie, subtypeName, obsolete, null);
 	}
 
-	public AffectedGenomicModel createAffectedGenomicModel(String primaryExternalId, String name, String taxonCurie, String subtypeName, Boolean obsolete, Organization dataProvider) {
+	public AffectedGenomicModel createAffectedGenomicModel(String primaryExternalId, String taxonCurie, String subtypeName, Boolean obsolete, Organization dataProvider) {
 		Vocabulary subtypeVocabulary = getVocabulary(VocabularyConstants.AGM_SUBTYPE_VOCABULARY);
 		VocabularyTerm subtype = getVocabularyTerm(subtypeVocabulary, subtypeName);
 
@@ -188,7 +188,6 @@ public class BaseITCase {
 		model.setPrimaryExternalId(primaryExternalId);
 		model.setTaxon(getNCBITaxonTerm(taxonCurie));
 		model.setSubtype(subtype);
-		model.setName(name);
 		model.setObsolete(obsolete);
 		model.setDataProvider(dataProvider);
 
