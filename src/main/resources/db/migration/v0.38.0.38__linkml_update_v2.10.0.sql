@@ -21,6 +21,7 @@ ALTER INDEX geneexpressionannotation_singlereference_index RENAME TO geneexpress
 ALTER INDEX phenotypeannotation_singlereference_index RENAME TO phenotypeannotation_evidenceitem_index;
 
 -- From migrations that won't get run due to hotfix on production
+-- from file v0.38.0.36__gene_expression_crossreferences.sql
 UPDATE geneexpressionannotation SET dataprovidercrossreference_id = NULL;
 
 CREATE TABLE IF NOT EXISTS geneexpressionannotation_crossreference (
@@ -41,3 +42,17 @@ CREATE INDEX IF NOT EXISTS gea_crossreference_geneexpressionannotation_index
 
 CREATE INDEX IF NOT EXISTS gea_crossreference_crossreferences_index
     ON geneexpressionannotation_crossreference USING btree (crossreferences_id ASC NULLS LAST);
+
+--from file v0.38.0.37__add_bto_ontology.sql
+INSERT INTO bulkload (id, backendbulkloadtype, name, ontologytype, internal, obsolete, group_id, dbdatecreated, bulkloadstatus)
+	SELECT nextval('bulkload_seq'), 'ONTOLOGY', 'BTO Ontology Load', 'BTO', false, false, id, now(), 'STOPPED'
+	FROM bulkloadgroup WHERE name = 'Ontology Bulk Loads';
+
+INSERT INTO bulkscheduledload (id, cronschedule, scheduleactive)
+	SELECT id, '0 0 22 ? * SUN-THU', true
+	FROM bulkload where name = 'BTO Ontology Load';
+
+INSERT INTO bulkurlload (id, bulkloadurl)
+	SELECT id, 'http://purl.obolibrary.org/obo/bto.owl'
+	FROM bulkload where name = 'BTO Ontology Load';
+
