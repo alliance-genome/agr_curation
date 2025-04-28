@@ -41,10 +41,10 @@ public class ModelDocumentBuilder {
 			ConditionRelationAnnotation annot = allConditionRels.computeIfAbsent(uniqueConditionRelations, k -> new ConditionRelationAnnotation(agmDiseaseAnnotation.getConditionRelations(), new ArrayList<>(), new ArrayList<>()));
 			annot.diseaseAnnotations.add(agmDiseaseAnnotation);
 			Set<Gene> genes = geneConditionMap.computeIfAbsent(uniqueConditionRelations, k -> new HashSet<>());
-			if(agmDiseaseAnnotation.getInferredGene() != null){
+			if (agmDiseaseAnnotation.getInferredGene() != null) {
 				genes.add(agmDiseaseAnnotation.getInferredGene());
 			}
-			if(agmDiseaseAnnotation.getAssertedGenes() != null){
+			if (agmDiseaseAnnotation.getAssertedGenes() != null) {
 				genes.addAll(agmDiseaseAnnotation.getAssertedGenes());
 			}
 			genes.addAll(associatedGenes);
@@ -56,10 +56,10 @@ public class ModelDocumentBuilder {
 			ConditionRelationAnnotation annot = allConditionRels.computeIfAbsent(uniqueConditionRelations, k -> new ConditionRelationAnnotation(agmPhenotypeAnnotation.getConditionRelations(), new ArrayList<>(), new ArrayList<>()));
 			annot.phenotypeAnnotations.add(agmPhenotypeAnnotation);
 			Set<Gene> genes = geneConditionMap.computeIfAbsent(uniqueConditionRelations, k -> new HashSet<>());
-			if(agmPhenotypeAnnotation.getInferredGene() != null){
+			if (agmPhenotypeAnnotation.getInferredGene() != null) {
 				genes.add(agmPhenotypeAnnotation.getInferredGene());
 			}
-			if(agmPhenotypeAnnotation.getAssertedGenes() != null){
+			if (agmPhenotypeAnnotation.getAssertedGenes() != null) {
 				genes.addAll(agmPhenotypeAnnotation.getAssertedGenes());
 			}
 			genes.addAll(associatedGenes);
