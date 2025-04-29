@@ -20,12 +20,9 @@ import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
 import org.apache.commons.collections.CollectionUtils;
 import org.semanticweb.elk.owlapi.ElkReasonerFactory;
 import org.semanticweb.owlapi.apibinding.OWLManager;
-import org.semanticweb.owlapi.model.AxiomType;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAnnotation;
-import org.semanticweb.owlapi.model.OWLAnnotationAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLAnnotationValue;
-import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLLiteral;
@@ -358,26 +355,22 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
 			String mainSynonymValue = getString(annotation.getValue());
 
 			if (node != null) {
-				if (isDisplaySynonym(ontology, node.getIRI().toString(), mainSynonymValue)) {
-					  synonym.setIsDisplaySynonym(true);
-				 }
-				//ontology.annotationAssertionAxioms(node.getIRI()).forEach(axiom -> {
-				//	if (axiom.isAnnotated()) {
-				//		axiom.annotations().forEach(an -> {
-				//			String inkey = an.getProperty().getIRI().getShortForm();
-				//			Log.info("inkey " + inkey);
-				//			if (inkey.equals("annotatedTarget")) {
-				//				Log.info("annotated target value " + an.getValue());
-				//			}
-				//			if (inkey.equals("hasSynonymType")) {
-				//				String shortForm = getIRIShortForm(an.getValue());
-				//				if (shortForm.equals("DISPLAY_SYNONYM")) {
-				//					synonym.setIsDisplaySynonym(true);
-				//				}
-				//			}
-				//		});
-				//	}
-				//});
+				ontology.annotationAssertionAxioms(node.getIRI()).forEach(axiom -> {
+					if (axiom.isAnnotated()) {
+						String valueText = getString(axiom.getValue());
+						if (valueText.equals(mainSynonymValue)) {
+							axiom.annotations().forEach(an -> {
+								String inkey = an.getProperty().getIRI().getShortForm();
+								if (inkey.equals("hasSynonymType")) {
+									String shortForm = getIRIShortForm(an.getValue());
+									if (shortForm.equals("DISPLAY_SYNONYM")) {
+										synonym.setIsDisplaySynonym(true);
+									}
+								}
+							});
+						}
+					}
+				});
 			}
 			synonym.setName(mainSynonymValue);
 			synonym.setHasExactSynonym(true);
@@ -555,38 +548,4 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
 
 		return property.getIRI().getFragment().startsWith(config.getLoadOnlyIRIPrefix() + "_");
 	}
-
-	private boolean isDisplaySynonym(OWLOntology ontology, String classIRI, String synonymText) {
-		for (OWLAnnotationAssertionAxiom axiom : ontology.getAxioms(AxiomType.ANNOTATION_ASSERTION)) {
-			// Check that the axiom has annotations (i.e., it's from <owl:Axiom>)
-			if (!axiom.isAnnotated()) {
-				continue;
-			}
-
-			// Ensure the value is the synonym text we're looking for
-			String valueText = getString(axiom.getValue());
-			if (!valueText.equals(synonymText)) {
-				continue;
-			}
-
-			// Ensure the subject matches the class we're interested in
-			if (axiom.getSubject() instanceof IRI subjectIRI &&
-					!subjectIRI.toString().equals(classIRI)) {
-				continue;
-			}
-
-			for (OWLAnnotation annotation : axiom.getAnnotations()) {
-				String key = annotation.getProperty().getIRI().getShortForm();
-				if (key.equals("hasSynonymType")) {
-					String shortForm = getIRIShortForm(annotation.getValue());
-					if (shortForm.equals("DISPLAY_SYNONYM")) {
-						return true;
-					}
-				}
-			}
-		}
-
-		return false;
-	}
-
 }
