@@ -41,7 +41,7 @@ public class ConditionRelationDTOValidator extends AuditedObjectDTOValidator<Con
 		
 		ConditionRelation relation = new ConditionRelation();
 
-		Reference reference = validateReference(dto.getReferenceCurie());
+		Reference reference = validateReference("reference_curie", dto.getReferenceCurie());
 		String refCurie = reference == null ? null : reference.getCurie();
 
 		String uniqueId = AnnotationUniqueIdHelper.getConditionRelationUniqueId(dto, refCurie);

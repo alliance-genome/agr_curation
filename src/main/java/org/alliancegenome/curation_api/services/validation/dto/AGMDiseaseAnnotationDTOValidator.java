@@ -45,7 +45,7 @@ public class AGMDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOValida
 		AGMDiseaseAnnotation annotation = new AGMDiseaseAnnotation();
 		AffectedGenomicModel agm = validateRequiredIdentifier(agmService, "agm_identifier", dto.getAgmIdentifier());
 
-		Reference reference = validateRequiredReference(dto.getEvidenceCurie());
+		Reference reference = validateRequiredReference("evidence_curie", dto.getEvidenceCurie());
 		String refCurie = reference == null ? null : reference.getCurie();
 
 		
