@@ -352,23 +352,27 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
 				term.setSynonyms(new ArrayList<>());
 			}
 			Synonym synonym = new Synonym();
+			String mainSynonymValue = getString(annotation.getValue());
 
 			if (node != null) {
-				ontology.annotationAssertionAxioms(node.getIRI()).forEach(annot -> {
-					if (annot.isAnnotated()) {
-						annot.annotations().forEach(an -> {
-							String inkey = an.getProperty().getIRI().getShortForm();
-							if (inkey.equals("hasSynonymType")) {
-								String shortForm = getIRIShortForm(an.getValue());
-								if (shortForm.equals("DISPLAY_SYNONYM")) {
-									synonym.setIsDisplaySynonym(true);
+				ontology.annotationAssertionAxioms(node.getIRI()).forEach(axiom -> {
+					if (axiom.isAnnotated()) {
+						String valueText = getString(axiom.getValue());
+						if (valueText.equals(mainSynonymValue)) {
+							axiom.annotations().forEach(an -> {
+								String inkey = an.getProperty().getIRI().getShortForm();
+								if (inkey.equals("hasSynonymType")) {
+									String shortForm = getIRIShortForm(an.getValue());
+									if (shortForm.equals("DISPLAY_SYNONYM")) {
+										synonym.setIsDisplaySynonym(true);
+									}
 								}
-							}
-						});
+							});
+						}
 					}
 				});
 			}
-			synonym.setName(getString(annotation.getValue()));
+			synonym.setName(mainSynonymValue);
 			synonym.setHasExactSynonym(true);
 			term.getSynonyms().add(synonym);
 		} else if (key.equals("hasRelatedSynonym")) {
@@ -544,5 +548,4 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
 
 		return property.getIRI().getFragment().startsWith(config.getLoadOnlyIRIPrefix() + "_");
 	}
-
 }
