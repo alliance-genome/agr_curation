@@ -17,8 +17,13 @@ export function SubjectAdditionalFieldData({ fieldData }) {
 					dangerouslySetInnerHTML={{ __html: fieldData['alleleSymbol']['displayText'] + '(Allele)' }}
 				></div>
 			);
-		else if (fieldData['type'] === 'AffectedGenomicModel')
-			return <div className="p-info" dangerouslySetInnerHTML={{ __html: fieldData['name'] + '(AGM)' }}></div>;
+		else if (fieldData['type'] === 'AffectedGenomicModel') {
+			let name = fieldData.agmFullName ? fieldData.agmFullName.displayText : getIdentifier(fieldData);
+			return <div
+				className="p-info"
+				dangerouslySetInnerHTML={{ __html: name + '(AGM)' }}
+			></div>
+		}
 	}
 	return null;
 }
