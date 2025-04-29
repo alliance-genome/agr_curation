@@ -641,7 +641,11 @@ export const DiseaseAnnotationsTable = () => {
 
 	const geneticModifierAgmsSearch = (event, setFiltered, setInputValue) => {
 		const autocompleteFields = [
-			'name',
+			'agmFullName.formatText',
+			'agmSynonyms.formatText',
+			'agmFullName.displayText',
+			'agmSynonyms.displayText',
+			'agmSecondaryIds.secondaryId',
 			'curie',
 			'primaryExternalId',
 			'modInternalId',
