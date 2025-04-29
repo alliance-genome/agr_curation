@@ -19,10 +19,7 @@ export function SubjectAdditionalFieldData({ fieldData }) {
 			);
 		else if (fieldData['type'] === 'AffectedGenomicModel') {
 			let name = fieldData.agmFullName ? fieldData.agmFullName.displayText : getIdentifier(fieldData);
-			return <div
-				className="p-info"
-				dangerouslySetInnerHTML={{ __html: name + '(AGM)' }}
-			></div>
+			return <div className="p-info" dangerouslySetInnerHTML={{ __html: name + '(AGM)' }}></div>;
 		}
 	}
 	return null;
