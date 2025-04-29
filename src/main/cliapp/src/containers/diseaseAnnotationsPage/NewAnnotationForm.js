@@ -673,7 +673,7 @@ export const NewAnnotationForm = ({
 										<label htmlFor="assertedAlleles">Asserted Alleles</label>
 									</div>
 									<div className={widgetColumnSize}>
-										<AutocompleteFormEditor
+										<AutocompleteFormMultiEditor
 											customRef={assertedAllelesRef}
 											search={assertedAllelesSearch}
 											name="assertedAlleles"
