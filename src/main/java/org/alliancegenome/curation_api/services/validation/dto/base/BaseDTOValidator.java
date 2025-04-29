@@ -205,16 +205,15 @@ public class BaseDTOValidator<E extends Object> {
 		return dpResponse;
 	}
 	
-	protected Reference validateReference(String referenceCurie) {
-		return validateReference(referenceCurie, false);
+	protected Reference validateReference(String field, String referenceCurie) {
+		return validateReference(field, referenceCurie, false);
 	}
 	
-	protected Reference validateRequiredReference(String referenceCurie) {
-		return validateReference(referenceCurie, true);
+	protected Reference validateRequiredReference(String field, String referenceCurie) {
+		return validateReference(field, referenceCurie, true);
 	}
 	
-	protected Reference validateReference(String referenceCurie, boolean isRequired) {
-		String field = "reference_curie";
+	protected Reference validateReference(String field, String referenceCurie, boolean isRequired) {
 		if (StringUtils.isBlank(referenceCurie)) {
 			if (isRequired) {
 				response.addErrorMessage(field, ValidationConstants.REQUIRED_MESSAGE);
