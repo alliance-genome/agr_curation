@@ -33,7 +33,7 @@ public class GeneDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOValid
 		GeneDiseaseAnnotation annotation = new GeneDiseaseAnnotation();
 		Gene gene = validateRequiredIdentifier(geneService, "gene_identifier", dto.getGeneIdentifier());
 		
-		Reference reference = validateRequiredReference(dto.getEvidenceCurie());
+		Reference reference = validateRequiredReference("evidence_curie", dto.getEvidenceCurie());
 		String refCurie = reference == null ? null : reference.getCurie();
 
 		if (gene != null) {

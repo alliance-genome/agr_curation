@@ -38,7 +38,7 @@ public class AlleleDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOVal
 		AlleleDiseaseAnnotation annotation = new AlleleDiseaseAnnotation();
 		Allele allele = validateRequiredIdentifier(alleleService, "allele_identifier", dto.getAlleleIdentifier());
 		
-		Reference reference = validateRequiredReference(dto.getEvidenceCurie());
+		Reference reference = validateRequiredReference("evidence_curie", dto.getEvidenceCurie());
 		String refCurie = reference == null ? null : reference.getCurie();
 
 		if (allele != null) {
