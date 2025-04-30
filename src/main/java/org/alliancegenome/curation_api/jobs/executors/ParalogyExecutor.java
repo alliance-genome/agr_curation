@@ -1,8 +1,10 @@
 package org.alliancegenome.curation_api.jobs.executors;
 
-import io.quarkus.logging.Log;
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
+import java.io.FileInputStream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.zip.GZIPInputStream;
+
 import org.alliancegenome.curation_api.dao.GeneToGeneParalogyDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
@@ -13,10 +15,9 @@ import org.alliancegenome.curation_api.model.ingest.dto.fms.ParalogyIngestFmsDTO
 import org.alliancegenome.curation_api.services.GeneToGeneParalogyService;
 import org.apache.commons.lang3.StringUtils;
 
-import java.io.FileInputStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.zip.GZIPInputStream;
+import io.quarkus.logging.Log;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 
 @ApplicationScoped
 public class ParalogyExecutor extends LoadFileExecutor {

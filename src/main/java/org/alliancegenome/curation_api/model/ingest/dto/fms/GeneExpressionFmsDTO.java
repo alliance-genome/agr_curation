@@ -1,8 +1,9 @@
 package org.alliancegenome.curation_api.model.ingest.dto.fms;
 
+import org.alliancegenome.curation_api.model.ingest.dto.base.BaseDTO;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import org.alliancegenome.curation_api.model.ingest.dto.base.BaseDTO;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
