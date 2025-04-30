@@ -2,9 +2,9 @@ package org.alliancegenome.curation_api.interfaces.document;
 
 import java.util.HashMap;
 
+import org.alliancegenome.curation_api.model.document.es.HTPDatasetSearchResultDocument;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.view.View;
-import org.alliancegenome.curation_api.model.document.es.HTPDatasetSearchResultDocument;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 

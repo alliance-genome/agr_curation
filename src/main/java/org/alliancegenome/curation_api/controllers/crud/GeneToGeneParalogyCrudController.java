@@ -1,13 +1,13 @@
 package org.alliancegenome.curation_api.controllers.crud;
 
-import org.alliancegenome.curation_api.model.entities.GeneToGeneParalogy;
 import org.alliancegenome.curation_api.controllers.base.BaseEntityCrudController;
 import org.alliancegenome.curation_api.dao.GeneToGeneParalogyDAO;
 import org.alliancegenome.curation_api.interfaces.crud.GeneToGeneParalogyCrudInterface;
 import org.alliancegenome.curation_api.jobs.executors.ParalogyExecutor;
-import org.alliancegenome.curation_api.services.GeneToGeneParalogyService;
-import org.alliancegenome.curation_api.response.APIResponse;
+import org.alliancegenome.curation_api.model.entities.GeneToGeneParalogy;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.ParalogyIngestFmsDTO;
+import org.alliancegenome.curation_api.response.APIResponse;
+import org.alliancegenome.curation_api.services.GeneToGeneParalogyService;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.RequestScoped;

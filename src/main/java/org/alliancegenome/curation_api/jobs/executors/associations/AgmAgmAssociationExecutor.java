@@ -1,8 +1,9 @@
 package org.alliancegenome.curation_api.jobs.executors.associations;
 
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
-import lombok.extern.jbosslog.JBossLog;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.jobs.executors.LoadFileExecutor;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
@@ -12,9 +13,9 @@ import org.alliancegenome.curation_api.model.ingest.dto.associations.AgmAgmAssoc
 import org.alliancegenome.curation_api.services.associations.AgmAgmAssociationService;
 import org.apache.commons.collections.CollectionUtils;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+import lombok.extern.jbosslog.JBossLog;
 
 @JBossLog
 @ApplicationScoped
