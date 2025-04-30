@@ -1,7 +1,10 @@
 package org.alliancegenome.curation_api.controllers;
 
-import jakarta.enterprise.context.RequestScoped;
-import jakarta.inject.Inject;
+import static org.reflections.scanners.Scanners.TypesAnnotated;
+
+import java.util.Set;
+import java.util.TreeMap;
+
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.interfaces.APIVersionInterface;
 import org.alliancegenome.curation_api.model.output.APIVersionInfo;
@@ -9,10 +12,8 @@ import org.alliancegenome.curation_api.services.APIVersionInfoService;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.reflections.Reflections;
 
-import java.util.Set;
-import java.util.TreeMap;
-
-import static org.reflections.scanners.Scanners.TypesAnnotated;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
 
 @RequestScoped
 public class APIVersionInfoController implements APIVersionInterface {

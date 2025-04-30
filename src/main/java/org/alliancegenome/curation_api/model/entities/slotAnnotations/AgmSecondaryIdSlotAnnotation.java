@@ -1,15 +1,17 @@
 package org.alliancegenome.curation_api.model.entities.slotAnnotations;
 
+import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
+import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
+import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
+
 import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToOne;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
-import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
-import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
-import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
-import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
 @Entity
 @Data

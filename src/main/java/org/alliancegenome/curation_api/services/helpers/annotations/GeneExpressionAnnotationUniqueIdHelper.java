@@ -1,10 +1,11 @@
 package org.alliancegenome.curation_api.services.helpers.annotations;
 
-import jakarta.enterprise.context.RequestScoped;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.ConsolidatedGeneExpressionFmsDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.GeneExpressionFmsDTO;
 import org.alliancegenome.curation_api.services.helpers.UniqueIdGeneratorHelper;
 import org.apache.commons.lang3.ObjectUtils;
+
+import jakarta.enterprise.context.RequestScoped;
 
 @RequestScoped
 public class GeneExpressionAnnotationUniqueIdHelper {
