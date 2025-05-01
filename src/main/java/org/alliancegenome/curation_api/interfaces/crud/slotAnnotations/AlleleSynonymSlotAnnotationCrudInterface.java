@@ -1,8 +1,8 @@
 package org.alliancegenome.curation_api.interfaces.crud.slotAnnotations;
 
 import org.alliancegenome.curation_api.interfaces.base.BaseIdCrudInterface;
-import org.alliancegenome.curation_api.model.entities.slotAnnotations.AlleleSynonymSlotAnnotation;
 import org.alliancegenome.curation_api.model.Null;
+import org.alliancegenome.curation_api.model.entities.slotAnnotations.AlleleSynonymSlotAnnotation;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.view.View;
 import org.eclipse.microprofile.openapi.annotations.media.Content;

@@ -33,17 +33,15 @@ public class GeneDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOValid
 		GeneDiseaseAnnotation annotation = new GeneDiseaseAnnotation();
 		Gene gene = validateRequiredIdentifier(geneService, "gene_identifier", dto.getGeneIdentifier());
 		
-		Reference reference = validateRequiredReference(dto.getEvidenceCurie());
+		Reference reference = validateRequiredReference("evidence_curie", dto.getEvidenceCurie());
 		String refCurie = reference == null ? null : reference.getCurie();
 
 		if (gene != null) {
 			String uniqueId = AnnotationUniqueIdHelper.getDiseaseAnnotationUniqueId(dto, dto.getGeneIdentifier(), refCurie);
-			String annotationId = UniqueIdentifierHelper.setAnnotationIdentifiers(dto, annotation, uniqueId);
-			String identifyingField = UniqueIdentifierHelper.getIdentifyingField(dto);
-
-			SearchResponse<GeneDiseaseAnnotation> annotationList = geneDiseaseAnnotationDAO.findByField(identifyingField, annotationId);
+			
+			SearchResponse<GeneDiseaseAnnotation> annotationList = geneDiseaseAnnotationDAO.findByField(UniqueIdentifierHelper.getIdentifyingField(dto), UniqueIdentifierHelper.getAnnotationIdentifier(dto, uniqueId));
 			annotation = AnnotationRetrievalHelper.getCurrentAnnotation(annotation, annotationList);
-			annotation.setUniqueId(uniqueId);
+			UniqueIdentifierHelper.setAnnotationIdentifiers(dto, annotation, uniqueId);
 			annotation.setDiseaseAnnotationSubject(gene);
 			UniqueIdentifierHelper.setObsoleteAndInternal(dto, annotation);
 

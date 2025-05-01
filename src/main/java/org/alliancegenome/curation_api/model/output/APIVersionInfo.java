@@ -1,10 +1,12 @@
 package org.alliancegenome.curation_api.model.output;
 
-import com.fasterxml.jackson.annotation.JsonView;
-import lombok.Data;
+import java.util.TreeMap;
+
 import org.alliancegenome.curation_api.view.View;
 
-import java.util.TreeMap;
+import com.fasterxml.jackson.annotation.JsonView;
+
+import lombok.Data;
 
 @Data
 public class APIVersionInfo {

@@ -11,6 +11,15 @@ export const SubjectAutocompleteTemplate = ({ item, setAutocompleteHoverItem, op
 				/>
 			</div>
 		);
+	} else if (item.agmSymbol) {
+		return (
+			<div>
+				<div
+					onMouseOver={(event) => onSelectionOver(event, item, query, op, setAutocompleteHoverItem)}
+					dangerouslySetInnerHTML={{ __html: item.agmSymbol.displayText + ' (' + getIdentifier(item) + ') ' }}
+				/>
+			</div>
+		);
 	} else if (item.alleleSymbol) {
 		return (
 			<div>
@@ -38,12 +47,12 @@ export const SubjectAutocompleteTemplate = ({ item, setAutocompleteHoverItem, op
 				/>
 			</div>
 		);
-	} else if (item.name) {
+	} else if (item.agmFullName) {
 		return (
 			<div>
 				<div
 					onMouseOver={(event) => onSelectionOver(event, item, query, op, setAutocompleteHoverItem)}
-					dangerouslySetInnerHTML={{ __html: item.name + ' (' + getIdentifier(item) + ') ' }}
+					dangerouslySetInnerHTML={{ __html: item.agmFullName.displayText + ' (' + getIdentifier(item) + ') ' }}
 				/>
 			</div>
 		);

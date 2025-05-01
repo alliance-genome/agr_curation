@@ -2,7 +2,11 @@ package org.alliancegenome.curation_api.services.validation.dto.fms;
 
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeParseException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
@@ -10,17 +14,31 @@ import org.alliancegenome.curation_api.dao.GeneExpressionAnnotationDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
 import org.alliancegenome.curation_api.exceptions.ValidationException;
-import org.alliancegenome.curation_api.model.entities.*;
+import org.alliancegenome.curation_api.model.entities.AnatomicalSite;
+import org.alliancegenome.curation_api.model.entities.CrossReference;
+import org.alliancegenome.curation_api.model.entities.ExpressionPattern;
+import org.alliancegenome.curation_api.model.entities.Gene;
+import org.alliancegenome.curation_api.model.entities.GeneExpressionAnnotation;
+import org.alliancegenome.curation_api.model.entities.Reference;
+import org.alliancegenome.curation_api.model.entities.TemporalContext;
+import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.AnatomicalTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.GOTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.MMOTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.OntologyTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.StageTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.UBERONTerm;
-import org.alliancegenome.curation_api.model.ingest.dto.fms.*;
+import org.alliancegenome.curation_api.model.ingest.dto.fms.ConsolidatedGeneExpressionFmsDTO;
+import org.alliancegenome.curation_api.model.ingest.dto.fms.CrossReferenceFmsDTO;
+import org.alliancegenome.curation_api.model.ingest.dto.fms.UberonSlimTermDTO;
+import org.alliancegenome.curation_api.model.ingest.dto.fms.WhenExpressedFmsDTO;
+import org.alliancegenome.curation_api.model.ingest.dto.fms.WhereExpressedFmsDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
-import org.alliancegenome.curation_api.services.*;
+import org.alliancegenome.curation_api.services.GeneService;
+import org.alliancegenome.curation_api.services.OrganizationService;
+import org.alliancegenome.curation_api.services.ReferenceService;
+import org.alliancegenome.curation_api.services.VocabularyTermService;
 import org.alliancegenome.curation_api.services.helpers.annotations.GeneExpressionAnnotationUniqueIdHelper;
 import org.alliancegenome.curation_api.services.ontology.AnatomicalTermService;
 import org.alliancegenome.curation_api.services.ontology.GoTermService;
@@ -51,7 +69,7 @@ public class GeneExpressionAnnotationFmsDTOValidator {
 	@Inject OntologyTermService ontologyTermService;
 	@Inject CrossReferenceFmsDTOValidator crossReferenceFmsDTOValidator;
 
-	public GeneExpressionAnnotation validateAnnotation(ConsolidatedGeneExpressionFmsDTO consolidatedGeneExpressionFmsDTO, BackendBulkDataProvider dataProvider, Map<String, Set<String>> experiments) throws ValidationException {
+	public GeneExpressionAnnotation validateAnnotation(ConsolidatedGeneExpressionFmsDTO consolidatedGeneExpressionFmsDTO, BackendBulkDataProvider dataProvider, Map<String, Set<String>> experiments, Map<String, Set<CrossReferenceFmsDTO>> crossReferences) throws ValidationException {
 		ObjectResponse<GeneExpressionAnnotation> response = new ObjectResponse<>();
 		GeneExpressionAnnotation geneExpressionAnnotation = new GeneExpressionAnnotation();
 		String uniqueId = "empty";
@@ -76,22 +94,24 @@ public class GeneExpressionAnnotationFmsDTOValidator {
 			geneExpressionAnnotation.setExpressionPattern(new ExpressionPattern());
 		}
 
-		if (ObjectUtils.isNotEmpty(consolidatedGeneExpressionFmsDTO.getCrossReferences())) {
-			Set<CrossReference> validatedCrossRefs = new HashSet<>();
-			for (CrossReferenceFmsDTO crossRefDto : consolidatedGeneExpressionFmsDTO.getCrossReferences()) {
-				ObjectResponse<List<CrossReference>> crossRefResponse = crossReferenceFmsDTOValidator.validateCrossReferenceFmsDTO(crossRefDto);
-				if (crossRefResponse.hasErrors()) {
-					response.addErrorMessage("cross_references", crossRefResponse.errorMessagesString());
-					break;
-				} else {
-					validatedCrossRefs.addAll(crossRefResponse.getEntity());
+		if (dataProvider.name().equals("ZFIN")) {
+			if (ObjectUtils.isNotEmpty(consolidatedGeneExpressionFmsDTO.getCrossReferences())) {
+				Set<CrossReference> validatedCrossRefs = new HashSet<>();
+				for (CrossReferenceFmsDTO crossRefDto : consolidatedGeneExpressionFmsDTO.getCrossReferences()) {
+					ObjectResponse<List<CrossReference>> crossRefResponse = crossReferenceFmsDTOValidator.validateCrossReferenceFmsDTO(crossRefDto);
+					if (crossRefResponse.hasErrors()) {
+						response.addErrorMessage("cross_references", crossRefResponse.errorMessagesString());
+						break;
+					} else {
+						validatedCrossRefs.addAll(crossRefResponse.getEntity());
+					}
 				}
-			}
-			if (geneExpressionAnnotation.getCrossReferences() == null) {
-				geneExpressionAnnotation.setCrossReferences(validatedCrossRefs.stream().toList());
-			} else {
-				geneExpressionAnnotation.getCrossReferences().clear();
-				geneExpressionAnnotation.getCrossReferences().addAll(validatedCrossRefs);
+				if (geneExpressionAnnotation.getCrossReferences() == null) {
+					geneExpressionAnnotation.setCrossReferences(validatedCrossRefs.stream().toList());
+				} else {
+					geneExpressionAnnotation.getCrossReferences().clear();
+					geneExpressionAnnotation.getCrossReferences().addAll(validatedCrossRefs);
+				}
 			}
 		}
 
@@ -162,6 +182,14 @@ public class GeneExpressionAnnotationFmsDTOValidator {
 			Set<String> expressionIds = new HashSet<>();
 			expressionIds.add(uniqueId);
 			experiments.put(experimentId, expressionIds);
+		}
+		if (dataProvider.name().equals("WB") || dataProvider.name().equals("MGI")) {
+			if (crossReferences.containsKey(experimentId)) {
+				crossReferences.get(experimentId).addAll(consolidatedGeneExpressionFmsDTO.getCrossReferences());
+			} else {
+				Set<CrossReferenceFmsDTO> experimentCrossReferences = new HashSet<>(consolidatedGeneExpressionFmsDTO.getCrossReferences());
+				crossReferences.put(experimentId, experimentCrossReferences);
+			}
 		}
 		return geneExpressionAnnotation;
 	}

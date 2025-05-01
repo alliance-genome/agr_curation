@@ -6,7 +6,7 @@ charset = utf-8
 indent_style = tab
 insert_final_newline = true
 trim_trailing_whitespace = true
-max_line_length = 600
+max_line_length = 800
 
 [*.md]
 max_line_length = off

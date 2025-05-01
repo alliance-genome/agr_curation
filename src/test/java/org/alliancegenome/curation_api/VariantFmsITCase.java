@@ -2,8 +2,8 @@ package org.alliancegenome.curation_api;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.oneOf;
 import static org.hamcrest.Matchers.nullValue;
+import static org.hamcrest.Matchers.oneOf;
 
 import java.util.HashMap;
 import java.util.List;

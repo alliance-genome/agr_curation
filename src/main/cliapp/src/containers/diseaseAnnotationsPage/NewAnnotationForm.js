@@ -323,18 +323,29 @@ export const NewAnnotationForm = ({
 	const subjectSearch = (event, setFiltered, setQuery) => {
 		//The order of the below fields are as per the Autocomplete search result
 		const autocompleteFields = [
+			'geneSymbol.formatText',
+			'alleleSymbol.formatText',
+			'agmFullName.formatText',
+			'geneFullName.formatText',
+			'alleleFullName.formatText',
+			'alleleSynonyms.formatText',
+			'geneSynonyms.formatText',
+			'agmSynonyms.formatText',
 			'geneSymbol.displayText',
 			'alleleSymbol.displayText',
-			'name',
+			'agmFullName.displayText',
 			'geneFullName.displayText',
 			'alleleFullName.displayText',
 			'alleleSynonyms.displayText',
 			'geneSynonyms.displayText',
+			'agmSynonyms.displayText',
 			'primaryExternalId',
 			'modInternalId',
 			'curie',
 			'crossReferences.referencedCurie',
 			'alleleSecondaryIds.secondaryId',
+			'agmSecondaryIds.secondaryId',
+			'geneSecondaryIds.secondaryId',
 		];
 		const endpoint = 'biologicalentity';
 		const filterName = 'diseaseAnnotationSubjectFilter';
@@ -662,7 +673,7 @@ export const NewAnnotationForm = ({
 										<label htmlFor="assertedAlleles">Asserted Alleles</label>
 									</div>
 									<div className={widgetColumnSize}>
-										<AutocompleteFormEditor
+										<AutocompleteFormMultiEditor
 											customRef={assertedAllelesRef}
 											search={assertedAllelesSearch}
 											name="assertedAlleles"

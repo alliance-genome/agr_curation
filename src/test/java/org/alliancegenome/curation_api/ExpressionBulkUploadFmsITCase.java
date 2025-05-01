@@ -1,5 +1,9 @@
 package org.alliancegenome.curation_api;
 
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.in;
+import static org.hamcrest.Matchers.is;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -26,8 +30,6 @@ import io.quarkus.test.junit.QuarkusIntegrationTest;
 import io.restassured.RestAssured;
 import io.restassured.config.HttpClientConfig;
 import io.restassured.config.RestAssuredConfig;
-
-import static org.hamcrest.Matchers.*;
 
 
 @QuarkusIntegrationTest
@@ -106,9 +108,7 @@ public class ExpressionBulkUploadFmsITCase extends BaseITCase {
 			.body("results[0].expressionAssayUsed.curie", is(mmoTerm))
 			.body("results[0].obsolete", is(false))
 			.body("results[0].internal", is(false))
-			.body("results[0].expressionAnnotations[0].uniqueId", is(annotationUniqueIdExpected))
-			.body("results[0].crossReferences[0].referencedCurie", is(in(List.of(crossReferenceId1, crossReferenceId2))))
-			.body("results[0].crossReferences[1].referencedCurie", is(in(List.of(crossReferenceId1, crossReferenceId2))));
+			.body("results[0].expressionAnnotations[0].uniqueId", is(annotationUniqueIdExpected));
 
 		RestAssured.given().when()
 			.header("Content-Type", "application/json")

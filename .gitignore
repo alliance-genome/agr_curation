@@ -7,7 +7,9 @@ target
 .vscode
 .project
 .settings
-.idea
+.idea/*
+!.idea/codeStyles/
+!.idea/codeStyles/**
 *.iml
 *.swp
 src/main/webapp/index.html

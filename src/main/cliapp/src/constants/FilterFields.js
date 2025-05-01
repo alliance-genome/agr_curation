@@ -15,9 +15,17 @@ export const FIELD_SETS = Object.freeze({
 		filterName: 'alleleAggregationFilter',
 		fields: ['dataProvider.abbreviation'],
 	},
+	agmNameFieldSet: {
+		filterName: 'agmNameFilter',
+		fields: ['agmFullName.displayText', 'agmFullName.formatText'],
+	},
 	agmSecondaryIdsFieldSet: {
 		filterName: 'agmSecondaryIdsFilter',
 		fields: ['agmSecondaryIds.secondaryId', 'agmSecondaryIds.evidence.curie'],
+	},
+	agmSynonymsFieldSet: {
+		filterName: 'agmSynonymsFilter',
+		fields: ['agmSynonyms.displayText', 'agmSynonyms.formatText'],
 	},
 	alleleAggregationFieldSet: {
 		filterName: 'alleleAggregationFilter',
@@ -728,6 +736,9 @@ export const FILTER_CONFIGS = Object.freeze({
 		filterComponentType: 'input',
 		fieldSets: [FIELD_SETS.aggregationDatabaseFieldSet],
 	},
+	agmNameFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.agmNameFieldSet] },
+	agmSecondaryIdsFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.agmSecondaryIdsFieldSet] },
+	agmSynonymsFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.agmSynonymsFieldSet] },
 	alleleFunctionalImpactsFilterConfig: {
 		filterComponentType: 'input',
 		fieldSets: [FIELD_SETS.alleleFunctionalImpactsFieldSet],
@@ -751,7 +762,6 @@ export const FILTER_CONFIGS = Object.freeze({
 		fieldSets: [FIELD_SETS.alleleNomenclatureEventsFieldSet],
 	},
 	alleleSecondaryIdsFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.alleleSecondaryIdsFieldSet] },
-	agmSecondaryIdsFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.agmSecondaryIdsFieldSet] },
 	alleleSymbolFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.alleleSymbolFieldSet] },
 	alleleSynonymsFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.alleleSynonymsFieldSet] },
 	assertedAllelesFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.assertedAllelesFieldSet] },

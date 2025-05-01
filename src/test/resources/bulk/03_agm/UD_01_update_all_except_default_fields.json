@@ -2,7 +2,6 @@
   {
     "primary_external_id": "AGMTEST:Agm0001",
     "subtype_name": "genotype",
-    "name": "TestAgm1a",
     "taxon_curie": "NCBITaxon:10116",
     "created_by_curie": "AGMTEST:Person0002",
     "updated_by_curie": "AGMTEST:Person0001",
@@ -19,8 +18,34 @@
         "prefix": "TEST2"
       }
     },
-    "synonyms" : [
-      "Syn 1","Syn 2"
+    "agm_full_name_dto": {
+      "display_text": "AGM<sup>test2</sup>",
+      "format_text": "AGM[test2]",
+      "name_type_name": "full_name",
+      "created_by_curie": "AGMTEST:Person0002",
+      "updated_by_curie": "AGMTEST:Person0001",
+      "date_created": "2022-04-09T22:10:12+00:00",
+      "date_updated": "2022-04-10T22:10:12+00:00"
+    },
+    "agm_synonym_dtos": [
+      {
+        "display_text": "AGM<sup>t2</sup>",
+        "format_text": "AGM[t2]",
+        "name_type_name": "retired_name",
+        "created_by_curie": "AGMTEST:Person0002",
+        "updated_by_curie": "AGMTEST:Person0001",
+        "date_created": "2022-04-09T22:10:12+00:00",
+        "date_updated": "2022-04-10T22:10:12+00:00"
+      }
+    ],
+    "agm_secondary_id_dtos": [
+      {
+        "secondary_id": "TEST:Secondary2",
+        "created_by_curie": "ALLELETEST:Person0002",
+        "updated_by_curie": "ALLELETEST:Person0001",
+        "date_created": "2022-04-09T22:10:12+00:00",
+        "date_updated": "2022-04-10T22:10:12+00:00"
+      }
     ]
   }
 ]

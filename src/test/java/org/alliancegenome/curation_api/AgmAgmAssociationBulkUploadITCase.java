@@ -1,19 +1,29 @@
 package org.alliancegenome.curation_api;
 
+import static org.hamcrest.Matchers.hasKey;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
+
+import java.time.OffsetDateTime;
+
+import org.alliancegenome.curation_api.base.BaseITCase;
+import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
+import org.alliancegenome.curation_api.model.entities.Organization;
+import org.alliancegenome.curation_api.resources.TestContainerResource;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Order;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestMethodOrder;
+
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusIntegrationTest;
 import io.restassured.RestAssured;
 import io.restassured.config.HttpClientConfig;
 import io.restassured.config.RestAssuredConfig;
-import org.alliancegenome.curation_api.base.BaseITCase;
-import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
-import org.alliancegenome.curation_api.model.entities.Organization;
-import org.alliancegenome.curation_api.resources.TestContainerResource;
-import org.junit.jupiter.api.*;
-
-import java.time.OffsetDateTime;
-
-import static org.hamcrest.Matchers.*;
 
 
 @QuarkusIntegrationTest
@@ -45,8 +55,8 @@ public class AgmAgmAssociationBulkUploadITCase extends BaseITCase {
 
 	private void loadRequiredEntities() {
 		Organization dataProvider = getOrganization("ZFIN");
-		agmSubject = createAffectedGenomicModel(agmSubjectCurie, "test name subject", "NCBITaxon:7955", "fish", false, dataProvider);
-		agmObject = createAffectedGenomicModel(agmObjectCurie, "test name object", "NCBITaxon:7955", "fish", false, dataProvider);
+		agmSubject = createAffectedGenomicModel(agmSubjectCurie, "NCBITaxon:7955", "fish", false, dataProvider);
+		agmObject = createAffectedGenomicModel(agmObjectCurie, "NCBITaxon:7955", "fish", false, dataProvider);
 	}
 	
 	@Test

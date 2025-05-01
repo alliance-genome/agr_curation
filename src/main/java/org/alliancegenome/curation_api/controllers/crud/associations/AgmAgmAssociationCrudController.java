@@ -1,8 +1,7 @@
 package org.alliancegenome.curation_api.controllers.crud.associations;
 
-import jakarta.annotation.PostConstruct;
-import jakarta.enterprise.context.RequestScoped;
-import jakarta.inject.Inject;
+import java.util.List;
+
 import org.alliancegenome.curation_api.controllers.base.BaseEntityCrudController;
 import org.alliancegenome.curation_api.dao.associations.AgmAgmAssociationDAO;
 import org.alliancegenome.curation_api.interfaces.crud.associations.AgmAgmAssociationCrudInterface;
@@ -13,7 +12,9 @@ import org.alliancegenome.curation_api.response.APIResponse;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.associations.AgmAgmAssociationService;
 
-import java.util.List;
+import jakarta.annotation.PostConstruct;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
 
 @RequestScoped
 public class AgmAgmAssociationCrudController extends

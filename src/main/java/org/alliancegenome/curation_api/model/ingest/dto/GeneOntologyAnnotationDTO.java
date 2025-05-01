@@ -1,10 +1,11 @@
 package org.alliancegenome.curation_api.model.ingest.dto;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.entities.Annotation;
+
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = false)

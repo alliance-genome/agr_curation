@@ -45,18 +45,16 @@ public class AGMDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOValida
 		AGMDiseaseAnnotation annotation = new AGMDiseaseAnnotation();
 		AffectedGenomicModel agm = validateRequiredIdentifier(agmService, "agm_identifier", dto.getAgmIdentifier());
 
-		Reference reference = validateRequiredReference(dto.getEvidenceCurie());
+		Reference reference = validateRequiredReference("evidence_curie", dto.getEvidenceCurie());
 		String refCurie = reference == null ? null : reference.getCurie();
 
 		
 		if (agm != null) {
 			String uniqueId = AnnotationUniqueIdHelper.getDiseaseAnnotationUniqueId(dto, dto.getAgmIdentifier(), refCurie);
-			String annotationId = UniqueIdentifierHelper.setAnnotationIdentifiers(dto, annotation, uniqueId);
-			String identifyingField = UniqueIdentifierHelper.getIdentifyingField(dto);
-
-			SearchResponse<AGMDiseaseAnnotation> annotationList = agmDiseaseAnnotationDAO.findByField(identifyingField, annotationId);
+			
+			SearchResponse<AGMDiseaseAnnotation> annotationList = agmDiseaseAnnotationDAO.findByField(UniqueIdentifierHelper.getIdentifyingField(dto), UniqueIdentifierHelper.getAnnotationIdentifier(dto, uniqueId));
 			annotation = AnnotationRetrievalHelper.getCurrentAnnotation(annotation, annotationList);
-			annotation.setUniqueId(uniqueId);
+			UniqueIdentifierHelper.setAnnotationIdentifiers(dto, annotation, uniqueId);
 			annotation.setDiseaseAnnotationSubject(agm);
 			UniqueIdentifierHelper.setObsoleteAndInternal(dto, annotation);
 
