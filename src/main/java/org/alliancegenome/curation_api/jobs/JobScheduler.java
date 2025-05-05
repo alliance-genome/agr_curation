@@ -55,24 +55,37 @@ public class JobScheduler {
 	// @Inject
 	// EventBus bus;
 
-	@Inject Event<PendingBulkLoadJobEvent> pendingJobEvents;
+	@Inject
+	Event<PendingBulkLoadJobEvent> pendingJobEvents;
 
-	@Inject Event<StartedBulkLoadJobEvent> startedJobEvents;
+	@Inject
+	Event<StartedBulkLoadJobEvent> startedJobEvents;
 
-	@Inject Event<StartedLoadJobEvent> startedFileJobEvents;
+	@Inject
+	Event<StartedLoadJobEvent> startedFileJobEvents;
 
-	@Inject BulkLoadFileDAO bulkLoadFileDAO;
-	@Inject BulkLoadFileHistoryDAO bulkLoadFileHistoryDAO;
-	@Inject BulkLoadGroupDAO groupDAO;
-	@Inject BulkScheduledLoadDAO bulkScheduledLoadDAO;
-	@Inject BulkLoadDAO bulkLoadDAO;
-	@Inject BulkLoadFileExceptionDAO bulkLoadFileExceptionDAO;
-	@Inject SlackNotifier slackNotifier;
-	@Inject IndexProcessingWebsocket indexProcessingWebsocket;
+	@Inject
+	BulkLoadFileDAO bulkLoadFileDAO;
+	@Inject
+	BulkLoadFileHistoryDAO bulkLoadFileHistoryDAO;
+	@Inject
+	BulkLoadGroupDAO groupDAO;
+	@Inject
+	BulkScheduledLoadDAO bulkScheduledLoadDAO;
+	@Inject
+	BulkLoadDAO bulkLoadDAO;
+	@Inject
+	BulkLoadFileExceptionDAO bulkLoadFileExceptionDAO;
+	@Inject
+	SlackNotifier slackNotifier;
+	@Inject
+	IndexProcessingWebsocket indexProcessingWebsocket;
 
-	@ConfigProperty(name = "bulk.data.loads.schedulingEnabled") Boolean loadSchedulingEnabled;
-	@ConfigProperty(name = "reindex.schedulingEnabled", defaultValue = "false") Boolean reindexSchedulingEnabled;
-	
+	@ConfigProperty(name = "bulk.data.loads.schedulingEnabled")
+	Boolean loadSchedulingEnabled;
+	@ConfigProperty(name = "reindex.schedulingEnabled", defaultValue = "false")
+	Boolean reindexSchedulingEnabled;
+
 	private ZonedDateTime lastCheck;
 	private Semaphore sem = new Semaphore(1);
 
@@ -127,7 +140,7 @@ public class JobScheduler {
 		if (event != null && event instanceof EndIndexProcessingEvent) {
 			blockedByMassIndexer = false;
 		}
-		
+
 		if (loadSchedulingEnabled && !blockedByMassIndexer) {
 			if (sem.tryAcquire()) {
 				ZonedDateTime start = ZonedDateTime.now();
@@ -211,7 +224,7 @@ public class JobScheduler {
 			Map<String, List<BulkLoadFileHistory>> groupedByFile = histories.stream().collect(Collectors.groupingBy(history -> history.getBulkLoadFile().getMd5Sum()));
 
 			Map<String, List<BulkLoadFileHistory>> limitedGroups = groupedByFile.entrySet().stream()
-				.collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().stream().sorted((o1, o2) -> o2.getLoadStarted().compareTo(o1.getLoadStarted())).filter(history -> !history.getCounts().isEmpty()).limit(2).collect(Collectors.toList())));
+					.collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().stream().sorted((o1, o2) -> o2.getLoadStarted().compareTo(o1.getLoadStarted())).filter(history -> !history.getCounts().isEmpty()).limit(2).collect(Collectors.toList())));
 
 			List<BulkLoadFileHistory> sortedList = limitedGroups.values().stream().flatMap(List::stream).sorted((o1, o2) -> o2.getLoadStarted().compareTo(o1.getLoadStarted())).collect(Collectors.toList());
 
