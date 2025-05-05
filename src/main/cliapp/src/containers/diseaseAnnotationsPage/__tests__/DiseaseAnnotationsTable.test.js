@@ -63,6 +63,7 @@ describe('<DiseaseAnnotationsPage />', () => {
 		const diseaseGeneticModifierAllelesTd = await result.findByText('DGM Allele test (WB:DGM2)');
 		const diseaseGeneticModifierGenesTd = await result.findByText('DGM Gene test (WB:DGM3)');
 		const secondaryDataProviderTd = await result.findByText('test provider');
+		const assertedAlleleTd = await result.findByText('Acox1tm1Jkr (MGI:1857811)');
 
 		const updatedByCreatedByArray = await result.findAllByText('MGI:curation_staff');
 		const dateUpdatedDateCreatedArray = await result.findAllByText('2017-06-08T14:15:35Z');
@@ -80,6 +81,7 @@ describe('<DiseaseAnnotationsPage />', () => {
 			expect(annotationTypeTd).toBeInTheDocument();
 			expect(inferredGeneTd).toBeInTheDocument();
 			expect(inferredAlleleTd).toBeInTheDocument();
+			expect(assertedAlleleTd).toBeInTheDocument();
 			expect(dataProviderTd).toBeInTheDocument();
 			expect(withTd).toBeInTheDocument();
 			expect(relatedNotesTd).toBeInTheDocument();

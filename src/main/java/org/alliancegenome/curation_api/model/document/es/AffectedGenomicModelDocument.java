@@ -1,15 +1,21 @@
 package org.alliancegenome.curation_api.model.document.es;
 
-import com.fasterxml.jackson.annotation.JsonView;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
 import org.alliancegenome.curation_api.model.entities.ConditionRelation;
-import org.alliancegenome.curation_api.model.entities.Organization;
+import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.ontology.DOTerm;
 import org.alliancegenome.curation_api.view.View;
 
-import java.util.*;
+import com.fasterxml.jackson.annotation.JsonView;
+
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -22,8 +28,9 @@ public class AffectedGenomicModelDocument extends ESDocument {
 	private AffectedGenomicModel model;
 	private List<String> associatedPhenotype = new ArrayList<>();
 
+	private Gene gene;
 	private Set<DOTerm> diseaseTerms;
-	private Organization dataProvider;
+	private String dataProvider;
 	private Set<ConditionRelation> conditionRelations;
 
 	public void addDiseaseTerm(DOTerm diseaseAnnotationObject) {

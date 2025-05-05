@@ -24,15 +24,21 @@ import org.alliancegenome.curation_api.services.ResourceDescriptorPageService;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 
-public abstract class BaseOntologyTermService<E extends OntologyTerm, D extends BaseEntityDAO<E>> extends BaseEntityCrudService<E, BaseEntityDAO<E>> {
-
-	@Inject CrossReferenceDAO crossReferenceDAO;
-	@Inject SynonymDAO synonymDAO;
-	@Inject CrossReferenceService crossReferenceService;
-	@Inject ResourceDescriptorPageService resourceDescriptorPageService;
+public abstract class BaseOntologyTermService<E extends OntologyTerm, D extends BaseEntityDAO<E>>
+		extends BaseEntityCrudService<E, BaseEntityDAO<E>> {
 
 	@Inject
-	@AuthenticatedUser Person authenticatedPerson;
+	CrossReferenceDAO crossReferenceDAO;
+	@Inject
+	SynonymDAO synonymDAO;
+	@Inject
+	CrossReferenceService crossReferenceService;
+	@Inject
+	ResourceDescriptorPageService resourceDescriptorPageService;
+
+	@Inject
+	@AuthenticatedUser
+	Person authenticatedPerson;
 
 	public E findByCurieOrSecondaryId(String id) {
 		return findByAlternativeFields(List.of("curie", "secondaryIdentifiers"), id);
@@ -227,9 +233,9 @@ public abstract class BaseOntologyTermService<E extends OntologyTerm, D extends 
 		}
 		List<String> newSynonymNames = newSynonyms.stream().map(Synonym::getName).toList();
 
-		for (Synonym syn: newSynonyms) {
+		for (Synonym syn : newSynonyms) {
+			SearchResponse<Synonym> response = synonymDAO.findByField("name", syn.getName());
 			if (!currentSynonymNames.contains(syn.getName())) {
-				SearchResponse<Synonym> response = synonymDAO.findByField("name", syn.getName());
 				Synonym synonym;
 				if (response == null) {
 					synonym = synonymDAO.persist(syn);
@@ -237,14 +243,16 @@ public abstract class BaseOntologyTermService<E extends OntologyTerm, D extends 
 					synonym = response.getSingleResult();
 				}
 				dbTerm.getSynonyms().add(synonym);
+			} else {
+				Synonym dbSynonym = response.getSingleResult();
+				updateSynonym(dbSynonym, syn);
 			}
 		}
-		for (Synonym syn: currentSynonyms) {
+		for (Synonym syn : currentSynonyms) {
 			if (!newSynonymNames.contains(syn.getName())) {
 				dbTerm.getSynonyms().remove(syn);
 			}
 		}
-
 	}
 
 	private void handleSecondaryIds(OntologyTerm dbTerm, OntologyTerm incomingTerm) {
@@ -290,15 +298,19 @@ public abstract class BaseOntologyTermService<E extends OntologyTerm, D extends 
 			mergedIds = new ArrayList<>();
 			dbTerm.setCrossReferences(null);
 		} else {
-			List<CrossReference> mergedCrossReferences = crossReferenceService.getUpdatedXrefList(incomingTerm.getCrossReferences(), dbTerm.getCrossReferences());
+			List<CrossReference> mergedCrossReferences = crossReferenceService
+					.getUpdatedXrefList(incomingTerm.getCrossReferences(), dbTerm.getCrossReferences());
 			mergedIds = mergedCrossReferences.stream().map(CrossReference::getId).collect(Collectors.toList());
-			for (CrossReference xref: mergedCrossReferences) {
+			for (CrossReference xref : mergedCrossReferences) {
 				String prefix = xref.getReferencedCurie().substring(0, xref.getReferencedCurie().indexOf(":"));
-				ResourceDescriptorPage page = resourceDescriptorPageService.getPageForResourceDescriptor(prefix, "ontology_provided_cross_reference");
+				ResourceDescriptorPage page = resourceDescriptorPageService.getPageForResourceDescriptor(prefix,
+						"ontology_provided_cross_reference");
 				if (page == null) {
-					// TODO: some how figure out how to make this less verbose by adding more resource descriptors
-					//Log.warn(dbTerm);
-					//Log.warn("Unable to find ResourceDescriptorPage for (prefix, page): (" + prefix + ", " + page + ")");
+					// TODO: some how figure out how to make this less verbose by adding more
+					// resource descriptors
+					// Log.warn(dbTerm);
+					// Log.warn("Unable to find ResourceDescriptorPage for (prefix, page): (" +
+					// prefix + ", " + page + ")");
 				}
 				xref.setResourceDescriptorPage(page);
 			}
@@ -321,6 +333,15 @@ public abstract class BaseOntologyTermService<E extends OntologyTerm, D extends 
 			}
 		}
 		return null;
+	}
+
+	private void updateSynonym(Synonym oldSyn, Synonym newSyn) {
+		oldSyn.setName(newSyn.getName());
+		oldSyn.setIsDisplaySynonym(newSyn.getIsDisplaySynonym());
+		oldSyn.setHasBroadSynonym(newSyn.getHasBroadSynonym());
+		oldSyn.setHasExactSynonym(newSyn.getHasExactSynonym());
+		oldSyn.setHasNarrowSynonym(newSyn.getHasNarrowSynonym());
+		oldSyn.setHasRelatedSynonym(newSyn.getHasRelatedSynonym());
 	}
 
 }

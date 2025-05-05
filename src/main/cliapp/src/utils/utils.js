@@ -153,6 +153,15 @@ export const getGenomicEntityText = (genomicEntity) => {
 	if (genomicEntity.alleleSymbol) return genomicEntity.alleleSymbol.displayText;
 	if (genomicEntity.geneFullName) return genomicEntity.geneFullName.displayText;
 	if (genomicEntity.alleleFullName) return genomicEntity.alleleFullName.displayText;
+	if (genomicEntity.agmFullName) return genomicEntity.agmFullName.displayText;
+	if (genomicEntity.name) return genomicEntity.name;
+	return null;
+};
+
+export const getGenomicEntityName = (genomicEntity) => {
+	if (genomicEntity.geneFullName) return genomicEntity.geneFullName.displayText;
+	if (genomicEntity.alleleFullName) return genomicEntity.alleleFullName.displayText;
+	if (genomicEntity.agmFullName) return genomicEntity.agmFullName.displayText;
 	if (genomicEntity.name) return genomicEntity.name;
 	return null;
 };
@@ -387,7 +396,7 @@ export function validateBioEntityFields(
 	closeRowRef,
 	areUiErrors
 ) {
-	const bioEntityFieldNames = ['diseaseAnnotationSubject', 'sgdStrainBackground', 'assertedAllele'];
+	const bioEntityFieldNames = ['diseaseAnnotationSubject', 'sgdStrainBackground'];
 
 	bioEntityFieldNames.forEach((field) => {
 		if (updatedRow[field] && Object.keys(updatedRow[field]).length === 1) {
@@ -447,7 +456,7 @@ export function validateRequiredFields(newAnnotationForm, uiErrorMessages, setUi
 }
 
 export function validateFormBioEntityFields(newAnnotationForm, uiErrorMessages, setUiErrorMessages, areUiErrors) {
-	const bioEntityFieldNames = ['diseaseAnnotationSubject', 'sgdStrainBackground', 'assertedAllele'];
+	const bioEntityFieldNames = ['diseaseAnnotationSubject', 'sgdStrainBackground'];
 
 	bioEntityFieldNames.forEach((field) => {
 		if (

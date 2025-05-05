@@ -1,5 +1,6 @@
 package org.alliancegenome.curation_api.services;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -11,11 +12,16 @@ import org.alliancegenome.curation_api.dao.GeneExpressionAnnotationDAO;
 import org.alliancegenome.curation_api.dao.GeneExpressionExperimentDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ValidationException;
+import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.GeneExpressionAnnotation;
 import org.alliancegenome.curation_api.model.entities.GeneExpressionExperiment;
+import org.alliancegenome.curation_api.model.entities.Organization;
+import org.alliancegenome.curation_api.model.ingest.dto.fms.CrossReferenceFmsDTO;
+import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
 import org.alliancegenome.curation_api.services.ontology.MmoTermService;
+import org.alliancegenome.curation_api.services.validation.dto.fms.CrossReferenceFmsDTOValidator;
 import org.apache.commons.lang3.StringUtils;
 
 import jakarta.annotation.PostConstruct;
@@ -32,6 +38,7 @@ public class GeneExpressionExperimentService extends BaseEntityCrudService<GeneE
 	@Inject MmoTermService mmoTermService;
 	@Inject ReferenceService referenceService;
 	@Inject OrganizationService organizationService;
+	@Inject CrossReferenceFmsDTOValidator crossReferenceFmsDTOValidator;
 
 	@Override
 	@PostConstruct
@@ -49,7 +56,7 @@ public class GeneExpressionExperimentService extends BaseEntityCrudService<GeneE
 	}
 
 	@Transactional
-	public GeneExpressionExperiment upsert(String experimentId, Set<String> geneExpressionAnnotationIds, BackendBulkDataProvider dataProvider) throws ValidationException {
+	public GeneExpressionExperiment upsert(String experimentId, Set<String> geneExpressionAnnotationIds, BackendBulkDataProvider dataProvider, Set<CrossReferenceFmsDTO> crossReferences) throws ValidationException {
 		GeneExpressionExperiment geneExpressionExperiment;
 		Set<GeneExpressionAnnotation> annotations;
 
@@ -65,7 +72,8 @@ public class GeneExpressionExperimentService extends BaseEntityCrudService<GeneE
 			geneExpressionExperiment = new GeneExpressionExperiment();
 			geneExpressionExperiment.setUniqueId(experimentId);
 		}
-		geneExpressionExperiment.setDataProvider(organizationService.getByAbbr(dataProvider.sourceOrganization).getEntity());
+		Organization organization = organizationService.getByAbbr(dataProvider.sourceOrganization).getEntity();
+		geneExpressionExperiment.setDataProvider(organization);
 		geneExpressionExperiment.setEntityAssayed(geneService.findByIdentifierString(geneId));
 		geneExpressionExperiment.setSingleReference(referenceService.getByCurie(referenceId).getEntity());
 		geneExpressionExperiment.setExpressionAssayUsed(mmoTermService.findByCurie(assayId));
@@ -76,8 +84,29 @@ public class GeneExpressionExperimentService extends BaseEntityCrudService<GeneE
 		if (annotations == null) {
 			annotations = new HashSet<>();
 		}
+
+		if (dataProvider.name().equals("MGI") || dataProvider.name().equals("WB")) {
+			if (geneExpressionExperiment.getCrossReferences() != null) {
+				geneExpressionExperiment.getCrossReferences().clear();
+			} else {
+				geneExpressionExperiment.setCrossReferences(new ArrayList<>());
+			}
+			Set<CrossReference> validatedCrossRefs = new HashSet<>();
+			for (CrossReferenceFmsDTO crossRefDto : crossReferences) {
+				ObjectResponse<List<CrossReference>> crossRefResponse = crossReferenceFmsDTOValidator.validateCrossReferenceFmsDTO(crossRefDto);
+				if (crossRefResponse.hasErrors()) {
+					response.addErrorMessage("cross_references", crossRefResponse.errorMessagesString());
+					break;
+				} else {
+					validatedCrossRefs.addAll(crossRefResponse.getEntity());
+				}
+			}
+			geneExpressionExperiment.getCrossReferences().addAll(validatedCrossRefs);
+		}
+
 		for (String geneExpressionAnnotationId: geneExpressionAnnotationIds) {
-			annotations.add(geneExpressionAnnotationDAO.findByField("uniqueId", geneExpressionAnnotationId).getSingleResult());
+			GeneExpressionAnnotation geneExpressionAnnotation = geneExpressionAnnotationDAO.findByField("uniqueId", geneExpressionAnnotationId).getSingleResult();
+			annotations.add(geneExpressionAnnotation);
 		}
 		geneExpressionExperiment.setExpressionAnnotations(annotations);
 

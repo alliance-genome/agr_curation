@@ -38,9 +38,9 @@ import org.alliancegenome.curation_api.model.entities.Variant;
 import org.alliancegenome.curation_api.model.entities.Vocabulary;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.VocabularyTermSet;
-import org.alliancegenome.curation_api.model.entities.associations.alleleAssociations.AlleleConstructAssociation;
-import org.alliancegenome.curation_api.model.entities.associations.alleleAssociations.AlleleGeneAssociation;
-import org.alliancegenome.curation_api.model.entities.associations.constructAssociations.ConstructGenomicEntityAssociation;
+import org.alliancegenome.curation_api.model.entities.associations.AlleleConstructAssociation;
+import org.alliancegenome.curation_api.model.entities.associations.AlleleGeneAssociation;
+import org.alliancegenome.curation_api.model.entities.associations.ConstructGenomicEntityAssociation;
 import org.alliancegenome.curation_api.model.entities.ontology.AnatomicalTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.CHEBITerm;
 import org.alliancegenome.curation_api.model.entities.ontology.ChemicalTerm;
@@ -61,9 +61,9 @@ import org.alliancegenome.curation_api.model.entities.ontology.UBERONTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.WBPhenotypeTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.ZECOTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.ZFATerm;
-import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleSymbolSlotAnnotation;
-import org.alliancegenome.curation_api.model.entities.slotAnnotations.constructSlotAnnotations.ConstructSymbolSlotAnnotation;
-import org.alliancegenome.curation_api.model.entities.slotAnnotations.geneSlotAnnotations.GeneSymbolSlotAnnotation;
+import org.alliancegenome.curation_api.model.entities.slotAnnotations.AlleleSymbolSlotAnnotation;
+import org.alliancegenome.curation_api.model.entities.slotAnnotations.ConstructSymbolSlotAnnotation;
+import org.alliancegenome.curation_api.model.entities.slotAnnotations.GeneSymbolSlotAnnotation;
 import org.alliancegenome.curation_api.response.ObjectListResponse;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
@@ -176,11 +176,11 @@ public class BaseITCase {
 		return map;
 	}
 
-	public AffectedGenomicModel createAffectedGenomicModel(String primaryExternalId, String name, String taxonCurie, String subtypeName, Boolean obsolete) throws Exception {
-		return createAffectedGenomicModel(primaryExternalId, name, taxonCurie, subtypeName, obsolete, null);
+	public AffectedGenomicModel createAffectedGenomicModel(String primaryExternalId, String taxonCurie, String subtypeName, Boolean obsolete) throws Exception {
+		return createAffectedGenomicModel(primaryExternalId, taxonCurie, subtypeName, obsolete, null);
 	}
 
-	public AffectedGenomicModel createAffectedGenomicModel(String primaryExternalId, String name, String taxonCurie, String subtypeName, Boolean obsolete, Organization dataProvider) {
+	public AffectedGenomicModel createAffectedGenomicModel(String primaryExternalId, String taxonCurie, String subtypeName, Boolean obsolete, Organization dataProvider) {
 		Vocabulary subtypeVocabulary = getVocabulary(VocabularyConstants.AGM_SUBTYPE_VOCABULARY);
 		VocabularyTerm subtype = getVocabularyTerm(subtypeVocabulary, subtypeName);
 
@@ -188,7 +188,6 @@ public class BaseITCase {
 		model.setPrimaryExternalId(primaryExternalId);
 		model.setTaxon(getNCBITaxonTerm(taxonCurie));
 		model.setSubtype(subtype);
-		model.setName(name);
 		model.setObsolete(obsolete);
 		model.setDataProvider(dataProvider);
 

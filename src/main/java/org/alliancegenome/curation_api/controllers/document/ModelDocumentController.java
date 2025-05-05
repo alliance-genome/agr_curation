@@ -1,6 +1,9 @@
 package org.alliancegenome.curation_api.controllers.document;
 
-import jakarta.inject.Inject;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
 import org.alliancegenome.curation_api.interfaces.document.ModelDocumentInterface;
 import org.alliancegenome.curation_api.model.document.builders.ModelDocumentBuilder;
 import org.alliancegenome.curation_api.model.document.es.AffectedGenomicModelDocument;
@@ -9,9 +12,7 @@ import org.alliancegenome.curation_api.model.input.Pagination;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.AffectedGenomicModelService;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import jakarta.inject.Inject;
 
 public class ModelDocumentController implements ModelDocumentInterface {
 

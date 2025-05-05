@@ -1,5 +1,7 @@
 package org.alliancegenome.curation_api.model.entities;
 
+import java.util.List;
+
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.entities.ontology.MMOTerm;
@@ -13,9 +15,12 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexingDe
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonView;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Index;
+import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -39,7 +44,6 @@ import lombok.EqualsAndHashCode;
 	@Index(name = "GeneExpressionAnnotation_updatedBy_index", columnList = "updatedBy_id"),
 	@Index(name = "GeneExpressionAnnotation_evidenceItem_index", columnList = "evidenceItem_id"),
 	@Index(name = "GeneExpressionAnnotation_dataProvider_index", columnList = "dataProvider_id"),
-	@Index(name = "GeneExpressionAnnotation_dataProviderCrossReference_index", columnList = "dataProviderCrossReference_id"),
 	@Index(name = "GeneExpressionAnnotation_expressionPattern_index", columnList = "expressionPattern_id"),
 	@Index(name = "GeneExpressionAnnotation_relation_index", columnList = "relation_id"),
 	@Index(name = "GeneExpressionAnnotation_expressionAnnotationSubject_index", columnList = "expressionAnnotationSubject_id"),
@@ -59,5 +63,15 @@ public class GeneExpressionAnnotation extends ExpressionAnnotation {
 	@ManyToOne
 	@JsonView({View.FieldsOnly.class, View.ForPublic.class})
 	private MMOTerm expressionAssayUsed;
+
+	@IndexedEmbedded(includePaths = {"referencedCurie", "displayName", "resourceDescriptorPage.name", "referencedCurie_keyword", "displayName_keyword", "resourceDescriptorPage.name_keyword"})
+	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
+	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+	@JoinTable(indexes = {
+		@Index(columnList = "geneexpressionannotation_id", name = "gea_crossreference_geneexpressionannotation_index"),
+		@Index(columnList = "crossreferences_id", name = "gea_crossreference_crossreferences_index")
+	})
+	@JsonView({ View.FieldsAndLists.class, View.ForPublic.class })
+	private List<CrossReference> crossReferences;
 
 }

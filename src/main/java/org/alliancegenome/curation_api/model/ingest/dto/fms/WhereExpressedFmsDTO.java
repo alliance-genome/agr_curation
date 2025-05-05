@@ -1,11 +1,11 @@
 package org.alliancegenome.curation_api.model.ingest.dto.fms;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import java.util.List;
 
 import org.alliancegenome.curation_api.model.ingest.dto.base.BaseDTO;
 
-import java.util.List;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = true)

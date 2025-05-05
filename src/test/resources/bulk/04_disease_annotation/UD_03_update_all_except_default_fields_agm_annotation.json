@@ -97,6 +97,8 @@
       "DATEST:Gene0001"
     ],
     "inferred_allele_identifier": "DATEST:Allele0002",
-    "asserted_allele_identifier": "DATEST:Allele0001"
+    "asserted_allele_identifiers": [
+      "DATEST:Allele0001"
+    ]
   }
 ]

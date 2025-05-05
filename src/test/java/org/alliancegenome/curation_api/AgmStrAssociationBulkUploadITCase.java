@@ -57,7 +57,7 @@ public class AgmStrAssociationBulkUploadITCase extends BaseITCase {
 
 	private void loadRequiredEntities() throws Exception {
 		Organization dataProvider = getOrganization("ZFIN");
-		agm = createAffectedGenomicModel(agmCurie, "test name", "NCBITaxon:7955", "fish", false, dataProvider);
+		agm = createAffectedGenomicModel(agmCurie, "NCBITaxon:7955", "fish", false, dataProvider);
 		str = getSequenceTargetingReagent(strCurie);
 	}
 	

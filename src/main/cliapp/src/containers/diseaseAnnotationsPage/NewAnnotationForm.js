@@ -29,7 +29,7 @@ import {
 } from '../../utils/utils';
 import { AutocompleteFormMultiEditor } from '../../components/Autocomplete/AutocompleteFormMultiEditor';
 import { SubjectAdditionalFieldData } from '../../components/FieldData/SubjectAdditionalFieldData';
-import { AssertedAlleleAdditionalFieldData } from '../../components/FieldData/AssertedAlleleAdditionalFieldData';
+import { AssertedAllelesAdditionalFieldData } from '../../components/FieldData/AssertedAllelesAdditionalFieldData';
 import { DiseaseAdditionalFieldData } from '../../components/FieldData/DiseaseAdditionalFieldData';
 import { SingleReferenceAdditionalFieldData } from '../../components/FieldData/SingleReferenceAdditionalFieldData';
 import { SGDStrainBackgroundAdditionalFieldData } from '../../components/FieldData/SGDStrainBackgroundAdditionalFieldData';
@@ -58,7 +58,7 @@ export const NewAnnotationForm = ({
 	const toast_error = useRef(null);
 	const withRef = useRef(null);
 	const assertedGenesRef = useRef(null);
-	const assertedAlleleRef = useRef(null);
+	const assertedAllelesRef = useRef(null);
 	const evidenceCodesRef = useRef(null);
 	const experimentsRef = useRef(null);
 	const {
@@ -85,7 +85,7 @@ export const NewAnnotationForm = ({
 	const areUiErrors = useRef(false);
 	let newAnnotationOptionalFields = [
 		'Asserted Genes',
-		'Asserted Allele',
+		'Asserted Alleles',
 		'NOT',
 		'With',
 		'Related Notes',
@@ -323,18 +323,29 @@ export const NewAnnotationForm = ({
 	const subjectSearch = (event, setFiltered, setQuery) => {
 		//The order of the below fields are as per the Autocomplete search result
 		const autocompleteFields = [
+			'geneSymbol.formatText',
+			'alleleSymbol.formatText',
+			'agmFullName.formatText',
+			'geneFullName.formatText',
+			'alleleFullName.formatText',
+			'alleleSynonyms.formatText',
+			'geneSynonyms.formatText',
+			'agmSynonyms.formatText',
 			'geneSymbol.displayText',
 			'alleleSymbol.displayText',
-			'name',
+			'agmFullName.displayText',
 			'geneFullName.displayText',
 			'alleleFullName.displayText',
 			'alleleSynonyms.displayText',
 			'geneSynonyms.displayText',
+			'agmSynonyms.displayText',
 			'primaryExternalId',
 			'modInternalId',
 			'curie',
 			'crossReferences.referencedCurie',
 			'alleleSecondaryIds.secondaryId',
+			'agmSecondaryIds.secondaryId',
+			'geneSecondaryIds.secondaryId',
 		];
 		const endpoint = 'biologicalentity';
 		const filterName = 'diseaseAnnotationSubjectFilter';
@@ -500,7 +511,7 @@ export const NewAnnotationForm = ({
 		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered);
 	};
 
-	const assertedAlleleSearch = (event, setFiltered, setInputValue) => {
+	const assertedAllelesSearch = (event, setFiltered, setInputValue) => {
 		const autocompleteFields = [
 			'alleleSymbol.displayText',
 			'alleleFullName.displayText',
@@ -512,7 +523,7 @@ export const NewAnnotationForm = ({
 			'alleleSynonyms.displayText',
 		];
 		const endpoint = 'allele';
-		const filterName = 'assertedAlleleFilter';
+		const filterName = 'assertedAllelesFilter';
 		const filter = buildAutocompleteFilter(event, autocompleteFields);
 		setInputValue(event.query);
 		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered);
@@ -655,23 +666,23 @@ export const NewAnnotationForm = ({
 							</>
 						)}
 
-						{selectedFormFields?.includes('Asserted Allele') && (
+						{selectedFormFields?.includes('Asserted Alleles') && (
 							<>
 								<div className="grid">
 									<div className={labelColumnSize}>
-										<label htmlFor="assertedAllele">Asserted Allele</label>
+										<label htmlFor="assertedAlleles">Asserted Alleles</label>
 									</div>
 									<div className={widgetColumnSize}>
-										<AutocompleteFormEditor
-											customRef={assertedAlleleRef}
-											search={assertedAlleleSearch}
-											name="assertedAllele"
-											label="Asserted Allele"
-											fieldName="assertedAllele"
+										<AutocompleteFormMultiEditor
+											customRef={assertedAllelesRef}
+											search={assertedAllelesSearch}
+											name="assertedAlleles"
+											label="Asserted Alleles"
+											fieldName="assertedAlleles"
 											subField="primaryExternalId"
 											disabled={!isAssertedAlleleEnabled}
-											initialValue={newAnnotation.assertedAllele}
-											onValueChangeHandler={onSingleReferenceChange}
+											initialValue={newAnnotation.assertedAlleles}
+											onValueChangeHandler={onArrayFieldChange}
 											valueDisplay={(item, setAutocompleteHoverItem, op, query) => (
 												<SubjectAutocompleteTemplate
 													item={item}
@@ -680,13 +691,12 @@ export const NewAnnotationForm = ({
 													query={query}
 												/>
 											)}
-											classNames={classNames({ 'p-invalid': submitted && errorMessages.assertedAllele })}
+											classNames={classNames({ 'p-invalid': submitted && errorMessages.assertedAlleles })}
 										/>
 									</div>
 									<div className={fieldDetailsColumnSize}>
-										<FormErrorMessageComponent errorMessages={errorMessages} errorField={'assertedAllele'} />
-										<FormErrorMessageComponent errorMessages={uiErrorMessages} errorField={'assertedAllele'} />
-										<AssertedAlleleAdditionalFieldData fieldData={newAnnotation.assertedAllele} />
+										<FormErrorMessageComponent errorMessages={errorMessages} errorField={'assertedAlleles'} />
+										<AssertedAllelesAdditionalFieldData fieldData={newAnnotation.assertedAlleles} />
 									</div>
 								</div>
 							</>

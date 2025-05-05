@@ -83,8 +83,8 @@ public class PhenotypeAnnotationBulkUploadFmsITCase extends BaseITCase {
 		createGene(gene, "NCBITaxon:6239", symbolTerm, false, dataProvider);
 		createAllele(allele, "TestAllele", "NCBITaxon:6239", symbolTerm, false, dataProvider);
 		createAllele(allele2, "TestAllele2", "NCBITaxon:6239", symbolTerm, false, dataProvider);
-		createAffectedGenomicModel(agm, "Test AGM", "NCBITaxon:6239", "strain", false, dataProvider);
-		createAffectedGenomicModel(agm2, "Test AGM2", "NCBITaxon:6239", "strain", false, dataProvider);
+		createAffectedGenomicModel(agm, "NCBITaxon:6239", "strain", false, dataProvider);
+		createAffectedGenomicModel(agm2, "NCBITaxon:6239", "strain", false, dataProvider);
 		createMpTerm(mpTerm, "Test PhenotypeTerm");
 		ResourceDescriptor rd = createResourceDescriptor("PMID");
 		createResourceDescriptorPage("default", "https://www.ncbi.nlm.nih.gov/pubmed/[%s]", rd);
@@ -221,7 +221,7 @@ public class PhenotypeAnnotationBulkUploadFmsITCase extends BaseITCase {
 		RestAssured.given().when().get(phenotypeAnnotationGetEndpoint + agmPaId).then().statusCode(200)
 				.body("entity.phenotypeAnnotationSubject.primaryExternalId", is(agm))
 				.body("entity.inferredGene.primaryExternalId", is(gene))
-				.body("entity.assertedAllele.primaryExternalId", is(allele));
+				.body("entity.assertedAlleles[0].primaryExternalId", is(allele));
 	}
 
 	@Test

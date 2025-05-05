@@ -2,6 +2,40 @@
  
 https://agr-jira.atlassian.net/wiki/spaces/ATEAM/overview
 
+## v0.39.0
+##format below here
+
+* New features:
+  * Load Brenda Tissue Ontology (BTO) into the persistent store, SCRUM-4971
+  * Enable display and filtering on Allele cross reference "referenced_curie" entries in Alleles data table, SCRUM-4641
+  * Convert AGM name field to a name slot annotation to support both display name and format text, SCRUM-5085
+  * Make asserted_allele_identifier slot in disease and phenotype annotation objects multivalued: LinkML changes, curation Java changes, curation UI changes, SCRUM-4946
+  * Display ontology subsets in the curation system and persistent store, SCRUM-5042
+
+* Fixes and maintenance:
+  * Outstanding issues with the Experimental Conditions table, SCRUM-4958
+  * Cannot create a new disease annotation in the curation system, SCRUM-4944
+  * Sorting species table on Phylogenetic Order results in 500 error, SCRUM-4945
+  * Curation: Disease annotation save fails with no error message, SCRUM-4929
+  * Experimental Conditions table throwing invalid entries errors when entering edit mode and saving existing row as is, SCRUM-4927
+  * All mouse GAF GO annotations are failing to load into the persistent store; unrecognized double prefix MGI:MGI:, SCRUM-4996
+  * History information pop-up (reporting load failures) showing NaN for counts and other reporting, SCRUM-4998
+  * Curation Phenotype Annotations table, publication cross references loaded as phenotype annotation cross references, SCRUM-4922
+  * Genes table throwing error on production curation, SCRUM-4980
+  * (Curation) Sort not persisting after table refresh for several tables and columns, SCRUM-4947
+  * Curation: Disease annotation save bug, SCRUM-4923
+  * New disease annotations should have Data Provider set to curator's/user's MOD affiliation, SCRUM-4948
+  * Data file loads are failing in the curation system (Possible Quarkus upgrade effect), SCRUM-4972
+  * Improve record count reporting for the XBA / XBS Ontologies Load, SCRUM-5046
+  * Fix loading of ORPHA and MIM ID objects as references for Phenotype Annotations in the persistent store, SCRUM-5013
+  * XBA / XBS Ontologies Load failing on alpha-curation, SCRUM-5036
+  * Data formatting of submitted disease annotations: WB inducing agent bundled together with ameliorating condition, SCRUM-5050
+  * Clean up human and rat disease annotations, SCRUM-5076
+  * Option to reload existing file missing for AGM Association direct LinkML file submission loads, SCRUM-5035
+  * Cannot filter Disease Annotations table Subject field with AGM names, SCRUM-5051
+  * Curation system Molecular and Genetic Interactions tables: Evidence filter only recognizing AGRKB publication IDs, SCRUM-5019
+
+##format above here
 ## v0.37.0
 * New Features:
   * Implement AGM Parental Populations, SCRUM-4667

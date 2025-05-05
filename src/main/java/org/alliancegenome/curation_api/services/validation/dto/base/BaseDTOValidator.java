@@ -30,8 +30,8 @@ import org.alliancegenome.curation_api.services.ReferenceService;
 import org.alliancegenome.curation_api.services.VocabularyTermService;
 import org.alliancegenome.curation_api.services.base.BaseOntologyTermService;
 import org.alliancegenome.curation_api.services.base.SubmittedObjectCrudService;
-import org.alliancegenome.curation_api.services.helpers.interactions.InteractionStringHelper;
-import org.alliancegenome.curation_api.services.helpers.notes.NoteIdentityHelper;
+import org.alliancegenome.curation_api.services.helpers.InteractionStringHelper;
+import org.alliancegenome.curation_api.services.helpers.NoteIdentityHelper;
 import org.alliancegenome.curation_api.services.ontology.MiTermService;
 import org.alliancegenome.curation_api.services.ontology.NcbiTaxonTermService;
 import org.alliancegenome.curation_api.services.validation.dto.CrossReferenceDTOValidator;
@@ -205,16 +205,15 @@ public class BaseDTOValidator<E extends Object> {
 		return dpResponse;
 	}
 	
-	protected Reference validateReference(String referenceCurie) {
-		return validateReference(referenceCurie, false);
+	protected Reference validateReference(String field, String referenceCurie) {
+		return validateReference(field, referenceCurie, false);
 	}
 	
-	protected Reference validateRequiredReference(String referenceCurie) {
-		return validateReference(referenceCurie, true);
+	protected Reference validateRequiredReference(String field, String referenceCurie) {
+		return validateReference(field, referenceCurie, true);
 	}
 	
-	protected Reference validateReference(String referenceCurie, boolean isRequired) {
-		String field = "reference_curie";
+	protected Reference validateReference(String field, String referenceCurie, boolean isRequired) {
 		if (StringUtils.isBlank(referenceCurie)) {
 			if (isRequired) {
 				response.addErrorMessage(field, ValidationConstants.REQUIRED_MESSAGE);

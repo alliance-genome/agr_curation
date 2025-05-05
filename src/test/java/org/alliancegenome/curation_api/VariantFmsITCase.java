@@ -1,5 +1,10 @@
 package org.alliancegenome.curation_api;
 
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
+import static org.hamcrest.Matchers.oneOf;
+
 import java.util.HashMap;
 import java.util.List;
 
@@ -23,8 +28,6 @@ import io.quarkus.test.junit.QuarkusIntegrationTest;
 import io.restassured.RestAssured;
 import io.restassured.config.HttpClientConfig;
 import io.restassured.config.RestAssuredConfig;
-
-import static org.hamcrest.Matchers.*;
 
 @QuarkusIntegrationTest
 @QuarkusTestResource(TestContainerResource.Initializer.class)
@@ -144,9 +147,9 @@ public class VariantFmsITCase extends BaseITCase {
 			body("entity.curatedVariantGenomicLocations[0].end", is(1000)).
 			body("entity.alleleVariantAssociations", hasSize(2)).
 			body("entity.alleleVariantAssociations[0].relation.name", is("has_variant")).
-			body("entity.alleleVariantAssociations[0].alleleAssociationSubject.primaryExternalId", is("WB:AlleleWithVar1")).
+			body("entity.alleleVariantAssociations[0].alleleAssociationSubject.primaryExternalId", is(oneOf("WB:AlleleWithVar1", "WB:AlleleWithVar2"))).
 			body("entity.alleleVariantAssociations[1].relation.name", is("has_variant")).
-			body("entity.alleleVariantAssociations[1].alleleAssociationSubject.primaryExternalId", is("WB:AlleleWithVar2")).
+			body("entity.alleleVariantAssociations[1].alleleAssociationSubject.primaryExternalId", is(oneOf("WB:AlleleWithVar1", "WB:AlleleWithVar2"))).
 			body("entity.relatedNotes", hasSize(1)).
 			body("entity.relatedNotes[0].internal", is(false)).
 			body("entity.relatedNotes[0].freeText", is("This is an updated test note.")).

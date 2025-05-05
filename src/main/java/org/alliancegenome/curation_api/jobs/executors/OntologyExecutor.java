@@ -15,6 +15,7 @@ import org.alliancegenome.curation_api.services.helpers.GenericOntologyLoadHelpe
 import org.alliancegenome.curation_api.services.ontology.ApoTermService;
 import org.alliancegenome.curation_api.services.ontology.AtpTermService;
 import org.alliancegenome.curation_api.services.ontology.BspoTermService;
+import org.alliancegenome.curation_api.services.ontology.BtoTermService;
 import org.alliancegenome.curation_api.services.ontology.CHEBITermService;
 import org.alliancegenome.curation_api.services.ontology.ClTermService;
 import org.alliancegenome.curation_api.services.ontology.CmoTermService;
@@ -107,6 +108,7 @@ public class OntologyExecutor {
 	@Inject CmoTermService cmoTermService;
 	@Inject BspoTermService bspoTermService;
 	@Inject GenoTermService genoTermService;
+	@Inject BtoTermService btoTermService;
 
 	@Inject BulkLoadFileDAO bulkLoadFileDAO;
 	@Inject LoadProcessDisplayService loadProcessDisplayService;
@@ -237,6 +239,7 @@ public class OntologyExecutor {
 				config.setLoadOnlyIRIPrefix("GENO");
 				processTerms(bulkLoadFileHistory, genoTermService, config);
 			}
+			case BTO -> processTerms(bulkLoadFileHistory, btoTermService, config);
 			default -> {
 				log.info("Ontology Load: " + bulkLoadFileHistory.getBulkLoad().getName() + " for OT: " + ontologyType + " not implemented");
 				throw new Exception("Ontology Load: " + bulkLoadFileHistory.getBulkLoad().getName() + " for OT: " + ontologyType + " not implemented");
@@ -259,16 +262,16 @@ public class OntologyExecutor {
 
 		bulkLoadFileDAO.merge(bulkLoadFileHistory.getBulkLoadFile());
 
-		bulkLoadFileHistory.setCount("Terms", termMap.size());
-		bulkLoadFileHistory.setCount("Closure", termMap.size());
-		bulkLoadFileHistory.setCount("Counts", termMap.size());
+		bulkLoadFileHistory.setCount(ontologyType + " Terms", termMap.size());
+		bulkLoadFileHistory.setCount(ontologyType + " Closure", termMap.size());
+		bulkLoadFileHistory.setCount(ontologyType + " Counts", termMap.size());
 		
 		String countType = null;
 
 		ProcessDisplayHelper ph = new ProcessDisplayHelper();
 		ph.addDisplayHandler(loadProcessDisplayService);
 		ph.startProcess(bulkLoadFileHistory.getBulkLoad().getName() + ": " + ontologyType.getClazz().getSimpleName() + " Terms", termMap.size());
-		countType = "Terms";
+		countType = ontologyType + " Terms";
 		for (Entry<String, ? extends OntologyTerm> entry : termMap.entrySet()) {
 			service.processUpdate(entry.getValue());
 			bulkLoadFileHistory.incrementCompleted(countType);
@@ -283,7 +286,7 @@ public class OntologyExecutor {
 		ProcessDisplayHelper ph1 = new ProcessDisplayHelper();
 		ph.addDisplayHandler(loadProcessDisplayService);
 		ph1.startProcess(bulkLoadFileHistory.getBulkLoad().getName() + ": " + ontologyType.getClazz().getSimpleName() + " Closure", termMap.size());
-		countType = "Closure";
+		countType = ontologyType + " Closure";
 		for (Entry<String, ? extends OntologyTerm> entry : termMap.entrySet()) {
 			service.processUpdateRelationships(entry.getValue());
 			bulkLoadFileHistory.incrementCompleted(countType);
@@ -298,7 +301,7 @@ public class OntologyExecutor {
 		ProcessDisplayHelper ph2 = new ProcessDisplayHelper();
 		ph.addDisplayHandler(loadProcessDisplayService);
 		ph2.startProcess(bulkLoadFileHistory.getBulkLoad().getName() + ": " + ontologyType.getClazz().getSimpleName() + " Counts", termMap.size());
-		countType = "Counts";
+		countType = ontologyType + " Counts";
 		for (Entry<String, ? extends OntologyTerm> entry : termMap.entrySet()) {
 			service.processCounts(entry.getValue());
 			bulkLoadFileHistory.incrementCompleted(countType);
