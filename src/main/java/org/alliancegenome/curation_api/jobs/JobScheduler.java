@@ -27,7 +27,10 @@ import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFile;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadGroup;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkScheduledLoad;
+import org.alliancegenome.curation_api.model.event.index.EndIndexProcessingEvent;
+import org.alliancegenome.curation_api.model.event.index.IndexProcessingEvent;
 import org.alliancegenome.curation_api.response.SearchResponse;
+import org.alliancegenome.curation_api.websocket.IndexProcessingWebsocket;
 import org.apache.commons.collections4.ListUtils;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
@@ -62,15 +65,14 @@ public class JobScheduler {
 	@Inject BulkLoadFileHistoryDAO bulkLoadFileHistoryDAO;
 	@Inject BulkLoadGroupDAO groupDAO;
 	@Inject BulkScheduledLoadDAO bulkScheduledLoadDAO;
-
 	@Inject BulkLoadDAO bulkLoadDAO;
 	@Inject BulkLoadFileExceptionDAO bulkLoadFileExceptionDAO;
 	@Inject SlackNotifier slackNotifier;
+	@Inject IndexProcessingWebsocket indexProcessingWebsocket;
 
 	@ConfigProperty(name = "bulk.data.loads.schedulingEnabled") Boolean loadSchedulingEnabled;
-
 	@ConfigProperty(name = "reindex.schedulingEnabled", defaultValue = "false") Boolean reindexSchedulingEnabled;
-
+	
 	private ZonedDateTime lastCheck;
 	private Semaphore sem = new Semaphore(1);
 
@@ -120,7 +122,13 @@ public class JobScheduler {
 
 	@Scheduled(every = "1m")
 	public void scheduleCronJobs() {
-		if (loadSchedulingEnabled) {
+		IndexProcessingEvent event = indexProcessingWebsocket.getEvent();
+		Boolean blockedByMassIndexer = true;
+		if (event != null && event instanceof EndIndexProcessingEvent) {
+			blockedByMassIndexer = false;
+		}
+		
+		if (loadSchedulingEnabled && !blockedByMassIndexer) {
 			if (sem.tryAcquire()) {
 				ZonedDateTime start = ZonedDateTime.now();
 				// Log.info("scheduleGroupJobs: Scheduling Enabled: " + loadSchedulingEnabled);
