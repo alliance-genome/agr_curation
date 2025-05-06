@@ -245,8 +245,8 @@ public abstract class BaseOntologyTermService<E extends OntologyTerm, D extends 
 				}
 				dbTerm.getSynonyms().add(synonym);
 			} else {
-				for(Synonym dbSynonym: dbTerm.getSynonyms()) {
-					if(dbSynonym.getName().equals(syn.getName())) {
+				for (Synonym dbSynonym: dbTerm.getSynonyms()) {
+					if (dbSynonym.getName().equals(syn.getName())) {
 						updateSynonym(dbSynonym, syn);
 						break;
 					}
