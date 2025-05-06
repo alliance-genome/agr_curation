@@ -234,20 +234,26 @@ public abstract class BaseOntologyTermService<E extends OntologyTerm, D extends 
 		List<String> newSynonymNames = newSynonyms.stream().map(Synonym::getName).toList();
 
 		for (Synonym syn : newSynonyms) {
-			SearchResponse<Synonym> response = synonymDAO.findByField("name", syn.getName());
 			if (!currentSynonymNames.contains(syn.getName())) {
+				SearchResponse<Synonym> response = synonymDAO.findByField("name", syn.getName());
 				Synonym synonym;
 				if (response == null) {
 					synonym = synonymDAO.persist(syn);
 				} else {
 					synonym = response.getSingleResult();
+					updateSynonym(synonym, syn);
 				}
 				dbTerm.getSynonyms().add(synonym);
 			} else {
-				Synonym dbSynonym = response.getSingleResult();
-				updateSynonym(dbSynonym, syn);
+				for(Synonym dbSynonym: dbTerm.getSynonyms()) {
+					if(dbSynonym.getName().equals(syn.getName())) {
+						updateSynonym(dbSynonym, syn);
+						break;
+					}
+				}
 			}
 		}
+		
 		for (Synonym syn : currentSynonyms) {
 			if (!newSynonymNames.contains(syn.getName())) {
 				dbTerm.getSynonyms().remove(syn);
