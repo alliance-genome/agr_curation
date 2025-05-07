@@ -1,8 +1,7 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useCallback, useEffect, useState} from 'react';
 
 import { Tree } from 'primereact/tree';
 import { Card } from 'primereact/card';
-import { ProgressSpinner } from 'primereact/progressspinner';
 
 import { OntologyService } from '../service/OntologyService';
 
@@ -14,9 +13,8 @@ export const GenericDataTree = (props) => {
 	const [currentPage, setCurrentPage] = useState(0);
 	const [hasMoreRootNodes, setHasMoreRootNodes] = useState(true);
 	const [loadingMore, setLoadingMore] = useState(false);
-	
+
 	const PAGE_SIZE = 20; // Number of root items to load at once
-	const treeContainerRef = useRef(null);
 
 	const findNodeToModify = (nodes, id) => {
 		for (let node of nodes) {
@@ -64,47 +62,44 @@ export const GenericDataTree = (props) => {
 		}
 	};
 
-	const loadMoreRootNodes = () => {
+	const loadMoreRootNodes = useCallback(() => {
 		if (loadingMore || !hasMoreRootNodes) return;
-		
+
 		setLoadingMore(true);
-		
+
 		const nextPage = currentPage + 1;
 		const start = nextPage * PAGE_SIZE;
 		const end = start + PAGE_SIZE;
 		const nextBatch = rootNodeCache.slice(start, end);
-		
+
 		if (nextBatch.length === 0) {
 			setHasMoreRootNodes(false);
 			setLoadingMore(false);
 			return;
 		}
-		
-		// Add the next batch of root nodes
-		setNodes(prevNodes => {
-			const newNodes = [...prevNodes];
-			
-			for (const node of nextBatch) {
-				newNodes.push(node);
-			}
-			
-			return newNodes.sort((a, b) => (a.label.toLowerCase() > b.label.toLowerCase() ? 1 : -1));
-		});
-		
+
+		setNodes(prevNodes => [...prevNodes, ...nextBatch]);
+
 		setCurrentPage(nextPage);
 		setHasMoreRootNodes(end < rootNodeCache.length);
 		setLoadingMore(false);
-	};
+	}, [currentPage, hasMoreRootNodes, loadingMore, rootNodeCache]);
 
-	const handleScroll = (e) => {
-		if (!treeContainerRef.current) return;
-		
-		const { scrollTop, scrollHeight, clientHeight } = e.target;
-		// If scrolled to bottom (with a small buffer)
-		if (scrollHeight - scrollTop - clientHeight < 100 && hasMoreRootNodes && !loadingMore) {
-			loadMoreRootNodes();
-		}
-	};
+	useEffect(() => {
+		const handleScroll = () => {
+			const scrollTop = window.scrollY || document.documentElement.scrollTop;
+			const scrollHeight = document.documentElement.scrollHeight;
+			const clientHeight = window.innerHeight;
+
+			// If scrolled to bottom (with a small buffer)
+			if (scrollHeight - scrollTop - clientHeight < 100 && hasMoreRootNodes && !loadingMore) {
+				loadMoreRootNodes();
+			}
+		};
+		window.addEventListener('scroll', handleScroll);
+		return () => window.removeEventListener('scroll', handleScroll);
+	}, [hasMoreRootNodes, loadingMore, loadMoreRootNodes]);
+
 
 	const onNodeSelect = (event) => {
 		//console.log(event.node);
@@ -121,13 +116,13 @@ export const GenericDataTree = (props) => {
 		ontologyService.getRootNodes().then((res) => {
 			let allNodes = [];
 			let count = 0;
-			
+
 			// Process and store all root nodes in cache
 			for (let node of res.data.entities) {
 				if (node.obsolete === true) {
 					continue;
 				}
-				
+
 				node.key = node.curie;
 				node.label = node.name + ' (' + node.curie + ')';
 				if (node?.childCount && node.childCount > 0) {
@@ -135,17 +130,17 @@ export const GenericDataTree = (props) => {
 				} else {
 					node.leaf = true;
 				}
-				
+
 				allNodes.push(node);
 				count = count + 1;
 			}
-			
+
 			// Sort the entire cache
 			allNodes.sort((a, b) => (a.label.toLowerCase() > b.label.toLowerCase() ? 1 : -1));
-			
+
 			// Store all nodes in cache
 			setRootNodeCache(allNodes);
-			
+
 			// Only display the first batch of nodes
 			const firstBatch = allNodes.slice(0, PAGE_SIZE);
 			setNodes(firstBatch);
@@ -159,12 +154,7 @@ export const GenericDataTree = (props) => {
 		<Card title={props.treeName + ' Tree'}>
 			<div className="grid">
 				<div className="col-6">
-					<div 
-						className="card tree-container"
-						ref={treeContainerRef}
-						onScroll={handleScroll}
-						style={{ maxHeight: '600px', overflow: 'auto' }}
-					>
+					<div className="card">
 						<Tree
 							value={nodes}
 							onExpand={loadOnExpand}
@@ -172,15 +162,6 @@ export const GenericDataTree = (props) => {
 							onSelect={onNodeSelect}
 							loading={loading}
 						/>
-						{loadingMore && (
-							<div className="flex justify-content-center">
-								<ProgressSpinner 
-									style={{ width: '30px', height: '30px' }} 
-									strokeWidth="4" 
-									animationDuration=".5s" 
-								/>
-							</div>
-						)}
 					</div>
 				</div>
 				<div className="col-6">
