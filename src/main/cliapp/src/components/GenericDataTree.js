@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState} from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 
 import { Tree } from 'primereact/tree';
 import { Card } from 'primereact/card';
@@ -78,7 +78,7 @@ export const GenericDataTree = (props) => {
 			return;
 		}
 
-		setNodes(prevNodes => [...prevNodes, ...nextBatch]);
+		setNodes((prevNodes) => [...prevNodes, ...nextBatch]);
 
 		setCurrentPage(nextPage);
 		setHasMoreRootNodes(end < rootNodeCache.length);
@@ -99,7 +99,6 @@ export const GenericDataTree = (props) => {
 		window.addEventListener('scroll', handleScroll);
 		return () => window.removeEventListener('scroll', handleScroll);
 	}, [hasMoreRootNodes, loadingMore, loadMoreRootNodes]);
-
 
 	const onNodeSelect = (event) => {
 		//console.log(event.node);
