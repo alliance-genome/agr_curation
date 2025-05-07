@@ -40,6 +40,9 @@ uirunalpha:
 uirunbeta:
 	export API_URL=https://beta-curation.alliancegenome.org; make -B -C src/main/cliapp run; unset API_URL
 
+uirunprod:
+	export API_URL=https://curation.alliancegenome.org; make -B -C src/main/cliapp run; unset API_URL
+
 uiruneales:
 	export API_URL=http://eales.rgd.mcw.edu:8080; make -B -C src/main/cliapp run; unset API_URL
 
