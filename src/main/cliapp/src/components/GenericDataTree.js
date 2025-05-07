@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 
 import { Tree } from 'primereact/tree';
 import { Card } from 'primereact/card';
@@ -9,11 +9,17 @@ export const GenericDataTree = (props) => {
 	const [nodes, setNodes] = useState(null);
 	const [loading, setLoading] = useState(true);
 	const [selectedTerm, setSelectedTerm] = useState();
+	const [rootNodeCache, setRootNodeCache] = useState([]);
+	const [currentPage, setCurrentPage] = useState(0);
+	const [hasMoreRootNodes, setHasMoreRootNodes] = useState(true);
+	const [loadingMore, setLoadingMore] = useState(false);
+
+	const PAGE_SIZE = 20; // Number of root items to load at once
 
 	const findNodeToModify = (nodes, id) => {
-		for (var node of nodes) {
+		for (let node of nodes) {
 			if (node.children) {
-				var found = findNodeToModify(node.children, id);
+				let found = findNodeToModify(node.children, id);
 				if (found !== null) return found;
 			} else {
 				if (node.curie === id) {
@@ -31,12 +37,12 @@ export const GenericDataTree = (props) => {
 			const ontologyService = new OntologyService(props.endpoint);
 			let _nodes = [...nodes];
 
-			var modifyNode = findNodeToModify(_nodes, event.node.curie);
+			let modifyNode = findNodeToModify(_nodes, event.node.curie);
 
 			ontologyService.getChildren(event.node.curie).then((res) => {
 				if (res.data.entities) {
 					modifyNode.children = [];
-					for (var node of res.data.entities) {
+					for (let node of res.data.entities) {
 						node.key = node.curie;
 						node.label = node.name + ' (' + node.curie + ')';
 						if (node?.childCount && node.childCount > 0) {
@@ -56,6 +62,44 @@ export const GenericDataTree = (props) => {
 		}
 	};
 
+	const loadMoreRootNodes = useCallback(() => {
+		if (loadingMore || !hasMoreRootNodes) return;
+
+		setLoadingMore(true);
+
+		const nextPage = currentPage + 1;
+		const start = nextPage * PAGE_SIZE;
+		const end = start + PAGE_SIZE;
+		const nextBatch = rootNodeCache.slice(start, end);
+
+		if (nextBatch.length === 0) {
+			setHasMoreRootNodes(false);
+			setLoadingMore(false);
+			return;
+		}
+
+		setNodes((prevNodes) => [...prevNodes, ...nextBatch]);
+
+		setCurrentPage(nextPage);
+		setHasMoreRootNodes(end < rootNodeCache.length);
+		setLoadingMore(false);
+	}, [currentPage, hasMoreRootNodes, loadingMore, rootNodeCache]);
+
+	useEffect(() => {
+		const handleScroll = () => {
+			const scrollTop = window.scrollY || document.documentElement.scrollTop;
+			const scrollHeight = document.documentElement.scrollHeight;
+			const clientHeight = window.innerHeight;
+
+			// If scrolled to bottom (with a small buffer)
+			if (scrollHeight - scrollTop - clientHeight < 100 && hasMoreRootNodes && !loadingMore) {
+				loadMoreRootNodes();
+			}
+		};
+		window.addEventListener('scroll', handleScroll);
+		return () => window.removeEventListener('scroll', handleScroll);
+	}, [hasMoreRootNodes, loadingMore, loadMoreRootNodes]);
+
 	const onNodeSelect = (event) => {
 		//console.log(event.node);
 
@@ -69,12 +113,15 @@ export const GenericDataTree = (props) => {
 	useEffect(() => {
 		const ontologyService = new OntologyService(props.endpoint);
 		ontologyService.getRootNodes().then((res) => {
-			var _nodes = [];
-			var count = 0;
-			for (var node of res.data.entities) {
+			let allNodes = [];
+			let count = 0;
+
+			// Process and store all root nodes in cache
+			for (let node of res.data.entities) {
 				if (node.obsolete === true) {
 					continue;
 				}
+
 				node.key = node.curie;
 				node.label = node.name + ' (' + node.curie + ')';
 				if (node?.childCount && node.childCount > 0) {
@@ -82,11 +129,22 @@ export const GenericDataTree = (props) => {
 				} else {
 					node.leaf = true;
 				}
-				_nodes.push(node);
+
+				allNodes.push(node);
 				count = count + 1;
 			}
-			_nodes.sort((a, b) => (a.label.toLowerCase() > b.label.toLowerCase() ? 1 : -1));
-			setNodes(_nodes);
+
+			// Sort the entire cache
+			allNodes.sort((a, b) => (a.label.toLowerCase() > b.label.toLowerCase() ? 1 : -1));
+
+			// Store all nodes in cache
+			setRootNodeCache(allNodes);
+
+			// Only display the first batch of nodes
+			const firstBatch = allNodes.slice(0, PAGE_SIZE);
+			setNodes(firstBatch);
+			setCurrentPage(0);
+			setHasMoreRootNodes(allNodes.length > PAGE_SIZE);
 			setLoading(false);
 		});
 	}, []); // eslint-disable-line react-hooks/exhaustive-deps
@@ -100,7 +158,6 @@ export const GenericDataTree = (props) => {
 							value={nodes}
 							onExpand={loadOnExpand}
 							selectionMode="single"
-							//onSelectionChange={onNodeSelect}
 							onSelect={onNodeSelect}
 							loading={loading}
 						/>
