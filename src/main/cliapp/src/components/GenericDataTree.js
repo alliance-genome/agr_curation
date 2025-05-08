@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 
 import { Tree } from 'primereact/tree';
 import { Card } from 'primereact/card';
+import { Button } from 'primereact/button';
 
 import { OntologyService } from '../service/OntologyService';
 
@@ -12,7 +13,7 @@ export const GenericDataTree = (props) => {
 	const [rootNodeCache, setRootNodeCache] = useState([]);
 	const [currentPage, setCurrentPage] = useState(0);
 	const [hasMoreRootNodes, setHasMoreRootNodes] = useState(true);
-	const [loadingMore, setLoadingMore] = useState(false);
+	const [renderingMore, setRenderingMore] = useState(false);
 
 	const PAGE_SIZE = 20; // Number of root items to load at once
 
@@ -63,9 +64,9 @@ export const GenericDataTree = (props) => {
 	};
 
 	const loadMoreRootNodes = useCallback(() => {
-		if (loadingMore || !hasMoreRootNodes) return;
+		if (renderingMore || !hasMoreRootNodes) return;
 
-		setLoadingMore(true);
+		setRenderingMore(true);
 
 		const nextPage = currentPage + 1;
 		const start = nextPage * PAGE_SIZE;
@@ -74,7 +75,7 @@ export const GenericDataTree = (props) => {
 
 		if (nextBatch.length === 0) {
 			setHasMoreRootNodes(false);
-			setLoadingMore(false);
+			setRenderingMore(false);
 			return;
 		}
 
@@ -82,8 +83,8 @@ export const GenericDataTree = (props) => {
 
 		setCurrentPage(nextPage);
 		setHasMoreRootNodes(end < rootNodeCache.length);
-		setLoadingMore(false);
-	}, [currentPage, hasMoreRootNodes, loadingMore, rootNodeCache]);
+		setRenderingMore(false);
+	}, [currentPage, hasMoreRootNodes, renderingMore, rootNodeCache]);
 
 	useEffect(() => {
 		const handleScroll = () => {
@@ -92,13 +93,13 @@ export const GenericDataTree = (props) => {
 			const clientHeight = window.innerHeight;
 
 			// If scrolled to bottom (with a small buffer)
-			if (scrollHeight - scrollTop - clientHeight < 100 && hasMoreRootNodes && !loadingMore) {
+			if (scrollHeight - scrollTop - clientHeight < 100 && hasMoreRootNodes && !renderingMore) {
 				loadMoreRootNodes();
 			}
 		};
 		window.addEventListener('scroll', handleScroll);
 		return () => window.removeEventListener('scroll', handleScroll);
-	}, [hasMoreRootNodes, loadingMore, loadMoreRootNodes]);
+	}, [hasMoreRootNodes, renderingMore, loadMoreRootNodes]);
 
 	const onNodeSelect = (event) => {
 		//console.log(event.node);
@@ -161,6 +162,11 @@ export const GenericDataTree = (props) => {
 							onSelect={onNodeSelect}
 							loading={loading}
 						/>
+						<div className="flex justify-content-end mt-3">
+							<Button onClick={loadMoreRootNodes} disabled={renderingMore}>
+								{renderingMore ? 'loading...' : !hasMoreRootNodes ? 'No more results' : 'Show More'}
+							</Button>
+						</div>
 					</div>
 				</div>
 				<div className="col-6">
