@@ -1,20 +1,28 @@
 package org.alliancegenome.curation_api.model.ingest.dto;
 
-import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
-import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
-import org.alliancegenome.curation_api.model.entities.Annotation;
+import org.alliancegenome.curation_api.model.ingest.dto.base.BaseDTO;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 @Data
-@EqualsAndHashCode(callSuper = false)
-@AGRCurationSchemaVersion(min = "2.8.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = {Annotation.class})
-public class GeneOntologyAnnotationDTO {
-
-	private String geneIdentifier;
-
-	private String goTermCurie;
-
-
+@EqualsAndHashCode(callSuper = true)
+public class GeneOntologyAnnotationDTO extends BaseDTO {
+	private String db;
+	private String dbObjectId;
+	private String dbObjectSymbol;
+	private String qualifier;
+	private String goId;
+	private String dbReference;
+	private String evidenceCode;
+	private String with;
+	private String aspect;
+	private String dbObjectName;
+	private String dbObjectSynonym;
+	private String dbObjectType;
+	private String taxon;
+	private String date;
+	private String assignedBy;
+	private String annoationExtension;
+	private String geneProductFormId;
 }
