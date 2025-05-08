@@ -43,7 +43,7 @@ public class GeneOntologyAnnotationExecutor extends LoadFileExecutor {
 
 		BulkFMSLoad fmsLoad = (BulkFMSLoad) bulkLoadFileHistory.getBulkLoad();
 		BackendBulkDataProvider dataProvider = BackendBulkDataProvider.valueOf(fmsLoad.getFmsDataSubType());
-		
+
 		CsvSchema csvSchema = CsvSchemaBuilder.gafSchema();
 		CsvMapper csvMapper = new CsvMapper();
 		MappingIterator<GeneOntologyAnnotationDTO> it = csvMapper.enable(CsvParser.Feature.INSERT_NULLS_FOR_MISSING_COLUMNS).readerFor(GeneOntologyAnnotationDTO.class).with(csvSchema).readValues(new GZIPInputStream(new FileInputStream(bulkLoadFileHistory.getBulkLoadFile().getLocalFilePath())));
@@ -60,48 +60,48 @@ public class GeneOntologyAnnotationExecutor extends LoadFileExecutor {
 		gafData.subList(0, gafHeaderData.size()).clear();
 
 		String name = bulkLoadFileHistory.getBulkLoad().getName();
-				
+
 		List<Long> gafIdsBefore = geneOntologyAnnotationService.getAllGafIdsPerProvider(dataProvider.name());
 		List<Long> gafIdsLoaded = new ArrayList<>();
-		
+
 		Map<String, Set<String>> annotationMap = new HashedMap<>();
 
-		
-		for(GeneOntologyAnnotationDTO annotation: gafData) {
-			if(annotation.getDb().equals(dataProvider.resourceDescriptor)) {
+		for (GeneOntologyAnnotationDTO annotation : gafData) {
+			if (annotation.getDb().equals(dataProvider.resourceDescriptor)) {
 				String curie = annotation.getDbObjectId();
 				String prefix = dataProvider.curiePrefix;
-				if(dataProvider == BackendBulkDataProvider.HUMAN || dataProvider == BackendBulkDataProvider.MGI) {
+				if (dataProvider == BackendBulkDataProvider.HUMAN || dataProvider == BackendBulkDataProvider.MGI) {
 					prefix = "";
 				}
 				annotation.setDbObjectId(prefix + annotation.getDbObjectId());
 
-				if(!annotationMap.containsKey(annotation.getDbObjectId())) {
+				if (!annotationMap.containsKey(annotation.getDbObjectId())) {
 					annotationMap.put(annotation.getDbObjectId(), new HashSet<>());
 				}
-				
+
 				Set<String> goList = annotationMap.get(annotation.getDbObjectId());
 				goList.add(annotation.getGoId());
-				
+
 			} else {
-				//System.out.println("DB not found: " + annotation.getDb() + " " + dataProvider.resourceDescriptor);
+				// System.out.println("DB not found: " + annotation.getDb() + " " +
+				// dataProvider.resourceDescriptor);
 			}
 		}
-		
+
 		ProcessDisplayHelper ph = new ProcessDisplayHelper();
 		ph.addDisplayHandler(loadProcessDisplayService);
 		ph.startProcess(name, annotationMap.size());
 		bulkLoadFileHistory.setTotalCount(annotationMap.size());
 
-		for(Entry<String, Set<String>> annotationMapEntry: annotationMap.entrySet()) {
+		for (Entry<String, Set<String>> annotationMapEntry : annotationMap.entrySet()) {
 
 			ObjectListResponse<GeneOntologyAnnotation> gafInsert = geneOntologyAnnotationService.insert(annotationMapEntry.getKey(), annotationMapEntry.getValue());
-			for(GeneOntologyAnnotation annotation: gafInsert.getEntities()) {
+			for (GeneOntologyAnnotation annotation : gafInsert.getEntities()) {
 				gafIdsLoaded.add(annotation.getId());
 			}
-			
-			if(gafInsert.getErrorMessages() != null && gafInsert.getErrorMessages().size() > 0) {
-				//System.out.println(gafInsert.getErrorMessages());
+
+			if (gafInsert.getErrorMessages() != null && gafInsert.getErrorMessages().size() > 0) {
+				// System.out.println(gafInsert.getErrorMessages());
 				bulkLoadFileHistory.incrementFailed();
 				List<String> errorList = gafInsert.getErrorMessages().entrySet().stream().map(t -> t.getValue()).toList();
 				addException(bulkLoadFileHistory, new ObjectUpdateExceptionData(annotationMapEntry, errorList, null));
@@ -110,7 +110,7 @@ public class GeneOntologyAnnotationExecutor extends LoadFileExecutor {
 			}
 
 			ph.progressProcess();
-			
+
 			if (Thread.currentThread().isInterrupted()) {
 				bulkLoadFileHistory.setErrorMessage("Thread isInterrupted");
 				throw new RuntimeException("Thread isInterrupted");
@@ -118,7 +118,6 @@ public class GeneOntologyAnnotationExecutor extends LoadFileExecutor {
 		}
 		ph.finishProcess();
 
-		
 		runCleanup(geneOntologyAnnotationService, bulkLoadFileHistory, dataProvider.name(), gafIdsBefore, gafIdsLoaded, "GAF Load");
 		updateHistory(bulkLoadFileHistory);
 		bulkLoadFileHistory.finishLoad();
