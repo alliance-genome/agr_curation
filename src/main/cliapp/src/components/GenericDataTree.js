@@ -164,12 +164,7 @@ export const GenericDataTree = (props) => {
 						/>
 						<div className="flex justify-content-end mt-3">
 							<Button onClick={loadMoreRootNodes} disabled={renderingMore}>
-								{renderingMore
-									? 'loading...'
-									: !hasMoreRootNodes
-									? 'No more results'
-									: 'Show More'
-								}
+								{renderingMore ? 'loading...' : !hasMoreRootNodes ? 'No more results' : 'Show More'}
 							</Button>
 						</div>
 					</div>
