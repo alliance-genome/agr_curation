@@ -47,18 +47,18 @@ public class GeneOntologyAnnotationService extends BaseEntityCrudService<GeneOnt
 
 	@Transactional
 	public ObjectListResponse<GeneOntologyAnnotation> insert(String geneId, Set<String> entities) {
-		
+
 		ObjectListResponse<GeneOntologyAnnotation> ret = new ObjectListResponse<>(new HashSet<>());
-		
+
 		Map<String, Object> geneParams = new HashMap<String, Object>();
 		geneParams.put("primaryExternalId", geneId);
 		Gene gene = geneDAO.findByParams(geneParams).getSingleResult();
-		
-		if(gene == null) {
-			for(String goTermId: entities) {
+
+		if (gene == null) {
+			for (String goTermId : entities) {
 				ret.addErrorMessage(geneId + "_" + goTermId, "No Gene: " + geneId + " Found for: " + goTermId);
 			}
-			//System.out.println("Gene Not Found: " + geneId);
+			// System.out.println("Gene Not Found: " + geneId);
 			return ret;
 		}
 
@@ -70,18 +70,18 @@ public class GeneOntologyAnnotationService extends BaseEntityCrudService<GeneOnt
 			currentAnnotations = new HashSet<>(gene.getGeneOntologyAnnotations());
 		}
 		List<String> currentAnnotationGoTermCuries = currentAnnotations.stream().map(goa -> goa.getGoTerm().getCurie()).toList();
-		
-		//System.out.println("Current Curies: " + currentAnnotationGoTermCuries);
-		
-		//System.out.println("New Curies: " + entities);
-		
-		for(String goTermId: entities) {
-			if(!currentAnnotationGoTermCuries.contains(goTermId)) {
-				//System.out.println("Term not found adding: " + goTermId + " to " + geneId);
+
+		// System.out.println("Current Curies: " + currentAnnotationGoTermCuries);
+
+		// System.out.println("New Curies: " + entities);
+
+		for (String goTermId : entities) {
+			if (!currentAnnotationGoTermCuries.contains(goTermId)) {
+				// System.out.println("Term not found adding: " + goTermId + " to " + geneId);
 				Map<String, Object> goParams = new HashMap<String, Object>();
 				goParams.put("curie", goTermId);
 				GOTerm goTerm = goTermDAO.findByParams(goParams).getSingleResult();
-				if(goTerm != null) {
+				if (goTerm != null) {
 					GeneOntologyAnnotation newAnnotation = new GeneOntologyAnnotation();
 					newAnnotation.setSingleGene(gene);
 					newAnnotation.setGoTerm(goTerm);
@@ -92,15 +92,15 @@ public class GeneOntologyAnnotationService extends BaseEntityCrudService<GeneOnt
 				}
 			}
 		}
-		
-		for(GeneOntologyAnnotation annotation: currentAnnotations) {
-			if(!entities.contains(annotation.getGoTerm().getCurie())) {
+
+		for (GeneOntologyAnnotation annotation : currentAnnotations) {
+			if (!entities.contains(annotation.getGoTerm().getCurie())) {
 				gene.getGeneOntologyAnnotations().remove(annotation);
 			} else {
 				ret.getEntities().add(annotation);
 			}
 		}
-		
+
 		return ret;
 	}
 
@@ -109,7 +109,7 @@ public class GeneOntologyAnnotationService extends BaseEntityCrudService<GeneOnt
 	public GeneOntologyAnnotation deprecateOrDelete(Long id, Boolean throwApiError, String requestSource, Boolean deprecate) {
 		return gafDAO.remove(id);
 	}
-	
+
 	public List<Long> getAllGafIdsPerProvider(String dataProvider) {
 		Map<String, Object> params = new HashMap<>();
 		params.put("singleGene.taxon.species.dataProvider.abbreviation", dataProvider);
