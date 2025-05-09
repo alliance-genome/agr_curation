@@ -73,7 +73,7 @@ public class GeneOntologyAnnotationExecutor extends LoadFileExecutor {
 				if (dataProvider == BackendBulkDataProvider.HUMAN || dataProvider == BackendBulkDataProvider.MGI) {
 					prefix = "";
 				}
-				if(dataProvider == BackendBulkDataProvider.XB) {
+				if (dataProvider == BackendBulkDataProvider.XB) {
 					prefix = dataProvider.resourceDescriptor + ":";
 				}
 				
