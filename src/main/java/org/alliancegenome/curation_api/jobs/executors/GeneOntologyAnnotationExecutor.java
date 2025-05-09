@@ -96,7 +96,8 @@ public class GeneOntologyAnnotationExecutor extends LoadFileExecutor {
 		ph.addDisplayHandler(loadProcessDisplayService);
 		ph.startProcess(name, annotationMap.size());
 		bulkLoadFileHistory.setTotalCount(annotationMap.size());
-
+		updateHistory(bulkLoadFileHistory);
+		
 		for (Entry<String, Set<String>> annotationMapEntry : annotationMap.entrySet()) {
 
 			ObjectListResponse<GeneOntologyAnnotation> gafInsert = geneOntologyAnnotationService.insert(annotationMapEntry.getKey(), annotationMapEntry.getValue());
