@@ -114,7 +114,7 @@ public class GeneOntologyAnnotationService extends BaseEntityCrudService<GeneOnt
 	public List<Long> getAllGafIdsPerProvider(BackendBulkDataProvider dataProvider) {
 		Map<String, Object> params = new HashMap<>();
 		params.put("singleGene.taxon.species.dataProvider.abbreviation", dataProvider.sourceOrganization);
-		if(dataProvider == BackendBulkDataProvider.HUMAN || dataProvider == BackendBulkDataProvider.RGD) {
+		if (dataProvider == BackendBulkDataProvider.HUMAN || dataProvider == BackendBulkDataProvider.RGD) {
 			params.put("singleGene.taxon.species.displayName", dataProvider.name());
 		}
 		return gafDAO.findIdsByParams(params);
