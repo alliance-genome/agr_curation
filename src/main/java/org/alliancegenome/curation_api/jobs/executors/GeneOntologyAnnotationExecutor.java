@@ -28,6 +28,7 @@ import com.fasterxml.jackson.dataformat.csv.CsvMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvParser;
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
 
+import io.quarkus.logging.Log;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
@@ -61,7 +62,8 @@ public class GeneOntologyAnnotationExecutor extends LoadFileExecutor {
 
 		String name = bulkLoadFileHistory.getBulkLoad().getName();
 
-		List<Long> gafIdsBefore = geneOntologyAnnotationService.getAllGafIdsPerProvider(dataProvider.name());
+		List<Long> gafIdsBefore = geneOntologyAnnotationService.getAllGafIdsPerProvider(dataProvider);
+		Log.info("Prior ID count: " + gafIdsBefore.size());
 		List<Long> gafIdsLoaded = new ArrayList<>();
 
 		Map<String, Set<String>> annotationMap = new HashedMap<>();
