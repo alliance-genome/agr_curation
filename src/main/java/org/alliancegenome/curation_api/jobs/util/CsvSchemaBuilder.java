@@ -106,6 +106,33 @@ public class CsvSchemaBuilder {
 		return schema;
 	}
 	
+	public static CsvSchema gafSchema() {
+		CsvSchema schema = CsvSchema.builder()
+				.setColumnSeparator('\t')
+				.setArrayElementSeparator(";")
+				.setNullValue(".")
+				.disableQuoteChar()
+				.addColumn("db")
+				.addColumn("dbObjectId")
+				.addColumn("dbObjectSymbol")
+				.addColumn("qualifier")
+				.addColumn("goId")
+				.addColumn("dbReference")
+				.addColumn("evidenceCode")
+				.addColumn("with")
+				.addColumn("aspect")
+				.addColumn("dbObjectName")
+				.addColumn("dbObjectSynonym")
+				.addColumn("dbObjectType")
+				.addColumn("taxon")
+				.addColumn("date")
+				.addColumn("assignedBy")
+				.addColumn("annoationExtension")
+				.addColumn("geneProductFormId")
+				.build();
+		return schema;
+	}
+	
 	public static CsvSchema vepTxtSchema() {
 		CsvSchema schema = CsvSchema.builder()
 				.setColumnSeparator('\t')
