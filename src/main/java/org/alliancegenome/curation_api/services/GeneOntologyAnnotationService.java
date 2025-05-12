@@ -12,6 +12,7 @@ import org.alliancegenome.curation_api.dao.GeneDAO;
 import org.alliancegenome.curation_api.dao.GeneOntologyAnnotationDAO;
 import org.alliancegenome.curation_api.dao.SpeciesDAO;
 import org.alliancegenome.curation_api.dao.ontology.GoTermDAO;
+import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.GeneOntologyAnnotation;
 import org.alliancegenome.curation_api.model.entities.Person;
@@ -110,9 +111,12 @@ public class GeneOntologyAnnotationService extends BaseEntityCrudService<GeneOnt
 		return gafDAO.remove(id);
 	}
 
-	public List<Long> getAllGafIdsPerProvider(String dataProvider) {
+	public List<Long> getAllGafIdsPerProvider(BackendBulkDataProvider dataProvider) {
 		Map<String, Object> params = new HashMap<>();
-		params.put("singleGene.taxon.species.dataProvider.abbreviation", dataProvider);
+		params.put("singleGene.taxon.species.dataProvider.abbreviation", dataProvider.sourceOrganization);
+		if (dataProvider == BackendBulkDataProvider.HUMAN || dataProvider == BackendBulkDataProvider.RGD) {
+			params.put("singleGene.taxon.species.displayName", dataProvider.name());
+		}
 		return gafDAO.findIdsByParams(params);
 	}
 
