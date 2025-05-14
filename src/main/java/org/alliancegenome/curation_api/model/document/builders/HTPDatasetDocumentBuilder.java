@@ -117,8 +117,8 @@ public class HTPDatasetDocumentBuilder {
 								.getHtpExpressionSampleLocations()
 								.stream()
 								.flatMap(site -> {
-									return site.getAnatomicalStructure().getIsaAncestors().stream()
-											.map(parent -> parent.getName());
+									return site.getAnatomicalStructure().getAncestors().stream()
+											.map(ancestor -> ancestor.getClosureObject().getName());
 								}).collect(Collectors.toList()));
 
 				if (sampleAnnot.getHtpExpressionSample() != null) {

@@ -1,6 +1,5 @@
 package org.alliancegenome.curation_api.model.entities.ontology;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -30,8 +29,8 @@ import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import jakarta.persistence.Transient;
 import jakarta.persistence.UniqueConstraint;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -42,7 +41,7 @@ import lombok.ToString;
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @Entity
-@ToString(exclude = { "isaParents", "isaChildren", "isaAncestors", "isaDescendants", "crossReferences", "synonyms", "secondaryIdentifiers", "subsets" }, callSuper = true)
+@ToString(exclude = { "ancestors", "descendants", "crossReferences", "synonyms", "secondaryIdentifiers", "subsets" }, callSuper = true)
 @AGRCurationSchemaVersion(min = LinkMLSchemaConstants.MIN_ONTOLOGY_RELEASE, max = LinkMLSchemaConstants.MAX_ONTOLOGY_RELEASE, dependencies = { CurieObject.class })
 @Table(
 	indexes = {
@@ -119,62 +118,59 @@ public class OntologyTerm extends CurieObject {
 	@JsonView({ View.FieldsAndLists.class })
 	private List<CrossReference> crossReferences;
 
-	@ManyToMany
-	@JoinTable(name = "ontologyterm_isa_parent_children", indexes = {
-		@Index(name = "ontologyterm_isa_parent_children_isaparents_index", columnList = "isaparents_id"),
-		@Index(name = "ontologyterm_isa_parent_children_isachildren_index", columnList = "isachildren_id")
-	})
-	private Set<OntologyTerm> isaParents;
+//	@ManyToMany
+//	@JoinTable(name = "ontologyterm_isa_parent_children", indexes = {
+//		@Index(name = "ontologyterm_isa_parent_children_isaparents_index", columnList = "isaparents_id"),
+//		@Index(name = "ontologyterm_isa_parent_children_isachildren_index", columnList = "isachildren_id")
+//	})
+//	private Set<OntologyTerm> isaParents;
+//
+//	@ManyToMany(mappedBy = "isaParents")
+//	private Set<OntologyTerm> isaChildren;
+//
 
-	@ManyToMany(mappedBy = "isaParents")
-	private Set<OntologyTerm> isaChildren;
+	@OneToMany(mappedBy = "closureSubject")
+	private Set<OntologyTermClosure> ancestors;
 
-	@ManyToMany
-	@JoinTable(name = "ontologyterm_isa_ancestor_descendant", indexes = {
-		@Index(name = "ontologyterm_isa_ancestor_descendant_isancestors_index", columnList = "isaancestors_id"),
-		@Index(name = "ontologyterm_isa_ancestor_descendant_isadescendants_index", columnList = "isadescendants_id")
-	})
-	private Set<OntologyTerm> isaAncestors;
+	@OneToMany(mappedBy = "closureObject")
+	private Set<OntologyTermClosure> descendants;
 
-	@ManyToMany(mappedBy = "isaAncestors")
-	private Set<OntologyTerm> isaDescendants;
-
-	@JsonView(View.FieldsOnly.class)
-	private Integer childCount = 0;
+//	@JsonView(View.FieldsOnly.class)
+//	private Integer childCount = 0;
 
 	@JsonView(View.FieldsOnly.class)
 	private Integer descendantCount = 0;
 
-	@Transient
-	public void addIsaChild(OntologyTerm term) {
-		if (isaChildren == null) {
-			isaChildren = new HashSet<>();
-		}
-		isaChildren.add(term);
-	}
-
-	@Transient
-	public void addIsaParent(OntologyTerm term) {
-		if (isaParents == null) {
-			isaParents = new HashSet<>();
-		}
-		isaParents.add(term);
-	}
-
-	@Transient
-	public void addIsaDescendant(OntologyTerm term) {
-		if (isaDescendants == null) {
-			isaDescendants = new HashSet<OntologyTerm>();
-		}
-		isaDescendants.add(term);
-	}
-
-	@Transient
-	public void addIsaAncestor(OntologyTerm term) {
-		if (isaAncestors == null) {
-			isaAncestors = new HashSet<OntologyTerm>();
-		}
-		isaAncestors.add(term);
-	}
+//	@Transient
+//	public void addIsaChild(OntologyTerm term) {
+//		if (isaChildren == null) {
+//			isaChildren = new HashSet<>();
+//		}
+//		isaChildren.add(term);
+//	}
+//
+//	@Transient
+//	public void addIsaParent(OntologyTerm term) {
+//		if (isaParents == null) {
+//			isaParents = new HashSet<>();
+//		}
+//		isaParents.add(term);
+//	}
+//
+//	@Transient
+//	public void addIsaDescendant(OntologyTerm term) {
+//		if (isaDescendants == null) {
+//			isaDescendants = new HashSet<OntologyTerm>();
+//		}
+//		isaDescendants.add(term);
+//	}
+//
+//	@Transient
+//	public void addIsaAncestor(OntologyTerm term) {
+//		if (isaAncestors == null) {
+//			isaAncestors = new HashSet<OntologyTerm>();
+//		}
+//		isaAncestors.add(term);
+//	}
 
 }

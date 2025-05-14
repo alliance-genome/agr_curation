@@ -5,17 +5,20 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.InputStream;
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.Synonym;
 import org.alliancegenome.curation_api.model.entities.ontology.OntologyTerm;
+import org.alliancegenome.curation_api.model.entities.ontology.OntologyTermClosure;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
 import org.apache.commons.collections.CollectionUtils;
 import org.jboss.logging.Logger.Level;
@@ -54,8 +57,9 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
 
 	private HashMap<String, T> allNodes = new HashMap<>();
 	private HashSet<String> traversedNodes = new HashSet<String>();
+	
 
-	private ProcessDisplayHelper ph = new ProcessDisplayHelper(10000);
+	private ProcessDisplayHelper ph = new ProcessDisplayHelper(1000);
 
 	public GenericOntologyLoadHelper(Class<T> clazz) {
 		this.clazz = clazz;
@@ -68,8 +72,7 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
 	}
 
 	public Map<String, T> load(String fullText) throws Exception {
-		File outfile = new File("tmp.file2.owl"); // TODO fix so multiple loads do not overwrite each other Generate
-													// random name
+		File outfile = new File("tmp.file2.owl"); // TODO fix so multiple loads do not overwrite each other Generate random name
 		log("Input data size: " + fullText.length());
 		BufferedWriter writer = new BufferedWriter(new FileWriter(outfile));
 		writer.append(fullText);
@@ -164,7 +167,7 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
 
 			boolean isNodeInOntology = isNodeInOntology(currentTreeNode, currentTerm, requiredNamespaces);
 
-			if (isNodeInOntology && currentTerm.getCurie() != null) {
+			if (isNodeInOntology) {
 				if (!allNodes.containsKey(currentTerm.getCurie())) {
 					allNodes.put(currentTerm.getCurie(), currentTerm);
 				} else {
@@ -179,14 +182,10 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
 			}
 
 			if (isNodeInOntology) {
-				HashSet<OntologyTerm> ancestors = new HashSet<OntologyTerm>();
-				traverseToRoot(currentTreeNode, depth, requiredNamespaces, ancestors);
-				ancestors.remove(currentTerm);
-				// if(ancestors.size() > 0) ancestors.remove(0);
-				currentTerm.setIsaAncestors(new HashSet<>(ancestors));
-				// printDepthMessage(depth, currentTerm.getCurie() + " [" +
-				// ancestors.stream().map(OntologyTerm::getCurie).collect(Collectors.joining(","))
-				// + "]");
+				HashSet<OntologyTermClosure> ancestors = new HashSet<OntologyTermClosure>();
+				HashSet<String> relationshipTypes = new HashSet<String>();
+				traverseToRoot(currentTreeNode, "self", currentTerm, relationshipTypes, 0, requiredNamespaces, ancestors);
+				currentTerm.setAncestors(new HashSet<>(ancestors));
 			}
 
 			for (OWLClass childTermNode : reasoner.getSubClasses(currentTreeNode, true).entities().collect(Collectors.toList())) {
@@ -195,9 +194,11 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
 					try {
 						T childTerm = traverse(childTermNode, depth + 1, requiredNamespaces);
 
-						if (childTerm != null && currentTerm.getCurie() != null && isNodeInOntology) {
-							// printDepthMessage(depth, "Adding isa parent: " + currentTerm.getCurie());
-							childTerm.addIsaParent(currentTerm);
+						// TODO: Ontology: turn back on -- Not sure this is needed
+						if (childTerm != null && isNodeInOntology) {
+							//String ancestorsString = childTerm.getAncestors().stream().map(t -> { return t.getClosureSubject().getCurie() + " " + t.getClosureTypes() + "(" + t.getDistance() + ") " + t.getClosureObject().getCurie(); }).toList() + "";
+							//printDepthMessage(depth, "Adding parent: " + currentTerm.getCurie() + " <- " + childTerm.getCurie() + " Ancestors: " + ancestorsString);
+							//childTerm.addIsaParent(currentTerm);
 						}
 					} catch (Exception e) {
 						e.printStackTrace();
@@ -210,20 +211,19 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
 
 	}
 
-	private void traverseToRoot(OWLClass currentTreeNode, int depth, HashSet<String> requiredNamespaces, HashSet<OntologyTerm> ancestors) throws Exception {
-		List<OWLClass> parents = new ArrayList<>();
+	private void traverseToRoot(OWLClass currentTreeNode, String relationType, OntologyTerm originalNode, HashSet<String> relationshipTypes, int depth, HashSet<String> requiredNamespaces, HashSet<OntologyTermClosure> ancestors) throws Exception {
+		List<Map.Entry<OWLClass, String>> parents = new ArrayList<>();
 
 		Set<OWLSubClassOfAxiom> parentsAxioms = ontology.getSubClassAxiomsForSubClass(currentTreeNode);
 		for (OWLSubClassOfAxiom sub : parentsAxioms) {
 			OWLClassExpression exp = sub.getSuperClass();
 			if (!exp.isAnonymous()) {
 				// is_a
-				parents.add(exp.asOWLClass());
+				parents.add(new AbstractMap.SimpleEntry<>(exp.asOWLClass(), "is_a"));
 			} else if (exp instanceof OWLObjectSomeValuesFrom) {
 				OWLObjectSomeValuesFrom restriction = (OWLObjectSomeValuesFrom) exp;
-				// part_of and or other ones could be added here
 				if (partOfProperty != null && restriction.getProperty().equals(partOfProperty) && !restriction.getFiller().isAnonymous()) {
-					parents.add(restriction.getFiller().asOWLClass());
+					parents.add(new AbstractMap.SimpleEntry<>(restriction.getFiller().asOWLClass(), "part_of"));
 				}
 			}
 		}
@@ -234,7 +234,7 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
 
 			currentTerm = getOntologyTerm(currentTreeNode);
 
-			if (isNodeInOntology(currentTreeNode, currentTerm, requiredNamespaces) && currentTerm.getCurie() != null) {
+			if (isNodeInOntology(currentTreeNode, currentTerm, requiredNamespaces)) {
 
 				T existingNode = allNodes.get(currentTerm.getCurie());
 
@@ -243,18 +243,37 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
 					existingNode = currentTerm;
 				}
 
-				if (!ancestors.contains(existingNode)) {
-					ancestors.add(existingNode);
+				if(relationType != null && !relationType.equals("self")) {
+					OntologyTermClosure closure = new OntologyTermClosure();
+					closure.setClosureSubject(originalNode);
+					closure.setClosureObject(existingNode);
+					closure.getClosureTypes().addAll(relationshipTypes);
+					closure.setDistance(depth);
+					ancestors.add(closure);
+
+					OntologyTermClosure closure2 = new OntologyTermClosure();
+					closure2.setClosureSubject(originalNode);
+					closure2.setClosureObject(existingNode);
+					closure2.getClosureTypes().add("is_a");
+					closure2.getClosureTypes().add("part_of");
+					closure2.setDistance(depth);
+					ancestors.add(closure2);
+
+				} else {
+					// We are the current node and need to traverse first
 				}
 			}
 
-			for (OWLClass parent : parents) {
-				traverseToRoot(parent, depth + 1, requiredNamespaces, ancestors);
+			for (Entry<OWLClass, String> parent : parents) {
+				relationshipTypes.add(parent.getValue());
+				traverseToRoot(parent.getKey(), parent.getValue(), originalNode, relationshipTypes, depth + 1, requiredNamespaces, ancestors);
+				relationshipTypes.remove(parent.getValue());
 			}
 		}
 	}
 
 	private boolean isNodeInOntology(OWLClass currentTreeNode, T currentTerm, HashSet<String> requiredNamespaces) {
+		boolean condition0 = currentTerm.getCurie() != null;
 		boolean condition1 = currentTerm.getNamespace() != null;
 		boolean condition2 = requiredNamespaces.contains(currentTerm.getNamespace());
 		boolean condition3 = config.getLoadOnlyIRIPrefix() != null;
@@ -264,7 +283,7 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
 		boolean condition6 = !hasChebiXref(currentTerm);
 
 		// CHECKSTYLE:OFF: UnnecessaryParentheses
-		return ((condition1 && condition2 && !condition3) || (condition3 && condition4)) && (condition5 || condition6);
+		return condition0 && ((condition1 && condition2 && !condition3) || (condition3 && condition4)) && (condition5 || condition6);
 		// CHECKSTYLE:ON: UnnecessaryParentheses
 	}
 
@@ -467,21 +486,23 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
 
 		traversedNodes.add(currentTerm.getCurie());
 
-		if (isPropertyInOntology) {
-			HashSet<OntologyTerm> ancestors = new HashSet<OntologyTerm>();
-			traverseToRootProperty(currentTreeProperty, depth, ancestors);
-			ancestors.remove(currentTerm);
-			currentTerm.setIsaAncestors(new HashSet<>(ancestors));
-		}
+		// TODO: Ontology: turn back on -- Test on the RO
+//		if (isPropertyInOntology) {
+//			HashSet<OntologyTerm> ancestors = new HashSet<OntologyTerm>();
+//			traverseToRootProperty(currentTreeProperty, depth, ancestors);
+//			ancestors.remove(currentTerm);
+//			currentTerm.setIsaAncestors(new HashSet<>(ancestors));
+//		}
 
 		for (OWLObjectPropertyExpression childTermPropertyExpression : reasoner.getSubObjectProperties(currentTreeProperty, true).entities().collect(Collectors.toList())) {
 			if (!childTermPropertyExpression.getNamedProperty().toString().equals(currentTreeProperty.toString())) {
 				try {
 					T childTerm = traverseProperties(childTermPropertyExpression.getNamedProperty(), depth + 1);
 
-					if (childTerm != null && currentTerm.getCurie() != null && isPropertyInOntology) {
-						childTerm.addIsaParent(currentTerm);
-					}
+					// TODO: Ontology: turn back on -- Test on the RO
+					//if (childTerm != null && currentTerm.getCurie() != null && isPropertyInOntology) {
+					//	childTerm.addIsaParent(currentTerm);
+					//}
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -549,4 +570,10 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
 		Log.log(level, message);
 		//System.out.println(message);
 	}
+
+	public void printTree(String string, Map<String, T> map) {
+		
+		
+	}
+
 }

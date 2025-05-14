@@ -1,5 +1,6 @@
 package org.alliancegenome.curation_api.controllers.base;
 
+import java.util.List;
 import java.util.Map;
 
 import org.alliancegenome.curation_api.dao.base.BaseEntityDAO;
@@ -52,19 +53,19 @@ public abstract class BaseOntologyTermController<S extends BaseOntologyTermServi
 		return service.getRootNodes();
 	}
 
-	public ObjectListResponse<E> getChildren(String curie) {
-		return service.getChildren(curie);
+	public ObjectListResponse<E> getChildren(String curie, List<String> relationTypes) {
+		return service.getChildren(curie, relationTypes);
 	}
 
-	public ObjectListResponse<E> getDescendants(String curie) {
-		return service.getDescendants(curie);
+	public ObjectListResponse<E> getDescendants(String curie, List<String> relationTypes) {
+		return service.getDescendants(curie, relationTypes);
 	}
 
-	public ObjectListResponse<E> getParents(String curie) {
-		return service.getParents(curie);
+	public ObjectListResponse<E> getParents(String curie, List<String> relationTypes) {
+		return service.getParents(curie, relationTypes);
 	}
 
-	public ObjectListResponse<E> getAncestors(String curie) {
-		return service.getAncestors(curie);
+	public ObjectListResponse<E> getAncestors(String curie, List<String> relationTypes) {
+		return service.getAncestors(curie, relationTypes);
 	}
 }

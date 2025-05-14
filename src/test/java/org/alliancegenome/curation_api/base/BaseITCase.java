@@ -540,7 +540,8 @@ public class BaseITCase {
 		goTerm.setName(name);
 		goTerm.setSecondaryIdentifiers(List.of(curie + "secondary"));
 		goTerm.setSubsets(subsets);
-		goTerm.addIsaAncestor(ancestor);
+		// TODO: Ontology: turn back on
+		//goTerm.addIsaAncestor(ancestor);
 
 		ObjectResponse<GOTerm> response = given().
 				contentType("application/json").

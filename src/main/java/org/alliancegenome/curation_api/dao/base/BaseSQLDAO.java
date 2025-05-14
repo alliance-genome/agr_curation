@@ -139,22 +139,22 @@ public class BaseSQLDAO<E extends AuditedObject> extends BaseEntityDAO<E> {
 			Path<Object> column = null;
 			Log.log(level, "Key: " + key);
 			if (key.contains(".")) {
-				String[] objects = key.split("\\.");
-				for (String s : objects) {
-					Log.log(level, "Looking up: " + s);
+				String[] fields = key.split("\\.");
+				for (String field : fields) {
+					Log.log(level, "Looking up: " + field);
 					if (column != null) {
-						Log.log(level, "Looking up via column: " + s);
-						Path<Object> pathColumn = column.get(s);
+						Log.log(level, "Looking up via column: " + field);
+						Path<Object> pathColumn = column.get(field);
 						if (pathColumn.getJavaType().equals(List.class)) {
-							column = ((Join) column).joinList(s, JoinType.LEFT);
+							column = ((Join) column).joinList(field, JoinType.LEFT);
 						} else {
 							column = pathColumn;
 						}
 					} else {
-						Log.log(level, "Looking up via root: " + s);
-						column = root.get(s);
+						Log.log(level, "Looking up via root: " + field);
+						column = root.get(field);
 						if (column.getJavaType().equals(List.class)) {
-							column = root.joinList(s, JoinType.LEFT);
+							column = root.joinList(field, JoinType.LEFT);
 						}
 					}
 
@@ -179,25 +179,31 @@ public class BaseSQLDAO<E extends AuditedObject> extends BaseEntityDAO<E> {
 
 			if (value == null) {
 				restrictions.add(builder.isEmpty(root.get(key)));
-			} else if (value instanceof Integer) {
-				Log.log(level, "Integer Type: " + value);
-				Integer desiredValue = (Integer) value;
+			} else if (value instanceof Integer desiredValue) {
+				Log.log(level, "Integer Type: " + desiredValue);
 				restrictions.add(builder.equal(column, desiredValue));
-			} else if (value instanceof Enum) {
-				Log.log(level, "Enum Type: " + value);
-				restrictions.add(builder.equal(column, value));
-			} else if (value instanceof Long) {
-				Log.log(level, "Long Type: " + value);
-				Long desiredValue = (Long) value;
+			} else if (value instanceof Enum desiredValue) {
+				Log.log(level, "Enum Type: " + desiredValue);
 				restrictions.add(builder.equal(column, desiredValue));
-			} else if (value instanceof Boolean) {
-				Log.log(level, "Boolean Type: " + value);
-				Boolean desiredValue = (Boolean) value;
+			} else if (value instanceof Long desiredValue) {
+				Log.log(level, "Long Type: " + desiredValue);
 				restrictions.add(builder.equal(column, desiredValue));
-			} else if (value instanceof String) {
-				Log.log(level, "String Type: " + value);
-				String desiredValue = (String) value;
+			} else if (value instanceof Boolean desiredValue) {
+				Log.log(level, "Boolean Type: " + desiredValue);
 				restrictions.add(builder.equal(column, desiredValue));
+			} else if (value instanceof String desiredValue) {
+				Log.log(level, "String Type: " + desiredValue);
+				restrictions.add(builder.equal(column, desiredValue));
+			} else if (value instanceof Set<?> desiredValue) {
+				Log.log(level, "Set Type: " + desiredValue);
+				Predicate listPredicate = column.in(desiredValue);
+				Predicate sizePredicate = builder.equal(builder.size(root.joinSet(key, JoinType.LEFT)), desiredValue.size());
+				restrictions.add(builder.and(listPredicate, sizePredicate));
+			} else if (value instanceof List<?> desiredValue) {
+				Log.log(level, "List Type: " + desiredValue);
+				Predicate listPredicate = column.in(desiredValue);
+				Predicate sizePredicate = builder.equal(builder.size(root.joinList(key, JoinType.LEFT)), desiredValue.size());
+				restrictions.add(builder.and(listPredicate, sizePredicate));	
 			} else {
 				// Not sure what to do here as we have a non supported value
 				Log.info("Unsupprted Value: " + value);
@@ -294,7 +300,7 @@ public class BaseSQLDAO<E extends AuditedObject> extends BaseEntityDAO<E> {
 
 		CriteriaQuery<Long> countQuery = cb.createQuery(Long.class);
 		countQuery.select(cb.count(countQuery.from(myClass)));
-		
+
 		Long totalResults = 0L;
 		if (pagination != null && pagination.getPage() == 0 && pagination.getLimit() == 0) {
 			totalResults = entityManager.createQuery(countQuery).getSingleResult();
@@ -670,7 +676,8 @@ public class BaseSQLDAO<E extends AuditedObject> extends BaseEntityDAO<E> {
 		if (orderByField != null) {
 			query.orderBy(builder.asc(root.get(orderByField)));
 		} else {
-			// Else always order by the ID field to prevent random lists when using different page,limit combinations
+			// Else always order by the ID field to prevent random lists when using
+			// different page,limit combinations
 			Metamodel metaModel = entityManager.getMetamodel();
 			IdentifiableType<E> of = (IdentifiableType<E>) metaModel.managedType(myClass);
 			query.orderBy(builder.asc(root.get(of.getId(of.getIdType().getJavaType()).getName())));

@@ -11,11 +11,13 @@ import org.alliancegenome.curation_api.auth.AuthenticatedUser;
 import org.alliancegenome.curation_api.dao.CrossReferenceDAO;
 import org.alliancegenome.curation_api.dao.SynonymDAO;
 import org.alliancegenome.curation_api.dao.base.BaseEntityDAO;
+import org.alliancegenome.curation_api.dao.ontology.OntologyTermClosureDAO;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.Person;
 import org.alliancegenome.curation_api.model.entities.ResourceDescriptorPage;
 import org.alliancegenome.curation_api.model.entities.Synonym;
 import org.alliancegenome.curation_api.model.entities.ontology.OntologyTerm;
+import org.alliancegenome.curation_api.model.entities.ontology.OntologyTermClosure;
 import org.alliancegenome.curation_api.response.ObjectListResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.CrossReferenceService;
@@ -24,13 +26,14 @@ import org.alliancegenome.curation_api.services.ResourceDescriptorPageService;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 
-public abstract class BaseOntologyTermService<E extends OntologyTerm, D extends BaseEntityDAO<E>>
-		extends BaseEntityCrudService<E, BaseEntityDAO<E>> {
+public abstract class BaseOntologyTermService<E extends OntologyTerm, D extends BaseEntityDAO<E>> extends BaseEntityCrudService<E, BaseEntityDAO<E>> {
 
 	@Inject
 	CrossReferenceDAO crossReferenceDAO;
 	@Inject
 	SynonymDAO synonymDAO;
+	@Inject
+	OntologyTermClosureDAO ontologyTermClosureDAO;
 	@Inject
 	CrossReferenceService crossReferenceService;
 	@Inject
@@ -76,35 +79,33 @@ public abstract class BaseOntologyTermService<E extends OntologyTerm, D extends 
 	}
 
 	@Transactional
-	public E processUpdateRelationships(E inTerm) {
-		E term = findByCurie(inTerm.getCurie());
-
-		HashSet<OntologyTerm> parentSet = new HashSet<>();
-		if (inTerm.getIsaParents() != null) {
-			inTerm.getIsaParents().forEach(o -> {
-				E parent = findByCurie(o.getCurie());
-				parentSet.add(parent);
-			});
+	public void processUpdateRelationships(Set<OntologyTermClosure> ancestors) {
+		if(ancestors.size() == 0) {
+			return;
 		}
-		term.setIsaParents(parentSet);
-
-		HashSet<OntologyTerm> ancestorsSet = new HashSet<>();
-		if (inTerm.getIsaAncestors() != null) {
-			inTerm.getIsaAncestors().forEach(o -> {
-				E ancestor = findByCurie(o.getCurie());
-				ancestorsSet.add(ancestor);
-			});
+		Set<OntologyTermClosure> newSet = new HashSet<>();
+		OntologyTerm subjectTerm = findByCurie(ancestors.iterator().next().getClosureSubject().getCurie());
+		if(subjectTerm != null) {
+			for(OntologyTermClosure closure: ancestors) {
+				closure.setClosureSubject(subjectTerm);
+				OntologyTerm objectTerm = findByCurie(closure.getClosureObject().getCurie());
+				if(objectTerm != null) {
+					closure.setClosureObject(objectTerm);
+					newSet.add(closure);
+				}
+			}
+			subjectTerm.getAncestors().retainAll(newSet);
+			subjectTerm.getAncestors().addAll(newSet);
+			for(OntologyTermClosure closure: subjectTerm.getAncestors()) {
+				ontologyTermClosureDAO.merge(closure);
+			}
 		}
-		term.setIsaAncestors(ancestorsSet);
-
-		return term;
 	}
 
 	@Transactional
 	public E processCounts(E inTerm) {
 		E term = findByCurie(inTerm.getCurie());
-		term.setChildCount(term.getIsaChildren().size());
-		term.setDescendantCount(term.getIsaDescendants().size());
+		term.setDescendantCount(term.getDescendants().size());
 		return term;
 	}
 
@@ -149,40 +150,48 @@ public abstract class BaseOntologyTermService<E extends OntologyTerm, D extends 
 		}
 	}
 
-	public ObjectListResponse<E> getChildren(String curie) {
+	// TODO: Ontology: turn back on
+	public ObjectListResponse<E> getChildren(String curie, List<String> relationTypes) {
 		E term = findByCurie(curie);
-		if (term != null) {
-			return (ObjectListResponse<E>) new ObjectListResponse<OntologyTerm>(term.getIsaChildren());
-		} else {
-			return new ObjectListResponse<E>();
-		}
+//		if (term != null) {
+//			return (ObjectListResponse<E>) new ObjectListResponse<OntologyTerm>(term.getIsaChildren());
+//		} else {
+//			return new ObjectListResponse<E>();
+//		}
+		return null;
 	}
 
-	public ObjectListResponse<E> getDescendants(String curie) {
+	// TODO: Ontology: turn back on
+	public ObjectListResponse<E> getDescendants(String curie, List<String> relationTypes) {
 		E term = findByCurie(curie);
-		if (term != null) {
-			return (ObjectListResponse<E>) new ObjectListResponse<OntologyTerm>(term.getIsaDescendants());
-		} else {
-			return new ObjectListResponse<E>();
-		}
+//		if (term != null) {
+//			return (ObjectListResponse<E>) new ObjectListResponse<OntologyTerm>(term.getIsaDescendants());
+//		} else {
+//			return new ObjectListResponse<E>();
+//		}
+		return null;
 	}
 
-	public ObjectListResponse<E> getParents(String curie) {
+	// TODO: Ontology: turn back on
+	public ObjectListResponse<E> getParents(String curie, List<String> relationTypes) {
 		E term = findByCurie(curie);
-		if (term != null) {
-			return (ObjectListResponse<E>) new ObjectListResponse<OntologyTerm>(term.getIsaParents());
-		} else {
-			return new ObjectListResponse<E>();
-		}
+//		if (term != null) {
+//			return (ObjectListResponse<E>) new ObjectListResponse<OntologyTerm>(term.getIsaParents());
+//		} else {
+//			return new ObjectListResponse<E>();
+//		}
+		return null;
 	}
 
-	public ObjectListResponse<E> getAncestors(String curie) {
+	// TODO: Ontology: turn back on
+	public ObjectListResponse<E> getAncestors(String curie, List<String> relationTypes) {
 		E term = findByCurie(curie);
-		if (term != null) {
-			return (ObjectListResponse<E>) new ObjectListResponse<OntologyTerm>(term.getIsaAncestors());
-		} else {
-			return new ObjectListResponse<E>();
-		}
+//		if (term != null) {
+//			return (ObjectListResponse<E>) new ObjectListResponse<OntologyTerm>(term.getIsaAncestors());
+//		} else {
+//			return new ObjectListResponse<E>();
+//		}
+		return null;
 	}
 
 	private void handleSubsets(OntologyTerm dbTerm, OntologyTerm incomingTerm) {
@@ -245,7 +254,7 @@ public abstract class BaseOntologyTermService<E extends OntologyTerm, D extends 
 				}
 				dbTerm.getSynonyms().add(synonym);
 			} else {
-				for (Synonym dbSynonym: dbTerm.getSynonyms()) {
+				for (Synonym dbSynonym : dbTerm.getSynonyms()) {
 					if (dbSynonym.getName().equals(syn.getName())) {
 						updateSynonym(dbSynonym, syn);
 						break;
@@ -253,7 +262,7 @@ public abstract class BaseOntologyTermService<E extends OntologyTerm, D extends 
 				}
 			}
 		}
-		
+
 		for (Synonym syn : currentSynonyms) {
 			if (!newSynonymNames.contains(syn.getName())) {
 				dbTerm.getSynonyms().remove(syn);
@@ -304,13 +313,11 @@ public abstract class BaseOntologyTermService<E extends OntologyTerm, D extends 
 			mergedIds = new ArrayList<>();
 			dbTerm.setCrossReferences(null);
 		} else {
-			List<CrossReference> mergedCrossReferences = crossReferenceService
-					.getUpdatedXrefList(incomingTerm.getCrossReferences(), dbTerm.getCrossReferences());
+			List<CrossReference> mergedCrossReferences = crossReferenceService.getUpdatedXrefList(incomingTerm.getCrossReferences(), dbTerm.getCrossReferences());
 			mergedIds = mergedCrossReferences.stream().map(CrossReference::getId).collect(Collectors.toList());
 			for (CrossReference xref : mergedCrossReferences) {
 				String prefix = xref.getReferencedCurie().substring(0, xref.getReferencedCurie().indexOf(":"));
-				ResourceDescriptorPage page = resourceDescriptorPageService.getPageForResourceDescriptor(prefix,
-						"ontology_provided_cross_reference");
+				ResourceDescriptorPage page = resourceDescriptorPageService.getPageForResourceDescriptor(prefix, "ontology_provided_cross_reference");
 				if (page == null) {
 					// TODO: some how figure out how to make this less verbose by adding more
 					// resource descriptors
@@ -331,10 +338,10 @@ public abstract class BaseOntologyTermService<E extends OntologyTerm, D extends 
 	}
 
 	public <T extends OntologyTerm> T findSubsetTerm(T childTerm, String subsetName) {
-		for (OntologyTerm term : childTerm.getIsaAncestors()) {
-			for (String subset : term.getSubsets()) {
+		for (OntologyTermClosure closure : childTerm.getAncestors()) {
+			for (String subset : closure.getClosureObject().getSubsets()) {
 				if (subset.contains(subsetName)) {
-					return (T) term;
+					return (T) closure.getClosureObject();
 				}
 			}
 		}

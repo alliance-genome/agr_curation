@@ -288,8 +288,10 @@ public class OntologyExecutor {
 		ph1.startProcess(bulkLoadFileHistory.getBulkLoad().getName() + ": " + ontologyType.getClazz().getSimpleName() + " Closure", termMap.size());
 		countType = ontologyType + " Closure";
 		for (Entry<String, ? extends OntologyTerm> entry : termMap.entrySet()) {
-			service.processUpdateRelationships(entry.getValue());
-			bulkLoadFileHistory.incrementCompleted(countType);
+			service.processUpdateRelationships(entry.getValue().getAncestors());
+			for(int i = 0; i < entry.getValue().getAncestors().size(); i++) {
+				bulkLoadFileHistory.incrementCompleted(countType);
+			}
 			ph1.progressProcess();
 			if (Thread.currentThread().isInterrupted()) {
 				bulkLoadFileHistory.setErrorMessage("Thread isInterrupted");

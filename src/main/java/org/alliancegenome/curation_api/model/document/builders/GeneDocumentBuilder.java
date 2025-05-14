@@ -19,7 +19,7 @@ import org.alliancegenome.curation_api.model.entities.associations.AlleleGeneAss
 import org.alliancegenome.curation_api.model.entities.ontology.AnatomicalTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.DOTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.GOTerm;
-import org.alliancegenome.curation_api.model.entities.ontology.OntologyTerm;
+import org.alliancegenome.curation_api.model.entities.ontology.OntologyTermClosure;
 import org.alliancegenome.curation_api.model.entities.ontology.SOTerm;
 import org.alliancegenome.curation_api.model.entities.orthology.GeneToGeneOrthologyGenerated;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.GeneSecondaryIdSlotAnnotation;
@@ -87,7 +87,7 @@ public class GeneDocumentBuilder {
 			SOTerm term = gene.getGeneType();
 			doc.setSoTermName(term.getName());
 			doc.setSoTermId(term.getCurie());
-			doc.setBiotypes(term.getIsaAncestors().stream().map(OntologyTerm::getName).collect(Collectors.toSet()));
+			doc.setBiotypes(term.getAncestors().stream().map(closure -> closure.getClosureObject().getName()).collect(Collectors.toSet()));
 			doc.getBiotypes().add(term.getName());
 			doc.setSoTermNameWithParents(new HashSet<>(doc.getBiotypes()));
 			handleBioTypes(doc);
@@ -128,7 +128,7 @@ public class GeneDocumentBuilder {
 					doc.getAlleles().add(association.getAlleleAssociationSubject().getAlleleSymbol().getFormatText());
 
 					// if(association.getAlleleAssociationSubject().getAgm) {
-					// TODO: Once the code for AgmAllele Associations comes thorugh will be able to
+					// TODO: Once the code for AgmAllele Associations comes through will be able to
 					// pick up this field
 					// }
 				}
@@ -168,8 +168,8 @@ public class GeneDocumentBuilder {
 			for (GeneDiseaseAnnotation annotation : gene.getGeneDiseaseAnnotations()) {
 				if (annotation.getDiseaseAnnotationObject() != null) {
 					DOTerm term = annotation.getDiseaseAnnotationObject();
-					for (OntologyTerm ontologyTerm : term.getIsaAncestors()) {
-						doc.getDiseasesWithParents().add(ontologyTerm.getName());
+					for (OntologyTermClosure closure : term.getAncestors()) {
+						doc.getDiseasesWithParents().add(closure.getClosureObject().getName());
 					}
 					doc.getDiseases().add(term.getName());
 				}
@@ -182,8 +182,8 @@ public class GeneDocumentBuilder {
 				if (ortho.getObjectGene().getGeneDiseaseAnnotations() != null) {
 					for (GeneDiseaseAnnotation annotation : ortho.getObjectGene().getGeneDiseaseAnnotations()) {
 						DOTerm term = annotation.getDiseaseAnnotationObject();
-						for (OntologyTerm ontologyTerm : term.getIsaAncestors()) {
-							doc.getDiseasesWithParents().add(ontologyTerm.getName());
+						for (OntologyTermClosure closure : term.getAncestors()) {
+							doc.getDiseasesWithParents().add(closure.getClosureObject().getName());
 						}
 						doc.getDiseases().add(term.getName());
 					}
@@ -208,10 +208,10 @@ public class GeneDocumentBuilder {
 					if (term.getSubsets() != null && term.getSubsets().contains("goslim_agr")) {
 						doc.getCellularComponentAgrSlim().add(term.getName());
 					}
-					for (OntologyTerm ontologyTerm : term.getIsaAncestors()) {
-						doc.getCellularComponentWithParents().add(ontologyTerm.getName());
-						if (ontologyTerm.getSubsets() != null && ontologyTerm.getSubsets().contains("goslim_agr")) {
-							doc.getCellularComponentAgrSlim().add(ontologyTerm.getName());
+					for (OntologyTermClosure closure : term.getAncestors()) {
+						doc.getCellularComponentWithParents().add(closure.getClosureObject().getName());
+						if (closure.getClosureObject().getSubsets() != null && closure.getClosureObject().getSubsets().contains("goslim_agr")) {
+							doc.getCellularComponentAgrSlim().add(closure.getClosureObject().getName());
 						}
 					}
 				}
@@ -220,10 +220,10 @@ public class GeneDocumentBuilder {
 					if (term.getSubsets() != null && term.getSubsets().contains("goslim_agr")) {
 						doc.getBiologicalProcessAgrSlim().add(term.getName());
 					}
-					for (OntologyTerm ontologyTerm : term.getIsaAncestors()) {
-						doc.getBiologicalProcessWithParents().add(ontologyTerm.getName());
-						if (ontologyTerm.getSubsets() != null && ontologyTerm.getSubsets().contains("goslim_agr")) {
-							doc.getBiologicalProcessAgrSlim().add(ontologyTerm.getName());
+					for (OntologyTermClosure closure : term.getAncestors()) {
+						doc.getBiologicalProcessWithParents().add(closure.getClosureObject().getName());
+						if (closure.getClosureObject().getSubsets() != null && closure.getClosureObject().getSubsets().contains("goslim_agr")) {
+							doc.getBiologicalProcessAgrSlim().add(closure.getClosureObject().getName());
 						}
 					}
 				}
@@ -232,10 +232,10 @@ public class GeneDocumentBuilder {
 					if (term.getSubsets() != null && term.getSubsets().contains("goslim_agr")) {
 						doc.getMolecularFunctionAgrSlim().add(term.getName());
 					}
-					for (OntologyTerm ontologyTerm : term.getIsaAncestors()) {
-						doc.getMolecularFunctionWithParents().add(ontologyTerm.getName());
-						if (ontologyTerm.getSubsets() != null && ontologyTerm.getSubsets().contains("goslim_agr")) {
-							doc.getMolecularFunctionAgrSlim().add(ontologyTerm.getName());
+					for (OntologyTermClosure closure : term.getAncestors()) {
+						doc.getMolecularFunctionWithParents().add(closure.getClosureObject().getName());
+						if (closure.getClosureObject().getSubsets() != null && closure.getClosureObject().getSubsets().contains("goslim_agr")) {
+							doc.getMolecularFunctionAgrSlim().add(closure.getClosureObject().getName());
 						}
 					}
 				}
@@ -256,10 +256,10 @@ public class GeneDocumentBuilder {
 						if (cellularComponentTerm.getSubsets() != null && cellularComponentTerm.getSubsets().contains("goslim_agr")) {
 							doc.getSubcellularExpressionAgrSlim().add(cellularComponentTerm.getName());
 						}
-						for (OntologyTerm ontologyTerm : cellularComponentTerm.getIsaAncestors()) {
-							doc.getSubcellularExpressionWithParents().add(ontologyTerm.getName());
-							if (ontologyTerm.getSubsets() != null && ontologyTerm.getSubsets().contains("goslim_agr")) {
-								doc.getSubcellularExpressionAgrSlim().add(ontologyTerm.getName());
+						for (OntologyTermClosure closure : cellularComponentTerm.getAncestors()) {
+							doc.getSubcellularExpressionWithParents().add(closure.getClosureObject().getName());
+							if (closure.getClosureObject().getSubsets() != null && closure.getClosureObject().getSubsets().contains("goslim_agr")) {
+								doc.getSubcellularExpressionAgrSlim().add(closure.getClosureObject().getName());
 							}
 						}
 					}
@@ -268,11 +268,11 @@ public class GeneDocumentBuilder {
 
 				if (annotation.getExpressionPattern() != null && annotation.getExpressionPattern().getWhereExpressed() != null && annotation.getExpressionPattern().getWhereExpressed().getAnatomicalStructure() != null) {
 					AnatomicalTerm anatomicalTerm = annotation.getExpressionPattern().getWhereExpressed().getAnatomicalStructure();
-					// TODO add slims to this
+					// TODO add uberon slims to this
 					if (anatomicalTerm != null) {
 						doc.getAnatomicalExpressionWithParents().add(anatomicalTerm.getName());
-						for (OntologyTerm ontologyTerm : anatomicalTerm.getIsaAncestors()) {
-							doc.getAnatomicalExpressionWithParents().add(ontologyTerm.getName());
+						for (OntologyTermClosure closure : anatomicalTerm.getAncestors()) {
+							doc.getAnatomicalExpressionWithParents().add(closure.getClosureObject().getName());
 						}
 					}
 				}
