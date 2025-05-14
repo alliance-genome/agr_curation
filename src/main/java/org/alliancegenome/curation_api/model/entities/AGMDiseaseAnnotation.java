@@ -12,8 +12,8 @@ import org.hibernate.search.mapper.pojo.automaticindexing.ReindexOnUpdate;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmbedded;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexingDependency;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonView;
 
@@ -34,12 +34,12 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @Schema(name = "AGM_Disease_Annotation", description = "Annotation class representing a agm disease annotation")
 @JsonTypeName("AGMDiseaseAnnotation")
-@AGRCurationSchemaVersion(min = "2.11.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { DiseaseAnnotation.class })
-
+@AGRCurationSchemaVersion(min = "2.11.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = {DiseaseAnnotation.class})
+@JsonPropertyOrder({"type", "diseaseAnnotationSubject", "relation", "diseaseAnnotationObject", "inferredGene", "inferredAllele", "assertedGenes", "assertedAlleles", "dataProvider", "evidenceItem", "dataProviderCrossReference", "evidenceCodes", "diseaseGeneticModifierAgms", "diseaseGeneticModifierRelation", "geneticSex", "negated", "relatedNotes", "annotationType"})
 @Table(indexes = {
-	@Index(name = "AGMDiseaseAnnotation_diseaseAnnotationSubject_index", columnList = "diseaseAnnotationSubject_id"),
-	@Index(name = "AGMDiseaseAnnotation_inferredAllele_index", columnList = "inferredAllele_id"),
-	@Index(name = "AGMDiseaseAnnotation_inferredGene_index", columnList = "inferredGene_id")
+		@Index(name = "AGMDiseaseAnnotation_diseaseAnnotationSubject_index", columnList = "diseaseAnnotationSubject_id"),
+		@Index(name = "AGMDiseaseAnnotation_inferredAllele_index", columnList = "inferredAllele_id"),
+		@Index(name = "AGMDiseaseAnnotation_inferredGene_index", columnList = "inferredGene_id")
 })
 public class AGMDiseaseAnnotation extends DiseaseAnnotation {
 
@@ -47,7 +47,7 @@ public class AGMDiseaseAnnotation extends DiseaseAnnotation {
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
 	@OnDelete(action = OnDeleteAction.CASCADE)
-	@JsonView({ View.FieldsOnly.class, View.ForPublic.class })
+	@JsonView({View.FieldsOnly.class, View.ForPublic.class})
 	private AffectedGenomicModel diseaseAnnotationSubject;
 
 	@IndexedEmbedded(includePaths = {
@@ -60,7 +60,7 @@ public class AGMDiseaseAnnotation extends DiseaseAnnotation {
 	})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@JsonView({ View.FieldsOnly.class, View.ForPublic.class })
+	@JsonView({View.FieldsOnly.class, View.ForPublic.class})
 	private Gene inferredGene;
 
 	@IndexedEmbedded(includePaths = {
@@ -72,7 +72,7 @@ public class AGMDiseaseAnnotation extends DiseaseAnnotation {
 	})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@JsonView({ View.FieldsOnly.class, View.ForPublic.class })
+	@JsonView({View.FieldsOnly.class, View.ForPublic.class})
 	private Allele inferredAllele;
 
 	@IndexedEmbedded(includePaths = {
@@ -86,14 +86,14 @@ public class AGMDiseaseAnnotation extends DiseaseAnnotation {
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
 	@JoinTable(
-		joinColumns = @JoinColumn(name = "agmdiseaseannotation_id"),
-		inverseJoinColumns = @JoinColumn(name = "assertedgenes_id"),
-		indexes = {
-			@Index(name = "agmdiseaseannotation_gene_agmda_index", columnList = "agmdiseaseannotation_id"),
-			@Index(name = "agmdiseaseannotation_gene_assertedgenes_index", columnList = "assertedgenes_id")
-		}
+			joinColumns = @JoinColumn(name = "agmdiseaseannotation_id"),
+			inverseJoinColumns = @JoinColumn(name = "assertedgenes_id"),
+			indexes = {
+					@Index(name = "agmdiseaseannotation_gene_agmda_index", columnList = "agmdiseaseannotation_id"),
+					@Index(name = "agmdiseaseannotation_gene_assertedgenes_index", columnList = "assertedgenes_id")
+			}
 	)
-	@JsonView({ View.FieldsAndLists.class, View.DiseaseAnnotation.class, View.ForPublic.class })
+	@JsonView({View.FieldsAndLists.class, View.DiseaseAnnotation.class, View.ForPublic.class})
 	private List<Gene> assertedGenes;
 
 	@IndexedEmbedded(includePaths = {
@@ -106,14 +106,14 @@ public class AGMDiseaseAnnotation extends DiseaseAnnotation {
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
 	@JoinTable(
-		joinColumns = @JoinColumn(name = "agmdiseaseannotation_id"),
-		inverseJoinColumns = @JoinColumn(name = "assertedalleles_id"),
-		indexes = {
-			@Index(name = "agmdiseaseannotation_allele_agmda_index", columnList = "agmdiseaseannotation_id"),
-			@Index(name = "agmdiseaseannotation_allele_assertedalleles_index", columnList = "assertedalleles_id")
-		}
+			joinColumns = @JoinColumn(name = "agmdiseaseannotation_id"),
+			inverseJoinColumns = @JoinColumn(name = "assertedalleles_id"),
+			indexes = {
+					@Index(name = "agmdiseaseannotation_allele_agmda_index", columnList = "agmdiseaseannotation_id"),
+					@Index(name = "agmdiseaseannotation_allele_assertedalleles_index", columnList = "assertedalleles_id")
+			}
 	)
-	@JsonView({ View.FieldsAndLists.class, View.DiseaseAnnotation.class, View.ForPublic.class })
+	@JsonView({View.FieldsAndLists.class, View.DiseaseAnnotation.class, View.ForPublic.class})
 	private List<Allele> assertedAlleles;
 
 	@Transient
@@ -138,7 +138,7 @@ public class AGMDiseaseAnnotation extends DiseaseAnnotation {
 		}
 		return diseaseAnnotationSubject.getTaxon().getCurie();
 	}
-	
+
 	@Transient
 	@Override
 	@JsonIgnore
