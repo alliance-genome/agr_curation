@@ -19,6 +19,7 @@ import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.Synonym;
 import org.alliancegenome.curation_api.model.entities.ontology.OntologyTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.OntologyTermClosure;
+import org.alliancegenome.curation_api.util.DefaultProcessDisplayHandler;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
 import org.apache.commons.collections.CollectionUtils;
 import org.jboss.logging.Logger.Level;
@@ -59,7 +60,7 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
 	private HashSet<String> traversedNodes = new HashSet<String>();
 	
 
-	private ProcessDisplayHelper ph = new ProcessDisplayHelper(1000);
+	private ProcessDisplayHelper ph = new ProcessDisplayHelper(1000, new DefaultProcessDisplayHandler(true));
 
 	public GenericOntologyLoadHelper(Class<T> clazz) {
 		this.clazz = clazz;
@@ -265,9 +266,14 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
 			}
 
 			for (Entry<OWLClass, String> parent : parents) {
-				relationshipTypes.add(parent.getValue());
+				boolean alreadyContains = relationshipTypes.contains(parent.getValue());
+				if(!alreadyContains) {
+					relationshipTypes.add(parent.getValue());
+				}
 				traverseToRoot(parent.getKey(), parent.getValue(), originalNode, relationshipTypes, depth + 1, requiredNamespaces, ancestors);
-				relationshipTypes.remove(parent.getValue());
+				if(!alreadyContains) {
+					relationshipTypes.remove(parent.getValue());
+				}
 			}
 		}
 	}
