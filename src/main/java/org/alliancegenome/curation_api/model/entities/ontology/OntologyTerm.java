@@ -118,59 +118,13 @@ public class OntologyTerm extends CurieObject {
 	@JsonView({ View.FieldsAndLists.class })
 	private List<CrossReference> crossReferences;
 
-//	@ManyToMany
-//	@JoinTable(name = "ontologyterm_isa_parent_children", indexes = {
-//		@Index(name = "ontologyterm_isa_parent_children_isaparents_index", columnList = "isaparents_id"),
-//		@Index(name = "ontologyterm_isa_parent_children_isachildren_index", columnList = "isachildren_id")
-//	})
-//	private Set<OntologyTerm> isaParents;
-//
-//	@ManyToMany(mappedBy = "isaParents")
-//	private Set<OntologyTerm> isaChildren;
-//
-
 	@OneToMany(mappedBy = "closureSubject")
 	private Set<OntologyTermClosure> ancestors;
 
 	@OneToMany(mappedBy = "closureObject")
 	private Set<OntologyTermClosure> descendants;
 
-//	@JsonView(View.FieldsOnly.class)
-//	private Integer childCount = 0;
-
 	@JsonView(View.FieldsOnly.class)
 	private Integer descendantCount = 0;
-
-//	@Transient
-//	public void addIsaChild(OntologyTerm term) {
-//		if (isaChildren == null) {
-//			isaChildren = new HashSet<>();
-//		}
-//		isaChildren.add(term);
-//	}
-//
-//	@Transient
-//	public void addIsaParent(OntologyTerm term) {
-//		if (isaParents == null) {
-//			isaParents = new HashSet<>();
-//		}
-//		isaParents.add(term);
-//	}
-//
-//	@Transient
-//	public void addIsaDescendant(OntologyTerm term) {
-//		if (isaDescendants == null) {
-//			isaDescendants = new HashSet<OntologyTerm>();
-//		}
-//		isaDescendants.add(term);
-//	}
-//
-//	@Transient
-//	public void addIsaAncestor(OntologyTerm term) {
-//		if (isaAncestors == null) {
-//			isaAncestors = new HashSet<OntologyTerm>();
-//		}
-//		isaAncestors.add(term);
-//	}
 
 }

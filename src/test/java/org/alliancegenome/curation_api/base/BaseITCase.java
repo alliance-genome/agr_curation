@@ -7,6 +7,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map.Entry;
 
@@ -544,6 +545,7 @@ public class BaseITCase {
 		OntologyTermClosure closure = new OntologyTermClosure();
 		closure.setClosureSubject(goTerm);
 		closure.setClosureObject(ancestor);
+		goTerm.setAncestors(new HashSet<>());
 		goTerm.getAncestors().add(closure);
 
 		ObjectResponse<GOTerm> response = given().
