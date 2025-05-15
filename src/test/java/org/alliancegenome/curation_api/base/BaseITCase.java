@@ -55,6 +55,7 @@ import org.alliancegenome.curation_api.model.entities.ontology.MPTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.OBITerm;
 import org.alliancegenome.curation_api.model.entities.ontology.OntologyTerm;
+import org.alliancegenome.curation_api.model.entities.ontology.OntologyTermClosure;
 import org.alliancegenome.curation_api.model.entities.ontology.SOTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.StageTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.UBERONTerm;
@@ -540,8 +541,10 @@ public class BaseITCase {
 		goTerm.setName(name);
 		goTerm.setSecondaryIdentifiers(List.of(curie + "secondary"));
 		goTerm.setSubsets(subsets);
-		// TODO: Ontology: turn back on
-		//goTerm.addIsaAncestor(ancestor);
+		OntologyTermClosure closure = new OntologyTermClosure();
+		closure.setClosureSubject(goTerm);
+		closure.setClosureObject(ancestor);
+		goTerm.getAncestors().add(closure);
 
 		ObjectResponse<GOTerm> response = given().
 				contentType("application/json").
