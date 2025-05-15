@@ -94,10 +94,21 @@ public abstract class BaseOntologyTermService<E extends OntologyTerm, D extends 
 					newSet.add(closure);
 				}
 			}
-			subjectTerm.getAncestors().retainAll(newSet);
-			subjectTerm.getAncestors().addAll(newSet);
-			for(OntologyTermClosure closure: subjectTerm.getAncestors()) {
-				ontologyTermClosureDAO.merge(closure);
+
+			Set<OntologyTermClosure> toAdd = new HashSet<>(newSet);
+			toAdd.removeAll(subjectTerm.getAncestors());
+
+			Set<OntologyTermClosure> toRemove = new HashSet<>(subjectTerm.getAncestors());
+			toRemove.removeAll(newSet);
+
+			subjectTerm.getAncestors().removeAll(toRemove);
+			subjectTerm.getAncestors().addAll(toAdd);
+
+			for(OntologyTermClosure closure: toAdd) {
+				ontologyTermClosureDAO.persist(closure);
+			}
+			for(OntologyTermClosure closure: toRemove) {
+				ontologyTermClosureDAO.remove(closure.getId());
 			}
 		}
 	}

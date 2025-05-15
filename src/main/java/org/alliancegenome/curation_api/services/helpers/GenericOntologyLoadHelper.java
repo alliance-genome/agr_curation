@@ -19,7 +19,6 @@ import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.Synonym;
 import org.alliancegenome.curation_api.model.entities.ontology.OntologyTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.OntologyTermClosure;
-import org.alliancegenome.curation_api.util.DefaultProcessDisplayHandler;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
 import org.apache.commons.collections.CollectionUtils;
 import org.jboss.logging.Logger.Level;
@@ -60,7 +59,7 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
 	private HashSet<String> traversedNodes = new HashSet<String>();
 	
 
-	private ProcessDisplayHelper ph = new ProcessDisplayHelper(1000, new DefaultProcessDisplayHandler(true));
+	private ProcessDisplayHelper ph = new ProcessDisplayHelper(1000);
 
 	public GenericOntologyLoadHelper(Class<T> clazz) {
 		this.clazz = clazz;
@@ -492,7 +491,7 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
 
 		traversedNodes.add(currentTerm.getCurie());
 
-		// TODO: Ontology: turn back on -- Test on the RO
+		// TODO: Ontology: turn back on -- Required for RO
 //		if (isPropertyInOntology) {
 //			HashSet<OntologyTerm> ancestors = new HashSet<OntologyTerm>();
 //			traverseToRootProperty(currentTreeProperty, depth, ancestors);
@@ -505,7 +504,7 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
 				try {
 					T childTerm = traverseProperties(childTermPropertyExpression.getNamedProperty(), depth + 1);
 
-					// TODO: Ontology: turn back on -- Test on the RO
+					// TODO: Ontology: turn back on -- Required for RO
 					//if (childTerm != null && currentTerm.getCurie() != null && isPropertyInOntology) {
 					//	childTerm.addIsaParent(currentTerm);
 					//}
