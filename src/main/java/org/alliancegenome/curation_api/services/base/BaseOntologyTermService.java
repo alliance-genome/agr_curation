@@ -80,16 +80,16 @@ public abstract class BaseOntologyTermService<E extends OntologyTerm, D extends 
 
 	@Transactional
 	public void processUpdateRelationships(Set<OntologyTermClosure> ancestors) {
-		if(ancestors.size() == 0) {
+		if (ancestors.size() == 0) {
 			return;
 		}
 		Set<OntologyTermClosure> newSet = new HashSet<>();
 		OntologyTerm subjectTerm = findByCurie(ancestors.iterator().next().getClosureSubject().getCurie());
-		if(subjectTerm != null) {
-			for(OntologyTermClosure closure: ancestors) {
+		if (subjectTerm != null) {
+			for (OntologyTermClosure closure : ancestors) {
 				closure.setClosureSubject(subjectTerm);
 				OntologyTerm objectTerm = findByCurie(closure.getClosureObject().getCurie());
-				if(objectTerm != null) {
+				if (objectTerm != null) {
 					closure.setClosureObject(objectTerm);
 					newSet.add(closure);
 				}
@@ -104,10 +104,10 @@ public abstract class BaseOntologyTermService<E extends OntologyTerm, D extends 
 			subjectTerm.getAncestors().removeAll(toRemove);
 			subjectTerm.getAncestors().addAll(toAdd);
 
-			for(OntologyTermClosure closure: toAdd) {
+			for (OntologyTermClosure closure : toAdd) {
 				ontologyTermClosureDAO.persist(closure);
 			}
-			for(OntologyTermClosure closure: toRemove) {
+			for (OntologyTermClosure closure : toRemove) {
 				ontologyTermClosureDAO.remove(closure.getId());
 			}
 		}

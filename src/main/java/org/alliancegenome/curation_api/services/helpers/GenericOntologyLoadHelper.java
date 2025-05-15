@@ -57,7 +57,6 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
 
 	private HashMap<String, T> allNodes = new HashMap<>();
 	private HashSet<String> traversedNodes = new HashSet<String>();
-	
 
 	private ProcessDisplayHelper ph = new ProcessDisplayHelper(1000);
 
@@ -196,9 +195,12 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
 
 						// TODO: Ontology: turn back on -- Not sure this is needed
 						if (childTerm != null && isNodeInOntology) {
-							//String ancestorsString = childTerm.getAncestors().stream().map(t -> { return t.getClosureSubject().getCurie() + " " + t.getClosureTypes() + "(" + t.getDistance() + ") " + t.getClosureObject().getCurie(); }).toList() + "";
-							//printDepthMessage(depth, "Adding parent: " + currentTerm.getCurie() + " <- " + childTerm.getCurie() + " Ancestors: " + ancestorsString);
-							//childTerm.addIsaParent(currentTerm);
+							// String ancestorsString = childTerm.getAncestors().stream().map(t -> { return
+							// t.getClosureSubject().getCurie() + " " + t.getClosureTypes() + "(" +
+							// t.getDistance() + ") " + t.getClosureObject().getCurie(); }).toList() + "";
+							// printDepthMessage(depth, "Adding parent: " + currentTerm.getCurie() + " <- "
+							// + childTerm.getCurie() + " Ancestors: " + ancestorsString);
+							// childTerm.addIsaParent(currentTerm);
 						}
 					} catch (Exception e) {
 						e.printStackTrace();
@@ -243,7 +245,7 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
 					existingNode = currentTerm;
 				}
 
-				if(relationType != null && !relationType.equals("self")) {
+				if (relationType != null && !relationType.equals("self")) {
 					OntologyTermClosure closure = new OntologyTermClosure();
 					closure.setClosureSubject(originalNode);
 					closure.setClosureObject(existingNode);
@@ -266,11 +268,11 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
 
 			for (Entry<OWLClass, String> parent : parents) {
 				boolean alreadyContains = relationshipTypes.contains(parent.getValue());
-				if(!alreadyContains) {
+				if (!alreadyContains) {
 					relationshipTypes.add(parent.getValue());
 				}
 				traverseToRoot(parent.getKey(), parent.getValue(), originalNode, relationshipTypes, depth + 1, requiredNamespaces, ancestors);
-				if(!alreadyContains) {
+				if (!alreadyContains) {
 					relationshipTypes.remove(parent.getValue());
 				}
 			}
@@ -505,9 +507,10 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
 					T childTerm = traverseProperties(childTermPropertyExpression.getNamedProperty(), depth + 1);
 
 					// TODO: Ontology: turn back on -- Required for RO
-					//if (childTerm != null && currentTerm.getCurie() != null && isPropertyInOntology) {
-					//	childTerm.addIsaParent(currentTerm);
-					//}
+					// if (childTerm != null && currentTerm.getCurie() != null &&
+					// isPropertyInOntology) {
+					// childTerm.addIsaParent(currentTerm);
+					// }
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -573,12 +576,11 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
 
 	private void log(Level level, String message) {
 		Log.log(level, message);
-		//System.out.println(message);
+		// System.out.println(message);
 	}
 
 	public void printTree(String string, Map<String, T> map) {
-		
-		
+
 	}
 
 }
