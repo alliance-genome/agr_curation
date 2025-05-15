@@ -5,7 +5,6 @@ import java.io.FileInputStream;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.alliancegenome.curation_api.model.entities.ontology.ATPTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.BTOTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.OntologyTerm;
 import org.alliancegenome.curation_api.services.helpers.GenericOntologyLoadConfig;
@@ -30,7 +29,7 @@ public class TestOntologyLoading {
 		Map<String, BTOTerm> map = loader.load(new FileInputStream(new File("/Users/olinblodgett/Desktop/FMS/BTO.owl")));
 		
 		
-		for(Entry<String, ? extends OntologyTerm> entry: map.entrySet()) {
+		for (Entry<String, ? extends OntologyTerm> entry : map.entrySet()) {
 			//if(entry.getKey().equals("BTO:0000030")) {
 				//String ancestorsString = entry.getValue().getAncestors().stream().map(t -> { return t.getClosureSubject().getCurie() + " " + t.getClosureTypes() + "(" + t.getDistance() + ") " + t.getClosureObject().getCurie() + "\n"; }).toList() + "";
 				//System.out.println("Ancestors: " + ancestorsString);
