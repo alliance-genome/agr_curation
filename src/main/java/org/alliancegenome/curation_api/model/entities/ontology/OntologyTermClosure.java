@@ -9,9 +9,6 @@ import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 import jakarta.persistence.Index;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
@@ -22,14 +19,12 @@ import lombok.Data;
 @Table(
 	indexes = {
 		@Index(name = "ontologyclosure_closureSubject_index", columnList = "closureSubject_id"),
-		@Index(name = "ontologyclosure_closureObject_index", columnList = "closureObject_id")
+		@Index(name = "ontologyclosure_closureObject_index", columnList = "closureObject_id"),
+		@Index(name = "ontologyclosure_createdby_index", columnList = "createdBy_id"),
+		@Index(name = "ontologyclosure_updatedby_index", columnList = "updatedBy_id")
 	}
 )
 public class OntologyTermClosure extends AuditedObject {
-
-	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE)
-	protected Long id;
 	
 	private Integer distance;
 	
