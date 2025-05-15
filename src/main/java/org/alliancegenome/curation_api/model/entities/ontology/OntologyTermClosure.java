@@ -43,8 +43,8 @@ public class OntologyTermClosure extends AuditedObject {
 			return false;
 		}
 		OntologyTermClosure pair = (OntologyTermClosure) o;
-		return Objects.equals(closureSubject, pair.closureSubject) 
-			&& Objects.equals(closureObject, pair.closureObject) 
+		return Objects.equals(closureSubject, pair.closureSubject)
+			&& Objects.equals(closureObject, pair.closureObject)
 			&& Objects.equals(closureTypes, pair.closureTypes);
 	}
 
