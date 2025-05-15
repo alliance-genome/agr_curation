@@ -8,13 +8,17 @@ import org.alliancegenome.curation_api.model.entities.base.AuditedObject;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.Index;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Data;
+import lombok.ToString;
 
 @Data
+@ToString(exclude = { "closureSubject", "closureObject" }, callSuper = true)
 @Entity
 @Table(indexes = {
 	@Index(name = "ontologyclosure_closureSubject_index", columnList = "closureSubject_id"),
@@ -29,6 +33,7 @@ public class OntologyTermClosure extends AuditedObject {
 	private Set<String> closureTypes = new HashSet<>();
 
 	@ManyToOne
+	@JsonBackReference("closureSubject")
 	private OntologyTerm closureSubject;
 
 	@ManyToOne

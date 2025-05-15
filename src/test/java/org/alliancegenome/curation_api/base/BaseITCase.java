@@ -545,6 +545,7 @@ public class BaseITCase {
 		OntologyTermClosure closure = new OntologyTermClosure();
 		closure.setClosureSubject(goTerm);
 		closure.setClosureObject(ancestor);
+		closure.setClosureTypes(new HashSet<>(List.of("is_a")));
 		goTerm.setAncestors(new HashSet<>());
 		goTerm.getAncestors().add(closure);
 
