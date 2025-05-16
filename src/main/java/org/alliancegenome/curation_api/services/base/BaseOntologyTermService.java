@@ -349,7 +349,7 @@ public abstract class BaseOntologyTermService<E extends OntologyTerm, D extends 
 	}
 
 	public <T extends OntologyTerm> T findSubsetTerm(T childTerm, String subsetName) {
-		if(childTerm.getSubsets().contains(subsetName)) {
+		if (childTerm.getSubsets().contains(subsetName)) {
 			return childTerm;
 		}
 		for (OntologyTermClosure closure : childTerm.getAncestors()) {
