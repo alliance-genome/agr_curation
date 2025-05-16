@@ -194,16 +194,17 @@ public class BaseSQLDAO<E extends AuditedObject> extends BaseEntityDAO<E> {
 			} else if (value instanceof String desiredValue) {
 				Log.log(level, "String Type: " + desiredValue);
 				restrictions.add(builder.equal(column, desiredValue));
-			} else if (value instanceof Set<?> desiredValue) {
-				Log.log(level, "Set Type: " + desiredValue);
-				Predicate listPredicate = column.in(desiredValue);
-				Predicate sizePredicate = builder.equal(builder.size(root.joinSet(key, JoinType.LEFT)), desiredValue.size());
-				restrictions.add(builder.and(listPredicate, sizePredicate));
-			} else if (value instanceof List<?> desiredValue) {
-				Log.log(level, "List Type: " + desiredValue);
-				Predicate listPredicate = column.in(desiredValue);
-				Predicate sizePredicate = builder.equal(builder.size(root.joinList(key, JoinType.LEFT)), desiredValue.size());
-				restrictions.add(builder.and(listPredicate, sizePredicate));
+// TODO: possible issue with the following will try to implement later
+//			} else if (value instanceof Set<?> desiredValue) {
+//				Log.log(level, "Set Type: " + desiredValue);
+//				Predicate listPredicate = column.in(desiredValue);
+//				Predicate sizePredicate = builder.equal(builder.size(root.joinSet(key, JoinType.LEFT)), desiredValue.size());
+//				restrictions.add(builder.and(listPredicate, sizePredicate));
+//			} else if (value instanceof List<?> desiredValue) {
+//				Log.log(level, "List Type: " + desiredValue);
+//				Predicate listPredicate = column.in(desiredValue);
+//				Predicate sizePredicate = builder.equal(builder.size(root.joinList(key, JoinType.LEFT)), desiredValue.size());
+//				restrictions.add(builder.and(listPredicate, sizePredicate));
 			} else {
 				// Not sure what to do here as we have a non supported value
 				Log.info("Unsupprted Value: " + value);
