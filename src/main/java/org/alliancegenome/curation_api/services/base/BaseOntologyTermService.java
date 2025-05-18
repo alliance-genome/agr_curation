@@ -23,6 +23,7 @@ import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.CrossReferenceService;
 import org.alliancegenome.curation_api.services.ResourceDescriptorPageService;
 
+import io.quarkus.logging.Log;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 
@@ -347,21 +348,19 @@ public abstract class BaseOntologyTermService<E extends OntologyTerm, D extends 
 			}
 		}
 	}
-
+	
 	public <T extends OntologyTerm> T findSubsetTerm(T childTerm, String subsetName) {
+		Log.info(childTerm + " " + subsetName);
 		if (childTerm.getSubsets().contains(subsetName)) {
 			return childTerm;
 		}
+		Log.info("getAncestors: " + childTerm.getAncestors());
 		for (OntologyTermClosure closure : childTerm.getAncestors()) {
-			for (String subset : closure.getClosureSubject().getSubsets()) {
-				if (subset.contains(subsetName)) {
-					return (T) closure.getClosureSubject();
-				}
+			if (closure.getClosureSubject().getSubsets().contains(subsetName)) {
+				return (T) closure.getClosureSubject();
 			}
-			for (String subset : closure.getClosureObject().getSubsets()) {
-				if (subset.contains(subsetName)) {
-					return (T) closure.getClosureObject();
-				}
+			if (closure.getClosureObject().getSubsets().contains(subsetName)) {
+				return (T) closure.getClosureObject();
 			}
 		}
 		return null;

@@ -18,7 +18,7 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmb
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexingDependency;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.KeywordField;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
 
 import jakarta.persistence.Column;
@@ -119,10 +119,11 @@ public class OntologyTerm extends CurieObject {
 	@JsonView({ View.FieldsAndLists.class })
 	private List<CrossReference> crossReferences;
 
+	@JsonIgnore // We are going to have individual endpoints for these fields
 	@OneToMany(mappedBy = "closureSubject")
-	@JsonManagedReference("closureSubject")
 	private Set<OntologyTermClosure> ancestors;
 
+	@JsonIgnore // We are going to have individual endpoints for these fields
 	@OneToMany(mappedBy = "closureObject")
 	private Set<OntologyTermClosure> descendants;
 

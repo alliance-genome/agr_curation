@@ -524,30 +524,16 @@ public class BaseITCase {
 	}
 
 	public GOTerm createGoTerm(String curie, String name, Boolean obsolete) {
-		return createGoTerm(curie, name, obsolete, null, null);
+		return createGoTerm(curie, name, obsolete, null);
 	}
 
 	public GOTerm createGoTerm(String curie, String name, Boolean obsolete, List<String> subsets) {
-		return createGoTerm(curie, name, obsolete, null, subsets);
-	}
-
-	public GOTerm createGoTerm(String curie, String name, Boolean obsolete, GOTerm ancestor) {
-		return createGoTerm(curie, name, obsolete, ancestor, null);
-	}
-
-	public GOTerm createGoTerm(String curie, String name, Boolean obsolete, GOTerm ancestor, List<String> subsets) {
 		GOTerm goTerm = new GOTerm();
 		goTerm.setCurie(curie);
 		goTerm.setObsolete(obsolete);
 		goTerm.setName(name);
 		goTerm.setSecondaryIdentifiers(List.of(curie + "secondary"));
 		goTerm.setSubsets(subsets);
-		OntologyTermClosure closure = new OntologyTermClosure();
-		closure.setClosureSubject(goTerm);
-		closure.setClosureObject(ancestor);
-		closure.setClosureTypes(new HashSet<>(List.of("is_a")));
-		goTerm.setAncestors(new HashSet<>());
-		goTerm.getAncestors().add(closure);
 
 		ObjectResponse<GOTerm> response = given().
 				contentType("application/json").
@@ -557,6 +543,25 @@ public class BaseITCase {
 				then().
 				statusCode(200).
 				extract().body().as(getObjectResponseTypeRefGOTerm());
+		return response.getEntity();
+	}
+	
+	public OntologyTermClosure createClosure(OntologyTerm term1, OntologyTerm term2, List<String> relationList) {
+		OntologyTermClosure closure = new OntologyTermClosure();
+		closure.setClosureSubject(term1);
+		closure.setClosureObject(term2);
+		closure.setClosureTypes(new HashSet<>(relationList));
+		closure.setDistance(1);
+
+		ObjectResponse<OntologyTermClosure> response = given().
+			contentType("application/json").
+			body(closure).
+			when().
+			post("/api/ontologytermclosure").
+			then().
+			statusCode(200).
+			extract().body().as(getObjectResponseTypeRefOntologyTermClosure());
+		
 		return response.getEntity();
 	}
 
@@ -1333,6 +1338,11 @@ public class BaseITCase {
 
 	private TypeRef<ObjectResponse<GOTerm>> getObjectResponseTypeRefGOTerm() {
 		return new TypeRef<ObjectResponse<GOTerm>>() {
+		};
+	}
+	
+	private TypeRef<ObjectResponse<OntologyTermClosure>> getObjectResponseTypeRefOntologyTermClosure() {
+		return new TypeRef<ObjectResponse<OntologyTermClosure>>() {
 		};
 	}
 
