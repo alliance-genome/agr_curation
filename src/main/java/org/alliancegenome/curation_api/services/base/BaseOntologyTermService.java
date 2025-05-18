@@ -162,48 +162,40 @@ public abstract class BaseOntologyTermService<E extends OntologyTerm, D extends 
 		}
 	}
 
-	// TODO: Ontology: turn back on
 	public ObjectListResponse<E> getChildren(String curie, List<String> relationTypes) {
 		E term = findByCurie(curie);
-//		if (term != null) {
-//			return (ObjectListResponse<E>) new ObjectListResponse<OntologyTerm>(term.getIsaChildren());
-//		} else {
-//			return new ObjectListResponse<E>();
-//		}
-		return null;
+		if (term != null) {
+			return (ObjectListResponse<E>) new ObjectListResponse<OntologyTerm>(term.getChildren(relationTypes));
+		} else {
+			return new ObjectListResponse<E>();
+		}
 	}
 
-	// TODO: Ontology: turn back on
 	public ObjectListResponse<E> getDescendants(String curie, List<String> relationTypes) {
 		E term = findByCurie(curie);
-//		if (term != null) {
-//			return (ObjectListResponse<E>) new ObjectListResponse<OntologyTerm>(term.getIsaDescendants());
-//		} else {
-//			return new ObjectListResponse<E>();
-//		}
-		return null;
+		if (term != null) {
+			return (ObjectListResponse<E>) new ObjectListResponse<OntologyTerm>(term.getDescendants(relationTypes));
+		} else {
+			return new ObjectListResponse<E>();
+		}
 	}
 
-	// TODO: Ontology: turn back on
 	public ObjectListResponse<E> getParents(String curie, List<String> relationTypes) {
 		E term = findByCurie(curie);
-//		if (term != null) {
-//			return (ObjectListResponse<E>) new ObjectListResponse<OntologyTerm>(term.getIsaParents());
-//		} else {
-//			return new ObjectListResponse<E>();
-//		}
-		return null;
+		if (term != null) {
+			return (ObjectListResponse<E>) new ObjectListResponse<OntologyTerm>(term.getParents(relationTypes));
+		} else {
+			return new ObjectListResponse<E>();
+		}
 	}
 
-	// TODO: Ontology: turn back on
 	public ObjectListResponse<E> getAncestors(String curie, List<String> relationTypes) {
 		E term = findByCurie(curie);
-//		if (term != null) {
-//			return (ObjectListResponse<E>) new ObjectListResponse<OntologyTerm>(term.getIsaAncestors());
-//		} else {
-//			return new ObjectListResponse<E>();
-//		}
-		return null;
+		if (term != null) {
+			return (ObjectListResponse<E>) new ObjectListResponse<OntologyTerm>(term.getAncestors(relationTypes));
+		} else {
+			return new ObjectListResponse<E>();
+		}
 	}
 
 	private void handleSubsets(OntologyTerm dbTerm, OntologyTerm incomingTerm) {

@@ -35,9 +35,8 @@ public class DiseaseSummaryDocumentBuilder {
 		DiseaseSummaryDocument doc = new DiseaseSummaryDocument();
 
 		doc.setDoTerm(doTerm);
-		// TODO: Ontology: turn back on
-		//doc.setParents(doTerm.getIsaParents());
-		//doc.setChildren(doTerm.getIsaChildren());
+		doc.setParents(doTerm.getParents(List.of("is_a", "part_of")));
+		doc.setChildren(doTerm.getChildren(List.of("is_a", "part_of")));
 		doc.setCrossReferenceLinkUrls(new ArrayList<>());
 		for (CrossReference cr : doTerm.getCrossReferences()) {
 			Map<String, String> map = new HashMap<>();

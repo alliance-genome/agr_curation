@@ -1,5 +1,6 @@
 package org.alliancegenome.curation_api.model.entities.ontology;
 
+import java.beans.Transient;
 import java.util.List;
 import java.util.Set;
 
@@ -129,5 +130,29 @@ public class OntologyTerm extends CurieObject {
 
 	@JsonView(View.FieldsOnly.class)
 	private Integer descendantCount = 0;
+
+	// TODO: Ontology: turn back on
+	@Transient
+	public Set<OntologyTerm> getChildren(List<String> relationTypes) {
+		return null;
+	}
+
+	// TODO: Ontology: turn back on
+	@Transient
+	public Set<OntologyTerm> getDescendants(List<String> relationTypes) {
+		return null;
+	}
+
+	// TODO: Ontology: turn back on
+	@Transient
+	public Set<OntologyTerm> getParents(List<String> relationTypes) {
+		return null;
+	}
+
+	// TODO: Ontology: turn back on
+		@Transient
+	public Set<OntologyTerm> getAncestors(List<String> relationTypes) {
+		return null;
+	}
 
 }
