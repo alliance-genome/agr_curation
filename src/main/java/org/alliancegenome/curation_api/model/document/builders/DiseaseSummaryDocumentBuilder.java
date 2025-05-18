@@ -35,8 +35,8 @@ public class DiseaseSummaryDocumentBuilder {
 		DiseaseSummaryDocument doc = new DiseaseSummaryDocument();
 
 		doc.setDoTerm(doTerm);
-		doc.setParents(doTerm.getParents(List.of("is_a", "part_of")));
-		doc.setChildren(doTerm.getChildren(List.of("is_a", "part_of")));
+		doc.setParents(new HashSet<>(doTerm.getParents(Set.of("is_a", "part_of"))));
+		doc.setChildren(new HashSet<>(doTerm.getChildren(Set.of("is_a", "part_of"))));
 		doc.setCrossReferenceLinkUrls(new ArrayList<>());
 		for (CrossReference cr : doTerm.getCrossReferences()) {
 			Map<String, String> map = new HashMap<>();

@@ -1,6 +1,6 @@
 package org.alliancegenome.curation_api.interfaces.base;
 
-import java.util.List;
+import java.util.Set;
 
 import org.alliancegenome.curation_api.interfaces.base.crud.BaseCreateControllerInterface;
 import org.alliancegenome.curation_api.interfaces.base.crud.BaseDeleteCurieControllerInterface;
@@ -48,20 +48,20 @@ public interface BaseOntologyTermCrudInterface<E extends OntologyTerm> extends
 	@GET
 	@Path("/{curie}/descendants")
 	@JsonView(View.FieldsOnly.class)
-	ObjectListResponse<E> getDescendants(@PathParam("curie") String curie, @QueryParam("relationTypes") List<String> relationTypes);
+	ObjectListResponse<E> getDescendants(@PathParam("curie") String curie, @QueryParam("relationTypes") Set<String> relationTypes);
 
 	@GET
 	@Path("/{curie}/children")
 	@JsonView(View.FieldsOnly.class)
-	ObjectListResponse<E> getChildren(@PathParam("curie") String curie, @QueryParam("relationTypes") List<String> relationTypes);
+	ObjectListResponse<E> getChildren(@PathParam("curie") String curie, @QueryParam("relationTypes") Set<String> relationTypes);
 
 	@GET
 	@Path("/{curie}/parents")
 	@JsonView(View.FieldsOnly.class)
-	ObjectListResponse<E> getParents(@PathParam("curie") String curie, @QueryParam("relationTypes") List<String> relationTypes);
+	ObjectListResponse<E> getParents(@PathParam("curie") String curie, @QueryParam("relationTypes") Set<String> relationTypes);
 
 	@GET
 	@Path("/{curie}/ancestors")
 	@JsonView(View.FieldsOnly.class)
-	ObjectListResponse<E> getAncestors(@PathParam("curie") String curie, @QueryParam("relationTypes") List<String> relationTypes);
+	ObjectListResponse<E> getAncestors(@PathParam("curie") String curie, @QueryParam("relationTypes") Set<String> relationTypes);
 }

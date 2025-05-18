@@ -162,7 +162,7 @@ public abstract class BaseOntologyTermService<E extends OntologyTerm, D extends 
 		}
 	}
 
-	public ObjectListResponse<E> getChildren(String curie, List<String> relationTypes) {
+	public ObjectListResponse<E> getChildren(String curie, Set<String> relationTypes) {
 		E term = findByCurie(curie);
 		if (term != null) {
 			return (ObjectListResponse<E>) new ObjectListResponse<OntologyTerm>(term.getChildren(relationTypes));
@@ -171,7 +171,7 @@ public abstract class BaseOntologyTermService<E extends OntologyTerm, D extends 
 		}
 	}
 
-	public ObjectListResponse<E> getDescendants(String curie, List<String> relationTypes) {
+	public ObjectListResponse<E> getDescendants(String curie, Set<String> relationTypes) {
 		E term = findByCurie(curie);
 		if (term != null) {
 			return (ObjectListResponse<E>) new ObjectListResponse<OntologyTerm>(term.getDescendants(relationTypes));
@@ -180,7 +180,7 @@ public abstract class BaseOntologyTermService<E extends OntologyTerm, D extends 
 		}
 	}
 
-	public ObjectListResponse<E> getParents(String curie, List<String> relationTypes) {
+	public ObjectListResponse<E> getParents(String curie, Set<String> relationTypes) {
 		E term = findByCurie(curie);
 		if (term != null) {
 			return (ObjectListResponse<E>) new ObjectListResponse<OntologyTerm>(term.getParents(relationTypes));
@@ -189,7 +189,7 @@ public abstract class BaseOntologyTermService<E extends OntologyTerm, D extends 
 		}
 	}
 
-	public ObjectListResponse<E> getAncestors(String curie, List<String> relationTypes) {
+	public ObjectListResponse<E> getAncestors(String curie, Set<String> relationTypes) {
 		E term = findByCurie(curie);
 		if (term != null) {
 			return (ObjectListResponse<E>) new ObjectListResponse<OntologyTerm>(term.getAncestors(relationTypes));
