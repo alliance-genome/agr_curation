@@ -58,7 +58,7 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
 	private HashMap<String, T> allNodes = new HashMap<>();
 	private HashSet<String> traversedNodes = new HashSet<String>();
 
-	private ProcessDisplayHelper ph = new ProcessDisplayHelper(1000);
+	private ProcessDisplayHelper ph = new ProcessDisplayHelper(10000);
 
 	public GenericOntologyLoadHelper(Class<T> clazz) {
 		this.clazz = clazz;
