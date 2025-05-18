@@ -71,7 +71,7 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
 	}
 
 	public Map<String, T> load(String fullText) throws Exception {
-		File outfile = new File("tmp.file2.owl"); // TODO fix so multiple loads do not overwrite each other Generate random name
+		File outfile = new File("tmp.file2.owl"); // TODO: fix so multiple loads do not overwrite each other Generate random name
 		log("Input data size: " + fullText.length());
 		BufferedWriter writer = new BufferedWriter(new FileWriter(outfile));
 		writer.append(fullText);
@@ -192,16 +192,6 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
 				if (!childTermNode.equals(currentTreeNode)) {
 					try {
 						T childTerm = traverse(childTermNode, depth + 1, requiredNamespaces);
-
-						// TODO: Ontology: turn back on -- Not sure this is needed
-						if (childTerm != null && isNodeInOntology) {
-							// String ancestorsString = childTerm.getAncestors().stream().map(t -> { return
-							// t.getClosureSubject().getCurie() + " " + t.getClosureTypes() + "(" +
-							// t.getDistance() + ") " + t.getClosureObject().getCurie(); }).toList() + "";
-							// printDepthMessage(depth, "Adding parent: " + currentTerm.getCurie() + " <- "
-							// + childTerm.getCurie() + " Ancestors: " + ancestorsString);
-							// childTerm.addIsaParent(currentTerm);
-						}
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
@@ -494,23 +484,23 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
 		traversedNodes.add(currentTerm.getCurie());
 
 		// TODO: Ontology: turn back on -- Required for RO
-//		if (isPropertyInOntology) {
+		if (isPropertyInOntology) {
 //			HashSet<OntologyTerm> ancestors = new HashSet<OntologyTerm>();
 //			traverseToRootProperty(currentTreeProperty, depth, ancestors);
 //			ancestors.remove(currentTerm);
 //			currentTerm.setIsaAncestors(new HashSet<>(ancestors));
-//		}
+		}
 
 		for (OWLObjectPropertyExpression childTermPropertyExpression : reasoner.getSubObjectProperties(currentTreeProperty, true).entities().collect(Collectors.toList())) {
 			if (!childTermPropertyExpression.getNamedProperty().toString().equals(currentTreeProperty.toString())) {
 				try {
 					T childTerm = traverseProperties(childTermPropertyExpression.getNamedProperty(), depth + 1);
 
-					// TODO: Ontology: turn back on -- Required for RO
-					// if (childTerm != null && currentTerm.getCurie() != null &&
-					// isPropertyInOntology) {
-					// childTerm.addIsaParent(currentTerm);
-					// }
+					
+					if (childTerm != null && currentTerm.getCurie() != null && isPropertyInOntology) {
+						// TODO: Ontology: turn back on -- Required for RO
+						//childTerm.addIsaParent(currentTerm);
+					}
 				} catch (Exception e) {
 					e.printStackTrace();
 				}

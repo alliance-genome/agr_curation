@@ -111,7 +111,7 @@ public class GeneDocumentBuilder {
 		if (gene.getCrossReferences() != null) {
 			doc.setCrossReferences(gene.getCrossReferences().stream().map(CrossReference::getReferencedCurie).collect(Collectors.toSet()));
 		}
-
+		
 		if (gene.getGeneGenomicLocationAssociations() != null) {
 			doc.setChromosomes(gene.getGeneGenomicLocationAssociations().stream().map(t -> {
 				if (t.getGeneGenomicLocationAssociationObject() != null) {
@@ -128,7 +128,7 @@ public class GeneDocumentBuilder {
 					doc.getAlleles().add(association.getAlleleAssociationSubject().getAlleleSymbol().getFormatText());
 
 					// if(association.getAlleleAssociationSubject().getAgm) {
-					// TODO: Once the code for AgmAllele Associations comes through will be able to
+					// TODO: GeneDocumentBuilder: Once the code for AgmAllele Associations comes through will be able to
 					// pick up this field
 					// }
 				}
@@ -268,7 +268,7 @@ public class GeneDocumentBuilder {
 
 				if (annotation.getExpressionPattern() != null && annotation.getExpressionPattern().getWhereExpressed() != null && annotation.getExpressionPattern().getWhereExpressed().getAnatomicalStructure() != null) {
 					AnatomicalTerm anatomicalTerm = annotation.getExpressionPattern().getWhereExpressed().getAnatomicalStructure();
-					// TODO add uberon slims to this
+					// TODO: GeneDocumentBuilder: add uberon slims to this
 					if (anatomicalTerm != null) {
 						doc.getAnatomicalExpressionWithParents().add(anatomicalTerm.getName());
 						for (OntologyTermClosure closure : anatomicalTerm.getAncestors()) {

@@ -45,22 +45,13 @@ import lombok.ToString;
 @Entity
 @ToString(exclude = { "ancestors", "descendants", "crossReferences", "synonyms", "secondaryIdentifiers", "subsets" }, callSuper = true)
 @AGRCurationSchemaVersion(min = LinkMLSchemaConstants.MIN_ONTOLOGY_RELEASE, max = LinkMLSchemaConstants.MAX_ONTOLOGY_RELEASE, dependencies = { CurieObject.class })
-@Table(
-	indexes = {
-		@Index(name = "ontologyterm_curie_index", columnList = "curie"),
-		@Index(name = "ontologyterm_name_index", columnList = "name"),
-		@Index(name = "ontologyterm_createdby_index", columnList = "createdBy_id"),
-		@Index(name = "ontologyterm_updatedby_index", columnList = "updatedBy_id")
-	},
-	uniqueConstraints = {
-		@UniqueConstraint(name = "ontologyterm_curie_uk", columnNames = "curie")
-	}
-)
+@Table(indexes = { @Index(name = "ontologyterm_curie_index", columnList = "curie"), @Index(name = "ontologyterm_name_index", columnList = "name"), @Index(name = "ontologyterm_createdby_index", columnList = "createdBy_id"),
+	@Index(name = "ontologyterm_updatedby_index", columnList = "updatedBy_id") }, uniqueConstraints = { @UniqueConstraint(name = "ontologyterm_curie_uk", columnNames = "curie") })
 public class OntologyTerm extends CurieObject {
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "name_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({View.FieldsOnly.class, View.ForPublic.class, View.GeneToGeneOrthologyDocument.class, View.GeneSummaryDocument.class, View.DiseaseSummaryDocument.class, View.ModelDocumentView.class})
+	@JsonView({ View.FieldsOnly.class, View.ForPublic.class, View.GeneToGeneOrthologyDocument.class, View.GeneSummaryDocument.class, View.DiseaseSummaryDocument.class, View.ModelDocumentView.class })
 	@Column(length = 2000)
 	protected String name;
 
@@ -106,17 +97,14 @@ public class OntologyTerm extends CurieObject {
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
 	@JoinTable(indexes = @Index(columnList = "ontologyterm_id", name = "ontologyterm_synonym_ontologyterm_index"))
-	@JsonView({ View.FieldsAndLists.class, View.DiseaseSummaryDocument.class})
+	@JsonView({ View.FieldsAndLists.class, View.DiseaseSummaryDocument.class })
 	private List<Synonym> synonyms;
 
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
 	@org.hibernate.annotations.OnDelete(action = org.hibernate.annotations.OnDeleteAction.CASCADE)
-	@JoinTable(indexes = {
-		@Index(columnList = "ontologyterm_id", name = "ontologyterm_crossreference_ontologyterm_index"),
-		@Index(columnList = "crossreferences_id", name = "ontologyterm_crossreference_crossreferences_index")
-	})
+	@JoinTable(indexes = { @Index(columnList = "ontologyterm_id", name = "ontologyterm_crossreference_ontologyterm_index"), @Index(columnList = "crossreferences_id", name = "ontologyterm_crossreference_crossreferences_index") })
 	@JsonView({ View.FieldsAndLists.class })
 	private List<CrossReference> crossReferences;
 
@@ -133,30 +121,22 @@ public class OntologyTerm extends CurieObject {
 
 	@Transient
 	public List<OntologyTerm> getChildren(Set<String> relationTypes) {
-		return descendants.stream()
-            .filter(o -> o.getClosureTypes().equals(relationTypes) && o.getDistance() == 1).map(t -> t.getClosureSubject())
-            .toList();
+		return descendants.stream().filter(o -> o.getClosureTypes().equals(relationTypes) && o.getDistance() == 1).map(t -> t.getClosureSubject()).toList();
 	}
 
 	@Transient
 	public List<OntologyTerm> getDescendants(Set<String> relationTypes) {
-		return descendants.stream()
-            .filter(o -> o.getClosureTypes().equals(relationTypes)).map(t -> t.getClosureSubject())
-            .toList();
+		return descendants.stream().filter(o -> o.getClosureTypes().equals(relationTypes)).map(t -> t.getClosureSubject()).toList();
 	}
 
 	@Transient
 	public List<OntologyTerm> getParents(Set<String> relationTypes) {
-		return ancestors.stream()
-            .filter(o -> o.getClosureTypes().equals(relationTypes) && o.getDistance() == 1).map(t -> t.getClosureObject())
-            .toList();
+		return ancestors.stream().filter(o -> o.getClosureTypes().equals(relationTypes) && o.getDistance() == 1).map(t -> t.getClosureObject()).toList();
 	}
 
 	@Transient
 	public List<OntologyTerm> getAncestors(Set<String> relationTypes) {
-		return ancestors.stream()
-            .filter(o -> o.getClosureTypes().equals(relationTypes)).map(t -> t.getClosureObject())
-            .toList();
+		return ancestors.stream().filter(o -> o.getClosureTypes().equals(relationTypes)).map(t -> t.getClosureObject()).toList();
 	}
 
 }
