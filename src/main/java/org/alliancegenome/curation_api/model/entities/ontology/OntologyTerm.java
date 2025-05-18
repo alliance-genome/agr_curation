@@ -150,7 +150,7 @@ public class OntologyTerm extends CurieObject {
 	}
 
 	// TODO: Ontology: turn back on
-		@Transient
+	@Transient
 	public Set<OntologyTerm> getAncestors(List<String> relationTypes) {
 		return null;
 	}
