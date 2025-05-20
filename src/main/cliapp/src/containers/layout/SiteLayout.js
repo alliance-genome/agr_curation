@@ -12,6 +12,7 @@ import { AppMenu } from '../../AppMenu';
 import { AppConfig } from '../../AppConfig';
 
 import { ApiVersionService } from '../../service/ApiVersionService';
+import { PersonService } from '../../service/PersonService';
 
 import PrimeReact from 'primereact/api';
 import { Tooltip } from 'primereact/tooltip';
@@ -52,6 +53,7 @@ export const SiteLayout = (props) => {
 
 	const { children } = props;
 	let [apiService, setApiService] = useState();
+	let [personService, setPersonService] = useState();
 
 	const setInputStyle = (value) => {
 		let _themeState = {
@@ -83,6 +85,7 @@ export const SiteLayout = (props) => {
 	useEffect(() => {
 		if (authState?.isAuthenticated) {
 			setApiService(new ApiVersionService());
+			setPersonService(new PersonService());
 		}
 	}, [authState]);
 
@@ -96,6 +99,22 @@ export const SiteLayout = (props) => {
 		keepPreviousData: true,
 		refetchOnWindowFocus: false,
 		enabled: !!(authState?.isAuthenticated && apiService),
+	});
+
+	// Add query to fetch user info and the apiToken
+	useQuery(['getUserInfo'], () => personService.getUserInfo(), {
+		onSuccess: (data) => {
+			// update apiToken in context if available
+			if (data?.apiToken) {
+				dispatch({ type: 'SET_API_TOKEN', payload: data.apiToken });
+			}
+		},
+		onError: (error) => {
+			console.log(error);
+		},
+		keepPreviousData: true,
+		refetchOnWindowFocus: false,
+		enabled: !!(authState?.isAuthenticated && personService),
 	});
 
 	const logout = async () => {

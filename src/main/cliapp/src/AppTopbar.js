@@ -14,8 +14,10 @@ export const AppTopbar = (props) => {
 	// extract apiVersion and apiToken from context
 	const { apiVersion, apiToken } = useContext(SiteContext);
 
-	// You can use apiToken for authenticated API calls
-	// Example usage might be displaying a token status or making authenticated requests
+	// apiToken is now available for authenticated API calls here in AppTopbar
+	// since it's fetched in SiteLayout when the app initializes
+
+	console.log('apiToken', apiToken);
 
 	var loc = window.location,
 		new_uri;

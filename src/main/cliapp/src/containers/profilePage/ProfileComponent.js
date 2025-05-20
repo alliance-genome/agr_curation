@@ -130,6 +130,7 @@ export const ProfileComponent = () => {
 				if (data?.apiToken) {
 					dispatch({ type: 'SET_API_TOKEN', payload: data.apiToken });
 				}
+				queryClient.invalidateQueries(['getUserInfo']);
 			})
 			.catch((err) => {
 				console.log(err);
