@@ -1,8 +1,9 @@
-import React, { useRef, useState, useContext } from 'react';
+import React, { useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Menu } from 'primereact/menu';
 import classNames from 'classnames';
-import { SiteContext } from './containers/layout/SiteContext';
+import { useQueryClient } from '@tanstack/react-query';
+import { QUERY_KEYS, getCachedData } from './service/SiteQueryHooks';
 import useWebSocket from 'react-use-websocket';
 import { Message } from 'primereact/message';
 import { ProgressBar } from 'primereact/progressbar';
@@ -11,8 +12,10 @@ export const AppTopbar = (props) => {
 	const menu = useRef(null);
 	const [processingEvent, setProcessingEvent] = useState(null);
 
-	// extract apiVersion and apiToken from context
-	const { apiVersion, apiToken } = useContext(SiteContext);
+	const queryClient = useQueryClient();
+	const apiVersion = getCachedData(queryClient, [QUERY_KEYS.API_VERSION]);
+	const userInfo = getCachedData(queryClient, [QUERY_KEYS.USER_INFO]);
+	const apiToken = userInfo?.apiToken;
 
 	// apiToken is now available for authenticated API calls here in AppTopbar
 	// since it's fetched in SiteLayout when the app initializes

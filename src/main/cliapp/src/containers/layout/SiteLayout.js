@@ -1,5 +1,4 @@
-import React, { useReducer, useEffect, useRef, useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import React, { useEffect, useRef, useState } from 'react';
 import classNames from 'classnames';
 import { useLocation } from 'react-router-dom';
 import { CSSTransition } from 'react-transition-group';
@@ -11,12 +10,10 @@ import { AppFooter } from '../../AppFooter';
 import { AppMenu } from '../../AppMenu';
 import { AppConfig } from '../../AppConfig';
 
-import { ApiVersionService } from '../../service/ApiVersionService';
-import { PersonService } from '../../service/PersonService';
+import { useApiVersion, useUserInfo } from '../../service/SiteQueryHooks';
 
 import PrimeReact from 'primereact/api';
 import { Tooltip } from 'primereact/tooltip';
-import { SiteContext, initialSiteContext, siteContextReducer } from './SiteContext';
 
 import 'primereact/resources/primereact.css';
 import 'primeicons/primeicons.css';
@@ -44,16 +41,15 @@ export const SiteLayout = (props) => {
 	const [mobileMenuActive, setMobileMenuActive] = useState(false);
 	const [mobileTopbarMenuActive, setMobileTopbarMenuActive] = useState(false);
 
-	const [siteContext, dispatch] = useReducer(siteContextReducer, initialSiteContext);
-
 	const copyTooltipRef = useRef();
 	const location = useLocation();
 
 	const { authState, oktaAuth } = useOktaAuth();
 
+	const { data: apiVersion } = useApiVersion(authState);
+	useUserInfo(authState);
+
 	const { children } = props;
-	let [apiService, setApiService] = useState();
-	let [personService, setPersonService] = useState();
 
 	const setInputStyle = (value) => {
 		let _themeState = {
@@ -81,41 +77,6 @@ export const SiteLayout = (props) => {
 
 		setThemeState(_themeState);
 	};
-
-	useEffect(() => {
-		if (authState?.isAuthenticated) {
-			setApiService(new ApiVersionService());
-			setPersonService(new PersonService());
-		}
-	}, [authState]);
-
-	useQuery(['getApiVersion'], () => apiService.getApiVersion(), {
-		onSuccess: (data) => {
-			dispatch({ type: 'SET_API_VERSION', payload: data });
-		},
-		onError: (error) => {
-			console.log(error);
-		},
-		keepPreviousData: true,
-		refetchOnWindowFocus: false,
-		enabled: !!(authState?.isAuthenticated && apiService),
-	});
-
-	// Add query to fetch user info and the apiToken
-	useQuery(['getUserInfo'], () => personService.getUserInfo(), {
-		onSuccess: (data) => {
-			// update apiToken in context if available
-			if (data?.apiToken) {
-				dispatch({ type: 'SET_API_TOKEN', payload: data.apiToken });
-			}
-		},
-		onError: (error) => {
-			console.log(error);
-		},
-		keepPreviousData: true,
-		refetchOnWindowFocus: false,
-		enabled: !!(authState?.isAuthenticated && personService),
-	});
 
 	const logout = async () => {
 		await oktaAuth.signOut();
@@ -393,19 +354,19 @@ export const SiteLayout = (props) => {
 						{
 							label: 'Search index UI (cerebro)',
 							icon: 'pi pi-fw pi-home',
-							url: `http://cerebro.alliancegenome.org:9000/#!/overview?host=http://${siteContext?.apiVersion?.esHost}`,
+							url: `http://cerebro.alliancegenome.org:9000/#!/overview?host=http://${apiVersion?.esHost}`,
 							target: '_blank',
 						},
 						{
 							label: 'Logs Server UI',
 							icon: 'pi pi-fw pi-home',
-							url: `http://logs.alliancegenome.org:5601/app/logtrail#/?q=*&h=agr.curation.${siteContext?.apiVersion?.env}.api.server&t=Now&i=logstash*&_g=()`,
+							url: `http://logs.alliancegenome.org:5601/app/logtrail#/?q=*&h=agr.curation.${apiVersion?.env}.api.server&t=Now&i=logstash*&_g=()`,
 							target: '_blank',
 						},
 						{
 							label: 'MaTI Swagger UI',
 							icon: 'pi pi-fw pi-home',
-							url: siteContext?.apiVersion?.matiHost + '/q/swagger-ui/',
+							url: apiVersion?.matiHost + '/q/swagger-ui/',
 							target: '_blank',
 						},
 						{ label: 'Site Health', icon: 'pi pi-fw pi-plus', to: '/healthpage' },
@@ -441,52 +402,50 @@ export const SiteLayout = (props) => {
 	});
 
 	return (
-		<SiteContext.Provider value={{ ...siteContext, dispatch }}>
-			<div className={wrapperClass} onClick={onWrapperClick}>
-				<Tooltip
-					ref={copyTooltipRef}
-					target=".block-action-copy"
-					position="bottom"
-					content="Copied to clipboard"
-					event="focus"
-				/>
+		<div className={wrapperClass} onClick={onWrapperClick}>
+			<Tooltip
+				ref={copyTooltipRef}
+				target=".block-action-copy"
+				position="bottom"
+				content="Copied to clipboard"
+				event="focus"
+			/>
 
-				<AppTopbar
-					onToggleMenuClick={onToggleMenuClick}
-					layoutColorMode={themeState?.layoutColorMode}
-					mobileTopbarMenuActive={mobileTopbarMenuActive}
-					onMobileTopbarMenuClick={onMobileTopbarMenuClick}
-					onMobileSubTopbarMenuClick={onMobileSubTopbarMenuClick}
-					authState={authState}
-					logout={logout}
-				/>
+			<AppTopbar
+				onToggleMenuClick={onToggleMenuClick}
+				layoutColorMode={themeState?.layoutColorMode}
+				mobileTopbarMenuActive={mobileTopbarMenuActive}
+				onMobileTopbarMenuClick={onMobileTopbarMenuClick}
+				onMobileSubTopbarMenuClick={onMobileSubTopbarMenuClick}
+				authState={authState}
+				logout={logout}
+			/>
 
-				<div className="layout-sidebar" onClick={onSidebarClick}>
-					<AppMenu model={menu} onMenuItemClick={onMenuItemClick} layoutColorMode={themeState?.layoutColorMode} />
-				</div>
-
-				<div className="layout-main-container">
-					<div className="layout-main">{children}</div>
-
-					<AppFooter layoutColorMode={themeState?.layoutColorMode} />
-				</div>
-
-				<AppConfig
-					rippleEffect={themeState?.ripple}
-					onRippleEffect={onRipple}
-					inputStyle={themeState?.inputStyle}
-					onInputStyleChange={onInputStyleChange}
-					layoutMode={themeState?.layoutMode}
-					onLayoutModeChange={onLayoutModeChange}
-					layoutColorMode={themeState?.layoutColorMode}
-					themeState={themeState}
-					setThemeState={setThemeState}
-				/>
-
-				<CSSTransition classNames="layout-mask" timeout={{ enter: 200, exit: 200 }} in={mobileMenuActive} unmountOnExit>
-					<div className="layout-mask p-component-overlay"></div>
-				</CSSTransition>
+			<div className="layout-sidebar" onClick={onSidebarClick}>
+				<AppMenu model={menu} onMenuItemClick={onMenuItemClick} layoutColorMode={themeState?.layoutColorMode} />
 			</div>
-		</SiteContext.Provider>
+
+			<div className="layout-main-container">
+				<div className="layout-main">{children}</div>
+
+				<AppFooter layoutColorMode={themeState?.layoutColorMode} />
+			</div>
+
+			<AppConfig
+				rippleEffect={themeState?.ripple}
+				onRippleEffect={onRipple}
+				inputStyle={themeState?.inputStyle}
+				onInputStyleChange={onInputStyleChange}
+				layoutMode={themeState?.layoutMode}
+				onLayoutModeChange={onLayoutModeChange}
+				layoutColorMode={themeState?.layoutColorMode}
+				themeState={themeState}
+				setThemeState={setThemeState}
+			/>
+
+			<CSSTransition classNames="layout-mask" timeout={{ enter: 200, exit: 200 }} in={mobileMenuActive} unmountOnExit>
+				<div className="layout-mask p-component-overlay"></div>
+			</CSSTransition>
+		</div>
 	);
 };

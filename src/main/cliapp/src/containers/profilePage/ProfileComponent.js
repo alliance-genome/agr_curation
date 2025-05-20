@@ -1,4 +1,4 @@
-import React, { useState, useRef, useContext } from 'react';
+import React, { useState, useRef } from 'react';
 import { Card } from 'primereact/card';
 import { DataTable } from 'primereact/datatable';
 import { Dropdown } from 'primereact/dropdown';
@@ -8,7 +8,7 @@ import { useOktaAuth } from '@okta/okta-react';
 import { Panel } from 'primereact/panel';
 import { Ripple } from 'primereact/ripple';
 import * as jose from 'jose';
-import { SiteContext } from '../layout/SiteContext';
+import { useRegenApiToken } from '../../service/SiteQueryHooks';
 
 import { ConfirmButton } from '../../components/ConfirmButton';
 import { useGetUserSettings } from '../../service/useGetUserSettings';
@@ -38,7 +38,8 @@ export const ProfileComponent = () => {
 	const { settings: siteState, mutate: setSiteState } = useGetUserSettings('siteSettings', initialSiteState, false);
 	const queryClient = useQueryClient();
 
-	const { dispatch } = useContext(SiteContext);
+	// Use our custom hook for regenerating API token
+	const regenApiTokenFn = useRegenApiToken();
 
 	const [localUserInfo, setLocalUserInfo] = useState({});
 	const [oktaToken] = useState(JSON.parse(localStorage.getItem('okta-token-storage')));
@@ -123,14 +124,9 @@ export const ProfileComponent = () => {
 	};
 
 	const regenApiToken = () => {
-		personService
-			.regenApiToken()
+		regenApiTokenFn()
 			.then((data) => {
 				setLocalUserInfo(data);
-				if (data?.apiToken) {
-					dispatch({ type: 'SET_API_TOKEN', payload: data.apiToken });
-				}
-				queryClient.invalidateQueries(['getUserInfo']);
 			})
 			.catch((err) => {
 				console.log(err);
@@ -140,9 +136,6 @@ export const ProfileComponent = () => {
 	useQuery(['localUserInfo'], () => personService.getUserInfo(), {
 		onSuccess: (data) => {
 			setLocalUserInfo(data);
-			if (data?.apiToken) {
-				dispatch({ type: 'SET_API_TOKEN', payload: data.apiToken });
-			}
 		},
 		onError: (error) => {
 			console.log(error);
