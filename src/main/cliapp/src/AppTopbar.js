@@ -11,7 +11,11 @@ export const AppTopbar = (props) => {
 	const menu = useRef(null);
 	const [processingEvent, setProcessingEvent] = useState(null);
 
-	const { apiVersion } = useContext(SiteContext);
+	// extract apiVersion and apiToken from context
+	const { apiVersion, apiToken } = useContext(SiteContext);
+
+	// You can use apiToken for authenticated API calls
+	// Example usage might be displaying a token status or making authenticated requests
 
 	var loc = window.location,
 		new_uri;
@@ -88,7 +92,7 @@ export const AppTopbar = (props) => {
 				{
 					label: 'Profile',
 					icon: 'pi pi-profile',
-					command: (e) => {
+					command: () => {
 						window.location.hash = '/profile';
 					},
 				},

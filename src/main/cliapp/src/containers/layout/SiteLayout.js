@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useReducer, useEffect, useRef, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import classNames from 'classnames';
 import { useLocation } from 'react-router-dom';
@@ -15,7 +15,7 @@ import { ApiVersionService } from '../../service/ApiVersionService';
 
 import PrimeReact from 'primereact/api';
 import { Tooltip } from 'primereact/tooltip';
-import { SiteContext } from './SiteContext';
+import { SiteContext, initialSiteContext, siteContextReducer } from './SiteContext';
 
 import 'primereact/resources/primereact.css';
 import 'primeicons/primeicons.css';
@@ -43,7 +43,7 @@ export const SiteLayout = (props) => {
 	const [mobileMenuActive, setMobileMenuActive] = useState(false);
 	const [mobileTopbarMenuActive, setMobileTopbarMenuActive] = useState(false);
 
-	const [siteContext, setSiteContext] = useState({});
+	const [siteContext, dispatch] = useReducer(siteContextReducer, initialSiteContext);
 
 	const copyTooltipRef = useRef();
 	const location = useLocation();
@@ -88,9 +88,7 @@ export const SiteLayout = (props) => {
 
 	useQuery(['getApiVersion'], () => apiService.getApiVersion(), {
 		onSuccess: (data) => {
-			//console.log(data);
-			//setApiVersion(data);
-			setSiteContext({ ...siteContext, apiVersion: data });
+			dispatch({ type: 'SET_API_VERSION', payload: data });
 		},
 		onError: (error) => {
 			console.log(error);
@@ -424,7 +422,7 @@ export const SiteLayout = (props) => {
 	});
 
 	return (
-		<SiteContext.Provider value={siteContext}>
+		<SiteContext.Provider value={{ ...siteContext, dispatch }}>
 			<div className={wrapperClass} onClick={onWrapperClick}>
 				<Tooltip
 					ref={copyTooltipRef}
