@@ -487,7 +487,7 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
 			HashSet<OntologyTerm> isaAncestors = new HashSet<OntologyTerm>();
 			traverseToRootProperty(currentTreeProperty, depth, isaAncestors);
 			HashSet<OntologyTermClosure> ancestors = new HashSet<OntologyTermClosure>();
-			for(OntologyTerm ancestorTerm: isaAncestors) {
+			for (OntologyTerm ancestorTerm : isaAncestors) {
 				OntologyTermClosure closure = new OntologyTermClosure();
 				closure.setClosureSubject(currentTerm);
 				closure.setClosureObject(ancestorTerm);
