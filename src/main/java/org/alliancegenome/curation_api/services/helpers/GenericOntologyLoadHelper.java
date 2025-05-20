@@ -483,24 +483,25 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
 
 		traversedNodes.add(currentTerm.getCurie());
 
-		// TODO: Ontology: turn back on -- Required for RO
 		if (isPropertyInOntology) {
-//			HashSet<OntologyTerm> ancestors = new HashSet<OntologyTerm>();
-//			traverseToRootProperty(currentTreeProperty, depth, ancestors);
-//			ancestors.remove(currentTerm);
-//			currentTerm.setIsaAncestors(new HashSet<>(ancestors));
+			HashSet<OntologyTerm> isaAncestors = new HashSet<OntologyTerm>();
+			traverseToRootProperty(currentTreeProperty, depth, isaAncestors);
+			HashSet<OntologyTermClosure> ancestors = new HashSet<OntologyTermClosure>();
+			for(OntologyTerm ancestorTerm: isaAncestors) {
+				OntologyTermClosure closure = new OntologyTermClosure();
+				closure.setClosureSubject(currentTerm);
+				closure.setClosureObject(ancestorTerm);
+				closure.getClosureTypes().add("is_a");
+				ancestors.add(closure);
+			}
+
+			currentTerm.setAncestors(new HashSet<>(ancestors));
 		}
 
 		for (OWLObjectPropertyExpression childTermPropertyExpression : reasoner.getSubObjectProperties(currentTreeProperty, true).entities().collect(Collectors.toList())) {
 			if (!childTermPropertyExpression.getNamedProperty().toString().equals(currentTreeProperty.toString())) {
 				try {
 					T childTerm = traverseProperties(childTermPropertyExpression.getNamedProperty(), depth + 1);
-
-					
-					if (childTerm != null && currentTerm.getCurie() != null && isPropertyInOntology) {
-						// TODO: Ontology: turn back on -- Required for RO
-						//childTerm.addIsaParent(currentTerm);
-					}
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
