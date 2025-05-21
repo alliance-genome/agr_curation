@@ -118,8 +118,8 @@ public abstract class BaseOntologyTermService<E extends OntologyTerm, D extends 
 	public E processCounts(E inTerm) {
 		E term = findByCurie(inTerm.getCurie());
 		int sum = 0;
-		for(OntologyTermClosure closure : term.getDescendants()) {
-			if(closure.getClosureTypes().equals(Set.of("is_a", "part_of"))) {
+		for (OntologyTermClosure closure : term.getDescendants()) {
+			if (closure.getClosureTypes().equals(Set.of("is_a", "part_of"))) {
 				sum++;
 			}
 		}
@@ -170,7 +170,7 @@ public abstract class BaseOntologyTermService<E extends OntologyTerm, D extends 
 
 	public ObjectListResponse<E> getChildren(String curie, Set<String> relationTypes) {
 		E term = findByCurie(curie);
-		if(relationTypes == null || relationTypes.size() == 0) {
+		if (relationTypes == null || relationTypes.size() == 0) {
 			relationTypes = Set.of("is_a", "part_of");
 		}
 		if (term != null) {
@@ -182,7 +182,7 @@ public abstract class BaseOntologyTermService<E extends OntologyTerm, D extends 
 
 	public ObjectListResponse<E> getDescendants(String curie, Set<String> relationTypes) {
 		E term = findByCurie(curie);
-		if(relationTypes == null || relationTypes.size() == 0) {
+		if (relationTypes == null || relationTypes.size() == 0) {
 			relationTypes = Set.of("is_a", "part_of");
 		}
 		if (term != null) {
@@ -194,7 +194,7 @@ public abstract class BaseOntologyTermService<E extends OntologyTerm, D extends 
 
 	public ObjectListResponse<E> getParents(String curie, Set<String> relationTypes) {
 		E term = findByCurie(curie);
-		if(relationTypes == null || relationTypes.size() == 0) {
+		if (relationTypes == null || relationTypes.size() == 0) {
 			relationTypes = Set.of("is_a", "part_of");
 		}
 		if (term != null) {
@@ -206,7 +206,7 @@ public abstract class BaseOntologyTermService<E extends OntologyTerm, D extends 
 
 	public ObjectListResponse<E> getAncestors(String curie, Set<String> relationTypes) {
 		E term = findByCurie(curie);
-		if(relationTypes == null || relationTypes.size() == 0) {
+		if (relationTypes == null || relationTypes.size() == 0) {
 			relationTypes = Set.of("is_a", "part_of");
 		}
 		if (term != null) {
@@ -358,7 +358,7 @@ public abstract class BaseOntologyTermService<E extends OntologyTerm, D extends 
 			}
 		}
 	}
-	
+
 	public <T extends OntologyTerm> T findSubsetTerm(T childTerm, String subsetName) {
 		Log.info(childTerm + " " + subsetName);
 		if (childTerm.getSubsets().contains(subsetName)) {
