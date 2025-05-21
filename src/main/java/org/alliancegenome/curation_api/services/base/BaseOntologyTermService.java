@@ -117,7 +117,13 @@ public abstract class BaseOntologyTermService<E extends OntologyTerm, D extends 
 	@Transactional
 	public E processCounts(E inTerm) {
 		E term = findByCurie(inTerm.getCurie());
-		term.setDescendantCount(term.getDescendants().size());
+		int sum = 0;
+		for(OntologyTermClosure closure : term.getDescendants()) {
+			if(closure.getClosureTypes().equals(Set.of("is_a", "part_of"))) {
+				sum++;
+			}
+		}
+		term.setDescendantCount(sum);
 		return term;
 	}
 
@@ -153,7 +159,7 @@ public abstract class BaseOntologyTermService<E extends OntologyTerm, D extends 
 
 	public ObjectListResponse<E> getRootNodes() {
 		HashMap<String, Object> params = new HashMap<>();
-		params.put("isaParents", null);
+		params.put("ancestors", null);
 		SearchResponse<E> rootNodesRes = dao.findByParams(params);
 		if (rootNodesRes != null) {
 			return new ObjectListResponse<E>(rootNodesRes.getResults());
@@ -164,6 +170,9 @@ public abstract class BaseOntologyTermService<E extends OntologyTerm, D extends 
 
 	public ObjectListResponse<E> getChildren(String curie, Set<String> relationTypes) {
 		E term = findByCurie(curie);
+		if(relationTypes == null || relationTypes.size() == 0) {
+			relationTypes = Set.of("is_a", "part_of");
+		}
 		if (term != null) {
 			return (ObjectListResponse<E>) new ObjectListResponse<OntologyTerm>(term.getChildren(relationTypes));
 		} else {
@@ -173,6 +182,9 @@ public abstract class BaseOntologyTermService<E extends OntologyTerm, D extends 
 
 	public ObjectListResponse<E> getDescendants(String curie, Set<String> relationTypes) {
 		E term = findByCurie(curie);
+		if(relationTypes == null || relationTypes.size() == 0) {
+			relationTypes = Set.of("is_a", "part_of");
+		}
 		if (term != null) {
 			return (ObjectListResponse<E>) new ObjectListResponse<OntologyTerm>(term.getDescendants(relationTypes));
 		} else {
@@ -182,6 +194,9 @@ public abstract class BaseOntologyTermService<E extends OntologyTerm, D extends 
 
 	public ObjectListResponse<E> getParents(String curie, Set<String> relationTypes) {
 		E term = findByCurie(curie);
+		if(relationTypes == null || relationTypes.size() == 0) {
+			relationTypes = Set.of("is_a", "part_of");
+		}
 		if (term != null) {
 			return (ObjectListResponse<E>) new ObjectListResponse<OntologyTerm>(term.getParents(relationTypes));
 		} else {
@@ -191,6 +206,9 @@ public abstract class BaseOntologyTermService<E extends OntologyTerm, D extends 
 
 	public ObjectListResponse<E> getAncestors(String curie, Set<String> relationTypes) {
 		E term = findByCurie(curie);
+		if(relationTypes == null || relationTypes.size() == 0) {
+			relationTypes = Set.of("is_a", "part_of");
+		}
 		if (term != null) {
 			return (ObjectListResponse<E>) new ObjectListResponse<OntologyTerm>(term.getAncestors(relationTypes));
 		} else {
