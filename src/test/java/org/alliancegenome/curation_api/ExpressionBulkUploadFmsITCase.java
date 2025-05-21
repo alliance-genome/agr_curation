@@ -4,7 +4,6 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.in;
 import static org.hamcrest.Matchers.is;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -225,13 +224,13 @@ public class ExpressionBulkUploadFmsITCase extends BaseITCase {
 		createVocabularyTerm(anatatomicalStructureQualifierTermset, anatomicalStructureQualifierTermId, false);
 		createVocabularyTerm(anatatomicalSubstructureQualifierTermset, anatomicalSubstructureQualifierTermId, false);
 		createVocabularyTerm(cellularComponentQualifierTermset, cellularComponentQualifierTermId, false);
-		List<String> subsets = new ArrayList<String>();
-		subsets.add("goslim_agr");
-		GOTerm isaAncestor = createGoTerm(cellularComponentRibbonTermId, "CellularComponentRibbonTermTest", false, subsets);
-		createGoTerm(cellularComponentTermId, "CellularComponentTermTest", false, isaAncestor);
+		GOTerm ancestorTerm = createGoTerm(cellularComponentRibbonTermId, "CellularComponentRibbonTermTest", false, List.of("goslim_agr"));
+		GOTerm childTerm = createGoTerm(cellularComponentTermId, "CellularComponentTermTest", false);
+		createClosure(childTerm, ancestorTerm, List.of("is_a"));
 		createUberonTerm(anatomicalStructureUberonTermId1, "UberonTermTest1");
 		createUberonTerm(anatomicalStructureUberonTermId2, "UberonTermTest2");
 		createUberonTerm(anatomicalSubstructureUberonTermId1, "UberonTermTest3");
 		createUberonTerm(anatomicalSubstructureUberonTermId2, "UberonTermTest4");
+		
 	}
 }

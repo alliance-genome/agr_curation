@@ -66,52 +66,97 @@ import lombok.extern.jbosslog.JBossLog;
 @ApplicationScoped
 public class OntologyExecutor {
 
-	@Inject XcoTermService xcoTermService;
-	@Inject GoTermService goTermService;
-	@Inject SoTermService soTermService;
-	@Inject EcoTermService ecoTermService;
-	@Inject ZecoTermService zecoTermService;
-	@Inject EmapaTermService emapaTermService;
-	@Inject DaoTermService daoTermService;
-	@Inject CHEBITermService chebiTermService;
-	@Inject ZfaTermService zfaTermService;
-	@Inject DoTermService doTermService;
-	@Inject HpTermService hpTermService;
-	@Inject WbbtTermService wbbtTermService;
-	@Inject MpTermService mpTermService;
-	@Inject MaTermService maTermService;
-	@Inject VtTermService vtTermService;
-	@Inject WblsTermService wblsTermService;
-	@Inject FbdvTermService fbdvTermService;
-	@Inject MmusdvTermService mmusdvTermService;
-	@Inject ZfsTermService zfsTermService;
-	@Inject XbaTermService xbaTermService;
-	@Inject XbsTermService xbsTermService;
-	@Inject XpoTermService xpoTermService;
-	@Inject AtpTermService atpTermService;
-	@Inject XbedTermService xbedTermService;
-	@Inject XsmoTermService xsmoTermService;
-	@Inject RoTermService roTermService;
-	@Inject ObiTermService obiTermService;
-	@Inject PatoTermService patoTermService;
-	@Inject WbPhenotypeTermService wbPhenotypeTermService;
-	@Inject FbcvTermService fbcvTermService;
-	@Inject MmoTermService mmoTermService;
-	@Inject ApoTermService apoTermService;
-	@Inject MiTermService miTermService;
-	@Inject MpathTermService mpathTermService;
-	@Inject ModTermService modTermService;
-	@Inject UberonTermService uberonTermService;
-	@Inject RsTermService rsTermService;
-	@Inject PwTermService pwTermService;
-	@Inject ClTermService clTermService;
-	@Inject CmoTermService cmoTermService;
-	@Inject BspoTermService bspoTermService;
-	@Inject GenoTermService genoTermService;
-	@Inject BtoTermService btoTermService;
+	@Inject
+	XcoTermService xcoTermService;
+	@Inject
+	GoTermService goTermService;
+	@Inject
+	SoTermService soTermService;
+	@Inject
+	EcoTermService ecoTermService;
+	@Inject
+	ZecoTermService zecoTermService;
+	@Inject
+	EmapaTermService emapaTermService;
+	@Inject
+	DaoTermService daoTermService;
+	@Inject
+	CHEBITermService chebiTermService;
+	@Inject
+	ZfaTermService zfaTermService;
+	@Inject
+	DoTermService doTermService;
+	@Inject
+	HpTermService hpTermService;
+	@Inject
+	WbbtTermService wbbtTermService;
+	@Inject
+	MpTermService mpTermService;
+	@Inject
+	MaTermService maTermService;
+	@Inject
+	VtTermService vtTermService;
+	@Inject
+	WblsTermService wblsTermService;
+	@Inject
+	FbdvTermService fbdvTermService;
+	@Inject
+	MmusdvTermService mmusdvTermService;
+	@Inject
+	ZfsTermService zfsTermService;
+	@Inject
+	XbaTermService xbaTermService;
+	@Inject
+	XbsTermService xbsTermService;
+	@Inject
+	XpoTermService xpoTermService;
+	@Inject
+	AtpTermService atpTermService;
+	@Inject
+	XbedTermService xbedTermService;
+	@Inject
+	XsmoTermService xsmoTermService;
+	@Inject
+	RoTermService roTermService;
+	@Inject
+	ObiTermService obiTermService;
+	@Inject
+	PatoTermService patoTermService;
+	@Inject
+	WbPhenotypeTermService wbPhenotypeTermService;
+	@Inject
+	FbcvTermService fbcvTermService;
+	@Inject
+	MmoTermService mmoTermService;
+	@Inject
+	ApoTermService apoTermService;
+	@Inject
+	MiTermService miTermService;
+	@Inject
+	MpathTermService mpathTermService;
+	@Inject
+	ModTermService modTermService;
+	@Inject
+	UberonTermService uberonTermService;
+	@Inject
+	RsTermService rsTermService;
+	@Inject
+	PwTermService pwTermService;
+	@Inject
+	ClTermService clTermService;
+	@Inject
+	CmoTermService cmoTermService;
+	@Inject
+	BspoTermService bspoTermService;
+	@Inject
+	GenoTermService genoTermService;
+	@Inject
+	BtoTermService btoTermService;
 
-	@Inject BulkLoadFileDAO bulkLoadFileDAO;
-	@Inject LoadProcessDisplayService loadProcessDisplayService;
+	@Inject
+	BulkLoadFileDAO bulkLoadFileDAO;
+	@Inject
+	LoadProcessDisplayService loadProcessDisplayService;
 
 	public void execLoad(BulkLoadFileHistory bulkLoadFileHistory) throws Exception {
 
@@ -265,7 +310,7 @@ public class OntologyExecutor {
 		bulkLoadFileHistory.setCount(ontologyType + " Terms", termMap.size());
 		bulkLoadFileHistory.setCount(ontologyType + " Closure", termMap.size());
 		bulkLoadFileHistory.setCount(ontologyType + " Counts", termMap.size());
-		
+
 		String countType = null;
 
 		ProcessDisplayHelper ph = new ProcessDisplayHelper();
@@ -288,8 +333,10 @@ public class OntologyExecutor {
 		ph1.startProcess(bulkLoadFileHistory.getBulkLoad().getName() + ": " + ontologyType.getClazz().getSimpleName() + " Closure", termMap.size());
 		countType = ontologyType + " Closure";
 		for (Entry<String, ? extends OntologyTerm> entry : termMap.entrySet()) {
-			service.processUpdateRelationships(entry.getValue());
-			bulkLoadFileHistory.incrementCompleted(countType);
+			service.processUpdateRelationships(entry.getValue().getAncestors());
+			for (int i = 0; i < entry.getValue().getAncestors().size(); i++) {
+				bulkLoadFileHistory.incrementCompleted(countType);
+			}
 			ph1.progressProcess();
 			if (Thread.currentThread().isInterrupted()) {
 				bulkLoadFileHistory.setErrorMessage("Thread isInterrupted");
