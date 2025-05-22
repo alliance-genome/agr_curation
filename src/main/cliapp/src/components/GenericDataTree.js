@@ -46,7 +46,7 @@ export const GenericDataTree = (props) => {
 					for (let node of res.data.entities) {
 						node.key = node.curie;
 						node.label = node.name + ' (' + node.curie + ')';
-						if (node?.childCount && node.childCount > 0) {
+						if (node?.descendantCount && node.descendantCount > 0) {
 							node.leaf = false;
 						} else {
 							node.leaf = true;
@@ -125,7 +125,7 @@ export const GenericDataTree = (props) => {
 
 				node.key = node.curie;
 				node.label = node.name + ' (' + node.curie + ')';
-				if (node?.childCount && node.childCount > 0) {
+				if (node?.descendantCount && node.descendantCount > 0) {
 					node.leaf = false;
 				} else {
 					node.leaf = true;
