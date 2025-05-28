@@ -7,6 +7,7 @@ import { QUERY_KEYS, getCachedData } from './service/SiteQueryHooks';
 import useWebSocket from 'react-use-websocket';
 import { Message } from 'primereact/message';
 import { ProgressBar } from 'primereact/progressbar';
+import { useCopyToClipboard } from './hooks/useCopyToClipboard';
 
 export const AppTopbar = (props) => {
 	const menu = useRef(null);
@@ -16,11 +17,7 @@ export const AppTopbar = (props) => {
 	const apiVersion = getCachedData(queryClient, [QUERY_KEYS.API_VERSION]);
 	const userInfo = getCachedData(queryClient, [QUERY_KEYS.USER_INFO]);
 	const apiToken = userInfo?.apiToken;
-
-	// apiToken is now available for authenticated API calls here in AppTopbar
-	// since it's fetched in SiteLayout when the app initializes
-
-	console.log('apiToken', apiToken);
+	const { copy, copied } = useCopyToClipboard();
 
 	var loc = window.location,
 		new_uri;
@@ -96,9 +93,16 @@ export const AppTopbar = (props) => {
 			items: [
 				{
 					label: 'Profile',
-					icon: 'pi pi-profile',
+					icon: 'pi pi-user',
 					command: () => {
 						window.location.hash = '/profile';
+					},
+				},
+				{
+					label: copied ? 'Copied!' : 'Copy API Token',
+					icon: 'pi pi-copy',
+					command: () => {
+						copy(apiToken);
 					},
 				},
 				{
