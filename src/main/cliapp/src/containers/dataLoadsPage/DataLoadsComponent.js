@@ -17,7 +17,7 @@ import { Button } from 'primereact/button';
 import { NewBulkLoadForm } from './NewBulkLoadForm';
 import { NewBulkLoadGroupForm } from './NewBulkLoadGroupForm';
 import { HistoryDialog } from './HistoryDialog';
-import { QUERY_KEYS, getCachedData } from '../../service/SiteQueryHooks';
+import { useApiVersion } from '../../service/SiteQueryHooks';
 import { LoadingOverlay } from '../../components/LoadingOverlay';
 import moment from 'moment-timezone';
 import { NumberTemplate } from '../../components/Templates/NumberTemplate';
@@ -39,7 +39,7 @@ export const DataLoadsComponent = () => {
 	};
 
 	const queryClient = useQueryClient();
-	const apiVersion = getCachedData(queryClient, QUERY_KEYS.API_VERSION)
+	const { data: apiVersion } = useApiVersion(authState);
 
 	const [isLoading, setIsLoading] = useState(false);
 	const [groups, setGroups] = useState({});
