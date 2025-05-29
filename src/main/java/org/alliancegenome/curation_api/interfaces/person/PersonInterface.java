@@ -34,6 +34,7 @@ public interface PersonInterface {
 
 	@GET
 	@Path("/regenapitoken")
+	@JsonView(View.PersonSettingView.class)
 	Person regenApiToken();
 
 }
