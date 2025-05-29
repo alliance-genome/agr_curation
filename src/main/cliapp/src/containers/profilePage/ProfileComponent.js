@@ -1,15 +1,13 @@
-import React, { useState, useRef } from 'react';
+import { useState, useRef } from 'react';
 import { Card } from 'primereact/card';
 import { DataTable } from 'primereact/datatable';
 import { Dropdown } from 'primereact/dropdown';
 import { Column } from 'primereact/column';
-import { PersonService } from '../../service/PersonService';
 import { useOktaAuth } from '@okta/okta-react';
 import { Panel } from 'primereact/panel';
 import { Ripple } from 'primereact/ripple';
 import * as jose from 'jose';
-import { useRegenApiToken } from '../../service/SiteQueryHooks';
-
+import { QUERY_KEYS, useRegenApiToken, useUserInfo } from '../../service/SiteQueryHooks';
 import { ConfirmButton } from '../../components/ConfirmButton';
 import { useGetUserSettings } from '../../service/useGetUserSettings';
 import JsonView from 'react18-json-view';
@@ -18,7 +16,7 @@ import 'react18-json-view/src/dark.css';
 import { PersonSettingsService } from '../../service/PersonSettingsService';
 import { useControlledVocabularyService } from '../../service/useControlledVocabularyService';
 import { Toast } from 'primereact/toast';
-import { useQueryClient, useQuery } from '@tanstack/react-query';
+import { useQueryClient } from '@tanstack/react-query';
 
 const initialThemeState = {
 	layoutMode: 'static',
@@ -38,16 +36,14 @@ export const ProfileComponent = () => {
 	const { settings: siteState, mutate: setSiteState } = useGetUserSettings('siteSettings', initialSiteState, false);
 	const queryClient = useQueryClient();
 
-	// Use our custom hook for regenerating API token
 	const regenApiTokenFn = useRegenApiToken();
 
-	const [localUserInfo, setLocalUserInfo] = useState({});
 	const [oktaToken] = useState(JSON.parse(localStorage.getItem('okta-token-storage')));
-
+	
 	const { authState } = useOktaAuth();
 	const toast_topright = useRef(null);
+	const { data: localUserInfo } = useUserInfo(authState);
 
-	const personService = new PersonService();
 	const personSettingsService = new PersonSettingsService();
 	const booleanTerms = useControlledVocabularyService('generic_boolean_terms');
 
@@ -58,7 +54,7 @@ export const ProfileComponent = () => {
 
 	const globalResetHandler = () => {
 		let success = true;
-		if (localUserInfo && localUserInfo.settings) {
+		if (localUserInfo?.settings) {
 			for (let setting of localUserInfo.settings) {
 				personSettingsService
 					.deleteUserSettings(setting.settingsKey)
@@ -74,7 +70,7 @@ export const ProfileComponent = () => {
 						sticky: false,
 					},
 				]);
-				queryClient.invalidateQueries(['localUserInfo']);
+				queryClient.invalidateQueries([QUERY_KEYS.USER_INFO]);
 			} else {
 				toast_topright.current.show([
 					{
@@ -104,7 +100,7 @@ export const ProfileComponent = () => {
 					sticky: false,
 				},
 			]);
-			queryClient.invalidateQueries(['localUserInfo']);
+			queryClient.invalidateQueries([QUERY_KEYS.USER_INFO]);
 		} else {
 			toast_topright.current.show([
 				{
@@ -122,28 +118,6 @@ export const ProfileComponent = () => {
 		setThemeState(initialThemeState);
 		window.location.reload();
 	};
-
-	const regenApiToken = () => {
-		regenApiTokenFn()
-			.then((data) => {
-				setLocalUserInfo(data);
-			})
-			.catch((err) => {
-				console.log(err);
-			});
-	};
-
-	useQuery(['localUserInfo'], () => personService.getUserInfo(), {
-		onSuccess: (data) => {
-			setLocalUserInfo(data);
-		},
-		onError: (error) => {
-			console.log(error);
-		},
-		keepPreviousData: true,
-		refetchOnWindowFocus: false,
-		enabled: !!authState?.isAuthenticated,
-	});
 
 	const valueTemplate = (props) => {
 		return props.template(props);
@@ -220,27 +194,27 @@ export const ProfileComponent = () => {
 	};
 
 	const userInfos = [
-		{ name: 'Name', value: localUserInfo.firstName + ' ' + localUserInfo.lastName, template: textTemplate },
+		{ name: 'Name', value: localUserInfo?.firstName + ' ' + localUserInfo?.lastName, template: textTemplate },
 		{
 			name: 'Alliance Member',
 			value: localUserInfo?.allianceMember?.fullName + ' (' + localUserInfo?.allianceMember?.abbreviation + ')',
 			template: textTemplate,
 		},
-		{ name: 'Okta Email', value: localUserInfo.oktaEmail, template: textTemplate },
+		{ name: 'Okta Email', value: localUserInfo?.oktaEmail, template: textTemplate },
 		{ name: 'Okta Access Token', value: oktaToken.accessToken.accessToken, template: textTemplate },
 		{ name: 'Okta Id Token', value: oktaToken.idToken.idToken, template: textTemplate },
-		{ name: 'Curation API Token', value: localUserInfo.apiToken, template: textTemplate },
+		{ name: 'Curation API Token', value: localUserInfo?.apiToken, template: textTemplate },
 		{
 			name: 'Okta Access Token Content',
 			value: jose.decodeJwt(oktaToken.accessToken.accessToken),
 			template: jsonTemplate,
 		},
 		{ name: 'Okta Id Token Content', value: jose.decodeJwt(oktaToken.idToken.idToken), template: jsonTemplate },
-		{ name: 'User Settings', value: localUserInfo.settings, template: jsonTemplate },
-		{ name: 'Site Settings', value: localUserInfo.settings, template: siteTemplate },
+		{ name: 'User Settings', value: localUserInfo?.settings, template: jsonTemplate },
+		{ name: 'Site Settings', value: localUserInfo?.settings, template: siteTemplate },
 	];
 
-	if (localUserInfo && localUserInfo.settings) {
+	if (localUserInfo?.settings) {
 		for (let setting of localUserInfo.settings) {
 			if (setting.settingsKey === 'themeSettings') continue;
 			if (setting.settingsKey === 'siteSettings') continue;
@@ -267,7 +241,7 @@ export const ProfileComponent = () => {
 								buttonText="Regenerate Curation API Token"
 								headerText="Regenerate Curation API Token"
 								messageText="Are you sure you want to regenerate the API token? This will immediately invalidate the prior token and it can't be used again."
-								acceptHandler={regenApiToken}
+								acceptHandler={regenApiTokenFn}
 							/>
 						</div>
 						<div className="col-4">

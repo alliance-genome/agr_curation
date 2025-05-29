@@ -15,8 +15,6 @@ export const useApiVersion = (authState) => {
     () => apiService.getApiVersion(),
     {
       enabled: !!authState?.isAuthenticated,
-      staleTime: Infinity,
-      cacheTime: Infinity,
     }
   );
 };
@@ -29,7 +27,7 @@ export const useUserInfo = (authState) => {
     () => personService.getUserInfo(),
     {
       enabled: !!authState?.isAuthenticated,
-      staleTime: 1000 * 60 * 5, // 5 minutes
+      // staleTime: 1000 * 60 * 5, 
     }
   );
 };
