@@ -20,7 +20,6 @@ export const useUserInfo = (authState) => {
 
 	return useQuery([QUERY_KEYS.USER_INFO], () => personService.getUserInfo(), {
 		enabled: !!authState?.isAuthenticated,
-		// staleTime: 1000 * 60 * 5,
 	});
 };
 

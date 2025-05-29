@@ -1,21 +1,22 @@
-import React, { useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Menu } from 'primereact/menu';
 import classNames from 'classnames';
-import { useQueryClient } from '@tanstack/react-query';
-import { QUERY_KEYS, getCachedData } from './service/SiteQueryHooks';
 import useWebSocket from 'react-use-websocket';
 import { Message } from 'primereact/message';
 import { ProgressBar } from 'primereact/progressbar';
 import { useCopyToClipboard } from './hooks/useCopyToClipboard';
+import { useApiVersion, useUserInfo } from './service/SiteQueryHooks';
+import { useOktaAuth } from '@okta/okta-react';
 
 export const AppTopbar = (props) => {
 	const menu = useRef(null);
 	const [processingEvent, setProcessingEvent] = useState(null);
+	const { authState } = useOktaAuth();
 
-	const queryClient = useQueryClient();
-	const apiVersion = getCachedData(queryClient, [QUERY_KEYS.API_VERSION]);
-	const userInfo = getCachedData(queryClient, [QUERY_KEYS.USER_INFO]);
+	const { data: userInfo } = useUserInfo(authState);
+	const { data: apiVersion } = useApiVersion(authState);
+
 	const apiToken = userInfo?.apiToken;
 	const { copy, copied } = useCopyToClipboard();
 
