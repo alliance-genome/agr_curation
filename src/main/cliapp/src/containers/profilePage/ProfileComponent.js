@@ -39,7 +39,7 @@ export const ProfileComponent = () => {
 	const regenApiTokenFn = useRegenApiToken();
 
 	const [oktaToken] = useState(JSON.parse(localStorage.getItem('okta-token-storage')));
-	
+
 	const { authState } = useOktaAuth();
 	const toast_topright = useRef(null);
 	const { data: localUserInfo } = useUserInfo(authState);
