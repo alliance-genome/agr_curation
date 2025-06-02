@@ -102,7 +102,7 @@ public class Allele extends GenomicEntity {
 	@JsonManagedReference
 	@JsonView({ View.FieldsAndLists.class, View.AlleleView.class })
 	private List<AlleleMutationTypeSlotAnnotation> alleleMutationTypes;
-	
+
 	@IndexedEmbedded(
 		includePaths = {
 			"inheritanceMode.name", "phenotypeTerm.curie", "phenotypeTerm.name", "phenotypeStatement", "evidence.curie", "inheritanceMode.name_keyword",
@@ -151,7 +151,7 @@ public class Allele extends GenomicEntity {
 	@JsonManagedReference
 	@JsonView({ View.FieldsAndLists.class, View.AlleleView.class })
 	private List<AlleleSecondaryIdSlotAnnotation> alleleSecondaryIds;
-	
+
 	@IndexedEmbedded(includePaths = { "germlineTransmissionStatus.name", "evidence.curie", "germlineTransmissionStatus.name_keyword", "evidence.curie_keyword"})
 	@OneToOne(mappedBy = "singleAllele", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonManagedReference
@@ -175,25 +175,17 @@ public class Allele extends GenomicEntity {
 	@JsonManagedReference
 	@JsonView({ View.FieldsOnly.class })
 	private AlleleDatabaseStatusSlotAnnotation alleleDatabaseStatus;
-	
+
 	@IndexedEmbedded(includePaths = { "nomenclatureEvent.name", "evidence.curie", "nomenclatureEvent.name_keyword", "evidence.curie_keyword"})
 	@OneToMany(mappedBy = "singleAllele", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonManagedReference
 	@JsonView({ View.FieldsAndLists.class, View.AlleleView.class })
 	private List<AlleleNomenclatureEventSlotAnnotation> alleleNomenclatureEvents;
-	
-	@IndexedEmbedded(
-		includePaths = {
-			"alleleGeneAssociationObject.curie", "alleleGeneAssociationObject.geneSymbol.displayText", "alleleGeneAssociationObject.geneSymbol.formatText", "alleleGeneAssociationObject.geneFullName.displayText",
-			"alleleGeneAssociationObject.geneFullName.formatText", "alleleGeneAssociationObject.curie_keyword", "alleleGeneAssociationObject.geneSymbol.displayText_keyword",
-			"alleleGeneAssociationObject.geneSymbol.formatText_keyword", "alleleGeneAssociationObject.geneFullName.displayText_keyword", "alleleGeneAssociationObject.geneFullName.formatText_keyword",
-			"alleleGeneAssociationObject.primaryExternalId", "alleleGeneAssociationObject.modInternalId", "alleleGeneAssociationObject.primaryExternalId_keyword", "alleleGeneAssociationObject.modInternalId_keyword"
-		}
-	)
+
 	@OneToMany(mappedBy = "alleleAssociationSubject", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonView({ View.FieldsAndLists.class, View.AlleleDetailView.class })
 	private List<AlleleGeneAssociation> alleleGeneAssociations;
-	
+
 	@IndexedEmbedded(
 		includePaths = {
 			"alleleVariantAssociationObject.curie", "alleleGeneAssociationObject.curie_keyword",
@@ -204,7 +196,7 @@ public class Allele extends GenomicEntity {
 	@OneToMany(mappedBy = "alleleAssociationSubject", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonView({ View.FieldsAndLists.class, View.AlleleDetailView.class })
 	private List<AlleleVariantAssociation> alleleVariantAssociations;
-	
+
 	@IndexedEmbedded(includePaths = {"freeText", "freeText_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
@@ -224,7 +216,7 @@ public class Allele extends GenomicEntity {
 	@Fetch(FetchMode.SUBSELECT)
 	@JsonView({ View.FieldsAndLists.class, View.AlleleDetailView.class })
 	private List<AlleleConstructAssociation> alleleConstructAssociations;
-	
+
 	@IndexedEmbedded(includePaths = {
 		"constructAssociationSubject.curie", "constructAssociationSubject.constructSymbol.displayText", "constructAssociationSubject.constructSymbol.formatText",
 		"constructAssociationSubject.constructFullName.displayText", "constructAssociationSubject.constructFullName.formatText", "constructAssociationSubject.primaryExternalId",
