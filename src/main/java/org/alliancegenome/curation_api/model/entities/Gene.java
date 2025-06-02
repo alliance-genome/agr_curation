@@ -131,13 +131,6 @@ public class Gene extends GenomicEntity {
 	@JsonView({ View.FieldsAndLists.class, View.GeneView.class, View.GeneSummaryDocument.class })
 	private List<GeneSecondaryIdSlotAnnotation> geneSecondaryIds;
 
-	@IndexedEmbedded(
-		includePaths = {"alleleAssociationSubject.curie", "alleleAssociationSubject.alleleSymbol.displayText", "alleleAssociationSubject.alleleSymbol.formatText", "alleleAssociationSubject.alleleFullName.displayText",
-			"alleleAssociationSubject.alleleFullName.formatText", "alleleAssociationSubject.curie_keyword", "alleleAssociationSubject.alleleSymbol.displayText_keyword", "alleleAssociationSubject.alleleSymbol.formatText_keyword",
-			"alleleAssociationSubject.alleleFullName.displayText_keyword", "alleleAssociationSubject.alleleFullName.formatText_keyword", "alleleAssociationSubject.primaryExternalId", "alleleAssociationSubject.modInternalId",
-			"alleleAssociationSubject.primaryExternalId_keyword", "alleleAssociationSubject.modInternalId_keyword"
-		}
-	)
 	@OneToMany(mappedBy = "alleleGeneAssociationObject", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonView({ View.FieldsAndLists.class, View.GeneDetailView.class })
 	private List<AlleleGeneAssociation> alleleGeneAssociations;
