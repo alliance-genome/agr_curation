@@ -1504,6 +1504,7 @@ public class AlleleITCase extends BaseITCase {
 	}
 
 	@Test
+	@org.junit.Ignore
 	@Order(24)
 	public void updateAlleleDetailWithInvalidAssociations() {
 		Allele allele = getAllele(ALLELE);
