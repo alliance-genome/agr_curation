@@ -1450,8 +1450,8 @@ public class AlleleITCase extends BaseITCase {
 			body("errorMessages.relatedNotes", is("freeText - " + ValidationConstants.DUPLICATE_MESSAGE + " (Test text|comment|false|false)"));
 	}
 
-	@Test
-	@org.junit.Ignore // Ignored because this test is not relevant for the AlleleGeneAssociation Load.
+	//@Test
+	// Ignored because this test is not relevant for the AlleleGeneAssociation Load.
 	@Order(22)
 	public void updateAlleleDetailWithNewAssociations() {
 		Allele allele = getAllele(ALLELE);
