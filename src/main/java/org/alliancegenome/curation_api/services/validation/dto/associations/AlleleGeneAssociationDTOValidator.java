@@ -31,7 +31,7 @@ public class AlleleGeneAssociationDTOValidator extends AlleleGenomicEntityAssoci
 	@Inject AlleleService alleleService;
 	@Inject GeneService geneService;
 	
-	public AlleleGeneAssociation validateAlleleGeneAssociationDTO(AlleleGeneAssociationDTO dto, BackendBulkDataProvider beDataProvider) throws ValidationException  {
+	public AlleleGeneAssociation validateAlleleGeneAssociationDTO(AlleleGeneAssociationDTO dto, BackendBulkDataProvider beDataProvider) throws ValidationException {
 		return validateAlleleGeneAssociationDTO(dto, beDataProvider, null, false);
 	}
 	
@@ -58,7 +58,7 @@ public class AlleleGeneAssociationDTOValidator extends AlleleGenomicEntityAssoci
 			}
 		}
 
-		AlleleGeneAssociation association = null;	
+		AlleleGeneAssociation association = null;
 		if (subjectIds != null && subjectIds.size() == 1 && objectIds != null && objectIds.size() == 1 && StringUtils.isNotBlank(dto.getRelationName())) {
 			HashMap<String, Object> params = new HashMap<>();
 
