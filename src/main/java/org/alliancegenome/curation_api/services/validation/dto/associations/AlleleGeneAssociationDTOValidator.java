@@ -2,6 +2,8 @@ package org.alliancegenome.curation_api.services.validation.dto.associations;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
@@ -28,7 +30,12 @@ public class AlleleGeneAssociationDTOValidator extends AlleleGenomicEntityAssoci
 	@Inject AlleleGeneAssociationDAO alleleGeneAssociationDAO;
 	@Inject AlleleService alleleService;
 	@Inject GeneService geneService;
+	
 	public AlleleGeneAssociation validateAlleleGeneAssociationDTO(AlleleGeneAssociationDTO dto, BackendBulkDataProvider beDataProvider) throws ValidationException {
+		return validateAlleleGeneAssociationDTO(dto, beDataProvider, null, false);
+	}
+	
+	public AlleleGeneAssociation validateAlleleGeneAssociationDTO(AlleleGeneAssociationDTO dto, BackendBulkDataProvider beDataProvider, Map<Long, Long> isAlleleOfAssociationMap, boolean isFullLoad) throws ValidationException {
 		response = new ObjectResponse<AlleleGeneAssociation>();
 		
 		List<Long> subjectIds = null;
@@ -57,11 +64,23 @@ public class AlleleGeneAssociationDTOValidator extends AlleleGenomicEntityAssoci
 
 			params.put("alleleAssociationSubject.id", subjectIds.get(0));
 			params.put("relation.name", dto.getRelationName());
-			params.put("alleleGeneAssociationObject.id", objectIds.get(0));
+			if (!isFullLoad && Objects.equals(dto.getRelationName(), VocabularyConstants.ALLELE_OF_VOCABULARY_TERM)) {
+				SearchResponse<AlleleGeneAssociation> isAlleleOfSearchResponse = alleleGeneAssociationDAO.findByParams(params);
+				if (isAlleleOfSearchResponse != null && isAlleleOfSearchResponse.getResults() != null) {
+					for (AlleleGeneAssociation isAlleleOfAssociation : isAlleleOfSearchResponse.getResults()) {
+						if (!Objects.equals(isAlleleOfAssociation.getAlleleGeneAssociationObject().getId(), objectIds.get(0))) {
+							response.addErrorMessage("relation_name", ValidationConstants.DUPLICATE_RELATION_PREFIX + VocabularyConstants.ALLELE_OF_VOCABULARY_TERM);
+						}
+						association = isAlleleOfAssociation;
+					}
+				}
+			} else {
+				params.put("alleleGeneAssociationObject.id", objectIds.get(0));
 
-			SearchResponse<AlleleGeneAssociation> searchResponse = alleleGeneAssociationDAO.findByParams(params);
-			if (searchResponse != null && searchResponse.getResults().size() == 1) {
-				association = searchResponse.getSingleResult();
+				SearchResponse<AlleleGeneAssociation> searchResponse = alleleGeneAssociationDAO.findByParams(params);
+				if (searchResponse != null && searchResponse.getResults().size() == 1) {
+					association = searchResponse.getSingleResult();
+				}
 			}
 		}
 
@@ -80,6 +99,12 @@ public class AlleleGeneAssociationDTOValidator extends AlleleGenomicEntityAssoci
 				response.addErrorMessage("allele_identifier", ValidationConstants.INVALID_MESSAGE + " for " + beDataProvider.name() + " load (" + dto.getAlleleIdentifier() + ")");
 			} else {
 				association.setAlleleAssociationSubject(subject);
+			}
+		}
+		
+		if (isFullLoad && isAlleleOfAssociationMap != null && association.getAlleleAssociationSubject() != null && Objects.equals(dto.getRelationName(), VocabularyConstants.ALLELE_OF_VOCABULARY_TERM)) {
+			if (isAlleleOfAssociationMap.containsKey(association.getAlleleAssociationSubject().getId()) && !Objects.equals(isAlleleOfAssociationMap.get(association.getAlleleAssociationSubject().getId()), association.getId())) {
+				response.addErrorMessage("relation_name", ValidationConstants.DUPLICATE_RELATION_PREFIX + VocabularyConstants.ALLELE_OF_VOCABULARY_TERM);
 			}
 		}
 
