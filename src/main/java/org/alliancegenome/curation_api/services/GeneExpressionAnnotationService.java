@@ -12,6 +12,8 @@ import org.alliancegenome.curation_api.dao.GeneExpressionAnnotationDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.interfaces.crud.BaseUpsertServiceInterface;
+import org.alliancegenome.curation_api.model.document.builders.ExpressionDetailBuilder;
+import org.alliancegenome.curation_api.model.document.es.ExpressionDetail;
 import org.alliancegenome.curation_api.model.entities.GeneExpressionAnnotation;
 import org.alliancegenome.curation_api.model.entities.GeneExpressionExperiment;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.ConsolidatedGeneExpressionFmsDTO;
@@ -21,16 +23,13 @@ import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.base.BaseAnnotationCrudService;
 import org.alliancegenome.curation_api.services.helpers.annotations.GeneExpressionAnnotationUniqueIdHelper;
 import org.alliancegenome.curation_api.services.validation.dto.fms.GeneExpressionAnnotationFmsDTOValidator;
-import org.alliancegenome.curation_api.view.View;
 import org.apache.commons.lang3.StringUtils;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
-import jakarta.ws.rs.core.Response;
 import lombok.Getter;
 
 @RequestScoped
@@ -40,7 +39,7 @@ public class GeneExpressionAnnotationService extends BaseAnnotationCrudService<G
 	@Inject GeneExpressionAnnotationFmsDTOValidator geneExpressionAnnotationFmsDTOValidator;
 	@Inject GeneExpressionExperimentService geneExpressionExperimentService;
 	@Inject GeneExpressionAnnotationUniqueIdHelper geneExpressionAnnotationUniqueIdHelper;
-
+	@Inject ExpressionDetailBuilder expressionDetailBuilder;
 	private ObjectMapper mapper;
 
 	@Getter
@@ -75,40 +74,25 @@ public class GeneExpressionAnnotationService extends BaseAnnotationCrudService<G
 		return geneExpressionAnnotationDAO.persist(geneExpressionAnnotation);
 	}
 
-	public Response getAnnotationsForIndexing(Integer page, Integer limit, HashMap<String, Object> params) {
+	public SearchResponse<ExpressionDetail> getAnnotationsForIndexing(Integer page, Integer limit) {
 		Pagination pagination = new Pagination(page, limit);
-		HashMap<String, Object> allparams = new HashMap<>();
-		allparams.put("internal", false);
-		allparams.put("obsolete", false);
-		if (params != null) {
-			allparams.putAll(params);
-		}
+		HashMap<String, Object> params = new HashMap<>();
+		params.put("internal", false);
+		params.put("obsolete", false);
+
 		Map<String, GeneExpressionExperiment> experiments = new HashMap<>();
-		geneExpressionExperimentService.findByParams(pagination, allparams)
-			.getResults().forEach(exp -> {
+		geneExpressionExperimentService.findByParams(pagination, params)
+			.getResults()
+			.forEach(exp -> {
 				experiments.put(exp.getUniqueId(), exp);
 			});
 
-		List<GeneExpressionAnnotation> annotations = new ArrayList<>();
-		for (GeneExpressionAnnotation geneExpressionAnnotation : findByParams(pagination, allparams).getResults()) {
-			if (geneExpressionAnnotation.getDataProvider().getAbbreviation().equals("MGI") || geneExpressionAnnotation.getDataProvider().getAbbreviation().equals("WB")) {
-				ConsolidatedGeneExpressionFmsDTO geneExpressionFmsDTO = new ConsolidatedGeneExpressionFmsDTO();
-				geneExpressionFmsDTO.setGeneId(geneExpressionAnnotation.getExpressionAnnotationSubject().getPrimaryExternalId());
-				geneExpressionFmsDTO.setAssay(geneExpressionAnnotation.getExpressionAssayUsed().getCurie());
-				String experimentId = geneExpressionAnnotationUniqueIdHelper.generateExperimentId(geneExpressionFmsDTO, geneExpressionAnnotation.getEvidenceItem().getCurie());
-				if (experiments.get(experimentId) != null && experiments.get(experimentId).getCrossReferences() != null) {
-					geneExpressionAnnotation.setCrossReferences(experiments.get(experimentId).getCrossReferences());
-				}
-			}
-			annotations.add(geneExpressionAnnotation);
+		List<ExpressionDetail> expressionDetailList = new ArrayList<>();
+		for (GeneExpressionAnnotation geneExpressionAnnotation : findByParams(pagination, params).getResults()) {
+			expressionDetailList.add(expressionDetailBuilder.build(geneExpressionAnnotation, experiments));
 		}
-		try {
-			SearchResponse<GeneExpressionAnnotation> resp = new SearchResponse<>();
-			resp.setResults(annotations);
-			String json = mapper.writerWithView(View.ForPublic.class).writeValueAsString(resp);
-			return Response.ok(json).build();
-		} catch (JsonProcessingException e) {
-			return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Error processing JSON").build();
-		}
+		SearchResponse<ExpressionDetail> response = new SearchResponse<>();
+		response.setResults(expressionDetailList);
+		return response;
 	}
 }

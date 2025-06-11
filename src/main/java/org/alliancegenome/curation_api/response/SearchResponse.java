@@ -17,6 +17,7 @@ import lombok.Data;
 @Data
 @Schema(name = "SearchResponse", description = "POJO that represents the SearchResponse")
 @JsonView({
+	View.ExpressionDetail.class,
 	View.FieldsOnly.class,
 	View.ForPublic.class,
 	View.GeneToGeneOrthologyDocument.class,
