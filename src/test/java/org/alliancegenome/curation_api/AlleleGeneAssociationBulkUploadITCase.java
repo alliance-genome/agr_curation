@@ -8,9 +8,12 @@ import static org.hamcrest.Matchers.not;
 import java.time.OffsetDateTime;
 
 import org.alliancegenome.curation_api.base.BaseITCase;
+import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.Gene;
+import org.alliancegenome.curation_api.model.entities.Organization;
 import org.alliancegenome.curation_api.model.entities.Vocabulary;
+import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.resources.TestContainerResource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -40,6 +43,7 @@ public class AlleleGeneAssociationBulkUploadITCase extends BaseITCase {
 	private String alleleCurie = "ALLELETEST:Allele0001";
 	private String relationName = "is_allele_of";
 	private String geneCurie = "GENETEST:Gene0001";
+	private String duplicateRelationGeneCurie = "AGATEST:Gene0002";
 	private String reference = "AGRKB:000000001";
 	private String reference2 = "AGRKB:000000021";
 	private String evidenceCodeCurie = "DATEST:Evidence0001";
@@ -67,6 +71,10 @@ public class AlleleGeneAssociationBulkUploadITCase extends BaseITCase {
 		addVocabularyTermToSet("allele_genomic_entity_association_note_type", noteType2, noteTypeVocab, false);
 		allele = getAllele(alleleCurie);
 		gene = getGene(geneCurie);
+		Vocabulary nameTypeVocabulary = getVocabulary(VocabularyConstants.NAME_TYPE_VOCABULARY);
+		VocabularyTerm symbolTerm = getVocabularyTerm(nameTypeVocabulary, "nomenclature_symbol");
+		Organization dataProvider = getOrganization("WB");
+		createGene(duplicateRelationGeneCurie, "NCBITaxon:6239", symbolTerm, false, dataProvider);
 	}
 	
 	@Test
@@ -257,4 +265,9 @@ public class AlleleGeneAssociationBulkUploadITCase extends BaseITCase {
 			body("entity.relatedNote", not(hasKey("evidence")));
 	}
 	
+	@Test
+	@Order(9)
+	public void alleleGeneAssociationBulkUploadDuplicateIsAlleleOfRelation() throws Exception {
+		checkFailedBulkLoad(alleleGeneAssociationBulkPostEndpoint, alleleGeneAssociationTestFilePath + "DR_01_duplicate_relation.json");
+	}
 }
