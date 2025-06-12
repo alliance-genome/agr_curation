@@ -81,7 +81,7 @@ public abstract class BaseOntologyTermService<E extends OntologyTerm, D extends 
 
 	@Transactional
 	public void processUpdateRelationships(Set<OntologyTermClosure> ancestors) {
-		if (ancestors.size() == 0) {
+		if (ancestors == null || ancestors.size() == 0) {
 			return;
 		}
 		Set<OntologyTermClosure> newSet = new HashSet<>();

@@ -333,6 +333,9 @@ public class OntologyExecutor {
 		ph1.startProcess(bulkLoadFileHistory.getBulkLoad().getName() + ": " + ontologyType.getClazz().getSimpleName() + " Closure", termMap.size());
 		countType = ontologyType + " Closure";
 		for (Entry<String, ? extends OntologyTerm> entry : termMap.entrySet()) {
+			if(entry.getValue().getAncestors() == null || entry.getValue().getAncestors().isEmpty()){
+				continue;
+			}
 			service.processUpdateRelationships(entry.getValue().getAncestors());
 			for (int i = 0; i < entry.getValue().getAncestors().size(); i++) {
 				bulkLoadFileHistory.incrementCompleted(countType);
