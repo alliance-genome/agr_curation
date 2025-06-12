@@ -87,6 +87,9 @@ okta.scopes = ""
 mati.url = http://localhost:8081
 %dev.okta.authentication = false
 %test.okta.authentication = false
+smallrye.jwt.always-check-authorization=true
+mp.jwt.token.header=Cookie
+mp.jwt.token.cookie=okta-token-cookie
 
 %dev.quarkus.live-reload.instrumentation = true
 
