@@ -1,17 +1,24 @@
-import React, { useRef, useState, useContext } from 'react';
+import { useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Menu } from 'primereact/menu';
 import classNames from 'classnames';
-import { SiteContext } from './containers/layout/SiteContext';
 import useWebSocket from 'react-use-websocket';
 import { Message } from 'primereact/message';
 import { ProgressBar } from 'primereact/progressbar';
+import { useCopyToClipboard } from './hooks/useCopyToClipboard';
+import { useApiVersion, useUserInfo } from './service/SiteQueryHooks';
+import { useOktaAuth } from '@okta/okta-react';
 
 export const AppTopbar = (props) => {
 	const menu = useRef(null);
 	const [processingEvent, setProcessingEvent] = useState(null);
+	const { authState } = useOktaAuth();
 
-	const { apiVersion } = useContext(SiteContext);
+	const { data: userInfo } = useUserInfo(authState);
+	const { data: apiVersion } = useApiVersion(authState);
+
+	const apiToken = userInfo?.apiToken;
+	const { copy, copied } = useCopyToClipboard();
 
 	var loc = window.location,
 		new_uri;
@@ -87,9 +94,16 @@ export const AppTopbar = (props) => {
 			items: [
 				{
 					label: 'Profile',
-					icon: 'pi pi-profile',
-					command: (e) => {
+					icon: 'pi pi-user',
+					command: () => {
 						window.location.hash = '/profile';
+					},
+				},
+				{
+					label: copied ? 'Copied!' : 'Copy API Token',
+					icon: 'pi pi-copy',
+					command: () => {
+						copy(apiToken);
 					},
 				},
 				{
