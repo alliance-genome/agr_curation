@@ -56,7 +56,7 @@ public class ReferenceService extends BaseEntityCrudService<Reference, Reference
 	public Reference retrieveFromDbOrLiteratureService(String curieOrXref) {
 		Reference reference = null;
 		// Currently 3/10/2025 there is 1 allele with ~3200 references
-		// TODO come up with a better caching solution than this
+		// TODO: come up with a better caching solution than this
 		if (referenceRequest > 3500) {
 			if (referenceCacheMap.isEmpty()) {
 				referenceCacheMap = referenceDAO.getReferenceMap(true);

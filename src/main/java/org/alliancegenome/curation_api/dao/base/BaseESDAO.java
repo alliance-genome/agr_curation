@@ -113,7 +113,7 @@ public class BaseESDAO<E extends BaseDocument> extends BaseDocumentDAO<E> {
 		SearchRequest searchRequest = new SearchRequest(esIndex);
 		searchRequest.source(searchSourceBuilder);
 
-		// TODO implement aggregations
+		// TODO: implement aggregations
 
 		try {
 			org.elasticsearch.action.search.SearchResponse searchResponse = restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);

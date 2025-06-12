@@ -22,7 +22,6 @@ import org.alliancegenome.curation_api.model.entities.GeneDiseaseAnnotation;
 import org.alliancegenome.curation_api.model.entities.GenomicEntity;
 import org.alliancegenome.curation_api.model.entities.Synonym;
 import org.alliancegenome.curation_api.model.entities.ontology.DOTerm;
-import org.alliancegenome.curation_api.model.entities.ontology.OntologyTerm;
 import org.alliancegenome.curation_api.model.entities.orthology.GeneToGeneOrthologyGenerated;
 import org.apache.commons.collections.CollectionUtils;
 
@@ -36,8 +35,8 @@ public class DiseaseSummaryDocumentBuilder {
 		DiseaseSummaryDocument doc = new DiseaseSummaryDocument();
 
 		doc.setDoTerm(doTerm);
-		doc.setParents(doTerm.getIsaParents());
-		doc.setChildren(doTerm.getIsaChildren());
+		doc.setParents(new HashSet<>(doTerm.getParents(Set.of("is_a", "part_of"))));
+		doc.setChildren(new HashSet<>(doTerm.getChildren(Set.of("is_a", "part_of"))));
 		doc.setCrossReferenceLinkUrls(new ArrayList<>());
 		for (CrossReference cr : doTerm.getCrossReferences()) {
 			Map<String, String> map = new HashMap<>();
@@ -110,12 +109,12 @@ public class DiseaseSummaryDocumentBuilder {
 				doc.getGenes().add(getGeneName(orthology.getObjectGene()));
 				doc.getAssociatedSpecies().add(orthology.getObjectGene().getTaxon().getGenusSpecies());
 			}));
-		doc.setParentDiseaseNames(doTerm.getIsaAncestors().stream().map(OntologyTerm::getName).collect(Collectors.toSet()));
+		doc.setParentDiseaseNames(doTerm.getAncestors().stream().map(closure -> closure.getClosureObject().getName()).collect(Collectors.toSet()));
 		// add self to the list
 		doc.getParentDiseaseNames().add(doTerm.getName());
 
 		// calculate diseaseGroup, ie parents with subset DO_AGR_slim
-		doc.setDiseaseGroup(doTerm.getIsaAncestors().stream().filter(ontologyTerm -> ontologyTerm.getSubsets().contains("DO_AGR_slim")).map(OntologyTerm::getName).collect(Collectors.toSet()));
+		doc.setDiseaseGroup(doTerm.getAncestors().stream().filter(closure -> closure.getClosureObject().getSubsets().contains("DO_AGR_slim")).map(closure -> closure.getClosureObject().getName()).collect(Collectors.toSet()));
 		return doc;
 	}
 

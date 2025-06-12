@@ -10,6 +10,15 @@ public class DefaultProcessDisplayHandler implements ProcessDisplayHandler {
 
 	private Runtime runtime = Runtime.getRuntime();
 	private DecimalFormat df = new DecimalFormat("#");
+	private boolean useStdOut;
+
+	public DefaultProcessDisplayHandler() {
+
+	}
+
+	public DefaultProcessDisplayHandler(boolean useStdOut) {
+		this.useStdOut = useStdOut;
+	}
 
 	@Override
 	public void startProcess(String message, long startTime, long totalSize) {
@@ -89,10 +98,20 @@ public class DefaultProcessDisplayHandler implements ProcessDisplayHandler {
 
 	private void logWarnMessage(String message) {
 		log.warn(message);
+		if (useStdOut) {
+			// CHECKSTYLE:OFF: RegexpSinglelineJavaCheck
+			System.out.println(message);
+			// CHECKSTYLE:ON: RegexpSinglelineJavaCheck
+		}
 	}
 
 	private void logInfoMessage(String message) {
 		log.info(message);
+		if (useStdOut) {
+			// CHECKSTYLE:OFF: RegexpSinglelineJavaCheck
+			System.out.println(message);
+			// CHECKSTYLE:ON: RegexpSinglelineJavaCheck
+		}
 	}
 
 }
