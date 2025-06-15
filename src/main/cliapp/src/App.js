@@ -27,9 +27,9 @@ const App = () => {
 
 	return (
 		<Security oktaAuth={oktaAuth} onAuthRequired={customAuthHandler} restoreOriginalUri={restoreOriginalUri}>
-    		<CookiesProvider defaultSetOptions={{ path: '/' }}>
+			<CookiesProvider defaultSetOptions={{ path: '/' }}>
 				<Login>{routes}</Login>
-    		</CookiesProvider>
+			</CookiesProvider>
 		</Security>
 	);
 };

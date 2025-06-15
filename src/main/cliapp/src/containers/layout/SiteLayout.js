@@ -82,7 +82,7 @@ export const SiteLayout = (props) => {
 	};
 
 	const logout = async () => {
-		removeCookie("okta-token-cookie");
+		removeCookie('okta-token-cookie');
 		await oktaAuth.signOut();
 	};
 
