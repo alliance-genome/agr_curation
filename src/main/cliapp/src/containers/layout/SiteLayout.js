@@ -14,6 +14,7 @@ import { useApiVersion, useUserInfo } from '../../service/SiteQueryHooks';
 
 import PrimeReact from 'primereact/api';
 import { Tooltip } from 'primereact/tooltip';
+import { useCookies } from 'react-cookie';
 
 import 'primereact/resources/primereact.css';
 import 'primeicons/primeicons.css';
@@ -48,6 +49,7 @@ export const SiteLayout = (props) => {
 
 	const { data: apiVersion } = useApiVersion(authState);
 	useUserInfo(authState);
+	const [, , removeCookie] = useCookies(['okta-token-cookie']);
 
 	const { children } = props;
 
@@ -79,6 +81,7 @@ export const SiteLayout = (props) => {
 	};
 
 	const logout = async () => {
+		removeCookie('okta-token-cookie');
 		await oktaAuth.signOut();
 	};
 
@@ -351,6 +354,7 @@ export const SiteLayout = (props) => {
 						{ label: 'Site Metrics', icon: 'pi pi-fw pi-home', to: '/metricspage' },
 						{ label: 'Entity Counts', icon: 'pi pi-fw pi-home', to: '/entitycounts' },
 						{ label: 'API UI (Swagger)', icon: 'pi pi-fw pi-home', url: '/swagger-ui', target: '_blank' },
+						{ label: 'GraphQL UI', icon: 'pi pi-fw pi-home', url: '/graphql-ui', target: '_blank' },
 						{
 							label: 'Search index UI (cerebro)',
 							icon: 'pi pi-fw pi-home',
