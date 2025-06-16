@@ -6,7 +6,7 @@ import { useCookies } from 'react-cookie';
 
 export const Login = ({ children }) => {
 	const { oktaAuth, authState } = useOktaAuth();
-	const [cookies, setCookie] = useCookies(['okta-token-cookie']);
+	const [, setCookie] = useCookies(['okta-token-cookie']);
 
 	const onSuccess = (tokens) => {
 		setCookie('okta-token-cookie', tokens.accessToken.accessToken);

@@ -14,7 +14,6 @@ import { useApiVersion, useUserInfo } from '../../service/SiteQueryHooks';
 
 import PrimeReact from 'primereact/api';
 import { Tooltip } from 'primereact/tooltip';
-import { SiteContext } from './SiteContext';
 import { useCookies } from 'react-cookie';
 
 import 'primereact/resources/primereact.css';
@@ -50,7 +49,7 @@ export const SiteLayout = (props) => {
 
 	const { data: apiVersion } = useApiVersion(authState);
 	useUserInfo(authState);
-	const [cookies, setCookie, removeCookie] = useCookies(['okta-token-cookie']);
+	const [, , removeCookie] = useCookies(['okta-token-cookie']);
 
 	const { children } = props;
 
