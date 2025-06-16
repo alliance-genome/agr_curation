@@ -67,10 +67,9 @@ public class TransgenicAlleleDocumentBuilder {
 		allele.getAlleleConstructAssociations().forEach(constructAssociation -> constructAssociation
 				.getAlleleConstructAssociationObject()
 				.getConstructGenomicEntityAssociations()
-				.forEach(constructGenomicEntityAssociation ->
-						{
-							if (constructGenomicEntityAssociation.getConstructGenomicEntityAssociationObject() instanceof Gene Gene &&
-									constructGenomicEntityAssociation.getRelation().equals(getConstructRelation("expresses"))) {
+				.forEach(constructGenomicEntityAssociation -> {
+							if (constructGenomicEntityAssociation.getConstructGenomicEntityAssociationObject() instanceof Gene Gene
+									&& constructGenomicEntityAssociation.getRelation().equals(getConstructRelation("expresses"))) {
 								List<Construct> constructList = geneConstructMap.computeIfAbsent(Gene, k -> new ArrayList<>());
 								constructList.add(constructAssociation.getAlleleConstructAssociationObject());
 							}
@@ -84,8 +83,8 @@ public class TransgenicAlleleDocumentBuilder {
 		List<Gene> expressedGenes = new ArrayList<>();
 		construct.getConstructGenomicEntityAssociations()
 				.forEach(constructGenomicEntityAssociation -> {
-							if (constructGenomicEntityAssociation.getConstructGenomicEntityAssociationObject() instanceof Gene gene &&
-									constructGenomicEntityAssociation.getRelation().equals(getConstructRelation(relationName))) {
+							if (constructGenomicEntityAssociation.getConstructGenomicEntityAssociationObject() instanceof Gene gene
+									&& constructGenomicEntityAssociation.getRelation().equals(getConstructRelation(relationName))) {
 								expressedGenes.add(gene);
 							}
 						}
