@@ -11,7 +11,9 @@ import org.alliancegenome.curation_api.dao.AlleleDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.exceptions.ValidationException;
+import org.alliancegenome.curation_api.interfaces.base.BasePopularityInterface;
 import org.alliancegenome.curation_api.model.entities.Allele;
+import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.ingest.dto.AlleleDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.associations.AlleleGeneAssociationService;
@@ -28,7 +30,7 @@ import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 
 @RequestScoped
-public class AlleleService extends SubmittedObjectCrudService<Allele, AlleleDTO, AlleleDAO> {
+public class AlleleService extends SubmittedObjectCrudService<Allele, AlleleDTO, AlleleDAO> implements BasePopularityInterface {
 
 	@Inject AlleleDAO alleleDAO;
 	@Inject AlleleValidator alleleValidator;
@@ -116,6 +118,14 @@ public class AlleleService extends SubmittedObjectCrudService<Allele, AlleleDTO,
 		List<Long> ids = alleleDAO.findIdsByParams(params);
 		ids.removeIf(Objects::isNull);
 		return ids;
+	}
+
+	@Transactional
+	public void updatePopularity(String curie, Double popularity) {
+		Allele allele = findByAlternativeFields(List.of("curie", "primaryExternalId", "alleleSecondaryIds.secondaryId"), curie);
+		if (allele != null) {
+			allele.setPopularity(popularity);
+		}
 	}
 
 }

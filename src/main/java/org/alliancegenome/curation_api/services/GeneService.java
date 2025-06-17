@@ -14,6 +14,7 @@ import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.exceptions.KnownIssueValidationException;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
 import org.alliancegenome.curation_api.exceptions.ValidationException;
+import org.alliancegenome.curation_api.interfaces.base.BasePopularityInterface;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
 import org.alliancegenome.curation_api.model.ingest.dto.GeneDTO;
@@ -37,7 +38,7 @@ import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 
 @RequestScoped
-public class GeneService extends SubmittedObjectCrudService<Gene, GeneDTO, GeneDAO> {
+public class GeneService extends SubmittedObjectCrudService<Gene, GeneDTO, GeneDAO> implements BasePopularityInterface {
 
 	@Inject GeneDAO geneDAO;
 	@Inject GeneValidator geneValidator;
@@ -265,4 +266,11 @@ public class GeneService extends SubmittedObjectCrudService<Gene, GeneDTO, GeneD
 		}
 	}
 
+	@Transactional
+	public void updatePopularity(String curie, Double popularity) {
+		Gene gene = findByAlternativeFields(List.of("curie", "primaryExternalId", "alleleSecondaryIds.secondaryId"), curie);
+		if (gene != null) {
+			gene.setPopularity(popularity);
+		}
+	}
 }
