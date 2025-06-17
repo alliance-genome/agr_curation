@@ -1,7 +1,5 @@
 package org.alliancegenome.curation_api.services.validation.dto.associations;
 
-import org.alliancegenome.curation_api.constants.OntologyConstants;
-import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.model.entities.Note;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
@@ -9,7 +7,6 @@ import org.alliancegenome.curation_api.model.entities.associations.AlleleGenomic
 import org.alliancegenome.curation_api.model.entities.ontology.ECOTerm;
 import org.alliancegenome.curation_api.model.ingest.dto.associations.AlleleGenomicEntityAssociationDTO;
 import org.alliancegenome.curation_api.services.ontology.EcoTermService;
-import org.apache.commons.collections.CollectionUtils;
 
 import jakarta.inject.Inject;
 
@@ -25,9 +22,6 @@ public class AlleleGenomicEntityAssociationDTOValidator<E extends AlleleGenomicE
 		association.setRelation(relation);
 
 		ECOTerm ecoTerm = validateOntologyTerm(ecoTermService, "evidence_code_curie", dto.getEvidenceCodeCurie());
-		if (ecoTerm != null && (CollectionUtils.isEmpty(ecoTerm.getSubsets()) || !ecoTerm.getSubsets().contains(OntologyConstants.AGR_ECO_TERM_SUBSET))) {
-			response.addErrorMessage("evidence_code_curie", ValidationConstants.UNSUPPORTED_MESSAGE + " (" + dto.getEvidenceCodeCurie() + ")");
-		}
 		association.setEvidenceCode(ecoTerm);
 		
 		Note relatedNote = validateNote(dto.getNoteDto(), VocabularyConstants.ALLELE_GENOMIC_ENTITY_ASSOCIATION_NOTE_TYPES_VOCABULARY_TERM_SET);
