@@ -79,6 +79,7 @@ public class BulkLoadJobExecutor {
 	GeneOntologyAnnotationExecutor gafExecutor;
 
 	@Inject BiogridOrcExecutor biogridOrcExecutor;
+	@Inject GoogleAnalyticsExecutor googleAnalyticsExecutor;
 
 	public void process(BulkLoadFileHistory bulkLoadFileHistory, Boolean cleanUp) throws Exception {
 
@@ -172,6 +173,8 @@ public class BulkLoadJobExecutor {
 			htpExpressionDatasetSampleAnnotationExecutor.execLoad(bulkLoadFileHistory);
 		} else if (bulkLoadFileHistory.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.GAF) {
 			gafExecutor.execLoad(bulkLoadFileHistory);
+		} else if (bulkLoadFileHistory.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.GOOGLE_ANALYTICS) {
+			googleAnalyticsExecutor.execLoad(bulkLoadFileHistory);
 		} else {
 			log.info("Load: " + bulkLoadFileHistory.getBulkLoad().getName() + " for type " + bulkLoadFileHistory.getBulkLoad().getBackendBulkLoadType() + " not implemented");
 			throw new Exception("Load: " + bulkLoadFileHistory.getBulkLoad().getName() + " for type " + bulkLoadFileHistory.getBulkLoad().getBackendBulkLoadType() + " not implemented");
