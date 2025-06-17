@@ -17,7 +17,7 @@ INSERT INTO bulkload (id, backendbulkloadtype, name, bulkloadstatus, group_id)
 SELECT nextval('bulkload_seq'), 'GOOGLE_ANALYTICS', 'GA Load', 'STOPPED', id FROM bulkloadgroup WHERE name = 'Resource Descriptor Load';
 
 INSERT INTO bulkscheduledload (id, cronschedule, scheduleactive)
-SELECT id, '0 0 22 ? * SUN-THU', false FROM bulkload WHERE backendbulkloadtype = 'GOOGLE_ANALYTICS';
+SELECT id, '0 0 22 1 1,4,7,10 ? *', false FROM bulkload WHERE backendbulkloadtype = 'GOOGLE_ANALYTICS';
 
 INSERT INTO bulkgoogleanalyticsload (id)
 SELECT id FROM bulkload WHERE name = 'GA Load';
