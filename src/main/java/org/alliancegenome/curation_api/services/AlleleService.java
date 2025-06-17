@@ -18,9 +18,6 @@ import org.alliancegenome.curation_api.model.input.Pagination;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 
-import org.alliancegenome.curation_api.services.associations.AlleleGeneAssociationService;
-import org.alliancegenome.curation_api.services.associations.ConstructGenomicEntityAssociationService;
-
 import org.alliancegenome.curation_api.services.base.SubmittedObjectCrudService;
 import org.alliancegenome.curation_api.services.validation.AlleleValidator;
 import org.alliancegenome.curation_api.services.validation.dto.AlleleDTOValidator;
