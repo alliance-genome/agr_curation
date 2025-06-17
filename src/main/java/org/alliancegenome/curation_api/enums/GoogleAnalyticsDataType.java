@@ -7,6 +7,8 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang3.tuple.Pair;
+
 import io.quarkus.logging.Log;
 
 public enum GoogleAnalyticsDataType {
@@ -19,8 +21,8 @@ public enum GoogleAnalyticsDataType {
 	MGI(
 		"mgi",
 		"337076227",
-		List.of(".*(MGI:\\d+).*"),
-		List.of(".*(MGI:\\d+).*")),
+		List.of("^\\/marker/(MGI:\\d+).*"),
+		List.of("^\\/allele/(MGI:\\d+).*")),
 	RGD(
 		"rgd",
 		"352399653",
@@ -67,20 +69,28 @@ public enum GoogleAnalyticsDataType {
 		return filters;
 	}
 
-	public void updateMap(String pagePathPlusQueryString, String metric, Map<String, Map<String, Double>> map) {
+	public void updateMap(List<Pair<String, String>> analyticsData, Map<String, Map<String, Double>> map) {
+		for (Pair<String, String> entry : analyticsData) {
+			String dimension = entry.getLeft();
+			String metric = entry.getRight();
+			updateMap(dimension, metric, map);
+		}
+	}
+	
+	public void updateMap(String dimension, String metric, Map<String, Map<String, Double>> map) {
 
 		for (String filter : this.getFilters()) {
 			Pattern pattern = Pattern.compile(filter);
-			Matcher matcher = pattern.matcher(pagePathPlusQueryString);
+			Matcher matcher = pattern.matcher(dimension);
 			String type = null;
 			String id = null;
 		
 			if (matcher.matches()) {
-				if (pagePathPlusQueryString.contains("DOID:")) {
+				if (dimension.contains("DOID:")) {
 					id = matcher.group(1);
 					updateMasterMap(map, "disease_ontology", id, metric);
 					break;
-				} else if (pagePathPlusQueryString.contains("GO:")) {
+				} else if (dimension.contains("GO:")) {
 					id = matcher.group(1);
 					updateMasterMap(map, "gene_ontology", id, metric);
 					break;
@@ -109,7 +119,7 @@ public enum GoogleAnalyticsDataType {
 		
 						case "sgd":
 							id = "SGD:" + matcher.group(1);
-							if (pagePathPlusQueryString.contains("/allele/")) {
+							if (dimension.contains("/allele/")) {
 								updateMasterMap(map, "allele", id, metric);
 							} else {
 								updateMasterMap(map, "gene", id, metric);
@@ -117,7 +127,7 @@ public enum GoogleAnalyticsDataType {
 							break;
 		
 						default:
-							Log.info("No matching pattern found for: " + pagePathPlusQueryString);
+							Log.info("No matching pattern found for: " + dimension);
 					}
 					break;
 				}

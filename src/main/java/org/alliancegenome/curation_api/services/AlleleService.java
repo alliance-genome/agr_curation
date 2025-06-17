@@ -15,6 +15,7 @@ import org.alliancegenome.curation_api.interfaces.base.BasePopularityInterface;
 import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.ingest.dto.AlleleDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
+import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.associations.AlleleGeneAssociationService;
 import org.alliancegenome.curation_api.services.associations.ConstructGenomicEntityAssociationService;
 import org.alliancegenome.curation_api.services.base.SubmittedObjectCrudService;
@@ -121,8 +122,10 @@ public class AlleleService extends SubmittedObjectCrudService<Allele, AlleleDTO,
 
 	@Transactional
 	public void updatePopularity(String curie, Double popularity) {
-		Allele allele = findByAlternativeFields(List.of("curie", "primaryExternalId", "alleleSecondaryIds.secondaryId"), curie);
-		if (allele != null) {
+		SearchResponse<Allele> searchResponse = findByField("primaryExternalId", curie);
+
+		if (searchResponse != null) {
+			Allele allele = searchResponse.getSingleResult();
 			allele.setPopularity(popularity);
 		}
 	}

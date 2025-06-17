@@ -99,3 +99,5 @@ mp.jwt.token.cookie=okta-token-cookie
 //%dev.quarkus.log.category."org.hibernate.SQL".level=DEBUG
 //%dev.quarkus.log.category."org.alliancegenome".level=DEBUG
 //%dev.quarkus.log.category."si.mazi.rescu".level=TRACE
+
+google.analytics.secret.key = ""

@@ -7,9 +7,11 @@ import com.google.analytics.data.v1beta.RunReportResponse;
 import com.google.api.gax.core.FixedCredentialsProvider;
 import com.google.auth.oauth2.GoogleCredentials;
 
+import io.quarkus.logging.Log;
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import net.nilosplace.process_display.ProcessDisplayHelper;
 import net.nilosplace.process_display.util.ObjectFileStorage;
 
 import com.google.analytics.data.v1beta.DateRange;
@@ -27,6 +29,9 @@ import org.alliancegenome.curation_api.model.entities.orthology.GeneToGeneOrthol
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.orthology.GeneToGeneOrthologyGeneratedService;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
+
 import java.io.*;
 import java.time.LocalDate;
 import java.util.*;
@@ -37,14 +42,16 @@ public class GoogleAnalyticsService {
 	@Inject
 	GeneToGeneOrthologyGeneratedService geneToGeneOrthologyGeneratedService;
 
-	private static final String KEY_FILE_LOCATION = "/Users/vrgollapally/Desktop/analytics_secrets.json";
+	@ConfigProperty(name = "google.analytics.secret.key")
+	String googleAnalyticsSecretKey;
+
 	GoogleCredentials credentials;
 	ObjectFileStorage<Map<String, Map<String, Double>>> objectFileStorage = new ObjectFileStorage<>();
 
 	@PostConstruct
 	protected void init() {
 		try {
-			credentials = GoogleCredentials.fromStream(new FileInputStream(KEY_FILE_LOCATION));
+			credentials = GoogleCredentials.fromStream(new ByteArrayInputStream(googleAnalyticsSecretKey.getBytes()));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -53,23 +60,40 @@ public class GoogleAnalyticsService {
 	public Map<String, Map<String, Double>> getDataMap() {
 
 		Map<String, Map<String, Double>> map = new HashMap<>();
-		generateAnalytics(map, GoogleAnalyticsDataType.ALLIANCE);
-		generateAnalytics(map, GoogleAnalyticsDataType.MGI);
-		generateAnalytics(map, GoogleAnalyticsDataType.FB);
-		generateAnalytics(map, GoogleAnalyticsDataType.RGD);
-		generateAnalytics(map, GoogleAnalyticsDataType.SGD);
+		List<Pair<String, String>> allianceMap = generateAnalytics(GoogleAnalyticsDataType.ALLIANCE);
+		GoogleAnalyticsDataType.ALLIANCE.updateMap(allianceMap, map);
+		List<Pair<String, String>> mgiMap = generateAnalytics(GoogleAnalyticsDataType.MGI);
+		GoogleAnalyticsDataType.MGI.updateMap(mgiMap, map);
+		List<Pair<String, String>> fbMap = generateAnalytics(GoogleAnalyticsDataType.FB);
+		GoogleAnalyticsDataType.FB.updateMap(fbMap, map);
+		List<Pair<String, String>> rgdMap = generateAnalytics(GoogleAnalyticsDataType.RGD);
+		GoogleAnalyticsDataType.RGD.updateMap(rgdMap, map);
+		List<Pair<String, String>> sgdMap = generateAnalytics(GoogleAnalyticsDataType.SGD);
+		GoogleAnalyticsDataType.SGD.updateMap(sgdMap, map);
 
-		generateOrthologPop(map);
+		HashMap<String, Double> humanOrthoPopMap = generateHumanOrthologMap(map);
+		for (String humanGeneId : humanOrthoPopMap.keySet()) {
+			map.get("gene").put(humanGeneId, humanOrthoPopMap.get(humanGeneId));
+		}
 		return map;
 	}
 
-	public void generateAnalytics(Map<String, Map<String, Double>> map, GoogleAnalyticsDataType site) {
+	public List<Pair<String, String>> generateAnalytics(GoogleAnalyticsDataType site) {
 		
+		List<Pair<String, String>> ret = new ArrayList<>();
+		ObjectFileStorage<List<Pair<String, String>>> objectStorage = new ObjectFileStorage<>();
+
 		if (StringUtils.isEmpty(site.getGa4PropertyId())) {
-			return;
+			return ret;
 		}
 
 		try {
+			File cacheFile = new File(site.getName() + "analyticsCache.data");
+			if (cacheFile.exists()) {
+				Log.info("Reading cache from " + cacheFile);
+				return objectStorage.readObjectFromFile(cacheFile);
+			}
+
 			BetaAnalyticsDataSettings settings =
 			BetaAnalyticsDataSettings.newBuilder()
 				.setCredentialsProvider(FixedCredentialsProvider.create(credentials))
@@ -97,6 +121,10 @@ public class GoogleAnalyticsService {
 			boolean moreRows = true;
 			LocalDate currentDate = LocalDate.now();
 
+			Log.info("Pulling GA Data for " + site.getName());
+
+			ProcessDisplayHelper ph = new ProcessDisplayHelper();
+			ph.startProcess("Pulling GA Data for " + site.getName());
 			while (moreRows) {
 				RunReportRequest request = RunReportRequest.newBuilder()
 				.setProperty("properties/" + site.getGa4PropertyId())
@@ -116,7 +144,9 @@ public class GoogleAnalyticsService {
 				for (Row row : response.getRowsList()) {
 					String dimension = row.getDimensionValues(0).getValue();
 					String metric = row.getMetricValues(0).getValue();
-					site.updateMap(dimension, metric, map);
+					Pair<String, String> entry = Pair.of(dimension, metric);
+					ret.add(entry);
+					ph.progressProcess();
 				}
 				if (response.getRowsCount() < limit) {
 					moreRows = false;
@@ -124,16 +154,31 @@ public class GoogleAnalyticsService {
 					offSet += limit;
 				}
 			}
+			ph.finishProcess();
+
+			Log.info("Writing cache into " + cacheFile);
+			objectStorage.writeObjectToFile(ret, cacheFile);
+			Log.info("Finished Pulling GA Data for " + site.getName());
 
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		return ret;
 	}
 
-	private void generateOrthologPop(Map<String, Map<String, Double>> map) {
+	private HashMap<String, Double> generateHumanOrthologMap(Map<String, Map<String, Double>> map) {
+		
+		HashMap<String, Double> humanOrthoPopMap = new HashMap<>();
+		ObjectFileStorage<HashMap<String, Double>> objectStorage = new ObjectFileStorage<>();
 
 		try {
-
+			File cacheFile = new File("humanOrthoPopMap.data");
+			if (cacheFile.exists()) {
+				Log.info("Reading cache from " + cacheFile);
+				return objectStorage.readObjectFromFile(cacheFile);
+			}
+			ProcessDisplayHelper ph = new ProcessDisplayHelper();
+			ph.startProcess("Pulling Orthologs for Human genes", map.get("gene").size());
 			HashMap<String, List<String>> humanOrthoMap = new HashMap<>();
 			for (String geneId : map.get("gene").keySet()) {
 				HashMap<String, Object> params = new HashMap<>();
@@ -151,9 +196,11 @@ public class GoogleAnalyticsService {
 						orthologs.add(ortho.getObjectGene().getPrimaryExternalId());
 					}
 				}
+				ph.progressProcess();
 			}
+			ph.finishProcess();
 
-			HashMap<String, Double> humanOrthoPopMap = new HashMap<>();
+			
 			for (Map.Entry<String, List<String>> entry : humanOrthoMap.entrySet()) {
 				String humanGeneId = entry.getKey();
 				List<String> orthologs = entry.getValue();
@@ -165,13 +212,13 @@ public class GoogleAnalyticsService {
 				}
 				humanOrthoPopMap.put(humanGeneId, pop);
 			}
-
-			for (String humanGeneId : humanOrthoPopMap.keySet()) {
-				map.get("gene").put(humanGeneId, humanOrthoPopMap.get(humanGeneId));
-			}
+			Log.info("Writing cache into " + cacheFile);
+			objectStorage.writeObjectToFile(humanOrthoPopMap, cacheFile);
+			Log.info("Finished Generating human ortho pop map");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		return humanOrthoPopMap;
 	}
 	
 }

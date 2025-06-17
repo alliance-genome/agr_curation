@@ -268,8 +268,9 @@ public class GeneService extends SubmittedObjectCrudService<Gene, GeneDTO, GeneD
 
 	@Transactional
 	public void updatePopularity(String curie, Double popularity) {
-		Gene gene = findByAlternativeFields(List.of("curie", "primaryExternalId", "alleleSecondaryIds.secondaryId"), curie);
-		if (gene != null) {
+		SearchResponse<Gene> searchResponse = findByField("primaryExternalId", curie);
+		if (searchResponse != null) {
+			Gene gene = searchResponse.getSingleResult();
 			gene.setPopularity(popularity);
 		}
 	}
