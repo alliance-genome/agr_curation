@@ -1,17 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-
 	<groupId>org.alliancegenome</groupId>
 	<artifactId>agr_curation_api</artifactId>
 	<name>AGR Curation :: API</name>
 	<version>0.0.0</version>
 	<description>This software is for using the curation api as a library</description>
 	<url>https://github.com/alliance-genome/agr_curation</url>
-
 	<properties>
 		<compiler-plugin.version>3.8.1</compiler-plugin.version>
 		<maven.compiler.parameters>true</maven.compiler.parameters>
@@ -29,21 +24,18 @@
 		<maven-checkstyle-plugin.version>3.3.1</maven-checkstyle-plugin.version>
 		<checkstyle.version>10.17.0</checkstyle.version>
 	</properties>
-
 	<scm>
 		<connection>scm:git:git@github.com:alliance-genome/agr_curation.git</connection>
 		<developerConnection>scm:git:git@github.com:alliance-genome/agr_curation.git</developerConnection>
 		<url>https://www.github.com/alliance-genome/agr_curation/tree/master</url>
 		<tag>HEAD</tag>
 	</scm>
-
 	<licenses>
 		<license>
 			<name>MIT License</name>
 			<url>http://www.opensource.org/licenses/mit-license.php</url>
 		</license>
 	</licenses>
-
 	<developers>
 		<developer>
 			<name>Olin Blodgett</name>
@@ -91,7 +83,6 @@
 			<organizationUrl>https://www.uoregon.edu/</organizationUrl>
 		</developer>
 	</developers>
-
 	<distributionManagement>
 		<snapshotRepository>
 			<id>ossrh</id>
@@ -103,7 +94,6 @@
 			<url>https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/</url>
 		</repository>
 	</distributionManagement>
-
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
@@ -113,28 +103,23 @@
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
-
 		</dependencies>
 	</dependencyManagement>
-
 	<dependencies>
 		<dependency>
 			<groupId>net.sourceforge.owlapi</groupId>
 			<artifactId>owlapi-distribution</artifactId>
 			<version>5.5.0</version>
 		</dependency>
-
 		<dependency>
 			<groupId>io.github.liveontologies</groupId>
 			<artifactId>elk-owlapi</artifactId>
 			<version>0.6.0</version>
 		</dependency>
-
 		<dependency>
 			<groupId>io.netty</groupId>
 			<artifactId>netty-transport-native-epoll</artifactId>
 		</dependency>
-
 		<dependency>
 			<groupId>io.quarkus</groupId>
 			<artifactId>quarkus-hibernate-orm</artifactId>
@@ -167,16 +152,19 @@
 			<groupId>io.quarkus</groupId>
 			<artifactId>quarkus-jdbc-postgresql</artifactId>
 		</dependency>
+		
 		<dependency>
 			<groupId>io.quarkus</groupId>
 			<artifactId>quarkus-smallrye-graphql</artifactId>
+		</dependency>	
+		<dependency>
+			<groupId>io.quarkus</groupId>
+			<artifactId>quarkus-smallrye-jwt</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>io.quarkus</groupId>
 			<artifactId>quarkus-arc</artifactId>
 		</dependency>
-
-
 		<dependency>
 			<groupId>io.quarkus</groupId>
 			<artifactId>quarkus-quartz</artifactId>
@@ -190,7 +178,6 @@
 			<groupId>io.quarkus</groupId>
 			<artifactId>quarkus-vertx</artifactId>
 		</dependency>
-
 		<dependency>
 			<groupId>io.quarkus</groupId>
 			<artifactId>quarkus-elasticsearch-rest-high-level-client</artifactId>
@@ -222,18 +209,14 @@
 			<artifactId>quarkus-junit5-mockito</artifactId>
 			<scope>test</scope>
 		</dependency>
-
 		<dependency>
 			<groupId>io.rest-assured</groupId>
 			<artifactId>rest-assured</artifactId>
 		</dependency>
-
 		<dependency>
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
 		</dependency>
-
-		
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-collections4</artifactId>
@@ -244,12 +227,10 @@
 			<artifactId>commons-collections</artifactId>
 			<version>3.2.2</version>
 		</dependency>
-		
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-compress</artifactId>
 		</dependency>
-
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
@@ -258,7 +239,7 @@
 		<dependency>
 			<groupId>com.amazonaws</groupId>
 			<artifactId>aws-java-sdk-s3</artifactId>
-			<version>1.12.131</version>
+			<version>1.12.783</version>
 		</dependency>
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
@@ -288,18 +269,15 @@
 			<groupId>com.fasterxml.jackson.dataformat</groupId>
 			<artifactId>jackson-dataformat-csv</artifactId>
 		</dependency>
-
 		<dependency>
 			<groupId>com.github.mmazi</groupId>
 			<artifactId>rescu</artifactId>
 			<version>3.0</version>
 		</dependency>
-
 		<dependency>
 			<groupId>com.cronutils</groupId>
 			<artifactId>cron-utils</artifactId>
 		</dependency>
-
 		<dependency>
 			<groupId>com.okta.authn.sdk</groupId>
 			<artifactId>okta-authn-sdk-api</artifactId>
@@ -310,7 +288,6 @@
 			<artifactId>okta-authn-sdk-impl</artifactId>
 			<version>${okta.authn.version}</version>
 		</dependency>
-
 		<dependency>
 			<groupId>com.okta.sdk</groupId>
 			<artifactId>okta-sdk-api</artifactId>
@@ -326,27 +303,22 @@
 			<artifactId>okta-sdk-httpclient</artifactId>
 			<version>${okta.version}</version>
 		</dependency>
-
 		<dependency>
 			<groupId>com.okta.jwt</groupId>
 			<artifactId>okta-jwt-verifier</artifactId>
 			<version>${okta-jwt.version}</version>
 		</dependency>
-
 		<dependency>
 			<groupId>com.okta.jwt</groupId>
 			<artifactId>okta-jwt-verifier-impl</artifactId>
 			<version>${okta-jwt.version}</version>
 			<scope>runtime</scope>
 		</dependency>
-
-
 		<dependency>
 			<groupId>com.innoventsolutions.birt.runtime</groupId>
 			<artifactId>org.eclipse.birt.runtime_4.8.0-20180626</artifactId>
 			<version>4.8.0</version>
 		</dependency>
-
 		<dependency>
 			<groupId>org.testcontainers</groupId>
 			<artifactId>testcontainers</artifactId>
@@ -362,32 +334,25 @@
 			<artifactId>elasticsearch</artifactId>
 			<scope>test</scope>
 		</dependency>
-
 		<dependency>
 			<groupId>org.reflections</groupId>
 			<artifactId>reflections</artifactId>
 			<version>0.10.2</version>
 		</dependency>
-
 		<dependency>
 			<groupId>org.jsoup</groupId>
 			<artifactId>jsoup</artifactId>
-			<version>1.13.1</version>
+			<version>1.20.1</version>
 		</dependency>
-
 		<dependency>
 			<groupId>com.slack.api</groupId>
 			<artifactId>slack-api-client</artifactId>
 			<version>1.36.1</version>
 		</dependency>
-
 	</dependencies>
-
 	<build>
 		<finalName>${project.artifactId}</finalName>
-
 		<plugins>
-
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-source-plugin</artifactId>
@@ -447,8 +412,6 @@
 					</execution>
 				</executions>
 			</plugin>
-
-
 			<plugin>
 				<groupId>${quarkus.platform.group-id}</groupId>
 				<artifactId>quarkus-maven-plugin</artifactId>
@@ -491,10 +454,7 @@
 					<tagNameFormat>v@{project.version}</tagNameFormat>
 				</configuration>
 			</plugin>
-
-
 		</plugins>
-
 		<pluginManagement>
 			<plugins>
 				<plugin>
@@ -532,9 +492,7 @@
 				</plugin>
 			</plugins>
 		</pluginManagement>
-
 	</build>
-
 	<profiles>
 		<profile>
 			<id>native</id>
@@ -571,5 +529,4 @@
 			</properties>
 		</profile>
 	</profiles>
-
 </project>

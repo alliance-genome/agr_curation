@@ -14,7 +14,6 @@ import org.hibernate.search.engine.backend.types.Searchable;
 import org.hibernate.search.engine.backend.types.Sortable;
 import org.hibernate.search.mapper.pojo.automaticindexing.ReindexOnUpdate;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.FullTextField;
-import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmbedded;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexingDependency;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.KeywordField;
@@ -32,14 +31,12 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
-@Indexed
 @Entity
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(callSuper = true)
 @Schema(name = "ExternalDataBaseEntity", description = "POJO that represents the ExternalDataBaseEntity")
-@AGRCurationSchemaVersion(min = "2.6.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = {
-		CurieObject.class })
+@AGRCurationSchemaVersion(min = "2.6.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { CurieObject.class })
 public class ExternalDataBaseEntity extends CurieObject {
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
@@ -61,8 +58,8 @@ public class ExternalDataBaseEntity extends CurieObject {
 	@ManyToMany
 	@OnDelete(action = OnDeleteAction.CASCADE)
 	@JoinTable(indexes = {
-			@Index(columnList = "externaldatabaseentity_id", name = "externaldbentity_crossreference_externaldbentity_index"),
-			@Index(columnList = "crossreferences_id", name = "externaldbentity_crossreference_crossreferences_index")
+		@Index(columnList = "externaldatabaseentity_id", name = "externaldbentity_crossreference_externaldbentity_index"),
+		@Index(columnList = "crossreferences_id", name = "externaldbentity_crossreference_crossreferences_index")
 	})
 	@JsonView({ View.FieldsAndLists.class })
 	private List<CrossReference> crossReferences;
