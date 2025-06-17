@@ -37,8 +37,8 @@ public class GoogleAnalyticsExecutor extends LoadFileExecutor {
 		ObjectFileStorage<Map<String, Map<String, Double>>> objectFileStorage = new ObjectFileStorage<>();
 		try {
 			Map<String, Map<String, Double>> analyticsMap = objectFileStorage.readObjectFromFile(inputFile);
-			Map<String, BasePopularityInterface> dataTypes = Map.of("disease_ontology",doTermService,"allele",alleleService,"gene",geneService,"gene_ontology",goTermService);
-			for(Entry<String, BasePopularityInterface> dataTypeEntry : dataTypes.entrySet()) {
+			Map<String, BasePopularityInterface> dataTypes = Map.of("disease_ontology", doTermService, "allele", alleleService, "gene", geneService, "gene_ontology", goTermService);
+			for (Entry<String, BasePopularityInterface> dataTypeEntry : dataTypes.entrySet()) {
 				Map<String, Double> dataTypeMap = analyticsMap.get(dataTypeEntry.getKey());
 				ProcessDisplayHelper ph = new ProcessDisplayHelper();
 				ph.startProcess("Google Analytics for " + dataTypeEntry.getKey(), dataTypeMap.size());

@@ -9,7 +9,7 @@ import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 
 @RequestScoped
-public class BulkGoogleAnalyticsLoadService extends BaseEntityCrudService<BulkGoogleAnalyticsLoad, BulkGoogleAnalyticsLoadDAO>  {
+public class BulkGoogleAnalyticsLoadService extends BaseEntityCrudService<BulkGoogleAnalyticsLoad, BulkGoogleAnalyticsLoadDAO> {
 	@Inject BulkGoogleAnalyticsLoadDAO bulkGoogleAnalyticsLoadDAO;
 
 	@Override

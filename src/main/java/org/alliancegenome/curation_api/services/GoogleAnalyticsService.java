@@ -39,7 +39,7 @@ public class GoogleAnalyticsService {
 
 	private static final String KEY_FILE_LOCATION = "/Users/vrgollapally/Desktop/analytics_secrets.json";
 	GoogleCredentials credentials;
-	ObjectFileStorage <Map<String, Map<String, Double>>> objectFileStorage = new ObjectFileStorage<>();
+	ObjectFileStorage<Map<String, Map<String, Double>>> objectFileStorage = new ObjectFileStorage<>();
 
 	@PostConstruct
 	protected void init() {
@@ -53,7 +53,7 @@ public class GoogleAnalyticsService {
 	public Map<String, Map<String, Double>> getDataMap() {
 
 		Map<String, Map<String, Double>> map = new HashMap<>();
-        generateAnalytics(map, GoogleAnalyticsDataType.ALLIANCE);
+		generateAnalytics(map, GoogleAnalyticsDataType.ALLIANCE);
 		generateAnalytics(map, GoogleAnalyticsDataType.MGI);
 		generateAnalytics(map, GoogleAnalyticsDataType.FB);
 		generateAnalytics(map, GoogleAnalyticsDataType.RGD);
@@ -97,7 +97,7 @@ public class GoogleAnalyticsService {
 			boolean moreRows = true;
 			LocalDate currentDate = LocalDate.now();
 
-			while(moreRows) {
+			while (moreRows) {
 				RunReportRequest request = RunReportRequest.newBuilder()
 				.setProperty("properties/" + site.getGa4PropertyId())
 				.addMetrics(Metric.newBuilder().setName("screenPageViews"))
@@ -115,7 +115,7 @@ public class GoogleAnalyticsService {
 				RunReportResponse response = analyticsData.runReport(request);
 				for (Row row : response.getRowsList()) {
 					String dimension = row.getDimensionValues(0).getValue();
-					String metric = row.getMetricValues(0).getValue();                    
+					String metric = row.getMetricValues(0).getValue();
 					site.updateMap(dimension, metric, map);
 				}
 				if (response.getRowsCount() < limit) {
@@ -123,7 +123,7 @@ public class GoogleAnalyticsService {
 				} else {
 					offSet += limit;
 				}
-			}            
+			}
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -160,7 +160,7 @@ public class GoogleAnalyticsService {
 				Double pop = map.get("gene").get(humanGeneId);
 				if (orthologs != null && orthologs.size() > 0) {
 					for (String ortholog : orthologs) {
-						pop += map.get("gene").containsKey(ortholog)? map.get("gene").get(ortholog) * 0.1 : 0.0;
+						pop += map.get("gene").containsKey(ortholog) ? map.get("gene").get(ortholog) * 0.1 : 0.0;
 					}
 				}
 				humanOrthoPopMap.put(humanGeneId, pop);

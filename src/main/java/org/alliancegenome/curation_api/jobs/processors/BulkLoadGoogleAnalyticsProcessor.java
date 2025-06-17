@@ -13,7 +13,7 @@ import jakarta.enterprise.event.ObservesAsync;
 import net.nilosplace.process_display.util.ObjectFileStorage;
 
 @ApplicationScoped
-public class BulkLoadGoogleAnalyticsProcessor extends BulkLoadProcessor{ 
+public class BulkLoadGoogleAnalyticsProcessor extends BulkLoadProcessor {
 	ObjectFileStorage<Map<String, Map<String, Double>>> objectFileStorage = new ObjectFileStorage<>();
 	public void processCustomLoad(@ObservesAsync StartedBulkLoadJobEvent load) {
 		BulkLoad bulkLoad = bulkLoadDAO.find(load.getId());

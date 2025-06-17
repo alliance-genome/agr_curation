@@ -12,28 +12,28 @@ import io.quarkus.logging.Log;
 public enum GoogleAnalyticsDataType {
 
 	ALLIANCE(
-		"alliance", 
+		"alliance",
 		"352718941",
-		List.of( "^\\/(gene)\\/(\\w+:(?:\\w)*\\d+)$", "^\\/(gene)\\/(ZFIN:ZDB-\\w+-\\d{6}-\\d+)$"),
-		List.of( "^\\/(allele)\\/(\\w+:(?:\\w)*\\d+)$", "^\\/(allele)\\/(ZFIN:ZDB-\\w+-\\d{6}-\\d+)$")),
+		List.of("^\\/(gene)\\/(\\w+:(?:\\w)*\\d+)$", "^\\/(gene)\\/(ZFIN:ZDB-\\w+-\\d{6}-\\d+)$"),
+		List.of("^\\/(allele)\\/(\\w+:(?:\\w)*\\d+)$", "^\\/(allele)\\/(ZFIN:ZDB-\\w+-\\d{6}-\\d+)$")),
 	MGI(
-		"mgi", 
-		"337076227", 
+		"mgi",
+		"337076227",
 		List.of(".*(MGI:\\d+).*"),
 		List.of(".*(MGI:\\d+).*")),
 	RGD(
 		"rgd",
-		"352399653", 
+		"352399653",
 		List.of("^\\/rgdweb\\/report\\/gene\\/main\\.html\\?id=(\\d+)$"),
 		List.of("^\\/rgdweb\\/report\\/gene\\/main\\.html\\?id=(\\d+)$")),
 	FB(
-		"flybase", 
-		"250855298", 
+		"flybase",
+		"250855298",
 		List.of("^\\/reports/(FBgn[\\d]+)(?:\\.\\w+)?$"),
 		List.of("^\\/reports/(FBal[\\d]+)(?:\\.\\w+)?$")),
 	SGD(
 		"sgd",
-		"302498604", 
+		"302498604",
 		List.of("^\\/locus\\/(S\\d{9})$"),
 		List.of("^\\/allele\\/(S\\d{9})$")
 	);
@@ -73,46 +73,46 @@ public enum GoogleAnalyticsDataType {
 			Pattern pattern = Pattern.compile(filter);
 			Matcher matcher = pattern.matcher(pagePathPlusQueryString);
 			String type = null;
-			String ID = null;
+			String id = null;
 		
 			if (matcher.matches()) {
 				if (pagePathPlusQueryString.contains("DOID:")) {
-					ID = matcher.group(1);
-					updateMasterMap(map, "disease_ontology", ID, metric);
+					id = matcher.group(1);
+					updateMasterMap(map, "disease_ontology", id, metric);
 					break;
 				} else if (pagePathPlusQueryString.contains("GO:")) {
-					ID = matcher.group(1);
-					updateMasterMap(map, "gene_ontology", ID, metric);
+					id = matcher.group(1);
+					updateMasterMap(map, "gene_ontology", id, metric);
 					break;
 				} else {
 					switch (this.name) {
 						case "alliance":
 							type = matcher.group(1);
-							ID = matcher.group(2);
-							updateMasterMap(map, type, ID, metric);
+							id = matcher.group(2);
+							updateMasterMap(map, type, id, metric);
 							break;
 		
 						case "mgi":
-							ID = matcher.group(1);
-							updateMasterMap(map, List.of("gene", "allele"), ID, metric);
+							id = matcher.group(1);
+							updateMasterMap(map, List.of("gene", "allele"), id, metric);
 							break;
 		
 						case "rgd":
-							ID = "RGD:" + matcher.group(1);
-							updateMasterMap(map, List.of("gene", "allele"), ID, metric);
+							id = "RGD:" + matcher.group(1);
+							updateMasterMap(map, List.of("gene", "allele"), id, metric);
 							break;
 		
 						case "flybase":
-							ID = "FB:" + matcher.group(1);
-							updateMasterMap(map, List.of("gene", "allele"), ID, metric);
+							id = "FB:" + matcher.group(1);
+							updateMasterMap(map, List.of("gene", "allele"), id, metric);
 							break;
 		
 						case "sgd":
-							ID = "SGD:" + matcher.group(1);
+							id = "SGD:" + matcher.group(1);
 							if (pagePathPlusQueryString.contains("/allele/")) {
-								updateMasterMap(map, "allele", ID, metric);
+								updateMasterMap(map, "allele", id, metric);
 							} else {
-								updateMasterMap(map, "gene", ID, metric);
+								updateMasterMap(map, "gene", id, metric);
 							}
 							break;
 		
