@@ -9,8 +9,6 @@ import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.GENOTerm;
 import org.alliancegenome.curation_api.view.View;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
 import org.hibernate.search.mapper.pojo.automaticindexing.ReindexOnUpdate;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmbedded;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexingDependency;
@@ -64,7 +62,6 @@ public class AgmAlleleAssociation extends Association {
 	@ManyToOne
 	@JsonView({ View.FieldsOnly.class })
 	@JsonIgnoreProperties({"components", "constructGenomicEntityAssociations", "agmSequenceTargetingReagentAssociations"})
-	@Fetch(FetchMode.JOIN)
 	private AffectedGenomicModel agmAssociationSubject;
 
 	@IndexedEmbedded(includePaths = {"curie", "name", "secondaryIdentifiers", "synonyms.name", "abbreviation",

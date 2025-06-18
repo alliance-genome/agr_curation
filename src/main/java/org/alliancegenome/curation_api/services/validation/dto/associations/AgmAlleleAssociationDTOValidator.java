@@ -58,63 +58,67 @@ public class AgmAlleleAssociationDTOValidator extends AuditedObjectDTOValidator<
 			}
 		}
 
-		AgmAlleleAssociation association = null;
-		if (subjectIds != null && subjectIds.size() == 1 && objectIds != null && objectIds.size() == 1 && StringUtils.isNotBlank(dto.getRelationName())) {
-			HashMap<String, Object> params = new HashMap<>();
-
-			params.put("agmAssociationSubject.id", subjectIds.get(0));
-			params.put("relation.name", dto.getRelationName());
-			params.put("agmAlleleAssociationObject.id", objectIds.get(0));
-
-			SearchResponse<AgmAlleleAssociation> searchResponse = agmAlleleAssociationDAO.findByParams(params);
-			if (searchResponse != null && searchResponse.getResults().size() == 1) {
-				association = searchResponse.getSingleResult();
-			}
-		}
-
-		if (association == null) {
-			association = new AgmAlleleAssociation();
-		}
-
 		VocabularyTerm relation = validateRequiredTermInVocabularyTermSet("relation_name", dto.getRelationName(), VocabularyConstants.AGM_ALLELE_RELATION_VOCABULARY_TERM_SET);
-		association.setRelation(relation);
-
-		if (association.getAgmAssociationSubject() == null && !StringUtils.isBlank(dto.getAgmSubjectIdentifier())) {
-
-			AffectedGenomicModel subject = agmService.findByIdentifierString(dto.getAgmSubjectIdentifier());
-			if (subject == null) {
-				response.addErrorMessage("agm_identifier", ValidationConstants.INVALID_MESSAGE + " (" + dto.getAgmSubjectIdentifier() + ")");
-			} else if (beDataProvider != null && !subject.getDataProvider().getAbbreviation().equals(beDataProvider.sourceOrganization)) {
-				response.addErrorMessage("agm_identifier", ValidationConstants.INVALID_MESSAGE + " for " + beDataProvider.name() + " load (" + dto.getAgmSubjectIdentifier() + ")");
-			} else {
-				association.setAgmAssociationSubject(subject);
-			}
-		}
-
-		if (association.getAgmAlleleAssociationObject() == null && !StringUtils.isBlank(dto.getAlleleIdentifier())) {
-
-			Allele object = alleleService.findByIdentifierString(dto.getAlleleIdentifier());
-			if (object == null) {
-				response.addErrorMessage("allele_identifier", ValidationConstants.INVALID_MESSAGE + " (" + dto.getAlleleIdentifier() + ")");
-			} else if (beDataProvider != null && !object.getDataProvider().getAbbreviation().equals(beDataProvider.sourceOrganization)) {
-				response.addErrorMessage("allele_identifier", ValidationConstants.INVALID_MESSAGE + " for " + beDataProvider.name() + " load (" + dto.getAlleleIdentifier() + ")");
-			} else {
-				association.setAgmAlleleAssociationObject(object);
-			}
-		}
 
 		GENOTerm zygosity = validateOntologyTerm(genoTermService, "zygosity_curie", dto.getZygosityCurie());
 		if (zygosity != null) {
 			validateTermInVocabulary("zygosity_curie", dto.getZygosityCurie(), VocabularyConstants.AGM_ALLELE_GENOTYPE_TERMS_VOCABULARY);
 		}
-		association.setZygosity(zygosity);
+		
+		AgmAlleleAssociation association = null;
+		if (subjectIds != null && subjectIds.size() == 1 && objectIds != null && objectIds.size() == 1 && relation != null && zygosity != null) {
+			HashMap<String, Object> params = new HashMap<>();
 
-		association = validateAuditedObjectDTO(association, dto);
+			params.put("agmAssociationSubject.id", subjectIds.get(0));
+			params.put("relation.id", relation.getId());
+			params.put("zygosity.id", zygosity.getId());
+			params.put("agmAlleleAssociationObject.id", objectIds.get(0));
+
+			SearchResponse<AgmAlleleAssociation> searchResponse = agmAlleleAssociationDAO.findByParams(params);
+			if (searchResponse != null && searchResponse.getResults().size() == 1) {
+				association = searchResponse.getSingleResult();
+				association = validateAuditedObjectDTO(association, dto);
+			} else {
+				if (association == null) {
+					association = new AgmAlleleAssociation();
+				}
+
+				association.setZygosity(zygosity);
+				association.setRelation(relation);
+
+				if (association.getAgmAssociationSubject() == null && !StringUtils.isBlank(dto.getAgmSubjectIdentifier())) {
+
+					AffectedGenomicModel subject = agmService.findByIdentifierString(dto.getAgmSubjectIdentifier());
+					if (subject == null) {
+						response.addErrorMessage("agm_identifier", ValidationConstants.INVALID_MESSAGE + " (" + dto.getAgmSubjectIdentifier() + ")");
+					} else if (beDataProvider != null && !subject.getDataProvider().getAbbreviation().equals(beDataProvider.sourceOrganization)) {
+						response.addErrorMessage("agm_identifier", ValidationConstants.INVALID_MESSAGE + " for " + beDataProvider.name() + " load (" + dto.getAgmSubjectIdentifier() + ")");
+					} else {
+						association.setAgmAssociationSubject(subject);
+					}
+				}
+
+				if (association.getAgmAlleleAssociationObject() == null && !StringUtils.isBlank(dto.getAlleleIdentifier())) {
+
+					Allele object = alleleService.findByIdentifierString(dto.getAlleleIdentifier());
+					if (object == null) {
+						response.addErrorMessage("allele_identifier", ValidationConstants.INVALID_MESSAGE + " (" + dto.getAlleleIdentifier() + ")");
+					} else if (beDataProvider != null && !object.getDataProvider().getAbbreviation().equals(beDataProvider.sourceOrganization)) {
+						response.addErrorMessage("allele_identifier", ValidationConstants.INVALID_MESSAGE + " for " + beDataProvider.name() + " load (" + dto.getAlleleIdentifier() + ")");
+					} else {
+						association.setAgmAlleleAssociationObject(object);
+					}
+				}
+				association = validateAuditedObjectDTO(association, dto);
+				association = agmAlleleAssociationDAO.persist(association);
+			}
+		}
+
 		
 		if (response.hasErrors()) {
 			throw new ObjectValidationException(dto, response.errorMessagesString());
 		}
 		
-		return agmAlleleAssociationDAO.persist(association);
+		return association;
 	}
 }
