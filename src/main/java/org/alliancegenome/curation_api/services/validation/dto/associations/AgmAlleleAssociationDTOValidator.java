@@ -77,12 +77,12 @@ public class AgmAlleleAssociationDTOValidator extends AuditedObjectDTOValidator<
 			SearchResponse<AgmAlleleAssociation> searchResponse = agmAlleleAssociationDAO.findByParams(params);
 			if (searchResponse != null && searchResponse.getResults().size() == 1) {
 				association = searchResponse.getSingleResult();
+				association = validateAuditedObjectDTO(association, dto);
 			} else {
 				if (association == null) {
 					association = new AgmAlleleAssociation();
 				}
 
-				association = validateAuditedObjectDTO(association, dto);
 				association.setZygosity(zygosity);
 				association.setRelation(relation);
 
@@ -109,6 +109,7 @@ public class AgmAlleleAssociationDTOValidator extends AuditedObjectDTOValidator<
 						association.setAgmAlleleAssociationObject(object);
 					}
 				}
+				association = validateAuditedObjectDTO(association, dto);
 				association = agmAlleleAssociationDAO.persist(association);
 			}
 		}

@@ -1,7 +1,6 @@
 package org.alliancegenome.curation_api.services.associations;
 
 import java.time.OffsetDateTime;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,7 +16,6 @@ import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.interfaces.crud.BaseUpsertServiceInterface;
-import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
 import org.alliancegenome.curation_api.model.entities.associations.AgmAlleleAssociation;
 import org.alliancegenome.curation_api.model.ingest.dto.associations.AgmAlleleAssociationDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
@@ -114,24 +112,6 @@ public class AgmAlleleAssociationService extends BaseAssociationDTOCrudService<A
 		response.setEntity(association);
 
 		return response;
-	}
-
-	private void addAssociationToAgm(AgmAlleleAssociation association) {
-		AffectedGenomicModel agm = association.getAgmAssociationSubject();
-		List<AgmAlleleAssociation> currentAssociations = agm.getComponents();
-		if (currentAssociations == null) {
-			currentAssociations = new ArrayList<>();
-			agm.setComponents(currentAssociations);
-		}
-
-		List<Long> currentAssociationIds = new ArrayList<>();
-		for (AgmAlleleAssociation aga : currentAssociations) {
-			currentAssociationIds.add(aga.getId());
-		}
-
-		if (!currentAssociationIds.contains(association.getId())) {
-			currentAssociations.add(association);
-		}
 	}
 
 }
