@@ -11,11 +11,13 @@ import org.alliancegenome.curation_api.dao.AlleleDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.exceptions.ValidationException;
+import org.alliancegenome.curation_api.interfaces.base.BasePopularityInterface;
 import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.ingest.dto.AlleleDTO;
+import org.alliancegenome.curation_api.model.input.Pagination;
 import org.alliancegenome.curation_api.response.ObjectResponse;
-import org.alliancegenome.curation_api.services.associations.AlleleGeneAssociationService;
-import org.alliancegenome.curation_api.services.associations.ConstructGenomicEntityAssociationService;
+import org.alliancegenome.curation_api.response.SearchResponse;
+
 import org.alliancegenome.curation_api.services.base.SubmittedObjectCrudService;
 import org.alliancegenome.curation_api.services.validation.AlleleValidator;
 import org.alliancegenome.curation_api.services.validation.dto.AlleleDTOValidator;
@@ -28,16 +30,16 @@ import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 
 @RequestScoped
-public class AlleleService extends SubmittedObjectCrudService<Allele, AlleleDTO, AlleleDAO> {
+public class AlleleService extends SubmittedObjectCrudService<Allele, AlleleDTO, AlleleDAO> implements BasePopularityInterface {
 
-	@Inject AlleleDAO alleleDAO;
-	@Inject AlleleValidator alleleValidator;
-	@Inject AlleleDTOValidator alleleDtoValidator;
-	@Inject DiseaseAnnotationService diseaseAnnotationService;
-	@Inject PersonService personService;
-	@Inject AlleleGeneAssociationService alleleGeneAssociationService;
-	@Inject ConstructGenomicEntityAssociationService constructGenomicEntityAssociationService;
-	@Inject PhenotypeAnnotationService phenotypeAnnotationService;
+	@Inject
+	AlleleDAO alleleDAO;
+	@Inject
+	AlleleValidator alleleValidator;
+	@Inject
+	AlleleDTOValidator alleleDtoValidator;
+	@Inject
+	PersonService personService;
 
 	@Override
 	@PostConstruct
@@ -49,20 +51,20 @@ public class AlleleService extends SubmittedObjectCrudService<Allele, AlleleDTO,
 	@Transactional
 	public ObjectResponse<Allele> update(Allele uiEntity) {
 		Allele dbEntity = alleleValidator.validateAlleleUpdate(uiEntity, false);
-		return new ObjectResponse<Allele>(dbEntity);
+		return new ObjectResponse<>(dbEntity);
 	}
 
 	@Transactional
 	public ObjectResponse<Allele> updateDetail(Allele uiEntity) {
 		Allele dbEntity = alleleValidator.validateAlleleUpdate(uiEntity, true);
-		return new ObjectResponse<Allele>(dbEntity);
+		return new ObjectResponse<>(dbEntity);
 	}
 
 	@Override
 	@Transactional
 	public ObjectResponse<Allele> create(Allele uiEntity) {
 		Allele dbEntity = alleleValidator.validateAlleleCreate(uiEntity);
-		return new ObjectResponse<Allele>(dbEntity);
+		return new ObjectResponse<>(dbEntity);
 	}
 
 	public Allele upsert(AlleleDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
@@ -116,6 +118,20 @@ public class AlleleService extends SubmittedObjectCrudService<Allele, AlleleDTO,
 		List<Long> ids = alleleDAO.findIdsByParams(params);
 		ids.removeIf(Objects::isNull);
 		return ids;
+	}
+
+	@Transactional
+	public void updatePopularity(String curie, Double popularity) {
+		SearchResponse<Allele> searchResponse = findByField("primaryExternalId", curie);
+
+		if (searchResponse != null) {
+			Allele allele = searchResponse.getSingleResult();
+			allele.setPopularity(popularity);
+		}
+	}
+
+	public SearchResponse<Allele> findAllAllelesWithConstructs(Pagination pagination, HashMap<String, Object> params) {
+		return alleleDAO.findAllAllelesWithConstructs(pagination, params);
 	}
 
 }

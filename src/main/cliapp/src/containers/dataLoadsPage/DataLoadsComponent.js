@@ -1,5 +1,5 @@
-import React, { useReducer, useRef, useState, useContext } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import React, { useReducer, useRef, useState } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { DataTable } from 'primereact/datatable';
 import Moment from 'react-moment';
 import { Column } from 'primereact/column';
@@ -17,8 +17,7 @@ import { Button } from 'primereact/button';
 import { NewBulkLoadForm } from './NewBulkLoadForm';
 import { NewBulkLoadGroupForm } from './NewBulkLoadGroupForm';
 import { HistoryDialog } from './HistoryDialog';
-import { useQueryClient } from '@tanstack/react-query';
-import { SiteContext } from '../layout/SiteContext';
+import { useApiVersion } from '../../service/SiteQueryHooks';
 import { LoadingOverlay } from '../../components/LoadingOverlay';
 import moment from 'moment-timezone';
 import { NumberTemplate } from '../../components/Templates/NumberTemplate';
@@ -39,7 +38,9 @@ export const DataLoadsComponent = () => {
 		}
 	};
 
-	const { apiVersion } = useContext(SiteContext);
+	const queryClient = useQueryClient();
+	const { data: apiVersion } = useApiVersion(authState);
+
 	const [isLoading, setIsLoading] = useState(false);
 	const [groups, setGroups] = useState({});
 	const [errorLoads, setErrorLoads] = useState([]);
@@ -61,8 +62,6 @@ export const DataLoadsComponent = () => {
 	const [uploadConfirmDialog, setUploadConfirmDialog] = useState(false);
 
 	const [newBulkLoad, bulkLoadDispatch] = useReducer(bulkLoadReducer, {});
-
-	const queryClient = useQueryClient();
 
 	let dataLoadService = null;
 	const toast = useRef(null);

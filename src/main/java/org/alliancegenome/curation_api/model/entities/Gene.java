@@ -18,7 +18,10 @@ import org.alliancegenome.curation_api.model.entities.slotAnnotations.GeneSynony
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.GeneSystematicNameSlotAnnotation;
 import org.alliancegenome.curation_api.view.View;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
+import org.hibernate.search.engine.backend.types.Projectable;
+import org.hibernate.search.engine.backend.types.Sortable;
 import org.hibernate.search.mapper.pojo.automaticindexing.ReindexOnUpdate;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.GenericField;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmbedded;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexingDependency;
@@ -67,6 +70,9 @@ import lombok.ToString;
 @AGRCurationSchemaVersion(min = "1.5.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { GenomicEntity.class }, partial = true)
 @Table(indexes = { @Index(name = "gene_genetype_index", columnList = "geneType_id") })
 public class Gene extends GenomicEntity {
+
+	@GenericField(projectable = Projectable.YES, sortable = Sortable.YES)
+	private Double popularity;
 
 	@IndexedEmbedded(includePaths = {"curie", "name", "secondaryIdentifiers", "synonyms.name", "namespace",
 			"curie_keyword", "name_keyword", "secondaryIdentifiers_keyword", "synonyms.name_keyword", "namespace_keyword" })
@@ -131,13 +137,6 @@ public class Gene extends GenomicEntity {
 	@JsonView({ View.FieldsAndLists.class, View.GeneView.class, View.GeneSummaryDocument.class })
 	private List<GeneSecondaryIdSlotAnnotation> geneSecondaryIds;
 
-	@IndexedEmbedded(
-		includePaths = {"alleleAssociationSubject.curie", "alleleAssociationSubject.alleleSymbol.displayText", "alleleAssociationSubject.alleleSymbol.formatText", "alleleAssociationSubject.alleleFullName.displayText",
-			"alleleAssociationSubject.alleleFullName.formatText", "alleleAssociationSubject.curie_keyword", "alleleAssociationSubject.alleleSymbol.displayText_keyword", "alleleAssociationSubject.alleleSymbol.formatText_keyword",
-			"alleleAssociationSubject.alleleFullName.displayText_keyword", "alleleAssociationSubject.alleleFullName.formatText_keyword", "alleleAssociationSubject.primaryExternalId", "alleleAssociationSubject.modInternalId",
-			"alleleAssociationSubject.primaryExternalId_keyword", "alleleAssociationSubject.modInternalId_keyword"
-		}
-	)
 	@OneToMany(mappedBy = "alleleGeneAssociationObject", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonView({ View.FieldsAndLists.class, View.GeneDetailView.class })
 	private List<AlleleGeneAssociation> alleleGeneAssociations;

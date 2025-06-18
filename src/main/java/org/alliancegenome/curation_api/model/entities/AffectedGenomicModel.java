@@ -101,13 +101,6 @@ public class AffectedGenomicModel extends GenomicEntity {
 	@JsonView({View.FieldsAndLists.class, View.AffectedGenomicModelDetailView.class})
 	private List<AgmSequenceTargetingReagentAssociation> agmSequenceTargetingReagentAssociations;
 
-	@IndexedEmbedded(includePaths = {
-		"agmAlleleAssociationObject.curie", "agmAlleleAssociationObject.primaryExternalId", "agmAlleleAssociationObject.modInternalId", "agmAlleleAssociationObject.curie_keyword", "agmAlleleAssociationObject.primaryExternalId_keyword", "agmAlleleAssociationObject.modInternalId_keyword",
-		"agmAlleleAssociationObject.alleleSymbol.formatText", "agmAlleleAssociationObject.alleleSymbol.displayText", "agmAlleleAssociationObject.alleleSymbol.formatText_keyword", "agmAlleleAssociationObject.alleleSymbol.displayText_keyword",
-		"agmAlleleAssociationObject.alleleFullName.formatText", "agmAlleleAssociationObject.alleleFullName.displayText", "agmAlleleAssociationObject.alleleFullName.formatText_keyword", "agmAlleleAssociationObject.alleleFullName.displayText_keyword",
-		"agmAlleleAssociationObject.alleleSynonyms.formatText", "agmAlleleAssociationObject.alleleSynonyms.displayText", "agmAlleleAssociationObject.alleleSynonyms.formatText_keyword", "agmAlleleAssociationObject.alleleSynonyms.displayText_keyword",
-		"agmAlleleAssociationObject.alleleSecondaryIds.secondaryId", "agmAlleleAssociationObject.alleleSecondaryIds.secondaryId_keyword"
-	})
 	@OneToMany(mappedBy = "agmAssociationSubject", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonView({View.FieldsAndLists.class, View.AffectedGenomicModelDetailView.class})
 	private List<AgmAlleleAssociation> components;
