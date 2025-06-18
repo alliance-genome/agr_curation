@@ -53,10 +53,6 @@ public class AgmAlleleAssociationService extends BaseAssociationDTOCrudService<A
 	@Transactional
 	public AgmAlleleAssociation upsert(AgmAlleleAssociationDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
 		AgmAlleleAssociation association = agmAlleleAssociationDtoValidator.validateAgmAlleleAssociationDTO(dto, dataProvider);
-		if (association != null) {
-			addAssociationToAgm(association);
-		}
-
 		return association;
 	}
 
@@ -65,7 +61,6 @@ public class AgmAlleleAssociationService extends BaseAssociationDTOCrudService<A
 		params.put(EntityFieldConstants.AGM_ASSOCIATION_SUBJECT_DATA_PROVIDER, dataProvider.sourceOrganization);
 		List<Long> associationIds = agmAlleleAssociationDAO.findIdsByParams(params);
 		associationIds.removeIf(Objects::isNull);
-
 		return associationIds;
 	}
 
