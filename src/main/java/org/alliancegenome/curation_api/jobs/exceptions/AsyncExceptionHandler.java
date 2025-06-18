@@ -44,11 +44,12 @@ public class AsyncExceptionHandler implements AsyncObserverExceptionHandler {
 			}
 
 			Log.info("Load File: " + bulkLoadFileHistory.getBulkLoad().getName() + " is failed");
-			throwable.printStackTrace();
 
 		} else {
 			Log.error("Error handling missing for error type: " + observerMethod);
+			
 		}
+		throwable.printStackTrace();
 
 	}
 
