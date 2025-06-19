@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 import org.alliancegenome.curation_api.auth.AuthenticatedUser;
 import org.alliancegenome.curation_api.dao.CrossReferenceDAO;
 import org.alliancegenome.curation_api.dao.SynonymDAO;
-import org.alliancegenome.curation_api.dao.base.BaseEntityDAO;
+import org.alliancegenome.curation_api.dao.base.BaseSQLDAO;
 import org.alliancegenome.curation_api.dao.ontology.OntologyTermClosureDAO;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.Person;
@@ -26,7 +26,7 @@ import org.alliancegenome.curation_api.services.ResourceDescriptorPageService;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 
-public abstract class BaseOntologyTermService<E extends OntologyTerm, D extends BaseEntityDAO<E>> extends BaseEntityCrudService<E, BaseEntityDAO<E>> {
+public abstract class BaseOntologyTermService<E extends OntologyTerm, D extends BaseSQLDAO<E>> extends BaseEntityCrudService<E, BaseSQLDAO<E>> {
 
 	@Inject
 	CrossReferenceDAO crossReferenceDAO;
@@ -154,6 +154,10 @@ public abstract class BaseOntologyTermService<E extends OntologyTerm, D extends 
 			}
 		});
 
+	}
+	
+	public List<Long> getAllIds() {
+		return dao.findIdsByParams(null);
 	}
 
 	public ObjectListResponse<E> getRootNodes() {
