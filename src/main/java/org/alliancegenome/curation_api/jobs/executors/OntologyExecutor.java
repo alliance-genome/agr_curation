@@ -392,7 +392,7 @@ public class OntologyExecutor extends LoadFileExecutor {
 		List<Long> idsToRemove = ListUtils.subtract(ontologyIdsBefore, distinctLoaded);
 		Log.debug("runLoad: Remove: " + idsToRemove.size());
 		
-		String countType = "Terms Deleted";
+		String countType = history.getBulkLoad().getOntologyType() + " Terms Deleted";
 		String loadTypeString = history.getBulkLoad().getOntologyType() + " ontology load";
 
 		long existingDeletes = history.getCount(countType).getTotal() == null ? 0 : history.getCount(countType).getTotal();
