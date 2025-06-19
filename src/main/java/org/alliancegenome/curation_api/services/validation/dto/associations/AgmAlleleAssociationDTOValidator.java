@@ -35,7 +35,7 @@ public class AgmAlleleAssociationDTOValidator extends AuditedObjectDTOValidator<
 	@Inject VocabularyTermService vocabularyTermService;
 	@Inject GenoTermService genoTermService;
 
-	public AgmAlleleAssociation validateAgmAlleleAssociationDTO(AgmAlleleAssociationDTO dto, BackendBulkDataProvider beDataProvider) throws ValidationException {
+	public AgmAlleleAssociation validateAgmAlleleAssociationDTO(AgmAlleleAssociationDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
 		response = new ObjectResponse<AgmAlleleAssociation>();
 
 		List<Long> subjectIds = null;
@@ -91,8 +91,8 @@ public class AgmAlleleAssociationDTOValidator extends AuditedObjectDTOValidator<
 					AffectedGenomicModel subject = agmService.findByIdentifierString(dto.getAgmSubjectIdentifier());
 					if (subject == null) {
 						response.addErrorMessage("agm_identifier", ValidationConstants.INVALID_MESSAGE + " (" + dto.getAgmSubjectIdentifier() + ")");
-					} else if (beDataProvider != null && !subject.getDataProvider().getAbbreviation().equals(beDataProvider.sourceOrganization)) {
-						response.addErrorMessage("agm_identifier", ValidationConstants.INVALID_MESSAGE + " for " + beDataProvider.name() + " load (" + dto.getAgmSubjectIdentifier() + ")");
+					} else if (dataProvider != null && !subject.getDataProvider().getAbbreviation().equals(dataProvider.sourceOrganization)) {
+						response.addErrorMessage("agm_identifier", ValidationConstants.INVALID_MESSAGE + " for " + dataProvider.name() + " load (" + dto.getAgmSubjectIdentifier() + ")");
 					} else {
 						association.setAgmAssociationSubject(subject);
 					}
@@ -103,8 +103,8 @@ public class AgmAlleleAssociationDTOValidator extends AuditedObjectDTOValidator<
 					Allele object = alleleService.findByIdentifierString(dto.getAlleleIdentifier());
 					if (object == null) {
 						response.addErrorMessage("allele_identifier", ValidationConstants.INVALID_MESSAGE + " (" + dto.getAlleleIdentifier() + ")");
-					} else if (beDataProvider != null && !object.getDataProvider().getAbbreviation().equals(beDataProvider.sourceOrganization)) {
-						response.addErrorMessage("allele_identifier", ValidationConstants.INVALID_MESSAGE + " for " + beDataProvider.name() + " load (" + dto.getAlleleIdentifier() + ")");
+					} else if (dataProvider != null && !object.getDataProvider().getAbbreviation().equals(dataProvider.sourceOrganization)) {
+						response.addErrorMessage("allele_identifier", ValidationConstants.INVALID_MESSAGE + " for " + dataProvider.name() + " load (" + dto.getAlleleIdentifier() + ")");
 					} else {
 						association.setAgmAlleleAssociationObject(object);
 					}
