@@ -12,7 +12,7 @@ import org.alliancegenome.curation_api.services.base.SubmittedObjectCrudService;
 
 public abstract class SubmittedObjectCrudController<S extends SubmittedObjectCrudService<E, T, D>, E extends SubmittedObject, T extends BaseDTO, D extends BaseEntityDAO<E>> extends BaseEntityCrudController<S, E, D> implements BaseSubmittedObjectCrudInterface<E>, BaseUpsertControllerInterface<E, T> {
 
-	protected SubmittedObjectCrudService<E, T, D> service;
+	private SubmittedObjectCrudService<E, T, D> service;
 
 	@Override
 	protected void setService(S service) {
