@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import org.alliancegenome.curation_api.dao.associations.ConstructGenomicEntityAssociationDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.jobs.executors.LoadFileExecutor;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
@@ -22,7 +21,6 @@ import lombok.extern.jbosslog.JBossLog;
 @ApplicationScoped
 public class ConstructGenomicEntityAssociationExecutor extends LoadFileExecutor {
 
-	@Inject ConstructGenomicEntityAssociationDAO constructGenomicEntityAssociationDAO;
 	@Inject ConstructGenomicEntityAssociationService constructGenomicEntityAssociationService;
 
 	public void execLoad(BulkLoadFileHistory bulkLoadFileHistory, Boolean cleanUp) {
