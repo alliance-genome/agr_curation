@@ -187,7 +187,7 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
 				currentTerm.setAncestors(new HashSet<>(ancestors));
 			}
 
-			for (OWLClass childTermNode : reasoner.getSubClasses(currentTreeNode, true).entities().collect(Collectors.toList())) {
+			for (OWLClass childTermNode : reasoner.getSubClasses(currentTreeNode, false).entities().collect(Collectors.toList())) {
 
 				if (!childTermNode.equals(currentTreeNode)) {
 					try {
