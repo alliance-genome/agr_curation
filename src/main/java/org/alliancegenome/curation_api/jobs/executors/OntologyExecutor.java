@@ -1,12 +1,18 @@
 package org.alliancegenome.curation_api.jobs.executors;
 
 import java.io.FileInputStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 import java.util.zip.GZIPInputStream;
 
 import org.alliancegenome.curation_api.dao.loads.BulkLoadFileDAO;
+import org.alliancegenome.curation_api.dao.loads.BulkLoadFileExceptionDAO;
+import org.alliancegenome.curation_api.dao.loads.BulkLoadFileHistoryDAO;
 import org.alliancegenome.curation_api.enums.OntologyBulkLoadType;
+import org.alliancegenome.curation_api.exceptions.ObjectUpdateException.ObjectUpdateExceptionData;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
 import org.alliancegenome.curation_api.model.entities.ontology.OntologyTerm;
 import org.alliancegenome.curation_api.services.base.BaseOntologyTermService;
@@ -57,14 +63,16 @@ import org.alliancegenome.curation_api.services.ontology.ZfaTermService;
 import org.alliancegenome.curation_api.services.ontology.ZfsTermService;
 import org.alliancegenome.curation_api.services.processing.LoadProcessDisplayService;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
+import org.apache.commons.collections4.ListUtils;
 
+import io.quarkus.logging.Log;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import lombok.extern.jbosslog.JBossLog;
 
 @JBossLog
 @ApplicationScoped
-public class OntologyExecutor {
+public class OntologyExecutor extends LoadFileExecutor {
 
 	@Inject
 	XcoTermService xcoTermService;
@@ -155,6 +163,10 @@ public class OntologyExecutor {
 
 	@Inject
 	BulkLoadFileDAO bulkLoadFileDAO;
+	@Inject
+	BulkLoadFileHistoryDAO bulkLoadFileHistoryDAO;
+	@Inject
+	BulkLoadFileExceptionDAO bulkLoadFileExceptionDAO;
 	@Inject
 	LoadProcessDisplayService loadProcessDisplayService;
 
@@ -310,6 +322,9 @@ public class OntologyExecutor {
 		bulkLoadFileHistory.setCount(ontologyType + " Terms", termMap.size());
 		bulkLoadFileHistory.setCount(ontologyType + " Closure", termMap.size());
 		bulkLoadFileHistory.setCount(ontologyType + " Counts", termMap.size());
+		
+		List<Long> ontologyIdsBefore = service.getAllIds();
+		List<Long> ontologyIdsLoaded = new ArrayList<>();
 
 		String countType = null;
 
@@ -318,7 +333,8 @@ public class OntologyExecutor {
 		ph.startProcess(bulkLoadFileHistory.getBulkLoad().getName() + ": " + ontologyType.getClazz().getSimpleName() + " Terms", termMap.size());
 		countType = ontologyType + " Terms";
 		for (Entry<String, ? extends OntologyTerm> entry : termMap.entrySet()) {
-			service.processUpdate(entry.getValue());
+			OntologyTerm term = service.processUpdate(entry.getValue());
+			ontologyIdsLoaded.add(term.getId());
 			bulkLoadFileHistory.incrementCompleted(countType);
 			ph.progressProcess();
 			if (Thread.currentThread().isInterrupted()) {
@@ -327,6 +343,8 @@ public class OntologyExecutor {
 			}
 		}
 		ph.finishProcess();
+		
+		runCleanup(service, bulkLoadFileHistory, ontologyIdsBefore, ontologyIdsLoaded);
 
 		ProcessDisplayHelper ph1 = new ProcessDisplayHelper();
 		ph.addDisplayHandler(loadProcessDisplayService);
@@ -362,5 +380,49 @@ public class OntologyExecutor {
 			}
 		}
 		ph2.finishProcess();
+	}
+
+	private void runCleanup(BaseOntologyTermService service, BulkLoadFileHistory history,
+			List<Long> ontologyIdsBefore, List<Long> ontologyIdsLoaded) {
+		Log.debug("runLoad: After: " + ontologyIdsLoaded.size());
+
+		List<Long> distinctLoaded = ontologyIdsLoaded.stream().distinct().collect(Collectors.toList());
+		Log.debug("runLoad: Distinct: " + distinctLoaded.size());
+
+		List<Long> idsToRemove = ListUtils.subtract(ontologyIdsBefore, distinctLoaded);
+		Log.debug("runLoad: Remove: " + idsToRemove.size());
+		
+		String countType = "Terms Deleted";
+		String loadTypeString = history.getBulkLoad().getOntologyType() + " ontology load";
+
+		long existingDeletes = history.getCount(countType).getTotal() == null ? 0 : history.getCount(countType).getTotal();
+		history.setCount(countType, idsToRemove.size() + existingDeletes);
+
+		ProcessDisplayHelper ph = new ProcessDisplayHelper(10000);
+		ph.startProcess("Deletion/deprecation of: " + loadTypeString, idsToRemove.size());
+		updateHistory(history);
+		for (Long id : idsToRemove) {
+			try {
+				service.deprecateOrDelete(id, false, loadTypeString, false);
+				history.incrementCompleted(countType);
+			} catch (Exception e) {
+				e.printStackTrace();
+				history.incrementFailed(countType);
+				addException(history, new ObjectUpdateExceptionData("{ \"id\": " + id + "}", e.getMessage(), e.getStackTrace()));
+			}
+			if (history.getErrorRate(countType) > 0.25) {
+				Log.error(countType + " failure rate > 25% aborting load");
+				failLoadAboveErrorRateCutoff(history);
+				break;
+			}
+			ph.progressProcess();
+			if (Thread.currentThread().isInterrupted()) {
+				history.setErrorMessage("Thread isInterrupted");
+				throw new RuntimeException("Thread isInterrupted");
+			}
+		}
+		bulkLoadFileHistoryDAO.merge(history);
+		updateExceptions(history);
+		ph.finishProcess();
 	}
 }
