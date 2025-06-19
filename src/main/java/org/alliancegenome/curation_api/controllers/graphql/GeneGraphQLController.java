@@ -1,4 +1,4 @@
-package org.alliancegenome.curation_api.controllers.crud;
+package org.alliancegenome.curation_api.controllers.graphql;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -18,12 +18,12 @@ import jakarta.inject.Inject;
 @GraphQLApi
 @Namespace("gene")
 @Description("Gene operations")
-public class GraphQLController {
+public class GeneGraphQLController {
 
 	@Inject GeneService geneService;
 	
 	@Query
-	public ObjectResponse<Gene> getGeneByIdentifier(String geneId) {
+	public ObjectResponse<Gene> geneByIdentifier(String geneId) {
 		return geneService.getByIdentifier(geneId);
 	}
 
@@ -33,4 +33,5 @@ public class GraphQLController {
 		HashMap<String, Object> params2 = new HashMap<String, Object>(params);
 		return geneService.findByParams(pagination, params2);
 	}
+
 }
