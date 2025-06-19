@@ -10,7 +10,7 @@ export function useVocabularyTermSetService(vocabularyLabel) {
 	useQuery(
 		['terms', vocabularyLabel],
 		() => {
-			return searchService.find('vocabularyterm', 15, 0, { 'vocabularyTermSets.vocabularyLabel': vocabularyLabel });
+			return searchService.find('vocabularyterm', 30, 0, { 'vocabularyTermSets.vocabularyLabel': vocabularyLabel });
 		},
 		{
 			onSuccess: (data) => {
