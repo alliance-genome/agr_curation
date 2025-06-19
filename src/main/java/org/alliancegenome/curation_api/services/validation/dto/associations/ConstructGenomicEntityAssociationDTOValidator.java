@@ -100,9 +100,10 @@ public class ConstructGenomicEntityAssociationDTOValidator extends EvidenceAssoc
 						association.setConstructGenomicEntityAssociationObject(object);
 					}
 				}
-				association = validateEvidenceAssociationDTO(association, dto);
 				
 			}
+			
+			association = validateEvidenceAssociationDTO(association, dto);
 			
 			if (association.getRelatedNotes() != null) {
 				association.getRelatedNotes().clear();
