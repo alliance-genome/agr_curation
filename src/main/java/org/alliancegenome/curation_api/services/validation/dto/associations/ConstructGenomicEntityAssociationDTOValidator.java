@@ -33,7 +33,7 @@ public class ConstructGenomicEntityAssociationDTOValidator extends EvidenceAssoc
 	@Inject GenomicEntityService genomicEntityService;
 	@Inject ConstructGenomicEntityAssociationDAO constructGenomicEntityAssociationDAO;
 
-	public ConstructGenomicEntityAssociation validateConstructGenomicEntityAssociationDTO(ConstructGenomicEntityAssociationDTO dto, BackendBulkDataProvider beDataProvider) throws ValidationException {
+	public ConstructGenomicEntityAssociation validateConstructGenomicEntityAssociationDTO(ConstructGenomicEntityAssociationDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
 		response = new ObjectResponse<ConstructGenomicEntityAssociation>();
 		
 		Construct construct = null;
@@ -42,8 +42,8 @@ public class ConstructGenomicEntityAssociationDTOValidator extends EvidenceAssoc
 			if (construct == null) {
 				response.addErrorMessage("construct_identifier", ValidationConstants.INVALID_MESSAGE);
 			} else {
-				if (beDataProvider != null && !construct.getDataProvider().getAbbreviation().equals(beDataProvider.sourceOrganization)) {
-					response.addErrorMessage("construct_identifier", ValidationConstants.INVALID_MESSAGE + " for " + beDataProvider.name() + " load");
+				if (dataProvider != null && !construct.getDataProvider().getAbbreviation().equals(dataProvider.sourceOrganization)) {
+					response.addErrorMessage("construct_identifier", ValidationConstants.INVALID_MESSAGE + " for " + dataProvider.name() + " load");
 					return null;
 				}
 			}
