@@ -157,7 +157,7 @@ public abstract class BaseOntologyTermService<E extends OntologyTerm, D extends 
 	}
 	
 	public List<Long> getAllIds() {
-		return dao.findIdsByParams(null);
+		return dao.findIdsByParams(new HashMap<String,Object>());
 	}
 
 	public ObjectListResponse<E> getRootNodes() {
