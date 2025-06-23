@@ -9,13 +9,16 @@ import org.alliancegenome.curation_api.dao.PersonDAO;
 import org.alliancegenome.curation_api.dao.base.BaseEntityDAO;
 import org.alliancegenome.curation_api.dao.base.BaseSQLDAO;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
+import org.alliancegenome.curation_api.model.entities.Annotation;
 import org.alliancegenome.curation_api.model.entities.Person;
 import org.alliancegenome.curation_api.model.entities.base.AuditedObject;
+import org.alliancegenome.curation_api.model.entities.base.SubmittedObject;
 import org.alliancegenome.curation_api.model.input.Pagination;
 import org.alliancegenome.curation_api.response.ObjectListResponse;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.PersonService;
+import org.apache.commons.lang3.StringUtils;
 
 import io.quarkus.logging.Log;
 import jakarta.inject.Inject;
@@ -153,6 +156,16 @@ public abstract class BaseEntityCrudService<E extends AuditedObject, D extends B
 			}
 			Log.error(errorMessage);
 			return null;
+		}
+		
+		if (object instanceof SubmittedObject submittedObject) {
+		    if (StringUtils.isNotBlank(submittedObject.getCurie())) {
+		        deprecate = true;
+		    }
+		} else if (object instanceof Annotation annotation) {
+		    if (StringUtils.isNotBlank(annotation.getCurie())) {
+		        deprecate = true;
+		    }
 		}
 
 		if (deprecate) {

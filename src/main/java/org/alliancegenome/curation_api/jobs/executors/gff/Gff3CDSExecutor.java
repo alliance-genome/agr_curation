@@ -78,9 +78,9 @@ public class Gff3CDSExecutor extends Gff3Executor {
 			boolean success = runLoad(bulkLoadFileHistory, gffHeaderData, preProcessedCDSGffData, entityIdsAdded, locationIdsAdded, associationIdsAdded, dataProvider, assemblyId);
 
 			if (success) {
-				runCleanup(cdsService, bulkLoadFileHistory, dataProvider.name(), cdsService.getIdsByDataProvider(dataProvider), entityIdsAdded, "GFF coding sequence");
 				runCleanup(cdsLocationService, bulkLoadFileHistory, dataProvider.name(), cdsLocationService.getIdsByDataProvider(dataProvider), locationIdsAdded, "GFF coding sequence genomic location association");
 				runCleanup(transcriptCdsService, bulkLoadFileHistory, dataProvider.name(), transcriptCdsService.getIdsByDataProvider(dataProvider), associationIdsAdded, "GFF transcript coding sequence association");
+				runCleanup(cdsService, bulkLoadFileHistory, dataProvider.name(), cdsService.getIdsByDataProvider(dataProvider), entityIdsAdded, "GFF coding sequence");
 			}
 			bulkLoadFileHistory.finishLoad();
 			updateHistory(bulkLoadFileHistory);

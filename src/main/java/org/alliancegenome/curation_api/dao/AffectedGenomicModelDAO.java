@@ -31,7 +31,7 @@ public class AffectedGenomicModelDAO extends BaseSQLDAO<AffectedGenomicModel> {
 		}
 		
 		Map<String, Object> dgmParams = new HashMap<>();
-		dgmParams.put("diseaseGeneticModifiers.id", agmId);
+		dgmParams.put("diseaseGeneticModifierAgms.id", agmId);
 		results = diseaseAnnotationDAO.findIdsByParams(dgmParams);
 		return CollectionUtils.isNotEmpty(results);
 	}
