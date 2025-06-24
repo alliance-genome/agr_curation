@@ -11,6 +11,7 @@ import org.alliancegenome.curation_api.model.document.es.Stage;
 import org.alliancegenome.curation_api.model.entities.GeneExpressionAnnotation;
 import org.alliancegenome.curation_api.model.entities.GeneExpressionExperiment;
 import org.alliancegenome.curation_api.model.entities.Reference;
+import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.ConsolidatedGeneExpressionFmsDTO;
 import org.alliancegenome.curation_api.services.ReferenceService;
 import org.alliancegenome.curation_api.services.helpers.annotations.GeneExpressionAnnotationUniqueIdHelper;
@@ -69,8 +70,8 @@ public class ExpressionDetailBuilder {
 
 		// TODO
 		expressionDetail.addTermIDs(List.of());
-		expressionDetail.setUberonTermIDs(List.of());
-		expressionDetail.setGoTermIDs(List.of());
+		expressionDetail.setUberonTermIDs(annotation.getExpressionPattern().getWhenExpressed().getStageUberonSlimTerms().stream().map(VocabularyTerm::getAbbreviation).toList());
+		expressionDetail.setGoTermIDs(List.of(annotation.getExpressionPattern().getWhereExpressed().getCellularComponentRibbonTerm().getName()));
 
 		return expressionDetail;
 	}
