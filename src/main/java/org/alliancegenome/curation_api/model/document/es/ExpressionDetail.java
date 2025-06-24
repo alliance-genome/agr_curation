@@ -22,27 +22,16 @@ public class ExpressionDetail extends ESDocument implements Comparable<Expressio
 	{
 		category = "gene_expression_annotation";
 	}
-	@JsonView({View.ExpressionDetail.class})
 	private Gene gene;
-	@JsonView({View.ExpressionDetail.class})
 	private String termName;
-	@JsonView({View.ExpressionDetail.class})
 	private Stage stage;
-	@JsonView({View.ExpressionDetail.class})
 	private MMOTerm assay;
-	@JsonView({View.ExpressionDetail.class})
 	private TreeSet<Publication> publications;
-	@JsonView({View.ExpressionDetail.class})
 	private String dataProvider;
-	@JsonView({View.ExpressionDetail.class})
 	private List<CrossReference> crossReferences;
-	@JsonView({View.ExpressionDetail.class})
 	private String stageTermID;
-	@JsonView({View.ExpressionDetail.class})
 	private List<String> termIDs = new java.util.ArrayList<>(6);
-	@JsonView({View.ExpressionDetail.class})
 	private List<String> uberonTermIDs = new java.util.ArrayList<>(6);
-	@JsonView({View.ExpressionDetail.class})
 	private List<String> goTermIDs = new java.util.ArrayList<>(6);
 
 	public void addTermIDs(Collection<String> ids) {
