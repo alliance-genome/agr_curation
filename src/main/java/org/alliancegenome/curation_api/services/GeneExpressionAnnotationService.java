@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.alliancegenome.curation_api.config.RestDefaultObjectMapper;
 import org.alliancegenome.curation_api.constants.EntityFieldConstants;
 import org.alliancegenome.curation_api.dao.GeneExpressionAnnotationDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
@@ -24,7 +23,6 @@ import org.alliancegenome.curation_api.services.base.BaseAnnotationCrudService;
 import org.alliancegenome.curation_api.services.helpers.annotations.GeneExpressionAnnotationUniqueIdHelper;
 import org.alliancegenome.curation_api.services.validation.dto.fms.GeneExpressionAnnotationFmsDTOValidator;
 import org.apache.commons.lang3.StringUtils;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.RequestScoped;
@@ -40,7 +38,6 @@ public class GeneExpressionAnnotationService extends BaseAnnotationCrudService<G
 	@Inject GeneExpressionExperimentService geneExpressionExperimentService;
 	@Inject GeneExpressionAnnotationUniqueIdHelper geneExpressionAnnotationUniqueIdHelper;
 	@Inject ExpressionDetailBuilder expressionDetailBuilder;
-	private ObjectMapper mapper;
 
 	@Getter
 	private Map<String, Set<String>> experiments;
@@ -53,8 +50,6 @@ public class GeneExpressionAnnotationService extends BaseAnnotationCrudService<G
 		setSQLDao(geneExpressionAnnotationDAO);
 		experiments = new HashMap<>();
 		crossReferences = new HashMap<>();
-		mapper = new RestDefaultObjectMapper().getMapper();
-
 	}
 
 	public List<Long> getAnnotationIdsByDataProvider(BackendBulkDataProvider dataProvider) {
