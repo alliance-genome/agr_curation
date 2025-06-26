@@ -250,9 +250,9 @@ const alleleReducer = (draft, action) => {
 			draft.submitted = true;
 			draft.errorMessages = {};
 
-			states = Object.values(draft.entityStates);
+			let submitStates = Object.values(draft.entityStates);
 
-			states.forEach((state) => {
+			submitStates.forEach((state) => {
 				state.errorMessages = {};
 			});
 			break;

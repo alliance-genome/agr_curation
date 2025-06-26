@@ -43,6 +43,7 @@ public enum BackendBulkLoadType {
 	EXPRESSION("json"),
 	HTPDATASET("json"),
 	HTPDATASAMPLE("json"),
+	GOOGLE_ANALYTICS("data"),
 	;
 
 	public String fileExtension;

@@ -129,12 +129,13 @@ export class DataLoadService extends BaseAuthService {
 				'CONSTRUCT_ASSOCIATION',
 				'AGM_ASSOCIATION',
 			],
+			BulkGoogleAnalyticsLoad: ['GOOGLE_ANALYTICS'],
 		};
 		return bulkLoadTypes[loadType];
 	}
 
 	getLoadTypes() {
-		return ['BulkFMSLoad', 'BulkURLLoad', 'BulkManualLoad'];
+		return ['BulkFMSLoad', 'BulkURLLoad', 'BulkManualLoad', 'BulkGoogleAnalyticsLoad'];
 	}
 
 	getOntologyTypes() {

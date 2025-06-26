@@ -72,6 +72,7 @@ public class ConstructGenomicEntityAssociationService extends BaseAssociationDTO
 		return new ObjectResponse<ConstructGenomicEntityAssociation>(aga);
 	}
 
+	@Override
 	@Transactional
 	public ConstructGenomicEntityAssociation upsert(ConstructGenomicEntityAssociationDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
 		ConstructGenomicEntityAssociation association = constructGenomicEntityAssociationDtoValidator.validateConstructGenomicEntityAssociationDTO(dto, dataProvider);
@@ -87,6 +88,7 @@ public class ConstructGenomicEntityAssociationService extends BaseAssociationDTO
 		return associationIds;
 	}
 
+	@Override
 	@Transactional
 	public ConstructGenomicEntityAssociation deprecateOrDelete(Long id, Boolean throwApiError, String requestSource, Boolean deprecate) {
 		ConstructGenomicEntityAssociation object = dao.getShallowEntity(ConstructGenomicEntityAssociation.class, id);
