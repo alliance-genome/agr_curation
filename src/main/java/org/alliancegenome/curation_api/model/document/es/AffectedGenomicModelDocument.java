@@ -13,6 +13,7 @@ import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.ontology.DOTerm;
 import org.alliancegenome.curation_api.view.View;
 import com.fasterxml.jackson.annotation.JsonView;
+import org.apache.commons.collections4.CollectionUtils;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -47,13 +48,13 @@ public class AffectedGenomicModelDocument extends ESDocument {
 		Set<ConditionRelation> modifierRelations = relations.stream().filter(conditionRelation -> modifierRelationshipTypes.contains(conditionRelation.getConditionRelationType().getName())).collect(Collectors.toSet());
 		Set<ConditionRelation> conditionRelationSet = relations.stream().filter(conditionRelation -> !modifierRelationshipTypes.contains(conditionRelation.getConditionRelationType().getName())).collect(Collectors.toSet());
 
-		if (org.apache.commons.collections4.CollectionUtils.isNotEmpty(modifierRelations)) {
+		if (CollectionUtils.isNotEmpty(modifierRelations)) {
 			if (conditionModifiers == null) {
 				conditionModifiers = new HashSet<>();
 			}
 			conditionModifiers.addAll(modifierRelations);
 		}
-		if (org.apache.commons.collections4.CollectionUtils.isNotEmpty(conditionRelationSet)) {
+		if (CollectionUtils.isNotEmpty(conditionRelationSet)) {
 			if (conditionRelations == null) {
 				conditionRelations = new HashSet<>();
 			}
