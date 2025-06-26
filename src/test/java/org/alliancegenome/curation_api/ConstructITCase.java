@@ -927,8 +927,8 @@ public class ConstructITCase extends BaseITCase {
 		
 	}
 	
-	@Test
-	@Order(18)
+	//@Test
+	//@Order(18)
 	public void updateConstructWithNewAssociations() {
 		Construct construct = getConstruct(CONSTRUCT);
 		

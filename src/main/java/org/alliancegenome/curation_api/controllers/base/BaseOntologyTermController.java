@@ -3,7 +3,7 @@ package org.alliancegenome.curation_api.controllers.base;
 import java.util.Map;
 import java.util.Set;
 
-import org.alliancegenome.curation_api.dao.base.BaseEntityDAO;
+import org.alliancegenome.curation_api.dao.base.BaseSQLDAO;
 import org.alliancegenome.curation_api.model.entities.ontology.OntologyTerm;
 import org.alliancegenome.curation_api.response.ObjectListResponse;
 import org.alliancegenome.curation_api.services.base.BaseOntologyTermService;
@@ -11,7 +11,7 @@ import org.alliancegenome.curation_api.services.helpers.GenericOntologyLoadConfi
 import org.alliancegenome.curation_api.services.helpers.GenericOntologyLoadHelper;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
 
-public abstract class BaseOntologyTermController<S extends BaseOntologyTermService<E, D>, E extends OntologyTerm, D extends BaseEntityDAO<E>> extends BaseEntityCrudController<S, E, BaseEntityDAO<E>> {
+public abstract class BaseOntologyTermController<S extends BaseOntologyTermService<E, D>, E extends OntologyTerm, D extends BaseSQLDAO<E>> extends BaseEntityCrudController<S, E, BaseSQLDAO<E>> {
 
 	private GenericOntologyLoadHelper<E> loader;
 
