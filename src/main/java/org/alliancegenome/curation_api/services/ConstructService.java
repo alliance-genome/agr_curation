@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 import org.alliancegenome.curation_api.constants.EntityFieldConstants;
 import org.alliancegenome.curation_api.dao.ConstructDAO;
@@ -28,12 +29,15 @@ import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
+import net.nilosplace.process_display.ProcessDisplayHelper;
 
 @RequestScoped
 public class ConstructService extends SubmittedObjectCrudService<Construct, ConstructDTO, ConstructDAO> {
 
 	@Inject
 	ConstructDAO constructDAO;
+	@Inject
+	ReferenceService referenceService;
 	@Inject
 	ConstructValidator constructValidator;
 	@Inject
@@ -46,6 +50,8 @@ public class ConstructService extends SubmittedObjectCrudService<Construct, Cons
 	ConstructComponentSlotAnnotationDAO constructComponentDAO;
 	@Inject
 	ConstructGenomicEntityAssociationService constructGenomicEntityAssociationService;
+
+	private Map<String, Long> constructIdMap = new HashMap<>();
 
 	@Override
 	@PostConstruct
@@ -79,6 +85,7 @@ public class ConstructService extends SubmittedObjectCrudService<Construct, Cons
 		return new ObjectResponse<>(constructDAO.persist(dbEntity));
 	}
 
+	@Override
 	@Transactional
 	public Construct upsert(ConstructDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
 		Construct construct = constructDtoValidator.validateConstructDTO(dto, dataProvider);
@@ -141,8 +148,6 @@ public class ConstructService extends SubmittedObjectCrudService<Construct, Cons
 		return constructIdMap;
 	}
 
-	private Map<String, Long> constructIdMap = new HashMap<>();
-
 	public Long getIdByModID(String modID) {
 		return getConstructIdMap().get(modID);
 	}
@@ -152,5 +157,16 @@ public class ConstructService extends SubmittedObjectCrudService<Construct, Cons
 			return null;
 		}
 		return constructDAO.getShallowEntity(Construct.class, id);
+	}
+
+	public void preLoadReferences(Set<String> refList) {
+		referenceService.cacheReferences();
+		ProcessDisplayHelper ph = new ProcessDisplayHelper();
+		ph.startProcess("Pre Load References", refList.size());
+		for (String curie : refList) {
+			referenceService.retrieveFromDbOrLiteratureService(curie);
+			ph.progressProcess();
+		}
+		ph.finishProcess();
 	}
 }

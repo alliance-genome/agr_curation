@@ -9,6 +9,9 @@ import org.alliancegenome.curation_api.model.entities.AlleleDiseaseAnnotation;
 import org.alliancegenome.curation_api.model.entities.GeneDiseaseAnnotation;
 import org.alliancegenome.curation_api.model.entities.base.AuditedObject;
 import org.apache.commons.collections4.CollectionUtils;
+import org.hibernate.search.engine.backend.types.Projectable;
+import org.hibernate.search.engine.backend.types.Sortable;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.GenericField;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
 
 import jakarta.persistence.Entity;
@@ -36,6 +39,9 @@ public class DOTerm extends OntologyTerm {
 	@ToString.Exclude
 	@OneToMany(mappedBy = "diseaseAnnotationObject")
 	private List<AGMDiseaseAnnotation> agmDiseaseAnnotations;
+
+	@GenericField(projectable = Projectable.YES, sortable = Sortable.YES)
+	private Double popularity;
 
 	public List<GeneDiseaseAnnotation> getPublicGeneDiseaseAnnotations() {
 		if (CollectionUtils.isEmpty(geneDiseaseAnnotations)) {

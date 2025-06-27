@@ -11,10 +11,8 @@ import org.alliancegenome.curation_api.model.entities.slotAnnotations.ConstructS
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.ConstructSynonymSlotAnnotation;
 import org.alliancegenome.curation_api.view.View;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
-import org.hibernate.search.mapper.pojo.automaticindexing.ReindexOnUpdate;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmbedded;
-import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexingDependency;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
@@ -58,8 +56,8 @@ public class Construct extends Reagent {
 	@JsonView({ View.FieldsAndLists.class, View.ConstructView.class })
 	private List<ConstructSynonymSlotAnnotation> constructSynonyms;
 
-	@IndexedEmbedded(includeDepth = 2)
-	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
+	//@IndexedEmbedded(includeDepth = 2)
+	//@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
 	@JsonView({ View.FieldsAndLists.class, View.ConstructView.class })
 	@JoinTable(indexes = {
