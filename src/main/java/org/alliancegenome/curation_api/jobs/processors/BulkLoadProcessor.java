@@ -18,6 +18,7 @@ import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoad;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFile;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
 import org.alliancegenome.curation_api.response.SearchResponse;
+import org.alliancegenome.curation_api.services.GoogleAnalyticsService;
 import org.alliancegenome.curation_api.services.fms.DataFileService;
 import org.alliancegenome.curation_api.util.FileTransferHelper;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
@@ -34,6 +35,8 @@ public class BulkLoadProcessor {
 	@ConfigProperty(name = "bulk.data.loads.s3SecretKey") String s3SecretKey;
 
 	@Inject DataFileService fmsDataFileService;
+
+	@Inject GoogleAnalyticsService googleAnalyticsService;
 
 	@Inject BulkLoadDAO bulkLoadDAO;
 	@Inject BulkLoadFileDAO bulkLoadFileDAO;

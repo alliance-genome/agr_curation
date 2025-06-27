@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 import org.alliancegenome.curation_api.auth.AuthenticatedUser;
 import org.alliancegenome.curation_api.dao.CrossReferenceDAO;
 import org.alliancegenome.curation_api.dao.SynonymDAO;
-import org.alliancegenome.curation_api.dao.base.BaseEntityDAO;
+import org.alliancegenome.curation_api.dao.base.BaseSQLDAO;
 import org.alliancegenome.curation_api.dao.ontology.OntologyTermClosureDAO;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.Person;
@@ -23,11 +23,10 @@ import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.CrossReferenceService;
 import org.alliancegenome.curation_api.services.ResourceDescriptorPageService;
 
-import io.quarkus.logging.Log;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 
-public abstract class BaseOntologyTermService<E extends OntologyTerm, D extends BaseEntityDAO<E>> extends BaseEntityCrudService<E, BaseEntityDAO<E>> {
+public abstract class BaseOntologyTermService<E extends OntologyTerm, D extends BaseSQLDAO<E>> extends BaseEntityCrudService<E, BaseSQLDAO<E>> {
 
 	@Inject
 	CrossReferenceDAO crossReferenceDAO;
@@ -81,7 +80,7 @@ public abstract class BaseOntologyTermService<E extends OntologyTerm, D extends 
 
 	@Transactional
 	public void processUpdateRelationships(Set<OntologyTermClosure> ancestors) {
-		if (ancestors.size() == 0) {
+		if (ancestors == null || ancestors.size() == 0) {
 			return;
 		}
 		Set<OntologyTermClosure> newSet = new HashSet<>();
@@ -155,6 +154,10 @@ public abstract class BaseOntologyTermService<E extends OntologyTerm, D extends 
 			}
 		});
 
+	}
+	
+	public List<Long> getAllIds() {
+		return dao.findIdsByParams(new HashMap<String, Object>());
 	}
 
 	public ObjectListResponse<E> getRootNodes() {
@@ -360,11 +363,11 @@ public abstract class BaseOntologyTermService<E extends OntologyTerm, D extends 
 	}
 
 	public <T extends OntologyTerm> T findSubsetTerm(T childTerm, String subsetName) {
-		Log.info(childTerm + " " + subsetName);
+		//Log.info(childTerm + " " + subsetName);
 		if (childTerm.getSubsets().contains(subsetName)) {
 			return childTerm;
 		}
-		Log.info("getAncestors: " + childTerm.getAncestors());
+		//Log.info("getAncestors: " + childTerm.getAncestors());
 		for (OntologyTermClosure closure : childTerm.getAncestors()) {
 			if (closure.getClosureSubject().getSubsets().contains(subsetName)) {
 				return (T) closure.getClosureSubject();
