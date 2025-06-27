@@ -36,8 +36,6 @@ public class AffectedGenomicModelDocument extends ESDocument {
 	private List<ConditionRelation> conditionRelations;
 	private List<ConditionRelation> conditionModifiers;
 
-	private boolean hasDiseaseAnnotations;
-	private boolean hasPhenotypeAnnotations;
 
 	public void addDiseaseTerm(DOTerm diseaseAnnotationObject) {
 		if (diseaseTerms == null) {
@@ -70,11 +68,11 @@ public class AffectedGenomicModelDocument extends ESDocument {
 		}
 	}
 
-	public boolean hasDiseaseAnnotations() {
+	public boolean isHasDiseaseAnnotations() {
 		return CollectionUtils.isNotEmpty(diseaseTerms);
 	}
 
-	public boolean hasPhenotypeAnnotations() {
+	public boolean isHasPhenotypeAnnotations() {
 		return CollectionUtils.isNotEmpty(associatedPhenotype);
 	}
 }
