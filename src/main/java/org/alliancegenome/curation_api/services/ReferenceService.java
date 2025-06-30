@@ -57,22 +57,27 @@ public class ReferenceService extends BaseEntityCrudService<Reference, Reference
 		Reference reference = null;
 		// Currently 3/10/2025 there is 1 allele with ~3200 references
 		// TODO: come up with a better caching solution than this
+		
 		if (referenceRequest > 3500) {
-			if (referenceCacheMap.isEmpty()) {
-				referenceCacheMap = referenceDAO.getReferenceMap(true);
-			}
-			if (referenceCacheMap.containsKey(curieOrXref)) {
-				reference = referenceCacheMap.get(curieOrXref);
-			} else {
-				Log.debug("Reference not cached, caching reference: (" + curieOrXref + ")");
-				reference = findOrCreateReference(curieOrXref);
-				referenceCacheMap.put(curieOrXref, reference);
-			}
-		} else {
-			reference = findOrCreateReference(curieOrXref);
-			referenceRequest++;
+			cacheReferences();
 		}
+		
+		if (referenceCacheMap.containsKey(curieOrXref)) {
+			return referenceCacheMap.get(curieOrXref);
+		}
+		
+		Log.debug("Reference not cached, caching reference: (" + curieOrXref + ")");
+		reference = findOrCreateReference(curieOrXref);
+		referenceCacheMap.put(curieOrXref, reference);
+		referenceRequest++;
+
 		return reference;
+	}
+	
+	public void cacheReferences() {
+		if (referenceCacheMap.isEmpty()) {
+			referenceCacheMap = referenceDAO.getReferenceMap(true);
+		}
 	}
 
 	@Transactional

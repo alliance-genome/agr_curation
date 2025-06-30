@@ -20,6 +20,7 @@ import org.alliancegenome.curation_api.model.ingest.dto.ConstructDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.slotAnnotions.ConstructComponentSlotAnnotationDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.slotAnnotions.NameSlotAnnotationDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
+import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.helpers.ConstructUniqueIdHelper;
 import org.alliancegenome.curation_api.services.helpers.SlotAnnotationIdentityHelper;
 import org.alliancegenome.curation_api.services.helpers.UniqueIdentifierHelper;
@@ -36,35 +37,49 @@ import jakarta.transaction.Transactional;
 @RequestScoped
 public class ConstructDTOValidator extends ReagentDTOValidator<Construct, ConstructDTO> {
 
-	@Inject ConstructSymbolSlotAnnotationDTOValidator constructSymbolDtoValidator;
-	@Inject ConstructFullNameSlotAnnotationDTOValidator constructFullNameDtoValidator;
-	@Inject ConstructSynonymSlotAnnotationDTOValidator constructSynonymDtoValidator;
-	@Inject ConstructDAO constructDAO;
-	@Inject ConstructComponentSlotAnnotationDTOValidator constructComponentDtoValidator;
-	@Inject SlotAnnotationIdentityHelper identityHelper;
+	@Inject
+	ConstructSymbolSlotAnnotationDTOValidator constructSymbolDtoValidator;
+	@Inject
+	ConstructFullNameSlotAnnotationDTOValidator constructFullNameDtoValidator;
+	@Inject
+	ConstructSynonymSlotAnnotationDTOValidator constructSynonymDtoValidator;
+	@Inject
+	ConstructDAO constructDAO;
+	@Inject
+	ConstructComponentSlotAnnotationDTOValidator constructComponentDtoValidator;
+	@Inject
+	SlotAnnotationIdentityHelper identityHelper;
 
 	@Transactional
 	public Construct validateConstructDTO(ConstructDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
+
 		response = new ObjectResponse<Construct>();
-		
+
 		Construct construct = new Construct();
-		
+
 		String uniqueId = ConstructUniqueIdHelper.getConstructUniqueId(dto);
 		String constructId = UniqueIdentifierHelper.setSubmittedObjectIdentifiers(dto, construct, uniqueId);
 		String identifyingField = UniqueIdentifierHelper.getIdentifyingField(dto);
-		Construct dbConstruct = findDatabaseObject(constructDAO, identifyingField, constructId);
-		if (dbConstruct != null) {
-			construct = dbConstruct;
+
+		boolean existing = false;
+
+		SearchResponse<Construct> resp = constructDAO.findByField(identifyingField, constructId);
+		if (resp != null) {
+			Construct dbConstruct = resp.getSingleResult();
+			if (dbConstruct != null) {
+				construct = dbConstruct;
+				existing = true;
+			}
 		}
-		
+
 		construct.setUniqueId(uniqueId);
 		UniqueIdentifierHelper.setObsoleteAndInternal(dto, construct);
-		
+
 		construct = validateReagentDTO(construct, dto);
-		
+
 		List<Reference> references = validateReferences(dto.getReferenceCuries());
 		construct.setReferences(references);
-		
+
 		ConstructSymbolSlotAnnotation symbol = validateConstructSymbol(construct, dto);
 		construct.setConstructSymbol(symbol);
 
@@ -99,7 +114,11 @@ public class ConstructDTOValidator extends ReagentDTOValidator<Construct, Constr
 			throw new ObjectValidationException(dto, response.errorMessagesString());
 		}
 
-		return constructDAO.persist(construct);
+		if (!existing) {
+			construct = constructDAO.persist(construct);
+		}
+
+		return construct;
 	}
 
 	private ConstructSymbolSlotAnnotation validateConstructSymbol(Construct construct, ConstructDTO dto) {

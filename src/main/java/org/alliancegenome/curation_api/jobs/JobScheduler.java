@@ -27,7 +27,10 @@ import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFile;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadGroup;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkScheduledLoad;
+import org.alliancegenome.curation_api.model.event.index.EndIndexProcessingEvent;
+import org.alliancegenome.curation_api.model.event.index.IndexProcessingEvent;
 import org.alliancegenome.curation_api.response.SearchResponse;
+import org.alliancegenome.curation_api.websocket.IndexProcessingWebsocket;
 import org.apache.commons.collections4.ListUtils;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
@@ -52,24 +55,36 @@ public class JobScheduler {
 	// @Inject
 	// EventBus bus;
 
-	@Inject Event<PendingBulkLoadJobEvent> pendingJobEvents;
+	@Inject
+	Event<PendingBulkLoadJobEvent> pendingJobEvents;
 
-	@Inject Event<StartedBulkLoadJobEvent> startedJobEvents;
+	@Inject
+	Event<StartedBulkLoadJobEvent> startedJobEvents;
 
-	@Inject Event<StartedLoadJobEvent> startedFileJobEvents;
+	@Inject
+	Event<StartedLoadJobEvent> startedFileJobEvents;
 
-	@Inject BulkLoadFileDAO bulkLoadFileDAO;
-	@Inject BulkLoadFileHistoryDAO bulkLoadFileHistoryDAO;
-	@Inject BulkLoadGroupDAO groupDAO;
-	@Inject BulkScheduledLoadDAO bulkScheduledLoadDAO;
+	@Inject
+	BulkLoadFileDAO bulkLoadFileDAO;
+	@Inject
+	BulkLoadFileHistoryDAO bulkLoadFileHistoryDAO;
+	@Inject
+	BulkLoadGroupDAO groupDAO;
+	@Inject
+	BulkScheduledLoadDAO bulkScheduledLoadDAO;
+	@Inject
+	BulkLoadDAO bulkLoadDAO;
+	@Inject
+	BulkLoadFileExceptionDAO bulkLoadFileExceptionDAO;
+	@Inject
+	SlackNotifier slackNotifier;
+	@Inject
+	IndexProcessingWebsocket indexProcessingWebsocket;
 
-	@Inject BulkLoadDAO bulkLoadDAO;
-	@Inject BulkLoadFileExceptionDAO bulkLoadFileExceptionDAO;
-	@Inject SlackNotifier slackNotifier;
-
-	@ConfigProperty(name = "bulk.data.loads.schedulingEnabled") Boolean loadSchedulingEnabled;
-
-	@ConfigProperty(name = "reindex.schedulingEnabled", defaultValue = "false") Boolean reindexSchedulingEnabled;
+	@ConfigProperty(name = "bulk.data.loads.schedulingEnabled")
+	Boolean loadSchedulingEnabled;
+	@ConfigProperty(name = "reindex.schedulingEnabled", defaultValue = "false")
+	Boolean reindexSchedulingEnabled;
 
 	private ZonedDateTime lastCheck;
 	private Semaphore sem = new Semaphore(1);
@@ -120,7 +135,13 @@ public class JobScheduler {
 
 	@Scheduled(every = "1m")
 	public void scheduleCronJobs() {
-		if (loadSchedulingEnabled) {
+		IndexProcessingEvent event = indexProcessingWebsocket.getEvent();
+		Boolean blockedByMassIndexer = true;
+		if (event != null && event instanceof EndIndexProcessingEvent) {
+			blockedByMassIndexer = false;
+		}
+
+		if (loadSchedulingEnabled && !blockedByMassIndexer) {
 			if (sem.tryAcquire()) {
 				ZonedDateTime start = ZonedDateTime.now();
 				// Log.info("scheduleGroupJobs: Scheduling Enabled: " + loadSchedulingEnabled);
@@ -203,7 +224,7 @@ public class JobScheduler {
 			Map<String, List<BulkLoadFileHistory>> groupedByFile = histories.stream().collect(Collectors.groupingBy(history -> history.getBulkLoadFile().getMd5Sum()));
 
 			Map<String, List<BulkLoadFileHistory>> limitedGroups = groupedByFile.entrySet().stream()
-				.collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().stream().sorted((o1, o2) -> o2.getLoadStarted().compareTo(o1.getLoadStarted())).filter(history -> !history.getCounts().isEmpty()).limit(2).collect(Collectors.toList())));
+					.collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().stream().sorted((o1, o2) -> o2.getLoadStarted().compareTo(o1.getLoadStarted())).filter(history -> !history.getCounts().isEmpty()).limit(2).collect(Collectors.toList())));
 
 			List<BulkLoadFileHistory> sortedList = limitedGroups.values().stream().flatMap(List::stream).sorted((o1, o2) -> o2.getLoadStarted().compareTo(o1.getLoadStarted())).collect(Collectors.toList());
 
