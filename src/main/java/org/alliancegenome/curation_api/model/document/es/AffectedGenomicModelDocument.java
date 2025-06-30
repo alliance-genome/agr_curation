@@ -58,7 +58,7 @@ public class AffectedGenomicModelDocument extends ESDocument {
 			if (conditionRelations == null) {
 				conditionRelations = new HashSet<>();
 			}
-			conditionRelations.addAll(modifierRelations);
+			conditionRelations.addAll(conditionRelationSet);
 		}
 	}
 }
