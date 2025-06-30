@@ -2,7 +2,8 @@ package org.alliancegenome.curation_api.model.document.es;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -12,8 +13,8 @@ import org.alliancegenome.curation_api.model.entities.ConditionRelation;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.ontology.DOTerm;
 import org.alliancegenome.curation_api.view.View;
-import com.fasterxml.jackson.annotation.JsonView;
 import org.apache.commons.collections4.CollectionUtils;
+import com.fasterxml.jackson.annotation.JsonView;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -30,16 +31,23 @@ public class AffectedGenomicModelDocument extends ESDocument {
 	private List<String> associatedPhenotype = new ArrayList<>();
 
 	private Gene gene;
-	private Set<DOTerm> diseaseTerms;
+	private List<DOTerm> diseaseTerms;
 	private String dataProvider;
-	private Set<ConditionRelation> conditionRelations;
-	private Set<ConditionRelation> conditionModifiers;
+	private List<ConditionRelation> conditionRelations;
+	private List<ConditionRelation> conditionModifiers;
+
+	private boolean hasDiseaseAnnotations;
+	private boolean hasPhenotypeAnnotations;
 
 	public void addDiseaseTerm(DOTerm diseaseAnnotationObject) {
 		if (diseaseTerms == null) {
-			diseaseTerms = new HashSet<>();
+			diseaseTerms = new ArrayList<>();
 		}
 		diseaseTerms.add(diseaseAnnotationObject);
+		diseaseTerms = diseaseTerms.stream()
+				.distinct()
+				.collect(Collectors.toList());
+		Collections.sort(diseaseTerms, Comparator.comparing(o -> o.getName() == null ? "" : o.getName()));
 	}
 
 	private List<String> modifierRelationshipTypes = List.of("ameliorated_by", "exacerbated_by");
@@ -50,15 +58,23 @@ public class AffectedGenomicModelDocument extends ESDocument {
 
 		if (CollectionUtils.isNotEmpty(modifierRelations)) {
 			if (conditionModifiers == null) {
-				conditionModifiers = new HashSet<>();
+				conditionModifiers = new ArrayList<>();
 			}
 			conditionModifiers.addAll(modifierRelations);
 		}
 		if (CollectionUtils.isNotEmpty(conditionRelationSet)) {
 			if (conditionRelations == null) {
-				conditionRelations = new HashSet<>();
+				conditionRelations = new ArrayList<>();
 			}
 			conditionRelations.addAll(conditionRelationSet);
 		}
+	}
+
+	public boolean hasDiseaseAnnotations() {
+		return CollectionUtils.isNotEmpty(diseaseTerms);
+	}
+
+	public boolean hasPhenotypeAnnotations() {
+		return CollectionUtils.isNotEmpty(associatedPhenotype);
 	}
 }
