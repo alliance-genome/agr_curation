@@ -4,6 +4,7 @@ import org.alliancegenome.curation_api.controllers.base.BaseOntologyTermControll
 import org.alliancegenome.curation_api.dao.ontology.CHEBITermDAO;
 import org.alliancegenome.curation_api.interfaces.crud.ontology.CHEBITermCrudInterface;
 import org.alliancegenome.curation_api.model.entities.ontology.CHEBITerm;
+import org.alliancegenome.curation_api.services.helpers.GenericOntologyLoadConfig;
 import org.alliancegenome.curation_api.services.ontology.CHEBITermService;
 
 import jakarta.annotation.PostConstruct;
@@ -17,8 +18,10 @@ public class CHEBITermCrudController extends BaseOntologyTermController<CHEBITer
 
 	@Override
 	@PostConstruct
-	public void init() {
-		setService(chebiTermService, CHEBITerm.class);
+	public void init() {GenericOntologyLoadConfig config = new GenericOntologyLoadConfig();
+		config.setLoadOnlyIRIPrefix("CHEBI");
+		config.setSkipClosureCalculation(true);
+		setService(chebiTermService, CHEBITerm.class, config);
 	}
 
 }

@@ -200,6 +200,7 @@ public class OntologyExecutor extends LoadFileExecutor {
 			}
 			case CHEBI -> {
 				config.setLoadOnlyIRIPrefix("CHEBI");
+				config.setSkipClosureCalculation(true);
 				processTerms(bulkLoadFileHistory, chebiTermService, config);
 			}
 			case ZFA -> {
@@ -346,25 +347,27 @@ public class OntologyExecutor extends LoadFileExecutor {
 		
 		runCleanup(service, bulkLoadFileHistory, ontologyIdsBefore, ontologyIdsLoaded);
 
-		ProcessDisplayHelper ph1 = new ProcessDisplayHelper();
-		ph.addDisplayHandler(loadProcessDisplayService);
-		ph1.startProcess(bulkLoadFileHistory.getBulkLoad().getName() + ": " + ontologyType.getClazz().getSimpleName() + " Closure", termMap.size());
-		countType = ontologyType + " Closure";
-		for (Entry<String, ? extends OntologyTerm> entry : termMap.entrySet()) {
-			if (entry.getValue().getAncestors() == null || entry.getValue().getAncestors().isEmpty()) {
-				continue;
+		if (!config.getSkipClosureCalculation()) {
+			ProcessDisplayHelper ph1 = new ProcessDisplayHelper();
+			ph.addDisplayHandler(loadProcessDisplayService);
+			ph1.startProcess(bulkLoadFileHistory.getBulkLoad().getName() + ": " + ontologyType.getClazz().getSimpleName() + " Closure", termMap.size());
+			countType = ontologyType + " Closure";
+			for (Entry<String, ? extends OntologyTerm> entry : termMap.entrySet()) {
+				if (entry.getValue().getAncestors() == null || entry.getValue().getAncestors().isEmpty()) {
+					continue;
+				}
+				service.processUpdateRelationships(entry.getValue().getAncestors());
+				for (int i = 0; i < entry.getValue().getAncestors().size(); i++) {
+					bulkLoadFileHistory.incrementCompleted(countType);
+				}
+				ph1.progressProcess();
+				if (Thread.currentThread().isInterrupted()) {
+					bulkLoadFileHistory.setErrorMessage("Thread isInterrupted");
+					throw new RuntimeException("Thread isInterrupted");
+				}
 			}
-			service.processUpdateRelationships(entry.getValue().getAncestors());
-			for (int i = 0; i < entry.getValue().getAncestors().size(); i++) {
-				bulkLoadFileHistory.incrementCompleted(countType);
-			}
-			ph1.progressProcess();
-			if (Thread.currentThread().isInterrupted()) {
-				bulkLoadFileHistory.setErrorMessage("Thread isInterrupted");
-				throw new RuntimeException("Thread isInterrupted");
-			}
+			ph1.finishProcess();
 		}
-		ph1.finishProcess();
 
 		ProcessDisplayHelper ph2 = new ProcessDisplayHelper();
 		ph.addDisplayHandler(loadProcessDisplayService);
