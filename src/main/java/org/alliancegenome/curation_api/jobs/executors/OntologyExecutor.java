@@ -200,7 +200,7 @@ public class OntologyExecutor extends LoadFileExecutor {
 			}
 			case CHEBI -> {
 				config.setLoadOnlyIRIPrefix("CHEBI");
-				config.setSkipClosureCalculation(true);
+				config.setCalculateClosure(false);
 				processTerms(bulkLoadFileHistory, chebiTermService, config);
 			}
 			case ZFA -> {
@@ -345,7 +345,7 @@ public class OntologyExecutor extends LoadFileExecutor {
 		
 		runCleanup(service, bulkLoadFileHistory, ontologyIdsBefore, ontologyIdsLoaded);
 
-		if (!config.getSkipClosureCalculation()) {
+		if (config.getCalculateClosure()) {
 			bulkLoadFileHistory.setCount(ontologyType + " Closure", termMap.size());
 			bulkLoadFileHistory.setCount(ontologyType + " Counts", termMap.size());
 			
