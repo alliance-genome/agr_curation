@@ -5,6 +5,9 @@ import java.util.List;
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.entities.GeneOntologyAnnotation;
+import org.hibernate.search.engine.backend.types.Projectable;
+import org.hibernate.search.engine.backend.types.Sortable;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.GenericField;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
 
 import jakarta.persistence.Entity;
@@ -24,5 +27,8 @@ public class GOTerm extends OntologyTerm {
 	@ToString.Exclude
 	@OneToMany(mappedBy = "goTerm")
 	private List<GeneOntologyAnnotation> geneOntologyAnnotations;
+
+	@GenericField(projectable = Projectable.YES, sortable = Sortable.YES)
+	private Double popularity;
 
 }

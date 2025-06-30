@@ -8,7 +8,6 @@ import java.util.Objects;
 
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.dao.NoteDAO;
-import org.alliancegenome.curation_api.dao.base.BaseEntityDAO;
 import org.alliancegenome.curation_api.dao.base.BaseSQLDAO;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.Note;
@@ -267,15 +266,15 @@ public class BaseDTOValidator<E extends Object> {
 		return references;
 	}
 	
-	protected <N extends OntologyTerm, D extends BaseEntityDAO<N>, S extends BaseOntologyTermService<N, D>> N validateOntologyTerm(S service, String field, String curie) {
+	protected <N extends OntologyTerm, D extends BaseSQLDAO<N>, S extends BaseOntologyTermService<N, D>> N validateOntologyTerm(S service, String field, String curie) {
 		return validateOntologyTerm(service, field, curie, false);
 	}
 	
-	protected <N extends OntologyTerm, D extends BaseEntityDAO<N>, S extends BaseOntologyTermService<N, D>> N validateRequiredOntologyTerm(S service, String field, String curie) {
+	protected <N extends OntologyTerm, D extends BaseSQLDAO<N>, S extends BaseOntologyTermService<N, D>> N validateRequiredOntologyTerm(S service, String field, String curie) {
 		return validateOntologyTerm(service, field, curie, true);
 	}
 	
-	protected <N extends OntologyTerm, D extends BaseEntityDAO<N>, S extends BaseOntologyTermService<N, D>> N validateOntologyTerm(S service, String field, String curie, boolean isRequired) {
+	protected <N extends OntologyTerm, D extends BaseSQLDAO<N>, S extends BaseOntologyTermService<N, D>> N validateOntologyTerm(S service, String field, String curie, boolean isRequired) {
 		if (StringUtils.isBlank(curie)) {
 			if (isRequired) {
 				response.addErrorMessage(field, ValidationConstants.REQUIRED_MESSAGE);
@@ -306,15 +305,15 @@ public class BaseDTOValidator<E extends Object> {
 		return ontologyTerm;
 	}
 	
-	protected <N extends OntologyTerm, D extends BaseEntityDAO<N>, S extends BaseOntologyTermService<N, D>> List<N> validateOntologyTerms(S service, String field, List<String> curies) {
+	protected <N extends OntologyTerm, D extends BaseSQLDAO<N>, S extends BaseOntologyTermService<N, D>> List<N> validateOntologyTerms(S service, String field, List<String> curies) {
 		return validateOntologyTerms(service, field, curies, false);
 	}
 	
-	protected <N extends OntologyTerm, D extends BaseEntityDAO<N>, S extends BaseOntologyTermService<N, D>> List<N> validateRequiredOntologyTerms(S service, String field, List<String> curies) {
+	protected <N extends OntologyTerm, D extends BaseSQLDAO<N>, S extends BaseOntologyTermService<N, D>> List<N> validateRequiredOntologyTerms(S service, String field, List<String> curies) {
 		return validateOntologyTerms(service, field, curies, true);
 	}
 	
-	protected <N extends OntologyTerm, D extends BaseEntityDAO<N>, S extends BaseOntologyTermService<N, D>> List<N> validateOntologyTerms(S service, String field, List<String> curies, boolean isRequired) {
+	protected <N extends OntologyTerm, D extends BaseSQLDAO<N>, S extends BaseOntologyTermService<N, D>> List<N> validateOntologyTerms(S service, String field, List<String> curies, boolean isRequired) {
 		if (CollectionUtils.isEmpty(curies)) {
 			if (isRequired) {
 				response.addErrorMessage(field, ValidationConstants.REQUIRED_MESSAGE);

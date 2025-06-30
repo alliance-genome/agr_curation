@@ -1,8 +1,5 @@
 package org.alliancegenome.curation_api.services;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.alliancegenome.curation_api.dao.GenomicEntityDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ValidationException;
@@ -41,24 +38,4 @@ public class GenomicEntityService extends SubmittedObjectCrudService<GenomicEnti
 		return null;
 	}
 
-	public Map<String, Long> getGenomicEntityIdMap() {
-		if (genomicEntityIdMap.size() > 0) {
-			return genomicEntityIdMap;
-		}
-		genomicEntityIdMap = genomicEntityDAO.getGenomicEntityIdMap();
-		return genomicEntityIdMap;
-	}
-
-	private Map<String, Long> genomicEntityIdMap = new HashMap<>();
-
-	public Long getIdByModID(String modID) {
-		return getGenomicEntityIdMap().get(modID);
-	}
-
-	public GenomicEntity getShallowEntity(Long id) {
-		if (id == null) {
-			return null;
-		}
-		return genomicEntityDAO.getShallowEntity(GenomicEntity.class, id);
-	}
 }
