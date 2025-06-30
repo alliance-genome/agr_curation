@@ -25,7 +25,6 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class ModelDocumentBuilder {
 
-
 	/**
 	 * Consolidation logic per affected genomic model:
 	 * Each unique condition relation (uniqueExperimentConditionId) will be consolidated into a single document
@@ -92,7 +91,7 @@ public class ModelDocumentBuilder {
 				doc.setDataProvider(model.getDataProvider().getAbbreviation());
 				doc.addConditionRelations(conditionRelation.relation);
 				if (CollectionUtils.isNotEmpty(conditionRelation.phenotypeAnnotations)) {
-					doc.getAssociatedPhenotype().addAll(conditionRelation.phenotypeAnnotations.stream().map(AGMPhenotypeAnnotation::getPhenotypeAnnotationObject).toList());
+					doc.getAssociatedPhenotype().addAll(conditionRelation.phenotypeAnnotations.stream().map(AGMPhenotypeAnnotation::getPhenotypeAnnotationObject).sorted().toList());
 				}
 				if (CollectionUtils.isNotEmpty(conditionRelation.diseaseAnnotations)) {
 					conditionRelation.diseaseAnnotations.forEach(agmDiseaseAnnotation -> {
@@ -108,17 +107,17 @@ public class ModelDocumentBuilder {
 
 	@NotNull
 	private static List<Gene> getAssociatedGenes(AffectedGenomicModel model) {
-		List<Gene> associatedGenes = new ArrayList<>(model.getAgmSequenceTargetingReagentAssociations().stream()
-			.map(association -> association.getAgmSequenceTargetingReagentAssociationObject().getSequenceTargetingReagentGeneAssociations()
-				.stream().map(SequenceTargetingReagentGeneAssociation::getSequenceTargetingReagentGeneAssociationObject).toList())
-			.flatMap(Collection::stream)
-			.toList());
+		Set<Gene> associatedGenes = new HashSet<>(model.getAgmSequenceTargetingReagentAssociations().stream()
+				.map(association -> association.getAgmSequenceTargetingReagentAssociationObject().getSequenceTargetingReagentGeneAssociations()
+						.stream().map(SequenceTargetingReagentGeneAssociation::getSequenceTargetingReagentGeneAssociationObject).toList())
+				.flatMap(Collection::stream)
+				.toList());
 		associatedGenes.addAll(model.getComponents().stream()
-			.map(association -> association.getAgmAlleleAssociationObject().getAlleleGeneAssociations()
-				.stream().map(AlleleGeneAssociation::getAlleleGeneAssociationObject).toList())
-			.flatMap(Collection::stream)
-			.toList()
+				.map(association -> association.getAgmAlleleAssociationObject().getAlleleGeneAssociations()
+						.stream().map(AlleleGeneAssociation::getAlleleGeneAssociationObject).toList())
+				.flatMap(Collection::stream)
+				.toList()
 		);
-		return associatedGenes;
+		return new ArrayList<>(associatedGenes);
 	}
 }
