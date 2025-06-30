@@ -66,7 +66,7 @@ public class AffectedGenomicModelDocument extends ESDocument {
 			conditionRelations.addAll(conditionRelationSet);
 		}
 	}
-  
+
 	public boolean isHasDiseaseAnnotations() {
 		return CollectionUtils.isNotEmpty(diseaseTerms);
 	}
