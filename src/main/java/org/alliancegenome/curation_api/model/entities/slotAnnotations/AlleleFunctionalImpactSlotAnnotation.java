@@ -58,7 +58,7 @@ public class AlleleFunctionalImpactSlotAnnotation extends SlotAnnotation {
 			@Index(name = "slotannotation_functionalimpacts_index", columnList = "functionalimpacts_id")
 		}
 	)
-	@JsonView({ View.FieldsAndLists.class, View.AlleleView.class })
+	@JsonView({ View.FieldsAndLists.class, View.AlleleView.class, View.AlleleDetailView.class })
 	private List<VocabularyTerm> functionalImpacts;
 
 	@IndexedEmbedded(includeDepth = 1)
