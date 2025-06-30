@@ -91,7 +91,7 @@ public class ModelDocumentBuilder {
 				doc.setDataProvider(model.getDataProvider().getAbbreviation());
 				doc.addConditionRelations(conditionRelation.relation);
 				if (CollectionUtils.isNotEmpty(conditionRelation.phenotypeAnnotations)) {
-					doc.getAssociatedPhenotype().addAll(conditionRelation.phenotypeAnnotations.stream().map(AGMPhenotypeAnnotation::getPhenotypeAnnotationObject).toList());
+					doc.getAssociatedPhenotype().addAll(conditionRelation.phenotypeAnnotations.stream().map(AGMPhenotypeAnnotation::getPhenotypeAnnotationObject).sorted().toList());
 				}
 				if (CollectionUtils.isNotEmpty(conditionRelation.diseaseAnnotations)) {
 					conditionRelation.diseaseAnnotations.forEach(agmDiseaseAnnotation -> {
