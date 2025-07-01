@@ -22,6 +22,7 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.KeywordFie
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorColumn;
 import jakarta.persistence.ElementCollection;
@@ -109,11 +110,11 @@ public class OntologyTerm extends CurieObject {
 	private List<CrossReference> crossReferences;
 
 	@JsonIgnore // We are going to have individual endpoints for these fields
-	@OneToMany(mappedBy = "closureSubject")
+	@OneToMany(mappedBy = "closureSubject", cascade = CascadeType.ALL, orphanRemoval = true)
 	private Set<OntologyTermClosure> ancestors;
 
 	@JsonIgnore // We are going to have individual endpoints for these fields
-	@OneToMany(mappedBy = "closureObject")
+	@OneToMany(mappedBy = "closureObject", cascade = CascadeType.ALL, orphanRemoval = true)
 	private Set<OntologyTermClosure> descendants;
 
 	@JsonView(View.FieldsOnly.class)
