@@ -136,7 +136,7 @@ public class View {
 
 	public static class DiseaseSummaryDocument { }
 	public static class DiseaseSearchResultDocument { }
-	public static class ExpressionDetail extends ForPublic { }
+	public static class ExpressionDetailDocument extends ForPublic { }
 
 	public static class GeneToGeneOrthologyDocument { }
 

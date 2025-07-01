@@ -11,8 +11,6 @@ import org.alliancegenome.curation_api.dao.GeneExpressionAnnotationDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.interfaces.crud.BaseUpsertServiceInterface;
-import org.alliancegenome.curation_api.model.document.builders.ExpressionDetailBuilder;
-import org.alliancegenome.curation_api.model.document.es.ExpressionDetail;
 import org.alliancegenome.curation_api.model.entities.GeneExpressionAnnotation;
 import org.alliancegenome.curation_api.model.entities.GeneExpressionExperiment;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.ConsolidatedGeneExpressionFmsDTO;
@@ -37,7 +35,8 @@ public class GeneExpressionAnnotationService extends BaseAnnotationCrudService<G
 	@Inject GeneExpressionAnnotationFmsDTOValidator geneExpressionAnnotationFmsDTOValidator;
 	@Inject GeneExpressionExperimentService geneExpressionExperimentService;
 	@Inject GeneExpressionAnnotationUniqueIdHelper geneExpressionAnnotationUniqueIdHelper;
-	@Inject ExpressionDetailBuilder expressionDetailBuilder;
+	@Inject
+	org.alliancegenome.curation_api.model.document.builders.ExpressionDetailDocumentBuilder expressionDetailDocumentBuilder;
 
 	@Getter
 	private Map<String, Set<String>> experiments;
@@ -69,7 +68,7 @@ public class GeneExpressionAnnotationService extends BaseAnnotationCrudService<G
 		return geneExpressionAnnotationDAO.persist(geneExpressionAnnotation);
 	}
 
-	public SearchResponse<ExpressionDetail> getAnnotationsForIndexing(Integer page, Integer limit) {
+	public SearchResponse<org.alliancegenome.curation_api.model.document.es.ExpressionDetailDocument> getAnnotationsForIndexing(Integer page, Integer limit) {
 		Pagination pagination = new Pagination(page, limit);
 		HashMap<String, Object> params = new HashMap<>();
 		params.put("internal", false);
@@ -82,12 +81,12 @@ public class GeneExpressionAnnotationService extends BaseAnnotationCrudService<G
 				experiments.put(exp.getUniqueId(), exp);
 			});
 
-		List<ExpressionDetail> expressionDetailList = new ArrayList<>();
+		List<org.alliancegenome.curation_api.model.document.es.ExpressionDetailDocument> expressionDetailDocumentList = new ArrayList<>();
 		for (GeneExpressionAnnotation geneExpressionAnnotation : findByParams(pagination, params).getResults()) {
-			expressionDetailList.add(expressionDetailBuilder.build(geneExpressionAnnotation, experiments));
+			expressionDetailDocumentList.add(expressionDetailDocumentBuilder.build(geneExpressionAnnotation, experiments));
 		}
-		SearchResponse<ExpressionDetail> response = new SearchResponse<>();
-		response.setResults(expressionDetailList);
+		SearchResponse<org.alliancegenome.curation_api.model.document.es.ExpressionDetailDocument> response = new SearchResponse<>();
+		response.setResults(expressionDetailDocumentList);
 		return response;
 	}
 }

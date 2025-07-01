@@ -2,7 +2,6 @@ package org.alliancegenome.curation_api.interfaces.document;
 
 import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 
-import org.alliancegenome.curation_api.model.document.es.ExpressionDetail;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.view.View;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
@@ -29,6 +28,6 @@ public interface GeneExpressionDocumentInterface {
 	 */
 	@POST
 	@Path("/annotations")
-	@JsonView({View.ExpressionDetail.class, View.FieldsOnly.class})
-	SearchResponse<ExpressionDetail> getAnnotationsForIndexing(@DefaultValue("0") @QueryParam("page") Integer page, @DefaultValue("10") @QueryParam("limit") Integer limit);
+	@JsonView({org.alliancegenome.curation_api.view.View.ExpressionDetailDocument.class, View.FieldsOnly.class})
+	SearchResponse<org.alliancegenome.curation_api.model.document.es.ExpressionDetailDocument> getAnnotationsForIndexing(@DefaultValue("0") @QueryParam("page") Integer page, @DefaultValue("10") @QueryParam("limit") Integer limit);
 }
