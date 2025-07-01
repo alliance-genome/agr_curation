@@ -110,11 +110,11 @@ public class OntologyTerm extends CurieObject {
 	private List<CrossReference> crossReferences;
 
 	@JsonIgnore // We are going to have individual endpoints for these fields
-	@OneToMany(mappedBy = "closureSubject", cascade = CascadeType.ALL, orphanRemoval = true)
+	@OneToMany(mappedBy = "closureSubject")
 	private Set<OntologyTermClosure> ancestors;
 
 	@JsonIgnore // We are going to have individual endpoints for these fields
-	@OneToMany(mappedBy = "closureObject", cascade = CascadeType.ALL, orphanRemoval = true)
+	@OneToMany(mappedBy = "closureObject")
 	private Set<OntologyTermClosure> descendants;
 
 	@JsonView(View.FieldsOnly.class)
