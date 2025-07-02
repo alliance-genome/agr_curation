@@ -61,4 +61,7 @@ public final class EntityFieldConstants {
 
 	public static final String SUBJECT_GENE_DATA_PROVIDER = "subjectGene." + DATA_PROVIDER;
 	public static final String SUBJECT_GENE_TAXON = "subjectGene." + TAXON;
+	
+	public static final String CLOSURE_SUBJECT = "closureSubject";
+	public static final String CLOSURE_OBJECT = "closureSubject";
 }

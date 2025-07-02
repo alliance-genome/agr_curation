@@ -343,8 +343,6 @@ public class OntologyExecutor extends LoadFileExecutor {
 			}
 		}
 		ph.finishProcess();
-		
-		runCleanup(service, bulkLoadFileHistory, ontologyIdsBefore, ontologyIdsLoaded);
 
 		ProcessDisplayHelper ph1 = new ProcessDisplayHelper();
 		ph.addDisplayHandler(loadProcessDisplayService);
@@ -380,6 +378,8 @@ public class OntologyExecutor extends LoadFileExecutor {
 			}
 		}
 		ph2.finishProcess();
+		
+		runCleanup(service, bulkLoadFileHistory, ontologyIdsBefore, ontologyIdsLoaded);
 	}
 
 	private void runCleanup(BaseOntologyTermService service, BulkLoadFileHistory history,
