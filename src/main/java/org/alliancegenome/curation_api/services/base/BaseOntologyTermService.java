@@ -1,5 +1,6 @@
 package org.alliancegenome.curation_api.services.base;
 
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -8,10 +9,12 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.alliancegenome.curation_api.auth.AuthenticatedUser;
+import org.alliancegenome.curation_api.constants.EntityFieldConstants;
 import org.alliancegenome.curation_api.dao.CrossReferenceDAO;
 import org.alliancegenome.curation_api.dao.SynonymDAO;
 import org.alliancegenome.curation_api.dao.base.BaseSQLDAO;
 import org.alliancegenome.curation_api.dao.ontology.OntologyTermClosureDAO;
+import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.Person;
 import org.alliancegenome.curation_api.model.entities.ResourceDescriptorPage;
@@ -19,10 +22,13 @@ import org.alliancegenome.curation_api.model.entities.Synonym;
 import org.alliancegenome.curation_api.model.entities.ontology.OntologyTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.OntologyTermClosure;
 import org.alliancegenome.curation_api.response.ObjectListResponse;
+import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.CrossReferenceService;
 import org.alliancegenome.curation_api.services.ResourceDescriptorPageService;
+import org.apache.commons.collections.CollectionUtils;
 
+import io.quarkus.logging.Log;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 
@@ -388,4 +394,46 @@ public abstract class BaseOntologyTermService<E extends OntologyTerm, D extends 
 		oldSyn.setHasRelatedSynonym(newSyn.getHasRelatedSynonym());
 	}
 
+	@Override
+	@Transactional
+	public E deprecateOrDelete(Long id, Boolean throwApiError, String requestSource, Boolean deprecate) {
+		E object = dao.find(id);
+		
+		if (object == null) {
+			String errorMessage = "Could not find entity with id: " + id;
+			if (throwApiError) {
+				ObjectResponse<E> response = new ObjectResponse<>();
+				response.addErrorMessage("id", errorMessage);
+				throw new ApiErrorException(response);
+			}
+			Log.error(errorMessage);
+			return null;
+		}
+
+		if (deprecate) {
+			if (!object.getObsolete()) {
+				object.setObsolete(true);
+				if (authenticatedPerson.getUniqueId() != null) {
+					requestSource = authenticatedPerson.getUniqueId();
+				}
+				Person updatedBy = personService.fetchByUniqueIdOrCreate(requestSource);
+				object.setUpdatedBy(updatedBy);
+				object.setDateUpdated(OffsetDateTime.now());
+				return dao.persist(object);
+			} else {
+				return object;
+			}
+		} else {
+			List<String> closureIdFields = List.of(EntityFieldConstants.CLOSURE_SUBJECT + ".id", EntityFieldConstants.CLOSURE_OBJECT + ".id");
+			List<Long> closureIds = ontologyTermClosureDAO.findIdsByFields(closureIdFields, id);
+			if (CollectionUtils.isNotEmpty(closureIds)) {
+				for (Long closureId : closureIds) {
+					ontologyTermClosureDAO.remove(closureId);
+				}
+			}
+			dao.remove(id);
+		}
+
+		return null;
+	}
 }
