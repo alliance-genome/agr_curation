@@ -20,4 +20,7 @@ public class GenericOntologyLoadConfig {
 
 	// Used to load object properties instead of entities
 	private Boolean loadObjectProperties = false;
+	
+	// Calculate closure
+	private Boolean calculateClosure = true;
 }
