@@ -43,13 +43,7 @@ public class ExpressionDetailDocumentBuilder {
 		}
 
 		expressionDetailDocument.setStage(annotation.getExpressionPattern().getWhenExpressed().getDevelopmentalStageStart());
-
-
-		// TODO
-//		expressionDetailDocument.addTermIDs(List.of());
-//		expressionDetail.setUberonTermIDs(annotation.getExpressionPattern().getWhenExpressed().getStageUberonSlimTerms().stream().map(VocabularyTerm::getAbbreviation).toList());
-//		expressionDetail.setGoTermIDs(List.of(annotation.getExpressionPattern().getWhereExpressed().getCellularComponentRibbonTerm().getName()));
-
+		
 		return expressionDetailDocument;
 	}
 }

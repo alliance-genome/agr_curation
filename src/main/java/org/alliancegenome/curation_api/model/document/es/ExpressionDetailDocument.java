@@ -31,11 +31,6 @@ public class ExpressionDetailDocument extends ESDocument implements Comparable<E
 	private List<CrossReference> crossReferences;
 	private String stageTermID;
 
-	private List<String> termIDs = new java.util.ArrayList<>(6);
-	private List<String> uberonTermIDs = new java.util.ArrayList<>(6);
-	private List<String> goTermIDs = new java.util.ArrayList<>(6);
-
-
 	@Override
 	public int compareTo(@NotNull ExpressionDetailDocument expressionDetailDocument) {
 		return 0;
