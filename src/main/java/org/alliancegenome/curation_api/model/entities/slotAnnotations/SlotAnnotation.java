@@ -66,7 +66,7 @@ public class SlotAnnotation extends AuditedObject {
 		@Index(name = "slotannotation_informationcontententity_slotannotation_index", columnList = "slotannotation_id"),
 		@Index(name = "slotannotation_informationcontententity_evidence_index", columnList = "evidence_id")
 	})
-	@JsonView({ View.FieldsAndLists.class, View.AffectedGenomicModelView.class, View.AlleleView.class, View.GeneView.class, View.ConstructView.class })
+	@JsonView({ View.FieldsAndLists.class, View.AffectedGenomicModelView.class, View.AlleleView.class, View.AlleleDetailView.class, View.GeneView.class, View.ConstructView.class })
 	private List<InformationContentEntity> evidence;
 
 }

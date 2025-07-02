@@ -36,7 +36,6 @@ public class AffectedGenomicModelDocument extends ESDocument {
 	private List<ConditionRelation> conditionRelations;
 	private List<ConditionRelation> conditionModifiers;
 
-
 	public void addDiseaseTerm(DOTerm diseaseAnnotationObject) {
 		if (diseaseTerms == null) {
 			diseaseTerms = new ArrayList<>();
