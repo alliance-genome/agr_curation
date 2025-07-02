@@ -342,8 +342,6 @@ public class OntologyExecutor extends LoadFileExecutor {
 			}
 		}
 		ph.finishProcess();
-		
-		runCleanup(service, bulkLoadFileHistory, ontologyIdsBefore, ontologyIdsLoaded);
 
 		if (config.getCalculateClosure()) {
 			bulkLoadFileHistory.setCount(ontologyType + " Closure", termMap.size());
@@ -384,6 +382,8 @@ public class OntologyExecutor extends LoadFileExecutor {
 			}
 			ph2.finishProcess();
 		}
+		
+		runCleanup(service, bulkLoadFileHistory, ontologyIdsBefore, ontologyIdsLoaded);
 	}
 
 	private void runCleanup(BaseOntologyTermService service, BulkLoadFileHistory history,
