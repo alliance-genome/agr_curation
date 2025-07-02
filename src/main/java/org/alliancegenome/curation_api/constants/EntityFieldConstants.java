@@ -70,9 +70,6 @@ public final class EntityFieldConstants {
 	public static final String TRANSCRIPT_GENOMIC_LOCATION_ASSOCIATION_OBJECT_ASSEMBLY = "transcript" + GENOMIC_LOCATION_ASSOCIATION_OBJECT + "." + ASSEMBLY;
 	public static final String GENE_GENOMIC_LOCATION_ASSOCIATION_OBJECT_ASSEMBLY = "gene" + GENOMIC_LOCATION_ASSOCIATION_OBJECT + "." + ASSEMBLY;
 
-	public static final String SUBJECT_GENE_DATA_PROVIDER = "subjectGene." + DATA_PROVIDER;
-	public static final String SUBJECT_GENE_TAXON = "subjectGene." + TAXON;
-	
 	public static final String CLOSURE_SUBJECT = "closureSubject";
 	public static final String CLOSURE_OBJECT = "closureSubject";
 
