@@ -51,7 +51,7 @@ public class OrthologyExecutor extends LoadFileExecutor {
 
 			boolean success = runLoad(generatedOrthologyService, bulkLoadFileHistory, dataProvider, orthologyData.getData(), orthoPairIdsLoaded);
 			if (success) {
-				runCleanup(generatedOrthologyService, bulkLoadFileHistory, fms.getFmsDataSubType(), orthoPairIdsBefore, orthoPairIdsLoaded, fms.getFmsDataType(), false);
+				runCleanup(generatedOrthologyService, bulkLoadFileHistory, fms.getFmsDataSubType(), orthoPairIdsBefore, orthoPairIdsLoaded, fms.getFmsDataType());
 			}
 			bulkLoadFileHistory.finishLoad();
 			updateHistory(bulkLoadFileHistory);

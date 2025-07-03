@@ -14,6 +14,7 @@ import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.exceptions.KnownIssueValidationException;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
 import org.alliancegenome.curation_api.exceptions.ValidationException;
+import org.alliancegenome.curation_api.interfaces.base.BasePopularityInterface;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
 import org.alliancegenome.curation_api.model.ingest.dto.GeneDTO;
@@ -37,7 +38,7 @@ import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 
 @RequestScoped
-public class GeneService extends SubmittedObjectCrudService<Gene, GeneDTO, GeneDAO> {
+public class GeneService extends SubmittedObjectCrudService<Gene, GeneDTO, GeneDAO> implements BasePopularityInterface {
 
 	@Inject GeneDAO geneDAO;
 	@Inject GeneValidator geneValidator;
@@ -95,9 +96,16 @@ public class GeneService extends SubmittedObjectCrudService<Gene, GeneDTO, GeneD
 	public Gene deprecateOrDelete(Long id, Boolean throwApiError, String requestSource, Boolean forceDeprecate) {
 		Gene gene = geneDAO.find(id);
 		if (gene != null) {
-			if (forceDeprecate || geneDAO.hasReferencingDiseaseAnnotations(id) || geneDAO.hasReferencingPhenotypeAnnotations(id)
-					|| geneDAO.hasReferencingOrthologyPairs(id) || geneDAO.hasReferencingInteractions(id)
+			if (forceDeprecate || geneDAO.hasReferencingDiseaseAnnotations(id)
+					|| geneDAO.hasReferencingPhenotypeAnnotations(id)
+					|| geneDAO.hasReferencingOrthologyPairs(id)
+					|| geneDAO.hasReferencingInteractions(id)
+					|| geneDAO.hasReferencingGeneExpressionAnnotations(id)
 					|| CollectionUtils.isNotEmpty(gene.getAlleleGeneAssociations())
+					|| CollectionUtils.isNotEmpty(gene.getGeneOntologyAnnotations())
+					|| CollectionUtils.isNotEmpty(gene.getSequenceTargetingReagentGeneAssociations())
+					|| CollectionUtils.isNotEmpty(gene.getTranscriptGeneAssociations())
+					|| CollectionUtils.isNotEmpty(gene.getGeneGenomicLocationAssociations())
 					|| CollectionUtils.isNotEmpty(gene.getConstructGenomicEntityAssociations())) {
 				if (!gene.getObsolete()) {
 					gene.setUpdatedBy(personService.fetchByUniqueIdOrCreate(requestSource));
@@ -265,4 +273,12 @@ public class GeneService extends SubmittedObjectCrudService<Gene, GeneDTO, GeneD
 		}
 	}
 
+	@Transactional
+	public void updatePopularity(String curie, Double popularity) {
+		SearchResponse<Gene> searchResponse = findByField("primaryExternalId", curie);
+		if (searchResponse != null) {
+			Gene gene = searchResponse.getSingleResult();
+			gene.setPopularity(popularity);
+		}
+	}
 }

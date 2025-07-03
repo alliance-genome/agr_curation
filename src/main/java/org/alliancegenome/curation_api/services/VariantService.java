@@ -64,8 +64,9 @@ public class VariantService extends SubmittedObjectCrudService<Variant, VariantD
 	public Variant deprecateOrDelete(Long id, Boolean throwApiError, String requestSource, Boolean forceDeprecate) {
 		Variant variant = variantDAO.find(id);
 		if (variant != null) {
-			if (forceDeprecate || variantDAO.hasReferencingDiseaseAnnotationIds(id)
-					|| CollectionUtils.isNotEmpty(variant.getAlleleVariantAssociations())) {
+			if (forceDeprecate
+					|| CollectionUtils.isNotEmpty(variant.getAlleleVariantAssociations())
+					|| CollectionUtils.isNotEmpty(variant.getCuratedVariantGenomicLocations())) {
 				if (!variant.getObsolete()) {
 					variant.setUpdatedBy(personService.fetchByUniqueIdOrCreate(requestSource));
 					variant.setDateUpdated(OffsetDateTime.now());

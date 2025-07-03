@@ -611,7 +611,7 @@ public class BaseSQLDAO<E extends AuditedObject> extends BaseEntityDAO<E> {
 		}
 	}
 
-	public List<Long> findIdsByFields(List<String> fields, String value) {
+	public List<Long> findIdsByFields(List<String> fields, Object value) {
 		Log.debug("SqlDAO: findByFields: " + fields + " " + value);
 		HashMap<String, Object> params = new HashMap<>();
 		for (String field : fields) {

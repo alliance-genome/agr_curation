@@ -39,6 +39,7 @@ import lombok.ToString;
 	@Index(name = "slotannotation_singleallele_index", columnList = "singleallele_id"),
 	@Index(name = "slotannotation_singleconstruct_index", columnList = "singleConstruct_id"),
 	@Index(name = "slotannotation_singlegene_index", columnList = "singlegene_id"),
+	@Index(name = "slotannotation_secondaryid_index", columnList = "secondaryid"),
 	@Index(name = "slotannotation_singleagm_index", columnList = "singleagm_id"),
 	@Index(name = "slotannotation_inheritancemode_index", columnList = "inheritancemode_id"),
 	@Index(name = "slotannotation_phenotypeterm_index", columnList = "phenotypeterm_id"),
@@ -65,7 +66,7 @@ public class SlotAnnotation extends AuditedObject {
 		@Index(name = "slotannotation_informationcontententity_slotannotation_index", columnList = "slotannotation_id"),
 		@Index(name = "slotannotation_informationcontententity_evidence_index", columnList = "evidence_id")
 	})
-	@JsonView({ View.FieldsAndLists.class, View.AffectedGenomicModelView.class, View.AlleleView.class, View.GeneView.class, View.ConstructView.class })
+	@JsonView({ View.FieldsAndLists.class, View.AffectedGenomicModelView.class, View.AlleleView.class, View.AlleleDetailView.class, View.GeneView.class, View.ConstructView.class })
 	private List<InformationContentEntity> evidence;
 
 }

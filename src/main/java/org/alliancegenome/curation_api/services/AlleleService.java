@@ -11,11 +11,13 @@ import org.alliancegenome.curation_api.dao.AlleleDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.exceptions.ValidationException;
+import org.alliancegenome.curation_api.interfaces.base.BasePopularityInterface;
 import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.ingest.dto.AlleleDTO;
 import org.alliancegenome.curation_api.model.input.Pagination;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
+
 import org.alliancegenome.curation_api.services.base.SubmittedObjectCrudService;
 import org.alliancegenome.curation_api.services.validation.AlleleValidator;
 import org.alliancegenome.curation_api.services.validation.dto.AlleleDTOValidator;
@@ -28,7 +30,7 @@ import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 
 @RequestScoped
-public class AlleleService extends SubmittedObjectCrudService<Allele, AlleleDTO, AlleleDAO> {
+public class AlleleService extends SubmittedObjectCrudService<Allele, AlleleDTO, AlleleDAO> implements BasePopularityInterface {
 
 	@Inject
 	AlleleDAO alleleDAO;
@@ -84,6 +86,7 @@ public class AlleleService extends SubmittedObjectCrudService<Allele, AlleleDTO,
 		if (allele != null) {
 			if (forceDeprecate || alleleDAO.hasReferencingDiseaseAnnotationIds(id)
 					|| alleleDAO.hasReferencingPhenotypeAnnotations(id)
+					|| alleleDAO.hasReferencingAgmAlleleAssociations(id)
 					|| CollectionUtils.isNotEmpty(allele.getAlleleGeneAssociations())
 					|| CollectionUtils.isNotEmpty(allele.getAlleleVariantAssociations())
 					|| CollectionUtils.isNotEmpty(allele.getConstructGenomicEntityAssociations())) {
@@ -118,7 +121,18 @@ public class AlleleService extends SubmittedObjectCrudService<Allele, AlleleDTO,
 		return ids;
 	}
 
+	@Transactional
+	public void updatePopularity(String curie, Double popularity) {
+		SearchResponse<Allele> searchResponse = findByField("primaryExternalId", curie);
+
+		if (searchResponse != null) {
+			Allele allele = searchResponse.getSingleResult();
+			allele.setPopularity(popularity);
+		}
+	}
+
 	public SearchResponse<Allele> findAllAllelesWithConstructs(Pagination pagination, HashMap<String, Object> params) {
 		return alleleDAO.findAllAllelesWithConstructs(pagination, params);
 	}
+
 }
