@@ -44,7 +44,7 @@ public class AffectedGenomicModelDocument extends ESDocument {
 		diseaseTerms = diseaseTerms.stream()
 				.distinct()
 				.collect(Collectors.toList());
-		Collections.sort(diseaseTerms, Comparator.comparing(o -> o.getName() == null ? "" : o.getName()));
+		Collections.sort(diseaseTerms, Comparator.comparing(o -> o.getName() == null ? "" : o.getName().toLowerCase()));
 	}
 
 	private List<String> modifierRelationshipTypes = List.of("ameliorated_by", "exacerbated_by");
@@ -73,5 +73,16 @@ public class AffectedGenomicModelDocument extends ESDocument {
 
 	public boolean isHasPhenotypeAnnotations() {
 		return CollectionUtils.isNotEmpty(associatedPhenotype);
+	}
+
+	public void addAssociatedPhenotype(List<String> phenotypeList) {
+		if (associatedPhenotype == null) {
+			associatedPhenotype = new ArrayList<>();
+		}
+		associatedPhenotype.addAll(phenotypeList);
+		associatedPhenotype = associatedPhenotype.stream()
+				.distinct()
+				.collect(Collectors.toList());
+		Collections.sort(associatedPhenotype, Comparator.comparing(String::toLowerCase));
 	}
 }
