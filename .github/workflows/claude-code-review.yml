@@ -26,8 +26,7 @@ jobs:
       review_focus: "critical bugs, database performance issues, and data integrity problems in the Java Quarkus backend. Focus on: Hibernate N+1 queries, missing @Transactional boundaries, inefficient JPA queries, database migration risks, improper entity relationships, missing indexes, bulk operation performance, and biological data validation errors"
       trigger_phrase: "@claude"
       use_zen_tools: true
-      pr_size_threshold: "300"
-      skip_threshold: "25"
+      # Use centralized thresholds from .github repo (skip_threshold: 3, pr_size_threshold: 40)
     secrets:
       ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
       OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
