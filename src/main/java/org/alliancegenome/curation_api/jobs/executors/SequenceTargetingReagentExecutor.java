@@ -64,8 +64,8 @@ public class SequenceTargetingReagentExecutor extends LoadFileExecutor {
 			
 			runLoad(bulkLoadFileHistory, dataProvider, sqtrIngestFmsDTO.getData(), idsAdded.get("SQTR"), idsAdded.get("SQTRGeneAssociation"));
 
-			runCleanup(sqtrService, bulkLoadFileHistory, dataProvider.name(), previousIds.get("SQTR"), idsAdded.get("SQTR"), "SQTR");
 			runCleanup(sqtrService, bulkLoadFileHistory, dataProvider.name(), previousIds.get("SQTRGeneAssociation"), idsAdded.get("SQTRGeneAssociation"), "SQTR Gene Associations");
+			runCleanup(sqtrService, bulkLoadFileHistory, dataProvider.name(), previousIds.get("SQTR"), idsAdded.get("SQTR"), "SQTR");
 
 			bulkLoadFileHistory.finishLoad();
 

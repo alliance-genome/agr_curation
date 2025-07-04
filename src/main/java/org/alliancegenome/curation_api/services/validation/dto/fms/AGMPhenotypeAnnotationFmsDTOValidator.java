@@ -2,6 +2,7 @@ package org.alliancegenome.curation_api.services.validation.dto.fms;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.dao.AGMPhenotypeAnnotationDAO;
@@ -75,7 +76,7 @@ public class AGMPhenotypeAnnotationFmsDTOValidator extends PhenotypeAnnotationFm
 
 	}
 
-	public List<AGMPhenotypeAnnotation> validateInferredOrAssertedEntities(AffectedGenomicModel primaryAnnotationSubject, PhenotypeFmsDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
+	public List<AGMPhenotypeAnnotation> validateInferredOrAssertedEntities(AffectedGenomicModel primaryAnnotationSubject, PhenotypeFmsDTO dto, BackendBulkDataProvider dataProvider, Set<Long> idsAdded) throws ValidationException {
 		ObjectResponse<AGMPhenotypeAnnotation> apaResponse = new ObjectResponse<AGMPhenotypeAnnotation>();
 
 		ObjectResponse<InformationContentEntity> refResponse = validateReference(dto);
@@ -89,8 +90,9 @@ public class AGMPhenotypeAnnotationFmsDTOValidator extends PhenotypeAnnotationFm
 		if (CollectionUtils.isEmpty(primaryAnnotations)) {
 			PhenotypeFmsDTO inferredPrimaryDTO = createPrimaryAnnotationDTO(dto, primaryAnnotationSubject.getIdentifier());
 			try {
-				Long primaryAnnotationId = phenotypeAnnotationService.upsertPrimaryAnnotation(inferredPrimaryDTO, dataProvider);
-				AGMPhenotypeAnnotation primaryAnnotation = agmPhenotypeAnnotationDAO.find(primaryAnnotationId);
+				Long createdPrimaryAnnotationId = phenotypeAnnotationService.upsertPrimaryAnnotation(inferredPrimaryDTO, dataProvider);
+				idsAdded.add(createdPrimaryAnnotationId);	
+				AGMPhenotypeAnnotation primaryAnnotation = agmPhenotypeAnnotationDAO.find(createdPrimaryAnnotationId);
 				primaryAnnotations = List.of(primaryAnnotation);
 			} catch (ObjectUpdateException e) {
 				throw new ObjectValidationException(dto, "Could not construct primary annotation for " + inferredPrimaryDTO.getObjectId() + ": " + e.getData().getMessage());
