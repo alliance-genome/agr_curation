@@ -91,7 +91,7 @@ public class AGMPhenotypeAnnotationFmsDTOValidator extends PhenotypeAnnotationFm
 			PhenotypeFmsDTO inferredPrimaryDTO = createPrimaryAnnotationDTO(dto, primaryAnnotationSubject.getIdentifier());
 			try {
 				Long createdPrimaryAnnotationId = phenotypeAnnotationService.upsertPrimaryAnnotation(inferredPrimaryDTO, dataProvider);
-				idsAdded.add(createdPrimaryAnnotationId);	
+				idsAdded.add(createdPrimaryAnnotationId);
 				AGMPhenotypeAnnotation primaryAnnotation = agmPhenotypeAnnotationDAO.find(createdPrimaryAnnotationId);
 				primaryAnnotations = List.of(primaryAnnotation);
 			} catch (ObjectUpdateException e) {
