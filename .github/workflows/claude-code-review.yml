@@ -29,6 +29,7 @@ jobs:
       - name: Check trigger
         id: check-trigger
         run: |
+          set -euo pipefail
           if [[ "${{ github.event_name }}" == "pull_request" ]]; then
             echo "triggered=true" >> $GITHUB_OUTPUT
             echo "pr_number=${{ github.event.pull_request.number }}" >> $GITHUB_OUTPUT
@@ -79,6 +80,7 @@ jobs:
         if: steps.check-trigger.outputs.triggered == 'true'
         id: strategy
         run: |
+          set -euo pipefail
           PR_SIZE=${{ steps.pr-details.outputs.pr_size }}
           SKIP_THRESHOLD=3
           SIZE_THRESHOLD=40
@@ -145,6 +147,8 @@ jobs:
         if: steps.check-trigger.outputs.triggered == 'true' && steps.strategy.outputs.skip_review == 'false'
         id: db-config
         run: |
+          set -euo pipefail
+          
           # Get configuration
           CONFIG=$(aws secretsmanager get-secret-value \
             --secret-id /claude-code-pr/config \
@@ -153,28 +157,33 @@ jobs:
             exit 1
           }
           
-          # Get database password
-          DB_SECRET=$(aws secretsmanager get-secret-value \
-            --secret-id curation-db-readonly \
-            --query SecretString --output text) || {
-            echo "❌ Failed to retrieve DB secret from AWS Secrets Manager"
-            exit 1
-          }
+          # Mask the entire CONFIG to hide internal hostnames
+          echo "::add-mask::$CONFIG"
+          
           
           # Extract values
-          echo "ssm_instance_id=$(echo $CONFIG | jq -r .ssm_instance_id)" >> $GITHUB_OUTPUT
-          echo "db_host=$(echo $CONFIG | jq -r .db_host)" >> $GITHUB_OUTPUT
-          echo "db_port=$(echo $CONFIG | jq -r .db_port)" >> $GITHUB_OUTPUT
-          echo "db_name=$(echo $CONFIG | jq -r .db_name)" >> $GITHUB_OUTPUT
-          echo "db_user=$(echo $CONFIG | jq -r .db_user)" >> $GITHUB_OUTPUT
+          SSM_INSTANCE_ID=$(echo $CONFIG | jq -r .ssm_instance_id)
+          DB_HOST=$(echo $CONFIG | jq -r .db_host)
+          DB_PORT=$(echo $CONFIG | jq -r .db_port)
+          DB_NAME=$(echo $CONFIG | jq -r .db_name)
+          DB_USER=$(echo $CONFIG | jq -r .db_user)
           
-          # Extract and mask password (but don't output it)
-          DB_PASSWORD=$(echo $DB_SECRET | jq -r .password)
-          echo "::add-mask::$DB_PASSWORD"
-          # SECURITY: Do not output password to step outputs - will pass via env var instead
+          # Validate all required fields are present
+          for var in SSM_INSTANCE_ID DB_HOST DB_PORT DB_NAME DB_USER; do
+            if [ -z "${!var}" ] || [ "${!var}" = "null" ]; then
+              echo "❌ CONFIG missing or empty: $var"
+              exit 1
+            fi
+          done
           
-          # Export to GITHUB_ENV for use in subsequent steps (secure - doesn't log the value)
-          echo "DB_PASSWORD=$DB_PASSWORD" >> $GITHUB_ENV
+          # Output validated values
+          echo "ssm_instance_id=$SSM_INSTANCE_ID" >> $GITHUB_OUTPUT
+          echo "db_host=$DB_HOST" >> $GITHUB_OUTPUT
+          echo "db_port=$DB_PORT" >> $GITHUB_OUTPUT
+          echo "db_name=$DB_NAME" >> $GITHUB_OUTPUT
+          echo "db_user=$DB_USER" >> $GITHUB_OUTPUT
+          
+          # Note: Password will be fetched right before Claude step to minimize exposure
 
       - name: Cache SSM Plugin
         id: cache-ssm-plugin
@@ -210,8 +219,16 @@ jobs:
         if: steps.check-trigger.outputs.triggered == 'true' && steps.strategy.outputs.skip_review == 'false'
         id: tunnel
         run: |
-          # Start SSM session in background
-          aws ssm start-session \
+          set -euo pipefail
+          
+          # Configurable timeout values
+          TUNNEL_TIMEOUT="50m"
+          WAIT_ITERATIONS=60
+          SLEEP_INTERVAL=2
+          
+          # Start SSM session in background with timeout
+          timeout --foreground $TUNNEL_TIMEOUT \
+            aws ssm start-session \
             --target ${{ steps.db-config.outputs.ssm_instance_id }} \
             --document-name AWS-StartPortForwardingSessionToRemoteHost \
             --parameters '{"host":["${{ steps.db-config.outputs.db_host }}"],"portNumber":["${{ steps.db-config.outputs.db_port }}"],"localPortNumber":["${{ steps.db-config.outputs.db_port }}"]}'  &
@@ -219,9 +236,26 @@ jobs:
           SSM_PID=$!
           echo "pid=$SSM_PID" >> $GITHUB_OUTPUT
           
+          # Validate SSM_PID before setting up trap
+          if [ -z "$SSM_PID" ] || ! ps -p $SSM_PID >/dev/null 2>&1; then
+            echo "❌ Failed to start SSM process"
+            exit 1
+          fi
+          
+          # Set up trap for cleanup on cancellation (after we have SSM_PID)
+          cleanup() {
+            echo "Received cancel signal – cleaning up SSM tunnel"
+            # Validate PID before attempting to kill
+            if [ -n "$SSM_PID" ] && ps -p $SSM_PID >/dev/null 2>&1; then
+              # Kill SSM process and its children
+              kill -TERM -- -$SSM_PID 2>/dev/null || true
+            fi
+          }
+          trap 'cleanup' INT TERM
+          
           # Wait for tunnel with retry loop and process validation
           echo "Waiting for SSM tunnel..."
-          for i in {1..60}; do
+          for i in $(seq 1 $WAIT_ITERATIONS); do
             # Check if SSM process is still running
             if ! ps -p $SSM_PID >/dev/null 2>&1; then
               echo "❌ SSM process crashed (PID: $SSM_PID)"
@@ -230,72 +264,88 @@ jobs:
             
             # Check if tunnel is ready
             if nc -z localhost ${{ steps.db-config.outputs.db_port }} 2>/dev/null; then
-              echo "✅ SSM tunnel established after $i seconds"
+              echo "✅ SSM tunnel established after $(($i * $SLEEP_INTERVAL)) seconds"
+              # Remove trap now that tunnel is established successfully
+              trap - INT TERM
               break
             fi
             
-            if [ $i -eq 60 ]; then
-              echo "❌ Timeout waiting for SSM tunnel after 60 seconds"
+            if [ $i -eq $WAIT_ITERATIONS ]; then
+              echo "❌ Timeout waiting for SSM tunnel after $(($WAIT_ITERATIONS * $SLEEP_INTERVAL)) seconds"
+              echo "Killing SSM process..."
+              kill $SSM_PID || true
               exit 1
             fi
             
             # Use longer sleep interval for more stable connection
-            sleep 2
+            sleep $SLEEP_INTERVAL
           done
 
       - name: Generate review configuration
         if: steps.check-trigger.outputs.triggered == 'true' && steps.strategy.outputs.skip_review == 'false'
         id: review-config
         run: |
-          # Generate MCP configuration
+          set -euo pipefail
+          
+          # Generate MCP configuration using jq for proper JSON escaping
           if [[ "${{ steps.strategy.outputs.use_zen_tools }}" == "true" ]]; then
-            MCP_CONFIG='{
-              "mcpServers": {
-                "postgres": {
-                  "command": "npx",
-                  "args": ["-y", "@modelcontextprotocol/server-postgres", "postgresql://localhost:${{ steps.db-config.outputs.db_port }}/${{ steps.db-config.outputs.db_name }}"],
-                  "env": {
-                    "PGUSER": "${{ steps.db-config.outputs.db_user }}",
-                    "PGPASSWORD": "'"$DB_PASSWORD"'"
-                  }
-                },
-                "zen": {
-                  "command": "sh",
-                  "args": ["-c", "python -m pip install --user uv && export PATH=$PATH:$HOME/.local/bin && uvx --from git+https://github.com/alliance-genome/zen-mcp-server.git zen-mcp-server"],
-                  "env": {
-                    "PATH": "/usr/local/bin:/usr/bin:/bin:/opt/homebrew/bin:$HOME/.local/bin",
-                    "OPENAI_API_KEY": "${{ secrets.OPENAI_API_KEY }}"
+            MCP_CONFIG=$(jq -n \
+              --arg dbuser "${{ steps.db-config.outputs.db_user }}" \
+              --arg dbport "${{ steps.db-config.outputs.db_port }}" \
+              --arg dbname "${{ steps.db-config.outputs.db_name }}" \
+              '{
+                mcpServers: {
+                  postgres: {
+                    command: "npx",
+                    args: ["-y", "@modelcontextprotocol/server-postgres", "postgresql://localhost:\($dbport)/\($dbname)"],
+                    env: { PGUSER: $dbuser }
+                  },
+                  zen: {
+                    command: "sh",
+                    args: ["-c", "python -m pip install --user uv && export PATH=$PATH:$HOME/.local/bin && uvx --from git+https://github.com/alliance-genome/zen-mcp-server.git zen-mcp-server"],
+                    env: { PATH: "/usr/local/bin:/usr/bin:/bin:/opt/homebrew/bin:$HOME/.local/bin" }
                   }
                 }
-              }
-            }'
+              }')
             ALLOWED_TOOLS="mcp__zen__codereview,mcp__zen__secaudit,mcp__zen__analyze,mcp__zen__testgen,mcp__zen__debug,mcp__zen__refactor,mcp__zen__chat,mcp__zen__consensus,mcp__zen__thinkdeep,mcp__zen__planner,mcp__zen__precommit,mcp__zen__tracer,mcp__zen__docgen,mcp__zen__challenge,mcp__zen__listmodels,mcp__zen__version,mcp__postgres__query,Bash,Edit,Read,Write,Glob,Grep,LS"
           else
-            MCP_CONFIG='{
-              "mcpServers": {
-                "postgres": {
-                  "command": "npx",
-                  "args": ["-y", "@modelcontextprotocol/server-postgres", "postgresql://localhost:${{ steps.db-config.outputs.db_port }}/${{ steps.db-config.outputs.db_name }}"],
-                  "env": {
-                    "PGUSER": "${{ steps.db-config.outputs.db_user }}",
-                    "PGPASSWORD": "'"$DB_PASSWORD"'"
+            MCP_CONFIG=$(jq -n \
+              --arg dbuser "${{ steps.db-config.outputs.db_user }}" \
+              --arg dbport "${{ steps.db-config.outputs.db_port }}" \
+              --arg dbname "${{ steps.db-config.outputs.db_name }}" \
+              '{
+                mcpServers: {
+                  postgres: {
+                    command: "npx",
+                    args: ["-y", "@modelcontextprotocol/server-postgres", "postgresql://localhost:\($dbport)/\($dbname)"],
+                    env: { PGUSER: $dbuser }
                   }
                 }
-              }
-            }'
+              }')
             ALLOWED_TOOLS="mcp__postgres__query,Bash,Edit,Read,Write,Glob,Grep,LS"
           fi
           
           # Set outputs
-          echo "mcp_config<<EOF" >> $GITHUB_OUTPUT
-          echo "$MCP_CONFIG" >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
-          
+          printf 'mcp_config<<EOF\n%s\nEOF\n' "$MCP_CONFIG" >> $GITHUB_OUTPUT
           echo "allowed_tools=$ALLOWED_TOOLS" >> $GITHUB_OUTPUT
 
+      - name: Get database password
+        if: steps.check-trigger.outputs.triggered == 'true' && steps.strategy.outputs.skip_review == 'false'
+        uses: aws-actions/aws-secretsmanager-get-secrets@v2.0.6
+        with:
+          secret-ids: |
+            DB_CREDS,curation-db-readonly
+          parse-json-secrets: true
+        # Note: This action automatically parses JSON secrets and creates environment variables
+        # PGPASSWORD is not persisted in GITHUB_ENV - the DB_CREDS_PASSWORD env var
+        # is only available for subsequent steps in this job, minimizing exposure window
+      
       - name: Run Claude Code Review
         if: steps.check-trigger.outputs.triggered == 'true' && steps.strategy.outputs.skip_review == 'false'
         uses: anthropics/claude-code-action@beta
+        env:
+          PGPASSWORD: ${{ env.DB_CREDS_PASSWORD }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
           model: claude-sonnet-4-20250514
@@ -354,14 +404,15 @@ jobs:
       - name: Cleanup
         if: always() && steps.tunnel.outputs.pid != ''
         run: |
-          # Kill the main SSM process
-          kill ${{ steps.tunnel.outputs.pid }} || true
+          set -euo pipefail
           
-          # Kill any child processes spawned by the SSM process
-          pkill -P ${{ steps.tunnel.outputs.pid }} || true
+          echo "Cleaning up SSM tunnel (PID: ${{ steps.tunnel.outputs.pid }})"
           
-          # Wait for process to fully terminate
-          wait ${{ steps.tunnel.outputs.pid }} 2>/dev/null || true
+          # Validate PID before attempting to kill
+          if [ -n "${{ steps.tunnel.outputs.pid }}" ] && ps -p ${{ steps.tunnel.outputs.pid }} >/dev/null 2>&1; then
+            # Kill the entire process group (same as trap handler)
+            kill -TERM -- -${{ steps.tunnel.outputs.pid }} 2>/dev/null || true
+          fi
           
           # Also terminate any hanging SSM sessions
           SESSIONS=$(aws ssm describe-sessions --state Active --filters "key=Target,value=${{ steps.db-config.outputs.ssm_instance_id }}" --query "Sessions[?DocumentName=='AWS-StartPortForwardingSessionToRemoteHost'].SessionId" --output text)
