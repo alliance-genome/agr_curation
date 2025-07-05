@@ -58,32 +58,15 @@ jobs:
             });
             
             let totalChanges = 0;
-            let hasDbChanges = false;
-            const dbPatterns = [
-              /\.sql$/i,
-              /migration/i,
-              /entity\//i,
-              /model\//i,
-              /schema\//i,
-              /database/i,
-              /hibernate/i,
-              /jpa/i
-            ];
             
             for (const file of files.data) {
               // Skip binary files
               if (file.patch) {
                 totalChanges += file.changes;
-                
-                // Check for database-related changes
-                if (dbPatterns.some(pattern => pattern.test(file.filename))) {
-                  hasDbChanges = true;
-                }
               }
             }
             
             core.setOutput('pr_size', totalChanges);
-            core.setOutput('has_db_changes', hasDbChanges);
             core.setOutput('files_changed', files.data.length);
 
       - name: Determine review strategy
@@ -93,7 +76,6 @@ jobs:
           PR_SIZE=${{ steps.pr-details.outputs.pr_size }}
           SKIP_THRESHOLD=3
           SIZE_THRESHOLD=40
-          HAS_DB_CHANGES=${{ steps.pr-details.outputs.has_db_changes }}
           
           if [ "$PR_SIZE" -le "$SKIP_THRESHOLD" ]; then
             echo "skip_review=true" >> $GITHUB_OUTPUT
@@ -107,13 +89,6 @@ jobs:
             echo "skip_review=false" >> $GITHUB_OUTPUT
             echo "use_zen_tools=false" >> $GITHUB_OUTPUT
             echo "reason=Standard review (${PR_SIZE} lines)" >> $GITHUB_OUTPUT
-          fi
-          
-          # Always enable database access for DB-related changes
-          if [ "$HAS_DB_CHANGES" = "true" ]; then
-            echo "force_db_access=true" >> $GITHUB_OUTPUT
-          else
-            echo "force_db_access=false" >> $GITHUB_OUTPUT
           fi
 
       - name: Post skip message
@@ -167,12 +142,18 @@ jobs:
           # Get configuration
           CONFIG=$(aws secretsmanager get-secret-value \
             --secret-id /claude-code-pr/config \
-            --query SecretString --output text)
+            --query SecretString --output text) || {
+            echo "❌ Failed to retrieve config from AWS Secrets Manager"
+            exit 1
+          }
           
           # Get database password
           DB_SECRET=$(aws secretsmanager get-secret-value \
             --secret-id curation-db-readonly \
-            --query SecretString --output text)
+            --query SecretString --output text) || {
+            echo "❌ Failed to retrieve DB secret from AWS Secrets Manager"
+            exit 1
+          }
           
           # Extract values
           echo "ssm_instance_id=$(echo $CONFIG | jq -r .ssm_instance_id)" >> $GITHUB_OUTPUT
@@ -186,12 +167,22 @@ jobs:
           echo "::add-mask::$DB_PASSWORD"
           echo "db_password=$DB_PASSWORD" >> $GITHUB_OUTPUT
 
+      - name: Cache SSM Plugin
+        id: cache-ssm-plugin
+        if: steps.check-trigger.outputs.triggered == 'true' && steps.strategy.outputs.skip_review == 'false'
+        uses: actions/cache@v4
+        with:
+          path: /tmp/session-manager-plugin.deb
+          key: ${{ runner.os }}-ssm-plugin
+
       - name: Install SSM Plugin
         if: steps.check-trigger.outputs.triggered == 'true' && steps.strategy.outputs.skip_review == 'false'
         run: |
-          curl -o session-manager-plugin.deb \
-            https://s3.amazonaws.com/session-manager-downloads/plugin/latest/ubuntu_64bit/session-manager-plugin.deb
-          sudo dpkg -i session-manager-plugin.deb
+          if [ "${{ steps.cache-ssm-plugin.outputs.cache-hit }}" != 'true' ]; then
+            curl -o /tmp/session-manager-plugin.deb \
+              https://s3.amazonaws.com/session-manager-downloads/plugin/latest/ubuntu_64bit/session-manager-plugin.deb
+          fi
+          sudo dpkg -i /tmp/session-manager-plugin.deb
 
       - name: Start database tunnel
         if: steps.check-trigger.outputs.triggered == 'true' && steps.strategy.outputs.skip_review == 'false'
@@ -206,16 +197,19 @@ jobs:
           SSM_PID=$!
           echo "pid=$SSM_PID" >> $GITHUB_OUTPUT
           
-          # Wait for tunnel
-          sleep 10
-          
-          # Verify tunnel is working
-          if nc -z localhost 5432; then
-            echo "✅ SSM tunnel established successfully"
-          else
-            echo "❌ Failed to establish SSM tunnel"
-            exit 1
-          fi
+          # Wait for tunnel with retry loop
+          echo "Waiting for SSM tunnel..."
+          for i in {1..30}; do
+            if nc -z localhost 5432; then
+              echo "✅ SSM tunnel established after $i seconds"
+              break
+            fi
+            if [ $i -eq 30 ]; then
+              echo "❌ Timeout waiting for SSM tunnel after 30 seconds"
+              exit 1
+            fi
+            sleep 1
+          done
 
       - name: Run Claude Code Review
         if: steps.check-trigger.outputs.triggered == 'true' && steps.strategy.outputs.skip_review == 'false'
@@ -240,10 +234,10 @@ jobs:
             PR Size: ${{ steps.pr-details.outputs.pr_size }} lines changed
             Files Changed: ${{ steps.pr-details.outputs.files_changed }}
             Review Strategy: ${{ steps.strategy.outputs.reason }}
-            Database Changes Detected: ${{ steps.pr-details.outputs.has_db_changes }}
             
-            WITH DATABASE ACCESS: Validate entity mappings against actual schema, check for 
-            missing migrations, verify foreign key constraints, analyze query performance 
+            WITH DATABASE ACCESS: If you detect database-related changes (SQL files, entity mappings, 
+            Hibernate configurations, migrations, etc.), validate entity mappings against actual schema, 
+            check for missing migrations, verify foreign key constraints, analyze query performance 
             implications, and ensure proper indexing for biological data queries.
             
             IMPORTANT: Always end your review comments with developer usage instructions:
