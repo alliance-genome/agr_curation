@@ -270,14 +270,9 @@ jobs:
             
             # Check if tunnel is ready
             if nc -z localhost $LOCAL_PORT 2>/dev/null; then
-              # Validate database connectivity with timeout
-              if timeout 10s psql -h localhost -p $LOCAL_PORT -U "${{ steps.db-config.outputs.db_user }}" -d "${{ steps.db-config.outputs.db_name }}" -c "SELECT 1" >/dev/null 2>&1; then
-                echo "✅ Database tunnel fully established after $(($i * $SLEEP_INTERVAL)) seconds"
-                # Keep trap active - do not remove
-                break
-              else
-                echo "Tunnel open but database not yet ready, retrying..."
-              fi
+              echo "✅ SSM tunnel established on port $LOCAL_PORT after $(($i * $SLEEP_INTERVAL)) seconds"
+              # Keep trap active - do not remove
+              break
             fi
             
             if [ $i -eq $WAIT_ITERATIONS ]; then
