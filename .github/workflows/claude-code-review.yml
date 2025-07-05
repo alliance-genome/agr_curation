@@ -142,7 +142,7 @@ jobs:
         with:
           role-to-assume: ${{ secrets.CLAUDE_CODE_PR_ROLE_ARN }}
           aws-region: us-east-1
-          role-duration-seconds: 900  # 15 minutes - minimal exposure window
+          role-duration-seconds: 1800  # 30 minutes - balance security and review completion
 
       - name: Get database configuration from AWS
         if: steps.check-trigger.outputs.triggered == 'true' && steps.strategy.outputs.skip_review == 'false'
@@ -230,7 +230,7 @@ jobs:
           set -euo pipefail
           
           # Configurable timeout values
-          TUNNEL_TIMEOUT="15m"  # Match OIDC session duration
+          TUNNEL_TIMEOUT="30m"  # Match OIDC session duration
           WAIT_ITERATIONS=60
           SLEEP_INTERVAL=2
           
