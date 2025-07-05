@@ -211,6 +211,60 @@ jobs:
             sleep 1
           done
 
+      - name: Generate Review Configuration
+        if: steps.check-trigger.outputs.triggered == 'true' && steps.strategy.outputs.skip_review == 'false'
+        id: review-config
+        run: |
+          # Generate MCP Configuration
+          POSTGRES_CONFIG=$(cat <<'EOF'
+          "postgres": {
+            "command": "npx",
+            "args": ["-y", "@modelcontextprotocol/server-postgres", "postgresql://localhost:5432/${{ steps.db-config.outputs.db_name }}"],
+            "env": {
+              "PGUSER": "${{ steps.db-config.outputs.db_user }}",
+              "PGPASSWORD": "${{ steps.db-config.outputs.db_password }}"
+            }
+          }
+          EOF
+          )
+          
+          if [[ "${{ steps.strategy.outputs.use_zen_tools }}" == "true" ]]; then
+            ZEN_CONFIG=$(cat <<'EOF'
+            ,
+            "zen": {
+              "command": "sh", 
+              "args": ["-c", "python -m pip install --user uv && export PATH=$PATH:$HOME/.local/bin && uvx --from git+https://github.com/alliance-genome/zen-mcp-server.git zen-mcp-server"],
+              "env": {
+                "PATH": "/usr/local/bin:/usr/bin:/bin:/opt/homebrew/bin:$HOME/.local/bin",
+                "OPENAI_API_KEY": "${{ secrets.OPENAI_API_KEY }}"
+              }
+            }
+          EOF
+            )
+            ALLOWED_TOOLS="mcp__postgres__query,mcp__zen__codereview,mcp__zen__secaudit,mcp__zen__analyze,mcp__zen__testgen,mcp__zen__debug,mcp__zen__refactor,mcp__zen__chat,mcp__zen__consensus,mcp__zen__thinkdeep,mcp__zen__planner,mcp__zen__precommit,mcp__zen__tracer,mcp__zen__docgen,mcp__zen__challenge,mcp__zen__listmodels,mcp__zen__version,Bash,Edit,Read,Write,Glob,Grep,LS"
+          else
+            ZEN_CONFIG=""
+            ALLOWED_TOOLS="mcp__postgres__query,Bash,Edit,Read,Write,Glob,Grep,LS"
+          fi
+          
+          # Build final MCP JSON config
+          MCP_JSON="{\"mcpServers\": { ${POSTGRES_CONFIG} ${ZEN_CONFIG} }}"
+          
+          # Validate JSON and output
+          echo "$MCP_JSON" | jq . > /dev/null || {
+            echo "❌ Generated invalid MCP JSON configuration"
+            exit 1
+          }
+          
+          # Set outputs (escape for multiline)
+          {
+            echo "mcp_config<<EOF"
+            echo "$MCP_JSON"
+            echo "EOF"
+          } >> $GITHUB_OUTPUT
+          
+          echo "allowed_tools=$ALLOWED_TOOLS" >> $GITHUB_OUTPUT
+
       - name: Run Claude Code Review
         if: steps.check-trigger.outputs.triggered == 'true' && steps.strategy.outputs.skip_review == 'false'
         uses: anthropics/claude-code-action@beta
@@ -261,40 +315,8 @@ jobs:
             Keep feedback concise and actionable.
             
             IMPORTANT: Always end your review with the developer capabilities section from your custom instructions.
-          mcp_config: |
-            ${{ steps.strategy.outputs.use_zen_tools == 'true' && format('{
-              "mcpServers": {
-                "postgres": {
-                  "command": "npx",
-                  "args": ["-y", "@modelcontextprotocol/server-postgres", "postgresql://localhost:5432/{0}"],
-                  "env": {
-                    "PGUSER": "{1}",
-                    "PGPASSWORD": "{2}"
-                  }
-                },
-                "zen": {
-                  "command": "sh",
-                  "args": ["-c", "python -m pip install --user uv && export PATH=$PATH:$HOME/.local/bin && uvx --from git+https://github.com/alliance-genome/zen-mcp-server.git zen-mcp-server"],
-                  "env": {
-                    "PATH": "/usr/local/bin:/usr/bin:/bin:/opt/homebrew/bin:$HOME/.local/bin",
-                    "OPENAI_API_KEY": "{3}"
-                  }
-                }
-              }
-            }', steps.db-config.outputs.db_name, steps.db-config.outputs.db_user, steps.db-config.outputs.db_password, secrets.OPENAI_API_KEY) || format('{
-              "mcpServers": {
-                "postgres": {
-                  "command": "npx",
-                  "args": ["-y", "@modelcontextprotocol/server-postgres", "postgresql://localhost:5432/{0}"],
-                  "env": {
-                    "PGUSER": "{1}",
-                    "PGPASSWORD": "{2}"
-                  }
-                }
-              }
-            }', steps.db-config.outputs.db_name, steps.db-config.outputs.db_user, steps.db-config.outputs.db_password) }}
-          allowed_tools: |
-            ${{ steps.strategy.outputs.use_zen_tools == 'true' && 'mcp__postgres__query,mcp__zen__codereview,mcp__zen__secaudit,mcp__zen__analyze,mcp__zen__testgen,mcp__zen__debug,mcp__zen__refactor,mcp__zen__chat,mcp__zen__consensus,mcp__zen__thinkdeep,mcp__zen__planner,mcp__zen__precommit,mcp__zen__tracer,mcp__zen__docgen,mcp__zen__challenge,mcp__zen__listmodels,mcp__zen__version,Bash,Edit,Read,Write,Glob,Grep,LS' || 'mcp__postgres__query,Bash,Edit,Read,Write,Glob,Grep,LS' }}
+          mcp_config: ${{ steps.review-config.outputs.mcp_config }}
+          allowed_tools: ${{ steps.review-config.outputs.allowed_tools }}
           claude_env: |
             REPOSITORY: ${{ github.repository }}
             ORGANIZATION: ${{ github.repository_owner }}
