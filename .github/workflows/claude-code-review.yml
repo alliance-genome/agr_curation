@@ -234,8 +234,15 @@ jobs:
           WAIT_ITERATIONS=60
           SLEEP_INTERVAL=2
           
-          # Dynamic port allocation to avoid collisions
+          # Dynamic port allocation to avoid collisions - do this right before tunnel start
           LOCAL_PORT=$(comm -23 <(seq 5500 6500) <(ss -lnt | awk 'NR>1{print $4}' | awk -F: '{print $NF}' | sort -n) | shuf -n1)
+          
+          # Final check that port is still available
+          if nc -z localhost $LOCAL_PORT 2>/dev/null; then
+            echo "❌ Port $LOCAL_PORT became unavailable, retrying..."
+            LOCAL_PORT=$(comm -23 <(seq 5500 6500) <(ss -lnt | awk 'NR>1{print $4}' | awk -F: '{print $NF}' | sort -n) | shuf -n1)
+          fi
+          
           echo "Using local port: $LOCAL_PORT"
           echo "local_port=$LOCAL_PORT" >> $GITHUB_OUTPUT
           
@@ -249,9 +256,13 @@ jobs:
           SSM_PID=$!
           echo "pid=$SSM_PID" >> $GITHUB_OUTPUT
           
-          # Validate SSM_PID before setting up trap
+          # Give SSM a moment to start
+          sleep 1
+          
+          # Validate SSM process started successfully
           if [ -z "$SSM_PID" ] || ! ps -p $SSM_PID >/dev/null 2>&1; then
-            echo "❌ Failed to start SSM process"
+            echo "❌ SSM session failed to start"
+            echo "Check that the SSM instance ID and parameters are correct"
             exit 1
           fi
           
@@ -348,20 +359,48 @@ jobs:
 
       - name: Get database password
         if: steps.check-trigger.outputs.triggered == 'true' && steps.strategy.outputs.skip_review == 'false'
+        id: db-password
         uses: aws-actions/aws-secretsmanager-get-secrets@v2.0.6
         with:
           secret-ids: |
             DB_CREDS,curation-db-readonly
           parse-json-secrets: true
         # Note: This action automatically parses JSON secrets and creates environment variables
-        # PGPASSWORD is not persisted in GITHUB_ENV - the DB_CREDS_PASSWORD env var
-        # is only available for subsequent steps in this job, minimizing exposure window
+        # DB_CREDS_PASSWORD env var is only available for subsequent steps in this job
+      
+      - name: Verify password and prepare for Claude
+        if: steps.check-trigger.outputs.triggered == 'true' && steps.strategy.outputs.skip_review == 'false'
+        id: prepare-claude
+        run: |
+          set -euo pipefail
+          
+          # Verify password was retrieved
+          if [ -z "${DB_CREDS_PASSWORD:-}" ]; then
+            echo "❌ Failed to retrieve database password from Secrets Manager"
+            exit 1
+          fi
+          
+          # Mask the password
+          echo "::add-mask::$DB_CREDS_PASSWORD"
+          
+          # Pass password to next step via GITHUB_ENV
+          echo "DB_PASSWORD=$DB_CREDS_PASSWORD" >> $GITHUB_ENV
+          
+          # Quick database connectivity check
+          echo "Testing database connection..."
+          if PGPASSWORD="$DB_CREDS_PASSWORD" psql -h localhost -p ${{ steps.tunnel.outputs.local_port }} -U "${{ steps.db-config.outputs.db_user }}" -d "${{ steps.db-config.outputs.db_name }}" -c "SELECT current_database(), version();" >/dev/null 2>&1; then
+            echo "✅ Database connection verified"
+          else
+            echo "❌ Database connection test failed"
+            echo "Please check credentials and tunnel configuration"
+            exit 1
+          fi
       
       - name: Run Claude Code Review
         if: steps.check-trigger.outputs.triggered == 'true' && steps.strategy.outputs.skip_review == 'false'
         uses: anthropics/claude-code-action@beta
         env:
-          PGPASSWORD: ${{ env.DB_CREDS_PASSWORD }}
+          PGPASSWORD: ${{ env.DB_PASSWORD }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
