@@ -247,21 +247,18 @@ jobs:
             ALLOWED_TOOLS="mcp__postgres__query,Bash,Edit,Read,Write,Glob,Grep,LS"
           fi
           
-          # Build final MCP JSON config
+          # Build final MCP JSON config and compress to single line
           MCP_JSON="{\"mcpServers\": { ${POSTGRES_CONFIG} ${ZEN_CONFIG} }}"
           
-          # Validate JSON and output
-          echo "$MCP_JSON" | jq . > /dev/null || {
+          # Validate and compress JSON to single line to avoid format string issues
+          COMPRESSED_JSON=$(echo "$MCP_JSON" | jq -c . 2>/dev/null) || {
             echo "❌ Generated invalid MCP JSON configuration"
+            echo "Raw JSON: $MCP_JSON"
             exit 1
           }
           
-          # Set outputs (escape for multiline)
-          {
-            echo "mcp_config<<EOF"
-            echo "$MCP_JSON"
-            echo "EOF"
-          } >> $GITHUB_OUTPUT
+          # Set outputs (single line avoids format string parsing)
+          echo "mcp_config=$COMPRESSED_JSON" >> $GITHUB_OUTPUT
           
           echo "allowed_tools=$ALLOWED_TOOLS" >> $GITHUB_OUTPUT
 
