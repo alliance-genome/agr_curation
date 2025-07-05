@@ -168,10 +168,10 @@ jobs:
           echo "db_name=$(echo $CONFIG | jq -r .db_name)" >> $GITHUB_OUTPUT
           echo "db_user=$(echo $CONFIG | jq -r .db_user)" >> $GITHUB_OUTPUT
           
-          # Extract and mask password
+          # Extract and mask password (but don't output it)
           DB_PASSWORD=$(echo $DB_SECRET | jq -r .password)
           echo "::add-mask::$DB_PASSWORD"
-          echo "db_password=$DB_PASSWORD" >> $GITHUB_OUTPUT
+          # SECURITY: Do not output password to step outputs - will pass via env var instead
 
       - name: Cache SSM Plugin
         id: cache-ssm-plugin
@@ -184,11 +184,24 @@ jobs:
       - name: Install SSM Plugin
         if: steps.check-trigger.outputs.triggered == 'true' && steps.strategy.outputs.skip_review == 'false'
         run: |
+          set -euo pipefail
+          
           if [ "${{ steps.cache-ssm-plugin.outputs.cache-hit }}" != 'true' ]; then
-            curl -o /tmp/session-manager-plugin.deb \
+            echo "Downloading SSM plugin..."
+            curl -fsSL -o /tmp/session-manager-plugin.deb \
               https://s3.amazonaws.com/session-manager-downloads/plugin/latest/ubuntu_64bit/session-manager-plugin.deb
           fi
-          sudo dpkg -i /tmp/session-manager-plugin.deb
+          
+          echo "Installing SSM plugin..."
+          sudo apt-get update -y
+          sudo dpkg -i /tmp/session-manager-plugin.deb || {
+            echo "Initial dpkg install failed, fixing dependencies..."
+            sudo apt-get install -f -y
+            sudo dpkg -i /tmp/session-manager-plugin.deb
+          }
+          
+          # Verify installation
+          session-manager-plugin --version
 
       - name: Start database tunnel
         if: steps.check-trigger.outputs.triggered == 'true' && steps.strategy.outputs.skip_review == 'false'
@@ -198,28 +211,40 @@ jobs:
           aws ssm start-session \
             --target ${{ steps.db-config.outputs.ssm_instance_id }} \
             --document-name AWS-StartPortForwardingSessionToRemoteHost \
-            --parameters '{"host":["${{ steps.db-config.outputs.db_host }}"],"portNumber":["5432"],"localPortNumber":["5432"]}' &
+            --parameters '{"host":["${{ steps.db-config.outputs.db_host }}"],"portNumber":["${{ steps.db-config.outputs.db_port }}"],"localPortNumber":["${{ steps.db-config.outputs.db_port }}"]}'  &
           
           SSM_PID=$!
           echo "pid=$SSM_PID" >> $GITHUB_OUTPUT
           
-          # Wait for tunnel with retry loop
+          # Wait for tunnel with retry loop and process validation
           echo "Waiting for SSM tunnel..."
-          for i in {1..30}; do
-            if nc -z localhost 5432; then
+          for i in {1..60}; do
+            # Check if SSM process is still running
+            if ! ps -p $SSM_PID >/dev/null 2>&1; then
+              echo "❌ SSM process crashed (PID: $SSM_PID)"
+              exit 1
+            fi
+            
+            # Check if tunnel is ready
+            if nc -z localhost ${{ steps.db-config.outputs.db_port }} 2>/dev/null; then
               echo "✅ SSM tunnel established after $i seconds"
               break
             fi
-            if [ $i -eq 30 ]; then
-              echo "❌ Timeout waiting for SSM tunnel after 30 seconds"
+            
+            if [ $i -eq 60 ]; then
+              echo "❌ Timeout waiting for SSM tunnel after 60 seconds"
               exit 1
             fi
-            sleep 1
+            
+            # Use longer sleep interval for more stable connection
+            sleep 2
           done
 
       - name: Generate review configuration
         if: steps.check-trigger.outputs.triggered == 'true' && steps.strategy.outputs.skip_review == 'false'
         id: review-config
+        env:
+          DB_PASSWORD: ${{ fromJSON(steps.get-db-secret.outputs.secret).password }}
         run: |
           # Generate MCP configuration
           if [[ "${{ steps.strategy.outputs.use_zen_tools }}" == "true" ]]; then
@@ -227,10 +252,10 @@ jobs:
               "mcpServers": {
                 "postgres": {
                   "command": "npx",
-                  "args": ["-y", "@modelcontextprotocol/server-postgres", "postgresql://localhost:5432/${{ steps.db-config.outputs.db_name }}"],
+                  "args": ["-y", "@modelcontextprotocol/server-postgres", "postgresql://localhost:${{ steps.db-config.outputs.db_port }}/${{ steps.db-config.outputs.db_name }}"],
                   "env": {
                     "PGUSER": "${{ steps.db-config.outputs.db_user }}",
-                    "PGPASSWORD": "${{ steps.db-config.outputs.db_password }}"
+                    "PGPASSWORD": "'"$DB_PASSWORD"'"
                   }
                 },
                 "zen": {
@@ -249,10 +274,10 @@ jobs:
               "mcpServers": {
                 "postgres": {
                   "command": "npx",
-                  "args": ["-y", "@modelcontextprotocol/server-postgres", "postgresql://localhost:5432/${{ steps.db-config.outputs.db_name }}"],
+                  "args": ["-y", "@modelcontextprotocol/server-postgres", "postgresql://localhost:${{ steps.db-config.outputs.db_port }}/${{ steps.db-config.outputs.db_name }}"],
                   "env": {
                     "PGUSER": "${{ steps.db-config.outputs.db_user }}",
-                    "PGPASSWORD": "${{ steps.db-config.outputs.db_password }}"
+                    "PGPASSWORD": "'"$DB_PASSWORD"'"
                   }
                 }
               }
@@ -328,10 +353,18 @@ jobs:
       - name: Cleanup
         if: always() && steps.tunnel.outputs.pid != ''
         run: |
+          # Kill the main SSM process
           kill ${{ steps.tunnel.outputs.pid }} || true
           
-          # Also terminate any hanging sessions
+          # Kill any child processes spawned by the SSM process
+          pkill -P ${{ steps.tunnel.outputs.pid }} || true
+          
+          # Wait for process to fully terminate
+          wait ${{ steps.tunnel.outputs.pid }} 2>/dev/null || true
+          
+          # Also terminate any hanging SSM sessions
           SESSIONS=$(aws ssm describe-sessions --state Active --filters "key=Target,value=${{ steps.db-config.outputs.ssm_instance_id }}" --query "Sessions[?DocumentName=='AWS-StartPortForwardingSessionToRemoteHost'].SessionId" --output text)
           for session in $SESSIONS; do
+            echo "Terminating SSM session: $session"
             aws ssm terminate-session --session-id $session || true
           done
