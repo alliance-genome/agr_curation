@@ -18,6 +18,7 @@ jobs:
       issues: write
       id-token: write  # Required for OIDC
     runs-on: ubuntu-latest
+    timeout-minutes: 30  # Match OIDC session duration to prevent hanging reviews
     
     steps:
       - name: Checkout repository
@@ -322,16 +323,8 @@ jobs:
           # Generate MCP configuration using jq for proper JSON escaping
           if [[ "${{ steps.strategy.outputs.use_zen_tools }}" == "true" ]]; then
             MCP_CONFIG=$(jq -n \
-              --arg dbuser "${{ steps.db-config.outputs.db_user }}" \
-              --arg localport "${{ steps.tunnel.outputs.local_port }}" \
-              --arg dbname "${{ steps.db-config.outputs.db_name }}" \
               '{
                 mcpServers: {
-                  postgres: {
-                    command: "npx",
-                    args: ["-y", "@modelcontextprotocol/server-postgres", "postgresql://localhost:\($localport)/\($dbname)"],
-                    env: { PGUSER: $dbuser }
-                  },
                   zen: {
                     command: "sh",
                     args: ["-c", "python -m pip install --user uv && export PATH=$PATH:$HOME/.local/bin && uvx --from git+https://github.com/alliance-genome/zen-mcp-server.git zen-mcp-server"],
@@ -339,22 +332,13 @@ jobs:
                   }
                 }
               }')
-            ALLOWED_TOOLS="mcp__zen__codereview,mcp__zen__secaudit,mcp__zen__analyze,mcp__zen__testgen,mcp__zen__debug,mcp__zen__refactor,mcp__zen__chat,mcp__zen__consensus,mcp__zen__thinkdeep,mcp__zen__planner,mcp__zen__precommit,mcp__zen__tracer,mcp__zen__docgen,mcp__zen__challenge,mcp__zen__listmodels,mcp__zen__version,mcp__postgres__query,Bash,Edit,Read,Write,Glob,Grep,LS"
+            ALLOWED_TOOLS="mcp__zen__codereview,mcp__zen__secaudit,mcp__zen__analyze,mcp__zen__testgen,mcp__zen__debug,mcp__zen__refactor,mcp__zen__chat,mcp__zen__consensus,mcp__zen__thinkdeep,mcp__zen__planner,mcp__zen__precommit,mcp__zen__tracer,mcp__zen__docgen,mcp__zen__challenge,mcp__zen__listmodels,mcp__zen__version,Bash,Edit,Read,Write,Glob,Grep,LS"
           else
             MCP_CONFIG=$(jq -n \
-              --arg dbuser "${{ steps.db-config.outputs.db_user }}" \
-              --arg localport "${{ steps.tunnel.outputs.local_port }}" \
-              --arg dbname "${{ steps.db-config.outputs.db_name }}" \
               '{
-                mcpServers: {
-                  postgres: {
-                    command: "npx",
-                    args: ["-y", "@modelcontextprotocol/server-postgres", "postgresql://localhost:\($localport)/\($dbname)"],
-                    env: { PGUSER: $dbuser }
-                  }
-                }
+                mcpServers: {}
               }')
-            ALLOWED_TOOLS="mcp__postgres__query,Bash,Edit,Read,Write,Glob,Grep,LS"
+            ALLOWED_TOOLS="Bash,Edit,Read,Write,Glob,Grep,LS"
           fi
           
           # Set outputs
@@ -425,10 +409,25 @@ jobs:
             Files Changed: ${{ steps.pr-details.outputs.files_changed }}
             Review Strategy: ${{ steps.strategy.outputs.reason }}
             
-            WITH DATABASE ACCESS: If you detect database-related changes (SQL files, entity mappings, 
-            Hibernate configurations, migrations, etc.), validate entity mappings against actual schema, 
-            check for missing migrations, verify foreign key constraints, analyze query performance 
-            implications, and ensure proper indexing for biological data queries.
+            DATABASE ACCESS: You have direct PostgreSQL read-only access via psql command:
+            - Host: localhost
+            - Port: ${{ steps.tunnel.outputs.local_port }}
+            - Database: ${{ steps.db-config.outputs.db_name }}
+            - User: ${{ steps.db-config.outputs.db_user }}
+            - Password is set in PGPASSWORD environment variable
+            
+            Use psql for database queries (read-only):
+            psql -h localhost -p ${{ steps.tunnel.outputs.local_port }} -U ${{ steps.db-config.outputs.db_user }} -d ${{ steps.db-config.outputs.db_name }} -c "YOUR SQL HERE"
+            
+            Examples:
+            - Check table structure: -c "\d table_name"
+            - List tables: -c "\dt"
+            - Query data: -c "SELECT * FROM table_name LIMIT 10"
+            
+            If you detect database-related changes (SQL files, entity mappings, Hibernate configurations, 
+            migrations, etc.), validate entity mappings against actual schema, check for missing migrations, 
+            verify foreign key constraints, analyze query performance implications, and ensure proper 
+            indexing for biological data queries.
             
             IMPORTANT: Always end your review comments with developer usage instructions:
             
