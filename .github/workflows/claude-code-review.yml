@@ -497,6 +497,61 @@ jobs:
             REVIEW_STRATEGY: ${{ steps.strategy.outputs.skip_review == 'true' && 'SKIP' || (steps.strategy.outputs.use_zen_tools == 'true' && 'ZEN_O3' || 'STANDARD') }}
             ESTIMATED_COST: ${{ steps.strategy.outputs.skip_review == 'true' && '$0.00' || (steps.strategy.outputs.use_zen_tools == 'true' && '~$0.30-0.50' || '~$0.10-0.20') }}
 
+      - name: Terminate zen-mcp-server and SSM tunnel
+        if: always() && steps.check-trigger.outputs.triggered == 'true' && steps.pr-details.outputs.skip_non_alpha != 'true' && steps.strategy.outputs.skip_review == 'false'
+        run: |
+          set -euo pipefail
+          
+          # NOTE: This step is needed because zen-mcp-server stays alive after the Claude Code action
+          # completes, causing the workflow job to hang indefinitely. We must explicitly terminate it.
+          echo "=== Post-review cleanup: Terminating zen-mcp-server and SSM tunnel ==="
+          
+          # Kill zen-mcp-server processes (primary fix for hanging issue)
+          echo "Terminating any zen-mcp-server processes..."
+          if pgrep -f "zen-mcp-server" > /dev/null 2>&1; then
+            echo "Found zen-mcp-server process(es), terminating..."
+            pkill -TERM -f "zen-mcp-server" 2>/dev/null || true
+          else
+            echo "No zen-mcp-server processes found"
+          fi
+          
+          # Kill SSM tunnel process using PID
+          echo "Terminating SSM tunnel process (PID: ${{ steps.tunnel.outputs.pid }})..."
+          if [ -n "${{ steps.tunnel.outputs.pid }}" ] && ps -p ${{ steps.tunnel.outputs.pid }} >/dev/null 2>&1; then
+            echo "SSM tunnel process is running, terminating..."
+            # Kill the entire process group
+            kill -TERM -- -${{ steps.tunnel.outputs.pid }} 2>/dev/null || true
+          else
+            echo "SSM tunnel process not found or already terminated"
+          fi
+          
+          # Also use pkill as backup for SSM tunnel
+          if pgrep -f "aws ssm start-session" > /dev/null 2>&1; then
+            echo "Found SSM session via pkill, terminating..."
+            pkill -TERM -f "aws ssm start-session" 2>/dev/null || true
+          fi
+          
+          # Give processes time to terminate gracefully
+          echo "Waiting 3 seconds for graceful termination..."
+          sleep 3
+          
+          # Force kill if processes are still running
+          if pgrep -f "zen-mcp-server" > /dev/null 2>&1; then
+            echo "zen-mcp-server still running, force killing..."
+            pkill -9 -f "zen-mcp-server" 2>/dev/null || true
+          fi
+          
+          if pgrep -f "aws ssm start-session" > /dev/null 2>&1; then
+            echo "SSM session still running, force killing..."
+            pkill -9 -f "aws ssm start-session" 2>/dev/null || true
+          fi
+          
+          echo "=== Post-review cleanup complete ==="
+          
+          # Optional: Show remaining processes for debugging
+          echo "=== Remaining relevant processes (for debugging) ==="
+          ps aux | grep -E "(zen|ssm|claude)" | grep -v grep || echo "No relevant processes found"
+
       - name: Cleanup
         if: always() && steps.tunnel.outputs.pid != '' && steps.pr-details.outputs.skip_non_alpha != 'true'
         run: |
