@@ -262,26 +262,37 @@ jobs:
             
             IMPORTANT: Always end your review with the developer capabilities section from your custom instructions.
           mcp_config: |
-            {
+            ${{ steps.strategy.outputs.use_zen_tools == 'true' && format('{
               "mcpServers": {
                 "postgres": {
                   "command": "npx",
-                  "args": ["-y", "@modelcontextprotocol/server-postgres", "postgresql://localhost:5432/${{ steps.db-config.outputs.db_name }}"],
+                  "args": ["-y", "@modelcontextprotocol/server-postgres", "postgresql://localhost:5432/{0}"],
                   "env": {
-                    "PGUSER": "${{ steps.db-config.outputs.db_user }}",
-                    "PGPASSWORD": "${{ steps.db-config.outputs.db_password }}"
+                    "PGUSER": "{1}",
+                    "PGPASSWORD": "{2}"
                   }
-                }${{ steps.strategy.outputs.use_zen_tools == 'true' && ',' || '' }}
-                ${{ steps.strategy.outputs.use_zen_tools == 'true' && format('"zen": {
+                },
+                "zen": {
                   "command": "sh",
                   "args": ["-c", "python -m pip install --user uv && export PATH=$PATH:$HOME/.local/bin && uvx --from git+https://github.com/alliance-genome/zen-mcp-server.git zen-mcp-server"],
                   "env": {
                     "PATH": "/usr/local/bin:/usr/bin:/bin:/opt/homebrew/bin:$HOME/.local/bin",
-                    "OPENAI_API_KEY": "{0}"
+                    "OPENAI_API_KEY": "{3}"
                   }
-                }', secrets.OPENAI_API_KEY) || '' }}
+                }
               }
-            }
+            }', steps.db-config.outputs.db_name, steps.db-config.outputs.db_user, steps.db-config.outputs.db_password, secrets.OPENAI_API_KEY) || format('{
+              "mcpServers": {
+                "postgres": {
+                  "command": "npx",
+                  "args": ["-y", "@modelcontextprotocol/server-postgres", "postgresql://localhost:5432/{0}"],
+                  "env": {
+                    "PGUSER": "{1}",
+                    "PGPASSWORD": "{2}"
+                  }
+                }
+              }
+            }', steps.db-config.outputs.db_name, steps.db-config.outputs.db_user, steps.db-config.outputs.db_password) }}
           allowed_tools: |
             ${{ steps.strategy.outputs.use_zen_tools == 'true' && 'mcp__zen__codereview,mcp__zen__secaudit,mcp__zen__analyze,mcp__zen__testgen,mcp__zen__debug,mcp__zen__refactor,mcp__zen__chat,mcp__zen__consensus,mcp__zen__thinkdeep,mcp__zen__planner,mcp__zen__precommit,mcp__zen__tracer,mcp__zen__docgen,mcp__zen__challenge,mcp__zen__listmodels,mcp__zen__version,Bash,Edit,Read,Write,Glob,Grep,LS' || 'Bash,Edit,Read,Write,Glob,Grep,LS' }}
           claude_env: |
