@@ -172,6 +172,9 @@ jobs:
           DB_PASSWORD=$(echo $DB_SECRET | jq -r .password)
           echo "::add-mask::$DB_PASSWORD"
           # SECURITY: Do not output password to step outputs - will pass via env var instead
+          
+          # Export to GITHUB_ENV for use in subsequent steps (secure - doesn't log the value)
+          echo "DB_PASSWORD=$DB_PASSWORD" >> $GITHUB_ENV
 
       - name: Cache SSM Plugin
         id: cache-ssm-plugin
@@ -243,8 +246,6 @@ jobs:
       - name: Generate review configuration
         if: steps.check-trigger.outputs.triggered == 'true' && steps.strategy.outputs.skip_review == 'false'
         id: review-config
-        env:
-          DB_PASSWORD: ${{ fromJSON(steps.get-db-secret.outputs.secret).password }}
         run: |
           # Generate MCP configuration
           if [[ "${{ steps.strategy.outputs.use_zen_tools }}" == "true" ]]; then
