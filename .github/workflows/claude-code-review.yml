@@ -199,7 +199,7 @@ jobs:
           path: /tmp/session-manager-plugin.deb
           key: ${{ runner.os }}-ssm-plugin
 
-      - name: Install SSM Plugin
+      - name: Install SSM Plugin and PostgreSQL client
         if: steps.check-trigger.outputs.triggered == 'true' && steps.strategy.outputs.skip_review == 'false'
         run: |
           set -euo pipefail
@@ -210,16 +210,18 @@ jobs:
               https://s3.amazonaws.com/session-manager-downloads/plugin/latest/ubuntu_64bit/session-manager-plugin.deb
           fi
           
-          echo "Installing SSM plugin..."
+          echo "Installing SSM plugin and PostgreSQL client..."
           sudo apt-get update -y
+          sudo apt-get install -y postgresql-client
           sudo dpkg -i /tmp/session-manager-plugin.deb || {
             echo "Initial dpkg install failed, fixing dependencies..."
             sudo apt-get install -f -y
             sudo dpkg -i /tmp/session-manager-plugin.deb
           }
           
-          # Verify installation
+          # Verify installations
           session-manager-plugin --version
+          pg_isready --version
 
       - name: Start database tunnel
         if: steps.check-trigger.outputs.triggered == 'true' && steps.strategy.outputs.skip_review == 'false'
@@ -273,15 +275,15 @@ jobs:
               exit 1
             fi
             
-            # Check if tunnel is ready
-            if nc -z localhost $LOCAL_PORT 2>/dev/null; then
-              # Try a basic connection test - this will fail but confirm the database is listening
-              if timeout 5s bash -c "echo '' | nc localhost $LOCAL_PORT" 2>&1 | grep -q "PostgreSQL"; then
-                echo "✅ Database tunnel fully established on port $LOCAL_PORT after $(($i * $SLEEP_INTERVAL)) seconds"
-                # Keep trap active - do not remove
-                break
-              else
-                echo "Tunnel open but database not yet ready, retrying..."
+            # Check if database is ready through tunnel using pg_isready
+            if pg_isready -h localhost -p $LOCAL_PORT -t 2 >/dev/null 2>&1; then
+              echo "✅ Database tunnel fully established on port $LOCAL_PORT after $(($i * $SLEEP_INTERVAL)) seconds"
+              # Keep trap active - do not remove
+              break
+            else
+              # Only show retry message if SSM process is still running
+              if ps -p $SSM_PID >/dev/null 2>&1; then
+                echo "Waiting for database through tunnel..."
               fi
             fi
             
