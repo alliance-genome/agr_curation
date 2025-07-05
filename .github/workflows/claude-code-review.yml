@@ -28,13 +28,15 @@ jobs:
 
       - name: Check trigger
         id: check-trigger
+        env:
+          COMMENT_BODY: ${{ github.event.comment.body }}
         run: |
           set -euo pipefail
           if [[ "${{ github.event_name }}" == "pull_request" ]]; then
             echo "triggered=true" >> $GITHUB_OUTPUT
             echo "pr_number=${{ github.event.pull_request.number }}" >> $GITHUB_OUTPUT
           elif [[ "${{ github.event_name }}" == "issue_comment" && "${{ github.event.issue.pull_request }}" != "" ]]; then
-            COMMENT="${{ github.event.comment.body }}"
+            COMMENT="$COMMENT_BODY"
             if [[ "$COMMENT" == *"@claude"* ]]; then
               echo "triggered=true" >> $GITHUB_OUTPUT
               echo "pr_number=${{ github.event.issue.number }}" >> $GITHUB_OUTPUT
@@ -181,6 +183,8 @@ jobs:
           echo "::add-mask::$DB_HOST"
           echo "::add-mask::$DB_PORT"
           echo "::add-mask::$SSM_INSTANCE_ID"
+          echo "::add-mask::$DB_USER"
+          echo "::add-mask::$DB_NAME"
           
           # Output validated values
           echo "ssm_instance_id=$SSM_INSTANCE_ID" >> $GITHUB_OUTPUT
