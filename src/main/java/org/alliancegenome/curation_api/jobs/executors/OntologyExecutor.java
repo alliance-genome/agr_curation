@@ -200,6 +200,7 @@ public class OntologyExecutor extends LoadFileExecutor {
 			}
 			case CHEBI -> {
 				config.setLoadOnlyIRIPrefix("CHEBI");
+				config.setCalculateClosure(false);
 				processTerms(bulkLoadFileHistory, chebiTermService, config);
 			}
 			case ZFA -> {
@@ -320,8 +321,6 @@ public class OntologyExecutor extends LoadFileExecutor {
 		bulkLoadFileDAO.merge(bulkLoadFileHistory.getBulkLoadFile());
 
 		bulkLoadFileHistory.setCount(ontologyType + " Terms", termMap.size());
-		bulkLoadFileHistory.setCount(ontologyType + " Closure", termMap.size());
-		bulkLoadFileHistory.setCount(ontologyType + " Counts", termMap.size());
 		
 		List<Long> ontologyIdsBefore = service.getAllIds();
 		List<Long> ontologyIdsLoaded = new ArrayList<>();
@@ -343,43 +342,48 @@ public class OntologyExecutor extends LoadFileExecutor {
 			}
 		}
 		ph.finishProcess();
+
+		if (config.getCalculateClosure()) {
+			bulkLoadFileHistory.setCount(ontologyType + " Closure", termMap.size());
+			bulkLoadFileHistory.setCount(ontologyType + " Counts", termMap.size());
+			
+			ProcessDisplayHelper ph1 = new ProcessDisplayHelper();
+			ph.addDisplayHandler(loadProcessDisplayService);
+			ph1.startProcess(bulkLoadFileHistory.getBulkLoad().getName() + ": " + ontologyType.getClazz().getSimpleName() + " Closure", termMap.size());
+			countType = ontologyType + " Closure";
+			for (Entry<String, ? extends OntologyTerm> entry : termMap.entrySet()) {
+				if (entry.getValue().getAncestors() == null || entry.getValue().getAncestors().isEmpty()) {
+					continue;
+				}
+				service.processUpdateRelationships(entry.getValue().getAncestors());
+				for (int i = 0; i < entry.getValue().getAncestors().size(); i++) {
+					bulkLoadFileHistory.incrementCompleted(countType);
+				}
+				ph1.progressProcess();
+				if (Thread.currentThread().isInterrupted()) {
+					bulkLoadFileHistory.setErrorMessage("Thread isInterrupted");
+					throw new RuntimeException("Thread isInterrupted");
+				}
+			}
+			ph1.finishProcess();
+
+			ProcessDisplayHelper ph2 = new ProcessDisplayHelper();
+			ph.addDisplayHandler(loadProcessDisplayService);
+			ph2.startProcess(bulkLoadFileHistory.getBulkLoad().getName() + ": " + ontologyType.getClazz().getSimpleName() + " Counts", termMap.size());
+			countType = ontologyType + " Counts";
+			for (Entry<String, ? extends OntologyTerm> entry : termMap.entrySet()) {
+				service.processCounts(entry.getValue());
+				bulkLoadFileHistory.incrementCompleted(countType);
+				ph2.progressProcess();
+				if (Thread.currentThread().isInterrupted()) {
+					bulkLoadFileHistory.setErrorMessage("Thread isInterrupted");
+					throw new RuntimeException("Thread isInterrupted");
+				}
+			}
+			ph2.finishProcess();
+		}
 		
 		runCleanup(service, bulkLoadFileHistory, ontologyIdsBefore, ontologyIdsLoaded);
-
-		ProcessDisplayHelper ph1 = new ProcessDisplayHelper();
-		ph.addDisplayHandler(loadProcessDisplayService);
-		ph1.startProcess(bulkLoadFileHistory.getBulkLoad().getName() + ": " + ontologyType.getClazz().getSimpleName() + " Closure", termMap.size());
-		countType = ontologyType + " Closure";
-		for (Entry<String, ? extends OntologyTerm> entry : termMap.entrySet()) {
-			if (entry.getValue().getAncestors() == null || entry.getValue().getAncestors().isEmpty()) {
-				continue;
-			}
-			service.processUpdateRelationships(entry.getValue().getAncestors());
-			for (int i = 0; i < entry.getValue().getAncestors().size(); i++) {
-				bulkLoadFileHistory.incrementCompleted(countType);
-			}
-			ph1.progressProcess();
-			if (Thread.currentThread().isInterrupted()) {
-				bulkLoadFileHistory.setErrorMessage("Thread isInterrupted");
-				throw new RuntimeException("Thread isInterrupted");
-			}
-		}
-		ph1.finishProcess();
-
-		ProcessDisplayHelper ph2 = new ProcessDisplayHelper();
-		ph.addDisplayHandler(loadProcessDisplayService);
-		ph2.startProcess(bulkLoadFileHistory.getBulkLoad().getName() + ": " + ontologyType.getClazz().getSimpleName() + " Counts", termMap.size());
-		countType = ontologyType + " Counts";
-		for (Entry<String, ? extends OntologyTerm> entry : termMap.entrySet()) {
-			service.processCounts(entry.getValue());
-			bulkLoadFileHistory.incrementCompleted(countType);
-			ph2.progressProcess();
-			if (Thread.currentThread().isInterrupted()) {
-				bulkLoadFileHistory.setErrorMessage("Thread isInterrupted");
-				throw new RuntimeException("Thread isInterrupted");
-			}
-		}
-		ph2.finishProcess();
 	}
 
 	private void runCleanup(BaseOntologyTermService service, BulkLoadFileHistory history,
