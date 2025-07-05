@@ -213,7 +213,7 @@ jobs:
 
       - name: Run Claude Code Review
         if: steps.check-trigger.outputs.triggered == 'true' && steps.strategy.outputs.skip_review == 'false'
-        uses: anthropics/claude-code-action@v0
+        uses: anthropics/claude-code-action@beta
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
           model: claude-sonnet-4-20250514
