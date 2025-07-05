@@ -294,7 +294,7 @@ jobs:
               }
             }', steps.db-config.outputs.db_name, steps.db-config.outputs.db_user, steps.db-config.outputs.db_password) }}
           allowed_tools: |
-            ${{ steps.strategy.outputs.use_zen_tools == 'true' && 'mcp__zen__codereview,mcp__zen__secaudit,mcp__zen__analyze,mcp__zen__testgen,mcp__zen__debug,mcp__zen__refactor,mcp__zen__chat,mcp__zen__consensus,mcp__zen__thinkdeep,mcp__zen__planner,mcp__zen__precommit,mcp__zen__tracer,mcp__zen__docgen,mcp__zen__challenge,mcp__zen__listmodels,mcp__zen__version,Bash,Edit,Read,Write,Glob,Grep,LS' || 'Bash,Edit,Read,Write,Glob,Grep,LS' }}
+            ${{ steps.strategy.outputs.use_zen_tools == 'true' && 'mcp__postgres__query,mcp__zen__codereview,mcp__zen__secaudit,mcp__zen__analyze,mcp__zen__testgen,mcp__zen__debug,mcp__zen__refactor,mcp__zen__chat,mcp__zen__consensus,mcp__zen__thinkdeep,mcp__zen__planner,mcp__zen__precommit,mcp__zen__tracer,mcp__zen__docgen,mcp__zen__challenge,mcp__zen__listmodels,mcp__zen__version,Bash,Edit,Read,Write,Glob,Grep,LS' || 'mcp__postgres__query,Bash,Edit,Read,Write,Glob,Grep,LS' }}
           claude_env: |
             REPOSITORY: ${{ github.repository }}
             ORGANIZATION: ${{ github.repository_owner }}
