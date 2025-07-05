@@ -142,6 +142,7 @@ jobs:
         with:
           role-to-assume: ${{ secrets.CLAUDE_CODE_PR_ROLE_ARN }}
           aws-region: us-east-1
+          role-duration-seconds: 900  # 15 minutes - minimal exposure window
 
       - name: Get database configuration from AWS
         if: steps.check-trigger.outputs.triggered == 'true' && steps.strategy.outputs.skip_review == 'false'
@@ -226,12 +227,17 @@ jobs:
           WAIT_ITERATIONS=60
           SLEEP_INTERVAL=2
           
+          # Dynamic port allocation to avoid collisions
+          LOCAL_PORT=$(comm -23 <(seq 5500 6500) <(ss -lnt | awk 'NR>1{print $4}' | awk -F: '{print $NF}' | sort -n) | shuf -n1)
+          echo "Using local port: $LOCAL_PORT"
+          echo "local_port=$LOCAL_PORT" >> $GITHUB_OUTPUT
+          
           # Start SSM session in background with timeout
           timeout --foreground $TUNNEL_TIMEOUT \
             aws ssm start-session \
             --target ${{ steps.db-config.outputs.ssm_instance_id }} \
             --document-name AWS-StartPortForwardingSessionToRemoteHost \
-            --parameters '{"host":["${{ steps.db-config.outputs.db_host }}"],"portNumber":["${{ steps.db-config.outputs.db_port }}"],"localPortNumber":["${{ steps.db-config.outputs.db_port }}"]}'  &
+            --parameters '{"host":["${{ steps.db-config.outputs.db_host }}"],"portNumber":["${{ steps.db-config.outputs.db_port }}"],"localPortNumber":["'$LOCAL_PORT'"]}'  &
           
           SSM_PID=$!
           echo "pid=$SSM_PID" >> $GITHUB_OUTPUT
@@ -263,11 +269,15 @@ jobs:
             fi
             
             # Check if tunnel is ready
-            if nc -z localhost ${{ steps.db-config.outputs.db_port }} 2>/dev/null; then
-              echo "✅ SSM tunnel established after $(($i * $SLEEP_INTERVAL)) seconds"
-              # Remove trap now that tunnel is established successfully
-              trap - INT TERM
-              break
+            if nc -z localhost $LOCAL_PORT 2>/dev/null; then
+              # Validate database connectivity with timeout
+              if timeout 10s psql -h localhost -p $LOCAL_PORT -U "${{ steps.db-config.outputs.db_user }}" -d "${{ steps.db-config.outputs.db_name }}" -c "SELECT 1" >/dev/null 2>&1; then
+                echo "✅ Database tunnel fully established after $(($i * $SLEEP_INTERVAL)) seconds"
+                # Keep trap active - do not remove
+                break
+              else
+                echo "Tunnel open but database not yet ready, retrying..."
+              fi
             fi
             
             if [ $i -eq $WAIT_ITERATIONS ]; then
@@ -291,13 +301,13 @@ jobs:
           if [[ "${{ steps.strategy.outputs.use_zen_tools }}" == "true" ]]; then
             MCP_CONFIG=$(jq -n \
               --arg dbuser "${{ steps.db-config.outputs.db_user }}" \
-              --arg dbport "${{ steps.db-config.outputs.db_port }}" \
+              --arg localport "${{ steps.tunnel.outputs.local_port }}" \
               --arg dbname "${{ steps.db-config.outputs.db_name }}" \
               '{
                 mcpServers: {
                   postgres: {
                     command: "npx",
-                    args: ["-y", "@modelcontextprotocol/server-postgres", "postgresql://localhost:\($dbport)/\($dbname)"],
+                    args: ["-y", "@modelcontextprotocol/server-postgres", "postgresql://localhost:\($localport)/\($dbname)"],
                     env: { PGUSER: $dbuser }
                   },
                   zen: {
@@ -311,13 +321,13 @@ jobs:
           else
             MCP_CONFIG=$(jq -n \
               --arg dbuser "${{ steps.db-config.outputs.db_user }}" \
-              --arg dbport "${{ steps.db-config.outputs.db_port }}" \
+              --arg localport "${{ steps.tunnel.outputs.local_port }}" \
               --arg dbname "${{ steps.db-config.outputs.db_name }}" \
               '{
                 mcpServers: {
                   postgres: {
                     command: "npx",
-                    args: ["-y", "@modelcontextprotocol/server-postgres", "postgresql://localhost:\($dbport)/\($dbname)"],
+                    args: ["-y", "@modelcontextprotocol/server-postgres", "postgresql://localhost:\($localport)/\($dbname)"],
                     env: { PGUSER: $dbuser }
                   }
                 }
