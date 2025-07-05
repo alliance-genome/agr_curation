@@ -20,6 +20,12 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
+      - name: Checkout repository
+        if: github.event_name == 'pull_request' || (github.event_name == 'issue_comment' && github.event.issue.pull_request)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
       - name: Check trigger
         id: check-trigger
         run: |
@@ -268,8 +274,6 @@ jobs:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
           model: claude-sonnet-4-20250514
           max_turns: 80
-          review_trigger: pull_request
-          review_scope: code
           custom_instructions: |
             You are reviewing code for an Alliance of Genome Resources Java Quarkus backend application.
             
