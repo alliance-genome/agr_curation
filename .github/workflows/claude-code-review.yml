@@ -16,18 +16,295 @@ jobs:
       contents: read
       pull-requests: write
       issues: write
-      # REQUIRED: Must grant id-token permission to the reusable workflow
-      id-token: write
-    uses: alliance-genome/.github/.github/workflows/claude-code-review.yml@main
-    with:
-      model: claude-sonnet-4-20250514
-      max_turns: "60"
-      # Java/Quarkus backend with Hibernate and complex biological data model
-      review_focus: "critical bugs, database performance issues, and data integrity problems in the Java Quarkus backend. Focus on: Hibernate N+1 queries, missing @Transactional boundaries, inefficient JPA queries, database migration risks, improper entity relationships, missing indexes, bulk operation performance, and biological data validation errors"
-      trigger_phrase: "@claude"
-      use_zen_tools: true
-      # Use centralized thresholds from .github repo (skip_threshold: 3, pr_size_threshold: 40)
-    secrets:
-      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-      GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
+      id-token: write  # Required for OIDC
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Check trigger
+        id: check-trigger
+        run: |
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            echo "triggered=true" >> $GITHUB_OUTPUT
+            echo "pr_number=${{ github.event.pull_request.number }}" >> $GITHUB_OUTPUT
+          elif [[ "${{ github.event_name }}" == "issue_comment" && "${{ github.event.issue.pull_request }}" != "" ]]; then
+            COMMENT="${{ github.event.comment.body }}"
+            if [[ "$COMMENT" == *"@claude"* ]]; then
+              echo "triggered=true" >> $GITHUB_OUTPUT
+              echo "pr_number=${{ github.event.issue.number }}" >> $GITHUB_OUTPUT
+            else
+              echo "triggered=false" >> $GITHUB_OUTPUT
+            fi
+          else
+            echo "triggered=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Get PR details and calculate size
+        if: steps.check-trigger.outputs.triggered == 'true'
+        id: pr-details
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pr = await github.rest.pulls.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: parseInt(${{ steps.check-trigger.outputs.pr_number }})
+            });
+            
+            // Calculate PR size excluding binary files
+            const files = await github.rest.pulls.listFiles({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: parseInt(${{ steps.check-trigger.outputs.pr_number }})
+            });
+            
+            let totalChanges = 0;
+            let hasDbChanges = false;
+            const dbPatterns = [
+              /\.sql$/i,
+              /migration/i,
+              /entity\//i,
+              /model\//i,
+              /schema\//i,
+              /database/i,
+              /hibernate/i,
+              /jpa/i
+            ];
+            
+            for (const file of files.data) {
+              // Skip binary files
+              if (file.patch) {
+                totalChanges += file.changes;
+                
+                // Check for database-related changes
+                if (dbPatterns.some(pattern => pattern.test(file.filename))) {
+                  hasDbChanges = true;
+                }
+              }
+            }
+            
+            core.setOutput('pr_size', totalChanges);
+            core.setOutput('has_db_changes', hasDbChanges);
+            core.setOutput('files_changed', files.data.length);
+
+      - name: Determine review strategy
+        if: steps.check-trigger.outputs.triggered == 'true'
+        id: strategy
+        run: |
+          PR_SIZE=${{ steps.pr-details.outputs.pr_size }}
+          SKIP_THRESHOLD=3
+          SIZE_THRESHOLD=40
+          HAS_DB_CHANGES=${{ steps.pr-details.outputs.has_db_changes }}
+          
+          if [ "$PR_SIZE" -le "$SKIP_THRESHOLD" ]; then
+            echo "skip_review=true" >> $GITHUB_OUTPUT
+            echo "use_zen_tools=false" >> $GITHUB_OUTPUT
+            echo "reason=PR too small (${PR_SIZE} lines)" >> $GITHUB_OUTPUT
+          elif [ "$PR_SIZE" -gt "$SIZE_THRESHOLD" ]; then
+            echo "skip_review=false" >> $GITHUB_OUTPUT
+            echo "use_zen_tools=true" >> $GITHUB_OUTPUT
+            echo "reason=Large PR - enhanced review with O3 (${PR_SIZE} lines)" >> $GITHUB_OUTPUT
+          else
+            echo "skip_review=false" >> $GITHUB_OUTPUT
+            echo "use_zen_tools=false" >> $GITHUB_OUTPUT
+            echo "reason=Standard review (${PR_SIZE} lines)" >> $GITHUB_OUTPUT
+          fi
+          
+          # Always enable database access for DB-related changes
+          if [ "$HAS_DB_CHANGES" = "true" ]; then
+            echo "force_db_access=true" >> $GITHUB_OUTPUT
+          else
+            echo "force_db_access=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Post skip message
+        if: steps.check-trigger.outputs.triggered == 'true' && steps.strategy.outputs.skip_review == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: parseInt(${{ steps.check-trigger.outputs.pr_number }}),
+              body: `🤖 **Claude Code Review Skipped**
+              
+              This PR has only **${{ steps.pr-details.outputs.pr_size }} lines changed** (≤ 3 lines).
+              
+              Claude reviews are automatically skipped for trivial changes to save costs and reduce noise.
+              
+              **Need a review anyway?** Comment \`@claude\` to trigger a manual review.
+              
+              ---
+              
+              **Review strategy (current thresholds):**
+              - **Bottom 10%** (≤ 3 lines): Skipped - this PR
+              - **Middle 40%** (4-40 lines): Standard Claude Sonnet review  
+              - **Top 50%** (> 40 lines): Enhanced Claude Sonnet + O3 analysis
+              
+              ---
+              
+              💡 **Claude Code Capabilities**
+              
+              I can help with more than just reviews! Try these:
+              - **Answer Questions**: \`@claude explain how the caching system works\`
+              - **Implement Code Changes**: \`@claude add error handling to the user login method\`
+              - **Debug Issues**: \`@claude help debug why the search is slow\`
+              - **Analyze Architecture**: \`@claude review the database schema changes\`
+              
+              Just comment \`@claude\` followed by your request!`
+            });
+
+      - name: Configure AWS credentials (OIDC)
+        if: steps.check-trigger.outputs.triggered == 'true' && steps.strategy.outputs.skip_review == 'false'
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.CLAUDE_CODE_PR_ROLE_ARN }}
+          aws-region: us-east-1
+
+      - name: Get database configuration from AWS
+        if: steps.check-trigger.outputs.triggered == 'true' && steps.strategy.outputs.skip_review == 'false'
+        id: db-config
+        run: |
+          # Get configuration
+          CONFIG=$(aws secretsmanager get-secret-value \
+            --secret-id /claude-code-pr/config \
+            --query SecretString --output text)
+          
+          # Get database password
+          DB_SECRET=$(aws secretsmanager get-secret-value \
+            --secret-id curation-db-readonly \
+            --query SecretString --output text)
+          
+          # Extract values
+          echo "ssm_instance_id=$(echo $CONFIG | jq -r .ssm_instance_id)" >> $GITHUB_OUTPUT
+          echo "db_host=$(echo $CONFIG | jq -r .db_host)" >> $GITHUB_OUTPUT
+          echo "db_port=$(echo $CONFIG | jq -r .db_port)" >> $GITHUB_OUTPUT
+          echo "db_name=$(echo $CONFIG | jq -r .db_name)" >> $GITHUB_OUTPUT
+          echo "db_user=$(echo $CONFIG | jq -r .db_user)" >> $GITHUB_OUTPUT
+          
+          # Extract and mask password
+          DB_PASSWORD=$(echo $DB_SECRET | jq -r .password)
+          echo "::add-mask::$DB_PASSWORD"
+          echo "db_password=$DB_PASSWORD" >> $GITHUB_OUTPUT
+
+      - name: Install SSM Plugin
+        if: steps.check-trigger.outputs.triggered == 'true' && steps.strategy.outputs.skip_review == 'false'
+        run: |
+          curl -o session-manager-plugin.deb \
+            https://s3.amazonaws.com/session-manager-downloads/plugin/latest/ubuntu_64bit/session-manager-plugin.deb
+          sudo dpkg -i session-manager-plugin.deb
+
+      - name: Start database tunnel
+        if: steps.check-trigger.outputs.triggered == 'true' && steps.strategy.outputs.skip_review == 'false'
+        id: tunnel
+        run: |
+          # Start SSM session in background
+          aws ssm start-session \
+            --target ${{ steps.db-config.outputs.ssm_instance_id }} \
+            --document-name AWS-StartPortForwardingSessionToRemoteHost \
+            --parameters '{"host":["${{ steps.db-config.outputs.db_host }}"],"portNumber":["5432"],"localPortNumber":["5432"]}' &
+          
+          SSM_PID=$!
+          echo "pid=$SSM_PID" >> $GITHUB_OUTPUT
+          
+          # Wait for tunnel
+          sleep 10
+          
+          # Verify tunnel is working
+          if nc -z localhost 5432; then
+            echo "✅ SSM tunnel established successfully"
+          else
+            echo "❌ Failed to establish SSM tunnel"
+            exit 1
+          fi
+
+      - name: Run Claude Code Review
+        if: steps.check-trigger.outputs.triggered == 'true' && steps.strategy.outputs.skip_review == 'false'
+        uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          model: claude-sonnet-4-20250514
+          max_turns: 60
+          review_trigger: pull_request
+          review_scope: code
+          custom_instructions: |
+            You are reviewing code for an Alliance of Genome Resources Java Quarkus backend application.
+            
+            FOCUS ONLY ON:
+            1. Critical and blocking bugs that could cause data corruption or system failures
+            2. Database performance issues (inefficient queries, N+1 problems, missing indexes)
+            3. Hibernate-specific issues: missing @Transactional boundaries, improper entity relationships
+            4. Biological data validation errors and data integrity problems
+            
+            Keep reviews concise and actionable. Only flag serious issues that need immediate attention.
+            
+            PR Size: ${{ steps.pr-details.outputs.pr_size }} lines changed
+            Files Changed: ${{ steps.pr-details.outputs.files_changed }}
+            Review Strategy: ${{ steps.strategy.outputs.reason }}
+            Database Changes Detected: ${{ steps.pr-details.outputs.has_db_changes }}
+            
+            WITH DATABASE ACCESS: Validate entity mappings against actual schema, check for 
+            missing migrations, verify foreign key constraints, analyze query performance 
+            implications, and ensure proper indexing for biological data queries.
+            
+            IMPORTANT: Always end your review comments with developer usage instructions:
+            
+            ---
+            💡 **Claude Code Capabilities**
+            
+            I can help with more than just reviews! Try these:
+            - **Answer Questions**: `@claude explain how the caching system works`
+            - **Implement Code Changes**: `@claude add error handling to the user login method`
+            - **Debug Issues**: `@claude help debug why the search is slow`
+            - **Analyze Architecture**: `@claude review the database schema changes`
+            
+            Just comment `@claude` followed by your request!
+          direct_prompt: |
+            Review this PR focusing ONLY on:
+            1. Critical and blocking bugs that could cause data corruption or system failures  
+            2. Database performance issues (inefficient queries, N+1 problems, missing indexes)
+            
+            ${{ steps.strategy.outputs.use_zen_tools == 'true' && 'This is a large PR (>40 lines changed) - use the zen codereview tool with ONLY the o3 model for enhanced analysis. Do not use multiple models - just Claude Sonnet plus O3.' || 'This is a standard PR - perform a standard Claude Sonnet review.' }}
+            Keep feedback concise and actionable.
+            
+            IMPORTANT: Always end your review with the developer capabilities section from your custom instructions.
+          mcp_config: |
+            {
+              "mcpServers": {
+                "postgres": {
+                  "command": "npx",
+                  "args": ["-y", "@modelcontextprotocol/server-postgres", "postgresql://localhost:5432/${{ steps.db-config.outputs.db_name }}"],
+                  "env": {
+                    "PGUSER": "${{ steps.db-config.outputs.db_user }}",
+                    "PGPASSWORD": "${{ steps.db-config.outputs.db_password }}"
+                  }
+                }${{ steps.strategy.outputs.use_zen_tools == 'true' && ',' || '' }}
+                ${{ steps.strategy.outputs.use_zen_tools == 'true' && format('"zen": {
+                  "command": "sh",
+                  "args": ["-c", "python -m pip install --user uv && export PATH=$PATH:$HOME/.local/bin && uvx --from git+https://github.com/alliance-genome/zen-mcp-server.git zen-mcp-server"],
+                  "env": {
+                    "PATH": "/usr/local/bin:/usr/bin:/bin:/opt/homebrew/bin:$HOME/.local/bin",
+                    "OPENAI_API_KEY": "{0}"
+                  }
+                }', secrets.OPENAI_API_KEY) || '' }}
+              }
+            }
+          allowed_tools: |
+            ${{ steps.strategy.outputs.use_zen_tools == 'true' && 'mcp__zen__codereview,mcp__zen__secaudit,mcp__zen__analyze,mcp__zen__testgen,mcp__zen__debug,mcp__zen__refactor,mcp__zen__chat,mcp__zen__consensus,mcp__zen__thinkdeep,mcp__zen__planner,mcp__zen__precommit,mcp__zen__tracer,mcp__zen__docgen,mcp__zen__challenge,mcp__zen__listmodels,mcp__zen__version,Bash,Edit,Read,Write,Glob,Grep,LS' || 'Bash,Edit,Read,Write,Glob,Grep,LS' }}
+          claude_env: |
+            REPOSITORY: ${{ github.repository }}
+            ORGANIZATION: ${{ github.repository_owner }}
+            PR_SIZE: ${{ steps.pr-details.outputs.pr_size }}
+            ZEN_TOOLS_ENABLED: ${{ steps.strategy.outputs.use_zen_tools }}
+            REVIEW_STRATEGY: ${{ steps.strategy.outputs.skip_review == 'true' && 'SKIP' || (steps.strategy.outputs.use_zen_tools == 'true' && 'ZEN_O3' || 'STANDARD') }}
+            ESTIMATED_COST: ${{ steps.strategy.outputs.skip_review == 'true' && '$0.00' || (steps.strategy.outputs.use_zen_tools == 'true' && '~$0.30-0.50' || '~$0.10-0.20') }}
+
+      - name: Cleanup
+        if: always() && steps.tunnel.outputs.pid != ''
+        run: |
+          kill ${{ steps.tunnel.outputs.pid }} || true
+          
+          # Also terminate any hanging sessions
+          SESSIONS=$(aws ssm describe-sessions --state Active --filters "key=Target,value=${{ steps.db-config.outputs.ssm_instance_id }}" --query "Sessions[?DocumentName=='AWS-StartPortForwardingSessionToRemoteHost'].SessionId" --output text)
+          for session in $SESSIONS; do
+            aws ssm terminate-session --session-id $session || true
+          done
