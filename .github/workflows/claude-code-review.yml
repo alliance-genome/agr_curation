@@ -177,6 +177,11 @@ jobs:
             fi
           done
           
+          # Mask internal infrastructure details
+          echo "::add-mask::$DB_HOST"
+          echo "::add-mask::$DB_PORT"
+          echo "::add-mask::$SSM_INSTANCE_ID"
+          
           # Output validated values
           echo "ssm_instance_id=$SSM_INSTANCE_ID" >> $GITHUB_OUTPUT
           echo "db_host=$DB_HOST" >> $GITHUB_OUTPUT
@@ -223,7 +228,7 @@ jobs:
           set -euo pipefail
           
           # Configurable timeout values
-          TUNNEL_TIMEOUT="50m"
+          TUNNEL_TIMEOUT="15m"  # Match OIDC session duration
           WAIT_ITERATIONS=60
           SLEEP_INTERVAL=2
           
@@ -270,9 +275,14 @@ jobs:
             
             # Check if tunnel is ready
             if nc -z localhost $LOCAL_PORT 2>/dev/null; then
-              echo "✅ SSM tunnel established on port $LOCAL_PORT after $(($i * $SLEEP_INTERVAL)) seconds"
-              # Keep trap active - do not remove
-              break
+              # Try a basic connection test - this will fail but confirm the database is listening
+              if timeout 5s bash -c "echo '' | nc localhost $LOCAL_PORT" 2>&1 | grep -q "PostgreSQL"; then
+                echo "✅ Database tunnel fully established on port $LOCAL_PORT after $(($i * $SLEEP_INTERVAL)) seconds"
+                # Keep trap active - do not remove
+                break
+              else
+                echo "Tunnel open but database not yet ready, retrying..."
+              fi
             fi
             
             if [ $i -eq $WAIT_ITERATIONS ]; then
