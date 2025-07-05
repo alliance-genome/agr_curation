@@ -3,12 +3,14 @@ name: Claude Code Review
 on:
   pull_request:
     types: [opened, synchronize, reopened]
+    branches:
+      - alpha  # Only run on PRs targeting the alpha branch
   issue_comment:
     types: [created]
 
 jobs:
   claude-review:
-    # Only run on pull requests and PR comments (not issue comments)
+    # Only run on pull requests to alpha and PR comments (not issue comments)
     if: |
       github.event_name == 'pull_request' || 
       (github.event_name == 'issue_comment' && github.event.issue.pull_request)
@@ -60,6 +62,15 @@ jobs:
               pull_number: parseInt(${{ steps.check-trigger.outputs.pr_number }})
             });
             
+            // Check if PR targets alpha branch (for comment-triggered reviews)
+            if (pr.data.base.ref !== 'alpha') {
+              core.setOutput('skip_non_alpha', 'true');
+              core.setOutput('base_branch', pr.data.base.ref);
+              core.setOutput('pr_size', '0');  // Default value to prevent undefined variable
+              core.setOutput('files_changed', '0');  // Default value to prevent undefined variable
+              return;
+            }
+            
             // Calculate PR size excluding binary files
             const files = await github.rest.pulls.listFiles({
               owner: context.repo.owner,
@@ -79,8 +90,30 @@ jobs:
             core.setOutput('pr_size', totalChanges);
             core.setOutput('files_changed', files.data.length);
 
+      - name: Post non-alpha branch message
+        if: steps.check-trigger.outputs.triggered == 'true' && steps.pr-details.outputs.skip_non_alpha == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: parseInt(${{ steps.check-trigger.outputs.pr_number }}),
+              body: `🤖 **Claude Code Review Not Available**
+              
+              This PR targets the **${{ steps.pr-details.outputs.base_branch }}** branch.
+              
+              Claude Code reviews are currently only available for PRs targeting the **alpha** branch.
+              
+              If you need code review assistance for this PR, please:
+              1. Target your PR to the alpha branch first
+              2. After review and merge to alpha, create a PR from alpha to ${{ steps.pr-details.outputs.base_branch }}
+              
+              This helps ensure code quality while managing review costs effectively.`
+            });
+
       - name: Determine review strategy
-        if: steps.check-trigger.outputs.triggered == 'true'
+        if: steps.check-trigger.outputs.triggered == 'true' && steps.pr-details.outputs.skip_non_alpha != 'true'
         id: strategy
         run: |
           set -euo pipefail
@@ -103,7 +136,7 @@ jobs:
           fi
 
       - name: Post skip message
-        if: steps.check-trigger.outputs.triggered == 'true' && steps.strategy.outputs.skip_review == 'true'
+        if: steps.check-trigger.outputs.triggered == 'true' && steps.pr-details.outputs.skip_non_alpha != 'true' && steps.strategy.outputs.skip_review == 'true'
         uses: actions/github-script@v7
         with:
           script: |
@@ -140,7 +173,7 @@ jobs:
             });
 
       - name: Configure AWS credentials (OIDC)
-        if: steps.check-trigger.outputs.triggered == 'true' && steps.strategy.outputs.skip_review == 'false'
+        if: steps.check-trigger.outputs.triggered == 'true' && steps.pr-details.outputs.skip_non_alpha != 'true' && steps.strategy.outputs.skip_review == 'false'
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ secrets.CLAUDE_CODE_PR_ROLE_ARN }}
@@ -148,7 +181,7 @@ jobs:
           role-duration-seconds: 1800  # 30 minutes - balance security and review completion
 
       - name: Get database configuration from AWS
-        if: steps.check-trigger.outputs.triggered == 'true' && steps.strategy.outputs.skip_review == 'false'
+        if: steps.check-trigger.outputs.triggered == 'true' && steps.pr-details.outputs.skip_non_alpha != 'true' && steps.strategy.outputs.skip_review == 'false'
         id: db-config
         run: |
           set -euo pipefail
@@ -198,14 +231,14 @@ jobs:
 
       - name: Cache SSM Plugin
         id: cache-ssm-plugin
-        if: steps.check-trigger.outputs.triggered == 'true' && steps.strategy.outputs.skip_review == 'false'
+        if: steps.check-trigger.outputs.triggered == 'true' && steps.pr-details.outputs.skip_non_alpha != 'true' && steps.strategy.outputs.skip_review == 'false'
         uses: actions/cache@v4
         with:
           path: /tmp/session-manager-plugin.deb
           key: ${{ runner.os }}-ssm-plugin
 
       - name: Install SSM Plugin and PostgreSQL client
-        if: steps.check-trigger.outputs.triggered == 'true' && steps.strategy.outputs.skip_review == 'false'
+        if: steps.check-trigger.outputs.triggered == 'true' && steps.pr-details.outputs.skip_non_alpha != 'true' && steps.strategy.outputs.skip_review == 'false'
         run: |
           set -euo pipefail
           
@@ -229,7 +262,7 @@ jobs:
           pg_isready --version
 
       - name: Start database tunnel
-        if: steps.check-trigger.outputs.triggered == 'true' && steps.strategy.outputs.skip_review == 'false'
+        if: steps.check-trigger.outputs.triggered == 'true' && steps.pr-details.outputs.skip_non_alpha != 'true' && steps.strategy.outputs.skip_review == 'false'
         id: tunnel
         run: |
           set -euo pipefail
@@ -315,7 +348,7 @@ jobs:
           done
 
       - name: Generate review configuration
-        if: steps.check-trigger.outputs.triggered == 'true' && steps.strategy.outputs.skip_review == 'false'
+        if: steps.check-trigger.outputs.triggered == 'true' && steps.pr-details.outputs.skip_non_alpha != 'true' && steps.strategy.outputs.skip_review == 'false'
         id: review-config
         run: |
           set -euo pipefail
@@ -328,7 +361,10 @@ jobs:
                   zen: {
                     command: "sh",
                     args: ["-c", "python -m pip install --user uv && export PATH=$PATH:$HOME/.local/bin && uvx --from git+https://github.com/alliance-genome/zen-mcp-server.git zen-mcp-server"],
-                    env: { PATH: "/usr/local/bin:/usr/bin:/bin:/opt/homebrew/bin:$HOME/.local/bin" }
+                    env: { 
+                      PATH: "/usr/local/bin:/usr/bin:/bin:/opt/homebrew/bin:$HOME/.local/bin",
+                      PYTHONUNBUFFERED: "1"
+                    }
                   }
                 }
               }')
@@ -346,7 +382,7 @@ jobs:
           echo "allowed_tools=$ALLOWED_TOOLS" >> $GITHUB_OUTPUT
 
       - name: Get database password
-        if: steps.check-trigger.outputs.triggered == 'true' && steps.strategy.outputs.skip_review == 'false'
+        if: steps.check-trigger.outputs.triggered == 'true' && steps.pr-details.outputs.skip_non_alpha != 'true' && steps.strategy.outputs.skip_review == 'false'
         id: db-password
         uses: aws-actions/aws-secretsmanager-get-secrets@v2.0.6
         with:
@@ -357,7 +393,7 @@ jobs:
         # DB_CREDS_PASSWORD env var is only available for subsequent steps in this job
       
       - name: Verify password and prepare for Claude
-        if: steps.check-trigger.outputs.triggered == 'true' && steps.strategy.outputs.skip_review == 'false'
+        if: steps.check-trigger.outputs.triggered == 'true' && steps.pr-details.outputs.skip_non_alpha != 'true' && steps.strategy.outputs.skip_review == 'false'
         id: prepare-claude
         run: |
           set -euo pipefail
@@ -385,11 +421,12 @@ jobs:
           fi
       
       - name: Run Claude Code Review
-        if: steps.check-trigger.outputs.triggered == 'true' && steps.strategy.outputs.skip_review == 'false'
+        if: steps.check-trigger.outputs.triggered == 'true' && steps.pr-details.outputs.skip_non_alpha != 'true' && steps.strategy.outputs.skip_review == 'false'
         uses: anthropics/claude-code-action@beta
         env:
           PGPASSWORD: ${{ env.DB_PASSWORD }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          PYTHONUNBUFFERED: "1"
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
           model: claude-sonnet-4-20250514
@@ -461,7 +498,7 @@ jobs:
             ESTIMATED_COST: ${{ steps.strategy.outputs.skip_review == 'true' && '$0.00' || (steps.strategy.outputs.use_zen_tools == 'true' && '~$0.30-0.50' || '~$0.10-0.20') }}
 
       - name: Cleanup
-        if: always() && steps.tunnel.outputs.pid != ''
+        if: always() && steps.tunnel.outputs.pid != '' && steps.pr-details.outputs.skip_non_alpha != 'true'
         run: |
           set -euo pipefail
           
