@@ -1,5 +1,8 @@
 name: Claude Code Review
 
+# IMPORTANT: This workflow automatically runs ONLY when a PR is first opened.
+# To request another review after making changes, comment "@claude Please review my changes."
+
 on:
   pull_request:
     types: [opened, synchronize, reopened]
