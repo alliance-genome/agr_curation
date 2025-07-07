@@ -1,0 +1,576 @@
+name: Claude Code Review
+
+# IMPORTANT: This workflow automatically runs ONLY when a PR is first opened.
+# To request another review after making changes, comment "@claude Please review my changes."
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches:
+      - alpha  # Only run on PRs targeting the alpha branch
+  issue_comment:
+    types: [created]
+
+jobs:
+  claude-review:
+    # Only run on pull requests to alpha and PR comments (not issue comments)
+    if: |
+      github.event_name == 'pull_request' || 
+      (github.event_name == 'issue_comment' && github.event.issue.pull_request)
+    permissions:
+      contents: read
+      pull-requests: write
+      issues: write
+      id-token: write  # Required for OIDC
+    runs-on: ubuntu-latest
+    timeout-minutes: 30  # Match OIDC session duration to prevent hanging reviews
+    
+    steps:
+      - name: Checkout repository
+        if: github.event_name == 'pull_request' || (github.event_name == 'issue_comment' && github.event.issue.pull_request)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check trigger
+        id: check-trigger
+        env:
+          COMMENT_BODY: ${{ github.event.comment.body }}
+        run: |
+          set -euo pipefail
+          if [[ "${{ github.event_name }}" == "pull_request" && "${{ github.event.action }}" == "opened" ]]; then
+            echo "triggered=true" >> $GITHUB_OUTPUT
+            echo "pr_number=${{ github.event.pull_request.number }}" >> $GITHUB_OUTPUT
+          elif [[ "${{ github.event_name }}" == "issue_comment" && "${{ github.event.issue.pull_request }}" != "" ]]; then
+            COMMENT="$COMMENT_BODY"
+            if [[ "$COMMENT" == *"@claude"* ]]; then
+              echo "triggered=true" >> $GITHUB_OUTPUT
+              echo "pr_number=${{ github.event.issue.number }}" >> $GITHUB_OUTPUT
+            else
+              echo "triggered=false" >> $GITHUB_OUTPUT
+            fi
+          else
+            echo "triggered=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Get PR details and calculate size
+        if: steps.check-trigger.outputs.triggered == 'true'
+        id: pr-details
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pr = await github.rest.pulls.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: parseInt(${{ steps.check-trigger.outputs.pr_number }})
+            });
+            
+            // Check if PR targets alpha branch (for comment-triggered reviews)
+            if (pr.data.base.ref !== 'alpha') {
+              core.setOutput('skip_non_alpha', 'true');
+              core.setOutput('base_branch', pr.data.base.ref);
+              core.setOutput('pr_size', '0');  // Default value to prevent undefined variable
+              core.setOutput('files_changed', '0');  // Default value to prevent undefined variable
+              return;
+            }
+            
+            // Calculate PR size excluding binary files
+            const files = await github.rest.pulls.listFiles({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: parseInt(${{ steps.check-trigger.outputs.pr_number }})
+            });
+            
+            let totalChanges = 0;
+            
+            for (const file of files.data) {
+              // Skip binary files
+              if (file.patch) {
+                totalChanges += file.changes;
+              }
+            }
+            
+            core.setOutput('pr_size', totalChanges);
+            core.setOutput('files_changed', files.data.length);
+
+      - name: Post non-alpha branch message
+        if: steps.check-trigger.outputs.triggered == 'true' && steps.pr-details.outputs.skip_non_alpha == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: parseInt(${{ steps.check-trigger.outputs.pr_number }}),
+              body: `🤖 **Claude Code Review Not Available**
+              
+              This PR targets the **${{ steps.pr-details.outputs.base_branch }}** branch.
+              
+              Claude Code reviews are currently only available for PRs targeting the **alpha** branch.
+              
+              If you need code review assistance for this PR, please:
+              1. Target your PR to the alpha branch first
+              2. After review and merge to alpha, create a PR from alpha to ${{ steps.pr-details.outputs.base_branch }}
+              
+              This helps ensure code quality while managing review costs effectively.`
+            });
+
+      - name: Determine review strategy
+        if: steps.check-trigger.outputs.triggered == 'true' && steps.pr-details.outputs.skip_non_alpha != 'true'
+        id: strategy
+        run: |
+          set -euo pipefail
+          PR_SIZE=${{ steps.pr-details.outputs.pr_size }}
+          SKIP_THRESHOLD=3
+          SIZE_THRESHOLD=40
+          
+          if [ "$PR_SIZE" -le "$SKIP_THRESHOLD" ]; then
+            echo "skip_review=true" >> $GITHUB_OUTPUT
+            echo "use_zen_tools=false" >> $GITHUB_OUTPUT
+            echo "reason=PR too small (${PR_SIZE} lines)" >> $GITHUB_OUTPUT
+          elif [ "$PR_SIZE" -gt "$SIZE_THRESHOLD" ]; then
+            echo "skip_review=false" >> $GITHUB_OUTPUT
+            echo "use_zen_tools=true" >> $GITHUB_OUTPUT
+            echo "reason=Large PR - enhanced review with O3 (${PR_SIZE} lines)" >> $GITHUB_OUTPUT
+          else
+            echo "skip_review=false" >> $GITHUB_OUTPUT
+            echo "use_zen_tools=false" >> $GITHUB_OUTPUT
+            echo "reason=Standard review (${PR_SIZE} lines)" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Post skip message
+        if: steps.check-trigger.outputs.triggered == 'true' && steps.pr-details.outputs.skip_non_alpha != 'true' && steps.strategy.outputs.skip_review == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: parseInt(${{ steps.check-trigger.outputs.pr_number }}),
+              body: `🤖 **Claude Code Review Skipped**
+              
+              This PR has only **${{ steps.pr-details.outputs.pr_size }} lines changed** (≤ 3 lines).
+              
+              Claude reviews are automatically skipped for trivial changes to save costs and reduce noise.
+              
+              **Need a review anyway?** Comment \`@claude\` to trigger a manual review.
+              
+              ---
+              
+              **Review strategy (current thresholds):**
+              - **Bottom 10%** (≤ 3 lines): Skipped - this PR
+              - **Middle 40%** (4-40 lines): Standard Claude Sonnet review  
+              - **Top 50%** (> 40 lines): Enhanced Claude Sonnet + O3 analysis
+              
+              ---
+              
+              💡 **Claude Code Capabilities**
+              
+              I can help with more than just reviews! Try these:
+              - **Answer Questions**: \`@claude explain how the caching system works\`
+              - **Implement Code Changes**: \`@claude add error handling to the user login method\`
+              - **Debug Issues**: \`@claude help debug why the search is slow\`
+              - **Analyze Architecture**: \`@claude review the database schema changes\`
+              
+              Just comment \`@claude\` followed by your request!`
+            });
+
+      - name: Configure AWS credentials (OIDC)
+        if: steps.check-trigger.outputs.triggered == 'true' && steps.pr-details.outputs.skip_non_alpha != 'true' && steps.strategy.outputs.skip_review == 'false'
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.CLAUDE_CODE_PR_ROLE_ARN }}
+          aws-region: us-east-1
+          role-duration-seconds: 1800  # 30 minutes - balance security and review completion
+
+      - name: Get database configuration from AWS
+        if: steps.check-trigger.outputs.triggered == 'true' && steps.pr-details.outputs.skip_non_alpha != 'true' && steps.strategy.outputs.skip_review == 'false'
+        id: db-config
+        run: |
+          set -euo pipefail
+          
+          # Get configuration
+          CONFIG=$(aws secretsmanager get-secret-value \
+            --secret-id /claude-code-pr/config \
+            --query SecretString --output text) || {
+            echo "❌ Failed to retrieve config from AWS Secrets Manager"
+            exit 1
+          }
+          
+          # Mask the entire CONFIG to hide internal hostnames
+          echo "::add-mask::$CONFIG"
+          
+          
+          # Extract values
+          SSM_INSTANCE_ID=$(echo $CONFIG | jq -r .ssm_instance_id)
+          DB_HOST=$(echo $CONFIG | jq -r .db_host)
+          DB_PORT=$(echo $CONFIG | jq -r .db_port)
+          DB_NAME=$(echo $CONFIG | jq -r .db_name)
+          DB_USER=$(echo $CONFIG | jq -r .db_user)
+          
+          # Validate all required fields are present
+          for var in SSM_INSTANCE_ID DB_HOST DB_PORT DB_NAME DB_USER; do
+            if [ -z "${!var}" ] || [ "${!var}" = "null" ]; then
+              echo "❌ CONFIG missing or empty: $var"
+              exit 1
+            fi
+          done
+          
+          # Mask internal infrastructure details
+          echo "::add-mask::$DB_HOST"
+          echo "::add-mask::$DB_PORT"
+          echo "::add-mask::$SSM_INSTANCE_ID"
+          echo "::add-mask::$DB_USER"
+          echo "::add-mask::$DB_NAME"
+          
+          # Output validated values
+          echo "ssm_instance_id=$SSM_INSTANCE_ID" >> $GITHUB_OUTPUT
+          echo "db_host=$DB_HOST" >> $GITHUB_OUTPUT
+          echo "db_port=$DB_PORT" >> $GITHUB_OUTPUT
+          echo "db_name=$DB_NAME" >> $GITHUB_OUTPUT
+          echo "db_user=$DB_USER" >> $GITHUB_OUTPUT
+          
+          # Note: Password will be fetched right before Claude step to minimize exposure
+
+      - name: Cache SSM Plugin
+        id: cache-ssm-plugin
+        if: steps.check-trigger.outputs.triggered == 'true' && steps.pr-details.outputs.skip_non_alpha != 'true' && steps.strategy.outputs.skip_review == 'false'
+        uses: actions/cache@v4
+        with:
+          path: /tmp/session-manager-plugin.deb
+          key: ${{ runner.os }}-ssm-plugin
+
+      - name: Install SSM Plugin and PostgreSQL client
+        if: steps.check-trigger.outputs.triggered == 'true' && steps.pr-details.outputs.skip_non_alpha != 'true' && steps.strategy.outputs.skip_review == 'false'
+        run: |
+          set -euo pipefail
+          
+          if [ "${{ steps.cache-ssm-plugin.outputs.cache-hit }}" != 'true' ]; then
+            echo "Downloading SSM plugin..."
+            curl -fsSL -o /tmp/session-manager-plugin.deb \
+              https://s3.amazonaws.com/session-manager-downloads/plugin/latest/ubuntu_64bit/session-manager-plugin.deb
+          fi
+          
+          echo "Installing SSM plugin and PostgreSQL client..."
+          sudo apt-get update -y
+          sudo apt-get install -y postgresql-client
+          sudo dpkg -i /tmp/session-manager-plugin.deb || {
+            echo "Initial dpkg install failed, fixing dependencies..."
+            sudo apt-get install -f -y
+            sudo dpkg -i /tmp/session-manager-plugin.deb
+          }
+          
+          # Verify installations
+          session-manager-plugin --version
+          pg_isready --version
+
+      - name: Start database tunnel
+        if: steps.check-trigger.outputs.triggered == 'true' && steps.pr-details.outputs.skip_non_alpha != 'true' && steps.strategy.outputs.skip_review == 'false'
+        id: tunnel
+        run: |
+          set -euo pipefail
+          
+          # Configurable timeout values
+          TUNNEL_TIMEOUT="30m"  # Match OIDC session duration
+          WAIT_ITERATIONS=60
+          SLEEP_INTERVAL=2
+          
+          # Dynamic port allocation to avoid collisions - do this right before tunnel start
+          LOCAL_PORT=$(comm -23 <(seq 5500 6500) <(ss -lnt | awk 'NR>1{print $4}' | awk -F: '{print $NF}' | sort -n) | shuf -n1)
+          
+          # Final check that port is still available
+          if nc -z localhost $LOCAL_PORT 2>/dev/null; then
+            echo "❌ Port $LOCAL_PORT became unavailable, retrying..."
+            LOCAL_PORT=$(comm -23 <(seq 5500 6500) <(ss -lnt | awk 'NR>1{print $4}' | awk -F: '{print $NF}' | sort -n) | shuf -n1)
+          fi
+          
+          echo "Using local port: $LOCAL_PORT"
+          echo "local_port=$LOCAL_PORT" >> $GITHUB_OUTPUT
+          
+          # Start SSM session in background with timeout
+          timeout --foreground $TUNNEL_TIMEOUT \
+            aws ssm start-session \
+            --target ${{ steps.db-config.outputs.ssm_instance_id }} \
+            --document-name AWS-StartPortForwardingSessionToRemoteHost \
+            --parameters '{"host":["${{ steps.db-config.outputs.db_host }}"],"portNumber":["${{ steps.db-config.outputs.db_port }}"],"localPortNumber":["'$LOCAL_PORT'"]}'  &
+          
+          SSM_PID=$!
+          echo "pid=$SSM_PID" >> $GITHUB_OUTPUT
+          
+          # Give SSM a moment to start
+          sleep 1
+          
+          # Validate SSM process started successfully
+          if [ -z "$SSM_PID" ] || ! ps -p $SSM_PID >/dev/null 2>&1; then
+            echo "❌ SSM session failed to start"
+            echo "Check that the SSM instance ID and parameters are correct"
+            exit 1
+          fi
+          
+          # Set up trap for cleanup on cancellation (after we have SSM_PID)
+          cleanup() {
+            echo "Received cancel signal – cleaning up SSM tunnel"
+            # Validate PID before attempting to kill
+            if [ -n "$SSM_PID" ] && ps -p $SSM_PID >/dev/null 2>&1; then
+              # Kill SSM process and its children
+              kill -TERM -- -$SSM_PID 2>/dev/null || true
+            fi
+          }
+          trap 'cleanup' INT TERM
+          
+          # Wait for tunnel with retry loop and process validation
+          echo "Waiting for SSM tunnel..."
+          for i in $(seq 1 $WAIT_ITERATIONS); do
+            # Check if SSM process is still running
+            if ! ps -p $SSM_PID >/dev/null 2>&1; then
+              echo "❌ SSM process crashed (PID: $SSM_PID)"
+              exit 1
+            fi
+            
+            # Check if database is ready through tunnel using pg_isready
+            if pg_isready -h localhost -p $LOCAL_PORT -t 2 >/dev/null 2>&1; then
+              echo "✅ Database tunnel fully established on port $LOCAL_PORT after $(($i * $SLEEP_INTERVAL)) seconds"
+              # Keep trap active - do not remove
+              break
+            else
+              # Only show retry message if SSM process is still running
+              if ps -p $SSM_PID >/dev/null 2>&1; then
+                echo "Waiting for database through tunnel..."
+              fi
+            fi
+            
+            if [ $i -eq $WAIT_ITERATIONS ]; then
+              echo "❌ Timeout waiting for SSM tunnel after $(($WAIT_ITERATIONS * $SLEEP_INTERVAL)) seconds"
+              echo "Killing SSM process..."
+              kill $SSM_PID || true
+              exit 1
+            fi
+            
+            # Use longer sleep interval for more stable connection
+            sleep $SLEEP_INTERVAL
+          done
+
+      - name: Generate review configuration
+        if: steps.check-trigger.outputs.triggered == 'true' && steps.pr-details.outputs.skip_non_alpha != 'true' && steps.strategy.outputs.skip_review == 'false'
+        id: review-config
+        run: |
+          set -euo pipefail
+          
+          # Generate MCP configuration using jq for proper JSON escaping
+          if [[ "${{ steps.strategy.outputs.use_zen_tools }}" == "true" ]]; then
+            MCP_CONFIG=$(jq -n \
+              '{
+                mcpServers: {
+                  zen: {
+                    command: "sh",
+                    args: ["-c", "python -m pip install --user uv && export PATH=$PATH:$HOME/.local/bin && uvx --from git+https://github.com/alliance-genome/zen-mcp-server.git zen-mcp-server"],
+                    env: { 
+                      PATH: "/usr/local/bin:/usr/bin:/bin:/opt/homebrew/bin:$HOME/.local/bin",
+                      PYTHONUNBUFFERED: "1"
+                    }
+                  }
+                }
+              }')
+            ALLOWED_TOOLS="mcp__zen__codereview,mcp__zen__secaudit,mcp__zen__analyze,mcp__zen__testgen,mcp__zen__debug,mcp__zen__refactor,mcp__zen__chat,mcp__zen__consensus,mcp__zen__thinkdeep,mcp__zen__planner,mcp__zen__precommit,mcp__zen__tracer,mcp__zen__docgen,mcp__zen__challenge,mcp__zen__listmodels,mcp__zen__version,Bash,Edit,Read,Write,Glob,Grep,LS"
+          else
+            MCP_CONFIG=$(jq -n \
+              '{
+                mcpServers: {}
+              }')
+            ALLOWED_TOOLS="Bash,Edit,Read,Write,Glob,Grep,LS"
+          fi
+          
+          # Set outputs
+          printf 'mcp_config<<EOF\n%s\nEOF\n' "$MCP_CONFIG" >> $GITHUB_OUTPUT
+          echo "allowed_tools=$ALLOWED_TOOLS" >> $GITHUB_OUTPUT
+
+      - name: Get database password
+        if: steps.check-trigger.outputs.triggered == 'true' && steps.pr-details.outputs.skip_non_alpha != 'true' && steps.strategy.outputs.skip_review == 'false'
+        id: db-password
+        uses: aws-actions/aws-secretsmanager-get-secrets@v2.0.6
+        with:
+          secret-ids: |
+            DB_CREDS,curation-db-readonly
+          parse-json-secrets: true
+        # Note: This action automatically parses JSON secrets and creates environment variables
+        # DB_CREDS_PASSWORD env var is only available for subsequent steps in this job
+      
+      - name: Verify password and prepare for Claude
+        if: steps.check-trigger.outputs.triggered == 'true' && steps.pr-details.outputs.skip_non_alpha != 'true' && steps.strategy.outputs.skip_review == 'false'
+        id: prepare-claude
+        run: |
+          set -euo pipefail
+          
+          # Verify password was retrieved
+          if [ -z "${DB_CREDS_PASSWORD:-}" ]; then
+            echo "❌ Failed to retrieve database password from Secrets Manager"
+            exit 1
+          fi
+          
+          # Mask the password
+          echo "::add-mask::$DB_CREDS_PASSWORD"
+          
+          # Pass password to next step via GITHUB_ENV
+          echo "DB_PASSWORD=$DB_CREDS_PASSWORD" >> $GITHUB_ENV
+          
+          # Quick database connectivity check
+          echo "Testing database connection..."
+          if PGPASSWORD="$DB_CREDS_PASSWORD" psql -h localhost -p ${{ steps.tunnel.outputs.local_port }} -U "${{ steps.db-config.outputs.db_user }}" -d "${{ steps.db-config.outputs.db_name }}" -c "SELECT current_database(), version();" >/dev/null 2>&1; then
+            echo "✅ Database connection verified"
+          else
+            echo "❌ Database connection test failed"
+            echo "Please check credentials and tunnel configuration"
+            exit 1
+          fi
+      
+      - name: Run Claude Code Review
+        if: steps.check-trigger.outputs.triggered == 'true' && steps.pr-details.outputs.skip_non_alpha != 'true' && steps.strategy.outputs.skip_review == 'false'
+        uses: anthropics/claude-code-action@beta
+        env:
+          PGPASSWORD: ${{ env.DB_PASSWORD }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          PYTHONUNBUFFERED: "1"
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          model: claude-sonnet-4-20250514
+          max_turns: 80
+          custom_instructions: |
+            You are reviewing code for an Alliance of Genome Resources Java Quarkus backend application.
+            
+            FOCUS ONLY ON:
+            1. Critical and blocking bugs that could cause data corruption or system failures
+            2. Database performance issues (inefficient queries, N+1 problems, missing indexes)
+            3. Hibernate-specific issues: missing @Transactional boundaries, improper entity relationships
+            4. Biological data validation errors and data integrity problems
+            
+            Keep reviews concise and actionable. Only flag serious issues that need immediate attention.
+            
+            PR Size: ${{ steps.pr-details.outputs.pr_size }} lines changed
+            Files Changed: ${{ steps.pr-details.outputs.files_changed }}
+            Review Strategy: ${{ steps.strategy.outputs.reason }}
+            
+            DATABASE ACCESS: You have direct PostgreSQL read-only access via psql command:
+            - Host: localhost
+            - Port: ${{ steps.tunnel.outputs.local_port }}
+            - Database: ${{ steps.db-config.outputs.db_name }}
+            - User: ${{ steps.db-config.outputs.db_user }}
+            - Password is set in PGPASSWORD environment variable
+            
+            Use psql for database queries (read-only):
+            psql -h localhost -p ${{ steps.tunnel.outputs.local_port }} -U ${{ steps.db-config.outputs.db_user }} -d ${{ steps.db-config.outputs.db_name }} -c "YOUR SQL HERE"
+            
+            Examples:
+            - Check table structure: -c "\d table_name"
+            - List tables: -c "\dt"
+            - Query data: -c "SELECT * FROM table_name LIMIT 10"
+            
+            If you detect database-related changes (SQL files, entity mappings, Hibernate configurations, 
+            migrations, etc.), validate entity mappings against actual schema, check for missing migrations, 
+            verify foreign key constraints, analyze query performance implications, and ensure proper 
+            indexing for biological data queries.
+            
+            IMPORTANT: Always end your review comments with developer usage instructions:
+            
+            ---
+            💡 **Claude Code Capabilities**
+            
+            I can help with more than just reviews! Try these:
+            - **Answer Questions**: `@claude explain how the caching system works`
+            - **Implement Code Changes**: `@claude add error handling to the user login method`
+            - **Debug Issues**: `@claude help debug why the search is slow`
+            - **Analyze Architecture**: `@claude review the database schema changes`
+            
+            Just comment `@claude` followed by your request!
+          direct_prompt: |
+            Review this PR focusing ONLY on:
+            1. Critical and blocking bugs that could cause data corruption or system failures  
+            2. Database performance issues (inefficient queries, N+1 problems, missing indexes)
+            
+            ${{ steps.strategy.outputs.use_zen_tools == 'true' && 'This is a large PR (>40 lines changed) - use the zen codereview tool with ONLY the o3 model for enhanced analysis. Do not use multiple models - just Claude Sonnet plus O3.' || 'This is a standard PR - perform a standard Claude Sonnet review.' }}
+            Keep feedback concise and actionable.
+            
+            IMPORTANT: Always end your review with the developer capabilities section from your custom instructions.
+          mcp_config: ${{ steps.review-config.outputs.mcp_config }}
+          allowed_tools: ${{ steps.review-config.outputs.allowed_tools }}
+          claude_env: |
+            REPOSITORY: ${{ github.repository }}
+            ORGANIZATION: ${{ github.repository_owner }}
+            PR_SIZE: ${{ steps.pr-details.outputs.pr_size }}
+            ZEN_TOOLS_ENABLED: ${{ steps.strategy.outputs.use_zen_tools }}
+            REVIEW_STRATEGY: ${{ steps.strategy.outputs.skip_review == 'true' && 'SKIP' || (steps.strategy.outputs.use_zen_tools == 'true' && 'ZEN_O3' || 'STANDARD') }}
+            ESTIMATED_COST: ${{ steps.strategy.outputs.skip_review == 'true' && '$0.00' || (steps.strategy.outputs.use_zen_tools == 'true' && '~$0.30-0.50' || '~$0.10-0.20') }}
+
+      - name: Terminate zen-mcp-server and SSM tunnel
+        if: always() && steps.check-trigger.outputs.triggered == 'true' && steps.pr-details.outputs.skip_non_alpha != 'true' && steps.strategy.outputs.skip_review == 'false'
+        run: |
+          set -euo pipefail
+          
+          # NOTE: This step is needed because zen-mcp-server stays alive after the Claude Code action
+          # completes, causing the workflow job to hang indefinitely. We must explicitly terminate it.
+          echo "=== Post-review cleanup: Terminating zen-mcp-server and SSM tunnel ==="
+          
+          # Kill zen-mcp-server processes (primary fix for hanging issue)
+          echo "Terminating any zen-mcp-server processes..."
+          if pgrep -f "zen-mcp-server" > /dev/null 2>&1; then
+            echo "Found zen-mcp-server process(es), terminating..."
+            pkill -TERM -f "zen-mcp-server" 2>/dev/null || true
+          else
+            echo "No zen-mcp-server processes found"
+          fi
+          
+          # Kill SSM tunnel process using PID
+          echo "Terminating SSM tunnel process (PID: ${{ steps.tunnel.outputs.pid }})..."
+          if [ -n "${{ steps.tunnel.outputs.pid }}" ] && ps -p ${{ steps.tunnel.outputs.pid }} >/dev/null 2>&1; then
+            echo "SSM tunnel process is running, terminating..."
+            # Kill the entire process group
+            kill -TERM -- -${{ steps.tunnel.outputs.pid }} 2>/dev/null || true
+          else
+            echo "SSM tunnel process not found or already terminated"
+          fi
+          
+          # Also use pkill as backup for SSM tunnel
+          if pgrep -f "aws ssm start-session" > /dev/null 2>&1; then
+            echo "Found SSM session via pkill, terminating..."
+            pkill -TERM -f "aws ssm start-session" 2>/dev/null || true
+          fi
+          
+          # Give processes time to terminate gracefully
+          echo "Waiting 3 seconds for graceful termination..."
+          sleep 3
+          
+          # Force kill if processes are still running
+          if pgrep -f "zen-mcp-server" > /dev/null 2>&1; then
+            echo "zen-mcp-server still running, force killing..."
+            pkill -9 -f "zen-mcp-server" 2>/dev/null || true
+          fi
+          
+          if pgrep -f "aws ssm start-session" > /dev/null 2>&1; then
+            echo "SSM session still running, force killing..."
+            pkill -9 -f "aws ssm start-session" 2>/dev/null || true
+          fi
+          
+          echo "=== Post-review cleanup complete ==="
+          
+          # Optional: Show remaining processes for debugging
+          echo "=== Remaining relevant processes (for debugging) ==="
+          ps aux | grep -E "(zen|ssm|claude)" | grep -v grep || echo "No relevant processes found"
+
+      - name: Cleanup
+        if: always() && steps.tunnel.outputs.pid != '' && steps.pr-details.outputs.skip_non_alpha != 'true'
+        run: |
+          set -euo pipefail
+          
+          echo "Cleaning up SSM tunnel (PID: ${{ steps.tunnel.outputs.pid }})"
+          
+          # Validate PID before attempting to kill
+          if [ -n "${{ steps.tunnel.outputs.pid }}" ] && ps -p ${{ steps.tunnel.outputs.pid }} >/dev/null 2>&1; then
+            # Kill the entire process group (same as trap handler)
+            kill -TERM -- -${{ steps.tunnel.outputs.pid }} 2>/dev/null || true
+          fi
+          
+          # Also terminate any hanging SSM sessions
+          SESSIONS=$(aws ssm describe-sessions --state Active --filters "key=Target,value=${{ steps.db-config.outputs.ssm_instance_id }}" --query "Sessions[?DocumentName=='AWS-StartPortForwardingSessionToRemoteHost'].SessionId" --output text)
+          for session in $SESSIONS; do
+            echo "Terminating SSM session: $session"
+            aws ssm terminate-session --session-id $session || true
+          done
