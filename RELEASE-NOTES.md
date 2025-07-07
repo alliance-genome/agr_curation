@@ -2,8 +2,18 @@
  
 https://agr-jira.atlassian.net/wiki/spaces/ATEAM/overview
 
+## v0.40.0
+* New features:
+  * Implemented cleanup procedure for ontology loads (SCRUM-5215)
+
+* Fixes and maintenance
+  * Enforced single is_allele_of relationship for AlleleGeneAssociation bulk loads (SCRUM-5178)
+  * Load speed improved for Construct and ConstructGenomicEntityAssociation bulk loads (SCRUM-4436)
+  * Load speed improved for AgmAlleleAssociation bulk loads (SCRUM-5198)
+  * Load speed improved for AlleleGeneAssociation bulk loads (SCRUM-5142)
+  * Fixed ontology tree view (SCRUM-5211, SCRUM-5199, SCRUM-5188)
+
 ## v0.39.0
-##format below here
 
 * New features:
   * Load Brenda Tissue Ontology (BTO) into the persistent store, SCRUM-4971
@@ -35,7 +45,6 @@ https://agr-jira.atlassian.net/wiki/spaces/ATEAM/overview
   * Cannot filter Disease Annotations table Subject field with AGM names, SCRUM-5051
   * Curation system Molecular and Genetic Interactions tables: Evidence filter only recognizing AGRKB publication IDs, SCRUM-5019
 
-##format above here
 ## v0.37.0
 * New Features:
   * Implement AGM Parental Populations, SCRUM-4667
