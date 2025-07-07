@@ -1,6 +1,7 @@
 package org.alliancegenome.curation_api.services;
 
 import java.util.List;
+import java.util.Set;
 
 import org.alliancegenome.curation_api.dao.AGMPhenotypeAnnotationDAO;
 import org.alliancegenome.curation_api.dao.ConditionRelationDAO;
@@ -51,8 +52,8 @@ public class AGMPhenotypeAnnotationService extends BaseAnnotationCrudService<AGM
 	}
 
 	@Transactional
-	public List<AGMPhenotypeAnnotation> addInferredOrAssertedEntities(AffectedGenomicModel primaryAnnotationSubject, PhenotypeFmsDTO secondaryAnnotationDto, BackendBulkDataProvider dataProvider) throws ValidationException {
-		List<AGMPhenotypeAnnotation> annotations = agmPhenotypeAnnotationFmsDtoValidator.validateInferredOrAssertedEntities(primaryAnnotationSubject, secondaryAnnotationDto, dataProvider);
+	public List<AGMPhenotypeAnnotation> addInferredOrAssertedEntities(AffectedGenomicModel primaryAnnotationSubject, PhenotypeFmsDTO secondaryAnnotationDto, BackendBulkDataProvider dataProvider, Set<Long> idsAdded) throws ValidationException {
+		List<AGMPhenotypeAnnotation> annotations = agmPhenotypeAnnotationFmsDtoValidator.validateInferredOrAssertedEntities(primaryAnnotationSubject, secondaryAnnotationDto, dataProvider, idsAdded);
 		for (AGMPhenotypeAnnotation annotation : annotations) {
 			agmPhenotypeAnnotationDAO.persist(annotation);
 		}
