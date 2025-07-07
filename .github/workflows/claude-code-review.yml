@@ -104,13 +104,13 @@ jobs:
               issue_number: parseInt(${{ steps.check-trigger.outputs.pr_number }}),
               body: `🤖 **Claude Code Review Not Available**
               
-              This PR targets the **${{ steps.pr-details.outputs.base_branch }}** branch.
+              This PR targets the **\`${{ steps.pr-details.outputs.base_branch }}\`** branch.
               
               Claude Code reviews are currently only available for PRs targeting the **alpha** branch.
               
               If you need code review assistance for this PR, please:
               1. Target your PR to the alpha branch first
-              2. After review and merge to alpha, create a PR from alpha to ${{ steps.pr-details.outputs.base_branch }}
+              2. After review and merge to alpha, create a PR from alpha to \`${{ steps.pr-details.outputs.base_branch }}\`
               
               This helps ensure code quality while managing review costs effectively.`
             });
@@ -122,19 +122,12 @@ jobs:
           set -euo pipefail
           PR_SIZE=${{ steps.pr-details.outputs.pr_size }}
           SKIP_THRESHOLD=3
-          SIZE_THRESHOLD=40
           
           if [ "$PR_SIZE" -le "$SKIP_THRESHOLD" ]; then
             echo "skip_review=true" >> $GITHUB_OUTPUT
-            echo "use_zen_tools=false" >> $GITHUB_OUTPUT
             echo "reason=PR too small (${PR_SIZE} lines)" >> $GITHUB_OUTPUT
-          elif [ "$PR_SIZE" -gt "$SIZE_THRESHOLD" ]; then
-            echo "skip_review=false" >> $GITHUB_OUTPUT
-            echo "use_zen_tools=true" >> $GITHUB_OUTPUT
-            echo "reason=Large PR - enhanced review with O3 (${PR_SIZE} lines)" >> $GITHUB_OUTPUT
           else
             echo "skip_review=false" >> $GITHUB_OUTPUT
-            echo "use_zen_tools=false" >> $GITHUB_OUTPUT
             echo "reason=Standard review (${PR_SIZE} lines)" >> $GITHUB_OUTPUT
           fi
 
@@ -158,9 +151,8 @@ jobs:
               ---
               
               **Review strategy (current thresholds):**
-              - **Bottom 10%** (≤ 3 lines): Skipped - this PR
-              - **Middle 40%** (4-40 lines): Standard Claude Sonnet review  
-              - **Top 50%** (> 40 lines): Enhanced Claude Sonnet + O3 analysis
+              - **≤ 3 lines**: Skipped - this PR
+              - **> 3 lines**: Standard Claude Sonnet review
               
               ---
               
@@ -356,29 +348,12 @@ jobs:
         run: |
           set -euo pipefail
           
-          # Generate MCP configuration using jq for proper JSON escaping
-          if [[ "${{ steps.strategy.outputs.use_zen_tools }}" == "true" ]]; then
-            MCP_CONFIG=$(jq -n \
-              '{
-                mcpServers: {
-                  zen: {
-                    command: "sh",
-                    args: ["-c", "python -m pip install --user uv && export PATH=$PATH:$HOME/.local/bin && uvx --from git+https://github.com/alliance-genome/zen-mcp-server.git zen-mcp-server"],
-                    env: { 
-                      PATH: "/usr/local/bin:/usr/bin:/bin:/opt/homebrew/bin:$HOME/.local/bin",
-                      PYTHONUNBUFFERED: "1"
-                    }
-                  }
-                }
-              }')
-            ALLOWED_TOOLS="mcp__zen__codereview,mcp__zen__secaudit,mcp__zen__analyze,mcp__zen__testgen,mcp__zen__debug,mcp__zen__refactor,mcp__zen__chat,mcp__zen__consensus,mcp__zen__thinkdeep,mcp__zen__planner,mcp__zen__precommit,mcp__zen__tracer,mcp__zen__docgen,mcp__zen__challenge,mcp__zen__listmodels,mcp__zen__version,Bash,Edit,Read,Write,Glob,Grep,LS"
-          else
-            MCP_CONFIG=$(jq -n \
-              '{
-                mcpServers: {}
-              }')
-            ALLOWED_TOOLS="Bash,Edit,Read,Write,Glob,Grep,LS"
-          fi
+          # Always use minimal MCP configuration (no zen tools)
+          MCP_CONFIG=$(jq -n \
+            '{
+              mcpServers: {}
+            }')
+          ALLOWED_TOOLS="Bash,Edit,Read,Write,Glob,Grep,LS"
           
           # Set outputs
           printf 'mcp_config<<EOF\n%s\nEOF\n' "$MCP_CONFIG" >> $GITHUB_OUTPUT
@@ -428,23 +403,41 @@ jobs:
         uses: anthropics/claude-code-action@beta
         env:
           PGPASSWORD: ${{ env.DB_PASSWORD }}
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           PYTHONUNBUFFERED: "1"
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
           model: claude-sonnet-4-20250514
           max_turns: 80
           custom_instructions: |
-            You are reviewing code for an Alliance of Genome Resources Java Quarkus backend application.
+            You are reviewing a PULL REQUEST DIFF for an Alliance of Genome Resources Java Quarkus backend application.
             
-            FOCUS ONLY ON:
-            1. Critical and blocking bugs that could cause data corruption or system failures
-            2. Database performance issues (inefficient queries, N+1 problems, missing indexes)
-            3. Hibernate-specific issues: missing @Transactional boundaries, improper entity relationships
-            4. Biological data validation errors and data integrity problems
+            REVIEW APPROACH:
+            1. FIRST: Use `git diff` to understand what lines changed in this PR
+            2. SECOND: For changed functions/methods, you MAY read the surrounding context to understand:
+               - How the changed code integrates with existing functionality
+               - Whether the changes might break existing behavior
+               - If the changes are consistent with the codebase patterns
+            3. FOCUS: Your review comments must be about the CHANGES, not pre-existing code
             
-            Keep reviews concise and actionable. Only flag serious issues that need immediate attention.
+            WHEN TO READ BROADER CONTEXT:
+            - When a method signature changes (check callers)
+            - When a method implementation changes (understand the full method)
+            - When new code is added (verify it fits with surrounding code)
+            - When imports/dependencies change (check usage)
+            - When Hibernate entities or queries change (verify database mappings)
             
+            REVIEW SCOPE - Only flag issues that are:
+            1. INTRODUCED or WORSENED by this PR's changes
+            2. Critical bugs that could cause data corruption or system failures
+            3. Database performance issues created by these changes
+            4. Hibernate-specific issues introduced by these changes
+            5. Breaking changes to existing functionality
+            
+            IMPORTANT: Many PRs are small fixes. If the changes look correct and don't introduce new issues, 
+            simply acknowledge the fix and say "Changes look good".
+            
+            Keep reviews concise and actionable. Reference specific line numbers from the diff.
+
             PR Size: ${{ steps.pr-details.outputs.pr_size }} lines changed
             Files Changed: ${{ steps.pr-details.outputs.files_changed }}
             Review Strategy: ${{ steps.strategy.outputs.reason }}
@@ -464,7 +457,7 @@ jobs:
             - List tables: -c "\dt"
             - Query data: -c "SELECT * FROM table_name LIMIT 10"
             
-            If you detect database-related changes (SQL files, entity mappings, Hibernate configurations, 
+            If you detect database-related changes in this PR (SQL files, entity mappings, Hibernate configurations, 
             migrations, etc.), validate entity mappings against actual schema, check for missing migrations, 
             verify foreign key constraints, analyze query performance implications, and ensure proper 
             indexing for biological data queries.
@@ -474,20 +467,44 @@ jobs:
             ---
             💡 **Claude Code Capabilities**
             
-            I can help with more than just reviews! Try these:
+            I can help with additional commands! Try these:
             - **Answer Questions**: `@claude explain how the caching system works`
             - **Implement Code Changes**: `@claude add error handling to the user login method`
             - **Debug Issues**: `@claude help debug why the search is slow`
             - **Analyze Architecture**: `@claude review the database schema changes`
+            - **Perform another review**: `@claude Please review my changes`
             
             Just comment `@claude` followed by your request!
           direct_prompt: |
-            Review this PR focusing ONLY on:
-            1. Critical and blocking bugs that could cause data corruption or system failures  
-            2. Database performance issues (inefficient queries, N+1 problems, missing indexes)
+            START by running: git diff origin/alpha...HEAD --name-status
+            Then examine the changed lines using: git diff origin/alpha...HEAD
             
-            ${{ steps.strategy.outputs.use_zen_tools == 'true' && 'This is a large PR (>40 lines changed) - use the zen codereview tool with ONLY the o3 model for enhanced analysis. Do not use multiple models - just Claude Sonnet plus O3.' || 'This is a standard PR - perform a standard Claude Sonnet review.' }}
-            Keep feedback concise and actionable.
+            REVIEW STRATEGY:
+            1. Analyze the diff to understand what changed
+            2. For complex changes, read the surrounding context of modified functions/methods
+            3. Check if changes might break existing functionality
+            4. Verify changes follow project patterns
+            5. For database changes, check entity mappings and query implications
+            
+            CONTEXTUAL READING GUIDELINES:
+            - Read modified methods in full to understand the changes
+            - Check callers if method signatures change
+            - Verify new code integrates properly with existing code
+            - For Hibernate entities, verify database mappings match schema
+            - DO NOT review or comment on unmodified code
+            
+            Focus your review on:
+            1. Critical bugs INTRODUCED by these changes
+            2. Breaking changes to existing functionality
+            3. Database performance issues CAUSED by these changes
+            4. Integration issues with existing code
+            
+            If the changes look correct and don't introduce new issues, say so clearly.
+            Example good responses for clean PRs:
+            - "Changes look good, no blocking issues."
+            - "The changes are correct and safe to merge."
+            
+            Keep feedback concise, actionable, and directly tied to the diff.
             
             IMPORTANT: Always end your review with the developer capabilities section from your custom instructions.
           mcp_config: ${{ steps.review-config.outputs.mcp_config }}
@@ -496,64 +513,6 @@ jobs:
             REPOSITORY: ${{ github.repository }}
             ORGANIZATION: ${{ github.repository_owner }}
             PR_SIZE: ${{ steps.pr-details.outputs.pr_size }}
-            ZEN_TOOLS_ENABLED: ${{ steps.strategy.outputs.use_zen_tools }}
-            REVIEW_STRATEGY: ${{ steps.strategy.outputs.skip_review == 'true' && 'SKIP' || (steps.strategy.outputs.use_zen_tools == 'true' && 'ZEN_O3' || 'STANDARD') }}
-            ESTIMATED_COST: ${{ steps.strategy.outputs.skip_review == 'true' && '$0.00' || (steps.strategy.outputs.use_zen_tools == 'true' && '~$0.30-0.50' || '~$0.10-0.20') }}
-
-      - name: Terminate zen-mcp-server and SSM tunnel
-        if: always() && steps.check-trigger.outputs.triggered == 'true' && steps.pr-details.outputs.skip_non_alpha != 'true' && steps.strategy.outputs.skip_review == 'false'
-        run: |
-          set -euo pipefail
-          
-          # NOTE: This step is needed because zen-mcp-server stays alive after the Claude Code action
-          # completes, causing the workflow job to hang indefinitely. We must explicitly terminate it.
-          echo "=== Post-review cleanup: Terminating zen-mcp-server and SSM tunnel ==="
-          
-          # Kill zen-mcp-server processes (primary fix for hanging issue)
-          echo "Terminating any zen-mcp-server processes..."
-          if pgrep -f "zen-mcp-server" > /dev/null 2>&1; then
-            echo "Found zen-mcp-server process(es), terminating..."
-            pkill -TERM -f "zen-mcp-server" 2>/dev/null || true
-          else
-            echo "No zen-mcp-server processes found"
-          fi
-          
-          # Kill SSM tunnel process using PID
-          echo "Terminating SSM tunnel process (PID: ${{ steps.tunnel.outputs.pid }})..."
-          if [ -n "${{ steps.tunnel.outputs.pid }}" ] && ps -p ${{ steps.tunnel.outputs.pid }} >/dev/null 2>&1; then
-            echo "SSM tunnel process is running, terminating..."
-            # Kill the entire process group
-            kill -TERM -- -${{ steps.tunnel.outputs.pid }} 2>/dev/null || true
-          else
-            echo "SSM tunnel process not found or already terminated"
-          fi
-          
-          # Also use pkill as backup for SSM tunnel
-          if pgrep -f "aws ssm start-session" > /dev/null 2>&1; then
-            echo "Found SSM session via pkill, terminating..."
-            pkill -TERM -f "aws ssm start-session" 2>/dev/null || true
-          fi
-          
-          # Give processes time to terminate gracefully
-          echo "Waiting 3 seconds for graceful termination..."
-          sleep 3
-          
-          # Force kill if processes are still running
-          if pgrep -f "zen-mcp-server" > /dev/null 2>&1; then
-            echo "zen-mcp-server still running, force killing..."
-            pkill -9 -f "zen-mcp-server" 2>/dev/null || true
-          fi
-          
-          if pgrep -f "aws ssm start-session" > /dev/null 2>&1; then
-            echo "SSM session still running, force killing..."
-            pkill -9 -f "aws ssm start-session" 2>/dev/null || true
-          fi
-          
-          echo "=== Post-review cleanup complete ==="
-          
-          # Optional: Show remaining processes for debugging
-          echo "=== Remaining relevant processes (for debugging) ==="
-          ps aux | grep -E "(zen|ssm|claude)" | grep -v grep || echo "No relevant processes found"
 
       - name: Cleanup
         if: always() && steps.tunnel.outputs.pid != '' && steps.pr-details.outputs.skip_non_alpha != 'true'
