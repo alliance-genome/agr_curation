@@ -1,6 +1,7 @@
 package org.alliancegenome.curation_api.controllers.document;
 
 import org.alliancegenome.curation_api.interfaces.document.GeneExpressionDocumentInterface;
+import org.alliancegenome.curation_api.model.document.es.ExpressionDetailDocument;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.GeneExpressionAnnotationService;
 
@@ -11,7 +12,7 @@ public class ExpressionDocumentController implements GeneExpressionDocumentInter
 	@Inject GeneExpressionAnnotationService geneExpressionAnnotationService;
 
 	@Override
-	public SearchResponse<org.alliancegenome.curation_api.model.document.es.ExpressionDetailDocument> getAnnotationsForIndexing(Integer page, Integer limit) {
+	public SearchResponse<ExpressionDetailDocument> getAnnotationsForIndexing(Integer page, Integer limit) {
 		return geneExpressionAnnotationService.getAnnotationsForIndexing(page, limit);
 	}
 }

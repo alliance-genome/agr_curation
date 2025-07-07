@@ -3,6 +3,7 @@ package org.alliancegenome.curation_api.model.document.builders;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import java.util.Map;
 
+import org.alliancegenome.curation_api.model.document.es.ExpressionDetailDocument;
 import org.alliancegenome.curation_api.model.entities.GeneExpressionAnnotation;
 import org.alliancegenome.curation_api.model.entities.GeneExpressionExperiment;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.ConsolidatedGeneExpressionFmsDTO;
@@ -20,8 +21,8 @@ public class ExpressionDetailDocumentBuilder {
 	@Inject private GeneExpressionAnnotationUniqueIdHelper geneExpressionAnnotationUniqueIdHelper;
 	@Inject private ReferenceService referenceService;
 
-	public org.alliancegenome.curation_api.model.document.es.ExpressionDetailDocument build(GeneExpressionAnnotation annotation, Map<String, GeneExpressionExperiment> experiments) {
-		org.alliancegenome.curation_api.model.document.es.ExpressionDetailDocument expressionDetailDocument = new org.alliancegenome.curation_api.model.document.es.ExpressionDetailDocument();
+	public ExpressionDetailDocument build(GeneExpressionAnnotation annotation, Map<String, GeneExpressionExperiment> experiments) {
+		ExpressionDetailDocument expressionDetailDocument = new ExpressionDetailDocument();
 		if (annotation.getDataProvider().getAbbreviation().equals("MGI") || annotation.getDataProvider().getAbbreviation().equals("WB")) {
 			ConsolidatedGeneExpressionFmsDTO geneExpressionFmsDTO = new ConsolidatedGeneExpressionFmsDTO();
 			geneExpressionFmsDTO.setGeneId(annotation.getExpressionAnnotationSubject().getPrimaryExternalId());
@@ -31,6 +32,7 @@ public class ExpressionDetailDocumentBuilder {
 				expressionDetailDocument.setCrossReferences(experiments.get(experimentId).getCrossReferences());
 			}
 		} else {
+			// This is for ZFIN only at the moment
 			expressionDetailDocument.setCrossReferences(annotation.getCrossReferences());
 		}
 		expressionDetailDocument.setReference(annotation.getEvidenceItem());
@@ -43,7 +45,7 @@ public class ExpressionDetailDocumentBuilder {
 		}
 
 		expressionDetailDocument.setStage(annotation.getExpressionPattern().getWhenExpressed().getDevelopmentalStageStart());
-		
+
 		return expressionDetailDocument;
 	}
 }
