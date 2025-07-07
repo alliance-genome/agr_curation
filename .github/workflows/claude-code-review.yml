@@ -411,17 +411,27 @@ jobs:
           custom_instructions: |
             You are reviewing a PULL REQUEST DIFF for an Alliance of Genome Resources Java Quarkus backend application.
             
-            CRITICAL INSTRUCTIONS:
-            1. Use `git diff` to see ONLY the lines that changed in this PR
-            2. DO NOT read entire files - focus ONLY on the diff hunks
-            3. DO NOT comment on code that wasn't modified in this PR
-            4. If you identify an issue, verify it's in the CHANGED lines, not existing code
+            REVIEW APPROACH:
+            1. FIRST: Use `git diff` to understand what lines changed in this PR
+            2. SECOND: For changed functions/methods, you MAY read the surrounding context to understand:
+               - How the changed code integrates with existing functionality
+               - Whether the changes might break existing behavior
+               - If the changes are consistent with the codebase patterns
+            3. FOCUS: Your review comments must be about the CHANGES, not pre-existing code
+            
+            WHEN TO READ BROADER CONTEXT:
+            - When a method signature changes (check callers)
+            - When a method implementation changes (understand the full method)
+            - When new code is added (verify it fits with surrounding code)
+            - When imports/dependencies change (check usage)
+            - When Hibernate entities or queries change (verify database mappings)
             
             REVIEW SCOPE - Only flag issues that are:
-            1. INTRODUCED by this PR's changes (not pre-existing)
+            1. INTRODUCED or WORSENED by this PR's changes
             2. Critical bugs that could cause data corruption or system failures
             3. Database performance issues created by these changes
             4. Hibernate-specific issues introduced by these changes
+            5. Breaking changes to existing functionality
             
             IMPORTANT: Many PRs are small fixes. If the changes look correct and don't introduce new issues, 
             simply acknowledge the fix and say "Changes look good".
@@ -467,15 +477,27 @@ jobs:
             Just comment `@claude` followed by your request!
           direct_prompt: |
             START by running: git diff origin/alpha...HEAD --name-status
-            Then examine ONLY the changed lines using: git diff origin/alpha...HEAD
+            Then examine the changed lines using: git diff origin/alpha...HEAD
             
-            CRITICAL: You MUST analyze ONLY the specific lines changed in this PR diff.
-            DO NOT use Read tool on entire files. DO NOT review unchanged code.
+            REVIEW STRATEGY:
+            1. Analyze the diff to understand what changed
+            2. For complex changes, read the surrounding context of modified functions/methods
+            3. Check if changes might break existing functionality
+            4. Verify changes follow project patterns
+            5. For database changes, check entity mappings and query implications
             
-            Review this PR's ACTUAL CHANGES focusing ONLY on:
-            1. Critical bugs INTRODUCED by these specific changes
-            2. Database performance issues CAUSED by these specific changes
-            3. Any issues that these SPECIFIC CHANGES create or worsen
+            CONTEXTUAL READING GUIDELINES:
+            - Read modified methods in full to understand the changes
+            - Check callers if method signatures change
+            - Verify new code integrates properly with existing code
+            - For Hibernate entities, verify database mappings match schema
+            - DO NOT review or comment on unmodified code
+            
+            Focus your review on:
+            1. Critical bugs INTRODUCED by these changes
+            2. Breaking changes to existing functionality
+            3. Database performance issues CAUSED by these changes
+            4. Integration issues with existing code
             
             If the changes look correct and don't introduce new issues, say so clearly.
             Example good responses for clean PRs:
