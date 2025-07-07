@@ -104,13 +104,13 @@ jobs:
               issue_number: parseInt(${{ steps.check-trigger.outputs.pr_number }}),
               body: `🤖 **Claude Code Review Not Available**
               
-              This PR targets the **${{ steps.pr-details.outputs.base_branch }}** branch.
+              This PR targets the **\`${{ steps.pr-details.outputs.base_branch }}\`** branch.
               
               Claude Code reviews are currently only available for PRs targeting the **alpha** branch.
               
               If you need code review assistance for this PR, please:
               1. Target your PR to the alpha branch first
-              2. After review and merge to alpha, create a PR from alpha to ${{ steps.pr-details.outputs.base_branch }}
+              2. After review and merge to alpha, create a PR from alpha to \`${{ steps.pr-details.outputs.base_branch }}\`
               
               This helps ensure code quality while managing review costs effectively.`
             });
@@ -122,19 +122,12 @@ jobs:
           set -euo pipefail
           PR_SIZE=${{ steps.pr-details.outputs.pr_size }}
           SKIP_THRESHOLD=3
-          SIZE_THRESHOLD=40
           
           if [ "$PR_SIZE" -le "$SKIP_THRESHOLD" ]; then
             echo "skip_review=true" >> $GITHUB_OUTPUT
-            echo "use_zen_tools=false" >> $GITHUB_OUTPUT
             echo "reason=PR too small (${PR_SIZE} lines)" >> $GITHUB_OUTPUT
-          elif [ "$PR_SIZE" -gt "$SIZE_THRESHOLD" ]; then
-            echo "skip_review=false" >> $GITHUB_OUTPUT
-            echo "use_zen_tools=true" >> $GITHUB_OUTPUT
-            echo "reason=Large PR - enhanced review with O3 (${PR_SIZE} lines)" >> $GITHUB_OUTPUT
           else
             echo "skip_review=false" >> $GITHUB_OUTPUT
-            echo "use_zen_tools=false" >> $GITHUB_OUTPUT
             echo "reason=Standard review (${PR_SIZE} lines)" >> $GITHUB_OUTPUT
           fi
 
@@ -158,9 +151,8 @@ jobs:
               ---
               
               **Review strategy (current thresholds):**
-              - **Bottom 10%** (≤ 3 lines): Skipped - this PR
-              - **Middle 40%** (4-40 lines): Standard Claude Sonnet review  
-              - **Top 50%** (> 40 lines): Enhanced Claude Sonnet + O3 analysis
+              - **≤ 3 lines**: Skipped - this PR
+              - **> 3 lines**: Standard Claude Sonnet review
               
               ---
               
@@ -356,29 +348,12 @@ jobs:
         run: |
           set -euo pipefail
           
-          # Generate MCP configuration using jq for proper JSON escaping
-          if [[ "${{ steps.strategy.outputs.use_zen_tools }}" == "true" ]]; then
-            MCP_CONFIG=$(jq -n \
-              '{
-                mcpServers: {
-                  zen: {
-                    command: "sh",
-                    args: ["-c", "python -m pip install --user uv && export PATH=$PATH:$HOME/.local/bin && uvx --from git+https://github.com/alliance-genome/zen-mcp-server.git zen-mcp-server"],
-                    env: { 
-                      PATH: "/usr/local/bin:/usr/bin:/bin:/opt/homebrew/bin:$HOME/.local/bin",
-                      PYTHONUNBUFFERED: "1"
-                    }
-                  }
-                }
-              }')
-            ALLOWED_TOOLS="mcp__zen__codereview,mcp__zen__secaudit,mcp__zen__analyze,mcp__zen__testgen,mcp__zen__debug,mcp__zen__refactor,mcp__zen__chat,mcp__zen__consensus,mcp__zen__thinkdeep,mcp__zen__planner,mcp__zen__precommit,mcp__zen__tracer,mcp__zen__docgen,mcp__zen__challenge,mcp__zen__listmodels,mcp__zen__version,Bash,Edit,Read,Write,Glob,Grep,LS"
-          else
-            MCP_CONFIG=$(jq -n \
-              '{
-                mcpServers: {}
-              }')
-            ALLOWED_TOOLS="Bash,Edit,Read,Write,Glob,Grep,LS"
-          fi
+          # Always use minimal MCP configuration (no zen tools)
+          MCP_CONFIG=$(jq -n \
+            '{
+              mcpServers: {}
+            }')
+          ALLOWED_TOOLS="Bash,Edit,Read,Write,Glob,Grep,LS"
           
           # Set outputs
           printf 'mcp_config<<EOF\n%s\nEOF\n' "$MCP_CONFIG" >> $GITHUB_OUTPUT
@@ -428,7 +403,6 @@ jobs:
         uses: anthropics/claude-code-action@beta
         env:
           PGPASSWORD: ${{ env.DB_PASSWORD }}
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           PYTHONUNBUFFERED: "1"
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
@@ -444,7 +418,8 @@ jobs:
             4. Biological data validation errors and data integrity problems
             
             Keep reviews concise and actionable. Only flag serious issues that need immediate attention.
-            
+            Focus ONLY on changes brought in by this PR, not the entire codebase.
+
             PR Size: ${{ steps.pr-details.outputs.pr_size }} lines changed
             Files Changed: ${{ steps.pr-details.outputs.files_changed }}
             Review Strategy: ${{ steps.strategy.outputs.reason }}
@@ -464,7 +439,7 @@ jobs:
             - List tables: -c "\dt"
             - Query data: -c "SELECT * FROM table_name LIMIT 10"
             
-            If you detect database-related changes (SQL files, entity mappings, Hibernate configurations, 
+            If you detect database-related changes in this PR (SQL files, entity mappings, Hibernate configurations, 
             migrations, etc.), validate entity mappings against actual schema, check for missing migrations, 
             verify foreign key constraints, analyze query performance implications, and ensure proper 
             indexing for biological data queries.
@@ -474,11 +449,12 @@ jobs:
             ---
             💡 **Claude Code Capabilities**
             
-            I can help with more than just reviews! Try these:
+            I can help with additional commands! Try these:
             - **Answer Questions**: `@claude explain how the caching system works`
             - **Implement Code Changes**: `@claude add error handling to the user login method`
             - **Debug Issues**: `@claude help debug why the search is slow`
             - **Analyze Architecture**: `@claude review the database schema changes`
+            - **Perform another review**: `@claude Please review my changes`
             
             Just comment `@claude` followed by your request!
           direct_prompt: |
@@ -486,7 +462,7 @@ jobs:
             1. Critical and blocking bugs that could cause data corruption or system failures  
             2. Database performance issues (inefficient queries, N+1 problems, missing indexes)
             
-            ${{ steps.strategy.outputs.use_zen_tools == 'true' && 'This is a large PR (>40 lines changed) - use the zen codereview tool with ONLY the o3 model for enhanced analysis. Do not use multiple models - just Claude Sonnet plus O3.' || 'This is a standard PR - perform a standard Claude Sonnet review.' }}
+            This is a standard PR - perform a standard Claude Sonnet review.
             Keep feedback concise and actionable.
             
             IMPORTANT: Always end your review with the developer capabilities section from your custom instructions.
@@ -496,64 +472,6 @@ jobs:
             REPOSITORY: ${{ github.repository }}
             ORGANIZATION: ${{ github.repository_owner }}
             PR_SIZE: ${{ steps.pr-details.outputs.pr_size }}
-            ZEN_TOOLS_ENABLED: ${{ steps.strategy.outputs.use_zen_tools }}
-            REVIEW_STRATEGY: ${{ steps.strategy.outputs.skip_review == 'true' && 'SKIP' || (steps.strategy.outputs.use_zen_tools == 'true' && 'ZEN_O3' || 'STANDARD') }}
-            ESTIMATED_COST: ${{ steps.strategy.outputs.skip_review == 'true' && '$0.00' || (steps.strategy.outputs.use_zen_tools == 'true' && '~$0.30-0.50' || '~$0.10-0.20') }}
-
-      - name: Terminate zen-mcp-server and SSM tunnel
-        if: always() && steps.check-trigger.outputs.triggered == 'true' && steps.pr-details.outputs.skip_non_alpha != 'true' && steps.strategy.outputs.skip_review == 'false'
-        run: |
-          set -euo pipefail
-          
-          # NOTE: This step is needed because zen-mcp-server stays alive after the Claude Code action
-          # completes, causing the workflow job to hang indefinitely. We must explicitly terminate it.
-          echo "=== Post-review cleanup: Terminating zen-mcp-server and SSM tunnel ==="
-          
-          # Kill zen-mcp-server processes (primary fix for hanging issue)
-          echo "Terminating any zen-mcp-server processes..."
-          if pgrep -f "zen-mcp-server" > /dev/null 2>&1; then
-            echo "Found zen-mcp-server process(es), terminating..."
-            pkill -TERM -f "zen-mcp-server" 2>/dev/null || true
-          else
-            echo "No zen-mcp-server processes found"
-          fi
-          
-          # Kill SSM tunnel process using PID
-          echo "Terminating SSM tunnel process (PID: ${{ steps.tunnel.outputs.pid }})..."
-          if [ -n "${{ steps.tunnel.outputs.pid }}" ] && ps -p ${{ steps.tunnel.outputs.pid }} >/dev/null 2>&1; then
-            echo "SSM tunnel process is running, terminating..."
-            # Kill the entire process group
-            kill -TERM -- -${{ steps.tunnel.outputs.pid }} 2>/dev/null || true
-          else
-            echo "SSM tunnel process not found or already terminated"
-          fi
-          
-          # Also use pkill as backup for SSM tunnel
-          if pgrep -f "aws ssm start-session" > /dev/null 2>&1; then
-            echo "Found SSM session via pkill, terminating..."
-            pkill -TERM -f "aws ssm start-session" 2>/dev/null || true
-          fi
-          
-          # Give processes time to terminate gracefully
-          echo "Waiting 3 seconds for graceful termination..."
-          sleep 3
-          
-          # Force kill if processes are still running
-          if pgrep -f "zen-mcp-server" > /dev/null 2>&1; then
-            echo "zen-mcp-server still running, force killing..."
-            pkill -9 -f "zen-mcp-server" 2>/dev/null || true
-          fi
-          
-          if pgrep -f "aws ssm start-session" > /dev/null 2>&1; then
-            echo "SSM session still running, force killing..."
-            pkill -9 -f "aws ssm start-session" 2>/dev/null || true
-          fi
-          
-          echo "=== Post-review cleanup complete ==="
-          
-          # Optional: Show remaining processes for debugging
-          echo "=== Remaining relevant processes (for debugging) ==="
-          ps aux | grep -E "(zen|ssm|claude)" | grep -v grep || echo "No relevant processes found"
 
       - name: Cleanup
         if: always() && steps.tunnel.outputs.pid != '' && steps.pr-details.outputs.skip_non_alpha != 'true'
