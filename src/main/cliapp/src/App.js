@@ -3,6 +3,7 @@ import { useHistory } from 'react-router-dom';
 import { Security } from '@okta/okta-react';
 import { OktaAuth } from '@okta/okta-auth-js';
 import { oktaAuthConfig } from './oktaAuthConfig';
+import { CookiesProvider } from 'react-cookie';
 
 import { Login } from './Login';
 
@@ -26,7 +27,9 @@ const App = () => {
 
 	return (
 		<Security oktaAuth={oktaAuth} onAuthRequired={customAuthHandler} restoreOriginalUri={restoreOriginalUri}>
-			<Login>{routes}</Login>
+			<CookiesProvider defaultSetOptions={{ path: '/' }}>
+				<Login>{routes}</Login>
+			</CookiesProvider>
 		</Security>
 	);
 };
