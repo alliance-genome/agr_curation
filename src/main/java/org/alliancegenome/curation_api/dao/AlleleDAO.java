@@ -6,17 +6,10 @@ import java.util.Map;
 
 import org.alliancegenome.curation_api.dao.base.BaseSQLDAO;
 import org.alliancegenome.curation_api.model.entities.Allele;
-import org.alliancegenome.curation_api.model.input.Pagination;
-import org.alliancegenome.curation_api.response.SearchResponse;
 import org.apache.commons.collections.CollectionUtils;
-import org.hibernate.query.sqm.internal.QuerySqmImpl;
-import org.hibernate.query.sqm.tree.select.SqmSelectStatement;
-import org.jboss.logging.Logger;
 
-import io.quarkus.logging.Log;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import jakarta.persistence.TypedQuery;
 
 @ApplicationScoped
 public class AlleleDAO extends BaseSQLDAO<Allele> {
@@ -80,5 +73,4 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 		results = agmPhenotypeAnnotationDAO.findIdsByParams(agmPaParams);
 		return CollectionUtils.isNotEmpty(results);
 	}
-
 }
