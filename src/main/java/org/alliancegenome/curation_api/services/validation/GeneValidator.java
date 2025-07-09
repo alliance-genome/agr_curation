@@ -8,6 +8,7 @@ import org.alliancegenome.curation_api.dao.CrossReferenceDAO;
 import org.alliancegenome.curation_api.dao.GeneDAO;
 import org.alliancegenome.curation_api.dao.ontology.SoTermDAO;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
+import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.ontology.SOTerm;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.GeneFullNameSlotAnnotation;
@@ -22,6 +23,7 @@ import org.alliancegenome.curation_api.services.validation.dto.slotAnnotations.G
 import org.alliancegenome.curation_api.services.validation.dto.slotAnnotations.GeneSynonymSlotAnnotationValidator;
 import org.alliancegenome.curation_api.services.validation.dto.slotAnnotations.GeneSystematicNameSlotAnnotationValidator;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.ObjectUtils;
 
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
@@ -84,6 +86,9 @@ public class GeneValidator extends GenomicEntityValidator<Gene> {
 		GeneSystematicNameSlotAnnotation systematicName = validateGeneSystematicName(uiEntity, dbEntity);
 		List<GeneSynonymSlotAnnotation> synonyms = validateGeneSynonyms(uiEntity, dbEntity);
 		List<GeneSecondaryIdSlotAnnotation> secondaryIds = validateGeneSecondaryIds(uiEntity, dbEntity);
+		
+		CrossReference gcrpCrossReference = validateDataProviderCrossReference(uiEntity.getGcrpCrossReference(), dbEntity.getGcrpCrossReference(), true);
+		dbEntity.setGcrpCrossReference(gcrpCrossReference);
 
 		response.convertErrorMessagesToMap();
 
@@ -246,6 +251,33 @@ public class GeneValidator extends GenomicEntityValidator<Gene> {
 		}
 
 		return validatedSecondaryIds;
+	}
+	
+	private CrossReference validateGcrpCrossReference(CrossReference uiXref, CrossReference dbXref) {
+		String fieldName = "gcrpCrossReference";
+		
+		CrossReference xref = null;
+		String dbXrefUniqueId = null;
+		String uiXrefUniqueId = null;
+		if (dbXref != null) {
+			dbXrefUniqueId = crossReferenceService.getCrossReferenceUniqueId(dbXref);
+		}
+		
+		if (ObjectUtils.isNotEmpty(uiXref)) {
+			ObjectResponse<CrossReference> xrefResponse = crossReferenceValidator.validateCrossReference(uiXref, false);
+			if (xrefResponse.hasErrors()) {
+				addMessageResponse(fieldName, xrefResponse.errorMessagesString());
+			} else {
+				uiXrefUniqueId = crossReferenceService.getCrossReferenceUniqueId(xrefResponse.getEntity());
+				if (dbXrefUniqueId == null || !dbXrefUniqueId.equals(uiXrefUniqueId)) {
+					xref = crossReferenceDAO.persist(xrefResponse.getEntity());
+				} else if (dbXrefUniqueId != null && dbXrefUniqueId.equals(uiXrefUniqueId)) {
+					xref = crossReferenceService.updateCrossReference(dbXref, uiXref);
+				}
+			}
+		}
+		
+		return xref;
 	}
 
 }

@@ -11,6 +11,7 @@ import org.alliancegenome.curation_api.dao.GeneDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
 import org.alliancegenome.curation_api.exceptions.ValidationException;
+import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.Note;
 import org.alliancegenome.curation_api.model.entities.ontology.SOTerm;
@@ -19,6 +20,7 @@ import org.alliancegenome.curation_api.model.entities.slotAnnotations.GeneSecond
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.GeneSymbolSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.GeneSynonymSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.GeneSystematicNameSlotAnnotation;
+import org.alliancegenome.curation_api.model.ingest.dto.CrossReferenceDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.GeneDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.slotAnnotions.NameSlotAnnotationDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.slotAnnotions.SecondaryIdSlotAnnotationDTO;
@@ -46,6 +48,7 @@ public class GeneDTOValidator extends GenomicEntityDTOValidator<Gene, GeneDTO> {
 	@Inject GeneSystematicNameSlotAnnotationDTOValidator geneSystematicNameDtoValidator;
 	@Inject GeneSynonymSlotAnnotationDTOValidator geneSynonymDtoValidator;
 	@Inject GeneSecondaryIdSlotAnnotationDTOValidator geneSecondaryIdDtoValidator;
+	@Inject CrossReferenceDTOValidator crossReferenceDtoValidator;
 	@Inject SlotAnnotationIdentityHelper identityHelper;
 	@Inject SoTermService soTermService;
 
@@ -106,6 +109,17 @@ public class GeneDTOValidator extends GenomicEntityDTOValidator<Gene, GeneDTO> {
 		SOTerm geneType = validateRequiredOntologyTerm(soTermService, "gene_type_curie", dto.getGeneTypeCurie());
 		gene.setGeneType(geneType);
 
+		CrossReference gcrpCrossReference = null;
+		if (dto.getGcrpCrossReferenceDto() != null) {
+			ObjectResponse<CrossReference> gcrpXrefResponse = crossReferenceDtoValidator.validateCrossReferenceDTO(dto.getGcrpCrossReferenceDto(), gene.getGcrpCrossReference());
+			if (gcrpXrefResponse.hasErrors()) {
+				response.addErrorMessage("gcrp_cross_reference_dto", gcrpXrefResponse.errorMessagesString());
+			} else {
+				gcrpCrossReference = gcrpXrefResponse.getEntity();
+			}
+		}
+		gene.setGcrpCrossReference(gcrpCrossReference);
+		
 		response.convertErrorMessagesToMap();
 
 		if (response.hasErrors()) {

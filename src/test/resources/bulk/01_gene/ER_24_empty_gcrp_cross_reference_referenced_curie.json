@@ -1,6 +1,6 @@
 [
   {
-    "primary_external_id": "GENETEST:DX01",
+    "primary_external_id": "GENETEST:ER16",
     "taxon_curie": "NCBITaxon:6239",
     "internal": true,
     "obsolete": true,
@@ -99,28 +99,10 @@
         "prefix": "TEST"
       }
     },
-    "cross_reference_dtos": [
-      {
-        "internal": false,
-        "obsolete": false,
-        "referenced_curie": "TEST:Xref01",
-        "page_area": "homepage",
-        "display_name": "TEST:Xref01Display",
-        "prefix": "TEST"
-      },
-      {
-        "internal": false,
-        "obsolete": false,
-        "referenced_curie": "TEST:Xref01",
-        "page_area": "homepage",
-        "display_name": "TEST:Xref01Display",
-        "prefix": "TEST"
-      }
-    ],
     "gcrp_cross_reference_dto": {
       "internal": false,
       "obsolete": false,
-      "referenced_curie": "TEST:GCRPDX01",
+      "referenced_curie": "",
       "page_area": "homepage",
       "displayName": "TEST:GCRPADX1Display",
       "prefix": "TEST"

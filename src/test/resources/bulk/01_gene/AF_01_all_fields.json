@@ -109,6 +109,14 @@
         "prefix": "TEST"
       }
     ],
+    "gcrp_cross_reference_dto": {
+      "internal": false,
+      "obsolete": false,
+      "referenced_curie": "TEST:GCRPAF01",
+      "page_area": "homepage",
+      "displayName": "TEST:GCRPAF01Display",
+      "prefix": "TEST"
+    },
     "gene_type_curie": "SO:0001217",
     "note_dtos": [
       {

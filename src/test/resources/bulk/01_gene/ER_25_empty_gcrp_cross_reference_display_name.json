@@ -1,6 +1,6 @@
 [
   {
-    "primary_external_id": "GENETEST:DX01",
+    "primary_external_id": "GENETEST:ER17",
     "taxon_curie": "NCBITaxon:6239",
     "internal": true,
     "obsolete": true,
@@ -94,35 +94,17 @@
       "source_organization_abbreviation": "WB",
       "cross_reference_dto": {
         "referenced_curie": "TEST:0001",
-        "page_area": "homepage",
         "display_name": "TEST:0001",
+        "page_area": "homepage",
         "prefix": "TEST"
       }
     },
-    "cross_reference_dtos": [
-      {
-        "internal": false,
-        "obsolete": false,
-        "referenced_curie": "TEST:Xref01",
-        "page_area": "homepage",
-        "display_name": "TEST:Xref01Display",
-        "prefix": "TEST"
-      },
-      {
-        "internal": false,
-        "obsolete": false,
-        "referenced_curie": "TEST:Xref01",
-        "page_area": "homepage",
-        "display_name": "TEST:Xref01Display",
-        "prefix": "TEST"
-      }
-    ],
     "gcrp_cross_reference_dto": {
       "internal": false,
       "obsolete": false,
       "referenced_curie": "TEST:GCRPDX01",
       "page_area": "homepage",
-      "displayName": "TEST:GCRPADX1Display",
+      "displayName": "",
       "prefix": "TEST"
     },
     "gene_type_curie": "SO:0001217"

@@ -18,6 +18,8 @@ import org.alliancegenome.curation_api.model.entities.slotAnnotations.GeneSynony
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.GeneSystematicNameSlotAnnotation;
 import org.alliancegenome.curation_api.view.View;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.hibernate.search.engine.backend.types.Projectable;
 import org.hibernate.search.engine.backend.types.Sortable;
 import org.hibernate.search.mapper.pojo.automaticindexing.ReindexOnUpdate;
@@ -68,7 +70,11 @@ import lombok.ToString;
 		"constructGenomicEntityAssociations" }, callSuper = true)
 @Schema(name = "Gene", description = "POJO that represents the Gene")
 @AGRCurationSchemaVersion(min = "1.5.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { GenomicEntity.class }, partial = true)
-@Table(indexes = { @Index(name = "gene_genetype_index", columnList = "geneType_id") })
+@Table(indexes = {
+		@Index(name = "gene_genetype_index", columnList = "geneType_id"),
+		@Index(name = "gene_gcrpcrossreference_index", columnList = "gcrpcrossreference_id")
+	}
+)
 public class Gene extends GenomicEntity {
 
 	@GenericField(projectable = Projectable.YES, sortable = Sortable.YES)
@@ -181,4 +187,10 @@ public class Gene extends GenomicEntity {
 		@Index(name = "gene_note_relatednotes_index", columnList = "relatedNotes_id")})
 	private List<Note> relatedNotes;
 
+	@IndexedEmbedded(includePaths = {"displayName", "referencedCurie", "displayName_keyword", "referencedCurie_keyword"})
+	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
+	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+	@Fetch(FetchMode.SELECT)
+	@JsonView({View.FieldsOnly.class})
+	private CrossReference gcrpCrossReference;
 }

@@ -161,6 +161,9 @@ public class GeneBulkUploadITCase extends BaseITCase {
 			body("entity.crossReferences[0].referencedCurie", is("TEST:Xref01")).
 			body("entity.crossReferences[0].displayName", is("TEST:Xref01Display")).
 			body("entity.crossReferences[0].resourceDescriptorPage.name", is("homepage")).
+			body("entity.gcrpCrossReference.referencedCurie", is("TEST:GCRPAF01")).
+			body("entity.gcrpCrossReference.displayName", is("TEST:GCRPAF01Display")).
+			body("entity.gcrpCrossReference.resourceDescriptorPage.name", is("homepage")).
 			body("entity.geneType.curie", is(soTerm)).
 			body("entity.relatedNotes", hasSize(1)).
 			body("entity.relatedNotes[0].internal", is(false)).
@@ -257,6 +260,9 @@ public class GeneBulkUploadITCase extends BaseITCase {
 			body("entity.crossReferences[0].referencedCurie", is("TEST2:Xref02")).
 			body("entity.crossReferences[0].displayName", is("TEST2:Xref02Display")).
 			body("entity.crossReferences[0].resourceDescriptorPage.name", is("homepage2")).
+			body("entity.gcrpCrossReference.referencedCurie", is("TEST2:GCRPUD01")).
+			body("entity.gcrpCrossReference.displayName", is("TEST2:GCRPUD01Display")).
+			body("entity.gcrpCrossReference.resourceDescriptorPage.name", is("homepage2")).
 			body("entity.geneType.curie", is(soTerm2)).
 			body("entity.relatedNotes", hasSize(1)).
 			body("entity.relatedNotes[0].internal", is(false)).
@@ -297,6 +303,10 @@ public class GeneBulkUploadITCase extends BaseITCase {
 		checkFailedBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "MR_23_no_gene_type.json");
 		checkFailedBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "MR_24_no_note_type_name.json");
 		checkFailedBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "MR_25_no_free_text.json");
+		checkFailedBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "MR_26_no_gcrp_cross_reference_referenced_curie.json");
+		checkFailedBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "MR_27_no_gcrp_cross_reference_display_name.json");
+		checkFailedBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "MR_28_no_gcrp_cross_reference_prefix.json");
+		checkFailedBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "MR_29_no_gcrp_cross_reference_page_area.json");
 	}
 	
 	@Test
@@ -325,6 +335,10 @@ public class GeneBulkUploadITCase extends BaseITCase {
 		checkFailedBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "ER_21_empty_gene_type.json");
 		checkFailedBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "ER_22_empty_note_type_name.json");
 		checkFailedBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "ER_23_empty_free_text.json");
+		checkFailedBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "ER_24_empty_gcrp_cross_reference_referenced_curie.json");
+		checkFailedBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "ER_25_empty_gcrp_cross_reference_display_name.json");
+		checkFailedBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "ER_26_empty_gcrp_cross_reference_prefix.json");
+		checkFailedBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "ER_27_empty_gcrp_cross_reference_page_area.json");
 	}
 	
 	@Test
@@ -352,6 +366,8 @@ public class GeneBulkUploadITCase extends BaseITCase {
 		checkFailedBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "IV_20_invalid_gene_type.json");
 		checkFailedBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "IV_21_invalid_note_type_name.json");
 		checkFailedBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "IV_22_invalid_evidence_curies.json");
+		checkFailedBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "IV_23_invalid_gcrp_cross_reference_prefix.json");
+		checkFailedBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "IV_24_invalid_gcrp_cross_reference_page_area.json");
 	}
 	
 	@Test
@@ -368,6 +384,7 @@ public class GeneBulkUploadITCase extends BaseITCase {
 			body("entity.primaryExternalId", is("GENETEST:Gene0001")).
 			body("entity", not(hasKey("relatedNotes"))).
 			body("entity", not(hasKey("crossReferences"))).
+			body("entity", not(hasKey("gcrpCrossReference"))).
 			body("entity", not(hasKey("createdBy"))).
 			body("entity", not(hasKey("updatedBy"))).
 			body("entity", not(hasKey("dateCreated"))).
