@@ -17,6 +17,7 @@ import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.interfaces.crud.BaseUpsertServiceInterface;
 import org.alliancegenome.curation_api.model.entities.associations.AlleleConstructAssociation;
 import org.alliancegenome.curation_api.model.ingest.dto.associations.AlleleConstructAssociationDTO;
+import org.alliancegenome.curation_api.model.input.Pagination;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.PersonService;
@@ -137,5 +138,9 @@ public class AlleleConstructAssociationService extends BaseAssociationDTOCrudSer
 		response.setEntity(association);
 
 		return response;
+	}
+
+	public SearchResponse<AlleleConstructAssociation> findAllAssociations(Pagination pagination, HashMap<String, Object> params) {
+		return alleleConstructAssociationDAO.findAllAssociations(pagination, params);
 	}
 }
