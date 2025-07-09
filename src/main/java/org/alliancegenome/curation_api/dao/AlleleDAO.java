@@ -81,48 +81,4 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 		return CollectionUtils.isNotEmpty(results);
 	}
 
-	public SearchResponse<Allele> findAllAllelesWithConstructs(Pagination pagination, HashMap<String, Object> params) {
-		Logger.Level level = Logger.Level.DEBUG;
-		if (params.containsKey("debug")) {
-			level = params.remove("debug").equals("true") ? Logger.Level.INFO : Logger.Level.DEBUG;
-		}
-
-		Log.log(level, "Pagination: " + pagination + " Params: " + params + " Class: " + myClass);
-
-		TypedQuery<Allele> query = entityManager.createQuery("""
-				from Allele
-				where alleleConstructAssociations is not empty
-				order by id
-				""", Allele.class);
-		if (pagination != null && pagination.getLimit() != null && pagination.getPage() != null) {
-			int first = pagination.getPage() * pagination.getLimit();
-			if (first < 0) {
-				first = 0;
-			}
-			query.setFirstResult(first);
-			query.setMaxResults(pagination.getLimit());
-		}
-		TypedQuery<Long> countQuery = entityManager.createQuery("""
-				select count(*)
-				from Allele
-				where alleleConstructAssociations is not empty
-				""", Long.class);
-
-		SearchResponse<Allele> results = new SearchResponse<>();
-
-		if (level == Logger.Level.INFO) {
-			results.setDebug("true");
-			results.setEsQuery(((QuerySqmImpl<?>) query).getQueryString());
-			results.setDbQuery(((SqmSelectStatement) query).toHqlString());
-		}
-
-		if (pagination != null && pagination.getPage() == 0 && pagination.getLimit() == 0) { // If pagination is null then there is no point in getting the total results
-			Long totalResults = countQuery.getSingleResult();
-			results.setTotalResults(totalResults);
-		} else {
-			List<Allele> dbResults = query.getResultList();
-			results.setResults(dbResults);
-		}
-		return results;
-	}
 }
