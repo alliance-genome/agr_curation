@@ -187,7 +187,7 @@ public class Gene extends GenomicEntity {
 		@Index(name = "gene_note_relatednotes_index", columnList = "relatedNotes_id")})
 	private List<Note> relatedNotes;
 
-	@IndexedEmbedded(includePaths = {"displayName", "referencedCurie", "displayName_keyword", "referencedCurie_keyword"})
+	@IndexedEmbedded(includePaths = {"displayName", "referencedCurie", "displayName_keyword", "referencedCurie_keyword", "resourceDescriptorPage.name", "resourceDescriptorPage.name_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
 	@Fetch(FetchMode.SELECT)

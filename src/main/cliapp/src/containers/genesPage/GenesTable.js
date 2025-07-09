@@ -329,7 +329,7 @@ export const GenesTable = () => {
 		},
 		{
 			field: 'gcrpCrossReference.displayName',
-			header: 'GCRP Cross References',
+			header: 'GCRP Cross Reference',
 			sortable: true,
 			filterConfig: FILTER_CONFIGS.gcrpCrossReferenceFilterConfig,
 			body: (rowData) => <CrossReferenceTemplate xref={rowData.gcrpCrossReference} />,
