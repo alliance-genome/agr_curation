@@ -34,7 +34,6 @@ public class TransgenicAlleleDocumentController implements TransgenicAlleleDocum
 		}
 
 		Pagination pagination = new Pagination(page, limit);
-//		SearchResponse<Allele> resp1 = service.findAllAllelesWithConstructs(pagination, params);
 		SearchResponse<AlleleConstructAssociation> resp = acService.findAllAssociations(pagination, params);
 
 		ArrayList<TransgenicAlleleDocument> list = new ArrayList<>();
