@@ -87,7 +87,7 @@ public class GeneValidator extends GenomicEntityValidator<Gene> {
 		List<GeneSynonymSlotAnnotation> synonyms = validateGeneSynonyms(uiEntity, dbEntity);
 		List<GeneSecondaryIdSlotAnnotation> secondaryIds = validateGeneSecondaryIds(uiEntity, dbEntity);
 		
-		CrossReference gcrpCrossReference = validateDataProviderCrossReference(uiEntity.getGcrpCrossReference(), dbEntity.getGcrpCrossReference(), true);
+		CrossReference gcrpCrossReference = validateGcrpCrossReference(uiEntity.getGcrpCrossReference(), dbEntity.getGcrpCrossReference());
 		dbEntity.setGcrpCrossReference(gcrpCrossReference);
 
 		response.convertErrorMessagesToMap();
