@@ -104,7 +104,7 @@
       "obsolete": false,
       "referenced_curie": "TEST:GCRPDX01",
       "page_area": "homepage",
-      "displayName": "",
+      "display_name": "",
       "prefix": "TEST"
     },
     "gene_type_curie": "SO:0001217"

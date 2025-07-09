@@ -119,7 +119,7 @@
       "obsolete": false,
       "referenced_curie": "TEST2:GCRPUD01",
       "page_area": "homepage2",
-      "displayName": "TEST2:GCRPUD01Display",
+      "display_name": "TEST2:GCRPUD01Display",
       "prefix": "TEST2"
     },
     "gene_type_curie": "SO:0000336"

@@ -122,7 +122,7 @@
       "obsolete": false,
       "referenced_curie": "TEST:GCRPDX01",
       "page_area": "homepage",
-      "displayName": "TEST:GCRPADX1Display",
+      "display_name": "TEST:GCRPADX1Display",
       "prefix": "TEST"
     },
     "gene_type_curie": "SO:0001217"

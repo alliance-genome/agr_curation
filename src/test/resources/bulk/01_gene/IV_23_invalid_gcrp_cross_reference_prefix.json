@@ -114,7 +114,7 @@
       "obsolete": false,
       "referenced_curie": "TEST:GCRPIV23",
       "page_area": "homepage",
-      "displayName": "TEST:GCRPIV23Display",
+      "display_name": "TEST:GCRPIV23Display",
       "prefix": "Invalid"
     },
     "gene_type_curie": "SO:0001217",

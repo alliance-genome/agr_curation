@@ -104,7 +104,7 @@
 			"obsolete": false,
 			"referenced_curie": "TEST:GCRPDN01",
 			"page_area": "homepage",
-			"displayName": "TEST:GCRPDN01Display",
+			"display_name": "TEST:GCRPDN01Display",
 			"prefix": "TEST"
 		},
 		"cross_reference_dtos": [
