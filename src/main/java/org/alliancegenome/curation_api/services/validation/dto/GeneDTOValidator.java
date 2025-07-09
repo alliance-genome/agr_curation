@@ -34,6 +34,7 @@ import org.alliancegenome.curation_api.services.validation.dto.slotAnnotations.G
 import org.alliancegenome.curation_api.services.validation.dto.slotAnnotations.GeneSystematicNameSlotAnnotationDTOValidator;
 import org.apache.commons.collections.CollectionUtils;
 
+import io.quarkus.logging.Log;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -122,6 +123,7 @@ public class GeneDTOValidator extends GenomicEntityDTOValidator<Gene, GeneDTO> {
 		response.convertErrorMessagesToMap();
 
 		if (response.hasErrors()) {
+			Log.info("ERROR: " + response.errorMessagesString());
 			throw new ObjectValidationException(dto, response.errorMessagesString());
 		}
 
