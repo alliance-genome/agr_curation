@@ -9,7 +9,7 @@ export const CrossReferenceTemplate = ({ xref }) => {
 	return (
 		<>
 			<EllipsisTableCell otherClasses={targetClass}>{xrefString}</EllipsisTableCell>
-			<Tooltip target={`.${targetClass}`} content={xrefString} mouseTrack position="bottom"/>
+			<Tooltip target={`.${targetClass}`} content={xrefString} mouseTrack position="bottom" />
 		</>
 	);
 };
