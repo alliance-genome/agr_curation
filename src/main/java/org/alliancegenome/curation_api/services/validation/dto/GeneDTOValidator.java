@@ -123,7 +123,6 @@ public class GeneDTOValidator extends GenomicEntityDTOValidator<Gene, GeneDTO> {
 		response.convertErrorMessagesToMap();
 
 		if (response.hasErrors()) {
-			Log.info("ERROR: " + response.errorMessagesString());
 			throw new ObjectValidationException(dto, response.errorMessagesString());
 		}
 
