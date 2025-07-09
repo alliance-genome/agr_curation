@@ -8,7 +8,6 @@ import org.alliancegenome.curation_api.dao.VocabularyTermDAO;
 import org.alliancegenome.curation_api.interfaces.document.TransgenicAlleleDocumentInterface;
 import org.alliancegenome.curation_api.model.document.builders.TransgenicAlleleDocumentBuilder;
 import org.alliancegenome.curation_api.model.document.es.TransgenicAlleleDocument;
-import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.associations.AlleleConstructAssociation;
 import org.alliancegenome.curation_api.model.input.Pagination;
 import org.alliancegenome.curation_api.response.SearchResponse;
