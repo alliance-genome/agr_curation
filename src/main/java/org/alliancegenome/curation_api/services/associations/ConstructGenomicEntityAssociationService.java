@@ -13,7 +13,6 @@ import org.alliancegenome.curation_api.dao.GenomicEntityDAO;
 import org.alliancegenome.curation_api.dao.PersonDAO;
 import org.alliancegenome.curation_api.dao.associations.ConstructGenomicEntityAssociationDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
-import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.interfaces.crud.BaseUpsertServiceInterface;
 import org.alliancegenome.curation_api.model.entities.Construct;
@@ -26,7 +25,6 @@ import org.alliancegenome.curation_api.services.base.BaseAssociationDTOCrudServi
 import org.alliancegenome.curation_api.services.validation.associations.ConstructGenomicEntityAssociationValidator;
 import org.alliancegenome.curation_api.services.validation.dto.associations.ConstructGenomicEntityAssociationDTOValidator;
 
-import io.quarkus.logging.Log;
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
@@ -86,25 +84,6 @@ public class ConstructGenomicEntityAssociationService extends BaseAssociationDTO
 		associationIds.removeIf(Objects::isNull);
 
 		return associationIds;
-	}
-
-	@Override
-	@Transactional
-	public ConstructGenomicEntityAssociation deprecateOrDelete(Long id, Boolean throwApiError, String requestSource, Boolean deprecate) {
-		ConstructGenomicEntityAssociation object = dao.getShallowEntity(ConstructGenomicEntityAssociation.class, id);
-
-		if (object == null) {
-			String errorMessage = "Could not find entity with id: " + id;
-			if (throwApiError) {
-				ObjectResponse<ConstructGenomicEntityAssociation> response = new ObjectResponse<>();
-				response.addErrorMessage("id", errorMessage);
-				throw new ApiErrorException(response);
-			}
-			Log.error(errorMessage);
-			return null;
-		}
-		dao.remove(id);
-		return null;
 	}
 
 	public ObjectResponse<ConstructGenomicEntityAssociation> getAssociation(Long constructId, String relationName, Long genomicEntityId) {

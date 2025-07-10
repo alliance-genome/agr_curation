@@ -1,6 +1,5 @@
 package org.alliancegenome.curation_api.services.associations;
 
-import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -12,7 +11,6 @@ import org.alliancegenome.curation_api.constants.EntityFieldConstants;
 import org.alliancegenome.curation_api.dao.PersonDAO;
 import org.alliancegenome.curation_api.dao.associations.CuratedVariantGenomicLocationAssociationDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
-import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.Variant;
 import org.alliancegenome.curation_api.model.entities.associations.CuratedVariantGenomicLocationAssociation;
 import org.alliancegenome.curation_api.response.ObjectResponse;
@@ -25,10 +23,7 @@ import org.apache.commons.lang3.StringUtils;
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
-import jakarta.transaction.Transactional;
-import lombok.extern.jbosslog.JBossLog;
 
-@JBossLog
 @RequestScoped
 public class CuratedVariantGenomicLocationAssociationService extends BaseEntityCrudService<CuratedVariantGenomicLocationAssociation, CuratedVariantGenomicLocationAssociationDAO> {
 
@@ -54,40 +49,6 @@ public class CuratedVariantGenomicLocationAssociationService extends BaseEntityC
 		associationIds.removeIf(Objects::isNull);
 
 		return associationIds;
-	}
-
-	@Override
-	@Transactional
-	public CuratedVariantGenomicLocationAssociation deprecateOrDelete(Long id, Boolean throwApiError, String loadDescription, Boolean deprecate) {
-		CuratedVariantGenomicLocationAssociation association = curatedVariantGenomicLocationAssociationDAO.find(id);
-
-		if (association == null) {
-			String errorMessage = "Could not find CuratedVariantGenomicLocationAssociation with id: " + id;
-			if (throwApiError) {
-				ObjectResponse<CuratedVariantGenomicLocationAssociation> response = new ObjectResponse<>();
-				response.addErrorMessage("id", errorMessage);
-				throw new ApiErrorException(response);
-			}
-			log.error(errorMessage);
-			return null;
-		}
-		if (deprecate) {
-			if (!association.getObsolete()) {
-				association.setObsolete(true);
-				if (authenticatedPerson.getId() != null) {
-					association.setUpdatedBy(personDAO.find(authenticatedPerson.getId()));
-				} else {
-					association.setUpdatedBy(personService.fetchByUniqueIdOrCreate(loadDescription));
-				}
-				association.setDateUpdated(OffsetDateTime.now());
-				return curatedVariantGenomicLocationAssociationDAO.persist(association);
-			}
-			return association;
-		}
-		
-		curatedVariantGenomicLocationAssociationDAO.remove(association.getId());
-		
-		return null;
 	}
 
 	public ObjectResponse<CuratedVariantGenomicLocationAssociation> getLocationAssociation(Long exonId, Long assemblyComponentId) {
