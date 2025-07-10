@@ -112,10 +112,10 @@
     "gcrp_cross_reference_dto": {
       "internal": false,
       "obsolete": false,
-      "referenced_curie": "TEST:GCRPAF01",
+      "referenced_curie": "TEST:GCRPIV23",
       "page_area": "homepage",
-      "display_name": "TEST:GCRPAF01Display",
-      "prefix": "TEST"
+      "display_name": "TEST:GCRPIV23Display",
+      "prefix": "Invalid"
     },
     "gene_type_curie": "SO:0001217",
     "note_dtos": [
