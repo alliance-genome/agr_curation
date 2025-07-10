@@ -99,9 +99,9 @@ public class AgmAlleleAssociationService extends BaseAssociationDTOCrudService<A
 		AgmAlleleAssociation association = null;
 
 		Map<String, Object> params = new HashMap<>();
-		params.put("agmAssociationSubject.id", agmId);
-		params.put("relation.name", relationName);
-		params.put("agmAlleleAssociationObject.id", alleleId);
+		params.put(EntityFieldConstants.AGM_ASSOCIATION_SUBJECT + ".id", agmId);
+		params.put(EntityFieldConstants.RELATION + ".name", relationName);
+		params.put(EntityFieldConstants.AGM_ALLELE_ASSOCIATION_OBJECT + ".id", alleleId);
 
 		SearchResponse<AgmAlleleAssociation> resp = agmAlleleAssociationDAO.findByParams(params);
 		if (resp != null && resp.getSingleResult() != null) {

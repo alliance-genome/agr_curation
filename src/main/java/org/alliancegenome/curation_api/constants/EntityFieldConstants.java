@@ -6,6 +6,8 @@ public final class EntityFieldConstants {
 		// Hidden from view, as it is a utility class
 	}
 	
+	public static final String RELATION = "relation";
+	
 	public static final String PRIMARY_EXTERNAL_ID = "primaryExternalId";
 	public static final String MOD_INTERNAL_ID = "modInternalId";
 
@@ -78,6 +80,7 @@ public final class EntityFieldConstants {
 	public static final String SUBJECT_GENE_TAXON = SUBJECT_GENE + "." + TAXON;
 	public static final String OBJECT_GENE = "objectGene";
 
+	public static final String AGM_AGM_ASSOCIATION_OBJECT = "agmAgmAssociationObject";
 	public static final String AGM_ALLELE_ASSOCIATION_OBJECT = "agmAlleleAssociationObject";
 	public static final String GENE_GENE_ASSOCIATION_OBJECT = "geneGeneAssociationObject";
 	
