@@ -102,8 +102,8 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 			if (oktaAuth.get()) {
 				String authorizationHeader = requestContext.getHeaderString(HttpHeaders.AUTHORIZATION);
 				String apiToken = null;
-				if (authorizationHeader != null && !authorizationHeader.toLowerCase().startsWith(AUTHENTICATION_SCHEME.toLowerCase() + " ")) {
-					apiToken = authorizationHeader.substring(AUTHENTICATION_SCHEME.length()).trim();
+				if (authorizationHeader != null && authorizationHeader.toLowerCase().startsWith(AUTHENTICATION_SCHEME.toLowerCase() + " ")) {
+					apiToken = authorizationHeader.substring(AUTHENTICATION_SCHEME.length() + 1).trim();
 
 					Person person = personService.findPersonByApiToken(apiToken);
 					if (person != null) {
