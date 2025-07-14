@@ -93,7 +93,7 @@ public class GeneDAO extends BaseSQLDAO<Gene> {
 		paralogyParams.put("query_operator", "or");
 		paralogyParams.put(EntityFieldConstants.SUBJECT_GENE + ".id", geneId);
 		paralogyParams.put(EntityFieldConstants.OBJECT_GENE + ".id", geneId);
-		List<Long> results = geneToGeneOrthologyDAO.findIdsByParams(paralogyParams);
+		List<Long> results = geneToGeneParalogyDAO.findIdsByParams(paralogyParams);
 		return CollectionUtils.isNotEmpty(results);
 	}
 
