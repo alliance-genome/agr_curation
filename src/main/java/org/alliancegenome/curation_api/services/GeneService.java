@@ -99,6 +99,7 @@ public class GeneService extends SubmittedObjectCrudService<Gene, GeneDTO, GeneD
 			if (forceDeprecate || geneDAO.hasReferencingDiseaseAnnotations(id)
 					|| geneDAO.hasReferencingPhenotypeAnnotations(id)
 					|| geneDAO.hasReferencingOrthologyPairs(id)
+					|| geneDAO.hasReferencingParalogyPairs(id)
 					|| geneDAO.hasReferencingInteractions(id)
 					|| geneDAO.hasReferencingGeneExpressionAnnotations(id)
 					|| CollectionUtils.isNotEmpty(gene.getAlleleGeneAssociations())
