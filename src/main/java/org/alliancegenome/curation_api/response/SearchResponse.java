@@ -25,6 +25,7 @@ import lombok.Data;
 	View.GeneSearchResultDocument.class,
 	View.DiseaseSummaryDocument.class,
 	View.DiseaseSearchResultDocument.class,
+	View.AlleleSummaryDocument.class,
 	View.ModelDocumentView.class,
 	View.HTPDatasetSearchResultDocument.class
 })
