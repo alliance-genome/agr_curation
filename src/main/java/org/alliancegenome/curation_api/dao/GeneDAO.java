@@ -22,6 +22,7 @@ public class GeneDAO extends BaseSQLDAO<Gene> {
 	@Inject AGMDiseaseAnnotationDAO agmDiseaseAnnotationDAO;
 	@Inject GeneDiseaseAnnotationDAO geneDiseaseAnnotationDAO;
 	@Inject GeneToGeneOrthologyDAO geneToGeneOrthologyDAO;
+	@Inject GeneToGeneParalogyDAO geneToGeneParalogyDAO;
 	@Inject GeneGeneticInteractionDAO geneGeneticInteractionDAO;
 	@Inject GeneMolecularInteractionDAO geneMolecularInteractionDAO;
 	@Inject AllelePhenotypeAnnotationDAO allelePhenotypeAnnotationDAO;
@@ -84,6 +85,15 @@ public class GeneDAO extends BaseSQLDAO<Gene> {
 		orthologyParams.put(EntityFieldConstants.SUBJECT_GENE + ".id", geneId);
 		orthologyParams.put(EntityFieldConstants.OBJECT_GENE + ".id", geneId);
 		List<Long> results = geneToGeneOrthologyDAO.findIdsByParams(orthologyParams);
+		return CollectionUtils.isNotEmpty(results);
+	}
+
+	public Boolean hasReferencingParalogyPairs(Long geneId) {
+		Map<String, Object> paralogyParams = new HashMap<>();
+		paralogyParams.put("query_operator", "or");
+		paralogyParams.put(EntityFieldConstants.SUBJECT_GENE + ".id", geneId);
+		paralogyParams.put(EntityFieldConstants.OBJECT_GENE + ".id", geneId);
+		List<Long> results = geneToGeneParalogyDAO.findIdsByParams(paralogyParams);
 		return CollectionUtils.isNotEmpty(results);
 	}
 

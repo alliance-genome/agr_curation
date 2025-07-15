@@ -86,4 +86,6 @@ public final class EntityFieldConstants {
 	
 	public static final String MAPS_TO_CHROMOSOME = "mapsToChromosome";
 
+	public static final String VARIANT_TRANSCRIPT = "variantTranscript";
+
 }
