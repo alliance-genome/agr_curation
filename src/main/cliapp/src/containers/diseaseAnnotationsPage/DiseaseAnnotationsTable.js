@@ -343,10 +343,9 @@ export const DiseaseAnnotationsTable = () => {
 		}
 
 		return diseaseRelationTerms;
-	}
+	};
 
 	const relationEditor = (props) => {
-		
 		let diseaseRelationTerms = getRelationTermSet(props);
 		return (
 			<>
