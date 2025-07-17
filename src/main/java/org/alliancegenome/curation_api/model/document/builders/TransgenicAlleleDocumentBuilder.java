@@ -15,6 +15,7 @@ import org.alliancegenome.curation_api.model.entities.slotAnnotations.ConstructC
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.GeneSymbolSlotAnnotation;
 import org.alliancegenome.curation_api.model.input.Pagination;
 import org.alliancegenome.curation_api.response.SearchResponse;
+import org.apache.commons.collections4.CollectionUtils;
 import org.jetbrains.annotations.NotNull;
 
 import lombok.extern.slf4j.Slf4j;
@@ -23,6 +24,9 @@ import lombok.extern.slf4j.Slf4j;
 public class TransgenicAlleleDocumentBuilder {
 
 	public List<TransgenicAlleleDocument> buildTransgenicAlleleDocument(AlleleConstructAssociation association) {
+		if (CollectionUtils.isEmpty(association.getAlleleConstructAssociationObject().getConstructGenomicEntityAssociations())) {
+			return null;
+		}
 
 		List<TransgenicAlleleDocument> transgenicAlleleDocuments = new ArrayList<>();
 		// get all genes that have a construct-expresses-gene relationship

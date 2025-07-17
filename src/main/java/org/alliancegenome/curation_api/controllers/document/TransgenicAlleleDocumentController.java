@@ -11,15 +11,13 @@ import org.alliancegenome.curation_api.model.document.es.TransgenicAlleleDocumen
 import org.alliancegenome.curation_api.model.entities.associations.AlleleConstructAssociation;
 import org.alliancegenome.curation_api.model.input.Pagination;
 import org.alliancegenome.curation_api.response.SearchResponse;
-import org.alliancegenome.curation_api.services.AlleleService;
 import org.alliancegenome.curation_api.services.associations.AlleleConstructAssociationService;
+import org.apache.commons.collections4.CollectionUtils;
 
 import jakarta.inject.Inject;
 
 public class TransgenicAlleleDocumentController implements TransgenicAlleleDocumentInterface {
 
-	@Inject
-	AlleleService service;
 	@Inject
 	AlleleConstructAssociationService acService;
 
@@ -32,8 +30,7 @@ public class TransgenicAlleleDocumentController implements TransgenicAlleleDocum
 			params = new HashMap<>();
 		}
 
-		Pagination pagination = new Pagination(page, limit);
-		SearchResponse<AlleleConstructAssociation> resp = acService.findAllAssociations(pagination, params);
+		SearchResponse<AlleleConstructAssociation> resp = acService.findByParams(new Pagination(page, limit), params);
 
 		ArrayList<TransgenicAlleleDocument> list = new ArrayList<>();
 		if (resp.getResults() != null) {
@@ -41,7 +38,9 @@ public class TransgenicAlleleDocumentController implements TransgenicAlleleDocum
 			builder.setVocabularyTermDAO(vocabularyTermDAO);
 			for (AlleleConstructAssociation association : resp.getResults()) {
 				List<TransgenicAlleleDocument> docs = builder.buildTransgenicAlleleDocument(association);
-				list.addAll(docs);
+				if (CollectionUtils.isNotEmpty(docs)) {
+					list.addAll(docs);
+				}
 			}
 		}
 

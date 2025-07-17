@@ -140,7 +140,4 @@ public class AlleleConstructAssociationService extends BaseAssociationDTOCrudSer
 		return response;
 	}
 
-	public SearchResponse<AlleleConstructAssociation> findAllAssociations(Pagination pagination, HashMap<String, Object> params) {
-		return alleleConstructAssociationDAO.findAllAssociations(pagination, params);
-	}
 }
