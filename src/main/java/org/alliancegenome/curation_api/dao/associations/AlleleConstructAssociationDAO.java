@@ -33,13 +33,17 @@ public class AlleleConstructAssociationDAO extends BaseSQLDAO<AlleleConstructAss
 
 		Log.log(level, "Pagination: " + pagination + " Params: " + params + " Class: " + myClass);
 
-		TypedQuery<AlleleConstructAssociation> query = entityManager.createQuery("""
+		String queryStringFirst = """
 								select aca
 				from AlleleConstructAssociation aca, ConstructGenomicEntityAssociation cgea
 				where aca.alleleConstructAssociationObject = cgea.constructAssociationSubject
 				and ((:params is not null AND (aca.alleleAssociationSubject.primaryExternalId = :params)) OR (:params is null))
 				order by aca.id
-				""", AlleleConstructAssociation.class);
+				""";
+		queryStringFirst = queryStringFirst.replaceAll("alleleConstructAssociationObject", ALLELE_CONSTRUCT_ASSOCIATION_OBJECT);
+		queryStringFirst = queryStringFirst.replaceAll("constructAssociationSubject", CONSTRUCT_ASSOCIATION_SUBJECT);
+		queryStringFirst = queryStringFirst.replaceAll("alleleAssociationSubject", ALLELE_ASSOCIATION_SUBJECT);
+		TypedQuery<AlleleConstructAssociation> query = entityManager.createQuery(queryStringFirst, AlleleConstructAssociation.class);
 		if (params.get("allele.primaryExternalId") != null) {
 			query.setParameter("params", params.get("allele.primaryExternalId"));
 		} else {
