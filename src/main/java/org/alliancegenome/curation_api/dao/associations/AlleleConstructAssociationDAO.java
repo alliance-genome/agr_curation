@@ -1,5 +1,8 @@
 package org.alliancegenome.curation_api.dao.associations;
 
+import static org.alliancegenome.curation_api.constants.EntityFieldConstants.ALLELE_ASSOCIATION_SUBJECT;
+import static org.alliancegenome.curation_api.constants.EntityFieldConstants.ALLELE_CONSTRUCT_ASSOCIATION_OBJECT;
+import static org.alliancegenome.curation_api.constants.EntityFieldConstants.CONSTRUCT_ASSOCIATION_SUBJECT;
 import java.util.HashMap;
 import java.util.List;
 
@@ -50,12 +53,16 @@ public class AlleleConstructAssociationDAO extends BaseSQLDAO<AlleleConstructAss
 			query.setFirstResult(first);
 			query.setMaxResults(pagination.getLimit());
 		}
-		TypedQuery<Long> countQuery = entityManager.createQuery("""
+		String queryString = """
 				select count(*)
 				from AlleleConstructAssociation aca, ConstructGenomicEntityAssociation cgea
 				where aca.alleleConstructAssociationObject = cgea.constructAssociationSubject
 				and ((:params is not null AND (aca.alleleAssociationSubject.primaryExternalId = :params)) OR (:params is null))
-				""", Long.class);
+				""";
+		queryString = queryString.replaceAll("alleleConstructAssociationObject", ALLELE_CONSTRUCT_ASSOCIATION_OBJECT);
+		queryString = queryString.replaceAll("constructAssociationSubject", CONSTRUCT_ASSOCIATION_SUBJECT);
+		queryString = queryString.replaceAll("alleleAssociationSubject", ALLELE_ASSOCIATION_SUBJECT);
+		TypedQuery<Long> countQuery = entityManager.createQuery(queryString, Long.class);
 		if (params.get("allele.primaryExternalId") != null) {
 			countQuery.setParameter("params", params.get("allele.primaryExternalId"));
 		} else {
