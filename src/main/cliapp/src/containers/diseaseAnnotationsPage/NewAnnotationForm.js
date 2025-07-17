@@ -43,6 +43,7 @@ import ErrorBoundary from '../../components/Error/ErrorBoundary';
 import { ConfirmButton } from '../../components/ConfirmButton';
 import { getDefaultFormState, getModFormFields } from '../../service/TableStateService';
 import { useGetUserSettings } from '../../service/useGetUserSettings';
+import { useVocabularyTermSetService } from '../../service/useVocabularyTermSetService';
 
 export const NewAnnotationForm = ({
 	newAnnotationState,
@@ -81,7 +82,11 @@ export const NewAnnotationForm = ({
 	const annotationTypeTerms = useControlledVocabularyService('annotation_type');
 	const booleanTerms = useControlledVocabularyService('generic_boolean_terms');
 	const geneticModifierRelationTerms = useControlledVocabularyService('disease_genetic_modifier_relation');
+	const agmRelationTerms = useVocabularyTermSetService('agm_disease_relation');
+	const alleleRelationTerms = useVocabularyTermSetService('allele_disease_relation');
+	const geneRelationTerms = useVocabularyTermSetService('gene_disease_relation');
 	const [uiErrorMessages, setUiErrorMessages] = useState({});
+	const [validRelationTerms, setValidRelationTerms] = useState(relationsTerms);
 	const areUiErrors = useRef(false);
 	let newAnnotationOptionalFields = [
 		'Asserted Genes',
@@ -123,6 +128,7 @@ export const NewAnnotationForm = ({
 		newAnnotationDispatch({ type: 'SET_IS_ASSERTED_ALLELE_ENABLED', value: false });
 		newAnnotationDispatch({ type: 'SET_IS_ASSERTED_GENE_ENABLED', value: false });
 		setUiErrorMessages({});
+		setValidRelationTerms(relationsTerms);
 	};
 
 	const handleSubmit = async (event, closeAfterSubmit = true) => {
@@ -196,6 +202,7 @@ export const NewAnnotationForm = ({
 		newAnnotationDispatch({ type: 'SET_IS_ASSERTED_ALLELE_ENABLED', value: false });
 
 		setUiErrorMessages({});
+		setValidRelationTerms(relationsTerms);
 	};
 
 	const handleSubmitAndAdd = (event) => {
@@ -313,6 +320,17 @@ export const NewAnnotationForm = ({
 		} else {
 			newAnnotationDispatch({ type: 'SET_IS_ASSERTED_ALLELE_ENABLED', value: false });
 		}
+
+		if (event.target?.value?.type === 'Gene') {
+			setValidRelationTerms(geneRelationTerms);
+		} else if (event.target?.value?.type === 'Allele') {
+			setValidRelationTerms(alleleRelationTerms);
+		} else if (event.target?.value?.type === 'AffectedGenomicModel') {
+			setValidRelationTerms(agmRelationTerms);
+		} else {
+			setValidRelationTerms(relationsTerms);
+		}
+
 		newAnnotationDispatch({
 			type: 'EDIT',
 			field: event.target.name,
@@ -710,7 +728,7 @@ export const NewAnnotationForm = ({
 							</div>
 							<div className={widgetColumnSize}>
 								<Dropdown
-									options={relationsTerms}
+									options={validRelationTerms ? validRelationTerms : relationsTerms}
 									value={newAnnotation.relation}
 									name="relation"
 									optionLabel="name"
