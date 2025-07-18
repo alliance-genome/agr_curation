@@ -10,11 +10,20 @@ import org.alliancegenome.curation_api.model.document.es.AlleleSummaryDocument;
 import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.Gene;
+import org.alliancegenome.curation_api.model.entities.ResourceDescriptorPage;
 import org.alliancegenome.curation_api.model.entities.associations.AlleleGeneAssociation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.AlleleSynonymSlotAnnotation;
+import org.alliancegenome.curation_api.services.ResourceDescriptorPageService;
 import org.apache.commons.collections.CollectionUtils;
 
+import jakarta.inject.Inject;
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 public class AlleleSummaryDocumentBuilder {
+
+	@Inject
+	ResourceDescriptorPageService resourceDescriptorPageService;
 
 	public AlleleSummaryDocument buildSummaryDocument(Allele allele) {
 		AlleleSummaryDocument doc = new AlleleSummaryDocument();
@@ -55,7 +64,7 @@ public class AlleleSummaryDocumentBuilder {
 		if (CollectionUtils.isNotEmpty(allele.getAlleleGeneAssociations())) {
 			AlleleGeneAssociation firstAssociation = allele.getAlleleGeneAssociations().get(0);
 			Gene associatedGene = firstAssociation.getAlleleGeneAssociationObject();
-			
+
 			if (associatedGene != null && associatedGene.getGeneSymbol() != null) {
 				String geneSymbol = associatedGene.getGeneSymbol().getDisplayText();
 				doc.setAlleleOfGene(geneSymbol);
@@ -75,28 +84,47 @@ public class AlleleSummaryDocumentBuilder {
 		}
 	}
 
-	private List<Map<String, String>> buildAdditionalInformation(Allele allele) {
-		List<Map<String, String>> additionalInfo = new ArrayList<>();
+	private Map<String, Object> buildAdditionalInformation(Allele allele) {
+		Map<String, Object> additionalInfo = new HashMap<>();
 
-		// Add MOD cross references
-		if (CollectionUtils.isNotEmpty(allele.getCrossReferences())) {
-			for (CrossReference cr : allele.getCrossReferences()) {
-				Map<String, String> map = new HashMap<>();
-				map.put("referencedCurie", cr.getReferencedCurie());
-				map.put("url", cr.getUrlFromResourceDescriptorPage(cr.getReferencedCurie()));
-				additionalInfo.add(map);
-			}
+		// Determine which cross reference to use - prefer data provider cross reference
+		CrossReference crossRef = allele.getDataProviderCrossReference();
+		if (crossRef == null && CollectionUtils.isNotEmpty(allele.getCrossReferences())) {
+			crossRef = allele.getCrossReferences().get(0);
 		}
 
-		// Add data provider cross reference if available
-		if (allele.getDataProviderCrossReference() != null) {
-			Map<String, String> map = new HashMap<>();
-			map.put("referencedCurie", allele.getDataProviderCrossReference().getReferencedCurie());
-			map.put("url", allele.getDataProviderCrossReference()
-					.getUrlFromResourceDescriptorPage(allele.getDataProviderCrossReference().getReferencedCurie()));
-			additionalInfo.add(map);
+		if (crossRef != null) {
+			String referencedCurie = crossRef.getReferencedCurie();
+			String primaryUrl = crossRef.getUrlFromResourceDescriptorPage(referencedCurie);
+
+			// Build references section using the allele/references resource descriptor page
+			Map<String, String> references = new HashMap<>();
+			String referencesUrl = buildUrlFromResourceDescriptorPage(referencedCurie, "allele/references");
+			references.put("crossRefCompleteUrl", referencesUrl);
+			references.put("name", referencedCurie);
+			additionalInfo.put("references", references);
+
+			// Build primary section using the default allele page
+			Map<String, String> primary = new HashMap<>();
+			primary.put("crossRefCompleteUrl", primaryUrl);
+			primary.put("name", referencedCurie);
+			additionalInfo.put("primary", primary);
 		}
 
 		return additionalInfo;
+	}
+
+	private String buildUrlFromResourceDescriptorPage(String referencedCurie, String pageName) {
+		String[] parts = referencedCurie.split(":");
+		if (parts.length >= 2) {
+			String prefix = parts[0];
+			String localId = parts[1];
+
+			ResourceDescriptorPage resourcePage = resourceDescriptorPageService.getPageForResourceDescriptor(prefix, pageName);
+			if (resourcePage != null) {
+				return resourcePage.getUrlTemplate().replace("[%s]", localId);
+			}
+		}
+		return null;
 	}
 }

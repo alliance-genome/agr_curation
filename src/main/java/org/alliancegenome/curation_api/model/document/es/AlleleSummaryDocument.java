@@ -24,6 +24,6 @@ public class AlleleSummaryDocument extends ESDocument {
 	private String alterationType;
 	private List<String> synonyms;
 	private String description;
-	private List<Map<String, String>> additionalInformation;
+	private Map<String, Object> additionalInformation;
 	private String alleleOfGene;
 }
