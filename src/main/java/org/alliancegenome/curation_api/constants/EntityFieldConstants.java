@@ -25,6 +25,7 @@ public final class EntityFieldConstants {
 	public static final String VARIANT_ASSOCIATION_SUBJECT = "variantAssociationSubject";
 	public static final String SQTR_ASSOCIATION_SUBJECT = "sequenceTargetingReagentAssociationSubject";
 	public static final String TRANSCRIPT_ASSOCIATION_SUBJECT = "transcriptAssociationSubject";
+	public static final String ALLELE_CONSTRUCT_ASSOCIATION_OBJECT = "alleleConstructAssociationObject";
 
 
 	public static final String DA_SUBJECT_TAXON = DA_SUBJECT + "." + TAXON;
@@ -61,7 +62,7 @@ public final class EntityFieldConstants {
 
 	public static final String SUBJECT_GENE_DATA_PROVIDER = "subjectGene." + DATA_PROVIDER;
 	public static final String SUBJECT_GENE_TAXON = "subjectGene." + TAXON;
-	
+
 	public static final String CLOSURE_SUBJECT = "closureSubject";
 	public static final String CLOSURE_OBJECT = "closureSubject";
 }
