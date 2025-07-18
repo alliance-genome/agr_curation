@@ -17,7 +17,7 @@ public class AlleleSummaryDocument extends ESDocument {
 	{
 		category = "allele_summary";
 	}
-	
+
 	private Allele allele;
 	private String species;
 	private String symbol;
@@ -25,4 +25,5 @@ public class AlleleSummaryDocument extends ESDocument {
 	private List<String> synonyms;
 	private String description;
 	private List<Map<String, String>> additionalInformation;
+	private String alleleOfGene;
 }
