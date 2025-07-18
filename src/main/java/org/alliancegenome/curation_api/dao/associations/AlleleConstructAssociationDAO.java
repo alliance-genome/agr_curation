@@ -11,5 +11,4 @@ public class AlleleConstructAssociationDAO extends BaseSQLDAO<AlleleConstructAss
 	protected AlleleConstructAssociationDAO() {
 		super(AlleleConstructAssociation.class);
 	}
-
 }
