@@ -1,6 +1,5 @@
 package org.alliancegenome.curation_api.services.associations;
 
-import java.time.OffsetDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,7 +12,6 @@ import org.alliancegenome.curation_api.dao.NoteDAO;
 import org.alliancegenome.curation_api.dao.PersonDAO;
 import org.alliancegenome.curation_api.dao.associations.AgmAlleleAssociationDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
-import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.interfaces.crud.BaseUpsertServiceInterface;
 import org.alliancegenome.curation_api.model.entities.associations.AgmAlleleAssociation;
@@ -24,7 +22,6 @@ import org.alliancegenome.curation_api.services.PersonService;
 import org.alliancegenome.curation_api.services.base.BaseAssociationDTOCrudService;
 import org.alliancegenome.curation_api.services.validation.dto.associations.AgmAlleleAssociationDTOValidator;
 
-import io.quarkus.logging.Log;
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
@@ -62,46 +59,13 @@ public class AgmAlleleAssociationService extends BaseAssociationDTOCrudService<A
 		return associationIds;
 	}
 
-	//todo: is this needed?
-	@Override
-	@Transactional
-	public AgmAlleleAssociation deprecateOrDelete(Long id, Boolean throwApiError, String loadDescription, Boolean deprecate) {
-		AgmAlleleAssociation association = agmAlleleAssociationDAO.find(id);
-
-		if (association == null) {
-			String errorMessage = "Could not find AgmAlleleAssociation with id: " + id;
-			if (throwApiError) {
-				ObjectResponse<AgmAlleleAssociation> response = new ObjectResponse<>();
-				response.addErrorMessage("id", errorMessage);
-				throw new ApiErrorException(response);
-			}
-			Log.error(errorMessage);
-			return null;
-		}
-		if (deprecate) {
-			if (!association.getObsolete()) {
-				association.setObsolete(true);
-				if (authenticatedPerson.getId() != null) {
-					association.setUpdatedBy(personDAO.find(authenticatedPerson.getId()));
-				} else {
-					association.setUpdatedBy(personService.fetchByUniqueIdOrCreate(loadDescription));
-				}
-				association.setDateUpdated(OffsetDateTime.now());
-				return agmAlleleAssociationDAO.persist(association);
-			}
-			return association;
-		}
-
-		return null;
-	}
-
 	public ObjectResponse<AgmAlleleAssociation> getAssociation(Long agmId, String relationName, Long alleleId) {
 		AgmAlleleAssociation association = null;
 
 		Map<String, Object> params = new HashMap<>();
-		params.put("agmAssociationSubject.id", agmId);
-		params.put("relation.name", relationName);
-		params.put("agmAlleleAssociationObject.id", alleleId);
+		params.put(EntityFieldConstants.AGM_ASSOCIATION_SUBJECT + ".id", agmId);
+		params.put(EntityFieldConstants.RELATION + ".name", relationName);
+		params.put(EntityFieldConstants.AGM_ALLELE_ASSOCIATION_OBJECT + ".id", alleleId);
 
 		SearchResponse<AgmAlleleAssociation> resp = agmAlleleAssociationDAO.findByParams(params);
 		if (resp != null && resp.getSingleResult() != null) {

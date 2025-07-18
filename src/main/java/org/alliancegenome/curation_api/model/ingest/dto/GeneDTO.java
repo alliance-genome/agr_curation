@@ -46,4 +46,8 @@ public class GeneDTO extends GenomicEntityDTO {
 	@JsonView({ View.FieldsOnly.class })
 	@JsonProperty("note_dtos")
 	private List<NoteDTO> noteDtos;
+	
+	@JsonView({ View.FieldsOnly.class })
+	@JsonProperty("gcrp_cross_reference_dto")
+	private CrossReferenceDTO gcrpCrossReferenceDto;
 }

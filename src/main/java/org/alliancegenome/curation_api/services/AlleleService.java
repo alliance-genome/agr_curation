@@ -84,6 +84,7 @@ public class AlleleService extends SubmittedObjectCrudService<Allele, AlleleDTO,
 		if (allele != null) {
 			if (forceDeprecate || alleleDAO.hasReferencingDiseaseAnnotationIds(id)
 					|| alleleDAO.hasReferencingPhenotypeAnnotations(id)
+					|| alleleDAO.hasReferencingAgmAlleleAssociations(id)
 					|| CollectionUtils.isNotEmpty(allele.getAlleleGeneAssociations())
 					|| CollectionUtils.isNotEmpty(allele.getAlleleVariantAssociations())
 					|| CollectionUtils.isNotEmpty(allele.getConstructGenomicEntityAssociations())) {

@@ -77,9 +77,9 @@ public class Gff3TranscriptExecutor extends Gff3Executor {
 			boolean success = runLoad(bulkLoadFileHistory, gffHeaderData, preProcessedTranscriptGffData, geneIdCurieMap, entityIdsAdded, locationIdsAdded, associationIdsAdded, dataProvider, assemblyId);
 
 			if (success) {
-				runCleanup(transcriptService, bulkLoadFileHistory, dataProvider.name(), transcriptService.getIdsByDataProvider(dataProvider), entityIdsAdded, "GFF transcript");
 				runCleanup(transcriptLocationService, bulkLoadFileHistory, dataProvider.name(), transcriptLocationService.getIdsByDataProvider(dataProvider), locationIdsAdded, "GFF transcript genomic location association");
 				runCleanup(transcriptGeneService, bulkLoadFileHistory, dataProvider.name(), transcriptGeneService.getIdsByDataProvider(dataProvider), associationIdsAdded, "GFF transcript gene association");
+				runCleanup(transcriptService, bulkLoadFileHistory, dataProvider.name(), transcriptService.getIdsByDataProvider(dataProvider), entityIdsAdded, "GFF transcript");
 			}
 			bulkLoadFileHistory.finishLoad();
 			updateHistory(bulkLoadFileHistory);
