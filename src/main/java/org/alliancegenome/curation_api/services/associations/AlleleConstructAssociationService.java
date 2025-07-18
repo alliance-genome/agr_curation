@@ -34,13 +34,20 @@ import lombok.extern.jbosslog.JBossLog;
 @RequestScoped
 public class AlleleConstructAssociationService extends BaseAssociationDTOCrudService<AlleleConstructAssociation, AlleleConstructAssociationDTO, AlleleConstructAssociationDAO> implements BaseUpsertServiceInterface<AlleleConstructAssociation, AlleleConstructAssociationDTO> {
 
-	@Inject AlleleConstructAssociationDAO alleleConstructAssociationDAO;
-	@Inject AlleleConstructAssociationValidator alleleConstructAssociationValidator;
-	@Inject AlleleConstructAssociationDTOValidator alleleConstructAssociationDtoValidator;
-	@Inject AlleleDAO alleleDAO;
-	@Inject NoteDAO noteDAO;
-	@Inject PersonService personService;
-	@Inject PersonDAO personDAO;
+	@Inject
+	AlleleConstructAssociationDAO alleleConstructAssociationDAO;
+	@Inject
+	AlleleConstructAssociationValidator alleleConstructAssociationValidator;
+	@Inject
+	AlleleConstructAssociationDTOValidator alleleConstructAssociationDtoValidator;
+	@Inject
+	AlleleDAO alleleDAO;
+	@Inject
+	NoteDAO noteDAO;
+	@Inject
+	PersonService personService;
+	@Inject
+	PersonDAO personDAO;
 
 	@Override
 	@PostConstruct

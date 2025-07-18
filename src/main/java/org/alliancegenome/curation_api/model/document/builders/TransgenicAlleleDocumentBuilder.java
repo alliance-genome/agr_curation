@@ -7,14 +7,15 @@ import java.util.Map;
 
 import org.alliancegenome.curation_api.dao.VocabularyTermDAO;
 import org.alliancegenome.curation_api.model.document.es.TransgenicAlleleDocument;
-import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.Construct;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
+import org.alliancegenome.curation_api.model.entities.associations.AlleleConstructAssociation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.ConstructComponentSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.GeneSymbolSlotAnnotation;
 import org.alliancegenome.curation_api.model.input.Pagination;
 import org.alliancegenome.curation_api.response.SearchResponse;
+import org.apache.commons.collections4.CollectionUtils;
 import org.jetbrains.annotations.NotNull;
 
 import lombok.extern.slf4j.Slf4j;
@@ -22,15 +23,18 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class TransgenicAlleleDocumentBuilder {
 
-	public List<TransgenicAlleleDocument> buildTransgenicAlleleDocument(Allele allele) {
+	public List<TransgenicAlleleDocument> buildTransgenicAlleleDocument(AlleleConstructAssociation association) {
+		if (CollectionUtils.isEmpty(association.getAlleleConstructAssociationObject().getConstructGenomicEntityAssociations())) {
+			return null;
+		}
 
 		List<TransgenicAlleleDocument> transgenicAlleleDocuments = new ArrayList<>();
 		// get all genes that have a construct-expresses-gene relationship
-		Map<Gene, List<Construct>> expressedGeneConstructMap = getExpressedGeneConstructMap(allele);
+		Map<Gene, List<Construct>> expressedGeneConstructMap = getExpressedGeneConstructMap(association);
 		expressedGeneConstructMap.forEach(
 				(gene, constructs) -> {
 					TransgenicAlleleDocument transAllele = new TransgenicAlleleDocument();
-					transAllele.setAllele(allele);
+					transAllele.setAllele(association.getAlleleAssociationSubject());
 					transAllele.setGene(gene);
 					transAllele.setConstructs(constructs);
 					List<Gene> genes = new ArrayList<>(constructs.stream().flatMap(construct -> getExpressedGeneList(construct, "expresses").stream()).toList());
@@ -62,19 +66,19 @@ public class TransgenicAlleleDocumentBuilder {
 				.toList();
 	}
 
-	private Map<Gene, List<Construct>> getExpressedGeneConstructMap(Allele allele) {
+	private Map<Gene, List<Construct>> getExpressedGeneConstructMap(AlleleConstructAssociation association) {
 		Map<Gene, List<Construct>> geneConstructMap = new HashMap<>();
-		allele.getAlleleConstructAssociations().forEach(constructAssociation -> constructAssociation
+		association
 				.getAlleleConstructAssociationObject()
 				.getConstructGenomicEntityAssociations()
 				.forEach(constructGenomicEntityAssociation -> {
 							if (constructGenomicEntityAssociation.getConstructGenomicEntityAssociationObject() instanceof Gene Gene
 									&& constructGenomicEntityAssociation.getRelation().equals(getConstructRelation("expresses"))) {
 								List<Construct> constructList = geneConstructMap.computeIfAbsent(Gene, k -> new ArrayList<>());
-								constructList.add(constructAssociation.getAlleleConstructAssociationObject());
+								constructList.add(association.getAlleleConstructAssociationObject());
 							}
 						}
-				));
+				);
 
 		return geneConstructMap;
 	}
