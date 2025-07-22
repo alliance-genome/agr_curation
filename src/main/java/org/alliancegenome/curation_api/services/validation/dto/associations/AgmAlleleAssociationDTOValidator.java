@@ -3,6 +3,7 @@ package org.alliancegenome.curation_api.services.validation.dto.associations;
 import java.util.HashMap;
 import java.util.List;
 
+import org.alliancegenome.curation_api.constants.EntityFieldConstants;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.associations.AgmAlleleAssociationDAO;
@@ -66,13 +67,12 @@ public class AgmAlleleAssociationDTOValidator extends AuditedObjectDTOValidator<
 		}
 		
 		AgmAlleleAssociation association = null;
-		if (subjectIds != null && subjectIds.size() == 1 && objectIds != null && objectIds.size() == 1 && relation != null && zygosity != null) {
+		if (subjectIds != null && subjectIds.size() == 1 && objectIds != null && objectIds.size() == 1 && relation != null) {
 			HashMap<String, Object> params = new HashMap<>();
 
-			params.put("agmAssociationSubject.id", subjectIds.get(0));
-			params.put("relation.id", relation.getId());
-			params.put("zygosity.id", zygosity.getId());
-			params.put("agmAlleleAssociationObject.id", objectIds.get(0));
+			params.put(EntityFieldConstants.AGM_ASSOCIATION_SUBJECT + ".id", subjectIds.get(0));
+			params.put(EntityFieldConstants.RELATION + ".id", relation.getId());
+			params.put(EntityFieldConstants.AGM_ALLELE_ASSOCIATION_OBJECT + ".id", objectIds.get(0));
 
 			SearchResponse<AgmAlleleAssociation> searchResponse = agmAlleleAssociationDAO.findByParams(params);
 			if (searchResponse != null && searchResponse.getResults().size() == 1) {

@@ -3,6 +3,7 @@ package org.alliancegenome.curation_api.services.validation.dto.associations;
 import java.util.HashMap;
 import java.util.List;
 
+import org.alliancegenome.curation_api.constants.EntityFieldConstants;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.associations.AgmAgmAssociationDAO;
@@ -55,9 +56,9 @@ public class AgmAgmAssociationDTOValidator extends AuditedObjectDTOValidator<Agm
 		if (subjectIds != null && subjectIds.size() == 1 && objectIds != null && objectIds.size() == 1 && StringUtils.isNotBlank(dto.getRelationName())) {
 			HashMap<String, Object> params = new HashMap<>();
 
-			params.put("agmAssociationSubject.id", subjectIds.get(0));
-			params.put("relation.name", dto.getRelationName());
-			params.put("agmAgmAssociationObject.id", objectIds.get(0));
+			params.put(EntityFieldConstants.AGM_ASSOCIATION_SUBJECT + ".id", subjectIds.get(0));
+			params.put(EntityFieldConstants.RELATION + ".name", dto.getRelationName());
+			params.put(EntityFieldConstants.AGM_AGM_ASSOCIATION_OBJECT + ".id", objectIds.get(0));
 
 			SearchResponse<AgmAgmAssociation> searchResponse = agmAgmAssociationDAO.findByParams(params);
 			if (searchResponse != null && searchResponse.getResults().size() == 1) {

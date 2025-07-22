@@ -9,6 +9,7 @@ import { SymbolDialog } from '../nameSlotAnnotations/dialogs/SymbolDialog';
 import { FullNameDialog } from '../nameSlotAnnotations/dialogs/FullNameDialog';
 import { SystematicNameDialog } from './SystematicNameDialog';
 import { CrossReferencesTemplate } from '../../components/Templates/CrossReferencesTemplate';
+import { CrossReferenceTemplate } from '../../components/Templates/CrossReferenceTemplate';
 import { useGetTableData } from '../../service/useGetTableData';
 import { useGetUserSettings } from '../../service/useGetUserSettings';
 import { IdTemplate } from '../../components/Templates/IdTemplate';
@@ -325,6 +326,13 @@ export const GenesTable = () => {
 			sortable: true,
 			filterConfig: FILTER_CONFIGS.crossReferencesFilterConfig,
 			body: (rowData) => <CrossReferencesTemplate list={rowData.crossReferences} />,
+		},
+		{
+			field: 'gcrpCrossReference.displayName',
+			header: 'GCRP Cross Reference',
+			sortable: true,
+			filterConfig: FILTER_CONFIGS.gcrpCrossReferenceFilterConfig,
+			body: (rowData) => <CrossReferenceTemplate xref={rowData.gcrpCrossReference} />,
 		},
 		{
 			field: 'updatedBy.uniqueId',

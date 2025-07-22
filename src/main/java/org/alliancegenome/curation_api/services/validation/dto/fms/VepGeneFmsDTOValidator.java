@@ -1,7 +1,10 @@
 package org.alliancegenome.curation_api.services.validation.dto.fms;
 
+import java.util.HashMap;
+
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.dao.PredictedVariantConsequenceDAO;
+import org.alliancegenome.curation_api.dao.TranscriptDAO;
 import org.alliancegenome.curation_api.exceptions.KnownIssueValidationException;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
 import org.alliancegenome.curation_api.exceptions.ValidationException;
@@ -11,7 +14,6 @@ import org.alliancegenome.curation_api.model.entities.associations.CuratedVarian
 import org.alliancegenome.curation_api.model.ingest.dto.fms.VepTxtDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
-import org.alliancegenome.curation_api.services.TranscriptService;
 import org.alliancegenome.curation_api.services.associations.CuratedVariantGenomicLocationAssociationService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -24,7 +26,7 @@ public class VepGeneFmsDTOValidator {
 
 	@Inject PredictedVariantConsequenceDAO predictedVariantConsequenceDAO;
 	@Inject CuratedVariantGenomicLocationAssociationService cvglaService;
-	@Inject TranscriptService transcriptService;
+	@Inject TranscriptDAO transcriptDAO;
 	
 	public Long validateGeneLevelConsequence(VepTxtDTO dto) throws ValidationException {
 		ObjectResponse<PredictedVariantConsequence> response = new ObjectResponse<>();
@@ -49,7 +51,11 @@ public class VepGeneFmsDTOValidator {
 			}
 			response.addErrorMessage("feature", ValidationConstants.REQUIRED_MESSAGE);
 		} else {
-			SearchResponse<Transcript> searchResponse = transcriptService.findByField("transcriptId", dto.getFeature());
+			HashMap<String, Object> params = new HashMap<>();
+			params.put("transcriptId", dto.getFeature());
+			params.put("obsolete", false);
+			
+			SearchResponse<Transcript> searchResponse = transcriptDAO.findByParams(params);
 			if (searchResponse == null || searchResponse.getSingleResult() == null) {
 				response.addErrorMessage("feature", ValidationConstants.INVALID_MESSAGE + " (" + dto.getFeature() + ")");
 			} else if (searchResponse.getReturnedRecords() > 1) {
