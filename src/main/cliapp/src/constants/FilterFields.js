@@ -302,6 +302,14 @@ export const FIELD_SETS = Object.freeze({
 		filterName: 'formulaFilter',
 		fields: ['formula'],
 	},
+	gcrpCrossReferenceFieldSet: {
+		filterName: 'gcrpCrossReferenceFilter',
+		fields: [
+			'gcrpCrossReference.displayName',
+			'gcrpCrossReference.resourceDescriptorPage.name',
+			'gcrpCrossReference.referencedCurie',
+		],
+	},
 	geneAggregationFieldSet: {
 		filterName: 'geneAggregationFilter',
 		fields: ['dataProvider.abbreviation'],
@@ -825,6 +833,7 @@ export const FILTER_CONFIGS = Object.freeze({
 	},
 	evidenceFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.evidenceFieldSet] },
 	formulaFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.formulaFieldSet] },
+	gcrpCrossReferenceFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.gcrpCrossReferenceFieldSet] },
 	geneAssociationSubjectFilterConfig: {
 		filterComponentType: 'input',
 		fieldSets: [FIELD_SETS.geneAssociationSubjectFieldSet],

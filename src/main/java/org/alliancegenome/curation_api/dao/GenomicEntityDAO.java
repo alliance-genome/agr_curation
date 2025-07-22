@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.alliancegenome.curation_api.constants.EntityFieldConstants;
 import org.alliancegenome.curation_api.dao.base.BaseSQLDAO;
 import org.alliancegenome.curation_api.model.entities.GenomicEntity;
 
@@ -19,7 +20,7 @@ public class GenomicEntityDAO extends BaseSQLDAO<GenomicEntity> {
 
 	public Map<String, Long> getGenomicEntityIdMap() {
 		Map<String, Long> genomicEntityIdMap = new HashMap<>();
-		Query q = entityManager.createNativeQuery("SELECT a.id, a.primaryExternalId, a.modInternalId FROM BiologicalEntity as a where exists (select * from genomicentity as g where g.id = a.id)");
+		Query q = entityManager.createNativeQuery("SELECT a.id, a." + EntityFieldConstants.PRIMARY_EXTERNAL_ID + ", a." + EntityFieldConstants.MOD_INTERNAL_ID + " FROM BiologicalEntity as a where exists (select * from genomicentity as g where g.id = a.id)");
 		List<Object[]> ids = q.getResultList();
 		ids.forEach(record -> {
 			if (record[1] != null) {
