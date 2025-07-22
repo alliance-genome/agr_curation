@@ -734,6 +734,7 @@ export const NewAnnotationForm = ({
 									optionLabel="name"
 									onChange={onDropdownFieldChange}
 									className={classNames({ 'p-invalid': submitted && errorMessages.relation })}
+									placeholder={newAnnotation.relation?.name}
 								/>
 							</div>
 							<div className={fieldDetailsColumnSize}>
@@ -971,6 +972,7 @@ export const NewAnnotationForm = ({
 											value={newAnnotation.geneticSex}
 											showClear={true}
 											className={classNames({ 'p-invalid': submitted && errorMessages.geneticSex })}
+											placeholderText={newAnnotation.geneticSex?.name}
 										/>
 									</div>
 									<div className={fieldDetailsColumnSize}>
@@ -1053,6 +1055,7 @@ export const NewAnnotationForm = ({
 											showClear={true}
 											value={newAnnotation.annotationType}
 											className={classNames({ 'p-invalid': submitted && errorMessages.annotationType })}
+											placeholderText={newAnnotation.annotationType?.name}
 										/>
 									</div>
 									<div className={fieldDetailsColumnSize}>
@@ -1077,6 +1080,7 @@ export const NewAnnotationForm = ({
 											showClear={true}
 											value={newAnnotation.diseaseGeneticModifierRelation}
 											className={classNames({ 'p-invalid': submitted && errorMessages.diseaseGeneticModifierRelation })}
+											placeholderText={newAnnotation.diseaseGeneticModifierRelation?.name}
 										/>
 									</div>
 									<div className={fieldDetailsColumnSize}>
