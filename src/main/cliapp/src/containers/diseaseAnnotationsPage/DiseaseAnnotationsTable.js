@@ -376,7 +376,7 @@ export const DiseaseAnnotationsTable = () => {
 					editorChange={onGeneticSexEditorValueChange}
 					props={props}
 					showClear={true}
-					placeholderText={props.rowData.geneticSex.name}
+					placeholderText={props.rowData.geneticSex?.name}
 				/>
 				<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={'geneticSex'} />
 			</>
@@ -397,7 +397,7 @@ export const DiseaseAnnotationsTable = () => {
 					editorChange={onAnnotationTypeEditorValueChange}
 					props={props}
 					showClear={true}
-					placeholderText={props.rowData.annotationType.name}
+					placeholderText={props.rowData.annotationType?.name}
 				/>
 				<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={'annotationType'} />
 			</>
@@ -418,7 +418,7 @@ export const DiseaseAnnotationsTable = () => {
 					editorChange={onGeneticModifierRelationEditorValueChange}
 					props={props}
 					showClear={true}
-					placeholderText={props.rowData.diseaseGeneticModifierRelation.name}
+					placeholderText={props.rowData.diseaseGeneticModifierRelation?.name}
 				/>
 				<ErrorMessageComponent
 					errorMessages={errorMessagesRef.current[props.rowIndex]}
