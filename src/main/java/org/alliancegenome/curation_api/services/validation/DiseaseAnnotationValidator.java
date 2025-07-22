@@ -136,7 +136,7 @@ public class DiseaseAnnotationValidator extends AnnotationValidator {
 
 	public List<Allele> validateDiseaseGeneticModifierAlleles(DiseaseAnnotation uiEntity, DiseaseAnnotation dbEntity) {
 		String field = "diseaseGeneticModifierAlleles";
-		if (CollectionUtils.isEmpty(uiEntity.getDiseaseGeneticModifierGenes())) {
+		if (CollectionUtils.isEmpty(uiEntity.getDiseaseGeneticModifierAlleles())) {
 			return null;
 		}
 

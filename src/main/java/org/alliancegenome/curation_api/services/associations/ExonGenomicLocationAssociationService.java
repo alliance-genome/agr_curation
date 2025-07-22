@@ -1,6 +1,5 @@
 package org.alliancegenome.curation_api.services.associations;
 
-import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -12,7 +11,6 @@ import org.alliancegenome.curation_api.constants.EntityFieldConstants;
 import org.alliancegenome.curation_api.dao.PersonDAO;
 import org.alliancegenome.curation_api.dao.associations.ExonGenomicLocationAssociationDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
-import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.Exon;
 import org.alliancegenome.curation_api.model.entities.associations.ExonGenomicLocationAssociation;
 import org.alliancegenome.curation_api.response.ObjectResponse;
@@ -24,10 +22,7 @@ import org.apache.commons.lang3.StringUtils;
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
-import jakarta.transaction.Transactional;
-import lombok.extern.jbosslog.JBossLog;
 
-@JBossLog
 @RequestScoped
 public class ExonGenomicLocationAssociationService extends BaseEntityCrudService<ExonGenomicLocationAssociation, ExonGenomicLocationAssociationDAO> {
 
@@ -52,40 +47,6 @@ public class ExonGenomicLocationAssociationService extends BaseEntityCrudService
 		associationIds.removeIf(Objects::isNull);
 
 		return associationIds;
-	}
-
-	@Override
-	@Transactional
-	public ExonGenomicLocationAssociation deprecateOrDelete(Long id, Boolean throwApiError, String loadDescription, Boolean deprecate) {
-		ExonGenomicLocationAssociation association = exonGenomicLocationAssociationDAO.find(id);
-
-		if (association == null) {
-			String errorMessage = "Could not find ExonGenomicLocationAssociation with id: " + id;
-			if (throwApiError) {
-				ObjectResponse<ExonGenomicLocationAssociation> response = new ObjectResponse<>();
-				response.addErrorMessage("id", errorMessage);
-				throw new ApiErrorException(response);
-			}
-			log.error(errorMessage);
-			return null;
-		}
-		if (deprecate) {
-			if (!association.getObsolete()) {
-				association.setObsolete(true);
-				if (authenticatedPerson.getId() != null) {
-					association.setUpdatedBy(personDAO.find(authenticatedPerson.getId()));
-				} else {
-					association.setUpdatedBy(personService.fetchByUniqueIdOrCreate(loadDescription));
-				}
-				association.setDateUpdated(OffsetDateTime.now());
-				return exonGenomicLocationAssociationDAO.persist(association);
-			}
-			return association;
-		}
-		
-		exonGenomicLocationAssociationDAO.remove(association.getId());
-		
-		return null;
 	}
 
 	public ObjectResponse<ExonGenomicLocationAssociation> getLocationAssociation(Long exonId, Long assemblyComponentId) {
