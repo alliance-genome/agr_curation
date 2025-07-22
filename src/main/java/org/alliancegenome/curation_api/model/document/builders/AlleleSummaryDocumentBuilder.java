@@ -2,7 +2,6 @@ package org.alliancegenome.curation_api.model.document.builders;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -16,34 +15,26 @@ import org.alliancegenome.curation_api.model.entities.slotAnnotations.AlleleSyno
 import org.alliancegenome.curation_api.services.ResourceDescriptorPageService;
 import org.apache.commons.collections.CollectionUtils;
 
-import jakarta.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class AlleleSummaryDocumentBuilder {
 
-	@Inject
-	ResourceDescriptorPageService resourceDescriptorPageService;
-
-	public AlleleSummaryDocument buildSummaryDocument(Allele allele) {
+	public AlleleSummaryDocument buildSummaryDocument(Allele allele, ResourceDescriptorPageService resourceDescriptorPageService) {
 		AlleleSummaryDocument doc = new AlleleSummaryDocument();
 
-		doc.setAllele(allele);
+		doc.setId(allele.getPrimaryExternalId());
 
-		// Species
 		if (allele.getTaxon() != null) {
 			doc.setSpecies(allele.getTaxon().getName());
 		}
 
-		// Symbol
 		if (allele.getAlleleSymbol() != null) {
 			doc.setSymbol(allele.getAlleleSymbol().getDisplayText());
 		}
 
-		// Alteration Type (Category)
 		doc.setAlterationType(determineAlterationType(allele));
 
-		// Synonyms
 		if (CollectionUtils.isNotEmpty(allele.getAlleleSynonyms())) {
 			doc.setSynonyms(allele.getAlleleSynonyms().stream()
 					.map(AlleleSynonymSlotAnnotation::getDisplayText)
@@ -52,24 +43,11 @@ public class AlleleSummaryDocumentBuilder {
 			doc.setSynonyms(new ArrayList<>());
 		}
 
-		// Description (needs to be fixed)
-		if (allele.getAlleleFullName() != null) {
-			doc.setDescription(allele.getAlleleFullName().getDisplayText());
-		}
+		//TODO: Implement description (needs DQM decision)
 
-		// Additional Information (MOD Cross References)
-		doc.setAdditionalInformation(buildAdditionalInformation(allele));
+		doc.setAdditionalInformation(buildAdditionalInformation(allele, resourceDescriptorPageService));
 
-		// Allele of Gene
-		if (CollectionUtils.isNotEmpty(allele.getAlleleGeneAssociations())) {
-			AlleleGeneAssociation firstAssociation = allele.getAlleleGeneAssociations().get(0);
-			Gene associatedGene = firstAssociation.getAlleleGeneAssociationObject();
-
-			if (associatedGene != null && associatedGene.getGeneSymbol() != null) {
-				String geneSymbol = associatedGene.getGeneSymbol().getDisplayText();
-				doc.setAlleleOfGene(geneSymbol);
-			}
-		}
+		doc.setAlleleOfGene(buildAlleleOfGene(allele));
 
 		return doc;
 	}
@@ -84,10 +62,9 @@ public class AlleleSummaryDocumentBuilder {
 		}
 	}
 
-	private Map<String, Object> buildAdditionalInformation(Allele allele) {
+	private Map<String, Object> buildAdditionalInformation(Allele allele, ResourceDescriptorPageService resourceDescriptorPageService) {
 		Map<String, Object> additionalInfo = new HashMap<>();
 
-		// Determine which cross reference to use - prefer data provider cross reference
 		CrossReference crossRef = allele.getDataProviderCrossReference();
 		if (crossRef == null && CollectionUtils.isNotEmpty(allele.getCrossReferences())) {
 			crossRef = allele.getCrossReferences().get(0);
@@ -97,14 +74,12 @@ public class AlleleSummaryDocumentBuilder {
 			String referencedCurie = crossRef.getReferencedCurie();
 			String primaryUrl = crossRef.getUrlFromResourceDescriptorPage(referencedCurie);
 
-			// Build references section using the allele/references resource descriptor page
 			Map<String, String> references = new HashMap<>();
-			String referencesUrl = buildUrlFromResourceDescriptorPage(referencedCurie, "allele/references");
+			String referencesUrl = buildUrlFromResourceDescriptorPage(referencedCurie, "allele/references", resourceDescriptorPageService);
 			references.put("crossRefCompleteUrl", referencesUrl);
 			references.put("name", referencedCurie);
 			additionalInfo.put("references", references);
 
-			// Build primary section using the default allele page
 			Map<String, String> primary = new HashMap<>();
 			primary.put("crossRefCompleteUrl", primaryUrl);
 			primary.put("name", referencedCurie);
@@ -114,7 +89,31 @@ public class AlleleSummaryDocumentBuilder {
 		return additionalInfo;
 	}
 
-	private String buildUrlFromResourceDescriptorPage(String referencedCurie, String pageName) {
+
+	private Map<String, String> buildAlleleOfGene(Allele allele) {
+		Map<String, String> alleleOfGene = new HashMap<>();
+
+		if (CollectionUtils.isNotEmpty(allele.getAlleleGeneAssociations())) {
+			AlleleGeneAssociation firstAssociation = allele.getAlleleGeneAssociations().get(0);
+			Gene associatedGene = firstAssociation.getAlleleGeneAssociationObject();
+
+			if (associatedGene != null ) {
+				if(associatedGene.getGeneSymbol() != null){
+					String geneSymbol = associatedGene.getGeneSymbol().getDisplayText();
+					alleleOfGene.put("geneSymbol", geneSymbol);
+				}
+
+				if(associatedGene.getPrimaryExternalId() != null){
+					String primaryExternalId = associatedGene.getPrimaryExternalId();
+					alleleOfGene.put("primaryExternalId", primaryExternalId);
+				}
+			}
+		}
+
+		return alleleOfGene;
+	}
+
+	private String buildUrlFromResourceDescriptorPage(String referencedCurie, String pageName, ResourceDescriptorPageService resourceDescriptorPageService) {
 		String[] parts = referencedCurie.split(":");
 		if (parts.length >= 2) {
 			String prefix = parts[0];

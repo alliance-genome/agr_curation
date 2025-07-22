@@ -10,6 +10,7 @@ import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.input.Pagination;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.AlleleService;
+import org.alliancegenome.curation_api.services.ResourceDescriptorPageService;
 
 import jakarta.inject.Inject;
 
@@ -17,8 +18,9 @@ public class AlleleDocumentController implements AlleleDocumentInterface {
 
 	@Inject
 	AlleleService alleleService;
+
 	@Inject
-	AlleleSummaryDocumentBuilder alleleSummaryDocumentBuilder;
+	ResourceDescriptorPageService resourceDescriptorPageService;
 
 	@Override
 	public SearchResponse<AlleleSummaryDocument> findSummary(Integer page, Integer limit, HashMap<String, Object> params) {
@@ -32,8 +34,9 @@ public class AlleleDocumentController implements AlleleDocumentInterface {
 		ArrayList<AlleleSummaryDocument> list = new ArrayList<>();
 
 		if (resp.getResults() != null) {
+			AlleleSummaryDocumentBuilder alleleSummaryDocumentBuilder = new AlleleSummaryDocumentBuilder();
 			for (Allele allele : resp.getResults()) {
-				AlleleSummaryDocument doc = alleleSummaryDocumentBuilder.buildSummaryDocument(allele);
+				AlleleSummaryDocument doc = alleleSummaryDocumentBuilder.buildSummaryDocument(allele, resourceDescriptorPageService);
 				list.add(doc);
 			}
 		}
