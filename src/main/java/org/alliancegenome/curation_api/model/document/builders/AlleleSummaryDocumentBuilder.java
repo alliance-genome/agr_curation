@@ -97,13 +97,13 @@ public class AlleleSummaryDocumentBuilder {
 			AlleleGeneAssociation firstAssociation = allele.getAlleleGeneAssociations().get(0);
 			Gene associatedGene = firstAssociation.getAlleleGeneAssociationObject();
 
-			if (associatedGene != null ) {
-				if(associatedGene.getGeneSymbol() != null){
+			if (associatedGene != null) {
+				if (associatedGene.getGeneSymbol() != null) {
 					String geneSymbol = associatedGene.getGeneSymbol().getDisplayText();
 					alleleOfGene.put("geneSymbol", geneSymbol);
 				}
 
-				if(associatedGene.getPrimaryExternalId() != null){
+				if (associatedGene.getPrimaryExternalId() != null) {
 					String primaryExternalId = associatedGene.getPrimaryExternalId();
 					alleleOfGene.put("primaryExternalId", primaryExternalId);
 				}
