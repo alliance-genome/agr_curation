@@ -5,9 +5,11 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.alliancegenome.curation_api.model.entities.AGMDiseaseAnnotation;
 import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
 import org.alliancegenome.curation_api.model.entities.ConditionRelation;
 import org.alliancegenome.curation_api.model.entities.Gene;
@@ -31,20 +33,34 @@ public class AffectedGenomicModelDocument extends ESDocument {
 	private List<String> associatedPhenotype = new ArrayList<>();
 
 	private Gene gene;
-	private List<DOTerm> diseaseTerms;
+	private List<AGMDiseaseAnnotation> diseaseAnnotations;
+	private List<DOTermAssociation> diseaseModels;
 	private String dataProvider;
 	private List<ConditionRelation> conditionRelations;
 	private List<ConditionRelation> conditionModifiers;
 
-	public void addDiseaseTerm(DOTerm diseaseAnnotationObject) {
-		if (diseaseTerms == null) {
-			diseaseTerms = new ArrayList<>();
+	public void addDiseaseAnnotation(AGMDiseaseAnnotation diseaseAnnotation) {
+		if (diseaseModels == null) {
+			diseaseModels = new ArrayList<>();
 		}
-		diseaseTerms.add(diseaseAnnotationObject);
-		diseaseTerms = diseaseTerms.stream()
-				.distinct()
-				.collect(Collectors.toList());
-		Collections.sort(diseaseTerms, Comparator.comparing(o -> o.getName() == null ? "" : o.getName().toLowerCase()));
+		DOTermAssociation diseaseModel = new DOTermAssociation(
+				diseaseAnnotation.getDiseaseAnnotationObject(),
+				diseaseAnnotation.getNegated() ? "IS_NOT_MODEL_OF" : "IS_MODEL_OF",
+				diseaseAnnotation.getNegated() ? "does not model " + diseaseAnnotation.getDiseaseAnnotationObject().getName() : diseaseAnnotation.getDiseaseAnnotationObject().getName()
+		);
+		diseaseModels.add(diseaseModel);
+		// group by disease name and annotation negated boolean to remove duplicates
+		Map<DOTerm, Map<String, List<DOTermAssociation>>> diseaseModelMap = diseaseModels.stream()
+				.collect(Collectors.groupingBy(DOTermAssociation::getDisease,
+						Collectors.groupingBy(DOTermAssociation::getAssociationType)));
+		// pick the first annotation for each disease term and negated state
+		diseaseModels = diseaseModelMap.values().stream().map(stringListMap -> {
+			List<DOTermAssociation> annotations = stringListMap.values().stream()
+					.flatMap(List::stream)
+					.toList();
+			return annotations.get(0);
+		}).collect(Collectors.toList());
+		Collections.sort(diseaseModels, Comparator.comparing(o -> o.getDisease().getName() == null ? "" : o.getDisease().getName().toLowerCase()));
 	}
 
 	private List<String> modifierRelationshipTypes = List.of("ameliorated_by", "exacerbated_by");
@@ -68,10 +84,11 @@ public class AffectedGenomicModelDocument extends ESDocument {
 	}
 
 	public boolean isHasDiseaseAnnotations() {
-		return CollectionUtils.isNotEmpty(diseaseTerms);
+		return CollectionUtils.isNotEmpty(diseaseAnnotations);
 	}
+
 	public boolean isHasDiseaseAndPhenotypeAnnotations() {
-		return CollectionUtils.isNotEmpty(diseaseTerms) && CollectionUtils.isNotEmpty(associatedPhenotype);
+		return CollectionUtils.isNotEmpty(diseaseAnnotations) && CollectionUtils.isNotEmpty(associatedPhenotype);
 	}
 
 	public boolean isHasPhenotypeAnnotations() {
@@ -87,5 +104,32 @@ public class AffectedGenomicModelDocument extends ESDocument {
 				.distinct()
 				.collect(Collectors.toList());
 		Collections.sort(associatedPhenotype, Comparator.comparing(String::toLowerCase));
+	}
+
+	private static class DOTermAssociation {
+		@JsonView({View.FieldsOnly.class, View.ForPublic.class, View.ModelDocumentView.class})
+		private final DOTerm disease;
+		@JsonView({View.FieldsOnly.class, View.ForPublic.class, View.ModelDocumentView.class})
+		private final String associationType;
+		@JsonView({View.FieldsOnly.class, View.ForPublic.class, View.ModelDocumentView.class})
+		private final String diseaseModel;
+
+		public DOTermAssociation(DOTerm disease, String associationType, String diseaseModel) {
+			this.disease = disease;
+			this.associationType = associationType;
+			this.diseaseModel = diseaseModel;
+		}
+
+		public DOTerm getDisease() {
+			return disease;
+		}
+
+		public String getAssociationType() {
+			return associationType;
+		}
+
+		public String getDiseaseModel() {
+			return diseaseModel;
+		}
 	}
 }
