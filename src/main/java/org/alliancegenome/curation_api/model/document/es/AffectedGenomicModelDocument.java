@@ -20,6 +20,8 @@ import com.fasterxml.jackson.annotation.JsonView;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -106,13 +108,18 @@ public class AffectedGenomicModelDocument extends ESDocument {
 		Collections.sort(associatedPhenotype, Comparator.comparing(String::toLowerCase));
 	}
 
+	@Getter
+	@Setter
 	private static class DOTermAssociation {
 		@JsonView({View.FieldsOnly.class, View.ForPublic.class, View.ModelDocumentView.class})
-		private final DOTerm disease;
+		private DOTerm disease;
 		@JsonView({View.FieldsOnly.class, View.ForPublic.class, View.ModelDocumentView.class})
-		private final String associationType;
+		private String associationType;
 		@JsonView({View.FieldsOnly.class, View.ForPublic.class, View.ModelDocumentView.class})
-		private final String diseaseModel;
+		private String diseaseModel;
+
+		public DOTermAssociation() {
+		}
 
 		public DOTermAssociation(DOTerm disease, String associationType, String diseaseModel) {
 			this.disease = disease;
@@ -120,16 +127,5 @@ public class AffectedGenomicModelDocument extends ESDocument {
 			this.diseaseModel = diseaseModel;
 		}
 
-		public DOTerm getDisease() {
-			return disease;
-		}
-
-		public String getAssociationType() {
-			return associationType;
-		}
-
-		public String getDiseaseModel() {
-			return diseaseModel;
-		}
 	}
 }
