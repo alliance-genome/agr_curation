@@ -705,11 +705,21 @@ Example of loading Allele's
 
 ## Submitting Data
 
-Here is an example using curl:
+Here is an example using curl with the Bearer token submission method with the long Okta Access token:
 
 ```bash
 curl \
-   -H "Authorization: Bearer 2C07D715..." \
+   -H "Authorization: Bearer <long Okta Access token>" \
+   -X POST "https://${Curation_System}.alliancegenome.org/api/data/submit" \
+   -F "LoadType_SubType=@/full/path/to/file1.json" \
+   -F "LoadType_SubType=@/full/path/to/file2.json"
+```
+
+Here is an example using curl with the APIToken token submission method with the short curation API token:
+
+```bash
+curl \
+   -H "Authorization: APIToken <short curation API token>" \
    -X POST "https://${Curation_System}.alliancegenome.org/api/data/submit" \
    -F "LoadType_SubType=@/full/path/to/file1.json" \
    -F "LoadType_SubType=@/full/path/to/file2.json"
