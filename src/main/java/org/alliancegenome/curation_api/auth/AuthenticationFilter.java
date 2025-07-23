@@ -80,7 +80,8 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 	@ConfigProperty(name = "okta.api.token")
 	Instance<String> apiToken;
 
-	private static final String AUTHENTICATION_SCHEME = "Bearer";
+	private static final String AUTHENTICATION_BEARER = "Bearer";
+	private static final String AUTHENTICATION_APITOKEN = "APIToken";
 
 	@Override
 	public void filter(ContainerRequestContext requestContext) throws IOException {
@@ -96,23 +97,22 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 			if (person != null) {
 				userAuthenticatedEvent.fire(person);
 			} else {
-				failAuthentication(requestContext);
+				failAuthentication(requestContext, AUTHENTICATION_BEARER);
 			}
 		} else {
 			if (oktaAuth.get()) {
 				String authorizationHeader = requestContext.getHeaderString(HttpHeaders.AUTHORIZATION);
 				String apiToken = null;
-				if (authorizationHeader != null && authorizationHeader.toLowerCase().startsWith(AUTHENTICATION_SCHEME.toLowerCase() + " ")) {
-					apiToken = authorizationHeader.substring(AUTHENTICATION_SCHEME.length()).trim();
-
+				if (authorizationHeader != null && authorizationHeader.toLowerCase().startsWith(AUTHENTICATION_APITOKEN.toLowerCase())) {
+					apiToken = authorizationHeader.substring(AUTHENTICATION_APITOKEN.length()).trim();
 					Person person = personService.findPersonByApiToken(apiToken);
 					if (person != null) {
 						userAuthenticatedEvent.fire(person);
 					} else {
-						failAuthentication(requestContext);
+						failAuthentication(requestContext, AUTHENTICATION_APITOKEN);
 					}
 				} else {
-					failAuthentication(requestContext);
+					failAuthentication(requestContext, AUTHENTICATION_APITOKEN);
 				}
 			} else {
 				loginDevUser();
@@ -120,8 +120,8 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 		}
 	}
 
-	private void failAuthentication(ContainerRequestContext requestContext) {
-		requestContext.abortWith(Response.status(Response.Status.UNAUTHORIZED).header(HttpHeaders.WWW_AUTHENTICATE, AUTHENTICATION_SCHEME).build());
+	private void failAuthentication(ContainerRequestContext requestContext, String authType) {
+		requestContext.abortWith(Response.status(Response.Status.UNAUTHORIZED).header(HttpHeaders.WWW_AUTHENTICATE, authType).build());
 	}
 
 	private void loginDevUser() {
