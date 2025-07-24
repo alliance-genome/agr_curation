@@ -65,6 +65,7 @@ public class AlleleService extends SubmittedObjectCrudService<Allele, AlleleDTO,
 		return new ObjectResponse<>(dbEntity);
 	}
 
+	@Override
 	public Allele upsert(AlleleDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
 		return alleleDtoValidator.validateAlleleDTO(dto, dataProvider);
 	}
@@ -84,6 +85,7 @@ public class AlleleService extends SubmittedObjectCrudService<Allele, AlleleDTO,
 		if (allele != null) {
 			if (forceDeprecate || alleleDAO.hasReferencingDiseaseAnnotationIds(id)
 					|| alleleDAO.hasReferencingPhenotypeAnnotations(id)
+					//|| alleleDAO.hasReferencingAgmAlleleAssociations(id)
 					|| CollectionUtils.isNotEmpty(allele.getAlleleGeneAssociations())
 					|| CollectionUtils.isNotEmpty(allele.getAlleleVariantAssociations())
 					|| CollectionUtils.isNotEmpty(allele.getConstructGenomicEntityAssociations())) {
@@ -118,6 +120,7 @@ public class AlleleService extends SubmittedObjectCrudService<Allele, AlleleDTO,
 		return ids;
 	}
 
+	@Override
 	@Transactional
 	public void updatePopularity(String curie, Double popularity) {
 		SearchResponse<Allele> searchResponse = findByField("primaryExternalId", curie);

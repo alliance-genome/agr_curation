@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.Set;
 
 import org.alliancegenome.curation_api.constants.EntityFieldConstants;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
@@ -28,7 +28,6 @@ import org.alliancegenome.curation_api.model.entities.PhenotypeAnnotation;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.PhenotypeFmsDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.base.BaseAnnotationCrudService;
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import jakarta.annotation.PostConstruct;
@@ -113,11 +112,9 @@ public class PhenotypeAnnotationService extends BaseAnnotationCrudService<Phenot
 		} else {
 			throw new ObjectValidationException(dto, "objectId - " + ValidationConstants.INVALID_TYPE_MESSAGE + " (" + dto.getObjectId() + ")");
 		}
-
 	}
 
-	public List<Long> addInferredOrAssertedEntities(PhenotypeFmsDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
-		List<Long> primaryAnnotationIds = new ArrayList<>();
+	public void addInferredOrAssertedEntities(PhenotypeFmsDTO dto, BackendBulkDataProvider dataProvider, Set<Long> idsAdded) throws ValidationException {
 		for (String primaryGeneticEntityCurie : dto.getPrimaryGeneticEntityIds()) {
 			GenomicEntity primaryAnnotationSubject = genomicEntityService.findByIdentifierString(primaryGeneticEntityCurie);
 			if (primaryAnnotationSubject == null) {
@@ -125,20 +122,13 @@ public class PhenotypeAnnotationService extends BaseAnnotationCrudService<Phenot
 			}
 
 			if (primaryAnnotationSubject instanceof AffectedGenomicModel) {
-				List<AGMPhenotypeAnnotation> annotations = agmPhenotypeAnnotationService.addInferredOrAssertedEntities((AffectedGenomicModel) primaryAnnotationSubject, dto, dataProvider);
-				if (CollectionUtils.isNotEmpty(annotations)) {
-					primaryAnnotationIds.addAll(annotations.stream().map(AGMPhenotypeAnnotation::getId).collect(Collectors.toList()));
-				}
+				agmPhenotypeAnnotationService.addInferredOrAssertedEntities((AffectedGenomicModel) primaryAnnotationSubject, dto, dataProvider, idsAdded);
 			} else if (primaryAnnotationSubject instanceof Allele) {
-				List<AllelePhenotypeAnnotation> annotations = allelePhenotypeAnnotationService.addInferredOrAssertedEntities((Allele) primaryAnnotationSubject, dto, dataProvider);
-				if (CollectionUtils.isNotEmpty(annotations)) {
-					primaryAnnotationIds.addAll(annotations.stream().map(AllelePhenotypeAnnotation::getId).collect(Collectors.toList()));
-				}
+				allelePhenotypeAnnotationService.addInferredOrAssertedEntities((Allele) primaryAnnotationSubject, dto, dataProvider, idsAdded);
 			} else {
 				throw new ObjectValidationException(dto, "primaryGeneticEntityIds - " + ValidationConstants.INVALID_TYPE_MESSAGE + " (" + primaryGeneticEntityCurie + ")");
 			}
 		}
-		return primaryAnnotationIds;
 	}
 
 }
