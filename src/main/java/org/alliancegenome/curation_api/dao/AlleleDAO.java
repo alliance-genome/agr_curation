@@ -33,7 +33,7 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 		super(Allele.class);
 	}
 
-	public Boolean hasReferencingDiseaseAnnotationIds(Long alleleId) {
+	public Boolean hasReferencingDiseaseAnnotations(Long alleleId) {
 
 		Map<String, Object> alleleDaParams = new HashMap<>();
 		alleleDaParams.put("query_operator", "or");
@@ -75,6 +75,13 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 		agmPaParams.put(EntityFieldConstants.ASSERTED_ALLELES + ".id", alleleId);
 		agmPaParams.put(EntityFieldConstants.INFERRED_ALLELE + ".id", alleleId);
 		results = agmPhenotypeAnnotationDAO.findIdsByParams(agmPaParams);
+		return CollectionUtils.isNotEmpty(results);
+	}
+	
+	public Boolean hasReferencingAgmAlleleAssociations(Long alleleId) {
+		Map<String, Object> params = new HashMap<>();
+		params.put(EntityFieldConstants.AGM_ALLELE_ASSOCIATION_OBJECT + ".id", alleleId);
+		List<Long> results = agmAlleleAssociationDAO.findIdsByParams(params);
 		return CollectionUtils.isNotEmpty(results);
 	}
 
