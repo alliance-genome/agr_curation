@@ -47,6 +47,8 @@ describe('<GenesPage />', () => {
 		const taxonTd = await result.findByText(/Caenorhabditis elegans/i);
 		const xrefsTd = await result.findByText(/WBGene00003771Xref/);
 		const geneTypeTd = await result.findByText(/protein_coding_gene/i);
+		const gcrpXrefDisplayTd = await result.findByText(/GCRPXref/i);
+		const gcrpXrefCurieTd = await result.findByText(/UniProt:GCRP01/i);
 
 		await waitFor(() => {
 			expect(primaryExternalIdTd).toBeInTheDocument();
@@ -58,6 +60,8 @@ describe('<GenesPage />', () => {
 			expect(taxonTd).toBeInTheDocument();
 			expect(xrefsTd).toBeInTheDocument();
 			expect(geneTypeTd).toBeInTheDocument();
+			expect(gcrpXrefDisplayTd).toBeInTheDocument();
+			expect(gcrpXrefCurieTd).toBeInTheDocument();
 		});
 	});
 });

@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.alliancegenome.curation_api.constants.EntityFieldConstants;
 import org.alliancegenome.curation_api.dao.base.BaseSQLDAO;
 import org.alliancegenome.curation_api.model.entities.Chromosome;
 import org.apache.commons.collections.CollectionUtils;
@@ -23,7 +24,7 @@ public class ChromosomeDAO extends BaseSQLDAO<Chromosome> {
 	public Boolean hasReferencingAssemblyComponents(Long chromosomeId) {
 		
 		Map<String, Object> params = new HashMap<>();
-		params.put("mapsToChromosome.id", chromosomeId);
+		params.put(EntityFieldConstants.MAPS_TO_CHROMOSOME + ".id", chromosomeId);
 		List<Long> results = assemblyComponentDAO.findIdsByParams(params);
 		
 		return CollectionUtils.isNotEmpty(results);

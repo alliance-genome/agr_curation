@@ -68,7 +68,11 @@ import lombok.ToString;
 		"constructGenomicEntityAssociations" }, callSuper = true)
 @Schema(name = "Gene", description = "POJO that represents the Gene")
 @AGRCurationSchemaVersion(min = "1.5.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { GenomicEntity.class }, partial = true)
-@Table(indexes = { @Index(name = "gene_genetype_index", columnList = "geneType_id") })
+@Table(indexes = {
+		@Index(name = "gene_genetype_index", columnList = "geneType_id"),
+		@Index(name = "gene_gcrpcrossreference_index", columnList = "gcrpcrossreference_id")
+	}
+)
 public class Gene extends GenomicEntity {
 
 	@GenericField(projectable = Projectable.YES, sortable = Sortable.YES)
@@ -181,4 +185,9 @@ public class Gene extends GenomicEntity {
 		@Index(name = "gene_note_relatednotes_index", columnList = "relatedNotes_id")})
 	private List<Note> relatedNotes;
 
+	@IndexedEmbedded(includePaths = {"displayName", "referencedCurie", "displayName_keyword", "referencedCurie_keyword", "resourceDescriptorPage.name", "resourceDescriptorPage.name_keyword"})
+	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
+	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+	@JsonView({View.FieldsOnly.class})
+	private CrossReference gcrpCrossReference;
 }
