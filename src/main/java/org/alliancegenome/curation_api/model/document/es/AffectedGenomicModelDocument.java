@@ -18,6 +18,7 @@ import org.alliancegenome.curation_api.view.View;
 import org.apache.commons.collections4.CollectionUtils;
 import com.fasterxml.jackson.annotation.JsonView;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -106,30 +107,15 @@ public class AffectedGenomicModelDocument extends ESDocument {
 		Collections.sort(associatedPhenotype, Comparator.comparing(String::toLowerCase));
 	}
 
+	@Data
+	@AllArgsConstructor
+	@JsonView({View.FieldsOnly.class, View.ForPublic.class, View.ModelDocumentView.class})
 	private static class DOTermAssociation {
 		@JsonView({View.FieldsOnly.class, View.ForPublic.class, View.ModelDocumentView.class})
-		private final DOTerm disease;
+		private DOTerm disease;
 		@JsonView({View.FieldsOnly.class, View.ForPublic.class, View.ModelDocumentView.class})
-		private final String associationType;
+		private String associationType;
 		@JsonView({View.FieldsOnly.class, View.ForPublic.class, View.ModelDocumentView.class})
-		private final String diseaseModel;
-
-		public DOTermAssociation(DOTerm disease, String associationType, String diseaseModel) {
-			this.disease = disease;
-			this.associationType = associationType;
-			this.diseaseModel = diseaseModel;
-		}
-
-		public DOTerm getDisease() {
-			return disease;
-		}
-
-		public String getAssociationType() {
-			return associationType;
-		}
-
-		public String getDiseaseModel() {
-			return diseaseModel;
-		}
+		private String diseaseModel;
 	}
 }
