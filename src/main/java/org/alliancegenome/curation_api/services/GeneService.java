@@ -9,9 +9,7 @@ import java.util.Objects;
 
 import org.alliancegenome.curation_api.constants.EntityFieldConstants;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
-import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.GeneDAO;
-import org.alliancegenome.curation_api.dao.NoteDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.exceptions.KnownIssueValidationException;
@@ -45,7 +43,7 @@ import jakarta.transaction.Transactional;
 public class GeneService extends SubmittedObjectCrudService<Gene, GeneDTO, GeneDAO> implements BasePopularityInterface {
 
 	@Inject GeneDAO geneDAO;
-	@Inject NoteDAO noteDAO;
+	@Inject NoteService noteService;
 	@Inject GeneValidator geneValidator;
 	@Inject GeneDTOValidator geneDtoValidator;
 	@Inject DiseaseAnnotationService diseaseAnnotationService;
@@ -56,7 +54,6 @@ public class GeneService extends SubmittedObjectCrudService<Gene, GeneDTO, GeneD
 	@Inject GeneInteractionService geneInteractionService;
 	@Inject PhenotypeAnnotationService phenotypeAnnotationService;
 	@Inject NcbiTaxonTermService ncbiTaxonTermService;
-	@Inject VocabularyTermService vocabularyTermService;
 	@Inject GeneXrefHelper geneXrefHelper;
 
 	@Override
@@ -131,7 +128,7 @@ public class GeneService extends SubmittedObjectCrudService<Gene, GeneDTO, GeneD
 				deprecationReasons.add("Gene is referenced by gene ontology annotation(s)");
 			}
 			if (CollectionUtils.isNotEmpty(gene.getSequenceTargetingReagentGeneAssociations())) {
-				deprecationReasons.add("Gene has sequence targeting reagenet association(s)");
+				deprecationReasons.add("Gene has sequence targeting reagent association(s)");
 			}
 			if (CollectionUtils.isNotEmpty(gene.getTranscriptGeneAssociations())) {
 				deprecationReasons.add("Gene has transcript association(s)");
@@ -148,11 +145,7 @@ public class GeneService extends SubmittedObjectCrudService<Gene, GeneDTO, GeneD
 					gene.setDateUpdated(OffsetDateTime.now());
 					gene.setObsolete(true);
 					
-					Note deprecationNote = new Note();
-					deprecationNote.setNoteType(vocabularyTermService.getTermInVocabularyTermSet(VocabularyConstants.GENE_NOTE_TYPES_VOCABULARY_TERM_SET, VocabularyConstants.DEPRECATION_REASON_TERM).getEntity());
-					deprecationNote.setFreeText(StringUtils.join(deprecationReasons, " | "));
-					noteDAO.persist(deprecationNote);
-					
+					Note deprecationNote = noteService.createDeprecationNote(deprecationReasons);
 					if (gene.getRelatedNotes() == null) {
 						gene.setRelatedNotes(new ArrayList<>());
 					}
