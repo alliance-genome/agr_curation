@@ -11,10 +11,7 @@ import lombok.Data;
 @AllArgsConstructor
 @JsonView({View.FieldsOnly.class, View.ForPublic.class, View.ModelDocumentView.class})
 public class DOTermAssociation {
-	@JsonView({View.FieldsOnly.class, View.ForPublic.class, View.ModelDocumentView.class})
 	private DOTerm disease;
-	@JsonView({View.FieldsOnly.class, View.ForPublic.class, View.ModelDocumentView.class})
 	private String associationType;
-	@JsonView({View.FieldsOnly.class, View.ForPublic.class, View.ModelDocumentView.class})
 	private String diseaseModel;
 }
