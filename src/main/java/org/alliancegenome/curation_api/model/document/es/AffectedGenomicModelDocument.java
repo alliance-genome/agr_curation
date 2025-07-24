@@ -21,8 +21,6 @@ import com.fasterxml.jackson.annotation.JsonView;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -119,6 +117,5 @@ public class AffectedGenomicModelDocument extends ESDocument {
 		private String associationType;
 		@JsonView({View.FieldsOnly.class, View.ForPublic.class, View.ModelDocumentView.class})
 		private String diseaseModel;
-
 	}
 }
