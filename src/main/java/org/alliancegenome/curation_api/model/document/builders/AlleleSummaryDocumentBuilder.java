@@ -11,16 +11,15 @@ import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.Construct;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.Gene;
-import org.alliancegenome.curation_api.model.entities.GenomicEntity;
+import org.alliancegenome.curation_api.model.entities.Note;
 import org.alliancegenome.curation_api.model.entities.ResourceDescriptorPage;
+import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.associations.AlleleConstructAssociation;
 import org.alliancegenome.curation_api.model.entities.associations.AlleleGeneAssociation;
-import org.alliancegenome.curation_api.model.entities.associations.ConstructGenomicEntityAssociation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.AlleleSynonymSlotAnnotation;
 import org.alliancegenome.curation_api.services.ResourceDescriptorPageService;
 import org.apache.commons.collections.CollectionUtils;
 
-import io.quarkus.logging.Log;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -41,15 +40,9 @@ public class AlleleSummaryDocumentBuilder {
 
 		doc.setAlterationType(determineAlterationType(allele));
 
-		if (CollectionUtils.isNotEmpty(allele.getAlleleSynonyms())) {
-			doc.setSynonyms(allele.getAlleleSynonyms().stream()
-					.map(AlleleSynonymSlotAnnotation::getDisplayText)
-					.collect(Collectors.toList()));
-		} else {
-			doc.setSynonyms(new ArrayList<>());
-		}
+		doc.setSynonyms(buildSynonyms(allele));
 
-		//TODO: Implement description (needs DQM decision)
+		doc.setDescription(buildDescription(allele));
 
 		doc.setAdditionalInformation(buildAdditionalInformation(allele, resourceDescriptorPageService));
 
@@ -68,6 +61,40 @@ public class AlleleSummaryDocumentBuilder {
 		} else {
 			return "allele with multiple variants";
 		}
+	}
+
+	private List<String> buildSynonyms(Allele allele) {
+		if (CollectionUtils.isEmpty(allele.getAlleleSynonyms())) {
+			return new ArrayList<>();
+		}
+
+		List<String> alleleSynonyms;
+
+		alleleSynonyms = allele.getAlleleSynonyms()
+			.stream()
+			.map(AlleleSynonymSlotAnnotation::getDisplayText)
+			.collect(Collectors.toList());
+
+		return alleleSynonyms;
+	}
+
+	//TODO: may need to update after DQM decision
+	private String buildDescription(Allele allele) {
+
+		String description = new String();
+
+		if (CollectionUtils.isNotEmpty(allele.getRelatedNotes())) {
+			Note alleleNote = allele.getRelatedNotes().get(0);
+			VocabularyTerm noteType = alleleNote.getNoteType();
+
+			if (noteType.getName().equals("mutation_description")) {
+				description = alleleNote.getFreeText();
+			}
+
+		}
+
+		return description;
+
 	}
 
 	private Map<String, Object> buildAdditionalInformation(Allele allele, ResourceDescriptorPageService resourceDescriptorPageService) {
