@@ -87,11 +87,11 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 	public void filter(ContainerRequestContext requestContext) throws IOException {
 		if (jsonWebToken.getClaimNames() != null) {
 			Person person = null;
-			if(jsonWebToken.getClaim("uid") != null) {
-				person = personService.findPersonByOktaId(jsonWebToken.getClaim("uid"));
-				if (person == null) {
-					person = validateUserToken();
-				}
+			if (person == null) {
+				person = validateUserTokenById();
+			}
+			if (person == null) {
+				person = validateUserTokenByEmail();
 			}
 			if (person == null) {
 				person = validateAdminToken();
@@ -145,8 +145,16 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 		}
 	}
 
+
+	private Person validateUserTokenById() {
+		if(jsonWebToken.getClaim("uid") != null) {
+			return personService.findPersonByOktaId(jsonWebToken.getClaim("uid"));
+		}
+		return null;
+	}
+	
 	// Check Okta(token), Check DB ApiToken(token), else return null
-	private Person validateUserToken() {
+	private Person validateUserTokenByEmail() {
 
 		String oktaUserId = (String) jsonWebToken.getClaim("uid"); // User Id
 
