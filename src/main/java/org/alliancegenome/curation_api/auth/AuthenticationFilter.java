@@ -86,9 +86,12 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 	@Override
 	public void filter(ContainerRequestContext requestContext) throws IOException {
 		if (jsonWebToken.getClaimNames() != null) {
-			Person person = personService.findPersonByOktaId(jsonWebToken.getClaim("uid"));
-			if (person == null) {
-				person = validateUserToken();
+			Person person = null;
+			if(jsonWebToken.getClaim("uid") != null) {
+				person = personService.findPersonByOktaId(jsonWebToken.getClaim("uid"));
+				if (person == null) {
+					person = validateUserToken();
+				}
 			}
 			if (person == null) {
 				person = validateAdminToken();
