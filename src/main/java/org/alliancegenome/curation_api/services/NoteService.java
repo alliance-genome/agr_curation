@@ -50,7 +50,7 @@ public class NoteService extends BaseEntityCrudService<Note, NoteDAO> {
 		String noteText = "Deletion of " + entityIdentifier + " was requested by " + requestSource;
 		if (requestSource.contains("bulk load")) {
 			noteText = entityIdentifier + " was not present in " + requestSource;
-		}	
+		}
 		noteText += ".  It was deprecated instead of deleted due to the following foreign key restraints: " + StringUtils.join(deprecationReasons, " | ");
 		deprecationNote.setFreeText(noteText);
 		
