@@ -158,16 +158,6 @@ public abstract class BaseEntityCrudService<E extends AuditedObject, D extends B
 			return null;
 		}
 
-		if (object instanceof SubmittedObject submittedObject) {
-			if (StringUtils.isNotBlank(submittedObject.getCurie())) {
-				deprecate = true;
-			}
-		} else if (object instanceof Annotation annotation) {
-			if (StringUtils.isNotBlank(annotation.getCurie())) {
-				deprecate = true;
-			}
-		}
-
 		if (deprecate) {
 			if (!object.getObsolete()) {
 				object.setObsolete(true);
