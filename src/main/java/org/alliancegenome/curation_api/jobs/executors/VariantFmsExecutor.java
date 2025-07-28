@@ -54,9 +54,9 @@ public class VariantFmsExecutor extends LoadFileExecutor {
 			
 			boolean success = runLoad(bulkLoadFileHistory, variantData.getData(), entityIdsAdded, locationIdsAdded, associationIdsAdded, dataProvider);
 			if (success) {
-				runCleanup(variantService, bulkLoadFileHistory, dataProvider.name(), variantService.getIdsByDataProvider(dataProvider.name()), entityIdsAdded, "Variant");
-				runCleanup(curatedVariantGenomicLocationAssociationService, bulkLoadFileHistory, dataProvider.name(), curatedVariantGenomicLocationAssociationService.getIdsByDataProvider(dataProvider), locationIdsAdded, "Curated variant genomic location association");
 				runCleanup(alleleVariantAssociationService, bulkLoadFileHistory, dataProvider.name(), alleleVariantAssociationService.getAssociationsByDataProvider(dataProvider), associationIdsAdded, "Allele variant association");
+				runCleanup(curatedVariantGenomicLocationAssociationService, bulkLoadFileHistory, dataProvider.name(), curatedVariantGenomicLocationAssociationService.getIdsByDataProvider(dataProvider), locationIdsAdded, "Curated variant genomic location association");
+				runCleanup(variantService, bulkLoadFileHistory, dataProvider.name(), variantService.getIdsByDataProvider(dataProvider.name()), entityIdsAdded, "Variant");
 			}
 			bulkLoadFileHistory.finishLoad();
 			updateHistory(bulkLoadFileHistory);
