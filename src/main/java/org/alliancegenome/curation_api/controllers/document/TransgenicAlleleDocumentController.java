@@ -8,17 +8,18 @@ import org.alliancegenome.curation_api.dao.VocabularyTermDAO;
 import org.alliancegenome.curation_api.interfaces.document.TransgenicAlleleDocumentInterface;
 import org.alliancegenome.curation_api.model.document.builders.TransgenicAlleleDocumentBuilder;
 import org.alliancegenome.curation_api.model.document.es.TransgenicAlleleDocument;
-import org.alliancegenome.curation_api.model.entities.Allele;
+import org.alliancegenome.curation_api.model.entities.associations.AlleleConstructAssociation;
 import org.alliancegenome.curation_api.model.input.Pagination;
 import org.alliancegenome.curation_api.response.SearchResponse;
-import org.alliancegenome.curation_api.services.AlleleService;
+import org.alliancegenome.curation_api.services.associations.AlleleConstructAssociationService;
+import org.apache.commons.collections4.CollectionUtils;
 
 import jakarta.inject.Inject;
 
 public class TransgenicAlleleDocumentController implements TransgenicAlleleDocumentInterface {
 
 	@Inject
-	AlleleService service;
+	AlleleConstructAssociationService acService;
 
 	@Inject
 	VocabularyTermDAO vocabularyTermDAO;
@@ -29,16 +30,17 @@ public class TransgenicAlleleDocumentController implements TransgenicAlleleDocum
 			params = new HashMap<>();
 		}
 
-		Pagination pagination = new Pagination(page, limit);
-		SearchResponse<Allele> resp = service.findAllAllelesWithConstructs(pagination, params);
+		SearchResponse<AlleleConstructAssociation> resp = acService.findByParams(new Pagination(page, limit), params);
 
 		ArrayList<TransgenicAlleleDocument> list = new ArrayList<>();
 		if (resp.getResults() != null) {
 			TransgenicAlleleDocumentBuilder builder = new TransgenicAlleleDocumentBuilder();
 			builder.setVocabularyTermDAO(vocabularyTermDAO);
-			for (Allele allele : resp.getResults()) {
-				List<TransgenicAlleleDocument> docs = builder.buildTransgenicAlleleDocument(allele);
-				list.addAll(docs);
+			for (AlleleConstructAssociation association : resp.getResults()) {
+				List<TransgenicAlleleDocument> docs = builder.buildTransgenicAlleleDocument(association);
+				if (CollectionUtils.isNotEmpty(docs)) {
+					list.addAll(docs);
+				}
 			}
 		}
 
