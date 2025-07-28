@@ -6,10 +6,12 @@ import com.fasterxml.jackson.annotation.JsonView;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor
-@JsonView({View.FieldsOnly.class, View.ForPublic.class, View.ModelDocumentView.class})
+@NoArgsConstructor
+@JsonView({View.ModelDocumentView.class})
 public class DOTermAssociation {
 	private DOTerm disease;
 	private String associationType;
