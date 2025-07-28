@@ -2,6 +2,7 @@ package org.alliancegenome.curation_api.dao;
 
 import java.util.HashMap;
 
+import org.alliancegenome.curation_api.constants.EntityFieldConstants;
 import org.alliancegenome.curation_api.dao.base.BaseSQLDAO;
 import org.alliancegenome.curation_api.model.entities.Organization;
 import org.alliancegenome.curation_api.response.SearchResponse;
@@ -22,7 +23,7 @@ public class OrganizationDAO extends BaseSQLDAO<Organization> {
 			return organizationCache.get(abbreviation);
 		} else {
 			HashMap<String, Object> params = new HashMap<>();
-			params.put("abbreviation", abbreviation);
+			params.put(EntityFieldConstants.ORGANIZATION_ABBREVIATION, abbreviation);
 			SearchResponse<Organization> resp = findByParams(params);
 			if (resp != null) {
 				organizationCache.put(abbreviation, resp.getSingleResult());
