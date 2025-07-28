@@ -145,14 +145,13 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 		}
 	}
 
-
 	private Person validateUserTokenById() {
-		if(jsonWebToken.getClaim("uid") != null) {
+		if (jsonWebToken.getClaim("uid") != null) {
 			return personService.findPersonByOktaId(jsonWebToken.getClaim("uid"));
 		}
 		return null;
 	}
-	
+
 	// Check Okta(token), Check DB ApiToken(token), else return null
 	private Person validateUserTokenByEmail() {
 
