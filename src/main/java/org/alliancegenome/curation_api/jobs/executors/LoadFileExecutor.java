@@ -274,7 +274,7 @@ public class LoadFileExecutor {
 	}
 
 	protected <S extends BaseEntityCrudService<?, ?>> void runCleanup(S service, BulkLoadFileHistory history, String dataProviderName, List<Long> annotationIdsBefore, List<Long> annotationIdsAfter, String loadTypeString) {
-		runCleanup(service, history, dataProviderName, annotationIdsBefore, annotationIdsAfter, loadTypeString, true);
+		runCleanup(service, history, dataProviderName, annotationIdsBefore, annotationIdsAfter, loadTypeString, false);
 	}
 
 	// The following methods are for bulk validation

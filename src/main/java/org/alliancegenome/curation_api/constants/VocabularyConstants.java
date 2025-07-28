@@ -101,4 +101,6 @@ public final class VocabularyConstants {
 	public static final String POLYPHEN_PREDICTION_VOCABULARY = "polyphen_prediction";
 
 	public static final String HTP_DATASET_SAMPLE_SEQUENCE_FORMAT_VOCABULARY = "htp_data_sample_sequencing_format";
+	
+	public static final String DEPRECATION_REASON_TERM = "deprecation_reason";
 }

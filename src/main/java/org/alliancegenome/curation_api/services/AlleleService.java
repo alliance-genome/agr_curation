@@ -1,6 +1,7 @@
 package org.alliancegenome.curation_api.services;
 
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,6 +14,7 @@ import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.interfaces.base.BasePopularityInterface;
 import org.alliancegenome.curation_api.model.entities.Allele;
+import org.alliancegenome.curation_api.model.entities.Note;
 import org.alliancegenome.curation_api.model.ingest.dto.AlleleDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
@@ -30,14 +32,11 @@ import jakarta.transaction.Transactional;
 @RequestScoped
 public class AlleleService extends SubmittedObjectCrudService<Allele, AlleleDTO, AlleleDAO> implements BasePopularityInterface {
 
-	@Inject
-	AlleleDAO alleleDAO;
-	@Inject
-	AlleleValidator alleleValidator;
-	@Inject
-	AlleleDTOValidator alleleDtoValidator;
-	@Inject
-	PersonService personService;
+	@Inject AlleleDAO alleleDAO;
+	@Inject AlleleValidator alleleValidator;
+	@Inject AlleleDTOValidator alleleDtoValidator;
+	@Inject PersonService personService;
+	@Inject NoteService noteService;
 
 	@Override
 	@PostConstruct
@@ -65,6 +64,7 @@ public class AlleleService extends SubmittedObjectCrudService<Allele, AlleleDTO,
 		return new ObjectResponse<>(dbEntity);
 	}
 
+	@Override
 	public Allele upsert(AlleleDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
 		return alleleDtoValidator.validateAlleleDTO(dto, dataProvider);
 	}
@@ -81,16 +81,41 @@ public class AlleleService extends SubmittedObjectCrudService<Allele, AlleleDTO,
 	@Transactional
 	public Allele deprecateOrDelete(Long id, Boolean throwApiError, String requestSource, Boolean forceDeprecate) {
 		Allele allele = alleleDAO.find(id);
+		List<String> deprecationReasons = new ArrayList<>();
 		if (allele != null) {
-			if (forceDeprecate || alleleDAO.hasReferencingDiseaseAnnotationIds(id)
-					|| alleleDAO.hasReferencingPhenotypeAnnotations(id)
-					|| CollectionUtils.isNotEmpty(allele.getAlleleGeneAssociations())
-					|| CollectionUtils.isNotEmpty(allele.getAlleleVariantAssociations())
-					|| CollectionUtils.isNotEmpty(allele.getConstructGenomicEntityAssociations())) {
+			if (forceDeprecate) {
+				deprecationReasons.add("Deprecation instead of deletion rule applied");
+			}
+			if (alleleDAO.hasReferencingDiseaseAnnotations(id)) {
+				deprecationReasons.add("Allele is referenced by disease annotation(s)");
+			}
+			if (alleleDAO.hasReferencingPhenotypeAnnotations(id)) {
+				deprecationReasons.add("Allele is referenced by phenotype annotation(s)");
+			}
+			if (alleleDAO.hasReferencingAgmAlleleAssociations(id)) {
+				deprecationReasons.add("Allele has AGM association(s)");
+			}
+			if (CollectionUtils.isNotEmpty(allele.getAlleleGeneAssociations())) {
+				deprecationReasons.add("Allele has gene association(s)");
+			}
+			if (CollectionUtils.isNotEmpty(allele.getAlleleVariantAssociations())) {
+				deprecationReasons.add("Allele has variant association(s)");
+			}
+			if (CollectionUtils.isNotEmpty(allele.getConstructGenomicEntityAssociations())) {
+				deprecationReasons.add("Allele has construct association(s)");
+			}
+			if (CollectionUtils.isNotEmpty(deprecationReasons)) {
 				if (!allele.getObsolete()) {
 					allele.setUpdatedBy(personService.fetchByUniqueIdOrCreate(requestSource));
 					allele.setDateUpdated(OffsetDateTime.now());
 					allele.setObsolete(true);
+					
+					Note deprecationNote = noteService.createDeprecationNote(deprecationReasons);
+					if (allele.getRelatedNotes() == null) {
+						allele.setRelatedNotes(new ArrayList<>());
+					}
+					allele.getRelatedNotes().add(deprecationNote);
+					
 					return alleleDAO.persist(allele);
 				} else {
 					return allele;
@@ -118,6 +143,7 @@ public class AlleleService extends SubmittedObjectCrudService<Allele, AlleleDTO,
 		return ids;
 	}
 
+	@Override
 	@Transactional
 	public void updatePopularity(String curie, Double popularity) {
 		SearchResponse<Allele> searchResponse = findByField("primaryExternalId", curie);
