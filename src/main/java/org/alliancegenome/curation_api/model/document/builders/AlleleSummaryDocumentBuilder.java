@@ -2,14 +2,19 @@ package org.alliancegenome.curation_api.model.document.builders;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.alliancegenome.curation_api.model.document.es.AlleleSummaryDocument;
 import org.alliancegenome.curation_api.model.entities.Allele;
+import org.alliancegenome.curation_api.model.entities.Construct;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.Gene;
+import org.alliancegenome.curation_api.model.entities.Note;
 import org.alliancegenome.curation_api.model.entities.ResourceDescriptorPage;
+import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
+import org.alliancegenome.curation_api.model.entities.associations.AlleleConstructAssociation;
 import org.alliancegenome.curation_api.model.entities.associations.AlleleGeneAssociation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.AlleleSynonymSlotAnnotation;
 import org.alliancegenome.curation_api.services.ResourceDescriptorPageService;
@@ -35,19 +40,15 @@ public class AlleleSummaryDocumentBuilder {
 
 		doc.setAlterationType(determineAlterationType(allele));
 
-		if (CollectionUtils.isNotEmpty(allele.getAlleleSynonyms())) {
-			doc.setSynonyms(allele.getAlleleSynonyms().stream()
-					.map(AlleleSynonymSlotAnnotation::getDisplayText)
-					.collect(Collectors.toList()));
-		} else {
-			doc.setSynonyms(new ArrayList<>());
-		}
+		doc.setSynonyms(buildSynonyms(allele));
 
-		//TODO: Implement description (needs DQM decision)
+		doc.setDescription(buildDescription(allele));
 
 		doc.setAdditionalInformation(buildAdditionalInformation(allele, resourceDescriptorPageService));
 
 		doc.setAlleleOfGene(buildAlleleOfGene(allele));
+
+		doc.setConstructs(buildConstructs(allele, resourceDescriptorPageService));
 
 		return doc;
 	}
@@ -60,6 +61,40 @@ public class AlleleSummaryDocumentBuilder {
 		} else {
 			return "allele with multiple variants";
 		}
+	}
+
+	private List<String> buildSynonyms(Allele allele) {
+		if (CollectionUtils.isEmpty(allele.getAlleleSynonyms())) {
+			return new ArrayList<>();
+		}
+
+		List<String> alleleSynonyms;
+
+		alleleSynonyms = allele.getAlleleSynonyms()
+			.stream()
+			.map(AlleleSynonymSlotAnnotation::getDisplayText)
+			.collect(Collectors.toList());
+
+		return alleleSynonyms;
+	}
+
+	//TODO: may need to update after DQM decision
+	private String buildDescription(Allele allele) {
+
+		String description = new String();
+
+		if (CollectionUtils.isNotEmpty(allele.getRelatedNotes())) {
+			Note alleleNote = allele.getRelatedNotes().get(0);
+			VocabularyTerm noteType = alleleNote.getNoteType();
+
+			if (noteType.getName().equals("mutation_description")) {
+				description = alleleNote.getFreeText();
+			}
+
+		}
+
+		return description;
+
 	}
 
 	private Map<String, Object> buildAdditionalInformation(Allele allele, ResourceDescriptorPageService resourceDescriptorPageService) {
@@ -111,6 +146,66 @@ public class AlleleSummaryDocumentBuilder {
 		}
 
 		return alleleOfGene;
+	}
+
+	private List<Map<String, Object>> buildConstructs(Allele allele, ResourceDescriptorPageService resourceDescriptorPageService) {
+		List<Map<String, Object>> constructs = new ArrayList<>();
+
+		if (CollectionUtils.isNotEmpty(allele.getAlleleConstructAssociations())) {
+			for (AlleleConstructAssociation association : allele.getAlleleConstructAssociations()) {
+				Construct construct = association.getAlleleConstructAssociationObject();
+
+
+				if (construct != null) {
+					Map<String, Object> constructMap = new HashMap<>();
+
+					if (construct.getPrimaryExternalId() != null) {
+						constructMap.put("id", construct.getPrimaryExternalId());
+					}
+
+					String displayText = null;
+					if (construct.getConstructSymbol() != null && construct.getConstructSymbol().getDisplayText() != null) {
+						displayText = construct.getConstructSymbol().getDisplayText();
+					} else if (construct.getConstructFullName() != null && construct.getConstructFullName().getDisplayText() != null) {
+						displayText = construct.getConstructFullName().getDisplayText();
+					} else if (construct.getPrimaryExternalId() != null) {
+						displayText = construct.getPrimaryExternalId();
+					}
+
+					if (displayText != null) {
+						constructMap.put("name", displayText);
+					}
+
+					constructMap.put("type", "construct");
+
+					Map<String, Object> crossReferenceMap = new HashMap<>();
+					if (construct.getDataProviderCrossReference() != null || construct.getPrimaryExternalId() != null) {
+						Map<String, String> primary = new HashMap<>();
+
+						String referencedCurie = construct.getPrimaryExternalId();
+						if (construct.getDataProviderCrossReference() != null && construct.getDataProviderCrossReference().getReferencedCurie() != null) {
+							referencedCurie = construct.getDataProviderCrossReference().getReferencedCurie();
+						}
+
+						if (referencedCurie != null) {
+							primary.put("name", referencedCurie);
+
+							String constructUrl = buildUrlFromResourceDescriptorPage(referencedCurie, "construct", resourceDescriptorPageService);
+							if (constructUrl != null) {
+								primary.put("crossRefCompleteUrl", constructUrl);
+							}
+
+							crossReferenceMap.put("primary", primary);
+						}
+					}
+					constructMap.put("crossReferenceMap", crossReferenceMap);
+
+					constructs.add(constructMap);
+				}
+			}
+		}
+
+		return constructs;
 	}
 
 	private String buildUrlFromResourceDescriptorPage(String referencedCurie, String pageName, ResourceDescriptorPageService resourceDescriptorPageService) {
