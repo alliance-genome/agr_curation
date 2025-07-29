@@ -1,7 +1,6 @@
 package org.alliancegenome.curation_api.model.document.builders;
 
 import java.util.HashMap;
-import java.util.Map;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 
 import org.alliancegenome.curation_api.dao.GeneExpressionExperimentDAO;
