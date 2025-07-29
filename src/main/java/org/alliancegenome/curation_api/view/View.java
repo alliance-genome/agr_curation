@@ -139,6 +139,9 @@ public class View {
 
 	public static class GeneToGeneOrthologyDocument { }
 
+	public static class GeneExpressionDocument extends ForPublic {
+	}
+
 	public static class DiseaseAnnotationForPublic extends ForPublic {
 	}
 
