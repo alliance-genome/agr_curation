@@ -105,7 +105,6 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 				String apiToken = null;
 				if (authorizationHeader != null && authorizationHeader.toLowerCase().startsWith(AUTHENTICATION_APITOKEN.toLowerCase())) {
 					apiToken = authorizationHeader.substring(AUTHENTICATION_APITOKEN.length()).trim();
-
 					Person person = personService.findPersonByApiToken(apiToken);
 					if (person != null) {
 						userAuthenticatedEvent.fire(person);

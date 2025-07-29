@@ -51,7 +51,7 @@ public class ParalogyExecutor extends LoadFileExecutor {
 			boolean success = runLoad(geneToGeneParalogyService, bulkLoadFileHistory, dataProvider, paralogyData.getData(), paralogyIdsLoaded, false);
 
 			if (success) {
-				runCleanup(geneToGeneParalogyService, bulkLoadFileHistory, fms.getFmsDataSubType(), paralogyPairsBefore, paralogyIdsLoaded, fms.getFmsDataType(), false);
+				runCleanup(geneToGeneParalogyService, bulkLoadFileHistory, fms.getFmsDataSubType(), paralogyPairsBefore, paralogyIdsLoaded, fms.getFmsDataType());
 			}
 			bulkLoadFileHistory.finishLoad();
 

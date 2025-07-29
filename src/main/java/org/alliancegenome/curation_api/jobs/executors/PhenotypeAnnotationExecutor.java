@@ -98,10 +98,7 @@ public class PhenotypeAnnotationExecutor extends LoadFileExecutor {
 			}
 
 			try {
-				List<Long> primaryAnnotationId = phenotypeAnnotationService.addInferredOrAssertedEntities(dto, dataProvider);
-				if (idsAdded != null) {
-					idsAdded.addAll(primaryAnnotationId);
-				}
+				phenotypeAnnotationService.addInferredOrAssertedEntities(dto, dataProvider, idsAdded);
 				history.incrementCompleted();
 			} catch (ObjectUpdateException e) {
 				history.incrementFailed();
