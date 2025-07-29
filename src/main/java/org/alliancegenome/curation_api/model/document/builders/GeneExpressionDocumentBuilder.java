@@ -1,12 +1,15 @@
 package org.alliancegenome.curation_api.model.document.builders;
 
 import java.util.HashMap;
+import java.util.List;
+
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 
 import org.alliancegenome.curation_api.dao.GeneExpressionExperimentDAO;
 import org.alliancegenome.curation_api.model.document.es.GeneExpressionDocument;
 import org.alliancegenome.curation_api.model.entities.GeneExpressionAnnotation;
 import org.alliancegenome.curation_api.model.entities.GeneExpressionExperiment;
+import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.helpers.UniqueIdGeneratorHelper;
 
@@ -35,10 +38,9 @@ public class GeneExpressionDocumentBuilder {
 			GeneExpressionExperiment experiment = null;
 			if (resp != null) {
 				experiment = resp.getSingleResult();
-			}
-
-			if (experiment != null && experiment.getCrossReferences() != null) {
-				expressionDocument.setCrossReferences(experiment.getCrossReferences());
+				if (experiment != null && experiment.getCrossReferences() != null) {
+					expressionDocument.setCrossReferences(experiment.getCrossReferences());
+				}
 			}
 		} else {
 			expressionDocument.setCrossReferences(annotation.getCrossReferences());
@@ -48,8 +50,9 @@ public class GeneExpressionDocumentBuilder {
 		expressionDocument.setGene(annotation.getExpressionAnnotationSubject());
 		expressionDocument.setAssay(annotation.getExpressionAssayUsed());
 		expressionDocument.setTermName(annotation.getWhereExpressedStatement());
-		if (isNotEmpty(annotation.getExpressionPattern().getWhenExpressed().getStageUberonSlimTerms())) {
-			expressionDocument.setStageTermID(annotation.getExpressionPattern().getWhenExpressed().getStageUberonSlimTerms().getFirst().getName());
+		List<VocabularyTerm> stageUberonTerms = annotation.getExpressionPattern().getWhenExpressed().getStageUberonSlimTerms();
+		if (isNotEmpty(stageUberonTerms)) {
+			expressionDocument.setStageTermName(stageUberonTerms.getFirst().getName());
 		}
 
 		expressionDocument.setStage(annotation.getExpressionPattern().getWhenExpressed().getDevelopmentalStageStart());

@@ -29,6 +29,6 @@ public class GeneExpressionDocument extends ESDocument {
 	private MMOTerm assay;
 	private Organization dataProvider;
 	private List<CrossReference> crossReferences;
-	private String stageTermID;
+	private String stageTermName;
 
 }
