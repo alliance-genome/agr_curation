@@ -86,17 +86,14 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 	@Override
 	public void filter(ContainerRequestContext requestContext) throws IOException {
 		if (jsonWebToken.getClaimNames() != null) {
-			Person person = null;
-			if (person == null) {
-				person = validateUserTokenById();
-			}
+			Person person = validateUserTokenById();
+			
 			if (person == null) {
 				person = validateUserTokenByEmail();
 			}
 			if (person == null) {
 				person = validateAdminToken();
 			}
-
 			if (person != null) {
 				userAuthenticatedEvent.fire(person);
 			} else {
