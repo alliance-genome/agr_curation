@@ -32,6 +32,7 @@ import { ControlledVocabularyDropdown } from '../../components/ControlledVocabul
 import { ConditionRelationHandleDropdown } from '../../components/ConditionRelationHandleSelector';
 import { ControlledVocabularyMultiSelectDropdown } from '../../components/ControlledVocabularyMultiSelector';
 import { useControlledVocabularyService } from '../../service/useControlledVocabularyService';
+import { useVocabularyTermSetService } from '../../service/useVocabularyTermSetService';
 import { ErrorMessageComponent } from '../../components/Error/ErrorMessageComponent';
 import { TrueFalseDropdown } from '../../components/TrueFalseDropDownSelector';
 import { Button } from 'primereact/button';
@@ -73,6 +74,9 @@ export const DiseaseAnnotationsTable = () => {
 	const { newAnnotationState, newAnnotationDispatch } = useNewAnnotationReducer();
 
 	const relationsTerms = useControlledVocabularyService('disease_relation');
+	const agmRelationTerms = useVocabularyTermSetService('agm_disease_relation');
+	const alleleRelationTerms = useVocabularyTermSetService('allele_disease_relation');
+	const geneRelationTerms = useVocabularyTermSetService('gene_disease_relation');
 	const geneticSexTerms = useControlledVocabularyService('genetic_sex');
 	const annotationTypeTerms = useControlledVocabularyService('annotation_type');
 	const booleanTerms = useControlledVocabularyService('generic_boolean_terms');
@@ -328,12 +332,26 @@ export const DiseaseAnnotationsTable = () => {
 		}
 	};
 
+	const getRelationTermSet = (props) => {
+		let diseaseRelationTerms = relationsTerms;
+		if (props.rowData?.diseaseAnnotationSubject?.type === 'Gene') {
+			diseaseRelationTerms = geneRelationTerms;
+		} else if (props.rowData?.diseaseAnnotationSubject?.type === 'Allele') {
+			diseaseRelationTerms = alleleRelationTerms;
+		} else if (props.rowData?.diseaseAnnotationSubject?.type === 'AffectedGenomicModel') {
+			diseaseRelationTerms = agmRelationTerms;
+		}
+
+		return diseaseRelationTerms;
+	};
+
 	const relationEditor = (props) => {
+		let diseaseRelationTerms = getRelationTermSet(props);
 		return (
 			<>
 				<ControlledVocabularyDropdown
 					field="relation"
-					options={relationsTerms}
+					options={diseaseRelationTerms}
 					editorChange={onRelationEditorValueChange}
 					props={props}
 					showClear={false}
@@ -358,6 +376,7 @@ export const DiseaseAnnotationsTable = () => {
 					editorChange={onGeneticSexEditorValueChange}
 					props={props}
 					showClear={true}
+					placeholderText={props.rowData.geneticSex?.name}
 				/>
 				<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={'geneticSex'} />
 			</>
@@ -378,6 +397,7 @@ export const DiseaseAnnotationsTable = () => {
 					editorChange={onAnnotationTypeEditorValueChange}
 					props={props}
 					showClear={true}
+					placeholderText={props.rowData.annotationType?.name}
 				/>
 				<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={'annotationType'} />
 			</>
@@ -398,6 +418,7 @@ export const DiseaseAnnotationsTable = () => {
 					editorChange={onGeneticModifierRelationEditorValueChange}
 					props={props}
 					showClear={true}
+					placeholderText={props.rowData.diseaseGeneticModifierRelation?.name}
 				/>
 				<ErrorMessageComponent
 					errorMessages={errorMessagesRef.current[props.rowIndex]}
