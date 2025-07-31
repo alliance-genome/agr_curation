@@ -7,7 +7,6 @@ import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.InformationContentEntity;
 import org.alliancegenome.curation_api.model.entities.Organization;
 import org.alliancegenome.curation_api.model.entities.ontology.MMOTerm;
-import org.alliancegenome.curation_api.model.entities.ontology.StageTerm;
 import org.alliancegenome.curation_api.view.View;
 
 import com.fasterxml.jackson.annotation.JsonView;
@@ -24,11 +23,11 @@ public class GeneExpressionDocument extends ESDocument {
 	}
 	private Gene gene;
 	private InformationContentEntity reference;
-	private String termName;
-	private StageTerm stage;
+	private String location;
+	private String stageName;
 	private MMOTerm assay;
 	private Organization dataProvider;
 	private List<CrossReference> crossReferences;
-	private String stageTermName;
+	private String stageUberonTerm;
 
 }
