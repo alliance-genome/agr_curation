@@ -24,7 +24,7 @@ public class GeneExpressionDocument extends ESDocument {
 	}
 	private Gene gene;
 	private InformationContentEntity reference;
-	private String Location;
+	private String location;
 	private String stageName;
 	private MMOTerm assay;
 	private Organization dataProvider;
