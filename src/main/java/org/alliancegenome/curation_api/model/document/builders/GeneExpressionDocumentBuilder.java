@@ -49,13 +49,12 @@ public class GeneExpressionDocumentBuilder {
 		expressionDocument.setDataProvider(annotation.getDataProvider());
 		expressionDocument.setGene(annotation.getExpressionAnnotationSubject());
 		expressionDocument.setAssay(annotation.getExpressionAssayUsed());
-		expressionDocument.setTermName(annotation.getWhereExpressedStatement());
+		expressionDocument.setLocation(annotation.getWhereExpressedStatement());
+		expressionDocument.setStageName(annotation.getWhenExpressedStageName());
 		List<VocabularyTerm> stageUberonTerms = annotation.getExpressionPattern().getWhenExpressed().getStageUberonSlimTerms();
 		if (isNotEmpty(stageUberonTerms)) {
-			expressionDocument.setStageTermName(stageUberonTerms.getFirst().getName());
+			expressionDocument.setStageUberonTerm(stageUberonTerms.getFirst().getName());
 		}
-
-		expressionDocument.setStage(annotation.getExpressionPattern().getWhenExpressed().getDevelopmentalStageStart());
 
 		return expressionDocument;
 

@@ -24,11 +24,11 @@ public class GeneExpressionDocument extends ESDocument {
 	}
 	private Gene gene;
 	private InformationContentEntity reference;
-	private String termName;
-	private StageTerm stage;
+	private String Location;
+	private String stageName;
 	private MMOTerm assay;
 	private Organization dataProvider;
 	private List<CrossReference> crossReferences;
-	private String stageTermName;
+	private String stageUberonTerm;
 
 }
