@@ -84,11 +84,11 @@ public class AffectedGenomicModelDocument extends ESDocument {
 	}
 
 	public boolean isHasDiseaseAnnotations() {
-		return CollectionUtils.isNotEmpty(diseaseAnnotations);
+		return CollectionUtils.isNotEmpty(diseaseModels);
 	}
 
 	public boolean isHasDiseaseAndPhenotypeAnnotations() {
-		return CollectionUtils.isNotEmpty(diseaseAnnotations) && CollectionUtils.isNotEmpty(associatedPhenotype);
+		return CollectionUtils.isNotEmpty(diseaseModels) && CollectionUtils.isNotEmpty(associatedPhenotype);
 	}
 
 	public boolean isHasPhenotypeAnnotations() {
