@@ -1,6 +1,5 @@
 package org.alliancegenome.curation_api.services.associations;
 
-import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -14,7 +13,6 @@ import org.alliancegenome.curation_api.dao.PersonDAO;
 import org.alliancegenome.curation_api.dao.SequenceTargetingReagentDAO;
 import org.alliancegenome.curation_api.dao.associations.AgmSequenceTargetingReagentAssociationDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
-import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.interfaces.crud.BaseUpsertServiceInterface;
 import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
@@ -31,9 +29,7 @@ import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
-import lombok.extern.jbosslog.JBossLog;
 
-@JBossLog
 @RequestScoped
 public class AgmStrAssociationService extends BaseAssociationDTOCrudService<AgmSequenceTargetingReagentAssociation, AgmSequenceTargetingReagentAssociationDTO, AgmSequenceTargetingReagentAssociationDAO> implements BaseUpsertServiceInterface<AgmSequenceTargetingReagentAssociation, AgmSequenceTargetingReagentAssociationDTO> {
 
@@ -65,39 +61,6 @@ public class AgmStrAssociationService extends BaseAssociationDTOCrudService<AgmS
 		associationIds.removeIf(Objects::isNull);
 
 		return associationIds;
-	}
-
-	//todo: is this needed?
-	@Override
-	@Transactional
-	public AgmSequenceTargetingReagentAssociation deprecateOrDelete(Long id, Boolean throwApiError, String loadDescription, Boolean deprecate) {
-		AgmSequenceTargetingReagentAssociation association = agmStrAssociationDAO.find(id);
-
-		if (association == null) {
-			String errorMessage = "Could not find AgmSequenceTargetingReagentAssociation with id: " + id;
-			if (throwApiError) {
-				ObjectResponse<AgmSequenceTargetingReagentAssociation> response = new ObjectResponse<>();
-				response.addErrorMessage("id", errorMessage);
-				throw new ApiErrorException(response);
-			}
-			log.error(errorMessage);
-			return null;
-		}
-		if (deprecate) {
-			if (!association.getObsolete()) {
-				association.setObsolete(true);
-				if (authenticatedPerson.getId() != null) {
-					association.setUpdatedBy(personDAO.find(authenticatedPerson.getId()));
-				} else {
-					association.setUpdatedBy(personService.fetchByUniqueIdOrCreate(loadDescription));
-				}
-				association.setDateUpdated(OffsetDateTime.now());
-				return agmStrAssociationDAO.persist(association);
-			}
-			return association;
-		}
-
-		return null;
 	}
 
 	public ObjectResponse<AgmSequenceTargetingReagentAssociation> getAssociation(Long agmId, String relationName, Long strId) {

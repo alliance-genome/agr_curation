@@ -129,6 +129,7 @@ export const SORT_FIELDS = Object.freeze([
 	'phenotypesOrTraits',
 	'crossReference.displayName',
 	'crossReferences.displayName',
+	'gcrpCrossReference.displayName',
 	'taxon.curie',
 	'fullName',
 	'displayName',

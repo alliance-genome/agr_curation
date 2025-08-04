@@ -1,6 +1,7 @@
 package org.alliancegenome.curation_api.services;
 
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,6 +17,7 @@ import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
 import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.interfaces.base.BasePopularityInterface;
 import org.alliancegenome.curation_api.model.entities.Gene;
+import org.alliancegenome.curation_api.model.entities.Note;
 import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
 import org.alliancegenome.curation_api.model.ingest.dto.GeneDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
@@ -41,6 +43,7 @@ import jakarta.transaction.Transactional;
 public class GeneService extends SubmittedObjectCrudService<Gene, GeneDTO, GeneDAO> implements BasePopularityInterface {
 
 	@Inject GeneDAO geneDAO;
+	@Inject NoteService noteService;
 	@Inject GeneValidator geneValidator;
 	@Inject GeneDTOValidator geneDtoValidator;
 	@Inject DiseaseAnnotationService diseaseAnnotationService;
@@ -95,15 +98,59 @@ public class GeneService extends SubmittedObjectCrudService<Gene, GeneDTO, GeneD
 	@Transactional
 	public Gene deprecateOrDelete(Long id, Boolean throwApiError, String requestSource, Boolean forceDeprecate) {
 		Gene gene = geneDAO.find(id);
+		List<String> deprecationReasons = new ArrayList<>();
 		if (gene != null) {
-			if (forceDeprecate || geneDAO.hasReferencingDiseaseAnnotations(id) || geneDAO.hasReferencingPhenotypeAnnotations(id)
-					|| geneDAO.hasReferencingOrthologyPairs(id) || geneDAO.hasReferencingInteractions(id)
-					|| CollectionUtils.isNotEmpty(gene.getAlleleGeneAssociations())
-					|| CollectionUtils.isNotEmpty(gene.getConstructGenomicEntityAssociations())) {
+			if (forceDeprecate) {
+				deprecationReasons.add("Deprecation instead of deletion rule applied");
+			}
+			if (geneDAO.hasReferencingDiseaseAnnotations(id)) {
+				deprecationReasons.add("Gene is referenced by disease annotation(s)");
+			}
+			if (geneDAO.hasReferencingPhenotypeAnnotations(id)) {
+				deprecationReasons.add("Gene is referenced by phenotype annotation(s)");
+			}
+			if (geneDAO.hasReferencingOrthologyPairs(id)) {
+				deprecationReasons.add("Gene is referenced by orthology pair(s)");
+			}
+			if (geneDAO.hasReferencingParalogyPairs(id)) {
+				deprecationReasons.add("Gene is referenced by paralogy pair(s)");
+			}
+			if (geneDAO.hasReferencingInteractions(id)) {
+				deprecationReasons.add("Gene is referenced by interaction(s)");
+			}
+			if (geneDAO.hasReferencingGeneExpressionAnnotations(id)) {
+				deprecationReasons.add("Gene is referenced by expression annotation(s)");
+			}
+			if (CollectionUtils.isNotEmpty(gene.getAlleleGeneAssociations())) {
+				deprecationReasons.add("Gene has allele association(s)");
+			}
+			if (CollectionUtils.isNotEmpty(gene.getGeneOntologyAnnotations())) {
+				deprecationReasons.add("Gene is referenced by gene ontology annotation(s)");
+			}
+			if (CollectionUtils.isNotEmpty(gene.getSequenceTargetingReagentGeneAssociations())) {
+				deprecationReasons.add("Gene has sequence targeting reagent association(s)");
+			}
+			if (CollectionUtils.isNotEmpty(gene.getTranscriptGeneAssociations())) {
+				deprecationReasons.add("Gene has transcript association(s)");
+			}
+			if (CollectionUtils.isNotEmpty(gene.getGeneGenomicLocationAssociations())) {
+				deprecationReasons.add("Gene has genomic location association(s)");
+			}
+			if (CollectionUtils.isNotEmpty(gene.getConstructGenomicEntityAssociations())) {
+				deprecationReasons.add("Gene has construct association(s)");
+			}
+			if (CollectionUtils.isNotEmpty(deprecationReasons)) {
 				if (!gene.getObsolete()) {
 					gene.setUpdatedBy(personService.fetchByUniqueIdOrCreate(requestSource));
 					gene.setDateUpdated(OffsetDateTime.now());
 					gene.setObsolete(true);
+					
+					Note deprecationNote = noteService.createDeprecationNote(deprecationReasons);
+					if (gene.getRelatedNotes() == null) {
+						gene.setRelatedNotes(new ArrayList<>());
+					}
+					gene.getRelatedNotes().add(deprecationNote);
+					
 					return geneDAO.persist(gene);
 				} else {
 					return gene;

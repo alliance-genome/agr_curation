@@ -79,7 +79,10 @@ public class AffectedGenomicModelService extends SubmittedObjectCrudService<Affe
 		if (agm != null) {
 			if (forceDeprecate || agmDAO.hasReferencingDiseaseAnnotations(id)
 					|| agmDAO.hasReferencingPhenotypeAnnotations(id)
-					|| CollectionUtils.isNotEmpty(agm.getConstructGenomicEntityAssociations())) {
+					|| CollectionUtils.isNotEmpty(agm.getConstructGenomicEntityAssociations())
+					|| CollectionUtils.isNotEmpty(agm.getAgmSequenceTargetingReagentAssociations())
+					|| CollectionUtils.isNotEmpty(agm.getComponents())
+					|| CollectionUtils.isNotEmpty(agm.getParentalPopulations())) {
 				if (!agm.getObsolete()) {
 					agm.setUpdatedBy(personService.fetchByUniqueIdOrCreate(requestSource));
 					agm.setDateUpdated(OffsetDateTime.now());
