@@ -19,8 +19,9 @@ public class DiseaseSummaryDocument extends ESDocument {
 	{
 		category = "disease_summary";
 	}
-	
+
 	private DOTerm doTerm;
+	private String diseaseURL;
 	private Set<OntologyTerm> parents;
 	private Set<OntologyTerm> children;
 	private List<Map<String, String>> crossReferenceLinkUrls;
