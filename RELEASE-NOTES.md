@@ -2,6 +2,15 @@
  
 https://agr-jira.atlassian.net/wiki/spaces/ATEAM/overview
 
+## v0.41.0
+* New features:
+  * Deprecation note created during cleanup for genes / alleles that can't be deleted due to foreign key constraints (SCRUM-5324)
+  * Disease relation options constrained based on annotation subject type in edit mode (SCRUM-4790)
+
+* Fixes and maintenance
+  * Implemented timeout on cookies to prevent 401 errors (SCRUM-5313)
+  * Fixed missing values for dropdown fields in edit mode (SCRUM-5288)
+
 ## v0.40.0
 * New features:
   * Implemented cleanup procedure for ontology loads (SCRUM-5215)
