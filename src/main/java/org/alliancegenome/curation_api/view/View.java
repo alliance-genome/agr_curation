@@ -156,4 +156,7 @@ public class View {
 
 	public class ModelDocumentView {
 	}
+
+	public class TransgenicAllelesDocumentView extends ForPublic {
+	}
 }
