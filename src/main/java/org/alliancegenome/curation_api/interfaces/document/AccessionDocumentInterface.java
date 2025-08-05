@@ -21,5 +21,5 @@ public interface AccessionDocumentInterface {
 	@GET
 	@Path("/summary")
 	@JsonView(View.AccessionSummaryDocument.class)
-	public AccessionSummaryDocument getAccessionSummary();
+	AccessionSummaryDocument getAccessionSummary();
 }
