@@ -1,5 +1,6 @@
 package org.alliancegenome.curation_api.dao;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -127,6 +128,24 @@ public class GeneDAO extends BaseSQLDAO<Gene> {
 		params.put(EntityFieldConstants.EA_SUBJECT + ".id", geneId);
 		List<Long> results = geneExpressionAnnotationDAO.findIdsByParams(params);
 		return CollectionUtils.isNotEmpty(results);
+	}
+	
+	public List<String> getAllGenePrimaryExternalIds() {
+		String sql = """
+			SELECT be.primaryexternalid
+			FROM biologicalentity be, gene as g
+			WHERE be.id = g.id and be.primaryexternalid is not NULL
+		""";
+		
+		Query query = entityManager.createNativeQuery(sql);
+		List<Object> objects = query.getResultList();
+		List<String> list = new ArrayList<>();
+		
+		objects.forEach(object -> {
+			list.add((String) object);
+		});
+		
+		return list;
 	}
 
 	public Map<String, Long> getAllGeneIdsPerSpecies(Species species) {

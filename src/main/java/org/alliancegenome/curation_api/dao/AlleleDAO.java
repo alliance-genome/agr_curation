@@ -1,5 +1,6 @@
 package org.alliancegenome.curation_api.dao;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,6 +13,7 @@ import org.apache.commons.collections.CollectionUtils;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.persistence.Query;
 
 @ApplicationScoped
 public class AlleleDAO extends BaseSQLDAO<Allele> {
@@ -84,5 +86,25 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 		List<Long> results = agmAlleleAssociationDAO.findIdsByParams(params);
 		return CollectionUtils.isNotEmpty(results);
 	}
+	
+	
+	public List<String> getAllAllelePrimaryExternalIds() {
+		String sql = """
+			SELECT be.primaryexternalid
+			FROM biologicalentity be, allele as a
+			WHERE be.id = a.id and be.primaryexternalid is not NULL
+		""";
+		
+		Query query = entityManager.createNativeQuery(sql);
+		List<Object> objects = query.getResultList();
+		List<String> list = new ArrayList<>();
+		
+		objects.forEach(object -> {
+			list.add((String) object);
+		});
+		
+		return list;
+	}
+
 
 }
