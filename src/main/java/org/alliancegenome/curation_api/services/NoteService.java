@@ -43,10 +43,16 @@ public class NoteService extends BaseEntityCrudService<Note, NoteDAO> {
 	}
 
 	@Transactional
-	public Note createDeprecationNote(List<String> deprecationReasons) {
+	public Note createDeprecationNote(String entityIdentifier, String requestSource, List<String> deprecationReasons) {
 		Note deprecationNote = new Note();
 		deprecationNote.setNoteType(vocabularyTermService.getTermInVocabulary(VocabularyConstants.NOTE_TYPE_VOCABULARY, VocabularyConstants.DEPRECATION_REASON_TERM).getEntity());
-		deprecationNote.setFreeText(StringUtils.join(deprecationReasons, " | "));
+		
+		String noteText = "Deletion of " + entityIdentifier + " was requested by " + requestSource;
+		if (requestSource.contains("bulk load")) {
+			noteText = entityIdentifier + " was not present in " + requestSource;
+		}
+		noteText += ".  It was deprecated instead of deleted due to the following foreign key restraints: " + StringUtils.join(deprecationReasons, " | ");
+		deprecationNote.setFreeText(noteText);
 		
 		return noteDAO.persist(deprecationNote);
 	}
