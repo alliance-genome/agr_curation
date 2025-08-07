@@ -49,7 +49,7 @@ public class TransgenicAlleleDocumentBuilder {
 					TransgenicAlleleDocument transAllele = new TransgenicAlleleDocument();
 					transAllele.setAllele(allele);
 					transAllele.setGene(gene);
-					transAllele.setConstructs(constructs);
+					transAllele.setConstructList(constructs);
 					List<Gene> genes = new ArrayList<>(constructs.stream().flatMap(construct -> getExpressedGeneList(construct, "expresses").stream()).toList());
 					List<Gene> nonBgiComponents = getNonBgiComponents(constructs);
 					genes.addAll(nonBgiComponents);

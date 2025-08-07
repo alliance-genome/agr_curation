@@ -22,7 +22,7 @@ public class TransgenicAlleleDocument extends ESDocument {
 
 	private Gene gene;
 	private Allele allele;
-	private List<Construct> constructs;
+	private List<Construct> constructList;
 	private List<Gene> expressedGenes;
 	private List<SequenceTargetingReagent> sequenceTargetingReagents;
 	private List<Gene> regulatoryGenes;

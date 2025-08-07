@@ -41,7 +41,7 @@ public class Construct extends Reagent {
 	@IndexedEmbedded(includePaths = { "displayText", "formatText", "nameType.name", "synonymScope.name", "evidence.curie", "displayText_keyword", "formatText_keyword", "nameType.name_keyword", "synonymScope.name_keyword", "evidence.curie_keyword"})
 	@OneToOne(mappedBy = "singleConstruct", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonManagedReference
-	@JsonView({ View.FieldsOnly.class })
+	@JsonView({ View.FieldsOnly.class, View.TransgenicAllelesDocumentView.class })
 	private ConstructSymbolSlotAnnotation constructSymbol;
 
 	@IndexedEmbedded(includePaths = { "displayText", "formatText", "nameType.name", "synonymScope.name", "evidence.curie", "displayText_keyword", "formatText_keyword", "nameType.name_keyword", "synonymScope.name_keyword", "evidence.curie_keyword"})
@@ -49,7 +49,7 @@ public class Construct extends Reagent {
 	@JsonManagedReference
 	@JsonView({ View.FieldsOnly.class })
 	private ConstructFullNameSlotAnnotation constructFullName;
-	
+
 	@IndexedEmbedded(includePaths = { "displayText", "formatText", "nameType.name", "synonymScope.name", "evidence.curie", "displayText_keyword", "formatText_keyword", "nameType.name_keyword", "synonymScope.name_keyword", "evidence.curie_keyword"})
 	@OneToMany(mappedBy = "singleConstruct", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonManagedReference
@@ -65,13 +65,13 @@ public class Construct extends Reagent {
 		@Index(name = "construct_reference_references_index", columnList = "references_id")
 	})
 	private List<Reference> references;
-	
+
 	@IndexedEmbedded(includePaths = { "relation.name", "relation.name_keyword", "componentSymbol", "taxon.curie", "taxonText", "componentSymbol_keyword", "taxon.curie_keyword", "taxonText_keyword"})
 	@OneToMany(mappedBy = "singleConstruct", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonManagedReference
 	@JsonView({ View.FieldsAndLists.class, View.ConstructView.class })
 	private List<ConstructComponentSlotAnnotation> constructComponents;
-	
+
 	@IndexedEmbedded(includePaths = {
 		"constructGenomicEntityAssociationObject.curie", "constructGenomicEntityAssociationObject.primaryExternalId", "constructGenomicEntityAssociationObject.modInternalId",
 		"constructGenomicEntityAssociationObject.name", "constructGenomicEntityAssociationObject.symbol", "relation.name", "constructGenomicEntityAssociationObject.curie_keyword",
