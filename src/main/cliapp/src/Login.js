@@ -9,8 +9,8 @@ export const Login = ({ children }) => {
 	const [, setCookie] = useCookies(['okta-token-cookie']);
 
 	const onSuccess = (tokens) => {
-		//set cookie max age to 48 hours
-		setCookie('okta-token-cookie', tokens.accessToken.accessToken, { maxAge: 60 * 60 * 48 });
+		//set cookie max age to 12 hours
+		setCookie('okta-token-cookie', tokens.accessToken.accessToken, { maxAge: 60 * 60 * 12 });
 		oktaAuth.handleLoginRedirect(tokens);
 	};
 
