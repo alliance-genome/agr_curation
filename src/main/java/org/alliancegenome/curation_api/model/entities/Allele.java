@@ -59,7 +59,8 @@ import lombok.ToString;
 	exclude = {
 		"alleleGeneAssociations", "alleleVariantAssociations", "alleleDiseaseAnnotations", "alleleMutationTypes", "alleleSymbol", "alleleFullName", "alleleSynonyms",
 		"alleleSecondaryIds", "alleleInheritanceModes", "alleleFunctionalImpacts", "alleleGermlineTransmissionStatus", "alleleDatabaseStatus",
-		"alleleNomenclatureEvents", "constructGenomicEntityAssociations", "alleleConstructAssociations"
+		"alleleNomenclatureEvents", "constructGenomicEntityAssociations", "alleleConstructAssociations", "allelePhenotypeAnnotations",
+		"agmPhenotypeAssertedAlleleAnnotations", "agmPhenotypeInferredAlleleAnnotations", "agmDiseaseAssertedAlleleAnnotations", "agmDiseaseInferredAlleleAnnotations"
 	},
 	callSuper = true
 )
