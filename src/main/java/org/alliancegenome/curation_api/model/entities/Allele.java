@@ -59,7 +59,8 @@ import lombok.ToString;
 	exclude = {
 		"alleleGeneAssociations", "alleleVariantAssociations", "alleleDiseaseAnnotations", "alleleMutationTypes", "alleleSymbol", "alleleFullName", "alleleSynonyms",
 		"alleleSecondaryIds", "alleleInheritanceModes", "alleleFunctionalImpacts", "alleleGermlineTransmissionStatus", "alleleDatabaseStatus",
-		"alleleNomenclatureEvents", "constructGenomicEntityAssociations", "alleleConstructAssociations"
+		"alleleNomenclatureEvents", "constructGenomicEntityAssociations", "alleleConstructAssociations", "allelePhenotypeAnnotations",
+		"agmPhenotypeAssertedAlleleAnnotations", "agmPhenotypeInferredAlleleAnnotations", "agmDiseaseAssertedAlleleAnnotations", "agmDiseaseInferredAlleleAnnotations"
 	},
 	callSuper = true
 )
@@ -101,6 +102,9 @@ public class Allele extends GenomicEntity {
 
 	@OneToMany(mappedBy = "diseaseAnnotationSubject", cascade = CascadeType.ALL)
 	private List<AlleleDiseaseAnnotation> alleleDiseaseAnnotations;
+
+	@OneToMany(mappedBy = "phenotypeAnnotationSubject", cascade = CascadeType.ALL)
+	private List<AllelePhenotypeAnnotation> allelePhenotypeAnnotations;
 
 	@IndexedEmbedded(includePaths = { "mutationTypes.curie", "mutationTypes.name", "evidence.curie", "mutationTypes.curie_keyword", "mutationTypes.name_keyword", "evidence.curie_keyword"})
 	@OneToMany(mappedBy = "singleAllele", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -231,5 +235,17 @@ public class Allele extends GenomicEntity {
 	@OneToMany(mappedBy = "constructGenomicEntityAssociationObject", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonView({ View.FieldsAndLists.class, View.GeneDetailView.class })
 	private List<ConstructGenomicEntityAssociation> constructGenomicEntityAssociations;
+
+	@ManyToMany(mappedBy = "assertedAlleles", cascade = CascadeType.ALL)
+	private List<AGMPhenotypeAnnotation> agmPhenotypeAssertedAlleleAnnotations;
+
+	@OneToMany(mappedBy = "inferredAllele", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<AGMPhenotypeAnnotation> agmPhenotypeInferredAlleleAnnotations;
+
+	@ManyToMany(mappedBy = "assertedAlleles", cascade = CascadeType.ALL)
+	private List<AGMDiseaseAnnotation> agmDiseaseAssertedAlleleAnnotations;
+
+	@OneToMany(mappedBy = "inferredAllele", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<AGMDiseaseAnnotation> agmDiseaseInferredAlleleAnnotations;
 
 }

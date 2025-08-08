@@ -7,6 +7,9 @@ import java.util.Map;
 
 import org.alliancegenome.curation_api.dao.VocabularyTermDAO;
 import org.alliancegenome.curation_api.model.document.es.TransgenicAlleleDocument;
+import org.alliancegenome.curation_api.model.entities.AGMDiseaseAnnotation;
+import org.alliancegenome.curation_api.model.entities.AGMPhenotypeAnnotation;
+import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.Construct;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
@@ -27,6 +30,16 @@ public class TransgenicAlleleDocumentBuilder {
 		if (CollectionUtils.isEmpty(association.getAlleleConstructAssociationObject().getConstructGenomicEntityAssociations())) {
 			return null;
 		}
+		Allele allele = association.getAlleleAssociationSubject();
+		// check AlleleDiseaseAnnotations and AGMDiseaseAnnotations with inferred or asserted alleles for disease annotations
+		List<AGMDiseaseAnnotation> agmDiseaseAnnotations = allele.getAgmDiseaseAssertedAlleleAnnotations();
+		agmDiseaseAnnotations.addAll(allele.getAgmDiseaseInferredAlleleAnnotations());
+		Boolean hasDiseaseAnnotation = CollectionUtils.isNotEmpty(agmDiseaseAnnotations) || CollectionUtils.isNotEmpty(allele.getAlleleDiseaseAnnotations());
+
+		// check AllelePhenotypeAnnotations and AGMPhenotypeAnnotations with inferred or asserted alleles for phenotype annotations
+		List<AGMPhenotypeAnnotation> agmPhenotypeAnnotations = allele.getAgmPhenotypeAssertedAlleleAnnotations();
+		agmPhenotypeAnnotations.addAll(allele.getAgmPhenotypeInferredAlleleAnnotations());
+		Boolean hasPhenotypeAnnotation = CollectionUtils.isNotEmpty(agmPhenotypeAnnotations) || CollectionUtils.isNotEmpty(allele.getAllelePhenotypeAnnotations());
 
 		List<TransgenicAlleleDocument> transgenicAlleleDocuments = new ArrayList<>();
 		// get all genes that have a construct-expresses-gene relationship
@@ -34,15 +47,17 @@ public class TransgenicAlleleDocumentBuilder {
 		expressedGeneConstructMap.forEach(
 				(gene, constructs) -> {
 					TransgenicAlleleDocument transAllele = new TransgenicAlleleDocument();
-					transAllele.setAllele(association.getAlleleAssociationSubject());
+					transAllele.setAllele(allele);
 					transAllele.setGene(gene);
-					transAllele.setConstructs(constructs);
+					transAllele.setConstructList(constructs);
 					List<Gene> genes = new ArrayList<>(constructs.stream().flatMap(construct -> getExpressedGeneList(construct, "expresses").stream()).toList());
 					List<Gene> nonBgiComponents = getNonBgiComponents(constructs);
 					genes.addAll(nonBgiComponents);
 					transAllele.setExpressedGenes(genes);
 					List<Gene> regulatorGenes = constructs.stream().flatMap(construct -> getExpressedGeneList(construct, "is_regulated_by").stream()).toList();
 					transAllele.setRegulatoryGenes(regulatorGenes);
+					transAllele.setHasDiseaseAnnotations(hasDiseaseAnnotation);
+					transAllele.setHasPhenotypeAnnotations(hasPhenotypeAnnotation);
 					transgenicAlleleDocuments.add(transAllele);
 				});
 		return transgenicAlleleDocuments;
