@@ -20,6 +20,7 @@ import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.GeneDiseaseAnnotation;
 import org.alliancegenome.curation_api.model.entities.GenomicEntity;
+import org.alliancegenome.curation_api.model.entities.ResourceDescriptorPage;
 import org.alliancegenome.curation_api.model.entities.Synonym;
 import org.alliancegenome.curation_api.model.entities.ontology.DOTerm;
 import org.alliancegenome.curation_api.model.entities.orthology.GeneToGeneOrthologyGenerated;
@@ -30,11 +31,13 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class DiseaseSummaryDocumentBuilder {
 
-	public DiseaseSummaryDocument buildSummaryDocument(DOTerm doTerm) {
+	public DiseaseSummaryDocument buildSummaryDocument(DOTerm doTerm, ResourceDescriptorPage resourceDescriptorPage) {
 
 		DiseaseSummaryDocument doc = new DiseaseSummaryDocument();
+		String diseaseURL = resourceDescriptorPage.getUrlTemplate().replace("[%s]", doTerm.getCurie());
 
 		doc.setDoTerm(doTerm);
+		doc.setDiseaseURL(diseaseURL);
 		doc.setParents(new HashSet<>(doTerm.getParents(Set.of("is_a", "part_of"))));
 		doc.setChildren(new HashSet<>(doTerm.getChildren(Set.of("is_a", "part_of"))));
 		doc.setCrossReferenceLinkUrls(new ArrayList<>());

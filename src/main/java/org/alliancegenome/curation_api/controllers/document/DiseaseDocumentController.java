@@ -33,13 +33,15 @@ public class DiseaseDocumentController implements DiseaseDocumentInterface {
 
 		Pagination pagination = new Pagination(page, limit);
 		SearchResponse<DOTerm> resp = doTermService.findByParams(pagination, params);
+		ResourceDescriptorPage diseaseResourceDescriptorPage = resourceDescriptorPageService.getPageForResourceDescriptor("DOID", "default");
+
 
 		List<String> sources = List.of("RGD", "MGI", "ZFIN", "FB", "WB", "SGD");
 		ArrayList<DiseaseSummaryDocument> list = new ArrayList<>();
 		if (resp.getResults() != null) {
 			DiseaseSummaryDocumentBuilder builder = new DiseaseSummaryDocumentBuilder();
 			for (DOTerm doTerm : resp.getResults()) {
-				DiseaseSummaryDocument doc = builder.buildSummaryDocument(doTerm);
+				DiseaseSummaryDocument doc = builder.buildSummaryDocument(doTerm, diseaseResourceDescriptorPage);
 				doc.setSourceReferenceLinkUrls(new ArrayList<Map<String, String>>());
 				String pageName;
 				for (String source : sources) {
