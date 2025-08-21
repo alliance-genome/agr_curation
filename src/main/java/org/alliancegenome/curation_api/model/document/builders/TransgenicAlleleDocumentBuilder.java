@@ -12,6 +12,7 @@ import org.alliancegenome.curation_api.model.entities.AGMPhenotypeAnnotation;
 import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.Construct;
 import org.alliancegenome.curation_api.model.entities.Gene;
+import org.alliancegenome.curation_api.model.entities.TransgenicAlleleConstruct;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.associations.AlleleConstructAssociation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.ConstructComponentSlotAnnotation;
@@ -49,13 +50,17 @@ public class TransgenicAlleleDocumentBuilder {
 					TransgenicAlleleDocument transAllele = new TransgenicAlleleDocument();
 					transAllele.setAllele(allele);
 					transAllele.setGene(gene);
-					transAllele.setConstructList(constructs);
-					List<Gene> genes = new ArrayList<>(constructs.stream().flatMap(construct -> getExpressedGeneList(construct, "expresses").stream()).toList());
-					List<Gene> nonBgiComponents = getNonBgiComponents(constructs);
-					genes.addAll(nonBgiComponents);
-					transAllele.setExpressedGenes(genes);
-					List<Gene> regulatorGenes = constructs.stream().flatMap(construct -> getExpressedGeneList(construct, "is_regulated_by").stream()).toList();
-					transAllele.setRegulatoryGenes(regulatorGenes);
+
+					List<TransgenicAlleleConstruct> tacList = constructs.stream().map(construct -> {
+						TransgenicAlleleConstruct tac = new TransgenicAlleleConstruct();
+						tac.setConstruct(construct);
+						tac.setExpressedGenes(getExpressedGeneList(construct, "expresses"));
+						tac.setRegulatoryGenes(getExpressedGeneList(construct, "is_regulated_by"));
+//						tac.setSequenceTargetingReagents(null);
+						tac.setNonBgiComponents(getNonBgiComponents(constructs));
+						return tac;
+					}).toList();
+					transAllele.setTransgenicAlleleConstructs(tacList);
 					transAllele.setHasDiseaseAnnotations(hasDiseaseAnnotation);
 					transAllele.setHasPhenotypeAnnotations(hasPhenotypeAnnotation);
 					transgenicAlleleDocuments.add(transAllele);
