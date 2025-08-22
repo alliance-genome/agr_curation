@@ -332,6 +332,8 @@ public class GeneExpressionAnnotationFmsDTOValidator {
 						} else {
 							uberonTerms.add(uberonTerm);
 						}
+					} else {
+						anatomicalSite.setAnatomicalStructureUberonTermOther(true);
 					}
 				}
 				anatomicalSite.setAnatomicalStructureUberonTerms(uberonTerms);
@@ -344,10 +346,12 @@ public class GeneExpressionAnnotationFmsDTOValidator {
 					if (!uberonSlimTermDTO.getUberonTerm().equals("Other")) {
 						UBERONTerm uberonTerm = uberonTermService.getByCurie(uberonSlimTermDTO.getUberonTerm()).getEntity();
 						if (uberonTerm == null) {
-							response.addErrorMessage("whereExpressed - anatomicalStructureUberonSlimTermId", ValidationConstants.INVALID_MESSAGE + " (" + uberonSlimTermDTO.getUberonTerm() + ")");
+							response.addErrorMessage("whereExpressed - anatomicalSubStructureUberonSlimTermId", ValidationConstants.INVALID_MESSAGE + " (" + uberonSlimTermDTO.getUberonTerm() + ")");
 						} else {
 							uberonTerms.add(uberonTerm);
 						}
+					} else {
+						anatomicalSite.setAnatomicalSubStructureUberonTermOther(true);
 					}
 				}
 				anatomicalSite.setAnatomicalSubstructureUberonTerms(uberonTerms);
