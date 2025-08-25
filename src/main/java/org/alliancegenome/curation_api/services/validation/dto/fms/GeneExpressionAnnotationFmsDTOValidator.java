@@ -408,6 +408,8 @@ public class GeneExpressionAnnotationFmsDTOValidator {
 		anatomicalSiteDB.setCellularComponentQualifiers(anatomicalSite.getCellularComponentQualifiers());
 		anatomicalSiteDB.setAnatomicalStructureUberonTerms(anatomicalSite.getAnatomicalStructureUberonTerms());
 		anatomicalSiteDB.setAnatomicalSubstructureUberonTerms(anatomicalSite.getAnatomicalSubstructureUberonTerms());
+		anatomicalSiteDB.setAnatomicalStructureUberonTermOther(anatomicalSite.getAnatomicalStructureUberonTermOther());
+		anatomicalSiteDB.setAnatomicalSubStructureUberonTermOther(anatomicalSite.getAnatomicalSubStructureUberonTermOther());
 		return anatomicalSiteDB;
 	}
 }
