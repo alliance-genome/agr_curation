@@ -38,7 +38,7 @@ public class AlleleSummaryDocumentBuilder {
 		alleleForDocument.setDataProviderCrossReference(allele.getDataProviderCrossReference());
 
 		// Create cross-references list with both general allele and references pages for additional info section
-		List<CrossReference> crossReferences = buildEnhancedCrossReferences(allele, resourceDescriptorPageService);
+		List<CrossReference> crossReferences = buildCrossReferences(allele, resourceDescriptorPageService);
 		alleleForDocument.setCrossReferences(crossReferences);
 
 		doc.setAllele(alleleForDocument);
@@ -120,7 +120,7 @@ public class AlleleSummaryDocumentBuilder {
 		return constructs;
 	}
 
-	private List<CrossReference> buildEnhancedCrossReferences(Allele allele, ResourceDescriptorPageService resourceDescriptorPageService) {
+	private List<CrossReference> buildCrossReferences(Allele allele, ResourceDescriptorPageService resourceDescriptorPageService) {
 		List<CrossReference> crossRefs = new ArrayList<>();
 
 		// Create a new cross-reference for allele/references using the
@@ -128,9 +128,9 @@ public class AlleleSummaryDocumentBuilder {
 		try {
 			Map<String, Object> params = new HashMap<>();
 			params.put("name", "allele/references");
+			params.put("resourceDescriptor.prefix", allele.getDataProvider().getAbbreviation());
 
-			SearchResponse<ResourceDescriptorPage> alleleReferencesPages = resourceDescriptorPageService.findByParams(null,
-					params);
+			SearchResponse<ResourceDescriptorPage> alleleReferencesPages = resourceDescriptorPageService.findByParams(null, params);
 			if (alleleReferencesPages != null && !alleleReferencesPages.getResults().isEmpty()) {
 				CrossReference alleleRefsCrossRef = new CrossReference();
 				alleleRefsCrossRef.setReferencedCurie(allele.getDataProviderCrossReference().getReferencedCurie());
