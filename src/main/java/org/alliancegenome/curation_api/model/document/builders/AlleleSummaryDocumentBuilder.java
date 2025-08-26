@@ -11,9 +11,7 @@ import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.Construct;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.Gene;
-import org.alliancegenome.curation_api.model.entities.Note;
 import org.alliancegenome.curation_api.model.entities.ResourceDescriptorPage;
-import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.associations.AlleleConstructAssociation;
 import org.alliancegenome.curation_api.model.entities.associations.AlleleGeneAssociation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.AlleleSynonymSlotAnnotation;
@@ -28,7 +26,13 @@ public class AlleleSummaryDocumentBuilder {
 	public AlleleSummaryDocument buildSummaryDocument(Allele allele, ResourceDescriptorPageService resourceDescriptorPageService) {
 		AlleleSummaryDocument doc = new AlleleSummaryDocument();
 
-		doc.setId(allele.getPrimaryExternalId());
+		Allele alleleForDocument = new Allele();
+		alleleForDocument.setId(allele.getId());
+		alleleForDocument.setPrimaryExternalId(allele.getPrimaryExternalId());
+		alleleForDocument.setTaxon(allele.getTaxon());
+		alleleForDocument.setAlleleSymbol(allele.getAlleleSymbol());
+		alleleForDocument.setAlleleSynonyms(allele.getAlleleSynonyms());
+		alleleForDocument.setDataProvider(allele.getDataProvider());
 
 		if (allele.getTaxon() != null) {
 			doc.setSpecies(allele.getTaxon().getName());
@@ -38,13 +42,11 @@ public class AlleleSummaryDocumentBuilder {
 			doc.setSymbol(allele.getAlleleSymbol().getDisplayText());
 		}
 
+		doc.setAllele(alleleForDocument);
+
 		doc.setAlterationType(determineAlterationType(allele));
 
-		doc.setSynonyms(buildSynonyms(allele));
-
 		doc.setDescription(buildDescription(allele));
-
-		doc.setAdditionalInformation(buildAdditionalInformation(allele, resourceDescriptorPageService));
 
 		doc.setAlleleOfGene(buildAlleleOfGene(allele));
 
@@ -63,22 +65,6 @@ public class AlleleSummaryDocumentBuilder {
 		}
 	}
 
-	private List<String> buildSynonyms(Allele allele) {
-		if (CollectionUtils.isEmpty(allele.getAlleleSynonyms())) {
-			return new ArrayList<>();
-		}
-
-		List<String> alleleSynonyms;
-
-		alleleSynonyms = allele.getAlleleSynonyms()
-			.stream()
-			.map(AlleleSynonymSlotAnnotation::getDisplayText)
-			.collect(Collectors.toList());
-
-		return alleleSynonyms;
-	}
-
-	//TODO: may need to update after DQM decision
 	private String buildDescription(Allele allele) {
 
 		String description = new String();
