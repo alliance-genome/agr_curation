@@ -50,7 +50,7 @@ public class AlleleSummaryDocumentBuilder {
 
 		doc.setAlleleOfGene(buildAlleleOfGene(allele));
 
-		doc.setConstructs(buildConstructs(allele, resourceDescriptorPageService));
+		doc.setConstructSlimList(getConstructs(allele));
 
 		return doc;
 	}
@@ -106,63 +106,18 @@ public class AlleleSummaryDocumentBuilder {
 		return alleleOfGene;
 	}
 
-	private List<Map<String, Object>> buildConstructs(Allele allele, ResourceDescriptorPageService resourceDescriptorPageService) {
-		List<Map<String, Object>> constructs = new ArrayList<>();
-
+	private List<Construct> getConstructs(Allele allele) {
+		List<Construct> constructs = new ArrayList<>();
 		if (CollectionUtils.isNotEmpty(allele.getAlleleConstructAssociations())) {
 			for (AlleleConstructAssociation association : allele.getAlleleConstructAssociations()) {
 				Construct construct = association.getAlleleConstructAssociationObject();
 
-
 				if (construct != null) {
-					Map<String, Object> constructMap = new HashMap<>();
-
-					if (construct.getPrimaryExternalId() != null) {
-						constructMap.put("id", construct.getPrimaryExternalId());
-					}
-
-					String displayText = null;
-					if (construct.getConstructSymbol() != null && construct.getConstructSymbol().getDisplayText() != null) {
-						displayText = construct.getConstructSymbol().getDisplayText();
-					} else if (construct.getConstructFullName() != null && construct.getConstructFullName().getDisplayText() != null) {
-						displayText = construct.getConstructFullName().getDisplayText();
-					} else if (construct.getPrimaryExternalId() != null) {
-						displayText = construct.getPrimaryExternalId();
-					}
-
-					if (displayText != null) {
-						constructMap.put("name", displayText);
-					}
-
-					constructMap.put("type", "construct");
-
-					Map<String, Object> crossReferenceMap = new HashMap<>();
-					if (construct.getDataProviderCrossReference() != null || construct.getPrimaryExternalId() != null) {
-						Map<String, String> primary = new HashMap<>();
-
-						String referencedCurie = construct.getPrimaryExternalId();
-						if (construct.getDataProviderCrossReference() != null && construct.getDataProviderCrossReference().getReferencedCurie() != null) {
-							referencedCurie = construct.getDataProviderCrossReference().getReferencedCurie();
-						}
-
-						if (referencedCurie != null) {
-							primary.put("name", referencedCurie);
-
-							String constructUrl = buildUrlFromResourceDescriptorPage(referencedCurie, "construct", resourceDescriptorPageService);
-							if (constructUrl != null) {
-								primary.put("crossRefCompleteUrl", constructUrl);
-							}
-
-							crossReferenceMap.put("primary", primary);
-						}
-					}
-					constructMap.put("crossReferenceMap", crossReferenceMap);
-
-					constructs.add(constructMap);
+					constructs.add(construct);
 				}
 			}
-		}
 
+		}
 		return constructs;
 	}
 
