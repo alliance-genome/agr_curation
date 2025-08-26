@@ -85,52 +85,22 @@ public class AlleleSummaryDocumentBuilder {
 
 	}
 
-	private Map<String, Object> buildAdditionalInformation(Allele allele, ResourceDescriptorPageService resourceDescriptorPageService) {
-		Map<String, Object> additionalInfo = new HashMap<>();
+	private Gene buildAlleleOfGene(Allele allele) {
+		Gene alleleOfGene = new Gene();
+		List<AlleleGeneAssociation> alleleGeneAssociations = allele.getAlleleGeneAssociations();
 
-		CrossReference crossRef = allele.getDataProviderCrossReference();
-		if (crossRef == null && CollectionUtils.isNotEmpty(allele.getCrossReferences())) {
-			crossRef = allele.getCrossReferences().get(0);
-		}
+		if (CollectionUtils.isNotEmpty(alleleGeneAssociations)) {
 
-		if (crossRef != null) {
-			String referencedCurie = crossRef.getReferencedCurie();
-			String primaryUrl = crossRef.getUrlFromResourceDescriptorPage(referencedCurie);
+			List<Gene> alleleOfGeneList = alleleGeneAssociations.stream()
+					.filter(aga -> aga.getRelation().getName().equals("is_allele_of"))
+					.filter(aga -> aga.getInternal() == false && aga.getObsolete() == false)
+					.map(aga -> aga.getAlleleGeneAssociationObject())
+					.collect(Collectors.toList());
 
-			Map<String, String> references = new HashMap<>();
-			String referencesUrl = buildUrlFromResourceDescriptorPage(referencedCurie, "allele/references", resourceDescriptorPageService);
-			references.put("crossRefCompleteUrl", referencesUrl);
-			references.put("name", referencedCurie);
-			additionalInfo.put("references", references);
-
-			Map<String, String> primary = new HashMap<>();
-			primary.put("crossRefCompleteUrl", primaryUrl);
-			primary.put("name", referencedCurie);
-			additionalInfo.put("primary", primary);
-		}
-
-		return additionalInfo;
-	}
-
-
-	private Map<String, String> buildAlleleOfGene(Allele allele) {
-		Map<String, String> alleleOfGene = new HashMap<>();
-
-		if (CollectionUtils.isNotEmpty(allele.getAlleleGeneAssociations())) {
-			AlleleGeneAssociation firstAssociation = allele.getAlleleGeneAssociations().get(0);
-			Gene associatedGene = firstAssociation.getAlleleGeneAssociationObject();
-
-			if (associatedGene != null) {
-				if (associatedGene.getGeneSymbol() != null) {
-					String geneSymbol = associatedGene.getGeneSymbol().getDisplayText();
-					alleleOfGene.put("geneSymbol", geneSymbol);
-				}
-
-				if (associatedGene.getPrimaryExternalId() != null) {
-					String primaryExternalId = associatedGene.getPrimaryExternalId();
-					alleleOfGene.put("primaryExternalId", primaryExternalId);
-				}
+			if (CollectionUtils.isNotEmpty(alleleOfGeneList)) {
+				alleleOfGene = alleleOfGeneList.get(0);
 			}
+
 		}
 
 		return alleleOfGene;

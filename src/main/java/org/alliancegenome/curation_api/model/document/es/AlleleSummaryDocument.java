@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.alliancegenome.curation_api.model.entities.Allele;
+import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.view.View;
 
 import com.fasterxml.jackson.annotation.JsonView;
@@ -22,6 +23,5 @@ public class AlleleSummaryDocument extends ESDocument {
 	private String alterationType;
 	private String description;
 	private Map<String, Object> additionalInformation;
-	private Map<String, String> alleleOfGene;
-	private List<Map<String, Object>> constructs;
+	private Gene alleleOfGene;
 }
