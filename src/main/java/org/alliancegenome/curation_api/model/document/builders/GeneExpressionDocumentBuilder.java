@@ -67,7 +67,7 @@ public class GeneExpressionDocumentBuilder {
 		if (annotation.getExpressionPattern() != null && annotation.getExpressionPattern().getWhenExpressed() != null) {
 
 			List<VocabularyTerm> stageUberonTerms = annotation.getExpressionPattern().getWhenExpressed().getStageUberonSlimTerms();
-			if (isNotEmpty(stageUberonTerms)) {
+			if (isNotEmpty(stageUberonTerms) && isNotEmpty(stageUberonTerms.getFirst())) {
 				stageUberonTerm = stageUberonTerms.getFirst().getName();
 				termIds.add(stageUberonTerms.getFirst().getName());
 				termIds.add(UBERON_STAGE_ROOT);
