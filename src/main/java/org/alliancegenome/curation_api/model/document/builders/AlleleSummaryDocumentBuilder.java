@@ -14,7 +14,7 @@ import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.ResourceDescriptorPage;
 import org.alliancegenome.curation_api.model.entities.associations.AlleleConstructAssociation;
 import org.alliancegenome.curation_api.model.entities.associations.AlleleGeneAssociation;
-import org.alliancegenome.curation_api.model.entities.slotAnnotations.AlleleSynonymSlotAnnotation;
+import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.ResourceDescriptorPageService;
 import org.apache.commons.collections.CollectionUtils;
 
@@ -34,13 +34,12 @@ public class AlleleSummaryDocumentBuilder {
 		alleleForDocument.setAlleleSynonyms(allele.getAlleleSynonyms());
 		alleleForDocument.setDataProvider(allele.getDataProvider());
 
-		if (allele.getTaxon() != null) {
-			doc.setSpecies(allele.getTaxon().getName());
-		}
+		// Set original dataProviderCrossReference
+		alleleForDocument.setDataProviderCrossReference(allele.getDataProviderCrossReference());
 
-		if (allele.getAlleleSymbol() != null) {
-			doc.setSymbol(allele.getAlleleSymbol().getDisplayText());
-		}
+		// Create cross-references list with both general allele and references pages for additional info section
+		List<CrossReference> crossReferences = buildEnhancedCrossReferences(allele, resourceDescriptorPageService);
+		alleleForDocument.setCrossReferences(crossReferences);
 
 		doc.setAllele(alleleForDocument);
 
@@ -121,17 +120,30 @@ public class AlleleSummaryDocumentBuilder {
 		return constructs;
 	}
 
-	private String buildUrlFromResourceDescriptorPage(String referencedCurie, String pageName, ResourceDescriptorPageService resourceDescriptorPageService) {
-		String[] parts = referencedCurie.split(":");
-		if (parts.length >= 2) {
-			String prefix = parts[0];
-			String localId = parts[1];
+	private List<CrossReference> buildEnhancedCrossReferences(Allele allele, ResourceDescriptorPageService resourceDescriptorPageService) {
+		List<CrossReference> crossRefs = new ArrayList<>();
 
-			ResourceDescriptorPage resourcePage = resourceDescriptorPageService.getPageForResourceDescriptor(prefix, pageName);
-			if (resourcePage != null) {
-				return resourcePage.getUrlTemplate().replace("[%s]", localId);
+		// Create a new cross-reference for allele/references using the
+		// allele/references page template
+		try {
+			Map<String, Object> params = new HashMap<>();
+			params.put("name", "allele/references");
+
+			SearchResponse<ResourceDescriptorPage> alleleReferencesPages = resourceDescriptorPageService.findByParams(null,
+					params);
+			if (alleleReferencesPages != null && !alleleReferencesPages.getResults().isEmpty()) {
+				CrossReference alleleRefsCrossRef = new CrossReference();
+				alleleRefsCrossRef.setReferencedCurie(allele.getDataProviderCrossReference().getReferencedCurie());
+				alleleRefsCrossRef.setDisplayName(allele.getDataProviderCrossReference().getDisplayName());
+				alleleRefsCrossRef.setResourceDescriptorPage(alleleReferencesPages.getResults().get(0));
+
+				crossRefs.add(alleleRefsCrossRef);
 			}
+		} catch (Exception e) {
+			log.warn("Could not create allele/references cross-reference for allele {}: {}",
+					allele.getPrimaryExternalId(), e.getMessage());
 		}
-		return null;
+
+		return crossRefs;
 	}
 }
