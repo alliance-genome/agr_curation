@@ -70,13 +70,15 @@ public class AlleleSummaryDocumentBuilder {
 		String description = new String();
 
 		if (CollectionUtils.isNotEmpty(allele.getRelatedNotes())) {
-			Note alleleNote = allele.getRelatedNotes().get(0);
-			VocabularyTerm noteType = alleleNote.getNoteType();
+			List<String> descriptionList = allele.getRelatedNotes()
+					.stream()
+					.filter(note -> note.getNoteType().getName().equals("mutation_description"))
+					.map(note -> note.getFreeText())
+					.collect(Collectors.toList());
 
-			if (noteType.getName().equals("mutation_description")) {
-				description = alleleNote.getFreeText();
+			if (CollectionUtils.isNotEmpty(descriptionList)) {
+				description = descriptionList.get(0);
 			}
-
 		}
 
 		return description;
