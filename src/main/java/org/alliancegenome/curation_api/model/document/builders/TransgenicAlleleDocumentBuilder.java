@@ -1,9 +1,11 @@
 package org.alliancegenome.curation_api.model.document.builders;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import org.alliancegenome.curation_api.dao.VocabularyTermDAO;
 import org.alliancegenome.curation_api.model.document.es.TransgenicAlleleDocument;
@@ -61,6 +63,16 @@ public class TransgenicAlleleDocumentBuilder {
 						return tac;
 					}).toList();
 					transAllele.setTransgenicAlleleConstructs(tacList);
+					transAllele.setConstructs(tacList.stream().map(TransgenicAlleleConstruct::getConstruct).toList());
+					List<Gene> genes = new ArrayList<>(tacList.stream().map(TransgenicAlleleConstruct::getExpressedGenes).flatMap(Collection::stream).toList());
+					genes.addAll(tacList.stream()
+							.map(TransgenicAlleleConstruct::getNonBgiComponents)
+							.filter(Objects::nonNull)
+							.flatMap(Collection::stream)
+							.toList());
+					transAllele.setExpressedGenes(genes);
+					transAllele.setSequenceTargetingReagents(tacList.stream().map(TransgenicAlleleConstruct::getSequenceTargetingReagents).filter(Objects::nonNull).flatMap(Collection::stream).toList());
+					transAllele.setRegulatoryGenes(tacList.stream().map(TransgenicAlleleConstruct::getRegulatoryGenes).flatMap(Collection::stream).toList());
 					transAllele.setHasDiseaseAnnotations(hasDiseaseAnnotation);
 					transAllele.setHasPhenotypeAnnotations(hasPhenotypeAnnotation);
 					transgenicAlleleDocuments.add(transAllele);
