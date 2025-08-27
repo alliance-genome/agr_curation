@@ -36,9 +36,7 @@ public class TransgenicAlleleDocument extends ESDocument {
 
 	public List<Gene> regulatoryGenes;
 
-	@JsonView(View.TransgenicAllelesDocumentView.class)
 	private Boolean hasDiseaseAnnotations;
 
-	@JsonView(View.TransgenicAllelesDocumentView.class)
 	private Boolean hasPhenotypeAnnotations;
 }
