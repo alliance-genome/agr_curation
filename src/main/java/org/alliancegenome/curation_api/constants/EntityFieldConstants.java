@@ -87,4 +87,6 @@ public final class EntityFieldConstants {
 
 	public static final String VARIANT_TRANSCRIPT = "variantTranscript";
 
+	public static final String UBERON_ANATOMY_OTHER = "UBERON:AnatomyOtherLocation";
+
 }
