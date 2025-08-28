@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.alliancegenome.curation_api.model.document.es.AlleleSummaryDocument;
@@ -34,7 +35,8 @@ public class AlleleSummaryDocumentBuilder {
 
 		doc.setDescription(buildDescription(allele));
 
-		doc.setAlleleOfGene(buildAlleleOfGene(allele));
+		Optional<Gene> optionalAlleleOfGene = buildAlleleOfGene(allele);
+		optionalAlleleOfGene.ifPresent(gene -> doc.setAlleleOfGene(gene));
 
 		doc.setConstructSlimList(getConstructs(allele));
 
@@ -53,7 +55,7 @@ public class AlleleSummaryDocumentBuilder {
 
 	private String buildDescription(Allele allele) {
 
-		String description = new String();
+		String description = "";
 
 		if (CollectionUtils.isNotEmpty(allele.getRelatedNotes())) {
 			List<String> descriptionList = allele.getRelatedNotes()
@@ -71,26 +73,21 @@ public class AlleleSummaryDocumentBuilder {
 
 	}
 
-	private Gene buildAlleleOfGene(Allele allele) {
-		Gene alleleOfGene = new Gene();
-		List<AlleleGeneAssociation> alleleGeneAssociations = allele.getAlleleGeneAssociations();
+  private Optional<Gene> buildAlleleOfGene(Allele allele) {
+      List<AlleleGeneAssociation> alleleGeneAssociations = allele.getAlleleGeneAssociations();
 
-		if (CollectionUtils.isNotEmpty(alleleGeneAssociations)) {
+      if (CollectionUtils.isEmpty(alleleGeneAssociations)) {
+          return Optional.empty();
+      }
 
-			List<Gene> alleleOfGeneList = alleleGeneAssociations.stream()
-					.filter(aga -> aga.getRelation().getName().equals("is_allele_of"))
-					.filter(aga -> aga.getInternal() == false && aga.getObsolete() == false)
-					.map(aga -> aga.getAlleleGeneAssociationObject())
-					.collect(Collectors.toList());
+      List<Gene> alleleOfGeneList = alleleGeneAssociations.stream()
+              .filter(aga -> aga.getRelation().getName().equals("is_allele_of"))
+              .filter(aga -> aga.getInternal() == false && aga.getObsolete() == false)
+              .map(aga -> aga.getAlleleGeneAssociationObject())
+              .collect(Collectors.toList());
 
-			if (CollectionUtils.isNotEmpty(alleleOfGeneList)) {
-				alleleOfGene = alleleOfGeneList.get(0);
-			}
-
-		}
-
-		return alleleOfGene;
-	}
+	  return alleleOfGeneList.stream().findFirst();
+  }
 
 	private List<Construct> getConstructs(Allele allele) {
 		List<Construct> constructs = new ArrayList<>();
