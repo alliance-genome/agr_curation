@@ -58,11 +58,6 @@ public class GeneExpressionDocumentBuilder {
 			expressionDocument.setCrossRefs(annotation.getCrossReferences());
 		}
 
-		Gene gene = new Gene();
-		gene.setPrimaryExternalId(annotation.getExpressionAnnotationSubject().getPrimaryExternalId());
-		gene.setGeneSymbol(annotation.getExpressionAnnotationSubject().getGeneSymbol());
-		gene.setTaxon(annotation.getExpressionAnnotationSubject().getTaxon());
-
 		String stageUberonTerm = null;
 		if (annotation.getExpressionPattern() != null && annotation.getExpressionPattern().getWhenExpressed() != null) {
 
@@ -108,7 +103,7 @@ public class GeneExpressionDocumentBuilder {
 		}
 
 		expressionDocument.setTermIds(termIds);
-		expressionDocument.setGene(gene);
+		expressionDocument.setGene(annotation.getExpressionAnnotationSubject());
 		expressionDocument.setDataProvider(annotation.getDataProvider().getAbbreviation());
 		expressionDocument.setAssay(annotation.getExpressionAssayUsed());
 		expressionDocument.setLocation(annotation.getWhereExpressedStatement());
