@@ -11,7 +11,6 @@ import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import org.alliancegenome.curation_api.dao.GeneExpressionExperimentDAO;
 import org.alliancegenome.curation_api.model.document.es.GeneExpressionDocument;
 import org.alliancegenome.curation_api.model.entities.AnatomicalSite;
-import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.GeneExpressionAnnotation;
 import org.alliancegenome.curation_api.model.entities.GeneExpressionExperiment;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
