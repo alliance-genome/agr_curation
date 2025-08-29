@@ -1,9 +1,6 @@
 package org.alliancegenome.curation_api.model.document.es;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
-import java.util.Objects;
 
 import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.Construct;
@@ -31,29 +28,15 @@ public class TransgenicAlleleDocument extends ESDocument {
 	 */
 	private List<TransgenicAlleleConstruct> transgenicAlleleConstructs;
 
-	@JsonView(View.TransgenicAllelesDocumentView.class)
-	public List<Construct> getConstructList() {
-		return transgenicAlleleConstructs.stream().map(TransgenicAlleleConstruct::getConstruct).toList();
-	}
+	public List<Construct> constructs;
 
-	public List<Gene> getExpressedGenes() {
-		List<Gene> genes = new ArrayList<>(transgenicAlleleConstructs.stream().map(TransgenicAlleleConstruct::getExpressedGenes).flatMap(Collection::stream).toList());
-		genes.addAll(transgenicAlleleConstructs.stream()
-				.map(TransgenicAlleleConstruct::getNonBgiComponents)
-				.filter(Objects::nonNull)
-				.flatMap(Collection::stream)
-				.toList());
-		return genes;
-	}
+	public List<Gene> expressedGenes;
 
-	public List<SequenceTargetingReagent> getSequenceTargetingReagents() {
-		return transgenicAlleleConstructs.stream().map(TransgenicAlleleConstruct::getSequenceTargetingReagents).filter(Objects::nonNull).flatMap(Collection::stream).toList();
-	}
+	public List<SequenceTargetingReagent> sequenceTargetingReagents;
 
-	public List<Gene> getRegulatoryGenes() {
-		return transgenicAlleleConstructs.stream().map(TransgenicAlleleConstruct::getRegulatoryGenes).flatMap(Collection::stream).toList();
-	}
+	public List<Gene> regulatoryGenes;
 
 	private Boolean hasDiseaseAnnotations;
+
 	private Boolean hasPhenotypeAnnotations;
 }
