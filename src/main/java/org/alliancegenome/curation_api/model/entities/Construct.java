@@ -84,6 +84,6 @@ public class Construct extends Reagent {
 	private List<ConstructGenomicEntityAssociation> constructGenomicEntityAssociations;
 	
 	@OneToMany(mappedBy = "alleleConstructAssociationObject", cascade = CascadeType.ALL, orphanRemoval = true)
-	@JsonView({ View.FieldsAndLists.class, View.ConstructView.class })
+	@JsonView({ View.FieldsAndLists.class, View.ConstructDetailView.class })
 	private List<AlleleConstructAssociation> alleleConstructAssociations;
 }
