@@ -13,10 +13,12 @@ import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.AlleleDAO;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.Allele;
+import org.alliancegenome.curation_api.model.entities.Construct;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.Note;
 import org.alliancegenome.curation_api.model.entities.Reference;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
+import org.alliancegenome.curation_api.model.entities.associations.AlleleConstructAssociation;
 import org.alliancegenome.curation_api.model.entities.associations.AlleleGeneAssociation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.AlleleDatabaseStatusSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.AlleleFullNameSlotAnnotation;
@@ -30,6 +32,7 @@ import org.alliancegenome.curation_api.model.entities.slotAnnotations.AlleleSymb
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.AlleleSynonymSlotAnnotation;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.helpers.AssociationIdentityHelper;
+import org.alliancegenome.curation_api.services.validation.associations.AlleleConstructAssociationValidator;
 import org.alliancegenome.curation_api.services.validation.associations.AlleleGeneAssociationValidator;
 import org.alliancegenome.curation_api.services.validation.dto.slotAnnotations.AlleleDatabaseStatusSlotAnnotationValidator;
 import org.alliancegenome.curation_api.services.validation.dto.slotAnnotations.AlleleFullNameSlotAnnotationValidator;
@@ -60,6 +63,7 @@ public class AlleleValidator extends GenomicEntityValidator<Allele> {
 	@Inject AlleleSecondaryIdSlotAnnotationValidator alleleSecondaryIdValidator;
 	@Inject AlleleFunctionalImpactSlotAnnotationValidator alleleFunctionalImpactValidator;
 	@Inject AlleleDatabaseStatusSlotAnnotationValidator alleleDatabaseStatusValidator;
+	@Inject AlleleConstructAssociationValidator alleleConstructAssociationValidator;
 	@Inject AlleleGeneAssociationValidator alleleGeneAssociationValidator;
 	@Inject ReferenceValidator referenceValidator;
 	
@@ -138,8 +142,10 @@ public class AlleleValidator extends GenomicEntityValidator<Allele> {
 		List<AlleleNomenclatureEventSlotAnnotation> nomenclatureEvents = validateAlleleNomenclatureEvents(uiEntity, dbEntity);
 
 		List<AlleleGeneAssociation> geneAssociations = null;
+		List<AlleleConstructAssociation> constructAssociations = null;
 		if (updateAllAssociations) { // This should contain logic for all fields only returned in AlleleDetailView
 			geneAssociations = validateAlleleGeneAssociations(uiEntity, dbEntity);
+			constructAssociations = validateAlleleConstructAssociations(uiEntity, dbEntity);
 		}
 
 		response.convertErrorMessagesToMap();
@@ -252,6 +258,16 @@ public class AlleleValidator extends GenomicEntityValidator<Allele> {
 					dbEntity.setAlleleGeneAssociations(new ArrayList<>());
 				}
 				dbEntity.getAlleleGeneAssociations().addAll(geneAssociations);
+			}
+			
+			if (dbEntity.getAlleleConstructAssociations() != null) {
+				dbEntity.getAlleleConstructAssociations().clear();
+			}
+			if (constructAssociations != null) {
+				if (dbEntity.getAlleleConstructAssociations() == null) {
+					dbEntity.setAlleleConstructAssociations(new ArrayList<>());
+				}
+				dbEntity.getAlleleConstructAssociations().addAll(constructAssociations);
 			}
 		}
 		return dbEntity;
@@ -622,5 +638,66 @@ public class AlleleValidator extends GenomicEntityValidator<Allele> {
 		}
 
 		return validatedGeneAssociations;
+	}
+
+	private List<AlleleConstructAssociation> validateAlleleConstructAssociations(Allele uiEntity, Allele dbEntity) {
+		String field = "alleleConstructAssociations";
+
+		List<AlleleConstructAssociation> uiAssociations = uiEntity.getAlleleConstructAssociations();
+
+		List<AlleleConstructAssociation> validatedConstructAssociations = new ArrayList<AlleleConstructAssociation>();
+		Boolean allValid = true;
+		Set<String> validatedAssociationIdentities = new HashSet<>();
+		if (CollectionUtils.isNotEmpty(uiAssociations)) {
+			for (int ix = 0; ix < uiAssociations.size(); ix++) {
+				AlleleConstructAssociation ca = uiAssociations.get(ix);
+				ObjectResponse<AlleleConstructAssociation> caResponse = alleleConstructAssociationValidator.validateAlleleConstructAssociation(ca);
+				if (caResponse.getEntity() == null) {
+					allValid = false;
+					response.addErrorMessages(field, ix, caResponse.getErrorMessages());
+				} else {
+					ca = caResponse.getEntity();
+					ca.setAlleleAssociationSubject(dbEntity);
+					String associationIdentity = AssociationIdentityHelper.alleleConstructAssociationIdentity(ca);
+					if (validatedAssociationIdentities.contains(associationIdentity)) {
+						Map<String, String> duplicateError = new HashMap<>();
+						duplicateError.put("relation", ValidationConstants.DUPLICATE_MESSAGE + " (" + associationIdentity + ")");
+						response.addErrorMessages(field, ix, duplicateError);
+						allValid = false;
+						continue;
+					}
+					validatedAssociationIdentities.add(associationIdentity);
+					validatedConstructAssociations.add(ca);
+				}
+			}
+		}
+		List<AlleleConstructAssociation> dbAssociations = dbEntity.getAlleleConstructAssociations();
+		if (CollectionUtils.isNotEmpty(dbAssociations)) {
+			Set<Long> idsToDelete = new HashSet<>(dbAssociations.stream().map(AlleleConstructAssociation::getId).collect(Collectors.toList()));
+			if (uiAssociations != null) {
+				Set<Long> uiIDs = new HashSet<>(uiAssociations.stream().map(AlleleConstructAssociation::getId).filter(id -> id != null).collect(Collectors.toList()));
+				idsToDelete.removeAll(uiIDs);
+				for (AlleleConstructAssociation ca : dbAssociations) {
+					if (idsToDelete.contains(ca.getId())) {
+						Construct construct = ca.getAlleleConstructAssociationObject();
+						List<AlleleConstructAssociation> constructAssociations = construct.getAlleleConstructAssociations();
+						constructAssociations.removeIf(constructAGA -> {
+							return idsToDelete.contains(constructAGA.getId());
+						});
+					}
+				}
+			}
+		}
+
+		if (!allValid) {
+			convertMapToErrorMessages(field);
+			return null;
+		}
+
+		if (CollectionUtils.isEmpty(validatedConstructAssociations)) {
+			return null;
+		}
+
+		return validatedConstructAssociations;
 	}
 }
