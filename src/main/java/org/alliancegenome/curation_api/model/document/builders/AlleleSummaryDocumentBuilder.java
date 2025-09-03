@@ -1,9 +1,7 @@
 package org.alliancegenome.curation_api.model.document.builders;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -15,7 +13,6 @@ import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.ResourceDescriptorPage;
 import org.alliancegenome.curation_api.model.entities.associations.AlleleConstructAssociation;
 import org.alliancegenome.curation_api.model.entities.associations.AlleleGeneAssociation;
-import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.ResourceDescriptorPageService;
 import org.apache.commons.collections.CollectionUtils;
 
@@ -23,6 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class AlleleSummaryDocumentBuilder {
+
 
 	public AlleleSummaryDocument buildSummaryDocument(Allele allele, ResourceDescriptorPageService resourceDescriptorPageService) {
 		AlleleSummaryDocument doc = new AlleleSummaryDocument();
@@ -73,21 +71,21 @@ public class AlleleSummaryDocumentBuilder {
 
 	}
 
-  private Optional<Gene> buildAlleleOfGene(Allele allele) {
-      List<AlleleGeneAssociation> alleleGeneAssociations = allele.getAlleleGeneAssociations();
+	private Optional<Gene> buildAlleleOfGene(Allele allele) {
+		List<AlleleGeneAssociation> alleleGeneAssociations = allele.getAlleleGeneAssociations();
 
-      if (CollectionUtils.isEmpty(alleleGeneAssociations)) {
-          return Optional.empty();
-      }
+		if (CollectionUtils.isEmpty(alleleGeneAssociations)) {
+			return Optional.empty();
+		}
 
-      List<Gene> alleleOfGeneList = alleleGeneAssociations.stream()
-              .filter(aga -> aga.getRelation().getName().equals("is_allele_of"))
-              .filter(aga -> aga.getInternal() == false && aga.getObsolete() == false)
-              .map(aga -> aga.getAlleleGeneAssociationObject())
-              .collect(Collectors.toList());
+		List<Gene> alleleOfGeneList = alleleGeneAssociations.stream()
+			.filter(aga -> aga.getRelation().getName().equals("is_allele_of"))
+			.filter(aga -> !aga.getInternal() && !aga.getObsolete())
+			.map(aga -> aga.getAlleleGeneAssociationObject())
+			.collect(Collectors.toList());
 
-	  return alleleOfGeneList.stream().findFirst();
-  }
+		return alleleOfGeneList.stream().findFirst();
+	}
 
 	private List<Construct> getConstructs(Allele allele) {
 		List<Construct> constructs = new ArrayList<>();
@@ -106,24 +104,23 @@ public class AlleleSummaryDocumentBuilder {
 
 	private CrossReference getCrossReference(Allele allele, ResourceDescriptorPageService resourceDescriptorPageService) {
 
-		// Create a new cross-reference for allele/references using the allele/references page template
 		CrossReference alleleRefsCrossRef = new CrossReference();
 
 		try {
-			Map<String, Object> params = new HashMap<>();
-			params.put("name", "allele/references");
-			params.put("resourceDescriptor.prefix", allele.getDataProvider().getAbbreviation());
+			if (allele.getDataProvider() == null) {
+				return alleleRefsCrossRef;
+			}
 
-			SearchResponse<ResourceDescriptorPage> alleleReferencesPages = resourceDescriptorPageService.findByParams(null, params);
-			if (alleleReferencesPages != null && !alleleReferencesPages.getResults().isEmpty()) {
+			String dataProviderAbbreviation = allele.getDataProvider().getAbbreviation();
+			ResourceDescriptorPage page = resourceDescriptorPageService.getPageForResourceDescriptor(dataProviderAbbreviation, "allele/references");
+
+			if (page != null && allele.getDataProviderCrossReference() != null) {
 				alleleRefsCrossRef.setReferencedCurie(allele.getDataProviderCrossReference().getReferencedCurie());
 				alleleRefsCrossRef.setDisplayName(allele.getDataProviderCrossReference().getDisplayName());
-				alleleRefsCrossRef.setResourceDescriptorPage(alleleReferencesPages.getResults().get(0));
-
+				alleleRefsCrossRef.setResourceDescriptorPage(page);
 			}
 		} catch (Exception e) {
-			log.warn("Could not create allele/references cross-reference for allele {}: {}",
-					allele.getPrimaryExternalId(), e.getMessage());
+			log.warn("Could not create allele/references cross-reference for allele {}: {}", allele.getPrimaryExternalId(), e.getMessage());
 		}
 
 		return alleleRefsCrossRef;
