@@ -46,6 +46,9 @@ public class View {
 	public static class ConstructView extends FieldsOnly {
 	}
 
+	public static class ConstructDetailView extends ConstructView {
+	}
+
 	public static class DiseaseAnnotation extends FieldsOnly {
 	}
 
