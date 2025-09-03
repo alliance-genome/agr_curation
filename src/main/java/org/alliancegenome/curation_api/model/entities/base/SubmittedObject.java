@@ -39,7 +39,7 @@ public class SubmittedObject extends CurieObject {
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "primaryExternalId_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({View.FieldsOnly.class, View.ForPublic.class, View.GeneToGeneOrthologyDocument.class, View.GeneSummaryDocument.class, View.ModelDocumentView.class, View.TransgenicAllelesDocumentView.class})
+	@JsonView({View.FieldsOnly.class, View.ForPublic.class, View.GeneToGeneOrthologyDocument.class, View.GeneSummaryDocument.class, View.ModelDocumentView.class, View.TransgenicAllelesDocumentView.class, View.AlleleSummaryDocument.class})
 	private String primaryExternalId;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
@@ -61,7 +61,7 @@ public class SubmittedObject extends CurieObject {
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@OneToOne(orphanRemoval = true)
 	@Fetch(FetchMode.SELECT)
-	@JsonView({View.FieldsOnly.class})
+	@JsonView({ View.FieldsOnly.class, View.AlleleSummaryDocument.class })
 	private CrossReference dataProviderCrossReference;
 
 	@Transient
