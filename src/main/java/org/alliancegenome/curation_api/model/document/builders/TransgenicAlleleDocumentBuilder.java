@@ -63,7 +63,7 @@ public class TransgenicAlleleDocumentBuilder {
 						return tac;
 					}).toList();
 					transAllele.setTransgenicAlleleConstructs(tacList);
-					transAllele.setConstructs(tacList.stream().map(TransgenicAlleleConstruct::getConstruct).toList());
+					transAllele.setConstructList(tacList.stream().map(TransgenicAlleleConstruct::getConstruct).toList());
 					List<Gene> genes = new ArrayList<>(tacList.stream().map(TransgenicAlleleConstruct::getExpressedGenes).flatMap(Collection::stream).toList());
 					genes.addAll(tacList.stream()
 							.map(TransgenicAlleleConstruct::getNonBgiComponents)
