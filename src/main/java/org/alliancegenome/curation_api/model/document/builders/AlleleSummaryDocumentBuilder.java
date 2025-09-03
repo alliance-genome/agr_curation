@@ -106,21 +106,17 @@ public class AlleleSummaryDocumentBuilder {
 
 		CrossReference alleleRefsCrossRef = new CrossReference();
 
-		try {
-			if (allele.getDataProvider() == null) {
-				return alleleRefsCrossRef;
-			}
+		if (allele.getDataProvider() == null) {
+			return alleleRefsCrossRef;
+		}
 
-			String dataProviderAbbreviation = allele.getDataProvider().getAbbreviation();
-			ResourceDescriptorPage page = resourceDescriptorPageService.getPageForResourceDescriptor(dataProviderAbbreviation, "allele/references");
+		String dataProviderAbbreviation = allele.getDataProvider().getAbbreviation();
+		ResourceDescriptorPage page = resourceDescriptorPageService.getPageForResourceDescriptor(dataProviderAbbreviation, "allele/references");
 
-			if (page != null && allele.getDataProviderCrossReference() != null) {
-				alleleRefsCrossRef.setReferencedCurie(allele.getDataProviderCrossReference().getReferencedCurie());
-				alleleRefsCrossRef.setDisplayName(allele.getDataProviderCrossReference().getDisplayName());
-				alleleRefsCrossRef.setResourceDescriptorPage(page);
-			}
-		} catch (Exception e) {
-			log.warn("Could not create allele/references cross-reference for allele {}: {}", allele.getPrimaryExternalId(), e.getMessage());
+		if (page != null && allele.getDataProviderCrossReference() != null) {
+			alleleRefsCrossRef.setReferencedCurie(allele.getDataProviderCrossReference().getReferencedCurie());
+			alleleRefsCrossRef.setDisplayName(allele.getDataProviderCrossReference().getDisplayName());
+			alleleRefsCrossRef.setResourceDescriptorPage(page);
 		}
 
 		return alleleRefsCrossRef;
