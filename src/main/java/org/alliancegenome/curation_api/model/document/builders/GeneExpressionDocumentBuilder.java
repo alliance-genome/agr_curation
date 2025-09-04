@@ -57,6 +57,7 @@ public class GeneExpressionDocumentBuilder {
 			expressionDocument.setCrossRefs(annotation.getCrossReferences());
 		}
 
+		//There is only single stage term coming from FMS files and that we are storing it in list as single element. Hence pulling the only element.
 		String stageUberonTerm = null;
 		if (annotation.getExpressionPattern() != null && annotation.getExpressionPattern().getWhenExpressed() != null) {
 
