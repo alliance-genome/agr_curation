@@ -28,7 +28,7 @@ public class TransgenicAlleleDocument extends ESDocument {
 	 */
 	private List<TransgenicAlleleConstruct> transgenicAlleleConstructs;
 
-	public List<Construct> constructs;
+	public List<Construct> constructList;
 
 	public List<Gene> expressedGenes;
 

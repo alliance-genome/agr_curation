@@ -130,7 +130,7 @@ public class Allele extends GenomicEntity {
 	)
 	@OneToOne(mappedBy = "singleAllele", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonManagedReference
-	@JsonView({ View.FieldsOnly.class, View.ForPublic.class, View.AlleleDetailView.class })
+	@JsonView({ View.FieldsOnly.class, View.ForPublic.class, View.AlleleDetailView.class, View.AlleleSummaryDocument.class })
 	private AlleleSymbolSlotAnnotation alleleSymbol;
 
 	@IndexedEmbedded(
@@ -152,7 +152,7 @@ public class Allele extends GenomicEntity {
 	)
 	@OneToMany(mappedBy = "singleAllele", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonManagedReference
-	@JsonView({ View.FieldsAndLists.class, View.AlleleView.class, View.AlleleDetailView.class })
+	@JsonView({ View.FieldsAndLists.class, View.AlleleView.class, View.AlleleDetailView.class, View.AlleleSummaryDocument.class })
 	private List<AlleleSynonymSlotAnnotation> alleleSynonyms;
 
 	@IndexedEmbedded(includePaths = { "secondaryId", "evidence.curie", "secondaryId_keyword", "evidence.curie_keyword"})
