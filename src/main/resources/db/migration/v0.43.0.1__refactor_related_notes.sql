@@ -29,3 +29,15 @@ ALTER TABLE reagent_note ADD CONSTRAINT reagent_note_relatednotes_id_fk FOREIGN 
 
 CREATE INDEX idxr3n77tcrjubcvaor107a7ad92 ON reagent_note USING btree (submittedobject_id);
 CREATE INDEX idxags0p43afm5906murhxo9g3wh ON reagent_note USING btree (relatednotes_id);
+
+CREATE TABLE geneexpressionexperiment_note (
+	submittedobject_id bigint,
+	relatednotes_id bigint
+	);
+	
+ALTER TABLE geneexpressionexperiment_note ADD CONSTRAINT geneexpressionexperiment_note_relatednotes_id_uk UNIQUE (relatednotes_id);
+ALTER TABLE geneexpressionexperiment_note ADD CONSTRAINT geneexpressionexperiment_note_submittedobject_id_fk FOREIGN KEY (submittedobject_id) REFERENCES geneexpressionexperiment (id);
+ALTER TABLE geneexpressionexperiment_note ADD CONSTRAINT geneexpressionexperiment_note_relatednotes_id_fk FOREIGN KEY (relatednotes_id) REFERENCES note (id);
+
+CREATE INDEX idx7bs25bfn1a97gonvqh0h7b117 ON geneexpressionexperiment_note USING btree (submittedobject_id);
+CREATE INDEX idxqqs0kd5xc4gd9loyfhwm3cptb ON geneexpressionexperiment_note USING btree (relatednotes_id);
