@@ -102,7 +102,7 @@ public class CodingSequenceService extends BaseEntityCrudService<CodingSequence,
 				codingSequenceDAO.remove(id);
 			}
 		} else {
-			String errorMessage = "Could not find Exon with id: " + id;
+			String errorMessage = "Could not find CodingSequence with id: " + id;
 			if (throwApiError) {
 				ObjectResponse<Variant> response = new ObjectResponse<>();
 				response.addErrorMessage("id", errorMessage);
