@@ -4,7 +4,6 @@ import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 import java.util.HashMap;
 
 import org.alliancegenome.curation_api.model.document.es.TransgenicAlleleDTO;
-import org.alliancegenome.curation_api.model.entities.associations.AlleleConstructAssociation;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.view.View;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
