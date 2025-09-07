@@ -15,7 +15,6 @@ import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.Construct;
 import org.alliancegenome.curation_api.model.entities.Gene;
-import org.alliancegenome.curation_api.model.entities.Note;
 import org.alliancegenome.curation_api.model.entities.Reference;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.associations.AlleleConstructAssociation;
@@ -105,7 +104,7 @@ public class AlleleValidator extends GenomicEntityValidator<Allele> {
 
 	public Allele validateAllele(Allele uiEntity, Allele dbEntity, Boolean updateAllAssociations) {
 
-		dbEntity = (Allele) validateGenomicEntityFields(uiEntity, dbEntity);
+		dbEntity = (Allele) validateGenomicEntityFields(uiEntity, dbEntity, VocabularyConstants.ALLELE_NOTE_TYPES_VOCABULARY_TERM_SET);
 
 		List<Reference> references = validateReferences(uiEntity, dbEntity);
 		dbEntity.setReferences(references);
@@ -117,17 +116,6 @@ public class AlleleValidator extends GenomicEntityValidator<Allele> {
 			dbEntity.setIsExtinct(uiEntity.getIsExtinct());
 		} else {
 			dbEntity.setIsExtinct(null);
-		}
-
-		List<Note> relatedNotes = validateRelatedNotes(uiEntity.getRelatedNotes(), VocabularyConstants.ALLELE_NOTE_TYPES_VOCABULARY_TERM_SET);
-		if (dbEntity.getRelatedNotes() != null) {
-			dbEntity.getRelatedNotes().clear();
-		}
-		if (relatedNotes != null) {
-			if (dbEntity.getRelatedNotes() == null) {
-				dbEntity.setRelatedNotes(new ArrayList<>());
-			}
-			dbEntity.getRelatedNotes().addAll(relatedNotes);
 		}
 
 		AlleleSymbolSlotAnnotation symbol = validateAlleleSymbol(uiEntity, dbEntity);

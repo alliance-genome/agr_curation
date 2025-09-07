@@ -78,9 +78,5 @@ public class AlleleDTO extends GenomicEntityDTO {
 	@JsonView({ View.FieldsAndLists.class })
 	@JsonProperty("allele_nomenclature_event_dtos")
 	private List<AlleleNomenclatureEventSlotAnnotationDTO> alleleNomenclatureEventDtos;
-	
-	@JsonView({ View.FieldsAndLists.class })
-	@JsonProperty("note_dtos")
-	private List<NoteDTO> noteDtos;
 
 }

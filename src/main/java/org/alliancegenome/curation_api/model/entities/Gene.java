@@ -176,15 +176,6 @@ public class Gene extends GenomicEntity {
 	@JsonView({ View.FieldsAndLists.class, View.GeneDetailView.class })
 	private List<ConstructGenomicEntityAssociation> constructGenomicEntityAssociations;
 
-	@IndexedEmbedded(includePaths = {"freeText", "freeText_keyword"})
-	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
-	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-	@JsonView({ View.FieldsAndLists.class, View.GeneView.class })
-	@JoinTable(indexes = {
-		@Index(name = "gene_note_gene_index", columnList = "gene_id"),
-		@Index(name = "gene_note_relatednotes_index", columnList = "relatedNotes_id")})
-	private List<Note> relatedNotes;
-
 	@IndexedEmbedded(includePaths = {"displayName", "referencedCurie", "displayName_keyword", "referencedCurie_keyword", "resourceDescriptorPage.name", "resourceDescriptorPage.name_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
