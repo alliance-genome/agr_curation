@@ -3,7 +3,8 @@ package org.alliancegenome.curation_api.interfaces.document;
 import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 import java.util.HashMap;
 
-import org.alliancegenome.curation_api.model.document.es.TransgenicAlleleDocument;
+import org.alliancegenome.curation_api.model.document.es.TransgenicAlleleDTO;
+import org.alliancegenome.curation_api.model.entities.associations.AlleleConstructAssociation;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.view.View;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
@@ -26,5 +27,5 @@ public interface TransgenicAlleleDocumentInterface {
 	@POST
 	@Path("/transgenic-allele-documents")
 	@JsonView(View.TransgenicAllelesDocumentView.class)
-	SearchResponse<TransgenicAlleleDocument> findDocuments(@DefaultValue("0") @QueryParam("page") Integer page, @DefaultValue("10") @QueryParam("limit") Integer limit, @RequestBody HashMap<String, Object> params);
+	SearchResponse<TransgenicAlleleDTO> findDocuments(@DefaultValue("0") @QueryParam("page") Integer page, @DefaultValue("10") @QueryParam("limit") Integer limit, @RequestBody HashMap<String, Object> params);
 }
