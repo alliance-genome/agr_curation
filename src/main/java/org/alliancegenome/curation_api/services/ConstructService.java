@@ -104,7 +104,7 @@ public class ConstructService extends SubmittedObjectCrudService<Construct, Cons
 			if (CollectionUtils.isNotEmpty(construct.getConstructGenomicEntityAssociations())) {
 				deprecationReasons.add("Construct has genomic entity association(s)");
 			}
-			if (CollectionUtils.isNotEmpty(deprecationReasons) ) {
+			if (CollectionUtils.isNotEmpty(deprecationReasons)) {
 				if (!construct.getObsolete()) {
 					construct.setUpdatedBy(personService.fetchByUniqueIdOrCreate(requestSource));
 					construct.setDateUpdated(OffsetDateTime.now());
