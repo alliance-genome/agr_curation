@@ -6,8 +6,8 @@ import org.alliancegenome.curation_api.services.validation.dto.base.SubmittedObj
 
 public class ReagentDTOValidator<E extends Reagent, D extends ReagentDTO> extends SubmittedObjectDTOValidator<E, D> {
 
-	public E validateReagentDTO(E reagent, D dto) {
-		reagent = validateSubmittedObjectDTO(reagent, dto);
+	public E validateReagentDTO(E reagent, D dto, String noteTypeVocabularyTermSet) {
+		reagent = validateSubmittedObjectDTO(reagent, dto, noteTypeVocabularyTermSet);
 		
 		reagent.setSecondaryIdentifiers(handleStringListField(dto.getSecondaryIdentifiers()));
 
