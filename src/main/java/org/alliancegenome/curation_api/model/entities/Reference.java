@@ -64,7 +64,7 @@ public class Reference extends InformationContentEntity {
 	 * Retrieve PMID if available in the crossReference collection otherwise MOD ID
 	 */
 	@Transient
-	@JsonView(View.ForPublic.class)
+	@JsonView({View.ForPublic.class, View.GeneExpressionDocument.class})
 	public String getReferenceID() {
 		return getReferenceID(true);
 	}
@@ -73,7 +73,7 @@ public class Reference extends InformationContentEntity {
 	 * Retrieve PUB MOD ID
 	 */
 	@Transient
-	@JsonView(View.ForPublic.class)
+	@JsonView({View.ForPublic.class, View.GeneExpressionDocument.class})
 	public String getPubModID() {
 		return getReferenceID(false);
 	}

@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.Gene;
+import org.alliancegenome.curation_api.model.entities.GeneExpressionAnnotation;
 import org.alliancegenome.curation_api.model.entities.ontology.MMOTerm;
 import org.alliancegenome.curation_api.view.View;
 
@@ -19,14 +20,18 @@ public class GeneExpressionDocument extends ESDocument {
 	{
 		category = "gene_expression_annotation";
 	}
-	private Gene gene;
-	private String location;
-	private String stageName;
-	private MMOTerm assay;
-	private String dataProvider;
-	private List<CrossReference> crossRefs;
-	private String stageTermId;
+	private GeneExpressionAnnotation geneExpressionAnnotation;
 	private List<String> uberonTermIds;
 	private List<String> goTermIds;
 	private List<String> termIds;
+
+	// private Gene gene;
+	// private String location;
+	// private String stageName;
+	// private MMOTerm assay;
+	// private String dataProvider;
+	// private List<CrossReference> crossRefs;
+	// private String reference;
+	// private String stageTermId;
+
 }

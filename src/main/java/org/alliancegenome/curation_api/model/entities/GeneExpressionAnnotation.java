@@ -55,13 +55,13 @@ public class GeneExpressionAnnotation extends ExpressionAnnotation {
 	@IndexedEmbedded(includePaths = {"geneSymbol.displayText", "geneSymbol.formatText", "geneSymbol.displayText_keyword", "geneSymbol.formatText_keyword", "curie", "curie_keyword", "taxon.curie", "taxon.name", "taxon.curie_keyword", "taxon.name_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@JsonView({View.FieldsOnly.class, View.ForPublic.class})
+	@JsonView({View.FieldsOnly.class, View.ForPublic.class, View.GeneExpressionDocument.class})
 	private Gene expressionAnnotationSubject;
 
 	@IndexedEmbedded(includePaths = {"name", "name_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@JsonView({View.FieldsOnly.class, View.ForPublic.class})
+	@JsonView({View.FieldsOnly.class, View.ForPublic.class, View.GeneExpressionDocument.class})
 	private MMOTerm expressionAssayUsed;
 
 	@IndexedEmbedded(includePaths = {"referencedCurie", "displayName", "resourceDescriptorPage.name", "referencedCurie_keyword", "displayName_keyword", "resourceDescriptorPage.name_keyword"})
@@ -71,7 +71,7 @@ public class GeneExpressionAnnotation extends ExpressionAnnotation {
 		@Index(columnList = "geneexpressionannotation_id", name = "gea_crossreference_geneexpressionannotation_index"),
 		@Index(columnList = "crossreferences_id", name = "gea_crossreference_crossreferences_index")
 	})
-	@JsonView({ View.FieldsAndLists.class, View.ForPublic.class })
+	@JsonView({ View.FieldsAndLists.class, View.ForPublic.class, View.GeneExpressionDocument.class })
 	private List<CrossReference> crossReferences;
 
 }

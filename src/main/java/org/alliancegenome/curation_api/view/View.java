@@ -129,7 +129,7 @@ public class View {
 	public static class ForPublic {
 	}
 
-	public static class GeneExpressionDocument extends ForPublic {
+	public static class GeneExpressionDocument {
 	}
 
 	public static class DiseaseAnnotationForPublic extends ForPublic {

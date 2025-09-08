@@ -25,7 +25,7 @@ public class SingleReferenceAssociation extends Association {
 	@IndexedEmbedded(includeDepth = 2)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@JsonView({ View.FieldsOnly.class, View.ForPublic.class })
+	@JsonView({ View.FieldsOnly.class, View.ForPublic.class, View.GeneExpressionDocument.class })
 	private InformationContentEntity evidenceItem;
 
 }

@@ -36,11 +36,11 @@ public class Synonym extends AuditedObject {
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "name_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({ View.FieldsOnly.class, View.DiseaseSummaryDocument.class })
+	@JsonView({ View.FieldsOnly.class, View.DiseaseSummaryDocument.class, View.GeneExpressionDocument.class })
 	@Column(columnDefinition = "TEXT")
 	private String name;
 
-	@JsonView({ View.FieldsOnly.class })
+	@JsonView({ View.FieldsOnly.class, View.GeneExpressionDocument.class })
 	private Boolean isDisplaySynonym = false;
 
 	@JsonView({ View.FieldsOnly.class })
