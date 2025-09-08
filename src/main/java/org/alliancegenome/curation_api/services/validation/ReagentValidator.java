@@ -8,9 +8,9 @@ import org.apache.commons.collections.CollectionUtils;
 
 public class ReagentValidator extends SubmittedObjectValidator<Reagent> {
 
-	public Reagent validateCommonReagentFields(Reagent uiEntity, Reagent dbEntity) {
+	public Reagent validateCommonReagentFields(Reagent uiEntity, Reagent dbEntity, String noteTypeVocabularyTermSet) {
 
-		dbEntity = (Reagent) validateSubmittedObjectFields(uiEntity, dbEntity);
+		dbEntity = (Reagent) validateSubmittedObjectFields(uiEntity, dbEntity, noteTypeVocabularyTermSet);
 
 		List<String> secondaryIds = CollectionUtils.isNotEmpty(uiEntity.getSecondaryIdentifiers()) ? uiEntity.getSecondaryIdentifiers() : null;
 		dbEntity.setSecondaryIdentifiers(secondaryIds);

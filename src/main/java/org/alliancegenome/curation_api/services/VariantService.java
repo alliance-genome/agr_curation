@@ -1,6 +1,7 @@
 package org.alliancegenome.curation_api.services;
 
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,6 +12,7 @@ import org.alliancegenome.curation_api.dao.VariantDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.exceptions.ValidationException;
+import org.alliancegenome.curation_api.model.entities.Note;
 import org.alliancegenome.curation_api.model.entities.Variant;
 import org.alliancegenome.curation_api.model.ingest.dto.VariantDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
@@ -63,14 +65,29 @@ public class VariantService extends SubmittedObjectCrudService<Variant, VariantD
 	@Transactional
 	public Variant deprecateOrDelete(Long id, Boolean throwApiError, String requestSource, Boolean forceDeprecate) {
 		Variant variant = variantDAO.find(id);
+		List<String> deprecationReasons = new ArrayList<>();
 		if (variant != null) {
-			if (forceDeprecate
-					|| CollectionUtils.isNotEmpty(variant.getAlleleVariantAssociations())
-					|| CollectionUtils.isNotEmpty(variant.getCuratedVariantGenomicLocations())) {
+			if (forceDeprecate) {
+				deprecationReasons.add("Deprecation instead of deletion rule applied");
+			}
+			if (CollectionUtils.isNotEmpty(variant.getAlleleVariantAssociations())) {
+				deprecationReasons.add("Variant has allele association(s)");
+			}
+			if (CollectionUtils.isNotEmpty(variant.getCuratedVariantGenomicLocations())) {
+				deprecationReasons.add("Variant has curated genomic location(s)");
+			}
+			if (CollectionUtils.isNotEmpty(deprecationReasons)) {
 				if (!variant.getObsolete()) {
 					variant.setUpdatedBy(personService.fetchByUniqueIdOrCreate(requestSource));
 					variant.setDateUpdated(OffsetDateTime.now());
 					variant.setObsolete(true);
+					
+					Note deprecationNote = noteService.createDeprecationNote(variant.getIdentifier(), requestSource, deprecationReasons);
+					if (variant.getRelatedNotes() == null) {
+						variant.setRelatedNotes(new ArrayList<>());
+					}
+					variant.getRelatedNotes().add(deprecationNote);
+					
 					return variantDAO.persist(variant);
 				} else {
 					return variant;

@@ -1,6 +1,7 @@
 package org.alliancegenome.curation_api.services;
 
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,10 +11,12 @@ import org.alliancegenome.curation_api.constants.EntityFieldConstants;
 import org.alliancegenome.curation_api.dao.TranscriptDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
+import org.alliancegenome.curation_api.model.entities.Note;
 import org.alliancegenome.curation_api.model.entities.Transcript;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
 import org.alliancegenome.curation_api.services.validation.dto.Gff3DtoValidator;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import io.quarkus.logging.Log;
@@ -28,6 +31,7 @@ public class TranscriptService extends BaseEntityCrudService<Transcript, Transcr
 	@Inject TranscriptDAO transcriptDAO;
 	@Inject PersonService personService;
 	@Inject Gff3DtoValidator gff3DtoValidator;
+	@Inject NoteService noteService;
 
 	@Override
 	@PostConstruct
@@ -59,12 +63,26 @@ public class TranscriptService extends BaseEntityCrudService<Transcript, Transcr
 	@Transactional
 	public Transcript deprecateOrDelete(Long id, Boolean throwApiError, String requestSource, Boolean forceDeprecate) {
 		Transcript transcript = transcriptDAO.find(id);
+		List<String> deprecationReasons = new ArrayList<>();
 		if (transcript != null) {
-			if (forceDeprecate || transcriptDAO.hasReferencingPredictedVariantConsequences(id)) {
+			if (forceDeprecate) {
+				deprecationReasons.add("Deprecation instead of deletion rule applied");
+			}
+			if (transcriptDAO.hasReferencingPredictedVariantConsequences(id)) {
+				deprecationReasons.add("Transcript has predicted variant consequence(s)");
+			}
+			if (CollectionUtils.isNotEmpty(deprecationReasons)) {
 				if (!transcript.getObsolete()) {
 					transcript.setUpdatedBy(personService.fetchByUniqueIdOrCreate(requestSource));
 					transcript.setDateUpdated(OffsetDateTime.now());
 					transcript.setObsolete(true);
+					
+					Note deprecationNote = noteService.createDeprecationNote(transcript.getIdentifier(), requestSource, deprecationReasons);
+					if (transcript.getRelatedNotes() == null) {
+						transcript.setRelatedNotes(new ArrayList<>());
+					}
+					transcript.getRelatedNotes().add(deprecationNote);
+					
 					return transcriptDAO.persist(transcript);
 				} else {
 					return transcript;
