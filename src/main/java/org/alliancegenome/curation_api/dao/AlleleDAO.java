@@ -24,7 +24,7 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 	@Inject AllelePhenotypeAnnotationDAO allelePhenotypeAnnotationDAO;
 	@Inject AGMPhenotypeAnnotationDAO agmPhenotypeAnnotationDAO;
 	@Inject AgmAlleleAssociationDAO agmAlleleAssociationDAO;
-	@Inject HTPExpressionDatasetAnnotationDAO htpExpressionDatasetAnnotationDAO;
+	@Inject HTPExpressionDatasetSampleAnnotationDAO htpExpressionDataseSampleAnnotationDAO;
 	
 	protected AlleleDAO() {
 		super(Allele.class);
@@ -82,10 +82,10 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 		return CollectionUtils.isNotEmpty(results);
 	}
 	
-	public Boolean hasReferencingHTPExpressionDatasetAnnotation(Long agmId) {
+	public Boolean hasReferencingHTPExpressionDatasetSampleAnnotation(Long agmId) {
 		Map<String, Object> params = new HashMap<>();
 		params.put(EntityFieldConstants.GENOMIC_INFORMATION_AGM + ".id", agmId);
-		List<Long> results = htpExpressionDatasetAnnotationDAO.findIdsByParams(params);
+		List<Long> results = htpExpressionDataseSampleAnnotationDAO.findIdsByParams(params);
 		
 		return CollectionUtils.isNotEmpty(results);
 	}

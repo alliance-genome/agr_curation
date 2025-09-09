@@ -9,7 +9,6 @@ import java.util.Objects;
 
 import org.alliancegenome.curation_api.constants.EntityFieldConstants;
 import org.alliancegenome.curation_api.dao.AffectedGenomicModelDAO;
-import org.alliancegenome.curation_api.dao.AlleleDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.exceptions.ValidationException;
@@ -33,7 +32,6 @@ import jakarta.transaction.Transactional;
 public class AffectedGenomicModelService extends SubmittedObjectCrudService<AffectedGenomicModel, AffectedGenomicModelDTO, AffectedGenomicModelDAO> {
 
 	@Inject AffectedGenomicModelDAO agmDAO;
-	@Inject AlleleDAO alleleDAO;
 	@Inject AffectedGenomicModelValidator agmValidator;
 	@Inject AffectedGenomicModelDTOValidator agmDtoValidator;
 	@Inject DiseaseAnnotationService diseaseAnnotationService;
@@ -84,13 +82,13 @@ public class AffectedGenomicModelService extends SubmittedObjectCrudService<Affe
 			if (forceDeprecate) {
 				deprecationReasons.add("Deprecation instead of deletion rule applied");
 			}
-			if (alleleDAO.hasReferencingDiseaseAnnotations(id)) {
+			if (agmDAO.hasReferencingDiseaseAnnotations(id)) {
 				deprecationReasons.add("AGM is referenced by disease annotation(s)");
 			}
-			if (alleleDAO.hasReferencingPhenotypeAnnotations(id)) {
+			if (agmDAO.hasReferencingPhenotypeAnnotations(id)) {
 				deprecationReasons.add("AGM is referenced by phenotype annotation(s)");
 			}
-			if (alleleDAO.hasReferencingHTPExpressionDatasetAnnotation(id)) {
+			if (agmDAO.hasReferencingHTPExpressionDatasetSampleAnnotation(id)) {
 				deprecationReasons.add("AGM is referenced by HTP expression dataset annotation(s)");
 			}
 			if (CollectionUtils.isNotEmpty(agm.getConstructGenomicEntityAssociations())) {
