@@ -1,15 +1,11 @@
 package org.alliancegenome.curation_api.services.validation;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.CrossReferenceDAO;
 import org.alliancegenome.curation_api.dao.VariantDAO;
 import org.alliancegenome.curation_api.dao.ontology.SoTermDAO;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
-import org.alliancegenome.curation_api.model.entities.Note;
 import org.alliancegenome.curation_api.model.entities.Variant;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.SOTerm;
@@ -61,7 +57,7 @@ public class VariantValidator extends GenomicEntityValidator<Variant> {
 
 	public Variant validateVariant(Variant uiEntity, Variant dbEntity) {
 
-		dbEntity = (Variant) validateGenomicEntityFields(uiEntity, dbEntity);
+		dbEntity = (Variant) validateGenomicEntityFields(uiEntity, dbEntity, VocabularyConstants.VARIANT_NOTE_TYPES_VOCABULARY_TERM_SET);
 
 		SOTerm variantType = validateRequiredEntity(soTermDAO, "variantType", uiEntity.getVariantType(), dbEntity.getVariantType());
 		dbEntity.setVariantType(variantType);
@@ -71,17 +67,6 @@ public class VariantValidator extends GenomicEntityValidator<Variant> {
 
 		SOTerm sourceGeneralConsequence = validateEntity(soTermDAO, "sourceGeneralConsequence", uiEntity.getSourceGeneralConsequence(), dbEntity.getSourceGeneralConsequence());
 		dbEntity.setSourceGeneralConsequence(sourceGeneralConsequence);
-
-		List<Note> relatedNotes = validateRelatedNotes(uiEntity.getRelatedNotes(), VocabularyConstants.VARIANT_NOTE_TYPES_VOCABULARY_TERM_SET);
-		if (dbEntity.getRelatedNotes() != null) {
-			dbEntity.getRelatedNotes().clear();
-		}
-		if (relatedNotes != null) {
-			if (dbEntity.getRelatedNotes() == null) {
-				dbEntity.setRelatedNotes(new ArrayList<>());
-			}
-			dbEntity.getRelatedNotes().addAll(relatedNotes);
-		}
 
 		if (response.hasErrors()) {
 			response.setErrorMessage(errorMessage);

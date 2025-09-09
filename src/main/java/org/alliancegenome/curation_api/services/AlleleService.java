@@ -110,8 +110,7 @@ public class AlleleService extends SubmittedObjectCrudService<Allele, AlleleDTO,
 					allele.setUpdatedBy(personService.fetchByUniqueIdOrCreate(requestSource));
 					allele.setDateUpdated(OffsetDateTime.now());
 					allele.setObsolete(true);
-
-					Note deprecationNote = noteService.createDeprecationNote(deprecationReasons);
+					Note deprecationNote = noteService.createDeprecationNote(allele.getIdentifier(), requestSource, deprecationReasons);
 					if (allele.getRelatedNotes() == null) {
 						allele.setRelatedNotes(new ArrayList<>());
 					}

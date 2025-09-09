@@ -65,7 +65,7 @@ public class AffectedGenomicModelValidator extends GenomicEntityValidator<Affect
 
 	private AffectedGenomicModel validateAffectedGenomicModel(AffectedGenomicModel uiEntity, AffectedGenomicModel dbEntity) {
 
-		dbEntity = validateGenomicEntityFields(uiEntity, dbEntity);
+		dbEntity = validateGenomicEntityFields(uiEntity, dbEntity, VocabularyConstants.AGM_NOTE_TYPES_VOCABULARY_TERM_SET);
 
 		AgmFullNameSlotAnnotation fullName = validateAgmFullName(uiEntity, dbEntity);
 		List<AgmSynonymSlotAnnotation> synonyms = validateAgmSynonyms(uiEntity, dbEntity);

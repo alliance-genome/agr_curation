@@ -13,7 +13,6 @@ import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
 import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.Gene;
-import org.alliancegenome.curation_api.model.entities.Note;
 import org.alliancegenome.curation_api.model.entities.ontology.SOTerm;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.GeneFullNameSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.GeneSecondaryIdSlotAnnotation;
@@ -60,19 +59,7 @@ public class GeneDTOValidator extends GenomicEntityDTOValidator<Gene, GeneDTO> {
 			gene = new Gene();
 		}
 
-		gene = validateGenomicEntityDTO(gene, dto, dataProvider);
-
-		if (gene.getRelatedNotes() != null) {
-			gene.getRelatedNotes().clear();
-		}
-
-		List<Note> validatedNotes = validateNotes(dto.getNoteDtos(), VocabularyConstants.GENE_NOTE_TYPES_VOCABULARY_TERM_SET);
-		if (CollectionUtils.isNotEmpty(validatedNotes)) {
-			if (gene.getRelatedNotes() == null) {
-				gene.setRelatedNotes(new ArrayList<>());
-			}
-			gene.getRelatedNotes().addAll(validatedNotes);
-		}
+		gene = validateGenomicEntityDTO(gene, dto, dataProvider, VocabularyConstants.GENE_NOTE_TYPES_VOCABULARY_TERM_SET);
 		
 		GeneSymbolSlotAnnotation symbol = validateGeneSymbol(gene, dto);
 		gene.setGeneSymbol(symbol);
