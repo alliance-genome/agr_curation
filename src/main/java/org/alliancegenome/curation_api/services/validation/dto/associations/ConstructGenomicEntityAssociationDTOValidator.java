@@ -45,7 +45,7 @@ public class ConstructGenomicEntityAssociationDTOValidator extends EvidenceAssoc
 		} else {
 			subjectIds = constructService.findIdsByIdentifierString(dto.getConstructIdentifier());
 			if (subjectIds == null || subjectIds.size() != 1) {
-				response.addErrorMessage("construct_identifier", ValidationConstants.INVALID_MESSAGE + " for " + dataProvider.name() + " load");
+				response.addErrorMessage("construct_identifier", ValidationConstants.INVALID_MESSAGE + " (" + dto.getConstructIdentifier() + ")");
 			}
 		}
 		
@@ -93,9 +93,7 @@ public class ConstructGenomicEntityAssociationDTOValidator extends EvidenceAssoc
 
 					GenomicEntity object = genomicEntityService.findByIdentifierString(dto.getGenomicEntityIdentifier());
 					if (object == null) {
-						response.addErrorMessage("allele_identifier", ValidationConstants.INVALID_MESSAGE + " (" + dto.getGenomicEntityIdentifier() + ")");
-					} else if (dataProvider != null && !object.getDataProvider().getAbbreviation().equals(dataProvider.sourceOrganization)) {
-						response.addErrorMessage("allele_identifier", ValidationConstants.INVALID_MESSAGE + " for " + dataProvider.name() + " load (" + dto.getGenomicEntityIdentifier() + ")");
+						response.addErrorMessage("genomic_entity_identifier", ValidationConstants.INVALID_MESSAGE + " (" + dto.getGenomicEntityIdentifier() + ")");
 					} else {
 						association.setConstructGenomicEntityAssociationObject(object);
 					}
