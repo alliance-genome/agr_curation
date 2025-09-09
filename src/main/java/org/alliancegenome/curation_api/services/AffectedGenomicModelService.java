@@ -1,6 +1,7 @@
 package org.alliancegenome.curation_api.services;
 
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,6 +14,7 @@ import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
+import org.alliancegenome.curation_api.model.entities.Note;
 import org.alliancegenome.curation_api.model.ingest.dto.AffectedGenomicModelDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.associations.ConstructGenomicEntityAssociationService;
@@ -38,6 +40,7 @@ public class AffectedGenomicModelService extends SubmittedObjectCrudService<Affe
 	@Inject PhenotypeAnnotationService phenotypeAnnotationService;
 	@Inject PersonService personService;
 	@Inject ConstructGenomicEntityAssociationService constructGenomicEntityAssociationService;
+	@Inject NoteService noteService;
 
 	@Override
 	@PostConstruct
@@ -76,17 +79,44 @@ public class AffectedGenomicModelService extends SubmittedObjectCrudService<Affe
 	@Transactional
 	public AffectedGenomicModel deprecateOrDelete(Long id, Boolean throwApiError, String requestSource, Boolean forceDeprecate) {
 		AffectedGenomicModel agm = agmDAO.find(id);
+		List<String> deprecationReasons = new ArrayList<>();
 		if (agm != null) {
-			if (forceDeprecate || agmDAO.hasReferencingDiseaseAnnotations(id)
-					|| agmDAO.hasReferencingPhenotypeAnnotations(id)
-					|| CollectionUtils.isNotEmpty(agm.getConstructGenomicEntityAssociations())
-					|| CollectionUtils.isNotEmpty(agm.getAgmSequenceTargetingReagentAssociations())
-					|| CollectionUtils.isNotEmpty(agm.getComponents())
-					|| CollectionUtils.isNotEmpty(agm.getParentalPopulations())) {
+			if (forceDeprecate) {
+				deprecationReasons.add("Deprecation instead of deletion rule applied");
+			}
+			if (alleleDAO.hasReferencingDiseaseAnnotations(id)) {
+				deprecationReasons.add("AGM is referenced by disease annotation(s)");
+			}
+			if (alleleDAO.hasReferencingPhenotypeAnnotations(id)) {
+				deprecationReasons.add("AGM is referenced by phenotype annotation(s)");
+			}
+			if (alleleDAO.hasReferencingHTPExpressionDatasetAnnotation(id)) {
+				deprecationReasons.add("AGM is referenced by HTP expression dataset annotation(s)");
+			}
+			if (CollectionUtils.isNotEmpty(agm.getConstructGenomicEntityAssociations())) {
+				deprecationReasons.add("AGM has construct association(s)");
+			}
+			if (CollectionUtils.isNotEmpty(agm.getAgmSequenceTargetingReagentAssociations())) {
+				deprecationReasons.add("AGM has STR association(s)");
+			}
+			if (CollectionUtils.isNotEmpty(agm.getComponents())) {
+				deprecationReasons.add("AGM has allele association(s)");
+			}
+			if (CollectionUtils.isNotEmpty(agm.getParentalPopulations())) {
+				deprecationReasons.add("AGM has AGM association(s)");
+			}
+			if (CollectionUtils.isNotEmpty(deprecationReasons)) {
 				if (!agm.getObsolete()) {
 					agm.setUpdatedBy(personService.fetchByUniqueIdOrCreate(requestSource));
 					agm.setDateUpdated(OffsetDateTime.now());
 					agm.setObsolete(true);
+					
+					Note deprecationNote = noteService.createDeprecationNote(agm.getIdentifier(), requestSource, deprecationReasons);
+					if (agm.getRelatedNotes() == null) {
+						agm.setRelatedNotes(new ArrayList<>());
+					}
+					agm.getRelatedNotes().add(deprecationNote);
+					
 					return agmDAO.persist(agm);
 				} else {
 					return agm;

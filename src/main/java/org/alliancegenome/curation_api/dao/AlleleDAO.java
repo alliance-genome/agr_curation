@@ -18,19 +18,14 @@ import jakarta.persistence.Query;
 @ApplicationScoped
 public class AlleleDAO extends BaseSQLDAO<Allele> {
 
-	@Inject
-	GeneDiseaseAnnotationDAO geneDiseaseAnnotationDAO;
-	@Inject
-	AlleleDiseaseAnnotationDAO alleleDiseaseAnnotationDAO;
-	@Inject
-	AGMDiseaseAnnotationDAO agmDiseaseAnnotationDAO;
-	@Inject
-	AllelePhenotypeAnnotationDAO allelePhenotypeAnnotationDAO;
-	@Inject
-	AGMPhenotypeAnnotationDAO agmPhenotypeAnnotationDAO;
-	@Inject
-	AgmAlleleAssociationDAO agmAlleleAssociationDAO;
-
+	@Inject GeneDiseaseAnnotationDAO geneDiseaseAnnotationDAO;
+	@Inject AlleleDiseaseAnnotationDAO alleleDiseaseAnnotationDAO;
+	@Inject AGMDiseaseAnnotationDAO agmDiseaseAnnotationDAO;
+	@Inject AllelePhenotypeAnnotationDAO allelePhenotypeAnnotationDAO;
+	@Inject AGMPhenotypeAnnotationDAO agmPhenotypeAnnotationDAO;
+	@Inject AgmAlleleAssociationDAO agmAlleleAssociationDAO;
+	@Inject HTPExpressionDatasetAnnotationDAO htpExpressionDatasetAnnotationDAO;
+	
 	protected AlleleDAO() {
 		super(Allele.class);
 	}
@@ -84,6 +79,14 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 		Map<String, Object> params = new HashMap<>();
 		params.put(EntityFieldConstants.AGM_ALLELE_ASSOCIATION_OBJECT + ".id", alleleId);
 		List<Long> results = agmAlleleAssociationDAO.findIdsByParams(params);
+		return CollectionUtils.isNotEmpty(results);
+	}
+	
+	public Boolean hasReferencingHTPExpressionDatasetAnnotation(Long agmId) {
+		Map<String, Object> params = new HashMap<>();
+		params.put(EntityFieldConstants.GENOMIC_INFORMATION_AGM + ".id", agmId);
+		List<Long> results = htpExpressionDatasetAnnotationDAO.findIdsByParams(params);
+		
 		return CollectionUtils.isNotEmpty(results);
 	}
 	

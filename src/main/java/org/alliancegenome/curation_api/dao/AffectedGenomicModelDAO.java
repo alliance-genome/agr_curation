@@ -20,6 +20,7 @@ public class AffectedGenomicModelDAO extends BaseSQLDAO<AffectedGenomicModel> {
 	@Inject GeneDiseaseAnnotationDAO geneDiseaseAnnotationDAO;
 	@Inject AGMPhenotypeAnnotationDAO agmPhenotypeAnnotationDAO;
 	@Inject GenePhenotypeAnnotationDAO genePhenotypeAnnotationDAO;
+	@Inject HTPExpressionDatasetAnnotationDAO htpExpressionDatasetAnnotationDAO;
 	
 	protected AffectedGenomicModelDAO() {
 		super(AffectedGenomicModel.class);
@@ -57,6 +58,14 @@ public class AffectedGenomicModelDAO extends BaseSQLDAO<AffectedGenomicModel> {
 		Map<String, Object> sbParams = new HashMap<>();
 		sbParams.put(EntityFieldConstants.STRAIN_BACKGROUND + ".id", agmId);
 		results = genePhenotypeAnnotationDAO.findIdsByParams(sbParams);
+		return CollectionUtils.isNotEmpty(results);
+	}
+	
+	public Boolean hasReferencingHTPExpressionDatasetAnnotation(Long agmId) {
+		Map<String, Object> params = new HashMap<>();
+		params.put(EntityFieldConstants.GENOMIC_INFORMATION_AGM + ".id", agmId);
+		List<Long> results = htpExpressionDatasetAnnotationDAO.findIdsByParams(params);
+		
 		return CollectionUtils.isNotEmpty(results);
 	}
 
