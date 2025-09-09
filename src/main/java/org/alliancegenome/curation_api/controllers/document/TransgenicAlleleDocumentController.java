@@ -4,15 +4,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import org.alliancegenome.curation_api.dao.VocabularyTermDAO;
 import org.alliancegenome.curation_api.interfaces.document.TransgenicAlleleDocumentInterface;
 import org.alliancegenome.curation_api.model.document.builders.TransgenicAlleleDocumentBuilder;
-import org.alliancegenome.curation_api.model.document.es.TransgenicAlleleDocument;
+import org.alliancegenome.curation_api.model.document.es.TransgenicAlleleDTO;
 import org.alliancegenome.curation_api.model.entities.associations.AlleleConstructAssociation;
 import org.alliancegenome.curation_api.model.input.Pagination;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.associations.AlleleConstructAssociationService;
-import org.apache.commons.collections4.CollectionUtils;
 
 import jakarta.inject.Inject;
 
@@ -21,31 +19,22 @@ public class TransgenicAlleleDocumentController implements TransgenicAlleleDocum
 	@Inject
 	AlleleConstructAssociationService acService;
 
-	@Inject
-	VocabularyTermDAO vocabularyTermDAO;
-
 	@Override
-	public SearchResponse<TransgenicAlleleDocument> findDocuments(Integer page, Integer limit, HashMap<String, Object> params) {
+	public SearchResponse<TransgenicAlleleDTO> findDocuments(Integer page, Integer limit, HashMap<String, Object> params) {
 		if (params == null) {
 			params = new HashMap<>();
 		}
-
-		SearchResponse<AlleleConstructAssociation> resp = acService.findByParams(new Pagination(page, limit), params);
-
-		ArrayList<TransgenicAlleleDocument> list = new ArrayList<>();
-		if (resp.getResults() != null) {
+		SearchResponse<AlleleConstructAssociation> response = acService.findByParams(new Pagination(page, limit), params);
+		List<TransgenicAlleleDTO> list = new ArrayList<>();
+		if (response.getResults() != null) {
 			TransgenicAlleleDocumentBuilder builder = new TransgenicAlleleDocumentBuilder();
-			builder.setVocabularyTermDAO(vocabularyTermDAO);
-			for (AlleleConstructAssociation association : resp.getResults()) {
-				List<TransgenicAlleleDocument> docs = builder.buildTransgenicAlleleDocument(association);
-				if (CollectionUtils.isNotEmpty(docs)) {
-					list.addAll(docs);
-				}
+			for (AlleleConstructAssociation association : response.getResults()) {
+				TransgenicAlleleDTO doc = builder.buildTransgenicAlleleDocument(association);
+				list.add(doc);
 			}
 		}
-
-		SearchResponse<TransgenicAlleleDocument> ret = new SearchResponse<>(list);
-		ret.setTotalResults(resp.getTotalResults());
+		SearchResponse<TransgenicAlleleDTO> ret = new SearchResponse<>(list);
+		ret.setTotalResults(response.getTotalResults());
 		return ret;
 	}
 }
