@@ -20,7 +20,6 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.FullTextFi
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmbedded;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexingDependency;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.KeywordField;
-
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonView;
 
@@ -39,7 +38,7 @@ import lombok.ToString;
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(callSuper = true)
-@AGRCurationSchemaVersion(min = "1.10.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { SlotAnnotation.class })
+@AGRCurationSchemaVersion(min = "1.10.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = {SlotAnnotation.class})
 @Schema(name = "ConstructComponentSlotAnnotation", description = "POJO representing a construct component slot annotation")
 public class ConstructComponentSlotAnnotation extends SlotAnnotation {
 
@@ -50,26 +49,26 @@ public class ConstructComponentSlotAnnotation extends SlotAnnotation {
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "componentSymbol_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({ View.FieldsOnly.class })
+	@JsonView({View.FieldsOnly.class, View.TransgenicAllelesDocumentView.class})
 	@EqualsAndHashCode.Include
 	protected String componentSymbol;
-	
+
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@JsonView({ View.FieldsOnly.class })
+	@JsonView({View.FieldsOnly.class})
 	private VocabularyTerm relation;
-	
+
 	@IndexedEmbedded(includePaths = {"name", "curie", "name_keyword", "curie_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@JsonView({ View.FieldsOnly.class })
+	@JsonView({View.FieldsOnly.class})
 	@Fetch(FetchMode.JOIN)
 	private NCBITaxonTerm taxon;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "taxonText_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({ View.FieldsOnly.class })
+	@JsonView({View.FieldsOnly.class})
 	@EqualsAndHashCode.Include
 	protected String taxonText;
 
@@ -79,14 +78,14 @@ public class ConstructComponentSlotAnnotation extends SlotAnnotation {
 	})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-	@JsonView({ View.FieldsAndLists.class, View.ConstructView.class })
+	@JsonView({View.FieldsAndLists.class, View.ConstructView.class})
 	@JoinTable(
-		joinColumns = @JoinColumn(name = "slotannotation_id"),
-		inverseJoinColumns = @JoinColumn(name = "relatednotes_id"),
-		indexes = {
-			@Index(name = "slotannotation_note_ccsa_index", columnList = "slotannotation_id"),
-			@Index(name = "slotannotation_note_relatednotes_index", columnList = "relatednotes_id")
-		}
+			joinColumns = @JoinColumn(name = "slotannotation_id"),
+			inverseJoinColumns = @JoinColumn(name = "relatednotes_id"),
+			indexes = {
+					@Index(name = "slotannotation_note_ccsa_index", columnList = "slotannotation_id"),
+					@Index(name = "slotannotation_note_relatednotes_index", columnList = "relatednotes_id")
+			}
 	)
 	private List<Note> relatedNotes;
 }
