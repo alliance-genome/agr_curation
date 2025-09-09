@@ -29,6 +29,8 @@ public class GeneExpressionDocumentBuilder {
 
 	public static final String UBERON_ANATOMY_OTHER = "UBERON:AnatomyOtherLocation";
 
+	public static final String UBERON__POST_EMBRYONIC_PRE_ADULT = "UBERON:PostEmbryonicPreAdult";
+
 	public static final String GO_CELLULAR_OTHER = "GO:otherLocations";
 	
 	public GeneExpressionDocument buildDocument(GeneExpressionAnnotation annotation, Map<String, GeneExpressionExperiment> experimentsCache) {
@@ -64,7 +66,12 @@ public class GeneExpressionDocumentBuilder {
 
 			List<VocabularyTerm> stageUberonTerms = annotation.getExpressionPattern().getWhenExpressed().getStageUberonSlimTerms();
 			if (CollectionUtils.isNotEmpty(stageUberonTerms) && ObjectUtils.isNotEmpty(stageUberonTerms.getFirst())) {
-				termIds.add(stageUberonTerms.getFirst().getName());
+				String stageTerm = stageUberonTerms.getFirst().getName();
+				if (stageTerm.equals("post embryonic, pre-adult")) {
+					stageTerm = UBERON__POST_EMBRYONIC_PRE_ADULT;
+					expressionDocument.getGeneExpressionAnnotation().getExpressionPattern().getWhenExpressed().getStageUberonSlimTerms().get(0).setName(stageTerm);
+				}
+				termIds.add(stageTerm);
 				termIds.add(UBERON_STAGE_ROOT);
 			}
 		}
