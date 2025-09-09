@@ -29,7 +29,7 @@ public class AlleleDocumentController implements AlleleDocumentInterface {
 		}
 
 		Pagination pagination = new Pagination(page, limit);
-		SearchResponse<Allele> resp = alleleService.findByParams(pagination, params);
+		SearchResponse<Allele> resp = alleleService.findAllelesForSummary(pagination, params);
 
 		ArrayList<AlleleSummaryDocument> list = new ArrayList<>();
 
