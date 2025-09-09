@@ -70,7 +70,7 @@ public class Construct extends Reagent {
 	@IndexedEmbedded(includePaths = { "relation.name", "relation.name_keyword", "componentSymbol", "taxon.curie", "taxonText", "componentSymbol_keyword", "taxon.curie_keyword", "taxonText_keyword"})
 	@OneToMany(mappedBy = "singleConstruct", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonManagedReference
-	@JsonView({ View.FieldsAndLists.class, View.ConstructView.class })
+	@JsonView({ View.FieldsAndLists.class, View.ConstructView.class, View.TransgenicAllelesDocumentView.class })
 	private List<ConstructComponentSlotAnnotation> constructComponents;
 
 	@IndexedEmbedded(includePaths = {
@@ -80,7 +80,7 @@ public class Construct extends Reagent {
 		"constructGenomicEntityAssociationObject.symbol_keyword", "relation.name_keyword"
 	})
 	@OneToMany(mappedBy = "constructAssociationSubject", cascade = CascadeType.ALL, orphanRemoval = true)
-	@JsonView({ View.FieldsAndLists.class, View.ConstructView.class })
+	@JsonView({ View.FieldsAndLists.class, View.ConstructView.class, View.TransgenicAllelesDocumentView.class })
 	private List<ConstructGenomicEntityAssociation> constructGenomicEntityAssociations;
 	
 	@OneToMany(mappedBy = "alleleConstructAssociationObject", cascade = CascadeType.ALL, orphanRemoval = true)
