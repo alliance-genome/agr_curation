@@ -82,9 +82,9 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 		return CollectionUtils.isNotEmpty(results);
 	}
 	
-	public Boolean hasReferencingHTPExpressionDatasetSampleAnnotation(Long agmId) {
+	public Boolean hasReferencingHTPExpressionDatasetSampleAnnotation(Long alleleId) {
 		Map<String, Object> params = new HashMap<>();
-		params.put(EntityFieldConstants.GENOMIC_INFORMATION_AGM + ".id", agmId);
+		params.put(EntityFieldConstants.GENOMIC_INFORMATION_AGM + ".id", alleleId);
 		List<Long> results = htpExpressionDataseSampleAnnotationDAO.findIdsByParams(params);
 		
 		return CollectionUtils.isNotEmpty(results);
