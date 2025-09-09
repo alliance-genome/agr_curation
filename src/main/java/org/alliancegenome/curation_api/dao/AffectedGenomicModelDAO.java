@@ -17,7 +17,9 @@ public class AffectedGenomicModelDAO extends BaseSQLDAO<AffectedGenomicModel> {
 
 	@Inject DiseaseAnnotationDAO diseaseAnnotationDAO;
 	@Inject AGMDiseaseAnnotationDAO agmDiseaseAnnotationDAO;
+	@Inject GeneDiseaseAnnotationDAO geneDiseaseAnnotationDAO;
 	@Inject AGMPhenotypeAnnotationDAO agmPhenotypeAnnotationDAO;
+	@Inject GenePhenotypeAnnotationDAO genePhenotypeAnnotationDAO;
 	
 	protected AffectedGenomicModelDAO() {
 		super(AffectedGenomicModel.class);
@@ -27,6 +29,13 @@ public class AffectedGenomicModelDAO extends BaseSQLDAO<AffectedGenomicModel> {
 		Map<String, Object> params = new HashMap<>();
 		params.put(EntityFieldConstants.DA_SUBJECT + ".id", agmId);
 		List<Long> results = agmDiseaseAnnotationDAO.findIdsByParams(params);
+		if (CollectionUtils.isNotEmpty(results)) {
+			return true;
+		}
+		
+		Map<String, Object> sbParams = new HashMap<>();
+		sbParams.put(EntityFieldConstants.STRAIN_BACKGROUND + ".id", agmId);
+		results = geneDiseaseAnnotationDAO.findIdsByParams(sbParams);
 		if (CollectionUtils.isNotEmpty(results)) {
 			return true;
 		}
@@ -41,6 +50,13 @@ public class AffectedGenomicModelDAO extends BaseSQLDAO<AffectedGenomicModel> {
 		Map<String, Object> params = new HashMap<>();
 		params.put(EntityFieldConstants.PA_SUBJECT + ".id", agmId);
 		List<Long> results = agmPhenotypeAnnotationDAO.findIdsByParams(params);
+		if (CollectionUtils.isNotEmpty(results)) {
+			return true;
+		}
+		
+		Map<String, Object> sbParams = new HashMap<>();
+		sbParams.put(EntityFieldConstants.STRAIN_BACKGROUND + ".id", agmId);
+		results = genePhenotypeAnnotationDAO.findIdsByParams(sbParams);
 		return CollectionUtils.isNotEmpty(results);
 	}
 
