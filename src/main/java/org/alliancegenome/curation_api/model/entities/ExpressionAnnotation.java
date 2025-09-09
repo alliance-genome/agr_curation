@@ -41,19 +41,19 @@ public abstract class ExpressionAnnotation extends Annotation {
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "whenExpressedStageName_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({View.FieldsOnly.class, View.ForPublic.class })
+	@JsonView({View.FieldsOnly.class, View.ForPublic.class, View.GeneExpressionDocument.class })
 	@Column(length = 2000)
 	private String whenExpressedStageName;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "whereExpressedStatement_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({ View.FieldsOnly.class, View.ForPublic.class })
+	@JsonView({ View.FieldsOnly.class, View.ForPublic.class, View.GeneExpressionDocument.class })
 	@Column(length = 2000)
 	private String whereExpressedStatement;
 
 	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
 	@JoinColumn(name = "expressionpattern_id", referencedColumnName = "id")
-	@JsonView({ View.FieldsOnly.class, View.ForPublic.class })
+	@JsonView({ View.FieldsOnly.class, View.ForPublic.class, View.GeneExpressionDocument.class})
 	private ExpressionPattern expressionPattern;
 
 	@Transient

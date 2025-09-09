@@ -6,8 +6,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
-
 import org.alliancegenome.curation_api.dao.GeneExpressionExperimentDAO;
 import org.alliancegenome.curation_api.model.document.es.GeneExpressionDocument;
 import org.alliancegenome.curation_api.model.entities.AnatomicalSite;
@@ -31,6 +29,8 @@ public class GeneExpressionDocumentBuilder {
 
 	public static final String UBERON_ANATOMY_OTHER = "UBERON:AnatomyOtherLocation";
 
+	public static final String UBERON__POST_EMBRYONIC_PRE_ADULT = "UBERON:PostEmbryonicPreAdult";
+
 	public static final String GO_CELLULAR_OTHER = "GO:otherLocations";
 	
 	public GeneExpressionDocument buildDocument(GeneExpressionAnnotation annotation, Map<String, GeneExpressionExperiment> experimentsCache) {
@@ -40,35 +40,41 @@ public class GeneExpressionDocumentBuilder {
 		List<String> termIds = new ArrayList<>();
 		
 		GeneExpressionDocument expressionDocument = new GeneExpressionDocument();
-		if (annotation.getDataProvider().getAbbreviation().equals("MGI") || annotation.getDataProvider().getAbbreviation().equals("WB")) {
-			
-			UniqueIdGeneratorHelper uniqueIdGeneratorHelper = new UniqueIdGeneratorHelper();
-			uniqueIdGeneratorHelper.add(annotation.getExpressionAnnotationSubject().getPrimaryExternalId());
-			uniqueIdGeneratorHelper.add(annotation.getEvidenceItem().getCurie());
-			uniqueIdGeneratorHelper.add(annotation.getExpressionAssayUsed().getCurie());
-			String uniqueId = uniqueIdGeneratorHelper.getUniqueId();
+		if (annotation != null) {
+			expressionDocument.setGeneExpressionAnnotation(annotation);
+		
+			if (annotation.getDataProvider().getAbbreviation().equals("MGI") || annotation.getDataProvider().getAbbreviation().equals("WB")) {
+				
+				UniqueIdGeneratorHelper uniqueIdGeneratorHelper = new UniqueIdGeneratorHelper();
+				uniqueIdGeneratorHelper.add(annotation.getExpressionAnnotationSubject().getPrimaryExternalId());
+				uniqueIdGeneratorHelper.add(annotation.getEvidenceItem().getCurie());
+				uniqueIdGeneratorHelper.add(annotation.getExpressionAssayUsed().getCurie());
+				String uniqueId = uniqueIdGeneratorHelper.getUniqueId();
 
-			GeneExpressionExperiment experiment = experimentsCache.get(uniqueId);
+				GeneExpressionExperiment experiment = experimentsCache.get(uniqueId);
 
-			if (experiment != null && experiment.getCrossReferences() != null) {
-				expressionDocument.setCrossRefs(experiment.getCrossReferences());
+				if (experiment != null && experiment.getCrossReferences() != null) {
+					expressionDocument.getGeneExpressionAnnotation().setCrossReferences(experiment.getCrossReferences());
+				}
+			} else {
+				expressionDocument.getGeneExpressionAnnotation().setCrossReferences(annotation.getCrossReferences());
 			}
-		} else {
-			expressionDocument.setCrossRefs(annotation.getCrossReferences());
 		}
 
-		//There is only single stage term coming from FMS files and that we are storing it in list as single element. Hence pulling the only element.
-		String stageUberonTerm = null;
+		// There is only single stage term coming from FMS files and that we are storing it in list as single element. Hence pulling the only element.
 		if (annotation.getExpressionPattern() != null && annotation.getExpressionPattern().getWhenExpressed() != null) {
 
 			List<VocabularyTerm> stageUberonTerms = annotation.getExpressionPattern().getWhenExpressed().getStageUberonSlimTerms();
-			if (isNotEmpty(stageUberonTerms) && isNotEmpty(stageUberonTerms.getFirst())) {
-				stageUberonTerm = stageUberonTerms.getFirst().getName();
-				termIds.add(stageUberonTerms.getFirst().getName());
+			if (CollectionUtils.isNotEmpty(stageUberonTerms) && ObjectUtils.isNotEmpty(stageUberonTerms.getFirst())) {
+				String stageTerm = stageUberonTerms.getFirst().getName();
+				if (stageTerm.equals("post embryonic, pre-adult")) {
+					stageTerm = UBERON__POST_EMBRYONIC_PRE_ADULT;
+					expressionDocument.getGeneExpressionAnnotation().getExpressionPattern().getWhenExpressed().getStageUberonSlimTerms().get(0).setName(stageTerm);
+				}
+				termIds.add(stageTerm);
 				termIds.add(UBERON_STAGE_ROOT);
 			}
 		}
-		expressionDocument.setStageTermId(stageUberonTerm);
 
 		AnatomicalSite whereExpressed = annotation.getExpressionPattern() != null ? annotation.getExpressionPattern().getWhereExpressed() : null;
 
@@ -90,8 +96,8 @@ public class GeneExpressionDocumentBuilder {
 				if (ObjectUtils.isNotEmpty(whereExpressed.getCellularComponentRibbonTerm())) {
 					goTermIds.add(whereExpressed.getCellularComponentRibbonTerm().getCurie());
 					goTermIds.add(GO_CC_ROOT);
+					expressionDocument.setGoTermIds(goTermIds);
 				}
-				expressionDocument.setGoTermIds(goTermIds);
 			} else {
 				goTermIds.add(GO_CELLULAR_OTHER);
 				goTermIds.add(GO_CC_ROOT);
@@ -101,15 +107,7 @@ public class GeneExpressionDocumentBuilder {
 			termIds.addAll(uberonTermIds);
 			termIds.addAll(goTermIds);
 		}
-
 		expressionDocument.setTermIds(termIds);
-		expressionDocument.setGene(annotation.getExpressionAnnotationSubject());
-		expressionDocument.setDataProvider(annotation.getDataProvider().getAbbreviation());
-		expressionDocument.setAssay(annotation.getExpressionAssayUsed());
-		expressionDocument.setLocation(annotation.getWhereExpressedStatement());
-		expressionDocument.setStageName(annotation.getWhenExpressedStageName());
-
-
 
 		return expressionDocument;
 
