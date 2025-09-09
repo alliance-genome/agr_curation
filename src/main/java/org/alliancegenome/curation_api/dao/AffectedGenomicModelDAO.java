@@ -35,7 +35,7 @@ public class AffectedGenomicModelDAO extends BaseSQLDAO<AffectedGenomicModel> {
 		
 		Map<String, Object> sbParams = new HashMap<>();
 		sbParams.put(EntityFieldConstants.STRAIN_BACKGROUND + ".id", agmId);
-		results = geneDiseaseAnnotationDAO.findIdsByParams(params);
+		results = geneDiseaseAnnotationDAO.findIdsByParams(sbParams);
 		if (CollectionUtils.isNotEmpty(results)) {
 			return true;
 		}
@@ -56,7 +56,7 @@ public class AffectedGenomicModelDAO extends BaseSQLDAO<AffectedGenomicModel> {
 		
 		Map<String, Object> sbParams = new HashMap<>();
 		sbParams.put(EntityFieldConstants.STRAIN_BACKGROUND + ".id", agmId);
-		results = genePhenotypeAnnotationDAO.findIdsByParams(params);
+		results = genePhenotypeAnnotationDAO.findIdsByParams(sbParams);
 		return CollectionUtils.isNotEmpty(results);
 	}
 
