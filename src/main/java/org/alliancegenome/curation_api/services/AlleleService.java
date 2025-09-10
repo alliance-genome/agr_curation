@@ -92,6 +92,9 @@ public class AlleleService extends SubmittedObjectCrudService<Allele, AlleleDTO,
 			if (alleleDAO.hasReferencingPhenotypeAnnotations(id)) {
 				deprecationReasons.add("Allele is referenced by phenotype annotation(s)");
 			}
+			if (alleleDAO.hasReferencingHTPExpressionDatasetSampleAnnotation(id)) {
+				deprecationReasons.add("Allele is referenced by HTP expression dataset annotation(s)");
+			}
 			if (alleleDAO.hasReferencingAgmAlleleAssociations(id)) {
 				deprecationReasons.add("Allele has AGM association(s)");
 			}

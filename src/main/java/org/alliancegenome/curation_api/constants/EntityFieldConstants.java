@@ -87,5 +87,9 @@ public final class EntityFieldConstants {
 	public static final String MAPS_TO_CHROMOSOME = "mapsToChromosome";
 
 	public static final String VARIANT_TRANSCRIPT = "variantTranscript";
+	
+	public static final String GENOMIC_INFORMATION = "genomicInformation";
+	public static final String GENOMIC_INFORMATION_AGM = GENOMIC_INFORMATION + ".bioSampleAgm";
+	public static final String GENOMIC_INFORMATION_ALLELE = GENOMIC_INFORMATION + ".bioSampleAllele";
 
 }
