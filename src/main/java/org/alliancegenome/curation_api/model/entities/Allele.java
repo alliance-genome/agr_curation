@@ -20,8 +20,6 @@ import org.alliancegenome.curation_api.model.entities.slotAnnotations.AlleleSeco
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.AlleleSymbolSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.AlleleSynonymSlotAnnotation;
 import org.alliancegenome.curation_api.view.View;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
 import org.hibernate.search.engine.backend.types.Aggregable;
 import org.hibernate.search.engine.backend.types.Projectable;
 import org.hibernate.search.engine.backend.types.Searchable;
@@ -79,7 +77,6 @@ public class Allele extends GenomicEntity {
 	)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
-	@Fetch(FetchMode.JOIN)
 	@JoinTable(indexes = {
 		@Index(name = "allele_reference_allele_index", columnList = "allele_id"),
 		@Index(name = "allele_reference_references_index", columnList = "references_id"),
@@ -91,7 +88,6 @@ public class Allele extends GenomicEntity {
 	@IndexedEmbedded(includePaths = {"name", "name_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@Fetch(FetchMode.SELECT)
 	@JsonView({ View.FieldsOnly.class, View.AlleleDetailView.class })
 	private VocabularyTerm inCollection;
 
@@ -222,7 +218,6 @@ public class Allele extends GenomicEntity {
 		"alleleConstructAssociationObject.constructFullName.displayText_keyword", "alleleConstructAssociationObject.constructFullName.formatText_keyword", "alleleConstructAssociationObject.primaryExternalId_keyword"
 	})
 	@OneToMany(mappedBy = "alleleAssociationSubject", cascade = CascadeType.ALL, orphanRemoval = true)
-	@Fetch(FetchMode.SUBSELECT)
 	@JsonView({ View.FieldsAndLists.class, View.AlleleDetailView.class })
 	private List<AlleleConstructAssociation> alleleConstructAssociations;
 
