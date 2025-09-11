@@ -29,7 +29,7 @@ public class InteractionCrossReferenceHelper {
 			String displayName = PsiMiTabPrefixEnum.getAllianceIdentifier(interactionId);
 			if (displayName != null) {
 				if (!displayName.startsWith("FB:")) {
-					CrossReference allianceXref = createAllianceXref(displayName, displayName); 
+					CrossReference allianceXref = createAllianceXref(displayName, displayName);
 					if (allianceXref != null) {
 						xrefs.add(allianceXref);
 					}
