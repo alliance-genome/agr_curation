@@ -32,7 +32,6 @@ import com.fasterxml.jackson.annotation.JsonView;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Index;
-import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
@@ -114,7 +113,7 @@ public class Gene extends GenomicEntity {
 	@IndexedEmbedded(includePaths = { "displayText", "formatText", "nameType.name", "synonymScope.name", "evidence.curie", "displayText_keyword", "formatText_keyword", "nameType.name_keyword", "synonymScope.name_keyword", "evidence.curie_keyword"})
 	@OneToOne(mappedBy = "singleGene", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonManagedReference
-	@JsonView({ View.FieldsOnly.class, View.ForPublic.class, View.GeneToGeneOrthologyDocument.class, View.GeneSummaryDocument.class, View.ModelDocumentView.class, View.TransgenicAllelesDocumentView.class })
+	@JsonView({ View.FieldsOnly.class, View.ForPublic.class, View.GeneToGeneOrthologyDocument.class, View.GeneSummaryDocument.class, View.ModelDocumentView.class, View.TransgenicAllelesDocumentView.class, View.AlleleSummaryDocument.class, View.GeneExpressionDocument.class })
 	private GeneSymbolSlotAnnotation geneSymbol;
 
 	@IndexedEmbedded(includePaths = { "displayText", "formatText", "nameType.name", "synonymScope.name", "evidence.curie", "displayText_keyword", "formatText_keyword", "nameType.name_keyword", "synonymScope.name_keyword", "evidence.curie_keyword"})
@@ -175,15 +174,6 @@ public class Gene extends GenomicEntity {
 	@OneToMany(mappedBy = "constructGenomicEntityAssociationObject", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonView({ View.FieldsAndLists.class, View.GeneDetailView.class })
 	private List<ConstructGenomicEntityAssociation> constructGenomicEntityAssociations;
-
-	@IndexedEmbedded(includePaths = {"freeText", "freeText_keyword"})
-	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
-	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-	@JsonView({ View.FieldsAndLists.class, View.GeneView.class })
-	@JoinTable(indexes = {
-		@Index(name = "gene_note_gene_index", columnList = "gene_id"),
-		@Index(name = "gene_note_relatednotes_index", columnList = "relatedNotes_id")})
-	private List<Note> relatedNotes;
 
 	@IndexedEmbedded(includePaths = {"displayName", "referencedCurie", "displayName_keyword", "referencedCurie_keyword", "resourceDescriptorPage.name", "resourceDescriptorPage.name_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)

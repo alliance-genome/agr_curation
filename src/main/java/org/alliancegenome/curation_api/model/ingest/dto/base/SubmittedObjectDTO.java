@@ -1,8 +1,11 @@
 package org.alliancegenome.curation_api.model.ingest.dto.base;
 
+import java.util.List;
+
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.ingest.dto.DataProviderDTO;
+import org.alliancegenome.curation_api.model.ingest.dto.NoteDTO;
 import org.alliancegenome.curation_api.view.View;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -28,4 +31,7 @@ public class SubmittedObjectDTO extends AuditedObjectDTO {
 	@JsonProperty("data_provider_dto")
 	private DataProviderDTO dataProviderDto;
 
+	@JsonView({ View.FieldsAndLists.class })
+	@JsonProperty("note_dtos")
+	private List<NoteDTO> noteDtos;
 }

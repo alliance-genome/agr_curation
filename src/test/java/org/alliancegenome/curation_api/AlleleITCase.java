@@ -13,6 +13,7 @@ import org.alliancegenome.curation_api.base.BaseITCase;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.model.entities.Allele;
+import org.alliancegenome.curation_api.model.entities.Construct;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.InformationContentEntity;
 import org.alliancegenome.curation_api.model.entities.Note;
@@ -21,6 +22,7 @@ import org.alliancegenome.curation_api.model.entities.Person;
 import org.alliancegenome.curation_api.model.entities.Reference;
 import org.alliancegenome.curation_api.model.entities.Vocabulary;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
+import org.alliancegenome.curation_api.model.entities.associations.AlleleConstructAssociation;
 import org.alliancegenome.curation_api.model.entities.associations.AlleleGeneAssociation;
 import org.alliancegenome.curation_api.model.entities.ontology.MPTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
@@ -131,6 +133,8 @@ public class AlleleITCase extends BaseITCase {
 	private Gene gene2;
 	private VocabularyTerm geneAssociationRelation;
 	private VocabularyTerm geneAssociationRelation2;
+	private Construct construct;
+	private VocabularyTerm constructAssociationRelation;
 
 
 	private void loadRequiredEntities() {
@@ -210,7 +214,8 @@ public class AlleleITCase extends BaseITCase {
 		Vocabulary relationVocabulary = getVocabulary(VocabularyConstants.ALLELE_RELATION_VOCABULARY);
 		geneAssociationRelation = getVocabularyTerm(relationVocabulary, "is_allele_of");
 		geneAssociationRelation2 = getVocabularyTerm(relationVocabulary, "duplication");
-
+		construct = createConstruct("TEST:AssociatedConstruct1", false, symbolNameType);
+		constructAssociationRelation = getVocabularyTerm(relationVocabulary, "contains");
 	}
 
 	@Test
@@ -1462,6 +1467,11 @@ public class AlleleITCase extends BaseITCase {
 		Reference reference = createReference("AGRKB:AssocTest1", false);
 		geneAssociation.setEvidence(List.of(reference));
 		allele.setAlleleGeneAssociations(List.of(geneAssociation));
+		
+		AlleleConstructAssociation constructAssociation = new AlleleConstructAssociation();
+		constructAssociation.setAlleleConstructAssociationObject(construct);
+		constructAssociation.setRelation(constructAssociationRelation);
+		allele.setAlleleConstructAssociations(List.of(constructAssociation));
 
 		RestAssured.given().
 			contentType("application/json").
@@ -1477,7 +1487,8 @@ public class AlleleITCase extends BaseITCase {
 			then().
 			statusCode(200).
 			body("entity", hasKey("alleleGeneAssociations")).
-			body("entity.alleleGeneAssociations[0].alleleGeneAssociationObject.primaryExternalId", is(gene.getPrimaryExternalId()));
+			body("entity.alleleGeneAssociations[0].alleleGeneAssociationObject.primaryExternalId", is(gene.getPrimaryExternalId())).
+			body("entity.alleleConstructAssociations[0].alleleConstructAssociationObject.primaryExternalId", is(construct.getPrimaryExternalId()));
 	}
 
 	@Test
@@ -1486,6 +1497,7 @@ public class AlleleITCase extends BaseITCase {
 		Allele allele = getAllele(ALLELE);
 
 		allele.setAlleleGeneAssociations(null);
+		allele.setAlleleConstructAssociations(null);
 
 		RestAssured.given().
 			contentType("application/json").
@@ -1500,7 +1512,8 @@ public class AlleleITCase extends BaseITCase {
 			get("/api/allele/" + ALLELE).
 			then().
 			statusCode(200).
-			body("entity", not(hasKey("alleleGeneAssociations")));
+			body("entity", not(hasKey("alleleGeneAssociations"))).
+			body("entity", not(hasKey("alleleConstructAssociations")));
 	}
 
 	@Test

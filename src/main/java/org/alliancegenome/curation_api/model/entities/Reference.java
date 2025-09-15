@@ -9,8 +9,6 @@ import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.view.View;
 import org.apache.commons.collections.CollectionUtils;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
 import org.hibernate.search.engine.backend.types.Aggregable;
 import org.hibernate.search.engine.backend.types.Searchable;
 import org.hibernate.search.engine.backend.types.Sortable;
@@ -43,7 +41,6 @@ public class Reference extends InformationContentEntity {
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
-	@Fetch(FetchMode.JOIN)
 	@JsonView({View.FieldsOnly.class, View.ForPublic.class})
 	@JoinTable(
 		indexes = {
@@ -64,7 +61,7 @@ public class Reference extends InformationContentEntity {
 	 * Retrieve PMID if available in the crossReference collection otherwise MOD ID
 	 */
 	@Transient
-	@JsonView(View.ForPublic.class)
+	@JsonView({View.ForPublic.class, View.GeneExpressionDocument.class})
 	public String getReferenceID() {
 		return getReferenceID(true);
 	}
@@ -73,7 +70,7 @@ public class Reference extends InformationContentEntity {
 	 * Retrieve PUB MOD ID
 	 */
 	@Transient
-	@JsonView(View.ForPublic.class)
+	@JsonView({View.ForPublic.class, View.GeneExpressionDocument.class})
 	public String getPubModID() {
 		return getReferenceID(false);
 	}

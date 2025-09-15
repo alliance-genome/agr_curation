@@ -51,7 +51,7 @@ public class OntologyTerm extends CurieObject {
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "name_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({ View.FieldsOnly.class, View.ForPublic.class, View.GeneToGeneOrthologyDocument.class, View.GeneSummaryDocument.class, View.DiseaseSummaryDocument.class, View.ModelDocumentView.class })
+	@JsonView({ View.FieldsOnly.class, View.ForPublic.class, View.GeneToGeneOrthologyDocument.class, View.GeneSummaryDocument.class, View.DiseaseSummaryDocument.class, View.ModelDocumentView.class, View.AlleleSummaryDocument.class, View.GeneExpressionDocument.class, View.GeneExpressionDocument.class })
 	@Column(length = 2000)
 	protected String name;
 
@@ -97,7 +97,7 @@ public class OntologyTerm extends CurieObject {
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
 	@JoinTable(indexes = @Index(columnList = "ontologyterm_id", name = "ontologyterm_synonym_ontologyterm_index"))
-	@JsonView({ View.FieldsAndLists.class, View.DiseaseSummaryDocument.class })
+	@JsonView({ View.FieldsAndLists.class, View.DiseaseSummaryDocument.class, View.GeneExpressionDocument.class })
 	private List<Synonym> synonyms;
 
 	@IndexedEmbedded(includeDepth = 1)

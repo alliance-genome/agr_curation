@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.alliancegenome.curation_api.dao.VocabularyTermDAO;
-import org.alliancegenome.curation_api.model.document.es.TransgenicAlleleDocument;
+import org.alliancegenome.curation_api.model.document.es.TransgenicAlleleDTO;
 import org.alliancegenome.curation_api.model.entities.AGMDiseaseAnnotation;
 import org.alliancegenome.curation_api.model.entities.AGMPhenotypeAnnotation;
 import org.alliancegenome.curation_api.model.entities.Allele;
@@ -26,7 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class TransgenicAlleleDocumentBuilder {
 
-	public List<TransgenicAlleleDocument> buildTransgenicAlleleDocument(AlleleConstructAssociation association) {
+	public TransgenicAlleleDTO buildTransgenicAlleleDocument(AlleleConstructAssociation association) {
 		if (CollectionUtils.isEmpty(association.getAlleleConstructAssociationObject().getConstructGenomicEntityAssociations())) {
 			return null;
 		}
@@ -41,73 +41,48 @@ public class TransgenicAlleleDocumentBuilder {
 		agmPhenotypeAnnotations.addAll(allele.getAgmPhenotypeInferredAlleleAnnotations());
 		Boolean hasPhenotypeAnnotation = CollectionUtils.isNotEmpty(agmPhenotypeAnnotations) || CollectionUtils.isNotEmpty(allele.getAllelePhenotypeAnnotations());
 
-		List<TransgenicAlleleDocument> transgenicAlleleDocuments = new ArrayList<>();
-		// get all genes that have a construct-expresses-gene relationship
-		Map<Gene, List<Construct>> expressedGeneConstructMap = getExpressedGeneConstructMap(association);
-		expressedGeneConstructMap.forEach(
-				(gene, constructs) -> {
-					TransgenicAlleleDocument transAllele = new TransgenicAlleleDocument();
-					transAllele.setAllele(allele);
-					transAllele.setGene(gene);
-					transAllele.setConstructList(constructs);
-					List<Gene> genes = new ArrayList<>(constructs.stream().flatMap(construct -> getExpressedGeneList(construct, "expresses").stream()).toList());
-					List<Gene> nonBgiComponents = getNonBgiComponents(constructs);
-					genes.addAll(nonBgiComponents);
-					transAllele.setExpressedGenes(genes);
-					List<Gene> regulatorGenes = constructs.stream().flatMap(construct -> getExpressedGeneList(construct, "is_regulated_by").stream()).toList();
-					transAllele.setRegulatoryGenes(regulatorGenes);
-					transAllele.setHasDiseaseAnnotations(hasDiseaseAnnotation);
-					transAllele.setHasPhenotypeAnnotations(hasPhenotypeAnnotation);
-					transgenicAlleleDocuments.add(transAllele);
-				});
-		return transgenicAlleleDocuments;
+		TransgenicAlleleDTO transgenicAlleleDocument = new TransgenicAlleleDTO();
+		transgenicAlleleDocument.setAllele(allele);
+		transgenicAlleleDocument.setConstruct(association.getAlleleConstructAssociationObject());
+		transgenicAlleleDocument.setHasDiseaseAnnotations(hasDiseaseAnnotation);
+		transgenicAlleleDocument.setHasPhenotypeAnnotations(hasPhenotypeAnnotation);
+		return transgenicAlleleDocument;
 	}
 
 	@NotNull
 	private static List<Gene> getNonBgiComponents(List<Construct> constructs) {
-		List<ConstructComponentSlotAnnotation> annotations = constructs
-				.stream()
-				.flatMap(construct -> construct.getConstructComponents().stream())
-				.toList();
-		return annotations.stream()
-				.map(annotation -> {
-					Gene nonBgiGene = new Gene();
-					GeneSymbolSlotAnnotation symbol = new GeneSymbolSlotAnnotation();
-					symbol.setDisplayText(annotation.getComponentSymbol());
-					symbol.setFormatText(annotation.getComponentSymbol());
-					nonBgiGene.setGeneSymbol(symbol);
-					return nonBgiGene;
-				})
-				.toList();
+		List<ConstructComponentSlotAnnotation> annotations = constructs.stream().flatMap(construct -> construct.getConstructComponents().stream()).toList();
+		return annotations.stream().map(annotation -> {
+			Gene nonBgiGene = new Gene();
+			GeneSymbolSlotAnnotation symbol = new GeneSymbolSlotAnnotation();
+			symbol.setDisplayText(annotation.getComponentSymbol());
+			symbol.setFormatText(annotation.getComponentSymbol());
+			nonBgiGene.setGeneSymbol(symbol);
+			return nonBgiGene;
+		}).toList();
 	}
 
 	private Map<Gene, List<Construct>> getExpressedGeneConstructMap(AlleleConstructAssociation association) {
 		Map<Gene, List<Construct>> geneConstructMap = new HashMap<>();
-		association
-				.getAlleleConstructAssociationObject()
-				.getConstructGenomicEntityAssociations()
-				.forEach(constructGenomicEntityAssociation -> {
-							if (constructGenomicEntityAssociation.getConstructGenomicEntityAssociationObject() instanceof Gene Gene
-									&& constructGenomicEntityAssociation.getRelation().equals(getConstructRelation("expresses"))) {
-								List<Construct> constructList = geneConstructMap.computeIfAbsent(Gene, k -> new ArrayList<>());
-								constructList.add(association.getAlleleConstructAssociationObject());
-							}
-						}
-				);
+		association.getAlleleConstructAssociationObject().getConstructGenomicEntityAssociations().forEach(constructGenomicEntityAssociation -> {
+			if (constructGenomicEntityAssociation.getConstructGenomicEntityAssociationObject() instanceof Gene Gene) {
+				if (constructGenomicEntityAssociation.getRelation().equals(getConstructRelation("expresses")) || constructGenomicEntityAssociation.getRelation().equals(getConstructRelation("is_regulated_by"))) {
+					List<Construct> constructList = geneConstructMap.computeIfAbsent(Gene, k -> new ArrayList<>());
+					constructList.add(association.getAlleleConstructAssociationObject());
+				}
+			}
+		});
 
 		return geneConstructMap;
 	}
 
 	private List<Gene> getExpressedGeneList(Construct construct, String relationName) {
 		List<Gene> expressedGenes = new ArrayList<>();
-		construct.getConstructGenomicEntityAssociations()
-				.forEach(constructGenomicEntityAssociation -> {
-							if (constructGenomicEntityAssociation.getConstructGenomicEntityAssociationObject() instanceof Gene gene
-									&& constructGenomicEntityAssociation.getRelation().equals(getConstructRelation(relationName))) {
-								expressedGenes.add(gene);
-							}
-						}
-				);
+		construct.getConstructGenomicEntityAssociations().forEach(constructGenomicEntityAssociation -> {
+			if (constructGenomicEntityAssociation.getConstructGenomicEntityAssociationObject() instanceof Gene gene && constructGenomicEntityAssociation.getRelation().equals(getConstructRelation(relationName))) {
+				expressedGenes.add(gene);
+			}
+		});
 		return expressedGenes;
 	}
 
@@ -132,4 +107,5 @@ public class TransgenicAlleleDocumentBuilder {
 		}
 		return terms.get(termName);
 	}
+
 }

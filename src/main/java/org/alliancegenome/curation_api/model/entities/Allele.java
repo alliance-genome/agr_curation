@@ -20,8 +20,6 @@ import org.alliancegenome.curation_api.model.entities.slotAnnotations.AlleleSeco
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.AlleleSymbolSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.AlleleSynonymSlotAnnotation;
 import org.alliancegenome.curation_api.view.View;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
 import org.hibernate.search.engine.backend.types.Aggregable;
 import org.hibernate.search.engine.backend.types.Projectable;
 import org.hibernate.search.engine.backend.types.Searchable;
@@ -79,7 +77,6 @@ public class Allele extends GenomicEntity {
 	)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
-	@Fetch(FetchMode.JOIN)
 	@JoinTable(indexes = {
 		@Index(name = "allele_reference_allele_index", columnList = "allele_id"),
 		@Index(name = "allele_reference_references_index", columnList = "references_id"),
@@ -91,7 +88,6 @@ public class Allele extends GenomicEntity {
 	@IndexedEmbedded(includePaths = {"name", "name_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@Fetch(FetchMode.SELECT)
 	@JsonView({ View.FieldsOnly.class, View.AlleleDetailView.class })
 	private VocabularyTerm inCollection;
 
@@ -130,7 +126,7 @@ public class Allele extends GenomicEntity {
 	)
 	@OneToOne(mappedBy = "singleAllele", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonManagedReference
-	@JsonView({ View.FieldsOnly.class, View.ForPublic.class, View.AlleleDetailView.class })
+	@JsonView({ View.FieldsOnly.class, View.ForPublic.class, View.AlleleDetailView.class, View.AlleleSummaryDocument.class })
 	private AlleleSymbolSlotAnnotation alleleSymbol;
 
 	@IndexedEmbedded(
@@ -152,7 +148,7 @@ public class Allele extends GenomicEntity {
 	)
 	@OneToMany(mappedBy = "singleAllele", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonManagedReference
-	@JsonView({ View.FieldsAndLists.class, View.AlleleView.class, View.AlleleDetailView.class })
+	@JsonView({ View.FieldsAndLists.class, View.AlleleView.class, View.AlleleDetailView.class, View.AlleleSummaryDocument.class })
 	private List<AlleleSynonymSlotAnnotation> alleleSynonyms;
 
 	@IndexedEmbedded(includePaths = { "secondaryId", "evidence.curie", "secondaryId_keyword", "evidence.curie_keyword"})
@@ -206,15 +202,6 @@ public class Allele extends GenomicEntity {
 	@JsonView({ View.FieldsAndLists.class, View.AlleleDetailView.class })
 	private List<AlleleVariantAssociation> alleleVariantAssociations;
 
-	@IndexedEmbedded(includePaths = {"freeText", "freeText_keyword"})
-	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
-	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-	@JsonView({ View.FieldsAndLists.class, View.AlleleView.class, View.AlleleDetailView.class })
-	@JoinTable(indexes = {
-		@Index(name = "allele_note_allele_index", columnList = "allele_id"),
-		@Index(name = "allele_note_relatednotes_index", columnList = "relatedNotes_id")})
-	private List<Note> relatedNotes;
-
 	@IndexedEmbedded(includePaths = {
 		"alleleConstructAssociationObject.curie", "alleleConstructAssociationObject.constructSymbol.displayText", "alleleConstructAssociationObject.constructSymbol.formatText",
 		"alleleConstructAssociationObject.constructFullName.displayText", "alleleConstructAssociationObject.constructFullName.formatText", "alleleConstructAssociationObject.primaryExternalId",
@@ -222,7 +209,6 @@ public class Allele extends GenomicEntity {
 		"alleleConstructAssociationObject.constructFullName.displayText_keyword", "alleleConstructAssociationObject.constructFullName.formatText_keyword", "alleleConstructAssociationObject.primaryExternalId_keyword"
 	})
 	@OneToMany(mappedBy = "alleleAssociationSubject", cascade = CascadeType.ALL, orphanRemoval = true)
-	@Fetch(FetchMode.SUBSELECT)
 	@JsonView({ View.FieldsAndLists.class, View.AlleleDetailView.class })
 	private List<AlleleConstructAssociation> alleleConstructAssociations;
 

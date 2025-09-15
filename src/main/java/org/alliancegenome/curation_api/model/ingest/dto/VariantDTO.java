@@ -1,7 +1,5 @@
 package org.alliancegenome.curation_api.model.ingest.dto;
 
-import java.util.List;
-
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.view.View;
@@ -28,9 +26,5 @@ public class VariantDTO extends GenomicEntityDTO {
 	@JsonView({ View.FieldsOnly.class })
 	@JsonProperty("source_general_consequence_curie")
 	private String sourceGeneralConsequenceCurie;
-
-	@JsonView({ View.FieldsAndLists.class })
-	@JsonProperty("note_dtos")
-	private List<NoteDTO> noteDtos;
 
 }

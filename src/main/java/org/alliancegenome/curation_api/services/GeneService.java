@@ -145,7 +145,7 @@ public class GeneService extends SubmittedObjectCrudService<Gene, GeneDTO, GeneD
 					gene.setDateUpdated(OffsetDateTime.now());
 					gene.setObsolete(true);
 					
-					Note deprecationNote = noteService.createDeprecationNote(deprecationReasons);
+					Note deprecationNote = noteService.createDeprecationNote(gene.getIdentifier(), requestSource, deprecationReasons);
 					if (gene.getRelatedNotes() == null) {
 						gene.setRelatedNotes(new ArrayList<>());
 					}
