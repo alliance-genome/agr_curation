@@ -16,7 +16,6 @@ import org.alliancegenome.curation_api.interfaces.base.BasePopularityInterface;
 import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.Note;
 import org.alliancegenome.curation_api.model.ingest.dto.AlleleDTO;
-import org.alliancegenome.curation_api.model.input.Pagination;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.base.SubmittedObjectCrudService;
@@ -118,7 +117,7 @@ public class AlleleService extends SubmittedObjectCrudService<Allele, AlleleDTO,
 						allele.setRelatedNotes(new ArrayList<>());
 					}
 					allele.getRelatedNotes().add(deprecationNote);
-
+					
 					return alleleDAO.persist(allele);
 				} else {
 					return allele;
@@ -155,9 +154,5 @@ public class AlleleService extends SubmittedObjectCrudService<Allele, AlleleDTO,
 			Allele allele = searchResponse.getSingleResult();
 			allele.setPopularity(popularity);
 		}
-	}
-
-	public SearchResponse<Allele> findAllelesForSummary(Pagination pagination, Map<String, Object> params) {
-		return alleleDAO.findAllelesForSummary(pagination, params);
 	}
 }
