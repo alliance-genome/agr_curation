@@ -1,4 +1,3 @@
-import React from 'react';
 import { useHistory } from 'react-router-dom';
 import { Security } from '@okta/okta-react';
 import { OktaAuth } from '@okta/okta-auth-js';
@@ -9,6 +8,7 @@ import { Login } from './Login';
 
 import routes from './routes';
 import './App.scss';
+import './button-style-overrides.css';
 
 const App = () => {
 	const oktaAuth = new OktaAuth(oktaAuthConfig);

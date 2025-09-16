@@ -1,0 +1,100 @@
+ /* TODO: this works for now. Try fixing the issue with overrides at some point in the future */
+/* Fix button text visibility issues across all themes */
+
+/* Primary button fixes - default PrimeReact buttons */
+.p-button {
+    color: var(--primary-color-text) !important;
+}
+
+.p-button:not(.p-disabled):hover {
+    color: var(--primary-color-text) !important;
+}
+
+.p-button:not(.p-disabled):active {
+    color: var(--primary-color-text) !important;
+}
+
+/* Ensure text buttons have dark text with proper contrast */
+.p-button.p-button-text {
+    color: var(--text-color) !important;
+}
+
+.p-button.p-button-text:not(.p-disabled):hover {
+    color: var(--text-color) !important;
+}
+
+.p-button.p-button-text:not(.p-disabled):active {
+    color: var(--text-color) !important;
+}
+
+/* Fix outlined buttons to have visible text */
+.p-button.p-button-outlined {
+    color: var(--text-color) !important;
+    border-color: var(--primary-color) !important;
+}
+
+.p-button.p-button-outlined:not(.p-disabled):hover {
+    color: var(--primary-color-text) !important;
+    background: var(--primary-color) !important;
+}
+
+/* Fix outlined plain buttons to have visible text */
+.p-button.p-button-outlined.p-button-plain {
+    color: var(--text-color) !important;
+    border-color: var(--surface-border) !important;
+}
+
+.p-button.p-button-outlined.p-button-plain:not(.p-disabled):hover {
+    color: var(--text-color) !important;
+    background: var(--surface-ground) !important;
+}
+
+.p-button.p-button-outlined.p-button-plain:not(.p-disabled):active {
+    color: var(--text-color) !important;
+    background: var(--surface-hover) !important;
+}
+
+/* Ensure secondary buttons have proper contrast */
+.p-button.p-button-secondary {
+    color: var(--text-color) !important;
+}
+
+.p-button.p-button-secondary:not(.p-disabled):hover {
+    color: var(--primary-color-text) !important;
+}
+
+/* Specific fixes for pagination and navigation buttons */
+.p-paginator .p-paginator-pages .p-paginator-page {
+    color: var(--text-color) !important;
+}
+
+.p-paginator .p-paginator-pages .p-paginator-page:not(.p-disabled):hover {
+    color: var(--text-color) !important;
+    background: var(--surface-hover) !important;
+}
+
+.p-paginator .p-paginator-pages .p-paginator-page.p-paginator-page-selected {
+    color: var(--primary-color-text) !important;
+    background: var(--primary-color) !important;
+}
+
+/* Fix paginator navigation buttons */
+.p-paginator .p-paginator-first,
+.p-paginator .p-paginator-prev,
+.p-paginator .p-paginator-next,
+.p-paginator .p-paginator-last {
+    color: var(--text-color) !important;
+}
+
+.p-paginator .p-paginator-first:not(.p-disabled):hover,
+.p-paginator .p-paginator-prev:not(.p-disabled):hover,
+.p-paginator .p-paginator-next:not(.p-disabled):hover,
+.p-paginator .p-paginator-last:not(.p-disabled):hover {
+    color: var(--text-color) !important;
+    background: var(--surface-hover) !important;
+}
+
+/* Fix confirm dialog buttons */
+.p-confirm-dialog .p-dialog-footer .p-button {
+    color: var(--primary-color-text) !important;
+}
