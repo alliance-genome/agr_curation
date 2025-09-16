@@ -1,4 +1,4 @@
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Security } from '@okta/okta-react';
 import { OktaAuth } from '@okta/okta-auth-js';
 import { oktaAuthConfig } from './oktaAuthConfig';
@@ -6,17 +6,17 @@ import { CookiesProvider } from 'react-cookie';
 
 import { Login } from './Login';
 
-import routes from './routes';
+import AppRoutes from './routes';
 import './App.scss';
 import './button-style-overrides.css';
 
 const App = () => {
 	const oktaAuth = new OktaAuth(oktaAuthConfig);
 
-	const history = useHistory();
+	const navigate = useNavigate();
 
 	const customAuthHandler = () => {
-		history.push('/login');
+		navigate('/login');
 	};
 
 	const restoreOriginalUri = async (_oktaAuth, originalUri) => {
@@ -28,7 +28,7 @@ const App = () => {
 	return (
 		<Security oktaAuth={oktaAuth} onAuthRequired={customAuthHandler} restoreOriginalUri={restoreOriginalUri}>
 			<CookiesProvider defaultSetOptions={{ path: '/' }}>
-				<Login>{routes}</Login>
+				<Login><AppRoutes /></Login>
 			</CookiesProvider>
 		</Security>
 	);

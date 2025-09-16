@@ -62,11 +62,10 @@ const AppSubmenu = (props) => {
 					aria-label={item.label}
 					onKeyDown={onKeyDown}
 					role="menuitem"
-					className="p-ripple"
-					activeClassName="router-link-active router-link-exact-active"
+					className={({ isActive }) => isActive ? "p-ripple router-link-active router-link-exact-active" : "p-ripple"}
 					to={item.to}
 					onClick={(e) => onMenuItemClick(e, item, i)}
-					exact
+					end
 					target={item.target}
 				>
 					{content}
