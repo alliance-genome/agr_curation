@@ -81,6 +81,6 @@ public class GeneExpressionAnnotation extends ExpressionAnnotation {
 		joinColumns = @JoinColumn(name = "expressionannotations_id"),
 		inverseJoinColumns = @JoinColumn(name = "geneexpressionexperiment_id")
 	)
-	@JsonView({View.FieldsOnly.class})
+	@JsonView({View.FieldsOnly.class, View.ForPublic.class})
 	private GeneExpressionExperiment expressionExperiment;
 }
