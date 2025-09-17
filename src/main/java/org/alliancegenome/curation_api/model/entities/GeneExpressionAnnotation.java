@@ -77,10 +77,10 @@ public class GeneExpressionAnnotation extends ExpressionAnnotation {
 	
 	@ManyToOne
 	@JoinTable(
-	    name = "geneexpressionexperiment_geneexpressionannotation", // whatever your join table is actually called
-	    joinColumns = @JoinColumn(name = "expressionannotations_id"),
-	    inverseJoinColumns = @JoinColumn(name = "geneexpressionexperiment_id")
+		name = "geneexpressionexperiment_geneexpressionannotation",
+		joinColumns = @JoinColumn(name = "expressionannotations_id"),
+		inverseJoinColumns = @JoinColumn(name = "geneexpressionexperiment_id")
 	)
-	@JsonView({ View.FieldsOnly.class })
+	@JsonView({View.FieldsOnly.class})
 	private GeneExpressionExperiment expressionExperiment;
 }
