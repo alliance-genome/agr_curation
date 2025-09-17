@@ -76,11 +76,5 @@ public class GeneExpressionAnnotation extends ExpressionAnnotation {
 	private List<CrossReference> crossReferences;
 	
 	@ManyToOne
-	@JoinTable(
-		name = "geneexpressionexperiment_geneexpressionannotation",
-		joinColumns = @JoinColumn(name = "expressionannotations_id"),
-		inverseJoinColumns = @JoinColumn(name = "geneexpressionexperiment_id")
-	)
-	@JsonView({View.FieldsOnly.class, View.ForPublic.class})
 	private GeneExpressionExperiment expressionExperiment;
 }
