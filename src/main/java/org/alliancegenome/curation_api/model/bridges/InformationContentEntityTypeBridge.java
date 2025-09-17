@@ -66,15 +66,15 @@ public class InformationContentEntityTypeBridge implements TypeBinder {
 				if (bridgedElement instanceof Reference) {
 					Reference ref = (Reference) bridgedElement;
 					List<CrossReference> xrefs;
-				    if (Hibernate.isInitialized(ref.getCrossReferences())) {
-				    	xrefs = ref.getCrossReferences();
-				    } else {
-				    	xrefs = Collections.emptyList();
-				    }
-				    if (CollectionUtils.isNotEmpty(xrefs)) {
-				    	primaryCrossReferenceCurie = ref.getReferenceID();
-						crossReferenceCuries = ref.getCrossReferences().stream().map(CrossReference::getReferencedCurie).collect(Collectors.toList());
+					if (Hibernate.isInitialized(ref.getCrossReferences())) {
+						xrefs = ref.getCrossReferences();
+					} else {
+						xrefs = Collections.emptyList();
 					}
+					if (CollectionUtils.isNotEmpty(xrefs)) {
+						primaryCrossReferenceCurie = ref.getReferenceID();
+						crossReferenceCuries = ref.getCrossReferences().stream().map(CrossReference::getReferencedCurie).collect(Collectors.toList());
+				    }
 				} else {
 					primaryCrossReferenceCurie = bridgedElement.getCurie();
 				}
