@@ -18,6 +18,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Index;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
@@ -73,5 +74,13 @@ public class GeneExpressionAnnotation extends ExpressionAnnotation {
 	})
 	@JsonView({ View.FieldsAndLists.class, View.ForPublic.class, View.GeneExpressionDocument.class })
 	private List<CrossReference> crossReferences;
-
+	
+	@ManyToOne
+	@JoinTable(
+	    name = "geneexpressionexperiment_geneexpressionannotation", // whatever your join table is actually called
+	    joinColumns = @JoinColumn(name = "expressionannotations_id"),
+	    inverseJoinColumns = @JoinColumn(name = "geneexpressionexperiment_id")
+	)
+	@JsonView({ View.FieldsOnly.class })
+	private GeneExpressionExperiment expressionExperiment;
 }

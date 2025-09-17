@@ -67,7 +67,7 @@ public abstract class ExpressionExperiment extends SubmittedObject {
 	@JsonView({ View.FieldsOnly.class, View.ForPublic.class })
 	private MMOTerm expressionAssayUsed;
 
-	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+	@OneToMany(mappedBy = "expressionExperiment", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonView({ View.FieldsAndLists.class, View.ForPublic.class })
 	private Set<GeneExpressionAnnotation> expressionAnnotations;
 
