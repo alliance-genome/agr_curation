@@ -74,7 +74,7 @@ public class InformationContentEntityTypeBridge implements TypeBinder {
 					if (CollectionUtils.isNotEmpty(xrefs)) {
 						primaryCrossReferenceCurie = ref.getReferenceID();
 						crossReferenceCuries = ref.getCrossReferences().stream().map(CrossReference::getReferencedCurie).collect(Collectors.toList());
-				    }
+					}
 				} else {
 					primaryCrossReferenceCurie = bridgedElement.getCurie();
 				}
