@@ -12,12 +12,14 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmbedded;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexingDependency;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonView;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Index;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
@@ -47,7 +49,8 @@ import lombok.EqualsAndHashCode;
 	@Index(name = "GeneExpressionAnnotation_expressionPattern_index", columnList = "expressionPattern_id"),
 	@Index(name = "GeneExpressionAnnotation_relation_index", columnList = "relation_id"),
 	@Index(name = "GeneExpressionAnnotation_expressionAnnotationSubject_index", columnList = "expressionAnnotationSubject_id"),
-	@Index(name = "GeneExpressionAnnotation_expressionAssayUsed_index", columnList = "expressionAssayUsed_id")
+	@Index(name = "GeneExpressionAnnotation_expressionAssayUsed_index", columnList = "expressionAssayUsed_id"),
+	@Index(name = "GeneExpressionAnnotation_expressionExperiment_index", columnList = "expressionExperiment_id")
 })
 
 public class GeneExpressionAnnotation extends ExpressionAnnotation {
@@ -73,5 +76,10 @@ public class GeneExpressionAnnotation extends ExpressionAnnotation {
 	})
 	@JsonView({ View.FieldsAndLists.class, View.ForPublic.class, View.GeneExpressionDocument.class })
 	private List<CrossReference> crossReferences;
-
+	
+	@ManyToOne
+	@JoinColumn(name = "expressionexperiment_id")
+	@JsonBackReference
+	@JsonView({View.FieldsOnly.class, View.ForPublic.class})
+	private GeneExpressionExperiment expressionExperiment;
 }

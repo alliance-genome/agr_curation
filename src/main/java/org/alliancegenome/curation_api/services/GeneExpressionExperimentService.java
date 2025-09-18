@@ -104,12 +104,16 @@ public class GeneExpressionExperimentService extends BaseEntityCrudService<GeneE
 			geneExpressionExperiment.getCrossReferences().addAll(validatedCrossRefs);
 		}
 
+		if (geneExpressionExperiment.getId() == null) {
+			geneExpressionExperimentDAO.persist(geneExpressionExperiment);
+		}
 		for (String geneExpressionAnnotationId: geneExpressionAnnotationIds) {
 			GeneExpressionAnnotation geneExpressionAnnotation = geneExpressionAnnotationDAO.findByField("uniqueId", geneExpressionAnnotationId).getSingleResult();
+			geneExpressionAnnotation.setExpressionExperiment(geneExpressionExperiment);
 			annotations.add(geneExpressionAnnotation);
 		}
 		geneExpressionExperiment.setExpressionAnnotations(annotations);
 
-		return geneExpressionExperimentDAO.persist(geneExpressionExperiment);
+		return geneExpressionExperiment;
 	}
 }
