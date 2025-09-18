@@ -8,6 +8,8 @@ import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.entities.base.SubmittedObject;
 import org.alliancegenome.curation_api.model.entities.ontology.MMOTerm;
 import org.alliancegenome.curation_api.view.View;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.hibernate.search.engine.backend.types.Aggregable;
 import org.hibernate.search.engine.backend.types.Searchable;
 import org.hibernate.search.engine.backend.types.Sortable;
@@ -18,6 +20,7 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmb
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexingDependency;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.KeywordField;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonView;
@@ -68,6 +71,8 @@ public abstract class ExpressionExperiment extends SubmittedObject {
 	private MMOTerm expressionAssayUsed;
 
 	@OneToMany(mappedBy = "expressionExperiment", cascade = CascadeType.ALL, orphanRemoval = true)
+	@JsonManagedReference
+	@Fetch(FetchMode.SUBSELECT)
 	@JsonView({ View.FieldsAndLists.class, View.ForPublic.class })
 	private Set<GeneExpressionAnnotation> expressionAnnotations;
 

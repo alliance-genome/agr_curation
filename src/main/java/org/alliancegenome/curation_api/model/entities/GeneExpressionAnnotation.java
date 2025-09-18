@@ -12,6 +12,7 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmbedded;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexingDependency;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonView;
 
@@ -78,6 +79,7 @@ public class GeneExpressionAnnotation extends ExpressionAnnotation {
 	
 	@ManyToOne
 	@JoinColumn(name = "expressionexperiment_id")
+	@JsonBackReference
 	@JsonView({View.FieldsOnly.class, View.ForPublic.class})
 	private GeneExpressionExperiment expressionExperiment;
 }
