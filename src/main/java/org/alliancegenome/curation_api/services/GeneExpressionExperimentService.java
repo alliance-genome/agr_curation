@@ -106,6 +106,7 @@ public class GeneExpressionExperimentService extends BaseEntityCrudService<GeneE
 
 		for (String geneExpressionAnnotationId: geneExpressionAnnotationIds) {
 			GeneExpressionAnnotation geneExpressionAnnotation = geneExpressionAnnotationDAO.findByField("uniqueId", geneExpressionAnnotationId).getSingleResult();
+			geneExpressionAnnotation.setExpressionExperiment(geneExpressionExperiment);
 			annotations.add(geneExpressionAnnotation);
 		}
 		geneExpressionExperiment.setExpressionAnnotations(annotations);
