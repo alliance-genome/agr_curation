@@ -142,6 +142,7 @@ public class View {
 	public static class DiseaseSummaryDocument { }
 	public static class DiseaseSearchResultDocument { }
 	public static class AlleleSummaryDocument { }
+	public static class AlleleForPublic extends ForPublic { }
 	public static class AccessionSummaryDocument { }
 	public static class GeneToGeneOrthologyDocument { }
 	public static class GeneExpressionDocument { }
