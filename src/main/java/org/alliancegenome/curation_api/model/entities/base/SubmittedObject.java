@@ -17,7 +17,6 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.FullTextFi
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmbedded;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexingDependency;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.KeywordField;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
 
@@ -48,8 +47,8 @@ public class SubmittedObject extends CurieObject {
 	private String modInternalId;
 
 	@IndexedEmbedded(includePaths = {
-		"abbreviation", "fullName", "shortName",
-		"abbreviation_keyword", "fullName_keyword", "shortName_keyword"
+			"abbreviation", "fullName", "shortName",
+			"abbreviation_keyword", "fullName_keyword", "shortName_keyword"
 	})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
@@ -61,7 +60,7 @@ public class SubmittedObject extends CurieObject {
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@OneToOne(orphanRemoval = true)
 	@Fetch(FetchMode.SELECT)
-	@JsonView({ View.FieldsOnly.class, View.AlleleSummaryDocument.class, View.ForPublic.class })
+	@JsonView({View.FieldsOnly.class, View.AlleleSummaryDocument.class, View.AlleleForPublic.class, View.TransgenicAllelesDocumentView.class})
 	private CrossReference dataProviderCrossReference;
 
 	@Transient
@@ -90,5 +89,4 @@ public class SubmittedObject extends CurieObject {
 		}
 		return null;
 	}
-
 }
