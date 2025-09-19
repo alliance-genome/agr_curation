@@ -52,7 +52,7 @@ public interface BaseFindControllerInterface<E extends AuditedObject> {
 		@DefaultValue("10") @QueryParam("limit") Integer limit,
 		@DefaultValue("ForPublic") @QueryParam("view") String view,
 		@RequestBody HashMap<String, Object> params);
-	
+
 	@POST
 	@Path("/find")
 	@Tag(name = "Relational Database Browsing Endpoints")

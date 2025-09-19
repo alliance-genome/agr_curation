@@ -61,7 +61,7 @@ public class SubmittedObject extends CurieObject {
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@OneToOne(orphanRemoval = true)
 	@Fetch(FetchMode.SELECT)
-	@JsonView({ View.FieldsOnly.class, View.AlleleSummaryDocument.class })
+	@JsonView({ View.FieldsOnly.class, View.AlleleSummaryDocument.class, View.AlleleForPublic.class })
 	private CrossReference dataProviderCrossReference;
 
 	@Transient
