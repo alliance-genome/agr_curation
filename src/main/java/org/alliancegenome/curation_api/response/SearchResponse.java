@@ -27,7 +27,8 @@ import lombok.Data;
 	View.DiseaseSearchResultDocument.class,
 	View.AlleleSummaryDocument.class,
 	View.ModelDocumentView.class,
-	View.HTPDatasetSearchResultDocument.class
+	View.HTPDatasetSearchResultDocument.class,
+	View.GeneExpressionDocument.class
 })
 public class SearchResponse<E> extends APIResponse {
 

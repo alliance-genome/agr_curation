@@ -46,6 +46,9 @@ public class View {
 	public static class ConstructView extends FieldsOnly {
 	}
 
+	public static class ConstructDetailView extends ConstructView {
+	}
+
 	public static class DiseaseAnnotation extends FieldsOnly {
 	}
 
@@ -126,9 +129,6 @@ public class View {
 	public static class ForPublic {
 	}
 
-	public static class GeneExpressionDocument extends ForPublic {
-	}
-
 	public static class DiseaseAnnotationForPublic extends ForPublic {
 	}
 
@@ -145,6 +145,7 @@ public class View {
 	public static class AlleleForPublic extends ForPublic { }
 	public static class AccessionSummaryDocument { }
 	public static class GeneToGeneOrthologyDocument { }
+	public static class GeneExpressionDocument { }
 
 	public static Class<?> viewLookup(String name) {
 		for (Class<?> innerClass : View.class.getDeclaredClasses()) {

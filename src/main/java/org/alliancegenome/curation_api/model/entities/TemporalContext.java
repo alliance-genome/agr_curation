@@ -76,7 +76,7 @@ public class TemporalContext extends AuditedObject {
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "stageuberonslimterms_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
 	@ManyToMany
-	@JsonView({View.FieldsOnly.class, View.ForPublic.class})
+	@JsonView({View.FieldsOnly.class, View.ForPublic.class, View.GeneExpressionDocument.class })
 	@JoinTable(
 		name = "temporalcontext_stageuberonslimterms",
 		indexes = {
