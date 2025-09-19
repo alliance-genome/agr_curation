@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -26,6 +27,7 @@ import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.CrossReferenceService;
 import org.alliancegenome.curation_api.services.ResourceDescriptorPageService;
+import org.alliancegenome.curation_api.services.helpers.UniqueIdGeneratorHelper;
 import org.apache.commons.collections.CollectionUtils;
 
 import io.quarkus.logging.Log;
@@ -89,34 +91,57 @@ public abstract class BaseOntologyTermService<E extends OntologyTerm, D extends 
 		if (ancestors == null || ancestors.size() == 0) {
 			return;
 		}
-		Set<OntologyTermClosure> newSet = new HashSet<>();
+		
 		OntologyTerm subjectTerm = findByCurie(ancestors.iterator().next().getClosureSubject().getCurie());
 		if (subjectTerm != null) {
+			
+			Set<OntologyTermClosure> existing = subjectTerm.getAncestors();
+			Map<String, OntologyTermClosure> existingMap = existing.stream().collect(Collectors.toMap(this::getClosureUniqueId, c -> c));
+			
+			Map<String, OntologyTermClosure> newMap = new HashMap<>();
 			for (OntologyTermClosure closure : ancestors) {
 				closure.setClosureSubject(subjectTerm);
 				OntologyTerm objectTerm = findByCurie(closure.getClosureObject().getCurie());
 				if (objectTerm != null) {
 					closure.setClosureObject(objectTerm);
-					newSet.add(closure);
+					newMap.put(getClosureUniqueId(closure), closure);
 				}
 			}
 
-			Set<OntologyTermClosure> toAdd = new HashSet<>(newSet);
-			toAdd.removeAll(subjectTerm.getAncestors());
-
-			Set<OntologyTermClosure> toRemove = new HashSet<>(subjectTerm.getAncestors());
-			toRemove.removeAll(newSet);
-
-			subjectTerm.getAncestors().removeAll(toRemove);
-			subjectTerm.getAncestors().addAll(toAdd);
-
-			for (OntologyTermClosure closure : toAdd) {
-				ontologyTermClosureDAO.persist(closure);
+			Set<String> toAdd = new HashSet<>(newMap.keySet());
+			toAdd.removeAll(existingMap.keySet());
+			
+			Set<String> toRemove = new HashSet<>(existingMap.keySet());
+			toRemove.removeAll(newMap.keySet());
+			
+			subjectTerm.getAncestors().removeIf(c -> toRemove.contains(getClosureUniqueId(c)));
+			for (String uniqueId : toRemove) {
+				OntologyTermClosure closure = existingMap.get(uniqueId);
+				if (closure != null && closure.getId() != null) {
+					ontologyTermClosureDAO.remove(closure.getId());
+				}
 			}
-			for (OntologyTermClosure closure : toRemove) {
-				ontologyTermClosureDAO.remove(closure.getId());
+			
+			for (String uniqueId : toAdd) {
+				OntologyTermClosure closure = newMap.get(uniqueId);
+				ontologyTermClosureDAO.persist(closure);
+				subjectTerm.getAncestors().add(closure);
 			}
 		}
+	}
+	
+	private String getClosureUniqueId(OntologyTermClosure closure) {
+		UniqueIdGeneratorHelper uniqueId = new UniqueIdGeneratorHelper();
+		if (closure.getClosureSubject() != null) {
+			uniqueId.add(closure.getClosureSubject().getCurie());
+		}
+		if (closure.getClosureObject() != null) {
+			uniqueId.add(closure.getClosureObject().getCurie());
+		}
+		uniqueId.addAll(closure.getClosureTypes());
+		uniqueId.add(closure.getDistance());
+		
+		return uniqueId.getUniqueId();
 	}
 
 	@Transactional

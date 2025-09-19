@@ -6,9 +6,9 @@ import org.alliancegenome.curation_api.services.validation.base.SubmittedObjectV
 
 public class BiologicalEntityValidator<E extends BiologicalEntity> extends SubmittedObjectValidator<E> {
 
-	public E validateBiologicalEntityFields(E uiEntity, E dbEntity) {
+	public E validateBiologicalEntityFields(E uiEntity, E dbEntity, String noteTypeVocabularyTermSet) {
 
-		dbEntity = validateSubmittedObjectFields(uiEntity, dbEntity);
+		dbEntity = validateSubmittedObjectFields(uiEntity, dbEntity, noteTypeVocabularyTermSet);
 
 		NCBITaxonTerm taxon = validateRequiredTaxon(uiEntity.getTaxon(), dbEntity.getTaxon());
 		dbEntity.setTaxon(taxon);

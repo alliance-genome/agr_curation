@@ -1,5 +1,6 @@
 package org.alliancegenome.curation_api.model.bridges;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -7,6 +8,7 @@ import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.InformationContentEntity;
 import org.alliancegenome.curation_api.model.entities.Reference;
 import org.apache.commons.collections.CollectionUtils;
+import org.hibernate.Hibernate;
 import org.hibernate.search.engine.backend.document.DocumentElement;
 import org.hibernate.search.engine.backend.document.IndexFieldReference;
 import org.hibernate.search.engine.backend.document.model.dsl.IndexSchemaElement;
@@ -63,8 +65,14 @@ public class InformationContentEntityTypeBridge implements TypeBinder {
 			if (bridgedElement != null) {
 				if (bridgedElement instanceof Reference) {
 					Reference ref = (Reference) bridgedElement;
-					primaryCrossReferenceCurie = ref.getReferenceID();
-					if (CollectionUtils.isNotEmpty(ref.getCrossReferences())) {
+					List<CrossReference> xrefs;
+					if (Hibernate.isInitialized(ref.getCrossReferences())) {
+						xrefs = ref.getCrossReferences();
+					} else {
+						xrefs = Collections.emptyList();
+					}
+					if (CollectionUtils.isNotEmpty(xrefs)) {
+						primaryCrossReferenceCurie = ref.getReferenceID();
 						crossReferenceCuries = ref.getCrossReferences().stream().map(CrossReference::getReferencedCurie).collect(Collectors.toList());
 					}
 				} else {

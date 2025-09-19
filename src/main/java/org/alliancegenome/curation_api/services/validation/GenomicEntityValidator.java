@@ -16,9 +16,9 @@ public class GenomicEntityValidator<E extends GenomicEntity> extends BiologicalE
 	@Inject CrossReferenceValidator crossReferenceValidator;
 	@Inject CrossReferenceService crossReferenceService;
 
-	public E validateGenomicEntityFields(E uiEntity, E dbEntity) {
+	public E validateGenomicEntityFields(E uiEntity, E dbEntity, String noteTypeVocabularyTermSet) {
 
-		dbEntity = validateBiologicalEntityFields(uiEntity, dbEntity);
+		dbEntity = validateBiologicalEntityFields(uiEntity, dbEntity, noteTypeVocabularyTermSet);
 
 		List<CrossReference> xrefs = validateCrossReferences(uiEntity, dbEntity);
 		if (dbEntity.getCrossReferences() != null) {

@@ -1,6 +1,7 @@
 package org.alliancegenome.curation_api.services;
 
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -9,16 +10,15 @@ import java.util.Set;
 
 import org.alliancegenome.curation_api.constants.EntityFieldConstants;
 import org.alliancegenome.curation_api.dao.ConstructDAO;
-import org.alliancegenome.curation_api.dao.slotAnnotations.ConstructComponentSlotAnnotationDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
 import org.alliancegenome.curation_api.model.entities.Construct;
+import org.alliancegenome.curation_api.model.entities.Note;
 import org.alliancegenome.curation_api.model.ingest.dto.ConstructDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
-import org.alliancegenome.curation_api.services.associations.ConstructGenomicEntityAssociationService;
 import org.alliancegenome.curation_api.services.base.SubmittedObjectCrudService;
 import org.alliancegenome.curation_api.services.validation.ConstructValidator;
 import org.alliancegenome.curation_api.services.validation.dto.ConstructDTOValidator;
@@ -34,22 +34,13 @@ import net.nilosplace.process_display.ProcessDisplayHelper;
 @RequestScoped
 public class ConstructService extends SubmittedObjectCrudService<Construct, ConstructDTO, ConstructDAO> {
 
-	@Inject
-	ConstructDAO constructDAO;
-	@Inject
-	ReferenceService referenceService;
-	@Inject
-	ConstructValidator constructValidator;
-	@Inject
-	ConstructDTOValidator constructDtoValidator;
-	@Inject
-	ConstructService constructService;
-	@Inject
-	PersonService personService;
-	@Inject
-	ConstructComponentSlotAnnotationDAO constructComponentDAO;
-	@Inject
-	ConstructGenomicEntityAssociationService constructGenomicEntityAssociationService;
+	@Inject ConstructDAO constructDAO;
+	@Inject ReferenceService referenceService;
+	@Inject ConstructValidator constructValidator;
+	@Inject ConstructDTOValidator constructDtoValidator;
+	@Inject ConstructService constructService;
+	@Inject PersonService personService;
+	@Inject NoteService noteService;
 
 	private Map<String, Long> constructIdMap = new HashMap<>();
 
@@ -105,13 +96,26 @@ public class ConstructService extends SubmittedObjectCrudService<Construct, Cons
 	@Transactional
 	public Construct deprecateOrDelete(Long id, Boolean throwApiError, String requestSource, Boolean forceDeprecate) {
 		Construct construct = constructDAO.find(id);
-
+		List<String> deprecationReasons = new ArrayList<>();
 		if (construct != null) {
-			if (forceDeprecate || CollectionUtils.isNotEmpty(construct.getConstructGenomicEntityAssociations())) {
+			if (forceDeprecate) {
+				deprecationReasons.add("Deprecation instead of deletion rule applied");
+			}
+			if (CollectionUtils.isNotEmpty(construct.getConstructGenomicEntityAssociations())) {
+				deprecationReasons.add("Construct has genomic entity association(s)");
+			}
+			if (CollectionUtils.isNotEmpty(deprecationReasons)) {
 				if (!construct.getObsolete()) {
 					construct.setUpdatedBy(personService.fetchByUniqueIdOrCreate(requestSource));
 					construct.setDateUpdated(OffsetDateTime.now());
 					construct.setObsolete(true);
+					
+					Note deprecationNote = noteService.createDeprecationNote(construct.getIdentifier(), requestSource, deprecationReasons);
+					if (construct.getRelatedNotes() == null) {
+						construct.setRelatedNotes(new ArrayList<>());
+					}
+					construct.getRelatedNotes().add(deprecationNote);
+					
 					return constructDAO.persist(construct);
 				} else {
 					return construct;

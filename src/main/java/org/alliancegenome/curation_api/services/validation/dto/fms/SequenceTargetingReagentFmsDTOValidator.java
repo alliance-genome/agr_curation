@@ -36,7 +36,7 @@ public class SequenceTargetingReagentFmsDTOValidator {
 	@Inject VocabularyTermService vocabularyTermService;
 
 
-	public SequenceTargetingReagent validateSQTRFmsDTO(SequenceTargetingReagentFmsDTO dto, BackendBulkDataProvider beDataProvider) throws ValidationException {
+	public SequenceTargetingReagent validateStrFmsDTO(SequenceTargetingReagentFmsDTO dto, BackendBulkDataProvider beDataProvider) throws ValidationException {
 		ObjectResponse<SequenceTargetingReagent> sqtrResponse = new ObjectResponse<>();
 		
 		SequenceTargetingReagent sqtr;
