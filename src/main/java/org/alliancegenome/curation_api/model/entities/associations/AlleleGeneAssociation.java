@@ -49,7 +49,7 @@ public class AlleleGeneAssociation extends AlleleGenomicEntityAssociation {
 		"curie_keyword", "alleleSymbol.displayText_keyword", "alleleSymbol.formatText_keyword", "alleleFullName.displayText_keyword",
 		"alleleFullName.formatText_keyword", "primaryExternalId", "primaryExternalId_keyword", "modInternalId", "modInternalId_keyword" })
 	@ManyToOne
-	@JsonView({ View.FieldsOnly.class })
+	@JsonView({ View.FieldsOnly.class, View.ForPublic.class })
 	@JsonIgnoreProperties({"alleleGeneAssociations", "alleleVariantAssociations"})
 	@Fetch(FetchMode.JOIN)
 	private Allele alleleAssociationSubject;
@@ -60,7 +60,7 @@ public class AlleleGeneAssociation extends AlleleGenomicEntityAssociation {
 		"modInternalId", "modInternalId_keyword" })
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@JsonView({ View.FieldsOnly.class, View.AlleleView.class })
+	@JsonView({ View.FieldsOnly.class, View.AlleleView.class, View.ForPublic.class })
 	@JsonIgnoreProperties({ "alleleGeneAssociations", "constructGenomicEntityAssociations", "sequenceTargetingReagentGeneAssociations", "transcriptGeneAssociations" })
 	private Gene alleleGeneAssociationObject;
 }
