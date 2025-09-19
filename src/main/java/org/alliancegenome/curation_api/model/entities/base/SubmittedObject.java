@@ -60,11 +60,7 @@ public class SubmittedObject extends CurieObject {
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@OneToOne(orphanRemoval = true)
 	@Fetch(FetchMode.SELECT)
-<<<<<<< Updated upstream
-	@JsonView({ View.FieldsOnly.class, View.AlleleSummaryDocument.class, View.ForPublic.class })
-=======
 	@JsonView({View.FieldsOnly.class, View.AlleleSummaryDocument.class, View.AlleleForPublic.class, View.TransgenicAllelesDocumentView.class})
->>>>>>> Stashed changes
 	private CrossReference dataProviderCrossReference;
 
 	@Transient
