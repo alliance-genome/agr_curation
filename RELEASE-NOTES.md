@@ -2,6 +2,12 @@
  
 https://agr-jira.atlassian.net/wiki/spaces/ATEAM/overview
 
+## v0.42.0
+* Fixes and maintenance
+	* Ontology tree view not displaying correct tree. (SCRUM-5339)
+    * SGD allele load causing stack overflow  error on production (SCRUM-5367)
+    * 401 errors on curation site, only fixed by clearing alliance cookies (SCRUM-5313)
+
 ## v0.41.0
 * New features:
   * Deprecation note created during cleanup for genes / alleles that can't be deleted due to foreign key constraints (SCRUM-5324)
