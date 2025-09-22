@@ -52,7 +52,7 @@ public class AffectedGenomicModelDTOValidator extends GenomicEntityDTOValidator<
 			agm = new AffectedGenomicModel();
 		}
 		
-		agm = validateGenomicEntityDTO(agm, dto, dataProvider);
+		agm = validateGenomicEntityDTO(agm, dto, dataProvider, VocabularyConstants.AGM_NOTE_TYPES_VOCABULARY_TERM_SET);
 
 		AgmFullNameSlotAnnotation fullName = validateAgmFullName(agm, dto);
 		agm.setAgmFullName(fullName);

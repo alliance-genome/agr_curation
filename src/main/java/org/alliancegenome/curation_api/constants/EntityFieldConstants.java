@@ -39,6 +39,7 @@ public final class EntityFieldConstants {
 	public static final String INFERRED_ALLELE = "inferredAllele";
 	public static final String INFERRED_GENE = "inferredGene";
 	public static final String WITH_GENE = "with";
+	public static final String STRAIN_BACKGROUND = "sgdStrainBackground";
 
 	public static final String DA_SUBJECT_TAXON = DA_SUBJECT + "." + TAXON;
 	public static final String EA_SUBJECT_TAXON = EA_SUBJECT + "." + TAXON;
@@ -86,5 +87,9 @@ public final class EntityFieldConstants {
 	public static final String MAPS_TO_CHROMOSOME = "mapsToChromosome";
 
 	public static final String VARIANT_TRANSCRIPT = "variantTranscript";
+	
+	public static final String GENOMIC_INFORMATION = "genomicInformation";
+	public static final String GENOMIC_INFORMATION_AGM = GENOMIC_INFORMATION + ".bioSampleAgm";
+	public static final String GENOMIC_INFORMATION_ALLELE = GENOMIC_INFORMATION + ".bioSampleAllele";
 
 }

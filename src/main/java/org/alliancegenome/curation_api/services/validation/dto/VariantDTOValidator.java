@@ -1,15 +1,11 @@
 package org.alliancegenome.curation_api.services.validation.dto;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.VariantDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
 import org.alliancegenome.curation_api.exceptions.ValidationException;
-import org.alliancegenome.curation_api.model.entities.Note;
 import org.alliancegenome.curation_api.model.entities.Variant;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.SOTerm;
@@ -17,7 +13,6 @@ import org.alliancegenome.curation_api.model.ingest.dto.VariantDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.ontology.SoTermService;
 import org.alliancegenome.curation_api.services.validation.dto.base.GenomicEntityDTOValidator;
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import jakarta.enterprise.context.RequestScoped;
@@ -51,7 +46,7 @@ public class VariantDTOValidator extends GenomicEntityDTOValidator<Variant, Vari
 			variant = new Variant();
 		}
 
-		variant = validateGenomicEntityDTO(variant, dto, dataProvider);
+		variant = validateGenomicEntityDTO(variant, dto, dataProvider, VocabularyConstants.VARIANT_NOTE_TYPES_VOCABULARY_TERM_SET);
 		
 		SOTerm variantType = validateRequiredOntologyTerm(soTermService, "variant_type_curie", dto.getVariantTypeCurie());
 		variant.setVariantType(variantType);
@@ -61,18 +56,6 @@ public class VariantDTOValidator extends GenomicEntityDTOValidator<Variant, Vari
 
 		SOTerm sourceGeneralConsequence = validateOntologyTerm(soTermService, "source_general_consequence_curie", dto.getSourceGeneralConsequenceCurie());
 		variant.setSourceGeneralConsequence(sourceGeneralConsequence);
-
-		if (variant.getRelatedNotes() != null) {
-			variant.getRelatedNotes().clear();
-		}
-
-		List<Note> validatedNotes = validateNotes(dto.getNoteDtos(), VocabularyConstants.VARIANT_NOTE_TYPES_VOCABULARY_TERM_SET);
-		if (CollectionUtils.isNotEmpty(validatedNotes)) {
-			if (variant.getRelatedNotes() == null) {
-				variant.setRelatedNotes(new ArrayList<>());
-			}
-			variant.getRelatedNotes().addAll(validatedNotes);
-		}
 		
 		response.convertErrorMessagesToMap();
 

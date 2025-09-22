@@ -1,8 +1,11 @@
 package org.alliancegenome.curation_api.model.entities.base;
 
+import java.util.List;
+
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
+import org.alliancegenome.curation_api.model.entities.Note;
 import org.alliancegenome.curation_api.model.entities.Organization;
 import org.alliancegenome.curation_api.view.View;
 import org.apache.commons.lang3.StringUtils;
@@ -20,8 +23,13 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.KeywordFie
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
 
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Index;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Transient;
 import lombok.Data;
@@ -38,7 +46,7 @@ public class SubmittedObject extends CurieObject {
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "primaryExternalId_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({View.FieldsOnly.class, View.ForPublic.class, View.GeneToGeneOrthologyDocument.class, View.GeneSummaryDocument.class, View.ModelDocumentView.class, View.TransgenicAllelesDocumentView.class, View.AlleleSummaryDocument.class})
+	@JsonView({View.FieldsOnly.class, View.ForPublic.class, View.GeneToGeneOrthologyDocument.class, View.GeneSummaryDocument.class, View.ModelDocumentView.class, View.TransgenicAllelesDocumentView.class, View.AlleleSummaryDocument.class, View.GeneExpressionDocument.class })
 	private String primaryExternalId;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
@@ -62,6 +70,20 @@ public class SubmittedObject extends CurieObject {
 	@Fetch(FetchMode.SELECT)
 	@JsonView({View.FieldsOnly.class, View.AlleleSummaryDocument.class, View.AlleleForPublic.class, View.TransgenicAllelesDocumentView.class})
 	private CrossReference dataProviderCrossReference;
+	
+	@IndexedEmbedded(includePaths = {"freeText", "freeText_keyword"})
+	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
+	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+	@JsonView({ View.FieldsAndLists.class, View.AlleleView.class, View.AlleleDetailView.class, View.GeneView.class, View.AffectedGenomicModelView.class, View.ConstructView.class, View.VariantView.class })
+	@JoinTable(
+		joinColumns = @JoinColumn(name = "submittedobject_id"),
+		inverseJoinColumns = @JoinColumn(name = "relatednotes_id"),
+		indexes = {
+			@Index(columnList = "submittedobject_id"),
+			@Index(columnList = "relatednotes_id")
+		}
+	)
+	private List<Note> relatedNotes;
 
 	@Transient
 	@JsonIgnore

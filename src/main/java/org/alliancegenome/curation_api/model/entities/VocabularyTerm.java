@@ -48,7 +48,7 @@ public class VocabularyTerm extends AuditedObject {
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "name_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({View.FieldsOnly.class, View.ForPublic.class, View.GeneToGeneOrthologyDocument.class, View.ModelDocumentView.class})
+	@JsonView({View.FieldsOnly.class, View.ForPublic.class, View.GeneToGeneOrthologyDocument.class, View.ModelDocumentView.class, View.GeneExpressionDocument.class })
 	private String name;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")

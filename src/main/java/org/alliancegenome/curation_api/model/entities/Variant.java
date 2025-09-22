@@ -62,19 +62,6 @@ public class Variant extends GenomicEntity {
 	@JsonView({ View.FieldsOnly.class })
 	private SOTerm sourceGeneralConsequence;
 
-	@IndexedEmbedded(includePaths = {"freeText", "noteType.name", "references.curie",
-			"references.primaryCrossReferenceCurie", "freeText_keyword", "noteType.name_keyword", "references.curie_keyword",
-			"references.primaryCrossReferenceCurie_keyword"
-	})
-	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
-	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-	@JsonView({ View.FieldsAndLists.class, View.VariantView.class })
-	@JoinTable(indexes = {
-			@Index(name = "variant_note_variant_index", columnList = "variant_id"),
-			@Index(name = "variant_note_relatednotes_index", columnList = "relatedNotes_id")
-		})
-	private List<Note> relatedNotes;
-
 	@IndexedEmbedded(
 		includePaths = {
 			"variantGenomicLocationAssociationObject.curie", "variantGenomicLocationAssociationObject.curie_keyword",

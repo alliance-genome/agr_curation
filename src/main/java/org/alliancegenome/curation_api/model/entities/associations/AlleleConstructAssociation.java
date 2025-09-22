@@ -61,7 +61,7 @@ public class AlleleConstructAssociation extends AlleleGenomicEntityAssociation {
 	})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JsonView({ View.FieldsOnly.class, View.AlleleView.class, View.TransgenicAllelesDocumentView.class, View.ForPublic.class })
-	@JsonIgnoreProperties({ "constructGenomicEntityAssociations" })
+	@JsonView({ View.FieldsOnly.class, View.AlleleView.class, View.TransgenicAllelesDocumentView.class })
+	@JsonIgnoreProperties({ "constructGenomicEntityAssociations", "alleleConstructAssociations" })
 	private Construct alleleConstructAssociationObject;
 }

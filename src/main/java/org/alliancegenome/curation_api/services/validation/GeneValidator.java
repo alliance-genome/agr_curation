@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.alliancegenome.curation_api.constants.ValidationConstants;
+import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.CrossReferenceDAO;
 import org.alliancegenome.curation_api.dao.GeneDAO;
 import org.alliancegenome.curation_api.dao.ontology.SoTermDAO;
@@ -76,7 +77,7 @@ public class GeneValidator extends GenomicEntityValidator<Gene> {
 
 	private Gene validateGene(Gene uiEntity, Gene dbEntity) {
 
-		dbEntity = validateGenomicEntityFields(uiEntity, dbEntity);
+		dbEntity = validateGenomicEntityFields(uiEntity, dbEntity, VocabularyConstants.GENE_NOTE_TYPES_VOCABULARY_TERM_SET);
 
 		SOTerm geneType = validateRequiredEntity(soTermDAO, "geneType", uiEntity.getGeneType(), dbEntity.getGeneType());
 		dbEntity.setGeneType(geneType);
