@@ -31,7 +31,7 @@ describe('NotEditor', () => {
 		const editorChange = jest.fn();
 
 		const result = render(<NotEditor props={props} value={value} editorChange={editorChange} />);
-		
+
 		// PrimeReact 10.9.7 changed dropdown structure - find the dropdown trigger
 		const dropdown = result.container.querySelector('.p-dropdown');
 		expect(dropdown).toBeInTheDocument();
@@ -40,7 +40,7 @@ describe('NotEditor', () => {
 
 		const option = result.getAllByText('NOT');
 		fireEvent.click(option[0]);
-		
+
 		// After selection, check that NOT text appears in the dropdown
 		// PrimeReact 10.9.7 renders 3 instances: option, dropdown label, and item label
 		expect(result.getAllByText('NOT')).toHaveLength(3);

@@ -29,11 +29,13 @@ export const NewVocabularyTermSetForm = ({
 		newVocabularyTermSetDispatch({ type: 'RESET' });
 	};
 
-	const mutation = useMutation((newVocabularyTermSet) => {
-		if (!vocabularyTermSetService) {
-			vocabularyTermSetService = new VocabularyTermSetService();
-		}
-		return vocabularyTermSetService.createVocabularyTermSet(newVocabularyTermSet);
+	const mutation = useMutation({
+		mutationFn: (newVocabularyTermSet) => {
+			if (!vocabularyTermSetService) {
+				vocabularyTermSetService = new VocabularyTermSetService();
+			}
+			return vocabularyTermSetService.createVocabularyTermSet(newVocabularyTermSet);
+		},
 	});
 
 	const handleSubmit = (event) => {

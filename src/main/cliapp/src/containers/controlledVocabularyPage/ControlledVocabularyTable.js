@@ -1,4 +1,4 @@
-import React, { useRef, useState, useReducer } from 'react';
+import React, { useRef, useState, useReducer, useEffect } from 'react';
 import { GenericDataTable } from '../../components/GenericDataTable/GenericDataTable';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { Toast } from 'primereact/toast';
@@ -53,26 +53,40 @@ export const ControlledVocabularyTable = () => {
 	const obsoleteTerms = useControlledVocabularyService('generic_boolean_terms');
 	let vocabularyService = new VocabularyService();
 
-	useQuery(['vocabularies'], () => vocabularyService.getVocabularies(), {
-		onSuccess: (data) => {
+	const { data: vocabulariesData, isSuccess: vocabulariesIsSuccess, isError: vocabulariesIsError, error: vocabulariesError } = useQuery({
+		queryKey: ['vocabularies'],
+		queryFn: () => vocabularyService.getVocabularies(),
+		placeholderData: (previousData) => previousData,
+		refetchOnWindowFocus: false,
+	});
+
+	// Handle vocabularies data (was in onSuccess callback)
+	useEffect(() => {
+		if (vocabulariesIsSuccess && vocabulariesData?.data?.results) {
 			setVocabularies(
-				data.data.results.sort(function (a, b) {
+				vocabulariesData.data.results.sort(function (a, b) {
 					return a.name.localeCompare(b.name, 'en', { sensitivity: 'base' });
 				})
 			);
-		},
-		onError: (error) => {
-			toast_topleft.current.show([
-				{ life: 7000, severity: 'error', summary: 'Page error: ', detail: error.message, sticky: false },
-			]);
-		},
-	});
-
-	const mutation = useMutation((updatedTerm) => {
-		if (!vocabularyService) {
-			vocabularyService = new VocabularyService();
 		}
-		return vocabularyService.saveTerm(updatedTerm);
+	}, [vocabulariesData, vocabulariesIsSuccess]);
+
+	// Handle vocabularies error (was in onError callback)
+	useEffect(() => {
+		if (vocabulariesIsError && vocabulariesError) {
+			toast_topleft.current.show([
+				{ life: 7000, severity: 'error', summary: 'Page error: ', detail: vocabulariesError.message, sticky: false },
+			]);
+		}
+	}, [vocabulariesIsError, vocabulariesError]);
+
+	const mutation = useMutation({
+		mutationFn: (updatedTerm) => {
+			if (!vocabularyService) {
+				vocabularyService = new VocabularyService();
+			}
+			return vocabularyService.saveTerm(updatedTerm);
+		},
 	});
 
 	const handleNewTerm = () => {

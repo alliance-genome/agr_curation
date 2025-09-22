@@ -29,8 +29,10 @@ export const NewTermForm = ({
 		setSubmitted(false);
 	};
 
-	const mutation = useMutation((newTerm) => {
-		return vocabularyService.createTerm(newTerm);
+	const mutation = useMutation({
+		mutationFn: (newTerm) => {
+			return vocabularyService.createTerm(newTerm);
+		},
 	});
 
 	const handleTermSubmit = (event) => {

@@ -137,11 +137,13 @@ export const AllelesTable = () => {
 
 	let alleleService = new AlleleService();
 
-	const mutation = useMutation((updatedAllele) => {
-		if (!alleleService) {
-			alleleService = new AlleleService();
-		}
-		return alleleService.saveAllele(updatedAllele);
+	const mutation = useMutation({
+		mutationFn: (updatedAllele) => {
+			if (!alleleService) {
+				alleleService = new AlleleService();
+			}
+			return alleleService.saveAllele(updatedAllele);
+		},
 	});
 
 	const handleRelatedNotesOpen = (relatedNotes) => {
@@ -1298,7 +1300,7 @@ export const AllelesTable = () => {
 		initialTableState
 	);
 
-	const { isFetching, isLoading } = useGetTableData({
+	const { isFetching, isPending } = useGetTableData({
 		tableState,
 		endpoint: SEARCH_ENDPOINT,
 		setIsInEditMode,
@@ -1331,7 +1333,7 @@ export const AllelesTable = () => {
 					toasts={{ toast_topleft, toast_topright }}
 					errorObject={{ errorMessages, setErrorMessages }}
 					defaultColumnWidth={DEFAULT_COLUMN_WIDTH}
-					fetching={isFetching || isLoading}
+					fetching={isFetching || isPending}
 				/>
 			</div>
 			<SymbolDialog

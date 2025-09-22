@@ -55,11 +55,13 @@ export const VariantsTable = () => {
 
 	let variantService = new VariantService();
 
-	const mutation = useMutation((updatedVariant) => {
-		if (!variantService) {
-			variantService = new VariantService();
-		}
-		return variantService.saveVariant(updatedVariant);
+	const mutation = useMutation({
+		mutationFn: (updatedVariant) => {
+			if (!variantService) {
+				variantService = new VariantService();
+			}
+			return variantService.saveVariant(updatedVariant);
+		},
 	});
 
 	const variantStatusTerms = useControlledVocabularyService('variant_status');

@@ -32,11 +32,13 @@ export const NewRelationForm = ({
 		newRelationDispatch({ type: 'RESET' });
 	};
 
-	const mutation = useMutation((newRelation) => {
-		if (!conditionRelationService) {
-			conditionRelationService = new ConditionRelationService();
-		}
-		return conditionRelationService.createConditionRelation(newRelation);
+	const mutation = useMutation({
+		mutationFn: (newRelation) => {
+			if (!conditionRelationService) {
+				conditionRelationService = new ConditionRelationService();
+			}
+			return conditionRelationService.createConditionRelation(newRelation);
+		},
 	});
 
 	const handleSubmit = (event) => {

@@ -45,11 +45,13 @@ export const VocabularyTermSetTable = () => {
 
 	let vocabularyTermSetService = new VocabularyTermSetService();
 
-	const mutation = useMutation((updatedVocabularyTermSet) => {
-		if (!vocabularyTermSetService) {
-			vocabularyTermSetService = new VocabularyTermSetService();
-		}
-		return vocabularyTermSetService.saveVocabularyTermSet(updatedVocabularyTermSet);
+	const mutation = useMutation({
+		mutationFn: (updatedVocabularyTermSet) => {
+			if (!vocabularyTermSetService) {
+				vocabularyTermSetService = new VocabularyTermSetService();
+			}
+			return vocabularyTermSetService.saveVocabularyTermSet(updatedVocabularyTermSet);
+		},
 	});
 
 	const handleNewVocabularyTermSetOpen = () => {

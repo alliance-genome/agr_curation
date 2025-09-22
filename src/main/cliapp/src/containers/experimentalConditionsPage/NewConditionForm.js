@@ -26,11 +26,13 @@ export const NewConditionForm = ({
 	const { newCondition, errorMessages, submitted, newConditionDialog } = newConditionState;
 	const queryClient = useQueryClient();
 
-	const mutation = useMutation((newCondition) => {
-		if (!experimentalConditionService) {
-			experimentalConditionService = new ExperimentalConditionService();
-		}
-		return experimentalConditionService.createExperimentalCondition(newCondition);
+	const mutation = useMutation({
+		mutationFn: (newCondition) => {
+			if (!experimentalConditionService) {
+				experimentalConditionService = new ExperimentalConditionService();
+			}
+			return experimentalConditionService.createExperimentalCondition(newCondition);
+		},
 	});
 
 	const hideDialog = () => {

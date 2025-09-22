@@ -115,11 +115,13 @@ export const NewAnnotationForm = ({
 		false
 	);
 	const { selectedFormFields } = settingsKey;
-	const mutation = useMutation((newAnnotation) => {
-		if (!diseaseAnnotationService) {
-			diseaseAnnotationService = new DiseaseAnnotationService();
-		}
-		return diseaseAnnotationService.createDiseaseAnnotation(newAnnotation);
+	const mutation = useMutation({
+		mutationFn: (newAnnotation) => {
+			if (!diseaseAnnotationService) {
+				diseaseAnnotationService = new DiseaseAnnotationService();
+			}
+			return diseaseAnnotationService.createDiseaseAnnotation(newAnnotation);
+		},
 	});
 
 	const hideDialog = () => {
@@ -159,7 +161,9 @@ export const NewAnnotationForm = ({
 		mutation.mutate(newAnnotation, {
 			onSuccess: (data) => {
 				if (!(isRelatedNotesErrors || isExConErrors)) {
-					queryClient.invalidateQueries(['DiseaseAnnotationsHandles']);
+					queryClient.invalidateQueries({
+						queryKey: ['DiseaseAnnotationsHandles'],
+					});
 					toast_success.current.show({ severity: 'success', summary: 'Successful', detail: 'New Annotation Added' });
 					if (closeAfterSubmit) {
 						newAnnotationDispatch({ type: 'RESET' });

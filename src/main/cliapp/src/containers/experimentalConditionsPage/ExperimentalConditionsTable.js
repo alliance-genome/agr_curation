@@ -56,11 +56,13 @@ export const ExperimentalConditionsTable = () => {
 		'conditionGeneOntology.name': ['conditionGeneOntology.curie', 'conditionGeneOntology.namespace'],
 	};
 
-	const mutation = useMutation((updatedCondition) => {
-		if (!experimentalConditionService) {
-			experimentalConditionService = new ExperimentalConditionService();
-		}
-		return experimentalConditionService.saveExperimentalCondition(updatedCondition);
+	const mutation = useMutation({
+		mutationFn: (updatedCondition) => {
+			if (!experimentalConditionService) {
+				experimentalConditionService = new ExperimentalConditionService();
+			}
+			return experimentalConditionService.saveExperimentalCondition(updatedCondition);
+		},
 	});
 
 	const handleNewConditionOpen = () => {

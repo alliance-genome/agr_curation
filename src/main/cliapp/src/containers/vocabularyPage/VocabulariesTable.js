@@ -38,11 +38,13 @@ export const VocabulariesTable = () => {
 
 	let vocabularyService = new VocabularyService();
 
-	const mutation = useMutation((updatedVocabulary) => {
-		if (!vocabularyService) {
-			vocabularyService = new VocabularyService();
-		}
-		return vocabularyService.saveVocabulary(updatedVocabulary);
+	const mutation = useMutation({
+		mutationFn: (updatedVocabulary) => {
+			if (!vocabularyService) {
+				vocabularyService = new VocabularyService();
+			}
+			return vocabularyService.saveVocabulary(updatedVocabulary);
+		},
 	});
 
 	const stringEditor = (props, field) => {

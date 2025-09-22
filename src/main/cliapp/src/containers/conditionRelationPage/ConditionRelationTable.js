@@ -50,11 +50,13 @@ export const ConditionRelationTable = () => {
 
 	const conditionRelationTypeTerms = useControlledVocabularyService('condition_relation');
 
-	const mutation = useMutation((updatedRelation) => {
-		if (!conditionRelationService) {
-			conditionRelationService = new ConditionRelationService();
-		}
-		return conditionRelationService.saveConditionRelation(updatedRelation);
+	const mutation = useMutation({
+		mutationFn: (updatedRelation) => {
+			if (!conditionRelationService) {
+				conditionRelationService = new ConditionRelationService();
+			}
+			return conditionRelationService.saveConditionRelation(updatedRelation);
+		},
 	});
 
 	const handleNewRelationOpen = () => {

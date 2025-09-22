@@ -70,7 +70,9 @@ export const ProfileComponent = () => {
 						sticky: false,
 					},
 				]);
-				queryClient.invalidateQueries([QUERY_KEYS.USER_INFO]);
+				queryClient.invalidateQueries({
+					queryKey: [QUERY_KEYS.USER_INFO],
+				});
 			} else {
 				toast_topright.current.show([
 					{
@@ -100,7 +102,9 @@ export const ProfileComponent = () => {
 					sticky: false,
 				},
 			]);
-			queryClient.invalidateQueries([QUERY_KEYS.USER_INFO]);
+			queryClient.invalidateQueries({
+				queryKey: [QUERY_KEYS.USER_INFO],
+			});
 		} else {
 			toast_topright.current.show([
 				{

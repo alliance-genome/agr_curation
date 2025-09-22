@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { MultiSelect } from 'primereact/multiselect';
-import { useQuery } from '@tanstack/react-query';
 import { SearchService } from '../../service/SearchService';
+import { useMultiSelectAggregationQuery } from '../../service/useMultiSelectAggregationQuery.js';
 
 export function FilterComponentMultiSelect({ isInEditMode, filterConfig, currentFilters, onFilter, endpoint }) {
 	const [selectedOptions, setSelectedOptions] = useState([]);
@@ -10,42 +10,15 @@ export function FilterComponentMultiSelect({ isInEditMode, filterConfig, current
 	const fieldSet = filterConfig.fieldSets[0];
 
 	const searchService = new SearchService();
-
-	useQuery(
-		[filterConfig.aggregationFieldSet, currentFilters],
-		() => searchService.search(endpoint, 0, 0, null, {}, {}, filterConfig.aggregationFieldSet.fields),
-		{
-			onSuccess: (data) => {
-				let tmp = [];
-				if (data.aggregations) {
-					for (let key in data.aggregations[fieldSet.fields[0]]) {
-						tmp.push({
-							optionLabel: key,
-							optionValue: data.aggregations[fieldSet.fields[0]][key],
-						});
-					}
-				}
-				tmp.sort((a, b) => (a.optionLabel > b.optionLabel ? 1 : -1));
-				setSelectableOptions(tmp);
-				if (currentFilters && currentFilters[fieldSet.filterName]) {
-					let newSelectedOptions = [];
-					let queryStrings = currentFilters[fieldSet.filterName][fieldSet.fields[0]].queryString.split(' ');
-					for (let i in tmp) {
-						for (let j in queryStrings) {
-							if (tmp[i].optionLabel === queryStrings[j].toLowerCase()) {
-								newSelectedOptions.push(tmp[i]);
-							}
-						}
-					}
-					if (newSelectedOptions.length > 0) setSelectedOptions(newSelectedOptions);
-				} else {
-					setSelectedOptions([]);
-				}
-			},
-			keepPreviousData: true,
-			refetchOnWindowFocus: false,
-		}
-	);
+	useMultiSelectAggregationQuery({
+		filterConfig,
+		currentFilters,
+		endpoint,
+		setSelectableOptions,
+		setSelectedOptions,
+		searchService,
+		fieldSet,
+	});
 
 	const panelFooterTemplate = () => {
 		const length = selectedOptions ? selectedOptions.length : 0;

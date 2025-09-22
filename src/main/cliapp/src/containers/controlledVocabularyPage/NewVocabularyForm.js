@@ -27,8 +27,10 @@ export const NewVocabularyForm = ({ newVocabularyDialog, setNewVocabularyDialog,
 
 	const booleanTerms = useControlledVocabularyService('generic_boolean_terms');
 
-	const mutation = useMutation((newVocabularyName) => {
-		return getService().createVocabulary(newVocabularyName);
+	const mutation = useMutation({
+		mutationFn: (newVocabularyName) => {
+			return getService().createVocabulary(newVocabularyName);
+		},
 	});
 
 	const onChange = (event, field) => {
@@ -67,7 +69,9 @@ export const NewVocabularyForm = ({ newVocabularyDialog, setNewVocabularyDialog,
 					if (setNewVocabulary) {
 						setNewVocabulary(data.data.entity, queryClient);
 					} else {
-						queryClient.invalidateQueries(['vocabularies']);
+						queryClient.invalidateQueries({
+							queryKey: ['vocabularies'],
+						});
 					}
 					toast_success.current.show({ severity: 'success', summary: 'Successful', detail: 'New Vocabulary Added' });
 					setSubmitted(false);

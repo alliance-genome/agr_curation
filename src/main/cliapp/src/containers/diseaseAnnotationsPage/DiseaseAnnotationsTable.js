@@ -108,8 +108,10 @@ export const DiseaseAnnotationsTable = () => {
 		'diseaseGeneticModifier.symbol': ['diseaseGeneticModifier.name', 'diseaseGeneticModifier.primaryExternalId'],
 	};
 
-	const mutation = useMutation((updatedAnnotation) => {
-		return diseaseAnnotationService.saveDiseaseAnnotation(updatedAnnotation);
+	const mutation = useMutation({
+		mutationFn: (updatedAnnotation) => {
+			return diseaseAnnotationService.saveDiseaseAnnotation(updatedAnnotation);
+		},
 	});
 
 	const handleNewAnnotationOpen = () => {

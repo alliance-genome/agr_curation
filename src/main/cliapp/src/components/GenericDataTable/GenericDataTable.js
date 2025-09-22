@@ -9,7 +9,7 @@ import { MultiSelect } from 'primereact/multiselect';
 import { Checkbox } from 'primereact/checkbox';
 
 import { FilterComponent } from '../Filters/FilterComponent';
-import { DataTableHeaderFooterTemplate } from '../DataTableHeaderFooterTemplate';
+import { DataTableHeaderTemplate } from '../DataTableHeaderFooterTemplate';
 import { DuplicationAction } from '../Actions/DuplicationAction';
 import { EntityDetailsAction } from '../Actions/EntityDetailsAction';
 
@@ -99,7 +99,7 @@ export const GenericDataTable = (props) => {
 	};
 
 	const header = (
-		<DataTableHeaderFooterTemplate
+		<DataTableHeaderTemplate
 			title={tableName + ' Table'}
 			tableState={tableState}
 			multiselectComponent={createMultiselectComponent()}
