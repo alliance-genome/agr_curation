@@ -15,11 +15,11 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class GeneToGeneOrthologyDocumentBuilder {
 
-	public GeneToGeneOrthologyDocument buildSearchResultDocument(GeneToGeneOrthologyGenerated geneToGeneOrthology, Set<String> geneIdMap) {
+	public GeneToGeneOrthologyDocument buildSearchResultDocument(GeneToGeneOrthologyGenerated geneToGeneOrthology) {
 		GeneToGeneOrthologyDocument doc = new GeneToGeneOrthologyDocument();
 		doc.setGeneToGeneOrthologyGenerated(geneToGeneOrthology);
 		createStringencyFilter(geneToGeneOrthology, doc);
-		createGeneAnnotations(geneToGeneOrthology, doc, geneIdMap);
+		createGeneAnnotations(geneToGeneOrthology, doc);
 		return doc;
 	}
 
@@ -31,20 +31,16 @@ public class GeneToGeneOrthologyDocumentBuilder {
 		}
 	}
 
-	private void createGeneAnnotations(GeneToGeneOrthologyGenerated geneToGeneOrthology, GeneToGeneOrthologyDocument document, Set<String> geneIdMap) {
+	private void createGeneAnnotations(GeneToGeneOrthologyGenerated geneToGeneOrthology, GeneToGeneOrthologyDocument document) {
 		List<Map<String, Object>> geneAnnotationsList = new ArrayList<>();
-		boolean hasGeneExpression = geneIdMap.contains(geneToGeneOrthology.getSubjectGene().getPrimaryExternalId());
-		putGeneInfo(geneAnnotationsList, geneToGeneOrthology.getSubjectGene(), hasGeneExpression);
-		boolean hasGene2Expression = geneIdMap.contains(geneToGeneOrthology.getObjectGene().getPrimaryExternalId());
-		putGeneInfo(geneAnnotationsList, geneToGeneOrthology.getObjectGene(), hasGene2Expression);
+		putGeneInfo(geneAnnotationsList, geneToGeneOrthology.getSubjectGene());
+		putGeneInfo(geneAnnotationsList, geneToGeneOrthology.getObjectGene());
 		document.setGeneAnnotations(geneAnnotationsList);
 	}
 
-	private void putGeneInfo(List<Map<String, Object>> list, Gene gene, boolean hasGeneExpression) {
+	private void putGeneInfo(List<Map<String, Object>> list, Gene gene) {
 		Map<String, Object> data = new HashMap<>();
 		data.put("geneIdentifier", gene.getIdentifier());
-		data.put("hasExpressionAnnotations", hasGeneExpression);
-		data.put("hasDiseaseAnnotations", gene.getGeneDiseaseAnnotations().size() > 0);
 		list.add(data);
 	}
 }

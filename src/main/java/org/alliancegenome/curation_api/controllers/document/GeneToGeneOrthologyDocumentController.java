@@ -19,15 +19,12 @@ public class GeneToGeneOrthologyDocumentController implements GeneToGeneOrtholog
 
 	@Inject
 	GeneToGeneOrthologyGeneratedService geneToGeneOrthologyGeneratedService;
-	@Inject
-	GeneExpressionAnnotationService geneExpressionAnnotationService;
 
 	@Override
 	public SearchResponse<GeneToGeneOrthologyDocument> findDocument(Integer page, Integer limit, HashMap<String, Object> params) {
 		if (params == null) {
 			params = new HashMap<>();
 		}
-		Set<String> geneIdMap = geneExpressionAnnotationService.getGeneExpressionAnnotation();
 		Pagination pagination = new Pagination(page, limit);
 		SearchResponse<GeneToGeneOrthologyGenerated> resp = geneToGeneOrthologyGeneratedService.findByParams(pagination, params);
 
@@ -35,7 +32,7 @@ public class GeneToGeneOrthologyDocumentController implements GeneToGeneOrtholog
 		if (resp.getResults() != null) {
 			GeneToGeneOrthologyDocumentBuilder builder = new GeneToGeneOrthologyDocumentBuilder();
 			for (GeneToGeneOrthologyGenerated geneToGeneOrthology : resp.getResults()) {
-				GeneToGeneOrthologyDocument doc = builder.buildSearchResultDocument(geneToGeneOrthology, geneIdMap);
+				GeneToGeneOrthologyDocument doc = builder.buildSearchResultDocument(geneToGeneOrthology);
 				list.add(doc);
 			}
 		}
