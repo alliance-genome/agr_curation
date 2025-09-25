@@ -1,6 +1,7 @@
 package org.alliancegenome.curation_api.controllers.crud;
 
 import java.util.List;
+import java.util.Set;
 
 import org.alliancegenome.curation_api.controllers.base.BaseEntityCrudController;
 import org.alliancegenome.curation_api.dao.GeneExpressionAnnotationDAO;
@@ -19,8 +20,10 @@ import jakarta.inject.Inject;
 @RequestScoped
 public class GeneExpressionAnnotationCrudController extends BaseEntityCrudController<GeneExpressionAnnotationService, GeneExpressionAnnotation, GeneExpressionAnnotationDAO> implements GeneExpressionAnnotationCrudInterface {
 
-	@Inject GeneExpressionAnnotationService geneExpressionAnnotationService;
-	@Inject GeneExpressionExecutor geneExpressionExecutor;
+	@Inject
+	GeneExpressionAnnotationService geneExpressionAnnotationService;
+	@Inject
+	GeneExpressionExecutor geneExpressionExecutor;
 
 	@Override
 	@PostConstruct
@@ -30,6 +33,14 @@ public class GeneExpressionAnnotationCrudController extends BaseEntityCrudContro
 
 	public ObjectResponse<GeneExpressionAnnotation> getByIdentifier(String identifierString) {
 		return geneExpressionAnnotationService.getByIdentifier(identifierString);
+	}
+
+	@Override
+	public ObjectResponse<Set<String>> geneExpressionAnnotationMap() {
+		Set<String> map = geneExpressionAnnotationService.getGeneExpressionAnnotation();
+		ObjectResponse<Set<String>> response = new ObjectResponse<>();
+		response.setEntity(map);
+		return response;
 	}
 
 	public APIResponse updateExpressionAnnotations(String dataProvider, List<GeneExpressionFmsDTO> annotations) {

@@ -64,7 +64,7 @@ public class SubmittedObject extends CurieObject {
 	@JsonView({View.FieldsOnly.class, View.GeneSummaryDocument.class, View.ModelDocumentView.class})
 	private Organization dataProvider;
 
-	@IndexedEmbedded(includePaths = {"displayName", "referencedCurie", "displayName_keyword", "referencedCurie_keyword"})
+	@IndexedEmbedded(includePaths = {"displayName", "referencoedCurie", "displayName_keyword", "referencedCurie_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@OneToOne(orphanRemoval = true)
 	@Fetch(FetchMode.SELECT)
