@@ -1,6 +1,7 @@
 package org.alliancegenome.curation_api.services;
 
 import java.util.List;
+import java.util.Set;
 
 import org.alliancegenome.curation_api.dao.GeneDiseaseAnnotationDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
@@ -20,10 +21,14 @@ import jakarta.transaction.Transactional;
 @RequestScoped
 public class GeneDiseaseAnnotationService extends BaseAnnotationDTOCrudService<GeneDiseaseAnnotation, GeneDiseaseAnnotationDTO, GeneDiseaseAnnotationDAO> {
 
-	@Inject GeneDiseaseAnnotationDAO geneDiseaseAnnotationDAO;
-	@Inject GeneDiseaseAnnotationValidator geneDiseaseValidator;
-	@Inject GeneDiseaseAnnotationDTOValidator geneDiseaseAnnotationDtoValidator;
-	@Inject DiseaseAnnotationService diseaseAnnotationService;
+	@Inject
+	GeneDiseaseAnnotationDAO geneDiseaseAnnotationDAO;
+	@Inject
+	GeneDiseaseAnnotationValidator geneDiseaseValidator;
+	@Inject
+	GeneDiseaseAnnotationDTOValidator geneDiseaseAnnotationDtoValidator;
+	@Inject
+	DiseaseAnnotationService diseaseAnnotationService;
 
 	@Override
 	@PostConstruct
@@ -62,5 +67,10 @@ public class GeneDiseaseAnnotationService extends BaseAnnotationDTOCrudService<G
 
 	public List<Long> getAnnotationIdsByDataProvider(BackendBulkDataProvider dataProvider) {
 		return diseaseAnnotationService.getAnnotationIdsByDataProvider(geneDiseaseAnnotationDAO, dataProvider);
+	}
+
+	public Set<String> getGeneDiseaseAnnotation() {
+		Set<String> geneIds = geneDiseaseAnnotationDAO.getGeneExpressionMap();
+		return geneIds;
 	}
 }
