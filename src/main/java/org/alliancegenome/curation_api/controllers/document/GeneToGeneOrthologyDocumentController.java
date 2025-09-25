@@ -6,7 +6,6 @@ import java.util.Set;
 
 import org.alliancegenome.curation_api.interfaces.document.GeneToGeneOrthologyDocumentInterface;
 import org.alliancegenome.curation_api.model.document.builders.GeneToGeneOrthologyDocumentBuilder;
-import org.alliancegenome.curation_api.model.document.builders.TransgenicAlleleDocumentBuilder;
 import org.alliancegenome.curation_api.model.document.es.GeneToGeneOrthologyDocument;
 import org.alliancegenome.curation_api.model.entities.orthology.GeneToGeneOrthologyGenerated;
 import org.alliancegenome.curation_api.model.input.Pagination;
