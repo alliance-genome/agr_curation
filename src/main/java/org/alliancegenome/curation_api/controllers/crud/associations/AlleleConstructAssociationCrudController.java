@@ -14,7 +14,6 @@ import org.alliancegenome.curation_api.response.APIResponse;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.associations.AlleleConstructAssociationService;
-import org.alliancegenome.curation_api.view.View;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.RequestScoped;
@@ -60,7 +59,7 @@ public class AlleleConstructAssociationCrudController extends
 	}
 
 	public ObjectResponse<AlleleConstructAssociation> getAssociation(Long alleleId, String relationName,
-																	 Long constructId) {
+																	Long constructId) {
 		return alleleConstructAssociationService.getAssociation(alleleId, relationName, constructId);
 	}
 }

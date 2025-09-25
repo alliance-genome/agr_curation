@@ -1,11 +1,9 @@
 package org.alliancegenome.curation_api.interfaces.crud;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.alliancegenome.curation_api.interfaces.base.BaseIdCrudInterface;
-import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.GeneExpressionAnnotation;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.GeneExpressionFmsDTO;
 import org.alliancegenome.curation_api.response.APIResponse;
