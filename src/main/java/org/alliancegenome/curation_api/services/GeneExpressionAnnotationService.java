@@ -18,6 +18,7 @@ import org.alliancegenome.curation_api.model.input.Pagination;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.base.BaseAnnotationCrudService;
 import org.alliancegenome.curation_api.services.validation.dto.fms.GeneExpressionAnnotationFmsDTOValidator;
+import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
 import org.apache.commons.lang3.StringUtils;
 
 import jakarta.annotation.PostConstruct;
@@ -64,25 +65,7 @@ public class GeneExpressionAnnotationService extends BaseAnnotationCrudService<G
 	}
 
 	public Set<String> getGeneExpressionAnnotation() {
-		Map<String, Object> map = new HashMap<>();
-		map.put("internal", false);
-		map.put("obsolete", false);
-		int batchsize = 1000;
-		int totalPages = 0;
-		try {
-			SearchResponse<GeneExpressionAnnotation> resp = geneExpressionAnnotationDAO.findByParams(new Pagination(0, 0), map);
-			//log.info("GeneToGeneOrthology count: " + resp.getTotalResults());
-			totalPages = (int) (resp.getTotalResults() / batchsize);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		Set<String> geneExpressionSet = new HashSet<>();
-		for (int page = 0; page < totalPages; page++) {
-			SearchResponse<GeneExpressionAnnotation> annotations = geneExpressionAnnotationDAO.findByParams(new Pagination(page, batchsize), map);
-			for (GeneExpressionAnnotation expression : annotations.getResults()) {
-				geneExpressionSet.add(expression.getExpressionAnnotationSubject().getPrimaryExternalId());
-			}
-		}
-		return geneExpressionSet;
+		Set<String> geneIds = geneExpressionAnnotationDAO.getGeneExpressionMap();
+		return geneIds;
 	}
 }
