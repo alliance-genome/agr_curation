@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import { CSSTransition } from 'react-transition-group';
 import classNames from 'classnames';
@@ -7,6 +7,8 @@ import { Badge } from 'primereact/badge';
 
 const AppSubmenu = (props) => {
 	const [activeIndex, setActiveIndex] = useState(null);
+	//CSSTransition React 19 work around
+	const submenuRefs = useRef({});
 
 	const onMenuItemClick = (event, item, index) => {
 		//avoid processing disabled items
@@ -20,8 +22,24 @@ const AppSubmenu = (props) => {
 			item.command({ originalEvent: event, item: item });
 		}
 
-		if (index === activeIndex) setActiveIndex(null);
-		else setActiveIndex(index);
+		// If this is a leaf node (has 'to' or 'url'), don't toggle parent state
+		if (item.to || item.url) {
+			// This is a link - don't change activeIndex, just call parent handler
+			event.stopPropagation(); // Prevent bubbling to parent menu items
+			if (props.onMenuItemClick) {
+				props.onMenuItemClick({
+					originalEvent: event,
+					item: item,
+				});
+			}
+			return; // Exit early - don't toggle activeIndex
+		}
+
+		// Only toggle activeIndex for parent items (items with children)
+		if (item.items && item.items.length > 0) {
+			if (index === activeIndex) setActiveIndex(null);
+			else setActiveIndex(index);
+		}
 
 		if (props.onMenuItemClick) {
 			props.onMenuItemClick({
@@ -43,13 +61,13 @@ const AppSubmenu = (props) => {
 		let badge = item.badge && <Badge value={item.badge} />;
 
 		return (
-			<React.Fragment>
+			<>
 				<i className={item.icon}></i>
 				<span>{item.label}</span>
 				{submenuIcon}
 				{badge}
 				<Ripple />
-			</React.Fragment>
+			</>
 		);
 	};
 
@@ -62,7 +80,7 @@ const AppSubmenu = (props) => {
 					aria-label={item.label}
 					onKeyDown={onKeyDown}
 					role="menuitem"
-					className={({ isActive }) => isActive ? 'p-ripple router-link-active router-link-exact-active' : 'p-ripple'}
+					className={({ isActive }) => (isActive ? 'p-ripple router-link-active router-link-exact-active' : 'p-ripple')}
 					to={item.to}
 					onClick={(e) => onMenuItemClick(e, item, i)}
 					end
@@ -93,6 +111,13 @@ const AppSubmenu = (props) => {
 		props.items &&
 		props.items.map((item, i) => {
 			let active = activeIndex === i;
+
+			if (!submenuRefs.current[i]) {
+				submenuRefs.current[i] = React.createRef();
+			}
+
+			const itemRef = submenuRefs.current[i];
+
 			let styleClass = classNames(item.badgeStyleClass, {
 				'layout-menuitem-category': props.root,
 				'active-menuitem': active && !item.to,
@@ -102,12 +127,12 @@ const AppSubmenu = (props) => {
 				return (
 					<li className={styleClass} key={i} role="none">
 						{props.root === true && (
-							<React.Fragment>
+							<>
 								<div className="layout-menuitem-root-text" aria-label={item.label}>
 									{item.label}
 								</div>
 								<AppSubmenu items={item.items} onMenuItemClick={props.onMenuItemClick} />
-							</React.Fragment>
+							</>
 						)}
 					</li>
 				);
@@ -120,8 +145,11 @@ const AppSubmenu = (props) => {
 							timeout={{ enter: 1000, exit: 450 }}
 							in={active}
 							unmountOnExit
+							nodeRef={itemRef}
 						>
-							<AppSubmenu items={item.items} onMenuItemClick={props.onMenuItemClick} />
+							<div ref={itemRef}>
+								<AppSubmenu items={item.items} onMenuItemClick={props.onMenuItemClick} />
+							</div>
 						</CSSTransition>
 					</li>
 				);

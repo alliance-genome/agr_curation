@@ -45,6 +45,9 @@ export const SiteLayout = (props) => {
 	const copyTooltipRef = useRef();
 	const location = useLocation();
 
+	//CSSTransition React 19 work around
+	const nodeRef = useRef(null);
+
 	const { authState, oktaAuth } = useOktaAuth();
 
 	const { data: apiVersion } = useApiVersion(authState);
@@ -447,8 +450,8 @@ export const SiteLayout = (props) => {
 				setThemeState={setThemeState}
 			/>
 
-			<CSSTransition classNames="layout-mask" timeout={{ enter: 200, exit: 200 }} in={mobileMenuActive} unmountOnExit>
-				<div className="layout-mask p-component-overlay"></div>
+			<CSSTransition nodeRef={nodeRef} classNames="layout-mask" timeout={{ enter: 200, exit: 200 }} in={mobileMenuActive} unmountOnExit>
+				<div ref={nodeRef} className="layout-mask p-component-overlay"></div>
 			</CSSTransition>
 		</div>
 	);
