@@ -60,7 +60,9 @@ public final class VocabularyConstants {
 	public static final String CONSTRUCT_GENOMIC_ENTITY_RELATION_VOCABULARY_TERM_SET = "construct_genomic_entity_relation";
 
 	public static final String NOTE_TYPE_VOCABULARY = "note_type";
+	public static final String AGM_NOTE_TYPES_VOCABULARY_TERM_SET = "agm_note_type";
 	public static final String ALLELE_NOTE_TYPES_VOCABULARY_TERM_SET = "allele_note_type";
+	public static final String CONSTRUCT_NOTE_TYPES_VOCABULARY_TERM_SET = "construct_note_type";
 	public static final String DISEASE_ANNOTATION_NOTE_TYPES_VOCABULARY_TERM_SET = "da_note_type";
 	public static final String GENE_NOTE_TYPES_VOCABULARY_TERM_SET = "gene_note_type";
 	public static final String CONSTRUCT_COMPONENT_NOTE_TYPES_VOCABULARY_TERM_SET = "construct_component_note_type";

@@ -1,14 +1,18 @@
 package org.alliancegenome.curation_api.services.validation.base;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
+import org.alliancegenome.curation_api.model.entities.Note;
 import org.alliancegenome.curation_api.model.entities.Organization;
 import org.alliancegenome.curation_api.model.entities.base.SubmittedObject;
 import org.apache.commons.lang3.StringUtils;
 
 public class SubmittedObjectValidator<E extends SubmittedObject> extends AuditedObjectValidator<SubmittedObject> {
 
-	public E validateSubmittedObjectFields(E uiEntity, E dbEntity) {
+	public E validateSubmittedObjectFields(E uiEntity, E dbEntity, String noteTypeVocabularyTermSet) {
 		Boolean newEntity = false;
 		if (dbEntity.getId() == null) {
 			newEntity = true;
@@ -30,6 +34,17 @@ public class SubmittedObjectValidator<E extends SubmittedObject> extends Audited
 		
 		CrossReference dataProviderXref = validateDataProviderCrossReference(uiEntity.getDataProviderCrossReference(), dbEntity.getDataProviderCrossReference());
 		dbEntity.setDataProviderCrossReference(dataProviderXref);
+		
+		List<Note> relatedNotes = validateRelatedNotes(uiEntity.getRelatedNotes(), noteTypeVocabularyTermSet);
+		if (dbEntity.getRelatedNotes() != null) {
+			dbEntity.getRelatedNotes().clear();
+		}
+		if (relatedNotes != null) {
+			if (dbEntity.getRelatedNotes() == null) {
+				dbEntity.setRelatedNotes(new ArrayList<>());
+			}
+			dbEntity.getRelatedNotes().addAll(relatedNotes);
+		}
 		
 		return dbEntity;
 	}

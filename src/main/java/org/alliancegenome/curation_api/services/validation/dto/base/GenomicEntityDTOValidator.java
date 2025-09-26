@@ -20,9 +20,9 @@ public class GenomicEntityDTOValidator<E extends GenomicEntity, D extends Genomi
 	@Inject CrossReferenceDTOValidator crossReferenceDtoValidator;
 	@Inject CrossReferenceService crossReferenceService;
 
-	public E validateGenomicEntityDTO(E entity, D dto, BackendBulkDataProvider dataProvider) {
+	public E validateGenomicEntityDTO(E entity, D dto, BackendBulkDataProvider dataProvider, String noteTypeVocabularyTermSet) {
 
-		entity = validateBiologicalEntityDTO(entity, dto, dataProvider);
+		entity = validateBiologicalEntityDTO(entity, dto, dataProvider, noteTypeVocabularyTermSet);
 		
 		List<CrossReference> validatedXrefs = new ArrayList<>();
 		if (CollectionUtils.isNotEmpty(dto.getCrossReferenceDtos())) {

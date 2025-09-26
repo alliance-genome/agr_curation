@@ -202,15 +202,6 @@ public class Allele extends GenomicEntity {
 	@JsonView({ View.FieldsAndLists.class, View.AlleleDetailView.class })
 	private List<AlleleVariantAssociation> alleleVariantAssociations;
 
-	@IndexedEmbedded(includePaths = {"freeText", "freeText_keyword"})
-	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
-	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-	@JsonView({ View.FieldsAndLists.class, View.AlleleView.class, View.AlleleDetailView.class, View.ForPublic.class })
-	@JoinTable(indexes = {
-		@Index(name = "allele_note_allele_index", columnList = "allele_id"),
-		@Index(name = "allele_note_relatednotes_index", columnList = "relatedNotes_id")})
-	private List<Note> relatedNotes;
-
 	@IndexedEmbedded(includePaths = {
 		"alleleConstructAssociationObject.curie", "alleleConstructAssociationObject.constructSymbol.displayText", "alleleConstructAssociationObject.constructSymbol.formatText",
 		"alleleConstructAssociationObject.constructFullName.displayText", "alleleConstructAssociationObject.constructFullName.formatText", "alleleConstructAssociationObject.primaryExternalId",

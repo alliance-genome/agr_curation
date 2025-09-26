@@ -10,9 +10,9 @@ import org.alliancegenome.curation_api.model.ingest.dto.BiologicalEntityDTO;
 
 public class BiologicalEntityDTOValidator<E extends BiologicalEntity, D extends BiologicalEntityDTO> extends SubmittedObjectDTOValidator<E, D> {
 
-	public E validateBiologicalEntityDTO(E entity, D dto, BackendBulkDataProvider beDataProvider) {
+	public E validateBiologicalEntityDTO(E entity, D dto, BackendBulkDataProvider beDataProvider, String noteTypeVocabularyTermSet) {
 
-		entity = validateSubmittedObjectDTO(entity, dto);
+		entity = validateSubmittedObjectDTO(entity, dto, noteTypeVocabularyTermSet);
 		
 		NCBITaxonTerm taxon = validateRequiredTaxon("taxon_curie", dto.getTaxonCurie());
 		if (beDataProvider != null && (beDataProvider.name().equals("RGD") || beDataProvider.name().equals("HUMAN")) && !Objects.equals(taxon.getCurie(), beDataProvider.canonicalTaxonCurie)) {

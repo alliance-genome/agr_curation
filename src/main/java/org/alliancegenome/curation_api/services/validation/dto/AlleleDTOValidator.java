@@ -12,7 +12,6 @@ import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
 import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.model.entities.Allele;
-import org.alliancegenome.curation_api.model.entities.Note;
 import org.alliancegenome.curation_api.model.entities.Reference;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.AlleleDatabaseStatusSlotAnnotation;
@@ -33,7 +32,6 @@ import org.alliancegenome.curation_api.model.ingest.dto.slotAnnotions.AlleleNome
 import org.alliancegenome.curation_api.model.ingest.dto.slotAnnotions.NameSlotAnnotationDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.slotAnnotions.SecondaryIdSlotAnnotationDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
-import org.alliancegenome.curation_api.services.helpers.NoteIdentityHelper;
 import org.alliancegenome.curation_api.services.helpers.SlotAnnotationIdentityHelper;
 import org.alliancegenome.curation_api.services.validation.dto.base.GenomicEntityDTOValidator;
 import org.alliancegenome.curation_api.services.validation.dto.slotAnnotations.AlleleDatabaseStatusSlotAnnotationDTOValidator;
@@ -78,7 +76,7 @@ public class AlleleDTOValidator extends GenomicEntityDTOValidator<Allele, Allele
 			allele = new Allele();
 		}
 
-		allele = validateGenomicEntityDTO(allele, dto, dataProvider);
+		allele = validateGenomicEntityDTO(allele, dto, dataProvider, VocabularyConstants.ALLELE_NOTE_TYPES_VOCABULARY_TERM_SET);
 		
 		VocabularyTerm inCollection = validateTermInVocabulary("in_collection_name", dto.getInCollectionName(), VocabularyConstants.ALLELE_COLLECTION_VOCABULARY);
 		allele.setInCollection(inCollection);
@@ -87,15 +85,6 @@ public class AlleleDTOValidator extends GenomicEntityDTOValidator<Allele, Allele
 
 		List<Reference> references = validateReferences(dto.getReferenceCuries());
 		allele.setReferences(references);
-		
-
-		List<Note> relatedNotes = validateRelatedNotes(allele, dto);
-		if (relatedNotes != null) {
-			if (allele.getRelatedNotes() == null) {
-				allele.setRelatedNotes(new ArrayList<>());
-			}
-			allele.getRelatedNotes().addAll(relatedNotes);
-		}
 
 		List<AlleleMutationTypeSlotAnnotation> mutationTypes = validateAlleleMutationTypes(allele, dto);
 		if (allele.getAlleleMutationTypes() != null) {
@@ -503,44 +492,6 @@ public class AlleleDTOValidator extends GenomicEntityDTOValidator<Allele, Allele
 		}
 
 		return validatedFunctionalImpacts;
-	}
-
-	private List<Note> validateRelatedNotes(Allele allele, AlleleDTO dto) {
-		String field = "relatedNotes";
-
-		if (allele.getRelatedNotes() != null) {
-			allele.getRelatedNotes().clear();
-		}
-
-		List<Note> validatedNotes = new ArrayList<Note>();
-		List<String> noteIdentities = new ArrayList<String>();
-		Boolean allValid = true;
-		if (CollectionUtils.isNotEmpty(dto.getNoteDtos())) {
-			for (int ix = 0; ix < dto.getNoteDtos().size(); ix++) {
-				ObjectResponse<Note> noteResponse = noteDtoValidator.validateNoteDTO(dto.getNoteDtos().get(ix), VocabularyConstants.ALLELE_NOTE_TYPES_VOCABULARY_TERM_SET);
-				if (noteResponse.hasErrors()) {
-					allValid = false;
-					response.addErrorMessages(field, ix, noteResponse.getErrorMessages());
-				} else {
-					String noteIdentity = NoteIdentityHelper.noteDtoIdentity(dto.getNoteDtos().get(ix));
-					if (!noteIdentities.contains(noteIdentity)) {
-						noteIdentities.add(noteIdentity);
-						validatedNotes.add(noteResponse.getEntity());
-					}
-				}
-			}
-		}
-
-		if (!allValid) {
-			response.convertMapToErrorMessages(field);
-			return null;
-		}
-
-		if (CollectionUtils.isEmpty(validatedNotes)) {
-			return null;
-		}
-
-		return validatedNotes;
 	}
 
 }

@@ -76,6 +76,18 @@ public class AnatomicalSite extends AuditedObject {
 	@Column(columnDefinition = "boolean default false", nullable = false)
 	private Boolean cellularComponentOther = false;
 
+	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer", valueBridge = @ValueBridgeRef(type = BooleanValueBridge.class))
+	@KeywordField(name = "anatomicalStructureUberonTermOther_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, valueBridge = @ValueBridgeRef(type = BooleanValueBridge.class))
+	@JsonView({ View.FieldsOnly.class })
+	@Column(columnDefinition = "boolean default false", nullable = false)
+	private Boolean anatomicalStructureUberonTermOther = false;
+
+	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer", valueBridge = @ValueBridgeRef(type = BooleanValueBridge.class))
+	@KeywordField(name = "anatomicalSubStructureUberonTermOther_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, valueBridge = @ValueBridgeRef(type = BooleanValueBridge.class))
+	@JsonView({ View.FieldsOnly.class })
+	@Column(columnDefinition = "boolean default false", nullable = false)
+	private Boolean anatomicalSubStructureUberonTermOther = false;
+
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "anatomicalstructurequalifiers_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
 	@ManyToMany
