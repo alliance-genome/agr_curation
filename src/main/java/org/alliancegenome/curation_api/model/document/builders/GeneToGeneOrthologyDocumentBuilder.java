@@ -14,15 +14,15 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class GeneToGeneOrthologyDocumentBuilder {
 
-	public static GeneToGeneOrthologyDocument buildSearchResultDocument(GeneToGeneOrthologyGenerated g2gOrtho) {
+	public GeneToGeneOrthologyDocument buildSearchResultDocument(GeneToGeneOrthologyGenerated geneToGeneOrthology) {
 		GeneToGeneOrthologyDocument doc = new GeneToGeneOrthologyDocument();
-		doc.setGeneToGeneOrthologyGenerated(g2gOrtho);
-		createStringencyFilter(g2gOrtho, doc);
-		createGeneAnnotations(g2gOrtho, doc);
+		doc.setGeneToGeneOrthologyGenerated(geneToGeneOrthology);
+		createStringencyFilter(geneToGeneOrthology, doc);
+		createGeneAnnotations(geneToGeneOrthology, doc);
 		return doc;
 	}
 
-	private static void createStringencyFilter(GeneToGeneOrthologyGenerated g2gOrtho, GeneToGeneOrthologyDocument document) {
+	private void createStringencyFilter(GeneToGeneOrthologyGenerated g2gOrtho, GeneToGeneOrthologyDocument document) {
 		if (Boolean.TRUE.equals(g2gOrtho.getStrictFilter())) {
 			document.setStringencyFilter("stringent");
 		} else if (Boolean.TRUE.equals(g2gOrtho.getModerateFilter())) {
@@ -30,19 +30,16 @@ public class GeneToGeneOrthologyDocumentBuilder {
 		}
 	}
 
-	private static void createGeneAnnotations(GeneToGeneOrthologyGenerated g2gOrtho, GeneToGeneOrthologyDocument document) {
+	private void createGeneAnnotations(GeneToGeneOrthologyGenerated geneToGeneOrthology, GeneToGeneOrthologyDocument document) {
 		List<Map<String, Object>> geneAnnotationsList = new ArrayList<>();
-		putGeneInfo(geneAnnotationsList, g2gOrtho.getSubjectGene());
-		putGeneInfo(geneAnnotationsList, g2gOrtho.getObjectGene());
+		putGeneInfo(geneAnnotationsList, geneToGeneOrthology.getSubjectGene());
+		putGeneInfo(geneAnnotationsList, geneToGeneOrthology.getObjectGene());
 		document.setGeneAnnotations(geneAnnotationsList);
 	}
 
-	private static void putGeneInfo(List<Map<String, Object>> list, Gene gene) {
+	private void putGeneInfo(List<Map<String, Object>> list, Gene gene) {
 		Map<String, Object> data = new HashMap<>();
 		data.put("geneIdentifier", gene.getIdentifier());
-		data.put("hasExpressionAnnotations", gene.getGeneExpressionAnnotations().size() > 0);
-		data.put("hasDiseaseAnnotations", gene.getGeneDiseaseAnnotations().size() > 0);
 		list.add(data);
 	}
-
 }

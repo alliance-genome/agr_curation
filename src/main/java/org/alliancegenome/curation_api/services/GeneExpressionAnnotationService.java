@@ -26,8 +26,10 @@ import lombok.Getter;
 @RequestScoped
 public class GeneExpressionAnnotationService extends BaseAnnotationCrudService<GeneExpressionAnnotation, GeneExpressionAnnotationDAO> implements BaseUpsertServiceInterface<GeneExpressionAnnotation, ConsolidatedGeneExpressionFmsDTO> {
 
-	@Inject GeneExpressionAnnotationDAO geneExpressionAnnotationDAO;
-	@Inject GeneExpressionAnnotationFmsDTOValidator geneExpressionAnnotationFmsDTOValidator;
+	@Inject
+	GeneExpressionAnnotationDAO geneExpressionAnnotationDAO;
+	@Inject
+	GeneExpressionAnnotationFmsDTOValidator geneExpressionAnnotationFmsDTOValidator;
 	@Getter
 	private Map<String, Set<String>> experiments;
 	@Getter
@@ -56,5 +58,10 @@ public class GeneExpressionAnnotationService extends BaseAnnotationCrudService<G
 	public GeneExpressionAnnotation upsert(ConsolidatedGeneExpressionFmsDTO consolidatedGeneExpressionFmsDTO, BackendBulkDataProvider dataProvider) throws ValidationException {
 		GeneExpressionAnnotation geneExpressionAnnotation = geneExpressionAnnotationFmsDTOValidator.validateAnnotation(consolidatedGeneExpressionFmsDTO, dataProvider, experiments, crossReferences);
 		return geneExpressionAnnotationDAO.persist(geneExpressionAnnotation);
+	}
+
+	public Set<String> getGeneExpressionAnnotation() {
+		Set<String> geneIds = geneExpressionAnnotationDAO.getGeneExpressionMap();
+		return geneIds;
 	}
 }

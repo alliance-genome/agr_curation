@@ -1,6 +1,7 @@
 package org.alliancegenome.curation_api.interfaces.crud;
 
 import java.util.List;
+import java.util.Set;
 
 import org.alliancegenome.curation_api.interfaces.base.BaseIdCrudInterface;
 import org.alliancegenome.curation_api.interfaces.base.BaseUpsertControllerInterface;
@@ -49,5 +50,11 @@ public interface GeneDiseaseAnnotationCrudInterface extends BaseIdCrudInterface<
 	@Path("/bulk/{dataProvider}/annotationFile")
 	@JsonView(View.FieldsAndLists.class)
 	APIResponse updateGeneDiseaseAnnotations(@PathParam("dataProvider") String dataProvider, List<GeneDiseaseAnnotationDTO> annotationData);
+
+	@GET
+	@Path("/annotatedGeneList")
+	@JsonView(View.FieldsAndLists.class)
+	ObjectResponse<Set<String>> geneDiseaseAnnotationMap();
+
 
 }

@@ -15,21 +15,22 @@ import jakarta.inject.Inject;
 
 public class GeneToGeneOrthologyDocumentController implements GeneToGeneOrthologyDocumentInterface {
 
-	@Inject GeneToGeneOrthologyGeneratedService geneToGeneOrthologyGeneratedService;
+	@Inject
+	GeneToGeneOrthologyGeneratedService geneToGeneOrthologyGeneratedService;
 
 	@Override
 	public SearchResponse<GeneToGeneOrthologyDocument> findDocument(Integer page, Integer limit, HashMap<String, Object> params) {
 		if (params == null) {
 			params = new HashMap<>();
 		}
-
 		Pagination pagination = new Pagination(page, limit);
 		SearchResponse<GeneToGeneOrthologyGenerated> resp = geneToGeneOrthologyGeneratedService.findByParams(pagination, params);
 
 		ArrayList<GeneToGeneOrthologyDocument> list = new ArrayList<>();
 		if (resp.getResults() != null) {
-			for (GeneToGeneOrthologyGenerated g2gOrtho : resp.getResults()) {
-				GeneToGeneOrthologyDocument doc = GeneToGeneOrthologyDocumentBuilder.buildSearchResultDocument(g2gOrtho);
+			GeneToGeneOrthologyDocumentBuilder builder = new GeneToGeneOrthologyDocumentBuilder();
+			for (GeneToGeneOrthologyGenerated geneToGeneOrthology : resp.getResults()) {
+				GeneToGeneOrthologyDocument doc = builder.buildSearchResultDocument(geneToGeneOrthology);
 				list.add(doc);
 			}
 		}
