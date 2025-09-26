@@ -17,7 +17,7 @@ public class AGMDiseaseAnnotationDAO extends BaseSQLDAO<AGMDiseaseAnnotation> {
 		super(AGMDiseaseAnnotation.class);
 	}
 
-    public Set<String> getAgmDiseaseAnnotationMap() {
+	public Set<String> getAgmDiseaseAnnotationMap() {
 		String hql = """
 				select distinct inferredGene.primaryExternalId
 				from AGMDiseaseAnnotation
@@ -27,5 +27,5 @@ public class AGMDiseaseAnnotationDAO extends BaseSQLDAO<AGMDiseaseAnnotation> {
 		List<Object> list = query.getResultList();
 
 		return new HashSet<>(list.stream().map(o -> (String) o).toList());
-    }
+	}
 }

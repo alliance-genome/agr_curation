@@ -25,6 +25,6 @@ public class GeneExpressionAnnotationDAO extends BaseSQLDAO<GeneExpressionAnnota
 				""";
 		Query query = entityManager.createQuery(hql);
 		List<Object> list = query.getResultList();
-		return new HashSet<>(list.stream().map(o -> (String)o).toList());
+		return new HashSet<>(list.stream().map(o -> (String) o).toList());
 	}
 }
