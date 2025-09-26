@@ -17,7 +17,7 @@ public class AlleleDiseaseAnnotationDAO extends BaseSQLDAO<AlleleDiseaseAnnotati
 		super(AlleleDiseaseAnnotation.class);
 	}
 
-    public Set<String> getGeneExpressionMap() {
+	public Set<String> getGeneDiseaseMap() {
 		String hql = """
 				select distinct inferredGene.primaryExternalId
 				from AlleleDiseaseAnnotation
@@ -26,5 +26,5 @@ public class AlleleDiseaseAnnotationDAO extends BaseSQLDAO<AlleleDiseaseAnnotati
 		Query query = entityManager.createQuery(hql);
 		List<Object> list = query.getResultList();
 		return new HashSet<>(list.stream().map(o -> (String) o).toList());
-    }
+	}
 }

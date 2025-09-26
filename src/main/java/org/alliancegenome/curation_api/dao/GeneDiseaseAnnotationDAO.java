@@ -17,7 +17,7 @@ public class GeneDiseaseAnnotationDAO extends BaseSQLDAO<GeneDiseaseAnnotation> 
 		super(GeneDiseaseAnnotation.class);
 	}
 
-	public Set<String> getGeneExpressionMap() {
+	public Set<String> getGeneDiseaseAnnotationMap() {
 		String hql = """
 				select distinct diseaseAnnotationSubject.primaryExternalId
 				from GeneDiseaseAnnotation

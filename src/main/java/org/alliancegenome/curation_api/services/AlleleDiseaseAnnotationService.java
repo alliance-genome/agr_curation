@@ -21,10 +21,14 @@ import jakarta.transaction.Transactional;
 @RequestScoped
 public class AlleleDiseaseAnnotationService extends BaseAnnotationDTOCrudService<AlleleDiseaseAnnotation, AlleleDiseaseAnnotationDTO, AlleleDiseaseAnnotationDAO> {
 
-	@Inject AlleleDiseaseAnnotationDAO alleleDiseaseAnnotationDAO;
-	@Inject AlleleDiseaseAnnotationValidator alleleDiseaseValidator;
-	@Inject AlleleDiseaseAnnotationDTOValidator alleleDiseaseAnnotationDtoValidator;
-	@Inject DiseaseAnnotationService diseaseAnnotationService;
+	@Inject
+	AlleleDiseaseAnnotationDAO alleleDiseaseAnnotationDAO;
+	@Inject
+	AlleleDiseaseAnnotationValidator alleleDiseaseValidator;
+	@Inject
+	AlleleDiseaseAnnotationDTOValidator alleleDiseaseAnnotationDtoValidator;
+	@Inject
+	DiseaseAnnotationService diseaseAnnotationService;
 
 	@Override
 	@PostConstruct
@@ -65,8 +69,8 @@ public class AlleleDiseaseAnnotationService extends BaseAnnotationDTOCrudService
 		return diseaseAnnotationService.getAnnotationIdsByDataProvider(alleleDiseaseAnnotationDAO, dataProvider);
 	}
 
-    public Set<String> getGeneDiseaseAnnotation() {
-		Set<String> geneIds = alleleDiseaseAnnotationDAO.getGeneExpressionMap();
+	public Set<String> getGeneDiseaseAnnotation() {
+		Set<String> geneIds = alleleDiseaseAnnotationDAO.getGeneDiseaseMap();
 		return geneIds;
-    }
+	}
 }

@@ -68,7 +68,7 @@ public class AGMDiseaseAnnotationService extends BaseAnnotationDTOCrudService<AG
 	}
 
 	public Set<String> getGeneDiseaseAnnotation() {
-		Set<String> geneIds = agmDiseaseAnnotationDAO.getGeneExpressionMap();
+		Set<String> geneIds = agmDiseaseAnnotationDAO.getAgmDiseaseAnnotationMap();
 		return geneIds;
 	}
 }
