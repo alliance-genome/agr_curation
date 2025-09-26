@@ -2,7 +2,6 @@ package org.alliancegenome.curation_api.controllers.document;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Set;
 
 import org.alliancegenome.curation_api.interfaces.document.GeneToGeneOrthologyDocumentInterface;
 import org.alliancegenome.curation_api.model.document.builders.GeneToGeneOrthologyDocumentBuilder;
@@ -10,7 +9,6 @@ import org.alliancegenome.curation_api.model.document.es.GeneToGeneOrthologyDocu
 import org.alliancegenome.curation_api.model.entities.orthology.GeneToGeneOrthologyGenerated;
 import org.alliancegenome.curation_api.model.input.Pagination;
 import org.alliancegenome.curation_api.response.SearchResponse;
-import org.alliancegenome.curation_api.services.GeneExpressionAnnotationService;
 import org.alliancegenome.curation_api.services.orthology.GeneToGeneOrthologyGeneratedService;
 
 import jakarta.inject.Inject;
