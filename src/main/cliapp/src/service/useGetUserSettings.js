@@ -27,8 +27,8 @@ export const useGetUserSettings = (key, defaultValue, isTable = true) => {
 	// Handle query success in useEffect (v5 removed onSuccess from useQuery)
 	useEffect(() => {
 		if (isSuccess && data) {
-			const serverSettings = {...data.entity, ...data.entity.settingsMap};
-			if (serverSettings) {
+			const serverSettings = {...data?.entity, ...data?.entity?.settingsMap};
+			if (serverSettings && Object.keys(serverSettings).length > 0) {
 				let updatedSettings = { ...serverSettings };
 				if (isTable) {
 					updatedSettings.filters = removeInvalidFilters(updatedSettings.filters);
