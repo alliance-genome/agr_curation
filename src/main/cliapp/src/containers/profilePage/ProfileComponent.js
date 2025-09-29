@@ -187,7 +187,7 @@ export const ProfileComponent = () => {
 					<Dropdown
 						name={'Debug'}
 						value={siteState.debug}
-						options={booleanTerms}
+						options={booleanTerms?.terms || []}
 						optionLabel="text"
 						optionValue="text"
 						onChange={debugChange}

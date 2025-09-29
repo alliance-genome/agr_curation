@@ -484,7 +484,7 @@ export const DiseaseAnnotationsTable = () => {
 		return (
 			<>
 				<TrueFalseDropdown
-					options={booleanTerms}
+					options={booleanTerms?.terms || []}
 					editorChange={onInternalEditorValueChange}
 					props={props}
 					field={'internal'}
@@ -505,7 +505,7 @@ export const DiseaseAnnotationsTable = () => {
 		return (
 			<>
 				<TrueFalseDropdown
-					options={booleanTerms}
+					options={booleanTerms?.terms || []}
 					editorChange={onObsoleteEditorValueChange}
 					props={props}
 					field={'obsolete'}

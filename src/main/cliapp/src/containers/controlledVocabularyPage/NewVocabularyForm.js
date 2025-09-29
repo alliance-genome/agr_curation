@@ -157,7 +157,7 @@ export const NewVocabularyForm = ({ newVocabularyDialog, setNewVocabularyDialog,
 						<Dropdown
 							id="obsolete"
 							value={vocabulary.obsolete}
-							options={booleanTerms}
+							options={booleanTerms?.terms || []}
 							optionLabel="text"
 							optionValue="name"
 							onChange={(e) => onObsoleteChange(e.target?.value)}

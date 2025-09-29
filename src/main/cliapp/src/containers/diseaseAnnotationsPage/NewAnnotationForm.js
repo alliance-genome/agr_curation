@@ -123,11 +123,6 @@ export const NewAnnotationForm = ({
 		},
 	});
 
-	console.log('booleanTerms', booleanTerms);
-	console.log('validRelationTerms', validRelationTerms);
-	console.log('relationsTerms', relationsTerms);
-	console.log('geneticSexTerms', geneticSexTerms);
-
 	const hideDialog = () => {
 		newAnnotationDispatch({ type: 'RESET' });
 		newAnnotationDispatch({ type: 'SET_IS_ENABLED', value: false });
@@ -331,13 +326,10 @@ export const NewAnnotationForm = ({
 		}
 
 		if (event.target?.value?.type === 'Gene') {
-			console.log('geneRelationTerms', geneRelationTerms);
 			setValidRelationTerms(geneRelationTerms);
 		} else if (event.target?.value?.type === 'Allele') {
-			console.log('alleleRelationTerms', alleleRelationTerms);
 			setValidRelationTerms(alleleRelationTerms);
 		} else if (event.target?.value?.type === 'AffectedGenomicModel') {
-			console.log('agmRelationTerms', agmRelationTerms);
 			setValidRelationTerms(agmRelationTerms);
 		} else {
 			setValidRelationTerms(relationsTerms);
