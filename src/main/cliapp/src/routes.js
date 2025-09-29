@@ -272,7 +272,7 @@ export default function AppRoutes() {
 						path="/ontology/eco"
 						element={
 							<ErrorBoundary>
-								<GeneralOntologyComponent showAbbreviation={true} name="ECO" endpoint="ecoterm" />
+								<GeneralOntologyComponent key="eco" showAbbreviation={true} name="ECO" endpoint="ecoterm" />
 							</ErrorBoundary>
 						}
 					/>
@@ -280,7 +280,7 @@ export default function AppRoutes() {
 						path="/ontology/go"
 						element={
 							<ErrorBoundary>
-								<GeneralOntologyComponent showNamespace={true} name="GO" endpoint="goterm" />
+								<GeneralOntologyComponent key="go" showNamespace={true} name="GO" endpoint="goterm" />
 							</ErrorBoundary>
 						}
 					/>
@@ -288,7 +288,7 @@ export default function AppRoutes() {
 						path="/ontology/so"
 						element={
 							<ErrorBoundary>
-								<GeneralOntologyComponent showNamespace={true} name="SO" endpoint="soterm" />
+								<GeneralOntologyComponent key="so" showNamespace={true} name="SO" endpoint="soterm" />
 							</ErrorBoundary>
 						}
 					/>
@@ -296,7 +296,7 @@ export default function AppRoutes() {
 						path="/ontology/ncbitaxon"
 						element={
 							<ErrorBoundary>
-								<GeneralOntologyComponent hideDefinition={true} name="NCBITaxon" endpoint="ncbitaxonterm" />
+								<GeneralOntologyComponent key="ncbitaxon" hideDefinition={true} name="NCBITaxon" endpoint="ncbitaxonterm" />
 							</ErrorBoundary>
 						}
 					/>
@@ -304,7 +304,7 @@ export default function AppRoutes() {
 						path="/ontology/chebi"
 						element={
 							<ErrorBoundary>
-								<GeneralOntologyComponent name="ChEBI" endpoint="chebiterm" />
+								<GeneralOntologyComponent key="chebi" name="ChEBI" endpoint="chebiterm" />
 							</ErrorBoundary>
 						}
 					/>
@@ -312,7 +312,7 @@ export default function AppRoutes() {
 						path="/ontology/do"
 						element={
 							<ErrorBoundary>
-								<GeneralOntologyComponent name="Diseases" endpoint="doterm" />
+								<GeneralOntologyComponent key="do" name="Diseases" endpoint="doterm" />
 							</ErrorBoundary>
 						}
 					/>
@@ -320,7 +320,7 @@ export default function AppRoutes() {
 						path="/ontology/ma"
 						element={
 							<ErrorBoundary>
-								<GeneralOntologyComponent name="MA" endpoint="materm" />
+								<GeneralOntologyComponent key="ma" name="MA" endpoint="materm" />
 							</ErrorBoundary>
 						}
 					/>
@@ -328,7 +328,7 @@ export default function AppRoutes() {
 						path="/ontology/zfa"
 						element={
 							<ErrorBoundary>
-								<GeneralOntologyComponent name="ZFA" endpoint="zfaterm" />
+								<GeneralOntologyComponent key="zfa" name="ZFA" endpoint="zfaterm" />
 							</ErrorBoundary>
 						}
 					/>
@@ -336,7 +336,7 @@ export default function AppRoutes() {
 						path="/ontology/mp"
 						element={
 							<ErrorBoundary>
-								<GeneralOntologyComponent name="MP" endpoint="mpterm" />
+								<GeneralOntologyComponent key="mp" name="MP" endpoint="mpterm" />
 							</ErrorBoundary>
 						}
 					/>
@@ -344,7 +344,7 @@ export default function AppRoutes() {
 						path="/ontology/dao"
 						element={
 							<ErrorBoundary>
-								<GeneralOntologyComponent name="DAO" endpoint="daoterm" />
+								<GeneralOntologyComponent key="dao" name="DAO" endpoint="daoterm" />
 							</ErrorBoundary>
 						}
 					/>
@@ -352,7 +352,7 @@ export default function AppRoutes() {
 						path="/ontology/emapa"
 						element={
 							<ErrorBoundary>
-								<GeneralOntologyComponent name="EMAPA" endpoint="emapaterm" />
+								<GeneralOntologyComponent key="emapa" name="EMAPA" endpoint="emapaterm" />
 							</ErrorBoundary>
 						}
 					/>
@@ -360,7 +360,7 @@ export default function AppRoutes() {
 						path="/ontology/wbbt"
 						element={
 							<ErrorBoundary>
-								<GeneralOntologyComponent name="WBbt" endpoint="wbbtterm" />
+								<GeneralOntologyComponent key="wbbt" name="WBbt" endpoint="wbbtterm" />
 							</ErrorBoundary>
 						}
 					/>
@@ -368,7 +368,7 @@ export default function AppRoutes() {
 						path="/ontology/xco"
 						element={
 							<ErrorBoundary>
-								<GeneralOntologyComponent name="XCO" endpoint="xcoterm" />
+								<GeneralOntologyComponent key="xco" name="XCO" endpoint="xcoterm" />
 							</ErrorBoundary>
 						}
 					/>
@@ -376,7 +376,7 @@ export default function AppRoutes() {
 						path="/ontology/ro"
 						element={
 							<ErrorBoundary>
-								<GeneralOntologyComponent name="RO" endpoint="roterm" />
+								<GeneralOntologyComponent key="ro" name="RO" endpoint="roterm" />
 							</ErrorBoundary>
 						}
 					/>
@@ -384,7 +384,7 @@ export default function AppRoutes() {
 						path="/ontology/zeco"
 						element={
 							<ErrorBoundary>
-								<GeneralOntologyComponent name="ZECO" endpoint="zecoterm" />
+								<GeneralOntologyComponent key="zeco" name="ZECO" endpoint="zecoterm" />
 							</ErrorBoundary>
 						}
 					/>
@@ -392,7 +392,7 @@ export default function AppRoutes() {
 						path="/ontology/wbls"
 						element={
 							<ErrorBoundary>
-								<GeneralOntologyComponent name="WBls" endpoint="wblsterm" />
+								<GeneralOntologyComponent key="wbls" name="WBls" endpoint="wblsterm" />
 							</ErrorBoundary>
 						}
 					/>
@@ -400,7 +400,7 @@ export default function AppRoutes() {
 						path="/ontology/fbdv"
 						element={
 							<ErrorBoundary>
-								<GeneralOntologyComponent name="FBdv" endpoint="fbdvterm" />
+								<GeneralOntologyComponent key="fbdv" name="FBdv" endpoint="fbdvterm" />
 							</ErrorBoundary>
 						}
 					/>
@@ -408,7 +408,7 @@ export default function AppRoutes() {
 						path="/ontology/mmusdv"
 						element={
 							<ErrorBoundary>
-								<GeneralOntologyComponent name="MmusDv" endpoint="mmusdvterm" />
+								<GeneralOntologyComponent key="mmusdv" name="MmusDv" endpoint="mmusdvterm" />
 							</ErrorBoundary>
 						}
 					/>
@@ -416,7 +416,7 @@ export default function AppRoutes() {
 						path="/ontology/zfs"
 						element={
 							<ErrorBoundary>
-								<GeneralOntologyComponent name="ZFS" endpoint="zfsterm" />
+								<GeneralOntologyComponent key="zfs" name="ZFS" endpoint="zfsterm" />
 							</ErrorBoundary>
 						}
 					/>
@@ -424,7 +424,7 @@ export default function AppRoutes() {
 						path="/ontology/xba"
 						element={
 							<ErrorBoundary>
-								<GeneralOntologyComponent name="XBA" endpoint="xbaterm" />
+								<GeneralOntologyComponent key="xba" name="XBA" endpoint="xbaterm" />
 							</ErrorBoundary>
 						}
 					/>
@@ -432,7 +432,7 @@ export default function AppRoutes() {
 						path="/ontology/xbs"
 						element={
 							<ErrorBoundary>
-								<GeneralOntologyComponent name="XBS" endpoint="xbsterm" />
+								<GeneralOntologyComponent key="xbs" name="XBS" endpoint="xbsterm" />
 							</ErrorBoundary>
 						}
 					/>
@@ -440,7 +440,7 @@ export default function AppRoutes() {
 						path="/ontology/xpo"
 						element={
 							<ErrorBoundary>
-								<GeneralOntologyComponent name="XPO" endpoint="xpoterm" />
+								<GeneralOntologyComponent key="xpo" name="XPO" endpoint="xpoterm" />
 							</ErrorBoundary>
 						}
 					/>
@@ -448,7 +448,7 @@ export default function AppRoutes() {
 						path="/ontology/atp"
 						element={
 							<ErrorBoundary>
-								<GeneralOntologyComponent name="ATP" endpoint="atpterm" />
+								<GeneralOntologyComponent key="atp" name="ATP" endpoint="atpterm" />
 							</ErrorBoundary>
 						}
 					/>
@@ -456,7 +456,7 @@ export default function AppRoutes() {
 						path="/ontology/xbed"
 						element={
 							<ErrorBoundary>
-								<GeneralOntologyComponent name="XBED" endpoint="xbedterm" />
+								<GeneralOntologyComponent key="xbed" name="XBED" endpoint="xbedterm" />
 							</ErrorBoundary>
 						}
 					/>
@@ -464,7 +464,7 @@ export default function AppRoutes() {
 						path="/ontology/xsmo"
 						element={
 							<ErrorBoundary>
-								<GeneralOntologyComponent name="XSMO" endpoint="xsmoterm" />
+								<GeneralOntologyComponent key="xsmo" name="XSMO" endpoint="xsmoterm" />
 							</ErrorBoundary>
 						}
 					/>
@@ -472,7 +472,7 @@ export default function AppRoutes() {
 						path="/ontology/vt"
 						element={
 							<ErrorBoundary>
-								<GeneralOntologyComponent name="VT" endpoint="vtterm" />
+								<GeneralOntologyComponent key="vt" name="VT" endpoint="vtterm" />
 							</ErrorBoundary>
 						}
 					/>
@@ -480,7 +480,7 @@ export default function AppRoutes() {
 						path="/ontology/obi"
 						element={
 							<ErrorBoundary>
-								<GeneralOntologyComponent name="OBI" endpoint="obiterm" />
+								<GeneralOntologyComponent key="obi" name="OBI" endpoint="obiterm" />
 							</ErrorBoundary>
 						}
 					/>
@@ -488,7 +488,7 @@ export default function AppRoutes() {
 						path="/ontology/wbpheno"
 						element={
 							<ErrorBoundary>
-								<GeneralOntologyComponent name="WBPhenotype" endpoint="wbphenotypeterm" />
+								<GeneralOntologyComponent key="wbpheno" name="WBPhenotype" endpoint="wbphenotypeterm" />
 							</ErrorBoundary>
 						}
 					/>
@@ -496,7 +496,7 @@ export default function AppRoutes() {
 						path="/ontology/pato"
 						element={
 							<ErrorBoundary>
-								<GeneralOntologyComponent name="PATO" endpoint="patoterm" />
+								<GeneralOntologyComponent key="pato" name="PATO" endpoint="patoterm" />
 							</ErrorBoundary>
 						}
 					/>
@@ -504,7 +504,7 @@ export default function AppRoutes() {
 						path="/ontology/hp"
 						element={
 							<ErrorBoundary>
-								<GeneralOntologyComponent name="HP" endpoint="hpterm" />
+								<GeneralOntologyComponent key="hp" name="HP" endpoint="hpterm" />
 							</ErrorBoundary>
 						}
 					/>
@@ -512,7 +512,7 @@ export default function AppRoutes() {
 						path="/ontology/fbcv"
 						element={
 							<ErrorBoundary>
-								<GeneralOntologyComponent showNamespace={true} name="FBcv" endpoint="fbcvterm" />
+								<GeneralOntologyComponent key="fbcv" showNamespace={true} name="FBcv" endpoint="fbcvterm" />
 							</ErrorBoundary>
 						}
 					/>
@@ -520,7 +520,7 @@ export default function AppRoutes() {
 						path="/ontology/mmo"
 						element={
 							<ErrorBoundary>
-								<GeneralOntologyComponent name="MMO" endpoint="mmoterm" />
+								<GeneralOntologyComponent key="mmo" name="MMO" endpoint="mmoterm" />
 							</ErrorBoundary>
 						}
 					/>
@@ -528,7 +528,7 @@ export default function AppRoutes() {
 						path="/ontology/apo"
 						element={
 							<ErrorBoundary>
-								<GeneralOntologyComponent showNamespace={true} name="APO" endpoint="apoterm" />
+								<GeneralOntologyComponent key="apo" showNamespace={true} name="APO" endpoint="apoterm" />
 							</ErrorBoundary>
 						}
 					/>
@@ -536,7 +536,7 @@ export default function AppRoutes() {
 						path="/ontology/mi"
 						element={
 							<ErrorBoundary>
-								<GeneralOntologyComponent name="MI" endpoint="miterm" />
+								<GeneralOntologyComponent key="mi" name="MI" endpoint="miterm" />
 							</ErrorBoundary>
 						}
 					/>
@@ -544,7 +544,7 @@ export default function AppRoutes() {
 						path="/ontology/mpath"
 						element={
 							<ErrorBoundary>
-								<GeneralOntologyComponent name="MPATH" endpoint="mpathterm" />
+								<GeneralOntologyComponent key="mpath" name="MPATH" endpoint="mpathterm" />
 							</ErrorBoundary>
 						}
 					/>
@@ -552,7 +552,7 @@ export default function AppRoutes() {
 						path="/ontology/mod"
 						element={
 							<ErrorBoundary>
-								<GeneralOntologyComponent name="MOD" endpoint="modterm" />
+								<GeneralOntologyComponent key="mod" name="MOD" endpoint="modterm" />
 							</ErrorBoundary>
 						}
 					/>
@@ -560,7 +560,7 @@ export default function AppRoutes() {
 						path="/ontology/uberon"
 						element={
 							<ErrorBoundary>
-								<GeneralOntologyComponent name="UBERON" endpoint="uberonterm" />
+								<GeneralOntologyComponent key="uberon" name="UBERON" endpoint="uberonterm" />
 							</ErrorBoundary>
 						}
 					/>
@@ -568,7 +568,7 @@ export default function AppRoutes() {
 						path="/ontology/rs"
 						element={
 							<ErrorBoundary>
-								<GeneralOntologyComponent name="RS" endpoint="rsterm" />
+								<GeneralOntologyComponent key="rs" name="RS" endpoint="rsterm" />
 							</ErrorBoundary>
 						}
 					/>
@@ -576,7 +576,7 @@ export default function AppRoutes() {
 						path="/ontology/pw"
 						element={
 							<ErrorBoundary>
-								<GeneralOntologyComponent name="PW" endpoint="pwterm" />
+								<GeneralOntologyComponent key="pw" name="PW" endpoint="pwterm" />
 							</ErrorBoundary>
 						}
 					/>
@@ -584,7 +584,7 @@ export default function AppRoutes() {
 						path="/ontology/cl"
 						element={
 							<ErrorBoundary>
-								<GeneralOntologyComponent name="CL" endpoint="clterm" />
+								<GeneralOntologyComponent key="cl" name="CL" endpoint="clterm" />
 							</ErrorBoundary>
 						}
 					/>
@@ -592,7 +592,7 @@ export default function AppRoutes() {
 						path="/ontology/cmo"
 						element={
 							<ErrorBoundary>
-								<GeneralOntologyComponent name="CMO" endpoint="cmoterm" />
+								<GeneralOntologyComponent key="cmo" name="CMO" endpoint="cmoterm" />
 							</ErrorBoundary>
 						}
 					/>
@@ -600,7 +600,7 @@ export default function AppRoutes() {
 						path="/ontology/bto"
 						element={
 							<ErrorBoundary>
-								<GeneralOntologyComponent name="BTO" endpoint="btoterm" />
+								<GeneralOntologyComponent key="bto" name="BTO" endpoint="btoterm" />
 							</ErrorBoundary>
 						}
 					/>
@@ -608,7 +608,7 @@ export default function AppRoutes() {
 						path="/ontology/bspo"
 						element={
 							<ErrorBoundary>
-								<GeneralOntologyComponent name="BSPO" endpoint="bspoterm" />
+								<GeneralOntologyComponent key="bspo" name="BSPO" endpoint="bspoterm" />
 							</ErrorBoundary>
 						}
 					/>
@@ -616,7 +616,7 @@ export default function AppRoutes() {
 						path="/ontology/geno"
 						element={
 							<ErrorBoundary>
-								<GeneralOntologyComponent name="GENO" endpoint="genoterm" />
+								<GeneralOntologyComponent key="geno" name="GENO" endpoint="genoterm" />
 							</ErrorBoundary>
 						}
 					/>
