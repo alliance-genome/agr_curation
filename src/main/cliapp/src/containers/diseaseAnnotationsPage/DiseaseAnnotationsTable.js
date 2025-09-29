@@ -1499,7 +1499,7 @@ export const DiseaseAnnotationsTable = () => {
 				newAnnotationDispatch={newAnnotationDispatch}
 				searchService={searchService}
 				relationsTerms={relationsTerms}
-				negatedTerms={booleanTerms}
+				negatedTerms={booleanTerms?.terms || []}
 				setNewDiseaseAnnotation={(newAnnotation, queryClient) =>
 					setNewEntity(tableState, setDiseaseAnnotations, newAnnotation, queryClient)
 				}
