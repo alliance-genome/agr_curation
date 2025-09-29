@@ -19,7 +19,7 @@ export function useVocabularyTermSetService(vocabularyLabel) {
 	// Handle query success in useEffect (v5 removed onSuccess from useQuery)
 	useEffect(() => {
 		if (isSuccess && data) {
-			setTerms(data.data);
+			setTerms(data.results);
 		}
 	}, [data, isSuccess]);
 

@@ -51,7 +51,6 @@ export const NewAnnotationForm = ({
 	searchService,
 	diseaseAnnotationService,
 	relationsTerms,
-	negatedTerms,
 	setNewDiseaseAnnotation,
 }) => {
 	const queryClient = useQueryClient();
@@ -124,6 +123,11 @@ export const NewAnnotationForm = ({
 		},
 	});
 
+	console.log('booleanTerms', booleanTerms);
+	console.log('validRelationTerms', validRelationTerms);
+	console.log('relationsTerms', relationsTerms);
+	console.log('geneticSexTerms', geneticSexTerms);
+
 	const hideDialog = () => {
 		newAnnotationDispatch({ type: 'RESET' });
 		newAnnotationDispatch({ type: 'SET_IS_ENABLED', value: false });
@@ -171,6 +175,7 @@ export const NewAnnotationForm = ({
 						setUiErrorMessages({});
 					}
 
+					//TODO: check this data
 					setNewDiseaseAnnotation(data.data.entity, queryClient);
 				}
 			},
@@ -326,10 +331,13 @@ export const NewAnnotationForm = ({
 		}
 
 		if (event.target?.value?.type === 'Gene') {
+			console.log('geneRelationTerms', geneRelationTerms);
 			setValidRelationTerms(geneRelationTerms);
 		} else if (event.target?.value?.type === 'Allele') {
+			console.log('alleleRelationTerms', alleleRelationTerms);
 			setValidRelationTerms(alleleRelationTerms);
 		} else if (event.target?.value?.type === 'AffectedGenomicModel') {
+			console.log('agmRelationTerms', agmRelationTerms);
 			setValidRelationTerms(agmRelationTerms);
 		} else {
 			setValidRelationTerms(relationsTerms);
@@ -732,7 +740,7 @@ export const NewAnnotationForm = ({
 							</div>
 							<div className={widgetColumnSize}>
 								<Dropdown
-									options={validRelationTerms ? validRelationTerms : relationsTerms}
+									options={validRelationTerms || relationsTerms || []}
 									value={newAnnotation.relation}
 									name="relation"
 									optionLabel="name"
@@ -971,7 +979,7 @@ export const NewAnnotationForm = ({
 									<div className={widgetColumnSize}>
 										<ControlledVocabularyFormDropdown
 											name="geneticSex"
-											options={geneticSexTerms}
+											options={geneticSexTerms || []}
 											editorChange={onDropdownFieldChange}
 											value={newAnnotation.geneticSex}
 											showClear={true}
@@ -1223,7 +1231,7 @@ export const NewAnnotationForm = ({
 										<Dropdown
 											name="internal"
 											value={newAnnotation.internal}
-											options={booleanTerms}
+											options={booleanTerms?.terms || []}
 											optionLabel="text"
 											optionValue="name"
 											onChange={onDropdownFieldChange}

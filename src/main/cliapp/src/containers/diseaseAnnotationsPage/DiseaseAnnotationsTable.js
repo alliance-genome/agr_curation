@@ -347,6 +347,8 @@ export const DiseaseAnnotationsTable = () => {
 		return diseaseRelationTerms;
 	};
 
+	console.log('relationTerms', relationsTerms);
+
 	const relationEditor = (props) => {
 		let diseaseRelationTerms = getRelationTermSet(props);
 		return (

@@ -54,14 +54,14 @@ export const HistoryDialog = ({ historyDialog, setHistoryDialog, history, dataLo
 			setFullHistory(fullHistoryData.data.entity);
 		}
 	}, [fullHistoryData, fullHistoryIsSuccess]);
-
+	
 	// Handle totalResults data (was in onSuccess callback)
 	useEffect(() => {
 		if (totalResultsIsSuccess && totalResultsData) {
 			setTotalRecords(totalResultsData.data.totalResults);
 		}
 	}, [totalResultsData, totalResultsIsSuccess]);
-
+	
 	// Handle exceptions data (was in onSuccess callback)
 	useEffect(() => {
 		if (exceptionsIsSuccess && exceptionsData) {

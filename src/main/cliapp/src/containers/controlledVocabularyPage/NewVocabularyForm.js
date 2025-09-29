@@ -67,6 +67,7 @@ export const NewVocabularyForm = ({ newVocabularyDialog, setNewVocabularyDialog,
 			mutation.mutate(vocabulary, {
 				onSuccess: (data) => {
 					if (setNewVocabulary) {
+						//TODO: check this data object
 						setNewVocabulary(data.data.entity, queryClient);
 					} else {
 						queryClient.invalidateQueries({

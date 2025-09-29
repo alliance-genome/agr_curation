@@ -27,7 +27,7 @@ export const useGetUserSettings = (key, defaultValue, isTable = true) => {
 	// Handle query success in useEffect (v5 removed onSuccess from useQuery)
 	useEffect(() => {
 		if (isSuccess && data) {
-			const serverSettings = data.data;
+			const serverSettings = {...data.entity, ...data.entity.settingsMap};
 			if (serverSettings) {
 				let updatedSettings = { ...serverSettings };
 				if (isTable) {
@@ -41,7 +41,7 @@ export const useGetUserSettings = (key, defaultValue, isTable = true) => {
 				localStorage.setItem(key, JSON.stringify(updatedSettings));
 			}
 		}
-	}, [data, isSuccess, key, defaultValue, isTable]);
+	}, [data, isSuccess, key, isTable]);
 
 	const { mutate } = useMutation({
 		mutationFn: (updatedSettings) => {

@@ -44,6 +44,7 @@ export const NewConditionForm = ({
 		newConditionDispatch({ type: 'SUBMIT' });
 		mutation.mutate(newCondition, {
 			onSuccess: (data) => {
+				//TODO: check this data object
 				setNewExperimentalCondition(data.data.entity, queryClient);
 				toast_success.current.show({ severity: 'success', summary: 'Successful', detail: 'New Relation Added' });
 				newConditionDispatch({ type: 'RESET' });

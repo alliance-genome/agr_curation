@@ -41,6 +41,7 @@ export const NewTermForm = ({
 		if (newTerm.name && newTerm.name.trim() && newTerm.vocabulary && newTerm.obsolete !== undefined) {
 			mutation.mutate(newTerm, {
 				onSuccess: (data) => {
+					//TODO: check this data object
 					setNewTerm(data.data.entity, queryClient);
 					toast_success.current.show({ severity: 'success', summary: 'Successful', detail: 'New Term Added' });
 					setSubmitted(false);

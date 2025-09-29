@@ -63,6 +63,8 @@ export const ControlledVocabularyTable = () => {
 	// Handle vocabularies data (was in onSuccess callback)
 	useEffect(() => {
 		if (vocabulariesIsSuccess && vocabulariesData?.data?.results) {
+			//TODO: check this data object
+			console.log('ControlledVocabularyTable data', vocabulariesData);
 			setVocabularies(
 				vocabulariesData.data.results.sort(function (a, b) {
 					return a.name.localeCompare(b.name, 'en', { sensitivity: 'base' });

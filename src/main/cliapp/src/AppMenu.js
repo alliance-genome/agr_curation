@@ -7,6 +7,7 @@ import { Badge } from 'primereact/badge';
 
 const AppSubmenu = (props) => {
 	const [activeIndex, setActiveIndex] = useState(null);
+
 	//CSSTransition React 19 work around
 	const submenuRefs = useRef({});
 

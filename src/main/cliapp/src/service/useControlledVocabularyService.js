@@ -40,7 +40,8 @@ export function useControlledVocabularyService(vocabularyLabel) {
 			if (vocabularyLabel === 'generic_boolean_terms') {
 				setTerms(TERM_DATA[vocabularyLabel]);
 			} else {
-				setTerms(data.data);
+				console.log('data', data);
+				setTerms(data.results);
 			}
 		}
 	}, [data, isSuccess, vocabularyLabel]);

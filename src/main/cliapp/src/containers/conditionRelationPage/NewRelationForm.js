@@ -46,7 +46,9 @@ export const NewRelationForm = ({
 		newRelationDispatch({ type: 'SUBMIT' });
 		mutation.mutate(newRelation, {
 			onSuccess: (data) => {
+				//TODO: check this data object
 				setNewConditionRelation(data.data.entity, queryClient);
+				console.log('NewRelationForm data', data);
 				toast_success.current.show({ severity: 'success', summary: 'Successful', detail: 'New Relation Added' });
 				newRelationDispatch({ type: 'RESET' });
 			},
