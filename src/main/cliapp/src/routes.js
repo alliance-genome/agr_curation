@@ -93,7 +93,7 @@ export default function AppRoutes() {
 						}
 					/>
 					<Route
-						path="/experimentalconditions"
+						path="/experimentalConditions"
 						element={
 							<ErrorBoundary>
 								<ExperimentalConditionsPage />
@@ -101,7 +101,7 @@ export default function AppRoutes() {
 						}
 					/>
 					<Route
-						path="/conditionrelation"
+						path="/conditionRelations"
 						element={
 							<ErrorBoundary>
 								<ConditionRelationPage />
@@ -173,7 +173,7 @@ export default function AppRoutes() {
 						}
 					/>
 					<Route
-						path="/controlledvocabulary"
+						path="/vocabterms"
 						element={
 							<ErrorBoundary>
 								<ControlledVocabularyPage />
@@ -189,7 +189,7 @@ export default function AppRoutes() {
 						}
 					/>
 					<Route
-						path="/vocabularyTermSets/:vocabulary"
+						path="/vocabularytermsets"
 						element={
 							<ErrorBoundary>
 								<VocabularyTermSetPage />
@@ -213,10 +213,18 @@ export default function AppRoutes() {
 						}
 					/>
 					<Route
-						path="/fms"
+						path="/fmsdatafiles"
 						element={
 							<ErrorBoundary>
 								<FMSComponent />
+							</ErrorBoundary>
+						}
+					/>
+					<Route
+						path="/fmsdatatypes/:dataType"
+						element={
+							<ErrorBoundary>
+								<FMSDataTypesComponent />
 							</ErrorBoundary>
 						}
 					/>
