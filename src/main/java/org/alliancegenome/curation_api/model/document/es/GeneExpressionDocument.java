@@ -18,6 +18,7 @@ public class GeneExpressionDocument extends ESDocument {
 		category = "gene_expression_annotation";
 	}
 	private GeneExpressionAnnotation geneExpressionAnnotation;
+	private String pubModID;
 	private List<String> uberonTermIds;
 	private List<String> goTermIds;
 	private List<String> termIds;
