@@ -139,6 +139,7 @@ export const GenericDataTable = (props) => {
 								padding: '4px 10px 4px',
 							}}
 							headerClassName="surface-0"
+							showClearButton={false}
 							columnKey={col.field}
 							key={col.field}
 							field={col.field}

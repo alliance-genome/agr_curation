@@ -1,4 +1,3 @@
-import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 
 import { RequiredAuth } from './components/RequiredAuth';
@@ -43,6 +42,7 @@ export default function AppRoutes() {
 	return (
 		<SiteLayout>
 			<Routes>
+				{/* RequiredAuth replaces SecureRoute which is not compatible with ReactRouter V6 */}
 				<Route element={<RequiredAuth />}>
 					<Route
 						path="/"
