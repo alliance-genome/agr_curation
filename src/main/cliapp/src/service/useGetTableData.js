@@ -59,7 +59,7 @@ export const useGetTableData = ({
 			setEntities(data.results);
 			setTotalRecords(data.totalResults);
 		}
-	}, [data, setIsInEditMode, setEntities, setTotalRecords, toast_topleft]);
+	}, [data, setIsInEditMode, setEntities, setTotalRecords, toast_topleft, isError, isSuccess]);
 
 	return { data, isSuccess, isError, isPending };
 };

@@ -1,5 +1,5 @@
 import { Dialog } from 'primereact/dialog';
-import React, { useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { Button } from 'primereact/button';
 import { InputText } from 'primereact/inputtext';
 import { Dropdown } from 'primereact/dropdown';
@@ -146,7 +146,7 @@ export const NewTermForm = ({
 								<label htmlFor="obsolete">Obsolete</label>
 								<Dropdown
 									id="obsolete"
-									options={obsoleteTerms}
+									options={obsoleteTerms?.terms || []}
 									value={newTerm.obsolete}
 									placeholder={'Select Obsolete'}
 									name="obsolete"
