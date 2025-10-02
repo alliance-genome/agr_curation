@@ -70,7 +70,7 @@ public class SubmittedObject extends CurieObject {
 	@Fetch(FetchMode.SELECT)
 	@JsonView({View.FieldsOnly.class, View.AlleleSummaryDocument.class, View.AlleleForPublic.class, View.TransgenicAllelesDocumentView.class})
 	private CrossReference dataProviderCrossReference;
-	
+
 	@IndexedEmbedded(includePaths = {"freeText", "freeText_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)

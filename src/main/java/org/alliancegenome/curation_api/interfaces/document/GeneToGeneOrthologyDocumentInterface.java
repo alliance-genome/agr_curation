@@ -28,5 +28,5 @@ public interface GeneToGeneOrthologyDocumentInterface {
 	@Path("/document")
 	@JsonView(View.GeneToGeneOrthologyDocument.class)
 	SearchResponse<GeneToGeneOrthologyDocument> findDocument(@DefaultValue("0") @QueryParam("page") Integer page, @DefaultValue("10") @QueryParam("limit") Integer limit, @RequestBody HashMap<String, Object> params);
-	
+
 }
