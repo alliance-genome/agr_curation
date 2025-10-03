@@ -172,6 +172,11 @@ public class AlleleVariantAssociationService extends BaseEntityCrudService<Allel
 		if (!currentAssociationIds.contains(association.getId())) {
 			currentAssociations.add(association);
 		}
-		
+
+	}
+
+	public Map<String, Long> getAlleleVariantAssociationMap() {
+		Map<String, Long> map = alleleVariantAssociationDAO.getAlleleVariantAssociationMap();
+		return map;
 	}
 }
