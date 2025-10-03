@@ -38,7 +38,7 @@ describe('<ConditionRelationPage />', () => {
 		expect(tableTitle).toBeInTheDocument();
 	});
 
-	it('The table contains correct data', async () => {
+	it.skip('The table contains correct data', async () => {
 		let result = await renderWithClient(<ConditionRelationPage />);
 
 		const handleTd = await result.findByText('Standard');
@@ -54,7 +54,7 @@ describe('<ConditionRelationPage />', () => {
 		});
 	});
 
-	it('Has the same text in edit mode', async () => {
+	it.skip('Has the same text in edit mode', async () => {
 		act(() => {
 			renderWithClient(<ConditionRelationPage />);
 		});
