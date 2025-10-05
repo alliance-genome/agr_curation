@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState , useMemo } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { Toast } from 'primereact/toast';
 import { SearchService } from '../../service/SearchService';
@@ -175,7 +175,8 @@ export const ConditionRelationTable = () => {
 		);
 	};
 
-	const columns = [
+	const columns = useMemo(
+		() => [
 		{
 			field: 'handle',
 			header: 'Handle',
@@ -214,12 +215,18 @@ export const ConditionRelationTable = () => {
 			filterConfig: FILTER_CONFIGS.experimentalConditionFilterConfig,
 			editor: (props) => conditionRelationTemplate(props),
 		},
-	];
+	],
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+		[]
+	);
 
 	const DEFAULT_COLUMN_WIDTH = 10;
 	const SEARCH_ENDPOINT = 'condition-relation';
 
-	const initialTableState = getDefaultTableState('Experiments', columns, DEFAULT_COLUMN_WIDTH);
+	const initialTableState = useMemo(
+		() => getDefaultTableState('Experiments', columns, DEFAULT_COLUMN_WIDTH),
+		[columns]
+	);
 
 	const { settings: tableState, mutate: setTableState } = useGetUserSettings(
 		initialTableState.tableSettingsKeyName,

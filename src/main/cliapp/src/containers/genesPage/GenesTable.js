@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState , useMemo } from 'react';
 import { GenericDataTable } from '../../components/GenericDataTable/GenericDataTable';
 import { Toast } from 'primereact/toast';
 import { getDefaultTableState } from '../../service/TableStateService';
@@ -193,7 +193,8 @@ export const GenesTable = () => {
 		}
 	};
 
-	const columns = [
+	const columns = useMemo(
+		() => [
 		{
 			field: 'curie',
 			header: 'Curie',
@@ -381,12 +382,18 @@ export const GenesTable = () => {
 			filterConfig: FILTER_CONFIGS.obsoleteFilterConfig,
 			sortable: true,
 		},
-	];
+	],
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+		[]
+	);
 
 	const DEFAULT_COLUMN_WIDTH = 10;
 	const SEARCH_ENDPOINT = 'gene';
 
-	const initialTableState = getDefaultTableState('Genes', columns, DEFAULT_COLUMN_WIDTH);
+	const initialTableState = useMemo(
+		() => getDefaultTableState('Genes', columns, DEFAULT_COLUMN_WIDTH),
+		[columns]
+	);
 
 	const { settings: tableState, mutate: setTableState } = useGetUserSettings(
 		initialTableState.tableSettingsKeyName,

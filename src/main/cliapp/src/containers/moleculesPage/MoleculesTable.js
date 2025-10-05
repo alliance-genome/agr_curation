@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState , useMemo } from 'react';
 import { GenericDataTable } from '../../components/GenericDataTable/GenericDataTable';
 import { Toast } from 'primereact/toast';
 import { getDefaultTableState } from '../../service/TableStateService';
@@ -22,7 +22,8 @@ export const MoleculesTable = () => {
 	const toast_topleft = useRef(null);
 	const toast_topright = useRef(null);
 
-	const columns = [
+	const columns = useMemo(
+		() => [
 		{
 			field: 'curie',
 			header: 'Curie',
@@ -79,12 +80,18 @@ export const MoleculesTable = () => {
 			body: (rowData) => <StringTemplate string={rowData.smiles} />,
 			filterConfig: FILTER_CONFIGS.smilesFilterConfig,
 		},
-	];
+	],
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+		[]
+	);
 
 	const DEFAULT_COLUMN_WIDTH = 13;
 	const SEARCH_ENDPOINT = 'molecule';
 
-	const initialTableState = getDefaultTableState('Molecule', columns, DEFAULT_COLUMN_WIDTH);
+	const initialTableState = useMemo(
+		() => getDefaultTableState('Molecule', columns, DEFAULT_COLUMN_WIDTH),
+		[columns]
+	);
 
 	const { settings: tableState, mutate: setTableState } = useGetUserSettings(
 		initialTableState.tableSettingsKeyName,

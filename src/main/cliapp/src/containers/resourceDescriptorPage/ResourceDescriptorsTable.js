@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState , useMemo } from 'react';
 import { GenericDataTable } from '../../components/GenericDataTable/GenericDataTable';
 import { Toast } from 'primereact/toast';
 import { getDefaultTableState } from '../../service/TableStateService';
@@ -22,7 +22,8 @@ export const ResourceDescriptorsTable = () => {
 	const toast_topleft = useRef(null);
 	const toast_topright = useRef(null);
 
-	const columns = [
+	const columns = useMemo(
+		() => [
 		{
 			field: 'prefix',
 			header: 'Prefix',
@@ -64,12 +65,18 @@ export const ResourceDescriptorsTable = () => {
 			body: (rowData) => <StringTemplate string={rowData.defaultUrlTemplate} />,
 			filterConfig: FILTER_CONFIGS.defaultUrlTemplateFilterConfig,
 		},
-	];
+	],
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+		[]
+	);
 
 	const DEFAULT_COLUMN_WIDTH = 20;
 	const SEARCH_ENDPOINT = 'resourcedescriptor';
 
-	const initialTableState = getDefaultTableState('ResourceDescriptors', columns, DEFAULT_COLUMN_WIDTH);
+	const initialTableState = useMemo(
+		() => getDefaultTableState('ResourceDescriptors', columns, DEFAULT_COLUMN_WIDTH),
+		[columns]
+	);
 
 	const { settings: tableState, mutate: setTableState } = useGetUserSettings(
 		initialTableState.tableSettingsKeyName,

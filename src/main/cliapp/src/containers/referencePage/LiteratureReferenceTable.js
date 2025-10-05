@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef , useMemo } from 'react';
 import { GenericDataTable } from '../../components/GenericDataTable/GenericDataTable';
 import { Card } from 'primereact/card';
 import { Toast } from 'primereact/toast';
@@ -21,7 +21,8 @@ export const LiteratureReferenceTable = () => {
 	const toast_topleft = useRef(null);
 	const toast_topright = useRef(null);
 
-	const columns = [
+	const columns = useMemo(
+		() => [
 		{
 			field: 'curie',
 			header: 'Curie',
@@ -68,11 +69,17 @@ export const LiteratureReferenceTable = () => {
 			filter: true,
 			filterConfig: FILTER_CONFIGS.literatureShortCitationFilterConfig,
 		},
-	];
+	],
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+		[]
+	);
 	const DEFAULT_COLUMN_WIDTH = 20;
 	const SEARCH_ENDPOINT = 'literature-reference';
 
-	const initialTableState = getDefaultTableState('LiteratureReferences', columns, DEFAULT_COLUMN_WIDTH);
+	const initialTableState = useMemo(
+		() => getDefaultTableState('LiteratureReferences', columns, DEFAULT_COLUMN_WIDTH),
+		[columns]
+	);
 
 	const { settings: tableState, mutate: setTableState } = useGetUserSettings(
 		initialTableState.tableSettingsKeyName,

@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState , useMemo } from 'react';
 import { GenericDataTable } from '../../components/GenericDataTable/GenericDataTable';
 import { Toast } from 'primereact/toast';
 import { getDefaultTableState } from '../../service/TableStateService';
@@ -20,7 +20,8 @@ export const SpeciesTable = () => {
 
 	const searchService = new SearchService();
 
-	const columns = [
+	const columns = useMemo(
+		() => [
 		{
 			field: 'taxon.curie',
 			header: 'Taxon',
@@ -75,12 +76,18 @@ export const SpeciesTable = () => {
 			sortable: false,
 			//filterConfig: FILTER_CONFIGS.speciesAssemblyFilterConfig
 		},
-	];
+	],
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+		[]
+	);
 
 	const DEFAULT_COLUMN_WIDTH = 10;
 	const SEARCH_ENDPOINT = 'species';
 
-	const initialTableState = getDefaultTableState('Species', columns, DEFAULT_COLUMN_WIDTH);
+	const initialTableState = useMemo(
+		() => getDefaultTableState('Species', columns, DEFAULT_COLUMN_WIDTH),
+		[columns]
+	);
 
 	const { settings: tableState, mutate: setTableState } = useGetUserSettings(
 		initialTableState.tableSettingsKeyName,

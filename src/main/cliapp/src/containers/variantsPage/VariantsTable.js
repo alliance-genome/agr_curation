@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState , useMemo } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { GenericDataTable } from '../../components/GenericDataTable/GenericDataTable';
 import { ErrorMessageComponent } from '../../components/Error/ErrorMessageComponent';
@@ -165,7 +165,8 @@ export const VariantsTable = () => {
 		}
 	};
 
-	const columns = [
+	const columns = useMemo(
+		() => [
 		{
 			field: 'curie',
 			header: 'Curie',
@@ -312,12 +313,18 @@ export const VariantsTable = () => {
 				<BooleanTableEditor rowProps={props} errorMessagesRef={errorMessagesRef} field={'obsolete'} showClear={false} />
 			),
 		},
-	];
+	],
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+		[errorMessagesRef]
+	);
 
 	const DEFAULT_COLUMN_WIDTH = 10;
 	const SEARCH_ENDPOINT = 'variant';
 
-	const initialTableState = getDefaultTableState('Variants', columns, DEFAULT_COLUMN_WIDTH);
+	const initialTableState = useMemo(
+		() => getDefaultTableState('Variants', columns, DEFAULT_COLUMN_WIDTH),
+		[columns]
+	);
 
 	const { settings: tableState, mutate: setTableState } = useGetUserSettings(
 		initialTableState.tableSettingsKeyName,

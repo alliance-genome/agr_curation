@@ -1,4 +1,4 @@
-import React, { useRef, useState, useReducer, useEffect } from 'react';
+import React, { useRef, useState, useReducer, useEffect, useMemo } from 'react';
 import { GenericDataTable } from '../../components/GenericDataTable/GenericDataTable';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { Toast } from 'primereact/toast';
@@ -208,7 +208,8 @@ export const ControlledVocabularyTable = () => {
 		);
 	};
 
-	const columns = [
+	const columns = useMemo(
+		() => [
 		{
 			field: 'id',
 			header: 'Id',
@@ -293,12 +294,18 @@ export const ControlledVocabularyTable = () => {
 			editor: (props) => obsoleteEditorTemplate(props),
 			body: (rowData) => <BooleanTemplate value={rowData.obsolete} />,
 		},
-	];
+	],
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+		[]
+	);
 
 	const DEFAULT_COLUMN_WIDTH = 13;
 	const SEARCH_ENDPOINT = 'vocabularyterm';
 
-	const initialTableState = getDefaultTableState('ControlledVocabularyTerms', columns, DEFAULT_COLUMN_WIDTH);
+	const initialTableState = useMemo(
+		() => getDefaultTableState('ControlledVocabularyTerms', columns, DEFAULT_COLUMN_WIDTH),
+		[columns]
+	);
 
 	const { settings: tableState, mutate: setTableState } = useGetUserSettings(
 		initialTableState.tableSettingsKeyName,

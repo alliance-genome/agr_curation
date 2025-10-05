@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef , useMemo } from 'react';
 import { GenericDataTable } from '../../components/GenericDataTable/GenericDataTable';
 import { Toast } from 'primereact/toast';
 import { getDefaultTableState } from '../../service/TableStateService';
@@ -213,7 +213,11 @@ export const AffectedGenomicModelTable = () => {
 	const DEFAULT_COLUMN_WIDTH = 100 / columns.length;
 	const SEARCH_ENDPOINT = 'agm';
 
-	const initialTableState = getDefaultTableState('AffectedGenomicModels', columns, DEFAULT_COLUMN_WIDTH);
+	const initialTableState = useMemo(
+		() => getDefaultTableState('AffectedGenomicModels', columns, DEFAULT_COLUMN_WIDTH),
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+		[columns]
+	);
 
 	const { settings: tableState, mutate: setTableState } = useGetUserSettings(
 		initialTableState.tableSettingsKeyName,

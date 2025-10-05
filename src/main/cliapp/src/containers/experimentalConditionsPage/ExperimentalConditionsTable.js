@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState , useMemo } from 'react';
 import { GenericDataTable } from '../../components/GenericDataTable/GenericDataTable';
 import { InputTextEditor } from '../../components/InputTextEditor';
 import { AutocompleteEditor } from '../../components/Autocomplete/AutocompleteEditor';
@@ -164,7 +164,8 @@ export const ExperimentalConditionsTable = () => {
 		);
 	};
 
-	const columns = [
+	const columns = useMemo(
+		() => [
 		{
 			field: 'uniqueId',
 			header: 'Unique ID',
@@ -261,12 +262,18 @@ export const ExperimentalConditionsTable = () => {
 			sortable: true,
 			editor: (props) => internalEditor(props),
 		},
-	];
+	],
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+		[]
+	);
 
 	const DEFAULT_COLUMN_WIDTH = 10;
 	const SEARCH_ENDPOINT = 'experimental-condition';
 
-	const initialTableState = getDefaultTableState('ExperimentalConditions', columns, DEFAULT_COLUMN_WIDTH);
+	const initialTableState = useMemo(
+		() => getDefaultTableState('ExperimentalConditions', columns, DEFAULT_COLUMN_WIDTH),
+		[columns]
+	);
 
 	const { settings: tableState, mutate: setTableState } = useGetUserSettings(
 		initialTableState.tableSettingsKeyName,

@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState , useMemo } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { Toast } from 'primereact/toast';
 import { Button } from 'primereact/button';
@@ -77,7 +77,8 @@ export const VocabulariesTable = () => {
 		}
 	};
 
-	const columns = [
+	const columns = useMemo(
+		() => [
 		{
 			field: 'name',
 			header: 'Name',
@@ -109,12 +110,18 @@ export const VocabulariesTable = () => {
 			body: (rowData) => <StringTemplate string={rowData.vocabularyLabel} />,
 			filterConfig: FILTER_CONFIGS.vocabularyLabelFilterConfig,
 		},
-	];
+	],
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+		[]
+	);
 
 	const DEFAULT_COLUMN_WIDTH = 20;
 	const SEARCH_ENDPOINT = 'vocabulary';
 
-	const initialTableState = getDefaultTableState('Vocabularies', columns, DEFAULT_COLUMN_WIDTH);
+	const initialTableState = useMemo(
+		() => getDefaultTableState('Vocabularies', columns, DEFAULT_COLUMN_WIDTH),
+		[columns]
+	);
 
 	const { settings: tableState, mutate: setTableState } = useGetUserSettings(
 		initialTableState.tableSettingsKeyName,

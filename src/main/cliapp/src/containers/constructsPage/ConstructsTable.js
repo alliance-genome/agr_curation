@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState , useMemo } from 'react';
 import { GenericDataTable } from '../../components/GenericDataTable/GenericDataTable';
 import { ComponentsDialog } from './ComponentsDialog';
 import { GenomicComponentsDialog } from './GenomicComponentsDialog';
@@ -140,7 +140,8 @@ export const ConstructsTable = () => {
 		return relationName + ': ' + symbolValue;
 	};
 
-	const columns = [
+	const columns = useMemo(
+		() => [
 		{
 			field: 'uniqueId',
 			header: 'Unique ID',
@@ -301,12 +302,18 @@ export const ConstructsTable = () => {
 			filterConfig: FILTER_CONFIGS.obsoleteFilterConfig,
 			sortable: { isInEditMode },
 		},
-	];
+	],
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+		[]
+	);
 
 	const DEFAULT_COLUMN_WIDTH = 10;
 	const SEARCH_ENDPOINT = 'construct';
 
-	const initialTableState = getDefaultTableState('Constructs', columns, DEFAULT_COLUMN_WIDTH);
+	const initialTableState = useMemo(
+		() => getDefaultTableState('Constructs', columns, DEFAULT_COLUMN_WIDTH),
+		[columns]
+	);
 
 	const { settings: tableState, mutate: setTableState } = useGetUserSettings(
 		initialTableState.tableSettingsKeyName,

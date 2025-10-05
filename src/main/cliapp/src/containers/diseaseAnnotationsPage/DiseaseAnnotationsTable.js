@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState , useMemo } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { Toast } from 'primereact/toast';
 
@@ -346,8 +346,6 @@ export const DiseaseAnnotationsTable = () => {
 
 		return diseaseRelationTerms;
 	};
-
-	console.log('relationTerms', relationsTerms);
 
 	const relationEditor = (props) => {
 		let diseaseRelationTerms = getRelationTermSet(props);
@@ -1433,7 +1431,11 @@ export const DiseaseAnnotationsTable = () => {
 	const SEARCH_ENDPOINT = 'disease-annotation';
 	const defaultFilters = { obsoleteFilter: { obsolete: { queryString: 'false' } } };
 
-	const initialTableState = getDefaultTableState('DiseaseAnnotations', columns, DEFAULT_COLUMN_WIDTH, defaultFilters);
+	const initialTableState = useMemo(
+		() => getDefaultTableState('DiseaseAnnotations', columns, DEFAULT_COLUMN_WIDTH, defaultFilters),
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+		[columns]
+	);
 
 	const { settings: tableState, mutate: setTableState } = useGetUserSettings(
 		initialTableState.tableSettingsKeyName,
