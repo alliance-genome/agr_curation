@@ -1,4 +1,4 @@
-import React, { useRef, useState , useMemo } from 'react';
+import React, { useRef, useState, useMemo } from 'react';
 import { GenericDataTable } from '../../components/GenericDataTable/GenericDataTable';
 import { ComponentsDialog } from './ComponentsDialog';
 import { GenomicComponentsDialog } from './GenomicComponentsDialog';
@@ -142,167 +142,167 @@ export const ConstructsTable = () => {
 
 	const columns = useMemo(
 		() => [
-		{
-			field: 'uniqueId',
-			header: 'Unique ID',
-			sortable: { isInEditMode },
-			body: (rowData) => <IdTemplate id={rowData.uniqueId} />,
-			filterConfig: FILTER_CONFIGS.uniqueidFilterConfig,
-		},
-		{
-			field: 'primaryExternalId',
-			header: 'Primary External ID',
-			sortable: { isInEditMode },
-			body: (rowData) => <IdTemplate id={rowData.primaryExternalId} />,
-			filterConfig: FILTER_CONFIGS.primaryexternalidFilterConfig,
-		},
-		{
-			field: 'modInternalId',
-			header: 'MOD Internal ID',
-			sortable: { isInEditMode },
-			body: (rowData) => <IdTemplate id={rowData.modInternalId} />,
-			filterConfig: FILTER_CONFIGS.modinternalidFilterConfig,
-		},
-		{
-			field: 'constructSymbol.displayText',
-			header: 'Symbol',
-			sortable: true,
-			body: (rowData) => (
-				<TextDialogTemplate
-					entity={rowData.constructSymbol}
-					handleOpen={handleSymbolOpen}
-					text={rowData.constructSymbol?.displayText}
-					underline={false}
-				/>
-			),
-			filter: true,
-			filterConfig: FILTER_CONFIGS.constructSymbolFilterConfig,
-		},
-		{
-			field: 'constructFullName.displayText',
-			header: 'Name',
-			sortable: true,
-			filter: true,
-			body: (rowData) => (
-				<TextDialogTemplate
-					entity={rowData.constructFullName}
-					handleOpen={handleFullNameOpen}
-					text={rowData.constructFullName?.displayText}
-					underline={false}
-				/>
-			),
-			filterConfig: FILTER_CONFIGS.constructNameFilterConfig,
-		},
-		{
-			field: 'constructSynonyms.displayText',
-			header: 'Synonyms',
-			body: (rowData) => (
-				<ListDialogTemplate
-					entities={rowData.constructSynonyms}
-					handleOpen={handleSynonymsOpen}
-					getTextField={(entity) => entity?.displayText}
-					underline={false}
-				/>
-			),
-			sortable: true,
-			filterConfig: FILTER_CONFIGS.constructSynonymsFilterConfig,
-		},
-		{
-			field: 'secondaryIdentifiers',
-			header: 'Secondary IDs',
-			sortable: true,
-			filterConfig: FILTER_CONFIGS.secondaryIdsFilterConfig,
-			body: (rowData) => <StringListTemplate list={rowData.secondaryIdentifiers} />,
-		},
-		{
-			field: 'constructComponents.componentSymbol',
-			header: 'Free Text Components',
-			body: (rowData) => (
-				<ListDialogTemplate
-					entities={rowData.constructComponents}
-					handleOpen={handleComponentsOpen}
-					getTextField={getComponentsTextString}
-					underline={true}
-				/>
-			),
-			sortable: { isInEditMode },
-			filterConfig: FILTER_CONFIGS.constructComponentsFilterConfig,
-		},
-		{
-			field: 'constructGenomicEntityAssociations.constructGenomicEntityAssociationObject.symbol',
-			header: 'Component Associations',
-			body: (rowData) => (
-				<ListDialogTemplate
-					entities={rowData.constructGenomicEntityAssociations}
-					handleOpen={handleGenomicComponentsOpen}
-					getTextField={getComponentsAssociationTextString}
-					underline={true}
-				/>
-			),
-			sortable: { isInEditMode },
-			filterConfig: FILTER_CONFIGS.constructGenomicComponentsFilterConfig,
-		},
-		{
-			field: 'references.primaryCrossReferenceCurie',
-			header: 'References',
-			body: (rowData) => <TruncatedReferencesTemplate references={rowData.references} />,
-			sortable: { isInEditMode },
-			filterConfig: FILTER_CONFIGS.referencesFilterConfig,
-		},
-		{
-			field: 'dataProvider.abbreviation',
-			header: 'Data Provider',
-			sortable: { isInEditMode },
-			filterConfig: FILTER_CONFIGS.constructDataProviderFilterConfig,
-		},
-		{
-			field: 'updatedBy.uniqueId',
-			header: 'Updated By',
-			sortable: { isInEditMode },
-			body: (rowData) => <StringTemplate string={rowData.updatedBy?.uniqueId} />,
-			filterConfig: FILTER_CONFIGS.updatedByFilterConfig,
-		},
-		{
-			field: 'dateUpdated',
-			header: 'Date Updated',
-			sortable: { isInEditMode },
-			filter: true,
-			body: (rowData) => <StringTemplate string={rowData.dateUpdated} />,
-			filterConfig: FILTER_CONFIGS.dateUpdatedFilterConfig,
-		},
-		{
-			field: 'createdBy.uniqueId',
-			header: 'Created By',
-			sortable: { isInEditMode },
-			filter: true,
-			body: (rowData) => <StringTemplate string={rowData.createdBy?.uniqueId} />,
-			filterConfig: FILTER_CONFIGS.createdByFilterConfig,
-		},
-		{
-			field: 'dateCreated',
-			header: 'Date Created',
-			sortable: { isInEditMode },
-			filter: true,
-			body: (rowData) => <StringTemplate string={rowData.dateCreated} />,
-			filterConfig: FILTER_CONFIGS.dataCreatedFilterConfig,
-		},
-		{
-			field: 'internal',
-			header: 'Internal',
-			body: (rowData) => <BooleanTemplate value={rowData.internal} />,
-			filter: true,
-			filterConfig: FILTER_CONFIGS.internalFilterConfig,
-			sortable: { isInEditMode },
-		},
-		{
-			field: 'obsolete',
-			header: 'Obsolete',
-			body: (rowData) => <BooleanTemplate value={rowData.obsolete} />,
-			filter: true,
-			filterConfig: FILTER_CONFIGS.obsoleteFilterConfig,
-			sortable: { isInEditMode },
-		},
-	],
+			{
+				field: 'uniqueId',
+				header: 'Unique ID',
+				sortable: { isInEditMode },
+				body: (rowData) => <IdTemplate id={rowData.uniqueId} />,
+				filterConfig: FILTER_CONFIGS.uniqueidFilterConfig,
+			},
+			{
+				field: 'primaryExternalId',
+				header: 'Primary External ID',
+				sortable: { isInEditMode },
+				body: (rowData) => <IdTemplate id={rowData.primaryExternalId} />,
+				filterConfig: FILTER_CONFIGS.primaryexternalidFilterConfig,
+			},
+			{
+				field: 'modInternalId',
+				header: 'MOD Internal ID',
+				sortable: { isInEditMode },
+				body: (rowData) => <IdTemplate id={rowData.modInternalId} />,
+				filterConfig: FILTER_CONFIGS.modinternalidFilterConfig,
+			},
+			{
+				field: 'constructSymbol.displayText',
+				header: 'Symbol',
+				sortable: true,
+				body: (rowData) => (
+					<TextDialogTemplate
+						entity={rowData.constructSymbol}
+						handleOpen={handleSymbolOpen}
+						text={rowData.constructSymbol?.displayText}
+						underline={false}
+					/>
+				),
+				filter: true,
+				filterConfig: FILTER_CONFIGS.constructSymbolFilterConfig,
+			},
+			{
+				field: 'constructFullName.displayText',
+				header: 'Name',
+				sortable: true,
+				filter: true,
+				body: (rowData) => (
+					<TextDialogTemplate
+						entity={rowData.constructFullName}
+						handleOpen={handleFullNameOpen}
+						text={rowData.constructFullName?.displayText}
+						underline={false}
+					/>
+				),
+				filterConfig: FILTER_CONFIGS.constructNameFilterConfig,
+			},
+			{
+				field: 'constructSynonyms.displayText',
+				header: 'Synonyms',
+				body: (rowData) => (
+					<ListDialogTemplate
+						entities={rowData.constructSynonyms}
+						handleOpen={handleSynonymsOpen}
+						getTextField={(entity) => entity?.displayText}
+						underline={false}
+					/>
+				),
+				sortable: true,
+				filterConfig: FILTER_CONFIGS.constructSynonymsFilterConfig,
+			},
+			{
+				field: 'secondaryIdentifiers',
+				header: 'Secondary IDs',
+				sortable: true,
+				filterConfig: FILTER_CONFIGS.secondaryIdsFilterConfig,
+				body: (rowData) => <StringListTemplate list={rowData.secondaryIdentifiers} />,
+			},
+			{
+				field: 'constructComponents.componentSymbol',
+				header: 'Free Text Components',
+				body: (rowData) => (
+					<ListDialogTemplate
+						entities={rowData.constructComponents}
+						handleOpen={handleComponentsOpen}
+						getTextField={getComponentsTextString}
+						underline={true}
+					/>
+				),
+				sortable: { isInEditMode },
+				filterConfig: FILTER_CONFIGS.constructComponentsFilterConfig,
+			},
+			{
+				field: 'constructGenomicEntityAssociations.constructGenomicEntityAssociationObject.symbol',
+				header: 'Component Associations',
+				body: (rowData) => (
+					<ListDialogTemplate
+						entities={rowData.constructGenomicEntityAssociations}
+						handleOpen={handleGenomicComponentsOpen}
+						getTextField={getComponentsAssociationTextString}
+						underline={true}
+					/>
+				),
+				sortable: { isInEditMode },
+				filterConfig: FILTER_CONFIGS.constructGenomicComponentsFilterConfig,
+			},
+			{
+				field: 'references.primaryCrossReferenceCurie',
+				header: 'References',
+				body: (rowData) => <TruncatedReferencesTemplate references={rowData.references} />,
+				sortable: { isInEditMode },
+				filterConfig: FILTER_CONFIGS.referencesFilterConfig,
+			},
+			{
+				field: 'dataProvider.abbreviation',
+				header: 'Data Provider',
+				sortable: { isInEditMode },
+				filterConfig: FILTER_CONFIGS.constructDataProviderFilterConfig,
+			},
+			{
+				field: 'updatedBy.uniqueId',
+				header: 'Updated By',
+				sortable: { isInEditMode },
+				body: (rowData) => <StringTemplate string={rowData.updatedBy?.uniqueId} />,
+				filterConfig: FILTER_CONFIGS.updatedByFilterConfig,
+			},
+			{
+				field: 'dateUpdated',
+				header: 'Date Updated',
+				sortable: { isInEditMode },
+				filter: true,
+				body: (rowData) => <StringTemplate string={rowData.dateUpdated} />,
+				filterConfig: FILTER_CONFIGS.dateUpdatedFilterConfig,
+			},
+			{
+				field: 'createdBy.uniqueId',
+				header: 'Created By',
+				sortable: { isInEditMode },
+				filter: true,
+				body: (rowData) => <StringTemplate string={rowData.createdBy?.uniqueId} />,
+				filterConfig: FILTER_CONFIGS.createdByFilterConfig,
+			},
+			{
+				field: 'dateCreated',
+				header: 'Date Created',
+				sortable: { isInEditMode },
+				filter: true,
+				body: (rowData) => <StringTemplate string={rowData.dateCreated} />,
+				filterConfig: FILTER_CONFIGS.dataCreatedFilterConfig,
+			},
+			{
+				field: 'internal',
+				header: 'Internal',
+				body: (rowData) => <BooleanTemplate value={rowData.internal} />,
+				filter: true,
+				filterConfig: FILTER_CONFIGS.internalFilterConfig,
+				sortable: { isInEditMode },
+			},
+			{
+				field: 'obsolete',
+				header: 'Obsolete',
+				body: (rowData) => <BooleanTemplate value={rowData.obsolete} />,
+				filter: true,
+				filterConfig: FILTER_CONFIGS.obsoleteFilterConfig,
+				sortable: { isInEditMode },
+			},
+		],
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 		[]
 	);
@@ -310,10 +310,7 @@ export const ConstructsTable = () => {
 	const DEFAULT_COLUMN_WIDTH = 10;
 	const SEARCH_ENDPOINT = 'construct';
 
-	const initialTableState = useMemo(
-		() => getDefaultTableState('Constructs', columns, DEFAULT_COLUMN_WIDTH),
-		[columns]
-	);
+	const initialTableState = useMemo(() => getDefaultTableState('Constructs', columns, DEFAULT_COLUMN_WIDTH), [columns]);
 
 	const { settings: tableState, mutate: setTableState } = useGetUserSettings(
 		initialTableState.tableSettingsKeyName,

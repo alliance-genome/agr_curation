@@ -1,4 +1,4 @@
-import React, { useRef, useState , useMemo } from 'react';
+import React, { useRef, useState, useMemo } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { GenericDataTable } from '../../components/GenericDataTable/GenericDataTable';
 import { ErrorMessageComponent } from '../../components/Error/ErrorMessageComponent';
@@ -167,153 +167,163 @@ export const VariantsTable = () => {
 
 	const columns = useMemo(
 		() => [
-		{
-			field: 'curie',
-			header: 'Curie',
-			sortable: { isInEditMode },
-			body: (rowData) => <IdTemplate id={rowData.curie} />,
-			filterConfig: FILTER_CONFIGS.curieFilterConfig,
-		},
-		{
-			field: 'primaryExternalId',
-			header: 'Primary External ID',
-			sortable: true,
-			body: (rowData) => <IdTemplate id={rowData.primaryExternalId} />,
-			filterConfig: FILTER_CONFIGS.primaryexternalidFilterConfig,
-		},
-		{
-			field: 'modInternalId',
-			header: 'MOD Internal ID',
-			sortable: true,
-			body: (rowData) => <IdTemplate id={rowData.modInternalId} />,
-			filterConfig: FILTER_CONFIGS.modinternalidFilterConfig,
-		},
-		{
-			field: 'taxon.name',
-			header: 'Taxon',
-			sortable: true,
-			body: (rowData) => <OntologyTermTemplate term={rowData.taxon} />,
-			filterConfig: FILTER_CONFIGS.taxonFilterConfig,
-			editor: (props) => <TaxonTableEditor rowProps={props} errorMessagesRef={errorMessagesRef} />,
-		},
-		{
-			field: 'variantType.name',
-			header: 'Variant Type',
-			sortable: true,
-			body: (rowData) => <OntologyTermTemplate term={rowData.variantType} />,
-			filterConfig: FILTER_CONFIGS.variantTypeFilterConfig,
-			editor: (props) => <VariantTypeTableEditor rowProps={props} errorMessagesRef={errorMessagesRef} />,
-		},
-		{
-			field: 'variantStatus.name',
-			header: 'Variant Status',
-			sortable: true,
-			body: (rowData) => <StringTemplate string={rowData.variantStatus?.name} />,
-			filterConfig: FILTER_CONFIGS.variantStatusFilterConfig,
-			editor: (props) => variantStatusEditor(props),
-		},
-		{
-			field: 'relatedNotes.freeText',
-			header: 'Related Notes',
-			sortable: true,
-			body: (rowData) => (
-				<CountDialogTemplate entities={rowData.relatedNotes} handleOpen={handleRelatedNotesOpen} text={'Notes'} />
-			),
-			filterConfig: FILTER_CONFIGS.relatedNotesFilterConfig,
-			editor: relatedNotesEditor,
-		},
-		{
-			field: 'references.primaryCrossReferenceCurie',
-			header: 'References',
-			sortable: true,
-			filterConfig: FILTER_CONFIGS.referencesFilterConfig,
-			body: (rowData) => (
-				<TruncatedReferencesTemplate references={rowData.references} identifier={rowData.primaryExternalId} />
-			),
-		},
-		{
-			field: 'sourceGeneralConsequence.name',
-			header: 'Source General Consequence',
-			sortable: true,
-			body: (rowData) => <OntologyTermTemplate term={rowData.sourceGeneralConsequence} />,
-			filterConfig: FILTER_CONFIGS.sourceGeneralConsequenceFilterConfig,
-			editor: (props) => <SourceGeneralConsequenceTableEditor rowProps={props} errorMessagesRef={errorMessagesRef} />,
-		},
-		{
-			field: 'synonyms',
-			header: 'Synonyms',
-			sortable: true,
-			filterConfig: FILTER_CONFIGS.synonymsFilterConfig,
-			body: (rowData) => <StringListTemplate list={rowData.synonyms} />,
-		},
-		{
-			field: 'dataProvider.abbreviation',
-			header: 'Data Provider',
-			sortable: true,
-			body: (rowData) => <StringTemplate string={rowData.dataProvider?.abbreviation} />,
-			filterConfig: FILTER_CONFIGS.variantDataProviderFilterConfig,
-		},
-		{
-			field: 'crossReferences.displayName',
-			header: 'Cross References',
-			sortable: true,
-			filterConfig: FILTER_CONFIGS.crossReferencesFilterConfig,
-			body: (rowData) => <CrossReferencesTemplate list={rowData.crossReferences} />,
-		},
-		{
-			field: 'updatedBy.uniqueId',
-			header: 'Updated By',
-			sortable: true,
-			body: (rowData) => <StringTemplate string={rowData.updatedBy?.uniqueId} />,
-			filterConfig: FILTER_CONFIGS.updatedByFilterConfig,
-		},
-		{
-			field: 'dateUpdated',
-			header: 'Date Updated',
-			sortable: true,
-			filter: true,
-			body: (rowData) => <StringTemplate string={rowData.dateUpdated} />,
-			filterConfig: FILTER_CONFIGS.dateUpdatedFilterConfig,
-		},
-		{
-			field: 'createdBy.uniqueId',
-			header: 'Created By',
-			sortable: true,
-			filter: true,
-			body: (rowData) => <StringTemplate string={rowData.createdBy?.uniqueId} />,
-			filterConfig: FILTER_CONFIGS.createdByFilterConfig,
-		},
-		{
-			field: 'dateCreated',
-			header: 'Date Created',
-			sortable: true,
-			filter: true,
-			body: (rowData) => <StringTemplate string={rowData.dateCreated} />,
-			filterConfig: FILTER_CONFIGS.dataCreatedFilterConfig,
-		},
-		{
-			field: 'internal',
-			header: 'Internal',
-			filter: true,
-			body: (rowData) => <BooleanTemplate value={rowData.internal} />,
-			filterConfig: FILTER_CONFIGS.internalFilterConfig,
-			sortable: true,
-			editor: (props) => (
-				<BooleanTableEditor rowProps={props} errorMessagesRef={errorMessagesRef} field={'internal'} showClear={false} />
-			),
-		},
-		{
-			field: 'obsolete',
-			header: 'Obsolete',
-			filter: true,
-			body: (rowData) => <BooleanTemplate value={rowData.obsolete} />,
-			filterConfig: FILTER_CONFIGS.obsoleteFilterConfig,
-			sortable: true,
-			editor: (props) => (
-				<BooleanTableEditor rowProps={props} errorMessagesRef={errorMessagesRef} field={'obsolete'} showClear={false} />
-			),
-		},
-	],
+			{
+				field: 'curie',
+				header: 'Curie',
+				sortable: { isInEditMode },
+				body: (rowData) => <IdTemplate id={rowData.curie} />,
+				filterConfig: FILTER_CONFIGS.curieFilterConfig,
+			},
+			{
+				field: 'primaryExternalId',
+				header: 'Primary External ID',
+				sortable: true,
+				body: (rowData) => <IdTemplate id={rowData.primaryExternalId} />,
+				filterConfig: FILTER_CONFIGS.primaryexternalidFilterConfig,
+			},
+			{
+				field: 'modInternalId',
+				header: 'MOD Internal ID',
+				sortable: true,
+				body: (rowData) => <IdTemplate id={rowData.modInternalId} />,
+				filterConfig: FILTER_CONFIGS.modinternalidFilterConfig,
+			},
+			{
+				field: 'taxon.name',
+				header: 'Taxon',
+				sortable: true,
+				body: (rowData) => <OntologyTermTemplate term={rowData.taxon} />,
+				filterConfig: FILTER_CONFIGS.taxonFilterConfig,
+				editor: (props) => <TaxonTableEditor rowProps={props} errorMessagesRef={errorMessagesRef} />,
+			},
+			{
+				field: 'variantType.name',
+				header: 'Variant Type',
+				sortable: true,
+				body: (rowData) => <OntologyTermTemplate term={rowData.variantType} />,
+				filterConfig: FILTER_CONFIGS.variantTypeFilterConfig,
+				editor: (props) => <VariantTypeTableEditor rowProps={props} errorMessagesRef={errorMessagesRef} />,
+			},
+			{
+				field: 'variantStatus.name',
+				header: 'Variant Status',
+				sortable: true,
+				body: (rowData) => <StringTemplate string={rowData.variantStatus?.name} />,
+				filterConfig: FILTER_CONFIGS.variantStatusFilterConfig,
+				editor: (props) => variantStatusEditor(props),
+			},
+			{
+				field: 'relatedNotes.freeText',
+				header: 'Related Notes',
+				sortable: true,
+				body: (rowData) => (
+					<CountDialogTemplate entities={rowData.relatedNotes} handleOpen={handleRelatedNotesOpen} text={'Notes'} />
+				),
+				filterConfig: FILTER_CONFIGS.relatedNotesFilterConfig,
+				editor: relatedNotesEditor,
+			},
+			{
+				field: 'references.primaryCrossReferenceCurie',
+				header: 'References',
+				sortable: true,
+				filterConfig: FILTER_CONFIGS.referencesFilterConfig,
+				body: (rowData) => (
+					<TruncatedReferencesTemplate references={rowData.references} identifier={rowData.primaryExternalId} />
+				),
+			},
+			{
+				field: 'sourceGeneralConsequence.name',
+				header: 'Source General Consequence',
+				sortable: true,
+				body: (rowData) => <OntologyTermTemplate term={rowData.sourceGeneralConsequence} />,
+				filterConfig: FILTER_CONFIGS.sourceGeneralConsequenceFilterConfig,
+				editor: (props) => <SourceGeneralConsequenceTableEditor rowProps={props} errorMessagesRef={errorMessagesRef} />,
+			},
+			{
+				field: 'synonyms',
+				header: 'Synonyms',
+				sortable: true,
+				filterConfig: FILTER_CONFIGS.synonymsFilterConfig,
+				body: (rowData) => <StringListTemplate list={rowData.synonyms} />,
+			},
+			{
+				field: 'dataProvider.abbreviation',
+				header: 'Data Provider',
+				sortable: true,
+				body: (rowData) => <StringTemplate string={rowData.dataProvider?.abbreviation} />,
+				filterConfig: FILTER_CONFIGS.variantDataProviderFilterConfig,
+			},
+			{
+				field: 'crossReferences.displayName',
+				header: 'Cross References',
+				sortable: true,
+				filterConfig: FILTER_CONFIGS.crossReferencesFilterConfig,
+				body: (rowData) => <CrossReferencesTemplate list={rowData.crossReferences} />,
+			},
+			{
+				field: 'updatedBy.uniqueId',
+				header: 'Updated By',
+				sortable: true,
+				body: (rowData) => <StringTemplate string={rowData.updatedBy?.uniqueId} />,
+				filterConfig: FILTER_CONFIGS.updatedByFilterConfig,
+			},
+			{
+				field: 'dateUpdated',
+				header: 'Date Updated',
+				sortable: true,
+				filter: true,
+				body: (rowData) => <StringTemplate string={rowData.dateUpdated} />,
+				filterConfig: FILTER_CONFIGS.dateUpdatedFilterConfig,
+			},
+			{
+				field: 'createdBy.uniqueId',
+				header: 'Created By',
+				sortable: true,
+				filter: true,
+				body: (rowData) => <StringTemplate string={rowData.createdBy?.uniqueId} />,
+				filterConfig: FILTER_CONFIGS.createdByFilterConfig,
+			},
+			{
+				field: 'dateCreated',
+				header: 'Date Created',
+				sortable: true,
+				filter: true,
+				body: (rowData) => <StringTemplate string={rowData.dateCreated} />,
+				filterConfig: FILTER_CONFIGS.dataCreatedFilterConfig,
+			},
+			{
+				field: 'internal',
+				header: 'Internal',
+				filter: true,
+				body: (rowData) => <BooleanTemplate value={rowData.internal} />,
+				filterConfig: FILTER_CONFIGS.internalFilterConfig,
+				sortable: true,
+				editor: (props) => (
+					<BooleanTableEditor
+						rowProps={props}
+						errorMessagesRef={errorMessagesRef}
+						field={'internal'}
+						showClear={false}
+					/>
+				),
+			},
+			{
+				field: 'obsolete',
+				header: 'Obsolete',
+				filter: true,
+				body: (rowData) => <BooleanTemplate value={rowData.obsolete} />,
+				filterConfig: FILTER_CONFIGS.obsoleteFilterConfig,
+				sortable: true,
+				editor: (props) => (
+					<BooleanTableEditor
+						rowProps={props}
+						errorMessagesRef={errorMessagesRef}
+						field={'obsolete'}
+						showClear={false}
+					/>
+				),
+			},
+		],
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 		[errorMessagesRef]
 	);
@@ -321,10 +331,7 @@ export const VariantsTable = () => {
 	const DEFAULT_COLUMN_WIDTH = 10;
 	const SEARCH_ENDPOINT = 'variant';
 
-	const initialTableState = useMemo(
-		() => getDefaultTableState('Variants', columns, DEFAULT_COLUMN_WIDTH),
-		[columns]
-	);
+	const initialTableState = useMemo(() => getDefaultTableState('Variants', columns, DEFAULT_COLUMN_WIDTH), [columns]);
 
 	const { settings: tableState, mutate: setTableState } = useGetUserSettings(
 		initialTableState.tableSettingsKeyName,

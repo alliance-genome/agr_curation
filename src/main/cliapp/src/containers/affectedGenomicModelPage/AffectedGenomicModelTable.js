@@ -1,4 +1,4 @@
-import React, { useState, useRef , useMemo } from 'react';
+import React, { useState, useRef, useMemo } from 'react';
 import { GenericDataTable } from '../../components/GenericDataTable/GenericDataTable';
 import { Toast } from 'primereact/toast';
 import { getDefaultTableState } from '../../service/TableStateService';

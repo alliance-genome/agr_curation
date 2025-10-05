@@ -1,4 +1,4 @@
-import React, { useRef, useState , useMemo } from 'react';
+import React, { useRef, useState, useMemo } from 'react';
 import { GenericDataTable } from '../../components/GenericDataTable/GenericDataTable';
 import { Toast } from 'primereact/toast';
 import { getDefaultTableState } from '../../service/TableStateService';
@@ -23,37 +23,37 @@ export const ResourceDescriptorPagesTable = () => {
 
 	const columns = useMemo(
 		() => [
-		{
-			field: 'resourceDescriptor.prefix',
-			header: 'Resource Descriptor',
-			sortable: true,
-			body: (rowData) => (
-				<StringTemplate string={`${rowData.resourceDescriptor?.prefix} (${rowData.resourceDescriptor.name})`} />
-			),
-			filterConfig: FILTER_CONFIGS.resourceDescriptorFilterConfig,
-		},
-		{
-			field: 'name',
-			header: 'Name',
-			sortable: true,
-			body: (rowData) => <StringTemplate string={rowData.name} />,
-			filterConfig: FILTER_CONFIGS.nameFilterConfig,
-		},
-		{
-			field: 'urlTemplate',
-			header: 'URL Template',
-			sortable: true,
-			body: (rowData) => <StringTemplate string={rowData.urlTemplate} />,
-			filterConfig: FILTER_CONFIGS.urlTemplateFilterConfig,
-		},
-		{
-			field: 'pageDescription',
-			header: 'Page Description',
-			sortable: true,
-			body: (rowData) => <StringTemplate string={rowData.pageDescription} />,
-			filterConfig: FILTER_CONFIGS.pageDescriptionFilterConfig,
-		},
-	],
+			{
+				field: 'resourceDescriptor.prefix',
+				header: 'Resource Descriptor',
+				sortable: true,
+				body: (rowData) => (
+					<StringTemplate string={`${rowData.resourceDescriptor?.prefix} (${rowData.resourceDescriptor.name})`} />
+				),
+				filterConfig: FILTER_CONFIGS.resourceDescriptorFilterConfig,
+			},
+			{
+				field: 'name',
+				header: 'Name',
+				sortable: true,
+				body: (rowData) => <StringTemplate string={rowData.name} />,
+				filterConfig: FILTER_CONFIGS.nameFilterConfig,
+			},
+			{
+				field: 'urlTemplate',
+				header: 'URL Template',
+				sortable: true,
+				body: (rowData) => <StringTemplate string={rowData.urlTemplate} />,
+				filterConfig: FILTER_CONFIGS.urlTemplateFilterConfig,
+			},
+			{
+				field: 'pageDescription',
+				header: 'Page Description',
+				sortable: true,
+				body: (rowData) => <StringTemplate string={rowData.pageDescription} />,
+				filterConfig: FILTER_CONFIGS.pageDescriptionFilterConfig,
+			},
+		],
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 		[]
 	);

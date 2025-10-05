@@ -1,4 +1,4 @@
-import React, { useRef, useState , useMemo } from 'react';
+import React, { useRef, useState, useMemo } from 'react';
 import { Toast } from 'primereact/toast';
 import { TabView, TabPanel } from 'primereact/tabview';
 import { BooleanTemplate } from '../../components/Templates/BooleanTemplate';

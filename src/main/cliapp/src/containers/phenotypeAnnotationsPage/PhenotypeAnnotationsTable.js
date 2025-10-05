@@ -1,4 +1,4 @@
-import React, { useRef, useState , useMemo } from 'react';
+import React, { useRef, useState, useMemo } from 'react';
 
 import { GenericDataTable } from '../../components/GenericDataTable/GenericDataTable';
 import { ConditionRelationsDialog } from '../../components/ConditionRelationsDialog';

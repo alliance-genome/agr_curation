@@ -1,4 +1,4 @@
-import React, { useRef, useState , useMemo } from 'react';
+import React, { useRef, useState, useMemo } from 'react';
 import { GenericDataTable } from '../../components/GenericDataTable/GenericDataTable';
 import { Toast } from 'primereact/toast';
 import { getDefaultTableState } from '../../service/TableStateService';
@@ -24,48 +24,48 @@ export const ResourceDescriptorsTable = () => {
 
 	const columns = useMemo(
 		() => [
-		{
-			field: 'prefix',
-			header: 'Prefix',
-			sortable: true,
-			body: (rowData) => <StringTemplate string={rowData.prefix} />,
-			filterConfig: FILTER_CONFIGS.prefixFilterConfig,
-		},
-		{
-			field: 'name',
-			header: 'Name',
-			sortable: true,
-			body: (rowData) => <StringTemplate string={rowData.name} />,
-			filterConfig: FILTER_CONFIGS.nameFilterConfig,
-		},
-		{
-			field: 'synonyms',
-			header: 'Synonyms',
-			body: (rowData) => <StringListTemplate list={rowData.synonyms} />,
-			filterConfig: FILTER_CONFIGS.synonymsFilterConfig,
-		},
-		{
-			field: 'idPattern',
-			header: 'ID Pattern',
-			sortable: true,
-			body: (rowData) => <StringTemplate string={rowData.idPattern} />,
-			filterConfig: FILTER_CONFIGS.idPatternFilterConfig,
-		},
-		{
-			field: 'idExample',
-			header: 'ID Example',
-			sortable: true,
-			body: (rowData) => <StringTemplate string={rowData.idExample} />,
-			filterConfig: FILTER_CONFIGS.idExampleFilterConfig,
-		},
-		{
-			field: 'defaultUrlTemplate',
-			header: 'Default URL Template',
-			sortable: true,
-			body: (rowData) => <StringTemplate string={rowData.defaultUrlTemplate} />,
-			filterConfig: FILTER_CONFIGS.defaultUrlTemplateFilterConfig,
-		},
-	],
+			{
+				field: 'prefix',
+				header: 'Prefix',
+				sortable: true,
+				body: (rowData) => <StringTemplate string={rowData.prefix} />,
+				filterConfig: FILTER_CONFIGS.prefixFilterConfig,
+			},
+			{
+				field: 'name',
+				header: 'Name',
+				sortable: true,
+				body: (rowData) => <StringTemplate string={rowData.name} />,
+				filterConfig: FILTER_CONFIGS.nameFilterConfig,
+			},
+			{
+				field: 'synonyms',
+				header: 'Synonyms',
+				body: (rowData) => <StringListTemplate list={rowData.synonyms} />,
+				filterConfig: FILTER_CONFIGS.synonymsFilterConfig,
+			},
+			{
+				field: 'idPattern',
+				header: 'ID Pattern',
+				sortable: true,
+				body: (rowData) => <StringTemplate string={rowData.idPattern} />,
+				filterConfig: FILTER_CONFIGS.idPatternFilterConfig,
+			},
+			{
+				field: 'idExample',
+				header: 'ID Example',
+				sortable: true,
+				body: (rowData) => <StringTemplate string={rowData.idExample} />,
+				filterConfig: FILTER_CONFIGS.idExampleFilterConfig,
+			},
+			{
+				field: 'defaultUrlTemplate',
+				header: 'Default URL Template',
+				sortable: true,
+				body: (rowData) => <StringTemplate string={rowData.defaultUrlTemplate} />,
+				filterConfig: FILTER_CONFIGS.defaultUrlTemplateFilterConfig,
+			},
+		],
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 		[]
 	);

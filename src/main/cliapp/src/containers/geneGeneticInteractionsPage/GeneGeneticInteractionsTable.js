@@ -1,4 +1,4 @@
-import React, { useRef, useState  } from 'react';
+import React, { useRef, useState } from 'react';
 
 import { GenericDataTable } from '../../components/GenericDataTable/GenericDataTable';
 import { IdTemplate } from '../../components/Templates/IdTemplate';
