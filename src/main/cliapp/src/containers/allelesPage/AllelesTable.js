@@ -1009,295 +1009,299 @@ export const AllelesTable = () => {
 		}));
 	};
 
-	const columns = useMemo(() => [
-		{
-			field: 'curie',
-			header: 'Curie',
-			body: (rowData) => <IdTemplate id={rowData.curie} />,
-			sortable: true,
-			filterConfig: FILTER_CONFIGS.curieFilterConfig,
-		},
-		{
-			field: 'primaryExternalId',
-			header: 'Primary External ID',
-			body: (rowData) => <IdTemplate id={rowData.primaryExternalId} />,
-			sortable: true,
-			filterConfig: FILTER_CONFIGS.primaryexternalidFilterConfig,
-		},
-		{
-			field: 'modInternalId',
-			header: 'MOD Internal ID',
-			body: (rowData) => <IdTemplate id={rowData.modInternalId} />,
-			sortable: true,
-			filterConfig: FILTER_CONFIGS.modinternalidFilterConfig,
-		},
-		{
-			field: 'alleleFullName.displayText',
-			header: 'Name',
-			body: (rowData) => (
-				<TextDialogTemplate
-					entity={rowData.alleleFullName}
-					handleOpen={handleFullNameOpen}
-					text={rowData.alleleFullName?.displayText}
-					underline={false}
-				/>
-			),
-			editor: (props) => fullNameEditor(props),
-			sortable: true,
-			filterConfig: FILTER_CONFIGS.alleleNameFilterConfig,
-		},
-		{
-			field: 'alleleSymbol.displayText',
-			header: 'Symbol',
-			body: (rowData) => (
-				<TextDialogTemplate
-					entity={rowData.alleleSymbol}
-					handleOpen={handleSymbolOpen}
-					text={rowData.alleleSymbol?.displayText}
-					underline={false}
-				/>
-			),
-			editor: (props) => symbolEditor(props),
-			sortable: true,
-			filterConfig: FILTER_CONFIGS.alleleSymbolFilterConfig,
-		},
-		{
-			field: 'alleleSynonyms.displayText',
-			header: 'Synonyms',
-			body: (rowData) => (
-				<ListDialogTemplate
-					entities={rowData.alleleSynonyms}
-					handleOpen={handleSynonymsOpen}
-					getTextField={(entity) => entity?.displayText}
-					underline={false}
-				/>
-			),
-			editor: (props) => synonymsEditor(props),
-			sortable: true,
-			filterConfig: FILTER_CONFIGS.alleleSynonymsFilterConfig,
-		},
-		{
-			field: 'alleleSecondaryIds.secondaryId',
-			header: 'Secondary IDs',
-			body: (rowData) => (
-				<ListDialogTemplate
-					entities={rowData.alleleSecondaryIds}
-					handleOpen={handleSecondaryIdsOpen}
-					getTextField={(entity) => entity?.secondaryId}
-				/>
-			),
-			editor: (props) => secondaryIdsEditor(props),
-			sortable: true,
-			filterConfig: FILTER_CONFIGS.alleleSecondaryIdsFilterConfig,
-		},
-		{
-			field: 'alleleNomenclatureEvents.nomenclatureEvent.name',
-			header: 'Nomenclature Events',
-			body: (rowData) => (
-				<ListDialogTemplate
-					entities={rowData.alleleNomenclatureEvents}
-					handleOpen={handleNomenclatureEventsOpen}
-					getTextField={(entity) => entity?.nomenclatureEvent?.name}
-				/>
-			),
-			sortable: true,
-			filterConfig: FILTER_CONFIGS.alleleNomenclatureEventsFilterConfig,
-			editor: (props) => nomenclatureEventsEditor(props),
-		},
-		{
-			field: 'taxon.name',
-			header: 'Taxon',
-			sortable: true,
-			body: (rowData) => <OntologyTermTemplate term={rowData.taxon} />,
-			filterConfig: FILTER_CONFIGS.taxonFilterConfig,
-			editor: (props) => <TaxonTableEditor rowProps={props} errorMessagesRef={errorMessagesRef} />,
-		},
-		{
-			field: 'alleleMutationTypes.mutationTypes.name',
-			header: 'Mutation Types',
-			body: (rowData) => (
-				<NestedListDialogTemplate
-					entities={rowData.alleleMutationTypes}
-					subType={'mutationTypes'}
-					handleOpen={handleMutationTypesOpen}
-					getTextString={(item) => `${item.name} (${item.curie})`}
-				/>
-			),
-			editor: (props) => mutationTypesEditor(props),
-			sortable: true,
-			filterConfig: FILTER_CONFIGS.alleleMutationFilterConfig,
-		},
-		{
-			field: 'alleleFunctionalImpacts.functionalImpacts.name',
-			header: 'Functional Impacts',
-			body: (rowData) => (
-				<NestedListDialogTemplate
-					entities={rowData.alleleFunctionalImpacts}
-					subType={'functionalImpacts'}
-					handleOpen={handleFunctionalImpactsOpen}
-					getTextString={(item) => item.name}
-				/>
-			),
-			editor: (props) => functionalImpactsEditor(props),
-			sortable: true,
-			filterConfig: FILTER_CONFIGS.alleleFunctionalImpactsFilterConfig,
-		},
-		{
-			field: 'alleleGermlineTransmissionStatus.germlineTransmissionStatus.name',
-			header: 'Germline Transmission Status',
-			body: (rowData) => (
-				<TextDialogTemplate
-					entity={rowData.alleleGermlineTransmissionStatus}
-					handleOpen={handleGermlineTransmissionStatusOpen}
-					text={rowData.alleleGermlineTransmissionStatus?.germlineTransmissionStatus?.name}
-				/>
-			),
-			editor: (props) => germlineTransmissionStatusEditor(props),
-			sortable: true,
-			filterConfig: FILTER_CONFIGS.alleleGermlineTransmissionStatusFilterConfig,
-		},
-		{
-			field: 'alleleDatabaseStatus.databaseStatus.name',
-			header: 'Database Status',
-			body: (rowData) => (
-				<TextDialogTemplate
-					entity={rowData.alleleDatabaseStatus}
-					handleOpen={handleDatabaseStatusOpen}
-					text={rowData.alleleDatabaseStatus?.databaseStatus?.name}
-				/>
-			),
-			editor: (props) => databaseStatusEditor(props),
-			sortable: true,
-			filterConfig: FILTER_CONFIGS.alleleDatabaseStatusFilterConfig,
-		},
-		{
-			field: 'references.primaryCrossReferenceCurie',
-			header: 'References',
-			body: (rowData) => (
-				<TruncatedReferencesTemplate
-					references={rowData.references}
-					identifier={rowData.primaryExternalId}
-					detailPage="Allele"
-				/>
-			),
-			sortable: true,
-			filterConfig: FILTER_CONFIGS.referencesFilterConfig,
-			editor: (props) => <ReferencesTableEditor rowProps={props} errorMessagesRef={errorMessagesRef} />,
-		},
-		{
-			field: 'alleleInheritanceModes.inheritanceMode.name',
-			header: 'Inheritance Modes',
-			body: (rowData) => (
-				<ListDialogTemplate
-					entities={rowData.alleleInheritanceModes}
-					handleOpen={handleInheritanceModesOpen}
-					getTextField={(entity) => entity?.inheritanceMode?.name}
-				/>
-			),
-			sortable: true,
-			filterConfig: FILTER_CONFIGS.alleleInheritanceModesFilterConfig,
-			editor: (props) => inheritanceModesEditor(props),
-		},
-		{
-			field: 'inCollection.name',
-			header: 'In Collection',
-			sortable: true,
-			body: (rowData) => <StringTemplate string={rowData.inCollection?.name} />,
-			filterConfig: FILTER_CONFIGS.inCollectionFilterConfig,
-			editor: (props) => <InCollectionTableEditor rowProps={props} errorMessagesRef={errorMessagesRef} />,
-		},
-		{
-			field: 'isExtinct',
-			header: 'Is Extinct',
-			body: (rowData) => <BooleanTemplate value={rowData.isExtinct} />,
-			filterConfig: FILTER_CONFIGS.isExtinctFilterConfig,
-			sortable: true,
-			editor: (props) => (
-				<BooleanTableEditor rowProps={props} errorMessagesRef={errorMessagesRef} field={'isExtinct'} />
-			),
-		},
-		{
-			field: 'relatedNotes.freeText',
-			header: 'Related Notes',
-			body: (rowData) => (
-				<CountDialogTemplate entities={rowData.relatedNotes} handleOpen={handleRelatedNotesOpen} text={'Notes'} />
-			),
-			sortable: true,
-			filterConfig: FILTER_CONFIGS.relatedNotesFilterConfig,
-			editor: relatedNotesEditor,
-		},
-		{
-			field: 'dataProvider.abbreviation',
-			header: 'Data Provider',
-			sortable: true,
-			filterConfig: FILTER_CONFIGS.alleleDataProviderFilterConfig,
-		},
-		{
-			field: 'crossReferences.displayName',
-			header: 'Cross References',
-			sortable: true,
-			filterConfig: FILTER_CONFIGS.crossReferencesFilterConfig,
-			body: (rowData) => <CrossReferencesTemplate list={rowData.crossReferences} />,
-		},
-		{
-			field: 'updatedBy.uniqueId',
-			header: 'Updated By',
-			sortable: true,
-			body: (rowData) => <StringTemplate string={rowData.updatedBy?.uniqueId} />,
-			filterConfig: FILTER_CONFIGS.updatedByFilterConfig,
-		},
-		{
-			field: 'dateUpdated',
-			header: 'Date Updated',
-			sortable: true,
-			filter: true,
-			body: (rowData) => <StringTemplate string={rowData.dateUpdated} />,
-			filterConfig: FILTER_CONFIGS.dateUpdatedFilterConfig,
-		},
-		{
-			field: 'createdBy.uniqueId',
-			header: 'Created By',
-			sortable: true,
-			filter: true,
-			body: (rowData) => <StringTemplate string={rowData.createdBy?.uniqueId} />,
-			filterConfig: FILTER_CONFIGS.createdByFilterConfig,
-		},
-		{
-			field: 'dateCreated',
-			header: 'Date Created',
-			sortable: true,
-			filter: true,
-			body: (rowData) => <StringTemplate string={rowData.dateCreated} />,
-			filterConfig: FILTER_CONFIGS.dataCreatedFilterConfig,
-		},
-		{
-			field: 'internal',
-			header: 'Internal',
-			body: (rowData) => <BooleanTemplate value={rowData.internal} />,
-			filter: true,
-			filterConfig: FILTER_CONFIGS.internalFilterConfig,
-			sortable: true,
-			editor: (props) => <BooleanTableEditor rowProps={props} errorMessagesRef={errorMessagesRef} field={'internal'} />,
-		},
-		{
-			field: 'obsolete',
-			header: 'Obsolete',
-			body: (rowData) => <BooleanTemplate value={rowData.obsolete} />,
-			filter: true,
-			filterConfig: FILTER_CONFIGS.obsoleteFilterConfig,
-			sortable: true,
-			editor: (props) => <BooleanTableEditor rowProps={props} errorMessagesRef={errorMessagesRef} field={'obsolete'} />,
-		},
+	const columns = useMemo(
+		() => [
+			{
+				field: 'curie',
+				header: 'Curie',
+				body: (rowData) => <IdTemplate id={rowData.curie} />,
+				sortable: true,
+				filterConfig: FILTER_CONFIGS.curieFilterConfig,
+			},
+			{
+				field: 'primaryExternalId',
+				header: 'Primary External ID',
+				body: (rowData) => <IdTemplate id={rowData.primaryExternalId} />,
+				sortable: true,
+				filterConfig: FILTER_CONFIGS.primaryexternalidFilterConfig,
+			},
+			{
+				field: 'modInternalId',
+				header: 'MOD Internal ID',
+				body: (rowData) => <IdTemplate id={rowData.modInternalId} />,
+				sortable: true,
+				filterConfig: FILTER_CONFIGS.modinternalidFilterConfig,
+			},
+			{
+				field: 'alleleFullName.displayText',
+				header: 'Name',
+				body: (rowData) => (
+					<TextDialogTemplate
+						entity={rowData.alleleFullName}
+						handleOpen={handleFullNameOpen}
+						text={rowData.alleleFullName?.displayText}
+						underline={false}
+					/>
+				),
+				editor: (props) => fullNameEditor(props),
+				sortable: true,
+				filterConfig: FILTER_CONFIGS.alleleNameFilterConfig,
+			},
+			{
+				field: 'alleleSymbol.displayText',
+				header: 'Symbol',
+				body: (rowData) => (
+					<TextDialogTemplate
+						entity={rowData.alleleSymbol}
+						handleOpen={handleSymbolOpen}
+						text={rowData.alleleSymbol?.displayText}
+						underline={false}
+					/>
+				),
+				editor: (props) => symbolEditor(props),
+				sortable: true,
+				filterConfig: FILTER_CONFIGS.alleleSymbolFilterConfig,
+			},
+			{
+				field: 'alleleSynonyms.displayText',
+				header: 'Synonyms',
+				body: (rowData) => (
+					<ListDialogTemplate
+						entities={rowData.alleleSynonyms}
+						handleOpen={handleSynonymsOpen}
+						getTextField={(entity) => entity?.displayText}
+						underline={false}
+					/>
+				),
+				editor: (props) => synonymsEditor(props),
+				sortable: true,
+				filterConfig: FILTER_CONFIGS.alleleSynonymsFilterConfig,
+			},
+			{
+				field: 'alleleSecondaryIds.secondaryId',
+				header: 'Secondary IDs',
+				body: (rowData) => (
+					<ListDialogTemplate
+						entities={rowData.alleleSecondaryIds}
+						handleOpen={handleSecondaryIdsOpen}
+						getTextField={(entity) => entity?.secondaryId}
+					/>
+				),
+				editor: (props) => secondaryIdsEditor(props),
+				sortable: true,
+				filterConfig: FILTER_CONFIGS.alleleSecondaryIdsFilterConfig,
+			},
+			{
+				field: 'alleleNomenclatureEvents.nomenclatureEvent.name',
+				header: 'Nomenclature Events',
+				body: (rowData) => (
+					<ListDialogTemplate
+						entities={rowData.alleleNomenclatureEvents}
+						handleOpen={handleNomenclatureEventsOpen}
+						getTextField={(entity) => entity?.nomenclatureEvent?.name}
+					/>
+				),
+				sortable: true,
+				filterConfig: FILTER_CONFIGS.alleleNomenclatureEventsFilterConfig,
+				editor: (props) => nomenclatureEventsEditor(props),
+			},
+			{
+				field: 'taxon.name',
+				header: 'Taxon',
+				sortable: true,
+				body: (rowData) => <OntologyTermTemplate term={rowData.taxon} />,
+				filterConfig: FILTER_CONFIGS.taxonFilterConfig,
+				editor: (props) => <TaxonTableEditor rowProps={props} errorMessagesRef={errorMessagesRef} />,
+			},
+			{
+				field: 'alleleMutationTypes.mutationTypes.name',
+				header: 'Mutation Types',
+				body: (rowData) => (
+					<NestedListDialogTemplate
+						entities={rowData.alleleMutationTypes}
+						subType={'mutationTypes'}
+						handleOpen={handleMutationTypesOpen}
+						getTextString={(item) => `${item.name} (${item.curie})`}
+					/>
+				),
+				editor: (props) => mutationTypesEditor(props),
+				sortable: true,
+				filterConfig: FILTER_CONFIGS.alleleMutationFilterConfig,
+			},
+			{
+				field: 'alleleFunctionalImpacts.functionalImpacts.name',
+				header: 'Functional Impacts',
+				body: (rowData) => (
+					<NestedListDialogTemplate
+						entities={rowData.alleleFunctionalImpacts}
+						subType={'functionalImpacts'}
+						handleOpen={handleFunctionalImpactsOpen}
+						getTextString={(item) => item.name}
+					/>
+				),
+				editor: (props) => functionalImpactsEditor(props),
+				sortable: true,
+				filterConfig: FILTER_CONFIGS.alleleFunctionalImpactsFilterConfig,
+			},
+			{
+				field: 'alleleGermlineTransmissionStatus.germlineTransmissionStatus.name',
+				header: 'Germline Transmission Status',
+				body: (rowData) => (
+					<TextDialogTemplate
+						entity={rowData.alleleGermlineTransmissionStatus}
+						handleOpen={handleGermlineTransmissionStatusOpen}
+						text={rowData.alleleGermlineTransmissionStatus?.germlineTransmissionStatus?.name}
+					/>
+				),
+				editor: (props) => germlineTransmissionStatusEditor(props),
+				sortable: true,
+				filterConfig: FILTER_CONFIGS.alleleGermlineTransmissionStatusFilterConfig,
+			},
+			{
+				field: 'alleleDatabaseStatus.databaseStatus.name',
+				header: 'Database Status',
+				body: (rowData) => (
+					<TextDialogTemplate
+						entity={rowData.alleleDatabaseStatus}
+						handleOpen={handleDatabaseStatusOpen}
+						text={rowData.alleleDatabaseStatus?.databaseStatus?.name}
+					/>
+				),
+				editor: (props) => databaseStatusEditor(props),
+				sortable: true,
+				filterConfig: FILTER_CONFIGS.alleleDatabaseStatusFilterConfig,
+			},
+			{
+				field: 'references.primaryCrossReferenceCurie',
+				header: 'References',
+				body: (rowData) => (
+					<TruncatedReferencesTemplate
+						references={rowData.references}
+						identifier={rowData.primaryExternalId}
+						detailPage="Allele"
+					/>
+				),
+				sortable: true,
+				filterConfig: FILTER_CONFIGS.referencesFilterConfig,
+				editor: (props) => <ReferencesTableEditor rowProps={props} errorMessagesRef={errorMessagesRef} />,
+			},
+			{
+				field: 'alleleInheritanceModes.inheritanceMode.name',
+				header: 'Inheritance Modes',
+				body: (rowData) => (
+					<ListDialogTemplate
+						entities={rowData.alleleInheritanceModes}
+						handleOpen={handleInheritanceModesOpen}
+						getTextField={(entity) => entity?.inheritanceMode?.name}
+					/>
+				),
+				sortable: true,
+				filterConfig: FILTER_CONFIGS.alleleInheritanceModesFilterConfig,
+				editor: (props) => inheritanceModesEditor(props),
+			},
+			{
+				field: 'inCollection.name',
+				header: 'In Collection',
+				sortable: true,
+				body: (rowData) => <StringTemplate string={rowData.inCollection?.name} />,
+				filterConfig: FILTER_CONFIGS.inCollectionFilterConfig,
+				editor: (props) => <InCollectionTableEditor rowProps={props} errorMessagesRef={errorMessagesRef} />,
+			},
+			{
+				field: 'isExtinct',
+				header: 'Is Extinct',
+				body: (rowData) => <BooleanTemplate value={rowData.isExtinct} />,
+				filterConfig: FILTER_CONFIGS.isExtinctFilterConfig,
+				sortable: true,
+				editor: (props) => (
+					<BooleanTableEditor rowProps={props} errorMessagesRef={errorMessagesRef} field={'isExtinct'} />
+				),
+			},
+			{
+				field: 'relatedNotes.freeText',
+				header: 'Related Notes',
+				body: (rowData) => (
+					<CountDialogTemplate entities={rowData.relatedNotes} handleOpen={handleRelatedNotesOpen} text={'Notes'} />
+				),
+				sortable: true,
+				filterConfig: FILTER_CONFIGS.relatedNotesFilterConfig,
+				editor: relatedNotesEditor,
+			},
+			{
+				field: 'dataProvider.abbreviation',
+				header: 'Data Provider',
+				sortable: true,
+				filterConfig: FILTER_CONFIGS.alleleDataProviderFilterConfig,
+			},
+			{
+				field: 'crossReferences.displayName',
+				header: 'Cross References',
+				sortable: true,
+				filterConfig: FILTER_CONFIGS.crossReferencesFilterConfig,
+				body: (rowData) => <CrossReferencesTemplate list={rowData.crossReferences} />,
+			},
+			{
+				field: 'updatedBy.uniqueId',
+				header: 'Updated By',
+				sortable: true,
+				body: (rowData) => <StringTemplate string={rowData.updatedBy?.uniqueId} />,
+				filterConfig: FILTER_CONFIGS.updatedByFilterConfig,
+			},
+			{
+				field: 'dateUpdated',
+				header: 'Date Updated',
+				sortable: true,
+				filter: true,
+				body: (rowData) => <StringTemplate string={rowData.dateUpdated} />,
+				filterConfig: FILTER_CONFIGS.dateUpdatedFilterConfig,
+			},
+			{
+				field: 'createdBy.uniqueId',
+				header: 'Created By',
+				sortable: true,
+				filter: true,
+				body: (rowData) => <StringTemplate string={rowData.createdBy?.uniqueId} />,
+				filterConfig: FILTER_CONFIGS.createdByFilterConfig,
+			},
+			{
+				field: 'dateCreated',
+				header: 'Date Created',
+				sortable: true,
+				filter: true,
+				body: (rowData) => <StringTemplate string={rowData.dateCreated} />,
+				filterConfig: FILTER_CONFIGS.dataCreatedFilterConfig,
+			},
+			{
+				field: 'internal',
+				header: 'Internal',
+				body: (rowData) => <BooleanTemplate value={rowData.internal} />,
+				filter: true,
+				filterConfig: FILTER_CONFIGS.internalFilterConfig,
+				sortable: true,
+				editor: (props) => (
+					<BooleanTableEditor rowProps={props} errorMessagesRef={errorMessagesRef} field={'internal'} />
+				),
+			},
+			{
+				field: 'obsolete',
+				header: 'Obsolete',
+				body: (rowData) => <BooleanTemplate value={rowData.obsolete} />,
+				filter: true,
+				filterConfig: FILTER_CONFIGS.obsoleteFilterConfig,
+				sortable: true,
+				editor: (props) => (
+					<BooleanTableEditor rowProps={props} errorMessagesRef={errorMessagesRef} field={'obsolete'} />
+				),
+			},
+		],
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	], [errorMessagesRef]);
+		[errorMessagesRef]
+	);
 
 	const DEFAULT_COLUMN_WIDTH = 10;
 	const SEARCH_ENDPOINT = 'allele';
 
-	const initialTableState = useMemo(
-		() => getDefaultTableState('Alleles', columns, DEFAULT_COLUMN_WIDTH),
-		[columns]
-	);
+	const initialTableState = useMemo(() => getDefaultTableState('Alleles', columns, DEFAULT_COLUMN_WIDTH), [columns]);
 
 	const { settings: tableState, mutate: setTableState } = useGetUserSettings(
 		initialTableState.tableSettingsKeyName,

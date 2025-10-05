@@ -53,7 +53,12 @@ export const ControlledVocabularyTable = () => {
 	const obsoleteTerms = useControlledVocabularyService('generic_boolean_terms');
 	let vocabularyService = new VocabularyService();
 
-	const { data: vocabulariesData, isSuccess: vocabulariesIsSuccess, isError: vocabulariesIsError, error: vocabulariesError } = useQuery({
+	const {
+		data: vocabulariesData,
+		isSuccess: vocabulariesIsSuccess,
+		isError: vocabulariesIsError,
+		error: vocabulariesError,
+	} = useQuery({
 		queryKey: ['vocabularies'],
 		queryFn: () => vocabularyService.getVocabularies(),
 		placeholderData: (previousData) => previousData,

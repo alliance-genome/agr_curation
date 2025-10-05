@@ -296,7 +296,12 @@ export default function AppRoutes() {
 						path="/ontology/ncbitaxon"
 						element={
 							<ErrorBoundary>
-								<GeneralOntologyComponent key="ncbitaxon" hideDefinition={true} name="NCBITaxon" endpoint="ncbitaxonterm" />
+								<GeneralOntologyComponent
+									key="ncbitaxon"
+									hideDefinition={true}
+									name="NCBITaxon"
+									endpoint="ncbitaxonterm"
+								/>
 							</ErrorBoundary>
 						}
 					/>

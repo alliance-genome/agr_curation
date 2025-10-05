@@ -15,9 +15,9 @@ if (!container) throw new Error('container not found!');
 
 const root = createRoot(container);
 
- const value = {
-	  hideOverlaysOnDocumentScrolling: true,
- };
+const value = {
+	hideOverlaysOnDocumentScrolling: true,
+};
 
 root.render(
 	<HashRouter>

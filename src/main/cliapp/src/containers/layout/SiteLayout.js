@@ -450,7 +450,13 @@ export const SiteLayout = (props) => {
 				setThemeState={setThemeState}
 			/>
 
-			<CSSTransition nodeRef={nodeRef} classNames="layout-mask" timeout={{ enter: 200, exit: 200 }} in={mobileMenuActive} unmountOnExit>
+			<CSSTransition
+				nodeRef={nodeRef}
+				classNames="layout-mask"
+				timeout={{ enter: 200, exit: 200 }}
+				in={mobileMenuActive}
+				unmountOnExit
+			>
 				<div ref={nodeRef} className="layout-mask p-component-overlay"></div>
 			</CSSTransition>
 		</div>

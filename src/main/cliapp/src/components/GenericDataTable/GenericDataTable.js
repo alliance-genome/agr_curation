@@ -110,18 +110,21 @@ export const GenericDataTable = (props) => {
 		/>
 	);
 
-	const filterComponentTemplate = useCallback((config) => {
-		return (
-			<FilterComponent
-				filterConfig={config}
-				isInEditMode={isInEditMode}
-				onFilter={onFilter}
-				aggregationFields={aggregationFields}
-				tableState={tableState}
-				endpoint={endpoint}
-			/>
-		);
-	}, [isInEditMode, onFilter, aggregationFields, tableState, endpoint]);
+	const filterComponentTemplate = useCallback(
+		(config) => {
+			return (
+				<FilterComponent
+					filterConfig={config}
+					isInEditMode={isInEditMode}
+					onFilter={onFilter}
+					aggregationFields={aggregationFields}
+					tableState={tableState}
+					endpoint={endpoint}
+				/>
+			);
+		},
+		[isInEditMode, onFilter, aggregationFields, tableState, endpoint]
+	);
 
 	const columnList = useMemo(() => {
 		const orderedColumns = orderColumns(columns, tableState.orderedColumnNames);
@@ -154,7 +157,14 @@ export const GenericDataTable = (props) => {
 				return null;
 			}
 		});
-	}, [columns, tableState.orderedColumnNames, tableState.selectedColumnNames, tableState.columnWidths, isInEditMode, filterComponentTemplate]);
+	}, [
+		columns,
+		tableState.orderedColumnNames,
+		tableState.selectedColumnNames,
+		tableState.columnWidths,
+		isInEditMode,
+		filterComponentTemplate,
+	]);
 
 	const rowEditorFilterNameHeader = (options) => {
 		return (
