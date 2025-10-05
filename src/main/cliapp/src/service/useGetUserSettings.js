@@ -41,6 +41,7 @@ export const useGetUserSettings = (key, defaultValue, isTable = true) => {
 				localStorage.setItem(key, JSON.stringify(updatedSettings));
 			}
 		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [data, isSuccess, key, isTable]);
 
 	const { mutate } = useMutation({

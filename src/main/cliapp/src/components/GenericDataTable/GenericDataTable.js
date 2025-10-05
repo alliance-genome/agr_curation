@@ -1,4 +1,4 @@
-import React, { useRef, useState, useMemo } from 'react';
+import React, { useRef, useState, useMemo, useCallback } from 'react';
 
 import { DataTable } from 'primereact/datatable';
 import { Dialog } from 'primereact/dialog';
@@ -110,7 +110,7 @@ export const GenericDataTable = (props) => {
 		/>
 	);
 
-	const filterComponentTemplate = (config) => {
+	const filterComponentTemplate = useCallback((config) => {
 		return (
 			<FilterComponent
 				filterConfig={config}
@@ -121,7 +121,7 @@ export const GenericDataTable = (props) => {
 				endpoint={endpoint}
 			/>
 		);
-	};
+	}, [isInEditMode, onFilter, aggregationFields, tableState, endpoint]);
 
 	const columnList = useMemo(() => {
 		const orderedColumns = orderColumns(columns, tableState.orderedColumnNames);
@@ -154,7 +154,7 @@ export const GenericDataTable = (props) => {
 				return null;
 			}
 		});
-	}, [columns, tableState.orderedColumnNames, tableState.selectedColumnNames, tableState.columnWidths, isInEditMode]);
+	}, [columns, tableState.orderedColumnNames, tableState.selectedColumnNames, tableState.columnWidths, isInEditMode, filterComponentTemplate]);
 
 	const rowEditorFilterNameHeader = (options) => {
 		return (

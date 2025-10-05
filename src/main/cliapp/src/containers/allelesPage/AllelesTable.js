@@ -1009,7 +1009,7 @@ export const AllelesTable = () => {
 		}));
 	};
 
-	const columns = [
+	const columns = useMemo(() => [
 		{
 			field: 'curie',
 			header: 'Curie',
@@ -1288,7 +1288,8 @@ export const AllelesTable = () => {
 			sortable: true,
 			editor: (props) => <BooleanTableEditor rowProps={props} errorMessagesRef={errorMessagesRef} field={'obsolete'} />,
 		},
-	];
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	], [errorMessagesRef]);
 
 	const DEFAULT_COLUMN_WIDTH = 10;
 	const SEARCH_ENDPOINT = 'allele';
