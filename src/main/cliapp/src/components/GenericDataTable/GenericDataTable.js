@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useState, useMemo } from 'react';
 
 import { DataTable } from 'primereact/datatable';
 import { Dialog } from 'primereact/dialog';
@@ -42,7 +42,6 @@ export const GenericDataTable = (props) => {
 		setSelectedColumnNames,
 		tableStateConfirm,
 		onFilter,
-		setColumnList,
 		entities,
 		dataTable,
 		editingRows,
@@ -55,7 +54,6 @@ export const GenericDataTable = (props) => {
 		handleColumnResizeEnd,
 		totalRecords,
 		onLazyLoad,
-		columnList,
 		handleDeletion,
 		handleDeprecation,
 		tableState,
@@ -125,41 +123,38 @@ export const GenericDataTable = (props) => {
 		);
 	};
 
-	useEffect(() => {
+	const columnList = useMemo(() => {
 		const orderedColumns = orderColumns(columns, tableState.orderedColumnNames);
 		const filteredColumns = filterColumns(orderedColumns, tableState.selectedColumnNames);
-		setColumnList(() => {
-			return filteredColumns.map((col) => {
-				if (col) {
-					return (
-						<Column
-							style={{
-								minWidth: `${tableState.columnWidths[col.field]}vw`,
-								maxWidth: `${tableState.columnWidths[col.field]}vw`,
-								padding: '4px 10px 4px',
-							}}
-							headerClassName="surface-0"
-							showClearButton={false}
-							columnKey={col.field}
-							key={col.field}
-							field={col.field}
-							header={col.header}
-							body={col.body}
-							sortable={col.sortable && !isInEditMode}
-							filter
-							editor={col.editor}
-							showFilterMenu={false}
-							filterElement={() => filterComponentTemplate(col.filterConfig)}
-							headerStyle={{ padding: '1rem' }}
-						/>
-					);
-				} else {
-					return null;
-				}
-			});
+		return filteredColumns.map((col) => {
+			if (col) {
+				return (
+					<Column
+						style={{
+							minWidth: `${tableState.columnWidths[col.field]}vw`,
+							maxWidth: `${tableState.columnWidths[col.field]}vw`,
+							padding: '4px 10px 4px',
+						}}
+						headerClassName="surface-0"
+						showClearButton={false}
+						columnKey={col.field}
+						key={col.field}
+						field={col.field}
+						header={col.header}
+						body={col.body}
+						sortable={col.sortable && !isInEditMode}
+						filter
+						editor={col.editor}
+						showFilterMenu={false}
+						filterElement={() => filterComponentTemplate(col.filterConfig)}
+						headerStyle={{ padding: '1rem' }}
+					/>
+				);
+			} else {
+				return null;
+			}
 		});
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [tableState, isInEditMode]);
+	}, [columns, tableState.orderedColumnNames, tableState.selectedColumnNames, tableState.columnWidths, isInEditMode]);
 
 	const rowEditorFilterNameHeader = (options) => {
 		return (

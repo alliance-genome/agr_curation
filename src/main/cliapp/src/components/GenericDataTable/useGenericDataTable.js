@@ -28,7 +28,6 @@ export const useGenericDataTable = ({
 	defaultFilters,
 }) => {
 	const [originalRows, setOriginalRows] = useState([]);
-	const [columnList, setColumnList] = useState([]);
 	const [editingRows, setEditingRows] = useState({});
 
 	const { errorMessages, setErrorMessages, uiErrorMessages, setUiErrorMessages } = errorObject;
@@ -408,7 +407,6 @@ export const useGenericDataTable = ({
 		setOrderedColumnNames,
 		tableState,
 		onFilter,
-		setColumnList,
 		entities,
 		dataTable,
 		editingRows,
@@ -421,7 +419,6 @@ export const useGenericDataTable = ({
 		handleColumnResizeEnd,
 		totalRecords,
 		onLazyLoad,
-		columnList,
 		handleDeletion,
 		handleDeprecation,
 		exceptionDialog,

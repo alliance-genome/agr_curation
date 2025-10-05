@@ -41,7 +41,7 @@ export const useGetUserSettings = (key, defaultValue, isTable = true) => {
 				localStorage.setItem(key, JSON.stringify(updatedSettings));
 			}
 		}
-	}, [data, isSuccess, key, isTable, defaultValue.columnWidths, defaultValue.selectedColumnNames]);
+	}, [data, isSuccess, key, isTable]);
 
 	const { mutate } = useMutation({
 		mutationFn: (updatedSettings) => {
