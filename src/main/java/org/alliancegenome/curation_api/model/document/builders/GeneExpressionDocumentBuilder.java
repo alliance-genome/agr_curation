@@ -111,7 +111,6 @@ public class GeneExpressionDocumentBuilder {
 		expressionDocument.setTermIds(termIds);
 		if (annotation.getEvidenceItem() != null && annotation.getEvidenceItem() instanceof Reference reference) {
 			expressionDocument.setPubModID(reference.getPubModID());
-			expressionDocument.setReferenceId(reference.getReferenceID());
 		}
 		
 		return expressionDocument;
