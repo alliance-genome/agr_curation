@@ -5,8 +5,8 @@ import java.util.HashMap;
 
 import org.alliancegenome.curation_api.interfaces.document.AlleleDocumentInterface;
 import org.alliancegenome.curation_api.model.document.builders.AlleleSummaryDocumentBuilder;
+import org.alliancegenome.curation_api.model.document.es.AlleleSummaryDTO;
 import org.alliancegenome.curation_api.model.document.es.AlleleSummaryDocument;
-import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.input.Pagination;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.AlleleService;
@@ -29,14 +29,14 @@ public class AlleleDocumentController implements AlleleDocumentInterface {
 		}
 
 		Pagination pagination = new Pagination(page, limit);
-		SearchResponse<Allele> resp = alleleService.findAllelesForSummary(pagination, params);
+		SearchResponse<AlleleSummaryDTO> resp = alleleService.findAllelesForSummary(pagination, params);
 
 		ArrayList<AlleleSummaryDocument> list = new ArrayList<>();
 
 		if (resp.getResults() != null) {
 			AlleleSummaryDocumentBuilder alleleSummaryDocumentBuilder = new AlleleSummaryDocumentBuilder();
-			for (Allele allele : resp.getResults()) {
-				AlleleSummaryDocument doc = alleleSummaryDocumentBuilder.buildSummaryDocument(allele, resourceDescriptorPageService);
+			for (AlleleSummaryDTO dto : resp.getResults()) {
+				AlleleSummaryDocument doc = alleleSummaryDocumentBuilder.buildSummaryDocument(dto, resourceDescriptorPageService);
 				list.add(doc);
 			}
 		}

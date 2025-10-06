@@ -8,6 +8,7 @@ import java.util.Map;
 import org.alliancegenome.curation_api.constants.EntityFieldConstants;
 import org.alliancegenome.curation_api.dao.associations.AgmAlleleAssociationDAO;
 import org.alliancegenome.curation_api.dao.base.BaseSQLDAO;
+import org.alliancegenome.curation_api.model.document.es.AlleleSummaryDTO;
 import org.alliancegenome.curation_api.model.entities.Allele;
 import org.apache.commons.collections.CollectionUtils;
 import org.alliancegenome.curation_api.model.input.Pagination;
@@ -110,11 +111,14 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 		
 		return list;
 	}
-	public SearchResponse<Allele> findAllelesForSummary(Pagination pagination, Map<String, Object> params) {
+	public SearchResponse<AlleleSummaryDTO> findAllelesForSummary(Pagination pagination, Map<String, Object> params) {
 		SearchResponse<Allele> filteredResults = super.findByParams(pagination, params, null);
 
 		if (filteredResults.getResults() == null || filteredResults.getResults().isEmpty()) {
-			return filteredResults;
+			SearchResponse<AlleleSummaryDTO> emptyResponse = new SearchResponse<>();
+			emptyResponse.setResults(new ArrayList<>());
+			emptyResponse.setTotalResults(0L);
+			return emptyResponse;
 		}
 
 		List<Long> alleleIds = filteredResults.getResults().stream()
@@ -132,6 +136,8 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 		TypedQuery<Allele> query = entityManager.createQuery(baseQuery, Allele.class);
 		query.setParameter("alleleIds", alleleIds);
 		List<Allele> alleles = query.getResultList();
+
+		Map<Long, Long> variantCountMap = new HashMap<>();
 
 		if (!alleleIds.isEmpty()) {
 			String geneAssocQuery = """
@@ -160,14 +166,20 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 			constructQuery.setParameter("alleleIds", alleleIds);
 			constructQuery.getResultList();
 
-			String variantAssocQuery = """
-				SELECT DISTINCT a FROM Allele a
-				LEFT JOIN FETCH a.alleleVariantAssociations
+			String variantCountQuery = """
+				SELECT a.id, COUNT(ava.id)
+				FROM Allele a
+				LEFT JOIN a.alleleVariantAssociations ava
 				WHERE a.id IN :alleleIds
+				GROUP BY a.id
 				""";
-			TypedQuery<Allele> variantQuery = entityManager.createQuery(variantAssocQuery, Allele.class);
-			variantQuery.setParameter("alleleIds", alleleIds);
-			variantQuery.getResultList();
+			Query variantCountQueryExec = entityManager.createQuery(variantCountQuery);
+			variantCountQueryExec.setParameter("alleleIds", alleleIds);
+			List<Object[]> variantCounts = variantCountQueryExec.getResultList();
+
+			for (Object[] row : variantCounts) {
+				variantCountMap.put((Long) row[0], (Long) row[1]);
+			}
 
 			String notesQuery = """
 				SELECT DISTINCT a FROM Allele a
@@ -179,8 +191,14 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 			notesQueryExec.getResultList();
 		}
 
-		SearchResponse<Allele> response = new SearchResponse<>();
-		response.setResults(alleles);
+		List<AlleleSummaryDTO> dtos = new ArrayList<>();
+		for (Allele allele : alleles) {
+			Long count = variantCountMap.getOrDefault(allele.getId(), 0L);
+			dtos.add(new AlleleSummaryDTO(allele, count));
+		}
+
+		SearchResponse<AlleleSummaryDTO> response = new SearchResponse<>();
+		response.setResults(dtos);
 		response.setTotalResults(filteredResults.getTotalResults());
 
 		return response;

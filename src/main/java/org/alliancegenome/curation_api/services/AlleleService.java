@@ -13,6 +13,7 @@ import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.interfaces.base.BasePopularityInterface;
+import org.alliancegenome.curation_api.model.document.es.AlleleSummaryDTO;
 import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.Note;
 import org.alliancegenome.curation_api.model.ingest.dto.AlleleDTO;
@@ -157,7 +158,7 @@ public class AlleleService extends SubmittedObjectCrudService<Allele, AlleleDTO,
 		}
 	}
 
-	public SearchResponse<Allele> findAllelesForSummary(Pagination pagination, Map<String, Object> params) {
+	public SearchResponse<AlleleSummaryDTO> findAllelesForSummary(Pagination pagination, Map<String, Object> params) {
 		return alleleDAO.findAllelesForSummary(pagination, params);
 	}
 }
