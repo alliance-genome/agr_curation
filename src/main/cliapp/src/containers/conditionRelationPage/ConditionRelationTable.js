@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useMemo } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { Toast } from 'primereact/toast';
 import { SearchService } from '../../service/SearchService';
@@ -50,11 +50,13 @@ export const ConditionRelationTable = () => {
 
 	const conditionRelationTypeTerms = useControlledVocabularyService('condition_relation');
 
-	const mutation = useMutation((updatedRelation) => {
-		if (!conditionRelationService) {
-			conditionRelationService = new ConditionRelationService();
-		}
-		return conditionRelationService.saveConditionRelation(updatedRelation);
+	const mutation = useMutation({
+		mutationFn: (updatedRelation) => {
+			if (!conditionRelationService) {
+				conditionRelationService = new ConditionRelationService();
+			}
+			return conditionRelationService.saveConditionRelation(updatedRelation);
+		},
 	});
 
 	const handleNewRelationOpen = () => {
@@ -173,51 +175,58 @@ export const ConditionRelationTable = () => {
 		);
 	};
 
-	const columns = [
-		{
-			field: 'handle',
-			header: 'Handle',
-			sortable: true,
-			body: (rowData) => rowData.handle,
-			filterConfig: FILTER_CONFIGS.conditionRelationHandleFilterConfig,
-			editor: (props) => handleEditor(props),
-		},
-		{
-			field: 'singleReference.primaryCrossReferenceCurie',
-			header: 'Reference',
-			sortable: true,
-			filterConfig: FILTER_CONFIGS.singleReferenceFilterConfig,
-			editor: (props) => referenceEditorTemplate(props),
-			body: (rowData) => <SingleReferenceTemplate singleReference={rowData.singleReference} />,
-		},
-		{
-			field: 'conditionRelationType.name',
-			header: 'Relation',
-			sortable: true,
-			filterConfig: FILTER_CONFIGS.conditionRelationTypeFilterConfig,
-			editor: (props) => conditionRelationTypeEditor(props),
-		},
-		{
-			field: 'conditions.conditionSummary',
-			header: 'Experimental Conditions',
-			sortable: true,
-			body: (rowData) => (
-				<ObjectListTemplate
-					list={rowData.conditions}
-					sortMethod={conditionsSort}
-					stringTemplate={(item) => item.conditionSummary}
-					showBullets={true}
-				/>
-			),
-			filterConfig: FILTER_CONFIGS.experimentalConditionFilterConfig,
-			editor: (props) => conditionRelationTemplate(props),
-		},
-	];
+	const columns = useMemo(
+		() => [
+			{
+				field: 'handle',
+				header: 'Handle',
+				sortable: true,
+				body: (rowData) => rowData.handle,
+				filterConfig: FILTER_CONFIGS.conditionRelationHandleFilterConfig,
+				editor: (props) => handleEditor(props),
+			},
+			{
+				field: 'singleReference.primaryCrossReferenceCurie',
+				header: 'Reference',
+				sortable: true,
+				filterConfig: FILTER_CONFIGS.singleReferenceFilterConfig,
+				editor: (props) => referenceEditorTemplate(props),
+				body: (rowData) => <SingleReferenceTemplate singleReference={rowData.singleReference} />,
+			},
+			{
+				field: 'conditionRelationType.name',
+				header: 'Relation',
+				sortable: true,
+				filterConfig: FILTER_CONFIGS.conditionRelationTypeFilterConfig,
+				editor: (props) => conditionRelationTypeEditor(props),
+			},
+			{
+				field: 'conditions.conditionSummary',
+				header: 'Experimental Conditions',
+				sortable: true,
+				body: (rowData) => (
+					<ObjectListTemplate
+						list={rowData.conditions}
+						sortMethod={conditionsSort}
+						stringTemplate={(item) => item.conditionSummary}
+						showBullets={true}
+					/>
+				),
+				filterConfig: FILTER_CONFIGS.experimentalConditionFilterConfig,
+				editor: (props) => conditionRelationTemplate(props),
+			},
+		],
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+		[]
+	);
 
 	const DEFAULT_COLUMN_WIDTH = 10;
 	const SEARCH_ENDPOINT = 'condition-relation';
 
-	const initialTableState = getDefaultTableState('Experiments', columns, DEFAULT_COLUMN_WIDTH);
+	const initialTableState = useMemo(
+		() => getDefaultTableState('Experiments', columns, DEFAULT_COLUMN_WIDTH),
+		[columns]
+	);
 
 	const { settings: tableState, mutate: setTableState } = useGetUserSettings(
 		initialTableState.tableSettingsKeyName,

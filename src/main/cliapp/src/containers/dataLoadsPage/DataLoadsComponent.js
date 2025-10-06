@@ -1,4 +1,4 @@
-import React, { useReducer, useRef, useState } from 'react';
+import React, { useReducer, useRef, useState, useEffect } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { DataTable } from 'primereact/datatable';
 import Moment from 'react-moment';
@@ -109,27 +109,34 @@ export const DataLoadsComponent = () => {
 		['CONSTRUCT_ASSOCIATION', ['ConstructGenomicEntityAssociationDTO']],
 	]);
 
-	useQuery(['bulkloadtable'], () => searchService.find('bulkloadgroup', 100, 0, {}), {
-		onSuccess: (data) => {
-			if (data.results) {
-				let _errorLoads = [];
-				for (let group of data.results) {
-					if (group.loads) {
-						for (let load of group.loads) {
-							load.group = group.id;
-							if (load.history) {
-								let sortedFiles = sortFilesByDate(load.history);
-								if (sortedFiles[0].bulkloadStatus === 'FAILED') {
-									_errorLoads.push(load);
-								}
+	const { data: bulkloadData, isSuccess: bulkloadIsSuccess } = useQuery({
+		queryKey: ['bulkloadtable'],
+		queryFn: () => searchService.find('bulkloadgroup', 100, 0, {}),
+		placeholderData: (previousData) => previousData,
+		refetchOnWindowFocus: false,
+	});
+
+	// Handle bulkload data processing (was in onSuccess callback)
+	useEffect(() => {
+		if (bulkloadIsSuccess && bulkloadData?.results) {
+			let _errorLoads = [];
+			for (let group of bulkloadData.results) {
+				if (group.loads) {
+					for (let load of group.loads) {
+						load.group = group.id;
+						if (load.history) {
+							let sortedFiles = sortFilesByDate(load.history);
+							if (sortedFiles[0].bulkloadStatus === 'FAILED') {
+								_errorLoads.push(load);
 							}
 						}
 					}
 				}
-				setGroups(data.results.sort((a, b) => (a.name > b.name ? 1 : -1)));
-				setErrorLoads(_errorLoads.sort((a, b) => (a.name > b.name ? 1 : -1)));
 			}
+			setGroups(bulkloadData.results.sort((a, b) => (a.name > b.name ? 1 : -1)));
+			setErrorLoads(_errorLoads.sort((a, b) => (a.name > b.name ? 1 : -1)));
 
+			// WebSocket setup for load processing events
 			var loc = window.location,
 				new_uri;
 			if (loc.protocol === 'https:') {
@@ -160,10 +167,8 @@ export const DataLoadsComponent = () => {
 					return newState;
 				});
 			};
-		},
-		keepPreviousData: true,
-		refetchOnWindowFocus: false,
-	});
+		}
+	}, [bulkloadData, bulkloadIsSuccess]);
 
 	const getService = () => {
 		if (!dataLoadService) {
@@ -177,14 +182,18 @@ export const DataLoadsComponent = () => {
 	};
 
 	const refresh = () => {
-		queryClient.invalidateQueries(['bulkloadtable']);
+		queryClient.invalidateQueries({
+			queryKey: ['bulkloadtable'],
+		});
 	};
 
 	const runLoad = (rowData) => {
 		getService()
 			.restartLoad(rowData.id)
 			.then((response) => {
-				queryClient.invalidateQueries(['bulkloadtable']);
+				queryClient.invalidateQueries({
+					queryKey: ['bulkloadtable'],
+				});
 			});
 	};
 
@@ -192,7 +201,9 @@ export const DataLoadsComponent = () => {
 		getService()
 			.restartHistoryLoad(rowData.id)
 			.then((response) => {
-				queryClient.invalidateQueries(['bulkloadtable']);
+				queryClient.invalidateQueries({
+					queryKey: ['bulkloadtable'],
+				});
 			});
 	};
 
@@ -200,7 +211,9 @@ export const DataLoadsComponent = () => {
 		getService()
 			.stopHistoryLoad(rowData.id)
 			.then((response) => {
-				queryClient.invalidateQueries(['bulkloadtable']);
+				queryClient.invalidateQueries({
+					queryKey: ['bulkloadtable'],
+				});
 			});
 	};
 
@@ -214,7 +227,9 @@ export const DataLoadsComponent = () => {
 		getService()
 			.deleteLoadFileHistory(rowData.id)
 			.then((response) => {
-				queryClient.invalidateQueries(['bulkloadtable']);
+				queryClient.invalidateQueries({
+					queryKey: ['bulkloadtable'],
+				});
 			});
 	};
 
@@ -222,7 +237,9 @@ export const DataLoadsComponent = () => {
 		getService()
 			.deleteLoad(rowData.type, rowData.id)
 			.then((response) => {
-				queryClient.invalidateQueries(['bulkloadtable']);
+				queryClient.invalidateQueries({
+					queryKey: ['bulkloadtable'],
+				});
 			});
 	};
 
@@ -230,7 +247,9 @@ export const DataLoadsComponent = () => {
 		getService()
 			.deleteGroup(rowData.id)
 			.then((response) => {
-				queryClient.invalidateQueries(['bulkloadtable']);
+				queryClient.invalidateQueries({
+					queryKey: ['bulkloadtable'],
+				});
 			});
 	};
 

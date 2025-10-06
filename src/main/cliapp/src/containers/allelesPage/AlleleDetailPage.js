@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import { useRef, useEffect } from 'react';
 import { Toast } from 'primereact/toast';
 import { Splitter, SplitterPanel } from 'primereact/splitter';
 import { Divider } from 'primereact/divider';
@@ -44,19 +44,24 @@ export default function AlleleDetailPage() {
 	const widgetColumnSize = 'col-4';
 	const fieldDetailsColumnSize = 'col-5';
 
-	const { isLoading: getRequestIsLoading } = useQuery([identifier], () => alleleService.getAllele(identifier), {
-		onSuccess: (result) => {
-			alleleDispatch({ type: 'SET', value: result?.data?.entity });
-		},
-		onError: (error) => {
-			console.warn(error);
-		},
-		keepPreviousData: true,
+	const { isPending: getRequestIsLoading, data: alleleQueryData } = useQuery({
+		queryKey: [identifier],
+		queryFn: () => alleleService.getAllele(identifier),
+		placeholderData: (previousData) => previousData,
 		refetchOnWindowFocus: false,
 	});
 
-	const { isLoading: allelePutRequestIsLoading, mutate: alleleMutate } = useMutation((allele) => {
-		return alleleService.saveAlleleDetail(allele);
+	// Handle query success in useEffect (v5 removed onSuccess from useQuery)
+	useEffect(() => {
+		if (alleleQueryData) {
+			alleleDispatch({ type: 'SET', value: alleleQueryData?.data?.entity });
+		}
+	}, [alleleQueryData, alleleDispatch]);
+
+	const { isPending: allelePutRequestIsLoading, mutate: alleleMutate } = useMutation({
+		mutationFn: (allele) => {
+			return alleleService.saveAlleleDetail(allele);
+		},
 	});
 
 	const handleSubmit = async (event) => {

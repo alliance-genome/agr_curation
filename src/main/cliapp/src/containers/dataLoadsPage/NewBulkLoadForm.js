@@ -31,12 +31,14 @@ export const NewBulkLoadForm = ({
 
 	const [backendBulkLoadTypes, setBackendLoadTypes] = useState();
 
-	const mutation = useMutation((bulkLoad) => {
-		if (bulkLoad.id) {
-			return getService().updateLoad(bulkLoad);
-		} else {
-			return getService().createLoad(bulkLoad);
-		}
+	const mutation = useMutation({
+		mutationFn: (bulkLoad) => {
+			if (bulkLoad.id) {
+				return getService().updateLoad(bulkLoad);
+			} else {
+				return getService().createLoad(bulkLoad);
+			}
+		},
 	});
 
 	useEffect(() => {
@@ -103,7 +105,9 @@ export const NewBulkLoadForm = ({
 
 		mutation.mutate(newBulkLoad, {
 			onSuccess: () => {
-				queryClient.invalidateQueries(['bulkloadtable']);
+				queryClient.invalidateQueries({
+					queryKey: ['bulkloadtable'],
+				});
 				bulkLoadDispatch({ type: 'RESET' });
 				hideFMS.current = true;
 				hideURL.current = true;

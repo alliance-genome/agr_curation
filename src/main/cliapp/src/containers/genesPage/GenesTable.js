@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useMemo } from 'react';
 import { GenericDataTable } from '../../components/GenericDataTable/GenericDataTable';
 import { Toast } from 'primereact/toast';
 import { getDefaultTableState } from '../../service/TableStateService';
@@ -193,200 +193,204 @@ export const GenesTable = () => {
 		}
 	};
 
-	const columns = [
-		{
-			field: 'curie',
-			header: 'Curie',
-			sortable: true,
-			filter: true,
-			body: (rowData) => <IdTemplate id={rowData.curie} />,
-			filterConfig: FILTER_CONFIGS.curieFilterConfig,
-		},
-		{
-			field: 'primaryExternalId',
-			header: 'Primary External ID',
-			sortable: true,
-			body: (rowData) => <IdTemplate id={rowData.primaryExternalId} />,
-			filterConfig: FILTER_CONFIGS.primaryexternalidFilterConfig,
-		},
-		{
-			field: 'modInternalId',
-			header: 'MOD Internal ID',
-			sortable: true,
-			body: (rowData) => <IdTemplate id={rowData.modInternalId} />,
-			filterConfig: FILTER_CONFIGS.modinternalidFilterConfig,
-		},
-		{
-			field: 'geneFullName.displayText',
-			header: 'Name',
-			sortable: true,
-			filter: true,
-			body: (rowData) => (
-				<TextDialogTemplate
-					entity={rowData.geneFullName}
-					handleOpen={handleFullNameOpen}
-					text={rowData.geneFullName?.displayText}
-					underline={false}
-				/>
-			),
-			filterConfig: FILTER_CONFIGS.geneNameFilterConfig,
-		},
-		{
-			field: 'geneSymbol.displayText',
-			header: 'Symbol',
-			sortable: true,
-			body: (rowData) => (
-				<TextDialogTemplate
-					entity={rowData.geneSymbol}
-					handleOpen={handleSymbolOpen}
-					text={rowData.geneSymbol?.displayText}
-					underline={false}
-				/>
-			),
-			filter: true,
-			filterConfig: FILTER_CONFIGS.geneSymbolFilterConfig,
-		},
-		{
-			field: 'geneSynonyms.displayText',
-			header: 'Synonyms',
-			sortable: true,
-			body: (rowData) => (
-				<ListDialogTemplate
-					entities={rowData.geneSynonyms}
-					handleOpen={handleSynonymsOpen}
-					getTextField={(entity) => entity?.displayText}
-					underline={false}
-				/>
-			),
-			filterConfig: FILTER_CONFIGS.geneSynonymsFilterConfig,
-		},
-		{
-			field: 'geneSecondaryIds.secondaryId',
-			header: 'Secondary IDs',
-			body: (rowData) => (
-				<ListDialogTemplate
-					entities={rowData.geneSecondaryIds}
-					handleOpen={handleSecondaryIdsOpen}
-					getTextField={(entity) => entity?.secondaryId}
-					underline={false}
-				/>
-			),
-			sortable: true,
-			filterConfig: FILTER_CONFIGS.geneSecondaryIdsFilterConfig,
-		},
-		{
-			field: 'geneSystematicName.displayText',
-			header: 'Systematic Name',
-			sortable: true,
-			body: (rowData) => (
-				<TextDialogTemplate
-					entity={rowData.geneSystematicName}
-					handleOpen={handleSystematicNameOpen}
-					text={rowData.geneSystematicName?.displayText}
-					underline={false}
-				/>
-			),
-			filter: true,
-			filterConfig: FILTER_CONFIGS.geneSystematicNameFilterConfig,
-		},
-		{
-			field: 'geneType.name',
-			header: 'Gene Type',
-			body: (rowData) => <OntologyTermTemplate term={rowData.geneType} />,
-			sortable: true,
-			filterConfig: FILTER_CONFIGS.geneTypeFilterConfig,
-		},
-		{
-			field: 'taxon.name',
-			header: 'Taxon',
-			sortable: true,
-			body: (rowData) => <OntologyTermTemplate term={rowData.taxon} />,
-			filter: true,
-			filterConfig: FILTER_CONFIGS.taxonFilterConfig,
-		},
-		{
-			field: 'relatedNotes.freeText',
-			header: 'Related Notes',
-			body: (rowData) => (
-				<CountDialogTemplate entities={rowData.relatedNotes} handleOpen={handleRelatedNotesOpen} text={'Notes'} />
-			),
-			sortable: true,
-			filterConfig: FILTER_CONFIGS.relatedNotesFilterConfig,
-			editor: relatedNotesEditor,
-		},
-		{
-			field: 'dataProvider.abbreviation',
-			header: 'Data Provider',
-			sortable: true,
-			filterConfig: FILTER_CONFIGS.geneDataProviderFilterConfig,
-		},
-		{
-			field: 'crossReferences.displayName',
-			header: 'Cross References',
-			sortable: true,
-			filterConfig: FILTER_CONFIGS.crossReferencesFilterConfig,
-			body: (rowData) => <CrossReferencesTemplate list={rowData.crossReferences} />,
-		},
-		{
-			field: 'gcrpCrossReference.displayName',
-			header: 'GCRP Cross Reference',
-			sortable: true,
-			filterConfig: FILTER_CONFIGS.gcrpCrossReferenceFilterConfig,
-			body: (rowData) => <CrossReferenceTemplate xref={rowData.gcrpCrossReference} />,
-		},
-		{
-			field: 'updatedBy.uniqueId',
-			header: 'Updated By',
-			sortable: true,
-			body: (rowData) => <StringTemplate string={rowData.updatedBy?.uniqueId} />,
-			filterConfig: FILTER_CONFIGS.updatedByFilterConfig,
-		},
-		{
-			field: 'dateUpdated',
-			header: 'Date Updated',
-			sortable: true,
-			filter: true,
-			body: (rowData) => <StringTemplate string={rowData.dateUpdated} />,
-			filterConfig: FILTER_CONFIGS.dateUpdatedFilterConfig,
-		},
-		{
-			field: 'createdBy.uniqueId',
-			header: 'Created By',
-			sortable: true,
-			filter: true,
-			body: (rowData) => <StringTemplate string={rowData.createdBy?.uniqueId} />,
-			filterConfig: FILTER_CONFIGS.createdByFilterConfig,
-		},
-		{
-			field: 'dateCreated',
-			header: 'Date Created',
-			sortable: true,
-			filter: true,
-			body: (rowData) => <StringTemplate string={rowData.dateCreated} />,
-			filterConfig: FILTER_CONFIGS.dataCreatedFilterConfig,
-		},
-		{
-			field: 'internal',
-			header: 'Internal',
-			body: (rowData) => <BooleanTemplate value={rowData.internal} />,
-			filter: true,
-			filterConfig: FILTER_CONFIGS.internalFilterConfig,
-			sortable: true,
-		},
-		{
-			field: 'obsolete',
-			header: 'Obsolete',
-			body: (rowData) => <BooleanTemplate value={rowData.obsolete} />,
-			filter: true,
-			filterConfig: FILTER_CONFIGS.obsoleteFilterConfig,
-			sortable: true,
-		},
-	];
+	const columns = useMemo(
+		() => [
+			{
+				field: 'curie',
+				header: 'Curie',
+				sortable: true,
+				filter: true,
+				body: (rowData) => <IdTemplate id={rowData.curie} />,
+				filterConfig: FILTER_CONFIGS.curieFilterConfig,
+			},
+			{
+				field: 'primaryExternalId',
+				header: 'Primary External ID',
+				sortable: true,
+				body: (rowData) => <IdTemplate id={rowData.primaryExternalId} />,
+				filterConfig: FILTER_CONFIGS.primaryexternalidFilterConfig,
+			},
+			{
+				field: 'modInternalId',
+				header: 'MOD Internal ID',
+				sortable: true,
+				body: (rowData) => <IdTemplate id={rowData.modInternalId} />,
+				filterConfig: FILTER_CONFIGS.modinternalidFilterConfig,
+			},
+			{
+				field: 'geneFullName.displayText',
+				header: 'Name',
+				sortable: true,
+				filter: true,
+				body: (rowData) => (
+					<TextDialogTemplate
+						entity={rowData.geneFullName}
+						handleOpen={handleFullNameOpen}
+						text={rowData.geneFullName?.displayText}
+						underline={false}
+					/>
+				),
+				filterConfig: FILTER_CONFIGS.geneNameFilterConfig,
+			},
+			{
+				field: 'geneSymbol.displayText',
+				header: 'Symbol',
+				sortable: true,
+				body: (rowData) => (
+					<TextDialogTemplate
+						entity={rowData.geneSymbol}
+						handleOpen={handleSymbolOpen}
+						text={rowData.geneSymbol?.displayText}
+						underline={false}
+					/>
+				),
+				filter: true,
+				filterConfig: FILTER_CONFIGS.geneSymbolFilterConfig,
+			},
+			{
+				field: 'geneSynonyms.displayText',
+				header: 'Synonyms',
+				sortable: true,
+				body: (rowData) => (
+					<ListDialogTemplate
+						entities={rowData.geneSynonyms}
+						handleOpen={handleSynonymsOpen}
+						getTextField={(entity) => entity?.displayText}
+						underline={false}
+					/>
+				),
+				filterConfig: FILTER_CONFIGS.geneSynonymsFilterConfig,
+			},
+			{
+				field: 'geneSecondaryIds.secondaryId',
+				header: 'Secondary IDs',
+				body: (rowData) => (
+					<ListDialogTemplate
+						entities={rowData.geneSecondaryIds}
+						handleOpen={handleSecondaryIdsOpen}
+						getTextField={(entity) => entity?.secondaryId}
+						underline={false}
+					/>
+				),
+				sortable: true,
+				filterConfig: FILTER_CONFIGS.geneSecondaryIdsFilterConfig,
+			},
+			{
+				field: 'geneSystematicName.displayText',
+				header: 'Systematic Name',
+				sortable: true,
+				body: (rowData) => (
+					<TextDialogTemplate
+						entity={rowData.geneSystematicName}
+						handleOpen={handleSystematicNameOpen}
+						text={rowData.geneSystematicName?.displayText}
+						underline={false}
+					/>
+				),
+				filter: true,
+				filterConfig: FILTER_CONFIGS.geneSystematicNameFilterConfig,
+			},
+			{
+				field: 'geneType.name',
+				header: 'Gene Type',
+				body: (rowData) => <OntologyTermTemplate term={rowData.geneType} />,
+				sortable: true,
+				filterConfig: FILTER_CONFIGS.geneTypeFilterConfig,
+			},
+			{
+				field: 'taxon.name',
+				header: 'Taxon',
+				sortable: true,
+				body: (rowData) => <OntologyTermTemplate term={rowData.taxon} />,
+				filter: true,
+				filterConfig: FILTER_CONFIGS.taxonFilterConfig,
+			},
+			{
+				field: 'relatedNotes.freeText',
+				header: 'Related Notes',
+				body: (rowData) => (
+					<CountDialogTemplate entities={rowData.relatedNotes} handleOpen={handleRelatedNotesOpen} text={'Notes'} />
+				),
+				sortable: true,
+				filterConfig: FILTER_CONFIGS.relatedNotesFilterConfig,
+				editor: relatedNotesEditor,
+			},
+			{
+				field: 'dataProvider.abbreviation',
+				header: 'Data Provider',
+				sortable: true,
+				filterConfig: FILTER_CONFIGS.geneDataProviderFilterConfig,
+			},
+			{
+				field: 'crossReferences.displayName',
+				header: 'Cross References',
+				sortable: true,
+				filterConfig: FILTER_CONFIGS.crossReferencesFilterConfig,
+				body: (rowData) => <CrossReferencesTemplate list={rowData.crossReferences} />,
+			},
+			{
+				field: 'gcrpCrossReference.displayName',
+				header: 'GCRP Cross Reference',
+				sortable: true,
+				filterConfig: FILTER_CONFIGS.gcrpCrossReferenceFilterConfig,
+				body: (rowData) => <CrossReferenceTemplate xref={rowData.gcrpCrossReference} />,
+			},
+			{
+				field: 'updatedBy.uniqueId',
+				header: 'Updated By',
+				sortable: true,
+				body: (rowData) => <StringTemplate string={rowData.updatedBy?.uniqueId} />,
+				filterConfig: FILTER_CONFIGS.updatedByFilterConfig,
+			},
+			{
+				field: 'dateUpdated',
+				header: 'Date Updated',
+				sortable: true,
+				filter: true,
+				body: (rowData) => <StringTemplate string={rowData.dateUpdated} />,
+				filterConfig: FILTER_CONFIGS.dateUpdatedFilterConfig,
+			},
+			{
+				field: 'createdBy.uniqueId',
+				header: 'Created By',
+				sortable: true,
+				filter: true,
+				body: (rowData) => <StringTemplate string={rowData.createdBy?.uniqueId} />,
+				filterConfig: FILTER_CONFIGS.createdByFilterConfig,
+			},
+			{
+				field: 'dateCreated',
+				header: 'Date Created',
+				sortable: true,
+				filter: true,
+				body: (rowData) => <StringTemplate string={rowData.dateCreated} />,
+				filterConfig: FILTER_CONFIGS.dataCreatedFilterConfig,
+			},
+			{
+				field: 'internal',
+				header: 'Internal',
+				body: (rowData) => <BooleanTemplate value={rowData.internal} />,
+				filter: true,
+				filterConfig: FILTER_CONFIGS.internalFilterConfig,
+				sortable: true,
+			},
+			{
+				field: 'obsolete',
+				header: 'Obsolete',
+				body: (rowData) => <BooleanTemplate value={rowData.obsolete} />,
+				filter: true,
+				filterConfig: FILTER_CONFIGS.obsoleteFilterConfig,
+				sortable: true,
+			},
+		],
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+		[]
+	);
 
 	const DEFAULT_COLUMN_WIDTH = 10;
 	const SEARCH_ENDPOINT = 'gene';
 
-	const initialTableState = getDefaultTableState('Genes', columns, DEFAULT_COLUMN_WIDTH);
+	const initialTableState = useMemo(() => getDefaultTableState('Genes', columns, DEFAULT_COLUMN_WIDTH), [columns]);
 
 	const { settings: tableState, mutate: setTableState } = useGetUserSettings(
 		initialTableState.tableSettingsKeyName,

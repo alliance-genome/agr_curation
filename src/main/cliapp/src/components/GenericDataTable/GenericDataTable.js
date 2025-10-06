@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useState, useMemo, useCallback } from 'react';
 
 import { DataTable } from 'primereact/datatable';
 import { Dialog } from 'primereact/dialog';
@@ -9,7 +9,7 @@ import { MultiSelect } from 'primereact/multiselect';
 import { Checkbox } from 'primereact/checkbox';
 
 import { FilterComponent } from '../Filters/FilterComponent';
-import { DataTableHeaderFooterTemplate } from '../DataTableHeaderFooterTemplate';
+import { DataTableHeaderTemplate } from '../DataTableHeaderFooterTemplate';
 import { DuplicationAction } from '../Actions/DuplicationAction';
 import { EntityDetailsAction } from '../Actions/EntityDetailsAction';
 
@@ -42,7 +42,6 @@ export const GenericDataTable = (props) => {
 		setSelectedColumnNames,
 		tableStateConfirm,
 		onFilter,
-		setColumnList,
 		entities,
 		dataTable,
 		editingRows,
@@ -55,7 +54,6 @@ export const GenericDataTable = (props) => {
 		handleColumnResizeEnd,
 		totalRecords,
 		onLazyLoad,
-		columnList,
 		handleDeletion,
 		handleDeprecation,
 		tableState,
@@ -99,7 +97,7 @@ export const GenericDataTable = (props) => {
 	};
 
 	const header = (
-		<DataTableHeaderFooterTemplate
+		<DataTableHeaderTemplate
 			title={tableName + ' Table'}
 			tableState={tableState}
 			multiselectComponent={createMultiselectComponent()}
@@ -112,53 +110,61 @@ export const GenericDataTable = (props) => {
 		/>
 	);
 
-	const filterComponentTemplate = (config) => {
-		return (
-			<FilterComponent
-				filterConfig={config}
-				isInEditMode={isInEditMode}
-				onFilter={onFilter}
-				aggregationFields={aggregationFields}
-				tableState={tableState}
-				endpoint={endpoint}
-			/>
-		);
-	};
+	const filterComponentTemplate = useCallback(
+		(config) => {
+			return (
+				<FilterComponent
+					filterConfig={config}
+					isInEditMode={isInEditMode}
+					onFilter={onFilter}
+					aggregationFields={aggregationFields}
+					tableState={tableState}
+					endpoint={endpoint}
+				/>
+			);
+		},
+		[isInEditMode, onFilter, aggregationFields, tableState, endpoint]
+	);
 
-	useEffect(() => {
+	const columnList = useMemo(() => {
 		const orderedColumns = orderColumns(columns, tableState.orderedColumnNames);
 		const filteredColumns = filterColumns(orderedColumns, tableState.selectedColumnNames);
-		setColumnList(() => {
-			return filteredColumns.map((col) => {
-				if (col) {
-					return (
-						<Column
-							style={{
-								minWidth: `${tableState.columnWidths[col.field]}vw`,
-								maxWidth: `${tableState.columnWidths[col.field]}vw`,
-								padding: '4px 10px 4px',
-							}}
-							headerClassName="surface-0"
-							columnKey={col.field}
-							key={col.field}
-							field={col.field}
-							header={col.header}
-							body={col.body}
-							sortable={col.sortable && !isInEditMode}
-							filter
-							editor={col.editor}
-							showFilterMenu={false}
-							filterElement={() => filterComponentTemplate(col.filterConfig)}
-							headerStyle={{ padding: '1rem' }}
-						/>
-					);
-				} else {
-					return null;
-				}
-			});
+		return filteredColumns.map((col) => {
+			if (col) {
+				return (
+					<Column
+						style={{
+							minWidth: `${tableState.columnWidths[col.field]}vw`,
+							maxWidth: `${tableState.columnWidths[col.field]}vw`,
+							padding: '4px 10px 4px',
+						}}
+						headerClassName="surface-0"
+						showClearButton={false}
+						columnKey={col.field}
+						key={col.field}
+						field={col.field}
+						header={col.header}
+						body={col.body}
+						sortable={col.sortable && !isInEditMode}
+						filter
+						editor={col.editor}
+						showFilterMenu={false}
+						filterElement={() => filterComponentTemplate(col.filterConfig)}
+						headerStyle={{ padding: '1rem' }}
+					/>
+				);
+			} else {
+				return null;
+			}
 		});
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [tableState, isInEditMode]);
+	}, [
+		columns,
+		tableState.orderedColumnNames,
+		tableState.selectedColumnNames,
+		tableState.columnWidths,
+		isInEditMode,
+		filterComponentTemplate,
+	]);
 
 	const rowEditorFilterNameHeader = (options) => {
 		return (
