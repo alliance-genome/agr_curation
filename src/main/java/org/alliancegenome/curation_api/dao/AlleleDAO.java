@@ -139,8 +139,11 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 				LEFT JOIN FETCH a.alleleGeneAssociations aga
 				LEFT JOIN FETCH aga.alleleGeneAssociationObject gene
 				LEFT JOIN FETCH gene.geneSymbol
-				LEFT JOIN FETCH aga.relation
+				LEFT JOIN FETCH aga.relation r
 				WHERE a.id IN :alleleIds
+				AND r.name = 'is_allele_of'
+				AND aga.internal = false
+				AND aga.obsolete = false
 				""";
 			TypedQuery<Allele> geneQuery = entityManager.createQuery(geneAssocQuery, Allele.class);
 			geneQuery.setParameter("alleleIds", alleleIds);
