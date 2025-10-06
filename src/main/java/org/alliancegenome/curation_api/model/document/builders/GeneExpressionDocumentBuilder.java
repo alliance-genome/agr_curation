@@ -11,6 +11,7 @@ import org.alliancegenome.curation_api.model.document.es.GeneExpressionDocument;
 import org.alliancegenome.curation_api.model.entities.AnatomicalSite;
 import org.alliancegenome.curation_api.model.entities.GeneExpressionAnnotation;
 import org.alliancegenome.curation_api.model.entities.GeneExpressionExperiment;
+import org.alliancegenome.curation_api.model.entities.Reference;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.helpers.UniqueIdGeneratorHelper;
@@ -108,7 +109,10 @@ public class GeneExpressionDocumentBuilder {
 			termIds.addAll(goTermIds);
 		}
 		expressionDocument.setTermIds(termIds);
-
+		if (annotation.getEvidenceItem() != null && annotation.getEvidenceItem() instanceof Reference reference) {
+			expressionDocument.setPubModID(reference.getPubModID());
+		}
+		
 		return expressionDocument;
 
 	}
