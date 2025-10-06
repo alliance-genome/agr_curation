@@ -10,10 +10,13 @@ import org.alliancegenome.curation_api.dao.associations.AgmAlleleAssociationDAO;
 import org.alliancegenome.curation_api.dao.base.BaseSQLDAO;
 import org.alliancegenome.curation_api.model.entities.Allele;
 import org.apache.commons.collections.CollectionUtils;
+import org.alliancegenome.curation_api.model.input.Pagination;
+import org.alliancegenome.curation_api.response.SearchResponse;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.persistence.Query;
+import jakarta.persistence.TypedQuery;
 
 @ApplicationScoped
 public class AlleleDAO extends BaseSQLDAO<Allele> {
@@ -106,6 +109,78 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 		});
 		
 		return list;
+	}
+	public SearchResponse<Allele> findAllelesForSummary(Pagination pagination, Map<String, Object> params) {
+		SearchResponse<Allele> filteredResults = super.findByParams(pagination, params, null);
+
+		if (filteredResults.getResults() == null || filteredResults.getResults().isEmpty()) {
+			return filteredResults;
+		}
+
+		List<Long> alleleIds = filteredResults.getResults().stream()
+			.map(Allele::getId)
+			.collect(java.util.stream.Collectors.toList());
+
+		String baseQuery = """
+			SELECT DISTINCT a FROM Allele a
+			LEFT JOIN FETCH a.dataProvider
+			LEFT JOIN FETCH a.dataProviderCrossReference
+			WHERE a.id IN :alleleIds
+			ORDER BY a.id
+			""";
+
+		TypedQuery<Allele> query = entityManager.createQuery(baseQuery, Allele.class);
+		query.setParameter("alleleIds", alleleIds);
+		List<Allele> alleles = query.getResultList();
+
+		if (!alleleIds.isEmpty()) {
+			String geneAssocQuery = """
+				SELECT DISTINCT a FROM Allele a
+				LEFT JOIN FETCH a.alleleGeneAssociations aga
+				LEFT JOIN FETCH aga.alleleGeneAssociationObject gene
+				LEFT JOIN FETCH gene.geneSymbol
+				LEFT JOIN FETCH aga.relation
+				WHERE a.id IN :alleleIds
+				""";
+			TypedQuery<Allele> geneQuery = entityManager.createQuery(geneAssocQuery, Allele.class);
+			geneQuery.setParameter("alleleIds", alleleIds);
+			geneQuery.getResultList(); // This loads the associations into the session
+
+			String constructAssocQuery = """
+				SELECT DISTINCT a FROM Allele a
+				LEFT JOIN FETCH a.alleleConstructAssociations aca
+				LEFT JOIN FETCH aca.alleleConstructAssociationObject construct
+				LEFT JOIN FETCH construct.constructSymbol
+				WHERE a.id IN :alleleIds
+				""";
+			TypedQuery<Allele> constructQuery = entityManager.createQuery(constructAssocQuery, Allele.class);
+			constructQuery.setParameter("alleleIds", alleleIds);
+			constructQuery.getResultList();
+
+			String variantAssocQuery = """
+				SELECT DISTINCT a FROM Allele a
+				LEFT JOIN FETCH a.alleleVariantAssociations
+				WHERE a.id IN :alleleIds
+				""";
+			TypedQuery<Allele> variantQuery = entityManager.createQuery(variantAssocQuery, Allele.class);
+			variantQuery.setParameter("alleleIds", alleleIds);
+			variantQuery.getResultList();
+
+			String notesQuery = """
+				SELECT DISTINCT a FROM Allele a
+				LEFT JOIN FETCH a.relatedNotes
+				WHERE a.id IN :alleleIds
+				""";
+			TypedQuery<Allele> notesQueryExec = entityManager.createQuery(notesQuery, Allele.class);
+			notesQueryExec.setParameter("alleleIds", alleleIds);
+			notesQueryExec.getResultList();
+		}
+
+		SearchResponse<Allele> response = new SearchResponse<>();
+		response.setResults(alleles);
+		response.setTotalResults(filteredResults.getTotalResults());
+
+		return response;
 	}
 
 
