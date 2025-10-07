@@ -29,7 +29,7 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 	@Inject AGMPhenotypeAnnotationDAO agmPhenotypeAnnotationDAO;
 	@Inject AgmAlleleAssociationDAO agmAlleleAssociationDAO;
 	@Inject HTPExpressionDatasetSampleAnnotationDAO htpExpressionDatasetSampleAnnotationDAO;
-	
+
 	protected AlleleDAO() {
 		super(Allele.class);
 	}
@@ -78,7 +78,7 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 		results = agmPhenotypeAnnotationDAO.findIdsByParams(agmPaParams);
 		return CollectionUtils.isNotEmpty(results);
 	}
-	
+
 	public Boolean hasReferencingAgmAlleleAssociations(Long alleleId) {
 		Map<String, Object> params = new HashMap<>();
 		params.put(EntityFieldConstants.AGM_ALLELE_ASSOCIATION_OBJECT + ".id", alleleId);
@@ -90,34 +90,34 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 		Map<String, Object> params = new HashMap<>();
 		params.put(EntityFieldConstants.GENOMIC_INFORMATION_ALLELE + ".id", alleleId);
 		List<Long> results = htpExpressionDatasetSampleAnnotationDAO.findIdsByParams(params);
-		
+
 		return CollectionUtils.isNotEmpty(results);
 	}
-	
+
 	public List<String> getAllAllelePrimaryExternalIds() {
 		String sql = """
 			SELECT be.primaryexternalid
 			FROM biologicalentity be, allele as a
 			WHERE be.id = a.id and be.primaryexternalid is not NULL
 		""";
-		
+
 		Query query = entityManager.createNativeQuery(sql);
 		List<Object> objects = query.getResultList();
 		List<String> list = new ArrayList<>();
-		
+
 		objects.forEach(object -> {
 			list.add((String) object);
 		});
-		
+
 		return list;
 	}
 	public SearchResponse<AlleleSummaryDTO> findAllelesForSummary(Pagination pagination, Map<String, Object> params) {
 		SearchResponse<Allele> filteredResults = super.findByParams(pagination, params, null);
 
-		if (filteredResults.getResults() == null || filteredResults.getResults().isEmpty()) {
+		if (filteredResults.getResults().isEmpty()) {
 			SearchResponse<AlleleSummaryDTO> emptyResponse = new SearchResponse<>();
 			emptyResponse.setResults(new ArrayList<>());
-			emptyResponse.setTotalResults(0L);
+			emptyResponse.setTotalResults(filteredResults.getTotalResults());
 			return emptyResponse;
 		}
 
@@ -150,6 +150,7 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 				AND r.name = 'is_allele_of'
 				AND aga.internal = false
 				AND aga.obsolete = false
+				and a.alleleGeneAssociations is not empty
 				""";
 			TypedQuery<Allele> geneQuery = entityManager.createQuery(geneAssocQuery, Allele.class);
 			geneQuery.setParameter("alleleIds", alleleIds);
@@ -160,7 +161,7 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 				LEFT JOIN FETCH a.alleleConstructAssociations aca
 				LEFT JOIN FETCH aca.alleleConstructAssociationObject construct
 				LEFT JOIN FETCH construct.constructSymbol
-				WHERE a.id IN :alleleIds
+				WHERE a.id IN :alleleIds and a.alleleConstructAssociations is not empty
 				""";
 			TypedQuery<Allele> constructQuery = entityManager.createQuery(constructAssocQuery, Allele.class);
 			constructQuery.setParameter("alleleIds", alleleIds);
@@ -170,7 +171,7 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 				SELECT a.id, COUNT(ava.id)
 				FROM Allele a
 				LEFT JOIN a.alleleVariantAssociations ava
-				WHERE a.id IN :alleleIds
+				WHERE a.id IN :alleleIds and a.alleleVariantAssociations is not empty
 				GROUP BY a.id
 				""";
 			Query variantCountQueryExec = entityManager.createQuery(variantCountQuery);
@@ -184,7 +185,7 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 			String notesQuery = """
 				SELECT DISTINCT a FROM Allele a
 				LEFT JOIN FETCH a.relatedNotes
-				WHERE a.id IN :alleleIds
+				WHERE a.id IN :alleleIds and a.relatedNotes is not empty
 				""";
 			TypedQuery<Allele> notesQueryExec = entityManager.createQuery(notesQuery, Allele.class);
 			notesQueryExec.setParameter("alleleIds", alleleIds);
