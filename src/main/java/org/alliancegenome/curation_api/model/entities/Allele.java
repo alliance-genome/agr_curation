@@ -38,6 +38,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Index;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
@@ -158,7 +159,7 @@ public class Allele extends GenomicEntity {
 	private List<AlleleSecondaryIdSlotAnnotation> alleleSecondaryIds;
 
 	@IndexedEmbedded(includePaths = { "germlineTransmissionStatus.name", "evidence.curie", "germlineTransmissionStatus.name_keyword", "evidence.curie_keyword"})
-	@OneToOne(mappedBy = "singleAllele", cascade = CascadeType.ALL, orphanRemoval = true)
+	@OneToOne(mappedBy = "singleAllele", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
 	@JsonManagedReference
 	@JsonView({ View.FieldsOnly.class, View.AlleleDetailView.class })
 	private AlleleGermlineTransmissionStatusSlotAnnotation alleleGermlineTransmissionStatus;
@@ -176,7 +177,7 @@ public class Allele extends GenomicEntity {
 	private List<AlleleFunctionalImpactSlotAnnotation> alleleFunctionalImpacts;
 
 	@IndexedEmbedded(includePaths = { "databaseStatus.name", "evidence.curie", "databaseStatus.name_keyword", "evidence.curie_keyword"})
-	@OneToOne(mappedBy = "singleAllele", cascade = CascadeType.ALL, orphanRemoval = true)
+	@OneToOne(mappedBy = "singleAllele", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
 	@JsonManagedReference
 	@JsonView({ View.FieldsOnly.class, View.AlleleDetailView.class })
 	private AlleleDatabaseStatusSlotAnnotation alleleDatabaseStatus;
