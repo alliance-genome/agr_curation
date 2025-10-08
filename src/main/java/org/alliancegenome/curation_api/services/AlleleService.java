@@ -119,7 +119,7 @@ public class AlleleService extends SubmittedObjectCrudService<Allele, AlleleDTO,
 						allele.setRelatedNotes(new ArrayList<>());
 					}
 					allele.getRelatedNotes().add(deprecationNote);
-					
+
 					return alleleDAO.persist(allele);
 				} else {
 					return allele;
@@ -158,6 +158,7 @@ public class AlleleService extends SubmittedObjectCrudService<Allele, AlleleDTO,
 		}
 	}
 
+	@Transactional
 	public SearchResponse<AlleleSummaryDTO> findAllelesForSummary(Pagination pagination, Map<String, Object> params) {
 		return alleleDAO.findAllelesForSummary(pagination, params);
 	}
