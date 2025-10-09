@@ -3,6 +3,7 @@ package org.alliancegenome.curation_api.model.document.builders;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.alliancegenome.curation_api.model.document.es.AlleleSummaryDTO;
 import org.alliancegenome.curation_api.model.document.es.AlleleSummaryDocument;
 import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
@@ -16,16 +17,29 @@ import lombok.extern.slf4j.Slf4j;
 public class AlleleSummaryDocumentBuilder {
 
 
-	public AlleleSummaryDocument buildSummaryDocument(Allele allele, ResourceDescriptorPageService resourceDescriptorPageService) {
+	public AlleleSummaryDocument buildSummaryDocument(AlleleSummaryDTO alleleDTO, ResourceDescriptorPageService resourceDescriptorPageService) {
+		Allele allele = alleleDTO.getAllele();
 		AlleleSummaryDocument doc = new AlleleSummaryDocument();
 
 		doc.setAllele(allele);
 
 		doc.setCrossReference(getCrossReference(allele, resourceDescriptorPageService));
 
+		doc.setAlterationType(determineAlterationType(alleleDTO.getVariantCount()));
+
 		doc.setDescription(buildDescription(allele));
 
 		return doc;
+	}
+
+	private String determineAlterationType(Long variantCount) {
+		if (variantCount == null || variantCount == 0) {
+			return "allele";
+		} else if (variantCount == 1) {
+			return "allele with one variant";
+		} else {
+			return "allele with multiple variants";
+		}
 	}
 
 	private String buildDescription(Allele allele) {
