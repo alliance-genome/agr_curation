@@ -1,5 +1,5 @@
 import { useQuery, useMutation } from '@tanstack/react-query';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { PersonSettingsService } from './PersonSettingsService';
 import { removeInvalidFilters, removeInvalidSorts } from '../utils/utils';
 
@@ -18,32 +18,38 @@ export const useGetUserSettings = (key, defaultValue, isTable = true) => {
 		return stickyObject;
 	});
 
-	useQuery([`${key}`], () => personSettingsService.getUserSettings(key), {
-		onSuccess: (data) => {
-			let userSettings = defaultValue;
-			if (Object.keys(data).length === 0) {
-				personSettingsService.saveUserSettings(key, userSettings);
-			} else {
-				userSettings = data.entity.settingsMap;
-			}
-
-			if (isTable) {
-				userSettings.filters = removeInvalidFilters(userSettings.filters);
-				userSettings.multiSortMeta = removeInvalidSorts(userSettings.multiSortMeta);
-				if (!userSettings.orderedColumnNames) userSettings.orderedColumnNames = defaultValue.selectedColumnNames;
-				if (!userSettings.columnWidths) userSettings.columnWidths = defaultValue.columnWidths;
-			}
-
-			setSettings(userSettings);
-			localStorage.setItem(key, JSON.stringify(userSettings));
-		},
+	const { data, isSuccess } = useQuery({
+		queryKey: [`${key}`],
+		queryFn: () => personSettingsService.getUserSettings(key),
 		refetchOnWindowFocus: false,
 	});
 
-	const { mutate } = useMutation((updatedSettings) => {
-		setSettings(updatedSettings);
-		localStorage.setItem(key, JSON.stringify(updatedSettings));
-		return personSettingsService.saveUserSettings(key, updatedSettings);
+	// Handle query success in useEffect (v5 removed onSuccess from useQuery)
+	useEffect(() => {
+		if (isSuccess && data) {
+			const serverSettings = { ...data?.entity, ...data?.entity?.settingsMap };
+			if (serverSettings && Object.keys(serverSettings).length > 0) {
+				let updatedSettings = { ...serverSettings };
+				if (isTable) {
+					updatedSettings.filters = removeInvalidFilters(updatedSettings.filters);
+					updatedSettings.multiSortMeta = removeInvalidSorts(updatedSettings.multiSortMeta);
+					if (!updatedSettings.orderedColumnNames)
+						updatedSettings.orderedColumnNames = defaultValue.selectedColumnNames;
+					if (!updatedSettings.columnWidths) updatedSettings.columnWidths = defaultValue.columnWidths;
+				}
+				setSettings(updatedSettings);
+				localStorage.setItem(key, JSON.stringify(updatedSettings));
+			}
+		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [data, isSuccess, key, isTable]);
+
+	const { mutate } = useMutation({
+		mutationFn: (updatedSettings) => {
+			setSettings(updatedSettings);
+			localStorage.setItem(key, JSON.stringify(updatedSettings));
+			return personSettingsService.saveUserSettings(key, updatedSettings);
+		},
 	});
 
 	return { settings, mutate };

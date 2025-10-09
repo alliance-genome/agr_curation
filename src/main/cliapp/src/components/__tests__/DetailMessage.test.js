@@ -1,6 +1,6 @@
 import { render } from '@testing-library/react';
 import '../../tools/jest/setupTests';
-import { BrowserRouter } from 'react-router-dom/cjs/react-router-dom.min';
+import { BrowserRouter } from 'react-router-dom';
 import { DetailMessage } from '../DetailMessage';
 describe('DetailMessage', () => {
 	it('should return null when display is false', () => {

@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import { ObjectListTemplate } from '../ObjectListTemplate';
 import '../../../tools/jest/setupTests';
-import { BrowserRouter } from 'react-router-dom/cjs/react-router-dom.min';
+import { BrowserRouter } from 'react-router-dom';
 
 describe('ObjectListTemplate', () => {
 	it('should render a list of items using the provided stringTemplate with object list', () => {

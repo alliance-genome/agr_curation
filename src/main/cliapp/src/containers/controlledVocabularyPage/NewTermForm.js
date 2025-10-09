@@ -1,5 +1,5 @@
 import { Dialog } from 'primereact/dialog';
-import React, { useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { Button } from 'primereact/button';
 import { InputText } from 'primereact/inputtext';
 import { Dropdown } from 'primereact/dropdown';
@@ -29,8 +29,10 @@ export const NewTermForm = ({
 		setSubmitted(false);
 	};
 
-	const mutation = useMutation((newTerm) => {
-		return vocabularyService.createTerm(newTerm);
+	const mutation = useMutation({
+		mutationFn: (newTerm) => {
+			return vocabularyService.createTerm(newTerm);
+		},
 	});
 
 	const handleTermSubmit = (event) => {
@@ -39,6 +41,7 @@ export const NewTermForm = ({
 		if (newTerm.name && newTerm.name.trim() && newTerm.vocabulary && newTerm.obsolete !== undefined) {
 			mutation.mutate(newTerm, {
 				onSuccess: (data) => {
+					//TODO: check this data object
 					setNewTerm(data.data.entity, queryClient);
 					toast_success.current.show({ severity: 'success', summary: 'Successful', detail: 'New Term Added' });
 					setSubmitted(false);
@@ -143,7 +146,7 @@ export const NewTermForm = ({
 								<label htmlFor="obsolete">Obsolete</label>
 								<Dropdown
 									id="obsolete"
-									options={obsoleteTerms}
+									options={obsoleteTerms?.terms || []}
 									value={newTerm.obsolete}
 									placeholder={'Select Obsolete'}
 									name="obsolete"
