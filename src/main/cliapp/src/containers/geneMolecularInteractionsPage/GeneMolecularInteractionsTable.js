@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useMemo } from 'react';
 
 import { GenericDataTable } from '../../components/GenericDataTable/GenericDataTable';
 import { IdTemplate } from '../../components/Templates/IdTemplate';
@@ -51,7 +51,8 @@ export const GeneMolecularInteractionsTable = () => {
 		'detectionMethod.name': ['detectionMethod.curie'],
 	};
 
-	const columns = [
+	const columns = useMemo(
+		() => [
 		{
 			field: 'uniqueId',
 			header: 'Unique ID',
@@ -164,17 +165,19 @@ export const GeneMolecularInteractionsTable = () => {
 			sortable: true,
 			filterConfig: FILTER_CONFIGS.obsoleteFilterConfig,
 		},
-	];
+	],
+	// eslint-disable-next-line react-hooks/exhaustive-deps
+	[]
+);
 
 	const DEFAULT_COLUMN_WIDTH = 10;
 	const SEARCH_ENDPOINT = 'gene-molecular-interaction';
 	const defaultFilters = { obsoleteFilter: { obsolete: { queryString: 'false' } } };
 
-	const initialTableState = getDefaultTableState(
-		'GeneMolecularInteractions',
-		columns,
-		DEFAULT_COLUMN_WIDTH,
-		defaultFilters
+	const initialTableState = useMemo(
+		() => getDefaultTableState('GeneMolecularInteractions', columns, DEFAULT_COLUMN_WIDTH, defaultFilters),
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+		[columns]
 	);
 
 	const { settings: tableState, mutate: setTableState } = useGetUserSettings(

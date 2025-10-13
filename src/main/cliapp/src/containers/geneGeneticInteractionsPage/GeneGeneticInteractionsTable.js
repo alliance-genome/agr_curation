@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useMemo } from 'react';
 
 import { GenericDataTable } from '../../components/GenericDataTable/GenericDataTable';
 import { IdTemplate } from '../../components/Templates/IdTemplate';
@@ -57,7 +57,8 @@ export const GeneGeneticInteractionsTable = () => {
 		],
 	};
 
-	const columns = [
+	const columns = useMemo(
+		() => [
 		{
 			field: 'uniqueId',
 			header: 'Unique ID',
@@ -177,17 +178,19 @@ export const GeneGeneticInteractionsTable = () => {
 			sortable: true,
 			filterConfig: FILTER_CONFIGS.obsoleteFilterConfig,
 		},
-	];
+	],
+	// eslint-disable-next-line react-hooks/exhaustive-deps
+	[]
+);
 
 	const DEFAULT_COLUMN_WIDTH = 10;
 	const SEARCH_ENDPOINT = 'gene-genetic-interaction';
 	const defaultFilters = { obsoleteFilter: { obsolete: { queryString: 'false' } } };
 
-	const initialTableState = getDefaultTableState(
-		'GeneGeneticInteractions',
-		columns,
-		DEFAULT_COLUMN_WIDTH,
-		defaultFilters
+	const initialTableState = useMemo(
+		() => getDefaultTableState('GeneGeneticInteractions', columns, DEFAULT_COLUMN_WIDTH, defaultFilters),
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+		[columns]
 	);
 
 	const { settings: tableState, mutate: setTableState } = useGetUserSettings(

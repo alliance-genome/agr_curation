@@ -264,7 +264,7 @@ export const ExperimentalConditionsTable = () => {
 			},
 		],
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-		[]
+		[booleanTerms]
 	);
 
 	const DEFAULT_COLUMN_WIDTH = 10;

@@ -74,7 +74,8 @@ export const PhenotypeAnnotationsTable = () => {
 		}
 	};
 
-	const columns = [
+	const columns = useMemo(
+		() => [
 		{
 			field: 'uniqueId',
 			header: 'Unique ID',
@@ -184,7 +185,10 @@ export const PhenotypeAnnotationsTable = () => {
 			sortable: true,
 			filterConfig: FILTER_CONFIGS.obsoleteFilterConfig,
 		},
-	];
+	],
+	// eslint-disable-next-line react-hooks/exhaustive-deps
+	[]
+);
 
 	const DEFAULT_COLUMN_WIDTH = 10;
 	const SEARCH_ENDPOINT = 'phenotype-annotation';

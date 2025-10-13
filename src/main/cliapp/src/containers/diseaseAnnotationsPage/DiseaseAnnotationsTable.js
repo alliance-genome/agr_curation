@@ -1143,7 +1143,8 @@ export const DiseaseAnnotationsTable = () => {
 		}
 	};
 
-	const columns = [
+	const columns = useMemo(
+		() => [
 		{
 			field: 'uniqueId',
 			header: 'Unique ID',
@@ -1425,7 +1426,10 @@ export const DiseaseAnnotationsTable = () => {
 			filterConfig: FILTER_CONFIGS.obsoleteFilterConfig,
 			editor: (props) => obsoleteEditor(props),
 		},
-	];
+	],
+	// eslint-disable-next-line react-hooks/exhaustive-deps
+	[relationsTerms, agmRelationTerms, alleleRelationTerms, geneRelationTerms, geneticSexTerms, annotationTypeTerms, booleanTerms, geneticModifierRelationTerms, diseaseQualifiersTerms]
+);
 
 	const DEFAULT_COLUMN_WIDTH = 10;
 	const SEARCH_ENDPOINT = 'disease-annotation';

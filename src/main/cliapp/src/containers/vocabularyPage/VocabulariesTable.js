@@ -112,7 +112,7 @@ export const VocabulariesTable = () => {
 			},
 		],
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-		[]
+		[obsoleteTerms]
 	);
 
 	const DEFAULT_COLUMN_WIDTH = 20;

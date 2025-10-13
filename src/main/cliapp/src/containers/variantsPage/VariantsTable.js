@@ -71,7 +71,9 @@ export const VariantsTable = () => {
 		updatedVariants[props.rowIndex].variantStatus = event.value;
 	};
 
+	console.log('main component -- terms', variantStatusTerms)
 	const variantStatusEditor = (props) => {
+		console.log('variantStatusEditor -- terms', variantStatusTerms)
 		return (
 			<>
 				<ControlledVocabularyDropdown
@@ -80,8 +82,9 @@ export const VariantsTable = () => {
 					editorChange={onVariantStatusEditorValueChange}
 					props={props}
 					showClear={true}
+					placeholderText={props.rowData.variantStatus?.name}
 				/>
-				<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={'geneticSex'} />
+				<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={'variantStatus'} />
 			</>
 		);
 	};
@@ -325,7 +328,7 @@ export const VariantsTable = () => {
 			},
 		],
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-		[errorMessagesRef]
+		[errorMessagesRef, variantStatusTerms]
 	);
 
 	const DEFAULT_COLUMN_WIDTH = 10;

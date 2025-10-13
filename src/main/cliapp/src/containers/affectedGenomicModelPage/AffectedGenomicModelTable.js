@@ -71,7 +71,8 @@ export const AffectedGenomicModelTable = () => {
 		}));
 	};
 
-	const columns = [
+	const columns = useMemo(
+		() => [
 		{
 			field: 'curie',
 			header: 'Curie',
@@ -208,7 +209,10 @@ export const AffectedGenomicModelTable = () => {
 			filterConfig: FILTER_CONFIGS.obsoleteFilterConfig,
 			sortable: true,
 		},
-	];
+	],
+	// eslint-disable-next-line react-hooks/exhaustive-deps
+	[]
+);
 
 	const DEFAULT_COLUMN_WIDTH = 100 / columns.length;
 	const SEARCH_ENDPOINT = 'agm';
