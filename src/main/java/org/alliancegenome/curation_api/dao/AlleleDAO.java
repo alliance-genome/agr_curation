@@ -156,15 +156,15 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 				""";
 		String baseQuery = """
 				FROM Allele a
-						 join BiologicalEntity b on b.id=a.id
-						 join SlotAnnotation s on a.id=s.singleAllele_id
-						 join OntologyTerm ot on ot.id=b.taxon_id
-						 join CrossReference cr on cr.id=b.dataprovidercrossreference_id
-						 join resourceDescriptorPage rd on rd.id=cr.resourcedescriptorpage_id
+						join BiologicalEntity b on b.id=a.id
+						join SlotAnnotation s on a.id=s.singleAllele_id
+						join OntologyTerm ot on ot.id=b.taxon_id
+						join CrossReference cr on cr.id=b.dataprovidercrossreference_id
+						join resourceDescriptorPage rd on rd.id=cr.resourcedescriptorpage_id
 				where s.formatText is not null
-				  and b.obsolete = false
-				  and b.internal = false
-				  and s.slotannotationtype = 'AlleleSymbolSlotAnnotation'
+				and b.obsolete = false
+				and b.internal = false
+				and s.slotannotationtype = 'AlleleSymbolSlotAnnotation'
 								""";
 
 		Query query;
@@ -307,21 +307,21 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 
 		String constructAssocQueryString = """
 				select aga.alleleassociationsubject_id as allele_id,
-				       aga.alleleconstructassociationobject_id as construct_id,
-				       be.primaryexternalid as gene_primary_id,
-				       be.modinternalid as modinternalid,
-				       sa.displaytext as gene_symbol,
-				       sa.formattext as gene_symbol_format,
-					   cr.referencedCurie,
-					   cr.displayName,
-					   rd.name,
-					   rd.urlTemplate
+					aga.alleleconstructassociationobject_id as construct_id,
+					be.primaryexternalid as gene_primary_id,
+					be.modinternalid as modinternalid,
+					sa.displaytext as gene_symbol,
+					sa.formattext as gene_symbol_format,
+					cr.referencedCurie,
+					cr.displayName,
+					rd.name,
+					rd.urlTemplate
 				from alleleconstructassociation aga
-						 join construct g on g.id = aga.alleleconstructassociationobject_id
-						 join reagent be on be.id = g.id
-						 join slotannotation sa on sa.singleconstruct_id = g.id
-						 join CrossReference cr on cr.id=be.dataprovidercrossreference_id
-						 join resourceDescriptorPage rd on rd.id=cr.resourcedescriptorpage_id
+						join construct g on g.id = aga.alleleconstructassociationobject_id
+						join reagent be on be.id = g.id
+						join slotannotation sa on sa.singleconstruct_id = g.id
+						join CrossReference cr on cr.id=be.dataprovidercrossreference_id
+						join resourceDescriptorPage rd on rd.id=cr.resourcedescriptorpage_id
 
 				where alleleassociationsubject_id in :alleleIds
 				  and sa.slotannotationtype = 'ConstructSymbolSlotAnnotation'
