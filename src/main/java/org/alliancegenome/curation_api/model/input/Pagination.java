@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Data @NoArgsConstructor @AllArgsConstructor
 public class Pagination {
 
-	private Integer page = 0; // This has to be 0 when quering the database and 1 for querying ES
+	private Integer page = 0; // This has to be 0 when querying the database and 1 for querying ES
 	private Integer limit = 20;
 
 	public long getOffset() {
@@ -16,5 +16,10 @@ public class Pagination {
 
 	public void increment() {
 		page += 1;
+	}
+
+	// if page = 0 and limit = 0 calculate the count of records
+	public boolean isCountCondition() {
+		return page == 0 && limit == 0;
 	}
 }
