@@ -14,17 +14,16 @@ import org.alliancegenome.curation_api.dao.associations.AgmAlleleAssociationDAO;
 import org.alliancegenome.curation_api.dao.base.BaseSQLDAO;
 import org.alliancegenome.curation_api.model.document.es.AlleleSummaryDTO;
 import org.alliancegenome.curation_api.model.entities.Allele;
-import org.alliancegenome.curation_api.model.entities.Construct;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.Note;
+import org.alliancegenome.curation_api.model.entities.Organization;
 import org.alliancegenome.curation_api.model.entities.ResourceDescriptorPage;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.associations.AlleleGeneAssociation;
 import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.AlleleSymbolSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.AlleleSynonymSlotAnnotation;
-import org.alliancegenome.curation_api.model.entities.slotAnnotations.ConstructSymbolSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.GeneSymbolSlotAnnotation;
 import org.alliancegenome.curation_api.model.input.Pagination;
 import org.alliancegenome.curation_api.response.SearchResponse;
@@ -152,15 +151,19 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 				cr.referencedCurie,
 				cr.displayName,
 				rd.name,
-				rd.urlTemplate
+				org.id,
+				org.abbreviation,
+				org.fullname,
+				org.shortname
 				""";
 		String baseQuery = """
 				FROM Allele a
-						join BiologicalEntity b on b.id=a.id
-						join SlotAnnotation s on a.id=s.singleAllele_id
-						join OntologyTerm ot on ot.id=b.taxon_id
-						join CrossReference cr on cr.id=b.dataprovidercrossreference_id
-						join resourceDescriptorPage rd on rd.id=cr.resourcedescriptorpage_id
+					join BiologicalEntity b on b.id=a.id
+					join SlotAnnotation s on a.id=s.singleAllele_id
+					join OntologyTerm ot on ot.id=b.taxon_id
+					join CrossReference cr on cr.id=b.dataprovidercrossreference_id
+					join resourceDescriptorPage rd on rd.id=cr.resourcedescriptorpage_id
+					join organization org on org.id=b.dataprovider_id
 				where s.formatText is not null
 				and b.obsolete = false
 				and b.internal = false
@@ -176,7 +179,7 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 			return emptyResponse;
 		} else {
 			query = entityManager.createNativeQuery(baseSelectQuery + baseQuery + " ORDER BY a.id");
-			query.setFirstResult(pagination.getPage()*pagination.getLimit());
+			query.setFirstResult(pagination.getPage() * pagination.getLimit());
 			query.setMaxResults(pagination.getLimit());
 		}
 		List<Object[]> results = query.getResultList();
@@ -197,23 +200,33 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 				symbolAnnotation.setDisplayText((String) row[5]);
 				allele.setAlleleSymbol(symbolAnnotation);
 			}
+			// Create NCBITaxonTerm if data exists
 			if (row[6] != null || row[7] != null) {
 				NCBITaxonTerm term = new NCBITaxonTerm();
 				term.setCurie((String) row[6]);
 				term.setName((String) row[7]);
 				allele.setTaxon(term);
 			}
+			// Create DataProviderCrossReference if data exists
 			if (row[8] != null || row[9] != null) {
 				CrossReference term = new CrossReference();
 				term.setReferencedCurie((String) row[8]);
 				term.setDisplayName((String) row[9]);
 				allele.setDataProviderCrossReference(term);
-				if (row[10] != null || row[11] != null) {
+				if (row[10] != null) {
 					ResourceDescriptorPage page = new ResourceDescriptorPage();
 					page.setName((String) row[10]);
-					page.setUrlTemplate((String) row[11]);
 					term.setResourceDescriptorPage(page);
 				}
+			}
+			// Create Organization (dataProvider) if data exists
+			if (row[11] != null) {
+				Organization org = new Organization();
+				org.setId((Long) row[11]);
+				org.setAbbreviation((String) row[12]);
+				org.setFullName((String) row[13]);
+				org.setShortName((String) row[14]);
+				allele.setDataProvider(org);
 			}
 			alleles.add(allele);
 		}
@@ -222,7 +235,7 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 				.map(Allele::getId)
 				.collect(java.util.stream.Collectors.toList());
 
-		Map<Long, Allele> allelMap = alleles.stream().collect(Collectors.toMap(Allele::getId, Function.identity()));
+		Map<Long, Allele> alleleMap = alleles.stream().collect(Collectors.toMap(Allele::getId, Function.identity()));
 
 		String synonymQueryString = """
 				select singleallele_id, string_agg(displaytext,'||'), string_agg(formatText,'||')
@@ -249,7 +262,7 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 							index.incrementAndGet();
 							return slot;
 						}).toList();
-				allelMap.get((Long) objects[0]).setAlleleSynonyms(slotList);
+				alleleMap.get((Long) objects[0]).setAlleleSynonyms(slotList);
 			}
 		});
 
@@ -257,19 +270,19 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 
 		String geneAssociationInfoQuery = """
 				select alleleassociationsubject_id as allele_id,
-				       allelegeneassociationobject_id as gene_id,
-				       be.primaryexternalid as gene_primary_id,
-				       sa.displaytext as gene_symbol,
-				       sa.formattext as gene_symbol_format,
-					   ot.name as taxon_nameagain
+					allelegeneassociationobject_id as gene_id,
+					be.primaryexternalid as gene_primary_id,
+					sa.displaytext as gene_symbol,
+					sa.formattext as gene_symbol_format,
+					ot.name as taxon_nameagain
 				from allelegeneassociation aga
-						 join vocabularyterm v on v.id = aga.relation_id
-						 join gene g on g.id = aga.allelegeneassociationobject_id
-						 join biologicalentity be on be.id = g.id
-						 join slotannotation sa on sa.singlegene_id = g.id and sa.slotannotationtype = 'GeneSymbolSlotAnnotation'
-						 join OntologyTerm ot on ot.id=be.taxon_id
+					join vocabularyterm v on v.id = aga.relation_id
+					join gene g on g.id = aga.allelegeneassociationobject_id
+					join biologicalentity be on be.id = g.id
+					join slotannotation sa on sa.singlegene_id = g.id and sa.slotannotationtype = 'GeneSymbolSlotAnnotation'
+					join OntologyTerm ot on ot.id=be.taxon_id
 				where alleleassociationsubject_id in :alleleIds
-				  and v.name = 'is_allele_of';
+				and v.name = 'is_allele_of';
 				""";
 
 		Query geneAssociationQuery = entityManager.createNativeQuery(geneAssociationInfoQuery);
@@ -279,14 +292,14 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 		List<AlleleGeneAssociation> associationList =
 				geneAssociationResults.stream().map(objects -> {
 					Long alleleID = (Long) objects[0];
-					Allele allele = allelMap.get(alleleID);
+					Allele allele = alleleMap.get(alleleID);
 					AlleleGeneAssociation association = new AlleleGeneAssociation();
 					association.setAlleleAssociationSubject(allele);
 					VocabularyTerm term = new VocabularyTerm();
 					term.setName("is_allele_of");
 					association.setRelation(term);
 					Gene gene = new Gene();
-					gene.setId(((Long) objects[1]));
+					gene.setId((Long) objects[1]);
 					gene.setPrimaryExternalId((String) objects[2]);
 
 					GeneSymbolSlotAnnotation annotation = new GeneSymbolSlotAnnotation();
@@ -301,72 +314,9 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 
 		Map<Allele, List<AlleleGeneAssociation>> map = associationList.stream().collect(Collectors.groupingBy(AlleleGeneAssociation::getAlleleAssociationSubject));
 		map.forEach((mapAllele, alleleGeneAssociations) -> {
-			Allele allele = allelMap.get(mapAllele.getId());
+			Allele allele = alleleMap.get(mapAllele.getId());
 			allele.setAlleleGeneAssociations(alleleGeneAssociations);
 		});
-
-		String constructAssocQueryString = """
-				select aga.alleleassociationsubject_id as allele_id,
-					aga.alleleconstructassociationobject_id as construct_id,
-					be.primaryexternalid as gene_primary_id,
-					be.modinternalid as modinternalid,
-					sa.displaytext as gene_symbol,
-					sa.formattext as gene_symbol_format,
-					cr.referencedCurie,
-					cr.displayName,
-					rd.name,
-					rd.urlTemplate
-				from alleleconstructassociation aga
-						join construct g on g.id = aga.alleleconstructassociationobject_id
-						join reagent be on be.id = g.id
-						join slotannotation sa on sa.singleconstruct_id = g.id
-						join CrossReference cr on cr.id=be.dataprovidercrossreference_id
-						join resourceDescriptorPage rd on rd.id=cr.resourcedescriptorpage_id
-
-				where alleleassociationsubject_id in :alleleIds
-				and sa.slotannotationtype = 'ConstructSymbolSlotAnnotation'
-				;
-									""";
-		Query constructQuery = entityManager.createNativeQuery(constructAssocQueryString);
-		constructQuery.setParameter("alleleIds", alleleIds);
-		List<Object[]> constructList = constructQuery.getResultList();
-
-		// Create minimal Allele objects from selected fields
-		for (Object[] row : constructList) {
-			Long alleleID = (Long) row[0];
-			Allele allele = allelMap.get(alleleID);
-			Long constructID = (Long) row[1];
-			Construct construct = new Construct();
-			construct.setId(constructID);
-			String primaryExternalId = (String) row[2];
-			String modInternalId = (String) row[3];
-			if (primaryExternalId != null) {
-				construct.setPrimaryExternalId(primaryExternalId);
-			}
-			if (modInternalId != null) {
-				construct.setModInternalId(primaryExternalId);
-			}
-			// Create ConstructSymbolSlotAnnotation if formatText or displayText exists
-			if (row[4] != null || row[5] != null) {
-				ConstructSymbolSlotAnnotation symbolAnnotation = new ConstructSymbolSlotAnnotation();
-				symbolAnnotation.setFormatText((String) row[4]);
-				symbolAnnotation.setDisplayText((String) row[5]);
-				construct.setConstructSymbol(symbolAnnotation);
-			}
-			if (row[6] != null || row[7] != null) {
-				CrossReference term = new CrossReference();
-				term.setReferencedCurie((String) row[6]);
-				term.setDisplayName((String) row[7]);
-				allele.setDataProviderCrossReference(term);
-				if (row[8] != null || row[9] != null) {
-					ResourceDescriptorPage page = new ResourceDescriptorPage();
-					page.setName((String) row[8]);
-					page.setUrlTemplate((String) row[9]);
-					term.setResourceDescriptorPage(page);
-				}
-			}
-			alleles.add(allele);
-		}
 
 		String variantCountQueryString = """
 				select alleleassociationsubject_id as allele_id,
@@ -391,11 +341,15 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 		}
 
 		String notesQueryString = """
-				SELECT submittedobject_id as allele_id,
-				freetext as note
-				from note, biologicalentity_note
-				WHERE submittedobject_id IN :alleleIds
-				and id = relatednotes_id
+				SELECT ben.submittedobject_id as allele_id,
+				n.freetext as note,
+				vt.id as notetype_id,
+				vt.name as notetype_name
+				from note n
+				join biologicalentity_note ben on ben.relatednotes_id = n.id
+				join vocabularyterm vt on vt.id = n.notetype_id
+				WHERE ben.submittedobject_id IN :alleleIds
+				and vt.name = 'mutation_description'
 				""";
 		Query notesQueryExec = entityManager.createNativeQuery(notesQueryString);
 		notesQueryExec.setParameter("alleleIds", alleleIds);
@@ -404,11 +358,21 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 		notesResults.forEach(objects -> {
 			Note note = new Note();
 			note.setFreeText((String) objects[1]);
-			List<Note> noteList = allelMap.get((Long) objects[0]).getRelatedNotes();
+
+			// Set the noteType
+			VocabularyTerm noteType = new VocabularyTerm();
+			noteType.setId((Long) objects[2]);
+			noteType.setName((String) objects[3]);
+			note.setNoteType(noteType);
+
+			Long alleleId = (Long) objects[0];
+			Allele allele = alleleMap.get(alleleId);
+			List<Note> noteList = allele.getRelatedNotes();
 			if (noteList == null) {
 				noteList = new ArrayList<>();
 			}
 			noteList.add(note);
+			allele.setRelatedNotes(noteList);
 		});
 
 		SearchResponse<AlleleSummaryDTO> response = new SearchResponse<>();
