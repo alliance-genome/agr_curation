@@ -324,7 +324,7 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 						join resourceDescriptorPage rd on rd.id=cr.resourcedescriptorpage_id
 
 				where alleleassociationsubject_id in :alleleIds
-				  and sa.slotannotationtype = 'ConstructSymbolSlotAnnotation'
+				and sa.slotannotationtype = 'ConstructSymbolSlotAnnotation'
 				;
 									""";
 		Query constructQuery = entityManager.createNativeQuery(constructAssocQueryString);
@@ -370,7 +370,7 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 
 		String variantCountQueryString = """
 				select alleleassociationsubject_id as allele_id,
-					   count(ava) as ct
+					count(ava) as ct
 				from alleleVariantAssociation ava
 				where alleleassociationsubject_id in :alleleIds
 				group by alleleassociationsubject_id
