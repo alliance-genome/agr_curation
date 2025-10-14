@@ -36,7 +36,7 @@ public class AlleleSummaryDocumentBuilder {
 		doc.setDescription(buildDescription(allele));
 
 		Optional<Gene> optionalAlleleOfGene = buildAlleleOfGene(allele);
-		optionalAlleleOfGene.ifPresent(gene -> doc.setAlleleOfGene(gene));
+		optionalAlleleOfGene.ifPresent(doc::setAlleleOfGene);
 
 		doc.setConstructSlimList(getConstructs(allele));
 
