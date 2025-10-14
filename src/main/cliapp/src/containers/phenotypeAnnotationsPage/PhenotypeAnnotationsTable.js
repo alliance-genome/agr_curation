@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useMemo } from 'react';
 
 import { GenericDataTable } from '../../components/GenericDataTable/GenericDataTable';
 import { ConditionRelationsDialog } from '../../components/ConditionRelationsDialog';
@@ -190,7 +190,11 @@ export const PhenotypeAnnotationsTable = () => {
 	const SEARCH_ENDPOINT = 'phenotype-annotation';
 	const defaultFilters = { obsoleteFilter: { obsolete: { queryString: 'false' } } };
 
-	const initialTableState = getDefaultTableState('PhenotypeAnnotations', columns, DEFAULT_COLUMN_WIDTH, defaultFilters);
+	const initialTableState = useMemo(
+		() => getDefaultTableState('PhenotypeAnnotations', columns, DEFAULT_COLUMN_WIDTH, defaultFilters),
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+		[columns]
+	);
 
 	const { settings: tableState, mutate: setTableState } = useGetUserSettings(
 		initialTableState.tableSettingsKeyName,

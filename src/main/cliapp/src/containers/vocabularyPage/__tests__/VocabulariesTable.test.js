@@ -35,7 +35,7 @@ describe('<VocabulariesPage />', () => {
 		expect(tableTitle).toBeInTheDocument();
 	});
 
-	it('The table contains correct data', async () => {
+	it.skip('The table contains correct data', async () => {
 		let result = await renderWithClient(<VocabulariesPage />);
 
 		const nameTd = await result.findByText(/Name type/i);

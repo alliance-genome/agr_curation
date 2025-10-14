@@ -1,4 +1,4 @@
-import React, { useRef, useState, useReducer } from 'react';
+import React, { useRef, useState, useReducer, useEffect, useMemo } from 'react';
 import { GenericDataTable } from '../../components/GenericDataTable/GenericDataTable';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { Toast } from 'primereact/toast';
@@ -53,26 +53,47 @@ export const ControlledVocabularyTable = () => {
 	const obsoleteTerms = useControlledVocabularyService('generic_boolean_terms');
 	let vocabularyService = new VocabularyService();
 
-	useQuery(['vocabularies'], () => vocabularyService.getVocabularies(), {
-		onSuccess: (data) => {
+	const {
+		data: vocabulariesData,
+		isSuccess: vocabulariesIsSuccess,
+		isError: vocabulariesIsError,
+		error: vocabulariesError,
+	} = useQuery({
+		queryKey: ['vocabularies'],
+		queryFn: () => vocabularyService.getVocabularies(),
+		placeholderData: (previousData) => previousData,
+		refetchOnWindowFocus: false,
+	});
+
+	// Handle vocabularies data (was in onSuccess callback)
+	useEffect(() => {
+		if (vocabulariesIsSuccess && vocabulariesData?.data?.results) {
+			//TODO: check this data object
+			console.log('ControlledVocabularyTable data', vocabulariesData);
 			setVocabularies(
-				data.data.results.sort(function (a, b) {
+				vocabulariesData.data.results.sort(function (a, b) {
 					return a.name.localeCompare(b.name, 'en', { sensitivity: 'base' });
 				})
 			);
-		},
-		onError: (error) => {
-			toast_topleft.current.show([
-				{ life: 7000, severity: 'error', summary: 'Page error: ', detail: error.message, sticky: false },
-			]);
-		},
-	});
-
-	const mutation = useMutation((updatedTerm) => {
-		if (!vocabularyService) {
-			vocabularyService = new VocabularyService();
 		}
-		return vocabularyService.saveTerm(updatedTerm);
+	}, [vocabulariesData, vocabulariesIsSuccess]);
+
+	// Handle vocabularies error (was in onError callback)
+	useEffect(() => {
+		if (vocabulariesIsError && vocabulariesError) {
+			toast_topleft.current.show([
+				{ life: 7000, severity: 'error', summary: 'Page error: ', detail: vocabulariesError.message, sticky: false },
+			]);
+		}
+	}, [vocabulariesIsError, vocabulariesError]);
+
+	const mutation = useMutation({
+		mutationFn: (updatedTerm) => {
+			if (!vocabularyService) {
+				vocabularyService = new VocabularyService();
+			}
+			return vocabularyService.saveTerm(updatedTerm);
+		},
 	});
 
 	const handleNewTerm = () => {
@@ -187,97 +208,104 @@ export const ControlledVocabularyTable = () => {
 		);
 	};
 
-	const columns = [
-		{
-			field: 'id',
-			header: 'Id',
-			sortable: false,
-			body: (rowData) => <IdTemplate id={rowData.id} />,
-		},
-		{
-			field: 'name',
-			header: 'Name',
-			sortable: true,
-			filterConfig: FILTER_CONFIGS.nameFilterConfig,
-			editor: (props) => nameEditorTemplate(props),
-			body: (rowData) => <StringTemplate string={rowData.name} />,
-		},
-		{
-			field: 'abbreviation',
-			header: 'Abbreviation',
-			sortable: true,
-			filterConfig: FILTER_CONFIGS.abbreviationFilterConfig,
-			editor: (props) => abbreviationEditorTemplate(props),
-			body: (rowData) => <StringTemplate string={rowData.abbreviation} />,
-		},
-		{
-			field: 'synonyms',
-			header: 'Synonyms',
-			sortable: true,
-			filterConfig: FILTER_CONFIGS.synonymsFilterConfig,
-			body: (rowData) => <StringListTemplate list={rowData.synonyms} />,
-		},
-		{
-			field: 'vocabulary.name',
-			header: 'Vocabulary',
-			sortable: true,
-			filterConfig: FILTER_CONFIGS.vocabularyNameFilterConfig,
-			editor: (props) => vocabularyEditorTemplate(props),
-			body: (rowData) => <StringTemplate string={rowData.vocabulary?.name} />,
-		},
-		{
-			field: 'definition',
-			header: 'Definition',
-			sortable: true,
-			filterConfig: FILTER_CONFIGS.definitionFilterConfig,
-			editor: (props) => definitionEditorTemplate(props),
-			body: (rowData) => <StringTemplate string={rowData.definition} />,
-		},
-		{
-			field: 'updatedBy.uniqueId',
-			header: 'Updated By',
-			sortable: true,
-			body: (rowData) => <StringTemplate string={rowData.updatedBy?.uniqueId} />,
-			filterConfig: FILTER_CONFIGS.updatedByFilterConfig,
-		},
-		{
-			field: 'dateUpdated',
-			header: 'Date Updated',
-			sortable: true,
-			filter: true,
-			body: (rowData) => <StringTemplate string={rowData.dateUpdated} />,
-			filterConfig: FILTER_CONFIGS.dateUpdatedFilterConfig,
-		},
-		{
-			field: 'createdBy.uniqueId',
-			header: 'Created By',
-			sortable: true,
-			filter: true,
-			body: (rowData) => <StringTemplate string={rowData.createdBy?.uniqueId} />,
-			filterConfig: FILTER_CONFIGS.createdByFilterConfig,
-		},
-		{
-			field: 'dateCreated',
-			header: 'Date Created',
-			sortable: true,
-			filter: true,
-			body: (rowData) => <StringTemplate string={rowData.dateCreated} />,
-			filterConfig: FILTER_CONFIGS.dataCreatedFilterConfig,
-		},
-		{
-			field: 'obsolete',
-			header: 'Obsolete',
-			sortable: true,
-			filterConfig: FILTER_CONFIGS.obsoleteFilterConfig,
-			editor: (props) => obsoleteEditorTemplate(props),
-			body: (rowData) => <BooleanTemplate value={rowData.obsolete} />,
-		},
-	];
+	const columns = useMemo(
+		() => [
+			{
+				field: 'id',
+				header: 'Id',
+				sortable: false,
+				body: (rowData) => <IdTemplate id={rowData.id} />,
+			},
+			{
+				field: 'name',
+				header: 'Name',
+				sortable: true,
+				filterConfig: FILTER_CONFIGS.nameFilterConfig,
+				editor: (props) => nameEditorTemplate(props),
+				body: (rowData) => <StringTemplate string={rowData.name} />,
+			},
+			{
+				field: 'abbreviation',
+				header: 'Abbreviation',
+				sortable: true,
+				filterConfig: FILTER_CONFIGS.abbreviationFilterConfig,
+				editor: (props) => abbreviationEditorTemplate(props),
+				body: (rowData) => <StringTemplate string={rowData.abbreviation} />,
+			},
+			{
+				field: 'synonyms',
+				header: 'Synonyms',
+				sortable: true,
+				filterConfig: FILTER_CONFIGS.synonymsFilterConfig,
+				body: (rowData) => <StringListTemplate list={rowData.synonyms} />,
+			},
+			{
+				field: 'vocabulary.name',
+				header: 'Vocabulary',
+				sortable: true,
+				filterConfig: FILTER_CONFIGS.vocabularyNameFilterConfig,
+				editor: (props) => vocabularyEditorTemplate(props),
+				body: (rowData) => <StringTemplate string={rowData.vocabulary?.name} />,
+			},
+			{
+				field: 'definition',
+				header: 'Definition',
+				sortable: true,
+				filterConfig: FILTER_CONFIGS.definitionFilterConfig,
+				editor: (props) => definitionEditorTemplate(props),
+				body: (rowData) => <StringTemplate string={rowData.definition} />,
+			},
+			{
+				field: 'updatedBy.uniqueId',
+				header: 'Updated By',
+				sortable: true,
+				body: (rowData) => <StringTemplate string={rowData.updatedBy?.uniqueId} />,
+				filterConfig: FILTER_CONFIGS.updatedByFilterConfig,
+			},
+			{
+				field: 'dateUpdated',
+				header: 'Date Updated',
+				sortable: true,
+				filter: true,
+				body: (rowData) => <StringTemplate string={rowData.dateUpdated} />,
+				filterConfig: FILTER_CONFIGS.dateUpdatedFilterConfig,
+			},
+			{
+				field: 'createdBy.uniqueId',
+				header: 'Created By',
+				sortable: true,
+				filter: true,
+				body: (rowData) => <StringTemplate string={rowData.createdBy?.uniqueId} />,
+				filterConfig: FILTER_CONFIGS.createdByFilterConfig,
+			},
+			{
+				field: 'dateCreated',
+				header: 'Date Created',
+				sortable: true,
+				filter: true,
+				body: (rowData) => <StringTemplate string={rowData.dateCreated} />,
+				filterConfig: FILTER_CONFIGS.dataCreatedFilterConfig,
+			},
+			{
+				field: 'obsolete',
+				header: 'Obsolete',
+				sortable: true,
+				filterConfig: FILTER_CONFIGS.obsoleteFilterConfig,
+				editor: (props) => obsoleteEditorTemplate(props),
+				body: (rowData) => <BooleanTemplate value={rowData.obsolete} />,
+			},
+		],
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+		[]
+	);
 
 	const DEFAULT_COLUMN_WIDTH = 13;
 	const SEARCH_ENDPOINT = 'vocabularyterm';
 
-	const initialTableState = getDefaultTableState('ControlledVocabularyTerms', columns, DEFAULT_COLUMN_WIDTH);
+	const initialTableState = useMemo(
+		() => getDefaultTableState('ControlledVocabularyTerms', columns, DEFAULT_COLUMN_WIDTH),
+		[columns]
+	);
 
 	const { settings: tableState, mutate: setTableState } = useGetUserSettings(
 		initialTableState.tableSettingsKeyName,

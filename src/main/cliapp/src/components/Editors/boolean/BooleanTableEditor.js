@@ -19,7 +19,7 @@ export const BooleanTableEditor = ({ rowProps, errorMessagesRef, field, showClea
 	return (
 		<>
 			<TrueFalseDropdown
-				options={booleanTerms}
+				options={booleanTerms?.terms || []}
 				editorChange={editorChange}
 				props={rowProps}
 				field={field}

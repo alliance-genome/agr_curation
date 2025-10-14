@@ -15,7 +15,7 @@ export const CronFields = ({ newItem, onChange }) => {
 					<label htmlFor="scheduled">Scheduled</label>
 					<Dropdown
 						id="scheduled"
-						options={booleanTerms}
+						options={booleanTerms?.terms || []}
 						value={newItem.scheduleActive}
 						onChange={onChange}
 						placeholder={'Select if Scheduled'}
