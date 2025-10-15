@@ -36,7 +36,7 @@ public class AlleleSummaryDocumentBuilder {
 		doc.setDescription(buildDescription(allele));
 
 		Optional<Gene> optionalAlleleOfGene = buildAlleleOfGene(allele);
-		optionalAlleleOfGene.ifPresent(gene -> doc.setAlleleOfGene(gene));
+		optionalAlleleOfGene.ifPresent(doc::setAlleleOfGene);
 
 		doc.setConstructSlimList(getConstructs(allele));
 
@@ -60,7 +60,6 @@ public class AlleleSummaryDocumentBuilder {
 		if (CollectionUtils.isNotEmpty(allele.getRelatedNotes())) {
 			List<String> descriptionList = allele.getRelatedNotes()
 					.stream()
-					.filter(note -> note.getNoteType().getName().equals("mutation_description"))
 					.map(note -> note.getFreeText())
 					.collect(Collectors.toList());
 
@@ -113,7 +112,18 @@ public class AlleleSummaryDocumentBuilder {
 		}
 
 		String dataProviderAbbreviation = allele.getDataProvider().getAbbreviation();
-		ResourceDescriptorPage page = resourceDescriptorPageService.getPageForResourceDescriptor(dataProviderAbbreviation, "allele/references");
+
+		// Determine the correct references page based on the current page type
+		String referencesPageName = "allele/references";
+		if (allele.getDataProviderCrossReference() != null
+			&& allele.getDataProviderCrossReference().getResourceDescriptorPage() != null) {
+			String currentPageName = allele.getDataProviderCrossReference().getResourceDescriptorPage().getName();
+			if ("transgene".equals(currentPageName)) {
+				referencesPageName = "transgene/references";
+			}
+		}
+
+		ResourceDescriptorPage page = resourceDescriptorPageService.getPageForResourceDescriptor(dataProviderAbbreviation, referencesPageName);
 
 		if (page != null && allele.getDataProviderCrossReference() != null) {
 			alleleRefsCrossRef.setReferencedCurie(allele.getDataProviderCrossReference().getReferencedCurie());
