@@ -74,7 +74,7 @@ public class SubmittedObject extends CurieObject {
 	@IndexedEmbedded(includePaths = {"freeText", "freeText_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-	@JsonView({ View.FieldsAndLists.class, View.AlleleView.class, View.AlleleDetailView.class, View.GeneView.class, View.AffectedGenomicModelView.class, View.ConstructView.class, View.VariantView.class })
+	@JsonView({ View.FieldsAndLists.class, View.AlleleView.class, View.AlleleDetailView.class, View.GeneView.class, View.AffectedGenomicModelView.class, View.ConstructView.class })
 	@JoinTable(
 		joinColumns = @JoinColumn(name = "submittedobject_id"),
 		inverseJoinColumns = @JoinColumn(name = "relatednotes_id"),
