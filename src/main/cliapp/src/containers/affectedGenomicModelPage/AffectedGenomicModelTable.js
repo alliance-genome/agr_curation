@@ -73,146 +73,146 @@ export const AffectedGenomicModelTable = () => {
 
 	const columns = useMemo(
 		() => [
-		{
-			field: 'curie',
-			header: 'Curie',
-			sortable: true,
-			filterConfig: FILTER_CONFIGS.curieFilterConfig,
-		},
-		{
-			field: 'primaryExternalId',
-			header: 'Primary External ID',
-			body: (rowData) => <IdTemplate id={rowData.primaryExternalId} />,
-			sortable: true,
-			filterConfig: FILTER_CONFIGS.primaryexternalidFilterConfig,
-		},
-		{
-			field: 'modInternalId',
-			header: 'MOD Internal ID',
-			body: (rowData) => <IdTemplate id={rowData.modInternalId} />,
-			sortable: true,
-			filterConfig: FILTER_CONFIGS.modinternalidFilterConfig,
-		},
-		{
-			field: 'agmFullName.displayText',
-			header: 'Name',
-			sortable: true,
-			filter: true,
-			body: (rowData) => (
-				<TextDialogTemplate
-					entity={rowData.agmFullName}
-					handleOpen={handleFullNameOpen}
-					text={rowData.agmFullName?.displayText}
-					underline={false}
-				/>
-			),
-			filterConfig: FILTER_CONFIGS.agmNameFilterConfig,
-		},
-		{
-			field: 'agmSynonyms.displayText',
-			header: 'Synonyms',
-			sortable: true,
-			body: (rowData) => (
-				<ListDialogTemplate
-					entities={rowData.agmSynonyms}
-					handleOpen={handleSynonymsOpen}
-					getTextField={(entity) => entity?.displayText}
-					underline={false}
-				/>
-			),
-			filterConfig: FILTER_CONFIGS.agmSynonymsFilterConfig,
-		},
-		{
-			field: 'agmSecondaryIds.secondaryId',
-			header: 'Secondary IDs',
-			body: (rowData) => (
-				<ListDialogTemplate
-					entities={rowData.agmSecondaryIds}
-					handleOpen={handleSecondaryIdsOpen}
-					getTextField={(entity) => entity?.secondaryId}
-				/>
-			),
-			sortable: true,
-			filterConfig: FILTER_CONFIGS.agmSecondaryIdsFilterConfig,
-		},
-		{
-			field: 'subtype.name',
-			header: 'Sub Type',
-			body: (rowData) => <StringTemplate string={rowData.subtype?.name} />,
-			sortable: true,
-			filterConfig: FILTER_CONFIGS.subtypeFilterConfig,
-		},
-		{
-			field: 'taxon.name',
-			header: 'Taxon',
-			sortable: true,
-			body: (rowData) => <OntologyTermTemplate term={rowData.taxon} />,
-			filterConfig: FILTER_CONFIGS.taxonFilterConfig,
-		},
-		{
-			field: 'dataProvider.abbreviation',
-			header: 'Data Provider',
-			sortable: true,
-			filterConfig: FILTER_CONFIGS.agmDataProviderFilterConfig,
-		},
-		{
-			field: 'crossReferences.displayName',
-			header: 'Cross References',
-			sortable: true,
-			filterConfig: FILTER_CONFIGS.crossReferencesFilterConfig,
-			body: (rowData) => <CrossReferencesTemplate list={rowData.crossReferences} />,
-		},
-		{
-			field: 'updatedBy.uniqueId',
-			header: 'Updated By',
-			sortable: true,
-			body: (rowData) => <StringTemplate string={rowData.updatedBy?.uniqueId} />,
-			filterConfig: FILTER_CONFIGS.updatedByFilterConfig,
-		},
-		{
-			field: 'dateUpdated',
-			header: 'Date Updated',
-			sortable: true,
-			filter: true,
-			body: (rowData) => <StringTemplate string={rowData.dateUpdated} />,
-			filterConfig: FILTER_CONFIGS.dateUpdatedFilterConfig,
-		},
-		{
-			field: 'createdBy.uniqueId',
-			header: 'Created By',
-			sortable: true,
-			filter: true,
-			body: (rowData) => <StringTemplate string={rowData.createdBy?.uniqueId} />,
-			filterConfig: FILTER_CONFIGS.createdByFilterConfig,
-		},
-		{
-			field: 'dateCreated',
-			header: 'Date Created',
-			sortable: true,
-			filter: true,
-			body: (rowData) => <StringTemplate string={rowData.dateCreated} />,
-			filterConfig: FILTER_CONFIGS.dataCreatedFilterConfig,
-		},
-		{
-			field: 'internal',
-			header: 'Internal',
-			body: (rowData) => <BooleanTemplate value={rowData.internal} />,
-			filter: true,
-			filterConfig: FILTER_CONFIGS.internalFilterConfig,
-			sortable: true,
-		},
-		{
-			field: 'obsolete',
-			header: 'Obsolete',
-			body: (rowData) => <BooleanTemplate value={rowData.obsolete} />,
-			filter: true,
-			filterConfig: FILTER_CONFIGS.obsoleteFilterConfig,
-			sortable: true,
-		},
-	],
-	// eslint-disable-next-line react-hooks/exhaustive-deps
-	[]
-);
+			{
+				field: 'curie',
+				header: 'Curie',
+				sortable: true,
+				filterConfig: FILTER_CONFIGS.curieFilterConfig,
+			},
+			{
+				field: 'primaryExternalId',
+				header: 'Primary External ID',
+				body: (rowData) => <IdTemplate id={rowData.primaryExternalId} />,
+				sortable: true,
+				filterConfig: FILTER_CONFIGS.primaryexternalidFilterConfig,
+			},
+			{
+				field: 'modInternalId',
+				header: 'MOD Internal ID',
+				body: (rowData) => <IdTemplate id={rowData.modInternalId} />,
+				sortable: true,
+				filterConfig: FILTER_CONFIGS.modinternalidFilterConfig,
+			},
+			{
+				field: 'agmFullName.displayText',
+				header: 'Name',
+				sortable: true,
+				filter: true,
+				body: (rowData) => (
+					<TextDialogTemplate
+						entity={rowData.agmFullName}
+						handleOpen={handleFullNameOpen}
+						text={rowData.agmFullName?.displayText}
+						underline={false}
+					/>
+				),
+				filterConfig: FILTER_CONFIGS.agmNameFilterConfig,
+			},
+			{
+				field: 'agmSynonyms.displayText',
+				header: 'Synonyms',
+				sortable: true,
+				body: (rowData) => (
+					<ListDialogTemplate
+						entities={rowData.agmSynonyms}
+						handleOpen={handleSynonymsOpen}
+						getTextField={(entity) => entity?.displayText}
+						underline={false}
+					/>
+				),
+				filterConfig: FILTER_CONFIGS.agmSynonymsFilterConfig,
+			},
+			{
+				field: 'agmSecondaryIds.secondaryId',
+				header: 'Secondary IDs',
+				body: (rowData) => (
+					<ListDialogTemplate
+						entities={rowData.agmSecondaryIds}
+						handleOpen={handleSecondaryIdsOpen}
+						getTextField={(entity) => entity?.secondaryId}
+					/>
+				),
+				sortable: true,
+				filterConfig: FILTER_CONFIGS.agmSecondaryIdsFilterConfig,
+			},
+			{
+				field: 'subtype.name',
+				header: 'Sub Type',
+				body: (rowData) => <StringTemplate string={rowData.subtype?.name} />,
+				sortable: true,
+				filterConfig: FILTER_CONFIGS.subtypeFilterConfig,
+			},
+			{
+				field: 'taxon.name',
+				header: 'Taxon',
+				sortable: true,
+				body: (rowData) => <OntologyTermTemplate term={rowData.taxon} />,
+				filterConfig: FILTER_CONFIGS.taxonFilterConfig,
+			},
+			{
+				field: 'dataProvider.abbreviation',
+				header: 'Data Provider',
+				sortable: true,
+				filterConfig: FILTER_CONFIGS.agmDataProviderFilterConfig,
+			},
+			{
+				field: 'crossReferences.displayName',
+				header: 'Cross References',
+				sortable: true,
+				filterConfig: FILTER_CONFIGS.crossReferencesFilterConfig,
+				body: (rowData) => <CrossReferencesTemplate list={rowData.crossReferences} />,
+			},
+			{
+				field: 'updatedBy.uniqueId',
+				header: 'Updated By',
+				sortable: true,
+				body: (rowData) => <StringTemplate string={rowData.updatedBy?.uniqueId} />,
+				filterConfig: FILTER_CONFIGS.updatedByFilterConfig,
+			},
+			{
+				field: 'dateUpdated',
+				header: 'Date Updated',
+				sortable: true,
+				filter: true,
+				body: (rowData) => <StringTemplate string={rowData.dateUpdated} />,
+				filterConfig: FILTER_CONFIGS.dateUpdatedFilterConfig,
+			},
+			{
+				field: 'createdBy.uniqueId',
+				header: 'Created By',
+				sortable: true,
+				filter: true,
+				body: (rowData) => <StringTemplate string={rowData.createdBy?.uniqueId} />,
+				filterConfig: FILTER_CONFIGS.createdByFilterConfig,
+			},
+			{
+				field: 'dateCreated',
+				header: 'Date Created',
+				sortable: true,
+				filter: true,
+				body: (rowData) => <StringTemplate string={rowData.dateCreated} />,
+				filterConfig: FILTER_CONFIGS.dataCreatedFilterConfig,
+			},
+			{
+				field: 'internal',
+				header: 'Internal',
+				body: (rowData) => <BooleanTemplate value={rowData.internal} />,
+				filter: true,
+				filterConfig: FILTER_CONFIGS.internalFilterConfig,
+				sortable: true,
+			},
+			{
+				field: 'obsolete',
+				header: 'Obsolete',
+				body: (rowData) => <BooleanTemplate value={rowData.obsolete} />,
+				filter: true,
+				filterConfig: FILTER_CONFIGS.obsoleteFilterConfig,
+				sortable: true,
+			},
+		],
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+		[]
+	);
 
 	const DEFAULT_COLUMN_WIDTH = 100 / columns.length;
 	const SEARCH_ENDPOINT = 'agm';

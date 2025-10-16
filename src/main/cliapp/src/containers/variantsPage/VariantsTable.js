@@ -71,9 +71,7 @@ export const VariantsTable = () => {
 		updatedVariants[props.rowIndex].variantStatus = event.value;
 	};
 
-	console.log('main component -- terms', variantStatusTerms)
 	const variantStatusEditor = (props) => {
-		console.log('variantStatusEditor -- terms', variantStatusTerms)
 		return (
 			<>
 				<ControlledVocabularyDropdown
