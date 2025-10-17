@@ -151,6 +151,7 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 				cr.referencedCurie,
 				cr.displayName,
 				rd.name,
+				rd.urltemplate,
 				org.id,
 				org.abbreviation,
 				org.fullname,
@@ -213,19 +214,20 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 				term.setReferencedCurie((String) row[8]);
 				term.setDisplayName((String) row[9]);
 				allele.setDataProviderCrossReference(term);
-				if (row[10] != null) {
+				if (row[10] != null || row[11] != null) {
 					ResourceDescriptorPage page = new ResourceDescriptorPage();
 					page.setName((String) row[10]);
+					page.setUrlTemplate((String) row[11]);
 					term.setResourceDescriptorPage(page);
 				}
 			}
 			// Create Organization (dataProvider) if data exists
-			if (row[11] != null) {
+			if (row[12] != null) {
 				Organization org = new Organization();
-				org.setId((Long) row[11]);
-				org.setAbbreviation((String) row[12]);
-				org.setFullName((String) row[13]);
-				org.setShortName((String) row[14]);
+				org.setId((Long) row[12]);
+				org.setAbbreviation((String) row[13]);
+				org.setFullName((String) row[14]);
+				org.setShortName((String) row[15]);
 				allele.setDataProvider(org);
 			}
 			alleles.add(allele);

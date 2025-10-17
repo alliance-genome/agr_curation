@@ -66,6 +66,22 @@ public class AlleleSummaryDocumentBuilder {
 
 	}
 
+	private Optional<Gene> buildAlleleOfGene(Allele allele) {
+		List<AlleleGeneAssociation> alleleGeneAssociations = allele.getAlleleGeneAssociations();
+
+		if (CollectionUtils.isEmpty(alleleGeneAssociations)) {
+			return Optional.empty();
+		}
+
+		List<Gene> alleleOfGeneList = alleleGeneAssociations.stream()
+			.filter(aga -> aga.getRelation().getName().equals("is_allele_of"))
+			.filter(aga -> !aga.getInternal() && !aga.getObsolete())
+			.map(aga -> aga.getAlleleGeneAssociationObject())
+			.collect(Collectors.toList());
+
+		return alleleOfGeneList.stream().findFirst();
+	}
+
 	private CrossReference getCrossReference(Allele allele, ResourceDescriptorPageService resourceDescriptorPageService) {
 
 		CrossReference alleleRefsCrossRef = new CrossReference();
