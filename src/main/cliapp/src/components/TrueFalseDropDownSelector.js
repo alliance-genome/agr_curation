@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Dropdown } from 'primereact/dropdown';
 
 export function TrueFalseDropdown({ field, options, showClear = false, editorChange, props }) {
@@ -17,7 +17,7 @@ export function TrueFalseDropdown({ field, options, showClear = false, editorCha
 		<>
 			<Dropdown
 				value={selectedValue}
-				options={options}
+				options={options || []}
 				onShow={onShow}
 				onChange={(e) => onChange(e)}
 				optionLabel="text"

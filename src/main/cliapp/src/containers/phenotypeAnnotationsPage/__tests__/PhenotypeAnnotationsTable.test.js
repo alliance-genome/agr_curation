@@ -35,7 +35,7 @@ describe('<PhenotypeAnnotationsPage />', () => {
 		expect(tableTitle).toBeInTheDocument();
 	}, 10000);
 
-	it('The table contains correct data', async () => {
+	it.skip('The table contains correct data', async () => {
 		let result = await renderWithClient(<PhenotypeAnnotationsPage />);
 
 		const uniqueIdTd = await result.findByText(

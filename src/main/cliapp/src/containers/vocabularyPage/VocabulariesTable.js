@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useMemo } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { Toast } from 'primereact/toast';
 import { Button } from 'primereact/button';
@@ -38,11 +38,13 @@ export const VocabulariesTable = () => {
 
 	let vocabularyService = new VocabularyService();
 
-	const mutation = useMutation((updatedVocabulary) => {
-		if (!vocabularyService) {
-			vocabularyService = new VocabularyService();
-		}
-		return vocabularyService.saveVocabulary(updatedVocabulary);
+	const mutation = useMutation({
+		mutationFn: (updatedVocabulary) => {
+			if (!vocabularyService) {
+				vocabularyService = new VocabularyService();
+			}
+			return vocabularyService.saveVocabulary(updatedVocabulary);
+		},
 	});
 
 	const stringEditor = (props, field) => {
@@ -75,44 +77,51 @@ export const VocabulariesTable = () => {
 		}
 	};
 
-	const columns = [
-		{
-			field: 'name',
-			header: 'Name',
-			sortable: true,
-			body: (rowData) => <StringTemplate string={rowData.name} />,
-			filterConfig: FILTER_CONFIGS.nameFilterConfig,
-			editor: (props) => stringEditor(props, 'name'),
-		},
-		{
-			field: 'vocabularyDescription',
-			header: 'Description',
-			sortable: true,
-			body: (rowData) => <StringTemplate string={rowData.vocabularyDescription} />,
-			filterConfig: FILTER_CONFIGS.vocabularyDescriptionFilterConfig,
-			editor: (props) => stringEditor(props, 'vocabularyDescription'),
-		},
-		{
-			field: 'obsolete',
-			header: 'Obsolete',
-			sortable: true,
-			body: (rowData) => <BooleanTemplate value={rowData.obsolete} />,
-			filterConfig: FILTER_CONFIGS.obsoleteFilterConfig,
-			editor: (props) => obsoleteEditorTemplate(props),
-		},
-		{
-			field: 'vocabularyLabel',
-			header: 'Label',
-			sortable: true,
-			body: (rowData) => <StringTemplate string={rowData.vocabularyLabel} />,
-			filterConfig: FILTER_CONFIGS.vocabularyLabelFilterConfig,
-		},
-	];
+	const columns = useMemo(
+		() => [
+			{
+				field: 'name',
+				header: 'Name',
+				sortable: true,
+				body: (rowData) => <StringTemplate string={rowData.name} />,
+				filterConfig: FILTER_CONFIGS.nameFilterConfig,
+				editor: (props) => stringEditor(props, 'name'),
+			},
+			{
+				field: 'vocabularyDescription',
+				header: 'Description',
+				sortable: true,
+				body: (rowData) => <StringTemplate string={rowData.vocabularyDescription} />,
+				filterConfig: FILTER_CONFIGS.vocabularyDescriptionFilterConfig,
+				editor: (props) => stringEditor(props, 'vocabularyDescription'),
+			},
+			{
+				field: 'obsolete',
+				header: 'Obsolete',
+				sortable: true,
+				body: (rowData) => <BooleanTemplate value={rowData.obsolete} />,
+				filterConfig: FILTER_CONFIGS.obsoleteFilterConfig,
+				editor: (props) => obsoleteEditorTemplate(props),
+			},
+			{
+				field: 'vocabularyLabel',
+				header: 'Label',
+				sortable: true,
+				body: (rowData) => <StringTemplate string={rowData.vocabularyLabel} />,
+				filterConfig: FILTER_CONFIGS.vocabularyLabelFilterConfig,
+			},
+		],
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+		[]
+	);
 
 	const DEFAULT_COLUMN_WIDTH = 20;
 	const SEARCH_ENDPOINT = 'vocabulary';
 
-	const initialTableState = getDefaultTableState('Vocabularies', columns, DEFAULT_COLUMN_WIDTH);
+	const initialTableState = useMemo(
+		() => getDefaultTableState('Vocabularies', columns, DEFAULT_COLUMN_WIDTH),
+		[columns]
+	);
 
 	const { settings: tableState, mutate: setTableState } = useGetUserSettings(
 		initialTableState.tableSettingsKeyName,

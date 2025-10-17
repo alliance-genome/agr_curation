@@ -10,16 +10,24 @@ export const QUERY_KEYS = {
 export const useApiVersion = (authState) => {
 	const apiService = new ApiVersionService();
 
-	return useQuery([QUERY_KEYS.API_VERSION], () => apiService.getApiVersion(), {
+	return useQuery({
+		queryKey: [QUERY_KEYS.API_VERSION],
+		queryFn: () => apiService.getApiVersion(),
 		enabled: !!authState?.isAuthenticated,
+		placeholderData: (previousData) => previousData,
+		refetchOnWindowFocus: false,
 	});
 };
 
 export const useUserInfo = (authState) => {
 	const personService = new PersonService();
 
-	return useQuery([QUERY_KEYS.USER_INFO], () => personService.getUserInfo(), {
+	return useQuery({
+		queryKey: [QUERY_KEYS.USER_INFO],
+		queryFn: () => personService.getUserInfo(),
 		enabled: !!authState?.isAuthenticated,
+		placeholderData: (previousData) => previousData,
+		refetchOnWindowFocus: false,
 	});
 };
 

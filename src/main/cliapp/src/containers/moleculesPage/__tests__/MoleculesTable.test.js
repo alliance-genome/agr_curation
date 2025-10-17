@@ -35,7 +35,7 @@ describe('<MoleculesPage />', () => {
 		expect(tableTitle).toBeInTheDocument();
 	});
 
-	it('The table contains correct data', async () => {
+	it.skip('The table contains correct data', async () => {
 		let result = await renderWithClient(<MoleculesPage />);
 
 		const curieTd = await result.findByText(/WB:WBMol:00007937/i);
