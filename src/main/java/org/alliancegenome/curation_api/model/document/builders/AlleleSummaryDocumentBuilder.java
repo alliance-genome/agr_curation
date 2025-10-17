@@ -1,13 +1,16 @@
 package org.alliancegenome.curation_api.model.document.builders;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.alliancegenome.curation_api.model.document.es.AlleleSummaryDTO;
 import org.alliancegenome.curation_api.model.document.es.AlleleSummaryDocument;
 import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
+import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.ResourceDescriptorPage;
+import org.alliancegenome.curation_api.model.entities.associations.AlleleGeneAssociation;
 import org.alliancegenome.curation_api.services.ResourceDescriptorPageService;
 import org.apache.commons.collections.CollectionUtils;
 
@@ -29,6 +32,9 @@ public class AlleleSummaryDocumentBuilder {
 
 		doc.setDescription(buildDescription(allele));
 
+		Optional<Gene> optionalAlleleOfGene = buildAlleleOfGene(allele);
+		optionalAlleleOfGene.ifPresent(doc::setAlleleOfGene);
+
 		return doc;
 	}
 
@@ -49,7 +55,6 @@ public class AlleleSummaryDocumentBuilder {
 		if (CollectionUtils.isNotEmpty(allele.getRelatedNotes())) {
 			List<String> descriptionList = allele.getRelatedNotes()
 					.stream()
-					.filter(note -> note.getNoteType().getName().equals("mutation_description"))
 					.map(note -> note.getFreeText())
 					.collect(Collectors.toList());
 
@@ -71,7 +76,18 @@ public class AlleleSummaryDocumentBuilder {
 		}
 
 		String dataProviderAbbreviation = allele.getDataProvider().getAbbreviation();
-		ResourceDescriptorPage page = resourceDescriptorPageService.getPageForResourceDescriptor(dataProviderAbbreviation, "allele/references");
+
+		// Determine the correct references page based on the current page type
+		String referencesPageName = "allele/references";
+		if (allele.getDataProviderCrossReference() != null
+			&& allele.getDataProviderCrossReference().getResourceDescriptorPage() != null) {
+			String currentPageName = allele.getDataProviderCrossReference().getResourceDescriptorPage().getName();
+			if ("transgene".equals(currentPageName)) {
+				referencesPageName = "transgene/references";
+			}
+		}
+
+		ResourceDescriptorPage page = resourceDescriptorPageService.getPageForResourceDescriptor(dataProviderAbbreviation, referencesPageName);
 
 		if (page != null && allele.getDataProviderCrossReference() != null) {
 			alleleRefsCrossRef.setReferencedCurie(allele.getDataProviderCrossReference().getReferencedCurie());
@@ -81,4 +97,20 @@ public class AlleleSummaryDocumentBuilder {
 
 		return alleleRefsCrossRef;
 	}
+
+	private Optional<Gene> buildAlleleOfGene(Allele allele) {
+		List<AlleleGeneAssociation> alleleGeneAssociations = allele.getAlleleGeneAssociations();
+
+		if (CollectionUtils.isEmpty(alleleGeneAssociations)) {
+			return Optional.empty();
+		}
+
+		List<Gene> alleleOfGeneList = alleleGeneAssociations.stream()
+			.filter(aga -> !aga.getInternal() && !aga.getObsolete())
+			.map(aga -> aga.getAlleleGeneAssociationObject())
+			.collect(Collectors.toList());
+
+		return alleleOfGeneList.stream().findFirst();
+	}
+
 }
