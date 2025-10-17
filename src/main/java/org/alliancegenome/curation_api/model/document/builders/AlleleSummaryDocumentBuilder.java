@@ -1,13 +1,16 @@
 package org.alliancegenome.curation_api.model.document.builders;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.alliancegenome.curation_api.model.document.es.AlleleSummaryDTO;
 import org.alliancegenome.curation_api.model.document.es.AlleleSummaryDocument;
 import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
+import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.ResourceDescriptorPage;
+import org.alliancegenome.curation_api.model.entities.associations.AlleleGeneAssociation;
 import org.alliancegenome.curation_api.services.ResourceDescriptorPageService;
 import org.apache.commons.collections.CollectionUtils;
 
@@ -31,8 +34,6 @@ public class AlleleSummaryDocumentBuilder {
 
 		Optional<Gene> optionalAlleleOfGene = buildAlleleOfGene(allele);
 		optionalAlleleOfGene.ifPresent(doc::setAlleleOfGene);
-
-		doc.setConstructSlimList(getConstructs(allele));
 
 		return doc;
 	}
@@ -96,4 +97,20 @@ public class AlleleSummaryDocumentBuilder {
 
 		return alleleRefsCrossRef;
 	}
+
+	private Optional<Gene> buildAlleleOfGene(Allele allele) {
+		List<AlleleGeneAssociation> alleleGeneAssociations = allele.getAlleleGeneAssociations();
+
+		if (CollectionUtils.isEmpty(alleleGeneAssociations)) {
+			return Optional.empty();
+		}
+
+		List<Gene> alleleOfGeneList = alleleGeneAssociations.stream()
+			.filter(aga -> !aga.getInternal() && !aga.getObsolete())
+			.map(aga -> aga.getAlleleGeneAssociationObject())
+			.collect(Collectors.toList());
+
+		return alleleOfGeneList.stream().findFirst();
+	}
+
 }
