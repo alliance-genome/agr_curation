@@ -10,6 +10,7 @@ import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.ResourceDescriptorPage;
+import org.alliancegenome.curation_api.model.entities.associations.AlleleGeneAssociation;
 import org.alliancegenome.curation_api.services.ResourceDescriptorPageService;
 import org.apache.commons.collections.CollectionUtils;
 
