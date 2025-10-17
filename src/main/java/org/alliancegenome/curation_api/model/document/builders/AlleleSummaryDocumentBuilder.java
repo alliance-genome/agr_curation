@@ -1,6 +1,5 @@
 package org.alliancegenome.curation_api.model.document.builders;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -8,11 +7,9 @@ import java.util.stream.Collectors;
 import org.alliancegenome.curation_api.model.document.es.AlleleSummaryDTO;
 import org.alliancegenome.curation_api.model.document.es.AlleleSummaryDocument;
 import org.alliancegenome.curation_api.model.entities.Allele;
-import org.alliancegenome.curation_api.model.entities.Construct;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.ResourceDescriptorPage;
-import org.alliancegenome.curation_api.model.entities.associations.AlleleConstructAssociation;
 import org.alliancegenome.curation_api.model.entities.associations.AlleleGeneAssociation;
 import org.alliancegenome.curation_api.services.ResourceDescriptorPageService;
 import org.apache.commons.collections.CollectionUtils;
@@ -37,8 +34,6 @@ public class AlleleSummaryDocumentBuilder {
 
 		Optional<Gene> optionalAlleleOfGene = buildAlleleOfGene(allele);
 		optionalAlleleOfGene.ifPresent(doc::setAlleleOfGene);
-
-		doc.setConstructSlimList(getConstructs(allele));
 
 		return doc;
 	}
@@ -86,21 +81,6 @@ public class AlleleSummaryDocumentBuilder {
 			.collect(Collectors.toList());
 
 		return alleleOfGeneList.stream().findFirst();
-	}
-
-	private List<Construct> getConstructs(Allele allele) {
-		List<Construct> constructs = new ArrayList<>();
-		if (CollectionUtils.isNotEmpty(allele.getAlleleConstructAssociations())) {
-			for (AlleleConstructAssociation association : allele.getAlleleConstructAssociations()) {
-				Construct construct = association.getAlleleConstructAssociationObject();
-
-				if (construct != null) {
-					constructs.add(construct);
-				}
-			}
-
-		}
-		return constructs;
 	}
 
 	private CrossReference getCrossReference(Allele allele, ResourceDescriptorPageService resourceDescriptorPageService) {
