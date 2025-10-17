@@ -38,8 +38,6 @@ public class AlleleSummaryDocumentBuilder {
 		Optional<Gene> optionalAlleleOfGene = buildAlleleOfGene(allele);
 		optionalAlleleOfGene.ifPresent(doc::setAlleleOfGene);
 
-		doc.setConstructSlimList(getConstructs(allele));
-
 		return doc;
 	}
 
@@ -86,21 +84,6 @@ public class AlleleSummaryDocumentBuilder {
 			.collect(Collectors.toList());
 
 		return alleleOfGeneList.stream().findFirst();
-	}
-
-	private List<Construct> getConstructs(Allele allele) {
-		List<Construct> constructs = new ArrayList<>();
-		if (CollectionUtils.isNotEmpty(allele.getAlleleConstructAssociations())) {
-			for (AlleleConstructAssociation association : allele.getAlleleConstructAssociations()) {
-				Construct construct = association.getAlleleConstructAssociationObject();
-
-				if (construct != null) {
-					constructs.add(construct);
-				}
-			}
-
-		}
-		return constructs;
 	}
 
 	private CrossReference getCrossReference(Allele allele, ResourceDescriptorPageService resourceDescriptorPageService) {
