@@ -44,7 +44,7 @@ public class CrossReference extends AuditedObject {
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "referencedCurie_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({ View.FieldsOnly.class, View.ForPublic.class, View.GeneSummaryDocument.class, View.AlleleSummaryDocument.class, View.GeneExpressionDocument.class, View.ModelDocumentView.class })
+	@JsonView({ View.FieldsOnly.class, View.ForPublic.class, View.GeneSummaryDocument.class, View.AlleleSummaryDocument.class, View.GeneExpressionDocument.class, View.ModelDocument.class })
 	@EqualsAndHashCode.Include
 	private String referencedCurie;
 
@@ -57,7 +57,7 @@ public class CrossReference extends AuditedObject {
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@JsonView({ View.FieldsOnly.class, View.ForPublic.class, View.DiseaseSummaryDocument.class, View.GeneSummaryDocument.class, View.AlleleSummaryDocument.class, View.GeneExpressionDocument.class, View.ModelDocumentView.class })
+	@JsonView({ View.FieldsOnly.class, View.ForPublic.class, View.DiseaseSummaryDocument.class, View.GeneSummaryDocument.class, View.AlleleSummaryDocument.class, View.GeneExpressionDocument.class, View.ModelDocument.class })
 	@Fetch(FetchMode.SELECT)
 	private ResourceDescriptorPage resourceDescriptorPage;
 

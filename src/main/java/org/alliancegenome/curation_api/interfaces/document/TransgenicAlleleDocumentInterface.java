@@ -25,6 +25,6 @@ public interface TransgenicAlleleDocumentInterface {
 
 	@POST
 	@Path("/transgenic-allele-documents")
-	@JsonView(View.TransgenicAllelesDocumentView.class)
+	@JsonView(View.TransgenicAllelesDocument.class)
 	SearchResponse<TransgenicAlleleDTO> findDocuments(@DefaultValue("0") @QueryParam("page") Integer page, @DefaultValue("10") @QueryParam("limit") Integer limit, @RequestBody HashMap<String, Object> params);
 }

@@ -10,7 +10,7 @@ import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode
-@JsonView(View.TransgenicAllelesDocumentView.class)
+@JsonView(View.TransgenicAllelesDocument.class)
 public class TransgenicAlleleDTO {
 
 	private Allele allele;

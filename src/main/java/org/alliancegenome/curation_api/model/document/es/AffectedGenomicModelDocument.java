@@ -23,7 +23,7 @@ import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-@JsonView(View.ModelDocumentView.class)
+@JsonView(View.ModelDocument.class)
 public class AffectedGenomicModelDocument extends ESDocument {
 	{
 		category = "affected_genomic_model_annotation";
