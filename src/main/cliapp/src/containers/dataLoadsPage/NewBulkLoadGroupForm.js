@@ -17,8 +17,10 @@ export const NewBulkLoadGroupForm = ({ bulkLoadGroupDialog, setBulkLoadGroupDial
 	const [submitted, setSubmitted] = useState(false);
 	let dataLoadService = null;
 
-	const mutation = useMutation((newGroupName) => {
-		return getService().createGroup(newGroupName);
+	const mutation = useMutation({
+		mutationFn: (newGroupName) => {
+			return getService().createGroup(newGroupName);
+		},
 	});
 
 	const queryClient = useQueryClient();
@@ -54,7 +56,9 @@ export const NewBulkLoadGroupForm = ({ bulkLoadGroupDialog, setBulkLoadGroupDial
 			console.log(event);
 			mutation.mutate(group, {
 				onSuccess: () => {
-					queryClient.invalidateQueries(['bulkloadtable']);
+					queryClient.invalidateQueries({
+						queryKey: ['bulkloadtable'],
+					});
 					setSubmitted(false);
 					setBulkLoadGroupDialog(false);
 					setGroup(emptyGroup);

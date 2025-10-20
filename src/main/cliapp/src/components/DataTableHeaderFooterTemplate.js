@@ -3,7 +3,7 @@ import { Card } from 'primereact/card';
 import { Splitter, SplitterPanel } from 'primereact/splitter';
 import { ConfirmButton } from './ConfirmButton';
 
-export function DataTableHeaderFooterTemplate({
+export function DataTableHeaderTemplate({
 	title,
 	multiselectComponent,
 	buttons,

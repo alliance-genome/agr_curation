@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { TreeTable } from 'primereact/treetable';
 import { Column } from 'primereact/column';
@@ -11,17 +11,19 @@ export const MetricsComponent = () => {
 
 	const metricService = new MetricService();
 
-	useQuery(['getMetrics', refresh], () => metricService.getMetrics(), {
-		onSuccess: (results) => {
-			//console.log(data);
-			setMetrics(results);
-		},
-		onError: (error) => {
-			console.log(error);
-		},
-		keepPreviousData: true,
+	const { data, isSuccess } = useQuery({
+		queryKey: ['getMetrics', refresh],
+		queryFn: () => metricService.getMetrics(),
+		placeholderData: (previousData) => previousData,
 		refetchOnWindowFocus: false,
 	});
+
+	// Handle query success in useEffect (v5 removed onSuccess from useQuery)
+	useEffect(() => {
+		if (isSuccess && data) {
+			setMetrics(data);
+		}
+	}, [data, isSuccess]);
 
 	return (
 		<div className="card">

@@ -18,12 +18,14 @@ export const NewReportForm = ({
 }) => {
 	const queryClient = useQueryClient();
 
-	const mutation = useMutation((report) => {
-		if (report.id) {
-			return getService().updateReport(report);
-		} else {
-			return getService().createReport(report);
-		}
+	const mutation = useMutation({
+		mutationFn: (report) => {
+			if (report.id) {
+				return getService().updateReport(report);
+			} else {
+				return getService().createReport(report);
+			}
+		},
 	});
 
 	const onChange = (e) => {
@@ -50,7 +52,9 @@ export const NewReportForm = ({
 
 		mutation.mutate(newReport, {
 			onSuccess: () => {
-				queryClient.invalidateQueries(['reporttable']);
+				queryClient.invalidateQueries({
+					queryKey: ['reporttable'],
+				});
 				reportDispatch({ type: 'RESET' });
 				setNewReportDialog(false);
 			},

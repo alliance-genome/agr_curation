@@ -42,7 +42,7 @@ export const RelatedNotesForm = ({ dispatch, relatedNotes, showRelatedNotes, err
 		return (
 			<>
 				<TrueFalseDropdown
-					options={booleanTerms}
+					options={booleanTerms?.terms || []}
 					editorChange={onInternalEditorValueChange}
 					props={props}
 					field={'internal'}
@@ -61,6 +61,8 @@ export const RelatedNotesForm = ({ dispatch, relatedNotes, showRelatedNotes, err
 			value: event.target.value,
 		});
 	};
+
+	console.log('noteTypeTerms', noteTypeTerms);
 
 	const noteTypeEditor = (props) => {
 		return (
