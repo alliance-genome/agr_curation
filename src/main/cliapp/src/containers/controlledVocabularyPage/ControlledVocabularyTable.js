@@ -296,7 +296,7 @@ export const ControlledVocabularyTable = () => {
 			},
 		],
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-		[]
+		[obsoleteTerms, vocabularies]
 	);
 
 	const DEFAULT_COLUMN_WIDTH = 13;
