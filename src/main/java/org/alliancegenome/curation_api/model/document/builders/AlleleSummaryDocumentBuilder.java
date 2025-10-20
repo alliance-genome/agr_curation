@@ -30,8 +30,6 @@ public class AlleleSummaryDocumentBuilder {
 
 		doc.setAlterationType(determineAlterationType(alleleDTO.getVariantCount()));
 
-		doc.setDescription(buildDescription(allele));
-
 		Optional<Gene> optionalAlleleOfGene = buildAlleleOfGene(allele);
 		optionalAlleleOfGene.ifPresent(doc::setAlleleOfGene);
 
@@ -46,25 +44,6 @@ public class AlleleSummaryDocumentBuilder {
 		} else {
 			return "allele with multiple variants";
 		}
-	}
-
-	private String buildDescription(Allele allele) {
-
-		String description = "";
-
-		if (CollectionUtils.isNotEmpty(allele.getRelatedNotes())) {
-			List<String> descriptionList = allele.getRelatedNotes()
-					.stream()
-					.map(note -> note.getFreeText())
-					.collect(Collectors.toList());
-
-			if (CollectionUtils.isNotEmpty(descriptionList)) {
-				description = descriptionList.get(0);
-			}
-		}
-
-		return description;
-
 	}
 
 	private Optional<Gene> buildAlleleOfGene(Allele allele) {
