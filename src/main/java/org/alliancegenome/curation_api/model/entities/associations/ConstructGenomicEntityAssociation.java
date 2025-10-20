@@ -65,13 +65,13 @@ public class ConstructGenomicEntityAssociation extends EvidenceAssociation {
 	@IndexedEmbedded(includePaths = {"name", "name_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@JsonView({View.FieldsOnly.class, View.TransgenicAllelesDocumentView.class})
+	@JsonView({View.FieldsOnly.class, View.TransgenicAllelesDocument.class})
 	private VocabularyTerm relation;
 
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@JsonView({View.FieldsOnly.class, View.TransgenicAllelesDocumentView.class})
+	@JsonView({View.FieldsOnly.class, View.TransgenicAllelesDocument.class})
 	@JsonIgnoreProperties({
 		"alleleGeneAssociations", "constructGenomicEntityAssociations", "sequenceTargetingReagentGeneAssociations",
 		"transcriptGenomicLocationAssociations", "exonGenomicLocationAssociations", "codingSequenceGenomicLocationAssociations",

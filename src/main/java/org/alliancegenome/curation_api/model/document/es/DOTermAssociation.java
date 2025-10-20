@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@JsonView({View.ModelDocumentView.class})
+@JsonView({View.ModelDocument.class})
 public class DOTermAssociation {
 	private DOTerm disease;
 	private String associationType;

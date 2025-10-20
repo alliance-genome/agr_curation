@@ -146,6 +146,8 @@ public class View {
 	public static class AccessionSummaryDocument { }
 	public static class GeneToGeneOrthologyDocument { }
 	public static class GeneExpressionDocument { }
+	public static class ModelDocument { }
+	public static class TransgenicAllelesDocument extends ForPublic { }
 
 	public static Class<?> viewLookup(String name) {
 		for (Class<?> innerClass : View.class.getDeclaredClasses()) {
@@ -156,9 +158,5 @@ public class View {
 		return ForPublic.class;
 	}
 
-	public class ModelDocumentView {
-	}
 
-	public class TransgenicAllelesDocumentView extends ForPublic {
-	}
 }
