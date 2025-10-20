@@ -56,13 +56,13 @@ public class ConstructComponentSlotAnnotation extends SlotAnnotation {
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@JsonView({View.FieldsOnly.class})
+	@JsonView({View.FieldsOnly.class, View.TransgenicAllelesDocumentView.class})
 	private VocabularyTerm relation;
 
 	@IndexedEmbedded(includePaths = {"name", "curie", "name_keyword", "curie_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@JsonView({View.FieldsOnly.class})
+	@JsonView({View.FieldsOnly.class, View.TransgenicAllelesDocumentView.class})
 	@Fetch(FetchMode.JOIN)
 	private NCBITaxonTerm taxon;
 
