@@ -351,7 +351,7 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 				join biologicalentity_note ben on ben.relatednotes_id = n.id
 				join vocabularyterm vt on vt.id = n.notetype_id
 				WHERE ben.submittedobject_id IN :alleleIds
-				and vt.name = 'mutation_description'
+				and vt.name IN ('mutation_description', 'transgene_content_summary', 'transgene_construction_summary');
 				""";
 		Query notesQueryExec = entityManager.createNativeQuery(notesQueryString);
 		notesQueryExec.setParameter("alleleIds", alleleIds);
