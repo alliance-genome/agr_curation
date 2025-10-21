@@ -26,7 +26,7 @@ public interface ModelDocumentInterface {
 
 	@POST
 	@Path("/gene-documents")
-	@JsonView(View.ModelDocumentView.class)
+	@JsonView(View.ModelDocument.class)
 	SearchResponse<AffectedGenomicModelDocument> findDocuments(@DefaultValue("0") @QueryParam("page") Integer page, @DefaultValue("10") @QueryParam("limit") Integer limit, @RequestBody HashMap<String, Object> params);
 	
 }

@@ -46,7 +46,7 @@ public class SubmittedObject extends CurieObject {
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "primaryExternalId_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({View.FieldsOnly.class, View.ForPublic.class, View.GeneToGeneOrthologyDocument.class, View.GeneSummaryDocument.class, View.ModelDocumentView.class, View.TransgenicAllelesDocumentView.class, View.AlleleSummaryDocument.class, View.GeneExpressionDocument.class })
+	@JsonView({View.FieldsOnly.class, View.ForPublic.class, View.GeneToGeneOrthologyDocument.class, View.GeneSummaryDocument.class, View.ModelDocument.class, View.TransgenicAllelesDocument.class, View.AlleleSummaryDocument.class, View.GeneExpressionDocument.class })
 	private String primaryExternalId;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
@@ -61,14 +61,14 @@ public class SubmittedObject extends CurieObject {
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
 	@Fetch(FetchMode.SELECT)
-	@JsonView({View.FieldsOnly.class, View.GeneSummaryDocument.class, View.ModelDocumentView.class})
+	@JsonView({View.FieldsOnly.class, View.GeneSummaryDocument.class, View.ModelDocument.class})
 	private Organization dataProvider;
 
 	@IndexedEmbedded(includePaths = {"displayName", "referencedCurie", "displayName_keyword", "referencedCurie_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@OneToOne(orphanRemoval = true)
 	@Fetch(FetchMode.SELECT)
-	@JsonView({View.FieldsOnly.class, View.AlleleSummaryDocument.class, View.AlleleForPublic.class, View.TransgenicAllelesDocumentView.class})
+	@JsonView({View.FieldsOnly.class, View.AlleleSummaryDocument.class, View.AlleleForPublic.class, View.TransgenicAllelesDocument.class, View.ModelDocument.class})
 	private CrossReference dataProviderCrossReference;
 
 	@IndexedEmbedded(includePaths = {"freeText", "freeText_keyword"})

@@ -47,13 +47,13 @@ public class ResourceDescriptorPage extends AuditedObject {
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "name_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({ View.FieldsOnly.class, View.ForPublic.class, View.GeneSummaryDocument.class, View.AlleleSummaryDocument.class })
+	@JsonView({ View.FieldsOnly.class, View.ForPublic.class, View.GeneSummaryDocument.class, View.AlleleSummaryDocument.class, View.ModelDocument.class })
 	@EqualsAndHashCode.Include
 	private String name;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "urlTemplate_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({ View.FieldsOnly.class, View.ForPublic.class, View.GeneSummaryDocument.class, View.AlleleSummaryDocument.class, View.GeneExpressionDocument.class })
+	@JsonView({ View.FieldsOnly.class, View.ForPublic.class, View.GeneSummaryDocument.class, View.AlleleSummaryDocument.class, View.GeneExpressionDocument.class, View.ModelDocument.class })
 	@EqualsAndHashCode.Include
 	private String urlTemplate;
 

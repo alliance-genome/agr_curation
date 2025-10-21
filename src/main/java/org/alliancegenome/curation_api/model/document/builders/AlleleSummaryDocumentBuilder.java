@@ -75,7 +75,6 @@ public class AlleleSummaryDocumentBuilder {
 		}
 
 		List<Gene> alleleOfGeneList = alleleGeneAssociations.stream()
-			.filter(aga -> aga.getRelation().getName().equals("is_allele_of"))
 			.filter(aga -> !aga.getInternal() && !aga.getObsolete())
 			.map(aga -> aga.getAlleleGeneAssociationObject())
 			.collect(Collectors.toList());
