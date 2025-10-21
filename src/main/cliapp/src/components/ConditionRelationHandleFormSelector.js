@@ -14,7 +14,7 @@ export function ConditionRelationHandleFormDropdown({
 }) {
 	const [selectedValue, setSelectedValue] = useState(value);
 	const experimentsSearchService = new ExperimentsSearchService();
-	const [handles, setHandles] = useState(null);
+	const [handles, setHandles] = useState([]);
 
 	const onShow = () => {
 		experimentsSearchService
@@ -23,7 +23,7 @@ export function ConditionRelationHandleFormDropdown({
 				if (data.results?.length > 0) {
 					setHandles(data.results);
 				} else {
-					setHandles(null);
+					setHandles([]);
 				}
 			});
 	};

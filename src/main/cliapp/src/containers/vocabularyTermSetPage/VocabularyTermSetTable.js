@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useMemo } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { Toast } from 'primereact/toast';
 import { SearchService } from '../../service/SearchService';
@@ -45,11 +45,13 @@ export const VocabularyTermSetTable = () => {
 
 	let vocabularyTermSetService = new VocabularyTermSetService();
 
-	const mutation = useMutation((updatedVocabularyTermSet) => {
-		if (!vocabularyTermSetService) {
-			vocabularyTermSetService = new VocabularyTermSetService();
-		}
-		return vocabularyTermSetService.saveVocabularyTermSet(updatedVocabularyTermSet);
+	const mutation = useMutation({
+		mutationFn: (updatedVocabularyTermSet) => {
+			if (!vocabularyTermSetService) {
+				vocabularyTermSetService = new VocabularyTermSetService();
+			}
+			return vocabularyTermSetService.saveVocabularyTermSet(updatedVocabularyTermSet);
+		},
 	});
 
 	const handleNewVocabularyTermSetOpen = () => {
@@ -163,51 +165,58 @@ export const VocabularyTermSetTable = () => {
 		);
 	};
 
-	const columns = [
-		{
-			field: 'name',
-			header: 'Name',
-			body: (rowData) => <StringTemplate string={rowData.name} />,
-			sortable: true,
-			filterConfig: FILTER_CONFIGS.nameFilterConfig,
-			editor: (props) => nameEditor(props),
-		},
-		{
-			field: 'vocabularyTermSetVocabulary.name',
-			header: 'Vocabulary',
-			sortable: true,
-			body: (rowData) => <StringTemplate string={rowData.vocabularyTermSetVocabulary?.name} />,
-			filterConfig: FILTER_CONFIGS.vocabularyFieldSetFilterConfig,
-			editor: (props) => vocabularyEditorTemplate(props),
-		},
-		{
-			field: 'memberTerms.name',
-			header: 'Member Terms',
-			sortable: true,
-			body: (rowData) => <StringListTemplate list={rowData.memberTerms?.map((memberTerm) => memberTerm?.name)} />,
-			filterConfig: FILTER_CONFIGS.vocabularyMemberTermsFilterConfig,
-			editor: (props) => memberTermsEditorTemplate(props),
-		},
-		{
-			field: 'vocabularyTermSetDescription',
-			header: 'Description',
-			body: (rowData) => <StringTemplate string={rowData.vocabularyTermSetDescription} />,
-			sortable: true,
-			filterConfig: FILTER_CONFIGS.vocabularyTermSetDescriptionFilterConfig,
-			editor: (props) => descriptionEditor(props),
-		},
-		{
-			field: 'vocabularyLabel',
-			header: 'Label',
-			body: (rowData) => <StringTemplate string={rowData.vocabularyLabel} />,
-			filterConfig: FILTER_CONFIGS.vocabularyLabelFilterConfig,
-		},
-	];
+	const columns = useMemo(
+		() => [
+			{
+				field: 'name',
+				header: 'Name',
+				body: (rowData) => <StringTemplate string={rowData.name} />,
+				sortable: true,
+				filterConfig: FILTER_CONFIGS.nameFilterConfig,
+				editor: (props) => nameEditor(props),
+			},
+			{
+				field: 'vocabularyTermSetVocabulary.name',
+				header: 'Vocabulary',
+				sortable: true,
+				body: (rowData) => <StringTemplate string={rowData.vocabularyTermSetVocabulary?.name} />,
+				filterConfig: FILTER_CONFIGS.vocabularyFieldSetFilterConfig,
+				editor: (props) => vocabularyEditorTemplate(props),
+			},
+			{
+				field: 'memberTerms.name',
+				header: 'Member Terms',
+				sortable: true,
+				body: (rowData) => <StringListTemplate list={rowData.memberTerms?.map((memberTerm) => memberTerm?.name)} />,
+				filterConfig: FILTER_CONFIGS.vocabularyMemberTermsFilterConfig,
+				editor: (props) => memberTermsEditorTemplate(props),
+			},
+			{
+				field: 'vocabularyTermSetDescription',
+				header: 'Description',
+				body: (rowData) => <StringTemplate string={rowData.vocabularyTermSetDescription} />,
+				sortable: true,
+				filterConfig: FILTER_CONFIGS.vocabularyTermSetDescriptionFilterConfig,
+				editor: (props) => descriptionEditor(props),
+			},
+			{
+				field: 'vocabularyLabel',
+				header: 'Label',
+				body: (rowData) => <StringTemplate string={rowData.vocabularyLabel} />,
+				filterConfig: FILTER_CONFIGS.vocabularyLabelFilterConfig,
+			},
+		],
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+		[]
+	);
 
 	const DEFAULT_COLUMN_WIDTH = 15;
 	const SEARCH_ENDPOINT = 'vocabularytermset';
 
-	const initialTableState = getDefaultTableState('VocabularyTermSets', columns, DEFAULT_COLUMN_WIDTH);
+	const initialTableState = useMemo(
+		() => getDefaultTableState('VocabularyTermSets', columns, DEFAULT_COLUMN_WIDTH),
+		[columns]
+	);
 
 	const { settings: tableState, mutate: setTableState } = useGetUserSettings(
 		initialTableState.tableSettingsKeyName,

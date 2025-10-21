@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useMemo } from 'react';
 import { GenericDataTable } from '../../components/GenericDataTable/GenericDataTable';
 import { InputTextEditor } from '../../components/InputTextEditor';
 import { AutocompleteEditor } from '../../components/Autocomplete/AutocompleteEditor';
@@ -56,11 +56,13 @@ export const ExperimentalConditionsTable = () => {
 		'conditionGeneOntology.name': ['conditionGeneOntology.curie', 'conditionGeneOntology.namespace'],
 	};
 
-	const mutation = useMutation((updatedCondition) => {
-		if (!experimentalConditionService) {
-			experimentalConditionService = new ExperimentalConditionService();
-		}
-		return experimentalConditionService.saveExperimentalCondition(updatedCondition);
+	const mutation = useMutation({
+		mutationFn: (updatedCondition) => {
+			if (!experimentalConditionService) {
+				experimentalConditionService = new ExperimentalConditionService();
+			}
+			return experimentalConditionService.saveExperimentalCondition(updatedCondition);
+		},
 	});
 
 	const handleNewConditionOpen = () => {
@@ -87,7 +89,7 @@ export const ExperimentalConditionsTable = () => {
 		return (
 			<>
 				<TrueFalseDropdown
-					options={booleanTerms}
+					options={booleanTerms?.terms || []}
 					editorChange={onInternalEditorValueChange}
 					props={props}
 					field={'internal'}
@@ -162,109 +164,116 @@ export const ExperimentalConditionsTable = () => {
 		);
 	};
 
-	const columns = [
-		{
-			field: 'uniqueId',
-			header: 'Unique ID',
-			sortable: true,
-			body: (rowData) => <IdTemplate id={rowData.uniqueId} />,
-			filterConfig: FILTER_CONFIGS.uniqueidFilterConfig,
-		},
-		{
-			field: 'conditionSummary',
-			header: 'Summary',
-			sortable: true,
-			body: (rowData) => <StringTemplate string={rowData.conditionSummary} />,
-			filterConfig: FILTER_CONFIGS.conditionRelationSummaryFilterConfig,
-		},
-		{
-			field: 'conditionClass.name',
-			header: 'Class',
-			sortable: true,
-			body: (rowData) => <OntologyTermTemplate term={rowData.conditionClass} />,
-			filterConfig: FILTER_CONFIGS.conditionClassFilterConfig,
-			editor: (props) => conditionClassEditorTemplate(props, curieAutocompleteFields),
-		},
-		{
-			field: 'conditionId.name',
-			header: 'Condition Term',
-			sortable: true,
-			body: (rowData) => <OntologyTermTemplate term={rowData.conditionId} />,
-			filterConfig: FILTER_CONFIGS.conditionIdFilterConfig,
-			editor: (props) =>
-				singleOntologyEditorTemplate(
-					props,
-					'conditionId',
-					'experimentalconditionontologyterm',
-					curieAutocompleteFields
-				),
-		},
-		{
-			field: 'conditionGeneOntology.name',
-			header: 'Gene Ontology',
-			sortable: true,
-			body: (rowData) => <OntologyTermTemplate term={rowData.conditionGeneOntology} />,
-			filterConfig: FILTER_CONFIGS.conditionGeneOntologyFilterConfig,
-			editor: (props) =>
-				singleOntologyEditorTemplate(props, 'conditionGeneOntology', 'goterm', curieAutocompleteFields),
-		},
-		{
-			field: 'conditionChemical.name',
-			header: 'Chemical',
-			sortable: true,
-			body: (rowData) => <OntologyTermTemplate term={rowData.conditionChemical} />,
-			filterConfig: FILTER_CONFIGS.conditionChemicalFilterConfig,
-			editor: (props) =>
-				singleOntologyEditorTemplate(props, 'conditionChemical', 'chemicalterm', curieAutocompleteFields),
-		},
-		{
-			field: 'conditionAnatomy.name',
-			header: 'Anatomy',
-			sortable: true,
-			body: (rowData) => <OntologyTermTemplate term={rowData.conditionAnatomy} />,
-			filterConfig: FILTER_CONFIGS.conditionAnatomyFilterConfig,
-			editor: (props) =>
-				singleOntologyEditorTemplate(props, 'conditionAnatomy', 'anatomicalterm', curieAutocompleteFields),
-		},
-		{
-			field: 'conditionTaxon.name',
-			header: 'Condition Taxon',
-			sortable: true,
-			body: (rowData) => <OntologyTermTemplate term={rowData.conditionTaxon} />,
-			filterConfig: FILTER_CONFIGS.conditionTaxonFilterConfig,
-			editor: (props) =>
-				singleOntologyEditorTemplate(props, 'conditionTaxon', 'ncbitaxonterm', curieAutocompleteFields),
-		},
-		{
-			field: 'conditionQuantity',
-			header: 'Quantity',
-			sortable: true,
-			body: (rowData) => <NumberTemplate number={rowData.conditionQuantity} />,
-			filterConfig: FILTER_CONFIGS.conditionQuantityFilterConfig,
-			editor: (props) => freeTextEditor(props, 'conditionQuantity'),
-		},
-		{
-			field: 'conditionFreeText',
-			header: 'Free Text',
-			sortable: true,
-			body: (rowData) => <StringTemplate string={rowData.conditionFreeText} />,
-			filterConfig: FILTER_CONFIGS.conditionFreeTextFilterConfig,
-			editor: (props) => freeTextEditor(props, 'conditionFreeText'),
-		},
-		{
-			field: 'internal',
-			header: 'Internal',
-			body: (rowData) => <BooleanTemplate value={rowData.internal} />,
-			filterConfig: FILTER_CONFIGS.internalFilterConfig,
-			sortable: true,
-			editor: (props) => internalEditor(props),
-		},
-	];
+	const columns = useMemo(
+		() => [
+			{
+				field: 'uniqueId',
+				header: 'Unique ID',
+				sortable: true,
+				body: (rowData) => <IdTemplate id={rowData.uniqueId} />,
+				filterConfig: FILTER_CONFIGS.uniqueidFilterConfig,
+			},
+			{
+				field: 'conditionSummary',
+				header: 'Summary',
+				sortable: true,
+				body: (rowData) => <StringTemplate string={rowData.conditionSummary} />,
+				filterConfig: FILTER_CONFIGS.conditionRelationSummaryFilterConfig,
+			},
+			{
+				field: 'conditionClass.name',
+				header: 'Class',
+				sortable: true,
+				body: (rowData) => <OntologyTermTemplate term={rowData.conditionClass} />,
+				filterConfig: FILTER_CONFIGS.conditionClassFilterConfig,
+				editor: (props) => conditionClassEditorTemplate(props, curieAutocompleteFields),
+			},
+			{
+				field: 'conditionId.name',
+				header: 'Condition Term',
+				sortable: true,
+				body: (rowData) => <OntologyTermTemplate term={rowData.conditionId} />,
+				filterConfig: FILTER_CONFIGS.conditionIdFilterConfig,
+				editor: (props) =>
+					singleOntologyEditorTemplate(
+						props,
+						'conditionId',
+						'experimentalconditionontologyterm',
+						curieAutocompleteFields
+					),
+			},
+			{
+				field: 'conditionGeneOntology.name',
+				header: 'Gene Ontology',
+				sortable: true,
+				body: (rowData) => <OntologyTermTemplate term={rowData.conditionGeneOntology} />,
+				filterConfig: FILTER_CONFIGS.conditionGeneOntologyFilterConfig,
+				editor: (props) =>
+					singleOntologyEditorTemplate(props, 'conditionGeneOntology', 'goterm', curieAutocompleteFields),
+			},
+			{
+				field: 'conditionChemical.name',
+				header: 'Chemical',
+				sortable: true,
+				body: (rowData) => <OntologyTermTemplate term={rowData.conditionChemical} />,
+				filterConfig: FILTER_CONFIGS.conditionChemicalFilterConfig,
+				editor: (props) =>
+					singleOntologyEditorTemplate(props, 'conditionChemical', 'chemicalterm', curieAutocompleteFields),
+			},
+			{
+				field: 'conditionAnatomy.name',
+				header: 'Anatomy',
+				sortable: true,
+				body: (rowData) => <OntologyTermTemplate term={rowData.conditionAnatomy} />,
+				filterConfig: FILTER_CONFIGS.conditionAnatomyFilterConfig,
+				editor: (props) =>
+					singleOntologyEditorTemplate(props, 'conditionAnatomy', 'anatomicalterm', curieAutocompleteFields),
+			},
+			{
+				field: 'conditionTaxon.name',
+				header: 'Condition Taxon',
+				sortable: true,
+				body: (rowData) => <OntologyTermTemplate term={rowData.conditionTaxon} />,
+				filterConfig: FILTER_CONFIGS.conditionTaxonFilterConfig,
+				editor: (props) =>
+					singleOntologyEditorTemplate(props, 'conditionTaxon', 'ncbitaxonterm', curieAutocompleteFields),
+			},
+			{
+				field: 'conditionQuantity',
+				header: 'Quantity',
+				sortable: true,
+				body: (rowData) => <NumberTemplate number={rowData.conditionQuantity} />,
+				filterConfig: FILTER_CONFIGS.conditionQuantityFilterConfig,
+				editor: (props) => freeTextEditor(props, 'conditionQuantity'),
+			},
+			{
+				field: 'conditionFreeText',
+				header: 'Free Text',
+				sortable: true,
+				body: (rowData) => <StringTemplate string={rowData.conditionFreeText} />,
+				filterConfig: FILTER_CONFIGS.conditionFreeTextFilterConfig,
+				editor: (props) => freeTextEditor(props, 'conditionFreeText'),
+			},
+			{
+				field: 'internal',
+				header: 'Internal',
+				body: (rowData) => <BooleanTemplate value={rowData.internal} />,
+				filterConfig: FILTER_CONFIGS.internalFilterConfig,
+				sortable: true,
+				editor: (props) => internalEditor(props),
+			},
+		],
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+		[booleanTerms]
+	);
 
 	const DEFAULT_COLUMN_WIDTH = 10;
 	const SEARCH_ENDPOINT = 'experimental-condition';
 
-	const initialTableState = getDefaultTableState('ExperimentalConditions', columns, DEFAULT_COLUMN_WIDTH);
+	const initialTableState = useMemo(
+		() => getDefaultTableState('ExperimentalConditions', columns, DEFAULT_COLUMN_WIDTH),
+		[columns]
+	);
 
 	const { settings: tableState, mutate: setTableState } = useGetUserSettings(
 		initialTableState.tableSettingsKeyName,

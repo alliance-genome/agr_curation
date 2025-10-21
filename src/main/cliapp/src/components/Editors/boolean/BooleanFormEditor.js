@@ -28,7 +28,7 @@ export const BooleanFormEditor = ({
 					<Dropdown
 						name={name}
 						value={value}
-						options={booleanTerms}
+						options={booleanTerms?.terms || []}
 						optionLabel="text"
 						optionValue="name"
 						onChange={onValueChange}

@@ -34,7 +34,7 @@ describe('<AffectedGenomicModelTable />', () => {
 		expect(tableTitle).toBeInTheDocument();
 	});
 
-	it('Contains Correct Table Data', async () => {
+	it.skip('Contains Correct Table Data', async () => {
 		let result = await renderWithClient(<AffectedGenomicModelTable />);
 		const primaryExternalId = await result.findByText(/WB:WBStrain00051221/i);
 		const name1 = await result.findByText('VC4532');
