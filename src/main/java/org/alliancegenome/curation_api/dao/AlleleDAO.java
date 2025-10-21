@@ -8,6 +8,8 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.time.Instant;
+import java.time.Duration;
 
 import org.alliancegenome.curation_api.constants.EntityFieldConstants;
 import org.alliancegenome.curation_api.dao.associations.AgmAlleleAssociationDAO;
@@ -157,6 +159,12 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 				org.fullname,
 				org.shortname
 				""";
+		// Build cursor condition for optimization
+		String cursorCondition = "";
+		if (pagination.isCursorBased()) {
+			cursorCondition = " AND a.id > " + pagination.getCursor();
+		}
+
 		String baseQuery = """
 				FROM Allele a
 					join BiologicalEntity b on b.id=a.id
@@ -169,21 +177,41 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 				and b.obsolete = false
 				and b.internal = false
 				and s.slotannotationtype = 'AlleleSymbolSlotAnnotation'
-								""";
+				""" + cursorCondition;
 
 		Query query;
 		if (pagination.isCountCondition()) {
 			query = entityManager.createNativeQuery(baseCountQuery + baseQuery);
+			Instant countQueryStart = Instant.now();
+			System.out.println("[PERF] findAllelesForSummary: Starting count query at " + countQueryStart);
+
 			SearchResponse<AlleleSummaryDTO> emptyResponse = new SearchResponse<>();
 			emptyResponse.setResults(new ArrayList<>());
-			emptyResponse.setTotalResults((Long) query.getSingleResult());
+			Long totalCount = (Long) query.getSingleResult();
+			emptyResponse.setTotalResults(totalCount);
+
+			Instant countQueryEnd = Instant.now();
+			System.out.println("[PERF] findAllelesForSummary: Count query completed in " + Duration.between(countQueryStart, countQueryEnd).toMillis() + "ms, found " + totalCount + " records");
 			return emptyResponse;
 		} else {
 			query = entityManager.createNativeQuery(baseSelectQuery + baseQuery + " ORDER BY a.id");
-			query.setFirstResult(pagination.getPage() * pagination.getLimit());
-			query.setMaxResults(pagination.getLimit());
+
+			// Use cursor-based pagination if cursor is provided, otherwise fall back to offset
+			if (pagination.isCursorBased()) {
+				// For cursor-based pagination, we don't need OFFSET
+				query.setMaxResults(pagination.getLimit());
+			} else {
+				// Traditional offset-based pagination
+				query.setFirstResult(pagination.getPage() * pagination.getLimit());
+				query.setMaxResults(pagination.getLimit());
+				System.out.println("[PERF] findAllelesForSummary: Using offset-based pagination with offset=" + (pagination.getPage() * pagination.getLimit()));
+			}
 		}
+
+		Instant mainQueryStart = Instant.now();
 		List<Object[]> results = query.getResultList();
+		Instant mainQueryEnd = Instant.now();
+		System.out.println("[PERF] findAllelesForSummary: Main query completed in " + Duration.between(mainQueryStart, mainQueryEnd).toMillis() + "ms, returned " + results.size() + " rows");
 
 		// Create minimal Allele objects from selected fields
 		List<Allele> alleles = new ArrayList<>();
@@ -380,6 +408,13 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 		SearchResponse<AlleleSummaryDTO> response = new SearchResponse<>();
 		response.setResults(dtos);
 		response.setTotalResults((long) alleles.size());
+
+		// Set nextCursor for cursor-based pagination
+		if (!alleles.isEmpty() && pagination.isCursorBased()) {
+			// Get the ID of the last allele in the current page as the next cursor
+			Long lastId = alleles.get(alleles.size() - 1).getId();
+			response.setNextCursor(lastId);
+		}
 
 		return response;
 	}
