@@ -217,7 +217,7 @@ export const ConditionRelationTable = () => {
 			},
 		],
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-		[]
+		[conditionRelationTypeTerms]
 	);
 
 	const DEFAULT_COLUMN_WIDTH = 10;

@@ -80,8 +80,9 @@ export const VariantsTable = () => {
 					editorChange={onVariantStatusEditorValueChange}
 					props={props}
 					showClear={true}
+					placeholderText={props.rowData.variantStatus?.name}
 				/>
-				<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={'geneticSex'} />
+				<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={'variantStatus'} />
 			</>
 		);
 	};
@@ -325,7 +326,7 @@ export const VariantsTable = () => {
 			},
 		],
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-		[errorMessagesRef]
+		[errorMessagesRef, variantStatusTerms]
 	);
 
 	const DEFAULT_COLUMN_WIDTH = 10;
