@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useMemo } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { Toast } from 'primereact/toast';
 
@@ -108,8 +108,10 @@ export const DiseaseAnnotationsTable = () => {
 		'diseaseGeneticModifier.symbol': ['diseaseGeneticModifier.name', 'diseaseGeneticModifier.primaryExternalId'],
 	};
 
-	const mutation = useMutation((updatedAnnotation) => {
-		return diseaseAnnotationService.saveDiseaseAnnotation(updatedAnnotation);
+	const mutation = useMutation({
+		mutationFn: (updatedAnnotation) => {
+			return diseaseAnnotationService.saveDiseaseAnnotation(updatedAnnotation);
+		},
 	});
 
 	const handleNewAnnotationOpen = () => {
@@ -480,7 +482,7 @@ export const DiseaseAnnotationsTable = () => {
 		return (
 			<>
 				<TrueFalseDropdown
-					options={booleanTerms}
+					options={booleanTerms?.terms || []}
 					editorChange={onInternalEditorValueChange}
 					props={props}
 					field={'internal'}
@@ -501,7 +503,7 @@ export const DiseaseAnnotationsTable = () => {
 		return (
 			<>
 				<TrueFalseDropdown
-					options={booleanTerms}
+					options={booleanTerms?.terms || []}
 					editorChange={onObsoleteEditorValueChange}
 					props={props}
 					field={'obsolete'}
@@ -1141,295 +1143,313 @@ export const DiseaseAnnotationsTable = () => {
 		}
 	};
 
-	const columns = [
-		{
-			field: 'uniqueId',
-			header: 'Unique ID',
-			body: (rowData) => <IdTemplate id={rowData.uniqueId} />,
-			sortable: true,
-			filterConfig: FILTER_CONFIGS.uniqueidFilterConfig,
-			editor: (props) => uniqueIdEditorTemplate(props),
-		},
-		{
-			field: 'primaryExternalId',
-			header: 'MOD Annotation ID',
-			body: (rowData) => <IdTemplate id={rowData.primaryExternalId} />,
-			sortable: true,
-			filterConfig: FILTER_CONFIGS.primaryexternalidFilterConfig,
-		},
-		{
-			field: 'modInternalId',
-			header: 'MOD Internal ID',
-			body: (rowData) => <IdTemplate id={rowData.modInternalId} />,
-			sortable: true,
-			filterConfig: FILTER_CONFIGS.modinternalidFilterConfig,
-		},
-		{
-			field: 'diseaseAnnotationSubject.symbol',
-			header: 'Subject',
-			body: (rowData) => <GenomicEntityTemplate genomicEntity={rowData.diseaseAnnotationSubject} />,
-			sortable: true,
-			filterConfig: FILTER_CONFIGS.diseaseAnnotationSubjectFieldConfig,
-			editor: (props) => subjectEditorTemplate(props),
-		},
-		{
-			field: 'relation.name',
-			header: 'Disease Relation',
-			sortable: true,
-			filterConfig: FILTER_CONFIGS.relationFilterConfig,
-			editor: (props) => relationEditor(props),
-		},
-		{
-			field: 'negated',
-			header: 'NOT',
-			body: (rowData) => <NotTemplate value={rowData.negated} />,
-			sortable: true,
-			filterConfig: FILTER_CONFIGS.negatedFilterConfig,
-			editor: (props) => <NotEditor props={props} value={props.value} editorChange={onNegatedEditorValueChange} />,
-		},
-		{
-			field: 'diseaseAnnotationObject.name',
-			header: 'Disease',
-			body: (rowData) => <OntologyTermTemplate term={rowData.diseaseAnnotationObject} />,
-			sortable: true,
-			filterConfig: FILTER_CONFIGS.diseaseAnnotationObjectFilterConfig,
-			editor: (props) => diseaseEditorTemplate(props),
-		},
-		{
-			field: 'evidenceItem.primaryCrossReferenceCurie',
-			header: 'Reference',
-			body: (rowData) => <SingleReferenceTemplate singleReference={rowData.evidenceItem} />,
-			sortable: true,
-			filterConfig: FILTER_CONFIGS.evidenceItemFilterConfig,
-			editor: (props) => referenceEditorTemplate(props),
-		},
-		{
-			field: 'evidenceCodes.abbreviation',
-			header: 'Evidence Code',
-			body: (rowData) => (
-				<ObjectListTemplate
-					list={rowData.evidenceCodes}
-					sortMethod={evidenceCodesSort}
-					stringTemplate={(item) => `${item.abbreviation} - ${item.name} (${item.curie})`}
-				/>
-			),
-			sortable: true,
-			filterConfig: FILTER_CONFIGS.evidenceCodesFilterConfig,
-			editor: (props) => evidenceEditorTemplate(props),
-		},
-		{
-			field: 'with.geneSymbol.displayText',
-			header: 'With',
-			body: (rowData) => <GenomicEntityListTemplate genomicEntities={rowData.with} />,
-			sortable: true,
-			filterConfig: FILTER_CONFIGS.withFilterConfig,
-			editor: (props) => withEditorTemplate(props),
-		},
-		{
-			field: 'relatedNotes.freeText',
-			header: 'Related Notes',
-			body: (rowData) => (
-				<CountDialogTemplate entities={rowData.relatedNotes} handleOpen={handleRelatedNotesOpen} text={'Notes'} />
-			),
-			sortable: true,
-			filterConfig: FILTER_CONFIGS.relatedNotesFilterConfig,
-			editor: relatedNotesEditor,
-		},
-		{
-			field: 'conditionRelations.handle',
-			header: 'Experiments',
-			body: (rowData) => {
-				if (!rowData.conditionRelations?.[0]?.handle) return null;
-				return (
-					<TextDialogTemplate
-						entity={rowData.conditionRelations}
-						handleOpen={handleConditionRelationsOpen}
-						text={rowData.conditionRelations[0].handle}
-						underline={false}
-					/>
-				);
+	const columns = useMemo(
+		() => [
+			{
+				field: 'uniqueId',
+				header: 'Unique ID',
+				body: (rowData) => <IdTemplate id={rowData.uniqueId} />,
+				sortable: true,
+				filterConfig: FILTER_CONFIGS.uniqueidFilterConfig,
+				editor: (props) => uniqueIdEditorTemplate(props),
 			},
-			sortable: true,
-			filterConfig: FILTER_CONFIGS.daConditionRelationsHandleFilterConfig,
-			editor: (props) => conditionRelationHandleEditor(props),
-		},
-		{
-			field: 'conditionRelations.uniqueId',
-			header: 'Experimental Conditions',
-			body: (rowData) => {
-				if (rowData.conditionRelations?.[0]?.handle) return null;
-				return (
-					<CountDialogTemplate
-						entities={rowData.conditionRelations}
-						handleOpen={handleConditionRelationsOpen}
-						text={'Conditions'}
-					/>
-				);
+			{
+				field: 'primaryExternalId',
+				header: 'MOD Annotation ID',
+				body: (rowData) => <IdTemplate id={rowData.primaryExternalId} />,
+				sortable: true,
+				filterConfig: FILTER_CONFIGS.primaryexternalidFilterConfig,
 			},
-			sortable: true,
-			filterConfig: FILTER_CONFIGS.daConditionRelationsSummaryFilterConfig,
-			editor: (props) => conditionRelationsEditor(props),
-		},
-		{
-			field: 'geneticSex.name',
-			header: 'Genetic Sex',
-			sortable: true,
-			filterConfig: FILTER_CONFIGS.geneticSexFilterConfig,
-			editor: (props) => geneticSexEditor(props),
-		},
-		{
-			field: 'diseaseQualifiers.name',
-			header: 'Disease Qualifiers',
-			body: (rowData) => (
-				<ObjectListTemplate
-					list={rowData.diseaseQualifiers}
-					sortMethod={diseaseQualifiersSort}
-					stringTemplate={(item) => item.name}
-				/>
-			),
-			sortable: true,
-			filterConfig: FILTER_CONFIGS.diseaseQualifiersFilterConfig,
-			editor: (props) => diseaseQualifiersEditor(props),
-		},
-		{
-			field: 'sgdStrainBackground.name',
-			header: 'SGD Strain Background',
-			body: (rowData) => <GenomicEntityTemplate genomicEntity={rowData.sgdStrainBackground} />,
-			sortable: true,
-			filterConfig: FILTER_CONFIGS.sgdStrainBackgroundFilterConfig,
-			editor: (props) => sgdStrainBackgroundEditorSelector(props),
-		},
-		{
-			field: 'annotationType.name',
-			header: 'Annotation Type',
-			sortable: true,
-			filterConfig: FILTER_CONFIGS.annotationTypeFilterConfig,
-			editor: (props) => annotationTypeEditor(props),
-		},
-		{
-			field: 'diseaseGeneticModifierRelation.name',
-			header: 'Genetic Modifier Relation',
-			sortable: true,
-			filterConfig: FILTER_CONFIGS.geneticModifierRelationFilterConfig,
-			editor: (props) => geneticModifierRelationEditor(props),
-		},
-		{
-			field: 'diseaseGeneticModifierAgms.name',
-			header: 'Genetic Modifier AGMs',
-			body: (rowData) => <GenomicEntityListTemplate genomicEntities={rowData.diseaseGeneticModifierAgms} />,
-			sortable: true,
-			filterConfig: FILTER_CONFIGS.geneticModifierAgmsFilterConfig,
-			editor: (props) => geneticModifierAgmsEditorTemplate(props),
-		},
-		{
-			field: 'diseaseGeneticModifierAlleles.alleleSymbol.displayText',
-			header: 'Genetic Modifier Alleles',
-			body: (rowData) => <GenomicEntityListTemplate genomicEntities={rowData.diseaseGeneticModifierAlleles} />,
-			sortable: true,
-			filterConfig: FILTER_CONFIGS.geneticModifierAllelesFilterConfig,
-			editor: (props) => geneticModifierAllelesEditorTemplate(props),
-		},
-		{
-			field: 'diseaseGeneticModifierGenes.geneSymbol.displayText',
-			header: 'Genetic Modifier Genes',
-			body: (rowData) => <GenomicEntityListTemplate genomicEntities={rowData.diseaseGeneticModifierGenes} />,
-			sortable: true,
-			filterConfig: FILTER_CONFIGS.geneticModifierGenesFilterConfig,
-			editor: (props) => geneticModifierGenesEditorTemplate(props),
-		},
-		{
-			field: 'inferredGene.geneSymbol.displayText',
-			header: 'Inferred Gene',
-			body: (rowData) => <GenomicEntityTemplate genomicEntity={rowData.inferredGene} />,
-			sortable: true,
-			filterConfig: FILTER_CONFIGS.inferredGeneFilterConfig,
-		},
-		{
-			field: 'assertedGenes.geneSymbol.displayText',
-			header: 'Asserted Genes',
-			body: (rowData) => <GenomicEntityListTemplate genomicEntities={rowData.assertedGenes} />,
-			sortable: true,
-			filterConfig: FILTER_CONFIGS.assertedGenesFilterConfig,
-			editor: (props) => assertedGenesEditorTemplate(props),
-		},
-		{
-			field: 'inferredAllele.alleleSymbol.displayText',
-			header: 'Inferred Allele',
-			body: (rowData) => <GenomicEntityTemplate genomicEntity={rowData.inferredAllele} />,
-			sortable: true,
-			filterConfig: FILTER_CONFIGS.inferredAlleleFilterConfig,
-		},
-		{
-			field: 'assertedAlleles.alleleSymbol.displayText',
-			header: 'Asserted Alleles',
-			body: (rowData) => <GenomicEntityListTemplate genomicEntities={rowData.assertedAlleles} />,
-			sortable: true,
-			filterConfig: FILTER_CONFIGS.assertedAllelesFilterConfig,
-			editor: (props) => assertedAllelesEditorTemplate(props),
-		},
-		{
-			field: 'dataProvider.abbreviation',
-			header: 'Data Provider',
-			sortable: true,
-			filterConfig: FILTER_CONFIGS.diseaseDataProviderFilterConfig,
-		},
-		{
-			field: 'secondaryDataProvider.abbreviation',
-			header: 'Secondary Data Provider',
-			sortable: true,
-			filterConfig: FILTER_CONFIGS.secondaryDataProviderFilterConfig,
-		},
-		{
-			field: 'updatedBy.uniqueId',
-			header: 'Updated By',
-			sortable: true,
-			body: (rowData) => <StringTemplate string={rowData.updatedBy?.uniqueId} />,
-			filterConfig: FILTER_CONFIGS.updatedByFilterConfig,
-		},
-		{
-			field: 'dateUpdated',
-			header: 'Date Updated',
-			sortable: true,
-			body: (rowData) => <StringTemplate string={rowData.dateUpdated} />,
-			filterConfig: FILTER_CONFIGS.dateUpdatedFilterConfig,
-		},
-		{
-			field: 'createdBy.uniqueId',
-			header: 'Created By',
-			sortable: true,
-			body: (rowData) => <StringTemplate string={rowData.createdBy?.uniqueId} />,
-			filterConfig: FILTER_CONFIGS.createdByFilterConfig,
-		},
-		{
-			field: 'dateCreated',
-			header: 'Date Created',
-			sortable: true,
-			body: (rowData) => <StringTemplate string={rowData.dateCreated} />,
-			filterConfig: FILTER_CONFIGS.dataCreatedFilterConfig,
-		},
-		{
-			field: 'internal',
-			header: 'Internal',
-			body: (rowData) => <BooleanTemplate value={rowData.internal} />,
-			sortable: true,
-			filterConfig: FILTER_CONFIGS.internalFilterConfig,
-			editor: (props) => internalEditor(props),
-		},
-		{
-			field: 'obsolete',
-			header: 'Obsolete',
-			body: (rowData) => <BooleanTemplate value={rowData.obsolete} />,
-			sortable: true,
-			filterConfig: FILTER_CONFIGS.obsoleteFilterConfig,
-			editor: (props) => obsoleteEditor(props),
-		},
-	];
+			{
+				field: 'modInternalId',
+				header: 'MOD Internal ID',
+				body: (rowData) => <IdTemplate id={rowData.modInternalId} />,
+				sortable: true,
+				filterConfig: FILTER_CONFIGS.modinternalidFilterConfig,
+			},
+			{
+				field: 'diseaseAnnotationSubject.symbol',
+				header: 'Subject',
+				body: (rowData) => <GenomicEntityTemplate genomicEntity={rowData.diseaseAnnotationSubject} />,
+				sortable: true,
+				filterConfig: FILTER_CONFIGS.diseaseAnnotationSubjectFieldConfig,
+				editor: (props) => subjectEditorTemplate(props),
+			},
+			{
+				field: 'relation.name',
+				header: 'Disease Relation',
+				sortable: true,
+				filterConfig: FILTER_CONFIGS.relationFilterConfig,
+				editor: (props) => relationEditor(props),
+			},
+			{
+				field: 'negated',
+				header: 'NOT',
+				body: (rowData) => <NotTemplate value={rowData.negated} />,
+				sortable: true,
+				filterConfig: FILTER_CONFIGS.negatedFilterConfig,
+				editor: (props) => <NotEditor props={props} value={props.value} editorChange={onNegatedEditorValueChange} />,
+			},
+			{
+				field: 'diseaseAnnotationObject.name',
+				header: 'Disease',
+				body: (rowData) => <OntologyTermTemplate term={rowData.diseaseAnnotationObject} />,
+				sortable: true,
+				filterConfig: FILTER_CONFIGS.diseaseAnnotationObjectFilterConfig,
+				editor: (props) => diseaseEditorTemplate(props),
+			},
+			{
+				field: 'evidenceItem.primaryCrossReferenceCurie',
+				header: 'Reference',
+				body: (rowData) => <SingleReferenceTemplate singleReference={rowData.evidenceItem} />,
+				sortable: true,
+				filterConfig: FILTER_CONFIGS.evidenceItemFilterConfig,
+				editor: (props) => referenceEditorTemplate(props),
+			},
+			{
+				field: 'evidenceCodes.abbreviation',
+				header: 'Evidence Code',
+				body: (rowData) => (
+					<ObjectListTemplate
+						list={rowData.evidenceCodes}
+						sortMethod={evidenceCodesSort}
+						stringTemplate={(item) => `${item.abbreviation} - ${item.name} (${item.curie})`}
+					/>
+				),
+				sortable: true,
+				filterConfig: FILTER_CONFIGS.evidenceCodesFilterConfig,
+				editor: (props) => evidenceEditorTemplate(props),
+			},
+			{
+				field: 'with.geneSymbol.displayText',
+				header: 'With',
+				body: (rowData) => <GenomicEntityListTemplate genomicEntities={rowData.with} />,
+				sortable: true,
+				filterConfig: FILTER_CONFIGS.withFilterConfig,
+				editor: (props) => withEditorTemplate(props),
+			},
+			{
+				field: 'relatedNotes.freeText',
+				header: 'Related Notes',
+				body: (rowData) => (
+					<CountDialogTemplate entities={rowData.relatedNotes} handleOpen={handleRelatedNotesOpen} text={'Notes'} />
+				),
+				sortable: true,
+				filterConfig: FILTER_CONFIGS.relatedNotesFilterConfig,
+				editor: relatedNotesEditor,
+			},
+			{
+				field: 'conditionRelations.handle',
+				header: 'Experiments',
+				body: (rowData) => {
+					if (!rowData.conditionRelations?.[0]?.handle) return null;
+					return (
+						<TextDialogTemplate
+							entity={rowData.conditionRelations}
+							handleOpen={handleConditionRelationsOpen}
+							text={rowData.conditionRelations[0].handle}
+							underline={false}
+						/>
+					);
+				},
+				sortable: true,
+				filterConfig: FILTER_CONFIGS.daConditionRelationsHandleFilterConfig,
+				editor: (props) => conditionRelationHandleEditor(props),
+			},
+			{
+				field: 'conditionRelations.uniqueId',
+				header: 'Experimental Conditions',
+				body: (rowData) => {
+					if (rowData.conditionRelations?.[0]?.handle) return null;
+					return (
+						<CountDialogTemplate
+							entities={rowData.conditionRelations}
+							handleOpen={handleConditionRelationsOpen}
+							text={'Conditions'}
+						/>
+					);
+				},
+				sortable: true,
+				filterConfig: FILTER_CONFIGS.daConditionRelationsSummaryFilterConfig,
+				editor: (props) => conditionRelationsEditor(props),
+			},
+			{
+				field: 'geneticSex.name',
+				header: 'Genetic Sex',
+				sortable: true,
+				filterConfig: FILTER_CONFIGS.geneticSexFilterConfig,
+				editor: (props) => geneticSexEditor(props),
+			},
+			{
+				field: 'diseaseQualifiers.name',
+				header: 'Disease Qualifiers',
+				body: (rowData) => (
+					<ObjectListTemplate
+						list={rowData.diseaseQualifiers}
+						sortMethod={diseaseQualifiersSort}
+						stringTemplate={(item) => item.name}
+					/>
+				),
+				sortable: true,
+				filterConfig: FILTER_CONFIGS.diseaseQualifiersFilterConfig,
+				editor: (props) => diseaseQualifiersEditor(props),
+			},
+			{
+				field: 'sgdStrainBackground.name',
+				header: 'SGD Strain Background',
+				body: (rowData) => <GenomicEntityTemplate genomicEntity={rowData.sgdStrainBackground} />,
+				sortable: true,
+				filterConfig: FILTER_CONFIGS.sgdStrainBackgroundFilterConfig,
+				editor: (props) => sgdStrainBackgroundEditorSelector(props),
+			},
+			{
+				field: 'annotationType.name',
+				header: 'Annotation Type',
+				sortable: true,
+				filterConfig: FILTER_CONFIGS.annotationTypeFilterConfig,
+				editor: (props) => annotationTypeEditor(props),
+			},
+			{
+				field: 'diseaseGeneticModifierRelation.name',
+				header: 'Genetic Modifier Relation',
+				sortable: true,
+				filterConfig: FILTER_CONFIGS.geneticModifierRelationFilterConfig,
+				editor: (props) => geneticModifierRelationEditor(props),
+			},
+			{
+				field: 'diseaseGeneticModifierAgms.name',
+				header: 'Genetic Modifier AGMs',
+				body: (rowData) => <GenomicEntityListTemplate genomicEntities={rowData.diseaseGeneticModifierAgms} />,
+				sortable: true,
+				filterConfig: FILTER_CONFIGS.geneticModifierAgmsFilterConfig,
+				editor: (props) => geneticModifierAgmsEditorTemplate(props),
+			},
+			{
+				field: 'diseaseGeneticModifierAlleles.alleleSymbol.displayText',
+				header: 'Genetic Modifier Alleles',
+				body: (rowData) => <GenomicEntityListTemplate genomicEntities={rowData.diseaseGeneticModifierAlleles} />,
+				sortable: true,
+				filterConfig: FILTER_CONFIGS.geneticModifierAllelesFilterConfig,
+				editor: (props) => geneticModifierAllelesEditorTemplate(props),
+			},
+			{
+				field: 'diseaseGeneticModifierGenes.geneSymbol.displayText',
+				header: 'Genetic Modifier Genes',
+				body: (rowData) => <GenomicEntityListTemplate genomicEntities={rowData.diseaseGeneticModifierGenes} />,
+				sortable: true,
+				filterConfig: FILTER_CONFIGS.geneticModifierGenesFilterConfig,
+				editor: (props) => geneticModifierGenesEditorTemplate(props),
+			},
+			{
+				field: 'inferredGene.geneSymbol.displayText',
+				header: 'Inferred Gene',
+				body: (rowData) => <GenomicEntityTemplate genomicEntity={rowData.inferredGene} />,
+				sortable: true,
+				filterConfig: FILTER_CONFIGS.inferredGeneFilterConfig,
+			},
+			{
+				field: 'assertedGenes.geneSymbol.displayText',
+				header: 'Asserted Genes',
+				body: (rowData) => <GenomicEntityListTemplate genomicEntities={rowData.assertedGenes} />,
+				sortable: true,
+				filterConfig: FILTER_CONFIGS.assertedGenesFilterConfig,
+				editor: (props) => assertedGenesEditorTemplate(props),
+			},
+			{
+				field: 'inferredAllele.alleleSymbol.displayText',
+				header: 'Inferred Allele',
+				body: (rowData) => <GenomicEntityTemplate genomicEntity={rowData.inferredAllele} />,
+				sortable: true,
+				filterConfig: FILTER_CONFIGS.inferredAlleleFilterConfig,
+			},
+			{
+				field: 'assertedAlleles.alleleSymbol.displayText',
+				header: 'Asserted Alleles',
+				body: (rowData) => <GenomicEntityListTemplate genomicEntities={rowData.assertedAlleles} />,
+				sortable: true,
+				filterConfig: FILTER_CONFIGS.assertedAllelesFilterConfig,
+				editor: (props) => assertedAllelesEditorTemplate(props),
+			},
+			{
+				field: 'dataProvider.abbreviation',
+				header: 'Data Provider',
+				sortable: true,
+				filterConfig: FILTER_CONFIGS.diseaseDataProviderFilterConfig,
+			},
+			{
+				field: 'secondaryDataProvider.abbreviation',
+				header: 'Secondary Data Provider',
+				sortable: true,
+				filterConfig: FILTER_CONFIGS.secondaryDataProviderFilterConfig,
+			},
+			{
+				field: 'updatedBy.uniqueId',
+				header: 'Updated By',
+				sortable: true,
+				body: (rowData) => <StringTemplate string={rowData.updatedBy?.uniqueId} />,
+				filterConfig: FILTER_CONFIGS.updatedByFilterConfig,
+			},
+			{
+				field: 'dateUpdated',
+				header: 'Date Updated',
+				sortable: true,
+				body: (rowData) => <StringTemplate string={rowData.dateUpdated} />,
+				filterConfig: FILTER_CONFIGS.dateUpdatedFilterConfig,
+			},
+			{
+				field: 'createdBy.uniqueId',
+				header: 'Created By',
+				sortable: true,
+				body: (rowData) => <StringTemplate string={rowData.createdBy?.uniqueId} />,
+				filterConfig: FILTER_CONFIGS.createdByFilterConfig,
+			},
+			{
+				field: 'dateCreated',
+				header: 'Date Created',
+				sortable: true,
+				body: (rowData) => <StringTemplate string={rowData.dateCreated} />,
+				filterConfig: FILTER_CONFIGS.dataCreatedFilterConfig,
+			},
+			{
+				field: 'internal',
+				header: 'Internal',
+				body: (rowData) => <BooleanTemplate value={rowData.internal} />,
+				sortable: true,
+				filterConfig: FILTER_CONFIGS.internalFilterConfig,
+				editor: (props) => internalEditor(props),
+			},
+			{
+				field: 'obsolete',
+				header: 'Obsolete',
+				body: (rowData) => <BooleanTemplate value={rowData.obsolete} />,
+				sortable: true,
+				filterConfig: FILTER_CONFIGS.obsoleteFilterConfig,
+				editor: (props) => obsoleteEditor(props),
+			},
+		],
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+		[
+			relationsTerms,
+			agmRelationTerms,
+			alleleRelationTerms,
+			geneRelationTerms,
+			geneticSexTerms,
+			annotationTypeTerms,
+			booleanTerms,
+			geneticModifierRelationTerms,
+			diseaseQualifiersTerms,
+		]
+	);
 
 	const DEFAULT_COLUMN_WIDTH = 10;
 	const SEARCH_ENDPOINT = 'disease-annotation';
 	const defaultFilters = { obsoleteFilter: { obsolete: { queryString: 'false' } } };
 
-	const initialTableState = getDefaultTableState('DiseaseAnnotations', columns, DEFAULT_COLUMN_WIDTH, defaultFilters);
+	const initialTableState = useMemo(
+		() => getDefaultTableState('DiseaseAnnotations', columns, DEFAULT_COLUMN_WIDTH, defaultFilters),
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+		[columns]
+	);
 
 	const { settings: tableState, mutate: setTableState } = useGetUserSettings(
 		initialTableState.tableSettingsKeyName,
@@ -1495,7 +1515,7 @@ export const DiseaseAnnotationsTable = () => {
 				newAnnotationDispatch={newAnnotationDispatch}
 				searchService={searchService}
 				relationsTerms={relationsTerms}
-				negatedTerms={booleanTerms}
+				negatedTerms={booleanTerms?.terms || []}
 				setNewDiseaseAnnotation={(newAnnotation, queryClient) =>
 					setNewEntity(tableState, setDiseaseAnnotations, newAnnotation, queryClient)
 				}

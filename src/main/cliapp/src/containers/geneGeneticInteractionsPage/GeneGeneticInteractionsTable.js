@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useMemo } from 'react';
 
 import { GenericDataTable } from '../../components/GenericDataTable/GenericDataTable';
 import { IdTemplate } from '../../components/Templates/IdTemplate';
@@ -57,137 +57,140 @@ export const GeneGeneticInteractionsTable = () => {
 		],
 	};
 
-	const columns = [
-		{
-			field: 'uniqueId',
-			header: 'Unique ID',
-			body: (rowData) => <IdTemplate id={rowData.uniqueId} />,
-			sortable: true,
-			filterConfig: FILTER_CONFIGS.uniqueidFilterConfig,
-		},
-		{
-			field: 'interactionId',
-			header: 'Interaction ID',
-			body: (rowData) => <IdTemplate id={rowData.interactionId} />,
-			sortable: true,
-			filterConfig: FILTER_CONFIGS.interactionIdFilterConfig,
-		},
-		{
-			field: 'geneAssociationSubject.geneSymbol.displayText',
-			header: 'Interactor A',
-			body: (rowData) => <GenomicEntityTemplate genomicEntity={rowData.geneAssociationSubject} />,
-			sortable: true,
-			filterConfig: FILTER_CONFIGS.geneAssociationSubjectFilterConfig,
-		},
-		{
-			field: 'relation.name',
-			header: 'Interaction Relation',
-			sortable: true,
-			body: (rowData) => <StringTemplate string={rowData.relation?.name} />,
-			filterConfig: FILTER_CONFIGS.gmiRelationFilterConfig,
-		},
-		{
-			field: 'geneGeneAssociationObject.geneSymbol.displayText',
-			header: 'Interactor B',
-			body: (rowData) => <GenomicEntityTemplate genomicEntity={rowData.geneGeneAssociationObject} />,
-			sortable: true,
-			filterConfig: FILTER_CONFIGS.geneGeneAssociationObjectFilterConfig,
-		},
-		{
-			field: 'interactionType.name',
-			header: 'Interaction Type',
-			body: (rowData) => <OntologyTermTemplate term={rowData.interactionType} />,
-			sortable: true,
-			filterConfig: FILTER_CONFIGS.interactionTypeFilterConfig,
-		},
-		{
-			field: 'interactorARole.name',
-			header: 'Interactor A Role',
-			body: (rowData) => <OntologyTermTemplate term={rowData.interactorARole} />,
-			sortable: true,
-			filterConfig: FILTER_CONFIGS.interactorARoleFilterConfig,
-		},
-		{
-			field: 'interactorBRole.name',
-			header: 'Interactor B Role',
-			body: (rowData) => <OntologyTermTemplate term={rowData.interactorBRole} />,
-			sortable: true,
-			filterConfig: FILTER_CONFIGS.interactorBRoleFilterConfig,
-		},
-		{
-			field: 'interactorAType.name',
-			header: 'Interactor A Type',
-			body: (rowData) => <OntologyTermTemplate term={rowData.interactorAType} />,
-			sortable: true,
-			filterConfig: FILTER_CONFIGS.interactorATypeFilterConfig,
-		},
-		{
-			field: 'interactorBType.name',
-			header: 'Interactor B Type',
-			body: (rowData) => <OntologyTermTemplate term={rowData.interactorBType} />,
-			sortable: true,
-			filterConfig: FILTER_CONFIGS.interactorBTypeFilterConfig,
-		},
-		{
-			field: 'interactionSource.name',
-			header: 'Interaction Source',
-			body: (rowData) => <OntologyTermTemplate term={rowData.interactionSource} />,
-			sortable: true,
-			filterConfig: FILTER_CONFIGS.interactionSourceFilterConfig,
-		},
-		{
-			field: 'interactorAGeneticPerturbation.alleleSymbol.displayText',
-			header: 'Interactor A Genetic Perturbation',
-			body: (rowData) => <GenomicEntityTemplate genomicEntity={rowData.interactorAGeneticPerturbation} />,
-			sortable: true,
-			filterConfig: FILTER_CONFIGS.interactorAGeneticPerturbationFilterConfig,
-		},
-		{
-			field: 'interactorBGeneticPerturbation.alleleSymbol.displayText',
-			header: 'Interactor B Genetic Perturbation',
-			body: (rowData) => <GenomicEntityTemplate genomicEntity={rowData.interactorBGeneticPerturbation} />,
-			sortable: true,
-			filterConfig: FILTER_CONFIGS.interactorBGeneticPerturbationFilterConfig,
-		},
-		{
-			field: 'phenotypesOrTraits',
-			header: 'Phenotypes / Traits',
-			sortable: true,
-			filterConfig: FILTER_CONFIGS.phenotypesOrTraitsFilterConfig,
-			body: (rowData) => <StringListTemplate list={rowData.phenotypesOrTraits} />,
-		},
-		{
-			field: 'evidence.curie',
-			header: 'Evidence',
-			body: (rowData) => <TruncatedReferencesTemplate references={rowData.evidence} />,
-			sortable: true,
-			filterConfig: FILTER_CONFIGS.evidenceFilterConfig,
-		},
-		{
-			field: 'internal',
-			header: 'Internal',
-			body: (rowData) => <BooleanTemplate value={rowData.internal} />,
-			sortable: true,
-			filterConfig: FILTER_CONFIGS.internalFilterConfig,
-		},
-		{
-			field: 'obsolete',
-			header: 'Obsolete',
-			body: (rowData) => <BooleanTemplate value={rowData.obsolete} />,
-			sortable: true,
-			filterConfig: FILTER_CONFIGS.obsoleteFilterConfig,
-		},
-	];
+	const columns = useMemo(
+		() => [
+			{
+				field: 'uniqueId',
+				header: 'Unique ID',
+				body: (rowData) => <IdTemplate id={rowData.uniqueId} />,
+				sortable: true,
+				filterConfig: FILTER_CONFIGS.uniqueidFilterConfig,
+			},
+			{
+				field: 'interactionId',
+				header: 'Interaction ID',
+				body: (rowData) => <IdTemplate id={rowData.interactionId} />,
+				sortable: true,
+				filterConfig: FILTER_CONFIGS.interactionIdFilterConfig,
+			},
+			{
+				field: 'geneAssociationSubject.geneSymbol.displayText',
+				header: 'Interactor A',
+				body: (rowData) => <GenomicEntityTemplate genomicEntity={rowData.geneAssociationSubject} />,
+				sortable: true,
+				filterConfig: FILTER_CONFIGS.geneAssociationSubjectFilterConfig,
+			},
+			{
+				field: 'relation.name',
+				header: 'Interaction Relation',
+				sortable: true,
+				body: (rowData) => <StringTemplate string={rowData.relation?.name} />,
+				filterConfig: FILTER_CONFIGS.gmiRelationFilterConfig,
+			},
+			{
+				field: 'geneGeneAssociationObject.geneSymbol.displayText',
+				header: 'Interactor B',
+				body: (rowData) => <GenomicEntityTemplate genomicEntity={rowData.geneGeneAssociationObject} />,
+				sortable: true,
+				filterConfig: FILTER_CONFIGS.geneGeneAssociationObjectFilterConfig,
+			},
+			{
+				field: 'interactionType.name',
+				header: 'Interaction Type',
+				body: (rowData) => <OntologyTermTemplate term={rowData.interactionType} />,
+				sortable: true,
+				filterConfig: FILTER_CONFIGS.interactionTypeFilterConfig,
+			},
+			{
+				field: 'interactorARole.name',
+				header: 'Interactor A Role',
+				body: (rowData) => <OntologyTermTemplate term={rowData.interactorARole} />,
+				sortable: true,
+				filterConfig: FILTER_CONFIGS.interactorARoleFilterConfig,
+			},
+			{
+				field: 'interactorBRole.name',
+				header: 'Interactor B Role',
+				body: (rowData) => <OntologyTermTemplate term={rowData.interactorBRole} />,
+				sortable: true,
+				filterConfig: FILTER_CONFIGS.interactorBRoleFilterConfig,
+			},
+			{
+				field: 'interactorAType.name',
+				header: 'Interactor A Type',
+				body: (rowData) => <OntologyTermTemplate term={rowData.interactorAType} />,
+				sortable: true,
+				filterConfig: FILTER_CONFIGS.interactorATypeFilterConfig,
+			},
+			{
+				field: 'interactorBType.name',
+				header: 'Interactor B Type',
+				body: (rowData) => <OntologyTermTemplate term={rowData.interactorBType} />,
+				sortable: true,
+				filterConfig: FILTER_CONFIGS.interactorBTypeFilterConfig,
+			},
+			{
+				field: 'interactionSource.name',
+				header: 'Interaction Source',
+				body: (rowData) => <OntologyTermTemplate term={rowData.interactionSource} />,
+				sortable: true,
+				filterConfig: FILTER_CONFIGS.interactionSourceFilterConfig,
+			},
+			{
+				field: 'interactorAGeneticPerturbation.alleleSymbol.displayText',
+				header: 'Interactor A Genetic Perturbation',
+				body: (rowData) => <GenomicEntityTemplate genomicEntity={rowData.interactorAGeneticPerturbation} />,
+				sortable: true,
+				filterConfig: FILTER_CONFIGS.interactorAGeneticPerturbationFilterConfig,
+			},
+			{
+				field: 'interactorBGeneticPerturbation.alleleSymbol.displayText',
+				header: 'Interactor B Genetic Perturbation',
+				body: (rowData) => <GenomicEntityTemplate genomicEntity={rowData.interactorBGeneticPerturbation} />,
+				sortable: true,
+				filterConfig: FILTER_CONFIGS.interactorBGeneticPerturbationFilterConfig,
+			},
+			{
+				field: 'phenotypesOrTraits',
+				header: 'Phenotypes / Traits',
+				sortable: true,
+				filterConfig: FILTER_CONFIGS.phenotypesOrTraitsFilterConfig,
+				body: (rowData) => <StringListTemplate list={rowData.phenotypesOrTraits} />,
+			},
+			{
+				field: 'evidence.curie',
+				header: 'Evidence',
+				body: (rowData) => <TruncatedReferencesTemplate references={rowData.evidence} />,
+				sortable: true,
+				filterConfig: FILTER_CONFIGS.evidenceFilterConfig,
+			},
+			{
+				field: 'internal',
+				header: 'Internal',
+				body: (rowData) => <BooleanTemplate value={rowData.internal} />,
+				sortable: true,
+				filterConfig: FILTER_CONFIGS.internalFilterConfig,
+			},
+			{
+				field: 'obsolete',
+				header: 'Obsolete',
+				body: (rowData) => <BooleanTemplate value={rowData.obsolete} />,
+				sortable: true,
+				filterConfig: FILTER_CONFIGS.obsoleteFilterConfig,
+			},
+		],
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+		[]
+	);
 
 	const DEFAULT_COLUMN_WIDTH = 10;
 	const SEARCH_ENDPOINT = 'gene-genetic-interaction';
 	const defaultFilters = { obsoleteFilter: { obsolete: { queryString: 'false' } } };
 
-	const initialTableState = getDefaultTableState(
-		'GeneGeneticInteractions',
-		columns,
-		DEFAULT_COLUMN_WIDTH,
-		defaultFilters
+	const initialTableState = useMemo(
+		() => getDefaultTableState('GeneGeneticInteractions', columns, DEFAULT_COLUMN_WIDTH, defaultFilters),
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+		[columns]
 	);
 
 	const { settings: tableState, mutate: setTableState } = useGetUserSettings(

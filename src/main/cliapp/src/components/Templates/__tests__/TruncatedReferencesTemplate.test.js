@@ -1,7 +1,7 @@
 import { render } from '@testing-library/react';
 import { TruncatedReferencesTemplate } from '../reference/TruncatedReferencesTemplate';
 import '../../../tools/jest/setupTests';
-import { BrowserRouter } from 'react-router-dom/cjs/react-router-dom.min';
+import { BrowserRouter } from 'react-router-dom';
 
 describe('TruncatedReferencesTemplate', () => {
 	it('should render a list of references when references prop is not null and has length greater than 0', () => {
