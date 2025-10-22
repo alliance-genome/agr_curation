@@ -28,7 +28,6 @@ export const useGenericDataTable = ({
 	defaultFilters,
 }) => {
 	const [originalRows, setOriginalRows] = useState([]);
-	const [columnList, setColumnList] = useState([]);
 	const [editingRows, setEditingRows] = useState({});
 
 	const { errorMessages, setErrorMessages, uiErrorMessages, setUiErrorMessages } = errorObject;
@@ -127,7 +126,7 @@ export const useGenericDataTable = ({
 		}
 	};
 
-	//Todo: at some point it may make sense to refactor this function into a set of smaller utility functions and pass them down from the calling components
+	//TODO: at some point it may make sense to refactor this function into a set of smaller utility functions and pass them down from the calling components
 	const onRowEditSave = (event) => {
 		const index = event.index % tableState.rows;
 		areUiErrors.current = false;
@@ -408,7 +407,6 @@ export const useGenericDataTable = ({
 		setOrderedColumnNames,
 		tableState,
 		onFilter,
-		setColumnList,
 		entities,
 		dataTable,
 		editingRows,
@@ -421,7 +419,6 @@ export const useGenericDataTable = ({
 		handleColumnResizeEnd,
 		totalRecords,
 		onLazyLoad,
-		columnList,
 		handleDeletion,
 		handleDeprecation,
 		exceptionDialog,

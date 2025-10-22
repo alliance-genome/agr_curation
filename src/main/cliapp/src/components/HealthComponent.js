@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Button } from 'primereact/button';
 import { HealthService } from '../service/HealthService';
@@ -9,17 +9,19 @@ export const HealthComponent = () => {
 
 	const healthService = new HealthService();
 
-	useQuery(['getHealth', refresh], () => healthService.getHealth(), {
-		onSuccess: (results) => {
-			// console.log(results);
-			setHealth(results);
-		},
-		onError: (error) => {
-			console.log(error);
-		},
-		keepPreviousData: true,
+	const { data, isSuccess } = useQuery({
+		queryKey: ['getHealth', refresh],
+		queryFn: () => healthService.getHealth(),
+		placeholderData: (previousData) => previousData,
 		refetchOnWindowFocus: false,
 	});
+
+	// Handle query success in useEffect (v5 removed onSuccess from useQuery)
+	useEffect(() => {
+		if (isSuccess && data) {
+			setHealth(data);
+		}
+	}, [data, isSuccess]);
 
 	return (
 		<div className="card">

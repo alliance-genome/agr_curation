@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useMemo } from 'react';
 import { GenericDataTable } from '../../components/GenericDataTable/GenericDataTable';
 import { Toast } from 'primereact/toast';
 import { getDefaultTableState } from '../../service/TableStateService';
@@ -20,67 +20,71 @@ export const SpeciesTable = () => {
 
 	const searchService = new SearchService();
 
-	const columns = [
-		{
-			field: 'taxon.curie',
-			header: 'Taxon',
-			sortable: true,
-			filter: true,
-			filterConfig: FILTER_CONFIGS.speciesTaxonCurieFilterConfig,
-		},
-		{
-			field: 'fullName',
-			header: 'Full Name',
-			sortable: true,
-			filter: true,
-			filterConfig: FILTER_CONFIGS.speciesFullNameFilterConfig,
-		},
-		{
-			field: 'displayName',
-			header: 'Display Name',
-			sortable: true,
-			filter: true,
-			filterConfig: FILTER_CONFIGS.speciesDisplayNameFilterConfig,
-		},
-		{
-			field: 'abbreviation',
-			header: 'Abbreviation',
-			sortable: true,
-			filter: true,
-			filterConfig: FILTER_CONFIGS.speciesAbbreviationFilterConfig,
-		},
-		{
-			field: 'commonNames',
-			header: 'Common Names',
-			sortable: false,
-			filter: true,
-			body: (rowData) => <CommaSeparatedArrayTemplate array={rowData.commonNames} />,
-			filterConfig: FILTER_CONFIGS.speciesCommonNameFilterConfig,
-		},
-		{
-			field: 'dataProvider.abbreviation',
-			header: 'Data Provider',
-			sortable: true,
-			filter: true,
-			filterConfig: FILTER_CONFIGS.speciesDataProviderFilterConfig,
-		},
-		{
-			field: 'phylogeneticOrder',
-			header: 'Phylogenetic Order',
-			sortable: true,
-		},
-		{
-			field: 'assembly_curie',
-			header: 'Assembly',
-			sortable: false,
-			//filterConfig: FILTER_CONFIGS.speciesAssemblyFilterConfig
-		},
-	];
+	const columns = useMemo(
+		() => [
+			{
+				field: 'taxon.curie',
+				header: 'Taxon',
+				sortable: true,
+				filter: true,
+				filterConfig: FILTER_CONFIGS.speciesTaxonCurieFilterConfig,
+			},
+			{
+				field: 'fullName',
+				header: 'Full Name',
+				sortable: true,
+				filter: true,
+				filterConfig: FILTER_CONFIGS.speciesFullNameFilterConfig,
+			},
+			{
+				field: 'displayName',
+				header: 'Display Name',
+				sortable: true,
+				filter: true,
+				filterConfig: FILTER_CONFIGS.speciesDisplayNameFilterConfig,
+			},
+			{
+				field: 'abbreviation',
+				header: 'Abbreviation',
+				sortable: true,
+				filter: true,
+				filterConfig: FILTER_CONFIGS.speciesAbbreviationFilterConfig,
+			},
+			{
+				field: 'commonNames',
+				header: 'Common Names',
+				sortable: false,
+				filter: true,
+				body: (rowData) => <CommaSeparatedArrayTemplate array={rowData.commonNames} />,
+				filterConfig: FILTER_CONFIGS.speciesCommonNameFilterConfig,
+			},
+			{
+				field: 'dataProvider.abbreviation',
+				header: 'Data Provider',
+				sortable: true,
+				filter: true,
+				filterConfig: FILTER_CONFIGS.speciesDataProviderFilterConfig,
+			},
+			{
+				field: 'phylogeneticOrder',
+				header: 'Phylogenetic Order',
+				sortable: true,
+			},
+			{
+				field: 'assembly_curie',
+				header: 'Assembly',
+				sortable: false,
+				//filterConfig: FILTER_CONFIGS.speciesAssemblyFilterConfig
+			},
+		],
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+		[]
+	);
 
 	const DEFAULT_COLUMN_WIDTH = 10;
 	const SEARCH_ENDPOINT = 'species';
 
-	const initialTableState = getDefaultTableState('Species', columns, DEFAULT_COLUMN_WIDTH);
+	const initialTableState = useMemo(() => getDefaultTableState('Species', columns, DEFAULT_COLUMN_WIDTH), [columns]);
 
 	const { settings: tableState, mutate: setTableState } = useGetUserSettings(
 		initialTableState.tableSettingsKeyName,

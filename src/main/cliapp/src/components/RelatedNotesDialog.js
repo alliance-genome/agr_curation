@@ -246,7 +246,7 @@ export const RelatedNotesDialog = ({
 		return (
 			<>
 				<TrueFalseDropdown
-					options={booleanTerms}
+					options={booleanTerms?.terms || []}
 					editorChange={onInternalEditorValueChange}
 					props={props}
 					field={'internal'}

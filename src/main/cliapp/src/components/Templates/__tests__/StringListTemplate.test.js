@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import { StringListTemplate } from '../StringListTemplate';
 import '../../../tools/jest/setupTests';
-import { BrowserRouter } from 'react-router-dom/cjs/react-router-dom.min';
+import { BrowserRouter } from 'react-router-dom';
 
 describe('StringListTemplate', () => {
 	it('should render correctly when provided with a non-empty list', () => {
