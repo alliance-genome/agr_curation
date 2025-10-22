@@ -13,7 +13,9 @@ import org.alliancegenome.curation_api.services.AlleleService;
 import org.alliancegenome.curation_api.services.ResourceDescriptorPageService;
 
 import jakarta.inject.Inject;
+import lombok.extern.jbosslog.JBossLog;
 
+@JBossLog
 public class AlleleDocumentController implements AlleleDocumentInterface {
 
 	@Inject
@@ -45,7 +47,7 @@ public class AlleleDocumentController implements AlleleDocumentInterface {
 					pagination.setCursor(cursor);
 				}
 			} catch (NumberFormatException e) {
-				System.err.println("[CONTROLLER] Invalid cursor parameter: " + params.get("cursor"));
+				log.info("[CONTROLLER] Invalid cursor parameter: " + params.get("cursor"));
 			}
 		}
 
@@ -65,9 +67,7 @@ public class AlleleDocumentController implements AlleleDocumentInterface {
 		// Pass through nextCursor for cursor-based pagination
 		if (resp.getNextCursor() != null) {
 			ret.setNextCursor(resp.getNextCursor());
-			System.out.println("[CONTROLLER] Returning nextCursor=" + resp.getNextCursor() + " to client");
 		}
-
 		return ret;
 	}
 

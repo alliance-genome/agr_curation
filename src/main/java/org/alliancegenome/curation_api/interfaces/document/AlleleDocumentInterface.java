@@ -30,16 +30,16 @@ public interface AlleleDocumentInterface {
 	@Path("/summary")
 	@JsonView(View.AlleleSummaryDocument.class)
 	SearchResponse<AlleleSummaryDocument> findSummary(@DefaultValue("0") @QueryParam("page") Integer page, @DefaultValue("10") @QueryParam("limit") Integer limit, @RequestBody HashMap<String, Object> params);
-	
+
 	@POST
 	@Path("/summary/cursor")
 	@JsonView(View.AlleleSummaryDocument.class)
-	@Operation(summary = "Find allele summaries using cursor-based pagination for optimal performance", 
-			   description = "Use cursor-based pagination to efficiently navigate large datasets. Use the nextCursor from the previous response as the cursor parameter for the next page.")
+	@Operation(summary = "Find allele summaries using cursor-based pagination for optimal performance",
+			description = "Use cursor-based pagination to efficiently navigate large datasets. Use the nextCursor from the previous response as the cursor parameter for the next page.")
 	SearchResponse<AlleleSummaryDocument> findSummaryWithCursor(
-		@DefaultValue("0") @QueryParam("page") Integer page, 
-		@DefaultValue("10") @QueryParam("limit") Integer limit, 
-		@Parameter(description = "Cursor for pagination - use nextCursor from previous response") @QueryParam("cursor") Long cursor, 
+		@DefaultValue("0") @QueryParam("page") Integer page,
+		@DefaultValue("10") @QueryParam("limit") Integer limit,
+		@Parameter(description = "Cursor for pagination - use nextCursor from previous response") @QueryParam("cursor") Long cursor,
 		@RequestBody HashMap<String, Object> params);
 
 }

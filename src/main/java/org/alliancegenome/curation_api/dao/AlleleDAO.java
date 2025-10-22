@@ -182,16 +182,11 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 		Query query;
 		if (pagination.isCountCondition()) {
 			query = entityManager.createNativeQuery(baseCountQuery + baseQuery);
-			Instant countQueryStart = Instant.now();
-			System.out.println("[PERF] findAllelesForSummary: Starting count query at " + countQueryStart);
 
 			SearchResponse<AlleleSummaryDTO> emptyResponse = new SearchResponse<>();
 			emptyResponse.setResults(new ArrayList<>());
 			Long totalCount = (Long) query.getSingleResult();
 			emptyResponse.setTotalResults(totalCount);
-
-			Instant countQueryEnd = Instant.now();
-			System.out.println("[PERF] findAllelesForSummary: Count query completed in " + Duration.between(countQueryStart, countQueryEnd).toMillis() + "ms, found " + totalCount + " records");
 			return emptyResponse;
 		} else {
 			query = entityManager.createNativeQuery(baseSelectQuery + baseQuery + " ORDER BY a.id");
@@ -204,14 +199,10 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 				// Traditional offset-based pagination
 				query.setFirstResult(pagination.getPage() * pagination.getLimit());
 				query.setMaxResults(pagination.getLimit());
-				System.out.println("[PERF] findAllelesForSummary: Using offset-based pagination with offset=" + (pagination.getPage() * pagination.getLimit()));
 			}
 		}
 
-		Instant mainQueryStart = Instant.now();
 		List<Object[]> results = query.getResultList();
-		Instant mainQueryEnd = Instant.now();
-		System.out.println("[PERF] findAllelesForSummary: Main query completed in " + Duration.between(mainQueryStart, mainQueryEnd).toMillis() + "ms, returned " + results.size() + " rows");
 
 		// Create minimal Allele objects from selected fields
 		List<Allele> alleles = new ArrayList<>();
