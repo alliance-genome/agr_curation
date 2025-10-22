@@ -157,6 +157,12 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 				org.fullname,
 				org.shortname
 				""";
+		// Build cursor condition for optimization
+		String cursorCondition = "";
+		if (pagination.isCursorBased()) {
+			cursorCondition = " AND a.id > " + pagination.getCursor();
+		}
+
 		String baseQuery = """
 				FROM Allele a
 					join BiologicalEntity b on b.id=a.id
@@ -169,20 +175,31 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 				and b.obsolete = false
 				and b.internal = false
 				and s.slotannotationtype = 'AlleleSymbolSlotAnnotation'
-								""";
+				""" + cursorCondition;
 
 		Query query;
 		if (pagination.isCountCondition()) {
 			query = entityManager.createNativeQuery(baseCountQuery + baseQuery);
+
 			SearchResponse<AlleleSummaryDTO> emptyResponse = new SearchResponse<>();
 			emptyResponse.setResults(new ArrayList<>());
-			emptyResponse.setTotalResults((Long) query.getSingleResult());
+			Long totalCount = (Long) query.getSingleResult();
+			emptyResponse.setTotalResults(totalCount);
 			return emptyResponse;
 		} else {
 			query = entityManager.createNativeQuery(baseSelectQuery + baseQuery + " ORDER BY a.id");
-			query.setFirstResult(pagination.getPage() * pagination.getLimit());
-			query.setMaxResults(pagination.getLimit());
+
+			// Use cursor-based pagination if cursor is provided, otherwise fall back to offset
+			if (pagination.isCursorBased()) {
+				// For cursor-based pagination, we don't need OFFSET
+				query.setMaxResults(pagination.getLimit());
+			} else {
+				// Traditional offset-based pagination
+				query.setFirstResult(pagination.getPage() * pagination.getLimit());
+				query.setMaxResults(pagination.getLimit());
+			}
 		}
+
 		List<Object[]> results = query.getResultList();
 
 		// Create minimal Allele objects from selected fields
@@ -380,6 +397,13 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 		SearchResponse<AlleleSummaryDTO> response = new SearchResponse<>();
 		response.setResults(dtos);
 		response.setTotalResults((long) alleles.size());
+
+		// Set nextCursor for cursor-based pagination
+		if (!alleles.isEmpty() && pagination.isCursorBased()) {
+			// Get the ID of the last allele in the current page as the next cursor
+			Long lastId = alleles.get(alleles.size() - 1).getId();
+			response.setNextCursor(lastId);
+		}
 
 		return response;
 	}
