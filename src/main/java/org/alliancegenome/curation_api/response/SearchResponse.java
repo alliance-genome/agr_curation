@@ -41,6 +41,7 @@ public class SearchResponse<E> extends APIResponse {
 	private String debug;
 	private String esQuery;
 	private String dbQuery;
+	private Long nextCursor; // For cursor-based pagination
 
 	public SearchResponse() {
 	}
