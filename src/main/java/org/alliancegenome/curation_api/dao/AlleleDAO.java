@@ -159,8 +159,10 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 				""";
 		// Build cursor condition for optimization
 		String cursorCondition = "";
+		boolean useCursorCondition = false;
 		if (pagination.isCursorBased()) {
-			cursorCondition = " AND a.id > " + pagination.getCursor();
+			cursorCondition = " AND a.id > :cursor";
+			useCursorCondition = true;
 		}
 
 		String baseQuery = """
@@ -180,7 +182,9 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 		Query query;
 		if (pagination.isCountCondition()) {
 			query = entityManager.createNativeQuery(baseCountQuery + baseQuery);
-
+			if (useCursorCondition) {
+				query.setParameter("cursor", pagination.getCursor());
+			}
 			SearchResponse<AlleleSummaryDTO> emptyResponse = new SearchResponse<>();
 			emptyResponse.setResults(new ArrayList<>());
 			Long totalCount = (Long) query.getSingleResult();
@@ -188,6 +192,10 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 			return emptyResponse;
 		} else {
 			query = entityManager.createNativeQuery(baseSelectQuery + baseQuery + " ORDER BY a.id");
+
+			if (useCursorCondition) {
+				query.setParameter("cursor", pagination.getCursor());
+			}
 
 			// Use cursor-based pagination if cursor is provided, otherwise fall back to offset
 			if (pagination.isCursorBased()) {
