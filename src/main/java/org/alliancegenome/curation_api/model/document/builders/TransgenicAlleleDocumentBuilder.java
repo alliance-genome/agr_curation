@@ -27,27 +27,27 @@ import lombok.extern.slf4j.Slf4j;
 public class TransgenicAlleleDocumentBuilder {
 
 	public TransgenicAlleleDTO buildTransgenicAlleleDocument(AlleleConstructAssociation association) {
-		if (CollectionUtils.isEmpty(association.getAlleleConstructAssociationObject().getConstructGenomicEntityAssociations())) {
-			return null;
-		}
 		Allele allele = association.getAlleleAssociationSubject();
-		// check AlleleDiseaseAnnotations and AGMDiseaseAnnotations with inferred or asserted alleles for disease annotations
-		List<AGMDiseaseAnnotation> agmDiseaseAnnotations = allele.getAgmDiseaseAssertedAlleleAnnotations();
-		agmDiseaseAnnotations.addAll(allele.getAgmDiseaseInferredAlleleAnnotations());
-		agmDiseaseAnnotations.addAll(allele.getAgmDiseaseAssertedAlleleAnnotations());
-		Boolean hasDiseaseAnnotation = CollectionUtils.isNotEmpty(agmDiseaseAnnotations) || CollectionUtils.isNotEmpty(allele.getAlleleDiseaseAnnotations());
-
-		// check AllelePhenotypeAnnotations and AGMPhenotypeAnnotations with inferred or asserted alleles for phenotype annotations
-		List<AGMPhenotypeAnnotation> agmPhenotypeAnnotations = allele.getAgmPhenotypeAssertedAlleleAnnotations();
-		agmPhenotypeAnnotations.addAll(allele.getAgmPhenotypeInferredAlleleAnnotations());
-		agmPhenotypeAnnotations.addAll(allele.getAgmPhenotypeAssertedAlleleAnnotations());
-		Boolean hasPhenotypeAnnotation = CollectionUtils.isNotEmpty(agmPhenotypeAnnotations) || CollectionUtils.isNotEmpty(allele.getAllelePhenotypeAnnotations());
 
 		TransgenicAlleleDTO transgenicAlleleDocument = new TransgenicAlleleDTO();
 		transgenicAlleleDocument.setAllele(allele);
 		transgenicAlleleDocument.setConstruct(association.getAlleleConstructAssociationObject());
-		transgenicAlleleDocument.setHasDiseaseAnnotations(hasDiseaseAnnotation);
-		transgenicAlleleDocument.setHasPhenotypeAnnotations(hasPhenotypeAnnotation);
+		// need disease and phenotype data only for constructs with genes (genomic entities)
+		if (CollectionUtils.isNotEmpty(association.getAlleleConstructAssociationObject().getConstructGenomicEntityAssociations())) {
+			// check AlleleDiseaseAnnotations and AGMDiseaseAnnotations with inferred or asserted alleles for disease annotations
+			List<AGMDiseaseAnnotation> agmDiseaseAnnotations = allele.getAgmDiseaseAssertedAlleleAnnotations();
+			agmDiseaseAnnotations.addAll(allele.getAgmDiseaseInferredAlleleAnnotations());
+			agmDiseaseAnnotations.addAll(allele.getAgmDiseaseAssertedAlleleAnnotations());
+			Boolean hasDiseaseAnnotation = CollectionUtils.isNotEmpty(agmDiseaseAnnotations) || CollectionUtils.isNotEmpty(allele.getAlleleDiseaseAnnotations());
+
+			// check AllelePhenotypeAnnotations and AGMPhenotypeAnnotations with inferred or asserted alleles for phenotype annotations
+			List<AGMPhenotypeAnnotation> agmPhenotypeAnnotations = allele.getAgmPhenotypeAssertedAlleleAnnotations();
+			agmPhenotypeAnnotations.addAll(allele.getAgmPhenotypeInferredAlleleAnnotations());
+			agmPhenotypeAnnotations.addAll(allele.getAgmPhenotypeAssertedAlleleAnnotations());
+			Boolean hasPhenotypeAnnotation = CollectionUtils.isNotEmpty(agmPhenotypeAnnotations) || CollectionUtils.isNotEmpty(allele.getAllelePhenotypeAnnotations());
+			transgenicAlleleDocument.setHasDiseaseAnnotations(hasDiseaseAnnotation);
+			transgenicAlleleDocument.setHasPhenotypeAnnotations(hasPhenotypeAnnotation);
+		}
 		return transgenicAlleleDocument;
 	}
 
