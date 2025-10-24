@@ -43,7 +43,7 @@ public class Synonym extends AuditedObject {
 	@JsonView({ View.FieldsOnly.class, View.GeneExpressionDocument.class })
 	private Boolean isDisplaySynonym = false;
 
-	@JsonView({ View.FieldsOnly.class })
+	@JsonView({ View.FieldsOnly.class, View.GeneExpressionDocument.class })
 	private Boolean hasExactSynonym = false;
 
 	@JsonView({ View.FieldsOnly.class })
