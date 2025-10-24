@@ -1,4 +1,3 @@
-import React from 'react';
 import { FilterComponentInputText } from './FilterComponentInputText';
 import { FilterComponentBinaryDropDown } from './FilterComponentBinaryDropDown';
 import { FilterComponentMultiSelect } from './FilterComponentMultiSelect';

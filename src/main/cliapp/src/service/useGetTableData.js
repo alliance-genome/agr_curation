@@ -1,4 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
+import { useEffect } from 'react';
 
 export const useGetTableData = ({
 	tableState,
@@ -11,9 +12,10 @@ export const useGetTableData = ({
 	toast_topleft,
 	searchService,
 }) => {
-	return useQuery(
-		[tableState.tableKeyName, tableState.rows, tableState.page, tableState.multiSortMeta, tableState.filters],
-		() =>
+	const { data, isSuccess, isError, isPending } = useQuery({
+		queryKey: [tableState.tableKeyName, tableState.rows, tableState.page, tableState.multiSortMeta, tableState.filters],
+
+		queryFn: () =>
 			searchService.search(
 				endpoint,
 				tableState.rows,
@@ -24,18 +26,40 @@ export const useGetTableData = ({
 				[],
 				nonNullFieldsTable
 			),
-		{
-			onSuccess: (data) => {
-				setIsInEditMode(false);
-				setEntities(data.results);
-				setTotalRecords(data.totalResults);
-			},
-			onError: (error) => {
-				toast_topleft.current.show([{ severity: 'error', summary: 'Error', detail: error.message, sticky: true }]);
-			},
-			keepPreviousData: true,
-			refetchOnWindowFocus: false,
-			enabled: !!tableState.rows,
+		placeholderData: (previousData) => previousData,
+		refetchOnWindowFocus: false,
+		enabled: !!tableState.rows,
+	});
+
+	// Handle query success in useEffect (v5 removed onSuccess from useQuery)
+	useEffect(() => {
+		if (isError && data) {
+			let message = '';
+			if (data.statusText) {
+				if (data.statusText.includes('NOT FOUND')) {
+					message = 'Record not found';
+				} else {
+					message = data.statusText;
+				}
+			} else {
+				message = 'Page error';
+			}
+
+			if (toast_topleft && toast_topleft.current) {
+				toast_topleft.current.show({
+					severity: 'error',
+					summary: message,
+					life: 7000,
+				});
+			}
 		}
-	);
+
+		if (isSuccess && data) {
+			setIsInEditMode(false);
+			setEntities(data.results);
+			setTotalRecords(data.totalResults);
+		}
+	}, [data, setIsInEditMode, setEntities, setTotalRecords, toast_topleft, isError, isSuccess]);
+
+	return { data, isSuccess, isError, isPending };
 };

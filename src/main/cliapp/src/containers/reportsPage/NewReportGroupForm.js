@@ -14,8 +14,10 @@ export const NewReportGroupForm = ({ reportGroupDialog, setReportGroupDialog }) 
 	const [submitted, setSubmitted] = useState(false);
 	let reportService = null;
 
-	const mutation = useMutation((newGroupName) => {
-		return getService().createGroup(newGroupName);
+	const mutation = useMutation({
+		mutationFn: (newGroupName) => {
+			return getService().createGroup(newGroupName);
+		},
 	});
 
 	const queryClient = useQueryClient();
@@ -51,7 +53,9 @@ export const NewReportGroupForm = ({ reportGroupDialog, setReportGroupDialog }) 
 			console.log(event);
 			mutation.mutate(group, {
 				onSuccess: () => {
-					queryClient.invalidateQueries(['reporttable']);
+					queryClient.invalidateQueries({
+						queryKey: ['reporttable'],
+					});
 					setSubmitted(false);
 					setReportGroupDialog(false);
 					setGroup(emptyGroup);

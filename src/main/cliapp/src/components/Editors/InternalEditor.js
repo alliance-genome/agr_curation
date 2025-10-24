@@ -10,7 +10,7 @@ export const InternalEditor = ({ props, internalOnChangeHandler, errorMessages, 
 			<TrueFalseDropdown
 				props={props}
 				field="internal"
-				options={booleanTerms}
+				options={booleanTerms?.terms || []}
 				editorChange={internalOnChangeHandler}
 				showClear={false}
 			/>

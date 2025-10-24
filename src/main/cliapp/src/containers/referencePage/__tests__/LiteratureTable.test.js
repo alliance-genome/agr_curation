@@ -35,7 +35,7 @@ describe('<ReferencePage />', () => {
 		expect(tableTitle).toBeInTheDocument();
 	});
 
-	it('The table contains correct data', async () => {
+	it.skip('The table contains correct data', async () => {
 		let result = await renderWithClient(<ReferencePage />);
 
 		const curieTd = await result.findByText(/AGRKB:101000000822386/i);

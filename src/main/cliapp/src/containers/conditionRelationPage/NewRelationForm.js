@@ -32,11 +32,13 @@ export const NewRelationForm = ({
 		newRelationDispatch({ type: 'RESET' });
 	};
 
-	const mutation = useMutation((newRelation) => {
-		if (!conditionRelationService) {
-			conditionRelationService = new ConditionRelationService();
-		}
-		return conditionRelationService.createConditionRelation(newRelation);
+	const mutation = useMutation({
+		mutationFn: (newRelation) => {
+			if (!conditionRelationService) {
+				conditionRelationService = new ConditionRelationService();
+			}
+			return conditionRelationService.createConditionRelation(newRelation);
+		},
 	});
 
 	const handleSubmit = (event) => {
@@ -44,7 +46,9 @@ export const NewRelationForm = ({
 		newRelationDispatch({ type: 'SUBMIT' });
 		mutation.mutate(newRelation, {
 			onSuccess: (data) => {
+				//TODO: check this data object
 				setNewConditionRelation(data.data.entity, queryClient);
+				console.log('NewRelationForm data', data);
 				toast_success.current.show({ severity: 'success', summary: 'Successful', detail: 'New Relation Added' });
 				newRelationDispatch({ type: 'RESET' });
 			},
