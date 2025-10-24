@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import Moment from 'react-moment';
 import moment from 'moment';
@@ -27,52 +27,51 @@ export const HistoryDialog = ({ historyDialog, setHistoryDialog, history, dataLo
 		initialTableState
 	);
 
-	useQuery(['bulkLoadFullHistory', history], () => dataLoadService.getFileHistoryFile(history.id), {
-		onSuccess: (res) => {
-			if (res.data.entity) {
-				setFullHistory(res.data.entity);
-			}
-		},
-		onError: (error) => {
-			console.log(error);
-		},
-		keepPreviousData: true,
+	const { data: fullHistoryData, isSuccess: fullHistoryIsSuccess } = useQuery({
+		queryKey: ['bulkLoadFullHistory', history],
+		queryFn: () => dataLoadService.getFileHistoryFile(history.id),
+		placeholderData: (previousData) => previousData,
 		refetchOnWindowFocus: false,
 	});
 
-	useQuery(
-		['bulkLoadHistoryExceptionsTotalResults', [history]],
-		() => dataLoadService.getHistoryExceptions(history.id, 0, 0),
-		{
-			onSuccess: (res) => {
-				setTotalRecords(res.data.totalResults);
-			},
-			onError: (error) => {
-				console.log(error);
-			},
-			keepPreviousData: true,
-			refetchOnWindowFocus: false,
-		}
-	);
+	const { data: totalResultsData, isSuccess: totalResultsIsSuccess } = useQuery({
+		queryKey: ['bulkLoadHistoryExceptionsTotalResults', [history]],
+		queryFn: () => dataLoadService.getHistoryExceptions(history.id, 0, 0),
+		placeholderData: (previousData) => previousData,
+		refetchOnWindowFocus: false,
+	});
 
-	useQuery(
-		['bulkLoadHistoryExceptions', [history, tableState]],
-		() => dataLoadService.getHistoryExceptions(history.id, tableState.rows, tableState.page),
-		{
-			onSuccess: (res) => {
-				if (res.data.results) {
-					setHistoryExceptions(res.data.results);
-				} else {
-					setHistoryExceptions([]);
-				}
-			},
-			onError: (error) => {
-				console.log(error);
-			},
-			keepPreviousData: true,
-			refetchOnWindowFocus: false,
+	const { data: exceptionsData, isSuccess: exceptionsIsSuccess } = useQuery({
+		queryKey: ['bulkLoadHistoryExceptions', [history, tableState]],
+		queryFn: () => dataLoadService.getHistoryExceptions(history.id, tableState.rows, tableState.page),
+		placeholderData: (previousData) => previousData,
+		refetchOnWindowFocus: false,
+	});
+
+	// Handle fullHistory data (was in onSuccess callback)
+	useEffect(() => {
+		if (fullHistoryIsSuccess && fullHistoryData?.data?.entity) {
+			setFullHistory(fullHistoryData.data.entity);
 		}
-	);
+	}, [fullHistoryData, fullHistoryIsSuccess]);
+
+	// Handle totalResults data (was in onSuccess callback)
+	useEffect(() => {
+		if (totalResultsIsSuccess && totalResultsData) {
+			setTotalRecords(totalResultsData.data.totalResults);
+		}
+	}, [totalResultsData, totalResultsIsSuccess]);
+
+	// Handle exceptions data (was in onSuccess callback)
+	useEffect(() => {
+		if (exceptionsIsSuccess && exceptionsData) {
+			if (exceptionsData.data.results) {
+				setHistoryExceptions(exceptionsData.data.results);
+			} else {
+				setHistoryExceptions([]);
+			}
+		}
+	}, [exceptionsData, exceptionsIsSuccess]);
 
 	const messageTemplate = (row) => {
 		let messages;

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { InputText } from 'primereact/inputtext';
 
 export function FilterComponentInputText({ isInEditMode, filterConfig, currentFilters, onFilter }) {

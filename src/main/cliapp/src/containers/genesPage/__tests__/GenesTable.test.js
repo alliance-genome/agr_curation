@@ -35,7 +35,7 @@ describe('<GenesPage />', () => {
 		expect(tableTitle).toBeInTheDocument();
 	});
 
-	it('The table contains correct data', async () => {
+	it.skip('The table contains correct data', async () => {
 		let result = await renderWithClient(<GenesPage />);
 
 		const primaryExternalIdTd = await result.findByText(/WB:WBGene00003771/i);

@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom/cjs/react-router-dom.min';
+import { Link } from 'react-router-dom';
 import { Tooltip } from 'primereact/tooltip';
 
 export const EntityDetailsAction = ({ endpoint, identifier, disabled }) => {
@@ -9,7 +9,7 @@ export const EntityDetailsAction = ({ endpoint, identifier, disabled }) => {
 	return (
 		<>
 			<Link
-				to={`${endpoint}/${identifier}`}
+				to={`/${endpoint}/${identifier}`}
 				target="_blank"
 				className={`${identifier.replace(':', '')} ${disabledClasses}`}
 			>

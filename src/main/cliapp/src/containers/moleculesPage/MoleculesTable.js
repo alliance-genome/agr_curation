@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useMemo } from 'react';
 import { GenericDataTable } from '../../components/GenericDataTable/GenericDataTable';
 import { Toast } from 'primereact/toast';
 import { getDefaultTableState } from '../../service/TableStateService';
@@ -22,69 +22,73 @@ export const MoleculesTable = () => {
 	const toast_topleft = useRef(null);
 	const toast_topright = useRef(null);
 
-	const columns = [
-		{
-			field: 'curie',
-			header: 'Curie',
-			sortable: true,
-			filter: true,
-			body: (rowData) => <IdTemplate id={rowData.curie} />,
-			filterConfig: FILTER_CONFIGS.curieFilterConfig,
-		},
-		{
-			field: 'name',
-			header: 'Name',
-			sortable: true,
-			filter: true,
-			body: (rowData) => <StringTemplate string={rowData.name} />,
-			filterConfig: FILTER_CONFIGS.nameFilterConfig,
-		},
-		{
-			field: 'inchi',
-			header: 'InChi',
-			sortable: true,
-			filter: true,
-			body: (rowData) => <StringTemplate string={rowData.inchi} />,
-			filterConfig: FILTER_CONFIGS.inchiFilterConfig,
-		},
-		{
-			field: 'inchiKey',
-			header: 'InChiKey',
-			sortable: true,
-			filter: true,
-			body: (rowData) => <StringTemplate string={rowData.inchiKey} />,
-			filterConfig: FILTER_CONFIGS.inchiKeyFilterConfig,
-		},
-		{
-			field: 'iupac',
-			header: 'IUPAC',
-			sortable: true,
-			filter: true,
-			body: (rowData) => <StringTemplate string={rowData.iupac} />,
-			filterConfig: FILTER_CONFIGS.iupacFilterConfig,
-		},
-		{
-			field: 'formula',
-			header: 'Formula',
-			sortable: true,
-			filter: true,
-			body: (rowData) => <StringTemplate string={rowData.formula} />,
-			filterConfig: FILTER_CONFIGS.formulaFilterConfig,
-		},
-		{
-			field: 'smiles',
-			header: 'SMILES',
-			sortable: true,
-			filter: true,
-			body: (rowData) => <StringTemplate string={rowData.smiles} />,
-			filterConfig: FILTER_CONFIGS.smilesFilterConfig,
-		},
-	];
+	const columns = useMemo(
+		() => [
+			{
+				field: 'curie',
+				header: 'Curie',
+				sortable: true,
+				filter: true,
+				body: (rowData) => <IdTemplate id={rowData.curie} />,
+				filterConfig: FILTER_CONFIGS.curieFilterConfig,
+			},
+			{
+				field: 'name',
+				header: 'Name',
+				sortable: true,
+				filter: true,
+				body: (rowData) => <StringTemplate string={rowData.name} />,
+				filterConfig: FILTER_CONFIGS.nameFilterConfig,
+			},
+			{
+				field: 'inchi',
+				header: 'InChi',
+				sortable: true,
+				filter: true,
+				body: (rowData) => <StringTemplate string={rowData.inchi} />,
+				filterConfig: FILTER_CONFIGS.inchiFilterConfig,
+			},
+			{
+				field: 'inchiKey',
+				header: 'InChiKey',
+				sortable: true,
+				filter: true,
+				body: (rowData) => <StringTemplate string={rowData.inchiKey} />,
+				filterConfig: FILTER_CONFIGS.inchiKeyFilterConfig,
+			},
+			{
+				field: 'iupac',
+				header: 'IUPAC',
+				sortable: true,
+				filter: true,
+				body: (rowData) => <StringTemplate string={rowData.iupac} />,
+				filterConfig: FILTER_CONFIGS.iupacFilterConfig,
+			},
+			{
+				field: 'formula',
+				header: 'Formula',
+				sortable: true,
+				filter: true,
+				body: (rowData) => <StringTemplate string={rowData.formula} />,
+				filterConfig: FILTER_CONFIGS.formulaFilterConfig,
+			},
+			{
+				field: 'smiles',
+				header: 'SMILES',
+				sortable: true,
+				filter: true,
+				body: (rowData) => <StringTemplate string={rowData.smiles} />,
+				filterConfig: FILTER_CONFIGS.smilesFilterConfig,
+			},
+		],
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+		[]
+	);
 
 	const DEFAULT_COLUMN_WIDTH = 13;
 	const SEARCH_ENDPOINT = 'molecule';
 
-	const initialTableState = getDefaultTableState('Molecule', columns, DEFAULT_COLUMN_WIDTH);
+	const initialTableState = useMemo(() => getDefaultTableState('Molecule', columns, DEFAULT_COLUMN_WIDTH), [columns]);
 
 	const { settings: tableState, mutate: setTableState } = useGetUserSettings(
 		initialTableState.tableSettingsKeyName,
