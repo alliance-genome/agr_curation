@@ -166,15 +166,15 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 		}
 
 		String baseQuery = """
-				 FROM Allele a
-				  INNER JOIN BiologicalEntity b ON b.id = a.id AND b.obsolete = false AND b.internal = false
-				  INNER JOIN SlotAnnotation s ON a.id = s.singleallele_id
-				      AND s.slotannotationtype = 'AlleleSymbolSlotAnnotation'
-				      AND s.formatText IS NOT NULL
-				  INNER JOIN OntologyTerm ot ON ot.id = b.taxon_id
-				  INNER JOIN CrossReference cr ON cr.id = b.dataprovidercrossreference_id
-				  INNER JOIN resourceDescriptorPage rd ON rd.id = cr.resourcedescriptorpage_id
-				  INNER JOIN organization org ON org.id = b.dataprovider_id
+				FROM Allele a
+				INNER JOIN BiologicalEntity b ON b.id = a.id AND b.obsolete = false AND b.internal = false
+				INNER JOIN SlotAnnotation s ON a.id = s.singleallele_id
+					AND s.slotannotationtype = 'AlleleSymbolSlotAnnotation'
+					AND s.formatText IS NOT NULL
+				INNER JOIN OntologyTerm ot ON ot.id = b.taxon_id
+				INNER JOIN CrossReference cr ON cr.id = b.dataprovidercrossreference_id
+				INNER JOIN resourceDescriptorPage rd ON rd.id = cr.resourcedescriptorpage_id
+				INNER JOIN organization org ON org.id = b.dataprovider_id
 				""" + cursorCondition;
 
 		Query query;
