@@ -1,14 +1,32 @@
 package org.alliancegenome.curation_api.dao;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.alliancegenome.curation_api.constants.EntityFieldConstants;
 import org.alliancegenome.curation_api.dao.associations.AgmAlleleAssociationDAO;
 import org.alliancegenome.curation_api.dao.base.BaseSQLDAO;
+import org.alliancegenome.curation_api.model.document.es.AlleleSummaryDTO;
 import org.alliancegenome.curation_api.model.entities.Allele;
+import org.alliancegenome.curation_api.model.entities.CrossReference;
+import org.alliancegenome.curation_api.model.entities.Gene;
+import org.alliancegenome.curation_api.model.entities.Note;
+import org.alliancegenome.curation_api.model.entities.Organization;
+import org.alliancegenome.curation_api.model.entities.ResourceDescriptorPage;
+import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
+import org.alliancegenome.curation_api.model.entities.associations.AlleleGeneAssociation;
+import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
+import org.alliancegenome.curation_api.model.entities.slotAnnotations.AlleleSymbolSlotAnnotation;
+import org.alliancegenome.curation_api.model.entities.slotAnnotations.AlleleSynonymSlotAnnotation;
+import org.alliancegenome.curation_api.model.entities.slotAnnotations.GeneSymbolSlotAnnotation;
+import org.alliancegenome.curation_api.model.input.Pagination;
+import org.alliancegenome.curation_api.response.SearchResponse;
 import org.apache.commons.collections.CollectionUtils;
 
 import jakarta.enterprise.context.ApplicationScoped;
@@ -18,14 +36,21 @@ import jakarta.persistence.Query;
 @ApplicationScoped
 public class AlleleDAO extends BaseSQLDAO<Allele> {
 
-	@Inject GeneDiseaseAnnotationDAO geneDiseaseAnnotationDAO;
-	@Inject AlleleDiseaseAnnotationDAO alleleDiseaseAnnotationDAO;
-	@Inject AGMDiseaseAnnotationDAO agmDiseaseAnnotationDAO;
-	@Inject AllelePhenotypeAnnotationDAO allelePhenotypeAnnotationDAO;
-	@Inject AGMPhenotypeAnnotationDAO agmPhenotypeAnnotationDAO;
-	@Inject AgmAlleleAssociationDAO agmAlleleAssociationDAO;
-	@Inject HTPExpressionDatasetSampleAnnotationDAO htpExpressionDatasetSampleAnnotationDAO;
-	
+	@Inject
+	GeneDiseaseAnnotationDAO geneDiseaseAnnotationDAO;
+	@Inject
+	AlleleDiseaseAnnotationDAO alleleDiseaseAnnotationDAO;
+	@Inject
+	AGMDiseaseAnnotationDAO agmDiseaseAnnotationDAO;
+	@Inject
+	AllelePhenotypeAnnotationDAO allelePhenotypeAnnotationDAO;
+	@Inject
+	AGMPhenotypeAnnotationDAO agmPhenotypeAnnotationDAO;
+	@Inject
+	AgmAlleleAssociationDAO agmAlleleAssociationDAO;
+	@Inject
+	HTPExpressionDatasetSampleAnnotationDAO htpExpressionDatasetSampleAnnotationDAO;
+
 	protected AlleleDAO() {
 		super(Allele.class);
 	}
@@ -74,7 +99,7 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 		results = agmPhenotypeAnnotationDAO.findIdsByParams(agmPaParams);
 		return CollectionUtils.isNotEmpty(results);
 	}
-	
+
 	public Boolean hasReferencingAgmAlleleAssociations(Long alleleId) {
 		Map<String, Object> params = new HashMap<>();
 		params.put(EntityFieldConstants.AGM_ALLELE_ASSOCIATION_OBJECT + ".id", alleleId);
@@ -86,27 +111,308 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 		Map<String, Object> params = new HashMap<>();
 		params.put(EntityFieldConstants.GENOMIC_INFORMATION_ALLELE + ".id", alleleId);
 		List<Long> results = htpExpressionDatasetSampleAnnotationDAO.findIdsByParams(params);
-		
+
 		return CollectionUtils.isNotEmpty(results);
 	}
-	
+
 	public List<String> getAllAllelePrimaryExternalIds() {
 		String sql = """
-			SELECT be.primaryexternalid
-			FROM biologicalentity be, allele as a
-			WHERE be.id = a.id and be.primaryexternalid is not NULL
-		""";
-		
+					SELECT be.primaryexternalid
+					FROM biologicalentity be, allele as a
+					WHERE be.id = a.id and be.primaryexternalid is not NULL
+				""";
+
 		Query query = entityManager.createNativeQuery(sql);
 		List<Object> objects = query.getResultList();
 		List<String> list = new ArrayList<>();
-		
+
 		objects.forEach(object -> {
 			list.add((String) object);
 		});
-		
+
 		return list;
 	}
 
+	public SearchResponse<AlleleSummaryDTO> findAllelesForSummary(Pagination pagination, Map<String, Object> params) {
 
+		String baseCountQuery = """
+				SELECT count( a.id)
+				""";
+		String baseSelectQuery = """
+				SELECT
+				a.id,
+				b.primaryExternalId,
+				b.curie,
+				b.modInternalId,
+				s.formatText,
+				s.displayText,
+				ot.curie,
+				ot.name,
+				cr.referencedCurie,
+				cr.displayName,
+				rd.name,
+				rd.urltemplate,
+				org.id,
+				org.abbreviation,
+				org.fullname,
+				org.shortname
+				""";
+		// Build cursor condition for optimization
+		String cursorCondition = "";
+		boolean useCursorCondition = false;
+		if (pagination.isCursorBased()) {
+			cursorCondition = " AND a.id > :cursor";
+			useCursorCondition = true;
+		}
+
+		String baseQuery = """
+				FROM Allele a
+					join BiologicalEntity b on b.id=a.id
+					join SlotAnnotation s on a.id=s.singleAllele_id
+					join OntologyTerm ot on ot.id=b.taxon_id
+					join CrossReference cr on cr.id=b.dataprovidercrossreference_id
+					join resourceDescriptorPage rd on rd.id=cr.resourcedescriptorpage_id
+					join organization org on org.id=b.dataprovider_id
+				where s.formatText is not null
+				and b.obsolete = false
+				and b.internal = false
+				and s.slotannotationtype = 'AlleleSymbolSlotAnnotation'
+				""" + cursorCondition;
+
+		Query query;
+		if (pagination.isCountCondition()) {
+			query = entityManager.createNativeQuery(baseCountQuery + baseQuery);
+			if (useCursorCondition) {
+				query.setParameter("cursor", pagination.getCursor());
+			}
+			SearchResponse<AlleleSummaryDTO> emptyResponse = new SearchResponse<>();
+			emptyResponse.setResults(new ArrayList<>());
+			Long totalCount = (Long) query.getSingleResult();
+			emptyResponse.setTotalResults(totalCount);
+			return emptyResponse;
+		} else {
+			query = entityManager.createNativeQuery(baseSelectQuery + baseQuery + " ORDER BY a.id");
+
+			if (useCursorCondition) {
+				query.setParameter("cursor", pagination.getCursor());
+			}
+
+			// Use cursor-based pagination if cursor is provided, otherwise fall back to offset
+			if (pagination.isCursorBased()) {
+				// For cursor-based pagination, we don't need OFFSET
+				query.setMaxResults(pagination.getLimit());
+			} else {
+				// Traditional offset-based pagination
+				query.setFirstResult(pagination.getPage() * pagination.getLimit());
+				query.setMaxResults(pagination.getLimit());
+			}
+		}
+
+		List<Object[]> results = query.getResultList();
+
+		// Create minimal Allele objects from selected fields
+		List<Allele> alleles = new ArrayList<>();
+		for (Object[] row : results) {
+			Allele allele = new Allele();
+			allele.setId((Long) row[0]);
+			allele.setPrimaryExternalId((String) row[1]);
+			allele.setCurie((String) row[2]);
+			allele.setModInternalId((String) row[3]);
+
+			// Create AlleleSymbolSlotAnnotation if formatText or displayText exists
+			if (row[4] != null || row[5] != null) {
+				AlleleSymbolSlotAnnotation symbolAnnotation = new AlleleSymbolSlotAnnotation();
+				symbolAnnotation.setFormatText((String) row[4]);
+				symbolAnnotation.setDisplayText((String) row[5]);
+				allele.setAlleleSymbol(symbolAnnotation);
+			}
+			// Create NCBITaxonTerm if data exists
+			if (row[6] != null || row[7] != null) {
+				NCBITaxonTerm term = new NCBITaxonTerm();
+				term.setCurie((String) row[6]);
+				term.setName((String) row[7]);
+				allele.setTaxon(term);
+			}
+			// Create DataProviderCrossReference if data exists
+			if (row[8] != null || row[9] != null) {
+				CrossReference term = new CrossReference();
+				term.setReferencedCurie((String) row[8]);
+				term.setDisplayName((String) row[9]);
+				allele.setDataProviderCrossReference(term);
+				if (row[10] != null || row[11] != null) {
+					ResourceDescriptorPage page = new ResourceDescriptorPage();
+					page.setName((String) row[10]);
+					page.setUrlTemplate((String) row[11]);
+					term.setResourceDescriptorPage(page);
+				}
+			}
+			// Create Organization (dataProvider) if data exists
+			if (row[12] != null) {
+				Organization org = new Organization();
+				org.setId((Long) row[12]);
+				org.setAbbreviation((String) row[13]);
+				org.setFullName((String) row[14]);
+				org.setShortName((String) row[15]);
+				allele.setDataProvider(org);
+			}
+			alleles.add(allele);
+		}
+
+		List<Long> alleleIds = alleles.stream()
+				.map(Allele::getId)
+				.collect(java.util.stream.Collectors.toList());
+
+		Map<Long, Allele> alleleMap = alleles.stream().collect(Collectors.toMap(Allele::getId, Function.identity()));
+
+		String synonymQueryString = """
+				select singleallele_id, string_agg(displaytext,'||'), string_agg(formatText,'||')
+				from slotannotation
+				where slotannotationtype = 'AlleleSynonymSlotAnnotation'
+				and singleallele_id in :alleleIds
+				group by singleallele_id
+								""";
+		Query synonymQuery = entityManager.createNativeQuery(synonymQueryString);
+		synonymQuery.setParameter("alleleIds", alleleIds);
+		List<Object[]> synonymQueryResults = synonymQuery.getResultList();
+		synonymQueryResults.forEach(objects -> {
+			String synonymList = (String) objects[1];
+			String synonymListFormat = (String) objects[2];
+			if (synonymList != null) {
+				String[] synonymArray = synonymList.split("\\|\\|");
+				String[] synonymArrayFormat = synonymListFormat.split("\\|\\|");
+				AtomicInteger index = new AtomicInteger(0);
+				List<AlleleSynonymSlotAnnotation> slotList = Arrays.stream(synonymArray).
+						map(synonym -> {
+							AlleleSynonymSlotAnnotation slot = new AlleleSynonymSlotAnnotation();
+							slot.setDisplayText(synonym);
+							slot.setFormatText(synonymArrayFormat[index.get()]);
+							index.incrementAndGet();
+							return slot;
+						}).toList();
+				alleleMap.get((Long) objects[0]).setAlleleSynonyms(slotList);
+			}
+		});
+
+		Map<Long, Long> variantCountMap = new HashMap<>();
+
+		String geneAssociationInfoQuery = """
+				select alleleassociationsubject_id as allele_id,
+					allelegeneassociationobject_id as gene_id,
+					be.primaryexternalid as gene_primary_id,
+					sa.displaytext as gene_symbol,
+					sa.formattext as gene_symbol_format,
+					ot.name as taxon_nameagain
+				from allelegeneassociation aga
+					join vocabularyterm v on v.id = aga.relation_id
+					join gene g on g.id = aga.allelegeneassociationobject_id
+					join biologicalentity be on be.id = g.id
+					join slotannotation sa on sa.singlegene_id = g.id and sa.slotannotationtype = 'GeneSymbolSlotAnnotation'
+					join OntologyTerm ot on ot.id=be.taxon_id
+				where alleleassociationsubject_id in :alleleIds
+				and v.name = 'is_allele_of';
+				""";
+
+		Query geneAssociationQuery = entityManager.createNativeQuery(geneAssociationInfoQuery);
+		geneAssociationQuery.setParameter("alleleIds", alleleIds);
+		List<Object[]> geneAssociationResults = geneAssociationQuery.getResultList();
+
+		List<AlleleGeneAssociation> associationList =
+				geneAssociationResults.stream().map(objects -> {
+					Long alleleID = (Long) objects[0];
+					Allele allele = alleleMap.get(alleleID);
+					AlleleGeneAssociation association = new AlleleGeneAssociation();
+					association.setAlleleAssociationSubject(allele);
+					VocabularyTerm term = new VocabularyTerm();
+					term.setName("is_allele_of");
+					association.setRelation(term);
+					Gene gene = new Gene();
+					gene.setId((Long) objects[1]);
+					gene.setPrimaryExternalId((String) objects[2]);
+
+					GeneSymbolSlotAnnotation annotation = new GeneSymbolSlotAnnotation();
+					annotation.setDisplayText((String) objects[3]);
+					annotation.setFormatText((String) objects[4]);
+					gene.setGeneSymbol(annotation);
+					association.setAlleleGeneAssociationObject(gene);
+					allele.setAlleleGeneAssociations(List.of(association));
+					return association;
+				}).toList();
+		long afterGeneQuery = System.currentTimeMillis();
+
+		Map<Allele, List<AlleleGeneAssociation>> map = associationList.stream().collect(Collectors.groupingBy(AlleleGeneAssociation::getAlleleAssociationSubject));
+		map.forEach((mapAllele, alleleGeneAssociations) -> {
+			Allele allele = alleleMap.get(mapAllele.getId());
+			allele.setAlleleGeneAssociations(alleleGeneAssociations);
+		});
+
+		String variantCountQueryString = """
+				select alleleassociationsubject_id as allele_id,
+					count(ava) as ct
+				from alleleVariantAssociation ava
+				where alleleassociationsubject_id in :alleleIds
+				group by alleleassociationsubject_id
+								""";
+
+		Query variantCountQuery = entityManager.createNativeQuery(variantCountQueryString);
+		variantCountQuery.setParameter("alleleIds", alleleIds);
+		List<Object[]> variantCountResults = variantCountQuery.getResultList();
+
+		for (Object[] row : variantCountResults) {
+			variantCountMap.put((Long) row[0], (Long) row[1]);
+		}
+
+		List<AlleleSummaryDTO> dtos = new ArrayList<>();
+		for (Allele allele : alleles) {
+			Long count = variantCountMap.getOrDefault(allele.getId(), 0L);
+			dtos.add(new AlleleSummaryDTO(allele, count));
+		}
+
+		String notesQueryString = """
+				SELECT ben.submittedobject_id as allele_id,
+				n.freetext as note,
+				vt.id as notetype_id,
+				vt.name as notetype_name
+				from note n
+				join biologicalentity_note ben on ben.relatednotes_id = n.id
+				join vocabularyterm vt on vt.id = n.notetype_id
+				WHERE ben.submittedobject_id IN :alleleIds
+				and vt.name IN ('mutation_description', 'transgene_content_summary', 'transgene_construction_summary');
+				""";
+		Query notesQueryExec = entityManager.createNativeQuery(notesQueryString);
+		notesQueryExec.setParameter("alleleIds", alleleIds);
+		List<Object[]> notesResults = notesQueryExec.getResultList();
+
+		notesResults.forEach(objects -> {
+			Note note = new Note();
+			note.setFreeText((String) objects[1]);
+
+			// Set the noteType
+			VocabularyTerm noteType = new VocabularyTerm();
+			noteType.setId((Long) objects[2]);
+			noteType.setName((String) objects[3]);
+			note.setNoteType(noteType);
+
+			Long alleleId = (Long) objects[0];
+			Allele allele = alleleMap.get(alleleId);
+			List<Note> noteList = allele.getRelatedNotes();
+			if (noteList == null) {
+				noteList = new ArrayList<>();
+			}
+			noteList.add(note);
+			allele.setRelatedNotes(noteList);
+		});
+
+		SearchResponse<AlleleSummaryDTO> response = new SearchResponse<>();
+		response.setResults(dtos);
+		response.setTotalResults((long) alleles.size());
+
+		// Set nextCursor for cursor-based pagination
+		if (!alleles.isEmpty() && pagination.isCursorBased()) {
+			// Get the ID of the last allele in the current page as the next cursor
+			Long lastId = alleles.get(alleles.size() - 1).getId();
+			response.setNextCursor(lastId);
+		}
+
+		return response;
+	}
 }

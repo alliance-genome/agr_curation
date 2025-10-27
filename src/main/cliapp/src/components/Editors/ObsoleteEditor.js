@@ -10,7 +10,7 @@ export const ObsoleteEditor = ({ props, obsoleteOnChangeHandler, errorMessages, 
 			<TrueFalseDropdown
 				props={props}
 				field="obsolete"
-				options={booleanTerms}
+				options={booleanTerms?.terms || []}
 				editorChange={obsoleteOnChangeHandler}
 				showClear={false}
 			/>

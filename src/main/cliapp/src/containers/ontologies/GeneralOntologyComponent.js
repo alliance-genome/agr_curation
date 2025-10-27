@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useMemo } from 'react';
 import { Toast } from 'primereact/toast';
 import { TabView, TabPanel } from 'primereact/tabview';
 import { BooleanTemplate } from '../../components/Templates/BooleanTemplate';
@@ -103,7 +103,11 @@ export const GeneralOntologyComponent = ({ name, endpoint, showNamespace, showAb
 	const DEFAULT_COLUMN_WIDTH = 17;
 	const defaultFilters = { obsoleteFilter: { obsolete: { queryString: 'false' } } };
 
-	const initialTableState = getDefaultTableState(name, columns, DEFAULT_COLUMN_WIDTH, defaultFilters);
+	const initialTableState = useMemo(
+		() => getDefaultTableState(name, columns, DEFAULT_COLUMN_WIDTH, defaultFilters),
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+		[columns]
+	);
 
 	const { settings: tableState, mutate: setTableState } = useGetUserSettings(
 		initialTableState.tableSettingsKeyName,

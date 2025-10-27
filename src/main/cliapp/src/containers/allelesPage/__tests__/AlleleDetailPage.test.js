@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter } from 'react-router-dom/cjs/react-router-dom';
+import { BrowserRouter } from 'react-router-dom';
 import { within, screen, waitFor } from '@testing-library/react';
 import { renderWithClient } from '../../../tools/jest/utils';
 import AlleleDetailPage from '../AlleleDetailPage';

@@ -15,7 +15,7 @@ import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-@JsonView(View.TransgenicAllelesDocumentView.class)
+@JsonView(View.TransgenicAllelesDocument.class)
 public class TransgenicAlleleDocument extends ESDocument {
 	{
 		category = "transgenic_allele_annotation";

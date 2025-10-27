@@ -49,20 +49,20 @@ public class ConstructComponentSlotAnnotation extends SlotAnnotation {
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "componentSymbol_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({View.FieldsOnly.class, View.TransgenicAllelesDocumentView.class})
+	@JsonView({View.FieldsOnly.class, View.TransgenicAllelesDocument.class})
 	@EqualsAndHashCode.Include
 	protected String componentSymbol;
 
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@JsonView({View.FieldsOnly.class})
+	@JsonView({View.FieldsOnly.class, View.TransgenicAllelesDocument.class})
 	private VocabularyTerm relation;
 
 	@IndexedEmbedded(includePaths = {"name", "curie", "name_keyword", "curie_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@JsonView({View.FieldsOnly.class})
+	@JsonView({View.FieldsOnly.class, View.TransgenicAllelesDocument.class})
 	@Fetch(FetchMode.JOIN)
 	private NCBITaxonTerm taxon;
 

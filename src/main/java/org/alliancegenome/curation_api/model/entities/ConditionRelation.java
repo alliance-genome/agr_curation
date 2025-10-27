@@ -50,7 +50,7 @@ public class ConditionRelation extends UniqueIdAuditedObject {
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@JsonView({View.FieldsOnly.class, View.ForPublic.class, View.ModelDocumentView.class})
+	@JsonView({View.FieldsOnly.class, View.ForPublic.class, View.ModelDocument.class})
 	private VocabularyTerm conditionRelationType;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
@@ -68,7 +68,7 @@ public class ConditionRelation extends UniqueIdAuditedObject {
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
-	@JsonView({View.FieldsAndLists.class, View.DiseaseAnnotation.class, View.PhenotypeAnnotationView.class, View.ConditionRelationView.class, View.ForPublic.class, View.ModelDocumentView.class})
+	@JsonView({View.FieldsAndLists.class, View.DiseaseAnnotation.class, View.PhenotypeAnnotationView.class, View.ConditionRelationView.class, View.ForPublic.class, View.ModelDocument.class})
 	private List<ExperimentalCondition> conditions;
 
 	public void addExperimentCondition(ExperimentalCondition experimentalCondition) {

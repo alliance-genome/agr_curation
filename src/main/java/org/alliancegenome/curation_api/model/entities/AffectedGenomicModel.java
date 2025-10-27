@@ -57,7 +57,7 @@ public class AffectedGenomicModel extends GenomicEntity {
 	@IndexedEmbedded(includePaths = {"name", "name_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@JsonView({View.FieldsOnly.class, View.ForPublic.class, View.ModelDocumentView.class})
+	@JsonView({View.FieldsOnly.class, View.ForPublic.class, View.ModelDocument.class})
 	private VocabularyTerm subtype;
 
 	@IndexedEmbedded(includePaths = {"secondaryId", "evidence.curie", "secondaryId_keyword", "evidence.curie_keyword"})
@@ -80,7 +80,7 @@ public class AffectedGenomicModel extends GenomicEntity {
 	@IndexedEmbedded(includePaths = { "displayText", "formatText", "nameType.name", "synonymScope.name", "evidence.curie", "displayText_keyword", "formatText_keyword", "nameType.name_keyword", "synonymScope.name_keyword", "evidence.curie_keyword"})
 	@OneToOne(mappedBy = "singleAgm", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonManagedReference
-	@JsonView({ View.FieldsOnly.class, View.AffectedGenomicModelView.class, View.ForPublic.class, View.ModelDocumentView.class })
+	@JsonView({ View.FieldsOnly.class, View.AffectedGenomicModelView.class, View.ForPublic.class, View.ModelDocument.class })
 	private AgmFullNameSlotAnnotation agmFullName;
 
 	@IndexedEmbedded(includePaths = { "displayText", "formatText", "nameType.name", "synonymScope.name", "evidence.curie", "displayText_keyword", "formatText_keyword", "nameType.name_keyword", "synonymScope.name_keyword", "evidence.curie_keyword"})

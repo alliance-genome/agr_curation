@@ -1,6 +1,7 @@
 package org.alliancegenome.curation_api.services;
 
 import java.util.List;
+import java.util.Set;
 
 import org.alliancegenome.curation_api.dao.AGMDiseaseAnnotationDAO;
 import org.alliancegenome.curation_api.dao.ConditionRelationDAO;
@@ -64,5 +65,10 @@ public class AGMDiseaseAnnotationService extends BaseAnnotationDTOCrudService<AG
 
 	public List<Long> getAnnotationIdsByDataProvider(BackendBulkDataProvider dataProvider) {
 		return diseaseAnnotationService.getAnnotationIdsByDataProvider(agmDiseaseAnnotationDAO, dataProvider);
+	}
+
+	public Set<String> getGeneDiseaseAnnotation() {
+		Set<String> geneIds = agmDiseaseAnnotationDAO.getAgmDiseaseAnnotationMap();
+		return geneIds;
 	}
 }

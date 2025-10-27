@@ -1,5 +1,6 @@
 package org.alliancegenome.curation_api.model.document.es;
 
+import java.util.HashMap;
 import java.util.List;
 
 import org.alliancegenome.curation_api.model.entities.GeneExpressionAnnotation;
@@ -18,8 +19,12 @@ public class GeneExpressionDocument extends ESDocument {
 		category = "gene_expression_annotation";
 	}
 	private GeneExpressionAnnotation geneExpressionAnnotation;
+	private String pubModID;
+	private String referenceId;
 	private List<String> uberonTermIds;
 	private List<String> goTermIds;
 	private List<String> termIds;
+	private HashMap<String, Integer> speciesOrder;
+	int phylogeneticSortingIndex;
 
 }

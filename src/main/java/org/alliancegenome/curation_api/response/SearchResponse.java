@@ -26,7 +26,7 @@ import lombok.Data;
 	View.DiseaseSummaryDocument.class,
 	View.DiseaseSearchResultDocument.class,
 	View.AlleleSummaryDocument.class,
-	View.ModelDocumentView.class,
+	View.ModelDocument.class,
 	View.HTPDatasetSearchResultDocument.class,
 	View.GeneExpressionDocument.class
 })
@@ -41,6 +41,7 @@ public class SearchResponse<E> extends APIResponse {
 	private String debug;
 	private String esQuery;
 	private String dbQuery;
+	private Long nextCursor; // For cursor-based pagination
 
 	public SearchResponse() {
 	}

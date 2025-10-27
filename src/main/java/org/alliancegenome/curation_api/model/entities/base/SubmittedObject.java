@@ -20,7 +20,6 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.FullTextFi
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmbedded;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexingDependency;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.KeywordField;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
 
@@ -47,7 +46,7 @@ public class SubmittedObject extends CurieObject {
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "primaryExternalId_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({View.FieldsOnly.class, View.ForPublic.class, View.GeneToGeneOrthologyDocument.class, View.GeneSummaryDocument.class, View.ModelDocumentView.class, View.TransgenicAllelesDocumentView.class, View.AlleleSummaryDocument.class, View.GeneExpressionDocument.class })
+	@JsonView({View.FieldsOnly.class, View.ForPublic.class, View.GeneToGeneOrthologyDocument.class, View.GeneSummaryDocument.class, View.ModelDocument.class, View.TransgenicAllelesDocument.class, View.AlleleSummaryDocument.class, View.GeneExpressionDocument.class })
 	private String primaryExternalId;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
@@ -56,26 +55,26 @@ public class SubmittedObject extends CurieObject {
 	private String modInternalId;
 
 	@IndexedEmbedded(includePaths = {
-		"abbreviation", "fullName", "shortName",
-		"abbreviation_keyword", "fullName_keyword", "shortName_keyword"
+			"abbreviation", "fullName", "shortName",
+			"abbreviation_keyword", "fullName_keyword", "shortName_keyword"
 	})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
 	@Fetch(FetchMode.SELECT)
-	@JsonView({View.FieldsOnly.class, View.GeneSummaryDocument.class, View.ModelDocumentView.class})
+	@JsonView({View.FieldsOnly.class, View.GeneSummaryDocument.class, View.ModelDocument.class})
 	private Organization dataProvider;
 
 	@IndexedEmbedded(includePaths = {"displayName", "referencedCurie", "displayName_keyword", "referencedCurie_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@OneToOne(orphanRemoval = true)
 	@Fetch(FetchMode.SELECT)
-	@JsonView({ View.FieldsOnly.class, View.AlleleSummaryDocument.class })
+	@JsonView({View.FieldsOnly.class, View.AlleleSummaryDocument.class, View.AlleleForPublic.class, View.TransgenicAllelesDocument.class, View.ModelDocument.class})
 	private CrossReference dataProviderCrossReference;
-	
+
 	@IndexedEmbedded(includePaths = {"freeText", "freeText_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-	@JsonView({ View.FieldsAndLists.class, View.AlleleView.class, View.AlleleDetailView.class, View.GeneView.class, View.AffectedGenomicModelView.class, View.ConstructView.class, View.VariantView.class })
+	@JsonView({ View.FieldsAndLists.class, View.AlleleView.class, View.AlleleDetailView.class, View.GeneView.class, View.AffectedGenomicModelView.class, View.ConstructView.class, View.VariantView.class, View.AlleleSummaryDocument.class })
 	@JoinTable(
 		joinColumns = @JoinColumn(name = "submittedobject_id"),
 		inverseJoinColumns = @JoinColumn(name = "relatednotes_id"),
@@ -112,5 +111,4 @@ public class SubmittedObject extends CurieObject {
 		}
 		return null;
 	}
-
 }

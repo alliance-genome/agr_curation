@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import classNames from 'classnames';
 import { useLocation } from 'react-router-dom';
 import { CSSTransition } from 'react-transition-group';
@@ -44,6 +44,9 @@ export const SiteLayout = (props) => {
 
 	const copyTooltipRef = useRef();
 	const location = useLocation();
+
+	//CSSTransition React 19 work around
+	const nodeRef = useRef(null);
 
 	const { authState, oktaAuth } = useOktaAuth();
 
@@ -447,8 +450,14 @@ export const SiteLayout = (props) => {
 				setThemeState={setThemeState}
 			/>
 
-			<CSSTransition classNames="layout-mask" timeout={{ enter: 200, exit: 200 }} in={mobileMenuActive} unmountOnExit>
-				<div className="layout-mask p-component-overlay"></div>
+			<CSSTransition
+				nodeRef={nodeRef}
+				classNames="layout-mask"
+				timeout={{ enter: 200, exit: 200 }}
+				in={mobileMenuActive}
+				unmountOnExit
+			>
+				<div ref={nodeRef} className="layout-mask p-component-overlay"></div>
 			</CSSTransition>
 		</div>
 	);

@@ -73,6 +73,9 @@ prettier-write:
 test:
 	mvn test
 
+uitest:
+	cd src/main/cliapp && npm run test
+
 integration-test:
 	mvn -ntp clean package
 	mvn -ntp failsafe:integration-test -Dokta.authentication=false

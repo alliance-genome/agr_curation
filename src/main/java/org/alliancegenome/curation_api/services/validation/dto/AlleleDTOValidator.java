@@ -53,31 +53,44 @@ import jakarta.transaction.Transactional;
 @RequestScoped
 public class AlleleDTOValidator extends GenomicEntityDTOValidator<Allele, AlleleDTO> {
 
-	@Inject AlleleDAO alleleDAO;
-	@Inject AlleleMutationTypeSlotAnnotationDTOValidator alleleMutationTypeDtoValidator;
-	@Inject AlleleInheritanceModeSlotAnnotationDTOValidator alleleInheritanceModeDtoValidator;
-	@Inject AlleleGermlineTransmissionStatusSlotAnnotationDTOValidator alleleGermlineTransmissionStatusDtoValidator;
-	@Inject AlleleNomenclatureEventSlotAnnotationDTOValidator alleleNomenclatureEventDtoValidator;
-	@Inject AlleleSymbolSlotAnnotationDTOValidator alleleSymbolDtoValidator;
-	@Inject AlleleFullNameSlotAnnotationDTOValidator alleleFullNameDtoValidator;
-	@Inject AlleleSynonymSlotAnnotationDTOValidator alleleSynonymDtoValidator;
-	@Inject AlleleSecondaryIdSlotAnnotationDTOValidator alleleSecondaryIdDtoValidator;
-	@Inject AlleleDatabaseStatusSlotAnnotationDTOValidator alleleDatabaseStatusDtoValidator;
-	@Inject SlotAnnotationIdentityHelper identityHelper;
-	@Inject AlleleFunctionalImpactSlotAnnotationDTOValidator alleleFunctionalImpactDtoValidator;
-	@Inject NoteDTOValidator noteDtoValidator;
+	@Inject
+	AlleleDAO alleleDAO;
+	@Inject
+	AlleleMutationTypeSlotAnnotationDTOValidator alleleMutationTypeDtoValidator;
+	@Inject
+	AlleleInheritanceModeSlotAnnotationDTOValidator alleleInheritanceModeDtoValidator;
+	@Inject
+	AlleleGermlineTransmissionStatusSlotAnnotationDTOValidator alleleGermlineTransmissionStatusDtoValidator;
+	@Inject
+	AlleleNomenclatureEventSlotAnnotationDTOValidator alleleNomenclatureEventDtoValidator;
+	@Inject
+	AlleleSymbolSlotAnnotationDTOValidator alleleSymbolDtoValidator;
+	@Inject
+	AlleleFullNameSlotAnnotationDTOValidator alleleFullNameDtoValidator;
+	@Inject
+	AlleleSynonymSlotAnnotationDTOValidator alleleSynonymDtoValidator;
+	@Inject
+	AlleleSecondaryIdSlotAnnotationDTOValidator alleleSecondaryIdDtoValidator;
+	@Inject
+	AlleleDatabaseStatusSlotAnnotationDTOValidator alleleDatabaseStatusDtoValidator;
+	@Inject
+	SlotAnnotationIdentityHelper identityHelper;
+	@Inject
+	AlleleFunctionalImpactSlotAnnotationDTOValidator alleleFunctionalImpactDtoValidator;
+	@Inject
+	NoteDTOValidator noteDtoValidator;
 
 	@Transactional
 	public Allele validateAlleleDTO(AlleleDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
-		response = new ObjectResponse<Allele>();
-		
+		response = new ObjectResponse<>();
+
 		Allele allele = findDatabaseObject(alleleDAO, "primaryExternalId", "primary_external_id", dto.getPrimaryExternalId());
 		if (allele == null) {
 			allele = new Allele();
 		}
 
 		allele = validateGenomicEntityDTO(allele, dto, dataProvider, VocabularyConstants.ALLELE_NOTE_TYPES_VOCABULARY_TERM_SET);
-		
+
 		VocabularyTerm inCollection = validateTermInVocabulary("in_collection_name", dto.getInCollectionName(), VocabularyConstants.ALLELE_COLLECTION_VOCABULARY);
 		allele.setInCollection(inCollection);
 
@@ -169,8 +182,14 @@ public class AlleleDTOValidator extends GenomicEntityDTOValidator<Allele, Allele
 		if (response.hasErrors()) {
 			throw new ObjectValidationException(dto, response.errorMessagesString());
 		}
-
-		return alleleDAO.persist(allele);
+		Allele newAllele;
+		try {
+			newAllele = alleleDAO.persist(allele);
+		} catch (Exception e) {
+			response.addErrorMessages("", null, e.getMessage());
+			throw new ObjectValidationException(dto, e.getMessage());
+		}
+		return newAllele;
 	}
 
 	private List<AlleleMutationTypeSlotAnnotation> validateAlleleMutationTypes(Allele allele, AlleleDTO dto) {
@@ -493,5 +512,4 @@ public class AlleleDTOValidator extends GenomicEntityDTOValidator<Allele, Allele
 
 		return validatedFunctionalImpacts;
 	}
-
 }
