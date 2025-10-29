@@ -314,7 +314,7 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
 		return ((OWLLiteral) owlAnnotationValue).getLiteral().equals("true");
 	}
 
-	private Synonym findExisitingOrCreateNewSynonym(T term, String name) {
+	private Synonym findExistingOrCreateNewSynonym(T term, String name) {
 		if (term.getSynonyms() == null) {
 			term.setSynonyms(new ArrayList<>());
 		}
