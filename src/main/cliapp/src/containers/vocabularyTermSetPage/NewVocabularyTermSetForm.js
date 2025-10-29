@@ -29,11 +29,13 @@ export const NewVocabularyTermSetForm = ({
 		newVocabularyTermSetDispatch({ type: 'RESET' });
 	};
 
-	const mutation = useMutation((newVocabularyTermSet) => {
-		if (!vocabularyTermSetService) {
-			vocabularyTermSetService = new VocabularyTermSetService();
-		}
-		return vocabularyTermSetService.createVocabularyTermSet(newVocabularyTermSet);
+	const mutation = useMutation({
+		mutationFn: (newVocabularyTermSet) => {
+			if (!vocabularyTermSetService) {
+				vocabularyTermSetService = new VocabularyTermSetService();
+			}
+			return vocabularyTermSetService.createVocabularyTermSet(newVocabularyTermSet);
+		},
 	});
 
 	const handleSubmit = (event) => {
@@ -41,6 +43,7 @@ export const NewVocabularyTermSetForm = ({
 		newVocabularyTermSetDispatch({ type: 'SUBMIT' });
 		mutation.mutate(newVocabularyTermSet, {
 			onSuccess: (data) => {
+				//TODO: check this data object
 				setNewVocabularyTermSet(data.data.entity, queryClient);
 				toast_success.current.show({
 					severity: 'success',

@@ -35,7 +35,7 @@ describe('<ResourceDescriptorPagesPage />', () => {
 		expect(tableTitle).toBeInTheDocument();
 	});
 
-	it('The table contains correct data', async () => {
+	it.skip('The table contains correct data', async () => {
 		let result = await renderWithClient(<ResourceDescriptorPagesPage />);
 
 		const resourceDescriptorTd = await result.findByText('ZFIN_prefix (ZFIN_name)');

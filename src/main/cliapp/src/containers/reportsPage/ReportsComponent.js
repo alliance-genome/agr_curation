@@ -1,4 +1,4 @@
-import React, { useReducer, useRef, useState } from 'react';
+import React, { useReducer, useRef, useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 
 import { SearchService } from '../../service/SearchService';
@@ -41,22 +41,26 @@ export const ReportsComponent = () => {
 
 	let reportService = null;
 
-	useQuery(['reporttable'], () => searchService.find('curationreportgroup', 100, 0, {}), {
-		onSuccess: (data) => {
-			if (data.results) {
-				for (let group of data.results) {
-					if (group.curationReports) {
-						for (let report of group.curationReports) {
-							report.curationReportGroup = group.id;
-						}
-					}
-				}
-				setGroups(data.results);
-			}
-		},
-		keepPreviousData: true,
+	const { data: reportData, isSuccess: reportIsSuccess } = useQuery({
+		queryKey: ['reporttable'],
+		queryFn: () => searchService.find('curationreportgroup', 100, 0, {}),
+		placeholderData: (previousData) => previousData,
 		refetchOnWindowFocus: false,
 	});
+
+	// Handle report data processing (was in onSuccess callback)
+	useEffect(() => {
+		if (reportIsSuccess && reportData?.results) {
+			for (let group of reportData.results) {
+				if (group.curationReports) {
+					for (let report of group.curationReports) {
+						report.curationReportGroup = group.id;
+					}
+				}
+			}
+			setGroups(reportData.results);
+		}
+	}, [reportData, reportIsSuccess]);
 
 	const getService = () => {
 		if (!reportService) {
