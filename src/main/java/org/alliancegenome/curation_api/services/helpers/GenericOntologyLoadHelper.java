@@ -314,6 +314,21 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
 		return ((OWLLiteral) owlAnnotationValue).getLiteral().equals("true");
 	}
 
+	private Synonym findExistingOrCreateNewSynonym(T term, String name) {
+		if (term.getSynonyms() == null) {
+			term.setSynonyms(new ArrayList<>());
+		}
+		for (Synonym existingSynonym : term.getSynonyms()) {
+			if (existingSynonym.getName().equals(name)) {
+				return existingSynonym;
+			}
+		}
+		Synonym newSynonym = new Synonym();
+		newSynonym.setName(name);
+		term.getSynonyms().add(newSynonym);
+		return newSynonym;
+	}
+
 	public T getOntologyTerm(OWLClass node) throws Exception {
 
 		T term = clazz.getDeclaredConstructor().newInstance();
@@ -362,11 +377,8 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
 		} else if (key.equals("hasOBONamespace")) {
 			term.setNamespace(getString(annotation.getValue()));
 		} else if (key.equals("hasExactSynonym")) {
-			if (term.getSynonyms() == null) {
-				term.setSynonyms(new ArrayList<>());
-			}
-			Synonym synonym = new Synonym();
 			String mainSynonymValue = getString(annotation.getValue());
+			Synonym synonym = findExistingOrCreateNewSynonym(term, mainSynonymValue);
 
 			if (node != null) {
 				ontology.annotationAssertionAxioms(node.getIRI()).forEach(axiom -> {
@@ -386,33 +398,19 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
 					}
 				});
 			}
-			synonym.setName(mainSynonymValue);
 			synonym.setHasExactSynonym(true);
-			term.getSynonyms().add(synonym);
 		} else if (key.equals("hasRelatedSynonym")) {
-			if (term.getSynonyms() == null) {
-				term.setSynonyms(new ArrayList<>());
-			}
-			Synonym synonym = new Synonym();
-			synonym.setName(getString(annotation.getValue()));
+			String synonymValue = getString(annotation.getValue());
+			Synonym synonym = findExistingOrCreateNewSynonym(term, synonymValue);
 			synonym.setHasRelatedSynonym(true);
-			term.getSynonyms().add(synonym);
 		} else if (key.equals("hasNarrowSynonym")) {
-			if (term.getSynonyms() == null) {
-				term.setSynonyms(new ArrayList<>());
-			}
-			Synonym synonym = new Synonym();
-			synonym.setName(getString(annotation.getValue()));
+			String synonymValue = getString(annotation.getValue());
+			Synonym synonym = findExistingOrCreateNewSynonym(term, synonymValue);
 			synonym.setHasNarrowSynonym(true);
-			term.getSynonyms().add(synonym);
 		} else if (key.equals("hasBroadSynonym")) {
-			if (term.getSynonyms() == null) {
-				term.setSynonyms(new ArrayList<>());
-			}
-			Synonym synonym = new Synonym();
-			synonym.setName(getString(annotation.getValue()));
+			String synonymValue = getString(annotation.getValue());
+			Synonym synonym = findExistingOrCreateNewSynonym(term, synonymValue);
 			synonym.setHasBroadSynonym(true);
-			term.getSynonyms().add(synonym);
 		} else if (key.equals("hasAlternativeId")) {
 			if (term.getSecondaryIdentifiers() == null) {
 				term.setSecondaryIdentifiers(new ArrayList<>());

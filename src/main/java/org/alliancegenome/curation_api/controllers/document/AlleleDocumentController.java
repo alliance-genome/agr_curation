@@ -74,7 +74,7 @@ public class AlleleDocumentController implements AlleleDocumentInterface {
 	/**
 	 * Cursor-based pagination endpoint for optimal performance with large datasets.
 	 * Use the nextCursor from the previous response as the cursor parameter for the next page.
-	 *
+	 * <p>
 	 * Example usage:
 	 * 1. First request: POST /allele/document/summary/cursor?limit=10 (no cursor)
 	 * 2. Next request: POST /allele/document/summary/cursor?limit=10&cursor=696355
