@@ -378,7 +378,7 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
 			term.setNamespace(getString(annotation.getValue()));
 		} else if (key.equals("hasExactSynonym")) {
 			String mainSynonymValue = getString(annotation.getValue());
-			Synonym synonym = findExisitingOrCreateNewSynonym(term, mainSynonymValue);
+			Synonym synonym = findExistingOrCreateNewSynonym(term, mainSynonymValue);
 
 			if (node != null) {
 				ontology.annotationAssertionAxioms(node.getIRI()).forEach(axiom -> {
@@ -401,15 +401,15 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
 			synonym.setHasExactSynonym(true);
 		} else if (key.equals("hasRelatedSynonym")) {
 			String synonymValue = getString(annotation.getValue());
-			Synonym synonym = findExisitingOrCreateNewSynonym(term, synonymValue);
+			Synonym synonym = findExistingOrCreateNewSynonym(term, synonymValue);
 			synonym.setHasRelatedSynonym(true);
 		} else if (key.equals("hasNarrowSynonym")) {
 			String synonymValue = getString(annotation.getValue());
-			Synonym synonym = findExisitingOrCreateNewSynonym(term, synonymValue);
+			Synonym synonym = findExistingOrCreateNewSynonym(term, synonymValue);
 			synonym.setHasNarrowSynonym(true);
 		} else if (key.equals("hasBroadSynonym")) {
 			String synonymValue = getString(annotation.getValue());
-			Synonym synonym = findExisitingOrCreateNewSynonym(term, synonymValue);
+			Synonym synonym = findExistingOrCreateNewSynonym(term, synonymValue);
 			synonym.setHasBroadSynonym(true);
 		} else if (key.equals("hasAlternativeId")) {
 			if (term.getSecondaryIdentifiers() == null) {
