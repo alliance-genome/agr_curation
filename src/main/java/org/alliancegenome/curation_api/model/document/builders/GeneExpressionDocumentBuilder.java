@@ -6,9 +6,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
+
 import org.alliancegenome.curation_api.dao.GeneExpressionExperimentDAO;
 import org.alliancegenome.curation_api.model.document.es.GeneExpressionDocument;
 import org.alliancegenome.curation_api.model.entities.AnatomicalSite;
+import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.GeneExpressionAnnotation;
 import org.alliancegenome.curation_api.model.entities.GeneExpressionExperiment;
 import org.alliancegenome.curation_api.model.entities.Reference;
@@ -110,8 +113,9 @@ public class GeneExpressionDocumentBuilder {
 		}
 		expressionDocument.setTermIds(termIds);
 		if (annotation.getEvidenceItem() != null && annotation.getEvidenceItem() instanceof Reference reference) {
-			expressionDocument.setPubModID(reference.getPubModID());
-			expressionDocument.setReferenceId(reference.getReferenceID());
+			List<String> referenceIdList = new ArrayList<>();
+			referenceIdList.add(reference.getReferenceID());
+			expressionDocument.setReferenceId(referenceIdList);
 		}
 		
 		return expressionDocument;
