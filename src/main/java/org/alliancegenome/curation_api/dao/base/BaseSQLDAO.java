@@ -213,6 +213,29 @@ public class BaseSQLDAO<E extends AuditedObject> extends BaseEntityDAO<E> {
 		return restrictions;
 	}
 
+	private Path<Object> resolveOrderByPath(Root<E> root, String orderByField, Logger.Level level) {
+		Path<Object> path = null;
+
+		Log.log(level, "Resolving order by path: " + orderByField);
+
+		if (orderByField.contains(".")) {
+			String[] fields = orderByField.split("\\.");
+			for (String field : fields) {
+				Log.log(level, "Looking up order by field: " + field);
+				if (path != null) {
+					path = path.get(field);
+				} else {
+					path = root.get(field);
+				}
+				Log.log(level, "Order by path - Column Alias: " + path.getAlias() + " Column Java Type: " + path.getJavaType());
+			}
+		} else {
+			path = root.get(orderByField);
+		}
+
+		return path;
+	}
+
 	public List<Long> findIdsByParams(Map<String, Object> params) {
 		Logger.Level level = Level.DEBUG;
 		if (params.containsKey("debug")) {
@@ -674,7 +697,8 @@ public class BaseSQLDAO<E extends AuditedObject> extends BaseEntityDAO<E> {
 		countQuery.select(builder.count(countRoot));
 
 		if (orderByField != null) {
-			query.orderBy(builder.asc(root.get(orderByField)));
+			Path<Object> orderByPath = resolveOrderByPath(root, orderByField, level);
+			query.orderBy(builder.asc(orderByPath));
 		} else {
 			// Else always order by the ID field to prevent random lists when using
 			// different page,limit combinations
