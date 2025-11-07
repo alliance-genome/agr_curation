@@ -110,9 +110,7 @@ public class GeneExpressionDocumentBuilder {
 		}
 		expressionDocument.setTermIds(termIds);
 		if (annotation.getEvidenceItem() != null && annotation.getEvidenceItem() instanceof Reference reference) {
-			List<String> referenceIdList = new ArrayList<>();
-			referenceIdList.add(reference.getReferenceID());
-			expressionDocument.setReferenceId(referenceIdList);
+			expressionDocument.setReferenceId(List.of(reference.getReferenceID()));
 		}
 		
 		return expressionDocument;
