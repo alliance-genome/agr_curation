@@ -1,6 +1,7 @@
 package org.alliancegenome.curation_api.model.entities.ontology;
 
 import java.util.List;
+import java.util.Map;
 
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
@@ -30,7 +31,7 @@ public class NCBITaxonTerm extends OntologyTerm {
 	@OneToMany(mappedBy = "taxon", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonView(View.GeneSummaryDocument.class)
 	private List<Species> species;
-	
+
 	@Transient
 	@JsonIgnore
 	public String getGenusSpecies() {
@@ -40,5 +41,29 @@ public class NCBITaxonTerm extends OntologyTerm {
 		String[] nameParts = name.split(" ");
 		return nameParts[0] + " " + nameParts[1];
 	}
+
+	@Transient
+	private static final Map<String, Integer> phylogeneticOrder = Map.of(
+			"NCBITaxon:9606", 0,
+			"NCBITaxon:10116", 100,
+			"NCBITaxon:10090", 200,
+			"NCBITaxon:8355", 300,
+			"NCBITaxon:8364", 400,
+			"NCBITaxon:7955", 500,
+			"NCBITaxon:7227", 600,
+			"NCBITaxon:6239", 700,
+			"NCBITaxon:559292", 800,
+			"NCBITaxon:2697049", 900
+	);
+
+	@Transient
+	public int getPhylogeneticSortOrder() {
+		if(phylogeneticOrder.get(curie) != null) {
+			return phylogeneticOrder.get(curie);
+		} else {
+			return 10000;
+		}
+	}
+
 
 }
