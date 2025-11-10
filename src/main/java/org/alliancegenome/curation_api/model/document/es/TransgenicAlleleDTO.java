@@ -17,7 +17,7 @@ public class TransgenicAlleleDTO {
 
 	public Construct construct;
 
-	private Boolean hasDiseaseAnnotations;
+	private Boolean hasDiseaseAnnotations = Boolean.FALSE;
 
-	private Boolean hasPhenotypeAnnotations;
+	private Boolean hasPhenotypeAnnotations = Boolean.FALSE;
 }

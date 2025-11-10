@@ -37,13 +37,11 @@ public class TransgenicAlleleDocumentBuilder {
 			// check AlleleDiseaseAnnotations and AGMDiseaseAnnotations with inferred or asserted alleles for disease annotations
 			List<AGMDiseaseAnnotation> agmDiseaseAnnotations = allele.getAgmDiseaseAssertedAlleleAnnotations();
 			agmDiseaseAnnotations.addAll(allele.getAgmDiseaseInferredAlleleAnnotations());
-			agmDiseaseAnnotations.addAll(allele.getAgmDiseaseAssertedAlleleAnnotations());
 			Boolean hasDiseaseAnnotation = CollectionUtils.isNotEmpty(agmDiseaseAnnotations) || CollectionUtils.isNotEmpty(allele.getAlleleDiseaseAnnotations());
 
 			// check AllelePhenotypeAnnotations and AGMPhenotypeAnnotations with inferred or asserted alleles for phenotype annotations
 			List<AGMPhenotypeAnnotation> agmPhenotypeAnnotations = allele.getAgmPhenotypeAssertedAlleleAnnotations();
 			agmPhenotypeAnnotations.addAll(allele.getAgmPhenotypeInferredAlleleAnnotations());
-			agmPhenotypeAnnotations.addAll(allele.getAgmPhenotypeAssertedAlleleAnnotations());
 			Boolean hasPhenotypeAnnotation = CollectionUtils.isNotEmpty(agmPhenotypeAnnotations) || CollectionUtils.isNotEmpty(allele.getAllelePhenotypeAnnotations());
 			transgenicAlleleDocument.setHasDiseaseAnnotations(hasDiseaseAnnotation);
 			transgenicAlleleDocument.setHasPhenotypeAnnotations(hasPhenotypeAnnotation);
