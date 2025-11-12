@@ -29,7 +29,7 @@ public class GeneExpressionDocumentController implements GeneExpressionDocumentI
 
 		Pagination pagination = new Pagination(page, limit);
 
-		SearchResponse<GeneExpressionAnnotation> resp = geneExpressionAnnotationService.findByParams(pagination, params);
+		SearchResponse<GeneExpressionAnnotation> resp = geneExpressionAnnotationService.findByParams(pagination, params, "expressionAnnotationSubject");
 		ArrayList<GeneExpressionDocument> list = new ArrayList<>();
 		if (CollectionUtils.isNotEmpty(resp.getResults())) {
 			GeneExpressionDocumentBuilder geneExpressionDocumentBuilder = new GeneExpressionDocumentBuilder();
