@@ -112,6 +112,7 @@ public class GeneExpressionDocumentBuilder {
 		if (annotation.getEvidenceItem() != null && annotation.getEvidenceItem() instanceof Reference reference) {
 			expressionDocument.setReferenceId(List.of(reference.getReferenceID()));
 		}
+		expressionDocument.setPhylogeneticSortingIndex(annotation.getExpressionAnnotationSubject().getTaxon().getPhylogeneticSortOrder());
 		
 		return expressionDocument;
 
