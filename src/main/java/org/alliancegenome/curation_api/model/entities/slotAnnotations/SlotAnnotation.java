@@ -50,8 +50,8 @@ import lombok.ToString;
 	@Index(name = "slotannotation_taxon_index", columnList = "taxon_id"),
 	@Index(name = "slotannotation_relation_index", columnList = "relation_id"),
 	@Index(name = "slotannotation_nametype_index", columnList = "nameType_id"),
-	@Index(name = "slotannotation_synonymscope_index", columnList = "synonymScope_id")
-	// Note: displaytext index removed - now managed via Flyway migration (v0.43.0.4) for pg_trgm GIN index
+	@Index(name = "slotannotation_synonymscope_index", columnList = "synonymScope_id"),
+	@Index(name = "slotannotation_displaytext_trgm_idx", columnList = "displaytext") // GIN index created via Flyway migration (v0.43.0.4)
 })
 
 
