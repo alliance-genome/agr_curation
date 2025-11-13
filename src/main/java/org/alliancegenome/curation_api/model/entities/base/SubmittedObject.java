@@ -51,7 +51,7 @@ public class SubmittedObject extends CurieObject {
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "modInternalId_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({View.FieldsOnly.class})
+	@JsonView({View.FieldsOnly.class, View.TransgenicAllelesDocument.class})
 	private String modInternalId;
 
 	@IndexedEmbedded(includePaths = {
