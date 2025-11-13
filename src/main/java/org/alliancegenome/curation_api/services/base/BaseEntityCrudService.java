@@ -183,6 +183,10 @@ public abstract class BaseEntityCrudService<E extends AuditedObject, D extends B
 		return dao.findByParams(pagination, params);
 	}
 
+	public SearchResponse<E> findByParams(Pagination pagination, Map<String, Object> params, String orderByField) {
+		return dao.findByParams(pagination, params, orderByField);
+	}
+
 	public SearchResponse<E> searchByParams(Pagination pagination, Map<String, Object> params) {
 		return dao.searchByParams(pagination, params);
 	}
