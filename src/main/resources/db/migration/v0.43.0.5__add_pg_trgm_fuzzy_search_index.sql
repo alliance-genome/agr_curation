@@ -2,8 +2,7 @@
 -- See: https://flywaydb.org/documentation/configuration/parameters/executeInTransaction
 -- flyway:noTransaction
 
--- Enable pg_trgm extension for fuzzy text search
-CREATE EXTENSION IF NOT EXISTS pg_trgm;
+-- Prerequisites: pg_trgm extension must be enabled (see v0.43.0.4)
 
 -- Drop existing B-tree index on displaytext (use CONCURRENTLY to match non-transactional mode)
 DROP INDEX CONCURRENTLY IF EXISTS slotannotation_displaytext_index;
