@@ -3,7 +3,6 @@ package org.alliancegenome.curation_api.interfaces.document;
 import java.util.HashMap;
 
 import org.alliancegenome.curation_api.model.document.es.VariantSummaryDTO;
-import org.alliancegenome.curation_api.model.entities.Variant;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.view.View;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
