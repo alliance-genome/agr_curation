@@ -20,3 +20,8 @@ search_index
 .DS_Store
 /bin/
 *.sublime-*
+
+# Sensitive migration documentation and user data
+OKTA_TO_COGNITO_MIGRATION.md
+abc_users.csv
+fb_curators.csv
