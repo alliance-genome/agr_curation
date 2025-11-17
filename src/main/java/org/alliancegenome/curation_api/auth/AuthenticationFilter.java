@@ -14,8 +14,6 @@ import org.alliancegenome.curation_api.services.helpers.PersonUniqueIdHelper;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.jwt.JsonWebToken;
 
-import com.nimbusds.jwt.JWTClaimsSet;
-
 import io.quarkus.logging.Log;
 import jakarta.annotation.Priority;
 import jakarta.enterprise.event.Event;
@@ -48,9 +46,6 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 	Event<Person> userAuthenticatedEvent;
 
 	@Inject
-	AuthenticationService authenticationService;
-
-	@Inject
 	PersonDAO personDAO;
 
 	@Inject
@@ -77,15 +72,8 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 	@ConfigProperty(name = "cognito.region")
 	Instance<String> region;
 
-	@ConfigProperty(name = "cognito.client.id")
-	Instance<String> clientId;
-
-	@ConfigProperty(name = "cognito.admin.client.ids")
-	Instance<String> adminClientIds;
-
 	private static final String AUTHENTICATION_BEARER = "Bearer";
 	private static final String AUTHENTICATION_APITOKEN = "APIToken";
-	private static final String TOKEN_COOKIE_NAME = "cognito-token-cookie";
 
 	private CognitoIdentityProviderClient cognitoClient;
 
@@ -110,36 +98,17 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 	@Override
 	public void filter(ContainerRequestContext requestContext) throws IOException {
 		if (jsonWebToken.getClaimNames() != null) {
+			// Token is ALREADY verified by Quarkus OIDC before we get here
+			// Signature, issuer, audience, and expiration are all validated
 			Person person = null;
 
-			// SECURITY FIX: Extract raw token and verify with AuthenticationService
-			String rawToken = extractRawToken(requestContext);
-			if (rawToken == null) {
-				Log.warn("JWT claims present but raw token not found");
-				failAuthentication(requestContext, AUTHENTICATION_BEARER);
-				return;
+			// Check if it's a user token (has 'sub' claim)
+			if (jsonWebToken.getSubject() != null && !jsonWebToken.getSubject().isEmpty()) {
+				person = validateUserToken();
 			}
-
-			try {
-				// First, try to verify as a user token
-				try {
-					JWTClaimsSet userClaims = authenticationService.verifyUserToken(rawToken);
-					person = validateUserToken(userClaims);
-				} catch (Exception userTokenEx) {
-					// Not a valid user token, try client credentials
-					Log.debug("Token is not a valid user token, trying client credentials: " + userTokenEx.getMessage());
-					try {
-						JWTClaimsSet adminClaims = authenticationService.verifyClientCredentialsToken(rawToken);
-						person = validateAdminToken(adminClaims);
-					} catch (Exception adminTokenEx) {
-						Log.error("Token verification failed for both user and admin: " + adminTokenEx.getMessage());
-						throw adminTokenEx;
-					}
-				}
-			} catch (Exception e) {
-				Log.error("Token verification failed", e);
-				failAuthentication(requestContext, AUTHENTICATION_BEARER);
-				return;
+			// Check if it's a client credentials token (has 'client_id' but no 'sub')
+			else if (jsonWebToken.getClaim("client_id") != null) {
+				person = validateAdminToken();
 			}
 
 			if (person != null) {
@@ -172,28 +141,6 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 		requestContext.abortWith(Response.status(Response.Status.UNAUTHORIZED).header(HttpHeaders.WWW_AUTHENTICATE, authType).build());
 	}
 
-	private String extractRawToken(ContainerRequestContext requestContext) {
-		// Try to get token from cookie first
-		String cookieHeader = requestContext.getHeaderString(HttpHeaders.COOKIE);
-		if (cookieHeader != null) {
-			String[] cookies = cookieHeader.split(";");
-			for (String cookie : cookies) {
-				String trimmedCookie = cookie.trim();
-				if (trimmedCookie.startsWith(TOKEN_COOKIE_NAME + "=")) {
-					return trimmedCookie.substring(TOKEN_COOKIE_NAME.length() + 1);
-				}
-			}
-		}
-
-		// Fallback to Authorization header
-		String authHeader = requestContext.getHeaderString(HttpHeaders.AUTHORIZATION);
-		if (authHeader != null && authHeader.toLowerCase().startsWith("bearer ")) {
-			return authHeader.substring(7);
-		}
-
-		return null;
-	}
-
 	private void loginDevUser() {
 		Log.debug("Cognito Authentication Disabled using Test Dev User");
 		Person authenticatedUser = personService.findPersonByOktaEmail("test@alliancegenome.org");
@@ -211,95 +158,118 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 		}
 	}
 
-	private Person validateUserToken(JWTClaimsSet claims) {
-		try {
-			String cognitoUserId = claims.getSubject(); // Cognito user ID in 'sub' claim
-			String cognitoUsername = claims.getStringClaim("cognito:username"); // Username claim
-			String email = claims.getStringClaim("email"); // Email claim
+	private Person validateUserToken() {
+		String cognitoUserId = jsonWebToken.getSubject(); // Cognito user ID in 'sub' claim
+		String cognitoUsername = jsonWebToken.getClaim("cognito:username"); // Username claim
+		String email = jsonWebToken.getClaim("email"); // Email claim
 
-			if (cognitoUserId == null || cognitoUserId.isEmpty()) {
-				Log.warn("User token missing sub claim");
-				return null;
-			}
+		if (cognitoUserId == null || cognitoUserId.isEmpty()) {
+			Log.warn("User token missing sub claim");
+			return null;
+		}
 
-			// Try to find existing user by Cognito ID first
-			Person authenticatedUser = personService.findPersonByOktaId(cognitoUserId);
-			if (authenticatedUser != null) {
-				// Update alliance member if needed
-				if (authenticatedUser.getAllianceMember() == null) {
-					String username = cognitoUsername != null ? cognitoUsername : email;
-					updateUserAllianceMember(authenticatedUser, username);
-				}
-				return authenticatedUser;
-			}
-
-			// Try by email
-			if (email != null) {
-				authenticatedUser = personService.findPersonByOktaEmail(email);
-			}
-
-			if (authenticatedUser != null) {
-				if (authenticatedUser.getAllianceMember() == null) {
-					String username = cognitoUsername != null ? cognitoUsername : email;
-					AdminGetUserResponse userDetails = getCognitoUser(username);
-					if (userDetails != null) {
-						AdminListGroupsForUserResponse groups = getCognitoUserGroups(username);
-						// NULL GUARD: Check if groups response is valid before accessing
-						if (groups != null && groups.groups() != null) {
-							authenticatedUser.setAllianceMember(getAllianceMemberFromCognitoGroups(groups.groups()));
-							personDAO.persist(authenticatedUser);
-						} else {
-							Log.warn("Could not retrieve groups for user: " + username);
-						}
+		// Try to find existing user by Cognito ID first
+		Person authenticatedUser = personService.findPersonByOktaId(cognitoUserId);
+		if (authenticatedUser != null) {
+			// Update alliance member if needed
+			if (authenticatedUser.getAllianceMember() == null) {
+				String username = cognitoUsername != null ? cognitoUsername : email;
+				AdminGetUserResponse userDetails = getCognitoUser(username);
+				if (userDetails != null) {
+					AdminListGroupsForUserResponse groups = getCognitoUserGroups(username);
+					// NULL GUARD: Check if groups response is valid before accessing
+					if (groups != null && groups.groups() != null) {
+						authenticatedUser.setAllianceMember(getAllianceMemberFromCognitoGroups(groups.groups()));
+						personDAO.persist(authenticatedUser);
+					} else {
+						Log.warn("Could not retrieve groups for user: " + username);
 					}
 				}
-				return authenticatedUser;
 			}
+			return authenticatedUser;
+		}
 
-			Log.info("Making Cognito call to get user info for: " + email);
+		// Try by email
+		if (email != null) {
+			authenticatedUser = personService.findPersonByOktaEmail(email);
+		}
 
-			String username = cognitoUsername != null ? cognitoUsername : email;
-			AdminGetUserResponse userDetails = getCognitoUser(username);
-
-			if (userDetails != null) {
-				Person person = new Person();
-				person.setApiToken(UUID.randomUUID().toString());
-				person.setOktaId(cognitoUserId);
-
-				AdminListGroupsForUserResponse groups = getCognitoUserGroups(username);
-				// NULL GUARD: Check if groups response is valid before accessing
-				if (groups != null && groups.groups() != null) {
-					person.setAllianceMember(getAllianceMemberFromCognitoGroups(groups.groups()));
-				} else {
-					Log.warn("Could not retrieve groups for new user: " + username);
-					// User will be created without alliance member association
+		if (authenticatedUser != null) {
+			if (authenticatedUser.getAllianceMember() == null) {
+				String username = cognitoUsername != null ? cognitoUsername : email;
+				AdminGetUserResponse userDetails = getCognitoUser(username);
+				if (userDetails != null) {
+					AdminListGroupsForUserResponse groups = getCognitoUserGroups(username);
+					// NULL GUARD: Check if groups response is valid before accessing
+					if (groups != null && groups.groups() != null) {
+						authenticatedUser.setAllianceMember(getAllianceMemberFromCognitoGroups(groups.groups()));
+						personDAO.persist(authenticatedUser);
+					} else {
+						Log.warn("Could not retrieve groups for user: " + username);
+					}
 				}
-
-				person.setOktaEmail(getAttributeValue(userDetails.userAttributes(), "email"));
-				person.setFirstName(getAttributeValue(userDetails.userAttributes(), "given_name"));
-				person.setLastName(getAttributeValue(userDetails.userAttributes(), "family_name"));
-				person.setUniqueId(loggedInPersonUniqueId.createLoggedInPersonUniqueId(person));
-				personDAO.persist(person);
-				return person;
 			}
+			return authenticatedUser;
+		}
+
+		Log.info("Making Cognito call to get user info for: " + email);
+
+		String username = cognitoUsername != null ? cognitoUsername : email;
+		AdminGetUserResponse userDetails = getCognitoUser(username);
+
+		if (userDetails != null) {
+			Person person = new Person();
+			person.setApiToken(UUID.randomUUID().toString());
+			person.setOktaId(cognitoUserId);
+
+			AdminListGroupsForUserResponse groups = getCognitoUserGroups(username);
+			// NULL GUARD: Check if groups response is valid before accessing
+			if (groups != null && groups.groups() != null) {
+				person.setAllianceMember(getAllianceMemberFromCognitoGroups(groups.groups()));
+			} else {
+				Log.warn("Could not retrieve groups for new user: " + username);
+				// User will be created without alliance member association
+			}
+
+			person.setOktaEmail(getAttributeValue(userDetails.userAttributes(), "email"));
+			person.setFirstName(getAttributeValue(userDetails.userAttributes(), "given_name"));
+			person.setLastName(getAttributeValue(userDetails.userAttributes(), "family_name"));
+			person.setUniqueId(loggedInPersonUniqueId.createLoggedInPersonUniqueId(person));
+			personDAO.persist(person);
+			return person;
 		}
 
 		return null;
 	}
 
-	private Person validateAdminToken(JWTClaimsSet claims) {
+	private Person validateAdminToken() {
 		try {
-			String cognitoClientId = claims.getStringClaim("client_id");
+			String cognitoClientId = jsonWebToken.getClaim("client_id");
 
 			if (cognitoClientId == null || cognitoClientId.isEmpty()) {
 				Log.warn("Client credentials token missing client_id claim");
 				return null;
 			}
 
-			// SECURITY: Verify admin scope is present
-			String scopes = claims.getStringClaim("scope");
-			if (scopes == null || !scopes.contains("admin")) {
-				Log.warn("Client credentials token missing required 'admin' scope for client: " + cognitoClientId);
+			// SECURITY: Verify admin scope is present (exact match, not substring)
+			// Cognito scopes are space-separated, e.g., "openid profile curation-api/admin"
+			String scopes = jsonWebToken.getClaim("scope");
+			if (scopes == null) {
+				Log.warn("Client credentials token missing scope claim for client: " + cognitoClientId);
+				return null;
+			}
+
+			// Split scopes and check for exact match on "curation-api/admin"
+			boolean hasAdminScope = false;
+			for (String scope : scopes.split("\\s+")) {
+				if ("curation-api/admin".equals(scope)) {
+					hasAdminScope = true;
+					break;
+				}
+			}
+
+			if (!hasAdminScope) {
+				Log.warn("Client credentials token missing required 'curation-api/admin' scope for client: " + cognitoClientId + ", has scopes: " + scopes);
 				return null;
 			}
 

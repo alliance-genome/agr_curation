@@ -9,8 +9,6 @@ import org.alliancegenome.curation_api.model.document.es.HTPDatasetSearchResultD
 import org.alliancegenome.curation_api.model.entities.HTPExpressionDatasetAnnotation;
 import org.alliancegenome.curation_api.model.entities.HTPExpressionDatasetSampleAnnotation;
 
-import com.okta.commons.lang.Collections;
-
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -80,7 +78,7 @@ public class HTPDatasetDocumentBuilder {
 			doc.setCrossReferences(crossReferences);
 		}
 
-		if (!Collections.isEmpty(sampleAnnots)) {
+		if (sampleAnnots != null && !sampleAnnots.isEmpty()) {
 			Set<String> whereExpressed = new HashSet<>();
 			Set<String> anatomicalExpression = new HashSet<>();
 			Set<String> anatomicalExpressionWithParents = new HashSet<>();
