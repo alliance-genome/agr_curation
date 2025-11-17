@@ -95,17 +95,44 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 		return cognitoClient;
 	}
 
+	@jakarta.annotation.PreDestroy
+	public void cleanup() {
+		if (cognitoClient != null) {
+			cognitoClient.close();
+			Log.info("Cognito client closed");
+		}
+	}
+
 	@Override
 	public void filter(ContainerRequestContext requestContext) throws IOException {
 		if (jsonWebToken.getClaimNames() != null) {
-			Person person = validateUserTokenById();
+			Person person = null;
 
-			if (person == null) {
-				person = validateUserTokenByEmail();
-			}
-			if (person == null) {
+			// SECURITY FIX: Determine token type FIRST to prevent privilege escalation
+			// Check if this is a user token (has 'sub' and appropriate token_use)
+			String sub = jsonWebToken.getClaim("sub");
+			String tokenUse = jsonWebToken.getClaim("token_use");
+
+			// User tokens have 'sub' claim and token_use of "access" or "id"
+			boolean isUserToken = (sub != null && !sub.isEmpty()) &&
+			                      (tokenUse != null && ("access".equals(tokenUse) || "id".equals(tokenUse)));
+
+			// Admin/client credentials tokens should NOT have 'sub' claim
+			boolean isAdminToken = (sub == null || sub.isEmpty()) &&
+			                       jsonWebToken.getClaim("client_id") != null;
+
+			if (isUserToken) {
+				// This is a user token - try user validation paths only
+				person = validateUserTokenById();
+				if (person == null) {
+					person = validateUserTokenByEmail();
+				}
+				// DO NOT fall through to admin token validation for user tokens
+			} else if (isAdminToken) {
+				// This is explicitly an admin/client credentials token
 				person = validateAdminToken();
 			}
+
 			if (person != null) {
 				userAuthenticatedEvent.fire(person);
 			} else {
@@ -172,11 +199,17 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 
 			if (authenticatedUser != null) {
 				if (authenticatedUser.getAllianceMember() == null) {
-					AdminGetUserResponse userDetails = getCognitoUser(cognitoUsername != null ? cognitoUsername : email);
+					String username = cognitoUsername != null ? cognitoUsername : email;
+					AdminGetUserResponse userDetails = getCognitoUser(username);
 					if (userDetails != null) {
-						AdminListGroupsForUserResponse groups = getCognitoUserGroups(cognitoUsername != null ? cognitoUsername : email);
-						authenticatedUser.setAllianceMember(getAllianceMemberFromCognitoGroups(groups.groups()));
-						personDAO.persist(authenticatedUser);
+						AdminListGroupsForUserResponse groups = getCognitoUserGroups(username);
+						// NULL GUARD: Check if groups response is valid before accessing
+						if (groups != null && groups.groups() != null) {
+							authenticatedUser.setAllianceMember(getAllianceMemberFromCognitoGroups(groups.groups()));
+							personDAO.persist(authenticatedUser);
+						} else {
+							Log.warn("Could not retrieve groups for user: " + username);
+						}
 					}
 				}
 				return authenticatedUser;
@@ -184,15 +217,22 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 
 			Log.info("Making Cognito call to get user info for: " + email);
 
-			AdminGetUserResponse userDetails = getCognitoUser(cognitoUsername != null ? cognitoUsername : email);
+			String username = cognitoUsername != null ? cognitoUsername : email;
+			AdminGetUserResponse userDetails = getCognitoUser(username);
 
 			if (userDetails != null) {
 				Person person = new Person();
 				person.setApiToken(UUID.randomUUID().toString());
 				person.setOktaId(cognitoUserId);
 
-				AdminListGroupsForUserResponse groups = getCognitoUserGroups(cognitoUsername != null ? cognitoUsername : email);
-				person.setAllianceMember(getAllianceMemberFromCognitoGroups(groups.groups()));
+				AdminListGroupsForUserResponse groups = getCognitoUserGroups(username);
+				// NULL GUARD: Check if groups response is valid before accessing
+				if (groups != null && groups.groups() != null) {
+					person.setAllianceMember(getAllianceMemberFromCognitoGroups(groups.groups()));
+				} else {
+					Log.warn("Could not retrieve groups for new user: " + username);
+					// User will be created without alliance member association
+				}
 
 				person.setOktaEmail(getAttributeValue(userDetails.userAttributes(), "email"));
 				person.setFirstName(getAttributeValue(userDetails.userAttributes(), "given_name"));
@@ -277,6 +317,12 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 		// This implementation assumes group names follow the pattern "{AbbreviationStaff}" (e.g., FBStaff, WBStaff)
 		// to determine alliance membership. The group structure and mapping logic may require revision
 		// based on finalized Cognito group organization and access control requirements.
+
+		// NULL GUARD: Handle null or empty groups list
+		if (groups == null || groups.isEmpty()) {
+			Log.debug("No groups provided for alliance member lookup");
+			return null;
+		}
 
 		// In Cognito, we'll use group names to determine alliance membership
 		// Groups are named like: FBStaff, WBStaff, MGIStaff, etc.
