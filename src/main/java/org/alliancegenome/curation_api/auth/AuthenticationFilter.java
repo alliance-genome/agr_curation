@@ -1,6 +1,7 @@
 package org.alliancegenome.curation_api.auth;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.UUID;
 
 import org.alliancegenome.curation_api.dao.AllianceMemberDAO;
@@ -13,16 +14,9 @@ import org.alliancegenome.curation_api.services.helpers.PersonUniqueIdHelper;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.jwt.JsonWebToken;
 
-import com.okta.sdk.authc.credentials.TokenClientCredentials;
-import com.okta.sdk.client.Client;
-import com.okta.sdk.client.Clients;
-import com.okta.sdk.resource.application.Application;
-import com.okta.sdk.resource.group.Group;
-import com.okta.sdk.resource.group.GroupList;
-import com.okta.sdk.resource.user.User;
+import com.nimbusds.jwt.JWTClaimsSet;
 
 import io.quarkus.logging.Log;
-import io.quarkus.scheduler.Scheduled;
 import jakarta.annotation.Priority;
 import jakarta.enterprise.event.Event;
 import jakarta.enterprise.inject.Instance;
@@ -35,6 +29,15 @@ import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.UriInfo;
 import jakarta.ws.rs.ext.Provider;
+import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
+import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.cognitoidentityprovider.CognitoIdentityProviderClient;
+import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminGetUserRequest;
+import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminGetUserResponse;
+import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminListGroupsForUserRequest;
+import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminListGroupsForUserResponse;
+import software.amazon.awssdk.services.cognitoidentityprovider.model.AttributeType;
+import software.amazon.awssdk.services.cognitoidentityprovider.model.GroupType;
 
 @Provider
 @Priority(Priorities.AUTHENTICATION)
@@ -65,29 +68,38 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 	@Inject
 	PersonUniqueIdHelper loggedInPersonUniqueId;
 
-	@ConfigProperty(name = "okta.authentication")
-	Instance<Boolean> oktaAuth;
+	@ConfigProperty(name = "cognito.authentication")
+	Instance<Boolean> cognitoAuth;
 
-	@ConfigProperty(name = "okta.url")
-	Instance<String> oktaUrl;
+	@ConfigProperty(name = "cognito.user.pool.id")
+	Instance<String> userPoolId;
 
-	@ConfigProperty(name = "okta.client.id")
+	@ConfigProperty(name = "cognito.region")
+	Instance<String> region;
+
+	@ConfigProperty(name = "cognito.client.id")
 	Instance<String> clientId;
-
-	@ConfigProperty(name = "okta.client.secret")
-	Instance<String> clientSecret;
-
-	@ConfigProperty(name = "okta.api.token")
-	Instance<String> apiToken;
 
 	private static final String AUTHENTICATION_BEARER = "Bearer";
 	private static final String AUTHENTICATION_APITOKEN = "APIToken";
+
+	private CognitoIdentityProviderClient cognitoClient;
+
+	private CognitoIdentityProviderClient getCognitoClient() {
+		if (cognitoClient == null) {
+			cognitoClient = CognitoIdentityProviderClient.builder()
+				.region(Region.of(region.get()))
+				.credentialsProvider(DefaultCredentialsProvider.create())
+				.build();
+		}
+		return cognitoClient;
+	}
 
 	@Override
 	public void filter(ContainerRequestContext requestContext) throws IOException {
 		if (jsonWebToken.getClaimNames() != null) {
 			Person person = validateUserTokenById();
-			
+
 			if (person == null) {
 				person = validateUserTokenByEmail();
 			}
@@ -100,7 +112,7 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 				failAuthentication(requestContext, AUTHENTICATION_BEARER);
 			}
 		} else {
-			if (oktaAuth.get()) {
+			if (cognitoAuth.get()) {
 				String authorizationHeader = requestContext.getHeaderString(HttpHeaders.AUTHORIZATION);
 				String apiToken = null;
 				if (authorizationHeader != null && authorizationHeader.toLowerCase().startsWith(AUTHENTICATION_APITOKEN.toLowerCase())) {
@@ -125,7 +137,7 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 	}
 
 	private void loginDevUser() {
-		Log.debug("OKTA Authentication Disabled using Test Dev User");
+		Log.debug("Cognito Authentication Disabled using Test Dev User");
 		Person authenticatedUser = personService.findPersonByOktaEmail("test@alliancegenome.org");
 		if (authenticatedUser == null) {
 			Person person = new Person();
@@ -142,43 +154,49 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 	}
 
 	private Person validateUserTokenById() {
-		if (jsonWebToken.getClaim("uid") != null) {
-			return personService.findPersonByOktaId(jsonWebToken.getClaim("uid"));
+		if (jsonWebToken.getClaim("sub") != null) {
+			// Cognito uses 'sub' claim for user ID
+			return personService.findPersonByOktaId(jsonWebToken.getClaim("sub"));
 		}
 		return null;
 	}
 
-	// Check Okta(token), Check DB ApiToken(token), else return null
 	private Person validateUserTokenByEmail() {
+		String cognitoUserId = (String) jsonWebToken.getClaim("sub"); // Cognito user ID in 'sub' claim
+		String cognitoUsername = jsonWebToken.getClaim("cognito:username"); // Username claim
 
-		String oktaUserId = (String) jsonWebToken.getClaim("uid"); // User Id
+		if (cognitoUserId != null && cognitoUserId.length() > 0) {
+			String email = jsonWebToken.getClaim("email"); // Email claim
 
-		if (oktaUserId != null && oktaUserId.length() > 0) {
-			String oktaEmail = jsonWebToken.getSubject(); // Subject Id
-
-			Person authenticatedUser = personService.findPersonByOktaEmail(oktaEmail);
+			Person authenticatedUser = personService.findPersonByOktaEmail(email);
 
 			if (authenticatedUser != null) {
 				if (authenticatedUser.getAllianceMember() == null) {
-					User user = getOktaUser(oktaUserId);
-					authenticatedUser.setAllianceMember(getAllianceMember(user.listGroups()));
-					personDAO.persist(authenticatedUser);
+					AdminGetUserResponse userDetails = getCognitoUser(cognitoUsername != null ? cognitoUsername : email);
+					if (userDetails != null) {
+						AdminListGroupsForUserResponse groups = getCognitoUserGroups(cognitoUsername != null ? cognitoUsername : email);
+						authenticatedUser.setAllianceMember(getAllianceMemberFromCognitoGroups(groups.groups()));
+						personDAO.persist(authenticatedUser);
+					}
 				}
 				return authenticatedUser;
 			}
 
-			Log.info("Making OKTA call to get user info: ");
+			Log.info("Making Cognito call to get user info for: " + email);
 
-			User user = getOktaUser(oktaUserId);
+			AdminGetUserResponse userDetails = getCognitoUser(cognitoUsername != null ? cognitoUsername : email);
 
-			if (user != null) {
+			if (userDetails != null) {
 				Person person = new Person();
 				person.setApiToken(UUID.randomUUID().toString());
-				person.setOktaId(oktaUserId);
-				person.setAllianceMember(getAllianceMember(user.listGroups()));
-				person.setOktaEmail(user.getProfile().getEmail());
-				person.setFirstName(user.getProfile().getFirstName());
-				person.setLastName(user.getProfile().getLastName());
+				person.setOktaId(cognitoUserId);
+
+				AdminListGroupsForUserResponse groups = getCognitoUserGroups(cognitoUsername != null ? cognitoUsername : email);
+				person.setAllianceMember(getAllianceMemberFromCognitoGroups(groups.groups()));
+
+				person.setOktaEmail(getAttributeValue(userDetails.userAttributes(), "email"));
+				person.setFirstName(getAttributeValue(userDetails.userAttributes(), "given_name"));
+				person.setLastName(getAttributeValue(userDetails.userAttributes(), "family_name"));
 				person.setUniqueId(loggedInPersonUniqueId.createLoggedInPersonUniqueId(person));
 				personDAO.persist(person);
 				return person;
@@ -189,65 +207,91 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 	}
 
 	private Person validateAdminToken() {
+		String cognitoClientId = (String) jsonWebToken.getClaim("client_id"); // Client ID for client credentials flow
 
-		String oktaClientId = (String) jsonWebToken.getClaim("cid"); // Client Id
+		if (cognitoClientId != null && cognitoClientId.length() > 0) {
 
-		if (oktaClientId != null && oktaClientId.length() > 0) {
-
-			Person authenticatedUser = personService.findPersonByOktaId(oktaClientId);
+			Person authenticatedUser = personService.findPersonByOktaId(cognitoClientId);
 
 			if (authenticatedUser != null) {
 				return authenticatedUser;
 			}
 
-			Log.info("Making OKTA call to get app info: ");
+			Log.info("Creating admin user for Cognito client: " + cognitoClientId);
 
-			Application app = getOktaClient(oktaClientId);
-
-			if (app != null) {
-				Log.debug("OKTA Authentication for Admin user via token");
-				String adminEmail = "admin@alliancegenome.org";
-				Person person = new Person();
-				person.setApiToken(UUID.randomUUID().toString());
-				person.setOktaId(app.getId());
-				person.setOktaEmail(adminEmail);
-				person.setFirstName(app.getLabel());
-				person.setLastName(app.getName());
-				person.setUniqueId(app.getLabel() + "|" + app.getName() + "|" + adminEmail);
-				personDAO.persist(person);
-				return person;
-			}
+			// For client credentials flow, create an admin user
+			Log.debug("Cognito Authentication for Admin user via client credentials");
+			String adminEmail = "admin@alliancegenome.org";
+			Person person = new Person();
+			person.setApiToken(UUID.randomUUID().toString());
+			person.setOktaId(cognitoClientId);
+			person.setOktaEmail(adminEmail);
+			person.setFirstName("Admin");
+			person.setLastName(cognitoClientId);
+			person.setUniqueId("Admin|" + cognitoClientId + "|" + adminEmail);
+			personDAO.persist(person);
+			return person;
 		}
 
 		return null;
 	}
 
-	private User getOktaUser(String oktaId) {
-		Client client = Clients.builder().setOrgUrl(oktaUrl.get()).setClientId(clientId.get()).setClientCredentials(new TokenClientCredentials(apiToken.get())).build();
-		return client.getUser(oktaId);
+	private AdminGetUserResponse getCognitoUser(String username) {
+		try {
+			AdminGetUserRequest request = AdminGetUserRequest.builder()
+				.userPoolId(userPoolId.get())
+				.username(username)
+				.build();
+
+			return getCognitoClient().adminGetUser(request);
+		} catch (Exception e) {
+			Log.error("Error getting Cognito user: " + username, e);
+			return null;
+		}
 	}
 
-	@Scheduled(cron = "0 0 2 ? * SUN")
-	public void rotateAPIKey() {
-		Application oktaApp = getOktaClient(clientId.get());
-		Log.info("Rotating Okta App API Key: " + oktaApp.getName() + " " + oktaApp.getLabel());
+	private AdminListGroupsForUserResponse getCognitoUserGroups(String username) {
+		try {
+			AdminListGroupsForUserRequest request = AdminListGroupsForUserRequest.builder()
+				.userPoolId(userPoolId.get())
+				.username(username)
+				.build();
+
+			return getCognitoClient().adminListGroupsForUser(request);
+		} catch (Exception e) {
+			Log.error("Error getting Cognito user groups: " + username, e);
+			return null;
+		}
 	}
 
-	private Application getOktaClient(String applicationId) {
-		Client client = Clients.builder().setOrgUrl(oktaUrl.get()).setClientId(clientId.get()).setClientCredentials(new TokenClientCredentials(apiToken.get())).build();
-		return client.getApplication(applicationId);
+	private String getAttributeValue(List<AttributeType> attributes, String attributeName) {
+		return attributes.stream()
+			.filter(attr -> attr.name().equals(attributeName))
+			.findFirst()
+			.map(AttributeType::value)
+			.orElse(null);
 	}
 
-	private AllianceMember getAllianceMember(GroupList groupList) {
-		for (Group group : groupList) {
-			String allianceMember = (String) group.getProfile().get("affiliated_alliance_member");
-			if (allianceMember != null) {
-				SearchResponse<AllianceMember> res = allianceMemberDAO.findByField("abbreviation", allianceMember);
+	private AllianceMember getAllianceMemberFromCognitoGroups(List<GroupType> groups) {
+		// In Cognito, we'll use group names to determine alliance membership
+		// Groups are named like: FBStaff, WBStaff, MGIStaff, etc.
+		// We'll extract the alliance abbreviation from the group name
+
+		for (GroupType group : groups) {
+			String groupName = group.groupName();
+
+			// Check if this is a "Staff" group
+			if (groupName.endsWith("Staff")) {
+				// Extract the alliance abbreviation (e.g., "FB" from "FBStaff")
+				String allianceAbbreviation = groupName.replace("Staff", "");
+
+				SearchResponse<AllianceMember> res = allianceMemberDAO.findByField("abbreviation", allianceAbbreviation);
 				if (res.getResults().size() == 1) {
 					AllianceMember member = res.getResults().get(0);
+					Log.info("Found alliance member for group " + groupName + ": " + member.getAbbreviation());
 					return member;
-				} else {
-					Log.info("Alliance Look up error: more than one member found");
+				} else if (res.getResults().size() > 1) {
+					Log.info("Alliance lookup error: more than one member found for " + allianceAbbreviation);
 				}
 			}
 		}
