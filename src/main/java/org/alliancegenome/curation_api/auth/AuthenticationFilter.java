@@ -273,6 +273,11 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 	}
 
 	private AllianceMember getAllianceMemberFromCognitoGroups(List<GroupType> groups) {
+		// TODO: Coordinate with Blue Team on Cognito group mapping strategy
+		// This implementation assumes group names follow the pattern "{AbbreviationStaff}" (e.g., FBStaff, WBStaff)
+		// to determine alliance membership. The group structure and mapping logic may require revision
+		// based on finalized Cognito group organization and access control requirements.
+
 		// In Cognito, we'll use group names to determine alliance membership
 		// Groups are named like: FBStaff, WBStaff, MGIStaff, etc.
 		// We'll extract the alliance abbreviation from the group name
