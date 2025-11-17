@@ -80,8 +80,12 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 	@ConfigProperty(name = "cognito.client.id")
 	Instance<String> clientId;
 
+	@ConfigProperty(name = "cognito.admin.client.ids")
+	Instance<String> adminClientIds;
+
 	private static final String AUTHENTICATION_BEARER = "Bearer";
 	private static final String AUTHENTICATION_APITOKEN = "APIToken";
+	private static final String TOKEN_COOKIE_NAME = "cognito-token-cookie";
 
 	private CognitoIdentityProviderClient cognitoClient;
 
@@ -108,29 +112,34 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 		if (jsonWebToken.getClaimNames() != null) {
 			Person person = null;
 
-			// SECURITY FIX: Determine token type FIRST to prevent privilege escalation
-			// Check if this is a user token (has 'sub' and appropriate token_use)
-			String sub = jsonWebToken.getClaim("sub");
-			String tokenUse = jsonWebToken.getClaim("token_use");
+			// SECURITY FIX: Extract raw token and verify with AuthenticationService
+			String rawToken = extractRawToken(requestContext);
+			if (rawToken == null) {
+				Log.warn("JWT claims present but raw token not found");
+				failAuthentication(requestContext, AUTHENTICATION_BEARER);
+				return;
+			}
 
-			// User tokens have 'sub' claim and token_use of "access" or "id"
-			boolean isUserToken = (sub != null && !sub.isEmpty()) &&
-			                      (tokenUse != null && ("access".equals(tokenUse) || "id".equals(tokenUse)));
-
-			// Admin/client credentials tokens should NOT have 'sub' claim
-			boolean isAdminToken = (sub == null || sub.isEmpty()) &&
-			                       jsonWebToken.getClaim("client_id") != null;
-
-			if (isUserToken) {
-				// This is a user token - try user validation paths only
-				person = validateUserTokenById();
-				if (person == null) {
-					person = validateUserTokenByEmail();
+			try {
+				// First, try to verify as a user token
+				try {
+					JWTClaimsSet userClaims = authenticationService.verifyUserToken(rawToken);
+					person = validateUserToken(userClaims);
+				} catch (Exception userTokenEx) {
+					// Not a valid user token, try client credentials
+					Log.debug("Token is not a valid user token, trying client credentials: " + userTokenEx.getMessage());
+					try {
+						JWTClaimsSet adminClaims = authenticationService.verifyClientCredentialsToken(rawToken);
+						person = validateAdminToken(adminClaims);
+					} catch (Exception adminTokenEx) {
+						Log.error("Token verification failed for both user and admin: " + adminTokenEx.getMessage());
+						throw adminTokenEx;
+					}
 				}
-				// DO NOT fall through to admin token validation for user tokens
-			} else if (isAdminToken) {
-				// This is explicitly an admin/client credentials token
-				person = validateAdminToken();
+			} catch (Exception e) {
+				Log.error("Token verification failed", e);
+				failAuthentication(requestContext, AUTHENTICATION_BEARER);
+				return;
 			}
 
 			if (person != null) {
@@ -163,6 +172,28 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 		requestContext.abortWith(Response.status(Response.Status.UNAUTHORIZED).header(HttpHeaders.WWW_AUTHENTICATE, authType).build());
 	}
 
+	private String extractRawToken(ContainerRequestContext requestContext) {
+		// Try to get token from cookie first
+		String cookieHeader = requestContext.getHeaderString(HttpHeaders.COOKIE);
+		if (cookieHeader != null) {
+			String[] cookies = cookieHeader.split(";");
+			for (String cookie : cookies) {
+				String trimmedCookie = cookie.trim();
+				if (trimmedCookie.startsWith(TOKEN_COOKIE_NAME + "=")) {
+					return trimmedCookie.substring(TOKEN_COOKIE_NAME.length() + 1);
+				}
+			}
+		}
+
+		// Fallback to Authorization header
+		String authHeader = requestContext.getHeaderString(HttpHeaders.AUTHORIZATION);
+		if (authHeader != null && authHeader.toLowerCase().startsWith("bearer ")) {
+			return authHeader.substring(7);
+		}
+
+		return null;
+	}
+
 	private void loginDevUser() {
 		Log.debug("Cognito Authentication Disabled using Test Dev User");
 		Person authenticatedUser = personService.findPersonByOktaEmail("test@alliancegenome.org");
@@ -180,20 +211,31 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 		}
 	}
 
-	private Person validateUserTokenById() {
-		if (jsonWebToken.getClaim("sub") != null) {
-			// Cognito uses 'sub' claim for user ID
-			return personService.findPersonByOktaId(jsonWebToken.getClaim("sub"));
-		}
-		return null;
-	}
+	private Person validateUserToken(JWTClaimsSet claims) {
+		try {
+			String cognitoUserId = claims.getSubject(); // Cognito user ID in 'sub' claim
+			String cognitoUsername = claims.getStringClaim("cognito:username"); // Username claim
+			String email = claims.getStringClaim("email"); // Email claim
 
-	private Person validateUserTokenByEmail() {
-		String cognitoUserId = (String) jsonWebToken.getClaim("sub"); // Cognito user ID in 'sub' claim
-		String cognitoUsername = jsonWebToken.getClaim("cognito:username"); // Username claim
+			if (cognitoUserId == null || cognitoUserId.isEmpty()) {
+				Log.warn("User token missing sub claim");
+				return null;
+			}
 
-		if (cognitoUserId != null && cognitoUserId.length() > 0) {
-			String email = jsonWebToken.getClaim("email"); // Email claim
+			// Try to find existing user by Cognito ID first
+			Person authenticatedUser = personService.findPersonByOktaId(cognitoUserId);
+			if (authenticatedUser != null) {
+				// Update alliance member if needed
+				if (authenticatedUser.getAllianceMember() == null) {
+					String username = cognitoUsername != null ? cognitoUsername : email;
+					updateUserAllianceMember(authenticatedUser, username);
+				}
+				return authenticatedUser;
+			}
+
+			// Try by email
+			if (email != null) {
+				authenticatedUser = personService.findPersonByOktaEmail(email);
 
 			Person authenticatedUser = personService.findPersonByOktaEmail(email);
 

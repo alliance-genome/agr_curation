@@ -88,6 +88,7 @@ cognito.region = us-east-1
 cognito.client.secret = ""
 cognito.domain = auth.alliancegenome.org
 cognito.scopes = openid,profile,email
+cognito.admin.client.ids = ""
 mati.url = http://localhost:8081
 %dev.cognito.authentication = false
 %test.cognito.authentication = false
