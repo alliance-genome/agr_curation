@@ -236,8 +236,7 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 			// Try by email
 			if (email != null) {
 				authenticatedUser = personService.findPersonByOktaEmail(email);
-
-			Person authenticatedUser = personService.findPersonByOktaEmail(email);
+			}
 
 			if (authenticatedUser != null) {
 				if (authenticatedUser.getAllianceMember() == null) {
@@ -288,22 +287,32 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 		return null;
 	}
 
-	private Person validateAdminToken() {
-		String cognitoClientId = (String) jsonWebToken.getClaim("client_id"); // Client ID for client credentials flow
+	private Person validateAdminToken(JWTClaimsSet claims) {
+		try {
+			String cognitoClientId = claims.getStringClaim("client_id");
 
-		if (cognitoClientId != null && cognitoClientId.length() > 0) {
+			if (cognitoClientId == null || cognitoClientId.isEmpty()) {
+				Log.warn("Client credentials token missing client_id claim");
+				return null;
+			}
 
+			// SECURITY: Verify admin scope is present
+			String scopes = claims.getStringClaim("scope");
+			if (scopes == null || !scopes.contains("admin")) {
+				Log.warn("Client credentials token missing required 'admin' scope for client: " + cognitoClientId);
+				return null;
+			}
+
+			// Lookup existing admin person
 			Person authenticatedUser = personService.findPersonByOktaId(cognitoClientId);
 
 			if (authenticatedUser != null) {
 				return authenticatedUser;
 			}
 
+			// Create new admin person for this client
 			Log.info("Creating admin user for Cognito client: " + cognitoClientId);
-
-			// For client credentials flow, create an admin user
-			Log.debug("Cognito Authentication for Admin user via client credentials");
-			String adminEmail = "admin@alliancegenome.org";
+			String adminEmail = "admin-" + cognitoClientId + "@alliancegenome.org";
 			Person person = new Person();
 			person.setApiToken(UUID.randomUUID().toString());
 			person.setOktaId(cognitoClientId);
@@ -313,9 +322,11 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 			person.setUniqueId("Admin|" + cognitoClientId + "|" + adminEmail);
 			personDAO.persist(person);
 			return person;
-		}
 
-		return null;
+		} catch (Exception e) {
+			Log.error("Error validating admin token", e);
+			return null;
+		}
 	}
 
 	private AdminGetUserResponse getCognitoUser(String username) {
