@@ -43,8 +43,7 @@ public class GeneExpressionRibbonDocumentBuilder {
 				otherTerm.setCurie("AnatomyOtherLocation");
 				otherTerm.setName("Other");
 				anatomicalUberonTerms.add(otherTerm);
-			}
-			else {
+			} else {
 				anatomicalUberonTerms.add(uberonTermService.getByCurie(term).getEntity());
 			}
 		}
@@ -60,8 +59,7 @@ public class GeneExpressionRibbonDocumentBuilder {
 				otherTerm.setCurie("PostEmbryonicPreAdult");
 				otherTerm.setName("post embryonic, pre-adult");
 				stageUberonTerms.add(otherTerm);
-			}
-			else {
+			} else {
 				stageUberonTerms.add(uberonTermService.getByCurie(term).getEntity());
 			}
 		}
@@ -77,13 +75,12 @@ public class GeneExpressionRibbonDocumentBuilder {
 				otherTerm.setCurie("otherLocations");
 				otherTerm.setName("other locations");
 				goSlimTerms.add(otherTerm);
-			}
-			else {
+			} else {
 				goSlimTerms.add(goTermService.getByCurie(term).getEntity());
 			}
 		}
 		document.setGoSlimTerms(goSlimTerms);
-		
+
 		return document;
 	}
 }

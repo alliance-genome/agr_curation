@@ -5,7 +5,7 @@ import org.alliancegenome.curation_api.model.document.builders.GeneExpressionRib
 import org.alliancegenome.curation_api.model.document.es.GeneExpressionRibbonSummaryDocument;
 import jakarta.inject.Inject;
 
-public class GeneExpressionRibbonDocumentController implements GeneExpressionRibbonDocumentInterface{
+public class GeneExpressionRibbonDocumentController implements GeneExpressionRibbonDocumentInterface {
 
 	@Inject GeneExpressionRibbonDocumentBuilder builder;
 
