@@ -83,10 +83,10 @@ quarkus.http.auth.permission.secured.policy=authenticated
 
 # Quarkus OIDC Configuration for AWS Cognito
 quarkus.oidc.auth-server-url=https://cognito-idp.us-east-1.amazonaws.com/us-east-1_d3eK6SYpI
-quarkus.oidc.client-id=7oiu2b1j531ihb3311ipdhli45
+quarkus.oidc.client-id=16mb6flnriept58r7gi4a95gda
 quarkus.oidc.application-type=service
 quarkus.oidc.token.issuer=https://cognito-idp.us-east-1.amazonaws.com/us-east-1_d3eK6SYpI
-quarkus.oidc.token.audience=7oiu2b1j531ihb3311ipdhli45
+quarkus.oidc.token.audience=16mb6flnriept58r7gi4a95gda
 quarkus.oidc.token.header=Authorization
 quarkus.oidc.token.cookie=cognito-token-cookie
 quarkus.oidc.enabled=true
