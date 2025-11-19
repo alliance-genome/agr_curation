@@ -2,6 +2,7 @@ package org.alliancegenome.curation_api.services.mati;
 
 import java.io.IOException;
 import java.util.Base64;
+import java.util.Optional;
 
 import org.alliancegenome.curation_api.interfaces.okta.OktaTokenInterface;
 import org.alliancegenome.curation_api.model.mati.Identifier;
@@ -11,31 +12,36 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.context.RequestScoped;
 import si.mazi.rescu.RestProxyFactory;
 
-@ApplicationScoped
+/**
+ * TEMPORARY FIX: Changed to @RequestScoped with Optional properties to prevent startup failures
+ * during Cognito migration. MaTI service needs to be properly migrated from Okta to Cognito.
+ * See SCRUM-5613 for full MaTI migration work.
+ */
+@RequestScoped
 public class MaTIService {
 
 	@ConfigProperty(name = "okta.client.id")
-	String clientId;
+	Optional<String> clientId;
 
 	@ConfigProperty(name = "okta.client.secret")
-	String clientSecret;
+	Optional<String> clientSecret;
 
 	@ConfigProperty(name = "okta.url")
-	String oktaUrl;
+	Optional<String> oktaUrl;
 
 	@ConfigProperty(name = "okta.scopes")
-	String oktaScopes;
+	Optional<String> oktaScopes;
 
 	@ConfigProperty(name = "mati.url")
 	String matiUrl;
 
 	private String fetchOktaToken() throws IOException {
-		OktaTokenInterface oktaAPI = RestProxyFactory.createProxy(OktaTokenInterface.class, oktaUrl);
-		String authorization = "Basic " + Base64.getEncoder().encodeToString((clientId + ":" + clientSecret).getBytes());
-		OktaToken oktaToken = oktaAPI.getClientCredentialsAccessToken(authorization, "client_credentials", oktaScopes);
+		OktaTokenInterface oktaAPI = RestProxyFactory.createProxy(OktaTokenInterface.class, oktaUrl.orElse(""));
+		String authorization = "Basic " + Base64.getEncoder().encodeToString((clientId.orElse("") + ":" + clientSecret.orElse("")).getBytes());
+		OktaToken oktaToken = oktaAPI.getClientCredentialsAccessToken(authorization, "client_credentials", oktaScopes.orElse(""));
 		return oktaToken.getAccessToken();
 	}
 

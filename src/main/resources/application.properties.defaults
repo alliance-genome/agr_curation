@@ -81,12 +81,11 @@ reindex.schedulingEnabled = false
 quarkus.http.auth.permission.secured.paths=/graphql,/graphql/*
 quarkus.http.auth.permission.secured.policy=authenticated
 
-# Quarkus OIDC Configuration for AWS Cognito
-quarkus.oidc.auth-server-url=https://cognito-idp.us-east-1.amazonaws.com/us-east-1_d3eK6SYpI
-quarkus.oidc.client-id=16mb6flnriept58r7gi4a95gda
+# Quarkus OIDC Configuration for AWS Cognito (JWT verification)
+quarkus.oidc.auth-server-url=https://cognito-idp.us-east-1.amazonaws.com/<user-pool-id>
+quarkus.oidc.client-id=<cognito-client-id>
 quarkus.oidc.application-type=service
-quarkus.oidc.token.issuer=https://cognito-idp.us-east-1.amazonaws.com/us-east-1_d3eK6SYpI
-quarkus.oidc.token.audience=16mb6flnriept58r7gi4a95gda
+quarkus.oidc.token.issuer=https://cognito-idp.us-east-1.amazonaws.com/<user-pool-id>
 quarkus.oidc.token.header=Authorization
 quarkus.oidc.token.cookie=cognito-token-cookie
 quarkus.oidc.enabled=true
@@ -98,9 +97,10 @@ cognito.authentication = false
 %dev.cognito.authentication = false
 %test.cognito.authentication = false
 
-# Cognito User Pool Configuration (for AWS SDK calls)
-cognito.user.pool.id = us-east-1_d3eK6SYpI
-cognito.region = us-east-1
+# Cognito Domain (for userinfo endpoint)
+cognito.domain = <cognito-domain>
+cognito.user.pool.id = <user-pool-id>
+cognito.region = <aws-region>
 
 mati.url = http://localhost:8081
 

@@ -10,7 +10,7 @@ public class PersonUniqueIdHelper {
 		UniqueIdGeneratorHelper uniqueId = new UniqueIdGeneratorHelper();
 		uniqueId.add(loggedInPerson.getFirstName());
 		uniqueId.add(loggedInPerson.getLastName());
-		uniqueId.add(loggedInPerson.getOktaEmail());
+		uniqueId.add(loggedInPerson.getEmail());
 
 		return uniqueId.getUniqueId();
 	}

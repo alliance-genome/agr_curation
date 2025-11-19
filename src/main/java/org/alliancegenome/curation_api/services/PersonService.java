@@ -60,7 +60,7 @@ public class PersonService extends BaseEntityCrudService<Person, PersonDAO> {
 		return personDAO.persist(person);
 	}
 
-	public Person findPersonByEmail(String email) {
+	public Person findPersonByAuthEmail(String email) {
 		SearchResponse<Person> resp = personDAO.findByField("email", email);
 		if (resp != null && resp.getResults().size() == 1) {
 			return resp.getSingleResult();
@@ -83,16 +83,8 @@ public class PersonService extends BaseEntityCrudService<Person, PersonDAO> {
 		return null;
 	}
 
-	public Person findPersonByOktaEmail(String email) {
-		SearchResponse<Person> resp = personDAO.findByField("oktaEmail", email);
-		if (resp != null && resp.getResults().size() == 1) {
-			return resp.getSingleResult();
-		}
-		return null;
-	}
-
-	public Person findPersonByOktaId(String oktaId) {
-		SearchResponse<Person> resp = personDAO.findByField("oktaId", oktaId);
+	public Person findPersonByAuthId(String authId) {
+		SearchResponse<Person> resp = personDAO.findByField("authId", authId);
 		if (resp != null && resp.getResults().size() == 1) {
 			return resp.getSingleResult();
 		}

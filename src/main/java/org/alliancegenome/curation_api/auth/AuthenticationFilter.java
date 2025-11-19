@@ -1,8 +1,19 @@
 package org.alliancegenome.curation_api.auth;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.alliancegenome.curation_api.dao.AllianceMemberDAO;
 import org.alliancegenome.curation_api.dao.PersonDAO;
@@ -27,15 +38,6 @@ import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.UriInfo;
 import jakarta.ws.rs.ext.Provider;
-import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
-import software.amazon.awssdk.regions.Region;
-import software.amazon.awssdk.services.cognitoidentityprovider.CognitoIdentityProviderClient;
-import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminGetUserRequest;
-import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminGetUserResponse;
-import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminListGroupsForUserRequest;
-import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminListGroupsForUserResponse;
-import software.amazon.awssdk.services.cognitoidentityprovider.model.AttributeType;
-import software.amazon.awssdk.services.cognitoidentityprovider.model.GroupType;
 
 @Provider
 @Priority(Priorities.AUTHENTICATION)
@@ -72,42 +74,45 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 	@ConfigProperty(name = "cognito.region")
 	Instance<String> region;
 
+	@ConfigProperty(name = "cognito.domain")
+	Instance<String> cognitoDomain;
+
 	private static final String AUTHENTICATION_BEARER = "Bearer";
 	private static final String AUTHENTICATION_APITOKEN = "APIToken";
+	private static final String ADMIN_SCOPE = "curation-api/admin";
+	private static final HttpClient httpClient = HttpClient.newHttpClient();
+	private static final ObjectMapper objectMapper = new ObjectMapper();
+	private static final long USERINFO_CACHE_TTL_MS = 15 * 60 * 1000; // 15 minutes
+	private static final ConcurrentHashMap<String, UserInfoCacheEntry> userInfoCache = new ConcurrentHashMap<>();
 
-	private CognitoIdentityProviderClient cognitoClient;
+	private static class UserInfoCacheEntry {
+		final Map<String, String> userInfo;
+		final long timestamp;
 
-	private CognitoIdentityProviderClient getCognitoClient() {
-		if (cognitoClient == null) {
-			cognitoClient = CognitoIdentityProviderClient.builder()
-				.region(Region.of(region.get()))
-				.credentialsProvider(DefaultCredentialsProvider.create())
-				.build();
+		UserInfoCacheEntry(Map<String, String> userInfo) {
+			this.userInfo = userInfo;
+			this.timestamp = System.currentTimeMillis();
 		}
-		return cognitoClient;
-	}
 
-	@jakarta.annotation.PreDestroy
-	public void cleanup() {
-		if (cognitoClient != null) {
-			cognitoClient.close();
-			Log.info("Cognito client closed");
+		boolean isExpired() {
+			return System.currentTimeMillis() - timestamp > USERINFO_CACHE_TTL_MS;
 		}
 	}
 
 	@Override
 	public void filter(ContainerRequestContext requestContext) throws IOException {
 		if (jsonWebToken.getClaimNames() != null) {
-			// Token is ALREADY verified by Quarkus OIDC before we get here
-			// Signature, issuer, audience, and expiration are all validated
 			Person person = null;
 
-			// Check if it's a user token (has 'sub' claim)
-			if (jsonWebToken.getSubject() != null && !jsonWebToken.getSubject().isEmpty()) {
-				person = validateUserToken();
+			String accessToken = null;
+			String authHeader = requestContext.getHeaderString(HttpHeaders.AUTHORIZATION);
+			if (authHeader != null && authHeader.toLowerCase().startsWith("bearer ")) {
+				accessToken = authHeader.substring(7).trim();
 			}
-			// Check if it's a client credentials token (has 'client_id' but no 'sub')
-			else if (jsonWebToken.getClaim("client_id") != null) {
+
+			if (jsonWebToken.getSubject() != null && !jsonWebToken.getSubject().isEmpty()) {
+				person = validateUserToken(accessToken);
+			} else if (jsonWebToken.getClaim("client_id") != null) {
 				person = validateAdminToken();
 			}
 
@@ -143,11 +148,11 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 
 	private void loginDevUser() {
 		Log.debug("Cognito Authentication Disabled using Test Dev User");
-		Person authenticatedUser = personService.findPersonByOktaEmail("test@alliancegenome.org");
+		Person authenticatedUser = personService.findPersonByAuthEmail("test@alliancegenome.org");
 		if (authenticatedUser == null) {
 			Person person = new Person();
 			person.setApiToken(UUID.randomUUID().toString());
-			person.setOktaEmail("test@alliancegenome.org");
+			person.setEmail("test@alliancegenome.org");
 			person.setFirstName("Local");
 			person.setLastName("Dev User");
 			person.setUniqueId("Local|Dev User|test@alliancegenome.org");
@@ -158,88 +163,105 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 		}
 	}
 
-	private Person validateUserToken() {
-		String cognitoUserId = jsonWebToken.getSubject(); // Cognito user ID in 'sub' claim
-		String cognitoUsername = jsonWebToken.getClaim("cognito:username"); // Username claim
-		String email = jsonWebToken.getClaim("email"); // Email claim
+	private Person validateUserToken(String accessToken) {
+		String cognitoUserId = jsonWebToken.getSubject();
+		String email = jsonWebToken.getClaim("email");
+
+		// Fetch user profile from Cognito userinfo endpoint (with caching)
+		Map<String, String> userInfo = fetchUserInfoFromCognito(cognitoUserId, accessToken);
+		String givenName = userInfo.get("given_name");
+		String familyName = userInfo.get("family_name");
+
+		if (email == null && userInfo.get("email") != null) {
+			email = userInfo.get("email");
+		}
+
+		List<String> groupNames = extractGroupsFromJwt();
 
 		if (cognitoUserId == null || cognitoUserId.isEmpty()) {
 			Log.warn("User token missing sub claim");
 			return null;
 		}
 
-		// Try to find existing user by Cognito ID first
-		Person authenticatedUser = personService.findPersonByOktaId(cognitoUserId);
+		Person authenticatedUser = personService.findPersonByAuthId(cognitoUserId);
 		if (authenticatedUser != null) {
-			// Update alliance member if needed
-			if (authenticatedUser.getAllianceMember() == null) {
-				String username = cognitoUsername != null ? cognitoUsername : email;
-				AdminGetUserResponse userDetails = getCognitoUser(username);
-				if (userDetails != null) {
-					AdminListGroupsForUserResponse groups = getCognitoUserGroups(username);
-					// NULL GUARD: Check if groups response is valid before accessing
-					if (groups != null && groups.groups() != null) {
-						authenticatedUser.setAllianceMember(getAllianceMemberFromCognitoGroups(groups.groups()));
-						personDAO.persist(authenticatedUser);
-					} else {
-						Log.warn("Could not retrieve groups for user: " + username);
-					}
-				}
-			}
+			updateUserIfNeeded(authenticatedUser, groupNames, givenName, familyName);
 			return authenticatedUser;
 		}
 
-		// Try by email
 		if (email != null) {
-			authenticatedUser = personService.findPersonByOktaEmail(email);
+			authenticatedUser = personService.findPersonByAuthEmail(email);
 		}
 
 		if (authenticatedUser != null) {
-			if (authenticatedUser.getAllianceMember() == null) {
-				String username = cognitoUsername != null ? cognitoUsername : email;
-				AdminGetUserResponse userDetails = getCognitoUser(username);
-				if (userDetails != null) {
-					AdminListGroupsForUserResponse groups = getCognitoUserGroups(username);
-					// NULL GUARD: Check if groups response is valid before accessing
-					if (groups != null && groups.groups() != null) {
-						authenticatedUser.setAllianceMember(getAllianceMemberFromCognitoGroups(groups.groups()));
-						personDAO.persist(authenticatedUser);
-					} else {
-						Log.warn("Could not retrieve groups for user: " + username);
-					}
-				}
-			}
+			updateUserIfNeeded(authenticatedUser, groupNames, givenName, familyName);
 			return authenticatedUser;
 		}
 
-		Log.info("Making Cognito call to get user info for: " + email);
+		Person person = new Person();
+		person.setApiToken(UUID.randomUUID().toString());
+		person.setAuthId(cognitoUserId);
+		person.setEmail(email);
+		person.setFirstName(givenName);
+		person.setLastName(familyName);
 
-		String username = cognitoUsername != null ? cognitoUsername : email;
-		AdminGetUserResponse userDetails = getCognitoUser(username);
-
-		if (userDetails != null) {
-			Person person = new Person();
-			person.setApiToken(UUID.randomUUID().toString());
-			person.setOktaId(cognitoUserId);
-
-			AdminListGroupsForUserResponse groups = getCognitoUserGroups(username);
-			// NULL GUARD: Check if groups response is valid before accessing
-			if (groups != null && groups.groups() != null) {
-				person.setAllianceMember(getAllianceMemberFromCognitoGroups(groups.groups()));
+		if (!groupNames.isEmpty()) {
+			AllianceMember member = getAllianceMemberFromGroupNames(groupNames);
+			if (member != null) {
+				person.setAllianceMember(member);
 			} else {
-				Log.warn("Could not retrieve groups for new user: " + username);
-				// User will be created without alliance member association
+				Log.warn("Could not determine alliance member from groups: " + groupNames);
 			}
-
-			person.setOktaEmail(getAttributeValue(userDetails.userAttributes(), "email"));
-			person.setFirstName(getAttributeValue(userDetails.userAttributes(), "given_name"));
-			person.setLastName(getAttributeValue(userDetails.userAttributes(), "family_name"));
-			person.setUniqueId(loggedInPersonUniqueId.createLoggedInPersonUniqueId(person));
-			personDAO.persist(person);
-			return person;
+		} else {
+			Log.warn("No groups found in JWT for new user");
 		}
 
-		return null;
+		person.setUniqueId(loggedInPersonUniqueId.createLoggedInPersonUniqueId(person));
+		personDAO.persist(person);
+
+		Log.info("Created new user: " + email);
+		return person;
+	}
+
+	private List<String> extractGroupsFromJwt() {
+		List<String> groupNames = new ArrayList<>();
+		try {
+			Object groupsClaim = jsonWebToken.getClaim("cognito:groups");
+			if (groupsClaim == null) {
+				groupsClaim = jsonWebToken.getClaim("groups");
+			}
+
+			if (groupsClaim instanceof List) {
+				List<?> groupsList = (List<?>) groupsClaim;
+				for (Object group : groupsList) {
+					if (group != null) {
+						groupNames.add(group.toString());
+					}
+				}
+			} else if (groupsClaim instanceof String[]) {
+				groupNames.addAll(Arrays.asList((String[]) groupsClaim));
+			} else if (groupsClaim instanceof String) {
+				groupNames.add((String) groupsClaim);
+			}
+		} catch (Exception e) {
+			Log.error("Error extracting groups from JWT", e);
+		}
+		return groupNames;
+	}
+
+	private void updateUserIfNeeded(Person user, List<String> groupNames, String givenName, String familyName) {
+		if (user.getAllianceMember() == null && !groupNames.isEmpty()) {
+			AllianceMember member = getAllianceMemberFromGroupNames(groupNames);
+			if (member != null) {
+				user.setAllianceMember(member);
+			}
+		}
+		if (user.getFirstName() == null && givenName != null) {
+			user.setFirstName(givenName);
+		}
+		if (user.getLastName() == null && familyName != null) {
+			user.setLastName(familyName);
+		}
 	}
 
 	private Person validateAdminToken() {
@@ -251,46 +273,42 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 				return null;
 			}
 
-			// SECURITY: Verify admin scope is present (exact match, not substring)
-			// Cognito scopes are space-separated, e.g., "openid profile curation-api/admin"
 			String scopes = jsonWebToken.getClaim("scope");
 			if (scopes == null) {
 				Log.warn("Client credentials token missing scope claim for client: " + cognitoClientId);
 				return null;
 			}
 
-			// Split scopes and check for exact match on "curation-api/admin"
 			boolean hasAdminScope = false;
 			for (String scope : scopes.split("\\s+")) {
-				if ("curation-api/admin".equals(scope)) {
+				if (ADMIN_SCOPE.equals(scope)) {
 					hasAdminScope = true;
 					break;
 				}
 			}
 
 			if (!hasAdminScope) {
-				Log.warn("Client credentials token missing required 'curation-api/admin' scope for client: " + cognitoClientId + ", has scopes: " + scopes);
+				Log.warn("Client credentials token missing required '" + ADMIN_SCOPE + "' scope for client: " + cognitoClientId);
 				return null;
 			}
 
-			// Lookup existing admin person
-			Person authenticatedUser = personService.findPersonByOktaId(cognitoClientId);
+			Person authenticatedUser = personService.findPersonByAuthId(cognitoClientId);
 
 			if (authenticatedUser != null) {
 				return authenticatedUser;
 			}
 
-			// Create new admin person for this client
-			Log.info("Creating admin user for Cognito client: " + cognitoClientId);
 			String adminEmail = "admin-" + cognitoClientId + "@alliancegenome.org";
 			Person person = new Person();
 			person.setApiToken(UUID.randomUUID().toString());
-			person.setOktaId(cognitoClientId);
-			person.setOktaEmail(adminEmail);
+			person.setAuthId(cognitoClientId);
+			person.setEmail(adminEmail);
 			person.setFirstName("Admin");
 			person.setLastName(cognitoClientId);
 			person.setUniqueId("Admin|" + cognitoClientId + "|" + adminEmail);
 			personDAO.persist(person);
+
+			Log.info("Created admin user for client: " + cognitoClientId);
 			return person;
 
 		} catch (Exception e) {
@@ -299,76 +317,81 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 		}
 	}
 
-	private AdminGetUserResponse getCognitoUser(String username) {
+	private Map<String, String> fetchUserInfoFromCognito(String userId, String accessToken) {
+		userInfoCache.entrySet().removeIf(entry -> entry.getValue().isExpired());
+
+		if (userId != null) {
+			UserInfoCacheEntry cached = userInfoCache.get(userId);
+			if (cached != null && !cached.isExpired()) {
+				return cached.userInfo;
+			}
+		}
+
+		Map<String, String> userInfo = new ConcurrentHashMap<>();
+
+		if (accessToken == null || accessToken.isEmpty()) {
+			Log.warn("No access token provided for userinfo request");
+			return userInfo;
+		}
+
 		try {
-			AdminGetUserRequest request = AdminGetUserRequest.builder()
-				.userPoolId(userPoolId.get())
-				.username(username)
+			String userInfoUrl = "https://" + cognitoDomain.get() + "/oauth2/userInfo";
+
+			HttpRequest request = HttpRequest.newBuilder()
+				.uri(URI.create(userInfoUrl))
+				.header("Authorization", "Bearer " + accessToken)
+				.GET()
 				.build();
 
-			return getCognitoClient().adminGetUser(request);
+			HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+
+			if (response.statusCode() == 200) {
+				Map<String, Object> responseMap = objectMapper.readValue(
+					response.body(),
+					new TypeReference<Map<String, Object>>() { }
+				);
+
+				if (responseMap.get("given_name") != null) {
+					userInfo.put("given_name", responseMap.get("given_name").toString());
+				}
+				if (responseMap.get("family_name") != null) {
+					userInfo.put("family_name", responseMap.get("family_name").toString());
+				}
+				if (responseMap.get("email") != null) {
+					userInfo.put("email", responseMap.get("email").toString());
+				}
+
+				if (userId != null) {
+					userInfoCache.put(userId, new UserInfoCacheEntry(userInfo));
+				}
+			} else {
+				Log.warn("Failed to fetch userinfo, status: " + response.statusCode());
+			}
 		} catch (Exception e) {
-			Log.error("Error getting Cognito user: " + username, e);
-			return null;
+			Log.error("Error fetching userinfo from Cognito", e);
 		}
+
+		return userInfo;
 	}
 
-	private AdminListGroupsForUserResponse getCognitoUserGroups(String username) {
-		try {
-			AdminListGroupsForUserRequest request = AdminListGroupsForUserRequest.builder()
-				.userPoolId(userPoolId.get())
-				.username(username)
-				.build();
-
-			return getCognitoClient().adminListGroupsForUser(request);
-		} catch (Exception e) {
-			Log.error("Error getting Cognito user groups: " + username, e);
-			return null;
-		}
-	}
-
-	private String getAttributeValue(List<AttributeType> attributes, String attributeName) {
-		return attributes.stream()
-			.filter(attr -> attr.name().equals(attributeName))
-			.findFirst()
-			.map(AttributeType::value)
-			.orElse(null);
-	}
-
-	private AllianceMember getAllianceMemberFromCognitoGroups(List<GroupType> groups) {
-		// TODO: Coordinate with Blue Team on Cognito group mapping strategy
-		// This implementation assumes group names follow the pattern "{AbbreviationStaff}" (e.g., FBStaff, WBStaff)
-		// to determine alliance membership. The group structure and mapping logic may require revision
-		// based on finalized Cognito group organization and access control requirements.
-
-		// NULL GUARD: Handle null or empty groups list
-		if (groups == null || groups.isEmpty()) {
-			Log.debug("No groups provided for alliance member lookup");
+	private AllianceMember getAllianceMemberFromGroupNames(List<String> groupNames) {
+		if (groupNames == null || groupNames.isEmpty()) {
 			return null;
 		}
 
-		// In Cognito, we'll use group names to determine alliance membership
-		// Groups are named like: FBStaff, WBStaff, MGIStaff, etc.
-		// We'll extract the alliance abbreviation from the group name
-
-		for (GroupType group : groups) {
-			String groupName = group.groupName();
-
-			// Check if this is a "Staff" group
+		for (String groupName : groupNames) {
 			if (groupName.endsWith("Staff")) {
-				// Extract the alliance abbreviation (e.g., "FB" from "FBStaff")
 				String allianceAbbreviation = groupName.replace("Staff", "");
 
 				SearchResponse<AllianceMember> res = allianceMemberDAO.findByField("abbreviation", allianceAbbreviation);
 				if (res.getResults().size() == 1) {
-					AllianceMember member = res.getResults().get(0);
-					Log.info("Found alliance member for group " + groupName + ": " + member.getAbbreviation());
-					return member;
+					return res.getResults().get(0);
 				} else if (res.getResults().size() > 1) {
-					Log.info("Alliance lookup error: more than one member found for " + allianceAbbreviation);
+					Log.warn("Multiple alliance members found for abbreviation: " + allianceAbbreviation);
 				}
 			}
 		}
+
 		return null;
 	}
 

@@ -95,16 +95,16 @@ public class Person extends Agent {
 	private AllianceMember allianceMember;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
-	@KeywordField(name = "oktaId_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
+	@KeywordField(name = "authId_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
 	@JsonView({ View.PrivateOnlyView.class, View.PersonSettingView.class })
-	@Column(unique = true)
-	private String oktaId;
+	@Column(name = "auth_id", unique = true)
+	private String authId;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
-	@KeywordField(name = "oktaEmail_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
+	@KeywordField(name = "email_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
 	@JsonView({ View.PrivateOnlyView.class, View.PersonSettingView.class })
 	@Column(unique = true)
-	private String oktaEmail;
+	private String email;
 
 	@JsonView({ View.PrivateOnlyView.class, View.PersonSettingView.class })
 	private String apiToken;
