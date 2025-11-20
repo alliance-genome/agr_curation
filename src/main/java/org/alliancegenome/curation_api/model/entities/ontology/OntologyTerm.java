@@ -45,8 +45,14 @@ import lombok.ToString;
 @Entity
 @ToString(exclude = { "ancestors", "descendants", "crossReferences", "synonyms", "secondaryIdentifiers", "subsets" }, callSuper = true)
 @AGRCurationSchemaVersion(min = LinkMLSchemaConstants.MIN_ONTOLOGY_RELEASE, max = LinkMLSchemaConstants.MAX_ONTOLOGY_RELEASE, dependencies = { CurieObject.class })
-@Table(indexes = { @Index(name = "ontologyterm_curie_index", columnList = "curie"), @Index(name = "ontologyterm_name_index", columnList = "name"), @Index(name = "ontologyterm_createdby_index", columnList = "createdBy_id"),
-	@Index(name = "ontologyterm_updatedby_index", columnList = "updatedBy_id") }, uniqueConstraints = { @UniqueConstraint(name = "ontologyterm_curie_uk", columnNames = "curie") })
+@Table(indexes = {
+	@Index(name = "ontologyterm_curie_index", columnList = "curie"),
+	@Index(name = "ontologyterm_name_index", columnList = "name"),
+	@Index(name = "ontologyterm_upper_name_index", columnList = "name"), // B-tree index on UPPER(name) created via Flyway migration (v0.43.0.6)
+	@Index(name = "ontologyterm_name_trgm_idx", columnList = "name"), // GIN trigram index created via Flyway migration (v0.43.0.6)
+	@Index(name = "ontologyterm_createdby_index", columnList = "createdBy_id"),
+	@Index(name = "ontologyterm_updatedby_index", columnList = "updatedBy_id")
+}, uniqueConstraints = { @UniqueConstraint(name = "ontologyterm_curie_uk", columnNames = "curie") })
 public class OntologyTerm extends CurieObject {
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")

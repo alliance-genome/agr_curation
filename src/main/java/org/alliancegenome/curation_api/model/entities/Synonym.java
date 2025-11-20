@@ -28,7 +28,9 @@ import lombok.ToString;
 @ToString(callSuper = true)
 @Table(indexes = {
 		@Index(name = "synonym_createdby_index", columnList = "createdBy_id"),
-		@Index(name = "synonym_updatedby_index", columnList = "updatedBy_id")
+		@Index(name = "synonym_updatedby_index", columnList = "updatedBy_id"),
+		@Index(name = "synonym_upper_name_index", columnList = "name"), // B-tree index on UPPER(name) created via Flyway migration (v0.43.0.7)
+		@Index(name = "synonym_name_trgm_idx", columnList = "name") // GIN trigram index created via Flyway migration (v0.43.0.7)
 })
 @AGRCurationSchemaVersion(min = "1.2.4", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = {
 		AuditedObject.class })
