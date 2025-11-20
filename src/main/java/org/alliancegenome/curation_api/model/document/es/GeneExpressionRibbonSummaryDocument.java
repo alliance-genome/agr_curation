@@ -8,8 +8,8 @@ import org.alliancegenome.curation_api.view.View;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
-import groovy.transform.EqualsAndHashCode;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
