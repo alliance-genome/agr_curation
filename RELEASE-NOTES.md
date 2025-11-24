@@ -2,6 +2,12 @@
  
 https://agr-jira.atlassian.net/wiki/spaces/ATEAM/overview
 
+## v0.43.0
+* Fixes and maintenance
+	* Testing alpha-curation: SGD EXPRESSION load (from FMS) into persistent store failing with 2,485 "Error invoking subclass method" exceptions (SCRUM-5440)
+    * Upgrade Curation UI to React 19 (SCRUM-5451)
+    * Lazy initialization errors on xrefs causing failures in FB allele load (SCRUM-5459)
+
 ## v0.42.0
 * Fixes and maintenance
 	* Ontology tree view not displaying correct tree. (SCRUM-5339)

@@ -28,11 +28,11 @@ public class GeneExpressionDocumentBuilder {
 
 	public static final String GO_CC_ROOT = "GO:0005575";
 
-	public static final String UBERON_ANATOMY_OTHER = "UBERON:AnatomyOtherLocation";
+	public static final String UBERON_ANATOMY_OTHER = "AnatomyOtherLocation";
 
-	public static final String UBERON__POST_EMBRYONIC_PRE_ADULT = "UBERON:PostEmbryonicPreAdult";
+	public static final String UBERON__POST_EMBRYONIC_PRE_ADULT = "PostEmbryonicPreAdult";
 
-	public static final String GO_CELLULAR_OTHER = "GO:otherLocations";
+	public static final String GO_CELLULAR_OTHER = "otherLocations";
 	
 	public GeneExpressionDocument buildDocument(GeneExpressionAnnotation annotation, Map<String, GeneExpressionExperiment> experimentsCache) {
 
@@ -110,9 +110,9 @@ public class GeneExpressionDocumentBuilder {
 		}
 		expressionDocument.setTermIds(termIds);
 		if (annotation.getEvidenceItem() != null && annotation.getEvidenceItem() instanceof Reference reference) {
-			expressionDocument.setPubModID(reference.getPubModID());
-			expressionDocument.setReferenceId(reference.getReferenceID());
+			expressionDocument.setReferenceId(List.of(reference.getReferenceID()));
 		}
+		expressionDocument.setPhylogeneticSortingIndex(annotation.getExpressionAnnotationSubject().getTaxon().getPhylogeneticSortOrder());
 		
 		return expressionDocument;
 

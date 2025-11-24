@@ -24,6 +24,9 @@ public class TransgenicAlleleDocumentController implements TransgenicAlleleDocum
 		if (params == null) {
 			params = new HashMap<>();
 		}
+		params.put("alleleAssociationSubject.obsolete", false);
+		params.put("alleleAssociationSubject.internal", false);
+
 		SearchResponse<AlleleConstructAssociation> response = acService.findByParams(new Pagination(page, limit), params);
 		List<TransgenicAlleleDTO> list = new ArrayList<>();
 		if (response.getResults() != null) {
