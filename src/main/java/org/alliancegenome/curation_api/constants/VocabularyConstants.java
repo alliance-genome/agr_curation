@@ -105,4 +105,8 @@ public final class VocabularyConstants {
 	public static final String HTP_DATASET_SAMPLE_SEQUENCE_FORMAT_VOCABULARY = "htp_data_sample_sequencing_format";
 	
 	public static final String DEPRECATION_REASON_TERM = "deprecation_reason";
+
+	public static final String ANATOMICAL_STRUCTURE_SLIM_TERMS_PUBLIC_SITE = "anatomical_structure_slim_terms_public_site";
+	public static final String STAGE_SLIM_TERMS_PUBLIC_SITE = "stage_slim_terms_public_site";
+	public static final String GO_SLIM_TERMS_PUBLIC_SITE = "cellular_component_slim_terms_public_site";
 }
