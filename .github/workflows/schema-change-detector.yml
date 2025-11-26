@@ -1,0 +1,128 @@
+name: Schema Change Detector
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches:
+      - alpha
+    paths:
+      - 'src/main/resources/db/migration/**.sql'
+      - 'src/main/java/org/alliancegenome/curation_api/model/entities/**.java'
+
+jobs:
+  detect-and-notify:
+    name: Detect Schema Changes
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write  # Required for AWS OIDC authentication
+      contents: read
+      pull-requests: write
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Full history for accurate file detection
+
+      - name: Get changed files
+        id: changed-files
+        uses: tj-actions/changed-files@v44
+        with:
+          files_yaml: |
+            migrations:
+              - 'src/main/resources/db/migration/**.sql'
+            entities:
+              - 'src/main/java/org/alliancegenome/curation_api/model/entities/**.java'
+
+      - name: Configure AWS credentials
+        if: steps.changed-files.outputs.migrations_any_changed == 'true' || steps.changed-files.outputs.entities_any_changed == 'true'
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.GH_ACTIONS_AWS_ROLE }}
+          role-session-name: gh-actions-schema-detector-${{ github.run_id }}
+          aws-region: us-east-1
+
+      - name: Build notification message
+        if: steps.changed-files.outputs.migrations_any_changed == 'true' || steps.changed-files.outputs.entities_any_changed == 'true'
+        id: message
+        run: |
+          # Escape special characters for JSON
+          PR_TITLE=$(echo '${{ github.event.pull_request.title }}' | jq -Rs '.')
+
+          # Build JSON message
+          cat > /tmp/notification.json << EOF
+          {
+            "source": "github-actions",
+            "eventType": "POTENTIAL_SCHEMA_CHANGE",
+            "repository": "${{ github.repository }}",
+            "pullRequest": {
+              "number": ${{ github.event.pull_request.number }},
+              "url": "${{ github.event.pull_request.html_url }}",
+              "title": $PR_TITLE,
+              "author": "${{ github.event.pull_request.user.login }}",
+              "branch": "${{ github.event.pull_request.head.ref }}"
+            },
+            "changedFiles": {
+              "migrationCount": ${{ steps.changed-files.outputs.migrations_all_changed_files_count || 0 }},
+              "entityCount": ${{ steps.changed-files.outputs.entities_all_changed_files_count || 0 }},
+              "migrations": "${{ steps.changed-files.outputs.migrations_all_changed_files }}",
+              "entities": "${{ steps.changed-files.outputs.entities_all_changed_files }}"
+            },
+            "actionRequired": "Review schema changes. The agr_curation_api_client library may need updates before this reaches production.",
+            "timeToProduction": "Approximately 2 weeks after merge to alpha"
+          }
+          EOF
+
+          echo "Notification payload:"
+          cat /tmp/notification.json
+
+      - name: Send SNS notification
+        if: steps.changed-files.outputs.migrations_any_changed == 'true' || steps.changed-files.outputs.entities_any_changed == 'true'
+        run: |
+          PR_TITLE="${{ github.event.pull_request.title }}"
+          PR_NUMBER="${{ github.event.pull_request.number }}"
+
+          # Truncate title for subject line (max 100 chars for SNS subject)
+          SUBJECT="Schema Change Detected: PR #${PR_NUMBER} - ${PR_TITLE:0:60}"
+
+          aws sns publish \
+            --topic-arn arn:aws:sns:us-east-1:100225593120:agr-schema-change-notifications \
+            --subject "$SUBJECT" \
+            --message file:///tmp/notification.json
+
+          echo "SNS notification sent successfully"
+
+      - name: Add PR comment
+        if: steps.changed-files.outputs.migrations_any_changed == 'true' || steps.changed-files.outputs.entities_any_changed == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const migrationFiles = '${{ steps.changed-files.outputs.migrations_all_changed_files }}'.split(' ').filter(f => f);
+            const entityFiles = '${{ steps.changed-files.outputs.entities_all_changed_files }}'.split(' ').filter(f => f);
+
+            let body = '## :warning: Schema Change Detected\n\n';
+            body += 'This PR contains changes that may affect the database schema.\n\n';
+            body += '**Downstream clients affected:** [`agr_curation_api_client`](https://github.com/alliance-genome/agr_curation_api_client)\n\n';
+
+            if (migrationFiles.length > 0) {
+              body += '### Migration Files Changed\n';
+              migrationFiles.forEach(f => body += `- \`${f}\`\n`);
+              body += '\n';
+            }
+
+            if (entityFiles.length > 0) {
+              body += '### Entity Files Changed\n';
+              entityFiles.forEach(f => body += `- \`${f}\`\n`);
+              body += '\n';
+            }
+
+            body += '---\n';
+            body += ':email: Notification sent to schema change subscribers.\n';
+            body += ':calendar: These changes will reach production ~2 weeks after merge to alpha.';
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: body
+            });
