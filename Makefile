@@ -77,8 +77,8 @@ uitest:
 	cd src/main/cliapp && npm run test
 
 integration-test:
-	mvn -ntp clean package
-	mvn -ntp failsafe:integration-test -Dcognito.authentication=false
+	mvn -ntp clean package -Dquarkus.profile=test
+	mvn -ntp failsafe:integration-test -Dquarkus.test.profile=test
 	mvn -ntp failsafe:verify
 
 verify:
