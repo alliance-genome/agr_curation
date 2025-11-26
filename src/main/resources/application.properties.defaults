@@ -92,15 +92,8 @@ quarkus.oidc.enabled=true
 %dev.quarkus.oidc.enabled=false
 %test.quarkus.oidc.enabled=false
 
-# Cognito Authentication
-cognito.authentication = false
-%dev.cognito.authentication = false
-%test.cognito.authentication = false
-
 # Cognito Domain (for userinfo endpoint)
 cognito.domain = <cognito-domain>
-cognito.user.pool.id = <user-pool-id>
-cognito.region = <aws-region>
 
 mati.url = http://localhost:8081
 
