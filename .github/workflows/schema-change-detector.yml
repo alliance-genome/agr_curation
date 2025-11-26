@@ -46,35 +46,75 @@ jobs:
         if: steps.changed-files.outputs.migrations_any_changed == 'true' || steps.changed-files.outputs.entities_any_changed == 'true'
         id: message
         run: |
-          # Escape special characters for JSON
-          PR_TITLE=$(echo '${{ github.event.pull_request.title }}' | jq -Rs '.')
+          PR_TITLE="${{ github.event.pull_request.title }}"
+          PR_NUMBER="${{ github.event.pull_request.number }}"
+          PR_URL="${{ github.event.pull_request.html_url }}"
+          PR_AUTHOR="${{ github.event.pull_request.user.login }}"
+          PR_BRANCH="${{ github.event.pull_request.head.ref }}"
 
-          # Build JSON message
-          cat > /tmp/notification.json << EOF
-          {
-            "source": "github-actions",
-            "eventType": "POTENTIAL_SCHEMA_CHANGE",
-            "repository": "${{ github.repository }}",
-            "pullRequest": {
-              "number": ${{ github.event.pull_request.number }},
-              "url": "${{ github.event.pull_request.html_url }}",
-              "title": $PR_TITLE,
-              "author": "${{ github.event.pull_request.user.login }}",
-              "branch": "${{ github.event.pull_request.head.ref }}"
-            },
-            "changedFiles": {
-              "migrationCount": ${{ steps.changed-files.outputs.migrations_all_changed_files_count || 0 }},
-              "entityCount": ${{ steps.changed-files.outputs.entities_all_changed_files_count || 0 }},
-              "migrations": "${{ steps.changed-files.outputs.migrations_all_changed_files }}",
-              "entities": "${{ steps.changed-files.outputs.entities_all_changed_files }}"
-            },
-            "actionRequired": "Review schema changes. The agr_curation_api_client library may need updates before this reaches production.",
-            "timeToProduction": "Approximately 2 weeks after merge to alpha"
-          }
+          MIGRATION_COUNT="${{ steps.changed-files.outputs.migrations_all_changed_files_count }}"
+          ENTITY_COUNT="${{ steps.changed-files.outputs.entities_all_changed_files_count }}"
+          MIGRATION_FILES="${{ steps.changed-files.outputs.migrations_all_changed_files }}"
+          ENTITY_FILES="${{ steps.changed-files.outputs.entities_all_changed_files }}"
+
+          # Build human-readable plain text message
+          cat > /tmp/notification.txt << 'MSGEOF'
+          AGR Schema Change Detected
+          ==================================================
+
+          A pull request targeting the alpha branch contains changes that
+          may affect the database schema.
+
+          MSGEOF
+
+          cat >> /tmp/notification.txt << EOF
+          PULL REQUEST
+          --------------------------------------------------
+          Title:  ${PR_TITLE}
+          Number: #${PR_NUMBER}
+          Author: ${PR_AUTHOR}
+          Branch: ${PR_BRANCH}
+          URL:    ${PR_URL}
+
           EOF
 
-          echo "Notification payload:"
-          cat /tmp/notification.json
+          # Add changed files sections
+          if [ -n "$MIGRATION_FILES" ] && [ "$MIGRATION_COUNT" != "0" ]; then
+            echo "MIGRATION FILES CHANGED [${MIGRATION_COUNT}]" >> /tmp/notification.txt
+            echo "--------------------------------------------------" >> /tmp/notification.txt
+            for file in $MIGRATION_FILES; do
+              echo "  - ${file}" >> /tmp/notification.txt
+            done
+            echo "" >> /tmp/notification.txt
+          fi
+
+          if [ -n "$ENTITY_FILES" ] && [ "$ENTITY_COUNT" != "0" ]; then
+            echo "ENTITY FILES CHANGED [${ENTITY_COUNT}]" >> /tmp/notification.txt
+            echo "--------------------------------------------------" >> /tmp/notification.txt
+            for file in $ENTITY_FILES; do
+              echo "  - ${file}" >> /tmp/notification.txt
+            done
+            echo "" >> /tmp/notification.txt
+          fi
+
+          cat >> /tmp/notification.txt << 'MSGEOF'
+          ACTION REQUIRED
+          --------------------------------------------------
+          Review the schema changes in this PR. The agr_curation_api_client
+          library may need updates before these changes reach production.
+
+          TIMELINE
+          --------------------------------------------------
+          These changes will reach production approximately 2 weeks after
+          merge to the alpha branch.
+
+          --------------------------------------------------
+          This notification was sent automatically by the
+          schema-change-detector GitHub Action.
+          MSGEOF
+
+          echo "Notification message:"
+          cat /tmp/notification.txt
 
       - name: Send SNS notification
         if: steps.changed-files.outputs.migrations_any_changed == 'true' || steps.changed-files.outputs.entities_any_changed == 'true'
@@ -83,12 +123,12 @@ jobs:
           PR_NUMBER="${{ github.event.pull_request.number }}"
 
           # Truncate title for subject line (max 100 chars for SNS subject)
-          SUBJECT="Schema Change Detected: PR #${PR_NUMBER} - ${PR_TITLE:0:60}"
+          SUBJECT="[AGR] Schema Change Detected: PR #${PR_NUMBER} - ${PR_TITLE:0:50}"
 
           aws sns publish \
             --topic-arn arn:aws:sns:us-east-1:100225593120:agr-schema-change-notifications \
             --subject "$SUBJECT" \
-            --message file:///tmp/notification.json
+            --message file:///tmp/notification.txt
 
           echo "SNS notification sent successfully"
 
