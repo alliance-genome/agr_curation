@@ -280,13 +280,16 @@ jobs:
           echo "local_port=$LOCAL_PORT" >> $GITHUB_OUTPUT
           
           # Start SSM session in background with timeout
-          timeout --foreground $TUNNEL_TIMEOUT \
+          # Use nohup and disown to prevent process from being killed when step shell exits
+          nohup timeout --foreground $TUNNEL_TIMEOUT \
             aws ssm start-session \
             --target ${{ steps.db-config.outputs.ssm_instance_id }} \
             --document-name AWS-StartPortForwardingSessionToRemoteHost \
-            --parameters '{"host":["${{ steps.db-config.outputs.db_host }}"],"portNumber":["${{ steps.db-config.outputs.db_port }}"],"localPortNumber":["'$LOCAL_PORT'"]}'  &
-          
+            --parameters '{"host":["${{ steps.db-config.outputs.db_host }}"],"portNumber":["${{ steps.db-config.outputs.db_port }}"],"localPortNumber":["'$LOCAL_PORT'"]}' \
+            > /tmp/ssm_tunnel.log 2>&1 &
+
           SSM_PID=$!
+          disown $SSM_PID
           echo "pid=$SSM_PID" >> $GITHUB_OUTPUT
           
           # Give SSM a moment to start
@@ -342,6 +345,27 @@ jobs:
             sleep $SLEEP_INTERVAL
           done
 
+          # Start keepalive to prevent idle timeout
+          # Send pg_isready every 10 seconds (more frequent) to keep tunnel alive
+          # Export variables so they're available in the subshell
+          export KEEPALIVE_SSM_PID=$SSM_PID
+          export KEEPALIVE_PORT=$LOCAL_PORT
+          nohup bash -c '
+            echo "Keepalive started for SSM PID: $KEEPALIVE_SSM_PID, Port: $KEEPALIVE_PORT"
+            while true; do
+              if ! ps -p $KEEPALIVE_SSM_PID >/dev/null 2>&1; then
+                echo "SSM process $KEEPALIVE_SSM_PID is no longer running, exiting keepalive"
+                exit 0
+              fi
+              pg_isready -h localhost -p $KEEPALIVE_PORT -t 1 >/dev/null 2>&1 || echo "pg_isready failed"
+              sleep 10
+            done
+          ' > /tmp/keepalive.log 2>&1 &
+          KEEPALIVE_PID=$!
+          disown $KEEPALIVE_PID
+          echo "keepalive_pid=$KEEPALIVE_PID" >> $GITHUB_OUTPUT
+          echo "✅ Started keepalive process (PID: $KEEPALIVE_PID) monitoring SSM PID: $SSM_PID"
+
       - name: Generate review configuration
         if: steps.check-trigger.outputs.triggered == 'true' && steps.pr-details.outputs.skip_non_alpha != 'true' && steps.strategy.outputs.skip_review == 'false'
         id: review-config
@@ -387,14 +411,34 @@ jobs:
           
           # Pass password to next step via GITHUB_ENV
           echo "DB_PASSWORD=$DB_CREDS_PASSWORD" >> $GITHUB_ENV
-          
+
+          # Verify tunnel is still running
+          echo "Checking tunnel status..."
+          if ps -p ${{ steps.tunnel.outputs.pid }} >/dev/null 2>&1; then
+            echo "✅ SSM tunnel process is running (PID: ${{ steps.tunnel.outputs.pid }})"
+          else
+            echo "❌ SSM tunnel process is NOT running (PID: ${{ steps.tunnel.outputs.pid }})"
+            echo "Tunnel log contents:"
+            cat /tmp/ssm_tunnel.log 2>/dev/null || echo "No tunnel log found"
+            exit 1
+          fi
+
+          # Check if port is listening
+          if nc -z localhost ${{ steps.tunnel.outputs.local_port }} 2>/dev/null; then
+            echo "✅ Port ${{ steps.tunnel.outputs.local_port }} is listening"
+          else
+            echo "❌ Port ${{ steps.tunnel.outputs.local_port }} is NOT listening"
+            exit 1
+          fi
+
           # Quick database connectivity check
           echo "Testing database connection..."
-          if PGPASSWORD="$DB_CREDS_PASSWORD" psql -h localhost -p ${{ steps.tunnel.outputs.local_port }} -U "${{ steps.db-config.outputs.db_user }}" -d "${{ steps.db-config.outputs.db_name }}" -c "SELECT current_database(), version();" >/dev/null 2>&1; then
+          if PGPASSWORD="$DB_CREDS_PASSWORD" psql -h localhost -p ${{ steps.tunnel.outputs.local_port }} -U "${{ steps.db-config.outputs.db_user }}" -d "${{ steps.db-config.outputs.db_name }}" -c "SELECT current_database(), version();" 2>&1; then
             echo "✅ Database connection verified"
           else
             echo "❌ Database connection test failed"
-            echo "Please check credentials and tunnel configuration"
+            echo "Attempting connection with verbose output..."
+            PGPASSWORD="$DB_CREDS_PASSWORD" psql -h localhost -p ${{ steps.tunnel.outputs.local_port }} -U "${{ steps.db-config.outputs.db_user }}" -d "${{ steps.db-config.outputs.db_name }}" -c "SELECT 1;" 2>&1 || true
             exit 1
           fi
       
