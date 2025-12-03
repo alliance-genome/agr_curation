@@ -48,6 +48,7 @@ import org.alliancegenome.curation_api.services.ontology.StageTermService;
 import org.alliancegenome.curation_api.services.ontology.UberonTermService;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.Hibernate;
 
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
@@ -399,16 +400,29 @@ public class GeneExpressionAnnotationFmsDTOValidator {
 			anatomicalSiteDB = new AnatomicalSite();
 		}
 		anatomicalSiteDB.setCellularComponentTerm(anatomicalSite.getCellularComponentTerm());
-
-		// Handle many-to-many relationship properly to avoid duplicates
-		if (anatomicalSiteDB.getCellularComponentRibbonTerms() != null) {
-			anatomicalSiteDB.getCellularComponentRibbonTerms().clear();
-		}
-		if (anatomicalSite.getCellularComponentRibbonTerms() != null) {
-			if (anatomicalSiteDB.getCellularComponentRibbonTerms() == null) {
-				anatomicalSiteDB.setCellularComponentRibbonTerms(new java.util.ArrayList<>());
+		
+		if (anatomicalSite.getCellularComponentRibbonTerms() == null || anatomicalSite.getCellularComponentRibbonTerms().isEmpty()) {
+			if (anatomicalSiteDB.getCellularComponentRibbonTerms() != null) {
+				Hibernate.initialize(anatomicalSiteDB.getCellularComponentRibbonTerms());
+				anatomicalSiteDB.getCellularComponentRibbonTerms().clear();
 			}
-			anatomicalSiteDB.getCellularComponentRibbonTerms().addAll(anatomicalSite.getCellularComponentRibbonTerms());
+		} else {
+			if (anatomicalSiteDB.getCellularComponentRibbonTerms() == null) {
+				anatomicalSiteDB.setCellularComponentRibbonTerms(new ArrayList<>());
+			} else {
+				Hibernate.initialize(anatomicalSiteDB.getCellularComponentRibbonTerms());
+			}
+
+			List<GOTerm> currentTerms = anatomicalSiteDB.getCellularComponentRibbonTerms();
+			List<GOTerm> newTerms = anatomicalSite.getCellularComponentRibbonTerms();
+
+			currentTerms.removeIf(term -> !newTerms.contains(term));
+
+			for (GOTerm term : newTerms) {
+				if (!currentTerms.contains(term)) {
+					currentTerms.add(term);
+				}
+			}
 		}
 
 		anatomicalSiteDB.setCellularComponentOther(anatomicalSite.getCellularComponentOther());
