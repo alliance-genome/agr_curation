@@ -399,7 +399,18 @@ public class GeneExpressionAnnotationFmsDTOValidator {
 			anatomicalSiteDB = new AnatomicalSite();
 		}
 		anatomicalSiteDB.setCellularComponentTerm(anatomicalSite.getCellularComponentTerm());
-		anatomicalSiteDB.setCellularComponentRibbonTerms(anatomicalSite.getCellularComponentRibbonTerms());
+
+		// Handle many-to-many relationship properly to avoid duplicates
+		if (anatomicalSiteDB.getCellularComponentRibbonTerms() != null) {
+			anatomicalSiteDB.getCellularComponentRibbonTerms().clear();
+		}
+		if (anatomicalSite.getCellularComponentRibbonTerms() != null) {
+			if (anatomicalSiteDB.getCellularComponentRibbonTerms() == null) {
+				anatomicalSiteDB.setCellularComponentRibbonTerms(new java.util.ArrayList<>());
+			}
+			anatomicalSiteDB.getCellularComponentRibbonTerms().addAll(anatomicalSite.getCellularComponentRibbonTerms());
+		}
+
 		anatomicalSiteDB.setCellularComponentOther(anatomicalSite.getCellularComponentOther());
 		anatomicalSiteDB.setAnatomicalStructure(anatomicalSite.getAnatomicalStructure());
 		anatomicalSiteDB.setAnatomicalSubstructure(anatomicalSite.getAnatomicalSubstructure());
