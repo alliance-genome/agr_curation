@@ -2,6 +2,13 @@
  
 https://agr-jira.atlassian.net/wiki/spaces/ATEAM/overview
 
+## v0.44.0
+* New features:
+  * Omit MGI construct symbols from display based on placeholder=true flag (SCRUM-5553)
+* Fixes and maintenance
+  * Curation Variant table "Variant Status" field not responding in edit mode (SCRUM-5487)
+  * Ontologies synonyms missing properties (SCRUM-5555)
+
 ## v0.43.0
 * Fixes and maintenance
 	* Testing alpha-curation: SGD EXPRESSION load (from FMS) into persistent store failing with 2,485 "Error invoking subclass method" exceptions (SCRUM-5440)
