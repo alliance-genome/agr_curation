@@ -394,8 +394,8 @@ public abstract class BaseOntologyTermService<E extends OntologyTerm, D extends 
 	}
 
 	public <T extends OntologyTerm> List<T> findSubsetTerms(T childTerm, String subsetName) {
-		List <T> subsetTermList = new ArrayList<>();
- 		if (childTerm.getSubsets().contains(subsetName)) {
+		List<T> subsetTermList = new ArrayList<>();
+		if (childTerm.getSubsets().contains(subsetName)) {
 			subsetTermList.add(childTerm);
 		}
 
