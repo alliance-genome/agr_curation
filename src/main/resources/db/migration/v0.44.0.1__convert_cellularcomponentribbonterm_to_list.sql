@@ -17,6 +17,10 @@ ALTER TABLE anatomicalsite_cellularcomponentribbonterms
 CREATE INDEX cellularcomponentribbonterms_anatomicalsite_index ON anatomicalsite_cellularcomponentribbonterms USING btree (anatomicalsite_id);
 CREATE INDEX cellularcomponentribbonterms_ribbonterms_index ON anatomicalsite_cellularcomponentribbonterms USING btree (cellularcomponentribbonterms_id);
 
+ALTER TABLE anatomicalsite_cellularcomponentribbonterms
+	ADD CONSTRAINT anatomicalsite_cellularcomponentribbonterms_unique
+	UNIQUE (anatomicalsite_id, cellularcomponentribbonterms_id);
+
 -- Drop the old foreign key constraint
 ALTER TABLE anatomicalsite DROP CONSTRAINT IF EXISTS fkcuqc7qacirmg4wqcwuou8abjn;
 

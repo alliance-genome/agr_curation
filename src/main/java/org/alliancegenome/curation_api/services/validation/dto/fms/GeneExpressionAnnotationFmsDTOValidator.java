@@ -279,7 +279,7 @@ public class GeneExpressionAnnotationFmsDTOValidator {
 						anatomicalSite.setCellularComponentOther(true);
 					} else {
 						anatomicalSite.setCellularComponentOther(false);
-						anatomicalSite.setCellularComponentRibbonTerm(cellularComponentRibbons);
+						anatomicalSite.setCellularComponentRibbonTerms(cellularComponentRibbons);
 					}
 					anatomicalSite.setCellularComponentTerm(cellularComponent);
 				}
@@ -399,7 +399,7 @@ public class GeneExpressionAnnotationFmsDTOValidator {
 			anatomicalSiteDB = new AnatomicalSite();
 		}
 		anatomicalSiteDB.setCellularComponentTerm(anatomicalSite.getCellularComponentTerm());
-		anatomicalSiteDB.setCellularComponentRibbonTerm(anatomicalSite.getCellularComponentRibbonTerm());
+		anatomicalSiteDB.setCellularComponentRibbonTerms(anatomicalSite.getCellularComponentRibbonTerms());
 		anatomicalSiteDB.setCellularComponentOther(anatomicalSite.getCellularComponentOther());
 		anatomicalSiteDB.setAnatomicalStructure(anatomicalSite.getAnatomicalStructure());
 		anatomicalSiteDB.setAnatomicalSubstructure(anatomicalSite.getAnatomicalSubstructure());
