@@ -274,12 +274,12 @@ public class GeneExpressionAnnotationFmsDTOValidator {
 				if (cellularComponent == null) {
 					response.addErrorMessage("whereExpressed - cellularComponentTermId", ValidationConstants.INVALID_MESSAGE + " (" + whereExpressedDTO.getCellularComponentTermId() + ")");
 				} else {
-					GOTerm cellularComponentRibbon = goTermService.findSubsetTerm(cellularComponent, "goslim_agr");
-					if (cellularComponentRibbon == null) {
+					List<GOTerm> cellularComponentRibbons = goTermService.findSubsetTerms(cellularComponent, "goslim_agr");
+					if (cellularComponentRibbons == null) {
 						anatomicalSite.setCellularComponentOther(true);
 					} else {
 						anatomicalSite.setCellularComponentOther(false);
-						anatomicalSite.setCellularComponentRibbonTerm(cellularComponentRibbon);
+						anatomicalSite.setCellularComponentRibbonTerm(cellularComponentRibbons);
 					}
 					anatomicalSite.setCellularComponentTerm(cellularComponent);
 				}
