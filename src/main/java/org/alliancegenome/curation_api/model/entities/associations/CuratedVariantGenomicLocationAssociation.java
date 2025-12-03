@@ -1,6 +1,9 @@
 package org.alliancegenome.curation_api.model.entities.associations;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
@@ -11,6 +14,7 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmbedded;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 
 import jakarta.persistence.CascadeType;
@@ -18,6 +22,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Index;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -46,7 +51,7 @@ import lombok.ToString;
 )
 
 public class CuratedVariantGenomicLocationAssociation extends VariantGenomicLocationAssociation {
-	
+
 	@IndexedEmbedded(
 		includePaths = {
 			"variantTranscript.name", "variantTranscript.primaryExternalId",
@@ -61,4 +66,31 @@ public class CuratedVariantGenomicLocationAssociation extends VariantGenomicLoca
 	@JsonManagedReference
 	@JsonView({ View.FieldsAndLists.class, VariantView.class })
 	private List<PredictedVariantConsequence> predictedVariantConsequences;
+
+	@Transient
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
+	@JsonView({ VariantView.class })
+	public List<String> getHgvsC() {
+		if (predictedVariantConsequences == null) {
+			return Collections.emptyList();
+		}
+		return predictedVariantConsequences.stream()
+			.map(PredictedVariantConsequence::getHgvsCodingNomenclature)
+			.filter(Objects::nonNull)
+			.collect(Collectors.toList());
+	}
+
+	@Transient
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
+	@JsonView({ VariantView.class })
+	public List<String> getHgvsP() {
+		if (predictedVariantConsequences == null) {
+			return Collections.emptyList();
+		}
+		return predictedVariantConsequences.stream()
+			.map(PredictedVariantConsequence::getHgvsProteinNomenclature)
+			.filter(Objects::nonNull)
+			.collect(Collectors.toList());
+	}
+
 }
