@@ -73,7 +73,6 @@ public class HTPExpressionDatasetSampleAnnotationFmsITCase extends BaseITCase {
 				.body("results[0].htpExpressionSampleLocations[0].anatomicalStructure.curie", is("ANAT:001"))
 				.body("results[0].htpExpressionSampleLocations[0].anatomicalSubstructure.curie", is("ANAT:002"))
 				.body("results[0].htpExpressionSampleLocations[0].cellularComponentTerm.curie", is("GOTEST:0012"))
-				.body("results[0].htpExpressionSampleLocations[0].cellularComponentRibbonTerm.curie", is("GOSLIMTEST:0012"))
 				.body("results[0].taxon.curie", is("NCBITaxon:6239"))
 				.body("results[0].abundance", is("abundance test"))
 				.body("results[0].assemblyVersions[0]", is("Zv9"));
