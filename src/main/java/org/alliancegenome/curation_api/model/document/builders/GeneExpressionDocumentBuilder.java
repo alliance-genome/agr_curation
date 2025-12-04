@@ -14,6 +14,7 @@ import org.alliancegenome.curation_api.model.entities.AnatomicalSite;
 import org.alliancegenome.curation_api.model.entities.GeneExpressionAnnotation;
 import org.alliancegenome.curation_api.model.entities.GeneExpressionExperiment;
 import org.alliancegenome.curation_api.model.entities.Reference;
+import org.alliancegenome.curation_api.model.entities.Synonym;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.helpers.UniqueIdGeneratorHelper;
@@ -116,6 +117,12 @@ public class GeneExpressionDocumentBuilder {
 		}
 		expressionDocument.setPhylogeneticSortingIndex(annotation.getExpressionAnnotationSubject().getTaxon().getPhylogeneticSortOrder());
 		
+		if (annotation.getExpressionAssayUsed() != null) {
+			String assayName = annotation.getExpressionAssayUsed().getSynonyms().stream().filter(synonym -> synonym.getIsDisplaySynonym()).findFirst().map(Synonym::getName).orElse(null);
+			if (assayName != null) {
+				expressionDocument.getGeneExpressionAnnotation().getExpressionAssayUsed().setName(assayName);
+			}
+		}
 		return expressionDocument;
 
 	}
