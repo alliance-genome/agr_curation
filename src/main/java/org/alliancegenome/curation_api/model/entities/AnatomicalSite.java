@@ -64,11 +64,17 @@ public class AnatomicalSite extends AuditedObject {
 	private GOTerm cellularComponentTerm;
 
 	//celullar compoent ribbon -- slim
-	@IndexedEmbedded(includePaths = {"name", "name_keyword"})
-	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
-	@ManyToOne
+	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
+	@KeywordField(name = "cellularcomponentribbonterms_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
+	@ManyToMany
 	@JsonView({View.FieldsOnly.class, View.ForPublic.class})
-	private GOTerm cellularComponentRibbonTerm;
+	@JoinTable(
+		name = "anatomicalsite_cellularcomponentribbonterms",
+		indexes = {
+			@Index(name = "cellularcomponentribbonterms_anatomicalsite_index", columnList = "anatomicalsite_id"),
+			@Index(name = "cellularcomponentribbonterms_ribbonterms_index", columnList = "cellularcomponentribbonterms_id")}
+	)
+	private List<GOTerm> cellularComponentRibbonTerms;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer", valueBridge = @ValueBridgeRef(type = BooleanValueBridge.class))
 	@KeywordField(name = "cellularComponentOther_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, valueBridge = @ValueBridgeRef(type = BooleanValueBridge.class))
