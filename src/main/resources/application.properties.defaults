@@ -81,12 +81,24 @@ reindex.schedulingEnabled = false
 quarkus.http.auth.permission.secured.paths=/graphql,/graphql/*
 quarkus.http.auth.permission.secured.policy=authenticated
 
-okta.authentication = false
-okta.client.id = ""
-okta.url = ""
-okta.client.secret = ""
-okta.api.token = ""
-okta.scopes = ""
+curation.authentication.enabled = false
+
+quarkus.oidc.application-type=service
+quarkus.oidc.token.header=Authorization
+quarkus.oidc.token.cookie=cognito-token-cookie
+quarkus.oidc.enabled=true
+quarkus.oidc.authentication.user-info-required=true
+%dev.quarkus.oidc.enabled=false
+%test.quarkus.oidc.enabled=false
+
+cognito.domain = <cognito-domain>
+cognito.user-pool-id=<user-pool-id>
+quarkus.oidc.auth-server-url=https://cognito-idp.us-east-1.amazonaws.com/${cognito.user-pool-id}
+quarkus.oidc.token.issuer=https://cognito-idp.us-east-1.amazonaws.com/${cognito.user-pool-id}
+quarkus.oidc.client-id=<cognito-client-id>
+quarkus.oidc.user-info-path=<user-info-path>
+
+
 mati.url = http://localhost:8081
 %dev.okta.authentication = false
 %test.okta.authentication = false
