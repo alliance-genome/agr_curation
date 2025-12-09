@@ -91,12 +91,12 @@ quarkus.oidc.authentication.user-info-required=true
 %dev.quarkus.oidc.enabled=false
 %test.quarkus.oidc.enabled=false
 
-cognito.domain = <cognito-domain>
-cognito.user-pool-id=<user-pool-id>
+cognito.domain = ""
+cognito.user-pool-id=""
 quarkus.oidc.auth-server-url=https://cognito-idp.us-east-1.amazonaws.com/${cognito.user-pool-id}
 quarkus.oidc.token.issuer=https://cognito-idp.us-east-1.amazonaws.com/${cognito.user-pool-id}
-quarkus.oidc.client-id=<cognito-client-id>
-quarkus.oidc.user-info-path=<user-info-path>
+quarkus.oidc.client-id=""
+quarkus.oidc.user-info-path=""
 
 
 mati.url = http://localhost:8081
