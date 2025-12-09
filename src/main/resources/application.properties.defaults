@@ -104,7 +104,7 @@ mati.url = http://localhost:8081
 %test.okta.authentication = false
 smallrye.jwt.always-check-authorization=true
 mp.jwt.token.header=Cookie
-mp.jwt.token.cookie=okta-token-cookie
+mp.jwt.token.cookie=cognito-token-cookie
 
 %dev.quarkus.live-reload.instrumentation = true
 
