@@ -56,7 +56,7 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 	PersonUniqueIdHelper loggedInPersonUniqueId;
 
 	@Inject
-	UserInfo userInfo;
+	Instance<UserInfo> userInfoInstance;
 
 	@ConfigProperty(name = "curation.authentication.enabled")
 	Instance<Boolean> curationAuthenticationEnabled;
@@ -139,11 +139,12 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 
 	private Person validateUserTokenByEmail() {
 
-		if (userInfo == null) {
+		if (!userInfoInstance.isResolvable()) {
 			Log.info("user info not injected");
 			return null;
 		}
 
+		UserInfo userInfo = userInfoInstance.get();
 		String authEmail = userInfo.getString("email");
 		String firstName = userInfo.getString("given_name");
 		String lastName = userInfo.getString("family_name");
