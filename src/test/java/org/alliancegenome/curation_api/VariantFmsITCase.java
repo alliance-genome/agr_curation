@@ -247,7 +247,7 @@ public class VariantFmsITCase extends BaseITCase {
 			body("entity.curatedVariantGenomicLocations[0].hgvs", is("NC_003279.8:g.1A>T")).
 			body("entity.curatedVariantGenomicLocations[0].relation.name", is("located_on")).
 			body("entity.curatedVariantGenomicLocations[0].variantGenomicLocationAssociationObject.name", is("I")).
-			body("entity.curatedVariantGenomicLocations[0].start", is(2)).
+			body("entity.curatedVariantGenomicLocations[0].start", is(1)).
 			body("entity.curatedVariantGenomicLocations[0].end", is(1000)).
 			body("entity.alleleVariantAssociations", hasSize(1)).
 			body("entity.alleleVariantAssociations[0].relation.name", is("has_variant")).
