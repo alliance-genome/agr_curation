@@ -249,9 +249,11 @@ public class VariantFmsITCase extends BaseITCase {
 			body("entity.curatedVariantGenomicLocations[0].variantGenomicLocationAssociationObject.name", is("I")).
 			body("entity.curatedVariantGenomicLocations[0].start", is(1)).
 			body("entity.curatedVariantGenomicLocations[0].end", is(1000)).
-			body("entity.alleleVariantAssociations", hasSize(1)).
+			body("entity.alleleVariantAssociations", hasSize(2)).
 			body("entity.alleleVariantAssociations[0].relation.name", is("has_variant")).
-			body("entity.alleleVariantAssociations[0].alleleAssociationSubject.primaryExternalId", is("WB:AlleleWithVar2")).
+			body("entity.alleleVariantAssociations[0].alleleAssociationSubject.primaryExternalId", is(oneOf("WB:AlleleWithVar1", "WB:AlleleWithVar2"))).
+			body("entity.alleleVariantAssociations[1].relation.name", is("has_variant")).
+			body("entity.alleleVariantAssociations[1].alleleAssociationSubject.primaryExternalId", is(oneOf("WB:AlleleWithVar1", "WB:AlleleWithVar2"))).
 			body("entity.relatedNotes", hasSize(1)).
 			body("entity.relatedNotes[0].internal", is(false)).
 			body("entity.relatedNotes[0].freeText", is("This is an updated test note.")).
