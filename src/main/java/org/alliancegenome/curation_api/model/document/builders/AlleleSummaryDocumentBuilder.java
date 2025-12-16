@@ -55,8 +55,8 @@ public class AlleleSummaryDocumentBuilder {
 
 		List<Gene> alleleOfGeneList = alleleGeneAssociations.stream()
 			.filter(aga -> !aga.getInternal() && !aga.getObsolete())
-			.map(aga -> aga.getAlleleGeneAssociationObject())
-			.collect(Collectors.toList());
+			.map(AlleleGeneAssociation::getAlleleGeneAssociationObject)
+			.toList();
 
 		return alleleOfGeneList.stream().findFirst();
 	}
