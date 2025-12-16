@@ -10,21 +10,19 @@ export class BaseAuthService {
 		try {
 			accessToken = JSON.parse(cognitoTokenStorage).accessToken;
 		} catch (e) {
+			console.warn(e);
 			accessToken = undefined;
 		}
 
 		if (accessToken) {
-			const authHeader = `${accessToken.tokenType} ${accessToken.accessToken}`;
 			this.api = axios.create({
 				baseURL: '/api',
 				headers: {
-					Authorization: authHeader,
+					Authorization: `${accessToken.tokenType} ${accessToken.accessToken}`,
 				},
 			});
 		} else {
-			this.api = axios.create({
-				baseURL: '/api',
-			});
+			console.log('No accessToken');
 		}
 	}
 }
