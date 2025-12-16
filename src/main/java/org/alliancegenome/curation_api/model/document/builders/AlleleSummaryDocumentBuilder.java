@@ -2,7 +2,6 @@ package org.alliancegenome.curation_api.model.document.builders;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.alliancegenome.curation_api.model.document.es.AlleleSummaryDTO;
 import org.alliancegenome.curation_api.model.document.es.AlleleSummaryDocument;
@@ -18,7 +17,6 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class AlleleSummaryDocumentBuilder {
-
 
 	public AlleleSummaryDocument buildSummaryDocument(AlleleSummaryDTO alleleDTO, ResourceDescriptorPageService resourceDescriptorPageService) {
 		Allele allele = alleleDTO.getAllele();
@@ -54,9 +52,9 @@ public class AlleleSummaryDocumentBuilder {
 		}
 
 		List<Gene> alleleOfGeneList = alleleGeneAssociations.stream()
-			.filter(aga -> !aga.getInternal() && !aga.getObsolete())
-			.map(aga -> aga.getAlleleGeneAssociationObject())
-			.collect(Collectors.toList());
+				.filter(aga -> !aga.getInternal() && !aga.getObsolete())
+				.map(AlleleGeneAssociation::getAlleleGeneAssociationObject)
+				.toList();
 
 		return alleleOfGeneList.stream().findFirst();
 	}
@@ -74,7 +72,7 @@ public class AlleleSummaryDocumentBuilder {
 		// Determine the correct references page based on the current page type
 		String referencesPageName = "allele/references";
 		if (allele.getDataProviderCrossReference() != null
-			&& allele.getDataProviderCrossReference().getResourceDescriptorPage() != null) {
+				&& allele.getDataProviderCrossReference().getResourceDescriptorPage() != null) {
 			String currentPageName = allele.getDataProviderCrossReference().getResourceDescriptorPage().getName();
 			if ("transgene".equals(currentPageName)) {
 				referencesPageName = "transgene/references";
