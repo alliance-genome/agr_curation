@@ -11,7 +11,6 @@ import java.util.Set;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.AssemblyComponentDAO;
-import org.alliancegenome.curation_api.dao.NoteDAO;
 import org.alliancegenome.curation_api.dao.VariantDAO;
 import org.alliancegenome.curation_api.dao.associations.AlleleVariantAssociationDAO;
 import org.alliancegenome.curation_api.dao.associations.CuratedVariantGenomicLocationAssociationDAO;
@@ -58,7 +57,6 @@ import jakarta.transaction.Transactional;
 public class VariantFmsDTOValidator {
 
 	@Inject VariantDAO variantDAO;
-	@Inject NoteDAO noteDAO;
 	@Inject AlleleService alleleService;
 	@Inject AssemblyComponentDAO assemblyComponentDAO;
 	@Inject CuratedVariantGenomicLocationAssociationDAO curatedVariantGenomicLocationAssociationDAO;
@@ -225,7 +223,7 @@ public class VariantFmsDTOValidator {
 					String noteIdentity = NoteIdentityHelper.variantNoteFmsDtoIdentity(dto.getNotes().get(ix));
 					if (!noteIdentities.contains(noteIdentity)) {
 						noteIdentities.add(noteIdentity);
-						validatedNotes.add(noteDAO.persist(noteResponse.getEntity()));
+						validatedNotes.add(noteResponse.getEntity());
 					}
 				}
 			}
