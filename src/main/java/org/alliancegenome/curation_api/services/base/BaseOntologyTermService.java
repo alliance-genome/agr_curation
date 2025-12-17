@@ -407,7 +407,7 @@ public abstract class BaseOntologyTermService<E extends OntologyTerm, D extends 
 				subsetTermList.add((T) closure.getClosureObject());
 			}
 		}
-		return subsetTermList;
+		return subsetTermList.isEmpty() ? null : subsetTermList;
 	}
 
 
