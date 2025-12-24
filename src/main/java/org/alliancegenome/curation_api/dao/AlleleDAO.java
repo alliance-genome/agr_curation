@@ -307,6 +307,8 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 					join slotannotation sa on sa.singlegene_id = g.id and sa.slotannotationtype = 'GeneSymbolSlotAnnotation'
 					join OntologyTerm ot on ot.id=be.taxon_id
 				where alleleassociationsubject_id in :alleleIds
+				and aga.internal = false
+				and aga.obsolete = false
 				and v.name = 'is_allele_of';
 				""";
 
