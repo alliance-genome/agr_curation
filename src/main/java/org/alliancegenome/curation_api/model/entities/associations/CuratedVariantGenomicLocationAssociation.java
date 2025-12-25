@@ -77,6 +77,7 @@ public class CuratedVariantGenomicLocationAssociation extends VariantGenomicLoca
 		return predictedVariantConsequences.stream()
 			.map(PredictedVariantConsequence::getHgvsCodingNomenclature)
 			.filter(Objects::nonNull)
+			.sorted()
 			.collect(Collectors.toList());
 	}
 
@@ -90,6 +91,7 @@ public class CuratedVariantGenomicLocationAssociation extends VariantGenomicLoca
 		return predictedVariantConsequences.stream()
 			.map(PredictedVariantConsequence::getHgvsProteinNomenclature)
 			.filter(Objects::nonNull)
+			.sorted()
 			.collect(Collectors.toList());
 	}
 
