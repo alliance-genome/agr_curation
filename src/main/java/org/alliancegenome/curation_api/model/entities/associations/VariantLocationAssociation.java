@@ -86,14 +86,14 @@ public abstract class VariantLocationAssociation extends LocationAssociation {
 		if (variantAssociationSubject != null && variantAssociationSubject.getVariantType() != null) {
 			String variantTypeCurie = variantAssociationSubject.getVariantType().getCurie();
 			if ("SO:0000667".equals(variantTypeCurie)) {
-				// Deletion
-				return "t" + referenceSequence + ">t";
+				// Insertion
+				return "c>c" + variantSequence;
 			} else if ("SO:1000008".equals(variantTypeCurie)) {
 				// Point mutation
 				return referenceSequence + ">" + variantSequence;
 			} else if ("SO:0000159".equals(variantTypeCurie)) {
-				// Insertion
-				return "c>c" + variantSequence;
+				// Deletion
+				return "t" + referenceSequence + ">t";
 			}
 		}
 		return null;
