@@ -1,26 +1,105 @@
-import React from 'react';
-import OktaSignInWidget from './OktaSignInWidget';
-import { useOktaAuth } from '@okta/okta-react';
-import { oktaSignInConfig } from './oktaAuthConfig';
+import React, { useEffect, useState, useCallback } from 'react';
+import { signInWithRedirect, getCurrentUser, fetchAuthSession } from 'aws-amplify/auth';
+import { Hub } from 'aws-amplify/utils';
 import { useCookies } from 'react-cookie';
 
 export const Login = ({ children }) => {
-	const { oktaAuth, authState } = useOktaAuth();
-	const [, setCookie] = useCookies(['okta-token-cookie']);
+	const [user, setUser] = useState(null);
+	const [loading, setLoading] = useState(true);
+	const [loggingOut, setLoggingOut] = useState(false);
+	const [, setCookie] = useCookies(['cognito-token-cookie']);
 
-	const onSuccess = (tokens) => {
-		//set cookie max age to 12 hours
-		setCookie('okta-token-cookie', tokens.accessToken.accessToken, { maxAge: 60 * 60 * 12 });
-		oktaAuth.handleLoginRedirect(tokens);
-	};
+	const checkUser = useCallback(async () => {
+		try {
+			const currentUser = await getCurrentUser();
+			const session = await fetchAuthSession();
 
-	const onError = (err) => {
-		console.log('error logging in', err);
-	};
+			if (currentUser && session.tokens?.accessToken) {
+				setUser(currentUser);
+				setCookie('cognito-token-cookie', session.tokens.accessToken.toString(), {
+					maxAge: 60 * 60 * 12,
+					path: '/',
+				});
 
-	return authState?.isAuthenticated ? (
-		children
-	) : (
-		<OktaSignInWidget config={oktaSignInConfig} onSuccess={onSuccess} onError={onError} />
-	);
+				const cognitoTokenStorage = {
+					accessToken: {
+						accessToken: session.tokens.accessToken.toString(),
+						tokenType: 'Bearer',
+						payload: session.tokens.accessToken.payload,
+					},
+					idToken: session.tokens.idToken
+						? {
+								idToken: session.tokens.idToken.toString(),
+								payload: session.tokens.idToken.payload,
+							}
+						: null,
+				};
+				localStorage.setItem('cognito-token-storage', JSON.stringify(cognitoTokenStorage));
+			} else {
+				setUser(null);
+			}
+		} catch (error) {
+			setUser(null);
+		} finally {
+			setLoading(false);
+		}
+	}, [setCookie]);
+
+	useEffect(() => {
+		const isCallback = window.location.search.includes('code=');
+
+		const hubListener = Hub.listen('auth', ({ payload }) => {
+			switch (payload.event) {
+				case 'signedIn':
+				case 'tokenRefresh':
+					checkUser();
+					break;
+				case 'signedOut':
+					setUser(null);
+					localStorage.removeItem('cognito-token-storage');
+					break;
+				default:
+					break;
+			}
+		});
+
+		if (!isCallback) {
+			checkUser();
+		}
+
+		return () => hubListener();
+	}, [checkUser]);
+
+	useEffect(() => {
+		const isCallback = window.location.search.includes('code=');
+
+		const justLoggedOut = sessionStorage.getItem('cognito-just-logged-out');
+		if (justLoggedOut) {
+			sessionStorage.removeItem('cognito-just-logged-out');
+			setLoggingOut(true);
+			setTimeout(() => {
+				setLoggingOut(false);
+				signInWithRedirect();
+			}, 1500);
+			return;
+		}
+
+		if (!loading && !user && !isCallback) {
+			signInWithRedirect();
+		}
+	}, [loading, user]);
+
+	if (loading) {
+		return <div>Loading authentication...</div>;
+	}
+
+	if (loggingOut) {
+		return <div>Logging out...</div>;
+	}
+
+	if (!user) {
+		return <div>Redirecting to login...</div>;
+	}
+
+	return children;
 };

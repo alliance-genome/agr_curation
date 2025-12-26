@@ -24,10 +24,17 @@ export const useGetUserSettings = (key, defaultValue, isTable = true) => {
 		refetchOnWindowFocus: false,
 	});
 
-	// Handle query success in useEffect (v5 removed onSuccess from useQuery)
 	useEffect(() => {
 		if (isSuccess && data) {
-			const serverSettings = { ...data?.entity, ...data?.entity?.settingsMap };
+			let settingsMap = data?.entity?.settingsMap || {};
+
+			while (settingsMap.settingsMap && typeof settingsMap.settingsMap === 'object') {
+				settingsMap = settingsMap.settingsMap;
+			}
+
+			const serverSettings = { ...data?.entity, ...settingsMap };
+			delete serverSettings.settingsMap;
+
 			if (serverSettings && Object.keys(serverSettings).length > 0) {
 				let updatedSettings = { ...serverSettings };
 				if (isTable) {

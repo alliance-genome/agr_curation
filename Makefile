@@ -78,7 +78,7 @@ uitest:
 
 integration-test:
 	mvn -ntp clean package
-	mvn -ntp failsafe:integration-test -Dokta.authentication=false
+	mvn -ntp failsafe:integration-test -Dcuration.authentication.enabled=false
 	mvn -ntp failsafe:verify
 
 verify:
