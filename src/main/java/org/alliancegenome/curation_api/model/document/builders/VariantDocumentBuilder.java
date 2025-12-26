@@ -34,7 +34,7 @@ public class VariantDocumentBuilder {
 							alleleSymbolSlotAnnotation.setFormatText(alleleAssociationSubject.getAlleleSymbol().getFormatText());
 							alleleSymbolSlotAnnotation.setDisplayText(alleleAssociationSubject.getAlleleSymbol().getDisplayText());
 							allele.setAlleleSymbol(alleleSymbolSlotAnnotation);
-							if(CollectionUtils.isNotEmpty(alleleAssociationSubject.getAlleleGeneAssociations())) {
+							if (CollectionUtils.isNotEmpty(alleleAssociationSubject.getAlleleGeneAssociations())) {
 								AlleleGeneAssociation isAlleleOf = alleleAssociationSubject.getAlleleGeneAssociations().stream()
 										.filter(alleleGeneAssociation -> alleleGeneAssociation.getRelation().getName().equals("is_allele_of")).toList().getFirst();
 								Gene associatedGene = isAlleleOf.getAlleleGeneAssociationObject();
