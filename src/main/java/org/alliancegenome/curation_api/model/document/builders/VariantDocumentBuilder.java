@@ -37,7 +37,7 @@ public class VariantDocumentBuilder {
 							if (CollectionUtils.isNotEmpty(alleleAssociationSubject.getAlleleGeneAssociations())) {
 								List<AlleleGeneAssociation> isAlleleOfList = alleleAssociationSubject.getAlleleGeneAssociations().stream()
 										.filter(alleleGeneAssociation -> alleleGeneAssociation.getRelation().getName().equals("is_allele_of")).toList();
-								if(CollectionUtils.isNotEmpty(isAlleleOfList)) {
+								if (CollectionUtils.isNotEmpty(isAlleleOfList)) {
 									AlleleGeneAssociation isAlleleOf = isAlleleOfList.getFirst();
 									Gene associatedGene = isAlleleOf.getAlleleGeneAssociationObject();
 									Gene shallowVersion = new Gene();
