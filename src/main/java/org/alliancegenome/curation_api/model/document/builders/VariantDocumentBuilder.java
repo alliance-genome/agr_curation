@@ -35,16 +35,19 @@ public class VariantDocumentBuilder {
 							alleleSymbolSlotAnnotation.setDisplayText(alleleAssociationSubject.getAlleleSymbol().getDisplayText());
 							allele.setAlleleSymbol(alleleSymbolSlotAnnotation);
 							if (CollectionUtils.isNotEmpty(alleleAssociationSubject.getAlleleGeneAssociations())) {
-								AlleleGeneAssociation isAlleleOf = alleleAssociationSubject.getAlleleGeneAssociations().stream()
-										.filter(alleleGeneAssociation -> alleleGeneAssociation.getRelation().getName().equals("is_allele_of")).toList().getFirst();
-								Gene associatedGene = isAlleleOf.getAlleleGeneAssociationObject();
-								Gene shallowVersion = new Gene();
-								shallowVersion.setPrimaryExternalId(associatedGene.getPrimaryExternalId());
-								GeneSymbolSlotAnnotation symbol = new GeneSymbolSlotAnnotation();
-								symbol.setFormatText(associatedGene.getGeneSymbol().getFormatText());
-								symbol.setDisplayText(associatedGene.getGeneSymbol().getDisplayText());
-								shallowVersion.setGeneSymbol(symbol);
-								dto.setIsAlleleOfGene(shallowVersion);
+								List<AlleleGeneAssociation> isAlleleOfList = alleleAssociationSubject.getAlleleGeneAssociations().stream()
+										.filter(alleleGeneAssociation -> alleleGeneAssociation.getRelation().getName().equals("is_allele_of")).toList();
+								if (CollectionUtils.isNotEmpty(isAlleleOfList)) {
+									AlleleGeneAssociation isAlleleOf = isAlleleOfList.getFirst();
+									Gene associatedGene = isAlleleOf.getAlleleGeneAssociationObject();
+									Gene shallowVersion = new Gene();
+									shallowVersion.setPrimaryExternalId(associatedGene.getPrimaryExternalId());
+									GeneSymbolSlotAnnotation symbol = new GeneSymbolSlotAnnotation();
+									symbol.setFormatText(associatedGene.getGeneSymbol().getFormatText());
+									symbol.setDisplayText(associatedGene.getGeneSymbol().getDisplayText());
+									shallowVersion.setGeneSymbol(symbol);
+									dto.setIsAlleleOfGene(shallowVersion);
+								}
 							}
 							dto.setAllele(allele);
 						}
