@@ -4,13 +4,13 @@ import { Dialog } from 'primereact/dialog';
 import { InputText } from 'primereact/inputtext';
 import { classNames } from 'primereact/utils';
 import { DataLoadService } from '../../service/DataLoadService';
-import { useOktaAuth } from '@okta/okta-react';
+import { useAuth } from '../../hooks/useAuth';
 
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import ErrorBoundary from '../../components/Error/ErrorBoundary';
 
 export const NewBulkLoadGroupForm = ({ bulkLoadGroupDialog, setBulkLoadGroupDialog }) => {
-	const { authState } = useOktaAuth();
+	const { authState } = useAuth();
 
 	const [group, setGroup] = useState({});
 

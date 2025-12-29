@@ -1,7 +1,31 @@
 package org.alliancegenome.curation_api.services;
 
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.alliancegenome.curation_api.enums.GoogleAnalyticsDataType;
+import org.alliancegenome.curation_api.model.entities.orthology.GeneToGeneOrthologyGenerated;
+import org.alliancegenome.curation_api.response.SearchResponse;
+import org.alliancegenome.curation_api.services.orthology.GeneToGeneOrthologyGeneratedService;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
+
 import com.google.analytics.data.v1beta.BetaAnalyticsDataClient;
 import com.google.analytics.data.v1beta.BetaAnalyticsDataSettings;
+import com.google.analytics.data.v1beta.DateRange;
+import com.google.analytics.data.v1beta.Dimension;
+import com.google.analytics.data.v1beta.Filter;
+import com.google.analytics.data.v1beta.Filter.StringFilter.MatchType;
+import com.google.analytics.data.v1beta.FilterExpression;
+import com.google.analytics.data.v1beta.FilterExpressionList;
+import com.google.analytics.data.v1beta.Metric;
+import com.google.analytics.data.v1beta.OrderBy;
+import com.google.analytics.data.v1beta.Row;
 import com.google.analytics.data.v1beta.RunReportRequest;
 import com.google.analytics.data.v1beta.RunReportResponse;
 import com.google.api.gax.core.FixedCredentialsProvider;
@@ -13,28 +37,11 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import net.nilosplace.process_display.ProcessDisplayHelper;
 import net.nilosplace.process_display.util.ObjectFileStorage;
-
-import com.google.analytics.data.v1beta.DateRange;
-import com.google.analytics.data.v1beta.Dimension;
-import com.google.analytics.data.v1beta.Filter;
-import com.google.analytics.data.v1beta.Filter.StringFilter.MatchType;
-import com.google.analytics.data.v1beta.FilterExpression;
-import com.google.analytics.data.v1beta.FilterExpressionList;
-import com.google.analytics.data.v1beta.Metric;
-import com.google.analytics.data.v1beta.OrderBy;
-import com.google.analytics.data.v1beta.Row;
-
-import org.alliancegenome.curation_api.enums.GoogleAnalyticsDataType;
-import org.alliancegenome.curation_api.model.entities.orthology.GeneToGeneOrthologyGenerated;
-import org.alliancegenome.curation_api.response.SearchResponse;
-import org.alliancegenome.curation_api.services.orthology.GeneToGeneOrthologyGeneratedService;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.Pair;
-import org.eclipse.microprofile.config.inject.ConfigProperty;
-
-import java.io.*;
-import java.time.LocalDate;
-import java.util.*;
+import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
+import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.secretsmanager.SecretsManagerClient;
+import software.amazon.awssdk.services.secretsmanager.model.GetSecretValueRequest;
+import software.amazon.awssdk.services.secretsmanager.model.GetSecretValueResponse;
 
 @ApplicationScoped
 public class GoogleAnalyticsService {
@@ -42,15 +49,28 @@ public class GoogleAnalyticsService {
 	@Inject
 	GeneToGeneOrthologyGeneratedService geneToGeneOrthologyGeneratedService;
 
-	@ConfigProperty(name = "google.analytics.secret.key")
-	String googleAnalyticsSecretKey;
-
 	GoogleCredentials credentials;
 	ObjectFileStorage<Map<String, Map<String, Double>>> objectFileStorage = new ObjectFileStorage<>();
 
 	@PostConstruct
 	protected void init() {
+
 		try {
+			
+			DefaultCredentialsProvider profile = DefaultCredentialsProvider.builder().build();
+
+			SecretsManagerClient secretsClient = SecretsManagerClient.builder()
+					.credentialsProvider(profile)
+					.region(Region.US_EAST_1).build();
+
+			GetSecretValueRequest valueRequest = GetSecretValueRequest.builder().secretId("google_analytics_secret_key").build();
+
+			GetSecretValueResponse valueResponse = secretsClient.getSecretValue(valueRequest);
+			
+			String googleAnalyticsSecretKey = valueResponse.secretString();
+
+			secretsClient.close();
+
 			credentials = GoogleCredentials.fromStream(new ByteArrayInputStream(googleAnalyticsSecretKey.getBytes()));
 		} catch (Exception e) {
 			e.printStackTrace();
