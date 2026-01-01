@@ -95,7 +95,7 @@ public abstract class VariantLocationAssociation extends LocationAssociation {
 				// Deletion
 				return "t" + referenceSequence + ">t";
 			}
-			if(referenceSequence != null && variantSequence != null){
+			if (referenceSequence != null && variantSequence != null) {
 				return referenceSequence + ">" + variantSequence;
 			}
 		}
