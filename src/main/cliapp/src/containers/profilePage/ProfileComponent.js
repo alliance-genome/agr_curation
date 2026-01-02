@@ -3,7 +3,7 @@ import { Card } from 'primereact/card';
 import { DataTable } from 'primereact/datatable';
 import { Dropdown } from 'primereact/dropdown';
 import { Column } from 'primereact/column';
-import { useOktaAuth } from '@okta/okta-react';
+import { useAuth } from '../../hooks/useAuth';
 import { Panel } from 'primereact/panel';
 import { Ripple } from 'primereact/ripple';
 import * as jose from 'jose';
@@ -38,9 +38,9 @@ export const ProfileComponent = () => {
 
 	const regenApiTokenFn = useRegenApiToken();
 
-	const [oktaToken] = useState(JSON.parse(localStorage.getItem('okta-token-storage')));
+	const [cognitoToken] = useState(JSON.parse(localStorage.getItem('cognito-token-storage')));
 
-	const { authState } = useOktaAuth();
+	const { authState } = useAuth();
 	const toast_topright = useRef(null);
 	const { data: localUserInfo } = useUserInfo(authState);
 
@@ -204,16 +204,20 @@ export const ProfileComponent = () => {
 			value: localUserInfo?.allianceMember?.fullName + ' (' + localUserInfo?.allianceMember?.abbreviation + ')',
 			template: textTemplate,
 		},
-		{ name: 'Okta Email', value: localUserInfo?.oktaEmail, template: textTemplate },
-		{ name: 'Okta Access Token', value: oktaToken.accessToken.accessToken, template: textTemplate },
-		{ name: 'Okta Id Token', value: oktaToken.idToken.idToken, template: textTemplate },
+		{ name: 'Cognito Email', value: localUserInfo?.oktaEmail, template: textTemplate },
+		{ name: 'Cognito Access Token', value: cognitoToken?.accessToken?.accessToken, template: textTemplate },
+		{ name: 'Cognito Id Token', value: cognitoToken?.idToken?.idToken, template: textTemplate },
 		{ name: 'Curation API Token', value: localUserInfo?.apiToken, template: textTemplate },
 		{
-			name: 'Okta Access Token Content',
-			value: jose.decodeJwt(oktaToken.accessToken.accessToken),
+			name: 'Cognito Access Token Content',
+			value: cognitoToken?.accessToken?.accessToken ? jose.decodeJwt(cognitoToken.accessToken.accessToken) : null,
 			template: jsonTemplate,
 		},
-		{ name: 'Okta Id Token Content', value: jose.decodeJwt(oktaToken.idToken.idToken), template: jsonTemplate },
+		{
+			name: 'Cognito Id Token Content',
+			value: cognitoToken?.idToken?.idToken ? jose.decodeJwt(cognitoToken.idToken.idToken) : null,
+			template: jsonTemplate,
+		},
 		{ name: 'User Settings', value: localUserInfo?.settings, template: jsonTemplate },
 		{ name: 'Site Settings', value: localUserInfo?.settings, template: siteTemplate },
 	];

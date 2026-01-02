@@ -60,14 +60,6 @@ public class PersonService extends BaseEntityCrudService<Person, PersonDAO> {
 		return personDAO.persist(person);
 	}
 
-	public Person findPersonByEmail(String email) {
-		SearchResponse<Person> resp = personDAO.findByField("email", email);
-		if (resp != null && resp.getResults().size() == 1) {
-			return resp.getSingleResult();
-		}
-		return null;
-	}
-
 	@Override
 	@Transactional
 	public ObjectResponse<Person> update(Person uiEntity) {
@@ -83,16 +75,16 @@ public class PersonService extends BaseEntityCrudService<Person, PersonDAO> {
 		return null;
 	}
 
-	public Person findPersonByOktaEmail(String email) {
-		SearchResponse<Person> resp = personDAO.findByField("oktaEmail", email);
+	public Person findPersonByAuthenticationEmail(String authEmail) {
+		SearchResponse<Person> resp = personDAO.findByField("authEmail", authEmail);
 		if (resp != null && resp.getResults().size() == 1) {
 			return resp.getSingleResult();
 		}
 		return null;
 	}
 
-	public Person findPersonByOktaId(String oktaId) {
-		SearchResponse<Person> resp = personDAO.findByField("oktaId", oktaId);
+	public Person findPersonByAuthenticationId(String authId) {
+		SearchResponse<Person> resp = personDAO.findByField("authId", authId);
 		if (resp != null && resp.getResults().size() == 1) {
 			return resp.getSingleResult();
 		}
