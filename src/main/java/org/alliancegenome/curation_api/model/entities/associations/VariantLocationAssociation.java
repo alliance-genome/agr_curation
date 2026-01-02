@@ -81,7 +81,7 @@ public abstract class VariantLocationAssociation extends LocationAssociation {
 
 	@Transient
 	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
-	@JsonView({View.FieldsOnly.class})
+	@JsonView({View.FieldsOnly.class, View.VariantView.class})
 	public String getNucleotideChange() {
 		if (variantAssociationSubject != null && variantAssociationSubject.getVariantType() != null) {
 			String variantTypeCurie = variantAssociationSubject.getVariantType().getCurie();
