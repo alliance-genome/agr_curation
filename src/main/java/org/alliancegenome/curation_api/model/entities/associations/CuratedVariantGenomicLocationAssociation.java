@@ -2,6 +2,7 @@ package org.alliancegenome.curation_api.model.entities.associations;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -115,7 +116,7 @@ public class CuratedVariantGenomicLocationAssociation extends VariantGenomicLoca
 				})
 				.flatMap(Collection::stream)
 				.distinct()
-				.sorted()
+				.sorted(Comparator.comparing(gene -> gene.getGeneSymbol().getDisplayText()))
 				.collect(Collectors.toList());
 	}
 }
