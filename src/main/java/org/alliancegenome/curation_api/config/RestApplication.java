@@ -3,6 +3,7 @@ package org.alliancegenome.curation_api.config;
 import org.alliancegenome.curation_api.auth.Secured;
 import org.eclipse.microprofile.openapi.annotations.OpenAPIDefinition;
 import org.eclipse.microprofile.openapi.annotations.info.Info;
+import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirement;
 
 import jakarta.ws.rs.ApplicationPath;
 import jakarta.ws.rs.core.Application;
@@ -16,7 +17,8 @@ import jakarta.ws.rs.core.Application;
 			+ "<h1>For flat file of API documentation click on the link below <a href=\"/openapi\"><h1>OpenAPI definition download</h1></a></h1>",
 		title = "Alliance of Genome Resources Curation API ",
 		version = "1.0 Alpha"
-	)
+	),
+	security = @SecurityRequirement(name = "APIToken")
 )
 public class RestApplication extends Application {
 
