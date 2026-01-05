@@ -98,10 +98,12 @@ quarkus.oidc.token.issuer=https://cognito-idp.us-east-1.amazonaws.com/${cognito.
 quarkus.oidc.client-id=""
 quarkus.oidc.user-info-path=""
 
+quarkus.smallrye-openapi.security-scheme=api-key
+quarkus.smallrye-openapi.security-scheme-name=APIToken
+quarkus.smallrye-openapi.api-key-parameter-in=header
+quarkus.smallrye-openapi.api-key-parameter-name=Authorization
 
 mati.url = http://localhost:8081
-%dev.okta.authentication = false
-%test.okta.authentication = false
 
 %dev.quarkus.live-reload.instrumentation = true
 
