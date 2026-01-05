@@ -46,7 +46,7 @@ public class Person extends Agent {
 	@JsonView({ View.FieldsOnly.class })
 	@EqualsAndHashCode.Include
 	protected String uniqueId;
-	
+
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "firstName_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
 	@JsonView({ View.FieldsOnly.class, View.PersonSettingView.class })
@@ -95,18 +95,18 @@ public class Person extends Agent {
 	private AllianceMember allianceMember;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
-	@KeywordField(name = "oktaId_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
+	@KeywordField(name = "authId_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
 	@JsonView({ View.PrivateOnlyView.class, View.PersonSettingView.class })
 	@Column(unique = true)
-	private String oktaId;
+	private String authId;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
-	@KeywordField(name = "oktaEmail_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
+	@KeywordField(name = "authEmail_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
 	@JsonView({ View.PrivateOnlyView.class, View.PersonSettingView.class })
 	@Column(unique = true)
-	private String oktaEmail;
+	private String authEmail;
 
 	@JsonView({ View.PrivateOnlyView.class, View.PersonSettingView.class })
 	private String apiToken;
-	
+
 }
