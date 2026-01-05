@@ -1,24 +1,29 @@
-import { useEffect } from 'react';
-import { Outlet } from 'react-router-dom';
-import { useOktaAuth } from '@okta/okta-react';
-import { toRelativeUrl } from '@okta/okta-auth-js';
+import { useEffect, useState } from 'react';
+import { Outlet, useNavigate } from 'react-router-dom';
+import { getCurrentUser } from 'aws-amplify/auth';
 
 const Loading = () => <div>Loading authentication...</div>;
 
 export const RequiredAuth = () => {
-	const { oktaAuth, authState } = useOktaAuth();
+	const [isAuthenticated, setIsAuthenticated] = useState(null);
+	const navigate = useNavigate();
 
 	useEffect(() => {
-		if (!authState) return;
+		const checkAuth = async () => {
+			try {
+				await getCurrentUser();
+				setIsAuthenticated(true);
+			} catch (error) {
+				console.error('Auth check failed:', error);
+				setIsAuthenticated(false);
+				navigate('/login');
+			}
+		};
 
-		if (!authState.isAuthenticated) {
-			const originalUri = toRelativeUrl(window.location.href, window.location.origin);
-			oktaAuth.setOriginalUri(originalUri);
-			oktaAuth.signInWithRedirect();
-		}
-	}, [oktaAuth, authState]);
+		checkAuth();
+	}, [navigate]);
 
-	if (!authState || !authState?.isAuthenticated) {
+	if (isAuthenticated === null || isAuthenticated === false) {
 		return <Loading />;
 	}
 

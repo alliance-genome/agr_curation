@@ -4,11 +4,11 @@ export class BaseAuthService {
 	api;
 
 	constructor() {
-		let oktaTokenStorage = localStorage.getItem('okta-token-storage');
+		let cognitoTokenStorage = localStorage.getItem('cognito-token-storage');
 		let accessToken;
 
 		try {
-			accessToken = JSON.parse(oktaTokenStorage).accessToken;
+			accessToken = JSON.parse(cognitoTokenStorage).accessToken;
 		} catch (e) {
 			console.warn(e);
 			accessToken = undefined;

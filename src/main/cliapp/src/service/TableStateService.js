@@ -414,8 +414,8 @@ const modTableSettings = {
 };
 
 export function getModTableState(table, defaultColumnWidths, defaultColumnNames) {
-	const oktaToken = JSON.parse(localStorage.getItem('okta-token-storage'));
-	const mod = oktaToken?.accessToken?.claims?.Groups?.filter((group) => group.includes('Staff'));
+	const cognitoToken = JSON.parse(localStorage.getItem('cognito-token-storage'));
+	const mod = cognitoToken?.accessToken?.payload?.['cognito:groups']?.filter((group) => group.includes('Staff'));
 	const modTableState = global.structuredClone(
 		modTableSettings[mod] ? modTableSettings[mod][table] : modTableSettings['Default'][table]
 	);
@@ -427,8 +427,8 @@ export function getModTableState(table, defaultColumnWidths, defaultColumnNames)
 }
 
 export function getModFormFields(table) {
-	const oktaToken = JSON.parse(localStorage.getItem('okta-token-storage'));
-	const mod = oktaToken?.accessToken?.claims?.Groups?.filter((group) => group.includes('Staff'));
+	const cognitoToken = JSON.parse(localStorage.getItem('cognito-token-storage'));
+	const mod = cognitoToken?.accessToken?.payload?.['cognito:groups']?.filter((group) => group.includes('Staff'));
 	const modFormFields = modTableSettings[mod]
 		? modTableSettings[mod][table]['selectedFormFields']
 		: modTableSettings['Default'][table]['selectedFormFields'];
