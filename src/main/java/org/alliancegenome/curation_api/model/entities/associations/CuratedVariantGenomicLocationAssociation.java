@@ -108,8 +108,11 @@ public class CuratedVariantGenomicLocationAssociation extends VariantGenomicLoca
 		}
 		return predictedVariantConsequences.stream()
 				.map(predictedVariantConsequence -> {
-					return predictedVariantConsequence
-							.getVariantTranscript()
+					var transcript = predictedVariantConsequence.getVariantTranscript();
+					if (transcript == null || transcript.getTranscriptGeneAssociations() == null) {
+						return Collections.<Gene>emptyList();
+					}
+					return transcript
 							.getTranscriptGeneAssociations()
 							.stream().map(TranscriptGeneAssociation::getTranscriptGeneAssociationObject)
 							.toList();
