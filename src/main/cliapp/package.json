@@ -51,7 +51,8 @@
         "react-moment": {
             "react": "19.1.1",
             "react-dom": "19.1.1"
-        }
+        },
+        "nth-check": "^2.0.1"
     },
     "scripts": {
         "start": "react-scripts start",
