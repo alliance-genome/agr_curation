@@ -13,7 +13,7 @@ export const AppTopbar = (props) => {
 	const menu = useRef(null);
 	const [processingEvent, setProcessingEvent] = useState(null);
 	const { authState } = useAuth();
-	const [ cognitoToken ] = useState(JSON.parse(localStorage.getItem('cognito-token-storage')));
+	const [cognitoToken] = useState(JSON.parse(localStorage.getItem('cognito-token-storage')));
 
 	const { data: userInfo } = useUserInfo(authState);
 	const { data: apiVersion } = useApiVersion(authState);
