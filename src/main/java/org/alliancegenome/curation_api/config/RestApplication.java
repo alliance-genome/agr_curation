@@ -29,21 +29,21 @@ import jakarta.ws.rs.core.Application;
 	components = @Components(
 		securitySchemes = {
 			@SecurityScheme(
-				securitySchemeName="APIToken",
+				securitySchemeName = "APIToken",
 				type = SecuritySchemeType.APIKEY,
 				in = SecuritySchemeIn.HEADER,
 				apiKeyName = "Authorization",
-				description="APIToken {apiToken} # Curation Short API Token",
-				scheme="api-key"
+				description = "APIToken {apiToken} # Curation Short API Token",
+				scheme = "api-key"
 			),
 			@SecurityScheme(
-				securitySchemeName="Bearer",
+				securitySchemeName = "Bearer",
 				type = SecuritySchemeType.APIKEY,
 				in = SecuritySchemeIn.HEADER,
 				apiKeyName = "Authorization",
-				description="<p>Bearer {accessToken} # Cognito Access Token</p>"
+				description = "<p>Bearer {accessToken} # Cognito Access Token</p>"
 					+ "<p>Bearer {adminToken} # Admin Token Generated from the CurationAPI-Admin</p>",
-				scheme="api-key"
+				scheme = "api-key"
 			)
 		}
 	)
