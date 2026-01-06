@@ -87,7 +87,7 @@ quarkus.oidc.application-type=service
 quarkus.oidc.token.header=Authorization
 quarkus.oidc.token.cookie=cognito-token-cookie
 quarkus.oidc.enabled=true
-quarkus.oidc.authentication.user-info-required=true
+quarkus.oidc.authentication.user-info-required=false
 %dev.quarkus.oidc.enabled=false
 %test.quarkus.oidc.enabled=false
 
@@ -97,11 +97,6 @@ quarkus.oidc.auth-server-url=https://cognito-idp.us-east-1.amazonaws.com/${cogni
 quarkus.oidc.token.issuer=https://cognito-idp.us-east-1.amazonaws.com/${cognito.user-pool-id}
 quarkus.oidc.client-id=""
 quarkus.oidc.user-info-path=""
-
-quarkus.smallrye-openapi.security-scheme=api-key
-quarkus.smallrye-openapi.security-scheme-name=APIToken
-quarkus.smallrye-openapi.api-key-parameter-in=header
-quarkus.smallrye-openapi.api-key-parameter-name=Authorization
 
 mati.url = http://localhost:8081
 

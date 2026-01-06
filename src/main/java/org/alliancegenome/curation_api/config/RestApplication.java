@@ -1,9 +1,13 @@
 package org.alliancegenome.curation_api.config;
 
 import org.alliancegenome.curation_api.auth.Secured;
+import org.eclipse.microprofile.openapi.annotations.Components;
 import org.eclipse.microprofile.openapi.annotations.OpenAPIDefinition;
+import org.eclipse.microprofile.openapi.annotations.enums.SecuritySchemeIn;
+import org.eclipse.microprofile.openapi.annotations.enums.SecuritySchemeType;
 import org.eclipse.microprofile.openapi.annotations.info.Info;
 import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirement;
+import org.eclipse.microprofile.openapi.annotations.security.SecurityScheme;
 
 import jakarta.ws.rs.ApplicationPath;
 import jakarta.ws.rs.core.Application;
@@ -18,7 +22,31 @@ import jakarta.ws.rs.core.Application;
 		title = "Alliance of Genome Resources Curation API ",
 		version = "1.0 Alpha"
 	),
-	security = @SecurityRequirement(name = "APIToken")
+	security = {
+		@SecurityRequirement(name = "APIToken"),
+		@SecurityRequirement(name = "Bearer")
+	},
+	components = @Components(
+		securitySchemes = {
+			@SecurityScheme(
+				securitySchemeName = "APIToken",
+				type = SecuritySchemeType.APIKEY,
+				in = SecuritySchemeIn.HEADER,
+				apiKeyName = "Authorization",
+				description = "APIToken {apiToken} # Curation Short API Token",
+				scheme = "api-key"
+			),
+			@SecurityScheme(
+				securitySchemeName = "Bearer",
+				type = SecuritySchemeType.APIKEY,
+				in = SecuritySchemeIn.HEADER,
+				apiKeyName = "Authorization",
+				description = "<p>Bearer {accessToken} # Cognito Access Token</p>"
+					+ "<p>Bearer {adminToken} # Admin Token Generated from the CurationAPI-Admin</p>",
+				scheme = "api-key"
+			)
+		}
+	)
 )
 public class RestApplication extends Application {
 
