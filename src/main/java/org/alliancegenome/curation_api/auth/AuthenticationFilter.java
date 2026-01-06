@@ -13,9 +13,8 @@ import org.alliancegenome.curation_api.services.helpers.PersonUniqueIdHelper;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.jwt.JsonWebToken;
 
-import io.quarkus.oidc.UserInfo;
 import io.quarkus.logging.Log;
-
+import io.quarkus.oidc.UserInfo;
 import jakarta.annotation.Priority;
 import jakarta.enterprise.event.Event;
 import jakarta.enterprise.inject.Instance;
@@ -70,14 +69,19 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 	@Override
 	public void filter(ContainerRequestContext requestContext) throws IOException {
 
+		//Log.info("Security Filter Firing: ");
+		//Log.info("Token: " + jsonWebToken);
+		//Log.info("Claim Names: " + jsonWebToken.getClaimNames());
+		//Log.info("User Info: " + userInfoInstance.get());
+
 		if (jsonWebToken.getClaimNames() != null) {
-			Person person = validateUserTokenById();
+			Person person = validateUserTokenById(); // Does not require userinfo
 
 			if (person == null) {
-				person = validateUserTokenByEmail();
+				person = validateUserTokenByEmail(); // Requires user info
 			}
 			if (person == null) {
-				person = validateAdminToken();
+				person = validateAdminToken(); // Does not require userinfo
 			}
 			if (person != null) {
 				userAuthenticatedEvent.fire(person);
@@ -88,8 +92,7 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 			if (curationAuthenticationEnabled.get()) {
 				String authorizationHeader = requestContext.getHeaderString(HttpHeaders.AUTHORIZATION);
 				String apiToken = null;
-				if (authorizationHeader != null
-						&& authorizationHeader.toLowerCase().startsWith(AUTHENTICATION_APITOKEN.toLowerCase())) {
+				if (authorizationHeader != null && authorizationHeader.toLowerCase().startsWith(AUTHENTICATION_APITOKEN.toLowerCase())) {
 					apiToken = authorizationHeader.substring(AUTHENTICATION_APITOKEN.length()).trim();
 					Person person = personService.findPersonByApiToken(apiToken);
 					if (person != null) {
@@ -107,8 +110,7 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 	}
 
 	private void failAuthentication(ContainerRequestContext requestContext, String authType) {
-		requestContext.abortWith(
-				Response.status(Response.Status.UNAUTHORIZED).header(HttpHeaders.WWW_AUTHENTICATE, authType).build());
+		requestContext.abortWith(Response.status(Response.Status.UNAUTHORIZED).header(HttpHeaders.WWW_AUTHENTICATE, authType).build());
 	}
 
 	private void loginDevUser() {
@@ -129,25 +131,29 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 	}
 
 	private Person validateUserTokenById() {
-
 		if (jsonWebToken.getClaim(USER_ID_FIELD) == null) {
 			return null;
 		}
-
 		return personService.findPersonByAuthenticationId(jsonWebToken.getClaim(USER_ID_FIELD));
 	}
 
 	private Person validateUserTokenByEmail() {
 
 		if (!userInfoInstance.isResolvable()) {
-			Log.info("user info not injected");
+			Log.info("User info not injected");
 			return null;
 		}
 
 		UserInfo userInfo = userInfoInstance.get();
-		String authEmail = userInfo.getString("email");
-		String firstName = userInfo.getString("given_name");
-		String lastName = userInfo.getString("family_name");
+
+		if(userInfo.getJsonObject() == null) {
+			Log.info("User info not present in token");
+			return null;
+		}
+
+		String authEmail = userInfo.getEmail();
+		String firstName = userInfo.getName();
+		String lastName = userInfo.getFamilyName();
 
 		Person authenticatedUser = personService.findPersonByAuthenticationEmail(authEmail);
 
@@ -180,6 +186,8 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 	// Can this be done in AWS since both applications are there?
 	private Person validateAdminToken() {
 
+		//Log.info("JWT: " + jsonWebToken);
+
 		String cognitoClientId = (String) jsonWebToken.getClaim("client_id");
 
 		if (cognitoClientId != null && !cognitoClientId.isEmpty()) {
@@ -187,12 +195,11 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 			Person authenticatedUser = personService.findPersonByAuthenticationId(cognitoClientId);
 
 			if (authenticatedUser != null) {
+				Log.info("Cognito Authentication for Admin user via token");
 				return authenticatedUser;
 			}
 
 			Log.info("Creating admin user for client_id: " + cognitoClientId);
-
-			Log.debug("Cognito Authentication for Admin user via token");
 			String adminEmail = "admin@alliancegenome.org";
 			Person person = new Person();
 			person.setApiToken(UUID.randomUUID().toString());
