@@ -22,9 +22,9 @@ import jakarta.ws.rs.core.Application;
 		title = "Alliance of Genome Resources Curation API ",
 		version = "1.0 Alpha"
 	),
-	security = { 
+	security = {
 		@SecurityRequirement(name = "APIToken"),
-		@SecurityRequirement(name = "Bearer"),
+		@SecurityRequirement(name = "Bearer")
 	},
 	components = @Components(
 		securitySchemes = {

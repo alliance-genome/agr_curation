@@ -69,10 +69,10 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 	@Override
 	public void filter(ContainerRequestContext requestContext) throws IOException {
 
-		//Log.info("Security Filter Firing: ");
-		//Log.info("Token: " + jsonWebToken);
-		//Log.info("Claim Names: " + jsonWebToken.getClaimNames());
-		//Log.info("User Info: " + userInfoInstance.get());
+		// Log.info("Security Filter Firing: ");
+		// Log.info("Token: " + jsonWebToken);
+		// Log.info("Claim Names: " + jsonWebToken.getClaimNames());
+		// Log.info("User Info: " + userInfoInstance.get());
 
 		if (jsonWebToken.getClaimNames() != null) {
 			Person person = validateUserTokenById(); // Does not require userinfo
@@ -146,7 +146,7 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 
 		UserInfo userInfo = userInfoInstance.get();
 
-		if(userInfo.getJsonObject() == null) {
+		if (userInfo.getJsonObject() == null) {
 			Log.info("User info not present in token");
 			return null;
 		}
@@ -186,7 +186,7 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 	// Can this be done in AWS since both applications are there?
 	private Person validateAdminToken() {
 
-		//Log.info("JWT: " + jsonWebToken);
+		// Log.info("JWT: " + jsonWebToken);
 
 		String cognitoClientId = (String) jsonWebToken.getClaim("client_id");
 
