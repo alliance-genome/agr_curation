@@ -172,7 +172,7 @@ public class FileTransferHelper {
 		Config config = ConfigProvider.getConfig();
 		String accessKey = config.getValue("bulk.data.loads.s3AccessKey", String.class);
 		String secretKey = config.getValue("bulk.data.loads.s3SecretKey", String.class);
-		if(aws_profile.isPresent() && aws_profile.get() != null) {
+		if (aws_profile.isPresent() && aws_profile.get() != null) {
 			Log.info("Default AWS Profile: " + aws_profile.get());
 			String profile = aws_profile.get();
 			return new ProfileCredentialsProvider(profile);
@@ -182,7 +182,6 @@ public class FileTransferHelper {
 			return new InstanceProfileCredentialsProvider(false);
 		}
 	}
-	
 
 	private File generateFilePath() {
 		return new File(generateUniqueFileName());
