@@ -3,7 +3,8 @@ import classNames from 'classnames';
 import { useLocation } from 'react-router-dom';
 import { CSSTransition } from 'react-transition-group';
 
-import { useOktaAuth } from '@okta/okta-react';
+import { signOut, fetchAuthSession } from 'aws-amplify/auth';
+import { COGNITO_CLIENT_ID, COGNITO_DOMAIN } from '../../cognitoAuthConfig';
 
 import { AppTopbar } from '../../AppTopbar';
 import { AppFooter } from '../../AppFooter';
@@ -48,11 +49,28 @@ export const SiteLayout = (props) => {
 	//CSSTransition React 19 work around
 	const nodeRef = useRef(null);
 
-	const { authState, oktaAuth } = useOktaAuth();
+	const [authState, setAuthState] = useState({ isAuthenticated: false });
+	const [authCheckTrigger, setAuthCheckTrigger] = useState(0);
+
+	useEffect(() => {
+		const checkAuth = async () => {
+			try {
+				const session = await fetchAuthSession();
+				if (session.tokens?.accessToken) {
+					setAuthState({ isAuthenticated: true });
+				} else {
+					setAuthState({ isAuthenticated: false });
+				}
+			} catch {
+				setAuthState({ isAuthenticated: false });
+			}
+		};
+		checkAuth();
+	}, [authCheckTrigger]);
 
 	const { data: apiVersion } = useApiVersion(authState);
 	useUserInfo(authState);
-	const [, , removeCookie] = useCookies(['okta-token-cookie']);
+	const [, , removeCookie] = useCookies(['cognito-token-cookie']);
 
 	const { children } = props;
 
@@ -84,8 +102,21 @@ export const SiteLayout = (props) => {
 	};
 
 	const logout = async () => {
-		removeCookie('okta-token-cookie');
-		await oktaAuth.signOut();
+		try {
+			removeCookie('cognito-token-cookie', { path: '/' });
+			localStorage.removeItem('cognito-token-storage');
+			sessionStorage.setItem('cognito-just-logged-out', 'true');
+			setAuthState({ isAuthenticated: false });
+			await signOut();
+
+			// Redirect to Cognito's logout endpoint to clear the Cognito session cookie
+			// This is required because signOut() only clears local state, not the Cognito Hosted UI session
+			const logoutUri = window.location.origin + '/';
+			window.location.href = `https://${COGNITO_DOMAIN}/logout?client_id=${COGNITO_CLIENT_ID}&logout_uri=${encodeURIComponent(logoutUri)}`;
+		} catch (error) {
+			console.error('Error signing out:', error);
+			setAuthCheckTrigger((prev) => prev + 1);
+		}
 	};
 
 	useEffect(() => {
