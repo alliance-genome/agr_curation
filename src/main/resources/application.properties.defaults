@@ -65,15 +65,11 @@ NET = local
 reports.schedulingEnabled = true
 %dev.reports.schedulingEnabled = false
 reports.s3Bucket = agr-curation-files
-reports.s3AccessKey = ""
-reports.s3SecretKey = ""
 reports.s3PathPrefix = dev/reports
 
 bulk.data.loads.schedulingEnabled = true
 %dev.bulk.data.loads.schedulingEnabled = false
 bulk.data.loads.s3Bucket = agr-curation-files
-bulk.data.loads.s3AccessKey = ""
-bulk.data.loads.s3SecretKey = ""
 bulk.data.loads.s3PathPrefix = dev
 
 reindex.schedulingEnabled = false

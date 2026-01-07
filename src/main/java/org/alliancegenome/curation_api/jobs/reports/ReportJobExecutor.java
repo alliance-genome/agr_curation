@@ -31,8 +31,6 @@ public class ReportJobExecutor {
 
 	@ConfigProperty(name = "reports.s3Bucket") String s3Bucket;
 	@ConfigProperty(name = "reports.s3PathPrefix") String s3PathPrefix;
-	@ConfigProperty(name = "reports.s3AccessKey") String s3AccessKey;
-	@ConfigProperty(name = "reports.s3SecretKey") String s3SecretKey;
 	@ConfigProperty(name = "quarkus.datasource.jdbc.url") String dbJdbcUrl;
 	@ConfigProperty(name = "quarkus.datasource.username") String dbUsername;
 	@ConfigProperty(name = "quarkus.datasource.password") String dbPassword;
@@ -80,7 +78,7 @@ public class ReportJobExecutor {
 
 		String md5Sum = fileHelper.getMD5SumOfFile(outputFile.getAbsolutePath());
 		String generatedS3Path = generateS3MD5Path(md5Sum, fileExt);
-		String s3Path = fileHelper.uploadFileToS3(s3AccessKey, s3SecretKey, s3Bucket, s3PathPrefix, generatedS3Path, outputFile);
+		String s3Path = fileHelper.uploadFileToS3(s3Bucket, s3PathPrefix, generatedS3Path, outputFile);
 		history.setXlsFilePath(s3Path);
 		Log.info("Cleanup file: " + outputFile.getAbsolutePath());
 		outputFile.delete();
@@ -97,7 +95,7 @@ public class ReportJobExecutor {
 
 		md5Sum = fileHelper.getMD5SumOfFile(outputFile.getAbsolutePath());
 		generatedS3Path = generateS3MD5Path(md5Sum, fileExt);
-		s3Path = fileHelper.uploadFileToS3(s3AccessKey, s3SecretKey, s3Bucket, s3PathPrefix, generatedS3Path, outputFile);
+		s3Path = fileHelper.uploadFileToS3(s3Bucket, s3PathPrefix, generatedS3Path, outputFile);
 		history.setHtmlFilePath(s3Path);
 		Log.info("Cleanup file: " + outputFile.getAbsolutePath());
 		outputFile.delete();
@@ -114,7 +112,7 @@ public class ReportJobExecutor {
 
 		md5Sum = fileHelper.getMD5SumOfFile(outputFile.getAbsolutePath());
 		generatedS3Path = generateS3MD5Path(md5Sum, fileExt);
-		s3Path = fileHelper.uploadFileToS3(s3AccessKey, s3SecretKey, s3Bucket, s3PathPrefix, generatedS3Path, outputFile);
+		s3Path = fileHelper.uploadFileToS3(s3Bucket, s3PathPrefix, generatedS3Path, outputFile);
 		history.setPdfFilePath(s3Path);
 		Log.info("Cleanup file: " + outputFile.getAbsolutePath());
 		outputFile.delete();
