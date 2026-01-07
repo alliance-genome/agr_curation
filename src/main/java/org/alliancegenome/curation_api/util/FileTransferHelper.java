@@ -9,19 +9,25 @@ import java.net.URL;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
+import org.eclipse.microprofile.config.Config;
+import org.eclipse.microprofile.config.ConfigProvider;
 import org.jboss.resteasy.plugins.providers.multipart.InputPart;
 import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataInput;
 import org.jsoup.Connection.Response;
 import org.jsoup.Jsoup;
 
+import com.amazonaws.auth.AWSCredentialsProvider;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.auth.InstanceProfileCredentialsProvider;
+import com.amazonaws.auth.profile.ProfileCredentialsProvider;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
@@ -30,6 +36,7 @@ import com.amazonaws.services.s3.transfer.TransferManager;
 import com.amazonaws.services.s3.transfer.TransferManagerBuilder;
 import com.amazonaws.services.s3.transfer.Upload;
 
+import io.quarkus.logging.Log;
 import lombok.extern.jbosslog.JBossLog;
 
 @JBossLog
@@ -121,13 +128,13 @@ public class FileTransferHelper {
 
 	}
 
-	public File downloadFileFromS3(String aWSAccessKey, String aWSSecretKey, String bucket, String fullS3Path) {
+	public File downloadFileFromS3(String bucket, String fullS3Path) {
 
 		File localOutFile = generateFilePath();
 
 		try {
 			log.info("Download file From S3: " + "s3://" + bucket + "/" + fullS3Path + " -> " + localOutFile.getAbsolutePath());
-			AmazonS3 s3 = AmazonS3ClientBuilder.standard().withCredentials(new AWSStaticCredentialsProvider(new BasicAWSCredentials(aWSAccessKey, aWSSecretKey))).withRegion(Regions.US_EAST_1).build();
+			AmazonS3 s3 = AmazonS3ClientBuilder.standard().withCredentials(new InstanceProfileCredentialsProvider(false)).withRegion(Regions.US_EAST_1).build();
 			TransferManager tm = TransferManagerBuilder.standard().withS3Client(s3).build();
 			final Download downloadFile = tm.download(bucket, fullS3Path, localOutFile);
 			downloadFile.waitForCompletion();
@@ -142,11 +149,11 @@ public class FileTransferHelper {
 		}
 	}
 
-	public String uploadFileToS3(String aWSAccessKey, String aWSSecretKey, String bucket, String prefix, String path, File inFile) {
+	public String uploadFileToS3(String bucket, String prefix, String path, File inFile) {
 		try {
 			String fullS3Path = prefix + "/" + path;
 			log.info("Uploading file to S3: " + inFile.getAbsolutePath() + " -> s3://" + bucket + "/" + fullS3Path);
-			AmazonS3 s3 = AmazonS3ClientBuilder.standard().withCredentials(new AWSStaticCredentialsProvider(new BasicAWSCredentials(aWSAccessKey, aWSSecretKey))).withRegion(Regions.US_EAST_1).build();
+			AmazonS3 s3 = AmazonS3ClientBuilder.standard().withCredentials(new InstanceProfileCredentialsProvider(false)).withRegion(Regions.US_EAST_1).build();
 			TransferManager tm = TransferManagerBuilder.standard().withS3Client(s3).build();
 			final Upload uploadFile = tm.upload(bucket, fullS3Path, inFile);
 			uploadFile.waitForCompletion();
@@ -159,6 +166,23 @@ public class FileTransferHelper {
 			return null;
 		}
 	}
+	
+	private AWSCredentialsProvider getCredentials() {
+		Optional<String> aws_profile = ConfigProvider.getConfig().getOptionalValue("bulk.data.loads.aws.profile", String.class);
+		Config config = ConfigProvider.getConfig();
+		String accessKey = config.getValue("bulk.data.loads.s3AccessKey", String.class);
+		String secretKey = config.getValue("bulk.data.loads.s3SecretKey", String.class);
+		if(aws_profile.isPresent() && aws_profile.get() != null) {
+			Log.info("Default AWS Profile: " + aws_profile.get());
+			String profile = aws_profile.get();
+			return new ProfileCredentialsProvider(profile);
+		} else if (accessKey != null) {
+			return new AWSStaticCredentialsProvider(new BasicAWSCredentials(accessKey, secretKey));
+		} else {
+			return new InstanceProfileCredentialsProvider(false);
+		}
+	}
+	
 
 	private File generateFilePath() {
 		return new File(generateUniqueFileName());
