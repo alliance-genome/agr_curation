@@ -168,13 +168,13 @@ public class FileTransferHelper {
 	}
 	
 	private AWSCredentialsProvider getCredentials() {
-		Optional<String> aws_profile = ConfigProvider.getConfig().getOptionalValue("bulk.data.loads.aws.profile", String.class);
+		Optional<String> awsProfile = ConfigProvider.getConfig().getOptionalValue("bulk.data.loads.aws.profile", String.class);
 		Config config = ConfigProvider.getConfig();
 		String accessKey = config.getValue("bulk.data.loads.s3AccessKey", String.class);
 		String secretKey = config.getValue("bulk.data.loads.s3SecretKey", String.class);
-		if (aws_profile.isPresent() && aws_profile.get() != null) {
-			Log.info("Default AWS Profile: " + aws_profile.get());
-			String profile = aws_profile.get();
+		if (awsProfile.isPresent() && awsProfile.get() != null) {
+			Log.info("Default AWS Profile: " + awsProfile.get());
+			String profile = awsProfile.get();
 			return new ProfileCredentialsProvider(profile);
 		} else if (accessKey != null) {
 			return new AWSStaticCredentialsProvider(new BasicAWSCredentials(accessKey, secretKey));
