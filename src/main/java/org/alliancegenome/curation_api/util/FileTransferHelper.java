@@ -134,7 +134,7 @@ public class FileTransferHelper {
 
 		try {
 			log.info("Download file From S3: " + "s3://" + bucket + "/" + fullS3Path + " -> " + localOutFile.getAbsolutePath());
-			AmazonS3 s3 = AmazonS3ClientBuilder.standard().withCredentials(new InstanceProfileCredentialsProvider(false)).withRegion(Regions.US_EAST_1).build();
+			AmazonS3 s3 = AmazonS3ClientBuilder.standard().withCredentials(getCredentials()).withRegion(Regions.US_EAST_1).build();
 			TransferManager tm = TransferManagerBuilder.standard().withS3Client(s3).build();
 			final Download downloadFile = tm.download(bucket, fullS3Path, localOutFile);
 			downloadFile.waitForCompletion();
@@ -153,7 +153,7 @@ public class FileTransferHelper {
 		try {
 			String fullS3Path = prefix + "/" + path;
 			log.info("Uploading file to S3: " + inFile.getAbsolutePath() + " -> s3://" + bucket + "/" + fullS3Path);
-			AmazonS3 s3 = AmazonS3ClientBuilder.standard().withCredentials(new InstanceProfileCredentialsProvider(false)).withRegion(Regions.US_EAST_1).build();
+			AmazonS3 s3 = AmazonS3ClientBuilder.standard().withCredentials(getCredentials()).withRegion(Regions.US_EAST_1).build();
 			TransferManager tm = TransferManagerBuilder.standard().withS3Client(s3).build();
 			final Upload uploadFile = tm.upload(bucket, fullS3Path, inFile);
 			uploadFile.waitForCompletion();
