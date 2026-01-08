@@ -32,13 +32,13 @@ public class AuditedObjectValidator<E extends AuditedObject> extends BaseValidat
 			createdBy.getOldEmails().size();
 			dbEntity.setCreatedBy(createdBy);
 		} else if (newEntity) {
-			Person createdBy = personService.findPersonByOktaEmail(authenticatedPerson.getOktaEmail());
+			Person createdBy = personService.findPersonByAuthenticationEmail(authenticatedPerson.getAuthEmail());
 			createdBy.getEmails().size();
 			createdBy.getOldEmails().size();
 			dbEntity.setCreatedBy(createdBy);
 		}
 
-		Person updatedBy = personService.findPersonByOktaEmail(authenticatedPerson.getOktaEmail());
+		Person updatedBy = personService.findPersonByAuthenticationEmail(authenticatedPerson.getAuthEmail());
 		dbEntity.setUpdatedBy(updatedBy);
 
 		dbEntity.setDateUpdated(OffsetDateTime.now());

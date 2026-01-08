@@ -7,17 +7,19 @@ import { Message } from 'primereact/message';
 import { ProgressBar } from 'primereact/progressbar';
 import { useCopyToClipboard } from './hooks/useCopyToClipboard';
 import { useApiVersion, useUserInfo } from './service/SiteQueryHooks';
-import { useOktaAuth } from '@okta/okta-react';
+import { useAuth } from './hooks/useAuth';
 
 export const AppTopbar = (props) => {
 	const menu = useRef(null);
 	const [processingEvent, setProcessingEvent] = useState(null);
-	const { authState } = useOktaAuth();
+	const { authState } = useAuth();
+	const [cognitoToken] = useState(JSON.parse(localStorage.getItem('cognito-token-storage')));
 
 	const { data: userInfo } = useUserInfo(authState);
 	const { data: apiVersion } = useApiVersion(authState);
 
 	const apiToken = userInfo?.apiToken;
+	const cognitoAccessToken = cognitoToken?.accessToken?.accessToken;
 	const { copy, copied } = useCopyToClipboard();
 
 	var loc = window.location,
@@ -103,7 +105,14 @@ export const AppTopbar = (props) => {
 					label: copied ? 'Copied!' : 'Copy API Token',
 					icon: 'pi pi-copy',
 					command: () => {
-						copy(apiToken);
+						copy(`APIToken ${apiToken}`);
+					},
+				},
+				{
+					label: copied ? 'Copied!' : 'Copy GraphQL Token',
+					icon: 'pi pi-copy',
+					command: () => {
+						copy(`{ "Authorization": "Bearer ${cognitoAccessToken}"}`);
 					},
 				},
 				{
