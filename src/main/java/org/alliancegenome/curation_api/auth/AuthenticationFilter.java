@@ -66,6 +66,10 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 	private static final String USER_FIRST_NAME_FIELD = "given_name";
 	private static final String USER_LAST_NAME_FIELD = "family_name";
 
+	private static final String ADMIN_CLIENTID_FIELD = "client_id";
+	private static final String ADMIN_SCOPE_FIELD = "scope";
+	private static final String ADMIN_SCOPE_VALUE = "curation-api/admin";
+
 	private static final String ALLIANCE_MEMBER_FIELD = "custom:allianceMember";
 
 	private static final String AUTHENTICATION_BEARER = "Bearer";
@@ -198,10 +202,10 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 
 	private Person validateAdminToken() {
 
-		String cognitoClientId = (String) jsonWebToken.getClaim("client_id");
-		String scope = (String) jsonWebToken.getClaim("scope");
+		String cognitoClientId = (String) jsonWebToken.getClaim(ADMIN_CLIENTID_FIELD);
+		String scope = (String) jsonWebToken.getClaim(ADMIN_SCOPE_FIELD);
 
-		if (cognitoClientId != null && !cognitoClientId.isEmpty() && !scope.isEmpty() && scope.equals("curation-api/admin")) {
+		if (cognitoClientId != null && !cognitoClientId.isEmpty() && !scope.isEmpty() && scope.equals(ADMIN_SCOPE_VALUE)) {
 
 			Person authenticatedUser = personService.findPersonByAuthenticationId(cognitoClientId);
 
