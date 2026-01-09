@@ -4,21 +4,21 @@ export class BaseAuthService {
 	api;
 
 	constructor() {
-		let cognitoTokenStorage = localStorage.getItem('cognito-token-storage');
-		let accessToken;
+		let cognitoToken;
 
 		try {
-			accessToken = JSON.parse(cognitoTokenStorage).accessToken;
+			cognitoToken = JSON.parse(localStorage.getItem('cognito-token-storage'));
 		} catch (e) {
 			console.warn(e);
-			accessToken = undefined;
+			cognitoToken = undefined;
 		}
 
-		if (accessToken) {
+		if (cognitoToken && cognitoToken.accessToken && cognitoToken.idToken) {
 			this.api = axios.create({
 				baseURL: '/api',
 				headers: {
-					Authorization: `${accessToken.tokenType} ${accessToken.accessToken}`,
+					Authorization: `${cognitoToken.accessToken.tokenType} ${cognitoToken.accessToken.accessToken}`,
+					SiteIdentity: `${cognitoToken.idToken.idToken}`,
 				},
 			});
 		} else {

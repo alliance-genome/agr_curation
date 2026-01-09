@@ -14,7 +14,8 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.jwt.JsonWebToken;
 
 import io.quarkus.logging.Log;
-import io.quarkus.oidc.UserInfo;
+import io.smallrye.jwt.auth.principal.JWTParser;
+import io.smallrye.jwt.auth.principal.ParseException;
 import jakarta.annotation.Priority;
 import jakarta.enterprise.event.Event;
 import jakarta.enterprise.inject.Instance;
@@ -49,22 +50,31 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 	JsonWebToken jsonWebToken;
 
 	@Inject
+	JWTParser parser;
+
+	@Inject
 	PersonService personService;
 
 	@Inject
 	PersonUniqueIdHelper loggedInPersonUniqueId;
 
-	@Inject
-	Instance<UserInfo> userInfoInstance;
-
 	@ConfigProperty(name = "curation.authentication.enabled")
 	Instance<Boolean> curationAuthenticationEnabled;
 
 	private static final String USER_ID_FIELD = "username";
+	private static final String USER_EMAIL_FIELD = "email";
+	private static final String USER_FIRST_NAME_FIELD = "given_name";
+	private static final String USER_LAST_NAME_FIELD = "family_name";
+
+	private static final String ADMIN_CLIENTID_FIELD = "client_id";
+	private static final String ADMIN_SCOPE_FIELD = "scope";
+	private static final String ADMIN_SCOPE_VALUE = "curation-api/admin";
+
 	private static final String ALLIANCE_MEMBER_FIELD = "custom:allianceMember";
 
 	private static final String AUTHENTICATION_BEARER = "Bearer";
 	private static final String AUTHENTICATION_APITOKEN = "APIToken";
+	private static final String HTTPHEADER_SITE_IDENTITY = "SiteIdentity";
 
 	@Override
 	public void filter(ContainerRequestContext requestContext) throws IOException {
@@ -72,16 +82,15 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 		// Log.info("Security Filter Firing: ");
 		// Log.info("Token: " + jsonWebToken);
 		// Log.info("Claim Names: " + jsonWebToken.getClaimNames());
-		// Log.info("User Info: " + userInfoInstance.get());
 
 		if (jsonWebToken.getClaimNames() != null) {
-			Person person = validateUserTokenById(); // Does not require userinfo
+			Person person = validateUserTokenById(); // Does not require id token
 
 			if (person == null) {
-				person = validateUserTokenByEmail(); // Requires user info
+				person = validateUserTokenByUsernameLookup(requestContext); // Requires id token
 			}
 			if (person == null) {
-				person = validateAdminToken(); // Does not require userinfo
+				person = validateAdminToken(); // Does not require id token
 			}
 			if (person != null) {
 				userAuthenticatedEvent.fire(person);
@@ -134,63 +143,69 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 		if (jsonWebToken.getClaim(USER_ID_FIELD) == null) {
 			return null;
 		}
-		return personService.findPersonByAuthenticationId(jsonWebToken.getClaim(USER_ID_FIELD));
+		Person person = personService.findPersonByAuthenticationId(jsonWebToken.getClaim(USER_ID_FIELD));
+		if (person != null) {
+			Log.info("Person Found in the db: " + person.getFirstName() + " " + person.getLastName());
+		}
+		return person;
 	}
 
-	private Person validateUserTokenByEmail() {
+	private Person validateUserTokenByUsernameLookup(ContainerRequestContext requestContext) {
 
-		if (!userInfoInstance.isResolvable()) {
-			Log.info("User info not injected");
+		if (jsonWebToken.getClaim(USER_ID_FIELD) == null) {
 			return null;
 		}
 
-		UserInfo userInfo = userInfoInstance.get();
+		String siteIdentityHeader = requestContext.getHeaderString(HTTPHEADER_SITE_IDENTITY);
 
-		if (userInfo.getJsonObject() == null) {
-			Log.info("User info not present in token");
-			return null;
-		}
+		if (siteIdentityHeader != null && siteIdentityHeader.length() > 0) {
 
-		String authEmail = userInfo.getEmail();
-		String firstName = userInfo.getName();
-		String lastName = userInfo.getFamilyName();
+			try {
+				JsonWebToken jwt = parser.parseOnly(siteIdentityHeader);
 
-		Person authenticatedUser = personService.findPersonByAuthenticationEmail(authEmail);
+				Person authenticatedUser = personService.findPersonByAuthenticationEmail(jwt.getClaim(USER_EMAIL_FIELD));
 
-		if (authenticatedUser != null) {
+				if (authenticatedUser != null) {
 
-			authenticatedUser.setAuthId(userInfo.getString(USER_ID_FIELD));
-			if (authenticatedUser.getAllianceMember() == null) {
-				authenticatedUser.setAllianceMember(getAllianceMember(userInfo.getString(ALLIANCE_MEMBER_FIELD)));
+					authenticatedUser.setAuthId(jwt.getSubject());
+					if (authenticatedUser.getAllianceMember() == null) {
+						authenticatedUser.setAllianceMember(getAllianceMember(jwt.getClaim(ALLIANCE_MEMBER_FIELD)));
+					}
+					personDAO.merge(authenticatedUser);
+					return authenticatedUser;
+				} else {
+					Log.info("authenticatedUser not found");
+				}
+
+				authenticatedUser = new Person();
+				authenticatedUser.setApiToken(UUID.randomUUID().toString());
+				authenticatedUser.setAuthId(jwt.getSubject());
+				authenticatedUser.setAllianceMember(getAllianceMember(jwt.getClaim(ALLIANCE_MEMBER_FIELD)));
+				authenticatedUser.setAuthEmail(jwt.getClaim(USER_EMAIL_FIELD));
+				authenticatedUser.setFirstName(jwt.getClaim(USER_FIRST_NAME_FIELD));
+				authenticatedUser.setLastName(jwt.getClaim(USER_LAST_NAME_FIELD));
+				authenticatedUser.setUniqueId(loggedInPersonUniqueId.createLoggedInPersonUniqueId(authenticatedUser));
+
+				personDAO.persist(authenticatedUser);
+
+				return authenticatedUser;
+
+			} catch (ParseException e) {
+				e.printStackTrace();
 			}
-			personDAO.merge(authenticatedUser);
-			return authenticatedUser;
-		} else {
-			Log.info("authenticatedUser not found");
+
 		}
 
-		authenticatedUser = new Person();
-		authenticatedUser.setApiToken(UUID.randomUUID().toString());
-		authenticatedUser.setAuthId(jsonWebToken.getClaim(USER_ID_FIELD));
-		authenticatedUser.setAllianceMember(getAllianceMember(userInfo.getString(ALLIANCE_MEMBER_FIELD)));
-		authenticatedUser.setAuthEmail(authEmail);
-		authenticatedUser.setFirstName(firstName);
-		authenticatedUser.setLastName(lastName);
-		authenticatedUser.setUniqueId(loggedInPersonUniqueId.createLoggedInPersonUniqueId(authenticatedUser));
+		return null;
 
-		personDAO.persist(authenticatedUser);
-
-		return authenticatedUser;
 	}
 
-	// Can this be done in AWS since both applications are there?
 	private Person validateAdminToken() {
 
-		// Log.info("JWT: " + jsonWebToken);
+		String cognitoClientId = (String) jsonWebToken.getClaim(ADMIN_CLIENTID_FIELD);
+		String scope = (String) jsonWebToken.getClaim(ADMIN_SCOPE_FIELD);
 
-		String cognitoClientId = (String) jsonWebToken.getClaim("client_id");
-
-		if (cognitoClientId != null && !cognitoClientId.isEmpty()) {
+		if (cognitoClientId != null && !cognitoClientId.isEmpty() && !scope.isEmpty() && scope.equals(ADMIN_SCOPE_VALUE)) {
 
 			Person authenticatedUser = personService.findPersonByAuthenticationId(cognitoClientId);
 
