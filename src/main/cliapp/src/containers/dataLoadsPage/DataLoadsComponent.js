@@ -8,7 +8,7 @@ import { Toast } from 'primereact/toast';
 import { Dialog } from 'primereact/dialog';
 import { ProgressBar } from 'primereact/progressbar';
 
-import { useOktaAuth } from '@okta/okta-react';
+import { useAuth } from '../../hooks/useAuth';
 import { SearchService } from '../../service/SearchService';
 import { DataLoadService } from '../../service/DataLoadService';
 import { DataSubmissionService } from '../../service/DataSubmissionService';
@@ -25,7 +25,7 @@ import { StickyHeader } from '../../components/StickyHeader';
 import { Splitter, SplitterPanel } from 'primereact/splitter';
 
 export const DataLoadsComponent = () => {
-	const { authState } = useOktaAuth();
+	const { authState } = useAuth();
 
 	const bulkLoadReducer = (state, action) => {
 		switch (action.type) {

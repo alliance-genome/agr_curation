@@ -31,8 +31,6 @@ public class BulkLoadProcessor {
 
 	@ConfigProperty(name = "bulk.data.loads.s3Bucket") String s3Bucket;
 	@ConfigProperty(name = "bulk.data.loads.s3PathPrefix") String s3PathPrefix;
-	@ConfigProperty(name = "bulk.data.loads.s3AccessKey") String s3AccessKey;
-	@ConfigProperty(name = "bulk.data.loads.s3SecretKey") String s3SecretKey;
 
 	@Inject DataFileService fmsDataFileService;
 
@@ -61,7 +59,7 @@ public class BulkLoadProcessor {
 		Log.info("Starting Syncing with S3: Local File: " + bulkLoadFile.getLocalFilePath() + " S3 File: " + bulkLoadFile.getS3Path());
 
 		if ((bulkLoadFile.getS3Path() != null || bulkLoadFile.generateS3MD5Path(bulkLoad) != null) && bulkLoadFile.getLocalFilePath() == null) {
-			File outfile = fileHelper.downloadFileFromS3(s3AccessKey, s3SecretKey, s3Bucket, bulkLoadFile.getS3Path());
+			File outfile = fileHelper.downloadFileFromS3(s3Bucket, bulkLoadFile.getS3Path());
 			if (outfile != null) {
 				// log.info(outfile + " is of size: " + outfile.length());
 				bulkLoadFile.setFileSize(outfile.length());
@@ -78,10 +76,8 @@ public class BulkLoadProcessor {
 			// log.info("Saving File: " + bulkLoadFile);
 			
 		} else if (bulkLoadFile.getS3Path() == null && bulkLoadFile.getLocalFilePath() != null) {
-			if (s3AccessKey != null && s3AccessKey.length() > 0) {
-				String s3Path = fileHelper.uploadFileToS3(s3AccessKey, s3SecretKey, s3Bucket, s3PathPrefix, bulkLoadFile.generateS3MD5Path(bulkLoad), new File(bulkLoadFile.getLocalFilePath()));
-				bulkLoadFile.setS3Path(s3Path);
-			}
+			String s3Path = fileHelper.uploadFileToS3(s3Bucket, s3PathPrefix, bulkLoadFile.generateS3MD5Path(bulkLoad), new File(bulkLoadFile.getLocalFilePath()));
+			bulkLoadFile.setS3Path(s3Path);
 			bulkLoadFileDAO.merge(bulkLoadFile);
 		} else if (bulkLoadFile.getS3Path() == null && bulkLoadFile.getLocalFilePath() == null) {
 			bulkLoadFileHistory.setErrorMessage("Failed to download or upload file with S3 Path: " + s3PathPrefix + "/" + bulkLoadFile.generateS3MD5Path(bulkLoad) + " Local and remote file missing");

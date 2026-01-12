@@ -21,8 +21,8 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.GenericFie
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmbedded;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexingDependency;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.KeywordField;
-
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 
 import jakarta.persistence.Column;
@@ -32,6 +32,7 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -40,7 +41,7 @@ import lombok.ToString;
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(callSuper = true)
-@AGRCurationSchemaVersion(min = "2.7.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AuditedObject.class })
+@AGRCurationSchemaVersion(min = "2.7.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = {AuditedObject.class})
 @Schema(name = "PredictedVariantConsequence", description = "POJO representing VEP predicted variant consequence results")
 @Table(indexes = {
 	@Index(name = "predictedvariantconsequence_varianttranscript_index", columnList = "varianttranscript_id"),
@@ -58,113 +59,141 @@ public class PredictedVariantConsequence extends AuditedObject {
 	@ManyToOne
 	@JsonBackReference
 	private CuratedVariantGenomicLocationAssociation variantGenomicLocation;
-	
+
 	@IndexedEmbedded(includePaths = {"name", "name_keyword", "curie", "curie_keyword", "primaryExternalId", "primaryExternalId_keyword", "modInternalId", "modInternalId_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@JsonView({ View.FieldsOnly.class })
+	@JsonView({View.FieldsOnly.class})
 	private Transcript variantTranscript;
-	
+
 	@IndexedEmbedded(includePaths = {"name", "name_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@JsonView({ View.FieldsOnly.class })
+	@JsonView({View.FieldsOnly.class})
 	private VocabularyTerm vepImpact;
-	
+
 	@IndexedEmbedded(includePaths = {"curie", "name", "secondaryIdentifiers", "synonyms.name", "namespace",
-			"curie_keyword", "name_keyword", "secondaryIdentifiers_keyword", "synonyms.name_keyword", "namespace_keyword" })
+		"curie_keyword", "name_keyword", "secondaryIdentifiers_keyword", "synonyms.name_keyword", "namespace_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
 	@JoinTable(indexes = {
 		@Index(name = "predictedvariantconsequence_ontologyterm_pvc_index", columnList = "predictedvariantconsequence_id"),
 		@Index(name = "predictedvariantconsequence_ontologyterm_vc_index", columnList = "vepconsequences_id")
 	})
-	@JsonView({ View.FieldsAndLists.class, View.VariantView.class })
+	@JsonView({View.FieldsAndLists.class, View.VariantView.class})
 	private List<SOTerm> vepConsequences;
-	
+
 	@IndexedEmbedded(includePaths = {"name", "name_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@JsonView({ View.FieldsOnly.class })
+	@JsonView({View.FieldsOnly.class})
 	private VocabularyTerm polyphenPrediction;
-	
+
 	@GenericField(projectable = Projectable.YES, sortable = Sortable.YES)
-	@JsonView({ View.FieldsOnly.class })
+	@JsonView({View.FieldsOnly.class})
 	private Float polyphenScore;
-	
+
 	@IndexedEmbedded(includePaths = {"name", "name_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@JsonView({ View.FieldsOnly.class })
+	@JsonView({View.FieldsOnly.class})
 	private VocabularyTerm siftPrediction;
-	
+
 	@GenericField(projectable = Projectable.YES, sortable = Sortable.YES)
-	@JsonView({ View.FieldsOnly.class })
+	@JsonView({View.FieldsOnly.class})
 	private Float siftScore;
-	
+
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "aminoAcidReference_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({ View.FieldsOnly.class })
+	@JsonView({View.FieldsOnly.class})
 	@Column(columnDefinition = "TEXT")
 	private String aminoAcidReference;
-	
+
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "aminoAcidVariant_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({ View.FieldsOnly.class })
+	@JsonView({View.FieldsOnly.class})
 	@Column(columnDefinition = "TEXT")
 	private String aminoAcidVariant;
-	
+
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "codonReference_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({ View.FieldsOnly.class })
+	@JsonView({View.FieldsOnly.class})
 	@Column(columnDefinition = "TEXT")
 	private String codonReference;
-	
+
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "codonVariant_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({ View.FieldsOnly.class })
+	@JsonView({View.FieldsOnly.class})
 	@Column(columnDefinition = "TEXT")
 	private String codonVariant;
-	
+
 	@GenericField(projectable = Projectable.YES, sortable = Sortable.YES)
-	@JsonView({ View.FieldsOnly.class })
+	@JsonView({View.FieldsOnly.class})
 	private Integer calculatedCdnaStart;
-	
+
 	@GenericField(projectable = Projectable.YES, sortable = Sortable.YES)
-	@JsonView({ View.FieldsOnly.class })
+	@JsonView({View.FieldsOnly.class})
 	private Integer calculatedCdnaEnd;
-	
+
 	@GenericField(projectable = Projectable.YES, sortable = Sortable.YES)
-	@JsonView({ View.FieldsOnly.class })
+	@JsonView({View.FieldsOnly.class})
 	private Integer calculatedCdsStart;
-	
+
 	@GenericField(projectable = Projectable.YES, sortable = Sortable.YES)
-	@JsonView({ View.FieldsOnly.class })
+	@JsonView({View.FieldsOnly.class})
 	private Integer calculatedCdsEnd;
-	
+
 	@GenericField(projectable = Projectable.YES, sortable = Sortable.YES)
-	@JsonView({ View.FieldsOnly.class })
+	@JsonView({View.FieldsOnly.class})
 	private Integer calculatedProteinStart;
-	
+
 	@GenericField(projectable = Projectable.YES, sortable = Sortable.YES)
-	@JsonView({ View.FieldsOnly.class })
+	@JsonView({View.FieldsOnly.class})
 	private Integer calculatedProteinEnd;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "hgvsProteinNomenclature_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({ View.FieldsOnly.class })
+	@JsonView({View.FieldsOnly.class})
 	@Column(columnDefinition = "TEXT")
 	private String hgvsProteinNomenclature;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "hgvsCodingNomenclature_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({ View.FieldsOnly.class })
+	@JsonView({View.FieldsOnly.class})
 	@Column(columnDefinition = "TEXT")
 	private String hgvsCodingNomenclature;
 
+	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
+	@KeywordField(name = "introns_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
+	@JsonView({View.FieldsOnly.class})
+	@Transient
+	private String introns;
+
+	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
+	@KeywordField(name = "exons_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
+	@JsonView({View.FieldsOnly.class})
+	@Transient
+	private String exons;
+
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer", valueBridge = @ValueBridgeRef(type = BooleanValueBridge.class))
 	@KeywordField(name = "geneLevelConsequence_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, valueBridge = @ValueBridgeRef(type = BooleanValueBridge.class))
-	@JsonView({ View.FieldsOnly.class })
+	@JsonView({View.FieldsOnly.class})
 	@Column(columnDefinition = "boolean default false", nullable = false)
 	private Boolean geneLevelConsequence = false;
+
+	@Transient
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
+	@JsonView({View.FieldsOnly.class, View.VariantView.class})
+	public String getIntronExonLocation() {
+		if (exons == null && introns == null) {
+			return null;
+		}
+		if (introns == null) {
+			return "Exon " + exons;
+		}
+		if (exons == null) {
+			return "Intron " + introns;
+		}
+		return "Exon " + exons + " : " + "Intron " + introns;
+	}
 }

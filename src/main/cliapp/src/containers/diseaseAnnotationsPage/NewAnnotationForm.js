@@ -105,8 +105,8 @@ export const NewAnnotationForm = ({
 		'Genetic Modifier Genes',
 		'Internal',
 	];
-	const oktaToken = JSON.parse(localStorage.getItem('okta-token-storage'));
-	const mod = oktaToken?.accessToken?.claims?.Groups?.filter((group) => group.includes('Staff'));
+	const cognitoToken = JSON.parse(localStorage.getItem('cognito-token-storage'));
+	const mod = cognitoToken?.accessToken?.payload?.['cognito:groups']?.filter((group) => group.includes('Staff'));
 	let defaultUserSettings = getDefaultFormState('DiseaseAnnotations', newAnnotationOptionalFields, undefined);
 	const { settings: settingsKey, mutate: setSettingsKey } = useGetUserSettings(
 		'DiseaseAnnotationsFormSettings',
