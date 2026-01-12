@@ -4,7 +4,11 @@ https://agr-jira.atlassian.net/wiki/spaces/ATEAM/overview
 
 ## v0.45.0
 * New features:
-	* Migrate A-Team curation system from Okta authentication to AWS Cognito (SCRUM-5606)
+  * Migrate A-Team curation system from Okta authentication to AWS Cognito (SCRUM-5606)
+  * UI vulnerability fixes by @adamgibs in https://github.com/alliance-genome/agr_curation/pull/2352
+  * Added code for admin tokens, Added code to fix admin tokens and use ID tokens (SCRUM-5641)
+  * add exon/intron info to PredictdVariantConsequence entity (SCRUM-5666)
+  * Update code to use machine profile vs secrets keys (SCRUM-5662)
 
 ## v0.44.0
 * New features:
