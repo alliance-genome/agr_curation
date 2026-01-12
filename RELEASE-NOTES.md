@@ -2,6 +2,10 @@
  
 https://agr-jira.atlassian.net/wiki/spaces/ATEAM/overview
 
+## v0.45.0
+* New features:
+	* Migrate A-Team curation system from Okta authentication to AWS Cognito (SCRUM-5606)
+
 ## v0.44.0
 * New features:
   * Omit MGI construct symbols from display based on placeholder=true flag (SCRUM-5553)
