@@ -393,22 +393,23 @@ public abstract class BaseOntologyTermService<E extends OntologyTerm, D extends 
 		}
 	}
 
-	public <T extends OntologyTerm> T findSubsetTerm(T childTerm, String subsetName) {
-		//Log.info(childTerm + " " + subsetName);
+	public <T extends OntologyTerm> List<T> findSubsetTerms(T childTerm, String subsetName) {
+		List<T> subsetTermList = new ArrayList<>();
 		if (childTerm.getSubsets().contains(subsetName)) {
-			return childTerm;
+			subsetTermList.add(childTerm);
 		}
-		//Log.info("getAncestors: " + childTerm.getAncestors());
+
 		for (OntologyTermClosure closure : childTerm.getAncestors()) {
 			if (closure.getClosureSubject().getSubsets().contains(subsetName)) {
-				return (T) closure.getClosureSubject();
+				subsetTermList.add((T) closure.getClosureSubject());
 			}
 			if (closure.getClosureObject().getSubsets().contains(subsetName)) {
-				return (T) closure.getClosureObject();
+				subsetTermList.add((T) closure.getClosureObject());
 			}
 		}
-		return null;
+		return subsetTermList.isEmpty() ? null : subsetTermList;
 	}
+
 
 	private void updateSynonym(Synonym oldSyn, Synonym newSyn) {
 		oldSyn.setName(newSyn.getName());

@@ -359,7 +359,7 @@ public class VariantFmsDTOValidator {
 				} else {
 					if (CollectionUtils.isNotEmpty(allele.getAlleleVariantAssociations())) {
 						for (AlleleVariantAssociation existingAssociation : allele.getAlleleVariantAssociations()) {
-							if (Objects.equals(dto.getAlleleId(), existingAssociation.getAlleleAssociationSubject().getPrimaryExternalId())) {
+							if (Objects.equals(variantId, existingAssociation.getAlleleVariantAssociationObject().getId())) {
 								association = alleleVariantAssociationDAO.find(existingAssociation.getId());
 								break;
 							}

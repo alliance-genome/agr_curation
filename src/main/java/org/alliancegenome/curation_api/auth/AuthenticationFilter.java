@@ -13,16 +13,9 @@ import org.alliancegenome.curation_api.services.helpers.PersonUniqueIdHelper;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.jwt.JsonWebToken;
 
-import com.okta.sdk.authc.credentials.TokenClientCredentials;
-import com.okta.sdk.client.Client;
-import com.okta.sdk.client.Clients;
-import com.okta.sdk.resource.application.Application;
-import com.okta.sdk.resource.group.Group;
-import com.okta.sdk.resource.group.GroupList;
-import com.okta.sdk.resource.user.User;
-
 import io.quarkus.logging.Log;
-import io.quarkus.scheduler.Scheduled;
+import io.smallrye.jwt.auth.principal.JWTParser;
+import io.smallrye.jwt.auth.principal.ParseException;
 import jakarta.annotation.Priority;
 import jakarta.enterprise.event.Event;
 import jakarta.enterprise.inject.Instance;
@@ -45,9 +38,6 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 	Event<Person> userAuthenticatedEvent;
 
 	@Inject
-	AuthenticationService authenticationService;
-
-	@Inject
 	PersonDAO personDAO;
 
 	@Inject
@@ -60,39 +50,47 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 	JsonWebToken jsonWebToken;
 
 	@Inject
+	JWTParser parser;
+
+	@Inject
 	PersonService personService;
 
 	@Inject
 	PersonUniqueIdHelper loggedInPersonUniqueId;
 
-	@ConfigProperty(name = "okta.authentication")
-	Instance<Boolean> oktaAuth;
+	@ConfigProperty(name = "curation.authentication.enabled")
+	Instance<Boolean> curationAuthenticationEnabled;
 
-	@ConfigProperty(name = "okta.url")
-	Instance<String> oktaUrl;
+	private static final String USER_ID_FIELD = "username";
+	private static final String USER_EMAIL_FIELD = "email";
+	private static final String USER_FIRST_NAME_FIELD = "given_name";
+	private static final String USER_LAST_NAME_FIELD = "family_name";
 
-	@ConfigProperty(name = "okta.client.id")
-	Instance<String> clientId;
+	private static final String ADMIN_CLIENTID_FIELD = "client_id";
+	private static final String ADMIN_SCOPE_FIELD = "scope";
+	private static final String ADMIN_SCOPE_VALUE = "curation-api/admin";
 
-	@ConfigProperty(name = "okta.client.secret")
-	Instance<String> clientSecret;
-
-	@ConfigProperty(name = "okta.api.token")
-	Instance<String> apiToken;
+	private static final String ALLIANCE_MEMBER_FIELD = "custom:allianceMember";
 
 	private static final String AUTHENTICATION_BEARER = "Bearer";
 	private static final String AUTHENTICATION_APITOKEN = "APIToken";
+	private static final String HTTPHEADER_SITE_IDENTITY = "SiteIdentity";
 
 	@Override
 	public void filter(ContainerRequestContext requestContext) throws IOException {
+
+		// Log.info("Security Filter Firing: ");
+		// Log.info("Token: " + jsonWebToken);
+		// Log.info("Claim Names: " + jsonWebToken.getClaimNames());
+
 		if (jsonWebToken.getClaimNames() != null) {
-			Person person = validateUserTokenById();
-			
+			Person person = validateUserTokenById(); // Does not require id token
+
 			if (person == null) {
-				person = validateUserTokenByEmail();
+				person = validateUserTokenByUsernameLookup(requestContext); // Requires id token
 			}
 			if (person == null) {
-				person = validateAdminToken();
+				person = validateAdminToken(); // Does not require id token
 			}
 			if (person != null) {
 				userAuthenticatedEvent.fire(person);
@@ -100,7 +98,7 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 				failAuthentication(requestContext, AUTHENTICATION_BEARER);
 			}
 		} else {
-			if (oktaAuth.get()) {
+			if (curationAuthenticationEnabled.get()) {
 				String authorizationHeader = requestContext.getHeaderString(HttpHeaders.AUTHORIZATION);
 				String apiToken = null;
 				if (authorizationHeader != null && authorizationHeader.toLowerCase().startsWith(AUTHENTICATION_APITOKEN.toLowerCase())) {
@@ -125,12 +123,12 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 	}
 
 	private void loginDevUser() {
-		Log.debug("OKTA Authentication Disabled using Test Dev User");
-		Person authenticatedUser = personService.findPersonByOktaEmail("test@alliancegenome.org");
+		Log.info("Cognito Authentication Disabled using Test Dev User");
+		Person authenticatedUser = personService.findPersonByAuthenticationEmail("test@alliancegenome.org");
 		if (authenticatedUser == null) {
 			Person person = new Person();
 			person.setApiToken(UUID.randomUUID().toString());
-			person.setOktaEmail("test@alliancegenome.org");
+			person.setAuthEmail("test@alliancegenome.org");
 			person.setFirstName("Local");
 			person.setLastName("Dev User");
 			person.setUniqueId("Local|Dev User|test@alliancegenome.org");
@@ -142,114 +140,100 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 	}
 
 	private Person validateUserTokenById() {
-		if (jsonWebToken.getClaim("uid") != null) {
-			return personService.findPersonByOktaId(jsonWebToken.getClaim("uid"));
+		if (jsonWebToken.getClaim(USER_ID_FIELD) == null) {
+			return null;
 		}
-		return null;
+		Person person = personService.findPersonByAuthenticationId(jsonWebToken.getClaim(USER_ID_FIELD));
+		if (person != null) {
+			Log.info("Person Found in the db: " + person.getFirstName() + " " + person.getLastName());
+		}
+		return person;
 	}
 
-	// Check Okta(token), Check DB ApiToken(token), else return null
-	private Person validateUserTokenByEmail() {
+	private Person validateUserTokenByUsernameLookup(ContainerRequestContext requestContext) {
 
-		String oktaUserId = (String) jsonWebToken.getClaim("uid"); // User Id
+		if (jsonWebToken.getClaim(USER_ID_FIELD) == null) {
+			return null;
+		}
 
-		if (oktaUserId != null && oktaUserId.length() > 0) {
-			String oktaEmail = jsonWebToken.getSubject(); // Subject Id
+		String siteIdentityHeader = requestContext.getHeaderString(HTTPHEADER_SITE_IDENTITY);
 
-			Person authenticatedUser = personService.findPersonByOktaEmail(oktaEmail);
+		if (siteIdentityHeader != null && siteIdentityHeader.length() > 0) {
 
-			if (authenticatedUser != null) {
-				if (authenticatedUser.getAllianceMember() == null) {
-					User user = getOktaUser(oktaUserId);
-					authenticatedUser.setAllianceMember(getAllianceMember(user.listGroups()));
-					personDAO.persist(authenticatedUser);
+			try {
+				JsonWebToken jwt = parser.parseOnly(siteIdentityHeader);
+
+				Person authenticatedUser = personService.findPersonByAuthenticationEmail(jwt.getClaim(USER_EMAIL_FIELD));
+
+				if (authenticatedUser != null) {
+
+					authenticatedUser.setAuthId(jwt.getSubject());
+					if (authenticatedUser.getAllianceMember() == null) {
+						authenticatedUser.setAllianceMember(getAllianceMember(jwt.getClaim(ALLIANCE_MEMBER_FIELD)));
+					}
+					personDAO.merge(authenticatedUser);
+					return authenticatedUser;
+				} else {
+					Log.info("authenticatedUser not found");
 				}
+
+				authenticatedUser = new Person();
+				authenticatedUser.setApiToken(UUID.randomUUID().toString());
+				authenticatedUser.setAuthId(jwt.getSubject());
+				authenticatedUser.setAllianceMember(getAllianceMember(jwt.getClaim(ALLIANCE_MEMBER_FIELD)));
+				authenticatedUser.setAuthEmail(jwt.getClaim(USER_EMAIL_FIELD));
+				authenticatedUser.setFirstName(jwt.getClaim(USER_FIRST_NAME_FIELD));
+				authenticatedUser.setLastName(jwt.getClaim(USER_LAST_NAME_FIELD));
+				authenticatedUser.setUniqueId(loggedInPersonUniqueId.createLoggedInPersonUniqueId(authenticatedUser));
+
+				personDAO.persist(authenticatedUser);
+
 				return authenticatedUser;
+
+			} catch (ParseException e) {
+				e.printStackTrace();
 			}
 
-			Log.info("Making OKTA call to get user info: ");
-
-			User user = getOktaUser(oktaUserId);
-
-			if (user != null) {
-				Person person = new Person();
-				person.setApiToken(UUID.randomUUID().toString());
-				person.setOktaId(oktaUserId);
-				person.setAllianceMember(getAllianceMember(user.listGroups()));
-				person.setOktaEmail(user.getProfile().getEmail());
-				person.setFirstName(user.getProfile().getFirstName());
-				person.setLastName(user.getProfile().getLastName());
-				person.setUniqueId(loggedInPersonUniqueId.createLoggedInPersonUniqueId(person));
-				personDAO.persist(person);
-				return person;
-			}
 		}
 
 		return null;
+
 	}
 
 	private Person validateAdminToken() {
 
-		String oktaClientId = (String) jsonWebToken.getClaim("cid"); // Client Id
+		String cognitoClientId = (String) jsonWebToken.getClaim(ADMIN_CLIENTID_FIELD);
+		String scope = (String) jsonWebToken.getClaim(ADMIN_SCOPE_FIELD);
 
-		if (oktaClientId != null && oktaClientId.length() > 0) {
+		if (cognitoClientId != null && !cognitoClientId.isEmpty() && !scope.isEmpty() && scope.equals(ADMIN_SCOPE_VALUE)) {
 
-			Person authenticatedUser = personService.findPersonByOktaId(oktaClientId);
+			Person authenticatedUser = personService.findPersonByAuthenticationId(cognitoClientId);
 
 			if (authenticatedUser != null) {
+				Log.info("Cognito Authentication for Admin user via token");
 				return authenticatedUser;
 			}
 
-			Log.info("Making OKTA call to get app info: ");
-
-			Application app = getOktaClient(oktaClientId);
-
-			if (app != null) {
-				Log.debug("OKTA Authentication for Admin user via token");
-				String adminEmail = "admin@alliancegenome.org";
-				Person person = new Person();
-				person.setApiToken(UUID.randomUUID().toString());
-				person.setOktaId(app.getId());
-				person.setOktaEmail(adminEmail);
-				person.setFirstName(app.getLabel());
-				person.setLastName(app.getName());
-				person.setUniqueId(app.getLabel() + "|" + app.getName() + "|" + adminEmail);
-				personDAO.persist(person);
-				return person;
-			}
+			Log.info("Creating admin user for client_id: " + cognitoClientId);
+			String adminEmail = "admin@alliancegenome.org";
+			Person person = new Person();
+			person.setApiToken(UUID.randomUUID().toString());
+			person.setAuthId(cognitoClientId);
+			person.setAuthEmail(adminEmail);
+			person.setFirstName(cognitoClientId);
+			person.setLastName("AppClient");
+			person.setUniqueId(cognitoClientId + "|AppClient|" + adminEmail);
+			personDAO.persist(person);
+			return person;
 		}
 
 		return null;
 	}
 
-	private User getOktaUser(String oktaId) {
-		Client client = Clients.builder().setOrgUrl(oktaUrl.get()).setClientId(clientId.get()).setClientCredentials(new TokenClientCredentials(apiToken.get())).build();
-		return client.getUser(oktaId);
-	}
-
-	@Scheduled(cron = "0 0 2 ? * SUN")
-	public void rotateAPIKey() {
-		Application oktaApp = getOktaClient(clientId.get());
-		Log.info("Rotating Okta App API Key: " + oktaApp.getName() + " " + oktaApp.getLabel());
-	}
-
-	private Application getOktaClient(String applicationId) {
-		Client client = Clients.builder().setOrgUrl(oktaUrl.get()).setClientId(clientId.get()).setClientCredentials(new TokenClientCredentials(apiToken.get())).build();
-		return client.getApplication(applicationId);
-	}
-
-	private AllianceMember getAllianceMember(GroupList groupList) {
-		for (Group group : groupList) {
-			String allianceMember = (String) group.getProfile().get("affiliated_alliance_member");
-			if (allianceMember != null) {
-				SearchResponse<AllianceMember> res = allianceMemberDAO.findByField("abbreviation", allianceMember);
-				if (res.getResults().size() == 1) {
-					AllianceMember member = res.getResults().get(0);
-					return member;
-				} else {
-					Log.info("Alliance Look up error: more than one member found");
-				}
-			}
+	private AllianceMember getAllianceMember(String allianceMemberValue) {
+		SearchResponse<AllianceMember> res = allianceMemberDAO.findByField("abbreviation", allianceMemberValue);
+		if (res.getResults().size() == 1) {
+			return res.getResults().get(0);
 		}
 		return null;
 	}

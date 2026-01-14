@@ -6,12 +6,15 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
+
 import org.alliancegenome.curation_api.dao.GeneExpressionExperimentDAO;
 import org.alliancegenome.curation_api.model.document.es.GeneExpressionDocument;
 import org.alliancegenome.curation_api.model.entities.AnatomicalSite;
 import org.alliancegenome.curation_api.model.entities.GeneExpressionAnnotation;
 import org.alliancegenome.curation_api.model.entities.GeneExpressionExperiment;
 import org.alliancegenome.curation_api.model.entities.Reference;
+import org.alliancegenome.curation_api.model.entities.Synonym;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.helpers.UniqueIdGeneratorHelper;
@@ -28,11 +31,11 @@ public class GeneExpressionDocumentBuilder {
 
 	public static final String GO_CC_ROOT = "GO:0005575";
 
-	public static final String UBERON_ANATOMY_OTHER = "UBERON:AnatomyOtherLocation";
+	public static final String UBERON_ANATOMY_OTHER = "AnatomyOtherLocation";
 
-	public static final String UBERON__POST_EMBRYONIC_PRE_ADULT = "UBERON:PostEmbryonicPreAdult";
+	public static final String UBERON__POST_EMBRYONIC_PRE_ADULT = "PostEmbryonicPreAdult";
 
-	public static final String GO_CELLULAR_OTHER = "GO:otherLocations";
+	public static final String GO_CELLULAR_OTHER = "otherLocations";
 	
 	public GeneExpressionDocument buildDocument(GeneExpressionAnnotation annotation, Map<String, GeneExpressionExperiment> experimentsCache) {
 
@@ -94,8 +97,8 @@ public class GeneExpressionDocumentBuilder {
 			}
 
 			if (!whereExpressed.getCellularComponentOther()) {
-				if (ObjectUtils.isNotEmpty(whereExpressed.getCellularComponentRibbonTerm())) {
-					goTermIds.add(whereExpressed.getCellularComponentRibbonTerm().getCurie());
+				if (ObjectUtils.isNotEmpty(whereExpressed.getCellularComponentRibbonTerms())) {
+					goTermIds.addAll(whereExpressed.getCellularComponentRibbonTerms().stream().map(term -> term.getCurie()).collect(Collectors.toList()));
 					goTermIds.add(GO_CC_ROOT);
 					expressionDocument.setGoTermIds(goTermIds);
 				}
@@ -114,6 +117,12 @@ public class GeneExpressionDocumentBuilder {
 		}
 		expressionDocument.setPhylogeneticSortingIndex(annotation.getExpressionAnnotationSubject().getTaxon().getPhylogeneticSortOrder());
 		
+		if (annotation.getExpressionAssayUsed() != null) {
+			String assayName = annotation.getExpressionAssayUsed().getSynonyms().stream().filter(synonym -> synonym.getIsDisplaySynonym()).findFirst().map(Synonym::getName).orElse(null);
+			if (assayName != null) {
+				expressionDocument.getGeneExpressionAnnotation().getExpressionAssayUsed().setName(assayName);
+			}
+		}
 		return expressionDocument;
 
 	}

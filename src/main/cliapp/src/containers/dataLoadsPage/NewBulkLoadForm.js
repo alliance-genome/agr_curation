@@ -8,7 +8,7 @@ import { InputText } from 'primereact/inputtext';
 import { FMSForm } from './FMSForm';
 import { URLForm } from './URLForm';
 import { ManualForm } from './ManualForm';
-import { useOktaAuth } from '@okta/okta-react';
+import { useAuth } from '../../hooks/useAuth';
 import ErrorBoundary from '../../components/Error/ErrorBoundary';
 
 export const NewBulkLoadForm = ({
@@ -21,7 +21,7 @@ export const NewBulkLoadForm = ({
 	setDisableFormFields,
 	dataLoadService,
 }) => {
-	const { authState } = useOktaAuth();
+	const { authState } = useAuth();
 
 	const queryClient = useQueryClient();
 	const hideFMS = useRef(true);

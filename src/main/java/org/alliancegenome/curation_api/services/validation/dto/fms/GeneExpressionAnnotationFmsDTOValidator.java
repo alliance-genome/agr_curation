@@ -48,6 +48,7 @@ import org.alliancegenome.curation_api.services.ontology.StageTermService;
 import org.alliancegenome.curation_api.services.ontology.UberonTermService;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.Hibernate;
 
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
@@ -274,12 +275,12 @@ public class GeneExpressionAnnotationFmsDTOValidator {
 				if (cellularComponent == null) {
 					response.addErrorMessage("whereExpressed - cellularComponentTermId", ValidationConstants.INVALID_MESSAGE + " (" + whereExpressedDTO.getCellularComponentTermId() + ")");
 				} else {
-					GOTerm cellularComponentRibbon = goTermService.findSubsetTerm(cellularComponent, "goslim_agr");
-					if (cellularComponentRibbon == null) {
+					List<GOTerm> cellularComponentRibbons = goTermService.findSubsetTerms(cellularComponent, "goslim_agr");
+					if (cellularComponentRibbons == null) {
 						anatomicalSite.setCellularComponentOther(true);
 					} else {
 						anatomicalSite.setCellularComponentOther(false);
-						anatomicalSite.setCellularComponentRibbonTerm(cellularComponentRibbon);
+						anatomicalSite.setCellularComponentRibbonTerms(cellularComponentRibbons);
 					}
 					anatomicalSite.setCellularComponentTerm(cellularComponent);
 				}
@@ -399,7 +400,31 @@ public class GeneExpressionAnnotationFmsDTOValidator {
 			anatomicalSiteDB = new AnatomicalSite();
 		}
 		anatomicalSiteDB.setCellularComponentTerm(anatomicalSite.getCellularComponentTerm());
-		anatomicalSiteDB.setCellularComponentRibbonTerm(anatomicalSite.getCellularComponentRibbonTerm());
+		
+		if (anatomicalSite.getCellularComponentRibbonTerms() == null || anatomicalSite.getCellularComponentRibbonTerms().isEmpty()) {
+			if (anatomicalSiteDB.getCellularComponentRibbonTerms() != null) {
+				Hibernate.initialize(anatomicalSiteDB.getCellularComponentRibbonTerms());
+				anatomicalSiteDB.getCellularComponentRibbonTerms().clear();
+			}
+		} else {
+			if (anatomicalSiteDB.getCellularComponentRibbonTerms() == null) {
+				anatomicalSiteDB.setCellularComponentRibbonTerms(new ArrayList<>());
+			} else {
+				Hibernate.initialize(anatomicalSiteDB.getCellularComponentRibbonTerms());
+			}
+
+			List<GOTerm> currentTerms = anatomicalSiteDB.getCellularComponentRibbonTerms();
+			List<GOTerm> newTerms = anatomicalSite.getCellularComponentRibbonTerms();
+
+			currentTerms.removeIf(term -> !newTerms.contains(term));
+
+			for (GOTerm term : newTerms) {
+				if (!currentTerms.contains(term)) {
+					currentTerms.add(term);
+				}
+			}
+		}
+
 		anatomicalSiteDB.setCellularComponentOther(anatomicalSite.getCellularComponentOther());
 		anatomicalSiteDB.setAnatomicalStructure(anatomicalSite.getAnatomicalStructure());
 		anatomicalSiteDB.setAnatomicalSubstructure(anatomicalSite.getAnatomicalSubstructure());

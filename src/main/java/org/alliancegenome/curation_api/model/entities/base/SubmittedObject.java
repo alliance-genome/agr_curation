@@ -46,7 +46,15 @@ public class SubmittedObject extends CurieObject {
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "primaryExternalId_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({View.FieldsOnly.class, View.ForPublic.class, View.GeneToGeneOrthologyDocument.class, View.GeneSummaryDocument.class, View.ModelDocument.class, View.TransgenicAllelesDocument.class, View.AlleleSummaryDocument.class, View.GeneExpressionDocument.class })
+	@JsonView({View.FieldsOnly.class,
+			View.ForPublic.class,
+			View.GeneToGeneOrthologyDocument.class,
+			View.GeneSummaryDocument.class,
+			View.ModelDocument.class,
+			View.TransgenicAllelesDocument.class,
+			View.AlleleSummaryDocument.class,
+			View.VariantDetailView.class,
+			View.GeneExpressionDocument.class })
 	private String primaryExternalId;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
