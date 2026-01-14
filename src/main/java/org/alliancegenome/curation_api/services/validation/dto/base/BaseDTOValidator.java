@@ -260,9 +260,11 @@ public class BaseDTOValidator<E extends Object> {
 				response.addErrorMessage(field, ValidationConstants.INVALID_MESSAGE + " (" + referenceCurie + ")");
 				return null;
 			}
-			references.add(reference);
+			if (!references.contains(reference)) {
+				references.add(reference);
+			}
 		}
-		
+
 		return references;
 	}
 	
