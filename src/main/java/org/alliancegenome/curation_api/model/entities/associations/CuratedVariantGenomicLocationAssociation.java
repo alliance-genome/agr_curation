@@ -75,11 +75,11 @@ public class CuratedVariantGenomicLocationAssociation extends VariantGenomicLoca
 	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	@JsonView({View.FieldsOnly.class, VariantView.class})
 	public PredictedVariantConsequence getMostSevereConsequence() {
-		if (predictedVariantConsequences == null) {
+		if (predictedVariantConsequences == null || predictedVariantConsequences.isEmpty()) {
 			return null;
 		}
 		return predictedVariantConsequences.stream()
-				.sorted(Comparator.comparingInt(pvc -> {
+				.min(Comparator.comparingInt(pvc -> {
 					if (pvc.getVepConsequences() == null || pvc.getVepConsequences().isEmpty()) {
 						return Integer.MAX_VALUE;
 					}
@@ -88,7 +88,7 @@ public class CuratedVariantGenomicLocationAssociation extends VariantGenomicLoca
 							.min(Integer::compareTo)
 							.orElse(Integer.MAX_VALUE);
 				}))
-				.collect(Collectors.toList()).getFirst();
+				.orElse(null);
 	}
 
 	@Transient
