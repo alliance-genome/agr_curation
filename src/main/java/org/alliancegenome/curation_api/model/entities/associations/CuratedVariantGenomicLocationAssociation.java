@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import static org.alliancegenome.curation_api.services.associations.CuratedVariantGenomicLocationAssociationService.SORTED_VARIANT_CONSEQUENCE_MAP;
+
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.entities.Gene;
@@ -68,6 +70,26 @@ public class CuratedVariantGenomicLocationAssociation extends VariantGenomicLoca
 	@JsonManagedReference
 	@JsonView({View.FieldsAndLists.class, VariantView.class})
 	private List<PredictedVariantConsequence> predictedVariantConsequences;
+
+	@Transient
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
+	@JsonView({View.FieldsOnly.class, VariantView.class})
+	public PredictedVariantConsequence getMostSevereConsequence() {
+		if (predictedVariantConsequences == null || predictedVariantConsequences.isEmpty()) {
+			return null;
+		}
+		return predictedVariantConsequences.stream()
+				.min(Comparator.comparingInt(pvc -> {
+					if (pvc.getVepConsequences() == null || pvc.getVepConsequences().isEmpty()) {
+						return Integer.MAX_VALUE;
+					}
+					return pvc.getVepConsequences().stream()
+							.map(soTerm -> SORTED_VARIANT_CONSEQUENCE_MAP.getOrDefault(soTerm.getName(), Integer.MAX_VALUE))
+							.min(Integer::compareTo)
+							.orElse(Integer.MAX_VALUE);
+				}))
+				.orElse(null);
+	}
 
 	@Transient
 	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
