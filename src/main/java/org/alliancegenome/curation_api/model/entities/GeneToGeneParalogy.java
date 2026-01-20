@@ -5,7 +5,7 @@ import java.util.List;
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.entities.base.AuditedObject;
-import org.alliancegenome.curation_api.view.View;
+import org.alliancegenome.curation_api.view.CurationView;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.hibernate.search.mapper.pojo.automaticindexing.ReindexOnUpdate;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmbedded;
@@ -40,51 +40,51 @@ public class GeneToGeneParalogy extends AuditedObject {
 	@IndexedEmbedded(includePaths = {"geneSymbol.displayText", "geneSymbol.formatText", "geneSymbol.displayText_keyword", "geneSymbol.formatText_keyword", "curie", "curie_keyword", "taxon.curie", "taxon.name", "taxon.curie_keyword", "taxon.name_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@JsonView({ View.FieldsOnly.class, View.ForPublic.class })
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.ForPublic.class })
 	private Gene subjectGene;
 
 	@IndexedEmbedded(includePaths = {"geneSymbol.displayText", "geneSymbol.formatText", "geneSymbol.displayText_keyword", "geneSymbol.formatText_keyword", "curie", "curie_keyword", "taxon.curie", "taxon.name", "taxon.curie_keyword", "taxon.name_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@JsonView({ View.FieldsOnly.class, View.ForPublic.class })
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.ForPublic.class })
 	private Gene objectGene;
 
 	@IndexedEmbedded(includePaths = {"name", "name_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@JsonView({ View.FieldsOnly.class })
+	@JsonView({ CurationView.FieldsOnly.class })
 	private VocabularyTerm confidence;
 
 	@IndexedEmbedded(includePaths = {"name", "name_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
-	@JsonView({ View.FieldsAndLists.class, View.ForPublic.class })
+	@JsonView({ CurationView.FieldsAndLists.class, CurationView.ForPublic.class })
 	@JoinTable(name = "genetogeneparalogy_predictionmethodsmatched", indexes = { @Index(name = "g2gparalogypmm_paralogyid_index", columnList = "genetogeneparalogy_id"), @Index(name = "g2gparalogypmm_pmmid_index", columnList = "predictionmethodsmatched_id")})
 	private List<VocabularyTerm> predictionMethodsMatched;
 
 	@IndexedEmbedded(includePaths = {"name", "name_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
-	@JsonView({ View.FieldsAndLists.class, View.ForPublic.class })
+	@JsonView({ CurationView.FieldsAndLists.class, CurationView.ForPublic.class })
 	@JoinTable(name = "genetogeneparalogy_predictionmethodsnotmatched", indexes = { @Index(name = "g2gparalogypmnm_orthid_index", columnList = "genetogeneparalogy_id"), @Index(name = "g2gparalogypmnm_pmnmid_index", columnList = "predictionmethodsnotmatched_id")})
 	private List<VocabularyTerm> predictionMethodsNotMatched;
 
 	@IndexedEmbedded(includePaths = {"name", "name_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
-	@JsonView({ View.FieldsAndLists.class, View.ForPublic.class })
+	@JsonView({ CurationView.FieldsAndLists.class, CurationView.ForPublic.class })
 	@JoinTable(name = "genetogeneparalogy_predictionmethodsnotcalled", indexes = { @Index(name = "g2gparalogypmnc_orthid_index", columnList = "genetogeneparalogy_id"), @Index(name = "g2gparalogypmnc_pmncid_index", columnList = "predictionmethodsnotcalled_id")})
 	private List<VocabularyTerm> predictionMethodsNotCalled;
 
-	@JsonView({ View.FieldsOnly.class, View.ForPublic.class })
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.ForPublic.class })
 	private Integer rank;
 
-	@JsonView({ View.FieldsOnly.class, View.ForPublic.class })
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.ForPublic.class })
 	private Integer length;
 
-	@JsonView({ View.FieldsOnly.class, View.ForPublic.class })
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.ForPublic.class })
 	private Integer similarity;
 
-	@JsonView({ View.FieldsOnly.class, View.ForPublic.class })
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.ForPublic.class })
 	private Integer identity;
 }

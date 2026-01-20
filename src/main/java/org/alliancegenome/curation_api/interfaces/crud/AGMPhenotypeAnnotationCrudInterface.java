@@ -3,7 +3,7 @@ package org.alliancegenome.curation_api.interfaces.crud;
 import org.alliancegenome.curation_api.interfaces.base.BaseIdCrudInterface;
 import org.alliancegenome.curation_api.model.entities.AGMPhenotypeAnnotation;
 import org.alliancegenome.curation_api.response.ObjectResponse;
-import org.alliancegenome.curation_api.view.View;
+import org.alliancegenome.curation_api.view.CurationView;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 import com.fasterxml.jackson.annotation.JsonView;
@@ -25,19 +25,19 @@ public interface AGMPhenotypeAnnotationCrudInterface extends BaseIdCrudInterface
 
 	@GET
 	@Path("/findBy/{identifier}")
-	@JsonView(View.FieldsAndLists.class)
+	@JsonView(CurationView.FieldsAndLists.class)
 	ObjectResponse<AGMPhenotypeAnnotation> getByIdentifier(@PathParam("identifier") String identifier);
 	
 	@Override
 	@PUT
 	@Path("/")
-	@JsonView(View.PhenotypeAnnotationView.class)
+	@JsonView(CurationView.PhenotypeAnnotationView.class)
 	ObjectResponse<AGMPhenotypeAnnotation> update(AGMPhenotypeAnnotation entity);
 
 	@Override
 	@POST
 	@Path("/")
-	@JsonView(View.PhenotypeAnnotationView.class)
+	@JsonView(CurationView.PhenotypeAnnotationView.class)
 	ObjectResponse<AGMPhenotypeAnnotation> create(AGMPhenotypeAnnotation entity);
 
 	

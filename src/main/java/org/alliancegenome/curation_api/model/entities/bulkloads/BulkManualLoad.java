@@ -3,7 +3,7 @@ package org.alliancegenome.curation_api.model.entities.bulkloads;
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
-import org.alliancegenome.curation_api.view.View;
+import org.alliancegenome.curation_api.view.CurationView;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -25,7 +25,7 @@ import lombok.ToString;
 @JsonTypeName
 public class BulkManualLoad extends BulkLoad {
 
-	@JsonView({ View.FieldsOnly.class })
+	@JsonView({ CurationView.FieldsOnly.class })
 	@Enumerated(EnumType.STRING)
 	private BackendBulkDataProvider dataProvider;
 }

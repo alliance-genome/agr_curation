@@ -10,7 +10,7 @@ import org.alliancegenome.curation_api.model.ingest.dto.GeneDTO;
 import org.alliancegenome.curation_api.response.APIResponse;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
-import org.alliancegenome.curation_api.view.View;
+import org.alliancegenome.curation_api.view.CurationView;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
@@ -34,33 +34,33 @@ public interface GeneCrudInterface extends BaseSubmittedObjectCrudInterface<Gene
 
 	@POST
 	@Path("/bulk/{dataProvider}/genes")
-	@JsonView(View.FieldsAndLists.class)
+	@JsonView(CurationView.FieldsAndLists.class)
 	APIResponse updateGenes(@PathParam("dataProvider") String dataProvider, List<GeneDTO> geneData);
 
 	@Override
 	@PUT
 	@Path("/")
-	@JsonView(View.GeneView.class)
+	@JsonView(CurationView.GeneView.class)
 	ObjectResponse<Gene> update(Gene entity);
 
 	@Override
 	@POST
 	@Path("/")
-	@JsonView(View.GeneView.class)
+	@JsonView(CurationView.GeneView.class)
 	ObjectResponse<Gene> create(Gene entity);
 
 	@Override
 	@POST
 	@Path("/find")
 	@Tag(name = "Relational Database Browsing Endpoints")
-	@JsonView(View.GeneView.class)
+	@JsonView(CurationView.GeneView.class)
 	SearchResponse<Gene> find(@DefaultValue("0") @QueryParam("page") Integer page, @DefaultValue("10") @QueryParam("limit") Integer limit, @RequestBody HashMap<String, Object> params);
 
 	@Override
 	@POST
 	@Path("/search")
 	@Tag(name = "Elastic Search Browsing Endpoints")
-	@JsonView({ View.GeneView.class })
+	@JsonView({ CurationView.GeneView.class })
 	SearchResponse<Gene> search(@DefaultValue("0") @QueryParam("page") Integer page, @DefaultValue("10") @QueryParam("limit") Integer limit, @RequestBody HashMap<String, Object> params);
 
 }

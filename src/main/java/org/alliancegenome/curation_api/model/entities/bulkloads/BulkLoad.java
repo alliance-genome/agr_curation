@@ -9,7 +9,7 @@ import org.alliancegenome.curation_api.enums.JobStatus;
 import org.alliancegenome.curation_api.enums.OntologyBulkLoadType;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.entities.base.AuditedObject;
-import org.alliancegenome.curation_api.view.View;
+import org.alliancegenome.curation_api.view.CurationView;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
@@ -52,29 +52,29 @@ import lombok.ToString;
 )
 public abstract class BulkLoad extends AuditedObject {
 
-	@JsonView({ View.FieldsOnly.class })
+	@JsonView({ CurationView.FieldsOnly.class })
 	private String name;
 
-	@JsonView({ View.FieldsOnly.class })
+	@JsonView({ CurationView.FieldsOnly.class })
 	@Enumerated(EnumType.STRING)
 	private JobStatus bulkloadStatus = JobStatus.STOPPED;
 
-	@JsonView({ View.FieldsOnly.class })
+	@JsonView({ CurationView.FieldsOnly.class })
 	@Column(columnDefinition = "TEXT")
 	private String errorMessage;
 
-	@JsonView({ View.FieldsOnly.class })
+	@JsonView({ CurationView.FieldsOnly.class })
 	@Enumerated(EnumType.STRING)
 	private BackendBulkLoadType backendBulkLoadType;
 
-	@JsonView({ View.FieldsOnly.class })
+	@JsonView({ CurationView.FieldsOnly.class })
 	@Enumerated(EnumType.STRING)
 	private OntologyBulkLoadType ontologyType;
 
 	@ManyToOne
 	private BulkLoadGroup group;
 	
-	@JsonView({ View.FieldsOnly.class })
+	@JsonView({ CurationView.FieldsOnly.class })
 	@OneToMany(mappedBy = "bulkLoad")
 	@OrderBy("loadFinished DESC")
 	private List<BulkLoadFileHistory> history;

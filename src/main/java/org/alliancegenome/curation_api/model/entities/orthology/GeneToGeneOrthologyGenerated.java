@@ -7,7 +7,7 @@ import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.bridges.BooleanValueBridge;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.base.AuditedObject;
-import org.alliancegenome.curation_api.view.View;
+import org.alliancegenome.curation_api.view.CurationView;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.hibernate.search.engine.backend.types.Aggregable;
 import org.hibernate.search.engine.backend.types.Searchable;
@@ -48,51 +48,51 @@ public class GeneToGeneOrthologyGenerated extends GeneToGeneOrthology {
 	@IndexedEmbedded(includePaths = {"name", "name_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@JsonView({ View.FieldsOnly.class, View.GeneToGeneOrthologyDocument.class })
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.GeneToGeneOrthologyDocument.class })
 	private VocabularyTerm isBestScore;
 	
 	@IndexedEmbedded(includePaths = {"name", "name_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@JsonView({ View.FieldsOnly.class, View.GeneToGeneOrthologyDocument.class })
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.GeneToGeneOrthologyDocument.class })
 	private VocabularyTerm isBestScoreReverse;
 	
 	@IndexedEmbedded(includePaths = {"name", "name_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@JsonView({ View.FieldsOnly.class, View.GeneToGeneOrthologyDocument.class })
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.GeneToGeneOrthologyDocument.class })
 	private VocabularyTerm confidence;
 	
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer", valueBridge = @ValueBridgeRef(type = BooleanValueBridge.class))
 	@KeywordField(name = "strictFilter_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, valueBridge = @ValueBridgeRef(type = BooleanValueBridge.class))
-	@JsonView({ View.FieldsOnly.class, View.GeneToGeneOrthologyDocument.class })
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.GeneToGeneOrthologyDocument.class })
 	@Column(nullable = true)
 	private Boolean strictFilter;
 	
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer", valueBridge = @ValueBridgeRef(type = BooleanValueBridge.class))
 	@KeywordField(name = "moderateFilter_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, valueBridge = @ValueBridgeRef(type = BooleanValueBridge.class))
-	@JsonView({ View.FieldsOnly.class, View.GeneToGeneOrthologyDocument.class })
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.GeneToGeneOrthologyDocument.class })
 	@Column(nullable = true)
 	private Boolean moderateFilter;
 	
 	@IndexedEmbedded(includePaths = {"name", "name_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
-	@JsonView({ View.FieldsAndLists.class, View.GeneToGeneOrthologyDocument.class })
+	@JsonView({ CurationView.FieldsAndLists.class, CurationView.GeneToGeneOrthologyDocument.class })
 	@JoinTable(name = "genetogeneorthologygenerated_predictionmethodsmatched", indexes = { @Index(name = "g2gorthgeneratedpmm_orthid_index", columnList = "genetogeneorthologygenerated_id"), @Index(name = "g2gorthgeneratedpmm_pmmid_index", columnList = "predictionmethodsmatched_id")})
 	private List<VocabularyTerm> predictionMethodsMatched;
 
 	@IndexedEmbedded(includePaths = {"name", "name_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
-	@JsonView({ View.FieldsAndLists.class, View.GeneToGeneOrthologyDocument.class })
+	@JsonView({ CurationView.FieldsAndLists.class, CurationView.GeneToGeneOrthologyDocument.class })
 	@JoinTable(name = "genetogeneorthologygenerated_predictionmethodsnotmatched", indexes = { @Index(name = "g2gorthgeneratedpmnm_orthid_index", columnList = "genetogeneorthologygenerated_id"), @Index(name = "g2gorthgeneratedpmnm_pmnmid_index", columnList = "predictionmethodsnotmatched_id")})
 	private List<VocabularyTerm> predictionMethodsNotMatched;
 
 	@IndexedEmbedded(includePaths = {"name", "name_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
-	@JsonView({ View.FieldsAndLists.class, View.GeneToGeneOrthologyDocument.class })
+	@JsonView({ CurationView.FieldsAndLists.class, CurationView.GeneToGeneOrthologyDocument.class })
 	@JoinTable(name = "genetogeneorthologygenerated_predictionmethodsnotcalled", indexes = { @Index(name = "g2gorthgeneratedpmnc_orthid_index", columnList = "genetogeneorthologygenerated_id"), @Index(name = "g2gorthgeneratedpmnc_pmncid_index", columnList = "predictionmethodsnotcalled_id")})
 	private List<VocabularyTerm> predictionMethodsNotCalled;
 }

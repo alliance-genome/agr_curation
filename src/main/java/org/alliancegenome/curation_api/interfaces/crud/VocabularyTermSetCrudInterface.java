@@ -8,7 +8,7 @@ import org.alliancegenome.curation_api.model.entities.VocabularyTermSet;
 import org.alliancegenome.curation_api.response.ObjectListResponse;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
-import org.alliancegenome.curation_api.view.View;
+import org.alliancegenome.curation_api.view.CurationView;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
@@ -33,37 +33,37 @@ public interface VocabularyTermSetCrudInterface extends BaseIdCrudInterface<Voca
 
 	@GET
 	@Path("/{id}")
-	@JsonView(View.VocabularyTermSetView.class)
+	@JsonView(CurationView.VocabularyTermSetView.class)
 	ObjectResponse<VocabularyTermSet> getById(@PathParam("id") Long id);
 
 	@GET
 	@Path("/{id}/terms")
-	@JsonView(View.VocabularyTermSetView.class)
+	@JsonView(CurationView.VocabularyTermSetView.class)
 	ObjectListResponse<VocabularyTerm> getTerms(@PathParam("id") Long id);
 
 	@Override
 	@PUT
 	@Path("/")
-	@JsonView(View.VocabularyTermSetView.class)
+	@JsonView(CurationView.VocabularyTermSetView.class)
 	ObjectResponse<VocabularyTermSet> update(VocabularyTermSet entity);
 
 	@Override
 	@POST
 	@Path("/")
-	@JsonView(View.VocabularyTermSetView.class)
+	@JsonView(CurationView.VocabularyTermSetView.class)
 	ObjectResponse<VocabularyTermSet> create(VocabularyTermSet entity);
 
 	@Override
 	@POST
 	@Path("/find")
 	@Tag(name = "Relational Database Browsing Endpoints")
-	@JsonView(View.VocabularyTermSetView.class)
+	@JsonView(CurationView.VocabularyTermSetView.class)
 	SearchResponse<VocabularyTermSet> find(@DefaultValue("0") @QueryParam("page") Integer page, @DefaultValue("10") @QueryParam("limit") Integer limit, @RequestBody HashMap<String, Object> params);
 
 	@Override
 	@POST
 	@Path("/search")
 	@Tag(name = "Elastic Search Browsing Endpoints")
-	@JsonView({ View.VocabularyTermSetView.class })
+	@JsonView({ CurationView.VocabularyTermSetView.class })
 	SearchResponse<VocabularyTermSet> search(@DefaultValue("0") @QueryParam("page") Integer page, @DefaultValue("10") @QueryParam("limit") Integer limit, @RequestBody HashMap<String, Object> params);
 }

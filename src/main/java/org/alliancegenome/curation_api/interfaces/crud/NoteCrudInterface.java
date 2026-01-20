@@ -3,7 +3,7 @@ package org.alliancegenome.curation_api.interfaces.crud;
 import org.alliancegenome.curation_api.interfaces.base.BaseIdCrudInterface;
 import org.alliancegenome.curation_api.model.entities.Note;
 import org.alliancegenome.curation_api.response.ObjectResponse;
-import org.alliancegenome.curation_api.view.View;
+import org.alliancegenome.curation_api.view.CurationView;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 import com.fasterxml.jackson.annotation.JsonView;
@@ -24,17 +24,17 @@ public interface NoteCrudInterface extends BaseIdCrudInterface<Note> {
 
 	@POST
 	@Path("/validate")
-	@JsonView(View.NoteView.class)
+	@JsonView(CurationView.NoteView.class)
 	ObjectResponse<Note> validate(Note entity);
 
 	@Override
 	@GET
-	@JsonView(View.NoteView.class)
+	@JsonView(CurationView.NoteView.class)
 	@Path("/{id}")
 	ObjectResponse<Note> getById(@PathParam("id") Long id);
 
 	@POST
 	@Path("/")
-	@JsonView(View.NoteView.class)
+	@JsonView(CurationView.NoteView.class)
 	ObjectResponse<Note> create(Note entity);
 }

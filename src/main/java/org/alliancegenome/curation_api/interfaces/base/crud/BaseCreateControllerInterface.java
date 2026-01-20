@@ -6,7 +6,7 @@ import org.alliancegenome.curation_api.model.Null;
 import org.alliancegenome.curation_api.model.entities.base.AuditedObject;
 import org.alliancegenome.curation_api.response.ObjectListResponse;
 import org.alliancegenome.curation_api.response.ObjectResponse;
-import org.alliancegenome.curation_api.view.View;
+import org.alliancegenome.curation_api.view.CurationView;
 import org.eclipse.microprofile.openapi.annotations.media.Content;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
@@ -27,7 +27,7 @@ public interface BaseCreateControllerInterface<E extends AuditedObject> {
 
 	@POST
 	@Path("/")
-	@JsonView(View.FieldsOnly.class)
+	@JsonView(CurationView.FieldsOnly.class)
 	@RequestBody(
 		description = "Post Request",
 		content = @Content(
@@ -48,7 +48,7 @@ public interface BaseCreateControllerInterface<E extends AuditedObject> {
 
 	@POST
 	@Path("/multiple")
-	@JsonView(View.FieldsOnly.class)
+	@JsonView(CurationView.FieldsOnly.class)
 	@RequestBody(
 		description = "Post Request",
 		content = @Content(

@@ -9,7 +9,7 @@ import org.alliancegenome.curation_api.model.ingest.dto.associations.AlleleConst
 import org.alliancegenome.curation_api.model.ingest.dto.associations.AlleleGeneAssociationDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.associations.AlleleVariantAssociationDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.associations.ConstructGenomicEntityAssociationDTO;
-import org.alliancegenome.curation_api.view.View;
+import org.alliancegenome.curation_api.view.CurationView;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
@@ -19,71 +19,71 @@ import lombok.Data;
 @Data
 public class IngestDTO {
 
-	@JsonView({View.FieldsOnly.class})
+	@JsonView({CurationView.FieldsOnly.class})
 	@JsonProperty("linkml_version")
 	private String linkMLVersion;
 
-	@JsonView({View.FieldsOnly.class})
+	@JsonView({CurationView.FieldsOnly.class})
 	@JsonProperty("alliance_member_release_version")
 	private String allianceMemberReleaseVersion;
 
-	@JsonView({View.FieldsAndLists.class})
+	@JsonView({CurationView.FieldsAndLists.class})
 	@JsonProperty("agm_ingest_set")
 	private List<AffectedGenomicModelDTO> agmIngestSet;
 
-	@JsonView({View.FieldsAndLists.class})
+	@JsonView({CurationView.FieldsAndLists.class})
 	@JsonProperty("allele_ingest_set")
 	private List<AlleleDTO> alleleIngestSet;
 
-	@JsonView({View.FieldsAndLists.class})
+	@JsonView({CurationView.FieldsAndLists.class})
 	@JsonProperty("disease_agm_ingest_set")
 	private List<AGMDiseaseAnnotationDTO> diseaseAgmIngestSet;
 
-	@JsonView({View.FieldsAndLists.class})
+	@JsonView({CurationView.FieldsAndLists.class})
 	@JsonProperty("disease_allele_ingest_set")
 	private List<AlleleDiseaseAnnotationDTO> diseaseAlleleIngestSet;
 
-	@JsonView({View.FieldsAndLists.class})
+	@JsonView({CurationView.FieldsAndLists.class})
 	@JsonProperty("disease_gene_ingest_set")
 	private List<GeneDiseaseAnnotationDTO> diseaseGeneIngestSet;
 
-	@JsonView({View.FieldsAndLists.class})
+	@JsonView({CurationView.FieldsAndLists.class})
 	@JsonProperty("gene_ingest_set")
 	private List<GeneDTO> geneIngestSet;
 
-	@JsonView({View.FieldsAndLists.class})
+	@JsonView({CurationView.FieldsAndLists.class})
 	@JsonProperty("construct_ingest_set")
 	private List<ConstructDTO> constructIngestSet;
 
-	@JsonView({View.FieldsAndLists.class})
+	@JsonView({CurationView.FieldsAndLists.class})
 	@JsonProperty("variant_ingest_set")
 	private List<VariantDTO> variantIngestSet;
 
-	@JsonView({View.FieldsAndLists.class})
+	@JsonView({CurationView.FieldsAndLists.class})
 	@JsonProperty("allele_construct_association_ingest_set")
 	private List<AlleleConstructAssociationDTO> alleleConstructAssociationIngestSet;
 
-	@JsonView({View.FieldsAndLists.class})
+	@JsonView({CurationView.FieldsAndLists.class})
 	@JsonProperty("allele_gene_association_ingest_set")
 	private List<AlleleGeneAssociationDTO> alleleGeneAssociationIngestSet;
 
-	@JsonView({View.FieldsAndLists.class})
+	@JsonView({CurationView.FieldsAndLists.class})
 	@JsonProperty("allele_variant_association_ingest_set")
 	private List<AlleleVariantAssociationDTO> alleleVariantAssociationIngestSet;
 
-	@JsonView({View.FieldsAndLists.class})
+	@JsonView({CurationView.FieldsAndLists.class})
 	@JsonProperty("construct_genomic_entity_association_ingest_set")
 	private List<ConstructGenomicEntityAssociationDTO> constructGenomicEntityAssociationIngestSet;
 
-	@JsonView({View.FieldsAndLists.class})
+	@JsonView({CurationView.FieldsAndLists.class})
 	@JsonProperty("agm_sequence_targeting_reagent_association_ingest_set")
 	private List<AgmSequenceTargetingReagentAssociationDTO> agmStrAssociationIngestSet;
 
-	@JsonView({View.FieldsAndLists.class})
+	@JsonView({CurationView.FieldsAndLists.class})
 	@JsonProperty("agm_allele_association_ingest_set")
 	private List<AgmAlleleAssociationDTO> agmAlleleAssociationIngestSet;
 	
-	@JsonView({View.FieldsAndLists.class})
+	@JsonView({CurationView.FieldsAndLists.class})
 	@JsonProperty("agm_agm_association_ingest_set")
 	private List<AgmAgmAssociationDTO> agmAgmAssociationIngestSet;
 }

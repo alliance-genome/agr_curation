@@ -8,7 +8,7 @@ import org.alliancegenome.curation_api.interfaces.base.crud.BaseReadCurieControl
 import org.alliancegenome.curation_api.interfaces.base.crud.BaseUpdateControllerInterface;
 import org.alliancegenome.curation_api.model.entities.ontology.OntologyTerm;
 import org.alliancegenome.curation_api.response.ObjectListResponse;
-import org.alliancegenome.curation_api.view.View;
+import org.alliancegenome.curation_api.view.CurationView;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
@@ -42,26 +42,26 @@ public interface BaseOntologyTermCrudInterface<E extends OntologyTerm> extends
 
 	@GET
 	@Path("/rootNodes")
-	@JsonView(View.FieldsOnly.class)
+	@JsonView(CurationView.FieldsOnly.class)
 	ObjectListResponse<E> getRootNodes();
 
 	@GET
 	@Path("/{curie}/descendants")
-	@JsonView(View.FieldsOnly.class)
+	@JsonView(CurationView.FieldsOnly.class)
 	ObjectListResponse<E> getDescendants(@PathParam("curie") String curie, @QueryParam("relationTypes") Set<String> relationTypes);
 
 	@GET
 	@Path("/{curie}/children")
-	@JsonView(View.FieldsOnly.class)
+	@JsonView(CurationView.FieldsOnly.class)
 	ObjectListResponse<E> getChildren(@PathParam("curie") String curie, @QueryParam("relationTypes") Set<String> relationTypes);
 
 	@GET
 	@Path("/{curie}/parents")
-	@JsonView(View.FieldsOnly.class)
+	@JsonView(CurationView.FieldsOnly.class)
 	ObjectListResponse<E> getParents(@PathParam("curie") String curie, @QueryParam("relationTypes") Set<String> relationTypes);
 
 	@GET
 	@Path("/{curie}/ancestors")
-	@JsonView(View.FieldsOnly.class)
+	@JsonView(CurationView.FieldsOnly.class)
 	ObjectListResponse<E> getAncestors(@PathParam("curie") String curie, @QueryParam("relationTypes") Set<String> relationTypes);
 }

@@ -10,7 +10,7 @@ import org.alliancegenome.curation_api.model.entities.slotAnnotations.ConstructC
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.ConstructFullNameSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.ConstructSymbolSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.ConstructSynonymSlotAnnotation;
-import org.alliancegenome.curation_api.view.View;
+import org.alliancegenome.curation_api.view.CurationView;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmbedded;
@@ -42,25 +42,25 @@ public class Construct extends Reagent {
 	@IndexedEmbedded(includePaths = { "displayText", "formatText", "nameType.name", "synonymScope.name", "evidence.curie", "displayText_keyword", "formatText_keyword", "nameType.name_keyword", "synonymScope.name_keyword", "evidence.curie_keyword"})
 	@OneToOne(mappedBy = "singleConstruct", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonManagedReference
-	@JsonView({ View.FieldsOnly.class, View.TransgenicAllelesDocument.class, View.AlleleSummaryDocument.class, View.ForPublic.class })
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.TransgenicAllelesDocument.class, CurationView.AlleleSummaryDocument.class, CurationView.ForPublic.class })
 	private ConstructSymbolSlotAnnotation constructSymbol;
 
 	@IndexedEmbedded(includePaths = { "displayText", "formatText", "nameType.name", "synonymScope.name", "evidence.curie", "displayText_keyword", "formatText_keyword", "nameType.name_keyword", "synonymScope.name_keyword", "evidence.curie_keyword"})
 	@OneToOne(mappedBy = "singleConstruct", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonManagedReference
-	@JsonView({ View.FieldsOnly.class })
+	@JsonView({ CurationView.FieldsOnly.class })
 	private ConstructFullNameSlotAnnotation constructFullName;
 
 	@IndexedEmbedded(includePaths = { "displayText", "formatText", "nameType.name", "synonymScope.name", "evidence.curie", "displayText_keyword", "formatText_keyword", "nameType.name_keyword", "synonymScope.name_keyword", "evidence.curie_keyword"})
 	@OneToMany(mappedBy = "singleConstruct", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonManagedReference
-	@JsonView({ View.FieldsAndLists.class, View.ConstructView.class })
+	@JsonView({ CurationView.FieldsAndLists.class, CurationView.ConstructView.class })
 	private List<ConstructSynonymSlotAnnotation> constructSynonyms;
 
 	//@IndexedEmbedded(includeDepth = 2)
 	//@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
-	@JsonView({ View.FieldsAndLists.class, View.ConstructView.class })
+	@JsonView({ CurationView.FieldsAndLists.class, CurationView.ConstructView.class })
 	@JoinTable(indexes = {
 		@Index(name = "construct_reference_construct_index", columnList = "construct_id"),
 		@Index(name = "construct_reference_references_index", columnList = "references_id")
@@ -70,7 +70,7 @@ public class Construct extends Reagent {
 	@IndexedEmbedded(includePaths = { "relation.name", "relation.name_keyword", "componentSymbol", "taxon.curie", "taxonText", "componentSymbol_keyword", "taxon.curie_keyword", "taxonText_keyword"})
 	@OneToMany(mappedBy = "singleConstruct", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonManagedReference
-	@JsonView({ View.FieldsAndLists.class, View.ConstructView.class, View.TransgenicAllelesDocument.class })
+	@JsonView({ CurationView.FieldsAndLists.class, CurationView.ConstructView.class, CurationView.TransgenicAllelesDocument.class })
 	private List<ConstructComponentSlotAnnotation> constructComponents;
 
 	@IndexedEmbedded(includePaths = {
@@ -80,10 +80,10 @@ public class Construct extends Reagent {
 		"constructGenomicEntityAssociationObject.symbol_keyword", "relation.name_keyword"
 	})
 	@OneToMany(mappedBy = "constructAssociationSubject", cascade = CascadeType.ALL, orphanRemoval = true)
-	@JsonView({ View.FieldsAndLists.class, View.ConstructView.class, View.TransgenicAllelesDocument.class })
+	@JsonView({ CurationView.FieldsAndLists.class, CurationView.ConstructView.class, CurationView.TransgenicAllelesDocument.class })
 	private List<ConstructGenomicEntityAssociation> constructGenomicEntityAssociations;
 	
 	@OneToMany(mappedBy = "alleleConstructAssociationObject", cascade = CascadeType.ALL, orphanRemoval = true)
-	@JsonView({ View.FieldsAndLists.class, View.ConstructDetailView.class })
+	@JsonView({ CurationView.FieldsAndLists.class, CurationView.ConstructDetailView.class })
 	private List<AlleleConstructAssociation> alleleConstructAssociations;
 }

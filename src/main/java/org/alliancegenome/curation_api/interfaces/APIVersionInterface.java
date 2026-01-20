@@ -1,7 +1,7 @@
 package org.alliancegenome.curation_api.interfaces;
 
 import org.alliancegenome.curation_api.model.output.APIVersionInfo;
-import org.alliancegenome.curation_api.view.View;
+import org.alliancegenome.curation_api.view.CurationView;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 import com.fasterxml.jackson.annotation.JsonView;
@@ -20,7 +20,7 @@ public interface APIVersionInterface {
 
 	@GET
 	@Path("/")
-	@JsonView(View.FieldsOnly.class)
+	@JsonView(CurationView.FieldsOnly.class)
 	APIVersionInfo get();
 
 }

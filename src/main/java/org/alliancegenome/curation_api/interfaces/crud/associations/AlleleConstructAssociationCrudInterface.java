@@ -9,7 +9,7 @@ import org.alliancegenome.curation_api.model.ingest.dto.associations.AlleleConst
 import org.alliancegenome.curation_api.response.APIResponse;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
-import org.alliancegenome.curation_api.view.View;
+import org.alliancegenome.curation_api.view.CurationView;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import com.fasterxml.jackson.annotation.JsonView;
 
@@ -30,21 +30,21 @@ public interface AlleleConstructAssociationCrudInterface extends BaseIdCrudInter
 
 	@POST
 	@Path("/bulk/{dataProvider}/associationFile")
-	@JsonView(View.FieldsAndLists.class)
+	@JsonView(CurationView.FieldsAndLists.class)
 	APIResponse updateAlleleConstructAssociations(@PathParam("dataProvider") String dataProvider, List<AlleleConstructAssociationDTO> associationData);
 
 	@GET
 	@Path("/findBy")
-	@JsonView(View.FieldsAndLists.class)
+	@JsonView(CurationView.FieldsAndLists.class)
 	ObjectResponse<AlleleConstructAssociation> getAssociation(@QueryParam("alleleId") Long alleleId, @QueryParam("relationName") String relationName, @QueryParam("constructId") Long constructId);
 
 	@POST
 	@Path("/validate")
-	@JsonView(View.FieldsAndLists.class)
+	@JsonView(CurationView.FieldsAndLists.class)
 	ObjectResponse<AlleleConstructAssociation> validate(AlleleConstructAssociation entity);
 
 	@POST
 	@Path("/findForPublic")
-	@JsonView(View.ForPublic.class)
+	@JsonView(CurationView.ForPublic.class)
 	SearchResponse<AlleleConstructAssociation> findForPublic(Integer page, Integer limit, HashMap<String, Object> params);
 }

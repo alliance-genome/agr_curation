@@ -5,7 +5,7 @@ import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
 import org.alliancegenome.curation_api.model.entities.Association;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
-import org.alliancegenome.curation_api.view.View;
+import org.alliancegenome.curation_api.view.CurationView;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
@@ -47,7 +47,7 @@ public class AgmAgmAssociation extends Association {
 		"curie", "name", "curie_keyword", "name_keyword",
 		"primaryExternalId", "primaryExternalId_keyword", "modInternalId", "modInternalId_keyword"})
 	@ManyToOne
-	@JsonView({View.FieldsOnly.class})
+	@JsonView({CurationView.FieldsOnly.class})
 	@JsonIgnoreProperties({"parentalPopulations", "agmSequenceTargetingReagentAssociations"})
 	@Fetch(FetchMode.JOIN)
 	private AffectedGenomicModel agmAssociationSubject;
@@ -55,13 +55,13 @@ public class AgmAgmAssociation extends Association {
 	@IndexedEmbedded(includePaths = {"name", "name_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@JsonView({View.FieldsOnly.class})
+	@JsonView({CurationView.FieldsOnly.class})
 	private VocabularyTerm relation;
 
 	@IndexedEmbedded(includePaths = {"name", "synonyms"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@JsonView({View.FieldsOnly.class})
+	@JsonView({CurationView.FieldsOnly.class})
 	@JsonIgnoreProperties({"parentalPopulations", "agmSequenceTargetingReagentAssociations"})
 	private AffectedGenomicModel agmAgmAssociationObject;
 }

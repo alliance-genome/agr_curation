@@ -9,7 +9,7 @@ import org.alliancegenome.curation_api.model.ingest.dto.fms.PsiMiTabDTO;
 import org.alliancegenome.curation_api.response.APIResponse;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
-import org.alliancegenome.curation_api.view.View;
+import org.alliancegenome.curation_api.view.CurationView;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
@@ -33,18 +33,18 @@ public interface GeneMolecularInteractionCrudInterface extends BaseIdCrudInterfa
 
 	@GET
 	@Path("/findBy/{identifier}")
-	@JsonView(View.GeneInteractionView.class)
+	@JsonView(CurationView.GeneInteractionView.class)
 	ObjectResponse<GeneMolecularInteraction> getByIdentifier(@PathParam("identifier") String identifier);
 	
 	@Override
 	@POST
 	@Path("/search")
-	@JsonView(View.GeneInteractionView.class)
+	@JsonView(CurationView.GeneInteractionView.class)
 	SearchResponse<GeneMolecularInteraction> search(@DefaultValue("0") @QueryParam("page") Integer page, @DefaultValue("10") @QueryParam("limit") Integer limit, @RequestBody HashMap<String, Object> params);
 
 	@POST
 	@Path("/bulk/interactionFile")
-	@JsonView(View.FieldsAndLists.class)
+	@JsonView(CurationView.FieldsAndLists.class)
 	APIResponse updateInteractions(List<PsiMiTabDTO> interactionData);
 
 }

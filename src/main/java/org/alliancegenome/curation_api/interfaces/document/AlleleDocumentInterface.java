@@ -4,7 +4,7 @@ import java.util.HashMap;
 
 import org.alliancegenome.curation_api.model.document.es.AlleleSummaryDocument;
 import org.alliancegenome.curation_api.response.SearchResponse;
-import org.alliancegenome.curation_api.view.View;
+import org.alliancegenome.curation_api.view.CurationView;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
@@ -28,12 +28,12 @@ public interface AlleleDocumentInterface {
 
 	@POST
 	@Path("/summary")
-	@JsonView(View.AlleleSummaryDocument.class)
+	@JsonView(CurationView.AlleleSummaryDocument.class)
 	SearchResponse<AlleleSummaryDocument> findSummary(@DefaultValue("0") @QueryParam("page") Integer page, @DefaultValue("10") @QueryParam("limit") Integer limit, @RequestBody HashMap<String, Object> params);
 
 	@POST
 	@Path("/summary/cursor")
-	@JsonView(View.AlleleSummaryDocument.class)
+	@JsonView(CurationView.AlleleSummaryDocument.class)
 	@Operation(summary = "Find allele summaries using cursor-based pagination for optimal performance",
 			description = "Use cursor-based pagination to efficiently navigate large datasets. Use the nextCursor from the previous response as the cursor parameter for the next page.")
 	SearchResponse<AlleleSummaryDocument> findSummaryWithCursor(

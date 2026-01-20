@@ -8,7 +8,7 @@ import org.alliancegenome.curation_api.model.ingest.dto.fms.SequenceTargetingRea
 import org.alliancegenome.curation_api.response.APIResponse;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
-import org.alliancegenome.curation_api.view.View;
+import org.alliancegenome.curation_api.view.CurationView;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
@@ -32,26 +32,26 @@ public interface SequenceTargetingReagentCrudInterface extends BaseSubmittedObje
 
 	@POST
 	@Path("/bulk/{dataProvider}/sqtrfile")
-	@JsonView(View.FieldsAndLists.class)
+	@JsonView(CurationView.FieldsAndLists.class)
 	APIResponse updateSequenceTargetingReagent(@PathParam("dataProvider") String dataProvider, SequenceTargetingReagentIngestFmsDTO sqtrData);
 
 	@Override
 	@POST
 	@Path("/find")
 	@Tag(name = "Relational Database Browsing Endpoints")
-	@JsonView(View.SequenceTargetingReagentView.class)
+	@JsonView(CurationView.SequenceTargetingReagentView.class)
 	SearchResponse<SequenceTargetingReagent> find(@DefaultValue("0") @QueryParam("page") Integer page, @DefaultValue("10") @QueryParam("limit") Integer limit, @RequestBody HashMap<String, Object> params);
 
 	@Override
 	@POST
 	@Path("/search")
 	@Tag(name = "Elastic Search Browsing Endpoints")
-	@JsonView({ View.SequenceTargetingReagentView.class })
+	@JsonView({ CurationView.SequenceTargetingReagentView.class })
 	SearchResponse<SequenceTargetingReagent> search(@DefaultValue("0") @QueryParam("page") Integer page, @DefaultValue("10") @QueryParam("limit") Integer limit, @RequestBody HashMap<String, Object> params);
 
 	@Override
 	@GET
 	@Path("/{identifierString}")
-	@JsonView(View.SequenceTargetingReagentDetailView.class)
+	@JsonView(CurationView.SequenceTargetingReagentDetailView.class)
 	ObjectResponse<SequenceTargetingReagent> getByIdentifier(@PathParam("identifierString") String identifierString);
 }

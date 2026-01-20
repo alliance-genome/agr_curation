@@ -5,7 +5,7 @@ import java.util.HashMap;
 import org.alliancegenome.curation_api.model.document.es.GeneSearchResultDocument;
 import org.alliancegenome.curation_api.model.document.es.GeneSummaryDocument;
 import org.alliancegenome.curation_api.response.SearchResponse;
-import org.alliancegenome.curation_api.view.View;
+import org.alliancegenome.curation_api.view.CurationView;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
@@ -27,12 +27,12 @@ public interface GeneDocumentInterface {
 
 	@POST
 	@Path("/searchresult")
-	@JsonView(View.GeneSearchResultDocument.class)
+	@JsonView(CurationView.GeneSearchResultDocument.class)
 	SearchResponse<GeneSearchResultDocument> findSearchResult(@DefaultValue("0") @QueryParam("page") Integer page, @DefaultValue("10") @QueryParam("limit") Integer limit, @RequestBody HashMap<String, Object> params);
 	
 	@POST
 	@Path("/summary")
-	@JsonView(View.GeneSummaryDocument.class)
+	@JsonView(CurationView.GeneSummaryDocument.class)
 	SearchResponse<GeneSummaryDocument> findSummary(@DefaultValue("0") @QueryParam("page") Integer page, @DefaultValue("10") @QueryParam("limit") Integer limit, @RequestBody HashMap<String, Object> params);
 
 }

@@ -4,7 +4,7 @@ import org.alliancegenome.curation_api.interfaces.base.BaseIdCrudInterface;
 import org.alliancegenome.curation_api.model.entities.orthology.GeneToGeneOrthologyGenerated;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.OrthologyIngestFmsDTO;
 import org.alliancegenome.curation_api.response.APIResponse;
-import org.alliancegenome.curation_api.view.View;
+import org.alliancegenome.curation_api.view.CurationView;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 import com.fasterxml.jackson.annotation.JsonView;
@@ -24,6 +24,6 @@ public interface GeneToGeneOrthologyGeneratedCrudInterface extends BaseIdCrudInt
 
 	@POST
 	@Path("/bulk/{dataProvider}/orthologyfile")
-	@JsonView(View.FieldsAndLists.class)
+	@JsonView(CurationView.FieldsAndLists.class)
 	APIResponse updateOrthology(@PathParam("dataProvider") String dataProvider, OrthologyIngestFmsDTO orthologyData);
 }

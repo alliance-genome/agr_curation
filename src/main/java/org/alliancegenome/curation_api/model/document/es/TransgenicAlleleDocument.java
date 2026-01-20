@@ -7,7 +7,7 @@ import org.alliancegenome.curation_api.model.entities.Construct;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.SequenceTargetingReagent;
 import org.alliancegenome.curation_api.model.entities.TransgenicAlleleConstruct;
-import org.alliancegenome.curation_api.view.View;
+import org.alliancegenome.curation_api.view.CurationView;
 import com.fasterxml.jackson.annotation.JsonView;
 
 import lombok.Data;
@@ -15,7 +15,7 @@ import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-@JsonView(View.TransgenicAllelesDocument.class)
+@JsonView(CurationView.TransgenicAllelesDocument.class)
 public class TransgenicAlleleDocument extends ESDocument {
 	{
 		category = "transgenic_allele_annotation";
