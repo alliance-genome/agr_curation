@@ -1,5 +1,6 @@
 package org.alliancegenome.curation_api.interfaces.base;
 
+import org.alliancegenome.curation_api.exceptions.ObjectWarningException;
 import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.model.entities.base.AuditedObject;
 import org.alliancegenome.curation_api.model.ingest.dto.base.BaseDTO;
@@ -15,5 +16,5 @@ public interface BaseUpsertControllerInterface<E extends AuditedObject, T extend
 	@POST
 	@Path("/upsert")
 	@JsonView(CurationView.FieldsOnly.class)
-	E upsert(T dto) throws ValidationException;
+	E upsert(T dto) throws ValidationException, ObjectWarningException;
 }

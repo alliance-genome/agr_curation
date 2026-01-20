@@ -11,6 +11,7 @@ import org.alliancegenome.curation_api.constants.EntityFieldConstants;
 import org.alliancegenome.curation_api.dao.AlleleDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
+import org.alliancegenome.curation_api.exceptions.ObjectWarningException;
 import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.interfaces.base.BasePopularityInterface;
 import org.alliancegenome.curation_api.model.document.es.AlleleSummaryDTO;
@@ -67,7 +68,7 @@ public class AlleleService extends SubmittedObjectCrudService<Allele, AlleleDTO,
 	}
 
 	@Override
-	public Allele upsert(AlleleDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
+	public Allele upsert(AlleleDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException, ObjectWarningException {
 		return alleleDtoValidator.validateAlleleDTO(dto, dataProvider);
 	}
 

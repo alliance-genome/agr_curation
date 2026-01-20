@@ -613,6 +613,7 @@ export const DataLoadsComponent = () => {
 				/>
 				<Column field="failed" header="Failed" body={(rowData) => <NumberTemplate number={rowData.failed} />} />
 				<Column field="skipped" header="Skipped" body={(rowData) => <NumberTemplate number={rowData.skipped} />} />
+				<Column field="warnings" header="Warnings" body={(rowData) => <NumberTemplate number={rowData.warnings} />} />
 				<Column field="total" header="Total" body={(rowData) => <NumberTemplate number={rowData.total} />} />
 			</DataTable>
 		);
