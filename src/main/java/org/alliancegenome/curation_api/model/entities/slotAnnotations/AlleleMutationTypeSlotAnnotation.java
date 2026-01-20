@@ -6,7 +6,7 @@ import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.ontology.SOTerm;
-import org.alliancegenome.curation_api.view.View;
+import org.alliancegenome.curation_api.view.CurationView;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
@@ -51,7 +51,7 @@ public class AlleleMutationTypeSlotAnnotation extends SlotAnnotation {
 			@Index(name = "slotannotation_soterm_mutationtypes_index", columnList = "mutationtypes_id")
 		}
 	)
-	@JsonView({ View.FieldsAndLists.class, View.AlleleView.class, View.AlleleDetailView.class })
+	@JsonView({ CurationView.FieldsAndLists.class, CurationView.AlleleView.class, CurationView.AlleleDetailView.class })
 	private List<SOTerm> mutationTypes;
 
 }

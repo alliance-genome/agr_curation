@@ -7,7 +7,7 @@ import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.entities.associations.ExonGenomicLocationAssociation;
 import org.alliancegenome.curation_api.model.entities.associations.TranscriptExonAssociation;
 import org.alliancegenome.curation_api.model.entities.ontology.SOTerm;
-import org.alliancegenome.curation_api.view.View;
+import org.alliancegenome.curation_api.view.CurationView;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.hibernate.search.engine.backend.types.Aggregable;
 import org.hibernate.search.engine.backend.types.Searchable;
@@ -45,17 +45,17 @@ public class Exon extends GenomicEntity {
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "uniqueId_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({ View.FieldsOnly.class })
+	@JsonView({ CurationView.FieldsOnly.class })
 	@EqualsAndHashCode.Include
 	protected String uniqueId;
 	
-	@JsonView({ View.FieldsOnly.class })
+	@JsonView({ CurationView.FieldsOnly.class })
 	private String name;
 
 	@IndexedEmbedded(includePaths = {"curie", "name", "curie_keyword", "name_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@JsonView({ View.FieldsOnly.class })
+	@JsonView({ CurationView.FieldsOnly.class })
 	private SOTerm exonType;
 
 	@IndexedEmbedded(
@@ -67,11 +67,11 @@ public class Exon extends GenomicEntity {
 		}
 	)
 	@OneToMany(mappedBy = "exonAssociationSubject", cascade = CascadeType.ALL, orphanRemoval = true)
-	@JsonView({ View.FieldsAndLists.class })
+	@JsonView({ CurationView.FieldsAndLists.class })
 	private List<ExonGenomicLocationAssociation> exonGenomicLocationAssociations;
 	
 	@OneToMany(mappedBy = "transcriptExonAssociationObject", cascade = CascadeType.ALL, orphanRemoval = true)
-	@JsonView({ View.FieldsAndLists.class })
+	@JsonView({ CurationView.FieldsAndLists.class })
 	private List<TranscriptExonAssociation> transcriptExonAssociations;
 
 }

@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.entities.base.UniqueIdAuditedObject;
-import org.alliancegenome.curation_api.view.View;
+import org.alliancegenome.curation_api.view.CurationView;
 import org.apache.commons.collections4.CollectionUtils;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.hibernate.annotations.Fetch;
@@ -50,25 +50,25 @@ public class ConditionRelation extends UniqueIdAuditedObject {
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@JsonView({View.FieldsOnly.class, View.ForPublic.class, View.ModelDocument.class})
+	@JsonView({CurationView.FieldsOnly.class, CurationView.ForPublic.class, CurationView.ModelDocument.class})
 	private VocabularyTerm conditionRelationType;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "handle_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({View.FieldsOnly.class})
+	@JsonView({CurationView.FieldsOnly.class})
 	private String handle;
 
 	@IndexedEmbedded(includeDepth = 2)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
 	@Fetch(FetchMode.SELECT)
-	@JsonView({View.FieldsOnly.class})
+	@JsonView({CurationView.FieldsOnly.class})
 	private Reference singleReference;
 
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
-	@JsonView({View.FieldsAndLists.class, View.DiseaseAnnotation.class, View.PhenotypeAnnotationView.class, View.ConditionRelationView.class, View.ForPublic.class, View.ModelDocument.class})
+	@JsonView({CurationView.FieldsAndLists.class, CurationView.DiseaseAnnotation.class, CurationView.PhenotypeAnnotationView.class, CurationView.ConditionRelationView.class, CurationView.ForPublic.class, CurationView.ModelDocument.class})
 	private List<ExperimentalCondition> conditions;
 
 	public void addExperimentCondition(ExperimentalCondition experimentalCondition) {

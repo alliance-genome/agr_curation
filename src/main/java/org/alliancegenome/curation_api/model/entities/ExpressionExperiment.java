@@ -7,7 +7,7 @@ import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.entities.base.SubmittedObject;
 import org.alliancegenome.curation_api.model.entities.ontology.MMOTerm;
-import org.alliancegenome.curation_api.view.View;
+import org.alliancegenome.curation_api.view.CurationView;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 import org.hibernate.search.engine.backend.types.Aggregable;
@@ -48,32 +48,32 @@ public abstract class ExpressionExperiment extends SubmittedObject {
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "uniqueId_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
 	@Column(length = 3500)
-	@JsonView({ View.FieldsOnly.class, View.ForPublic.class })
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.ForPublic.class })
 	@EqualsAndHashCode.Include
 	private String uniqueId;
 
 	@IndexedEmbedded(includePaths = {"geneSymbol.displayText", "geneSymbol.formatText", "geneSymbol.displayText_keyword", "geneSymbol.formatText_keyword", "curie", "curie_keyword", "taxon.curie", "taxon.name", "taxon.curie_keyword", "taxon.name_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@JsonView({ View.FieldsOnly.class, View.ForPublic.class })
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.ForPublic.class })
 	private Gene entityAssayed;
 
 	@IndexedEmbedded(includePaths = {"curie", "primaryCrossReferenceCurie", "crossReferences.referencedCurie", "curie_keyword", "primaryCrossReferenceCurie_keyword", "crossReferences.referencedCurie_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@JsonView({ View.FieldsOnly.class, View.ForPublic.class })
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.ForPublic.class })
 	private Reference singleReference;
 
 	@IndexedEmbedded(includePaths = {"name", "name_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@JsonView({ View.FieldsOnly.class, View.ForPublic.class })
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.ForPublic.class })
 	private MMOTerm expressionAssayUsed;
 
 	@OneToMany(mappedBy = "expressionExperiment", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonManagedReference
 	@Fetch(FetchMode.SUBSELECT)
-	@JsonView({ View.FieldsAndLists.class, View.ForPublic.class })
+	@JsonView({ CurationView.FieldsAndLists.class, CurationView.ForPublic.class })
 	private Set<GeneExpressionAnnotation> expressionAnnotations;
 
 	@IndexedEmbedded(includePaths = {"referencedCurie", "displayName", "resourceDescriptorPage.name", "referencedCurie_keyword", "displayName_keyword", "resourceDescriptorPage.name_keyword"})
@@ -83,7 +83,7 @@ public abstract class ExpressionExperiment extends SubmittedObject {
 		@Index(columnList = "geneexpressionexperiment_id", name = "gee_crossreference_geneexpressionexperiment_index"),
 		@Index(columnList = "crossreferences_id", name = "gee_crossreference_crossreferences_index")
 	})
-	@JsonView({ View.FieldsAndLists.class, View.ForPublic.class, View.GeneExpressionDocument.class })
+	@JsonView({ CurationView.FieldsAndLists.class, CurationView.ForPublic.class, CurationView.GeneExpressionDocument.class })
 	private List<CrossReference> crossReferences;
 
 	@Transient private Allele specimenGenomicModel;

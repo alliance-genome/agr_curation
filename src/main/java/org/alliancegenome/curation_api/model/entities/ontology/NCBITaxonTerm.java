@@ -6,7 +6,7 @@ import java.util.Map;
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.entities.Species;
-import org.alliancegenome.curation_api.view.View;
+import org.alliancegenome.curation_api.view.CurationView;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
@@ -28,7 +28,7 @@ import lombok.ToString;
 public class NCBITaxonTerm extends OntologyTerm {
 
 	@OneToMany(mappedBy = "taxon", cascade = CascadeType.ALL, orphanRemoval = true)
-	@JsonView(View.GeneSummaryDocument.class)
+	@JsonView(CurationView.GeneSummaryDocument.class)
 	private List<Species> species;
 
 	@Transient

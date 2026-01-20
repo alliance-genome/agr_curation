@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
-import org.alliancegenome.curation_api.view.View;
+import org.alliancegenome.curation_api.view.CurationView;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
@@ -47,7 +47,7 @@ public class AGMDiseaseAnnotation extends DiseaseAnnotation {
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
 	@OnDelete(action = OnDeleteAction.CASCADE)
-	@JsonView({View.FieldsOnly.class, View.ForPublic.class})
+	@JsonView({CurationView.FieldsOnly.class, CurationView.ForPublic.class})
 	private AffectedGenomicModel diseaseAnnotationSubject;
 
 	@IndexedEmbedded(includePaths = {
@@ -60,7 +60,7 @@ public class AGMDiseaseAnnotation extends DiseaseAnnotation {
 	})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@JsonView({View.FieldsOnly.class, View.ForPublic.class})
+	@JsonView({CurationView.FieldsOnly.class, CurationView.ForPublic.class})
 	private Gene inferredGene;
 
 	@IndexedEmbedded(includePaths = {
@@ -72,7 +72,7 @@ public class AGMDiseaseAnnotation extends DiseaseAnnotation {
 	})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@JsonView({View.FieldsOnly.class, View.ForPublic.class})
+	@JsonView({CurationView.FieldsOnly.class, CurationView.ForPublic.class})
 	private Allele inferredAllele;
 
 	@IndexedEmbedded(includePaths = {
@@ -93,7 +93,7 @@ public class AGMDiseaseAnnotation extends DiseaseAnnotation {
 					@Index(name = "agmdiseaseannotation_gene_assertedgenes_index", columnList = "assertedgenes_id")
 			}
 	)
-	@JsonView({View.FieldsAndLists.class, View.DiseaseAnnotation.class, View.ForPublic.class})
+	@JsonView({CurationView.FieldsAndLists.class, CurationView.DiseaseAnnotation.class, CurationView.ForPublic.class})
 	private List<Gene> assertedGenes;
 
 	@IndexedEmbedded(includePaths = {
@@ -113,7 +113,7 @@ public class AGMDiseaseAnnotation extends DiseaseAnnotation {
 					@Index(name = "agmdiseaseannotation_allele_assertedalleles_index", columnList = "assertedalleles_id")
 			}
 	)
-	@JsonView({View.FieldsAndLists.class, View.DiseaseAnnotation.class, View.ForPublic.class})
+	@JsonView({CurationView.FieldsAndLists.class, CurationView.DiseaseAnnotation.class, CurationView.ForPublic.class})
 	private List<Allele> assertedAlleles;
 
 	@Transient

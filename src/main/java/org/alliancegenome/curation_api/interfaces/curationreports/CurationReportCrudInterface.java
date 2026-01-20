@@ -3,7 +3,7 @@ package org.alliancegenome.curation_api.interfaces.curationreports;
 import org.alliancegenome.curation_api.interfaces.base.BaseIdCrudInterface;
 import org.alliancegenome.curation_api.model.entities.curationreports.CurationReport;
 import org.alliancegenome.curation_api.response.ObjectResponse;
-import org.alliancegenome.curation_api.view.View;
+import org.alliancegenome.curation_api.view.CurationView;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 import com.fasterxml.jackson.annotation.JsonView;
@@ -23,12 +23,12 @@ public interface CurationReportCrudInterface extends BaseIdCrudInterface<Curatio
 
 	@GET
 	@Path("/{id}")
-	@JsonView(View.ReportHistory.class)
+	@JsonView(CurationView.ReportHistory.class)
 	ObjectResponse<CurationReport> getById(@PathParam("id") Long id);
 
 	@GET
 	@Path("/restart/{id}")
-	@JsonView(View.FieldsOnly.class)
+	@JsonView(CurationView.FieldsOnly.class)
 	ObjectResponse<CurationReport> restartReport(@PathParam("id") Long id);
 
 }

@@ -5,7 +5,7 @@ import java.util.List;
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.entities.base.AuditedObject;
-import org.alliancegenome.curation_api.view.View;
+import org.alliancegenome.curation_api.view.CurationView;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
@@ -23,10 +23,10 @@ import lombok.ToString;
 @AGRCurationSchemaVersion(min = "1.2.4", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AuditedObject.class })
 public class BulkLoadGroup extends AuditedObject {
 
-	@JsonView({ View.FieldsOnly.class })
+	@JsonView({ CurationView.FieldsOnly.class })
 	private String name;
 
-	@JsonView({ View.FieldsOnly.class })
+	@JsonView({ CurationView.FieldsOnly.class })
 	@OneToMany(mappedBy = "group")
 	private List<BulkLoad> loads;
 }

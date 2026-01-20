@@ -5,7 +5,7 @@ import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoad;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFile;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
 import org.alliancegenome.curation_api.response.ObjectResponse;
-import org.alliancegenome.curation_api.view.View;
+import org.alliancegenome.curation_api.view.CurationView;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 import com.fasterxml.jackson.annotation.JsonView;
@@ -25,23 +25,23 @@ import jakarta.ws.rs.core.Response;
 public interface BulkLoadFileHistoryCrudInterface extends BaseIdCrudInterface<BulkLoadFileHistory> {
 	@GET
 	@Path("/{id}/download")
-	@JsonView(View.BulkLoadFileHistoryView.class)
+	@JsonView(CurationView.BulkLoadFileHistoryView.class)
 	@Produces(MediaType.APPLICATION_JSON)
 	Response download(@PathParam("id") Long id);
 
 	@GET
 	@Path("/restartload/{id}")
-	@JsonView(View.FieldsOnly.class)
+	@JsonView(CurationView.FieldsOnly.class)
 	ObjectResponse<BulkLoad> restartBulkLoad(@PathParam("id") Long id);
 	
 	@GET
 	@Path("/stoploadhistory/{id}")
-	@JsonView(View.FieldsOnly.class)
+	@JsonView(CurationView.FieldsOnly.class)
 	ObjectResponse<BulkLoadFile> stopBulkLoadHistory(@PathParam("id") Long id);
 	
 	@GET
 	@Path("/restartloadhistory/{id}")
-	@JsonView(View.FieldsOnly.class)
+	@JsonView(CurationView.FieldsOnly.class)
 	ObjectResponse<BulkLoadFile> restartBulkLoadHistory(@PathParam("id") Long id);
 
 }

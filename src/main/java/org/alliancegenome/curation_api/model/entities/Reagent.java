@@ -6,7 +6,7 @@ import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.bridges.BooleanValueBridge;
 import org.alliancegenome.curation_api.model.entities.base.SubmittedObject;
-import org.alliancegenome.curation_api.view.View;
+import org.alliancegenome.curation_api.view.CurationView;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.hibernate.search.engine.backend.types.Aggregable;
 import org.hibernate.search.engine.backend.types.Searchable;
@@ -55,20 +55,20 @@ public class Reagent extends SubmittedObject {
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "uniqueId_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
 	@Column(length = 2000)
-	@JsonView({View.FieldsOnly.class})
+	@JsonView({CurationView.FieldsOnly.class})
 	@EqualsAndHashCode.Include
 	protected String uniqueId;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "secondaryIdentifiers_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
 	@ElementCollection
-	@JsonView({View.FieldsAndLists.class, View.ConstructView.class})
+	@JsonView({CurationView.FieldsAndLists.class, CurationView.ConstructView.class})
 	@JoinTable(indexes = @Index(name = "reagent_secondaryidentifiers_reagent_index", columnList = "reagent_id"))
 	private List<String> secondaryIdentifiers;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer", valueBridge = @ValueBridgeRef(type = BooleanValueBridge.class))
 	@KeywordField(name = "placeholder_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, valueBridge = @ValueBridgeRef(type = BooleanValueBridge.class))
-	@JsonView({View.FieldsOnly.class, View.ForPublic.class, View.TransgenicAllelesDocument.class})
+	@JsonView({CurationView.FieldsOnly.class, CurationView.ForPublic.class, CurationView.TransgenicAllelesDocument.class})
 	@Column(columnDefinition = "boolean default false", nullable = false)
 	private Boolean placeholder;
 }

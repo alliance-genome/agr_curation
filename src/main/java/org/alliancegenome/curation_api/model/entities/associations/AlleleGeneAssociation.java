@@ -4,7 +4,7 @@ import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.Gene;
-import org.alliancegenome.curation_api.view.View;
+import org.alliancegenome.curation_api.view.CurationView;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
@@ -49,7 +49,7 @@ public class AlleleGeneAssociation extends AlleleGenomicEntityAssociation {
 		"curie_keyword", "alleleSymbol.displayText_keyword", "alleleSymbol.formatText_keyword", "alleleFullName.displayText_keyword",
 		"alleleFullName.formatText_keyword", "primaryExternalId", "primaryExternalId_keyword", "modInternalId", "modInternalId_keyword" })
 	@ManyToOne
-	@JsonView({ View.FieldsOnly.class, View.ForPublic.class })
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.ForPublic.class })
 	@JsonIgnoreProperties({"alleleGeneAssociations", "alleleVariantAssociations"})
 	@Fetch(FetchMode.JOIN)
 	private Allele alleleAssociationSubject;
@@ -60,7 +60,7 @@ public class AlleleGeneAssociation extends AlleleGenomicEntityAssociation {
 		"modInternalId", "modInternalId_keyword" })
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@JsonView({ View.FieldsOnly.class, View.AlleleView.class, View.ForPublic.class })
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.AlleleView.class, CurationView.ForPublic.class })
 	@JsonIgnoreProperties({ "alleleGeneAssociations", "constructGenomicEntityAssociations", "sequenceTargetingReagentGeneAssociations", "transcriptGeneAssociations" })
 	private Gene alleleGeneAssociationObject;
 }

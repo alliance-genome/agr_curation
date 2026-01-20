@@ -7,7 +7,7 @@ import org.alliancegenome.curation_api.model.entities.associations.AgmAlleleAsso
 import org.alliancegenome.curation_api.model.ingest.dto.associations.AgmAlleleAssociationDTO;
 import org.alliancegenome.curation_api.response.APIResponse;
 import org.alliancegenome.curation_api.response.ObjectResponse;
-import org.alliancegenome.curation_api.view.View;
+import org.alliancegenome.curation_api.view.CurationView;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 import com.fasterxml.jackson.annotation.JsonView;
@@ -28,11 +28,11 @@ import jakarta.ws.rs.core.MediaType;
 public interface AgmAlleleAssociationCrudInterface extends BaseIdCrudInterface<AgmAlleleAssociation> {
 	@GET
 	@Path("/findBy")
-	@JsonView(View.FieldsAndLists.class)
+	@JsonView(CurationView.FieldsAndLists.class)
 	ObjectResponse<AgmAlleleAssociation> getAssociation(@QueryParam("agmId") Long agmId, @QueryParam("relationName") String relationName, @QueryParam("alleleId") Long alleleId);
 
 	@POST
 	@Path("/bulk/{dataProvider}/associationFile")
-	@JsonView(View.FieldsAndLists.class)
+	@JsonView(CurationView.FieldsAndLists.class)
 	APIResponse updateAgmAlleleAssociations(@PathParam("dataProvider") String dataProvider, List<AgmAlleleAssociationDTO> associationData);
 }

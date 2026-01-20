@@ -7,7 +7,7 @@ import org.alliancegenome.curation_api.model.entities.associations.AlleleGeneAss
 import org.alliancegenome.curation_api.model.ingest.dto.associations.AlleleGeneAssociationDTO;
 import org.alliancegenome.curation_api.response.APIResponse;
 import org.alliancegenome.curation_api.response.ObjectResponse;
-import org.alliancegenome.curation_api.view.View;
+import org.alliancegenome.curation_api.view.CurationView;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 import com.fasterxml.jackson.annotation.JsonView;
@@ -29,16 +29,16 @@ public interface AlleleGeneAssociationCrudInterface extends BaseIdCrudInterface<
 
 	@POST
 	@Path("/bulk/{dataProvider}/associationFile")
-	@JsonView(View.FieldsAndLists.class)
+	@JsonView(CurationView.FieldsAndLists.class)
 	APIResponse updateAlleleGeneAssociations(@PathParam("dataProvider") String dataProvider, List<AlleleGeneAssociationDTO> associationData);
 	
 	@GET
 	@Path("/findBy")
-	@JsonView(View.FieldsAndLists.class)
+	@JsonView(CurationView.FieldsAndLists.class)
 	ObjectResponse<AlleleGeneAssociation> getAssociation(@QueryParam("alleleId") Long alleleId, @QueryParam("relationName") String relationName, @QueryParam("geneId") Long geneId);
 	
 	@POST
 	@Path("/validate")
-	@JsonView(View.FieldsAndLists.class)
+	@JsonView(CurationView.FieldsAndLists.class)
 	ObjectResponse<AlleleGeneAssociation> validate(AlleleGeneAssociation entity);
 }

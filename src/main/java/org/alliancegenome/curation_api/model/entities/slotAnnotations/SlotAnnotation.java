@@ -6,7 +6,7 @@ import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.entities.InformationContentEntity;
 import org.alliancegenome.curation_api.model.entities.base.AuditedObject;
-import org.alliancegenome.curation_api.view.View;
+import org.alliancegenome.curation_api.view.CurationView;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.hibernate.search.mapper.pojo.automaticindexing.ReindexOnUpdate;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmbedded;
@@ -66,7 +66,7 @@ public class SlotAnnotation extends AuditedObject {
 		@Index(name = "slotannotation_informationcontententity_slotannotation_index", columnList = "slotannotation_id"),
 		@Index(name = "slotannotation_informationcontententity_evidence_index", columnList = "evidence_id")
 	})
-	@JsonView({ View.FieldsAndLists.class, View.AffectedGenomicModelView.class, View.AlleleView.class, View.AlleleDetailView.class, View.GeneView.class, View.ConstructView.class })
+	@JsonView({ CurationView.FieldsAndLists.class, CurationView.AffectedGenomicModelView.class, CurationView.AlleleView.class, CurationView.AlleleDetailView.class, CurationView.GeneView.class, CurationView.ConstructView.class })
 	private List<InformationContentEntity> evidence;
 
 }

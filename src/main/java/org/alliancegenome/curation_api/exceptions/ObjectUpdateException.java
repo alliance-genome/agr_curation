@@ -3,7 +3,7 @@ package org.alliancegenome.curation_api.exceptions;
 import java.util.Collection;
 
 import org.alliancegenome.curation_api.config.RestDefaultObjectMapper;
-import org.alliancegenome.curation_api.view.View;
+import org.alliancegenome.curation_api.view.CurationView;
 
 import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -35,13 +35,13 @@ public class ObjectUpdateException extends ValidationException {
 
 		private static ObjectMapper mapper = new RestDefaultObjectMapper().getMapper();
 
-		@JsonView({ View.FieldsOnly.class })
+		@JsonView({ CurationView.FieldsOnly.class })
 		private String jsonObject;
-		@JsonView({ View.FieldsOnly.class })
+		@JsonView({ CurationView.FieldsOnly.class })
 		private String message;
-		@JsonView({ View.FieldsOnly.class })
+		@JsonView({ CurationView.FieldsOnly.class })
 		private Collection<String> messages;
-		@JsonView({ View.FieldsOnly.class })
+		@JsonView({ CurationView.FieldsOnly.class })
 		private StackTraceElement[] stackTraceElements;
 
 		public ObjectUpdateExceptionData(Object updateObject, Collection<String> messages, StackTraceElement[] stackTraceElements) {

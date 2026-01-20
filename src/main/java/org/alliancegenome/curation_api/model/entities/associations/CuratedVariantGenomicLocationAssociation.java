@@ -13,8 +13,8 @@ import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.PredictedVariantConsequence;
-import org.alliancegenome.curation_api.view.View;
-import org.alliancegenome.curation_api.view.View.VariantView;
+import org.alliancegenome.curation_api.view.CurationView;
+import org.alliancegenome.curation_api.view.CurationView.VariantView;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmbedded;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
@@ -68,7 +68,7 @@ public class CuratedVariantGenomicLocationAssociation extends VariantGenomicLoca
 	)
 	@OneToMany(mappedBy = "variantGenomicLocation", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonManagedReference
-	@JsonView({View.FieldsAndLists.class, VariantView.class})
+	@JsonView({CurationView.FieldsAndLists.class, VariantView.class})
 	private List<PredictedVariantConsequence> predictedVariantConsequences;
 
 	@Transient

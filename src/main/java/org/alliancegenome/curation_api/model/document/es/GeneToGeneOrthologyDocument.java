@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.alliancegenome.curation_api.model.entities.orthology.GeneToGeneOrthologyGenerated;
-import org.alliancegenome.curation_api.view.View;
+import org.alliancegenome.curation_api.view.CurationView;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
@@ -13,7 +13,7 @@ import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-@JsonView(View.GeneToGeneOrthologyDocument.class)
+@JsonView(CurationView.GeneToGeneOrthologyDocument.class)
 public class GeneToGeneOrthologyDocument extends ESDocument {
 	{
 		category = "gene_to_gene_orthology";

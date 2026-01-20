@@ -5,7 +5,7 @@ import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.entities.AssemblyComponent;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.LocationAssociation;
-import org.alliancegenome.curation_api.view.View;
+import org.alliancegenome.curation_api.view.CurationView;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
@@ -61,7 +61,7 @@ public class GeneGenomicLocationAssociation extends LocationAssociation {
 		"transcriptGeneAssociations",
 		"alleleGeneAssociations"
 	})
-	@JsonView({ View.FieldsOnly.class })
+	@JsonView({ CurationView.FieldsOnly.class })
 	private Gene geneAssociationSubject;
 
 	@IndexedEmbedded(includePaths = {
@@ -69,14 +69,14 @@ public class GeneGenomicLocationAssociation extends LocationAssociation {
 		"modInternalId", "modInternalId_keyword", "name", "name_keyword"
 	})
 	@ManyToOne
-	@JsonView({ View.FieldsOnly.class, View.GeneSummaryDocument.class })
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.GeneSummaryDocument.class })
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@Fetch(FetchMode.JOIN)
 	private AssemblyComponent geneGenomicLocationAssociationObject;
 	
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "strand_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({ View.FieldsOnly.class, View.GeneSummaryDocument.class })
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.GeneSummaryDocument.class })
 	@Column(length = 1)
 	private String strand;
 }

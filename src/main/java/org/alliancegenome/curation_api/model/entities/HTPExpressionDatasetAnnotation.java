@@ -5,7 +5,7 @@ import java.util.List;
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.entities.base.AuditedObject;
-import org.alliancegenome.curation_api.view.View;
+import org.alliancegenome.curation_api.view.CurationView;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
@@ -56,7 +56,7 @@ public class HTPExpressionDatasetAnnotation extends AuditedObject {
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-	@JsonView({ View.FieldsOnly.class })
+	@JsonView({ CurationView.FieldsOnly.class })
 	private ExternalDataBaseEntity htpExpressionDataset;
 
 	@IndexedEmbedded(includeDepth = 1)
@@ -67,10 +67,10 @@ public class HTPExpressionDatasetAnnotation extends AuditedObject {
 		@Index(name = "htpdatasetannotation_externaldatabaseentity_htpdataset_index", columnList = "htpexpressiondatasetannotation_id"),
 		@Index(name = "htpdatasetannotation_externaldatabaseentity_subseries_index", columnList = "subseries_id")
 	})
-	@JsonView({ View.FieldsAndLists.class })
+	@JsonView({ CurationView.FieldsAndLists.class })
 	private List<ExternalDataBaseEntity> subSeries;
 
-	@JsonView({ View.FieldsOnly.class })
+	@JsonView({ CurationView.FieldsOnly.class })
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "name_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
 	@Column(columnDefinition = "TEXT")
@@ -84,16 +84,16 @@ public class HTPExpressionDatasetAnnotation extends AuditedObject {
 		@Index(name = "htpdatasetannotation_reference_htpdataset_index", columnList = "htpexpressiondatasetannotation_id"),
 		@Index(name = "htpdatasetannotation_reference_references_index", columnList = "references_id")
 	})
-	@JsonView({ View.FieldsAndLists.class })
+	@JsonView({ CurationView.FieldsAndLists.class })
 	private List<Reference> references;
 
 	@IndexedEmbedded(includePaths = { "freeText", "noteType.name", "references.curie", "references.primaryCrossReferenceCurie", "freeText_keyword", "noteType.name_keyword", "references.curie_keyword", "references.primaryCrossReferenceCurie_keyword" })
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-	@JsonView({ View.FieldsOnly.class })
+	@JsonView({ CurationView.FieldsOnly.class })
 	private Note relatedNote;
 
-	@JsonView({ View.FieldsOnly.class })
+	@JsonView({ CurationView.FieldsOnly.class })
 	@GenericField(projectable = Projectable.YES, sortable = Sortable.YES)
 	private Integer numberOfChannels;
 
@@ -101,7 +101,7 @@ public class HTPExpressionDatasetAnnotation extends AuditedObject {
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
 	@OnDelete(action = OnDeleteAction.CASCADE)
-	@JsonView({ View.FieldsAndLists.class })
+	@JsonView({ CurationView.FieldsAndLists.class })
 	@JoinTable(name = "htpexpressiondatasetannotation_categorytags", indexes = { @Index(name = "htpdatasetannotation_htpdatasetid_index", columnList = "htpexpressiondatasetannotation_id"), @Index(name = "htpdatasetannotation_categorytags_index", columnList = "categorytags_id")})
 	List<VocabularyTerm> categoryTags;
 
@@ -112,14 +112,14 @@ public class HTPExpressionDatasetAnnotation extends AuditedObject {
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
 	@Fetch(FetchMode.SELECT)
-	@JsonView({ View.FieldsOnly.class })
+	@JsonView({ CurationView.FieldsOnly.class })
 	protected Organization dataProvider;
 	
 	@IndexedEmbedded(includePaths = {"displayName", "referencedCurie", "displayName_keyword", "referencedCurie_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@OneToOne(orphanRemoval = true)
 	@Fetch(FetchMode.SELECT)
-	@JsonView({ View.FieldsOnly.class })
+	@JsonView({ CurationView.FieldsOnly.class })
 	private CrossReference dataProviderCrossReference;
 
 }

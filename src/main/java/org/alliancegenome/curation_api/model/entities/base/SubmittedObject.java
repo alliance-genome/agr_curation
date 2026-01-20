@@ -7,7 +7,7 @@ import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.Note;
 import org.alliancegenome.curation_api.model.entities.Organization;
-import org.alliancegenome.curation_api.view.View;
+import org.alliancegenome.curation_api.view.CurationView;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.hibernate.annotations.Fetch;
@@ -46,20 +46,20 @@ public class SubmittedObject extends CurieObject {
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "primaryExternalId_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({View.FieldsOnly.class,
-			View.ForPublic.class,
-			View.GeneToGeneOrthologyDocument.class,
-			View.GeneSummaryDocument.class,
-			View.ModelDocument.class,
-			View.TransgenicAllelesDocument.class,
-			View.AlleleSummaryDocument.class,
-			View.VariantDetailView.class,
-			View.GeneExpressionDocument.class })
+	@JsonView({CurationView.FieldsOnly.class,
+			CurationView.ForPublic.class,
+			CurationView.GeneToGeneOrthologyDocument.class,
+			CurationView.GeneSummaryDocument.class,
+			CurationView.ModelDocument.class,
+			CurationView.TransgenicAllelesDocument.class,
+			CurationView.AlleleSummaryDocument.class,
+			CurationView.VariantDetailView.class,
+			CurationView.GeneExpressionDocument.class })
 	private String primaryExternalId;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "modInternalId_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({View.FieldsOnly.class, View.TransgenicAllelesDocument.class})
+	@JsonView({CurationView.FieldsOnly.class, CurationView.TransgenicAllelesDocument.class})
 	private String modInternalId;
 
 	@IndexedEmbedded(includePaths = {
@@ -69,20 +69,20 @@ public class SubmittedObject extends CurieObject {
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
 	@Fetch(FetchMode.SELECT)
-	@JsonView({View.FieldsOnly.class, View.GeneSummaryDocument.class, View.ModelDocument.class})
+	@JsonView({CurationView.FieldsOnly.class, CurationView.GeneSummaryDocument.class, CurationView.ModelDocument.class})
 	private Organization dataProvider;
 
 	@IndexedEmbedded(includePaths = {"displayName", "referencedCurie", "displayName_keyword", "referencedCurie_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@OneToOne(orphanRemoval = true)
 	@Fetch(FetchMode.SELECT)
-	@JsonView({View.FieldsOnly.class, View.AlleleSummaryDocument.class, View.AlleleForPublic.class, View.TransgenicAllelesDocument.class, View.ModelDocument.class, View.ForPublic.class})
+	@JsonView({CurationView.FieldsOnly.class, CurationView.AlleleSummaryDocument.class, CurationView.AlleleForPublic.class, CurationView.TransgenicAllelesDocument.class, CurationView.ModelDocument.class, CurationView.ForPublic.class})
 	private CrossReference dataProviderCrossReference;
 
 	@IndexedEmbedded(includePaths = {"freeText", "freeText_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-	@JsonView({ View.FieldsAndLists.class, View.AlleleView.class, View.AlleleDetailView.class, View.GeneView.class, View.AffectedGenomicModelView.class, View.ConstructView.class, View.VariantView.class, View.AlleleSummaryDocument.class })
+	@JsonView({ CurationView.FieldsAndLists.class, CurationView.AlleleView.class, CurationView.AlleleDetailView.class, CurationView.GeneView.class, CurationView.AffectedGenomicModelView.class, CurationView.ConstructView.class, CurationView.VariantView.class, CurationView.AlleleSummaryDocument.class })
 	@JoinTable(
 		joinColumns = @JoinColumn(name = "submittedobject_id"),
 		inverseJoinColumns = @JoinColumn(name = "relatednotes_id"),

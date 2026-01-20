@@ -11,7 +11,7 @@ import org.alliancegenome.curation_api.model.entities.associations.ConstructGeno
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.AgmFullNameSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.AgmSecondaryIdSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.AgmSynonymSlotAnnotation;
-import org.alliancegenome.curation_api.view.View;
+import org.alliancegenome.curation_api.view.CurationView;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.hibernate.search.mapper.pojo.automaticindexing.ReindexOnUpdate;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
@@ -57,13 +57,13 @@ public class AffectedGenomicModel extends GenomicEntity {
 	@IndexedEmbedded(includePaths = {"name", "name_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@JsonView({View.FieldsOnly.class, View.ForPublic.class, View.ModelDocument.class})
+	@JsonView({CurationView.FieldsOnly.class, CurationView.ForPublic.class, CurationView.ModelDocument.class})
 	private VocabularyTerm subtype;
 
 	@IndexedEmbedded(includePaths = {"secondaryId", "evidence.curie", "secondaryId_keyword", "evidence.curie_keyword"})
 	@OneToMany(mappedBy = "singleAgm", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonManagedReference
-	@JsonView({View.FieldsAndLists.class, View.AffectedGenomicModelView.class})
+	@JsonView({CurationView.FieldsAndLists.class, CurationView.AffectedGenomicModelView.class})
 	private List<AgmSecondaryIdSlotAnnotation> agmSecondaryIds;
 
 
@@ -74,19 +74,19 @@ public class AffectedGenomicModel extends GenomicEntity {
 		"constructAssociationSubject.constructFullName.displayText_keyword", "constructAssociationSubject.constructFullName.formatText_keyword", "constructAssociationSubject.primaryExternalId_keyword"
 	})
 	@OneToMany(mappedBy = "constructGenomicEntityAssociationObject", cascade = CascadeType.ALL, orphanRemoval = true)
-	@JsonView({View.FieldsAndLists.class, View.GeneDetailView.class})
+	@JsonView({CurationView.FieldsAndLists.class, CurationView.GeneDetailView.class})
 	private List<ConstructGenomicEntityAssociation> constructGenomicEntityAssociations;
 
 	@IndexedEmbedded(includePaths = { "displayText", "formatText", "nameType.name", "synonymScope.name", "evidence.curie", "displayText_keyword", "formatText_keyword", "nameType.name_keyword", "synonymScope.name_keyword", "evidence.curie_keyword"})
 	@OneToOne(mappedBy = "singleAgm", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonManagedReference
-	@JsonView({ View.FieldsOnly.class, View.AffectedGenomicModelView.class, View.ForPublic.class, View.ModelDocument.class })
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.AffectedGenomicModelView.class, CurationView.ForPublic.class, CurationView.ModelDocument.class })
 	private AgmFullNameSlotAnnotation agmFullName;
 
 	@IndexedEmbedded(includePaths = { "displayText", "formatText", "nameType.name", "synonymScope.name", "evidence.curie", "displayText_keyword", "formatText_keyword", "nameType.name_keyword", "synonymScope.name_keyword", "evidence.curie_keyword"})
 	@OneToMany(mappedBy = "singleAgm", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonManagedReference
-	@JsonView({ View.FieldsAndLists.class, View.AffectedGenomicModelView.class })
+	@JsonView({ CurationView.FieldsAndLists.class, CurationView.AffectedGenomicModelView.class })
 	private List<AgmSynonymSlotAnnotation> agmSynonyms;
 
 	@IndexedEmbedded(includePaths = {
@@ -98,11 +98,11 @@ public class AffectedGenomicModel extends GenomicEntity {
 		"agmSequenceTargetingReagentAssociationObject.secondaryIdentifiers_keyword"
 	})
 	@OneToMany(mappedBy = "agmAssociationSubject", cascade = CascadeType.ALL, orphanRemoval = true)
-	@JsonView({View.FieldsAndLists.class, View.AffectedGenomicModelDetailView.class})
+	@JsonView({CurationView.FieldsAndLists.class, CurationView.AffectedGenomicModelDetailView.class})
 	private List<AgmSequenceTargetingReagentAssociation> agmSequenceTargetingReagentAssociations;
 
 	@OneToMany(mappedBy = "agmAssociationSubject", cascade = CascadeType.ALL, orphanRemoval = true)
-	@JsonView({View.FieldsAndLists.class, View.AffectedGenomicModelDetailView.class})
+	@JsonView({CurationView.FieldsAndLists.class, CurationView.AffectedGenomicModelDetailView.class})
 	private List<AgmAlleleAssociation> components;
 
 	@IndexedEmbedded(includePaths = {
@@ -114,6 +114,6 @@ public class AffectedGenomicModel extends GenomicEntity {
 		"agmAgmAssociationObject.secondaryIdentifiers_keyword"
 	})
 	@OneToMany(mappedBy = "agmAssociationSubject", cascade = CascadeType.ALL, orphanRemoval = true)
-	@JsonView({View.FieldsAndLists.class, View.AffectedGenomicModelDetailView.class})
+	@JsonView({CurationView.FieldsAndLists.class, CurationView.AffectedGenomicModelDetailView.class})
 	private List<AgmAgmAssociation> parentalPopulations;
 }

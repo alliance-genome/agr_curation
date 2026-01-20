@@ -7,7 +7,7 @@ import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.entities.associations.AlleleVariantAssociation;
 import org.alliancegenome.curation_api.model.entities.associations.CuratedVariantGenomicLocationAssociation;
 import org.alliancegenome.curation_api.model.entities.ontology.SOTerm;
-import org.alliancegenome.curation_api.view.View;
+import org.alliancegenome.curation_api.view.CurationView;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 import org.hibernate.search.mapper.pojo.automaticindexing.ReindexOnUpdate;
@@ -46,20 +46,20 @@ public class Variant extends GenomicEntity {
 	@IndexedEmbedded(includePaths = {"curie", "name", "curie_keyword", "name_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@JsonView({ View.FieldsOnly.class })
+	@JsonView({ CurationView.FieldsOnly.class })
 	private SOTerm variantType;
 
 	@IndexedEmbedded(includePaths = {"name", "name_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@JsonView({ View.FieldsOnly.class })
+	@JsonView({ CurationView.FieldsOnly.class })
 	@Fetch(FetchMode.JOIN)
 	private VocabularyTerm variantStatus;
 
 	@IndexedEmbedded(includePaths = {"curie", "name", "curie_keyword", "name_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@JsonView({ View.FieldsOnly.class })
+	@JsonView({ CurationView.FieldsOnly.class })
 	private SOTerm sourceGeneralConsequence;
 
 	@IndexedEmbedded(
@@ -71,17 +71,17 @@ public class Variant extends GenomicEntity {
 		}
 	)
 	@OneToMany(mappedBy = "variantAssociationSubject", cascade = CascadeType.ALL, orphanRemoval = true)
-	@JsonView({ View.FieldsAndLists.class, View.VariantDetailView.class })
+	@JsonView({ CurationView.FieldsAndLists.class, CurationView.VariantDetailView.class })
 	private List<CuratedVariantGenomicLocationAssociation> curatedVariantGenomicLocations;
 
 	@OneToMany(mappedBy = "alleleVariantAssociationObject", cascade = CascadeType.ALL, orphanRemoval = true)
-	@JsonView({ View.FieldsAndLists.class, View.VariantDetailView.class })
+	@JsonView({ CurationView.FieldsAndLists.class, CurationView.VariantDetailView.class })
 	private List<AlleleVariantAssociation> alleleVariantAssociations;
 
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ElementCollection
 	@JoinTable(indexes = @Index(name = "variant_synonyms_variant_index", columnList = "variant_id"))
-	@JsonView({ View.FieldsAndLists.class, View.VariantView.class })
+	@JsonView({ CurationView.FieldsAndLists.class, CurationView.VariantView.class })
 	private List<String> synonyms;
 
 	@IndexedEmbedded(
@@ -97,6 +97,6 @@ public class Variant extends GenomicEntity {
 		@Index(name = "variant_reference_variant_index", columnList = "variant_id"),
 		@Index(name = "variant_reference_references_index", columnList = "references_id")
 	})
-	@JsonView({ View.FieldsAndLists.class, View.VariantView.class })
+	@JsonView({ CurationView.FieldsAndLists.class, CurationView.VariantView.class })
 	private List<Reference> references;
 }

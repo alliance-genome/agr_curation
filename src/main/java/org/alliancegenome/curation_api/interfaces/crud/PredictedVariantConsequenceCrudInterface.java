@@ -6,7 +6,7 @@ import org.alliancegenome.curation_api.interfaces.base.BaseIdCrudInterface;
 import org.alliancegenome.curation_api.model.entities.PredictedVariantConsequence;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.VepTxtDTO;
 import org.alliancegenome.curation_api.response.APIResponse;
-import org.alliancegenome.curation_api.view.View;
+import org.alliancegenome.curation_api.view.CurationView;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 import com.fasterxml.jackson.annotation.JsonView;
@@ -26,12 +26,12 @@ public interface PredictedVariantConsequenceCrudInterface extends BaseIdCrudInte
 
 	@POST
 	@Path("/bulk/{dataProvider}/transcriptConsequenceFile")
-	@JsonView(View.FieldsAndLists.class)
+	@JsonView(CurationView.FieldsAndLists.class)
 	APIResponse updateTranscriptLevelConsequences(@PathParam("dataProvider") String dataProvider, List<VepTxtDTO> consequenceData);
 	
 	@POST
 	@Path("/bulk/{dataProvider}/geneConsequenceFile")
-	@JsonView(View.FieldsAndLists.class)
+	@JsonView(CurationView.FieldsAndLists.class)
 	APIResponse updateGeneLevelConsequences(@PathParam("dataProvider") String dataProvider, List<VepTxtDTO> consequenceData);
 
 }

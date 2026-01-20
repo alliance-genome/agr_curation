@@ -6,7 +6,7 @@ import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.enums.JobStatus;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.entities.base.AuditedObject;
-import org.alliancegenome.curation_api.view.View;
+import org.alliancegenome.curation_api.view.CurationView;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
@@ -29,36 +29,36 @@ public class CurationReportHistory extends AuditedObject {
 	@ManyToOne
 	private CurationReport curationReport;
 
-	@JsonView({ View.FieldsOnly.class })
+	@JsonView({ CurationView.FieldsOnly.class })
 	private LocalDateTime curationReportTimestamp;
 
-	@JsonView({ View.FieldsAndLists.class })
+	@JsonView({ CurationView.FieldsAndLists.class })
 	private String pdfFilePath;
 
-	@JsonView({ View.FieldsAndLists.class })
+	@JsonView({ CurationView.FieldsAndLists.class })
 	private String xlsFilePath;
 
-	@JsonView({ View.FieldsAndLists.class })
+	@JsonView({ CurationView.FieldsAndLists.class })
 	private String htmlFilePath;
 
-	@JsonView({ View.FieldsOnly.class })
+	@JsonView({ CurationView.FieldsOnly.class })
 	@Enumerated(EnumType.STRING)
 	private JobStatus curationReportStatus;
 
 	@Transient
-	@JsonView({ View.FieldsOnly.class })
+	@JsonView({ CurationView.FieldsOnly.class })
 	public String pdfUrl() {
 		return "https://agr-curation-files.s3.amazonaws.com/" + pdfFilePath;
 	}
 
 	@Transient
-	@JsonView({ View.FieldsOnly.class })
+	@JsonView({ CurationView.FieldsOnly.class })
 	public String xlsUrl() {
 		return "https://agr-curation-files.s3.amazonaws.com/" + xlsFilePath;
 	}
 
 	@Transient
-	@JsonView({ View.FieldsOnly.class })
+	@JsonView({ CurationView.FieldsOnly.class })
 	public String htmlUrl() {
 		return "https://agr-curation-files.s3.amazonaws.com/" + htmlFilePath;
 	}

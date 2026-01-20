@@ -6,7 +6,7 @@ import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.entities.associations.AgmSequenceTargetingReagentAssociation;
 import org.alliancegenome.curation_api.model.entities.associations.SequenceTargetingReagentGeneAssociation;
-import org.alliancegenome.curation_api.view.View;
+import org.alliancegenome.curation_api.view.CurationView;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
@@ -43,7 +43,7 @@ import lombok.ToString;
 public class SequenceTargetingReagent extends GenomicEntity {
 
 	@Column(columnDefinition = "TEXT")
-	@JsonView({ View.FieldsOnly.class, View.ForPublic.class })
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.ForPublic.class })
 	private String name;
 
 	@IndexedEmbedded(includePaths = {"curie", "primaryCrossReferenceCurie", "crossReferences.referencedCurie", "curie_keyword", "primaryCrossReferenceCurie_keyword", "crossReferences.referencedCurie_keyword"})
@@ -54,26 +54,26 @@ public class SequenceTargetingReagent extends GenomicEntity {
 		@Index(name = "sequencetargetingreagent_reference_sqtr_index", columnList = "sequencetargetingreagent_id"),
 		@Index(name = "sequencetargetingreagent_reference_references_index", columnList = "references_id")
 	})
-	@JsonView({ View.FieldsAndLists.class, View.SequenceTargetingReagentView.class })
+	@JsonView({ CurationView.FieldsAndLists.class, CurationView.SequenceTargetingReagentView.class })
 	private List<Reference> references;
 
 	@ElementCollection
 	@JoinTable(indexes = @Index(name = "sqtr_synonyms_sqtr_index", columnList = "sequencetargetingreagent_id"))
-	@JsonView({ View.FieldsAndLists.class, View.SequenceTargetingReagentView.class })
+	@JsonView({ CurationView.FieldsAndLists.class, CurationView.SequenceTargetingReagentView.class })
 	private List<String> synonyms;
 	
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "secondaryIdentifiers_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
 	@ElementCollection
 	@JoinTable(indexes = @Index(name = "sqtr_secondaryIdentifiers_sqtr_index", columnList = "sequencetargetingreagent_id"))
-	@JsonView({ View.FieldsAndLists.class, View.SequenceTargetingReagentView.class })
+	@JsonView({ CurationView.FieldsAndLists.class, CurationView.SequenceTargetingReagentView.class })
 	private List<String> secondaryIdentifiers;
 
 	@OneToMany(mappedBy = "sequenceTargetingReagentAssociationSubject", cascade = CascadeType.ALL, orphanRemoval = true)
-	@JsonView({ View.FieldsAndLists.class, View.SequenceTargetingReagentDetailView.class })
+	@JsonView({ CurationView.FieldsAndLists.class, CurationView.SequenceTargetingReagentDetailView.class })
 	private List<SequenceTargetingReagentGeneAssociation> sequenceTargetingReagentGeneAssociations;
 
 	@OneToMany(mappedBy = "agmSequenceTargetingReagentAssociationObject", cascade = CascadeType.ALL, orphanRemoval = true)
-	@JsonView({ View.FieldsAndLists.class, View.SequenceTargetingReagentDetailView.class })
+	@JsonView({ CurationView.FieldsAndLists.class, CurationView.SequenceTargetingReagentDetailView.class })
 	private List<AgmSequenceTargetingReagentAssociation> agmSequenceTargetingReagentAssociations;
 }

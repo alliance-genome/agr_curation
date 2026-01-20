@@ -1,6 +1,6 @@
 package org.alliancegenome.curation_api.response;
 
-import org.alliancegenome.curation_api.view.View;
+import org.alliancegenome.curation_api.view.CurationView;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
 import com.fasterxml.jackson.annotation.JsonView;
@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 @Schema(name = "ObjectResponse", description = "POJO that represents the ObjectResponse")
 public class ObjectResponse<E> extends APIResponse {
 
-	@JsonView({ View.FieldsOnly.class, View.PersonSettingView.class })
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.PersonSettingView.class })
 	private E entity;
 	
 }

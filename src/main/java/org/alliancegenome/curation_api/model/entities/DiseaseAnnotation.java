@@ -9,7 +9,7 @@ import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.bridges.BooleanValueBridge;
 import org.alliancegenome.curation_api.model.entities.ontology.DOTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.ECOTerm;
-import org.alliancegenome.curation_api.view.View;
+import org.alliancegenome.curation_api.view.CurationView;
 import org.apache.commons.collections4.CollectionUtils;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.hibernate.annotations.Fetch;
@@ -84,26 +84,26 @@ public abstract class DiseaseAnnotation extends Annotation {
 		"curie_keyword", "name_keyword", "secondaryIdentifiers_keyword", "synonyms.name_keyword", "namespace_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@JsonView({View.FieldsOnly.class, View.ForPublic.class, View.ModelDocument.class})
+	@JsonView({CurationView.FieldsOnly.class, CurationView.ForPublic.class, CurationView.ModelDocument.class})
 	private DOTerm diseaseAnnotationObject;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer", valueBridge = @ValueBridgeRef(type = BooleanValueBridge.class))
 	@KeywordField(name = "negated_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, valueBridge = @ValueBridgeRef(type = BooleanValueBridge.class))
-	@JsonView({View.FieldsOnly.class, View.ForPublic.class})
+	@JsonView({CurationView.FieldsOnly.class, CurationView.ForPublic.class})
 	@Column(columnDefinition = "boolean default false", nullable = false)
 	private Boolean negated = false;
 
 	@IndexedEmbedded(includePaths = {"name", "name_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@JsonView({View.FieldsOnly.class, View.ForPublic.class})
+	@JsonView({CurationView.FieldsOnly.class, CurationView.ForPublic.class})
 	private VocabularyTerm relation;
 
 	@IndexedEmbedded(includePaths = {"curie", "name", "secondaryIdentifiers", "synonyms.name", "abbreviation",
 		"curie_keyword", "name_keyword", "secondaryIdentifiers_keyword", "synonyms.name_keyword", "abbreviation_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
-	@JsonView({View.FieldsAndLists.class, View.DiseaseAnnotation.class, View.ForPublic.class})
+	@JsonView({CurationView.FieldsAndLists.class, CurationView.DiseaseAnnotation.class, CurationView.ForPublic.class})
 	@JoinTable(
 		joinColumns = @JoinColumn(name = "diseaseannotation_id"),
 		inverseJoinColumns = @JoinColumn(name = "evidencecodes_id"),
@@ -124,7 +124,7 @@ public abstract class DiseaseAnnotation extends Annotation {
 	})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
-	@JsonView({View.FieldsAndLists.class, View.DiseaseAnnotation.class, View.ForPublic.class})
+	@JsonView({CurationView.FieldsAndLists.class, CurationView.DiseaseAnnotation.class, CurationView.ForPublic.class})
 	@JoinTable(
 		joinColumns = @JoinColumn(name = "diseaseannotation_id"),
 		inverseJoinColumns = @JoinColumn(name = "with_id"),
@@ -138,13 +138,13 @@ public abstract class DiseaseAnnotation extends Annotation {
 	@IndexedEmbedded(includePaths = {"name", "name_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@JsonView({View.FieldsOnly.class, View.ForPublic.class})
+	@JsonView({CurationView.FieldsOnly.class, CurationView.ForPublic.class})
 	private VocabularyTerm annotationType;
 
 	@IndexedEmbedded(includePaths = {"name", "name_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
-	@JsonView({View.FieldsAndLists.class, View.DiseaseAnnotation.class, View.ForPublic.class})
+	@JsonView({CurationView.FieldsAndLists.class, CurationView.DiseaseAnnotation.class, CurationView.ForPublic.class})
 	@JoinTable(
 		joinColumns = @JoinColumn(name = "diseaseannotation_id"),
 		inverseJoinColumns = @JoinColumn(name = "diseasequalifiers_id"),
@@ -158,7 +158,7 @@ public abstract class DiseaseAnnotation extends Annotation {
 	@IndexedEmbedded(includePaths = {"name", "name_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@JsonView({View.FieldsOnly.class, View.ForPublic.class})
+	@JsonView({CurationView.FieldsOnly.class, CurationView.ForPublic.class})
 	private VocabularyTerm geneticSex;
 
 	@IndexedEmbedded(includePaths = {
@@ -168,14 +168,14 @@ public abstract class DiseaseAnnotation extends Annotation {
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
 	@Fetch(FetchMode.SELECT)
-	@JsonView({ View.FieldsOnly.class, View.ForPublic.class })
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.ForPublic.class })
 	private Organization secondaryDataProvider;
 
 	@IndexedEmbedded(includePaths = {"displayName", "referencedCurie", "displayName_keyword", "referencedCurie_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@OneToOne(orphanRemoval = true)
 	@Fetch(FetchMode.SELECT)
-	@JsonView({ View.FieldsOnly.class, View.ForPublic.class })
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.ForPublic.class })
 	private CrossReference secondaryDataProviderCrossReference;
 
 	@IndexedEmbedded(includePaths = {
@@ -188,7 +188,7 @@ public abstract class DiseaseAnnotation extends Annotation {
 	})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
-	@JsonView({View.FieldsAndLists.class, View.DiseaseAnnotation.class, View.ForPublic.class})
+	@JsonView({CurationView.FieldsAndLists.class, CurationView.DiseaseAnnotation.class, CurationView.ForPublic.class})
 	@JoinTable(
 		name = "diseaseannotation_modifiergene",
 		joinColumns = @JoinColumn(name = "diseaseannotation_id"),
@@ -209,7 +209,7 @@ public abstract class DiseaseAnnotation extends Annotation {
 	})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
-	@JsonView({View.FieldsAndLists.class, View.DiseaseAnnotation.class, View.ForPublic.class})
+	@JsonView({CurationView.FieldsAndLists.class, CurationView.DiseaseAnnotation.class, CurationView.ForPublic.class})
 	@JoinTable(
 		name = "diseaseannotation_modifierallele",
 		joinColumns = @JoinColumn(name = "diseaseannotation_id"),
@@ -224,7 +224,7 @@ public abstract class DiseaseAnnotation extends Annotation {
 	@IndexedEmbedded(includePaths = {"name", "name_keyword", "curie", "curie_keyword", "primaryExternalId", "primaryExternalId_keyword", "modInternalId", "modInternalId_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
-	@JsonView({View.FieldsAndLists.class, View.DiseaseAnnotation.class, View.ForPublic.class})
+	@JsonView({CurationView.FieldsAndLists.class, CurationView.DiseaseAnnotation.class, CurationView.ForPublic.class})
 	@JoinTable(
 		name = "diseaseannotation_modifieragm",
 		joinColumns = @JoinColumn(name = "diseaseannotation_id"),
@@ -253,7 +253,7 @@ public abstract class DiseaseAnnotation extends Annotation {
 	@IndexedEmbedded(includePaths = {"name", "name_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@JsonView({View.FieldsOnly.class, View.ForPublic.class})
+	@JsonView({CurationView.FieldsOnly.class, CurationView.ForPublic.class})
 	private VocabularyTerm diseaseGeneticModifierRelation;
 
 	@Transient

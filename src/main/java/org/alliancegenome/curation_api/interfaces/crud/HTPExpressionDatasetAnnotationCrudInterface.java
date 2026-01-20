@@ -4,7 +4,7 @@ import org.alliancegenome.curation_api.interfaces.base.BaseIdCrudInterface;
 import org.alliancegenome.curation_api.model.entities.HTPExpressionDatasetAnnotation;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.HTPExpressionDatasetAnnotationIngestFmsDTO;
 import org.alliancegenome.curation_api.response.APIResponse;
-import org.alliancegenome.curation_api.view.View;
+import org.alliancegenome.curation_api.view.CurationView;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 import com.fasterxml.jackson.annotation.JsonView;
@@ -24,6 +24,6 @@ public interface HTPExpressionDatasetAnnotationCrudInterface extends BaseIdCrudI
 	
 	@POST
 	@Path("/bulk/{dataProvider}/htpexpressiondatasetannotationfile")
-	@JsonView(View.FieldsAndLists.class)
+	@JsonView(CurationView.FieldsAndLists.class)
 	APIResponse updateHTPExpressionDatasetAnnotation(@PathParam("dataProvider") String dataProvider, HTPExpressionDatasetAnnotationIngestFmsDTO htpDatasetData);
 }

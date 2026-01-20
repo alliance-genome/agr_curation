@@ -3,7 +3,7 @@ package org.alliancegenome.curation_api.interfaces.crud;
 import org.alliancegenome.curation_api.interfaces.base.BaseCurieObjectCrudInterface;
 import org.alliancegenome.curation_api.model.entities.Reference;
 import org.alliancegenome.curation_api.response.ObjectResponse;
-import org.alliancegenome.curation_api.view.View;
+import org.alliancegenome.curation_api.view.CurationView;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 import com.fasterxml.jackson.annotation.JsonView;
@@ -27,6 +27,6 @@ public interface ReferenceCrudInterface extends BaseCurieObjectCrudInterface<Ref
 
 	@GET
 	@Path("/sync/{id}")
-	@JsonView(View.FieldsAndLists.class)
+	@JsonView(CurationView.FieldsAndLists.class)
 	ObjectResponse<Reference> synchroniseReference(@PathParam("id") Long id);
 }

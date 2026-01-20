@@ -2,7 +2,7 @@ package org.alliancegenome.curation_api.model.document.es;
 
 import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.Construct;
-import org.alliancegenome.curation_api.view.View;
+import org.alliancegenome.curation_api.view.CurationView;
 import com.fasterxml.jackson.annotation.JsonView;
 
 import lombok.Data;
@@ -10,7 +10,7 @@ import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode
-@JsonView(View.TransgenicAllelesDocument.class)
+@JsonView(CurationView.TransgenicAllelesDocument.class)
 public class TransgenicAlleleDTO {
 
 	private Allele allele;

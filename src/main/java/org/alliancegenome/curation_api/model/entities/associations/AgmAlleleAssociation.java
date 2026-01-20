@@ -7,7 +7,7 @@ import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.Association;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.GENOTerm;
-import org.alliancegenome.curation_api.view.View;
+import org.alliancegenome.curation_api.view.CurationView;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.hibernate.search.mapper.pojo.automaticindexing.ReindexOnUpdate;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmbedded;
@@ -52,7 +52,7 @@ public class AgmAlleleAssociation extends Association {
 	})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@JsonView({ View.FieldsOnly.class })
+	@JsonView({ CurationView.FieldsOnly.class })
 	@JsonIgnoreProperties({"alleleGeneAssociations", "alleleVariantAssociations"})
 	private Allele agmAlleleAssociationObject;
 
@@ -60,7 +60,7 @@ public class AgmAlleleAssociation extends Association {
 		"curie", "name", "curie_keyword", "name_keyword",
 		"primaryExternalId", "primaryExternalId_keyword", "modInternalId", "modInternalId_keyword" })
 	@ManyToOne
-	@JsonView({ View.FieldsOnly.class })
+	@JsonView({ CurationView.FieldsOnly.class })
 	@JsonIgnoreProperties({"components", "constructGenomicEntityAssociations", "agmSequenceTargetingReagentAssociations"})
 	private AffectedGenomicModel agmAssociationSubject;
 
@@ -68,13 +68,13 @@ public class AgmAlleleAssociation extends Association {
 	"curie_keyword", "name_keyword", "secondaryIdentifiers_keyword", "synonyms.name_keyword", "abbreviation_keyword" })
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@JsonView(View.FieldsOnly.class)
+	@JsonView(CurationView.FieldsOnly.class)
 	private GENOTerm zygosity;
 
 	@IndexedEmbedded(includePaths = { "name", "name_keyword" })
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@JsonView({ View.FieldsOnly.class })
+	@JsonView({ CurationView.FieldsOnly.class })
 	private VocabularyTerm relation;
 
 }

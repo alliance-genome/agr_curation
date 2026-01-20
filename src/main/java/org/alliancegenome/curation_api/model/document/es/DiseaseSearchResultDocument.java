@@ -3,7 +3,7 @@ package org.alliancegenome.curation_api.model.document.es;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.alliancegenome.curation_api.view.View;
+import org.alliancegenome.curation_api.view.CurationView;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
@@ -11,7 +11,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 import lombok.Data;
 
 @Data
-@JsonView(View.DiseaseSearchResultDocument.class)
+@JsonView(CurationView.DiseaseSearchResultDocument.class)
 public class DiseaseSearchResultDocument extends ESDocument {
 
 	{

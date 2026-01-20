@@ -8,7 +8,7 @@ import org.alliancegenome.curation_api.model.entities.base.AuditedObject;
 import org.alliancegenome.curation_api.model.entities.ontology.MMOTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.OBITerm;
-import org.alliancegenome.curation_api.view.View;
+import org.alliancegenome.curation_api.view.CurationView;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
@@ -64,27 +64,27 @@ public class HTPExpressionDatasetSampleAnnotation extends AuditedObject {
 	"curie_keyword", "preferredCrossReference.referencedCurie_keyword", "secondaryIdentifiers_keyword" })
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-	@JsonView({ View.FieldsOnly.class })
+	@JsonView({ CurationView.FieldsOnly.class })
 	private ExternalDataBaseEntity htpExpressionSample;
 	
 	@IndexedEmbedded(includePaths = {"curie", "name", "secondaryIdentifiers", "synonyms.name", "abbreviation",
 	"curie_keyword", "name_keyword", "secondaryIdentifiers_keyword", "synonyms.name_keyword", "abbreviation_keyword" })
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@JsonView(View.FieldsOnly.class)
+	@JsonView(CurationView.FieldsOnly.class)
 	private OBITerm htpExpressionSampleType;
 
 	@IndexedEmbedded(includePaths = {"curie", "name", "secondaryIdentifiers", "synonyms.name", "abbreviation",
 	"curie_keyword", "name_keyword", "secondaryIdentifiers_keyword", "synonyms.name_keyword", "abbreviation_keyword" })
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@JsonView(View.FieldsOnly.class)
+	@JsonView(CurationView.FieldsOnly.class)
 	private MMOTerm expressionAssayUsed;
 
 	@IndexedEmbedded(includePaths = {"age", "whenExpressedStageName", "age_keyword", "whenExpressedStageName_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-	@JsonView({ View.FieldsOnly.class })
+	@JsonView({ CurationView.FieldsOnly.class })
 	private BioSampleAge htpExpressionSampleAge;
 
 	@IndexedEmbedded(includePaths = {"bioSampleAllele.curie", "bioSampleAllele.modInternalId", "bioSampleAllele.primaryExternalId", "bioSampleAllele.primaryExternalId_keyword",
@@ -93,13 +93,13 @@ public class HTPExpressionDatasetSampleAnnotation extends AuditedObject {
 	})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-	@JsonView({ View.FieldsOnly.class })
+	@JsonView({ CurationView.FieldsOnly.class })
 	private BioSampleGenomicInformation genomicInformation;
 
 	@IndexedEmbedded(includePaths = {"channelId", "channelId_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-	@JsonView({ View.FieldsOnly.class })
+	@JsonView({ CurationView.FieldsOnly.class })
 	private MicroarraySampleDetails microarraySampleDetails;
 
 	@IndexedEmbedded(includePaths = {
@@ -109,26 +109,26 @@ public class HTPExpressionDatasetSampleAnnotation extends AuditedObject {
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
 	@Fetch(FetchMode.SELECT)
-	@JsonView({ View.FieldsOnly.class })
+	@JsonView({ CurationView.FieldsOnly.class })
 	protected Organization dataProvider;
 	
 	@IndexedEmbedded(includePaths = {"displayName", "referencedCurie", "displayName_keyword", "referencedCurie_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@OneToOne(orphanRemoval = true)
 	@Fetch(FetchMode.SELECT)
-	@JsonView({ View.FieldsOnly.class })
+	@JsonView({ CurationView.FieldsOnly.class })
 	private CrossReference dataProviderCrossReference;
 
 	@IndexedEmbedded(includePaths = {"name", "name_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@JsonView({ View.FieldsOnly.class })
+	@JsonView({ CurationView.FieldsOnly.class })
 	private VocabularyTerm geneticSex;
 
 	@IndexedEmbedded(includePaths = {"name", "name_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@JsonView({ View.FieldsOnly.class })
+	@JsonView({ CurationView.FieldsOnly.class })
 	private VocabularyTerm sequencingFormat;
 
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
@@ -137,14 +137,14 @@ public class HTPExpressionDatasetSampleAnnotation extends AuditedObject {
 		@Index(name = "htpdatasample_anatomicalsite_htpdatasample_index", columnList = "htpexpressiondatasetsampleannotation_id"),
 		@Index(name = "htpdatasample_anatomicalsite_samplelocations_index", columnList = "htpexpressionsamplelocations_id")
 	})
-	@JsonView({ View.FieldsAndLists.class })
+	@JsonView({ CurationView.FieldsAndLists.class })
 	@Fetch(FetchMode.JOIN)
 	private List<AnatomicalSite> htpExpressionSampleLocations;
 
 	@IndexedEmbedded(includePaths = {"freeText", "freeText_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-	@JsonView({ View.FieldsAndLists.class, View.AlleleView.class })
+	@JsonView({ CurationView.FieldsAndLists.class, CurationView.AlleleView.class })
 	@JoinTable(indexes = {
 		@Index(name = "htpdatasample_note_htpdatasample_index", columnList = "htpexpressiondatasetsampleannotation_id"),
 		@Index(name = "htpdatasample_note_relatednotes_index", columnList = "relatednotes_id")})
@@ -153,20 +153,20 @@ public class HTPExpressionDatasetSampleAnnotation extends AuditedObject {
 	@IndexedEmbedded(includePaths = {"name", "curie", "name_keyword", "curie_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@JsonView({ View.FieldsOnly.class })
+	@JsonView({ CurationView.FieldsOnly.class })
 	private NCBITaxonTerm taxon;
 
-	@JsonView({ View.FieldsOnly.class })
+	@JsonView({ CurationView.FieldsOnly.class })
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "htpexpressionsampletitle_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
 	private String htpExpressionSampleTitle;
 
-	@JsonView({ View.FieldsOnly.class })
+	@JsonView({ CurationView.FieldsOnly.class })
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "abundance_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
 	private String abundance;
 
-	@JsonView({ View.FieldsOnly.class })
+	@JsonView({ CurationView.FieldsOnly.class })
 	@ElementCollection
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "assemblyversions_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
@@ -182,7 +182,7 @@ public class HTPExpressionDatasetSampleAnnotation extends AuditedObject {
 		@Index(name = "htpdatasample_externaldatabaseentity_htpdatasample_index", columnList = "htpexpressiondatasetsampleannotation_id"),
 		@Index(name = "htpdatasample_externaldatabaseentity_datasetids_index", columnList = "datasetids_id")
 	})
-	@JsonView({ View.FieldsAndLists.class })
+	@JsonView({ CurationView.FieldsAndLists.class })
 	private List<ExternalDataBaseEntity> datasetIds;
 
 }
