@@ -16,6 +16,7 @@ import org.alliancegenome.curation_api.dao.loads.BulkLoadFileHistoryDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.enums.JobStatus;
 import org.alliancegenome.curation_api.exceptions.KnownIssueValidationException;
+import org.alliancegenome.curation_api.exceptions.ObjectWarningException;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException.ObjectUpdateExceptionData;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
@@ -44,7 +45,7 @@ import jakarta.inject.Inject;
 public class LoadFileExecutor {
 
 	protected static ObjectMapper mapper = new RestDefaultObjectMapper().getMapper();
-	
+
 	@Inject protected LoadProcessDisplayService loadProcessDisplayService;
 	@Inject protected BulkLoadFileDAO bulkLoadFileDAO;
 	@Inject protected BulkLoadFileHistoryDAO bulkLoadFileHistoryDAO;
@@ -208,7 +209,7 @@ public class LoadFileExecutor {
 	protected <E extends AuditedObject, T extends BaseDTO> boolean runLoad(BaseUpsertServiceInterface<E, T> service, BulkLoadFileHistory history, BackendBulkDataProvider dataProvider, List<T> objectList, List<Long> idsAdded, String countType) {
 		return runLoad(service, history, dataProvider, objectList, idsAdded, true, countType);
 	}
-	
+
 	protected <E extends AuditedObject, T extends BaseDTO> boolean runLoad(BaseUpsertServiceInterface<E, T> service, BulkLoadFileHistory history, BackendBulkDataProvider dataProvider, List<T> objectList, List<Long> idsAdded, Boolean terminateFailing, String countType) {
 		String dataType = "";
 		if (CollectionUtils.isNotEmpty(objectList)) {
@@ -244,6 +245,13 @@ public class LoadFileExecutor {
 					}
 				} catch (ObjectUpdateException e) {
 					history.incrementFailed(countType);
+					addException(history, e.getData());
+				} catch (ObjectWarningException e) {
+					history.incrementCompleted(countType);
+					history.incrementWarnings(countType);
+					if (idsAdded != null) {
+						idsAdded.add(e.getEntityId());
+					}
 					addException(history, e.getData());
 				} catch (KnownIssueValidationException e) {
 					Log.debug(e.getMessage());

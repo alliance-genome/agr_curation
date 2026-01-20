@@ -38,7 +38,9 @@ import org.alliancegenome.curation_api.services.validation.dto.NoteDTOValidator;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 
+import io.quarkus.logging.Log;
 import jakarta.inject.Inject;
 
 public class BaseDTOValidator<E extends Object> {
@@ -267,7 +269,30 @@ public class BaseDTOValidator<E extends Object> {
 
 		return references;
 	}
-	
+
+	protected Pair<List<Reference>, List<String>> validateReferencesWithWarning(List<String> referenceCuries) {
+		List<Reference> validRefs = new ArrayList<>();
+		List<String> skippedCuries = new ArrayList<>();
+
+		if (CollectionUtils.isEmpty(referenceCuries)) {
+			return Pair.of(validRefs, skippedCuries);
+		}
+
+		for (String referenceCurie : referenceCuries) {
+			Reference ref = referenceService.retrieveFromDbOrLiteratureService(referenceCurie);
+			if (ref == null) {
+				Log.info(referenceCurie + " was not found - skipping");
+				skippedCuries.add(referenceCurie);
+			} else {
+				if (!validRefs.contains(ref)) {
+					validRefs.add(ref);
+				}
+			}
+		}
+
+		return Pair.of(validRefs, skippedCuries);
+	}
+
 	protected <N extends OntologyTerm, D extends BaseSQLDAO<N>, S extends BaseOntologyTermService<N, D>> N validateOntologyTerm(S service, String field, String curie) {
 		return validateOntologyTerm(service, field, curie, false);
 	}
