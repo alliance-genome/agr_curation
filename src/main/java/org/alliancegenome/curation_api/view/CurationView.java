@@ -1,6 +1,6 @@
 package org.alliancegenome.curation_api.view;
 
-public class View {
+public class CurationView {
 
 	// Curation Views
 
@@ -114,6 +114,10 @@ public class View {
 
 	public static class VariantDetailView extends VariantView {
 	}
+	
+	public static class VariantIndexerView extends VariantView {
+		
+	}
 
 	public static class GeneInteractionView extends FieldsOnly {
 	}
@@ -150,7 +154,7 @@ public class View {
 	public static class TransgenicAllelesDocument extends ForPublic { }
 
 	public static Class<?> viewLookup(String name) {
-		for (Class<?> innerClass : View.class.getDeclaredClasses()) {
+		for (Class<?> innerClass : CurationView.class.getDeclaredClasses()) {
 			if (innerClass.getSimpleName().equals(name)) {
 				return innerClass;
 			}

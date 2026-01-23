@@ -4,7 +4,7 @@ import java.util.Map;
 
 import org.alliancegenome.curation_api.model.entities.PersonSetting;
 import org.alliancegenome.curation_api.response.ObjectResponse;
-import org.alliancegenome.curation_api.view.View;
+import org.alliancegenome.curation_api.view.CurationView;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
@@ -27,17 +27,17 @@ public interface PersonSettingInterface {
 
 	@GET
 	@Path("/{settingsKey}")
-	@JsonView(View.PersonSettingView.class)
+	@JsonView(CurationView.PersonSettingView.class)
 	ObjectResponse<PersonSetting> getUserSetting(@PathParam("settingsKey") String settingsKey);
 
 	@PUT
 	@Path("/{settingsKey}")
-	@JsonView(View.PersonSettingView.class)
+	@JsonView(CurationView.PersonSettingView.class)
 	ObjectResponse<PersonSetting> saveUserSetting(@PathParam("settingsKey") String settingsKey, @RequestBody Map<String, Object> settingsMap);
 
 	@DELETE
 	@Path("/{settingsKey}")
-	@JsonView(View.PersonSettingView.class)
+	@JsonView(CurationView.PersonSettingView.class)
 	ObjectResponse<PersonSetting> deleteUserSetting(@PathParam("settingsKey") String settingsKey);
 
 }

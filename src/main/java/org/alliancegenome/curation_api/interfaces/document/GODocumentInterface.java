@@ -4,7 +4,7 @@ import java.util.HashMap;
 
 import org.alliancegenome.curation_api.model.document.es.GOSearchResultDocument;
 import org.alliancegenome.curation_api.response.SearchResponse;
-import org.alliancegenome.curation_api.view.View;
+import org.alliancegenome.curation_api.view.CurationView;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
@@ -26,7 +26,7 @@ public interface GODocumentInterface {
 
 	@POST
 	@Path("/searchresult")
-	@JsonView(View.GOSearchResultDocument.class)
+	@JsonView(CurationView.GOSearchResultDocument.class)
 	SearchResponse<GOSearchResultDocument> findSearchResult(@DefaultValue("0") @QueryParam("page") Integer page, @DefaultValue("10") @QueryParam("limit") Integer limit, @RequestBody HashMap<String, Object> params);
 	
 }

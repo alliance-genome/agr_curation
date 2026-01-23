@@ -3,7 +3,7 @@ package org.alliancegenome.curation_api.interfaces.crud.associations;
 import org.alliancegenome.curation_api.interfaces.base.BaseIdCrudInterface;
 import org.alliancegenome.curation_api.model.entities.associations.SequenceTargetingReagentGeneAssociation;
 import org.alliancegenome.curation_api.response.ObjectResponse;
-import org.alliancegenome.curation_api.view.View;
+import org.alliancegenome.curation_api.view.CurationView;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 import com.fasterxml.jackson.annotation.JsonView;
@@ -23,6 +23,6 @@ public interface SequenceTargetingReagentGeneAssociationCrudInterface extends Ba
 
 	@GET
 	@Path("/findBy")
-	@JsonView(View.FieldsAndLists.class)
+	@JsonView(CurationView.FieldsAndLists.class)
 	ObjectResponse<SequenceTargetingReagentGeneAssociation> getAssociation(@QueryParam("sqtrId") Long alleleId, @QueryParam("relationName") String relationName, @QueryParam("geneId") Long geneId);
 }

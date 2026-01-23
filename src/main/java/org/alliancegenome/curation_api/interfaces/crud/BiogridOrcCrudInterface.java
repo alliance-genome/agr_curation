@@ -4,7 +4,7 @@ import org.alliancegenome.curation_api.interfaces.base.crud.BaseCreateController
 import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.BiogridOrcIngestFmsDTO;
 import org.alliancegenome.curation_api.response.APIResponse;
-import org.alliancegenome.curation_api.view.View;
+import org.alliancegenome.curation_api.view.CurationView;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 import com.fasterxml.jackson.annotation.JsonView;
@@ -26,7 +26,7 @@ public interface BiogridOrcCrudInterface extends BaseCreateControllerInterface<C
 
 	@POST
 	@Path("/bulk/{dataProvider}/biogridfile")
-	@JsonView(View.FieldsAndLists.class)
+	@JsonView(CurationView.FieldsAndLists.class)
 	APIResponse updateBiogridOrc(@PathParam("dataProvider") String dataProvider, BiogridOrcIngestFmsDTO biogridOrcData);
 
 }

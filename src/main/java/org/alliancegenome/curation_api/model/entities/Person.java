@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
-import org.alliancegenome.curation_api.view.View;
+import org.alliancegenome.curation_api.view.CurationView;
 import org.hibernate.search.engine.backend.types.Aggregable;
 import org.hibernate.search.engine.backend.types.Searchable;
 import org.hibernate.search.engine.backend.types.Sortable;
@@ -43,70 +43,70 @@ public class Person extends Agent {
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "uniqueId_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
 	@Column(unique = true, length = 2000)
-	@JsonView({ View.FieldsOnly.class })
+	@JsonView({ CurationView.FieldsOnly.class })
 	@EqualsAndHashCode.Include
 	protected String uniqueId;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "firstName_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({ View.FieldsOnly.class, View.PersonSettingView.class })
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.PersonSettingView.class })
 	private String firstName;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "middleName_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({ View.FieldsOnly.class, View.PersonSettingView.class })
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.PersonSettingView.class })
 	private String middleName;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "lastName_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({ View.FieldsOnly.class, View.PersonSettingView.class })
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.PersonSettingView.class })
 	private String lastName;
 
 	@KeywordField(aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES)
 	@ElementCollection
-	@JsonView({ View.FieldsAndLists.class, View.PersonSettingView.class })
+	@JsonView({ CurationView.FieldsAndLists.class, CurationView.PersonSettingView.class })
 	@JoinTable(indexes = @Index(columnList = "person_id"))
 	private List<String> emails;
 
 	@KeywordField(aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES)
 	@ElementCollection
-	@JsonView({ View.FieldsAndLists.class, View.PersonSettingView.class })
+	@JsonView({ CurationView.FieldsAndLists.class, CurationView.PersonSettingView.class })
 	@JoinTable(indexes = @Index(columnList = "person_id"))
 	private List<String> oldEmails;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "orcid_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({ View.FieldsOnly.class, View.PersonSettingView.class })
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.PersonSettingView.class })
 	@Column(unique = true)
 	private String orcid;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "primaryExternalId_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({ View.FieldsOnly.class, View.PersonSettingView.class })
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.PersonSettingView.class })
 	@Column(unique = true)
 	private String primaryExternalId;
 
 	@OneToMany(mappedBy = "person")
-	@JsonView({ View.PersonSettingView.class })
+	@JsonView({ CurationView.PersonSettingView.class })
 	private List<PersonSetting> settings;
 
 	@ManyToOne
-	@JsonView({ View.FieldsOnly.class, View.PersonSettingView.class })
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.PersonSettingView.class })
 	private AllianceMember allianceMember;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "authId_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({ View.PrivateOnlyView.class, View.PersonSettingView.class })
+	@JsonView({ CurationView.PrivateOnlyView.class, CurationView.PersonSettingView.class })
 	@Column(unique = true)
 	private String authId;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "authEmail_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({ View.PrivateOnlyView.class, View.PersonSettingView.class })
+	@JsonView({ CurationView.PrivateOnlyView.class, CurationView.PersonSettingView.class })
 	@Column(unique = true)
 	private String authEmail;
 
-	@JsonView({ View.PrivateOnlyView.class, View.PersonSettingView.class })
+	@JsonView({ CurationView.PrivateOnlyView.class, CurationView.PersonSettingView.class })
 	private String apiToken;
 
 }

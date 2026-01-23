@@ -9,7 +9,7 @@ import org.alliancegenome.curation_api.model.entities.GeneDiseaseAnnotation;
 import org.alliancegenome.curation_api.model.ingest.dto.GeneDiseaseAnnotationDTO;
 import org.alliancegenome.curation_api.response.APIResponse;
 import org.alliancegenome.curation_api.response.ObjectResponse;
-import org.alliancegenome.curation_api.view.View;
+import org.alliancegenome.curation_api.view.CurationView;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 import com.fasterxml.jackson.annotation.JsonView;
@@ -31,29 +31,29 @@ public interface GeneDiseaseAnnotationCrudInterface extends BaseIdCrudInterface<
 
 	@GET
 	@Path("/findBy/{identifier}")
-	@JsonView(View.FieldsAndLists.class)
+	@JsonView(CurationView.FieldsAndLists.class)
 	ObjectResponse<GeneDiseaseAnnotation> getByIdentifier(@PathParam("identifier") String identifier);
 
 	@Override
 	@PUT
 	@Path("/")
-	@JsonView(View.DiseaseAnnotation.class)
+	@JsonView(CurationView.DiseaseAnnotation.class)
 	ObjectResponse<GeneDiseaseAnnotation> update(GeneDiseaseAnnotation entity);
 
 	@Override
 	@POST
 	@Path("/")
-	@JsonView(View.DiseaseAnnotation.class)
+	@JsonView(CurationView.DiseaseAnnotation.class)
 	ObjectResponse<GeneDiseaseAnnotation> create(GeneDiseaseAnnotation entity);
 
 	@POST
 	@Path("/bulk/{dataProvider}/annotationFile")
-	@JsonView(View.FieldsAndLists.class)
+	@JsonView(CurationView.FieldsAndLists.class)
 	APIResponse updateGeneDiseaseAnnotations(@PathParam("dataProvider") String dataProvider, List<GeneDiseaseAnnotationDTO> annotationData);
 
 	@GET
 	@Path("/annotatedGeneList")
-	@JsonView(View.FieldsAndLists.class)
+	@JsonView(CurationView.FieldsAndLists.class)
 	ObjectResponse<Set<String>> geneDiseaseAnnotationMap();
 
 

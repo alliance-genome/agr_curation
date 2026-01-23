@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.alliancegenome.curation_api.model.entities.ontology.GOTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.UBERONTerm;
-import org.alliancegenome.curation_api.view.View;
+import org.alliancegenome.curation_api.view.CurationView;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
@@ -13,7 +13,7 @@ import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-@JsonView(View.ForPublic.class)
+@JsonView(CurationView.ForPublic.class)
 public class GeneExpressionRibbonSummaryDocument extends ESDocument {
 
 	{

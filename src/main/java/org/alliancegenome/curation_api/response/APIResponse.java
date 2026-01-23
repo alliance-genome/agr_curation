@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.alliancegenome.curation_api.view.View;
+import org.alliancegenome.curation_api.view.CurationView;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -16,14 +16,14 @@ import lombok.Data;
 @Data
 public class APIResponse {
 
-	@JsonView({ View.FieldsOnly.class }) private String errorMessage;
+	@JsonView({ CurationView.FieldsOnly.class }) private String errorMessage;
 
-	@JsonView({ View.FieldsOnly.class }) private Map<String, String> errorMessages;
+	@JsonView({ CurationView.FieldsOnly.class }) private Map<String, String> errorMessages;
 
 	@org.eclipse.microprofile.graphql.Ignore
-	@JsonView({ View.FieldsOnly.class }) private Map<String, Object> supplementalData = new HashMap<>();
+	@JsonView({ CurationView.FieldsOnly.class }) private Map<String, Object> supplementalData = new HashMap<>();
 
-	@JsonView({ View.FieldsOnly.class }) private String requestDuration;
+	@JsonView({ CurationView.FieldsOnly.class }) private String requestDuration;
 
 	public void addErrorMessage(String fieldName, String errorMessage) {
 		if (errorMessages == null) {

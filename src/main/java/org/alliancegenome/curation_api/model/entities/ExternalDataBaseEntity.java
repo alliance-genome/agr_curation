@@ -5,7 +5,7 @@ import java.util.List;
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.entities.base.CurieObject;
-import org.alliancegenome.curation_api.view.View;
+import org.alliancegenome.curation_api.view.CurationView;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
@@ -42,7 +42,7 @@ public class ExternalDataBaseEntity extends CurieObject {
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "secondaryIdentifiers_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
 	@ElementCollection
-	@JsonView(View.FieldsAndLists.class)
+	@JsonView(CurationView.FieldsAndLists.class)
 	@Column(columnDefinition = "TEXT")
 	@JoinTable(indexes = @Index(name = "externaldbentity_secondaryidentifiers_externaldbentity_index", columnList = "externaldatabaseentity_id"))
 	private List<String> secondaryIdentifiers;
@@ -50,7 +50,7 @@ public class ExternalDataBaseEntity extends CurieObject {
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@OneToOne
-	@JsonView({ View.FieldsOnly.class })
+	@JsonView({ CurationView.FieldsOnly.class })
 	private CrossReference preferredCrossReference;
 
 	@IndexedEmbedded(includeDepth = 1)
@@ -61,7 +61,7 @@ public class ExternalDataBaseEntity extends CurieObject {
 		@Index(columnList = "externaldatabaseentity_id", name = "externaldbentity_crossreference_externaldbentity_index"),
 		@Index(columnList = "crossreferences_id", name = "externaldbentity_crossreference_crossreferences_index")
 	})
-	@JsonView({ View.FieldsAndLists.class })
+	@JsonView({ CurationView.FieldsAndLists.class })
 	private List<CrossReference> crossReferences;
 
 	@ToString.Exclude

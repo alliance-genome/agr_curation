@@ -6,7 +6,7 @@ import org.alliancegenome.curation_api.interfaces.base.crud.BaseCreateController
 import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.ingest.dto.CrossReferenceDTO;
 import org.alliancegenome.curation_api.response.APIResponse;
-import org.alliancegenome.curation_api.view.View;
+import org.alliancegenome.curation_api.view.CurationView;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 import com.fasterxml.jackson.annotation.JsonView;
@@ -26,7 +26,7 @@ public interface ExpressionAtlasCrudInterface extends BaseCreateControllerInterf
 
 	@POST
 	@Path("/bulk/{dataProvider}_{assemblyName}/transcripts")
-	@JsonView(View.FieldsAndLists.class)
+	@JsonView(CurationView.FieldsAndLists.class)
 	APIResponse updateExpressionAtlas(@PathParam("dataProvider") String dataProvider, @PathParam("assemblyName") String assemblyName, List<CrossReferenceDTO> crossRefData);
 
 }

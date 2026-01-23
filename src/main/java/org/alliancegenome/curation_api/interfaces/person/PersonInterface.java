@@ -2,7 +2,7 @@ package org.alliancegenome.curation_api.interfaces.person;
 
 import org.alliancegenome.curation_api.model.entities.Person;
 import org.alliancegenome.curation_api.response.ObjectResponse;
-import org.alliancegenome.curation_api.view.View;
+import org.alliancegenome.curation_api.view.CurationView;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
@@ -24,17 +24,17 @@ public interface PersonInterface {
 	@POST
 	@Path("/")
 	@Operation(hidden = true)
-	@JsonView(View.FieldsOnly.class)
+	@JsonView(CurationView.FieldsOnly.class)
 	ObjectResponse<Person> create(Person entity);
 
 	@GET
 	@Path("/")
-	@JsonView(View.PersonSettingView.class)
+	@JsonView(CurationView.PersonSettingView.class)
 	Person getLoggedInPerson();
 
 	@GET
 	@Path("/regenapitoken")
-	@JsonView(View.PersonSettingView.class)
+	@JsonView(CurationView.PersonSettingView.class)
 	Person regenApiToken();
 
 }

@@ -11,7 +11,7 @@ import org.alliancegenome.curation_api.model.ingest.dto.AffectedGenomicModelDTO;
 import org.alliancegenome.curation_api.response.APIResponse;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
-import org.alliancegenome.curation_api.view.View;
+import org.alliancegenome.curation_api.view.CurationView;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
@@ -38,39 +38,39 @@ public interface AffectedGenomicModelCrudInterface extends BaseSubmittedObjectCr
 
 	@POST
 	@Path("/bulk/{dataProvider}/agms")
-	@JsonView(View.FieldsAndLists.class)
+	@JsonView(CurationView.FieldsAndLists.class)
 	APIResponse updateAGMs(@PathParam("dataProvider") String dataProvider, List<AffectedGenomicModelDTO> agmData);
 
 	@Override
 	@GET
 	@Path("/{identifierString}")
-	@JsonView(View.AffectedGenomicModelDetailView.class)
+	@JsonView(CurationView.AffectedGenomicModelDetailView.class)
 	ObjectResponse<AffectedGenomicModel> getByIdentifier(@PathParam("identifierString") String identifierString);
 
 	@Override
 	@PUT
 	@Path("/")
-	@JsonView(View.AffectedGenomicModelView.class)
+	@JsonView(CurationView.AffectedGenomicModelView.class)
 	ObjectResponse<AffectedGenomicModel> update(AffectedGenomicModel entity);
 	
 	@Override
 	@POST
 	@Path("/")
-	@JsonView(View.AffectedGenomicModelView.class)
+	@JsonView(CurationView.AffectedGenomicModelView.class)
 	ObjectResponse<AffectedGenomicModel> create(AffectedGenomicModel entity);
 
 	@Override
 	@POST
 	@Path("/find")
 	@Tag(name = "Relational Database Browsing Endpoints")
-	@JsonView(View.AffectedGenomicModelView.class)
+	@JsonView(CurationView.AffectedGenomicModelView.class)
 	SearchResponse<AffectedGenomicModel> find(@DefaultValue("0") @QueryParam("page") Integer page, @DefaultValue("10") @QueryParam("limit") Integer limit, @RequestBody HashMap<String, Object> params);
 
 	@Override
 	@POST
 	@Path("/search")
 	@Tag(name = "Elastic Search Browsing Endpoints")
-	@JsonView({ View.AffectedGenomicModelView.class })
+	@JsonView({ CurationView.AffectedGenomicModelView.class })
 	SearchResponse<AffectedGenomicModel> search(@DefaultValue("0") @QueryParam("page") Integer page, @DefaultValue("10") @QueryParam("limit") Integer limit, @RequestBody HashMap<String, Object> params);
 
 }

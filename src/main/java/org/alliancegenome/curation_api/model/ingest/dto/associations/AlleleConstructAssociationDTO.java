@@ -2,7 +2,7 @@ package org.alliancegenome.curation_api.model.ingest.dto.associations;
 
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
-import org.alliancegenome.curation_api.view.View;
+import org.alliancegenome.curation_api.view.CurationView;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
@@ -15,7 +15,7 @@ import lombok.EqualsAndHashCode;
 @AGRCurationSchemaVersion(min = "2.0.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AlleleGenomicEntityAssociationDTO.class }, submitted = true)
 public class AlleleConstructAssociationDTO extends AlleleGenomicEntityAssociationDTO {
 
-	@JsonView({ View.FieldsOnly.class })
+	@JsonView({ CurationView.FieldsOnly.class })
 	@JsonProperty("construct_identifier")
 	private String constructIdentifier;
 

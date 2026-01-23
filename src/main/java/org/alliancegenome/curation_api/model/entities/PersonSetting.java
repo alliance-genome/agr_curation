@@ -5,7 +5,7 @@ import java.util.Map;
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.entities.base.AuditedObject;
-import org.alliancegenome.curation_api.view.View;
+import org.alliancegenome.curation_api.view.CurationView;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
@@ -37,12 +37,12 @@ public class PersonSetting extends AuditedObject {
 	@ManyToOne
 	private Person person;
 
-	@JsonView(View.PersonSettingView.class)
+	@JsonView(CurationView.PersonSettingView.class)
 	private String settingsKey;
 
 	@org.eclipse.microprofile.graphql.Ignore
 	@JdbcTypeCode(SqlTypes.JSON)
-	@JsonView(View.PersonSettingView.class)
+	@JsonView(CurationView.PersonSettingView.class)
 	private Map<String, Object> settingsMap;
 
 }

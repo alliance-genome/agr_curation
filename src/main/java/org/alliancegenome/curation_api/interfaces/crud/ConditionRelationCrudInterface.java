@@ -6,7 +6,7 @@ import org.alliancegenome.curation_api.interfaces.base.BaseIdCrudInterface;
 import org.alliancegenome.curation_api.model.entities.ConditionRelation;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
-import org.alliancegenome.curation_api.view.View;
+import org.alliancegenome.curation_api.view.CurationView;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
@@ -30,29 +30,29 @@ public interface ConditionRelationCrudInterface extends BaseIdCrudInterface<Cond
 	@Override
 	@POST
 	@Path("/")
-	@JsonView(View.ConditionRelationCreateView.class)
+	@JsonView(CurationView.ConditionRelationCreateView.class)
 	ObjectResponse<ConditionRelation> create(ConditionRelation entity);
 
 	@Override
 	@PUT
 	@Path("/")
-	@JsonView(View.ConditionRelationUpdateView.class)
+	@JsonView(CurationView.ConditionRelationUpdateView.class)
 	ObjectResponse<ConditionRelation> update(ConditionRelation entity);
 
 	@Override
 	@GET
 	@Path("/{id}")
-	@JsonView(View.ConditionRelationView.class)
+	@JsonView(CurationView.ConditionRelationView.class)
 	ObjectResponse<ConditionRelation> getById(@PathParam("id") Long id);
 
 	@POST
 	@Path("/validate")
-	@JsonView(View.ConditionRelationView.class)
+	@JsonView(CurationView.ConditionRelationView.class)
 	ObjectResponse<ConditionRelation> validate(ConditionRelation entity);
 
 	@POST
 	@Path("/find-experiments")
-	@JsonView(View.FieldsAndLists.class)
+	@JsonView(CurationView.FieldsAndLists.class)
 	SearchResponse<ConditionRelation> findExperiments(@RequestBody HashMap<String, Object> params);
 
 }
