@@ -83,7 +83,7 @@ public class AlleleDTOValidator extends GenomicEntityDTOValidator<Allele, Allele
 	NoteDTOValidator noteDtoValidator;
 
 	@Transactional
-	public Allele validateAlleleDTO(AlleleDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException, ObjectWarningException {
+	public Allele validateAlleleDTO(AlleleDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
 		response = new ObjectResponse<>();
 
 		Allele allele = findDatabaseObject(alleleDAO, "primaryExternalId", "primary_external_id", dto.getPrimaryExternalId());
