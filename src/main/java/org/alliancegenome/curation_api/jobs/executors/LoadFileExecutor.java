@@ -47,19 +47,25 @@ public class LoadFileExecutor {
 
 	protected static ObjectMapper mapper = new RestDefaultObjectMapper().getMapper();
 
-	@Inject protected LoadProcessDisplayService loadProcessDisplayService;
-	@Inject protected BulkLoadFileDAO bulkLoadFileDAO;
-	@Inject protected BulkLoadFileHistoryDAO bulkLoadFileHistoryDAO;
-	@Inject BulkLoadFileExceptionDAO bulkLoadFileExceptionDAO;
-	@Inject APIVersionInfoService apiVersionInfoService;
-	@Inject SlackNotifier slackNotifier;
+	@Inject
+	protected LoadProcessDisplayService loadProcessDisplayService;
+	@Inject
+	protected BulkLoadFileDAO bulkLoadFileDAO;
+	@Inject
+	protected BulkLoadFileHistoryDAO bulkLoadFileHistoryDAO;
+	@Inject
+	BulkLoadFileExceptionDAO bulkLoadFileExceptionDAO;
+	@Inject
+	APIVersionInfoService apiVersionInfoService;
+	@Inject
+	SlackNotifier slackNotifier;
 
 	protected void updateHistory(BulkLoadFileHistory history) {
 		bulkLoadFileHistoryDAO.merge(history);
 	}
 
 	protected void updateExceptions(BulkLoadFileHistory history) {
-		//bulkLoadFileHistoryDAO.merge(history);
+		// bulkLoadFileHistoryDAO.merge(history);
 		for (BulkLoadFileException e : history.getExceptions()) {
 			bulkLoadFileExceptionDAO.merge(e);
 		}
@@ -69,9 +75,9 @@ public class LoadFileExecutor {
 		BulkLoadFileException exception = new BulkLoadFileException();
 		exception.setException(objectUpdateExceptionData);
 		exception.setBulkLoadFileHistory(history);
-		//history.getExceptions().add(exception);
+		// history.getExceptions().add(exception);
 		bulkLoadFileExceptionDAO.persist(exception);
-		//bulkLoadFileHistoryDAO.merge(history);
+		// bulkLoadFileHistoryDAO.merge(history);
 	}
 
 	protected String getVersionNumber(String versionString) {
@@ -240,8 +246,8 @@ public class LoadFileExecutor {
 			for (T dtoObject : objectList) {
 				try {
 					ObjectResponse<E> dbObject = service.upsert(dtoObject, dataProvider);
-					if(dbObject.hasWarnings()) {
-						for(Entry<String, String> entry: dbObject.getWarningMessages().entrySet()) {
+					if (dbObject.hasWarnings()) {
+						for (Entry<String, String> entry : dbObject.getWarningMessages().entrySet()) {
 							history.incrementWarnings(countType);
 						}
 						addException(history, new ObjectUpdateExceptionData(dtoObject, dbObject.warningMessagesList(), null));
