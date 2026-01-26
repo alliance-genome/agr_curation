@@ -1,6 +1,7 @@
 package org.alliancegenome.curation_api.interfaces.document;
 
 import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
+
 import java.util.HashMap;
 
 import org.alliancegenome.curation_api.model.document.es.TransgenicAlleleDTO;
@@ -8,6 +9,7 @@ import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.view.CurationView;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
+
 import com.fasterxml.jackson.annotation.JsonView;
 
 import jakarta.ws.rs.Consumes;

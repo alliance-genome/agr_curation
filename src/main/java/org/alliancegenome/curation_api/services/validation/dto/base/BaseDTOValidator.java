@@ -38,9 +38,7 @@ import org.alliancegenome.curation_api.services.validation.dto.NoteDTOValidator;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.apache.commons.lang3.tuple.Pair;
 
-import io.quarkus.logging.Log;
 import jakarta.inject.Inject;
 
 public class BaseDTOValidator<E extends Object> {
@@ -229,29 +227,9 @@ public class BaseDTOValidator<E extends Object> {
 		
 		return reference;
 	}
-	
-	protected List<Reference> validateReferences(List<String> referenceCuries) {
-		return validateReferences("reference_curies", referenceCuries, false);
-	}
-	
-	protected List<Reference> validateRequiredReferences(List<String> referenceCuries) {
-		return validateReferences("reference_curies", referenceCuries, true);
-	}
-	
-	
-	protected List<Reference> validateReferences(String field, List<String> referenceCuries) {
-		return validateReferences(field, referenceCuries, false);
-	}
-	
-	protected List<Reference> validateRequiredReferences(String field, List<String> referenceCuries) {
-		return validateReferences(field, referenceCuries, true);
-	}
-	
-	protected List<Reference> validateReferences(String field, List<String> referenceCuries, boolean isRequired) {
+
+	protected List<Reference> validateReferences(String field, List<String> referenceCuries, boolean failOnMissingReferences) {
 		if (CollectionUtils.isEmpty(referenceCuries)) {
-			if (isRequired) {
-				response.addErrorMessage(field, ValidationConstants.REQUIRED_MESSAGE);
-			}
 			return null;
 		}
 		
@@ -259,38 +237,18 @@ public class BaseDTOValidator<E extends Object> {
 		for (String referenceCurie : referenceCuries) {
 			Reference reference = referenceService.retrieveFromDbOrLiteratureService(referenceCurie);
 			if (reference == null) {
-				response.addErrorMessage(field, ValidationConstants.INVALID_MESSAGE + " (" + referenceCurie + ")");
-				return null;
+				if(failOnMissingReferences) {
+					response.addErrorMessage(field, ValidationConstants.INVALID_MESSAGE + " (" + referenceCurie + ")");
+					return null;
+				} else {
+					response.addWarningMessage(field, ValidationConstants.WARNING_MISSING_MESSAGE + " (" + referenceCurie + ")");
+				}
 			}
 			if (!references.contains(reference)) {
 				references.add(reference);
 			}
 		}
-
 		return references;
-	}
-
-	protected Pair<List<Reference>, List<String>> validateReferencesWithWarning(List<String> referenceCuries) {
-		List<Reference> validRefs = new ArrayList<>();
-		List<String> skippedCuries = new ArrayList<>();
-
-		if (CollectionUtils.isEmpty(referenceCuries)) {
-			return Pair.of(validRefs, skippedCuries);
-		}
-
-		for (String referenceCurie : referenceCuries) {
-			Reference ref = referenceService.retrieveFromDbOrLiteratureService(referenceCurie);
-			if (ref == null) {
-				Log.info(referenceCurie + " was not found - skipping");
-				skippedCuries.add(referenceCurie);
-			} else {
-				if (!validRefs.contains(ref)) {
-					validRefs.add(ref);
-				}
-			}
-		}
-
-		return Pair.of(validRefs, skippedCuries);
 	}
 
 	protected <N extends OntologyTerm, D extends BaseSQLDAO<N>, S extends BaseOntologyTermService<N, D>> N validateOntologyTerm(S service, String field, String curie) {

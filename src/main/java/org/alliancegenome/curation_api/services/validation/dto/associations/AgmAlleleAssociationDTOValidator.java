@@ -36,7 +36,7 @@ public class AgmAlleleAssociationDTOValidator extends AuditedObjectDTOValidator<
 	@Inject VocabularyTermService vocabularyTermService;
 	@Inject GenoTermService genoTermService;
 
-	public AgmAlleleAssociation validateAgmAlleleAssociationDTO(AgmAlleleAssociationDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
+	public ObjectResponse<AgmAlleleAssociation> validateAgmAlleleAssociationDTO(AgmAlleleAssociationDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
 		response = new ObjectResponse<AgmAlleleAssociation>();
 
 		List<Long> subjectIds = null;
@@ -119,6 +119,8 @@ public class AgmAlleleAssociationDTOValidator extends AuditedObjectDTOValidator<
 			throw new ObjectValidationException(dto, response.errorMessagesString());
 		}
 		
-		return association;
+		response.setEntity(association);	
+		
+		return response;
 	}
 }
