@@ -8,7 +8,7 @@ import org.alliancegenome.curation_api.exceptions.ObjectUpdateException.ObjectUp
 import lombok.Getter;
 
 @Getter
-public class ObjectWarningException extends Exception {
+public class ObjectWarningException extends ValidationException {
 
 	private final Long entityId;
 	private final ObjectUpdateExceptionData data;
