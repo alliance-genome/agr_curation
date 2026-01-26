@@ -329,7 +329,7 @@ public class ConstructITCase extends BaseITCase {
 			then().
 			statusCode(400).
 			body("errorMessages", is(aMapWithSize(2))).
-			body("errorMessages.modInternalId", is(ValidationConstants.REQUIRED_UNLESS_OTHER_FIELD_POPULATED_MESSAGE + "primaryExternalId")).
+			body("errorMessages.modInternalId", is(ValidationConstants.REQUIRED_UNLESS_OTHER_FIELD_POPULATED_MESSAGE + " primaryExternalId")).
 			body("errorMessages.constructSymbol", is(ValidationConstants.REQUIRED_MESSAGE));
 	}
 	
@@ -350,7 +350,7 @@ public class ConstructITCase extends BaseITCase {
 			statusCode(400).
 			body("errorMessages", is(aMapWithSize(3))).
 			body("errorMessages.constructSymbol", is(ValidationConstants.REQUIRED_MESSAGE)).
-			body("errorMessages.modInternalId", is(ValidationConstants.REQUIRED_UNLESS_OTHER_FIELD_POPULATED_MESSAGE + "primaryExternalId")).
+			body("errorMessages.modInternalId", is(ValidationConstants.REQUIRED_UNLESS_OTHER_FIELD_POPULATED_MESSAGE + " primaryExternalId")).
 			body("errorMessages.dataProvider", is(ValidationConstants.REQUIRED_MESSAGE));
 	}
 	
@@ -464,7 +464,7 @@ public class ConstructITCase extends BaseITCase {
 			then().
 			statusCode(400).
 			body("errorMessages", is(aMapWithSize(5))).
-			body("errorMessages.modInternalId", is(ValidationConstants.REQUIRED_UNLESS_OTHER_FIELD_POPULATED_MESSAGE + "primaryExternalId")).
+			body("errorMessages.modInternalId", is(ValidationConstants.REQUIRED_UNLESS_OTHER_FIELD_POPULATED_MESSAGE + " primaryExternalId")).
 			body("errorMessages.constructSymbol", is(String.join(" | ", List.of(
 					"displayText - " + ValidationConstants.REQUIRED_MESSAGE,
 					"formatText - " + ValidationConstants.REQUIRED_MESSAGE)))).
@@ -504,7 +504,7 @@ public class ConstructITCase extends BaseITCase {
 			then().
 			statusCode(400).
 			body("errorMessages", is(aMapWithSize(5))).
-			body("errorMessages.modInternalId", is(ValidationConstants.REQUIRED_UNLESS_OTHER_FIELD_POPULATED_MESSAGE + "primaryExternalId")).
+			body("errorMessages.modInternalId", is(ValidationConstants.REQUIRED_UNLESS_OTHER_FIELD_POPULATED_MESSAGE + " primaryExternalId")).
 			body("errorMessages.constructSymbol", is(String.join(" | ", List.of(
 					"displayText - " + ValidationConstants.REQUIRED_MESSAGE,
 					"formatText - " + ValidationConstants.REQUIRED_MESSAGE)))).
