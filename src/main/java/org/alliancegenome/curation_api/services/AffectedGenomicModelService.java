@@ -61,7 +61,7 @@ public class AffectedGenomicModelService extends SubmittedObjectCrudService<Affe
 	}
 
 	@Override
-	public AffectedGenomicModel upsert(AffectedGenomicModelDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
+	public ObjectResponse<AffectedGenomicModel> upsert(AffectedGenomicModelDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
 		return agmDtoValidator.validateAffectedGenomicModelDTO(dto, dataProvider);
 	}
 

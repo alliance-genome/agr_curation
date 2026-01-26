@@ -3,6 +3,7 @@ package org.alliancegenome.curation_api.controllers.document;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+
 import org.alliancegenome.curation_api.dao.GeneExpressionExperimentDAO;
 import org.alliancegenome.curation_api.interfaces.document.GeneExpressionDocumentInterface;
 import org.alliancegenome.curation_api.model.document.builders.GeneExpressionDocumentBuilder;
