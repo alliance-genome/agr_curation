@@ -50,11 +50,12 @@ public class GeneDiseaseAnnotationService extends BaseAnnotationDTOCrudService<G
 		return new ObjectResponse<>(geneDiseaseAnnotationDAO.persist(dbEntity));
 	}
 
+	@Override
 	@Transactional
-	public GeneDiseaseAnnotation upsert(GeneDiseaseAnnotationDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
-		GeneDiseaseAnnotation annotation = geneDiseaseAnnotationDtoValidator.validateGeneDiseaseAnnotationDTO(dto, dataProvider);
-
-		return geneDiseaseAnnotationDAO.persist(annotation);
+	public ObjectResponse<GeneDiseaseAnnotation> upsert(GeneDiseaseAnnotationDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
+		ObjectResponse<GeneDiseaseAnnotation> resp = geneDiseaseAnnotationDtoValidator.validateGeneDiseaseAnnotationDTO(dto, dataProvider);
+		geneDiseaseAnnotationDAO.persist(resp.getEntity());
+		return resp;
 	}
 
 	@Override

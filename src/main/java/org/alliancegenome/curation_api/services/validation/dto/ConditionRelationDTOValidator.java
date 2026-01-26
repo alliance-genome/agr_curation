@@ -78,7 +78,7 @@ public class ConditionRelationDTOValidator extends AuditedObjectDTOValidator<Con
 		if (StringUtils.isNotBlank(dto.getHandle())) {
 			relation.setHandle(dto.getHandle());
 			if (StringUtils.isBlank(dto.getReferenceCurie())) {
-				response.addErrorMessage("handle", ValidationConstants.DEPENDENCY_MESSAGE_PREFIX + "reference_curie");
+				response.addErrorMessage("handle", ValidationConstants.DEPENDENCY_MESSAGE_PREFIX + " reference_curie");
 			}
 		} else {
 			if (relation.getHandle() != null) {

@@ -14,6 +14,7 @@ import org.alliancegenome.curation_api.interfaces.crud.BaseUpsertServiceInterfac
 import org.alliancegenome.curation_api.model.entities.Person;
 import org.alliancegenome.curation_api.model.entities.PredictedVariantConsequence;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.VepTxtDTO;
+import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
 import org.alliancegenome.curation_api.services.validation.dto.fms.VepGeneFmsDTOValidator;
 import org.alliancegenome.curation_api.services.validation.dto.fms.VepTranscriptFmsDTOValidator;
@@ -64,8 +65,7 @@ public class PredictedVariantConsequenceService extends BaseEntityCrudService<Pr
 
 	@Override
 	@Transactional
-	public PredictedVariantConsequence upsert(VepTxtDTO dto, BackendBulkDataProvider dataProvider)
-			throws ValidationException {
+	public ObjectResponse<PredictedVariantConsequence> upsert(VepTxtDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
 		return vepTranscriptFmsDtoValidator.validateTranscriptLevelConsequence(dto, dataProvider);
 	}
 

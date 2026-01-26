@@ -18,6 +18,7 @@ import org.alliancegenome.curation_api.model.ingest.dto.fms.HTPExpressionDataset
 import org.alliancegenome.curation_api.model.ingest.dto.fms.HTPExpressionDatasetAnnotationIngestFmsDTO;
 import org.alliancegenome.curation_api.response.APIResponse;
 import org.alliancegenome.curation_api.response.LoadHistoryResponce;
+import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.ExternalDataBaseEntityService;
 import org.alliancegenome.curation_api.services.HTPExpressionDatasetAnnotationService;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
@@ -81,10 +82,10 @@ public class HTPExpressionDatasetAnnotationExecutor extends LoadFileExecutor {
 		updateHistory(history);
 		for (HTPExpressionDatasetAnnotationFmsDTO dto : htpDatasetAnnotations) {
 			try {
-				HTPExpressionDatasetAnnotation dbObject = htpExpressionDatasetAnnotationService.upsert(dto, dataProvider);
+				ObjectResponse<HTPExpressionDatasetAnnotation> dbObject = htpExpressionDatasetAnnotationService.upsert(dto, dataProvider);
 				history.incrementCompleted();
-				if (dbObject != null) {
-					htpAnnotationsIdsLoaded.add(dbObject.getId());
+				if (dbObject.getEntity() != null) {
+					htpAnnotationsIdsLoaded.add(dbObject.getEntity().getId());
 				}
 			} catch (ObjectUpdateException e) {
 				history.incrementFailed();

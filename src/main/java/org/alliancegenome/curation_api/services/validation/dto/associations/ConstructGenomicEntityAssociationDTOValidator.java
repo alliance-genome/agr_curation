@@ -36,7 +36,7 @@ public class ConstructGenomicEntityAssociationDTOValidator extends EvidenceAssoc
 	@Inject
 	ConstructGenomicEntityAssociationDAO constructGenomicEntityAssociationDAO;
 
-	public ConstructGenomicEntityAssociation validateConstructGenomicEntityAssociationDTO(ConstructGenomicEntityAssociationDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
+	public ObjectResponse<ConstructGenomicEntityAssociation> validateConstructGenomicEntityAssociationDTO(ConstructGenomicEntityAssociationDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
 		response = new ObjectResponse<ConstructGenomicEntityAssociation>();
 
 		List<Long> subjectIds = null;
@@ -119,7 +119,9 @@ public class ConstructGenomicEntityAssociationDTOValidator extends EvidenceAssoc
 		if (response.hasErrors()) {
 			throw new ObjectValidationException(dto, response.errorMessagesString());
 		}
+		
+		response.setEntity(constructGenomicEntityAssociationDAO.persist(association));		
 
-		return constructGenomicEntityAssociationDAO.persist(association);
+		return response;
 	}
 }

@@ -9,7 +9,6 @@ import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.AlleleDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
-import org.alliancegenome.curation_api.exceptions.ObjectWarningException;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
 import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.model.entities.Allele;
@@ -46,7 +45,6 @@ import org.alliancegenome.curation_api.services.validation.dto.slotAnnotations.A
 import org.alliancegenome.curation_api.services.validation.dto.slotAnnotations.AlleleSymbolSlotAnnotationDTOValidator;
 import org.alliancegenome.curation_api.services.validation.dto.slotAnnotations.AlleleSynonymSlotAnnotationDTOValidator;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.tuple.Pair;
 
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
@@ -83,7 +81,7 @@ public class AlleleDTOValidator extends GenomicEntityDTOValidator<Allele, Allele
 	NoteDTOValidator noteDtoValidator;
 
 	@Transactional
-	public Allele validateAlleleDTO(AlleleDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
+	public ObjectResponse<Allele> validateAlleleDTO(AlleleDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
 		response = new ObjectResponse<>();
 
 		Allele allele = findDatabaseObject(alleleDAO, "primaryExternalId", "primary_external_id", dto.getPrimaryExternalId());
@@ -98,9 +96,8 @@ public class AlleleDTOValidator extends GenomicEntityDTOValidator<Allele, Allele
 
 		allele.setIsExtinct(dto.getIsExtinct());
 
-		Pair<List<Reference>, List<String>> refResult = validateReferencesWithWarning(dto.getReferenceCuries());
-		allele.setReferences(refResult.getLeft().isEmpty() ? null : refResult.getLeft());
-		List<String> skippedReferenceCuries = refResult.getRight();
+		List<Reference> refs = validateReferences("reference_curies", dto.getReferenceCuries(), false);
+		allele.setReferences(refs);
 
 		List<AlleleMutationTypeSlotAnnotation> mutationTypes = validateAlleleMutationTypes(allele, dto);
 		if (allele.getAlleleMutationTypes() != null) {
@@ -180,24 +177,21 @@ public class AlleleDTOValidator extends GenomicEntityDTOValidator<Allele, Allele
 			allele.getAlleleFunctionalImpacts().addAll(functionalImpacts);
 		}
 
+		response.convertWarningMessagesToMap();
 		response.convertErrorMessagesToMap();
 
 		if (response.hasErrors()) {
 			throw new ObjectValidationException(dto, response.errorMessagesString());
 		}
-		Allele newAllele;
+		
 		try {
-			newAllele = alleleDAO.persist(allele);
+			response.setEntity(alleleDAO.persist(allele));
+			return response;
 		} catch (Exception e) {
 			response.addErrorMessages("", null, e.getMessage());
 			throw new ObjectValidationException(dto, e.getMessage());
 		}
 
-		if (CollectionUtils.isNotEmpty(skippedReferenceCuries)) {
-			throw new ObjectWarningException(newAllele.getId(), dto, "references", skippedReferenceCuries);
-		}
-
-		return newAllele;
 	}
 
 	private List<AlleleMutationTypeSlotAnnotation> validateAlleleMutationTypes(Allele allele, AlleleDTO dto) {

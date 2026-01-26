@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.zip.GZIPInputStream;
@@ -16,7 +17,6 @@ import org.alliancegenome.curation_api.dao.loads.BulkLoadFileHistoryDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.enums.JobStatus;
 import org.alliancegenome.curation_api.exceptions.KnownIssueValidationException;
-import org.alliancegenome.curation_api.exceptions.ObjectWarningException;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException.ObjectUpdateExceptionData;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
@@ -29,6 +29,7 @@ import org.alliancegenome.curation_api.model.ingest.dto.IngestDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.base.BaseDTO;
 import org.alliancegenome.curation_api.response.APIResponse;
 import org.alliancegenome.curation_api.response.LoadHistoryResponce;
+import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.APIVersionInfoService;
 import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
 import org.alliancegenome.curation_api.services.processing.LoadProcessDisplayService;
@@ -238,20 +239,19 @@ public class LoadFileExecutor {
 			updateHistory(history);
 			for (T dtoObject : objectList) {
 				try {
-					E dbObject = service.upsert(dtoObject, dataProvider);
+					ObjectResponse<E> dbObject = service.upsert(dtoObject, dataProvider);
+					if(dbObject.hasWarnings()) {
+						for(Entry<String, String> entry: dbObject.getWarningMessages().entrySet()) {
+							history.incrementWarnings(countType);
+						}
+						addException(history, new ObjectUpdateExceptionData(dtoObject, dbObject.warningMessagesList(), null));
+					}
 					history.incrementCompleted(countType);
 					if (idsAdded != null) {
-						idsAdded.add(dbObject.getId());
+						idsAdded.add(dbObject.getEntity().getId());
 					}
 				} catch (ObjectUpdateException e) {
 					history.incrementFailed(countType);
-					addException(history, e.getData());
-				} catch (ObjectWarningException e) {
-					history.incrementCompleted(countType);
-					history.incrementWarnings(countType);
-					if (idsAdded != null) {
-						idsAdded.add(e.getEntityId());
-					}
 					addException(history, e.getData());
 				} catch (KnownIssueValidationException e) {
 					Log.debug(e.getMessage());

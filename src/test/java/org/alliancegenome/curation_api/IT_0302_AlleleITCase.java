@@ -1560,7 +1560,7 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 			then().
 			statusCode(400).
 			body("errorMessages", is(aMapWithSize(1))).
-			body("errorMessages.alleleGeneAssociations", is("relation - " + ValidationConstants.DUPLICATE_RELATION_PREFIX + VocabularyConstants.ALLELE_OF_VOCABULARY_TERM));
+			body("errorMessages.alleleGeneAssociations", is("relation - " + ValidationConstants.DUPLICATE_RELATION_PREFIX + " " + VocabularyConstants.ALLELE_OF_VOCABULARY_TERM));
 	}
 
 	@Test
