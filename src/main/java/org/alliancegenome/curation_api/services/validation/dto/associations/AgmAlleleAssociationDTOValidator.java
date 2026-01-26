@@ -30,11 +30,16 @@ import jakarta.inject.Inject;
 
 @RequestScoped
 public class AgmAlleleAssociationDTOValidator extends AuditedObjectDTOValidator<AgmAlleleAssociation, AgmAlleleAssociationDTO> {
-	@Inject AgmAlleleAssociationDAO agmAlleleAssociationDAO;
-	@Inject AffectedGenomicModelService agmService;
-	@Inject AlleleService alleleService;
-	@Inject VocabularyTermService vocabularyTermService;
-	@Inject GenoTermService genoTermService;
+	@Inject
+	AgmAlleleAssociationDAO agmAlleleAssociationDAO;
+	@Inject
+	AffectedGenomicModelService agmService;
+	@Inject
+	AlleleService alleleService;
+	@Inject
+	VocabularyTermService vocabularyTermService;
+	@Inject
+	GenoTermService genoTermService;
 
 	public ObjectResponse<AgmAlleleAssociation> validateAgmAlleleAssociationDTO(AgmAlleleAssociationDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
 		response = new ObjectResponse<AgmAlleleAssociation>();
@@ -65,7 +70,7 @@ public class AgmAlleleAssociationDTOValidator extends AuditedObjectDTOValidator<
 		if (zygosity != null) {
 			validateTermInVocabulary("zygosity_curie", dto.getZygosityCurie(), VocabularyConstants.AGM_ALLELE_GENOTYPE_TERMS_VOCABULARY);
 		}
-		
+
 		AgmAlleleAssociation association = null;
 		if (subjectIds != null && subjectIds.size() == 1 && objectIds != null && objectIds.size() == 1 && relation != null) {
 			HashMap<String, Object> params = new HashMap<>();
@@ -114,13 +119,12 @@ public class AgmAlleleAssociationDTOValidator extends AuditedObjectDTOValidator<
 			association = agmAlleleAssociationDAO.persist(association);
 		}
 
-		
 		if (response.hasErrors()) {
 			throw new ObjectValidationException(dto, response.errorMessagesString());
 		}
-		
-		response.setEntity(association);	
-		
+
+		response.setEntity(association);
+
 		return response;
 	}
 }
