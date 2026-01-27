@@ -16,6 +16,7 @@ import { Divider } from 'primereact/divider';
 import { FormFieldWrapper } from '../../components/FormFieldWrapper';
 import { SymbolForm } from './symbol/SymbolForm';
 import { FullNameForm } from './fullName/FullNameForm';
+import { SynonymsForm } from './synonyms/SynonymsForm';
 
 export default function ConstructDetailPage() {
 	const { identifier } = useParams();
@@ -111,6 +112,10 @@ export default function ConstructDetailPage() {
 					<Divider />
 
 					<FullNameForm state={constructState} />
+
+					<Divider />
+
+					<SynonymsForm state={constructState} />
 
 					<Divider />
 
