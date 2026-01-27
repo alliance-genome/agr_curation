@@ -277,7 +277,9 @@ export const DataLoadsComponent = () => {
 				}*/}
 
 				{rowData.counts &&
-					Object.values(rowData.counts).some((field) => field.failed !== undefined && field.failed > 0) && (
+					Object.values(rowData.counts).some((field) =>
+						(field.failed !== undefined && field.failed > 0) ||
+						(field.warnings !== undefined && field.warnings > 0)) && (
 						<Button
 							tooltip="Download file exceptions"
 							className="p-button-rounded p-button-warning"
