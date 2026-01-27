@@ -4,9 +4,8 @@ import { useRef } from 'react';
 
 export const FullNameForm = ({ labelColumnSize, state }) => {
 	const tableRef = useRef(null);
-	console.log('full name ', state.construct.constructFullName);
 
-	const fullNameArray = [state.construct?.constructFullName];
+	const fullNameArray = state.construct?.constructFullName ? [state.construct.constructFullName] : [];
 
 	return (
 		<FormTableWrapper

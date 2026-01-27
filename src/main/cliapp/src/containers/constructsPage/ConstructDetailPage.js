@@ -3,13 +3,17 @@ import { Toast } from 'primereact/toast';
 import { Splitter, SplitterPanel } from 'primereact/splitter';
 import { ProgressSpinner } from 'primereact/progressspinner';
 import { useParams } from 'react-router-dom';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { ConstructService } from '../../service/ConstructService';
 import ErrorBoundary from '../../components/Error/ErrorBoundary';
 import { StickyHeader } from '../../components/StickyHeader';
 import { useConstructReducer } from './useConstructReducer';
 import { IdentifierFormTemplate } from '../../components/Templates/IdentifierFormTemplate';
+import { DataProviderFormTemplate } from '../../components/Templates/DataProviderFormTemplate';
+import { UserFormTemplate } from '../../components/Templates/UserFormTemplate';
+import { DateFormTemplate } from '../../components/Templates/DateFormTemplate';
 import { Divider } from 'primereact/divider';
+import { FormFieldWrapper } from '../../components/FormFieldWrapper';
 import { FullNameForm } from './fullName/FullNameForm';
 
 export default function ConstructDetailPage() {
@@ -23,7 +27,6 @@ export default function ConstructDetailPage() {
 	const widgetColumnSize = 'col-4';
 	const fieldDetailsColumnSize = 'col-5';
 
-	console.log('identifier', identifier);
 	const { isPending: getRequestIsLoading, data: constructQueryData } = useQuery({
 		queryKey: [identifier],
 		queryFn: () => constructService.getConstruct(identifier),
@@ -80,9 +83,100 @@ export default function ConstructDetailPage() {
 						fieldDetailsColumnSize={fieldDetailsColumnSize}
 					/>
 
-					<Divider/>
+					<Divider />
+
+					<IdentifierFormTemplate
+						identifier={constructState.construct?.modInternalId}
+						label="MOD Internal ID"
+						widgetColumnSize={widgetColumnSize}
+						labelColumnSize={labelColumnSize}
+						fieldDetailsColumnSize={fieldDetailsColumnSize}
+					/>
+
+					<Divider />
+
+					<IdentifierFormTemplate
+						identifier={constructState.construct?.uniqueId}
+						label="Unique ID"
+						widgetColumnSize={widgetColumnSize}
+						labelColumnSize={labelColumnSize}
+						fieldDetailsColumnSize={fieldDetailsColumnSize}
+					/>
+
+					<Divider />
 
 					<FullNameForm state={constructState} />
+
+					<Divider />
+
+					<DataProviderFormTemplate
+						dataProvider={constructState.construct?.dataProvider?.abbreviation}
+						widgetColumnSize={widgetColumnSize}
+						labelColumnSize={labelColumnSize}
+						fieldDetailsColumnSize={fieldDetailsColumnSize}
+					/>
+
+					<Divider />
+
+					<UserFormTemplate
+						user={constructState.construct?.createdBy?.uniqueId}
+						fieldName="Created By"
+						widgetColumnSize={widgetColumnSize}
+						labelColumnSize={labelColumnSize}
+						fieldDetailsColumnSize={fieldDetailsColumnSize}
+					/>
+
+					<Divider />
+
+					<DateFormTemplate
+						date={constructState.construct?.dateCreated}
+						fieldName="Date Created"
+						widgetColumnSize={widgetColumnSize}
+						labelColumnSize={labelColumnSize}
+						fieldDetailsColumnSize={fieldDetailsColumnSize}
+					/>
+
+					<Divider />
+
+					<UserFormTemplate
+						user={constructState.construct?.updatedBy?.uniqueId}
+						fieldName="Updated By"
+						widgetColumnSize={widgetColumnSize}
+						labelColumnSize={labelColumnSize}
+						fieldDetailsColumnSize={fieldDetailsColumnSize}
+					/>
+
+					<Divider />
+
+					<DateFormTemplate
+						date={constructState.construct?.dateUpdated}
+						fieldName="Date Updated"
+						widgetColumnSize={widgetColumnSize}
+						labelColumnSize={labelColumnSize}
+						fieldDetailsColumnSize={fieldDetailsColumnSize}
+					/>
+
+					<Divider />
+
+					<FormFieldWrapper
+						labelColumnSize={labelColumnSize}
+						fieldDetailsColumnSize={fieldDetailsColumnSize}
+						widgetColumnSize={widgetColumnSize}
+						fieldName="Internal"
+						formField={constructState.construct?.internal?.toString() || 'false'}
+						additionalDataField={constructState.construct?.internal?.toString() || 'false'}
+					/>
+
+					<Divider />
+
+					<FormFieldWrapper
+						labelColumnSize={labelColumnSize}
+						fieldDetailsColumnSize={fieldDetailsColumnSize}
+						widgetColumnSize={widgetColumnSize}
+						fieldName="Obsolete"
+						formField={constructState.construct?.obsolete?.toString() || 'false'}
+						additionalDataField={constructState.construct?.obsolete?.toString() || 'false'}
+					/>
 				</form>
 			</ErrorBoundary>
 		</>
