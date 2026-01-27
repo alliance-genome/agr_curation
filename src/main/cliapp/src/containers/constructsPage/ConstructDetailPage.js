@@ -18,6 +18,7 @@ import { SymbolForm } from './symbol/SymbolForm';
 import { FullNameForm } from './fullName/FullNameForm';
 import { SynonymsForm } from './synonyms/SynonymsForm';
 import { ReferencesForm } from './references/ReferencesForm';
+import { ConstructComponentsForm } from './components/ConstructComponentsForm';
 
 export default function ConstructDetailPage() {
 	const { identifier } = useParams();
@@ -121,6 +122,10 @@ export default function ConstructDetailPage() {
 					<Divider />
 
 					<ReferencesForm state={constructState} />
+
+					<Divider />
+
+					<ConstructComponentsForm state={constructState} />
 
 					<Divider />
 
