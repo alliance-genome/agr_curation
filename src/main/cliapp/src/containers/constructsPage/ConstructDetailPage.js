@@ -9,6 +9,8 @@ import ErrorBoundary from '../../components/Error/ErrorBoundary';
 import { StickyHeader } from '../../components/StickyHeader';
 import { useConstructReducer } from './useConstructReducer';
 import { IdentifierFormTemplate } from '../../components/Templates/IdentifierFormTemplate';
+import { Divider } from 'primereact/divider';
+import { FullNameForm } from './fullName/FullNameForm';
 
 export default function ConstructDetailPage() {
 	const { identifier } = useParams();
@@ -77,6 +79,10 @@ export default function ConstructDetailPage() {
 						labelColumnSize={labelColumnSize}
 						fieldDetailsColumnSize={fieldDetailsColumnSize}
 					/>
+
+					<Divider/>
+
+					<FullNameForm state={constructState} />
 				</form>
 			</ErrorBoundary>
 		</>
