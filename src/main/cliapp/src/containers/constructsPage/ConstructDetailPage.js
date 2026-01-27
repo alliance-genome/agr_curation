@@ -14,6 +14,7 @@ import { UserFormTemplate } from '../../components/Templates/UserFormTemplate';
 import { DateFormTemplate } from '../../components/Templates/DateFormTemplate';
 import { Divider } from 'primereact/divider';
 import { FormFieldWrapper } from '../../components/FormFieldWrapper';
+import { SymbolForm } from './symbol/SymbolForm';
 import { FullNameForm } from './fullName/FullNameForm';
 
 export default function ConstructDetailPage() {
@@ -102,6 +103,10 @@ export default function ConstructDetailPage() {
 						labelColumnSize={labelColumnSize}
 						fieldDetailsColumnSize={fieldDetailsColumnSize}
 					/>
+
+					<Divider />
+
+					<SymbolForm state={constructState} />
 
 					<Divider />
 
