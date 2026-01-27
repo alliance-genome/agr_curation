@@ -19,6 +19,7 @@ import { FullNameForm } from './fullName/FullNameForm';
 import { SynonymsForm } from './synonyms/SynonymsForm';
 import { ReferencesForm } from './references/ReferencesForm';
 import { ConstructComponentsForm } from './components/ConstructComponentsForm';
+import { GenomicAssociationsForm } from './genomicAssociations/GenomicAssociationsForm';
 
 export default function ConstructDetailPage() {
 	const { identifier } = useParams();
@@ -126,6 +127,10 @@ export default function ConstructDetailPage() {
 					<Divider />
 
 					<ConstructComponentsForm state={constructState} />
+
+					<Divider />
+
+					<GenomicAssociationsForm state={constructState} />
 
 					<Divider />
 
