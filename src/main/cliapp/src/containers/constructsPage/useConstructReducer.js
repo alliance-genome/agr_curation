@@ -1,4 +1,5 @@
 import { useImmerReducer } from 'use-immer';
+import { generateCrossRefSearchFields } from './utils';
 
 const initialConstructState = {
 	construct: {
@@ -10,7 +11,9 @@ const initialConstructState = {
 const constructReducer = (draft, action) => {
 	switch (action.type) {
 		case 'SET':
-			draft.construct = action.value;
+			const construct = action.value;
+			generateCrossRefSearchFields(construct.references);
+			draft.construct = construct;
 			break;
 		default:
 			throw Error('Unknown action: ' + action.type);

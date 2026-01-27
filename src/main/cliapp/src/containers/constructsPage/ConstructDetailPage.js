@@ -17,6 +17,7 @@ import { FormFieldWrapper } from '../../components/FormFieldWrapper';
 import { SymbolForm } from './symbol/SymbolForm';
 import { FullNameForm } from './fullName/FullNameForm';
 import { SynonymsForm } from './synonyms/SynonymsForm';
+import { ReferencesForm } from './references/ReferencesForm';
 
 export default function ConstructDetailPage() {
 	const { identifier } = useParams();
@@ -116,6 +117,10 @@ export default function ConstructDetailPage() {
 					<Divider />
 
 					<SynonymsForm state={constructState} />
+
+					<Divider />
+
+					<ReferencesForm state={constructState} />
 
 					<Divider />
 
