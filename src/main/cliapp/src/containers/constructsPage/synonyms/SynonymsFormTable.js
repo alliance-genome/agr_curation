@@ -4,17 +4,6 @@ import { ColumnGroup } from 'primereact/columngroup';
 import { Row } from 'primereact/row';
 
 export const SynonymsFormTable = ({ synonyms, tableRef }) => {
-	const headerGroup = (
-		<ColumnGroup>
-			<Row>
-				<Column header="Display Text" />
-				<Column header="Format Text" />
-				<Column header="Name Type" />
-				<Column header="Internal" />
-			</Row>
-		</ColumnGroup>
-	);
-
 	const internalTemplate = (rowData) => {
 		return rowData?.internal?.toString() || 'false';
 	};
@@ -24,33 +13,51 @@ export const SynonymsFormTable = ({ synonyms, tableRef }) => {
 			value={synonyms}
 			dataKey="id"
 			showGridlines
-			headerColumnGroup={headerGroup}
+			removableSort
+			filterDisplay="row"
 			size="small"
 			resizableColumns
-			columnResizeMode="expand"
+			columnResizeMode="fit"
 			ref={tableRef}
+			paginator
+			paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
+			currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
+			rows={5}
+			rowsPerPageOptions={[5, 10, 20, 50]}
 			emptyMessage="No synonyms available"
 		>
 			<Column
 				field="displayText"
 				header="Display Text"
-				headerClassName="surface-0"
+				sortable
+				filter
+				showFilterMenu={false}
+				filterMatchMode="contains"
 			/>
 			<Column
 				field="formatText"
 				header="Format Text"
-				headerClassName="surface-0"
+				sortable
+				filter
+				showFilterMenu={false}
+				filterMatchMode="contains"
 			/>
 			<Column
 				field="nameType.name"
 				header="Name Type"
-				headerClassName="surface-0"
+				sortable
+				filter
+				showFilterMenu={false}
+				filterMatchMode="contains"
 			/>
 			<Column
 				field="internal"
 				header="Internal"
-				headerClassName="surface-0"
 				body={internalTemplate}
+				sortable
+				filter
+				showFilterMenu={false}
+				filterMatchMode="contains"
 			/>
 		</DataTable>
 	);
