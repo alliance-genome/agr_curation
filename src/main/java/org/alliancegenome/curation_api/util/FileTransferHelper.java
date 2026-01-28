@@ -178,7 +178,7 @@ public class FileTransferHelper {
 			Log.info("AWSStaticCredentialsProvider: " + accessKey.get());
 			return new AWSStaticCredentialsProvider(new BasicAWSCredentials(accessKey.get(), secretKey.get()));
 		} else {
-			Log.info("InstanceProfileCredentialsProvider: " + accessKey.get());
+			Log.info("InstanceProfileCredentialsProvider: ");
 			return new InstanceProfileCredentialsProvider(false);
 		}
 	}
