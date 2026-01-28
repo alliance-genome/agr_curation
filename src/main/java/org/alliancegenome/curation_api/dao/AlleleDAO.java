@@ -349,11 +349,11 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 
 		String variantQueryString = """
 			SELECT DISTINCT ava.alleleassociationsubject_id as allele_id,
-				v.id as variant_id, 
+				v.id as variant_id,
 				o.name as variant_type,
 				cvg.hgvs,
 				otc.name as consequence
-	 		FROM allelevariantassociation ava
+			FROM allelevariantassociation ava
 				JOIN variant v ON v.id = ava.allelevariantassociationobject_id
 				JOIN ontologyterm o ON o.id = v.varianttype_id
 				JOIN curatedvariantgenomiclocation cvg ON cvg.variantassociationsubject_id = v.id
@@ -377,7 +377,7 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 				variantMap = new HashMap<>();
 				alleleVariantMap.put(alleleId, variantMap);
 			}
-			Variant variant = variantMap.get((Long)row[1]);
+			Variant variant = variantMap.get((Long) row[1]);
 			if (variant == null) {
 				List<SOTerm> vepConsequences = new ArrayList<>();
 				PredictedVariantConsequence pvc = new PredictedVariantConsequence();
@@ -387,7 +387,7 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 				CuratedVariantGenomicLocationAssociation cvgla = new CuratedVariantGenomicLocationAssociation();
 				cvgla.setHgvs((String) row[3]);
 				cvgla.setPredictedVariantConsequences(pvcList);
-				List<CuratedVariantGenomicLocationAssociation> cvglaList= new ArrayList<>();
+				List<CuratedVariantGenomicLocationAssociation> cvglaList = new ArrayList<>();
 				cvglaList.add(cvgla);
 
 				variant = new Variant();
@@ -396,7 +396,7 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 				variantType.setName((String) row[2]);
 				variant.setVariantType(variantType);
 				variant.setCuratedVariantGenomicLocations(cvglaList);
-				variantMap.put((Long)row[1], variant);
+				variantMap.put((Long) row[1], variant);
 			}
 
 			SOTerm consequence = new SOTerm();
