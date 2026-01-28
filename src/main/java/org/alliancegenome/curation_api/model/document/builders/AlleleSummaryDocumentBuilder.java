@@ -31,6 +31,10 @@ public class AlleleSummaryDocumentBuilder {
 		Optional<Gene> optionalAlleleOfGene = buildAlleleOfGene(allele);
 		optionalAlleleOfGene.ifPresent(doc::setAlleleOfGene);
 
+		doc.setVariants(alleleDTO.getVariants());
+		doc.setHasPhenotype(alleleDTO.getHasPhenotype());
+		doc.setHasDisease(alleleDTO.getHasDisease());
+
 		return doc;
 	}
 
