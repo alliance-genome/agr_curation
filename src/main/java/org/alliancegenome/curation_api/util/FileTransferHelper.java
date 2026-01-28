@@ -16,7 +16,6 @@ import java.util.zip.GZIPOutputStream;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
-import org.eclipse.microprofile.config.Config;
 import org.eclipse.microprofile.config.ConfigProvider;
 import org.jboss.resteasy.plugins.providers.multipart.InputPart;
 import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataInput;
@@ -169,16 +168,18 @@ public class FileTransferHelper {
 	
 	private AWSCredentialsProvider getCredentials() {
 		Optional<String> awsProfile = ConfigProvider.getConfig().getOptionalValue("bulk.data.loads.aws.profile", String.class);
-		Config config = ConfigProvider.getConfig();
-		String accessKey = config.getValue("bulk.data.loads.s3AccessKey", String.class);
-		String secretKey = config.getValue("bulk.data.loads.s3SecretKey", String.class);
+		Optional<String> accessKey = ConfigProvider.getConfig().getOptionalValue("bulk.data.loads.s3AccessKey", String.class);
+		Optional<String> secretKey = ConfigProvider.getConfig().getOptionalValue("bulk.data.loads.s3SecretKey", String.class);
+
 		if (awsProfile.isPresent() && awsProfile.get() != null) {
-			Log.info("Default AWS Profile: " + awsProfile.get());
+			Log.info("ProfileCredentialsProvider: " + awsProfile.get());
 			String profile = awsProfile.get();
 			return new ProfileCredentialsProvider(profile);
-		} else if (accessKey != null) {
-			return new AWSStaticCredentialsProvider(new BasicAWSCredentials(accessKey, secretKey));
+		} else if (accessKey.isPresent() && accessKey.get() != null && secretKey.isPresent() && secretKey.get() != null) {
+			Log.info("AWSStaticCredentialsProvider: " + accessKey.get());
+			return new AWSStaticCredentialsProvider(new BasicAWSCredentials(accessKey.get(), secretKey.get()));
 		} else {
+			Log.info("InstanceProfileCredentialsProvider: " + accessKey.get());
 			return new InstanceProfileCredentialsProvider(false);
 		}
 	}
