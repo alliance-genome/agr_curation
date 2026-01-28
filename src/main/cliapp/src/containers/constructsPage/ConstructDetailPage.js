@@ -87,6 +87,7 @@ export default function ConstructDetailPage() {
 						widgetColumnSize={widgetColumnSize}
 						labelColumnSize={labelColumnSize}
 						fieldDetailsColumnSize={fieldDetailsColumnSize}
+						showAdditionalData={false}
 					/>
 
 					<Divider />
@@ -97,6 +98,7 @@ export default function ConstructDetailPage() {
 						widgetColumnSize={widgetColumnSize}
 						labelColumnSize={labelColumnSize}
 						fieldDetailsColumnSize={fieldDetailsColumnSize}
+						showAdditionalData={false}
 					/>
 
 					<Divider />
@@ -107,6 +109,7 @@ export default function ConstructDetailPage() {
 						widgetColumnSize={widgetColumnSize}
 						labelColumnSize={labelColumnSize}
 						fieldDetailsColumnSize={fieldDetailsColumnSize}
+						showAdditionalData={false}
 					/>
 
 					<Divider />
