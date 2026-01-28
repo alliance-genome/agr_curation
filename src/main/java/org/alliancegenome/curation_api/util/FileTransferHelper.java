@@ -173,8 +173,7 @@ public class FileTransferHelper {
 
 		if (awsProfile.isPresent() && awsProfile.get() != null) {
 			Log.info("ProfileCredentialsProvider: " + awsProfile.get());
-			String profile = awsProfile.get();
-			return new ProfileCredentialsProvider(profile);
+			return new ProfileCredentialsProvider(awsProfile.get());
 		} else if (accessKey.isPresent() && accessKey.get() != null && secretKey.isPresent() && secretKey.get() != null) {
 			Log.info("AWSStaticCredentialsProvider: " + accessKey.get());
 			return new AWSStaticCredentialsProvider(new BasicAWSCredentials(accessKey.get(), secretKey.get()));
