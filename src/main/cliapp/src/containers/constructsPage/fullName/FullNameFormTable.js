@@ -4,6 +4,10 @@ import { ColumnGroup } from 'primereact/columngroup';
 import { Row } from 'primereact/row';
 
 export const FullNameFormTable = ({ name, tableRef }) => {
+	const internalTemplate = (rowData) => {
+		return rowData?.internal?.toString() || 'false';
+	};
+
 	let headerGroup = (
 		<ColumnGroup>
 			<Row>
@@ -29,7 +33,7 @@ export const FullNameFormTable = ({ name, tableRef }) => {
 			<Column field="displayText" header="Display Text" headerClassName="surface-0" />
 			<Column field="formatText" header="Format Text" headerClassName="surface-0" />
 			<Column field="nameType.name" header="Name Type" headerClassName="surface-0" />
-			<Column field="internal" header="Internal" headerClassName="surface-0" />
+			<Column field="internal" header="Internal" headerClassName="surface-0" body={internalTemplate} />
 		</DataTable>
 	);
 };

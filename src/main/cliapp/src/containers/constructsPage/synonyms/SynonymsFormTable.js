@@ -1,7 +1,5 @@
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
-import { ColumnGroup } from 'primereact/columngroup';
-import { Row } from 'primereact/row';
 
 export const SynonymsFormTable = ({ synonyms, tableRef }) => {
 	const internalTemplate = (rowData) => {

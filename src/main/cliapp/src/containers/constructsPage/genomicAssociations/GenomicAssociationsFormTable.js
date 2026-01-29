@@ -93,7 +93,7 @@ export const GenomicAssociationsFormTable = ({ associations, tableRef }) => {
 				body={componentTemplate}
 			/>
 			<Column header="Related Notes" body={relatedNotesTemplate} />
-			<Column header="Evidence" body={(rowData) => evidenceTemplate(rowData)} />
+			<Column header="Evidence" body={evidenceTemplate} />
 			<Column
 				field="updatedBy.uniqueId"
 				header="Updated By"
