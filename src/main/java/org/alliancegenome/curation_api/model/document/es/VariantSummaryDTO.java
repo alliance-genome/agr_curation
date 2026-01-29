@@ -4,6 +4,7 @@ import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.associations.CuratedVariantGenomicLocationAssociation;
 import org.alliancegenome.curation_api.view.CurationView;
+
 import com.fasterxml.jackson.annotation.JsonView;
 
 import lombok.Data;

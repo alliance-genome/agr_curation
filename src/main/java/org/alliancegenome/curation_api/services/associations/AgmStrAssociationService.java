@@ -49,9 +49,8 @@ public class AgmStrAssociationService extends BaseAssociationDTOCrudService<AgmS
 
 	@Override
 	@Transactional
-	public AgmSequenceTargetingReagentAssociation upsert(AgmSequenceTargetingReagentAssociationDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
-		AgmSequenceTargetingReagentAssociation association = agmStrAssociationDtoValidator.validateAgmSequenceTargetingReagentAssociationDTO(dto, dataProvider);
-		return association;
+	public ObjectResponse<AgmSequenceTargetingReagentAssociation> upsert(AgmSequenceTargetingReagentAssociationDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
+		return agmStrAssociationDtoValidator.validateAgmSequenceTargetingReagentAssociationDTO(dto, dataProvider);
 	}
 
 	public List<Long> getAssociationsByDataProvider(BackendBulkDataProvider dataProvider) {
