@@ -30,27 +30,10 @@ export const SymbolFormTable = ({ symbol, tableRef }) => {
 			columnResizeMode="expand"
 			ref={tableRef}
 		>
-			<Column
-				field="displayText"
-				header="Display Text"
-				headerClassName="surface-0"
-			/>
-			<Column
-				field="formatText"
-				header="Format Text"
-				headerClassName="surface-0"
-			/>
-			<Column
-				field="nameType.name"
-				header="Name Type"
-				headerClassName="surface-0"
-			/>
-			<Column
-				field="internal"
-				header="Internal"
-				headerClassName="surface-0"
-				body={internalTemplate}
-			/>
+			<Column field="displayText" header="Display Text" headerClassName="surface-0" />
+			<Column field="formatText" header="Format Text" headerClassName="surface-0" />
+			<Column field="nameType.name" header="Name Type" headerClassName="surface-0" />
+			<Column field="internal" header="Internal" headerClassName="surface-0" body={internalTemplate} />
 		</DataTable>
 	);
 };

@@ -22,9 +22,7 @@ export const GenomicAssociationsFormTable = ({ associations, tableRef }) => {
 		const obj = rowData.constructGenomicEntityAssociationObject;
 
 		if (obj.geneSymbol || obj.alleleSymbol) {
-			let symbolValue = obj.geneSymbol
-				? obj.geneSymbol.displayText
-				: obj.alleleSymbol.displayText;
+			let symbolValue = obj.geneSymbol ? obj.geneSymbol.displayText : obj.alleleSymbol.displayText;
 			componentDisplayValue = symbolValue + ' (' + getIdentifier(obj) + ')';
 		} else if (obj.name) {
 			componentDisplayValue = obj.name + ' (' + getIdentifier(obj) + ')';
@@ -94,14 +92,8 @@ export const GenomicAssociationsFormTable = ({ associations, tableRef }) => {
 				filterMatchMode="contains"
 				body={componentTemplate}
 			/>
-			<Column
-				header="Related Notes"
-				body={relatedNotesTemplate}
-			/>
-			<Column
-				header="Evidence"
-				body={(rowData) => evidenceTemplate(rowData)}
-			/>
+			<Column header="Related Notes" body={relatedNotesTemplate} />
+			<Column header="Evidence" body={(rowData) => evidenceTemplate(rowData)} />
 			<Column
 				field="updatedBy.uniqueId"
 				header="Updated By"

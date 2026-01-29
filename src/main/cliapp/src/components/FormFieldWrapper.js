@@ -6,7 +6,7 @@ export const FormFieldWrapper = ({
 	widgetColumnSize,
 	fieldDetailsColumnSize,
 	fieldName,
-	showAdditionalData=true,
+	showAdditionalData = true,
 }) => {
 	return (
 		<div className="grid">

@@ -8,17 +8,12 @@ export const SecondaryIdsForm = ({ state }) => {
 	// Convert string array to object array for DataTable
 	const secondaryIdsArray = (state.construct?.secondaryIdentifiers || []).map((id, index) => ({
 		id: index,
-		identifier: id
+		identifier: id,
 	}));
 
 	return (
 		<FormTableWrapper
-			table={
-				<SecondaryIdsFormTable
-					secondaryIds={secondaryIdsArray}
-					tableRef={tableRef}
-				/>
-			}
+			table={<SecondaryIdsFormTable secondaryIds={secondaryIdsArray} tableRef={tableRef} />}
 			tableName="Secondary IDs"
 			showTable={true}
 		/>

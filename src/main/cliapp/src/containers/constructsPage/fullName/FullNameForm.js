@@ -10,12 +10,7 @@ export const FullNameForm = ({ labelColumnSize, state }) => {
 	return (
 		<FormTableWrapper
 			labelColumnSize={labelColumnSize}
-			table={
-				<FullNameFormTable
-					name={fullNameArray}
-					tableRef={tableRef}
-				/>
-			}
+			table={<FullNameFormTable name={fullNameArray} tableRef={tableRef} />}
 			tableName="Full Name"
 			showTable={true}
 		/>

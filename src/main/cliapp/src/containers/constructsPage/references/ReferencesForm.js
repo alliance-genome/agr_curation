@@ -9,12 +9,7 @@ export const ReferencesForm = ({ state }) => {
 
 	return (
 		<FormTableWrapper
-			table={
-				<ReferencesFormTable
-					references={referencesArray}
-					tableRef={tableRef}
-				/>
-			}
+			table={<ReferencesFormTable references={referencesArray} tableRef={tableRef} />}
 			tableName="References"
 			showTable={true}
 		/>

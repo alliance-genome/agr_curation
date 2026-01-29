@@ -9,12 +9,7 @@ export const ConstructComponentsForm = ({ state }) => {
 
 	return (
 		<FormTableWrapper
-			table={
-				<ConstructComponentsFormTable
-					components={componentsArray}
-					tableRef={tableRef}
-				/>
-			}
+			table={<ConstructComponentsFormTable components={componentsArray} tableRef={tableRef} />}
 			tableName="Construct Components"
 			showTable={true}
 		/>

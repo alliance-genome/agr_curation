@@ -2,8 +2,7 @@ import { useImmerReducer } from 'use-immer';
 import { generateCrossRefSearchFields } from './utils';
 
 const initialConstructState = {
-	construct: {
-	},
+	construct: {},
 	errorMessages: {},
 	submitted: false,
 };
