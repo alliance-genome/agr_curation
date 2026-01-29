@@ -46,7 +46,7 @@ public class Variant extends GenomicEntity {
 	@IndexedEmbedded(includePaths = {"curie", "name", "curie_keyword", "name_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@JsonView({ CurationView.FieldsOnly.class })
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.AlleleSummaryDocument.class })
 	private SOTerm variantType;
 
 	@IndexedEmbedded(includePaths = {"name", "name_keyword"})
@@ -71,7 +71,7 @@ public class Variant extends GenomicEntity {
 		}
 	)
 	@OneToMany(mappedBy = "variantAssociationSubject", cascade = CascadeType.ALL, orphanRemoval = true)
-	@JsonView({ CurationView.FieldsAndLists.class, CurationView.VariantDetailView.class })
+	@JsonView({ CurationView.FieldsAndLists.class, CurationView.VariantDetailView.class, CurationView.AlleleSummaryDocument.class })
 	private List<CuratedVariantGenomicLocationAssociation> curatedVariantGenomicLocations;
 
 	@OneToMany(mappedBy = "alleleVariantAssociationObject", cascade = CascadeType.ALL, orphanRemoval = true)

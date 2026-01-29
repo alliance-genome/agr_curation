@@ -1,9 +1,11 @@
 package org.alliancegenome.curation_api.model.document.es;
 
+import java.util.List;
 import java.util.Map;
 
 import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.Gene;
+import org.alliancegenome.curation_api.model.entities.Variant;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.view.CurationView;
 
@@ -25,4 +27,7 @@ public class AlleleSummaryDocument extends ESDocument {
 	private Map<String, Object> additionalInformation;
 	private Gene alleleOfGene;
 	private CrossReference crossReference;
+	private List<Variant> variants;
+	private Boolean hasPhenotype;
+	private Boolean hasDisease;
 }

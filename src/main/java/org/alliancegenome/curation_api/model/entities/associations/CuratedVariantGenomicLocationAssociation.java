@@ -68,7 +68,7 @@ public class CuratedVariantGenomicLocationAssociation extends VariantGenomicLoca
 	)
 	@OneToMany(mappedBy = "variantGenomicLocation", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonManagedReference
-	@JsonView({CurationView.FieldsAndLists.class, CurationView.VariantView.class})
+	@JsonView({CurationView.FieldsAndLists.class, CurationView.VariantView.class, CurationView.AlleleSummaryDocument.class})
 	private List<PredictedVariantConsequence> predictedVariantConsequences;
 
 	@Transient
