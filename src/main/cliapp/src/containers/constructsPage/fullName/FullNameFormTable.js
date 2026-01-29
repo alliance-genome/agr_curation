@@ -3,10 +3,7 @@ import { Column } from 'primereact/column';
 import { ColumnGroup } from 'primereact/columngroup';
 import { Row } from 'primereact/row';
 
-export const FullNameFormTable = ({
-	name,
-	tableRef,
-}) => {
+export const FullNameFormTable = ({ name, tableRef }) => {
 	let headerGroup = (
 		<ColumnGroup>
 			<Row>
@@ -29,26 +26,10 @@ export const FullNameFormTable = ({
 			columnResizeMode="expand"
 			ref={tableRef}
 		>
-			<Column
-				field="displayText"
-				header="Display Text"
-				headerClassName="surface-0"
-			/>
-			<Column
-				field="formatText"
-				header="Format Text"
-				headerClassName="surface-0"
-			/>
-			<Column
-				field="nameType.name"
-				header="Name Type"
-				headerClassName="surface-0"
-			/>
-			<Column
-				field="internal"
-				header="Internal"
-				headerClassName="surface-0"
-			/>
+			<Column field="displayText" header="Display Text" headerClassName="surface-0" />
+			<Column field="formatText" header="Format Text" headerClassName="surface-0" />
+			<Column field="nameType.name" header="Name Type" headerClassName="surface-0" />
+			<Column field="internal" header="Internal" headerClassName="surface-0" />
 		</DataTable>
 	);
 };

@@ -9,12 +9,7 @@ export const GenomicAssociationsForm = ({ state }) => {
 
 	return (
 		<FormTableWrapper
-			table={
-				<GenomicAssociationsFormTable
-					associations={associationsArray}
-					tableRef={tableRef}
-				/>
-			}
+			table={<GenomicAssociationsFormTable associations={associationsArray} tableRef={tableRef} />}
 			tableName="Genomic Entity Associations"
 			showTable={true}
 		/>

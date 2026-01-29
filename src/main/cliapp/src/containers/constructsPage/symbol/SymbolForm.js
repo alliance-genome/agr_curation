@@ -9,12 +9,7 @@ export const SymbolForm = ({ state }) => {
 
 	return (
 		<FormTableWrapper
-			table={
-				<SymbolFormTable
-					symbol={symbolArray}
-					tableRef={tableRef}
-				/>
-			}
+			table={<SymbolFormTable symbol={symbolArray} tableRef={tableRef} />}
 			tableName="Symbol"
 			showTable={true}
 		/>

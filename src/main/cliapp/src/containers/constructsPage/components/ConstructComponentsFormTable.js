@@ -24,16 +24,12 @@ export const ConstructComponentsFormTable = ({ components, tableRef }) => {
 
 	const relatedNotesTemplate = (rowData) => {
 		if (!rowData?.relatedNotes || rowData.relatedNotes.length === 0) return null;
-		return rowData.relatedNotes.map((note, index) => (
-			<div key={note.id || index}>{note.freeText}</div>
-		));
+		return rowData.relatedNotes.map((note, index) => <div key={note.id || index}>{note.freeText}</div>);
 	};
 
 	const evidenceTemplate = (rowData) => {
 		if (!rowData?.evidence || rowData.evidence.length === 0) return null;
-		return rowData.evidence.map((ref, index) => (
-			<div key={ref.id || index}>{ref.curie || ref.shortCitation}</div>
-		));
+		return rowData.evidence.map((ref, index) => <div key={ref.id || index}>{ref.curie || ref.shortCitation}</div>);
 	};
 
 	const internalTemplate = (rowData) => {
@@ -84,22 +80,9 @@ export const ConstructComponentsFormTable = ({ components, tableRef }) => {
 				filterMatchMode="contains"
 				body={taxonTemplate}
 			/>
-			<Column
-				field="taxonText"
-				header="Taxon Text"
-				sortable
-				filter
-				showFilterMenu={false}
-				filterMatchMode="contains"
-			/>
-			<Column
-				header="Related Notes"
-				body={relatedNotesTemplate}
-			/>
-			<Column
-				header="Evidence"
-				body={evidenceTemplate}
-			/>
+			<Column field="taxonText" header="Taxon Text" sortable filter showFilterMenu={false} filterMatchMode="contains" />
+			<Column header="Related Notes" body={relatedNotesTemplate} />
+			<Column header="Evidence" body={evidenceTemplate} />
 			<Column
 				field="internal"
 				header="Internal"

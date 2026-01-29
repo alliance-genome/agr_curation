@@ -9,12 +9,7 @@ export const SynonymsForm = ({ state }) => {
 
 	return (
 		<FormTableWrapper
-			table={
-				<SynonymsFormTable
-					synonyms={synonymsArray}
-					tableRef={tableRef}
-				/>
-			}
+			table={<SynonymsFormTable synonyms={synonymsArray} tableRef={tableRef} />}
 			tableName="Synonyms"
 			showTable={true}
 		/>

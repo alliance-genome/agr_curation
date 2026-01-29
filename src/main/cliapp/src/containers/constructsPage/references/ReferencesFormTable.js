@@ -22,14 +22,7 @@ export const ReferencesFormTable = ({ references, tableRef }) => {
 			rowsPerPageOptions={[5, 10, 20, 50]}
 			emptyMessage="No references available"
 		>
-			<Column
-				field="curie"
-				header="Curie"
-				sortable
-				filter
-				showFilterMenu={false}
-				filterMatchMode="contains"
-			/>
+			<Column field="curie" header="Curie" sortable filter showFilterMenu={false} filterMatchMode="contains" />
 			<Column
 				field="crossReferences"
 				header="Cross References"
