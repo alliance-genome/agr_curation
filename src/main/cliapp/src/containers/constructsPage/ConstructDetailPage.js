@@ -1,4 +1,4 @@
-import { useRef, useEffect } from 'react';
+import { useRef, useEffect, useMemo } from 'react';
 import { Toast } from 'primereact/toast';
 import { Splitter, SplitterPanel } from 'primereact/splitter';
 import { ProgressSpinner } from 'primereact/progressspinner';
@@ -25,7 +25,7 @@ import { GenomicAssociationsForm } from './genomicAssociations/GenomicAssociatio
 export default function ConstructDetailPage() {
 	const { identifier } = useParams();
 	const { constructState, constructDispatch } = useConstructReducer();
-	const constructService = new ConstructService();
+	const constructService = useMemo(() => new ConstructService(), []);
 	const toastSuccess = useRef(null);
 	const toastError = useRef(null);
 
@@ -75,9 +75,7 @@ export default function ConstructDetailPage() {
 						<SplitterPanel size={70} className="flex justify-content-start ml-5 py-3 ">
 							<h1 dangerouslySetInnerHTML={{ __html: headerText() }} />
 						</SplitterPanel>
-						<SplitterPanel size={30} className="flex justify-content-start py-3">
-							{/* <Button label="Save" icon="pi pi-check" className="p-button-text" size="large" onClick={handleSubmit} /> */}
-						</SplitterPanel>
+						<SplitterPanel size={30} className="flex justify-content-start py-3"></SplitterPanel>
 					</Splitter>
 				</StickyHeader>
 				<form className="mt-8">
