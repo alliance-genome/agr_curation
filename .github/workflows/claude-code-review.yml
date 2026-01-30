@@ -412,7 +412,12 @@ jobs:
 
           # PR-specific prompt (only for automated PR reviews)
           prompt: |
-            ${{ github.event_name == 'pull_request' && '
+            ${{ github.event_name == 'pull_request' && format('
+            REPO: {0}
+            PR NUMBER: {1}
+
+            Review this pull request.
+
             START by running: git diff origin/alpha...HEAD --name-status
             Then examine the changed lines using: git diff origin/alpha...HEAD
 
@@ -436,13 +441,18 @@ jobs:
             3. Database performance issues CAUSED by these changes
             4. Integration issues with existing code
 
-            If the changes look correct and don''t introduce new issues, say so clearly.
+            If the changes look correct and don''''t introduce new issues, say so clearly.
             Example good responses for clean PRs:
             - "Changes look good, no blocking issues."
             - "The changes are correct and safe to merge."
 
             Keep feedback concise, actionable, and directly tied to the diff.
-            ' || '' }}
+
+            IMPORTANT: You MUST post your review as a GitHub PR comment using:
+            gh pr comment {1} --body "YOUR_REVIEW_HERE"
+
+            Do NOT just output text - you must use the gh command to post your review to the PR.
+            ', github.repository, github.event.pull_request.number) || '' }}
 
           # CLI arguments (v1 format)
           claude_args: |
@@ -510,7 +520,9 @@ jobs:
             - **Analyze Architecture**: \`@claude review the database schema changes\`
             - **Perform another review**: \`@claude Please review my changes\`
 
-            Just comment \`@claude\` followed by your request!"
+            Just comment \`@claude\` followed by your request!
+
+            CRITICAL: You MUST post your review to the PR using gh pr comment. Do not just output text."
 
           # Environment variables for Claude (v1 settings format)
           settings: |
