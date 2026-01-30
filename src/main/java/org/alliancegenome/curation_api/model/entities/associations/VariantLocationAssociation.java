@@ -50,7 +50,7 @@ public abstract class VariantLocationAssociation extends LocationAssociation {
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "hgvs_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({CurationView.FieldsOnly.class})
+	@JsonView({CurationView.FieldsOnly.class, CurationView.AlleleSummaryDocument.class})
 	@Column(columnDefinition = "TEXT")
 	private String hgvs;
 

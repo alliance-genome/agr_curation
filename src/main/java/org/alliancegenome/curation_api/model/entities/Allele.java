@@ -199,7 +199,7 @@ public class Allele extends GenomicEntity {
 		}
 	)
 	@OneToMany(mappedBy = "alleleAssociationSubject", cascade = CascadeType.ALL, orphanRemoval = true)
-	@JsonView({ CurationView.FieldsAndLists.class, CurationView.AlleleDetailView.class })
+	@JsonView({ CurationView.FieldsAndLists.class, CurationView.AlleleDetailView.class, CurationView.AlleleSummaryDocument.class })
 	private List<AlleleVariantAssociation> alleleVariantAssociations;
 
 	@IndexedEmbedded(includePaths = {

@@ -81,7 +81,7 @@ public class PredictedVariantConsequence extends AuditedObject {
 		@Index(name = "predictedvariantconsequence_ontologyterm_pvc_index", columnList = "predictedvariantconsequence_id"),
 		@Index(name = "predictedvariantconsequence_ontologyterm_vc_index", columnList = "vepconsequences_id")
 	})
-	@JsonView({CurationView.FieldsAndLists.class, CurationView.VariantView.class})
+	@JsonView({CurationView.FieldsAndLists.class, CurationView.VariantView.class, CurationView.AlleleSummaryDocument.class})
 	private List<SOTerm> vepConsequences;
 
 	@IndexedEmbedded(includePaths = {"name", "name_keyword"})

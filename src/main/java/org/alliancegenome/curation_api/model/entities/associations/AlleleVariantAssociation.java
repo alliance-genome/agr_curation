@@ -58,7 +58,7 @@ public class AlleleVariantAssociation extends AlleleGenomicEntityAssociation {
 		"modInternalId", "modInternalId_keyword" })
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@JsonView({ CurationView.FieldsOnly.class, CurationView.AlleleView.class })
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.AlleleView.class, CurationView.AlleleSummaryDocument.class })
 	@JsonIgnoreProperties({ "alleleVariantAssociations", "constructGenomicEntityAssociations", "curatedVariantGenomicLocations" })
 	private Variant alleleVariantAssociationObject;
 }
