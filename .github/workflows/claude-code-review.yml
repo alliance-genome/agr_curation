@@ -22,13 +22,14 @@ jobs:
       pull-requests: write
       issues: write
       id-token: write  # Required for OIDC
+      actions: read  # Required for reading CI results
     runs-on: ubuntu-latest
     timeout-minutes: 30  # Match OIDC session duration to prevent hanging reviews
     
     steps:
       - name: Checkout repository
         if: github.event_name == 'pull_request' || (github.event_name == 'issue_comment' && github.event.issue.pull_request)
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
@@ -400,119 +401,126 @@ jobs:
       
       - name: Run Claude Code Review
         if: steps.check-trigger.outputs.triggered == 'true' && steps.pr-details.outputs.skip_non_alpha != 'true' && steps.strategy.outputs.skip_review == 'false'
-        uses: anthropics/claude-code-action@beta
+        uses: anthropics/claude-code-action@v1
         env:
           PGPASSWORD: ${{ env.DB_PASSWORD }}
           PYTHONUNBUFFERED: "1"
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
-          model: claude-sonnet-4-20250514
-          max_turns: 80
-          custom_instructions: |
-            You are reviewing a PULL REQUEST DIFF for an Alliance of Genome Resources Java Quarkus backend application.
-            
-            REVIEW APPROACH:
-            1. FIRST: Use `git diff` to understand what lines changed in this PR
-            2. SECOND: For changed functions/methods, you MAY read the surrounding context to understand:
-               - How the changed code integrates with existing functionality
-               - Whether the changes might break existing behavior
-               - If the changes are consistent with the codebase patterns
-            3. FOCUS: Your review comments must be about the CHANGES, not pre-existing code
-            
-            WHEN TO READ BROADER CONTEXT:
-            - When a method signature changes (check callers)
-            - When a method implementation changes (understand the full method)
-            - When new code is added (verify it fits with surrounding code)
-            - When imports/dependencies change (check usage)
-            - When Hibernate entities or queries change (verify database mappings)
-            
-            REVIEW SCOPE - Only flag issues that are:
-            1. INTRODUCED or WORSENED by this PR's changes
-            2. Critical bugs that could cause data corruption or system failures
-            3. Database performance issues created by these changes
-            4. Hibernate-specific issues introduced by these changes
-            5. Breaking changes to existing functionality
-            
-            IMPORTANT: Many PRs are small fixes. If the changes look correct and don't introduce new issues, 
-            simply acknowledge the fix and say "Changes look good".
-            
-            Keep reviews concise and actionable. Reference specific line numbers from the diff.
+          trigger_phrase: "@claude"
+          mcp_config: ${{ steps.review-config.outputs.mcp_config }}
 
-            PR Size: ${{ steps.pr-details.outputs.pr_size }} lines changed
-            Files Changed: ${{ steps.pr-details.outputs.files_changed }}
-            Review Strategy: ${{ steps.strategy.outputs.reason }}
-            
-            DATABASE ACCESS: You have direct PostgreSQL read-only access via psql command:
-            - Host: localhost
-            - Port: ${{ steps.tunnel.outputs.local_port }}
-            - Database: ${{ steps.db-config.outputs.db_name }}
-            - User: ${{ steps.db-config.outputs.db_user }}
-            - Password is set in PGPASSWORD environment variable
-            
-            Use psql for database queries (read-only):
-            psql -h localhost -p ${{ steps.tunnel.outputs.local_port }} -U ${{ steps.db-config.outputs.db_user }} -d ${{ steps.db-config.outputs.db_name }} -c "YOUR SQL HERE"
-            
-            Examples:
-            - Check table structure: -c "\d table_name"
-            - List tables: -c "\dt"
-            - Query data: -c "SELECT * FROM table_name LIMIT 10"
-            
-            If you detect database-related changes in this PR (SQL files, entity mappings, Hibernate configurations, 
-            migrations, etc.), validate entity mappings against actual schema, check for missing migrations, 
-            verify foreign key constraints, analyze query performance implications, and ensure proper 
-            indexing for biological data queries.
-            
-            IMPORTANT: Always end your review comments with developer usage instructions:
-            
-            ---
-            💡 **Claude Code Capabilities**
-            
-            I can help with additional commands! Try these:
-            - **Answer Questions**: `@claude explain how the caching system works`
-            - **Implement Code Changes**: `@claude add error handling to the user login method`
-            - **Debug Issues**: `@claude help debug why the search is slow`
-            - **Analyze Architecture**: `@claude review the database schema changes`
-            - **Perform another review**: `@claude Please review my changes`
-            
-            Just comment `@claude` followed by your request!
-          direct_prompt: |
+          # PR-specific prompt (only for automated PR reviews)
+          prompt: |
+            ${{ github.event_name == 'pull_request' && '
             START by running: git diff origin/alpha...HEAD --name-status
             Then examine the changed lines using: git diff origin/alpha...HEAD
-            
+
             REVIEW STRATEGY:
             1. Analyze the diff to understand what changed
             2. For complex changes, read the surrounding context of modified functions/methods
             3. Check if changes might break existing functionality
             4. Verify changes follow project patterns
             5. For database changes, check entity mappings and query implications
-            
+
             CONTEXTUAL READING GUIDELINES:
             - Read modified methods in full to understand the changes
             - Check callers if method signatures change
             - Verify new code integrates properly with existing code
             - For Hibernate entities, verify database mappings match schema
             - DO NOT review or comment on unmodified code
-            
+
             Focus your review on:
             1. Critical bugs INTRODUCED by these changes
             2. Breaking changes to existing functionality
             3. Database performance issues CAUSED by these changes
             4. Integration issues with existing code
-            
-            If the changes look correct and don't introduce new issues, say so clearly.
+
+            If the changes look correct and don''t introduce new issues, say so clearly.
             Example good responses for clean PRs:
             - "Changes look good, no blocking issues."
             - "The changes are correct and safe to merge."
-            
+
             Keep feedback concise, actionable, and directly tied to the diff.
-            
-            IMPORTANT: Always end your review with the developer capabilities section from your custom instructions.
-          mcp_config: ${{ steps.review-config.outputs.mcp_config }}
-          allowed_tools: ${{ steps.review-config.outputs.allowed_tools }}
-          claude_env: |
-            REPOSITORY: ${{ github.repository }}
-            ORGANIZATION: ${{ github.repository_owner }}
-            PR_SIZE: ${{ steps.pr-details.outputs.pr_size }}
+            ' || '' }}
+
+          # CLI arguments (v1 format)
+          claude_args: |
+            --model claude-sonnet-4-5-20250929
+            --max-turns 80
+            --allowedTools "${{ steps.review-config.outputs.allowed_tools }}"
+            --append-system-prompt "You are reviewing a PULL REQUEST DIFF for an Alliance of Genome Resources Java Quarkus backend application.
+
+            REVIEW APPROACH:
+            1. FIRST: Use git diff to understand what lines changed in this PR
+            2. SECOND: For changed functions/methods, you MAY read the surrounding context to understand:
+               - How the changed code integrates with existing functionality
+               - Whether the changes might break existing behavior
+               - If the changes are consistent with the codebase patterns
+            3. FOCUS: Your review comments must be about the CHANGES, not pre-existing code
+
+            WHEN TO READ BROADER CONTEXT:
+            - When a method signature changes (check callers)
+            - When a method implementation changes (understand the full method)
+            - When new code is added (verify it fits with surrounding code)
+            - When imports/dependencies change (check usage)
+            - When Hibernate entities or queries change (verify database mappings)
+
+            REVIEW SCOPE - Only flag issues that are:
+            1. INTRODUCED or WORSENED by this PR's changes
+            2. Critical bugs that could cause data corruption or system failures
+            3. Database performance issues created by these changes
+            4. Hibernate-specific issues introduced by these changes
+            5. Breaking changes to existing functionality
+
+            IMPORTANT: Many PRs are small fixes. If the changes look correct and don't introduce new issues, simply acknowledge the fix and say 'Changes look good'.
+
+            Keep reviews concise and actionable. Reference specific line numbers from the diff.
+
+            PR Size: ${{ steps.pr-details.outputs.pr_size }} lines changed
+            Files Changed: ${{ steps.pr-details.outputs.files_changed }}
+            Review Strategy: ${{ steps.strategy.outputs.reason }}
+
+            DATABASE ACCESS: You have direct PostgreSQL read-only access via psql command:
+            - Host: localhost
+            - Port: ${{ steps.tunnel.outputs.local_port }}
+            - Database: ${{ steps.db-config.outputs.db_name }}
+            - User: ${{ steps.db-config.outputs.db_user }}
+            - Password is set in PGPASSWORD environment variable
+
+            Use psql for database queries (read-only):
+            psql -h localhost -p ${{ steps.tunnel.outputs.local_port }} -U ${{ steps.db-config.outputs.db_user }} -d ${{ steps.db-config.outputs.db_name }} -c 'YOUR SQL HERE'
+
+            Examples:
+            - Check table structure: -c '\d table_name'
+            - List tables: -c '\dt'
+            - Query data: -c 'SELECT * FROM table_name LIMIT 10'
+
+            If you detect database-related changes in this PR (SQL files, entity mappings, Hibernate configurations, migrations, etc.), validate entity mappings against actual schema, check for missing migrations, verify foreign key constraints, analyze query performance implications, and ensure proper indexing for biological data queries.
+
+            IMPORTANT: Always end your review comments with developer usage instructions:
+
+            ---
+            **Claude Code Capabilities**
+
+            I can help with more than just reviews! Try these:
+            - **Answer Questions**: \`@claude explain how the caching system works\`
+            - **Implement Code Changes**: \`@claude add error handling to the user login method\`
+            - **Debug Issues**: \`@claude help debug why the search is slow\`
+            - **Analyze Architecture**: \`@claude review the database schema changes\`
+            - **Perform another review**: \`@claude Please review my changes\`
+
+            Just comment \`@claude\` followed by your request!"
+
+          # Environment variables for Claude (v1 settings format)
+          settings: |
+            {
+              "env": {
+                "REPOSITORY": "${{ github.repository }}",
+                "ORGANIZATION": "${{ github.repository_owner }}",
+                "PR_SIZE": "${{ steps.pr-details.outputs.pr_size }}"
+              }
+            }
 
       - name: Cleanup
         if: always() && steps.tunnel.outputs.pid != '' && steps.pr-details.outputs.skip_non_alpha != 'true'
