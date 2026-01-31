@@ -11,7 +11,7 @@ export const FullNameForm = ({ labelColumnSize, state }) => {
 		<FormTableWrapper
 			labelColumnSize={labelColumnSize}
 			table={<FullNameFormTable name={fullNameArray} tableRef={tableRef} />}
-			tableName="Full Name"
+			tableName="Name"
 			showTable={true}
 		/>
 	);
