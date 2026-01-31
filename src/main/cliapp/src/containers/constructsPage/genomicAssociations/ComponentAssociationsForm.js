@@ -1,16 +1,16 @@
 import { FormTableWrapper } from '../../../components/FormTableWrapper';
-import { GenomicAssociationsFormTable } from './GenomicAssociationsFormTable';
+import { ComponentAssociationsFormTable } from './ComponentAssociationsFormTable';
 import { useRef } from 'react';
 
-export const GenomicAssociationsForm = ({ state }) => {
+export const ComponentAssociationsForm = ({ state }) => {
 	const tableRef = useRef(null);
 
 	const associationsArray = state.construct?.constructGenomicEntityAssociations || [];
 
 	return (
 		<FormTableWrapper
-			table={<GenomicAssociationsFormTable associations={associationsArray} tableRef={tableRef} />}
-			tableName="Genomic Entity Associations"
+			table={<ComponentAssociationsFormTable associations={associationsArray} tableRef={tableRef} />}
+			tableName="Component Associations"
 			showTable={true}
 		/>
 	);
