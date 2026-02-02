@@ -1,7 +1,8 @@
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
+import { evidenceTemplate } from '../../../components/EvidenceComponent';
 
-export const ConstructComponentsFormTable = ({ components, tableRef }) => {
+export const FreeTextComponentsFormTable = ({ components, tableRef }) => {
 	const relationTemplate = (rowData) => {
 		if (!rowData?.relation?.name) return null;
 		let relationName = rowData.relation.name;
@@ -25,11 +26,6 @@ export const ConstructComponentsFormTable = ({ components, tableRef }) => {
 	const relatedNotesTemplate = (rowData) => {
 		if (!rowData?.relatedNotes || rowData.relatedNotes.length === 0) return null;
 		return rowData.relatedNotes.map((note, index) => <div key={note.id || index}>{note.freeText}</div>);
-	};
-
-	const evidenceTemplate = (rowData) => {
-		if (!rowData?.evidence || rowData.evidence.length === 0) return null;
-		return rowData.evidence.map((ref, index) => <div key={ref.id || index}>{ref.curie || ref.shortCitation}</div>);
 	};
 
 	const internalTemplate = (rowData) => {

@@ -1,16 +1,16 @@
 import { FormTableWrapper } from '../../../components/FormTableWrapper';
-import { ConstructComponentsFormTable } from './ConstructComponentsFormTable';
+import { FreeTextComponentsFormTable } from './FreeTextComponentsFormTable';
 import { useRef } from 'react';
 
-export const ConstructComponentsForm = ({ state }) => {
+export const FreeTextComponentsForm = ({ state }) => {
 	const tableRef = useRef(null);
 
 	const componentsArray = state.construct?.constructComponents || [];
 
 	return (
 		<FormTableWrapper
-			table={<ConstructComponentsFormTable components={componentsArray} tableRef={tableRef} />}
-			tableName="Construct Components"
+			table={<FreeTextComponentsFormTable components={componentsArray} tableRef={tableRef} />}
+			tableName="Free Text Components"
 			showTable={true}
 		/>
 	);

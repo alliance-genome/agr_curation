@@ -4,7 +4,7 @@ import { Tooltip } from 'primereact/tooltip';
 import { getIdentifier } from '../../../utils/utils';
 import { evidenceTemplate } from '../../../components/EvidenceComponent';
 
-export const GenomicAssociationsFormTable = ({ associations, tableRef }) => {
+export const ComponentAssociationsFormTable = ({ associations, tableRef }) => {
 	const relationTemplate = (rowData) => {
 		if (!rowData?.relation?.name) return null;
 		let relationName = rowData.relation.name;
