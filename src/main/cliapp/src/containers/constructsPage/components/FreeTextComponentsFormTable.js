@@ -28,11 +28,6 @@ export const FreeTextComponentsFormTable = ({ components, tableRef }) => {
 		return rowData.relatedNotes.map((note, index) => <div key={note.id || index}>{note.freeText}</div>);
 	};
 
-	// const evidenceTemplate = (rowData) => {
-	// 	if (!rowData?.evidence || rowData.evidence.length === 0) return null;
-	// 	return rowData.evidence.map((ref, index) => <div key={ref.id || index}>{ref.curie || ref.shortCitation}</div>);
-	// };
-
 	const internalTemplate = (rowData) => {
 		return rowData?.internal?.toString() || 'false';
 	};
