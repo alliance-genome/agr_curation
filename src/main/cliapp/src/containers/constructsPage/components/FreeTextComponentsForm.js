@@ -1,5 +1,5 @@
 import { FormTableWrapper } from '../../../components/FormTableWrapper';
-import { FreeTextComponentsFormTable } from './ConstructComponentsFormTable';
+import { FreeTextComponentsFormTable } from './FreeTextComponentsFormTable';
 import { useRef } from 'react';
 
 export const FreeTextComponentsForm = ({ state }) => {

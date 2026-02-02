@@ -12,7 +12,7 @@ import {
 import { evidenceTemplate } from '../../../components/EvidenceComponent';
 
 export const SymbolFormTable = ({ symbol, tableRef }) => {
-	let headerGroup = (
+	const headerGroup = (
 		<ColumnGroup>
 			<Row>
 				<Column header="Display Text" />
@@ -83,10 +83,10 @@ export const SymbolFormTable = ({ symbol, tableRef }) => {
 				field="evidence.curie"
 				header="Evidence"
 				headerClassName="surface-0"
-				body={(rowData) => evidenceTemplate(rowData)}
+				body={evidenceTemplate}
 			/>
-			<Column field="updatedBy.uniqueId" header="Updated By" />
-			<Column field="dateUpdated" header="Date Updated" />
+			<Column field="updatedBy.uniqueId" header="Updated By" headerClassName="surface-0" />
+			<Column field="dateUpdated" header="Date Updated" headerClassName="surface-0" />
 		</DataTable>
 	);
 };

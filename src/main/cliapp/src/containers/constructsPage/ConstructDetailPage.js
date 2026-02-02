@@ -19,7 +19,7 @@ import { FullNameForm } from './fullName/FullNameForm';
 import { SynonymsForm } from './synonyms/SynonymsForm';
 import { SecondaryIdsForm } from './secondaryIds/SecondaryIdsForm';
 import { ReferencesForm } from './references/ReferencesForm';
-import { FreeTextComponentsForm } from './components/ConstructComponentsForm';
+import { FreeTextComponentsForm } from './components/FreeTextComponentsForm';
 import { ComponentAssociationsForm } from './genomicAssociations/ComponentAssociationsForm';
 
 export default function ConstructDetailPage() {
