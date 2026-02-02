@@ -44,42 +44,12 @@ export const FullNameFormTable = ({ name, tableRef }) => {
 			ref={tableRef}
 		>
 			<Column field="displayText" header="Display Text" headerClassName="surface-0" body={displayTextTemplate} />
-			<Column
-				field="formatText"
-				header="Format Text"
-				headerClassName="surface-0"
-				body={formatTextTemplate}
-			/>
-			<Column
-				field="synonymScope"
-				header="Synonym Scope"
-				headerClassName="surface-0"
-				body={synonymScopeTemplate}
-			/>
-			<Column
-				field="nameType"
-				header="Name Type"
-				headerClassName="surface-0"
-				body={nameTypeTemplate}
-			/>
-			<Column
-				field="synonymUrl"
-				header="Synonym URL"
-				headerClassName="surface-0"
-				body={synonymUrlTemplate}
-			/>
-			<Column
-				field="internal"
-				header="Internal"
-				body={internalTemplate}
-				headerClassName="surface-0"
-			/>
-			<Column
-				field="evidence.curie"
-				header="Evidence"
-				headerClassName="surface-0"
-				body={evidenceTemplate}
-			/>
+			<Column field="formatText" header="Format Text" headerClassName="surface-0" body={formatTextTemplate} />
+			<Column field="synonymScope" header="Synonym Scope" headerClassName="surface-0" body={synonymScopeTemplate} />
+			<Column field="nameType" header="Name Type" headerClassName="surface-0" body={nameTypeTemplate} />
+			<Column field="synonymUrl" header="Synonym URL" headerClassName="surface-0" body={synonymUrlTemplate} />
+			<Column field="internal" header="Internal" body={internalTemplate} headerClassName="surface-0" />
+			<Column field="evidence.curie" header="Evidence" headerClassName="surface-0" body={evidenceTemplate} />
 			<Column field="updatedBy.uniqueId" header="Updated By" headerClassName="surface-0" />
 			<Column field="dateUpdated" header="Date Updated" headerClassName="surface-0" />
 		</DataTable>
