@@ -84,7 +84,7 @@ export const ComponentAssociationsFormTable = ({ associations, tableRef }) => {
 				body={relationTemplate}
 			/>
 			<Column
-				field="constructGenomicEntityAssociationObject.primaryExternalId"
+				field="componentSearchField"
 				header="Component"
 				sortable
 				filter

@@ -13,3 +13,25 @@ export const generateCrossRefSearchField = (reference) => {
 
 	return refStrings.join();
 };
+
+export const generateComponentSearchFields = (associations) => {
+	if (associations) {
+		associations.forEach((association) => {
+			association.componentSearchField = generateComponentSearchField(association);
+		});
+	}
+};
+
+export const generateComponentSearchField = (association) => {
+	const obj = association?.constructGenomicEntityAssociationObject;
+	if (!obj) return '';
+
+	const searchParts = [
+		obj.primaryExternalId,
+		obj.alleleSymbol?.displayText,
+		obj.geneSymbol?.displayText,
+		obj.name,
+	].filter(Boolean);
+
+	return searchParts.join(' ');
+};
