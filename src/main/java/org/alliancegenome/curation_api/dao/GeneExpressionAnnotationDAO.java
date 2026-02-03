@@ -19,10 +19,11 @@ public class GeneExpressionAnnotationDAO extends BaseSQLDAO<GeneExpressionAnnota
 
 	public Set<String> getGeneExpressionMap() {
 		String hql = """
-				select distinct expressionAnnotationSubject.primaryExternalId
-				from GeneExpressionAnnotation
-				where obsolete = false and internal = false
-				""";
+			select distinct expressionAnnotationSubject.primaryExternalId
+			from GeneExpressionAnnotation
+			where obsolete = false and internal = false
+		""";
+		
 		Query query = entityManager.createQuery(hql);
 		List<Object> list = query.getResultList();
 		return new HashSet<>(list.stream().map(o -> (String) o).toList());

@@ -20,6 +20,7 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.FullTextFi
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmbedded;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexingDependency;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.KeywordField;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
 
@@ -53,7 +54,7 @@ public class SubmittedObject extends CurieObject {
 			CurationView.ModelDocument.class,
 			CurationView.TransgenicAllelesDocument.class,
 			CurationView.AlleleSummaryDocument.class,
-			CurationView.VariantDetailView.class,
+			CurationView.VariantDocument.class,
 			CurationView.GeneExpressionDocument.class })
 	private String primaryExternalId;
 
