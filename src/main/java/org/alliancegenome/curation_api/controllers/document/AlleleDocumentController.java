@@ -77,7 +77,7 @@ public class AlleleDocumentController implements AlleleDocumentInterface {
 	 * <p>
 	 * Example usage:
 	 * 1. First request: POST /allele/document/summary/cursor?limit=10 (no cursor)
-	 * 2. Next request: POST /allele/document/summary/cursor?limit=10&cursor=696355
+	 * 2. Next request: POST /allele/document/summary/cursor?limit=10&amp;cursor=696355
 	 */
 	@Override
 	public SearchResponse<AlleleSummaryDocument> findSummaryWithCursor(Integer page, Integer limit, Long cursor, HashMap<String, Object> params) {
