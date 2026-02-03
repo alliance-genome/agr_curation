@@ -39,6 +39,7 @@ import io.restassured.RestAssured;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @DisplayName("309 - VariantITCase")
 @Order(309)
+@SuppressWarnings("checkstyle:TypeNameCheck")
 public class Test_0309_VariantITCase extends BaseITCase {
 
 	private static final String VARIANT = "Variant:0001";

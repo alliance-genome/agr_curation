@@ -34,6 +34,7 @@ import io.restassured.config.RestAssuredConfig;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @DisplayName("101 - Gene bulk upload")
 @Order(101)
+@SuppressWarnings("checkstyle:TypeNameCheck")
 public class Test_0101_GeneBulkUploadITCase extends BaseITCase {
 	
 	@BeforeEach

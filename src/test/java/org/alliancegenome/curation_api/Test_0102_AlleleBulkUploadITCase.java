@@ -30,6 +30,7 @@ import io.restassured.config.RestAssuredConfig;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @DisplayName("102 - Allele bulk upload")
 @Order(102)
+@SuppressWarnings("checkstyle:TypeNameCheck")
 public class Test_0102_AlleleBulkUploadITCase extends BaseITCase {
 	
 	private String requiredReference = "AGRKB:000000001";
