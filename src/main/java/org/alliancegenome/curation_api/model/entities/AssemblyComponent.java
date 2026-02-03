@@ -34,7 +34,7 @@ import lombok.ToString;
 )
 public class AssemblyComponent extends GenomicEntity {
 
-	@JsonView({ CurationView.FieldsOnly.class, CurationView.GeneSummaryDocument.class })
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.GeneSummaryDocument.class, CurationView.AlleleSummaryDocument.class })
 	private String name;
 
 	@IndexedEmbedded(includePaths = {"name", "name_keyword", "curie", "curie_keyword", "primaryExternalId", "primaryExternalId_keyword", "modInternalId", "modInternalId_keyword"})

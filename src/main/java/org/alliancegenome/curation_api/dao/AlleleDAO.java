@@ -14,6 +14,7 @@ import org.alliancegenome.curation_api.dao.associations.AgmAlleleAssociationDAO;
 import org.alliancegenome.curation_api.dao.base.BaseSQLDAO;
 import org.alliancegenome.curation_api.model.document.es.AlleleSummaryDTO;
 import org.alliancegenome.curation_api.model.entities.Allele;
+import org.alliancegenome.curation_api.model.entities.AssemblyComponent;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.Note;
@@ -352,6 +353,9 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 				v.id as variant_id,
 				o.name as variant_type,
 				cvg.hgvs,
+				cvg.start,
+				cvg.end,
+				ac.name as chromosome,
 				otc.name as consequence
 			FROM allelevariantassociation ava
 				JOIN variant v ON v.id = ava.allelevariantassociationobject_id
@@ -360,6 +364,7 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 				JOIN predictedvariantconsequence pvc ON pvc.variantgenomiclocation_id = cvg.id
 				JOIN predictedvariantconsequence_ontologyterm pvco ON pvco.predictedvariantconsequence_id = pvc.id
 				JOIN ontologyterm otc ON otc.id = pvco.vepconsequences_id
+				JOIN assemblycomponent ac ON cvg.variantgenomiclocationassociationobject_id = ac.id
 				WHERE ava.alleleassociationsubject_id IN :alleleIds
 			AND ava.obsolete = false AND ava.internal = false
 			""";
@@ -386,6 +391,11 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 				pvcList.add(pvc);
 				CuratedVariantGenomicLocationAssociation cvgla = new CuratedVariantGenomicLocationAssociation();
 				cvgla.setHgvs((String) row[3]);
+				cvgla.setStart((Integer) row[4]);
+				cvgla.setEnd((Integer) row[5]);
+				AssemblyComponent ac = new AssemblyComponent();
+				ac.setName((String) row[6]);
+				cvgla.setVariantGenomicLocationAssociationObject(ac);
 				cvgla.setPredictedVariantConsequences(pvcList);
 				List<CuratedVariantGenomicLocationAssociation> cvglaList = new ArrayList<>();
 				cvglaList.add(cvgla);
@@ -400,7 +410,7 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 			}
 
 			SOTerm consequence = new SOTerm();
-			consequence.setName((String) row[4]);
+			consequence.setName((String) row[7]);
 			variant.getCuratedVariantGenomicLocations().get(0)
 					.getPredictedVariantConsequences().get(0)
 					.getVepConsequences().add(consequence);
