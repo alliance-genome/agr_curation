@@ -35,10 +35,10 @@ import io.restassured.RestAssured;
 @QuarkusTestResource(TestContainerResource.Initializer.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@DisplayName("402 - ConstructGenomicEntityAssociationITCase")
-@Order(402)
+@DisplayName("403 - ConstructGenomicEntityAssociationITCase")
+@Order(403)
 @SuppressWarnings("checkstyle:TypeNameCheck")
-public class Test_0402_ConstructGenomicEntityAssociationITCase extends BaseITCase {
+public class Test_0403_ConstructGenomicEntityAssociationITCase extends BaseITCase {
 
 	private Construct construct;
 	private Construct construct2;
