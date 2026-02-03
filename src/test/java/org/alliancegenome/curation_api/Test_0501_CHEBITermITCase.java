@@ -28,6 +28,7 @@ import io.restassured.config.RestAssuredConfig;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @DisplayName("501 - CHEBITermITCase")
 @Order(501)
+@SuppressWarnings("checkstyle:TypeNameCheck")
 public class Test_0501_CHEBITermITCase {
 	private static final String CHEBITERMCURIE = "CH:0001";
 

@@ -45,6 +45,7 @@ import io.restassured.RestAssured;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @DisplayName("307 - ConstructITCase")
 @Order(307)
+@SuppressWarnings("checkstyle:TypeNameCheck")
 public class Test_0307_ConstructITCase extends BaseITCase {
 
 	private static final String CONSTRUCT = "Construct:0001";

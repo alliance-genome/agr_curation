@@ -32,6 +32,7 @@ import io.restassured.config.RestAssuredConfig;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @DisplayName("203 - Construct Genomic Entity Associations bulk upload")
 @Order(203)
+@SuppressWarnings("checkstyle:TypeNameCheck")
 public class Test_0203_ConstructGenomicEntityAssociationBulkUploadITCase extends BaseITCase {
 	
 	private String constructPrimaryExternalId = "WB:Construct0001";

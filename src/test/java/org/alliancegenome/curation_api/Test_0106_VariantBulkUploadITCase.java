@@ -32,6 +32,7 @@ import io.restassured.config.RestAssuredConfig;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @DisplayName("106 - Variant bulk upload")
 @Order(106)
+@SuppressWarnings("checkstyle:TypeNameCheck")
 public class Test_0106_VariantBulkUploadITCase extends BaseITCase {
 	
 	private String variantType = "SO:VT001";

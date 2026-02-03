@@ -32,6 +32,7 @@ import io.restassured.RestAssured;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @DisplayName("308 - NoteITCase")
 @Order(308)
+@SuppressWarnings("checkstyle:TypeNameCheck")
 public class Test_0308_NoteITCase extends BaseITCase {
 	
 	private Vocabulary testVocabulary;

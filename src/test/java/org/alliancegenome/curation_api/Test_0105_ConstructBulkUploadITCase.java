@@ -33,6 +33,7 @@ import io.restassured.config.RestAssuredConfig;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @DisplayName("105 - Construct bulk upload")
 @Order(105)
+@SuppressWarnings("checkstyle:TypeNameCheck")
 public class Test_0105_ConstructBulkUploadITCase extends BaseITCase {
 	
 	@BeforeEach

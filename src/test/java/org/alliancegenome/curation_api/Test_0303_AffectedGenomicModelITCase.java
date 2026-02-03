@@ -40,6 +40,7 @@ import io.restassured.RestAssured;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @DisplayName("303 - AffectedGenomicModelITCase")
 @Order(303)
+@SuppressWarnings("checkstyle:TypeNameCheck")
 public class Test_0303_AffectedGenomicModelITCase extends BaseITCase {
 
 	private static final String AGM = "AGM:0001";

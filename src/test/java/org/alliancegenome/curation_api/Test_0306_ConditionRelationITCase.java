@@ -37,6 +37,7 @@ import io.restassured.RestAssured;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @DisplayName("306 - ConditionRelationITCase")
 @Order(306)
+@SuppressWarnings("checkstyle:TypeNameCheck")
 public class Test_0306_ConditionRelationITCase extends BaseITCase {
 
 	private Vocabulary conditionRelationTypeVocabulary;

@@ -46,6 +46,7 @@ import io.restassured.RestAssured;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @DisplayName("304 - DiseaseAnnotationITCase")
 @Order(304)
+@SuppressWarnings("checkstyle:TypeNameCheck")
 public class Test_0304_DiseaseAnnotationITCase extends BaseITCase {
 
 	private static final String GENE_DISEASE_ANNOTATION = "GeneDisease:0001";

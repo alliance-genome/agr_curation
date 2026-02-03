@@ -37,6 +37,7 @@ import io.restassured.RestAssured;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @DisplayName("402 - AlleleConstructAssociationITCase")
 @Order(402)
+@SuppressWarnings("checkstyle:TypeNameCheck")
 public class Test_0402_AlleleConstructAssociationITCase extends BaseITCase {
 
 	private Allele allele;

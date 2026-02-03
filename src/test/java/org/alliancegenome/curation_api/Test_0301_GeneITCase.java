@@ -44,6 +44,7 @@ import io.restassured.RestAssured;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @DisplayName("301 - GeneITCase")
 @Order(301)
+@SuppressWarnings("checkstyle:TypeNameCheck")
 public class Test_0301_GeneITCase extends BaseITCase {
 
 	private static final String GENE = "GENE:0001";

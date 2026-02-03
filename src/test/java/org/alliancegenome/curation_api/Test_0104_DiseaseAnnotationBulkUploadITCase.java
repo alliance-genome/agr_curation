@@ -36,6 +36,7 @@ import io.restassured.config.RestAssuredConfig;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @DisplayName("104 - Disease annotation bulk upload")
 @Order(104)
+@SuppressWarnings("checkstyle:TypeNameCheck")
 public class Test_0104_DiseaseAnnotationBulkUploadITCase extends BaseITCase {
 	
 	private String geneDiseaseAnnotation = "DATEST:Annot0001";

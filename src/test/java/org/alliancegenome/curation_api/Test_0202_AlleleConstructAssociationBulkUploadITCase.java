@@ -36,6 +36,7 @@ import io.restassured.config.RestAssuredConfig;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @DisplayName("202 - Allele Construct Associations bulk upload")
 @Order(202)
+@SuppressWarnings("checkstyle:TypeNameCheck")
 public class Test_0202_AlleleConstructAssociationBulkUploadITCase extends BaseITCase {
 	
 	private Allele allele;

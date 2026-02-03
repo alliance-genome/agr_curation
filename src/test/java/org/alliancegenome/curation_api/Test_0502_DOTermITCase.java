@@ -29,6 +29,7 @@ import io.restassured.config.RestAssuredConfig;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @DisplayName("502 - DOTermITCase")
 @Order(502)
+@SuppressWarnings("checkstyle:TypeNameCheck")
 public class Test_0502_DOTermITCase {
 	private static final String DOTERMCURIE = "DOID:10001";
 

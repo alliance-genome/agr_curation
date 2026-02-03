@@ -29,6 +29,7 @@ import io.restassured.config.RestAssuredConfig;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @DisplayName("103 - AGM bulk upload")
 @Order(103)
+@SuppressWarnings("checkstyle:TypeNameCheck")
 public class Test_0103_AgmBulkUploadITCase extends BaseITCase {
 
 	private String dataProvider = "WB";
