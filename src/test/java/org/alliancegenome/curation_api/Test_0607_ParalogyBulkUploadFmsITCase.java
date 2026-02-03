@@ -33,6 +33,7 @@ import io.restassured.config.RestAssuredConfig;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @DisplayName("607 - Paralogy bulk upload - FMS")
 @Order(607)
+@SuppressWarnings("checkstyle:TypeNameCheck")
 public class Test_0607_ParalogyBulkUploadFmsITCase extends BaseITCase {
 
 	@BeforeEach

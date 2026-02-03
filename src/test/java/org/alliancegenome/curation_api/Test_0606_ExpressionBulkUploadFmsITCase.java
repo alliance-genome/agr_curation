@@ -37,6 +37,7 @@ import io.restassured.config.RestAssuredConfig;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @DisplayName("606 - Expression bulk upload - FMS")
 @Order(606)
+@SuppressWarnings("checkstyle:TypeNameCheck")
 public class Test_0606_ExpressionBulkUploadFmsITCase extends BaseITCase {
 
 	private final String expressionBulkPostEndpoint = "/api/gene-expression-annotation/bulk/ZFIN/annotationFile";

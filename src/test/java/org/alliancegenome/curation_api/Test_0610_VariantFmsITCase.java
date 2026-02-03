@@ -35,6 +35,7 @@ import io.restassured.config.RestAssuredConfig;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @DisplayName("610 - Variant data bulk upload - FMS")
 @Order(610)
+@SuppressWarnings("checkstyle:TypeNameCheck")
 public class Test_0610_VariantFmsITCase extends BaseITCase {
 
 	// These tests require: GeneBulkUploadITCase and VocabularyTermITCase

@@ -28,6 +28,7 @@ import io.restassured.config.RestAssuredConfig;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @DisplayName("611 - VEP data bulk upload - FMS")
 @Order(611)
+@SuppressWarnings("checkstyle:TypeNameCheck")
 public class Test_0611_VepFmsITCase extends BaseITCase {
 
 	// These tests require: GeneBulkUploadITCase and VocabularyTermITCase

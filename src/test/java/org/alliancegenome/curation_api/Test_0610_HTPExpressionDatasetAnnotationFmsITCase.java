@@ -27,6 +27,7 @@ import io.restassured.config.RestAssuredConfig;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @DisplayName("610 - HTPExpressionDatasetAnnotation bulk upload - FMS")
 @Order(610)
+@SuppressWarnings("checkstyle:TypeNameCheck")
 public class Test_0610_HTPExpressionDatasetAnnotationFmsITCase extends BaseITCase {
 
 	@BeforeEach

@@ -28,6 +28,7 @@ import io.restassured.config.RestAssuredConfig;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @DisplayName("608 - GFF data bulk upload - FMS")
 @Order(608)
+@SuppressWarnings("checkstyle:TypeNameCheck")
 public class Test_0608_Gff3BulkUploadITCase extends BaseITCase {
 
 	// These tests require: GeneBulkUploadITCase and VocabularyTermITCase

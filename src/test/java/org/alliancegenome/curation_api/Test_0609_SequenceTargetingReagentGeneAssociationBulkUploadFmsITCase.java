@@ -27,6 +27,7 @@ import io.restassured.RestAssured;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @DisplayName("609 - Sequence Targeting Reagent Gene Associations bulk upload")
 @Order(609)
+@SuppressWarnings("checkstyle:TypeNameCheck")
 public class Test_0609_SequenceTargetingReagentGeneAssociationBulkUploadFmsITCase extends BaseITCase {
 	
 	private Gene gene;

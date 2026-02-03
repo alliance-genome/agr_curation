@@ -27,6 +27,7 @@ import io.restassured.config.RestAssuredConfig;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @DisplayName("605 - Sequence Targeting Reagent bulk upload - FMS")
 @Order(605)
+@SuppressWarnings("checkstyle:TypeNameCheck")
 public class Test_0605_SequenceTargetingReagentBulkUploadFmsITCase extends BaseITCase {
 
 	@BeforeEach

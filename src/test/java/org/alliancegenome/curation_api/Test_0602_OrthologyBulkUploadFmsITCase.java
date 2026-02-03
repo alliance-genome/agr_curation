@@ -27,6 +27,7 @@ import io.restassured.config.RestAssuredConfig;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @DisplayName("602 - Orthology bulk upload - FMS")
 @Order(602)
+@SuppressWarnings("checkstyle:TypeNameCheck")
 public class Test_0602_OrthologyBulkUploadFmsITCase extends BaseITCase {
 
 	@BeforeEach

@@ -36,6 +36,7 @@ import io.restassured.config.RestAssuredConfig;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @DisplayName("603 - Phenotype Annotation bulk upload - FMS")
 @Order(603)
+@SuppressWarnings("checkstyle:TypeNameCheck")
 public class Test_0603_PhenotypeAnnotationBulkUploadFmsITCase extends BaseITCase {
 
 	@BeforeEach

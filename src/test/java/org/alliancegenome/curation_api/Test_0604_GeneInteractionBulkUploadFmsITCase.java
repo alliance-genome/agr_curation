@@ -34,6 +34,7 @@ import io.restassured.config.RestAssuredConfig;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @DisplayName("604 - Gene Interaction bulk upload - FMS")
 @Order(604)
+@SuppressWarnings("checkstyle:TypeNameCheck")
 public class Test_0604_GeneInteractionBulkUploadFmsITCase extends BaseITCase {
 
 	@BeforeEach
