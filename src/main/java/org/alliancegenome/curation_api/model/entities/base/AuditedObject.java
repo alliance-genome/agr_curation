@@ -1,5 +1,6 @@
 package org.alliancegenome.curation_api.model.entities.base;
 
+import java.beans.Transient;
 import java.io.Serializable;
 import java.time.OffsetDateTime;
 
@@ -37,6 +38,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.PrePersist;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -84,14 +86,14 @@ public class AuditedObject implements Serializable {
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer", valueBridge = @ValueBridgeRef(type = BooleanValueBridge.class))
 	@KeywordField(name = "internal_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, valueBridge = @ValueBridgeRef(type = BooleanValueBridge.class))
 	@JsonView({ CurationView.FieldsOnly.class, CurationView.ForPublic.class })
-	@Column(columnDefinition = "boolean default false", nullable = false)
+	@Column(columnDefinition = "boolean default false")
 	@ColumnDefault("false")
 	private Boolean internal;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer", valueBridge = @ValueBridgeRef(type = BooleanValueBridge.class))
 	@KeywordField(name = "obsolete_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, valueBridge = @ValueBridgeRef(type = BooleanValueBridge.class))
 	@JsonView({ CurationView.FieldsOnly.class, CurationView.ForPublic.class })
-	@Column(columnDefinition = "boolean default false", nullable = false)
+	@Column(columnDefinition = "boolean default false")
 	@ColumnDefault("false")
 	private Boolean obsolete;
 
@@ -106,6 +108,18 @@ public class AuditedObject implements Serializable {
 	@JsonView(CurationView.FieldsOnly.class)
 	@UpdateTimestamp
 	private OffsetDateTime dbDateUpdated;
+
+	@PrePersist
+	@Transient
+	@JsonIgnore
+	public void defaultInternalObsolete() {
+		if (internal == null) {
+			internal = Boolean.FALSE;
+		}
+		if (obsolete == null) {
+			obsolete = Boolean.FALSE;
+		}
+	}
 
 	@JsonIgnore
 	public boolean isNotInternalOrObsolete() {
