@@ -1,5 +1,5 @@
 import { useImmerReducer } from 'use-immer';
-import { generateCrossRefSearchFields } from './utils';
+import { generateCrossRefSearchFields, generateComponentSearchFields } from './utils';
 
 const initialConstructState = {
 	construct: {},
@@ -12,6 +12,7 @@ const constructReducer = (draft, action) => {
 		case 'SET':
 			const construct = action.value;
 			generateCrossRefSearchFields(construct.references);
+			generateComponentSearchFields(construct.constructGenomicEntityAssociations);
 			draft.construct = construct;
 			break;
 		default:
