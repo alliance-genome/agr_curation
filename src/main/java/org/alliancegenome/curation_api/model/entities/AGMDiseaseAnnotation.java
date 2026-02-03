@@ -12,6 +12,7 @@ import org.hibernate.search.mapper.pojo.automaticindexing.ReindexOnUpdate;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmbedded;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexingDependency;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -109,7 +110,7 @@ public class AGMDiseaseAnnotation extends DiseaseAnnotation {
 			joinColumns = @JoinColumn(name = "agmdiseaseannotation_id"),
 			inverseJoinColumns = @JoinColumn(name = "assertedalleles_id"),
 			indexes = {
-					@Index(name = "agmdiseaseannotation_allele_agmda_index", columnList = "agmdiseaseannotation_id"),
+					@Index(name = "agmdiseaseannotation_allele_agmdiseaseannotation_index", columnList = "agmdiseaseannotation_id"),
 					@Index(name = "agmdiseaseannotation_allele_assertedalleles_index", columnList = "assertedalleles_id")
 			}
 	)

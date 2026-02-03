@@ -65,6 +65,7 @@ public class ResourceDescriptor extends AuditedObject {
 	@JoinTable(indexes = @Index(columnList = "resourcedescriptor_id"))
 	@Fetch(FetchMode.JOIN)
 	@JsonView({ CurationView.ResourceDescriptorView.class, CurationView.FieldsAndLists.class })
+	@Column(columnDefinition = "TEXT")
 	private List<String> synonyms;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
