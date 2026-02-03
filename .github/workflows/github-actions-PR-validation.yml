@@ -144,7 +144,7 @@ jobs:
           mvn --version
       - name: Package API
         run: |
-          mvn -ntp clean package -Dquarkus.package.type=uber-jar -ntp
+          mvn -ntp clean package -Dquarkus.package.type=uber-jar
 
 
   integration-test-api:
