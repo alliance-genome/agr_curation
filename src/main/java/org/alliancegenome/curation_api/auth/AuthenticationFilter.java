@@ -132,6 +132,8 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 			person.setFirstName("Local");
 			person.setLastName("Dev User");
 			person.setUniqueId("Local|Dev User|test@alliancegenome.org");
+			person.setInternal(false);
+			person.setObsolete(false);
 			personDAO.persist(person);
 			userAuthenticatedEvent.fire(person);
 		} else {
@@ -219,6 +221,8 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 			Person person = new Person();
 			person.setApiToken(UUID.randomUUID().toString());
 			person.setAuthId(cognitoClientId);
+			person.setInternal(false);
+			person.setObsolete(false);
 			person.setAuthEmail(adminEmail);
 			person.setFirstName(cognitoClientId);
 			person.setLastName("AppClient");
