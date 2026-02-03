@@ -20,6 +20,7 @@ import io.restassured.config.RestAssuredConfig;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @DisplayName("1000 - APIVersionInfoControllerITCase")
 @Order(1000)
+@SuppressWarnings("checkstyle:TypeNameCheck")
 class Test_1000_APIVersionInfoControllerITCase {
 
 	@BeforeEach

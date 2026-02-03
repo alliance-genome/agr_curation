@@ -25,6 +25,7 @@ import io.restassured.config.RestAssuredConfig;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @DisplayName("503 - NCBITaxonTermITCase")
 @Order(503)
+@SuppressWarnings("checkstyle:TypeNameCheck")
 public class Test_0503_NCBITaxonTermITCase {
 	private static final String VALID_TAXON_CURIE = "NCBITaxon:1";
 	private static final String INVALID_TAXON_PREFIX = "NCBI:1";

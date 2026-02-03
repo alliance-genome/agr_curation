@@ -26,6 +26,7 @@ import io.restassured.config.RestAssuredConfig;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @DisplayName("108 - DO term bulk upload")
 @Order(108)
+@SuppressWarnings("checkstyle:TypeNameCheck")
 public class Test_0108_DOTermBulkUploadITCase {
 
 	@BeforeEach
