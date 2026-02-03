@@ -1435,16 +1435,9 @@ public class Test_0302_AlleleITCase extends BaseITCase {
 	public void createAlleleWithDuplicateNote() {
 		Allele allele = new Allele();
 		allele.setPrimaryExternalId("ALLELE:0021");
-		taxon = getNCBITaxonTerm("NCBITaxon:10090");
 		allele.setTaxon(taxon);
-
-		nameTypeVocabulary = getVocabulary(VocabularyConstants.NAME_TYPE_VOCABULARY);
-		symbolNameType = getVocabularyTerm(nameTypeVocabulary, "nomenclature_symbol");
 		AlleleSymbolSlotAnnotation alleleSymbol = createAlleleSymbolSlotAnnotation(null, "Test symbol", symbolNameType, null, null);
 		allele.setAlleleSymbol(alleleSymbol);
-
-		noteTypeVocabulary = getVocabulary(VocabularyConstants.NOTE_TYPE_VOCABULARY);
-		noteType = getVocabularyTerm(noteTypeVocabulary, "comment");
 		Note note1 = createNote(noteType, "Test text", false, false, null);
 		Note note2 = createNote(noteType, "Test text", false, false, null);
 		allele.setRelatedNotes(List.of(note1, note2));
