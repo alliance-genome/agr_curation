@@ -77,12 +77,12 @@ public class GeneService extends SubmittedObjectCrudService<Gene, GeneDTO, GeneD
 	}
 
 	@Override
-	public Gene upsert(GeneDTO dto) throws ValidationException {
+	public ObjectResponse<Gene> upsert(GeneDTO dto) throws ValidationException {
 		return upsert(dto, null);
 	}
 
 	@Override
-	public Gene upsert(GeneDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
+	public ObjectResponse<Gene> upsert(GeneDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
 		return geneDtoValidator.validateGeneDTO(dto, dataProvider);
 	}
 
@@ -313,6 +313,7 @@ public class GeneService extends SubmittedObjectCrudService<Gene, GeneDTO, GeneD
 		}
 	}
 
+	@Override
 	@Transactional
 	public void updatePopularity(String curie, Double popularity) {
 		SearchResponse<Gene> searchResponse = findByField("primaryExternalId", curie);

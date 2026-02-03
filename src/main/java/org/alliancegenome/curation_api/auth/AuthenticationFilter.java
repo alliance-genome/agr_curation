@@ -145,7 +145,7 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 		}
 		Person person = personService.findPersonByAuthenticationId(jsonWebToken.getClaim(USER_ID_FIELD));
 		if (person != null) {
-			Log.info("Person Found in the db: " + person.getFirstName() + " " + person.getLastName());
+			Log.debug("Person Found in the db: " + person.getFirstName() + " " + person.getLastName());
 		}
 		return person;
 	}

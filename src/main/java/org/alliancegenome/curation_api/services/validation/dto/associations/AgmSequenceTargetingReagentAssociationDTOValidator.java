@@ -31,7 +31,7 @@ public class AgmSequenceTargetingReagentAssociationDTOValidator extends AuditedO
 	@Inject AffectedGenomicModelService agmService;
 	@Inject SequenceTargetingReagentService strService;
 
-	public AgmSequenceTargetingReagentAssociation validateAgmSequenceTargetingReagentAssociationDTO(AgmSequenceTargetingReagentAssociationDTO dto, BackendBulkDataProvider beDataProvider) throws ValidationException {
+	public ObjectResponse<AgmSequenceTargetingReagentAssociation> validateAgmSequenceTargetingReagentAssociationDTO(AgmSequenceTargetingReagentAssociationDTO dto, BackendBulkDataProvider beDataProvider) throws ValidationException {
 		response = new ObjectResponse<AgmSequenceTargetingReagentAssociation>();
 		
 		List<Long> subjectIds = null;
@@ -102,8 +102,8 @@ public class AgmSequenceTargetingReagentAssociationDTOValidator extends AuditedO
 		if (response.hasErrors()) {
 			throw new ObjectValidationException(dto, response.errorMessagesString());
 		}
-
-		association = agmStrAssociationDAO.persist(association);
-		return association;
+		
+		response.setEntity(agmStrAssociationDAO.persist(association));
+		return response;
 	}
 }

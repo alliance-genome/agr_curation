@@ -104,7 +104,7 @@ export const FullNameForm = ({ labelColumnSize, state, dispatch }) => {
 					evidenceOnChangeHandler={evidenceOnChangeHandler}
 				/>
 			}
-			tableName="Full Name"
+			tableName="Name"
 			showTable={state.entityStates.alleleFullName.show}
 			button={
 				<Button

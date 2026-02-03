@@ -7,6 +7,7 @@ import org.alliancegenome.curation_api.enums.JobStatus;
 import org.alliancegenome.curation_api.jobs.events.StartedBulkLoadJobEvent;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkGoogleAnalyticsLoad;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoad;
+
 import io.quarkus.logging.Log;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.ObservesAsync;
