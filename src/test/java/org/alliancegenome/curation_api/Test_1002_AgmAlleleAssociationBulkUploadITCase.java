@@ -36,6 +36,7 @@ import io.restassured.config.RestAssuredConfig;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @DisplayName("1002 - AffectedGenomicModel Allele Associations bulk upload")
 @Order(1002)
+@SuppressWarnings("checkstyle:TypeNameCheck")
 public class Test_1002_AgmAlleleAssociationBulkUploadITCase extends BaseITCase {
 	
 	private AffectedGenomicModel agm;

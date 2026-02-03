@@ -20,6 +20,7 @@ import org.junit.jupiter.api.TestMethodOrder;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @DisplayName("2000 - ReferenceIdentity")
 @Order(2000)
+@SuppressWarnings("checkstyle:TypeNameCheck")
 class Test_2000_ReferenceIdentity {
 
 	@Test

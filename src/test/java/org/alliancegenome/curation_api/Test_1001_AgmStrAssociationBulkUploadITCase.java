@@ -33,6 +33,7 @@ import io.restassured.config.RestAssuredConfig;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @DisplayName("1001 - AffectedGenomicModel SequenceTargetingReagent Associations bulk upload")
 @Order(1001)
+@SuppressWarnings("checkstyle:TypeNameCheck")
 public class Test_1001_AgmStrAssociationBulkUploadITCase extends BaseITCase {
 	
 	private AffectedGenomicModel agm;
