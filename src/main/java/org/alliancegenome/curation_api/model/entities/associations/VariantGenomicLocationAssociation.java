@@ -41,7 +41,7 @@ public abstract class VariantGenomicLocationAssociation extends VariantLocationA
 		"modInternalId", "modInternalId_keyword", "name", "name_keyword"
 	})
 	@ManyToOne
-	@JsonView({ CurationView.FieldsOnly.class })
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.AlleleSummaryDocument.class })
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@Fetch(FetchMode.JOIN)
 	private AssemblyComponent variantGenomicLocationAssociationObject;
