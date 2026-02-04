@@ -67,15 +67,13 @@ public class AlleleGeneAssociationService extends BaseAssociationDTOCrudService<
 
 	@Override
 	@Transactional
-	public AlleleGeneAssociation upsert(AlleleGeneAssociationDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
-		AlleleGeneAssociation association = alleleGeneAssociationDtoValidator.validateAlleleGeneAssociationDTO(dto, dataProvider);
-		return association;
+	public ObjectResponse<AlleleGeneAssociation> upsert(AlleleGeneAssociationDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
+		return alleleGeneAssociationDtoValidator.validateAlleleGeneAssociationDTO(dto, dataProvider);
 	}
 	
 	@Transactional
-	public AlleleGeneAssociation upsert(AlleleGeneAssociationDTO dto, BackendBulkDataProvider dataProvider, Map<Long, Long> isAlleleOfAssociationMap, boolean isFullLoad) throws ValidationException {
-		AlleleGeneAssociation association = alleleGeneAssociationDtoValidator.validateAlleleGeneAssociationDTO(dto, dataProvider, isAlleleOfAssociationMap, isFullLoad);
-		return association;
+	public ObjectResponse<AlleleGeneAssociation> upsert(AlleleGeneAssociationDTO dto, BackendBulkDataProvider dataProvider, Map<Long, Long> isAlleleOfAssociationMap, boolean isFullLoad) throws ValidationException {
+		return alleleGeneAssociationDtoValidator.validateAlleleGeneAssociationDTO(dto, dataProvider, isAlleleOfAssociationMap, isFullLoad);
 	}
 
 	public List<Long> getAssociationsByDataProvider(BackendBulkDataProvider dataProvider) {

@@ -27,7 +27,7 @@ public class GeneDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOValid
 	@Inject GeneDiseaseAnnotationDAO geneDiseaseAnnotationDAO;
 	@Inject AffectedGenomicModelService affectedGenomicModelService;
 
-	public GeneDiseaseAnnotation validateGeneDiseaseAnnotationDTO(GeneDiseaseAnnotationDTO dto, BackendBulkDataProvider dataProvider) throws ObjectValidationException {
+	public ObjectResponse<GeneDiseaseAnnotation> validateGeneDiseaseAnnotationDTO(GeneDiseaseAnnotationDTO dto, BackendBulkDataProvider dataProvider) throws ObjectValidationException {
 		response = new ObjectResponse<GeneDiseaseAnnotation>();
 		
 		GeneDiseaseAnnotation annotation = new GeneDiseaseAnnotation();
@@ -67,8 +67,10 @@ public class GeneDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOValid
 		if (response.hasErrors()) {
 			throw new ObjectValidationException(dto, response.errorMessagesString());
 		}
+		
+		response.setEntity(annotation);
 
-		return annotation;
+		return response;
 	}
 
 }

@@ -51,7 +51,7 @@ public class GeneDTOValidator extends GenomicEntityDTOValidator<Gene, GeneDTO> {
 	@Inject SoTermService soTermService;
 
 	@Transactional
-	public Gene validateGeneDTO(GeneDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
+	public ObjectResponse<Gene> validateGeneDTO(GeneDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
 		response = new ObjectResponse<Gene>();
 		
 		Gene gene = findDatabaseObject(geneDAO, "primaryExternalId", "primary_external_id", dto.getPrimaryExternalId());
@@ -111,8 +111,10 @@ public class GeneDTOValidator extends GenomicEntityDTOValidator<Gene, GeneDTO> {
 		if (response.hasErrors()) {
 			throw new ObjectValidationException(dto, response.errorMessagesString());
 		}
+		
+		response.setEntity(geneDAO.persist(gene));
 
-		return geneDAO.persist(gene);
+		return response;
 	}
 
 	private GeneSymbolSlotAnnotation validateGeneSymbol(Gene gene, GeneDTO dto) {

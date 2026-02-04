@@ -72,9 +72,8 @@ public class AlleleConstructAssociationService extends BaseAssociationDTOCrudSer
 
 	@Override
 	@Transactional
-	public AlleleConstructAssociation upsert(AlleleConstructAssociationDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
-		AlleleConstructAssociation association = alleleConstructAssociationDtoValidator.validateAlleleConstructAssociationDTO(dto, dataProvider);
-		return association;
+	public ObjectResponse<AlleleConstructAssociation> upsert(AlleleConstructAssociationDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
+		return alleleConstructAssociationDtoValidator.validateAlleleConstructAssociationDTO(dto, dataProvider);
 	}
 
 	public List<Long> getAssociationsByDataProvider(BackendBulkDataProvider dataProvider) {
