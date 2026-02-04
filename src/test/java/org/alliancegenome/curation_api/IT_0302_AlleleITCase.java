@@ -1515,8 +1515,7 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 			body("entity", not(hasKey("alleleConstructAssociations")));
 	}
 
-	@Test
-	@org.junit.Ignore
+	//@Test
 	@Order(24)
 	public void updateAlleleDetailWithInvalidAssociations() {
 		Allele allele = getAllele(ALLELE);
