@@ -123,7 +123,7 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 	}
 
 	private void loginDevUser() {
-		Log.info("Cognito Authentication Disabled using Test Dev User");
+		Log.debug("Cognito Authentication Disabled using Test Dev User");
 		Person authenticatedUser = personService.findPersonByAuthenticationEmail("test@alliancegenome.org");
 		if (authenticatedUser == null) {
 			Person person = new Person();
@@ -132,6 +132,8 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 			person.setFirstName("Local");
 			person.setLastName("Dev User");
 			person.setUniqueId("Local|Dev User|test@alliancegenome.org");
+			person.setInternal(false);
+			person.setObsolete(false);
 			personDAO.persist(person);
 			userAuthenticatedEvent.fire(person);
 		} else {
@@ -145,7 +147,7 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 		}
 		Person person = personService.findPersonByAuthenticationId(jsonWebToken.getClaim(USER_ID_FIELD));
 		if (person != null) {
-			Log.info("Person Found in the db: " + person.getFirstName() + " " + person.getLastName());
+			Log.debug("Person Found in the db: " + person.getFirstName() + " " + person.getLastName());
 		}
 		return person;
 	}
@@ -219,6 +221,8 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 			Person person = new Person();
 			person.setApiToken(UUID.randomUUID().toString());
 			person.setAuthId(cognitoClientId);
+			person.setInternal(false);
+			person.setObsolete(false);
 			person.setAuthEmail(adminEmail);
 			person.setFirstName(cognitoClientId);
 			person.setLastName("AppClient");

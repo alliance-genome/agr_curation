@@ -17,6 +17,7 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.FullTextFi
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmbedded;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexingDependency;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.KeywordField;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
@@ -42,26 +43,26 @@ public abstract class VariantLocationAssociation extends LocationAssociation {
 			"modInternalId", "modInternalId_keyword", "name", "name_keyword"
 	})
 	@ManyToOne
-	@JsonView({CurationView.FieldsOnly.class})
+	@JsonView({CurationView.FieldsOnly.class, CurationView.VariantDocument.class })
 	@JsonIgnoreProperties({"curatedVariantGenomicLocations", "alleleVariantAssociations"})
 	@Fetch(FetchMode.JOIN)
 	private Variant variantAssociationSubject;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "hgvs_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({CurationView.FieldsOnly.class, CurationView.AlleleSummaryDocument.class})
+	@JsonView({CurationView.FieldsOnly.class, CurationView.AlleleSummaryDocument.class, CurationView.VariantDocument.class})
 	@Column(columnDefinition = "TEXT")
 	private String hgvs;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "referenceSequence_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({CurationView.FieldsOnly.class})
+	@JsonView({CurationView.FieldsOnly.class, CurationView.VariantDocument.class})
 	@Column(columnDefinition = "TEXT")
 	private String referenceSequence;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "variantSequence_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({CurationView.FieldsOnly.class})
+	@JsonView({CurationView.FieldsOnly.class, CurationView.VariantDocument.class})
 	@Column(columnDefinition = "TEXT")
 	private String variantSequence;
 
@@ -78,7 +79,7 @@ public abstract class VariantLocationAssociation extends LocationAssociation {
 	@ManyToOne
 	@JsonView({CurationView.FieldsOnly.class})
 	private SOTerm curatedConsequence;
-
+	
 	@Transient
 	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	@JsonView({CurationView.FieldsOnly.class, CurationView.VariantView.class})

@@ -45,7 +45,7 @@ public class AnnotationValidator extends AuditedObjectValidator<Annotation> {
 				addMessageResponse("conditionRelations", "singleReference - " + ValidationConstants.INVALID_MESSAGE);
 			}
 
-			if (conditionRelation.getObsolete() && !previousConditionRelationIds.contains(conditionRelation.getId())) {
+			if (conditionRelation.getObsolete() != null && conditionRelation.getObsolete() && !previousConditionRelationIds.contains(conditionRelation.getId())) {
 				addMessageResponse("conditionRelations", ValidationConstants.OBSOLETE_MESSAGE);
 			}
 
