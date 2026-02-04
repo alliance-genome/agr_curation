@@ -1,0 +1,12 @@
+DROP INDEX idx_allele_id_btree;
+DROP INDEX cellularcomponentqualifiers_qualifiers_index;
+DROP INDEX idxk04don501qvjx3gsreq6i4eo;
+DROP INDEX idxk1mxuc2w5565d95qkk9uk2kdh;
+DROP INDEX idx_genetogeneorthologygenerated_confidence;
+DROP INDEX idx_g2gorthgen_predmethods_ortho;
+DROP INDEX resourcedescriptorpage_createdby_id_index;
+DROP INDEX resourcedescriptorpage_updatedby_id_index;
+DROP INDEX idxknjhcn64qms05eq8c8s2hhmxc;
+
+ALTER TABLE ONLY resourcedescriptor DROP CONSTRAINT resourcedescriptor_prefix_key;
+ALTER TABLE ONLY organization DROP CONSTRAINT organization_abbreviation_key;

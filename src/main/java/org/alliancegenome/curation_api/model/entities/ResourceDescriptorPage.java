@@ -33,8 +33,8 @@ import lombok.ToString;
 @AGRCurationSchemaVersion(min = "1.5.1", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AuditedObject.class })
 @Table(indexes = {
 		@Index(name = "resourcedescriptorpage_resourcedescriptor_id_index", columnList = "resourcedescriptor_id"),
-		@Index(name = "resourcedescriptorpage_createdby_id_index", columnList = "createdby_id"),
-		@Index(name = "resourcedescriptorpage_updatedby_id_index", columnList = "updatedby_id")
+		@Index(name = "resourcedescriptorpage_createdby_index", columnList = "createdby_id"),
+		@Index(name = "resourcedescriptorpage_updatedby_index", columnList = "updatedby_id")
 })
 @Schema(name = "ResourceDescriptorPage", description = "Annotation class representing a resource descriptor page")
 public class ResourceDescriptorPage extends AuditedObject {
