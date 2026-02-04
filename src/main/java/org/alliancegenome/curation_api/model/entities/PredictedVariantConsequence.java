@@ -23,6 +23,7 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexingDe
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.KeywordField;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 
 import jakarta.persistence.Column;
@@ -32,6 +33,7 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -162,10 +164,37 @@ public class PredictedVariantConsequence extends AuditedObject {
 	@Column(columnDefinition = "TEXT")
 	private String hgvsCodingNomenclature;
 
+	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
+	@KeywordField(name = "introns_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
+	@JsonView({CurationView.FieldsOnly.class})
+	@Transient
+	private String introns;
+
+	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
+	@KeywordField(name = "exons_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
+	@JsonView({CurationView.FieldsOnly.class})
+	@Transient
+	private String exons;
+	
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer", valueBridge = @ValueBridgeRef(type = BooleanValueBridge.class))
 	@KeywordField(name = "geneLevelConsequence_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, valueBridge = @ValueBridgeRef(type = BooleanValueBridge.class))
 	@JsonView({CurationView.FieldsOnly.class, CurationView.VariantDocument.class})
 	@Column(columnDefinition = "boolean default false", nullable = false)
 	private Boolean geneLevelConsequence = false;
 
+	@Transient
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
+	@JsonView({CurationView.FieldsOnly.class, CurationView.VariantView.class})
+	public String getIntronExonLocation() {
+		if (exons == null && introns == null) {
+			return null;
+		}
+		if (introns == null) {
+			return "Exon " + exons;
+		}
+		if (exons == null) {
+			return "Intron " + introns;
+		}
+		return "Exon " + exons + " : " + "Intron " + introns;
+	}
 }

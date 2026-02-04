@@ -11,7 +11,7 @@ import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-@JsonView(value = { CurationView.VariantDocument.class })
+@JsonView({ CurationView.VariantDocument.class })
 public class VariantSummaryDocument extends ESDocument {
 
 	{
