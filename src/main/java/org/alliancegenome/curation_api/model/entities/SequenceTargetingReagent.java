@@ -60,6 +60,7 @@ public class SequenceTargetingReagent extends GenomicEntity {
 	@ElementCollection
 	@JoinTable(indexes = @Index(name = "sqtr_synonyms_sqtr_index", columnList = "sequencetargetingreagent_id"))
 	@JsonView({ CurationView.FieldsAndLists.class, CurationView.SequenceTargetingReagentView.class })
+	@Column(columnDefinition = "TEXT")
 	private List<String> synonyms;
 	
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")

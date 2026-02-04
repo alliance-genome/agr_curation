@@ -34,12 +34,12 @@ public abstract class LocationAssociation extends EvidenceAssociation {
 
 	@GenericField(projectable = Projectable.YES, sortable = Sortable.YES)
 	@Column(name = "`start`")
-	@JsonView({CurationView.FieldsOnly.class, CurationView.GeneSummaryDocument.class, CurationView.AlleleSummaryDocument.class})
+	@JsonView({CurationView.FieldsOnly.class, CurationView.GeneSummaryDocument.class, CurationView.AlleleSummaryDocument.class, CurationView.VariantDocument.class})
 	private Integer start;
 
 	@GenericField(projectable = Projectable.YES, sortable = Sortable.YES)
 	@Column(name = "`end`")
-	@JsonView({CurationView.FieldsOnly.class, CurationView.GeneSummaryDocument.class, CurationView.AlleleSummaryDocument.class})
+	@JsonView({CurationView.FieldsOnly.class, CurationView.GeneSummaryDocument.class, CurationView.AlleleSummaryDocument.class, CurationView.VariantDocument.class})
 	private Integer end;
 
 }

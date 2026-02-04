@@ -126,7 +126,7 @@ public class Allele extends GenomicEntity {
 	)
 	@OneToOne(mappedBy = "singleAllele", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonManagedReference
-	@JsonView({ CurationView.FieldsOnly.class, CurationView.ForPublic.class, CurationView.AlleleDetailView.class, CurationView.AlleleSummaryDocument.class })
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.ForPublic.class, CurationView.AlleleDetailView.class, CurationView.AlleleSummaryDocument.class, CurationView.VariantDocument.class })
 	private AlleleSymbolSlotAnnotation alleleSymbol;
 
 	@IndexedEmbedded(

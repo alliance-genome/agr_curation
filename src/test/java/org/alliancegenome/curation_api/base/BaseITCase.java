@@ -691,11 +691,12 @@ public class BaseITCase {
 		return response.getEntity();
 	}
 
-	public Note createNote(VocabularyTerm vocabularyTerm, String text, Boolean internal, Reference reference) {
+	public Note createNote(VocabularyTerm vocabularyTerm, String text, Boolean internal, Boolean obsolete, Reference reference) {
 		Note note = new Note();
 		note.setNoteType(vocabularyTerm);
 		note.setFreeText(text);
 		note.setInternal(internal);
+		note.setObsolete(obsolete);
 		if (reference != null) {
 			note.setReferences(List.of(reference));
 		}

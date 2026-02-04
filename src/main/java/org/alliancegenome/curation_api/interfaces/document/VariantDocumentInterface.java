@@ -2,7 +2,7 @@ package org.alliancegenome.curation_api.interfaces.document;
 
 import java.util.HashMap;
 
-import org.alliancegenome.curation_api.model.document.es.VariantSummaryDTO;
+import org.alliancegenome.curation_api.model.document.es.VariantSummaryDocument;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.view.CurationView;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
@@ -26,6 +26,6 @@ public interface VariantDocumentInterface {
 
 	@POST
 	@Path("/documents")
-	@JsonView(CurationView.VariantDetailView.class)
-	SearchResponse<VariantSummaryDTO> findDocuments(@DefaultValue("0") @QueryParam("page") Integer page, @DefaultValue("10") @QueryParam("limit") Integer limit, @RequestBody HashMap<String, Object> params);
+	@JsonView(CurationView.VariantDocument.class)
+	SearchResponse<VariantSummaryDocument> findDocuments(@DefaultValue("0") @QueryParam("page") Integer page, @DefaultValue("10") @QueryParam("limit") Integer limit, @RequestBody HashMap<String, Object> params);
 }

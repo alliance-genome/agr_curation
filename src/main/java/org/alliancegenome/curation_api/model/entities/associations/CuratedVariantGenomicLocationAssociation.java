@@ -1,7 +1,5 @@
 package org.alliancegenome.curation_api.model.entities.associations;
 
-import static org.alliancegenome.curation_api.services.associations.CuratedVariantGenomicLocationAssociationService.SORTED_VARIANT_CONSEQUENCE_MAP;
-
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -10,6 +8,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
+import org.alliancegenome.curation_api.constants.VariantConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.PredictedVariantConsequence;
@@ -68,12 +67,12 @@ public class CuratedVariantGenomicLocationAssociation extends VariantGenomicLoca
 	)
 	@OneToMany(mappedBy = "variantGenomicLocation", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonManagedReference
-	@JsonView({CurationView.FieldsAndLists.class, CurationView.VariantView.class, CurationView.AlleleSummaryDocument.class})
+	@JsonView({CurationView.FieldsAndLists.class, CurationView.VariantView.class, CurationView.VariantDocument.class, CurationView.AlleleSummaryDocument.class})
 	private List<PredictedVariantConsequence> predictedVariantConsequences;
 
 	@Transient
 	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
-	@JsonView({CurationView.FieldsOnly.class, CurationView.VariantView.class})
+	@JsonView({CurationView.FieldsOnly.class, CurationView.VariantDocument.class})
 	public PredictedVariantConsequence getMostSevereConsequence() {
 		if (predictedVariantConsequences == null || predictedVariantConsequences.isEmpty()) {
 			return null;
@@ -84,7 +83,7 @@ public class CuratedVariantGenomicLocationAssociation extends VariantGenomicLoca
 						return Integer.MAX_VALUE;
 					}
 					return pvc.getVepConsequences().stream()
-							.map(soTerm -> SORTED_VARIANT_CONSEQUENCE_MAP.getOrDefault(soTerm.getName(), Integer.MAX_VALUE))
+							.map(soTerm -> VariantConstants.SORTED_VARIANT_CONSEQUENCE_MAP.getOrDefault(soTerm.getName(), Integer.MAX_VALUE))
 							.min(Integer::compareTo)
 							.orElse(Integer.MAX_VALUE);
 				}))
@@ -93,7 +92,7 @@ public class CuratedVariantGenomicLocationAssociation extends VariantGenomicLoca
 
 	@Transient
 	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
-	@JsonView({CurationView.VariantView.class})
+	@JsonView({CurationView.VariantDocument.class})
 	public List<String> getHgvsC() {
 		if (predictedVariantConsequences == null) {
 			return Collections.emptyList();
@@ -108,7 +107,7 @@ public class CuratedVariantGenomicLocationAssociation extends VariantGenomicLoca
 
 	@Transient
 	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
-	@JsonView({CurationView.VariantView.class})
+	@JsonView({CurationView.VariantDocument.class})
 	public List<String> getHgvsP() {
 		if (predictedVariantConsequences == null) {
 			return Collections.emptyList();
@@ -123,7 +122,7 @@ public class CuratedVariantGenomicLocationAssociation extends VariantGenomicLoca
 
 	@Transient
 	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
-	@JsonView({CurationView.VariantView.class})
+	@JsonView({CurationView.VariantDocument.class})
 	public List<Gene> getOverlapGenes() {
 		if (predictedVariantConsequences == null) {
 			return Collections.emptyList();
@@ -144,4 +143,5 @@ public class CuratedVariantGenomicLocationAssociation extends VariantGenomicLoca
 				.sorted(Comparator.comparing(gene -> gene.getGeneSymbol().getDisplayText()))
 				.collect(Collectors.toList());
 	}
+
 }

@@ -116,7 +116,7 @@ public class AGMPhenotypeAnnotation extends PhenotypeAnnotation {
 		joinColumns = @JoinColumn(name = "agmphenotypeannotation_id"),
 		inverseJoinColumns = @JoinColumn(name = "assertedalleles_id"),
 		indexes = {
-			@Index(name = "agmphenotypeannotation_allele_agmpa_index", columnList = "agmphenotypeannotation_id"),
+			@Index(name = "agmphenotypeannotation_allele_agmphenotypeannotation_index", columnList = "agmphenotypeannotation_id"),
 			@Index(name = "agmphenotypeannotation_allele_assertedalleles_index", columnList = "assertedalleles_id")
 		}
 	)

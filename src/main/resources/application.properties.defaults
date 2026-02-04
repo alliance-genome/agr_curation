@@ -81,7 +81,6 @@ curation.authentication.enabled = false
 
 quarkus.oidc.application-type=service
 quarkus.oidc.token.header=Authorization
-quarkus.oidc.token.cookie=cognito-token-cookie
 quarkus.oidc.enabled=true
 quarkus.oidc.authentication.user-info-required=false
 %dev.quarkus.oidc.enabled=false

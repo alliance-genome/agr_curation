@@ -114,10 +114,6 @@ public class CurationView {
 
 	public static class VariantDetailView extends VariantView {
 	}
-	
-	public static class VariantIndexerView extends VariantView {
-		
-	}
 
 	public static class GeneInteractionView extends FieldsOnly {
 	}
@@ -151,6 +147,7 @@ public class CurationView {
 	public static class GeneToGeneOrthologyDocument { }
 	public static class GeneExpressionDocument { }
 	public static class ModelDocument { }
+	public static class VariantDocument { }
 	public static class TransgenicAllelesDocument extends ForPublic { }
 
 	public static Class<?> viewLookup(String name) {

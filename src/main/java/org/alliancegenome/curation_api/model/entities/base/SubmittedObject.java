@@ -54,7 +54,7 @@ public class SubmittedObject extends CurieObject {
 			CurationView.ModelDocument.class,
 			CurationView.TransgenicAllelesDocument.class,
 			CurationView.AlleleSummaryDocument.class,
-			CurationView.VariantDetailView.class,
+			CurationView.VariantDocument.class,
 			CurationView.GeneExpressionDocument.class })
 	private String primaryExternalId;
 

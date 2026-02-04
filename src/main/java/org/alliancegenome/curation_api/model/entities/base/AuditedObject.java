@@ -1,5 +1,6 @@
 package org.alliancegenome.curation_api.model.entities.base;
 
+import java.beans.Transient;
 import java.io.Serializable;
 import java.time.OffsetDateTime;
 
@@ -11,6 +12,7 @@ import org.alliancegenome.curation_api.model.entities.Person;
 import org.alliancegenome.curation_api.view.CurationView;
 import org.alliancegenome.curation_api.view.CurationView.VocabularyTermSetView;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
+import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
@@ -36,6 +38,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.PrePersist;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -83,14 +86,16 @@ public class AuditedObject implements Serializable {
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer", valueBridge = @ValueBridgeRef(type = BooleanValueBridge.class))
 	@KeywordField(name = "internal_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, valueBridge = @ValueBridgeRef(type = BooleanValueBridge.class))
 	@JsonView({ CurationView.FieldsOnly.class, CurationView.ForPublic.class })
-	@Column(columnDefinition = "boolean default false", nullable = false)
-	private Boolean internal = false;
+	@Column(columnDefinition = "boolean default false")
+	@ColumnDefault("false")
+	private Boolean internal;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer", valueBridge = @ValueBridgeRef(type = BooleanValueBridge.class))
 	@KeywordField(name = "obsolete_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, valueBridge = @ValueBridgeRef(type = BooleanValueBridge.class))
 	@JsonView({ CurationView.FieldsOnly.class, CurationView.ForPublic.class })
-	@Column(columnDefinition = "boolean default false", nullable = false)
-	private Boolean obsolete = false;
+	@Column(columnDefinition = "boolean default false")
+	@ColumnDefault("false")
+	private Boolean obsolete;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer", valueBridge = @ValueBridgeRef(type = OffsetDateTimeValueBridge.class))
 	@KeywordField(name = "dbDateCreated_keyword", sortable = Sortable.YES, searchable = Searchable.YES, aggregable = Aggregable.YES, valueBridge = @ValueBridgeRef(type = OffsetDateTimeValueBridge.class))
@@ -104,6 +109,19 @@ public class AuditedObject implements Serializable {
 	@UpdateTimestamp
 	private OffsetDateTime dbDateUpdated;
 
+	@PrePersist
+	@Transient
+	@JsonIgnore
+	public void defaultInternalObsolete() {
+		if (internal == null) {
+			internal = Boolean.FALSE;
+		}
+		if (obsolete == null) {
+			obsolete = Boolean.FALSE;
+		}
+	}
+
+	@Transient
 	@JsonIgnore
 	public boolean isNotInternalOrObsolete() {
 		return !internal && !obsolete;
