@@ -22,18 +22,6 @@ public class VariantDocumentBuilder {
 						dto.setVariant(curatedVariantGenomicLocationAssociation);
 						Allele alleleAssociationSubject = alleleVariantAssociation.getAlleleAssociationSubject();
 						dto.setAllele(alleleAssociationSubject);
-						// Not Being used in the VariantSummaryDocument
-//						if (alleleAssociationSubject != null) {
-//							if (CollectionUtils.isNotEmpty(alleleAssociationSubject.getAlleleGeneAssociations())) {
-//								List<AlleleGeneAssociation> isAlleleOfList = alleleAssociationSubject.getAlleleGeneAssociations().stream()
-//										.filter(alleleGeneAssociation -> alleleGeneAssociation.getRelation().getName().equals("is_allele_of")).toList();
-//								if (CollectionUtils.isNotEmpty(isAlleleOfList)) {
-//									AlleleGeneAssociation isAlleleOf = isAlleleOfList.getFirst();
-//									Gene associatedGene = isAlleleOf.getAlleleGeneAssociationObject();
-//									dto.setIsAlleleOfGene(associatedGene);
-//								}
-//							}
-//						}
 						dtos.add(dto);
 					});
 					return dtos;
