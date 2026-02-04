@@ -9,6 +9,7 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+
 import org.alliancegenome.curation_api.constants.EntityFieldConstants;
 import org.alliancegenome.curation_api.dao.associations.AgmAlleleAssociationDAO;
 import org.alliancegenome.curation_api.dao.base.BaseSQLDAO;
@@ -20,8 +21,8 @@ import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.Note;
 import org.alliancegenome.curation_api.model.entities.Organization;
 import org.alliancegenome.curation_api.model.entities.PredictedVariantConsequence;
-import org.alliancegenome.curation_api.model.entities.Variant;
 import org.alliancegenome.curation_api.model.entities.ResourceDescriptorPage;
+import org.alliancegenome.curation_api.model.entities.Variant;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.associations.AlleleGeneAssociation;
 import org.alliancegenome.curation_api.model.entities.associations.CuratedVariantGenomicLocationAssociation;
@@ -165,7 +166,7 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 		// Build cursor condition for optimization
 		String cursorCondition = "";
 		boolean useCursorCondition = false;
-		if (pagination.isCursorBased()) {
+		if (pagination.getCursor() != null) {
 			cursorCondition = " AND a.id > :cursor";
 			useCursorCondition = true;
 		}
@@ -183,7 +184,7 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 				""" + cursorCondition;
 
 		Query query;
-		if (pagination.isCountCondition()) {
+		if (pagination.getPage() == 0 && pagination.getLimit() == 0) {
 			query = entityManager.createNativeQuery(baseCountQuery + baseQuery);
 			if (useCursorCondition) {
 				query.setParameter("cursor", pagination.getCursor());
@@ -201,7 +202,7 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 			}
 
 			// Use cursor-based pagination if cursor is provided, otherwise fall back to offset
-			if (pagination.isCursorBased()) {
+			if (pagination.getCursor() != null) {
 				// For cursor-based pagination, we don't need OFFSET
 				query.setMaxResults(pagination.getLimit());
 			} else {
@@ -292,7 +293,7 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 							index.incrementAndGet();
 							return slot;
 						}).toList();
-				alleleMap.get((Long) objects[0]).setAlleleSynonyms(slotList);
+				alleleMap.get(objects[0]).setAlleleSynonyms(slotList);
 			}
 		});
 
@@ -382,7 +383,7 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 				variantMap = new HashMap<>();
 				alleleVariantMap.put(alleleId, variantMap);
 			}
-			Variant variant = variantMap.get((Long) row[1]);
+			Variant variant = variantMap.get(row[1]);
 			if (variant == null) {
 				List<SOTerm> vepConsequences = new ArrayList<>();
 				PredictedVariantConsequence pvc = new PredictedVariantConsequence();
@@ -492,7 +493,7 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 		response.setTotalResults((long) alleles.size());
 
 		// Set nextCursor for cursor-based pagination
-		if (!alleles.isEmpty() && pagination.isCursorBased()) {
+		if (!alleles.isEmpty() && pagination.getCursor() != null) {
 			// Get the ID of the last allele in the current page as the next cursor
 			Long lastId = alleles.get(alleles.size() - 1).getId();
 			response.setNextCursor(lastId);
