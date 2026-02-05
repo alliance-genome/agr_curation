@@ -79,27 +79,5 @@ public abstract class VariantLocationAssociation extends LocationAssociation {
 	@ManyToOne
 	@JsonView({CurationView.FieldsOnly.class})
 	private SOTerm curatedConsequence;
-	
-	@Transient
-	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
-	@JsonView({CurationView.FieldsOnly.class, CurationView.VariantView.class})
-	public String getNucleotideChange() {
-		if (variantAssociationSubject != null && variantAssociationSubject.getVariantType() != null) {
-			String variantTypeCurie = variantAssociationSubject.getVariantType().getCurie();
-			if ("SO:0000667".equals(variantTypeCurie)) {
-				// Insertion
-				return "c>c" + variantSequence;
-			} else if ("SO:1000008".equals(variantTypeCurie)) {
-				// Point mutation
-				return referenceSequence + ">" + variantSequence;
-			} else if ("SO:0000159".equals(variantTypeCurie)) {
-				// Deletion
-				return "t" + referenceSequence + ">t";
-			}
-			if (referenceSequence != null && variantSequence != null) {
-				return referenceSequence + ">" + variantSequence;
-			}
-		}
-		return null;
-	}
+
 }
