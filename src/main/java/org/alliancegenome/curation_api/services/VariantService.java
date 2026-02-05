@@ -57,7 +57,8 @@ public class VariantService extends SubmittedObjectCrudService<Variant, VariantD
 		return new ObjectResponse<Variant>(dbEntity);
 	}
 
-	public Variant upsert(VariantDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
+	@Override
+	public ObjectResponse<Variant> upsert(VariantDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
 		return variantDtoValidator.validateVariantDTO(dto, dataProvider);
 	}
 

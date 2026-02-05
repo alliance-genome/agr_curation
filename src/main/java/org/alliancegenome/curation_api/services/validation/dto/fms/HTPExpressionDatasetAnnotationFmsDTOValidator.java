@@ -43,7 +43,7 @@ public class HTPExpressionDatasetAnnotationFmsDTOValidator {
 	@Inject OrganizationService organizationService;
 	
 	@Transactional
-	public HTPExpressionDatasetAnnotation validateHTPExpressionDatasetAnnotationFmsDTO(HTPExpressionDatasetAnnotationFmsDTO dto, BackendBulkDataProvider backendBulkDataProvider) throws ValidationException {
+	public ObjectResponse<HTPExpressionDatasetAnnotation> validateHTPExpressionDatasetAnnotationFmsDTO(HTPExpressionDatasetAnnotationFmsDTO dto, BackendBulkDataProvider backendBulkDataProvider) throws ValidationException {
 		ObjectResponse<HTPExpressionDatasetAnnotation> htpAnnotationResponse = new ObjectResponse<>();
 
 		HTPExpressionDatasetAnnotation htpannotation;
@@ -169,7 +169,9 @@ public class HTPExpressionDatasetAnnotationFmsDTOValidator {
 		if (htpAnnotationResponse.hasErrors()) {
 			throw new ObjectValidationException(dto, htpAnnotationResponse.errorMessagesString());
 		}
+		
+		htpAnnotationResponse.setEntity(htpExpressionDatasetAnnotationDAO.persist(htpannotation));
 
-		return htpExpressionDatasetAnnotationDAO.persist(htpannotation);
+		return htpAnnotationResponse;
 	}
 }

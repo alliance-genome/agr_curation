@@ -2076,9 +2076,9 @@ public class IT_0304_DiseaseAnnotationITCase extends BaseITCase {
 			then().
 			statusCode(400).
 			body("errorMessages", is(aMapWithSize(3))).
-			body("errorMessages.diseaseGeneticModifierAgms", is(ValidationConstants.DEPENDENCY_MESSAGE_PREFIX + "diseaseGeneticModifierRelation")).
-			body("errorMessages.diseaseGeneticModifierAlleles", is(ValidationConstants.DEPENDENCY_MESSAGE_PREFIX + "diseaseGeneticModifierRelation")).
-			body("errorMessages.diseaseGeneticModifierGenes", is(ValidationConstants.DEPENDENCY_MESSAGE_PREFIX + "diseaseGeneticModifierRelation"));
+			body("errorMessages.diseaseGeneticModifierAgms", is(ValidationConstants.DEPENDENCY_MESSAGE_PREFIX + " diseaseGeneticModifierRelation")).
+			body("errorMessages.diseaseGeneticModifierAlleles", is(ValidationConstants.DEPENDENCY_MESSAGE_PREFIX + " diseaseGeneticModifierRelation")).
+			body("errorMessages.diseaseGeneticModifierGenes", is(ValidationConstants.DEPENDENCY_MESSAGE_PREFIX + " diseaseGeneticModifierRelation"));
 		
 		diseaseAnnotation.setDiseaseGeneticModifierAgms(null);
 		diseaseAnnotation.setDiseaseGeneticModifierAlleles(null);
@@ -2093,7 +2093,7 @@ public class IT_0304_DiseaseAnnotationITCase extends BaseITCase {
 			then().
 			statusCode(400).
 			body("errorMessages", is(aMapWithSize(1))).
-			body("errorMessages.diseaseGeneticModifierRelation", is(ValidationConstants.DEPENDENCY_MESSAGE_PREFIX + "diseaseGeneticModifierGenes / diseaseGeneticModifierAlleles / diseaseGeneticModifierAgms"));
+			body("errorMessages.diseaseGeneticModifierRelation", is(ValidationConstants.DEPENDENCY_MESSAGE_PREFIX + " diseaseGeneticModifierGenes / diseaseGeneticModifierAlleles / diseaseGeneticModifierAgms"));
 	
 	}
 	
@@ -2111,9 +2111,9 @@ public class IT_0304_DiseaseAnnotationITCase extends BaseITCase {
 			then().
 			statusCode(400).
 			body("errorMessages", is(aMapWithSize(3))).
-			body("errorMessages.diseaseGeneticModifierAgms", is(ValidationConstants.DEPENDENCY_MESSAGE_PREFIX + "diseaseGeneticModifierRelation")).
-			body("errorMessages.diseaseGeneticModifierAlleles", is(ValidationConstants.DEPENDENCY_MESSAGE_PREFIX + "diseaseGeneticModifierRelation")).
-			body("errorMessages.diseaseGeneticModifierGenes", is(ValidationConstants.DEPENDENCY_MESSAGE_PREFIX + "diseaseGeneticModifierRelation"));
+			body("errorMessages.diseaseGeneticModifierAgms", is(ValidationConstants.DEPENDENCY_MESSAGE_PREFIX + " diseaseGeneticModifierRelation")).
+			body("errorMessages.diseaseGeneticModifierAlleles", is(ValidationConstants.DEPENDENCY_MESSAGE_PREFIX + " diseaseGeneticModifierRelation")).
+			body("errorMessages.diseaseGeneticModifierGenes", is(ValidationConstants.DEPENDENCY_MESSAGE_PREFIX + " diseaseGeneticModifierRelation"));
 		
 		diseaseAnnotation.setDiseaseGeneticModifierRelation(diseaseGeneticModifierRelation);
 		diseaseAnnotation.setDiseaseGeneticModifierAgms(null);
@@ -2128,7 +2128,7 @@ public class IT_0304_DiseaseAnnotationITCase extends BaseITCase {
 			then().
 			statusCode(400).
 			body("errorMessages", is(aMapWithSize(1))).
-			body("errorMessages.diseaseGeneticModifierRelation", is(ValidationConstants.DEPENDENCY_MESSAGE_PREFIX + "diseaseGeneticModifierGenes / diseaseGeneticModifierAlleles / diseaseGeneticModifierAgms"));
+			body("errorMessages.diseaseGeneticModifierRelation", is(ValidationConstants.DEPENDENCY_MESSAGE_PREFIX + " diseaseGeneticModifierGenes / diseaseGeneticModifierAlleles / diseaseGeneticModifierAgms"));
 	
 	}
 	
@@ -2157,7 +2157,7 @@ public class IT_0304_DiseaseAnnotationITCase extends BaseITCase {
 			then().
 			statusCode(400).
 			body("errorMessages", is(aMapWithSize(1))).
-			body("errorMessages.conditionRelations", is("handle - " + ValidationConstants.DEPENDENCY_MESSAGE_PREFIX + "singleReference"));
+			body("errorMessages.conditionRelations", is("handle - " + ValidationConstants.DEPENDENCY_MESSAGE_PREFIX + " singleReference"));
 	}
 	
 	@Test
@@ -2177,7 +2177,7 @@ public class IT_0304_DiseaseAnnotationITCase extends BaseITCase {
 			then().
 			statusCode(400).
 			body("errorMessages", is(aMapWithSize(1))).
-			body("errorMessages.conditionRelations", is("handle - " + ValidationConstants.DEPENDENCY_MESSAGE_PREFIX + "singleReference"));
+			body("errorMessages.conditionRelations", is("handle - " + ValidationConstants.DEPENDENCY_MESSAGE_PREFIX + " singleReference"));
 	}
 	
 	@Test
