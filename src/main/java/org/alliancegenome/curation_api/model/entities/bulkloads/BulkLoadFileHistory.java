@@ -147,6 +147,14 @@ public class BulkLoadFileHistory extends AuditedObject {
 		getProcessCount(countType).incrementSkipped();
 	}
 	@Transient
+	public void incrementWarnings() {
+		incrementWarnings(COUNT_TYPE);
+	}
+	@Transient
+	public void incrementWarnings(String countType) {
+		getProcessCount(countType).incrementWarnings();
+	}
+	@Transient
 	public void setTotalCount(long total) {
 		getProcessCount(COUNT_TYPE).setTotal(total);
 	}

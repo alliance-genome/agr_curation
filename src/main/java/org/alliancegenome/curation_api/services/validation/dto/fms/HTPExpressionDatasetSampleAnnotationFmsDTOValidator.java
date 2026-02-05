@@ -64,7 +64,7 @@ public class HTPExpressionDatasetSampleAnnotationFmsDTOValidator {
 	@Inject AnatomicalSiteDAO anatomicalSiteDAO;
 
 	@Transactional
-	public HTPExpressionDatasetSampleAnnotation validateHTPExpressionDatasetSampleAnnotationFmsDTO(HTPExpressionDatasetSampleAnnotationFmsDTO dto, BackendBulkDataProvider backendBulkDataProvider) throws ValidationException {
+	public ObjectResponse<HTPExpressionDatasetSampleAnnotation> validateHTPExpressionDatasetSampleAnnotationFmsDTO(HTPExpressionDatasetSampleAnnotationFmsDTO dto, BackendBulkDataProvider backendBulkDataProvider) throws ValidationException {
 		ObjectResponse<HTPExpressionDatasetSampleAnnotation> htpSampleAnnotationResponse = new ObjectResponse<>();
 		HTPExpressionDatasetSampleAnnotation htpSampleAnnotation;
 
@@ -279,7 +279,10 @@ public class HTPExpressionDatasetSampleAnnotationFmsDTOValidator {
 		for (Long id : idsToRemove) {
 			anatomicalSiteDAO.remove(id);
 		}
-		return htp;
+		
+		htpSampleAnnotationResponse.setEntity(htp);
+		
+		return htpSampleAnnotationResponse;
 	}
 
 	protected void validateGenomicInformation(BioSampleGenomicInformationFmsDTO dto, HTPExpressionDatasetSampleAnnotation htpSampleAnnotation, ObjectResponse<HTPExpressionDatasetSampleAnnotation> htpSampleAnnotationResponse) {

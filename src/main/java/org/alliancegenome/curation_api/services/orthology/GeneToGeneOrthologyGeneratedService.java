@@ -11,6 +11,7 @@ import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.interfaces.crud.BaseUpsertServiceInterface;
 import org.alliancegenome.curation_api.model.entities.orthology.GeneToGeneOrthologyGenerated;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.OrthologyFmsDTO;
+import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
 import org.alliancegenome.curation_api.services.validation.dto.fms.OrthologyFmsDTOValidator;
 import org.apache.commons.lang3.StringUtils;
@@ -32,7 +33,7 @@ public class GeneToGeneOrthologyGeneratedService extends BaseEntityCrudService<G
 	}
 
 	@Override
-	public GeneToGeneOrthologyGenerated upsert(OrthologyFmsDTO orthoPair, BackendBulkDataProvider backendBulkDataProvider) throws ValidationException {
+	public ObjectResponse<GeneToGeneOrthologyGenerated> upsert(OrthologyFmsDTO orthoPair, BackendBulkDataProvider backendBulkDataProvider) throws ValidationException {
 		return orthologyFmsDtoValidator.validateOrthologyFmsDTO(orthoPair);
 	}
 

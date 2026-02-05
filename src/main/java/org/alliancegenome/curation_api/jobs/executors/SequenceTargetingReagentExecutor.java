@@ -18,6 +18,7 @@ import org.alliancegenome.curation_api.model.ingest.dto.fms.SequenceTargetingRea
 import org.alliancegenome.curation_api.model.ingest.dto.fms.SequenceTargetingReagentIngestFmsDTO;
 import org.alliancegenome.curation_api.response.APIResponse;
 import org.alliancegenome.curation_api.response.LoadHistoryResponce;
+import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.SequenceTargetingReagentService;
 import org.alliancegenome.curation_api.services.associations.SequenceTargetingReagentGeneAssociationService;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
@@ -115,10 +116,11 @@ public class SequenceTargetingReagentExecutor extends LoadFileExecutor {
 			List<Long> idsLoaded, BackendBulkDataProvider dataProvider, ProcessDisplayHelper ph) {
 		for (SequenceTargetingReagentFmsDTO dto : sqtrs) {
 			try {
-				SequenceTargetingReagent dbObject = sqtrService.upsert(dto, dataProvider);
+				
+				ObjectResponse<SequenceTargetingReagent> dbObject = sqtrService.upsert(dto, dataProvider);
 				history.incrementCompleted();
 				if (idsLoaded != null) {
-					idsLoaded.add(dbObject.getId());
+					idsLoaded.add(dbObject.getEntity().getId());
 				}
 			} catch (ObjectUpdateException e) {
 				history.incrementFailed();

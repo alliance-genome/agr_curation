@@ -8,6 +8,7 @@ import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.SequenceTargetingReagent;
 import org.alliancegenome.curation_api.model.entities.TransgenicAlleleConstruct;
 import org.alliancegenome.curation_api.view.CurationView;
+
 import com.fasterxml.jackson.annotation.JsonView;
 
 import lombok.Data;
