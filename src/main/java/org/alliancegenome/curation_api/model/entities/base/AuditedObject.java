@@ -110,7 +110,6 @@ public class AuditedObject implements Serializable {
 	private OffsetDateTime dbDateUpdated;
 
 	@PrePersist
-	@Transient
 	@JsonIgnore
 	public void defaultInternalObsolete() {
 		if (internal == null) {
