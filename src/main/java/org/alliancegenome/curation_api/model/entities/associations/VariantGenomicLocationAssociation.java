@@ -97,7 +97,7 @@ public abstract class VariantGenomicLocationAssociation extends VariantLocationA
 
 	@Transient
 	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
-	@JsonView({CurationView.FieldsOnly.class, CurationView.VariantView.class})
+	@JsonView({CurationView.FieldsOnly.class, CurationView.VariantDocument.class})
 	public String getNucleotideChange() {
 		if (getVariantAssociationSubject() != null && getVariantAssociationSubject().getVariantType() != null) {
 			String variantTypeCurie = getVariantAssociationSubject().getVariantType().getCurie();
