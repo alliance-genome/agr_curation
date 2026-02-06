@@ -247,13 +247,12 @@
 			<version>1.18.32</version>
 		</dependency>
 		<dependency>
-			<groupId>com.amazonaws</groupId>
-			<artifactId>aws-java-sdk-s3</artifactId>
-			<version>1.12.783</version>
+			<groupId>software.amazon.awssdk</groupId>
+			<artifactId>secretsmanager</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>software.amazon.awssdk</groupId>
-			<artifactId>secretsmanager</artifactId>
+			<artifactId>s3-transfer-manager</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
