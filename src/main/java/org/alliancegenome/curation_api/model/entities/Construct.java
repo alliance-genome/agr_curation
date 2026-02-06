@@ -14,6 +14,8 @@ import org.alliancegenome.curation_api.view.CurationView;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmbedded;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexingDependency;
+import org.hibernate.search.mapper.pojo.automaticindexing.ReindexOnUpdate;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
@@ -57,8 +59,13 @@ public class Construct extends Reagent {
 	@JsonView({ CurationView.FieldsAndLists.class, CurationView.ConstructView.class })
 	private List<ConstructSynonymSlotAnnotation> constructSynonyms;
 
-	//@IndexedEmbedded(includeDepth = 2)
-	//@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
+	@IndexedEmbedded(
+		includePaths = {
+			"primaryCrossReferenceCurie", "crossReferences.referencedCurie", "crossReferences.displayName", "curie", "primaryCrossReferenceCurie_keyword",
+			"crossReferences.referencedCurie_keyword", "crossReferences.displayName_keyword", "curie_keyword"
+		}
+	)
+	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
 	@JsonView({ CurationView.FieldsAndLists.class, CurationView.ConstructView.class })
 	@JoinTable(indexes = {
