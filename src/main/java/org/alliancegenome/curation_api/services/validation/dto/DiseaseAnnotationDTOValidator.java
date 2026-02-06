@@ -93,9 +93,9 @@ public class DiseaseAnnotationDTOValidator<E extends DiseaseAnnotation, D extend
 		
 		if (CollectionUtils.isNotEmpty(dto.getDiseaseGeneticModifierIdentifiers()) || StringUtils.isNotBlank(dto.getDiseaseGeneticModifierRelationName())) {
 			if (CollectionUtils.isEmpty(dto.getDiseaseGeneticModifierIdentifiers())) {
-				response.addErrorMessage("disease_genetic_modifier_relation_name", ValidationConstants.DEPENDENCY_MESSAGE_PREFIX + "disease_genetic_modifier_identifiers");
+				response.addErrorMessage("disease_genetic_modifier_relation_name", ValidationConstants.DEPENDENCY_MESSAGE_PREFIX + " disease_genetic_modifier_identifiers");
 			} else if (StringUtils.isBlank(dto.getDiseaseGeneticModifierRelationName())) {
-				response.addErrorMessage("disease_genetic_modifier_identifiers", ValidationConstants.DEPENDENCY_MESSAGE_PREFIX + "disease_genetic_modifier_relation_name");
+				response.addErrorMessage("disease_genetic_modifier_identifiers", ValidationConstants.DEPENDENCY_MESSAGE_PREFIX + " disease_genetic_modifier_relation_name");
 			} else {
 				VocabularyTerm diseaseGeneticModifierRelation = validateTermInVocabulary("disease_genetic_modifier_relation_name", dto.getDiseaseGeneticModifierRelationName(), VocabularyConstants.DISEASE_GENETIC_MODIFIER_RELATION_VOCABULARY);
 				

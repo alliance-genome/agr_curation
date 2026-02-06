@@ -6,6 +6,7 @@ export const FormFieldWrapper = ({
 	widgetColumnSize,
 	fieldDetailsColumnSize,
 	fieldName,
+	showAdditionalData = true,
 }) => {
 	return (
 		<div className="grid">
@@ -16,7 +17,7 @@ export const FormFieldWrapper = ({
 				{formField}
 				{errorField}
 			</div>
-			<div className={fieldDetailsColumnSize}>{additionalDataField}</div>
+			{showAdditionalData && <div className={fieldDetailsColumnSize}>{additionalDataField}</div>}
 		</div>
 	);
 };

@@ -90,13 +90,13 @@ public class IT_0609_SequenceTargetingReagentGeneAssociationBulkUploadFmsITCase 
 	@Test
 	@Order(2)
 	public void sqtrGeneAssociationBulkUploadInvalidGenes() throws Exception {
-		checkBulkLoadRecordCounts(sqtrBulkPostEndpoint, sqtrGeneAssociationTestFilePath + "IV_01_invalid_gene_ids.json", "Records", 2, 1, 1, 0);
+		checkBulkLoadRecordCounts(sqtrBulkPostEndpoint, sqtrGeneAssociationTestFilePath + "IV_01_invalid_gene_ids.json", "Records", 2, 1, 1, 0, 0);
 	}
 	
 	@Test
 	@Order(3)
 	public void sqtrGeneAssociationBulkUploadMissingGenes() throws Exception {
-		checkBulkLoadRecordCounts(sqtrBulkPostEndpoint, sqtrGeneAssociationTestFilePath + "UE_01_update_empty_gene_ids.json", "Records", 2, 0, 2, 0);
+		checkBulkLoadRecordCounts(sqtrBulkPostEndpoint, sqtrGeneAssociationTestFilePath + "UE_01_update_empty_gene_ids.json", "Records", 2, 0, 2, 0, 0);
 	}
 	
 

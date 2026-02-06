@@ -70,7 +70,7 @@ public class GeneExpressionAnnotationFmsDTOValidator {
 	@Inject OntologyTermService ontologyTermService;
 	@Inject CrossReferenceFmsDTOValidator crossReferenceFmsDTOValidator;
 
-	public GeneExpressionAnnotation validateAnnotation(ConsolidatedGeneExpressionFmsDTO consolidatedGeneExpressionFmsDTO, BackendBulkDataProvider dataProvider, Map<String, Set<String>> experiments, Map<String, Set<CrossReferenceFmsDTO>> crossReferences) throws ValidationException {
+	public ObjectResponse<GeneExpressionAnnotation> validateAnnotation(ConsolidatedGeneExpressionFmsDTO consolidatedGeneExpressionFmsDTO, BackendBulkDataProvider dataProvider, Map<String, Set<String>> experiments, Map<String, Set<CrossReferenceFmsDTO>> crossReferences) throws ValidationException {
 		ObjectResponse<GeneExpressionAnnotation> response = new ObjectResponse<>();
 		GeneExpressionAnnotation geneExpressionAnnotation = new GeneExpressionAnnotation();
 		String uniqueId = "empty";
@@ -192,7 +192,10 @@ public class GeneExpressionAnnotationFmsDTOValidator {
 				crossReferences.put(experimentId, experimentCrossReferences);
 			}
 		}
-		return geneExpressionAnnotation;
+		
+		response.setEntity(geneExpressionAnnotation);
+		
+		return response;
 	}
 
 	protected ObjectResponse<TemporalContext> validateTemporalContext(WhenExpressedFmsDTO whenExpressedDTO) {
