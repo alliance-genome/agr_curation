@@ -8,7 +8,6 @@ import org.alliancegenome.curation_api.view.CurationView;
 import org.hibernate.search.mapper.pojo.automaticindexing.ReindexOnUpdate;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmbedded;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexingDependency;
-
 import com.fasterxml.jackson.annotation.JsonView;
 
 import jakarta.persistence.CascadeType;
@@ -36,8 +35,6 @@ public class GenomicEntity extends BiologicalEntity {
 		@Index(columnList = "crossreferences_id", name = "genomicentity_crossreference_crossreferences_index")
 	})
 	@EqualsAndHashCode.Include
-	@JsonView({CurationView.FieldsAndLists.class, CurationView.AlleleView.class, CurationView.GeneView.class, CurationView.AffectedGenomicModelView.class, CurationView.VariantView.class, CurationView.GeneSummaryDocument.class })
+	@JsonView({CurationView.FieldsAndLists.class, CurationView.AlleleView.class, CurationView.GeneView.class, CurationView.AffectedGenomicModelView.class, CurationView.VariantView.class, CurationView.GeneSummaryDocument.class, CurationView.VariantDocument.class})
 	private List<CrossReference> crossReferences;
-
-
 }
