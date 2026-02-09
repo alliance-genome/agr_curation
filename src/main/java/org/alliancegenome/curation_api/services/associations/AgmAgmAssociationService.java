@@ -55,9 +55,8 @@ public class AgmAgmAssociationService extends BaseAssociationDTOCrudService<AgmA
 
 	@Override
 	@Transactional
-	public AgmAgmAssociation upsert(AgmAgmAssociationDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
-		AgmAgmAssociation association = agmAgmAssociationDtoValidator.validateAgmAgmAssociationDTO(dto, dataProvider);
-		return association;
+	public ObjectResponse<AgmAgmAssociation> upsert(AgmAgmAssociationDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
+		return agmAgmAssociationDtoValidator.validateAgmAgmAssociationDTO(dto, dataProvider);
 	}
 
 	public List<Long> getAssociationsByDataProvider(BackendBulkDataProvider dataProvider) {

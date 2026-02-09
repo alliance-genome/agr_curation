@@ -29,10 +29,14 @@ import jakarta.inject.Inject;
 @RequestScoped
 public class ConstructGenomicEntityAssociationValidator extends EvidenceAssociationValidator<ConstructGenomicEntityAssociation> {
 
-	@Inject ConstructDAO constructDAO;
-	@Inject GenomicEntityDAO genomicEntityDAO;
-	@Inject ConstructGenomicEntityAssociationDAO constructGenomicEntityAssociationDAO;
-	@Inject NoteValidator noteValidator;
+	@Inject
+	ConstructDAO constructDAO;
+	@Inject
+	GenomicEntityDAO genomicEntityDAO;
+	@Inject
+	ConstructGenomicEntityAssociationDAO constructGenomicEntityAssociationDAO;
+	@Inject
+	NoteValidator noteValidator;
 
 	private String errorMessage;
 
@@ -58,7 +62,7 @@ public class ConstructGenomicEntityAssociationValidator extends EvidenceAssociat
 			dbEntity = new ConstructGenomicEntityAssociation();
 		}
 
-		dbEntity = (ConstructGenomicEntityAssociation) validateEvidenceAssociationFields(uiEntity, dbEntity);
+		dbEntity = validateEvidenceAssociationFields(uiEntity, dbEntity);
 
 		if (validateConstruct) {
 			Construct subject = validateRequiredEntity(constructDAO, "constructAssociationSubject", uiEntity.getConstructAssociationSubject(), dbEntity.getConstructAssociationSubject());

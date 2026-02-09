@@ -129,7 +129,7 @@ public class ConditionRelationValidator extends AuditedObjectValidator<Condition
 		}
 
 		if (uiEntity.getSingleReference() == null || StringUtils.isBlank(uiEntity.getSingleReference().getCurie())) {
-			addMessageResponse("handle", ValidationConstants.DEPENDENCY_MESSAGE_PREFIX + "singleReference");
+			addMessageResponse("handle", ValidationConstants.DEPENDENCY_MESSAGE_PREFIX + " singleReference");
 			return null;
 		}
 

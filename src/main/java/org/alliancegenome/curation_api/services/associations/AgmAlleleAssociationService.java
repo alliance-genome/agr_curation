@@ -46,9 +46,8 @@ public class AgmAlleleAssociationService extends BaseAssociationDTOCrudService<A
 
 	@Override
 	@Transactional
-	public AgmAlleleAssociation upsert(AgmAlleleAssociationDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
-		AgmAlleleAssociation association = agmAlleleAssociationDtoValidator.validateAgmAlleleAssociationDTO(dto, dataProvider);
-		return association;
+	public ObjectResponse<AgmAlleleAssociation> upsert(AgmAlleleAssociationDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
+		return agmAlleleAssociationDtoValidator.validateAgmAlleleAssociationDTO(dto, dataProvider);
 	}
 
 	public List<Long> getAssociationsByDataProvider(BackendBulkDataProvider dataProvider) {

@@ -38,7 +38,7 @@ public class OrthologyFmsDTOValidator {
 	@Inject VocabularyTermService vocabularyTermService;
 
 	@Transactional
-	public GeneToGeneOrthologyGenerated validateOrthologyFmsDTO(OrthologyFmsDTO dto) throws ValidationException {
+	public ObjectResponse<GeneToGeneOrthologyGenerated> validateOrthologyFmsDTO(OrthologyFmsDTO dto) throws ValidationException {
 
 		ObjectResponse<GeneToGeneOrthologyGenerated> orthologyResponse = new ObjectResponse<GeneToGeneOrthologyGenerated>();
 
@@ -202,8 +202,10 @@ public class OrthologyFmsDTOValidator {
 		if (orthologyResponse.hasErrors()) {
 			throw new ObjectValidationException(dto, orthologyResponse.errorMessagesString());
 		}
+		
+		orthologyResponse.setEntity(generatedOrthologyDAO.persist(orthoPair));
 
-		return generatedOrthologyDAO.persist(orthoPair);
+		return orthologyResponse;
 
 	}
 

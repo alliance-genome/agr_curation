@@ -68,16 +68,16 @@ public class IT_0605_SequenceTargetingReagentBulkUploadFmsITCase extends BaseITC
 	@Order(2)
 	public void sqtrBulkUploadMissingRequiredFields() throws Exception {
 		
-		checkBulkLoadRecordCounts(sqtrBulkPostEndpoint, sqtrTestFilePath + "MR_01_no_name.json", "Records", 2, 1, 1, 0);
-		checkBulkLoadRecordCounts(sqtrBulkPostEndpoint, sqtrTestFilePath + "MR_02_no_taxon.json", "Records", 2, 1, 1, 0);
+		checkBulkLoadRecordCounts(sqtrBulkPostEndpoint, sqtrTestFilePath + "MR_01_no_name.json", "Records", 2, 1, 1, 0, 0);
+		checkBulkLoadRecordCounts(sqtrBulkPostEndpoint, sqtrTestFilePath + "MR_02_no_taxon.json", "Records", 2, 1, 1, 0, 0);
 	}
 
 	@Test
 	@Order(3)
 	public void sqtrBulkUploadEmptyRequiredFields() throws Exception {
 
-		checkBulkLoadRecordCounts(sqtrBulkPostEndpoint, sqtrTestFilePath + "ER_01_empty_name.json", "Records", 2, 1, 1, 0);
-		checkBulkLoadRecordCounts(sqtrBulkPostEndpoint, sqtrTestFilePath + "ER_02_empty_taxon.json", "Records", 2, 1, 1, 0);
+		checkBulkLoadRecordCounts(sqtrBulkPostEndpoint, sqtrTestFilePath + "ER_01_empty_name.json", "Records", 2, 1, 1, 0, 0);
+		checkBulkLoadRecordCounts(sqtrBulkPostEndpoint, sqtrTestFilePath + "ER_02_empty_taxon.json", "Records", 2, 1, 1, 0, 0);
 		
 	}
 

@@ -49,7 +49,7 @@ public class ResourceDescriptor extends AuditedObject {
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "prefix_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
 	@JsonView({ CurationView.FieldsOnly.class, CurationView.ForPublic.class })
-	@Column(unique = true)
+	@Column(unique = true, nullable = false)
 	@EqualsAndHashCode.Include
 	protected String prefix;
 
