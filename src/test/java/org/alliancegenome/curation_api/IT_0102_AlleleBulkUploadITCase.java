@@ -408,7 +408,6 @@ public class IT_0102_AlleleBulkUploadITCase extends BaseITCase {
 		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "IV_02_invalid_date_updated.json");
 		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "IV_03_invalid_taxon.json");
 		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "IV_04_invalid_in_collection.json");
-		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "IV_05_invalid_reference.json");
 		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "IV_06_invalid_allele_mutation_type_mutation_type.json");
 		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "IV_07_invalid_allele_mutation_type_evidence.json");
 		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "IV_08_invalid_allele_symbol_name_type.json");
@@ -675,5 +674,11 @@ public class IT_0102_AlleleBulkUploadITCase extends BaseITCase {
 		checkSuccessfulBulkLoad(alleleBulkPostEndpointRGD, alleleTestFilePath + "VT_02_valid_taxon_for_RGD.json");
 		checkFailedBulkLoad(alleleBulkPostEndpointRGD, alleleTestFilePath + "VT_01_valid_taxon_for_HUMAN.json");
 		checkFailedBulkLoad(alleleBulkPostEndpointHUMAN, alleleTestFilePath + "VT_02_valid_taxon_for_RGD.json");
+	}
+
+	@Test
+	@Order(14)
+	public void alleleBulkUploadInvalidReferenceWarning() throws Exception {
+		checkWarningBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "IV_05_invalid_reference.json");
 	}
 }

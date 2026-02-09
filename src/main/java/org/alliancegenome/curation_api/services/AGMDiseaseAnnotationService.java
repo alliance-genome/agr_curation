@@ -48,11 +48,14 @@ public class AGMDiseaseAnnotationService extends BaseAnnotationDTOCrudService<AG
 		return new ObjectResponse<>(agmDiseaseAnnotationDAO.persist(dbEntity));
 	}
 
+	@Override
 	@Transactional
-	public AGMDiseaseAnnotation upsert(AGMDiseaseAnnotationDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
-		AGMDiseaseAnnotation annotation = agmDiseaseAnnotationDtoValidator.validateAGMDiseaseAnnotationDTO(dto, dataProvider);
-
-		return agmDiseaseAnnotationDAO.persist(annotation);
+	public ObjectResponse<AGMDiseaseAnnotation> upsert(AGMDiseaseAnnotationDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
+		ObjectResponse<AGMDiseaseAnnotation> resp = agmDiseaseAnnotationDtoValidator.validateAGMDiseaseAnnotationDTO(dto, dataProvider);
+		
+		agmDiseaseAnnotationDAO.persist(resp.getEntity());
+		
+		return resp;
 	}
 
 	@Override

@@ -29,7 +29,7 @@ public class AgmAgmAssociationDTOValidator extends AuditedObjectDTOValidator<Agm
 	@Inject AgmAgmAssociationDAO agmAgmAssociationDAO;
 	@Inject AffectedGenomicModelService agmService;
 
-	public AgmAgmAssociation validateAgmAgmAssociationDTO(AgmAgmAssociationDTO dto, BackendBulkDataProvider beDataProvider) throws ValidationException {
+	public ObjectResponse<AgmAgmAssociation> validateAgmAgmAssociationDTO(AgmAgmAssociationDTO dto, BackendBulkDataProvider beDataProvider) throws ValidationException {
 		response = new ObjectResponse<AgmAgmAssociation>();
 
 		List<Long> subjectIds = null;
@@ -102,7 +102,8 @@ public class AgmAgmAssociationDTOValidator extends AuditedObjectDTOValidator<Agm
 			throw new ObjectValidationException(dto, response.errorMessagesString());
 		}
 
-		association = agmAgmAssociationDAO.persist(association);
-		return association;
+		response.setEntity(agmAgmAssociationDAO.persist(association));
+
+		return response;
 	}
 }

@@ -2,6 +2,7 @@ package org.alliancegenome.curation_api.model.document.es;
 
 import org.alliancegenome.curation_api.model.entities.ontology.DOTerm;
 import org.alliancegenome.curation_api.view.CurationView;
+
 import com.fasterxml.jackson.annotation.JsonView;
 
 import lombok.AllArgsConstructor;

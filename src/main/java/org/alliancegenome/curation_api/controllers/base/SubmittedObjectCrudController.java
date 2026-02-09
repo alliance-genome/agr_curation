@@ -21,11 +21,11 @@ public abstract class SubmittedObjectCrudController<S extends SubmittedObjectCru
 	}
 
 	@Override
-	public E upsert(T dto) throws ValidationException {
+	public ObjectResponse<E> upsert(T dto) throws ValidationException {
 		return service.upsert(dto);
 	}
 
-	public E upsert(T dto, BackendBulkDataProvider dataProvider) throws ValidationException {
+	public ObjectResponse<E> upsert(T dto, BackendBulkDataProvider dataProvider) throws ValidationException {
 		return service.upsert(dto, dataProvider);
 	}
 

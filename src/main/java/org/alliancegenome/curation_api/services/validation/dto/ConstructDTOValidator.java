@@ -52,7 +52,7 @@ public class ConstructDTOValidator extends ReagentDTOValidator<Construct, Constr
 	SlotAnnotationIdentityHelper identityHelper;
 
 	@Transactional
-	public Construct validateConstructDTO(ConstructDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
+	public ObjectResponse<Construct> validateConstructDTO(ConstructDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
 
 		response = new ObjectResponse<Construct>();
 
@@ -78,8 +78,9 @@ public class ConstructDTOValidator extends ReagentDTOValidator<Construct, Constr
 
 		construct = validateReagentDTO(construct, dto, VocabularyConstants.CONSTRUCT_NOTE_TYPES_VOCABULARY_TERM_SET);
 
-		List<Reference> references = validateReferences(dto.getReferenceCuries());
-		construct.setReferences(references);
+		List<Reference> refs = validateReferences("reference_curies", dto.getReferenceCuries(), true);
+
+		construct.setReferences(refs);
 
 		ConstructSymbolSlotAnnotation symbol = validateConstructSymbol(construct, dto);
 		construct.setConstructSymbol(symbol);
@@ -119,7 +120,9 @@ public class ConstructDTOValidator extends ReagentDTOValidator<Construct, Constr
 			construct = constructDAO.persist(construct);
 		}
 
-		return construct;
+		response.setEntity(construct);
+		
+		return response;
 	}
 
 	private ConstructSymbolSlotAnnotation validateConstructSymbol(Construct construct, ConstructDTO dto) {

@@ -14,6 +14,7 @@ public class ProcessCount {
 	private Long failed = 0L;
 	private Long skipped = 0L;
 	private Long completed = 0L;
+	private Long warnings = 0L;
 	private Long error = 0L;
 	
 	public ProcessCount(Long total) {
@@ -38,6 +39,10 @@ public class ProcessCount {
 		failed++;
 		error++;
 	}
+
+	public void incrementWarnings() {
+		warnings++;
+	}
 	public double getErrorRate() {
 		return error / 1000;
 	}
@@ -47,6 +52,7 @@ public class ProcessCount {
 		failed += count.getFailed();
 		skipped += count.getSkipped();
 		completed += count.getCompleted();
+		warnings += count.getWarnings();
 		error += count.getError();
 	}
 

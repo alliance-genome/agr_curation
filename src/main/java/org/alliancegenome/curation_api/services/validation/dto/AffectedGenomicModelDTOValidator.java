@@ -44,7 +44,7 @@ public class AffectedGenomicModelDTOValidator extends GenomicEntityDTOValidator<
 	@Inject AgmSecondaryIdSlotAnnotationDTOValidator agmSecondaryIdDtoValidator;
 
 	@Transactional
-	public AffectedGenomicModel validateAffectedGenomicModelDTO(AffectedGenomicModelDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
+	public ObjectResponse<AffectedGenomicModel> validateAffectedGenomicModelDTO(AffectedGenomicModelDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
 		response = new ObjectResponse<AffectedGenomicModel>();
 		
 		AffectedGenomicModel agm = findDatabaseObject(affectedGenomicModelDAO, "primaryExternalId", "primary_external_id", dto.getPrimaryExternalId());
@@ -88,7 +88,9 @@ public class AffectedGenomicModelDTOValidator extends GenomicEntityDTOValidator<
 			throw new ObjectValidationException(dto, response.errorMessagesString());
 		}
 
-		return affectedGenomicModelDAO.persist(agm);
+		response.setEntity(affectedGenomicModelDAO.persist(agm));
+		
+		return response;
 	}
 
 	private AgmFullNameSlotAnnotation validateAgmFullName(AffectedGenomicModel agm, AffectedGenomicModelDTO dto) {
