@@ -158,7 +158,11 @@ public class AlleleService extends SubmittedObjectCrudService<Allele, AlleleDTO,
 		}
 	}
 
-	public SearchResponse<AlleleSummaryDTO> findAllelesForSummary(Pagination pagination, Map<String, Object> params) {
-		return alleleDAO.findAllelesForSummary(pagination, params);
+	public List<Long> getAllAlleleSummaryIds() {
+		return alleleDAO.getAllAlleleSummaryIds();
+	}
+
+	public SearchResponse<AlleleSummaryDTO> findAllelesForSummaryByIds(List<Long> ids) {
+		return alleleDAO.findAllelesForSummaryByIds(ids);
 	}
 }
