@@ -6,8 +6,8 @@ import org.alliancegenome.curation_api.interfaces.base.BaseIdCrudInterface;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
-import org.alliancegenome.curation_api.view.View;
-import org.alliancegenome.curation_api.view.View.VocabularyTermView;
+import org.alliancegenome.curation_api.view.CurationView;
+import org.alliancegenome.curation_api.view.CurationView.VocabularyTermView;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
@@ -33,29 +33,29 @@ public interface VocabularyTermCrudInterface extends BaseIdCrudInterface<Vocabul
 	@Override
 	@POST
 	@Path("/search")
-	@JsonView(View.VocabularyTermView.class)
+	@JsonView(CurationView.VocabularyTermView.class)
 	@Tag(name = "Elastic Search Browsing Endpoints")
 	SearchResponse<VocabularyTerm> search(@DefaultValue("0") @QueryParam("page") Integer page, @DefaultValue("10") @QueryParam("limit") Integer limit, @RequestBody HashMap<String, Object> params);
 
 	@Override
 	@GET
 	@Path("/{id}")
-	@JsonView(View.VocabularyTermView.class)
+	@JsonView(CurationView.VocabularyTermView.class)
 	ObjectResponse<VocabularyTerm> getById(@PathParam("id") Long id);
 
 	@GET
 	@Path("/findBy")
-	@JsonView(View.VocabularyTermView.class)
+	@JsonView(CurationView.VocabularyTermView.class)
 	ObjectResponse<VocabularyTerm> getTermInVocabulary(@QueryParam("vocabularyName") String vocabularyName, @QueryParam("termName") String termName);
 
 	@GET
 	@Path("/findInSet")
-	@JsonView(View.VocabularyTermView.class)
+	@JsonView(CurationView.VocabularyTermView.class)
 	ObjectResponse<VocabularyTerm> getTermInVocabularyTermSet(@QueryParam("vocabularyTermSetName") String vocabularyTermSetName, @QueryParam("termName") String termName);
 
 	@PUT
 	@Path("/")
-	@JsonView(View.VocabularyTermUpdate.class)
+	@JsonView(CurationView.VocabularyTermUpdate.class)
 	ObjectResponse<VocabularyTerm> update(VocabularyTerm entity);
 
 	@POST

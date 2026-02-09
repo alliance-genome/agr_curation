@@ -17,13 +17,13 @@ import org.alliancegenome.curation_api.model.document.es.AlleleSummaryDTO;
 import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.Note;
 import org.alliancegenome.curation_api.model.ingest.dto.AlleleDTO;
+import org.alliancegenome.curation_api.model.input.Pagination;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.base.SubmittedObjectCrudService;
 import org.alliancegenome.curation_api.services.validation.AlleleValidator;
 import org.alliancegenome.curation_api.services.validation.dto.AlleleDTOValidator;
 import org.apache.commons.collections.CollectionUtils;
-import org.alliancegenome.curation_api.model.input.Pagination;
 
 import io.quarkus.logging.Log;
 import jakarta.annotation.PostConstruct;
@@ -67,7 +67,7 @@ public class AlleleService extends SubmittedObjectCrudService<Allele, AlleleDTO,
 	}
 
 	@Override
-	public Allele upsert(AlleleDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
+	public ObjectResponse<Allele> upsert(AlleleDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
 		return alleleDtoValidator.validateAlleleDTO(dto, dataProvider);
 	}
 
@@ -119,7 +119,7 @@ public class AlleleService extends SubmittedObjectCrudService<Allele, AlleleDTO,
 						allele.setRelatedNotes(new ArrayList<>());
 					}
 					allele.getRelatedNotes().add(deprecationNote);
-					
+
 					return alleleDAO.persist(allele);
 				} else {
 					return allele;

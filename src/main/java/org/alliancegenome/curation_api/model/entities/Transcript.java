@@ -9,7 +9,7 @@ import org.alliancegenome.curation_api.model.entities.associations.TranscriptExo
 import org.alliancegenome.curation_api.model.entities.associations.TranscriptGeneAssociation;
 import org.alliancegenome.curation_api.model.entities.associations.TranscriptGenomicLocationAssociation;
 import org.alliancegenome.curation_api.model.entities.ontology.SOTerm;
-import org.alliancegenome.curation_api.view.View;
+import org.alliancegenome.curation_api.view.CurationView;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.hibernate.search.engine.backend.types.Aggregable;
 import org.hibernate.search.engine.backend.types.Searchable;
@@ -47,16 +47,16 @@ public class Transcript extends GenomicEntity {
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "transcriptId_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({ View.FieldsOnly.class })
+	@JsonView({ CurationView.FieldsOnly.class })
 	private String transcriptId;
 	
-	@JsonView({ View.FieldsOnly.class })
+	@JsonView({ CurationView.FieldsOnly.class })
 	private String name;
 
 	@IndexedEmbedded(includePaths = {"curie", "name", "curie_keyword", "name_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@JsonView({ View.FieldsOnly.class, View.VariantView.class })
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.VariantDocument.class })
 	private SOTerm transcriptType;
 
 	@IndexedEmbedded(
@@ -68,7 +68,7 @@ public class Transcript extends GenomicEntity {
 		}
 	)
 	@OneToMany(mappedBy = "transcriptAssociationSubject", cascade = CascadeType.ALL, orphanRemoval = true)
-	@JsonView({ View.FieldsAndLists.class })
+	@JsonView({ CurationView.FieldsAndLists.class })
 	private List<TranscriptGenomicLocationAssociation> transcriptGenomicLocationAssociations;
 
 	@IndexedEmbedded(
@@ -80,7 +80,7 @@ public class Transcript extends GenomicEntity {
 		}
 	)
 	@OneToMany(mappedBy = "transcriptAssociationSubject", cascade = CascadeType.ALL, orphanRemoval = true)
-	@JsonView({ View.FieldsAndLists.class })
+	@JsonView({ CurationView.FieldsAndLists.class })
 	private List<TranscriptCodingSequenceAssociation> transcriptCodingSequenceAssociations;
 
 	@IndexedEmbedded(
@@ -92,7 +92,7 @@ public class Transcript extends GenomicEntity {
 		}
 	)
 	@OneToMany(mappedBy = "transcriptAssociationSubject", cascade = CascadeType.ALL, orphanRemoval = true)
-	@JsonView({ View.FieldsAndLists.class })
+	@JsonView({ CurationView.FieldsAndLists.class })
 	private List<TranscriptExonAssociation> transcriptExonAssociations;
 
 	@IndexedEmbedded(
@@ -104,6 +104,6 @@ public class Transcript extends GenomicEntity {
 		}
 	)
 	@OneToMany(mappedBy = "transcriptAssociationSubject", cascade = CascadeType.ALL, orphanRemoval = true)
-	@JsonView({ View.FieldsAndLists.class })
+	@JsonView({ CurationView.FieldsAndLists.class, CurationView.VariantDocument.class })
 	private List<TranscriptGeneAssociation> transcriptGeneAssociations;
 }

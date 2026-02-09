@@ -12,7 +12,7 @@ import org.alliancegenome.curation_api.response.ObjectListResponse;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
-import org.alliancegenome.curation_api.view.View;
+import org.alliancegenome.curation_api.view.CurationView;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -82,7 +82,7 @@ public abstract class BaseEntityCrudController<S extends BaseEntityCrudService<E
 		Pagination pagination = new Pagination(page, limit);
 		SearchResponse<E> resp = service.findByParams(pagination, params);
 
-		Class<?> viewClass = View.viewLookup(view);
+		Class<?> viewClass = CurationView.viewLookup(view);
 		try {
 			String json = mapper.writerWithView(viewClass).writeValueAsString(resp);
 			return Response.ok(json).build();

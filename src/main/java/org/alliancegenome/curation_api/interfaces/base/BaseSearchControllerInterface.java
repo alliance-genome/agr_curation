@@ -4,7 +4,7 @@ import java.util.HashMap;
 
 import org.alliancegenome.curation_api.model.Null;
 import org.alliancegenome.curation_api.response.SearchResponse;
-import org.alliancegenome.curation_api.view.View;
+import org.alliancegenome.curation_api.view.CurationView;
 import org.eclipse.microprofile.openapi.annotations.media.Content;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
@@ -29,7 +29,7 @@ public interface BaseSearchControllerInterface<E> {
 	@POST
 	@Path("/search")
 	@Tag(name = "Elastic Search Browsing Endpoints")
-	@JsonView({ View.FieldsAndLists.class })
+	@JsonView({ CurationView.FieldsAndLists.class })
 	@RequestBody(
 		description = "Post Request",
 		content = @Content(

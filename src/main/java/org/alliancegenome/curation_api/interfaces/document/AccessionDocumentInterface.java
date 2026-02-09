@@ -1,7 +1,7 @@
 package org.alliancegenome.curation_api.interfaces.document;
 
 import org.alliancegenome.curation_api.model.document.es.AccessionSummaryDocument;
-import org.alliancegenome.curation_api.view.View;
+import org.alliancegenome.curation_api.view.CurationView;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 import com.fasterxml.jackson.annotation.JsonView;
@@ -20,6 +20,6 @@ public interface AccessionDocumentInterface {
 
 	@GET
 	@Path("/summary")
-	@JsonView(View.AccessionSummaryDocument.class)
+	@JsonView(CurationView.AccessionSummaryDocument.class)
 	AccessionSummaryDocument getAccessionSummary();
 }

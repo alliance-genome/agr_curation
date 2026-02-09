@@ -5,7 +5,7 @@ import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.entities.LocationAssociation;
 import org.alliancegenome.curation_api.model.entities.Variant;
 import org.alliancegenome.curation_api.model.entities.ontology.SOTerm;
-import org.alliancegenome.curation_api.view.View;
+import org.alliancegenome.curation_api.view.CurationView;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
@@ -17,14 +17,13 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.FullTextFi
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmbedded;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexingDependency;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.KeywordField;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MappedSuperclass;
-import jakarta.persistence.Transient;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -38,67 +37,44 @@ import lombok.ToString;
 public abstract class VariantLocationAssociation extends LocationAssociation {
 
 	@IndexedEmbedded(includePaths = {
-			"curie", "curie_keyword", "primaryExternalId", "primaryExternalId_keyword",
-			"modInternalId", "modInternalId_keyword", "name", "name_keyword"
+		"curie", "curie_keyword", "primaryExternalId", "primaryExternalId_keyword",
+		"modInternalId", "modInternalId_keyword", "name", "name_keyword"
 	})
 	@ManyToOne
-	@JsonView({View.FieldsOnly.class})
+	@JsonView({CurationView.FieldsOnly.class, CurationView.VariantDocument.class})
 	@JsonIgnoreProperties({"curatedVariantGenomicLocations", "alleleVariantAssociations"})
 	@Fetch(FetchMode.JOIN)
 	private Variant variantAssociationSubject;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "hgvs_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({View.FieldsOnly.class})
+	@JsonView({CurationView.FieldsOnly.class, CurationView.AlleleSummaryDocument.class, CurationView.VariantDocument.class})
 	@Column(columnDefinition = "TEXT")
 	private String hgvs;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "referenceSequence_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({View.FieldsOnly.class})
+	@JsonView({CurationView.FieldsOnly.class, CurationView.VariantDocument.class})
 	@Column(columnDefinition = "TEXT")
 	private String referenceSequence;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "variantSequence_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({View.FieldsOnly.class})
+	@JsonView({CurationView.FieldsOnly.class, CurationView.VariantDocument.class})
 	@Column(columnDefinition = "TEXT")
 	private String variantSequence;
 
 	@IndexedEmbedded(includePaths = {"curie", "name", "secondaryIdentifiers", "synonyms.name", "namespace",
-			"curie_keyword", "name_keyword", "secondaryIdentifiers_keyword", "synonyms.name_keyword", "namespace_keyword"})
+		"curie_keyword", "name_keyword", "secondaryIdentifiers_keyword", "synonyms.name_keyword", "namespace_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@JsonView({View.FieldsOnly.class})
+	@JsonView({CurationView.FieldsOnly.class})
 	private SOTerm consequence;
 
 	@IndexedEmbedded(includePaths = {"curie", "name", "secondaryIdentifiers", "synonyms.name", "namespace",
-			"curie_keyword", "name_keyword", "secondaryIdentifiers_keyword", "synonyms.name_keyword", "namespace_keyword"})
+		"curie_keyword", "name_keyword", "secondaryIdentifiers_keyword", "synonyms.name_keyword", "namespace_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@JsonView({View.FieldsOnly.class})
+	@JsonView({CurationView.FieldsOnly.class})
 	private SOTerm curatedConsequence;
-
-	@Transient
-	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
-	@JsonView({View.FieldsOnly.class, View.VariantView.class})
-	public String getNucleotideChange() {
-		if (variantAssociationSubject != null && variantAssociationSubject.getVariantType() != null) {
-			String variantTypeCurie = variantAssociationSubject.getVariantType().getCurie();
-			if ("SO:0000667".equals(variantTypeCurie)) {
-				// Insertion
-				return "c>c" + variantSequence;
-			} else if ("SO:1000008".equals(variantTypeCurie)) {
-				// Point mutation
-				return referenceSequence + ">" + variantSequence;
-			} else if ("SO:0000159".equals(variantTypeCurie)) {
-				// Deletion
-				return "t" + referenceSequence + ">t";
-			}
-			if (referenceSequence != null && variantSequence != null) {
-				return referenceSequence + ">" + variantSequence;
-			}
-		}
-		return null;
-	}
 }

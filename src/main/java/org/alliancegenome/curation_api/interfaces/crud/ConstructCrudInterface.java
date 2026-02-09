@@ -8,7 +8,7 @@ import org.alliancegenome.curation_api.model.entities.Construct;
 import org.alliancegenome.curation_api.model.ingest.dto.ConstructDTO;
 import org.alliancegenome.curation_api.response.APIResponse;
 import org.alliancegenome.curation_api.response.ObjectResponse;
-import org.alliancegenome.curation_api.view.View;
+import org.alliancegenome.curation_api.view.CurationView;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 import com.fasterxml.jackson.annotation.JsonView;
@@ -31,24 +31,24 @@ public interface ConstructCrudInterface extends BaseSubmittedObjectCrudInterface
 	@Override
 	@GET
 	@Path("/{identifierString}")
-	@JsonView(View.ConstructView.class)
+	@JsonView(CurationView.ConstructView.class)
 	ObjectResponse<Construct> getByIdentifier(@PathParam("identifierString") String identifierString);
 
 	@Override
 	@PUT
 	@Path("/")
-	@JsonView(View.ConstructView.class)
+	@JsonView(CurationView.ConstructView.class)
 	ObjectResponse<Construct> update(Construct entity);
 
 	@Override
 	@POST
 	@Path("/")
-	@JsonView(View.ConstructView.class)
+	@JsonView(CurationView.ConstructView.class)
 	ObjectResponse<Construct> create(Construct entity);
 
 	@POST
 	@Path("/bulk/{dataProvider}/constructs")
-	@JsonView(View.FieldsAndLists.class)
+	@JsonView(CurationView.FieldsAndLists.class)
 	APIResponse updateConstructs(@PathParam("dataProvider") String dataProvider, List<ConstructDTO> constructData);
 
 }

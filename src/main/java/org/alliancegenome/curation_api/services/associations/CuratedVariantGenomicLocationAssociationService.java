@@ -36,7 +36,7 @@ public class CuratedVariantGenomicLocationAssociationService extends BaseEntityC
 	@Inject VariantFmsDTOValidator variantFmsDtoValidator;
 	@Inject PersonDAO personDAO;
 	@Inject PersonService personService;
-	
+
 	@Override
 	@PostConstruct
 	protected void init() {
@@ -73,18 +73,18 @@ public class CuratedVariantGenomicLocationAssociationService extends BaseEntityC
 
 		return response;
 	}
-	
+
 	public void addAssociationToSubject(CuratedVariantGenomicLocationAssociation association) {
 		Variant variant = association.getVariantAssociationSubject();
-		
+
 		List<CuratedVariantGenomicLocationAssociation> currentSubjectAssociations = variant.getCuratedVariantGenomicLocations();
 		if (currentSubjectAssociations == null) {
 			currentSubjectAssociations = new ArrayList<>();
 		}
-		
+
 		List<Long> currentSubjectAssociationIds = currentSubjectAssociations.stream()
 				.map(CuratedVariantGenomicLocationAssociation::getId).collect(Collectors.toList());
-		
+
 		if (!currentSubjectAssociationIds.contains(association.getId())) {
 			currentSubjectAssociations.add(association);
 		}
@@ -118,4 +118,7 @@ public class CuratedVariantGenomicLocationAssociationService extends BaseEntityC
 		}
 		return null;
 	}
+
+
+
 }

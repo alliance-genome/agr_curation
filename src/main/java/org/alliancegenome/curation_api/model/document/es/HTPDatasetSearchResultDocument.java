@@ -2,7 +2,7 @@ package org.alliancegenome.curation_api.model.document.es;
 
 import java.util.Set;
 
-import org.alliancegenome.curation_api.view.View;
+import org.alliancegenome.curation_api.view.CurationView;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
@@ -10,7 +10,7 @@ import jakarta.json.bind.annotation.JsonbProperty;
 import lombok.Data;
 
 @Data
-@JsonView(View.HTPDatasetSearchResultDocument.class)
+@JsonView(CurationView.HTPDatasetSearchResultDocument.class)
 public class HTPDatasetSearchResultDocument extends ESDocument {
 
 	{

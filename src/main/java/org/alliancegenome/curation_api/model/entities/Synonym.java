@@ -3,7 +3,7 @@ package org.alliancegenome.curation_api.model.entities;
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.entities.base.AuditedObject;
-import org.alliancegenome.curation_api.view.View;
+import org.alliancegenome.curation_api.view.CurationView;
 import org.hibernate.search.engine.backend.types.Aggregable;
 import org.hibernate.search.engine.backend.types.Searchable;
 import org.hibernate.search.engine.backend.types.Sortable;
@@ -36,22 +36,22 @@ public class Synonym extends AuditedObject {
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "name_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({ View.FieldsOnly.class, View.DiseaseSummaryDocument.class, View.GeneExpressionDocument.class })
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.DiseaseSummaryDocument.class, CurationView.GeneExpressionDocument.class })
 	@Column(columnDefinition = "TEXT")
 	private String name;
 
-	@JsonView({ View.FieldsOnly.class, View.GeneExpressionDocument.class })
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.GeneExpressionDocument.class })
 	private Boolean isDisplaySynonym = false;
 
-	@JsonView({ View.FieldsOnly.class, View.GeneExpressionDocument.class })
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.GeneExpressionDocument.class })
 	private Boolean hasExactSynonym = false;
 
-	@JsonView({ View.FieldsOnly.class })
+	@JsonView({ CurationView.FieldsOnly.class })
 	private Boolean hasRelatedSynonym = false;
 
-	@JsonView({ View.FieldsOnly.class })
+	@JsonView({ CurationView.FieldsOnly.class })
 	private Boolean hasNarrowSynonym = false;
 
-	@JsonView({ View.FieldsOnly.class })
+	@JsonView({ CurationView.FieldsOnly.class })
 	private Boolean hasBroadSynonym = false;
 }

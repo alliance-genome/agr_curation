@@ -7,7 +7,7 @@ import org.alliancegenome.curation_api.model.entities.associations.AgmSequenceTa
 import org.alliancegenome.curation_api.model.ingest.dto.associations.AgmSequenceTargetingReagentAssociationDTO;
 import org.alliancegenome.curation_api.response.APIResponse;
 import org.alliancegenome.curation_api.response.ObjectResponse;
-import org.alliancegenome.curation_api.view.View;
+import org.alliancegenome.curation_api.view.CurationView;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 import com.fasterxml.jackson.annotation.JsonView;
@@ -29,11 +29,11 @@ public interface AgmSequenceTargetingReagentAssociationCrudInterface extends Bas
 
 	@GET
 	@Path("/findBy")
-	@JsonView(View.FieldsAndLists.class)
+	@JsonView(CurationView.FieldsAndLists.class)
 	ObjectResponse<AgmSequenceTargetingReagentAssociation> getAssociation(@QueryParam("agmId") Long agmId, @QueryParam("relationName") String relationName, @QueryParam("strId") Long strId);
 
 	@POST
 	@Path("/bulk/{dataProvider}/associationFile")
-	@JsonView(View.FieldsAndLists.class)
+	@JsonView(CurationView.FieldsAndLists.class)
 	APIResponse updateAgmStrAssociations(@PathParam("dataProvider") String dataProvider, List<AgmSequenceTargetingReagentAssociationDTO> associationData);
 }

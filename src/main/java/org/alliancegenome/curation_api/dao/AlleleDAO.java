@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -14,14 +15,19 @@ import org.alliancegenome.curation_api.dao.associations.AgmAlleleAssociationDAO;
 import org.alliancegenome.curation_api.dao.base.BaseSQLDAO;
 import org.alliancegenome.curation_api.model.document.es.AlleleSummaryDTO;
 import org.alliancegenome.curation_api.model.entities.Allele;
+import org.alliancegenome.curation_api.model.entities.AssemblyComponent;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.Note;
 import org.alliancegenome.curation_api.model.entities.Organization;
+import org.alliancegenome.curation_api.model.entities.PredictedVariantConsequence;
 import org.alliancegenome.curation_api.model.entities.ResourceDescriptorPage;
+import org.alliancegenome.curation_api.model.entities.Variant;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.associations.AlleleGeneAssociation;
+import org.alliancegenome.curation_api.model.entities.associations.CuratedVariantGenomicLocationAssociation;
 import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
+import org.alliancegenome.curation_api.model.entities.ontology.SOTerm;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.AlleleSymbolSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.AlleleSynonymSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.GeneSymbolSlotAnnotation;
@@ -160,7 +166,7 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 		// Build cursor condition for optimization
 		String cursorCondition = "";
 		boolean useCursorCondition = false;
-		if (pagination.isCursorBased()) {
+		if (pagination.getCursor() != null) {
 			cursorCondition = " AND a.id > :cursor";
 			useCursorCondition = true;
 		}
@@ -178,7 +184,7 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 				""" + cursorCondition;
 
 		Query query;
-		if (pagination.isCountCondition()) {
+		if (pagination.getPage() == 0 && pagination.getLimit() == 0) {
 			query = entityManager.createNativeQuery(baseCountQuery + baseQuery);
 			if (useCursorCondition) {
 				query.setParameter("cursor", pagination.getCursor());
@@ -196,7 +202,7 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 			}
 
 			// Use cursor-based pagination if cursor is provided, otherwise fall back to offset
-			if (pagination.isCursorBased()) {
+			if (pagination.getCursor() != null) {
 				// For cursor-based pagination, we don't need OFFSET
 				query.setMaxResults(pagination.getLimit());
 			} else {
@@ -287,11 +293,9 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 							index.incrementAndGet();
 							return slot;
 						}).toList();
-				alleleMap.get((Long) objects[0]).setAlleleSynonyms(slotList);
+				alleleMap.get(objects[0]).setAlleleSynonyms(slotList);
 			}
 		});
-
-		Map<Long, Long> variantCountMap = new HashMap<>();
 
 		String geneAssociationInfoQuery = """
 				select alleleassociationsubject_id as allele_id,
@@ -345,26 +349,108 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 			allele.setAlleleGeneAssociations(alleleGeneAssociations);
 		});
 
-		String variantCountQueryString = """
-				select alleleassociationsubject_id as allele_id,
-					count(ava) as ct
-				from alleleVariantAssociation ava
-				where alleleassociationsubject_id in :alleleIds
-				group by alleleassociationsubject_id
-								""";
+		String variantQueryString = """
+			SELECT DISTINCT ava.alleleassociationsubject_id as allele_id,
+				v.id as variant_id,
+				o.name as variant_type,
+				cvg.hgvs,
+				cvg.start,
+				cvg.end,
+				ac.name as chromosome,
+				otc.name as consequence
+			FROM allelevariantassociation ava
+				JOIN variant v ON v.id = ava.allelevariantassociationobject_id
+				JOIN ontologyterm o ON o.id = v.varianttype_id
+				JOIN curatedvariantgenomiclocation cvg ON cvg.variantassociationsubject_id = v.id
+				JOIN predictedvariantconsequence pvc ON pvc.variantgenomiclocation_id = cvg.id
+				JOIN predictedvariantconsequence_ontologyterm pvco ON pvco.predictedvariantconsequence_id = pvc.id
+				JOIN ontologyterm otc ON otc.id = pvco.vepconsequences_id
+				JOIN assemblycomponent ac ON cvg.variantgenomiclocationassociationobject_id = ac.id
+				WHERE ava.alleleassociationsubject_id IN :alleleIds
+			AND ava.obsolete = false AND ava.internal = false
+			""";
 
-		Query variantCountQuery = entityManager.createNativeQuery(variantCountQueryString);
-		variantCountQuery.setParameter("alleleIds", alleleIds);
-		List<Object[]> variantCountResults = variantCountQuery.getResultList();
+		Query variantQuery = entityManager.createNativeQuery(variantQueryString);
+		variantQuery.setParameter("alleleIds", alleleIds);
+		List<Object[]> variantResults = variantQuery.getResultList();
 
-		for (Object[] row : variantCountResults) {
-			variantCountMap.put((Long) row[0], (Long) row[1]);
+		Map<Long, Map<Long, Variant>> alleleVariantMap = new HashMap<>();
+		
+		for (Object[] row : variantResults) {
+			Long alleleId = (Long) row[0];
+			Map<Long, Variant> variantMap = alleleVariantMap.get(alleleId);
+			if (variantMap == null) {
+				variantMap = new HashMap<>();
+				alleleVariantMap.put(alleleId, variantMap);
+			}
+			Variant variant = variantMap.get(row[1]);
+			if (variant == null) {
+				List<SOTerm> vepConsequences = new ArrayList<>();
+				PredictedVariantConsequence pvc = new PredictedVariantConsequence();
+				pvc.setVepConsequences(vepConsequences);
+				List<PredictedVariantConsequence> pvcList = new ArrayList<>();
+				pvcList.add(pvc);
+				CuratedVariantGenomicLocationAssociation cvgla = new CuratedVariantGenomicLocationAssociation();
+				cvgla.setHgvs((String) row[3]);
+				cvgla.setStart((Integer) row[4]);
+				cvgla.setEnd((Integer) row[5]);
+				AssemblyComponent ac = new AssemblyComponent();
+				ac.setName((String) row[6]);
+				cvgla.setVariantGenomicLocationAssociationObject(ac);
+				cvgla.setPredictedVariantConsequences(pvcList);
+				List<CuratedVariantGenomicLocationAssociation> cvglaList = new ArrayList<>();
+				cvglaList.add(cvgla);
+
+				variant = new Variant();
+				variant.setId((Long) row[1]);
+				SOTerm variantType = new SOTerm();
+				variantType.setName((String) row[2]);
+				variant.setVariantType(variantType);
+				variant.setCuratedVariantGenomicLocations(cvglaList);
+				variantMap.put((Long) row[1], variant);
+			}
+
+			SOTerm consequence = new SOTerm();
+			consequence.setName((String) row[7]);
+			variant.getCuratedVariantGenomicLocations().get(0)
+					.getPredictedVariantConsequences().get(0)
+					.getVepConsequences().add(consequence);
 		}
+
+		String phenotypeQueryString = """
+				SELECT DISTINCT phenotypeannotationsubject_id as allele_id
+				FROM allelephenotypeannotation
+				WHERE phenotypeannotationsubject_id IN :alleleIds
+				""";
+
+		Query phenotypeQuery = entityManager.createNativeQuery(phenotypeQueryString);
+		phenotypeQuery.setParameter("alleleIds", alleleIds);
+		List<Object> phenotypeResults = phenotypeQuery.getResultList();
+
+		Set<Long> allelesWithPhenotype = phenotypeResults.stream()
+				.map(obj -> (Long) obj)
+				.collect(Collectors.toSet());
+
+		String diseaseQueryString = """
+				SELECT DISTINCT diseaseannotationsubject_id as allele_id
+				FROM allelediseaseannotation
+				WHERE diseaseannotationsubject_id IN :alleleIds
+				""";
+
+		Query diseaseQuery = entityManager.createNativeQuery(diseaseQueryString);
+		diseaseQuery.setParameter("alleleIds", alleleIds);
+		List<Object> diseaseResults = diseaseQuery.getResultList();
+
+		Set<Long> allelesWithDisease = diseaseResults.stream()
+				.map(obj -> (Long) obj)
+				.collect(Collectors.toSet());
 
 		List<AlleleSummaryDTO> dtos = new ArrayList<>();
 		for (Allele allele : alleles) {
-			Long count = variantCountMap.getOrDefault(allele.getId(), 0L);
-			dtos.add(new AlleleSummaryDTO(allele, count));
+			List<Variant> variants = new ArrayList<>(alleleVariantMap.getOrDefault(allele.getId(), new HashMap<>()).values());
+			Boolean hasPhenotype = allelesWithPhenotype.contains(allele.getId());
+			Boolean hasDisease = allelesWithDisease.contains(allele.getId());
+			dtos.add(new AlleleSummaryDTO(allele, variants, hasPhenotype, hasDisease));
 		}
 
 		String notesQueryString = """
@@ -407,7 +493,7 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 		response.setTotalResults((long) alleles.size());
 
 		// Set nextCursor for cursor-based pagination
-		if (!alleles.isEmpty() && pagination.isCursorBased()) {
+		if (!alleles.isEmpty() && pagination.getCursor() != null) {
 			// Get the ID of the last allele in the current page as the next cursor
 			Long lastId = alleles.get(alleles.size() - 1).getId();
 			response.setNextCursor(lastId);

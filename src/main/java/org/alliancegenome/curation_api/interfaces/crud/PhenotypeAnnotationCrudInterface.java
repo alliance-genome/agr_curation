@@ -9,7 +9,7 @@ import org.alliancegenome.curation_api.model.ingest.dto.fms.PhenotypeFmsDTO;
 import org.alliancegenome.curation_api.response.APIResponse;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
-import org.alliancegenome.curation_api.view.View;
+import org.alliancegenome.curation_api.view.CurationView;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
@@ -33,24 +33,24 @@ public interface PhenotypeAnnotationCrudInterface extends BaseIdCrudInterface<Ph
 
 	@GET
 	@Path("/findBy/{identifier}")
-	@JsonView(View.FieldsAndLists.class)
+	@JsonView(CurationView.FieldsAndLists.class)
 	ObjectResponse<PhenotypeAnnotation> getByIdentifier(@PathParam("identifier") String identifier);
 
 	@Override
 	@GET
 	@Path("/{id}")
-	@JsonView(View.FieldsAndLists.class)
+	@JsonView(CurationView.FieldsAndLists.class)
 	ObjectResponse<PhenotypeAnnotation> getById(@PathParam("id") Long id);
 
 	@Override
 	@POST
 	@Path("/search")
-	@JsonView(View.PhenotypeAnnotationView.class)
+	@JsonView(CurationView.PhenotypeAnnotationView.class)
 	SearchResponse<PhenotypeAnnotation> search(@DefaultValue("0") @QueryParam("page") Integer page, @DefaultValue("10") @QueryParam("limit") Integer limit, @RequestBody HashMap<String, Object> params);
 
 	@POST
 	@Path("/bulk/{dataProvider}/annotationFile")
-	@JsonView(View.FieldsAndLists.class)
+	@JsonView(CurationView.FieldsAndLists.class)
 	APIResponse updatePhenotypeAnnotations(@PathParam("dataProvider") String dataProvider, List<PhenotypeFmsDTO> annotationData);
 
 }

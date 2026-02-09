@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.alliancegenome.curation_api.view.View;
+import org.alliancegenome.curation_api.view.CurationView;
 import org.apache.commons.collections.CollectionUtils;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
@@ -17,18 +17,19 @@ import lombok.Data;
 @Data
 @Schema(name = "SearchResponse", description = "POJO that represents the SearchResponse")
 @JsonView({
-	View.FieldsOnly.class,
-	View.ForPublic.class,
-	View.GeneToGeneOrthologyDocument.class,
-	View.GOSearchResultDocument.class,
-	View.GeneSummaryDocument.class,
-	View.GeneSearchResultDocument.class,
-	View.DiseaseSummaryDocument.class,
-	View.DiseaseSearchResultDocument.class,
-	View.AlleleSummaryDocument.class,
-	View.ModelDocument.class,
-	View.HTPDatasetSearchResultDocument.class,
-	View.GeneExpressionDocument.class
+	CurationView.FieldsOnly.class,
+	CurationView.ForPublic.class,
+	CurationView.GeneToGeneOrthologyDocument.class,
+	CurationView.GOSearchResultDocument.class,
+	CurationView.GeneSummaryDocument.class,
+	CurationView.GeneSearchResultDocument.class,
+	CurationView.DiseaseSummaryDocument.class,
+	CurationView.DiseaseSearchResultDocument.class,
+	CurationView.AlleleSummaryDocument.class,
+	CurationView.ModelDocument.class,
+	CurationView.VariantDocument.class,
+	CurationView.HTPDatasetSearchResultDocument.class,
+	CurationView.GeneExpressionDocument.class
 })
 public class SearchResponse<E> extends APIResponse {
 

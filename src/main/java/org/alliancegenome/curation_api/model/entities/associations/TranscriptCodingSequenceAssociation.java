@@ -6,7 +6,7 @@ import org.alliancegenome.curation_api.model.entities.CodingSequence;
 import org.alliancegenome.curation_api.model.entities.EvidenceAssociation;
 import org.alliancegenome.curation_api.model.entities.Transcript;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
-import org.alliancegenome.curation_api.view.View;
+import org.alliancegenome.curation_api.view.CurationView;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.hibernate.search.mapper.pojo.automaticindexing.ReindexOnUpdate;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmbedded;
@@ -51,7 +51,7 @@ public class TranscriptCodingSequenceAssociation extends EvidenceAssociation {
 		"transcriptGeneAssociations",
 		"transcriptGenomicLocationAssociations"
 	})
-	@JsonView({ View.FieldsOnly.class })
+	@JsonView({ CurationView.FieldsOnly.class })
 	private Transcript transcriptAssociationSubject;
 	
 	@IndexedEmbedded(includePaths = {"curie", "name", "primaryExternalId", "modInternalId", "uniqueId",
@@ -63,12 +63,12 @@ public class TranscriptCodingSequenceAssociation extends EvidenceAssociation {
 		"codingSequenceGenomicLocationAssociations",
 		"constructGenomicEntityAssociations"
 	})
-	@JsonView({ View.FieldsOnly.class })
+	@JsonView({ CurationView.FieldsOnly.class })
 	private CodingSequence transcriptCodingSequenceAssociationObject;
 	
 	@IndexedEmbedded(includePaths = {"name", "name_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@JsonView({ View.FieldsOnly.class })
+	@JsonView({ CurationView.FieldsOnly.class })
 	private VocabularyTerm relation;
 }

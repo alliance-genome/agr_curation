@@ -9,7 +9,7 @@ import org.alliancegenome.curation_api.model.entities.EvidenceAssociation;
 import org.alliancegenome.curation_api.model.entities.GenomicEntity;
 import org.alliancegenome.curation_api.model.entities.Note;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
-import org.alliancegenome.curation_api.view.View;
+import org.alliancegenome.curation_api.view.CurationView;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
@@ -57,7 +57,7 @@ public class ConstructGenomicEntityAssociation extends EvidenceAssociation {
 		"curie_keyword", "constructSymbol.displayText_keyword", "constructSymbol.formatText_keyword",
 		"constructFullName.displayText_keyword", "constructFullName.formatText_keyword", "primaryExternalId_keyword", "modInternalId_keyword"})
 	@ManyToOne
-	@JsonView({View.FieldsOnly.class})
+	@JsonView({CurationView.FieldsOnly.class})
 	@JsonIgnoreProperties("constructGenomicEntityAssociations")
 	@Fetch(FetchMode.JOIN)
 	private Construct constructAssociationSubject;
@@ -65,13 +65,13 @@ public class ConstructGenomicEntityAssociation extends EvidenceAssociation {
 	@IndexedEmbedded(includePaths = {"name", "name_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@JsonView({View.FieldsOnly.class, View.TransgenicAllelesDocument.class})
+	@JsonView({CurationView.FieldsOnly.class, CurationView.TransgenicAllelesDocument.class})
 	private VocabularyTerm relation;
 
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@JsonView({View.FieldsOnly.class, View.TransgenicAllelesDocument.class})
+	@JsonView({CurationView.FieldsOnly.class, CurationView.TransgenicAllelesDocument.class})
 	@JsonIgnoreProperties({
 		"alleleGeneAssociations", "constructGenomicEntityAssociations", "sequenceTargetingReagentGeneAssociations",
 		"transcriptGenomicLocationAssociations", "exonGenomicLocationAssociations", "codingSequenceGenomicLocationAssociations",
@@ -85,7 +85,7 @@ public class ConstructGenomicEntityAssociation extends EvidenceAssociation {
 	})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-	@JsonView({View.FieldsAndLists.class, View.ConstructView.class})
+	@JsonView({CurationView.FieldsAndLists.class, CurationView.ConstructView.class})
 	@JoinTable(
 		joinColumns = @JoinColumn(name = "constructgenomicentityassociation_id"),
 		inverseJoinColumns = @JoinColumn(name = "relatedNotes_id"),

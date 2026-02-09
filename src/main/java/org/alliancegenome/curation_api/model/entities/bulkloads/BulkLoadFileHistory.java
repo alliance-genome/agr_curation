@@ -12,7 +12,7 @@ import org.alliancegenome.curation_api.enums.JobStatus;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.entities.base.AuditedObject;
 import org.alliancegenome.curation_api.model.output.ProcessCount;
-import org.alliancegenome.curation_api.view.View;
+import org.alliancegenome.curation_api.view.CurationView;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
@@ -41,35 +41,35 @@ public class BulkLoadFileHistory extends AuditedObject {
 
 	private static final String COUNT_TYPE = "Records";
 
-	@JsonView({ View.FieldsOnly.class })
+	@JsonView({ CurationView.FieldsOnly.class })
 	private LocalDateTime loadStarted = LocalDateTime.now();
 
-	@JsonView({ View.FieldsOnly.class })
+	@JsonView({ CurationView.FieldsOnly.class })
 	private LocalDateTime loadFinished;
 
-	@JsonView({ View.FieldsOnly.class })
+	@JsonView({ CurationView.FieldsOnly.class })
 	@JdbcTypeCode(SqlTypes.JSON)
 	private Map<String, ProcessCount> counts = new HashMap<>();
 
-	@JsonView({ View.FieldsOnly.class })
+	@JsonView({ CurationView.FieldsOnly.class })
 	@Enumerated(EnumType.STRING)
 	private JobStatus bulkloadStatus = JobStatus.STOPPED;
 
-	@JsonView({ View.FieldsOnly.class })
+	@JsonView({ CurationView.FieldsOnly.class })
 	@Column(columnDefinition = "TEXT")
 	private String errorMessage;
 	
-	@JsonView({ View.FieldsOnly.class })
+	@JsonView({ CurationView.FieldsOnly.class })
 	private String runningThreadName;
 
 	@ManyToOne
-	@JsonView({ View.FieldsOnly.class })
+	@JsonView({ CurationView.FieldsOnly.class })
 	private BulkLoadFile bulkLoadFile;
 
 	@ManyToOne private BulkLoad bulkLoad;
 
 	@OneToMany(mappedBy = "bulkLoadFileHistory")
-	@JsonView(View.BulkLoadFileHistoryView.class)
+	@JsonView(CurationView.BulkLoadFileHistoryView.class)
 	private List<BulkLoadFileException> exceptions = new ArrayList<>();
 
 	public BulkLoadFileHistory(String countType, Long count) {
@@ -145,6 +145,14 @@ public class BulkLoadFileHistory extends AuditedObject {
 	@Transient
 	public void incrementSkipped(String countType) {
 		getProcessCount(countType).incrementSkipped();
+	}
+	@Transient
+	public void incrementWarnings() {
+		incrementWarnings(COUNT_TYPE);
+	}
+	@Transient
+	public void incrementWarnings(String countType) {
+		getProcessCount(countType).incrementWarnings();
 	}
 	@Transient
 	public void setTotalCount(long total) {

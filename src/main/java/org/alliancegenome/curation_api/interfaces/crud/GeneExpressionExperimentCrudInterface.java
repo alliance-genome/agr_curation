@@ -3,7 +3,7 @@ package org.alliancegenome.curation_api.interfaces.crud;
 import org.alliancegenome.curation_api.interfaces.base.BaseIdCrudInterface;
 import org.alliancegenome.curation_api.model.entities.GeneExpressionExperiment;
 import org.alliancegenome.curation_api.response.ObjectResponse;
-import org.alliancegenome.curation_api.view.View;
+import org.alliancegenome.curation_api.view.CurationView;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 import com.fasterxml.jackson.annotation.JsonView;
@@ -23,6 +23,6 @@ import jakarta.ws.rs.core.MediaType;
 public interface GeneExpressionExperimentCrudInterface extends BaseIdCrudInterface<GeneExpressionExperiment> {
 	@GET
 	@Path("/findBy/{identifier}")
-	@JsonView(View.FieldsAndLists.class)
+	@JsonView(CurationView.FieldsAndLists.class)
 	ObjectResponse<GeneExpressionExperiment> getByIdentifier(@PathParam("identifier") String identifier);
 }

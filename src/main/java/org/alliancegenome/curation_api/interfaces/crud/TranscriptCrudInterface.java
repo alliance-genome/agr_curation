@@ -6,7 +6,7 @@ import org.alliancegenome.curation_api.interfaces.base.BaseSubmittedObjectCrudIn
 import org.alliancegenome.curation_api.model.entities.Transcript;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.Gff3DTO;
 import org.alliancegenome.curation_api.response.APIResponse;
-import org.alliancegenome.curation_api.view.View;
+import org.alliancegenome.curation_api.view.CurationView;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 import com.fasterxml.jackson.annotation.JsonView;
@@ -26,7 +26,7 @@ public interface TranscriptCrudInterface extends BaseSubmittedObjectCrudInterfac
 
 	@POST
 	@Path("/bulk/{dataProvider}_{assemblyName}/transcripts")
-	@JsonView(View.FieldsAndLists.class)
+	@JsonView(CurationView.FieldsAndLists.class)
 	APIResponse updateTranscripts(@PathParam("dataProvider") String dataProvider, @PathParam("assemblyName") String assemblyName, List<Gff3DTO> gff3Data);
 	
 }

@@ -8,7 +8,7 @@ import org.alliancegenome.curation_api.model.entities.Construct;
 import org.alliancegenome.curation_api.model.entities.Note;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
-import org.alliancegenome.curation_api.view.View;
+import org.alliancegenome.curation_api.view.CurationView;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
@@ -20,6 +20,7 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.FullTextFi
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmbedded;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexingDependency;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.KeywordField;
+
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonView;
 
@@ -49,26 +50,26 @@ public class ConstructComponentSlotAnnotation extends SlotAnnotation {
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "componentSymbol_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({View.FieldsOnly.class, View.TransgenicAllelesDocument.class})
+	@JsonView({CurationView.FieldsOnly.class, CurationView.TransgenicAllelesDocument.class})
 	@EqualsAndHashCode.Include
 	protected String componentSymbol;
 
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@JsonView({View.FieldsOnly.class, View.TransgenicAllelesDocument.class})
+	@JsonView({CurationView.FieldsOnly.class, CurationView.TransgenicAllelesDocument.class})
 	private VocabularyTerm relation;
 
 	@IndexedEmbedded(includePaths = {"name", "curie", "name_keyword", "curie_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@JsonView({View.FieldsOnly.class, View.TransgenicAllelesDocument.class})
+	@JsonView({CurationView.FieldsOnly.class, CurationView.TransgenicAllelesDocument.class})
 	@Fetch(FetchMode.JOIN)
 	private NCBITaxonTerm taxon;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "taxonText_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({View.FieldsOnly.class})
+	@JsonView({CurationView.FieldsOnly.class})
 	@EqualsAndHashCode.Include
 	protected String taxonText;
 
@@ -78,7 +79,7 @@ public class ConstructComponentSlotAnnotation extends SlotAnnotation {
 	})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-	@JsonView({View.FieldsAndLists.class, View.ConstructView.class})
+	@JsonView({CurationView.FieldsAndLists.class, CurationView.ConstructView.class})
 	@JoinTable(
 			joinColumns = @JoinColumn(name = "slotannotation_id"),
 			inverseJoinColumns = @JoinColumn(name = "relatednotes_id"),

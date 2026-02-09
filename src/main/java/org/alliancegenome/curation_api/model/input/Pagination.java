@@ -17,22 +17,4 @@ public class Pagination {
 		this.limit = limit;
 		this.cursor = null;
 	}
-
-	public long getOffset() {
-		return page * limit;
-	}
-
-	public void increment() {
-		page += 1;
-	}
-
-	// if page = 0 and limit = 0 calculate the count of records
-	public boolean isCountCondition() {
-		return page == 0 && limit == 0;
-	}
-	
-	// Check if cursor-based pagination should be used
-	public boolean isCursorBased() {
-		return cursor != null;
-	}
 }

@@ -4,7 +4,7 @@ import org.alliancegenome.curation_api.interfaces.base.BaseIdCrudInterface;
 import org.alliancegenome.curation_api.model.entities.GeneToGeneParalogy;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.ParalogyIngestFmsDTO;
 import org.alliancegenome.curation_api.response.APIResponse;
-import org.alliancegenome.curation_api.view.View;
+import org.alliancegenome.curation_api.view.CurationView;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 import com.fasterxml.jackson.annotation.JsonView;
@@ -24,7 +24,7 @@ public interface GeneToGeneParalogyCrudInterface extends BaseIdCrudInterface<Gen
 
 	@POST
 	@Path("/bulk/{dataProvider}/paralogyfile")
-	@JsonView(View.FieldsAndLists.class)
+	@JsonView(CurationView.FieldsAndLists.class)
 	APIResponse updateParalogy(@PathParam("dataProvider") String dataProvider, ParalogyIngestFmsDTO paralogyData);
 
 }

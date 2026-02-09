@@ -6,14 +6,14 @@ import java.util.Set;
 
 import org.alliancegenome.curation_api.model.entities.ontology.DOTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.OntologyTerm;
-import org.alliancegenome.curation_api.view.View;
+import org.alliancegenome.curation_api.view.CurationView;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
 import lombok.Data;
 
 @Data
-@JsonView(View.DiseaseSummaryDocument.class)
+@JsonView(CurationView.DiseaseSummaryDocument.class)
 public class DiseaseSummaryDocument extends ESDocument {
 
 	{

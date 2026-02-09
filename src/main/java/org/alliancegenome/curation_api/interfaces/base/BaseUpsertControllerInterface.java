@@ -3,7 +3,8 @@ package org.alliancegenome.curation_api.interfaces.base;
 import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.model.entities.base.AuditedObject;
 import org.alliancegenome.curation_api.model.ingest.dto.base.BaseDTO;
-import org.alliancegenome.curation_api.view.View;
+import org.alliancegenome.curation_api.response.ObjectResponse;
+import org.alliancegenome.curation_api.view.CurationView;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
@@ -14,6 +15,6 @@ public interface BaseUpsertControllerInterface<E extends AuditedObject, T extend
 
 	@POST
 	@Path("/upsert")
-	@JsonView(View.FieldsOnly.class)
-	E upsert(T dto) throws ValidationException;
+	@JsonView(CurationView.FieldsOnly.class)
+	ObjectResponse<E> upsert(T dto) throws ValidationException;
 }

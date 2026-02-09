@@ -6,7 +6,7 @@ import org.alliancegenome.curation_api.interfaces.base.BaseIdCrudInterface;
 import org.alliancegenome.curation_api.model.entities.GeneInteraction;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
-import org.alliancegenome.curation_api.view.View;
+import org.alliancegenome.curation_api.view.CurationView;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
@@ -30,13 +30,13 @@ public interface GeneInteractionCrudInterface extends BaseIdCrudInterface<GeneIn
 
 	@GET
 	@Path("/findBy/{identifierString}")
-	@JsonView(View.GeneInteractionView.class)
+	@JsonView(CurationView.GeneInteractionView.class)
 	ObjectResponse<GeneInteraction> getByIdentifier(@PathParam("identifierString") String identifierString);
 	
 	@Override
 	@POST
 	@Path("/search")
-	@JsonView(View.GeneInteractionView.class)
+	@JsonView(CurationView.GeneInteractionView.class)
 	SearchResponse<GeneInteraction> search(@DefaultValue("0") @QueryParam("page") Integer page, @DefaultValue("10") @QueryParam("limit") Integer limit, @RequestBody HashMap<String, Object> params);
 
 }

@@ -3,7 +3,7 @@ package org.alliancegenome.curation_api.interfaces.crud;
 import org.alliancegenome.curation_api.interfaces.base.BaseIdCrudInterface;
 import org.alliancegenome.curation_api.model.entities.ResourceDescriptor;
 import org.alliancegenome.curation_api.response.ObjectResponse;
-import org.alliancegenome.curation_api.view.View;
+import org.alliancegenome.curation_api.view.CurationView;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 import com.fasterxml.jackson.annotation.JsonView;
@@ -24,7 +24,7 @@ public interface ResourceDescriptorCrudInterface extends BaseIdCrudInterface<Res
 	@Override
 	@GET
 	@Path("/{id}")
-	@JsonView(View.ResourceDescriptorView.class)
+	@JsonView(CurationView.ResourceDescriptorView.class)
 	ObjectResponse<ResourceDescriptor> getById(@PathParam("id") Long id);
 
 }

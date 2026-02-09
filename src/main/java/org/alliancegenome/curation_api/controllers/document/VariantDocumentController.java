@@ -6,7 +6,7 @@ import java.util.List;
 
 import org.alliancegenome.curation_api.interfaces.document.VariantDocumentInterface;
 import org.alliancegenome.curation_api.model.document.builders.VariantDocumentBuilder;
-import org.alliancegenome.curation_api.model.document.es.VariantSummaryDTO;
+import org.alliancegenome.curation_api.model.document.es.VariantSummaryDocument;
 import org.alliancegenome.curation_api.model.entities.Variant;
 import org.alliancegenome.curation_api.model.input.Pagination;
 import org.alliancegenome.curation_api.response.SearchResponse;
@@ -20,7 +20,7 @@ public class VariantDocumentController implements VariantDocumentInterface {
 	VariantService service;
 
 	@Override
-	public SearchResponse<VariantSummaryDTO> findDocuments(Integer page, Integer limit, HashMap<String, Object> params) {
+	public SearchResponse<VariantSummaryDocument> findDocuments(Integer page, Integer limit, HashMap<String, Object> params) {
 		if (params == null) {
 			params = new HashMap<>();
 		}
@@ -29,16 +29,16 @@ public class VariantDocumentController implements VariantDocumentInterface {
 		Pagination pagination = new Pagination(page, limit);
 		SearchResponse<Variant> resp = service.findByParams(pagination, params);
 
-		ArrayList<VariantSummaryDTO> list = new ArrayList<>();
+		ArrayList<VariantSummaryDocument> list = new ArrayList<>();
 		if (resp.getResults() != null) {
 			VariantDocumentBuilder builder = new VariantDocumentBuilder();
 			for (Variant variant : resp.getResults()) {
-				List<VariantSummaryDTO> docs = builder.buildVariantDocument(variant);
+				List<VariantSummaryDocument> docs = builder.buildVariantDocument(variant);
 				list.addAll(docs);
 			}
 		}
 
-		SearchResponse<VariantSummaryDTO> ret = new SearchResponse<>(list);
+		SearchResponse<VariantSummaryDocument> ret = new SearchResponse<>(list);
 		ret.setTotalResults(resp.getTotalResults());
 		return ret;
 	}

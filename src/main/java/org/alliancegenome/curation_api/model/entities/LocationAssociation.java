@@ -2,7 +2,7 @@ package org.alliancegenome.curation_api.model.entities;
 
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
-import org.alliancegenome.curation_api.view.View;
+import org.alliancegenome.curation_api.view.CurationView;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.hibernate.search.engine.backend.types.Projectable;
 import org.hibernate.search.engine.backend.types.Sortable;
@@ -29,17 +29,17 @@ public abstract class LocationAssociation extends EvidenceAssociation {
 	@IndexedEmbedded(includePaths = {"name", "name_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@JsonView({View.FieldsOnly.class})
+	@JsonView({CurationView.FieldsOnly.class})
 	private VocabularyTerm relation;
 
 	@GenericField(projectable = Projectable.YES, sortable = Sortable.YES)
 	@Column(name = "`start`")
-	@JsonView({View.FieldsOnly.class, View.GeneSummaryDocument.class})
+	@JsonView({CurationView.FieldsOnly.class, CurationView.GeneSummaryDocument.class, CurationView.AlleleSummaryDocument.class, CurationView.VariantDocument.class})
 	private Integer start;
 
 	@GenericField(projectable = Projectable.YES, sortable = Sortable.YES)
 	@Column(name = "`end`")
-	@JsonView({View.FieldsOnly.class, View.GeneSummaryDocument.class})
+	@JsonView({CurationView.FieldsOnly.class, CurationView.GeneSummaryDocument.class, CurationView.AlleleSummaryDocument.class, CurationView.VariantDocument.class})
 	private Integer end;
 
 }

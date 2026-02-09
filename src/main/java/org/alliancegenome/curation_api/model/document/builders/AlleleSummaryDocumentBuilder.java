@@ -31,6 +31,10 @@ public class AlleleSummaryDocumentBuilder {
 		Optional<Gene> optionalAlleleOfGene = buildAlleleOfGene(allele);
 		optionalAlleleOfGene.ifPresent(doc::setAlleleOfGene);
 
+		doc.setVariants(alleleDTO.getVariants());
+		doc.setHasPhenotype(alleleDTO.getHasPhenotype());
+		doc.setHasDisease(alleleDTO.getHasDisease());
+
 		return doc;
 	}
 
@@ -52,7 +56,7 @@ public class AlleleSummaryDocumentBuilder {
 		}
 
 		List<Gene> alleleOfGeneList = alleleGeneAssociations.stream()
-				.filter(aga -> !aga.getInternal() && !aga.getObsolete())
+				.filter(aga -> aga.isNotInternalOrObsolete())
 				.map(AlleleGeneAssociation::getAlleleGeneAssociationObject)
 				.toList();
 

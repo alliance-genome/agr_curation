@@ -43,20 +43,28 @@ import jakarta.inject.Inject;
 
 public class BaseDTOValidator<E extends Object> {
 
-	@Inject OrganizationService organizationService;
-	@Inject CrossReferenceDTOValidator crossReferenceDtoValidator;
-	@Inject MiTermService miTermService;
-	@Inject ReferenceService referenceService;
-	@Inject VocabularyTermService vocabularyTermService;
-	@Inject NoteDTOValidator noteDtoValidator;
-	@Inject NoteDAO noteDAO;
-	@Inject NcbiTaxonTermService ncbiTaxonTermService;
+	@Inject
+	OrganizationService organizationService;
+	@Inject
+	CrossReferenceDTOValidator crossReferenceDtoValidator;
+	@Inject
+	MiTermService miTermService;
+	@Inject
+	ReferenceService referenceService;
+	@Inject
+	VocabularyTermService vocabularyTermService;
+	@Inject
+	NoteDTOValidator noteDtoValidator;
+	@Inject
+	NoteDAO noteDAO;
+	@Inject
+	NcbiTaxonTermService ncbiTaxonTermService;
 
 	protected ObjectResponse<E> response;
-	
+
 	protected HashMap<String, String> miCurieCache = new HashMap<>();
 	protected HashMap<String, MITerm> miTermCache = new HashMap<>();
-	
+
 	protected HashMap<String, HashMap<String, VocabularyTerm>> vocabularyTermCache = new HashMap<>();
 	protected HashMap<String, HashMap<String, OntologyTerm>> ontologyTermCache = new HashMap<>();
 
@@ -105,11 +113,11 @@ public class BaseDTOValidator<E extends Object> {
 
 		return list;
 	}
-	
+
 	protected <N extends AuditedObject, D extends BaseSQLDAO<N>> N findDatabaseObject(D dao, String field, String identifier) {
 		return findDatabaseObject(dao, field, field, identifier);
 	}
-	
+
 	protected <N extends AuditedObject, D extends BaseSQLDAO<N>> N findDatabaseObject(D dao, String dbField, String dtoField, String identifier) {
 		N entity = null;
 		if (StringUtils.isNotBlank(identifier)) {
@@ -123,15 +131,15 @@ public class BaseDTOValidator<E extends Object> {
 
 		return entity;
 	}
-	
+
 	protected <N extends SubmittedObject, D extends BaseSQLDAO<N>, T extends SubmittedObjectDTO, S extends SubmittedObjectCrudService<N, T, D>> N validateIdentifier(S service, String field, String identifier) {
 		return validateIdentifier(service, field, identifier, false);
 	}
-	
+
 	protected <N extends SubmittedObject, D extends BaseSQLDAO<N>, T extends SubmittedObjectDTO, S extends SubmittedObjectCrudService<N, T, D>> N validateRequiredIdentifier(S service, String field, String identifier) {
 		return validateIdentifier(service, field, identifier, true);
 	}
-	
+
 	protected <N extends SubmittedObject, D extends BaseSQLDAO<N>, T extends SubmittedObjectDTO, S extends SubmittedObjectCrudService<N, T, D>> N validateIdentifier(S service, String field, String identifier, boolean isRequired) {
 		if (StringUtils.isBlank(identifier)) {
 			if (isRequired) {
@@ -139,23 +147,23 @@ public class BaseDTOValidator<E extends Object> {
 			}
 			return null;
 		}
-		
+
 		N submittedObject = service.findByIdentifierString(identifier);
 		if (submittedObject == null) {
 			response.addErrorMessage(field, ValidationConstants.INVALID_MESSAGE + " (" + identifier + ")");
 		}
-		
+
 		return submittedObject;
 	}
-	
+
 	protected <N extends SubmittedObject, D extends BaseSQLDAO<N>, T extends SubmittedObjectDTO, S extends SubmittedObjectCrudService<N, T, D>> List<N> validateIdentifiers(S service, String field, List<String> identifiers) {
 		return validateIdentifiers(service, field, identifiers, false);
 	}
-	
+
 	protected <N extends SubmittedObject, D extends BaseSQLDAO<N>, T extends SubmittedObjectDTO, S extends SubmittedObjectCrudService<N, T, D>> List<N> validateRequiredIdentifiers(S service, String field, List<String> identifiers) {
 		return validateIdentifiers(service, field, identifiers, true);
 	}
-	
+
 	protected <N extends SubmittedObject, D extends BaseSQLDAO<N>, T extends SubmittedObjectDTO, S extends SubmittedObjectCrudService<N, T, D>> List<N> validateIdentifiers(S service, String field, List<String> identifiers, boolean isRequired) {
 		if (CollectionUtils.isEmpty(identifiers)) {
 			if (isRequired) {
@@ -172,10 +180,10 @@ public class BaseDTOValidator<E extends Object> {
 			}
 			submittedObjects.add(submittedObject);
 		}
-		
+
 		return submittedObjects;
 	}
-	
+
 	protected ObjectResponse<ImmutablePair<Organization, CrossReference>> validateDataProviderDTO(DataProviderDTO dto, CrossReference dbDataProviderXref) {
 		Organization dataProvider = null;
 		ObjectResponse<ImmutablePair<Organization, CrossReference>> dpResponse = new ObjectResponse<>();
@@ -203,15 +211,15 @@ public class BaseDTOValidator<E extends Object> {
 		dpResponse.setEntity(new ImmutablePair<Organization, CrossReference>(dataProvider, dataProviderXref));
 		return dpResponse;
 	}
-	
+
 	protected Reference validateReference(String field, String referenceCurie) {
 		return validateReference(field, referenceCurie, false);
 	}
-	
+
 	protected Reference validateRequiredReference(String field, String referenceCurie) {
 		return validateReference(field, referenceCurie, true);
 	}
-	
+
 	protected Reference validateReference(String field, String referenceCurie, boolean isRequired) {
 		if (StringUtils.isBlank(referenceCurie)) {
 			if (isRequired) {
@@ -219,61 +227,46 @@ public class BaseDTOValidator<E extends Object> {
 			}
 			return null;
 		}
-		
+
 		Reference reference = referenceService.retrieveFromDbOrLiteratureService(referenceCurie);
 		if (reference == null) {
 			response.addErrorMessage(field, ValidationConstants.INVALID_MESSAGE + " (" + referenceCurie + ")");
 		}
-		
+
 		return reference;
 	}
-	
-	protected List<Reference> validateReferences(List<String> referenceCuries) {
-		return validateReferences("reference_curies", referenceCuries, false);
-	}
-	
-	protected List<Reference> validateRequiredReferences(List<String> referenceCuries) {
-		return validateReferences("reference_curies", referenceCuries, true);
-	}
-	
-	
-	protected List<Reference> validateReferences(String field, List<String> referenceCuries) {
-		return validateReferences(field, referenceCuries, false);
-	}
-	
-	protected List<Reference> validateRequiredReferences(String field, List<String> referenceCuries) {
-		return validateReferences(field, referenceCuries, true);
-	}
-	
-	protected List<Reference> validateReferences(String field, List<String> referenceCuries, boolean isRequired) {
+
+	protected List<Reference> validateReferences(String field, List<String> referenceCuries, boolean failOnMissingReferences) {
 		if (CollectionUtils.isEmpty(referenceCuries)) {
-			if (isRequired) {
-				response.addErrorMessage(field, ValidationConstants.REQUIRED_MESSAGE);
-			}
 			return null;
 		}
-		
+
 		List<Reference> references = new ArrayList<>();
 		for (String referenceCurie : referenceCuries) {
 			Reference reference = referenceService.retrieveFromDbOrLiteratureService(referenceCurie);
 			if (reference == null) {
-				response.addErrorMessage(field, ValidationConstants.INVALID_MESSAGE + " (" + referenceCurie + ")");
-				return null;
+				if (failOnMissingReferences) {
+					response.addErrorMessage(field, ValidationConstants.INVALID_MESSAGE + " (" + referenceCurie + ")");
+					return null;
+				} else {
+					response.addWarningMessage(field, ValidationConstants.WARNING_MISSING_MESSAGE + " (" + referenceCurie + ")");
+				}
 			}
-			references.add(reference);
+			if (!references.contains(reference)) {
+				references.add(reference);
+			}
 		}
-		
 		return references;
 	}
-	
+
 	protected <N extends OntologyTerm, D extends BaseSQLDAO<N>, S extends BaseOntologyTermService<N, D>> N validateOntologyTerm(S service, String field, String curie) {
 		return validateOntologyTerm(service, field, curie, false);
 	}
-	
+
 	protected <N extends OntologyTerm, D extends BaseSQLDAO<N>, S extends BaseOntologyTermService<N, D>> N validateRequiredOntologyTerm(S service, String field, String curie) {
 		return validateOntologyTerm(service, field, curie, true);
 	}
-	
+
 	protected <N extends OntologyTerm, D extends BaseSQLDAO<N>, S extends BaseOntologyTermService<N, D>> N validateOntologyTerm(S service, String field, String curie, boolean isRequired) {
 		if (StringUtils.isBlank(curie)) {
 			if (isRequired) {
@@ -281,7 +274,7 @@ public class BaseDTOValidator<E extends Object> {
 			}
 			return null;
 		}
-		
+
 		N ontologyTerm = null;
 		if (!ontologyTermCache.containsKey(service.getClass().getName())) {
 			ontologyTermCache.put(service.getClass().getName(), new HashMap<String, OntologyTerm>());
@@ -290,29 +283,29 @@ public class BaseDTOValidator<E extends Object> {
 		}
 		if (ontologyTerm == null) {
 			ontologyTerm = service.findByCurieOrSecondaryId(curie);
-			
+
 			if (ontologyTerm == null) {
 				response.addErrorMessage(field, ValidationConstants.INVALID_MESSAGE + " (" + curie + ")");
 				return null;
 			}
-			
+
 			ontologyTerm.getSecondaryIdentifiers().size();
 			ontologyTerm.getSynonyms().size();
 			ontologyTerm.getDefinitionUrls().size();
 			ontologyTermCache.get(service.getClass().getName()).put(curie, ontologyTerm);
 		}
-		
+
 		return ontologyTerm;
 	}
-	
+
 	protected <N extends OntologyTerm, D extends BaseSQLDAO<N>, S extends BaseOntologyTermService<N, D>> List<N> validateOntologyTerms(S service, String field, List<String> curies) {
 		return validateOntologyTerms(service, field, curies, false);
 	}
-	
+
 	protected <N extends OntologyTerm, D extends BaseSQLDAO<N>, S extends BaseOntologyTermService<N, D>> List<N> validateRequiredOntologyTerms(S service, String field, List<String> curies) {
 		return validateOntologyTerms(service, field, curies, true);
 	}
-	
+
 	protected <N extends OntologyTerm, D extends BaseSQLDAO<N>, S extends BaseOntologyTermService<N, D>> List<N> validateOntologyTerms(S service, String field, List<String> curies, boolean isRequired) {
 		if (CollectionUtils.isEmpty(curies)) {
 			if (isRequired) {
@@ -320,7 +313,7 @@ public class BaseDTOValidator<E extends Object> {
 			}
 			return null;
 		}
-		
+
 		List<N> ontologyTerms = new ArrayList<>();
 		if (!ontologyTermCache.containsKey(service.getClass().getName())) {
 			ontologyTermCache.put(service.getClass().getName(), new HashMap<String, OntologyTerm>());
@@ -329,38 +322,38 @@ public class BaseDTOValidator<E extends Object> {
 			N ontologyTerm = (N) ontologyTermCache.get(service.getClass().getName()).get(curie);
 			if (ontologyTerm == null) {
 				ontologyTerm = service.findByCurieOrSecondaryId(curie);
-				
+
 				if (ontologyTerm == null) {
 					response.addErrorMessage(field, ValidationConstants.INVALID_MESSAGE + " (" + curie + ")");
 					return null;
 				}
-				
+
 				ontologyTerm.getSecondaryIdentifiers().size();
 				ontologyTerm.getSynonyms().size();
 				ontologyTermCache.get(service.getClass().getName()).put(curie, ontologyTerm);
 			}
 			ontologyTerms.add(ontologyTerm);
 		}
-		
+
 		return ontologyTerms;
 	}
-	
+
 	protected VocabularyTerm validateTermInVocabulary(String field, String termName, String vocabularyName) {
 		return validateVocabularyTerm(field, termName, vocabularyName, false, false);
 	}
-	
+
 	protected VocabularyTerm validateRequiredTermInVocabulary(String field, String termName, String vocabularyName) {
 		return validateVocabularyTerm(field, termName, vocabularyName, true, false);
 	}
-	
+
 	protected VocabularyTerm validateTermInVocabularyTermSet(String field, String termName, String vocabularyTermSetName) {
 		return validateVocabularyTerm(field, termName, vocabularyTermSetName, false, true);
 	}
-	
+
 	protected VocabularyTerm validateRequiredTermInVocabularyTermSet(String field, String termName, String vocabularyTermSetName) {
 		return validateVocabularyTerm(field, termName, vocabularyTermSetName, true, true);
 	}
-	
+
 	protected VocabularyTerm validateVocabularyTerm(String field, String termName, String vocabularyOrSetName, boolean isRequired, boolean isTermSet) {
 		if (StringUtils.isBlank(termName)) {
 			if (isRequired) {
@@ -375,42 +368,42 @@ public class BaseDTOValidator<E extends Object> {
 		} else {
 			term = vocabularyTermCache.get(vocabularyOrSetName).get(termName);
 		}
-		
+
 		if (term == null) {
 			if (isTermSet) {
 				term = vocabularyTermService.getTermInVocabularyTermSet(vocabularyOrSetName, termName).getEntity();
 			} else {
 				term = vocabularyTermService.getTermInVocabulary(vocabularyOrSetName, termName).getEntity();
 			}
-			
+
 			if (term == null) {
 				response.addErrorMessage(field, ValidationConstants.INVALID_MESSAGE);
 				return null;
 			}
-			
+
 			term.getSynonyms().size();
 			vocabularyTermCache.get(vocabularyOrSetName).put(termName, term);
 		}
-		
+
 		return term;
 	}
-	
+
 	protected List<VocabularyTerm> validateTermsInVocabulary(String field, List<String> termNames, String vocabularyName) {
 		return validateVocabularyTerms(field, termNames, vocabularyName, false, false);
 	}
-	
+
 	protected List<VocabularyTerm> validateRequiredTermsInVocabulary(String field, List<String> termNames, String vocabularyName) {
 		return validateVocabularyTerms(field, termNames, vocabularyName, true, false);
 	}
-	
+
 	protected List<VocabularyTerm> validateTermsInVocabularyTermSet(String field, List<String> termNames, String vocabularyTermSetName) {
 		return validateVocabularyTerms(field, termNames, vocabularyTermSetName, false, true);
 	}
-	
+
 	protected List<VocabularyTerm> validateRequiredTermsInVocabularyTermSet(String field, List<String> termNames, String vocabularyTermSetName) {
 		return validateVocabularyTerms(field, termNames, vocabularyTermSetName, true, true);
 	}
-	
+
 	protected List<VocabularyTerm> validateVocabularyTerms(String field, List<String> termNames, String vocabularyOrSetName, boolean isRequired, boolean isTermSet) {
 		if (CollectionUtils.isEmpty(termNames)) {
 			if (isRequired) {
@@ -431,12 +424,12 @@ public class BaseDTOValidator<E extends Object> {
 				} else {
 					term = vocabularyTermService.getTermInVocabulary(vocabularyOrSetName, termName).getEntity();
 				}
-			
+
 				if (term == null) {
 					response.addErrorMessage(field, ValidationConstants.INVALID_MESSAGE);
 					return null;
 				}
-				
+
 				term.getSynonyms().size();
 				vocabularyTermCache.get(vocabularyOrSetName).put(termName, term);
 			}
@@ -445,34 +438,34 @@ public class BaseDTOValidator<E extends Object> {
 
 		return terms;
 	}
-	
+
 	protected Note validateNote(NoteDTO dto, String noteTypeSet) {
 		if (dto == null) {
 			return null;
 		}
-		
+
 		ObjectResponse<Note> noteResponse = noteDtoValidator.validateNoteDTO(dto, noteTypeSet);
 		if (noteResponse.hasErrors()) {
 			response.addErrorMessage("note_dto", noteResponse.errorMessagesString());
 			return null;
 		}
-		
+
 		return noteDAO.persist(noteResponse.getEntity());
 	}
-	
+
 	protected List<Note> validateNotes(List<NoteDTO> dtos, String noteTypeSet) {
 		return validateNotes(dtos, noteTypeSet, null);
 	}
-	
+
 	protected List<Note> validateNotes(List<NoteDTO> dtos, String noteTypeSet, String expectedReference) {
 		if (CollectionUtils.isEmpty(dtos)) {
 			return null;
 		}
-		
+
 		List<Note> validatedNotes = new ArrayList<Note>();
 		List<String> noteIdentities = new ArrayList<String>();
 		Boolean allNotesValid = true;
-		
+
 		for (int ix = 0; ix < dtos.size(); ix++) {
 			ObjectResponse<Note> noteResponse = noteDtoValidator.validateNoteDTO(dtos.get(ix), noteTypeSet);
 			if (noteResponse.hasErrors()) {
@@ -503,18 +496,18 @@ public class BaseDTOValidator<E extends Object> {
 			response.convertMapToErrorMessages("note_dtos");
 			return null;
 		}
-		
+
 		return validatedNotes;
 	}
-	
+
 	protected NCBITaxonTerm validateTaxon(String field, String curie) {
 		return validateTaxon(field, curie, false);
 	}
-	
+
 	protected NCBITaxonTerm validateRequiredTaxon(String field, String curie) {
 		return validateTaxon(field, curie, true);
 	}
-	
+
 	protected NCBITaxonTerm validateTaxon(String field, String curie, boolean isRequired) {
 		if (StringUtils.isBlank(curie)) {
 			if (isRequired) {
@@ -522,12 +515,12 @@ public class BaseDTOValidator<E extends Object> {
 			}
 			return null;
 		}
-		
+
 		ObjectResponse<NCBITaxonTerm> taxonResponse = ncbiTaxonTermService.getByCurie(curie);
 		if (taxonResponse.getEntity() == null) {
 			response.addErrorMessage(field, ValidationConstants.INVALID_MESSAGE + " (" + curie + ")");
 		}
-		
+
 		return taxonResponse.getEntity();
 	}
 

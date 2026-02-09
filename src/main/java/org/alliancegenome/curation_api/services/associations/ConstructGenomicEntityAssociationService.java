@@ -72,9 +72,8 @@ public class ConstructGenomicEntityAssociationService extends BaseAssociationDTO
 
 	@Override
 	@Transactional
-	public ConstructGenomicEntityAssociation upsert(ConstructGenomicEntityAssociationDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
-		ConstructGenomicEntityAssociation association = constructGenomicEntityAssociationDtoValidator.validateConstructGenomicEntityAssociationDTO(dto, dataProvider);
-		return association;
+	public ObjectResponse<ConstructGenomicEntityAssociation> upsert(ConstructGenomicEntityAssociationDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
+		return constructGenomicEntityAssociationDtoValidator.validateConstructGenomicEntityAssociationDTO(dto, dataProvider);
 	}
 
 	public List<Long> getAssociationsByDataProvider(BackendBulkDataProvider dataProvider) {

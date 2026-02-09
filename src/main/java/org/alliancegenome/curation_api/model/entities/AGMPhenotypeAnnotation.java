@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
-import org.alliancegenome.curation_api.view.View;
+import org.alliancegenome.curation_api.view.CurationView;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
@@ -49,7 +49,7 @@ public class AGMPhenotypeAnnotation extends PhenotypeAnnotation {
 	@ManyToOne
 	@Fetch(FetchMode.SELECT)
 	@org.hibernate.annotations.OnDelete(action = org.hibernate.annotations.OnDeleteAction.CASCADE)
-	@JsonView({ View.FieldsOnly.class, View.ForPublic.class })
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.ForPublic.class })
 	private AffectedGenomicModel phenotypeAnnotationSubject;
 
 	@IndexedEmbedded(includePaths = {
@@ -63,7 +63,7 @@ public class AGMPhenotypeAnnotation extends PhenotypeAnnotation {
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
 	@Fetch(FetchMode.SELECT)
-	@JsonView({ View.FieldsOnly.class, View.ForPublic.class })
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.ForPublic.class })
 	private Gene inferredGene;
 
 	@IndexedEmbedded(includePaths = {
@@ -76,7 +76,7 @@ public class AGMPhenotypeAnnotation extends PhenotypeAnnotation {
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
 	@Fetch(FetchMode.SELECT)
-	@JsonView({ View.FieldsOnly.class, View.ForPublic.class })
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.ForPublic.class })
 	private Allele inferredAllele;
 
 	@IndexedEmbedded(includePaths = {
@@ -90,7 +90,7 @@ public class AGMPhenotypeAnnotation extends PhenotypeAnnotation {
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
 	@Fetch(FetchMode.SELECT)
-	@JsonView({ View.FieldsAndLists.class, View.PhenotypeAnnotationView.class, View.ForPublic.class })
+	@JsonView({ CurationView.FieldsAndLists.class, CurationView.PhenotypeAnnotationView.class, CurationView.ForPublic.class })
 	@JoinTable(
 		joinColumns = @JoinColumn(name = "agmphenotypeannotation_id"),
 		inverseJoinColumns = @JoinColumn(name = "assertedgenes_id"),
@@ -111,12 +111,12 @@ public class AGMPhenotypeAnnotation extends PhenotypeAnnotation {
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
 	@Fetch(FetchMode.SELECT)
-	@JsonView({ View.FieldsAndLists.class, View.PhenotypeAnnotationView.class, View.ForPublic.class })
+	@JsonView({ CurationView.FieldsAndLists.class, CurationView.PhenotypeAnnotationView.class, CurationView.ForPublic.class })
 	@JoinTable(
 		joinColumns = @JoinColumn(name = "agmphenotypeannotation_id"),
 		inverseJoinColumns = @JoinColumn(name = "assertedalleles_id"),
 		indexes = {
-			@Index(name = "agmphenotypeannotation_allele_agmpa_index", columnList = "agmphenotypeannotation_id"),
+			@Index(name = "agmphenotypeannotation_allele_agmphenotypeannotation_index", columnList = "agmphenotypeannotation_id"),
 			@Index(name = "agmphenotypeannotation_allele_assertedalleles_index", columnList = "assertedalleles_id")
 		}
 	)

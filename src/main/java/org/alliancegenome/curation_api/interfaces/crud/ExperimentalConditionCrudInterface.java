@@ -3,7 +3,7 @@ package org.alliancegenome.curation_api.interfaces.crud;
 import org.alliancegenome.curation_api.interfaces.base.BaseIdCrudInterface;
 import org.alliancegenome.curation_api.model.entities.ExperimentalCondition;
 import org.alliancegenome.curation_api.response.ObjectResponse;
-import org.alliancegenome.curation_api.view.View;
+import org.alliancegenome.curation_api.view.CurationView;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 import com.fasterxml.jackson.annotation.JsonView;
@@ -23,7 +23,7 @@ public interface ExperimentalConditionCrudInterface extends BaseIdCrudInterface<
 
 	@GET
 	@Path("/findBy/{conditionSummary}")
-	@JsonView(View.FieldsAndLists.class)
+	@JsonView(CurationView.FieldsAndLists.class)
 	ObjectResponse<ExperimentalCondition> get(@PathParam("conditionSummary") String conditionSummary);
 
 }

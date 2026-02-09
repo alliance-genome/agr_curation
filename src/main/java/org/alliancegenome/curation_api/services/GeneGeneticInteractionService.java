@@ -29,15 +29,18 @@ public class GeneGeneticInteractionService extends BaseEntityCrudService<GeneGen
 		setSQLDao(geneGeneticInteractionDAO);
 	}
 
+	@Override
 	public ObjectResponse<GeneGeneticInteraction> getByIdentifier(String identifier) {
 		GeneGeneticInteraction interaction = findByAlternativeFields(List.of("interactionId", "uniqueId"), identifier);
 		return new ObjectResponse<GeneGeneticInteraction>(interaction);
 	}
 
+	@Override
 	@Transactional
-	public GeneGeneticInteraction upsert(PsiMiTabDTO dto, BackendBulkDataProvider backendBulkDataProvider) throws ValidationException {
-		GeneGeneticInteraction interaction = geneGeneticInteractionValidator.validateGeneGeneticInteractionFmsDTO(dto);
-		return geneGeneticInteractionDAO.persist(interaction);
+	public ObjectResponse<GeneGeneticInteraction> upsert(PsiMiTabDTO dto, BackendBulkDataProvider backendBulkDataProvider) throws ValidationException {
+		ObjectResponse<GeneGeneticInteraction> resp = geneGeneticInteractionValidator.validateGeneGeneticInteractionFmsDTO(dto);
+		geneGeneticInteractionDAO.persist(resp.getEntity());
+		return resp;
 	}
 
 }
