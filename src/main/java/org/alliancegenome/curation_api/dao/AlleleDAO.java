@@ -214,7 +214,91 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 
 		List<Object[]> results = query.getResultList();
 
-		// Create minimal Allele objects from selected fields
+		List<Allele> alleles = buildAllelesFromResults(results);
+
+		List<AlleleSummaryDTO> dtos = enrichAllelesAndBuildDTOs(alleles);
+
+		SearchResponse<AlleleSummaryDTO> response = new SearchResponse<>();
+		response.setResults(dtos);
+		response.setTotalResults((long) alleles.size());
+
+		// Set nextCursor for cursor-based pagination
+		if (!alleles.isEmpty() && pagination.getCursor() != null) {
+			Long lastId = alleles.get(alleles.size() - 1).getId();
+			response.setNextCursor(lastId);
+		}
+
+		return response;
+	}
+
+	public List<Long> getAllAlleleSummaryIds() {
+		String sql = """
+				SELECT a.id
+				FROM Allele a
+				INNER JOIN BiologicalEntity b ON b.id = a.id AND b.obsolete = false AND b.internal = false
+				INNER JOIN SlotAnnotation s ON a.id = s.singleallele_id
+					AND s.slotannotationtype = 'AlleleSymbolSlotAnnotation'
+					AND s.formatText IS NOT NULL
+				ORDER BY a.id
+				""";
+
+		Query query = entityManager.createNativeQuery(sql);
+		List<Object> results = query.getResultList();
+		return results.stream().map(obj -> (Long) obj).collect(Collectors.toList());
+	}
+
+	public SearchResponse<AlleleSummaryDTO> findAllelesForSummaryByIds(List<Long> alleleIds) {
+		if (CollectionUtils.isEmpty(alleleIds)) {
+			SearchResponse<AlleleSummaryDTO> emptyResponse = new SearchResponse<>();
+			emptyResponse.setTotalResults(0L);
+			return emptyResponse;
+		}
+
+		String selectQuery = """
+				SELECT
+				a.id,
+				b.primaryExternalId,
+				b.curie,
+				b.modInternalId,
+				s.formatText,
+				s.displayText,
+				ot.curie,
+				ot.name,
+				cr.referencedCurie,
+				cr.displayName,
+				rd.name,
+				rd.urltemplate,
+				org.id,
+				org.abbreviation,
+				org.fullname,
+				org.shortname
+				FROM Allele a
+				INNER JOIN BiologicalEntity b ON b.id = a.id
+				INNER JOIN SlotAnnotation s ON a.id = s.singleallele_id
+					AND s.slotannotationtype = 'AlleleSymbolSlotAnnotation'
+					AND s.formatText IS NOT NULL
+				INNER JOIN OntologyTerm ot ON ot.id = b.taxon_id
+				INNER JOIN CrossReference cr ON cr.id = b.dataprovidercrossreference_id
+				INNER JOIN resourceDescriptorPage rd ON rd.id = cr.resourcedescriptorpage_id
+				INNER JOIN organization org ON org.id = b.dataprovider_id
+				WHERE a.id IN :alleleIds
+				""";
+
+		Query query = entityManager.createNativeQuery(selectQuery);
+		query.setParameter("alleleIds", alleleIds);
+		List<Object[]> results = query.getResultList();
+
+		List<Allele> alleles = buildAllelesFromResults(results);
+
+		List<AlleleSummaryDTO> dtos = enrichAllelesAndBuildDTOs(alleles);
+
+		SearchResponse<AlleleSummaryDTO> response = new SearchResponse<>();
+		response.setResults(dtos);
+		response.setTotalResults((long) alleles.size());
+		return response;
+	}
+
+	private List<Allele> buildAllelesFromResults(List<Object[]> results) {
 		List<Allele> alleles = new ArrayList<>();
 		for (Object[] row : results) {
 			Allele allele = new Allele();
@@ -223,21 +307,18 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 			allele.setCurie((String) row[2]);
 			allele.setModInternalId((String) row[3]);
 
-			// Create AlleleSymbolSlotAnnotation if formatText or displayText exists
 			if (row[4] != null || row[5] != null) {
 				AlleleSymbolSlotAnnotation symbolAnnotation = new AlleleSymbolSlotAnnotation();
 				symbolAnnotation.setFormatText((String) row[4]);
 				symbolAnnotation.setDisplayText((String) row[5]);
 				allele.setAlleleSymbol(symbolAnnotation);
 			}
-			// Create NCBITaxonTerm if data exists
 			if (row[6] != null || row[7] != null) {
 				NCBITaxonTerm term = new NCBITaxonTerm();
 				term.setCurie((String) row[6]);
 				term.setName((String) row[7]);
 				allele.setTaxon(term);
 			}
-			// Create DataProviderCrossReference if data exists
 			if (row[8] != null || row[9] != null) {
 				CrossReference term = new CrossReference();
 				term.setReferencedCurie((String) row[8]);
@@ -250,7 +331,6 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 					term.setResourceDescriptorPage(page);
 				}
 			}
-			// Create Organization (dataProvider) if data exists
 			if (row[12] != null) {
 				Organization org = new Organization();
 				org.setId((Long) row[12]);
@@ -261,13 +341,17 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 			}
 			alleles.add(allele);
 		}
+		return alleles;
+	}
 
+	private List<AlleleSummaryDTO> enrichAllelesAndBuildDTOs(List<Allele> alleles) {
 		List<Long> alleleIds = alleles.stream()
 				.map(Allele::getId)
-				.collect(java.util.stream.Collectors.toList());
+				.collect(Collectors.toList());
 
 		Map<Long, Allele> alleleMap = alleles.stream().collect(Collectors.toMap(Allele::getId, Function.identity()));
 
+		// Synonyms
 		String synonymQueryString = """
 				select singleallele_id, string_agg(displaytext,'||'), string_agg(formatText,'||')
 				from slotannotation
@@ -297,6 +381,7 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 			}
 		});
 
+		// Gene associations
 		String geneAssociationInfoQuery = """
 				select alleleassociationsubject_id as allele_id,
 					allelegeneassociationobject_id as gene_id,
@@ -341,7 +426,6 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 					allele.setAlleleGeneAssociations(List.of(association));
 					return association;
 				}).toList();
-		long afterGeneQuery = System.currentTimeMillis();
 
 		Map<Allele, List<AlleleGeneAssociation>> map = associationList.stream().collect(Collectors.groupingBy(AlleleGeneAssociation::getAlleleAssociationSubject));
 		map.forEach((mapAllele, alleleGeneAssociations) -> {
@@ -349,6 +433,7 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 			allele.setAlleleGeneAssociations(alleleGeneAssociations);
 		});
 
+		// Variants
 		String variantQueryString = """
 			SELECT DISTINCT ava.alleleassociationsubject_id as allele_id,
 				v.id as variant_id,
@@ -375,7 +460,7 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 		List<Object[]> variantResults = variantQuery.getResultList();
 
 		Map<Long, Map<Long, Variant>> alleleVariantMap = new HashMap<>();
-		
+
 		for (Object[] row : variantResults) {
 			Long alleleId = (Long) row[0];
 			Map<Long, Variant> variantMap = alleleVariantMap.get(alleleId);
@@ -417,6 +502,7 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 					.getVepConsequences().add(consequence);
 		}
 
+		// Phenotype existence
 		String phenotypeQueryString = """
 				SELECT DISTINCT phenotypeannotationsubject_id as allele_id
 				FROM allelephenotypeannotation
@@ -431,6 +517,7 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 				.map(obj -> (Long) obj)
 				.collect(Collectors.toSet());
 
+		// Disease existence
 		String diseaseQueryString = """
 				SELECT DISTINCT diseaseannotationsubject_id as allele_id
 				FROM allelediseaseannotation
@@ -445,6 +532,7 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 				.map(obj -> (Long) obj)
 				.collect(Collectors.toSet());
 
+		// Build DTOs
 		List<AlleleSummaryDTO> dtos = new ArrayList<>();
 		for (Allele allele : alleles) {
 			List<Variant> variants = new ArrayList<>(alleleVariantMap.getOrDefault(allele.getId(), new HashMap<>()).values());
@@ -453,6 +541,7 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 			dtos.add(new AlleleSummaryDTO(allele, variants, hasPhenotype, hasDisease));
 		}
 
+		// Notes
 		String notesQueryString = """
 				SELECT ben.submittedobject_id as allele_id,
 				n.freetext as note,
@@ -472,7 +561,6 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 			Note note = new Note();
 			note.setFreeText((String) objects[1]);
 
-			// Set the noteType
 			VocabularyTerm noteType = new VocabularyTerm();
 			noteType.setId((Long) objects[2]);
 			noteType.setName((String) objects[3]);
@@ -488,17 +576,6 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 			allele.setRelatedNotes(noteList);
 		});
 
-		SearchResponse<AlleleSummaryDTO> response = new SearchResponse<>();
-		response.setResults(dtos);
-		response.setTotalResults((long) alleles.size());
-
-		// Set nextCursor for cursor-based pagination
-		if (!alleles.isEmpty() && pagination.getCursor() != null) {
-			// Get the ID of the last allele in the current page as the next cursor
-			Long lastId = alleles.get(alleles.size() - 1).getId();
-			response.setNextCursor(lastId);
-		}
-
-		return response;
+		return dtos;
 	}
 }

@@ -23,7 +23,6 @@ import org.alliancegenome.curation_api.services.base.SubmittedObjectCrudService;
 import org.alliancegenome.curation_api.services.validation.AlleleValidator;
 import org.alliancegenome.curation_api.services.validation.dto.AlleleDTOValidator;
 import org.apache.commons.collections.CollectionUtils;
-import org.alliancegenome.curation_api.model.input.Pagination;
 
 import io.quarkus.logging.Log;
 import jakarta.annotation.PostConstruct;
@@ -158,7 +157,11 @@ public class AlleleService extends SubmittedObjectCrudService<Allele, AlleleDTO,
 		}
 	}
 
-	public SearchResponse<AlleleSummaryDTO> findAllelesForSummary(Pagination pagination, Map<String, Object> params) {
-		return alleleDAO.findAllelesForSummary(pagination, params);
+	public List<Long> getAllAlleleSummaryIds() {
+		return alleleDAO.getAllAlleleSummaryIds();
+	}
+
+	public SearchResponse<AlleleSummaryDTO> findAllelesForSummaryByIds(List<Long> ids) {
+		return alleleDAO.findAllelesForSummaryByIds(ids);
 	}
 }
