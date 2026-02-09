@@ -139,7 +139,7 @@ public class FileTransferHelper {
 
 			DownloadFileRequest downloadFileRequest = DownloadFileRequest.builder()
 				.getObjectRequest(b -> b.bucket(bucket).key(fullS3Path))
-				.addTransferListener(LoggingTransferListener.create())  // Add listener.
+				.addTransferListener(LoggingTransferListener.create())	// Add listener.
 				.destination(localOutFile)
 				.build();
 
@@ -168,7 +168,7 @@ public class FileTransferHelper {
 
 			UploadFileRequest uploadFileRequest = UploadFileRequest.builder()
 				.putObjectRequest(b -> b.bucket(bucket).key(fullS3Path))
-				.addTransferListener(LoggingTransferListener.create())  // Add listener.
+				.addTransferListener(LoggingTransferListener.create())	// Add listener.
 				.source(inFile)
 				.build();
 
