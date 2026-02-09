@@ -1,6 +1,7 @@
 package org.alliancegenome.curation_api.interfaces.document;
 
 import java.util.HashMap;
+import java.util.List;
 
 import org.alliancegenome.curation_api.model.document.es.AlleleSummaryDocument;
 import org.alliancegenome.curation_api.response.SearchResponse;
@@ -41,5 +42,15 @@ public interface AlleleDocumentInterface {
 		@DefaultValue("10") @QueryParam("limit") Integer limit,
 		@Parameter(description = "Cursor for pagination - use nextCursor from previous response") @QueryParam("cursor") Long cursor,
 		@RequestBody HashMap<String, Object> params);
+
+	@POST
+	@Path("/ids")
+	@JsonView(CurationView.AlleleSummaryDocument.class)
+	SearchResponse<Long> getAllIds();
+
+	@POST
+	@Path("/summary/byids")
+	@JsonView(CurationView.AlleleSummaryDocument.class)
+	SearchResponse<AlleleSummaryDocument> findSummaryByIds(@RequestBody List<Long> ids);
 
 }
