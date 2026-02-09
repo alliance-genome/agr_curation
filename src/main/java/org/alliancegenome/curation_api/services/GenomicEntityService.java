@@ -5,6 +5,7 @@ import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.model.entities.GenomicEntity;
 import org.alliancegenome.curation_api.model.ingest.dto.GenomicEntityDTO;
+import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.base.SubmittedObjectCrudService;
 
 import jakarta.annotation.PostConstruct;
@@ -24,12 +25,12 @@ public class GenomicEntityService extends SubmittedObjectCrudService<GenomicEnti
 	}
 
 	@Override
-	public GenomicEntity upsert(GenomicEntityDTO dto) throws ValidationException {
+	public ObjectResponse<GenomicEntity> upsert(GenomicEntityDTO dto) throws ValidationException {
 		return null;
 	}
 
 	@Override
-	public GenomicEntity upsert(GenomicEntityDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
+	public ObjectResponse<GenomicEntity> upsert(GenomicEntityDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
 		return null;
 	}
 

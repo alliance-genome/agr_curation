@@ -16,6 +16,6 @@ export class ConstructService extends BaseAuthService {
 	}
 
 	async getConstruct(identifier) {
-		return this.api.get(`/allele/findBy/${identifier}`);
+		return this.api.get(`/construct/${identifier}`);
 	}
 }

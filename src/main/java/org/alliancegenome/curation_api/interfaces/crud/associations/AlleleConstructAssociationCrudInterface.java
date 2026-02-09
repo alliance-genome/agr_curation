@@ -11,6 +11,7 @@ import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.view.CurationView;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
+
 import com.fasterxml.jackson.annotation.JsonView;
 
 import jakarta.ws.rs.Consumes;

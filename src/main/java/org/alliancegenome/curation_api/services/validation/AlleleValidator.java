@@ -104,7 +104,7 @@ public class AlleleValidator extends GenomicEntityValidator<Allele> {
 
 	public Allele validateAllele(Allele uiEntity, Allele dbEntity, Boolean updateAllAssociations) {
 
-		dbEntity = (Allele) validateGenomicEntityFields(uiEntity, dbEntity, VocabularyConstants.ALLELE_NOTE_TYPES_VOCABULARY_TERM_SET);
+		dbEntity = validateGenomicEntityFields(uiEntity, dbEntity, VocabularyConstants.ALLELE_NOTE_TYPES_VOCABULARY_TERM_SET);
 
 		List<Reference> references = validateReferences(uiEntity, dbEntity);
 		dbEntity.setReferences(references);
@@ -577,7 +577,7 @@ public class AlleleValidator extends GenomicEntityValidator<Allele> {
 					if (ga.getRelation().getName().equals(VocabularyConstants.ALLELE_OF_VOCABULARY_TERM)) {
 						if (hasIsAlleleOfRelation) {
 							Map<String, String> duplicateRelationError = new HashMap<>();
-							duplicateRelationError.put("relation", ValidationConstants.DUPLICATE_RELATION_PREFIX + VocabularyConstants.ALLELE_OF_VOCABULARY_TERM);
+							duplicateRelationError.put("relation", ValidationConstants.DUPLICATE_RELATION_PREFIX + " " + VocabularyConstants.ALLELE_OF_VOCABULARY_TERM);
 							response.addErrorMessages(field, ix, duplicateRelationError);
 							allValid = false;
 							continue;

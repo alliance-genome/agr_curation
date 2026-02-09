@@ -81,7 +81,7 @@ public class AlleleDTOValidator extends GenomicEntityDTOValidator<Allele, Allele
 	NoteDTOValidator noteDtoValidator;
 
 	@Transactional
-	public Allele validateAlleleDTO(AlleleDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
+	public ObjectResponse<Allele> validateAlleleDTO(AlleleDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
 		response = new ObjectResponse<>();
 
 		Allele allele = findDatabaseObject(alleleDAO, "primaryExternalId", "primary_external_id", dto.getPrimaryExternalId());
@@ -96,8 +96,8 @@ public class AlleleDTOValidator extends GenomicEntityDTOValidator<Allele, Allele
 
 		allele.setIsExtinct(dto.getIsExtinct());
 
-		List<Reference> references = validateReferences(dto.getReferenceCuries());
-		allele.setReferences(references);
+		List<Reference> refs = validateReferences("reference_curies", dto.getReferenceCuries(), false);
+		allele.setReferences(refs);
 
 		List<AlleleMutationTypeSlotAnnotation> mutationTypes = validateAlleleMutationTypes(allele, dto);
 		if (allele.getAlleleMutationTypes() != null) {
@@ -177,19 +177,21 @@ public class AlleleDTOValidator extends GenomicEntityDTOValidator<Allele, Allele
 			allele.getAlleleFunctionalImpacts().addAll(functionalImpacts);
 		}
 
+		response.convertWarningMessagesToMap();
 		response.convertErrorMessagesToMap();
 
 		if (response.hasErrors()) {
 			throw new ObjectValidationException(dto, response.errorMessagesString());
 		}
-		Allele newAllele;
+		
 		try {
-			newAllele = alleleDAO.persist(allele);
+			response.setEntity(alleleDAO.persist(allele));
+			return response;
 		} catch (Exception e) {
 			response.addErrorMessages("", null, e.getMessage());
 			throw new ObjectValidationException(dto, e.getMessage());
 		}
-		return newAllele;
+
 	}
 
 	private List<AlleleMutationTypeSlotAnnotation> validateAlleleMutationTypes(Allele allele, AlleleDTO dto) {

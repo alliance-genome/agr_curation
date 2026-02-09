@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.zip.GZIPInputStream;
@@ -28,6 +29,7 @@ import org.alliancegenome.curation_api.model.ingest.dto.IngestDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.base.BaseDTO;
 import org.alliancegenome.curation_api.response.APIResponse;
 import org.alliancegenome.curation_api.response.LoadHistoryResponce;
+import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.APIVersionInfoService;
 import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
 import org.alliancegenome.curation_api.services.processing.LoadProcessDisplayService;
@@ -44,20 +46,26 @@ import jakarta.inject.Inject;
 public class LoadFileExecutor {
 
 	protected static ObjectMapper mapper = new RestDefaultObjectMapper().getMapper();
-	
-	@Inject protected LoadProcessDisplayService loadProcessDisplayService;
-	@Inject protected BulkLoadFileDAO bulkLoadFileDAO;
-	@Inject protected BulkLoadFileHistoryDAO bulkLoadFileHistoryDAO;
-	@Inject BulkLoadFileExceptionDAO bulkLoadFileExceptionDAO;
-	@Inject APIVersionInfoService apiVersionInfoService;
-	@Inject SlackNotifier slackNotifier;
+
+	@Inject
+	protected LoadProcessDisplayService loadProcessDisplayService;
+	@Inject
+	protected BulkLoadFileDAO bulkLoadFileDAO;
+	@Inject
+	protected BulkLoadFileHistoryDAO bulkLoadFileHistoryDAO;
+	@Inject
+	BulkLoadFileExceptionDAO bulkLoadFileExceptionDAO;
+	@Inject
+	APIVersionInfoService apiVersionInfoService;
+	@Inject
+	SlackNotifier slackNotifier;
 
 	protected void updateHistory(BulkLoadFileHistory history) {
 		bulkLoadFileHistoryDAO.merge(history);
 	}
 
 	protected void updateExceptions(BulkLoadFileHistory history) {
-		//bulkLoadFileHistoryDAO.merge(history);
+		// bulkLoadFileHistoryDAO.merge(history);
 		for (BulkLoadFileException e : history.getExceptions()) {
 			bulkLoadFileExceptionDAO.merge(e);
 		}
@@ -67,9 +75,9 @@ public class LoadFileExecutor {
 		BulkLoadFileException exception = new BulkLoadFileException();
 		exception.setException(objectUpdateExceptionData);
 		exception.setBulkLoadFileHistory(history);
-		//history.getExceptions().add(exception);
+		// history.getExceptions().add(exception);
 		bulkLoadFileExceptionDAO.persist(exception);
-		//bulkLoadFileHistoryDAO.merge(history);
+		// bulkLoadFileHistoryDAO.merge(history);
 	}
 
 	protected String getVersionNumber(String versionString) {
@@ -208,7 +216,7 @@ public class LoadFileExecutor {
 	protected <E extends AuditedObject, T extends BaseDTO> boolean runLoad(BaseUpsertServiceInterface<E, T> service, BulkLoadFileHistory history, BackendBulkDataProvider dataProvider, List<T> objectList, List<Long> idsAdded, String countType) {
 		return runLoad(service, history, dataProvider, objectList, idsAdded, true, countType);
 	}
-	
+
 	protected <E extends AuditedObject, T extends BaseDTO> boolean runLoad(BaseUpsertServiceInterface<E, T> service, BulkLoadFileHistory history, BackendBulkDataProvider dataProvider, List<T> objectList, List<Long> idsAdded, Boolean terminateFailing, String countType) {
 		String dataType = "";
 		if (CollectionUtils.isNotEmpty(objectList)) {
@@ -237,10 +245,16 @@ public class LoadFileExecutor {
 			updateHistory(history);
 			for (T dtoObject : objectList) {
 				try {
-					E dbObject = service.upsert(dtoObject, dataProvider);
+					ObjectResponse<E> dbObject = service.upsert(dtoObject, dataProvider);
+					if (dbObject.hasWarnings()) {
+						for (Entry<String, String> entry : dbObject.getWarningMessages().entrySet()) {
+							history.incrementWarnings(countType);
+						}
+						addException(history, new ObjectUpdateExceptionData(dtoObject, dbObject.warningMessagesList(), null));
+					}
 					history.incrementCompleted(countType);
 					if (idsAdded != null) {
-						idsAdded.add(dbObject.getId());
+						idsAdded.add(dbObject.getEntity().getId());
 					}
 				} catch (ObjectUpdateException e) {
 					history.incrementFailed(countType);
