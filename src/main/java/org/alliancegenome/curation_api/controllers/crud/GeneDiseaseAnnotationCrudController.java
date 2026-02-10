@@ -1,7 +1,6 @@
 package org.alliancegenome.curation_api.controllers.crud;
 
 import java.util.List;
-import java.util.Set;
 
 import org.alliancegenome.curation_api.controllers.base.BaseAnnotationDTOCrudController;
 import org.alliancegenome.curation_api.dao.GeneDiseaseAnnotationDAO;
@@ -10,6 +9,7 @@ import org.alliancegenome.curation_api.jobs.executors.GeneDiseaseAnnotationExecu
 import org.alliancegenome.curation_api.model.entities.GeneDiseaseAnnotation;
 import org.alliancegenome.curation_api.model.ingest.dto.GeneDiseaseAnnotationDTO;
 import org.alliancegenome.curation_api.response.APIResponse;
+import org.alliancegenome.curation_api.response.ObjectListResponse;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.AGMDiseaseAnnotationService;
 import org.alliancegenome.curation_api.services.AlleleDiseaseAnnotationService;
@@ -38,23 +38,21 @@ public class GeneDiseaseAnnotationCrudController extends BaseAnnotationDTOCrudCo
 		setService(geneDiseaseAnnotationService);
 	}
 
+	@Override
 	public APIResponse updateGeneDiseaseAnnotations(String dataProvider, List<GeneDiseaseAnnotationDTO> annotations) {
 		return geneDiseaseAnnotationExecutor.runLoadApi(geneDiseaseAnnotationService, dataProvider, annotations);
 	}
 
+	@Override
 	public ObjectResponse<GeneDiseaseAnnotation> getByIdentifier(String identifierString) {
 		return geneDiseaseAnnotationService.getByIdentifier(identifierString);
 	}
 
 	@Override
-	public ObjectResponse<Set<String>> geneDiseaseAnnotationMap() {
-		Set<String> map = geneDiseaseAnnotationService.getGeneDiseaseAnnotation();
-		Set<String> map2 = agmDiseaseAnnotationService.getGeneDiseaseAnnotation();
-		Set<String> map3 = alleleDiseaseAnnotationService.getGeneDiseaseAnnotation();
-		map.addAll(map2);
-		map.addAll(map3);
-		ObjectResponse<Set<String>> response = new ObjectResponse<>();
-		response.setEntity(map);
-		return response;
+	public ObjectListResponse<String> annotatedGeneList() {
+		List<String> list = geneDiseaseAnnotationService.getGeneDiseaseAnnotationList();
+		list.addAll(agmDiseaseAnnotationService.getGeneDiseaseAnnotationList());
+		list.addAll(alleleDiseaseAnnotationService.getGeneDiseaseAnnotationList());
+		return new ObjectListResponse<>(list);
 	}
 }

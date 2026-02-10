@@ -1,8 +1,7 @@
 package org.alliancegenome.curation_api.dao;
 
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import org.alliancegenome.curation_api.dao.base.BaseSQLDAO;
 import org.alliancegenome.curation_api.model.entities.AlleleDiseaseAnnotation;
@@ -17,7 +16,7 @@ public class AlleleDiseaseAnnotationDAO extends BaseSQLDAO<AlleleDiseaseAnnotati
 		super(AlleleDiseaseAnnotation.class);
 	}
 
-	public Set<String> getGeneDiseaseMap() {
+	public List<String> getGeneDiseaseList() {
 		String hql = """
 				select distinct inferredGene.primaryExternalId
 				from AlleleDiseaseAnnotation
@@ -25,6 +24,6 @@ public class AlleleDiseaseAnnotationDAO extends BaseSQLDAO<AlleleDiseaseAnnotati
 				""";
 		Query query = entityManager.createQuery(hql);
 		List<Object> list = query.getResultList();
-		return new HashSet<>(list.stream().map(o -> (String) o).toList());
+		return new ArrayList<>(list.stream().map(o -> (String) o).toList());
 	}
 }
