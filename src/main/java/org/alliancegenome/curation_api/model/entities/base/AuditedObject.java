@@ -123,7 +123,13 @@ public class AuditedObject implements Serializable {
 	@Transient
 	@JsonIgnore
 	public boolean isNotInternalOrObsolete() {
-		return !((internal != null && internal) || (obsolete != null && obsolete));
+		if(internal != null && internal) {
+			return false;
+		}
+		if(obsolete != null && obsolete) {
+			return false;
+		}
+		return true;
 	}
 
 }
