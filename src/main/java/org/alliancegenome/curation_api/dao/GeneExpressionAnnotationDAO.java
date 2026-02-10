@@ -1,8 +1,7 @@
 package org.alliancegenome.curation_api.dao;
 
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import org.alliancegenome.curation_api.dao.base.BaseSQLDAO;
 import org.alliancegenome.curation_api.model.entities.GeneExpressionAnnotation;
@@ -17,7 +16,7 @@ public class GeneExpressionAnnotationDAO extends BaseSQLDAO<GeneExpressionAnnota
 		super(GeneExpressionAnnotation.class);
 	}
 
-	public Set<String> getGeneExpressionMap() {
+	public List<String> getGeneExpressionList() {
 		String hql = """
 			select distinct expressionAnnotationSubject.primaryExternalId
 			from GeneExpressionAnnotation
@@ -26,6 +25,6 @@ public class GeneExpressionAnnotationDAO extends BaseSQLDAO<GeneExpressionAnnota
 		
 		Query query = entityManager.createQuery(hql);
 		List<Object> list = query.getResultList();
-		return new HashSet<>(list.stream().map(o -> (String) o).toList());
+		return new ArrayList<>(list.stream().map(o -> (String) o).toList());
 	}
 }

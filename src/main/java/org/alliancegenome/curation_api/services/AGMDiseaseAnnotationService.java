@@ -1,7 +1,6 @@
 package org.alliancegenome.curation_api.services;
 
 import java.util.List;
-import java.util.Set;
 
 import org.alliancegenome.curation_api.dao.AGMDiseaseAnnotationDAO;
 import org.alliancegenome.curation_api.dao.ConditionRelationDAO;
@@ -48,6 +47,7 @@ public class AGMDiseaseAnnotationService extends BaseAnnotationDTOCrudService<AG
 		return new ObjectResponse<>(agmDiseaseAnnotationDAO.persist(dbEntity));
 	}
 
+	@Override
 	@Transactional
 	public AGMDiseaseAnnotation upsert(AGMDiseaseAnnotationDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
 		AGMDiseaseAnnotation annotation = agmDiseaseAnnotationDtoValidator.validateAGMDiseaseAnnotationDTO(dto, dataProvider);
@@ -67,8 +67,7 @@ public class AGMDiseaseAnnotationService extends BaseAnnotationDTOCrudService<AG
 		return diseaseAnnotationService.getAnnotationIdsByDataProvider(agmDiseaseAnnotationDAO, dataProvider);
 	}
 
-	public Set<String> getGeneDiseaseAnnotation() {
-		Set<String> geneIds = agmDiseaseAnnotationDAO.getAgmDiseaseAnnotationMap();
-		return geneIds;
+	public List<String> getGeneDiseaseAnnotationList() {
+		return agmDiseaseAnnotationDAO.getAgmDiseaseAnnotationList();
 	}
 }

@@ -36,6 +36,14 @@ public class GeneToGeneOrthologyGeneratedService extends BaseEntityCrudService<G
 		return orthologyFmsDtoValidator.validateOrthologyFmsDTO(orthoPair);
 	}
 
+	public List<Long> getAllOrthologyIds() {
+		return geneToGeneOrthologyGeneratedDAO.getAllOrthologyIds();
+	}
+
+	public List<GeneToGeneOrthologyGenerated> findByIds(List<Long> ids) {
+		return geneToGeneOrthologyGeneratedDAO.findByIds(ids);
+	}
+
 	public List<Long> getAllOrthologyPairIdsBySubjectGeneDataProvider(BackendBulkDataProvider dataProvider) {
 		Map<String, Object> params = new HashMap<>();
 		params.put(EntityFieldConstants.SUBJECT_GENE_DATA_PROVIDER, dataProvider.sourceOrganization);

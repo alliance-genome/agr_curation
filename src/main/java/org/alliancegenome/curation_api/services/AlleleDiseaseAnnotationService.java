@@ -1,7 +1,6 @@
 package org.alliancegenome.curation_api.services;
 
 import java.util.List;
-import java.util.Set;
 
 import org.alliancegenome.curation_api.dao.AlleleDiseaseAnnotationDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
@@ -50,6 +49,7 @@ public class AlleleDiseaseAnnotationService extends BaseAnnotationDTOCrudService
 		return new ObjectResponse<>(alleleDiseaseAnnotationDAO.persist(dbEntity));
 	}
 
+	@Override
 	@Transactional
 	public AlleleDiseaseAnnotation upsert(AlleleDiseaseAnnotationDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
 		AlleleDiseaseAnnotation annotation = alleleDiseaseAnnotationDtoValidator.validateAlleleDiseaseAnnotationDTO(dto, dataProvider);
@@ -69,8 +69,7 @@ public class AlleleDiseaseAnnotationService extends BaseAnnotationDTOCrudService
 		return diseaseAnnotationService.getAnnotationIdsByDataProvider(alleleDiseaseAnnotationDAO, dataProvider);
 	}
 
-	public Set<String> getGeneDiseaseAnnotation() {
-		Set<String> geneIds = alleleDiseaseAnnotationDAO.getGeneDiseaseMap();
-		return geneIds;
+	public List<String> getGeneDiseaseAnnotationList() {
+		return alleleDiseaseAnnotationDAO.getGeneDiseaseList();
 	}
 }
