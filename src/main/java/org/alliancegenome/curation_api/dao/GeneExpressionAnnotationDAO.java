@@ -35,10 +35,10 @@ public class GeneExpressionAnnotationDAO extends BaseSQLDAO<GeneExpressionAnnota
 		}
 
 		return entityManager.createQuery(
-				"SELECT g FROM GeneExpressionAnnotation g WHERE expressionAnnotationSubject.primaryExternalId IN :ids", GeneExpressionAnnotation.class)
-			.setParameter("ids", ids)
-			.getResultList();
-		
+				"SELECT g FROM GeneExpressionAnnotation g "
+				+ "WHERE obsolete = false and internal = false and "
+				+ "expressionAnnotationSubject.primaryExternalId IN :ids",
+				GeneExpressionAnnotation.class).setParameter("ids", ids).getResultList();
 	}
 
 }
