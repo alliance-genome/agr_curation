@@ -1,6 +1,6 @@
 package org.alliancegenome.curation_api.interfaces.document;
 
-import java.util.HashMap;
+import java.util.List;
 
 import org.alliancegenome.curation_api.model.document.es.GeneToGeneOrthologyDocument;
 import org.alliancegenome.curation_api.response.SearchResponse;
@@ -11,11 +11,9 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import com.fasterxml.jackson.annotation.JsonView;
 
 import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.DefaultValue;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 
 @Path("/genetogeneorthology/document")
@@ -25,8 +23,13 @@ import jakarta.ws.rs.core.MediaType;
 public interface GeneToGeneOrthologyDocumentInterface {
 
 	@POST
-	@Path("/document")
+	@Path("/ids")
 	@JsonView(CurationView.GeneToGeneOrthologyDocument.class)
-	SearchResponse<GeneToGeneOrthologyDocument> findDocument(@DefaultValue("0") @QueryParam("page") Integer page, @DefaultValue("10") @QueryParam("limit") Integer limit, @RequestBody HashMap<String, Object> params);
+	SearchResponse<Long> getAllIds();
+
+	@POST
+	@Path("/byids")
+	@JsonView(CurationView.GeneToGeneOrthologyDocument.class)
+	SearchResponse<GeneToGeneOrthologyDocument> findByIds(@RequestBody List<Long> ids);
 
 }
