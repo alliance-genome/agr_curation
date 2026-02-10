@@ -1,5 +1,6 @@
 package org.alliancegenome.curation_api.model.document.builders;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -55,10 +56,13 @@ public class AlleleSummaryDocumentBuilder {
 			return Optional.empty();
 		}
 
-		List<Gene> alleleOfGeneList = alleleGeneAssociations.stream()
-				.filter(aga -> aga.isNotInternalOrObsolete())
-				.map(AlleleGeneAssociation::getAlleleGeneAssociationObject)
-				.toList();
+		ArrayList<Gene> alleleOfGeneList = new ArrayList<>();
+		
+		for(AlleleGeneAssociation assoc: alleleGeneAssociations) {
+			if(assoc.isNotInternalOrObsolete()) {
+				alleleOfGeneList.add(assoc.getAlleleGeneAssociationObject());
+			}
+		}
 
 		return alleleOfGeneList.stream().findFirst();
 	}
