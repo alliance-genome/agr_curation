@@ -89,7 +89,7 @@ public class Species extends AuditedObject {
 	@Fetch(FetchMode.SELECT)
 	@JsonView({ CurationView.FieldsOnly.class, CurationView.GeneSummaryDocument.class })
 	protected Organization dataProvider;
-	
+
 	@IndexedEmbedded(includePaths = {"displayName", "referencedCurie", "displayName_keyword", "referencedCurie_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@OneToOne(orphanRemoval = true)
@@ -104,7 +104,7 @@ public class Species extends AuditedObject {
 
 	//@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	//@KeywordField(name = "assembly_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({ CurationView.FieldsOnly.class })
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.GeneSummaryDocument.class })
 	//CHECKSTYLE:OFF: MemberName
 	private String assembly_curie;
 	//CHECKSTYLE:ON: MemberName
