@@ -1,7 +1,6 @@
 package org.alliancegenome.curation_api.services;
 
 import java.util.List;
-import java.util.Set;
 
 import org.alliancegenome.curation_api.dao.AlleleDiseaseAnnotationDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
@@ -70,8 +69,7 @@ public class AlleleDiseaseAnnotationService extends BaseAnnotationDTOCrudService
 		return diseaseAnnotationService.getAnnotationIdsByDataProvider(alleleDiseaseAnnotationDAO, dataProvider);
 	}
 
-	public Set<String> getGeneDiseaseAnnotation() {
-		Set<String> geneIds = alleleDiseaseAnnotationDAO.getGeneDiseaseMap();
-		return geneIds;
+	public List<String> getGeneDiseaseAnnotationList() {
+		return alleleDiseaseAnnotationDAO.getGeneDiseaseList();
 	}
 }
