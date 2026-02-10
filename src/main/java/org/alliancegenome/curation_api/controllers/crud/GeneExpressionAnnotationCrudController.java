@@ -1,7 +1,6 @@
 package org.alliancegenome.curation_api.controllers.crud;
 
 import java.util.List;
-import java.util.Set;
 
 import org.alliancegenome.curation_api.controllers.base.BaseEntityCrudController;
 import org.alliancegenome.curation_api.dao.GeneExpressionAnnotationDAO;
@@ -10,6 +9,7 @@ import org.alliancegenome.curation_api.jobs.executors.GeneExpressionExecutor;
 import org.alliancegenome.curation_api.model.entities.GeneExpressionAnnotation;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.GeneExpressionFmsDTO;
 import org.alliancegenome.curation_api.response.APIResponse;
+import org.alliancegenome.curation_api.response.ObjectListResponse;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.GeneExpressionAnnotationService;
 
@@ -31,18 +31,17 @@ public class GeneExpressionAnnotationCrudController extends BaseEntityCrudContro
 		setService(geneExpressionAnnotationService);
 	}
 
+	@Override
 	public ObjectResponse<GeneExpressionAnnotation> getByIdentifier(String identifierString) {
 		return geneExpressionAnnotationService.getByIdentifier(identifierString);
 	}
 
 	@Override
-	public ObjectResponse<Set<String>> geneExpressionAnnotationMap() {
-		Set<String> map = geneExpressionAnnotationService.getGeneExpressionAnnotation();
-		ObjectResponse<Set<String>> response = new ObjectResponse<>();
-		response.setEntity(map);
-		return response;
+	public ObjectListResponse<String> annotatedGeneList() {
+		return new ObjectListResponse<String>(geneExpressionAnnotationService.getGeneExpressionAnnotationList());
 	}
 
+	@Override
 	public APIResponse updateExpressionAnnotations(String dataProvider, List<GeneExpressionFmsDTO> annotations) {
 		APIResponse response = geneExpressionExecutor.runLoadAPI(geneExpressionAnnotationService, dataProvider, annotations);
 		return response;

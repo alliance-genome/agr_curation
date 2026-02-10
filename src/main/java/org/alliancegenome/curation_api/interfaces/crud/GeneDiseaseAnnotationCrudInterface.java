@@ -1,13 +1,13 @@
 package org.alliancegenome.curation_api.interfaces.crud;
 
 import java.util.List;
-import java.util.Set;
 
 import org.alliancegenome.curation_api.interfaces.base.BaseIdCrudInterface;
 import org.alliancegenome.curation_api.interfaces.base.BaseUpsertControllerInterface;
 import org.alliancegenome.curation_api.model.entities.GeneDiseaseAnnotation;
 import org.alliancegenome.curation_api.model.ingest.dto.GeneDiseaseAnnotationDTO;
 import org.alliancegenome.curation_api.response.APIResponse;
+import org.alliancegenome.curation_api.response.ObjectListResponse;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.view.CurationView;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
@@ -54,7 +54,7 @@ public interface GeneDiseaseAnnotationCrudInterface extends BaseIdCrudInterface<
 	@GET
 	@Path("/annotatedGeneList")
 	@JsonView(CurationView.FieldsAndLists.class)
-	ObjectResponse<Set<String>> geneDiseaseAnnotationMap();
+	ObjectListResponse<String> annotatedGeneList();
 
 
 }
