@@ -62,8 +62,7 @@ public class GeneExpressionAnnotationService extends BaseAnnotationCrudService<G
 		return resp;
 	}
 
-	public Set<String> getGeneExpressionAnnotation() {
-		Set<String> geneIds = geneExpressionAnnotationDAO.getGeneExpressionMap();
-		return geneIds;
+	public List<String> getGeneExpressionAnnotationList() {
+		return geneExpressionAnnotationDAO.getGeneExpressionList();
 	}
 }
