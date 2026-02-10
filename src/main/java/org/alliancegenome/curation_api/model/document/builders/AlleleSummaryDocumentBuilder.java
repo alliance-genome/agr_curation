@@ -57,9 +57,9 @@ public class AlleleSummaryDocumentBuilder {
 		}
 
 		ArrayList<Gene> alleleOfGeneList = new ArrayList<>();
-		
-		for(AlleleGeneAssociation assoc: alleleGeneAssociations) {
-			if(assoc.isNotInternalOrObsolete()) {
+
+		for (AlleleGeneAssociation assoc : alleleGeneAssociations) {
+			if (assoc.isNotInternalOrObsolete()) {
 				alleleOfGeneList.add(assoc.getAlleleGeneAssociationObject());
 			}
 		}
@@ -79,8 +79,7 @@ public class AlleleSummaryDocumentBuilder {
 
 		// Determine the correct references page based on the current page type
 		String referencesPageName = "allele/references";
-		if (allele.getDataProviderCrossReference() != null
-				&& allele.getDataProviderCrossReference().getResourceDescriptorPage() != null) {
+		if (allele.getDataProviderCrossReference() != null && allele.getDataProviderCrossReference().getResourceDescriptorPage() != null) {
 			String currentPageName = allele.getDataProviderCrossReference().getResourceDescriptorPage().getName();
 			if ("transgene".equals(currentPageName)) {
 				referencesPageName = "transgene/references";
