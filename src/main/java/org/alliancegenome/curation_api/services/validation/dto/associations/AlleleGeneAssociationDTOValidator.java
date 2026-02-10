@@ -31,11 +31,11 @@ public class AlleleGeneAssociationDTOValidator extends AlleleGenomicEntityAssoci
 	@Inject AlleleService alleleService;
 	@Inject GeneService geneService;
 	
-	public AlleleGeneAssociation validateAlleleGeneAssociationDTO(AlleleGeneAssociationDTO dto, BackendBulkDataProvider beDataProvider) throws ValidationException {
+	public ObjectResponse<AlleleGeneAssociation> validateAlleleGeneAssociationDTO(AlleleGeneAssociationDTO dto, BackendBulkDataProvider beDataProvider) throws ValidationException {
 		return validateAlleleGeneAssociationDTO(dto, beDataProvider, null, false);
 	}
 	
-	public AlleleGeneAssociation validateAlleleGeneAssociationDTO(AlleleGeneAssociationDTO dto, BackendBulkDataProvider beDataProvider, Map<Long, Long> isAlleleOfAssociationMap, boolean isFullLoad) throws ValidationException {
+	public ObjectResponse<AlleleGeneAssociation> validateAlleleGeneAssociationDTO(AlleleGeneAssociationDTO dto, BackendBulkDataProvider beDataProvider, Map<Long, Long> isAlleleOfAssociationMap, boolean isFullLoad) throws ValidationException {
 		response = new ObjectResponse<AlleleGeneAssociation>();
 		
 		List<Long> subjectIds = null;
@@ -69,7 +69,7 @@ public class AlleleGeneAssociationDTOValidator extends AlleleGenomicEntityAssoci
 				if (isAlleleOfSearchResponse != null && isAlleleOfSearchResponse.getResults() != null) {
 					for (AlleleGeneAssociation isAlleleOfAssociation : isAlleleOfSearchResponse.getResults()) {
 						if (!Objects.equals(isAlleleOfAssociation.getAlleleGeneAssociationObject().getId(), objectIds.get(0))) {
-							response.addErrorMessage("relation_name", ValidationConstants.DUPLICATE_RELATION_PREFIX + VocabularyConstants.ALLELE_OF_VOCABULARY_TERM);
+							response.addErrorMessage("relation_name", ValidationConstants.DUPLICATE_RELATION_PREFIX + " " + VocabularyConstants.ALLELE_OF_VOCABULARY_TERM);
 						}
 						association = isAlleleOfAssociation;
 					}
@@ -124,7 +124,8 @@ public class AlleleGeneAssociationDTOValidator extends AlleleGenomicEntityAssoci
 			throw new ObjectValidationException(dto, response.errorMessagesString());
 		}
 
-		association = alleleGeneAssociationDAO.persist(association);
-		return association;
+		response.setEntity(alleleGeneAssociationDAO.persist(association));
+
+		return response;
 	}
 }

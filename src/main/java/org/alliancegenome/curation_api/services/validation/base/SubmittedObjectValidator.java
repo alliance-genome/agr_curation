@@ -62,7 +62,7 @@ public class SubmittedObjectValidator<E extends SubmittedObject> extends Audited
 		String modInternalId = uiEntity.getModInternalId();
 		if (StringUtils.isBlank(modInternalId)) {
 			if (StringUtils.isBlank(uiEntity.getPrimaryExternalId())) {
-				addMessageResponse("modInternalId", ValidationConstants.REQUIRED_UNLESS_OTHER_FIELD_POPULATED_MESSAGE + "primaryExternalId");
+				addMessageResponse("modInternalId", ValidationConstants.REQUIRED_UNLESS_OTHER_FIELD_POPULATED_MESSAGE + " primaryExternalId");
 			}
 			return null;
 		}

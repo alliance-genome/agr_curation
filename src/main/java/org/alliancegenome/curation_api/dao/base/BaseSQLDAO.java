@@ -19,7 +19,7 @@ import org.alliancegenome.curation_api.services.processing.IndexProcessDisplaySe
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
 import org.elasticsearch.index.query.Operator;
 import org.hibernate.exception.ConstraintViolationException;
-import org.hibernate.query.sqm.internal.QuerySqmImpl;
+import org.hibernate.query.sqm.internal.SqmQueryImpl;
 import org.hibernate.query.sqm.tree.domain.SqmPluralValuedSimplePath;
 import org.hibernate.query.sqm.tree.select.SqmSelectStatement;
 import org.hibernate.search.engine.search.aggregation.AggregationKey;
@@ -463,7 +463,7 @@ public class BaseSQLDAO<E extends AuditedObject> extends BaseEntityDAO<E> {
 
 		Log.log(level, "Search: " + pagination + " Params: " + params);
 
-		SearchQueryOptionsStep<?, E, SearchLoadingOptionsStep, ?, ?> step = searchSession.search(myClass).where(p -> {
+		SearchQueryOptionsStep<?, ?, E, SearchLoadingOptionsStep, ?, ?> step = searchSession.search(myClass).where(p -> {
 			AtomicInteger outerBoost = new AtomicInteger();
 			return p.bool().with(b -> {
 				if (params.containsKey("searchFilters")) {
@@ -471,7 +471,7 @@ public class BaseSQLDAO<E extends AuditedObject> extends BaseEntityDAO<E> {
 					outerBoost.set(searchFilters.keySet().size());
 					String filterOperator = (String) params.get("searchFilterOperator");
 					for (String filterName : searchFilters.keySet()) {
-						BooleanPredicateClausesStep<?> bpStep = p.bool().with(s -> {
+						BooleanPredicateClausesStep<?, ?> bpStep = p.bool().with(s -> {
 							s.must(f -> f.bool().with(q -> {
 								int innerBoost = searchFilters.get(filterName).keySet().size();
 								for (String field : searchFilters.get(filterName).keySet()) {
@@ -490,7 +490,7 @@ public class BaseSQLDAO<E extends AuditedObject> extends BaseEntityDAO<E> {
 
 									String queryType = (String) searchFilters.get(filterName).get(field).get("queryType");
 									if (queryType != null && queryType.equals("matchQuery")) {
-										BooleanPredicateClausesStep<?> clause = p.bool();
+										BooleanPredicateClausesStep<?, ?> clause = p.bool();
 										if (useKeywordFields != null && useKeywordFields) {
 											clause.should(p.match().field(field + "_keyword").matching(searchFilters.get(filterName).get(field).get("queryString").toString()).boost(boost + 500));
 										} else {
@@ -498,7 +498,7 @@ public class BaseSQLDAO<E extends AuditedObject> extends BaseEntityDAO<E> {
 										}
 										q.should(clause);
 									} else { // assume simple query
-										BooleanPredicateClausesStep<?> clause = p.bool();
+										BooleanPredicateClausesStep<?, ?> clause = p.bool();
 										if (useKeywordFields != null && useKeywordFields) {
 											clause.should(p.simpleQueryString().fields(field + "_keyword").matching(searchFilters.get(filterName).get(field).get("queryString").toString()).defaultOperator(booleanOperator).boost(boost + 500));
 										}
@@ -543,7 +543,7 @@ public class BaseSQLDAO<E extends AuditedObject> extends BaseEntityDAO<E> {
 
 		if (params.containsKey("sortOrders")) {
 			step = step.sort(f -> {
-				CompositeSortComponentsStep<?> com = f.composite();
+				CompositeSortComponentsStep<?, ?> com = f.composite();
 				ArrayList<HashMap<String, Object>> sortOrders = (ArrayList<HashMap<String, Object>>) params.get("sortOrders");
 				if (sortOrders != null) {
 					for (HashMap<String, Object> map : sortOrders) {
@@ -709,7 +709,7 @@ public class BaseSQLDAO<E extends AuditedObject> extends BaseEntityDAO<E> {
 
 		if (level == Level.INFO) {
 			results.setDebug("true");
-			results.setEsQuery(((QuerySqmImpl) allQuery).getQueryString());
+			results.setEsQuery(((SqmQueryImpl) allQuery).getQueryString());
 			results.setDbQuery(((SqmSelectStatement) query).toHqlString());
 		}
 

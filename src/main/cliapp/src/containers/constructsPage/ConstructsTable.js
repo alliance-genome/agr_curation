@@ -245,7 +245,13 @@ export const ConstructsTable = () => {
 			{
 				field: 'references.primaryCrossReferenceCurie',
 				header: 'References',
-				body: (rowData) => <TruncatedReferencesTemplate references={rowData.references} />,
+				body: (rowData) => (
+					<TruncatedReferencesTemplate
+						references={rowData.references}
+						identifier={rowData.primaryExternalId}
+						detailPage="Construct"
+					/>
+				),
 				sortable: { isInEditMode },
 				filterConfig: FILTER_CONFIGS.referencesFilterConfig,
 			},
@@ -344,7 +350,7 @@ export const ConstructsTable = () => {
 					setTableState={setTableState}
 					columns={columns}
 					isEditable={false}
-					hasDetails={false}
+					hasDetails={true}
 					isInEditMode={isInEditMode}
 					setIsInEditMode={setIsInEditMode}
 					toasts={{ toast_topleft, toast_topright }}
