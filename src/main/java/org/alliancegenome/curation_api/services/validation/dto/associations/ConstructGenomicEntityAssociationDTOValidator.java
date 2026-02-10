@@ -36,7 +36,7 @@ public class ConstructGenomicEntityAssociationDTOValidator extends EvidenceAssoc
 	@Inject
 	ConstructGenomicEntityAssociationDAO constructGenomicEntityAssociationDAO;
 
-	public ConstructGenomicEntityAssociation validateConstructGenomicEntityAssociationDTO(ConstructGenomicEntityAssociationDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
+	public ObjectResponse<ConstructGenomicEntityAssociation> validateConstructGenomicEntityAssociationDTO(ConstructGenomicEntityAssociationDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
 		response = new ObjectResponse<ConstructGenomicEntityAssociation>();
 
 		List<Long> subjectIds = null;
@@ -48,7 +48,7 @@ public class ConstructGenomicEntityAssociationDTOValidator extends EvidenceAssoc
 				response.addErrorMessage("construct_identifier", ValidationConstants.INVALID_MESSAGE + " (" + dto.getConstructIdentifier() + ")");
 			}
 		}
-		
+
 		List<Long> objectIds = null;
 		if (StringUtils.isBlank(dto.getGenomicEntityIdentifier())) {
 			response.addErrorMessage("genomic_entity_identifier", ValidationConstants.REQUIRED_MESSAGE);
@@ -58,7 +58,7 @@ public class ConstructGenomicEntityAssociationDTOValidator extends EvidenceAssoc
 				response.addErrorMessage("genomic_entity_identifier", ValidationConstants.INVALID_MESSAGE + " (" + dto.getGenomicEntityIdentifier() + ")");
 			}
 		}
-		
+
 		VocabularyTerm relation = validateRequiredTermInVocabularyTermSet("genomic_entity_relation_name", dto.getGenomicEntityRelationName(), VocabularyConstants.CONSTRUCT_GENOMIC_ENTITY_RELATION_VOCABULARY_TERM_SET);
 
 		ConstructGenomicEntityAssociation association = null;
@@ -75,9 +75,9 @@ public class ConstructGenomicEntityAssociationDTOValidator extends EvidenceAssoc
 				if (association == null) {
 					association = new ConstructGenomicEntityAssociation();
 				}
-				
+
 				association.setRelation(relation);
-				
+
 				if (!StringUtils.isBlank(dto.getConstructIdentifier())) {
 					Construct subject = constructService.findByIdentifierString(dto.getConstructIdentifier());
 					if (subject == null) {
@@ -88,7 +88,7 @@ public class ConstructGenomicEntityAssociationDTOValidator extends EvidenceAssoc
 						association.setConstructAssociationSubject(subject);
 					}
 				}
-				
+
 				if (!StringUtils.isBlank(dto.getGenomicEntityIdentifier())) {
 
 					GenomicEntity object = genomicEntityService.findByIdentifierString(dto.getGenomicEntityIdentifier());
@@ -98,11 +98,11 @@ public class ConstructGenomicEntityAssociationDTOValidator extends EvidenceAssoc
 						association.setConstructGenomicEntityAssociationObject(object);
 					}
 				}
-				
+
 			}
-			
+
 			association = validateEvidenceAssociationDTO(association, dto);
-			
+
 			if (association.getRelatedNotes() != null) {
 				association.getRelatedNotes().clear();
 			}
@@ -120,6 +120,8 @@ public class ConstructGenomicEntityAssociationDTOValidator extends EvidenceAssoc
 			throw new ObjectValidationException(dto, response.errorMessagesString());
 		}
 
-		return constructGenomicEntityAssociationDAO.persist(association);
+		response.setEntity(constructGenomicEntityAssociationDAO.persist(association));
+
+		return response;
 	}
 }

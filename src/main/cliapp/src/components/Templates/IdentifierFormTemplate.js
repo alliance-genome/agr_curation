@@ -6,6 +6,7 @@ export const IdentifierFormTemplate = ({
 	widgetColumnSize,
 	labelColumnSize,
 	fieldDetailsColumnSize,
+	showAdditionalData,
 }) => {
 	return (
 		<>
@@ -16,6 +17,7 @@ export const IdentifierFormTemplate = ({
 				fieldName={label}
 				formField={identifier}
 				additionalDataField={identifier}
+				showAdditionalData={showAdditionalData}
 			/>
 		</>
 	);

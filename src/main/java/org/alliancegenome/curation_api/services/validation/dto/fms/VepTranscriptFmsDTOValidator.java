@@ -49,7 +49,7 @@ public class VepTranscriptFmsDTOValidator {
 	private static final Pattern PATHOGENICITY_PREDICTION_RESULT = Pattern.compile("^([\\w]+)\\(([\\d\\.]+)\\)$");
 	private static final Pattern POSITION_STRING = Pattern.compile("^[\\d\\?\\-]+$");
 	
-	public PredictedVariantConsequence validateTranscriptLevelConsequence(VepTxtDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
+	public ObjectResponse<PredictedVariantConsequence> validateTranscriptLevelConsequence(VepTxtDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
 		ObjectResponse<PredictedVariantConsequence> response = new ObjectResponse<>();
 		PredictedVariantConsequence predictedVariantConsequence = new PredictedVariantConsequence();
 
@@ -267,7 +267,9 @@ public class VepTranscriptFmsDTOValidator {
 		}
 		cvglaDAO.persist(variantLocation);
 		
-		return predictedVariantConsequence;
+		response.setEntity(predictedVariantConsequence);
+		
+		return response;
 	}
 	
 	private Map<String, String> getExtraAttributes(VepTxtDTO dto) {

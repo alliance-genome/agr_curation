@@ -51,10 +51,10 @@ public class AlleleDiseaseAnnotationService extends BaseAnnotationDTOCrudService
 
 	@Override
 	@Transactional
-	public AlleleDiseaseAnnotation upsert(AlleleDiseaseAnnotationDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
-		AlleleDiseaseAnnotation annotation = alleleDiseaseAnnotationDtoValidator.validateAlleleDiseaseAnnotationDTO(dto, dataProvider);
-
-		return alleleDiseaseAnnotationDAO.persist(annotation);
+	public ObjectResponse<AlleleDiseaseAnnotation> upsert(AlleleDiseaseAnnotationDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
+		ObjectResponse<AlleleDiseaseAnnotation> resp = alleleDiseaseAnnotationDtoValidator.validateAlleleDiseaseAnnotationDTO(dto, dataProvider);
+		alleleDiseaseAnnotationDAO.persist(resp.getEntity());
+		return resp;
 	}
 
 	@Override

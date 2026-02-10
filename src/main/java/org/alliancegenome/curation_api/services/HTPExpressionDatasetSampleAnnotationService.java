@@ -12,6 +12,7 @@ import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.interfaces.crud.BaseUpsertServiceInterface;
 import org.alliancegenome.curation_api.model.entities.HTPExpressionDatasetSampleAnnotation;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.HTPExpressionDatasetSampleAnnotationFmsDTO;
+import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
 import org.alliancegenome.curation_api.services.validation.dto.fms.HTPExpressionDatasetSampleAnnotationFmsDTOValidator;
 
@@ -31,8 +32,9 @@ public class HTPExpressionDatasetSampleAnnotationService extends BaseEntityCrudS
 	protected void init() {
 		setSQLDao(htpExpressionDatasetSampleAnnotationDAO);
 	}
+	@Override
 	@Transactional
-	public HTPExpressionDatasetSampleAnnotation upsert(HTPExpressionDatasetSampleAnnotationFmsDTO htpExpressionDatasetSampleAnnotationData, BackendBulkDataProvider backendBulkDataProvider) throws ValidationException {
+	public ObjectResponse<HTPExpressionDatasetSampleAnnotation> upsert(HTPExpressionDatasetSampleAnnotationFmsDTO htpExpressionDatasetSampleAnnotationData, BackendBulkDataProvider backendBulkDataProvider) throws ValidationException {
 		return htpExpressionDatasetSampleAnnotationFmsDtoValidator.validateHTPExpressionDatasetSampleAnnotationFmsDTO(htpExpressionDatasetSampleAnnotationData, backendBulkDataProvider);
 	}
 
