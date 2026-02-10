@@ -66,7 +66,7 @@ public class AlleleService extends SubmittedObjectCrudService<Allele, AlleleDTO,
 	}
 
 	@Override
-	public Allele upsert(AlleleDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
+	public ObjectResponse<Allele> upsert(AlleleDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
 		return alleleDtoValidator.validateAlleleDTO(dto, dataProvider);
 	}
 
@@ -118,7 +118,7 @@ public class AlleleService extends SubmittedObjectCrudService<Allele, AlleleDTO,
 						allele.setRelatedNotes(new ArrayList<>());
 					}
 					allele.getRelatedNotes().add(deprecationNote);
-					
+
 					return alleleDAO.persist(allele);
 				} else {
 					return allele;

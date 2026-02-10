@@ -34,7 +34,7 @@ public class GeneGeneticInteractionFmsDTOValidator extends GeneInteractionFmsDTO
 
 	private ObjectResponse<GeneGeneticInteraction> ggiResponse;
 
-	public GeneGeneticInteraction validateGeneGeneticInteractionFmsDTO(PsiMiTabDTO dto) throws ValidationException {
+	public ObjectResponse<GeneGeneticInteraction> validateGeneGeneticInteractionFmsDTO(PsiMiTabDTO dto) throws ValidationException {
 
 		GeneGeneticInteraction interaction = null;
 		ggiResponse = new ObjectResponse<GeneGeneticInteraction>();
@@ -105,8 +105,10 @@ public class GeneGeneticInteractionFmsDTOValidator extends GeneInteractionFmsDTO
 		if (ggiResponse.hasErrors()) {
 			throw new ObjectValidationException(dto, ggiResponse.getErrorMessages().values());
 		}
+		
+		ggiResponse.setEntity(interaction);
 
-		return interaction;
+		return ggiResponse;
 
 	}
 

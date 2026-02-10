@@ -62,8 +62,9 @@ public class MoleculeService extends BaseEntityCrudService<Molecule, MoleculeDAO
 		return new ObjectResponse<>(moleculeDAO.persist(dbEntity));
 	}
 
+	@Override
 	@Transactional
-	public Molecule upsert(MoleculeFmsDTO dto, BackendBulkDataProvider backendBulkDataProvider) throws ValidationException {
+	public ObjectResponse<Molecule> upsert(MoleculeFmsDTO dto, BackendBulkDataProvider backendBulkDataProvider) throws ValidationException {
 		log.debug("processUpdate Molecule: ");
 
 		if (StringUtils.isBlank(dto.getId())) {
@@ -176,7 +177,8 @@ public class MoleculeService extends BaseEntityCrudService<Molecule, MoleculeDAO
 				}
 			}
 
-			return molecule;
+			return new ObjectResponse<>(molecule);
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new ObjectUpdateException(dto, e.getMessage(), e.getStackTrace());
