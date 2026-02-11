@@ -26,6 +26,7 @@ export const TruncatedReferencesTemplate = ({ references, identifier, detailPage
 					identifier={`${identifier}`}
 					display={displayDetailMessage}
 					text={`View all references on ${detailPage} Detail Page`}
+					detailPage={detailPage}
 				/>
 			</div>
 		</>

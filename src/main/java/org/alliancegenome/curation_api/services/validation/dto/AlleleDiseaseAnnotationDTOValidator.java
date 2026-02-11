@@ -32,7 +32,7 @@ public class AlleleDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOVal
 	@Inject AlleleService alleleService;
 	@Inject GeneService geneService;
 
-	public AlleleDiseaseAnnotation validateAlleleDiseaseAnnotationDTO(AlleleDiseaseAnnotationDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
+	public ObjectResponse<AlleleDiseaseAnnotation> validateAlleleDiseaseAnnotationDTO(AlleleDiseaseAnnotationDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
 		response = new ObjectResponse<AlleleDiseaseAnnotation>();
 		
 		AlleleDiseaseAnnotation annotation = new AlleleDiseaseAnnotation();
@@ -73,8 +73,10 @@ public class AlleleDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOVal
 		if (response.hasErrors()) {
 			throw new ObjectValidationException(dto, response.errorMessagesString());
 		}
+		
+		response.setEntity(annotation);
 
-		return annotation;
+		return response;
 	}
 
 }

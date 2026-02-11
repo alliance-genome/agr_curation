@@ -277,7 +277,10 @@ export const DataLoadsComponent = () => {
 				}*/}
 
 				{rowData.counts &&
-					Object.values(rowData.counts).some((field) => field.failed !== undefined && field.failed > 0) && (
+					Object.values(rowData.counts).some(
+						(field) =>
+							(field.failed !== undefined && field.failed > 0) || (field.warnings !== undefined && field.warnings > 0)
+					) && (
 						<Button
 							tooltip="Download file exceptions"
 							className="p-button-rounded p-button-warning"
@@ -613,6 +616,7 @@ export const DataLoadsComponent = () => {
 				/>
 				<Column field="failed" header="Failed" body={(rowData) => <NumberTemplate number={rowData.failed} />} />
 				<Column field="skipped" header="Skipped" body={(rowData) => <NumberTemplate number={rowData.skipped} />} />
+				<Column field="warnings" header="Warnings" body={(rowData) => <NumberTemplate number={rowData.warnings} />} />
 				<Column field="total" header="Total" body={(rowData) => <NumberTemplate number={rowData.total} />} />
 			</DataTable>
 		);

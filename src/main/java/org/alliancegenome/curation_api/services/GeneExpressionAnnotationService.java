@@ -13,6 +13,7 @@ import org.alliancegenome.curation_api.interfaces.crud.BaseUpsertServiceInterfac
 import org.alliancegenome.curation_api.model.entities.GeneExpressionAnnotation;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.ConsolidatedGeneExpressionFmsDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.CrossReferenceFmsDTO;
+import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.base.BaseAnnotationCrudService;
 import org.alliancegenome.curation_api.services.validation.dto.fms.GeneExpressionAnnotationFmsDTOValidator;
 import org.apache.commons.lang3.StringUtils;
@@ -55,9 +56,10 @@ public class GeneExpressionAnnotationService extends BaseAnnotationCrudService<G
 
 	@Transactional
 	@Override
-	public GeneExpressionAnnotation upsert(ConsolidatedGeneExpressionFmsDTO consolidatedGeneExpressionFmsDTO, BackendBulkDataProvider dataProvider) throws ValidationException {
-		GeneExpressionAnnotation geneExpressionAnnotation = geneExpressionAnnotationFmsDTOValidator.validateAnnotation(consolidatedGeneExpressionFmsDTO, dataProvider, experiments, crossReferences);
-		return geneExpressionAnnotationDAO.persist(geneExpressionAnnotation);
+	public ObjectResponse<GeneExpressionAnnotation> upsert(ConsolidatedGeneExpressionFmsDTO consolidatedGeneExpressionFmsDTO, BackendBulkDataProvider dataProvider) throws ValidationException {
+		ObjectResponse<GeneExpressionAnnotation> resp = geneExpressionAnnotationFmsDTOValidator.validateAnnotation(consolidatedGeneExpressionFmsDTO, dataProvider, experiments, crossReferences);
+		geneExpressionAnnotationDAO.persist(resp.getEntity());
+		return resp;
 	}
 
 	public List<String> getGeneExpressionAnnotationList() {

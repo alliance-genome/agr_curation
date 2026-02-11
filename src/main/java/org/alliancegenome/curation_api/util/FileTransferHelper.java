@@ -16,28 +16,27 @@ import java.util.zip.GZIPOutputStream;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
-import org.eclipse.microprofile.config.Config;
 import org.eclipse.microprofile.config.ConfigProvider;
 import org.jboss.resteasy.plugins.providers.multipart.InputPart;
 import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataInput;
 import org.jsoup.Connection.Response;
 import org.jsoup.Jsoup;
 
-import com.amazonaws.auth.AWSCredentialsProvider;
-import com.amazonaws.auth.AWSStaticCredentialsProvider;
-import com.amazonaws.auth.BasicAWSCredentials;
-import com.amazonaws.auth.InstanceProfileCredentialsProvider;
-import com.amazonaws.auth.profile.ProfileCredentialsProvider;
-import com.amazonaws.regions.Regions;
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.AmazonS3ClientBuilder;
-import com.amazonaws.services.s3.transfer.Download;
-import com.amazonaws.services.s3.transfer.TransferManager;
-import com.amazonaws.services.s3.transfer.TransferManagerBuilder;
-import com.amazonaws.services.s3.transfer.Upload;
-
 import io.quarkus.logging.Log;
 import lombok.extern.jbosslog.JBossLog;
+import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
+import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
+import software.amazon.awssdk.auth.credentials.InstanceProfileCredentialsProvider;
+import software.amazon.awssdk.auth.credentials.ProfileCredentialsProvider;
+import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
+import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.s3.S3AsyncClient;
+import software.amazon.awssdk.transfer.s3.S3TransferManager;
+import software.amazon.awssdk.transfer.s3.model.DownloadFileRequest;
+import software.amazon.awssdk.transfer.s3.model.FileDownload;
+import software.amazon.awssdk.transfer.s3.model.FileUpload;
+import software.amazon.awssdk.transfer.s3.model.UploadFileRequest;
+import software.amazon.awssdk.transfer.s3.progress.LoggingTransferListener;
 
 @JBossLog
 public class FileTransferHelper {
@@ -134,13 +133,23 @@ public class FileTransferHelper {
 
 		try {
 			log.info("Download file From S3: " + "s3://" + bucket + "/" + fullS3Path + " -> " + localOutFile.getAbsolutePath());
-			AmazonS3 s3 = AmazonS3ClientBuilder.standard().withCredentials(getCredentials()).withRegion(Regions.US_EAST_1).build();
-			TransferManager tm = TransferManagerBuilder.standard().withS3Client(s3).build();
-			final Download downloadFile = tm.download(bucket, fullS3Path, localOutFile);
-			downloadFile.waitForCompletion();
-			tm.shutdownNow();
+
+			S3AsyncClient s3 = S3AsyncClient.crtBuilder().credentialsProvider(getCredentials()).region(Region.US_EAST_1).build();
+			S3TransferManager tm = S3TransferManager.builder().s3Client(s3).build();
+
+			DownloadFileRequest downloadFileRequest = DownloadFileRequest.builder()
+				.getObjectRequest(b -> b.bucket(bucket).key(fullS3Path))
+				.addTransferListener(LoggingTransferListener.create())
+				.destination(localOutFile)
+				.build();
+
+			FileDownload downloadFile = tm.downloadFile(downloadFileRequest);
+
+			downloadFile.completionFuture().join();
 			log.info("S3 Download complete");
-			s3.shutdown();
+			tm.close();
+			s3.close();
+
 			return localOutFile;
 		} catch (Exception e) {
 			localOutFile.delete();
@@ -153,13 +162,23 @@ public class FileTransferHelper {
 		try {
 			String fullS3Path = prefix + "/" + path;
 			log.info("Uploading file to S3: " + inFile.getAbsolutePath() + " -> s3://" + bucket + "/" + fullS3Path);
-			AmazonS3 s3 = AmazonS3ClientBuilder.standard().withCredentials(getCredentials()).withRegion(Regions.US_EAST_1).build();
-			TransferManager tm = TransferManagerBuilder.standard().withS3Client(s3).build();
-			final Upload uploadFile = tm.upload(bucket, fullS3Path, inFile);
-			uploadFile.waitForCompletion();
-			tm.shutdownNow();
+
+			S3AsyncClient s3 = S3AsyncClient.crtBuilder().credentialsProvider(getCredentials()).region(Region.US_EAST_1).build();
+			S3TransferManager tm = S3TransferManager.builder().s3Client(s3).build();
+
+			UploadFileRequest uploadFileRequest = UploadFileRequest.builder()
+				.putObjectRequest(b -> b.bucket(bucket).key(fullS3Path))
+				.addTransferListener(LoggingTransferListener.create())
+				.source(inFile)
+				.build();
+
+			FileUpload uploadFile = tm.uploadFile(uploadFileRequest);
+
+			uploadFile.completionFuture().join();
 			log.info("S3 Upload complete");
-			s3.shutdown();
+			tm.close();
+			s3.close();
+
 			return fullS3Path;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -167,19 +186,20 @@ public class FileTransferHelper {
 		}
 	}
 	
-	private AWSCredentialsProvider getCredentials() {
+	private AwsCredentialsProvider getCredentials() {
 		Optional<String> awsProfile = ConfigProvider.getConfig().getOptionalValue("bulk.data.loads.aws.profile", String.class);
-		Config config = ConfigProvider.getConfig();
-		String accessKey = config.getValue("bulk.data.loads.s3AccessKey", String.class);
-		String secretKey = config.getValue("bulk.data.loads.s3SecretKey", String.class);
+		Optional<String> accessKey = ConfigProvider.getConfig().getOptionalValue("bulk.data.loads.s3AccessKey", String.class);
+		Optional<String> secretKey = ConfigProvider.getConfig().getOptionalValue("bulk.data.loads.s3SecretKey", String.class);
+
 		if (awsProfile.isPresent() && awsProfile.get() != null) {
-			Log.info("Default AWS Profile: " + awsProfile.get());
-			String profile = awsProfile.get();
-			return new ProfileCredentialsProvider(profile);
-		} else if (accessKey != null) {
-			return new AWSStaticCredentialsProvider(new BasicAWSCredentials(accessKey, secretKey));
+			Log.info("ProfileCredentialsProvider: " + awsProfile.get());
+			return ProfileCredentialsProvider.builder().profileName(awsProfile.get()).build();
+		} else if (accessKey.isPresent() && accessKey.get() != null && secretKey.isPresent() && secretKey.get() != null) {
+			Log.info("AWSStaticCredentialsProvider: " + accessKey.get());
+			return StaticCredentialsProvider.create(AwsBasicCredentials.create(accessKey.get(), secretKey.get()));
 		} else {
-			return new InstanceProfileCredentialsProvider(false);
+			Log.info("InstanceProfileCredentialsProvider: ");
+			return InstanceProfileCredentialsProvider.builder().asyncCredentialUpdateEnabled(false).build();
 		}
 	}
 
