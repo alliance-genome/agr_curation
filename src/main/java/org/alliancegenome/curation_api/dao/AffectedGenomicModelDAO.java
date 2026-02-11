@@ -1,8 +1,10 @@
 package org.alliancegenome.curation_api.dao;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.alliancegenome.curation_api.constants.EntityFieldConstants;
 import org.alliancegenome.curation_api.dao.base.BaseSQLDAO;
@@ -11,6 +13,7 @@ import org.apache.commons.collections.CollectionUtils;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.persistence.Query;
 
 @ApplicationScoped
 public class AffectedGenomicModelDAO extends BaseSQLDAO<AffectedGenomicModel> {
@@ -65,8 +68,28 @@ public class AffectedGenomicModelDAO extends BaseSQLDAO<AffectedGenomicModel> {
 		Map<String, Object> params = new HashMap<>();
 		params.put(EntityFieldConstants.GENOMIC_INFORMATION_AGM + ".id", agmId);
 		List<Long> results = htpExpressionDatasetSampleAnnotationDAO.findIdsByParams(params);
-		
+
 		return CollectionUtils.isNotEmpty(results);
+	}
+
+	public List<Long> getAllIds() {
+		String sql = """
+				SELECT a.id
+				FROM affectedgenomicmodel a
+				INNER JOIN biologicalentity b ON b.id = a.id AND b.obsolete = false AND b.internal = false
+				ORDER BY a.id
+				""";
+
+		Query query = entityManager.createNativeQuery(sql);
+		List<Object> results = query.getResultList();
+		return results.stream().map(obj -> (Long) obj).collect(Collectors.toList());
+	}
+
+	public List<AffectedGenomicModel> findByIds(List<Long> ids) {
+		if (CollectionUtils.isEmpty(ids)) {
+			return new ArrayList<>();
+		}
+		return entityManager.createQuery("SELECT a FROM AffectedGenomicModel a WHERE a.id IN :ids", AffectedGenomicModel.class).setParameter("ids", ids).getResultList();
 	}
 
 }
