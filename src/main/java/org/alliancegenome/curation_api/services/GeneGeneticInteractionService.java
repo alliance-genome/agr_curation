@@ -35,6 +35,14 @@ public class GeneGeneticInteractionService extends BaseEntityCrudService<GeneGen
 		return new ObjectResponse<GeneGeneticInteraction>(interaction);
 	}
 
+	public List<Long> getAllIds() {
+		return geneGeneticInteractionDAO.getAllIds();
+	}
+
+	public List<GeneGeneticInteraction> findByIds(List<Long> ids) {
+		return geneGeneticInteractionDAO.findByIds(ids);
+	}
+
 	@Override
 	@Transactional
 	public ObjectResponse<GeneGeneticInteraction> upsert(PsiMiTabDTO dto, BackendBulkDataProvider backendBulkDataProvider) throws ValidationException {
