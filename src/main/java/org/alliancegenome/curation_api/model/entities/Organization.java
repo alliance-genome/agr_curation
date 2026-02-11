@@ -49,7 +49,7 @@ public class Organization extends Agent {
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "abbreviation_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
 	@JsonView({CurationView.FieldsOnly.class, CurationView.PersonSettingView.class, CurationView.ForPublic.class, CurationView.GeneSummaryDocument.class, CurationView.ModelDocument.class, CurationView.GeneExpressionDocument.class })
-	@Column(unique = true)
+	@Column(unique = true, nullable = false)
 	private String abbreviation;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")

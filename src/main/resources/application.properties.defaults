@@ -11,6 +11,7 @@ quarkus.swagger-ui.always-include=true
 quarkus.swagger-ui.doc-expansion=none
 quarkus.health.openapi.included=true
 quarkus.smallrye-graphql.ui.always-include=true
+mp.openapi.extensions.smallrye.maximumStaticFileSize=4194304
 
 quarkus.datasource.db-kind=postgresql
 quarkus.datasource.username=postgres

@@ -383,7 +383,7 @@ export const GenericDataTable = (props) => {
 							<EntityDetailsAction endpoint={endpoint} identifier={getIdentifier(props)} disabled={isInEditMode} />
 						)}
 						showFilterMenu={false}
-						className={`text-center p-0 action-column ${isEditable ? 'visible' : 'hidden'}`}
+						className="text-center p-0 action-column"
 						bodyStyle={{ textAlign: 'center' }}
 						frozen
 						headerClassName="surface-0 action-column sticky"

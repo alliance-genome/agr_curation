@@ -16,6 +16,7 @@ import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHist
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkManualLoad;
 import org.alliancegenome.curation_api.model.ingest.dto.IngestDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.associations.AlleleGeneAssociationDTO;
+import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.associations.AlleleGeneAssociationService;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
 import org.apache.commons.collections.CollectionUtils;
@@ -89,12 +90,13 @@ public class AlleleGeneAssociationExecutor extends LoadFileExecutor {
 			Map<Long, Long> isAlleleOfAssociationMap = new HashMap<>();
 			for (AlleleGeneAssociationDTO dto : associationDtos) {
 				try {
-					AlleleGeneAssociation dbObject = alleleGeneAssociationService.upsert(dto, dataProvider, isAlleleOfAssociationMap, isFullLoad);
+					
+					ObjectResponse<AlleleGeneAssociation> dbObject = alleleGeneAssociationService.upsert(dto, dataProvider, isAlleleOfAssociationMap, isFullLoad);
 					history.incrementCompleted(countType);
 					if (idsAdded != null) {
-						idsAdded.add(dbObject.getId());
+						idsAdded.add(dbObject.getEntity().getId());
 					}
-					isAlleleOfAssociationMap.put(dbObject.getAlleleAssociationSubject().getId(), dbObject.getId());
+					isAlleleOfAssociationMap.put(dbObject.getEntity().getAlleleAssociationSubject().getId(), dbObject.getEntity().getId());
 				} catch (ObjectUpdateException e) {
 					history.incrementFailed(countType);
 					addException(history, e.getData());

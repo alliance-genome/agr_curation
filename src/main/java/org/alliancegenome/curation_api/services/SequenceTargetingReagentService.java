@@ -42,10 +42,10 @@ public class SequenceTargetingReagentService extends SubmittedObjectCrudService<
 		setSQLDao(strDAO);
 	}
 
+	@Override
 	@Transactional
-	public SequenceTargetingReagent upsert(SequenceTargetingReagentFmsDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
-		SequenceTargetingReagent str = strDtoValidator.validateStrFmsDTO(dto, dataProvider);
-		return strDAO.persist(str);
+	public ObjectResponse<SequenceTargetingReagent> upsert(SequenceTargetingReagentFmsDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
+		return strDtoValidator.validateStrFmsDTO(dto, dataProvider);
 	}
 
 	@Override

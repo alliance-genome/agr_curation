@@ -16,7 +16,7 @@ import { AffectedGenomicModelPage } from './containers/affectedGenomicModelPage'
 import { AllelesPage, AlleleDetailPage } from './containers/allelesPage';
 import { GenesPage } from './containers/genesPage';
 import { VariantsPage } from './containers/variantsPage';
-import { ConstructsPage } from './containers/constructsPage';
+import { ConstructsPage, ConstructDetailPage } from './containers/constructsPage';
 import { ProfilePage } from './containers/profilePage';
 import { MoleculesPage } from './containers/moleculesPage';
 import { SpeciesPage } from './containers/speciesPage';
@@ -145,6 +145,14 @@ export default function AppRoutes() {
 						element={
 							<ErrorBoundary>
 								<ConstructsPage />
+							</ErrorBoundary>
+						}
+					/>
+					<Route
+						path="/construct/:identifier"
+						element={
+							<ErrorBoundary>
+								<ConstructDetailPage />
 							</ErrorBoundary>
 						}
 					/>

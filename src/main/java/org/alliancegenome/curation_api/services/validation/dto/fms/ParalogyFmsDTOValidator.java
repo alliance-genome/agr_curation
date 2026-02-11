@@ -37,7 +37,7 @@ public class ParalogyFmsDTOValidator {
 	@Inject VocabularyTermService vocabularyTermService;
 
 	@Transactional
-	public GeneToGeneParalogy validateParalogyFmsDTO(ParalogyFmsDTO dto) throws ValidationException {
+	public ObjectResponse<GeneToGeneParalogy> validateParalogyFmsDTO(ParalogyFmsDTO dto) throws ValidationException {
 
 		ObjectResponse<GeneToGeneParalogy> paralogyResponse = new ObjectResponse<GeneToGeneParalogy>();
 
@@ -185,7 +185,9 @@ public class ParalogyFmsDTOValidator {
 			throw new ObjectValidationException(dto, paralogyResponse.errorMessagesString());
 		}
 
-		return genetoGeneParalogyDAO.persist(paralogyData);
+		paralogyResponse.setEntity(genetoGeneParalogyDAO.persist(paralogyData));
+		
+		return paralogyResponse;
 	}
 
 	private String convertToModCurie(String curie, Integer taxonId) {
