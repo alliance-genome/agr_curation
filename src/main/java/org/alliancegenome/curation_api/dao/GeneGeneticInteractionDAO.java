@@ -23,7 +23,6 @@ public class GeneGeneticInteractionDAO extends BaseSQLDAO<GeneGeneticInteraction
 				SELECT id
 				FROM genegeneticinteraction
 				WHERE obsolete = false AND internal = false
-				ORDER BY id
 				""";
 
 		Query query = entityManager.createNativeQuery(sql);
