@@ -89,7 +89,16 @@ public class AffectedGenomicModelDAO extends BaseSQLDAO<AffectedGenomicModel> {
 		if (CollectionUtils.isEmpty(ids)) {
 			return new ArrayList<>();
 		}
-		return entityManager.createQuery("SELECT a FROM AffectedGenomicModel a WHERE a.id IN :ids", AffectedGenomicModel.class).setParameter("ids", ids).getResultList();
+		return entityManager.createQuery(
+				"SELECT a FROM AffectedGenomicModel a"
+				+ " LEFT JOIN FETCH a.agmFullName"
+				+ " LEFT JOIN FETCH a.subtype"
+				+ " LEFT JOIN FETCH a.dataProvider"
+				+ " LEFT JOIN FETCH a.dataProviderCrossReference"
+				+ " WHERE a.id IN :ids",
+				AffectedGenomicModel.class)
+			.setParameter("ids", ids)
+			.getResultList();
 	}
 
 }
