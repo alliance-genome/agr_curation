@@ -321,4 +321,12 @@ public class GeneService extends SubmittedObjectCrudService<Gene, GeneDTO, GeneD
 			gene.setPopularity(popularity);
 		}
 	}
+
+	public List<Long> getAllGeneSummaryIds() {
+		return geneDAO.getAllGeneSummaryIds();
+	}
+
+	public List<Gene> findByIds(List<Long> ids) {
+		return geneDAO.findByIds(ids);
+	}
 }
