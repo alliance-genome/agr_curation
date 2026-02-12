@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
+import org.alliancegenome.curation_api.dao.GeneMolecularInteractionDAO;
 import org.alliancegenome.curation_api.enums.PsiMiTabPrefixEnum;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
 import org.alliancegenome.curation_api.exceptions.ValidationException;
@@ -27,10 +28,11 @@ public class GeneMolecularInteractionFmsDTOValidator extends GeneInteractionFmsD
 
 	@Inject GeneMolecularInteractionService geneMolecularInteractionService;
 	@Inject VocabularyTermService vocabularyTermService;
+	@Inject GeneMolecularInteractionDAO geneMolecularInteractionDAO;
 
 	private ObjectResponse<GeneMolecularInteraction> gmiResponse;
 
-	public GeneMolecularInteraction validateGeneMolecularInteractionFmsDTO(PsiMiTabDTO dto) throws ValidationException {
+	public ObjectResponse<GeneMolecularInteraction> validateGeneMolecularInteractionFmsDTO(PsiMiTabDTO dto) throws ValidationException {
 
 		GeneMolecularInteraction interaction = null;
 		gmiResponse = new ObjectResponse<GeneMolecularInteraction>();
@@ -117,8 +119,10 @@ public class GeneMolecularInteractionFmsDTOValidator extends GeneInteractionFmsD
 		if (gmiResponse.hasErrors()) {
 			throw new ObjectValidationException(dto, gmiResponse.errorMessagesList());
 		}
+		
+		gmiResponse.setEntity(geneMolecularInteractionDAO.persist(interaction));
 
-		return interaction;
+		return gmiResponse;
 
 	}
 }

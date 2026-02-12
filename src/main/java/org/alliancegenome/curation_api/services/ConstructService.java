@@ -78,10 +78,8 @@ public class ConstructService extends SubmittedObjectCrudService<Construct, Cons
 
 	@Override
 	@Transactional
-	public Construct upsert(ConstructDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
-		Construct construct = constructDtoValidator.validateConstructDTO(dto, dataProvider);
-
-		return constructDAO.persist(construct);
+	public ObjectResponse<Construct> upsert(ConstructDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
+		return constructDtoValidator.validateConstructDTO(dto, dataProvider);
 	}
 
 	@Override

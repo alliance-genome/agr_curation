@@ -27,7 +27,7 @@ public class AlleleConstructAssociationDTOValidator extends AlleleGenomicEntityA
 	@Inject AlleleConstructAssociationDAO alleleConstructAssociationDAO;
 	@Inject AlleleService alleleService;
 	@Inject ConstructService constructService;
-	public AlleleConstructAssociation validateAlleleConstructAssociationDTO(AlleleConstructAssociationDTO dto, BackendBulkDataProvider beDataProvider) throws ValidationException {
+	public ObjectResponse<AlleleConstructAssociation> validateAlleleConstructAssociationDTO(AlleleConstructAssociationDTO dto, BackendBulkDataProvider beDataProvider) throws ValidationException {
 		
 		response = new ObjectResponse<AlleleConstructAssociation>();
 
@@ -62,6 +62,8 @@ public class AlleleConstructAssociationDTOValidator extends AlleleGenomicEntityA
 			throw new ObjectValidationException(dto, response.errorMessagesString());
 		}
 		
-		return alleleConstructAssociationDAO.persist(association);
+		response.setEntity(alleleConstructAssociationDAO.persist(association));
+		
+		return response;
 	}
 }

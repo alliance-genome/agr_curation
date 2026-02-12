@@ -113,7 +113,7 @@ public class DiseaseAnnotationValidator extends AnnotationValidator {
 		}
 
 		if (uiEntity.getDiseaseGeneticModifierRelation() == null) {
-			addMessageResponse(field, ValidationConstants.DEPENDENCY_MESSAGE_PREFIX + "diseaseGeneticModifierRelation");
+			addMessageResponse(field, ValidationConstants.DEPENDENCY_MESSAGE_PREFIX + " diseaseGeneticModifierRelation");
 			return null;
 		}
 
@@ -127,7 +127,7 @@ public class DiseaseAnnotationValidator extends AnnotationValidator {
 		}
 
 		if (uiEntity.getDiseaseGeneticModifierRelation() == null) {
-			addMessageResponse(field, ValidationConstants.DEPENDENCY_MESSAGE_PREFIX + "diseaseGeneticModifierRelation");
+			addMessageResponse(field, ValidationConstants.DEPENDENCY_MESSAGE_PREFIX + " diseaseGeneticModifierRelation");
 			return null;
 		}
 
@@ -141,7 +141,7 @@ public class DiseaseAnnotationValidator extends AnnotationValidator {
 		}
 
 		if (uiEntity.getDiseaseGeneticModifierRelation() == null) {
-			addMessageResponse(field, ValidationConstants.DEPENDENCY_MESSAGE_PREFIX + "diseaseGeneticModifierRelation");
+			addMessageResponse(field, ValidationConstants.DEPENDENCY_MESSAGE_PREFIX + " diseaseGeneticModifierRelation");
 			return null;
 		}
 
@@ -156,7 +156,7 @@ public class DiseaseAnnotationValidator extends AnnotationValidator {
 
 		if (CollectionUtils.isEmpty(uiEntity.getDiseaseGeneticModifierGenes()) && CollectionUtils.isEmpty(uiEntity.getDiseaseGeneticModifierAlleles())
 				&& CollectionUtils.isEmpty(uiEntity.getDiseaseGeneticModifierAgms())) {
-			addMessageResponse(field, ValidationConstants.DEPENDENCY_MESSAGE_PREFIX + "diseaseGeneticModifierGenes / diseaseGeneticModifierAlleles / diseaseGeneticModifierAgms");
+			addMessageResponse(field, ValidationConstants.DEPENDENCY_MESSAGE_PREFIX + " diseaseGeneticModifierGenes / diseaseGeneticModifierAlleles / diseaseGeneticModifierAgms");
 			return null;
 		}
 		
