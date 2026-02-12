@@ -99,6 +99,6 @@ public class Variant extends GenomicEntity {
 		@Index(name = "variant_reference_variant_index", columnList = "variant_id"),
 		@Index(name = "variant_reference_references_index", columnList = "references_id")
 	})
-	@JsonView({ CurationView.FieldsAndLists.class, CurationView.VariantView.class })
+	@JsonView({ CurationView.FieldsAndLists.class, CurationView.VariantView.class, CurationView.VariantDocument.class })
 	private List<Reference> references;
 }
