@@ -2,6 +2,7 @@ package org.alliancegenome.curation_api.controllers.document;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import org.alliancegenome.curation_api.interfaces.document.GeneDocumentInterface;
 import org.alliancegenome.curation_api.model.document.builders.GeneDocumentBuilder;
@@ -62,6 +63,33 @@ public class GeneDocumentController implements GeneDocumentInterface {
 		SearchResponse<GeneSummaryDocument> ret = new SearchResponse<GeneSummaryDocument>(list);
 		ret.setTotalResults(resp.getTotalResults());
 		return ret;
-		
+
 	}
+
+	@Override
+	public SearchResponse<Long> getAllIds() {
+		List<Long> ids = geneService.getAllGeneSummaryIds();
+		SearchResponse<Long> response = new SearchResponse<>(ids);
+		response.setTotalResults((long) ids.size());
+		return response;
+	}
+
+	@Override
+	public SearchResponse<GeneSummaryDocument> findByIds(List<Long> ids) {
+		List<Gene> genes = geneService.findByIds(ids);
+
+		ArrayList<GeneSummaryDocument> list = new ArrayList<>();
+		if (genes != null) {
+			GeneDocumentBuilder builder = new GeneDocumentBuilder();
+			for (Gene gene : genes) {
+				GeneSummaryDocument doc = builder.buildSummaryDocument(gene);
+				list.add(doc);
+			}
+		}
+
+		SearchResponse<GeneSummaryDocument> ret = new SearchResponse<>(list);
+		ret.setTotalResults((long) list.size());
+		return ret;
+	}
+
 }
