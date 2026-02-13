@@ -176,6 +176,8 @@ jobs:
       - name: Create test containers properties file
         run: |
           touch ~/.testcontainers.properties
+      - name: Set up Docker API for Testcontainers
+        run: echo "api.version=1.44" > ~/.docker-java.properties
       - name: Run Integration tests
         run: |
           make integration-test
