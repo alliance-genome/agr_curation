@@ -64,7 +64,7 @@ public abstract class VariantGenomicLocationAssociation extends VariantLocationA
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "paddedBase_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({ CurationView.FieldsOnly.class })
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.VariantDocument.class })
 	@Column(length = 1)
 	private String paddedBase;
 
