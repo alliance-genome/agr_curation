@@ -89,6 +89,6 @@ public class ResourceDescriptor extends AuditedObject {
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@OneToMany(mappedBy = "resourceDescriptor", cascade = CascadeType.ALL)
-	@JsonView({ CurationView.ResourceDescriptorView.class })
+	@JsonView({ CurationView.ResourceDescriptorView.class, CurationView.FieldsAndLists.class })
 	private List<ResourceDescriptorPage> resourcePages;
 }
