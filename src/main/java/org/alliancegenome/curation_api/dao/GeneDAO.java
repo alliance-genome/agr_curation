@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.alliancegenome.curation_api.constants.EntityFieldConstants;
 import org.alliancegenome.curation_api.dao.base.BaseSQLDAO;
@@ -45,7 +46,7 @@ public class GeneDAO extends BaseSQLDAO<Gene> {
 		if (CollectionUtils.isNotEmpty(results)) {
 			return true;
 		}
-		
+
 		Map<String, Object> alleleDaParams = new HashMap<>();
 		alleleDaParams.put("query_operator", "or");
 		alleleDaParams.put(EntityFieldConstants.ASSERTED_GENES + ".id", geneId);
@@ -56,7 +57,7 @@ public class GeneDAO extends BaseSQLDAO<Gene> {
 		if (CollectionUtils.isNotEmpty(results)) {
 			return true;
 		}
-		
+
 		Map<String, Object> agmDaParams = new HashMap<>();
 		agmDaParams.put("query_operator", "or");
 		agmDaParams.put(EntityFieldConstants.ASSERTED_GENES + ".id", geneId);
@@ -129,22 +130,22 @@ public class GeneDAO extends BaseSQLDAO<Gene> {
 		List<Long> results = geneExpressionAnnotationDAO.findIdsByParams(params);
 		return CollectionUtils.isNotEmpty(results);
 	}
-	
+
 	public List<String> getAllGenePrimaryExternalIds() {
 		String sql = """
 			SELECT be.primaryexternalid
 			FROM biologicalentity be, gene as g
 			WHERE be.id = g.id and be.primaryexternalid is not NULL
 		""";
-		
+
 		Query query = entityManager.createNativeQuery(sql);
 		List<Object> objects = query.getResultList();
 		List<String> list = new ArrayList<>();
-		
+
 		objects.forEach(object -> {
 			list.add((String) object);
 		});
-		
+
 		return list;
 	}
 
@@ -166,5 +167,37 @@ public class GeneDAO extends BaseSQLDAO<Gene> {
 			ensemblGeneMap.put((String) object[2], (Long) object[0]);
 		});
 		return ensemblGeneMap;
+	}
+
+	public List<Long> getAllGeneSummaryIds() {
+		String sql = """
+				SELECT g.id
+				FROM gene g
+				INNER JOIN biologicalentity b ON b.id = g.id AND b.obsolete = false AND b.internal = false
+				ORDER BY g.id
+				""";
+
+		Query query = entityManager.createNativeQuery(sql);
+		List<Object> results = query.getResultList();
+		return results.stream().map(obj -> (Long) obj).collect(Collectors.toList());
+	}
+
+	public List<Gene> findByIds(List<Long> ids) {
+
+		if (CollectionUtils.isEmpty(ids)) {
+			return new ArrayList<>();
+		}
+
+		String sql = """
+				SELECT g FROM Gene g
+				LEFT JOIN FETCH g.geneFullName
+				LEFT JOIN FETCH g.dataProvider
+				LEFT JOIN FETCH g.dataProviderCrossReference
+				WHERE g.id IN :ids
+				""";
+
+		return entityManager.createQuery(sql, Gene.class)
+			.setParameter("ids", ids)
+			.getResultList();
 	}
 }
