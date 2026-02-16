@@ -1,23 +1,17 @@
 package org.alliancegenome.curation_api.model.document.builders;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.alliancegenome.curation_api.dao.GeneExpressionExperimentDAO;
 import org.alliancegenome.curation_api.model.document.es.GeneExpressionDocument;
 import org.alliancegenome.curation_api.model.entities.AnatomicalSite;
+import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.GeneExpressionAnnotation;
-import org.alliancegenome.curation_api.model.entities.GeneExpressionExperiment;
 import org.alliancegenome.curation_api.model.entities.Reference;
 import org.alliancegenome.curation_api.model.entities.Synonym;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
-import org.alliancegenome.curation_api.response.SearchResponse;
-import org.alliancegenome.curation_api.services.helpers.UniqueIdGeneratorHelper;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 
@@ -38,7 +32,7 @@ public class GeneExpressionDocumentBuilder {
 
 	public static final String GO_CELLULAR_OTHER = "otherLocations";
 	
-	public GeneExpressionDocument buildDocument(GeneExpressionAnnotation annotation, Map<String, GeneExpressionExperiment> experimentsCache) {
+	public GeneExpressionDocument buildDocument(GeneExpressionAnnotation annotation) {
 
 		List<String> uberonTermIds = new ArrayList<>();
 		List<String> goTermIds = new ArrayList<>();
@@ -47,20 +41,8 @@ public class GeneExpressionDocumentBuilder {
 		GeneExpressionDocument expressionDocument = new GeneExpressionDocument();
 		if (annotation != null) {
 			expressionDocument.setGeneExpressionAnnotation(annotation);
-		
 			if (annotation.getDataProvider().getAbbreviation().equals("MGI") || annotation.getDataProvider().getAbbreviation().equals("WB")) {
-				
-				UniqueIdGeneratorHelper uniqueIdGeneratorHelper = new UniqueIdGeneratorHelper();
-				uniqueIdGeneratorHelper.add(annotation.getExpressionAnnotationSubject().getPrimaryExternalId());
-				uniqueIdGeneratorHelper.add(annotation.getEvidenceItem().getCurie());
-				uniqueIdGeneratorHelper.add(annotation.getExpressionAssayUsed().getCurie());
-				String uniqueId = uniqueIdGeneratorHelper.getUniqueId();
-
-				GeneExpressionExperiment experiment = experimentsCache.get(uniqueId);
-
-				if (experiment != null && experiment.getCrossReferences() != null) {
-					expressionDocument.getGeneExpressionAnnotation().setCrossReferences(experiment.getCrossReferences());
-				}
+				expressionDocument.getGeneExpressionAnnotation().setCrossReferences(annotation.getExpressionExperiment().getCrossReferences());
 			} else {
 				expressionDocument.getGeneExpressionAnnotation().setCrossReferences(annotation.getCrossReferences());
 			}
@@ -128,39 +110,63 @@ public class GeneExpressionDocumentBuilder {
 
 	}
 
-	public Map<String, GeneExpressionExperiment> preloadExperiments(List<GeneExpressionAnnotation> annotations, GeneExpressionExperimentDAO geneExpressionExperimentDAO) {
-		Set<String> uniqueIds = new HashSet<>();
-		UniqueIdGeneratorHelper uniqueIdGeneratorHelper = new UniqueIdGeneratorHelper();
+	public List<GeneExpressionDocument> consolidateExpressionDocuments(List<GeneExpressionDocument> documents) {
+		Map<String, List<GeneExpressionDocument>> groupedDocuments = documents.stream()
+			.collect(Collectors.groupingBy(doc -> {
+				String geneId = doc.getGeneExpressionAnnotation().getExpressionAnnotationSubject() != null ? doc.getGeneExpressionAnnotation().getExpressionAnnotationSubject().getPrimaryExternalId() : "";
+				String location = doc.getGeneExpressionAnnotation().getWhereExpressedStatement() != null ? doc.getGeneExpressionAnnotation().getWhereExpressedStatement() : "";
+				String stage = doc.getGeneExpressionAnnotation().getWhenExpressedStageName() != null ? doc.getGeneExpressionAnnotation().getWhenExpressedStageName() : "";
+				String assay = doc.getGeneExpressionAnnotation().getExpressionAssayUsed() != null ? doc.getGeneExpressionAnnotation().getExpressionAssayUsed().getCurie() : "";
 
-		for (GeneExpressionAnnotation annotation : annotations) {
-			if (annotation.getDataProvider().getAbbreviation().equals("MGI") || annotation.getDataProvider().getAbbreviation().equals("WB")) {
+				return geneId + "||" + location + "||" + stage + "||" + assay;
+			}));
 
-				uniqueIdGeneratorHelper.clear();
-				uniqueIdGeneratorHelper.add(annotation.getExpressionAnnotationSubject().getPrimaryExternalId());
-				uniqueIdGeneratorHelper.add(annotation.getEvidenceItem().getCurie());
-				uniqueIdGeneratorHelper.add(annotation.getExpressionAssayUsed().getCurie());
-				uniqueIds.add(uniqueIdGeneratorHelper.getUniqueId());
-			}
-		}
+		List<GeneExpressionDocument> consolidatedDocuments = new ArrayList<>();
 
-		if (uniqueIds.isEmpty()) {
-			return new HashMap<>();
-		}
+		for (Map.Entry<String, List<GeneExpressionDocument>> entry : groupedDocuments.entrySet()) {
+			List<GeneExpressionDocument> group = entry.getValue();
 
-		Map<String, GeneExpressionExperiment> result = new HashMap<>();
-		for (String uniqueId : uniqueIds) {
-			HashMap<String, Object> params = new HashMap<>();
-			params.put("uniqueId", uniqueId);
-			SearchResponse<GeneExpressionExperiment> experiments = geneExpressionExperimentDAO.findByParams(params);
-			
-			if (CollectionUtils.isNotEmpty(experiments.getResults())) {
-				GeneExpressionExperiment experiment = experiments.getSingleResult();
-				if (experiment != null) {
-					result.put(experiment.getUniqueId(), experiment);
+			if (group.size() == 1) {
+				consolidatedDocuments.add(group.get(0));
+			} else {
+				GeneExpressionDocument consolidated = group.get(0);
+
+				List<CrossReference> allCrossReferences = new ArrayList<>();
+				List<String> allReferenceIds = new ArrayList<>();
+
+				// logic behind this consolidation is to have 1:1 mapping for reference and crossReference for consolidated annotations, 
+				// which is useful while deconsolidating later for download endpoint
+				for (GeneExpressionDocument doc : group) {
+					int annotationSize = Math.max(
+						CollectionUtils.isNotEmpty(doc.getGeneExpressionAnnotation().getCrossReferences()) ? doc.getGeneExpressionAnnotation().getCrossReferences().size() : 0,
+						CollectionUtils.isNotEmpty(doc.getReferenceId()) ? doc.getReferenceId().size() : 0
+					);
+					for (int i = 0; i < annotationSize; i++) {
+						if (CollectionUtils.isNotEmpty(doc.getGeneExpressionAnnotation().getCrossReferences()) && i < doc.getGeneExpressionAnnotation().getCrossReferences().size()) {
+							allCrossReferences.add(doc.getGeneExpressionAnnotation().getCrossReferences().get(i));
+						} else {
+							CrossReference emptyRef = new CrossReference();
+							emptyRef.setDisplayName("");
+							emptyRef.setReferencedCurie("");
+							allCrossReferences.add(emptyRef);
+						}
+						if (CollectionUtils.isNotEmpty(doc.getReferenceId())) {
+							// Incoming geneexpression annotation always has only one referenceId
+							allReferenceIds.add(doc.getReferenceId().get(0));
+						}
+					}
 				}
+
+				consolidated.getGeneExpressionAnnotation().setCrossReferences(allCrossReferences);
+				consolidated.setReferenceId(allReferenceIds);
+
+				consolidatedDocuments.add(consolidated);
 			}
 		}
-		
-		return result;
+
+		return consolidatedDocuments;
 	}
+	
+	
+	
 }

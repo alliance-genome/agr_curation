@@ -134,6 +134,14 @@ public class AffectedGenomicModelService extends SubmittedObjectCrudService<Affe
 		return null;
 	}
 
+	public List<Long> getAllIds() {
+		return agmDAO.getAllIds();
+	}
+
+	public List<AffectedGenomicModel> findByIds(List<Long> ids) {
+		return agmDAO.findByIds(ids);
+	}
+
 	public List<Long> getIdsByDataProvider(String dataProvider) {
 		Map<String, Object> params = new HashMap<>();
 		params.put(EntityFieldConstants.DATA_PROVIDER, dataProvider);

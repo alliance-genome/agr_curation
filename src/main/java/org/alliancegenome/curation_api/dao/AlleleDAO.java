@@ -236,9 +236,6 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 				SELECT a.id
 				FROM Allele a
 				INNER JOIN BiologicalEntity b ON b.id = a.id AND b.obsolete = false AND b.internal = false
-				INNER JOIN SlotAnnotation s ON a.id = s.singleallele_id
-					AND s.slotannotationtype = 'AlleleSymbolSlotAnnotation'
-					AND s.formatText IS NOT NULL
 				ORDER BY a.id
 				""";
 
