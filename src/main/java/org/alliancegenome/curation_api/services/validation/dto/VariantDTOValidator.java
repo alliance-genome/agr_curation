@@ -26,7 +26,7 @@ public class VariantDTOValidator extends GenomicEntityDTOValidator<Variant, Vari
 	@Inject SoTermService soTermService;
 
 	@Transactional
-	public Variant validateVariantDTO(VariantDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
+	public ObjectResponse<Variant> validateVariantDTO(VariantDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
 		response = new ObjectResponse<Variant>();
 		
 		Variant variant = null;
@@ -36,7 +36,7 @@ public class VariantDTOValidator extends GenomicEntityDTOValidator<Variant, Vari
 		if (variant == null) {
 			if (StringUtils.isBlank(dto.getModInternalId())) {
 				if (StringUtils.isBlank(dto.getPrimaryExternalId())) {
-					response.addErrorMessage("mod_internal_id", ValidationConstants.REQUIRED_UNLESS_OTHER_FIELD_POPULATED_MESSAGE + "primary_external_id");
+					response.addErrorMessage("mod_internal_id", ValidationConstants.REQUIRED_UNLESS_OTHER_FIELD_POPULATED_MESSAGE + " primary_external_id");
 				}
 			} else {
 				variant = findDatabaseObject(variantDAO, "modInternalId", dto.getModInternalId());
@@ -63,7 +63,9 @@ public class VariantDTOValidator extends GenomicEntityDTOValidator<Variant, Vari
 			throw new ObjectValidationException(dto, response.errorMessagesString());
 		}
 
-		return variantDAO.persist(variant);
+		response.setEntity(variantDAO.persist(variant));
+		
+		return response;
 	}
 
 }

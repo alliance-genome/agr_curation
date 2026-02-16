@@ -36,7 +36,7 @@ public class SequenceTargetingReagentFmsDTOValidator {
 	@Inject VocabularyTermService vocabularyTermService;
 
 
-	public SequenceTargetingReagent validateStrFmsDTO(SequenceTargetingReagentFmsDTO dto, BackendBulkDataProvider beDataProvider) throws ValidationException {
+	public ObjectResponse<SequenceTargetingReagent> validateStrFmsDTO(SequenceTargetingReagentFmsDTO dto, BackendBulkDataProvider beDataProvider) throws ValidationException {
 		ObjectResponse<SequenceTargetingReagent> sqtrResponse = new ObjectResponse<>();
 		
 		SequenceTargetingReagent sqtr;
@@ -94,7 +94,9 @@ public class SequenceTargetingReagentFmsDTOValidator {
 			throw new ObjectValidationException(dto, sqtrResponse.errorMessagesString());
 		}
 
-		return sqtr;
+		sqtrResponse.setEntity(sqtrDAO.persist(sqtr));
+
+		return sqtrResponse;
 	}
 
 }

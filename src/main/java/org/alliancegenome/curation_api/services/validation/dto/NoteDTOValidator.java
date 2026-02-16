@@ -30,7 +30,7 @@ public class NoteDTOValidator extends AuditedObjectDTOValidator<Note, NoteDTO> {
 		VocabularyTerm noteType = validateRequiredTermInVocabularyTermSet("note_type_name", dto.getNoteTypeName(), noteTypeVocabularyTermSet);
 		note.setNoteType(noteType);
 
-		List<Reference> references = validateReferences("evidence_curies", dto.getEvidenceCuries());
+		List<Reference> references = validateReferences("evidence_curies", dto.getEvidenceCuries(), true);
 		note.setReferences(references);
 		
 		response.setEntity(note);
