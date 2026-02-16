@@ -2,6 +2,20 @@
  
 https://agr-jira.atlassian.net/wiki/spaces/ATEAM/overview
 
+## v0.46.0
+* New fearures:
+   * Do not obsolete alleles because of failed reference (SCRUM-4930)
+   * Collapse long lists of References for Constructs table (SCRUM-5496)
+   * Migrate A-Team curation system from Okta authentication to AWS Cognito: Swagger (SCRUM-5611)
+   * Migrate A-Team curation system from Okta authentication to AWS Cognito: MATI (SCRUM-5613)
+   * Duplicate references associated with alleles in curation system (SCRUM-5620)
+   * Establish machine-to-machine (Cognito) authentication for Blue Team to access A-Team systems (SCRUM-5641)
+   * Create Read-Only Constructs Detail Page (SCRUM-5729)
+* Fixes and maintenance
+   * "Error invoking subclass method" error on an MGI construct load (SCRUM-5651)
+   * Curation: Attempting to download latest MGI Allele Association file results in error page (SCRUM-5662)
+   * alpha-curation: All files uploaded since early December have null S3 files on Data Loads page (SCRUM-5733)
+
 ## v0.45.0
 * New features:
   * Migrate A-Team curation system from Okta authentication to AWS Cognito (SCRUM-5606)

@@ -42,7 +42,7 @@ public class GeneMolecularInteractionService extends BaseEntityCrudService<GeneM
 		return geneMolecularInteractionDAO.findByIds(ids);
 	}
 
-  @Override
+	@Override
 	@Transactional
 	public ObjectResponse<GeneMolecularInteraction> upsert(PsiMiTabDTO dto, BackendBulkDataProvider backendBulkDataProvider) throws ValidationException {
 		return geneMolInteractionValidator.validateGeneMolecularInteractionFmsDTO(dto);
