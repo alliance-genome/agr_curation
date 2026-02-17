@@ -12,7 +12,7 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmbedded;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexingDependency;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonView;
 
@@ -77,9 +77,19 @@ public class GeneExpressionAnnotation extends ExpressionAnnotation {
 	@JsonView({ CurationView.FieldsAndLists.class, CurationView.ForPublic.class, CurationView.GeneExpressionDocument.class })
 	private List<CrossReference> crossReferences;
 	
+	@IndexedEmbedded(includePaths = {
+		"uniqueId", "uniqueId_keyword",
+		"primaryExternalId", "primaryExternalId_keyword",
+		"modInternalId", "modInternalId_keyword",
+		"singleReference.curie", "singleReference.primaryCrossReferenceCurie",
+		"singleReference.crossReferences.referencedCurie",
+		"singleReference.curie_keyword", "singleReference.primaryCrossReferenceCurie_keyword",
+		"singleReference.crossReferences.referencedCurie_keyword"
+	})
+	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
 	@JoinColumn(name = "expressionexperiment_id")
-	@JsonBackReference
+	@JsonIgnoreProperties("expressionAnnotations")
 	@JsonView({CurationView.FieldsOnly.class, CurationView.ForPublic.class})
 	private GeneExpressionExperiment expressionExperiment;
 }
