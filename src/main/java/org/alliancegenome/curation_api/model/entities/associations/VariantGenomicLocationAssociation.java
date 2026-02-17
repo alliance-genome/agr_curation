@@ -106,9 +106,8 @@ public abstract class VariantGenomicLocationAssociation extends VariantLocationA
 			// Insertion
 			if ("SO:0000667".equals(variantTypeCurie)) {
 				return paddedBase + ">" + paddedBase + getVariantSequence();
-			}
-			// Deletion
-			else if ("SO:0000159".equals(variantTypeCurie)) {
+			} else if ("SO:0000159".equals(variantTypeCurie)) {
+				// Deletion
 				return paddedBase + getReferenceSequence() + ">" + paddedBase;
 			}
 			if (getReferenceSequence() != null && getVariantSequence() != null) {
