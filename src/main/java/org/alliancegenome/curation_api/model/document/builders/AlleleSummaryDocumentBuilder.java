@@ -27,8 +27,7 @@ public class AlleleSummaryDocumentBuilder {
 
 		doc.setCrossReference(getCrossReference(allele, resourceDescriptorPageService));
 
-		doc.setAlterationType(determineAlterationType(alleleDTO.getVariantCount()));
-
+		setAlterationType(alleleDTO.getVariantCount(), doc);
 		Optional<Gene> optionalAlleleOfGene = buildAlleleOfGene(allele);
 		optionalAlleleOfGene.ifPresent(doc::setAlleleOfGene);
 
@@ -39,13 +38,16 @@ public class AlleleSummaryDocumentBuilder {
 		return doc;
 	}
 
-	private String determineAlterationType(Long variantCount) {
+	private void setAlterationType(Long variantCount, AlleleSummaryDocument doc) {
 		if (variantCount == null || variantCount == 0) {
-			return "allele";
+			doc.setAlterationType("allele");
+			doc.setAlterationTypeSortOrder(3);
 		} else if (variantCount == 1) {
-			return "allele with one variant";
+			doc.setAlterationType("allele with one variant");
+			doc.setAlterationTypeSortOrder(1);
 		} else {
-			return "allele with multiple variants";
+			doc.setAlterationType("allele with multiple variants");
+			doc.setAlterationTypeSortOrder(2);
 		}
 	}
 
