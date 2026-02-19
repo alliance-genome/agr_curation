@@ -1,5 +1,6 @@
 package org.alliancegenome.curation_api.model.document.es;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -29,6 +30,17 @@ public class AlleleSummaryDocument extends ESDocument {
 	private Gene alleleOfGene;
 	private CrossReference crossReference;
 	private List<Variant> variants;
+	private HashSet<String> geneIds;
 	private Boolean hasPhenotype;
 	private Boolean hasDisease;
+	
+
+	public void setAlleleOfGene(Gene alleleOfGene) {
+		this.alleleOfGene = alleleOfGene;
+		if (geneIds == null) {
+			geneIds = new HashSet<>();
+		}
+		geneIds.add(alleleOfGene.getPrimaryExternalId());
+	}
 }
+
