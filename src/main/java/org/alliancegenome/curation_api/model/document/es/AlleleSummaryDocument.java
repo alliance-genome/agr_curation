@@ -23,6 +23,7 @@ public class AlleleSummaryDocument extends ESDocument {
 
 	private Allele allele;
 	private String alterationType;
+	private Integer alterationTypeSortOrder;
 	private String description;
 	private Map<String, Object> additionalInformation;
 	private Gene alleleOfGene;
