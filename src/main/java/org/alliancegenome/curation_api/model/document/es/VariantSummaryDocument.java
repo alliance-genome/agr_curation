@@ -1,5 +1,7 @@
 package org.alliancegenome.curation_api.model.document.es;
 
+import java.util.HashSet;
+
 import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.associations.CuratedVariantGenomicLocationAssociation;
 import org.alliancegenome.curation_api.view.CurationView;
@@ -21,5 +23,6 @@ public class VariantSummaryDocument extends ESDocument {
 
 	private Allele allele;
 	private CuratedVariantGenomicLocationAssociation variant;
+	private HashSet<String> geneIds;
 
 }
