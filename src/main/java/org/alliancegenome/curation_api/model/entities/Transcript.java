@@ -56,7 +56,7 @@ public class Transcript extends GenomicEntity {
 	@IndexedEmbedded(includePaths = {"curie", "name", "curie_keyword", "name_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@JsonView({ CurationView.FieldsOnly.class, CurationView.VariantDocument.class })
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.VariantSummaryDocument.class, CurationView.SequenceSummaryDocument.class })
 	private SOTerm transcriptType;
 
 	@IndexedEmbedded(
@@ -104,6 +104,6 @@ public class Transcript extends GenomicEntity {
 		}
 	)
 	@OneToMany(mappedBy = "transcriptAssociationSubject", cascade = CascadeType.ALL, orphanRemoval = true)
-	@JsonView({ CurationView.FieldsAndLists.class, CurationView.VariantDocument.class })
+	@JsonView({ CurationView.FieldsAndLists.class, CurationView.VariantSummaryDocument.class, CurationView.SequenceSummaryDocument.class })
 	private List<TranscriptGeneAssociation> transcriptGeneAssociations;
 }

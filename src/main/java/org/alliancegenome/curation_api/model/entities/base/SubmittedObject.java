@@ -54,7 +54,8 @@ public class SubmittedObject extends CurieObject {
 			CurationView.ModelDocument.class,
 			CurationView.TransgenicAllelesDocument.class,
 			CurationView.AlleleSummaryDocument.class,
-			CurationView.VariantDocument.class,
+			CurationView.VariantSummaryDocument.class,
+			CurationView.SequenceSummaryDocument.class,
 			CurationView.GeneExpressionDocument.class })
 	private String primaryExternalId;
 
@@ -77,7 +78,7 @@ public class SubmittedObject extends CurieObject {
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@OneToOne(orphanRemoval = true)
 	@Fetch(FetchMode.SELECT)
-	@JsonView({CurationView.FieldsOnly.class, CurationView.AlleleSummaryDocument.class, CurationView.AlleleForPublic.class, CurationView.TransgenicAllelesDocument.class, CurationView.ModelDocument.class, CurationView.ForPublic.class})
+	@JsonView({CurationView.FieldsOnly.class, CurationView.AlleleSummaryDocument.class, CurationView.TransgenicAllelesDocument.class, CurationView.ModelDocument.class, CurationView.ForPublic.class})
 	private CrossReference dataProviderCrossReference;
 
 	@IndexedEmbedded(includePaths = {"freeText", "freeText_keyword"})
