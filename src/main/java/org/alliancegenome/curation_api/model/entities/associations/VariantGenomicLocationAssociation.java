@@ -42,7 +42,7 @@ public abstract class VariantGenomicLocationAssociation extends VariantLocationA
 		"modInternalId", "modInternalId_keyword", "name", "name_keyword"
 	})
 	@ManyToOne
-	@JsonView({CurationView.FieldsOnly.class, CurationView.AlleleSummaryDocument.class, CurationView.VariantDocument.class})
+	@JsonView({CurationView.FieldsOnly.class, CurationView.AlleleSummaryDocument.class, CurationView.VariantSummaryDocument.class, CurationView.SequenceSummaryDocument.class})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@Fetch(FetchMode.JOIN)
 	private AssemblyComponent variantGenomicLocationAssociationObject;
@@ -63,7 +63,7 @@ public abstract class VariantGenomicLocationAssociation extends VariantLocationA
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "paddedBase_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({CurationView.FieldsOnly.class, CurationView.VariantDocument.class})
+	@JsonView({CurationView.FieldsOnly.class, CurationView.VariantSummaryDocument.class, CurationView.SequenceSummaryDocument.class})
 	@Column(length = 1)
 	private String paddedBase;
 
@@ -95,7 +95,7 @@ public abstract class VariantGenomicLocationAssociation extends VariantLocationA
 
 	@Transient
 	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
-	@JsonView({CurationView.FieldsOnly.class, CurationView.VariantDocument.class})
+	@JsonView({CurationView.FieldsOnly.class, CurationView.VariantSummaryDocument.class, CurationView.SequenceSummaryDocument.class})
 	public String getNucleotideChange() {
 		if (getVariantAssociationSubject() != null && getVariantAssociationSubject().getVariantType() != null) {
 			String variantTypeCurie = getVariantAssociationSubject().getVariantType().getCurie();

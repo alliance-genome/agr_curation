@@ -26,6 +26,6 @@ public interface VariantDocumentInterface {
 
 	@POST
 	@Path("/documents")
-	@JsonView(CurationView.VariantDocument.class)
+	@JsonView({CurationView.VariantSummaryDocument.class, CurationView.SequenceSummaryDocument.class})
 	SearchResponse<VariantSummaryDocument> findDocuments(@DefaultValue("0") @QueryParam("page") Integer page, @DefaultValue("10") @QueryParam("limit") Integer limit, @RequestBody HashMap<String, Object> params);
 }
