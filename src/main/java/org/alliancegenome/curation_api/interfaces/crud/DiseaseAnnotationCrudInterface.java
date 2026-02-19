@@ -21,6 +21,7 @@ import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
+import org.eclipse.microprofile.openapi.annotations.Operation;
 
 @Path("/disease-annotation")
 @Tag(name = "CRUD - Disease Annotations")
@@ -28,6 +29,7 @@ import jakarta.ws.rs.core.MediaType;
 @Consumes(MediaType.APPLICATION_JSON)
 public interface DiseaseAnnotationCrudInterface extends BaseIdCrudInterface<DiseaseAnnotation> {
 
+	@Operation(summary = "Get disease annotation by identifier", description = "Retrieve a single disease annotation by its identifier")
 	@GET
 	@Path("/findBy/{identifier}")
 	@JsonView(CurationView.FieldsAndLists.class)

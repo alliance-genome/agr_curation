@@ -24,6 +24,7 @@ import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
+import org.eclipse.microprofile.openapi.annotations.Operation;
 
 @Path("/phenotype-annotation")
 @Tag(name = "CRUD - Phenotype Annotations")
@@ -31,6 +32,7 @@ import jakarta.ws.rs.core.MediaType;
 @Consumes(MediaType.APPLICATION_JSON)
 public interface PhenotypeAnnotationCrudInterface extends BaseIdCrudInterface<PhenotypeAnnotation> {
 
+	@Operation(summary = "Get phenotype annotation by identifier", description = "Retrieve a single phenotype annotation by its identifier")
 	@GET
 	@Path("/findBy/{identifier}")
 	@JsonView(CurationView.FieldsAndLists.class)
@@ -48,6 +50,7 @@ public interface PhenotypeAnnotationCrudInterface extends BaseIdCrudInterface<Ph
 	@JsonView(CurationView.PhenotypeAnnotationView.class)
 	SearchResponse<PhenotypeAnnotation> search(@DefaultValue("0") @QueryParam("page") Integer page, @DefaultValue("10") @QueryParam("limit") Integer limit, @RequestBody HashMap<String, Object> params);
 
+	@Operation(summary = "Bulk load phenotype annotation data", description = "Bulk load phenotype annotation records from a data provider submission")
 	@POST
 	@Path("/bulk/{dataProvider}/annotationFile")
 	@JsonView(CurationView.FieldsAndLists.class)

@@ -27,6 +27,7 @@ import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
+import org.eclipse.microprofile.openapi.annotations.Operation;
 
 @Path("/variant")
 @Tag(name = "CRUD - Variants")
@@ -34,11 +35,13 @@ import jakarta.ws.rs.core.MediaType;
 @Consumes(MediaType.APPLICATION_JSON)
 public interface VariantCrudInterface extends BaseSubmittedObjectCrudInterface<Variant>, BaseUpsertControllerInterface<Variant, VariantDTO> {
 
+	@Operation(summary = "Bulk load variant data", description = "Bulk load variant records from a data provider submission")
 	@POST
 	@Path("/bulk/{dataProvider}/variants")
 	@JsonView(CurationView.FieldsAndLists.class)
 	APIResponse updateVariants(@PathParam("dataProvider") String dataProvider, List<VariantDTO> alleleData);
 
+	@Operation(summary = "Bulk load variant data", description = "Bulk load variant records from a data provider submission")
 	@POST
 	@Path("/bulk/{dataProvider}/fmsvariants")
 	@JsonView(CurationView.FieldsAndLists.class)

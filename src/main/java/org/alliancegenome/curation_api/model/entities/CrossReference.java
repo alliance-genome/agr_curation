@@ -31,7 +31,7 @@ import lombok.ToString;
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = false)
 @ToString(callSuper = true)
-@Schema(name = "CrossReference", description = "POJO that represents the Cross Reference")
+@Schema(name = "CrossReference", description = "CrossReference: a cross reference")
 @AGRCurationSchemaVersion(min = "1.6.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = {AuditedObject.class})
 @Table(indexes = {
 	@Index(name = "crossreference_createdby_index", columnList = "createdBy_id"),

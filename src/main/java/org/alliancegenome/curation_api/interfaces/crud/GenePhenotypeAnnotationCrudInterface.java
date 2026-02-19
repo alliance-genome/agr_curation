@@ -16,6 +16,7 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
+import org.eclipse.microprofile.openapi.annotations.Operation;
 
 @Path("/gene-phenotype-annotation")
 @Tag(name = "CRUD - Gene Phenotype Annotations")
@@ -23,6 +24,7 @@ import jakarta.ws.rs.core.MediaType;
 @Consumes(MediaType.APPLICATION_JSON)
 public interface GenePhenotypeAnnotationCrudInterface extends BaseIdCrudInterface<GenePhenotypeAnnotation> {
 
+	@Operation(summary = "Get gene phenotype annotation by identifier", description = "Retrieve a single gene phenotype annotation by its identifier")
 	@GET
 	@Path("/findBy/{identifier}")
 	@JsonView(CurationView.FieldsAndLists.class)

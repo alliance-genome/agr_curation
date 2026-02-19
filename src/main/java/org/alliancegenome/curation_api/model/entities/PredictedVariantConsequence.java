@@ -43,7 +43,7 @@ import lombok.ToString;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(callSuper = true)
 @AGRCurationSchemaVersion(min = "2.7.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = {AuditedObject.class})
-@Schema(name = "PredictedVariantConsequence", description = "POJO representing VEP predicted variant consequence results")
+@Schema(name = "PredictedVariantConsequence", description = "PredictedVariantConsequence: a predicted variant consequence")
 @Table(indexes = {
 	@Index(name = "predictedvariantconsequence_varianttranscript_index", columnList = "varianttranscript_id"),
 	@Index(name = "predictedvariantconsequence_vepimpact_index", columnList = "vepimpact_id"),

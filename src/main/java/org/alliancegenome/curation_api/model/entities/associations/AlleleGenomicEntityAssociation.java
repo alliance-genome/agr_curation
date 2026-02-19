@@ -27,7 +27,7 @@ import lombok.ToString;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(callSuper = true)
 @AGRCurationSchemaVersion(min = "1.9.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { EvidenceAssociation.class })
-@Schema(name = "AlleleGenomicEntityAssociation", description = "POJO representing an association between an allele and a genomic entity")
+@Schema(name = "AlleleGenomicEntityAssociation", description = "AlleleGenomicEntityAssociation: an allele genomic entity association")
 public class AlleleGenomicEntityAssociation extends EvidenceAssociation {
 
 	@IndexedEmbedded(includePaths = { "name", "name_keyword" })

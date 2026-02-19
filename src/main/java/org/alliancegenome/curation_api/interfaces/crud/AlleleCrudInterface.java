@@ -26,6 +26,7 @@ import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
+import org.eclipse.microprofile.openapi.annotations.Operation;
 
 @Path("/allele")
 @Tag(name = "CRUD - Alleles")
@@ -33,6 +34,7 @@ import jakarta.ws.rs.core.MediaType;
 @Consumes(MediaType.APPLICATION_JSON)
 public interface AlleleCrudInterface extends BaseSubmittedObjectCrudInterface<Allele>, BaseUpsertControllerInterface<Allele, AlleleDTO> {
 
+	@Operation(summary = "Bulk load allele data", description = "Bulk load allele records from a data provider submission")
 	@POST
 	@Path("/bulk/{dataProvider}/alleles")
 	@JsonView(CurationView.FieldsAndLists.class)
@@ -50,6 +52,7 @@ public interface AlleleCrudInterface extends BaseSubmittedObjectCrudInterface<Al
 	@JsonView(CurationView.AlleleView.class)
 	ObjectResponse<Allele> update(Allele entity);
 	
+	@Operation(summary = "Update allele with full detail", description = "Update a allele entity and return the detailed view")
 	@PUT
 	@Path("/updateDetail")
 	@JsonView(CurationView.AlleleDetailView.class)

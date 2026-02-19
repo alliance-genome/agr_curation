@@ -15,6 +15,7 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
+import org.eclipse.microprofile.openapi.annotations.Operation;
 
 @Path("/htpexpressiondatasetannotation")
 @Tag(name = "CRUD - HTP Expression Dataset Annotation")
@@ -22,6 +23,7 @@ import jakarta.ws.rs.core.MediaType;
 @Consumes(MediaType.APPLICATION_JSON)
 public interface HTPExpressionDatasetAnnotationCrudInterface extends BaseIdCrudInterface<HTPExpressionDatasetAnnotation> {
 	
+	@Operation(summary = "Bulk load HTP expression dataset annotation data", description = "Bulk load HTP expression dataset annotation records from a data provider submission")
 	@POST
 	@Path("/bulk/{dataProvider}/htpexpressiondatasetannotationfile")
 	@JsonView(CurationView.FieldsAndLists.class)

@@ -21,6 +21,7 @@ import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
+import org.eclipse.microprofile.openapi.annotations.Operation;
 
 @Path("gene-interaction")
 @Tag(name = "CRUD - Gene Interactions")
@@ -28,6 +29,7 @@ import jakarta.ws.rs.core.MediaType;
 @Consumes(MediaType.APPLICATION_JSON)
 public interface GeneInteractionCrudInterface extends BaseIdCrudInterface<GeneInteraction> {
 
+	@Operation(summary = "Get gene interaction by identifier", description = "Retrieve a single gene interaction by its identifier")
 	@GET
 	@Path("/findBy/{identifierString}")
 	@JsonView(CurationView.GeneInteractionView.class)
