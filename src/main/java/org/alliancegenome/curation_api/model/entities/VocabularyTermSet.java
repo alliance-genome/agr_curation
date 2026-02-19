@@ -36,7 +36,7 @@ import lombok.ToString;
 @Entity
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
-@Schema(name = "VocabularyTermSet", description = "POJO that represents the Vocabulary Term Set")
+@Schema(name = "VocabularyTermSet", description = "VocabularyTermSet: a vocabulary term set")
 @ToString(callSuper = true)
 @Table(
 	indexes = {

@@ -35,7 +35,7 @@ import lombok.ToString;
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(callSuper = true)
-@Schema(name = "ExternalDataBaseEntity", description = "POJO that represents the ExternalDataBaseEntity")
+@Schema(name = "ExternalDataBaseEntity", description = "ExternalDataBaseEntity: an external data base entity")
 @AGRCurationSchemaVersion(min = "2.6.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { CurieObject.class })
 public class ExternalDataBaseEntity extends CurieObject {
 

@@ -29,7 +29,7 @@ import lombok.ToString;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(callSuper = true)
 @AGRCurationSchemaVersion(min = "2.8.1", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = {Association.class})
-@Schema(name = "AgmAgmAssociation", description = "POJO representing an association between an AGM and another AGM")
+@Schema(name = "AgmAgmAssociation", description = "AgmAgmAssociation: an agm agm association")
 
 @Table(indexes = {
 	@Index(name = "AgmAgmAssociation_internal_index", columnList = "internal"),

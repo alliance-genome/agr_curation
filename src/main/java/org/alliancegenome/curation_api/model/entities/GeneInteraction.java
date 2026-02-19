@@ -38,7 +38,7 @@ import lombok.ToString;
 @EqualsAndHashCode(callSuper = true)
 @AGRCurationSchemaVersion(min = "2.2.2", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { Annotation.class })
 @ToString(callSuper = true)
-@Schema(name = "Gene_Interaction", description = "Annotation class representing a gene interaction")
+@Schema(name = "Gene_Interaction", description = "GeneInteraction: a gene interaction")
 public abstract class GeneInteraction extends GeneGeneAssociation {
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")

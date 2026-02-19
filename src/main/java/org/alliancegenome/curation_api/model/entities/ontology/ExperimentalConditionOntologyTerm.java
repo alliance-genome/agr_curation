@@ -7,7 +7,9 @@ import jakarta.persistence.Entity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
+@Schema(name = "ExperimentalConditionOntologyTerm", description = "ExperimentalConditionOntologyTerm: an experimental condition ontology term")
 @Entity
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
