@@ -18,7 +18,7 @@ import lombok.ToString;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(callSuper = true)
 @AGRCurationSchemaVersion(min = "1.2.4", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { BulkScheduledLoad.class })
-@Schema(name = "BulkFMSLoad", description = "POJO that represents the BulkFMSLoad")
+@Schema(name = "BulkFMSLoad", description = "BulkFMSLoad: a bulk FMS load")
 @JsonTypeName
 public class BulkFMSLoad extends BulkScheduledLoad {
 

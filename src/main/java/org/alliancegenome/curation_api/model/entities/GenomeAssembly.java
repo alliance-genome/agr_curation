@@ -27,7 +27,7 @@ import lombok.ToString;
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(callSuper = true)
-@Schema(name = "GenomeAssembly", description = "POJO that represents a GenomeAssembly")
+@Schema(name = "GenomeAssembly", description = "GenomeAssembly: a genome assembly")
 @AGRCurationSchemaVersion(min = "2.4.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { BiologicalEntity.class })
 public class GenomeAssembly extends BiologicalEntity {
 

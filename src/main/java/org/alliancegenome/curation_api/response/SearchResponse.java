@@ -15,7 +15,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 import lombok.Data;
 
 @Data
-@Schema(name = "SearchResponse", description = "POJO that represents the SearchResponse")
+@Schema(name = "SearchResponse", description = "SearchResponse: wraps paginated search results with metadata. The 'results' field contains matching entities, with totalResults, returnedRecords, and aggregations for pagination.")
 @JsonView({
 	CurationView.FieldsOnly.class,
 	CurationView.ForPublic.class,
@@ -34,16 +34,24 @@ import lombok.Data;
 })
 public class SearchResponse<E> extends APIResponse {
 
+	@Schema(description = "The list of matching entity objects")
 	@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
 	private List<E> results = new ArrayList<>();
 
+	@Schema(description = "Total number of matching results across all pages")
 	private Long totalResults;
+	@Schema(description = "Number of records returned in this page")
 	private Integer returnedRecords;
+	@Schema(description = "Faceted aggregation counts keyed by field name")
 	private Map<String, Map<String, Long>> aggregations;
+	@Schema(description = "Debug information for the search query")
 	private String debug;
+	@Schema(description = "The generated Elasticsearch/OpenSearch query")
 	private String esQuery;
+	@Schema(description = "The generated database query")
 	private String dbQuery;
-	private Long nextCursor; // For cursor-based pagination
+	@Schema(description = "Cursor value for fetching the next page of results")
+	private Long nextCursor;
 
 	public SearchResponse() {
 	}
