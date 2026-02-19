@@ -63,6 +63,6 @@ public interface GeneCrudInterface extends BaseSubmittedObjectCrudInterface<Gene
 	@Path("/search")
 	@Tag(name = "Elastic Search Browsing Endpoints")
 	@JsonView({ CurationView.GeneView.class })
-	SearchResponse<Gene> search(@DefaultValue("0") @QueryParam("page") Integer page, @DefaultValue("10") @QueryParam("limit") Integer limit, @RequestBody HashMap<String, Object> params);
+	SearchResponse<Gene> search(@DefaultValue("0") @QueryParam("page") Integer page, @DefaultValue("10") @QueryParam("limit") Integer limit, HashMap<String, Object> params);
 
 }

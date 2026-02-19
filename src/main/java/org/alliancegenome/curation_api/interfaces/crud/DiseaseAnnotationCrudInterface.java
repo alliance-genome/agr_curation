@@ -7,7 +7,6 @@ import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.view.CurationView;
-import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 import com.fasterxml.jackson.annotation.JsonView;
@@ -38,7 +37,8 @@ public interface DiseaseAnnotationCrudInterface extends BaseIdCrudInterface<Dise
 	@Override
 	@POST
 	@Path("/search")
+	@Tag(name = "Elastic Search Browsing Endpoints")
 	@JsonView(CurationView.DiseaseAnnotation.class)
-	SearchResponse<DiseaseAnnotation> search(@DefaultValue("0") @QueryParam("page") Integer page, @DefaultValue("10") @QueryParam("limit") Integer limit, @RequestBody HashMap<String, Object> params);
+	SearchResponse<DiseaseAnnotation> search(@DefaultValue("0") @QueryParam("page") Integer page, @DefaultValue("10") @QueryParam("limit") Integer limit, HashMap<String, Object> params);
 
 }

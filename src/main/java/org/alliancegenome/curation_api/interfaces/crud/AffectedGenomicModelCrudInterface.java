@@ -73,6 +73,6 @@ public interface AffectedGenomicModelCrudInterface extends BaseSubmittedObjectCr
 	@Path("/search")
 	@Tag(name = "Elastic Search Browsing Endpoints")
 	@JsonView({ CurationView.AffectedGenomicModelView.class })
-	SearchResponse<AffectedGenomicModel> search(@DefaultValue("0") @QueryParam("page") Integer page, @DefaultValue("10") @QueryParam("limit") Integer limit, @RequestBody HashMap<String, Object> params);
+	SearchResponse<AffectedGenomicModel> search(@DefaultValue("0") @QueryParam("page") Integer page, @DefaultValue("10") @QueryParam("limit") Integer limit, HashMap<String, Object> params);
 
 }
