@@ -27,6 +27,7 @@ import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
+import org.eclipse.microprofile.openapi.annotations.Operation;
 
 @Path("/agm")
 @Tag(name = "CRUD - Affected Genomic Models")
@@ -36,6 +37,7 @@ public interface AffectedGenomicModelCrudInterface extends BaseSubmittedObjectCr
 	BaseReadIdentifierControllerInterface<AffectedGenomicModel>,
 	BaseUpsertControllerInterface<AffectedGenomicModel, AffectedGenomicModelDTO> {
 
+	@Operation(summary = "Bulk load affected genomic model data", description = "Bulk load affected genomic model records from a data provider submission")
 	@POST
 	@Path("/bulk/{dataProvider}/agms")
 	@JsonView(CurationView.FieldsAndLists.class)

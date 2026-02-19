@@ -24,6 +24,7 @@ import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
+import org.eclipse.microprofile.openapi.annotations.Operation;
 
 @Path("/vocabularytermset")
 @Tag(name = "CRUD - VocabularyTermSet")
@@ -31,11 +32,13 @@ import jakarta.ws.rs.core.MediaType;
 @Consumes(MediaType.APPLICATION_JSON)
 public interface VocabularyTermSetCrudInterface extends BaseIdCrudInterface<VocabularyTermSet> {
 
+	@Operation(summary = "Get vocabulary term set by ID", description = "Retrieve a single vocabulary term set by its database ID")
 	@GET
 	@Path("/{id}")
 	@JsonView(CurationView.VocabularyTermSetView.class)
 	ObjectResponse<VocabularyTermSet> getById(@PathParam("id") Long id);
 
+	@Operation(summary = "Get terms for vocabulary term set", description = "Retrieve all vocabulary terms belonging to this vocabulary term set")
 	@GET
 	@Path("/{id}/terms")
 	@JsonView(CurationView.VocabularyTermSetView.class)

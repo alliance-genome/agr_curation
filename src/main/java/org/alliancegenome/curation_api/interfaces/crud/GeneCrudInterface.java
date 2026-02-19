@@ -25,6 +25,7 @@ import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
+import org.eclipse.microprofile.openapi.annotations.Operation;
 
 @Path("/gene")
 @Tag(name = "CRUD - Genes")
@@ -32,6 +33,7 @@ import jakarta.ws.rs.core.MediaType;
 @Consumes(MediaType.APPLICATION_JSON)
 public interface GeneCrudInterface extends BaseSubmittedObjectCrudInterface<Gene>, BaseUpsertControllerInterface<Gene, GeneDTO> {
 
+	@Operation(summary = "Bulk load gene data", description = "Bulk load gene records from a data provider submission")
 	@POST
 	@Path("/bulk/{dataProvider}/genes")
 	@JsonView(CurationView.FieldsAndLists.class)

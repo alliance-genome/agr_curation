@@ -23,6 +23,7 @@ import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
+import org.eclipse.microprofile.openapi.annotations.Operation;
 
 @Path("/sqtr")
 @Tag(name = "CRUD - SQTR")
@@ -30,6 +31,7 @@ import jakarta.ws.rs.core.MediaType;
 @Consumes(MediaType.APPLICATION_JSON)
 public interface SequenceTargetingReagentCrudInterface extends BaseSubmittedObjectCrudInterface<SequenceTargetingReagent> {
 
+	@Operation(summary = "Bulk load sequence targeting reagent data", description = "Bulk load sequence targeting reagent records from a data provider submission")
 	@POST
 	@Path("/bulk/{dataProvider}/sqtrfile")
 	@JsonView(CurationView.FieldsAndLists.class)
