@@ -166,13 +166,13 @@ public class PredictedVariantConsequence extends AuditedObject {
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "introns_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({CurationView.FieldsOnly.class})
+	@JsonView({CurationView.FieldsOnly.class, CurationView.SequenceSummaryDocument.class})
 	@Transient
 	private String introns;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "exons_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({CurationView.FieldsOnly.class})
+	@JsonView({CurationView.FieldsOnly.class, CurationView.SequenceSummaryDocument.class})
 	@Transient
 	private String exons;
 	
@@ -184,7 +184,7 @@ public class PredictedVariantConsequence extends AuditedObject {
 
 	@Transient
 	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
-	@JsonView({CurationView.FieldsOnly.class, CurationView.VariantView.class})
+	@JsonView({CurationView.FieldsOnly.class, CurationView.VariantView.class, CurationView.SequenceSummaryDocument.class})
 	public String getIntronExonLocation() {
 		if (exons == null && introns == null) {
 			return null;
