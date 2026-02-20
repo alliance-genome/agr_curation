@@ -19,6 +19,7 @@ public class VariantFmsDTO extends BaseDTO {
 	private String genomicReferenceSequence;
 	private String genomicVariantSequence;
 	private String type;
+	private String paddedBase;
 	private String consequence;
 	private List<VariantNoteFmsDTO> notes;
 	private List<PublicationRefFmsDTO> references;
