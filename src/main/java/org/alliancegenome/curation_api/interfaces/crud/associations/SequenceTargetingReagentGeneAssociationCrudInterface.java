@@ -14,6 +14,7 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
+import org.eclipse.microprofile.openapi.annotations.Operation;
 
 @Path("/sqtrgeneassociation")
 @Tag(name = "CRUD - SQTR Gene Associations")
@@ -21,6 +22,7 @@ import jakarta.ws.rs.core.MediaType;
 @Consumes(MediaType.APPLICATION_JSON)
 public interface SequenceTargetingReagentGeneAssociationCrudInterface extends BaseIdCrudInterface<SequenceTargetingReagentGeneAssociation> {
 
+	@Operation(summary = "Get sequence targeting reagent gene association by component IDs", description = "Look up a specific sequence targeting reagent gene association by its component entity IDs and relation")
 	@GET
 	@Path("/findBy")
 	@JsonView(CurationView.FieldsAndLists.class)
