@@ -43,7 +43,7 @@ public class Reference extends InformationContentEntity {
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
 	@Fetch(FetchMode.JOIN)
-	@JsonView({CurationView.FieldsOnly.class, CurationView.ForPublic.class})
+	@JsonView({CurationView.FieldsOnly.class, CurationView.ForPublic.class, CurationView.VariantSummaryDocument.class})
 	@JoinTable(
 		indexes = {
 			@Index(name = "reference_crossreference_reference_index", columnList = "Reference_id"),
