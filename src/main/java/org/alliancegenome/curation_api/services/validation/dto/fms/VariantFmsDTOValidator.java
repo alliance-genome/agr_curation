@@ -307,7 +307,13 @@ public class VariantFmsDTOValidator {
 		association.setVariantGenomicLocationAssociationObject(chromosome);
 		association.setStart(dto.getStart());
 		association.setEnd(dto.getEnd());
-		association.setPaddedBase(dto.getPaddedBase());
+		if (StringUtils.isNotEmpty(dto.getPaddedBase())) {
+			if (!dto.getPaddedBase().matches("[ACGTacgt]+")) {
+				cvglaResponse.addErrorMessage("paddedBase", ValidationConstants.INVALID_MESSAGE + " (" + dto.getPaddedBase() + ") does contain invalid characters");
+			} else {
+				association.setPaddedBase(dto.getPaddedBase().toUpperCase());
+			}
+		}
 		association.setRelation(vocabularyTermService.getTermInVocabulary(VocabularyConstants.LOCATION_ASSOCIATION_RELATION_VOCABULARY, "located_on").getEntity());
 
 		if (StringUtils.isNotBlank(dto.getGenomicReferenceSequence()) && !Objects.equals(dto.getGenomicReferenceSequence(), "N/A")) {
