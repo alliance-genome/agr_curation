@@ -1,5 +1,7 @@
 package org.alliancegenome.curation_api.services.ontology;
 
+import java.util.List;
+
 import org.alliancegenome.curation_api.dao.ontology.GoTermDAO;
 import org.alliancegenome.curation_api.interfaces.base.BasePopularityInterface;
 import org.alliancegenome.curation_api.model.entities.ontology.GOTerm;
@@ -28,6 +30,14 @@ public class GoTermService extends BaseOntologyTermService<GOTerm, GoTermDAO> im
 		if (term != null) {
 			term.setPopularity(popularity);
 		}
+	}
+
+	public List<Long> getAllGOSearchResultIds() {
+		return goTermDAO.getAllGOSearchResultIds();
+	}
+
+	public List<GOTerm> findByIds(List<Long> ids) {
+		return goTermDAO.findByIds(ids);
 	}
 
 }
