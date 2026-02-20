@@ -31,7 +31,7 @@ import lombok.ToString;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(callSuper = true)
 @AGRCurationSchemaVersion(min = "2.3.1", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { EvidenceAssociation.class })
-@Schema(name = "SequenceTargetingReagentGeneAssociation", description = "POJO representing an association between an SQTR and a gene")
+@Schema(name = "SequenceTargetingReagentGeneAssociation", description = "SequenceTargetingReagentGeneAssociation: a sequence targeting reagent gene association")
 
 @Table(
 	indexes = {
