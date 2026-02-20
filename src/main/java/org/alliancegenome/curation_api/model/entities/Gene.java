@@ -178,6 +178,6 @@ public class Gene extends GenomicEntity {
 	@IndexedEmbedded(includePaths = {"displayName", "referencedCurie", "displayName_keyword", "referencedCurie_keyword", "resourceDescriptorPage.name", "resourceDescriptorPage.name_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-	@JsonView({CurationView.FieldsOnly.class})
+	@JsonView({CurationView.FieldsOnly.class, CurationView.GeneSummaryDocument.class})
 	private CrossReference gcrpCrossReference;
 }
