@@ -1,5 +1,7 @@
 package org.alliancegenome.curation_api.model.document.es;
 
+import java.util.HashSet;
+
 import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.PredictedVariantConsequence;
 import org.alliancegenome.curation_api.model.entities.associations.CuratedVariantGenomicLocationAssociation;
@@ -22,5 +24,6 @@ public class SequenceSummaryDocument extends ESDocument {
 	private Allele allele;
 	private CuratedVariantGenomicLocationAssociation variant;
 	private PredictedVariantConsequence consequence;
+	private HashSet<String> geneIds;
 
 }
