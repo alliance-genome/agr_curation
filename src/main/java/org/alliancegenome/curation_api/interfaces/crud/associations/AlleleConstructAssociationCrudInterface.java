@@ -22,6 +22,7 @@ import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
+import org.eclipse.microprofile.openapi.annotations.Operation;
 
 @Path("/alleleconstructassociation")
 @Tag(name = "CRUD - Allele Construct Associations")
@@ -29,21 +30,25 @@ import jakarta.ws.rs.core.MediaType;
 @Consumes(MediaType.APPLICATION_JSON)
 public interface AlleleConstructAssociationCrudInterface extends BaseIdCrudInterface<AlleleConstructAssociation> {
 
+	@Operation(summary = "Bulk load allele construct association data", description = "Bulk load allele construct association records from a data provider submission")
 	@POST
 	@Path("/bulk/{dataProvider}/associationFile")
 	@JsonView(CurationView.FieldsAndLists.class)
 	APIResponse updateAlleleConstructAssociations(@PathParam("dataProvider") String dataProvider, List<AlleleConstructAssociationDTO> associationData);
 
+	@Operation(summary = "Get allele construct association by component IDs", description = "Look up a specific allele construct association by its component entity IDs and relation")
 	@GET
 	@Path("/findBy")
 	@JsonView(CurationView.FieldsAndLists.class)
 	ObjectResponse<AlleleConstructAssociation> getAssociation(@QueryParam("alleleId") Long alleleId, @QueryParam("relationName") String relationName, @QueryParam("constructId") Long constructId);
 
+	@Operation(summary = "Validate allele construct association", description = "Validate a allele construct association entity without persisting it")
 	@POST
 	@Path("/validate")
 	@JsonView(CurationView.FieldsAndLists.class)
 	ObjectResponse<AlleleConstructAssociation> validate(AlleleConstructAssociation entity);
 
+	@Operation(summary = "Find allele construct association for public API", description = "Query allele construct association records with public-facing view")
 	@POST
 	@Path("/findForPublic")
 	@JsonView(CurationView.ForPublic.class)
