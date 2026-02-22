@@ -237,6 +237,7 @@ export const SiteLayout = (props) => {
 						{ label: 'Experimental Conditions', icon: 'pi pi-fw pi-home', to: '/experimentalConditions' },
 						{ label: 'Experiments', icon: 'pi pi-fw pi-home', to: '/conditionRelations' },
 						{ label: 'Genes', icon: 'pi pi-fw pi-home', to: '/genes' },
+						{ label: 'Gene Expression Annotations', icon: 'pi pi-fw pi-home', to: '/geneExpressionAnnotations' },
 						{ label: 'Gene Genetic Interactions', icon: 'pi pi-fw pi-home', to: '/geneGeneticInteractions' },
 						{ label: 'Gene Molecular Interactions', icon: 'pi pi-fw pi-home', to: '/geneMolecularInteractions' },
 						{ label: 'Literature References', icon: 'pi pi-fw pi-home', to: '/references' },

@@ -38,7 +38,7 @@ import lombok.ToString;
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(exclude = { "sequenceTargetingReagentGeneAssociations", "agmSequenceTargetingReagentAssociations" }, callSuper = true)
-@Schema(name = "SequenceTargetingReagent", description = "POJO that represents the SequenceTargetingReagent")
+@Schema(name = "SequenceTargetingReagent", description = "SequenceTargetingReagent: a sequence targeting reagent")
 @AGRCurationSchemaVersion(min = "2.3.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { GenomicEntity.class }, partial = true)
 public class SequenceTargetingReagent extends GenomicEntity {
 
