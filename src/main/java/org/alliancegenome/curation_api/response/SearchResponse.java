@@ -39,7 +39,7 @@ public class SearchResponse<E> extends APIResponse {
 	private List<E> results = new ArrayList<>();
 
 	@Schema(description = "Total number of matching results across all pages")
-	private Long totalResults;
+	private long totalResults;
 	@Schema(description = "Number of records returned in this page")
 	private Integer returnedRecords;
 	@Schema(description = "Faceted aggregation counts keyed by field name")
@@ -51,7 +51,8 @@ public class SearchResponse<E> extends APIResponse {
 	@Schema(description = "The generated database query")
 	private String dbQuery;
 	@Schema(description = "Cursor value for fetching the next page of results")
-	private Long nextCursor;
+	private long nextCursor;
+
 
 	public SearchResponse() {
 	}
