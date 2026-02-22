@@ -109,8 +109,8 @@ public class ConditionRelationService extends BaseEntityCrudService<ConditionRel
 			conditionRelationSearchResponse.getResults().add(getStandardExperiment(ConditionRelation.Constant.HANDLE_GENERIC_CONTROL, reference));
 		}
 		if (genericOptional.isEmpty() || standardOptional.isEmpty()) {
-			conditionRelationSearchResponse.setTotalResults(conditionRelationSearchResponse.getTotalResults() == null ? 1 : conditionRelationSearchResponse.getTotalResults() + 1);
-			conditionRelationSearchResponse.setReturnedRecords(conditionRelationSearchResponse.getReturnedRecords() == null ? 1 : conditionRelationSearchResponse.getReturnedRecords() + 1);
+			conditionRelationSearchResponse.setTotalResults(conditionRelationSearchResponse.getTotalResults());
+			conditionRelationSearchResponse.setReturnedRecords(conditionRelationSearchResponse.getReturnedRecords());
 		}
 		return conditionRelationSearchResponse;
 	}

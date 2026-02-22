@@ -37,13 +37,13 @@ public class SearchResponse<E> extends APIResponse {
 	@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
 	private List<E> results = new ArrayList<>();
 
-	private Long totalResults;
+	private long totalResults;
 	private Integer returnedRecords;
 	private Map<String, Map<String, Long>> aggregations;
 	private String debug;
 	private String esQuery;
 	private String dbQuery;
-	private Long nextCursor; // For cursor-based pagination
+	private long nextCursor; // For cursor-based pagination
 
 	public SearchResponse() {
 	}
