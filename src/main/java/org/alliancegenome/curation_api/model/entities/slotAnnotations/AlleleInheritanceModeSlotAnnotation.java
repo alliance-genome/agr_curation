@@ -31,7 +31,7 @@ import lombok.ToString;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(callSuper = true)
 @AGRCurationSchemaVersion(min = "1.5.1", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { SlotAnnotation.class })
-@Schema(name = "AlleleInheritanceModeSlotAnnotation", description = "POJO representing an allele inheritance mode slot annotation")
+@Schema(name = "AlleleInheritanceModeSlotAnnotation", description = "AlleleInheritanceModeSlotAnnotation: an allele inheritance mode slot annotation")
 public class AlleleInheritanceModeSlotAnnotation extends SlotAnnotation {
 
 	@ManyToOne
