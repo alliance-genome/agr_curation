@@ -67,12 +67,12 @@ public class CuratedVariantGenomicLocationAssociation extends VariantGenomicLoca
 	)
 	@OneToMany(mappedBy = "variantGenomicLocation", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonManagedReference
-	@JsonView({CurationView.FieldsAndLists.class, CurationView.VariantView.class, CurationView.VariantSummaryDocument.class, CurationView.SequenceSummaryDocument.class, CurationView.AlleleSummaryDocument.class})
+	@JsonView({CurationView.FieldsAndLists.class, CurationView.VariantView.class, CurationView.VariantSummaryDocument.class, CurationView.AlleleSummaryDocument.class})
 	private List<PredictedVariantConsequence> predictedVariantConsequences;
 
 	@Transient
 	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
-	@JsonView({CurationView.FieldsOnly.class, CurationView.VariantSummaryDocument.class, CurationView.SequenceSummaryDocument.class})
+	@JsonView({CurationView.FieldsOnly.class, CurationView.VariantSummaryDocument.class})
 	public PredictedVariantConsequence getMostSevereConsequence() {
 		if (predictedVariantConsequences == null || predictedVariantConsequences.isEmpty()) {
 			return null;
@@ -92,7 +92,7 @@ public class CuratedVariantGenomicLocationAssociation extends VariantGenomicLoca
 
 	@Transient
 	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
-	@JsonView({CurationView.VariantSummaryDocument.class, CurationView.SequenceSummaryDocument.class})
+	@JsonView({CurationView.VariantSummaryDocument.class})
 	public List<String> getHgvsC() {
 		if (predictedVariantConsequences == null) {
 			return Collections.emptyList();
@@ -107,7 +107,7 @@ public class CuratedVariantGenomicLocationAssociation extends VariantGenomicLoca
 
 	@Transient
 	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
-	@JsonView({CurationView.VariantSummaryDocument.class, CurationView.SequenceSummaryDocument.class})
+	@JsonView({CurationView.VariantSummaryDocument.class})
 	public List<String> getHgvsP() {
 		if (predictedVariantConsequences == null) {
 			return Collections.emptyList();
@@ -122,7 +122,7 @@ public class CuratedVariantGenomicLocationAssociation extends VariantGenomicLoca
 
 	@Transient
 	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
-	@JsonView({CurationView.VariantSummaryDocument.class, CurationView.SequenceSummaryDocument.class})
+	@JsonView({CurationView.VariantSummaryDocument.class})
 	public List<Gene> getOverlapGenes() {
 		if (predictedVariantConsequences == null) {
 			return Collections.emptyList();
