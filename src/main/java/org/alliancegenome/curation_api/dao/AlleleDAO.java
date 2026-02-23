@@ -506,11 +506,11 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 				WHERE phenotypeannotationsubject_id IN :alleleIds
 				UNION
 				SELECT DISTINCT phenotypeannotationsubject_id as allele_id
-				FROM agmphenotypeannotation 
+				FROM agmphenotypeannotation
 				WHERE inferredallele_id IN :alleleIds
 				UNION
-				SELECT DISTINCT agmphenotypeannotation_id as allele_id 
-				FROM agmphenotypeannotation_allele 
+				SELECT DISTINCT agmphenotypeannotation_id as allele_id
+				FROM agmphenotypeannotation_allele
 				WHERE assertedalleles_id :alleleIds
 				""";
 
@@ -529,11 +529,11 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 				WHERE diseaseannotationsubject_id IN :alleleIds
 				UNION
 				SELECT DISTINCT diseaseannotationsubject_id as allele_id
-				FROM agmdiseaseannotation 
+				FROM agmdiseaseannotation
 				WHERE inferredallele_id IN :alleleIds
 				UNION
-				SELECT DISTINCT agmdiseaseannotation_id as allele_id 
-				FROM agmdiseaseannotation_allele 
+				SELECT DISTINCT agmdiseaseannotation_id as allele_id
+				FROM agmdiseaseannotation_allele
 				WHERE assertedalleles_id IN :alleleIds
 				""";
 
