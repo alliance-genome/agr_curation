@@ -504,6 +504,14 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 				SELECT DISTINCT phenotypeannotationsubject_id as allele_id
 				FROM allelephenotypeannotation
 				WHERE phenotypeannotationsubject_id IN :alleleIds
+				UNION
+				SELECT DISTINCT phenotypeannotationsubject_id as allele_id
+				FROM agmphenotypeannotation 
+				WHERE inferredallele_id IN :alleleIds
+				UNION
+				SELECT DISTINCT agmphenotypeannotation_id as allele_id 
+				FROM agmphenotypeannotation_allele 
+				WHERE assertedalleles_id :alleleIds
 				""";
 
 		Query phenotypeQuery = entityManager.createNativeQuery(phenotypeQueryString);
@@ -519,6 +527,14 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 				SELECT DISTINCT diseaseannotationsubject_id as allele_id
 				FROM allelediseaseannotation
 				WHERE diseaseannotationsubject_id IN :alleleIds
+				UNION
+				SELECT DISTINCT diseaseannotationsubject_id as allele_id
+				FROM agmdiseaseannotation 
+				WHERE inferredallele_id IN :alleleIds
+				UNION
+				SELECT DISTINCT agmdiseaseannotation_id as allele_id 
+				FROM agmdiseaseannotation_allele 
+				WHERE assertedalleles_id IN :alleleIds
 				""";
 
 		Query diseaseQuery = entityManager.createNativeQuery(diseaseQueryString);
