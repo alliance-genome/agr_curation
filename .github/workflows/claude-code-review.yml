@@ -454,6 +454,23 @@ jobs:
             Do NOT just output text - you must use the gh command to post your review to the PR.
             ', github.repository, github.event.pull_request.number) || '' }}
 
+            ${{ github.event_name == 'issue_comment' && format('
+            REPO: {0}
+            PR NUMBER: {1}
+
+            A user has commented on this PR requesting your assistance.
+
+            START by reading their comment: gh pr view {1} --comments --json comments --jq ".comments[-1].body"
+            Then check the PR diff: git diff origin/alpha...HEAD
+
+            If they are asking for a review or check, perform a full code review of the changes.
+
+            IMPORTANT: You MUST post your response as a GitHub PR comment using:
+            gh pr comment {1} --body "YOUR_RESPONSE_HERE"
+
+            Do NOT just output text - you must use the gh command to post your response to the PR.
+            ', github.repository, github.event.issue.number) || '' }}
+
           # CLI arguments (v1 format)
           claude_args: |
             --model ${{ vars.CLAUDE_PR_REVIEW_MODEL }}
