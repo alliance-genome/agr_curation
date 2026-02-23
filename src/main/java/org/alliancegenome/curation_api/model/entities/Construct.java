@@ -35,7 +35,7 @@ import lombok.ToString;
 @Entity
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
-@Schema(name = "construct", description = "POJO that represents a construct")
+@Schema(name = "construct", description = "Construct: a construct")
 @ToString(exclude = {"constructGenomicEntityAssociations", "alleleConstructAssociations", "constructComponents", "constructSymbol", "constructFullName", "constructSynonyms"}, callSuper = true)
 @AGRCurationSchemaVersion(min = "2.1.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { Reagent.class })
 

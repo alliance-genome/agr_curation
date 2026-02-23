@@ -14,6 +14,7 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
+import org.eclipse.microprofile.openapi.annotations.Operation;
 
 @Path("/expression-annotation")
 @Tag(name = "CRUD - Expression Annotations")
@@ -21,6 +22,7 @@ import jakarta.ws.rs.core.MediaType;
 @Consumes(MediaType.APPLICATION_JSON)
 public interface ExpressionAnnotationCrudInterface extends BaseIdCrudInterface<ExpressionAnnotation> {
 
+	@Operation(summary = "Get expression annotation by identifier", description = "Retrieve a single expression annotation by its identifier")
 	@GET
 	@Path("/findBy/{identifier}")
 	@JsonView(CurationView.FieldsAndLists.class)

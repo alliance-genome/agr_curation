@@ -454,9 +454,26 @@ jobs:
             Do NOT just output text - you must use the gh command to post your review to the PR.
             ', github.repository, github.event.pull_request.number) || '' }}
 
+            ${{ github.event_name == 'issue_comment' && format('
+            REPO: {0}
+            PR NUMBER: {1}
+
+            A user has commented on this PR requesting your assistance.
+
+            START by reading their comment: gh pr view {1} --comments --json comments --jq ".comments[-1].body"
+            Then check the PR diff: git diff origin/alpha...HEAD
+
+            If they are asking for a review or check, perform a full code review of the changes.
+
+            IMPORTANT: You MUST post your response as a GitHub PR comment using:
+            gh pr comment {1} --body "YOUR_RESPONSE_HERE"
+
+            Do NOT just output text - you must use the gh command to post your response to the PR.
+            ', github.repository, github.event.issue.number) || '' }}
+
           # CLI arguments (v1 format)
           claude_args: |
-            --model claude-sonnet-4-5-20250929
+            --model ${{ vars.CLAUDE_PR_REVIEW_MODEL }}
             --max-turns 80
             --allowedTools "${{ steps.review-config.outputs.allowed_tools }}"
             --append-system-prompt "You are reviewing a PULL REQUEST DIFF for an Alliance of Genome Resources Java Quarkus backend application.
