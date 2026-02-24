@@ -84,7 +84,9 @@ public class GeneExpressionAnnotation extends ExpressionAnnotation {
 		"singleReference.curie", "singleReference.primaryCrossReferenceCurie",
 		"singleReference.crossReferences.referencedCurie",
 		"singleReference.curie_keyword", "singleReference.primaryCrossReferenceCurie_keyword",
-		"singleReference.crossReferences.referencedCurie_keyword"
+		"singleReference.crossReferences.referencedCurie_keyword",
+		"crossReferences.referencedCurie", "crossReferences.displayName", "crossReferences.resourceDescriptorPage.name",
+		"crossReferences.referencedCurie_keyword", "crossReferences.displayName_keyword", "crossReferences.resourceDescriptorPage.name_keyword"
 	})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne

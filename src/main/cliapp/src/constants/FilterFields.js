@@ -743,9 +743,16 @@ export const FIELD_SETS = Object.freeze({
 		filterName: 'geaExperimentPrimaryExternalIdFilter',
 		fields: ['expressionExperiment.primaryExternalId'],
 	},
-	geaExperimentModInternalIdFieldSet: {
-		filterName: 'geaExperimentModInternalIdFilter',
-		fields: ['expressionExperiment.modInternalId'],
+	geaExperimentCrossRefsFieldSet: {
+		filterName: 'geaExperimentCrossRefsFilter',
+		fields: [
+			'expressionExperiment.crossReferences.referencedCurie',
+			'expressionExperiment.crossReferences.displayName',
+		],
+	},
+	geaAggregationFieldSet: {
+		filterName: 'geaAggregationFilter',
+		fields: ['dataProvider.abbreviation'],
 	},
 	geaExperimentSingleReferenceFieldSet: {
 		filterName: 'geaExperimentSingleReferenceFilter',
@@ -766,10 +773,6 @@ export const FIELD_SETS = Object.freeze({
 	geaAssayUsedFieldSet: {
 		filterName: 'geaAssayUsedFilter',
 		fields: ['expressionAssayUsed.name'],
-	},
-	geaDataProviderFieldSet: {
-		filterName: 'geaDataProviderFilter',
-		fields: ['dataProvider.abbreviation', 'dataProvider.fullName', 'dataProvider.shortName'],
 	},
 	geaRelationFieldSet: {
 		filterName: 'geaRelationFilter',
@@ -1021,9 +1024,9 @@ export const FILTER_CONFIGS = Object.freeze({
 		filterComponentType: 'input',
 		fieldSets: [FIELD_SETS.geaExperimentPrimaryExternalIdFieldSet],
 	},
-	geaExperimentModInternalIdFilterConfig: {
+	geaExperimentCrossRefsFilterConfig: {
 		filterComponentType: 'input',
-		fieldSets: [FIELD_SETS.geaExperimentModInternalIdFieldSet],
+		fieldSets: [FIELD_SETS.geaExperimentCrossRefsFieldSet],
 	},
 	geaExperimentSingleReferenceFilterConfig: {
 		filterComponentType: 'input',
@@ -1031,7 +1034,12 @@ export const FILTER_CONFIGS = Object.freeze({
 	},
 	geaSubjectFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.geaSubjectFieldSet] },
 	geaAssayUsedFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.geaAssayUsedFieldSet] },
-	geaDataProviderFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.geaDataProviderFieldSet] },
+	geaDataProviderFilterConfig: {
+		filterComponentType: 'multiselect',
+		fieldSets: [FIELD_SETS.dataProviderFieldSet],
+		aggregationFieldSet: FIELD_SETS.geaAggregationFieldSet,
+		useKeywordFields: true,
+	},
 	geaRelationFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.geaRelationFieldSet] },
 	geaWhereExpressedFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.geaWhereExpressedFieldSet] },
 	geaWhenExpressedFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.geaWhenExpressedFieldSet] },
