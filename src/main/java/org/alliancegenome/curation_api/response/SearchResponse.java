@@ -41,7 +41,7 @@ public class SearchResponse<E> extends APIResponse {
 	@Schema(description = "Total number of matching results across all pages")
 	private long totalResults;
 	@Schema(description = "Number of records returned in this page")
-	private Integer returnedRecords;
+	private long returnedRecords;
 	@Schema(description = "Faceted aggregation counts keyed by field name")
 	private Map<String, Map<String, Long>> aggregations;
 	@Schema(description = "Debug information for the search query")
