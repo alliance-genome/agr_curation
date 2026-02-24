@@ -87,13 +87,6 @@ export const GeneExpressionAnnotationsTable = () => {
 				filterConfig: FILTER_CONFIGS.geaExperimentPrimaryExternalIdFilterConfig,
 			},
 			{
-				field: 'expressionExperiment.modInternalId',
-				header: 'MOD Internal Experiment ID',
-				body: (rowData) => <StringTemplate string={rowData.expressionExperiment?.modInternalId} />,
-				sortable: true,
-				filterConfig: FILTER_CONFIGS.geaExperimentModInternalIdFilterConfig,
-			},
-			{
 				field: 'expressionAnnotationSubject.geneSymbol.displayText',
 				header: 'Subject',
 				body: (rowData) => <GenomicEntityTemplate genomicEntity={rowData.expressionAnnotationSubject} />,
@@ -126,6 +119,7 @@ export const GeneExpressionAnnotationsTable = () => {
 				header: 'Experiment Cross Refs',
 				body: (rowData) => <CrossReferencesTemplate list={rowData.expressionExperiment?.crossReferences} />,
 				sortable: false,
+				filterConfig: FILTER_CONFIGS.geaExperimentCrossRefsFilterConfig,
 			},
 			{
 				field: 'dataProvider.abbreviation',
@@ -147,20 +141,6 @@ export const GeneExpressionAnnotationsTable = () => {
 				body: (rowData) => <IdTemplate id={rowData.uniqueId} />,
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.uniqueidFilterConfig,
-			},
-			{
-				field: 'primaryExternalId',
-				header: 'MOD Annotation ID',
-				body: (rowData) => <StringTemplate string={rowData.primaryExternalId} />,
-				sortable: true,
-				filterConfig: FILTER_CONFIGS.primaryexternalidFilterConfig,
-			},
-			{
-				field: 'modInternalId',
-				header: 'MOD Internal Annotation ID',
-				body: (rowData) => <StringTemplate string={rowData.modInternalId} />,
-				sortable: true,
-				filterConfig: FILTER_CONFIGS.modinternalidFilterConfig,
 			},
 			{
 				field: 'relation.name',
@@ -194,7 +174,7 @@ export const GeneExpressionAnnotationsTable = () => {
 				field: 'crossReferences.displayName',
 				header: 'Annotation Cross Refs',
 				body: (rowData) => <CrossReferencesTemplate list={rowData.crossReferences} />,
-				sortable: true,
+				sortable: false,
 				filterConfig: FILTER_CONFIGS.crossReferencesFilterConfig,
 			},
 			{
