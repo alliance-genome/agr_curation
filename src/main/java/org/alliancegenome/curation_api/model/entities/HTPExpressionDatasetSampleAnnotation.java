@@ -41,7 +41,7 @@ import lombok.ToString;
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(callSuper = true)
-@Schema(name = "HTPExpressionDatasetSampleAnnotation", description = "POJO that represents the HighThroughputExpressionDatasetSampleAnnotation")
+@Schema(name = "HTPExpressionDatasetSampleAnnotation", description = "HTPExpressionDatasetSampleAnnotation: a HTP expression dataset sample annotation")
 @AGRCurationSchemaVersion(min = "2.9.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AuditedObject.class })
 @Table(indexes = {
 	@Index(name = "htpdatasample_htpExpressionSample_index", columnList = "htpExpressionSample_id"),

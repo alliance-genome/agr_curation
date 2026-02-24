@@ -20,8 +20,10 @@ import jakarta.persistence.UniqueConstraint;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
 @Inheritance(strategy = InheritanceType.JOINED)
+@Schema(name = "InformationContentEntity", description = "InformationContentEntity: an information content entity")
 @Entity
 @Data
 @TypeBinding(binder = @TypeBinderRef(type = InformationContentEntityTypeBridge.class))
