@@ -38,7 +38,9 @@ public class SearchResponse<E> extends APIResponse {
 	private List<E> results = new ArrayList<>();
 
 	private long totalResults;
-	private Integer returnedRecords;
+	@Schema(description = "Number of records returned in this page")
+	private long returnedRecords;
+	@Schema(description = "Faceted aggregation counts keyed by field name")
 	private Map<String, Map<String, Long>> aggregations;
 	private String debug;
 	private String esQuery;
