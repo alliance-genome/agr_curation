@@ -35,7 +35,7 @@ import lombok.ToString;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(exclude = "predictedVariantConsequences", callSuper = true)
 @AGRCurationSchemaVersion(min = "2.4.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = {VariantGenomicLocationAssociation.class})
-@Schema(name = "CuratedVariantGenomicLocationAssociation", description = "POJO representing an association between a variant and a curated genomic location")
+@Schema(name = "CuratedVariantGenomicLocationAssociation", description = "CuratedVariantGenomicLocationAssociation: a curated variant genomic location association")
 
 @Table(indexes = {
 		@Index(name = "cvgla_internal_index", columnList = "internal"),
