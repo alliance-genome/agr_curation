@@ -140,15 +140,16 @@ public class CurationView {
 	public static class GeneSearchResultDocument { }
 	public static class GOSearchResultDocument { }
 	public static class HTPDatasetSearchResultDocument { }
-	
+
 	// Views for summary pages
 	public static class DiseaseSummaryDocument { }
 	public static class GeneSummaryDocument { }
 	public static class AlleleSummaryDocument { }
 	public static class AccessionSummaryDocument { }
 	public static class VariantSummaryDocument { }
+	public static class VariantSearchResultDocument { }
 	public static class SequenceSummaryDocument { }
-	
+
 	// View for Table Documents
 	public static class GeneToGeneOrthologyDocument { }
 	public static class GeneExpressionDocument { }
