@@ -36,7 +36,7 @@ import lombok.ToString;
 @Data
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
-@Schema(name = "Gene_Genetic_Interaction", description = "Class representing an interaction between genes")
+@Schema(name = "Gene_Genetic_Interaction", description = "GeneGeneticInteraction: a gene genetic interaction")
 @AGRCurationSchemaVersion(min = "2.2.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { GeneInteraction.class })
 
 @Table(indexes = {
