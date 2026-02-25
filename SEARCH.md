@@ -1,24 +1,40 @@
-# Search payload for /search endpoints
+# Search Payload for /search Endpoints
 
-## Endpoints
+## Overview
 
-Endpoints are in the following structure
+The `/search` endpoints query against OpenSearch (via Hibernate Search) and are used by the curation UI for browsing and filtering data. Each entity type exposes its own search endpoint.
 
-POST /api/{object}/search
+## Endpoint
 
-{object} will be any of the objects that we have tables for in the UI and the database
+```
+POST /api/{object}/search?page={page}&limit={limit}
+```
+
+`{object}` is any entity that has a corresponding table in the curation system (e.g., `gene`, `allele`, `disease-annotation`).
 
 ## Query Parameters
 
-### Page
+| Parameter | Type    | Default | Description                                      |
+|-----------|---------|---------|--------------------------------------------------|
+| `page`    | Integer | `0`     | Zero-based page number.                          |
+| `limit`   | Integer | `10`    | Number of results per page.                      |
 
-This will be a zero based page of results that is pulled from the database. 
+Results are fetched starting at offset `page * limit` and returning up to `limit` records.
 
-### Limit 
+## Request Body
 
-This will be the size of the page that comes back. 
+The request body is a JSON object with the following top-level fields:
 
-## POST Search Payload Example
+| Field                   | Required | Type                | Description                                                        |
+|-------------------------|----------|---------------------|--------------------------------------------------------------------|
+| `searchFilters`         | Yes      | Object              | Named filter groups containing field-level search criteria.        |
+| `searchFilterOperator`  | No       | String              | How filters are combined: `"AND"` (default) or `"OR"`.            |
+| `sortOrders`            | No       | Array               | Ordered list of sort directives.                                   |
+| `aggregations`          | No       | Array of Strings    | Fields to aggregate (facet) in the results.                        |
+| `nonNullFieldsTable`    | No       | Array of Strings    | Fields that must be non-null across the entire result set.         |
+| `debug`                 | No       | String              | Set to `"true"` to include the generated query in the response.   |
+
+### Full Example
 
 ```json
 {
@@ -43,134 +59,231 @@ This will be the size of the page that comes back.
         "uniqueidFilter": {
             "uniqueId": {
                 "queryString": "wb",
-                "tokenOperator": "AND",
-                "useKeywordFields": false
-            }
-            "nonNullFields": [],
-            "nullFields": [],
+                "tokenOperator": "AND"
+            },
+            "nonNullFields": ["someRelation.curie"],
+            "nullFields": ["deprecatedField"]
         }
     },
-    "searchFilterOperator": "OR",
     "sortOrders": [
-        {
-            "field": "diseaseAnnotationSubject.symbol",
-            "order": 1
-        },
-        {
-            "field": "diseaseAnnotationSubject.name",
-            "order": 1
-        },
-        {
-            "field": "diseaseAnnotationSubject.primaryExternalId",
-            "order": 1
-        }
+        { "field": "diseaseAnnotationSubject.symbol", "order": 1 },
+        { "field": "diseaseAnnotationSubject.name", "order": 1 },
+        { "field": "diseaseAnnotationSubject.primaryExternalId", "order": 1 }
     ],
     "aggregations": ["secondaryDataProvider.sourceOrganization.abbreviation"],
     "nonNullFieldsTable": [],
-    "debug": "true",
+    "debug": "true"
 }
-
 ```
 
-### Search filters (required)
+---
 
-#### Filters
+## Search Filters
 
-All search filters need to have a unique name. Names only have meaning to the caller of the endpoint. In the above example "nameFilter" is only the name of the filter. It could be called "filter1" or any other name that makes sense to the caller.
+`searchFilters` is a map of **named filter groups**. Each key is an arbitrary name chosen by the caller (e.g., `"nameFilter"`, `"filter1"`). The names have no meaning to the server -- they only need to be unique within the request.
 
-Filters by default will be "AND"ed together so in the above example "nameFilter" AND "obsoleteFilter" AND "uniqueidFilter". However if you wish to have them "OR"ed together set the "searchFilterOperator" to "OR".
+### How Filters Combine
 
-#### Fields
+By default, all filter groups are **AND**'d together:
 
-Inside a single filter there can be multiple items listed. These items are the names of the fields in the linkML model starting with {object} and its field. These fields can be chanined together to get access to nested properties as in if {object} is a disease annotation then a field could be "diseaseAnnotationSubject.taxon.curie", which would query against the tax id that is on the subject of a disease annotation.
+> nameFilter **AND** obsoleteFilter **AND** uniqueidFilter
 
-Fields inside a single filter are "OR"ed together, in the above example for "obsoleteFilter" we are saying where field "obsolete" is false OR field "internal" is false.
+To **OR** them instead, set `searchFilterOperator` to `"OR"` at the top level:
 
-##### Query String (required)
+> nameFilter **OR** obsoleteFilter **OR** uniqueidFilter
 
-The queryString inside a field will be tokenized and a match will be performed on each token.
+### Fields Within a Filter
 
-##### Query Type (optional)
+Each filter group contains one or more **field entries** (plus optional `nonNullFields` / `nullFields` lists). The field entries within a single filter are **OR**'d together.
 
-Query type only has one option "matchQuery" this will do a "match" query in Elastic Search vs any other value it will do a simpleQueryString search instead. Default is to use Simple Query String.
+For example, given this filter:
 
-##### Use Keyword Fields (optional)
+```json
+"obsoleteFilter": {
+    "obsolete": { "queryString": "false", "tokenOperator": "AND" },
+    "internal": { "queryString": "false", "tokenOperator": "AND" }
+}
+```
 
-This option will run against the _keyword fields vs the regular field names. In the above example for the uniqueId field the uniqueId_keyword field will be used instead. Default is false.
+The logic is: `obsolete matches "false"` **OR** `internal matches "false"`.
 
-##### Token Operator (optional)
+#### Field Names
 
-This option controls how the tokens are matched. Values are "AND" or "OR". So in the above example the name field will have to match pax6 OR pax. Default value is AND.
+Field names correspond to entity properties and can be dot-separated to traverse nested relationships. For example, if the entity is a disease annotation:
 
-#### Non Null Fields (optional)
+- `"uniqueId"` -- a direct field on the disease annotation
+- `"diseaseAnnotationSubject.taxon.curie"` -- traverses subject -> taxon -> curie
 
-In the context of a single filter we can specify that certain fields needs to be populated, this will be AND'ed to the field criteria. As in this list of fields must have a non null value.
+### Field Configuration
 
-#### Null Fields (optional)
+Each field entry is an object with the following properties:
 
-In the context of a single filter we can specify that certain field needs to be empty or null, this will be AND'ed to the field criteria. As in this list of fields must have a non null value.
+| Property           | Required | Type    | Default                | Description                                                  |
+|--------------------|----------|---------|------------------------|--------------------------------------------------------------|
+| `queryString`      | Yes      | String  | --                     | The search text. Will be tokenized by whitespace.            |
+| `tokenOperator`    | No       | String  | `"AND"`                | How tokens are matched: `"AND"` or `"OR"`.                   |
+| `queryType`        | No       | String  | (simple query string)  | Set to `"matchQuery"` for a plain match query.               |
+| `useKeywordFields` | No       | Boolean | `false`                | If `true`, queries against the `_keyword` variant of the field. |
 
-### Sort Orders (optional)
+#### queryString
 
-Sort orders is a list of objects that contain two fields on called "field" and the other called "order" field is the field in elasticSearch that we are going to order on which can also be a nest object field. Order is of two values 1 meaning ascending and -1 descending.
+The query string is tokenized by whitespace. Each token is matched according to the `tokenOperator`.
 
-### Non Null Fields Table (optional)
+For example, with `"queryString": "pax6 pax7"`:
+- `tokenOperator: "OR"` -- matches documents containing **pax6** or **pax7** (or both)
+- `tokenOperator: "AND"` -- matches only documents containing **both** pax6 and pax7
 
-This is a list of fields that have to be non null across the whole "table" or query. This will filter out all records that have null's in the fields in this list.
+#### queryType
 
-### Aggregations (optional)
+Controls which type of OpenSearch query is generated:
 
-This is a list of fields that will be aggregated in the results. This will be in the returned object see the response object below.
+- **Default (simple query string)** -- Supports special query syntax characters: `+` (must contain), `-` (must not contain), `"..."` (exact phrase), `*` (prefix wildcard), `(` `)` (grouping). Use this when the caller needs advanced search syntax.
+- **`"matchQuery"`** -- A plain text match with no special syntax. All characters are treated as literal search terms. Use this for straightforward text matching.
 
-### Debug (optional)
+#### useKeywordFields
 
-Debug true will turn on some extra debugging in order to see the query getting sent to ElasticSearch and some duration statistics. Default value is false.
+When set to `true`, the query runs against the `_keyword` variant of the field (e.g., `uniqueId_keyword` instead of `uniqueId`). Keyword fields are not analyzed/tokenized, so queries match on the exact stored value. This is useful for exact-match filtering on identifiers or controlled vocabulary values.
 
-## Return Object "SearchResults"
+When using simple query string mode (the default), setting `useKeywordFields: true` will query **both** the keyword field and the analyzed field, with the keyword field receiving a higher relevance boost.
+
+### nonNullFields (optional)
+
+A list of field names that must have a non-null value. This is specified **inside** a filter group and is AND'd with the filter's field criteria. Any documents where these fields are missing or null will be excluded.
+
+```json
+"myFilter": {
+    "name": { "queryString": "pax6", "tokenOperator": "AND" },
+    "nonNullFields": ["symbol", "taxon.curie"]
+}
+```
+
+Logic: `(name matches "pax6") AND (symbol exists) AND (taxon.curie exists)`
+
+### nullFields (optional)
+
+A list of field names that must be null or empty. This is specified **inside** a filter group and is AND'd with the filter's field criteria. Only documents where these fields are missing or null will be included.
+
+```json
+"myFilter": {
+    "name": { "queryString": "pax6", "tokenOperator": "AND" },
+    "nullFields": ["deprecatedField"]
+}
+```
+
+Logic: `(name matches "pax6") AND (deprecatedField does NOT exist)`
+
+---
+
+## Sort Orders (optional)
+
+An ordered list of sort directives. Each entry has two fields:
+
+| Property | Type    | Description                                         |
+|----------|---------|-----------------------------------------------------|
+| `field`  | String  | The entity field to sort on (supports dot notation). |
+| `order`  | Integer | `1` for ascending, `-1` for descending.             |
+
+Sorting is applied in the order the entries appear in the array.
+
+**Note:** The system automatically appends `_keyword` to sort field names. When you specify `"field": "diseaseAnnotationSubject.symbol"`, the actual sort is performed on `diseaseAnnotationSubject.symbol_keyword`.
+
+```json
+"sortOrders": [
+    { "field": "diseaseAnnotationSubject.symbol", "order": 1 },
+    { "field": "diseaseAnnotationSubject.name", "order": -1 }
+]
+```
+
+---
+
+## Non Null Fields Table (optional)
+
+A list of fields that must be non-null across the **entire** query result set. Unlike `nonNullFields` inside a filter (which is scoped to that filter's boolean context), this applies globally and filters out any record that has a null value in any of the listed fields.
+
+```json
+"nonNullFieldsTable": ["diseaseAnnotationSubject.symbol"]
+```
+
+---
+
+## Aggregations (optional)
+
+A list of field names to aggregate (facet). The results include term counts for each unique value in the specified fields. Each aggregation returns up to **30 terms** (the values with the highest document counts).
+
+**Note:** Like sort fields, the system automatically appends `_keyword` to aggregation field names.
+
+```json
+"aggregations": ["secondaryDataProvider.sourceOrganization.abbreviation"]
+```
+
+---
+
+## Debug (optional)
+
+Set to the string `"true"` to include the generated OpenSearch query in the response. This is useful for troubleshooting search behavior. The value must be the **string** `"true"`, not a boolean.
+
+```json
+"debug": "true"
+```
+
+---
+
+## Relevance Scoring
+
+The system assigns boost values to filters based on their declaration order. Filters listed **first** in `searchFilters` receive a higher relevance boost than those listed later. Within a single filter, fields listed first also receive a higher boost than later fields.
+
+This means the order of filters and fields affects result ranking (but not which results are returned).
+
+---
+
+## Behavior With Empty or Missing Filters
+
+If `searchFilters` is empty (`{}`) or not provided, the query performs a **match all** and returns all documents (subject to `nonNullFieldsTable`, pagination, and sorting).
+
+---
+
+## Response Object
 
 ```json
 {
     "results": [
-        { ... },
-        { ... },
-        { ... },
-        { ... },
-        { ... }
+        { "...entity..." },
+        { "...entity..." }
     ],
+    "totalResults": 1163,
+    "returnedRecords": 2,
     "aggregations": {
         "secondaryDataProvider.sourceOrganization.abbreviation": {
-            "rgd": 11297,
-            "omim": 200,
-            "alliance": 14
+            "RGD": 11297,
+            "OMIM": 200,
+            "Alliance": 14
         }
-    }
-    "esQuery": "..."
-    "totalResults": 1163,
-    "returnedRecords": 5
+    },
+    "esQuery": "...",
+    "dbQuery": "..."
 }
 ```
 
-### Results
+| Field             | Type    | Description                                                                                                    |
+|-------------------|---------|----------------------------------------------------------------------------------------------------------------|
+| `results`         | Array   | The page of entity objects matching the query.                                                                 |
+| `totalResults`    | Long    | Total number of matching documents across all pages.                                                           |
+| `returnedRecords` | Integer | Number of records in this page. Will equal `limit` except on the last page.                                    |
+| `aggregations`    | Object  | Present only if `aggregations` was requested. Map of field name to value/count pairs.                          |
+| `esQuery`         | String  | Present only when `debug` is `"true"`. The raw OpenSearch query that was generated.                            |
+| `dbQuery`         | String  | Present only when `debug` is `"true"` on `/find` endpoints. The generated HQL query (not used by `/search`).  |
 
-This is the list of objects coming back from the system.
+---
 
-### Aggregations
+## Example
 
-Aggregations will be an object containing fields by field name. Each entry will have all the values under, with the counts.
+**Request:**
 
-### Total Results
-
-This is the count of the total results found on the whole query.
-
-### Returned Results
-
-This is the count of the page of results, for each page should be the count that is in the result set. May be smaller then limit on the last page.
-
-### Examples
-
+```
 POST /api/disease-annotation/search?limit=1&page=0
+```
 
-Search Payload:
+**Request Body:**
 
 ```json
 {
@@ -195,18 +308,9 @@ Search Payload:
         }
     },
     "sortOrders": [
-        {
-            "field": "diseaseAnnotationSubject.symbol",
-            "order": 1
-        },
-        {
-            "field": "diseaseAnnotationSubject.name",
-            "order": 1
-        },
-        {
-            "field": "diseaseAnnotationSubject.primaryExternalId",
-            "order": 1
-        }
+        { "field": "diseaseAnnotationSubject.symbol", "order": 1 },
+        { "field": "diseaseAnnotationSubject.name", "order": 1 },
+        { "field": "diseaseAnnotationSubject.primaryExternalId", "order": 1 }
     ],
     "aggregations": [],
     "nonNullFieldsTable": [],
@@ -214,21 +318,21 @@ Search Payload:
 }
 ```
 
-Return Payload
+**Response:**
 
 ```json
 {
     "results": [
-        { ... }
+        { "...disease annotation entity..." }
     ],
     "totalResults": 1163,
     "returnedRecords": 1,
     "debug": "true",
-    "esQuery": "{\"query\":{\"bool\":{\"must\":[{\"simple_query_string\":{\"boost\":31000.0,\"query\":\"false\",\"default_operator\":\"or\",\"fields\":[\"internal\"]}},{\"simple_query_string\":{\"boost\":21000.0,\"query\":\"false\",\"default_operator\":\"or\",\"fields\":[\"obsolete\"]}},{\"simple_query_string\":{\"boost\":11000.0,\"query\":\"wb\",\"default_operator\":\"and\",\"fields\":[\"uniqueId\"]}},{\"match_all\":{}}],\"minimum_should_match\":\"0\"}},\"sort\":[{\"diseaseAnnotationSubject.symbol_keyword\":{\"order\":\"asc\",\"unmapped_type\":\"keyword\"}},{\"diseaseAnnotationSubject.name_keyword\":{\"order\":\"asc\",\"unmapped_type\":\"keyword\"}},{\"diseaseAnnotationSubject.primaryExternalId_keyword\":{\"order\":\"asc\",\"unmapped_type\":\"keyword\"}}],\"docvalue_fields\":[\"_entity_type\"],\"_source\":false}"
+    "esQuery": "..."
 }
 ```
 
-Destringify the esQuery:
+When `debug` is enabled, the `esQuery` field contains the raw OpenSearch query. Below is the prettified version of a typical generated query:
 
 ```json
 {
@@ -237,32 +341,26 @@ Destringify the esQuery:
             "must": [
                 {
                     "simple_query_string": {
-                        "boost": 31000,
+                        "boost": 31000.0,
                         "query": "false",
                         "default_operator": "or",
-                        "fields": [
-                            "internal"
-                        ]
+                        "fields": ["internal"]
                     }
                 },
                 {
                     "simple_query_string": {
-                        "boost": 21000,
+                        "boost": 21000.0,
                         "query": "false",
                         "default_operator": "or",
-                        "fields": [
-                            "obsolete"
-                        ]
+                        "fields": ["obsolete"]
                     }
                 },
                 {
                     "simple_query_string": {
-                        "boost": 11000,
+                        "boost": 11000.0,
                         "query": "wb",
                         "default_operator": "and",
-                        "fields": [
-                            "uniqueId"
-                        ]
+                        "fields": ["uniqueId"]
                     }
                 },
                 {
@@ -291,11 +389,8 @@ Destringify the esQuery:
                 "unmapped_type": "keyword"
             }
         }
-    ],
-    "docvalue_fields": [
-        "_entity_type"
-    ],
-    "_source": false
+    ]
 }
 ```
 
+Notice that the boost values decrease with each filter (31000, 21000, 11000) reflecting the declaration-order relevance scoring, and that the sort fields have `_keyword` appended automatically.
