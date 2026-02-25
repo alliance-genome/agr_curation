@@ -9,8 +9,10 @@ import jakarta.persistence.Index;
 import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
 @Indexed
+@Schema(name = "GeneExpressionExperiment", description = "GeneExpressionExperiment: a gene expression experiment")
 @Entity
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = false)

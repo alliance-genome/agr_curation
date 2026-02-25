@@ -14,6 +14,7 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
+import org.eclipse.microprofile.openapi.annotations.Operation;
 
 @Path("/reference")
 @Tag(name = "CRUD - Reference")
@@ -21,10 +22,12 @@ import jakarta.ws.rs.core.MediaType;
 @Consumes(MediaType.APPLICATION_JSON)
 public interface ReferenceCrudInterface extends BaseCurieObjectCrudInterface<Reference> {
 
+	@Operation(summary = "Synchronise all references", description = "Synchronise all references with external sources")
 	@GET
 	@Path("/sync")
 	void synchroniseReferences();
 
+	@Operation(summary = "Synchronise reference", description = "Synchronise a single reference with external sources")
 	@GET
 	@Path("/sync/{id}")
 	@JsonView(CurationView.FieldsAndLists.class)
