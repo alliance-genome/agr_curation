@@ -399,7 +399,7 @@ export const SiteLayout = (props) => {
 						{
 							label: 'Logs Server UI',
 							icon: 'pi pi-fw pi-home',
-							url: `http://logs.alliancegenome.org:5601/app/logtrail#/?q=*&h=agr.curation.${apiVersion?.env}.api.server&t=Now&i=logstash*&_g=()`,
+							url: `https://logs.alliancegenome.org/?service=agr.curation.${apiVersion?.env}.api.server`,
 							target: '_blank',
 						},
 						{
