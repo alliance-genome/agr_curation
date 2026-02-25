@@ -15,6 +15,7 @@ public class GOSearchResultDocument extends ESDocument {
 
 	{
 		category = "go_search_result";
+		searchable = true;
 	}
 
 	private String curie;
