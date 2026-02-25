@@ -735,6 +735,57 @@ export const FIELD_SETS = Object.freeze({
 			'with.modInternalId',
 		],
 	},
+	geaExperimentUniqueidFieldSet: {
+		filterName: 'geaExperimentUniqueidFilter',
+		fields: ['expressionExperiment.uniqueId'],
+	},
+	geaExperimentPrimaryExternalIdFieldSet: {
+		filterName: 'geaExperimentPrimaryExternalIdFilter',
+		fields: ['expressionExperiment.primaryExternalId'],
+	},
+	geaExperimentCrossRefsFieldSet: {
+		filterName: 'geaExperimentCrossRefsFilter',
+		fields: [
+			'expressionExperiment.crossReferences.referencedCurie',
+			'expressionExperiment.crossReferences.displayName',
+		],
+	},
+	geaAggregationFieldSet: {
+		filterName: 'geaAggregationFilter',
+		fields: ['dataProvider.abbreviation'],
+	},
+	geaExperimentSingleReferenceFieldSet: {
+		filterName: 'geaExperimentSingleReferenceFilter',
+		fields: [
+			'expressionExperiment.singleReference.curie',
+			'expressionExperiment.singleReference.primaryCrossReferenceCurie',
+			'expressionExperiment.singleReference.crossReferences.referencedCurie',
+		],
+	},
+	geaSubjectFieldSet: {
+		filterName: 'geaSubjectFilter',
+		fields: [
+			'expressionAnnotationSubject.geneSymbol.displayText',
+			'expressionAnnotationSubject.geneSymbol.formatText',
+			'expressionAnnotationSubject.curie',
+		],
+	},
+	geaAssayUsedFieldSet: {
+		filterName: 'geaAssayUsedFilter',
+		fields: ['expressionAssayUsed.name'],
+	},
+	geaRelationFieldSet: {
+		filterName: 'geaRelationFilter',
+		fields: ['relation.name'],
+	},
+	geaWhereExpressedFieldSet: {
+		filterName: 'geaWhereExpressedFilter',
+		fields: ['whereExpressedStatement'],
+	},
+	geaWhenExpressedFieldSet: {
+		filterName: 'geaWhenExpressedFilter',
+		fields: ['whenExpressedStageName'],
+	},
 });
 
 export const FILTER_CONFIGS = Object.freeze({
@@ -965,6 +1016,33 @@ export const FILTER_CONFIGS = Object.freeze({
 		fieldSets: [FIELD_SETS.vocabularyTermSetDescriptionFieldSet],
 	},
 	withFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.withFieldSet] },
+	geaExperimentUniqueidFilterConfig: {
+		filterComponentType: 'input',
+		fieldSets: [FIELD_SETS.geaExperimentUniqueidFieldSet],
+	},
+	geaExperimentPrimaryExternalIdFilterConfig: {
+		filterComponentType: 'input',
+		fieldSets: [FIELD_SETS.geaExperimentPrimaryExternalIdFieldSet],
+	},
+	geaExperimentCrossRefsFilterConfig: {
+		filterComponentType: 'input',
+		fieldSets: [FIELD_SETS.geaExperimentCrossRefsFieldSet],
+	},
+	geaExperimentSingleReferenceFilterConfig: {
+		filterComponentType: 'input',
+		fieldSets: [FIELD_SETS.geaExperimentSingleReferenceFieldSet],
+	},
+	geaSubjectFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.geaSubjectFieldSet] },
+	geaAssayUsedFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.geaAssayUsedFieldSet] },
+	geaDataProviderFilterConfig: {
+		filterComponentType: 'multiselect',
+		fieldSets: [FIELD_SETS.dataProviderFieldSet],
+		aggregationFieldSet: FIELD_SETS.geaAggregationFieldSet,
+		useKeywordFields: true,
+	},
+	geaRelationFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.geaRelationFieldSet] },
+	geaWhereExpressedFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.geaWhereExpressedFieldSet] },
+	geaWhenExpressedFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.geaWhenExpressedFieldSet] },
 
 	isExtinctFilterConfig: { filterComponentType: 'dropdown', fieldSets: [FIELD_SETS.isExtinctFieldSet] },
 	obsoleteFilterConfig: { filterComponentType: 'dropdown', fieldSets: [FIELD_SETS.obsoleteFieldSet] },

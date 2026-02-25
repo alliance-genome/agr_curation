@@ -38,7 +38,7 @@ import lombok.ToString;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
-@Schema(name = "ExperimentalCondition", description = "POJO that describes the Experimental Condition")
+@Schema(name = "ExperimentalCondition", description = "ExperimentalCondition: an experimental condition")
 @Table(indexes = {
 	@Index(name = "experimentalcondition_createdby_index", columnList = "createdBy_id"),
 	@Index(name = "experimentalcondition_updatedby_index", columnList = "updatedBy_id")
