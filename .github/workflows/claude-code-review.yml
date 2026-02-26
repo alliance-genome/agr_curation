@@ -22,7 +22,7 @@ jobs:
       pull-requests: write
       issues: write
       id-token: write  # Required for OIDC
-      actions: read  # Required for reading CI results
+      actions: write  # Required for CI results and auto-retry via run rerun
     runs-on: ubuntu-latest
     timeout-minutes: 30  # Match OIDC session duration to prevent hanging reviews
     
