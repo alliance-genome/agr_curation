@@ -24,7 +24,7 @@ public class VariantDocumentBuilder {
 						Allele alleleAssociationSubject = alleleVariantAssociation.getAlleleAssociationSubject();
 						dto.setAllele(alleleAssociationSubject);
 						HashSet<String> geneIds = new HashSet<>();
-						alleleAssociationSubject.getAlleleGeneAssociations().stream().forEach(association -> {
+						alleleAssociationSubject.getAlleleGeneAssociations().forEach(association -> {
 							geneIds.add(association.getAlleleGeneAssociationObject().getPrimaryExternalId());
 						});
 						dto.setGeneIds(geneIds);

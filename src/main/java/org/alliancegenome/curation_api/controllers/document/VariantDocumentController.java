@@ -12,6 +12,8 @@ import org.alliancegenome.curation_api.model.input.Pagination;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.VariantService;
 
+import org.hibernate.Hibernate;
+
 import jakarta.inject.Inject;
 
 public class VariantDocumentController implements VariantDocumentInterface {
@@ -33,6 +35,7 @@ public class VariantDocumentController implements VariantDocumentInterface {
 		if (resp.getResults() != null) {
 			VariantDocumentBuilder builder = new VariantDocumentBuilder();
 			for (Variant variant : resp.getResults()) {
+				Hibernate.initialize(variant.getRelatedNotes());
 				List<VariantSummaryDocument> docs = builder.buildVariantDocument(variant);
 				list.addAll(docs);
 			}
