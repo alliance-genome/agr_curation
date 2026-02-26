@@ -38,7 +38,7 @@ import lombok.ToString;
 @Indexed
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(callSuper = true)
-@Schema(name = "ConditionRelation", description = "POJO that describes the Condition Relation")
+@Schema(name = "ConditionRelation", description = "ConditionRelation: a condition relation")
 @Table(indexes = {
 	@Index(name = "conditionrelation_createdby_index", columnList = "createdBy_id"),
 	@Index(name = "conditionrelation_updatedby_index", columnList = "updatedBy_id")
