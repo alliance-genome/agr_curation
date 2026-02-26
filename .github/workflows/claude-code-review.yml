@@ -233,7 +233,7 @@ jobs:
 
           claude_args: |
             --model ${{ vars.CLAUDE_PR_REVIEW_MODEL }}
-            --max-turns 10
+            --max-turns 60
             --allowedTools "Bash(gh pr comment:*),Bash(gh pr diff:*),Bash(gh pr view:*),Bash(git diff:*),Bash(git log:*),Bash(psql:*),Read,Glob,Grep"
 
       # Interactive mode: respond to @claude mentions on PRs.
@@ -248,7 +248,7 @@ jobs:
           trigger_phrase: "@claude"
           claude_args: |
             --model ${{ vars.CLAUDE_PR_REVIEW_MODEL }}
-            --max-turns 10
+            --max-turns 60
 
       - name: Cleanup
         if: always() && steps.tunnel.outputs.pid != ''
