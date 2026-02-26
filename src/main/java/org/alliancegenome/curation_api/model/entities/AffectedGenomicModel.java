@@ -44,7 +44,7 @@ import lombok.ToString;
 		"agmSequenceTargetingReagentAssociations",
 		"components",
 		"parentalPopulations" }, callSuper = true)
-@Schema(name = "AffectedGenomicModel", description = "POJO that represents the AGM")
+@Schema(name = "AffectedGenomicModel", description = "AffectedGenomicModel: an affected genomic model")
 @AGRCurationSchemaVersion(min = "2.12.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = {GenomicEntity.class}, partial = true)
 public class AffectedGenomicModel extends GenomicEntity {
 
@@ -60,30 +60,24 @@ public class AffectedGenomicModel extends GenomicEntity {
 	@JsonView({CurationView.FieldsOnly.class, CurationView.ForPublic.class, CurationView.ModelDocument.class})
 	private VocabularyTerm subtype;
 
-	@IndexedEmbedded(includePaths = {"secondaryId", "evidence.curie", "secondaryId_keyword", "evidence.curie_keyword"})
+	@IndexedEmbedded(includePaths = {"secondaryId", "evidence.curie", "secondaryId_keyword"})
 	@OneToMany(mappedBy = "singleAgm", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonManagedReference
 	@JsonView({CurationView.FieldsAndLists.class, CurationView.AffectedGenomicModelView.class})
 	private List<AgmSecondaryIdSlotAnnotation> agmSecondaryIds;
 
 
-	@IndexedEmbedded(includePaths = {
-		"constructAssociationSubject.curie", "constructAssociationSubject.constructSymbol.displayText", "constructAssociationSubject.constructSymbol.formatText",
-		"constructAssociationSubject.constructFullName.displayText", "constructAssociationSubject.constructFullName.formatText", "constructAssociationSubject.primaryExternalId",
-		"constructAssociationSubject.curie_keyword", "constructAssociationSubject.constructSymbol.displayText_keyword", "constructAssociationSubject.constructSymbol.formatText_keyword",
-		"constructAssociationSubject.constructFullName.displayText_keyword", "constructAssociationSubject.constructFullName.formatText_keyword", "constructAssociationSubject.primaryExternalId_keyword"
-	})
 	@OneToMany(mappedBy = "constructGenomicEntityAssociationObject", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonView({CurationView.FieldsAndLists.class, CurationView.GeneDetailView.class})
 	private List<ConstructGenomicEntityAssociation> constructGenomicEntityAssociations;
 
-	@IndexedEmbedded(includePaths = { "displayText", "formatText", "nameType.name", "synonymScope.name", "evidence.curie", "displayText_keyword", "formatText_keyword", "nameType.name_keyword", "synonymScope.name_keyword", "evidence.curie_keyword"})
+	@IndexedEmbedded(includePaths = { "displayText", "formatText", "nameType.name", "synonymScope.name", "evidence.curie", "displayText_keyword", "formatText_keyword", "nameType.name_keyword", "synonymScope.name_keyword"})
 	@OneToOne(mappedBy = "singleAgm", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonManagedReference
 	@JsonView({ CurationView.FieldsOnly.class, CurationView.AffectedGenomicModelView.class, CurationView.ForPublic.class, CurationView.ModelDocument.class })
 	private AgmFullNameSlotAnnotation agmFullName;
 
-	@IndexedEmbedded(includePaths = { "displayText", "formatText", "nameType.name", "synonymScope.name", "evidence.curie", "displayText_keyword", "formatText_keyword", "nameType.name_keyword", "synonymScope.name_keyword", "evidence.curie_keyword"})
+	@IndexedEmbedded(includePaths = { "displayText", "formatText", "nameType.name", "synonymScope.name", "evidence.curie", "displayText_keyword", "formatText_keyword", "nameType.name_keyword", "synonymScope.name_keyword"})
 	@OneToMany(mappedBy = "singleAgm", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonManagedReference
 	@JsonView({ CurationView.FieldsAndLists.class, CurationView.AffectedGenomicModelView.class })
