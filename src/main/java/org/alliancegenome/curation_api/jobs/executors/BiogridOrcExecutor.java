@@ -52,7 +52,7 @@ public class BiogridOrcExecutor extends LoadFileExecutor {
 
 				CsvMapper csvMapper = new CsvMapper();
 				CsvSchema biogridOrcFmsSchema = CsvSchemaBuilder.biogridOrcFmsSchema();
-				String regexPattern = "BIOGRID-ORCS-SCREEN_(\\d+)-1.1.16.screen.tab.txt";
+				String regexPattern = "BIOGRID-ORCS-SCREEN_(\\d+)-[\\d.]+\\.screen\\.tab\\.txt";
 				Pattern pattern = Pattern.compile(regexPattern);
 
 				Matcher matcher = pattern.matcher(tarEntry.getName());
