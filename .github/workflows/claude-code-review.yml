@@ -218,9 +218,15 @@ jobs:
             Only flag issues introduced by the changes, not pre-existing code.
             If the changes look correct, say so briefly.
 
-            You have read-only PostgreSQL access (curation database):
+            An SSM tunnel is open to the Alliance production curation PostgreSQL database (read-only).
+            Query the database through the tunnel using:
             psql -h localhost -p ${{ steps.tunnel.outputs.local_port }} -U ${{ steps.db-config.outputs.db_user }} -d ${{ steps.db-config.outputs.db_name }} -c 'YOUR SQL HERE'
             (PGPASSWORD is set in the environment.)
+
+            When the PR touches queries, models, or migrations, use the database to:
+            - Check table schemas and indexes relevant to the changes
+            - Run EXPLAIN on new or modified queries to flag performance issues
+            - Verify referenced tables and columns exist
 
             Use `gh pr comment` for top-level feedback.
             Only post GitHub comments — do not submit review text as messages.
