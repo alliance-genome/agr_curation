@@ -25,5 +25,10 @@ public class SequenceSummaryDocument extends ESDocument {
 	private CuratedVariantGenomicLocationAssociation variant;
 	private PredictedVariantConsequence consequence;
 	private HashSet<String> geneIds;
+	private String sequenceSummaryCategory;
+	private String alterationType;
+	private Integer alterationTypeSortOrder;
+	private Boolean hasPhenotype;
+	private Boolean hasDisease;
 
 }
