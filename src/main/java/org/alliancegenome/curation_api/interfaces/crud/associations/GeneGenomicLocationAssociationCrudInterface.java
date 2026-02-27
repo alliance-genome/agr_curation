@@ -17,6 +17,7 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
+import org.eclipse.microprofile.openapi.annotations.Operation;
 
 @Path("/genegenomiclocation")
 @Tag(name = "CRUD - GeneGenomicLocationAssociation")
@@ -24,6 +25,7 @@ import jakarta.ws.rs.core.MediaType;
 @Consumes(MediaType.APPLICATION_JSON)
 public interface GeneGenomicLocationAssociationCrudInterface extends BaseIdCrudInterface<GeneGenomicLocationAssociation> {
 
+	@Operation(summary = "Bulk load gene genomic location association data", description = "Bulk load gene genomic location association records from a data provider submission")
 	@POST
 	@Path("/bulk/{dataProvider}_{assemblyName}/geneLocations")
 	@JsonView(CurationView.FieldsAndLists.class)
