@@ -50,13 +50,13 @@ public class Transcript extends GenomicEntity {
 	@JsonView({ CurationView.FieldsOnly.class })
 	private String transcriptId;
 	
-	@JsonView({ CurationView.FieldsOnly.class })
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.AlleleSummaryDocument.class })
 	private String name;
 
 	@IndexedEmbedded(includePaths = {"curie", "name", "curie_keyword", "name_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@JsonView({ CurationView.FieldsOnly.class, CurationView.VariantSummaryDocument.class, CurationView.SequenceSummaryDocument.class })
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.AlleleSummaryDocument.class, CurationView.VariantSummaryDocument.class, CurationView.SequenceSummaryDocument.class })
 	private SOTerm transcriptType;
 
 	@IndexedEmbedded(
@@ -104,6 +104,6 @@ public class Transcript extends GenomicEntity {
 		}
 	)
 	@OneToMany(mappedBy = "transcriptAssociationSubject", cascade = CascadeType.ALL, orphanRemoval = true)
-	@JsonView({ CurationView.FieldsAndLists.class, CurationView.VariantSummaryDocument.class, CurationView.SequenceSummaryDocument.class })
+	@JsonView({ CurationView.FieldsAndLists.class, CurationView.AlleleSummaryDocument.class, CurationView.VariantSummaryDocument.class, CurationView.SequenceSummaryDocument.class })
 	private List<TranscriptGeneAssociation> transcriptGeneAssociations;
 }
