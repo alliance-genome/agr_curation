@@ -197,4 +197,18 @@ public class PredictedVariantConsequence extends AuditedObject {
 		}
 		return "Exon " + exons + " : " + "Intron " + introns;
 	}
+
+	@Transient
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
+	@JsonView({CurationView.FieldsOnly.class, CurationView.VariantSummaryDocument.class})
+	public String getSequenceFeatureName() {
+		if (hgvsCodingNomenclature == null) {
+			return null;
+		}
+		String[] tokens = hgvsCodingNomenclature.split(":");
+		if (tokens.length < 2) {
+			return null;
+		}
+		return tokens[1];
+	}
 }
