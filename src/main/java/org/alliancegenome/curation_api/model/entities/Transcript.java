@@ -47,10 +47,10 @@ public class Transcript extends GenomicEntity {
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "transcriptId_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({ CurationView.FieldsOnly.class })
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.VariantSummaryDocument.class })
 	private String transcriptId;
-	
-	@JsonView({ CurationView.FieldsOnly.class, CurationView.AlleleSummaryDocument.class })
+
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.AlleleSummaryDocument.class, CurationView.VariantSummaryDocument.class })
 	private String name;
 
 	@IndexedEmbedded(includePaths = {"curie", "name", "curie_keyword", "name_keyword"})
