@@ -454,7 +454,9 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 				ot_tt.name as transcript_type,
 				pvc.genelevelconsequence,
 				be_g.primaryexternalid as gene_id,
-				cvg.id as cvg_id
+				cvg.id as cvg_id,
+				sa_g.displaytext as gene_symbol,
+				sa_g.formattext as gene_symbol_format
 			FROM allelevariantassociation ava
 				JOIN variant v ON v.id = ava.allelevariantassociationobject_id
 				JOIN ontologyterm o ON o.id = v.varianttype_id
@@ -471,6 +473,7 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 				LEFT JOIN ontologyterm ot_tt ON ot_tt.id = t.transcripttype_id
 				LEFT JOIN transcriptgeneassociation tga ON tga.transcriptassociationsubject_id = t.id
 				LEFT JOIN biologicalentity be_g ON be_g.id = tga.transcriptgeneassociationobject_id
+				LEFT JOIN slotannotation sa_g ON sa_g.singlegene_id = be_g.id AND sa_g.slotannotationtype = 'GeneSymbolSlotAnnotation'
 				WHERE ava.alleleassociationsubject_id IN :alleleIds
 			AND ava.obsolete = false AND ava.internal = false
 			""";
@@ -557,6 +560,12 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 					if (row[19] != null) {
 						Gene gene = new Gene();
 						gene.setPrimaryExternalId((String) row[19]);
+						if (row[21] != null) {
+							GeneSymbolSlotAnnotation annotation = new GeneSymbolSlotAnnotation();
+							annotation.setDisplayText((String) row[21]);
+							annotation.setFormatText((String) row[22]);
+							gene.setGeneSymbol(annotation);
+						}
 						TranscriptGeneAssociation tga = new TranscriptGeneAssociation();
 						tga.setTranscriptGeneAssociationObject(gene);
 						transcript.setTranscriptGeneAssociations(List.of(tga));
