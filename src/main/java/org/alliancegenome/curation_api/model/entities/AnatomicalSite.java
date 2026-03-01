@@ -38,7 +38,7 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @AGRCurationSchemaVersion(min = "2.7.0", max = LinkMLSchemaConstants.LATEST_RELEASE)
-@Schema(name = "Anatomical_Site", description = "Anatomical part of an expression pattern")
+@Schema(name = "Anatomical_Site", description = "AnatomicalSite: an anatomical site")
 @Table(indexes = {
 	@Index(name = "anatomicalsite_anatomicalstructure_index ", columnList = "anatomicalstructure_id"),
 	@Index(name = "anatomicalsite_anatomicalsubstructure_index", columnList = "anatomicalsubstructure_id"),
