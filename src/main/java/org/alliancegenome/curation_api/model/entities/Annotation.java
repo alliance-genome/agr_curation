@@ -38,7 +38,7 @@ import lombok.ToString;
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(callSuper = true)
-@Schema(name = "annotation", description = "POJO that represents an annotation")
+@Schema(name = "annotation", description = "Annotation: an annotation")
 @AGRCurationSchemaVersion(min = "2.9.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AuditedObject.class })
 public class Annotation extends SingleReferenceAssociation {
 
