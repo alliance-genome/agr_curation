@@ -120,6 +120,7 @@ public class CuratedVariantGenomicLocationAssociation extends VariantGenomicLoca
 				.collect(Collectors.toList());
 	}
 
+	@Deprecated
 	@Transient
 	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	@JsonView({CurationView.VariantSummaryDocument.class})
@@ -140,7 +141,10 @@ public class CuratedVariantGenomicLocationAssociation extends VariantGenomicLoca
 				})
 				.flatMap(Collection::stream)
 				.distinct()
-				.sorted(Comparator.comparing(gene -> gene.getGeneSymbol().getDisplayText()))
+				.sorted(Comparator.comparing(
+						gene -> gene.getGeneSymbol() != null ? gene.getGeneSymbol().getDisplayText() : null,
+						Comparator.nullsLast(Comparator.naturalOrder())
+				))
 				.collect(Collectors.toList());
 	}
 
