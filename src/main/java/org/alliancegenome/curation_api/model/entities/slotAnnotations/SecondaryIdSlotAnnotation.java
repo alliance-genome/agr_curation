@@ -22,7 +22,7 @@ import lombok.ToString;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(callSuper = true)
 @AGRCurationSchemaVersion(min = "1.7.2", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { SlotAnnotation.class })
-@Schema(name = "SecondaryIdSlotAnnotation", description = "POJO representing a scondary ID slot annotation")
+@Schema(name = "SecondaryIdSlotAnnotation", description = "SecondaryIdSlotAnnotation: a secondary id slot annotation")
 public abstract class SecondaryIdSlotAnnotation extends SlotAnnotation {
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")

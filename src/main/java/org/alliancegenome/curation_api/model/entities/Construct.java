@@ -35,25 +35,25 @@ import lombok.ToString;
 @Entity
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
-@Schema(name = "construct", description = "POJO that represents a construct")
+@Schema(name = "construct", description = "Construct: a construct")
 @ToString(exclude = {"constructGenomicEntityAssociations", "alleleConstructAssociations", "constructComponents", "constructSymbol", "constructFullName", "constructSynonyms"}, callSuper = true)
 @AGRCurationSchemaVersion(min = "2.1.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { Reagent.class })
 
 public class Construct extends Reagent {
 
-	@IndexedEmbedded(includePaths = { "displayText", "formatText", "nameType.name", "synonymScope.name", "evidence.curie", "displayText_keyword", "formatText_keyword", "nameType.name_keyword", "synonymScope.name_keyword", "evidence.curie_keyword"})
+	@IndexedEmbedded(includePaths = { "displayText", "formatText", "nameType.name", "synonymScope.name", "evidence.curie", "displayText_keyword", "formatText_keyword", "nameType.name_keyword", "synonymScope.name_keyword"})
 	@OneToOne(mappedBy = "singleConstruct", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonManagedReference
 	@JsonView({ CurationView.FieldsOnly.class, CurationView.TransgenicAllelesDocument.class, CurationView.AlleleSummaryDocument.class, CurationView.ForPublic.class })
 	private ConstructSymbolSlotAnnotation constructSymbol;
 
-	@IndexedEmbedded(includePaths = { "displayText", "formatText", "nameType.name", "synonymScope.name", "evidence.curie", "displayText_keyword", "formatText_keyword", "nameType.name_keyword", "synonymScope.name_keyword", "evidence.curie_keyword"})
+	@IndexedEmbedded(includePaths = { "displayText", "formatText", "nameType.name", "synonymScope.name", "evidence.curie", "displayText_keyword", "formatText_keyword", "nameType.name_keyword", "synonymScope.name_keyword"})
 	@OneToOne(mappedBy = "singleConstruct", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonManagedReference
 	@JsonView({ CurationView.FieldsOnly.class })
 	private ConstructFullNameSlotAnnotation constructFullName;
 
-	@IndexedEmbedded(includePaths = { "displayText", "formatText", "nameType.name", "synonymScope.name", "evidence.curie", "displayText_keyword", "formatText_keyword", "nameType.name_keyword", "synonymScope.name_keyword", "evidence.curie_keyword"})
+	@IndexedEmbedded(includePaths = { "displayText", "formatText", "nameType.name", "synonymScope.name", "evidence.curie", "displayText_keyword", "formatText_keyword", "nameType.name_keyword", "synonymScope.name_keyword"})
 	@OneToMany(mappedBy = "singleConstruct", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonManagedReference
 	@JsonView({ CurationView.FieldsAndLists.class, CurationView.ConstructView.class })
