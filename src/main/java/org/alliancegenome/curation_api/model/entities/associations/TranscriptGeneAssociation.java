@@ -51,9 +51,9 @@ public class TranscriptGeneAssociation extends EvidenceAssociation {
 		"transcriptGeneAssociations",
 		"transcriptGenomicLocationAssociations"
 	})
-	@JsonView({ CurationView.FieldsOnly.class, CurationView.VariantSummaryDocument.class, CurationView.SequenceSummaryDocument.class })
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.AlleleSummaryDocument.class, CurationView.VariantSummaryDocument.class, CurationView.SequenceSummaryDocument.class })
 	private Transcript transcriptAssociationSubject;
-	
+
 	@IndexedEmbedded(includePaths = {"curie", "geneSymbol.displayText", "geneSymbol.formatText", "geneFullName.displayText", "geneFullName.formatText",
 			"curie_keyword", "geneSymbol.displayText_keyword", "geneSymbol.formatText_keyword", "geneFullName.displayText_keyword", "geneFullName.formatText_keyword",
 			"primaryExternalId", "primaryExternalId_keyword", "modInternalId", "modInternalId_keyword"})
@@ -65,7 +65,7 @@ public class TranscriptGeneAssociation extends EvidenceAssociation {
 		"sequenceTargetingReagentGeneAssociations",
 		"transcriptGeneAssociations"
 	})
-	@JsonView({ CurationView.FieldsOnly.class, CurationView.VariantSummaryDocument.class, CurationView.SequenceSummaryDocument.class })
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.AlleleSummaryDocument.class, CurationView.VariantSummaryDocument.class, CurationView.SequenceSummaryDocument.class })
 	private Gene transcriptGeneAssociationObject;
 	
 	@IndexedEmbedded(includePaths = {"name", "name_keyword"})

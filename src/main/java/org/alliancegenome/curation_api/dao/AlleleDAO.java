@@ -444,10 +444,10 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 				JOIN variant v ON v.id = ava.allelevariantassociationobject_id
 				JOIN ontologyterm o ON o.id = v.varianttype_id
 				JOIN curatedvariantgenomiclocation cvg ON cvg.variantassociationsubject_id = v.id
-				JOIN predictedvariantconsequence pvc ON pvc.variantgenomiclocation_id = cvg.id
-				JOIN predictedvariantconsequence_ontologyterm pvco ON pvco.predictedvariantconsequence_id = pvc.id
-				JOIN ontologyterm otc ON otc.id = pvco.vepconsequences_id
 				JOIN assemblycomponent ac ON cvg.variantgenomiclocationassociationobject_id = ac.id
+				LEFT JOIN predictedvariantconsequence pvc ON pvc.variantgenomiclocation_id = cvg.id
+				LEFT JOIN predictedvariantconsequence_ontologyterm pvco ON pvco.predictedvariantconsequence_id = pvc.id
+				LEFT JOIN ontologyterm otc ON otc.id = pvco.vepconsequences_id
 				WHERE ava.alleleassociationsubject_id IN :alleleIds
 			AND ava.obsolete = false AND ava.internal = false
 			""";
@@ -492,11 +492,13 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 				variantMap.put((Long) row[1], variant);
 			}
 
-			SOTerm consequence = new SOTerm();
-			consequence.setName((String) row[7]);
-			variant.getCuratedVariantGenomicLocations().get(0)
-					.getPredictedVariantConsequences().get(0)
-					.getVepConsequences().add(consequence);
+			if (row[7] != null) {
+				SOTerm consequence = new SOTerm();
+				consequence.setName((String) row[7]);
+				variant.getCuratedVariantGenomicLocations().get(0)
+						.getPredictedVariantConsequences().get(0)
+						.getVepConsequences().add(consequence);
+			}
 		}
 
 		// Phenotype existence
