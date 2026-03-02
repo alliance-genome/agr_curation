@@ -24,7 +24,7 @@ import lombok.ToString;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(callSuper = true)
 @AGRCurationSchemaVersion(min = "1.5.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { SlotAnnotation.class })
-@Schema(name = "AlleleNomenclatureSlotAnnotation", description = "POJO representing an allele nomenclature event slot annotation")
+@Schema(name = "AlleleNomenclatureSlotAnnotation", description = "AlleleNomenclatureEventSlotAnnotation: an allele nomenclature event slot annotation")
 public class AlleleNomenclatureEventSlotAnnotation extends SlotAnnotation {
 
 	@ManyToOne
