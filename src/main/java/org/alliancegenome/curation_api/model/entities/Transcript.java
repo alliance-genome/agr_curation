@@ -50,7 +50,7 @@ public class Transcript extends GenomicEntity {
 	@JsonView({ CurationView.FieldsOnly.class, CurationView.VariantSummaryDocument.class })
 	private String transcriptId;
 
-	@JsonView({ CurationView.FieldsOnly.class, CurationView.AlleleSummaryDocument.class, CurationView.VariantSummaryDocument.class })
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.AlleleSummaryDocument.class, CurationView.VariantSummaryDocument.class, CurationView.SequenceSummaryDocument.class })
 	private String name;
 
 	@IndexedEmbedded(includePaths = {"curie", "name", "curie_keyword", "name_keyword"})
