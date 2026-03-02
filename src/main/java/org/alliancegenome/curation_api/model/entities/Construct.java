@@ -41,19 +41,19 @@ import lombok.ToString;
 
 public class Construct extends Reagent {
 
-	@IndexedEmbedded(includePaths = { "displayText", "formatText", "nameType.name", "synonymScope.name", "evidence.curie", "displayText_keyword", "formatText_keyword", "nameType.name_keyword", "synonymScope.name_keyword"})
+	@IndexedEmbedded(includePaths = { "displayText", "formatText", "nameType.name", "synonymScope.name", "evidence.curie", "displayText_keyword", "formatText_keyword", "nameType.name_keyword", "synonymScope.name_keyword", "evidence.curie_keyword"})
 	@OneToOne(mappedBy = "singleConstruct", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonManagedReference
 	@JsonView({ CurationView.FieldsOnly.class, CurationView.TransgenicAllelesDocument.class, CurationView.AlleleSummaryDocument.class, CurationView.ForPublic.class })
 	private ConstructSymbolSlotAnnotation constructSymbol;
 
-	@IndexedEmbedded(includePaths = { "displayText", "formatText", "nameType.name", "synonymScope.name", "evidence.curie", "displayText_keyword", "formatText_keyword", "nameType.name_keyword", "synonymScope.name_keyword"})
+	@IndexedEmbedded(includePaths = { "displayText", "formatText", "nameType.name", "synonymScope.name", "evidence.curie", "displayText_keyword", "formatText_keyword", "nameType.name_keyword", "synonymScope.name_keyword", "evidence.curie_keyword"})
 	@OneToOne(mappedBy = "singleConstruct", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonManagedReference
 	@JsonView({ CurationView.FieldsOnly.class })
 	private ConstructFullNameSlotAnnotation constructFullName;
 
-	@IndexedEmbedded(includePaths = { "displayText", "formatText", "nameType.name", "synonymScope.name", "evidence.curie", "displayText_keyword", "formatText_keyword", "nameType.name_keyword", "synonymScope.name_keyword"})
+	@IndexedEmbedded(includePaths = { "displayText", "formatText", "nameType.name", "synonymScope.name", "evidence.curie", "displayText_keyword", "formatText_keyword", "nameType.name_keyword", "synonymScope.name_keyword", "evidence.curie_keyword"})
 	@OneToMany(mappedBy = "singleConstruct", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonManagedReference
 	@JsonView({ CurationView.FieldsAndLists.class, CurationView.ConstructView.class })
