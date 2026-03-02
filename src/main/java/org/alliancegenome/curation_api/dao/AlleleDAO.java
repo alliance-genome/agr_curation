@@ -582,6 +582,9 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 				if (pvc.getVepConsequences().stream().noneMatch(c -> consequence.getName().equals(c.getName()))) {
 					pvc.getVepConsequences().add(consequence);
 				}
+				variant.getCuratedVariantGenomicLocations().get(0)
+						.getPredictedVariantConsequences().get(0)
+						.getVepConsequences().add(consequence);
 			}
 		}
 
