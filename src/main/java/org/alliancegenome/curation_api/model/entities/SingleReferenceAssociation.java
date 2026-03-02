@@ -18,7 +18,7 @@ import lombok.EqualsAndHashCode;
 @MappedSuperclass
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
-@Schema(name = "singleReferenceAssociation", description = "POJO that represents an association supported by a single information content entity")
+@Schema(name = "singleReferenceAssociation", description = "SingleReferenceAssociation: a single reference association")
 @AGRCurationSchemaVersion(min = "2.10.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { Association.class })
 public class SingleReferenceAssociation extends Association {
 

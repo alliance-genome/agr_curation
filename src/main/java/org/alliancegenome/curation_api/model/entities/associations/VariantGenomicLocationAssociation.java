@@ -33,7 +33,7 @@ import lombok.ToString;
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(callSuper = true)
-@AGRCurationSchemaVersion(min = "2.4.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = {VariantLocationAssociation.class})
+@AGRCurationSchemaVersion(min = "2.4.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { VariantLocationAssociation.class })
 @Schema(name = "VariantGenomicLocationAssociation", description = "POJO representing an association between a variant and a genomic location")
 public abstract class VariantGenomicLocationAssociation extends VariantLocationAssociation {
 
