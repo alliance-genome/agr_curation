@@ -1,8 +1,5 @@
 package org.alliancegenome.curation_api.model.document.es;
 
-import java.util.HashSet;
-
-import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.PredictedVariantConsequence;
 import org.alliancegenome.curation_api.model.entities.associations.CuratedVariantGenomicLocationAssociation;
 import org.alliancegenome.curation_api.view.CurationView;
@@ -15,20 +12,14 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @JsonView({ CurationView.SequenceSummaryDocument.class })
-public class SequenceSummaryDocument extends ESDocument {
+public class SequenceSummaryDocument extends AVSParentDocument {
 
 	{
 		category = "sequence_summary";
 	}
 
-	private Allele allele;
-	private CuratedVariantGenomicLocationAssociation variant;
+	private CuratedVariantGenomicLocationAssociation variantLocation;
 	private PredictedVariantConsequence consequence;
-	private HashSet<String> geneIds;
 	private String sequenceSummaryCategory;
-	private String alterationType;
-	private Integer alterationTypeSortOrder;
-	private Boolean hasPhenotype;
-	private Boolean hasDisease;
 
 }
