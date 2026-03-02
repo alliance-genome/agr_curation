@@ -72,7 +72,7 @@ public class Variant extends GenomicEntity {
 		}
 	)
 	@OneToMany(mappedBy = "variantAssociationSubject", cascade = CascadeType.ALL, orphanRemoval = true)
-	@JsonView({ CurationView.FieldsAndLists.class, CurationView.VariantDetailView.class, CurationView.AlleleSummaryDocument.class })
+	@JsonView({ CurationView.FieldsAndLists.class, CurationView.VariantDetailView.class, CurationView.AlleleSummaryDocument.class, CurationView.VariantSummaryDocument.class })
 	private List<CuratedVariantGenomicLocationAssociation> curatedVariantGenomicLocations;
 
 	@OneToMany(mappedBy = "alleleVariantAssociationObject", cascade = CascadeType.ALL, orphanRemoval = true)
