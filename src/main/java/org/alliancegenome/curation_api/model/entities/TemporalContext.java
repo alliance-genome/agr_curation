@@ -35,7 +35,7 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @AGRCurationSchemaVersion(min = "2.2.3", max = LinkMLSchemaConstants.LATEST_RELEASE)
-@Schema(name = "Temporal_Context", description = "Temporal expression pattern")
+@Schema(name = "Temporal_Context", description = "TemporalContext: a temporal context")
 @Table(indexes = {
 	@Index(name = "temporalcontext_developmentalstagestart_index ", columnList = "developmentalstagestart_id"),
 	@Index(name = "temporalcontext_developmentalstagestop_index ", columnList = "developmentalstagestop_id"),

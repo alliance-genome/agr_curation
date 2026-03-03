@@ -24,7 +24,7 @@ import lombok.ToString;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(callSuper = true)
 @AGRCurationSchemaVersion(min = "1.4.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { SlotAnnotation.class })
-@Schema(name = "AlleleGermlineTransmissionStatusSlotAnnotation", description = "POJO representing an allele germline transmission status slot annotation")
+@Schema(name = "AlleleGermlineTransmissionStatusSlotAnnotation", description = "AlleleGermlineTransmissionStatusSlotAnnotation: an allele germline transmission status slot annotation")
 public class AlleleGermlineTransmissionStatusSlotAnnotation extends SlotAnnotation {
 
 	@ManyToOne
