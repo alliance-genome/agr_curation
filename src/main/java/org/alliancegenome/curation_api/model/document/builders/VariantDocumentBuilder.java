@@ -20,7 +20,7 @@ public class VariantDocumentBuilder {
 					List<VariantSummaryDocument> dtos = new ArrayList<>();
 					variant.getAlleleVariantAssociations().forEach(alleleVariantAssociation -> {
 						VariantSummaryDocument dto = new VariantSummaryDocument();
-						dto.setVariant(variant);
+						dto.setVariants(List.of(variant));
 						Allele alleleAssociationSubject = alleleVariantAssociation.getAlleleAssociationSubject();
 						dto.setAllele(alleleAssociationSubject);
 						HashSet<String> geneIds = new HashSet<>();

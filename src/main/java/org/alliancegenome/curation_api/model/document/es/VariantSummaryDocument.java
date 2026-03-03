@@ -1,6 +1,8 @@
 package org.alliancegenome.curation_api.model.document.es;
 
 
+import java.util.List;
+
 import org.alliancegenome.curation_api.model.entities.Variant;
 import org.alliancegenome.curation_api.view.CurationView;
 
@@ -17,5 +19,5 @@ public class VariantSummaryDocument extends AVSParentDocument {
 	{
 		category = "variant_summary";
 	}
-	private Variant variant;
+	private List<Variant> variants;
 }

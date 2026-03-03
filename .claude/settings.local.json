@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(grep:*)",
+      "WebFetch(domain:agr-jira.atlassian.net)",
+      "Bash(/tmp/xlsx_reader/bin/python3:*)",
+      "Bash(xxd:*)",
+      "Bash(make checkstyle:*)",
+      "Bash(make:*)",
+      "Bash(curl:*)",
+      "Bash(python3:*)"
+    ]
+  },
+  "enabledMcpjsonServers": [
+    "logs",
+    "jira"
+  ]
+}
