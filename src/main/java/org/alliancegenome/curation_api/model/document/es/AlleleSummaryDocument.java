@@ -1,10 +1,12 @@
 package org.alliancegenome.curation_api.model.document.es;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 
 import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.Gene;
+import org.alliancegenome.curation_api.model.entities.Variant;
 import org.alliancegenome.curation_api.view.CurationView;
 
 import com.fasterxml.jackson.annotation.JsonView;
@@ -23,6 +25,7 @@ public class AlleleSummaryDocument extends AVSParentDocument {
 	private Map<String, Object> additionalInformation;
 	private Gene alleleOfGene;
 	private CrossReference crossReference;
+	private List<Variant> variants;
 
 	public void setAlleleOfGene(Gene alleleOfGene) {
 		this.alleleOfGene = alleleOfGene;
