@@ -456,10 +456,14 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 				be_g.primaryexternalid as gene_id,
 				cvg.id as cvg_id,
 				sa_g.displaytext as gene_symbol,
-				sa_g.formattext as gene_symbol_format
+				sa_g.formattext as gene_symbol_format,
+				ot_taxon.curie as taxon_curie,
+				ot_taxon.name as taxon_name
 			FROM allelevariantassociation ava
 				JOIN variant v ON v.id = ava.allelevariantassociationobject_id
 				JOIN ontologyterm o ON o.id = v.varianttype_id
+				JOIN biologicalentity be_v ON be_v.id = v.id
+				LEFT JOIN ontologyterm ot_taxon ON ot_taxon.id = be_v.taxon_id
 				JOIN curatedvariantgenomiclocation cvg ON cvg.variantassociationsubject_id = v.id
 				JOIN assemblycomponent ac ON cvg.variantgenomiclocationassociationobject_id = ac.id
 				LEFT JOIN predictedvariantconsequence pvc ON pvc.variantgenomiclocation_id = cvg.id
@@ -499,6 +503,12 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 				variantType.setName((String) row[2]);
 				variant.setVariantType(variantType);
 				variant.setCuratedVariantGenomicLocations(new ArrayList<>());
+				if (row[23] != null) {
+					NCBITaxonTerm taxon = new NCBITaxonTerm();
+					taxon.setCurie((String) row[23]);
+					taxon.setName((String) row[24]);
+					variant.setTaxon(taxon);
+				}
 				variantMap.put(variantId, variant);
 			}
 
