@@ -15,6 +15,7 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
+import org.eclipse.microprofile.openapi.annotations.Operation;
 
 @Path("/paralogy")
 @Tag(name = "CRUD - Paralogy")
@@ -22,6 +23,7 @@ import jakarta.ws.rs.core.MediaType;
 @Consumes(MediaType.APPLICATION_JSON)
 public interface GeneToGeneParalogyCrudInterface extends BaseIdCrudInterface<GeneToGeneParalogy> {
 
+	@Operation(summary = "Bulk load gene to gene paralogy data", description = "Bulk load gene to gene paralogy records from a data provider submission")
 	@POST
 	@Path("/bulk/{dataProvider}/paralogyfile")
 	@JsonView(CurationView.FieldsAndLists.class)
