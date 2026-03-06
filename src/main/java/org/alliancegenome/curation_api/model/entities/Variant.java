@@ -106,7 +106,7 @@ public class Variant extends GenomicEntity {
 
 	@Transient
 	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
-	@JsonView({CurationView.VariantSummaryDocument.class, CurationView.SequenceSummaryDocument.class})
+	@JsonView({CurationView.VariantSummaryDocument.class})
 	public String getNucleotideChange() {
 		String variantTypeCurie = getVariantType().getCurie();
 		String paddedBase = "";
