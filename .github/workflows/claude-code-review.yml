@@ -249,6 +249,7 @@ jobs:
           claude_args: |
             --model ${{ vars.CLAUDE_PR_REVIEW_MODEL }}
             --max-turns 60
+            --append-system-prompt "When re-reviewing a PR after being asked to check again, ALWAYS run git log --oneline to check if new commits were pushed since your previous review. Read through all PR comments to find your earlier review(s) and note when they were posted. If new commits were pushed after your previous review, check whether those commits addressed the feedback from your earlier review. Frame your updated review accordingly — for example, note which issues from your earlier review have been addressed by the new commit(s) and which (if any) remain. Do NOT retract or call previous reviews inaccurate when subsequent commits fixed the issues that were flagged."
 
       - name: Cleanup
         if: always() && steps.tunnel.outputs.pid != ''
