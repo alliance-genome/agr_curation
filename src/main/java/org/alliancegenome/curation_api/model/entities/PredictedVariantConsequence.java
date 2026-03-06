@@ -166,13 +166,13 @@ public class PredictedVariantConsequence extends AuditedObject {
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "introns_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({CurationView.FieldsOnly.class, CurationView.AlleleSummaryDocument.class, CurationView.SequenceSummaryDocument.class})
+	@JsonView({CurationView.FieldsOnly.class, CurationView.AlleleSummaryDocument.class, CurationView.SequenceSummaryDocument.class, CurationView.VariantSummaryDocument.class})
 	@Transient
 	private String introns;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "exons_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({CurationView.FieldsOnly.class, CurationView.AlleleSummaryDocument.class, CurationView.SequenceSummaryDocument.class})
+	@JsonView({CurationView.FieldsOnly.class, CurationView.AlleleSummaryDocument.class, CurationView.SequenceSummaryDocument.class, CurationView.VariantSummaryDocument.class})
 	@Transient
 	private String exons;
 
@@ -184,15 +184,17 @@ public class PredictedVariantConsequence extends AuditedObject {
 
 	@Transient
 	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
-	@JsonView({CurationView.FieldsOnly.class, CurationView.AlleleSummaryDocument.class, CurationView.VariantView.class, CurationView.SequenceSummaryDocument.class})
+	@JsonView({CurationView.FieldsOnly.class, CurationView.AlleleSummaryDocument.class, CurationView.VariantView.class, CurationView.SequenceSummaryDocument.class, CurationView.VariantSummaryDocument.class})
 	public String getIntronExonLocation() {
-		if (exons == null && introns == null) {
+		boolean hasExons = exons != null && !exons.isEmpty();
+		boolean hasIntrons = introns != null && !introns.isEmpty();
+		if (!hasExons && !hasIntrons) {
 			return null;
 		}
-		if (introns == null) {
+		if (!hasIntrons) {
 			return "Exon " + exons;
 		}
-		if (exons == null) {
+		if (!hasExons) {
 			return "Intron " + introns;
 		}
 		return "Exon " + exons + " : " + "Intron " + introns;
