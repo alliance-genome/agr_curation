@@ -14,6 +14,7 @@ import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
+import org.eclipse.microprofile.openapi.annotations.Operation;
 
 @Path("/molecule")
 @Tag(name = "CRUD - Molecules")
@@ -21,6 +22,7 @@ import jakarta.ws.rs.core.MediaType;
 @Consumes(MediaType.APPLICATION_JSON)
 public interface MoleculeCrudInterface extends BaseIdCrudInterface<Molecule> {
 
+	@Operation(summary = "Bulk load molecule data", description = "Bulk load molecule records from a data provider submission")
 	@POST
 	@Path("/bulk/moleculefile")
 	@JsonView(CurationView.FieldsAndLists.class)
