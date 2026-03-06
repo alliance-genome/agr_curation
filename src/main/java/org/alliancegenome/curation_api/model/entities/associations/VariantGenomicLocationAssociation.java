@@ -93,27 +93,4 @@ public abstract class VariantGenomicLocationAssociation extends VariantLocationA
 	@JsonView({CurationView.FieldsOnly.class})
 	private SOTerm geneLocalizationType;
 
-	@Transient
-	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
-	@JsonView({CurationView.FieldsOnly.class, CurationView.VariantSummaryDocument.class, CurationView.SequenceSummaryDocument.class})
-	public String getNucleotideChange() {
-		if (getVariantAssociationSubject() != null && getVariantAssociationSubject().getVariantType() != null) {
-			String variantTypeCurie = getVariantAssociationSubject().getVariantType().getCurie();
-			String paddedBase = "";
-			if (getPaddedBase() != null && getPaddedBase().length() == 1) {
-				paddedBase = getPaddedBase().toLowerCase();
-			}
-			// Insertion
-			if ("SO:0000667".equals(variantTypeCurie)) {
-				return paddedBase + ">" + paddedBase + getVariantSequence();
-			} else if ("SO:0000159".equals(variantTypeCurie)) {
-				// Deletion
-				return paddedBase + getReferenceSequence() + ">" + paddedBase;
-			}
-			if (getReferenceSequence() != null && getVariantSequence() != null) {
-				return getReferenceSequence() + ">" + getVariantSequence();
-			}
-		}
-		return null;
-	}
 }
