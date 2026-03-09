@@ -65,7 +65,7 @@ import lombok.ToString;
 		"sequenceTargetingReagentGeneAssociations",
 		"transcriptGeneAssociations",
 		"constructGenomicEntityAssociations" }, callSuper = true)
-@Schema(name = "Gene", description = "POJO that represents the Gene")
+@Schema(name = "Gene", description = "Gene: a gene")
 @AGRCurationSchemaVersion(min = "1.5.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { GenomicEntity.class }, partial = true)
 @Table(indexes = {
 		@Index(name = "gene_genetype_index", columnList = "geneType_id"),
@@ -113,7 +113,7 @@ public class Gene extends GenomicEntity {
 	@IndexedEmbedded(includePaths = { "displayText", "formatText", "nameType.name", "synonymScope.name", "evidence.curie", "displayText_keyword", "formatText_keyword", "nameType.name_keyword", "synonymScope.name_keyword", "evidence.curie_keyword"})
 	@OneToOne(mappedBy = "singleGene", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonManagedReference
-	@JsonView({ CurationView.FieldsOnly.class, CurationView.ForPublic.class, CurationView.GeneToGeneOrthologyDocument.class, CurationView.GeneSummaryDocument.class, CurationView.ModelDocument.class, CurationView.TransgenicAllelesDocument.class, CurationView.AlleleSummaryDocument.class, CurationView.GeneExpressionDocument.class, CurationView.VariantDocument.class })
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.ForPublic.class, CurationView.GeneToGeneOrthologyDocument.class, CurationView.GeneSummaryDocument.class, CurationView.ModelDocument.class, CurationView.TransgenicAllelesDocument.class, CurationView.AlleleSummaryDocument.class, CurationView.GeneExpressionDocument.class, CurationView.VariantSummaryDocument.class, CurationView.SequenceSummaryDocument.class })
 	private GeneSymbolSlotAnnotation geneSymbol;
 
 	@IndexedEmbedded(includePaths = { "displayText", "formatText", "nameType.name", "synonymScope.name", "evidence.curie", "displayText_keyword", "formatText_keyword", "nameType.name_keyword", "synonymScope.name_keyword", "evidence.curie_keyword"})
@@ -161,7 +161,7 @@ public class Gene extends GenomicEntity {
 		}
 	)
 	@OneToMany(mappedBy = "geneAssociationSubject", cascade = CascadeType.ALL, orphanRemoval = true)
-	@JsonView({ CurationView.FieldsAndLists.class, CurationView.GeneDetailView.class, CurationView.GeneSummaryDocument.class, CurationView.VariantDocument.class })
+	@JsonView({ CurationView.FieldsAndLists.class, CurationView.GeneDetailView.class, CurationView.GeneSummaryDocument.class, CurationView.VariantSummaryDocument.class, CurationView.SequenceSummaryDocument.class })
 	private List<GeneGenomicLocationAssociation> geneGenomicLocationAssociations;
 
 
@@ -178,6 +178,6 @@ public class Gene extends GenomicEntity {
 	@IndexedEmbedded(includePaths = {"displayName", "referencedCurie", "displayName_keyword", "referencedCurie_keyword", "resourceDescriptorPage.name", "resourceDescriptorPage.name_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-	@JsonView({CurationView.FieldsOnly.class})
+	@JsonView({CurationView.FieldsOnly.class, CurationView.GeneSummaryDocument.class})
 	private CrossReference gcrpCrossReference;
 }

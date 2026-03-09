@@ -43,7 +43,7 @@ import lombok.ToString;
 		@Index(name = "resourcedescriptor_createdby_index", columnList = "createdBy_id"),
 		@Index(name = "resourcedescriptor_updatedby_index", columnList = "updatedBy_id")
 })
-@Schema(name = "ResourceDescriptor", description = "Annotation class representing a resource descriptor")
+@Schema(name = "ResourceDescriptor", description = "ResourceDescriptor: a resource descriptor")
 public class ResourceDescriptor extends AuditedObject {
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
@@ -89,6 +89,6 @@ public class ResourceDescriptor extends AuditedObject {
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@OneToMany(mappedBy = "resourceDescriptor", cascade = CascadeType.ALL)
-	@JsonView({ CurationView.ResourceDescriptorView.class })
+	@JsonView({ CurationView.ResourceDescriptorView.class, CurationView.FieldsAndLists.class })
 	private List<ResourceDescriptorPage> resourcePages;
 }

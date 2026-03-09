@@ -37,11 +37,13 @@ import jakarta.persistence.UniqueConstraint;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "OntologyTermType", length = 64)
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
+@Schema(name = "OntologyTerm", description = "OntologyTerm: an ontology term")
 @Entity
 @ToString(exclude = { "ancestors", "descendants", "crossReferences", "synonyms", "secondaryIdentifiers", "subsets" }, callSuper = true)
 @AGRCurationSchemaVersion(min = LinkMLSchemaConstants.MIN_ONTOLOGY_RELEASE, max = LinkMLSchemaConstants.MAX_ONTOLOGY_RELEASE, dependencies = { CurieObject.class })
@@ -52,7 +54,7 @@ public class OntologyTerm extends CurieObject {
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "name_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
 	@JsonView({ CurationView.FieldsOnly.class, CurationView.ForPublic.class, CurationView.GeneToGeneOrthologyDocument.class, CurationView.GeneSummaryDocument.class, CurationView.DiseaseSummaryDocument.class, CurationView.ModelDocument.class, CurationView.AlleleSummaryDocument.class,
-		CurationView.GeneExpressionDocument.class, CurationView.GeneExpressionDocument.class, CurationView.VariantDocument.class })
+		CurationView.GeneExpressionDocument.class, CurationView.GeneExpressionDocument.class, CurationView.VariantSummaryDocument.class, CurationView.SequenceSummaryDocument.class })
 	@Column(length = 2000)
 	protected String name;
 

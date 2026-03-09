@@ -15,6 +15,7 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
+import org.eclipse.microprofile.openapi.annotations.Operation;
 
 @Path("/note")
 @Tag(name = "CRUD - Notes")
@@ -22,6 +23,7 @@ import jakarta.ws.rs.core.MediaType;
 @Consumes(MediaType.APPLICATION_JSON)
 public interface NoteCrudInterface extends BaseIdCrudInterface<Note> {
 
+	@Operation(summary = "Validate note", description = "Validate a note entity without persisting it")
 	@POST
 	@Path("/validate")
 	@JsonView(CurationView.NoteView.class)
@@ -33,6 +35,7 @@ public interface NoteCrudInterface extends BaseIdCrudInterface<Note> {
 	@Path("/{id}")
 	ObjectResponse<Note> getById(@PathParam("id") Long id);
 
+	@Operation(summary = "Create note", description = "Create a new note entity")
 	@POST
 	@Path("/")
 	@JsonView(CurationView.NoteView.class)

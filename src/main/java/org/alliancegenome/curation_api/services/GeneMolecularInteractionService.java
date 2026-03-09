@@ -34,6 +34,14 @@ public class GeneMolecularInteractionService extends BaseEntityCrudService<GeneM
 		return new ObjectResponse<>(findByAlternativeFields(List.of("interactionId", "uniqueId"), identifier));
 	}
 
+	public List<Long> getAllIds() {
+		return geneMolecularInteractionDAO.getAllIds();
+	}
+
+	public List<GeneMolecularInteraction> findByIds(List<Long> ids) {
+		return geneMolecularInteractionDAO.findByIds(ids);
+	}
+
 	@Override
 	@Transactional
 	public ObjectResponse<GeneMolecularInteraction> upsert(PsiMiTabDTO dto, BackendBulkDataProvider backendBulkDataProvider) throws ValidationException {

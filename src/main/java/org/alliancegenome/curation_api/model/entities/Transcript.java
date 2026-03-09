@@ -37,7 +37,7 @@ import lombok.ToString;
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(exclude = { "transcriptGenomicLocationAssociations", "transcriptGeneAssociations", "transcriptCodingSequenceAssociations", "transcriptExonAssociations" }, callSuper = true)
-@Schema(name = "Transcript", description = "POJO that represents the Transcript")
+@Schema(name = "Transcript", description = "Transcript: a transcript")
 @AGRCurationSchemaVersion(min = "2.8.1", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { GenomicEntity.class })
 @Table(indexes = {
 	@Index(name = "transcript_transcriptId_index", columnList = "transcriptId"),
@@ -47,16 +47,16 @@ public class Transcript extends GenomicEntity {
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "transcriptId_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({ CurationView.FieldsOnly.class })
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.VariantSummaryDocument.class })
 	private String transcriptId;
-	
-	@JsonView({ CurationView.FieldsOnly.class })
+
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.AlleleSummaryDocument.class, CurationView.VariantSummaryDocument.class, CurationView.SequenceSummaryDocument.class })
 	private String name;
 
 	@IndexedEmbedded(includePaths = {"curie", "name", "curie_keyword", "name_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@JsonView({ CurationView.FieldsOnly.class, CurationView.VariantDocument.class })
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.AlleleSummaryDocument.class, CurationView.VariantSummaryDocument.class, CurationView.SequenceSummaryDocument.class })
 	private SOTerm transcriptType;
 
 	@IndexedEmbedded(
@@ -104,6 +104,6 @@ public class Transcript extends GenomicEntity {
 		}
 	)
 	@OneToMany(mappedBy = "transcriptAssociationSubject", cascade = CascadeType.ALL, orphanRemoval = true)
-	@JsonView({ CurationView.FieldsAndLists.class, CurationView.VariantDocument.class })
+	@JsonView({ CurationView.FieldsAndLists.class, CurationView.AlleleSummaryDocument.class, CurationView.VariantSummaryDocument.class, CurationView.SequenceSummaryDocument.class })
 	private List<TranscriptGeneAssociation> transcriptGeneAssociations;
 }

@@ -43,7 +43,7 @@ import lombok.ToString;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(callSuper = true)
 @AGRCurationSchemaVersion(min = "2.7.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = {AuditedObject.class})
-@Schema(name = "PredictedVariantConsequence", description = "POJO representing VEP predicted variant consequence results")
+@Schema(name = "PredictedVariantConsequence", description = "PredictedVariantConsequence: a predicted variant consequence")
 @Table(indexes = {
 	@Index(name = "predictedvariantconsequence_varianttranscript_index", columnList = "varianttranscript_id"),
 	@Index(name = "predictedvariantconsequence_vepimpact_index", columnList = "vepimpact_id"),
@@ -64,13 +64,13 @@ public class PredictedVariantConsequence extends AuditedObject {
 	@IndexedEmbedded(includePaths = {"name", "name_keyword", "curie", "curie_keyword", "primaryExternalId", "primaryExternalId_keyword", "modInternalId", "modInternalId_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@JsonView({CurationView.FieldsOnly.class, CurationView.VariantDocument.class})
+	@JsonView({CurationView.FieldsOnly.class, CurationView.AlleleSummaryDocument.class, CurationView.VariantSummaryDocument.class, CurationView.SequenceSummaryDocument.class})
 	private Transcript variantTranscript;
 
 	@IndexedEmbedded(includePaths = {"name", "name_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@JsonView({CurationView.FieldsOnly.class, CurationView.VariantDocument.class})
+	@JsonView({CurationView.FieldsOnly.class, CurationView.AlleleSummaryDocument.class, CurationView.VariantSummaryDocument.class, CurationView.SequenceSummaryDocument.class})
 	private VocabularyTerm vepImpact;
 
 	@IndexedEmbedded(includePaths = {"curie", "name", "secondaryIdentifiers", "synonyms.name", "namespace",
@@ -81,110 +81,110 @@ public class PredictedVariantConsequence extends AuditedObject {
 		@Index(name = "predictedvariantconsequence_ontologyterm_pvc_index", columnList = "predictedvariantconsequence_id"),
 		@Index(name = "predictedvariantconsequence_ontologyterm_vc_index", columnList = "vepconsequences_id")
 	})
-	@JsonView({CurationView.FieldsAndLists.class, CurationView.VariantView.class, CurationView.AlleleSummaryDocument.class, CurationView.VariantDocument.class})
+	@JsonView({CurationView.FieldsAndLists.class, CurationView.VariantView.class, CurationView.AlleleSummaryDocument.class, CurationView.VariantSummaryDocument.class, CurationView.SequenceSummaryDocument.class})
 	private List<SOTerm> vepConsequences;
 
 	@IndexedEmbedded(includePaths = {"name", "name_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@JsonView({CurationView.FieldsOnly.class, CurationView.VariantDocument.class})
+	@JsonView({CurationView.FieldsOnly.class, CurationView.AlleleSummaryDocument.class, CurationView.VariantSummaryDocument.class, CurationView.SequenceSummaryDocument.class})
 	private VocabularyTerm polyphenPrediction;
 
 	@GenericField(projectable = Projectable.YES, sortable = Sortable.YES)
-	@JsonView({CurationView.FieldsOnly.class, CurationView.VariantDocument.class})
+	@JsonView({CurationView.FieldsOnly.class, CurationView.AlleleSummaryDocument.class, CurationView.VariantSummaryDocument.class, CurationView.SequenceSummaryDocument.class})
 	private Float polyphenScore;
 
 	@IndexedEmbedded(includePaths = {"name", "name_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@JsonView({CurationView.FieldsOnly.class, CurationView.VariantDocument.class})
+	@JsonView({CurationView.FieldsOnly.class, CurationView.AlleleSummaryDocument.class, CurationView.VariantSummaryDocument.class, CurationView.SequenceSummaryDocument.class})
 	private VocabularyTerm siftPrediction;
 
 	@GenericField(projectable = Projectable.YES, sortable = Sortable.YES)
-	@JsonView({CurationView.FieldsOnly.class, CurationView.VariantDocument.class})
+	@JsonView({CurationView.FieldsOnly.class, CurationView.AlleleSummaryDocument.class, CurationView.VariantSummaryDocument.class, CurationView.SequenceSummaryDocument.class})
 	private Float siftScore;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "aminoAcidReference_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({CurationView.FieldsOnly.class, CurationView.VariantDocument.class})
+	@JsonView({CurationView.FieldsOnly.class, CurationView.VariantSummaryDocument.class, CurationView.SequenceSummaryDocument.class})
 	@Column(columnDefinition = "TEXT")
 	private String aminoAcidReference;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "aminoAcidVariant_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({CurationView.FieldsOnly.class, CurationView.VariantDocument.class})
+	@JsonView({CurationView.FieldsOnly.class, CurationView.VariantSummaryDocument.class, CurationView.SequenceSummaryDocument.class})
 	@Column(columnDefinition = "TEXT")
 	private String aminoAcidVariant;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "codonReference_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({CurationView.FieldsOnly.class, CurationView.VariantDocument.class})
+	@JsonView({CurationView.FieldsOnly.class, CurationView.VariantSummaryDocument.class, CurationView.SequenceSummaryDocument.class})
 	@Column(columnDefinition = "TEXT")
 	private String codonReference;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "codonVariant_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({CurationView.FieldsOnly.class, CurationView.VariantDocument.class})
+	@JsonView({CurationView.FieldsOnly.class, CurationView.VariantSummaryDocument.class, CurationView.SequenceSummaryDocument.class})
 	@Column(columnDefinition = "TEXT")
 	private String codonVariant;
 
 	@GenericField(projectable = Projectable.YES, sortable = Sortable.YES)
-	@JsonView({CurationView.FieldsOnly.class, CurationView.VariantDocument.class})
+	@JsonView({CurationView.FieldsOnly.class, CurationView.VariantSummaryDocument.class, CurationView.SequenceSummaryDocument.class})
 	private Integer calculatedCdnaStart;
 
 	@GenericField(projectable = Projectable.YES, sortable = Sortable.YES)
-	@JsonView({CurationView.FieldsOnly.class, CurationView.VariantDocument.class})
+	@JsonView({CurationView.FieldsOnly.class, CurationView.VariantSummaryDocument.class, CurationView.SequenceSummaryDocument.class})
 	private Integer calculatedCdnaEnd;
 
 	@GenericField(projectable = Projectable.YES, sortable = Sortable.YES)
-	@JsonView({CurationView.FieldsOnly.class, CurationView.VariantDocument.class})
+	@JsonView({CurationView.FieldsOnly.class, CurationView.VariantSummaryDocument.class, CurationView.SequenceSummaryDocument.class})
 	private Integer calculatedCdsStart;
 
 	@GenericField(projectable = Projectable.YES, sortable = Sortable.YES)
-	@JsonView({CurationView.FieldsOnly.class, CurationView.VariantDocument.class})
+	@JsonView({CurationView.FieldsOnly.class, CurationView.VariantSummaryDocument.class, CurationView.SequenceSummaryDocument.class})
 	private Integer calculatedCdsEnd;
 
 	@GenericField(projectable = Projectable.YES, sortable = Sortable.YES)
-	@JsonView({CurationView.FieldsOnly.class, CurationView.VariantDocument.class})
+	@JsonView({CurationView.FieldsOnly.class, CurationView.VariantSummaryDocument.class, CurationView.SequenceSummaryDocument.class})
 	private Integer calculatedProteinStart;
 
 	@GenericField(projectable = Projectable.YES, sortable = Sortable.YES)
-	@JsonView({CurationView.FieldsOnly.class, CurationView.VariantDocument.class})
+	@JsonView({CurationView.FieldsOnly.class, CurationView.VariantSummaryDocument.class, CurationView.SequenceSummaryDocument.class})
 	private Integer calculatedProteinEnd;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "hgvsProteinNomenclature_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({CurationView.FieldsOnly.class, CurationView.VariantDocument.class})
+	@JsonView({CurationView.FieldsOnly.class, CurationView.VariantSummaryDocument.class, CurationView.SequenceSummaryDocument.class})
 	@Column(columnDefinition = "TEXT")
 	private String hgvsProteinNomenclature;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "hgvsCodingNomenclature_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({CurationView.FieldsOnly.class, CurationView.VariantDocument.class})
+	@JsonView({CurationView.FieldsOnly.class, CurationView.VariantSummaryDocument.class, CurationView.SequenceSummaryDocument.class})
 	@Column(columnDefinition = "TEXT")
 	private String hgvsCodingNomenclature;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "introns_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({CurationView.FieldsOnly.class})
+	@JsonView({CurationView.FieldsOnly.class, CurationView.AlleleSummaryDocument.class, CurationView.VariantSummaryDocument.class, CurationView.SequenceSummaryDocument.class})
 	@Transient
 	private String introns;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "exons_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({CurationView.FieldsOnly.class})
+	@JsonView({CurationView.FieldsOnly.class, CurationView.AlleleSummaryDocument.class, CurationView.VariantSummaryDocument.class, CurationView.SequenceSummaryDocument.class})
 	@Transient
 	private String exons;
-	
+
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer", valueBridge = @ValueBridgeRef(type = BooleanValueBridge.class))
 	@KeywordField(name = "geneLevelConsequence_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, valueBridge = @ValueBridgeRef(type = BooleanValueBridge.class))
-	@JsonView({CurationView.FieldsOnly.class, CurationView.VariantDocument.class})
+	@JsonView({CurationView.FieldsOnly.class, CurationView.AlleleSummaryDocument.class, CurationView.VariantSummaryDocument.class, CurationView.SequenceSummaryDocument.class})
 	@Column(columnDefinition = "boolean default false", nullable = false)
 	private Boolean geneLevelConsequence = false;
 
 	@Transient
 	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
-	@JsonView({CurationView.FieldsOnly.class, CurationView.VariantView.class})
+	@JsonView({CurationView.FieldsOnly.class, CurationView.VariantView.class, CurationView.AlleleSummaryDocument.class, CurationView.VariantSummaryDocument.class, CurationView.SequenceSummaryDocument.class})
 	public String getIntronExonLocation() {
 		if (exons == null && introns == null) {
 			return null;
@@ -196,5 +196,19 @@ public class PredictedVariantConsequence extends AuditedObject {
 			return "Intron " + introns;
 		}
 		return "Exon " + exons + " : " + "Intron " + introns;
+	}
+
+	@Transient
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
+	@JsonView({CurationView.FieldsOnly.class, CurationView.VariantSummaryDocument.class})
+	public String getSequenceFeatureName() {
+		if (hgvsCodingNomenclature == null) {
+			return null;
+		}
+		String[] tokens = hgvsCodingNomenclature.split(":");
+		if (tokens.length < 2) {
+			return null;
+		}
+		return tokens[1];
 	}
 }

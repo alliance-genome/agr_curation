@@ -23,7 +23,7 @@ import lombok.ToString;
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(callSuper = true)
-@Schema(name = "AssemblyComponent", description = "POJO that represents the AssemblyComponent")
+@Schema(name = "AssemblyComponent", description = "AssemblyComponent: an assembly component")
 @AGRCurationSchemaVersion(min = "2.4.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { GenomicEntity.class })
 @Table(
 	indexes = {
@@ -33,13 +33,13 @@ import lombok.ToString;
 	}
 )
 public class AssemblyComponent extends GenomicEntity {
-	@JsonView({ CurationView.FieldsOnly.class, CurationView.GeneSummaryDocument.class, CurationView.AlleleSummaryDocument.class, CurationView.VariantDocument.class })
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.GeneSummaryDocument.class, CurationView.AlleleSummaryDocument.class, CurationView.VariantSummaryDocument.class, CurationView.SequenceSummaryDocument.class })
 	private String name;
 
 	@IndexedEmbedded(includePaths = {"name", "name_keyword", "curie", "curie_keyword", "primaryExternalId", "primaryExternalId_keyword", "modInternalId", "modInternalId_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@JsonView({ CurationView.FieldsOnly.class, CurationView.VariantDocument.class })
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.VariantSummaryDocument.class, CurationView.SequenceSummaryDocument.class })
 	private GenomeAssembly genomeAssembly;
 	
 	@IndexedEmbedded(includePaths = {"name", "name_keyword"})

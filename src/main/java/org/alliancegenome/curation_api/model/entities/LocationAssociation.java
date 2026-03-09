@@ -22,7 +22,7 @@ import lombok.EqualsAndHashCode;
 @MappedSuperclass
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
-@Schema(name = "locationAssociation", description = "POJO that represents a location association")
+@Schema(name = "locationAssociation", description = "LocationAssociation: a location association")
 @AGRCurationSchemaVersion(min = "2.0.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = {EvidenceAssociation.class})
 public abstract class LocationAssociation extends EvidenceAssociation {
 
@@ -34,12 +34,12 @@ public abstract class LocationAssociation extends EvidenceAssociation {
 
 	@GenericField(projectable = Projectable.YES, sortable = Sortable.YES)
 	@Column(name = "`start`")
-	@JsonView({CurationView.FieldsOnly.class, CurationView.GeneSummaryDocument.class, CurationView.AlleleSummaryDocument.class, CurationView.VariantDocument.class})
+	@JsonView({CurationView.FieldsOnly.class, CurationView.GeneSummaryDocument.class, CurationView.AlleleSummaryDocument.class, CurationView.VariantSummaryDocument.class, CurationView.SequenceSummaryDocument.class})
 	private Integer start;
 
 	@GenericField(projectable = Projectable.YES, sortable = Sortable.YES)
 	@Column(name = "`end`")
-	@JsonView({CurationView.FieldsOnly.class, CurationView.GeneSummaryDocument.class, CurationView.AlleleSummaryDocument.class, CurationView.VariantDocument.class})
+	@JsonView({CurationView.FieldsOnly.class, CurationView.GeneSummaryDocument.class, CurationView.AlleleSummaryDocument.class, CurationView.VariantSummaryDocument.class, CurationView.SequenceSummaryDocument.class})
 	private Integer end;
 
 }

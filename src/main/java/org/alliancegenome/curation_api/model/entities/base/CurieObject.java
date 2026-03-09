@@ -23,12 +23,12 @@ import lombok.ToString;
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
 @AGRCurationSchemaVersion(min = "2.0.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = {AuditedObject.class})
-@Schema(name = "CurieObject", description = "POJO that represents the CurieObject")
+@Schema(name = "CurieObject", description = "CurieObject: a curie object")
 public class CurieObject extends AuditedObject {
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "curie_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({CurationView.FieldsOnly.class, CurationView.ForPublic.class, CurationView.GeneToGeneOrthologyDocument.class, CurationView.GeneSummaryDocument.class, CurationView.DiseaseSummaryDocument.class, CurationView.ModelDocument.class, CurationView.GeneExpressionDocument.class, CurationView.AlleleSummaryDocument.class, CurationView.VariantDocument.class })
+	@JsonView({CurationView.FieldsOnly.class, CurationView.ForPublic.class, CurationView.GeneToGeneOrthologyDocument.class, CurationView.GeneSummaryDocument.class, CurationView.DiseaseSummaryDocument.class, CurationView.ModelDocument.class, CurationView.GeneExpressionDocument.class, CurationView.AlleleSummaryDocument.class, CurationView.VariantSummaryDocument.class, CurationView.SequenceSummaryDocument.class })
 	@Column(nullable = false)
 	protected String curie;
 

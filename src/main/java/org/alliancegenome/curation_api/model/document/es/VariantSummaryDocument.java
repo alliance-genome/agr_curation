@@ -1,7 +1,9 @@
 package org.alliancegenome.curation_api.model.document.es;
 
-import org.alliancegenome.curation_api.model.entities.Allele;
-import org.alliancegenome.curation_api.model.entities.associations.CuratedVariantGenomicLocationAssociation;
+
+import java.util.List;
+
+import org.alliancegenome.curation_api.model.entities.Variant;
 import org.alliancegenome.curation_api.view.CurationView;
 
 import com.fasterxml.jackson.annotation.JsonView;
@@ -11,15 +13,11 @@ import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-@JsonView({ CurationView.VariantDocument.class })
-public class VariantSummaryDocument extends ESDocument {
+@JsonView({ CurationView.VariantSummaryDocument.class })
+public class VariantSummaryDocument extends AVSParentDocument {
 
 	{
 		category = "variant_summary";
 	}
-	protected String subCategory;
-
-	private Allele allele;
-	private CuratedVariantGenomicLocationAssociation variant;
-
+	private List<Variant> variants;
 }

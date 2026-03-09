@@ -135,20 +135,26 @@ public class CurationView {
 	public static class BulkLoadFileHistoryView extends FieldsOnly {
 	}
 
+	// Views for search results
+	public static class DiseaseSearchResultDocument { }
 	public static class GeneSearchResultDocument { }
-	public static class GeneSummaryDocument { }
 	public static class GOSearchResultDocument { }
 	public static class HTPDatasetSearchResultDocument { }
+
+	// Views for summary pages
 	public static class DiseaseSummaryDocument { }
-	public static class DiseaseSearchResultDocument { }
+	public static class GeneSummaryDocument { }
 	public static class AlleleSummaryDocument { }
-	public static class AlleleForPublic extends ForPublic { }
 	public static class AccessionSummaryDocument { }
+	public static class VariantSummaryDocument { }
+	public static class VariantSearchResultDocument { }
+	public static class SequenceSummaryDocument { }
+
+	// View for Table Documents
 	public static class GeneToGeneOrthologyDocument { }
 	public static class GeneExpressionDocument { }
 	public static class ModelDocument { }
-	public static class VariantDocument { }
-	public static class TransgenicAllelesDocument extends ForPublic { }
+	public static class TransgenicAllelesDocument { }
 
 	public static Class<?> viewLookup(String name) {
 		for (Class<?> innerClass : CurationView.class.getDeclaredClasses()) {

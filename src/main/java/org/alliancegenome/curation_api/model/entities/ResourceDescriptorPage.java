@@ -36,7 +36,7 @@ import lombok.ToString;
 		@Index(name = "resourcedescriptorpage_createdby_index", columnList = "createdby_id"),
 		@Index(name = "resourcedescriptorpage_updatedby_index", columnList = "updatedby_id")
 })
-@Schema(name = "ResourceDescriptorPage", description = "Annotation class representing a resource descriptor page")
+@Schema(name = "ResourceDescriptorPage", description = "ResourceDescriptorPage: a resource descriptor page")
 public class ResourceDescriptorPage extends AuditedObject {
 
 	@IndexedEmbedded(includeDepth = 1)
@@ -53,7 +53,7 @@ public class ResourceDescriptorPage extends AuditedObject {
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "urlTemplate_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({ CurationView.FieldsOnly.class, CurationView.ForPublic.class, CurationView.GeneSummaryDocument.class, CurationView.AlleleSummaryDocument.class, CurationView.GeneExpressionDocument.class, CurationView.ModelDocument.class })
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.ForPublic.class, CurationView.GeneSummaryDocument.class, CurationView.AlleleSummaryDocument.class, CurationView.GeneExpressionDocument.class, CurationView.ModelDocument.class, CurationView.VariantSummaryDocument.class, CurationView.SequenceSummaryDocument.class })
 	@EqualsAndHashCode.Include
 	private String urlTemplate;
 

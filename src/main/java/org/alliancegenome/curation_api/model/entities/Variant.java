@@ -30,8 +30,10 @@ import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
 @Indexed
+@Schema(name = "Variant", description = "Variant: a variant")
 @Entity
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
@@ -47,7 +49,7 @@ public class Variant extends GenomicEntity {
 	@IndexedEmbedded(includePaths = {"curie", "name", "curie_keyword", "name_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@JsonView({ CurationView.FieldsOnly.class, CurationView.AlleleSummaryDocument.class, CurationView.VariantDocument.class })
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.AlleleSummaryDocument.class, CurationView.VariantSummaryDocument.class, CurationView.SequenceSummaryDocument.class })
 	private SOTerm variantType;
 
 	@IndexedEmbedded(includePaths = {"name", "name_keyword"})
@@ -72,7 +74,7 @@ public class Variant extends GenomicEntity {
 		}
 	)
 	@OneToMany(mappedBy = "variantAssociationSubject", cascade = CascadeType.ALL, orphanRemoval = true)
-	@JsonView({ CurationView.FieldsAndLists.class, CurationView.VariantDetailView.class, CurationView.AlleleSummaryDocument.class })
+	@JsonView({ CurationView.FieldsAndLists.class, CurationView.VariantDetailView.class, CurationView.AlleleSummaryDocument.class, CurationView.VariantSummaryDocument.class, CurationView.SequenceSummaryDocument.class })
 	private List<CuratedVariantGenomicLocationAssociation> curatedVariantGenomicLocations;
 
 	@OneToMany(mappedBy = "alleleVariantAssociationObject", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -99,6 +101,6 @@ public class Variant extends GenomicEntity {
 		@Index(name = "variant_reference_variant_index", columnList = "variant_id"),
 		@Index(name = "variant_reference_references_index", columnList = "references_id")
 	})
-	@JsonView({ CurationView.FieldsAndLists.class, CurationView.VariantView.class })
+	@JsonView({ CurationView.FieldsAndLists.class, CurationView.VariantView.class, CurationView.VariantSummaryDocument.class, CurationView.SequenceSummaryDocument.class })
 	private List<Reference> references;
 }

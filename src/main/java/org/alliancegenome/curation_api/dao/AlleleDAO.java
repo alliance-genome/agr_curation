@@ -27,6 +27,8 @@ import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.associations.AlleleGeneAssociation;
 import org.alliancegenome.curation_api.model.entities.associations.CuratedVariantGenomicLocationAssociation;
 import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
+import org.alliancegenome.curation_api.model.entities.Transcript;
+import org.alliancegenome.curation_api.model.entities.associations.TranscriptGeneAssociation;
 import org.alliancegenome.curation_api.model.entities.ontology.SOTerm;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.AlleleSymbolSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.AlleleSynonymSlotAnnotation;
@@ -236,9 +238,6 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 				SELECT a.id
 				FROM Allele a
 				INNER JOIN BiologicalEntity b ON b.id = a.id AND b.obsolete = false AND b.internal = false
-				INNER JOIN SlotAnnotation s ON a.id = s.singleallele_id
-					AND s.slotannotationtype = 'AlleleSymbolSlotAnnotation'
-					AND s.formatText IS NOT NULL
 				ORDER BY a.id
 				""";
 
@@ -442,15 +441,39 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 				cvg.start,
 				cvg.end,
 				ac.name as chromosome,
-				otc.name as consequence
+				otc.name as consequence,
+				pvc.id as pvc_id,
+				vt_impact.name as vep_impact,
+				vt_sift.name as sift_prediction,
+				pvc.siftscore,
+				vt_poly.name as polyphen_prediction,
+				pvc.polyphenscore,
+				t.name as transcript_name,
+				be_t.primaryexternalid as transcript_id,
+				be_t.curie as transcript_curie,
+				ot_tt.name as transcript_type,
+				pvc.genelevelconsequence,
+				be_g.primaryexternalid as gene_id,
+				cvg.id as cvg_id,
+				sa_g.displaytext as gene_symbol,
+				sa_g.formattext as gene_symbol_format
 			FROM allelevariantassociation ava
 				JOIN variant v ON v.id = ava.allelevariantassociationobject_id
 				JOIN ontologyterm o ON o.id = v.varianttype_id
 				JOIN curatedvariantgenomiclocation cvg ON cvg.variantassociationsubject_id = v.id
-				JOIN predictedvariantconsequence pvc ON pvc.variantgenomiclocation_id = cvg.id
-				JOIN predictedvariantconsequence_ontologyterm pvco ON pvco.predictedvariantconsequence_id = pvc.id
-				JOIN ontologyterm otc ON otc.id = pvco.vepconsequences_id
 				JOIN assemblycomponent ac ON cvg.variantgenomiclocationassociationobject_id = ac.id
+				LEFT JOIN predictedvariantconsequence pvc ON pvc.variantgenomiclocation_id = cvg.id
+				LEFT JOIN predictedvariantconsequence_ontologyterm pvco ON pvco.predictedvariantconsequence_id = pvc.id
+				LEFT JOIN ontologyterm otc ON otc.id = pvco.vepconsequences_id
+				LEFT JOIN vocabularyterm vt_impact ON vt_impact.id = pvc.vepimpact_id
+				LEFT JOIN vocabularyterm vt_sift ON vt_sift.id = pvc.siftprediction_id
+				LEFT JOIN vocabularyterm vt_poly ON vt_poly.id = pvc.polyphenprediction_id
+				LEFT JOIN transcript t ON t.id = pvc.varianttranscript_id
+				LEFT JOIN biologicalentity be_t ON be_t.id = t.id
+				LEFT JOIN ontologyterm ot_tt ON ot_tt.id = t.transcripttype_id
+				LEFT JOIN transcriptgeneassociation tga ON tga.transcriptassociationsubject_id = t.id
+				LEFT JOIN biologicalentity be_g ON be_g.id = tga.transcriptgeneassociationobject_id
+				LEFT JOIN slotannotation sa_g ON sa_g.singlegene_id = be_g.id AND sa_g.slotannotationtype = 'GeneSymbolSlotAnnotation'
 				WHERE ava.alleleassociationsubject_id IN :alleleIds
 			AND ava.obsolete = false AND ava.internal = false
 			""";
@@ -463,43 +486,171 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 
 		for (Object[] row : variantResults) {
 			Long alleleId = (Long) row[0];
-			Map<Long, Variant> variantMap = alleleVariantMap.get(alleleId);
-			if (variantMap == null) {
-				variantMap = new HashMap<>();
-				alleleVariantMap.put(alleleId, variantMap);
-			}
-			Variant variant = variantMap.get(row[1]);
+			Long variantId = (Long) row[1];
+			Long pvcId = (Long) row[8];
+			Long cvgId = (Long) row[20];
+
+			Map<Long, Variant> variantMap = alleleVariantMap.computeIfAbsent(alleleId, k -> new HashMap<>());
+			Variant variant = variantMap.get(variantId);
 			if (variant == null) {
-				List<SOTerm> vepConsequences = new ArrayList<>();
-				PredictedVariantConsequence pvc = new PredictedVariantConsequence();
-				pvc.setVepConsequences(vepConsequences);
-				List<PredictedVariantConsequence> pvcList = new ArrayList<>();
-				pvcList.add(pvc);
-				CuratedVariantGenomicLocationAssociation cvgla = new CuratedVariantGenomicLocationAssociation();
+				variant = new Variant();
+				variant.setId(variantId);
+				SOTerm variantType = new SOTerm();
+				variantType.setName((String) row[2]);
+				variant.setVariantType(variantType);
+				variant.setCuratedVariantGenomicLocations(new ArrayList<>());
+				variantMap.put(variantId, variant);
+			}
+
+			// Find or create the genomic location
+			CuratedVariantGenomicLocationAssociation cvgla = variant.getCuratedVariantGenomicLocations().stream()
+				.filter(c -> cvgId.equals(c.getId())).findFirst().orElse(null);
+			if (cvgla == null) {
+				cvgla = new CuratedVariantGenomicLocationAssociation();
+				cvgla.setId(cvgId);
 				cvgla.setHgvs((String) row[3]);
 				cvgla.setStart((Integer) row[4]);
 				cvgla.setEnd((Integer) row[5]);
 				AssemblyComponent ac = new AssemblyComponent();
 				ac.setName((String) row[6]);
 				cvgla.setVariantGenomicLocationAssociationObject(ac);
-				cvgla.setPredictedVariantConsequences(pvcList);
-				List<CuratedVariantGenomicLocationAssociation> cvglaList = new ArrayList<>();
-				cvglaList.add(cvgla);
-
-				variant = new Variant();
-				variant.setId((Long) row[1]);
-				SOTerm variantType = new SOTerm();
-				variantType.setName((String) row[2]);
-				variant.setVariantType(variantType);
-				variant.setCuratedVariantGenomicLocations(cvglaList);
-				variantMap.put((Long) row[1], variant);
+				cvgla.setVariantAssociationSubject(variant);
+				cvgla.setPredictedVariantConsequences(new ArrayList<>());
+				variant.getCuratedVariantGenomicLocations().add(cvgla);
 			}
 
-			SOTerm consequence = new SOTerm();
-			consequence.setName((String) row[7]);
-			variant.getCuratedVariantGenomicLocations().get(0)
-					.getPredictedVariantConsequences().get(0)
-					.getVepConsequences().add(consequence);
+			if (pvcId == null) {
+				continue;
+			}
+
+			// Find or create the predicted variant consequence
+			PredictedVariantConsequence pvc = cvgla.getPredictedVariantConsequences().stream()
+				.filter(p -> pvcId.equals(p.getId())).findFirst().orElse(null);
+			if (pvc == null) {
+				pvc = new PredictedVariantConsequence();
+				pvc.setId(pvcId);
+				pvc.setVepConsequences(new ArrayList<>());
+				if (row[9] != null) {
+					VocabularyTerm vepImpact = new VocabularyTerm();
+					vepImpact.setName((String) row[9]);
+					pvc.setVepImpact(vepImpact);
+				}
+				if (row[10] != null) {
+					VocabularyTerm siftPrediction = new VocabularyTerm();
+					siftPrediction.setName((String) row[10]);
+					pvc.setSiftPrediction(siftPrediction);
+				}
+				pvc.setSiftScore((Float) row[11]);
+				if (row[12] != null) {
+					VocabularyTerm polyphenPrediction = new VocabularyTerm();
+					polyphenPrediction.setName((String) row[12]);
+					pvc.setPolyphenPrediction(polyphenPrediction);
+				}
+				pvc.setPolyphenScore((Float) row[13]);
+				if (row[14] != null || row[15] != null || row[16] != null) {
+					Transcript transcript = new Transcript();
+					transcript.setName((String) row[14]);
+					transcript.setPrimaryExternalId((String) row[15]);
+					transcript.setCurie((String) row[16]);
+					if (row[17] != null) {
+						SOTerm transcriptType = new SOTerm();
+						transcriptType.setName((String) row[17]);
+						transcript.setTranscriptType(transcriptType);
+					}
+					if (row[19] != null) {
+						Gene gene = new Gene();
+						gene.setPrimaryExternalId((String) row[19]);
+						if (row[21] != null) {
+							GeneSymbolSlotAnnotation annotation = new GeneSymbolSlotAnnotation();
+							annotation.setDisplayText((String) row[21]);
+							annotation.setFormatText((String) row[22]);
+							gene.setGeneSymbol(annotation);
+						}
+						TranscriptGeneAssociation tga = new TranscriptGeneAssociation();
+						tga.setTranscriptGeneAssociationObject(gene);
+						transcript.setTranscriptGeneAssociations(List.of(tga));
+					}
+					pvc.setVariantTranscript(transcript);
+				}
+				pvc.setGeneLevelConsequence(row[18] != null ? (Boolean) row[18] : false);
+				cvgla.getPredictedVariantConsequences().add(pvc);
+			}
+
+			if (row[7] != null) {
+				SOTerm consequence = new SOTerm();
+				consequence.setName((String) row[7]);
+				if (pvc.getVepConsequences().stream().noneMatch(c -> consequence.getName().equals(c.getName()))) {
+					pvc.getVepConsequences().add(consequence);
+				}
+				variant.getCuratedVariantGenomicLocations().get(0)
+						.getPredictedVariantConsequences().get(0)
+						.getVepConsequences().add(consequence);
+			}
+		}
+
+		// Intron/Exon location computation
+		Map<Long, PredictedVariantConsequence> pvcById = new HashMap<>();
+		for (Map<Long, Variant> variantMap : alleleVariantMap.values()) {
+			for (Variant v : variantMap.values()) {
+				for (CuratedVariantGenomicLocationAssociation loc : v.getCuratedVariantGenomicLocations()) {
+					for (PredictedVariantConsequence pvc : loc.getPredictedVariantConsequences()) {
+						if (pvc.getId() != null && pvc.getVariantTranscript() != null) {
+							pvcById.put(pvc.getId(), pvc);
+						}
+					}
+				}
+			}
+		}
+
+		if (!pvcById.isEmpty()) {
+			String intronExonQueryString = """
+				WITH exon_data AS (
+					SELECT pvc.id as pvc_id,
+						cvg.start as vstart,
+						egla.start as estart, egla.end as eend,
+						egla.strand,
+						COUNT(*) OVER (PARTITION BY pvc.id) as total_exons,
+						CASE WHEN egla.strand = '-'
+							THEN ROW_NUMBER() OVER (PARTITION BY pvc.id ORDER BY egla.start DESC)
+							ELSE ROW_NUMBER() OVER (PARTITION BY pvc.id ORDER BY egla.start ASC)
+						END as exon_num,
+						CASE WHEN cvg.start BETWEEN egla.start AND egla.end THEN true ELSE false END as in_exon
+					FROM predictedvariantconsequence pvc
+					JOIN curatedvariantgenomiclocation cvg ON cvg.id = pvc.variantgenomiclocation_id
+					JOIN transcriptexonassociation tea ON tea.transcriptassociationsubject_id = pvc.varianttranscript_id
+					JOIN exongenomiclocationassociation egla ON egla.exonassociationsubject_id = tea.transcriptexonassociationobject_id
+					WHERE pvc.id IN :pvcIds
+				)
+				SELECT pvc_id,
+					CASE
+						WHEN bool_or(in_exon) THEN
+							MAX(CASE WHEN in_exon THEN exon_num END) || '/' || MAX(total_exons)
+						ELSE NULL
+					END as exon_location,
+					CASE
+						WHEN NOT bool_or(in_exon) THEN
+							(CASE WHEN MAX(strand) = '-'
+								THEN MAX(total_exons) - MIN(CASE WHEN estart > vstart THEN exon_num END)
+								ELSE MIN(CASE WHEN estart > vstart THEN exon_num END) - 1
+							END) || '/' || (MAX(total_exons) - 1)
+						ELSE NULL
+					END as intron_location
+				FROM exon_data
+				GROUP BY pvc_id
+				""";
+
+			Query intronExonQuery = entityManager.createNativeQuery(intronExonQueryString);
+			intronExonQuery.setParameter("pvcIds", pvcById.keySet());
+			List<Object[]> intronExonResults = intronExonQuery.getResultList();
+
+			for (Object[] row : intronExonResults) {
+				Long pvcId = (Long) row[0];
+				PredictedVariantConsequence pvc = pvcById.get(pvcId);
+				if (pvc != null) {
+					pvc.setExons((String) row[1]);
+					pvc.setIntrons((String) row[2]);
+				}
+			}
 		}
 
 		// Phenotype existence
@@ -507,6 +658,14 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 				SELECT DISTINCT phenotypeannotationsubject_id as allele_id
 				FROM allelephenotypeannotation
 				WHERE phenotypeannotationsubject_id IN :alleleIds
+				UNION
+				SELECT DISTINCT inferredallele_id as allele_id
+				FROM agmphenotypeannotation
+				WHERE inferredallele_id IN :alleleIds
+				UNION
+				SELECT DISTINCT assertedalleles_id as allele_id
+				FROM agmphenotypeannotation_allele
+				WHERE assertedalleles_id IN :alleleIds
 				""";
 
 		Query phenotypeQuery = entityManager.createNativeQuery(phenotypeQueryString);
@@ -522,6 +681,14 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 				SELECT DISTINCT diseaseannotationsubject_id as allele_id
 				FROM allelediseaseannotation
 				WHERE diseaseannotationsubject_id IN :alleleIds
+				UNION
+				SELECT DISTINCT inferredallele_id as allele_id
+				FROM agmdiseaseannotation
+				WHERE inferredallele_id IN :alleleIds
+				UNION
+				SELECT DISTINCT assertedalleles_id as allele_id
+				FROM agmdiseaseannotation_allele
+				WHERE assertedalleles_id IN :alleleIds
 				""";
 
 		Query diseaseQuery = entityManager.createNativeQuery(diseaseQueryString);

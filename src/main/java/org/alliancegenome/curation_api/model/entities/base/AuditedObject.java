@@ -48,7 +48,7 @@ import lombok.ToString;
 @ToString(exclude = { "createdBy", "updatedBy" })
 @AGRCurationSchemaVersion(min = "1.2.0", max = LinkMLSchemaConstants.LATEST_RELEASE)
 @MappedSuperclass
-@Schema(name = "AuditedObject", description = "POJO that represents the AuditedObject")
+@Schema(name = "AuditedObject", description = "AuditedObject: an audited object")
 public class AuditedObject implements Serializable {
 
 	@Id
@@ -123,7 +123,13 @@ public class AuditedObject implements Serializable {
 	@Transient
 	@JsonIgnore
 	public boolean isNotInternalOrObsolete() {
-		return internal != null && !internal && obsolete != null && !obsolete;
+		if (internal != null && internal) {
+			return false;
+		}
+		if (obsolete != null && obsolete) {
+			return false;
+		}
+		return true;
 	}
 
 }

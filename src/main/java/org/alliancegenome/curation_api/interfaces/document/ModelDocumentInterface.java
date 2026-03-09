@@ -1,6 +1,6 @@
 package org.alliancegenome.curation_api.interfaces.document;
 
-import java.util.HashMap;
+import java.util.List;
 
 import org.alliancegenome.curation_api.model.document.es.AffectedGenomicModelDocument;
 import org.alliancegenome.curation_api.response.SearchResponse;
@@ -11,11 +11,10 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import com.fasterxml.jackson.annotation.JsonView;
 
 import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.DefaultValue;
+import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 
 @Path("/model")
@@ -24,9 +23,13 @@ import jakarta.ws.rs.core.MediaType;
 @Consumes(MediaType.APPLICATION_JSON)
 public interface ModelDocumentInterface {
 
+	@GET
+	@Path("/ids")
+	SearchResponse<Long> getAllIds();
+
 	@POST
-	@Path("/gene-documents")
+	@Path("/byids")
 	@JsonView(CurationView.ModelDocument.class)
-	SearchResponse<AffectedGenomicModelDocument> findDocuments(@DefaultValue("0") @QueryParam("page") Integer page, @DefaultValue("10") @QueryParam("limit") Integer limit, @RequestBody HashMap<String, Object> params);
-	
+	SearchResponse<AffectedGenomicModelDocument> findByIds(@RequestBody List<Long> ids);
+
 }

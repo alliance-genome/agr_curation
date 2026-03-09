@@ -42,7 +42,7 @@ import lombok.ToString;
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
 @AGRCurationSchemaVersion(min = "2.9.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = {CurieObject.class})
-@Schema(name = "SubmittedObject", description = "POJO that represents the SubmittedObject")
+@Schema(name = "SubmittedObject", description = "SubmittedObject: a submitted object")
 public class SubmittedObject extends CurieObject {
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
@@ -54,7 +54,8 @@ public class SubmittedObject extends CurieObject {
 			CurationView.ModelDocument.class,
 			CurationView.TransgenicAllelesDocument.class,
 			CurationView.AlleleSummaryDocument.class,
-			CurationView.VariantDocument.class,
+			CurationView.VariantSummaryDocument.class,
+			CurationView.SequenceSummaryDocument.class,
 			CurationView.GeneExpressionDocument.class })
 	private String primaryExternalId;
 
@@ -77,13 +78,13 @@ public class SubmittedObject extends CurieObject {
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@OneToOne(orphanRemoval = true)
 	@Fetch(FetchMode.SELECT)
-	@JsonView({CurationView.FieldsOnly.class, CurationView.AlleleSummaryDocument.class, CurationView.AlleleForPublic.class, CurationView.TransgenicAllelesDocument.class, CurationView.ModelDocument.class, CurationView.ForPublic.class})
+	@JsonView({CurationView.FieldsOnly.class, CurationView.AlleleSummaryDocument.class, CurationView.TransgenicAllelesDocument.class, CurationView.ModelDocument.class, CurationView.ForPublic.class})
 	private CrossReference dataProviderCrossReference;
 
 	@IndexedEmbedded(includePaths = {"freeText", "freeText_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-	@JsonView({ CurationView.FieldsAndLists.class, CurationView.AlleleView.class, CurationView.AlleleDetailView.class, CurationView.GeneView.class, CurationView.AffectedGenomicModelView.class, CurationView.ConstructView.class, CurationView.VariantView.class, CurationView.AlleleSummaryDocument.class })
+	@JsonView({ CurationView.FieldsAndLists.class, CurationView.AlleleView.class, CurationView.AlleleDetailView.class, CurationView.GeneView.class, CurationView.AffectedGenomicModelView.class, CurationView.ConstructView.class, CurationView.VariantView.class, CurationView.AlleleSummaryDocument.class, CurationView.GeneSummaryDocument.class, CurationView.VariantSummaryDocument.class })
 	@JoinTable(
 		joinColumns = @JoinColumn(name = "submittedobject_id"),
 		inverseJoinColumns = @JoinColumn(name = "relatednotes_id"),

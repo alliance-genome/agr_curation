@@ -21,7 +21,9 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
+@Schema(name = "BulkLoadFileException", description = "BulkLoadFileException: a bulk load file exception")
 @Entity
 @Data
 @AllArgsConstructor

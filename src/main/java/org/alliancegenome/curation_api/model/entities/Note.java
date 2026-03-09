@@ -35,7 +35,7 @@ import lombok.ToString;
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(callSuper = true)
-@Schema(name = "Note", description = "POJO that represents the Note")
+@Schema(name = "Note", description = "Note: a note")
 @AGRCurationSchemaVersion(min = "1.2.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AuditedObject.class })
 @Table(indexes = {
 		@Index(name = "Note_noteType_index", columnList = "noteType_id"),
@@ -46,14 +46,14 @@ public class Note extends AuditedObject {
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer", valueBridge = @ValueBridgeRef(type = FreeTextValueBridge.class))
 	@KeywordField(name = "freeText_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer", valueBridge = @ValueBridgeRef(type = FreeTextValueBridge.class))
-	@JsonView({ CurationView.FieldsOnly.class, CurationView.ForPublic.class, CurationView.AlleleSummaryDocument.class })
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.ForPublic.class, CurationView.AlleleSummaryDocument.class, CurationView.GeneSummaryDocument.class, CurationView.VariantSummaryDocument.class })
 	@Column(columnDefinition = "TEXT")
 	private String freeText;
 
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@JsonView({ CurationView.FieldsOnly.class, CurationView.ForPublic.class, CurationView.AlleleSummaryDocument.class })
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.ForPublic.class, CurationView.AlleleSummaryDocument.class, CurationView.GeneSummaryDocument.class })
 	private VocabularyTerm noteType;
 
 	@IndexedEmbedded(includeDepth = 1)

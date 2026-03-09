@@ -28,7 +28,7 @@ import lombok.ToString;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(callSuper = true)
 @AGRCurationSchemaVersion(min = "2.2.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { EvidenceAssociation.class })
-@Schema(name = "TranscriptGeneAssociation", description = "POJO representing an association between a transcript and a gene")
+@Schema(name = "TranscriptGeneAssociation", description = "TranscriptGeneAssociation: a transcript gene association")
 
 @Table(indexes = {
 	@Index(name = "TranscriptGeneAssociation_internal_index", columnList = "internal"),
@@ -51,9 +51,9 @@ public class TranscriptGeneAssociation extends EvidenceAssociation {
 		"transcriptGeneAssociations",
 		"transcriptGenomicLocationAssociations"
 	})
-	@JsonView({ CurationView.FieldsOnly.class, CurationView.VariantDocument.class })
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.AlleleSummaryDocument.class, CurationView.VariantSummaryDocument.class, CurationView.SequenceSummaryDocument.class })
 	private Transcript transcriptAssociationSubject;
-	
+
 	@IndexedEmbedded(includePaths = {"curie", "geneSymbol.displayText", "geneSymbol.formatText", "geneFullName.displayText", "geneFullName.formatText",
 			"curie_keyword", "geneSymbol.displayText_keyword", "geneSymbol.formatText_keyword", "geneFullName.displayText_keyword", "geneFullName.formatText_keyword",
 			"primaryExternalId", "primaryExternalId_keyword", "modInternalId", "modInternalId_keyword"})
@@ -65,7 +65,7 @@ public class TranscriptGeneAssociation extends EvidenceAssociation {
 		"sequenceTargetingReagentGeneAssociations",
 		"transcriptGeneAssociations"
 	})
-	@JsonView({ CurationView.FieldsOnly.class, CurationView.VariantDocument.class })
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.AlleleSummaryDocument.class, CurationView.VariantSummaryDocument.class, CurationView.SequenceSummaryDocument.class })
 	private Gene transcriptGeneAssociationObject;
 	
 	@IndexedEmbedded(includePaths = {"name", "name_keyword"})

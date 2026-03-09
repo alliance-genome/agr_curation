@@ -19,7 +19,6 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.FullTextFi
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmbedded;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexingDependency;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.KeywordField;
-
 import com.fasterxml.jackson.annotation.JsonView;
 
 import jakarta.persistence.Column;
@@ -36,7 +35,7 @@ import lombok.ToString;
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(callSuper = true)
-@Schema(name = "Reference", description = "POJO that represents the Reference")
+@Schema(name = "Reference", description = "Reference: a reference")
 @AGRCurationSchemaVersion(min = "1.4.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = {InformationContentEntity.class}, partial = true)
 public class Reference extends InformationContentEntity {
 
@@ -44,7 +43,7 @@ public class Reference extends InformationContentEntity {
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
 	@Fetch(FetchMode.JOIN)
-	@JsonView({CurationView.FieldsOnly.class, CurationView.ForPublic.class})
+	@JsonView({CurationView.FieldsOnly.class, CurationView.ForPublic.class, CurationView.VariantSummaryDocument.class})
 	@JoinTable(
 		indexes = {
 			@Index(name = "reference_crossreference_reference_index", columnList = "Reference_id"),
@@ -64,7 +63,7 @@ public class Reference extends InformationContentEntity {
 	 * Retrieve PMID if available in the crossReference collection otherwise MOD ID
 	 */
 	@Transient
-	@JsonView({CurationView.ForPublic.class, CurationView.GeneExpressionDocument.class})
+	@JsonView({CurationView.ForPublic.class, CurationView.GeneExpressionDocument.class, CurationView.VariantSummaryDocument.class, CurationView.SequenceSummaryDocument.class})
 	public String getReferenceID() {
 		return getReferenceID(true);
 	}

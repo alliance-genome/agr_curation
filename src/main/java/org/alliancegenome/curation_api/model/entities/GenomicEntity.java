@@ -18,7 +18,9 @@ import jakarta.persistence.OneToMany;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
+@Schema(name = "GenomicEntity", description = "GenomicEntity: a genomic entity")
 @Entity
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
@@ -35,6 +37,6 @@ public class GenomicEntity extends BiologicalEntity {
 		@Index(columnList = "crossreferences_id", name = "genomicentity_crossreference_crossreferences_index")
 	})
 	@EqualsAndHashCode.Include
-	@JsonView({CurationView.FieldsAndLists.class, CurationView.AlleleView.class, CurationView.GeneView.class, CurationView.AffectedGenomicModelView.class, CurationView.VariantView.class, CurationView.GeneSummaryDocument.class, CurationView.VariantDocument.class})
+	@JsonView({CurationView.FieldsAndLists.class, CurationView.AlleleView.class, CurationView.GeneView.class, CurationView.AffectedGenomicModelView.class, CurationView.VariantView.class, CurationView.GeneSummaryDocument.class, CurationView.VariantSummaryDocument.class, CurationView.SequenceSummaryDocument.class})
 	private List<CrossReference> crossReferences;
 }

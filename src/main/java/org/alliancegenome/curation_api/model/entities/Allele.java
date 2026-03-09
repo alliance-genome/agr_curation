@@ -48,8 +48,10 @@ import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
 @Indexed
+@Schema(name = "Allele", description = "Allele: an allele")
 @Entity
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
@@ -126,7 +128,7 @@ public class Allele extends GenomicEntity {
 	)
 	@OneToOne(mappedBy = "singleAllele", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonManagedReference
-	@JsonView({ CurationView.FieldsOnly.class, CurationView.ForPublic.class, CurationView.AlleleDetailView.class, CurationView.AlleleSummaryDocument.class, CurationView.VariantDocument.class })
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.ForPublic.class, CurationView.AlleleDetailView.class, CurationView.AlleleSummaryDocument.class, CurationView.VariantSummaryDocument.class, CurationView.SequenceSummaryDocument.class })
 	private AlleleSymbolSlotAnnotation alleleSymbol;
 
 	@IndexedEmbedded(
@@ -148,7 +150,7 @@ public class Allele extends GenomicEntity {
 	)
 	@OneToMany(mappedBy = "singleAllele", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonManagedReference
-	@JsonView({ CurationView.FieldsAndLists.class, CurationView.AlleleView.class, CurationView.AlleleDetailView.class, CurationView.AlleleSummaryDocument.class, CurationView.ForPublic.class })
+	@JsonView({ CurationView.FieldsAndLists.class, CurationView.AlleleView.class, CurationView.AlleleDetailView.class, CurationView.AlleleSummaryDocument.class, CurationView.SequenceSummaryDocument.class, CurationView.ForPublic.class })
 	private List<AlleleSynonymSlotAnnotation> alleleSynonyms;
 
 	@IndexedEmbedded(includePaths = { "secondaryId", "evidence.curie", "secondaryId_keyword", "evidence.curie_keyword"})

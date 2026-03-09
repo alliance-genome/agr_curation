@@ -30,7 +30,7 @@ import lombok.ToString;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(callSuper = true)
 @AGRCurationSchemaVersion(min = "1.5.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { SlotAnnotation.class })
-@Schema(name = "NameSlotAnnotation", description = "POJO representing a name slot annotation")
+@Schema(name = "NameSlotAnnotation", description = "NameSlotAnnotation: a name slot annotation")
 public abstract class NameSlotAnnotation extends SlotAnnotation {
 
 	@IndexedEmbedded(includeDepth = 1)
@@ -42,14 +42,14 @@ public abstract class NameSlotAnnotation extends SlotAnnotation {
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "formatText_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({ CurationView.FieldsOnly.class, CurationView.ForPublic.class, CurationView.GeneSummaryDocument.class, CurationView.ModelDocument.class, CurationView.TransgenicAllelesDocument.class, CurationView.AlleleSummaryDocument.class, CurationView.VariantDocument.class })
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.ForPublic.class, CurationView.GeneSummaryDocument.class, CurationView.ModelDocument.class, CurationView.TransgenicAllelesDocument.class, CurationView.AlleleSummaryDocument.class, CurationView.VariantSummaryDocument.class, CurationView.SequenceSummaryDocument.class })
 	@EqualsAndHashCode.Include
 	@Column(columnDefinition = "TEXT")
 	protected String formatText;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "displayText_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({ CurationView.FieldsOnly.class, CurationView.ForPublic.class, CurationView.GeneToGeneOrthologyDocument.class, CurationView.GeneSummaryDocument.class, CurationView.ModelDocument.class, CurationView.TransgenicAllelesDocument.class, CurationView.AlleleSummaryDocument.class, CurationView.GeneExpressionDocument.class, CurationView.VariantDocument.class })
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.ForPublic.class, CurationView.GeneToGeneOrthologyDocument.class, CurationView.GeneSummaryDocument.class, CurationView.ModelDocument.class, CurationView.TransgenicAllelesDocument.class, CurationView.AlleleSummaryDocument.class, CurationView.GeneExpressionDocument.class, CurationView.VariantSummaryDocument.class, CurationView.SequenceSummaryDocument.class })
 	@EqualsAndHashCode.Include
 	@Column(columnDefinition = "TEXT")
 	protected String displayText;

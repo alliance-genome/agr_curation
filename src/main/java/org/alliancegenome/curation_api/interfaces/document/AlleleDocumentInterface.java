@@ -11,6 +11,7 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import com.fasterxml.jackson.annotation.JsonView;
 
 import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
@@ -21,7 +22,7 @@ import jakarta.ws.rs.core.MediaType;
 @Consumes(MediaType.APPLICATION_JSON)
 public interface AlleleDocumentInterface {
 
-	@POST
+	@GET
 	@Path("/ids")
 	@JsonView(CurationView.AlleleSummaryDocument.class)
 	SearchResponse<Long> getAllIds();

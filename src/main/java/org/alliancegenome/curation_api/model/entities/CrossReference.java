@@ -31,7 +31,7 @@ import lombok.ToString;
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = false)
 @ToString(callSuper = true)
-@Schema(name = "CrossReference", description = "POJO that represents the Cross Reference")
+@Schema(name = "CrossReference", description = "CrossReference: a cross reference")
 @AGRCurationSchemaVersion(min = "1.6.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = {AuditedObject.class})
 @Table(indexes = {
 	@Index(name = "crossreference_createdby_index", columnList = "createdBy_id"),
@@ -43,20 +43,20 @@ public class CrossReference extends AuditedObject {
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "referencedCurie_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({CurationView.FieldsOnly.class, CurationView.ForPublic.class, CurationView.GeneSummaryDocument.class, CurationView.AlleleSummaryDocument.class, CurationView.GeneExpressionDocument.class, CurationView.ModelDocument.class, CurationView.VariantDocument.class})
+	@JsonView({CurationView.FieldsOnly.class, CurationView.ForPublic.class, CurationView.GeneSummaryDocument.class, CurationView.AlleleSummaryDocument.class, CurationView.GeneExpressionDocument.class, CurationView.ModelDocument.class, CurationView.VariantSummaryDocument.class, CurationView.SequenceSummaryDocument.class})
 	@EqualsAndHashCode.Include
 	private String referencedCurie;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "displayName_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({CurationView.FieldsOnly.class, CurationView.ForPublic.class, CurationView.GeneSummaryDocument.class, CurationView.AlleleSummaryDocument.class, CurationView.GeneExpressionDocument.class, CurationView.VariantDocument.class})
+	@JsonView({CurationView.FieldsOnly.class, CurationView.ForPublic.class, CurationView.GeneSummaryDocument.class, CurationView.AlleleSummaryDocument.class, CurationView.GeneExpressionDocument.class, CurationView.VariantSummaryDocument.class, CurationView.SequenceSummaryDocument.class})
 	@EqualsAndHashCode.Include
 	private String displayName;
 
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@JsonView({CurationView.FieldsOnly.class, CurationView.ForPublic.class, CurationView.DiseaseSummaryDocument.class, CurationView.GeneSummaryDocument.class, CurationView.AlleleSummaryDocument.class, CurationView.GeneExpressionDocument.class, CurationView.ModelDocument.class})
+	@JsonView({CurationView.FieldsOnly.class, CurationView.ForPublic.class, CurationView.DiseaseSummaryDocument.class, CurationView.GeneSummaryDocument.class, CurationView.AlleleSummaryDocument.class, CurationView.GeneExpressionDocument.class, CurationView.ModelDocument.class, CurationView.VariantSummaryDocument.class, CurationView.SequenceSummaryDocument.class})
 	@Fetch(FetchMode.SELECT)
 	private ResourceDescriptorPage resourceDescriptorPage;
 

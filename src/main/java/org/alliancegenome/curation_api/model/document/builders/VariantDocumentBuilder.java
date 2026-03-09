@@ -2,6 +2,7 @@ package org.alliancegenome.curation_api.model.document.builders;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 
 import org.alliancegenome.curation_api.model.document.es.VariantSummaryDocument;
@@ -19,9 +20,14 @@ public class VariantDocumentBuilder {
 					List<VariantSummaryDocument> dtos = new ArrayList<>();
 					variant.getAlleleVariantAssociations().forEach(alleleVariantAssociation -> {
 						VariantSummaryDocument dto = new VariantSummaryDocument();
-						dto.setVariant(curatedVariantGenomicLocationAssociation);
+						dto.setVariants(List.of(variant));
 						Allele alleleAssociationSubject = alleleVariantAssociation.getAlleleAssociationSubject();
 						dto.setAllele(alleleAssociationSubject);
+						HashSet<String> geneIds = new HashSet<>();
+						alleleAssociationSubject.getAlleleGeneAssociations().forEach(association -> {
+							geneIds.add(association.getAlleleGeneAssociationObject().getPrimaryExternalId());
+						});
+						dto.setGeneIds(geneIds);
 						dtos.add(dto);
 					});
 					return dtos;

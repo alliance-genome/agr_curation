@@ -15,7 +15,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 import lombok.Data;
 
 @Data
-@Schema(name = "SearchResponse", description = "POJO that represents the SearchResponse")
+@Schema(name = "SearchResponse", description = "SearchResponse: wraps paginated search results with metadata. The 'results' field contains matching entities, with totalResults, returnedRecords, and aggregations for pagination.")
 @JsonView({
 	CurationView.FieldsOnly.class,
 	CurationView.ForPublic.class,
@@ -27,22 +27,32 @@ import lombok.Data;
 	CurationView.DiseaseSearchResultDocument.class,
 	CurationView.AlleleSummaryDocument.class,
 	CurationView.ModelDocument.class,
-	CurationView.VariantDocument.class,
+	CurationView.VariantSummaryDocument.class,
+	CurationView.SequenceSummaryDocument.class,
 	CurationView.HTPDatasetSearchResultDocument.class,
 	CurationView.GeneExpressionDocument.class
 })
 public class SearchResponse<E> extends APIResponse {
 
+	@Schema(description = "The list of matching entity objects")
 	@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
 	private List<E> results = new ArrayList<>();
 
-	private Long totalResults;
-	private Integer returnedRecords;
+	@Schema(description = "Total number of matching results across all pages")
+	private long totalResults;
+	@Schema(description = "Number of records returned in this page")
+	private long returnedRecords;
+	@Schema(description = "Faceted aggregation counts keyed by field name")
 	private Map<String, Map<String, Long>> aggregations;
+	@Schema(description = "Debug information for the search query")
 	private String debug;
+	@Schema(description = "The generated Elasticsearch/OpenSearch query")
 	private String esQuery;
+	@Schema(description = "The generated database query")
 	private String dbQuery;
-	private Long nextCursor; // For cursor-based pagination
+	@Schema(description = "Cursor value for fetching the next page of results")
+	private long nextCursor;
+
 
 	public SearchResponse() {
 	}

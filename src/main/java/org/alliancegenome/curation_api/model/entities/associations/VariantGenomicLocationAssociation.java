@@ -18,7 +18,6 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.GenericFie
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmbedded;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexingDependency;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.KeywordField;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 
@@ -43,73 +42,73 @@ public abstract class VariantGenomicLocationAssociation extends VariantLocationA
 		"modInternalId", "modInternalId_keyword", "name", "name_keyword"
 	})
 	@ManyToOne
-	@JsonView({ CurationView.FieldsOnly.class, CurationView.AlleleSummaryDocument.class, CurationView.VariantDocument.class })
+	@JsonView({CurationView.FieldsOnly.class, CurationView.AlleleSummaryDocument.class, CurationView.VariantSummaryDocument.class, CurationView.SequenceSummaryDocument.class})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@Fetch(FetchMode.JOIN)
 	private AssemblyComponent variantGenomicLocationAssociationObject;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "variationStrand_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({ CurationView.FieldsOnly.class })
+	@JsonView({CurationView.FieldsOnly.class})
 	@Column(length = 1)
 	private String variationStrand;
 
 	@GenericField(projectable = Projectable.YES, sortable = Sortable.YES)
-	@JsonView({ CurationView.FieldsOnly.class })
+	@JsonView({CurationView.FieldsOnly.class})
 	private Integer numberAdditionalDnaBasePairs;
 
 	@GenericField(projectable = Projectable.YES, sortable = Sortable.YES)
-	@JsonView({ CurationView.FieldsOnly.class })
+	@JsonView({CurationView.FieldsOnly.class})
 	private Integer numberRemovedDnaBasePairs;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "paddedBase_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({ CurationView.FieldsOnly.class })
+	@JsonView({CurationView.FieldsOnly.class, CurationView.VariantSummaryDocument.class, CurationView.SequenceSummaryDocument.class})
 	@Column(length = 1)
 	private String paddedBase;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "insertedSequence_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({ CurationView.FieldsOnly.class })
+	@JsonView({CurationView.FieldsOnly.class})
 	@Column(columnDefinition = "TEXT")
 	private String insertedSequence;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "deletedSequence_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({ CurationView.FieldsOnly.class })
+	@JsonView({CurationView.FieldsOnly.class})
 	@Column(columnDefinition = "TEXT")
 	private String deletedSequence;
 
 	@IndexedEmbedded(includePaths = {"curie", "name", "secondaryIdentifiers", "synonyms.name", "namespace",
-			"curie_keyword", "name_keyword", "secondaryIdentifiers_keyword", "synonyms.name_keyword", "namespace_keyword" })
+		"curie_keyword", "name_keyword", "secondaryIdentifiers_keyword", "synonyms.name_keyword", "namespace_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@JsonView({ CurationView.FieldsOnly.class })
+	@JsonView({CurationView.FieldsOnly.class})
 	private SOTerm dnaMutationType;
 
 	@IndexedEmbedded(includePaths = {"curie", "name", "secondaryIdentifiers", "synonyms.name", "namespace",
-			"curie_keyword", "name_keyword", "secondaryIdentifiers_keyword", "synonyms.name_keyword", "namespace_keyword" })
+		"curie_keyword", "name_keyword", "secondaryIdentifiers_keyword", "synonyms.name_keyword", "namespace_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@JsonView({ CurationView.FieldsOnly.class })
+	@JsonView({CurationView.FieldsOnly.class})
 	private SOTerm geneLocalizationType;
-
 
 	@Transient
 	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
-	@JsonView({CurationView.FieldsOnly.class, CurationView.VariantDocument.class})
+	@JsonView({CurationView.FieldsOnly.class, CurationView.VariantSummaryDocument.class, CurationView.SequenceSummaryDocument.class})
 	public String getNucleotideChange() {
 		if (getVariantAssociationSubject() != null && getVariantAssociationSubject().getVariantType() != null) {
 			String variantTypeCurie = getVariantAssociationSubject().getVariantType().getCurie();
+			String paddedBase = "";
+			if (getPaddedBase() != null && getPaddedBase().length() == 1) {
+				paddedBase = getPaddedBase().toLowerCase();
+			}
+			// Insertion
 			if ("SO:0000667".equals(variantTypeCurie)) {
-				// Insertion
-				return "c>c" + getVariantSequence();
-			} else if ("SO:1000008".equals(variantTypeCurie)) {
-				// Point mutation
-				return getReferenceSequence() + ">" + getVariantSequence();
+				return paddedBase + ">" + paddedBase + getVariantSequence();
 			} else if ("SO:0000159".equals(variantTypeCurie)) {
 				// Deletion
-				return "t" + getReferenceSequence() + ">t";
+				return paddedBase + getReferenceSequence() + ">" + paddedBase;
 			}
 			if (getReferenceSequence() != null && getVariantSequence() != null) {
 				return getReferenceSequence() + ">" + getVariantSequence();
@@ -117,5 +116,4 @@ public abstract class VariantGenomicLocationAssociation extends VariantLocationA
 		}
 		return null;
 	}
-
 }
