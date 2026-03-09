@@ -20,6 +20,7 @@ import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
+import org.eclipse.microprofile.openapi.annotations.Operation;
 
 @Path("/constructgenomicentityassociation")
 @Tag(name = "CRUD - Construct Genomic Entity Associations")
@@ -27,16 +28,19 @@ import jakarta.ws.rs.core.MediaType;
 @Consumes(MediaType.APPLICATION_JSON)
 public interface ConstructGenomicEntityAssociationCrudInterface extends BaseIdCrudInterface<ConstructGenomicEntityAssociation> {
 
+	@Operation(summary = "Bulk load construct genomic entity association data", description = "Bulk load construct genomic entity association records from a data provider submission")
 	@POST
 	@Path("/bulk/{dataProvider}/associationFile")
 	@JsonView(CurationView.FieldsAndLists.class)
 	APIResponse updateConstructGenomicEntityAssociations(@PathParam("dataProvider") String dataProvider, List<ConstructGenomicEntityAssociationDTO> associationData);
 	
+	@Operation(summary = "Get construct genomic entity association by component IDs", description = "Look up a specific construct genomic entity association by its component entity IDs and relation")
 	@GET
 	@Path("/findBy")
 	@JsonView(CurationView.FieldsAndLists.class)
 	ObjectResponse<ConstructGenomicEntityAssociation> getAssociation(@QueryParam("constructId") Long constructId, @QueryParam("relationName") String relationName, @QueryParam("genomicEntityId") Long genomicEntityId);
 	
+	@Operation(summary = "Validate construct genomic entity association", description = "Validate a construct genomic entity association entity without persisting it")
 	@POST
 	@Path("/validate")
 	@JsonView(CurationView.FieldsAndLists.class)
