@@ -45,4 +45,12 @@ public class HTPExpressionDatasetAnnotationService extends BaseEntityCrudService
 		return ids;
 	}
 
+	public List<Long> getAllHTPDatasetSearchResultIds() {
+		return htpExpressionDatasetAnnotationDAO.getAllHTPDatasetSearchResultIds();
+	}
+
+	public List<HTPExpressionDatasetAnnotation> findByIds(List<Long> ids) {
+		return htpExpressionDatasetAnnotationDAO.findByIds(ids);
+	}
+
 }
