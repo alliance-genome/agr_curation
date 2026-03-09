@@ -44,7 +44,7 @@ import lombok.ToString;
 		"agmSequenceTargetingReagentAssociations",
 		"components",
 		"parentalPopulations" }, callSuper = true)
-@Schema(name = "AffectedGenomicModel", description = "POJO that represents the AGM")
+@Schema(name = "AffectedGenomicModel", description = "AffectedGenomicModel: an affected genomic model")
 @AGRCurationSchemaVersion(min = "2.12.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = {GenomicEntity.class}, partial = true)
 public class AffectedGenomicModel extends GenomicEntity {
 
