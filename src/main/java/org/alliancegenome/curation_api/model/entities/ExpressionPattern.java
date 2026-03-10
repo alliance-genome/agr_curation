@@ -24,7 +24,7 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @AGRCurationSchemaVersion(min = "2.2.3", max = LinkMLSchemaConstants.LATEST_RELEASE)
-@Schema(name = "Expression_Pattern", description = "Annotation class representing an expression pattern")
+@Schema(name = "Expression_Pattern", description = "ExpressionPattern: an expression pattern")
 
 @Table(indexes = {
 	@Index(name = "expressionpattern_whenexpressed_index", columnList = "whenexpressed_id"),
