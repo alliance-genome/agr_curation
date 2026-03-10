@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.alliancegenome.curation_api.model.document.es.GOSearchResultDocument;
+import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.GeneOntologyAnnotation;
 import org.alliancegenome.curation_api.model.entities.ResourceDescriptorPage;
 import org.alliancegenome.curation_api.model.entities.Synonym;
@@ -31,11 +32,20 @@ public class GODocumentBuilder {
 			Set<String> genes = new HashSet<>();
 			Set<String> associatedSpecies = new HashSet<>();
 			for (GeneOntologyAnnotation goAnnotation : goAnnotations) {
-				String geneSymbol = goAnnotation.getSingleGene().getGeneSymbol().getDisplayText();
-				String speciesAbbreviation = goAnnotation.getSingleGene().getTaxon().getSpecies().get(0).getAbbreviation();
+				if (Boolean.TRUE.equals(goAnnotation.getObsolete()) || Boolean.TRUE.equals(goAnnotation.getInternal())) {
+					continue;
+				}
+				Gene gene = goAnnotation.getSingleGene();
+				if (gene == null || Boolean.TRUE.equals(gene.getObsolete()) || Boolean.TRUE.equals(gene.getInternal())
+						|| gene.getGeneSymbol() == null || gene.getTaxon() == null
+						|| gene.getTaxon().getSpecies() == null || gene.getTaxon().getSpecies().isEmpty()) {
+					continue;
+				}
+				String geneSymbol = gene.getGeneSymbol().getDisplayText();
+				String speciesAbbreviation = gene.getTaxon().getSpecies().get(0).getAbbreviation();
 				String geneDisplayString = geneSymbol + " (" + speciesAbbreviation + ")";
 
-				String taxonName = goAnnotation.getSingleGene().getTaxon().getName();
+				String taxonName = gene.getTaxon().getName();
 
 				genes.add(geneDisplayString);
 				associatedSpecies.add(taxonName);
