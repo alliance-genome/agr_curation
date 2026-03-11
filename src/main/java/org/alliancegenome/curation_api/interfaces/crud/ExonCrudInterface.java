@@ -17,6 +17,7 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
+import org.eclipse.microprofile.openapi.annotations.Operation;
 
 @Path("/exon")
 @Tag(name = "CRUD - Exon")
@@ -24,6 +25,7 @@ import jakarta.ws.rs.core.MediaType;
 @Consumes(MediaType.APPLICATION_JSON)
 public interface ExonCrudInterface extends BaseSubmittedObjectCrudInterface<Exon> {
 
+	@Operation(summary = "Bulk load exon data", description = "Bulk load exon records from a data provider submission")
 	@POST
 	@Path("/bulk/{dataProvider}_{assemblyName}/exons")
 	@JsonView(CurationView.FieldsAndLists.class)

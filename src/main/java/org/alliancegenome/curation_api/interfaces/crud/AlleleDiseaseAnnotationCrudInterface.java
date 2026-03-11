@@ -21,6 +21,7 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
+import org.eclipse.microprofile.openapi.annotations.Operation;
 
 @Path("/allele-disease-annotation")
 @Tag(name = "CRUD - Allele Disease Annotations")
@@ -28,6 +29,7 @@ import jakarta.ws.rs.core.MediaType;
 @Consumes(MediaType.APPLICATION_JSON)
 public interface AlleleDiseaseAnnotationCrudInterface extends BaseIdCrudInterface<AlleleDiseaseAnnotation>, BaseUpsertControllerInterface<AlleleDiseaseAnnotation, AlleleDiseaseAnnotationDTO> {
 
+	@Operation(summary = "Get allele disease annotation by identifier", description = "Retrieve a single allele disease annotation by its identifier")
 	@GET
 	@Path("/findBy/{identifier}")
 	@JsonView(CurationView.FieldsAndLists.class)
@@ -45,6 +47,7 @@ public interface AlleleDiseaseAnnotationCrudInterface extends BaseIdCrudInterfac
 	@JsonView(CurationView.DiseaseAnnotation.class)
 	ObjectResponse<AlleleDiseaseAnnotation> create(AlleleDiseaseAnnotation entity);
 
+	@Operation(summary = "Bulk load allele disease annotation data", description = "Bulk load allele disease annotation records from a data provider submission")
 	@POST
 	@Path("/bulk/{dataProvider}/annotationFile")
 	@JsonView(CurationView.FieldsAndLists.class)

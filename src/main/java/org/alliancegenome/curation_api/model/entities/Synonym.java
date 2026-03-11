@@ -20,7 +20,9 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
+@Schema(name = "Synonym", description = "Synonym: a synonym")
 @Entity
 @Data
 @NoArgsConstructor

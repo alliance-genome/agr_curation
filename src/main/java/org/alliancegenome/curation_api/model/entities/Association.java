@@ -14,7 +14,7 @@ import lombok.ToString;
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(callSuper = true)
-@Schema(name = "association", description = "POJO that represents an association")
+@Schema(name = "association", description = "Association: an association")
 @AGRCurationSchemaVersion(min = "1.9.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AuditedObject.class })
 public class Association extends AuditedObject {
 	

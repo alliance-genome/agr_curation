@@ -25,7 +25,7 @@ import lombok.ToString;
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(callSuper = true)
-@Schema(name = "MicroarraySampleDetails", description = "POJO that represents the MicroarraySampleDetails")
+@Schema(name = "MicroarraySampleDetails", description = "MicroarraySampleDetails: a microarray sample details")
 @AGRCurationSchemaVersion(min = "2.7.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AuditedObject.class })
 @Indexed
 public class MicroarraySampleDetails extends AuditedObject {

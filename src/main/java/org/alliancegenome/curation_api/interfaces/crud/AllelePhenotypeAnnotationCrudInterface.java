@@ -16,6 +16,7 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
+import org.eclipse.microprofile.openapi.annotations.Operation;
 
 @Path("/allele-phenotype-annotation")
 @Tag(name = "CRUD - Allele Phenotype Annotations")
@@ -23,6 +24,7 @@ import jakarta.ws.rs.core.MediaType;
 @Consumes(MediaType.APPLICATION_JSON)
 public interface AllelePhenotypeAnnotationCrudInterface extends BaseIdCrudInterface<AllelePhenotypeAnnotation> {
 
+	@Operation(summary = "Get allele phenotype annotation by identifier", description = "Retrieve a single allele phenotype annotation by its identifier")
 	@GET
 	@Path("/findBy/{identifier}")
 	@JsonView(CurationView.FieldsAndLists.class)

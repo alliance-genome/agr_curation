@@ -9,7 +9,6 @@ import org.alliancegenome.curation_api.response.APIResponse;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.view.CurationView;
-import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 import com.fasterxml.jackson.annotation.JsonView;
@@ -23,6 +22,7 @@ import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
+import org.eclipse.microprofile.openapi.annotations.Operation;
 
 @Path("/sqtr")
 @Tag(name = "CRUD - SQTR")
@@ -30,6 +30,7 @@ import jakarta.ws.rs.core.MediaType;
 @Consumes(MediaType.APPLICATION_JSON)
 public interface SequenceTargetingReagentCrudInterface extends BaseSubmittedObjectCrudInterface<SequenceTargetingReagent> {
 
+	@Operation(summary = "Bulk load sequence targeting reagent data", description = "Bulk load sequence targeting reagent records from a data provider submission")
 	@POST
 	@Path("/bulk/{dataProvider}/sqtrfile")
 	@JsonView(CurationView.FieldsAndLists.class)
@@ -40,14 +41,14 @@ public interface SequenceTargetingReagentCrudInterface extends BaseSubmittedObje
 	@Path("/find")
 	@Tag(name = "Relational Database Browsing Endpoints")
 	@JsonView(CurationView.SequenceTargetingReagentView.class)
-	SearchResponse<SequenceTargetingReagent> find(@DefaultValue("0") @QueryParam("page") Integer page, @DefaultValue("10") @QueryParam("limit") Integer limit, @RequestBody HashMap<String, Object> params);
+	SearchResponse<SequenceTargetingReagent> find(@DefaultValue("0") @QueryParam("page") Integer page, @DefaultValue("10") @QueryParam("limit") Integer limit, HashMap<String, Object> params);
 
 	@Override
 	@POST
 	@Path("/search")
 	@Tag(name = "Elastic Search Browsing Endpoints")
 	@JsonView({ CurationView.SequenceTargetingReagentView.class })
-	SearchResponse<SequenceTargetingReagent> search(@DefaultValue("0") @QueryParam("page") Integer page, @DefaultValue("10") @QueryParam("limit") Integer limit, @RequestBody HashMap<String, Object> params);
+	SearchResponse<SequenceTargetingReagent> search(@DefaultValue("0") @QueryParam("page") Integer page, @DefaultValue("10") @QueryParam("limit") Integer limit, HashMap<String, Object> params);
 
 	@Override
 	@GET

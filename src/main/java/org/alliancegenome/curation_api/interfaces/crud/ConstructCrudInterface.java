@@ -21,6 +21,7 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
+import org.eclipse.microprofile.openapi.annotations.Operation;
 
 @Path("/construct")
 @Tag(name = "CRUD - Constructs")
@@ -46,6 +47,7 @@ public interface ConstructCrudInterface extends BaseSubmittedObjectCrudInterface
 	@JsonView(CurationView.ConstructView.class)
 	ObjectResponse<Construct> create(Construct entity);
 
+	@Operation(summary = "Bulk load construct data", description = "Bulk load construct records from a data provider submission")
 	@POST
 	@Path("/bulk/{dataProvider}/constructs")
 	@JsonView(CurationView.FieldsAndLists.class)

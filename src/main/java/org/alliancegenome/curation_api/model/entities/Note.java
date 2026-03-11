@@ -35,7 +35,7 @@ import lombok.ToString;
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(callSuper = true)
-@Schema(name = "Note", description = "POJO that represents the Note")
+@Schema(name = "Note", description = "Note: a note")
 @AGRCurationSchemaVersion(min = "1.2.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AuditedObject.class })
 @Table(indexes = {
 		@Index(name = "Note_noteType_index", columnList = "noteType_id"),

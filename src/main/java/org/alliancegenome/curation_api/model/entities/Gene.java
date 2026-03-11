@@ -65,7 +65,7 @@ import lombok.ToString;
 		"sequenceTargetingReagentGeneAssociations",
 		"transcriptGeneAssociations",
 		"constructGenomicEntityAssociations" }, callSuper = true)
-@Schema(name = "Gene", description = "POJO that represents the Gene")
+@Schema(name = "Gene", description = "Gene: a gene")
 @AGRCurationSchemaVersion(min = "1.5.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { GenomicEntity.class }, partial = true)
 @Table(indexes = {
 		@Index(name = "gene_genetype_index", columnList = "geneType_id"),

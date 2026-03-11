@@ -16,7 +16,7 @@ import lombok.EqualsAndHashCode;
 @Entity
 @Data
 @EqualsAndHashCode
-@Schema(name = "Gene_Disease_Annotation", description = "Annotation class representing a gene disease annotation")
+@Schema(name = "Gene_Disease_Annotation", description = "GeneOntologyAnnotation: a gene ontology annotation")
 @JsonTypeName("GeneOntologyAnnotation")
 @AGRCurationSchemaVersion(min = "2.8.0", max = LinkMLSchemaConstants.LATEST_RELEASE)
 public class GeneOntologyAnnotation extends AuditedObject {

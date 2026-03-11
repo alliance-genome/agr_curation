@@ -22,6 +22,7 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
+import org.eclipse.microprofile.openapi.annotations.Operation;
 
 @Path("/gene-disease-annotation")
 @Tag(name = "CRUD - Gene Disease Annotations")
@@ -29,6 +30,7 @@ import jakarta.ws.rs.core.MediaType;
 @Consumes(MediaType.APPLICATION_JSON)
 public interface GeneDiseaseAnnotationCrudInterface extends BaseIdCrudInterface<GeneDiseaseAnnotation>, BaseUpsertControllerInterface<GeneDiseaseAnnotation, GeneDiseaseAnnotationDTO> {
 
+	@Operation(summary = "Get gene disease annotation by identifier", description = "Retrieve a single gene disease annotation by its identifier")
 	@GET
 	@Path("/findBy/{identifier}")
 	@JsonView(CurationView.FieldsAndLists.class)
@@ -46,11 +48,13 @@ public interface GeneDiseaseAnnotationCrudInterface extends BaseIdCrudInterface<
 	@JsonView(CurationView.DiseaseAnnotation.class)
 	ObjectResponse<GeneDiseaseAnnotation> create(GeneDiseaseAnnotation entity);
 
+	@Operation(summary = "Bulk load gene disease annotation data", description = "Bulk load gene disease annotation records from a data provider submission")
 	@POST
 	@Path("/bulk/{dataProvider}/annotationFile")
 	@JsonView(CurationView.FieldsAndLists.class)
 	APIResponse updateGeneDiseaseAnnotations(@PathParam("dataProvider") String dataProvider, List<GeneDiseaseAnnotationDTO> annotationData);
 
+	@Operation(summary = "Get annotated gene identifiers", description = "Retrieve list of gene identifiers that have gene disease annotation annotations")
 	@GET
 	@Path("/annotatedGeneList")
 	@JsonView(CurationView.FieldsAndLists.class)

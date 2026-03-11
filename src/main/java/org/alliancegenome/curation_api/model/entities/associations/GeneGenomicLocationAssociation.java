@@ -35,7 +35,7 @@ import lombok.ToString;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(callSuper = true)
 @AGRCurationSchemaVersion(min = "2.4.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { LocationAssociation.class })
-@Schema(name = "GeneGenomicLocationAssociation", description = "POJO representing an association between a gene and a genomic location")
+@Schema(name = "GeneGenomicLocationAssociation", description = "GeneGenomicLocationAssociation: a gene genomic location association")
 
 @Table(indexes = {
 	@Index(name = "geneGenomicLocationAssociation_internal_index", columnList = "internal"),
