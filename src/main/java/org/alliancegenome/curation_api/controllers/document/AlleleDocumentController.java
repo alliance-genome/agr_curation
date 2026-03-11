@@ -11,8 +11,6 @@ import org.alliancegenome.curation_api.response.ObjectListResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.AlleleService;
 import org.alliancegenome.curation_api.services.ResourceDescriptorPageService;
-import org.apache.xerces.xs.datatypes.ObjectList;
-
 import jakarta.inject.Inject;
 import lombok.extern.jbosslog.JBossLog;
 
