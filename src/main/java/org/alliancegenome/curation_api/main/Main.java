@@ -2,6 +2,7 @@ package org.alliancegenome.curation_api.main;
 
 import org.alliancegenome.exceptional.client.ExceptionCatcher;
 
+import io.quarkus.logging.Log;
 import io.quarkus.runtime.Quarkus;
 import io.quarkus.runtime.annotations.QuarkusMain;
 
