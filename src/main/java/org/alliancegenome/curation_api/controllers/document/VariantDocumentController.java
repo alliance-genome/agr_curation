@@ -12,9 +12,9 @@ import org.alliancegenome.curation_api.model.document.es.VariantSummaryDocument;
 import org.alliancegenome.curation_api.model.entities.PredictedVariantConsequence;
 import org.alliancegenome.curation_api.model.entities.Variant;
 import org.alliancegenome.curation_api.model.input.Pagination;
+import org.alliancegenome.curation_api.response.ObjectListResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.VariantService;
-
 import org.hibernate.Hibernate;
 
 import jakarta.inject.Inject;
@@ -61,5 +61,10 @@ public class VariantDocumentController implements VariantDocumentInterface {
 		SearchResponse<VariantSummaryDocument> ret = new SearchResponse<>(list);
 		ret.setTotalResults(resp.getTotalResults());
 		return ret;
+	}
+
+	@Override
+	public ObjectListResponse<String> getAllVariantNames() {
+		return service.findAllVariantNames();
 	}
 }
