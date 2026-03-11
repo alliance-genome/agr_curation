@@ -98,9 +98,8 @@ export const VariantsTable = () => {
 	};
 
 	const handleRelatedNotesOpenInEdit = (event, rowProps, isInEdit) => {
-		const { rows } = rowProps.props;
 		const { rowIndex } = rowProps;
-		const index = rowIndex % rows;
+		const index = rowIndex;
 		let _relatedNotesData = {};
 		_relatedNotesData['originalRelatedNotes'] = rowProps.rowData.relatedNotes;
 		_relatedNotesData['dialog'] = true;
