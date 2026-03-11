@@ -28,12 +28,14 @@ export const SynonymsEditDialog = ({
 	const [errorMessages, setErrorMessages] = useState({});
 	const [isValidating, setIsValidating] = useState(false);
 	const validationService = new ValidationService();
+	const dataKeyCounter = useRef(0);
 	const tableRef = useRef(null);
 	const toast_topright = useRef(null);
 
 	const synonymTypeTerms = useControlledVocabularyService('name_type');
 
 	const showDialogHandler = () => {
+		dataKeyCounter.current = 0;
 		let _localSynonyms = cloneSynonyms(originalSynonyms);
 		setLocalSynonyms(_localSynonyms);
 
@@ -67,9 +69,8 @@ export const SynonymsEditDialog = ({
 		if (clonableSynonyms?.length > 0 && clonableSynonyms[0]) {
 			_clonableSynonyms = global.structuredClone(clonableSynonyms);
 			if (_clonableSynonyms) {
-				let counter = 0;
 				_clonableSynonyms.forEach((syn) => {
-					syn.dataKey = counter++;
+					syn.dataKey = dataKeyCounter.current++;
 				});
 			}
 		}
@@ -121,14 +122,14 @@ export const SynonymsEditDialog = ({
 	};
 
 	const createNewSynonymHandler = () => {
-		let cnt = localSynonyms ? localSynonyms.length : 0;
+		const newKey = dataKeyCounter.current++;
 		const _localSynonyms = global.structuredClone(localSynonyms);
 		_localSynonyms.push({
-			dataKey: cnt,
+			dataKey: newKey,
 			internal: false,
 			nameType: synonymTypeTerms?.[0] || null,
 		});
-		let _editingRows = { ...editingRows, ...{ [`${cnt}`]: true } };
+		let _editingRows = { ...editingRows, ...{ [`${newKey}`]: true } };
 		setEditingRows(_editingRows);
 		setLocalSynonyms(_localSynonyms);
 	};

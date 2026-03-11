@@ -29,12 +29,14 @@ export const SymbolEditDialog = ({
 	const [errorMessages, setErrorMessages] = useState({});
 	const [isValidating, setIsValidating] = useState(false);
 	const validationService = new ValidationService();
+	const dataKeyCounter = useRef(0);
 	const tableRef = useRef(null);
 	const toast_topright = useRef(null);
 
 	const symbolNameTypeTerms = useVocabularyTermSetService('symbol_name_type');
 
 	const showDialogHandler = () => {
+		dataKeyCounter.current = 0;
 		let _localSymbols = cloneSymbols(originalSymbols);
 		setLocalSymbols(_localSymbols);
 
@@ -68,9 +70,8 @@ export const SymbolEditDialog = ({
 		if (clonableSymbols?.length > 0 && clonableSymbols[0]) {
 			_clonableSymbols = global.structuredClone(clonableSymbols);
 			if (_clonableSymbols) {
-				let counter = 0;
 				_clonableSymbols.forEach((sym) => {
-					sym.dataKey = counter++;
+					sym.dataKey = dataKeyCounter.current++;
 				});
 			}
 		}

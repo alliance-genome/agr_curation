@@ -30,12 +30,14 @@ export const FullNameEditDialog = ({
 	const [errorMessages, setErrorMessages] = useState({});
 	const [isValidating, setIsValidating] = useState(false);
 	const validationService = new ValidationService();
+	const dataKeyCounter = useRef(0);
 	const tableRef = useRef(null);
 	const toast_topright = useRef(null);
 
 	const fullNameTypeTerms = useVocabularyTermSetService('full_name_type');
 
 	const showDialogHandler = () => {
+		dataKeyCounter.current = 0;
 		let _localFullNames = cloneFullNames(originalFullNames);
 		setLocalFullNames(_localFullNames);
 
@@ -69,9 +71,8 @@ export const FullNameEditDialog = ({
 		if (clonableFullNames?.length > 0 && clonableFullNames[0]) {
 			_clonableFullNames = global.structuredClone(clonableFullNames);
 			if (_clonableFullNames) {
-				let counter = 0;
 				_clonableFullNames.forEach((fn) => {
-					fn.dataKey = counter++;
+					fn.dataKey = dataKeyCounter.current++;
 				});
 			}
 		}
@@ -123,14 +124,14 @@ export const FullNameEditDialog = ({
 	};
 
 	const createNewFullNameHandler = () => {
-		let cnt = localFullNames ? localFullNames.length : 0;
+		const newKey = dataKeyCounter.current++;
 		const _localFullNames = global.structuredClone(localFullNames);
 		_localFullNames.push({
-			dataKey: cnt,
+			dataKey: newKey,
 			internal: false,
 			nameType: fullNameTypeTerms?.[0] || null,
 		});
-		let _editingRows = { ...editingRows, ...{ [`${cnt}`]: true } };
+		let _editingRows = { ...editingRows, ...{ [`${newKey}`]: true } };
 		setEditingRows(_editingRows);
 		setLocalFullNames(_localFullNames);
 	};
