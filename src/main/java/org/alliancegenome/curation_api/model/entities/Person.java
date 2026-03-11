@@ -12,6 +12,7 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.FullTextFi
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.KeywordField;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 
 import jakarta.persistence.Column;
@@ -66,13 +67,13 @@ public class Person extends Agent {
 
 	@KeywordField(aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES)
 	@ElementCollection
-	@JsonView({ CurationView.FieldsAndLists.class, CurationView.PersonSettingView.class })
+	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	@JoinTable(indexes = @Index(columnList = "person_id"))
 	private List<String> emails;
 
 	@KeywordField(aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES)
 	@ElementCollection
-	@JsonView({ CurationView.FieldsAndLists.class, CurationView.PersonSettingView.class })
+	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	@JoinTable(indexes = @Index(columnList = "person_id"))
 	private List<String> oldEmails;
 
