@@ -33,11 +33,16 @@ import jakarta.transaction.Transactional;
 @RequestScoped
 public class AlleleService extends SubmittedObjectCrudService<Allele, AlleleDTO, AlleleDAO> implements BasePopularityInterface {
 
-	@Inject AlleleDAO alleleDAO;
-	@Inject AlleleValidator alleleValidator;
-	@Inject AlleleDTOValidator alleleDtoValidator;
-	@Inject PersonService personService;
-	@Inject NoteService noteService;
+	@Inject
+	AlleleDAO alleleDAO;
+	@Inject
+	AlleleValidator alleleValidator;
+	@Inject
+	AlleleDTOValidator alleleDtoValidator;
+	@Inject
+	PersonService personService;
+	@Inject
+	NoteService noteService;
 
 	@Override
 	@PostConstruct
@@ -164,4 +169,5 @@ public class AlleleService extends SubmittedObjectCrudService<Allele, AlleleDTO,
 	public SearchResponse<AlleleSummaryDTO> findAllelesForSummaryByIds(List<Long> ids) {
 		return alleleDAO.findAllelesForSummaryByIds(ids);
 	}
+
 }
