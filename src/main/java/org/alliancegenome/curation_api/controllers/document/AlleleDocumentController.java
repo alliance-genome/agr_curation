@@ -48,9 +48,4 @@ public class AlleleDocumentController implements AlleleDocumentInterface {
 		return ret;
 	}
 
-	@Override
-	public ObjectListResponse<String> getAllVariantNames() {
-		return alleleService.findAllVariantNames();
-	}
-
 }

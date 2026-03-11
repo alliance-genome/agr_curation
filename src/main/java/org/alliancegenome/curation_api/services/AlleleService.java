@@ -166,7 +166,4 @@ public class AlleleService extends SubmittedObjectCrudService<Allele, AlleleDTO,
 		return alleleDAO.findAllelesForSummaryByIds(ids);
 	}
 
-	public ObjectListResponse<String> findAllVariantNames() {
-		return alleleDAO.getAllVariantNames();
-	}
 }

@@ -142,22 +142,6 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 		return list;
 	}
 
-	public ObjectListResponse<String> getAllVariantNames() {
-
-		String sql = """
-				SELECT DISTINCT hgvs from curatedvariantgenomiclocation
-			""";
-		Query query = entityManager.createNativeQuery(sql);
-		List<Object> objects = query.getResultList();
-		List<String> hgvsList = new ArrayList<>();
-		objects.forEach(object -> {
-			hgvsList.add((String) object);
-		});
-		ObjectListResponse<String> ret = new ObjectListResponse<>();
-		ret.setEntities(hgvsList);
-		return ret;
-	}
-
 	public SearchResponse<AlleleSummaryDTO> findAllelesForSummary(Pagination pagination, Map<String, Object> params) {
 
 		String baseCountQuery = """

@@ -28,10 +28,6 @@ public interface AlleleDocumentInterface {
 	@JsonView(CurationView.AlleleSummaryDocument.class)
 	SearchResponse<Long> getAllIds();
 
-	@GET
-	@Path("/variantNames")
-	ObjectListResponse<String> getAllVariantNames();
-
 	@POST
 	@Path("/summary/byids")
 	@JsonView(CurationView.AlleleSummaryDocument.class)
