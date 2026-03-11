@@ -7,9 +7,11 @@ import org.alliancegenome.curation_api.interfaces.document.AlleleDocumentInterfa
 import org.alliancegenome.curation_api.model.document.builders.AlleleSummaryDocumentBuilder;
 import org.alliancegenome.curation_api.model.document.es.AlleleSummaryDTO;
 import org.alliancegenome.curation_api.model.document.es.AlleleSummaryDocument;
+import org.alliancegenome.curation_api.response.ObjectListResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.AlleleService;
 import org.alliancegenome.curation_api.services.ResourceDescriptorPageService;
+import org.apache.xerces.xs.datatypes.ObjectList;
 
 import jakarta.inject.Inject;
 import lombok.extern.jbosslog.JBossLog;
@@ -46,6 +48,11 @@ public class AlleleDocumentController implements AlleleDocumentInterface {
 		SearchResponse<AlleleSummaryDocument> ret = new SearchResponse<>(list);
 		ret.setTotalResults(resp.getTotalResults());
 		return ret;
+	}
+
+	@Override
+	public ObjectListResponse<String> getAllVariantNames() {
+		return alleleService.findAllVariantNames();
 	}
 
 }

@@ -17,6 +17,7 @@ import org.alliancegenome.curation_api.model.document.es.AlleleSummaryDTO;
 import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.Note;
 import org.alliancegenome.curation_api.model.ingest.dto.AlleleDTO;
+import org.alliancegenome.curation_api.response.ObjectListResponse;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.base.SubmittedObjectCrudService;
@@ -163,5 +164,9 @@ public class AlleleService extends SubmittedObjectCrudService<Allele, AlleleDTO,
 
 	public SearchResponse<AlleleSummaryDTO> findAllelesForSummaryByIds(List<Long> ids) {
 		return alleleDAO.findAllelesForSummaryByIds(ids);
+	}
+
+	public ObjectListResponse<String> findAllVariantNames() {
+		return alleleDAO.getAllVariantNames();
 	}
 }

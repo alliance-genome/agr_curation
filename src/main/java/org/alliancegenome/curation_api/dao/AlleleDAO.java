@@ -34,6 +34,7 @@ import org.alliancegenome.curation_api.model.entities.slotAnnotations.AlleleSymb
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.AlleleSynonymSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.GeneSymbolSlotAnnotation;
 import org.alliancegenome.curation_api.model.input.Pagination;
+import org.alliancegenome.curation_api.response.ObjectListResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.apache.commons.collections.CollectionUtils;
 
@@ -139,6 +140,22 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 		});
 
 		return list;
+	}
+
+	public ObjectListResponse<String> getAllVariantNames() {
+
+		String sql = """
+				SELECT DISTINCT hgvs from curatedvariantgenomiclocation
+			""";
+		Query query = entityManager.createNativeQuery(sql);
+		List<Object> objects = query.getResultList();
+		List<String> hgvsList = new ArrayList<>();
+		objects.forEach(object -> {
+			hgvsList.add((String) object);
+		});
+		ObjectListResponse<String> ret = new ObjectListResponse<>();
+		ret.setEntities(hgvsList);
+		return ret;
 	}
 
 	public SearchResponse<AlleleSummaryDTO> findAllelesForSummary(Pagination pagination, Map<String, Object> params) {

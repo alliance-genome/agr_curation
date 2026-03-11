@@ -3,6 +3,7 @@ package org.alliancegenome.curation_api.interfaces.document;
 import java.util.List;
 
 import org.alliancegenome.curation_api.model.document.es.AlleleSummaryDocument;
+import org.alliancegenome.curation_api.response.ObjectListResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.view.CurationView;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
@@ -26,6 +27,10 @@ public interface AlleleDocumentInterface {
 	@Path("/ids")
 	@JsonView(CurationView.AlleleSummaryDocument.class)
 	SearchResponse<Long> getAllIds();
+
+	@GET
+	@Path("/variantIds")
+	ObjectListResponse<String> getAllVariantNames();
 
 	@POST
 	@Path("/summary/byids")
