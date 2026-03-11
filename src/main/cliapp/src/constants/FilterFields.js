@@ -1071,12 +1071,30 @@ export const FILTER_CONFIGS = Object.freeze({
 	geaRelationFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.geaRelationFieldSet] },
 	geaWhereExpressedFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.geaWhereExpressedFieldSet] },
 	geaWhenExpressedFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.geaWhenExpressedFieldSet] },
-	geaExperimentInternalFilterConfig: { filterComponentType: 'dropdown', fieldSets: [FIELD_SETS.geaExperimentInternalFieldSet] },
-	geaExperimentObsoleteFilterConfig: { filterComponentType: 'dropdown', fieldSets: [FIELD_SETS.geaExperimentObsoleteFieldSet] },
-	geaExperimentCreatedByFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.geaExperimentCreatedByFieldSet] },
-	geaExperimentDateCreatedFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.geaExperimentDateCreatedFieldSet] },
-	geaExperimentUpdatedByFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.geaExperimentUpdatedByFieldSet] },
-	geaExperimentDateUpdatedFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.geaExperimentDateUpdatedFieldSet] },
+	geaExperimentInternalFilterConfig: {
+		filterComponentType: 'dropdown',
+		fieldSets: [FIELD_SETS.geaExperimentInternalFieldSet],
+	},
+	geaExperimentObsoleteFilterConfig: {
+		filterComponentType: 'dropdown',
+		fieldSets: [FIELD_SETS.geaExperimentObsoleteFieldSet],
+	},
+	geaExperimentCreatedByFilterConfig: {
+		filterComponentType: 'input',
+		fieldSets: [FIELD_SETS.geaExperimentCreatedByFieldSet],
+	},
+	geaExperimentDateCreatedFilterConfig: {
+		filterComponentType: 'input',
+		fieldSets: [FIELD_SETS.geaExperimentDateCreatedFieldSet],
+	},
+	geaExperimentUpdatedByFilterConfig: {
+		filterComponentType: 'input',
+		fieldSets: [FIELD_SETS.geaExperimentUpdatedByFieldSet],
+	},
+	geaExperimentDateUpdatedFilterConfig: {
+		filterComponentType: 'input',
+		fieldSets: [FIELD_SETS.geaExperimentDateUpdatedFieldSet],
+	},
 	geaExperimentCurieFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.geaExperimentCurieFieldSet] },
 
 	isExtinctFilterConfig: { filterComponentType: 'dropdown', fieldSets: [FIELD_SETS.isExtinctFieldSet] },
