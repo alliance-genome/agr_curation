@@ -15,7 +15,6 @@ import org.alliancegenome.curation_api.model.input.Pagination;
 import org.alliancegenome.curation_api.response.ObjectListResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.VariantService;
-
 import org.hibernate.Hibernate;
 
 import jakarta.inject.Inject;

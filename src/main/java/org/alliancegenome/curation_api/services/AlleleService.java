@@ -17,7 +17,6 @@ import org.alliancegenome.curation_api.model.document.es.AlleleSummaryDTO;
 import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.Note;
 import org.alliancegenome.curation_api.model.ingest.dto.AlleleDTO;
-import org.alliancegenome.curation_api.response.ObjectListResponse;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.base.SubmittedObjectCrudService;
@@ -34,11 +33,16 @@ import jakarta.transaction.Transactional;
 @RequestScoped
 public class AlleleService extends SubmittedObjectCrudService<Allele, AlleleDTO, AlleleDAO> implements BasePopularityInterface {
 
-	@Inject AlleleDAO alleleDAO;
-	@Inject AlleleValidator alleleValidator;
-	@Inject AlleleDTOValidator alleleDtoValidator;
-	@Inject PersonService personService;
-	@Inject NoteService noteService;
+	@Inject
+	AlleleDAO alleleDAO;
+	@Inject
+	AlleleValidator alleleValidator;
+	@Inject
+	AlleleDTOValidator alleleDtoValidator;
+	@Inject
+	PersonService personService;
+	@Inject
+	NoteService noteService;
 
 	@Override
 	@PostConstruct
