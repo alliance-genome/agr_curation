@@ -29,7 +29,7 @@ public interface AlleleDocumentInterface {
 	SearchResponse<Long> getAllIds();
 
 	@GET
-	@Path("/variantIds")
+	@Path("/variantNames")
 	ObjectListResponse<String> getAllVariantNames();
 
 	@POST
