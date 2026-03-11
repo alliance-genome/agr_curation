@@ -12,9 +12,10 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Schema(name = "ObjectResponse", description = "POJO that represents the ObjectResponse")
+@Schema(name = "ObjectResponse", description = "ObjectResponse: wraps a single entity with error/warning messages. The 'entity' field contains the returned object.")
 public class ObjectResponse<E> extends APIResponse {
 
+	@Schema(description = "The returned entity object")
 	@JsonView({ CurationView.FieldsOnly.class, CurationView.PersonSettingView.class })
 	private E entity;
 	

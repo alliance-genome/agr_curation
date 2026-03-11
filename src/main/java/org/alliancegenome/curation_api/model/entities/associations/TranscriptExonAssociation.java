@@ -28,7 +28,7 @@ import lombok.ToString;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(callSuper = true)
 @AGRCurationSchemaVersion(min = "2.2.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { EvidenceAssociation.class })
-@Schema(name = "TranscriptExonAssociation", description = "POJO representing an association between a transcript and an exon")
+@Schema(name = "TranscriptExonAssociation", description = "TranscriptExonAssociation: a transcript exon association")
 
 @Table(indexes = {
 	@Index(columnList = "internal"),

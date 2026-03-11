@@ -14,7 +14,7 @@ import lombok.EqualsAndHashCode;
 @Entity
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
-@Schema(name = "Molecule", description = "POJO that represents the Molecule")
+@Schema(name = "Molecule", description = "Molecule: a molecule")
 
 @AGRCurationSchemaVersion(min = "1.2.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { ChemicalTerm.class })
 public class Molecule extends ChemicalTerm {

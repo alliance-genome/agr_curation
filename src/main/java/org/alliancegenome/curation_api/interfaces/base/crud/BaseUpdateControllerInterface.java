@@ -1,11 +1,9 @@
 package org.alliancegenome.curation_api.interfaces.base.crud;
 
-import org.alliancegenome.curation_api.model.Null;
 import org.alliancegenome.curation_api.model.entities.base.AuditedObject;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.view.CurationView;
-import org.eclipse.microprofile.openapi.annotations.media.Content;
-import org.eclipse.microprofile.openapi.annotations.media.Schema;
+import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponses;
@@ -25,22 +23,13 @@ public interface BaseUpdateControllerInterface<E extends AuditedObject> {
 	@PUT
 	@Path("/")
 	@JsonView(CurationView.FieldsOnly.class)
-	@RequestBody(
-		description = "Put Request",
-		content = @Content(
-			mediaType = "application/json",
-			schema = @Schema(implementation = String.class)
-		)
-	)
+	@Operation(summary = "Update entity", description = "Update an existing entity with the submitted JSON payload")
+	@RequestBody(description = "The entity object with updated fields")
 	@APIResponses(
 		@APIResponse(
-			description = "Response Entity",
-			content = @Content(
-				mediaType = "application/json",
-				schema = @Schema(implementation = Null.class)
-			)
-		)
+			responseCode = "200",
+			description = "The updated entity")
 	)
 	ObjectResponse<E> update(E entity);
-	
+
 }

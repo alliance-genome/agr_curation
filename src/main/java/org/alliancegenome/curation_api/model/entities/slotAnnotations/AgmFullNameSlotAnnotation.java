@@ -18,7 +18,7 @@ import lombok.ToString;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(callSuper = true)
 @AGRCurationSchemaVersion(min = "2.12.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { NameSlotAnnotation.class })
-@Schema(name = "AgmFullNameSlotAnnotation", description = "POJO representing an AGM full name slot annotation")
+@Schema(name = "AgmFullNameSlotAnnotation", description = "AgmFullNameSlotAnnotation: an agm full name slot annotation")
 public class AgmFullNameSlotAnnotation extends NameSlotAnnotation {
 
 	@OneToOne

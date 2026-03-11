@@ -36,7 +36,7 @@ import lombok.ToString;
 		@Index(name = "resourcedescriptorpage_createdby_index", columnList = "createdby_id"),
 		@Index(name = "resourcedescriptorpage_updatedby_index", columnList = "updatedby_id")
 })
-@Schema(name = "ResourceDescriptorPage", description = "Annotation class representing a resource descriptor page")
+@Schema(name = "ResourceDescriptorPage", description = "ResourceDescriptorPage: a resource descriptor page")
 public class ResourceDescriptorPage extends AuditedObject {
 
 	@IndexedEmbedded(includeDepth = 1)

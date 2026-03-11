@@ -17,6 +17,7 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
+import org.eclipse.microprofile.openapi.annotations.Operation;
 
 @Path("predictedvariantconsequence")
 @Tag(name = "CRUD - Predicted Variant Consequence")
@@ -24,11 +25,13 @@ import jakarta.ws.rs.core.MediaType;
 @Consumes(MediaType.APPLICATION_JSON)
 public interface PredictedVariantConsequenceCrudInterface extends BaseIdCrudInterface<PredictedVariantConsequence> {
 
+	@Operation(summary = "Bulk load predicted variant consequence data", description = "Bulk load predicted variant consequence records from a data provider submission")
 	@POST
 	@Path("/bulk/{dataProvider}/transcriptConsequenceFile")
 	@JsonView(CurationView.FieldsAndLists.class)
 	APIResponse updateTranscriptLevelConsequences(@PathParam("dataProvider") String dataProvider, List<VepTxtDTO> consequenceData);
 	
+	@Operation(summary = "Bulk load predicted variant consequence data", description = "Bulk load predicted variant consequence records from a data provider submission")
 	@POST
 	@Path("/bulk/{dataProvider}/geneConsequenceFile")
 	@JsonView(CurationView.FieldsAndLists.class)
