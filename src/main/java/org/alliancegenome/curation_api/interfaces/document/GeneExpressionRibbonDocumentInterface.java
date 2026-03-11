@@ -12,14 +12,14 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 
-@Path("/gene-expression-ribbon-summary")
+@Path("/gene-expression-ribbon-summary/document")
 @Tag(name = "Public Document Endpoints")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public interface GeneExpressionRibbonDocumentInterface {
 	
 	@POST
-	@Path("")
+	@Path("/")
 	@JsonView(CurationView.ForPublic.class)
 	GeneExpressionRibbonSummaryDocument findDocument();
 	

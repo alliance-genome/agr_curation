@@ -20,14 +20,14 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 
-@Path("/variant")
+@Path("/variant/document")
 @Tag(name = "Public Document Endpoints")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public interface VariantDocumentInterface {
 
 	@POST
-	@Path("/documents")
+	@Path("/")
 	@JsonView({CurationView.VariantSummaryDocument.class, CurationView.SequenceSummaryDocument.class})
 	SearchResponse<VariantSummaryDocument> findDocuments(@DefaultValue("0") @QueryParam("page") Integer page, @DefaultValue("10") @QueryParam("limit") Integer limit, @RequestBody HashMap<String, Object> params);
 
