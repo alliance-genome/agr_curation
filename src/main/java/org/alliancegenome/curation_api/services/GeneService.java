@@ -380,6 +380,7 @@ public class GeneService extends SubmittedObjectCrudService<Gene, GeneDTO, GeneD
 
 		// Build base documents from Q1
 		Map<Long, GeneSearchResultDocument> docMap = new HashMap<>();
+		Map<Long, String> speciesAbbrevMap = new HashMap<>();
 		for (Object[] row : baseInfoRows) {
 			Long id = (Long) row[0];
 			GeneSearchResultDocument doc = new GeneSearchResultDocument();
@@ -391,6 +392,10 @@ public class GeneService extends SubmittedObjectCrudService<Gene, GeneDTO, GeneD
 			String symbol = (String) row[5];
 			String soTermCurie = (String) row[6];
 			String soTermName = (String) row[7];
+
+			if (speciesAbbrev != null) {
+				speciesAbbrevMap.put(id, speciesAbbrev);
+			}
 
 			if (fullName != null) {
 				doc.setName(fullName);
@@ -422,6 +427,8 @@ public class GeneService extends SubmittedObjectCrudService<Gene, GeneDTO, GeneD
 				doc.setBiotypes(biotypes);
 				doc.setSoTermNameWithParents(new HashSet<>(biotypes));
 				handleBioTypes(doc);
+				// Sync soTermNameWithParents with biotypes after handleBioTypes adds items
+				doc.setSoTermNameWithParents(new HashSet<>(doc.getBiotypes()));
 			}
 		}
 
@@ -440,7 +447,17 @@ public class GeneService extends SubmittedObjectCrudService<Gene, GeneDTO, GeneD
 			doc.setSecondaryIds(secondaryIds.getOrDefault(id, new HashSet<>()));
 			doc.setCrossReferences(crossRefs.getOrDefault(id, new HashSet<>()));
 			doc.setChromosomes(chromosomes.getOrDefault(id, new HashSet<>()));
-			doc.setAlleles(alleles.getOrDefault(id, new HashSet<>()));
+			Set<String> rawAlleles = alleles.getOrDefault(id, new HashSet<>());
+			String abbrev = speciesAbbrevMap.get(id);
+			if (abbrev != null && !rawAlleles.isEmpty()) {
+				Set<String> formattedAlleles = new HashSet<>();
+				for (String allele : rawAlleles) {
+					formattedAlleles.add(allele + " (" + abbrev + ")");
+				}
+				doc.setAlleles(formattedAlleles);
+			} else {
+				doc.setAlleles(rawAlleles);
+			}
 		}
 
 		// Q8: Phenotype statements
