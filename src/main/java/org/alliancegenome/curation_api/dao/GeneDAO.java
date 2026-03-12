@@ -236,7 +236,7 @@ public class GeneDAO extends BaseSQLDAO<Gene> {
 			SELECT g.id, ancestor_ot.name
 			FROM gene g
 			JOIN ontologytermclosure otc ON otc.closuresubject_id = g.genetype_id
-			JOIN ontologyterm ancestor_ot ON ancestor_ot.id = otc.closureobject_id
+			JOIN ontologyterm ancestor_ot ON ancestor_ot.id = otc.closureobject_id AND ancestor_ot.ontologytermtype = 'SOTerm'
 			WHERE g.id IN :geneIds
 			""";
 		Query query = entityManager.createNativeQuery(sql);
@@ -369,7 +369,7 @@ public class GeneDAO extends BaseSQLDAO<Gene> {
 			JOIN diseaseannotation da ON da.id = gda.id
 			JOIN ontologyterm do_term ON do_term.id = da.diseaseannotationobject_id
 			LEFT JOIN ontologytermclosure otc ON otc.closuresubject_id = do_term.id
-			LEFT JOIN ontologyterm ancestor_ot ON ancestor_ot.id = otc.closureobject_id
+			LEFT JOIN ontologyterm ancestor_ot ON ancestor_ot.id = otc.closureobject_id AND ancestor_ot.ontologytermtype = 'DOTerm'
 			WHERE gda.diseaseannotationsubject_id IN :geneIds
 			""";
 		Query query = entityManager.createNativeQuery(sql);
@@ -407,7 +407,7 @@ public class GeneDAO extends BaseSQLDAO<Gene> {
 			JOIN diseaseannotation da ON da.id = gda.id
 			JOIN ontologyterm do_term ON do_term.id = da.diseaseannotationobject_id
 			LEFT JOIN ontologytermclosure otc ON otc.closuresubject_id = do_term.id
-			LEFT JOIN ontologyterm ancestor_ot ON ancestor_ot.id = otc.closureobject_id
+			LEFT JOIN ontologyterm ancestor_ot ON ancestor_ot.id = otc.closureobject_id AND ancestor_ot.ontologytermtype = 'DOTerm'
 			WHERE o.subjectgene_id IN :geneIds
 			""";
 		Query query = entityManager.createNativeQuery(sql);
@@ -424,16 +424,16 @@ public class GeneDAO extends BaseSQLDAO<Gene> {
 			SELECT goa.singlegene_id, ot.namespace, ot.name,
 			       CASE WHEN ots.ontologyterm_id IS NOT NULL THEN true ELSE false END
 			FROM geneontologyannotation goa
-			JOIN ontologyterm ot ON ot.id = goa.goterm_id
+			JOIN ontologyterm ot ON ot.id = goa.goterm_id AND ot.ontologytermtype = 'GOTerm'
 			LEFT JOIN ontologyterm_subsets ots ON ots.ontologyterm_id = ot.id AND ots.subsets = 'goslim_agr'
 			WHERE goa.singlegene_id IN :geneIds
 			UNION ALL
 			SELECT goa.singlegene_id, ot.namespace, ancestor.name,
 			       CASE WHEN ots.ontologyterm_id IS NOT NULL THEN true ELSE false END
 			FROM geneontologyannotation goa
-			JOIN ontologyterm ot ON ot.id = goa.goterm_id
+			JOIN ontologyterm ot ON ot.id = goa.goterm_id AND ot.ontologytermtype = 'GOTerm'
 			JOIN ontologytermclosure otc ON otc.closuresubject_id = ot.id
-			JOIN ontologyterm ancestor ON ancestor.id = otc.closureobject_id
+			JOIN ontologyterm ancestor ON ancestor.id = otc.closureobject_id AND ancestor.ontologytermtype = 'GOTerm'
 			LEFT JOIN ontologyterm_subsets ots ON ots.ontologyterm_id = ancestor.id AND ots.subsets = 'goslim_agr'
 			WHERE goa.singlegene_id IN :geneIds
 			""";
@@ -453,7 +453,7 @@ public class GeneDAO extends BaseSQLDAO<Gene> {
 			FROM geneexpressionannotation gea
 			JOIN expressionpattern ep ON ep.id = gea.expressionpattern_id
 			JOIN anatomicalsite ans ON ans.id = ep.whereexpressed_id
-			JOIN ontologyterm cc_term ON cc_term.id = ans.cellularcomponentterm_id
+			JOIN ontologyterm cc_term ON cc_term.id = ans.cellularcomponentterm_id AND cc_term.ontologytermtype = 'GOTerm'
 			LEFT JOIN ontologyterm_subsets ots ON ots.ontologyterm_id = cc_term.id AND ots.subsets = 'goslim_agr'
 			WHERE gea.expressionannotationsubject_id IN :geneIds
 			UNION ALL
@@ -462,9 +462,9 @@ public class GeneDAO extends BaseSQLDAO<Gene> {
 			FROM geneexpressionannotation gea
 			JOIN expressionpattern ep ON ep.id = gea.expressionpattern_id
 			JOIN anatomicalsite ans ON ans.id = ep.whereexpressed_id
-			JOIN ontologyterm cc_term ON cc_term.id = ans.cellularcomponentterm_id
+			JOIN ontologyterm cc_term ON cc_term.id = ans.cellularcomponentterm_id AND cc_term.ontologytermtype = 'GOTerm'
 			JOIN ontologytermclosure otc ON otc.closuresubject_id = cc_term.id
-			JOIN ontologyterm ancestor ON ancestor.id = otc.closureobject_id
+			JOIN ontologyterm ancestor ON ancestor.id = otc.closureobject_id AND ancestor.ontologytermtype = 'GOTerm'
 			LEFT JOIN ontologyterm_subsets ots ON ots.ontologyterm_id = ancestor.id AND ots.subsets = 'goslim_agr'
 			WHERE gea.expressionannotationsubject_id IN :geneIds
 			""";
