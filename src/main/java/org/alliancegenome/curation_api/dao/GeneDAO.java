@@ -369,7 +369,8 @@ public class GeneDAO extends BaseSQLDAO<Gene> {
 			JOIN diseaseannotation da ON da.id = gda.id
 			JOIN ontologyterm do_term ON do_term.id = da.diseaseannotationobject_id
 			LEFT JOIN ontologytermclosure otc ON otc.closuresubject_id = do_term.id
-			LEFT JOIN ontologyterm ancestor_ot ON ancestor_ot.id = otc.closureobject_id AND ancestor_ot.ontologytermtype = 'DOTerm'
+			LEFT JOIN ontologyterm ancestor_ot ON ancestor_ot.id = otc.closureobject_id
+				AND ancestor_ot.ontologytermtype = 'DOTerm'
 			WHERE gda.diseaseannotationsubject_id IN :geneIds
 			""";
 		Query query = entityManager.createNativeQuery(sql);
@@ -401,14 +402,26 @@ public class GeneDAO extends BaseSQLDAO<Gene> {
 			return new ArrayList<>();
 		}
 		String sql = """
-			SELECT o.subjectgene_id, do_term.name, ancestor_ot.name
-			FROM genetogeneorthology o
-			JOIN genediseaseannotation gda ON gda.diseaseannotationsubject_id = o.objectgene_id
-			JOIN diseaseannotation da ON da.id = gda.id
-			JOIN ontologyterm do_term ON do_term.id = da.diseaseannotationobject_id
-			LEFT JOIN ontologytermclosure otc ON otc.closuresubject_id = do_term.id
-			LEFT JOIN ontologyterm ancestor_ot ON ancestor_ot.id = otc.closureobject_id AND ancestor_ot.ontologytermtype = 'DOTerm'
-			WHERE o.subjectgene_id IN :geneIds
+			WITH ortho_diseases AS MATERIALIZED (
+				SELECT o.subjectgene_id, da.diseaseannotationobject_id AS term_id
+				FROM genetogeneorthology o
+				JOIN genediseaseannotation gda ON gda.diseaseannotationsubject_id = o.objectgene_id
+				JOIN diseaseannotation da ON da.id = gda.id
+				WHERE o.subjectgene_id IN :geneIds
+			),
+			distinct_ortho_disease_terms AS MATERIALIZED (
+				SELECT DISTINCT term_id FROM ortho_diseases
+			),
+			ortho_disease_ancestors AS MATERIALIZED (
+				SELECT dodt.term_id, ancestor.name
+				FROM distinct_ortho_disease_terms dodt
+				JOIN ontologytermclosure otc ON otc.closuresubject_id = dodt.term_id
+				JOIN ontologyterm ancestor ON ancestor.id = otc.closureobject_id AND ancestor.ontologytermtype = 'DOTerm'
+			)
+			SELECT od.subjectgene_id, do_term.name, oda.name
+			FROM ortho_diseases od
+			JOIN ontologyterm do_term ON do_term.id = od.term_id
+			LEFT JOIN ortho_disease_ancestors oda ON oda.term_id = od.term_id
 			""";
 		Query query = entityManager.createNativeQuery(sql);
 		query.setParameter("geneIds", geneIds);
@@ -508,7 +521,9 @@ public class GeneDAO extends BaseSQLDAO<Gene> {
 				AND ans.anatomicalstructure_id IS NOT NULL
 			),
 			distinct_anat_terms AS MATERIALIZED (
-				SELECT DISTINCT term_id FROM gene_anat
+				SELECT DISTINCT dat.term_id, ot.name
+				FROM (SELECT DISTINCT term_id FROM gene_anat) dat
+				JOIN ontologyterm ot ON ot.id = dat.term_id
 			),
 			anat_ancestors AS MATERIALIZED (
 				SELECT dat.term_id, ancestor.name
@@ -516,9 +531,9 @@ public class GeneDAO extends BaseSQLDAO<Gene> {
 				JOIN ontologytermclosure otc ON otc.closuresubject_id = dat.term_id
 				JOIN ontologyterm ancestor ON ancestor.id = otc.closureobject_id
 			)
-			SELECT ga.gene_id, anat_term.name
+			SELECT ga.gene_id, dat.name
 			FROM gene_anat ga
-			JOIN ontologyterm anat_term ON anat_term.id = ga.term_id
+			JOIN distinct_anat_terms dat ON dat.term_id = ga.term_id
 			UNION ALL
 			SELECT ga.gene_id, aa.name
 			FROM gene_anat ga
