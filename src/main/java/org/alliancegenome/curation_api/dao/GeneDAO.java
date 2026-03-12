@@ -218,8 +218,7 @@ public class GeneDAO extends BaseSQLDAO<Gene> {
 			LEFT JOIN slotannotation sym ON sym.singlegene_id = g.id AND sym.slotannotationtype = 'GeneSymbolSlotAnnotation'
 			LEFT JOIN slotannotation fn ON fn.singlegene_id = g.id AND fn.slotannotationtype = 'GeneFullNameSlotAnnotation'
 			LEFT JOIN ontologyterm ot_taxon ON ot_taxon.id = be.taxon_id
-			LEFT JOIN ncbitaxonterm_species nts ON nts.ncbitaxonterm_id = ot_taxon.id
-			LEFT JOIN species sp ON sp.id = nts.species_id
+			LEFT JOIN species sp ON sp.taxon_id = ot_taxon.id
 			LEFT JOIN ontologyterm so ON so.id = g.genetype_id
 			WHERE g.id IN :geneIds
 			""";
