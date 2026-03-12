@@ -336,20 +336,6 @@ public class GeneService extends SubmittedObjectCrudService<Gene, GeneDTO, GeneD
 
 	// --- Batch assembly for GeneSearchResultDocument ---
 
-	private static final Map<String, String> TAXON_ABBREVIATION_MAP = Map.ofEntries(
-		Map.entry("Homo sapiens", "Hsa"),
-		Map.entry("Rattus norvegicus", "Rno"),
-		Map.entry("Mus musculus", "Mmu"),
-		Map.entry("Danio rerio", "Dre"),
-		Map.entry("Drosophila melanogaster", "Dme"),
-		Map.entry("Caenorhabditis elegans", "Cel"),
-		Map.entry("Saccharomyces cerevisiae", "Sce"),
-		Map.entry("Saccharomyces cerevisiae S288C", "Sce"),
-		Map.entry("Xenopus laevis", "Xla"),
-		Map.entry("Xenopus tropicalis", "Xtr"),
-		Map.entry("Severe acute respiratory syndrome coronavirus 2", "SARS-CoV-2")
-	);
-
 	private static final Set<String> BIOTYPE_LEVEL_0 = Set.of(
 		"protein_coding_gene", "pseudogene", "ncRNA_gene", "other_gene"
 	);
@@ -402,11 +388,10 @@ public class GeneService extends SubmittedObjectCrudService<Gene, GeneDTO, GeneD
 
 			String fullName = (String) row[2];
 			String taxonName = (String) row[3];
-			String symbol = (String) row[4];
-			String soTermCurie = (String) row[5];
-			String soTermName = (String) row[6];
-
-			String speciesAbbrev = taxonName != null ? TAXON_ABBREVIATION_MAP.get(taxonName) : null;
+			String speciesAbbrev = (String) row[4];
+			String symbol = (String) row[5];
+			String soTermCurie = (String) row[6];
+			String soTermName = (String) row[7];
 			if (speciesAbbrev != null) {
 				speciesAbbrevMap.put(id, speciesAbbrev);
 			}

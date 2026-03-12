@@ -211,13 +211,14 @@ public class GeneDAO extends BaseSQLDAO<Gene> {
 			return new ArrayList<>();
 		}
 		String sql = """
-			SELECT g.id, be.primaryexternalid, fn.formattext, ot_taxon.name,
+			SELECT g.id, be.primaryexternalid, fn.formattext, ot_taxon.name, sp.abbreviation,
 			       sym.displaytext, so.curie, so.name
 			FROM gene g
 			JOIN biologicalentity be ON be.id = g.id AND be.obsolete = false AND be.internal = false
 			LEFT JOIN slotannotation sym ON sym.singlegene_id = g.id AND sym.slotannotationtype = 'GeneSymbolSlotAnnotation'
 			LEFT JOIN slotannotation fn ON fn.singlegene_id = g.id AND fn.slotannotationtype = 'GeneFullNameSlotAnnotation'
 			LEFT JOIN ontologyterm ot_taxon ON ot_taxon.id = be.taxon_id
+			LEFT JOIN species sp ON sp.taxon_id = ot_taxon.id
 			LEFT JOIN ontologyterm so ON so.id = g.genetype_id
 			WHERE g.id IN :geneIds
 			""";
