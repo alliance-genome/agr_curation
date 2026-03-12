@@ -421,21 +421,32 @@ public class GeneDAO extends BaseSQLDAO<Gene> {
 			return new ArrayList<>();
 		}
 		String sql = """
-			SELECT goa.singlegene_id, ot.namespace, ot.name,
+			WITH gene_go AS MATERIALIZED (
+				SELECT goa.singlegene_id, goa.goterm_id
+				FROM geneontologyannotation goa
+				WHERE goa.singlegene_id IN :geneIds
+			),
+			distinct_go_terms AS MATERIALIZED (
+				SELECT DISTINCT goterm_id AS term_id FROM gene_go
+			),
+			go_ancestors AS MATERIALIZED (
+				SELECT dgt.term_id, ancestor.id AS ancestor_id, ancestor.name,
+				       CASE WHEN ots.ontologyterm_id IS NOT NULL THEN true ELSE false END AS is_agr_slim
+				FROM distinct_go_terms dgt
+				JOIN ontologytermclosure otc ON otc.closuresubject_id = dgt.term_id
+				JOIN ontologyterm ancestor ON ancestor.id = otc.closureobject_id AND ancestor.ontologytermtype = 'GOTerm'
+				LEFT JOIN ontologyterm_subsets ots ON ots.ontologyterm_id = ancestor.id AND ots.subsets = 'goslim_agr'
+			)
+			SELECT gg.singlegene_id, ot.namespace, ot.name,
 			       CASE WHEN ots.ontologyterm_id IS NOT NULL THEN true ELSE false END
-			FROM geneontologyannotation goa
-			JOIN ontologyterm ot ON ot.id = goa.goterm_id AND ot.ontologytermtype = 'GOTerm'
+			FROM gene_go gg
+			JOIN ontologyterm ot ON ot.id = gg.goterm_id AND ot.ontologytermtype = 'GOTerm'
 			LEFT JOIN ontologyterm_subsets ots ON ots.ontologyterm_id = ot.id AND ots.subsets = 'goslim_agr'
-			WHERE goa.singlegene_id IN :geneIds
 			UNION ALL
-			SELECT goa.singlegene_id, ot.namespace, ancestor.name,
-			       CASE WHEN ots.ontologyterm_id IS NOT NULL THEN true ELSE false END
-			FROM geneontologyannotation goa
-			JOIN ontologyterm ot ON ot.id = goa.goterm_id AND ot.ontologytermtype = 'GOTerm'
-			JOIN ontologytermclosure otc ON otc.closuresubject_id = ot.id
-			JOIN ontologyterm ancestor ON ancestor.id = otc.closureobject_id AND ancestor.ontologytermtype = 'GOTerm'
-			LEFT JOIN ontologyterm_subsets ots ON ots.ontologyterm_id = ancestor.id AND ots.subsets = 'goslim_agr'
-			WHERE goa.singlegene_id IN :geneIds
+			SELECT gg.singlegene_id, ot.namespace, ga.name, ga.is_agr_slim
+			FROM gene_go gg
+			JOIN ontologyterm ot ON ot.id = gg.goterm_id AND ot.ontologytermtype = 'GOTerm'
+			JOIN go_ancestors ga ON ga.term_id = gg.goterm_id
 			""";
 		Query query = entityManager.createNativeQuery(sql);
 		query.setParameter("geneIds", geneIds);
@@ -448,25 +459,34 @@ public class GeneDAO extends BaseSQLDAO<Gene> {
 			return new ArrayList<>();
 		}
 		String sql = """
-			SELECT gea.expressionannotationsubject_id, cc_term.name,
+			WITH gene_cc AS MATERIALIZED (
+				SELECT gea.expressionannotationsubject_id AS gene_id, ans.cellularcomponentterm_id AS term_id
+				FROM geneexpressionannotation gea
+				JOIN expressionpattern ep ON ep.id = gea.expressionpattern_id
+				JOIN anatomicalsite ans ON ans.id = ep.whereexpressed_id
+				WHERE gea.expressionannotationsubject_id IN :geneIds
+				AND ans.cellularcomponentterm_id IS NOT NULL
+			),
+			distinct_cc_terms AS MATERIALIZED (
+				SELECT DISTINCT term_id FROM gene_cc
+			),
+			cc_ancestors AS MATERIALIZED (
+				SELECT dct.term_id, ancestor.name,
+				       CASE WHEN ots.ontologyterm_id IS NOT NULL THEN true ELSE false END AS is_agr_slim
+				FROM distinct_cc_terms dct
+				JOIN ontologytermclosure otc ON otc.closuresubject_id = dct.term_id
+				JOIN ontologyterm ancestor ON ancestor.id = otc.closureobject_id AND ancestor.ontologytermtype = 'GOTerm'
+				LEFT JOIN ontologyterm_subsets ots ON ots.ontologyterm_id = ancestor.id AND ots.subsets = 'goslim_agr'
+			)
+			SELECT gcc.gene_id, cc_term.name,
 			       CASE WHEN ots.ontologyterm_id IS NOT NULL THEN true ELSE false END
-			FROM geneexpressionannotation gea
-			JOIN expressionpattern ep ON ep.id = gea.expressionpattern_id
-			JOIN anatomicalsite ans ON ans.id = ep.whereexpressed_id
-			JOIN ontologyterm cc_term ON cc_term.id = ans.cellularcomponentterm_id AND cc_term.ontologytermtype = 'GOTerm'
+			FROM gene_cc gcc
+			JOIN ontologyterm cc_term ON cc_term.id = gcc.term_id AND cc_term.ontologytermtype = 'GOTerm'
 			LEFT JOIN ontologyterm_subsets ots ON ots.ontologyterm_id = cc_term.id AND ots.subsets = 'goslim_agr'
-			WHERE gea.expressionannotationsubject_id IN :geneIds
 			UNION ALL
-			SELECT gea.expressionannotationsubject_id, ancestor.name,
-			       CASE WHEN ots.ontologyterm_id IS NOT NULL THEN true ELSE false END
-			FROM geneexpressionannotation gea
-			JOIN expressionpattern ep ON ep.id = gea.expressionpattern_id
-			JOIN anatomicalsite ans ON ans.id = ep.whereexpressed_id
-			JOIN ontologyterm cc_term ON cc_term.id = ans.cellularcomponentterm_id AND cc_term.ontologytermtype = 'GOTerm'
-			JOIN ontologytermclosure otc ON otc.closuresubject_id = cc_term.id
-			JOIN ontologyterm ancestor ON ancestor.id = otc.closureobject_id AND ancestor.ontologytermtype = 'GOTerm'
-			LEFT JOIN ontologyterm_subsets ots ON ots.ontologyterm_id = ancestor.id AND ots.subsets = 'goslim_agr'
-			WHERE gea.expressionannotationsubject_id IN :geneIds
+			SELECT gcc.gene_id, ca.name, ca.is_agr_slim
+			FROM gene_cc gcc
+			JOIN cc_ancestors ca ON ca.term_id = gcc.term_id
 			""";
 		Query query = entityManager.createNativeQuery(sql);
 		query.setParameter("geneIds", geneIds);
@@ -479,21 +499,30 @@ public class GeneDAO extends BaseSQLDAO<Gene> {
 			return new HashMap<>();
 		}
 		String sql = """
-			SELECT gea.expressionannotationsubject_id, anat_term.name
-			FROM geneexpressionannotation gea
-			JOIN expressionpattern ep ON ep.id = gea.expressionpattern_id
-			JOIN anatomicalsite ans ON ans.id = ep.whereexpressed_id
-			JOIN ontologyterm anat_term ON anat_term.id = ans.anatomicalstructure_id
-			WHERE gea.expressionannotationsubject_id IN :geneIds
+			WITH gene_anat AS MATERIALIZED (
+				SELECT gea.expressionannotationsubject_id AS gene_id, ans.anatomicalstructure_id AS term_id
+				FROM geneexpressionannotation gea
+				JOIN expressionpattern ep ON ep.id = gea.expressionpattern_id
+				JOIN anatomicalsite ans ON ans.id = ep.whereexpressed_id
+				WHERE gea.expressionannotationsubject_id IN :geneIds
+				AND ans.anatomicalstructure_id IS NOT NULL
+			),
+			distinct_anat_terms AS MATERIALIZED (
+				SELECT DISTINCT term_id FROM gene_anat
+			),
+			anat_ancestors AS MATERIALIZED (
+				SELECT dat.term_id, ancestor.name
+				FROM distinct_anat_terms dat
+				JOIN ontologytermclosure otc ON otc.closuresubject_id = dat.term_id
+				JOIN ontologyterm ancestor ON ancestor.id = otc.closureobject_id
+			)
+			SELECT ga.gene_id, anat_term.name
+			FROM gene_anat ga
+			JOIN ontologyterm anat_term ON anat_term.id = ga.term_id
 			UNION ALL
-			SELECT gea.expressionannotationsubject_id, ancestor.name
-			FROM geneexpressionannotation gea
-			JOIN expressionpattern ep ON ep.id = gea.expressionpattern_id
-			JOIN anatomicalsite ans ON ans.id = ep.whereexpressed_id
-			JOIN ontologyterm anat_term ON anat_term.id = ans.anatomicalstructure_id
-			JOIN ontologytermclosure otc ON otc.closuresubject_id = anat_term.id
-			JOIN ontologyterm ancestor ON ancestor.id = otc.closureobject_id
-			WHERE gea.expressionannotationsubject_id IN :geneIds
+			SELECT ga.gene_id, aa.name
+			FROM gene_anat ga
+			JOIN anat_ancestors aa ON aa.term_id = ga.term_id
 			""";
 		Query query = entityManager.createNativeQuery(sql);
 		query.setParameter("geneIds", geneIds);
