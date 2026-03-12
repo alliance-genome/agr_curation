@@ -126,7 +126,7 @@ export const CLASSES = Object.freeze({
 	GeneExpressionAnnotation: {
 		name: 'Gene Expression Annotations',
 		type: 'entity',
-		hasTable: false,
+		hasTable: true,
 		isIndexed: true,
 	},
 	PredictedVariantConsequence: {

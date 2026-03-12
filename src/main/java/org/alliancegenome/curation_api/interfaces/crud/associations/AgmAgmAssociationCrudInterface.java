@@ -20,6 +20,7 @@ import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
+import org.eclipse.microprofile.openapi.annotations.Operation;
 
 @Path("/agmagmassociation")
 @Tag(name = "CRUD - AGM AGM Associations")
@@ -27,11 +28,13 @@ import jakarta.ws.rs.core.MediaType;
 @Consumes(MediaType.APPLICATION_JSON)
 public interface AgmAgmAssociationCrudInterface extends BaseIdCrudInterface<AgmAgmAssociation> {
 
+	@Operation(summary = "Get agm agm association by component IDs", description = "Look up a specific agm agm association by its component entity IDs and relation")
 	@GET
 	@Path("/findBy")
 	@JsonView(CurationView.FieldsAndLists.class)
 	ObjectResponse<AgmAgmAssociation> getAssociation(@QueryParam("agmSubjectId") Long agmId, @QueryParam("relationName") String relationName, @QueryParam("agmObjectId") Long strId);
 
+	@Operation(summary = "Bulk load agm agm association data", description = "Bulk load agm agm association records from a data provider submission")
 	@POST
 	@Path("/bulk/{dataProvider}/associationFile")
 	@JsonView(CurationView.FieldsAndLists.class)

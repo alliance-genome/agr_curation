@@ -29,7 +29,7 @@ import lombok.ToString;
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(callSuper = true)
-@Schema(name = "BioSampleGenomicInformation", description = "POJO that represents the BioSampleGenomicInformation")
+@Schema(name = "BioSampleGenomicInformation", description = "BioSampleGenomicInformation: a bio sample genomic information")
 @AGRCurationSchemaVersion(min = "2.7.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AuditedObject.class })
 @Indexed
 @Table(indexes = {

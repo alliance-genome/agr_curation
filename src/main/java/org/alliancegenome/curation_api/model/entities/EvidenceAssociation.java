@@ -23,7 +23,7 @@ import lombok.EqualsAndHashCode;
 @MappedSuperclass
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
-@Schema(name = "evidenceAssociation", description = "POJO that represents an association supported by any number of information content entities")
+@Schema(name = "evidenceAssociation", description = "EvidenceAssociation: an evidence association")
 @AGRCurationSchemaVersion(min = "1.9.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { Association.class })
 public class EvidenceAssociation extends Association {
 

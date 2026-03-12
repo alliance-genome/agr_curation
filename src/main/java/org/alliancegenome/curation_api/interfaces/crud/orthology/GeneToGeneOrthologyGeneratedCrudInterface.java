@@ -15,6 +15,7 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
+import org.eclipse.microprofile.openapi.annotations.Operation;
 
 @Path("/orthologygenerated")
 @Tag(name = "CRUD - Orthology")
@@ -22,6 +23,7 @@ import jakarta.ws.rs.core.MediaType;
 @Consumes(MediaType.APPLICATION_JSON)
 public interface GeneToGeneOrthologyGeneratedCrudInterface extends BaseIdCrudInterface<GeneToGeneOrthologyGenerated> {
 
+	@Operation(summary = "Bulk load gene to gene orthology generated data", description = "Bulk load gene to gene orthology generated records from a data provider submission")
 	@POST
 	@Path("/bulk/{dataProvider}/orthologyfile")
 	@JsonView(CurationView.FieldsAndLists.class)

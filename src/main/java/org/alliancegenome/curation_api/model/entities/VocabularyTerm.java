@@ -42,7 +42,7 @@ import lombok.ToString;
 	@Index(name = "vocabularyterm_createdby_index", columnList = "createdBy_id"),
 	@Index(name = "vocabularyterm_updatedby_index", columnList = "updatedBy_id")
 })
-@Schema(name = "VocabularyTerm", description = "POJO that represents the Vocabulary Term")
+@Schema(name = "VocabularyTerm", description = "VocabularyTerm: a vocabulary term")
 @AGRCurationSchemaVersion(min = "1.2.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = {AuditedObject.class})
 public class VocabularyTerm extends AuditedObject {
 

@@ -1,11 +1,10 @@
 package org.alliancegenome.curation_api.interfaces.base.crud;
 
-import org.alliancegenome.curation_api.model.Null;
 import org.alliancegenome.curation_api.model.entities.base.AuditedObject;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.view.CurationView;
-import org.eclipse.microprofile.openapi.annotations.media.Content;
-import org.eclipse.microprofile.openapi.annotations.media.Schema;
+import org.eclipse.microprofile.openapi.annotations.Operation;
+import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponses;
 
@@ -25,15 +24,12 @@ public interface BaseReadCurieControllerInterface<E extends AuditedObject> {
 	@GET
 	@Path("/{curie}")
 	@JsonView(CurationView.FieldsOnly.class)
+	@Operation(summary = "Get entity by curie", description = "Retrieve a single entity by its curie identifier")
 	@APIResponses(
 		@APIResponse(
-			description = "Get the Entity by Curie",
-			content = @Content(
-				mediaType = "application/json",
-				schema = @Schema(implementation = Null.class)
-			)
-		)
+			responseCode = "200",
+			description = "The entity matching the given curie")
 	)
-	ObjectResponse<E> getByCurie(@PathParam("curie") String curie);
+	ObjectResponse<E> getByCurie(@Parameter(description = "Curie identifier of the entity") @PathParam("curie") String curie);
 
 }

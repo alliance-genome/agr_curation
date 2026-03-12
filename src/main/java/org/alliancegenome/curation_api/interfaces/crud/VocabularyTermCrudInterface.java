@@ -8,7 +8,6 @@ import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.view.CurationView;
 import org.alliancegenome.curation_api.view.CurationView.VocabularyTermView;
-import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 import com.fasterxml.jackson.annotation.JsonView;
@@ -23,6 +22,7 @@ import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
+import org.eclipse.microprofile.openapi.annotations.Operation;
 
 @Path("/vocabularyterm")
 @Tag(name = "CRUD - VocabularyTerm")
@@ -35,7 +35,7 @@ public interface VocabularyTermCrudInterface extends BaseIdCrudInterface<Vocabul
 	@Path("/search")
 	@JsonView(CurationView.VocabularyTermView.class)
 	@Tag(name = "Elastic Search Browsing Endpoints")
-	SearchResponse<VocabularyTerm> search(@DefaultValue("0") @QueryParam("page") Integer page, @DefaultValue("10") @QueryParam("limit") Integer limit, @RequestBody HashMap<String, Object> params);
+	SearchResponse<VocabularyTerm> search(@DefaultValue("0") @QueryParam("page") Integer page, @DefaultValue("10") @QueryParam("limit") Integer limit, HashMap<String, Object> params);
 
 	@Override
 	@GET
@@ -43,21 +43,25 @@ public interface VocabularyTermCrudInterface extends BaseIdCrudInterface<Vocabul
 	@JsonView(CurationView.VocabularyTermView.class)
 	ObjectResponse<VocabularyTerm> getById(@PathParam("id") Long id);
 
+	@Operation(summary = "Get term in vocabulary", description = "Retrieve a specific vocabulary term by vocabulary name and term name")
 	@GET
 	@Path("/findBy")
 	@JsonView(CurationView.VocabularyTermView.class)
 	ObjectResponse<VocabularyTerm> getTermInVocabulary(@QueryParam("vocabularyName") String vocabularyName, @QueryParam("termName") String termName);
 
+	@Operation(summary = "Get term in vocabulary term set", description = "Retrieve a specific vocabulary term by vocabulary term set name and term name")
 	@GET
 	@Path("/findInSet")
 	@JsonView(CurationView.VocabularyTermView.class)
 	ObjectResponse<VocabularyTerm> getTermInVocabularyTermSet(@QueryParam("vocabularyTermSetName") String vocabularyTermSetName, @QueryParam("termName") String termName);
 
+	@Operation(summary = "Update", description = "Update for vocabulary term")
 	@PUT
 	@Path("/")
 	@JsonView(CurationView.VocabularyTermUpdate.class)
 	ObjectResponse<VocabularyTerm> update(VocabularyTerm entity);
 
+	@Operation(summary = "Create vocabulary term", description = "Create a new vocabulary term entity")
 	@POST
 	@Path("/")
 	@JsonView(VocabularyTermView.class)

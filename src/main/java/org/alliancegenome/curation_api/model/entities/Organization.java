@@ -27,9 +27,11 @@ import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
 @Inheritance(strategy = InheritanceType.JOINED)
 @Data
+@Schema(name = "Organization", description = "Organization: an organization")
 @Entity
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)

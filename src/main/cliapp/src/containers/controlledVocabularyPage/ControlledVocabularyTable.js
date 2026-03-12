@@ -198,7 +198,7 @@ export const ControlledVocabularyTable = () => {
 		return (
 			<>
 				<TrueFalseDropdown
-					options={obsoleteTerms}
+					options={obsoleteTerms?.terms || []}
 					editorChange={onObsoleteEditorValueChange}
 					props={props}
 					field={'obsolete'}

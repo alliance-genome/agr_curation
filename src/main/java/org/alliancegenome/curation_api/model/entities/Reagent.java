@@ -38,7 +38,7 @@ import lombok.ToString;
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(callSuper = true)
-@Schema(name = "reagent", description = "POJO that represents a reagent")
+@Schema(name = "reagent", description = "Reagent: a reagent")
 @AGRCurationSchemaVersion(min = "2.0.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = {SubmittedObject.class})
 @Table(indexes = {
 		@Index(name = "reagent_uniqueid_index", columnList = "uniqueid"),

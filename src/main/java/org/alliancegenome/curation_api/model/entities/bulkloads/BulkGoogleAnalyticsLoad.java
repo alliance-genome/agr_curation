@@ -16,7 +16,7 @@ import lombok.ToString;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(callSuper = true)
 @AGRCurationSchemaVersion(min = "2.13.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { BulkScheduledLoad.class })
-@Schema(name = "BulkGoogleAnalyticsLoad", description = "POJO that represents the BulkLoadGoogleAnalyticsLoad")
+@Schema(name = "BulkGoogleAnalyticsLoad", description = "BulkGoogleAnalyticsLoad: a bulk google analytics load")
 @JsonTypeName
 public class BulkGoogleAnalyticsLoad extends BulkScheduledLoad {
 	
