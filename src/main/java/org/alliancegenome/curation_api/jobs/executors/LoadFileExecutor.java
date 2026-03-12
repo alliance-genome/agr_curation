@@ -60,8 +60,9 @@ public class LoadFileExecutor {
 	@Inject
 	SlackNotifier slackNotifier;
 
-	record IdObject(long id) {}
-	
+	record IdObject(long id) {
+	}
+
 	protected void updateHistory(BulkLoadFileHistory history) {
 		bulkLoadFileHistoryDAO.merge(history);
 	}
