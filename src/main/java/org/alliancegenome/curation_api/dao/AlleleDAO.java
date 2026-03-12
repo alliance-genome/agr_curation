@@ -239,6 +239,9 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 			SELECT a.id
 			FROM Allele a
 			INNER JOIN BiologicalEntity b ON b.id = a.id AND b.obsolete = false AND b.internal = false
+			LEFT JOIN AlleleFullNameSlotAnnotation afn ON afn.singleallele_id = a.id
+			LEFT JOIN NameSlotAnnotation nsa ON nsa.id = afn.id
+			WHERE nsa.displaytext IS NULL OR nsa.displaytext <> 'wild type'
 			ORDER BY a.id
 			""";
 
