@@ -2,6 +2,8 @@ package org.alliancegenome.curation_api.services.loads;
 
 import java.util.Set;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import org.alliancegenome.curation_api.dao.loads.BulkLoadDAO;
 import org.alliancegenome.curation_api.dao.loads.BulkLoadFileExceptionDAO;
 import org.alliancegenome.curation_api.dao.loads.BulkLoadFileHistoryDAO;
@@ -34,7 +36,9 @@ public class BulkLoadFileHistoryService extends BaseEntityCrudService<BulkLoadFi
 	@Inject BulkLoadFileHistoryDAO bulkLoadFileHistoryDAO;
 	@Inject BulkLoadFileExceptionDAO bulkLoadFileExceptionDAO;
 	@Inject BulkLoadDAO bulkLoadDAO;
-	
+
+	private static final ObjectMapper MAPPER = new ObjectMapper();
+
 	@Override
 	@PostConstruct
 	protected void init() {
@@ -53,8 +57,11 @@ public class BulkLoadFileHistoryService extends BaseEntityCrudService<BulkLoadFi
 			if (exception.getException().getMessages() != null) {
 				object.put("messages", exception.getException().getMessages());
 			}
-			JsonObject data = new JsonObject(exception.getException().getJsonObject());
-			object.put("jsonObject", data);
+			// Include jsonObject as raw string if it can't be parsed as valid JSON
+			String jsonObjectString = exception.getException().getJsonObject();
+			if (jsonObjectString != null) {
+				object.put("jsonObject", parseJsonObject(jsonObjectString));
+			}
 			jsonArray.add(object);
 		}
 
@@ -63,9 +70,27 @@ public class BulkLoadFileHistoryService extends BaseEntityCrudService<BulkLoadFi
 		response.type(MediaType.APPLICATION_OCTET_STREAM);
 		return response.build();
 	}
-	
 
-	
+
+	private Object parseJsonObject(String jsonObjectString) {
+		// Try parsing as a JSON object directly
+		try {
+			return new JsonObject(jsonObjectString);
+		} catch (Exception e) {
+			Log.debug("Failed to parse jsonObject directly: " + e.getMessage());
+		}
+
+		// Try unwrapping double-encoded JSON from ObjectMapper.writeValueAsString()
+		try {
+			String unwrapped = MAPPER.readValue(jsonObjectString, String.class);
+			return new JsonObject(unwrapped);
+		} catch (Exception e) {
+			Log.debug("Failed to unwrap double-encoded jsonObject: " + e.getMessage());
+		}
+
+		return jsonObjectString;
+	}
+
 	public ObjectResponse<BulkLoad> restartBulkLoad(Long id) {
 		ObjectResponse<BulkLoad> resp = updateBulkLoad(id); // Transaction has to close before calling the fire
 		Log.debug("Restart Bulk Load: " + id);
@@ -76,23 +101,23 @@ public class BulkLoadFileHistoryService extends BaseEntityCrudService<BulkLoadFi
 		}
 		return null;
 	}
-	
+
 	public ObjectResponse<BulkLoadFile> stopBulkLoadHistory(Long id) {
 		BulkLoadFileHistory history = bulkLoadFileHistoryDAO.find(id);
 		Log.info("Stop Bulk Load: " + history.getRunningThreadName());
 
 		Set<Thread> threadSet = Thread.getAllStackTraces().keySet();
-		
+
 		for (Thread t: threadSet) {
 			if (t.getName().equals(history.getRunningThreadName())) {
 				Log.info("Interupting Thread: " + t.getName());
 				t.interrupt();
 			}
 		}
-		
+
 		return new ObjectResponse<BulkLoadFile>(history.getBulkLoadFile());
 	}
-	
+
 	@Transactional
 	public ObjectResponse<BulkLoad> updateBulkLoad(Long id) {
 		BulkLoad load = bulkLoadDAO.find(id);
