@@ -279,7 +279,7 @@ public class GeneDAO extends BaseSQLDAO<Gene> {
 		}
 		String sql = """
 			SELECT gc.genomicentity_id, cr.referencedcurie
-			FROM genomicentity_crossreferences gc
+			FROM genomicentity_crossreference gc
 			JOIN crossreference cr ON cr.id = gc.crossreferences_id
 			WHERE gc.genomicentity_id IN :geneIds
 			""";
