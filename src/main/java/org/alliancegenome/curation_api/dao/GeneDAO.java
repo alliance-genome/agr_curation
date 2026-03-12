@@ -212,7 +212,7 @@ public class GeneDAO extends BaseSQLDAO<Gene> {
 		}
 		String sql = """
 			SELECT g.id, be.primaryexternalid, fn.formattext, ot_taxon.name, sp.abbreviation,
-			       sym.displaytext, so.curie, so.name
+				sym.displaytext, so.curie, so.name
 			FROM gene g
 			JOIN biologicalentity be ON be.id = g.id AND be.obsolete = false AND be.internal = false
 			LEFT JOIN slotannotation sym ON sym.singlegene_id = g.id AND sym.slotannotationtype = 'GeneSymbolSlotAnnotation'
@@ -314,7 +314,7 @@ public class GeneDAO extends BaseSQLDAO<Gene> {
 			FROM allelegeneassociation aga
 			JOIN vocabularyterm v ON v.id = aga.relation_id AND v.name = 'is_allele_of'
 			JOIN slotannotation sa ON sa.singleallele_id = aga.alleleassociationsubject_id
-			  AND sa.slotannotationtype = 'AlleleSymbolSlotAnnotation'
+				AND sa.slotannotationtype = 'AlleleSymbolSlotAnnotation'
 			WHERE aga.allelegeneassociationobject_id IN :geneIds AND aga.internal = false AND aga.obsolete = false
 			""";
 		Query query = entityManager.createNativeQuery(sql);
@@ -387,7 +387,7 @@ public class GeneDAO extends BaseSQLDAO<Gene> {
 			FROM genetogeneorthology o
 			JOIN genetogeneorthologygenerated og ON og.id = o.id AND og.strictfilter = true
 			JOIN slotannotation sa ON sa.singlegene_id = o.objectgene_id
-			  AND sa.slotannotationtype = 'GeneSymbolSlotAnnotation'
+				AND sa.slotannotationtype = 'GeneSymbolSlotAnnotation'
 			WHERE o.subjectgene_id IN :geneIds
 			""";
 		Query query = entityManager.createNativeQuery(sql);
@@ -431,14 +431,14 @@ public class GeneDAO extends BaseSQLDAO<Gene> {
 			),
 			go_ancestors AS MATERIALIZED (
 				SELECT dgt.term_id, ancestor.id AS ancestor_id, ancestor.name,
-				       CASE WHEN ots.ontologyterm_id IS NOT NULL THEN true ELSE false END AS is_agr_slim
+					CASE WHEN ots.ontologyterm_id IS NOT NULL THEN true ELSE false END AS is_agr_slim
 				FROM distinct_go_terms dgt
 				JOIN ontologytermclosure otc ON otc.closuresubject_id = dgt.term_id
 				JOIN ontologyterm ancestor ON ancestor.id = otc.closureobject_id AND ancestor.ontologytermtype = 'GOTerm'
 				LEFT JOIN ontologyterm_subsets ots ON ots.ontologyterm_id = ancestor.id AND ots.subsets = 'goslim_agr'
 			)
 			SELECT gg.singlegene_id, ot.namespace, ot.name,
-			       CASE WHEN ots.ontologyterm_id IS NOT NULL THEN true ELSE false END
+				CASE WHEN ots.ontologyterm_id IS NOT NULL THEN true ELSE false END
 			FROM gene_go gg
 			JOIN ontologyterm ot ON ot.id = gg.goterm_id AND ot.ontologytermtype = 'GOTerm'
 			LEFT JOIN ontologyterm_subsets ots ON ots.ontologyterm_id = ot.id AND ots.subsets = 'goslim_agr'
@@ -472,14 +472,14 @@ public class GeneDAO extends BaseSQLDAO<Gene> {
 			),
 			cc_ancestors AS MATERIALIZED (
 				SELECT dct.term_id, ancestor.name,
-				       CASE WHEN ots.ontologyterm_id IS NOT NULL THEN true ELSE false END AS is_agr_slim
+					CASE WHEN ots.ontologyterm_id IS NOT NULL THEN true ELSE false END AS is_agr_slim
 				FROM distinct_cc_terms dct
 				JOIN ontologytermclosure otc ON otc.closuresubject_id = dct.term_id
 				JOIN ontologyterm ancestor ON ancestor.id = otc.closureobject_id AND ancestor.ontologytermtype = 'GOTerm'
 				LEFT JOIN ontologyterm_subsets ots ON ots.ontologyterm_id = ancestor.id AND ots.subsets = 'goslim_agr'
 			)
 			SELECT gcc.gene_id, cc_term.name,
-			       CASE WHEN ots.ontologyterm_id IS NOT NULL THEN true ELSE false END
+				CASE WHEN ots.ontologyterm_id IS NOT NULL THEN true ELSE false END
 			FROM gene_cc gcc
 			JOIN ontologyterm cc_term ON cc_term.id = gcc.term_id AND cc_term.ontologytermtype = 'GOTerm'
 			LEFT JOIN ontologyterm_subsets ots ON ots.ontologyterm_id = cc_term.id AND ots.subsets = 'goslim_agr'
