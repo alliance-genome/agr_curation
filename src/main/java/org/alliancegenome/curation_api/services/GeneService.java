@@ -394,11 +394,11 @@ public class GeneService extends SubmittedObjectCrudService<Gene, GeneDTO, GeneD
 
 			if (fullName != null) {
 				doc.setName(fullName);
-				if (speciesAbbrev != null) {
-					doc.setNameKey(fullName + " (" + speciesAbbrev + ")");
-				} else {
-					doc.setNameKey(fullName);
-				}
+			}
+			if (symbol != null && speciesAbbrev != null) {
+				doc.setNameKey(symbol + " (" + speciesAbbrev + ")");
+			} else if (symbol != null) {
+				doc.setNameKey(symbol);
 			}
 
 			if (taxonName != null) {
@@ -429,7 +429,14 @@ public class GeneService extends SubmittedObjectCrudService<Gene, GeneDTO, GeneD
 		for (Map.Entry<Long, GeneSearchResultDocument> entry : docMap.entrySet()) {
 			Long id = entry.getKey();
 			GeneSearchResultDocument doc = entry.getValue();
-			doc.setSynonyms(synonyms.getOrDefault(id, new HashSet<>()));
+			Set<String> geneSynonyms = new HashSet<>(synonyms.getOrDefault(id, new HashSet<>()));
+			if (doc.getName() != null) {
+				geneSynonyms.add(doc.getName());
+			}
+			if (doc.getSymbol() != null) {
+				geneSynonyms.add(doc.getSymbol());
+			}
+			doc.setSynonyms(geneSynonyms);
 			doc.setSecondaryIds(secondaryIds.getOrDefault(id, new HashSet<>()));
 			doc.setCrossReferences(crossRefs.getOrDefault(id, new HashSet<>()));
 			doc.setChromosomes(chromosomes.getOrDefault(id, new HashSet<>()));
