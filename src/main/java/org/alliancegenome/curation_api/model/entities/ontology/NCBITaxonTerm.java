@@ -34,7 +34,7 @@ public class NCBITaxonTerm extends OntologyTerm {
 
 	@Transient
 	@JsonIgnore
-	public String getGenusSpecies() {
+	public String getGenesSpecies() {
 		if (name == null) {
 			return null;
 		}
