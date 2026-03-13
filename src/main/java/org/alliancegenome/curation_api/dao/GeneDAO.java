@@ -539,8 +539,8 @@ public class GeneDAO extends BaseSQLDAO<Gene> {
 		String expandedSql = sql.replace(":geneIds", buildInClause(geneIds));
 		List<Object[]> results = new ArrayList<>();
 		try (Connection conn = dataSource.getConnection();
-			 PreparedStatement ps = conn.prepareStatement(expandedSql);
-			 ResultSet rs = ps.executeQuery()) {
+				PreparedStatement ps = conn.prepareStatement(expandedSql);
+				ResultSet rs = ps.executeQuery()) {
 			int colCount = rs.getMetaData().getColumnCount();
 			while (rs.next()) {
 				Object[] row = new Object[colCount];
