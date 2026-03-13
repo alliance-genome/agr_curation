@@ -17,7 +17,9 @@ import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @RequestScoped
 public class DoTermService extends BaseOntologyTermService<DOTerm, DoTermDAO> implements BasePopularityInterface {
 
@@ -38,40 +40,50 @@ public class DoTermService extends BaseOntologyTermService<DOTerm, DoTermDAO> im
 		}
 	}
 
-	public List<Long> getAllIds() {
-		return doTermDAO.getAllIds();
-	}
+	public List<DiseaseSearchResultDocument> buildAllSearchResultDocuments() {
+		log.info("Building all disease search result documents...");
 
-	public List<DOTerm> findByIds(List<Long> ids) {
-		return doTermDAO.findByIds(ids);
-	}
+		log.info("Loading gene symbol cache...");
+		Map<Long, String[]> geneSymbolCache = buildGeneSymbolCache();
+		log.info("Cached {} gene symbols", geneSymbolCache.size());
 
-	public List<DiseaseSearchResultDocument> buildSearchResultDocuments(List<Long> ids) {
-		List<Object[]> baseFields = doTermDAO.findBaseFieldsByIds(ids);
-		List<Object[]> synonymRows = doTermDAO.findSynonymsByIds(ids);
-		List<Object[]> crossRefRows = doTermDAO.findCrossReferencesByIds(ids);
-		List<Object[]> secondaryIdRows = doTermDAO.findSecondaryIdsByIds(ids);
-		List<Object[]> geneRows = doTermDAO.findGenesAndSpeciesByIds(ids);
-		List<Object[]> diseaseGroupRows = doTermDAO.findDiseaseGroupByIds(ids);
+		log.info("Loading base fields...");
+		List<Object[]> baseFields = doTermDAO.findAllBaseFields();
+		log.info("Loaded {} DOTerms", baseFields.size());
 
-		Map<Long, Set<String>> synonymsMap = groupToSet(synonymRows);
-		Map<Long, Set<String>> crossRefsMap = groupToSet(crossRefRows);
-		Map<Long, Set<String>> secondaryIdsMap = groupToSet(secondaryIdRows);
-		Map<Long, Set<String>> diseaseGroupMap = groupToSet(diseaseGroupRows);
+		log.info("Loading synonyms...");
+		Map<Long, Set<String>> synonymsMap = groupToSet(doTermDAO.findAllSynonyms());
 
-		// Gene rows: (doterm_id, gene_symbol, abbreviation, genus_species)
+		log.info("Loading cross references...");
+		Map<Long, Set<String>> crossRefsMap = groupToSet(doTermDAO.findAllCrossReferences());
+
+		log.info("Loading secondary IDs...");
+		Map<Long, Set<String>> secondaryIdsMap = groupToSet(doTermDAO.findAllSecondaryIds());
+
+		log.info("Loading disease groups...");
+		Map<Long, Set<String>> diseaseGroupMap = groupToSet(doTermDAO.findAllDiseaseGroups());
+
+		log.info("Loading disease-gene mappings...");
+		List<Object[]> geneIdRows = doTermDAO.findDiseaseGeneIds();
+		log.info("Loaded {} disease-gene pairs", geneIdRows.size());
+
 		Map<Long, Set<String>> genesMap = new HashMap<>();
 		Map<Long, Set<String>> speciesMap = new HashMap<>();
-		for (Object[] row : geneRows) {
+		for (Object[] row : geneIdRows) {
 			Long dotermId = (Long) row[0];
-			String symbol = (String) row[1];
-			String abbreviation = (String) row[2];
-			String genusSpecies = (String) row[3];
-
+			Long geneId = (Long) row[1];
+			String[] geneInfo = geneSymbolCache.get(geneId);
+			if (geneInfo == null) {
+				continue;
+			}
+			String symbol = geneInfo[0];
+			String abbreviation = geneInfo[1];
+			String genusSpecies = geneInfo[2];
 			genesMap.computeIfAbsent(dotermId, k -> new HashSet<>()).add(symbol + " (" + abbreviation + ")");
 			speciesMap.computeIfAbsent(dotermId, k -> new HashSet<>()).add(genusSpecies);
 		}
 
+		log.info("Assembling documents...");
 		List<DiseaseSearchResultDocument> docs = new ArrayList<>();
 		for (Object[] base : baseFields) {
 			Long id = (Long) base[0];
@@ -95,7 +107,21 @@ public class DoTermService extends BaseOntologyTermService<DOTerm, DoTermDAO> im
 			docs.add(doc);
 		}
 
+		log.info("Built {} disease search result documents", docs.size());
 		return docs;
+	}
+
+	private Map<Long, String[]> buildGeneSymbolCache() {
+		List<Object[]> rows = doTermDAO.findAllGeneSymbols();
+		Map<Long, String[]> cache = new HashMap<>();
+		for (Object[] row : rows) {
+			Long geneId = (Long) row[0];
+			String symbol = (String) row[1];
+			String abbreviation = (String) row[2];
+			String genusSpecies = (String) row[3];
+			cache.put(geneId, new String[]{symbol, abbreviation, genusSpecies});
+		}
+		return cache;
 	}
 
 	private Map<Long, Set<String>> groupToSet(List<Object[]> rows) {
