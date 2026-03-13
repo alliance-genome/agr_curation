@@ -35,7 +35,6 @@ public class DiseaseDocumentController implements DiseaseDocumentInterface {
 		SearchResponse<DOTerm> resp = doTermService.findByParams(pagination, params);
 		ResourceDescriptorPage diseaseResourceDescriptorPage = resourceDescriptorPageService.getPageForResourceDescriptor("DOID", "default");
 
-
 		List<String> sources = List.of("RGD", "MGI", "ZFIN", "FB", "WB", "SGD");
 		ArrayList<DiseaseSummaryDocument> list = new ArrayList<>();
 		if (resp.getResults() != null) {
@@ -70,27 +69,11 @@ public class DiseaseDocumentController implements DiseaseDocumentInterface {
 	}
 
 	@Override
-	public SearchResponse<DiseaseSearchResultDocument> findSearchResult(Integer page, Integer limit, HashMap<String, Object> params) {
-		if (params == null) {
-			params = new HashMap<>();
-		}
-
-		Pagination pagination = new Pagination(page, limit);
-		SearchResponse<DOTerm> resp = doTermService.findByParams(pagination, params);
-
-		ArrayList<DiseaseSearchResultDocument> list = new ArrayList<>();
-		if (resp.getResults() != null) {
-			DiseaseSummaryDocumentBuilder builder = new DiseaseSummaryDocumentBuilder();
-			for (DOTerm doTerm : resp.getResults()) {
-				DiseaseSearchResultDocument doc = builder.buildSearchResultDocument(doTerm);
-				list.add(doc);
-			}
-		}
-
+	public SearchResponse<DiseaseSearchResultDocument> findAll() {
+		List<DiseaseSearchResultDocument> list = doTermService.buildAllSearchResultDocuments();
 		SearchResponse<DiseaseSearchResultDocument> ret = new SearchResponse<>(list);
-		ret.setTotalResults(resp.getTotalResults());
+		ret.setTotalResults((long) list.size());
 		return ret;
 	}
-
 
 }

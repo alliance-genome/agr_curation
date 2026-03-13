@@ -46,4 +46,9 @@ public interface GeneDocumentInterface {
 	@JsonView(CurationView.GeneSummaryDocument.class)
 	SearchResponse<GeneSummaryDocument> findByIds(@RequestBody List<Long> ids);
 
+	@POST
+	@Path("/searchresult/byids")
+	@JsonView(CurationView.GeneSearchResultDocument.class)
+	SearchResponse<GeneSearchResultDocument> findSearchResultByIds(@RequestBody List<Long> ids);
+
 }

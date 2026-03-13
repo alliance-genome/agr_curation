@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.alliancegenome.curation_api.interfaces.document.GeneDocumentInterface;
-import org.alliancegenome.curation_api.model.document.builders.GeneDocumentBuilder;
 import org.alliancegenome.curation_api.model.document.es.GeneSearchResultDocument;
 import org.alliancegenome.curation_api.model.document.es.GeneSummaryDocument;
 import org.alliancegenome.curation_api.model.entities.Gene;
@@ -28,16 +27,15 @@ public class GeneDocumentController implements GeneDocumentInterface {
 		Pagination pagination = new Pagination(page, limit);
 		SearchResponse<Gene> resp = geneService.findByParams(pagination, params);
 
-		ArrayList<GeneSearchResultDocument> list = new ArrayList<>();
+		List<Long> ids = new ArrayList<>();
 		if (resp.getResults() != null) {
-			GeneDocumentBuilder builder = new GeneDocumentBuilder();
 			for (Gene gene : resp.getResults()) {
-				GeneSearchResultDocument doc = builder.buildSearchResultDocument(gene);
-				list.add(doc);
+				ids.add(gene.getId());
 			}
 		}
 
-		SearchResponse<GeneSearchResultDocument> ret = new SearchResponse<GeneSearchResultDocument>(list);
+		List<GeneSearchResultDocument> list = geneService.buildSearchResultDocuments(ids);
+		SearchResponse<GeneSearchResultDocument> ret = new SearchResponse<>(list);
 		ret.setTotalResults(resp.getTotalResults());
 		return ret;
 	}
@@ -53,14 +51,14 @@ public class GeneDocumentController implements GeneDocumentInterface {
 
 		ArrayList<GeneSummaryDocument> list = new ArrayList<>();
 		if (resp.getResults() != null) {
-			GeneDocumentBuilder builder = new GeneDocumentBuilder();
 			for (Gene gene : resp.getResults()) {
-				GeneSummaryDocument doc = builder.buildSummaryDocument(gene);
+				GeneSummaryDocument doc = new GeneSummaryDocument();
+				doc.setGene(gene);
 				list.add(doc);
 			}
 		}
 
-		SearchResponse<GeneSummaryDocument> ret = new SearchResponse<GeneSummaryDocument>(list);
+		SearchResponse<GeneSummaryDocument> ret = new SearchResponse<>(list);
 		ret.setTotalResults(resp.getTotalResults());
 		return ret;
 
@@ -68,7 +66,7 @@ public class GeneDocumentController implements GeneDocumentInterface {
 
 	@Override
 	public SearchResponse<Long> getAllIds() {
-		List<Long> ids = geneService.getAllGeneSummaryIds();
+		List<Long> ids = geneService.getAllIds();
 		SearchResponse<Long> response = new SearchResponse<>(ids);
 		response.setTotalResults((long) ids.size());
 		return response;
@@ -80,14 +78,22 @@ public class GeneDocumentController implements GeneDocumentInterface {
 
 		ArrayList<GeneSummaryDocument> list = new ArrayList<>();
 		if (genes != null) {
-			GeneDocumentBuilder builder = new GeneDocumentBuilder();
 			for (Gene gene : genes) {
-				GeneSummaryDocument doc = builder.buildSummaryDocument(gene);
+				GeneSummaryDocument doc = new GeneSummaryDocument();
+				doc.setGene(gene);
 				list.add(doc);
 			}
 		}
 
 		SearchResponse<GeneSummaryDocument> ret = new SearchResponse<>(list);
+		ret.setTotalResults((long) list.size());
+		return ret;
+	}
+
+	@Override
+	public SearchResponse<GeneSearchResultDocument> findSearchResultByIds(List<Long> ids) {
+		List<GeneSearchResultDocument> list = geneService.buildSearchResultDocuments(ids);
+		SearchResponse<GeneSearchResultDocument> ret = new SearchResponse<>(list);
 		ret.setTotalResults((long) list.size());
 		return ret;
 	}
