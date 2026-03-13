@@ -92,5 +92,28 @@ public class DiseaseDocumentController implements DiseaseDocumentInterface {
 		return ret;
 	}
 
+	@Override
+	public SearchResponse<Long> getAllIds() {
+		List<Long> ids = doTermService.getAllIds();
+		SearchResponse<Long> response = new SearchResponse<>(ids);
+		response.setTotalResults((long) ids.size());
+		return response;
+	}
+
+	@Override
+	public SearchResponse<DiseaseSearchResultDocument> findByIds(List<Long> ids) {
+		List<DOTerm> doTerms = doTermService.findByIds(ids);
+		ArrayList<DiseaseSearchResultDocument> list = new ArrayList<>();
+		if (doTerms != null) {
+			DiseaseSummaryDocumentBuilder builder = new DiseaseSummaryDocumentBuilder();
+			for (DOTerm doTerm : doTerms) {
+				DiseaseSearchResultDocument doc = builder.buildSearchResultDocument(doTerm);
+				list.add(doc);
+			}
+		}
+		SearchResponse<DiseaseSearchResultDocument> ret = new SearchResponse<>(list);
+		ret.setTotalResults((long) list.size());
+		return ret;
+	}
 
 }

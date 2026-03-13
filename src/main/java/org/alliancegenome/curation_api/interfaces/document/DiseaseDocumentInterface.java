@@ -1,6 +1,7 @@
 package org.alliancegenome.curation_api.interfaces.document;
 
 import java.util.HashMap;
+import java.util.List;
 
 import org.alliancegenome.curation_api.model.document.es.DiseaseSearchResultDocument;
 import org.alliancegenome.curation_api.model.document.es.DiseaseSummaryDocument;
@@ -13,6 +14,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DefaultValue;
+import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
@@ -35,5 +37,13 @@ public interface DiseaseDocumentInterface {
 	@JsonView(CurationView.DiseaseSearchResultDocument.class)
 	SearchResponse<DiseaseSearchResultDocument> findSearchResult(@DefaultValue("0") @QueryParam("page") Integer page, @DefaultValue("10") @QueryParam("limit") Integer limit, @RequestBody HashMap<String, Object> params);
 
+	@GET
+	@Path("/ids")
+	SearchResponse<Long> getAllIds();
+
+	@POST
+	@Path("/byids")
+	@JsonView(CurationView.DiseaseSearchResultDocument.class)
+	SearchResponse<DiseaseSearchResultDocument> findByIds(@RequestBody List<Long> ids);
 
 }

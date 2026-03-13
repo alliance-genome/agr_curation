@@ -1,5 +1,7 @@
 package org.alliancegenome.curation_api.services.ontology;
 
+import java.util.List;
+
 import org.alliancegenome.curation_api.dao.ontology.DoTermDAO;
 import org.alliancegenome.curation_api.interfaces.base.BasePopularityInterface;
 import org.alliancegenome.curation_api.model.entities.ontology.DOTerm;
@@ -28,5 +30,13 @@ public class DoTermService extends BaseOntologyTermService<DOTerm, DoTermDAO> im
 		if (term != null) {
 			term.setPopularity(popularity);
 		}
+	}
+
+	public List<Long> getAllIds() {
+		return doTermDAO.getAllIds();
+	}
+
+	public List<DOTerm> findByIds(List<Long> ids) {
+		return doTermDAO.findByIds(ids);
 	}
 }
