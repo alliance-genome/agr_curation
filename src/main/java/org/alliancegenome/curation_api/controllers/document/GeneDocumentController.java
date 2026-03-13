@@ -66,7 +66,7 @@ public class GeneDocumentController implements GeneDocumentInterface {
 
 	@Override
 	public SearchResponse<Long> getAllIds() {
-		List<Long> ids = geneService.getAllGeneSummaryIds();
+		List<Long> ids = geneService.getAllIds();
 		SearchResponse<Long> response = new SearchResponse<>(ids);
 		response.setTotalResults((long) ids.size());
 		return response;

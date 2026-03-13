@@ -329,8 +329,8 @@ public class GeneService extends SubmittedObjectCrudService<Gene, GeneDTO, GeneD
 		}
 	}
 
-	public List<Long> getAllGeneSummaryIds() {
-		return geneDAO.getAllGeneSummaryIds();
+	public List<Long> getAllIds() {
+		return geneDAO.getAllIds();
 	}
 
 	public List<Gene> findByIds(List<Long> ids) {

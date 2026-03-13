@@ -158,27 +158,7 @@ public class GeneDAO extends BaseSQLDAO<Gene> {
 		return list;
 	}
 
-	public Map<String, Long> getAllGeneIdsPerSpecies(Species species) {
-		String sql = """
-						select g.id, be.primaryexternalid, s.displaytext
-						from biologicalentity as be, gene as g, slotannotation as s
-						where be.taxon_id = :ID
-						AND be.id = g.id
-						AND s.singlegene_id = g.id
-						AND s.slotannotationtype = 'GeneSymbolSlotAnnotation'
-			""";
-		Query query = entityManager.createNativeQuery(sql);
-		query.setParameter("ID", species.getTaxon().getId());
-		List<Object[]> objects = query.getResultList();
-		Map<String, Long> ensemblGeneMap = new HashMap<>();
-		objects.forEach(object -> {
-			ensemblGeneMap.put((String) object[1], (Long) object[0]);
-			ensemblGeneMap.put((String) object[2], (Long) object[0]);
-		});
-		return ensemblGeneMap;
-	}
-
-	public List<Long> getAllGeneSummaryIds() {
+	public List<Long> getAllIds() {
 		String sql = """
 				SELECT g.id
 				FROM gene g
