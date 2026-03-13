@@ -21,6 +21,7 @@ import lombok.ToString;
 @Table(indexes = {
 	@Index(name = "ontologyclosure_closureSubject_index", columnList = "closureSubject_id"),
 	@Index(name = "ontologyclosure_closureObject_index", columnList = "closureObject_id"),
+	@Index(name = "ontologyclosure_subject_object_index", columnList = "closureSubject_id, closureObject_id"),
 	@Index(name = "ontologyclosure_createdby_index", columnList = "createdBy_id"),
 	@Index(name = "ontologyclosure_updatedby_index", columnList = "updatedBy_id") })
 public class OntologyTermClosure extends AuditedObject {
