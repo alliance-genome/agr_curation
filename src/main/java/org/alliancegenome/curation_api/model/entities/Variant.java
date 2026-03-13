@@ -124,11 +124,19 @@ public class Variant extends GenomicEntity {
 			// Insertion
 			String variantSequence = first.getVariantSequence();
 			String referenceSequence = first.getReferenceSequence();
+			if (referenceSequence == null && variantSequence == null) {
+				return null;
+			}
 			if ("SO:0000667".equals(variantTypeCurie)) {
 				return paddedBase + ">" + paddedBase + variantSequence;
 			} else if ("SO:0000159".equals(variantTypeCurie)) {
 				// Deletion
 				return paddedBase + referenceSequence + ">" + paddedBase;
+			} else if ("SO:1000032".equals(variantTypeCurie)) {
+				// Delins (deletion + insertion)
+				String left = paddedBase + (referenceSequence != null ? referenceSequence : "");
+				String right = paddedBase + (variantSequence != null ? variantSequence : "");
+				return left + ">" + right;
 			}
 			if (referenceSequence != null && variantSequence != null) {
 				return referenceSequence + ">" + variantSequence;
