@@ -280,7 +280,8 @@ public class GeneDAO extends BaseSQLDAO<Gene> {
 			return new HashMap<>();
 		}
 		return runJdbcSetQuery("""
-			SELECT ggla.geneassociationsubject_id, ac.name
+			SELECT ggla.geneassociationsubject_id,
+				CASE WHEN ac.name LIKE 'chr%' THEN substring(ac.name, 4) ELSE ac.name END
 			FROM genegenomiclocationassociation ggla
 			JOIN assemblycomponent ac ON ac.id = ggla.genegenomiclocationassociationobject_id
 			WHERE ggla.geneassociationsubject_id IN :geneIds
