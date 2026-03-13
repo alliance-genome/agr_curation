@@ -168,7 +168,7 @@ public class DoTermDAO extends BaseSQLDAO<DOTerm> {
 			SELECT ag.doterm_id, sa.displaytext AS gene_symbol, sp.abbreviation,
 				split_part(taxon.name, ' ', 1) || ' ' || split_part(taxon.name, ' ', 2) AS genus_species
 			FROM all_genes ag
-			JOIN slotannotation sa ON sa.singlegene_id = ag.gene_id AND sa.dtype = 'GeneSymbolSlotAnnotation'
+			JOIN slotannotation sa ON sa.singlegene_id = ag.gene_id AND sa.slotannotationtype = 'GeneSymbolSlotAnnotation'
 			JOIN biologicalentity be ON be.id = ag.gene_id
 			JOIN ontologyterm taxon ON taxon.id = be.taxon_id
 			JOIN species sp ON sp.taxon_id = taxon.id
