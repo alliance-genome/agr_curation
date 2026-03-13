@@ -20,17 +20,20 @@ import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
+import org.eclipse.microprofile.openapi.annotations.Operation;
 
 @Path("/agmalleleassociation")
 @Tag(name = "CRUD - AGM Allele Associations")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public interface AgmAlleleAssociationCrudInterface extends BaseIdCrudInterface<AgmAlleleAssociation> {
+	@Operation(summary = "Get agm allele association by component IDs", description = "Look up a specific agm allele association by its component entity IDs and relation")
 	@GET
 	@Path("/findBy")
 	@JsonView(CurationView.FieldsAndLists.class)
 	ObjectResponse<AgmAlleleAssociation> getAssociation(@QueryParam("agmId") Long agmId, @QueryParam("relationName") String relationName, @QueryParam("alleleId") Long alleleId);
 
+	@Operation(summary = "Bulk load agm allele association data", description = "Bulk load agm allele association records from a data provider submission")
 	@POST
 	@Path("/bulk/{dataProvider}/associationFile")
 	@JsonView(CurationView.FieldsAndLists.class)

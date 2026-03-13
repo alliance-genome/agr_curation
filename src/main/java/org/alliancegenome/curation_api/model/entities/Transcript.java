@@ -37,7 +37,7 @@ import lombok.ToString;
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(exclude = { "transcriptGenomicLocationAssociations", "transcriptGeneAssociations", "transcriptCodingSequenceAssociations", "transcriptExonAssociations" }, callSuper = true)
-@Schema(name = "Transcript", description = "POJO that represents the Transcript")
+@Schema(name = "Transcript", description = "Transcript: a transcript")
 @AGRCurationSchemaVersion(min = "2.8.1", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { GenomicEntity.class })
 @Table(indexes = {
 	@Index(name = "transcript_transcriptId_index", columnList = "transcriptId"),

@@ -14,9 +14,11 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.ToString;
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
 @Data
 @ToString(exclude = { "closureSubject", "closureObject" }, callSuper = true)
+@Schema(name = "OntologyTermClosure", description = "OntologyTermClosure: an ontology term closure")
 @Entity
 @Table(indexes = {
 	@Index(name = "ontologyclosure_closureSubject_index", columnList = "closureSubject_id"),

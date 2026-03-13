@@ -60,7 +60,7 @@ export const VocabulariesTable = () => {
 		return (
 			<>
 				<TrueFalseDropdown
-					options={obsoleteTerms}
+					options={obsoleteTerms?.terms || []}
 					editorChange={onObsoleteEditorValueChange}
 					props={props}
 					field={'obsolete'}

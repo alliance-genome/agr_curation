@@ -17,7 +17,7 @@ import lombok.ToString;
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(callSuper = true)
-@Schema(name = "BulkURLLoad", description = "POJO that represents the BulkURLLoad")
+@Schema(name = "BulkURLLoad", description = "BulkURLLoad: a bulk URL load")
 @AGRCurationSchemaVersion(min = "1.2.4", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { BulkScheduledLoad.class })
 @JsonTypeName
 public class BulkURLLoad extends BulkScheduledLoad {

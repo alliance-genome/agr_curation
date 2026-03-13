@@ -23,7 +23,7 @@ import lombok.ToString;
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(callSuper = true)
-@Schema(name = "AssemblyComponent", description = "POJO that represents the AssemblyComponent")
+@Schema(name = "AssemblyComponent", description = "AssemblyComponent: an assembly component")
 @AGRCurationSchemaVersion(min = "2.4.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { GenomicEntity.class })
 @Table(
 	indexes = {

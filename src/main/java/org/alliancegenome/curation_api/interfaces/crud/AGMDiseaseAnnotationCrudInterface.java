@@ -21,6 +21,7 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
+import org.eclipse.microprofile.openapi.annotations.Operation;
 
 @Path("/agm-disease-annotation")
 @Tag(name = "CRUD - AGM Disease Annotations")
@@ -28,6 +29,7 @@ import jakarta.ws.rs.core.MediaType;
 @Consumes(MediaType.APPLICATION_JSON)
 public interface AGMDiseaseAnnotationCrudInterface extends BaseIdCrudInterface<AGMDiseaseAnnotation>, BaseUpsertControllerInterface<AGMDiseaseAnnotation, AGMDiseaseAnnotationDTO> {
 
+	@Operation(summary = "Get AGM disease annotation by identifier", description = "Retrieve a single AGM disease annotation by its identifier")
 	@GET
 	@Path("/findBy/{identifier}")
 	@JsonView(CurationView.FieldsAndLists.class)
@@ -45,6 +47,7 @@ public interface AGMDiseaseAnnotationCrudInterface extends BaseIdCrudInterface<A
 	@JsonView(CurationView.DiseaseAnnotation.class)
 	ObjectResponse<AGMDiseaseAnnotation> create(AGMDiseaseAnnotation entity);
 
+	@Operation(summary = "Bulk load AGM disease annotation data", description = "Bulk load AGM disease annotation records from a data provider submission")
 	@POST
 	@Path("/bulk/{dataProvider}/annotationFile")
 	@JsonView(CurationView.FieldsAndLists.class)

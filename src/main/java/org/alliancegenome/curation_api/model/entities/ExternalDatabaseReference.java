@@ -17,7 +17,7 @@ import lombok.ToString;
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(callSuper = true)
-@Schema(name = "Reference", description = "POJO that represents the Reference")
+@Schema(name = "Reference", description = "ExternalDatabaseReference: an external database reference")
 @AGRCurationSchemaVersion(min = "2.10.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = {InformationContentEntity.class}, partial = true)
 public class ExternalDatabaseReference extends InformationContentEntity {
 

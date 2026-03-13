@@ -16,9 +16,10 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Schema(name = "ObjectListResponse", description = "POJO that represents the Object List Response")
+@Schema(name = "ObjectListResponse", description = "ObjectListResponse: wraps a list of entities with error/warning messages. The 'entities' field contains the returned list.")
 public class ObjectListResponse<E> extends APIResponse {
 
+	@Schema(description = "The list of returned entity objects")
 	@JsonView(CurationView.FieldsOnly.class)
 	private List<E> entities;
 

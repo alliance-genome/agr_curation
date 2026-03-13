@@ -9,6 +9,7 @@ import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
+import org.eclipse.microprofile.openapi.annotations.Operation;
 
 @Path("/ecoterm")
 @Tag(name = "CRUD - Ontology")
@@ -16,6 +17,7 @@ import jakarta.ws.rs.core.MediaType;
 @Consumes(MediaType.APPLICATION_JSON)
 public interface EcoTermCrudInterface extends BaseOntologyTermCrudInterface<ECOTerm> {
 
+	@Operation(summary = "Bulk load eco term data", description = "Bulk load eco term records from a data provider submission")
 	@GET
 	@Path("/updateAbbreviations")
 	void updateAbbreviations();

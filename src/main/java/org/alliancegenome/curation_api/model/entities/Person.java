@@ -25,7 +25,9 @@ import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
+@Schema(name = "Person", description = "Person: a person")
 @Entity
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
@@ -64,13 +66,11 @@ public class Person extends Agent {
 
 	@KeywordField(aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES)
 	@ElementCollection
-	@JsonView({ CurationView.FieldsAndLists.class, CurationView.PersonSettingView.class })
 	@JoinTable(indexes = @Index(columnList = "person_id"))
 	private List<String> emails;
 
 	@KeywordField(aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES)
 	@ElementCollection
-	@JsonView({ CurationView.FieldsAndLists.class, CurationView.PersonSettingView.class })
 	@JoinTable(indexes = @Index(columnList = "person_id"))
 	private List<String> oldEmails;
 
