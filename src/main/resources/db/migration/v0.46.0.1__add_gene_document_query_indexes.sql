@@ -3,7 +3,7 @@
 
 -- Q12/Q11/Q13/Q9/Q10b: ontologytermclosure covering index for closure joins.
 -- Enables index-only scan on (subject -> object) lookups, avoiding 9.9M row merge joins.
-CREATE INDEX IF NOT EXISTS ontologytermclosure_subject_object_index
+CREATE INDEX IF NOT EXISTS ontologyclosure_subject_object_index
 	ON public.ontologytermclosure USING btree (closuresubject_id, closureobject_id);
 
 -- Q7: allelegeneassociation composite index for gene -> allele lookups.
