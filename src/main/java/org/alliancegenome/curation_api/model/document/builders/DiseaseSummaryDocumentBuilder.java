@@ -13,8 +13,6 @@ import java.util.stream.Collectors;
 import org.alliancegenome.curation_api.model.document.es.DiseaseSearchResultDocument;
 import org.alliancegenome.curation_api.model.document.es.DiseaseSummaryDocument;
 import org.alliancegenome.curation_api.model.entities.AGMDiseaseAnnotation;
-import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
-import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.AlleleDiseaseAnnotation;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.Gene;
@@ -89,8 +87,6 @@ public class DiseaseSummaryDocumentBuilder {
 			assertedGenes.removeIf(gene -> !hasSpecies(gene));
 			doc.getGenes().addAll(assertedGenes.stream().map(this::getGeneName).collect(Collectors.toSet()));
 			allInvolvedGenes.addAll(assertedGenes);
-			doc.getAlleles().addAll(agmDiseaseAnnotations.stream().filter(agmDiseaseAnnotation -> agmDiseaseAnnotation.getInferredAllele() != null).filter(agmDiseaseAnnotation -> hasSpecies(agmDiseaseAnnotation.getInferredAllele())).map(alleleDiseaseAnnotation -> getAlleleName(alleleDiseaseAnnotation.getInferredAllele())).collect(Collectors.toSet()));
-			doc.setModels(agmDiseaseAnnotations.stream().map(AGMDiseaseAnnotation::getDiseaseAnnotationSubject).filter(this::hasSpecies).map(this::getModelName).collect(Collectors.toSet()));
 		}
 		// loop over AlleleDiseaseAnnotations
 		List<AlleleDiseaseAnnotation> alleleDiseaseAnnotations = doTerm.getPublicAlleleDiseaseAnnotations();
@@ -104,11 +100,6 @@ public class DiseaseSummaryDocumentBuilder {
 			assertedGenes.removeIf(gene -> !hasSpecies(gene));
 			allInvolvedGenes.addAll(assertedGenes);
 			doc.getGenes().addAll(assertedGenes.stream().map(this::getGeneName).collect(Collectors.toSet()));
-			doc.getAlleles().addAll(alleleDiseaseAnnotations.stream()
-				.filter(alleleDiseaseAnnotation -> alleleDiseaseAnnotation.getDiseaseAnnotationSubject().getAlleleSymbol() != null)
-				.filter(alleleDiseaseAnnotation -> hasSpecies(alleleDiseaseAnnotation.getDiseaseAnnotationSubject()))
-				.map(alleleDiseaseAnnotation -> getAlleleName(alleleDiseaseAnnotation.getDiseaseAnnotationSubject())).collect(Collectors.toSet())
-			);
 		}
 
 		// add orthologous genes for the all-involved genes (only
@@ -117,21 +108,9 @@ public class DiseaseSummaryDocumentBuilder {
 				doc.getGenes().add(getGeneName(orthology.getObjectGene()));
 				doc.getAssociatedSpecies().add(orthology.getObjectGene().getTaxon().getGenesSpecies());
 			}));
-		doc.setParentDiseaseNames(doTerm.getAncestors().stream().map(closure -> closure.getClosureObject().getName()).collect(Collectors.toSet()));
-		// add self to the list
-		doc.getParentDiseaseNames().add(doTerm.getName());
-
 		// calculate diseaseGroup, ie parents with subset DO_AGR_slim
 		doc.setDiseaseGroup(doTerm.getAncestors().stream().filter(closure -> closure.getClosureObject().getSubsets().contains("DO_AGR_slim")).map(closure -> closure.getClosureObject().getName()).collect(Collectors.toSet()));
 		return doc;
-	}
-
-	private String getAlleleName(Allele allele) {
-		return allele.getAlleleSymbol().getFormatText() + getSpeciesAbbrev(allele);
-	}
-
-	private String getModelName(AffectedGenomicModel model) {
-		return model.getAgmFullName().getFormatText() + getSpeciesAbbrev(model);
 	}
 
 	private String getGeneName(Gene gene) {
