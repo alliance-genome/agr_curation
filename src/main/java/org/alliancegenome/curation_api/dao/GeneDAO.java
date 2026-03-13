@@ -1,5 +1,9 @@
 package org.alliancegenome.curation_api.dao;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -7,6 +11,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import javax.sql.DataSource;
 
 import org.alliancegenome.curation_api.constants.EntityFieldConstants;
 import org.alliancegenome.curation_api.dao.base.BaseSQLDAO;
@@ -22,6 +28,7 @@ import jakarta.persistence.Query;
 @ApplicationScoped
 public class GeneDAO extends BaseSQLDAO<Gene> {
 
+	@Inject DataSource dataSource;
 	@Inject AlleleDiseaseAnnotationDAO alleleDiseaseAnnotationDAO;
 	@Inject AGMDiseaseAnnotationDAO agmDiseaseAnnotationDAO;
 	@Inject GeneDiseaseAnnotationDAO geneDiseaseAnnotationDAO;
@@ -205,12 +212,11 @@ public class GeneDAO extends BaseSQLDAO<Gene> {
 
 	// --- Batch SQL methods for GeneSearchResultDocument assembly ---
 
-	@SuppressWarnings("unchecked")
 	public List<Object[]> getBaseGeneInfo(List<Long> geneIds) {
 		if (CollectionUtils.isEmpty(geneIds)) {
 			return new ArrayList<>();
 		}
-		String sql = """
+		return runJdbcQuery("""
 			SELECT g.id, be.primaryexternalid, fn.formattext, ot_taxon.name, sp.abbreviation,
 				sym.displaytext, so.curie, so.name
 			FROM gene g
@@ -221,113 +227,85 @@ public class GeneDAO extends BaseSQLDAO<Gene> {
 			LEFT JOIN species sp ON sp.taxon_id = ot_taxon.id
 			LEFT JOIN ontologyterm so ON so.id = g.genetype_id
 			WHERE g.id IN :geneIds
-			""";
-		Query query = entityManager.createNativeQuery(sql);
-		query.setParameter("geneIds", geneIds);
-		return query.getResultList();
+			""", geneIds);
 	}
 
-	@SuppressWarnings("unchecked")
 	public Map<Long, Set<String>> getSoTermAncestors(List<Long> geneIds) {
 		if (CollectionUtils.isEmpty(geneIds)) {
 			return new HashMap<>();
 		}
-		String sql = """
+		return runJdbcSetQuery("""
 			SELECT g.id, ancestor_ot.name
 			FROM gene g
 			JOIN ontologytermclosure otc ON otc.closuresubject_id = g.genetype_id
 			JOIN ontologyterm ancestor_ot ON ancestor_ot.id = otc.closureobject_id AND ancestor_ot.ontologytermtype = 'SOTerm'
 			WHERE g.id IN :geneIds
-			""";
-		Query query = entityManager.createNativeQuery(sql);
-		query.setParameter("geneIds", geneIds);
-		return collectToSetMap(query.getResultList());
+			""", geneIds);
 	}
 
-	@SuppressWarnings("unchecked")
 	public Map<Long, Set<String>> getGeneSynonyms(List<Long> geneIds) {
 		if (CollectionUtils.isEmpty(geneIds)) {
 			return new HashMap<>();
 		}
-		String sql = """
+		return runJdbcSetQuery("""
 			SELECT singlegene_id, displaytext FROM slotannotation
 			WHERE slotannotationtype = 'GeneSynonymSlotAnnotation' AND singlegene_id IN :geneIds
-			""";
-		Query query = entityManager.createNativeQuery(sql);
-		query.setParameter("geneIds", geneIds);
-		return collectToSetMap(query.getResultList());
+			""", geneIds);
 	}
 
-	@SuppressWarnings("unchecked")
 	public Map<Long, Set<String>> getGeneSecondaryIds(List<Long> geneIds) {
 		if (CollectionUtils.isEmpty(geneIds)) {
 			return new HashMap<>();
 		}
-		String sql = """
+		return runJdbcSetQuery("""
 			SELECT singlegene_id, secondaryid FROM slotannotation
 			WHERE slotannotationtype = 'GeneSecondaryIdSlotAnnotation' AND singlegene_id IN :geneIds
-			""";
-		Query query = entityManager.createNativeQuery(sql);
-		query.setParameter("geneIds", geneIds);
-		return collectToSetMap(query.getResultList());
+			""", geneIds);
 	}
 
-	@SuppressWarnings("unchecked")
 	public Map<Long, Set<String>> getGeneCrossReferences(List<Long> geneIds) {
 		if (CollectionUtils.isEmpty(geneIds)) {
 			return new HashMap<>();
 		}
-		String sql = """
+		return runJdbcSetQuery("""
 			SELECT gc.genomicentity_id, cr.referencedcurie
 			FROM genomicentity_crossreference gc
 			JOIN crossreference cr ON cr.id = gc.crossreferences_id
 			WHERE gc.genomicentity_id IN :geneIds
-			""";
-		Query query = entityManager.createNativeQuery(sql);
-		query.setParameter("geneIds", geneIds);
-		return collectToSetMap(query.getResultList());
+			""", geneIds);
 	}
 
-	@SuppressWarnings("unchecked")
 	public Map<Long, Set<String>> getGeneChromosomes(List<Long> geneIds) {
 		if (CollectionUtils.isEmpty(geneIds)) {
 			return new HashMap<>();
 		}
-		String sql = """
+		return runJdbcSetQuery("""
 			SELECT ggla.geneassociationsubject_id, ac.name
 			FROM genegenomiclocationassociation ggla
 			JOIN assemblycomponent ac ON ac.id = ggla.genegenomiclocationassociationobject_id
 			WHERE ggla.geneassociationsubject_id IN :geneIds
-			""";
-		Query query = entityManager.createNativeQuery(sql);
-		query.setParameter("geneIds", geneIds);
-		return collectToSetMap(query.getResultList());
+			""", geneIds);
 	}
 
-	@SuppressWarnings("unchecked")
 	public Map<Long, Set<String>> getGeneAlleles(List<Long> geneIds) {
 		if (CollectionUtils.isEmpty(geneIds)) {
 			return new HashMap<>();
 		}
-		String sql = """
+		return runJdbcSetQuery("""
 			SELECT aga.allelegeneassociationobject_id, sa.formattext
 			FROM allelegeneassociation aga
 			JOIN vocabularyterm v ON v.id = aga.relation_id AND v.name = 'is_allele_of'
 			JOIN slotannotation sa ON sa.singleallele_id = aga.alleleassociationsubject_id
 				AND sa.slotannotationtype = 'AlleleSymbolSlotAnnotation'
 			WHERE aga.allelegeneassociationobject_id IN :geneIds AND aga.internal = false AND aga.obsolete = false
-			""";
-		Query query = entityManager.createNativeQuery(sql);
-		query.setParameter("geneIds", geneIds);
-		return collectToSetMap(query.getResultList());
+			""", geneIds);
 	}
 
-	@SuppressWarnings("unchecked")
 	public Map<Long, Set<String>> getGenePhenotypeStatements(List<Long> geneIds) {
 		if (CollectionUtils.isEmpty(geneIds)) {
 			return new HashMap<>();
 		}
-		String sql = """
+		return runJdbcSetQuery("""
 			SELECT gpa.phenotypeannotationsubject_id, pa.phenotypeannotationobject
 			FROM genephenotypeannotation gpa
 			JOIN phenotypeannotation pa ON pa.id = gpa.id
@@ -352,18 +330,14 @@ public class GeneDAO extends BaseSQLDAO<Gene> {
 			FROM agmphenotypeannotation_gene agmpg
 			JOIN phenotypeannotation pa ON pa.id = agmpg.agmphenotypeannotation_id
 			WHERE agmpg.assertedgenes_id IN :geneIds
-			""";
-		Query query = entityManager.createNativeQuery(sql);
-		query.setParameter("geneIds", geneIds);
-		return collectToSetMap(query.getResultList());
+			""", geneIds);
 	}
 
-	@SuppressWarnings("unchecked")
 	public List<Object[]> getDirectGeneDiseases(List<Long> geneIds) {
 		if (CollectionUtils.isEmpty(geneIds)) {
 			return new ArrayList<>();
 		}
-		String sql = """
+		return runJdbcQuery("""
 			SELECT gda.diseaseannotationsubject_id, do_term.name, ancestor_ot.name
 			FROM genediseaseannotation gda
 			JOIN diseaseannotation da ON da.id = gda.id
@@ -372,36 +346,28 @@ public class GeneDAO extends BaseSQLDAO<Gene> {
 			LEFT JOIN ontologyterm ancestor_ot ON ancestor_ot.id = otc.closureobject_id
 				AND ancestor_ot.ontologytermtype = 'DOTerm'
 			WHERE gda.diseaseannotationsubject_id IN :geneIds
-			""";
-		Query query = entityManager.createNativeQuery(sql);
-		query.setParameter("geneIds", geneIds);
-		return query.getResultList();
+			""", geneIds);
 	}
 
-	@SuppressWarnings("unchecked")
 	public Map<Long, Set<String>> getStrictOrthologySymbols(List<Long> geneIds) {
 		if (CollectionUtils.isEmpty(geneIds)) {
 			return new HashMap<>();
 		}
-		String sql = """
+		return runJdbcSetQuery("""
 			SELECT o.subjectgene_id, sa.displaytext
 			FROM genetogeneorthology o
 			JOIN genetogeneorthologygenerated og ON og.id = o.id AND og.strictfilter = true
 			JOIN slotannotation sa ON sa.singlegene_id = o.objectgene_id
 				AND sa.slotannotationtype = 'GeneSymbolSlotAnnotation'
 			WHERE o.subjectgene_id IN :geneIds
-			""";
-		Query query = entityManager.createNativeQuery(sql);
-		query.setParameter("geneIds", geneIds);
-		return collectToSetMap(query.getResultList());
+			""", geneIds);
 	}
 
-	@SuppressWarnings("unchecked")
 	public List<Object[]> getOrthologDiseases(List<Long> geneIds) {
 		if (CollectionUtils.isEmpty(geneIds)) {
 			return new ArrayList<>();
 		}
-		String sql = """
+		return runJdbcQuery("""
 			WITH ortho_diseases AS MATERIALIZED (
 				SELECT o.subjectgene_id, da.diseaseannotationobject_id AS term_id
 				FROM genetogeneorthology o
@@ -422,18 +388,14 @@ public class GeneDAO extends BaseSQLDAO<Gene> {
 			FROM ortho_diseases od
 			JOIN ontologyterm do_term ON do_term.id = od.term_id
 			LEFT JOIN ortho_disease_ancestors oda ON oda.term_id = od.term_id
-			""";
-		Query query = entityManager.createNativeQuery(sql);
-		query.setParameter("geneIds", geneIds);
-		return query.getResultList();
+			""", geneIds);
 	}
 
-	@SuppressWarnings("unchecked")
 	public List<Object[]> getGeneGoTerms(List<Long> geneIds) {
 		if (CollectionUtils.isEmpty(geneIds)) {
 			return new ArrayList<>();
 		}
-		String sql = """
+		return runJdbcQuery("""
 			WITH gene_go AS MATERIALIZED (
 				SELECT goa.singlegene_id, goa.goterm_id
 				FROM geneontologyannotation goa
@@ -460,18 +422,14 @@ public class GeneDAO extends BaseSQLDAO<Gene> {
 			FROM gene_go gg
 			JOIN ontologyterm ot ON ot.id = gg.goterm_id AND ot.ontologytermtype = 'GOTerm'
 			JOIN go_ancestors ga ON ga.term_id = gg.goterm_id
-			""";
-		Query query = entityManager.createNativeQuery(sql);
-		query.setParameter("geneIds", geneIds);
-		return query.getResultList();
+			""", geneIds);
 	}
 
-	@SuppressWarnings("unchecked")
 	public List<Object[]> getExpressionSubcellularCC(List<Long> geneIds) {
 		if (CollectionUtils.isEmpty(geneIds)) {
 			return new ArrayList<>();
 		}
-		String sql = """
+		return runJdbcQuery("""
 			WITH gene_cc AS MATERIALIZED (
 				SELECT gea.expressionannotationsubject_id AS gene_id, ans.cellularcomponentterm_id AS term_id
 				FROM geneexpressionannotation gea
@@ -500,18 +458,14 @@ public class GeneDAO extends BaseSQLDAO<Gene> {
 			SELECT gcc.gene_id, ca.name, ca.is_agr_slim
 			FROM gene_cc gcc
 			JOIN cc_ancestors ca ON ca.term_id = gcc.term_id
-			""";
-		Query query = entityManager.createNativeQuery(sql);
-		query.setParameter("geneIds", geneIds);
-		return query.getResultList();
+			""", geneIds);
 	}
 
-	@SuppressWarnings("unchecked")
 	public Map<Long, Set<String>> getExpressionAnatomical(List<Long> geneIds) {
 		if (CollectionUtils.isEmpty(geneIds)) {
 			return new HashMap<>();
 		}
-		String sql = """
+		return runJdbcSetQuery("""
 			WITH gene_anat AS MATERIALIZED (
 				SELECT gea.expressionannotationsubject_id AS gene_id, ans.anatomicalstructure_id AS term_id
 				FROM geneexpressionannotation gea
@@ -538,43 +492,32 @@ public class GeneDAO extends BaseSQLDAO<Gene> {
 			SELECT ga.gene_id, aa.name
 			FROM gene_anat ga
 			JOIN anat_ancestors aa ON aa.term_id = ga.term_id
-			""";
-		Query query = entityManager.createNativeQuery(sql);
-		query.setParameter("geneIds", geneIds);
-		return collectToSetMap(query.getResultList());
+			""", geneIds);
 	}
 
-	@SuppressWarnings("unchecked")
 	public List<Object[]> getWhereExpressedAndStages(List<Long> geneIds) {
 		if (CollectionUtils.isEmpty(geneIds)) {
 			return new ArrayList<>();
 		}
-		String sql = """
+		return runJdbcQuery("""
 			SELECT gea.expressionannotationsubject_id, gea.whereexpressedstatement, gea.whenexpressedstagename
 			FROM geneexpressionannotation gea
 			WHERE gea.expressionannotationsubject_id IN :geneIds
-			""";
-		Query query = entityManager.createNativeQuery(sql);
-		query.setParameter("geneIds", geneIds);
-		return query.getResultList();
+			""", geneIds);
 	}
 
-	@SuppressWarnings("unchecked")
 	public List<Object[]> getGeneDescriptions(List<Long> geneIds) {
 		if (CollectionUtils.isEmpty(geneIds)) {
 			return new ArrayList<>();
 		}
-		String sql = """
+		return runJdbcQuery("""
 			SELECT ben.submittedobject_id, vt.name, n.freetext
 			FROM biologicalentity_note ben
 			JOIN note n ON n.id = ben.relatednotes_id
 			JOIN vocabularyterm vt ON vt.id = n.notetype_id
 			WHERE ben.submittedobject_id IN :geneIds
 			AND vt.name IN ('automated_gene_description', 'MOD_provided_gene_description')
-			""";
-		Query query = entityManager.createNativeQuery(sql);
-		query.setParameter("geneIds", geneIds);
-		return query.getResultList();
+			""", geneIds);
 	}
 
 	private Map<Long, Set<String>> collectToSetMap(List<Object[]> rows) {
@@ -587,5 +530,43 @@ public class GeneDAO extends BaseSQLDAO<Gene> {
 			}
 		}
 		return map;
+	}
+
+	// --- Thread-safe JDBC query helpers (bypass request-scoped EntityManager) ---
+
+	public List<Object[]> runJdbcQuery(String sql, List<Long> geneIds) {
+		String expandedSql = sql.replace(":geneIds", buildInClause(geneIds));
+		List<Object[]> results = new ArrayList<>();
+		try (Connection conn = dataSource.getConnection();
+			 PreparedStatement ps = conn.prepareStatement(expandedSql);
+			 ResultSet rs = ps.executeQuery()) {
+			int colCount = rs.getMetaData().getColumnCount();
+			while (rs.next()) {
+				Object[] row = new Object[colCount];
+				for (int i = 0; i < colCount; i++) {
+					row[i] = rs.getObject(i + 1);
+				}
+				results.add(row);
+			}
+		} catch (SQLException e) {
+			throw new RuntimeException("JDBC query failed: " + e.getMessage(), e);
+		}
+		return results;
+	}
+
+	public Map<Long, Set<String>> runJdbcSetQuery(String sql, List<Long> geneIds) {
+		return collectToSetMap(runJdbcQuery(sql, geneIds));
+	}
+
+	private String buildInClause(List<Long> ids) {
+		StringBuilder sb = new StringBuilder("(");
+		for (int i = 0; i < ids.size(); i++) {
+			if (i > 0) {
+				sb.append(",");
+			}
+			sb.append(ids.get(i));
+		}
+		sb.append(")");
+		return sb.toString();
 	}
 }

@@ -8,6 +8,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.alliancegenome.curation_api.constants.EntityFieldConstants;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
@@ -360,23 +363,47 @@ public class GeneService extends SubmittedObjectCrudService<Gene, GeneDTO, GeneD
 			return new ArrayList<>();
 		}
 
-		// Run all batch queries
-		List<Object[]> baseInfoRows = geneDAO.getBaseGeneInfo(geneIds);
-		Map<Long, Set<String>> soAncestors = geneDAO.getSoTermAncestors(geneIds);
-		Map<Long, Set<String>> synonyms = geneDAO.getGeneSynonyms(geneIds);
-		Map<Long, Set<String>> secondaryIds = geneDAO.getGeneSecondaryIds(geneIds);
-		Map<Long, Set<String>> crossRefs = geneDAO.getGeneCrossReferences(geneIds);
-		Map<Long, Set<String>> chromosomes = geneDAO.getGeneChromosomes(geneIds);
-		Map<Long, Set<String>> alleles = geneDAO.getGeneAlleles(geneIds);
-		Map<Long, Set<String>> phenotypes = geneDAO.getGenePhenotypeStatements(geneIds);
-		List<Object[]> directDiseaseRows = geneDAO.getDirectGeneDiseases(geneIds);
-		Map<Long, Set<String>> strictOrthoSymbols = geneDAO.getStrictOrthologySymbols(geneIds);
-		List<Object[]> orthoDiseaseRows = geneDAO.getOrthologDiseases(geneIds);
-		List<Object[]> goRows = geneDAO.getGeneGoTerms(geneIds);
-		List<Object[]> subcellularRows = geneDAO.getExpressionSubcellularCC(geneIds);
-		Map<Long, Set<String>> anatomical = geneDAO.getExpressionAnatomical(geneIds);
-		List<Object[]> whereExpressedRows = geneDAO.getWhereExpressedAndStages(geneIds);
-		List<Object[]> descriptionRows = geneDAO.getGeneDescriptions(geneIds);
+		// Run all batch queries in parallel
+		ExecutorService executor = Executors.newFixedThreadPool(8);
+		CompletableFuture<List<Object[]>> baseInfoFuture = CompletableFuture.supplyAsync(() -> geneDAO.getBaseGeneInfo(geneIds), executor);
+		CompletableFuture<Map<Long, Set<String>>> soAncestorsFuture = CompletableFuture.supplyAsync(() -> geneDAO.getSoTermAncestors(geneIds), executor);
+		CompletableFuture<Map<Long, Set<String>>> synonymsFuture = CompletableFuture.supplyAsync(() -> geneDAO.getGeneSynonyms(geneIds), executor);
+		CompletableFuture<Map<Long, Set<String>>> secondaryIdsFuture = CompletableFuture.supplyAsync(() -> geneDAO.getGeneSecondaryIds(geneIds), executor);
+		CompletableFuture<Map<Long, Set<String>>> crossRefsFuture = CompletableFuture.supplyAsync(() -> geneDAO.getGeneCrossReferences(geneIds), executor);
+		CompletableFuture<Map<Long, Set<String>>> chromosomesFuture = CompletableFuture.supplyAsync(() -> geneDAO.getGeneChromosomes(geneIds), executor);
+		CompletableFuture<Map<Long, Set<String>>> allelesFuture = CompletableFuture.supplyAsync(() -> geneDAO.getGeneAlleles(geneIds), executor);
+		CompletableFuture<Map<Long, Set<String>>> phenotypesFuture = CompletableFuture.supplyAsync(() -> geneDAO.getGenePhenotypeStatements(geneIds), executor);
+		CompletableFuture<List<Object[]>> directDiseaseFuture = CompletableFuture.supplyAsync(() -> geneDAO.getDirectGeneDiseases(geneIds), executor);
+		CompletableFuture<Map<Long, Set<String>>> strictOrthoFuture = CompletableFuture.supplyAsync(() -> geneDAO.getStrictOrthologySymbols(geneIds), executor);
+		CompletableFuture<List<Object[]>> orthoDiseaseFuture = CompletableFuture.supplyAsync(() -> geneDAO.getOrthologDiseases(geneIds), executor);
+		CompletableFuture<List<Object[]>> goFuture = CompletableFuture.supplyAsync(() -> geneDAO.getGeneGoTerms(geneIds), executor);
+		CompletableFuture<List<Object[]>> subcellularFuture = CompletableFuture.supplyAsync(() -> geneDAO.getExpressionSubcellularCC(geneIds), executor);
+		CompletableFuture<Map<Long, Set<String>>> anatomicalFuture = CompletableFuture.supplyAsync(() -> geneDAO.getExpressionAnatomical(geneIds), executor);
+		CompletableFuture<List<Object[]>> whereExpressedFuture = CompletableFuture.supplyAsync(() -> geneDAO.getWhereExpressedAndStages(geneIds), executor);
+		CompletableFuture<List<Object[]>> descriptionFuture = CompletableFuture.supplyAsync(() -> geneDAO.getGeneDescriptions(geneIds), executor);
+
+		CompletableFuture.allOf(baseInfoFuture, soAncestorsFuture, synonymsFuture, secondaryIdsFuture,
+			crossRefsFuture, chromosomesFuture, allelesFuture, phenotypesFuture, directDiseaseFuture,
+			strictOrthoFuture, orthoDiseaseFuture, goFuture, subcellularFuture, anatomicalFuture,
+			whereExpressedFuture, descriptionFuture).join();
+		executor.shutdown();
+
+		List<Object[]> baseInfoRows = baseInfoFuture.join();
+		Map<Long, Set<String>> soAncestors = soAncestorsFuture.join();
+		Map<Long, Set<String>> synonyms = synonymsFuture.join();
+		Map<Long, Set<String>> secondaryIds = secondaryIdsFuture.join();
+		Map<Long, Set<String>> crossRefs = crossRefsFuture.join();
+		Map<Long, Set<String>> chromosomes = chromosomesFuture.join();
+		Map<Long, Set<String>> alleles = allelesFuture.join();
+		Map<Long, Set<String>> phenotypes = phenotypesFuture.join();
+		List<Object[]> directDiseaseRows = directDiseaseFuture.join();
+		Map<Long, Set<String>> strictOrthoSymbols = strictOrthoFuture.join();
+		List<Object[]> orthoDiseaseRows = orthoDiseaseFuture.join();
+		List<Object[]> goRows = goFuture.join();
+		List<Object[]> subcellularRows = subcellularFuture.join();
+		Map<Long, Set<String>> anatomical = anatomicalFuture.join();
+		List<Object[]> whereExpressedRows = whereExpressedFuture.join();
+		List<Object[]> descriptionRows = descriptionFuture.join();
 
 		// Build base documents from Q1
 		Map<Long, GeneSearchResultDocument> docMap = new HashMap<>();
