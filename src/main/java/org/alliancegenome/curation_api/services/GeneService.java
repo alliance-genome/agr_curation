@@ -364,7 +364,7 @@ public class GeneService extends SubmittedObjectCrudService<Gene, GeneDTO, GeneD
 		}
 
 		// Run all batch queries in parallel
-		ExecutorService executor = Executors.newFixedThreadPool(8);
+		ExecutorService executor = Executors.newFixedThreadPool(16);
 		CompletableFuture<List<Object[]>> baseInfoFuture = CompletableFuture.supplyAsync(() -> geneDAO.getBaseGeneInfo(geneIds), executor);
 		CompletableFuture<Map<Long, Set<String>>> soAncestorsFuture = CompletableFuture.supplyAsync(() -> geneDAO.getSoTermAncestors(geneIds), executor);
 		CompletableFuture<Map<Long, Set<String>>> synonymsFuture = CompletableFuture.supplyAsync(() -> geneDAO.getGeneSynonyms(geneIds), executor);
