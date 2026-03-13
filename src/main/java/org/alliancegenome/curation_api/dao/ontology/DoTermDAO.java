@@ -2,7 +2,6 @@ package org.alliancegenome.curation_api.dao.ontology;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.alliancegenome.curation_api.dao.base.BaseSQLDAO;
 import org.alliancegenome.curation_api.model.entities.ontology.DOTerm;
@@ -33,20 +32,6 @@ public class DoTermDAO extends BaseSQLDAO<DOTerm> {
 		});
 
 		return list;
-	}
-
-	public List<Long> getAllIds() {
-		String sql = """
-			SELECT id
-			FROM ontologyterm
-			WHERE ontologytermtype = 'DOTerm'
-			AND obsolete = false
-			AND internal = false
-			ORDER BY id
-			""";
-		Query query = entityManager.createNativeQuery(sql);
-		List<Object> results = query.getResultList();
-		return results.stream().map(obj -> (Long) obj).collect(Collectors.toList());
 	}
 
 	public List<Object[]> findAllBaseFields() {
