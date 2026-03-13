@@ -6,7 +6,6 @@ import java.util.stream.Collectors;
 
 import org.alliancegenome.curation_api.dao.base.BaseSQLDAO;
 import org.alliancegenome.curation_api.model.entities.ontology.DOTerm;
-import org.apache.commons.collections.CollectionUtils;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.Query;
@@ -48,20 +47,6 @@ public class DoTermDAO extends BaseSQLDAO<DOTerm> {
 		Query query = entityManager.createNativeQuery(sql);
 		List<Object> results = query.getResultList();
 		return results.stream().map(obj -> (Long) obj).collect(Collectors.toList());
-	}
-
-	public List<DOTerm> findByIds(List<Long> ids) {
-		if (CollectionUtils.isEmpty(ids)) {
-			return new ArrayList<>();
-		}
-		String jpql = """
-			SELECT DISTINCT d FROM DOTerm d
-			LEFT JOIN FETCH d.synonyms
-			WHERE d.id IN :ids
-			""";
-		return entityManager.createQuery(jpql, DOTerm.class)
-			.setParameter("ids", ids)
-			.getResultList();
 	}
 
 	public List<Object[]> findAllBaseFields() {
