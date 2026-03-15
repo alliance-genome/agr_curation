@@ -1,7 +1,6 @@
 package org.alliancegenome.curation_api.services;
 
 import java.util.List;
-import java.util.Map;
 
 import org.alliancegenome.curation_api.dao.GeneMolecularInteractionDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
