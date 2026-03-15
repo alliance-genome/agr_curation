@@ -1,6 +1,7 @@
 package org.alliancegenome.curation_api.services;
 
 import java.util.List;
+import java.util.Map;
 
 import org.alliancegenome.curation_api.dao.GeneGeneticInteractionDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
@@ -35,6 +36,10 @@ public class GeneGeneticInteractionService extends BaseEntityCrudService<GeneGen
 		return new ObjectResponse<GeneGeneticInteraction>(interaction);
 	}
 
+	public void preloadInteractionIds() {
+		geneGeneticInteractionValidator.setExistingInteractionMap(geneGeneticInteractionDAO.findInteractionIdMap());
+	}
+
 	public List<Long> getAllIds() {
 		return geneGeneticInteractionDAO.getAllIds();
 	}
@@ -46,9 +51,7 @@ public class GeneGeneticInteractionService extends BaseEntityCrudService<GeneGen
 	@Override
 	@Transactional
 	public ObjectResponse<GeneGeneticInteraction> upsert(PsiMiTabDTO dto, BackendBulkDataProvider backendBulkDataProvider) throws ValidationException {
-		ObjectResponse<GeneGeneticInteraction> resp = geneGeneticInteractionValidator.validateGeneGeneticInteractionFmsDTO(dto);
-		geneGeneticInteractionDAO.persist(resp.getEntity());
-		return resp;
+		return geneGeneticInteractionValidator.validateGeneGeneticInteractionFmsDTO(dto);
 	}
 
 }

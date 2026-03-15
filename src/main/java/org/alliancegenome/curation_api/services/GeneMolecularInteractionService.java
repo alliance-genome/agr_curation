@@ -1,6 +1,7 @@
 package org.alliancegenome.curation_api.services;
 
 import java.util.List;
+import java.util.Map;
 
 import org.alliancegenome.curation_api.dao.GeneMolecularInteractionDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
@@ -32,6 +33,10 @@ public class GeneMolecularInteractionService extends BaseEntityCrudService<GeneM
 	@Override
 	public ObjectResponse<GeneMolecularInteraction> getByIdentifier(String identifier) {
 		return new ObjectResponse<>(findByAlternativeFields(List.of("interactionId", "uniqueId"), identifier));
+	}
+
+	public void preloadInteractionIds() {
+		geneMolInteractionValidator.setExistingInteractionMap(geneMolecularInteractionDAO.findInteractionIdMap());
 	}
 
 	public List<Long> getAllIds() {
