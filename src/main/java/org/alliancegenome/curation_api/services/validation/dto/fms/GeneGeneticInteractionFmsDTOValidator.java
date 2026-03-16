@@ -1,12 +1,14 @@
 package org.alliancegenome.curation_api.services.validation.dto.fms;
 
 import java.util.List;
+import java.util.Map;
 
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.enums.PsiMiTabPrefixEnum;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
 import org.alliancegenome.curation_api.exceptions.ValidationException;
+import org.alliancegenome.curation_api.dao.GeneGeneticInteractionDAO;
 import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.GeneGeneticInteraction;
@@ -28,11 +30,17 @@ import jakarta.inject.Inject;
 public class GeneGeneticInteractionFmsDTOValidator extends GeneInteractionFmsDTOValidator {
 
 	@Inject GeneGeneticInteractionService geneGeneticInteractionService;
+	@Inject GeneGeneticInteractionDAO geneGeneticInteractionDAO;
 	@Inject AlleleService alleleService;
 	@Inject VocabularyTermService vocabularyTermService;
 	@Inject InteractionAnnotationsHelper interactionAnnotationsHelper;
 
+	private Map<String, long[]> existingInteractionMap;
 	private ObjectResponse<GeneGeneticInteraction> ggiResponse;
+
+	public void setExistingInteractionMap(Map<String, long[]> map) {
+		this.existingInteractionMap = map;
+	}
 
 	public ObjectResponse<GeneGeneticInteraction> validateGeneGeneticInteractionFmsDTO(PsiMiTabDTO dto) throws ValidationException {
 
@@ -75,10 +83,27 @@ public class GeneGeneticInteractionFmsDTOValidator extends GeneInteractionFmsDTO
 
 		String uniqueId = InteractionStringHelper.getGeneGeneticInteractionUniqueId(dto, interactorA, interactorB, interactionId, references, phenotypesOrTraits);
 
-		String searchValue = interactionId == null ? uniqueId : interactionId;
-		ObjectResponse<GeneGeneticInteraction> interactionResponse = geneGeneticInteractionService.getByIdentifier(searchValue);
-		if (interactionResponse != null) {
-			interaction = interactionResponse.getEntity();
+		// Fast path: use pre-loaded map to skip unchanged records or find existing by PK
+		if (existingInteractionMap != null && interactionId != null) {
+			long[] existing = existingInteractionMap.get(interactionId);
+			if (existing != null) {
+				long existingId = existing[0];
+				long existingUniqueIdHash = existing[1];
+				if (uniqueId != null && uniqueId.hashCode() == existingUniqueIdHash) {
+					interaction = new GeneGeneticInteraction();
+					interaction.setId(existingId);
+					ggiResponse.setEntity(interaction);
+					return ggiResponse;
+				}
+				interaction = geneGeneticInteractionDAO.find(existingId);
+			}
+		}
+		if (interaction == null) {
+			String searchValue = interactionId == null ? uniqueId : interactionId;
+			ObjectResponse<GeneGeneticInteraction> interactionResponse = geneGeneticInteractionService.getByIdentifier(searchValue);
+			if (interactionResponse != null) {
+				interaction = interactionResponse.getEntity();
+			}
 		}
 		if (interaction == null) {
 			interaction = new GeneGeneticInteraction();
@@ -106,7 +131,7 @@ public class GeneGeneticInteractionFmsDTOValidator extends GeneInteractionFmsDTO
 			throw new ObjectValidationException(dto, ggiResponse.getErrorMessages().values());
 		}
 		
-		ggiResponse.setEntity(interaction);
+		ggiResponse.setEntity(geneGeneticInteractionDAO.persist(interaction));
 
 		return ggiResponse;
 

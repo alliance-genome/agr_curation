@@ -72,11 +72,10 @@ public class BaseSQLDAO<E extends AuditedObject> extends BaseEntityDAO<E> {
 
 	@Transactional
 	public E persist(E entity) {
-		Log.debug("SqlDAO: persist: " + entity);
 		try {
 			entityManager.persist(entity);
 		} catch (Exception e) {
-			Log.error("Entity Persist Failed: " + entity);
+			Log.error("Entity Persist Failed: " + entity.getClass().getSimpleName() + " id=" + entity.getId());
 			throw e;
 		}
 		return entity;
@@ -84,11 +83,10 @@ public class BaseSQLDAO<E extends AuditedObject> extends BaseEntityDAO<E> {
 
 	@Transactional
 	public List<E> persist(List<E> entities) {
-		Log.debug("SqlDAO: persist: " + entities);
 		try {
 			entityManager.persist(entities);
 		} catch (Exception e) {
-			Log.error("Entity Persist Failed: " + entities);
+			Log.error("Entity Persist Failed: " + entities.getClass().getSimpleName());
 			throw e;
 		}
 		return entities;
@@ -96,11 +94,10 @@ public class BaseSQLDAO<E extends AuditedObject> extends BaseEntityDAO<E> {
 
 	@Transactional
 	public E merge(E entity) {
-		Log.debug("SqlDAO: merge: " + entity);
 		try {
 			entityManager.merge(entity);
 		} catch (Exception e) {
-			Log.error("Entity Persist Failed: " + entity);
+			Log.error("Entity Merge Failed: " + entity.getClass().getSimpleName() + " id=" + entity.getId());
 			throw e;
 		}
 		return entity;

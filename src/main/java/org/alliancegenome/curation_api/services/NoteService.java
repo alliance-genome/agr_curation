@@ -34,7 +34,11 @@ public class NoteService extends BaseEntityCrudService<Note, NoteDAO> {
 		if (dbEntity == null) {
 			return null;
 		}
-		return new ObjectResponse<Note>(noteDAO.persist(dbEntity));
+		dbEntity = noteDAO.persist(dbEntity);
+		if (dbEntity.getNoteType() != null && dbEntity.getNoteType().getSynonyms() != null) {
+			dbEntity.getNoteType().getSynonyms().size();
+		}
+		return new ObjectResponse<Note>(dbEntity);
 	}
 
 	public ObjectResponse<Note> validate(Note uiEntity) {
