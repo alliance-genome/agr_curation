@@ -60,6 +60,9 @@ public class LoadFileExecutor {
 	@Inject
 	SlackNotifier slackNotifier;
 
+	record IdObject(long id) {
+	}
+
 	protected void updateHistory(BulkLoadFileHistory history) {
 		bulkLoadFileHistoryDAO.merge(history);
 	}
@@ -322,7 +325,7 @@ public class LoadFileExecutor {
 			} catch (Exception e) {
 				e.printStackTrace();
 				history.incrementFailed(countType);
-				addException(history, new ObjectUpdateExceptionData("{ \"id\": " + id + "}", e.getMessage(), e.getStackTrace()));
+				addException(history, new ObjectUpdateExceptionData(new IdObject(id), e.getMessage(), e.getStackTrace()));
 			}
 			if (history.getErrorRate(countType) > 0.25) {
 				Log.error(countType + " failure rate > 25% aborting load");

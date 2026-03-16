@@ -10,6 +10,7 @@ import lombok.Data;
 public abstract class AVSParentDocument extends ESDocument {
 	protected Allele allele;
 	protected HashSet<String> geneIds;
+	protected String symbol;
 	protected String alterationType;
 	protected Integer alterationTypeSortOrder;
 	protected Boolean hasPhenotype;

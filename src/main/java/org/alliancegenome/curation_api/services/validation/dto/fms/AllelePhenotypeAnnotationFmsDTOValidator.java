@@ -1,6 +1,7 @@
 package org.alliancegenome.curation_api.services.validation.dto.fms;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
@@ -35,6 +36,8 @@ public class AllelePhenotypeAnnotationFmsDTOValidator extends PhenotypeAnnotatio
 	@Inject GenomicEntityService genomicEntityService;
 	@Inject PhenotypeAnnotationService phenotypeAnnotationService;
 	@Inject GenePhenotypeAnnotationXrefHelper xrefHelper;
+
+	private HashMap<String, Long> genomicEntityIdCache = new HashMap<>();
 
 	public AllelePhenotypeAnnotation validatePrimaryAnnotation(Allele subject, PhenotypeFmsDTO dto, BackendBulkDataProvider dataProvider) throws ObjectValidationException {
 
@@ -74,6 +77,26 @@ public class AllelePhenotypeAnnotationFmsDTOValidator extends PhenotypeAnnotatio
 	}
 
 	public List<AllelePhenotypeAnnotation> validateInferredOrAssertedEntities(Allele primaryAnnotationSubject, PhenotypeFmsDTO dto, BackendBulkDataProvider dataProvider, Set<Long> idsAdded) throws ValidationException {
+		// Fast skip: check if the inferred gene is already set using pre-loaded maps only
+		if (existingUniqueIds != null && inferredGeneIds != null && dataProvider.hasInferredGenePhenotypeAnnotations && StringUtils.isNotBlank(dto.getObjectId())) {
+			ObjectResponse<InformationContentEntity> quickRefResponse = validateReference(dto);
+			if (!quickRefResponse.hasErrors()) {
+				String quickRefString = quickRefResponse.getEntity() != null ? quickRefResponse.getEntity().getCurie() : null;
+				String uniqueId = AnnotationUniqueIdHelper.getPhenotypeAnnotationUniqueId(dto, primaryAnnotationSubject.getIdentifier(), quickRefString);
+				if (existingUniqueIds.containsKey(uniqueId)) {
+					Long existingInferredGeneId = inferredGeneIds.get(uniqueId);
+					Long objectEntityId = genomicEntityIdCache.computeIfAbsent(dto.getObjectId(), id -> {
+						GenomicEntity entity = genomicEntityService.findByIdentifierString(id);
+						return entity != null ? entity.getId() : null;
+					});
+					if (existingInferredGeneId != null && objectEntityId != null && existingInferredGeneId.equals(objectEntityId)) {
+						idsAdded.add(existingUniqueIds.get(uniqueId));
+						return new ArrayList<>();
+					}
+				}
+			}
+		}
+
 		ObjectResponse<AllelePhenotypeAnnotation> apaResponse = new ObjectResponse<AllelePhenotypeAnnotation>();
 
 		ObjectResponse<InformationContentEntity> refResponse = validateReference(dto);
@@ -81,8 +104,8 @@ public class AllelePhenotypeAnnotationFmsDTOValidator extends PhenotypeAnnotatio
 
 		InformationContentEntity reference = refResponse.getEntity();
 		String refString = reference == null ? null : reference.getCurie();
-		
-		List<AllelePhenotypeAnnotation> primaryAnnotations = findPrimaryAnnotations(allelePhenotypeAnnotationDAO, dto, primaryAnnotationSubject.getPrimaryExternalId(), refString);
+
+		List<AllelePhenotypeAnnotation> primaryAnnotations = findPrimaryAnnotations(allelePhenotypeAnnotationDAO, dto, primaryAnnotationSubject.getIdentifier(), refString);
 		
 		if (CollectionUtils.isEmpty(primaryAnnotations)) {
 
@@ -106,6 +129,23 @@ public class AllelePhenotypeAnnotationFmsDTOValidator extends PhenotypeAnnotatio
 			if (inferredOrAssertedEntity == null) {
 				apaResponse.addErrorMessage("objectId", ValidationConstants.INVALID_MESSAGE + " (" + dto.getObjectId() + ")");
 			} else if (inferredOrAssertedEntity instanceof Gene) {
+				boolean alreadySet = true;
+				for (AllelePhenotypeAnnotation primaryAnnotation : primaryAnnotations) {
+					if (dataProvider.hasInferredGenePhenotypeAnnotations) {
+						if (primaryAnnotation.getInferredGene() == null || !primaryAnnotation.getInferredGene().getId().equals(inferredOrAssertedEntity.getId())) {
+							alreadySet = false;
+							break;
+						}
+					} else if (dataProvider.hasAssertedGenePhenotypeAnnotations) {
+						if (primaryAnnotation.getAssertedGenes() == null || primaryAnnotation.getAssertedGenes().stream().noneMatch(g -> g.getId().equals(inferredOrAssertedEntity.getId()))) {
+							alreadySet = false;
+							break;
+						}
+					}
+				}
+				if (alreadySet) {
+					return new ArrayList<>();
+				}
 				Gene inferredOrAssertedGene = xrefHelper.addGenePhenotypeCrossReference(dataProvider, (Gene) inferredOrAssertedEntity);
 				for (AllelePhenotypeAnnotation primaryAnnotation : primaryAnnotations) {
 					if (dataProvider.hasInferredGenePhenotypeAnnotations) {
@@ -129,7 +169,7 @@ public class AllelePhenotypeAnnotationFmsDTOValidator extends PhenotypeAnnotatio
 		if (apaResponse.hasErrors()) {
 			throw new ObjectValidationException(dto, apaResponse.errorMessagesString());
 		}
-		
+
 		return primaryAnnotations;
 	}
 

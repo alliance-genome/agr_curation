@@ -22,13 +22,13 @@ import org.alliancegenome.curation_api.model.entities.Note;
 import org.alliancegenome.curation_api.model.entities.Organization;
 import org.alliancegenome.curation_api.model.entities.PredictedVariantConsequence;
 import org.alliancegenome.curation_api.model.entities.ResourceDescriptorPage;
+import org.alliancegenome.curation_api.model.entities.Transcript;
 import org.alliancegenome.curation_api.model.entities.Variant;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.associations.AlleleGeneAssociation;
 import org.alliancegenome.curation_api.model.entities.associations.CuratedVariantGenomicLocationAssociation;
-import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
-import org.alliancegenome.curation_api.model.entities.Transcript;
 import org.alliancegenome.curation_api.model.entities.associations.TranscriptGeneAssociation;
+import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.SOTerm;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.AlleleSymbolSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.AlleleSynonymSlotAnnotation;
@@ -125,10 +125,10 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 
 	public List<String> getAllAllelePrimaryExternalIds() {
 		String sql = """
-					SELECT be.primaryexternalid
-					FROM biologicalentity be, allele as a
-					WHERE be.id = a.id and be.primaryexternalid is not NULL
-				""";
+				SELECT be.primaryexternalid
+				FROM biologicalentity be, allele as a
+				WHERE be.id = a.id and be.primaryexternalid is not NULL
+			""";
 
 		Query query = entityManager.createNativeQuery(sql);
 		List<Object> objects = query.getResultList();
@@ -144,27 +144,27 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 	public SearchResponse<AlleleSummaryDTO> findAllelesForSummary(Pagination pagination, Map<String, Object> params) {
 
 		String baseCountQuery = """
-				SELECT count( a.id)
-				""";
+			SELECT count( a.id)
+			""";
 		String baseSelectQuery = """
-				SELECT
-				a.id,
-				b.primaryExternalId,
-				b.curie,
-				b.modInternalId,
-				s.formatText,
-				s.displayText,
-				ot.curie,
-				ot.name,
-				cr.referencedCurie,
-				cr.displayName,
-				rd.name,
-				rd.urltemplate,
-				org.id,
-				org.abbreviation,
-				org.fullname,
-				org.shortname
-				""";
+			SELECT
+			a.id,
+			b.primaryExternalId,
+			b.curie,
+			b.modInternalId,
+			s.formatText,
+			s.displayText,
+			ot.curie,
+			ot.name,
+			cr.referencedCurie,
+			cr.displayName,
+			rd.name,
+			rd.urltemplate,
+			org.id,
+			org.abbreviation,
+			org.fullname,
+			org.shortname
+			""";
 		// Build cursor condition for optimization
 		String cursorCondition = "";
 		boolean useCursorCondition = false;
@@ -174,16 +174,16 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 		}
 
 		String baseQuery = """
-				FROM Allele a
-				INNER JOIN BiologicalEntity b ON b.id = a.id AND b.obsolete = false AND b.internal = false
-				INNER JOIN SlotAnnotation s ON a.id = s.singleallele_id
-					AND s.slotannotationtype = 'AlleleSymbolSlotAnnotation'
-					AND s.formatText IS NOT NULL
-				INNER JOIN OntologyTerm ot ON ot.id = b.taxon_id
-				INNER JOIN CrossReference cr ON cr.id = b.dataprovidercrossreference_id
-				INNER JOIN resourceDescriptorPage rd ON rd.id = cr.resourcedescriptorpage_id
-				INNER JOIN organization org ON org.id = b.dataprovider_id
-				""" + cursorCondition;
+			FROM Allele a
+			INNER JOIN BiologicalEntity b ON b.id = a.id AND b.obsolete = false AND b.internal = false
+			INNER JOIN SlotAnnotation s ON a.id = s.singleallele_id
+				AND s.slotannotationtype = 'AlleleSymbolSlotAnnotation'
+				AND s.formatText IS NOT NULL
+			INNER JOIN OntologyTerm ot ON ot.id = b.taxon_id
+			INNER JOIN CrossReference cr ON cr.id = b.dataprovidercrossreference_id
+			INNER JOIN resourceDescriptorPage rd ON rd.id = cr.resourcedescriptorpage_id
+			INNER JOIN organization org ON org.id = b.dataprovider_id
+			""" + cursorCondition;
 
 		Query query;
 		if (pagination.getPage() == 0 && pagination.getLimit() == 0) {
@@ -203,7 +203,8 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 				query.setParameter("cursor", pagination.getCursor());
 			}
 
-			// Use cursor-based pagination if cursor is provided, otherwise fall back to offset
+			// Use cursor-based pagination if cursor is provided, otherwise fall back to
+			// offset
 			if (pagination.getCursor() != null) {
 				// For cursor-based pagination, we don't need OFFSET
 				query.setMaxResults(pagination.getLimit());
@@ -222,7 +223,7 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 
 		SearchResponse<AlleleSummaryDTO> response = new SearchResponse<>();
 		response.setResults(dtos);
-		response.setTotalResults((long) alleles.size());
+		response.setTotalResults(alleles.size());
 
 		// Set nextCursor for cursor-based pagination
 		if (!alleles.isEmpty() && pagination.getCursor() != null) {
@@ -235,11 +236,13 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 
 	public List<Long> getAllAlleleSummaryIds() {
 		String sql = """
-				SELECT a.id
-				FROM Allele a
-				INNER JOIN BiologicalEntity b ON b.id = a.id AND b.obsolete = false AND b.internal = false
-				ORDER BY a.id
-				""";
+			SELECT a.id
+			FROM Allele a
+			INNER JOIN BiologicalEntity b ON b.id = a.id AND b.obsolete = false AND b.internal = false
+			LEFT JOIN slotannotation sa ON sa.singleallele_id = a.id AND sa.slotannotationtype = 'AlleleFullNameSlotAnnotation'
+			WHERE sa.displaytext IS NULL OR sa.displaytext <> 'wild type'
+			ORDER BY a.id
+			""";
 
 		Query query = entityManager.createNativeQuery(sql);
 		List<Object> results = query.getResultList();
@@ -254,34 +257,34 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 		}
 
 		String selectQuery = """
-				SELECT
-				a.id,
-				b.primaryExternalId,
-				b.curie,
-				b.modInternalId,
-				s.formatText,
-				s.displayText,
-				ot.curie,
-				ot.name,
-				cr.referencedCurie,
-				cr.displayName,
-				rd.name,
-				rd.urltemplate,
-				org.id,
-				org.abbreviation,
-				org.fullname,
-				org.shortname
-				FROM Allele a
-				INNER JOIN BiologicalEntity b ON b.id = a.id
-				INNER JOIN SlotAnnotation s ON a.id = s.singleallele_id
-					AND s.slotannotationtype = 'AlleleSymbolSlotAnnotation'
-					AND s.formatText IS NOT NULL
-				INNER JOIN OntologyTerm ot ON ot.id = b.taxon_id
-				INNER JOIN CrossReference cr ON cr.id = b.dataprovidercrossreference_id
-				INNER JOIN resourceDescriptorPage rd ON rd.id = cr.resourcedescriptorpage_id
-				INNER JOIN organization org ON org.id = b.dataprovider_id
-				WHERE a.id IN :alleleIds
-				""";
+			SELECT
+			a.id,
+			b.primaryExternalId,
+			b.curie,
+			b.modInternalId,
+			s.formatText,
+			s.displayText,
+			ot.curie,
+			ot.name,
+			cr.referencedCurie,
+			cr.displayName,
+			rd.name,
+			rd.urltemplate,
+			org.id,
+			org.abbreviation,
+			org.fullname,
+			org.shortname
+			FROM Allele a
+			INNER JOIN BiologicalEntity b ON b.id = a.id
+			INNER JOIN SlotAnnotation s ON a.id = s.singleallele_id
+				AND s.slotannotationtype = 'AlleleSymbolSlotAnnotation'
+				AND s.formatText IS NOT NULL
+			INNER JOIN OntologyTerm ot ON ot.id = b.taxon_id
+			INNER JOIN CrossReference cr ON cr.id = b.dataprovidercrossreference_id
+			INNER JOIN resourceDescriptorPage rd ON rd.id = cr.resourcedescriptorpage_id
+			INNER JOIN organization org ON org.id = b.dataprovider_id
+			WHERE a.id IN :alleleIds
+			""";
 
 		Query query = entityManager.createNativeQuery(selectQuery);
 		query.setParameter("alleleIds", alleleIds);
@@ -293,7 +296,7 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 
 		SearchResponse<AlleleSummaryDTO> response = new SearchResponse<>();
 		response.setResults(dtos);
-		response.setTotalResults((long) alleles.size());
+		response.setTotalResults(alleles.size());
 		return response;
 	}
 
@@ -344,20 +347,18 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 	}
 
 	private List<AlleleSummaryDTO> enrichAllelesAndBuildDTOs(List<Allele> alleles) {
-		List<Long> alleleIds = alleles.stream()
-				.map(Allele::getId)
-				.collect(Collectors.toList());
+		List<Long> alleleIds = alleles.stream().map(Allele::getId).collect(Collectors.toList());
 
 		Map<Long, Allele> alleleMap = alleles.stream().collect(Collectors.toMap(Allele::getId, Function.identity()));
 
 		// Synonyms
 		String synonymQueryString = """
-				select singleallele_id, string_agg(displaytext,'||'), string_agg(formatText,'||')
-				from slotannotation
-				where slotannotationtype = 'AlleleSynonymSlotAnnotation'
-				and singleallele_id in :alleleIds
-				group by singleallele_id
-								""";
+			select singleallele_id, string_agg(displaytext,'||'), string_agg(formatText,'||')
+			from slotannotation
+			where slotannotationtype = 'AlleleSynonymSlotAnnotation'
+			and singleallele_id in :alleleIds
+			group by singleallele_id
+							""";
 		Query synonymQuery = entityManager.createNativeQuery(synonymQueryString);
 		synonymQuery.setParameter("alleleIds", alleleIds);
 		List<Object[]> synonymQueryResults = synonymQuery.getResultList();
@@ -368,63 +369,61 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 				String[] synonymArray = synonymList.split("\\|\\|");
 				String[] synonymArrayFormat = synonymListFormat.split("\\|\\|");
 				AtomicInteger index = new AtomicInteger(0);
-				List<AlleleSynonymSlotAnnotation> slotList = Arrays.stream(synonymArray).
-						map(synonym -> {
-							AlleleSynonymSlotAnnotation slot = new AlleleSynonymSlotAnnotation();
-							slot.setDisplayText(synonym);
-							slot.setFormatText(synonymArrayFormat[index.get()]);
-							index.incrementAndGet();
-							return slot;
-						}).toList();
+				List<AlleleSynonymSlotAnnotation> slotList = Arrays.stream(synonymArray).map(synonym -> {
+					AlleleSynonymSlotAnnotation slot = new AlleleSynonymSlotAnnotation();
+					slot.setDisplayText(synonym);
+					slot.setFormatText(synonymArrayFormat[index.get()]);
+					index.incrementAndGet();
+					return slot;
+				}).toList();
 				alleleMap.get(objects[0]).setAlleleSynonyms(slotList);
 			}
 		});
 
 		// Gene associations
 		String geneAssociationInfoQuery = """
-				select alleleassociationsubject_id as allele_id,
-					allelegeneassociationobject_id as gene_id,
-					be.primaryexternalid as gene_primary_id,
-					sa.displaytext as gene_symbol,
-					sa.formattext as gene_symbol_format,
-					ot.name as taxon_nameagain
-				from allelegeneassociation aga
-					join vocabularyterm v on v.id = aga.relation_id
-					join gene g on g.id = aga.allelegeneassociationobject_id
-					join biologicalentity be on be.id = g.id
-					join slotannotation sa on sa.singlegene_id = g.id and sa.slotannotationtype = 'GeneSymbolSlotAnnotation'
-					join OntologyTerm ot on ot.id=be.taxon_id
-				where alleleassociationsubject_id in :alleleIds
-				and aga.internal = false
-				and aga.obsolete = false
-				and v.name = 'is_allele_of';
-				""";
+			select alleleassociationsubject_id as allele_id,
+				allelegeneassociationobject_id as gene_id,
+				be.primaryexternalid as gene_primary_id,
+				sa.displaytext as gene_symbol,
+				sa.formattext as gene_symbol_format,
+				ot.name as taxon_nameagain
+			from allelegeneassociation aga
+				join vocabularyterm v on v.id = aga.relation_id
+				join gene g on g.id = aga.allelegeneassociationobject_id
+				join biologicalentity be on be.id = g.id
+				join slotannotation sa on sa.singlegene_id = g.id and sa.slotannotationtype = 'GeneSymbolSlotAnnotation'
+				join OntologyTerm ot on ot.id=be.taxon_id
+			where alleleassociationsubject_id in :alleleIds
+			and aga.internal = false
+			and aga.obsolete = false
+			and v.name = 'is_allele_of';
+			""";
 
 		Query geneAssociationQuery = entityManager.createNativeQuery(geneAssociationInfoQuery);
 		geneAssociationQuery.setParameter("alleleIds", alleleIds);
 		List<Object[]> geneAssociationResults = geneAssociationQuery.getResultList();
 
-		List<AlleleGeneAssociation> associationList =
-				geneAssociationResults.stream().map(objects -> {
-					Long alleleID = (Long) objects[0];
-					Allele allele = alleleMap.get(alleleID);
-					AlleleGeneAssociation association = new AlleleGeneAssociation();
-					association.setAlleleAssociationSubject(allele);
-					VocabularyTerm term = new VocabularyTerm();
-					term.setName("is_allele_of");
-					association.setRelation(term);
-					Gene gene = new Gene();
-					gene.setId((Long) objects[1]);
-					gene.setPrimaryExternalId((String) objects[2]);
+		List<AlleleGeneAssociation> associationList = geneAssociationResults.stream().map(objects -> {
+			Long alleleID = (Long) objects[0];
+			Allele allele = alleleMap.get(alleleID);
+			AlleleGeneAssociation association = new AlleleGeneAssociation();
+			association.setAlleleAssociationSubject(allele);
+			VocabularyTerm term = new VocabularyTerm();
+			term.setName("is_allele_of");
+			association.setRelation(term);
+			Gene gene = new Gene();
+			gene.setId((Long) objects[1]);
+			gene.setPrimaryExternalId((String) objects[2]);
 
-					GeneSymbolSlotAnnotation annotation = new GeneSymbolSlotAnnotation();
-					annotation.setDisplayText((String) objects[3]);
-					annotation.setFormatText((String) objects[4]);
-					gene.setGeneSymbol(annotation);
-					association.setAlleleGeneAssociationObject(gene);
-					allele.setAlleleGeneAssociations(List.of(association));
-					return association;
-				}).toList();
+			GeneSymbolSlotAnnotation annotation = new GeneSymbolSlotAnnotation();
+			annotation.setDisplayText((String) objects[3]);
+			annotation.setFormatText((String) objects[4]);
+			gene.setGeneSymbol(annotation);
+			association.setAlleleGeneAssociationObject(gene);
+			allele.setAlleleGeneAssociations(List.of(association));
+			return association;
+		}).toList();
 
 		Map<Allele, List<AlleleGeneAssociation>> map = associationList.stream().collect(Collectors.groupingBy(AlleleGeneAssociation::getAlleleAssociationSubject));
 		map.forEach((mapAllele, alleleGeneAssociations) -> {
@@ -456,10 +455,14 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 				be_g.primaryexternalid as gene_id,
 				cvg.id as cvg_id,
 				sa_g.displaytext as gene_symbol,
-				sa_g.formattext as gene_symbol_format
+				sa_g.formattext as gene_symbol_format,
+				ot_taxon.curie as taxon_curie,
+				ot_taxon.name as taxon_name
 			FROM allelevariantassociation ava
 				JOIN variant v ON v.id = ava.allelevariantassociationobject_id
 				JOIN ontologyterm o ON o.id = v.varianttype_id
+				JOIN biologicalentity be_v ON be_v.id = v.id
+				LEFT JOIN ontologyterm ot_taxon ON ot_taxon.id = be_v.taxon_id
 				JOIN curatedvariantgenomiclocation cvg ON cvg.variantassociationsubject_id = v.id
 				JOIN assemblycomponent ac ON cvg.variantgenomiclocationassociationobject_id = ac.id
 				LEFT JOIN predictedvariantconsequence pvc ON pvc.variantgenomiclocation_id = cvg.id
@@ -499,12 +502,17 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 				variantType.setName((String) row[2]);
 				variant.setVariantType(variantType);
 				variant.setCuratedVariantGenomicLocations(new ArrayList<>());
+				if (row[23] != null) {
+					NCBITaxonTerm taxon = new NCBITaxonTerm();
+					taxon.setCurie((String) row[23]);
+					taxon.setName((String) row[24]);
+					variant.setTaxon(taxon);
+				}
 				variantMap.put(variantId, variant);
 			}
 
 			// Find or create the genomic location
-			CuratedVariantGenomicLocationAssociation cvgla = variant.getCuratedVariantGenomicLocations().stream()
-				.filter(c -> cvgId.equals(c.getId())).findFirst().orElse(null);
+			CuratedVariantGenomicLocationAssociation cvgla = variant.getCuratedVariantGenomicLocations().stream().filter(c -> cvgId.equals(c.getId())).findFirst().orElse(null);
 			if (cvgla == null) {
 				cvgla = new CuratedVariantGenomicLocationAssociation();
 				cvgla.setId(cvgId);
@@ -524,8 +532,7 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 			}
 
 			// Find or create the predicted variant consequence
-			PredictedVariantConsequence pvc = cvgla.getPredictedVariantConsequences().stream()
-				.filter(p -> pvcId.equals(p.getId())).findFirst().orElse(null);
+			PredictedVariantConsequence pvc = cvgla.getPredictedVariantConsequences().stream().filter(p -> pvcId.equals(p.getId())).findFirst().orElse(null);
 			if (pvc == null) {
 				pvc = new PredictedVariantConsequence();
 				pvc.setId(pvcId);
@@ -655,49 +662,45 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 
 		// Phenotype existence
 		String phenotypeQueryString = """
-				SELECT DISTINCT phenotypeannotationsubject_id as allele_id
-				FROM allelephenotypeannotation
-				WHERE phenotypeannotationsubject_id IN :alleleIds
-				UNION
-				SELECT DISTINCT inferredallele_id as allele_id
-				FROM agmphenotypeannotation
-				WHERE inferredallele_id IN :alleleIds
-				UNION
-				SELECT DISTINCT assertedalleles_id as allele_id
-				FROM agmphenotypeannotation_allele
-				WHERE assertedalleles_id IN :alleleIds
-				""";
+			SELECT DISTINCT phenotypeannotationsubject_id as allele_id
+			FROM allelephenotypeannotation
+			WHERE phenotypeannotationsubject_id IN :alleleIds
+			UNION
+			SELECT DISTINCT inferredallele_id as allele_id
+			FROM agmphenotypeannotation
+			WHERE inferredallele_id IN :alleleIds
+			UNION
+			SELECT DISTINCT assertedalleles_id as allele_id
+			FROM agmphenotypeannotation_allele
+			WHERE assertedalleles_id IN :alleleIds
+			""";
 
 		Query phenotypeQuery = entityManager.createNativeQuery(phenotypeQueryString);
 		phenotypeQuery.setParameter("alleleIds", alleleIds);
 		List<Object> phenotypeResults = phenotypeQuery.getResultList();
 
-		Set<Long> allelesWithPhenotype = phenotypeResults.stream()
-				.map(obj -> (Long) obj)
-				.collect(Collectors.toSet());
+		Set<Long> allelesWithPhenotype = phenotypeResults.stream().map(obj -> (Long) obj).collect(Collectors.toSet());
 
 		// Disease existence
 		String diseaseQueryString = """
-				SELECT DISTINCT diseaseannotationsubject_id as allele_id
-				FROM allelediseaseannotation
-				WHERE diseaseannotationsubject_id IN :alleleIds
-				UNION
-				SELECT DISTINCT inferredallele_id as allele_id
-				FROM agmdiseaseannotation
-				WHERE inferredallele_id IN :alleleIds
-				UNION
-				SELECT DISTINCT assertedalleles_id as allele_id
-				FROM agmdiseaseannotation_allele
-				WHERE assertedalleles_id IN :alleleIds
-				""";
+			SELECT DISTINCT diseaseannotationsubject_id as allele_id
+			FROM allelediseaseannotation
+			WHERE diseaseannotationsubject_id IN :alleleIds
+			UNION
+			SELECT DISTINCT inferredallele_id as allele_id
+			FROM agmdiseaseannotation
+			WHERE inferredallele_id IN :alleleIds
+			UNION
+			SELECT DISTINCT assertedalleles_id as allele_id
+			FROM agmdiseaseannotation_allele
+			WHERE assertedalleles_id IN :alleleIds
+			""";
 
 		Query diseaseQuery = entityManager.createNativeQuery(diseaseQueryString);
 		diseaseQuery.setParameter("alleleIds", alleleIds);
 		List<Object> diseaseResults = diseaseQuery.getResultList();
 
-		Set<Long> allelesWithDisease = diseaseResults.stream()
-				.map(obj -> (Long) obj)
-				.collect(Collectors.toSet());
+		Set<Long> allelesWithDisease = diseaseResults.stream().map(obj -> (Long) obj).collect(Collectors.toSet());
 
 		// Build DTOs
 		List<AlleleSummaryDTO> dtos = new ArrayList<>();
@@ -710,16 +713,16 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 
 		// Notes
 		String notesQueryString = """
-				SELECT ben.submittedobject_id as allele_id,
-				n.freetext as note,
-				vt.id as notetype_id,
-				vt.name as notetype_name
-				from note n
-				join biologicalentity_note ben on ben.relatednotes_id = n.id
-				join vocabularyterm vt on vt.id = n.notetype_id
-				WHERE ben.submittedobject_id IN :alleleIds
-				and vt.name IN ('mutation_description', 'transgene_content_summary', 'transgene_construction_summary');
-				""";
+			SELECT ben.submittedobject_id as allele_id,
+			n.freetext as note,
+			vt.id as notetype_id,
+			vt.name as notetype_name
+			from note n
+			join biologicalentity_note ben on ben.relatednotes_id = n.id
+			join vocabularyterm vt on vt.id = n.notetype_id
+			WHERE ben.submittedobject_id IN :alleleIds
+			and vt.name IN ('mutation_description', 'transgene_content_summary', 'transgene_construction_summary');
+			""";
 		Query notesQueryExec = entityManager.createNativeQuery(notesQueryString);
 		notesQueryExec.setParameter("alleleIds", alleleIds);
 		List<Object[]> notesResults = notesQueryExec.getResultList();

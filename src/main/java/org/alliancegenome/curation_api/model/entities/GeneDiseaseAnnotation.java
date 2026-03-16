@@ -99,6 +99,6 @@ public class GeneDiseaseAnnotation extends DiseaseAnnotation {
 		if (diseaseAnnotationSubject.getTaxon() == null) {
 			return null;
 		}
-		return diseaseAnnotationSubject.getTaxon().getGenusSpecies();
+		return diseaseAnnotationSubject.getTaxon().getGenesSpecies();
 	}
 }

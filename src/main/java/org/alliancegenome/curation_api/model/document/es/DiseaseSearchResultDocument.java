@@ -21,20 +21,15 @@ public class DiseaseSearchResultDocument extends ESDocument {
 	private String curie;
 	private String definition;
 	String name;
-	Set<String> synonyms;
+	Set<String> synonyms = new HashSet<>();
 	String primaryKey;
-	Set<String> crossReferences;
-	Set<String> parentDiseaseNames;
-	Set<String> genes;
-	Set<String> diseaseGroup;
+	Set<String> crossReferences = new HashSet<>();
+	Set<String> genes = new HashSet<>();
+	Set<String> diseaseGroup = new HashSet<>();
 	Set<String> associatedSpecies = new HashSet<>();
 	@JsonProperty("name_key")
 	String nameKey;
 
-	Set<String> models = new HashSet<>();
-	Set<String> alleles = new HashSet<>();
-
 	Set<String> secondaryIds = new HashSet<>();
-
 
 }

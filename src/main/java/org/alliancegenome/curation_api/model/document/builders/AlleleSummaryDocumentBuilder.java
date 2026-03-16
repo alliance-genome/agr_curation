@@ -24,6 +24,9 @@ public class AlleleSummaryDocumentBuilder {
 		AlleleSummaryDocument doc = new AlleleSummaryDocument();
 
 		doc.setAllele(allele);
+		if (allele.getAlleleSymbol() != null) {
+			doc.setSymbol(allele.getAlleleSymbol().getDisplayText());
+		}
 
 		doc.setCrossReference(getCrossReference(allele, resourceDescriptorPageService));
 

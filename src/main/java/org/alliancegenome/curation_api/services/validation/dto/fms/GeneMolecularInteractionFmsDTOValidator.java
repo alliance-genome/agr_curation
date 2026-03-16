@@ -1,6 +1,7 @@
 package org.alliancegenome.curation_api.services.validation.dto.fms;
 
 import java.util.List;
+import java.util.Map;
 
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
@@ -30,7 +31,12 @@ public class GeneMolecularInteractionFmsDTOValidator extends GeneInteractionFmsD
 	@Inject VocabularyTermService vocabularyTermService;
 	@Inject GeneMolecularInteractionDAO geneMolecularInteractionDAO;
 
+	private Map<String, long[]> existingInteractionMap;
 	private ObjectResponse<GeneMolecularInteraction> gmiResponse;
+
+	public void setExistingInteractionMap(Map<String, long[]> map) {
+		this.existingInteractionMap = map;
+	}
 
 	public ObjectResponse<GeneMolecularInteraction> validateGeneMolecularInteractionFmsDTO(PsiMiTabDTO dto) throws ValidationException {
 
@@ -71,10 +77,29 @@ public class GeneMolecularInteractionFmsDTOValidator extends GeneInteractionFmsD
 
 		String uniqueId = InteractionStringHelper.getGeneMolecularInteractionUniqueId(dto, interactorA, interactorB, interactionId, references);
 
-		String searchValue = interactionId == null ? uniqueId : interactionId;
-		ObjectResponse<GeneMolecularInteraction> interactionResponse = geneMolecularInteractionService.getByIdentifier(searchValue);
-		if (interactionResponse != null) {
-			interaction = interactionResponse.getEntity();
+		// Fast path: use pre-loaded map to skip unchanged records or find existing by PK
+		if (existingInteractionMap != null && interactionId != null) {
+			long[] existing = existingInteractionMap.get(interactionId);
+			if (existing != null) {
+				long existingId = existing[0];
+				long existingUniqueIdHash = existing[1];
+				// Skip entirely if uniqueId hasn't changed
+				if (uniqueId != null && uniqueId.hashCode() == existingUniqueIdHash) {
+					interaction = new GeneMolecularInteraction();
+					interaction.setId(existingId);
+					gmiResponse.setEntity(interaction);
+					return gmiResponse;
+				}
+				// Changed -- load by PK instead of findByParams
+				interaction = geneMolecularInteractionDAO.find(existingId);
+			}
+		}
+		if (interaction == null) {
+			String searchValue = interactionId == null ? uniqueId : interactionId;
+			ObjectResponse<GeneMolecularInteraction> interactionResponse = geneMolecularInteractionService.getByIdentifier(searchValue);
+			if (interactionResponse != null) {
+				interaction = interactionResponse.getEntity();
+			}
 		}
 		if (interaction == null) {
 			interaction = new GeneMolecularInteraction();

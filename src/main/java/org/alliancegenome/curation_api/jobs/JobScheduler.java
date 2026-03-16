@@ -136,9 +136,10 @@ public class JobScheduler {
 	@Scheduled(every = "1m")
 	public void scheduleCronJobs() {
 		IndexProcessingEvent event = indexProcessingWebsocket.getEvent();
-		Boolean blockedByMassIndexer = true;
-		if (event != null && event instanceof EndIndexProcessingEvent) {
-			blockedByMassIndexer = false;
+		boolean blockedByMassIndexer = event != null && !(event instanceof EndIndexProcessingEvent);
+
+		if (blockedByMassIndexer) {
+			Log.info("Scheduled events blocked by mass indexer");
 		}
 
 		if (loadSchedulingEnabled && !blockedByMassIndexer) {

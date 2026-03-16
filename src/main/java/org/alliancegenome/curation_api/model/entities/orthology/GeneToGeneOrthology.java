@@ -33,7 +33,8 @@ import lombok.ToString;
 	@Index(name = "genetogeneorthology_createdby_index", columnList = "createdBy_id"),
 	@Index(name = "genetogeneorthology_updatedby_index", columnList = "updatedBy_id"),
 	@Index(name = "genetogeneorthology_subjectgene_index", columnList = "subjectgene_id"),
-	@Index(name = "genetogeneorthology_objectgene_index", columnList = "objectgene_id")
+	@Index(name = "genetogeneorthology_objectgene_index", columnList = "objectgene_id"),
+	@Index(name = "genetogeneorthology_subject_object_index", columnList = "subjectgene_id, objectgene_id")
 })
 public class GeneToGeneOrthology extends AuditedObject {
 

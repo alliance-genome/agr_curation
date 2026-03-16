@@ -186,13 +186,15 @@ public class PredictedVariantConsequence extends AuditedObject {
 	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	@JsonView({CurationView.FieldsOnly.class, CurationView.VariantView.class, CurationView.AlleleSummaryDocument.class, CurationView.VariantSummaryDocument.class, CurationView.SequenceSummaryDocument.class})
 	public String getIntronExonLocation() {
-		if (exons == null && introns == null) {
+		boolean hasExons = exons != null && !exons.isEmpty();
+		boolean hasIntrons = introns != null && !introns.isEmpty();
+		if (!hasExons && !hasIntrons) {
 			return null;
 		}
-		if (introns == null) {
+		if (!hasIntrons) {
 			return "Exon " + exons;
 		}
-		if (exons == null) {
+		if (!hasExons) {
 			return "Intron " + introns;
 		}
 		return "Exon " + exons + " : " + "Intron " + introns;

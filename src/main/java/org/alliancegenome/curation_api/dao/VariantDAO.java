@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.alliancegenome.curation_api.dao.base.BaseSQLDAO;
 import org.alliancegenome.curation_api.model.entities.Variant;
+import org.alliancegenome.curation_api.response.ObjectListResponse;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.Query;
@@ -32,5 +33,21 @@ public class VariantDAO extends BaseSQLDAO<Variant> {
 		});
 		
 		return list;
+	}
+
+	public ObjectListResponse<String> getAllVariantNames() {
+
+		String sql = """
+				SELECT DISTINCT hgvs from curatedvariantgenomiclocation
+			""";
+		Query query = entityManager.createNativeQuery(sql);
+		List<Object> objects = query.getResultList();
+		List<String> hgvsList = new ArrayList<>();
+		objects.forEach(object -> {
+			hgvsList.add((String) object);
+		});
+		ObjectListResponse<String> ret = new ObjectListResponse<>();
+		ret.setEntities(hgvsList);
+		return ret;
 	}
 }

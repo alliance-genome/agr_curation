@@ -114,7 +114,7 @@ public class HTPExpressionDatasetAnnotation extends AuditedObject {
 	@Fetch(FetchMode.SELECT)
 	@JsonView({ CurationView.FieldsOnly.class })
 	protected Organization dataProvider;
-	
+
 	@IndexedEmbedded(includePaths = {"displayName", "referencedCurie", "displayName_keyword", "referencedCurie_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@OneToOne(orphanRemoval = true)

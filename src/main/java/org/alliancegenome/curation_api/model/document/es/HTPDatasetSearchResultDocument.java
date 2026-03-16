@@ -6,7 +6,6 @@ import org.alliancegenome.curation_api.view.CurationView;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
-import jakarta.json.bind.annotation.JsonbProperty;
 import lombok.Data;
 
 @Data
@@ -15,6 +14,7 @@ public class HTPDatasetSearchResultDocument extends ESDocument {
 
 	{
 		category = "htp_dataset_search_result";
+		searchable = true;
 	}
 
 	private String dataProvider;
@@ -23,7 +23,6 @@ public class HTPDatasetSearchResultDocument extends ESDocument {
 	private String species;
 	private String summary;
 	private String href;
-	@JsonbProperty("name_key")
 	private String nameKey;
 	private Set<String> tags;
 	private Set<String> variantType;

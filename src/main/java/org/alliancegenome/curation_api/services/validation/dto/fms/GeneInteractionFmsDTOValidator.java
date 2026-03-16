@@ -187,36 +187,43 @@ public class GeneInteractionFmsDTOValidator extends BaseDTOValidator {
 		if (prefix.isModPrefix) {
 			allianceGene = getGeneFromCache(convertedCurie);
 		} else {
-			String taxonCurie = InteractionStringHelper.getAllianceTaxonCurie(psiMiTabTaxonCurie);
-			if (taxonCurie == null) {
-				response.addErrorMessage("taxon", ValidationConstants.INVALID_MESSAGE + " (expecting string starting taxid:<suffix>, got " + psiMiTabTaxonCurie + ")");
-				return response;
-			}
-			NCBITaxonTerm taxon = ncbiTaxonTermService.getByCurie(taxonCurie).getEntity();
-			if (taxon == null) {
-				response.addErrorMessage("taxon", ValidationConstants.INVALID_MESSAGE + " (" + taxonCurie + " not found)");
-				return response;
-			}
+			String cacheKey = convertedCurie + "|" + psiMiTabTaxonCurie;
+			if (geneCache.containsKey(cacheKey)) {
+				allianceGene = geneCache.get(cacheKey);
+			} else {
+				String taxonCurie = InteractionStringHelper.getAllianceTaxonCurie(psiMiTabTaxonCurie);
+				if (taxonCurie == null) {
+					response.addErrorMessage("taxon", ValidationConstants.INVALID_MESSAGE + " (expecting string starting taxid:<suffix>, got " + psiMiTabTaxonCurie + ")");
+					return response;
+				}
+				NCBITaxonTerm taxon = ncbiTaxonTermService.getByCurie(taxonCurie).getEntity();
+				if (taxon == null) {
+					response.addErrorMessage("taxon", ValidationConstants.INVALID_MESSAGE + " (" + taxonCurie + " not found)");
+					return response;
+				}
 
-			SearchResponse<Gene> searchResponse = geneService.findByField("crossReferences.referencedCurie", convertedCurie);
-			if (searchResponse != null) {
-				// Need to check that returned gene is non-obsolete and belongs to MOD corresponding to taxon
-				for (Gene searchResult : searchResponse.getResults()) {
-					if (!searchResult.getObsolete()) {
-						String resultDataProviderCoreGenus = BackendBulkDataProvider.getCoreGenus(searchResult.getDataProvider().getAbbreviation());
-						if (taxon.getName().startsWith(resultDataProviderCoreGenus + " ")) {
-							allianceGene = searchResult;
-							break;
-						}
-						if (StringUtils.equals(taxonCurie, "NCBITaxon:9606") && StringUtils.equals(searchResult.getDataProvider().getAbbreviation(), "RGD")) {
-							allianceGene = searchResult;
-							break;
-						}
-						if (StringUtils.equals(taxonCurie, "NCBITaxon:2697049") && StringUtils.equals(searchResult.getDataProvider().getAbbreviation(), "Alliance")) {
-							allianceGene = searchResult;
-							break;
+				SearchResponse<Gene> searchResponse = geneService.findByField("crossReferences.referencedCurie", convertedCurie);
+				if (searchResponse != null) {
+					for (Gene searchResult : searchResponse.getResults()) {
+						if (!searchResult.getObsolete()) {
+							String resultDataProviderCoreGenus = BackendBulkDataProvider.getCoreGenus(searchResult.getDataProvider().getAbbreviation());
+							if (taxon.getName().startsWith(resultDataProviderCoreGenus + " ")) {
+								allianceGene = searchResult;
+								break;
+							}
+							if (StringUtils.equals(taxonCurie, "NCBITaxon:9606") && StringUtils.equals(searchResult.getDataProvider().getAbbreviation(), "RGD")) {
+								allianceGene = searchResult;
+								break;
+							}
+							if (StringUtils.equals(taxonCurie, "NCBITaxon:2697049") && StringUtils.equals(searchResult.getDataProvider().getAbbreviation(), "Alliance")) {
+								allianceGene = searchResult;
+								break;
+							}
 						}
 					}
+				}
+				if (allianceGene != null) {
+					geneCache.put(cacheKey, allianceGene);
 				}
 			}
 		}

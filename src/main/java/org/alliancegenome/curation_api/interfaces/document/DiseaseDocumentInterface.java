@@ -13,6 +13,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DefaultValue;
+import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
@@ -30,10 +31,9 @@ public interface DiseaseDocumentInterface {
 	@JsonView(CurationView.DiseaseSummaryDocument.class)
 	SearchResponse<DiseaseSummaryDocument> findSummary(@DefaultValue("0") @QueryParam("page") Integer page, @DefaultValue("10") @QueryParam("limit") Integer limit, @RequestBody HashMap<String, Object> params);
 
-	@POST
-	@Path("/searchresult")
+	@GET
+	@Path("/all")
 	@JsonView(CurationView.DiseaseSearchResultDocument.class)
-	SearchResponse<DiseaseSearchResultDocument> findSearchResult(@DefaultValue("0") @QueryParam("page") Integer page, @DefaultValue("10") @QueryParam("limit") Integer limit, @RequestBody HashMap<String, Object> params);
-
+	SearchResponse<DiseaseSearchResultDocument> findAll();
 
 }
