@@ -50,6 +50,11 @@ public class AgmAlleleAssociationService extends BaseAssociationDTOCrudService<A
 		return agmAlleleAssociationDtoValidator.validateAgmAlleleAssociationDTO(dto, dataProvider);
 	}
 
+	public void preloadAssociationKeys(BackendBulkDataProvider dataProvider) {
+		Map<String, Long>[] keys = agmAlleleAssociationDAO.findAssociationKeysByDataProvider(dataProvider.sourceOrganization);
+		agmAlleleAssociationDtoValidator.preloadAssociationKeys(keys[0], keys[1]);
+	}
+
 	public List<Long> getAssociationsByDataProvider(BackendBulkDataProvider dataProvider) {
 		Map<String, Object> params = new HashMap<>();
 		params.put(EntityFieldConstants.AGM_ASSOCIATION_SUBJECT_DATA_PROVIDER, dataProvider.sourceOrganization);

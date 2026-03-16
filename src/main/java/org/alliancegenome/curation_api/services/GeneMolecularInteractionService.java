@@ -34,6 +34,10 @@ public class GeneMolecularInteractionService extends BaseEntityCrudService<GeneM
 		return new ObjectResponse<>(findByAlternativeFields(List.of("interactionId", "uniqueId"), identifier));
 	}
 
+	public void preloadInteractionIds() {
+		geneMolInteractionValidator.setExistingInteractionMap(geneMolecularInteractionDAO.findInteractionIdMap());
+	}
+
 	public List<Long> getAllIds() {
 		return geneMolecularInteractionDAO.getAllIds();
 	}

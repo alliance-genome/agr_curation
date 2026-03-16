@@ -2,8 +2,8 @@ package org.alliancegenome.curation_api.services.validation.dto.associations;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-import org.alliancegenome.curation_api.constants.EntityFieldConstants;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.associations.AgmAlleleAssociationDAO;
@@ -17,7 +17,6 @@ import org.alliancegenome.curation_api.model.entities.associations.AgmAlleleAsso
 import org.alliancegenome.curation_api.model.entities.ontology.GENOTerm;
 import org.alliancegenome.curation_api.model.ingest.dto.associations.AgmAlleleAssociationDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
-import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.AffectedGenomicModelService;
 import org.alliancegenome.curation_api.services.AlleleService;
 import org.alliancegenome.curation_api.services.VocabularyTermService;
@@ -41,6 +40,18 @@ public class AgmAlleleAssociationDTOValidator extends AuditedObjectDTOValidator<
 	@Inject
 	GenoTermService genoTermService;
 
+	private HashMap<String, List<Long>> agmIdCache = new HashMap<>();
+	private HashMap<String, List<Long>> alleleIdCache = new HashMap<>();
+	private HashMap<String, AffectedGenomicModel> agmCache = new HashMap<>();
+	private HashMap<String, Allele> alleleCache = new HashMap<>();
+	private Map<String, Long> existingIdentityKeys;
+	private Map<String, Long> existingFullStateKeys;
+
+	public void preloadAssociationKeys(Map<String, Long> identityKeys, Map<String, Long> fullStateKeys) {
+		this.existingIdentityKeys = identityKeys;
+		this.existingFullStateKeys = fullStateKeys;
+	}
+
 	public ObjectResponse<AgmAlleleAssociation> validateAgmAlleleAssociationDTO(AgmAlleleAssociationDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
 		response = new ObjectResponse<AgmAlleleAssociation>();
 
@@ -48,7 +59,7 @@ public class AgmAlleleAssociationDTOValidator extends AuditedObjectDTOValidator<
 		if (StringUtils.isBlank(dto.getAgmSubjectIdentifier())) {
 			response.addErrorMessage("agm_identifier", ValidationConstants.REQUIRED_MESSAGE);
 		} else {
-			subjectIds = agmService.findIdsByIdentifierString(dto.getAgmSubjectIdentifier());
+			subjectIds = agmIdCache.computeIfAbsent(dto.getAgmSubjectIdentifier(), agmService::findIdsByIdentifierString);
 			if (subjectIds == null || subjectIds.size() != 1) {
 				response.addErrorMessage("agm_identifier", ValidationConstants.INVALID_MESSAGE + " (" + dto.getAgmSubjectIdentifier() + ")");
 			}
@@ -58,7 +69,7 @@ public class AgmAlleleAssociationDTOValidator extends AuditedObjectDTOValidator<
 		if (StringUtils.isBlank(dto.getAlleleIdentifier())) {
 			response.addErrorMessage("allele_identifier", ValidationConstants.REQUIRED_MESSAGE);
 		} else {
-			objectIds = alleleService.findIdsByIdentifierString(dto.getAlleleIdentifier());
+			objectIds = alleleIdCache.computeIfAbsent(dto.getAlleleIdentifier(), alleleService::findIdsByIdentifierString);
 			if (objectIds == null || objectIds.size() != 1) {
 				response.addErrorMessage("allele_identifier", ValidationConstants.INVALID_MESSAGE + " (" + dto.getAlleleIdentifier() + ")");
 			}
@@ -71,27 +82,42 @@ public class AgmAlleleAssociationDTOValidator extends AuditedObjectDTOValidator<
 			validateTermInVocabulary("zygosity_curie", dto.getZygosityCurie(), VocabularyConstants.AGM_ALLELE_GENOTYPE_TERMS_VOCABULARY);
 		}
 
+		if (response.hasErrors()) {
+			throw new ObjectValidationException(dto, response.errorMessagesString());
+		}
+
 		AgmAlleleAssociation association = null;
 		if (subjectIds != null && subjectIds.size() == 1 && objectIds != null && objectIds.size() == 1 && relation != null) {
-			HashMap<String, Object> params = new HashMap<>();
+			String identityKey = subjectIds.get(0) + "|" + relation.getId() + "|" + objectIds.get(0);
 
-			params.put(EntityFieldConstants.AGM_ASSOCIATION_SUBJECT + ".id", subjectIds.get(0));
-			params.put(EntityFieldConstants.RELATION + ".id", relation.getId());
-			params.put(EntityFieldConstants.AGM_ALLELE_ASSOCIATION_OBJECT + ".id", objectIds.get(0));
+			Boolean internal = dto.getInternal() != null ? dto.getInternal() : false;
+			Boolean obsolete = dto.getObsolete() != null ? dto.getObsolete() : false;
+			String fullKey = identityKey + "|" + (zygosity != null ? zygosity.getId() : "null") + "|" + internal + "|" + obsolete;
 
-			SearchResponse<AgmAlleleAssociation> searchResponse = agmAlleleAssociationDAO.findByParams(params);
-			if (searchResponse != null && searchResponse.getResults().size() == 1) {
-				association = searchResponse.getSingleResult();
+			// Check if record is completely unchanged -- skip all DB work
+			if (existingFullStateKeys != null && existingFullStateKeys.containsKey(fullKey)) {
+				Long existingId = existingFullStateKeys.get(fullKey);
+				association = new AgmAlleleAssociation();
+				association.setId(existingId);
+				response.setEntity(association);
+				return response;
+			}
+
+			// Record exists but changed -- find and update
+			if (existingIdentityKeys != null && existingIdentityKeys.containsKey(identityKey)) {
+				association = agmAlleleAssociationDAO.find(existingIdentityKeys.get(identityKey));
 			} else {
-				if (association == null) {
-					association = new AgmAlleleAssociation();
-				}
+				association = agmAlleleAssociationDAO.findBySubjectAndRelationAndObject(subjectIds.get(0), relation.getId(), objectIds.get(0));
+			}
+
+			if (association == null) {
+				association = new AgmAlleleAssociation();
 
 				association.setRelation(relation);
 
 				if (association.getAgmAssociationSubject() == null && !StringUtils.isBlank(dto.getAgmSubjectIdentifier())) {
 
-					AffectedGenomicModel subject = agmService.findByIdentifierString(dto.getAgmSubjectIdentifier());
+					AffectedGenomicModel subject = agmCache.computeIfAbsent(dto.getAgmSubjectIdentifier(), agmService::findByIdentifierString);
 					if (subject == null) {
 						response.addErrorMessage("agm_identifier", ValidationConstants.INVALID_MESSAGE + " (" + dto.getAgmSubjectIdentifier() + ")");
 					} else if (dataProvider != null && !subject.getDataProvider().getAbbreviation().equals(dataProvider.sourceOrganization)) {
@@ -103,7 +129,7 @@ public class AgmAlleleAssociationDTOValidator extends AuditedObjectDTOValidator<
 
 				if (association.getAgmAlleleAssociationObject() == null && !StringUtils.isBlank(dto.getAlleleIdentifier())) {
 
-					Allele object = alleleService.findByIdentifierString(dto.getAlleleIdentifier());
+					Allele object = alleleCache.computeIfAbsent(dto.getAlleleIdentifier(), alleleService::findByIdentifierString);
 					if (object == null) {
 						response.addErrorMessage("allele_identifier", ValidationConstants.INVALID_MESSAGE + " (" + dto.getAlleleIdentifier() + ")");
 					} else if (dataProvider != null && !object.getDataProvider().getAbbreviation().equals(dataProvider.sourceOrganization)) {

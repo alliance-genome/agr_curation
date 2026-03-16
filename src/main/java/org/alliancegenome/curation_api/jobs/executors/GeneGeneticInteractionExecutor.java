@@ -34,10 +34,12 @@ public class GeneGeneticInteractionExecutor extends LoadFileExecutor {
 			List<PsiMiTabDTO> interactionData = it.readAll();
 
 			List<Long> interactionIdsLoaded = new ArrayList<>();
-			List<Long> interactionIdsBefore = geneGeneticInteractionDAO.findAllIds().getResults();
+			List<Long> interactionIdsBefore = geneGeneticInteractionDAO.getAllIds();
 
 			bulkLoadFileHistory.setCount(interactionData.size());
 			updateHistory(bulkLoadFileHistory);
+
+			geneGeneticInteractionService.preloadInteractionIds();
 
 			boolean success = runLoad(geneGeneticInteractionService, bulkLoadFileHistory, null, interactionData, interactionIdsLoaded, false, "Records", "GeneGeneticInteraction");
 			if (success) {
