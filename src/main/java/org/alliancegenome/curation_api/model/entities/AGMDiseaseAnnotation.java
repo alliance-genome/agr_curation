@@ -33,7 +33,7 @@ import lombok.EqualsAndHashCode;
 @Entity
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
-@Schema(name = "AGM_Disease_Annotation", description = "Annotation class representing a agm disease annotation")
+@Schema(name = "AGM_Disease_Annotation", description = "AGMDiseaseAnnotation: an AGM disease annotation")
 @JsonTypeName("AGMDiseaseAnnotation")
 @AGRCurationSchemaVersion(min = "2.11.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = {DiseaseAnnotation.class})
 @JsonPropertyOrder({"type", "diseaseAnnotationSubject", "relation", "diseaseAnnotationObject", "inferredGene", "inferredAllele", "assertedGenes", "assertedAlleles", "dataProvider", "evidenceItem", "dataProviderCrossReference", "evidenceCodes", "diseaseGeneticModifierAgms", "diseaseGeneticModifierRelation", "geneticSex", "negated", "relatedNotes", "annotationType"})

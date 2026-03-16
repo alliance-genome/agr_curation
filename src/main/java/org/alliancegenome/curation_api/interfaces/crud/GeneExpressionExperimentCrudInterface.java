@@ -14,6 +14,7 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
+import org.eclipse.microprofile.openapi.annotations.Operation;
 
 
 @Path("/gene-expression-experiment")
@@ -21,6 +22,7 @@ import jakarta.ws.rs.core.MediaType;
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public interface GeneExpressionExperimentCrudInterface extends BaseIdCrudInterface<GeneExpressionExperiment> {
+	@Operation(summary = "Get gene expression experiment by identifier", description = "Retrieve a single gene expression experiment by its identifier")
 	@GET
 	@Path("/findBy/{identifier}")
 	@JsonView(CurationView.FieldsAndLists.class)

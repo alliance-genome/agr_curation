@@ -15,6 +15,7 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
+import org.eclipse.microprofile.openapi.annotations.Operation;
 
 
 @Path("/biogrid-orc")
@@ -24,6 +25,7 @@ import jakarta.ws.rs.core.MediaType;
 public interface BiogridOrcCrudInterface extends BaseCreateControllerInterface<CrossReference> {
 
 
+	@Operation(summary = "Bulk load biogrid orc data", description = "Bulk load biogrid orc records from a data provider submission")
 	@POST
 	@Path("/bulk/{dataProvider}/biogridfile")
 	@JsonView(CurationView.FieldsAndLists.class)

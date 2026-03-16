@@ -20,7 +20,7 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmb
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexingDependency;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.KeywordField;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonView;
@@ -71,7 +71,7 @@ public abstract class ExpressionExperiment extends SubmittedObject {
 	private MMOTerm expressionAssayUsed;
 
 	@OneToMany(mappedBy = "expressionExperiment", cascade = CascadeType.ALL, orphanRemoval = true)
-	@JsonManagedReference
+	@JsonIgnoreProperties("expressionExperiment")
 	@Fetch(FetchMode.SUBSELECT)
 	@JsonView({ CurationView.FieldsAndLists.class, CurationView.ForPublic.class })
 	private Set<GeneExpressionAnnotation> expressionAnnotations;
