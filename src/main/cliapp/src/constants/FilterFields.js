@@ -786,6 +786,34 @@ export const FIELD_SETS = Object.freeze({
 		filterName: 'geaWhenExpressedFilter',
 		fields: ['whenExpressedStageName'],
 	},
+	geaExperimentInternalFieldSet: {
+		filterName: 'geaExperimentInternalFilter',
+		fields: ['expressionExperiment.internal'],
+	},
+	geaExperimentObsoleteFieldSet: {
+		filterName: 'geaExperimentObsoleteFilter',
+		fields: ['expressionExperiment.obsolete'],
+	},
+	geaExperimentCreatedByFieldSet: {
+		filterName: 'geaExperimentCreatedByFilter',
+		fields: ['expressionExperiment.createdBy.uniqueId'],
+	},
+	geaExperimentDateCreatedFieldSet: {
+		filterName: 'geaExperimentDateCreatedFilter',
+		fields: ['expressionExperiment.dateCreated'],
+	},
+	geaExperimentUpdatedByFieldSet: {
+		filterName: 'geaExperimentUpdatedByFilter',
+		fields: ['expressionExperiment.updatedBy.uniqueId'],
+	},
+	geaExperimentDateUpdatedFieldSet: {
+		filterName: 'geaExperimentDateUpdatedFilter',
+		fields: ['expressionExperiment.dateUpdated'],
+	},
+	geaExperimentCurieFieldSet: {
+		filterName: 'geaExperimentCurieFilter',
+		fields: ['expressionExperiment.curie'],
+	},
 });
 
 export const FILTER_CONFIGS = Object.freeze({
@@ -1043,6 +1071,31 @@ export const FILTER_CONFIGS = Object.freeze({
 	geaRelationFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.geaRelationFieldSet] },
 	geaWhereExpressedFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.geaWhereExpressedFieldSet] },
 	geaWhenExpressedFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.geaWhenExpressedFieldSet] },
+	geaExperimentInternalFilterConfig: {
+		filterComponentType: 'dropdown',
+		fieldSets: [FIELD_SETS.geaExperimentInternalFieldSet],
+	},
+	geaExperimentObsoleteFilterConfig: {
+		filterComponentType: 'dropdown',
+		fieldSets: [FIELD_SETS.geaExperimentObsoleteFieldSet],
+	},
+	geaExperimentCreatedByFilterConfig: {
+		filterComponentType: 'input',
+		fieldSets: [FIELD_SETS.geaExperimentCreatedByFieldSet],
+	},
+	geaExperimentDateCreatedFilterConfig: {
+		filterComponentType: 'input',
+		fieldSets: [FIELD_SETS.geaExperimentDateCreatedFieldSet],
+	},
+	geaExperimentUpdatedByFilterConfig: {
+		filterComponentType: 'input',
+		fieldSets: [FIELD_SETS.geaExperimentUpdatedByFieldSet],
+	},
+	geaExperimentDateUpdatedFilterConfig: {
+		filterComponentType: 'input',
+		fieldSets: [FIELD_SETS.geaExperimentDateUpdatedFieldSet],
+	},
+	geaExperimentCurieFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.geaExperimentCurieFieldSet] },
 
 	isExtinctFilterConfig: { filterComponentType: 'dropdown', fieldSets: [FIELD_SETS.isExtinctFieldSet] },
 	obsoleteFilterConfig: { filterComponentType: 'dropdown', fieldSets: [FIELD_SETS.obsoleteFieldSet] },

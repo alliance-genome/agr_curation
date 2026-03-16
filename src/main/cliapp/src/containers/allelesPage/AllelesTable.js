@@ -12,10 +12,13 @@ import { InheritanceModesDialog } from './inheritanceModes/InheritanceModesDialo
 import { NomenclatureEventsDialog } from './nomenclatureEvents/NomenclatureEventsDialog';
 import { GermlineTransmissionStatusDialog } from './germlineTransmissionStatus/GermlineTransmissionStatusDialog';
 import { DatabaseStatusDialog } from './databaseStatus/DatabaseStatusDialog';
-import { SymbolDialog } from '../nameSlotAnnotations/dialogs/SymbolDialog';
-import { FullNameDialog } from '../nameSlotAnnotations/dialogs/FullNameDialog';
+import { SymbolEditDialog } from '../nameSlotAnnotations/dialogs/SymbolEditDialog';
+import { SymbolReadOnlyDialog } from '../nameSlotAnnotations/dialogs/SymbolReadOnlyDialog';
+import { FullNameEditDialog } from '../nameSlotAnnotations/dialogs/FullNameEditDialog';
+import { FullNameReadOnlyDialog } from '../nameSlotAnnotations/dialogs/FullNameReadOnlyDialog';
 import { SecondaryIdsDialog } from './secondaryIds/SecondaryIdsDialog';
-import { SynonymsDialog } from '../nameSlotAnnotations/dialogs/SynonymsDialog';
+import { SynonymsEditDialog } from '../nameSlotAnnotations/dialogs/SynonymsEditDialog';
+import { SynonymsReadOnlyDialog } from '../nameSlotAnnotations/dialogs/SynonymsReadOnlyDialog';
 import { RelatedNotesDialog } from '../../components/RelatedNotesDialog';
 import { TaxonTableEditor } from '../../components/Editors/taxon/TaxonTableEditor';
 import { InCollectionTableEditor } from '../../components/Editors/inCollection/InCollectionTableEditor';
@@ -158,9 +161,8 @@ export const AllelesTable = () => {
 	};
 
 	const handleRelatedNotesOpenInEdit = (event, rowProps, isInEdit) => {
-		const { rows } = rowProps.props;
 		const { rowIndex } = rowProps;
-		const index = rowIndex % rows;
+		const index = rowIndex;
 		let _relatedNotesData = {};
 		_relatedNotesData['originalRelatedNotes'] = rowProps.rowData.relatedNotes;
 		_relatedNotesData['dialog'] = true;
@@ -269,9 +271,8 @@ export const AllelesTable = () => {
 	};
 
 	const handleSymbolOpenInEdit = (event, rowProps, isInEdit) => {
-		const { rows } = rowProps.props;
 		const { rowIndex } = rowProps;
-		const index = rowIndex % rows;
+		const index = rowIndex;
 		let _symbolData = {};
 		_symbolData['originalSymbols'] = [rowProps.rowData.alleleSymbol];
 		_symbolData['dialog'] = true;
@@ -354,9 +355,8 @@ export const AllelesTable = () => {
 	};
 
 	const handleFullNameOpenInEdit = (event, rowProps, isInEdit) => {
-		const { rows } = rowProps.props;
 		const { rowIndex } = rowProps;
-		const index = rowIndex % rows;
+		const index = rowIndex;
 		let _fullNameData = {};
 		_fullNameData['originalFullNames'] = [rowProps.rowData.alleleFullName];
 		_fullNameData['dialog'] = true;
@@ -434,9 +434,8 @@ export const AllelesTable = () => {
 	};
 
 	const handleSynonymsOpenInEdit = (event, rowProps, isInEdit) => {
-		const { rows } = rowProps.props;
 		const { rowIndex } = rowProps;
-		const index = rowIndex % rows;
+		const index = rowIndex;
 		let _synonymsData = {};
 		_synonymsData['originalSynonyms'] = rowProps.rowData.alleleSynonyms;
 		_synonymsData['dialog'] = true;
@@ -514,9 +513,8 @@ export const AllelesTable = () => {
 	};
 
 	const handleInheritanceModesOpenInEdit = (event, rowProps, isInEdit) => {
-		const { rows } = rowProps.props;
 		const { rowIndex } = rowProps;
-		const index = rowIndex % rows;
+		const index = rowIndex;
 		let _inheritanceModesData = {};
 		_inheritanceModesData['originalInheritanceModes'] = rowProps.rowData.alleleInheritanceModes;
 		_inheritanceModesData['dialog'] = true;
@@ -594,9 +592,8 @@ export const AllelesTable = () => {
 	};
 
 	const handleGermlineTransmissionStatusOpenInEdit = (event, rowProps, isInEdit) => {
-		const { rows } = rowProps.props;
 		const { rowIndex } = rowProps;
-		const index = rowIndex % rows;
+		const index = rowIndex;
 		let _germlineTransmissionStatusData = {};
 		_germlineTransmissionStatusData['originalGermlineTransmissionStatuses'] = [
 			rowProps.rowData.alleleGermlineTransmissionStatus,
@@ -676,9 +673,8 @@ export const AllelesTable = () => {
 	};
 
 	const handleNomenclatureEventsOpenInEdit = (event, rowProps, isInEdit) => {
-		const { rows } = rowProps.props;
 		const { rowIndex } = rowProps;
-		const index = rowIndex % rows;
+		const index = rowIndex;
 		let _nomenclatureEventsData = {};
 		_nomenclatureEventsData['originalNomenclatureEvents'] = rowProps.rowData.alleleNomenclatureEvents;
 		_nomenclatureEventsData['dialog'] = true;
@@ -756,9 +752,8 @@ export const AllelesTable = () => {
 	};
 
 	const handleDatabaseStatusOpenInEdit = (event, rowProps, isInEdit) => {
-		const { rows } = rowProps.props;
 		const { rowIndex } = rowProps;
-		const index = rowIndex % rows;
+		const index = rowIndex;
 		let _databaseStatusData = {};
 		_databaseStatusData['originalDatabaseStatuses'] = [rowProps.rowData.alleleDatabaseStatus];
 		_databaseStatusData['dialog'] = true;
@@ -836,9 +831,8 @@ export const AllelesTable = () => {
 	};
 
 	const handleMutationTypesOpenInEdit = (event, rowProps, isInEdit) => {
-		const { rows } = rowProps.props;
 		const { rowIndex } = rowProps;
-		const index = rowIndex % rows;
+		const index = rowIndex;
 		let _mutationTypesData = {};
 		_mutationTypesData['originalMutationTypes'] = rowProps.rowData.alleleMutationTypes;
 		_mutationTypesData['dialog'] = true;
@@ -916,9 +910,8 @@ export const AllelesTable = () => {
 	};
 
 	const handleFunctionalImpactsOpenInEdit = (event, rowProps, isInEdit) => {
-		const { rows } = rowProps.props;
 		const { rowIndex } = rowProps;
-		const index = rowIndex % rows;
+		const index = rowIndex;
 		let _functionalImpactsData = {};
 		_functionalImpactsData['originalFunctionalImpacts'] = rowProps.rowData.alleleFunctionalImpacts;
 		_functionalImpactsData['dialog'] = true;
@@ -995,9 +988,8 @@ export const AllelesTable = () => {
 	};
 
 	const handleSecondaryIdsOpenInEdit = (event, rowProps, isInEdit) => {
-		const { rows } = rowProps.props;
 		const { rowIndex } = rowProps;
-		const index = rowIndex % rows;
+		const index = rowIndex;
 		let _secondaryIdsData = {};
 		_secondaryIdsData['originalSecondaryIds'] = rowProps.rowData.alleleSecondaryIds;
 		_secondaryIdsData['dialog'] = true;
@@ -1344,7 +1336,7 @@ export const AllelesTable = () => {
 					fetching={isFetching || isPending}
 				/>
 			</div>
-			<SymbolDialog
+			<SymbolEditDialog
 				name="Allele Symbol"
 				field="alleleSymbol"
 				endpoint="allelesymbolslotannotation"
@@ -1353,7 +1345,8 @@ export const AllelesTable = () => {
 				errorMessagesMainRow={errorMessages}
 				setErrorMessagesMainRow={setErrorMessages}
 			/>
-			<FullNameDialog
+			<SymbolReadOnlyDialog originalSymbolData={symbolData} setOriginalSymbolData={setSymbolData} />
+			<FullNameEditDialog
 				name="Allele Name"
 				field="alleleFullName"
 				endpoint="allelefullnameslotannotation"
@@ -1362,7 +1355,8 @@ export const AllelesTable = () => {
 				errorMessagesMainRow={errorMessages}
 				setErrorMessagesMainRow={setErrorMessages}
 			/>
-			<SynonymsDialog
+			<FullNameReadOnlyDialog originalFullNameData={fullNameData} setOriginalFullNameData={setFullNameData} />
+			<SynonymsEditDialog
 				name="Allele Synonym"
 				field="alleleSynonyms"
 				endpoint="allelesynonymslotannotation"
@@ -1371,6 +1365,7 @@ export const AllelesTable = () => {
 				errorMessagesMainRow={errorMessages}
 				setErrorMessagesMainRow={setErrorMessages}
 			/>
+			<SynonymsReadOnlyDialog originalSynonymsData={synonymsData} setOriginalSynonymsData={setSynonymsData} />
 			<NomenclatureEventsDialog
 				originalNomenclatureEventsData={nomenclatureEventsData}
 				setOriginalNomenclatureEventsData={setNomenclatureEventsData}
