@@ -20,6 +20,7 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
+import org.eclipse.microprofile.openapi.annotations.Operation;
 
 @Path("/condition-relation")
 @Tag(name = "CRUD - ConditionRelations")
@@ -45,11 +46,13 @@ public interface ConditionRelationCrudInterface extends BaseIdCrudInterface<Cond
 	@JsonView(CurationView.ConditionRelationView.class)
 	ObjectResponse<ConditionRelation> getById(@PathParam("id") Long id);
 
+	@Operation(summary = "Validate condition relation", description = "Validate a condition relation entity without persisting it")
 	@POST
 	@Path("/validate")
 	@JsonView(CurationView.ConditionRelationView.class)
 	ObjectResponse<ConditionRelation> validate(ConditionRelation entity);
 
+	@Operation(summary = "Find experiments", description = "Search for experimental condition relation records using field-level filters")
 	@POST
 	@Path("/find-experiments")
 	@JsonView(CurationView.FieldsAndLists.class)

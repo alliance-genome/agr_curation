@@ -26,6 +26,7 @@ import jakarta.persistence.UniqueConstraint;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
 @Inheritance(strategy = InheritanceType.JOINED)
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
@@ -40,6 +41,7 @@ import lombok.ToString;
 	@JsonSubTypes.Type(value = Variant.class, name = "Variant"),
 	@JsonSubTypes.Type(value = SequenceTargetingReagent.class, name = "SequenceTargetingReagent")
 })
+@Schema(name = "BiologicalEntity", description = "BiologicalEntity: a biological entity")
 @Entity
 @TypeBinding(binder = @TypeBinderRef(type = BiologicalEntityTypeBridge.class))
 @Data

@@ -39,7 +39,7 @@ import lombok.ToString;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(callSuper = true)
 @AGRCurationSchemaVersion(min = "1.5.1", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { SlotAnnotation.class })
-@Schema(name = "AlleleFunctionalImpactSlotAnnotation", description = "POJO representing an allele functional impact slot annotation")
+@Schema(name = "AlleleFunctionalImpactSlotAnnotation", description = "AlleleFunctionalImpactSlotAnnotation: an allele functional impact slot annotation")
 public class AlleleFunctionalImpactSlotAnnotation extends SlotAnnotation {
 
 	@ManyToOne

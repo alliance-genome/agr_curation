@@ -9,7 +9,7 @@
     },
     "license": "MIT",
     "dependencies": {
-        "@aws-amplify/ui-react": "^6.6.1",
+        "@aws-amplify/ui-react": "^6.15.0",
         "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
         "@fullcalendar/core": "^6.1.19",
         "@fullcalendar/daygrid": "^6.1.19",
@@ -19,8 +19,8 @@
         "@testing-library/jest-dom": "^5.16.5",
         "@testing-library/react": "^16.3.0",
         "@testing-library/user-event": "^14.4.3",
-        "aws-amplify": "^6.11.3",
-        "axios": "^0.30.0",
+        "aws-amplify": "^6.16.2",
+        "axios": "^0.30.3",
         "chart.js": "3.3.2",
         "classnames": "^2.2.6",
         "file-saver": "^2.0.5",
@@ -38,7 +38,7 @@
         "react-cookie": "^8.0.1",
         "react-dom": "19.1.1",
         "react-moment": "^1.1.1",
-        "react-router-dom": "^6.30.1",
+        "react-router-dom": "^6.30.3",
         "react-scripts": "^5.0.0",
         "react-transition-group": "^4.4.1",
         "react-use-websocket": "^3.0.0",
@@ -52,7 +52,15 @@
             "react": "19.1.1",
             "react-dom": "19.1.1"
         },
-        "nth-check": "^2.0.1"
+        "lodash": "4.17.23",
+        "webpack": "5.105.2",
+        "qs": "6.15.0",
+        "jsonpath": "1.2.0",
+        "ajv@^6.0.0": "6.14.0",
+        "ajv@^8.0.0": "8.18.0",
+        "nth-check": "2.1.1",
+        "postcss": "8.5.6",
+        "cookie": "0.7.2"
     },
     "scripts": {
         "start": "react-scripts start",

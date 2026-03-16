@@ -33,7 +33,7 @@ import lombok.ToString;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(callSuper = true)
 @AGRCurationSchemaVersion(min = "2.4.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = {LocationAssociation.class})
-@Schema(name = "VariantLocationAssociation", description = "POJO representing an association between a variant and a location")
+@Schema(name = "VariantLocationAssociation", description = "VariantLocationAssociation: a variant location association")
 public abstract class VariantLocationAssociation extends LocationAssociation {
 
 	@IndexedEmbedded(includePaths = {

@@ -31,7 +31,7 @@ import lombok.ToString;
 @Entity
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
-@Schema(name = "SlotAnnotation", description = "POJO that represents a SlotAnnotation")
+@Schema(name = "SlotAnnotation", description = "SlotAnnotation: a slot annotation")
 @ToString(callSuper = true)
 @Table(indexes = {
 	@Index(name = "slotannotation_createdby_index", columnList = "createdBy_id"),

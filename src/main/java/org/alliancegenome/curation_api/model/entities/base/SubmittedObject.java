@@ -42,7 +42,7 @@ import lombok.ToString;
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
 @AGRCurationSchemaVersion(min = "2.9.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = {CurieObject.class})
-@Schema(name = "SubmittedObject", description = "POJO that represents the SubmittedObject")
+@Schema(name = "SubmittedObject", description = "SubmittedObject: a submitted object")
 public class SubmittedObject extends CurieObject {
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")

@@ -17,6 +17,7 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
+import org.eclipse.microprofile.openapi.annotations.Operation;
 
 @Path("/cds")
 @Tag(name = "CRUD - Coding Sequence")
@@ -24,6 +25,7 @@ import jakarta.ws.rs.core.MediaType;
 @Consumes(MediaType.APPLICATION_JSON)
 public interface CodingSequenceCrudInterface extends BaseSubmittedObjectCrudInterface<CodingSequence> {
 
+	@Operation(summary = "Bulk load coding sequence data", description = "Bulk load coding sequence records from a data provider submission")
 	@POST
 	@Path("/bulk/{dataProvider}_{assemblyName}/codingSequences")
 	@JsonView(CurationView.FieldsAndLists.class)

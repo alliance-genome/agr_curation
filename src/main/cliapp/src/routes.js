@@ -8,6 +8,7 @@ import { DataLoadsPage } from './containers/dataLoadsPage/';
 import { ReportsPage } from './containers/reportsPage/';
 import { DiseaseAnnotationsPage } from './containers/diseaseAnnotationsPage';
 import { PhenotypeAnnotationsPage } from './containers/phenotypeAnnotationsPage';
+import { GeneExpressionAnnotationsPage } from './containers/geneExpressionAnnotationsPage';
 import { GeneGeneticInteractionsPage } from './containers/geneGeneticInteractionsPage/GeneGeneticInteractionsPage';
 import { GeneMolecularInteractionsPage } from './containers/geneMolecularInteractionsPage/GeneMolecularInteractionsPage';
 import { ExperimentalConditionsPage } from './containers/experimentalConditionsPage';
@@ -89,6 +90,14 @@ export default function AppRoutes() {
 						element={
 							<ErrorBoundary>
 								<GeneMolecularInteractionsPage />
+							</ErrorBoundary>
+						}
+					/>
+					<Route
+						path="/geneExpressionAnnotations"
+						element={
+							<ErrorBoundary>
+								<GeneExpressionAnnotationsPage />
 							</ErrorBoundary>
 						}
 					/>

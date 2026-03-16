@@ -17,6 +17,7 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
+import org.eclipse.microprofile.openapi.annotations.Operation;
 
 @Path("/transcript")
 @Tag(name = "CRUD - Transcript")
@@ -24,6 +25,7 @@ import jakarta.ws.rs.core.MediaType;
 @Consumes(MediaType.APPLICATION_JSON)
 public interface TranscriptCrudInterface extends BaseSubmittedObjectCrudInterface<Transcript> {
 
+	@Operation(summary = "Bulk load transcript data", description = "Bulk load transcript records from a data provider submission")
 	@POST
 	@Path("/bulk/{dataProvider}_{assemblyName}/transcripts")
 	@JsonView(CurationView.FieldsAndLists.class)

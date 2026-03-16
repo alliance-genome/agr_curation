@@ -17,6 +17,7 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
+import org.eclipse.microprofile.openapi.annotations.Operation;
 
 @Path("/expression-atlas")
 @Tag(name = "CRUD - Expression Atlas")
@@ -24,6 +25,7 @@ import jakarta.ws.rs.core.MediaType;
 @Consumes(MediaType.APPLICATION_JSON)
 public interface ExpressionAtlasCrudInterface extends BaseCreateControllerInterface<CrossReference> {
 
+	@Operation(summary = "Bulk load expression atlas data", description = "Bulk load expression atlas records from a data provider submission")
 	@POST
 	@Path("/bulk/{dataProvider}_{assemblyName}/transcripts")
 	@JsonView(CurationView.FieldsAndLists.class)

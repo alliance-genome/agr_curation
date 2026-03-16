@@ -14,6 +14,7 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
+import org.eclipse.microprofile.openapi.annotations.Operation;
 
 @Path("/experimental-condition")
 @Tag(name = "CRUD - ExperimentalConditions")
@@ -21,6 +22,7 @@ import jakarta.ws.rs.core.MediaType;
 @Consumes(MediaType.APPLICATION_JSON)
 public interface ExperimentalConditionCrudInterface extends BaseIdCrudInterface<ExperimentalCondition> {
 
+	@Operation(summary = "Get experimental condition by identifier", description = "Retrieve a single experimental condition by its identifier")
 	@GET
 	@Path("/findBy/{conditionSummary}")
 	@JsonView(CurationView.FieldsAndLists.class)

@@ -36,7 +36,7 @@ import lombok.ToString;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
-@Schema(name = "GeneToGeneOrthologyGenerated", description = "POJO that represents generated orthology between two genes")
+@Schema(name = "GeneToGeneOrthologyGenerated", description = "GeneToGeneOrthologyGenerated: a gene to gene orthology generated")
 @AGRCurationSchemaVersion(min = "1.7.4", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AuditedObject.class, GeneToGeneOrthology.class })
 @Table(indexes = {
 	@Index(name = "genetogeneorthologygenerated_isbestscore_index", columnList = "isbestscore_id"),
