@@ -9,6 +9,7 @@ https://agr-jira.atlassian.net/wiki/spaces/ATEAM/overview
    * Fix Construct Table Reference Sorting (SCRUM-5741)
    * Update the Logs Server link in Curation UI (SCRUM-5803)
    * Reduce OpenSearch index bloat by removing unnecessary Hibernate Search annotations (SCRUM-5807)
+   * Optimize bulk load performance and fix VocabularyTerm synonym lazy loading (v0.46.42)
 
 ## v0.46.0
 * New fearures:
