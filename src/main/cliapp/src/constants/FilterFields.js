@@ -768,11 +768,13 @@ export const FIELD_SETS = Object.freeze({
 			'expressionAnnotationSubject.geneSymbol.displayText',
 			'expressionAnnotationSubject.geneSymbol.formatText',
 			'expressionAnnotationSubject.curie',
+			'expressionAnnotationSubject.primaryExternalId',
+			'expressionAnnotationSubject.modInternalId',
 		],
 	},
 	geaAssayUsedFieldSet: {
 		filterName: 'geaAssayUsedFilter',
-		fields: ['expressionAssayUsed.name'],
+		fields: ['expressionAssayUsed.name', 'expressionAssayUsed.curie'],
 	},
 	geaRelationFieldSet: {
 		filterName: 'geaRelationFilter',
