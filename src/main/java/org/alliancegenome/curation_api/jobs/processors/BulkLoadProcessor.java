@@ -14,9 +14,11 @@ import org.alliancegenome.curation_api.enums.JobStatus;
 import org.alliancegenome.curation_api.jobs.events.PendingLoadJobEvent;
 import org.alliancegenome.curation_api.jobs.executors.BulkLoadJobExecutor;
 import org.alliancegenome.curation_api.jobs.util.SlackNotifier;
+import org.alliancegenome.curation_api.model.entities.bulkloads.BulkFMSLoad;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoad;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFile;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
+import org.alliancegenome.curation_api.model.entities.bulkloads.BulkManualLoad;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.GoogleAnalyticsService;
 import org.alliancegenome.curation_api.services.fms.DataFileService;
@@ -219,6 +221,9 @@ public class BulkLoadProcessor {
 		bulkLoadFileHistory.setLoadFinished(LocalDateTime.now());
 		if (status != JobStatus.FINISHED) {
 			slackNotifier.slackalert(bulkLoadFileHistory);
+		} else if (status == JobStatus.FINISHED){
+			String dataProvider = extractDataProvider(bulkLoadFileHistory.getBulkLoad());
+			slackNotifier.slackDataloadComplete(bulkLoadFileHistory, dataProvider);
 		}
 		
 		bulkLoadFileHistory.setRunningThreadName(null); // Clears the name once finished
@@ -226,6 +231,20 @@ public class BulkLoadProcessor {
 		bulkLoadFileHistory.getBulkLoad().setBulkloadStatus(status);
 		bulkLoadDAO.merge(bulkLoadFileHistory.getBulkLoad());
 		Log.info("Load File: " + bulkLoadFileHistory.getBulkLoadFile().getMd5Sum() + " is finished. Message: " + message + " Status: " + status);
+	}
+
+	private String extractDataProvider(BulkLoad bulkLoad) {
+		if (bulkLoad instanceof BulkManualLoad bulkManualLoad) {
+			if (bulkManualLoad.getDataProvider() != null) {
+				return bulkManualLoad.getDataProvider().sourceOrganization;
+			}
+		}
+		if (bulkLoad instanceof BulkFMSLoad bulkFMSLoad) {
+			if (bulkFMSLoad.getFmsDataSubType() != null) {
+				return bulkFMSLoad.getFmsDataSubType();
+			}
+		}
+		return bulkLoad.getName();
 	}
 
 }
