@@ -7,7 +7,7 @@ import { LiteratureAutocompleteTemplate } from '../Autocomplete/LiteratureAutoco
 const referenceSearch = (event, setFiltered, setInputValue) => {
 	const searchService = new SearchService();
 	const autocompleteFields = ['curie', 'cross_references.curie'];
-	const endpoint = 'literature-reference';
+	const endpoint = 'literature-reference/document';
 	const filterName = 'referencesFilter';
 	const filter = buildAutocompleteFilter(event, autocompleteFields);
 

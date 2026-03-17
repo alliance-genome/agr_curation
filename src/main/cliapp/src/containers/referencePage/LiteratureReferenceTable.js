@@ -74,7 +74,7 @@ export const LiteratureReferenceTable = () => {
 		[]
 	);
 	const DEFAULT_COLUMN_WIDTH = 20;
-	const SEARCH_ENDPOINT = 'literature-reference';
+	const SEARCH_ENDPOINT = 'literature-reference/document';
 
 	const initialTableState = useMemo(
 		() => getDefaultTableState('LiteratureReferences', columns, DEFAULT_COLUMN_WIDTH),

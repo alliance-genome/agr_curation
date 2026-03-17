@@ -308,7 +308,7 @@ export function autocompleteSearch(
 	applyObsoleteFilter = true
 ) {
 	const obsoleteFilter =
-		applyObsoleteFilter && endpoint !== 'literature-reference'
+		applyObsoleteFilter && endpoint !== 'literature-reference/document'
 			? {
 					obsoleteFilter: {
 						obsolete: {

@@ -7,7 +7,7 @@ import { DialogErrorMessageComponent } from '../Error/DialogErrorMessageComponen
 const evidenceSearch = (event, setFiltered, setInputValue) => {
 	const searchService = new SearchService();
 	const autocompleteFields = ['curie', 'cross_references.curie'];
-	const endpoint = 'literature-reference';
+	const endpoint = 'literature-reference/document';
 	const filterName = 'evidenceFilter';
 	const filter = buildAutocompleteFilter(event, autocompleteFields);
 

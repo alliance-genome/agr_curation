@@ -339,7 +339,7 @@ export const RelatedNotesDialog = ({
 
 	const evidenceSearch = (event, setFiltered, setInputValue) => {
 		const autocompleteFields = ['curie', 'cross_references.curie'];
-		const endpoint = 'literature-reference';
+		const endpoint = 'literature-reference/document';
 		const filterName = 'evidenceFilter';
 		const filter = buildAutocompleteFilter(event, autocompleteFields);
 

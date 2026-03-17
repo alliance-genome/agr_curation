@@ -1096,7 +1096,7 @@ export const DiseaseAnnotationsTable = () => {
 
 	const referenceSearch = (event, setFiltered, setQuery) => {
 		const autocompleteFields = ['curie', 'cross_references.curie'];
-		const endpoint = 'literature-reference';
+		const endpoint = 'literature-reference/document';
 		const filterName = 'curieFilter';
 		const filter = buildAutocompleteFilter(event, autocompleteFields);
 		setQuery(event.query);
