@@ -46,35 +46,23 @@ export const WhenExpressedDialog = ({ whenExpressedData, setWhenExpressedData })
 				<Column
 					field="developmentalStageStart.name"
 					header="Developmental Stage Start"
-					body={(rowData) => (
-						<EllipsisTableCell>{termTemplate(rowData.developmentalStageStart)}</EllipsisTableCell>
-					)}
+					body={(rowData) => <EllipsisTableCell>{termTemplate(rowData.developmentalStageStart)}</EllipsisTableCell>}
 				/>
 				<Column
 					field="developmentalStageStop.name"
 					header="Developmental Stage Stop"
-					body={(rowData) => (
-						<EllipsisTableCell>{termTemplate(rowData.developmentalStageStop)}</EllipsisTableCell>
-					)}
+					body={(rowData) => <EllipsisTableCell>{termTemplate(rowData.developmentalStageStop)}</EllipsisTableCell>}
 				/>
-				<Column
-					field="age"
-					header="Age"
-					body={(rowData) => <EllipsisTableCell>{rowData.age}</EllipsisTableCell>}
-				/>
+				<Column field="age" header="Age" body={(rowData) => <EllipsisTableCell>{rowData.age}</EllipsisTableCell>} />
 				<Column
 					field="temporalQualifiers"
 					header="Temporal Qualifiers"
-					body={(rowData) => (
-						<EllipsisTableCell>{listTemplate(rowData.temporalQualifiers)}</EllipsisTableCell>
-					)}
+					body={(rowData) => <EllipsisTableCell>{listTemplate(rowData.temporalQualifiers)}</EllipsisTableCell>}
 				/>
 				<Column
 					field="stageUberonSlimTerms"
 					header="Stage Uberon Terms"
-					body={(rowData) => (
-						<EllipsisTableCell>{listTemplate(rowData.stageUberonSlimTerms)}</EllipsisTableCell>
-					)}
+					body={(rowData) => <EllipsisTableCell>{listTemplate(rowData.stageUberonSlimTerms)}</EllipsisTableCell>}
 				/>
 			</DataTable>
 		</Dialog>

@@ -45,9 +45,7 @@ export const WhereExpressedDialog = ({ whereExpressedData, setWhereExpressedData
 				<Column
 					field="anatomicalStructure.name"
 					header="Anatomical Structure"
-					body={(rowData) => (
-						<EllipsisTableCell>{termTemplate(rowData.anatomicalStructure)}</EllipsisTableCell>
-					)}
+					body={(rowData) => <EllipsisTableCell>{termTemplate(rowData.anatomicalStructure)}</EllipsisTableCell>}
 				/>
 				<Column
 					field="anatomicalStructureQualifiers"
@@ -66,9 +64,7 @@ export const WhereExpressedDialog = ({ whereExpressedData, setWhereExpressedData
 				<Column
 					field="anatomicalSubstructure.name"
 					header="Anatomical Substructure"
-					body={(rowData) => (
-						<EllipsisTableCell>{termTemplate(rowData.anatomicalSubstructure)}</EllipsisTableCell>
-					)}
+					body={(rowData) => <EllipsisTableCell>{termTemplate(rowData.anatomicalSubstructure)}</EllipsisTableCell>}
 				/>
 				<Column
 					field="anatomicalSubstructureQualifiers"
@@ -81,24 +77,18 @@ export const WhereExpressedDialog = ({ whereExpressedData, setWhereExpressedData
 					field="anatomicalSubstructureUberonTerms"
 					header="Substructure Uberon Terms"
 					body={(rowData) => (
-						<EllipsisTableCell>
-							{listTemplate(rowData.anatomicalSubstructureUberonTerms)}
-						</EllipsisTableCell>
+						<EllipsisTableCell>{listTemplate(rowData.anatomicalSubstructureUberonTerms)}</EllipsisTableCell>
 					)}
 				/>
 				<Column
 					field="cellularComponentTerm.name"
 					header="Cellular Component"
-					body={(rowData) => (
-						<EllipsisTableCell>{termTemplate(rowData.cellularComponentTerm)}</EllipsisTableCell>
-					)}
+					body={(rowData) => <EllipsisTableCell>{termTemplate(rowData.cellularComponentTerm)}</EllipsisTableCell>}
 				/>
 				<Column
 					field="cellularComponentQualifiers"
 					header="Cellular Component Qualifiers"
-					body={(rowData) => (
-						<EllipsisTableCell>{listTemplate(rowData.cellularComponentQualifiers)}</EllipsisTableCell>
-					)}
+					body={(rowData) => <EllipsisTableCell>{listTemplate(rowData.cellularComponentQualifiers)}</EllipsisTableCell>}
 				/>
 				<Column
 					field="cellularComponentRibbonTerms"
@@ -111,21 +101,31 @@ export const WhereExpressedDialog = ({ whereExpressedData, setWhereExpressedData
 					field="cellularComponentOther"
 					header="CC Other"
 					body={(rowData) => (
-						<EllipsisTableCell>{rowData.cellularComponentOther != null ? String(rowData.cellularComponentOther) : ''}</EllipsisTableCell>
+						<EllipsisTableCell>
+							{rowData.cellularComponentOther != null ? String(rowData.cellularComponentOther) : ''}
+						</EllipsisTableCell>
 					)}
 				/>
 				<Column
 					field="anatomicalStructureUberonTermOther"
 					header="Structure Uberon Other"
 					body={(rowData) => (
-						<EllipsisTableCell>{rowData.anatomicalStructureUberonTermOther != null ? String(rowData.anatomicalStructureUberonTermOther) : ''}</EllipsisTableCell>
+						<EllipsisTableCell>
+							{rowData.anatomicalStructureUberonTermOther != null
+								? String(rowData.anatomicalStructureUberonTermOther)
+								: ''}
+						</EllipsisTableCell>
 					)}
 				/>
 				<Column
 					field="anatomicalSubStructureUberonTermOther"
 					header="Substructure Uberon Other"
 					body={(rowData) => (
-						<EllipsisTableCell>{rowData.anatomicalSubStructureUberonTermOther != null ? String(rowData.anatomicalSubStructureUberonTermOther) : ''}</EllipsisTableCell>
+						<EllipsisTableCell>
+							{rowData.anatomicalSubStructureUberonTermOther != null
+								? String(rowData.anatomicalSubStructureUberonTermOther)
+								: ''}
+						</EllipsisTableCell>
 					)}
 				/>
 			</DataTable>
