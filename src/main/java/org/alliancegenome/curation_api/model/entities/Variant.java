@@ -135,7 +135,7 @@ public class Variant extends GenomicEntity {
 			} else if ("SO:1000032".equals(variantTypeCurie)) {
 				// Delins (deletion + insertion)
 				String left = paddedBase + (referenceSequence != null ? referenceSequence : "");
-				String right = paddedBase + (variantSequence != null ? variantSequence : "");
+				String right = paddedBase + (variantSequence != null ? variantSequence : " Insertion sequence not available");
 				return left + ">" + right;
 			}
 			if (referenceSequence != null && variantSequence != null) {
