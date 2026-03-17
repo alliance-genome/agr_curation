@@ -26,7 +26,7 @@ public class SlackNotifier {
 
 	@ConfigProperty(name = "net", defaultValue = "\"\"") Instance<String> systemName;
 	@ConfigProperty(name = "slack.token") Instance<String> slackToken;
-	@ConfigProperty(name = "slack.channels") Instance<String> slackDataloadsChannels;
+	@ConfigProperty(name = "slack.channel") Instance<String> slackDataloadsChannel;
 
 	private void sendSlackMessage(String channel, String groupName, String loadName, String message, List<Field> fields, String color, String pretext) {
 
@@ -77,7 +77,7 @@ public class SlackNotifier {
 			if (bulkLoad.getBackendBulkLoadType() == BackendBulkLoadType.ONTOLOGY) {
 				fields.add(new Field("Ontology Type", String.valueOf(bulkLoad.getOntologyType()), true));
 			}
-			sendSlackMessage(slackDataloadsChannels.get(),
+			sendSlackMessage(slackDataloadsChannel.get(),
 				bulkLoad.getGroup().getName(), bulkLoad.getName(), bulkLoad.getErrorMessage(), fields,
 				"danger", "An error has occurred on Curation ");
 		}
@@ -100,7 +100,7 @@ public class SlackNotifier {
 				fields.add(new Field("Alliance Member Release Version", bulkLoadFileHistory.getBulkLoadFile().getAllianceMemberReleaseVersion(), false));
 			}
 
-			sendSlackMessage(slackDataloadsChannels.get(),
+			sendSlackMessage(slackDataloadsChannel.get(),
 				bulkLoadFileHistory.getBulkLoad().getGroup().getName(), bulkLoadFileHistory.getBulkLoad().getName(),
 				bulkLoadFileHistory.getErrorMessage(), fields,
 				"danger", "An error has occurred on Curation ");
@@ -129,7 +129,7 @@ public class SlackNotifier {
 			.collect(Collectors.joining(", "));
 		fields.add(new Field("Dependent Loads To Run", dependentLoadNames, false));
 
-		sendSlackMessage(slackDataloadsChannels.get(),
+		sendSlackMessage(slackDataloadsChannel.get(),
 			bulkLoad.getGroup().getName(), bulkLoad.getName(),
 			bulkLoad.getName() + " has finished successfully. The following dependent loads need to be run/rerun.",
 			fields, "good", "Data load completed on Curation ");
