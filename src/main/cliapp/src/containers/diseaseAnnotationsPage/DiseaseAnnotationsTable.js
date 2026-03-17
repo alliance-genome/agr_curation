@@ -10,6 +10,7 @@ import { EditMessageTooltip } from '../../components/EditMessageTooltip';
 import { EllipsisTableCell } from '../../components/EllipsisTableCell';
 import { GenericDataTable } from '../../components/GenericDataTable/GenericDataTable';
 import { SearchService } from '../../service/SearchService';
+import { Endpoints } from '../../constants/Endpoints';
 import { DiseaseAnnotationService } from '../../service/DiseaseAnnotationService';
 import { RelatedNotesDialog } from '../../components/RelatedNotesDialog';
 import { ConditionRelationsDialog } from '../../components/ConditionRelationsDialog';
@@ -559,10 +560,10 @@ export const DiseaseAnnotationsTable = () => {
 	};
 
 	const getSubjectEndpoint = (props) => {
-		if (props.rowData?.type === 'GeneDiseaseAnnotation') return 'gene';
-		if (props.rowData?.type === 'AlleleDiseaseAnnotation') return 'allele';
-		if (props.rowData?.type === 'AGMDiseaseAnnotation') return 'agm';
-		return 'biologicalentity';
+		if (props.rowData?.type === 'GeneDiseaseAnnotation') return Endpoints.Entity.GENE;
+		if (props.rowData?.type === 'AlleleDiseaseAnnotation') return Endpoints.Entity.ALLELE;
+		if (props.rowData?.type === 'AGMDiseaseAnnotation') return Endpoints.Entity.AGM;
+		return Endpoints.Entity.BIOLOGICAL_ENTITY;
 	};
 
 	const getSubjectAutocompleteFields = (props) => {
@@ -612,7 +613,7 @@ export const DiseaseAnnotationsTable = () => {
 			'modInternalId',
 			'crossReferences.referencedCurie',
 		];
-		const endpoint = 'agm';
+		const endpoint = Endpoints.Entity.AGM;
 		const filterName = 'sgdStrainBackgroundFilter';
 		const filter = buildAutocompleteFilter(event, autocompleteFields);
 		const otherFilters = {
@@ -674,7 +675,7 @@ export const DiseaseAnnotationsTable = () => {
 			'modInternalId',
 			'crossReferences.referencedCurie',
 		];
-		const endpoint = 'agm';
+		const endpoint = Endpoints.Entity.AGM;
 		const filterName = 'geneticModifierAgmsFilter';
 		const filter = buildAutocompleteFilter(event, autocompleteFields);
 		setInputValue(event.query);
@@ -729,7 +730,7 @@ export const DiseaseAnnotationsTable = () => {
 			'crossReferences.referencedCurie',
 			'alleleSecondaryIds.secondaryId',
 		];
-		const endpoint = 'allele';
+		const endpoint = Endpoints.Entity.ALLELE;
 		const filterName = 'geneticModifierAllelesFilter';
 		const filter = buildAutocompleteFilter(event, autocompleteFields);
 		setInputValue(event.query);
@@ -787,7 +788,7 @@ export const DiseaseAnnotationsTable = () => {
 			'modInternalId',
 			'crossReferences.referencedCurie',
 		];
-		const endpoint = 'gene';
+		const endpoint = Endpoints.Entity.GENE;
 		const filterName = 'geneticModifierGenesFilter';
 		const filter = buildAutocompleteFilter(event, autocompleteFields);
 		setInputValue(event.query);
@@ -843,7 +844,7 @@ export const DiseaseAnnotationsTable = () => {
 			'alleleSynonyms.formatText',
 			'alleleSynonyms.displayText',
 		];
-		const endpoint = 'allele';
+		const endpoint = Endpoints.Entity.ALLELE;
 		const filterName = 'assertedAllelesFilter';
 		const filter = buildAutocompleteFilter(event, autocompleteFields);
 		setInputValue(event.query);
@@ -893,7 +894,7 @@ export const DiseaseAnnotationsTable = () => {
 			'secondaryIdentifiers',
 			'synonyms.name',
 		];
-		const endpoint = 'doterm';
+		const endpoint = Endpoints.Ontology.DO;
 		const filterName = 'diseaseFilter';
 		const filter = buildAutocompleteFilter(event, autocompleteFields);
 		const otherFilters = {
@@ -944,7 +945,7 @@ export const DiseaseAnnotationsTable = () => {
 			'geneSystematicName.formatText',
 			'geneSystematicName.displayText',
 		];
-		const endpoint = 'gene';
+		const endpoint = Endpoints.Entity.GENE;
 		const filterName = 'assertedGenesFilter';
 		const filter = buildAutocompleteFilter(event, autocompleteFields);
 
@@ -1003,7 +1004,7 @@ export const DiseaseAnnotationsTable = () => {
 			'geneSystematicName.displayText',
 			'geneSecondaryIds.secondaryId',
 		];
-		const endpoint = 'gene';
+		const endpoint = Endpoints.Entity.GENE;
 		const filterName = 'withFilter';
 		const filter = buildAutocompleteFilter(event, autocompleteFields);
 		const otherFilters = {
@@ -1047,7 +1048,7 @@ export const DiseaseAnnotationsTable = () => {
 
 	const evidenceSearch = (event, setFiltered, setInputValue) => {
 		const autocompleteFields = ['curie', 'name', 'abbreviation'];
-		const endpoint = 'ecoterm';
+		const endpoint = Endpoints.Ontology.ECO;
 		const filterName = 'evidenceFilter';
 		const filter = buildAutocompleteFilter(event, autocompleteFields);
 		const otherFilters = {
@@ -1096,7 +1097,7 @@ export const DiseaseAnnotationsTable = () => {
 
 	const referenceSearch = (event, setFiltered, setQuery) => {
 		const autocompleteFields = ['curie', 'cross_references.curie'];
-		const endpoint = 'literature-reference/document';
+		const endpoint = Endpoints.Document.LITERATURE_REFERENCE;
 		const filterName = 'curieFilter';
 		const filter = buildAutocompleteFilter(event, autocompleteFields);
 		setQuery(event.query);
@@ -1442,7 +1443,7 @@ export const DiseaseAnnotationsTable = () => {
 	);
 
 	const DEFAULT_COLUMN_WIDTH = 10;
-	const SEARCH_ENDPOINT = 'disease-annotation';
+	const SEARCH_ENDPOINT = Endpoints.Annotation.DISEASE_ANNOTATION;
 	const defaultFilters = { obsoleteFilter: { obsolete: { queryString: 'false' } } };
 
 	const initialTableState = useMemo(

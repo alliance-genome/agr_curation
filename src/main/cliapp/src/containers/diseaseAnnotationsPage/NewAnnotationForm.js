@@ -44,6 +44,7 @@ import { ConfirmButton } from '../../components/ConfirmButton';
 import { getDefaultFormState, getModFormFields } from '../../service/TableStateService';
 import { useGetUserSettings } from '../../service/useGetUserSettings';
 import { useVocabularyTermSetService } from '../../service/useVocabularyTermSetService';
+import { Endpoints } from '../../constants/Endpoints';
 
 export const NewAnnotationForm = ({
 	newAnnotationState,
@@ -136,13 +137,13 @@ export const NewAnnotationForm = ({
 		event.preventDefault();
 		newAnnotationDispatch({ type: 'SUBMIT' });
 		const isRelatedNotesErrors = await validateTable(
-			'note',
+			Endpoints.Entity.NOTE,
 			'relatedNotesErrorMessages',
 			newAnnotation.relatedNotes,
 			newAnnotationDispatch
 		);
 		const isExConErrors = await validateTable(
-			'condition-relation',
+			Endpoints.Annotation.CONDITION_RELATION,
 			'exConErrorMessages',
 			newAnnotation.conditionRelations,
 			newAnnotationDispatch
@@ -224,7 +225,7 @@ export const NewAnnotationForm = ({
 
 	const referenceSearch = (event, setFiltered, setQuery) => {
 		const autocompleteFields = ['curie', 'cross_references.curie'];
-		const endpoint = 'literature-reference/document';
+		const endpoint = Endpoints.Document.LITERATURE_REFERENCE;
 		const filterName = 'curieFilter';
 		const filter = buildAutocompleteFilter(event, autocompleteFields);
 		setQuery(event.query);
@@ -239,7 +240,7 @@ export const NewAnnotationForm = ({
 			'modInternalId',
 			'crossReferences.referencedCurie',
 		];
-		const endpoint = 'agm';
+		const endpoint = Endpoints.Entity.AGM;
 		const filterName = 'sgdStrainBackgroundFilter';
 		const filter = buildAutocompleteFilter(event, autocompleteFields);
 		const otherFilters = {
@@ -261,7 +262,7 @@ export const NewAnnotationForm = ({
 			'curie',
 			'crossReferences.referencedCurie',
 		];
-		const endpoint = 'agm';
+		const endpoint = Endpoints.Entity.AGM;
 		const filterName = 'geneticModifierAgmsFilter';
 		const filter = buildAutocompleteFilter(event, autocompleteFields);
 		setQuery(event.query);
@@ -279,7 +280,7 @@ export const NewAnnotationForm = ({
 			'alleleSecondaryIds.secondaryId',
 			'alleleSynonyms.displayText',
 		];
-		const endpoint = 'allele';
+		const endpoint = Endpoints.Entity.ALLELE;
 		const filterName = 'geneticModifierAllelesFilter';
 		const filter = buildAutocompleteFilter(event, autocompleteFields);
 		setQuery(event.query);
@@ -296,7 +297,7 @@ export const NewAnnotationForm = ({
 			'crossReferences.referencedCurie',
 			'geneSynonyms.displayText',
 		];
-		const endpoint = 'gene';
+		const endpoint = Endpoints.Entity.GENE;
 		const filterName = 'geneticModifierGenesFilter';
 		const filter = buildAutocompleteFilter(event, autocompleteFields);
 		setQuery(event.query);
@@ -369,7 +370,7 @@ export const NewAnnotationForm = ({
 			'agmSecondaryIds.secondaryId',
 			'geneSecondaryIds.secondaryId',
 		];
-		const endpoint = 'biologicalentity';
+		const endpoint = Endpoints.Entity.BIOLOGICAL_ENTITY;
 		const filterName = 'diseaseAnnotationSubjectFilter';
 		const filter = buildAutocompleteFilter(event, autocompleteFields);
 		setQuery(event.query);
@@ -396,7 +397,7 @@ export const NewAnnotationForm = ({
 			'secondaryIdentifiers',
 			'synonyms.name',
 		];
-		const endpoint = 'doterm';
+		const endpoint = Endpoints.Ontology.DO;
 		const filterName = 'diseaseFilter';
 		const filter = buildAutocompleteFilter(event, autocompleteFields);
 		setQuery(event.query);
@@ -448,7 +449,7 @@ export const NewAnnotationForm = ({
 	};
 	const evidenceSearch = (event, setFiltered, setInputValue) => {
 		const autocompleteFields = ['curie', 'name', 'abbreviation'];
-		const endpoint = 'ecoterm';
+		const endpoint = Endpoints.Ontology.ECO;
 		const filterName = 'evidenceFilter';
 		const filter = buildAutocompleteFilter(event, autocompleteFields);
 		const otherFilters = {
@@ -473,7 +474,7 @@ export const NewAnnotationForm = ({
 			'crossReferences.referencedCurie',
 			'geneSynonyms.displayText',
 		];
-		const endpoint = 'gene';
+		const endpoint = Endpoints.Entity.GENE;
 		const filterName = 'withFilter';
 		const filter = buildAutocompleteFilter(event, autocompleteFields);
 		const otherFilters = {
@@ -526,7 +527,7 @@ export const NewAnnotationForm = ({
 			'crossReferences.referencedCurie',
 			'geneSynonyms.displayText',
 		];
-		const endpoint = 'gene';
+		const endpoint = Endpoints.Entity.GENE;
 		const filterName = 'assertedGenesFilter';
 		const filter = buildAutocompleteFilter(event, autocompleteFields);
 		setInputValue(event.query);
@@ -544,7 +545,7 @@ export const NewAnnotationForm = ({
 			'alleleSecondaryIds.secondaryId',
 			'alleleSynonyms.displayText',
 		];
-		const endpoint = 'allele';
+		const endpoint = Endpoints.Entity.ALLELE;
 		const filterName = 'assertedAllelesFilter';
 		const filter = buildAutocompleteFilter(event, autocompleteFields);
 		setInputValue(event.query);

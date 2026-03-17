@@ -26,6 +26,7 @@ import { CountDialogTemplate } from '../../components/Templates/dialog/CountDial
 import { ErrorMessageComponent } from '../../components/Error/ErrorMessageComponent';
 
 import { SearchService } from '../../service/SearchService';
+import { Endpoints } from '../../constants/Endpoints';
 
 import { Button } from 'primereact/button';
 import { EditMessageTooltip } from '../../components/EditMessageTooltip';
@@ -390,7 +391,7 @@ export const GenesTable = () => {
 	);
 
 	const DEFAULT_COLUMN_WIDTH = 10;
-	const SEARCH_ENDPOINT = 'gene';
+	const SEARCH_ENDPOINT = Endpoints.Entity.GENE;
 
 	const initialTableState = useMemo(() => getDefaultTableState('Genes', columns, DEFAULT_COLUMN_WIDTH), [columns]);
 

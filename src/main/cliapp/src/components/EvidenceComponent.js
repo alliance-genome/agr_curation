@@ -11,6 +11,7 @@ import {
 	getRefStrings,
 } from '../utils/utils';
 import { LiteratureAutocompleteTemplate } from './Autocomplete/LiteratureAutocompleteTemplate';
+import { Endpoints } from '../constants/Endpoints';
 
 export const evidenceTemplate = (rowData) => {
 	if (rowData && rowData.evidence) {
@@ -53,7 +54,7 @@ export const onEvidenceValueChange = (event, setFieldValue, props) => {
 export const evidenceSearch = (event, setFiltered, setInputValue) => {
 	const searchService = new SearchService();
 	const autocompleteFields = ['curie', 'cross_references.curie'];
-	const endpoint = 'literature-reference/document';
+	const endpoint = Endpoints.Document.LITERATURE_REFERENCE;
 	const filterName = 'evidenceFilter';
 	const filter = buildAutocompleteFilter(event, autocompleteFields);
 

@@ -14,6 +14,7 @@ import { FILTER_CONFIGS } from '../../constants/FilterFields';
 import { useGetTableData } from '../../service/useGetTableData';
 import { useGetUserSettings } from '../../service/useGetUserSettings';
 import { SearchService } from '../../service/SearchService';
+import { Endpoints } from '../../constants/Endpoints';
 import { WhereExpressedDialog } from './WhereExpressedDialog';
 import { WhenExpressedDialog } from './WhenExpressedDialog';
 
@@ -294,7 +295,7 @@ export const GeneExpressionAnnotationsTable = () => {
 	);
 
 	const DEFAULT_COLUMN_WIDTH = 10;
-	const SEARCH_ENDPOINT = 'gene-expression-annotation';
+	const SEARCH_ENDPOINT = Endpoints.Annotation.GENE_EXPRESSION_ANNOTATION;
 	const defaultFilters = { obsoleteFilter: { obsolete: { queryString: 'false' } } };
 
 	const initialTableState = useMemo(

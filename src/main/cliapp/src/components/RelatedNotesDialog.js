@@ -24,6 +24,7 @@ import { LiteratureAutocompleteTemplate } from './Autocomplete/LiteratureAutocom
 import { ListTableCell } from './ListTableCell';
 import { AutocompleteMultiEditor } from './Autocomplete/AutocompleteMultiEditor';
 import { SearchService } from '../service/SearchService';
+import { Endpoints } from '../constants/Endpoints';
 
 export const RelatedNotesDialog = ({
 	originalRelatedNotesData,
@@ -169,7 +170,7 @@ export const RelatedNotesDialog = ({
 	const validateNote = async (note) => {
 		let _note = global.structuredClone(note);
 		delete _note.dataKey;
-		const result = await validationService.validate('note', _note);
+		const result = await validationService.validate(Endpoints.Entity.NOTE, _note);
 		return result;
 	};
 
@@ -339,7 +340,7 @@ export const RelatedNotesDialog = ({
 
 	const evidenceSearch = (event, setFiltered, setInputValue) => {
 		const autocompleteFields = ['curie', 'cross_references.curie'];
-		const endpoint = 'literature-reference/document';
+		const endpoint = Endpoints.Document.LITERATURE_REFERENCE;
 		const filterName = 'evidenceFilter';
 		const filter = buildAutocompleteFilter(event, autocompleteFields);
 
