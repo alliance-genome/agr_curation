@@ -6,6 +6,7 @@ import { GenomicEntityTemplate } from '../../components/Templates/genomicEntity/
 import { BooleanTemplate } from '../../components/Templates/BooleanTemplate';
 import { OntologyTermTemplate } from '../../components/Templates/OntologyTermTemplate';
 import { StringTemplate } from '../../components/Templates/StringTemplate';
+import { TextDialogTemplate } from '../../components/Templates/dialog/TextDialogTemplate';
 import { SingleReferenceTemplate } from '../../components/Templates/reference/SingleReferenceTemplate';
 import { CrossReferencesTemplate } from '../../components/Templates/CrossReferencesTemplate';
 import { getDefaultTableState } from '../../service/TableStateService';
@@ -13,6 +14,8 @@ import { FILTER_CONFIGS } from '../../constants/FilterFields';
 import { useGetTableData } from '../../service/useGetTableData';
 import { useGetUserSettings } from '../../service/useGetUserSettings';
 import { SearchService } from '../../service/SearchService';
+import { WhereExpressedDialog } from './WhereExpressedDialog';
+import { WhenExpressedDialog } from './WhenExpressedDialog';
 
 export const GeneExpressionAnnotationsTable = () => {
 	const [isInEditMode, setIsInEditMode] = useState(false);
@@ -30,6 +33,17 @@ export const GeneExpressionAnnotationsTable = () => {
 
 	const toast_topleft = useRef(null);
 	const toast_topright = useRef(null);
+
+	const [whereExpressedData, setWhereExpressedData] = useState({ data: null, dialog: false });
+	const [whenExpressedData, setWhenExpressedData] = useState({ data: null, dialog: false });
+
+	const handleWhereExpressedOpen = (anatomicalSite) => {
+		setWhereExpressedData({ data: anatomicalSite, dialog: true });
+	};
+
+	const handleWhenExpressedOpen = (temporalContext) => {
+		setWhenExpressedData({ data: temporalContext, dialog: true });
+	};
 
 	const sortMapping = {};
 
@@ -153,14 +167,26 @@ export const GeneExpressionAnnotationsTable = () => {
 			{
 				field: 'whereExpressedStatement',
 				header: 'Where Expressed',
-				body: (rowData) => <StringTemplate string={rowData.whereExpressedStatement} />,
+				body: (rowData) => (
+					<TextDialogTemplate
+						entity={rowData.expressionPattern?.whereExpressed}
+						handleOpen={handleWhereExpressedOpen}
+						text={rowData.whereExpressedStatement}
+					/>
+				),
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.geaWhereExpressedFilterConfig,
 			},
 			{
 				field: 'whenExpressedStageName',
 				header: 'When Expressed',
-				body: (rowData) => <StringTemplate string={rowData.whenExpressedStageName} />,
+				body: (rowData) => (
+					<TextDialogTemplate
+						entity={rowData.expressionPattern?.whenExpressed}
+						handleOpen={handleWhenExpressedOpen}
+						text={rowData.whenExpressedStageName}
+					/>
+				),
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.geaWhenExpressedFilterConfig,
 			},
@@ -320,6 +346,8 @@ export const GeneExpressionAnnotationsTable = () => {
 					defaultFilters={defaultFilters}
 				/>
 			</div>
+			<WhereExpressedDialog whereExpressedData={whereExpressedData} setWhereExpressedData={setWhereExpressedData} />
+			<WhenExpressedDialog whenExpressedData={whenExpressedData} setWhenExpressedData={setWhenExpressedData} />
 		</>
 	);
 };
