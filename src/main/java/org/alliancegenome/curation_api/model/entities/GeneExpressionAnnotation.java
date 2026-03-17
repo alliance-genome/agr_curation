@@ -55,13 +55,13 @@ import lombok.EqualsAndHashCode;
 
 public class GeneExpressionAnnotation extends ExpressionAnnotation {
 
-	@IndexedEmbedded(includePaths = {"geneSymbol.displayText", "geneSymbol.formatText", "geneSymbol.displayText_keyword", "geneSymbol.formatText_keyword", "curie", "curie_keyword", "taxon.curie", "taxon.name", "taxon.curie_keyword", "taxon.name_keyword"})
+	@IndexedEmbedded(includePaths = {"geneSymbol.displayText", "geneSymbol.formatText", "geneSymbol.displayText_keyword", "geneSymbol.formatText_keyword", "curie", "curie_keyword", "primaryExternalId", "primaryExternalId_keyword", "modInternalId", "modInternalId_keyword", "taxon.curie", "taxon.name", "taxon.curie_keyword", "taxon.name_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
 	@JsonView({CurationView.FieldsOnly.class, CurationView.ForPublic.class, CurationView.GeneExpressionDocument.class})
 	private Gene expressionAnnotationSubject;
 
-	@IndexedEmbedded(includePaths = {"name", "name_keyword"})
+	@IndexedEmbedded(includePaths = {"name", "name_keyword", "curie", "curie_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
 	@JsonView({CurationView.FieldsOnly.class, CurationView.ForPublic.class, CurationView.GeneExpressionDocument.class})
@@ -81,6 +81,8 @@ public class GeneExpressionAnnotation extends ExpressionAnnotation {
 		"uniqueId", "uniqueId_keyword",
 		"primaryExternalId", "primaryExternalId_keyword",
 		"modInternalId", "modInternalId_keyword",
+		"internal", "internal_keyword",
+		"obsolete", "obsolete_keyword",
 		"singleReference.curie", "singleReference.primaryCrossReferenceCurie",
 		"singleReference.crossReferences.referencedCurie",
 		"singleReference.curie_keyword", "singleReference.primaryCrossReferenceCurie_keyword",
