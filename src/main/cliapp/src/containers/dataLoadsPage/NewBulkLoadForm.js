@@ -223,7 +223,6 @@ export const NewBulkLoadForm = ({
 								<p style={{ margin: 0, fontStyle: 'italic', color: '#999' }}>None</p>
 							)}
 						</div>
-						
 					</form>
 				</div>
 			</ErrorBoundary>
