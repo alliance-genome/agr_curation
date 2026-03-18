@@ -107,12 +107,11 @@ public class SlackNotifier {
 				bulkLoadFileHistory.getErrorMessage(), fields,
 				"danger", "An error has occurred on Curation ");
 		} else if (bulkLoadFileHistory.getBulkloadStatus() == JobStatus.FINISHED) {
-			String dataProvider = extractDataProvider(bulkLoadFileHistory.getBulkLoad());
-			slackDataloadComplete(bulkLoadFileHistory, dataProvider);
+			slackDataloadComplete(bulkLoadFileHistory);
 		}
 	}
 
-	public void slackDataloadComplete(BulkLoadFileHistory bulkLoadFileHistory, String dataProvider) {
+	public void slackDataloadComplete(BulkLoadFileHistory bulkLoadFileHistory) {
 		BulkLoad bulkLoad = bulkLoadFileHistory.getBulkLoad();
 		Set<BulkLoad> dependentLoads = bulkLoad.getDepends();
 
@@ -123,7 +122,6 @@ public class SlackNotifier {
 		List<Field> fields = new ArrayList<>();
 		fields.add(new Field("Environment", systemName.get(), true));
 		fields.add(new Field("Load Type", String.valueOf(bulkLoad.getBackendBulkLoadType()), true));
-		fields.add(new Field("Data Provider", dataProvider != null ? dataProvider : "N/A", true));
 		fields.add(new Field("Completed At",
 			bulkLoadFileHistory.getLoadFinished() != null
 				? bulkLoadFileHistory.getLoadFinished().toString() : "N/A", true));
@@ -138,19 +136,5 @@ public class SlackNotifier {
 			bulkLoad.getGroup().getName(), bulkLoad.getName(),
 			bulkLoad.getName() + " has finished successfully. The following dependent loads need to be run/rerun.",
 			fields, "good", "Data load completed on Curation ");
-	}
-
-	private String extractDataProvider(BulkLoad bulkLoad) {
-		if (bulkLoad instanceof BulkManualLoad bulkManualLoad) {
-			if (bulkManualLoad.getDataProvider() != null) {
-				return bulkManualLoad.getDataProvider().sourceOrganization;
-			}
-		}
-		if (bulkLoad instanceof BulkFMSLoad bulkFMSLoad) {
-			if (bulkFMSLoad.getFmsDataSubType() != null) {
-				return bulkFMSLoad.getFmsDataSubType();
-			}
-		}
-		return null;
 	}
 }
