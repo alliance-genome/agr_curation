@@ -79,7 +79,7 @@ public class SlackNotifier {
 			if (bulkLoad.getBackendBulkLoadType() == BackendBulkLoadType.ONTOLOGY) {
 				fields.add(new Field("Ontology Type", String.valueOf(bulkLoad.getOntologyType()), true));
 			}
-			sendSlackMessage(slackDataloadsChannel.get(),
+			sendSlackMessage(slackDataloadsChannel.get().isEmpty() ? "a-team-dataloads" : slackDataloadsChannel.get(),
 				bulkLoad.getGroup().getName(), bulkLoad.getName(), bulkLoad.getErrorMessage(), fields,
 				"danger", "An error has occurred on Curation ");
 		}
@@ -102,7 +102,7 @@ public class SlackNotifier {
 				fields.add(new Field("Alliance Member Release Version", bulkLoadFileHistory.getBulkLoadFile().getAllianceMemberReleaseVersion(), false));
 			}
 
-			sendSlackMessage(slackDataloadsChannel.get(),
+			sendSlackMessage(slackDataloadsChannel.get().isEmpty() ? "a-team-dataloads": slackDataloadsChannel.get(),
 				bulkLoadFileHistory.getBulkLoad().getGroup().getName(), bulkLoadFileHistory.getBulkLoad().getName(),
 				bulkLoadFileHistory.getErrorMessage(), fields,
 				"danger", "An error has occurred on Curation ");
@@ -132,7 +132,7 @@ public class SlackNotifier {
 			.collect(Collectors.joining(", "));
 		fields.add(new Field("Dependent Loads To Run", dependentLoadNames, false));
 
-		sendSlackMessage(slackDataloadsChannel.get(),
+		sendSlackMessage(slackDataloadsChannel.get().isEmpty() ? "a-team-dataloads" : slackDataloadsChannel.get(),
 			bulkLoad.getGroup().getName(), bulkLoad.getName(),
 			bulkLoad.getName() + " has finished successfully. The following dependent loads need to be run/rerun.",
 			fields, "good", "Data load completed on Curation ");
