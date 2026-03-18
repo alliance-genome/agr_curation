@@ -15,6 +15,7 @@ import { useGetUserSettings } from '../../service/useGetUserSettings';
 import { CrossReferencesTemplate } from '../../components/Templates/CrossReferencesTemplate';
 
 import { SearchService } from '../../service/SearchService';
+import { Endpoints } from '../../constants/Endpoints';
 
 export const PhenotypeAnnotationsTable = () => {
 	const [isInEditMode, setIsInEditMode] = useState(false); //needs better name
@@ -191,7 +192,7 @@ export const PhenotypeAnnotationsTable = () => {
 	);
 
 	const DEFAULT_COLUMN_WIDTH = 10;
-	const SEARCH_ENDPOINT = 'phenotype-annotation';
+	const SEARCH_ENDPOINT = Endpoints.Annotation.PHENOTYPE_ANNOTATION;
 	const defaultFilters = { obsoleteFilter: { obsolete: { queryString: 'false' } } };
 
 	const initialTableState = useMemo(

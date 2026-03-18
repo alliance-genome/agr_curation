@@ -2,6 +2,7 @@ import React, { useRef, useState, useMemo } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { Toast } from 'primereact/toast';
 import { SearchService } from '../../service/SearchService';
+import { Endpoints } from '../../constants/Endpoints';
 import { Messages } from 'primereact/messages';
 import { ControlledVocabularyDropdown } from '../../components/ControlledVocabularySelector';
 import { ErrorMessageComponent } from '../../components/Error/ErrorMessageComponent';
@@ -95,7 +96,7 @@ export const ConditionRelationTable = () => {
 
 	const referenceSearch = (event, setFiltered, setQuery) => {
 		const autocompleteFields = ['curie', 'cross_references.curie'];
-		const endpoint = 'literature-reference';
+		const endpoint = Endpoints.Document.LITERATURE_REFERENCE;
 		const filterName = 'curieFilter';
 		const filter = buildAutocompleteFilter(event, autocompleteFields);
 		setQuery(event.query);
@@ -134,7 +135,7 @@ export const ConditionRelationTable = () => {
 
 	const conditionRelationSearch = (event, setFiltered, setInputValue) => {
 		const autocompleteFields = ['conditionSummary'];
-		const endpoint = 'experimental-condition';
+		const endpoint = Endpoints.Annotation.EXPERIMENTAL_CONDITION;
 		const filterName = 'experimentalConditionFilter';
 		const filter = buildAutocompleteFilter(event, autocompleteFields);
 
@@ -221,7 +222,7 @@ export const ConditionRelationTable = () => {
 	);
 
 	const DEFAULT_COLUMN_WIDTH = 10;
-	const SEARCH_ENDPOINT = 'condition-relation';
+	const SEARCH_ENDPOINT = Endpoints.Annotation.CONDITION_RELATION;
 
 	const initialTableState = useMemo(
 		() => getDefaultTableState('Experiments', columns, DEFAULT_COLUMN_WIDTH),
