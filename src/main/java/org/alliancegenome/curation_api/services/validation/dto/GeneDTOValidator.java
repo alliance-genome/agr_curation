@@ -106,12 +106,13 @@ public class GeneDTOValidator extends GenomicEntityDTOValidator<Gene, GeneDTO> {
 		}
 		gene.setGcrpCrossReference(gcrpCrossReference);
 		
+		response.convertWarningMessagesToMap();
 		response.convertErrorMessagesToMap();
 
 		if (response.hasErrors()) {
 			throw new ObjectValidationException(dto, response.errorMessagesString());
 		}
-		
+
 		response.setEntity(geneDAO.persist(gene));
 
 		return response;
@@ -130,6 +131,10 @@ public class GeneDTOValidator extends GenomicEntityDTOValidator<Gene, GeneDTO> {
 			response.addErrorMessage(field, symbolResponse.errorMessagesString());
 			response.addErrorMessages(field, symbolResponse.getErrorMessages());
 			return null;
+		}
+
+		if (symbolResponse.hasWarnings()) {
+			response.addWarningMessages(symbolResponse.getWarningMessages());
 		}
 
 		GeneSymbolSlotAnnotation symbol = symbolResponse.getEntity();
@@ -152,6 +157,10 @@ public class GeneDTOValidator extends GenomicEntityDTOValidator<Gene, GeneDTO> {
 			return null;
 		}
 
+		if (nameResponse.hasWarnings()) {
+			response.addWarningMessages(nameResponse.getWarningMessages());
+		}
+
 		GeneFullNameSlotAnnotation fullName = nameResponse.getEntity();
 		fullName.setSingleGene(gene);
 
@@ -170,6 +179,10 @@ public class GeneDTOValidator extends GenomicEntityDTOValidator<Gene, GeneDTO> {
 			response.addErrorMessage(field, nameResponse.errorMessagesString());
 			response.addErrorMessages(field, nameResponse.getErrorMessages());
 			return null;
+		}
+
+		if (nameResponse.hasWarnings()) {
+			response.addWarningMessages(nameResponse.getWarningMessages());
 		}
 
 		GeneSystematicNameSlotAnnotation systematicName = nameResponse.getEntity();
@@ -203,6 +216,9 @@ public class GeneDTOValidator extends GenomicEntityDTOValidator<Gene, GeneDTO> {
 					syn.setSingleGene(gene);
 					validatedSynonyms.add(syn);
 				}
+				if (synResponse.hasWarnings()) {
+					response.addWarningMessages(field, ix, synResponse.getWarningMessages());
+				}
 			}
 		}
 
@@ -210,6 +226,8 @@ public class GeneDTOValidator extends GenomicEntityDTOValidator<Gene, GeneDTO> {
 			response.convertMapToErrorMessages(field);
 			return null;
 		}
+
+		response.convertMapToWarningMessages(field);
 
 		if (CollectionUtils.isEmpty(validatedSynonyms)) {
 			return null;
@@ -243,6 +261,9 @@ public class GeneDTOValidator extends GenomicEntityDTOValidator<Gene, GeneDTO> {
 					sid.setSingleGene(gene);
 					validatedSecondaryIds.add(sid);
 				}
+				if (sidResponse.hasWarnings()) {
+					response.addWarningMessages(field, ix, sidResponse.getWarningMessages());
+				}
 			}
 		}
 
@@ -250,6 +271,8 @@ public class GeneDTOValidator extends GenomicEntityDTOValidator<Gene, GeneDTO> {
 			response.convertMapToErrorMessages(field);
 			return null;
 		}
+
+		response.convertMapToWarningMessages(field);
 
 		if (CollectionUtils.isEmpty(validatedSecondaryIds)) {
 			return null;

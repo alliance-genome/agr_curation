@@ -18,7 +18,7 @@ public class NoteDTOValidator extends AuditedObjectDTOValidator<Note, NoteDTO> {
 
 	public ObjectResponse<Note> validateNoteDTO(NoteDTO dto, String noteTypeVocabularyTermSet) {
 		response = new ObjectResponse<Note>();
-		
+
 		Note note = new Note();
 		note = validateAuditedObjectDTO(note, dto);
 
@@ -30,9 +30,9 @@ public class NoteDTOValidator extends AuditedObjectDTOValidator<Note, NoteDTO> {
 		VocabularyTerm noteType = validateRequiredTermInVocabularyTermSet("note_type_name", dto.getNoteTypeName(), noteTypeVocabularyTermSet);
 		note.setNoteType(noteType);
 
-		List<Reference> references = validateReferences("evidence_curies", dto.getEvidenceCuries(), true);
+		List<Reference> references = validateOptionalEntities("evidence_curies", dto.getEvidenceCuries(), referenceService::retrieveFromDbOrLiteratureService);
 		note.setReferences(references);
-		
+
 		response.setEntity(note);
 
 		return response;

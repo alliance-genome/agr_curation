@@ -356,17 +356,11 @@ public class IT_0101_GeneBulkUploadITCase extends BaseITCase {
 		checkFailedBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "IV_09_invalid_gene_full_name_synonym_scope.json");
 		checkFailedBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "IV_10_invalid_gene_systematic_name_synonym_scope.json");
 		checkFailedBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "IV_11_invalid_gene_synonym_synonym_scope.json");
-		checkFailedBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "IV_12_invalid_gene_symbol_evidence.json");
-		checkFailedBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "IV_13_invalid_gene_full_name_evidence.json");
-		checkFailedBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "IV_14_invalid_gene_systematic_name_evidence.json");
-		checkFailedBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "IV_15_invalid_gene_synonym_evidence.json");
 		checkFailedBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "IV_16_invalid_data_provider_source_organization_abbreviation.json");
 		checkFailedBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "IV_17_invalid_data_provider_cross_reference_prefix.json");
 		checkFailedBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "IV_18_invalid_data_provider_cross_reference_page_area.json");
-		checkFailedBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "IV_19_invalid_gene_secondary_id_evidence.json");
 		checkFailedBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "IV_20_invalid_gene_type.json");
 		checkFailedBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "IV_21_invalid_note_type_name.json");
-		checkFailedBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "IV_22_invalid_evidence_curies.json");
 		checkFailedBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "IV_23_invalid_gcrp_cross_reference_prefix.json");
 		checkFailedBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "IV_24_invalid_gcrp_cross_reference_page_area.json");
 	}
@@ -564,5 +558,16 @@ public class IT_0101_GeneBulkUploadITCase extends BaseITCase {
 			statusCode(200).
 			body("entity.primaryExternalId", is("GENETEST:DN01")).
 			body("entity.relatedNotes", hasSize(1));
+	}
+
+	@Test
+	@Order(14)
+	public void geneBulkUploadInvalidReferenceWarning() throws Exception {
+		checkWarningBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "IV_12_invalid_gene_symbol_evidence.json");
+		checkWarningBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "IV_13_invalid_gene_full_name_evidence.json");
+		checkWarningBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "IV_14_invalid_gene_systematic_name_evidence.json");
+		checkWarningBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "IV_15_invalid_gene_synonym_evidence.json");
+		checkWarningBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "IV_19_invalid_gene_secondary_id_evidence.json");
+		checkWarningBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "IV_22_invalid_evidence_curies.json");
 	}
 }

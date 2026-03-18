@@ -96,7 +96,7 @@ public class AlleleDTOValidator extends GenomicEntityDTOValidator<Allele, Allele
 
 		allele.setIsExtinct(dto.getIsExtinct());
 
-		List<Reference> refs = validateReferences("reference_curies", dto.getReferenceCuries(), false);
+		List<Reference> refs = validateOptionalEntities("reference_curies", dto.getReferenceCuries(), referenceService::retrieveFromDbOrLiteratureService);
 		allele.setReferences(refs);
 
 		List<AlleleMutationTypeSlotAnnotation> mutationTypes = validateAlleleMutationTypes(allele, dto);
@@ -183,7 +183,7 @@ public class AlleleDTOValidator extends GenomicEntityDTOValidator<Allele, Allele
 		if (response.hasErrors()) {
 			throw new ObjectValidationException(dto, response.errorMessagesString());
 		}
-		
+
 		try {
 			response.setEntity(alleleDAO.persist(allele));
 			return response;
@@ -219,6 +219,9 @@ public class AlleleDTOValidator extends GenomicEntityDTOValidator<Allele, Allele
 					mt.setSingleAllele(allele);
 					validatedMutationTypes.add(mt);
 				}
+				if (mtResponse.hasWarnings()) {
+					response.addWarningMessages(field, ix, mtResponse.getWarningMessages());
+				}
 			}
 		}
 
@@ -226,6 +229,8 @@ public class AlleleDTOValidator extends GenomicEntityDTOValidator<Allele, Allele
 			response.convertMapToErrorMessages(field);
 			return null;
 		}
+
+		response.convertMapToWarningMessages(field);
 
 		if (CollectionUtils.isEmpty(validatedMutationTypes)) {
 			return null;
@@ -259,6 +264,9 @@ public class AlleleDTOValidator extends GenomicEntityDTOValidator<Allele, Allele
 					im.setSingleAllele(allele);
 					validatedInheritanceModes.add(im);
 				}
+				if (imResponse.hasWarnings()) {
+					response.addWarningMessages(field, ix, imResponse.getWarningMessages());
+				}
 			}
 		}
 
@@ -266,6 +274,8 @@ public class AlleleDTOValidator extends GenomicEntityDTOValidator<Allele, Allele
 			response.convertMapToErrorMessages(field);
 			return null;
 		}
+
+		response.convertMapToWarningMessages(field);
 
 		if (CollectionUtils.isEmpty(validatedInheritanceModes)) {
 			return null;
@@ -287,6 +297,9 @@ public class AlleleDTOValidator extends GenomicEntityDTOValidator<Allele, Allele
 			response.addErrorMessages(field, agtsResponse.getErrorMessages());
 			return null;
 		}
+		if (agtsResponse.hasWarnings()) {
+			response.addWarningMessages(agtsResponse.getWarningMessages());
+		}
 
 		AlleleGermlineTransmissionStatusSlotAnnotation agts = agtsResponse.getEntity();
 		agts.setSingleAllele(allele);
@@ -306,6 +319,9 @@ public class AlleleDTOValidator extends GenomicEntityDTOValidator<Allele, Allele
 			response.addErrorMessage(field, adsResponse.errorMessagesString());
 			response.addErrorMessages(field, adsResponse.getErrorMessages());
 			return null;
+		}
+		if (adsResponse.hasWarnings()) {
+			response.addWarningMessages(adsResponse.getWarningMessages());
 		}
 
 		AlleleDatabaseStatusSlotAnnotation ads = adsResponse.getEntity();
@@ -339,6 +355,9 @@ public class AlleleDTOValidator extends GenomicEntityDTOValidator<Allele, Allele
 					ne.setSingleAllele(allele);
 					validatedNomenclatureEvents.add(ne);
 				}
+				if (neResponse.hasWarnings()) {
+					response.addWarningMessages(field, ix, neResponse.getWarningMessages());
+				}
 			}
 		}
 
@@ -346,6 +365,8 @@ public class AlleleDTOValidator extends GenomicEntityDTOValidator<Allele, Allele
 			response.convertMapToErrorMessages(field);
 			return null;
 		}
+
+		response.convertMapToWarningMessages(field);
 
 		if (CollectionUtils.isEmpty(validatedNomenclatureEvents)) {
 			return null;
@@ -368,6 +389,9 @@ public class AlleleDTOValidator extends GenomicEntityDTOValidator<Allele, Allele
 			response.addErrorMessages(field, symbolResponse.getErrorMessages());
 			return null;
 		}
+		if (symbolResponse.hasWarnings()) {
+			response.addWarningMessages(symbolResponse.getWarningMessages());
+		}
 
 		AlleleSymbolSlotAnnotation symbol = symbolResponse.getEntity();
 		symbol.setSingleAllele(allele);
@@ -387,6 +411,9 @@ public class AlleleDTOValidator extends GenomicEntityDTOValidator<Allele, Allele
 			response.addErrorMessage(field, nameResponse.errorMessagesString());
 			response.addErrorMessages(field, nameResponse.getErrorMessages());
 			return null;
+		}
+		if (nameResponse.hasWarnings()) {
+			response.addWarningMessages(nameResponse.getWarningMessages());
 		}
 
 		AlleleFullNameSlotAnnotation fullName = nameResponse.getEntity();
@@ -420,6 +447,9 @@ public class AlleleDTOValidator extends GenomicEntityDTOValidator<Allele, Allele
 					syn.setSingleAllele(allele);
 					validatedSynonyms.add(syn);
 				}
+				if (synResponse.hasWarnings()) {
+					response.addWarningMessages(field, ix, synResponse.getWarningMessages());
+				}
 			}
 		}
 
@@ -427,6 +457,8 @@ public class AlleleDTOValidator extends GenomicEntityDTOValidator<Allele, Allele
 			response.convertMapToErrorMessages(field);
 			return null;
 		}
+
+		response.convertMapToWarningMessages(field);
 
 		if (CollectionUtils.isEmpty(validatedSynonyms)) {
 			return null;
@@ -460,6 +492,9 @@ public class AlleleDTOValidator extends GenomicEntityDTOValidator<Allele, Allele
 					sid.setSingleAllele(allele);
 					validatedSecondaryIds.add(sid);
 				}
+				if (sidResponse.hasWarnings()) {
+					response.addWarningMessages(field, ix, sidResponse.getWarningMessages());
+				}
 			}
 		}
 
@@ -467,6 +502,8 @@ public class AlleleDTOValidator extends GenomicEntityDTOValidator<Allele, Allele
 			response.convertMapToErrorMessages(field);
 			return null;
 		}
+
+		response.convertMapToWarningMessages(field);
 
 		if (CollectionUtils.isEmpty(validatedSecondaryIds)) {
 			return null;
@@ -500,6 +537,9 @@ public class AlleleDTOValidator extends GenomicEntityDTOValidator<Allele, Allele
 					fi.setSingleAllele(allele);
 					validatedFunctionalImpacts.add(fi);
 				}
+				if (fiResponse.hasWarnings()) {
+					response.addWarningMessages(field, ix, fiResponse.getWarningMessages());
+				}
 			}
 		}
 
@@ -507,6 +547,8 @@ public class AlleleDTOValidator extends GenomicEntityDTOValidator<Allele, Allele
 			response.convertMapToErrorMessages(field);
 			return null;
 		}
+
+		response.convertMapToWarningMessages(field);
 
 		if (CollectionUtils.isEmpty(validatedFunctionalImpacts)) {
 			return null;

@@ -293,8 +293,6 @@ public class IT_0105_ConstructBulkUploadITCase extends BaseITCase {
 	public void constructBulkUploadInvalidFields() throws Exception {
 		checkFailedBulkLoad(constructBulkPostEndpoint, constructTestFilePath + "IV_01_invalid_date_created.json");
 		checkFailedBulkLoad(constructBulkPostEndpoint, constructTestFilePath + "IV_02_invalid_date_updated.json");
-		checkFailedBulkLoad(constructBulkPostEndpoint, constructTestFilePath + "IV_03_invalid_reference.json");
-		checkFailedBulkLoad(constructBulkPostEndpoint, constructTestFilePath + "IV_04_invalid_construct_component_evidence.json");
 		checkFailedBulkLoad(constructBulkPostEndpoint, constructTestFilePath + "IV_05_invalid_construct_component_taxon.json");
 		checkFailedBulkLoad(constructBulkPostEndpoint, constructTestFilePath + "IV_06_invalid_construct_component_note_note_type.json");
 		checkFailedBulkLoad(constructBulkPostEndpoint, constructTestFilePath + "IV_07_invalid_data_provider_source_organization_abbreviation.json");
@@ -306,9 +304,6 @@ public class IT_0105_ConstructBulkUploadITCase extends BaseITCase {
 		checkFailedBulkLoad(constructBulkPostEndpoint, constructTestFilePath + "IV_13_invalid_construct_symbol_synonym_scope.json");
 		checkFailedBulkLoad(constructBulkPostEndpoint, constructTestFilePath + "IV_14_invalid_construct_full_name_synonym_scope.json");
 		checkFailedBulkLoad(constructBulkPostEndpoint, constructTestFilePath + "IV_15_invalid_construct_synonym_synonym_scope.json");
-		checkFailedBulkLoad(constructBulkPostEndpoint, constructTestFilePath + "IV_16_invalid_construct_symbol_evidence.json");
-		checkFailedBulkLoad(constructBulkPostEndpoint, constructTestFilePath + "IV_17_invalid_construct_full_name_evidence.json");
-		checkFailedBulkLoad(constructBulkPostEndpoint, constructTestFilePath + "IV_18_invalid_construct_synonym_evidence.json");
 		checkFailedBulkLoad(constructBulkPostEndpoint, constructTestFilePath + "IV_19_invalid_construct_component_relation.json");
 	}
 	
@@ -491,5 +486,14 @@ public class IT_0105_ConstructBulkUploadITCase extends BaseITCase {
 			statusCode(200).
 			body("entity.primaryExternalId", is("WB:Construct0001"));
 	}
-		
+
+	@Test
+	@Order(14)
+	public void constructBulkUploadInvalidReferenceWarning() throws Exception {
+		checkWarningBulkLoad(constructBulkPostEndpoint, constructTestFilePath + "IV_03_invalid_reference.json");
+		checkWarningBulkLoad(constructBulkPostEndpoint, constructTestFilePath + "IV_04_invalid_construct_component_evidence.json");
+		checkWarningBulkLoad(constructBulkPostEndpoint, constructTestFilePath + "IV_16_invalid_construct_symbol_evidence.json");
+		checkWarningBulkLoad(constructBulkPostEndpoint, constructTestFilePath + "IV_17_invalid_construct_full_name_evidence.json");
+		checkWarningBulkLoad(constructBulkPostEndpoint, constructTestFilePath + "IV_18_invalid_construct_synonym_evidence.json");
+	}
 }

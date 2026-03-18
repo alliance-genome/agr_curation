@@ -78,7 +78,7 @@ public class ConstructDTOValidator extends ReagentDTOValidator<Construct, Constr
 
 		construct = validateReagentDTO(construct, dto, VocabularyConstants.CONSTRUCT_NOTE_TYPES_VOCABULARY_TERM_SET);
 
-		List<Reference> refs = validateReferences("reference_curies", dto.getReferenceCuries(), true);
+		List<Reference> refs = validateOptionalEntities("reference_curies", dto.getReferenceCuries(), referenceService::retrieveFromDbOrLiteratureService);
 
 		construct.setReferences(refs);
 
@@ -110,6 +110,7 @@ public class ConstructDTOValidator extends ReagentDTOValidator<Construct, Constr
 			construct.getConstructComponents().addAll(components);
 		}
 
+		response.convertWarningMessagesToMap();
 		response.convertErrorMessagesToMap();
 
 		if (response.hasErrors()) {
@@ -140,6 +141,10 @@ public class ConstructDTOValidator extends ReagentDTOValidator<Construct, Constr
 			return null;
 		}
 
+		if (symbolResponse.hasWarnings()) {
+			response.addWarningMessages(symbolResponse.getWarningMessages());
+		}
+
 		ConstructSymbolSlotAnnotation symbol = symbolResponse.getEntity();
 		symbol.setSingleConstruct(construct);
 
@@ -158,6 +163,10 @@ public class ConstructDTOValidator extends ReagentDTOValidator<Construct, Constr
 			response.addErrorMessage(field, nameResponse.errorMessagesString());
 			response.addErrorMessages(field, nameResponse.getErrorMessages());
 			return null;
+		}
+
+		if (nameResponse.hasWarnings()) {
+			response.addWarningMessages(nameResponse.getWarningMessages());
 		}
 
 		ConstructFullNameSlotAnnotation fullName = nameResponse.getEntity();
@@ -191,6 +200,9 @@ public class ConstructDTOValidator extends ReagentDTOValidator<Construct, Constr
 					syn.setSingleConstruct(construct);
 					validatedSynonyms.add(syn);
 				}
+				if (synResponse.hasWarnings()) {
+					response.addWarningMessages(field, ix, synResponse.getWarningMessages());
+				}
 			}
 		}
 
@@ -198,6 +210,8 @@ public class ConstructDTOValidator extends ReagentDTOValidator<Construct, Constr
 			response.convertMapToErrorMessages(field);
 			return null;
 		}
+
+		response.convertMapToWarningMessages(field);
 
 		if (CollectionUtils.isEmpty(validatedSynonyms)) {
 			return null;
@@ -231,6 +245,9 @@ public class ConstructDTOValidator extends ReagentDTOValidator<Construct, Constr
 					comp.setSingleConstruct(construct);
 					validatedComponents.add(comp);
 				}
+				if (compResponse.hasWarnings()) {
+					response.addWarningMessages(field, ix, compResponse.getWarningMessages());
+				}
 			}
 		}
 
@@ -238,6 +255,8 @@ public class ConstructDTOValidator extends ReagentDTOValidator<Construct, Constr
 			response.convertMapToErrorMessages(field);
 			return null;
 		}
+
+		response.convertMapToWarningMessages(field);
 
 		if (CollectionUtils.isEmpty(validatedComponents)) {
 			return null;
