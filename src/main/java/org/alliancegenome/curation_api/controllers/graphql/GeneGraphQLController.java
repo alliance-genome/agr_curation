@@ -15,9 +15,9 @@ import org.eclipse.microprofile.graphql.Query;
 
 import jakarta.inject.Inject;
 
-@GraphQLApi
-@Namespace("gene")
-@Description("Gene operations")
+// @GraphQLApi
+// @Namespace("gene")
+// @Description("Gene operations")
 public class GeneGraphQLController {
 
 	@Inject GeneService geneService;

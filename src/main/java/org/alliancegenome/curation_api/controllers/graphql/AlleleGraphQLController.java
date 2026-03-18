@@ -15,9 +15,9 @@ import org.eclipse.microprofile.graphql.Query;
 
 import jakarta.inject.Inject;
 
-@GraphQLApi
-@Namespace("allele")
-@Description("Allele operations")
+// @GraphQLApi
+// @Namespace("allele")
+// @Description("Allele operations")
 public class AlleleGraphQLController {
 	
 	@Inject

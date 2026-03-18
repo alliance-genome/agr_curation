@@ -81,6 +81,7 @@ public abstract class BulkLoad extends AuditedObject {
 	@OrderBy("loadFinished DESC")
 	private List<BulkLoadFileHistory> history;
 
+	@JsonView({ CurationView.FieldsAndLists.class })
 	@ManyToMany
 	@JoinTable(name = "bulkload_dependencies", indexes = {
 		@Index(name = "bulkload_dependencies_dependencies_index", columnList = "dependencies_id"),
