@@ -210,6 +210,19 @@ export const NewBulkLoadForm = ({
 							onChange={onChange}
 							disableFormFields={disableFormFields}
 						/>
+
+						<div className="field">
+							<label>Dependencies</label>
+							{Array.isArray(newBulkLoad.dependencies) && newBulkLoad.dependencies.length > 0 ? (
+								<ul style={{ margin: 0, paddingLeft: '1.5rem' }}>
+									{newBulkLoad.dependencies.map((dep) => (
+										<li key={dep.id}>{dep.name}</li>
+									))}
+								</ul>
+							) : (
+								<p style={{ margin: 0, fontStyle: 'italic', color: '#999' }}>None</p>
+							)}
+						</div>
 					</form>
 				</div>
 			</ErrorBoundary>

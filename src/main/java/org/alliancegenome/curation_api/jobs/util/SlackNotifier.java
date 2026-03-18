@@ -3,6 +3,8 @@ package org.alliancegenome.curation_api.jobs.util;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.alliancegenome.curation_api.enums.BackendBulkLoadType;
 import org.alliancegenome.curation_api.enums.JobStatus;
@@ -24,11 +26,11 @@ public class SlackNotifier {
 
 	@ConfigProperty(name = "net", defaultValue = "\"\"") Instance<String> systemName;
 	@ConfigProperty(name = "slack.token") Instance<String> slackToken;
-	@ConfigProperty(name = "slack.channels") Instance<List<String>> slackChannels;
+	@ConfigProperty(name = "slack.channel") Instance<String> slackDataloadsChannel;
 
-	private void slackalert(String groupName, String loadName, String message, List<Field> fields) {
+	private void sendSlackMessage(String channel, String groupName, String loadName, String message, List<Field> fields, String color, String pretext) {
 
-		if (!systemName.get().equals("\"\"") && !slackToken.get().equals("\"\"")) {
+		if (!systemName.get().equals("\"\"") && !slackToken.get().equals("\"\"") && !channel.equals("\"\"")) {
 
 			Slack slack = Slack.getInstance();
 
@@ -37,30 +39,27 @@ public class SlackNotifier {
 			String systemNameString = systemName.get();
 
 			try {
-				for (String channel : slackChannels.get()) {
-
-					Attachment attachment = new Attachment();
-					attachment.setServiceName(groupName);
-					attachment.setPretext("An error has occured on Curation " + systemNameString);
-					attachment.setTitle(loadName);
-					if (systemNameString.equals("production")) {
-						attachment.setTitleLink("https://curation.alliancegenome.org/#/dataloads");
-						attachment.setServiceUrl("https://curation.alliancegenome.org/#/dataloads");
-					} else {
-						attachment.setTitleLink("https://" + systemNameString + "-curation.alliancegenome.org/#/dataloads");
-						attachment.setServiceUrl("https://" + systemNameString + "-curation.alliancegenome.org/#/dataloads");
-					}
-					attachment.setFooter("Failure Time: ");
-					attachment.setTs(String.valueOf((new Date()).getTime() / 1000));
-					attachment.setColor("danger");
-					if (fields != null) {
-						attachment.setFields(fields);
-					}
-					List<Attachment> attachments = new ArrayList<>();
-					attachments.add(attachment);
-					ChatPostMessageRequest request = ChatPostMessageRequest.builder().channel(channel).text(message).attachments(attachments).build();
-					methods.chatPostMessage(request);
+				Attachment attachment = new Attachment();
+				attachment.setServiceName(groupName);
+				attachment.setPretext(pretext + systemNameString);
+				attachment.setTitle(loadName);
+				if (systemNameString.equals("production")) {
+					attachment.setTitleLink("https://curation.alliancegenome.org/#/dataloads");
+					attachment.setServiceUrl("https://curation.alliancegenome.org/#/dataloads");
+				} else {
+					attachment.setTitleLink("https://" + systemNameString + "-curation.alliancegenome.org/#/dataloads");
+					attachment.setServiceUrl("https://" + systemNameString + "-curation.alliancegenome.org/#/dataloads");
 				}
+				attachment.setFooter("Time: ");
+				attachment.setTs(String.valueOf((new Date()).getTime() / 1000));
+				attachment.setColor(color);
+				if (fields != null) {
+					attachment.setFields(fields);
+				}
+				List<Attachment> attachments = new ArrayList<>();
+				attachments.add(attachment);
+				ChatPostMessageRequest request = ChatPostMessageRequest.builder().channel(channel).text(message).attachments(attachments).build();
+				methods.chatPostMessage(request);
 				slack.close();
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -78,9 +77,9 @@ public class SlackNotifier {
 			if (bulkLoad.getBackendBulkLoadType() == BackendBulkLoadType.ONTOLOGY) {
 				fields.add(new Field("Ontology Type", String.valueOf(bulkLoad.getOntologyType()), true));
 			}
-			slackalert(
-
-				bulkLoad.getGroup().getName(), bulkLoad.getName(), bulkLoad.getErrorMessage(), fields);
+			sendSlackMessage(slackDataloadsChannel.get().isEmpty() ? "a-team-dataloads" : slackDataloadsChannel.get(),
+				bulkLoad.getGroup().getName(), bulkLoad.getName(), bulkLoad.getErrorMessage(), fields,
+				"danger", "An error has occurred on Curation ");
 		}
 	}
 
@@ -101,7 +100,39 @@ public class SlackNotifier {
 				fields.add(new Field("Alliance Member Release Version", bulkLoadFileHistory.getBulkLoadFile().getAllianceMemberReleaseVersion(), false));
 			}
 
-			slackalert(bulkLoadFileHistory.getBulkLoad().getGroup().getName(), bulkLoadFileHistory.getBulkLoad().getName(), bulkLoadFileHistory.getErrorMessage(), fields);
+			sendSlackMessage(slackDataloadsChannel.get().isEmpty() ? "a-team-dataloads" : slackDataloadsChannel.get(),
+				bulkLoadFileHistory.getBulkLoad().getGroup().getName(), bulkLoadFileHistory.getBulkLoad().getName(),
+				bulkLoadFileHistory.getErrorMessage(), fields,
+				"danger", "An error has occurred on Curation ");
+		} else if (bulkLoadFileHistory.getBulkloadStatus() == JobStatus.FINISHED) {
+			slackDataloadComplete(bulkLoadFileHistory);
 		}
+	}
+
+	public void slackDataloadComplete(BulkLoadFileHistory bulkLoadFileHistory) {
+		BulkLoad bulkLoad = bulkLoadFileHistory.getBulkLoad();
+		Set<BulkLoad> dependentLoads = bulkLoad.getDepends();
+
+		if (dependentLoads == null || dependentLoads.isEmpty()) {
+			return;
+		}
+
+		List<Field> fields = new ArrayList<>();
+		fields.add(new Field("Environment", systemName.get(), true));
+		fields.add(new Field("Load Type", String.valueOf(bulkLoad.getBackendBulkLoadType()), true));
+		fields.add(new Field("Completed At",
+			bulkLoadFileHistory.getLoadFinished() != null
+				? bulkLoadFileHistory.getLoadFinished().toString() : "N/A", true));
+
+		String dependentLoadNames = dependentLoads.stream()
+			.map(BulkLoad::getName)
+			.sorted()
+			.collect(Collectors.joining(", "));
+		fields.add(new Field("Dependent Loads To Run", dependentLoadNames, false));
+
+		sendSlackMessage(slackDataloadsChannel.get().isEmpty() ? "a-team-dataloads" : slackDataloadsChannel.get(),
+			bulkLoad.getGroup().getName(), bulkLoad.getName(),
+			bulkLoad.getName() + " has finished successfully. The following dependent loads need to be run/rerun.",
+			fields, "good", "Data load completed on Curation ");
 	}
 }
