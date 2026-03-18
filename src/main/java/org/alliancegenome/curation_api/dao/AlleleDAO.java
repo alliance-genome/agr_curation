@@ -702,13 +702,84 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 
 		Set<Long> allelesWithDisease = diseaseResults.stream().map(obj -> (Long) obj).collect(Collectors.toSet());
 
+		// Disease AGR slim groups per allele
+		String diseaseAgrSlimQueryString = """
+			SELECT allele_id, ancestor.name
+			FROM (
+				SELECT DISTINCT ada.diseaseannotationsubject_id AS allele_id, da.diseaseannotationobject_id AS doterm_id
+				FROM allelediseaseannotation ada
+				JOIN diseaseannotation da ON da.id = ada.id
+				WHERE ada.diseaseannotationsubject_id IN :alleleIds
+				UNION
+				SELECT DISTINCT agm.inferredallele_id AS allele_id, da.diseaseannotationobject_id AS doterm_id
+				FROM agmdiseaseannotation agm
+				JOIN diseaseannotation da ON da.id = agm.id
+				WHERE agm.inferredallele_id IN :alleleIds
+				UNION
+				SELECT DISTINCT agma.assertedalleles_id AS allele_id, da.diseaseannotationobject_id AS doterm_id
+				FROM agmdiseaseannotation_allele agma
+				JOIN agmdiseaseannotation agm ON agm.id = agma.agmdiseaseannotation_id
+				JOIN diseaseannotation da ON da.id = agm.id
+				WHERE agma.assertedalleles_id IN :alleleIds
+			) allele_diseases
+			JOIN ontologytermclosure otc ON otc.closuresubject_id = allele_diseases.doterm_id
+			JOIN ontologyterm ancestor ON ancestor.id = otc.closureobject_id
+			JOIN ontologyterm_subsets sub ON sub.ontologyterm_id = ancestor.id
+			WHERE sub.subsets = 'DO_AGR_slim'
+			""";
+		Query diseaseAgrSlimQuery = entityManager.createNativeQuery(diseaseAgrSlimQueryString);
+		diseaseAgrSlimQuery.setParameter("alleleIds", alleleIds);
+		List<Object[]> diseaseAgrSlimResults = diseaseAgrSlimQuery.getResultList();
+
+		Map<Long, Set<String>> alleleDiseaseAgrSlimMap = new HashMap<>();
+		for (Object[] row : diseaseAgrSlimResults) {
+			Long alleleId = (Long) row[0];
+			String slimName = (String) row[1];
+			alleleDiseaseAgrSlimMap.computeIfAbsent(alleleId, k -> new java.util.HashSet<>()).add(slimName);
+		}
+
+		// Disease names per allele
+		String diseaseNamesQueryString = """
+			SELECT DISTINCT allele_id, doterm.name
+			FROM (
+				SELECT ada.diseaseannotationsubject_id AS allele_id, da.diseaseannotationobject_id AS doterm_id
+				FROM allelediseaseannotation ada
+				JOIN diseaseannotation da ON da.id = ada.id
+				WHERE ada.diseaseannotationsubject_id IN :alleleIds
+				UNION
+				SELECT agm.inferredallele_id AS allele_id, da.diseaseannotationobject_id AS doterm_id
+				FROM agmdiseaseannotation agm
+				JOIN diseaseannotation da ON da.id = agm.id
+				WHERE agm.inferredallele_id IN :alleleIds
+				UNION
+				SELECT agma.assertedalleles_id AS allele_id, da.diseaseannotationobject_id AS doterm_id
+				FROM agmdiseaseannotation_allele agma
+				JOIN agmdiseaseannotation agm ON agm.id = agma.agmdiseaseannotation_id
+				JOIN diseaseannotation da ON da.id = agm.id
+				WHERE agma.assertedalleles_id IN :alleleIds
+			) allele_diseases
+			JOIN ontologyterm doterm ON doterm.id = allele_diseases.doterm_id
+			""";
+		Query diseaseNamesQuery = entityManager.createNativeQuery(diseaseNamesQueryString);
+		diseaseNamesQuery.setParameter("alleleIds", alleleIds);
+		List<Object[]> diseaseNamesResults = diseaseNamesQuery.getResultList();
+
+		Map<Long, Set<String>> alleleDiseaseNamesMap = new HashMap<>();
+		for (Object[] row : diseaseNamesResults) {
+			Long alleleId = (Long) row[0];
+			String diseaseName = (String) row[1];
+			alleleDiseaseNamesMap.computeIfAbsent(alleleId, k -> new java.util.HashSet<>()).add(diseaseName);
+		}
+
 		// Build DTOs
 		List<AlleleSummaryDTO> dtos = new ArrayList<>();
 		for (Allele allele : alleles) {
 			List<Variant> variants = new ArrayList<>(alleleVariantMap.getOrDefault(allele.getId(), new HashMap<>()).values());
 			Boolean hasPhenotype = allelesWithPhenotype.contains(allele.getId());
 			Boolean hasDisease = allelesWithDisease.contains(allele.getId());
-			dtos.add(new AlleleSummaryDTO(allele, variants, hasPhenotype, hasDisease));
+			Set<String> diseases = alleleDiseaseNamesMap.get(allele.getId());
+			Set<String> diseasesAgrSlim = alleleDiseaseAgrSlimMap.get(allele.getId());
+			dtos.add(new AlleleSummaryDTO(allele, variants, hasPhenotype, hasDisease, diseases, diseasesAgrSlim));
 		}
 
 		// Notes

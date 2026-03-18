@@ -2,6 +2,7 @@ package org.alliancegenome.curation_api.model.document.es;
 
 
 import java.util.List;
+import java.util.Set;
 
 import org.alliancegenome.curation_api.model.entities.Variant;
 import org.alliancegenome.curation_api.view.CurationView;
@@ -20,4 +21,6 @@ public class VariantSummaryDocument extends AVSParentDocument {
 		category = "variant_summary";
 	}
 	private List<Variant> variants;
+	protected Set<String> diseases;
+
 }

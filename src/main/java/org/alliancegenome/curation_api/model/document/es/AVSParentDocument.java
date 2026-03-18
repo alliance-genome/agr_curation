@@ -1,6 +1,7 @@
 package org.alliancegenome.curation_api.model.document.es;
 
 import java.util.HashSet;
+import java.util.Set;
 
 import org.alliancegenome.curation_api.model.entities.Allele;
 
@@ -15,4 +16,6 @@ public abstract class AVSParentDocument extends ESDocument {
 	protected Integer alterationTypeSortOrder;
 	protected Boolean hasPhenotype;
 	protected Boolean hasDisease;
+	protected Set<String> diseases;
+	protected Set<String> diseasesAgrSlim;
 }
