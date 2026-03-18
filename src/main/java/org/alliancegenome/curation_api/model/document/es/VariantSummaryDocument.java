@@ -21,6 +21,5 @@ public class VariantSummaryDocument extends AVSParentDocument {
 		category = "variant_summary";
 	}
 	private List<Variant> variants;
-	protected Set<String> diseases;
 
 }
