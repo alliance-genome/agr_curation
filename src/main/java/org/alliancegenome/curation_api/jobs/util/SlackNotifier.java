@@ -8,8 +8,10 @@ import java.util.stream.Collectors;
 
 import org.alliancegenome.curation_api.enums.BackendBulkLoadType;
 import org.alliancegenome.curation_api.enums.JobStatus;
+import org.alliancegenome.curation_api.model.entities.bulkloads.BulkFMSLoad;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoad;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
+import org.alliancegenome.curation_api.model.entities.bulkloads.BulkManualLoad;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import com.slack.api.Slack;
@@ -104,6 +106,9 @@ public class SlackNotifier {
 				bulkLoadFileHistory.getBulkLoad().getGroup().getName(), bulkLoadFileHistory.getBulkLoad().getName(),
 				bulkLoadFileHistory.getErrorMessage(), fields,
 				"danger", "An error has occurred on Curation ");
+		} else if (bulkLoadFileHistory.getBulkloadStatus() == JobStatus.FINISHED) {
+			String dataProvider = extractDataProvider(bulkLoadFileHistory.getBulkLoad());
+			slackDataloadComplete(bulkLoadFileHistory, dataProvider);
 		}
 	}
 
@@ -133,5 +138,19 @@ public class SlackNotifier {
 			bulkLoad.getGroup().getName(), bulkLoad.getName(),
 			bulkLoad.getName() + " has finished successfully. The following dependent loads need to be run/rerun.",
 			fields, "good", "Data load completed on Curation ");
+	}
+
+	private String extractDataProvider(BulkLoad bulkLoad) {
+		if (bulkLoad instanceof BulkManualLoad bulkManualLoad) {
+			if (bulkManualLoad.getDataProvider() != null) {
+				return bulkManualLoad.getDataProvider().sourceOrganization;
+			}
+		}
+		if (bulkLoad instanceof BulkFMSLoad bulkFMSLoad) {
+			if (bulkFMSLoad.getFmsDataSubType() != null) {
+				return bulkFMSLoad.getFmsDataSubType();
+			}
+		}
+		return null;
 	}
 }

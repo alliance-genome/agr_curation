@@ -189,9 +189,7 @@ public class BulkLoadProcessor {
 		BulkLoad bulkLoad = bulkLoadDAO.find(load.getId());
 		bulkLoad.setErrorMessage(message);
 		bulkLoad.setBulkloadStatus(status);
-		if (status != JobStatus.FINISHED) {
-			slackNotifier.slackalert(bulkLoad);
-		}
+		slackNotifier.slackalert(bulkLoad);
 		bulkLoadDAO.merge(bulkLoad);
 		Log.info("Load: " + bulkLoad.getName() + " is finished");
 	}
@@ -219,32 +217,13 @@ public class BulkLoadProcessor {
 		bulkLoadFileHistory.setErrorMessage(message);
 		bulkLoadFileHistory.setBulkloadStatus(status);
 		bulkLoadFileHistory.setLoadFinished(LocalDateTime.now());
-		if (status != JobStatus.FINISHED) {
-			slackNotifier.slackalert(bulkLoadFileHistory);
-		} else if (status == JobStatus.FINISHED){
-			String dataProvider = extractDataProvider(bulkLoadFileHistory.getBulkLoad());
-			slackNotifier.slackDataloadComplete(bulkLoadFileHistory, dataProvider);
-		}
+		slackNotifier.slackalert(bulkLoadFileHistory);
 		
 		bulkLoadFileHistory.setRunningThreadName(null); // Clears the name once finished
 		bulkLoadFileHistoryDAO.merge(bulkLoadFileHistory);
 		bulkLoadFileHistory.getBulkLoad().setBulkloadStatus(status);
 		bulkLoadDAO.merge(bulkLoadFileHistory.getBulkLoad());
 		Log.info("Load File: " + bulkLoadFileHistory.getBulkLoadFile().getMd5Sum() + " is finished. Message: " + message + " Status: " + status);
-	}
-
-	private String extractDataProvider(BulkLoad bulkLoad) {
-		if (bulkLoad instanceof BulkManualLoad bulkManualLoad) {
-			if (bulkManualLoad.getDataProvider() != null) {
-				return bulkManualLoad.getDataProvider().sourceOrganization;
-			}
-		}
-		if (bulkLoad instanceof BulkFMSLoad bulkFMSLoad) {
-			if (bulkFMSLoad.getFmsDataSubType() != null) {
-				return bulkFMSLoad.getFmsDataSubType();
-			}
-		}
-		return bulkLoad.getName();
 	}
 
 }
