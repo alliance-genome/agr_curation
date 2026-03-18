@@ -30,6 +30,7 @@ import { useGetUserSettings } from '../../service/useGetUserSettings';
 import { TruncatedReferencesTemplate } from '../../components/Templates/reference/TruncatedReferencesTemplate';
 
 import { SearchService } from '../../service/SearchService';
+import { Endpoints } from '../../constants/Endpoints';
 
 export const VariantsTable = () => {
 	const [isInEditMode, setIsInEditMode] = useState(false);
@@ -329,7 +330,7 @@ export const VariantsTable = () => {
 	);
 
 	const DEFAULT_COLUMN_WIDTH = 10;
-	const SEARCH_ENDPOINT = 'variant';
+	const SEARCH_ENDPOINT = Endpoints.Entity.VARIANT;
 
 	const initialTableState = useMemo(() => getDefaultTableState('Variants', columns, DEFAULT_COLUMN_WIDTH), [columns]);
 

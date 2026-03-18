@@ -4,6 +4,7 @@ import { GenericDataTable } from '../../components/GenericDataTable/GenericDataT
 import { ErrorMessageComponent } from '../../components/Error/ErrorMessageComponent';
 import { AlleleService } from '../../service/AlleleService';
 import { SearchService } from '../../service/SearchService';
+import { Endpoints } from '../../constants/Endpoints';
 import { useGetTableData } from '../../service/useGetTableData';
 import { useGetUserSettings } from '../../service/useGetUserSettings';
 import { MutationTypesDialog } from './mutationTypes/MutationTypesDialog';
@@ -1291,7 +1292,7 @@ export const AllelesTable = () => {
 	);
 
 	const DEFAULT_COLUMN_WIDTH = 10;
-	const SEARCH_ENDPOINT = 'allele';
+	const SEARCH_ENDPOINT = Endpoints.Entity.ALLELE;
 
 	const initialTableState = useMemo(() => getDefaultTableState('Alleles', columns, DEFAULT_COLUMN_WIDTH), [columns]);
 

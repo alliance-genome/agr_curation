@@ -1,5 +1,6 @@
 import { BaseAuthService } from './BaseAuthService';
 import { DeletionService } from './DeletionService';
+import { Endpoints } from '../constants/Endpoints';
 
 export class ConstructService extends BaseAuthService {
 	saveConstruct(updatedConstruct) {
@@ -12,7 +13,7 @@ export class ConstructService extends BaseAuthService {
 
 	async deleteConstruct(construct) {
 		const deletionService = new DeletionService();
-		return await deletionService.delete(`construct`, construct.id);
+		return await deletionService.delete(Endpoints.Entity.CONSTRUCT, construct.id);
 	}
 
 	async getConstruct(identifier) {
