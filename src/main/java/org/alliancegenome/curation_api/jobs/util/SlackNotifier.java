@@ -8,10 +8,8 @@ import java.util.stream.Collectors;
 
 import org.alliancegenome.curation_api.enums.BackendBulkLoadType;
 import org.alliancegenome.curation_api.enums.JobStatus;
-import org.alliancegenome.curation_api.model.entities.bulkloads.BulkFMSLoad;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoad;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
-import org.alliancegenome.curation_api.model.entities.bulkloads.BulkManualLoad;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import com.slack.api.Slack;
@@ -102,7 +100,7 @@ public class SlackNotifier {
 				fields.add(new Field("Alliance Member Release Version", bulkLoadFileHistory.getBulkLoadFile().getAllianceMemberReleaseVersion(), false));
 			}
 
-			sendSlackMessage(slackDataloadsChannel.get().isEmpty() ? "a-team-dataloads": slackDataloadsChannel.get(),
+			sendSlackMessage(slackDataloadsChannel.get().isEmpty() ? "a-team-dataloads" : slackDataloadsChannel.get(),
 				bulkLoadFileHistory.getBulkLoad().getGroup().getName(), bulkLoadFileHistory.getBulkLoad().getName(),
 				bulkLoadFileHistory.getErrorMessage(), fields,
 				"danger", "An error has occurred on Curation ");
