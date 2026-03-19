@@ -16,6 +16,7 @@ public class DiseaseSearchResultDocument extends ESDocument {
 
 	{
 		category = "disease_search_result";
+		searchable = true;
 	}
 
 	private String curie;
