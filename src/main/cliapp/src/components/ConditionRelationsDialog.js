@@ -17,6 +17,7 @@ import { ExConAutocompleteTemplate } from './Autocomplete/ExConAutocompleteTempl
 import { SearchService } from '../service/SearchService';
 import { autocompleteSearch, buildAutocompleteFilter, multipleAutocompleteOnChange } from '../utils/utils';
 import { AutocompleteMultiEditor } from './Autocomplete/AutocompleteMultiEditor';
+import { Endpoints } from '../constants/Endpoints';
 
 export const ConditionRelationsDialog = ({
 	originalConditionRelationsData,
@@ -152,7 +153,7 @@ export const ConditionRelationsDialog = ({
 	const validateRelation = async (relation) => {
 		let _relation = global.structuredClone(relation);
 		delete _relation.dataKey;
-		const result = await validationService.validate('condition-relation', _relation);
+		const result = await validationService.validate(Endpoints.Annotation.CONDITION_RELATION, _relation);
 		return result;
 	};
 
@@ -283,7 +284,7 @@ export const ConditionRelationsDialog = ({
 			'conditionChemical.curie',
 			'conditionAnatomy.curie',
 		];
-		const endpoint = 'experimental-condition';
+		const endpoint = Endpoints.Annotation.EXPERIMENTAL_CONDITION;
 		const filterName = 'conditionSummaryFilter';
 		const filter = buildAutocompleteFilter(event, autocompleteFields);
 

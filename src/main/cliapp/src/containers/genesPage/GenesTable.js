@@ -4,9 +4,12 @@ import { Toast } from 'primereact/toast';
 import { getDefaultTableState } from '../../service/TableStateService';
 import { FILTER_CONFIGS } from '../../constants/FilterFields';
 import { SecondaryIdsDialog } from './SecondaryIdsDialog';
-import { SynonymsDialog } from '../nameSlotAnnotations/dialogs/SynonymsDialog';
-import { SymbolDialog } from '../nameSlotAnnotations/dialogs/SymbolDialog';
-import { FullNameDialog } from '../nameSlotAnnotations/dialogs/FullNameDialog';
+import { SynonymsEditDialog } from '../nameSlotAnnotations/dialogs/SynonymsEditDialog';
+import { SynonymsReadOnlyDialog } from '../nameSlotAnnotations/dialogs/SynonymsReadOnlyDialog';
+import { SymbolEditDialog } from '../nameSlotAnnotations/dialogs/SymbolEditDialog';
+import { SymbolReadOnlyDialog } from '../nameSlotAnnotations/dialogs/SymbolReadOnlyDialog';
+import { FullNameEditDialog } from '../nameSlotAnnotations/dialogs/FullNameEditDialog';
+import { FullNameReadOnlyDialog } from '../nameSlotAnnotations/dialogs/FullNameReadOnlyDialog';
 import { SystematicNameDialog } from './SystematicNameDialog';
 import { CrossReferencesTemplate } from '../../components/Templates/CrossReferencesTemplate';
 import { CrossReferenceTemplate } from '../../components/Templates/CrossReferenceTemplate';
@@ -23,6 +26,7 @@ import { CountDialogTemplate } from '../../components/Templates/dialog/CountDial
 import { ErrorMessageComponent } from '../../components/Error/ErrorMessageComponent';
 
 import { SearchService } from '../../service/SearchService';
+import { Endpoints } from '../../constants/Endpoints';
 
 import { Button } from 'primereact/button';
 import { EditMessageTooltip } from '../../components/EditMessageTooltip';
@@ -125,9 +129,8 @@ export const GenesTable = () => {
 	};
 
 	const handleRelatedNotesOpenInEdit = (event, rowProps, isInEdit) => {
-		const { rows } = rowProps.props;
 		const { rowIndex } = rowProps;
-		const index = rowIndex % rows;
+		const index = rowIndex;
 		let _relatedNotesData = {};
 		_relatedNotesData['originalRelatedNotes'] = rowProps.rowData.relatedNotes;
 		_relatedNotesData['dialog'] = true;
@@ -388,7 +391,7 @@ export const GenesTable = () => {
 	);
 
 	const DEFAULT_COLUMN_WIDTH = 10;
-	const SEARCH_ENDPOINT = 'gene';
+	const SEARCH_ENDPOINT = Endpoints.Entity.GENE;
 
 	const initialTableState = useMemo(() => getDefaultTableState('Genes', columns, DEFAULT_COLUMN_WIDTH), [columns]);
 
@@ -431,27 +434,30 @@ export const GenesTable = () => {
 					fetching={isFetching || isLoading}
 				/>
 			</div>
-			<FullNameDialog
+			<FullNameEditDialog
 				name="Gene Name"
 				field="geneFullName"
 				endpoint="genefullnameslotannotation"
 				originalFullNameData={fullNameData}
 				setOriginalFullNameData={setFullNameData}
 			/>
-			<SymbolDialog
+			<FullNameReadOnlyDialog originalFullNameData={fullNameData} setOriginalFullNameData={setFullNameData} />
+			<SymbolEditDialog
 				name="Gene Symbol"
 				field="geneSymbol"
 				endpoint="genesymbolslotannotation"
 				originalSymbolData={symbolData}
 				setOriginalSymbolData={setSymbolData}
 			/>
-			<SynonymsDialog
+			<SymbolReadOnlyDialog originalSymbolData={symbolData} setOriginalSymbolData={setSymbolData} />
+			<SynonymsEditDialog
 				name="Gene Synonym"
 				field="geneSynonyms"
 				endpoint="genesynonymslotannotation"
 				originalSynonymsData={synonymsData}
 				setOriginalSynonymsData={setSynonymsData}
 			/>
+			<SynonymsReadOnlyDialog originalSynonymsData={synonymsData} setOriginalSynonymsData={setSynonymsData} />
 			<SecondaryIdsDialog
 				originalSecondaryIdsData={secondaryIdsData}
 				setOriginalSecondaryIdsData={setSecondaryIdsData}
