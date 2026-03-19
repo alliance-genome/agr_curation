@@ -1,6 +1,7 @@
 package org.alliancegenome.curation_api.model.document.es;
 
 import java.util.List;
+import java.util.Set;
 
 import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.Variant;
@@ -15,6 +16,8 @@ public class AlleleSummaryDTO {
 	private List<Variant> variants;
 	private Boolean hasPhenotype;
 	private Boolean hasDisease;
+	private Set<String> diseases;
+	private Set<String> diseasesAgrSlim;
 
 
 	public AlleleSummaryDTO(Allele allele, Long variantCount) {
@@ -22,11 +25,13 @@ public class AlleleSummaryDTO {
 		this.variantCount = variantCount;
 	}
 
-	public AlleleSummaryDTO(Allele allele, List<Variant> variants, Boolean hasPhenotype, Boolean hasDisease) {
+	public AlleleSummaryDTO(Allele allele, List<Variant> variants, Boolean hasPhenotype, Boolean hasDisease, Set<String> diseases, Set<String> diseasesAgrSlim) {
 		this.allele = allele;
 		this.variants = variants;
 		this.variantCount = variants != null ? (long) variants.size() : 0L;
 		this.hasPhenotype = hasPhenotype;
 		this.hasDisease = hasDisease;
+		this.diseases = diseases;
+		this.diseasesAgrSlim = diseasesAgrSlim;
 	}
 }
