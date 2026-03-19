@@ -37,6 +37,8 @@ public class AlleleSummaryDocumentBuilder {
 		doc.setVariants(alleleDTO.getVariants());
 		doc.setHasPhenotype(alleleDTO.getHasPhenotype());
 		doc.setHasDisease(alleleDTO.getHasDisease());
+		doc.setDiseases(alleleDTO.getDiseases());
+		doc.setDiseasesAgrSlim(alleleDTO.getDiseasesAgrSlim());
 
 		return doc;
 	}

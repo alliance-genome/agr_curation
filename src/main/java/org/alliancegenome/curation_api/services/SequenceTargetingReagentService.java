@@ -22,7 +22,6 @@ import org.alliancegenome.curation_api.services.base.SubmittedObjectCrudService;
 import org.alliancegenome.curation_api.services.validation.dto.fms.SequenceTargetingReagentFmsDTOValidator;
 import org.apache.commons.collections.CollectionUtils;
 
-import io.quarkus.logging.Log;
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
@@ -68,13 +67,13 @@ public class SequenceTargetingReagentService extends SubmittedObjectCrudService<
 					str.setUpdatedBy(personService.fetchByUniqueIdOrCreate(requestSource));
 					str.setDateUpdated(OffsetDateTime.now());
 					str.setObsolete(true);
-					
+
 					Note deprecationNote = noteService.createDeprecationNote(str.getIdentifier(), requestSource, deprecationReasons);
 					if (str.getRelatedNotes() == null) {
 						str.setRelatedNotes(new ArrayList<>());
 					}
 					str.getRelatedNotes().add(deprecationNote);
-					
+
 					return strDAO.persist(str);
 				} else {
 					return str;
@@ -89,7 +88,6 @@ public class SequenceTargetingReagentService extends SubmittedObjectCrudService<
 				response.addErrorMessage("id", errorMessage);
 				throw new ApiErrorException(response);
 			}
-			Log.error(errorMessage);
 		}
 		return null;
 	}

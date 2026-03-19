@@ -3,6 +3,7 @@ package org.alliancegenome.curation_api.model.document.es;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.Gene;
@@ -26,6 +27,8 @@ public class AlleleSummaryDocument extends AVSParentDocument {
 	private Gene alleleOfGene;
 	private CrossReference crossReference;
 	private List<Variant> variants;
+	private Set<String> diseases;
+	private Set<String> diseasesAgrSlim;
 
 	public void setAlleleOfGene(Gene alleleOfGene) {
 		this.alleleOfGene = alleleOfGene;
