@@ -89,7 +89,6 @@ public class SequenceTargetingReagentService extends SubmittedObjectCrudService<
 				response.addErrorMessage("id", errorMessage);
 				throw new ApiErrorException(response);
 			}
-			Log.error(errorMessage);
 		}
 		return null;
 	}
