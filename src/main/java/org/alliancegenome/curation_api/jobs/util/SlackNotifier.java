@@ -111,7 +111,7 @@ public class SlackNotifier {
 
 	public void slackDataloadComplete(BulkLoadFileHistory bulkLoadFileHistory) {
 		BulkLoad bulkLoad = bulkLoadFileHistory.getBulkLoad();
-		Set<BulkLoad> dependentLoads = bulkLoad.getDepends();
+		Set<BulkLoad> dependentLoads = bulkLoad.getDependencies();
 
 		if (dependentLoads == null || dependentLoads.isEmpty()) {
 			return;
