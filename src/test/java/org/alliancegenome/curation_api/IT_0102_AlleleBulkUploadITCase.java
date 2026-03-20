@@ -680,5 +680,6 @@ public class IT_0102_AlleleBulkUploadITCase extends BaseITCase {
 		checkWarningBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "IV_30_invalid_related_notes_evidence.json");
 		checkWarningBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "IV_32_invalid_allele_database_status_evidence.json");
 		checkWarningBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "IV_34_invalid_allele_nomenclature_events_evidence.json");
+		checkWarningBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "IV_35_invalid_multiple_evidence_fields.json", 4);
 	}
 }

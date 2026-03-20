@@ -569,5 +569,6 @@ public class IT_0101_GeneBulkUploadITCase extends BaseITCase {
 		checkWarningBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "IV_15_invalid_gene_synonym_evidence.json");
 		checkWarningBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "IV_19_invalid_gene_secondary_id_evidence.json");
 		checkWarningBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "IV_22_invalid_evidence_curies.json");
+		checkWarningBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "IV_25_invalid_multiple_evidence_fields.json", 3);
 	}
 }

@@ -108,7 +108,8 @@ public class AffectedGenomicModelDTOValidator extends GenomicEntityDTOValidator<
 		}
 
 		if (nameResponse.hasWarnings()) {
-			response.addWarningMessages(nameResponse.getWarningMessages());
+			response.addWarningMessage(field, nameResponse.warningMessagesString());
+			response.addWarningMessages(field, nameResponse.getWarningMessages());
 		}
 
 		AgmFullNameSlotAnnotation fullName = nameResponse.getEntity();

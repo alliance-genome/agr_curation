@@ -134,7 +134,8 @@ public class GeneDTOValidator extends GenomicEntityDTOValidator<Gene, GeneDTO> {
 		}
 
 		if (symbolResponse.hasWarnings()) {
-			response.addWarningMessages(symbolResponse.getWarningMessages());
+			response.addWarningMessage(field, symbolResponse.warningMessagesString());
+			response.addWarningMessages(field, symbolResponse.getWarningMessages());
 		}
 
 		GeneSymbolSlotAnnotation symbol = symbolResponse.getEntity();
@@ -158,7 +159,8 @@ public class GeneDTOValidator extends GenomicEntityDTOValidator<Gene, GeneDTO> {
 		}
 
 		if (nameResponse.hasWarnings()) {
-			response.addWarningMessages(nameResponse.getWarningMessages());
+			response.addWarningMessage(field, nameResponse.warningMessagesString());
+			response.addWarningMessages(field, nameResponse.getWarningMessages());
 		}
 
 		GeneFullNameSlotAnnotation fullName = nameResponse.getEntity();
@@ -182,7 +184,8 @@ public class GeneDTOValidator extends GenomicEntityDTOValidator<Gene, GeneDTO> {
 		}
 
 		if (nameResponse.hasWarnings()) {
-			response.addWarningMessages(nameResponse.getWarningMessages());
+			response.addWarningMessage(field, nameResponse.warningMessagesString());
+			response.addWarningMessages(field, nameResponse.getWarningMessages());
 		}
 
 		GeneSystematicNameSlotAnnotation systematicName = nameResponse.getEntity();

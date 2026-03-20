@@ -301,7 +301,8 @@ public class AlleleDTOValidator extends GenomicEntityDTOValidator<Allele, Allele
 			return null;
 		}
 		if (agtsResponse.hasWarnings()) {
-			response.addWarningMessages(agtsResponse.getWarningMessages());
+			response.addWarningMessage(field, agtsResponse.warningMessagesString());
+			response.addWarningMessages(field, agtsResponse.getWarningMessages());
 		}
 
 		AlleleGermlineTransmissionStatusSlotAnnotation agts = agtsResponse.getEntity();
@@ -324,7 +325,8 @@ public class AlleleDTOValidator extends GenomicEntityDTOValidator<Allele, Allele
 			return null;
 		}
 		if (adsResponse.hasWarnings()) {
-			response.addWarningMessages(adsResponse.getWarningMessages());
+			response.addWarningMessage(field, adsResponse.warningMessagesString());
+			response.addWarningMessages(field, adsResponse.getWarningMessages());
 		}
 
 		AlleleDatabaseStatusSlotAnnotation ads = adsResponse.getEntity();
@@ -393,7 +395,8 @@ public class AlleleDTOValidator extends GenomicEntityDTOValidator<Allele, Allele
 			return null;
 		}
 		if (symbolResponse.hasWarnings()) {
-			response.addWarningMessages(symbolResponse.getWarningMessages());
+			response.addWarningMessage(field, symbolResponse.warningMessagesString());
+			response.addWarningMessages(field, symbolResponse.getWarningMessages());
 		}
 
 		AlleleSymbolSlotAnnotation symbol = symbolResponse.getEntity();
@@ -416,7 +419,8 @@ public class AlleleDTOValidator extends GenomicEntityDTOValidator<Allele, Allele
 			return null;
 		}
 		if (nameResponse.hasWarnings()) {
-			response.addWarningMessages(nameResponse.getWarningMessages());
+			response.addWarningMessage(field, nameResponse.warningMessagesString());
+			response.addWarningMessages(field, nameResponse.getWarningMessages());
 		}
 
 		AlleleFullNameSlotAnnotation fullName = nameResponse.getEntity();

@@ -495,5 +495,6 @@ public class IT_0105_ConstructBulkUploadITCase extends BaseITCase {
 		checkWarningBulkLoad(constructBulkPostEndpoint, constructTestFilePath + "IV_16_invalid_construct_symbol_evidence.json");
 		checkWarningBulkLoad(constructBulkPostEndpoint, constructTestFilePath + "IV_17_invalid_construct_full_name_evidence.json");
 		checkWarningBulkLoad(constructBulkPostEndpoint, constructTestFilePath + "IV_18_invalid_construct_synonym_evidence.json");
+		checkWarningBulkLoad(constructBulkPostEndpoint, constructTestFilePath + "IV_20_invalid_multiple_evidence_fields.json", 3);
 	}
 }

@@ -447,7 +447,8 @@ public class BaseDTOValidator<E extends Object> {
 			return null;
 		}
 		if (noteResponse.hasWarnings()) {
-			response.addWarningMessages(noteResponse.getWarningMessages());
+			response.addWarningMessage("note_dto", noteResponse.warningMessagesString());
+			response.addWarningMessages("note_dto", noteResponse.getWarningMessages());
 		}
 
 		return noteDAO.persist(noteResponse.getEntity());

@@ -145,7 +145,8 @@ public class ConstructDTOValidator extends ReagentDTOValidator<Construct, Constr
 		}
 
 		if (symbolResponse.hasWarnings()) {
-			response.addWarningMessages(symbolResponse.getWarningMessages());
+			response.addWarningMessage(field, symbolResponse.warningMessagesString());
+			response.addWarningMessages(field, symbolResponse.getWarningMessages());
 		}
 
 		ConstructSymbolSlotAnnotation symbol = symbolResponse.getEntity();
@@ -169,7 +170,8 @@ public class ConstructDTOValidator extends ReagentDTOValidator<Construct, Constr
 		}
 
 		if (nameResponse.hasWarnings()) {
-			response.addWarningMessages(nameResponse.getWarningMessages());
+			response.addWarningMessage(field, nameResponse.warningMessagesString());
+			response.addWarningMessages(field, nameResponse.getWarningMessages());
 		}
 
 		ConstructFullNameSlotAnnotation fullName = nameResponse.getEntity();
