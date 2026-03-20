@@ -32,6 +32,7 @@ import org.alliancegenome.curation_api.model.ingest.dto.slotAnnotions.AlleleNome
 import org.alliancegenome.curation_api.model.ingest.dto.slotAnnotions.NameSlotAnnotationDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.slotAnnotions.SecondaryIdSlotAnnotationDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
+import org.alliancegenome.curation_api.services.ReferenceService;
 import org.alliancegenome.curation_api.services.helpers.SlotAnnotationIdentityHelper;
 import org.alliancegenome.curation_api.services.validation.dto.base.GenomicEntityDTOValidator;
 import org.alliancegenome.curation_api.services.validation.dto.slotAnnotations.AlleleDatabaseStatusSlotAnnotationDTOValidator;
@@ -79,6 +80,8 @@ public class AlleleDTOValidator extends GenomicEntityDTOValidator<Allele, Allele
 	AlleleFunctionalImpactSlotAnnotationDTOValidator alleleFunctionalImpactDtoValidator;
 	@Inject
 	NoteDTOValidator noteDtoValidator;
+	@Inject
+	ReferenceService referenceService;
 
 	@Transactional
 	public ObjectResponse<Allele> validateAlleleDTO(AlleleDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {

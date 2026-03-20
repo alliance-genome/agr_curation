@@ -22,6 +22,7 @@ import org.alliancegenome.curation_api.model.ingest.dto.slotAnnotions.ConstructC
 import org.alliancegenome.curation_api.model.ingest.dto.slotAnnotions.NameSlotAnnotationDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
+import org.alliancegenome.curation_api.services.ReferenceService;
 import org.alliancegenome.curation_api.services.helpers.ConstructUniqueIdHelper;
 import org.alliancegenome.curation_api.services.helpers.SlotAnnotationIdentityHelper;
 import org.alliancegenome.curation_api.services.helpers.UniqueIdentifierHelper;
@@ -50,6 +51,8 @@ public class ConstructDTOValidator extends ReagentDTOValidator<Construct, Constr
 	ConstructComponentSlotAnnotationDTOValidator constructComponentDtoValidator;
 	@Inject
 	SlotAnnotationIdentityHelper identityHelper;
+	@Inject
+	ReferenceService referenceService;
 
 	@Transactional
 	public ObjectResponse<Construct> validateConstructDTO(ConstructDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
