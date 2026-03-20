@@ -13,6 +13,7 @@ import { TrueFalseDropdown } from '../../../components/TrueFalseDropDownSelector
 import { useControlledVocabularyService } from '../../../service/useControlledVocabularyService';
 import { ValidationService } from '../../../service/ValidationService';
 import { evidenceTemplate, evidenceEditorTemplate } from '../../../components/EvidenceComponent';
+import { Endpoints } from '../../../constants/Endpoints';
 
 export const SecondaryIdsDialog = ({
 	originalSecondaryIdsData,
@@ -151,7 +152,7 @@ export const SecondaryIdsDialog = ({
 	const validateSecondaryId = async (sid) => {
 		let _sid = global.structuredClone(sid);
 		delete _sid.dataKey;
-		const result = await validationService.validate('allelesecondaryidslotannotation', _sid);
+		const result = await validationService.validate(Endpoints.SlotAnnotation.ALLELE_SECONDARY_ID, _sid);
 		return result;
 	};
 

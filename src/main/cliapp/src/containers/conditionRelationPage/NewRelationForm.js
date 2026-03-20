@@ -12,6 +12,7 @@ import { ExConAutocompleteTemplate } from '../../components/Autocomplete/ExConAu
 import { FormErrorMessageComponent } from '../../components/Error/FormErrorMessageComponent';
 import { classNames } from 'primereact/utils';
 import { autocompleteSearch, buildAutocompleteFilter } from '../../utils/utils';
+import { Endpoints } from '../../constants/Endpoints';
 import { AutocompleteMultiEditor } from '../../components/Autocomplete/AutocompleteMultiEditor';
 import ErrorBoundary from '../../components/Error/ErrorBoundary';
 
@@ -93,7 +94,7 @@ export const NewRelationForm = ({
 
 	const referenceSearch = (event, setFiltered, setQuery) => {
 		const autocompleteFields = ['curie', 'cross_references.curie'];
-		const endpoint = 'literature-reference';
+		const endpoint = Endpoints.Document.LITERATURE_REFERENCE;
 		const filterName = 'curieFilter';
 		const filter = buildAutocompleteFilter(event, autocompleteFields);
 		setQuery(event.query);
@@ -111,7 +112,7 @@ export const NewRelationForm = ({
 
 	const conditionSearch = (event, setFiltered, setInputValue) => {
 		const autocompleteFields = ['conditionSummary'];
-		const endpoint = 'experimental-condition';
+		const endpoint = Endpoints.Annotation.EXPERIMENTAL_CONDITION;
 		const filterName = 'experimentalConditionFilter';
 		const filter = buildAutocompleteFilter(event, autocompleteFields);
 		setInputValue(event.query);
