@@ -51,7 +51,7 @@ public class BaseDTOValidator<E extends Object> {
 	@Inject
 	MiTermService miTermService;
 	@Inject
-	protected ReferenceService referenceService;
+	ReferenceService referenceService;
 	@Inject
 	VocabularyTermService vocabularyTermService;
 	@Inject
