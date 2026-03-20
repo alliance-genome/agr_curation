@@ -3,11 +3,12 @@ import { SearchService } from '../../service/SearchService';
 import { autocompleteSearch, buildAutocompleteFilter } from '../../utils/utils';
 import { VocabTermAutocompleteTemplate } from '../Autocomplete/VocabTermAutocompleteTemplate';
 import { DialogErrorMessageComponent } from '../Error/DialogErrorMessageComponent';
+import { Endpoints } from '../../constants/Endpoints';
 
 const functionalImpactSearch = (event, setFiltered, setQuery) => {
 	const searchService = new SearchService();
 	const autocompleteFields = ['name'];
-	const endpoint = 'vocabularyterm';
+	const endpoint = Endpoints.Vocabulary.TERM;
 	const filterName = 'functionalImpactFilter';
 	const otherFilters = {
 		vocabularyFilter: {

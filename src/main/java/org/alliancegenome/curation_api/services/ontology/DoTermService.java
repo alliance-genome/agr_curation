@@ -94,7 +94,6 @@ public class DoTermService extends BaseOntologyTermService<DOTerm, DoTermDAO> im
 			DiseaseSearchResultDocument doc = new DiseaseSearchResultDocument();
 			doc.setCurie(curie);
 			doc.setPrimaryKey(curie);
-			doc.setSearchable(false);
 			doc.setName(name);
 			doc.setNameKey(name);
 			doc.setDefinition(definition);

@@ -14,6 +14,7 @@ import { TrueFalseDropdown } from '../../components/TrueFalseDropDownSelector';
 import { useGetTableData } from '../../service/useGetTableData';
 import { useGetUserSettings } from '../../service/useGetUserSettings';
 import { SearchService } from '../../service/SearchService';
+import { Endpoints } from '../../constants/Endpoints';
 import { setNewEntity } from '../../utils/utils';
 
 import { StringTemplate } from '../../components/Templates/StringTemplate';
@@ -116,7 +117,7 @@ export const VocabulariesTable = () => {
 	);
 
 	const DEFAULT_COLUMN_WIDTH = 20;
-	const SEARCH_ENDPOINT = 'vocabulary';
+	const SEARCH_ENDPOINT = Endpoints.Vocabulary.VOCABULARY;
 
 	const initialTableState = useMemo(
 		() => getDefaultTableState('Vocabularies', columns, DEFAULT_COLUMN_WIDTH),
