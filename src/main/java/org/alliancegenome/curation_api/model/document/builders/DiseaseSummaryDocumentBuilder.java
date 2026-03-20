@@ -54,7 +54,6 @@ public class DiseaseSummaryDocumentBuilder {
 
 		doc.setCurie(doTerm.getCurie());
 		doc.setPrimaryKey(doTerm.getCurie());
-		doc.setSearchable(false);
 		doc.setDefinition(doTerm.getDefinition());
 		doc.setName(doTerm.getName());
 		doc.setNameKey(doTerm.getName());

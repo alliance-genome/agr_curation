@@ -15,6 +15,7 @@ public class GeneSearchResultDocument extends ESDocument {
 
 	{
 		category = "gene_search_result";
+		searchable = true;
 	}
 
 	private String curie;
