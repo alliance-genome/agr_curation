@@ -83,7 +83,7 @@ public abstract class ExpressionExperiment extends SubmittedObject {
 		@Index(columnList = "geneexpressionexperiment_id", name = "gee_crossreference_geneexpressionexperiment_index"),
 		@Index(columnList = "crossreferences_id", name = "gee_crossreference_crossreferences_index")
 	})
-	@JsonView({ CurationView.FieldsAndLists.class, CurationView.ForPublic.class, CurationView.GeneExpressionDocument.class })
+	@JsonView({ CurationView.FieldsAndLists.class, CurationView.ForPublic.class, CurationView.GeneExpressionDocument.class, CurationView.GeneExpressionAnnotationView.class })
 	private List<CrossReference> crossReferences;
 
 	@Transient private Allele specimenGenomicModel;

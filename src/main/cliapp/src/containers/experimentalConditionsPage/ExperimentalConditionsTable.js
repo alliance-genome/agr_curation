@@ -5,6 +5,7 @@ import { AutocompleteEditor } from '../../components/Autocomplete/AutocompleteEd
 import { useMutation } from '@tanstack/react-query';
 import { Toast } from 'primereact/toast';
 import { SearchService } from '../../service/SearchService';
+import { Endpoints } from '../../constants/Endpoints';
 import { ErrorMessageComponent } from '../../components/Error/ErrorMessageComponent';
 import { ExperimentalConditionService } from '../../service/ExperimentalConditionService';
 import { Button } from 'primereact/button';
@@ -104,7 +105,7 @@ export const ExperimentalConditionsTable = () => {
 	};
 
 	const conditionClassSearch = (event, setFiltered, setQuery) => {
-		const endpoint = 'zecoterm';
+		const endpoint = Endpoints.Ontology.ZECO;
 		const filterName = 'conditionClassEditorFilter';
 		const filter = buildAutocompleteFilter(event, curieAutocompleteFields);
 		const otherFilters = {
@@ -198,7 +199,7 @@ export const ExperimentalConditionsTable = () => {
 					singleOntologyEditorTemplate(
 						props,
 						'conditionId',
-						'experimentalconditionontologyterm',
+						Endpoints.Ontology.EXPERIMENTAL_CONDITION,
 						curieAutocompleteFields
 					),
 			},
@@ -209,7 +210,7 @@ export const ExperimentalConditionsTable = () => {
 				body: (rowData) => <OntologyTermTemplate term={rowData.conditionGeneOntology} />,
 				filterConfig: FILTER_CONFIGS.conditionGeneOntologyFilterConfig,
 				editor: (props) =>
-					singleOntologyEditorTemplate(props, 'conditionGeneOntology', 'goterm', curieAutocompleteFields),
+					singleOntologyEditorTemplate(props, 'conditionGeneOntology', Endpoints.Ontology.GO, curieAutocompleteFields),
 			},
 			{
 				field: 'conditionChemical.name',
@@ -218,7 +219,12 @@ export const ExperimentalConditionsTable = () => {
 				body: (rowData) => <OntologyTermTemplate term={rowData.conditionChemical} />,
 				filterConfig: FILTER_CONFIGS.conditionChemicalFilterConfig,
 				editor: (props) =>
-					singleOntologyEditorTemplate(props, 'conditionChemical', 'chemicalterm', curieAutocompleteFields),
+					singleOntologyEditorTemplate(
+						props,
+						'conditionChemical',
+						Endpoints.Ontology.CHEMICAL,
+						curieAutocompleteFields
+					),
 			},
 			{
 				field: 'conditionAnatomy.name',
@@ -227,7 +233,12 @@ export const ExperimentalConditionsTable = () => {
 				body: (rowData) => <OntologyTermTemplate term={rowData.conditionAnatomy} />,
 				filterConfig: FILTER_CONFIGS.conditionAnatomyFilterConfig,
 				editor: (props) =>
-					singleOntologyEditorTemplate(props, 'conditionAnatomy', 'anatomicalterm', curieAutocompleteFields),
+					singleOntologyEditorTemplate(
+						props,
+						'conditionAnatomy',
+						Endpoints.Ontology.ANATOMICAL,
+						curieAutocompleteFields
+					),
 			},
 			{
 				field: 'conditionTaxon.name',
@@ -236,7 +247,7 @@ export const ExperimentalConditionsTable = () => {
 				body: (rowData) => <OntologyTermTemplate term={rowData.conditionTaxon} />,
 				filterConfig: FILTER_CONFIGS.conditionTaxonFilterConfig,
 				editor: (props) =>
-					singleOntologyEditorTemplate(props, 'conditionTaxon', 'ncbitaxonterm', curieAutocompleteFields),
+					singleOntologyEditorTemplate(props, 'conditionTaxon', Endpoints.Ontology.NCBI_TAXON, curieAutocompleteFields),
 			},
 			{
 				field: 'conditionQuantity',
@@ -268,7 +279,7 @@ export const ExperimentalConditionsTable = () => {
 	);
 
 	const DEFAULT_COLUMN_WIDTH = 10;
-	const SEARCH_ENDPOINT = 'experimental-condition';
+	const SEARCH_ENDPOINT = Endpoints.Annotation.EXPERIMENTAL_CONDITION;
 
 	const initialTableState = useMemo(
 		() => getDefaultTableState('ExperimentalConditions', columns, DEFAULT_COLUMN_WIDTH),

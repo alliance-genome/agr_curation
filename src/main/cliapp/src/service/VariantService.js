@@ -1,5 +1,6 @@
 import { BaseAuthService } from './BaseAuthService';
 import { DeletionService } from './DeletionService';
+import { Endpoints } from '../constants/Endpoints';
 
 export class VariantService extends BaseAuthService {
 	saveVariant(updatedVariant) {
@@ -12,7 +13,7 @@ export class VariantService extends BaseAuthService {
 
 	async deleteVariant(variant) {
 		const deletionService = new DeletionService();
-		return await deletionService.delete(`variant`, variant.curie);
+		return await deletionService.delete(Endpoints.Entity.VARIANT, variant.curie);
 	}
 
 	async getVariant(curie) {

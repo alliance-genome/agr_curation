@@ -4,6 +4,7 @@ import { autocompleteSearch, buildAutocompleteFilter } from '../../utils/utils';
 import { SubjectAutocompleteTemplate } from '../Autocomplete/SubjectAutocompleteTemplate';
 import { DialogErrorMessageComponent } from '../Error/DialogErrorMessageComponent';
 import { getIdentifier } from '../../utils/utils';
+import { Endpoints } from '../../constants/Endpoints';
 
 const geneSearch = (event, setFiltered, setInputValue) => {
 	const searchService = new SearchService();
@@ -21,7 +22,7 @@ const geneSearch = (event, setFiltered, setInputValue) => {
 		'geneSystematicName.displayText',
 		'geneSecondaryIds.secondaryId',
 	];
-	const endpoint = 'gene';
+	const endpoint = Endpoints.Entity.GENE;
 	const filterName = 'objectFilter';
 	const filter = buildAutocompleteFilter(event, autocompleteFields);
 
