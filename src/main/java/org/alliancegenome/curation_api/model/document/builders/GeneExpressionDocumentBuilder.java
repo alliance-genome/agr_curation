@@ -98,7 +98,7 @@ public class GeneExpressionDocumentBuilder {
 		if (annotation.getEvidenceItem() != null && annotation.getEvidenceItem() instanceof Reference reference) {
 			expressionDocument.setReferenceId(List.of(reference.getReferenceID()));
 		}
-		expressionDocument.setPhylogeneticSortingIndex(annotation.getExpressionAnnotationSubject().getTaxon().getPhylogeneticSortOrder());
+		expressionDocument.setPhylogeneticSortingIndex(annotation.getExpressionAnnotationSubject().getTaxon().getSpecies().getPhylogeneticOrder());
 		
 		if (annotation.getExpressionAssayUsed() != null) {
 			String assayName = annotation.getExpressionAssayUsed().getSynonyms().stream().filter(synonym -> synonym.getIsDisplaySynonym()).findFirst().map(Synonym::getName).orElse(null);

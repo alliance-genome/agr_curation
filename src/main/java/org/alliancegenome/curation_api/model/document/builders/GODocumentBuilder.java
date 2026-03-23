@@ -38,11 +38,11 @@ public class GODocumentBuilder {
 				Gene gene = goAnnotation.getSingleGene();
 				if (gene == null || Boolean.TRUE.equals(gene.getObsolete()) || Boolean.TRUE.equals(gene.getInternal())
 						|| gene.getGeneSymbol() == null || gene.getTaxon() == null
-						|| gene.getTaxon().getSpecies() == null || gene.getTaxon().getSpecies().isEmpty()) {
+						|| gene.getTaxon().getSpecies() == null) {
 					continue;
 				}
 				String geneSymbol = gene.getGeneSymbol().getDisplayText();
-				String speciesAbbreviation = gene.getTaxon().getSpecies().get(0).getAbbreviation();
+				String speciesAbbreviation = gene.getTaxon().getSpecies().getAbbreviation();
 				String geneDisplayString = geneSymbol + " (" + speciesAbbreviation + ")";
 
 				String taxonName = gene.getTaxon().getName();
