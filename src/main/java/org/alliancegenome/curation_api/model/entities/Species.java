@@ -43,7 +43,7 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema;
 @Indexed
 @NoArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
-@ToString(callSuper = true)
+@ToString(callSuper = true, exclude = {"taxon"})
 @Table(indexes = {
 		@Index(name = "species_createdby_index", columnList = "createdBy_id"),
 		@Index(name = "species_updatedby_index", columnList = "updatedBy_id"),
