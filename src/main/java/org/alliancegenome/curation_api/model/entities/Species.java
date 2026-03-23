@@ -55,7 +55,7 @@ public class Species extends AuditedObject {
 
 	@IndexedEmbedded(includePaths = {"name", "curie", "name_keyword", "curie_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
-	@ManyToOne
+	@OneToOne
 	@JsonView({ CurationView.FieldsOnly.class })
 	@Fetch(FetchMode.JOIN)
 	private NCBITaxonTerm taxon;

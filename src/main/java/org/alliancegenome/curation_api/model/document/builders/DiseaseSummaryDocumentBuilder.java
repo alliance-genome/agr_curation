@@ -117,11 +117,11 @@ public class DiseaseSummaryDocumentBuilder {
 	}
 
 	private boolean hasSpecies(GenomicEntity genomicEntity) {
-		return CollectionUtils.isNotEmpty(genomicEntity.getTaxon().getSpecies());
+		return genomicEntity.getTaxon() != null && genomicEntity.getTaxon().getSpecies() != null;
 	}
 
 	private String getSpeciesAbbrev(GenomicEntity genomicEntity) {
-		return " (" + genomicEntity.getTaxon().getSpecies().get(0).getAbbreviation() + ")";
+		return " (" + genomicEntity.getTaxon().getSpecies().getAbbreviation() + ")";
 	}
 
 	public Set<Gene> getSingleGenes(Collection<AGMDiseaseAnnotation> annotations, Function<AGMDiseaseAnnotation, Gene> function) {
