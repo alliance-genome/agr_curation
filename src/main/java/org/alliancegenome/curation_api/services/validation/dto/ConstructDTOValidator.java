@@ -22,6 +22,7 @@ import org.alliancegenome.curation_api.model.ingest.dto.slotAnnotions.ConstructC
 import org.alliancegenome.curation_api.model.ingest.dto.slotAnnotions.NameSlotAnnotationDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
+import org.alliancegenome.curation_api.services.ReferenceService;
 import org.alliancegenome.curation_api.services.helpers.ConstructUniqueIdHelper;
 import org.alliancegenome.curation_api.services.helpers.SlotAnnotationIdentityHelper;
 import org.alliancegenome.curation_api.services.helpers.UniqueIdentifierHelper;
@@ -50,6 +51,8 @@ public class ConstructDTOValidator extends ReagentDTOValidator<Construct, Constr
 	ConstructComponentSlotAnnotationDTOValidator constructComponentDtoValidator;
 	@Inject
 	SlotAnnotationIdentityHelper identityHelper;
+	@Inject
+	ReferenceService referenceService;
 
 	@Transactional
 	public ObjectResponse<Construct> validateConstructDTO(ConstructDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
@@ -78,7 +81,7 @@ public class ConstructDTOValidator extends ReagentDTOValidator<Construct, Constr
 
 		construct = validateReagentDTO(construct, dto, VocabularyConstants.CONSTRUCT_NOTE_TYPES_VOCABULARY_TERM_SET);
 
-		List<Reference> refs = validateReferences("reference_curies", dto.getReferenceCuries(), true);
+		List<Reference> refs = validateOptionalEntities("reference_curies", dto.getReferenceCuries(), referenceService::retrieveFromDbOrLiteratureService);
 
 		construct.setReferences(refs);
 
@@ -110,6 +113,7 @@ public class ConstructDTOValidator extends ReagentDTOValidator<Construct, Constr
 			construct.getConstructComponents().addAll(components);
 		}
 
+		response.convertWarningMessagesToMap();
 		response.convertErrorMessagesToMap();
 
 		if (response.hasErrors()) {
@@ -140,6 +144,11 @@ public class ConstructDTOValidator extends ReagentDTOValidator<Construct, Constr
 			return null;
 		}
 
+		if (symbolResponse.hasWarnings()) {
+			response.addWarningMessage(field, symbolResponse.warningMessagesString());
+			response.addWarningMessages(field, symbolResponse.getWarningMessages());
+		}
+
 		ConstructSymbolSlotAnnotation symbol = symbolResponse.getEntity();
 		symbol.setSingleConstruct(construct);
 
@@ -158,6 +167,11 @@ public class ConstructDTOValidator extends ReagentDTOValidator<Construct, Constr
 			response.addErrorMessage(field, nameResponse.errorMessagesString());
 			response.addErrorMessages(field, nameResponse.getErrorMessages());
 			return null;
+		}
+
+		if (nameResponse.hasWarnings()) {
+			response.addWarningMessage(field, nameResponse.warningMessagesString());
+			response.addWarningMessages(field, nameResponse.getWarningMessages());
 		}
 
 		ConstructFullNameSlotAnnotation fullName = nameResponse.getEntity();
@@ -191,6 +205,9 @@ public class ConstructDTOValidator extends ReagentDTOValidator<Construct, Constr
 					syn.setSingleConstruct(construct);
 					validatedSynonyms.add(syn);
 				}
+				if (synResponse.hasWarnings()) {
+					response.addWarningMessages(field, ix, synResponse.getWarningMessages());
+				}
 			}
 		}
 
@@ -198,6 +215,8 @@ public class ConstructDTOValidator extends ReagentDTOValidator<Construct, Constr
 			response.convertMapToErrorMessages(field);
 			return null;
 		}
+
+		response.convertMapToWarningMessages(field);
 
 		if (CollectionUtils.isEmpty(validatedSynonyms)) {
 			return null;
@@ -231,6 +250,9 @@ public class ConstructDTOValidator extends ReagentDTOValidator<Construct, Constr
 					comp.setSingleConstruct(construct);
 					validatedComponents.add(comp);
 				}
+				if (compResponse.hasWarnings()) {
+					response.addWarningMessages(field, ix, compResponse.getWarningMessages());
+				}
 			}
 		}
 
@@ -238,6 +260,8 @@ public class ConstructDTOValidator extends ReagentDTOValidator<Construct, Constr
 			response.convertMapToErrorMessages(field);
 			return null;
 		}
+
+		response.convertMapToWarningMessages(field);
 
 		if (CollectionUtils.isEmpty(validatedComponents)) {
 			return null;

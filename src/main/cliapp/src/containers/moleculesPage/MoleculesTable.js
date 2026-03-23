@@ -10,6 +10,7 @@ import { IdTemplate } from '../../components/Templates/IdTemplate';
 import { StringTemplate } from '../../components/Templates/StringTemplate';
 
 import { SearchService } from '../../service/SearchService';
+import { Endpoints } from '../../constants/Endpoints';
 
 export const MoleculesTable = () => {
 	const [isInEditMode, setIsInEditMode] = useState(false);
@@ -86,7 +87,7 @@ export const MoleculesTable = () => {
 	);
 
 	const DEFAULT_COLUMN_WIDTH = 13;
-	const SEARCH_ENDPOINT = 'molecule';
+	const SEARCH_ENDPOINT = Endpoints.Entity.MOLECULE;
 
 	const initialTableState = useMemo(() => getDefaultTableState('Molecule', columns, DEFAULT_COLUMN_WIDTH), [columns]);
 
