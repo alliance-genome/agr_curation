@@ -43,7 +43,7 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema;
 @Indexed
 @NoArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
-@ToString(callSuper = true)
+@ToString(callSuper = true, exclude = {"taxon"})
 @Table(indexes = {
 		@Index(name = "species_createdby_index", columnList = "createdBy_id"),
 		@Index(name = "species_updatedby_index", columnList = "updatedBy_id"),
@@ -55,7 +55,7 @@ public class Species extends AuditedObject {
 
 	@IndexedEmbedded(includePaths = {"name", "curie", "name_keyword", "curie_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
-	@ManyToOne
+	@OneToOne
 	@JsonView({ CurationView.FieldsOnly.class })
 	@Fetch(FetchMode.JOIN)
 	private NCBITaxonTerm taxon;
