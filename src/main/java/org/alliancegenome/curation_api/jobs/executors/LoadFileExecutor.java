@@ -116,14 +116,12 @@ public class LoadFileExecutor {
 		if (bulkLoadFileHistory.getBulkLoadFile().getLinkMLSchemaVersion() == null) {
 			bulkLoadFileHistory.setErrorMessage("Missing Schema Version");
 			bulkLoadFileHistory.setBulkloadStatus(JobStatus.FAILED);
-			slackNotifier.slackalert(bulkLoadFileHistory);
 			bulkLoadFileHistoryDAO.merge(bulkLoadFileHistory);
 			return false;
 		}
 		if (!validSchemaVersion(bulkLoadFileHistory.getBulkLoadFile().getLinkMLSchemaVersion(), dtoClass)) {
 			bulkLoadFileHistory.setErrorMessage("Invalid Schema Version: " + bulkLoadFileHistory.getBulkLoadFile().getLinkMLSchemaVersion());
 			bulkLoadFileHistory.setBulkloadStatus(JobStatus.FAILED);
-			slackNotifier.slackalert(bulkLoadFileHistory);
 			bulkLoadFileHistoryDAO.merge(bulkLoadFileHistory);
 			return false;
 		}
@@ -354,14 +352,12 @@ public class LoadFileExecutor {
 		}
 		bulkLoadFileHistory.setErrorMessage(String.join("|", errorMessages));
 		bulkLoadFileHistory.setBulkloadStatus(JobStatus.FAILED);
-		slackNotifier.slackalert(bulkLoadFileHistory);
 		updateHistory(bulkLoadFileHistory);
 	}
 
 	protected void failLoadAboveErrorRateCutoff(BulkLoadFileHistory bulkLoadFileHistory) {
 		bulkLoadFileHistory.setBulkloadStatus(JobStatus.FAILED);
 		bulkLoadFileHistory.setErrorMessage("Failure rate exceeded cutoff");
-		slackNotifier.slackalert(bulkLoadFileHistory);
 		updateHistory(bulkLoadFileHistory);
 	}
 }

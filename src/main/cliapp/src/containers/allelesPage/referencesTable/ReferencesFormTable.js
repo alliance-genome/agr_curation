@@ -19,6 +19,7 @@ export const ReferencesFormTable = ({ references, editingRows, onRowEditChange, 
 			columnResizeMode="fit"
 			onRowEditChange={onRowEditChange}
 			ref={tableRef}
+			cellMemo={false}
 			paginator
 			paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
 			currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"

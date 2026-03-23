@@ -1,5 +1,6 @@
 import { BaseAuthService } from './BaseAuthService';
 import { DeletionService } from './DeletionService';
+import { Endpoints } from '../constants/Endpoints';
 
 export class DiseaseAnnotationService extends BaseAuthService {
 	saveDiseaseAnnotation(updatedAnnotation) {
@@ -37,9 +38,9 @@ const findEndpointType = (updatedAnnotation) => {
 };
 
 const typeEndpoints = {
-	AGMDiseaseAnnotation: 'agm',
-	AlleleDiseaseAnnotation: 'allele',
-	GeneDiseaseAnnotation: 'gene',
+	AGMDiseaseAnnotation: Endpoints.Entity.AGM,
+	AlleleDiseaseAnnotation: Endpoints.Entity.ALLELE,
+	GeneDiseaseAnnotation: Endpoints.Entity.GENE,
 };
 
 const subectAnnotationLookup = {
@@ -49,7 +50,7 @@ const subectAnnotationLookup = {
 };
 
 const subjectTypeEndpoints = {
-	AffectedGenomicModel: 'agm',
-	Allele: 'allele',
-	Gene: 'gene',
+	AffectedGenomicModel: Endpoints.Entity.AGM,
+	Allele: Endpoints.Entity.ALLELE,
+	Gene: Endpoints.Entity.GENE,
 };

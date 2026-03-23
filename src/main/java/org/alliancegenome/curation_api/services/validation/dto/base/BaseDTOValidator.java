@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Function;
 
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.dao.NoteDAO;
@@ -236,27 +237,23 @@ public class BaseDTOValidator<E extends Object> {
 		return reference;
 	}
 
-	protected List<Reference> validateReferences(String field, List<String> referenceCuries, boolean failOnMissingReferences) {
-		if (CollectionUtils.isEmpty(referenceCuries)) {
+	protected <T> List<T> validateOptionalEntities(String field, List<String> curies, Function<String, T> lookupFn) {
+		if (CollectionUtils.isEmpty(curies)) {
 			return null;
 		}
 
-		List<Reference> references = new ArrayList<>();
-		for (String referenceCurie : referenceCuries) {
-			Reference reference = referenceService.retrieveFromDbOrLiteratureService(referenceCurie);
-			if (reference == null) {
-				if (failOnMissingReferences) {
-					response.addErrorMessage(field, ValidationConstants.INVALID_MESSAGE + " (" + referenceCurie + ")");
-					return null;
-				} else {
-					response.addWarningMessage(field, ValidationConstants.WARNING_MISSING_MESSAGE + " (" + referenceCurie + ")");
-				}
+		List<T> entities = new ArrayList<>();
+		for (String curie : curies) {
+			T entity = lookupFn.apply(curie);
+			if (entity == null) {
+				response.addWarningMessage(field, ValidationConstants.WARNING_MISSING_MESSAGE + " (" + curie + ")");
+				continue;
 			}
-			if (!references.contains(reference)) {
-				references.add(reference);
+			if (!entities.contains(entity)) {
+				entities.add(entity);
 			}
 		}
-		return references;
+		return entities;
 	}
 
 	protected <N extends OntologyTerm, D extends BaseSQLDAO<N>, S extends BaseOntologyTermService<N, D>> N validateOntologyTerm(S service, String field, String curie) {
@@ -449,6 +446,10 @@ public class BaseDTOValidator<E extends Object> {
 			response.addErrorMessage("note_dto", noteResponse.errorMessagesString());
 			return null;
 		}
+		if (noteResponse.hasWarnings()) {
+			response.addWarningMessage("note_dto", noteResponse.warningMessagesString());
+			response.addWarningMessages("note_dto", noteResponse.getWarningMessages());
+		}
 
 		return noteDAO.persist(noteResponse.getEntity());
 	}
@@ -472,6 +473,9 @@ public class BaseDTOValidator<E extends Object> {
 				allNotesValid = false;
 				response.addErrorMessages("note_dtos", ix, noteResponse.getErrorMessages());
 			} else {
+				if (noteResponse.hasWarnings()) {
+					response.addWarningMessages("note_dtos", ix, noteResponse.getWarningMessages());
+				}
 				if (StringUtils.isNotBlank(expectedReference)) {
 					if (CollectionUtils.isNotEmpty(dtos.get(ix).getEvidenceCuries())) {
 						for (String noteRef : dtos.get(ix).getEvidenceCuries()) {
@@ -496,6 +500,8 @@ public class BaseDTOValidator<E extends Object> {
 			response.convertMapToErrorMessages("note_dtos");
 			return null;
 		}
+
+		response.convertMapToWarningMessages("note_dtos");
 
 		return validatedNotes;
 	}
