@@ -1,5 +1,7 @@
 package org.alliancegenome.curation_api.exceptions;
 
+import org.alliancegenome.exceptional.client.ExceptionCatcher;
+
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -16,6 +18,7 @@ public class ApiErrorExceptionMapper implements ExceptionMapper<ApiErrorExceptio
 		// dereference entity to make sure it's not tried to be serialized
 		// due to lazy-initialization issues
 		// TODO: Once we get the jackson-hibernate HibernateSerialzers working we don't need it any longer.
+		ExceptionCatcher.report(e);
 		e.getObjectResponse().setEntity(null);
 		rb.entity(e.getObjectResponse());
 		return rb.build();
