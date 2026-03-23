@@ -136,6 +136,6 @@ public class AllelePhenotypeAnnotation extends PhenotypeAnnotation {
 		if (phenotypeAnnotationSubject.getTaxon() == null) {
 			return null;
 		}
-		return phenotypeAnnotationSubject.getTaxon().getGenesSpecies();
+		return phenotypeAnnotationSubject.getTaxon().getSpecies().getFullName();
 	}
 }

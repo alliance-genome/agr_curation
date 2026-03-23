@@ -66,7 +66,7 @@ public class DiseaseSummaryDocumentBuilder {
 		List<GeneDiseaseAnnotation> geneDiseaseAnnotations = doTerm.getPublicGeneDiseaseAnnotations();
 		if (CollectionUtils.isNotEmpty(geneDiseaseAnnotations)) {
 			doc.setGenes(geneDiseaseAnnotations.stream().map(GeneDiseaseAnnotation::getDiseaseAnnotationSubject).filter(this::hasSpecies).map(this::getGeneName).collect(Collectors.toSet()));
-			doc.setAssociatedSpecies(geneDiseaseAnnotations.stream().map(GeneDiseaseAnnotation::getDiseaseAnnotationSubject).filter(this::hasSpecies).map(gene -> gene.getTaxon().getGenesSpecies()).collect(Collectors.toSet()));
+			doc.setAssociatedSpecies(geneDiseaseAnnotations.stream().map(GeneDiseaseAnnotation::getDiseaseAnnotationSubject).filter(this::hasSpecies).map(gene -> gene.getTaxon().getSpecies().getFullName()).collect(Collectors.toSet()));
 
 			// collect all the involved genes: direct genes, inferred genes, and asserted
 			// genes
@@ -105,7 +105,7 @@ public class DiseaseSummaryDocumentBuilder {
 		allInvolvedGenes.forEach(gene -> gene.getGeneToGeneOrthologyGenerateds()
 			.stream().filter(GeneToGeneOrthologyGenerated::getStrictFilter).filter(orthology -> hasSpecies(orthology.getObjectGene())).forEach(orthology -> {
 				doc.getGenes().add(getGeneName(orthology.getObjectGene()));
-				doc.getAssociatedSpecies().add(orthology.getObjectGene().getTaxon().getGenesSpecies());
+				doc.getAssociatedSpecies().add(orthology.getObjectGene().getTaxon().getSpecies().getFullName());
 			}));
 		// calculate diseaseGroup, ie parents with subset DO_AGR_slim
 		doc.setDiseaseGroup(doTerm.getAncestors().stream().filter(closure -> closure.getClosureObject().getSubsets().contains("DO_AGR_slim")).map(closure -> closure.getClosureObject().getName()).collect(Collectors.toSet()));
