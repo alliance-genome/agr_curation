@@ -59,7 +59,7 @@ public class ConstructGenomicEntityAssociationDTOValidator extends EvidenceAssoc
 			}
 		}
 
-		VocabularyTerm relation = validateRequiredTermInVocabularyTermSet("genomic_entity_relation_name", dto.getGenomicEntityRelationName(), VocabularyConstants.CONSTRUCT_GENOMIC_ENTITY_RELATION_VOCABULARY_TERM_SET);
+		VocabularyTerm relation = validateRequiredTermInVocabularyTermSet("relation_name", dto.getRelationName(), VocabularyConstants.CONSTRUCT_GENOMIC_ENTITY_RELATION_VOCABULARY_TERM_SET);
 
 		ConstructGenomicEntityAssociation association = null;
 		if (subjectIds != null && subjectIds.size() == 1 && objectIds != null && objectIds.size() == 1 && relation != null) {
