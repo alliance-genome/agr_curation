@@ -7,9 +7,8 @@ import java.util.List;
 import org.alliancegenome.curation_api.interfaces.document.AlleleDocumentInterface;
 import org.alliancegenome.curation_api.model.document.builders.AlleleSummaryDocumentBuilder;
 import org.alliancegenome.curation_api.model.document.builders.TransgenicAlleleDocumentBuilder;
-import org.alliancegenome.curation_api.model.document.es.AlleleSummaryDTO;
 import org.alliancegenome.curation_api.model.document.es.AlleleSummaryDocument;
-import org.alliancegenome.curation_api.model.document.es.TransgenicAlleleDTO;
+import org.alliancegenome.curation_api.model.document.es.TransgenicAlleleDocument;
 import org.alliancegenome.curation_api.model.entities.associations.AlleleConstructAssociation;
 import org.alliancegenome.curation_api.model.input.Pagination;
 import org.alliancegenome.curation_api.response.SearchResponse;
@@ -25,10 +24,10 @@ public class AlleleDocumentController implements AlleleDocumentInterface {
 
 	@Inject
 	AlleleService alleleService;
-	
+
 	@Inject
 	AlleleConstructAssociationService acService;
-	
+
 	@Inject
 	ResourceDescriptorPageService resourceDescriptorPageService;
 
@@ -42,23 +41,18 @@ public class AlleleDocumentController implements AlleleDocumentInterface {
 
 	@Override
 	public SearchResponse<AlleleSummaryDocument> findSummaryByIds(List<Long> ids) {
-		SearchResponse<AlleleSummaryDTO> resp = alleleService.findAllelesForSummaryByIds(ids);
-		ArrayList<AlleleSummaryDocument> list = new ArrayList<>();
+		SearchResponse<AlleleSummaryDocument> resp = alleleService.findAllelesForSummaryByIds(ids);
 		if (resp.getResults() != null) {
-			AlleleSummaryDocumentBuilder alleleSummaryDocumentBuilder = new AlleleSummaryDocumentBuilder();
-			for (AlleleSummaryDTO dto : resp.getResults()) {
-				AlleleSummaryDocument doc = alleleSummaryDocumentBuilder.buildSummaryDocument(dto, resourceDescriptorPageService);
-				list.add(doc);
+			AlleleSummaryDocumentBuilder builder = new AlleleSummaryDocumentBuilder();
+			for (AlleleSummaryDocument doc : resp.getResults()) {
+				builder.finalizeDocument(doc, resourceDescriptorPageService);
 			}
 		}
-
-		SearchResponse<AlleleSummaryDocument> ret = new SearchResponse<>(list);
-		ret.setTotalResults(resp.getTotalResults());
-		return ret;
+		return resp;
 	}
 
 	@Override
-	public SearchResponse<TransgenicAlleleDTO> findDocuments(Integer page, Integer limit, HashMap<String, Object> params) {
+	public SearchResponse<TransgenicAlleleDocument> findDocuments(Integer page, Integer limit, HashMap<String, Object> params) {
 		if (params == null) {
 			params = new HashMap<>();
 		}
@@ -66,15 +60,15 @@ public class AlleleDocumentController implements AlleleDocumentInterface {
 		params.put("alleleAssociationSubject.internal", false);
 
 		SearchResponse<AlleleConstructAssociation> response = acService.findByParams(new Pagination(page, limit), params);
-		List<TransgenicAlleleDTO> list = new ArrayList<>();
+		List<TransgenicAlleleDocument> list = new ArrayList<>();
 		if (response.getResults() != null) {
 			TransgenicAlleleDocumentBuilder builder = new TransgenicAlleleDocumentBuilder();
 			for (AlleleConstructAssociation association : response.getResults()) {
-				TransgenicAlleleDTO doc = builder.buildTransgenicAlleleDocument(association);
+				TransgenicAlleleDocument doc = builder.buildTransgenicAlleleDocument(association);
 				list.add(doc);
 			}
 		}
-		SearchResponse<TransgenicAlleleDTO> ret = new SearchResponse<>(list);
+		SearchResponse<TransgenicAlleleDocument> ret = new SearchResponse<>(list);
 		ret.setTotalResults(response.getTotalResults());
 		return ret;
 	}

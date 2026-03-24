@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.alliancegenome.curation_api.dao.VocabularyTermDAO;
-import org.alliancegenome.curation_api.model.document.es.TransgenicAlleleDTO;
+import org.alliancegenome.curation_api.model.document.es.TransgenicAlleleDocument;
 import org.alliancegenome.curation_api.model.entities.AGMDiseaseAnnotation;
 import org.alliancegenome.curation_api.model.entities.AGMPhenotypeAnnotation;
 import org.alliancegenome.curation_api.model.entities.Allele;
@@ -26,12 +26,12 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class TransgenicAlleleDocumentBuilder {
 
-	public TransgenicAlleleDTO buildTransgenicAlleleDocument(AlleleConstructAssociation association) {
+	public TransgenicAlleleDocument buildTransgenicAlleleDocument(AlleleConstructAssociation association) {
 		Allele allele = association.getAlleleAssociationSubject();
 
-		TransgenicAlleleDTO transgenicAlleleDocument = new TransgenicAlleleDTO();
+		TransgenicAlleleDocument transgenicAlleleDocument = new TransgenicAlleleDocument();
 		transgenicAlleleDocument.setAllele(allele);
-		transgenicAlleleDocument.setConstruct(association.getAlleleConstructAssociationObject());
+		transgenicAlleleDocument.setConstructList(List.of(association.getAlleleConstructAssociationObject()));
 		// need disease and phenotype data only for constructs with genes (genomic entities)
 		if (CollectionUtils.isNotEmpty(association.getAlleleConstructAssociationObject().getConstructGenomicEntityAssociations())) {
 			// check AlleleDiseaseAnnotations and AGMDiseaseAnnotations with inferred or asserted alleles for disease annotations
