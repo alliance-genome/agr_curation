@@ -8,6 +8,7 @@ import { useGetTableData } from '../../service/useGetTableData';
 import { useGetUserSettings } from '../../service/useGetUserSettings';
 
 import { SearchService } from '../../service/SearchService';
+import { Endpoints } from '../../constants/Endpoints';
 
 export const SpeciesTable = () => {
 	const [isInEditMode, setIsInEditMode] = useState(false);
@@ -82,7 +83,7 @@ export const SpeciesTable = () => {
 	);
 
 	const DEFAULT_COLUMN_WIDTH = 10;
-	const SEARCH_ENDPOINT = 'species';
+	const SEARCH_ENDPOINT = Endpoints.Entity.SPECIES;
 
 	const initialTableState = useMemo(() => getDefaultTableState('Species', columns, DEFAULT_COLUMN_WIDTH), [columns]);
 

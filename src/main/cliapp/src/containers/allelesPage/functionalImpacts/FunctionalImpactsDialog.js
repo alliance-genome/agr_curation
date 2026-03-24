@@ -24,6 +24,7 @@ import { AutocompleteMultiEditor } from '../../../components/Autocomplete/Autoco
 import { AutocompleteEditor } from '../../../components/Autocomplete/AutocompleteEditor';
 import { InputTextAreaEditor } from '../../../components/InputTextAreaEditor';
 import { VocabTermAutocompleteTemplate } from '../../../components/Autocomplete/VocabTermAutocompleteTemplate';
+import { Endpoints } from '../../../constants/Endpoints';
 
 export const FunctionalImpactsDialog = ({
 	originalFunctionalImpactsData,
@@ -187,7 +188,7 @@ export const FunctionalImpactsDialog = ({
 	const validateFunctionalImpact = async (fi) => {
 		let _fi = global.structuredClone(fi);
 		delete _fi.dataKey;
-		const result = await validationService.validate('allelefunctionalimpactslotannotation', _fi);
+		const result = await validationService.validate(Endpoints.SlotAnnotation.ALLELE_FUNCTIONAL_IMPACT, _fi);
 		return result;
 	};
 
@@ -283,7 +284,7 @@ export const FunctionalImpactsDialog = ({
 
 	const functionalImpactSearch = (event, setFiltered, setQuery) => {
 		const autocompleteFields = ['name'];
-		const endpoint = 'vocabularyterm';
+		const endpoint = Endpoints.Vocabulary.TERM;
 		const filterName = 'functionalImpactFilter';
 		const otherFilters = {
 			vocabularyFilter: {
@@ -339,7 +340,7 @@ export const FunctionalImpactsDialog = ({
 
 	const phenotypeTermSearch = (event, setFiltered, setInputValue) => {
 		const autocompleteFields = ['name', 'curie'];
-		const endpoint = 'phenotypeterm';
+		const endpoint = Endpoints.Ontology.PHENOTYPE;
 		const filterName = 'phenotypeTermFilter';
 		const filter = buildAutocompleteFilter(event, autocompleteFields);
 
