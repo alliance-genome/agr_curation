@@ -215,9 +215,11 @@ export const NewBulkLoadForm = ({
 							<label>Dependencies</label>
 							{Array.isArray(newBulkLoad.dependencies) && newBulkLoad.dependencies.length > 0 ? (
 								<ul style={{ margin: 0, paddingLeft: '1.5rem' }}>
-									{newBulkLoad.dependencies.map((dep) => (
-										<li key={dep.id}>{dep.name}</li>
-									))}
+									{[...newBulkLoad.dependencies]
+										.sort((a, b) => a.name.localeCompare(b.name))
+										.map((dep) => (
+											<li key={dep.id}>{dep.name}</li>
+										))}
 								</ul>
 							) : (
 								<p style={{ margin: 0, fontStyle: 'italic', color: '#999' }}>None</p>
