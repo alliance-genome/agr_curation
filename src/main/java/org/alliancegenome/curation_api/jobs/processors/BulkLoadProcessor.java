@@ -215,7 +215,6 @@ public class BulkLoadProcessor {
 		bulkLoadFileHistory.setErrorMessage(message);
 		bulkLoadFileHistory.setBulkloadStatus(status);
 		bulkLoadFileHistory.setLoadFinished(LocalDateTime.now());
-		Thread.interrupted();
 		slackNotifier.slackalert(bulkLoadFileHistory);
 		
 		bulkLoadFileHistory.setRunningThreadName(null); // Clears the name once finished
