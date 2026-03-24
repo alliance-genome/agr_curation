@@ -252,7 +252,7 @@ public class LoadFileExecutor {
 						for (Entry<String, String> entry : dbObject.getWarningMessages().entrySet()) {
 							history.incrementWarnings(countType);
 						}
-						addException(history, new ObjectUpdateExceptionData(dtoObject, dbObject.warningMessagesList(), null));
+						addException(history, new ObjectUpdateExceptionData(dtoObject, dbObject.warningMessagesString(), null));
 					}
 					history.incrementCompleted(countType);
 					if (idsAdded != null) {
