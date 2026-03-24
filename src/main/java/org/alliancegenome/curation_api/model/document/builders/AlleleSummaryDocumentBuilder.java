@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import org.alliancegenome.curation_api.model.document.es.AlleleSummaryDTO;
 import org.alliancegenome.curation_api.model.document.es.AlleleSummaryDocument;
 import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
@@ -19,35 +18,24 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class AlleleSummaryDocumentBuilder {
 
-	public AlleleSummaryDocument buildSummaryDocument(AlleleSummaryDTO alleleDTO, ResourceDescriptorPageService resourceDescriptorPageService) {
-		Allele allele = alleleDTO.getAllele();
-		AlleleSummaryDocument doc = new AlleleSummaryDocument();
+	public void finalizeDocument(AlleleSummaryDocument doc, ResourceDescriptorPageService resourceDescriptorPageService) {
+		Allele allele = doc.getAllele();
 
-		doc.setAllele(allele);
 		if (allele.getAlleleSymbol() != null) {
 			doc.setSymbol(allele.getAlleleSymbol().getDisplayText());
 		}
 
 		doc.setCrossReference(getCrossReference(allele, resourceDescriptorPageService));
 
-		setAlterationType(alleleDTO.getVariantCount(), doc);
+		long variantCount = doc.getVariants() != null ? doc.getVariants().size() : 0;
+		setAlterationType(variantCount, doc);
+
 		Optional<Gene> optionalAlleleOfGene = buildAlleleOfGene(allele);
 		optionalAlleleOfGene.ifPresent(doc::setAlleleOfGene);
-
-		doc.setVariants(alleleDTO.getVariants());
-		doc.setHasPhenotype(alleleDTO.getHasPhenotype());
-		doc.setHasDisease(alleleDTO.getHasDisease());
-		doc.setDiseases(alleleDTO.getDiseases());
-		doc.setDiseasesAgrSlim(alleleDTO.getDiseasesAgrSlim());
-		doc.setConstructExpressedComponents(alleleDTO.getConstructExpressedComponents());
-		doc.setConstructRegulatoryRegions(alleleDTO.getConstructRegulatoryRegions());
-		doc.setConstructKnockdownComponents(alleleDTO.getConstructKnockdownComponents());
-
-		return doc;
 	}
 
-	private void setAlterationType(Long variantCount, AlleleSummaryDocument doc) {
-		if (variantCount == null || variantCount == 0) {
+	private void setAlterationType(long variantCount, AlleleSummaryDocument doc) {
+		if (variantCount == 0) {
 			doc.setAlterationType("allele");
 			doc.setAlterationTypeSortOrder(3);
 		} else if (variantCount == 1) {

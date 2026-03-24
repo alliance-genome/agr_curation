@@ -7,7 +7,6 @@ import java.util.List;
 import org.alliancegenome.curation_api.interfaces.document.AlleleDocumentInterface;
 import org.alliancegenome.curation_api.model.document.builders.AlleleSummaryDocumentBuilder;
 import org.alliancegenome.curation_api.model.document.builders.TransgenicAlleleDocumentBuilder;
-import org.alliancegenome.curation_api.model.document.es.AlleleSummaryDTO;
 import org.alliancegenome.curation_api.model.document.es.AlleleSummaryDocument;
 import org.alliancegenome.curation_api.model.document.es.TransgenicAlleleDTO;
 import org.alliancegenome.curation_api.model.entities.associations.AlleleConstructAssociation;
@@ -25,10 +24,10 @@ public class AlleleDocumentController implements AlleleDocumentInterface {
 
 	@Inject
 	AlleleService alleleService;
-	
+
 	@Inject
 	AlleleConstructAssociationService acService;
-	
+
 	@Inject
 	ResourceDescriptorPageService resourceDescriptorPageService;
 
@@ -42,19 +41,14 @@ public class AlleleDocumentController implements AlleleDocumentInterface {
 
 	@Override
 	public SearchResponse<AlleleSummaryDocument> findSummaryByIds(List<Long> ids) {
-		SearchResponse<AlleleSummaryDTO> resp = alleleService.findAllelesForSummaryByIds(ids);
-		ArrayList<AlleleSummaryDocument> list = new ArrayList<>();
+		SearchResponse<AlleleSummaryDocument> resp = alleleService.findAllelesForSummaryByIds(ids);
 		if (resp.getResults() != null) {
-			AlleleSummaryDocumentBuilder alleleSummaryDocumentBuilder = new AlleleSummaryDocumentBuilder();
-			for (AlleleSummaryDTO dto : resp.getResults()) {
-				AlleleSummaryDocument doc = alleleSummaryDocumentBuilder.buildSummaryDocument(dto, resourceDescriptorPageService);
-				list.add(doc);
+			AlleleSummaryDocumentBuilder builder = new AlleleSummaryDocumentBuilder();
+			for (AlleleSummaryDocument doc : resp.getResults()) {
+				builder.finalizeDocument(doc, resourceDescriptorPageService);
 			}
 		}
-
-		SearchResponse<AlleleSummaryDocument> ret = new SearchResponse<>(list);
-		ret.setTotalResults(resp.getTotalResults());
-		return ret;
+		return resp;
 	}
 
 	@Override

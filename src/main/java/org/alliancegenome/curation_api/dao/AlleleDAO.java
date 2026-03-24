@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 import org.alliancegenome.curation_api.constants.EntityFieldConstants;
 import org.alliancegenome.curation_api.dao.associations.AgmAlleleAssociationDAO;
 import org.alliancegenome.curation_api.dao.base.BaseSQLDAO;
-import org.alliancegenome.curation_api.model.document.es.AlleleSummaryDTO;
+import org.alliancegenome.curation_api.model.document.es.AlleleSummaryDocument;
 import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.AssemblyComponent;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
@@ -141,7 +141,7 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 		return list;
 	}
 
-	public SearchResponse<AlleleSummaryDTO> findAllelesForSummary(Pagination pagination, Map<String, Object> params) {
+	public SearchResponse<AlleleSummaryDocument> findAllelesForSummary(Pagination pagination, Map<String, Object> params) {
 
 		String baseCountQuery = """
 			SELECT count( a.id)
@@ -191,7 +191,7 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 			if (useCursorCondition) {
 				query.setParameter("cursor", pagination.getCursor());
 			}
-			SearchResponse<AlleleSummaryDTO> emptyResponse = new SearchResponse<>();
+			SearchResponse<AlleleSummaryDocument> emptyResponse = new SearchResponse<>();
 			emptyResponse.setResults(new ArrayList<>());
 			Long totalCount = (Long) query.getSingleResult();
 			emptyResponse.setTotalResults(totalCount);
@@ -219,10 +219,10 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 
 		List<Allele> alleles = buildAllelesFromResults(results);
 
-		List<AlleleSummaryDTO> dtos = enrichAllelesAndBuildDTOs(alleles);
+		List<AlleleSummaryDocument> docs = enrichAllelesAndBuildDocuments(alleles);
 
-		SearchResponse<AlleleSummaryDTO> response = new SearchResponse<>();
-		response.setResults(dtos);
+		SearchResponse<AlleleSummaryDocument> response = new SearchResponse<>();
+		response.setResults(docs);
 		response.setTotalResults(alleles.size());
 
 		// Set nextCursor for cursor-based pagination
@@ -249,9 +249,9 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 		return results.stream().map(obj -> (Long) obj).collect(Collectors.toList());
 	}
 
-	public SearchResponse<AlleleSummaryDTO> findAllelesForSummaryByIds(List<Long> alleleIds) {
+	public SearchResponse<AlleleSummaryDocument> findAllelesForSummaryByIds(List<Long> alleleIds) {
 		if (CollectionUtils.isEmpty(alleleIds)) {
-			SearchResponse<AlleleSummaryDTO> emptyResponse = new SearchResponse<>();
+			SearchResponse<AlleleSummaryDocument> emptyResponse = new SearchResponse<>();
 			emptyResponse.setTotalResults(0L);
 			return emptyResponse;
 		}
@@ -292,10 +292,10 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 
 		List<Allele> alleles = buildAllelesFromResults(results);
 
-		List<AlleleSummaryDTO> dtos = enrichAllelesAndBuildDTOs(alleles);
+		List<AlleleSummaryDocument> docs = enrichAllelesAndBuildDocuments(alleles);
 
-		SearchResponse<AlleleSummaryDTO> response = new SearchResponse<>();
-		response.setResults(dtos);
+		SearchResponse<AlleleSummaryDocument> response = new SearchResponse<>();
+		response.setResults(docs);
 		response.setTotalResults(alleles.size());
 		return response;
 	}
@@ -346,7 +346,7 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 		return alleles;
 	}
 
-	private List<AlleleSummaryDTO> enrichAllelesAndBuildDTOs(List<Allele> alleles) {
+	private List<AlleleSummaryDocument> enrichAllelesAndBuildDocuments(List<Allele> alleles) {
 		List<Long> alleleIds = alleles.stream().map(Allele::getId).collect(Collectors.toList());
 
 		Map<Long, Allele> alleleMap = alleles.stream().collect(Collectors.toMap(Allele::getId, Function.identity()));
@@ -796,19 +796,20 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 			}
 		}
 
-		// Build DTOs
-		List<AlleleSummaryDTO> dtos = new ArrayList<>();
+		// Build documents
+		List<AlleleSummaryDocument> docs = new ArrayList<>();
 		for (Allele allele : alleles) {
-			List<Variant> variants = new ArrayList<>(alleleVariantMap.getOrDefault(allele.getId(), new HashMap<>()).values());
-			Boolean hasPhenotype = allelesWithPhenotype.contains(allele.getId());
-			Boolean hasDisease = allelesWithDisease.contains(allele.getId());
-			Set<String> diseases = alleleDiseaseNamesMap.get(allele.getId());
-			Set<String> diseasesAgrSlim = alleleDiseaseAgrSlimMap.get(allele.getId());
-			AlleleSummaryDTO dto = new AlleleSummaryDTO(allele, variants, hasPhenotype, hasDisease, diseases, diseasesAgrSlim);
-			dto.setConstructExpressedComponents(alleleConstructExpressedComponentsMap.get(allele.getId()));
-			dto.setConstructRegulatoryRegions(alleleConstructRegulatoryRegionsMap.get(allele.getId()));
-			dto.setConstructKnockdownComponents(alleleConstructKnockdownComponentsMap.get(allele.getId()));
-			dtos.add(dto);
+			AlleleSummaryDocument doc = new AlleleSummaryDocument();
+			doc.setAllele(allele);
+			doc.setVariants(new ArrayList<>(alleleVariantMap.getOrDefault(allele.getId(), new HashMap<>()).values()));
+			doc.setHasPhenotype(allelesWithPhenotype.contains(allele.getId()));
+			doc.setHasDisease(allelesWithDisease.contains(allele.getId()));
+			doc.setDiseases(alleleDiseaseNamesMap.get(allele.getId()));
+			doc.setDiseasesAgrSlim(alleleDiseaseAgrSlimMap.get(allele.getId()));
+			doc.setConstructExpressedComponents(alleleConstructExpressedComponentsMap.get(allele.getId()));
+			doc.setConstructRegulatoryRegions(alleleConstructRegulatoryRegionsMap.get(allele.getId()));
+			doc.setConstructKnockdownComponents(alleleConstructKnockdownComponentsMap.get(allele.getId()));
+			docs.add(doc);
 		}
 
 		// Notes
@@ -846,6 +847,6 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 			allele.setRelatedNotes(noteList);
 		});
 
-		return dtos;
+		return docs;
 	}
 }
