@@ -18,6 +18,9 @@ public class AlleleSummaryDTO {
 	private Boolean hasDisease;
 	private Set<String> diseases;
 	private Set<String> diseasesAgrSlim;
+	private Set<String> constructExpressedComponents;
+	private Set<String> constructRegulatoryRegions;
+	private Set<String> constructKnockdownComponents;
 
 
 	public AlleleSummaryDTO(Allele allele, Long variantCount) {

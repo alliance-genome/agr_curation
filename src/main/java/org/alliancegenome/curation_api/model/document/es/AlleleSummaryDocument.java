@@ -29,6 +29,9 @@ public class AlleleSummaryDocument extends AVSParentDocument {
 	private List<Variant> variants;
 	private Set<String> diseases;
 	private Set<String> diseasesAgrSlim;
+	private Set<String> constructExpressedComponents;
+	private Set<String> constructRegulatoryRegions;
+	private Set<String> constructKnockdownComponents;
 
 	public void setAlleleOfGene(Gene alleleOfGene) {
 		this.alleleOfGene = alleleOfGene;
