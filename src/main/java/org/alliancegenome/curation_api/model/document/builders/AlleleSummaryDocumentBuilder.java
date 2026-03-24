@@ -39,6 +39,9 @@ public class AlleleSummaryDocumentBuilder {
 		doc.setHasDisease(alleleDTO.getHasDisease());
 		doc.setDiseases(alleleDTO.getDiseases());
 		doc.setDiseasesAgrSlim(alleleDTO.getDiseasesAgrSlim());
+		doc.setConstructExpressedComponents(alleleDTO.getConstructExpressedComponents());
+		doc.setConstructRegulatoryRegions(alleleDTO.getConstructRegulatoryRegions());
+		doc.setConstructKnockdownComponents(alleleDTO.getConstructKnockdownComponents());
 
 		return doc;
 	}

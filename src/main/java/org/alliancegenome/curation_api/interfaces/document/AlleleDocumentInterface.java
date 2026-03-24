@@ -24,7 +24,6 @@ import jakarta.ws.rs.core.MediaType;
 @Path("/allele/document")
 @Tag(name = "Public Document Endpoints")
 @Produces(MediaType.APPLICATION_JSON)
-@Consumes(MediaType.APPLICATION_JSON)
 public interface AlleleDocumentInterface {
 
 	@GET
@@ -34,11 +33,13 @@ public interface AlleleDocumentInterface {
 
 	@POST
 	@Path("/summary/byids")
+	@Consumes(MediaType.APPLICATION_JSON)
 	@JsonView(CurationView.AlleleSummaryDocument.class)
 	SearchResponse<AlleleSummaryDocument> findSummaryByIds(@RequestBody List<Long> ids);
 
 	@POST
 	@Path("/transgenic")
+	@Consumes(MediaType.APPLICATION_JSON)
 	@JsonView(CurationView.TransgenicAllelesDocument.class)
 	SearchResponse<TransgenicAlleleDTO> findDocuments(@DefaultValue("0") @QueryParam("page") Integer page, @DefaultValue("10") @QueryParam("limit") Integer limit, @RequestBody HashMap<String, Object> params);
 

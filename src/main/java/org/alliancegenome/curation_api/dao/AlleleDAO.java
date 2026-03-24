@@ -768,6 +768,34 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 			alleleDiseaseNamesMap.computeIfAbsent(alleleId, k -> new java.util.HashSet<>()).add(diseaseName);
 		}
 
+		// Construct components per allele (expressed, regulatory, knockdown)
+		String constructComponentsQueryString = """
+			SELECT DISTINCT aca.alleleassociationsubject_id AS allele_id, sa.componentsymbol, vt.name AS relation_name
+			FROM alleleconstructassociation aca
+			JOIN slotannotation sa ON sa.singleconstruct_id = aca.alleleconstructassociationobject_id
+				AND sa.slotannotationtype = 'ConstructComponentSlotAnnotation'
+			JOIN vocabularyterm vt ON vt.id = sa.relation_id AND vt.name IN ('expresses', 'is_regulated_by', 'targets')
+			WHERE aca.alleleassociationsubject_id IN :alleleIds
+			AND aca.obsolete = false AND aca.internal = false
+			""";
+		Query constructComponentsQuery = entityManager.createNativeQuery(constructComponentsQueryString);
+		constructComponentsQuery.setParameter("alleleIds", alleleIds);
+		List<Object[]> constructComponentsResults = constructComponentsQuery.getResultList();
+
+		Map<Long, Set<String>> alleleConstructExpressedComponentsMap = new HashMap<>();
+		Map<Long, Set<String>> alleleConstructRegulatoryRegionsMap = new HashMap<>();
+		Map<Long, Set<String>> alleleConstructKnockdownComponentsMap = new HashMap<>();
+		for (Object[] row : constructComponentsResults) {
+			Long alleleId = (Long) row[0];
+			String componentSymbol = (String) row[1];
+			String relationName = (String) row[2];
+			switch (relationName) {
+				case "expresses" -> alleleConstructExpressedComponentsMap.computeIfAbsent(alleleId, k -> new java.util.HashSet<>()).add(componentSymbol);
+				case "is_regulated_by" -> alleleConstructRegulatoryRegionsMap.computeIfAbsent(alleleId, k -> new java.util.HashSet<>()).add(componentSymbol);
+				case "targets" -> alleleConstructKnockdownComponentsMap.computeIfAbsent(alleleId, k -> new java.util.HashSet<>()).add(componentSymbol);
+			}
+		}
+
 		// Build DTOs
 		List<AlleleSummaryDTO> dtos = new ArrayList<>();
 		for (Allele allele : alleles) {
@@ -776,7 +804,11 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 			Boolean hasDisease = allelesWithDisease.contains(allele.getId());
 			Set<String> diseases = alleleDiseaseNamesMap.get(allele.getId());
 			Set<String> diseasesAgrSlim = alleleDiseaseAgrSlimMap.get(allele.getId());
-			dtos.add(new AlleleSummaryDTO(allele, variants, hasPhenotype, hasDisease, diseases, diseasesAgrSlim));
+			AlleleSummaryDTO dto = new AlleleSummaryDTO(allele, variants, hasPhenotype, hasDisease, diseases, diseasesAgrSlim);
+			dto.setConstructExpressedComponents(alleleConstructExpressedComponentsMap.get(allele.getId()));
+			dto.setConstructRegulatoryRegions(alleleConstructRegulatoryRegionsMap.get(allele.getId()));
+			dto.setConstructKnockdownComponents(alleleConstructKnockdownComponentsMap.get(allele.getId()));
+			dtos.add(dto);
 		}
 
 		// Notes
