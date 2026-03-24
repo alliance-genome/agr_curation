@@ -8,7 +8,7 @@ import org.alliancegenome.curation_api.interfaces.document.AlleleDocumentInterfa
 import org.alliancegenome.curation_api.model.document.builders.AlleleSummaryDocumentBuilder;
 import org.alliancegenome.curation_api.model.document.builders.TransgenicAlleleDocumentBuilder;
 import org.alliancegenome.curation_api.model.document.es.AlleleSummaryDocument;
-import org.alliancegenome.curation_api.model.document.es.TransgenicAlleleDTO;
+import org.alliancegenome.curation_api.model.document.es.TransgenicAlleleDocument;
 import org.alliancegenome.curation_api.model.entities.associations.AlleleConstructAssociation;
 import org.alliancegenome.curation_api.model.input.Pagination;
 import org.alliancegenome.curation_api.response.SearchResponse;
@@ -52,7 +52,7 @@ public class AlleleDocumentController implements AlleleDocumentInterface {
 	}
 
 	@Override
-	public SearchResponse<TransgenicAlleleDTO> findDocuments(Integer page, Integer limit, HashMap<String, Object> params) {
+	public SearchResponse<TransgenicAlleleDocument> findDocuments(Integer page, Integer limit, HashMap<String, Object> params) {
 		if (params == null) {
 			params = new HashMap<>();
 		}
@@ -60,15 +60,15 @@ public class AlleleDocumentController implements AlleleDocumentInterface {
 		params.put("alleleAssociationSubject.internal", false);
 
 		SearchResponse<AlleleConstructAssociation> response = acService.findByParams(new Pagination(page, limit), params);
-		List<TransgenicAlleleDTO> list = new ArrayList<>();
+		List<TransgenicAlleleDocument> list = new ArrayList<>();
 		if (response.getResults() != null) {
 			TransgenicAlleleDocumentBuilder builder = new TransgenicAlleleDocumentBuilder();
 			for (AlleleConstructAssociation association : response.getResults()) {
-				TransgenicAlleleDTO doc = builder.buildTransgenicAlleleDocument(association);
+				TransgenicAlleleDocument doc = builder.buildTransgenicAlleleDocument(association);
 				list.add(doc);
 			}
 		}
-		SearchResponse<TransgenicAlleleDTO> ret = new SearchResponse<>(list);
+		SearchResponse<TransgenicAlleleDocument> ret = new SearchResponse<>(list);
 		ret.setTotalResults(response.getTotalResults());
 		return ret;
 	}
