@@ -1,0 +1,48 @@
+ALTER TABLE ontologyterm ADD COLUMN IF NOT EXISTS severityorder integer;
+
+UPDATE ontologyterm SET severityorder = severity.rank
+FROM (VALUES
+    ('transcript_ablation', 10),
+    ('splice_acceptor_variant', 20),
+    ('splice_donor_variant', 30),
+    ('stop_gained', 40),
+    ('frameshift_variant', 50),
+    ('stop_lost', 60),
+    ('start_lost', 70),
+    ('transcript_amplification', 80),
+    ('feature_elongation', 90),
+    ('feature_truncation', 100),
+    ('inframe_insertion', 110),
+    ('inframe_deletion', 120),
+    ('missense_variant', 130),
+    ('protein_altering_variant', 140),
+    ('splice_donor_5th_base_variant', 150),
+    ('splice_region_variant', 160),
+    ('splice_donor_region_variant', 170),
+    ('splice_polypyrimidine_tract_variant', 180),
+    ('incomplete_terminal_codon_variant', 190),
+    ('start_retained_variant', 200),
+    ('stop_retained_variant', 210),
+    ('synonymous_variant', 220),
+    ('coding_sequence_variant', 230),
+    ('mature_miRNA_variant', 240),
+    ('5_prime_UTR_variant', 250),
+    ('3_prime_UTR_variant', 260),
+    ('non_coding_transcript_exon_variant', 270),
+    ('intron_variant', 280),
+    ('NMD_transcript_variant', 290),
+    ('non_coding_transcript_variant', 300),
+    ('coding_transcript_variant', 310),
+    ('upstream_gene_variant', 320),
+    ('downstream_gene_variant', 330),
+    ('TFBS_ablation', 340),
+    ('TFBS_amplification', 350),
+    ('TF_binding_site_variant', 360),
+    ('regulatory_region_ablation', 370),
+    ('regulatory_region_amplification', 380),
+    ('regulatory_region_variant', 390),
+    ('intergenic_variant', 400),
+    ('sequence_variant', 410)
+) AS severity(name, rank)
+WHERE ontologyterm.name = severity.name
+  AND ontologyterm.ontologytermtype = 'SOTerm';
