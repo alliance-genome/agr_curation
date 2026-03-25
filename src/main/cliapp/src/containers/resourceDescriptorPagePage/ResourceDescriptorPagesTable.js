@@ -6,6 +6,7 @@ import { FILTER_CONFIGS } from '../../constants/FilterFields';
 import { useGetTableData } from '../../service/useGetTableData';
 import { useGetUserSettings } from '../../service/useGetUserSettings';
 import { SearchService } from '../../service/SearchService';
+import { Endpoints } from '../../constants/Endpoints';
 
 import { StringTemplate } from '../../components/Templates/StringTemplate';
 
@@ -59,7 +60,7 @@ export const ResourceDescriptorPagesTable = () => {
 	);
 
 	const DEFAULT_COLUMN_WIDTH = 20;
-	const SEARCH_ENDPOINT = 'resourcedescriptorpage';
+	const SEARCH_ENDPOINT = Endpoints.Resource.DESCRIPTOR_PAGE;
 
 	const initialTableState = useMemo(
 		() => getDefaultTableState('ResourceDescriptorPages', columns, DEFAULT_COLUMN_WIDTH),

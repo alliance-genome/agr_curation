@@ -51,6 +51,7 @@ export const SynonymsFormTable = ({
 			columnResizeMode="expand"
 			onRowEditChange={onRowEditChange}
 			ref={tableRef}
+			cellMemo={false}
 		>
 			<Column
 				editor={(props) => <DeleteAction deletionHandler={deletionHandler} id={props?.rowData?.dataKey} />}
