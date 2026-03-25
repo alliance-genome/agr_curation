@@ -38,6 +38,7 @@ import { GeneralOntologyComponent } from './containers/ontologies/GeneralOntolog
 import { Endpoints } from './constants/Endpoints';
 import { ResourceDescriptorsPage } from './containers/resourceDescriptorPage';
 import { ResourceDescriptorPagesPage } from './containers/resourceDescriptorPagePage';
+import { LoadDependencyPage } from './containers/loadDependencyPage';
 import ErrorBoundary from './components/Error/ErrorBoundary';
 
 export default function AppRoutes() {
@@ -666,6 +667,14 @@ export default function AppRoutes() {
 						element={
 							<ErrorBoundary>
 								<ResourceDescriptorPagesPage />
+							</ErrorBoundary>
+						}
+					/>
+					<Route
+						path="/loadDependencies"
+						element={
+							<ErrorBoundary>
+								<LoadDependencyPage />
 							</ErrorBoundary>
 						}
 					/>
