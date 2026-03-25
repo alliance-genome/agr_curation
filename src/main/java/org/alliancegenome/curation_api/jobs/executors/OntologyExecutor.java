@@ -192,10 +192,7 @@ public class OntologyExecutor extends LoadFileExecutor {
 				config.getAltNameSpaces().add("cellular_component");
 				processTerms(bulkLoadFileHistory, goTermService, config);
 			}
-			case SO -> {
-				processTerms(bulkLoadFileHistory, soTermService, config);
-				soTermService.updateSeverityRankings();
-			}
+			case SO -> processTerms(bulkLoadFileHistory, soTermService, config);
 			case XCO -> processTerms(bulkLoadFileHistory, xcoTermService, config);
 			case ECO -> {
 				processTerms(bulkLoadFileHistory, ecoTermService, config);
