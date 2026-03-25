@@ -46,6 +46,7 @@ export const InheritanceModesFormTable = ({
 			editingRows={editingRows}
 			resizableColumns
 			columnResizeMode="expand"
+			cellMemo={false}
 			onRowEditChange={onRowEditChange}
 			ref={tableRef}
 		>

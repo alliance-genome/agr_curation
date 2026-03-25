@@ -13,6 +13,7 @@ import { TruncatedReferencesTemplate } from '../../components/Templates/referenc
 import { StringTemplate } from '../../components/Templates/StringTemplate';
 
 import { SearchService } from '../../service/SearchService';
+import { Endpoints } from '../../constants/Endpoints';
 
 export const GeneMolecularInteractionsTable = () => {
 	const [isInEditMode, setIsInEditMode] = useState(false); //needs better name
@@ -171,7 +172,7 @@ export const GeneMolecularInteractionsTable = () => {
 	);
 
 	const DEFAULT_COLUMN_WIDTH = 10;
-	const SEARCH_ENDPOINT = 'gene-molecular-interaction';
+	const SEARCH_ENDPOINT = Endpoints.Annotation.GENE_MOLECULAR_INTERACTION;
 	const defaultFilters = { obsoleteFilter: { obsolete: { queryString: 'false' } } };
 
 	const initialTableState = useMemo(

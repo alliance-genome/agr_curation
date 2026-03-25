@@ -8,16 +8,10 @@ import org.alliancegenome.curation_api.model.input.Pagination;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.GeneService;
-import org.apache.logging.log4j.plugins.Namespace;
-import org.eclipse.microprofile.graphql.Description;
-import org.eclipse.microprofile.graphql.GraphQLApi;
 import org.eclipse.microprofile.graphql.Query;
 
 import jakarta.inject.Inject;
 
-@GraphQLApi
-@Namespace("gene")
-@Description("Gene operations")
 public class GeneGraphQLController {
 
 	@Inject GeneService geneService;
