@@ -40,7 +40,7 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema;
 @Inheritance(strategy = InheritanceType.JOINED)
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
-@ToString(exclude = { "group" }, callSuper = true)
+@ToString(exclude = { "group", "dependencies", "depends" }, callSuper = true)
 @AGRCurationSchemaVersion(min = "1.2.4", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AuditedObject.class })
 @Table(
 	indexes = {
@@ -81,6 +81,7 @@ public abstract class BulkLoad extends AuditedObject {
 	@OrderBy("loadFinished DESC")
 	private List<BulkLoadFileHistory> history;
 
+	@JsonView({ CurationView.FieldsAndLists.class })
 	@ManyToMany
 	@JoinTable(name = "bulkload_dependencies", indexes = {
 		@Index(name = "bulkload_dependencies_dependencies_index", columnList = "dependencies_id"),
