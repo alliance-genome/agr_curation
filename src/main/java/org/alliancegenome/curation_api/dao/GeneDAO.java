@@ -162,6 +162,7 @@ public class GeneDAO extends BaseSQLDAO<Gene> {
 				SELECT g.id
 				FROM gene g
 				INNER JOIN biologicalentity b ON b.id = g.id AND b.obsolete = false AND b.internal = false
+				INNER JOIN species sp ON sp.taxon_id = b.taxon_id
 				ORDER BY g.id
 				""";
 
