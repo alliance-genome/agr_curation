@@ -42,9 +42,9 @@ public class Gff3GeneExecutor extends Gff3Executor {
 		CsvSchema gff3Schema = CsvSchemaBuilder.gff3Schema();
 		CsvMapper csvMapper = new CsvMapper();
 		MappingIterator<Gff3DTO> it = csvMapper.enable(CsvParser.Feature.INSERT_NULLS_FOR_MISSING_COLUMNS).readerFor(Gff3DTO.class).with(gff3Schema).readValues(new GZIPInputStream(new FileInputStream(bulkLoadFileHistory.getBulkLoadFile().getLocalFilePath())));
-		Log.info("Loading Gene Data into Memroy");
+		Log.info("Loading GFF Data into Memory");
 		List<Gff3DTO> gffRawData = it.readAll();
-		Log.info("Finished Loading Gene Data info Memory");
+		Log.info("Finished Loading GFF Data into Memory");
 		List<String> gffHeaderData = new ArrayList<>();
 		List<Gff3DTO> gffFileData = new ArrayList<>();
 		ProcessDisplayHelper ph = new ProcessDisplayHelper(2000);

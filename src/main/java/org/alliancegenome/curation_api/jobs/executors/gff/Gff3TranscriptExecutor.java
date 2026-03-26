@@ -28,6 +28,7 @@ import com.fasterxml.jackson.dataformat.csv.CsvMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvParser;
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
 
+import io.quarkus.logging.Log;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
@@ -44,24 +45,31 @@ public class Gff3TranscriptExecutor extends Gff3Executor {
 		CsvSchema gff3Schema = CsvSchemaBuilder.gff3Schema();
 		CsvMapper csvMapper = new CsvMapper();
 		MappingIterator<Gff3DTO> it = csvMapper.enable(CsvParser.Feature.INSERT_NULLS_FOR_MISSING_COLUMNS).readerFor(Gff3DTO.class).with(gff3Schema).readValues(new GZIPInputStream(new FileInputStream(bulkLoadFileHistory.getBulkLoadFile().getLocalFilePath())));
-		List<Gff3DTO> gffData = it.readAll();
+		Log.info("Loading GFF Data into Memory");
+		List<Gff3DTO> gffRawData = it.readAll();
+		Log.info("Finished Loading GFF Data into Memory");
 		List<String> gffHeaderData = new ArrayList<>();
-		for (Gff3DTO gffLine : gffData) {
+		List<Gff3DTO> gffFileData = new ArrayList<>();
+		ProcessDisplayHelper ph = new ProcessDisplayHelper(2000);
+		ph.startProcess("GFF Transcript header pre-processing", gffRawData.size());
+		while(!gffRawData.isEmpty()) {
+			Gff3DTO gffLine = gffRawData.remove(0);
 			if (gffLine.getSeqId().startsWith("#")) {
 				gffHeaderData.add(gffLine.getSeqId());
 			} else {
-				break;
+				gffFileData.add(gffLine);
 			}
+			ph.progressProcess();
 		}
-		gffData.subList(0, gffHeaderData.size()).clear();
+		ph.finishProcess();
 		
 		BulkFMSLoad fmsLoad = (BulkFMSLoad) bulkLoadFileHistory.getBulkLoad();
 		BackendBulkDataProvider dataProvider = BackendBulkDataProvider.valueOf(fmsLoad.getFmsDataSubType());
 
-		List<ImmutablePair<Gff3DTO, Map<String, String>>> preProcessedTranscriptGffData = Gff3AttributesHelper.getTranscriptGffData(gffData, dataProvider);
-		Map<String, String> geneIdCurieMap = gff3Service.getGeneIdCurieMap(gffData, dataProvider);
+		List<ImmutablePair<Gff3DTO, Map<String, String>>> preProcessedTranscriptGffData = Gff3AttributesHelper.getTranscriptGffData(gffFileData, dataProvider);
+		Map<String, String> geneIdCurieMap = gff3Service.getGeneIdCurieMap(gffFileData, dataProvider);
 		
-		gffData.clear();
+		gffFileData.clear();
 		
 		List<Long> entityIdsAdded = new ArrayList<>();
 		List<Long> locationIdsAdded = new ArrayList<>();
