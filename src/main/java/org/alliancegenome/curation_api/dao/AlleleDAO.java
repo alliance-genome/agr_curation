@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -748,7 +749,7 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 		for (Object[] row : diseaseAgrSlimResults) {
 			Long alleleId = (Long) row[0];
 			String slimName = (String) row[1];
-			alleleDiseaseAgrSlimMap.computeIfAbsent(alleleId, k -> new java.util.HashSet<>()).add(slimName);
+			alleleDiseaseAgrSlimMap.computeIfAbsent(alleleId, k -> new HashSet<>()).add(slimName);
 		}
 
 		// Disease names with all parent terms per allele
@@ -785,9 +786,9 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 			Long alleleId = (Long) row[0];
 			String directName = (String) row[1];
 			String ancestorName = (String) row[2];
-			alleleDiseaseWithParentsMap.computeIfAbsent(alleleId, k -> new java.util.HashSet<>()).add(directName);
+			alleleDiseaseWithParentsMap.computeIfAbsent(alleleId, k -> new HashSet<>()).add(directName);
 			if (ancestorName != null) {
-				alleleDiseaseWithParentsMap.computeIfAbsent(alleleId, k -> new java.util.HashSet<>()).add(ancestorName);
+				alleleDiseaseWithParentsMap.computeIfAbsent(alleleId, k -> new HashSet<>()).add(ancestorName);
 			}
 		}
 
@@ -821,7 +822,7 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 		for (Object[] row : diseaseNamesResults) {
 			Long alleleId = (Long) row[0];
 			String diseaseName = (String) row[1];
-			alleleDiseaseNamesMap.computeIfAbsent(alleleId, k -> new java.util.HashSet<>()).add(diseaseName);
+			alleleDiseaseNamesMap.computeIfAbsent(alleleId, k -> new HashSet<>()).add(diseaseName);
 		}
 
 		// Construct components per allele (expressed, regulatory, knockdown)
@@ -846,9 +847,9 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 			String componentSymbol = (String) row[1];
 			String relationName = (String) row[2];
 			switch (relationName) {
-				case "expresses" -> alleleConstructExpressedComponentsMap.computeIfAbsent(alleleId, k -> new java.util.HashSet<>()).add(componentSymbol);
-				case "is_regulated_by" -> alleleConstructRegulatoryRegionsMap.computeIfAbsent(alleleId, k -> new java.util.HashSet<>()).add(componentSymbol);
-				case "targets" -> alleleConstructKnockdownComponentsMap.computeIfAbsent(alleleId, k -> new java.util.HashSet<>()).add(componentSymbol);
+				case "expresses" -> alleleConstructExpressedComponentsMap.computeIfAbsent(alleleId, k -> new HashSet<>()).add(componentSymbol);
+				case "is_regulated_by" -> alleleConstructRegulatoryRegionsMap.computeIfAbsent(alleleId, k -> new HashSet<>()).add(componentSymbol);
+				case "targets" -> alleleConstructKnockdownComponentsMap.computeIfAbsent(alleleId, k -> new HashSet<>()).add(componentSymbol);
 			}
 		}
 
