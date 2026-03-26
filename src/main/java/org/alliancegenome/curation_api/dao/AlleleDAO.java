@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -748,7 +749,47 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 		for (Object[] row : diseaseAgrSlimResults) {
 			Long alleleId = (Long) row[0];
 			String slimName = (String) row[1];
-			alleleDiseaseAgrSlimMap.computeIfAbsent(alleleId, k -> new java.util.HashSet<>()).add(slimName);
+			alleleDiseaseAgrSlimMap.computeIfAbsent(alleleId, k -> new HashSet<>()).add(slimName);
+		}
+
+		// Disease names with all parent terms per allele
+		String diseaseWithParentsQueryString = """
+			SELECT allele_id, doterm.name AS direct_name, ancestor.name AS ancestor_name
+			FROM (
+				SELECT DISTINCT ada.diseaseannotationsubject_id AS allele_id, da.diseaseannotationobject_id AS doterm_id
+				FROM allelediseaseannotation ada
+				JOIN diseaseannotation da ON da.id = ada.id
+				WHERE ada.diseaseannotationsubject_id IN :alleleIds
+				UNION
+				SELECT DISTINCT agm.inferredallele_id AS allele_id, da.diseaseannotationobject_id AS doterm_id
+				FROM agmdiseaseannotation agm
+				JOIN diseaseannotation da ON da.id = agm.id
+				WHERE agm.inferredallele_id IN :alleleIds
+				UNION
+				SELECT DISTINCT agma.assertedalleles_id AS allele_id, da.diseaseannotationobject_id AS doterm_id
+				FROM agmdiseaseannotation_allele agma
+				JOIN agmdiseaseannotation agm ON agm.id = agma.agmdiseaseannotation_id
+				JOIN diseaseannotation da ON da.id = agm.id
+				WHERE agma.assertedalleles_id IN :alleleIds
+			) allele_diseases
+			JOIN ontologyterm doterm ON doterm.id = allele_diseases.doterm_id
+			LEFT JOIN ontologytermclosure otc ON otc.closuresubject_id = allele_diseases.doterm_id
+			LEFT JOIN ontologyterm ancestor ON ancestor.id = otc.closureobject_id
+				AND ancestor.ontologytermtype = 'DOTerm'
+			""";
+		Query diseaseWithParentsQuery = entityManager.createNativeQuery(diseaseWithParentsQueryString);
+		diseaseWithParentsQuery.setParameter("alleleIds", alleleIds);
+		List<Object[]> diseaseWithParentsResults = diseaseWithParentsQuery.getResultList();
+
+		Map<Long, Set<String>> alleleDiseaseWithParentsMap = new HashMap<>();
+		for (Object[] row : diseaseWithParentsResults) {
+			Long alleleId = (Long) row[0];
+			String directName = (String) row[1];
+			String ancestorName = (String) row[2];
+			alleleDiseaseWithParentsMap.computeIfAbsent(alleleId, k -> new HashSet<>()).add(directName);
+			if (ancestorName != null) {
+				alleleDiseaseWithParentsMap.computeIfAbsent(alleleId, k -> new HashSet<>()).add(ancestorName);
+			}
 		}
 
 		// Disease names per allele
@@ -781,7 +822,7 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 		for (Object[] row : diseaseNamesResults) {
 			Long alleleId = (Long) row[0];
 			String diseaseName = (String) row[1];
-			alleleDiseaseNamesMap.computeIfAbsent(alleleId, k -> new java.util.HashSet<>()).add(diseaseName);
+			alleleDiseaseNamesMap.computeIfAbsent(alleleId, k -> new HashSet<>()).add(diseaseName);
 		}
 
 		// Construct components per allele (expressed, regulatory, knockdown)
@@ -806,9 +847,9 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 			String componentSymbol = (String) row[1];
 			String relationName = (String) row[2];
 			switch (relationName) {
-				case "expresses" -> alleleConstructExpressedComponentsMap.computeIfAbsent(alleleId, k -> new java.util.HashSet<>()).add(componentSymbol);
-				case "is_regulated_by" -> alleleConstructRegulatoryRegionsMap.computeIfAbsent(alleleId, k -> new java.util.HashSet<>()).add(componentSymbol);
-				case "targets" -> alleleConstructKnockdownComponentsMap.computeIfAbsent(alleleId, k -> new java.util.HashSet<>()).add(componentSymbol);
+				case "expresses" -> alleleConstructExpressedComponentsMap.computeIfAbsent(alleleId, k -> new HashSet<>()).add(componentSymbol);
+				case "is_regulated_by" -> alleleConstructRegulatoryRegionsMap.computeIfAbsent(alleleId, k -> new HashSet<>()).add(componentSymbol);
+				case "targets" -> alleleConstructKnockdownComponentsMap.computeIfAbsent(alleleId, k -> new HashSet<>()).add(componentSymbol);
 			}
 		}
 
@@ -821,6 +862,7 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 			doc.setHasPhenotype(allelesWithPhenotype.contains(allele.getId()));
 			doc.setHasDisease(allelesWithDisease.contains(allele.getId()));
 			doc.setDiseases(alleleDiseaseNamesMap.get(allele.getId()));
+			doc.setDiseasesWithParents(alleleDiseaseWithParentsMap.get(allele.getId()));
 			doc.setDiseasesAgrSlim(alleleDiseaseAgrSlimMap.get(allele.getId()));
 			doc.setConstructExpressedComponents(alleleConstructExpressedComponentsMap.get(allele.getId()));
 			doc.setConstructRegulatoryRegions(alleleConstructRegulatoryRegionsMap.get(allele.getId()));
