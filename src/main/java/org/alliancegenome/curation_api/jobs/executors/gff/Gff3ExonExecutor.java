@@ -51,7 +51,7 @@ public class Gff3ExonExecutor extends Gff3Executor {
 		Log.info("Finished Loading GFF Data into Memory");
 		List<String> gffHeaderData = new ArrayList<>();
 		List<Gff3DTO> gffFileData = new ArrayList<>();
-		ProcessDisplayHelper ph = new ProcessDisplayHelper(2000);
+		ProcessDisplayHelper ph = new ProcessDisplayHelper();
 		ph.startProcess("GFF Exon header pre-processing", gffRawData.size());
 		while(!gffRawData.isEmpty()) {
 			Gff3DTO gffLine = gffRawData.remove(0);
