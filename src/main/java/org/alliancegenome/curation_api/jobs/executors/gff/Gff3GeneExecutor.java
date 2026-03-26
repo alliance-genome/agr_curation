@@ -37,45 +37,49 @@ public class Gff3GeneExecutor extends Gff3Executor {
 	@Inject GeneGenomicLocationAssociationService geneLocationService;
 	@Inject Gff3DtoValidator gff3DtoValidator;
 	
-	public void execLoad(BulkLoadFileHistory bulkLoadFileHistory) {
-		try {
+	public void execLoad(BulkLoadFileHistory bulkLoadFileHistory) throws Exception {
 
-			CsvSchema gff3Schema = CsvSchemaBuilder.gff3Schema();
-			CsvMapper csvMapper = new CsvMapper();
-			MappingIterator<Gff3DTO> it = csvMapper.enable(CsvParser.Feature.INSERT_NULLS_FOR_MISSING_COLUMNS).readerFor(Gff3DTO.class).with(gff3Schema).readValues(new GZIPInputStream(new FileInputStream(bulkLoadFileHistory.getBulkLoadFile().getLocalFilePath())));
-			List<Gff3DTO> gffData = it.readAll();
-			List<String> gffHeaderData = new ArrayList<>();
-			for (Gff3DTO gffLine : gffData) {
-				if (gffLine.getSeqId().startsWith("#")) {
-					gffHeaderData.add(gffLine.getSeqId());
-				} else {
-					break;
-				}
+		CsvSchema gff3Schema = CsvSchemaBuilder.gff3Schema();
+		CsvMapper csvMapper = new CsvMapper();
+		MappingIterator<Gff3DTO> it = csvMapper.enable(CsvParser.Feature.INSERT_NULLS_FOR_MISSING_COLUMNS).readerFor(Gff3DTO.class).with(gff3Schema).readValues(new GZIPInputStream(new FileInputStream(bulkLoadFileHistory.getBulkLoadFile().getLocalFilePath())));
+		Log.info("Loading Gene Data into Memroy");
+		List<Gff3DTO> gffRawData = it.readAll();
+		Log.info("Finished Loading Gene Data info Memory");
+		List<String> gffHeaderData = new ArrayList<>();
+		List<Gff3DTO> gffFileData = new ArrayList<>();
+		ProcessDisplayHelper ph = new ProcessDisplayHelper(2000);
+		ph.startProcess("GFF Gene header pre-processing", gffRawData.size());
+		while(!gffRawData.isEmpty()) {
+			Gff3DTO gffLine = gffRawData.remove(0);
+			if (gffLine.getSeqId().startsWith("#")) {
+				gffHeaderData.add(gffLine.getSeqId());
+			} else {
+				gffFileData.add(gffLine);
 			}
-			gffData.subList(0, gffHeaderData.size()).clear();
-			
-			BulkFMSLoad fmsLoad = (BulkFMSLoad) bulkLoadFileHistory.getBulkLoad();
-			BackendBulkDataProvider dataProvider = BackendBulkDataProvider.valueOf(fmsLoad.getFmsDataSubType());
-
-			List<ImmutablePair<Gff3DTO, Map<String, String>>> preProcessedGeneGffData = Gff3AttributesHelper.getGeneGffData(gffData, dataProvider);
-			
-			gffData.clear();
-			
-			List<Long> locationIdsAdded = new ArrayList<>();
-			String assemblyId = loadGenomeAssemblyFromGFF(gffHeaderData);
-			
-			boolean success = runLoad(bulkLoadFileHistory, gffHeaderData, preProcessedGeneGffData, locationIdsAdded, dataProvider, assemblyId);
-
-			if (success) {
-				runCleanup(geneLocationService, bulkLoadFileHistory, dataProvider.name(), geneLocationService.getIdsByDataProvider(dataProvider), locationIdsAdded, "GFF gene genomic location association");
-			}
-			bulkLoadFileHistory.finishLoad();
-			updateHistory(bulkLoadFileHistory);
-			updateExceptions(bulkLoadFileHistory);
-
-		} catch (Exception e) {
-			e.printStackTrace();
+			ph.progressProcess();
 		}
+		ph.finishProcess();
+		
+		BulkFMSLoad fmsLoad = (BulkFMSLoad) bulkLoadFileHistory.getBulkLoad();
+		BackendBulkDataProvider dataProvider = BackendBulkDataProvider.valueOf(fmsLoad.getFmsDataSubType());
+
+		List<ImmutablePair<Gff3DTO, Map<String, String>>> preProcessedGeneGffData = Gff3AttributesHelper.getGeneGffData(gffFileData, dataProvider);
+		
+		gffFileData.clear();
+		
+		List<Long> locationIdsAdded = new ArrayList<>();
+		String assemblyId = loadGenomeAssemblyFromGFF(gffHeaderData);
+		
+		boolean success = runLoad(bulkLoadFileHistory, gffHeaderData, preProcessedGeneGffData, locationIdsAdded, dataProvider, assemblyId);
+
+		if (success) {
+			runCleanup(geneLocationService, bulkLoadFileHistory, dataProvider.name(), geneLocationService.getIdsByDataProvider(dataProvider), locationIdsAdded, "GFF gene genomic location association");
+		}
+		bulkLoadFileHistory.finishLoad();
+		updateHistory(bulkLoadFileHistory);
+		updateExceptions(bulkLoadFileHistory);
+
+
 	}
 	
 	private boolean runLoad(

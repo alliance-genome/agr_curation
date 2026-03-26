@@ -40,54 +40,50 @@ public class Gff3ExonExecutor extends Gff3Executor {
 	@Inject Gff3DtoValidator gff3DtoValidator;
 	
 
-	public void execLoad(BulkLoadFileHistory bulkLoadFileHistory) {
-		try {
+	public void execLoad(BulkLoadFileHistory bulkLoadFileHistory) throws Exception {
 
-			CsvSchema gff3Schema = CsvSchemaBuilder.gff3Schema();
-			CsvMapper csvMapper = new CsvMapper();
-			MappingIterator<Gff3DTO> it = csvMapper.enable(CsvParser.Feature.INSERT_NULLS_FOR_MISSING_COLUMNS).readerFor(Gff3DTO.class).with(gff3Schema).readValues(new GZIPInputStream(new FileInputStream(bulkLoadFileHistory.getBulkLoadFile().getLocalFilePath())));
-			List<Gff3DTO> gffData = it.readAll();
-			List<String> gffHeaderData = new ArrayList<>();
-			for (Gff3DTO gffLine : gffData) {
-				if (gffLine.getSeqId().startsWith("#")) {
-					gffHeaderData.add(gffLine.getSeqId());
-				} else {
-					break;
-				}
+		CsvSchema gff3Schema = CsvSchemaBuilder.gff3Schema();
+		CsvMapper csvMapper = new CsvMapper();
+		MappingIterator<Gff3DTO> it = csvMapper.enable(CsvParser.Feature.INSERT_NULLS_FOR_MISSING_COLUMNS).readerFor(Gff3DTO.class).with(gff3Schema).readValues(new GZIPInputStream(new FileInputStream(bulkLoadFileHistory.getBulkLoadFile().getLocalFilePath())));
+		List<Gff3DTO> gffData = it.readAll();
+		List<String> gffHeaderData = new ArrayList<>();
+		for (Gff3DTO gffLine : gffData) {
+			if (gffLine.getSeqId().startsWith("#")) {
+				gffHeaderData.add(gffLine.getSeqId());
+			} else {
+				break;
 			}
-			gffData.subList(0, gffHeaderData.size()).clear();
-			
-			BulkFMSLoad fmsLoad = (BulkFMSLoad) bulkLoadFileHistory.getBulkLoad();
-			BackendBulkDataProvider dataProvider = BackendBulkDataProvider.valueOf(fmsLoad.getFmsDataSubType());
-
-			List<ImmutablePair<Gff3DTO, Map<String, String>>> preProcessedExonGffData = Gff3AttributesHelper.getExonGffData(gffData, dataProvider);
-			
-			gffData.clear();
-			
-			List<Long> entityIdsAdded = new ArrayList<>();
-			List<Long> locationIdsAdded = new ArrayList<>();
-			List<Long> associationIdsAdded = new ArrayList<>();
-			
-			
-			String assemblyId = loadGenomeAssemblyFromGFF(gffHeaderData);
-			
-			if (assemblyId == null) {
-				addException(bulkLoadFileHistory, new ObjectUpdateExceptionData(null, "GFF Header does not contain assembly", null));
-			}
-			
-			boolean success = runLoad(bulkLoadFileHistory, gffHeaderData, preProcessedExonGffData, entityIdsAdded, locationIdsAdded, associationIdsAdded, dataProvider, assemblyId);
-			if (success) {
-				runCleanup(exonLocationService, bulkLoadFileHistory, dataProvider.name(), exonLocationService.getIdsByDataProvider(dataProvider), locationIdsAdded, "GFF exon genomic location association");
-				runCleanup(transcriptExonService, bulkLoadFileHistory, dataProvider.name(), transcriptExonService.getIdsByDataProvider(dataProvider), associationIdsAdded, "GFF transcript exon association");
-				runCleanup(exonService, bulkLoadFileHistory, dataProvider.name(), exonService.getIdsByDataProvider(dataProvider), entityIdsAdded, "GFF exon");
-			}
-			bulkLoadFileHistory.finishLoad();
-			updateHistory(bulkLoadFileHistory);
-			updateExceptions(bulkLoadFileHistory);
-
-		} catch (Exception e) {
-			e.printStackTrace();
 		}
+		gffData.subList(0, gffHeaderData.size()).clear();
+		
+		BulkFMSLoad fmsLoad = (BulkFMSLoad) bulkLoadFileHistory.getBulkLoad();
+		BackendBulkDataProvider dataProvider = BackendBulkDataProvider.valueOf(fmsLoad.getFmsDataSubType());
+
+		List<ImmutablePair<Gff3DTO, Map<String, String>>> preProcessedExonGffData = Gff3AttributesHelper.getExonGffData(gffData, dataProvider);
+		
+		gffData.clear();
+		
+		List<Long> entityIdsAdded = new ArrayList<>();
+		List<Long> locationIdsAdded = new ArrayList<>();
+		List<Long> associationIdsAdded = new ArrayList<>();
+		
+		
+		String assemblyId = loadGenomeAssemblyFromGFF(gffHeaderData);
+		
+		if (assemblyId == null) {
+			addException(bulkLoadFileHistory, new ObjectUpdateExceptionData(null, "GFF Header does not contain assembly", null));
+		}
+		
+		boolean success = runLoad(bulkLoadFileHistory, gffHeaderData, preProcessedExonGffData, entityIdsAdded, locationIdsAdded, associationIdsAdded, dataProvider, assemblyId);
+		if (success) {
+			runCleanup(exonLocationService, bulkLoadFileHistory, dataProvider.name(), exonLocationService.getIdsByDataProvider(dataProvider), locationIdsAdded, "GFF exon genomic location association");
+			runCleanup(transcriptExonService, bulkLoadFileHistory, dataProvider.name(), transcriptExonService.getIdsByDataProvider(dataProvider), associationIdsAdded, "GFF transcript exon association");
+			runCleanup(exonService, bulkLoadFileHistory, dataProvider.name(), exonService.getIdsByDataProvider(dataProvider), entityIdsAdded, "GFF exon");
+		}
+		bulkLoadFileHistory.finishLoad();
+		updateHistory(bulkLoadFileHistory);
+		updateExceptions(bulkLoadFileHistory);
+
 	}
 
 	
