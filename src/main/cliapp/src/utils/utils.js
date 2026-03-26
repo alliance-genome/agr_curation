@@ -2,6 +2,7 @@ import { confirmDialog } from 'primereact/confirmdialog';
 import { SORT_FIELDS } from '../constants/SortFields';
 
 import { FIELD_SETS } from '../constants/FilterFields';
+import { Endpoints } from '../constants/Endpoints';
 import { ValidationService } from '../service/ValidationService';
 
 export function returnSorted(event, originalSort) {
@@ -308,7 +309,7 @@ export function autocompleteSearch(
 	applyObsoleteFilter = true
 ) {
 	const obsoleteFilter =
-		applyObsoleteFilter && endpoint !== 'literature-reference'
+		applyObsoleteFilter && endpoint !== Endpoints.Document.LITERATURE_REFERENCE
 			? {
 					obsoleteFilter: {
 						obsolete: {
