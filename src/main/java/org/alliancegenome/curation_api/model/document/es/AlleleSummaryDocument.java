@@ -28,6 +28,7 @@ public class AlleleSummaryDocument extends AVSParentDocument {
 	private CrossReference crossReference;
 	private List<Variant> variants;
 	private Set<String> diseases;
+	private Set<String> diseasesWithParents;
 	private Set<String> diseasesAgrSlim;
 	private Set<String> constructExpressedComponents;
 	private Set<String> constructRegulatoryRegions;
@@ -39,6 +40,15 @@ public class AlleleSummaryDocument extends AVSParentDocument {
 			geneIds = new HashSet<>();
 		}
 		geneIds.add(alleleOfGene.getPrimaryExternalId());
+	}
+
+	public void removeTransportFields() {
+		diseases = null;
+		diseasesWithParents = null;
+		diseasesAgrSlim = null;
+		constructExpressedComponents = null;
+		constructRegulatoryRegions = null;
+		constructKnockdownComponents = null;
 	}
 }
 

@@ -751,6 +751,46 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 			alleleDiseaseAgrSlimMap.computeIfAbsent(alleleId, k -> new java.util.HashSet<>()).add(slimName);
 		}
 
+		// Disease names with all parent terms per allele
+		String diseaseWithParentsQueryString = """
+			SELECT allele_id, doterm.name AS direct_name, ancestor.name AS ancestor_name
+			FROM (
+				SELECT DISTINCT ada.diseaseannotationsubject_id AS allele_id, da.diseaseannotationobject_id AS doterm_id
+				FROM allelediseaseannotation ada
+				JOIN diseaseannotation da ON da.id = ada.id
+				WHERE ada.diseaseannotationsubject_id IN :alleleIds
+				UNION
+				SELECT DISTINCT agm.inferredallele_id AS allele_id, da.diseaseannotationobject_id AS doterm_id
+				FROM agmdiseaseannotation agm
+				JOIN diseaseannotation da ON da.id = agm.id
+				WHERE agm.inferredallele_id IN :alleleIds
+				UNION
+				SELECT DISTINCT agma.assertedalleles_id AS allele_id, da.diseaseannotationobject_id AS doterm_id
+				FROM agmdiseaseannotation_allele agma
+				JOIN agmdiseaseannotation agm ON agm.id = agma.agmdiseaseannotation_id
+				JOIN diseaseannotation da ON da.id = agm.id
+				WHERE agma.assertedalleles_id IN :alleleIds
+			) allele_diseases
+			JOIN ontologyterm doterm ON doterm.id = allele_diseases.doterm_id
+			LEFT JOIN ontologytermclosure otc ON otc.closuresubject_id = allele_diseases.doterm_id
+			LEFT JOIN ontologyterm ancestor ON ancestor.id = otc.closureobject_id
+				AND ancestor.ontologytermtype = 'DOTerm'
+			""";
+		Query diseaseWithParentsQuery = entityManager.createNativeQuery(diseaseWithParentsQueryString);
+		diseaseWithParentsQuery.setParameter("alleleIds", alleleIds);
+		List<Object[]> diseaseWithParentsResults = diseaseWithParentsQuery.getResultList();
+
+		Map<Long, Set<String>> alleleDiseaseWithParentsMap = new HashMap<>();
+		for (Object[] row : diseaseWithParentsResults) {
+			Long alleleId = (Long) row[0];
+			String directName = (String) row[1];
+			String ancestorName = (String) row[2];
+			alleleDiseaseWithParentsMap.computeIfAbsent(alleleId, k -> new java.util.HashSet<>()).add(directName);
+			if (ancestorName != null) {
+				alleleDiseaseWithParentsMap.computeIfAbsent(alleleId, k -> new java.util.HashSet<>()).add(ancestorName);
+			}
+		}
+
 		// Disease names per allele
 		String diseaseNamesQueryString = """
 			SELECT DISTINCT allele_id, doterm.name
@@ -821,6 +861,7 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 			doc.setHasPhenotype(allelesWithPhenotype.contains(allele.getId()));
 			doc.setHasDisease(allelesWithDisease.contains(allele.getId()));
 			doc.setDiseases(alleleDiseaseNamesMap.get(allele.getId()));
+			doc.setDiseasesWithParents(alleleDiseaseWithParentsMap.get(allele.getId()));
 			doc.setDiseasesAgrSlim(alleleDiseaseAgrSlimMap.get(allele.getId()));
 			doc.setConstructExpressedComponents(alleleConstructExpressedComponentsMap.get(allele.getId()));
 			doc.setConstructRegulatoryRegions(alleleConstructRegulatoryRegionsMap.get(allele.getId()));
