@@ -35,11 +35,15 @@ import jakarta.inject.Inject;
 @ApplicationScoped
 public class Gff3TranscriptExecutor extends Gff3Executor {
 
-	@Inject TranscriptService transcriptService;
-	@Inject TranscriptGenomicLocationAssociationService transcriptLocationService;
-	@Inject TranscriptGeneAssociationService transcriptGeneService;
-	@Inject Gff3DtoValidator gff3DtoValidator;
-	
+	@Inject
+	TranscriptService transcriptService;
+	@Inject
+	TranscriptGenomicLocationAssociationService transcriptLocationService;
+	@Inject
+	TranscriptGeneAssociationService transcriptGeneService;
+	@Inject
+	Gff3DtoValidator gff3DtoValidator;
+
 	public void execLoad(BulkLoadFileHistory bulkLoadFileHistory) throws Exception {
 
 		CsvSchema gff3Schema = CsvSchemaBuilder.gff3Schema();
@@ -52,7 +56,7 @@ public class Gff3TranscriptExecutor extends Gff3Executor {
 		List<Gff3DTO> gffFileData = new ArrayList<>();
 		ProcessDisplayHelper ph = new ProcessDisplayHelper();
 		ph.startProcess("GFF Transcript header pre-processing", gffRawData.size());
-		while(!gffRawData.isEmpty()) {
+		while (!gffRawData.isEmpty()) {
 			Gff3DTO gffLine = gffRawData.remove(0);
 			if (gffLine.getSeqId().startsWith("#")) {
 				gffHeaderData.add(gffLine.getSeqId());
@@ -62,25 +66,25 @@ public class Gff3TranscriptExecutor extends Gff3Executor {
 			ph.progressProcess();
 		}
 		ph.finishProcess();
-		
+
 		BulkFMSLoad fmsLoad = (BulkFMSLoad) bulkLoadFileHistory.getBulkLoad();
 		BackendBulkDataProvider dataProvider = BackendBulkDataProvider.valueOf(fmsLoad.getFmsDataSubType());
 
 		List<ImmutablePair<Gff3DTO, Map<String, String>>> preProcessedTranscriptGffData = Gff3AttributesHelper.getTranscriptGffData(gffFileData, dataProvider);
 		Map<String, String> geneIdCurieMap = gff3Service.getGeneIdCurieMap(gffFileData, dataProvider);
-		
+
 		gffFileData.clear();
-		
+
 		List<Long> entityIdsAdded = new ArrayList<>();
 		List<Long> locationIdsAdded = new ArrayList<>();
 		List<Long> associationIdsAdded = new ArrayList<>();
-		
+
 		String assemblyId = loadGenomeAssemblyFromGFF(gffHeaderData);
-		
+
 		if (assemblyId == null) {
 			addException(bulkLoadFileHistory, new ObjectUpdateExceptionData(null, "GFF Header does not contain assembly", null));
 		}
-		
+
 		boolean success = runLoad(bulkLoadFileHistory, gffHeaderData, preProcessedTranscriptGffData, geneIdCurieMap, entityIdsAdded, locationIdsAdded, associationIdsAdded, dataProvider, assemblyId);
 
 		if (success) {
@@ -93,18 +97,10 @@ public class Gff3TranscriptExecutor extends Gff3Executor {
 		updateExceptions(bulkLoadFileHistory);
 
 	}
-	
-	private boolean runLoad(
-		BulkLoadFileHistory history,
-		List<String> gffHeaderData,
-		List<ImmutablePair<Gff3DTO, Map<String, String>>> gffData,
-		Map<String, String> geneIdCurieMap,
-		List<Long> entityIdsAdded,
-		List<Long> locationIdsAdded,
-		List<Long> associationIdsAdded,
-		BackendBulkDataProvider dataProvider,
-		String assemblyId) {
-	
+
+	private boolean runLoad(BulkLoadFileHistory history, List<String> gffHeaderData, List<ImmutablePair<Gff3DTO, Map<String, String>>> gffData, Map<String, String> geneIdCurieMap, List<Long> entityIdsAdded, List<Long> locationIdsAdded, List<Long> associationIdsAdded,
+			BackendBulkDataProvider dataProvider, String assemblyId) {
+
 		ProcessDisplayHelper ph = new ProcessDisplayHelper();
 		ph.addDisplayHandler(loadProcessDisplayService);
 		ph.startProcess("GFF Transcript update for " + dataProvider.name(), gffData.size());
@@ -128,7 +124,7 @@ public class Gff3TranscriptExecutor extends Gff3Executor {
 				history.incrementFailed(countType);
 				addException(history, new ObjectUpdateExceptionData(gff3EntryPair.getKey(), e.getMessage(), e.getStackTrace()));
 			}
-			
+
 			if (assemblyId != null) {
 				countType = "Locations";
 				try {
@@ -165,7 +161,7 @@ public class Gff3TranscriptExecutor extends Gff3Executor {
 		ph.finishProcess();
 		return true;
 	}
-	
+
 	public APIResponse runLoadApi(String dataProviderName, String assemblyName, List<Gff3DTO> gffData) {
 		List<Long> idsAdded = new ArrayList<>();
 		BackendBulkDataProvider dataProvider = BackendBulkDataProvider.valueOf(dataProviderName);
@@ -175,9 +171,8 @@ public class Gff3TranscriptExecutor extends Gff3Executor {
 		history = bulkLoadFileHistoryDAO.persist(history);
 		runLoad(history, null, preProcessedTranscriptGffData, geneIdCurieMap, idsAdded, idsAdded, idsAdded, dataProvider, assemblyName);
 		history.finishLoad();
-		
+
 		return new LoadHistoryResponce(history);
 	}
-
 
 }

@@ -35,11 +35,14 @@ import jakarta.inject.Inject;
 @ApplicationScoped
 public class Gff3ExonExecutor extends Gff3Executor {
 
-	@Inject ExonService exonService;
-	@Inject ExonGenomicLocationAssociationService exonLocationService;
-	@Inject TranscriptExonAssociationService transcriptExonService;
-	@Inject Gff3DtoValidator gff3DtoValidator;
-	
+	@Inject
+	ExonService exonService;
+	@Inject
+	ExonGenomicLocationAssociationService exonLocationService;
+	@Inject
+	TranscriptExonAssociationService transcriptExonService;
+	@Inject
+	Gff3DtoValidator gff3DtoValidator;
 
 	public void execLoad(BulkLoadFileHistory bulkLoadFileHistory) throws Exception {
 
@@ -53,7 +56,7 @@ public class Gff3ExonExecutor extends Gff3Executor {
 		List<Gff3DTO> gffFileData = new ArrayList<>();
 		ProcessDisplayHelper ph = new ProcessDisplayHelper();
 		ph.startProcess("GFF Exon header pre-processing", gffRawData.size());
-		while(!gffRawData.isEmpty()) {
+		while (!gffRawData.isEmpty()) {
 			Gff3DTO gffLine = gffRawData.remove(0);
 			if (gffLine.getSeqId().startsWith("#")) {
 				gffHeaderData.add(gffLine.getSeqId());
@@ -63,25 +66,24 @@ public class Gff3ExonExecutor extends Gff3Executor {
 			ph.progressProcess();
 		}
 		ph.finishProcess();
-		
+
 		BulkFMSLoad fmsLoad = (BulkFMSLoad) bulkLoadFileHistory.getBulkLoad();
 		BackendBulkDataProvider dataProvider = BackendBulkDataProvider.valueOf(fmsLoad.getFmsDataSubType());
 
 		List<ImmutablePair<Gff3DTO, Map<String, String>>> preProcessedExonGffData = Gff3AttributesHelper.getExonGffData(gffFileData, dataProvider);
-		
+
 		gffFileData.clear();
-		
+
 		List<Long> entityIdsAdded = new ArrayList<>();
 		List<Long> locationIdsAdded = new ArrayList<>();
 		List<Long> associationIdsAdded = new ArrayList<>();
-		
-		
+
 		String assemblyId = loadGenomeAssemblyFromGFF(gffHeaderData);
-		
+
 		if (assemblyId == null) {
 			addException(bulkLoadFileHistory, new ObjectUpdateExceptionData(null, "GFF Header does not contain assembly", null));
 		}
-		
+
 		boolean success = runLoad(bulkLoadFileHistory, gffHeaderData, preProcessedExonGffData, entityIdsAdded, locationIdsAdded, associationIdsAdded, dataProvider, assemblyId);
 		if (success) {
 			runCleanup(exonLocationService, bulkLoadFileHistory, dataProvider.name(), exonLocationService.getIdsByDataProvider(dataProvider), locationIdsAdded, "GFF exon genomic location association");
@@ -94,16 +96,9 @@ public class Gff3ExonExecutor extends Gff3Executor {
 
 	}
 
-	
-	private boolean runLoad(
-		BulkLoadFileHistory history,
-		List<String> gffHeaderData,
-		List<ImmutablePair<Gff3DTO, Map<String, String>>> gffData,
-		List<Long> entityIdsAdded,
-		List<Long> locationIdsAdded,
-		List<Long> associationIdsAdded,
-		BackendBulkDataProvider dataProvider, String assemblyId) {
-		
+	private boolean runLoad(BulkLoadFileHistory history, List<String> gffHeaderData, List<ImmutablePair<Gff3DTO, Map<String, String>>> gffData, List<Long> entityIdsAdded, List<Long> locationIdsAdded, List<Long> associationIdsAdded, BackendBulkDataProvider dataProvider,
+			String assemblyId) {
+
 		ProcessDisplayHelper ph = new ProcessDisplayHelper();
 		ph.addDisplayHandler(loadProcessDisplayService);
 		ph.startProcess("GFF Exon update for " + dataProvider.name(), gffData.size());
@@ -112,14 +107,14 @@ public class Gff3ExonExecutor extends Gff3Executor {
 		history.setCount("Locations", gffData.size());
 		history.setCount("Associations", gffData.size());
 		updateHistory(history);
-		
+
 		String countType = null;
 		for (ImmutablePair<Gff3DTO, Map<String, String>> gff3EntryPair : gffData) {
 
 			countType = "Entities";
 			try {
 				gff3DtoValidator.validateExonEntry(gff3EntryPair.getKey(), gff3EntryPair.getValue(), entityIdsAdded, dataProvider);
-				
+
 				history.incrementCompleted(countType);
 			} catch (ObjectUpdateException e) {
 				history.incrementFailed(countType);
@@ -129,7 +124,7 @@ public class Gff3ExonExecutor extends Gff3Executor {
 				history.incrementFailed(countType);
 				addException(history, new ObjectUpdateExceptionData(gff3EntryPair.getKey(), e.getMessage(), e.getStackTrace()));
 			}
-			
+
 			if (assemblyId != null) {
 				countType = "Locations";
 				try {
@@ -144,7 +139,7 @@ public class Gff3ExonExecutor extends Gff3Executor {
 					addException(history, new ObjectUpdateExceptionData(gff3EntryPair.getKey(), e.getMessage(), e.getStackTrace()));
 				}
 			}
-			
+
 			countType = "Associations";
 			try {
 				gff3Service.loadExonParentChildAssociations(gff3EntryPair, associationIdsAdded, dataProvider);
@@ -168,7 +163,7 @@ public class Gff3ExonExecutor extends Gff3Executor {
 		ph.finishProcess();
 		return true;
 	}
-	
+
 	public APIResponse runLoadApi(String dataProviderName, String assemblyName, List<Gff3DTO> gffData) {
 		List<Long> idsAdded = new ArrayList<Long>();
 		BackendBulkDataProvider dataProvider = BackendBulkDataProvider.valueOf(dataProviderName);
@@ -177,9 +172,8 @@ public class Gff3ExonExecutor extends Gff3Executor {
 		history = bulkLoadFileHistoryDAO.persist(history);
 		runLoad(history, null, preProcessedExonGffData, idsAdded, idsAdded, idsAdded, dataProvider, assemblyName);
 		history.finishLoad();
-		
+
 		return new LoadHistoryResponce(history);
 	}
-
 
 }

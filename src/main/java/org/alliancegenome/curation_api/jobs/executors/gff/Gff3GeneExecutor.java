@@ -34,9 +34,11 @@ import jakarta.inject.Inject;
 @ApplicationScoped
 public class Gff3GeneExecutor extends Gff3Executor {
 
-	@Inject GeneGenomicLocationAssociationService geneLocationService;
-	@Inject Gff3DtoValidator gff3DtoValidator;
-	
+	@Inject
+	GeneGenomicLocationAssociationService geneLocationService;
+	@Inject
+	Gff3DtoValidator gff3DtoValidator;
+
 	public void execLoad(BulkLoadFileHistory bulkLoadFileHistory) throws Exception {
 
 		CsvSchema gff3Schema = CsvSchemaBuilder.gff3Schema();
@@ -49,7 +51,7 @@ public class Gff3GeneExecutor extends Gff3Executor {
 		List<Gff3DTO> gffFileData = new ArrayList<>();
 		ProcessDisplayHelper ph = new ProcessDisplayHelper();
 		ph.startProcess("GFF Gene header pre-processing", gffRawData.size());
-		while(!gffRawData.isEmpty()) {
+		while (!gffRawData.isEmpty()) {
 			Gff3DTO gffLine = gffRawData.remove(0);
 			if (gffLine.getSeqId().startsWith("#")) {
 				gffHeaderData.add(gffLine.getSeqId());
@@ -59,17 +61,17 @@ public class Gff3GeneExecutor extends Gff3Executor {
 			ph.progressProcess();
 		}
 		ph.finishProcess();
-		
+
 		BulkFMSLoad fmsLoad = (BulkFMSLoad) bulkLoadFileHistory.getBulkLoad();
 		BackendBulkDataProvider dataProvider = BackendBulkDataProvider.valueOf(fmsLoad.getFmsDataSubType());
 
 		List<ImmutablePair<Gff3DTO, Map<String, String>>> preProcessedGeneGffData = Gff3AttributesHelper.getGeneGffData(gffFileData, dataProvider);
-		
+
 		gffFileData.clear();
-		
+
 		List<Long> locationIdsAdded = new ArrayList<>();
 		String assemblyId = loadGenomeAssemblyFromGFF(gffHeaderData);
-		
+
 		boolean success = runLoad(bulkLoadFileHistory, gffHeaderData, preProcessedGeneGffData, locationIdsAdded, dataProvider, assemblyId);
 
 		if (success) {
@@ -79,17 +81,10 @@ public class Gff3GeneExecutor extends Gff3Executor {
 		updateHistory(bulkLoadFileHistory);
 		updateExceptions(bulkLoadFileHistory);
 
-
 	}
-	
-	private boolean runLoad(
-		BulkLoadFileHistory history,
-		List<String> gffHeaderData,
-		List<ImmutablePair<Gff3DTO, Map<String, String>>> gffData,
-		List<Long> locationIdsAdded,
-		BackendBulkDataProvider dataProvider,
-		String assemblyId) {
-	
+
+	private boolean runLoad(BulkLoadFileHistory history, List<String> gffHeaderData, List<ImmutablePair<Gff3DTO, Map<String, String>>> gffData, List<Long> locationIdsAdded, BackendBulkDataProvider dataProvider, String assemblyId) {
+
 		ProcessDisplayHelper ph = new ProcessDisplayHelper();
 		ph.addDisplayHandler(loadProcessDisplayService);
 		ph.startProcess("GFF Gene update for " + dataProvider.name(), gffData.size());
@@ -122,7 +117,7 @@ public class Gff3GeneExecutor extends Gff3Executor {
 		ph.finishProcess();
 		return true;
 	}
-	
+
 	public APIResponse runLoadApi(String dataProviderName, String assemblyName, List<Gff3DTO> gffData) {
 		List<Long> idsAdded = new ArrayList<>();
 		BackendBulkDataProvider dataProvider = BackendBulkDataProvider.valueOf(dataProviderName);
@@ -131,9 +126,8 @@ public class Gff3GeneExecutor extends Gff3Executor {
 		history = bulkLoadFileHistoryDAO.persist(history);
 		runLoad(history, null, preProcessedGeneGffData, idsAdded, dataProvider, assemblyName);
 		history.finishLoad();
-		
+
 		return new LoadHistoryResponce(history);
 	}
-
 
 }
