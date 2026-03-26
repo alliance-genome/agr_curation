@@ -79,7 +79,7 @@ public class DoTermDAO extends BaseSQLDAO<DOTerm> {
 	public List<Object[]> findAllGeneSymbols() {
 		String sql = """
 			SELECT sa.singlegene_id, sa.displaytext, sp.abbreviation,
-				split_part(taxon.name, ' ', 1) || ' ' || split_part(taxon.name, ' ', 2) AS genus_species
+				sp.fullname AS genus_species
 			FROM slotannotation sa
 			JOIN biologicalentity be ON be.id = sa.singlegene_id
 			JOIN ontologyterm taxon ON taxon.id = be.taxon_id
