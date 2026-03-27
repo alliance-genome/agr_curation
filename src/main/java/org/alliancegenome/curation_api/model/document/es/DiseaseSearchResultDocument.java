@@ -28,7 +28,6 @@ public class DiseaseSearchResultDocument extends ESDocument {
 	Set<String> genes = new HashSet<>();
 	Set<String> diseaseGroup = new HashSet<>();
 	Set<String> associatedSpecies = new HashSet<>();
-	@JsonProperty("name_key")
 	String nameKey;
 
 	Set<String> secondaryIds = new HashSet<>();

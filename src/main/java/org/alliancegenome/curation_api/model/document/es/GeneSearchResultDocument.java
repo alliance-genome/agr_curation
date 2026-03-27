@@ -22,7 +22,6 @@ public class GeneSearchResultDocument extends ESDocument {
 	private String automatedGeneDescription;
 	private String geneDescription;
 	private String name;
-	@JsonbProperty("name_key")
 	private String nameKey;
 	private String species;
 	private String symbol;
@@ -63,8 +62,7 @@ public class GeneSearchResultDocument extends ESDocument {
 
 	private Set<String> strictOrthologySymbols;
 
-	// Gene -> AlleleGeneAssociation -> Allele -> AgmAlleleAssociation -> AGM ->
-	// Symbol
-	// private Set<String> models;
+	// Gene -> AlleleGeneAssociation -> Allele -> AgmAlleleAssociation -> AGM -> Symbol
+	private Set<String> models;
 
 }
