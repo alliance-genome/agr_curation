@@ -12,7 +12,9 @@ import org.alliancegenome.curation_api.dao.CodingSequenceDAO;
 import org.alliancegenome.curation_api.dao.ExonDAO;
 import org.alliancegenome.curation_api.dao.GenomeAssemblyDAO;
 import org.alliancegenome.curation_api.dao.TranscriptDAO;
+import org.alliancegenome.curation_api.dao.associations.CodingSequenceGenomicLocationAssociationDAO;
 import org.alliancegenome.curation_api.dao.associations.ExonGenomicLocationAssociationDAO;
+import org.alliancegenome.curation_api.dao.associations.TranscriptCodingSequenceAssociationDAO;
 import org.alliancegenome.curation_api.dao.associations.TranscriptExonAssociationDAO;
 import org.alliancegenome.curation_api.dao.loads.BulkLoadFileExceptionDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
@@ -67,6 +69,8 @@ public class Gff3Service {
 	@Inject BulkLoadFileExceptionDAO bulkLoadFileExceptionDAO;
 	@Inject ExonGenomicLocationAssociationDAO exonLocationDAO;
 	@Inject TranscriptExonAssociationDAO transcriptExonDAO;
+	@Inject CodingSequenceGenomicLocationAssociationDAO cdsLocationDAO;
+	@Inject TranscriptCodingSequenceAssociationDAO transcriptCdsDAO;
 	@Inject ExonGenomicLocationAssociationService exonLocationService;
 	@Inject CodingSequenceGenomicLocationAssociationService cdsLocationService;
 	@Inject TranscriptGenomicLocationAssociationService transcriptLocationService;
@@ -385,6 +389,137 @@ public class Gff3Service {
 
 					TranscriptExonAssociation existingAssoc = transcriptExonAssocMap.get(exon.getId());
 					TranscriptExonAssociation transcriptAssociation = gff3DtoValidator.validateTranscriptExonAssociation(gffEntry, exon, parentTranscript, existingAssoc);
+					if (transcriptAssociation != null) {
+						associationIdsAdded.add(transcriptAssociation.getId());
+					}
+					history.incrementCompleted("Associations");
+				} catch (ObjectUpdateException e) {
+					history.incrementFailed("Associations");
+					addBatchException(history, e.getData());
+				} catch (Exception e) {
+					e.printStackTrace();
+					history.incrementFailed("Associations");
+					addBatchException(history, new ObjectUpdateExceptionData(gffEntry, e.getMessage(), e.getStackTrace()));
+				}
+			}
+
+			ph.progressProcess();
+		}
+	}
+
+	@Transactional
+	public void loadCdsBatch(
+			List<ImmutablePair<Gff3DTO, Map<String, String>>> batch,
+			List<Long> entityIdsAdded,
+			List<Long> locationIdsAdded,
+			List<Long> associationIdsAdded,
+			BackendBulkDataProvider dataProvider,
+			String assemblyId,
+			BulkLoadFileHistory history,
+			ProcessDisplayHelper ph) {
+
+		entityManager.setFlushMode(FlushModeType.COMMIT);
+
+		// Batch-load existing CDS by uniqueId
+		Set<String> uniqueIds = new HashSet<>();
+		Set<String> parentIds = new HashSet<>();
+		for (ImmutablePair<Gff3DTO, Map<String, String>> pair : batch) {
+			uniqueIds.add(Gff3UniqueIdHelper.getExonOrCodingSequenceUniqueId(pair.getKey(), pair.getValue(), dataProvider));
+			String parent = pair.getValue().get("Parent");
+			if (parent != null && !transcriptCache.containsKey(parent)) {
+				parentIds.add(parent);
+			}
+		}
+		Map<String, CodingSequence> cdsMap = cdsDAO.findByUniqueIds(uniqueIds);
+
+		// Batch-load transcripts not yet cached
+		if (!parentIds.isEmpty()) {
+			transcriptCache.putAll(transcriptDAO.findByModInternalIds(parentIds));
+		}
+
+		// Batch-load existing associations for existing CDS
+		Set<Long> existingCdsIds = new HashSet<>();
+		for (CodingSequence cds : cdsMap.values()) {
+			if (cds.getId() != null) {
+				existingCdsIds.add(cds.getId());
+			}
+		}
+		Map<Long, CodingSequenceGenomicLocationAssociation> locationAssocMap = assemblyId != null
+			? cdsLocationDAO.findByCdsIdsAndAssembly(existingCdsIds, assemblyId)
+			: new HashMap<>();
+		Map<Long, TranscriptCodingSequenceAssociation> transcriptCdsAssocMap = transcriptCdsDAO.findByCdsIds(existingCdsIds);
+
+		for (ImmutablePair<Gff3DTO, Map<String, String>> pair : batch) {
+			Gff3DTO gffEntry = pair.getKey();
+			Map<String, String> attributes = pair.getValue();
+			String uniqueId = Gff3UniqueIdHelper.getExonOrCodingSequenceUniqueId(gffEntry, attributes, dataProvider);
+
+			// Phase 1: Entity
+			CodingSequence cds = null;
+			try {
+				if (!StringUtils.equals(gffEntry.getType(), "CDS")) {
+					throw new ObjectValidationException(gffEntry, "Invalid Type: " + gffEntry.getType() + " for CDS Entity");
+				}
+
+				cds = cdsMap.get(uniqueId);
+				if (cds == null) {
+					cds = new CodingSequence();
+					cds.setUniqueId(uniqueId);
+				}
+
+				if (attributes.containsKey("Name")) {
+					cds.setName(attributes.get("Name"));
+				}
+
+				cds.setDataProvider(organizationService.getByAbbr(dataProvider.sourceOrganization).getEntity());
+				cds.setTaxon(ncbiTaxonTermService.getByCurie(dataProvider.canonicalTaxonCurie).getEntity());
+
+				cds = cdsDAO.persist(cds);
+				entityIdsAdded.add(cds.getId());
+				history.incrementCompleted("Entities");
+			} catch (ObjectUpdateException e) {
+				history.incrementFailed("Entities");
+				addBatchException(history, e.getData());
+				cds = null;
+			} catch (Exception e) {
+				e.printStackTrace();
+				history.incrementFailed("Entities");
+				addBatchException(history, new ObjectUpdateExceptionData(gffEntry, e.getMessage(), e.getStackTrace()));
+				cds = null;
+			}
+
+			// Phase 2: Location
+			if (cds != null && assemblyId != null) {
+				try {
+					CodingSequenceGenomicLocationAssociation existingLocation = locationAssocMap.get(cds.getId());
+					CodingSequenceGenomicLocationAssociation cdsLocation = gff3DtoValidator.validateCdsLocation(gffEntry, cds, assemblyId, dataProvider, existingLocation);
+					if (cdsLocation != null) {
+						locationIdsAdded.add(cdsLocation.getId());
+					}
+					history.incrementCompleted("Locations");
+				} catch (ObjectUpdateException e) {
+					history.incrementFailed("Locations");
+					addBatchException(history, e.getData());
+				} catch (Exception e) {
+					e.printStackTrace();
+					history.incrementFailed("Locations");
+					addBatchException(history, new ObjectUpdateExceptionData(gffEntry, e.getMessage(), e.getStackTrace()));
+				}
+			}
+
+			// Phase 3: Transcript-CDS Association
+			if (cds != null) {
+				try {
+					if (!attributes.containsKey("Parent")) {
+						throw new ObjectValidationException(gffEntry, "Attributes - Parent - " + ValidationConstants.REQUIRED_MESSAGE);
+					}
+					Transcript parentTranscript = transcriptCache.get(attributes.get("Parent"));
+					if (parentTranscript == null) {
+						throw new ObjectValidationException(gffEntry, "Attributes - Parent - " + ValidationConstants.INVALID_MESSAGE + " (" + attributes.get("Parent") + ")");
+					}
+
+					TranscriptCodingSequenceAssociation existingAssoc = transcriptCdsAssocMap.get(cds.getId());
+					TranscriptCodingSequenceAssociation transcriptAssociation = gff3DtoValidator.validateTranscriptCodingSequenceAssociation(gffEntry, cds, parentTranscript, existingAssoc);
 					if (transcriptAssociation != null) {
 						associationIdsAdded.add(transcriptAssociation.getId());
 					}

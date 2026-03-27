@@ -7,7 +7,6 @@ import java.util.Map;
 import java.util.zip.GZIPInputStream;
 
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
-import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException.ObjectUpdateExceptionData;
 import org.alliancegenome.curation_api.jobs.util.CsvSchemaBuilder;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkFMSLoad;
@@ -16,11 +15,9 @@ import org.alliancegenome.curation_api.model.ingest.dto.fms.Gff3DTO;
 import org.alliancegenome.curation_api.response.APIResponse;
 import org.alliancegenome.curation_api.response.LoadHistoryResponce;
 import org.alliancegenome.curation_api.services.CodingSequenceService;
-import org.alliancegenome.curation_api.services.Gff3Service;
 import org.alliancegenome.curation_api.services.associations.CodingSequenceGenomicLocationAssociationService;
 import org.alliancegenome.curation_api.services.associations.TranscriptCodingSequenceAssociationService;
 import org.alliancegenome.curation_api.services.helpers.Gff3AttributesHelper;
-import org.alliancegenome.curation_api.services.validation.dto.Gff3DtoValidator;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 
@@ -37,11 +34,7 @@ import jakarta.inject.Inject;
 public class Gff3CDSExecutor extends Gff3Executor {
 
 	@Inject
-	Gff3Service gff3Service;
-	@Inject
 	CodingSequenceService cdsService;
-	@Inject
-	Gff3DtoValidator gff3DtoValidator;
 	@Inject
 	CodingSequenceGenomicLocationAssociationService cdsLocationService;
 	@Inject
@@ -113,48 +106,13 @@ public class Gff3CDSExecutor extends Gff3Executor {
 		history.setCount("Associations", gffData.size());
 		updateHistory(history);
 
-		String countType = null;
-		for (ImmutablePair<Gff3DTO, Map<String, String>> gff3EntryPair : gffData) {
+		int batchSize = 3000;
+		for (int i = 0; i < gffData.size(); i += batchSize) {
+			int end = Math.min(i + batchSize, gffData.size());
+			List<ImmutablePair<Gff3DTO, Map<String, String>>> batch = gffData.subList(i, end);
 
-			countType = "Entities";
-			try {
-				gff3DtoValidator.validateCdsEntry(gff3EntryPair.getKey(), gff3EntryPair.getValue(), entityIdsAdded, dataProvider);
-				history.incrementCompleted(countType);
-			} catch (ObjectUpdateException e) {
-				history.incrementFailed(countType);
-				addException(history, e.getData());
-			} catch (Exception e) {
-				e.printStackTrace();
-				history.incrementFailed(countType);
-				addException(history, new ObjectUpdateExceptionData(gff3EntryPair.getKey(), e.getMessage(), e.getStackTrace()));
-			}
-			if (assemblyId != null) {
-				countType = "Locations";
-				try {
-					gff3Service.loadCDSLocationAssociations(gff3EntryPair, locationIdsAdded, dataProvider, assemblyId);
-					history.incrementCompleted(countType);
-				} catch (ObjectUpdateException e) {
-					history.incrementFailed(countType);
-					addException(history, e.getData());
-				} catch (Exception e) {
-					e.printStackTrace();
-					history.incrementFailed(countType);
-					addException(history, new ObjectUpdateExceptionData(gff3EntryPair.getKey(), e.getMessage(), e.getStackTrace()));
-				}
-			}
-			countType = "Associations";
-			try {
-				gff3Service.loadCDSParentChildAssociations(gff3EntryPair, associationIdsAdded, dataProvider);
-				history.incrementCompleted(countType);
-			} catch (ObjectUpdateException e) {
-				history.incrementFailed(countType);
-				addException(history, e.getData());
-			} catch (Exception e) {
-				e.printStackTrace();
-				history.incrementFailed(countType);
-				addException(history, new ObjectUpdateExceptionData(gff3EntryPair.getKey(), e.getMessage(), e.getStackTrace()));
-			}
-			ph.progressProcess();
+			gff3Service.loadCdsBatch(batch, entityIdsAdded, locationIdsAdded, associationIdsAdded, dataProvider, assemblyId, history, ph);
+
 			if (Thread.currentThread().isInterrupted()) {
 				history.setErrorMessage("Thread isInterrupted");
 				throw new RuntimeException("Thread isInterrupted");
