@@ -22,8 +22,8 @@ public class TranscriptExonAssociationDAO extends BaseSQLDAO<TranscriptExonAssoc
 			return new HashMap<>();
 		}
 		List<TranscriptExonAssociation> results = entityManager.createQuery(
-				"SELECT a FROM TranscriptExonAssociation a" +
-				" WHERE a.transcriptExonAssociationObject.id IN :exonIds",
+				"SELECT a FROM TranscriptExonAssociation a"
+				+ " WHERE a.transcriptExonAssociationObject.id IN :exonIds",
 				TranscriptExonAssociation.class)
 			.setParameter("exonIds", exonIds)
 			.getResultList();

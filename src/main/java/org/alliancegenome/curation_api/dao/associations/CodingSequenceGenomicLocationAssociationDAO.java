@@ -22,9 +22,9 @@ public class CodingSequenceGenomicLocationAssociationDAO extends BaseSQLDAO<Codi
 			return new HashMap<>();
 		}
 		List<CodingSequenceGenomicLocationAssociation> results = entityManager.createQuery(
-				"SELECT a FROM CodingSequenceGenomicLocationAssociation a" +
-				" WHERE a.codingSequenceAssociationSubject.id IN :cdsIds" +
-				" AND a.codingSequenceGenomicLocationAssociationObject.genomeAssembly.primaryExternalId = :assemblyId",
+				"SELECT a FROM CodingSequenceGenomicLocationAssociation a"
+				+ " WHERE a.codingSequenceAssociationSubject.id IN :cdsIds"
+				+ " AND a.codingSequenceGenomicLocationAssociationObject.genomeAssembly.primaryExternalId = :assemblyId",
 				CodingSequenceGenomicLocationAssociation.class)
 			.setParameter("cdsIds", cdsIds)
 			.setParameter("assemblyId", assemblyId)

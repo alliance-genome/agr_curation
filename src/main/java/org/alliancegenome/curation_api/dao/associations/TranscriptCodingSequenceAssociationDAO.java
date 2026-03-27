@@ -22,8 +22,8 @@ public class TranscriptCodingSequenceAssociationDAO extends BaseSQLDAO<Transcrip
 			return new HashMap<>();
 		}
 		List<TranscriptCodingSequenceAssociation> results = entityManager.createQuery(
-				"SELECT a FROM TranscriptCodingSequenceAssociation a" +
-				" WHERE a.transcriptCodingSequenceAssociationObject.id IN :cdsIds",
+				"SELECT a FROM TranscriptCodingSequenceAssociation a"
+				+ " WHERE a.transcriptCodingSequenceAssociationObject.id IN :cdsIds",
 				TranscriptCodingSequenceAssociation.class)
 			.setParameter("cdsIds", cdsIds)
 			.getResultList();

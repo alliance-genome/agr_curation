@@ -22,9 +22,9 @@ public class ExonGenomicLocationAssociationDAO extends BaseSQLDAO<ExonGenomicLoc
 			return new HashMap<>();
 		}
 		List<ExonGenomicLocationAssociation> results = entityManager.createQuery(
-				"SELECT a FROM ExonGenomicLocationAssociation a" +
-				" WHERE a.exonAssociationSubject.id IN :exonIds" +
-				" AND a.exonGenomicLocationAssociationObject.genomeAssembly.primaryExternalId = :assemblyId",
+				"SELECT a FROM ExonGenomicLocationAssociation a"
+				+ " WHERE a.exonAssociationSubject.id IN :exonIds"
+				+ " AND a.exonGenomicLocationAssociationObject.genomeAssembly.primaryExternalId = :assemblyId",
 				ExonGenomicLocationAssociation.class)
 			.setParameter("exonIds", exonIds)
 			.setParameter("assemblyId", assemblyId)
