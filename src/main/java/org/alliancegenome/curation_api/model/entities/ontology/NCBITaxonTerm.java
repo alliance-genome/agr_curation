@@ -26,7 +26,7 @@ import lombok.ToString;
 public class NCBITaxonTerm extends OntologyTerm {
 
 	@OneToOne(mappedBy = "taxon", cascade = CascadeType.ALL, orphanRemoval = true)
-	@JsonView(CurationView.GeneSummaryDocument.class)
+	@JsonView({CurationView.GeneSummaryDocument.class, CurationView.AlleleSummaryDocument.class})
 	private Species species;
 
 }
