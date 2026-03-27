@@ -66,13 +66,11 @@ public class Person extends Agent {
 
 	@KeywordField(aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES)
 	@ElementCollection
-	@JsonView({ CurationView.FieldsAndLists.class, CurationView.PersonSettingView.class })
 	@JoinTable(indexes = @Index(columnList = "person_id"))
 	private List<String> emails;
 
 	@KeywordField(aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES)
 	@ElementCollection
-	@JsonView({ CurationView.FieldsAndLists.class, CurationView.PersonSettingView.class })
 	@JoinTable(indexes = @Index(columnList = "person_id"))
 	private List<String> oldEmails;
 
