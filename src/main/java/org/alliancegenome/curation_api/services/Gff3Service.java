@@ -1,8 +1,10 @@
 package org.alliancegenome.curation_api.services;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.alliancegenome.curation_api.constants.Gff3Constants;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
@@ -10,8 +12,13 @@ import org.alliancegenome.curation_api.dao.CodingSequenceDAO;
 import org.alliancegenome.curation_api.dao.ExonDAO;
 import org.alliancegenome.curation_api.dao.GenomeAssemblyDAO;
 import org.alliancegenome.curation_api.dao.TranscriptDAO;
+import org.alliancegenome.curation_api.dao.associations.ExonGenomicLocationAssociationDAO;
+import org.alliancegenome.curation_api.dao.associations.TranscriptExonAssociationDAO;
+import org.alliancegenome.curation_api.dao.loads.BulkLoadFileExceptionDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.KnownIssueValidationException;
+import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
+import org.alliancegenome.curation_api.exceptions.ObjectUpdateException.ObjectUpdateExceptionData;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
 import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.model.entities.CodingSequence;
@@ -25,6 +32,8 @@ import org.alliancegenome.curation_api.model.entities.associations.TranscriptCod
 import org.alliancegenome.curation_api.model.entities.associations.TranscriptExonAssociation;
 import org.alliancegenome.curation_api.model.entities.associations.TranscriptGeneAssociation;
 import org.alliancegenome.curation_api.model.entities.associations.TranscriptGenomicLocationAssociation;
+import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileException;
+import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.Gff3DTO;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.associations.CodingSequenceGenomicLocationAssociationService;
@@ -36,6 +45,7 @@ import org.alliancegenome.curation_api.services.associations.TranscriptGeneAssoc
 import org.alliancegenome.curation_api.services.associations.TranscriptGenomicLocationAssociationService;
 import org.alliancegenome.curation_api.services.helpers.Gff3AttributesHelper;
 import org.alliancegenome.curation_api.services.helpers.Gff3UniqueIdHelper;
+import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
 import org.alliancegenome.curation_api.services.ontology.NcbiTaxonTermService;
 import org.alliancegenome.curation_api.services.validation.dto.Gff3DtoValidator;
 import org.apache.commons.lang3.StringUtils;
@@ -43,6 +53,8 @@ import org.apache.commons.lang3.tuple.ImmutablePair;
 
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.FlushModeType;
 import jakarta.transaction.Transactional;
 
 @RequestScoped
@@ -52,6 +64,9 @@ public class Gff3Service {
 	@Inject ExonDAO exonDAO;
 	@Inject CodingSequenceDAO cdsDAO;
 	@Inject TranscriptDAO transcriptDAO;
+	@Inject BulkLoadFileExceptionDAO bulkLoadFileExceptionDAO;
+	@Inject ExonGenomicLocationAssociationDAO exonLocationDAO;
+	@Inject TranscriptExonAssociationDAO transcriptExonDAO;
 	@Inject ExonGenomicLocationAssociationService exonLocationService;
 	@Inject CodingSequenceGenomicLocationAssociationService cdsLocationService;
 	@Inject TranscriptGenomicLocationAssociationService transcriptLocationService;
@@ -60,8 +75,12 @@ public class Gff3Service {
 	@Inject TranscriptCodingSequenceAssociationService transcriptCdsService;
 	@Inject TranscriptExonAssociationService transcriptExonService;
 	@Inject NcbiTaxonTermService ncbiTaxonTermService;
+	@Inject OrganizationService organizationService;
 	@Inject Gff3DtoValidator gff3DtoValidator;
 	@Inject GeneService geneService;
+	@Inject EntityManager entityManager;
+
+	private Map<String, Transcript> transcriptCache = new HashMap<>();
 
 	@Transactional
 	public void loadExonLocationAssociations(ImmutablePair<Gff3DTO, Map<String, String>> gffEntryPair, List<Long> idsAdded, BackendBulkDataProvider dataProvider, String assemblyId) throws ValidationException {
@@ -251,6 +270,144 @@ public class Gff3Service {
 			idsAdded.add(geneAssociation.getId());
 			transcriptGeneService.addAssociationToSubjectAndObject(geneAssociation);
 		}
+	}
+
+	@Transactional
+	public void loadExonBatch(
+			List<ImmutablePair<Gff3DTO, Map<String, String>>> batch,
+			List<Long> entityIdsAdded,
+			List<Long> locationIdsAdded,
+			List<Long> associationIdsAdded,
+			BackendBulkDataProvider dataProvider,
+			String assemblyId,
+			BulkLoadFileHistory history,
+			ProcessDisplayHelper ph) {
+
+		entityManager.setFlushMode(FlushModeType.COMMIT);
+
+		// Batch-load existing exons by uniqueId
+		Set<String> uniqueIds = new HashSet<>();
+		Set<String> parentIds = new HashSet<>();
+		for (ImmutablePair<Gff3DTO, Map<String, String>> pair : batch) {
+			uniqueIds.add(Gff3UniqueIdHelper.getExonOrCodingSequenceUniqueId(pair.getKey(), pair.getValue(), dataProvider));
+			String parent = pair.getValue().get("Parent");
+			if (parent != null && !transcriptCache.containsKey(parent)) {
+				parentIds.add(parent);
+			}
+		}
+		Map<String, Exon> exonMap = exonDAO.findByUniqueIds(uniqueIds);
+
+		// Batch-load transcripts not yet cached
+		if (!parentIds.isEmpty()) {
+			transcriptCache.putAll(transcriptDAO.findByModInternalIds(parentIds));
+		}
+
+		// Batch-load existing associations for existing exons
+		Set<Long> existingExonIds = new HashSet<>();
+		for (Exon exon : exonMap.values()) {
+			if (exon.getId() != null) {
+				existingExonIds.add(exon.getId());
+			}
+		}
+		Map<Long, ExonGenomicLocationAssociation> locationAssocMap = assemblyId != null
+			? exonLocationDAO.findByExonIdsAndAssembly(existingExonIds, assemblyId)
+			: new HashMap<>();
+		Map<Long, TranscriptExonAssociation> transcriptExonAssocMap = transcriptExonDAO.findByExonIds(existingExonIds);
+
+		for (ImmutablePair<Gff3DTO, Map<String, String>> pair : batch) {
+			Gff3DTO gffEntry = pair.getKey();
+			Map<String, String> attributes = pair.getValue();
+			String uniqueId = Gff3UniqueIdHelper.getExonOrCodingSequenceUniqueId(gffEntry, attributes, dataProvider);
+
+			// Phase 1: Entity
+			Exon exon = null;
+			try {
+				if (!StringUtils.equals(gffEntry.getType(), "exon") && !StringUtils.equals(gffEntry.getType(), "noncoding_exon")) {
+					throw new ObjectValidationException(gffEntry, "Invalid Type: " + gffEntry.getType() + " for Exon Entity");
+				}
+
+				exon = exonMap.get(uniqueId);
+				if (exon == null) {
+					exon = new Exon();
+					exon.setUniqueId(uniqueId);
+				}
+
+				if (attributes.containsKey("Name")) {
+					exon.setName(attributes.get("Name"));
+				}
+
+				exon.setDataProvider(organizationService.getByAbbr(dataProvider.sourceOrganization).getEntity());
+				exon.setTaxon(ncbiTaxonTermService.getByCurie(dataProvider.canonicalTaxonCurie).getEntity());
+
+				exon = exonDAO.persist(exon);
+				entityIdsAdded.add(exon.getId());
+				history.incrementCompleted("Entities");
+			} catch (ObjectUpdateException e) {
+				history.incrementFailed("Entities");
+				addBatchException(history, e.getData());
+				exon = null;
+			} catch (Exception e) {
+				e.printStackTrace();
+				history.incrementFailed("Entities");
+				addBatchException(history, new ObjectUpdateExceptionData(gffEntry, e.getMessage(), e.getStackTrace()));
+				exon = null;
+			}
+
+			// Phase 2: Location
+			if (exon != null && assemblyId != null) {
+				try {
+					ExonGenomicLocationAssociation existingLocation = locationAssocMap.get(exon.getId());
+					ExonGenomicLocationAssociation exonLocation = gff3DtoValidator.validateExonLocation(gffEntry, exon, assemblyId, dataProvider, existingLocation);
+					if (exonLocation != null) {
+						locationIdsAdded.add(exonLocation.getId());
+					}
+					history.incrementCompleted("Locations");
+				} catch (ObjectUpdateException e) {
+					history.incrementFailed("Locations");
+					addBatchException(history, e.getData());
+				} catch (Exception e) {
+					e.printStackTrace();
+					history.incrementFailed("Locations");
+					addBatchException(history, new ObjectUpdateExceptionData(gffEntry, e.getMessage(), e.getStackTrace()));
+				}
+			}
+
+			// Phase 3: Transcript-Exon Association
+			if (exon != null) {
+				try {
+					if (!attributes.containsKey("Parent")) {
+						throw new ObjectValidationException(gffEntry, "Attributes - Parent - " + ValidationConstants.REQUIRED_MESSAGE);
+					}
+					Transcript parentTranscript = transcriptCache.get(attributes.get("Parent"));
+					if (parentTranscript == null) {
+						throw new ObjectValidationException(gffEntry, "Attributes - Parent - " + ValidationConstants.INVALID_MESSAGE + " (" + attributes.get("Parent") + ")");
+					}
+
+					TranscriptExonAssociation existingAssoc = transcriptExonAssocMap.get(exon.getId());
+					TranscriptExonAssociation transcriptAssociation = gff3DtoValidator.validateTranscriptExonAssociation(gffEntry, exon, parentTranscript, existingAssoc);
+					if (transcriptAssociation != null) {
+						associationIdsAdded.add(transcriptAssociation.getId());
+					}
+					history.incrementCompleted("Associations");
+				} catch (ObjectUpdateException e) {
+					history.incrementFailed("Associations");
+					addBatchException(history, e.getData());
+				} catch (Exception e) {
+					e.printStackTrace();
+					history.incrementFailed("Associations");
+					addBatchException(history, new ObjectUpdateExceptionData(gffEntry, e.getMessage(), e.getStackTrace()));
+				}
+			}
+
+			ph.progressProcess();
+		}
+	}
+
+	private void addBatchException(BulkLoadFileHistory history, ObjectUpdateExceptionData data) {
+		BulkLoadFileException exception = new BulkLoadFileException();
+		exception.setException(data);
+		exception.setBulkLoadFileHistory(history);
+		bulkLoadFileExceptionDAO.persist(exception);
 	}
 
 	public Map<String, String> getGeneIdCurieMap(List<Gff3DTO> gffData, BackendBulkDataProvider dataProvider) {

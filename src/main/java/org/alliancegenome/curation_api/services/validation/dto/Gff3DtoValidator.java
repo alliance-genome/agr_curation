@@ -249,12 +249,31 @@ public class Gff3DtoValidator {
 		}
 		locationAssociation.setExonAssociationSubject(exon);
 		locationAssociation.setStrand(gffEntry.getStrand());
-		
+
 		ObjectResponse<ExonGenomicLocationAssociation> locationResponse = validateLocationAssociation(locationAssociation, gffEntry, assemblyComponent);
 		if (locationResponse.hasErrors()) {
 			throw new ObjectValidationException(gffEntry, locationResponse.errorMessagesString());
 		}
-		
+
+		return exonLocationDAO.persist(locationResponse.getEntity());
+	}
+
+	@Transactional
+	public ExonGenomicLocationAssociation validateExonLocation(Gff3DTO gffEntry, Exon exon, String assemblyId, BackendBulkDataProvider dataProvider, ExonGenomicLocationAssociation existingAssociation) throws ObjectValidationException {
+		AssemblyComponent assemblyComponent = null;
+		ExonGenomicLocationAssociation locationAssociation = existingAssociation != null ? existingAssociation : new ExonGenomicLocationAssociation();
+		if (StringUtils.isNotBlank(gffEntry.getSeqId())) {
+			assemblyComponent = assemblyComponentService.fetchOrCreate(gffEntry.getSeqId(), assemblyId, dataProvider.canonicalTaxonCurie, dataProvider);
+			locationAssociation.setExonGenomicLocationAssociationObject(assemblyComponent);
+		}
+		locationAssociation.setExonAssociationSubject(exon);
+		locationAssociation.setStrand(gffEntry.getStrand());
+
+		ObjectResponse<ExonGenomicLocationAssociation> locationResponse = validateLocationAssociation(locationAssociation, gffEntry, assemblyComponent);
+		if (locationResponse.hasErrors()) {
+			throw new ObjectValidationException(gffEntry, locationResponse.errorMessagesString());
+		}
+
 		return exonLocationDAO.persist(locationResponse.getEntity());
 	}
 
@@ -415,7 +434,22 @@ public class Gff3DtoValidator {
 
 		return transcriptExonDAO.persist(association);
 	}
-	
+
+	@Transactional
+	public TranscriptExonAssociation validateTranscriptExonAssociation(Gff3DTO gffEntry, Exon exon, Transcript parentTranscript) throws ObjectValidationException {
+		return validateTranscriptExonAssociation(gffEntry, exon, parentTranscript, null);
+	}
+
+	@Transactional
+	public TranscriptExonAssociation validateTranscriptExonAssociation(Gff3DTO gffEntry, Exon exon, Transcript parentTranscript, TranscriptExonAssociation existingAssociation) throws ObjectValidationException {
+		TranscriptExonAssociation association = existingAssociation != null ? existingAssociation : new TranscriptExonAssociation();
+		association.setTranscriptAssociationSubject(parentTranscript);
+		association.setTranscriptExonAssociationObject(exon);
+		association.setRelation(vocabularyTermService.getTermInVocabulary(VocabularyConstants.TRANSCRIPT_RELATION_VOCABULARY, VocabularyConstants.TRANSCRIPT_PARENT_TERM).getEntity());
+
+		return transcriptExonDAO.persist(association);
+	}
+
 	private <E extends LocationAssociation> ObjectResponse<E> validateLocationAssociation(E association, Gff3DTO dto, AssemblyComponent assemblyComponent) {
 		ObjectResponse<E> associationResponse = new ObjectResponse<E>();
 		

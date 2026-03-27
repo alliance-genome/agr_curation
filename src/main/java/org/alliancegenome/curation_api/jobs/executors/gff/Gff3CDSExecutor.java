@@ -60,8 +60,7 @@ public class Gff3CDSExecutor extends Gff3Executor {
 		List<Gff3DTO> gffFileData = new ArrayList<>();
 		ProcessDisplayHelper ph = new ProcessDisplayHelper();
 		ph.startProcess("GFF CDS header pre-processing", gffRawData.size());
-		while (!gffRawData.isEmpty()) {
-			Gff3DTO gffLine = gffRawData.remove(0);
+		for (Gff3DTO gffLine : gffRawData) {
 			if (gffLine.getSeqId().startsWith("#")) {
 				gffHeaderData.add(gffLine.getSeqId());
 			} else {
@@ -70,6 +69,7 @@ public class Gff3CDSExecutor extends Gff3Executor {
 			ph.progressProcess();
 		}
 		ph.finishProcess();
+		gffRawData.clear();
 
 		BulkFMSLoad fmsLoad = (BulkFMSLoad) bulkLoadFileHistory.getBulkLoad();
 		BackendBulkDataProvider dataProvider = BackendBulkDataProvider.valueOf(fmsLoad.getFmsDataSubType());
