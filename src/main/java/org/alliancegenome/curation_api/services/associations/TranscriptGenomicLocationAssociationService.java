@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.alliancegenome.curation_api.constants.EntityFieldConstants;
@@ -23,6 +22,7 @@ import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 
+
 @RequestScoped
 public class TranscriptGenomicLocationAssociationService extends BaseEntityCrudService<TranscriptGenomicLocationAssociation, TranscriptGenomicLocationAssociationDAO> {
 
@@ -38,15 +38,13 @@ public class TranscriptGenomicLocationAssociationService extends BaseEntityCrudS
 
 
 	public List<Long> getIdsByDataProvider(BackendBulkDataProvider dataProvider) {
-		Map<String, Object> params = new HashMap<>();
-		params.put(EntityFieldConstants.TRANSCRIPT_ASSOCIATION_SUBJECT_DATA_PROVIDER, dataProvider.sourceOrganization);
-		if (StringUtils.equals(dataProvider.sourceOrganization, "RGD") || StringUtils.equals(dataProvider.sourceOrganization, "XB")) {
-			params.put(EntityFieldConstants.TRANSCRIPT_ASSOCIATION_SUBJECT_TAXON, dataProvider.canonicalTaxonCurie);
-		}
-		List<Long> associationIds = transcriptGenomicLocationAssociationDAO.findIdsByParams(params);
-		associationIds.removeIf(Objects::isNull);
+		String taxon = needsTaxonFilter(dataProvider) ? dataProvider.canonicalTaxonCurie : null;
+		return transcriptGenomicLocationAssociationDAO.findIdsByDataProvider(dataProvider.sourceOrganization, taxon);
+	}
 
-		return associationIds;
+	private boolean needsTaxonFilter(BackendBulkDataProvider dataProvider) {
+		return StringUtils.equals(dataProvider.sourceOrganization, "RGD")
+			|| StringUtils.equals(dataProvider.sourceOrganization, "XB");
 	}
 
 	public ObjectResponse<TranscriptGenomicLocationAssociation> getLocationAssociation(Long transcriptId, Long assemblyComponentId) {

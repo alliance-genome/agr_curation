@@ -7,7 +7,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.stream.Collectors;
 import java.util.zip.GZIPInputStream;
 
 import org.alliancegenome.curation_api.config.RestDefaultObjectMapper;
@@ -36,7 +35,6 @@ import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
 import org.alliancegenome.curation_api.services.processing.LoadProcessDisplayService;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -299,13 +297,18 @@ public class LoadFileExecutor {
 			history.setErrorMessage(ApiErrorException.INTERRUPTED_MESSAGE);
 			throw new RuntimeException(ApiErrorException.INTERRUPTED_MESSAGE);
 		}
-		Log.debug("runLoad: After: " + dataProviderName + " " + annotationIdsAfter.size());
+		Log.debug("runCleanup: After: " + dataProviderName + " " + annotationIdsAfter.size());
 
-		List<Long> distinctAfter = annotationIdsAfter.stream().distinct().collect(Collectors.toList());
-		Log.debug("runLoad: Distinct: " + dataProviderName + " " + distinctAfter.size());
+		Set<Long> distinctAfter = new LinkedHashSet<>(annotationIdsAfter);
+		Log.debug("runCleanup: Distinct: " + dataProviderName + " " + distinctAfter.size());
 
-		List<Long> idsToRemove = ListUtils.subtract(annotationIdsBefore, distinctAfter);
-		Log.debug("runLoad: Remove: " + dataProviderName + " " + idsToRemove.size());
+		List<Long> idsToRemove = new ArrayList<>();
+		for (Long id : annotationIdsBefore) {
+			if (!distinctAfter.contains(id)) {
+				idsToRemove.add(id);
+			}
+		}
+		Log.debug("runCleanup: Remove: " + dataProviderName + " " + idsToRemove.size());
 
 		String countType = loadTypeString + " Deleted";
 
@@ -314,32 +317,80 @@ public class LoadFileExecutor {
 
 		String loadDescription = dataProviderName + " " + loadTypeString + " bulk load (" + history.getBulkLoadFile().getMd5Sum() + ")";
 
-		ProcessDisplayHelper ph = new ProcessDisplayHelper(10000);
-		ph.startProcess("Deletion/deprecation of: " + dataProviderName + " " + loadTypeString, idsToRemove.size());
 		updateHistory(history);
-		for (Long id : idsToRemove) {
-			try {
-				service.deprecateOrDelete(id, false, loadDescription, deprecate);
-				history.incrementCompleted(countType);
-			} catch (Exception e) {
-				e.printStackTrace();
-				history.incrementFailed(countType);
-				addException(history, new ObjectUpdateExceptionData(new IdObject(id), e.getMessage(), e.getStackTrace()));
+		Log.info("Updated history ready to delete");
+		
+		if (!deprecate) {
+			// Batch delete path — bulk JPQL DELETE, fall back to per-row on FK errors
+			int batchSize = 3000;
+			ProcessDisplayHelper ph = new ProcessDisplayHelper(10000);
+			ph.startProcess("Deletion/deprecation in batches: " + dataProviderName + " " + loadTypeString, idsToRemove.size() / batchSize);
+
+			for (int i = 0; i < idsToRemove.size(); i += batchSize) {
+				int end = Math.min(i + batchSize, idsToRemove.size());
+				List<Long> batch = idsToRemove.subList(i, end);
+				try {
+					service.removeByIds(batch);
+					for (int j = 0; j < batch.size(); j++) {
+						history.incrementCompleted(countType);
+					}
+				} catch (Exception batchEx) {
+					// FK constraint or other error — fall back to per-row for this batch
+					Log.warn("Batch delete failed, falling back to per-row: " + batchEx.getMessage());
+					for (Long id : batch) {
+						try {
+							service.deprecateOrDelete(id, false, loadDescription, false);
+							history.incrementCompleted(countType);
+						} catch (Exception e) {
+							e.printStackTrace();
+							history.incrementFailed(countType);
+							addException(history, new ObjectUpdateExceptionData(new IdObject(id), e.getMessage(), e.getStackTrace()));
+						}
+					}
+				}
+				if (history.getErrorRate(countType) > 0.25) {
+					Log.error(countType + " failure rate > 25% aborting load");
+					failLoadAboveErrorRateCutoff(history);
+					break;
+				}
+				if (Thread.currentThread().isInterrupted()) {
+					history.setErrorMessage("Thread isInterrupted");
+					throw new RuntimeException("Thread isInterrupted");
+				}
+				ph.progressProcess();
 			}
-			if (history.getErrorRate(countType) > 0.25) {
-				Log.error(countType + " failure rate > 25% aborting load");
-				failLoadAboveErrorRateCutoff(history);
-				break;
+			ph.finishProcess();
+		} else {
+			// Deprecate path — per-row update (sets obsolete=true)
+			ProcessDisplayHelper ph = new ProcessDisplayHelper(10000);
+			ph.startProcess("Deletion/deprecation of: " + dataProviderName + " " + loadTypeString, idsToRemove.size());
+
+			for (Long id : idsToRemove) {
+				try {
+					service.deprecateOrDelete(id, false, loadDescription, deprecate);
+					history.incrementCompleted(countType);
+				} catch (Exception e) {
+					e.printStackTrace();
+					history.incrementFailed(countType);
+					addException(history, new ObjectUpdateExceptionData(new IdObject(id), e.getMessage(), e.getStackTrace()));
+				}
+				if (history.getErrorRate(countType) > 0.25) {
+					Log.error(countType + " failure rate > 25% aborting load");
+					failLoadAboveErrorRateCutoff(history);
+					break;
+				}
+				ph.progressProcess();
+				if (Thread.currentThread().isInterrupted()) {
+					history.setErrorMessage(ApiErrorException.INTERRUPTED_MESSAGE);
+					throw new RuntimeException(ApiErrorException.INTERRUPTED_MESSAGE);
+				}
 			}
-			ph.progressProcess();
-			if (Thread.currentThread().isInterrupted()) {
-				history.setErrorMessage(ApiErrorException.INTERRUPTED_MESSAGE);
-				throw new RuntimeException(ApiErrorException.INTERRUPTED_MESSAGE);
-			}
+			ph.finishProcess();
 		}
+		Log.info("Saving history");
 		updateHistory(history);
 		updateExceptions(history);
-		ph.finishProcess();
+		Log.info("Finished cleanup");
 	}
 
 	protected void failLoad(BulkLoadFileHistory bulkLoadFileHistory, Exception e) {

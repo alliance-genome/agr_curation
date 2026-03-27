@@ -1,6 +1,7 @@
 package org.alliancegenome.curation_api.services.base;
 
 import java.time.OffsetDateTime;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -173,6 +174,11 @@ public abstract class BaseEntityCrudService<E extends AuditedObject, D extends B
 		}
 
 		return null;
+	}
+
+	@Transactional
+	public int removeByIds(Collection<Long> ids) {
+		return dao.removeByIds(ids);
 	}
 
 	public SearchResponse<E> findByField(String field, String value) {

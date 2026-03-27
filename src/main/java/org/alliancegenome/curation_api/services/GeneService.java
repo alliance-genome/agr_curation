@@ -381,11 +381,12 @@ public class GeneService extends SubmittedObjectCrudService<Gene, GeneDTO, GeneD
 		CompletableFuture<Map<Long, Set<String>>> anatomicalFuture = CompletableFuture.supplyAsync(() -> geneDAO.getExpressionAnatomical(geneIds), executor);
 		CompletableFuture<List<Object[]>> whereExpressedFuture = CompletableFuture.supplyAsync(() -> geneDAO.getWhereExpressedAndStages(geneIds), executor);
 		CompletableFuture<List<Object[]>> descriptionFuture = CompletableFuture.supplyAsync(() -> geneDAO.getGeneDescriptions(geneIds), executor);
+		CompletableFuture<Map<Long, Set<String>>> modelsFuture = CompletableFuture.supplyAsync(() -> geneDAO.getGeneModels(geneIds), executor);
 
 		CompletableFuture.allOf(baseInfoFuture, soAncestorsFuture, synonymsFuture, secondaryIdsFuture,
 			crossRefsFuture, chromosomesFuture, allelesFuture, phenotypesFuture, directDiseaseFuture,
 			strictOrthoFuture, orthoDiseaseFuture, goFuture, subcellularFuture, anatomicalFuture,
-			whereExpressedFuture, descriptionFuture).join();
+			whereExpressedFuture, descriptionFuture, modelsFuture).join();
 		executor.shutdown();
 
 		List<Object[]> baseInfoRows = baseInfoFuture.join();
@@ -404,6 +405,7 @@ public class GeneService extends SubmittedObjectCrudService<Gene, GeneDTO, GeneD
 		Map<Long, Set<String>> anatomical = anatomicalFuture.join();
 		List<Object[]> whereExpressedRows = whereExpressedFuture.join();
 		List<Object[]> descriptionRows = descriptionFuture.join();
+		Map<Long, Set<String>> models = modelsFuture.join();
 
 		// Build base documents from Q1
 		Map<Long, GeneSearchResultDocument> docMap = new HashMap<>();
@@ -638,6 +640,11 @@ public class GeneService extends SubmittedObjectCrudService<Gene, GeneDTO, GeneD
 					doc.setGeneDescription(freetext);
 				}
 			}
+		}
+
+		// Q16: Models (Gene -> Allele -> AGM)
+		for (Map.Entry<Long, GeneSearchResultDocument> entry : docMap.entrySet()) {
+			entry.getValue().setModels(models.getOrDefault(entry.getKey(), new HashSet<>()));
 		}
 
 		// Return documents in input order

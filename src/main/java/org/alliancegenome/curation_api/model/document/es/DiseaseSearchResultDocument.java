@@ -5,7 +5,6 @@ import java.util.Set;
 
 import org.alliancegenome.curation_api.view.CurationView;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 
 import lombok.Data;
@@ -28,7 +27,6 @@ public class DiseaseSearchResultDocument extends ESDocument {
 	Set<String> genes = new HashSet<>();
 	Set<String> diseaseGroup = new HashSet<>();
 	Set<String> associatedSpecies = new HashSet<>();
-	@JsonProperty("name_key")
 	String nameKey;
 
 	Set<String> secondaryIds = new HashSet<>();

@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -42,6 +43,27 @@ public class GeneDAO extends BaseSQLDAO<Gene> {
 
 	protected GeneDAO() {
 		super(Gene.class);
+	}
+
+	public Map<String, Gene> findByIdentifiers(Collection<String> identifiers) {
+		if (identifiers == null || identifiers.isEmpty()) {
+			return new HashMap<>();
+		}
+		List<Gene> results = entityManager.createQuery(
+				"SELECT g FROM Gene g WHERE g.primaryExternalId IN :ids OR g.modInternalId IN :ids",
+				Gene.class)
+			.setParameter("ids", identifiers)
+			.getResultList();
+		Map<String, Gene> map = new HashMap<>();
+		for (Gene g : results) {
+			if (g.getPrimaryExternalId() != null) {
+				map.put(g.getPrimaryExternalId(), g);
+			}
+			if (g.getModInternalId() != null) {
+				map.put(g.getModInternalId(), g);
+			}
+		}
+		return map;
 	}
 
 	public Boolean hasReferencingDiseaseAnnotations(Long geneId) {
@@ -484,6 +506,23 @@ public class GeneDAO extends BaseSQLDAO<Gene> {
 			SELECT gea.expressionannotationsubject_id, gea.whereexpressedstatement, gea.whenexpressedstagename
 			FROM geneexpressionannotation gea
 			WHERE gea.expressionannotationsubject_id IN :geneIds
+			""", geneIds);
+	}
+
+	public Map<Long, Set<String>> getGeneModels(List<Long> geneIds) {
+		if (CollectionUtils.isEmpty(geneIds)) {
+			return new HashMap<>();
+		}
+		return runJdbcSetQuery("""
+			SELECT ag.allelegeneassociationobject_id, slag.formattext
+			FROM allelegeneassociation ag
+			JOIN allele a ON a.id = ag.alleleassociationsubject_id
+			JOIN agmalleleassociation aa ON aa.agmalleleassociationobject_id = a.id
+			JOIN affectedgenomicmodel agm ON agm.id = aa.agmassociationsubject_id
+			JOIN slotannotation slag ON slag.singleagm_id = agm.id AND slag.slotannotationtype = 'AgmFullNameSlotAnnotation'
+			WHERE ag.allelegeneassociationobject_id IN :geneIds
+			AND ag.internal = false AND ag.obsolete = false
+			AND aa.internal = false AND aa.obsolete = false
 			""", geneIds);
 	}
 
