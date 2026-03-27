@@ -325,6 +325,48 @@ public class Gff3DtoValidator {
 	}
 
 	@Transactional
+	public TranscriptGenomicLocationAssociation validateTranscriptLocation(Gff3DTO gffEntry, Transcript transcript, String assemblyId, BackendBulkDataProvider dataProvider, TranscriptGenomicLocationAssociation existingAssociation) throws ObjectValidationException {
+		AssemblyComponent assemblyComponent = null;
+		TranscriptGenomicLocationAssociation locationAssociation = existingAssociation != null ? existingAssociation : new TranscriptGenomicLocationAssociation();
+		if (StringUtils.isNotBlank(gffEntry.getSeqId())) {
+			assemblyComponent = assemblyComponentService.fetchOrCreate(gffEntry.getSeqId(), assemblyId, dataProvider.canonicalTaxonCurie, dataProvider);
+			locationAssociation.setTranscriptGenomicLocationAssociationObject(assemblyComponent);
+		}
+		locationAssociation.setTranscriptAssociationSubject(transcript);
+		locationAssociation.setStrand(gffEntry.getStrand());
+		locationAssociation.setPhase(gffEntry.getPhase());
+
+		ObjectResponse<TranscriptGenomicLocationAssociation> locationResponse = validateLocationAssociation(locationAssociation, gffEntry, assemblyComponent);
+		if (locationResponse.hasErrors()) {
+			throw new ObjectValidationException(gffEntry, locationResponse.errorMessagesString());
+		}
+
+		return transcriptLocationDAO.persist(locationResponse.getEntity());
+	}
+
+	@Transactional
+	public TranscriptGeneAssociation validateTranscriptGeneAssociation(Gff3DTO gffEntry, Transcript transcript, Gene parentGene, TranscriptGeneAssociation existingAssociation) throws ObjectValidationException {
+		TranscriptGeneAssociation association;
+		boolean newAssociation;
+		if (existingAssociation != null) {
+			association = existingAssociation;
+			newAssociation = false;
+		} else {
+			association = new TranscriptGeneAssociation();
+			newAssociation = true;
+		}
+		association.setTranscriptAssociationSubject(transcript);
+		association.setTranscriptGeneAssociationObject(parentGene);
+		association.setRelation(vocabularyTermService.getTermInVocabulary(VocabularyConstants.TRANSCRIPT_RELATION_VOCABULARY, VocabularyConstants.TRANSCRIPT_CHILD_TERM).getEntity());
+
+		if (newAssociation) {
+			return transcriptGeneDAO.persist(association);
+		} else {
+			return association;
+		}
+	}
+
+	@Transactional
 	public GeneGenomicLocationAssociation validateGeneLocation(Gff3DTO gffEntry, Gene gene, String assemblyId, BackendBulkDataProvider dataProvider) throws ObjectValidationException {
 		AssemblyComponent assemblyComponent = null;
 		GeneGenomicLocationAssociation locationAssociation = new GeneGenomicLocationAssociation();

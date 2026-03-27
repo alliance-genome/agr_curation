@@ -24,6 +24,18 @@ public class TranscriptDAO extends BaseSQLDAO<Transcript> {
 		super(Transcript.class);
 	}
 
+	public List<Long> findIdsByDataProvider(String dataProvider, String taxonCurie) {
+		String jpql = "SELECT t.id FROM Transcript t WHERE t.dataProvider.abbreviation = :dp";
+		if (taxonCurie != null) {
+			jpql += " AND t.taxon.curie = :taxon";
+		}
+		var query = entityManager.createQuery(jpql, Long.class).setParameter("dp", dataProvider);
+		if (taxonCurie != null) {
+			query.setParameter("taxon", taxonCurie);
+		}
+		return query.getResultList();
+	}
+
 	public Map<String, Transcript> findByModInternalIds(Collection<String> modInternalIds) {
 		if (modInternalIds == null || modInternalIds.isEmpty()) {
 			return new HashMap<>();

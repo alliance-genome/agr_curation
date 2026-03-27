@@ -298,10 +298,10 @@ public class LoadFileExecutor {
 			history.setErrorMessage("Thread isInterrupted");
 			throw new RuntimeException("Thread isInterrupted");
 		}
-		Log.debug("runLoad: After: " + dataProviderName + " " + annotationIdsAfter.size());
+		Log.debug("runCleanup: After: " + dataProviderName + " " + annotationIdsAfter.size());
 
 		Set<Long> distinctAfter = new LinkedHashSet<>(annotationIdsAfter);
-		Log.debug("runLoad: Distinct: " + dataProviderName + " " + distinctAfter.size());
+		Log.debug("runCleanup: Distinct: " + dataProviderName + " " + distinctAfter.size());
 
 		List<Long> idsToRemove = new ArrayList<>();
 		for (Long id : annotationIdsBefore) {
@@ -309,7 +309,7 @@ public class LoadFileExecutor {
 				idsToRemove.add(id);
 			}
 		}
-		Log.debug("runLoad: Remove: " + dataProviderName + " " + idsToRemove.size());
+		Log.debug("runCleanup: Remove: " + dataProviderName + " " + idsToRemove.size());
 
 		String countType = loadTypeString + " Deleted";
 
@@ -318,13 +318,15 @@ public class LoadFileExecutor {
 
 		String loadDescription = dataProviderName + " " + loadTypeString + " bulk load (" + history.getBulkLoadFile().getMd5Sum() + ")";
 
-		ProcessDisplayHelper ph = new ProcessDisplayHelper(10000);
-		ph.startProcess("Deletion/deprecation of: " + dataProviderName + " " + loadTypeString, idsToRemove.size());
 		updateHistory(history);
-
+		Log.info("Updated history ready to delete");
+		
 		if (!deprecate) {
 			// Batch delete path — bulk JPQL DELETE, fall back to per-row on FK errors
 			int batchSize = 3000;
+			ProcessDisplayHelper ph = new ProcessDisplayHelper(10000);
+			ph.startProcess("Deletion/deprecation in batches: " + dataProviderName + " " + loadTypeString, idsToRemove.size() / batchSize);
+
 			for (int i = 0; i < idsToRemove.size(); i += batchSize) {
 				int end = Math.min(i + batchSize, idsToRemove.size());
 				List<Long> batch = idsToRemove.subList(i, end);
@@ -332,11 +334,10 @@ public class LoadFileExecutor {
 					service.removeByIds(batch);
 					for (int j = 0; j < batch.size(); j++) {
 						history.incrementCompleted(countType);
-						ph.progressProcess();
 					}
 				} catch (Exception batchEx) {
 					// FK constraint or other error — fall back to per-row for this batch
-					Log.debug("Batch delete failed, falling back to per-row: " + batchEx.getMessage());
+					Log.warn("Batch delete failed, falling back to per-row: " + batchEx.getMessage());
 					for (Long id : batch) {
 						try {
 							service.deprecateOrDelete(id, false, loadDescription, false);
@@ -346,7 +347,6 @@ public class LoadFileExecutor {
 							history.incrementFailed(countType);
 							addException(history, new ObjectUpdateExceptionData(new IdObject(id), e.getMessage(), e.getStackTrace()));
 						}
-						ph.progressProcess();
 					}
 				}
 				if (history.getErrorRate(countType) > 0.25) {
@@ -358,9 +358,14 @@ public class LoadFileExecutor {
 					history.setErrorMessage("Thread isInterrupted");
 					throw new RuntimeException("Thread isInterrupted");
 				}
+				ph.progressProcess();
 			}
+			ph.finishProcess();
 		} else {
 			// Deprecate path — per-row update (sets obsolete=true)
+			ProcessDisplayHelper ph = new ProcessDisplayHelper(10000);
+			ph.startProcess("Deletion/deprecation of: " + dataProviderName + " " + loadTypeString, idsToRemove.size());
+
 			for (Long id : idsToRemove) {
 				try {
 					service.deprecateOrDelete(id, false, loadDescription, deprecate);
@@ -381,10 +386,12 @@ public class LoadFileExecutor {
 					throw new RuntimeException("Thread isInterrupted");
 				}
 			}
+			ph.finishProcess();
 		}
+		Log.info("Saving history");
 		updateHistory(history);
 		updateExceptions(history);
-		ph.finishProcess();
+		Log.info("Finished cleanup");
 	}
 
 	protected void failLoad(BulkLoadFileHistory bulkLoadFileHistory, Exception e) {

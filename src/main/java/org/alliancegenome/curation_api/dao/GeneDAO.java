@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -42,6 +43,27 @@ public class GeneDAO extends BaseSQLDAO<Gene> {
 
 	protected GeneDAO() {
 		super(Gene.class);
+	}
+
+	public Map<String, Gene> findByIdentifiers(Collection<String> identifiers) {
+		if (identifiers == null || identifiers.isEmpty()) {
+			return new HashMap<>();
+		}
+		List<Gene> results = entityManager.createQuery(
+				"SELECT g FROM Gene g WHERE g.primaryExternalId IN :ids OR g.modInternalId IN :ids",
+				Gene.class)
+			.setParameter("ids", identifiers)
+			.getResultList();
+		Map<String, Gene> map = new HashMap<>();
+		for (Gene g : results) {
+			if (g.getPrimaryExternalId() != null) {
+				map.put(g.getPrimaryExternalId(), g);
+			}
+			if (g.getModInternalId() != null) {
+				map.put(g.getModInternalId(), g);
+			}
+		}
+		return map;
 	}
 
 	public Boolean hasReferencingDiseaseAnnotations(Long geneId) {
