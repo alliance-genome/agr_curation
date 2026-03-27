@@ -17,6 +17,7 @@ import { evidenceTemplate, evidenceEditorTemplate } from '../../../components/Ev
 import { ControlledVocabularyDropdown } from '../../../components/ControlledVocabularySelector';
 import { AutocompleteEditor } from '../../../components/Autocomplete/AutocompleteEditor';
 import { InputTextAreaEditor } from '../../../components/InputTextAreaEditor';
+import { Endpoints } from '../../../constants/Endpoints';
 
 export const InheritanceModesDialog = ({
 	originalInheritanceModesData,
@@ -176,7 +177,7 @@ export const InheritanceModesDialog = ({
 	const validateInheritanceMode = async (im) => {
 		let _im = global.structuredClone(im);
 		delete _im.dataKey;
-		const result = await validationService.validate('alleleinheritancemodeslotannotation', _im);
+		const result = await validationService.validate(Endpoints.SlotAnnotation.ALLELE_INHERITANCE_MODE, _im);
 		return result;
 	};
 
@@ -301,7 +302,7 @@ export const InheritanceModesDialog = ({
 
 	const phenotypeTermSearch = (event, setFiltered, setInputValue) => {
 		const autocompleteFields = ['name', 'curie'];
-		const endpoint = 'phenotypeterm';
+		const endpoint = Endpoints.Ontology.PHENOTYPE;
 		const filterName = 'phenotypeTermFilter';
 		const filter = buildAutocompleteFilter(event, autocompleteFields);
 

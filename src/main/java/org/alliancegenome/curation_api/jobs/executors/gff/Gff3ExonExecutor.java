@@ -7,6 +7,8 @@ import java.util.Map;
 import java.util.zip.GZIPInputStream;
 
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
+import org.alliancegenome.curation_api.exceptions.ApiErrorException;
+import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException.ObjectUpdateExceptionData;
 import org.alliancegenome.curation_api.jobs.util.CsvSchemaBuilder;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkFMSLoad;
@@ -112,8 +114,8 @@ public class Gff3ExonExecutor extends Gff3Executor {
 			gff3Service.loadExonBatch(batch, entityIdsAdded, locationIdsAdded, associationIdsAdded, dataProvider, assemblyId, history, ph);
 
 			if (Thread.currentThread().isInterrupted()) {
-				history.setErrorMessage("Thread isInterrupted");
-				throw new RuntimeException("Thread isInterrupted");
+				history.setErrorMessage(ApiErrorException.INTERRUPTED_MESSAGE);
+				throw new RuntimeException(ApiErrorException.INTERRUPTED_MESSAGE);
 			}
 		}
 		updateHistory(history);
