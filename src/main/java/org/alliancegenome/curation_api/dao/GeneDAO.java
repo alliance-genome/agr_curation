@@ -352,6 +352,32 @@ public class GeneDAO extends BaseSQLDAO<Gene> {
 			""", geneIds);
 	}
 
+	public Map<Long, Set<String>> getGeneDiseaseAgrSlim(List<Long> geneIds) {
+		if (CollectionUtils.isEmpty(geneIds)) {
+			return new HashMap<>();
+		}
+		return runJdbcSetQuery("""
+			SELECT gene_id, ancestor.name
+			FROM (
+				SELECT DISTINCT gda.diseaseannotationsubject_id AS gene_id, da.diseaseannotationobject_id AS doterm_id
+				FROM genediseaseannotation gda
+				JOIN diseaseannotation da ON da.id = gda.id
+				WHERE gda.diseaseannotationsubject_id IN :geneIds
+				UNION
+				SELECT DISTINCT o.subjectgene_id AS gene_id, da.diseaseannotationobject_id AS doterm_id
+				FROM genetogeneorthology o
+				JOIN genetogeneorthologygenerated og ON og.id = o.id AND og.strictfilter = true
+				JOIN genediseaseannotation gda ON gda.diseaseannotationsubject_id = o.objectgene_id
+				JOIN diseaseannotation da ON da.id = gda.id
+				WHERE o.subjectgene_id IN :geneIds
+			) gene_diseases
+			JOIN ontologytermclosure otc ON otc.closuresubject_id = gene_diseases.doterm_id
+			JOIN ontologyterm ancestor ON ancestor.id = otc.closureobject_id
+			JOIN ontologyterm_subsets sub ON sub.ontologyterm_id = ancestor.id
+			WHERE sub.subsets = 'DO_AGR_slim'
+			""", geneIds);
+	}
+
 	public Map<Long, Set<String>> getStrictOrthologySymbols(List<Long> geneIds) {
 		if (CollectionUtils.isEmpty(geneIds)) {
 			return new HashMap<>();

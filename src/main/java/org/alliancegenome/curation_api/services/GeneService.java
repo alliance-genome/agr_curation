@@ -382,11 +382,12 @@ public class GeneService extends SubmittedObjectCrudService<Gene, GeneDTO, GeneD
 		CompletableFuture<List<Object[]>> whereExpressedFuture = CompletableFuture.supplyAsync(() -> geneDAO.getWhereExpressedAndStages(geneIds), executor);
 		CompletableFuture<List<Object[]>> descriptionFuture = CompletableFuture.supplyAsync(() -> geneDAO.getGeneDescriptions(geneIds), executor);
 		CompletableFuture<Map<Long, Set<String>>> modelsFuture = CompletableFuture.supplyAsync(() -> geneDAO.getGeneModels(geneIds), executor);
+		CompletableFuture<Map<Long, Set<String>>> diseaseAgrSlimFuture = CompletableFuture.supplyAsync(() -> geneDAO.getGeneDiseaseAgrSlim(geneIds), executor);
 
 		CompletableFuture.allOf(baseInfoFuture, soAncestorsFuture, synonymsFuture, secondaryIdsFuture,
 			crossRefsFuture, chromosomesFuture, allelesFuture, phenotypesFuture, directDiseaseFuture,
 			strictOrthoFuture, orthoDiseaseFuture, goFuture, subcellularFuture, anatomicalFuture,
-			whereExpressedFuture, descriptionFuture, modelsFuture).join();
+			whereExpressedFuture, descriptionFuture, modelsFuture, diseaseAgrSlimFuture).join();
 		executor.shutdown();
 
 		List<Object[]> baseInfoRows = baseInfoFuture.join();
@@ -406,6 +407,7 @@ public class GeneService extends SubmittedObjectCrudService<Gene, GeneDTO, GeneD
 		List<Object[]> whereExpressedRows = whereExpressedFuture.join();
 		List<Object[]> descriptionRows = descriptionFuture.join();
 		Map<Long, Set<String>> models = modelsFuture.join();
+		Map<Long, Set<String>> diseaseAgrSlim = diseaseAgrSlimFuture.join();
 
 		// Build base documents from Q1
 		Map<Long, GeneSearchResultDocument> docMap = new HashMap<>();
@@ -525,6 +527,7 @@ public class GeneService extends SubmittedObjectCrudService<Gene, GeneDTO, GeneD
 			GeneSearchResultDocument doc = entry.getValue();
 			doc.setDiseases(diseases.getOrDefault(id, new HashSet<>()));
 			doc.setDiseasesWithParents(diseasesWithParents.getOrDefault(id, new HashSet<>()));
+			doc.setDiseasesAgrSlim(diseaseAgrSlim.getOrDefault(id, new HashSet<>()));
 		}
 
 		// Q10a: Strict orthology symbols

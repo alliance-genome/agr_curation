@@ -45,7 +45,7 @@ public class GeneSearchResultDocument extends ESDocument {
 	private Set<String> whereExpressed;
 
 	private Set<String> diseases;
-	// private Set<String> diseasesAgrSlim;
+	private Set<String> diseasesAgrSlim;
 	private Set<String> diseasesWithParents;
 	private Set<String> molecularFunctionAgrSlim;
 	private Set<String> molecularFunctionWithParents;
