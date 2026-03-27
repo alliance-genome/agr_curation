@@ -6,7 +6,6 @@ import org.alliancegenome.curation_api.view.CurationView;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
-import jakarta.json.bind.annotation.JsonbProperty;
 import lombok.Data;
 
 @Data
@@ -23,7 +22,6 @@ public class GOSearchResultDocument extends ESDocument {
 	private String definition;
 	private String name;
 	private String href;
-	@JsonbProperty("name_key")
 	private String nameKey;
 	private Set<String> associatedSpecies;
 	private Set<String> genes;
