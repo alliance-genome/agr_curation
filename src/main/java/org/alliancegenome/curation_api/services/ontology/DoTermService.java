@@ -63,6 +63,14 @@ public class DoTermService extends BaseOntologyTermService<DOTerm, DoTermDAO> im
 		log.info("Loading disease groups...");
 		Map<Long, Set<String>> diseaseGroupMap = groupToSet(doTermDAO.findAllDiseaseGroups());
 
+		log.info("Loading allele symbol cache...");
+		Map<Long, String[]> alleleSymbolCache = buildAlleleSymbolCache();
+		log.info("Cached {} allele symbols", alleleSymbolCache.size());
+
+		log.info("Loading AGM name cache...");
+		Map<Long, String[]> agmNameCache = buildAgmNameCache();
+		log.info("Cached {} AGM names", agmNameCache.size());
+
 		log.info("Loading disease-gene mappings...");
 		List<Object[]> geneIdRows = doTermDAO.findDiseaseGeneIds();
 		log.info("Loaded {} disease-gene pairs", geneIdRows.size());
@@ -83,6 +91,40 @@ public class DoTermService extends BaseOntologyTermService<DOTerm, DoTermDAO> im
 			speciesMap.computeIfAbsent(dotermId, k -> new HashSet<>()).add(genusSpecies);
 		}
 
+		log.info("Loading disease-allele mappings...");
+		List<Object[]> alleleIdRows = doTermDAO.findDiseaseAlleleIds();
+		log.info("Loaded {} disease-allele pairs", alleleIdRows.size());
+
+		Map<Long, Set<String>> allelesMap = new HashMap<>();
+		for (Object[] row : alleleIdRows) {
+			Long dotermId = (Long) row[0];
+			Long alleleId = (Long) row[1];
+			String[] alleleInfo = alleleSymbolCache.get(alleleId);
+			if (alleleInfo == null) {
+				continue;
+			}
+			String symbol = alleleInfo[0];
+			String abbreviation = alleleInfo[1];
+			allelesMap.computeIfAbsent(dotermId, k -> new HashSet<>()).add(symbol + " (" + abbreviation + ")");
+		}
+
+		log.info("Loading disease-model mappings...");
+		List<Object[]> agmIdRows = doTermDAO.findDiseaseAgmIds();
+		log.info("Loaded {} disease-model pairs", agmIdRows.size());
+
+		Map<Long, Set<String>> modelsMap = new HashMap<>();
+		for (Object[] row : agmIdRows) {
+			Long dotermId = (Long) row[0];
+			Long agmId = (Long) row[1];
+			String[] agmInfo = agmNameCache.get(agmId);
+			if (agmInfo == null) {
+				continue;
+			}
+			String name = agmInfo[0];
+			String abbreviation = agmInfo[1];
+			modelsMap.computeIfAbsent(dotermId, k -> new HashSet<>()).add(name + " (" + abbreviation + ")");
+		}
+
 		log.info("Assembling documents...");
 		List<DiseaseSearchResultDocument> docs = new ArrayList<>();
 		for (Object[] base : baseFields) {
@@ -101,6 +143,8 @@ public class DoTermService extends BaseOntologyTermService<DOTerm, DoTermDAO> im
 			doc.setCrossReferences(crossRefsMap.getOrDefault(id, new HashSet<>()));
 			doc.setSecondaryIds(secondaryIdsMap.getOrDefault(id, new HashSet<>()));
 			doc.setGenes(genesMap.getOrDefault(id, new HashSet<>()));
+			doc.setAlleles(allelesMap.getOrDefault(id, new HashSet<>()));
+			doc.setModels(modelsMap.getOrDefault(id, new HashSet<>()));
 			doc.setAssociatedSpecies(speciesMap.getOrDefault(id, new HashSet<>()));
 			doc.setDiseaseGroup(diseaseGroupMap.getOrDefault(id, new HashSet<>()));
 			docs.add(doc);
@@ -119,6 +163,32 @@ public class DoTermService extends BaseOntologyTermService<DOTerm, DoTermDAO> im
 			String abbreviation = (String) row[2];
 			String genusSpecies = (String) row[3];
 			cache.put(geneId, new String[]{symbol, abbreviation, genusSpecies});
+		}
+		return cache;
+	}
+
+	private Map<Long, String[]> buildAlleleSymbolCache() {
+		List<Object[]> rows = doTermDAO.findAllAlleleSymbols();
+		Map<Long, String[]> cache = new HashMap<>();
+		for (Object[] row : rows) {
+			Long alleleId = (Long) row[0];
+			String symbol = (String) row[1];
+			String abbreviation = (String) row[2];
+			String genusSpecies = (String) row[3];
+			cache.put(alleleId, new String[]{symbol, abbreviation, genusSpecies});
+		}
+		return cache;
+	}
+
+	private Map<Long, String[]> buildAgmNameCache() {
+		List<Object[]> rows = doTermDAO.findAllAgmNames();
+		Map<Long, String[]> cache = new HashMap<>();
+		for (Object[] row : rows) {
+			Long agmId = (Long) row[0];
+			String name = (String) row[1];
+			String abbreviation = (String) row[2];
+			String genusSpecies = (String) row[3];
+			cache.put(agmId, new String[]{name, abbreviation, genusSpecies});
 		}
 		return cache;
 	}
