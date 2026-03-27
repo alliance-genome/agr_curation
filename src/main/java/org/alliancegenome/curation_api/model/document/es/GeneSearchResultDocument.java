@@ -6,7 +6,6 @@ import org.alliancegenome.curation_api.view.CurationView;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
-import jakarta.json.bind.annotation.JsonbProperty;
 import lombok.Data;
 
 @Data

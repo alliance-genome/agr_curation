@@ -5,7 +5,6 @@ import java.util.Set;
 
 import org.alliancegenome.curation_api.view.CurationView;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 
 import lombok.Data;
