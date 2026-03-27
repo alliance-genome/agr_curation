@@ -27,7 +27,7 @@ public class HTPDatasetSearchResultDocument extends ESDocument {
 	private Set<String> tags;
 	private Set<String> variantType;
 	private Set<String> whereExpressed;
-	private Set<String> anatomicalExpression;
+	private Set<String> anatomicalExpressionSlim;
 	private Set<String> anatomicalExpressionWithParents;
 	private Set<String> assays;
 	private Set<String> crossReferences;

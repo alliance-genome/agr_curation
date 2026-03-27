@@ -56,7 +56,7 @@ public class GeneSearchResultDocument extends ESDocument {
 	private Set<String> subcellularExpressionAgrSlim;
 	private Set<String> subcellularExpressionWithParents;
 
-	// private Set<String> anatomicalExpression; // uberon slim
+	private Set<String> anatomicalExpressionSlim;
 	private Set<String> anatomicalExpressionWithParents;
 
 	private Set<String> strictOrthologySymbols;

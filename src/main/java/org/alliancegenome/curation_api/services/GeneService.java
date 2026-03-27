@@ -379,6 +379,7 @@ public class GeneService extends SubmittedObjectCrudService<Gene, GeneDTO, GeneD
 		CompletableFuture<List<Object[]>> goFuture = CompletableFuture.supplyAsync(() -> geneDAO.getGeneGoTerms(geneIds), executor);
 		CompletableFuture<List<Object[]>> subcellularFuture = CompletableFuture.supplyAsync(() -> geneDAO.getExpressionSubcellularCC(geneIds), executor);
 		CompletableFuture<Map<Long, Set<String>>> anatomicalFuture = CompletableFuture.supplyAsync(() -> geneDAO.getExpressionAnatomical(geneIds), executor);
+		CompletableFuture<Map<Long, Set<String>>> anatomicalSlimFuture = CompletableFuture.supplyAsync(() -> geneDAO.getExpressionAnatomicalSlim(geneIds), executor);
 		CompletableFuture<List<Object[]>> whereExpressedFuture = CompletableFuture.supplyAsync(() -> geneDAO.getWhereExpressedAndStages(geneIds), executor);
 		CompletableFuture<List<Object[]>> descriptionFuture = CompletableFuture.supplyAsync(() -> geneDAO.getGeneDescriptions(geneIds), executor);
 		CompletableFuture<Map<Long, Set<String>>> modelsFuture = CompletableFuture.supplyAsync(() -> geneDAO.getGeneModels(geneIds), executor);
@@ -387,7 +388,7 @@ public class GeneService extends SubmittedObjectCrudService<Gene, GeneDTO, GeneD
 		CompletableFuture.allOf(baseInfoFuture, soAncestorsFuture, synonymsFuture, secondaryIdsFuture,
 			crossRefsFuture, chromosomesFuture, allelesFuture, phenotypesFuture, directDiseaseFuture,
 			strictOrthoFuture, orthoDiseaseFuture, goFuture, subcellularFuture, anatomicalFuture,
-			whereExpressedFuture, descriptionFuture, modelsFuture, diseaseAgrSlimFuture).join();
+			anatomicalSlimFuture, whereExpressedFuture, descriptionFuture, modelsFuture, diseaseAgrSlimFuture).join();
 		executor.shutdown();
 
 		List<Object[]> baseInfoRows = baseInfoFuture.join();
@@ -404,6 +405,7 @@ public class GeneService extends SubmittedObjectCrudService<Gene, GeneDTO, GeneD
 		List<Object[]> goRows = goFuture.join();
 		List<Object[]> subcellularRows = subcellularFuture.join();
 		Map<Long, Set<String>> anatomical = anatomicalFuture.join();
+		Map<Long, Set<String>> anatomicalSlim = anatomicalSlimFuture.join();
 		List<Object[]> whereExpressedRows = whereExpressedFuture.join();
 		List<Object[]> descriptionRows = descriptionFuture.join();
 		Map<Long, Set<String>> models = modelsFuture.join();
@@ -606,6 +608,7 @@ public class GeneService extends SubmittedObjectCrudService<Gene, GeneDTO, GeneD
 
 		// Q13: Expression anatomical
 		for (Map.Entry<Long, GeneSearchResultDocument> entry : docMap.entrySet()) {
+			entry.getValue().setAnatomicalExpressionSlim(anatomicalSlim.getOrDefault(entry.getKey(), new HashSet<>()));
 			entry.getValue().setAnatomicalExpressionWithParents(anatomical.getOrDefault(entry.getKey(), new HashSet<>()));
 		}
 

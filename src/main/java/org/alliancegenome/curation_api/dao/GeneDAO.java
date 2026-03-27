@@ -524,6 +524,22 @@ public class GeneDAO extends BaseSQLDAO<Gene> {
 			""", geneIds);
 	}
 
+	public Map<Long, Set<String>> getExpressionAnatomicalSlim(List<Long> geneIds) {
+		if (CollectionUtils.isEmpty(geneIds)) {
+			return new HashMap<>();
+		}
+		return runJdbcSetQuery("""
+			SELECT gea.expressionannotationsubject_id, ot.name
+			FROM geneexpressionannotation gea
+			JOIN expressionpattern ep ON ep.id = gea.expressionpattern_id
+			JOIN anatomicalsite ans ON ans.id = ep.whereexpressed_id
+			JOIN anatomicalsite_anatomicalstructureuberonterms asut
+				ON asut.anatomicalsite_id = ans.id
+			JOIN ontologyterm ot ON ot.id = asut.anatomicalstructureuberonterms_id
+			WHERE gea.expressionannotationsubject_id IN :geneIds
+			""", geneIds);
+	}
+
 	public List<Object[]> getWhereExpressedAndStages(List<Long> geneIds) {
 		if (CollectionUtils.isEmpty(geneIds)) {
 			return new ArrayList<>();
