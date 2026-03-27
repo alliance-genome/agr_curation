@@ -25,6 +25,8 @@ public class DiseaseSearchResultDocument extends ESDocument {
 	String primaryKey;
 	Set<String> crossReferences = new HashSet<>();
 	Set<String> genes = new HashSet<>();
+	Set<String> alleles = new HashSet<>();
+	Set<String> models = new HashSet<>();
 	Set<String> diseaseGroup = new HashSet<>();
 	Set<String> associatedSpecies = new HashSet<>();
 	String nameKey;

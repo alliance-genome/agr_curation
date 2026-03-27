@@ -644,7 +644,18 @@ public class GeneService extends SubmittedObjectCrudService<Gene, GeneDTO, GeneD
 
 		// Q16: Models (Gene -> Allele -> AGM)
 		for (Map.Entry<Long, GeneSearchResultDocument> entry : docMap.entrySet()) {
-			entry.getValue().setModels(models.getOrDefault(entry.getKey(), new HashSet<>()));
+			Long id = entry.getKey();
+			Set<String> rawModels = models.getOrDefault(id, new HashSet<>());
+			String abbrev = speciesAbbrevMap.get(id);
+			if (abbrev != null && !rawModels.isEmpty()) {
+				Set<String> formattedModels = new HashSet<>();
+				for (String model : rawModels) {
+					formattedModels.add(model + " (" + abbrev + ")");
+				}
+				entry.getValue().setModels(formattedModels);
+			} else {
+				entry.getValue().setModels(rawModels);
+			}
 		}
 
 		// Return documents in input order
