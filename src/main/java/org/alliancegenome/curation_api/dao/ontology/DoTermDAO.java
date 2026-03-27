@@ -130,6 +130,56 @@ public class DoTermDAO extends BaseSQLDAO<DOTerm> {
 		return entityManager.createNativeQuery(sql).getResultList();
 	}
 
+	public List<Object[]> findAllAlleleSymbols() {
+		String sql = """
+			SELECT sa.singleallele_id, sa.formattext, sp.abbreviation,
+				sp.fullname AS genus_species
+			FROM slotannotation sa
+			JOIN biologicalentity be ON be.id = sa.singleallele_id
+			JOIN ontologyterm taxon ON taxon.id = be.taxon_id
+			JOIN species sp ON sp.taxon_id = taxon.id
+			WHERE sa.slotannotationtype = 'AlleleSymbolSlotAnnotation'
+			AND sa.singleallele_id IS NOT NULL
+			""";
+		return entityManager.createNativeQuery(sql).getResultList();
+	}
+
+	public List<Object[]> findAllAgmNames() {
+		String sql = """
+			SELECT sa.singleagm_id, sa.formattext, sp.abbreviation,
+				sp.fullname AS genus_species
+			FROM slotannotation sa
+			JOIN biologicalentity be ON be.id = sa.singleagm_id
+			JOIN ontologyterm taxon ON taxon.id = be.taxon_id
+			JOIN species sp ON sp.taxon_id = taxon.id
+			WHERE sa.slotannotationtype = 'AgmFullNameSlotAnnotation'
+			AND sa.singleagm_id IS NOT NULL
+			""";
+		return entityManager.createNativeQuery(sql).getResultList();
+	}
+
+	public List<Object[]> findDiseaseAlleleIds() {
+		String sql = """
+			SELECT da.diseaseannotationobject_id AS doterm_id,
+				ada.diseaseannotationsubject_id AS allele_id
+			FROM diseaseannotation da
+			JOIN allelediseaseannotation ada ON ada.id = da.id
+			WHERE da.internal = false AND da.obsolete = false
+			""";
+		return entityManager.createNativeQuery(sql).getResultList();
+	}
+
+	public List<Object[]> findDiseaseAgmIds() {
+		String sql = """
+			SELECT da.diseaseannotationobject_id AS doterm_id,
+				agmda.diseaseannotationsubject_id AS agm_id
+			FROM diseaseannotation da
+			JOIN agmdiseaseannotation agmda ON agmda.id = da.id
+			WHERE da.internal = false AND da.obsolete = false
+			""";
+		return entityManager.createNativeQuery(sql).getResultList();
+	}
+
 	public List<Object[]> findAllDiseaseGroups() {
 		String sql = """
 			SELECT DISTINCT otc.closuresubject_id, ancestor.name
