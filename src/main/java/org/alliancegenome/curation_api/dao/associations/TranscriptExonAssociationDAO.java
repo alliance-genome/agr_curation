@@ -17,6 +17,19 @@ public class TranscriptExonAssociationDAO extends BaseSQLDAO<TranscriptExonAssoc
 		super(TranscriptExonAssociation.class);
 	}
 
+	public List<Long> findIdsByDataProvider(String dataProvider, String taxonCurie) {
+		String jpql = "SELECT a.id FROM TranscriptExonAssociation a"
+			+ " WHERE a.transcriptAssociationSubject.dataProvider.abbreviation = :dp";
+		if (taxonCurie != null) {
+			jpql += " AND a.transcriptAssociationSubject.taxon.curie = :taxon";
+		}
+		var query = entityManager.createQuery(jpql, Long.class).setParameter("dp", dataProvider);
+		if (taxonCurie != null) {
+			query.setParameter("taxon", taxonCurie);
+		}
+		return query.getResultList();
+	}
+
 	public Map<Long, TranscriptExonAssociation> findByExonIds(Collection<Long> exonIds) {
 		if (exonIds == null || exonIds.isEmpty()) {
 			return new HashMap<>();

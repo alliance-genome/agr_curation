@@ -17,6 +17,19 @@ public class TranscriptCodingSequenceAssociationDAO extends BaseSQLDAO<Transcrip
 		super(TranscriptCodingSequenceAssociation.class);
 	}
 
+	public List<Long> findIdsByDataProvider(String dataProvider, String taxonCurie) {
+		String jpql = "SELECT a.id FROM TranscriptCodingSequenceAssociation a"
+			+ " WHERE a.transcriptAssociationSubject.dataProvider.abbreviation = :dp";
+		if (taxonCurie != null) {
+			jpql += " AND a.transcriptAssociationSubject.taxon.curie = :taxon";
+		}
+		var query = entityManager.createQuery(jpql, Long.class).setParameter("dp", dataProvider);
+		if (taxonCurie != null) {
+			query.setParameter("taxon", taxonCurie);
+		}
+		return query.getResultList();
+	}
+
 	public Map<Long, TranscriptCodingSequenceAssociation> findByCdsIds(Collection<Long> cdsIds) {
 		if (cdsIds == null || cdsIds.isEmpty()) {
 			return new HashMap<>();

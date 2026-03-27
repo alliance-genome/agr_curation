@@ -17,6 +17,18 @@ public class CodingSequenceDAO extends BaseSQLDAO<CodingSequence> {
 		super(CodingSequence.class);
 	}
 
+	public List<Long> findIdsByDataProvider(String dataProvider, String taxonCurie) {
+		String jpql = "SELECT c.id FROM CodingSequence c WHERE c.dataProvider.abbreviation = :dp";
+		if (taxonCurie != null) {
+			jpql += " AND c.taxon.curie = :taxon";
+		}
+		var query = entityManager.createQuery(jpql, Long.class).setParameter("dp", dataProvider);
+		if (taxonCurie != null) {
+			query.setParameter("taxon", taxonCurie);
+		}
+		return query.getResultList();
+	}
+
 	public Map<String, CodingSequence> findByUniqueIds(Collection<String> uniqueIds) {
 		if (uniqueIds == null || uniqueIds.isEmpty()) {
 			return new HashMap<>();

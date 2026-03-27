@@ -17,6 +17,19 @@ public class ExonGenomicLocationAssociationDAO extends BaseSQLDAO<ExonGenomicLoc
 		super(ExonGenomicLocationAssociation.class);
 	}
 
+	public List<Long> findIdsByDataProvider(String dataProvider, String taxonCurie) {
+		String jpql = "SELECT a.id FROM ExonGenomicLocationAssociation a"
+			+ " WHERE a.exonAssociationSubject.dataProvider.abbreviation = :dp";
+		if (taxonCurie != null) {
+			jpql += " AND a.exonAssociationSubject.taxon.curie = :taxon";
+		}
+		var query = entityManager.createQuery(jpql, Long.class).setParameter("dp", dataProvider);
+		if (taxonCurie != null) {
+			query.setParameter("taxon", taxonCurie);
+		}
+		return query.getResultList();
+	}
+
 	public Map<Long, ExonGenomicLocationAssociation> findByExonIdsAndAssembly(Collection<Long> exonIds, String assemblyId) {
 		if (exonIds == null || exonIds.isEmpty()) {
 			return new HashMap<>();

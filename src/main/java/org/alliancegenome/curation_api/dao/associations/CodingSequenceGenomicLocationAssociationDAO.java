@@ -17,6 +17,19 @@ public class CodingSequenceGenomicLocationAssociationDAO extends BaseSQLDAO<Codi
 		super(CodingSequenceGenomicLocationAssociation.class);
 	}
 
+	public List<Long> findIdsByDataProvider(String dataProvider, String taxonCurie) {
+		String jpql = "SELECT a.id FROM CodingSequenceGenomicLocationAssociation a"
+			+ " WHERE a.codingSequenceAssociationSubject.dataProvider.abbreviation = :dp";
+		if (taxonCurie != null) {
+			jpql += " AND a.codingSequenceAssociationSubject.taxon.curie = :taxon";
+		}
+		var query = entityManager.createQuery(jpql, Long.class).setParameter("dp", dataProvider);
+		if (taxonCurie != null) {
+			query.setParameter("taxon", taxonCurie);
+		}
+		return query.getResultList();
+	}
+
 	public Map<Long, CodingSequenceGenomicLocationAssociation> findByCdsIdsAndAssembly(Collection<Long> cdsIds, String assemblyId) {
 		if (cdsIds == null || cdsIds.isEmpty()) {
 			return new HashMap<>();

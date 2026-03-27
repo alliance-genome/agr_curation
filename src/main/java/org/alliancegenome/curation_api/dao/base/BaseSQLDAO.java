@@ -3,6 +3,7 @@ package org.alliancegenome.curation_api.dao.base;
 import static org.reflections.scanners.Scanners.TypesAnnotated;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -114,6 +115,17 @@ public class BaseSQLDAO<E extends AuditedObject> extends BaseEntityDAO<E> {
 			handlePersistenceException(entity, e);
 		}
 		return entity;
+	}
+
+	@Transactional
+	public int removeByIds(Collection<Long> ids) {
+		if (ids == null || ids.isEmpty()) {
+			return 0;
+		}
+		return entityManager
+			.createQuery("DELETE FROM " + myClass.getSimpleName() + " e WHERE e.id IN :ids")
+			.setParameter("ids", ids)
+			.executeUpdate();
 	}
 
 	public E find(Long id) {

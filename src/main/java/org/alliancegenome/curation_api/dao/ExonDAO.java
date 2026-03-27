@@ -17,6 +17,18 @@ public class ExonDAO extends BaseSQLDAO<Exon> {
 		super(Exon.class);
 	}
 
+	public List<Long> findIdsByDataProvider(String dataProvider, String taxonCurie) {
+		String jpql = "SELECT e.id FROM Exon e WHERE e.dataProvider.abbreviation = :dp";
+		if (taxonCurie != null) {
+			jpql += " AND e.taxon.curie = :taxon";
+		}
+		var query = entityManager.createQuery(jpql, Long.class).setParameter("dp", dataProvider);
+		if (taxonCurie != null) {
+			query.setParameter("taxon", taxonCurie);
+		}
+		return query.getResultList();
+	}
+
 	public Map<String, Exon> findByUniqueIds(Collection<String> uniqueIds) {
 		if (uniqueIds == null || uniqueIds.isEmpty()) {
 			return new HashMap<>();
