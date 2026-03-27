@@ -487,6 +487,23 @@ public class GeneDAO extends BaseSQLDAO<Gene> {
 			""", geneIds);
 	}
 
+	public Map<Long, Set<String>> getGeneModels(List<Long> geneIds) {
+		if (CollectionUtils.isEmpty(geneIds)) {
+			return new HashMap<>();
+		}
+		return runJdbcSetQuery("""
+			SELECT ag.allelegeneassociationobject_id, slag.formattext
+			FROM allelegeneassociation ag
+			JOIN allele a ON a.id = ag.alleleassociationsubject_id
+			JOIN agmalleleassociation aa ON aa.agmalleleassociationobject_id = a.id
+			JOIN affectedgenomicmodel agm ON agm.id = aa.agmassociationsubject_id
+			JOIN slotannotation slag ON slag.singleagm_id = agm.id AND slag.slotannotationtype = 'AgmFullNameSlotAnnotation'
+			WHERE ag.allelegeneassociationobject_id IN :geneIds
+			AND ag.internal = false AND ag.obsolete = false
+			AND aa.internal = false AND aa.obsolete = false
+			""", geneIds);
+	}
+
 	public List<Object[]> getGeneDescriptions(List<Long> geneIds) {
 		if (CollectionUtils.isEmpty(geneIds)) {
 			return new ArrayList<>();
