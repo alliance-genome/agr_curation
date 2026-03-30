@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.alliancegenome.curation_api.model.entities.ontology.OntologyTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.OntologyTermClosure;
 
 import com.fasterxml.jackson.core.JsonParser;
@@ -18,7 +19,12 @@ public class OntologyTermAncestorDeserializer extends JsonDeserializer<Set<Ontol
 		Set<OntologyTermClosure> closures = new HashSet<>();
 		if (p.currentToken() == JsonToken.START_ARRAY) {
 			while (p.nextToken() != JsonToken.END_ARRAY) {
-				// Skip the curie strings - they are only needed for ES indexing
+				String curie = p.getText();
+				OntologyTerm term = new OntologyTerm();
+				term.setCurie(curie);
+				OntologyTermClosure closure = new OntologyTermClosure();
+				closure.setClosureObject(term);
+				closures.add(closure);
 			}
 		}
 		return closures;
