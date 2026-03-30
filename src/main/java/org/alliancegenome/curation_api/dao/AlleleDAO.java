@@ -24,6 +24,7 @@ import org.alliancegenome.curation_api.model.entities.Note;
 import org.alliancegenome.curation_api.model.entities.Organization;
 import org.alliancegenome.curation_api.model.entities.PredictedVariantConsequence;
 import org.alliancegenome.curation_api.model.entities.ResourceDescriptorPage;
+import org.alliancegenome.curation_api.model.entities.Species;
 import org.alliancegenome.curation_api.model.entities.Transcript;
 import org.alliancegenome.curation_api.model.entities.Variant;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
@@ -275,7 +276,11 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 			org.id,
 			org.abbreviation,
 			org.fullname,
-			org.shortname
+			org.shortname,
+			sp.abbreviation,
+			sp.fullname,
+			sp.displayname,
+			sp.assembly_curie
 			FROM Allele a
 			INNER JOIN BiologicalEntity b ON b.id = a.id
 			INNER JOIN SlotAnnotation s ON a.id = s.singleallele_id
@@ -285,6 +290,7 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 			INNER JOIN CrossReference cr ON cr.id = b.dataprovidercrossreference_id
 			INNER JOIN resourceDescriptorPage rd ON rd.id = cr.resourcedescriptorpage_id
 			INNER JOIN organization org ON org.id = b.dataprovider_id
+			LEFT JOIN species sp ON sp.taxon_id = ot.id
 			WHERE a.id IN :alleleIds
 			""";
 
@@ -321,6 +327,14 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 				NCBITaxonTerm term = new NCBITaxonTerm();
 				term.setCurie((String) row[6]);
 				term.setName((String) row[7]);
+				if (row[16] != null) {
+					Species species = new Species();
+					species.setAbbreviation((String) row[16]);
+					species.setFullName((String) row[17]);
+					species.setDisplayName((String) row[18]);
+					species.setAssembly_curie((String) row[19]);
+					term.setSpecies(species);
+				}
 				allele.setTaxon(term);
 			}
 			if (row[8] != null || row[9] != null) {
