@@ -11,6 +11,7 @@ import { classNames } from 'primereact/utils';
 import { AutocompleteMultiEditor } from '../../components/Autocomplete/AutocompleteMultiEditor';
 import { AutocompleteEditor } from '../../components/Autocomplete/AutocompleteEditor';
 import { autocompleteSearch, buildAutocompleteFilter } from '../../utils/utils';
+import { Endpoints } from '../../constants/Endpoints';
 import ErrorBoundary from '../../components/Error/ErrorBoundary';
 
 export const NewVocabularyTermSetForm = ({
@@ -96,7 +97,7 @@ export const NewVocabularyTermSetForm = ({
 	};
 	const vocabularySearch = (event, setFiltered, setQuery) => {
 		const autocompleteFields = ['name'];
-		const endpoint = 'vocabulary';
+		const endpoint = Endpoints.Vocabulary.VOCABULARY;
 		const filterName = 'vocabularyFilter';
 		const filter = buildAutocompleteFilter(event, autocompleteFields);
 
@@ -115,7 +116,7 @@ export const NewVocabularyTermSetForm = ({
 
 	const memberTermSearch = (event, setFiltered, setInputValue, props) => {
 		const autocompleteFields = ['name'];
-		const endpoint = 'vocabularyterm';
+		const endpoint = Endpoints.Vocabulary.TERM;
 		const filterName = 'memberTermsFilter';
 		const filter = buildAutocompleteFilter(event, autocompleteFields);
 		const otherFilters = {

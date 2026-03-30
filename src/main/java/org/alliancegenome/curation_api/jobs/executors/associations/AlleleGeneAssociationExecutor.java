@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Objects;
 
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
+import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.exceptions.KnownIssueValidationException;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException.ObjectUpdateExceptionData;
@@ -73,8 +74,8 @@ public class AlleleGeneAssociationExecutor extends LoadFileExecutor {
 	
 	protected boolean runLoad(BulkLoadFileHistory history, BackendBulkDataProvider dataProvider, List<AlleleGeneAssociationDTO> associationDtos, List<Long> idsAdded, String countType, boolean isFullLoad) {
 		if (Thread.currentThread().isInterrupted()) {
-			history.setErrorMessage("Thread isInterrupted");
-			throw new RuntimeException("Thread isInterrupted");
+			history.setErrorMessage(ApiErrorException.INTERRUPTED_MESSAGE);
+			throw new RuntimeException(ApiErrorException.INTERRUPTED_MESSAGE);
 		}
 		ProcessDisplayHelper ph = new ProcessDisplayHelper();
 		ph.addDisplayHandler(loadProcessDisplayService);
@@ -117,8 +118,8 @@ public class AlleleGeneAssociationExecutor extends LoadFileExecutor {
 				}
 				ph.progressProcess();
 				if (Thread.currentThread().isInterrupted()) {
-					history.setErrorMessage("Thread isInterrupted");
-					throw new RuntimeException("Thread isInterrupted");
+					history.setErrorMessage(ApiErrorException.INTERRUPTED_MESSAGE);
+					throw new RuntimeException(ApiErrorException.INTERRUPTED_MESSAGE);
 				}
 			}
 			updateHistory(history);
