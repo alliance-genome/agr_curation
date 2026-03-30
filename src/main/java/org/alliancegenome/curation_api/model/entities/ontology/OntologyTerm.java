@@ -116,7 +116,7 @@ public class OntologyTerm extends CurieObject {
 	private List<CrossReference> crossReferences;
 
 	@JsonView({ CurationView.GeneSummaryDocument.class })
-	@JsonSerialize(using = OntologyTermAncestorSerializer.class)
+	@JsonSerialize(converter = OntologyTermAncestorSerializer.class)
 	@JsonDeserialize(converter = OntologyTermAncestorDeserializer.class)
 	@OneToMany(mappedBy = "closureSubject")
 	private Set<OntologyTermClosure> ancestors;
