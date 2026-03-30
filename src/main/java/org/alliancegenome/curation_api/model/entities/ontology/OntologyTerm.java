@@ -9,6 +9,7 @@ import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.Synonym;
 import org.alliancegenome.curation_api.model.entities.base.CurieObject;
+import org.alliancegenome.curation_api.model.serializers.OntologyTermAncestorDeserializer;
 import org.alliancegenome.curation_api.model.serializers.OntologyTermAncestorSerializer;
 import org.alliancegenome.curation_api.view.CurationView;
 import org.hibernate.search.engine.backend.types.Aggregable;
@@ -22,6 +23,7 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.KeywordFie
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import jakarta.persistence.Column;
@@ -115,6 +117,7 @@ public class OntologyTerm extends CurieObject {
 
 	@JsonView({ CurationView.GeneSummaryDocument.class })
 	@JsonSerialize(using = OntologyTermAncestorSerializer.class)
+	@JsonDeserialize(using = OntologyTermAncestorDeserializer.class)
 	@OneToMany(mappedBy = "closureSubject")
 	private Set<OntologyTermClosure> ancestors;
 
