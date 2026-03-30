@@ -6,6 +6,7 @@ import java.io.StringWriter;
 import org.alliancegenome.curation_api.dao.loads.BulkLoadFileHistoryDAO;
 import org.alliancegenome.curation_api.enums.BulkLoadCleanUp;
 import org.alliancegenome.curation_api.enums.JobStatus;
+import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.jobs.events.StartedLoadJobEvent;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
 
@@ -42,11 +43,13 @@ public class StartLoadProcessor extends BulkLoadProcessor {
 			// This gets run when quarkus is in Dev Mode
 			bulkLoadFileHistory.setErrorMessage(formatStackTrace(e));
 
-			endLoad(bulkLoadFileHistory, "Failed loading: " + bulkLoadFileHistory.getBulkLoad().getName() + " please check the logs for more info. " + bulkLoadFileHistory.getErrorMessage(), JobStatus.FAILED);
-			Log.error("Load File: " + bulkLoadFileHistory.getBulkLoad().getName() + " is failed");
-			if (!bulkLoadFileHistory.getErrorMessage().equals("Thread isInterrupted")) {
+			if (!bulkLoadFileHistory.getErrorMessage().equals(ApiErrorException.INTERRUPTED_MESSAGE)) {
+				Thread.interrupted();
 				e.printStackTrace();
 			}
+			
+			endLoad(bulkLoadFileHistory, "Failed loading: " + bulkLoadFileHistory.getBulkLoad().getName() + " please check the logs for more info. " + bulkLoadFileHistory.getErrorMessage(), JobStatus.FAILED);
+			Log.error("Load File: " + bulkLoadFileHistory.getBulkLoad().getName() + " is failed");
 		}
 
 	}

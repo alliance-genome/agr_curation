@@ -50,6 +50,7 @@ export const FullNameFormTable = ({
 			editingRows={editingRows}
 			resizableColumns
 			columnResizeMode="expand"
+			cellMemo={false}
 			onRowEditChange={onRowEditChange}
 			ref={tableRef}
 		>

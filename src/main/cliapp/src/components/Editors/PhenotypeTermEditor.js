@@ -2,11 +2,12 @@ import { AutocompleteEditor } from '../Autocomplete/AutocompleteEditor';
 import { SearchService } from '../../service/SearchService';
 import { autocompleteSearch, buildAutocompleteFilter } from '../../utils/utils';
 import { DialogErrorMessageComponent } from '../Error/DialogErrorMessageComponent';
+import { Endpoints } from '../../constants/Endpoints';
 
 const phenotypeTermSearch = (event, setFiltered, setInputValue) => {
 	const searchService = new SearchService();
 	const autocompleteFields = ['name', 'curie'];
-	const endpoint = 'phenotypeterm';
+	const endpoint = Endpoints.Ontology.PHENOTYPE;
 	const filterName = 'phenotypeTermFilter';
 	const filter = buildAutocompleteFilter(event, autocompleteFields);
 

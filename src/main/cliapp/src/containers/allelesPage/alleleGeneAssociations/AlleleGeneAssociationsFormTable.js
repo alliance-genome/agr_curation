@@ -69,6 +69,7 @@ export const AlleleGeneAssociationsFormTable = ({
 				resizableColumns
 				columnResizeMode="expand"
 				onRowEditChange={onRowEditChange}
+				cellMemo={false}
 				ref={tableRef}
 				paginator
 				paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
