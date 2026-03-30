@@ -3,16 +3,16 @@ package org.alliancegenome.curation_api.controllers.document;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.alliancegenome.curation_api.interfaces.document.ModelDocumentInterface;
-import org.alliancegenome.curation_api.model.document.builders.ModelDocumentBuilder;
-import org.alliancegenome.curation_api.model.document.es.AffectedGenomicModelDocument;
+import org.alliancegenome.curation_api.interfaces.document.AGMAnnotationDocumentInterface;
+import org.alliancegenome.curation_api.model.document.builders.AGMAnnotationDocumentBuilder;
+import org.alliancegenome.curation_api.model.document.es.AGMAnnotationDocument;
 import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.AffectedGenomicModelService;
 
 import jakarta.inject.Inject;
 
-public class ModelDocumentController implements ModelDocumentInterface {
+public class AGMAnnotationDocumentController implements AGMAnnotationDocumentInterface {
 
 	@Inject
 	AffectedGenomicModelService affectedGenomicModelService;
@@ -26,19 +26,19 @@ public class ModelDocumentController implements ModelDocumentInterface {
 	}
 
 	@Override
-	public SearchResponse<AffectedGenomicModelDocument> findByIds(List<Long> ids) {
+	public SearchResponse<AGMAnnotationDocument> findByIds(List<Long> ids) {
 		List<AffectedGenomicModel> entities = affectedGenomicModelService.findByIds(ids);
 
-		ArrayList<AffectedGenomicModelDocument> list = new ArrayList<>();
+		ArrayList<AGMAnnotationDocument> list = new ArrayList<>();
 		if (entities != null) {
-			ModelDocumentBuilder builder = new ModelDocumentBuilder();
+			AGMAnnotationDocumentBuilder builder = new AGMAnnotationDocumentBuilder();
 			for (AffectedGenomicModel model : entities) {
-				List<AffectedGenomicModelDocument> docs = builder.buildModelDocument(model);
+				List<AGMAnnotationDocument> docs = builder.buildAGMAnntationDocument(model);
 				list.addAll(docs);
 			}
 		}
 
-		SearchResponse<AffectedGenomicModelDocument> ret = new SearchResponse<>(list);
+		SearchResponse<AGMAnnotationDocument> ret = new SearchResponse<>(list);
 		ret.setTotalResults((long) list.size());
 		return ret;
 	}
