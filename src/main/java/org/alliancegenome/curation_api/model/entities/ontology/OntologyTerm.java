@@ -117,7 +117,7 @@ public class OntologyTerm extends CurieObject {
 
 	@JsonView({ CurationView.GeneSummaryDocument.class })
 	@JsonSerialize(using = OntologyTermAncestorSerializer.class)
-	@JsonDeserialize(using = OntologyTermAncestorDeserializer.class)
+	@JsonDeserialize(converter = OntologyTermAncestorDeserializer.class)
 	@OneToMany(mappedBy = "closureSubject")
 	private Set<OntologyTermClosure> ancestors;
 
