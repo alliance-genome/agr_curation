@@ -379,14 +379,16 @@ public class GeneService extends SubmittedObjectCrudService<Gene, GeneDTO, GeneD
 		CompletableFuture<List<Object[]>> goFuture = CompletableFuture.supplyAsync(() -> geneDAO.getGeneGoTerms(geneIds), executor);
 		CompletableFuture<List<Object[]>> subcellularFuture = CompletableFuture.supplyAsync(() -> geneDAO.getExpressionSubcellularCC(geneIds), executor);
 		CompletableFuture<Map<Long, Set<String>>> anatomicalFuture = CompletableFuture.supplyAsync(() -> geneDAO.getExpressionAnatomical(geneIds), executor);
+		CompletableFuture<Map<Long, Set<String>>> anatomicalSlimFuture = CompletableFuture.supplyAsync(() -> geneDAO.getExpressionAnatomicalSlim(geneIds), executor);
 		CompletableFuture<List<Object[]>> whereExpressedFuture = CompletableFuture.supplyAsync(() -> geneDAO.getWhereExpressedAndStages(geneIds), executor);
 		CompletableFuture<List<Object[]>> descriptionFuture = CompletableFuture.supplyAsync(() -> geneDAO.getGeneDescriptions(geneIds), executor);
 		CompletableFuture<Map<Long, Set<String>>> modelsFuture = CompletableFuture.supplyAsync(() -> geneDAO.getGeneModels(geneIds), executor);
+		CompletableFuture<Map<Long, Set<String>>> diseaseAgrSlimFuture = CompletableFuture.supplyAsync(() -> geneDAO.getGeneDiseaseAgrSlim(geneIds), executor);
 
 		CompletableFuture.allOf(baseInfoFuture, soAncestorsFuture, synonymsFuture, secondaryIdsFuture,
 			crossRefsFuture, chromosomesFuture, allelesFuture, phenotypesFuture, directDiseaseFuture,
 			strictOrthoFuture, orthoDiseaseFuture, goFuture, subcellularFuture, anatomicalFuture,
-			whereExpressedFuture, descriptionFuture, modelsFuture).join();
+			anatomicalSlimFuture, whereExpressedFuture, descriptionFuture, modelsFuture, diseaseAgrSlimFuture).join();
 		executor.shutdown();
 
 		List<Object[]> baseInfoRows = baseInfoFuture.join();
@@ -403,9 +405,11 @@ public class GeneService extends SubmittedObjectCrudService<Gene, GeneDTO, GeneD
 		List<Object[]> goRows = goFuture.join();
 		List<Object[]> subcellularRows = subcellularFuture.join();
 		Map<Long, Set<String>> anatomical = anatomicalFuture.join();
+		Map<Long, Set<String>> anatomicalSlim = anatomicalSlimFuture.join();
 		List<Object[]> whereExpressedRows = whereExpressedFuture.join();
 		List<Object[]> descriptionRows = descriptionFuture.join();
 		Map<Long, Set<String>> models = modelsFuture.join();
+		Map<Long, Set<String>> diseaseAgrSlim = diseaseAgrSlimFuture.join();
 
 		// Build base documents from Q1
 		Map<Long, GeneSearchResultDocument> docMap = new HashMap<>();
@@ -525,6 +529,7 @@ public class GeneService extends SubmittedObjectCrudService<Gene, GeneDTO, GeneD
 			GeneSearchResultDocument doc = entry.getValue();
 			doc.setDiseases(diseases.getOrDefault(id, new HashSet<>()));
 			doc.setDiseasesWithParents(diseasesWithParents.getOrDefault(id, new HashSet<>()));
+			doc.setDiseasesAgrSlim(diseaseAgrSlim.getOrDefault(id, new HashSet<>()));
 		}
 
 		// Q10a: Strict orthology symbols
@@ -603,6 +608,7 @@ public class GeneService extends SubmittedObjectCrudService<Gene, GeneDTO, GeneD
 
 		// Q13: Expression anatomical
 		for (Map.Entry<Long, GeneSearchResultDocument> entry : docMap.entrySet()) {
+			entry.getValue().setAnatomicalExpressionSlim(anatomicalSlim.getOrDefault(entry.getKey(), new HashSet<>()));
 			entry.getValue().setAnatomicalExpressionWithParents(anatomical.getOrDefault(entry.getKey(), new HashSet<>()));
 		}
 
