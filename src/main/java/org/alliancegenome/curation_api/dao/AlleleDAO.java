@@ -711,17 +711,24 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 
 		// Disease existence
 		String diseaseQueryString = """
-			SELECT DISTINCT diseaseannotationsubject_id as allele_id
-			FROM allelediseaseannotation
-			WHERE diseaseannotationsubject_id IN :alleleIds
+			SELECT DISTINCT ada.diseaseannotationsubject_id as allele_id
+			FROM allelediseaseannotation ada
+			JOIN diseaseannotation da ON da.id = ada.id
+			WHERE ada.diseaseannotationsubject_id IN :alleleIds
+			AND da.negated = false
 			UNION
-			SELECT DISTINCT inferredallele_id as allele_id
-			FROM agmdiseaseannotation
-			WHERE inferredallele_id IN :alleleIds
+			SELECT DISTINCT agmda.inferredallele_id as allele_id
+			FROM agmdiseaseannotation agmda
+			JOIN diseaseannotation da ON da.id = agmda.id
+			WHERE agmda.inferredallele_id IN :alleleIds
+			AND da.negated = false
 			UNION
-			SELECT DISTINCT assertedalleles_id as allele_id
-			FROM agmdiseaseannotation_allele
-			WHERE assertedalleles_id IN :alleleIds
+			SELECT DISTINCT agmdaa.assertedalleles_id as allele_id
+			FROM agmdiseaseannotation_allele agmdaa
+			JOIN agmdiseaseannotation agmda ON agmda.id = agmdaa.agmdiseaseannotation_id
+			JOIN diseaseannotation da ON da.id = agmda.id
+			WHERE agmdaa.assertedalleles_id IN :alleleIds
+			AND da.negated = false
 			""";
 
 		Query diseaseQuery = entityManager.createNativeQuery(diseaseQueryString);
