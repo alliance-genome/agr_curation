@@ -1,9 +1,9 @@
--- Fix AGM full name formattext containing HTML <sup>/<​/sup> tags
+-- Fix formattext containing HTML <sup>/<​/sup> tags across all slot annotation types.
 -- MGI and ZFIN submitted formattext identical to displaytext (with HTML superscript markup).
 -- formattext should use plain angle brackets: Alx4<lst> not Alx4<sup>lst</sup>
--- Affects ~96,905 MGI and ~26,643 ZFIN AGM records (123,548 total)
+-- Affects ~206,015 records: AgmFullName (123,548), AlleleSynonym (76,805),
+-- ConstructSymbol (5,631), GeneSynonym (26), AlleleSymbol (4), GeneSymbol (1)
 
 UPDATE slotannotation
 SET formattext = REPLACE(REPLACE(formattext, '<sup>', '<'), '</sup>', '>')
-WHERE slotannotationtype = 'AgmFullNameSlotAnnotation'
-	AND formattext LIKE '%<sup>%';
+WHERE formattext LIKE '%<sup>%';
