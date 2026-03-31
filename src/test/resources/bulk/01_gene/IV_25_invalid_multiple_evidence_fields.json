@@ -1,0 +1,50 @@
+[
+  {
+    "primary_external_id": "GENETEST:IV25",
+    "taxon_curie": "NCBITaxon:6239",
+    "internal": false,
+    "obsolete": false,
+    "gene_type_curie": "SO:0001217",
+    "gene_symbol_dto": {
+      "display_text": "iv25",
+      "format_text": "iv25",
+      "name_type_name": "nomenclature_symbol",
+      "evidence_curies": [
+        "PMID:does_not_exist"
+      ],
+      "internal": false,
+      "obsolete": false
+    },
+    "gene_full_name_dto": {
+      "display_text": "Invalid evidence test 25",
+      "format_text": "Invalid evidence test 25",
+      "name_type_name": "full_name",
+      "evidence_curies": [
+        "PMID:does_not_exist"
+      ],
+      "internal": false,
+      "obsolete": false
+    },
+    "gene_systematic_name_dto": {
+      "display_text": "iv25.1",
+      "format_text": "iv25.1",
+      "name_type_name": "systematic_name",
+      "evidence_curies": [
+        "PMID:does_not_exist"
+      ],
+      "internal": false,
+      "obsolete": false
+    },
+    "data_provider_dto": {
+      "internal": false,
+      "obsolete": false,
+      "source_organization_abbreviation": "WB",
+      "cross_reference_dto": {
+        "referenced_curie": "TEST:0001",
+        "page_area": "homepage",
+        "display_name": "TEST:0001",
+        "prefix": "TEST"
+      }
+    }
+  }
+]

@@ -3,11 +3,12 @@ import { SearchService } from '../../service/SearchService';
 import { autocompleteSearch, buildAutocompleteFilter } from '../../utils/utils';
 import { SubjectAutocompleteTemplate } from '../Autocomplete/SubjectAutocompleteTemplate';
 import { DialogErrorMessageComponent } from '../Error/DialogErrorMessageComponent';
+import { Endpoints } from '../../constants/Endpoints';
 
 const mutationTypeSearch = (event, setFiltered, setInputValue) => {
 	const searchService = new SearchService();
 	const autocompleteFields = ['name', 'curie'];
-	const endpoint = 'soterm';
+	const endpoint = Endpoints.Ontology.SO;
 	const filterName = 'mutationTypeFilter';
 	const filter = buildAutocompleteFilter(event, autocompleteFields);
 

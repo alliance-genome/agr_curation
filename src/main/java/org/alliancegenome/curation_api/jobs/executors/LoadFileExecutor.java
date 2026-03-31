@@ -15,6 +15,7 @@ import org.alliancegenome.curation_api.dao.loads.BulkLoadFileExceptionDAO;
 import org.alliancegenome.curation_api.dao.loads.BulkLoadFileHistoryDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.enums.JobStatus;
+import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.exceptions.KnownIssueValidationException;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException.ObjectUpdateExceptionData;
@@ -114,14 +115,12 @@ public class LoadFileExecutor {
 		if (bulkLoadFileHistory.getBulkLoadFile().getLinkMLSchemaVersion() == null) {
 			bulkLoadFileHistory.setErrorMessage("Missing Schema Version");
 			bulkLoadFileHistory.setBulkloadStatus(JobStatus.FAILED);
-			slackNotifier.slackalert(bulkLoadFileHistory);
 			bulkLoadFileHistoryDAO.merge(bulkLoadFileHistory);
 			return false;
 		}
 		if (!validSchemaVersion(bulkLoadFileHistory.getBulkLoadFile().getLinkMLSchemaVersion(), dtoClass)) {
 			bulkLoadFileHistory.setErrorMessage("Invalid Schema Version: " + bulkLoadFileHistory.getBulkLoadFile().getLinkMLSchemaVersion());
 			bulkLoadFileHistory.setBulkloadStatus(JobStatus.FAILED);
-			slackNotifier.slackalert(bulkLoadFileHistory);
 			bulkLoadFileHistoryDAO.merge(bulkLoadFileHistory);
 			return false;
 		}
@@ -230,8 +229,8 @@ public class LoadFileExecutor {
 
 	protected <E extends AuditedObject, T extends BaseDTO> boolean runLoad(BaseUpsertServiceInterface<E, T> service, BulkLoadFileHistory history, BackendBulkDataProvider dataProvider, List<T> objectList, List<Long> idsAdded, Boolean terminateFailing, String countType, String dataType) {
 		if (Thread.currentThread().isInterrupted()) {
-			history.setErrorMessage("Thread isInterrupted");
-			throw new RuntimeException("Thread isInterrupted");
+			history.setErrorMessage(ApiErrorException.INTERRUPTED_MESSAGE);
+			throw new RuntimeException(ApiErrorException.INTERRUPTED_MESSAGE);
 		}
 		ProcessDisplayHelper ph = new ProcessDisplayHelper();
 		ph.addDisplayHandler(loadProcessDisplayService);
@@ -251,7 +250,7 @@ public class LoadFileExecutor {
 						for (Entry<String, String> entry : dbObject.getWarningMessages().entrySet()) {
 							history.incrementWarnings(countType);
 						}
-						addException(history, new ObjectUpdateExceptionData(dtoObject, dbObject.warningMessagesList(), null));
+						addException(history, new ObjectUpdateExceptionData(dtoObject, dbObject.warningMessagesString(), null));
 					}
 					history.incrementCompleted(countType);
 					if (idsAdded != null) {
@@ -277,8 +276,8 @@ public class LoadFileExecutor {
 				}
 				ph.progressProcess();
 				if (Thread.currentThread().isInterrupted()) {
-					history.setErrorMessage("Thread isInterrupted");
-					throw new RuntimeException("Thread isInterrupted");
+					history.setErrorMessage(ApiErrorException.INTERRUPTED_MESSAGE);
+					throw new RuntimeException(ApiErrorException.INTERRUPTED_MESSAGE);
 				}
 			}
 			updateHistory(history);
@@ -295,8 +294,8 @@ public class LoadFileExecutor {
 	// The following methods are for bulk validation
 	protected <S extends BaseEntityCrudService<?, ?>> void runCleanup(S service, BulkLoadFileHistory history, String dataProviderName, List<Long> annotationIdsBefore, List<Long> annotationIdsAfter, String loadTypeString, Boolean deprecate) {
 		if (Thread.currentThread().isInterrupted()) {
-			history.setErrorMessage("Thread isInterrupted");
-			throw new RuntimeException("Thread isInterrupted");
+			history.setErrorMessage(ApiErrorException.INTERRUPTED_MESSAGE);
+			throw new RuntimeException(ApiErrorException.INTERRUPTED_MESSAGE);
 		}
 		Log.debug("runCleanup: After: " + dataProviderName + " " + annotationIdsAfter.size());
 
@@ -382,8 +381,8 @@ public class LoadFileExecutor {
 				}
 				ph.progressProcess();
 				if (Thread.currentThread().isInterrupted()) {
-					history.setErrorMessage("Thread isInterrupted");
-					throw new RuntimeException("Thread isInterrupted");
+					history.setErrorMessage(ApiErrorException.INTERRUPTED_MESSAGE);
+					throw new RuntimeException(ApiErrorException.INTERRUPTED_MESSAGE);
 				}
 			}
 			ph.finishProcess();
@@ -405,14 +404,12 @@ public class LoadFileExecutor {
 		}
 		bulkLoadFileHistory.setErrorMessage(String.join("|", errorMessages));
 		bulkLoadFileHistory.setBulkloadStatus(JobStatus.FAILED);
-		slackNotifier.slackalert(bulkLoadFileHistory);
 		updateHistory(bulkLoadFileHistory);
 	}
 
 	protected void failLoadAboveErrorRateCutoff(BulkLoadFileHistory bulkLoadFileHistory) {
 		bulkLoadFileHistory.setBulkloadStatus(JobStatus.FAILED);
 		bulkLoadFileHistory.setErrorMessage("Failure rate exceeded cutoff");
-		slackNotifier.slackalert(bulkLoadFileHistory);
 		updateHistory(bulkLoadFileHistory);
 	}
 }

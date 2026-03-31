@@ -11,6 +11,7 @@ import { AutocompleteEditor } from '../../components/Autocomplete/AutocompleteEd
 import { FormErrorMessageComponent } from '../../components/Error/FormErrorMessageComponent';
 import { classNames } from 'primereact/utils';
 import { autocompleteSearch, buildAutocompleteFilter } from '../../utils/utils';
+import { Endpoints } from '../../constants/Endpoints';
 import ErrorBoundary from '../../components/Error/ErrorBoundary';
 
 export const NewConditionForm = ({
@@ -75,7 +76,7 @@ export const NewConditionForm = ({
 	};
 
 	const conditionClassSearch = (event, setFiltered, setQuery) => {
-		const endpoint = 'zecoterm';
+		const endpoint = Endpoints.Ontology.ZECO;
 		const filterName = 'conditionClassEditorFilter';
 		const filter = buildAutocompleteFilter(event, curieAutocompleteFields);
 		const otherFilters = {
@@ -90,7 +91,7 @@ export const NewConditionForm = ({
 	};
 
 	const conditionIdSearch = (event, setFiltered, setQuery) => {
-		const endpoint = 'experimentalconditionontologyterm';
+		const endpoint = Endpoints.Ontology.EXPERIMENTAL_CONDITION;
 		const filterName = 'singleOntologyFilter';
 		const filter = buildAutocompleteFilter(event, curieAutocompleteFields);
 		setQuery(event.query);
@@ -98,7 +99,7 @@ export const NewConditionForm = ({
 	};
 
 	const conditionGeneOntologySearch = (event, setFiltered, setQuery) => {
-		const endpoint = 'goterm';
+		const endpoint = Endpoints.Ontology.GO;
 		const filterName = 'singleOntologyFilter';
 		const filter = buildAutocompleteFilter(event, curieAutocompleteFields);
 
@@ -107,7 +108,7 @@ export const NewConditionForm = ({
 	};
 
 	const conditionChemicalSearch = (event, setFiltered, setQuery) => {
-		const endpoint = 'chemicalterm';
+		const endpoint = Endpoints.Ontology.CHEMICAL;
 		const filterName = 'singleOntologyFilter';
 		const filter = buildAutocompleteFilter(event, curieAutocompleteFields);
 		setQuery(event.query);
@@ -115,7 +116,7 @@ export const NewConditionForm = ({
 	};
 
 	const conditionAnatomySearch = (event, setFiltered, setQuery) => {
-		const endpoint = 'anatomicalterm';
+		const endpoint = Endpoints.Ontology.ANATOMICAL;
 		const filterName = 'singleOntologyFilter';
 		const filter = buildAutocompleteFilter(event, curieAutocompleteFields);
 		setQuery(event.query);
@@ -123,7 +124,7 @@ export const NewConditionForm = ({
 	};
 
 	const conditionTaxonSearch = (event, setFiltered, setQuery) => {
-		const endpoint = 'ncbitaxonterm';
+		const endpoint = Endpoints.Ontology.NCBI_TAXON;
 		const filterName = 'singleOntologyFilter';
 		const filter = buildAutocompleteFilter(event, curieAutocompleteFields);
 		setQuery(event.query);

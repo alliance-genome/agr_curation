@@ -3,11 +3,12 @@ import { SearchService } from '../../service/SearchService';
 import { autocompleteSearch, buildAutocompleteFilter } from '../../utils/utils';
 import { DialogErrorMessageComponent } from '../Error/DialogErrorMessageComponent';
 import { LiteratureAutocompleteTemplate } from '../Autocomplete/LiteratureAutocompleteTemplate';
+import { Endpoints } from '../../constants/Endpoints';
 
 const referenceSearch = (event, setFiltered, setInputValue) => {
 	const searchService = new SearchService();
 	const autocompleteFields = ['curie', 'cross_references.curie'];
-	const endpoint = 'literature-reference';
+	const endpoint = Endpoints.Document.LITERATURE_REFERENCE;
 	const filterName = 'referencesFilter';
 	const filter = buildAutocompleteFilter(event, autocompleteFields);
 

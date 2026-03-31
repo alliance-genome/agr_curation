@@ -55,13 +55,13 @@ import lombok.EqualsAndHashCode;
 
 public class GeneExpressionAnnotation extends ExpressionAnnotation {
 
-	@IndexedEmbedded(includePaths = {"geneSymbol.displayText", "geneSymbol.formatText", "geneSymbol.displayText_keyword", "geneSymbol.formatText_keyword", "curie", "curie_keyword", "taxon.curie", "taxon.name", "taxon.curie_keyword", "taxon.name_keyword"})
+	@IndexedEmbedded(includePaths = {"geneSymbol.displayText", "geneSymbol.formatText", "geneSymbol.displayText_keyword", "geneSymbol.formatText_keyword", "curie", "curie_keyword", "primaryExternalId", "primaryExternalId_keyword", "modInternalId", "modInternalId_keyword", "taxon.curie", "taxon.name", "taxon.curie_keyword", "taxon.name_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
 	@JsonView({CurationView.FieldsOnly.class, CurationView.ForPublic.class, CurationView.GeneExpressionDocument.class})
 	private Gene expressionAnnotationSubject;
 
-	@IndexedEmbedded(includePaths = {"name", "name_keyword"})
+	@IndexedEmbedded(includePaths = {"name", "name_keyword", "curie", "curie_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
 	@JsonView({CurationView.FieldsOnly.class, CurationView.ForPublic.class, CurationView.GeneExpressionDocument.class})
@@ -74,19 +74,28 @@ public class GeneExpressionAnnotation extends ExpressionAnnotation {
 		@Index(columnList = "geneexpressionannotation_id", name = "gea_crossreference_geneexpressionannotation_index"),
 		@Index(columnList = "crossreferences_id", name = "gea_crossreference_crossreferences_index")
 	})
-	@JsonView({ CurationView.FieldsAndLists.class, CurationView.ForPublic.class, CurationView.GeneExpressionDocument.class })
+	@JsonView({ CurationView.FieldsAndLists.class, CurationView.ForPublic.class, CurationView.GeneExpressionDocument.class, CurationView.GeneExpressionAnnotationView.class })
 	private List<CrossReference> crossReferences;
 	
 	@IndexedEmbedded(includePaths = {
 		"uniqueId", "uniqueId_keyword",
 		"primaryExternalId", "primaryExternalId_keyword",
 		"modInternalId", "modInternalId_keyword",
+		"internal", "internal_keyword",
+		"obsolete", "obsolete_keyword",
 		"singleReference.curie", "singleReference.primaryCrossReferenceCurie",
 		"singleReference.crossReferences.referencedCurie",
 		"singleReference.curie_keyword", "singleReference.primaryCrossReferenceCurie_keyword",
 		"singleReference.crossReferences.referencedCurie_keyword",
 		"crossReferences.referencedCurie", "crossReferences.displayName", "crossReferences.resourceDescriptorPage.name",
-		"crossReferences.referencedCurie_keyword", "crossReferences.displayName_keyword", "crossReferences.resourceDescriptorPage.name_keyword"
+		"crossReferences.referencedCurie_keyword", "crossReferences.displayName_keyword", "crossReferences.resourceDescriptorPage.name_keyword",
+		"internal", "internal_keyword",
+		"obsolete", "obsolete_keyword",
+		"createdBy.uniqueId", "createdBy.uniqueId_keyword",
+		"updatedBy.uniqueId", "updatedBy.uniqueId_keyword",
+		"dateCreated", "dateCreated_keyword",
+		"dateUpdated", "dateUpdated_keyword",
+		"curie", "curie_keyword"
 	})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
