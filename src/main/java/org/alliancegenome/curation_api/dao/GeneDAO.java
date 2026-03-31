@@ -219,7 +219,7 @@ public class GeneDAO extends BaseSQLDAO<Gene> {
 			return new ArrayList<>();
 		}
 		return runJdbcQuery("""
-			SELECT g.id, be.primaryexternalid, fn.formattext, ot_taxon.name, sp.abbreviation,
+			SELECT g.id, be.primaryexternalid, fn.formattext, sp.fullname, sp.abbreviation,
 				sym.displaytext, so.curie, so.name
 			FROM gene g
 			JOIN biologicalentity be ON be.id = g.id AND be.obsolete = false AND be.internal = false
