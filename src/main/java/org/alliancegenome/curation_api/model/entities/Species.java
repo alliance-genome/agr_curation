@@ -101,7 +101,7 @@ public class Species extends AuditedObject {
 
 	@GenericField(aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES)
 	@KeywordField(name = "phylogeneticOrder_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, valueBridge = @ValueBridgeRef(type = IntegerValueBridge.class))
-	@JsonView(CurationView.FieldsOnly.class)
+	@JsonView({CurationView.FieldsOnly.class, CurationView.ForPublic.class, CurationView.GeneExpressionDocument.class, CurationView.TransgenicAllelesDocument.class})
 	private Integer phylogeneticOrder;
 
 	//@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
