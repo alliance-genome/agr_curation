@@ -3,11 +3,12 @@ import { buildAutocompleteFilter, autocompleteSearch } from '../../utils/utils';
 import { SearchService } from '../../service/SearchService';
 import { EvidenceAutocompleteTemplate } from '../Autocomplete/EvidenceAutocompleteTemplate';
 import { ErrorMessageComponent } from '../Error/ErrorMessageComponent';
+import { Endpoints } from '../../constants/Endpoints';
 
 const evidenceSearch = (event, setFiltered, setInputValue) => {
 	const searchService = new SearchService();
 	const autocompleteFields = ['curie', 'name', 'abbreviation'];
-	const endpoint = 'ecoterm';
+	const endpoint = Endpoints.Ontology.ECO;
 	const filterName = 'evidenceFilter';
 	const filter = buildAutocompleteFilter(event, autocompleteFields);
 	const otherFilters = {

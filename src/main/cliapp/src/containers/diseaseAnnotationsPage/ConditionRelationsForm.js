@@ -11,6 +11,7 @@ import { FormErrorMessageComponent } from '../../components/Error/FormErrorMessa
 import { ExConAutocompleteTemplate } from '../../components/Autocomplete/ExConAutocompleteTemplate';
 import { AutocompleteMultiEditor } from '../../components/Autocomplete/AutocompleteMultiEditor';
 import { autocompleteSearch, buildAutocompleteFilter } from '../../utils/utils';
+import { Endpoints } from '../../constants/Endpoints';
 
 export const ConditionRelationsForm = ({
 	dispatch,
@@ -79,7 +80,7 @@ export const ConditionRelationsForm = ({
 
 	const conditionSearch = (event, setFiltered, setInputValue) => {
 		const autocompleteFields = ['conditionSummary'];
-		const endpoint = 'experimental-condition';
+		const endpoint = Endpoints.Annotation.EXPERIMENTAL_CONDITION;
 		const filterName = 'conditionSummaryFilter';
 		const filter = buildAutocompleteFilter(event, autocompleteFields);
 

@@ -1,5 +1,6 @@
 import { buildAutocompleteFilter, autocompleteSearch } from '../../../utils/utils';
 import { SearchService } from '../../../service/SearchService';
+import { Endpoints } from '../../../constants/Endpoints';
 
 export const taxonSearch = (event, setFiltered, setQuery) => {
 	const searchService = new SearchService();
@@ -10,7 +11,7 @@ export const taxonSearch = (event, setFiltered, setQuery) => {
 		'secondaryIdentifiers',
 		'synonyms.name',
 	];
-	const endpoint = 'ncbitaxonterm';
+	const endpoint = Endpoints.Ontology.NCBI_TAXON;
 	const filterName = 'taxonFilter';
 	setQuery(event.query);
 	const filter = buildAutocompleteFilter(event, autocompleteFields);
