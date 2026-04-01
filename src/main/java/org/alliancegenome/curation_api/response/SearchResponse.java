@@ -30,7 +30,8 @@ import lombok.Data;
 	CurationView.VariantSummaryDocument.class,
 	CurationView.SequenceSummaryDocument.class,
 	CurationView.HTPDatasetSearchResultDocument.class,
-	CurationView.GeneExpressionDocument.class
+	CurationView.GeneExpressionDocument.class,
+	CurationView.TransgenicAllelesDocument.class
 })
 public class SearchResponse<E> extends APIResponse {
 
