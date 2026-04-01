@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.alliancegenome.curation_api.model.entities.Variant;
 import org.alliancegenome.curation_api.view.CurationView;
+
 import com.fasterxml.jackson.annotation.JsonView;
 
 import lombok.Data;
@@ -16,6 +17,8 @@ public class VariantSummaryDocument extends AVSParentDocument {
 
 	{
 		category = "variant_summary";
+		alterationType = "variant";
+		alterationTypeSortOrder = 4;
 	}
 	private List<Variant> variants;
 }
