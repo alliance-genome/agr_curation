@@ -13,6 +13,7 @@ import { ControlledVocabularyDropdown } from '../../../components/ControlledVoca
 import { useControlledVocabularyService } from '../../../service/useControlledVocabularyService';
 import { ValidationService } from '../../../service/ValidationService';
 import { evidenceTemplate, evidenceEditorTemplate } from '../../../components/EvidenceComponent';
+import { Endpoints } from '../../../constants/Endpoints';
 
 export const DatabaseStatusDialog = ({
 	originalDatabaseStatusData,
@@ -158,7 +159,7 @@ export const DatabaseStatusDialog = ({
 	const validateDatabaseStatus = async (gts) => {
 		let _gts = global.structuredClone(gts);
 		delete _gts.dataKey;
-		const result = await validationService.validate('alleledatabasestatusslotannotation', _gts);
+		const result = await validationService.validate(Endpoints.SlotAnnotation.ALLELE_DATABASE_STATUS, _gts);
 		return result;
 	};
 
