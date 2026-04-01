@@ -204,7 +204,7 @@ export const ProfileComponent = () => {
 			value: localUserInfo?.allianceMember?.fullName + ' (' + localUserInfo?.allianceMember?.abbreviation + ')',
 			template: textTemplate,
 		},
-		{ name: 'Cognito Email', value: localUserInfo?.oktaEmail, template: textTemplate },
+		{ name: 'Cognito Email', value: localUserInfo?.authEmail, template: textTemplate },
 		{ name: 'Cognito Access Token', value: cognitoToken?.accessToken?.accessToken, template: textTemplate },
 		{ name: 'Cognito Id Token', value: cognitoToken?.idToken?.idToken, template: textTemplate },
 		{ name: 'Curation API Token', value: localUserInfo?.apiToken, template: textTemplate },

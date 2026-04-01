@@ -379,6 +379,7 @@ export const SiteLayout = (props) => {
 						{ label: 'FMS Data Files', icon: 'pi pi-fw pi-home', to: '/fmsdatafiles' },
 						{ label: 'FMS Data Types', icon: 'pi pi-fw pi-home', to: '/fmsdatatypes' },
 						{ label: 'Data Loads', icon: 'pi pi-fw pi-home', to: '/dataloads' },
+						{ label: 'Load Dependencies', icon: 'pi pi-fw pi-sitemap', to: '/loadDependencies' },
 						{ label: 'Reports', icon: 'pi pi-fw pi-home', to: '/reports' },
 					],
 				},
