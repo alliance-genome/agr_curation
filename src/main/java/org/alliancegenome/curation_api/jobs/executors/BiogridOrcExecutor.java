@@ -10,6 +10,7 @@ import java.util.regex.Pattern;
 import java.util.zip.GZIPInputStream;
 
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
+import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.exceptions.KnownIssueValidationException;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException.ObjectUpdateExceptionData;
@@ -121,8 +122,8 @@ public class BiogridOrcExecutor extends LoadFileExecutor {
 				}
 				ph.progressProcess();
 				if (Thread.currentThread().isInterrupted()) {
-					history.setErrorMessage("Thread isInterrupted");
-					throw new RuntimeException("Thread isInterrupted");
+					history.setErrorMessage(ApiErrorException.INTERRUPTED_MESSAGE);
+					throw new RuntimeException(ApiErrorException.INTERRUPTED_MESSAGE);
 				}
 			}
 			

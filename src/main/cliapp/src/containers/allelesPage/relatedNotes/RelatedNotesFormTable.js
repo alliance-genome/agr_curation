@@ -43,6 +43,7 @@ export const RelatedNotesFormTable = ({
 			editingRows={editingRows}
 			resizableColumns
 			columnResizeMode="expand"
+			cellMemo={false}
 			onRowEditChange={onRowEditChange}
 			ref={tableRef}
 		>
