@@ -5,7 +5,7 @@ export class BaseService {
 
 	constructor() {
 		this.api = createApiClient({
-			baseURL: '/',
+			baseURL: '',
 		});
 	}
 }

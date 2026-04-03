@@ -26,7 +26,16 @@ class ApiClient {
 			config.body = isFormData ? data : JSON.stringify(data);
 		}
 
-		const res = await fetch(fullURL, config);
+		let res;
+		try {
+			res = await fetch(fullURL, config);
+		} catch (networkError) {
+			// Network failures (DNS, CORS, offline, etc.) throw a TypeError with no
+			// HTTP response. Wrap it so callers that access error.response.data don't crash.
+			const error = new Error(`Network error: ${networkError.message}`);
+			error.response = { status: 0, statusText: 'Network Error', headers: {}, data: {} };
+			throw error;
+		}
 
 		// Build an axios-compatible response object
 		const response = {

@@ -5,7 +5,7 @@ import { renderWithClient } from '../../../tools/jest/utils';
 import AlleleDetailPage from '../AlleleDetailPage';
 import { setLocalStorage } from '../../../tools/jest/setupTests';
 import { setupGetEntityHandler } from '../../../tools/jest/commonMswhandlers';
-import { alleleDetailData } from '../mockData/mockData.jsx';
+import { alleleDetailData } from '../mockData/mockData.js';
 
 describe('<AlleleDetailPage />', () => {
 	beforeEach(() => {

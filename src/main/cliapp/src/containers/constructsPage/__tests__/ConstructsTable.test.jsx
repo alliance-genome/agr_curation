@@ -10,7 +10,7 @@ import {
 	setupSearchHandler,
 	setupSaveSettingsHandler,
 } from '../../../tools/jest/commonMswhandlers';
-import { data } from '../mockData/mockData.jsx';
+import { data } from '../mockData/mockData.js';
 
 describe('<ConstructsTable />', () => {
 	beforeEach(() => {
