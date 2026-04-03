@@ -192,7 +192,6 @@ public class IT_0106_VariantBulkUploadITCase extends BaseITCase {
 		checkFailedBulkLoad(variantBulkPostEndpoint, variantTestFilePath + "IV_08_invalid_data_provider_cross_reference_prefix.json");
 		checkFailedBulkLoad(variantBulkPostEndpoint, variantTestFilePath + "IV_09_invalid_data_provider_cross_reference_page_area.json");
 		checkFailedBulkLoad(variantBulkPostEndpoint, variantTestFilePath + "IV_10_invalid_related_notes_note_type.json");
-		checkFailedBulkLoad(variantBulkPostEndpoint, variantTestFilePath + "IV_11_invalid_related_notes_evidence.json");
 	}
 	
 	@Test
@@ -287,5 +286,10 @@ public class IT_0106_VariantBulkUploadITCase extends BaseITCase {
 			body("entity.primaryExternalId", is("VARIANTTEST:DN01")).
 			body("entity.relatedNotes", hasSize(1));
 	}
-	
+
+	@Test
+	@Order(13)
+	public void variantBulkUploadInvalidReferenceWarning() throws Exception {
+		checkWarningBulkLoad(variantBulkPostEndpoint, variantTestFilePath + "IV_11_invalid_related_notes_evidence.json");
+	}
 }

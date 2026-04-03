@@ -1,5 +1,6 @@
 import { BaseAuthService } from './BaseAuthService';
 import { DeletionService } from './DeletionService';
+import { Endpoints } from '../constants/Endpoints';
 
 export class AlleleService extends BaseAuthService {
 	saveAllele(updatedAllele) {
@@ -16,7 +17,7 @@ export class AlleleService extends BaseAuthService {
 
 	async deleteAllele(allele) {
 		const deletionService = new DeletionService();
-		return await deletionService.delete(`allele`, allele.id);
+		return await deletionService.delete(Endpoints.Entity.ALLELE, allele.id);
 	}
 
 	async getAllele(identifier) {

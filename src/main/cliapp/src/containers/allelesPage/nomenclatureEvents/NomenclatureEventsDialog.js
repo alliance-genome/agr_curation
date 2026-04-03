@@ -13,6 +13,7 @@ import { useControlledVocabularyService } from '../../../service/useControlledVo
 import { ValidationService } from '../../../service/ValidationService';
 import { evidenceTemplate, evidenceEditorTemplate } from '../../../components/EvidenceComponent';
 import { ControlledVocabularyDropdown } from '../../../components/ControlledVocabularySelector';
+import { Endpoints } from '../../../constants/Endpoints';
 
 export const NomenclatureEventsDialog = ({
 	originalNomenclatureEventsData,
@@ -153,7 +154,7 @@ export const NomenclatureEventsDialog = ({
 	const validateNomenclatureEvent = async (ne) => {
 		let _ne = global.structuredClone(ne);
 		delete _ne.dataKey;
-		const result = await validationService.validate('allelenomenclatureeventslotannotation', _ne);
+		const result = await validationService.validate(Endpoints.SlotAnnotation.ALLELE_NOMENCLATURE_EVENT, _ne);
 		return result;
 	};
 

@@ -11,6 +11,7 @@ import { StringListTemplate } from '../../components/Templates/StringListTemplat
 import { useGetTableData } from '../../service/useGetTableData';
 import { useGetUserSettings } from '../../service/useGetUserSettings';
 import { SearchService } from '../../service/SearchService';
+import { Endpoints } from '../../constants/Endpoints';
 import { TruncatedReferencesTemplate } from '../../components/Templates/reference/TruncatedReferencesTemplate';
 import { StringTemplate } from '../../components/Templates/StringTemplate';
 
@@ -184,7 +185,7 @@ export const GeneGeneticInteractionsTable = () => {
 	);
 
 	const DEFAULT_COLUMN_WIDTH = 10;
-	const SEARCH_ENDPOINT = 'gene-genetic-interaction';
+	const SEARCH_ENDPOINT = Endpoints.Annotation.GENE_GENETIC_INTERACTION;
 	const defaultFilters = { obsoleteFilter: { obsolete: { queryString: 'false' } } };
 
 	const initialTableState = useMemo(
