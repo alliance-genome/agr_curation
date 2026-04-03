@@ -16,7 +16,7 @@ class ApiClient {
 			method,
 			headers: {
 				...this.defaultHeaders,
-				// Only set Content-Type for JSON bodies; FormData sets its own boundary
+				// Only set Content-Type for JSON bodies; FormData (for file uploads) sets its own boundary
 				...(!isFormData && data ? { 'Content-Type': 'application/json' } : {}),
 				...headers,
 			},
@@ -44,6 +44,7 @@ class ApiClient {
 			headers: Object.fromEntries(res.headers.entries()),
 		};
 
+		//for file downloads
 		if (responseType === 'blob') {
 			response.data = await res.blob();
 		} else {

@@ -59,16 +59,14 @@ const buildAnnotation = (rowData) => {
 		evidenceItem: structuredClone(rowData.evidenceItem) || DEFAULT_ANNOTATION.evidenceItem,
 		evidenceCodes: structuredClone(rowData.evidenceCodes) || DEFAULT_ANNOTATION.subject,
 		with: structuredClone(rowData.with) || DEFAULT_ANNOTATION.with,
-		relatedNotes:
-			processDupRelatedNotes(structuredClone(rowData.relatedNotes)) || DEFAULT_ANNOTATION.relatedNotes,
+		relatedNotes: processDupRelatedNotes(structuredClone(rowData.relatedNotes)) || DEFAULT_ANNOTATION.relatedNotes,
 		conditionRelations: structuredClone(rowData.conditionRelations) || DEFAULT_ANNOTATION.conditionRelations,
 		geneticSex: structuredClone(rowData.geneticSex) || DEFAULT_ANNOTATION.geneticSex,
 		diseaseQualifiers: structuredClone(rowData.diseaseQualifiers) || DEFAULT_ANNOTATION.diseaseQualifiers,
 		sgdStrainBackground: structuredClone(rowData.sgdStrainBackground) || DEFAULT_ANNOTATION.sgdStrainBackground,
 		annotationType: structuredClone(rowData.annotationType) || DEFAULT_ANNOTATION.annotationType,
 		diseaseGeneticModifierRelation:
-			structuredClone(rowData.diseaseGeneticModifierRelation) ||
-			DEFAULT_ANNOTATION.diseaseGeneticModifierRelation,
+			structuredClone(rowData.diseaseGeneticModifierRelation) || DEFAULT_ANNOTATION.diseaseGeneticModifierRelation,
 		diseaseGeneticModifierAgms:
 			structuredClone(rowData.diseaseGeneticModifierAgms) || DEFAULT_ANNOTATION.diseaseGeneticModifierAgms,
 		diseaseGeneticModifierAlleles:

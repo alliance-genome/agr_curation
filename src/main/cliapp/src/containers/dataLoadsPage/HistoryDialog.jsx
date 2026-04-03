@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import dayjs from 'dayjs';
+import duration from 'dayjs/plugin/duration';
 import { Dialog } from 'primereact/dialog';
+
+dayjs.extend(duration);
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { ScrollPanel } from 'primereact/scrollpanel';
@@ -195,14 +198,9 @@ export const HistoryDialog = ({ historyDialog, setHistoryDialog, history, dataLo
 							<div>
 								<span className="block text-500 font-medium mb-3">Duration</span>
 								<div className="text-900 font-medium text-xl">
-									{(() => {
-									const ms = dayjs(fullHistory.loadFinished).diff(dayjs(fullHistory.loadStarted));
-									const totalSec = Math.floor(Math.abs(ms) / 1000);
-									const h = String(Math.floor(totalSec / 3600)).padStart(2, '0');
-									const m = String(Math.floor((totalSec % 3600) / 60)).padStart(2, '0');
-									const s = String(totalSec % 60).padStart(2, '0');
-									return `${h}:${m}:${s}`;
-								})()}
+									{dayjs
+										.duration(dayjs(fullHistory.loadFinished).diff(dayjs(fullHistory.loadStarted)))
+										.format('HH:mm:ss')}
 								</div>
 							</div>
 							<span className="text-500">How long the load took</span>
