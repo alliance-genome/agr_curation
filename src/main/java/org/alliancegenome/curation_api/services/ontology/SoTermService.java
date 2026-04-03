@@ -1,5 +1,7 @@
 package org.alliancegenome.curation_api.services.ontology;
 
+import java.util.Map;
+
 import org.alliancegenome.curation_api.dao.ontology.SoTermDAO;
 import org.alliancegenome.curation_api.model.entities.ontology.SOTerm;
 import org.alliancegenome.curation_api.services.base.BaseOntologyTermService;
@@ -18,6 +20,10 @@ public class SoTermService extends BaseOntologyTermService<SOTerm, SoTermDAO> {
 	@PostConstruct
 	protected void init() {
 		setSQLDao(soTermDAO);
+	}
+
+	public Map<String, Integer> getSeverityRanking() {
+		return soTermDAO.getSeverityRanking();
 	}
 
 }

@@ -1,5 +1,7 @@
 package org.alliancegenome.curation_api.controllers.crud.ontology;
 
+import java.util.Map;
+
 import org.alliancegenome.curation_api.controllers.base.BaseOntologyTermController;
 import org.alliancegenome.curation_api.dao.ontology.SoTermDAO;
 import org.alliancegenome.curation_api.interfaces.crud.ontology.SoTermCrudInterface;
@@ -20,6 +22,11 @@ public class SoTermCrudController extends BaseOntologyTermController<SoTermServi
 	@PostConstruct
 	public void init() {
 		setService(soTermService, SOTerm.class);
+	}
+
+	@Override
+	public Map<String, Integer> getSeverityRanking() {
+		return soTermService.getSeverityRanking();
 	}
 
 }
