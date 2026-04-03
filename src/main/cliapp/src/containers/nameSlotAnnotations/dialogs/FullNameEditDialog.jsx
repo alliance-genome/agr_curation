@@ -130,6 +130,8 @@ export const FullNameEditDialog = ({
 			dataKey: newKey,
 			internal: false,
 			nameType: fullNameTypeTerms?.[0] || null,
+			displayText: '',
+			formatText: '',
 		});
 		let _editingRows = { ...editingRows, ...{ [`${newKey}`]: true } };
 		setEditingRows(_editingRows);
@@ -151,9 +153,8 @@ export const FullNameEditDialog = ({
 		mainRowProps.rowData[field] = _localFullNames[0] ? _localFullNames[0] : null;
 		let updatedAnnotations = [...mainRowProps.props.value];
 		updatedAnnotations[rowIndex][field] = _localFullNames[0] ? _localFullNames[0] : null;
-		// Signal PrimeReact that editing data changed so the main table re-renders the cell
 		if (mainRowProps.editorCallback) {
-			mainRowProps.editorCallback();
+			mainRowProps.editorCallback(_localFullNames[0]?.displayText ?? null);
 		}
 
 		const errorMessagesCopy = structuredClone(errorMessagesMainRow);
@@ -327,6 +328,7 @@ export const FullNameEditDialog = ({
 									errorMessages={errorMessages}
 									dataKey={props?.rowData?.dataKey}
 									textOnChangeHandler={textOnChangeHandler}
+									editorCallback={props.editorCallback}
 									field="displayText"
 								/>
 							);
@@ -344,6 +346,7 @@ export const FullNameEditDialog = ({
 									errorMessages={errorMessages}
 									dataKey={props?.rowData?.dataKey}
 									textOnChangeHandler={textOnChangeHandler}
+									editorCallback={props.editorCallback}
 									field="formatText"
 								/>
 							);
@@ -381,6 +384,7 @@ export const FullNameEditDialog = ({
 									errorMessages={errorMessages}
 									dataKey={props?.rowData?.dataKey}
 									textOnChangeHandler={textOnChangeHandler}
+									editorCallback={props.editorCallback}
 									field="synonymUrl"
 								/>
 							);

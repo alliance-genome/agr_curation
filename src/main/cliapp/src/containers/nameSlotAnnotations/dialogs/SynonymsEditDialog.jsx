@@ -128,6 +128,8 @@ export const SynonymsEditDialog = ({
 			dataKey: newKey,
 			internal: false,
 			nameType: synonymTypeTerms?.[0] || null,
+			displayText: '',
+			formatText: '',
 		});
 		let _editingRows = { ...editingRows, ...{ [`${newKey}`]: true } };
 		setEditingRows(_editingRows);
@@ -149,9 +151,8 @@ export const SynonymsEditDialog = ({
 		mainRowProps.rowData[field] = _localSynonyms;
 		let updatedAnnotations = [...mainRowProps.props.value];
 		updatedAnnotations[rowIndex][field] = _localSynonyms;
-		// Signal PrimeReact that editing data changed so the main table re-renders the cell
 		if (mainRowProps.editorCallback) {
-			mainRowProps.editorCallback();
+			mainRowProps.editorCallback(_localSynonyms?.[0]?.displayText ?? null);
 		}
 
 		const errorMessagesCopy = structuredClone(errorMessagesMainRow);
@@ -304,6 +305,7 @@ export const SynonymsEditDialog = ({
 									errorMessages={errorMessages}
 									dataKey={props?.rowData?.dataKey}
 									textOnChangeHandler={textOnChangeHandler}
+									editorCallback={props.editorCallback}
 									field="displayText"
 								/>
 							);
@@ -321,6 +323,7 @@ export const SynonymsEditDialog = ({
 									errorMessages={errorMessages}
 									dataKey={props?.rowData?.dataKey}
 									textOnChangeHandler={textOnChangeHandler}
+									editorCallback={props.editorCallback}
 									field="formatText"
 								/>
 							);
@@ -376,6 +379,7 @@ export const SynonymsEditDialog = ({
 									errorMessages={errorMessages}
 									dataKey={props?.rowData?.dataKey}
 									textOnChangeHandler={textOnChangeHandler}
+									editorCallback={props.editorCallback}
 									field="synonymUrl"
 								/>
 							);

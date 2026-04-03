@@ -2,12 +2,23 @@ import { InputText } from 'primereact/inputtext';
 import { DialogErrorMessageComponent } from '../Error/DialogErrorMessageComponent';
 import { useState } from 'react';
 
-export const TableInputTextEditor = ({ value, errorMessages, dataKey, textOnChangeHandler, rowIndex, field }) => {
-	const [localValue, setLocalValue] = useState(value);
+export const TableInputTextEditor = ({
+	value,
+	errorMessages,
+	dataKey,
+	textOnChangeHandler,
+	editorCallback,
+	rowIndex,
+	field,
+}) => {
+	const [localValue, setLocalValue] = useState(value ?? '');
 
 	const onChange = (e) => {
 		setLocalValue(e.target.value);
 		textOnChangeHandler(rowIndex, e, field);
+		if (editorCallback) {
+			editorCallback(e.target.value);
+		}
 	};
 
 	return (

@@ -131,9 +131,8 @@ export const SymbolEditDialog = ({
 		mainRowProps.rowData[field] = _localSymbols[0] ? _localSymbols[0] : null;
 		let updatedAnnotations = [...mainRowProps.props.value];
 		updatedAnnotations[rowIndex][field] = _localSymbols[0] ? _localSymbols[0] : null;
-		// Signal PrimeReact that editing data changed so the main table re-renders the cell
 		if (mainRowProps.editorCallback) {
-			mainRowProps.editorCallback();
+			mainRowProps.editorCallback(_localSymbols[0]?.displayText ?? null);
 		}
 
 		const errorMessagesCopy = structuredClone(errorMessagesMainRow);
@@ -293,6 +292,7 @@ export const SymbolEditDialog = ({
 									errorMessages={errorMessages}
 									dataKey={props?.rowData?.dataKey}
 									textOnChangeHandler={textOnChangeHandler}
+									editorCallback={props.editorCallback}
 									field="displayText"
 								/>
 							);
@@ -310,6 +310,7 @@ export const SymbolEditDialog = ({
 									errorMessages={errorMessages}
 									dataKey={props?.rowData?.dataKey}
 									textOnChangeHandler={textOnChangeHandler}
+									editorCallback={props.editorCallback}
 									field="formatText"
 								/>
 							);
@@ -347,6 +348,7 @@ export const SymbolEditDialog = ({
 									errorMessages={errorMessages}
 									dataKey={props?.rowData?.dataKey}
 									textOnChangeHandler={textOnChangeHandler}
+									editorCallback={props.editorCallback}
 									field="synonymUrl"
 								/>
 							);
