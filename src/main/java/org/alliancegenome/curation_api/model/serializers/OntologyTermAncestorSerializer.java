@@ -16,7 +16,7 @@ public class OntologyTermAncestorSerializer extends StdConverter<Set<OntologyTer
 		List<Pair<String, Set<String>>> ancestorCuries = new ArrayList<>();
 		if (value != null) {
 			for (OntologyTermClosure closure : value) {
-				if (closure.getClosureObject() != null && closure.getClosureObject().getCurie() != null ) {
+				if (closure.getClosureObject() != null && closure.getClosureObject().getCurie() != null) {
 					ancestorCuries.add(Pair.of(closure.getClosureObject().getCurie(), closure.getClosureTypes()));
 				}
 			}

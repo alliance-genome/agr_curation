@@ -1,9 +1,7 @@
 package org.alliancegenome.curation_api.model.serializers;
 
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.alliancegenome.curation_api.model.entities.ontology.OntologyTerm;
