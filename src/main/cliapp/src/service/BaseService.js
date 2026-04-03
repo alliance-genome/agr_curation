@@ -1,10 +1,10 @@
-import axios from 'axios';
+import { createApiClient } from './ApiClient';
 
 export class BaseService {
 	api;
 
 	constructor() {
-		this.api = axios.create({
+		this.api = createApiClient({
 			baseURL: '/',
 		});
 	}
