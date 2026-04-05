@@ -3,6 +3,7 @@ import { Dialog } from 'primereact/dialog';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { Button } from 'primereact/button';
+import { Endpoints } from '../constants/Endpoints';
 import { ColumnGroup } from 'primereact/columngroup';
 import { Row } from 'primereact/row';
 import { DeleteAction } from './Actions/DeletionAction';
@@ -128,7 +129,7 @@ export const RelatedNotesDialogEditOnly = ({
 	};
 
 	const validateTable = async () => {
-		const results = await validate(localRelatedNotes, 'note', validationService);
+		const results = await validate(localRelatedNotes, Endpoints.Entity.NOTE, validationService);
 		const errors = [];
 		let anyErrors = false;
 		results.forEach((result, index) => {

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Dropdown } from 'primereact/dropdown';
 import { SearchService } from '../service/SearchService';
+import { Endpoints } from '../constants/Endpoints';
 
 export function ConditionRelationHandleDropdown({
 	field,
@@ -19,7 +20,7 @@ export function ConditionRelationHandleDropdown({
 		setSelectedValue(props.rowData[field]);
 		if (props.props.value[props.rowIndex]?.singleReference?.curie) {
 			searchService
-				.find('condition-relation', 15, 0, {
+				.find(Endpoints.Annotation.CONDITION_RELATION, 15, 0, {
 					'singleReference.curie': props.props.value[props.rowIndex].singleReference.curie,
 				})
 				.then((data) => {
