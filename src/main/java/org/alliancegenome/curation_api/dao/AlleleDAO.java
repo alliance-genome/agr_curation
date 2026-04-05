@@ -876,12 +876,16 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 
 		// Construct genomic entity associations (real gene entities) per allele
 		String constructGeneAssocQueryString = """
-			SELECT DISTINCT aca.alleleassociationsubject_id AS allele_id, gsa.displaytext AS gene_symbol, vt.name AS relation_name
+			SELECT DISTINCT aca.alleleassociationsubject_id AS allele_id,
+				gsa.displaytext || ' (' || s.abbreviation || ')' AS gene_symbol,
+				vt.name AS relation_name
 			FROM alleleconstructassociation aca
 			JOIN constructgenomicentityassociation cgea ON cgea.constructassociationsubject_id = aca.alleleconstructassociationobject_id
 			JOIN vocabularyterm vt ON vt.id = cgea.relation_id AND vt.name IN ('expresses', 'is_regulated_by', 'targets')
 			JOIN gene g ON g.id = cgea.constructgenomicentityassociationobject_id
 			JOIN slotannotation gsa ON gsa.singlegene_id = g.id AND gsa.slotannotationtype = 'GeneSymbolSlotAnnotation'
+			JOIN biologicalentity be ON be.id = g.id
+			JOIN species s ON s.taxon_id = be.taxon_id
 			WHERE aca.alleleassociationsubject_id IN :alleleIds
 			AND aca.obsolete = false AND aca.internal = false
 			AND cgea.obsolete = false AND cgea.internal = false
