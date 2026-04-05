@@ -73,7 +73,7 @@ public class Annotation extends SingleReferenceAssociation {
 			"singleReference.crossReferences.referencedCurie_keyword", "conditions.conditionSummary_keyword", "conditions.uniqueId_keyword" })
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
-	@JsonView({ CurationView.FieldsAndLists.class, CurationView.DiseaseAnnotation.class, CurationView.PhenotypeAnnotationView.class, CurationView.ForPublic.class })
+	@JsonView({ CurationView.FieldsAndLists.class, CurationView.DiseaseAnnotation.class, CurationView.PhenotypeAnnotationView.class, CurationView.ForPublic.class, CurationView.GeneExpressionAnnotationView.class })
 	@JoinTable(
 		joinColumns = @JoinColumn(name = "annotation_id"),
 		inverseJoinColumns = @JoinColumn(name = "conditionRelations_id"),
@@ -90,7 +90,7 @@ public class Annotation extends SingleReferenceAssociation {
 	})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-	@JsonView({ CurationView.FieldsAndLists.class, CurationView.DiseaseAnnotation.class, CurationView.ForPublic.class })
+	@JsonView({ CurationView.FieldsAndLists.class, CurationView.DiseaseAnnotation.class, CurationView.ForPublic.class, CurationView.GeneExpressionAnnotationView.class })
 	@JoinTable(
 		joinColumns = @JoinColumn(name = "annotation_id"),
 		inverseJoinColumns = @JoinColumn(name = "relatedNotes_id"),

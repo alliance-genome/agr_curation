@@ -57,6 +57,7 @@ public class VariantDTOValidator extends GenomicEntityDTOValidator<Variant, Vari
 		SOTerm sourceGeneralConsequence = validateOntologyTerm(soTermService, "source_general_consequence_curie", dto.getSourceGeneralConsequenceCurie());
 		variant.setSourceGeneralConsequence(sourceGeneralConsequence);
 		
+		response.convertWarningMessagesToMap();
 		response.convertErrorMessagesToMap();
 
 		if (response.hasErrors()) {

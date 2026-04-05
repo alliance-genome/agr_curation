@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Dropdown } from 'primereact/dropdown';
 import { ExperimentsSearchService } from '../service/ExperimentsSearchService';
+import { Endpoints } from '../constants/Endpoints';
 
 export function ConditionRelationHandleFormDropdown({
 	editorChange,
@@ -18,7 +19,7 @@ export function ConditionRelationHandleFormDropdown({
 
 	const onShow = () => {
 		experimentsSearchService
-			.findExperiments('condition-relation', 15, 0, { 'singleReference.curie': referenceCurie })
+			.findExperiments(Endpoints.Annotation.CONDITION_RELATION, 15, 0, { 'singleReference.curie': referenceCurie })
 			.then((data) => {
 				if (data.results?.length > 0) {
 					setHandles(data.results);

@@ -19,6 +19,7 @@ import { TruncatedReferencesTemplate } from '../../components/Templates/referenc
 import { StringTemplate } from '../../components/Templates/StringTemplate';
 
 import { SearchService } from '../../service/SearchService';
+import { Endpoints } from '../../constants/Endpoints';
 
 export const ConstructsTable = () => {
 	const toast_topleft = useRef(null);
@@ -314,7 +315,7 @@ export const ConstructsTable = () => {
 	);
 
 	const DEFAULT_COLUMN_WIDTH = 10;
-	const SEARCH_ENDPOINT = 'construct';
+	const SEARCH_ENDPOINT = Endpoints.Entity.CONSTRUCT;
 
 	const initialTableState = useMemo(() => getDefaultTableState('Constructs', columns, DEFAULT_COLUMN_WIDTH), [columns]);
 

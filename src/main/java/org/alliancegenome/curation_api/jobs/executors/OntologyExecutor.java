@@ -12,6 +12,7 @@ import org.alliancegenome.curation_api.dao.loads.BulkLoadFileDAO;
 import org.alliancegenome.curation_api.dao.loads.BulkLoadFileExceptionDAO;
 import org.alliancegenome.curation_api.dao.loads.BulkLoadFileHistoryDAO;
 import org.alliancegenome.curation_api.enums.OntologyBulkLoadType;
+import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException.ObjectUpdateExceptionData;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
 import org.alliancegenome.curation_api.model.entities.ontology.OntologyTerm;
@@ -337,8 +338,8 @@ public class OntologyExecutor extends LoadFileExecutor {
 			bulkLoadFileHistory.incrementCompleted(countType);
 			ph.progressProcess();
 			if (Thread.currentThread().isInterrupted()) {
-				bulkLoadFileHistory.setErrorMessage("Thread isInterrupted");
-				throw new RuntimeException("Thread isInterrupted");
+				bulkLoadFileHistory.setErrorMessage(ApiErrorException.INTERRUPTED_MESSAGE);
+				throw new RuntimeException(ApiErrorException.INTERRUPTED_MESSAGE);
 			}
 		}
 		ph.finishProcess();
@@ -361,8 +362,8 @@ public class OntologyExecutor extends LoadFileExecutor {
 				}
 				ph1.progressProcess();
 				if (Thread.currentThread().isInterrupted()) {
-					bulkLoadFileHistory.setErrorMessage("Thread isInterrupted");
-					throw new RuntimeException("Thread isInterrupted");
+					bulkLoadFileHistory.setErrorMessage(ApiErrorException.INTERRUPTED_MESSAGE);
+					throw new RuntimeException(ApiErrorException.INTERRUPTED_MESSAGE);
 				}
 			}
 			ph1.finishProcess();
@@ -376,8 +377,8 @@ public class OntologyExecutor extends LoadFileExecutor {
 				bulkLoadFileHistory.incrementCompleted(countType);
 				ph2.progressProcess();
 				if (Thread.currentThread().isInterrupted()) {
-					bulkLoadFileHistory.setErrorMessage("Thread isInterrupted");
-					throw new RuntimeException("Thread isInterrupted");
+					bulkLoadFileHistory.setErrorMessage(ApiErrorException.INTERRUPTED_MESSAGE);
+					throw new RuntimeException(ApiErrorException.INTERRUPTED_MESSAGE);
 				}
 			}
 			ph2.finishProcess();
@@ -421,8 +422,8 @@ public class OntologyExecutor extends LoadFileExecutor {
 			}
 			ph.progressProcess();
 			if (Thread.currentThread().isInterrupted()) {
-				history.setErrorMessage("Thread isInterrupted");
-				throw new RuntimeException("Thread isInterrupted");
+				history.setErrorMessage(ApiErrorException.INTERRUPTED_MESSAGE);
+				throw new RuntimeException(ApiErrorException.INTERRUPTED_MESSAGE);
 			}
 		}
 		bulkLoadFileHistoryDAO.merge(history);
