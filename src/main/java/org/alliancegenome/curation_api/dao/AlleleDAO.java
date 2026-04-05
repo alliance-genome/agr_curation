@@ -874,6 +874,35 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 			}
 		}
 
+		// Construct genomic entity associations (real gene entities) per allele
+		String constructGeneAssocQueryString = """
+			SELECT DISTINCT aca.alleleassociationsubject_id AS allele_id, gsa.displaytext AS gene_symbol, vt.name AS relation_name
+			FROM alleleconstructassociation aca
+			JOIN constructgenomicentityassociation cgea ON cgea.constructassociationsubject_id = aca.alleleconstructassociationobject_id
+			JOIN vocabularyterm vt ON vt.id = cgea.relation_id AND vt.name IN ('expresses', 'is_regulated_by', 'targets')
+			JOIN gene g ON g.id = cgea.constructgenomicentityassociationobject_id
+			JOIN slotannotation gsa ON gsa.singlegene_id = g.id AND gsa.slotannotationtype = 'GeneSymbolSlotAnnotation'
+			WHERE aca.alleleassociationsubject_id IN :alleleIds
+			AND aca.obsolete = false AND aca.internal = false
+			AND cgea.obsolete = false AND cgea.internal = false
+			""";
+		Query constructGeneAssocQuery = entityManager.createNativeQuery(constructGeneAssocQueryString);
+		constructGeneAssocQuery.setParameter("alleleIds", alleleIds);
+		List<Object[]> constructGeneAssocResults = constructGeneAssocQuery.getResultList();
+
+		for (Object[] row : constructGeneAssocResults) {
+			Long alleleId = (Long) row[0];
+			String geneSymbol = (String) row[1];
+			String relationName = (String) row[2];
+			if (geneSymbol != null) {
+				switch (relationName) {
+					case "expresses" -> alleleConstructExpressedComponentsMap.computeIfAbsent(alleleId, k -> new HashSet<>()).add(geneSymbol);
+					case "is_regulated_by" -> alleleConstructRegulatoryRegionsMap.computeIfAbsent(alleleId, k -> new HashSet<>()).add(geneSymbol);
+					case "targets" -> alleleConstructKnockdownComponentsMap.computeIfAbsent(alleleId, k -> new HashSet<>()).add(geneSymbol);
+				}
+			}
+		}
+
 		// Build documents
 		List<AlleleSummaryDocument> docs = new ArrayList<>();
 		for (Allele allele : alleles) {
