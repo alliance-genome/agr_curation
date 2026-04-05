@@ -1,27 +1,33 @@
 package org.alliancegenome.curation_api.model.serializers;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import org.alliancegenome.curation_api.model.entities.ontology.OntologyTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.OntologyTermClosure;
-import org.apache.commons.lang3.tuple.Pair;
 
 import com.fasterxml.jackson.databind.util.StdConverter;
 
-public class OntologyTermAncestorDeserializer extends StdConverter<List<Pair<String, Set<String>>>, Set<OntologyTermClosure>> {
+public class OntologyTermAncestorDeserializer extends StdConverter<List<List<Object>>, Set<OntologyTermClosure>> {
 
 	@Override
-	public Set<OntologyTermClosure> convert(List<Pair<String, Set<String>>> curies) {
+	@SuppressWarnings("unchecked")
+	public Set<OntologyTermClosure> convert(List<List<Object>> pairs) {
 		Set<OntologyTermClosure> closures = new HashSet<>();
-		if (curies != null) {
-			for (Pair<String, Set<String>> pair : curies) {
+		if (pairs != null) {
+			for (List<Object> pair : pairs) {
+				if (pair == null || pair.size() < 2) {
+					continue;
+				}
+				String curie = (String) pair.get(0);
+				Set<String> types = new HashSet<>((Collection<String>) pair.get(1));
 				OntologyTerm ancestorTerm = new OntologyTerm();
-				ancestorTerm.setCurie(pair.getLeft());
+				ancestorTerm.setCurie(curie);
 				OntologyTermClosure closure = new OntologyTermClosure();
 				closure.setClosureObject(ancestorTerm);
-				closure.setClosureTypes(pair.getRight());
+				closure.setClosureTypes(types);
 				closures.add(closure);
 			}
 		}
