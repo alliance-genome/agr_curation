@@ -17,6 +17,7 @@ import { AutocompleteMultiEditor } from '../../../components/Autocomplete/Autoco
 import { autocompleteSearch, buildAutocompleteFilter, multipleAutocompleteOnChange } from '../../../utils/utils';
 import { SubjectAutocompleteTemplate } from '../../../components/Autocomplete/SubjectAutocompleteTemplate';
 import { evidenceTemplate, evidenceEditorTemplate } from '../../../components/EvidenceComponent';
+import { Endpoints } from '../../../constants/Endpoints';
 
 export const MutationTypesDialog = ({
 	originalMutationTypesData,
@@ -162,7 +163,7 @@ export const MutationTypesDialog = ({
 	const validateMutationType = async (mt) => {
 		let _mt = global.structuredClone(mt);
 		delete _mt.dataKey;
-		const result = await validationService.validate('allelemutationtypeslotannotation', _mt);
+		const result = await validationService.validate(Endpoints.SlotAnnotation.ALLELE_MUTATION_TYPE, _mt);
 		return result;
 	};
 
@@ -268,7 +269,7 @@ export const MutationTypesDialog = ({
 
 	const mutationTypeSearch = (event, setFiltered, setInputValue) => {
 		const autocompleteFields = ['name', 'curie'];
-		const endpoint = 'soterm';
+		const endpoint = Endpoints.Ontology.SO;
 		const filterName = 'mutationTypeFilter';
 		const filter = buildAutocompleteFilter(event, autocompleteFields);
 

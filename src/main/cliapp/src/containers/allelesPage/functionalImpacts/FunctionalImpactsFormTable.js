@@ -46,6 +46,7 @@ export const FunctionalImpactsFormTable = ({
 			editingRows={editingRows}
 			resizableColumns
 			columnResizeMode="expand"
+			cellMemo={false}
 			onRowEditChange={onRowEditChange}
 			ref={tableRef}
 		>

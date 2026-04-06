@@ -409,34 +409,23 @@ public class IT_0102_AlleleBulkUploadITCase extends BaseITCase {
 		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "IV_03_invalid_taxon.json");
 		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "IV_04_invalid_in_collection.json");
 		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "IV_06_invalid_allele_mutation_type_mutation_type.json");
-		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "IV_07_invalid_allele_mutation_type_evidence.json");
 		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "IV_08_invalid_allele_symbol_name_type.json");
 		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "IV_09_invalid_allele_full_name_name_type.json");
 		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "IV_10_invalid_allele_synonym_name_type.json");
 		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "IV_11_invalid_allele_symbol_synonym_scope.json");
 		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "IV_12_invalid_allele_full_name_synonym_scope.json");
 		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "IV_13_invalid_allele_synonym_synonym_scope.json");
-		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "IV_14_invalid_allele_symbol_evidence.json");
-		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "IV_15_invalid_allele_full_name_evidence.json");
-		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "IV_16_invalid_allele_synonym_evidence.json");
-		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "IV_17_invalid_allele_secondary_id_evidence.json");
 		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "IV_18_invalid_allele_inheritance_mode_inheritance_mode.json");
 		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "IV_19_invalid_allele_inheritance_mode_phenotype_term.json");
-		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "IV_20_invalid_allele_inheritance_mode_evidence.json");
 		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "IV_21_invalid_data_provider_source_organization_abbreviation.json");
 		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "IV_22_invalid_data_provider_cross_reference_prefix.json");
 		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "IV_23_invalid_data_provider_cross_reference_page_area.json");
 		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "IV_24_invalid_allele_functional_impacts_functional_impacts.json");
 		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "IV_25_invalid_allele_functional_impacts_phenotype_term.json");
-		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "IV_26_invalid_allele_functional_impacts_evidence.json");
 		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "IV_27_invalid_allele_germline_transmission_status_germline_transmission_status.json");
-		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "IV_28_invalid_allele_germline_transmission_status_evidence.json");
 		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "IV_29_invalid_related_notes_note_type_name.json");
-		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "IV_30_invalid_related_notes_evidence.json");
 		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "IV_31_invalid_allele_database_status_database_status.json");
-		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "IV_32_invalid_allele_database_status_evidence.json");
 		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "IV_33_invalid_allele_nomenclature_events_nomenclature_event.json");
-		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "IV_34_invalid_allele_nomenclature_events_evidence.json");
 	}
 	
 	@Test
@@ -680,5 +669,17 @@ public class IT_0102_AlleleBulkUploadITCase extends BaseITCase {
 	@Order(14)
 	public void alleleBulkUploadInvalidReferenceWarning() throws Exception {
 		checkWarningBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "IV_05_invalid_reference.json");
+		checkWarningBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "IV_07_invalid_allele_mutation_type_evidence.json");
+		checkWarningBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "IV_14_invalid_allele_symbol_evidence.json");
+		checkWarningBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "IV_15_invalid_allele_full_name_evidence.json");
+		checkWarningBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "IV_16_invalid_allele_synonym_evidence.json");
+		checkWarningBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "IV_17_invalid_allele_secondary_id_evidence.json");
+		checkWarningBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "IV_20_invalid_allele_inheritance_mode_evidence.json");
+		checkWarningBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "IV_26_invalid_allele_functional_impacts_evidence.json");
+		checkWarningBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "IV_28_invalid_allele_germline_transmission_status_evidence.json");
+		checkWarningBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "IV_30_invalid_related_notes_evidence.json");
+		checkWarningBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "IV_32_invalid_allele_database_status_evidence.json");
+		checkWarningBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "IV_34_invalid_allele_nomenclature_events_evidence.json");
+		checkWarningBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "IV_35_invalid_multiple_evidence_fields.json", 4);
 	}
 }

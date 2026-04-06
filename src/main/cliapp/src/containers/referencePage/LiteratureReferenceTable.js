@@ -9,6 +9,7 @@ import { useGetUserSettings } from '../../service/useGetUserSettings';
 import { StringListTemplate } from '../../components/Templates/StringListTemplate';
 import { StringTemplate } from '../../components/Templates/StringTemplate';
 import { SearchService } from '../../service/SearchService';
+import { Endpoints } from '../../constants/Endpoints';
 
 export const LiteratureReferenceTable = () => {
 	const [isInEditMode, setIsInEditMode] = useState(false);
@@ -74,7 +75,7 @@ export const LiteratureReferenceTable = () => {
 		[]
 	);
 	const DEFAULT_COLUMN_WIDTH = 20;
-	const SEARCH_ENDPOINT = 'literature-reference';
+	const SEARCH_ENDPOINT = Endpoints.Document.LITERATURE_REFERENCE;
 
 	const initialTableState = useMemo(
 		() => getDefaultTableState('LiteratureReferences', columns, DEFAULT_COLUMN_WIDTH),
