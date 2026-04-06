@@ -25,9 +25,9 @@ public class SubmittedObjectDTOValidator<E extends SubmittedObject, D extends Su
 	public E validateSubmittedObjectDTO(E entity, D dto, String noteTypeVocabularyTermSet) {
 
 		entity = validateAuditedObjectDTO(entity, dto);
-		
+
 		UniqueIdentifierHelper.setSubmittedObjectIdentifiers(dto, entity, null);
-		
+
 		if (dto.getDataProviderDto() == null) {
 			response.addErrorMessage("data_provider_dto", ValidationConstants.REQUIRED_MESSAGE);
 		} else {
@@ -43,11 +43,11 @@ public class SubmittedObjectDTOValidator<E extends SubmittedObject, D extends Su
 				}
 			}
 		}
-		
+
 		if (entity.getRelatedNotes() != null) {
 			entity.getRelatedNotes().clear();
 		}
-		
+
 		List<Note> relatedNotes = validateRelatedNotes(entity, dto, noteTypeVocabularyTermSet);
 		if (relatedNotes != null) {
 			if (entity.getRelatedNotes() == null) {
@@ -58,8 +58,6 @@ public class SubmittedObjectDTOValidator<E extends SubmittedObject, D extends Su
 
 		return entity;
 	}
-	
-
 
 	private List<Note> validateRelatedNotes(E entity, D dto, String noteTypeVocabularyTermSet) {
 		String field = "relatedNotes";
@@ -84,12 +82,19 @@ public class SubmittedObjectDTOValidator<E extends SubmittedObject, D extends Su
 						validatedNotes.add(noteResponse.getEntity());
 					}
 				}
+				if (noteResponse.hasWarnings()) {
+					response.addWarningMessages(field, ix, noteResponse.getWarningMessages());
+				}
 			}
 		}
 
 		if (!allValid) {
 			response.convertMapToErrorMessages(field);
 			return null;
+		}
+
+		if (CollectionUtils.isNotEmpty(dto.getNoteDtos())) {
+			response.convertMapToWarningMessages(field);
 		}
 
 		if (CollectionUtils.isEmpty(validatedNotes)) {

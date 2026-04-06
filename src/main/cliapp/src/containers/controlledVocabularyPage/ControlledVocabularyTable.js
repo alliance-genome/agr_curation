@@ -17,6 +17,7 @@ import { FILTER_CONFIGS } from '../../constants/FilterFields';
 import { useGetTableData } from '../../service/useGetTableData';
 import { useGetUserSettings } from '../../service/useGetUserSettings';
 import { SearchService } from '../../service/SearchService';
+import { Endpoints } from '../../constants/Endpoints';
 import { setNewEntity } from '../../utils/utils';
 import { StringListTemplate } from '../../components/Templates/StringListTemplate';
 import { StringTemplate } from '../../components/Templates/StringTemplate';
@@ -198,7 +199,7 @@ export const ControlledVocabularyTable = () => {
 		return (
 			<>
 				<TrueFalseDropdown
-					options={obsoleteTerms}
+					options={obsoleteTerms?.terms || []}
 					editorChange={onObsoleteEditorValueChange}
 					props={props}
 					field={'obsolete'}
@@ -300,7 +301,7 @@ export const ControlledVocabularyTable = () => {
 	);
 
 	const DEFAULT_COLUMN_WIDTH = 13;
-	const SEARCH_ENDPOINT = 'vocabularyterm';
+	const SEARCH_ENDPOINT = Endpoints.Vocabulary.TERM;
 
 	const initialTableState = useMemo(
 		() => getDefaultTableState('ControlledVocabularyTerms', columns, DEFAULT_COLUMN_WIDTH),

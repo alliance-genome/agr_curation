@@ -1,5 +1,6 @@
 import { BaseAuthService } from './BaseAuthService';
 import { DeletionService } from './DeletionService';
+import { Endpoints } from '../constants/Endpoints';
 
 export class VocabularyService extends BaseAuthService {
 	saveTerm(updatedTerm) {
@@ -28,11 +29,11 @@ export class VocabularyService extends BaseAuthService {
 
 	async deleteTerm(term) {
 		const deletionService = new DeletionService();
-		return await deletionService.delete(`vocabularyterm`, term.id);
+		return await deletionService.delete(Endpoints.Vocabulary.TERM, term.id);
 	}
 
 	async deleteVocabulary(updatedVocabulary) {
 		const deletionService = new DeletionService();
-		return await deletionService.delete('vocabulary', updatedVocabulary.id);
+		return await deletionService.delete(Endpoints.Vocabulary.VOCABULARY, updatedVocabulary.id);
 	}
 }

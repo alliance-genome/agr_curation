@@ -11,6 +11,7 @@ import { useGetTableData } from '../../service/useGetTableData';
 import { useGetUserSettings } from '../../service/useGetUserSettings';
 
 import { SearchService } from '../../service/SearchService';
+import { Endpoints } from '../../constants/Endpoints';
 import { OntologyTermTemplate } from '../../components/Templates/OntologyTermTemplate';
 import { ListDialogTemplate } from '../../components/Templates/dialog/ListDialogTemplate';
 import { TextDialogTemplate } from '../../components/Templates/dialog/TextDialogTemplate';
@@ -215,7 +216,7 @@ export const AffectedGenomicModelTable = () => {
 	);
 
 	const DEFAULT_COLUMN_WIDTH = 100 / columns.length;
-	const SEARCH_ENDPOINT = 'agm';
+	const SEARCH_ENDPOINT = Endpoints.Entity.AGM;
 
 	const initialTableState = useMemo(
 		() => getDefaultTableState('AffectedGenomicModels', columns, DEFAULT_COLUMN_WIDTH),

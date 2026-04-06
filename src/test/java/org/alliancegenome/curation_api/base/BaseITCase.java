@@ -158,6 +158,10 @@ public class BaseITCase {
 		checkBulkLoadRecordCounts(endpoint, filePath, "Records", 1, 0, 1, 0, 1);
 	}
 
+	public void checkWarningBulkLoad(String endpoint, String filePath, int nrWarnings) throws Exception {
+		checkBulkLoadRecordCounts(endpoint, filePath, "Records", 1, 0, 1, 0, nrWarnings);
+	}
+
 	public void checkSkippedBulkLoad(String endpoint, String filePath) throws Exception {
 		checkBulkLoadRecordCounts(endpoint, filePath, "Records", 1, 0, 0, 1, 0);
 	}
