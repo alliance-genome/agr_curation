@@ -82,6 +82,7 @@ public class AffectedGenomicModelDTOValidator extends GenomicEntityDTOValidator<
 		VocabularyTerm subtype = validateRequiredTermInVocabulary("subtype_name", dto.getSubtypeName(), VocabularyConstants.AGM_SUBTYPE_VOCABULARY);
 		agm.setSubtype(subtype);
 
+		response.convertWarningMessagesToMap();
 		response.convertErrorMessagesToMap();
 
 		if (response.hasErrors()) {
@@ -104,6 +105,11 @@ public class AffectedGenomicModelDTOValidator extends GenomicEntityDTOValidator<
 			response.addErrorMessage(field, nameResponse.errorMessagesString());
 			response.addErrorMessages(field, nameResponse.getErrorMessages());
 			return null;
+		}
+
+		if (nameResponse.hasWarnings()) {
+			response.addWarningMessage(field, nameResponse.warningMessagesString());
+			response.addWarningMessages(field, nameResponse.getWarningMessages());
 		}
 
 		AgmFullNameSlotAnnotation fullName = nameResponse.getEntity();
@@ -137,6 +143,9 @@ public class AffectedGenomicModelDTOValidator extends GenomicEntityDTOValidator<
 					syn.setSingleAgm(agm);
 					validatedSynonyms.add(syn);
 				}
+				if (synResponse.hasWarnings()) {
+					response.addWarningMessages(field, ix, synResponse.getWarningMessages());
+				}
 			}
 		}
 
@@ -144,6 +153,8 @@ public class AffectedGenomicModelDTOValidator extends GenomicEntityDTOValidator<
 			response.convertMapToErrorMessages(field);
 			return null;
 		}
+
+		response.convertMapToWarningMessages(field);
 
 		if (CollectionUtils.isEmpty(validatedSynonyms)) {
 			return null;
@@ -177,6 +188,9 @@ public class AffectedGenomicModelDTOValidator extends GenomicEntityDTOValidator<
 					sid.setSingleAgm(model);
 					validatedSecondaryIds.add(sid);
 				}
+				if (sidResponse.hasWarnings()) {
+					response.addWarningMessages(field, ix, sidResponse.getWarningMessages());
+				}
 			}
 		}
 
@@ -184,6 +198,8 @@ public class AffectedGenomicModelDTOValidator extends GenomicEntityDTOValidator<
 			response.convertMapToErrorMessages(field);
 			return null;
 		}
+
+		response.convertMapToWarningMessages(field);
 
 		if (CollectionUtils.isEmpty(validatedSecondaryIds)) {
 			return null;
