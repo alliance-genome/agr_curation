@@ -13,7 +13,7 @@ import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.interfaces.base.BasePopularityInterface;
-import org.alliancegenome.curation_api.model.document.es.AlleleSummaryDTO;
+import org.alliancegenome.curation_api.model.document.es.AlleleSummaryDocument;
 import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.Note;
 import org.alliancegenome.curation_api.model.ingest.dto.AlleleDTO;
@@ -33,11 +33,16 @@ import jakarta.transaction.Transactional;
 @RequestScoped
 public class AlleleService extends SubmittedObjectCrudService<Allele, AlleleDTO, AlleleDAO> implements BasePopularityInterface {
 
-	@Inject AlleleDAO alleleDAO;
-	@Inject AlleleValidator alleleValidator;
-	@Inject AlleleDTOValidator alleleDtoValidator;
-	@Inject PersonService personService;
-	@Inject NoteService noteService;
+	@Inject
+	AlleleDAO alleleDAO;
+	@Inject
+	AlleleValidator alleleValidator;
+	@Inject
+	AlleleDTOValidator alleleDtoValidator;
+	@Inject
+	PersonService personService;
+	@Inject
+	NoteService noteService;
 
 	@Override
 	@PostConstruct
@@ -161,7 +166,8 @@ public class AlleleService extends SubmittedObjectCrudService<Allele, AlleleDTO,
 		return alleleDAO.getAllAlleleSummaryIds();
 	}
 
-	public SearchResponse<AlleleSummaryDTO> findAllelesForSummaryByIds(List<Long> ids) {
+	public SearchResponse<AlleleSummaryDocument> findAllelesForSummaryByIds(List<Long> ids) {
 		return alleleDAO.findAllelesForSummaryByIds(ids);
 	}
+
 }

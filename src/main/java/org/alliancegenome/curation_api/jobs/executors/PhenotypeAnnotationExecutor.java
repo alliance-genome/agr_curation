@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import java.util.zip.GZIPInputStream;
 
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
+import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException.ObjectUpdateExceptionData;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
@@ -53,7 +54,9 @@ public class PhenotypeAnnotationExecutor extends LoadFileExecutor {
 
 			Set<Long> annotationIdsLoaded = new HashSet<>();
 			List<Long> annotationIdsBefore = phenotypeAnnotationService.getAnnotationIdsByDataProvider(dataProvider);
-			
+
+			phenotypeAnnotationService.preloadUniqueIds(dataProvider);
+
 			runLoad(bulkLoadFileHistory, phenotypeData.getData(), annotationIdsLoaded, dataProvider);
 			
 			runCleanup(phenotypeAnnotationService, bulkLoadFileHistory, dataProvider.name(), annotationIdsBefore, annotationIdsLoaded.stream().collect(Collectors.toList()), "phenotype annotation");
@@ -111,8 +114,8 @@ public class PhenotypeAnnotationExecutor extends LoadFileExecutor {
 			
 			ph.progressProcess();
 			if (Thread.currentThread().isInterrupted()) {
-				history.setErrorMessage("Thread isInterrupted");
-				throw new RuntimeException("Thread isInterrupted");
+				history.setErrorMessage(ApiErrorException.INTERRUPTED_MESSAGE);
+				throw new RuntimeException(ApiErrorException.INTERRUPTED_MESSAGE);
 			}
 		}
 		updateHistory(history);
@@ -143,8 +146,8 @@ public class PhenotypeAnnotationExecutor extends LoadFileExecutor {
 			
 			ph.progressProcess();
 			if (Thread.currentThread().isInterrupted()) {
-				history.setErrorMessage("Thread isInterrupted");
-				throw new RuntimeException("Thread isInterrupted");
+				history.setErrorMessage(ApiErrorException.INTERRUPTED_MESSAGE);
+				throw new RuntimeException(ApiErrorException.INTERRUPTED_MESSAGE);
 			}
 		}
 		updateHistory(history);

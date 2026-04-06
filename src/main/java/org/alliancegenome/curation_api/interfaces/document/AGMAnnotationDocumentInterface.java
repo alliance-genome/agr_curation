@@ -2,7 +2,7 @@ package org.alliancegenome.curation_api.interfaces.document;
 
 import java.util.List;
 
-import org.alliancegenome.curation_api.model.document.es.AffectedGenomicModelDocument;
+import org.alliancegenome.curation_api.model.document.es.AGMAnnotationDocument;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.view.CurationView;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
@@ -17,11 +17,11 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 
-@Path("/model")
+@Path("/agmannotation/document")
 @Tag(name = "Public Document Endpoints")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public interface ModelDocumentInterface {
+public interface AGMAnnotationDocumentInterface {
 
 	@GET
 	@Path("/ids")
@@ -30,6 +30,6 @@ public interface ModelDocumentInterface {
 	@POST
 	@Path("/byids")
 	@JsonView(CurationView.ModelDocument.class)
-	SearchResponse<AffectedGenomicModelDocument> findByIds(@RequestBody List<Long> ids);
+	SearchResponse<AGMAnnotationDocument> findByIds(@RequestBody List<Long> ids);
 
 }

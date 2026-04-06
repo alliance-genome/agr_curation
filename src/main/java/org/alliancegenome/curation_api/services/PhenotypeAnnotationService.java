@@ -24,10 +24,15 @@ import org.alliancegenome.curation_api.model.entities.AllelePhenotypeAnnotation;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.GenePhenotypeAnnotation;
 import org.alliancegenome.curation_api.model.entities.GenomicEntity;
+import org.alliancegenome.curation_api.model.entities.InformationContentEntity;
 import org.alliancegenome.curation_api.model.entities.PhenotypeAnnotation;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.PhenotypeFmsDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.base.BaseAnnotationCrudService;
+import org.alliancegenome.curation_api.services.helpers.annotations.AnnotationUniqueIdHelper;
+import org.alliancegenome.curation_api.services.validation.dto.fms.AGMPhenotypeAnnotationFmsDTOValidator;
+import org.alliancegenome.curation_api.services.validation.dto.fms.AllelePhenotypeAnnotationFmsDTOValidator;
+import org.alliancegenome.curation_api.services.validation.dto.fms.GenePhenotypeAnnotationFmsDTOValidator;
 import org.apache.commons.lang3.StringUtils;
 
 import jakarta.annotation.PostConstruct;
@@ -46,11 +51,17 @@ public class PhenotypeAnnotationService extends BaseAnnotationCrudService<Phenot
 	@Inject PersonDAO personDAO;
 	@Inject GenomicEntityService genomicEntityService;
 	@Inject ReferenceService referenceService;
+	@Inject InformationContentEntityService iceService;
 	@Inject AGMPhenotypeAnnotationService agmPhenotypeAnnotationService;
 	@Inject GenePhenotypeAnnotationService genePhenotypeAnnotationService;
 	@Inject AllelePhenotypeAnnotationService allelePhenotypeAnnotationService;
+	@Inject GenePhenotypeAnnotationFmsDTOValidator genePhenotypeAnnotationFmsDtoValidator;
+	@Inject AllelePhenotypeAnnotationFmsDTOValidator allelePhenotypeAnnotationFmsDtoValidator;
+	@Inject AGMPhenotypeAnnotationFmsDTOValidator agmPhenotypeAnnotationFmsDtoValidator;
 
 	HashMap<String, List<PhenotypeFmsDTO>> unprocessedAnnotationsMap = new HashMap<>();
+	private HashMap<String, String> genomicEntityIdentifierCache = new HashMap<>();
+	private Map<String, Long> existingUniqueIds;
 
 	@Override
 	@PostConstruct
@@ -90,15 +101,52 @@ public class PhenotypeAnnotationService extends BaseAnnotationCrudService<Phenot
 		return annotationIds;
 	}
 
+	public void preloadUniqueIds(BackendBulkDataProvider dataProvider) {
+		existingUniqueIds = phenotypeAnnotationDAO.findUniqueIdsByDataProvider(dataProvider.sourceOrganization);
+		Map<String, Long> inferredGeneIds = phenotypeAnnotationDAO.findInferredGeneIdsByDataProvider(dataProvider.sourceOrganization);
+		Map<String, Long> inferredAlleleIds = phenotypeAnnotationDAO.findInferredAlleleIdsByDataProvider(dataProvider.sourceOrganization);
+		genePhenotypeAnnotationFmsDtoValidator.setExistingUniqueIds(existingUniqueIds);
+		allelePhenotypeAnnotationFmsDtoValidator.setExistingUniqueIds(existingUniqueIds);
+		allelePhenotypeAnnotationFmsDtoValidator.setInferredGeneIds(inferredGeneIds);
+		agmPhenotypeAnnotationFmsDtoValidator.setExistingUniqueIds(existingUniqueIds);
+		agmPhenotypeAnnotationFmsDtoValidator.setInferredGeneIds(inferredGeneIds);
+		agmPhenotypeAnnotationFmsDtoValidator.setInferredAlleleIds(inferredAlleleIds);
+	}
+
+	private String resolveIdentifier(String objectId) {
+		return genomicEntityIdentifierCache.computeIfAbsent(objectId, id -> {
+			GenomicEntity entity = genomicEntityService.findByIdentifierString(id);
+			return entity != null ? entity.getIdentifier() : null;
+		});
+	}
+
 	@Transactional
 	public Long upsertPrimaryAnnotation(PhenotypeFmsDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
 		if (StringUtils.isBlank(dto.getObjectId())) {
 			throw new ObjectValidationException(dto, "objectId - " + ValidationConstants.REQUIRED_MESSAGE);
 		}
-		GenomicEntity phenotypeAnnotationSubject = genomicEntityService.findByIdentifierString(dto.getObjectId());
-		if (phenotypeAnnotationSubject == null) {
+
+		String subjectIdentifier = resolveIdentifier(dto.getObjectId());
+		if (subjectIdentifier == null) {
 			throw new ObjectValidationException(dto, "objectId - " + ValidationConstants.INVALID_MESSAGE + " (" + dto.getObjectId() + ")");
 		}
+
+		// Skip unchanged records by checking pre-loaded uniqueId map
+		if (existingUniqueIds != null && dto.getEvidence() != null && StringUtils.isNotBlank(dto.getEvidence().getPublicationId())) {
+			String refCurie = dto.getEvidence().getPublicationId();
+			if (refCurie.startsWith("OMIM:")) {
+				refCurie = refCurie.substring(1);
+			}
+			InformationContentEntity refEntity = iceService.retrieveFromDbOrLiteratureService(refCurie);
+			String refString = refEntity != null ? refEntity.getCurie() : null;
+			String uniqueId = AnnotationUniqueIdHelper.getPhenotypeAnnotationUniqueId(dto, subjectIdentifier, refString);
+			if (existingUniqueIds.containsKey(uniqueId)) {
+				return existingUniqueIds.get(uniqueId);
+			}
+		}
+
+		// Not skipped -- do a fresh entity lookup within this transaction
+		GenomicEntity phenotypeAnnotationSubject = genomicEntityService.findByIdentifierString(dto.getObjectId());
 
 		if (phenotypeAnnotationSubject instanceof AffectedGenomicModel) {
 			AGMPhenotypeAnnotation annotation = agmPhenotypeAnnotationService.upsertPrimaryAnnotation((AffectedGenomicModel) phenotypeAnnotationSubject, dto, dataProvider);

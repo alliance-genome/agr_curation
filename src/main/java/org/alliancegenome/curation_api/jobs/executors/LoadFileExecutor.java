@@ -7,7 +7,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.stream.Collectors;
 import java.util.zip.GZIPInputStream;
 
 import org.alliancegenome.curation_api.config.RestDefaultObjectMapper;
@@ -16,6 +15,7 @@ import org.alliancegenome.curation_api.dao.loads.BulkLoadFileExceptionDAO;
 import org.alliancegenome.curation_api.dao.loads.BulkLoadFileHistoryDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.enums.JobStatus;
+import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.exceptions.KnownIssueValidationException;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException.ObjectUpdateExceptionData;
@@ -35,7 +35,6 @@ import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
 import org.alliancegenome.curation_api.services.processing.LoadProcessDisplayService;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -59,6 +58,9 @@ public class LoadFileExecutor {
 	APIVersionInfoService apiVersionInfoService;
 	@Inject
 	SlackNotifier slackNotifier;
+
+	record IdObject(long id) {
+	}
 
 	protected void updateHistory(BulkLoadFileHistory history) {
 		bulkLoadFileHistoryDAO.merge(history);
@@ -113,14 +115,12 @@ public class LoadFileExecutor {
 		if (bulkLoadFileHistory.getBulkLoadFile().getLinkMLSchemaVersion() == null) {
 			bulkLoadFileHistory.setErrorMessage("Missing Schema Version");
 			bulkLoadFileHistory.setBulkloadStatus(JobStatus.FAILED);
-			slackNotifier.slackalert(bulkLoadFileHistory);
 			bulkLoadFileHistoryDAO.merge(bulkLoadFileHistory);
 			return false;
 		}
 		if (!validSchemaVersion(bulkLoadFileHistory.getBulkLoadFile().getLinkMLSchemaVersion(), dtoClass)) {
 			bulkLoadFileHistory.setErrorMessage("Invalid Schema Version: " + bulkLoadFileHistory.getBulkLoadFile().getLinkMLSchemaVersion());
 			bulkLoadFileHistory.setBulkloadStatus(JobStatus.FAILED);
-			slackNotifier.slackalert(bulkLoadFileHistory);
 			bulkLoadFileHistoryDAO.merge(bulkLoadFileHistory);
 			return false;
 		}
@@ -229,8 +229,8 @@ public class LoadFileExecutor {
 
 	protected <E extends AuditedObject, T extends BaseDTO> boolean runLoad(BaseUpsertServiceInterface<E, T> service, BulkLoadFileHistory history, BackendBulkDataProvider dataProvider, List<T> objectList, List<Long> idsAdded, Boolean terminateFailing, String countType, String dataType) {
 		if (Thread.currentThread().isInterrupted()) {
-			history.setErrorMessage("Thread isInterrupted");
-			throw new RuntimeException("Thread isInterrupted");
+			history.setErrorMessage(ApiErrorException.INTERRUPTED_MESSAGE);
+			throw new RuntimeException(ApiErrorException.INTERRUPTED_MESSAGE);
 		}
 		ProcessDisplayHelper ph = new ProcessDisplayHelper();
 		ph.addDisplayHandler(loadProcessDisplayService);
@@ -250,7 +250,7 @@ public class LoadFileExecutor {
 						for (Entry<String, String> entry : dbObject.getWarningMessages().entrySet()) {
 							history.incrementWarnings(countType);
 						}
-						addException(history, new ObjectUpdateExceptionData(dtoObject, dbObject.warningMessagesList(), null));
+						addException(history, new ObjectUpdateExceptionData(dtoObject, dbObject.warningMessagesString(), null));
 					}
 					history.incrementCompleted(countType);
 					if (idsAdded != null) {
@@ -276,8 +276,8 @@ public class LoadFileExecutor {
 				}
 				ph.progressProcess();
 				if (Thread.currentThread().isInterrupted()) {
-					history.setErrorMessage("Thread isInterrupted");
-					throw new RuntimeException("Thread isInterrupted");
+					history.setErrorMessage(ApiErrorException.INTERRUPTED_MESSAGE);
+					throw new RuntimeException(ApiErrorException.INTERRUPTED_MESSAGE);
 				}
 			}
 			updateHistory(history);
@@ -294,16 +294,21 @@ public class LoadFileExecutor {
 	// The following methods are for bulk validation
 	protected <S extends BaseEntityCrudService<?, ?>> void runCleanup(S service, BulkLoadFileHistory history, String dataProviderName, List<Long> annotationIdsBefore, List<Long> annotationIdsAfter, String loadTypeString, Boolean deprecate) {
 		if (Thread.currentThread().isInterrupted()) {
-			history.setErrorMessage("Thread isInterrupted");
-			throw new RuntimeException("Thread isInterrupted");
+			history.setErrorMessage(ApiErrorException.INTERRUPTED_MESSAGE);
+			throw new RuntimeException(ApiErrorException.INTERRUPTED_MESSAGE);
 		}
-		Log.debug("runLoad: After: " + dataProviderName + " " + annotationIdsAfter.size());
+		Log.debug("runCleanup: After: " + dataProviderName + " " + annotationIdsAfter.size());
 
-		List<Long> distinctAfter = annotationIdsAfter.stream().distinct().collect(Collectors.toList());
-		Log.debug("runLoad: Distinct: " + dataProviderName + " " + distinctAfter.size());
+		Set<Long> distinctAfter = new LinkedHashSet<>(annotationIdsAfter);
+		Log.debug("runCleanup: Distinct: " + dataProviderName + " " + distinctAfter.size());
 
-		List<Long> idsToRemove = ListUtils.subtract(annotationIdsBefore, distinctAfter);
-		Log.debug("runLoad: Remove: " + dataProviderName + " " + idsToRemove.size());
+		List<Long> idsToRemove = new ArrayList<>();
+		for (Long id : annotationIdsBefore) {
+			if (!distinctAfter.contains(id)) {
+				idsToRemove.add(id);
+			}
+		}
+		Log.debug("runCleanup: Remove: " + dataProviderName + " " + idsToRemove.size());
 
 		String countType = loadTypeString + " Deleted";
 
@@ -312,32 +317,80 @@ public class LoadFileExecutor {
 
 		String loadDescription = dataProviderName + " " + loadTypeString + " bulk load (" + history.getBulkLoadFile().getMd5Sum() + ")";
 
-		ProcessDisplayHelper ph = new ProcessDisplayHelper(10000);
-		ph.startProcess("Deletion/deprecation of: " + dataProviderName + " " + loadTypeString, idsToRemove.size());
 		updateHistory(history);
-		for (Long id : idsToRemove) {
-			try {
-				service.deprecateOrDelete(id, false, loadDescription, deprecate);
-				history.incrementCompleted(countType);
-			} catch (Exception e) {
-				e.printStackTrace();
-				history.incrementFailed(countType);
-				addException(history, new ObjectUpdateExceptionData("{ \"id\": " + id + "}", e.getMessage(), e.getStackTrace()));
+		Log.info("Updated history ready to delete");
+		
+		if (!deprecate) {
+			// Batch delete path — bulk JPQL DELETE, fall back to per-row on FK errors
+			int batchSize = 3000;
+			ProcessDisplayHelper ph = new ProcessDisplayHelper(10000);
+			ph.startProcess("Deletion/deprecation in batches: " + dataProviderName + " " + loadTypeString, idsToRemove.size() / batchSize);
+
+			for (int i = 0; i < idsToRemove.size(); i += batchSize) {
+				int end = Math.min(i + batchSize, idsToRemove.size());
+				List<Long> batch = idsToRemove.subList(i, end);
+				try {
+					service.removeByIds(batch);
+					for (int j = 0; j < batch.size(); j++) {
+						history.incrementCompleted(countType);
+					}
+				} catch (Exception batchEx) {
+					// FK constraint or other error — fall back to per-row for this batch
+					Log.warn("Batch delete failed, falling back to per-row: " + batchEx.getMessage());
+					for (Long id : batch) {
+						try {
+							service.deprecateOrDelete(id, false, loadDescription, false);
+							history.incrementCompleted(countType);
+						} catch (Exception e) {
+							e.printStackTrace();
+							history.incrementFailed(countType);
+							addException(history, new ObjectUpdateExceptionData(new IdObject(id), e.getMessage(), e.getStackTrace()));
+						}
+					}
+				}
+				if (history.getErrorRate(countType) > 0.25) {
+					Log.error(countType + " failure rate > 25% aborting load");
+					failLoadAboveErrorRateCutoff(history);
+					break;
+				}
+				if (Thread.currentThread().isInterrupted()) {
+					history.setErrorMessage("Thread isInterrupted");
+					throw new RuntimeException("Thread isInterrupted");
+				}
+				ph.progressProcess();
 			}
-			if (history.getErrorRate(countType) > 0.25) {
-				Log.error(countType + " failure rate > 25% aborting load");
-				failLoadAboveErrorRateCutoff(history);
-				break;
+			ph.finishProcess();
+		} else {
+			// Deprecate path — per-row update (sets obsolete=true)
+			ProcessDisplayHelper ph = new ProcessDisplayHelper(10000);
+			ph.startProcess("Deletion/deprecation of: " + dataProviderName + " " + loadTypeString, idsToRemove.size());
+
+			for (Long id : idsToRemove) {
+				try {
+					service.deprecateOrDelete(id, false, loadDescription, deprecate);
+					history.incrementCompleted(countType);
+				} catch (Exception e) {
+					e.printStackTrace();
+					history.incrementFailed(countType);
+					addException(history, new ObjectUpdateExceptionData(new IdObject(id), e.getMessage(), e.getStackTrace()));
+				}
+				if (history.getErrorRate(countType) > 0.25) {
+					Log.error(countType + " failure rate > 25% aborting load");
+					failLoadAboveErrorRateCutoff(history);
+					break;
+				}
+				ph.progressProcess();
+				if (Thread.currentThread().isInterrupted()) {
+					history.setErrorMessage(ApiErrorException.INTERRUPTED_MESSAGE);
+					throw new RuntimeException(ApiErrorException.INTERRUPTED_MESSAGE);
+				}
 			}
-			ph.progressProcess();
-			if (Thread.currentThread().isInterrupted()) {
-				history.setErrorMessage("Thread isInterrupted");
-				throw new RuntimeException("Thread isInterrupted");
-			}
+			ph.finishProcess();
 		}
+		Log.info("Saving history");
 		updateHistory(history);
 		updateExceptions(history);
-		ph.finishProcess();
+		Log.info("Finished cleanup");
 	}
 
 	protected void failLoad(BulkLoadFileHistory bulkLoadFileHistory, Exception e) {
@@ -351,14 +404,12 @@ public class LoadFileExecutor {
 		}
 		bulkLoadFileHistory.setErrorMessage(String.join("|", errorMessages));
 		bulkLoadFileHistory.setBulkloadStatus(JobStatus.FAILED);
-		slackNotifier.slackalert(bulkLoadFileHistory);
 		updateHistory(bulkLoadFileHistory);
 	}
 
 	protected void failLoadAboveErrorRateCutoff(BulkLoadFileHistory bulkLoadFileHistory) {
 		bulkLoadFileHistory.setBulkloadStatus(JobStatus.FAILED);
 		bulkLoadFileHistory.setErrorMessage("Failure rate exceeded cutoff");
-		slackNotifier.slackalert(bulkLoadFileHistory);
 		updateHistory(bulkLoadFileHistory);
 	}
 }

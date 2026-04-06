@@ -2,6 +2,7 @@ import React, { useRef, useState, useMemo } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { Toast } from 'primereact/toast';
 import { SearchService } from '../../service/SearchService';
+import { Endpoints } from '../../constants/Endpoints';
 import { Messages } from 'primereact/messages';
 import { ErrorMessageComponent } from '../../components/Error/ErrorMessageComponent';
 import { Button } from 'primereact/button';
@@ -63,7 +64,7 @@ export const VocabularyTermSetTable = () => {
 	};
 	const vocabularySearch = (event, setFiltered, setQuery) => {
 		const autocompleteFields = ['name'];
-		const endpoint = 'vocabulary';
+		const endpoint = Endpoints.Vocabulary.VOCABULARY;
 		const filterName = 'vocabularyFilter';
 		const filter = buildAutocompleteFilter(event, autocompleteFields);
 
@@ -104,7 +105,7 @@ export const VocabularyTermSetTable = () => {
 
 	const memberTermSearch = (event, setFiltered, setInputValue, props) => {
 		const autocompleteFields = ['name'];
-		const endpoint = 'vocabularyterm';
+		const endpoint = Endpoints.Vocabulary.TERM;
 		const filterName = 'memberTermsFilter';
 		const filter = buildAutocompleteFilter(event, autocompleteFields);
 		const otherFilters = {
@@ -211,7 +212,7 @@ export const VocabularyTermSetTable = () => {
 	);
 
 	const DEFAULT_COLUMN_WIDTH = 15;
-	const SEARCH_ENDPOINT = 'vocabularytermset';
+	const SEARCH_ENDPOINT = Endpoints.Vocabulary.TERM_SET;
 
 	const initialTableState = useMemo(
 		() => getDefaultTableState('VocabularyTermSets', columns, DEFAULT_COLUMN_WIDTH),

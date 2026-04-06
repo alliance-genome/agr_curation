@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.alliancegenome.curation_api.constants.ValidationConstants;
@@ -19,6 +20,7 @@ import org.alliancegenome.curation_api.model.entities.ExternalDatabaseReference;
 import org.alliancegenome.curation_api.model.entities.InformationContentEntity;
 import org.alliancegenome.curation_api.model.entities.PhenotypeAnnotation;
 import org.alliancegenome.curation_api.model.entities.ontology.PhenotypeTerm;
+import org.alliancegenome.curation_api.services.helpers.annotations.AnnotationUniqueIdHelper;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.ConditionRelationFmsDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.PhenotypeFmsDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.PhenotypeTermIdentifierFmsDTO;
@@ -47,6 +49,22 @@ public class PhenotypeAnnotationFmsDTOValidator {
 	@Inject VocabularyTermService vocabularyTermService;
 	@Inject ResourceDescriptorPageService resourceDescriptorPageService;
 	@Inject ExternalDatabaseReferenceDAO externalDatabaseReferenceDAO;
+
+	protected Map<String, Long> existingUniqueIds;
+	protected Map<String, Long> inferredGeneIds;
+	protected Map<String, Long> inferredAlleleIds;
+
+	public void setExistingUniqueIds(Map<String, Long> existingUniqueIds) {
+		this.existingUniqueIds = existingUniqueIds;
+	}
+
+	public void setInferredGeneIds(Map<String, Long> inferredGeneIds) {
+		this.inferredGeneIds = inferredGeneIds;
+	}
+
+	public void setInferredAlleleIds(Map<String, Long> inferredAlleleIds) {
+		this.inferredAlleleIds = inferredAlleleIds;
+	}
 
 	public <E extends PhenotypeAnnotation> ObjectResponse<E> validatePhenotypeAnnotation(E annotation, PhenotypeFmsDTO dto, BackendBulkDataProvider beDataProvider) {
 
@@ -144,9 +162,23 @@ public class PhenotypeAnnotationFmsDTOValidator {
 		return refResponse;
 	}
 
-	protected <D extends BaseSQLDAO<E>, E extends PhenotypeAnnotation> List<E> findPrimaryAnnotations(D dao, PhenotypeFmsDTO dto, String primaryAnnotationSubjectprimaryExternalId, String refString) {
+	protected <D extends BaseSQLDAO<E>, E extends PhenotypeAnnotation> List<E> findPrimaryAnnotations(D dao, PhenotypeFmsDTO dto, String primaryAnnotationSubjectIdentifier, String refString) {
+		// Fast path: compute uniqueId and look up in pre-loaded map
+		if (existingUniqueIds != null) {
+			String uniqueId = AnnotationUniqueIdHelper.getPhenotypeAnnotationUniqueId(dto, primaryAnnotationSubjectIdentifier, refString);
+			Long existingId = existingUniqueIds.get(uniqueId);
+			if (existingId != null) {
+				E annotation = dao.find(existingId);
+				if (annotation != null) {
+					return List.of(annotation);
+				}
+			}
+			return null;
+		}
+
+		// Fallback: original findByParams path
 		HashMap<String, Object> params = new HashMap<>();
-		params.put("phenotypeAnnotationSubject.primaryExternalId", primaryAnnotationSubjectprimaryExternalId);
+		params.put("phenotypeAnnotationSubject.primaryExternalId", primaryAnnotationSubjectIdentifier);
 		if (StringUtils.isNotBlank(dto.getPhenotypeStatement())) {
 			params.put("phenotypeAnnotationObject", dto.getPhenotypeStatement());
 		} else {
@@ -157,12 +189,12 @@ public class PhenotypeAnnotationFmsDTOValidator {
 		} else {
 			return null;
 		}
-		
+
 		SearchResponse<E> searchResponse = dao.findByParams(params);
 		if (searchResponse == null || CollectionUtils.isEmpty(searchResponse.getResults())) {
 			return null;
 		}
-		
+
 		String secondaryPhenotypeTermIdString = "";
 		if (CollectionUtils.isNotEmpty(dto.getPhenotypeTermIdentifiers())) {
 			List<String> validPhenotypeTermCuries = new ArrayList<>();
@@ -178,7 +210,7 @@ public class PhenotypeAnnotationFmsDTOValidator {
 				secondaryPhenotypeTermIdString = getPhenotypeTermIdString(validPhenotypeTermCuries);
 			}
 		}
-		
+
 		List<E> primaryAnnotations = new ArrayList<>();
 		for (E possiblePrimaryAnnotation : searchResponse.getResults()) {
 			String primaryPhenotypeTermIdString = "";
@@ -192,7 +224,7 @@ public class PhenotypeAnnotationFmsDTOValidator {
 		if (CollectionUtils.isEmpty(primaryAnnotations)) {
 			return null;
 		}
-		
+
 		return primaryAnnotations;
 	}
 	

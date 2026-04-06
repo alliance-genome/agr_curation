@@ -15,14 +15,14 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 
-@Path("/gene-expression")
+@Path("/gene-expression/document")
 @Tag(name = "Public Document Endpoints")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public interface GeneExpressionDocumentInterface {
 	
 	@POST
-	@Path("/expression-documents")
+	@Path("/")
 	@JsonView(CurationView.GeneExpressionDocument.class)
 	SearchResponse<GeneExpressionDocument> getConsolidateDocumentsForGenes(List<String> geneIds);
 

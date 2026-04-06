@@ -4,10 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
-import org.alliancegenome.curation_api.constants.EntityFieldConstants;
 import org.alliancegenome.curation_api.dao.PersonDAO;
 import org.alliancegenome.curation_api.dao.associations.ExonGenomicLocationAssociationDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
@@ -38,15 +36,13 @@ public class ExonGenomicLocationAssociationService extends BaseEntityCrudService
 
 
 	public List<Long> getIdsByDataProvider(BackendBulkDataProvider dataProvider) {
-		Map<String, Object> params = new HashMap<>();
-		params.put(EntityFieldConstants.EXON_ASSOCIATION_SUBJECT_DATA_PROVIDER, dataProvider.sourceOrganization);
-		if (StringUtils.equals(dataProvider.sourceOrganization, "RGD") || StringUtils.equals(dataProvider.sourceOrganization, "XB")) {
-			params.put(EntityFieldConstants.EXON_ASSOCIATION_SUBJECT_TAXON, dataProvider.canonicalTaxonCurie);
-		}
-		List<Long> associationIds = exonGenomicLocationAssociationDAO.findIdsByParams(params);
-		associationIds.removeIf(Objects::isNull);
+		String taxon = needsTaxonFilter(dataProvider) ? dataProvider.canonicalTaxonCurie : null;
+		return exonGenomicLocationAssociationDAO.findIdsByDataProvider(dataProvider.sourceOrganization, taxon);
+	}
 
-		return associationIds;
+	private boolean needsTaxonFilter(BackendBulkDataProvider dataProvider) {
+		return StringUtils.equals(dataProvider.sourceOrganization, "RGD")
+			|| StringUtils.equals(dataProvider.sourceOrganization, "XB");
 	}
 
 	public ObjectResponse<ExonGenomicLocationAssociation> getLocationAssociation(Long exonId, Long assemblyComponentId) {

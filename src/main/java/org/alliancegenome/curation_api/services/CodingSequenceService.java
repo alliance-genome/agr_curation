@@ -2,12 +2,7 @@ package org.alliancegenome.curation_api.services;
 
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-
-import org.alliancegenome.curation_api.constants.EntityFieldConstants;
 import org.alliancegenome.curation_api.dao.CodingSequenceDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
@@ -41,14 +36,13 @@ public class CodingSequenceService extends BaseEntityCrudService<CodingSequence,
 	}
 
 	public List<Long> getIdsByDataProvider(BackendBulkDataProvider dataProvider) {
-		Map<String, Object> params = new HashMap<>();
-		params.put(EntityFieldConstants.DATA_PROVIDER, dataProvider.sourceOrganization);
-		if (StringUtils.equals(dataProvider.sourceOrganization, "RGD") || StringUtils.equals(dataProvider.sourceOrganization, "XB")) {
-			params.put(EntityFieldConstants.TAXON, dataProvider.canonicalTaxonCurie);
-		}
-		List<Long> ids = codingSequenceDAO.findIdsByParams(params);
-		ids.removeIf(Objects::isNull);
-		return ids;
+		String taxon = needsTaxonFilter(dataProvider) ? dataProvider.canonicalTaxonCurie : null;
+		return codingSequenceDAO.findIdsByDataProvider(dataProvider.sourceOrganization, taxon);
+	}
+
+	private boolean needsTaxonFilter(BackendBulkDataProvider dataProvider) {
+		return StringUtils.equals(dataProvider.sourceOrganization, "RGD")
+			|| StringUtils.equals(dataProvider.sourceOrganization, "XB");
 	}
 
 	@Override

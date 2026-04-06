@@ -15,7 +15,7 @@ import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-@AGRCurationSchemaVersion(min = "2.0.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { EvidenceAssociationDTO.class, NoteDTO.class }, submitted = true)
+@AGRCurationSchemaVersion(min = "2.14.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { EvidenceAssociationDTO.class, NoteDTO.class }, submitted = true)
 public class ConstructGenomicEntityAssociationDTO extends EvidenceAssociationDTO {
 
 	@JsonView({ CurationView.FieldsOnly.class })
@@ -23,8 +23,8 @@ public class ConstructGenomicEntityAssociationDTO extends EvidenceAssociationDTO
 	private String constructIdentifier;
 	
 	@JsonView({ CurationView.FieldsOnly.class })
-	@JsonProperty("genomic_entity_relation_name")
-	private String genomicEntityRelationName;
+	@JsonProperty("relation_name")
+	private String relationName;
 	
 	@JsonView({ CurationView.FieldsOnly.class })
 	@JsonProperty("genomic_entity_identifier")

@@ -1,15 +1,20 @@
 package org.alliancegenome.curation_api.controllers.document;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import org.alliancegenome.curation_api.interfaces.document.AlleleDocumentInterface;
 import org.alliancegenome.curation_api.model.document.builders.AlleleSummaryDocumentBuilder;
-import org.alliancegenome.curation_api.model.document.es.AlleleSummaryDTO;
+import org.alliancegenome.curation_api.model.document.builders.TransgenicAlleleDocumentBuilder;
 import org.alliancegenome.curation_api.model.document.es.AlleleSummaryDocument;
+import org.alliancegenome.curation_api.model.document.es.TransgenicAlleleDocument;
+import org.alliancegenome.curation_api.model.entities.associations.AlleleConstructAssociation;
+import org.alliancegenome.curation_api.model.input.Pagination;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.AlleleService;
 import org.alliancegenome.curation_api.services.ResourceDescriptorPageService;
+import org.alliancegenome.curation_api.services.associations.AlleleConstructAssociationService;
 
 import jakarta.inject.Inject;
 import lombok.extern.jbosslog.JBossLog;
@@ -21,30 +26,50 @@ public class AlleleDocumentController implements AlleleDocumentInterface {
 	AlleleService alleleService;
 
 	@Inject
+	AlleleConstructAssociationService acService;
+
+	@Inject
 	ResourceDescriptorPageService resourceDescriptorPageService;
 
 	@Override
 	public SearchResponse<Long> getAllIds() {
 		List<Long> ids = alleleService.getAllAlleleSummaryIds();
 		SearchResponse<Long> response = new SearchResponse<>(ids);
-		response.setTotalResults((long) ids.size());
+		response.setTotalResults(ids.size());
 		return response;
 	}
 
 	@Override
 	public SearchResponse<AlleleSummaryDocument> findSummaryByIds(List<Long> ids) {
-		SearchResponse<AlleleSummaryDTO> resp = alleleService.findAllelesForSummaryByIds(ids);
-		ArrayList<AlleleSummaryDocument> list = new ArrayList<>();
+		SearchResponse<AlleleSummaryDocument> resp = alleleService.findAllelesForSummaryByIds(ids);
 		if (resp.getResults() != null) {
-			AlleleSummaryDocumentBuilder alleleSummaryDocumentBuilder = new AlleleSummaryDocumentBuilder();
-			for (AlleleSummaryDTO dto : resp.getResults()) {
-				AlleleSummaryDocument doc = alleleSummaryDocumentBuilder.buildSummaryDocument(dto, resourceDescriptorPageService);
+			AlleleSummaryDocumentBuilder builder = new AlleleSummaryDocumentBuilder();
+			for (AlleleSummaryDocument doc : resp.getResults()) {
+				builder.finalizeDocument(doc, resourceDescriptorPageService);
+			}
+		}
+		return resp;
+	}
+
+	@Override
+	public SearchResponse<TransgenicAlleleDocument> findDocuments(Integer page, Integer limit, HashMap<String, Object> params) {
+		if (params == null) {
+			params = new HashMap<>();
+		}
+		params.put("alleleAssociationSubject.obsolete", false);
+		params.put("alleleAssociationSubject.internal", false);
+
+		SearchResponse<AlleleConstructAssociation> response = acService.findByParams(new Pagination(page, limit), params);
+		List<TransgenicAlleleDocument> list = new ArrayList<>();
+		if (response.getResults() != null) {
+			TransgenicAlleleDocumentBuilder builder = new TransgenicAlleleDocumentBuilder();
+			for (AlleleConstructAssociation association : response.getResults()) {
+				TransgenicAlleleDocument doc = builder.buildTransgenicAlleleDocument(association);
 				list.add(doc);
 			}
 		}
-
-		SearchResponse<AlleleSummaryDocument> ret = new SearchResponse<>(list);
-		ret.setTotalResults(resp.getTotalResults());
+		SearchResponse<TransgenicAlleleDocument> ret = new SearchResponse<>(list);
+		ret.setTotalResults(response.getTotalResults());
 		return ret;
 	}
 

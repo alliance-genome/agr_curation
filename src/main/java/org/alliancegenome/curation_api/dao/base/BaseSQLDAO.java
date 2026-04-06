@@ -3,6 +3,7 @@ package org.alliancegenome.curation_api.dao.base;
 import static org.reflections.scanners.Scanners.TypesAnnotated;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -72,11 +73,10 @@ public class BaseSQLDAO<E extends AuditedObject> extends BaseEntityDAO<E> {
 
 	@Transactional
 	public E persist(E entity) {
-		Log.debug("SqlDAO: persist: " + entity);
 		try {
 			entityManager.persist(entity);
 		} catch (Exception e) {
-			Log.error("Entity Persist Failed: " + entity);
+			Log.error("Entity Persist Failed: " + entity.getClass().getSimpleName() + " id=" + entity.getId());
 			throw e;
 		}
 		return entity;
@@ -84,11 +84,10 @@ public class BaseSQLDAO<E extends AuditedObject> extends BaseEntityDAO<E> {
 
 	@Transactional
 	public List<E> persist(List<E> entities) {
-		Log.debug("SqlDAO: persist: " + entities);
 		try {
 			entityManager.persist(entities);
 		} catch (Exception e) {
-			Log.error("Entity Persist Failed: " + entities);
+			Log.error("Entity Persist Failed: " + entities.getClass().getSimpleName());
 			throw e;
 		}
 		return entities;
@@ -96,11 +95,10 @@ public class BaseSQLDAO<E extends AuditedObject> extends BaseEntityDAO<E> {
 
 	@Transactional
 	public E merge(E entity) {
-		Log.debug("SqlDAO: merge: " + entity);
 		try {
 			entityManager.merge(entity);
 		} catch (Exception e) {
-			Log.error("Entity Persist Failed: " + entity);
+			Log.error("Entity Merge Failed: " + entity.getClass().getSimpleName() + " id=" + entity.getId());
 			throw e;
 		}
 		return entity;
@@ -117,6 +115,17 @@ public class BaseSQLDAO<E extends AuditedObject> extends BaseEntityDAO<E> {
 			handlePersistenceException(entity, e);
 		}
 		return entity;
+	}
+
+	@Transactional
+	public int removeByIds(Collection<Long> ids) {
+		if (ids == null || ids.isEmpty()) {
+			return 0;
+		}
+		return entityManager
+			.createQuery("DELETE FROM " + myClass.getSimpleName() + " e WHERE e.id IN :ids")
+			.setParameter("ids", ids)
+			.executeUpdate();
 	}
 
 	public E find(Long id) {

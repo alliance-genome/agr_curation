@@ -2,6 +2,7 @@ package org.alliancegenome.curation_api.controllers.document;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import org.alliancegenome.curation_api.interfaces.document.HTPDatasetDocumentInterface;
 import org.alliancegenome.curation_api.model.document.builders.HTPDatasetDocumentBuilder;
@@ -36,6 +37,31 @@ public class HTPDatasetDocumentController implements HTPDatasetDocumentInterface
 
 		SearchResponse<HTPDatasetSearchResultDocument> ret = new SearchResponse<HTPDatasetSearchResultDocument>(list);
 		ret.setTotalResults(resp.getTotalResults());
+		return ret;
+	}
+
+	@Override
+	public SearchResponse<Long> getAllIds() {
+		List<Long> ids = htpDatasetService.getAllHTPDatasetSearchResultIds();
+		SearchResponse<Long> response = new SearchResponse<>(ids);
+		response.setTotalResults((long) ids.size());
+		return response;
+	}
+
+	@Override
+	public SearchResponse<HTPDatasetSearchResultDocument> findByIds(List<Long> ids) {
+		List<HTPExpressionDatasetAnnotation> annotations = htpDatasetService.findByIds(ids);
+
+		ArrayList<HTPDatasetSearchResultDocument> list = new ArrayList<>();
+		if (annotations != null) {
+			for (HTPExpressionDatasetAnnotation annotation : annotations) {
+				HTPDatasetSearchResultDocument doc = HTPDatasetDocumentBuilder.buildSearchResultDocument(annotation);
+				list.add(doc);
+			}
+		}
+
+		SearchResponse<HTPDatasetSearchResultDocument> ret = new SearchResponse<>(list);
+		ret.setTotalResults((long) list.size());
 		return ret;
 	}
 }

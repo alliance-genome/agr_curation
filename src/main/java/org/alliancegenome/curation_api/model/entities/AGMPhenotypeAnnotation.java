@@ -165,6 +165,6 @@ public class AGMPhenotypeAnnotation extends PhenotypeAnnotation {
 		if (phenotypeAnnotationSubject.getTaxon() == null) {
 			return null;
 		}
-		return phenotypeAnnotationSubject.getTaxon().getGenusSpecies();
+		return phenotypeAnnotationSubject.getTaxon().getSpecies().getFullName();
 	}
 }

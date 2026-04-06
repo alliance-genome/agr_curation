@@ -8,7 +8,6 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
-import org.alliancegenome.curation_api.constants.VariantConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.PredictedVariantConsequence;
@@ -83,7 +82,7 @@ public class CuratedVariantGenomicLocationAssociation extends VariantGenomicLoca
 						return Integer.MAX_VALUE;
 					}
 					return pvc.getVepConsequences().stream()
-							.map(soTerm -> VariantConstants.SORTED_VARIANT_CONSEQUENCE_MAP.getOrDefault(soTerm.getName(), Integer.MAX_VALUE))
+							.map(soTerm -> soTerm.getSeverityOrder() != null ? soTerm.getSeverityOrder() : Integer.MAX_VALUE)
 							.min(Integer::compareTo)
 							.orElse(Integer.MAX_VALUE);
 				}))

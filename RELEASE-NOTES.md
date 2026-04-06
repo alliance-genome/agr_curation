@@ -2,6 +2,15 @@
  
 https://agr-jira.atlassian.net/wiki/spaces/ATEAM/overview
 
+## v0.47.0
+* Fixes and maintenance
+   * Curation Swagger pages slow and timing out (SCRUM-2479)
+   * Duplicate references associated with constructs in curation system (SCRUM-5738)
+   * Fix Construct Table Reference Sorting (SCRUM-5741)
+   * Update the Logs Server link in Curation UI (SCRUM-5803)
+   * Reduce OpenSearch index bloat by removing unnecessary Hibernate Search annotations (SCRUM-5807)
+   * Optimize bulk load performance and fix VocabularyTerm synonym lazy loading (v0.46.42)
+
 ## v0.46.0
 * New fearures:
    * Do not obsolete alleles because of failed reference (SCRUM-4930)

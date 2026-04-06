@@ -1,6 +1,5 @@
 package org.alliancegenome.curation_api.model.document.es;
 
-
 import java.util.List;
 
 import org.alliancegenome.curation_api.model.entities.Variant;
@@ -13,11 +12,13 @@ import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-@JsonView({ CurationView.VariantSummaryDocument.class })
+@JsonView({CurationView.VariantSummaryDocument.class})
 public class VariantSummaryDocument extends AVSParentDocument {
 
 	{
 		category = "variant_summary";
+		alterationType = "variant";
+		alterationTypeSortOrder = 4;
 	}
 	private List<Variant> variants;
 }

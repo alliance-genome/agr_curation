@@ -3,6 +3,7 @@ package org.alliancegenome.curation_api.model.document.es;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.Gene;
@@ -26,6 +27,12 @@ public class AlleleSummaryDocument extends AVSParentDocument {
 	private Gene alleleOfGene;
 	private CrossReference crossReference;
 	private List<Variant> variants;
+	private Set<String> diseases;
+	private Set<String> diseasesWithParents;
+	private Set<String> diseasesAgrSlim;
+	private Set<String> constructExpressedComponents;
+	private Set<String> constructRegulatoryRegions;
+	private Set<String> constructKnockdownComponents;
 
 	public void setAlleleOfGene(Gene alleleOfGene) {
 		this.alleleOfGene = alleleOfGene;
@@ -33,6 +40,15 @@ public class AlleleSummaryDocument extends AVSParentDocument {
 			geneIds = new HashSet<>();
 		}
 		geneIds.add(alleleOfGene.getPrimaryExternalId());
+	}
+
+	public void removeTransportFields() {
+		diseases = null;
+		diseasesWithParents = null;
+		diseasesAgrSlim = null;
+		constructExpressedComponents = null;
+		constructRegulatoryRegions = null;
+		constructKnockdownComponents = null;
 	}
 }
 

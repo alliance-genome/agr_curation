@@ -1,0 +1,2 @@
+CREATE INDEX AgmAlleleAssociation_subject_relation_object_index
+	ON agmalleleassociation (agmassociationsubject_id, relation_id, agmalleleassociationobject_id);

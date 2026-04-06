@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.alliancegenome.curation_api.model.document.es.AffectedGenomicModelDocument;
+import org.alliancegenome.curation_api.model.document.es.AGMAnnotationDocument;
 import org.alliancegenome.curation_api.model.entities.AGMDiseaseAnnotation;
 import org.alliancegenome.curation_api.model.entities.AGMPhenotypeAnnotation;
 import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
@@ -23,7 +23,7 @@ import org.jetbrains.annotations.NotNull;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class ModelDocumentBuilder {
+public class AGMAnnotationDocumentBuilder {
 
 	/**
 	 * Consolidation logic per affected genomic model:
@@ -34,8 +34,8 @@ public class ModelDocumentBuilder {
 	 * models without associated genes or inferred / asserted genes from disease annotations and phenotype annotations are not
 	 * included (only gene-related models are needed for now)
 	 */
-	public List<AffectedGenomicModelDocument> buildModelDocument(AffectedGenomicModel model) {
-		List<AffectedGenomicModelDocument> returnList = new ArrayList<>();
+	public List<AGMAnnotationDocument> buildAGMAnntationDocument(AffectedGenomicModel model) {
+		List<AGMAnnotationDocument> returnList = new ArrayList<>();
 		record ConditionRelationAnnotation(List<ConditionRelation> relation, List<AGMDiseaseAnnotation> diseaseAnnotations, List<AGMPhenotypeAnnotation> phenotypeAnnotations) {
 		}
 
@@ -75,7 +75,7 @@ public class ModelDocumentBuilder {
 
 		if (MapUtils.isEmpty(allConditionRels)) {
 			associatedGenes.forEach(gene -> {
-				AffectedGenomicModelDocument doc = new AffectedGenomicModelDocument();
+				AGMAnnotationDocument doc = new AGMAnnotationDocument();
 				doc.setModel(model);
 				doc.setDataProvider(model.getDataProvider().getAbbreviation());
 				doc.setGene(gene);
@@ -86,7 +86,7 @@ public class ModelDocumentBuilder {
 
 		allConditionRels.forEach((relation, conditionRelation) -> {
 			geneConditionMap.get(relation).forEach(gene -> {
-				AffectedGenomicModelDocument doc = new AffectedGenomicModelDocument();
+				AGMAnnotationDocument doc = new AGMAnnotationDocument();
 				doc.setModel(model);
 				doc.setDataProvider(model.getDataProvider().getAbbreviation());
 				doc.addConditionRelations(conditionRelation.relation);

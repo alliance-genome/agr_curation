@@ -80,7 +80,7 @@ public class HTPDatasetDocumentBuilder {
 
 		if (sampleAnnots != null && !sampleAnnots.isEmpty()) {
 			Set<String> whereExpressed = new HashSet<>();
-			Set<String> anatomicalExpression = new HashSet<>();
+			Set<String> anatomicalExpressionSlim = new HashSet<>();
 			Set<String> anatomicalExpressionWithParents = new HashSet<>();
 			Set<String> sampleIds = new HashSet<>();
 			Set<String> assays = new HashSet<>();
@@ -102,7 +102,7 @@ public class HTPDatasetDocumentBuilder {
 									return site.getAnatomicalStructure().getName();
 								}).collect(Collectors.toList()));
 
-				anatomicalExpression.addAll(
+				anatomicalExpressionSlim.addAll(
 						sampleAnnot
 								.getHtpExpressionSampleLocations()
 								.stream()
@@ -136,7 +136,7 @@ public class HTPDatasetDocumentBuilder {
 			}
 
 			doc.setWhereExpressed(whereExpressed);
-			doc.setAnatomicalExpression(anatomicalExpression);
+			doc.setAnatomicalExpressionSlim(anatomicalExpressionSlim);
 			doc.setAnatomicalExpressionWithParents(anatomicalExpressionWithParents);
 			doc.setSampleIds(sampleIds);
 			doc.setAssays(assays);
