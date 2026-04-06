@@ -447,6 +447,29 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 			allele.setAlleleGeneAssociations(alleleGeneAssociations);
 		});
 
+		// Gene synonyms per allele (via allele -> gene association)
+		String geneSynonymsQueryString = """
+			SELECT DISTINCT aga.alleleassociationsubject_id AS allele_id, sa.displaytext AS synonym
+			FROM allelegeneassociation aga
+			JOIN vocabularyterm v ON v.id = aga.relation_id AND v.name = 'is_allele_of'
+			JOIN slotannotation sa ON sa.singlegene_id = aga.allelegeneassociationobject_id
+				AND sa.slotannotationtype = 'GeneSynonymSlotAnnotation'
+			WHERE aga.alleleassociationsubject_id IN :alleleIds
+			AND aga.internal = false AND aga.obsolete = false
+			""";
+		Query geneSynonymsQuery = entityManager.createNativeQuery(geneSynonymsQueryString);
+		geneSynonymsQuery.setParameter("alleleIds", alleleIds);
+		List<Object[]> geneSynonymsResults = geneSynonymsQuery.getResultList();
+
+		Map<Long, Set<String>> alleleGeneSynonymsMap = new HashMap<>();
+		for (Object[] row : geneSynonymsResults) {
+			Long alleleId = (Long) row[0];
+			String synonym = (String) row[1];
+			if (synonym != null) {
+				alleleGeneSynonymsMap.computeIfAbsent(alleleId, k -> new HashSet<>()).add(synonym);
+			}
+		}
+
 		// Variants
 		String variantQueryString = """
 			SELECT DISTINCT ava.alleleassociationsubject_id as allele_id,
@@ -921,6 +944,7 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 			doc.setConstructExpressedComponents(alleleConstructExpressedComponentsMap.get(allele.getId()));
 			doc.setConstructRegulatoryRegions(alleleConstructRegulatoryRegionsMap.get(allele.getId()));
 			doc.setConstructKnockdownComponents(alleleConstructKnockdownComponentsMap.get(allele.getId()));
+			doc.setGeneSynonyms(alleleGeneSynonymsMap.get(allele.getId()));
 			docs.add(doc);
 		}
 
