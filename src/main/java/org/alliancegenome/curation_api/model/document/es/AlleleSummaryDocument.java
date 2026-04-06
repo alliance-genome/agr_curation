@@ -33,6 +33,7 @@ public class AlleleSummaryDocument extends AVSParentDocument {
 	private Set<String> constructExpressedComponents;
 	private Set<String> constructRegulatoryRegions;
 	private Set<String> constructKnockdownComponents;
+	private Set<String> geneSynonyms;
 
 	public void setAlleleOfGene(Gene alleleOfGene) {
 		this.alleleOfGene = alleleOfGene;
@@ -49,6 +50,7 @@ public class AlleleSummaryDocument extends AVSParentDocument {
 		constructExpressedComponents = null;
 		constructRegulatoryRegions = null;
 		constructKnockdownComponents = null;
+		geneSynonyms = null;
 	}
 }
 
