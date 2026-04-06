@@ -144,7 +144,7 @@ const processTable = (field, allele, draft) => {
 		return;
 	}
 
-	let clonableEntities = global.structuredClone(allele[field]);
+	let clonableEntities = structuredClone(allele[field]);
 	clonableEntities.forEach((entity, index) => {
 		addDataKey(entity);
 		draft.entityStates[field].editingRows[`${entity.dataKey}`] = true;
