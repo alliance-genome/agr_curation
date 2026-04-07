@@ -935,7 +935,7 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 		for (Allele allele : alleles) {
 			AlleleSummaryDocument doc = new AlleleSummaryDocument();
 			doc.setAllele(allele);
-			doc.setVariants(new ArrayList<>(alleleVariantMap.getOrDefault(allele.getId(), new HashMap<>()).values()));
+			doc.setVariantList(new ArrayList<>(alleleVariantMap.getOrDefault(allele.getId(), new HashMap<>()).values()));
 			doc.setHasPhenotype(allelesWithPhenotype.contains(allele.getId()));
 			doc.setHasDisease(allelesWithDisease.contains(allele.getId()));
 			doc.setDiseases(alleleDiseaseNamesMap.get(allele.getId()));
