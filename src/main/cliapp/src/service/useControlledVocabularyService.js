@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { SearchService } from './SearchService';
+import { Endpoints } from '../constants/Endpoints';
 
 const TERM_DATA = {
 	generic_boolean_terms: {
@@ -29,7 +30,7 @@ export function useControlledVocabularyService(vocabularyLabel) {
 	const { data, isSuccess } = useQuery({
 		queryKey: ['terms', vocabularyLabel],
 		queryFn: () => {
-			return searchService.find('vocabularyterm', 20, 0, { 'vocabulary.vocabularyLabel': vocabularyLabel });
+			return searchService.find(Endpoints.Vocabulary.TERM, 20, 0, { 'vocabulary.vocabularyLabel': vocabularyLabel });
 		},
 		placeholderData: (previousData) => previousData,
 		refetchOnWindowFocus: false,

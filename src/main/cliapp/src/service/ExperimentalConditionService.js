@@ -1,5 +1,6 @@
 import { BaseAuthService } from './BaseAuthService';
 import { DeletionService } from './DeletionService';
+import { Endpoints } from '../constants/Endpoints';
 
 export class ExperimentalConditionService extends BaseAuthService {
 	saveExperimentalCondition(updatedCondition) {
@@ -11,6 +12,6 @@ export class ExperimentalConditionService extends BaseAuthService {
 
 	async deleteExperimentalCondition(experimentalCondition) {
 		const deletionService = new DeletionService();
-		return await deletionService.delete(`experimental-condition`, experimentalCondition.id);
+		return await deletionService.delete(Endpoints.Annotation.EXPERIMENTAL_CONDITION, experimentalCondition.id);
 	}
 }
