@@ -27,7 +27,7 @@ public class AlleleSummaryDocumentBuilder {
 
 		doc.setCrossReference(getCrossReference(allele, resourceDescriptorPageService));
 
-		long variantCount = doc.getVariants() != null ? doc.getVariants().size() : 0;
+		long variantCount = doc.getVariantList() != null ? doc.getVariantList().size() : 0;
 		setAlterationType(variantCount, doc);
 
 		Optional<Gene> optionalAlleleOfGene = buildAlleleOfGene(allele);

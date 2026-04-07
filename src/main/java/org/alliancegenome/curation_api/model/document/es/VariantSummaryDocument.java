@@ -20,5 +20,5 @@ public class VariantSummaryDocument extends AVSParentDocument {
 		alterationType = "variant";
 		alterationTypeSortOrder = 4;
 	}
-	private List<Variant> variants;
+	private List<Variant> variantList;
 }

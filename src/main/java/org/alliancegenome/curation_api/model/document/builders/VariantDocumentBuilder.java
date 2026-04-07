@@ -20,7 +20,7 @@ public class VariantDocumentBuilder {
 					List<VariantSummaryDocument> dtos = new ArrayList<>();
 					variant.getAlleleVariantAssociations().forEach(alleleVariantAssociation -> {
 						VariantSummaryDocument dto = new VariantSummaryDocument();
-						dto.setVariants(List.of(variant));
+						dto.setVariantList(List.of(variant));
 						dto.setSymbol(curatedVariantGenomicLocationAssociation.getHgvs());
 						Allele alleleAssociationSubject = alleleVariantAssociation.getAlleleAssociationSubject();
 						dto.setAllele(alleleAssociationSubject);

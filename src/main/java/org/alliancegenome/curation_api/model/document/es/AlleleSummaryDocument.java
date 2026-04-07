@@ -26,7 +26,7 @@ public class AlleleSummaryDocument extends AVSParentDocument {
 	private Map<String, Object> additionalInformation;
 	private Gene alleleOfGene;
 	private CrossReference crossReference;
-	private List<Variant> variants;
+	private List<Variant> variantList;
 	private Set<String> diseases;
 	private Set<String> diseasesWithParents;
 	private Set<String> diseasesAgrSlim;
