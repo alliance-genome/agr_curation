@@ -3,12 +3,9 @@ import { GenericDataTable } from '../../components/GenericDataTable/GenericDataT
 import { Toast } from 'primereact/toast';
 import { getDefaultTableState } from '../../service/TableStateService';
 import { FILTER_CONFIGS } from '../../constants/FilterFields';
-import { SecondaryIdsDialog } from './SecondaryIdsDialog';
-import { SynonymsEditDialog } from '../nameSlotAnnotations/dialogs/SynonymsEditDialog';
+import { SecondaryIdsReadOnlyDialog } from '../allelesPage/secondaryIds/SecondaryIdsReadOnlyDialog';
 import { SynonymsReadOnlyDialog } from '../nameSlotAnnotations/dialogs/SynonymsReadOnlyDialog';
-import { SymbolEditDialog } from '../nameSlotAnnotations/dialogs/SymbolEditDialog';
 import { SymbolReadOnlyDialog } from '../nameSlotAnnotations/dialogs/SymbolReadOnlyDialog';
-import { FullNameEditDialog } from '../nameSlotAnnotations/dialogs/FullNameEditDialog';
 import { FullNameReadOnlyDialog } from '../nameSlotAnnotations/dialogs/FullNameReadOnlyDialog';
 import { SystematicNameDialog } from './SystematicNameDialog';
 import { CrossReferencesTemplate } from '../../components/Templates/CrossReferencesTemplate';
@@ -18,7 +15,7 @@ import { useGetUserSettings } from '../../service/useGetUserSettings';
 import { IdTemplate } from '../../components/Templates/IdTemplate';
 import { TextDialogTemplate } from '../../components/Templates/dialog/TextDialogTemplate';
 import { ListDialogTemplate } from '../../components/Templates/dialog/ListDialogTemplate';
-import { RelatedNotesDialog } from '../../components/RelatedNotesDialog';
+import { RelatedNotesReadOnlyDialog } from '../../components/RelatedNotesReadOnlyDialog';
 import { BooleanTemplate } from '../../components/Templates/BooleanTemplate';
 import { OntologyTermTemplate } from '../../components/Templates/OntologyTermTemplate';
 import { StringTemplate } from '../../components/Templates/StringTemplate';
@@ -434,31 +431,10 @@ export const GenesTable = () => {
 					fetching={isFetching || isLoading}
 				/>
 			</div>
-			<FullNameEditDialog
-				name="Gene Name"
-				field="geneFullName"
-				endpoint="genefullnameslotannotation"
-				originalFullNameData={fullNameData}
-				setOriginalFullNameData={setFullNameData}
-			/>
 			<FullNameReadOnlyDialog originalFullNameData={fullNameData} setOriginalFullNameData={setFullNameData} />
-			<SymbolEditDialog
-				name="Gene Symbol"
-				field="geneSymbol"
-				endpoint="genesymbolslotannotation"
-				originalSymbolData={symbolData}
-				setOriginalSymbolData={setSymbolData}
-			/>
 			<SymbolReadOnlyDialog originalSymbolData={symbolData} setOriginalSymbolData={setSymbolData} />
-			<SynonymsEditDialog
-				name="Gene Synonym"
-				field="geneSynonyms"
-				endpoint="genesynonymslotannotation"
-				originalSynonymsData={synonymsData}
-				setOriginalSynonymsData={setSynonymsData}
-			/>
 			<SynonymsReadOnlyDialog originalSynonymsData={synonymsData} setOriginalSynonymsData={setSynonymsData} />
-			<SecondaryIdsDialog
+			<SecondaryIdsReadOnlyDialog
 				originalSecondaryIdsData={secondaryIdsData}
 				setOriginalSecondaryIdsData={setSecondaryIdsData}
 			/>
@@ -466,12 +442,9 @@ export const GenesTable = () => {
 				originalSystematicNameData={systematicNameData}
 				setOriginalSystematicNameData={setSystematicNameData}
 			/>
-			<RelatedNotesDialog
+			<RelatedNotesReadOnlyDialog
 				originalRelatedNotesData={relatedNotesData}
 				setOriginalRelatedNotesData={setRelatedNotesData}
-				errorMessagesMainRow={errorMessages}
-				setErrorMessagesMainRow={setErrorMessages}
-				noteTypeVocabularyTermSet="variant_note_type"
 			/>
 		</>
 	);

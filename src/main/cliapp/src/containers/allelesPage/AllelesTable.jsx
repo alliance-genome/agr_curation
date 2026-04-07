@@ -7,20 +7,28 @@ import { SearchService } from '../../service/SearchService';
 import { Endpoints } from '../../constants/Endpoints';
 import { useGetTableData } from '../../service/useGetTableData';
 import { useGetUserSettings } from '../../service/useGetUserSettings';
-import { MutationTypesDialog } from './mutationTypes/MutationTypesDialog';
-import { FunctionalImpactsDialog } from './functionalImpacts/FunctionalImpactsDialog';
-import { InheritanceModesDialog } from './inheritanceModes/InheritanceModesDialog';
-import { NomenclatureEventsDialog } from './nomenclatureEvents/NomenclatureEventsDialog';
-import { GermlineTransmissionStatusDialog } from './germlineTransmissionStatus/GermlineTransmissionStatusDialog';
-import { DatabaseStatusDialog } from './databaseStatus/DatabaseStatusDialog';
+import { MutationTypesEditDialog } from './mutationTypes/MutationTypesEditDialog';
+import { MutationTypesReadOnlyDialog } from './mutationTypes/MutationTypesReadOnlyDialog';
+import { FunctionalImpactsEditDialog } from './functionalImpacts/FunctionalImpactsEditDialog';
+import { FunctionalImpactsReadOnlyDialog } from './functionalImpacts/FunctionalImpactsReadOnlyDialog';
+import { InheritanceModesEditDialog } from './inheritanceModes/InheritanceModesEditDialog';
+import { InheritanceModesReadOnlyDialog } from './inheritanceModes/InheritanceModesReadOnlyDialog';
+import { NomenclatureEventsEditDialog } from './nomenclatureEvents/NomenclatureEventsEditDialog';
+import { NomenclatureEventsReadOnlyDialog } from './nomenclatureEvents/NomenclatureEventsReadOnlyDialog';
+import { GermlineTransmissionStatusEditDialog } from './germlineTransmissionStatus/GermlineTransmissionStatusEditDialog';
+import { GermlineTransmissionStatusReadOnlyDialog } from './germlineTransmissionStatus/GermlineTransmissionStatusReadOnlyDialog';
+import { DatabaseStatusEditDialog } from './databaseStatus/DatabaseStatusEditDialog';
+import { DatabaseStatusReadOnlyDialog } from './databaseStatus/DatabaseStatusReadOnlyDialog';
 import { SymbolEditDialog } from '../nameSlotAnnotations/dialogs/SymbolEditDialog';
 import { SymbolReadOnlyDialog } from '../nameSlotAnnotations/dialogs/SymbolReadOnlyDialog';
 import { FullNameEditDialog } from '../nameSlotAnnotations/dialogs/FullNameEditDialog';
 import { FullNameReadOnlyDialog } from '../nameSlotAnnotations/dialogs/FullNameReadOnlyDialog';
-import { SecondaryIdsDialog } from './secondaryIds/SecondaryIdsDialog';
+import { SecondaryIdsEditDialog } from './secondaryIds/SecondaryIdsEditDialog';
+import { SecondaryIdsReadOnlyDialog } from './secondaryIds/SecondaryIdsReadOnlyDialog';
 import { SynonymsEditDialog } from '../nameSlotAnnotations/dialogs/SynonymsEditDialog';
 import { SynonymsReadOnlyDialog } from '../nameSlotAnnotations/dialogs/SynonymsReadOnlyDialog';
-import { RelatedNotesDialog } from '../../components/RelatedNotesDialog';
+import { RelatedNotesEditDialog } from '../../components/RelatedNotesEditDialog';
+import { RelatedNotesReadOnlyDialog } from '../../components/RelatedNotesReadOnlyDialog';
 import { TaxonTableEditor } from '../../components/Editors/taxon/TaxonTableEditor';
 import { InCollectionTableEditor } from '../../components/Editors/inCollection/InCollectionTableEditor';
 import { ReferencesTableEditor } from '../../components/Editors/references/ReferencesTableEditor';
@@ -1367,54 +1375,86 @@ export const AllelesTable = () => {
 				setErrorMessagesMainRow={setErrorMessages}
 			/>
 			<SynonymsReadOnlyDialog originalSynonymsData={synonymsData} setOriginalSynonymsData={setSynonymsData} />
-			<NomenclatureEventsDialog
+			<NomenclatureEventsEditDialog
 				originalNomenclatureEventsData={nomenclatureEventsData}
 				setOriginalNomenclatureEventsData={setNomenclatureEventsData}
 				errorMessagesMainRow={errorMessages}
 				setErrorMessagesMainRow={setErrorMessages}
 			/>
-			<MutationTypesDialog
+			<NomenclatureEventsReadOnlyDialog
+				originalNomenclatureEventsData={nomenclatureEventsData}
+				setOriginalNomenclatureEventsData={setNomenclatureEventsData}
+			/>
+			<MutationTypesEditDialog
 				originalMutationTypesData={mutationTypesData}
 				setOriginalMutationTypesData={setMutationTypesData}
 				errorMessagesMainRow={errorMessages}
 				setErrorMessagesMainRow={setErrorMessages}
 			/>
-			<InheritanceModesDialog
+			<MutationTypesReadOnlyDialog
+				originalMutationTypesData={mutationTypesData}
+				setOriginalMutationTypesData={setMutationTypesData}
+			/>
+			<InheritanceModesEditDialog
 				originalInheritanceModesData={inheritanceModesData}
 				setOriginalInheritanceModesData={setInheritanceModesData}
 				errorMessagesMainRow={errorMessages}
 				setErrorMessagesMainRow={setErrorMessages}
 			/>
-			<SecondaryIdsDialog
+			<InheritanceModesReadOnlyDialog
+				originalInheritanceModesData={inheritanceModesData}
+				setOriginalInheritanceModesData={setInheritanceModesData}
+			/>
+			<SecondaryIdsEditDialog
 				originalSecondaryIdsData={secondaryIdsData}
 				setOriginalSecondaryIdsData={setSecondaryIdsData}
 				errorMessagesMainRow={errorMessages}
 				setErrorMessagesMainRow={setErrorMessages}
 			/>
-			<FunctionalImpactsDialog
+			<SecondaryIdsReadOnlyDialog
+				originalSecondaryIdsData={secondaryIdsData}
+				setOriginalSecondaryIdsData={setSecondaryIdsData}
+			/>
+			<FunctionalImpactsEditDialog
 				originalFunctionalImpactsData={functionalImpactsData}
 				setOriginalFunctionalImpactsData={setFunctionalImpactsData}
 				errorMessagesMainRow={errorMessages}
 				setErrorMessagesMainRow={setErrorMessages}
 			/>
-			<GermlineTransmissionStatusDialog
+			<FunctionalImpactsReadOnlyDialog
+				originalFunctionalImpactsData={functionalImpactsData}
+				setOriginalFunctionalImpactsData={setFunctionalImpactsData}
+			/>
+			<GermlineTransmissionStatusEditDialog
 				originalGermlineTransmissionStatusData={germlineTransmissionStatusData}
 				setOriginalGermlineTransmissionStatusData={setGermlineTransmissionStatusData}
 				errorMessagesMainRow={errorMessages}
 				setErrorMessagesMainRow={setErrorMessages}
 			/>
-			<DatabaseStatusDialog
+			<GermlineTransmissionStatusReadOnlyDialog
+				originalGermlineTransmissionStatusData={germlineTransmissionStatusData}
+				setOriginalGermlineTransmissionStatusData={setGermlineTransmissionStatusData}
+			/>
+			<DatabaseStatusEditDialog
 				originalDatabaseStatusData={databaseStatusData}
 				setOriginalDatabaseStatusData={setDatabaseStatusData}
 				errorMessagesMainRow={errorMessages}
 				setErrorMessagesMainRow={setErrorMessages}
 			/>
-			<RelatedNotesDialog
+			<DatabaseStatusReadOnlyDialog
+				originalDatabaseStatusData={databaseStatusData}
+				setOriginalDatabaseStatusData={setDatabaseStatusData}
+			/>
+			<RelatedNotesEditDialog
 				originalRelatedNotesData={relatedNotesData}
 				setOriginalRelatedNotesData={setRelatedNotesData}
 				errorMessagesMainRow={errorMessages}
 				setErrorMessagesMainRow={setErrorMessages}
 				noteTypeVocabularyTermSet="allele_note_type"
+			/>
+			<RelatedNotesReadOnlyDialog
+				originalRelatedNotesData={relatedNotesData}
+				setOriginalRelatedNotesData={setRelatedNotesData}
 			/>
 		</>
 	);
