@@ -1,5 +1,6 @@
 import { BaseAuthService } from './BaseAuthService';
 import { DeletionService } from './DeletionService';
+import { Endpoints } from '../constants/Endpoints';
 
 export class AlleleGeneAssociationService extends BaseAuthService {
 	saveAlleleGeneAssociation(updatedAssociation) {
@@ -12,7 +13,7 @@ export class AlleleGeneAssociationService extends BaseAuthService {
 
 	async deleteAlleleGeneAssociation(id) {
 		const deletionService = new DeletionService();
-		return await deletionService.delete(`allelegeneassociation`, id);
+		return await deletionService.delete(Endpoints.Entity.ALLELE_GENE_ASSOCIATION, id);
 	}
 
 	saveAlleleGeneAssociations(updatedAssociations) {
