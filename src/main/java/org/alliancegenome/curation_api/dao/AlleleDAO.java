@@ -732,6 +732,70 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 
 		Set<Long> allelesWithPhenotype = phenotypeResults.stream().map(obj -> (Long) obj).collect(Collectors.toSet());
 
+		// Phenotype statements per allele (from direct allele annotations + AGM annotations + phenotype term names)
+		String phenotypeStatementsQueryString = """
+			SELECT DISTINCT allele_id, statement FROM (
+				SELECT apa.phenotypeannotationsubject_id AS allele_id, pa.phenotypeannotationobject AS statement
+				FROM allelephenotypeannotation apa
+				JOIN phenotypeannotation pa ON pa.id = apa.id
+				WHERE apa.phenotypeannotationsubject_id IN :alleleIds
+				AND pa.obsolete = false AND pa.internal = false
+				AND pa.phenotypeannotationobject IS NOT NULL
+				UNION
+				SELECT agmpa.inferredallele_id AS allele_id, pa.phenotypeannotationobject AS statement
+				FROM agmphenotypeannotation agmpa
+				JOIN phenotypeannotation pa ON pa.id = agmpa.id
+				WHERE agmpa.inferredallele_id IN :alleleIds
+				AND pa.obsolete = false AND pa.internal = false
+				AND pa.phenotypeannotationobject IS NOT NULL
+				UNION
+				SELECT agmpa_a.assertedalleles_id AS allele_id, pa.phenotypeannotationobject AS statement
+				FROM agmphenotypeannotation_allele agmpa_a
+				JOIN agmphenotypeannotation agmpa ON agmpa.id = agmpa_a.agmphenotypeannotation_id
+				JOIN phenotypeannotation pa ON pa.id = agmpa.id
+				WHERE agmpa_a.assertedalleles_id IN :alleleIds
+				AND pa.obsolete = false AND pa.internal = false
+				AND pa.phenotypeannotationobject IS NOT NULL
+				UNION
+				SELECT apa.phenotypeannotationsubject_id AS allele_id, ot.name AS statement
+				FROM allelephenotypeannotation apa
+				JOIN phenotypeannotation pa ON pa.id = apa.id
+				JOIN phenotypeannotation_ontologyterm pat ON pat.phenotypeannotation_id = pa.id
+				JOIN ontologyterm ot ON ot.id = pat.phenotypeterms_id
+				WHERE apa.phenotypeannotationsubject_id IN :alleleIds
+				AND pa.obsolete = false AND pa.internal = false
+				UNION
+				SELECT agmpa.inferredallele_id AS allele_id, ot.name AS statement
+				FROM agmphenotypeannotation agmpa
+				JOIN phenotypeannotation pa ON pa.id = agmpa.id
+				JOIN phenotypeannotation_ontologyterm pat ON pat.phenotypeannotation_id = pa.id
+				JOIN ontologyterm ot ON ot.id = pat.phenotypeterms_id
+				WHERE agmpa.inferredallele_id IN :alleleIds
+				AND pa.obsolete = false AND pa.internal = false
+				UNION
+				SELECT agmpa_a.assertedalleles_id AS allele_id, ot.name AS statement
+				FROM agmphenotypeannotation_allele agmpa_a
+				JOIN agmphenotypeannotation agmpa ON agmpa.id = agmpa_a.agmphenotypeannotation_id
+				JOIN phenotypeannotation pa ON pa.id = agmpa.id
+				JOIN phenotypeannotation_ontologyterm pat ON pat.phenotypeannotation_id = pa.id
+				JOIN ontologyterm ot ON ot.id = pat.phenotypeterms_id
+				WHERE agmpa_a.assertedalleles_id IN :alleleIds
+				AND pa.obsolete = false AND pa.internal = false
+			) sub WHERE statement IS NOT NULL
+			""";
+		Query phenotypeStatementsQuery = entityManager.createNativeQuery(phenotypeStatementsQueryString);
+		phenotypeStatementsQuery.setParameter("alleleIds", alleleIds);
+		List<Object[]> phenotypeStatementsResults = phenotypeStatementsQuery.getResultList();
+
+		Map<Long, Set<String>> allelePhenotypeStatementsMap = new HashMap<>();
+		for (Object[] row : phenotypeStatementsResults) {
+			Long alleleId = (Long) row[0];
+			String statement = (String) row[1];
+			if (statement != null) {
+				allelePhenotypeStatementsMap.computeIfAbsent(alleleId, k -> new HashSet<>()).add(statement);
+			}
+		}
+
 		// Disease existence
 		String diseaseQueryString = """
 			SELECT DISTINCT ada.diseaseannotationsubject_id as allele_id
@@ -945,6 +1009,7 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 			doc.setConstructRegulatoryRegions(alleleConstructRegulatoryRegionsMap.get(allele.getId()));
 			doc.setConstructKnockdownComponents(alleleConstructKnockdownComponentsMap.get(allele.getId()));
 			doc.setGeneSynonyms(alleleGeneSynonymsMap.get(allele.getId()));
+			doc.setPhenotypeStatements(allelePhenotypeStatementsMap.get(allele.getId()));
 			docs.add(doc);
 		}
 
