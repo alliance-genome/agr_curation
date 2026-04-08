@@ -3,7 +3,8 @@ import { useMutation } from '@tanstack/react-query';
 import { GenericDataTable } from '../../components/GenericDataTable/GenericDataTable';
 import { ErrorMessageComponent } from '../../components/Error/ErrorMessageComponent';
 import { VariantService } from '../../service/VariantService';
-import { RelatedNotesDialog } from '../../components/RelatedNotesDialog';
+import { RelatedNotesEditDialog } from '../../components/RelatedNotesEditDialog';
+import { RelatedNotesReadOnlyDialog } from '../../components/RelatedNotesReadOnlyDialog';
 import { TaxonTableEditor } from '../../components/Editors/taxon/TaxonTableEditor';
 import { VariantTypeTableEditor } from '../../components/Editors/variantType/VariantTypeTableEditor';
 import { SourceGeneralConsequenceTableEditor } from '../../components/Editors/sourceGeneralConsequence/SourceGeneralConsequenceTableEditor';
@@ -376,12 +377,16 @@ export const VariantsTable = () => {
 					fetching={isFetching || isLoading}
 				/>
 			</div>
-			<RelatedNotesDialog
+			<RelatedNotesEditDialog
 				originalRelatedNotesData={relatedNotesData}
 				setOriginalRelatedNotesData={setRelatedNotesData}
 				errorMessagesMainRow={errorMessages}
 				setErrorMessagesMainRow={setErrorMessages}
 				noteTypeVocabularyTermSet="variant_note_type"
+			/>
+			<RelatedNotesReadOnlyDialog
+				originalRelatedNotesData={relatedNotesData}
+				setOriginalRelatedNotesData={setRelatedNotesData}
 			/>
 		</>
 	);

@@ -12,8 +12,10 @@ import { GenericDataTable } from '../../components/GenericDataTable/GenericDataT
 import { SearchService } from '../../service/SearchService';
 import { Endpoints } from '../../constants/Endpoints';
 import { DiseaseAnnotationService } from '../../service/DiseaseAnnotationService';
-import { RelatedNotesDialog } from '../../components/RelatedNotesDialog';
-import { ConditionRelationsDialog } from '../../components/ConditionRelationsDialog';
+import { RelatedNotesEditDialog } from '../../components/RelatedNotesEditDialog';
+import { RelatedNotesReadOnlyDialog } from '../../components/RelatedNotesReadOnlyDialog';
+import { ConditionRelationsEditDialog } from '../../components/ConditionRelationsEditDialog';
+import { ConditionRelationsReadOnlyDialog } from '../../components/ConditionRelationsReadOnlyDialog';
 
 import { SingleReferenceTemplate } from '../../components/Templates/reference/SingleReferenceTemplate';
 import { ObjectListTemplate } from '../../components/Templates/ObjectListTemplate';
@@ -1521,7 +1523,7 @@ export const DiseaseAnnotationsTable = () => {
 					setNewEntity(tableState, setDiseaseAnnotations, newAnnotation, queryClient)
 				}
 			/>
-			<RelatedNotesDialog
+			<RelatedNotesEditDialog
 				originalRelatedNotesData={relatedNotesData}
 				setOriginalRelatedNotesData={setRelatedNotesData}
 				errorMessagesMainRow={errorMessages}
@@ -1529,11 +1531,20 @@ export const DiseaseAnnotationsTable = () => {
 				noteTypeVocabularyTermSet="da_note_type"
 				showReferences={false}
 			/>
-			<ConditionRelationsDialog
+			<RelatedNotesReadOnlyDialog
+				originalRelatedNotesData={relatedNotesData}
+				setOriginalRelatedNotesData={setRelatedNotesData}
+				showReferences={false}
+			/>
+			<ConditionRelationsEditDialog
 				originalConditionRelationsData={conditionRelationsData}
 				setOriginalConditionRelationsData={setConditionRelationsData}
 				errorMessagesMainRow={errorMessages}
 				setErrorMessagesMainRow={setErrorMessages}
+			/>
+			<ConditionRelationsReadOnlyDialog
+				originalConditionRelationsData={conditionRelationsData}
+				setOriginalConditionRelationsData={setConditionRelationsData}
 			/>
 		</>
 	);
