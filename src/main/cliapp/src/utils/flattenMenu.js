@@ -2,12 +2,10 @@
  * Recursively flattens the hierarchical menu structure into a flat array
  * of navigable items with breadcrumb paths.
  */
-export function flattenMenu(menuTree, parentPath = []) {
+export function flattenMenu(menuTree, parentPath = [], isRoot = true) {
 	const results = [];
 
 	for (const item of menuTree) {
-		const currentPath = item.label && parentPath.length > 0 ? [...parentPath, item.label] : parentPath;
-
 		if (item.to || (item.url && item.url.length > 0 && !item.url.includes('undefined'))) {
 			results.push({
 				label: item.label,
@@ -20,8 +18,8 @@ export function flattenMenu(menuTree, parentPath = []) {
 		}
 
 		if (item.items) {
-			const nestedPath = item.label ? (parentPath.length === 0 ? [] : currentPath) : parentPath;
-			results.push(...flattenMenu(item.items, nestedPath));
+			const nestedPath = item.label && !isRoot ? [...parentPath, item.label] : parentPath;
+			results.push(...flattenMenu(item.items, nestedPath, false));
 		}
 	}
 
