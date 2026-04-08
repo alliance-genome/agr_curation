@@ -11,6 +11,7 @@ import java.util.Set;
 import java.util.zip.GZIPInputStream;
 
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
+import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException.ObjectUpdateExceptionData;
 import org.alliancegenome.curation_api.jobs.util.CsvSchemaBuilder;
 import org.alliancegenome.curation_api.model.entities.GeneOntologyAnnotation;
@@ -119,8 +120,8 @@ public class GeneOntologyAnnotationExecutor extends LoadFileExecutor {
 			ph.progressProcess();
 
 			if (Thread.currentThread().isInterrupted()) {
-				bulkLoadFileHistory.setErrorMessage("Thread isInterrupted");
-				throw new RuntimeException("Thread isInterrupted");
+				bulkLoadFileHistory.setErrorMessage(ApiErrorException.INTERRUPTED_MESSAGE);
+				throw new RuntimeException(ApiErrorException.INTERRUPTED_MESSAGE);
 			}
 		}
 		ph.finishProcess();
