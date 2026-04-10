@@ -41,6 +41,7 @@ public class OrthologyFmsDTOValidator {
 	// remove this exclusion together with:
 	// - src/test/resources/bulk/fms/02_orthology/KI_01_excluded_vma21_pdcd2_pair.json
 	// - orthologyBulkUploadExcludedKnownIssuePair() in IT_0602_OrthologyBulkUploadFmsITCase
+	// - orthologyBulkExecutorCleanupDeletesExcludedKnownIssuePair() in IT_0602_OrthologyBulkUploadFmsITCase
 	private static final Set<ExcludedOrthologyPair> EXCLUDED_ORTHOLOGY_PAIRS = Set.of(
 		new ExcludedOrthologyPair("WB:WBGene00011116", "MGI:1914298"),
 		new ExcludedOrthologyPair("WB:WBGene00011116", "RGD:620474"),
@@ -79,8 +80,10 @@ public class OrthologyFmsDTOValidator {
 		}
 
 		if (isExcludedOrthologyPair(subjectGeneIdentifier, objectGeneIdentifier)) {
-			// KANBAN-965: keep the workaround at validation so both file ingest and raw API bulk
-			// updates reject the same known bad DIOPT pair.
+			// KANBAN-965: skip the temporary exclusion here so provider cleanup removes any stale row.
+			// The executor-backed cleanup behavior is covered by
+			// orthologyBulkExecutorCleanupDeletesExcludedKnownIssuePair() in
+			// IT_0602_OrthologyBulkUploadFmsITCase.
 			throw new KnownIssueValidationException("Skipping excluded orthology pair: "
 				+ subjectGeneIdentifier + " <-> " + objectGeneIdentifier);
 		}
