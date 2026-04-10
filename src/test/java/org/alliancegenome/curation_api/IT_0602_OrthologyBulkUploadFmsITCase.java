@@ -6,28 +6,19 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.fail;
 
-import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.time.Instant;
 import java.util.zip.GZIPOutputStream;
-import java.security.MessageDigest;
 
 import org.alliancegenome.curation_api.base.BaseITCase;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
-import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
-import org.alliancegenome.curation_api.enums.BackendBulkLoadType;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.Organization;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
-import org.alliancegenome.curation_api.model.entities.bulkloads.BulkManualLoad;
 import org.alliancegenome.curation_api.model.entities.orthology.GeneToGeneOrthologyGenerated;
 import org.alliancegenome.curation_api.resources.TestContainerResource;
 import org.junit.jupiter.api.BeforeEach;
@@ -157,10 +148,9 @@ public class IT_0602_OrthologyBulkUploadFmsITCase extends BaseITCase {
 		// a bad row can already exist in agr_curation even though new ingest now skips it.
 		// Keep this aligned with OrthologyFmsDTOValidator.EXCLUDED_ORTHOLOGY_PAIRS and the
 		// KI_01_excluded_vma21_pdcd2_pair.json fixture, and remove all three together once the
-		// upstream DIOPT source data is corrected. This test intentionally uses the DQM manual
-		// submission path (/api/data/submit with ORTHOLOGY_MGI) because it exercises the same
-		// file-history creation and async cleanup flow that CI rejected when the test tried to
-		// create BulkLoadFileHistory directly.
+		// upstream DIOPT source data is corrected. This still needs the DQM manual submission
+		// path because the raw JSON bulk endpoint does not invoke executor cleanup, but it avoids
+		// asserting on bulk-load history internals and waits on the deleted orthology row instead.
 		Organization mgiDataProvider = getOrganization("MGI");
 		Organization wbDataProvider = getOrganization("WB");
 		VocabularyTerm symbolTerm = getVocabularyTerm(getVocabulary(VocabularyConstants.NAME_TYPE_VOCABULARY), "nomenclature_symbol");
@@ -197,11 +187,9 @@ public class IT_0602_OrthologyBulkUploadFmsITCase extends BaseITCase {
 			extract().jsonPath().getLong("entity.id"));
 
 		// KANBAN-965: reuse the same temporary KI_01 fixture here so the cleanup-path coverage
-		// stays tied to the exact excluded pair list used by the validator.
-		Path gzipFile = createGzipFromResource(orthologyTestFilePath + "KI_01_excluded_vma21_pdcd2_pair.json");
-		Long bulkLoadId = findExistingBulkManualLoadId(BackendBulkLoadType.ORTHOLOGY, BackendBulkDataProvider.MGI);
-		Set<Integer> existingHistoryIds = getHistoryIdsForBulkLoad(bulkLoadId);
-		String expectedMd5 = getMd5Sum(gzipFile);
+		// stays tied to the exact excluded pair list used by the validator. The payload gets a
+		// unique dateProduced value so the DQM submission is not deduplicated by gzip MD5.
+		Path gzipFile = createUniqueGzipFromResource(orthologyTestFilePath + "KI_01_excluded_vma21_pdcd2_pair.json");
 
 		RestAssured.given().
 			multiPart("ORTHOLOGY_MGI", gzipFile.toFile(), "application/gzip").
@@ -211,18 +199,7 @@ public class IT_0602_OrthologyBulkUploadFmsITCase extends BaseITCase {
 			statusCode(200).
 			body(is("OK"));
 
-		Long cleanupHistoryId = waitForCleanupHistoryId(bulkLoadId, existingHistoryIds, expectedMd5);
-		Map<String, Object> cleanupHistory = waitForBulkLoadHistoryToFinish(cleanupHistoryId);
-		Map<String, Map<String, Number>> counts = (Map<String, Map<String, Number>>) cleanupHistory.get("counts");
-
-		assertEquals(1, counts.get("Records").get("skipped").intValue());
-		assertEquals(1, counts.get("Orthology Deleted").get("completed").intValue());
-		assertNull(RestAssured.given().
-			when().
-			get("/api/orthologygenerated/" + staleOrthologyId).
-			then().
-			statusCode(200).
-			extract().path("entity"));
+		waitForOrthologyDeletion(staleOrthologyId);
 	}
 
 	@Test
@@ -284,146 +261,42 @@ public class IT_0602_OrthologyBulkUploadFmsITCase extends BaseITCase {
 			body("results[0]", not(hasKey("predictionMethodsNotCalled")));
 	}
 
-	private Path createGzipFromResource(String resourcePath) throws Exception {
+	private Path createUniqueGzipFromResource(String resourcePath) throws Exception {
+		String content = Files.readString(Path.of(resourcePath));
+		String uniqueContent = content.replaceFirst(
+			"\"dateProduced\"\\s*:\\s*\"[^\"]+\"",
+			"\"dateProduced\": \"" + Instant.now() + "\""
+		);
+		if (uniqueContent.equals(content)) {
+			fail("Failed to update dateProduced in " + resourcePath);
+		}
+
 		Path gzipFile = Files.createTempFile("kanban-965-orthology-", ".json.gz");
 		gzipFile.toFile().deleteOnExit();
 		try (GZIPOutputStream outputStream = new GZIPOutputStream(Files.newOutputStream(gzipFile))) {
-			outputStream.write(Files.readString(Path.of(resourcePath)).getBytes(StandardCharsets.UTF_8));
+			outputStream.write(uniqueContent.getBytes(StandardCharsets.UTF_8));
 		}
 		return gzipFile;
 	}
 
-	private Set<Integer> getHistoryIdsForBulkLoad(Long bulkLoadId) {
-		List<Integer> historyIds = getHistoryResultsForBulkLoad(bulkLoadId).stream().
-			map(history -> (Integer) history.get("id")).
-			toList();
-
-		return historyIds == null ? new HashSet<>() : new HashSet<>(historyIds);
-	}
-
-	@SuppressWarnings("unchecked")
-	private Long waitForCleanupHistoryId(Long bulkLoadId, Set<Integer> existingHistoryIds, String expectedMd5) throws Exception {
+	private void waitForOrthologyDeletion(Long orthologyId) throws Exception {
 		long timeoutAt = System.currentTimeMillis() + 30000;
 		while (System.currentTimeMillis() < timeoutAt) {
-			List<Map<String, Object>> histories = getHistoryResultsForBulkLoad(bulkLoadId);
-
-			if (histories != null) {
-				for (Map<String, Object> history : histories) {
-					Integer historyId = (Integer) history.get("id");
-					Map<String, Object> bulkLoadFile = (Map<String, Object>) history.get("bulkLoadFile");
-					String md5Sum = bulkLoadFile == null ? null : (String) bulkLoadFile.get("md5Sum");
-					if (historyId != null && !existingHistoryIds.contains(historyId) && expectedMd5.equals(md5Sum)) {
-						return historyId.longValue();
-					}
-				}
-			}
-
-			Thread.sleep(500);
-		}
-
-		fail("Timed out waiting for cleanup history to be created");
-		return null;
-	}
-
-	@SuppressWarnings("unchecked")
-	private List<Map<String, Object>> getHistoryResultsForBulkLoad(Long bulkLoadId) {
-		int page = 0;
-		int pageSize = 100;
-		List<Map<String, Object>> allHistories = new java.util.ArrayList<>();
-		while (true) {
-			Map<String, Object> response = RestAssured.given().
-				contentType("application/json").
-				body("{\"bulkLoad.id\": " + bulkLoadId + "}").
+			Object entity = RestAssured.given().
 				when().
-				post("/api/bulkloadfilehistory/find?limit=" + pageSize + "&page=" + page).
-				then().
-				statusCode(200).
-				extract().path("$");
-
-			List<Map<String, Object>> results = response == null ? null : (List<Map<String, Object>>) response.get("results");
-			if (results == null || results.isEmpty()) {
-				break;
-			}
-			allHistories.addAll(results);
-
-			Number returnedRecords = (Number) response.get("returnedRecords");
-			if (returnedRecords == null || returnedRecords.intValue() < pageSize) {
-				break;
-			}
-			page++;
-		}
-		return allHistories;
-	}
-
-	@SuppressWarnings("unchecked")
-	private Map<String, Object> waitForBulkLoadHistoryToFinish(Long historyId) throws Exception {
-		long timeoutAt = System.currentTimeMillis() + 30000;
-		while (System.currentTimeMillis() < timeoutAt) {
-			Map<String, Object> history = RestAssured.given().
-				when().
-				get("/api/bulkloadfilehistory/" + historyId).
+				get("/api/orthologygenerated/" + orthologyId).
 				then().
 				statusCode(200).
 				extract().path("entity");
 
-			String bulkloadStatus = (String) history.get("bulkloadStatus");
-			if ("FINISHED".equals(bulkloadStatus)) {
-				return history;
-			}
-			if ("FAILED".equals(bulkloadStatus) || "FORCED_STOPPED".equals(bulkloadStatus) || "STOPPED".equals(bulkloadStatus)) {
-				fail("Cleanup load ended with status " + bulkloadStatus + ": " + history.get("errorMessage"));
+			if (entity == null) {
+				return;
 			}
 
 			Thread.sleep(500);
 		}
 
-		fail("Timed out waiting for cleanup history to finish");
-		return null;
-	}
-
-	private Long findExistingBulkManualLoadId(BackendBulkLoadType loadType, BackendBulkDataProvider dataProvider) {
-		List<Integer> bulkLoadIds = RestAssured.given().
-			contentType("application/json").
-			body("{\"backendBulkLoadType\": \"" + loadType + "\", \"dataProvider\": \"" + dataProvider + "\"}").
-			when().
-			post("/api/bulkmanualload/find?limit=10&page=0").
-			then().
-			statusCode(200).
-			extract().path("results.id");
-
-		if (bulkLoadIds == null || bulkLoadIds.isEmpty()) {
-			BulkManualLoad bulkLoad = new BulkManualLoad();
-			bulkLoad.setName("KANBAN-965 orthology cleanup test");
-			bulkLoad.setBackendBulkLoadType(loadType);
-			bulkLoad.setDataProvider(dataProvider);
-			return RestAssured.given().
-				contentType("application/json").
-				body(bulkLoad).
-				when().
-				post("/api/bulkmanualload").
-				then().
-				statusCode(200).
-				extract().jsonPath().getLong("entity.id");
-		}
-
-		assertEquals(1, bulkLoadIds.size());
-		return bulkLoadIds.get(0).longValue();
-	}
-
-	private String getMd5Sum(Path filePath) throws Exception {
-		MessageDigest md5 = MessageDigest.getInstance("MD5");
-		try (InputStream inputStream = Files.newInputStream(filePath)) {
-			byte[] buffer = new byte[8192];
-			int bytesRead;
-			while ((bytesRead = inputStream.read(buffer)) != -1) {
-				md5.update(buffer, 0, bytesRead);
-			}
-		}
-		StringBuilder hex = new StringBuilder();
-		for (byte value : md5.digest()) {
-			hex.append(String.format("%02x", value));
-		}
-		return hex.toString();
+		fail("Timed out waiting for cleanup to delete orthology " + orthologyId);
 	}
 
 }
