@@ -141,12 +141,21 @@ public class IT_0602_OrthologyBulkUploadFmsITCase extends BaseITCase {
 	@Test
 	@Order(5)
 	public void orthologyBulkUploadExcludedKnownIssuePair() throws Exception {
+		// KANBAN-965: this fixture represents the known bad VMA21/pdcd-2 DIOPT pair that is
+		// temporarily excluded in OrthologyFmsDTOValidator.EXCLUDED_ORTHOLOGY_PAIRS.
+		// Remove this test together with that exclusion, the KI_01 fixture below, and the cleanup
+		// test if/when the upstream DIOPT data is fixed and regenerated cleanly.
 		checkSkippedBulkLoad(orthologyBulkPostEndpoint, orthologyTestFilePath + "KI_01_excluded_vma21_pdcd2_pair.json");
 	}
 
 	@Test
 	@Order(6)
 	public void orthologyBulkExecutorCleanupDeletesExcludedKnownIssuePair() throws Exception {
+		// KANBAN-965: this covers the failure mode that originally escaped the loader-side fix:
+		// a bad row can already exist in agr_curation even though new ingest now skips it.
+		// Keep this aligned with OrthologyFmsDTOValidator.EXCLUDED_ORTHOLOGY_PAIRS and the
+		// KI_01_excluded_vma21_pdcd2_pair.json fixture, and remove all three together once the
+		// upstream DIOPT source data is corrected.
 		Organization mgiDataProvider = getOrganization("MGI");
 		Organization wbDataProvider = getOrganization("WB");
 		VocabularyTerm symbolTerm = getVocabularyTerm(getVocabulary(VocabularyConstants.NAME_TYPE_VOCABULARY), "nomenclature_symbol");
@@ -182,6 +191,8 @@ public class IT_0602_OrthologyBulkUploadFmsITCase extends BaseITCase {
 			statusCode(200).
 			extract().jsonPath().getLong("entity.id"));
 
+		// KANBAN-965: reuse the same temporary KI_01 fixture here so the cleanup-path coverage
+		// stays tied to the exact excluded pair list used by the validator.
 		Path gzipFile = createGzipFromResource(orthologyTestFilePath + "KI_01_excluded_vma21_pdcd2_pair.json");
 
 		BulkFMSLoad bulkLoad = new BulkFMSLoad();
