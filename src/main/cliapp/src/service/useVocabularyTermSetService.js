@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { SearchService } from './SearchService';
+import { Endpoints } from '../constants/Endpoints';
 
 export function useVocabularyTermSetService(vocabularyLabel) {
 	const [terms, setTerms] = useState();
@@ -9,7 +10,9 @@ export function useVocabularyTermSetService(vocabularyLabel) {
 	const { data, isSuccess } = useQuery({
 		queryKey: ['terms', vocabularyLabel],
 		queryFn: () => {
-			return searchService.find('vocabularyterm', 30, 0, { 'vocabularyTermSets.vocabularyLabel': vocabularyLabel });
+			return searchService.find(Endpoints.Vocabulary.TERM, 30, 0, {
+				'vocabularyTermSets.vocabularyLabel': vocabularyLabel,
+			});
 		},
 		placeholderData: (previousData) => previousData,
 
