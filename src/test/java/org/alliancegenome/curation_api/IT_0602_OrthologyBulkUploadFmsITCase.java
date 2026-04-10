@@ -19,13 +19,12 @@ import java.util.zip.GZIPOutputStream;
 
 import org.alliancegenome.curation_api.base.BaseITCase;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
+import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.enums.BackendBulkLoadType;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.Organization;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
-import org.alliancegenome.curation_api.model.entities.bulkloads.BulkFMSLoad;
-import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFile;
-import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
+import org.alliancegenome.curation_api.model.entities.bulkloads.BulkManualLoad;
 import org.alliancegenome.curation_api.model.entities.orthology.GeneToGeneOrthologyGenerated;
 import org.alliancegenome.curation_api.resources.TestContainerResource;
 import org.junit.jupiter.api.BeforeEach;
@@ -155,7 +154,10 @@ public class IT_0602_OrthologyBulkUploadFmsITCase extends BaseITCase {
 		// a bad row can already exist in agr_curation even though new ingest now skips it.
 		// Keep this aligned with OrthologyFmsDTOValidator.EXCLUDED_ORTHOLOGY_PAIRS and the
 		// KI_01_excluded_vma21_pdcd2_pair.json fixture, and remove all three together once the
-		// upstream DIOPT source data is corrected.
+		// upstream DIOPT source data is corrected. This test intentionally uses the DQM manual
+		// submission path (/api/data/submit with ORTHOLOGY_MGI) because it exercises the same
+		// file-history creation and async cleanup flow that CI rejected when the test tried to
+		// create BulkLoadFileHistory directly.
 		Organization mgiDataProvider = getOrganization("MGI");
 		Organization wbDataProvider = getOrganization("WB");
 		VocabularyTerm symbolTerm = getVocabularyTerm(getVocabulary(VocabularyConstants.NAME_TYPE_VOCABULARY), "nomenclature_symbol");
@@ -195,51 +197,28 @@ public class IT_0602_OrthologyBulkUploadFmsITCase extends BaseITCase {
 		// stays tied to the exact excluded pair list used by the validator.
 		Path gzipFile = createGzipFromResource(orthologyTestFilePath + "KI_01_excluded_vma21_pdcd2_pair.json");
 
-		BulkFMSLoad bulkLoad = new BulkFMSLoad();
+		BulkManualLoad bulkLoad = new BulkManualLoad();
 		bulkLoad.setName("KANBAN-965 orthology cleanup test");
 		bulkLoad.setBackendBulkLoadType(BackendBulkLoadType.ORTHOLOGY);
-		bulkLoad.setFmsDataType("Orthology");
-		bulkLoad.setFmsDataSubType("MGI");
+		bulkLoad.setDataProvider(BackendBulkDataProvider.MGI);
 		bulkLoad.setId(RestAssured.given().
 			contentType("application/json").
 			body(bulkLoad).
 			when().
-			post("/api/bulkfmsload").
+			post("/api/bulkmanualload").
 			then().
 			statusCode(200).
 			extract().jsonPath().getLong("entity.id"));
-
-		BulkLoadFile bulkLoadFile = new BulkLoadFile();
-		bulkLoadFile.setLocalFilePath(gzipFile.toString());
-		bulkLoadFile.setMd5Sum("KANBAN-965-" + System.nanoTime());
-		bulkLoadFile.setId(RestAssured.given().
-			contentType("application/json").
-			body(bulkLoadFile).
-			when().
-			post("/api/bulkloadfile").
-			then().
-			statusCode(200).
-			extract().jsonPath().getLong("entity.id"));
-
-		BulkLoadFileHistory bulkLoadFileHistory = new BulkLoadFileHistory();
-		bulkLoadFileHistory.setBulkLoad(bulkLoad);
-		bulkLoadFileHistory.setBulkLoadFile(bulkLoadFile);
-		Long originalHistoryId = RestAssured.given().
-			contentType("application/json").
-			body(bulkLoadFileHistory).
-			when().
-			post("/api/bulkloadfilehistory").
-			then().
-			statusCode(200).
-			extract().jsonPath().getLong("entity.id");
 
 		RestAssured.given().
+			multiPart("ORTHOLOGY_MGI", gzipFile.toFile(), "application/gzip").
 			when().
-			get("/api/bulkloadfilehistory/restartloadhistory/" + originalHistoryId).
+			post("/api/data/submit?cleanUp=true").
 			then().
-			statusCode(200);
+			statusCode(200).
+			body(is("OK"));
 
-		Long cleanupHistoryId = waitForCleanupHistoryId(bulkLoad.getId(), bulkLoadFile.getId(), originalHistoryId);
+		Long cleanupHistoryId = waitForCleanupHistoryId(bulkLoad.getId());
 		Map<String, Object> cleanupHistory = waitForBulkLoadHistoryToFinish(cleanupHistoryId);
 		Map<String, Map<String, Number>> counts = (Map<String, Map<String, Number>>) cleanupHistory.get("counts");
 
@@ -321,12 +300,12 @@ public class IT_0602_OrthologyBulkUploadFmsITCase extends BaseITCase {
 		return gzipFile;
 	}
 
-	private Long waitForCleanupHistoryId(Long bulkLoadId, Long bulkLoadFileId, Long originalHistoryId) throws Exception {
+	private Long waitForCleanupHistoryId(Long bulkLoadId) throws Exception {
 		long timeoutAt = System.currentTimeMillis() + 30000;
 		while (System.currentTimeMillis() < timeoutAt) {
 			List<Integer> historyIds = RestAssured.given().
 				contentType("application/json").
-				body("{\"bulkLoad.id\": " + bulkLoadId + ", \"bulkLoadFile.id\": " + bulkLoadFileId + "}").
+				body("{\"bulkLoad.id\": " + bulkLoadId + "}").
 				when().
 				post("/api/bulkloadfilehistory/find?limit=10&page=0").
 				then().
@@ -334,10 +313,7 @@ public class IT_0602_OrthologyBulkUploadFmsITCase extends BaseITCase {
 				extract().path("results.id");
 
 			if (historyIds != null && !historyIds.isEmpty()) {
-				Long latestHistoryId = historyIds.stream().map(Integer::longValue).max(Comparator.naturalOrder()).orElse(originalHistoryId);
-				if (latestHistoryId > originalHistoryId) {
-					return latestHistoryId;
-				}
+				return historyIds.stream().map(Integer::longValue).max(Comparator.naturalOrder()).orElse(null);
 			}
 
 			Thread.sleep(500);
