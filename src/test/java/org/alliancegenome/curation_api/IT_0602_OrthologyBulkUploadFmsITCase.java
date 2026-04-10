@@ -4,8 +4,29 @@ import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.fail;
+
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.zip.GZIPOutputStream;
 
 import org.alliancegenome.curation_api.base.BaseITCase;
+import org.alliancegenome.curation_api.constants.VocabularyConstants;
+import org.alliancegenome.curation_api.enums.BackendBulkLoadType;
+import org.alliancegenome.curation_api.model.entities.Gene;
+import org.alliancegenome.curation_api.model.entities.Organization;
+import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
+import org.alliancegenome.curation_api.model.entities.bulkloads.BulkFMSLoad;
+import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFile;
+import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
+import org.alliancegenome.curation_api.model.entities.orthology.GeneToGeneOrthologyGenerated;
 import org.alliancegenome.curation_api.resources.TestContainerResource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -119,6 +140,110 @@ public class IT_0602_OrthologyBulkUploadFmsITCase extends BaseITCase {
 
 	@Test
 	@Order(5)
+	public void orthologyBulkUploadExcludedKnownIssuePair() throws Exception {
+		checkSkippedBulkLoad(orthologyBulkPostEndpoint, orthologyTestFilePath + "KI_01_excluded_vma21_pdcd2_pair.json");
+	}
+
+	@Test
+	@Order(6)
+	public void orthologyBulkExecutorCleanupDeletesExcludedKnownIssuePair() throws Exception {
+		Organization mgiDataProvider = getOrganization("MGI");
+		Organization wbDataProvider = getOrganization("WB");
+		VocabularyTerm symbolTerm = getVocabularyTerm(getVocabulary(VocabularyConstants.NAME_TYPE_VOCABULARY), "nomenclature_symbol");
+
+		Gene subjectGene = createGene("MGI:1914298", "NCBITaxon:10090", symbolTerm, false, mgiDataProvider);
+		Gene objectGene = createGene("WB:WBGene00011116", "NCBITaxon:6239", symbolTerm, false, wbDataProvider);
+
+		GeneToGeneOrthologyGenerated staleOrthology = new GeneToGeneOrthologyGenerated();
+		staleOrthology.setSubjectGene(subjectGene);
+		staleOrthology.setObjectGene(objectGene);
+		staleOrthology.setIsBestScore(getVocabularyTerm(getVocabulary(VocabularyConstants.ORTHOLOGY_BEST_SCORE_VOCABULARY), "Yes"));
+		staleOrthology.setIsBestScoreReverse(getVocabularyTerm(getVocabularyTermSet(VocabularyConstants.ORTHOLOGY_BEST_REVERSE_SCORE_VOCABULARY_TERM_SET).getVocabularyTermSetVocabulary(), "Yes"));
+		staleOrthology.setConfidence(getVocabularyTerm(getVocabulary(VocabularyConstants.HOMOLOGY_CONFIDENCE_VOCABULARY), "high"));
+		staleOrthology.setStrictFilter(true);
+		staleOrthology.setModerateFilter(true);
+		staleOrthology.setObsolete(false);
+		staleOrthology.setInternal(false);
+
+		Long staleOrthologyId = RestAssured.given().
+			contentType("application/json").
+			body(staleOrthology).
+			when().
+			post("/api/orthologygenerated").
+			then().
+			statusCode(200).
+			extract().jsonPath().getLong("entity.id");
+
+		assertNotNull(staleOrthologyId);
+		assertEquals(staleOrthologyId, RestAssured.given().
+			when().
+			get("/api/orthologygenerated/" + staleOrthologyId).
+			then().
+			statusCode(200).
+			extract().jsonPath().getLong("entity.id"));
+
+		Path gzipFile = createGzipFromResource(orthologyTestFilePath + "KI_01_excluded_vma21_pdcd2_pair.json");
+
+		BulkFMSLoad bulkLoad = new BulkFMSLoad();
+		bulkLoad.setName("KANBAN-965 orthology cleanup test");
+		bulkLoad.setBackendBulkLoadType(BackendBulkLoadType.ORTHOLOGY);
+		bulkLoad.setFmsDataType("Orthology");
+		bulkLoad.setFmsDataSubType("MGI");
+		bulkLoad.setId(RestAssured.given().
+			contentType("application/json").
+			body(bulkLoad).
+			when().
+			post("/api/bulkfmsload").
+			then().
+			statusCode(200).
+			extract().jsonPath().getLong("entity.id"));
+
+		BulkLoadFile bulkLoadFile = new BulkLoadFile();
+		bulkLoadFile.setLocalFilePath(gzipFile.toString());
+		bulkLoadFile.setMd5Sum("KANBAN-965-" + System.nanoTime());
+		bulkLoadFile.setId(RestAssured.given().
+			contentType("application/json").
+			body(bulkLoadFile).
+			when().
+			post("/api/bulkloadfile").
+			then().
+			statusCode(200).
+			extract().jsonPath().getLong("entity.id"));
+
+		BulkLoadFileHistory bulkLoadFileHistory = new BulkLoadFileHistory();
+		bulkLoadFileHistory.setBulkLoad(bulkLoad);
+		bulkLoadFileHistory.setBulkLoadFile(bulkLoadFile);
+		Long originalHistoryId = RestAssured.given().
+			contentType("application/json").
+			body(bulkLoadFileHistory).
+			when().
+			post("/api/bulkloadfilehistory").
+			then().
+			statusCode(200).
+			extract().jsonPath().getLong("entity.id");
+
+		RestAssured.given().
+			when().
+			get("/api/bulkloadfilehistory/restartloadhistory/" + originalHistoryId).
+			then().
+			statusCode(200);
+
+		Long cleanupHistoryId = waitForCleanupHistoryId(bulkLoad.getId(), bulkLoadFile.getId(), originalHistoryId);
+		Map<String, Object> cleanupHistory = waitForBulkLoadHistoryToFinish(cleanupHistoryId);
+		Map<String, Map<String, Number>> counts = (Map<String, Map<String, Number>>) cleanupHistory.get("counts");
+
+		assertEquals(1, counts.get("Records").get("skipped").intValue());
+		assertEquals(1, counts.get("Orthology Deleted").get("completed").intValue());
+		assertNull(RestAssured.given().
+			when().
+			get("/api/orthologygenerated/" + staleOrthologyId).
+			then().
+			statusCode(200).
+			extract().path("entity"));
+	}
+
+	@Test
+	@Order(7)
 	public void orthologyBulkUploadUpdateMissingNonRequiredFields() throws Exception {
 
 		checkSuccessfulBulkLoad(orthologyBulkPostEndpoint, orthologyTestFilePath + "UM_01_update_no_non_required_fields.json");
@@ -140,7 +265,7 @@ public class IT_0602_OrthologyBulkUploadFmsITCase extends BaseITCase {
 	}
 
 	@Test
-	@Order(6)
+	@Order(8)
 	public void orthologyBulkUploadUpdateEmptyNonRequiredFields() throws Exception {
 
 		checkSuccessfulBulkLoad(orthologyBulkPostEndpoint, orthologyTestFilePath + "AF_01_all_fields.json");
@@ -174,6 +299,67 @@ public class IT_0602_OrthologyBulkUploadFmsITCase extends BaseITCase {
 			body("results[0]", not(hasKey("predictionMethodsMatched"))).
 			body("results[0]", not(hasKey("predictionMethodsNotMatched"))).
 			body("results[0]", not(hasKey("predictionMethodsNotCalled")));
+	}
+
+	private Path createGzipFromResource(String resourcePath) throws Exception {
+		Path gzipFile = Files.createTempFile("kanban-965-orthology-", ".json.gz");
+		gzipFile.toFile().deleteOnExit();
+		try (GZIPOutputStream outputStream = new GZIPOutputStream(Files.newOutputStream(gzipFile))) {
+			outputStream.write(Files.readString(Path.of(resourcePath)).getBytes(StandardCharsets.UTF_8));
+		}
+		return gzipFile;
+	}
+
+	private Long waitForCleanupHistoryId(Long bulkLoadId, Long bulkLoadFileId, Long originalHistoryId) throws Exception {
+		long timeoutAt = System.currentTimeMillis() + 30000;
+		while (System.currentTimeMillis() < timeoutAt) {
+			List<Integer> historyIds = RestAssured.given().
+				contentType("application/json").
+				body("{\"bulkLoad.id\": " + bulkLoadId + ", \"bulkLoadFile.id\": " + bulkLoadFileId + "}").
+				when().
+				post("/api/bulkloadfilehistory/find?limit=10&page=0").
+				then().
+				statusCode(200).
+				extract().path("results.id");
+
+			if (historyIds != null && !historyIds.isEmpty()) {
+				Long latestHistoryId = historyIds.stream().map(Integer::longValue).max(Comparator.naturalOrder()).orElse(originalHistoryId);
+				if (latestHistoryId > originalHistoryId) {
+					return latestHistoryId;
+				}
+			}
+
+			Thread.sleep(500);
+		}
+
+		fail("Timed out waiting for cleanup history to be created");
+		return null;
+	}
+
+	@SuppressWarnings("unchecked")
+	private Map<String, Object> waitForBulkLoadHistoryToFinish(Long historyId) throws Exception {
+		long timeoutAt = System.currentTimeMillis() + 30000;
+		while (System.currentTimeMillis() < timeoutAt) {
+			Map<String, Object> history = RestAssured.given().
+				when().
+				get("/api/bulkloadfilehistory/" + historyId).
+				then().
+				statusCode(200).
+				extract().path("entity");
+
+			String bulkloadStatus = (String) history.get("bulkloadStatus");
+			if ("FINISHED".equals(bulkloadStatus)) {
+				return history;
+			}
+			if ("FAILED".equals(bulkloadStatus) || "FORCED_STOPPED".equals(bulkloadStatus) || "STOPPED".equals(bulkloadStatus)) {
+				fail("Cleanup load ended with status " + bulkloadStatus + ": " + history.get("errorMessage"));
+			}
+
+			Thread.sleep(500);
+		}
+
+		fail("Timed out waiting for cleanup history to finish");
+		return null;
 	}
 
 }
