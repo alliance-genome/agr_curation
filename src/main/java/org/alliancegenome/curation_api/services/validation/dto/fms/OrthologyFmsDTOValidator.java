@@ -37,7 +37,11 @@ public class OrthologyFmsDTOValidator {
 	}
 
 	// KANBAN-965: temporary local exclusion for known bad VMA21/pdcd-2 DIOPT data.
-	// Remove this once the upstream DIOPT data is corrected and the bad pairs stop appearing.
+	// When DIOPT fixes the upstream data and the bad pairs no longer appear in orthology loads,
+	// remove this exclusion together with:
+	// - src/test/resources/bulk/fms/02_orthology/KI_01_excluded_vma21_pdcd2_pair.json
+	// - orthologyBulkUploadExcludedKnownIssuePair() in IT_0602_OrthologyBulkUploadFmsITCase
+	// - orthologyBulkExecutorCleanupDeletesExcludedKnownIssuePair() in IT_0602_OrthologyBulkUploadFmsITCase
 	private static final Set<ExcludedOrthologyPair> EXCLUDED_ORTHOLOGY_PAIRS = Set.of(
 		new ExcludedOrthologyPair("WB:WBGene00011116", "MGI:1914298"),
 		new ExcludedOrthologyPair("WB:WBGene00011116", "RGD:620474"),
@@ -77,6 +81,9 @@ public class OrthologyFmsDTOValidator {
 
 		if (isExcludedOrthologyPair(subjectGeneIdentifier, objectGeneIdentifier)) {
 			// KANBAN-965: skip the temporary exclusion here so provider cleanup removes any stale row.
+			// The executor-backed cleanup behavior is covered by
+			// orthologyBulkExecutorCleanupDeletesExcludedKnownIssuePair() in
+			// IT_0602_OrthologyBulkUploadFmsITCase.
 			throw new KnownIssueValidationException("Skipping excluded orthology pair: "
 				+ subjectGeneIdentifier + " <-> " + objectGeneIdentifier);
 		}
