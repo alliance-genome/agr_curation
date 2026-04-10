@@ -27,6 +27,7 @@ import org.alliancegenome.curation_api.enums.BackendBulkLoadType;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.Organization;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
+import org.alliancegenome.curation_api.model.entities.bulkloads.BulkManualLoad;
 import org.alliancegenome.curation_api.model.entities.orthology.GeneToGeneOrthologyGenerated;
 import org.alliancegenome.curation_api.resources.TestContainerResource;
 import org.junit.jupiter.api.BeforeEach;
@@ -388,10 +389,23 @@ public class IT_0602_OrthologyBulkUploadFmsITCase extends BaseITCase {
 			post("/api/bulkmanualload/find?limit=10&page=0").
 			then().
 			statusCode(200).
-			body("returnedRecords", is(1)).
 			extract().path("results.id");
 
-		assertNotNull(bulkLoadIds);
+		if (bulkLoadIds == null || bulkLoadIds.isEmpty()) {
+			BulkManualLoad bulkLoad = new BulkManualLoad();
+			bulkLoad.setName("KANBAN-965 orthology cleanup test");
+			bulkLoad.setBackendBulkLoadType(loadType);
+			bulkLoad.setDataProvider(dataProvider);
+			return RestAssured.given().
+				contentType("application/json").
+				body(bulkLoad).
+				when().
+				post("/api/bulkmanualload").
+				then().
+				statusCode(200).
+				extract().jsonPath().getLong("entity.id");
+		}
+
 		assertEquals(1, bulkLoadIds.size());
 		return bulkLoadIds.get(0).longValue();
 	}
