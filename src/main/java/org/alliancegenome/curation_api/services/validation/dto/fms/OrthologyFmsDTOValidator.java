@@ -36,6 +36,8 @@ public class OrthologyFmsDTOValidator {
 	private record ExcludedOrthologyPair(String subjectGeneIdentifier, String objectGeneIdentifier) {
 	}
 
+	// KANBAN-965: temporary local exclusion for known bad VMA21/pdcd-2 DIOPT data.
+	// Remove this once the upstream DIOPT data is corrected and the bad pairs stop appearing.
 	private static final Set<ExcludedOrthologyPair> EXCLUDED_ORTHOLOGY_PAIRS = Set.of(
 		new ExcludedOrthologyPair("WB:WBGene00011116", "MGI:1914298"),
 		new ExcludedOrthologyPair("WB:WBGene00011116", "RGD:620474"),
@@ -74,6 +76,7 @@ public class OrthologyFmsDTOValidator {
 		}
 
 		if (isExcludedOrthologyPair(subjectGeneIdentifier, objectGeneIdentifier)) {
+			// KANBAN-965: skip the temporary exclusion here so provider cleanup removes any stale row.
 			throw new KnownIssueValidationException("Skipping excluded orthology pair: "
 				+ subjectGeneIdentifier + " <-> " + objectGeneIdentifier);
 		}
