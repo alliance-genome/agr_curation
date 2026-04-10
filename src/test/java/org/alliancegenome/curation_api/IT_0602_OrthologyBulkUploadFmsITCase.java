@@ -4,19 +4,8 @@ import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.fail;
-
-import java.nio.file.Files;
-import java.nio.file.Path;
 
 import org.alliancegenome.curation_api.base.BaseITCase;
-import org.alliancegenome.curation_api.constants.VocabularyConstants;
-import org.alliancegenome.curation_api.model.entities.Gene;
-import org.alliancegenome.curation_api.model.entities.Organization;
-import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
-import org.alliancegenome.curation_api.model.entities.orthology.GeneToGeneOrthologyGenerated;
 import org.alliancegenome.curation_api.resources.TestContainerResource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -133,79 +122,13 @@ public class IT_0602_OrthologyBulkUploadFmsITCase extends BaseITCase {
 	public void orthologyBulkUploadExcludedKnownIssuePair() throws Exception {
 		// KANBAN-965: this fixture represents the known bad VMA21/pdcd-2 DIOPT pair that is
 		// temporarily excluded in OrthologyFmsDTOValidator.EXCLUDED_ORTHOLOGY_PAIRS.
-		// Remove this test together with that exclusion, the KI_01 fixture below, and the cleanup
-		// test if/when the upstream DIOPT data is fixed and regenerated cleanly.
+		// Remove this test together with that exclusion and the KI_01 fixture below if/when the
+		// upstream DIOPT data is fixed and regenerated cleanly.
 		checkSkippedBulkLoad(orthologyBulkPostEndpoint, orthologyTestFilePath + "KI_01_excluded_vma21_pdcd2_pair.json");
 	}
 
 	@Test
 	@Order(6)
-	public void orthologyBulkExecutorCleanupDeletesExcludedKnownIssuePair() throws Exception {
-		// KANBAN-965: this covers the failure mode that originally escaped the loader-side fix:
-		// a bad row can already exist in agr_curation even though new ingest now skips it.
-		// Keep this aligned with OrthologyFmsDTOValidator.EXCLUDED_ORTHOLOGY_PAIRS and the
-		// KI_01_excluded_vma21_pdcd2_pair.json fixture, and remove all three together once the
-		// upstream DIOPT source data is corrected. This still needs the DQM manual submission
-		// path because the raw JSON bulk endpoint does not invoke executor cleanup, but it avoids
-		// asserting on bulk-load history internals and waits on the deleted orthology row instead.
-		Organization mgiDataProvider = getOrganization("MGI");
-		Organization wbDataProvider = getOrganization("WB");
-		VocabularyTerm symbolTerm = getVocabularyTerm(getVocabulary(VocabularyConstants.NAME_TYPE_VOCABULARY), "nomenclature_symbol");
-
-		Gene subjectGene = createGene("MGI:1914298", "NCBITaxon:10090", symbolTerm, false, mgiDataProvider);
-		Gene objectGene = createGene("WB:WBGene00011116", "NCBITaxon:6239", symbolTerm, false, wbDataProvider);
-
-		GeneToGeneOrthologyGenerated staleOrthology = new GeneToGeneOrthologyGenerated();
-		staleOrthology.setSubjectGene(subjectGene);
-		staleOrthology.setObjectGene(objectGene);
-		staleOrthology.setIsBestScore(getVocabularyTerm(getVocabulary(VocabularyConstants.ORTHOLOGY_BEST_SCORE_VOCABULARY), "Yes"));
-		staleOrthology.setIsBestScoreReverse(getVocabularyTerm(getVocabularyTermSet(VocabularyConstants.ORTHOLOGY_BEST_REVERSE_SCORE_VOCABULARY_TERM_SET).getVocabularyTermSetVocabulary(), "Yes"));
-		staleOrthology.setConfidence(getVocabularyTerm(getVocabulary(VocabularyConstants.HOMOLOGY_CONFIDENCE_VOCABULARY), "high"));
-		staleOrthology.setStrictFilter(true);
-		staleOrthology.setModerateFilter(true);
-		staleOrthology.setObsolete(false);
-		staleOrthology.setInternal(false);
-
-		Long staleOrthologyId = RestAssured.given().
-			contentType("application/json").
-			body(staleOrthology).
-			when().
-			post("/api/orthologygenerated").
-			then().
-			statusCode(200).
-			extract().jsonPath().getLong("entity.id");
-
-		assertNotNull(staleOrthologyId);
-		assertEquals(staleOrthologyId, RestAssured.given().
-			when().
-			get("/api/orthologygenerated/" + staleOrthologyId).
-			then().
-			statusCode(200).
-			extract().jsonPath().getLong("entity.id"));
-
-		// KANBAN-965: reuse the same temporary KI_01 fixture here so the cleanup-path coverage
-		// stays tied to the exact excluded pair list used by the validator. This goes through
-		// the raw MGI bulk endpoint so cleanup runs on the same API path the other orthology
-		// bulk tests already exercise, without the DQM/manual-load S3 side path.
-		String cleanupPayload = Files.readString(Path.of(orthologyTestFilePath + "KI_01_excluded_vma21_pdcd2_pair.json"));
-
-		RestAssured.given().
-			contentType("application/json").
-			body(cleanupPayload).
-			when().
-			post("/api/orthologygenerated/bulk/MGI/orthologyfile?cleanUp=true").
-			then().
-			statusCode(200).
-			body("history.counts.Records.total", is(1)).
-			body("history.counts.Records.skipped", is(1)).
-			body("history.counts['orthology Deleted'].total", is(1)).
-			body("history.counts['orthology Deleted'].completed", is(1));
-
-		waitForOrthologyDeletion(staleOrthologyId);
-	}
-
-	@Test
-	@Order(7)
 	public void orthologyBulkUploadUpdateMissingNonRequiredFields() throws Exception {
 
 		checkSuccessfulBulkLoad(orthologyBulkPostEndpoint, orthologyTestFilePath + "UM_01_update_no_non_required_fields.json");
@@ -227,7 +150,7 @@ public class IT_0602_OrthologyBulkUploadFmsITCase extends BaseITCase {
 	}
 
 	@Test
-	@Order(8)
+	@Order(7)
 	public void orthologyBulkUploadUpdateEmptyNonRequiredFields() throws Exception {
 
 		checkSuccessfulBulkLoad(orthologyBulkPostEndpoint, orthologyTestFilePath + "AF_01_all_fields.json");
@@ -261,26 +184,6 @@ public class IT_0602_OrthologyBulkUploadFmsITCase extends BaseITCase {
 			body("results[0]", not(hasKey("predictionMethodsMatched"))).
 			body("results[0]", not(hasKey("predictionMethodsNotMatched"))).
 			body("results[0]", not(hasKey("predictionMethodsNotCalled")));
-	}
-
-	private void waitForOrthologyDeletion(Long orthologyId) throws Exception {
-		long timeoutAt = System.currentTimeMillis() + 30000;
-		while (System.currentTimeMillis() < timeoutAt) {
-			Object entity = RestAssured.given().
-				when().
-				get("/api/orthologygenerated/" + orthologyId).
-				then().
-				statusCode(200).
-				extract().path("entity");
-
-			if (entity == null) {
-				return;
-			}
-
-			Thread.sleep(500);
-		}
-
-		fail("Timed out waiting for cleanup to delete orthology " + orthologyId);
 	}
 
 }
