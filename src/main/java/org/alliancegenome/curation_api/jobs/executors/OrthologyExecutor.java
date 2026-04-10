@@ -12,9 +12,6 @@ import org.alliancegenome.curation_api.model.entities.bulkloads.BulkFMSLoad;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
 import org.alliancegenome.curation_api.model.entities.orthology.GeneToGeneOrthologyGenerated;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.OrthologyIngestFmsDTO;
-import org.alliancegenome.curation_api.model.ingest.dto.fms.OrthologyFmsDTO;
-import org.alliancegenome.curation_api.response.APIResponse;
-import org.alliancegenome.curation_api.response.LoadHistoryResponce;
 import org.alliancegenome.curation_api.services.orthology.GeneToGeneOrthologyGeneratedService;
 import org.apache.commons.lang3.StringUtils;
 
@@ -63,28 +60,5 @@ public class OrthologyExecutor extends LoadFileExecutor {
 			failLoad(bulkLoadFileHistory, e);
 			e.printStackTrace();
 		}
-	}
-
-	public APIResponse runLoadApi(String dataProviderName, List<OrthologyFmsDTO> orthologyData, Boolean cleanUp) {
-		List<Long> orthoPairIdsLoaded = new ArrayList<>();
-		BulkLoadFileHistory history = new BulkLoadFileHistory(orthologyData.size());
-		history = bulkLoadFileHistoryDAO.persist(history);
-
-		BackendBulkDataProvider dataProvider = BackendBulkDataProvider.valueOf(dataProviderName);
-		List<Long> orthoPairIdsBefore = new ArrayList<>();
-		if (Boolean.TRUE.equals(cleanUp)) {
-			orthoPairIdsBefore = generatedOrthologyService.getAllOrthologyPairIdsBySubjectGeneDataProvider(dataProvider);
-			log.debug("runLoadApi: Before: total " + orthoPairIdsBefore.size());
-		}
-
-		boolean success = runLoad(generatedOrthologyService, history, dataProvider, orthologyData, orthoPairIdsLoaded);
-		if (success && Boolean.TRUE.equals(cleanUp)) {
-			runCleanup(generatedOrthologyService, history, dataProvider.name(), orthoPairIdsBefore, orthoPairIdsLoaded, "orthology");
-		}
-
-		history.finishLoad();
-		updateHistory(history);
-		updateExceptions(history);
-		return new LoadHistoryResponce(history);
 	}
 }
