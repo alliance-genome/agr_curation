@@ -316,7 +316,11 @@ public class LoadFileExecutor {
 		long existingDeletes = history.getCount(countType).getTotal() == null ? 0 : history.getCount(countType).getTotal();
 		history.setCount(countType, idsToRemove.size() + existingDeletes);
 
-		String loadDescription = dataProviderName + " " + loadTypeString + " bulk load (" + history.getBulkLoadFile().getMd5Sum() + ")";
+		String loadSource = "api";
+		if (history.getBulkLoadFile() != null && StringUtils.isNotBlank(history.getBulkLoadFile().getMd5Sum())) {
+			loadSource = history.getBulkLoadFile().getMd5Sum();
+		}
+		String loadDescription = dataProviderName + " " + loadTypeString + " bulk load (" + loadSource + ")";
 
 		updateHistory(history);
 		Log.info("Updated history ready to delete");

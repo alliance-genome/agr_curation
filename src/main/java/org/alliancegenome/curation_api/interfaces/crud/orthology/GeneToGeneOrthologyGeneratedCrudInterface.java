@@ -10,10 +10,12 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import com.fasterxml.jackson.annotation.JsonView;
 
 import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.DefaultValue;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 
@@ -27,5 +29,5 @@ public interface GeneToGeneOrthologyGeneratedCrudInterface extends BaseIdCrudInt
 	@POST
 	@Path("/bulk/{dataProvider}/orthologyfile")
 	@JsonView(CurationView.FieldsAndLists.class)
-	APIResponse updateOrthology(@PathParam("dataProvider") String dataProvider, OrthologyIngestFmsDTO orthologyData);
+	APIResponse updateOrthology(@PathParam("dataProvider") String dataProvider, OrthologyIngestFmsDTO orthologyData, @DefaultValue("false") @QueryParam("cleanUp") Boolean cleanUp);
 }

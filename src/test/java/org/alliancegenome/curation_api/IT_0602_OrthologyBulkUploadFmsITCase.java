@@ -8,21 +8,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.fail;
 
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.time.Instant;
-import java.util.List;
-import java.util.zip.GZIPOutputStream;
 
 import org.alliancegenome.curation_api.base.BaseITCase;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
-import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
-import org.alliancegenome.curation_api.enums.BackendBulkLoadType;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.Organization;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
-import org.alliancegenome.curation_api.model.entities.bulkloads.BulkManualLoad;
 import org.alliancegenome.curation_api.model.entities.orthology.GeneToGeneOrthologyGenerated;
 import org.alliancegenome.curation_api.resources.TestContainerResource;
 import org.junit.jupiter.api.BeforeEach;
@@ -191,18 +184,22 @@ public class IT_0602_OrthologyBulkUploadFmsITCase extends BaseITCase {
 			extract().jsonPath().getLong("entity.id"));
 
 		// KANBAN-965: reuse the same temporary KI_01 fixture here so the cleanup-path coverage
-		// stays tied to the exact excluded pair list used by the validator. The payload gets a
-		// unique dateProduced value so the DQM submission is not deduplicated by gzip MD5.
-		ensureOrthologyManualLoadExists();
-		Path gzipFile = createUniqueGzipFromResource(orthologyTestFilePath + "KI_01_excluded_vma21_pdcd2_pair.json");
+		// stays tied to the exact excluded pair list used by the validator. This goes through
+		// the raw MGI bulk endpoint so cleanup runs on the same API path the other orthology
+		// bulk tests already exercise, without the DQM/manual-load S3 side path.
+		String cleanupPayload = Files.readString(Path.of(orthologyTestFilePath + "KI_01_excluded_vma21_pdcd2_pair.json"));
 
 		RestAssured.given().
-			multiPart("ORTHOLOGY_MGI", gzipFile.toFile(), "application/gzip").
+			contentType("application/json").
+			body(cleanupPayload).
 			when().
-			post("/api/data/submit?cleanUp=true").
+			post("/api/orthologygenerated/bulk/MGI/orthologyfile?cleanUp=true").
 			then().
 			statusCode(200).
-			body(is("OK"));
+			body("history.counts.Records.total", is(1)).
+			body("history.counts.Records.skipped", is(1)).
+			body("history.counts['orthology Deleted'].total", is(1)).
+			body("history.counts['orthology Deleted'].completed", is(1));
 
 		waitForOrthologyDeletion(staleOrthologyId);
 	}
@@ -266,24 +263,6 @@ public class IT_0602_OrthologyBulkUploadFmsITCase extends BaseITCase {
 			body("results[0]", not(hasKey("predictionMethodsNotCalled")));
 	}
 
-	private Path createUniqueGzipFromResource(String resourcePath) throws Exception {
-		String content = Files.readString(Path.of(resourcePath));
-		String uniqueContent = content.replaceFirst(
-			"\"dateProduced\"\\s*:\\s*\"[^\"]+\"",
-			"\"dateProduced\": \"" + Instant.now() + "\""
-		);
-		if (uniqueContent.equals(content)) {
-			fail("Failed to update dateProduced in " + resourcePath);
-		}
-
-		Path gzipFile = Files.createTempFile("kanban-965-orthology-", ".json.gz");
-		gzipFile.toFile().deleteOnExit();
-		try (GZIPOutputStream outputStream = new GZIPOutputStream(Files.newOutputStream(gzipFile))) {
-			outputStream.write(uniqueContent.getBytes(StandardCharsets.UTF_8));
-		}
-		return gzipFile;
-	}
-
 	private void waitForOrthologyDeletion(Long orthologyId) throws Exception {
 		long timeoutAt = System.currentTimeMillis() + 30000;
 		while (System.currentTimeMillis() < timeoutAt) {
@@ -302,34 +281,6 @@ public class IT_0602_OrthologyBulkUploadFmsITCase extends BaseITCase {
 		}
 
 		fail("Timed out waiting for cleanup to delete orthology " + orthologyId);
-	}
-
-	private void ensureOrthologyManualLoadExists() {
-		List<Integer> bulkLoadIds = RestAssured.given().
-			contentType("application/json").
-			body("{\"backendBulkLoadType\": \"" + BackendBulkLoadType.ORTHOLOGY + "\", \"dataProvider\": \"" + BackendBulkDataProvider.MGI + "\"}").
-			when().
-			post("/api/bulkmanualload/find?limit=10&page=0").
-			then().
-			statusCode(200).
-			extract().path("results.id");
-
-		if (bulkLoadIds == null || bulkLoadIds.isEmpty()) {
-			BulkManualLoad bulkLoad = new BulkManualLoad();
-			bulkLoad.setName("KANBAN-965 orthology cleanup test");
-			bulkLoad.setBackendBulkLoadType(BackendBulkLoadType.ORTHOLOGY);
-			bulkLoad.setDataProvider(BackendBulkDataProvider.MGI);
-			RestAssured.given().
-				contentType("application/json").
-				body(bulkLoad).
-				when().
-				post("/api/bulkmanualload").
-				then().
-				statusCode(200);
-			return;
-		}
-
-		assertEquals(1, bulkLoadIds.size());
 	}
 
 }
