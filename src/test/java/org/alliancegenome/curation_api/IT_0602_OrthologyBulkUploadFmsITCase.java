@@ -9,13 +9,16 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.fail;
 
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.zip.GZIPOutputStream;
+import java.security.MessageDigest;
 
 import org.alliancegenome.curation_api.base.BaseITCase;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
@@ -24,7 +27,6 @@ import org.alliancegenome.curation_api.enums.BackendBulkLoadType;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.Organization;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
-import org.alliancegenome.curation_api.model.entities.bulkloads.BulkManualLoad;
 import org.alliancegenome.curation_api.model.entities.orthology.GeneToGeneOrthologyGenerated;
 import org.alliancegenome.curation_api.resources.TestContainerResource;
 import org.junit.jupiter.api.BeforeEach;
@@ -196,19 +198,9 @@ public class IT_0602_OrthologyBulkUploadFmsITCase extends BaseITCase {
 		// KANBAN-965: reuse the same temporary KI_01 fixture here so the cleanup-path coverage
 		// stays tied to the exact excluded pair list used by the validator.
 		Path gzipFile = createGzipFromResource(orthologyTestFilePath + "KI_01_excluded_vma21_pdcd2_pair.json");
-
-		BulkManualLoad bulkLoad = new BulkManualLoad();
-		bulkLoad.setName("KANBAN-965 orthology cleanup test");
-		bulkLoad.setBackendBulkLoadType(BackendBulkLoadType.ORTHOLOGY);
-		bulkLoad.setDataProvider(BackendBulkDataProvider.MGI);
-		bulkLoad.setId(RestAssured.given().
-			contentType("application/json").
-			body(bulkLoad).
-			when().
-			post("/api/bulkmanualload").
-			then().
-			statusCode(200).
-			extract().jsonPath().getLong("entity.id"));
+		Long bulkLoadId = findExistingBulkManualLoadId(BackendBulkLoadType.ORTHOLOGY, BackendBulkDataProvider.MGI);
+		Set<Integer> existingHistoryIds = getHistoryIdsForBulkLoad(bulkLoadId);
+		String expectedMd5 = getMd5Sum(gzipFile);
 
 		RestAssured.given().
 			multiPart("ORTHOLOGY_MGI", gzipFile.toFile(), "application/gzip").
@@ -218,7 +210,7 @@ public class IT_0602_OrthologyBulkUploadFmsITCase extends BaseITCase {
 			statusCode(200).
 			body(is("OK"));
 
-		Long cleanupHistoryId = waitForCleanupHistoryId(bulkLoad.getId());
+		Long cleanupHistoryId = waitForCleanupHistoryId(bulkLoadId, existingHistoryIds, expectedMd5);
 		Map<String, Object> cleanupHistory = waitForBulkLoadHistoryToFinish(cleanupHistoryId);
 		Map<String, Map<String, Number>> counts = (Map<String, Map<String, Number>>) cleanupHistory.get("counts");
 
@@ -300,20 +292,29 @@ public class IT_0602_OrthologyBulkUploadFmsITCase extends BaseITCase {
 		return gzipFile;
 	}
 
-	private Long waitForCleanupHistoryId(Long bulkLoadId) throws Exception {
+	private Set<Integer> getHistoryIdsForBulkLoad(Long bulkLoadId) {
+		List<Integer> historyIds = getHistoryResultsForBulkLoad(bulkLoadId).stream().
+			map(history -> (Integer) history.get("id")).
+			toList();
+
+		return historyIds == null ? new HashSet<>() : new HashSet<>(historyIds);
+	}
+
+	@SuppressWarnings("unchecked")
+	private Long waitForCleanupHistoryId(Long bulkLoadId, Set<Integer> existingHistoryIds, String expectedMd5) throws Exception {
 		long timeoutAt = System.currentTimeMillis() + 30000;
 		while (System.currentTimeMillis() < timeoutAt) {
-			List<Integer> historyIds = RestAssured.given().
-				contentType("application/json").
-				body("{\"bulkLoad.id\": " + bulkLoadId + "}").
-				when().
-				post("/api/bulkloadfilehistory/find?limit=10&page=0").
-				then().
-				statusCode(200).
-				extract().path("results.id");
+			List<Map<String, Object>> histories = getHistoryResultsForBulkLoad(bulkLoadId);
 
-			if (historyIds != null && !historyIds.isEmpty()) {
-				return historyIds.stream().map(Integer::longValue).max(Comparator.naturalOrder()).orElse(null);
+			if (histories != null) {
+				for (Map<String, Object> history : histories) {
+					Integer historyId = (Integer) history.get("id");
+					Map<String, Object> bulkLoadFile = (Map<String, Object>) history.get("bulkLoadFile");
+					String md5Sum = bulkLoadFile == null ? null : (String) bulkLoadFile.get("md5Sum");
+					if (historyId != null && !existingHistoryIds.contains(historyId) && expectedMd5.equals(md5Sum)) {
+						return historyId.longValue();
+					}
+				}
 			}
 
 			Thread.sleep(500);
@@ -321,6 +322,36 @@ public class IT_0602_OrthologyBulkUploadFmsITCase extends BaseITCase {
 
 		fail("Timed out waiting for cleanup history to be created");
 		return null;
+	}
+
+	@SuppressWarnings("unchecked")
+	private List<Map<String, Object>> getHistoryResultsForBulkLoad(Long bulkLoadId) {
+		int page = 0;
+		int pageSize = 100;
+		List<Map<String, Object>> allHistories = new java.util.ArrayList<>();
+		while (true) {
+			Map<String, Object> response = RestAssured.given().
+				contentType("application/json").
+				body("{\"bulkLoad.id\": " + bulkLoadId + "}").
+				when().
+				post("/api/bulkloadfilehistory/find?limit=" + pageSize + "&page=" + page).
+				then().
+				statusCode(200).
+				extract().path("$");
+
+			List<Map<String, Object>> results = response == null ? null : (List<Map<String, Object>>) response.get("results");
+			if (results == null || results.isEmpty()) {
+				break;
+			}
+			allHistories.addAll(results);
+
+			Number returnedRecords = (Number) response.get("returnedRecords");
+			if (returnedRecords == null || returnedRecords.intValue() < pageSize) {
+				break;
+			}
+			page++;
+		}
+		return allHistories;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -347,6 +378,38 @@ public class IT_0602_OrthologyBulkUploadFmsITCase extends BaseITCase {
 
 		fail("Timed out waiting for cleanup history to finish");
 		return null;
+	}
+
+	private Long findExistingBulkManualLoadId(BackendBulkLoadType loadType, BackendBulkDataProvider dataProvider) {
+		List<Integer> bulkLoadIds = RestAssured.given().
+			contentType("application/json").
+			body("{\"backendBulkLoadType\": \"" + loadType + "\", \"dataProvider\": \"" + dataProvider + "\"}").
+			when().
+			post("/api/bulkmanualload/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("returnedRecords", is(1)).
+			extract().path("results.id");
+
+		assertNotNull(bulkLoadIds);
+		assertEquals(1, bulkLoadIds.size());
+		return bulkLoadIds.get(0).longValue();
+	}
+
+	private String getMd5Sum(Path filePath) throws Exception {
+		MessageDigest md5 = MessageDigest.getInstance("MD5");
+		try (InputStream inputStream = Files.newInputStream(filePath)) {
+			byte[] buffer = new byte[8192];
+			int bytesRead;
+			while ((bytesRead = inputStream.read(buffer)) != -1) {
+				md5.update(buffer, 0, bytesRead);
+			}
+		}
+		StringBuilder hex = new StringBuilder();
+		for (byte value : md5.digest()) {
+			hex.append(String.format("%02x", value));
+		}
+		return hex.toString();
 	}
 
 }
