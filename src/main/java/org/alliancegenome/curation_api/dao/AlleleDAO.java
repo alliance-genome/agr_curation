@@ -1002,6 +1002,26 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 			}
 		}
 
+		// Construct IDs per allele
+		String constructIdsQueryString = """
+			SELECT DISTINCT aca.alleleassociationsubject_id AS allele_id, r.primaryexternalid AS construct_id
+			FROM alleleconstructassociation aca
+			JOIN reagent r ON r.id = aca.alleleconstructassociationobject_id
+			WHERE aca.alleleassociationsubject_id IN :alleleIds
+			AND aca.obsolete = false AND aca.internal = false
+			AND r.primaryexternalid IS NOT NULL
+			""";
+		Query constructIdsQuery = entityManager.createNativeQuery(constructIdsQueryString);
+		constructIdsQuery.setParameter("alleleIds", alleleIds);
+		List<Object[]> constructIdsResults = constructIdsQuery.getResultList();
+
+		Map<Long, Set<String>> alleleConstructIdsMap = new HashMap<>();
+		for (Object[] row : constructIdsResults) {
+			Long alleleId = (Long) row[0];
+			String constructId = (String) row[1];
+			alleleConstructIdsMap.computeIfAbsent(alleleId, k -> new HashSet<>()).add(constructId);
+		}
+
 		// Build documents
 		List<AlleleSummaryDocument> docs = new ArrayList<>();
 		for (Allele allele : alleles) {
@@ -1013,6 +1033,7 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 			doc.setDiseases(alleleDiseaseNamesMap.get(allele.getId()));
 			doc.setDiseasesWithParents(alleleDiseaseWithParentsMap.get(allele.getId()));
 			doc.setDiseasesAgrSlim(alleleDiseaseAgrSlimMap.get(allele.getId()));
+			doc.setConstructs(alleleConstructIdsMap.get(allele.getId()));
 			doc.setConstructExpressedComponents(alleleConstructExpressedComponentsMap.get(allele.getId()));
 			doc.setConstructRegulatoryRegions(alleleConstructRegulatoryRegionsMap.get(allele.getId()));
 			doc.setConstructKnockdownComponents(alleleConstructKnockdownComponentsMap.get(allele.getId()));
