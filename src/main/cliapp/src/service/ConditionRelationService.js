@@ -1,5 +1,6 @@
 import { BaseAuthService } from './BaseAuthService';
 import { DeletionService } from './DeletionService';
+import { Endpoints } from '../constants/Endpoints';
 
 export class ConditionRelationService extends BaseAuthService {
 	saveConditionRelation(updatedConditionRelation) {
@@ -12,6 +13,6 @@ export class ConditionRelationService extends BaseAuthService {
 
 	async deleteConditionRelation(conditionRelation) {
 		const deletionService = new DeletionService();
-		return await deletionService.delete(`condition-relation`, conditionRelation.id);
+		return await deletionService.delete(Endpoints.Annotation.CONDITION_RELATION, conditionRelation.id);
 	}
 }
