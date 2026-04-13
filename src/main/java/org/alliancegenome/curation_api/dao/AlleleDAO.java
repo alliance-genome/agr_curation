@@ -698,7 +698,7 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 			}
 		}
 
-		// Sort vepConsequences by severity (most severe first)
+		// Sort vepConsequences by severity within each PVC, then sort PVCs by their most severe consequence
 		for (Map<Long, Variant> variantMap : alleleVariantMap.values()) {
 			for (Variant v : variantMap.values()) {
 				for (CuratedVariantGenomicLocationAssociation loc : v.getCuratedVariantGenomicLocations()) {
@@ -707,6 +707,14 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 							soTerm -> soTerm.getSeverityOrder() != null ? soTerm.getSeverityOrder() : Integer.MAX_VALUE
 						));
 					}
+					loc.getPredictedVariantConsequences().sort(Comparator.comparingInt(pvc -> {
+						if (pvc.getVepConsequences() == null || pvc.getVepConsequences().isEmpty()) {
+							return Integer.MAX_VALUE;
+						}
+						return pvc.getVepConsequences().stream()
+							.mapToInt(c -> c.getSeverityOrder() != null ? c.getSeverityOrder() : Integer.MAX_VALUE)
+							.min().orElse(Integer.MAX_VALUE);
+					}));
 				}
 			}
 		}
