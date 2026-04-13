@@ -148,18 +148,42 @@ public class PhenotypeAnnotationService extends BaseAnnotationCrudService<Phenot
 		// Not skipped -- do a fresh entity lookup within this transaction
 		GenomicEntity phenotypeAnnotationSubject = genomicEntityService.findByIdentifierString(dto.getObjectId());
 
+		Long annotationId;
 		if (phenotypeAnnotationSubject instanceof AffectedGenomicModel) {
 			AGMPhenotypeAnnotation annotation = agmPhenotypeAnnotationService.upsertPrimaryAnnotation((AffectedGenomicModel) phenotypeAnnotationSubject, dto, dataProvider);
-			return annotation.getId();
+			annotationId = annotation.getId();
 		} else if (phenotypeAnnotationSubject instanceof Allele) {
 			AllelePhenotypeAnnotation annotation = allelePhenotypeAnnotationService.upsertPrimaryAnnotation((Allele) phenotypeAnnotationSubject, dto, dataProvider);
-			return annotation.getId();
+			annotationId = annotation.getId();
 		} else if (phenotypeAnnotationSubject instanceof Gene) {
 			GenePhenotypeAnnotation annotation = genePhenotypeAnnotationService.upsertPrimaryAnnotation((Gene) phenotypeAnnotationSubject, dto, dataProvider);
-			return annotation.getId();
+			annotationId = annotation.getId();
 		} else {
 			throw new ObjectValidationException(dto, "objectId - " + ValidationConstants.INVALID_TYPE_MESSAGE + " (" + dto.getObjectId() + ")");
 		}
+
+		// Update in-memory map so subsequent duplicates within the same load are caught
+		if (existingUniqueIds != null && annotationId != null) {
+			String uniqueId = computeUniqueId(dto, subjectIdentifier);
+			if (uniqueId != null) {
+				existingUniqueIds.put(uniqueId, annotationId);
+			}
+		}
+
+		return annotationId;
+	}
+
+	private String computeUniqueId(PhenotypeFmsDTO dto, String subjectIdentifier) {
+		if (dto.getEvidence() == null || StringUtils.isBlank(dto.getEvidence().getPublicationId())) {
+			return null;
+		}
+		String refCurie = dto.getEvidence().getPublicationId();
+		if (refCurie.startsWith("OMIM:")) {
+			refCurie = refCurie.substring(1);
+		}
+		InformationContentEntity refEntity = iceService.retrieveFromDbOrLiteratureService(refCurie);
+		String refString = refEntity != null ? refEntity.getCurie() : null;
+		return AnnotationUniqueIdHelper.getPhenotypeAnnotationUniqueId(dto, subjectIdentifier, refString);
 	}
 
 	public void addInferredOrAssertedEntities(PhenotypeFmsDTO dto, BackendBulkDataProvider dataProvider, Set<Long> idsAdded) throws ValidationException {
