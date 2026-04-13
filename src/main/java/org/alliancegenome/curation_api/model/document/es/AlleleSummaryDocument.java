@@ -30,6 +30,7 @@ public class AlleleSummaryDocument extends AVSParentDocument {
 	private Set<String> diseases;
 	private Set<String> diseasesWithParents;
 	private Set<String> diseasesAgrSlim;
+	private Set<String> constructs;
 	private Set<String> constructExpressedComponents;
 	private Set<String> constructRegulatoryRegions;
 	private Set<String> constructKnockdownComponents;
@@ -48,6 +49,7 @@ public class AlleleSummaryDocument extends AVSParentDocument {
 		diseases = null;
 		diseasesWithParents = null;
 		diseasesAgrSlim = null;
+		constructs = null;
 		constructExpressedComponents = null;
 		constructRegulatoryRegions = null;
 		constructKnockdownComponents = null;
