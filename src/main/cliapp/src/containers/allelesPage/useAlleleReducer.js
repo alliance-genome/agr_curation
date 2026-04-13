@@ -1,6 +1,7 @@
 import { useImmerReducer } from 'use-immer';
 import { addDataKey, generateCrossRefSearchFields, generateCurieSearchFields } from './utils';
 import { getUniqueItemsByProperty } from '../../utils/utils';
+import { Endpoints } from '../../constants/Endpoints';
 
 const initialAlleleState = {
 	allele: {
@@ -30,7 +31,7 @@ const initialAlleleState = {
 	entityStates: {
 		alleleSynonyms: {
 			field: 'alleleSynonyms',
-			endpoint: 'allelesynonymslotannotation',
+			endpoint: Endpoints.SlotAnnotation.ALLELE_SYNONYM,
 			show: false,
 			errorMessages: {},
 			editingRows: {},
@@ -38,7 +39,7 @@ const initialAlleleState = {
 		},
 		alleleFullName: {
 			field: 'alleleFullName',
-			endpoint: 'allelefullnameslotannotation',
+			endpoint: Endpoints.SlotAnnotation.ALLELE_FULL_NAME,
 			show: false,
 			errorMessages: {},
 			editingRows: {},
@@ -46,7 +47,7 @@ const initialAlleleState = {
 		},
 		alleleSecondaryIds: {
 			field: 'alleleSecondaryIds',
-			endpoint: 'allelesecondaryidslotannotation',
+			endpoint: Endpoints.SlotAnnotation.ALLELE_SECONDARY_ID,
 			show: false,
 			errorMessages: {},
 			editingRows: {},
@@ -54,7 +55,7 @@ const initialAlleleState = {
 		},
 		alleleSymbol: {
 			field: 'alleleSymbol',
-			endpoint: 'allelesymbolslotannotation',
+			endpoint: Endpoints.SlotAnnotation.ALLELE_SYMBOL,
 			show: false,
 			errorMessages: {},
 			editingRows: {},
@@ -62,7 +63,7 @@ const initialAlleleState = {
 		},
 		alleleNomenclatureEvents: {
 			field: 'alleleNomenclatureEvents',
-			endpoint: 'allelenomenclatureeventslotannotation',
+			endpoint: Endpoints.SlotAnnotation.ALLELE_NOMENCLATURE_EVENT,
 			show: false,
 			errorMessages: {},
 			editingRows: {},
@@ -70,7 +71,7 @@ const initialAlleleState = {
 		},
 		alleleMutationTypes: {
 			field: 'alleleMutationTypes',
-			endpoint: 'allelemutationtypeslotannotation',
+			endpoint: Endpoints.SlotAnnotation.ALLELE_MUTATION_TYPE,
 			show: false,
 			errorMessages: {},
 			editingRows: {},
@@ -78,7 +79,7 @@ const initialAlleleState = {
 		},
 		alleleInheritanceModes: {
 			field: 'alleleInheritanceModes',
-			endpoint: 'alleleinheritancemodeslotannotation',
+			endpoint: Endpoints.SlotAnnotation.ALLELE_INHERITANCE_MODE,
 			show: false,
 			errorMessages: {},
 			editingRows: {},
@@ -86,7 +87,7 @@ const initialAlleleState = {
 		},
 		alleleFunctionalImpacts: {
 			field: 'alleleFunctionalImpacts',
-			endpoint: 'allelefunctionalimpactslotannotation',
+			endpoint: Endpoints.SlotAnnotation.ALLELE_FUNCTIONAL_IMPACT,
 			show: false,
 			errorMessages: {},
 			editingRows: {},
@@ -94,7 +95,7 @@ const initialAlleleState = {
 		},
 		alleleGermlineTransmissionStatus: {
 			field: 'alleleGermlineTransmissionStatus',
-			endpoint: 'allelegermlinetransmissionstatusslotannotation',
+			endpoint: Endpoints.SlotAnnotation.ALLELE_GERMLINE_TRANSMISSION_STATUS,
 			show: false,
 			errorMessages: {},
 			editingRows: {},
@@ -102,7 +103,7 @@ const initialAlleleState = {
 		},
 		alleleDatabaseStatus: {
 			field: 'alleleDatabaseStatus',
-			endpoint: 'alleledatabasestatusslotannotation',
+			endpoint: Endpoints.SlotAnnotation.ALLELE_DATABASE_STATUS,
 			show: false,
 			errorMessages: {},
 			editingRows: {},
@@ -110,7 +111,7 @@ const initialAlleleState = {
 		},
 		relatedNotes: {
 			field: 'relatedNotes',
-			endpoint: 'note',
+			endpoint: Endpoints.Entity.NOTE,
 			show: false,
 			errorMessages: {},
 			editingRows: {},
@@ -143,7 +144,7 @@ const processTable = (field, allele, draft) => {
 		return;
 	}
 
-	let clonableEntities = global.structuredClone(allele[field]);
+	let clonableEntities = structuredClone(allele[field]);
 	clonableEntities.forEach((entity, index) => {
 		addDataKey(entity);
 		draft.entityStates[field].editingRows[`${entity.dataKey}`] = true;
