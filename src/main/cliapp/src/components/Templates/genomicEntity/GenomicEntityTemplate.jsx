@@ -9,7 +9,7 @@ export const GenomicEntityTemplate = ({ genomicEntity }) => {
 	const identifier = getIdentifier(genomicEntity);
 	const subjectName = getGenomicEntityName(genomicEntity);
 
-	const tooltipTemplate = `Identifier: ${identifier} ${subjectName ? `<br/> Name: ${subjectName}` : null}`;
+	const tooltipTemplate = `Identifier: ${identifier}${subjectName ? `<br/> Name: ${subjectName}` : ''}`;
 
 	if (!subjectText)
 		return (

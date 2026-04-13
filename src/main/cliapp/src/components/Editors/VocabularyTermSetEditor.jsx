@@ -3,7 +3,7 @@ import { ControlledVocabularyDropdown } from '../ControlledVocabularySelector';
 import { useVocabularyTermSetService } from '../../service/useVocabularyTermSetService';
 
 export const VocabularyTermSetEditor = ({
-	props,
+	editorOptions,
 	onChangeHandler,
 	errorMessages,
 	dataKey,
@@ -21,7 +21,7 @@ export const VocabularyTermSetEditor = ({
 				field={field}
 				options={vocabTerms}
 				editorChange={onChangeHandler}
-				props={props}
+				editorOptions={editorOptions}
 				showClear={showClear}
 				optionLabel={optionLabel}
 				dataKey="id"

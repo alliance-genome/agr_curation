@@ -16,13 +16,13 @@ const referenceSearch = (event, setFiltered, setInputValue) => {
 	autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered);
 };
 
-export const ReferencesEditor = ({ props, errorMessages, onChange, dataKey }) => {
+export const ReferencesEditor = ({ editorOptions, errorMessages, onChange, dataKey }) => {
 	return (
 		<>
 			<AutocompleteMultiEditor
 				search={referenceSearch}
-				initialValue={props?.rowData?.references}
-				rowProps={props}
+				initialValue={editorOptions?.rowData?.references}
+				rowProps={editorOptions}
 				fieldName="references"
 				subField="curie"
 				valueDisplay={(item, setAutocompleteHoverItem, op, query) => (

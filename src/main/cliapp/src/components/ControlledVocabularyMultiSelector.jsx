@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { MultiSelect } from 'primereact/multiselect';
 
-export function ControlledVocabularyMultiSelectDropdown({ options, editorChange, props, placeholderText }) {
-	const [selectedValues, setSelectedValues] = useState(props.rowData.diseaseQualifiers);
+export function ControlledVocabularyMultiSelectDropdown({ options, editorChange, editorOptions, placeholderText }) {
+	const [selectedValues, setSelectedValues] = useState(editorOptions.rowData.diseaseQualifiers);
 	const onChange = (e) => {
 		setSelectedValues(e.value);
-		editorChange(props, e);
+		editorChange(editorOptions, e);
 	};
 
 	return (

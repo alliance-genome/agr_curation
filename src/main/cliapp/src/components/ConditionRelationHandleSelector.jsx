@@ -7,34 +7,35 @@ export function ConditionRelationHandleDropdown({
 	field,
 	options,
 	editorChange,
-	props,
+	editorOptions,
 	showClear,
 	placeholderText,
 	dataKey,
 }) {
-	const [selectedValue, setSelectedValue] = useState(props.rowData[field]);
+	const [selectedValue, setSelectedValue] = useState(editorOptions.rowData[field]);
 	const searchService = new SearchService();
-	const [handles, setHandles] = useState(null);
+	const [handles, setHandles] = useState([]);
 
 	const onShow = () => {
-		setSelectedValue(props.rowData[field]);
-		if (props.props.value[props.rowIndex]?.singleReference?.curie) {
+		setSelectedValue(editorOptions.rowData[field]);
+		const singleReferenceCurie = editorOptions.value[0]?.singleReference?.curie;
+		if (singleReferenceCurie) {
 			searchService
 				.find(Endpoints.Annotation.CONDITION_RELATION, 15, 0, {
-					'singleReference.curie': props.props.value[props.rowIndex].singleReference.curie,
+					'singleReference.curie': singleReferenceCurie
 				})
 				.then((data) => {
 					if (data.results?.length > 0) {
 						setHandles(data.results);
 					} else {
-						setHandles(null);
+						setHandles([]);
 					}
 				});
 		}
 	};
 	const onChange = (e) => {
 		setSelectedValue(e.value);
-		editorChange(props, e);
+		editorChange(editorOptions, e);
 	};
 
 	return (

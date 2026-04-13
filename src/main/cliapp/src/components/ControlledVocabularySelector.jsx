@@ -5,18 +5,18 @@ export function ControlledVocabularyDropdown({
 	field,
 	options,
 	editorChange,
-	props,
+	editorOptions,
 	showClear,
 	placeholderText,
 	dataKey,
 }) {
-	const [selectedValue, setSelectedValue] = useState(props.rowData[field]);
+	const [selectedValue, setSelectedValue] = useState(editorOptions.rowData[field]);
 	const onShow = () => {
-		setSelectedValue(props.rowData[field]);
+		setSelectedValue(editorOptions.rowData[field]);
 	};
 	const onChange = (e) => {
 		setSelectedValue(e.value);
-		editorChange(props, e);
+		editorChange(editorOptions, e);
 	};
 
 	return (

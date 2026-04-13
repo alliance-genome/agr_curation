@@ -8,7 +8,7 @@ describe('NotEditor', () => {
 		const value = true;
 		const editorChange = vi.fn();
 
-		const result = render(<NotEditor props={props} value={value} editorChange={editorChange} />);
+		const result = render(<NotEditor editorOptions={props} value={value} editorChange={editorChange} />);
 
 		expect(result.getAllByText('NOT')).toHaveLength(2);
 	});
@@ -18,7 +18,7 @@ describe('NotEditor', () => {
 		const value = undefined;
 		const editorChange = vi.fn();
 
-		const result = render(<NotEditor props={props} value={value} editorChange={editorChange} />);
+		const result = render(<NotEditor editorOptions={props} value={value} editorChange={editorChange} />);
 
 		// PrimeReact 10.9.7 changed how empty dropdowns render - check for the dropdown component itself
 		const dropdown = result.container.querySelector('.p-dropdown');
@@ -30,7 +30,7 @@ describe('NotEditor', () => {
 		const value = false;
 		const editorChange = vi.fn();
 
-		const result = render(<NotEditor props={props} value={value} editorChange={editorChange} />);
+		const result = render(<NotEditor editorOptions={props} value={value} editorChange={editorChange} />);
 
 		// PrimeReact 10.9.7 changed dropdown structure - find the dropdown trigger
 		const dropdown = result.container.querySelector('.p-dropdown');
@@ -50,7 +50,7 @@ describe('NotEditor', () => {
 		const props = {};
 		const value = false;
 		const editorChange = vi.fn();
-		const result = render(<NotEditor props={props} value={value} editorChange={editorChange} />);
+		const result = render(<NotEditor editorOptions={props} value={value} editorChange={editorChange} />);
 		const span = result.container.getElementsByTagName('span')[0];
 
 		fireEvent.click(span);

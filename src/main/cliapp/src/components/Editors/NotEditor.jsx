@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Dropdown } from 'primereact/dropdown';
 
-export function NotEditor({ props, value, editorChange }) {
+export function NotEditor({ editorOptions, value, editorChange }) {
 	const [selectedValue, setSelectedValue] = useState(value);
 	const textString = selectedValue ? 'NOT' : '';
 	const options = [{ label: 'NOT', value: true }];
@@ -19,7 +19,7 @@ export function NotEditor({ props, value, editorChange }) {
 			event = e;
 		}
 		setSelectedValue(event.target.value);
-		editorChange(event, props);
+		editorChange(event, editorOptions);
 	};
 
 	return (

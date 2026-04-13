@@ -76,20 +76,20 @@ export const ConditionRelationsEditDialog = ({
 		return _clonableRelations;
 	};
 
-	const conditionRelationTypeOnChangeHandler = (props, event) => {
-		props.editorCallback(event.value);
+	const conditionRelationTypeOnChangeHandler = (editorOptions, event) => {
+		editorOptions.editorCallback(event.value);
 		setLocalConditionRelations((prev) => {
 			const updated = [...prev];
-			updated[props.rowIndex] = { ...updated[props.rowIndex], conditionRelationType: event.value };
+			updated[editorOptions.rowIndex] = { ...updated[editorOptions.rowIndex], conditionRelationType: event.value };
 			return updated;
 		});
 	};
 
-	const onConditionRelationValueChange = (event, setFieldValue, props) => {
-		multipleAutocompleteOnChange(props, event, 'conditions', setFieldValue);
+	const onConditionRelationValueChange = (event, setFieldValue, editorOptions) => {
+		multipleAutocompleteOnChange(editorOptions, event, 'conditions', setFieldValue);
 		setLocalConditionRelations((prev) => {
 			const updated = [...prev];
-			updated[props.rowIndex] = { ...updated[props.rowIndex], conditions: event.target.value };
+			updated[editorOptions.rowIndex] = { ...updated[editorOptions.rowIndex], conditions: event.target.value };
 			return updated;
 		});
 	};
@@ -112,11 +112,11 @@ export const ConditionRelationsEditDialog = ({
 		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered);
 	};
 
-	const internalOnChangeHandler = (props, event) => {
-		props.editorCallback(event.target.value?.name);
+	const internalOnChangeHandler = (editorOptions, event) => {
+		editorOptions.editorCallback(event.target.value?.name);
 		setLocalConditionRelations((prev) => {
 			const updated = [...prev];
-			updated[props.rowIndex] = { ...updated[props.rowIndex], internal: event.target?.value?.name };
+			updated[editorOptions.rowIndex] = { ...updated[editorOptions.rowIndex], internal: event.target?.value?.name };
 			return updated;
 		});
 	};
@@ -145,11 +145,8 @@ export const ConditionRelationsEditDialog = ({
 		for (const relation of _localConditionRelations) {
 			delete relation.dataKey;
 		}
-		mainRowProps.rowData.conditionRelations = _localConditionRelations;
-		let updatedAnnotations = [...mainRowProps.props.value];
-		updatedAnnotations[rowIndex].conditionRelations = _localConditionRelations;
 		if (mainRowProps.editorCallback) {
-			mainRowProps.editorCallback(_localConditionRelations?.[0]?.conditionRelationType?.name ?? null);
+			mainRowProps.editorCallback(_localConditionRelations);
 		}
 
 		const errorMessagesCopy = structuredClone(errorMessagesMainRow);
@@ -273,8 +270,8 @@ export const ConditionRelationsEditDialog = ({
 					cellMemo={false}
 				>
 					<Column
-						editor={(props) => (
-							<DeleteAction deletionHandler={handleDeleteConditionRelation} id={props?.rowData?.dataKey} />
+						editor={(editorOptions) => (
+							<DeleteAction deletionHandler={handleDeleteConditionRelation} id={editorOptions?.rowData?.dataKey} />
 						)}
 						className="max-w-4rem"
 						bodyClassName="text-center"
@@ -282,14 +279,14 @@ export const ConditionRelationsEditDialog = ({
 						frozen
 					/>
 					<Column
-						editor={(props) => {
+						editor={(editorOptions) => {
 							return (
 								<ControlledVocabularyEditor
-									props={props}
+									editorOptions={editorOptions}
 									onChangeHandler={conditionRelationTypeOnChangeHandler}
 									errorMessages={errorMessages}
-									dataKey={props?.rowData?.dataKey}
-									rowIndex={props.rowIndex}
+									dataKey={editorOptions?.rowData?.dataKey}
+									rowIndex={editorOptions.rowIndex}
 									vocabType="condition_relation"
 									field="conditionRelationType"
 									showClear={false}
@@ -301,13 +298,13 @@ export const ConditionRelationsEditDialog = ({
 						headerClassName="surface-0"
 					/>
 					<Column
-						editor={(props) => {
+						editor={(editorOptions) => {
 							return (
 								<>
 									<AutocompleteMultiEditor
 										search={conditionSearch}
-										initialValue={props.rowData.conditions}
-										rowProps={props}
+										initialValue={editorOptions.rowData.conditions}
+										rowProps={editorOptions}
 										fieldName="conditions"
 										subField="conditionSummary"
 										valueDisplay={(item, setAutocompleteHoverItem, op, query) => (
@@ -321,7 +318,7 @@ export const ConditionRelationsEditDialog = ({
 										onValueChangeHandler={onConditionRelationValueChange}
 									/>
 									<DialogErrorMessageComponent
-										errorMessages={errorMessages[props?.rowData?.dataKey]}
+										errorMessages={errorMessages[editorOptions?.rowData?.dataKey]}
 										errorField={'conditions'}
 									/>
 								</>
@@ -332,13 +329,13 @@ export const ConditionRelationsEditDialog = ({
 						headerClassName="surface-0"
 					/>
 					<Column
-						editor={(props) => {
+						editor={(editorOptions) => {
 							return (
 								<InternalEditor
-									props={props}
-									rowIndex={props.rowIndex}
+									editorOptions={editorOptions}
+									rowIndex={editorOptions.rowIndex}
 									errorMessages={errorMessages}
-									dataKey={props?.rowData?.dataKey}
+									dataKey={editorOptions?.rowData?.dataKey}
 									internalOnChangeHandler={internalOnChangeHandler}
 								/>
 							);

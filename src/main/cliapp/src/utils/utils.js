@@ -72,7 +72,7 @@ export function orderColumnFields(
 	orderedColumnNames.forEach((columnName) => {
 		let column = columns.find((col) => col.header === columnName);
 		if (column) {
-			orderedColumnFields.push(column.field);
+			orderedColumnFields.push(column.columnKey || column.field);
 		}
 	});
 
@@ -343,31 +343,26 @@ export function buildAutocompleteFilter(event, autocompleteFields) {
 }
 
 export function defaultAutocompleteOnChange(rowProps, event, fieldName, setFieldValue, subField = 'curie') {
-	const index = rowProps.props.rows ? rowProps.rowIndex % rowProps.props.rows : rowProps.rowIndex;
-
-	let updatedRows = [...rowProps.props.value];
-
 	if (!event.target.value) {
-		updatedRows[index][fieldName] = null;
+		rowProps.editorCallback(null);
 		setFieldValue('');
 		return;
 	}
 
 	if (typeof event.target.value === 'object') {
-		updatedRows[index][fieldName] = event.target.value;
-		setFieldValue(updatedRows[rowProps.rowIndex][fieldName]?.[subField]);
+		rowProps.editorCallback(event.target.value);
+		setFieldValue(event.target.value?.[subField]);
 	} else {
-		updatedRows[index][fieldName] = {};
-		updatedRows[index][fieldName][subField] = event.target.value;
-		setFieldValue(updatedRows[index][fieldName]?.[subField]);
+		const value = {};
+		value[subField] = event.target.value;
+		rowProps.editorCallback(value);
+		setFieldValue(event.target.value);
 	}
 }
 
 export function multipleAutocompleteOnChange(rowProps, event, fieldName, setFieldValue) {
-	let updatedRows = [...rowProps.props.value];
-	const index = rowProps.props.rows ? rowProps.rowIndex % rowProps.props.rows : rowProps.rowIndex;
 	if (!event.target.value) {
-		updatedRows[index][fieldName] = null;
+		rowProps.editorCallback(null);
 		setFieldValue('');
 		return;
 	}
@@ -375,8 +370,8 @@ export function multipleAutocompleteOnChange(rowProps, event, fieldName, setFiel
 	if (event.target.value.length > 0) {
 		nonDuplicateRows = getUniqueItemsByProperty(event.target.value, 'id');
 	}
-	updatedRows[index][fieldName] = nonDuplicateRows;
-	setFieldValue(updatedRows[index][fieldName]);
+	rowProps.editorCallback(nonDuplicateRows);
+	setFieldValue(nonDuplicateRows);
 }
 
 const isPropValuesEqual = (subject, target, propName) => {

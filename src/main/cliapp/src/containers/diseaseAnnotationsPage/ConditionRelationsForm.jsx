@@ -38,42 +38,42 @@ export const ConditionRelationsForm = ({
 		dispatch({ type: 'ADD_NEW_RELATION', count });
 	};
 
-	const onConditionRelationTypeEditorValueChange = (props, event) => {
+	const onConditionRelationTypeEditorValueChange = (editorOptions, event) => {
 		dispatch({
 			type: 'EDIT_ROW',
 			tableType: 'conditionRelations',
 			field: 'conditionRelationType',
-			index: props.rowIndex,
+			index: editorOptions.rowIndex,
 			value: event.target.value,
 		});
 	};
 
-	const conditionRelationTypeEditor = (props) => {
+	const conditionRelationTypeEditor = (editorOptions) => {
 		return (
 			<>
 				<ControlledVocabularyDropdown
 					field="conditionRelationType"
 					options={conditionRelationTypeTerms}
 					editorChange={onConditionRelationTypeEditorValueChange}
-					props={props}
+					editorOptions={editorOptions}
 					showClear={false}
 					dataKey="id"
 				/>
 				<DialogErrorMessageComponent
-					errorMessages={errorMessages[props.rowIndex]}
+					errorMessages={errorMessages[editorOptions.rowIndex]}
 					errorField={'conditionRelationType'}
 				/>
 			</>
 		);
 	};
 
-	const onConditionsEditorValueChange = (event, setValue, props) => {
+	const onConditionsEditorValueChange = (event, setValue, editorOptions) => {
 		setValue(event.target.value);
 		dispatch({
 			type: 'EDIT_ROW',
 			tableType: 'conditionRelations',
 			field: 'conditions',
-			index: props.rowIndex,
+			index: editorOptions.rowIndex,
 			value: event.target.value,
 		});
 	};
@@ -88,13 +88,13 @@ export const ConditionRelationsForm = ({
 		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered);
 	};
 
-	const conditionsEditorTemplate = (props) => {
+	const conditionsEditorTemplate = (editorOptions) => {
 		return (
 			<>
 				<AutocompleteMultiEditor
 					search={conditionSearch}
-					initialValue={props.rowData.conditions}
-					rowProps={props}
+					initialValue={editorOptions.rowData.conditions}
+					rowProps={editorOptions}
 					fieldName="conditions"
 					subField="conditionSummary"
 					valueDisplay={(item, setAutocompleteHoverItem, op, query) => (
@@ -107,52 +107,52 @@ export const ConditionRelationsForm = ({
 					)}
 					onValueChangeHandler={onConditionsEditorValueChange}
 				/>
-				<DialogErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={'conditions'} />
+				<DialogErrorMessageComponent errorMessages={errorMessages[editorOptions.rowIndex]} errorField={'conditions'} />
 			</>
 		);
 	};
 
-	const onInternalEditorValueChange = (props, event) => {
+	const onInternalEditorValueChange = (editorOptions, event) => {
 		dispatch({
 			type: 'EDIT_ROW',
 			tableType: 'conditionRelations',
 			field: 'internal',
-			index: props.rowIndex,
+			index: editorOptions.rowIndex,
 			value: event.value.name,
 		});
 	};
 
-	const internalEditor = (props) => {
+	const internalEditor = (editorOptions) => {
 		return (
 			<>
 				<TrueFalseDropdown
 					options={booleanTerms?.terms || []}
 					editorChange={onInternalEditorValueChange}
-					props={props}
+					editorOptions={editorOptions}
 					field={'internal'}
 				/>
-				<FormErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={'internal'} />
+				<FormErrorMessageComponent errorMessages={errorMessages[editorOptions.rowIndex]} errorField={'internal'} />
 			</>
 		);
 	};
 
-	const handleDeleteRelation = (event, props) => {
+	const handleDeleteRelation = (event, editorOptions) => {
 		event.preventDefault();
 		dispatch({
 			type: 'DELETE_ROW',
 			tableType: 'conditionRelations',
 			showType: 'showConditionRelations',
-			index: props.rowIndex,
+			index: editorOptions.rowIndex,
 		});
 	};
 
-	const deleteAction = (props) => {
+	const deleteAction = (editorOptions) => {
 		return (
 			<Button
 				icon="pi pi-trash"
 				className="p-button-text"
 				onClick={(event) => {
-					handleDeleteRelation(event, props);
+					handleDeleteRelation(event, editorOptions);
 				}}
 			/>
 		);
@@ -174,8 +174,8 @@ export const ConditionRelationsForm = ({
 					columnResizeMode="expand"
 				>
 					<Column
-						editor={(props) => deleteAction(props)}
-						body={(props) => deleteAction(props)}
+						editor={(editorOptions) => deleteAction(editorOptions)}
+						body={(editorOptions) => deleteAction(editorOptions)}
 						style={{ maxWidth: '4rem' }}
 						frozen
 						headerClassName="surface-0"

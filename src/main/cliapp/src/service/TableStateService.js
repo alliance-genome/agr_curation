@@ -3,7 +3,7 @@ const modTableSettings = {
 		DiseaseAnnotations: {
 			page: 0,
 			first: 0,
-			rows: 50,
+			rows: 10,
 			multiSortMeta: [],
 			selectedColumnNames: [
 				'Subject',
@@ -59,7 +59,7 @@ const modTableSettings = {
 		DiseaseAnnotations: {
 			page: 0,
 			first: 0,
-			rows: 50,
+			rows: 10,
 			multiSortMeta: [],
 			selectedColumnNames: [
 				'Subject',
@@ -107,7 +107,7 @@ const modTableSettings = {
 	WBStaff: {
 		DiseaseAnnotations: {
 			page: 0,
-			rows: 50,
+			rows: 10,
 			first: 0,
 			multiSortMeta: [{ field: 'dateCreated', order: -1 }],
 			selectedColumnNames: [
@@ -168,7 +168,7 @@ const modTableSettings = {
 		DiseaseAnnotations: {
 			page: 0,
 			first: 0,
-			rows: 50,
+			rows: 10,
 			multiSortMeta: [],
 			selectedColumnNames: [
 				'Obsolete',
@@ -221,7 +221,7 @@ const modTableSettings = {
 		DiseaseAnnotations: {
 			page: 0,
 			first: 0,
-			rows: 50,
+			rows: 10,
 			multiSortMeta: [],
 			selectedColumnNames: [
 				'Subject',
@@ -258,7 +258,7 @@ const modTableSettings = {
 		DiseaseAnnotations: {
 			page: 0,
 			first: 0,
-			rows: 50,
+			rows: 10,
 			multiSortMeta: [],
 			selectedColumnNames: [
 				'Subject',
@@ -301,7 +301,7 @@ const modTableSettings = {
 		DiseaseAnnotations: {
 			page: 0,
 			first: 0,
-			rows: 50,
+			rows: 10,
 			multiSortMeta: [],
 			selectedColumnNames: [
 				'Internal',
@@ -348,7 +348,7 @@ const modTableSettings = {
 		DiseaseAnnotations: {
 			page: 0,
 			first: 0,
-			rows: 50,
+			rows: 10,
 			multiSortMeta: [],
 			selectedColumnNames: [
 				'Unique ID',
@@ -445,7 +445,7 @@ export function getDefaultTableState(
 	const { defaultColumnNames, defaultColumnWidths } = columns.reduce(
 		(acc, col) => {
 			acc.defaultColumnNames.push(col.header);
-			acc.defaultColumnWidths[col.field] = defaultColumnWidth;
+			acc.defaultColumnWidths[col.columnKey || col.field] = defaultColumnWidth;
 			return acc;
 		},
 		{ defaultColumnNames: [], defaultColumnWidths: {} }

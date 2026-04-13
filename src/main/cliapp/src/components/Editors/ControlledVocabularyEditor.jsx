@@ -3,7 +3,7 @@ import { useControlledVocabularyService } from '../../service/useControlledVocab
 import { ControlledVocabularyDropdown } from '../ControlledVocabularySelector';
 
 export const ControlledVocabularyEditor = ({
-	props,
+	editorOptions,
 	onChangeHandler,
 	errorMessages,
 	dataKey,
@@ -20,7 +20,7 @@ export const ControlledVocabularyEditor = ({
 				field={field}
 				options={vocabTerms}
 				editorChange={onChangeHandler}
-				props={props}
+				editorOptions={editorOptions}
 				showClear={showClear}
 				optionLabel={optionLabel}
 				dataKey="id"

@@ -136,7 +136,7 @@ export const useGenericDataTable = ({
 			setIsInEditMode(false);
 		}
 
-		let updatedRow = structuredClone(event.data); //deep copy
+		let updatedRow = structuredClone(event.newData ?? event.data);
 
 		if (tableName === 'Disease Annotations') {
 			validateBioEntityFields(updatedRow, setUiErrorMessages, event, setIsInEditMode, closeRowRef, areUiErrors);
@@ -147,10 +147,11 @@ export const useGenericDataTable = ({
 			return;
 		}
 
+		const rowData = event.newData ?? event.data;
 		if (curieFields) {
 			curieFields.forEach((field) => {
-				if (event.data[field] && Object.keys(event.data[field]).length >= 1) {
-					const curie = trimWhitespace(event.data[field].curie);
+				if (rowData[field] && Object.keys(rowData[field]).length >= 1) {
+					const curie = trimWhitespace(rowData[field].curie);
 					updatedRow[field] = {};
 					updatedRow[field].curie = curie;
 				}
@@ -159,8 +160,8 @@ export const useGenericDataTable = ({
 
 		if (idFields) {
 			idFields.forEach((field) => {
-				if (event.data[field] && Object.keys(event.data[field]).length >= 1) {
-					const id = event.data[field].id;
+				if (rowData[field] && Object.keys(rowData[field]).length >= 1) {
+					const id = rowData[field].id;
 					updatedRow[field] = {};
 					updatedRow[field].id = id;
 				}
@@ -394,11 +395,11 @@ export const useGenericDataTable = ({
 		const currentWidth = event.element.clientWidth;
 		const delta = event.delta;
 		const newWidth = Math.floor(((currentWidth + delta) / window.innerWidth) * 100);
-		const field = event.column.props.field;
+		const key = event.column.props.columnKey || event.column.props.field;
 
 		const _columnWidths = { ...tableState.columnWidths };
 
-		_columnWidths[field] = newWidth;
+		_columnWidths[key] = newWidth;
 		setColumnWidths(_columnWidths);
 	};
 

@@ -65,7 +65,7 @@ export const DiseaseAnnotationsTable = () => {
 		isInEdit: false,
 		dialog: false,
 		rowIndex: null,
-		mailRowProps: {},
+		mainRowProps: {},
 	});
 	const [relatedNotesData, setRelatedNotesData] = useState({
 		relatedNotes: [],
@@ -193,19 +193,19 @@ export const DiseaseAnnotationsTable = () => {
 		}));
 	};
 
-	const relatedNotesEditor = (props) => {
-		if (props?.rowData?.relatedNotes) {
+	const relatedNotesEditor = (editorOptions) => {
+		if (editorOptions?.rowData?.relatedNotes) {
 			return (
 				<>
 					<div>
 						<Button
 							className="p-button-text"
 							onClick={(event) => {
-								handleRelatedNotesOpenInEdit(event, props, true);
+								handleRelatedNotesOpenInEdit(event, editorOptions, true);
 							}}
 						>
 							<span style={{ textDecoration: 'underline' }}>
-								{`Notes(${props.rowData.relatedNotes.length}) `}
+								{`Notes(${editorOptions.rowData.relatedNotes.length}) `}
 								<i className="pi pi-user-edit" style={{ fontSize: '1em' }}></i>
 							</span>
 							&nbsp;&nbsp;&nbsp;&nbsp;
@@ -213,7 +213,7 @@ export const DiseaseAnnotationsTable = () => {
 						</Button>
 					</div>
 					<ErrorMessageComponent
-						errorMessages={errorMessagesRef.current[props.rowIndex]}
+						errorMessages={errorMessagesRef.current[editorOptions.rowIndex]}
 						errorField={'relatedNotes'}
 						style={{ fontSize: '1em' }}
 					/>
@@ -226,7 +226,7 @@ export const DiseaseAnnotationsTable = () => {
 						<Button
 							className="p-button-text"
 							onClick={(event) => {
-								handleRelatedNotesOpenInEdit(event, props, true);
+								handleRelatedNotesOpenInEdit(event, editorOptions, true);
 							}}
 						>
 							<span style={{ textDecoration: 'underline' }}>
@@ -238,7 +238,7 @@ export const DiseaseAnnotationsTable = () => {
 						</Button>
 					</div>
 					<ErrorMessageComponent
-						errorMessages={errorMessagesRef.current[props.rowIndex]}
+						errorMessages={errorMessagesRef.current[editorOptions.rowIndex]}
 						errorField={'relatedNotes'}
 						style={{ fontSize: '1em' }}
 					/>
@@ -247,9 +247,9 @@ export const DiseaseAnnotationsTable = () => {
 		}
 	};
 
-	const conditionRelationsEditor = (props) => {
-		if (props.rowData?.conditionRelations) {
-			const handle = props.rowData.conditionRelations[0]?.handle;
+	const conditionRelationsEditor = (editorOptions) => {
+		if (editorOptions.rowData?.conditionRelations) {
+			const handle = editorOptions.rowData.conditionRelations[0]?.handle;
 
 			if (handle) return null;
 
@@ -259,11 +259,11 @@ export const DiseaseAnnotationsTable = () => {
 						<Button
 							className="p-button-text"
 							onClick={(event) => {
-								handleConditionRelationsOpenInEdit(event, props, true);
+								handleConditionRelationsOpenInEdit(event, editorOptions, true);
 							}}
 						>
 							<span style={{ textDecoration: 'underline' }}>
-								{!handle && `Conditions (${props.rowData.conditionRelations.length})`}
+								{!handle && `Conditions (${editorOptions.rowData.conditionRelations.length})`}
 								{handle && handle}
 								<i className="pi pi-user-edit" style={{ fontSize: '1em' }}></i>
 							</span>
@@ -272,7 +272,7 @@ export const DiseaseAnnotationsTable = () => {
 						</Button>
 					</div>
 					<ErrorMessageComponent
-						errorMessages={errorMessagesRef.current[props.rowIndex]}
+						errorMessages={errorMessagesRef.current[editorOptions.rowIndex]}
 						errorField={'conditionRelations'}
 						style={{ fontSize: '1em' }}
 					/>
@@ -285,7 +285,7 @@ export const DiseaseAnnotationsTable = () => {
 						<Button
 							className="p-button-text"
 							onClick={(event) => {
-								handleConditionRelationsOpenInEdit(event, props, true);
+								handleConditionRelationsOpenInEdit(event, editorOptions, true);
 							}}
 						>
 							<span style={{ textDecoration: 'underline' }}>
@@ -301,19 +301,19 @@ export const DiseaseAnnotationsTable = () => {
 		}
 	};
 
-	const conditionRelationHandleEditor = (props) => {
-		if (props.rowData?.conditionRelations && props.rowData.conditionRelations[0]?.handle) {
+	const conditionRelationHandleEditor = (editorOptions) => {
+		if (editorOptions.rowData?.conditionRelations && editorOptions.rowData.conditionRelations[0]?.handle) {
 			return (
 				<>
 					<ConditionRelationHandleDropdown
 						field="conditionRelationHandle"
 						editorChange={onConditionRelationHandleEditorValueChange}
-						props={props}
+						editorOptions={editorOptions}
 						showClear={false}
-						placeholderText={props.rowData.conditionRelations[0].handle}
+						placeholderText={editorOptions.rowData.conditionRelations[0].handle}
 					/>
 					<ErrorMessageComponent
-						errorMessages={errorMessagesRef.current[props.rowIndex]}
+						errorMessages={errorMessagesRef.current[editorOptions.rowIndex]}
 						errorField={'conditionRelationHandle'}
 					/>
 				</>
@@ -321,221 +321,173 @@ export const DiseaseAnnotationsTable = () => {
 		}
 	};
 
-	const onConditionRelationHandleEditorValueChange = (props, event) => {
-		let updatedAnnotations = [...props.props.value];
+	const onConditionRelationHandleEditorValueChange = (editorOptions, event) => {
+		const conditionRelations = [...editorOptions.rowData.conditionRelations];
 		if (typeof event.value === 'object') {
-			updatedAnnotations[props.rowIndex].conditionRelations[0] = event.value;
+			conditionRelations[0] = event.value;
 		} else {
-			updatedAnnotations[props.rowIndex].conditionRelations[0].handle = event.value;
+			conditionRelations[0] = { ...conditionRelations[0], handle: event.value };
 		}
+		editorOptions.editorCallback(conditionRelations);
 	};
 
-	const onRelationEditorValueChange = (props, event) => {
-		let updatedAnnotations = [...props.props.value];
-		if (event.value || event.value === '') {
-			updatedAnnotations[props.rowIndex].relation = event.value;
-		}
-	};
-
-	const getRelationTermSet = (props) => {
+	const getRelationTermSet = (editorOptions) => {
 		let diseaseRelationTerms = relationsTerms;
-		if (props.rowData?.diseaseAnnotationSubject?.type === 'Gene') {
+		if (editorOptions.rowData?.diseaseAnnotationSubject?.type === 'Gene') {
 			diseaseRelationTerms = geneRelationTerms;
-		} else if (props.rowData?.diseaseAnnotationSubject?.type === 'Allele') {
+		} else if (editorOptions.rowData?.diseaseAnnotationSubject?.type === 'Allele') {
 			diseaseRelationTerms = alleleRelationTerms;
-		} else if (props.rowData?.diseaseAnnotationSubject?.type === 'AffectedGenomicModel') {
+		} else if (editorOptions.rowData?.diseaseAnnotationSubject?.type === 'AffectedGenomicModel') {
 			diseaseRelationTerms = agmRelationTerms;
 		}
 
 		return diseaseRelationTerms;
 	};
 
-	const relationEditor = (props) => {
-		let diseaseRelationTerms = getRelationTermSet(props);
+	const relationEditor = (editorOptions) => {
+		let diseaseRelationTerms = getRelationTermSet(editorOptions);
 		return (
 			<>
 				<ControlledVocabularyDropdown
 					field="relation"
 					options={diseaseRelationTerms}
-					editorChange={onRelationEditorValueChange}
-					props={props}
+					editorChange={(editorOptions, event) => editorOptions.editorCallback(event.value)}
+					editorOptions={editorOptions}
 					showClear={false}
-					placeholderText={props.rowData.relation.name}
+					placeholderText={editorOptions.rowData.relation?.name}
 				/>
-				<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={'relation'} />
+				<ErrorMessageComponent errorMessages={errorMessagesRef.current[editorOptions.rowIndex]} errorField={'relation'} />
 			</>
 		);
 	};
 
-	const onGeneticSexEditorValueChange = (props, event) => {
-		let updatedAnnotations = [...props.props.value];
-		updatedAnnotations[props.rowIndex].geneticSex = event.value;
-	};
-
-	const geneticSexEditor = (props) => {
+	const geneticSexEditor = (editorOptions) => {
 		return (
 			<>
 				<ControlledVocabularyDropdown
 					field="geneticSex"
 					options={geneticSexTerms}
-					editorChange={onGeneticSexEditorValueChange}
-					props={props}
+					editorChange={(editorOptions, event) => editorOptions.editorCallback(event.value)}
+					editorOptions={editorOptions}
 					showClear={true}
-					placeholderText={props.rowData.geneticSex?.name}
+					placeholderText={editorOptions.rowData.geneticSex?.name}
 				/>
-				<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={'geneticSex'} />
+				<ErrorMessageComponent errorMessages={errorMessagesRef.current[editorOptions.rowIndex]} errorField={'geneticSex'} />
 			</>
 		);
 	};
 
-	const onAnnotationTypeEditorValueChange = (props, event) => {
-		let updatedAnnotations = [...props.props.value];
-		updatedAnnotations[props.rowIndex].annotationType = event.value;
-	};
-
-	const annotationTypeEditor = (props) => {
+	const annotationTypeEditor = (editorOptions) => {
 		return (
 			<>
 				<ControlledVocabularyDropdown
 					field="annotationType"
 					options={annotationTypeTerms}
-					editorChange={onAnnotationTypeEditorValueChange}
-					props={props}
+					editorChange={(editorOptions, event) => editorOptions.editorCallback(event.value)}
+					editorOptions={editorOptions}
 					showClear={true}
-					placeholderText={props.rowData.annotationType?.name}
+					placeholderText={editorOptions.rowData.annotationType?.name}
 				/>
-				<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={'annotationType'} />
+				<ErrorMessageComponent errorMessages={errorMessagesRef.current[editorOptions.rowIndex]} errorField={'annotationType'} />
 			</>
 		);
 	};
 
-	const onGeneticModifierRelationEditorValueChange = (props, event) => {
-		let updatedAnnotations = [...props.props.value];
-		updatedAnnotations[props.rowIndex].diseaseGeneticModifierRelation = event.value;
-	};
-
-	const geneticModifierRelationEditor = (props) => {
+	const geneticModifierRelationEditor = (editorOptions) => {
 		return (
 			<>
 				<ControlledVocabularyDropdown
 					field="diseaseGeneticModifierRelation"
 					options={geneticModifierRelationTerms}
-					editorChange={onGeneticModifierRelationEditorValueChange}
-					props={props}
+					editorChange={(editorOptions, event) => editorOptions.editorCallback(event.value)}
+					editorOptions={editorOptions}
 					showClear={true}
-					placeholderText={props.rowData.diseaseGeneticModifierRelation?.name}
+					placeholderText={editorOptions.rowData.diseaseGeneticModifierRelation?.name}
 				/>
 				<ErrorMessageComponent
-					errorMessages={errorMessagesRef.current[props.rowIndex]}
+					errorMessages={errorMessagesRef.current[editorOptions.rowIndex]}
 					errorField={'diseaseGeneticModifierRelation'}
 				/>
 			</>
 		);
 	};
 
-	const onDiseaseQualifiersEditorValueChange = (props, event) => {
-		let updatedAnnotations = [...props.props.value];
-		if (event.value || event.value === '') {
-			updatedAnnotations[props.rowIndex].diseaseQualifiers = event.value;
-		}
-	};
-
-	const diseaseQualifiersEditor = (props) => {
+	const diseaseQualifiersEditor = (editorOptions) => {
 		let placeholderText = '';
-		if (props.rowData.diseaseQualifiers) {
+		if (editorOptions.rowData.diseaseQualifiers) {
 			let placeholderTextElements = [];
-			props.rowData.diseaseQualifiers.forEach((x, i) => placeholderTextElements.push(x.name));
+			editorOptions.rowData.diseaseQualifiers.forEach((x, i) => placeholderTextElements.push(x.name));
 			placeholderText = placeholderTextElements.join();
 		}
 		return (
 			<>
 				<ControlledVocabularyMultiSelectDropdown
 					options={diseaseQualifiersTerms}
-					editorChange={onDiseaseQualifiersEditorValueChange}
-					props={props}
+					editorChange={(editorOptions, event) => editorOptions.editorCallback(event.value)}
+					editorOptions={editorOptions}
 					placeholderText={placeholderText}
 				/>
 				<ErrorMessageComponent
-					errorMessages={errorMessagesRef.current[props.rowIndex]}
+					errorMessages={errorMessagesRef.current[editorOptions.rowIndex]}
 					errorField={'diseaseQualifiers'}
 				/>
 			</>
 		);
 	};
 
-	const onNegatedEditorValueChange = (event, props) => {
+	const onNegatedEditorValueChange = (event, editorOptions) => {
 		if (event.target.value === undefined || event.target.value === null) return;
-
-		props.editorCallback(event.target.value);
-
-		setDiseaseAnnotations((prevDiseaseAnnotations) => {
-			prevDiseaseAnnotations[props.rowIndex].negated = event.target.value;
-			return prevDiseaseAnnotations;
-		});
+		editorOptions.editorCallback(event.target.value);
 	};
 
-	const onInternalEditorValueChange = (props, event) => {
-		let updatedAnnotations = [...props.props.value];
-		if (event.value || event.value === '') {
-			updatedAnnotations[props.rowIndex].internal = JSON.parse(event.value.name);
-		}
-	};
-
-	const internalEditor = (props) => {
+	const internalEditor = (editorOptions) => {
 		return (
 			<>
 				<TrueFalseDropdown
 					options={booleanTerms?.terms || []}
-					editorChange={onInternalEditorValueChange}
-					props={props}
+					editorChange={(editorOptions, event) => editorOptions.editorCallback(JSON.parse(event.value.name))}
+					editorOptions={editorOptions}
 					field={'internal'}
 				/>
-				<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={'internal'} />
+				<ErrorMessageComponent errorMessages={errorMessagesRef.current[editorOptions.rowIndex]} errorField={'internal'} />
 			</>
 		);
 	};
 
-	const onObsoleteEditorValueChange = (props, event) => {
-		let updatedAnnotations = [...props.props.value];
-		if (event.value || event.value === '') {
-			updatedAnnotations[props.rowIndex].obsolete = JSON.parse(event.value.name);
-		}
-	};
-
-	const obsoleteEditor = (props) => {
+	const obsoleteEditor = (editorOptions) => {
 		return (
 			<>
 				<TrueFalseDropdown
 					options={booleanTerms?.terms || []}
-					editorChange={onObsoleteEditorValueChange}
-					props={props}
+					editorChange={(editorOptions, event) => editorOptions.editorCallback(JSON.parse(event.value.name))}
+					editorOptions={editorOptions}
 					field={'obsolete'}
 				/>
-				<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={'obsolete'} />
+				<ErrorMessageComponent errorMessages={errorMessagesRef.current[editorOptions.rowIndex]} errorField={'obsolete'} />
 			</>
 		);
 	};
 
-	const onSubjectValueChange = (event, setFieldValue, props) => {
-		defaultAutocompleteOnChange(props, event, 'diseaseAnnotationSubject', setFieldValue, 'primaryExternalId');
+	const onSubjectValueChange = (event, setFieldValue, editorOptions) => {
+		defaultAutocompleteOnChange(editorOptions, event, 'diseaseAnnotationSubject', setFieldValue, 'primaryExternalId');
 	};
 
-	const subjectSearch = (event, setFiltered, setQuery, props) => {
-		const autocompleteFields = getSubjectAutocompleteFields(props);
-		const endpoint = getSubjectEndpoint(props);
+	const subjectSearch = (event, setFiltered, setQuery, editorOptions) => {
+		const autocompleteFields = getSubjectAutocompleteFields(editorOptions);
+		const endpoint = getSubjectEndpoint(editorOptions);
 		const filterName = 'diseaseAnnotationSubjectFilter';
 		const filter = buildAutocompleteFilter(event, autocompleteFields);
 		setQuery(event.query);
 		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered);
 	};
 
-	const subjectEditorTemplate = (props) => {
+	const subjectEditorTemplate = (editorOptions) => {
 		return (
 			<>
 				<AutocompleteEditor
-					initialValue={getIdentifier(props.rowData.diseaseAnnotationSubject)}
+					initialValue={getIdentifier(editorOptions.rowData.diseaseAnnotationSubject)}
 					search={subjectSearch}
-					rowProps={props}
+					rowProps={editorOptions}
 					searchService={searchService}
 					subField="primaryExternalId"
 					fieldName="diseaseAnnotationSubject"
@@ -550,27 +502,27 @@ export const DiseaseAnnotationsTable = () => {
 					onValueChangeHandler={onSubjectValueChange}
 				/>
 				<ErrorMessageComponent
-					errorMessages={errorMessagesRef.current[props.rowIndex]}
+					errorMessages={errorMessagesRef.current[editorOptions.rowIndex]}
 					errorField={'diseaseAnnotationSubject'}
 				/>
 				<ErrorMessageComponent
-					errorMessages={uiErrorMessagesRef.current[props.rowIndex]}
+					errorMessages={uiErrorMessagesRef.current[editorOptions.rowIndex]}
 					errorField={'diseaseAnnotationSubject'}
 				/>
 			</>
 		);
 	};
 
-	const getSubjectEndpoint = (props) => {
-		if (props.rowData?.type === 'GeneDiseaseAnnotation') return Endpoints.Entity.GENE;
-		if (props.rowData?.type === 'AlleleDiseaseAnnotation') return Endpoints.Entity.ALLELE;
-		if (props.rowData?.type === 'AGMDiseaseAnnotation') return Endpoints.Entity.AGM;
+	const getSubjectEndpoint = (editorOptions) => {
+		if (editorOptions.rowData?.type === 'GeneDiseaseAnnotation') return Endpoints.Entity.GENE;
+		if (editorOptions.rowData?.type === 'AlleleDiseaseAnnotation') return Endpoints.Entity.ALLELE;
+		if (editorOptions.rowData?.type === 'AGMDiseaseAnnotation') return Endpoints.Entity.AGM;
 		return Endpoints.Entity.BIOLOGICAL_ENTITY;
 	};
 
-	const getSubjectAutocompleteFields = (props) => {
+	const getSubjectAutocompleteFields = (editorOptions) => {
 		let subjectFields = ['curie', 'primaryExternalId', 'modInternalId', 'crossReferences.referencedCurie'];
-		if (props.rowData.type === 'AGMDiseaseAnnotation') {
+		if (editorOptions.rowData.type === 'AGMDiseaseAnnotation') {
 			subjectFields.push(
 				'agmFullName.formatText',
 				'agmFullName.displayText',
@@ -578,7 +530,7 @@ export const DiseaseAnnotationsTable = () => {
 				'agmSynonyms.displayText',
 				'agmSecondaryIds.secondaryId'
 			);
-		} else if (props.rowData.type === 'AlleleDiseaseAnnotation') {
+		} else if (editorOptions.rowData.type === 'AlleleDiseaseAnnotation') {
 			subjectFields.push(
 				'alleleFullName.formatText',
 				'alleleFullName.displayText',
@@ -588,7 +540,7 @@ export const DiseaseAnnotationsTable = () => {
 				'alleleSynonyms.displayText',
 				'alleleSecondaryIds.secondaryId'
 			);
-		} else if (props.rowData.type === 'GeneDiseaseAnnotation') {
+		} else if (editorOptions.rowData.type === 'GeneDiseaseAnnotation') {
 			subjectFields.push(
 				'geneFullName.formatText',
 				'geneFullName.displayText',
@@ -603,8 +555,8 @@ export const DiseaseAnnotationsTable = () => {
 		}
 		return subjectFields;
 	};
-	const onSgdStrainBackgroundValueChange = (event, setFieldValue, props) => {
-		defaultAutocompleteOnChange(props, event, 'sgdStrainBackground', setFieldValue, 'primaryExternalId');
+	const onSgdStrainBackgroundValueChange = (event, setFieldValue, editorOptions) => {
+		defaultAutocompleteOnChange(editorOptions, event, 'sgdStrainBackground', setFieldValue, 'primaryExternalId');
 	};
 
 	const sgdStrainBackgroundSearch = (event, setFiltered, setQuery) => {
@@ -629,12 +581,12 @@ export const DiseaseAnnotationsTable = () => {
 		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered, otherFilters);
 	};
 
-	const sgdStrainBackgroundEditorTemplate = (props) => {
+	const sgdStrainBackgroundEditorTemplate = (editorOptions) => {
 		return (
 			<>
 				<AutocompleteEditor
-					rowProps={props}
-					initialValue={getIdentifier(props.rowData.sgdStrainBackground)}
+					rowProps={editorOptions}
+					initialValue={getIdentifier(editorOptions.rowData.sgdStrainBackground)}
 					search={sgdStrainBackgroundSearch}
 					searchService={searchService}
 					fieldName="sgdStrainBackground"
@@ -650,19 +602,19 @@ export const DiseaseAnnotationsTable = () => {
 					onValueChangeHandler={onSgdStrainBackgroundValueChange}
 				/>
 				<ErrorMessageComponent
-					errorMessages={errorMessagesRef.current[props.rowIndex]}
+					errorMessages={errorMessagesRef.current[editorOptions.rowIndex]}
 					errorField={'sgdStrainBackground'}
 				/>
 				<ErrorMessageComponent
-					errorMessages={uiErrorMessagesRef.current[props.rowIndex]}
+					errorMessages={uiErrorMessagesRef.current[editorOptions.rowIndex]}
 					errorField={'sgdStrainBackground'}
 				/>
 			</>
 		);
 	};
 
-	const onGeneticModifierAgmsValueChange = (event, setFieldValue, props) => {
-		multipleAutocompleteOnChange(props, event, 'diseaseGeneticModifierAgms', setFieldValue);
+	const onGeneticModifierAgmsValueChange = (event, setFieldValue, editorOptions) => {
+		multipleAutocompleteOnChange(editorOptions, event, 'diseaseGeneticModifierAgms', setFieldValue);
 	};
 
 	const geneticModifierAgmsSearch = (event, setFiltered, setInputValue) => {
@@ -684,13 +636,13 @@ export const DiseaseAnnotationsTable = () => {
 		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered);
 	};
 
-	const geneticModifierAgmsEditorTemplate = (props) => {
+	const geneticModifierAgmsEditorTemplate = (editorOptions) => {
 		return (
 			<>
 				<AutocompleteMultiEditor
 					search={geneticModifierAgmsSearch}
-					initialValue={props.rowData.diseaseGeneticModifierAgms}
-					rowProps={props}
+					initialValue={editorOptions.rowData.diseaseGeneticModifierAgms}
+					rowProps={editorOptions}
 					fieldName="diseaseGeneticModifierAgms"
 					subField="primaryExternalId"
 					valueDisplay={(item, setAutocompleteHoverItem, op, query) => (
@@ -704,19 +656,19 @@ export const DiseaseAnnotationsTable = () => {
 					onValueChangeHandler={onGeneticModifierAgmsValueChange}
 				/>
 				<ErrorMessageComponent
-					errorMessages={errorMessagesRef.current[props.rowIndex]}
+					errorMessages={errorMessagesRef.current[editorOptions.rowIndex]}
 					errorField={'diseaseGeneticModifierAgms'}
 				/>
 				<ErrorMessageComponent
-					errorMessages={uiErrorMessagesRef.current[props.rowIndex]}
+					errorMessages={uiErrorMessagesRef.current[editorOptions.rowIndex]}
 					errorField={'diseaseGeneticModifierAgms'}
 				/>
 			</>
 		);
 	};
 
-	const onGeneticModifierAllelesValueChange = (event, setFieldValue, props) => {
-		multipleAutocompleteOnChange(props, event, 'diseaseGeneticModifierAlleles', setFieldValue);
+	const onGeneticModifierAllelesValueChange = (event, setFieldValue, editorOptions) => {
+		multipleAutocompleteOnChange(editorOptions, event, 'diseaseGeneticModifierAlleles', setFieldValue);
 	};
 
 	const geneticModifierAllelesSearch = (event, setFiltered, setInputValue) => {
@@ -739,13 +691,13 @@ export const DiseaseAnnotationsTable = () => {
 		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered);
 	};
 
-	const geneticModifierAllelesEditorTemplate = (props) => {
+	const geneticModifierAllelesEditorTemplate = (editorOptions) => {
 		return (
 			<>
 				<AutocompleteMultiEditor
 					search={geneticModifierAllelesSearch}
-					initialValue={props.rowData.diseaseGeneticModifierAlleles}
-					rowProps={props}
+					initialValue={editorOptions.rowData.diseaseGeneticModifierAlleles}
+					rowProps={editorOptions}
 					fieldName="diseaseGeneticModifierAlleles"
 					subField="primaryExternalId"
 					valueDisplay={(item, setAutocompleteHoverItem, op, query) => (
@@ -759,19 +711,19 @@ export const DiseaseAnnotationsTable = () => {
 					onValueChangeHandler={onGeneticModifierAllelesValueChange}
 				/>
 				<ErrorMessageComponent
-					errorMessages={errorMessagesRef.current[props.rowIndex]}
+					errorMessages={errorMessagesRef.current[editorOptions.rowIndex]}
 					errorField={'diseaseGeneticModifierAlleles'}
 				/>
 				<ErrorMessageComponent
-					errorMessages={uiErrorMessagesRef.current[props.rowIndex]}
+					errorMessages={uiErrorMessagesRef.current[editorOptions.rowIndex]}
 					errorField={'diseaseGeneticModifierAlleles'}
 				/>
 			</>
 		);
 	};
 
-	const onGeneticModifierGenesValueChange = (event, setFieldValue, props) => {
-		multipleAutocompleteOnChange(props, event, 'diseaseGeneticModifierGenes', setFieldValue);
+	const onGeneticModifierGenesValueChange = (event, setFieldValue, editorOptions) => {
+		multipleAutocompleteOnChange(editorOptions, event, 'diseaseGeneticModifierGenes', setFieldValue);
 	};
 
 	const geneticModifierGenesSearch = (event, setFiltered, setInputValue) => {
@@ -797,13 +749,13 @@ export const DiseaseAnnotationsTable = () => {
 		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered);
 	};
 
-	const geneticModifierGenesEditorTemplate = (props) => {
+	const geneticModifierGenesEditorTemplate = (editorOptions) => {
 		return (
 			<>
 				<AutocompleteMultiEditor
 					search={geneticModifierGenesSearch}
-					initialValue={props.rowData.diseaseGeneticModifierGenes}
-					rowProps={props}
+					initialValue={editorOptions.rowData.diseaseGeneticModifierGenes}
+					rowProps={editorOptions}
 					fieldName="diseaseGeneticModifierGenes"
 					subField="primaryExternalId"
 					valueDisplay={(item, setAutocompleteHoverItem, op, query) => (
@@ -817,19 +769,19 @@ export const DiseaseAnnotationsTable = () => {
 					onValueChangeHandler={onGeneticModifierGenesValueChange}
 				/>
 				<ErrorMessageComponent
-					errorMessages={errorMessagesRef.current[props.rowIndex]}
+					errorMessages={errorMessagesRef.current[editorOptions.rowIndex]}
 					errorField={'diseaseGeneticModifierGenes'}
 				/>
 				<ErrorMessageComponent
-					errorMessages={uiErrorMessagesRef.current[props.rowIndex]}
+					errorMessages={uiErrorMessagesRef.current[editorOptions.rowIndex]}
 					errorField={'diseaseGeneticModifierGenes'}
 				/>
 			</>
 		);
 	};
 
-	const onAssertedAlleleValueChange = (event, setFieldValue, props) => {
-		multipleAutocompleteOnChange(props, event, 'assertedAlleles', setFieldValue);
+	const onAssertedAlleleValueChange = (event, setFieldValue, editorOptions) => {
+		multipleAutocompleteOnChange(editorOptions, event, 'assertedAlleles', setFieldValue);
 	};
 
 	const assertedAllelesSearch = (event, setFiltered, setInputValue) => {
@@ -853,14 +805,14 @@ export const DiseaseAnnotationsTable = () => {
 		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered);
 	};
 
-	const assertedAllelesEditorTemplate = (props) => {
-		if (props.rowData.type === 'AGMDiseaseAnnotation') {
+	const assertedAllelesEditorTemplate = (editorOptions) => {
+		if (editorOptions.rowData.type === 'AGMDiseaseAnnotation') {
 			return (
 				<>
 					<AutocompleteMultiEditor
 						search={assertedAllelesSearch}
-						initialValue={props.rowData.assertedAlleles}
-						rowProps={props}
+						initialValue={editorOptions.rowData.assertedAlleles}
+						rowProps={editorOptions}
 						fieldName="assertedAlleles"
 						subField="primaryExternalId"
 						valueDisplay={(item, setAutocompleteHoverItem, op, query) => (
@@ -874,7 +826,7 @@ export const DiseaseAnnotationsTable = () => {
 						onValueChangeHandler={onAssertedAlleleValueChange}
 					/>
 					<ErrorMessageComponent
-						errorMessages={errorMessagesRef.current[props.rowIndex]}
+						errorMessages={errorMessagesRef.current[editorOptions.rowIndex]}
 						errorField={'assertedAlleles'}
 					/>
 				</>
@@ -884,8 +836,8 @@ export const DiseaseAnnotationsTable = () => {
 		}
 	};
 
-	const onDiseaseValueChange = (event, setFieldValue, props) => {
-		defaultAutocompleteOnChange(props, event, 'diseaseAnnotationObject', setFieldValue);
+	const onDiseaseValueChange = (event, setFieldValue, editorOptions) => {
+		defaultAutocompleteOnChange(editorOptions, event, 'diseaseAnnotationObject', setFieldValue);
 	};
 
 	const diseaseSearch = (event, setFiltered, setQuery) => {
@@ -910,26 +862,26 @@ export const DiseaseAnnotationsTable = () => {
 		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered, otherFilters);
 	};
 
-	const diseaseEditorTemplate = (props) => {
+	const diseaseEditorTemplate = (editorOptions) => {
 		return (
 			<>
 				<AutocompleteEditor
 					search={diseaseSearch}
-					initialValue={props.rowData.diseaseAnnotationObject?.curie}
-					rowProps={props}
+					initialValue={editorOptions.rowData.diseaseAnnotationObject?.curie}
+					rowProps={editorOptions}
 					fieldName="diseaseAnnotationObject"
 					onValueChangeHandler={onDiseaseValueChange}
 				/>
 				<ErrorMessageComponent
-					errorMessages={errorMessagesRef.current[props.rowIndex]}
+					errorMessages={errorMessagesRef.current[editorOptions.rowIndex]}
 					errorField={'diseaseAnnotationObject'}
 				/>
 			</>
 		);
 	};
 
-	const onAssertedGeneValueChange = (event, setFieldValue, props) => {
-		multipleAutocompleteOnChange(props, event, 'assertedGenes', setFieldValue);
+	const onAssertedGeneValueChange = (event, setFieldValue, editorOptions) => {
+		multipleAutocompleteOnChange(editorOptions, event, 'assertedGenes', setFieldValue);
 	};
 
 	const assertedGenesSearch = (event, setFiltered, setInputValue) => {
@@ -955,16 +907,16 @@ export const DiseaseAnnotationsTable = () => {
 		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered);
 	};
 
-	const assertedGenesEditorTemplate = (props) => {
-		if (props.rowData.type === 'GeneDiseaseAnnotation') {
+	const assertedGenesEditorTemplate = (editorOptions) => {
+		if (editorOptions.rowData.type === 'GeneDiseaseAnnotation') {
 			return null;
 		} else {
 			return (
 				<>
 					<AutocompleteMultiEditor
 						search={assertedGenesSearch}
-						initialValue={props.rowData.assertedGenes}
-						rowProps={props}
+						initialValue={editorOptions.rowData.assertedGenes}
+						rowProps={editorOptions}
 						fieldName="assertedGenes"
 						subField="primaryExternalId"
 						valueDisplay={(item, setAutocompleteHoverItem, op, query) => (
@@ -978,7 +930,7 @@ export const DiseaseAnnotationsTable = () => {
 						onValueChangeHandler={onAssertedGeneValueChange}
 					/>
 					<ErrorMessageComponent
-						errorMessages={errorMessagesRef.current[props.rowIndex]}
+						errorMessages={errorMessagesRef.current[editorOptions.rowIndex]}
 						errorField={'assertedGenes'}
 					/>
 				</>
@@ -986,8 +938,8 @@ export const DiseaseAnnotationsTable = () => {
 		}
 	};
 
-	const onWithValueChange = (event, setFieldValue, props) => {
-		multipleAutocompleteOnChange(props, event, 'with', setFieldValue);
+	const onWithValueChange = (event, setFieldValue, editorOptions) => {
+		multipleAutocompleteOnChange(editorOptions, event, 'with', setFieldValue);
 	};
 
 	const withSearch = (event, setFiltered, setInputValue) => {
@@ -1020,13 +972,13 @@ export const DiseaseAnnotationsTable = () => {
 		setInputValue(event.query);
 		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered, otherFilters);
 	};
-	const withEditorTemplate = (props) => {
+	const withEditorTemplate = (editorOptions) => {
 		return (
 			<>
 				<AutocompleteMultiEditor
 					search={withSearch}
-					initialValue={props.rowData.with}
-					rowProps={props}
+					initialValue={editorOptions.rowData.with}
+					rowProps={editorOptions}
 					fieldName="with"
 					subField="primaryExternalId"
 					valueDisplay={(item, setAutocompleteHoverItem, op, query) => (
@@ -1039,13 +991,13 @@ export const DiseaseAnnotationsTable = () => {
 					)}
 					onValueChangeHandler={onWithValueChange}
 				/>
-				<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField="with" />
+				<ErrorMessageComponent errorMessages={errorMessagesRef.current[editorOptions.rowIndex]} errorField="with" />
 			</>
 		);
 	};
 
-	const onEvidenceValueChange = (event, setFieldValue, props) => {
-		multipleAutocompleteOnChange(props, event, 'evidenceCodes', setFieldValue);
+	const onEvidenceValueChange = (event, setFieldValue, editorOptions) => {
+		multipleAutocompleteOnChange(editorOptions, event, 'evidenceCodes', setFieldValue);
 	};
 
 	const evidenceSearch = (event, setFiltered, setInputValue) => {
@@ -1070,13 +1022,13 @@ export const DiseaseAnnotationsTable = () => {
 		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered, otherFilters);
 	};
 
-	const evidenceEditorTemplate = (props) => {
+	const evidenceEditorTemplate = (editorOptions) => {
 		return (
 			<>
 				<AutocompleteMultiEditor
 					search={evidenceSearch}
-					initialValue={props.rowData.evidenceCodes}
-					rowProps={props}
+					initialValue={editorOptions.rowData.evidenceCodes}
+					rowProps={editorOptions}
 					fieldName="evidenceCodes"
 					valueDisplay={(item, setAutocompleteHoverItem, op, query) => (
 						<EvidenceAutocompleteTemplate
@@ -1088,13 +1040,13 @@ export const DiseaseAnnotationsTable = () => {
 					)}
 					onValueChangeHandler={onEvidenceValueChange}
 				/>
-				<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField="evidenceCodes" />
+				<ErrorMessageComponent errorMessages={errorMessagesRef.current[editorOptions.rowIndex]} errorField="evidenceCodes" />
 			</>
 		);
 	};
 
-	const onReferenceValueChange = (event, setFieldValue, props) => {
-		defaultAutocompleteOnChange(props, event, 'evidenceItem', setFieldValue);
+	const onReferenceValueChange = (event, setFieldValue, editorOptions) => {
+		defaultAutocompleteOnChange(editorOptions, event, 'evidenceItem', setFieldValue);
 	};
 
 	const referenceSearch = (event, setFiltered, setQuery) => {
@@ -1106,13 +1058,13 @@ export const DiseaseAnnotationsTable = () => {
 		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered);
 	};
 
-	const referenceEditorTemplate = (props) => {
+	const referenceEditorTemplate = (editorOptions) => {
 		return (
 			<>
 				<AutocompleteEditor
 					search={referenceSearch}
-					initialValue={() => getRefString(props.rowData.evidenceItem)}
-					rowProps={props}
+					initialValue={() => getRefString(editorOptions.rowData.evidenceItem)}
+					rowProps={editorOptions}
 					fieldName="evidenceItem"
 					valueDisplay={(item, setAutocompleteHoverItem, op, query) => (
 						<LiteratureAutocompleteTemplate
@@ -1124,23 +1076,23 @@ export const DiseaseAnnotationsTable = () => {
 					)}
 					onValueChangeHandler={onReferenceValueChange}
 				/>
-				<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={'evidenceItem'} />
+				<ErrorMessageComponent errorMessages={errorMessagesRef.current[editorOptions.rowIndex]} errorField={'evidenceItem'} />
 			</>
 		);
 	};
 
-	const uniqueIdEditorTemplate = (props) => {
+	const uniqueIdEditorTemplate = (editorOptions) => {
 		return (
 			<>
-				<EllipsisTableCell otherClasses={`c${props.rowData.id}`}>{props.rowData.uniqueId}</EllipsisTableCell>
-				<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={'uniqueId'} />
+				<EllipsisTableCell otherClasses={`c${editorOptions.rowData.id}`}>{editorOptions.rowData.uniqueId}</EllipsisTableCell>
+				<ErrorMessageComponent errorMessages={errorMessagesRef.current[editorOptions.rowIndex]} errorField={'uniqueId'} />
 			</>
 		);
 	};
 
-	const sgdStrainBackgroundEditorSelector = (props) => {
-		if (props.rowData.type === 'GeneDiseaseAnnotation') {
-			return sgdStrainBackgroundEditorTemplate(props);
+	const sgdStrainBackgroundEditorSelector = (editorOptions) => {
+		if (editorOptions.rowData.type === 'GeneDiseaseAnnotation') {
+			return sgdStrainBackgroundEditorTemplate(editorOptions);
 		} else {
 			return null;
 		}
@@ -1154,7 +1106,7 @@ export const DiseaseAnnotationsTable = () => {
 				body: (rowData) => <IdTemplate id={rowData.uniqueId} />,
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.uniqueidFilterConfig,
-				editor: (props) => uniqueIdEditorTemplate(props),
+				editor: (editorOptions) => uniqueIdEditorTemplate(editorOptions),
 			},
 			{
 				field: 'primaryExternalId',
@@ -1171,19 +1123,22 @@ export const DiseaseAnnotationsTable = () => {
 				filterConfig: FILTER_CONFIGS.modinternalidFilterConfig,
 			},
 			{
-				field: 'diseaseAnnotationSubject.symbol',
+				field: 'diseaseAnnotationSubject',
+				columnKey: 'diseaseAnnotationSubject.symbol',
 				header: 'Subject',
 				body: (rowData) => <GenomicEntityTemplate genomicEntity={rowData.diseaseAnnotationSubject} />,
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.diseaseAnnotationSubjectFieldConfig,
-				editor: (props) => subjectEditorTemplate(props),
+				editor: (editorOptions) => subjectEditorTemplate(editorOptions),
 			},
 			{
-				field: 'relation.name',
+				field: 'relation',
+				columnKey: 'relation.name',
 				header: 'Disease Relation',
+				body: (rowData) => rowData.relation?.name,
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.relationFilterConfig,
-				editor: (props) => relationEditor(props),
+				editor: (editorOptions) => relationEditor(editorOptions),
 			},
 			{
 				field: 'negated',
@@ -1191,26 +1146,29 @@ export const DiseaseAnnotationsTable = () => {
 				body: (rowData) => <NotTemplate value={rowData.negated} />,
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.negatedFilterConfig,
-				editor: (props) => <NotEditor props={props} value={props.value} editorChange={onNegatedEditorValueChange} />,
+				editor: (editorOptions) => <NotEditor editorOptions={editorOptions} value={editorOptions.value} editorChange={onNegatedEditorValueChange} />,
 			},
 			{
-				field: 'diseaseAnnotationObject.name',
+				field: 'diseaseAnnotationObject',
+				columnKey: 'diseaseAnnotationObject.name',
 				header: 'Disease',
 				body: (rowData) => <OntologyTermTemplate term={rowData.diseaseAnnotationObject} />,
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.diseaseAnnotationObjectFilterConfig,
-				editor: (props) => diseaseEditorTemplate(props),
+				editor: (editorOptions) => diseaseEditorTemplate(editorOptions),
 			},
 			{
-				field: 'evidenceItem.primaryCrossReferenceCurie',
+				field: 'evidenceItem',
+				columnKey: 'evidenceItem.primaryCrossReferenceCurie',
 				header: 'Reference',
 				body: (rowData) => <SingleReferenceTemplate singleReference={rowData.evidenceItem} />,
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.evidenceItemFilterConfig,
-				editor: (props) => referenceEditorTemplate(props),
+				editor: (editorOptions) => referenceEditorTemplate(editorOptions),
 			},
 			{
-				field: 'evidenceCodes.abbreviation',
+				field: 'evidenceCodes',
+				columnKey: 'evidenceCodes.abbreviation',
 				header: 'Evidence Code',
 				body: (rowData) => (
 					<ObjectListTemplate
@@ -1221,18 +1179,20 @@ export const DiseaseAnnotationsTable = () => {
 				),
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.evidenceCodesFilterConfig,
-				editor: (props) => evidenceEditorTemplate(props),
+				editor: (editorOptions) => evidenceEditorTemplate(editorOptions),
 			},
 			{
-				field: 'with.geneSymbol.displayText',
+				field: 'with',
+				columnKey: 'with.geneSymbol.displayText',
 				header: 'With',
 				body: (rowData) => <GenomicEntityListTemplate genomicEntities={rowData.with} />,
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.withFilterConfig,
-				editor: (props) => withEditorTemplate(props),
+				editor: (editorOptions) => withEditorTemplate(editorOptions),
 			},
 			{
-				field: 'relatedNotes.freeText',
+				field: 'relatedNotes',
+				columnKey: 'relatedNotes.freeText',
 				header: 'Related Notes',
 				body: (rowData) => (
 					<CountDialogTemplate entities={rowData.relatedNotes} handleOpen={handleRelatedNotesOpen} text={'Notes'} />
@@ -1242,7 +1202,8 @@ export const DiseaseAnnotationsTable = () => {
 				editor: relatedNotesEditor,
 			},
 			{
-				field: 'conditionRelations.handle',
+				field: 'conditionRelations',
+				columnKey: 'conditionRelations.handle',
 				header: 'Experiments',
 				body: (rowData) => {
 					if (!rowData.conditionRelations?.[0]?.handle) return null;
@@ -1257,10 +1218,11 @@ export const DiseaseAnnotationsTable = () => {
 				},
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.daConditionRelationsHandleFilterConfig,
-				editor: (props) => conditionRelationHandleEditor(props),
+				editor: (editorOptions) => conditionRelationHandleEditor(editorOptions),
 			},
 			{
-				field: 'conditionRelations.uniqueId',
+				field: 'conditionRelations',
+				columnKey: 'conditionRelations.uniqueId',
 				header: 'Experimental Conditions',
 				body: (rowData) => {
 					if (rowData.conditionRelations?.[0]?.handle) return null;
@@ -1274,17 +1236,20 @@ export const DiseaseAnnotationsTable = () => {
 				},
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.daConditionRelationsSummaryFilterConfig,
-				editor: (props) => conditionRelationsEditor(props),
+				editor: (editorOptions) => conditionRelationsEditor(editorOptions),
 			},
 			{
-				field: 'geneticSex.name',
+				field: 'geneticSex',
+				columnKey: 'geneticSex.name',
 				header: 'Genetic Sex',
+				body: (rowData) => rowData.geneticSex?.name,
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.geneticSexFilterConfig,
-				editor: (props) => geneticSexEditor(props),
+				editor: (editorOptions) => geneticSexEditor(editorOptions),
 			},
 			{
-				field: 'diseaseQualifiers.name',
+				field: 'diseaseQualifiers',
+				columnKey: 'diseaseQualifiers.name',
 				header: 'Disease Qualifiers',
 				body: (rowData) => (
 					<ObjectListTemplate
@@ -1295,53 +1260,61 @@ export const DiseaseAnnotationsTable = () => {
 				),
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.diseaseQualifiersFilterConfig,
-				editor: (props) => diseaseQualifiersEditor(props),
+				editor: (editorOptions) => diseaseQualifiersEditor(editorOptions),
 			},
 			{
-				field: 'sgdStrainBackground.name',
+				field: 'sgdStrainBackground',
+				columnKey: 'sgdStrainBackground.name',
 				header: 'SGD Strain Background',
 				body: (rowData) => <GenomicEntityTemplate genomicEntity={rowData.sgdStrainBackground} />,
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.sgdStrainBackgroundFilterConfig,
-				editor: (props) => sgdStrainBackgroundEditorSelector(props),
+				editor: (editorOptions) => sgdStrainBackgroundEditorSelector(editorOptions),
 			},
 			{
-				field: 'annotationType.name',
+				field: 'annotationType',
+				columnKey: 'annotationType.name',
 				header: 'Annotation Type',
+				body: (rowData) => rowData.annotationType?.name,
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.annotationTypeFilterConfig,
-				editor: (props) => annotationTypeEditor(props),
+				editor: (editorOptions) => annotationTypeEditor(editorOptions),
 			},
 			{
-				field: 'diseaseGeneticModifierRelation.name',
+				field: 'diseaseGeneticModifierRelation',
+				columnKey: 'diseaseGeneticModifierRelation.name',
 				header: 'Genetic Modifier Relation',
+				body: (rowData) => rowData.diseaseGeneticModifierRelation?.name,
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.geneticModifierRelationFilterConfig,
-				editor: (props) => geneticModifierRelationEditor(props),
+				editor: (editorOptions) => geneticModifierRelationEditor(editorOptions),
 			},
 			{
-				field: 'diseaseGeneticModifierAgms.name',
+				field: 'diseaseGeneticModifierAgms',
+				columnKey: 'diseaseGeneticModifierAgms.name',
 				header: 'Genetic Modifier AGMs',
 				body: (rowData) => <GenomicEntityListTemplate genomicEntities={rowData.diseaseGeneticModifierAgms} />,
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.geneticModifierAgmsFilterConfig,
-				editor: (props) => geneticModifierAgmsEditorTemplate(props),
+				editor: (editorOptions) => geneticModifierAgmsEditorTemplate(editorOptions),
 			},
 			{
-				field: 'diseaseGeneticModifierAlleles.alleleSymbol.displayText',
+				field: 'diseaseGeneticModifierAlleles',
+				columnKey: 'diseaseGeneticModifierAlleles.alleleSymbol.displayText',
 				header: 'Genetic Modifier Alleles',
 				body: (rowData) => <GenomicEntityListTemplate genomicEntities={rowData.diseaseGeneticModifierAlleles} />,
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.geneticModifierAllelesFilterConfig,
-				editor: (props) => geneticModifierAllelesEditorTemplate(props),
+				editor: (editorOptions) => geneticModifierAllelesEditorTemplate(editorOptions),
 			},
 			{
-				field: 'diseaseGeneticModifierGenes.geneSymbol.displayText',
+				field: 'diseaseGeneticModifierGenes',
+				columnKey: 'diseaseGeneticModifierGenes.geneSymbol.displayText',
 				header: 'Genetic Modifier Genes',
 				body: (rowData) => <GenomicEntityListTemplate genomicEntities={rowData.diseaseGeneticModifierGenes} />,
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.geneticModifierGenesFilterConfig,
-				editor: (props) => geneticModifierGenesEditorTemplate(props),
+				editor: (editorOptions) => geneticModifierGenesEditorTemplate(editorOptions),
 			},
 			{
 				field: 'inferredGene.geneSymbol.displayText',
@@ -1351,12 +1324,13 @@ export const DiseaseAnnotationsTable = () => {
 				filterConfig: FILTER_CONFIGS.inferredGeneFilterConfig,
 			},
 			{
-				field: 'assertedGenes.geneSymbol.displayText',
+				field: 'assertedGenes',
+				columnKey: 'assertedGenes.geneSymbol.displayText',
 				header: 'Asserted Genes',
 				body: (rowData) => <GenomicEntityListTemplate genomicEntities={rowData.assertedGenes} />,
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.assertedGenesFilterConfig,
-				editor: (props) => assertedGenesEditorTemplate(props),
+				editor: (editorOptions) => assertedGenesEditorTemplate(editorOptions),
 			},
 			{
 				field: 'inferredAllele.alleleSymbol.displayText',
@@ -1366,12 +1340,13 @@ export const DiseaseAnnotationsTable = () => {
 				filterConfig: FILTER_CONFIGS.inferredAlleleFilterConfig,
 			},
 			{
-				field: 'assertedAlleles.alleleSymbol.displayText',
+				field: 'assertedAlleles',
+				columnKey: 'assertedAlleles.alleleSymbol.displayText',
 				header: 'Asserted Alleles',
 				body: (rowData) => <GenomicEntityListTemplate genomicEntities={rowData.assertedAlleles} />,
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.assertedAllelesFilterConfig,
-				editor: (props) => assertedAllelesEditorTemplate(props),
+				editor: (editorOptions) => assertedAllelesEditorTemplate(editorOptions),
 			},
 			{
 				field: 'dataProvider.abbreviation',
@@ -1419,7 +1394,7 @@ export const DiseaseAnnotationsTable = () => {
 				body: (rowData) => <BooleanTemplate value={rowData.internal} />,
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.internalFilterConfig,
-				editor: (props) => internalEditor(props),
+				editor: (editorOptions) => internalEditor(editorOptions),
 			},
 			{
 				field: 'obsolete',
@@ -1427,7 +1402,7 @@ export const DiseaseAnnotationsTable = () => {
 				body: (rowData) => <BooleanTemplate value={rowData.obsolete} />,
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.obsoleteFilterConfig,
-				editor: (props) => obsoleteEditor(props),
+				editor: (editorOptions) => obsoleteEditor(editorOptions),
 			},
 		],
 		// eslint-disable-next-line react-hooks/exhaustive-deps
