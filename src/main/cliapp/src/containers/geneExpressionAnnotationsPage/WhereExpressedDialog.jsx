@@ -17,13 +17,14 @@ const listTemplate = (terms) => {
 };
 
 export const WhereExpressedDialog = ({ whereExpressedData, setWhereExpressedData }) => {
-	const { data, dialog } = whereExpressedData;
+	const { data, statement, dialog } = whereExpressedData;
 	const [localData, setLocalData] = useState(null);
 
 	const showDialogHandler = () => {
 		if (data) {
 			const _localData = structuredClone(data);
 			_localData.dataKey = 0;
+			_localData.whereExpressedStatement = statement;
 			setLocalData([_localData]);
 		} else {
 			setLocalData([]);
@@ -42,6 +43,11 @@ export const WhereExpressedDialog = ({ whereExpressedData, setWhereExpressedData
 		<Dialog visible={dialog} className="w-10" modal onHide={hideDialog} closable onShow={showDialogHandler}>
 			<h3>Where Expressed [Anatomical Site]</h3>
 			<DataTable value={localData} dataKey="dataKey" showGridlines>
+				<Column
+					field="whereExpressedStatement"
+					header="Where Expressed Statement"
+					body={(rowData) => <EllipsisTableCell>{rowData.whereExpressedStatement}</EllipsisTableCell>}
+				/>
 				<Column
 					field="anatomicalStructure.name"
 					header="Anatomical Structure"
@@ -127,6 +133,26 @@ export const WhereExpressedDialog = ({ whereExpressedData, setWhereExpressedData
 								: ''}
 						</EllipsisTableCell>
 					)}
+				/>
+				<Column
+					field="updatedBy.uniqueId"
+					header="Updated By"
+					body={(rowData) => <EllipsisTableCell>{rowData.updatedBy?.uniqueId}</EllipsisTableCell>}
+				/>
+				<Column
+					field="dateUpdated"
+					header="Date Updated"
+					body={(rowData) => <EllipsisTableCell>{rowData.dateUpdated}</EllipsisTableCell>}
+				/>
+				<Column
+					field="createdBy.uniqueId"
+					header="Created By"
+					body={(rowData) => <EllipsisTableCell>{rowData.createdBy?.uniqueId}</EllipsisTableCell>}
+				/>
+				<Column
+					field="dateCreated"
+					header="Date Created"
+					body={(rowData) => <EllipsisTableCell>{rowData.dateCreated}</EllipsisTableCell>}
 				/>
 			</DataTable>
 		</Dialog>

@@ -18,13 +18,14 @@ const listTemplate = (terms) => {
 };
 
 export const WhenExpressedDialog = ({ whenExpressedData, setWhenExpressedData }) => {
-	const { data, dialog } = whenExpressedData;
+	const { data, statement, dialog } = whenExpressedData;
 	const [localData, setLocalData] = useState(null);
 
 	const showDialogHandler = () => {
 		if (data) {
 			const _localData = structuredClone(data);
 			_localData.dataKey = 0;
+			_localData.whenExpressedStageName = statement;
 			setLocalData([_localData]);
 		} else {
 			setLocalData([]);
@@ -43,6 +44,11 @@ export const WhenExpressedDialog = ({ whenExpressedData, setWhenExpressedData })
 		<Dialog visible={dialog} className="w-10" modal onHide={hideDialog} closable onShow={showDialogHandler}>
 			<h3>When Expressed [Temporal Context]</h3>
 			<DataTable value={localData} dataKey="dataKey" showGridlines>
+				<Column
+					field="whenExpressedStageName"
+					header="When Expressed Statement"
+					body={(rowData) => <EllipsisTableCell>{rowData.whenExpressedStageName}</EllipsisTableCell>}
+				/>
 				<Column
 					field="developmentalStageStart.name"
 					header="Developmental Stage Start"
@@ -63,6 +69,26 @@ export const WhenExpressedDialog = ({ whenExpressedData, setWhenExpressedData })
 					field="stageUberonSlimTerms"
 					header="Stage Uberon Terms"
 					body={(rowData) => <EllipsisTableCell>{listTemplate(rowData.stageUberonSlimTerms)}</EllipsisTableCell>}
+				/>
+				<Column
+					field="updatedBy.uniqueId"
+					header="Updated By"
+					body={(rowData) => <EllipsisTableCell>{rowData.updatedBy?.uniqueId}</EllipsisTableCell>}
+				/>
+				<Column
+					field="dateUpdated"
+					header="Date Updated"
+					body={(rowData) => <EllipsisTableCell>{rowData.dateUpdated}</EllipsisTableCell>}
+				/>
+				<Column
+					field="createdBy.uniqueId"
+					header="Created By"
+					body={(rowData) => <EllipsisTableCell>{rowData.createdBy?.uniqueId}</EllipsisTableCell>}
+				/>
+				<Column
+					field="dateCreated"
+					header="Date Created"
+					body={(rowData) => <EllipsisTableCell>{rowData.dateCreated}</EllipsisTableCell>}
 				/>
 			</DataTable>
 		</Dialog>
