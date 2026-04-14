@@ -3,9 +3,7 @@ import { InputText } from 'primereact/inputtext';
 import { ErrorMessageComponent } from '../Error/ErrorMessageComponent';
 
 export function StringListEditor({ rowProps, fieldName }) {
-	const initialValue = Array.isArray(rowProps.rowData[fieldName])
-		? rowProps.rowData[fieldName].join(', ')
-		: '';
+	const initialValue = Array.isArray(rowProps.rowData[fieldName]) ? rowProps.rowData[fieldName].join(', ') : '';
 	const [fieldValue, setFieldValue] = useState(initialValue);
 
 	const onChange = (e) => {
@@ -13,7 +11,10 @@ export function StringListEditor({ rowProps, fieldName }) {
 		setFieldValue(value);
 		let updatedEntities = [...rowProps.props.value];
 		updatedEntities[rowProps.rowIndex][fieldName] = value
-			? value.split(',').map((s) => s.trim()).filter((s) => s.length > 0)
+			? value
+					.split(',')
+					.map((s) => s.trim())
+					.filter((s) => s.length > 0)
 			: [];
 	};
 
