@@ -2,6 +2,24 @@
  
 https://agr-jira.atlassian.net/wiki/spaces/ATEAM/overview
 
+## v0.48.0
+* New features:
+   * Create user interface data table for LTP Expression data: read-only, with column sort & filter and pagination (SCRUM-5456)
+   * Create user interface data table pop-ups for LTP Expression: Where Expressed and When Expressed (SCRUM-5894)
+   * HTP Dataset Search results: write a curation indexer, new search result document, rewrite Search API endpoint (SCRUM-5821)
+   * Turn on a load-dependency specific A-Team Data Loads channel in Slack (SCRUM-5825)
+   * Expand allele load warnings to all reference fields in Allele class (SCRUM-5858)
+   * Make data load warning JSON 'messages' singular 'message' to be consistent with failure exception messages (SCRUM-5857)
+   * Update Java curation code to be up to date with the latest (v2.16.0) LinkML model: Java property renaming (SCRUM-5901)
+* Fixes and maintenance
+   * Cannot add, edit, or delete allele synonyms in the curation tool table interface; allele detail page throws 400 error (SCRUM-5834)
+   * Attempting to edit vocabulary terms or vocabularies in the curation system results in an error (SCRUM-5831)
+   * 500 error when attempting to load JSON exceptions for latest failed RGD GAF load (SCRUM-5860)
+   * "Entity may not be null" error in latest RGD GAF load (SCRUM-5864)
+   * Scheduled ontology loads not running (SCRUM-5862)
+   * Missing Cognito email display on Curation Profile page (SCRUM-5915)
+   * GFF bulk load performance: batch Exon, CDS, and Transcript processing (SCRUM-5931)
+
 ## v0.47.0
 * Fixes and maintenance
    * Curation Swagger pages slow and timing out (SCRUM-2479)
