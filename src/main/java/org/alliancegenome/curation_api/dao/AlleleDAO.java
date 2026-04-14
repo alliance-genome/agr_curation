@@ -470,6 +470,29 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 			}
 		}
 
+		// Gene cross references per allele (via allele -> gene association)
+		String geneCrossRefsQueryString = """
+			SELECT DISTINCT aga.alleleassociationsubject_id AS allele_id, cr.referencedcurie AS xref
+			FROM allelegeneassociation aga
+			JOIN vocabularyterm v ON v.id = aga.relation_id AND v.name = 'is_allele_of'
+			JOIN genomicentity_crossreference gecr ON gecr.genomicentity_id = aga.allelegeneassociationobject_id
+			JOIN crossreference cr ON cr.id = gecr.crossreferences_id
+			WHERE aga.alleleassociationsubject_id IN :alleleIds
+			AND aga.internal = false AND aga.obsolete = false
+			""";
+		Query geneCrossRefsQuery = entityManager.createNativeQuery(geneCrossRefsQueryString);
+		geneCrossRefsQuery.setParameter("alleleIds", alleleIds);
+		List<Object[]> geneCrossRefsResults = geneCrossRefsQuery.getResultList();
+
+		Map<Long, Set<String>> alleleGeneCrossRefsMap = new HashMap<>();
+		for (Object[] row : geneCrossRefsResults) {
+			Long alleleId = (Long) row[0];
+			String xref = (String) row[1];
+			if (xref != null) {
+				alleleGeneCrossRefsMap.computeIfAbsent(alleleId, k -> new HashSet<>()).add(xref);
+			}
+		}
+
 		// Variants
 		String variantQueryString = """
 			SELECT DISTINCT ava.alleleassociationsubject_id as allele_id,
@@ -1037,6 +1060,7 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 			doc.setConstructExpressedComponents(alleleConstructExpressedComponentsMap.get(allele.getId()));
 			doc.setConstructRegulatoryRegions(alleleConstructRegulatoryRegionsMap.get(allele.getId()));
 			doc.setConstructKnockdownComponents(alleleConstructKnockdownComponentsMap.get(allele.getId()));
+			doc.setGeneCrossReferences(alleleGeneCrossRefsMap.get(allele.getId()));
 			doc.setGeneSynonyms(alleleGeneSynonymsMap.get(allele.getId()));
 			doc.setPhenotypeStatements(allelePhenotypeStatementsMap.get(allele.getId()));
 			docs.add(doc);

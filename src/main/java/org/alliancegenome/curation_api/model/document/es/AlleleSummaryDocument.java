@@ -34,6 +34,7 @@ public class AlleleSummaryDocument extends AVSParentDocument {
 	private Set<String> constructExpressedComponents;
 	private Set<String> constructRegulatoryRegions;
 	private Set<String> constructKnockdownComponents;
+	private Set<String> geneCrossReferences;
 	private Set<String> geneSynonyms;
 	private Set<String> phenotypeStatements;
 
@@ -53,6 +54,7 @@ public class AlleleSummaryDocument extends AVSParentDocument {
 		constructExpressedComponents = null;
 		constructRegulatoryRegions = null;
 		constructKnockdownComponents = null;
+		geneCrossReferences = null;
 		geneSynonyms = null;
 		phenotypeStatements = null;
 	}
