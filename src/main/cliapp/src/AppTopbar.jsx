@@ -138,6 +138,16 @@ export const AppTopbar = (props) => {
 					>
 						<i className="pi pi-bars" />
 					</button>
+					<button
+						type="button"
+						className="p-link layout-topbar-button command-palette-trigger"
+						onClick={props.onSearchClick}
+					>
+						<i className="pi pi-search" />
+						<span className="command-palette-shortcut">
+							{/Mac|iPhone|iPad|iPod/.test(navigator.userAgent) ? '⌘K' : 'Ctrl+K'}
+						</span>
+					</button>
 				</>
 			)}
 			<button

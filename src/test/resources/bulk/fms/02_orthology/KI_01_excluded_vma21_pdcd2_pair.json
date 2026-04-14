@@ -1,0 +1,37 @@
+{
+  "data": [
+    {
+      "confidence": "high",
+      "gene1": "DRSC:MGI:1914298",
+      "gene1Species": 10090,
+      "gene2": "DRSC:WB:WBGene00011116",
+      "gene2Species": 6239,
+      "isBestRevScore": "Yes",
+      "isBestScore": "Yes",
+      "moderateFilter": true,
+      "predictionMethodsMatched": [
+        "Ensembl Compara"
+      ],
+      "predictionMethodsNotCalled": [
+        "HGNC"
+      ],
+      "predictionMethodsNotMatched": [
+        "OMA"
+      ],
+      "strictFilter": true
+    }
+  ],
+  "metaData": {
+    "dataProvider": {
+      "crossReference": {
+        "id": "MGI",
+        "pages": [
+          "homepage"
+        ]
+      },
+      "type": "curated"
+    },
+    "dateProduced": "2026-04-10T14:00:00Z",
+    "release": "9"
+  }
+}

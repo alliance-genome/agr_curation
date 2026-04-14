@@ -15,9 +15,9 @@ import { Endpoints } from '../../constants/Endpoints';
 import { OntologyTermTemplate } from '../../components/Templates/OntologyTermTemplate';
 import { ListDialogTemplate } from '../../components/Templates/dialog/ListDialogTemplate';
 import { TextDialogTemplate } from '../../components/Templates/dialog/TextDialogTemplate';
-import { FullNameDialog } from '../nameSlotAnnotations/dialogs/FullNameDialog';
-import { SynonymsDialog } from '../nameSlotAnnotations/dialogs/SynonymsDialog';
-import { SecondaryIdsDialog } from '../allelesPage/secondaryIds/SecondaryIdsDialog';
+import { FullNameReadOnlyDialog } from '../nameSlotAnnotations/dialogs/FullNameReadOnlyDialog';
+import { SynonymsReadOnlyDialog } from '../nameSlotAnnotations/dialogs/SynonymsReadOnlyDialog';
+import { SecondaryIdsReadOnlyDialog } from '../allelesPage/secondaryIds/SecondaryIdsReadOnlyDialog';
 
 export const AffectedGenomicModelTable = () => {
 	const [isInEditMode, setIsInEditMode] = useState(false);
@@ -263,25 +263,11 @@ export const AffectedGenomicModelTable = () => {
 					fetching={isFetching || isLoading}
 				/>
 			</div>
-			<FullNameDialog
-				name="AGM Name"
-				field="agmFullName"
-				endpoint="agmfullnameslotannotation"
-				originalFullNameData={fullNameData}
-				setOriginalFullNameData={setFullNameData}
-			/>
-			<SynonymsDialog
-				name="AGM Synonym"
-				field="agmSynonyms"
-				endpoint="agmsynonymslotannotation"
-				originalSynonymsData={synonymsData}
-				setOriginalSynonymsData={setSynonymsData}
-			/>
-			<SecondaryIdsDialog
+			<FullNameReadOnlyDialog originalFullNameData={fullNameData} setOriginalFullNameData={setFullNameData} />
+			<SynonymsReadOnlyDialog originalSynonymsData={synonymsData} setOriginalSynonymsData={setSynonymsData} />
+			<SecondaryIdsReadOnlyDialog
 				originalSecondaryIdsData={secondaryIdsData}
 				setOriginalSecondaryIdsData={setSecondaryIdsData}
-				errorMessagesMainRow={errorMessages}
-				setErrorMessagesMainRow={setErrorMessages}
 			/>
 		</>
 	);

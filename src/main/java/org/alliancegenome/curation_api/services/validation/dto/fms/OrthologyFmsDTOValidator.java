@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
@@ -32,6 +33,25 @@ import jakarta.transaction.Transactional;
 @RequestScoped
 public class OrthologyFmsDTOValidator {
 
+	private record ExcludedOrthologyPair(String subjectGeneIdentifier, String objectGeneIdentifier) {
+	}
+
+	// KANBAN-965: temporary local exclusion for known bad VMA21/pdcd-2 DIOPT data.
+	// When DIOPT fixes the upstream data and the bad pairs no longer appear in orthology loads,
+	// remove this exclusion together with:
+	// - src/test/resources/bulk/fms/02_orthology/KI_01_excluded_vma21_pdcd2_pair.json
+	// - orthologyBulkUploadExcludedKnownIssuePair() in IT_0602_OrthologyBulkUploadFmsITCase
+	private static final Set<ExcludedOrthologyPair> EXCLUDED_ORTHOLOGY_PAIRS = Set.of(
+		new ExcludedOrthologyPair("WB:WBGene00011116", "MGI:1914298"),
+		new ExcludedOrthologyPair("WB:WBGene00011116", "RGD:620474"),
+		new ExcludedOrthologyPair("WB:WBGene00011116", "RGD:727913"),
+		new ExcludedOrthologyPair("WB:WBGene00011116", "HGNC:22082"),
+		new ExcludedOrthologyPair("MGI:1914298", "WB:WBGene00011116"),
+		new ExcludedOrthologyPair("RGD:620474", "WB:WBGene00011116"),
+		new ExcludedOrthologyPair("RGD:727913", "WB:WBGene00011116"),
+		new ExcludedOrthologyPair("HGNC:22082", "WB:WBGene00011116")
+	);
+
 	@Inject GeneToGeneOrthologyGeneratedDAO generatedOrthologyDAO;
 	@Inject GeneService geneService;
 	@Inject NcbiTaxonTermService ncbiTaxonTermService;
@@ -56,6 +76,13 @@ public class OrthologyFmsDTOValidator {
 			orthologyResponse.addErrorMessage("gene2", ValidationConstants.REQUIRED_MESSAGE);
 		} else {
 			objectGeneIdentifier = convertToModCurie(dto.getGene2(), dto.getGene2Species());
+		}
+
+		if (isExcludedOrthologyPair(subjectGeneIdentifier, objectGeneIdentifier)) {
+			// KANBAN-965: keep the workaround at validation so both file ingest and raw API bulk
+			// updates reject the same known bad DIOPT pair.
+			throw new KnownIssueValidationException("Skipping excluded orthology pair: "
+				+ subjectGeneIdentifier + " <-> " + objectGeneIdentifier);
 		}
 
 		Gene subjectGene = null;
@@ -235,6 +262,13 @@ public class OrthologyFmsDTOValidator {
 		}
 
 		return curie;
+	}
+
+	private boolean isExcludedOrthologyPair(String subjectGeneIdentifier, String objectGeneIdentifier) {
+		if (StringUtils.isAnyBlank(subjectGeneIdentifier, objectGeneIdentifier)) {
+			return false;
+		}
+		return EXCLUDED_ORTHOLOGY_PAIRS.contains(new ExcludedOrthologyPair(subjectGeneIdentifier, objectGeneIdentifier));
 	}
 
 }

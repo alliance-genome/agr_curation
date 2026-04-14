@@ -8,7 +8,7 @@ import { Row } from 'primereact/row';
 import { EllipsisTableCell } from '../../components/EllipsisTableCell';
 import { evidenceTemplate } from '../../components/EvidenceComponent';
 import { Button } from 'primereact/button';
-import { RelatedNotesDialog } from '../../components/RelatedNotesDialog';
+import { RelatedNotesReadOnlyDialog } from '../../components/RelatedNotesReadOnlyDialog';
 
 export const ComponentsDialog = ({
 	originalComponentsData,
@@ -183,12 +183,9 @@ export const ComponentsDialog = ({
 					</DataTable>
 				</Dialog>
 			</div>
-			<RelatedNotesDialog
+			<RelatedNotesReadOnlyDialog
 				originalRelatedNotesData={relatedNotesData}
 				setOriginalRelatedNotesData={setRelatedNotesData}
-				errorMessagesMainRow={errorMessagesMainRow}
-				setErrorMessagesMainRow={setErrorMessagesMainRow}
-				noteTypeVocabularyTermSet="construct_component_note_type"
 			/>
 		</>
 	);

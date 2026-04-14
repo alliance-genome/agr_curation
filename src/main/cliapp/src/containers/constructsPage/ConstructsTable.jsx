@@ -2,9 +2,9 @@ import React, { useRef, useState, useMemo } from 'react';
 import { GenericDataTable } from '../../components/GenericDataTable/GenericDataTable';
 import { ComponentsDialog } from './ComponentsDialog';
 import { GenomicComponentsDialog } from './GenomicComponentsDialog';
-import { SymbolDialog } from '../nameSlotAnnotations/dialogs/SymbolDialog';
-import { FullNameDialog } from '../nameSlotAnnotations/dialogs/FullNameDialog';
-import { SynonymsDialog } from '../nameSlotAnnotations/dialogs/SynonymsDialog';
+import { SymbolReadOnlyDialog } from '../nameSlotAnnotations/dialogs/SymbolReadOnlyDialog';
+import { FullNameReadOnlyDialog } from '../nameSlotAnnotations/dialogs/FullNameReadOnlyDialog';
+import { SynonymsReadOnlyDialog } from '../nameSlotAnnotations/dialogs/SynonymsReadOnlyDialog';
 import { Toast } from 'primereact/toast';
 import { getDefaultTableState } from '../../service/TableStateService';
 import { FILTER_CONFIGS } from '../../constants/FilterFields';
@@ -360,27 +360,9 @@ export const ConstructsTable = () => {
 					fetching={isFetching || isLoading}
 				/>
 			</div>
-			<FullNameDialog
-				name="Construct Name"
-				field="constructFullName"
-				endpoint="constructfullnameslotannotation"
-				originalFullNameData={fullNameData}
-				setOriginalFullNameData={setFullNameData}
-			/>
-			<SymbolDialog
-				name="Construct Symbol"
-				field="constructSymbol"
-				endpoint="constructsymbolslotannotation"
-				originalSymbolData={symbolData}
-				setOriginalSymbolData={setSymbolData}
-			/>
-			<SynonymsDialog
-				name="Construct Synonym"
-				field="constructSynonyms"
-				endpoint="constructsynonymslotannotation"
-				originalSynonymsData={synonymsData}
-				setOriginalSynonymsData={setSynonymsData}
-			/>
+			<FullNameReadOnlyDialog originalFullNameData={fullNameData} setOriginalFullNameData={setFullNameData} />
+			<SymbolReadOnlyDialog originalSymbolData={symbolData} setOriginalSymbolData={setSymbolData} />
+			<SynonymsReadOnlyDialog originalSynonymsData={synonymsData} setOriginalSynonymsData={setSynonymsData} />
 			<ComponentsDialog
 				originalComponentsData={componentsData}
 				setOriginalComponentsData={setComponentsData}

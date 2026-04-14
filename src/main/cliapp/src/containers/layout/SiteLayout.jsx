@@ -10,6 +10,7 @@ import { AppTopbar } from '../../AppTopbar';
 import { AppFooter } from '../../AppFooter';
 import { AppMenu } from '../../AppMenu';
 import { AppConfig } from '../../AppConfig';
+import { CommandPalette } from '../../components/CommandPalette/CommandPalette';
 
 import { useApiVersion, useUserInfo } from '../../service/SiteQueryHooks';
 
@@ -42,6 +43,7 @@ export const SiteLayout = (props) => {
 	const [overlayMenuActive, setOverlayMenuActive] = useState(false);
 	const [mobileMenuActive, setMobileMenuActive] = useState(false);
 	const [mobileTopbarMenuActive, setMobileTopbarMenuActive] = useState(false);
+	const [commandPaletteVisible, setCommandPaletteVisible] = useState(false);
 
 	const copyTooltipRef = useRef();
 	const location = useLocation();
@@ -143,6 +145,17 @@ export const SiteLayout = (props) => {
 	useEffect(() => {
 		copyTooltipRef && copyTooltipRef.current && copyTooltipRef.current.updateTargetEvents();
 	}, [location]);
+
+	useEffect(() => {
+		const handleKeyDown = (e) => {
+			if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+				e.preventDefault();
+				setCommandPaletteVisible(true);
+			}
+		};
+		document.addEventListener('keydown', handleKeyDown);
+		return () => document.removeEventListener('keydown', handleKeyDown);
+	}, []);
 
 	const onInputStyleChange = (inputStyle) => {
 		setInputStyle(inputStyle);
@@ -459,7 +472,10 @@ export const SiteLayout = (props) => {
 				onMobileSubTopbarMenuClick={onMobileSubTopbarMenuClick}
 				authState={authState}
 				logout={logout}
+				onSearchClick={() => setCommandPaletteVisible(true)}
 			/>
+
+			<CommandPalette menu={menu} visible={commandPaletteVisible} onHide={() => setCommandPaletteVisible(false)} />
 
 			<div className="layout-sidebar" onClick={onSidebarClick}>
 				<AppMenu model={menu} onMenuItemClick={onMenuItemClick} layoutColorMode={themeState?.layoutColorMode} />

@@ -1,7 +1,7 @@
 import React, { useRef, useState, useMemo } from 'react';
 
 import { GenericDataTable } from '../../components/GenericDataTable/GenericDataTable';
-import { ConditionRelationsDialog } from '../../components/ConditionRelationsDialog';
+import { ConditionRelationsReadOnlyDialog } from '../../components/ConditionRelationsReadOnlyDialog';
 import { SingleReferenceTemplate } from '../../components/Templates/reference/SingleReferenceTemplate';
 import { IdTemplate } from '../../components/Templates/IdTemplate';
 import { GenomicEntityTemplate } from '../../components/Templates/genomicEntity/GenomicEntityTemplate';
@@ -244,11 +244,9 @@ export const PhenotypeAnnotationsTable = () => {
 					defaultFilters={defaultFilters}
 				/>
 			</div>
-			<ConditionRelationsDialog
+			<ConditionRelationsReadOnlyDialog
 				originalConditionRelationsData={conditionRelationsData}
 				setOriginalConditionRelationsData={setConditionRelationsData}
-				errorMessagesMainRow={errorMessages}
-				setErrorMessagesMainRow={setErrorMessages}
 			/>
 		</>
 	);
