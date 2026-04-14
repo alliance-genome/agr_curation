@@ -38,12 +38,12 @@ export const GeneExpressionAnnotationsTable = () => {
 	const [whereExpressedData, setWhereExpressedData] = useState({ data: null, dialog: false });
 	const [whenExpressedData, setWhenExpressedData] = useState({ data: null, dialog: false });
 
-	const handleWhereExpressedOpen = (anatomicalSite) => {
-		setWhereExpressedData({ data: anatomicalSite, dialog: true });
+	const handleWhereExpressedOpen = (anatomicalSite, statement) => {
+		setWhereExpressedData({ data: anatomicalSite, statement, dialog: true });
 	};
 
-	const handleWhenExpressedOpen = (temporalContext) => {
-		setWhenExpressedData({ data: temporalContext, dialog: true });
+	const handleWhenExpressedOpen = (temporalContext, statement) => {
+		setWhenExpressedData({ data: temporalContext, statement, dialog: true });
 	};
 
 	const sortMapping = {};
@@ -171,7 +171,7 @@ export const GeneExpressionAnnotationsTable = () => {
 				body: (rowData) => (
 					<TextDialogTemplate
 						entity={rowData.expressionPattern?.whereExpressed}
-						handleOpen={handleWhereExpressedOpen}
+						handleOpen={(entity) => handleWhereExpressedOpen(entity, rowData.whereExpressedStatement)}
 						text={rowData.whereExpressedStatement}
 					/>
 				),
@@ -184,7 +184,7 @@ export const GeneExpressionAnnotationsTable = () => {
 				body: (rowData) => (
 					<TextDialogTemplate
 						entity={rowData.expressionPattern?.whenExpressed}
-						handleOpen={handleWhenExpressedOpen}
+						handleOpen={(entity) => handleWhenExpressedOpen(entity, rowData.whenExpressedStageName)}
 						text={rowData.whenExpressedStageName}
 					/>
 				),
