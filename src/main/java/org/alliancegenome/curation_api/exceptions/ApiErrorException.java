@@ -9,6 +9,8 @@ import lombok.Setter;
 @Getter
 public class ApiErrorException extends RuntimeException {
 
+	public static final String INTERRUPTED_MESSAGE = "Thread isInterrupted";
+	
 	private ObjectResponse<?> objectResponse;
 
 	public ApiErrorException(String message) {
