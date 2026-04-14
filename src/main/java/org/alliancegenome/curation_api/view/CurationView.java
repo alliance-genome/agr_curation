@@ -118,6 +118,9 @@ public class CurationView {
 	public static class GeneInteractionView extends FieldsOnly {
 	}
 
+	public static class GeneExpressionAnnotationView extends FieldsOnly {
+	}
+
 	public static class PersonSettingView {
 	}
 
