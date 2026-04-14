@@ -1,16 +1,17 @@
 import React, { useRef, useState, useMemo } from 'react';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 import { GenericDataTable } from '../../components/GenericDataTable/GenericDataTable';
-import { Dropdown } from 'primereact/dropdown';
 import { Toast } from 'primereact/toast';
 import { getDefaultTableState } from '../../service/TableStateService';
 import { FILTER_CONFIGS } from '../../constants/FilterFields';
 import { CommaSeparatedArrayTemplate } from '../../components/Templates/CommaSeparatedArrayTemplate';
 import { InputTextEditor } from '../../components/InputTextEditor';
 import { StringListEditor } from '../../components/Editors/StringListEditor';
+import { ControlledVocabularyDropdown } from '../../components/ControlledVocabularySelector';
 import { ErrorMessageComponent } from '../../components/Error/ErrorMessageComponent';
 import { useGetTableData } from '../../service/useGetTableData';
 import { useGetUserSettings } from '../../service/useGetUserSettings';
+import { useOrganizationService } from '../../service/useOrganizationService';
 
 import { SearchService } from '../../service/SearchService';
 import { SpeciesService } from '../../service/SpeciesService';
@@ -31,6 +32,8 @@ export const SpeciesTable = () => {
 
 	let speciesService = new SpeciesService();
 
+	const organizations = useOrganizationService();
+
 	const mutation = useMutation({
 		mutationFn: (updatedSpecies) => {
 			if (!speciesService) {
@@ -49,42 +52,24 @@ export const SpeciesTable = () => {
 		);
 	};
 
-	const { data: organizationsData } = useQuery({
-		queryKey: ['organizations'],
-		queryFn: () => searchService.find('organization', 100, 0, {}),
-		refetchOnWindowFocus: false,
-	});
+	const onDataProviderEditorValueChange = (props, event) => {
+		let updatedEntities = [...props.props.value];
+		updatedEntities[props.rowIndex].dataProvider = event.value;
+	};
 
-	const organizations = useMemo(() => organizationsData?.results || [], [organizationsData]);
-
-	const DataProviderDropdownEditor = ({ rowProps }) => {
-		const [selectedValue, setSelectedValue] = useState(rowProps.rowData.dataProvider);
-
-		const onShow = () => {
-			setSelectedValue(rowProps.rowData.dataProvider);
-		};
-
-		const onChange = (e) => {
-			setSelectedValue(e.value);
-			let updatedEntities = [...rowProps.props.value];
-			updatedEntities[rowProps.rowIndex].dataProvider = e.value;
-		};
-
+	const dataProviderEditor = (props) => {
 		return (
 			<>
-				<Dropdown
-					ariaLabel="dataProvider"
-					value={selectedValue}
+				<ControlledVocabularyDropdown
+					field="dataProvider"
 					options={organizations}
-					optionLabel="abbreviation"
-					dataKey="id"
-					onShow={onShow}
-					onChange={onChange}
+					editorChange={onDataProviderEditorValueChange}
+					props={props}
 					showClear={false}
-					placeholder={rowProps.rowData.dataProvider?.abbreviation}
-					style={{ width: '100%' }}
+					dataKey="id"
+					placeholderText={props.rowData.dataProvider?.abbreviation}
 				/>
-				<ErrorMessageComponent errorMessages={errorMessagesRef.current[rowProps.rowIndex]} errorField="dataProvider" />
+				<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField="dataProvider" />
 			</>
 		);
 	};
@@ -142,7 +127,7 @@ export const SpeciesTable = () => {
 				sortable: true,
 				filter: true,
 				filterConfig: FILTER_CONFIGS.speciesDataProviderFilterConfig,
-				editor: (props) => <DataProviderDropdownEditor rowProps={props} />,
+				editor: (props) => dataProviderEditor(props),
 			},
 			{
 				field: 'phylogeneticOrder',
@@ -159,7 +144,7 @@ export const SpeciesTable = () => {
 			},
 		],
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-		[]
+		[organizations]
 	);
 
 	const DEFAULT_COLUMN_WIDTH = 10;
