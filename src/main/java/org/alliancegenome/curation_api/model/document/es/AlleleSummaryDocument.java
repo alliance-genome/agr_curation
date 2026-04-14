@@ -26,13 +26,17 @@ public class AlleleSummaryDocument extends AVSParentDocument {
 	private Map<String, Object> additionalInformation;
 	private Gene alleleOfGene;
 	private CrossReference crossReference;
-	private List<Variant> variants;
+	private List<Variant> variantList;
 	private Set<String> diseases;
 	private Set<String> diseasesWithParents;
 	private Set<String> diseasesAgrSlim;
+	private Set<String> constructs;
 	private Set<String> constructExpressedComponents;
 	private Set<String> constructRegulatoryRegions;
 	private Set<String> constructKnockdownComponents;
+	private Set<String> geneCrossReferences;
+	private Set<String> geneSynonyms;
+	private Set<String> phenotypeStatements;
 
 	public void setAlleleOfGene(Gene alleleOfGene) {
 		this.alleleOfGene = alleleOfGene;
@@ -46,9 +50,13 @@ public class AlleleSummaryDocument extends AVSParentDocument {
 		diseases = null;
 		diseasesWithParents = null;
 		diseasesAgrSlim = null;
+		constructs = null;
 		constructExpressedComponents = null;
 		constructRegulatoryRegions = null;
 		constructKnockdownComponents = null;
+		geneCrossReferences = null;
+		geneSynonyms = null;
+		phenotypeStatements = null;
 	}
 }
 

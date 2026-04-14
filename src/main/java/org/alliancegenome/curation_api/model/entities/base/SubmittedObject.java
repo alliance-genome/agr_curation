@@ -78,7 +78,7 @@ public class SubmittedObject extends CurieObject {
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@OneToOne(orphanRemoval = true)
 	@Fetch(FetchMode.SELECT)
-	@JsonView({CurationView.FieldsOnly.class, CurationView.AlleleSummaryDocument.class, CurationView.TransgenicAllelesDocument.class, CurationView.ModelDocument.class, CurationView.ForPublic.class})
+	@JsonView({CurationView.FieldsOnly.class, CurationView.AlleleSummaryDocument.class, CurationView.TransgenicAllelesDocument.class, CurationView.ModelDocument.class, CurationView.ForPublic.class, CurationView.GeneSummaryDocument.class})
 	private CrossReference dataProviderCrossReference;
 
 	@IndexedEmbedded(includePaths = {"freeText", "freeText_keyword"})

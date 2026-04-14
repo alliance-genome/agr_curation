@@ -119,6 +119,16 @@ public class IT_0602_OrthologyBulkUploadFmsITCase extends BaseITCase {
 
 	@Test
 	@Order(5)
+	public void orthologyBulkUploadExcludedKnownIssuePair() throws Exception {
+		// KANBAN-965: this fixture represents the known bad VMA21/pdcd-2 DIOPT pair that is
+		// temporarily excluded in OrthologyFmsDTOValidator.EXCLUDED_ORTHOLOGY_PAIRS.
+		// Remove this test together with that exclusion and the KI_01 fixture below if/when the
+		// upstream DIOPT data is fixed and regenerated cleanly.
+		checkSkippedBulkLoad(orthologyBulkPostEndpoint, orthologyTestFilePath + "KI_01_excluded_vma21_pdcd2_pair.json");
+	}
+
+	@Test
+	@Order(6)
 	public void orthologyBulkUploadUpdateMissingNonRequiredFields() throws Exception {
 
 		checkSuccessfulBulkLoad(orthologyBulkPostEndpoint, orthologyTestFilePath + "UM_01_update_no_non_required_fields.json");
@@ -140,7 +150,7 @@ public class IT_0602_OrthologyBulkUploadFmsITCase extends BaseITCase {
 	}
 
 	@Test
-	@Order(6)
+	@Order(7)
 	public void orthologyBulkUploadUpdateEmptyNonRequiredFields() throws Exception {
 
 		checkSuccessfulBulkLoad(orthologyBulkPostEndpoint, orthologyTestFilePath + "AF_01_all_fields.json");
