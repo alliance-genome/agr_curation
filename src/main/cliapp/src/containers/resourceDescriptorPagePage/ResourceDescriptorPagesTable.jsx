@@ -80,7 +80,10 @@ export const ResourceDescriptorPagesTable = () => {
 					)}
 					onValueChangeHandler={onResourceDescriptorValueChange}
 				/>
-				<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField="resourceDescriptor" />
+				<ErrorMessageComponent
+					errorMessages={errorMessagesRef.current[props.rowIndex]}
+					errorField="resourceDescriptor"
+				/>
 			</>
 		);
 	};
