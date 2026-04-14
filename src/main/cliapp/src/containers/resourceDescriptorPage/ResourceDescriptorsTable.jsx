@@ -1,4 +1,5 @@
 import React, { useRef, useState, useMemo } from 'react';
+import { useMutation } from '@tanstack/react-query';
 import { GenericDataTable } from '../../components/GenericDataTable/GenericDataTable';
 import { Toast } from 'primereact/toast';
 import { getDefaultTableState } from '../../service/TableStateService';
@@ -6,10 +7,14 @@ import { FILTER_CONFIGS } from '../../constants/FilterFields';
 import { useGetTableData } from '../../service/useGetTableData';
 import { useGetUserSettings } from '../../service/useGetUserSettings';
 import { SearchService } from '../../service/SearchService';
+import { ResourceDescriptorService } from '../../service/ResourceDescriptorService';
 import { Endpoints } from '../../constants/Endpoints';
 
 import { StringTemplate } from '../../components/Templates/StringTemplate';
-import { StringListTemplate } from '../../components/Templates/StringListTemplate';
+import { CommaSeparatedArrayTemplate } from '../../components/Templates/CommaSeparatedArrayTemplate';
+import { InputTextEditor } from '../../components/InputTextEditor';
+import { StringListEditor } from '../../components/Editors/StringListEditor';
+import { ErrorMessageComponent } from '../../components/Error/ErrorMessageComponent';
 
 export const ResourceDescriptorsTable = () => {
 	const [isInEditMode, setIsInEditMode] = useState(false);
@@ -22,6 +27,28 @@ export const ResourceDescriptorsTable = () => {
 
 	const toast_topleft = useRef(null);
 	const toast_topright = useRef(null);
+	const errorMessagesRef = useRef();
+	errorMessagesRef.current = errorMessages;
+
+	let resourceDescriptorService = new ResourceDescriptorService();
+
+	const mutation = useMutation({
+		mutationFn: (updatedResourceDescriptor) => {
+			if (!resourceDescriptorService) {
+				resourceDescriptorService = new ResourceDescriptorService();
+			}
+			return resourceDescriptorService.saveResourceDescriptor(updatedResourceDescriptor);
+		},
+	});
+
+	const stringEditor = (props, field) => {
+		return (
+			<>
+				<InputTextEditor rowProps={props} fieldName={field} />
+				<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={field} />
+			</>
+		);
+	};
 
 	const columns = useMemo(
 		() => [
@@ -31,6 +58,7 @@ export const ResourceDescriptorsTable = () => {
 				sortable: true,
 				body: (rowData) => <StringTemplate string={rowData.prefix} />,
 				filterConfig: FILTER_CONFIGS.prefixFilterConfig,
+				editor: (props) => stringEditor(props, 'prefix'),
 			},
 			{
 				field: 'name',
@@ -38,12 +66,19 @@ export const ResourceDescriptorsTable = () => {
 				sortable: true,
 				body: (rowData) => <StringTemplate string={rowData.name} />,
 				filterConfig: FILTER_CONFIGS.nameFilterConfig,
+				editor: (props) => stringEditor(props, 'name'),
 			},
 			{
 				field: 'synonyms',
 				header: 'Synonyms',
-				body: (rowData) => <StringListTemplate list={rowData.synonyms} />,
+				body: (rowData) => <CommaSeparatedArrayTemplate array={rowData.synonyms} />,
 				filterConfig: FILTER_CONFIGS.synonymsFilterConfig,
+				editor: (props) => (
+					<>
+						<StringListEditor rowProps={props} fieldName="synonyms" />
+						<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField="synonyms" />
+					</>
+				),
 			},
 			{
 				field: 'idPattern',
@@ -51,6 +86,7 @@ export const ResourceDescriptorsTable = () => {
 				sortable: true,
 				body: (rowData) => <StringTemplate string={rowData.idPattern} />,
 				filterConfig: FILTER_CONFIGS.idPatternFilterConfig,
+				editor: (props) => stringEditor(props, 'idPattern'),
 			},
 			{
 				field: 'idExample',
@@ -58,6 +94,7 @@ export const ResourceDescriptorsTable = () => {
 				sortable: true,
 				body: (rowData) => <StringTemplate string={rowData.idExample} />,
 				filterConfig: FILTER_CONFIGS.idExampleFilterConfig,
+				editor: (props) => stringEditor(props, 'idExample'),
 			},
 			{
 				field: 'defaultUrlTemplate',
@@ -65,6 +102,7 @@ export const ResourceDescriptorsTable = () => {
 				sortable: true,
 				body: (rowData) => <StringTemplate string={rowData.defaultUrlTemplate} />,
 				filterConfig: FILTER_CONFIGS.defaultUrlTemplateFilterConfig,
+				editor: (props) => stringEditor(props, 'defaultUrlTemplate'),
 			},
 		],
 		// eslint-disable-next-line react-hooks/exhaustive-deps
@@ -108,7 +146,8 @@ export const ResourceDescriptorsTable = () => {
 				tableState={tableState}
 				setTableState={setTableState}
 				columns={columns}
-				isEditable={false}
+				isEditable={true}
+				mutation={mutation}
 				isInEditMode={isInEditMode}
 				setIsInEditMode={setIsInEditMode}
 				toasts={{ toast_topleft, toast_topright }}
