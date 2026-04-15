@@ -18,6 +18,7 @@ import org.alliancegenome.curation_api.dao.base.BaseSQLDAO;
 import org.alliancegenome.curation_api.model.document.es.AlleleSummaryDocument;
 import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.AssemblyComponent;
+import org.alliancegenome.curation_api.model.entities.GenomeAssembly;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.Note;
@@ -520,7 +521,10 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 				sa_g.formattext as gene_symbol_format,
 				ot_taxon.curie as taxon_curie,
 				ot_taxon.name as taxon_name,
-				otc.severityorder as consequence_severity
+				otc.severityorder as consequence_severity,
+				be_ga.primaryexternalid as genome_assembly,
+				pvc.hgvscodingnomenclature as hgvs_coding,
+				pvc.hgvsproteinnomenclature as hgvs_protein
 			FROM allelevariantassociation ava
 				JOIN variant v ON v.id = ava.allelevariantassociationobject_id
 				JOIN ontologyterm o ON o.id = v.varianttype_id
@@ -528,6 +532,8 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 				LEFT JOIN ontologyterm ot_taxon ON ot_taxon.id = be_v.taxon_id
 				JOIN curatedvariantgenomiclocation cvg ON cvg.variantassociationsubject_id = v.id
 				JOIN assemblycomponent ac ON cvg.variantgenomiclocationassociationobject_id = ac.id
+				LEFT JOIN genomeassembly ga ON ga.id = ac.genomeassembly_id
+				LEFT JOIN biologicalentity be_ga ON be_ga.id = ga.id
 				LEFT JOIN predictedvariantconsequence pvc ON pvc.variantgenomiclocation_id = cvg.id
 				LEFT JOIN predictedvariantconsequence_ontologyterm pvco ON pvco.predictedvariantconsequence_id = pvc.id
 				LEFT JOIN ontologyterm otc ON otc.id = pvco.vepconsequences_id
@@ -584,6 +590,11 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 				cvgla.setEnd((Integer) row[5]);
 				AssemblyComponent ac = new AssemblyComponent();
 				ac.setName((String) row[6]);
+				if (row[26] != null) {
+					GenomeAssembly genomeAssembly = new GenomeAssembly();
+					genomeAssembly.setPrimaryExternalId((String) row[26]);
+					ac.setGenomeAssembly(genomeAssembly);
+				}
 				cvgla.setVariantGenomicLocationAssociationObject(ac);
 				cvgla.setVariantAssociationSubject(variant);
 				cvgla.setPredictedVariantConsequences(new ArrayList<>());
@@ -643,6 +654,8 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 					pvc.setVariantTranscript(transcript);
 				}
 				pvc.setGeneLevelConsequence(row[18] != null ? (Boolean) row[18] : false);
+				pvc.setHgvsCodingNomenclature((String) row[27]);
+				pvc.setHgvsProteinNomenclature((String) row[28]);
 				cvgla.getPredictedVariantConsequences().add(pvc);
 			}
 
@@ -1027,12 +1040,13 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 
 		// Construct IDs per allele
 		String constructIdsQueryString = """
-			SELECT DISTINCT aca.alleleassociationsubject_id AS allele_id, r.primaryexternalid AS construct_id
+			SELECT DISTINCT aca.alleleassociationsubject_id AS allele_id,
+				COALESCE(r.primaryexternalid, r.modinternalid) AS construct_id
 			FROM alleleconstructassociation aca
 			JOIN reagent r ON r.id = aca.alleleconstructassociationobject_id
 			WHERE aca.alleleassociationsubject_id IN :alleleIds
 			AND aca.obsolete = false AND aca.internal = false
-			AND r.primaryexternalid IS NOT NULL
+			AND (r.primaryexternalid IS NOT NULL OR r.modinternalid IS NOT NULL)
 			""";
 		Query constructIdsQuery = entityManager.createNativeQuery(constructIdsQueryString);
 		constructIdsQuery.setParameter("alleleIds", alleleIds);
