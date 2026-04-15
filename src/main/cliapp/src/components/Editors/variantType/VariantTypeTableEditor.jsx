@@ -4,7 +4,7 @@ import { ErrorMessageComponent } from '../../Error/ErrorMessageComponent';
 import { variantTypeSearch } from './utils';
 import { defaultAutocompleteOnChange } from '../../../utils/utils';
 
-export const VariantTypeTableEditor = ({ rowProps, errorMessagesRef }) => {
+export const VariantTypeTableEditor = ({ editorOptions, errorMessagesRef }) => {
 	const onVariantTypeValueChange = (event, setFieldValue, props) => {
 		defaultAutocompleteOnChange(props, event, 'variantType', setFieldValue);
 	};
@@ -13,12 +13,12 @@ export const VariantTypeTableEditor = ({ rowProps, errorMessagesRef }) => {
 		<>
 			<AutocompleteEditor
 				search={variantTypeSearch}
-				initialValue={rowProps.rowData.variantType?.curie}
-				rowProps={rowProps}
+				initialValue={editorOptions.rowData.variantType?.curie}
+				editorOptions={editorOptions}
 				fieldName="variantType"
 				onValueChangeHandler={onVariantTypeValueChange}
 			/>
-			<ErrorMessageComponent errorMessages={errorMessagesRef.current[rowProps.rowIndex]} errorField="variantType" />
+			<ErrorMessageComponent errorMessages={errorMessagesRef.current[editorOptions.rowIndex]} errorField="variantType" />
 		</>
 	);
 };

@@ -9,13 +9,13 @@ const onReferenceValueChange = (event, setFieldValue, props) => {
 	multipleAutocompleteOnChange(props, event, 'references', setFieldValue);
 };
 
-export const ReferencesTableEditor = ({ rowProps, errorMessagesRef }) => {
+export const ReferencesTableEditor = ({ editorOptions, errorMessagesRef }) => {
 	return (
 		<>
 			<AutocompleteMultiEditor
 				search={referenceSearch}
-				initialValue={rowProps.rowData.references}
-				rowProps={rowProps}
+				initialValue={editorOptions.rowData.references}
+				editorOptions={editorOptions}
 				fieldName="references"
 				valueDisplay={(item, setAutocompleteHoverItem, op, query) => (
 					<LiteratureAutocompleteTemplate
@@ -27,7 +27,7 @@ export const ReferencesTableEditor = ({ rowProps, errorMessagesRef }) => {
 				)}
 				onValueChangeHandler={onReferenceValueChange}
 			/>
-			<ErrorMessageComponent errorMessages={errorMessagesRef.current[rowProps.rowIndex]} errorField={'references'} />
+			<ErrorMessageComponent errorMessages={errorMessagesRef.current[editorOptions.rowIndex]} errorField={'references'} />
 		</>
 	);
 };

@@ -293,7 +293,7 @@ export const ConditionRelationsEditDialog = ({
 								/>
 							);
 						}}
-						field="conditionRelationType.name"
+						field="conditionRelationType"
 						header="Relation"
 						headerClassName="surface-0"
 					/>
@@ -324,7 +324,7 @@ export const ConditionRelationsEditDialog = ({
 								</>
 							);
 						}}
-						field="conditions.conditionSummary"
+						field="conditions"
 						header="Conditions"
 						headerClassName="surface-0"
 					/>

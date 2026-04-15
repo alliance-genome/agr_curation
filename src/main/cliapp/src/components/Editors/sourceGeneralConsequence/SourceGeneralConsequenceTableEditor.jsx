@@ -4,7 +4,7 @@ import { ErrorMessageComponent } from '../../Error/ErrorMessageComponent';
 import { sourceGeneralConsequenceSearch } from './utils';
 import { defaultAutocompleteOnChange } from '../../../utils/utils';
 
-export const SourceGeneralConsequenceTableEditor = ({ rowProps, errorMessagesRef }) => {
+export const SourceGeneralConsequenceTableEditor = ({ editorOptions, errorMessagesRef }) => {
 	const onSourceGeneralConsequenceValueChange = (event, setFieldValue, props) => {
 		defaultAutocompleteOnChange(props, event, 'sourceGeneralConsequence', setFieldValue);
 	};
@@ -13,13 +13,13 @@ export const SourceGeneralConsequenceTableEditor = ({ rowProps, errorMessagesRef
 		<>
 			<AutocompleteEditor
 				search={sourceGeneralConsequenceSearch}
-				initialValue={rowProps.rowData.sourceGeneralConsequence?.curie}
-				rowProps={rowProps}
+				initialValue={editorOptions.rowData.sourceGeneralConsequence?.curie}
+				editorOptions={editorOptions}
 				fieldName="sourceGeneralConsequence"
 				onValueChangeHandler={onSourceGeneralConsequenceValueChange}
 			/>
 			<ErrorMessageComponent
-				errorMessages={errorMessagesRef.current[rowProps.rowIndex]}
+				errorMessages={errorMessagesRef.current[editorOptions.rowIndex]}
 				errorField="sourceGeneralConsequence"
 			/>
 		</>

@@ -291,7 +291,7 @@ export const RelatedNotesEditDialog = ({
 								/>
 							);
 						}}
-						field="noteType.name"
+						field="noteType"
 						header="Note Type"
 						headerClassName="surface-0"
 					/>
@@ -327,7 +327,7 @@ export const RelatedNotesEditDialog = ({
 									/>
 								);
 							}}
-							field="evidence.curie"
+							field="evidence"
 							header="Evidence"
 							headerClassName="surface-0"
 							className="wrap-word max-w-25rem"

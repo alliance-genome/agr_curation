@@ -4,13 +4,13 @@ import { LiteratureAutocompleteTemplate } from '../../Autocomplete/LiteratureAut
 import { referenceSearch } from './utils';
 import { DialogErrorMessageComponent } from '../../Error/DialogErrorMessageComponent';
 
-export const SingleReferenceTableEditor = ({ props, errorMessages, onChange }) => {
+export const SingleReferenceTableEditor = ({ editorOptions, errorMessages, onChange }) => {
 	return (
 		<>
 			<AutocompleteEditor
 				search={referenceSearch}
-				initialValue={props.rowData?.curie}
-				rowProps={props}
+				initialValue={editorOptions.rowData?.curie}
+				rowProps={editorOptions}
 				fieldName="references"
 				valueDisplay={(item, setAutocompleteHoverItem, op, query) => (
 					<LiteratureAutocompleteTemplate
@@ -22,7 +22,7 @@ export const SingleReferenceTableEditor = ({ props, errorMessages, onChange }) =
 				)}
 				onValueChangeHandler={onChange}
 			/>
-			<DialogErrorMessageComponent errorMessages={errorMessages[props?.rowIndex]} errorField={'select'} />
+			<DialogErrorMessageComponent errorMessages={errorMessages[editorOptions?.rowIndex]} errorField={'select'} />
 		</>
 	);
 };

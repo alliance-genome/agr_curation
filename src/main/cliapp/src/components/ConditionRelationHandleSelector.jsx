@@ -22,7 +22,7 @@ export function ConditionRelationHandleDropdown({
 		if (singleReferenceCurie) {
 			searchService
 				.find(Endpoints.Annotation.CONDITION_RELATION, 15, 0, {
-					'singleReference.curie': singleReferenceCurie
+					'singleReference.curie': singleReferenceCurie,
 				})
 				.then((data) => {
 					if (data.results?.length > 0) {

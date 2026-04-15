@@ -9,13 +9,13 @@ const onInCollectionValueChange = (event, setFieldValue, props) => {
 	defaultAutocompleteOnChange(props, event, 'inCollection', setFieldValue, 'name');
 };
 
-export const InCollectionTableEditor = ({ rowProps, errorMessagesRef }) => {
+export const InCollectionTableEditor = ({ editorOptions, errorMessagesRef }) => {
 	return (
 		<>
 			<AutocompleteEditor
 				search={inCollectionSearch}
-				initialValue={rowProps.rowData.inCollection?.name}
-				rowProps={rowProps}
+				initialValue={editorOptions.rowData.inCollection?.name}
+				editorOptions={editorOptions}
 				fieldName="inCollection"
 				onValueChangeHandler={onInCollectionValueChange}
 				valueDisplay={(item, setAutocompleteSelectedItem, op, query) => (
@@ -27,7 +27,7 @@ export const InCollectionTableEditor = ({ rowProps, errorMessagesRef }) => {
 					/>
 				)}
 			/>
-			<ErrorMessageComponent errorMessages={errorMessagesRef.current[rowProps.rowIndex]} errorField="inCollection" />
+			<ErrorMessageComponent errorMessages={errorMessagesRef.current[editorOptions.rowIndex]} errorField="inCollection" />
 		</>
 	);
 };

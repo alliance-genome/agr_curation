@@ -363,7 +363,7 @@ export function defaultAutocompleteOnChange(rowProps, event, fieldName, setField
 export function multipleAutocompleteOnChange(rowProps, event, fieldName, setFieldValue) {
 	if (!event.target.value) {
 		rowProps.editorCallback(null);
-		setFieldValue('');
+		setFieldValue([]);
 		return;
 	}
 	let nonDuplicateRows = [];

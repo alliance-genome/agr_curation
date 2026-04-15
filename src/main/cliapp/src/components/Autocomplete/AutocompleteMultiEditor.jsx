@@ -3,6 +3,9 @@ import { AutoComplete } from 'primereact/autocomplete';
 import { onSelectionOver } from '../../utils/utils';
 import { EditorTooltip } from './EditorTooltip';
 import { getIdentifier } from '../../utils/utils';
+import { useSyncedState } from '../../hooks/useSyncedState';
+
+const EMPTY_ARRAY = [];
 
 export const AutocompleteMultiEditor = ({
 	search,
@@ -17,8 +20,7 @@ export const AutocompleteMultiEditor = ({
 	disabled,
 }) => {
 	const [suggestions, setSuggestions] = useState([]);
-	const [fieldValue, setFieldValue] = useState(initialValue);
-
+	const [fieldValue, setFieldValue] = useSyncedState(initialValue ?? EMPTY_ARRAY);
 	const [inputValue, setInputValue] = useState(initialValue);
 	const [autocompleteHoverItem, setAutocompleteHoverItem] = useState({});
 	const op = useRef(null);
