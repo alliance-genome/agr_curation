@@ -124,6 +124,21 @@ export const ResourceDescriptorPagesTable = () => {
 				filterConfig: FILTER_CONFIGS.pageDescriptionFilterConfig,
 				editor: (props) => stringEditor(props, 'pageDescription'),
 			},
+			{
+				field: 'updatedBy.uniqueId',
+				header: 'Updated By',
+				sortable: true,
+				body: (rowData) => <StringTemplate string={rowData.updatedBy?.uniqueId} />,
+				filterConfig: FILTER_CONFIGS.updatedByFilterConfig,
+			},
+			{
+				field: 'dateUpdated',
+				header: 'Date Updated',
+				sortable: true,
+				filter: true,
+				body: (rowData) => <StringTemplate string={rowData.dateUpdated} />,
+				filterConfig: FILTER_CONFIGS.dateUpdatedFilterConfig,
+			},
 		],
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 		[]
