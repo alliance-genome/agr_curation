@@ -152,6 +152,7 @@ public class CurationView {
 	public static class VariantSummaryDocument { }
 	public static class VariantSearchResultDocument { }
 	public static class SequenceSummaryDocument { }
+	public static class GeneCacheDocument { }
 
 	// View for Table Documents
 	public static class GeneToGeneOrthologyDocument { }

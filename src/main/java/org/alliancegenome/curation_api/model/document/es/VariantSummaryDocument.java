@@ -1,5 +1,6 @@
 package org.alliancegenome.curation_api.model.document.es;
 
+import java.util.HashSet;
 import java.util.List;
 
 import org.alliancegenome.curation_api.model.entities.Variant;
@@ -21,4 +22,6 @@ public class VariantSummaryDocument extends AVSParentDocument {
 		alterationTypeSortOrder = 4;
 	}
 	private List<Variant> variantList;
+	private HashSet<String> geneSynonyms;
+	private HashSet<String> geneCrossReferences;
 }

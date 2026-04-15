@@ -1,5 +1,7 @@
 package org.alliancegenome.curation_api.model.document.es;
 
+import java.util.HashSet;
+
 import org.alliancegenome.curation_api.model.entities.PredictedVariantConsequence;
 import org.alliancegenome.curation_api.model.entities.Variant;
 import org.alliancegenome.curation_api.view.CurationView;
@@ -20,5 +22,7 @@ public class SequenceSummaryDocument extends AVSParentDocument {
 
 	private Variant variant;
 	private PredictedVariantConsequence consequence;
+	private HashSet<String> geneSynonyms;
+	private HashSet<String> geneCrossReferences;
 
 }

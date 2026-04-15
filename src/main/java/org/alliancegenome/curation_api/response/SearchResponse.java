@@ -23,6 +23,7 @@ import lombok.Data;
 	CurationView.GOSearchResultDocument.class,
 	CurationView.GeneSummaryDocument.class,
 	CurationView.GeneSearchResultDocument.class,
+	CurationView.GeneCacheDocument.class,
 	CurationView.DiseaseSummaryDocument.class,
 	CurationView.DiseaseSearchResultDocument.class,
 	CurationView.AlleleSummaryDocument.class,
