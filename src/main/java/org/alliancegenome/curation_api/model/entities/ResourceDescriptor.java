@@ -60,7 +60,7 @@ public class ResourceDescriptor extends AuditedObject {
 	private String name;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
-	@KeywordField(name = "synoynyms_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES)
+	@KeywordField(name = "synonyms_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES)
 	@ElementCollection
 	@JoinTable(indexes = @Index(columnList = "resourcedescriptor_id"))
 	@Fetch(FetchMode.JOIN)

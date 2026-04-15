@@ -1,5 +1,4 @@
 import { useImmerReducer } from 'use-immer';
-import 'core-js/features/structured-clone';
 
 const DEFAULT_ANNOTATION = {
 	diseaseAnnotationSubject: {
@@ -32,7 +31,7 @@ const DEFAULT_ANNOTATION = {
 	internal: false,
 };
 const initialNewAnnotationState = {
-	newAnnotation: global.structuredClone(DEFAULT_ANNOTATION),
+	newAnnotation: structuredClone(DEFAULT_ANNOTATION),
 	errorMessages: {},
 	relatedNotesErrorMessages: [],
 	exConErrorMessages: [],
@@ -50,32 +49,30 @@ const initialNewAnnotationState = {
 const buildAnnotation = (rowData) => {
 	return {
 		diseaseAnnotationSubject:
-			global.structuredClone(rowData.diseaseAnnotationSubject) || DEFAULT_ANNOTATION.diseaseAnnotationSubject,
-		assertedGenes: global.structuredClone(rowData.assertedGenes) || DEFAULT_ANNOTATION.assertedGenes,
-		assertedAlleles: global.structuredClone(rowData.assertedAlleles) || DEFAULT_ANNOTATION.assertedAlleles,
-		relation: global.structuredClone(rowData.relation) || DEFAULT_ANNOTATION.relation,
+			structuredClone(rowData.diseaseAnnotationSubject) || DEFAULT_ANNOTATION.diseaseAnnotationSubject,
+		assertedGenes: structuredClone(rowData.assertedGenes) || DEFAULT_ANNOTATION.assertedGenes,
+		assertedAlleles: structuredClone(rowData.assertedAlleles) || DEFAULT_ANNOTATION.assertedAlleles,
+		relation: structuredClone(rowData.relation) || DEFAULT_ANNOTATION.relation,
 		negated: rowData.negated || DEFAULT_ANNOTATION.negated,
 		diseaseAnnotationObject:
-			global.structuredClone(rowData.diseaseAnnotationObject) || DEFAULT_ANNOTATION.diseaseAnnotationObject,
-		evidenceItem: global.structuredClone(rowData.evidenceItem) || DEFAULT_ANNOTATION.evidenceItem,
-		evidenceCodes: global.structuredClone(rowData.evidenceCodes) || DEFAULT_ANNOTATION.subject,
-		with: global.structuredClone(rowData.with) || DEFAULT_ANNOTATION.with,
-		relatedNotes:
-			processDupRelatedNotes(global.structuredClone(rowData.relatedNotes)) || DEFAULT_ANNOTATION.relatedNotes,
-		conditionRelations: global.structuredClone(rowData.conditionRelations) || DEFAULT_ANNOTATION.conditionRelations,
-		geneticSex: global.structuredClone(rowData.geneticSex) || DEFAULT_ANNOTATION.geneticSex,
-		diseaseQualifiers: global.structuredClone(rowData.diseaseQualifiers) || DEFAULT_ANNOTATION.diseaseQualifiers,
-		sgdStrainBackground: global.structuredClone(rowData.sgdStrainBackground) || DEFAULT_ANNOTATION.sgdStrainBackground,
-		annotationType: global.structuredClone(rowData.annotationType) || DEFAULT_ANNOTATION.annotationType,
+			structuredClone(rowData.diseaseAnnotationObject) || DEFAULT_ANNOTATION.diseaseAnnotationObject,
+		evidenceItem: structuredClone(rowData.evidenceItem) || DEFAULT_ANNOTATION.evidenceItem,
+		evidenceCodes: structuredClone(rowData.evidenceCodes) || DEFAULT_ANNOTATION.subject,
+		with: structuredClone(rowData.with) || DEFAULT_ANNOTATION.with,
+		relatedNotes: processDupRelatedNotes(structuredClone(rowData.relatedNotes)) || DEFAULT_ANNOTATION.relatedNotes,
+		conditionRelations: structuredClone(rowData.conditionRelations) || DEFAULT_ANNOTATION.conditionRelations,
+		geneticSex: structuredClone(rowData.geneticSex) || DEFAULT_ANNOTATION.geneticSex,
+		diseaseQualifiers: structuredClone(rowData.diseaseQualifiers) || DEFAULT_ANNOTATION.diseaseQualifiers,
+		sgdStrainBackground: structuredClone(rowData.sgdStrainBackground) || DEFAULT_ANNOTATION.sgdStrainBackground,
+		annotationType: structuredClone(rowData.annotationType) || DEFAULT_ANNOTATION.annotationType,
 		diseaseGeneticModifierRelation:
-			global.structuredClone(rowData.diseaseGeneticModifierRelation) ||
-			DEFAULT_ANNOTATION.diseaseGeneticModifierRelation,
+			structuredClone(rowData.diseaseGeneticModifierRelation) || DEFAULT_ANNOTATION.diseaseGeneticModifierRelation,
 		diseaseGeneticModifierAgms:
-			global.structuredClone(rowData.diseaseGeneticModifierAgms) || DEFAULT_ANNOTATION.diseaseGeneticModifierAgms,
+			structuredClone(rowData.diseaseGeneticModifierAgms) || DEFAULT_ANNOTATION.diseaseGeneticModifierAgms,
 		diseaseGeneticModifierAlleles:
-			global.structuredClone(rowData.diseaseGeneticModifierAlleles) || DEFAULT_ANNOTATION.diseaseGeneticModifierAlleles,
+			structuredClone(rowData.diseaseGeneticModifierAlleles) || DEFAULT_ANNOTATION.diseaseGeneticModifierAlleles,
 		diseaseGeneticModifierGenes:
-			global.structuredClone(rowData.diseaseGeneticModifierGenes) || DEFAULT_ANNOTATION.diseaseGeneticModifierGenes,
+			structuredClone(rowData.diseaseGeneticModifierGenes) || DEFAULT_ANNOTATION.diseaseGeneticModifierGenes,
 		internal: rowData.internal || DEFAULT_ANNOTATION.internal,
 	};
 };

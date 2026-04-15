@@ -206,7 +206,7 @@ jobs:
         run: |
           npm ci
           npx prettier --check .
-          npm test -- --watchAll=false
+          npm test
           npm run build
   test-build-docker-image:
       name: Test Build Docker Image
