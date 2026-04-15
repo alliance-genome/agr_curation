@@ -91,6 +91,22 @@ public class GeneDocumentController implements GeneDocumentInterface {
 	}
 
 	@Override
+	public SearchResponse<GeneSummaryDocument> findCacheByIds(List<Long> ids) {
+		List<Gene> genes = geneService.findByIds(ids);
+		ArrayList<GeneSummaryDocument> list = new ArrayList<>();
+		if (genes != null) {
+			for (Gene gene : genes) {
+				GeneSummaryDocument doc = new GeneSummaryDocument();
+				doc.setGene(gene);
+				list.add(doc);
+			}
+		}
+		SearchResponse<GeneSummaryDocument> ret = new SearchResponse<>(list);
+		ret.setTotalResults((long) list.size());
+		return ret;
+	}
+
+	@Override
 	public SearchResponse<GeneSearchResultDocument> findSearchResultByIds(List<Long> ids) {
 		List<GeneSearchResultDocument> list = geneService.buildSearchResultDocuments(ids);
 		SearchResponse<GeneSearchResultDocument> ret = new SearchResponse<>(list);
