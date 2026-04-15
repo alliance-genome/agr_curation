@@ -51,6 +51,7 @@ public class SubmittedObject extends CurieObject {
 			CurationView.ForPublic.class,
 			CurationView.GeneToGeneOrthologyDocument.class,
 			CurationView.GeneSummaryDocument.class,
+			CurationView.GeneCacheDocument.class,
 			CurationView.ModelDocument.class,
 			CurationView.TransgenicAllelesDocument.class,
 			CurationView.AlleleSummaryDocument.class,
