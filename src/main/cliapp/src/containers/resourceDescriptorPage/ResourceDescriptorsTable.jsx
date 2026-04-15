@@ -13,7 +13,7 @@ import { Endpoints } from '../../constants/Endpoints';
 import { StringTemplate } from '../../components/Templates/StringTemplate';
 import { CommaSeparatedArrayTemplate } from '../../components/Templates/CommaSeparatedArrayTemplate';
 import { InputTextEditor } from '../../components/InputTextEditor';
-import { StringListEditor } from '../../components/Editors/StringListEditor';
+import { StringListTextAreaEditor } from '../../components/Editors/StringListTextAreaEditor';
 import { ErrorMessageComponent } from '../../components/Error/ErrorMessageComponent';
 
 export const ResourceDescriptorsTable = () => {
@@ -75,7 +75,7 @@ export const ResourceDescriptorsTable = () => {
 				filterConfig: FILTER_CONFIGS.synonymsFilterConfig,
 				editor: (props) => (
 					<>
-						<StringListEditor rowProps={props} fieldName="synonyms" />
+						<StringListTextAreaEditor rowProps={props} fieldName="synonyms" rows={5} />
 						<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField="synonyms" />
 					</>
 				),
@@ -103,6 +103,21 @@ export const ResourceDescriptorsTable = () => {
 				body: (rowData) => <StringTemplate string={rowData.defaultUrlTemplate} />,
 				filterConfig: FILTER_CONFIGS.defaultUrlTemplateFilterConfig,
 				editor: (props) => stringEditor(props, 'defaultUrlTemplate'),
+			},
+			{
+				field: 'updatedBy.uniqueId',
+				header: 'Updated By',
+				sortable: true,
+				body: (rowData) => <StringTemplate string={rowData.updatedBy?.uniqueId} />,
+				filterConfig: FILTER_CONFIGS.updatedByFilterConfig,
+			},
+			{
+				field: 'dateUpdated',
+				header: 'Date Updated',
+				sortable: true,
+				filter: true,
+				body: (rowData) => <StringTemplate string={rowData.dateUpdated} />,
+				filterConfig: FILTER_CONFIGS.dateUpdatedFilterConfig,
 			},
 		],
 		// eslint-disable-next-line react-hooks/exhaustive-deps
