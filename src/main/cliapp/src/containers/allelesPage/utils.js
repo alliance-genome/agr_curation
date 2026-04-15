@@ -19,10 +19,10 @@ export const getCrossReferences = (reference) => {
 	let curieField;
 
 	if (reference.cross_references) {
-		crossReferences = global.structuredClone(reference.cross_references);
+		crossReferences = structuredClone(reference.cross_references);
 		curieField = 'curie';
 	} else if (reference.crossReferences) {
-		crossReferences = global.structuredClone(reference.crossReferences);
+		crossReferences = structuredClone(reference.crossReferences);
 		curieField = 'referencedCurie';
 	} else {
 		return {};
@@ -59,7 +59,7 @@ export const generateCurieSearchFields = (entities, subArrayField) => {
 
 export const validateRequiredAutosuggestField = (table, errorMessages, dispatch, entityType, fieldName) => {
 	let areUiErrors = false;
-	const newErrorMessages = global.structuredClone(errorMessages);
+	const newErrorMessages = structuredClone(errorMessages);
 
 	for (let i = 0; i < table.length; i++) {
 		const row = table[i];
@@ -86,7 +86,7 @@ export const validateRequiredAutosuggestField = (table, errorMessages, dispatch,
 };
 
 export const addDataKey = (entity) => {
-	entity.dataKey = global.crypto.randomUUID();
+	entity.dataKey = crypto.randomUUID();
 };
 
 export const processErrors = (data, dispatch, allele) => {
