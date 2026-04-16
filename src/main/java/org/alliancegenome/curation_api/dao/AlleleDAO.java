@@ -529,7 +529,17 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 				cvg.referencesequence,
 				cvg.variantsequence,
 				cvg.paddedbase,
-				o.curie as variant_type_curie
+				o.curie as variant_type_curie,
+				pvc.aminoacidreference,
+				pvc.aminoacidvariant,
+				pvc.codonreference,
+				pvc.codonvariant,
+				pvc.calculatedcdnastart,
+				pvc.calculatedcdnaend,
+				pvc.calculatedcdsstart,
+				pvc.calculatedcdsend,
+				pvc.calculatedproteinstart,
+				pvc.calculatedproteinend
 			FROM allelevariantassociation ava
 				JOIN variant v ON v.id = ava.allelevariantassociationobject_id
 				JOIN ontologyterm o ON o.id = v.varianttype_id
@@ -665,6 +675,16 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 				pvc.setGeneLevelConsequence(row[18] != null ? (Boolean) row[18] : false);
 				pvc.setHgvsCodingNomenclature((String) row[27]);
 				pvc.setHgvsProteinNomenclature((String) row[28]);
+				pvc.setAminoAcidReference((String) row[33]);
+				pvc.setAminoAcidVariant((String) row[34]);
+				pvc.setCodonReference((String) row[35]);
+				pvc.setCodonVariant((String) row[36]);
+				pvc.setCalculatedCdnaStart((Integer) row[37]);
+				pvc.setCalculatedCdnaEnd((Integer) row[38]);
+				pvc.setCalculatedCdsStart((Integer) row[39]);
+				pvc.setCalculatedCdsEnd((Integer) row[40]);
+				pvc.setCalculatedProteinStart((Integer) row[41]);
+				pvc.setCalculatedProteinEnd((Integer) row[42]);
 				cvgla.getPredictedVariantConsequences().add(pvc);
 			}
 
