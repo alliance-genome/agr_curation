@@ -525,7 +525,11 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 				otc.severityorder as consequence_severity,
 				be_ga.primaryexternalid as genome_assembly,
 				pvc.hgvscodingnomenclature as hgvs_coding,
-				pvc.hgvsproteinnomenclature as hgvs_protein
+				pvc.hgvsproteinnomenclature as hgvs_protein,
+				cvg.referencesequence,
+				cvg.variantsequence,
+				cvg.paddedbase,
+				o.curie as variant_type_curie
 			FROM allelevariantassociation ava
 				JOIN variant v ON v.id = ava.allelevariantassociationobject_id
 				JOIN ontologyterm o ON o.id = v.varianttype_id
@@ -570,6 +574,7 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 				variant.setId(variantId);
 				SOTerm variantType = new SOTerm();
 				variantType.setName((String) row[2]);
+				variantType.setCurie((String) row[32]);
 				variant.setVariantType(variantType);
 				variant.setCuratedVariantGenomicLocations(new ArrayList<>());
 				if (row[23] != null) {
@@ -597,6 +602,9 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 					ac.setGenomeAssembly(genomeAssembly);
 				}
 				cvgla.setVariantGenomicLocationAssociationObject(ac);
+				cvgla.setReferenceSequence(row[29] != null ? row[29].toString() : null);
+				cvgla.setVariantSequence(row[30] != null ? row[30].toString() : null);
+				cvgla.setPaddedBase(row[31] != null ? row[31].toString() : null);
 				cvgla.setVariantAssociationSubject(variant);
 				cvgla.setPredictedVariantConsequences(new ArrayList<>());
 				variant.getCuratedVariantGenomicLocations().add(cvgla);
