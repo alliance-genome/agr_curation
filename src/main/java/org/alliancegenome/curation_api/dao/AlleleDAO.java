@@ -20,6 +20,7 @@ import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.AssemblyComponent;
 import org.alliancegenome.curation_api.model.entities.GenomeAssembly;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
+import org.alliancegenome.curation_api.model.entities.Reference;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.Note;
 import org.alliancegenome.curation_api.model.entities.Organization;
@@ -524,7 +525,21 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 				otc.severityorder as consequence_severity,
 				be_ga.primaryexternalid as genome_assembly,
 				pvc.hgvscodingnomenclature as hgvs_coding,
-				pvc.hgvsproteinnomenclature as hgvs_protein
+				pvc.hgvsproteinnomenclature as hgvs_protein,
+				cvg.referencesequence,
+				cvg.variantsequence,
+				cvg.paddedbase,
+				o.curie as variant_type_curie,
+				pvc.aminoacidreference,
+				pvc.aminoacidvariant,
+				pvc.codonreference,
+				pvc.codonvariant,
+				pvc.calculatedcdnastart,
+				pvc.calculatedcdnaend,
+				pvc.calculatedcdsstart,
+				pvc.calculatedcdsend,
+				pvc.calculatedproteinstart,
+				pvc.calculatedproteinend
 			FROM allelevariantassociation ava
 				JOIN variant v ON v.id = ava.allelevariantassociationobject_id
 				JOIN ontologyterm o ON o.id = v.varianttype_id
@@ -569,6 +584,7 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 				variant.setId(variantId);
 				SOTerm variantType = new SOTerm();
 				variantType.setName((String) row[2]);
+				variantType.setCurie((String) row[32]);
 				variant.setVariantType(variantType);
 				variant.setCuratedVariantGenomicLocations(new ArrayList<>());
 				if (row[23] != null) {
@@ -596,6 +612,9 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 					ac.setGenomeAssembly(genomeAssembly);
 				}
 				cvgla.setVariantGenomicLocationAssociationObject(ac);
+				cvgla.setReferenceSequence(row[29] != null ? row[29].toString() : null);
+				cvgla.setVariantSequence(row[30] != null ? row[30].toString() : null);
+				cvgla.setPaddedBase(row[31] != null ? row[31].toString() : null);
 				cvgla.setVariantAssociationSubject(variant);
 				cvgla.setPredictedVariantConsequences(new ArrayList<>());
 				variant.getCuratedVariantGenomicLocations().add(cvgla);
@@ -656,6 +675,16 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 				pvc.setGeneLevelConsequence(row[18] != null ? (Boolean) row[18] : false);
 				pvc.setHgvsCodingNomenclature((String) row[27]);
 				pvc.setHgvsProteinNomenclature((String) row[28]);
+				pvc.setAminoAcidReference((String) row[33]);
+				pvc.setAminoAcidVariant((String) row[34]);
+				pvc.setCodonReference((String) row[35]);
+				pvc.setCodonVariant((String) row[36]);
+				pvc.setCalculatedCdnaStart((Integer) row[37]);
+				pvc.setCalculatedCdnaEnd((Integer) row[38]);
+				pvc.setCalculatedCdsStart((Integer) row[39]);
+				pvc.setCalculatedCdsEnd((Integer) row[40]);
+				pvc.setCalculatedProteinStart((Integer) row[41]);
+				pvc.setCalculatedProteinEnd((Integer) row[42]);
 				cvgla.getPredictedVariantConsequences().add(pvc);
 			}
 
@@ -1057,6 +1086,65 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 			Long alleleId = (Long) row[0];
 			String constructId = (String) row[1];
 			alleleConstructIdsMap.computeIfAbsent(alleleId, k -> new HashSet<>()).add(constructId);
+		}
+
+		// Variant references
+		Set<Long> allVariantIds = new HashSet<>();
+		for (Map<Long, Variant> variantMap : alleleVariantMap.values()) {
+			allVariantIds.addAll(variantMap.keySet());
+		}
+		if (!allVariantIds.isEmpty()) {
+			String variantRefsQueryString = """
+				SELECT vr.variant_id, r.id AS ref_id, be.curie, cr.referencedcurie, cr.displayname, rdp.name AS rdp_name, rdp.urltemplate
+				FROM variant_reference vr
+				JOIN reference r ON r.id = vr.references_id
+				JOIN biologicalentity be ON be.id = r.id
+				LEFT JOIN reference_crossreference rcr ON rcr.reference_id = r.id
+				LEFT JOIN crossreference cr ON cr.id = rcr.crossreferences_id
+				LEFT JOIN resourcedescriptorpage rdp ON rdp.id = cr.resourcedescriptorpage_id
+				WHERE vr.variant_id IN :variantIds
+				""";
+			Query variantRefsQuery = entityManager.createNativeQuery(variantRefsQueryString);
+			variantRefsQuery.setParameter("variantIds", allVariantIds);
+			List<Object[]> variantRefsResults = variantRefsQuery.getResultList();
+
+			Map<Long, Map<Long, Reference>> variantRefMap = new HashMap<>();
+			for (Object[] row : variantRefsResults) {
+				Long variantId = (Long) row[0];
+				Long refId = (Long) row[1];
+				String curie = (String) row[2];
+				Map<Long, Reference> refMap = variantRefMap.computeIfAbsent(variantId, k -> new HashMap<>());
+				Reference ref = refMap.get(refId);
+				if (ref == null) {
+					ref = new Reference();
+					ref.setCurie(curie);
+					ref.setCrossReferences(new ArrayList<>());
+					refMap.put(refId, ref);
+				}
+				if (row[3] != null) {
+					CrossReference cr = new CrossReference();
+					cr.setReferencedCurie((String) row[3]);
+					cr.setDisplayName((String) row[4]);
+					if (row[5] != null) {
+						ResourceDescriptorPage rdp = new ResourceDescriptorPage();
+						rdp.setName((String) row[5]);
+						rdp.setUrlTemplate((String) row[6]);
+						cr.setResourceDescriptorPage(rdp);
+					}
+					if (ref.getCrossReferences().stream().noneMatch(c -> cr.getReferencedCurie().equals(c.getReferencedCurie()))) {
+						ref.getCrossReferences().add(cr);
+					}
+				}
+			}
+
+			for (Map<Long, Variant> variantMap : alleleVariantMap.values()) {
+				for (Map.Entry<Long, Variant> entry : variantMap.entrySet()) {
+					Map<Long, Reference> refMap = variantRefMap.get(entry.getKey());
+					if (refMap != null) {
+						entry.getValue().setReferences(new ArrayList<>(refMap.values()));
+					}
+				}
+			}
 		}
 
 		// Build documents
