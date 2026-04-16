@@ -2,6 +2,7 @@ package org.alliancegenome.curation_api.model.entities;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.constants.ReferenceConstants;
@@ -42,7 +43,7 @@ public class Reference extends InformationContentEntity {
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
-	@Fetch(FetchMode.JOIN)
+	@Fetch(FetchMode.SUBSELECT)
 	@JsonView({CurationView.FieldsOnly.class, CurationView.ForPublic.class, CurationView.AlleleSummaryDocument.class, CurationView.VariantSummaryDocument.class})
 	@JoinTable(
 		indexes = {
@@ -51,7 +52,7 @@ public class Reference extends InformationContentEntity {
 		}
 	)
 	@EqualsAndHashCode.Include
-	private List<CrossReference> crossReferences;
+	private Set<CrossReference> crossReferences;
 
 	@JsonView({CurationView.FieldsOnly.class, CurationView.ForPublic.class})
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")

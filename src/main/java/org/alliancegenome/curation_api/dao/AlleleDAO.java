@@ -1118,7 +1118,7 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 				if (ref == null) {
 					ref = new Reference();
 					ref.setCurie(curie);
-					ref.setCrossReferences(new ArrayList<>());
+					ref.setCrossReferences(new HashSet<>());
 					refMap.put(refId, ref);
 				}
 				if (row[3] != null) {

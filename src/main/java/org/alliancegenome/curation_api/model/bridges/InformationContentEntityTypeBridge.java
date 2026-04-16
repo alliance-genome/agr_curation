@@ -1,5 +1,6 @@
 package org.alliancegenome.curation_api.model.bridges;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -65,11 +66,11 @@ public class InformationContentEntityTypeBridge implements TypeBinder {
 			if (bridgedElement != null) {
 				if (bridgedElement instanceof Reference) {
 					Reference ref = (Reference) bridgedElement;
-					List<CrossReference> xrefs;
+					Collection<CrossReference> xrefs;
 					if (Hibernate.isInitialized(ref.getCrossReferences())) {
 						xrefs = ref.getCrossReferences();
 					} else {
-						xrefs = Collections.emptyList();
+						xrefs = Collections.emptySet();
 					}
 					if (CollectionUtils.isNotEmpty(xrefs)) {
 						primaryCrossReferenceCurie = ref.getReferenceID();
