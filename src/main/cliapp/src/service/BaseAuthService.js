@@ -1,4 +1,4 @@
-import axios from 'axios';
+import { createApiClient } from './ApiClient';
 
 export class BaseAuthService {
 	api;
@@ -14,7 +14,7 @@ export class BaseAuthService {
 		}
 
 		if (cognitoToken && cognitoToken.accessToken && cognitoToken.idToken) {
-			this.api = axios.create({
+			this.api = createApiClient({
 				baseURL: '/api',
 				headers: {
 					Authorization: `${cognitoToken.accessToken.tokenType} ${cognitoToken.accessToken.accessToken}`,
