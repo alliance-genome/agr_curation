@@ -1,6 +1,7 @@
 package org.alliancegenome.curation_api.services.helpers;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -116,7 +117,7 @@ public class ReferenceSynchronisationHelper {
 		}
 		if (CollectionUtils.isNotEmpty(consolidatedXrefs)) {
 			if (ref.getCrossReferences() == null) {
-				ref.setCrossReferences(new ArrayList<>());
+				ref.setCrossReferences(new HashSet<>());
 			}
 			ref.getCrossReferences().addAll(consolidatedXrefs);
 		}

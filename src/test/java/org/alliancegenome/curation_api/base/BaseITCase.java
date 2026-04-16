@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.Map.Entry;
 
 import org.alliancegenome.curation_api.constants.OntologyConstants;
@@ -767,7 +768,7 @@ public class BaseITCase {
 			statusCode(200).
 			extract().body().as(getObjectResponseTypeRefCrossReference());
 
-		reference.setCrossReferences(List.of(xrefResponse.getEntity()));
+		reference.setCrossReferences(Set.of(xrefResponse.getEntity()));
 
 		ObjectResponse<Reference> response = RestAssured.given().
 			contentType("application/json").

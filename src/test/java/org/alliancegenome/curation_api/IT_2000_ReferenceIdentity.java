@@ -3,7 +3,6 @@ package org.alliancegenome.curation_api;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import org.alliancegenome.curation_api.model.entities.CrossReference;
@@ -45,7 +44,7 @@ class IT_2000_ReferenceIdentity {
 		crossReference.setReferencedCurie(xrefCurie);
 		crossReference.setDisplayName(xrefCurie);
 		
-		reference1.setCrossReferences(List.of(crossReference));
+		reference1.setCrossReferences(Set.of(crossReference));
 		return reference1;
 	}
 }
