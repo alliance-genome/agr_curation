@@ -45,7 +45,7 @@ class IT_2000_ReferenceIdentity {
 		crossReference.setReferencedCurie(xrefCurie);
 		crossReference.setDisplayName(xrefCurie);
 		
-		reference1.setCrossReferences(List.of(crossReference));
+		reference1.setCrossReferences(Set.of(crossReference));
 		return reference1;
 	}
 }
