@@ -1,4 +1,3 @@
-import React from 'react';
 import { defaultAutocompleteOnChange } from '../../../utils/utils';
 import { AutocompleteEditor } from '../../Autocomplete/AutocompleteEditor';
 import { inCollectionSearch } from './utils';

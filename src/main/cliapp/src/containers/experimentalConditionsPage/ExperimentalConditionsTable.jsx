@@ -126,7 +126,7 @@ export const ExperimentalConditionsTable = () => {
 				<AutocompleteEditor
 					search={conditionClassSearch}
 					initialValue={props.rowData.conditionClass?.curie}
-					rowProps={props}
+					editorOptions={props}
 					fieldName="conditionClass"
 					onValueChangeHandler={onConditionClassValueChange}
 				/>
@@ -155,7 +155,7 @@ export const ExperimentalConditionsTable = () => {
 						singleOntologySearch(event, setFiltered, endpoint, autocomplete, setQuery)
 					}
 					initialValue={props.rowData[fieldname]?.curie}
-					rowProps={props}
+					editorOptions={props}
 					filterName="singleOntologyFilter"
 					fieldName={fieldname}
 					onValueChangeHandler={onSingleOntologyValueChange}

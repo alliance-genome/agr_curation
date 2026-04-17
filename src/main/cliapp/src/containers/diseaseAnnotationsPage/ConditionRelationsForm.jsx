@@ -94,7 +94,7 @@ export const ConditionRelationsForm = ({
 				<AutocompleteMultiEditor
 					search={conditionSearch}
 					initialValue={editorOptions.rowData.conditions}
-					rowProps={editorOptions}
+					editorOptions={editorOptions}
 					fieldName="conditions"
 					subField="conditionSummary"
 					valueDisplay={(item, setAutocompleteHoverItem, op, query) => (

@@ -1,7 +1,6 @@
 import React, { useRef, useState, useMemo } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { GenericDataTable } from '../../components/GenericDataTable/GenericDataTable';
-import { ErrorMessageComponent } from '../../components/Error/ErrorMessageComponent';
 import { AlleleService } from '../../service/AlleleService';
 import { SearchService } from '../../service/SearchService';
 import { Endpoints } from '../../constants/Endpoints';
@@ -29,6 +28,7 @@ import { SynonymsEditDialog } from '../nameSlotAnnotations/dialogs/SynonymsEditD
 import { SynonymsReadOnlyDialog } from '../nameSlotAnnotations/dialogs/SynonymsReadOnlyDialog';
 import { RelatedNotesEditDialog } from '../../components/RelatedNotesEditDialog';
 import { RelatedNotesReadOnlyDialog } from '../../components/RelatedNotesReadOnlyDialog';
+import { DialogTriggerEditor } from '../../components/Editors/DialogTriggerEditor';
 import { TaxonTableEditor } from '../../components/Editors/taxon/TaxonTableEditor';
 import { InCollectionTableEditor } from '../../components/Editors/inCollection/InCollectionTableEditor';
 import { ReferencesTableEditor } from '../../components/Editors/references/ReferencesTableEditor';
@@ -43,10 +43,7 @@ import { NestedListDialogTemplate } from '../../components/Templates/dialog/Nest
 import { CountDialogTemplate } from '../../components/Templates/dialog/CountDialogTemplate';
 import { CrossReferencesTemplate } from '../../components/Templates/CrossReferencesTemplate';
 
-import { Tooltip } from 'primereact/tooltip';
 import { Toast } from 'primereact/toast';
-import { Button } from 'primereact/button';
-import { EditMessageTooltip } from '../../components/EditMessageTooltip';
 import { getDefaultTableState } from '../../service/TableStateService';
 import { FILTER_CONFIGS } from '../../constants/FilterFields';
 import { StringTemplate } from '../../components/Templates/StringTemplate';
@@ -169,104 +166,18 @@ export const AllelesTable = () => {
 		}));
 	};
 
-	const handleRelatedNotesOpenInEdit = (event, rowProps, isInEdit) => {
-		const { rowIndex } = rowProps;
+	const handleRelatedNotesOpenInEdit = (event, editorOptions, isInEdit) => {
+		const { rowIndex } = editorOptions;
 		const index = rowIndex;
 		let _relatedNotesData = {};
-		_relatedNotesData['originalRelatedNotes'] = rowProps.rowData.relatedNotes;
+		_relatedNotesData['originalRelatedNotes'] = editorOptions.rowData.relatedNotes;
 		_relatedNotesData['dialog'] = true;
 		_relatedNotesData['isInEdit'] = isInEdit;
 		_relatedNotesData['rowIndex'] = index;
-		_relatedNotesData['mainRowProps'] = rowProps;
+		_relatedNotesData['mainRowProps'] = editorOptions;
 		setRelatedNotesData(() => ({
 			..._relatedNotesData,
 		}));
-	};
-
-	const relatedNotesEditor = (props) => {
-		if (props?.rowData?.relatedNotes) {
-			return (
-				<>
-					<div>
-						<Button
-							className="p-button-text"
-							onClick={(event) => {
-								handleRelatedNotesOpenInEdit(event, props, true);
-							}}
-						>
-							<span style={{ textDecoration: 'underline' }}>
-								{`Notes(${props.rowData.relatedNotes.length}) `}
-								<i className="pi pi-user-edit" style={{ fontSize: '1em' }}></i>
-							</span>
-							&nbsp;&nbsp;&nbsp;&nbsp;
-							<EditMessageTooltip object="allele" />
-						</Button>
-					</div>
-					<ErrorMessageComponent
-						errorMessages={errorMessagesRef.current[props.rowIndex]}
-						errorField={'relatedNotes'}
-						style={{ fontSize: '1em' }}
-					/>
-				</>
-			);
-		} else {
-			return (
-				<>
-					<div>
-						<Button
-							className="p-button-text"
-							onClick={(event) => {
-								handleRelatedNotesOpenInEdit(event, props, true);
-							}}
-						>
-							<span style={{ textDecoration: 'underline' }}>
-								Add Note
-								<i className="pi pi-user-edit" style={{ fontSize: '1em' }}></i>
-							</span>
-							&nbsp;&nbsp;&nbsp;&nbsp;
-							<EditMessageTooltip />
-						</Button>
-					</div>
-					<ErrorMessageComponent
-						errorMessages={errorMessagesRef.current[props.rowIndex]}
-						errorField={'relatedNotes'}
-						style={{ fontSize: '1em' }}
-					/>
-				</>
-			);
-		}
-	};
-
-	const symbolEditor = (props) => {
-		return (
-			<>
-				<div>
-					<Button
-						className="p-button-text"
-						onClick={(event) => {
-							handleSymbolOpenInEdit(event, props, true);
-						}}
-					>
-						<span style={{ textDecoration: 'underline' }}>
-							{
-								<div
-									className="overflow-hidden text-overflow-ellipsis"
-									dangerouslySetInnerHTML={{ __html: props.rowData.alleleSymbol.displayText }}
-								/>
-							}
-							<i className="pi pi-user-edit" style={{ fontSize: '1em' }}></i>
-						</span>
-						&nbsp;&nbsp;&nbsp;&nbsp;
-						<EditMessageTooltip object="allele" />
-					</Button>
-				</div>
-				<ErrorMessageComponent
-					errorMessages={errorMessagesRef.current[props.rowIndex]}
-					errorField={'alleleSymbol'}
-					style={{ fontSize: '1em' }}
-				/>
-			</>
-		);
 	};
 
 	const handleSymbolOpen = (alleleSymbol) => {
@@ -279,78 +190,18 @@ export const AllelesTable = () => {
 		}));
 	};
 
-	const handleSymbolOpenInEdit = (event, rowProps, isInEdit) => {
-		const { rowIndex } = rowProps;
+	const handleSymbolOpenInEdit = (event, editorOptions, isInEdit) => {
+		const { rowIndex } = editorOptions;
 		const index = rowIndex;
 		let _symbolData = {};
-		_symbolData['originalSymbols'] = [rowProps.rowData.alleleSymbol];
+		_symbolData['originalSymbols'] = [editorOptions.rowData.alleleSymbol];
 		_symbolData['dialog'] = true;
 		_symbolData['isInEdit'] = isInEdit;
 		_symbolData['rowIndex'] = index;
-		_symbolData['mainRowProps'] = rowProps;
+		_symbolData['mainRowProps'] = editorOptions;
 		setSymbolData(() => ({
 			..._symbolData,
 		}));
-	};
-
-	const fullNameEditor = (props) => {
-		if (props?.rowData?.alleleFullName) {
-			return (
-				<>
-					<div>
-						<Button
-							className="p-button-text"
-							onClick={(event) => {
-								handleFullNameOpenInEdit(event, props, true);
-							}}
-						>
-							<span style={{ textDecoration: 'underline' }}>
-								{
-									<div
-										className="overflow-hidden text-overflow-ellipsis"
-										dangerouslySetInnerHTML={{ __html: props.rowData.alleleFullName.displayText }}
-									/>
-								}
-								<i className="pi pi-user-edit" style={{ fontSize: '1em' }}></i>
-							</span>
-							&nbsp;&nbsp;&nbsp;&nbsp;
-							<EditMessageTooltip object="allele" />
-						</Button>
-					</div>
-					<ErrorMessageComponent
-						errorMessages={errorMessagesRef.current[props.rowIndex]}
-						errorField={'alleleFullName'}
-						style={{ fontSize: '1em' }}
-					/>
-				</>
-			);
-		} else {
-			return (
-				<>
-					<div>
-						<Button
-							className="p-button-text"
-							onClick={(event) => {
-								handleFullNameOpenInEdit(event, props, true);
-							}}
-						>
-							<span style={{ textDecoration: 'underline' }}>
-								Add Full Name
-								<i className="pi pi-user-edit" style={{ fontSize: '1em' }}></i>
-							</span>
-							&nbsp;&nbsp;&nbsp;&nbsp;
-							<Tooltip target=".exclamation-icon" style={{ width: '250px', maxWidth: '250px' }} />
-							<EditMessageTooltip object="allele" />
-						</Button>
-					</div>
-					<ErrorMessageComponent
-						errorMessages={errorMessagesRef.current[props.rowIndex]}
-						errorField={'alleleFullName'}
-						style={{ fontSize: '1em' }}
-					/>
-				</>
-			);
-		}
 	};
 
 	const handleFullNameOpen = (alleleFullName) => {
@@ -363,73 +214,18 @@ export const AllelesTable = () => {
 		}));
 	};
 
-	const handleFullNameOpenInEdit = (event, rowProps, isInEdit) => {
-		const { rowIndex } = rowProps;
+	const handleFullNameOpenInEdit = (event, editorOptions, isInEdit) => {
+		const { rowIndex } = editorOptions;
 		const index = rowIndex;
 		let _fullNameData = {};
-		_fullNameData['originalFullNames'] = [rowProps.rowData.alleleFullName];
+		_fullNameData['originalFullNames'] = [editorOptions.rowData.alleleFullName];
 		_fullNameData['dialog'] = true;
 		_fullNameData['isInEdit'] = isInEdit;
 		_fullNameData['rowIndex'] = index;
-		_fullNameData['mainRowProps'] = rowProps;
+		_fullNameData['mainRowProps'] = editorOptions;
 		setFullNameData(() => ({
 			..._fullNameData,
 		}));
-	};
-
-	const synonymsEditor = (props) => {
-		if (props?.rowData?.alleleSynonyms) {
-			return (
-				<>
-					<div>
-						<Button
-							className="p-button-text"
-							onClick={(event) => {
-								handleSynonymsOpenInEdit(event, props, true);
-							}}
-						>
-							<span style={{ textDecoration: 'underline' }}>
-								{`Synonyms(${props.rowData.alleleSynonyms.length}) `}
-								<i className="pi pi-user-edit" style={{ fontSize: '1em' }}></i>
-							</span>
-							&nbsp;&nbsp;&nbsp;&nbsp;
-							<EditMessageTooltip object="allele" />
-						</Button>
-					</div>
-					<ErrorMessageComponent
-						errorMessages={errorMessagesRef.current[props.rowIndex]}
-						errorField={'alleleSynonyms'}
-						style={{ fontSize: '1em' }}
-					/>
-				</>
-			);
-		} else {
-			return (
-				<>
-					<div>
-						<Button
-							className="p-button-text"
-							onClick={(event) => {
-								handleSynonymsOpenInEdit(event, props, true);
-							}}
-						>
-							<span style={{ textDecoration: 'underline' }}>
-								Add Synonym
-								<i className="pi pi-user-edit" style={{ fontSize: '1em' }}></i>
-							</span>
-							&nbsp;&nbsp;&nbsp;&nbsp;
-							<Tooltip target=".exclamation-icon" style={{ width: '250px', maxWidth: '250px' }} />
-							<EditMessageTooltip object="allele" />
-						</Button>
-					</div>
-					<ErrorMessageComponent
-						errorMessages={errorMessagesRef.current[props.rowIndex]}
-						errorField={'alleleSynonyms'}
-						style={{ fontSize: '1em' }}
-					/>
-				</>
-			);
-		}
 	};
 
 	const handleSynonymsOpen = (alleleSynonyms) => {
@@ -442,73 +238,18 @@ export const AllelesTable = () => {
 		}));
 	};
 
-	const handleSynonymsOpenInEdit = (event, rowProps, isInEdit) => {
-		const { rowIndex } = rowProps;
+	const handleSynonymsOpenInEdit = (event, editorOptions, isInEdit) => {
+		const { rowIndex } = editorOptions;
 		const index = rowIndex;
 		let _synonymsData = {};
-		_synonymsData['originalSynonyms'] = rowProps.rowData.alleleSynonyms;
+		_synonymsData['originalSynonyms'] = editorOptions.rowData.alleleSynonyms;
 		_synonymsData['dialog'] = true;
 		_synonymsData['isInEdit'] = isInEdit;
 		_synonymsData['rowIndex'] = index;
-		_synonymsData['mainRowProps'] = rowProps;
+		_synonymsData['mainRowProps'] = editorOptions;
 		setSynonymsData(() => ({
 			..._synonymsData,
 		}));
-	};
-
-	const inheritanceModesEditor = (props) => {
-		if (props?.rowData?.alleleInheritanceModes) {
-			return (
-				<>
-					<div>
-						<Button
-							className="p-button-text"
-							onClick={(event) => {
-								handleInheritanceModesOpenInEdit(event, props, true);
-							}}
-						>
-							<span style={{ textDecoration: 'underline' }}>
-								{`Inheritance Modes(${props.rowData.alleleInheritanceModes.length}) `}
-								<i className="pi pi-user-edit" style={{ fontSize: '1em' }}></i>
-							</span>
-							&nbsp;&nbsp;&nbsp;&nbsp;
-							<EditMessageTooltip object="allele" />
-						</Button>
-					</div>
-					<ErrorMessageComponent
-						errorMessages={errorMessagesRef.current[props.rowIndex]}
-						errorField={'alleleInheritanceModes'}
-						style={{ fontSize: '1em' }}
-					/>
-				</>
-			);
-		} else {
-			return (
-				<>
-					<div>
-						<Button
-							className="p-button-text"
-							onClick={(event) => {
-								handleInheritanceModesOpenInEdit(event, props, true);
-							}}
-						>
-							<span style={{ textDecoration: 'underline' }}>
-								Add Inheritance Mode
-								<i className="pi pi-user-edit" style={{ fontSize: '1em' }}></i>
-							</span>
-							&nbsp;&nbsp;&nbsp;&nbsp;
-							<Tooltip target=".exclamation-icon" style={{ width: '250px', maxWidth: '250px' }} />
-							<EditMessageTooltip object="allele" />
-						</Button>
-					</div>
-					<ErrorMessageComponent
-						errorMessages={errorMessagesRef.current[props.rowIndex]}
-						errorField={'alleleInheritanceModes'}
-						style={{ fontSize: '1em' }}
-					/>
-				</>
-			);
-		}
 	};
 
 	const handleInheritanceModesOpen = (alleleInheritanceModes) => {
@@ -521,73 +262,18 @@ export const AllelesTable = () => {
 		}));
 	};
 
-	const handleInheritanceModesOpenInEdit = (event, rowProps, isInEdit) => {
-		const { rowIndex } = rowProps;
+	const handleInheritanceModesOpenInEdit = (event, editorOptions, isInEdit) => {
+		const { rowIndex } = editorOptions;
 		const index = rowIndex;
 		let _inheritanceModesData = {};
-		_inheritanceModesData['originalInheritanceModes'] = rowProps.rowData.alleleInheritanceModes;
+		_inheritanceModesData['originalInheritanceModes'] = editorOptions.rowData.alleleInheritanceModes;
 		_inheritanceModesData['dialog'] = true;
 		_inheritanceModesData['isInEdit'] = isInEdit;
 		_inheritanceModesData['rowIndex'] = index;
-		_inheritanceModesData['mainRowProps'] = rowProps;
+		_inheritanceModesData['mainRowProps'] = editorOptions;
 		setInheritanceModesData(() => ({
 			..._inheritanceModesData,
 		}));
-	};
-
-	const germlineTransmissionStatusEditor = (props) => {
-		if (props?.rowData?.alleleGermlineTransmissionStatus) {
-			return (
-				<>
-					<div>
-						<Button
-							className="p-button-text"
-							onClick={(event) => {
-								handleGermlineTransmissionStatusOpenInEdit(event, props, true);
-							}}
-						>
-							<span style={{ textDecoration: 'underline' }}>
-								{`${props.rowData.alleleGermlineTransmissionStatus.germlineTransmissionStatus.name}`}
-								<i className="pi pi-user-edit" style={{ fontSize: '1em' }}></i>
-							</span>
-							&nbsp;&nbsp;&nbsp;&nbsp;
-							<EditMessageTooltip object="allele" />
-						</Button>
-					</div>
-					<ErrorMessageComponent
-						errorMessages={errorMessagesRef.current[props.rowIndex]}
-						errorField={'alleleGermlineTransmissionStatus'}
-						style={{ fontSize: '1em' }}
-					/>
-				</>
-			);
-		} else {
-			return (
-				<>
-					<div>
-						<Button
-							className="p-button-text"
-							onClick={(event) => {
-								handleGermlineTransmissionStatusOpenInEdit(event, props, true);
-							}}
-						>
-							<span style={{ textDecoration: 'underline' }}>
-								Add Germline Transmission Status
-								<i className="pi pi-user-edit" style={{ fontSize: '1em' }}></i>
-							</span>
-							&nbsp;&nbsp;&nbsp;&nbsp;
-							<Tooltip target=".exclamation-icon" style={{ width: '250px', maxWidth: '250px' }} />
-							<EditMessageTooltip object="allele" />
-						</Button>
-					</div>
-					<ErrorMessageComponent
-						errorMessages={errorMessagesRef.current[props.rowIndex]}
-						errorField={'alleleGermlineTransmissionStatus'}
-						style={{ fontSize: '1em' }}
-					/>
-				</>
-			);
-		}
 	};
 
 	const handleGermlineTransmissionStatusOpen = (alleleGermlineTransmissionStatus) => {
@@ -600,75 +286,20 @@ export const AllelesTable = () => {
 		}));
 	};
 
-	const handleGermlineTransmissionStatusOpenInEdit = (event, rowProps, isInEdit) => {
-		const { rowIndex } = rowProps;
+	const handleGermlineTransmissionStatusOpenInEdit = (event, editorOptions, isInEdit) => {
+		const { rowIndex } = editorOptions;
 		const index = rowIndex;
 		let _germlineTransmissionStatusData = {};
 		_germlineTransmissionStatusData['originalGermlineTransmissionStatuses'] = [
-			rowProps.rowData.alleleGermlineTransmissionStatus,
+			editorOptions.rowData.alleleGermlineTransmissionStatus,
 		];
 		_germlineTransmissionStatusData['dialog'] = true;
 		_germlineTransmissionStatusData['isInEdit'] = isInEdit;
 		_germlineTransmissionStatusData['rowIndex'] = index;
-		_germlineTransmissionStatusData['mainRowProps'] = rowProps;
+		_germlineTransmissionStatusData['mainRowProps'] = editorOptions;
 		setGermlineTransmissionStatusData(() => ({
 			..._germlineTransmissionStatusData,
 		}));
-	};
-
-	const nomenclatureEventsEditor = (props) => {
-		if (props?.rowData?.alleleNomenclatureEvents) {
-			return (
-				<>
-					<div>
-						<Button
-							className="p-button-text"
-							onClick={(event) => {
-								handleNomenclatureEventsOpenInEdit(event, props, true);
-							}}
-						>
-							<span style={{ textDecoration: 'underline' }}>
-								{`Nomenclature Events(${props.rowData.alleleNomenclatureEvents.length}) `}
-								<i className="pi pi-user-edit" style={{ fontSize: '1em' }}></i>
-							</span>
-							&nbsp;&nbsp;&nbsp;&nbsp;
-							<EditMessageTooltip object="allele" />
-						</Button>
-					</div>
-					<ErrorMessageComponent
-						errorMessages={errorMessagesRef.current[props.rowIndex]}
-						errorField={'alleleNomenclatureEvents'}
-						style={{ fontSize: '1em' }}
-					/>
-				</>
-			);
-		} else {
-			return (
-				<>
-					<div>
-						<Button
-							className="p-button-text"
-							onClick={(event) => {
-								handleNomenclatureEventsOpenInEdit(event, props, true);
-							}}
-						>
-							<span style={{ textDecoration: 'underline' }}>
-								Add Nomenclature Event
-								<i className="pi pi-user-edit" style={{ fontSize: '1em' }}></i>
-							</span>
-							&nbsp;&nbsp;&nbsp;&nbsp;
-							<Tooltip target=".exclamation-icon" style={{ width: '250px', maxWidth: '250px' }} />
-							<EditMessageTooltip object="allele" />
-						</Button>
-					</div>
-					<ErrorMessageComponent
-						errorMessages={errorMessagesRef.current[props.rowIndex]}
-						errorField={'alleleNomenclatureEvents'}
-						style={{ fontSize: '1em' }}
-					/>
-				</>
-			);
-		}
 	};
 
 	const handleNomenclatureEventsOpen = (alleleNomenclatureEvents) => {
@@ -681,73 +312,18 @@ export const AllelesTable = () => {
 		}));
 	};
 
-	const handleNomenclatureEventsOpenInEdit = (event, rowProps, isInEdit) => {
-		const { rowIndex } = rowProps;
+	const handleNomenclatureEventsOpenInEdit = (event, editorOptions, isInEdit) => {
+		const { rowIndex } = editorOptions;
 		const index = rowIndex;
 		let _nomenclatureEventsData = {};
-		_nomenclatureEventsData['originalNomenclatureEvents'] = rowProps.rowData.alleleNomenclatureEvents;
+		_nomenclatureEventsData['originalNomenclatureEvents'] = editorOptions.rowData.alleleNomenclatureEvents;
 		_nomenclatureEventsData['dialog'] = true;
 		_nomenclatureEventsData['isInEdit'] = isInEdit;
 		_nomenclatureEventsData['rowIndex'] = index;
-		_nomenclatureEventsData['mainRowProps'] = rowProps;
+		_nomenclatureEventsData['mainRowProps'] = editorOptions;
 		setNomenclatureEventsData(() => ({
 			..._nomenclatureEventsData,
 		}));
-	};
-
-	const databaseStatusEditor = (props) => {
-		if (props?.rowData?.alleleDatabaseStatus?.databaseStatus) {
-			return (
-				<>
-					<div>
-						<Button
-							className="p-button-text"
-							onClick={(event) => {
-								handleDatabaseStatusOpenInEdit(event, props, true);
-							}}
-						>
-							<span style={{ textDecoration: 'underline' }}>
-								{`${props.rowData.alleleDatabaseStatus.databaseStatus.name}`}
-								<i className="pi pi-user-edit" style={{ fontSize: '1em' }}></i>
-							</span>
-							&nbsp;&nbsp;&nbsp;&nbsp;
-							<EditMessageTooltip object="allele" />
-						</Button>
-					</div>
-					<ErrorMessageComponent
-						errorMessages={errorMessagesRef.current[props.rowIndex]}
-						errorField={'alleleDatabaseStatus'}
-						style={{ fontSize: '1em' }}
-					/>
-				</>
-			);
-		} else {
-			return (
-				<>
-					<div>
-						<Button
-							className="p-button-text"
-							onClick={(event) => {
-								handleDatabaseStatusOpenInEdit(event, props, true);
-							}}
-						>
-							<span style={{ textDecoration: 'underline' }}>
-								Add Database Status
-								<i className="pi pi-user-edit" style={{ fontSize: '1em' }}></i>
-							</span>
-							&nbsp;&nbsp;&nbsp;&nbsp;
-							<Tooltip target=".exclamation-icon" style={{ width: '250px', maxWidth: '250px' }} />
-							<EditMessageTooltip object="allele" />
-						</Button>
-					</div>
-					<ErrorMessageComponent
-						errorMessages={errorMessagesRef.current[props.rowIndex]}
-						errorField={'alleleDatabaseStatus'}
-						style={{ fontSize: '1em' }}
-					/>
-				</>
-			);
-		}
 	};
 
 	const handleDatabaseStatusOpen = (alleleDatabaseStatus) => {
@@ -760,73 +336,18 @@ export const AllelesTable = () => {
 		}));
 	};
 
-	const handleDatabaseStatusOpenInEdit = (event, rowProps, isInEdit) => {
-		const { rowIndex } = rowProps;
+	const handleDatabaseStatusOpenInEdit = (event, editorOptions, isInEdit) => {
+		const { rowIndex } = editorOptions;
 		const index = rowIndex;
 		let _databaseStatusData = {};
-		_databaseStatusData['originalDatabaseStatuses'] = [rowProps.rowData.alleleDatabaseStatus];
+		_databaseStatusData['originalDatabaseStatuses'] = [editorOptions.rowData.alleleDatabaseStatus];
 		_databaseStatusData['dialog'] = true;
 		_databaseStatusData['isInEdit'] = isInEdit;
 		_databaseStatusData['rowIndex'] = index;
-		_databaseStatusData['mainRowProps'] = rowProps;
+		_databaseStatusData['mainRowProps'] = editorOptions;
 		setDatabaseStatusData(() => ({
 			..._databaseStatusData,
 		}));
-	};
-
-	const mutationTypesEditor = (props) => {
-		if (props?.rowData?.alleleMutationTypes) {
-			return (
-				<>
-					<div>
-						<Button
-							className="p-button-text"
-							onClick={(event) => {
-								handleMutationTypesOpenInEdit(event, props, true);
-							}}
-						>
-							<span style={{ textDecoration: 'underline' }}>
-								{`Mutation Types(${props.rowData.alleleMutationTypes.length}) `}
-								<i className="pi pi-user-edit" style={{ fontSize: '1em' }}></i>
-							</span>
-							&nbsp;&nbsp;&nbsp;&nbsp;
-							<EditMessageTooltip object="allele" />
-						</Button>
-					</div>
-					<ErrorMessageComponent
-						errorMessages={errorMessagesRef.current[props.rowIndex]}
-						errorField={'alleleMutationTypes'}
-						style={{ fontSize: '1em' }}
-					/>
-				</>
-			);
-		} else {
-			return (
-				<>
-					<div>
-						<Button
-							className="p-button-text"
-							onClick={(event) => {
-								handleMutationTypesOpenInEdit(event, props, true);
-							}}
-						>
-							<span style={{ textDecoration: 'underline' }}>
-								Add Mutation Type
-								<i className="pi pi-user-edit" style={{ fontSize: '1em' }}></i>
-							</span>
-							&nbsp;&nbsp;&nbsp;&nbsp;
-							<Tooltip target=".exclamation-icon" style={{ width: '250px', maxWidth: '250px' }} />
-							<EditMessageTooltip object="allele" />
-						</Button>
-					</div>
-					<ErrorMessageComponent
-						errorMessages={errorMessagesRef.current[props.rowIndex]}
-						errorField={'alleleMutationTypes'}
-						style={{ fontSize: '1em' }}
-					/>
-				</>
-			);
-		}
 	};
 
 	const handleMutationTypesOpen = (alleleMutationTypes) => {
@@ -839,73 +360,18 @@ export const AllelesTable = () => {
 		}));
 	};
 
-	const handleMutationTypesOpenInEdit = (event, rowProps, isInEdit) => {
-		const { rowIndex } = rowProps;
+	const handleMutationTypesOpenInEdit = (event, editorOptions, isInEdit) => {
+		const { rowIndex } = editorOptions;
 		const index = rowIndex;
 		let _mutationTypesData = {};
-		_mutationTypesData['originalMutationTypes'] = rowProps.rowData.alleleMutationTypes;
+		_mutationTypesData['originalMutationTypes'] = editorOptions.rowData.alleleMutationTypes;
 		_mutationTypesData['dialog'] = true;
 		_mutationTypesData['isInEdit'] = isInEdit;
 		_mutationTypesData['rowIndex'] = index;
-		_mutationTypesData['mainRowProps'] = rowProps;
+		_mutationTypesData['mainRowProps'] = editorOptions;
 		setMutationTypesData(() => ({
 			..._mutationTypesData,
 		}));
-	};
-
-	const functionalImpactsEditor = (props) => {
-		if (props?.rowData?.alleleFunctionalImpacts) {
-			return (
-				<>
-					<div>
-						<Button
-							className="p-button-text"
-							onClick={(event) => {
-								handleFunctionalImpactsOpenInEdit(event, props, true);
-							}}
-						>
-							<span style={{ textDecoration: 'underline' }}>
-								{`Functional Impacts(${props.rowData.alleleFunctionalImpacts.length}) `}
-								<i className="pi pi-user-edit" style={{ fontSize: '1em' }}></i>
-							</span>
-							&nbsp;&nbsp;&nbsp;&nbsp;
-							<EditMessageTooltip />
-						</Button>
-					</div>
-					<ErrorMessageComponent
-						errorMessages={errorMessagesRef.current[props.rowIndex]}
-						errorField={'alleleFunctionalImpacts'}
-						style={{ fontSize: '1em' }}
-					/>
-				</>
-			);
-		} else {
-			return (
-				<>
-					<div>
-						<Button
-							className="p-button-text"
-							onClick={(event) => {
-								handleFunctionalImpactsOpenInEdit(event, props, true);
-							}}
-						>
-							<span style={{ textDecoration: 'underline' }}>
-								Add Functional Impact
-								<i className="pi pi-user-edit" style={{ fontSize: '1em' }}></i>
-							</span>
-							&nbsp;&nbsp;&nbsp;&nbsp;
-							<Tooltip target=".exclamation-icon" style={{ width: '250px', maxWidth: '250px' }} />
-							<EditMessageTooltip />
-						</Button>
-					</div>
-					<ErrorMessageComponent
-						errorMessages={errorMessagesRef.current[props.rowIndex]}
-						errorField={'alleleFunctionalImpacts'}
-						style={{ fontSize: '1em' }}
-					/>
-				</>
-			);
-		}
 	};
 
 	const handleFunctionalImpactsOpen = (alleleFunctionalImpacts) => {
@@ -918,72 +384,18 @@ export const AllelesTable = () => {
 		}));
 	};
 
-	const handleFunctionalImpactsOpenInEdit = (event, rowProps, isInEdit) => {
-		const { rowIndex } = rowProps;
+	const handleFunctionalImpactsOpenInEdit = (event, editorOptions, isInEdit) => {
+		const { rowIndex } = editorOptions;
 		const index = rowIndex;
 		let _functionalImpactsData = {};
-		_functionalImpactsData['originalFunctionalImpacts'] = rowProps.rowData.alleleFunctionalImpacts;
+		_functionalImpactsData['originalFunctionalImpacts'] = editorOptions.rowData.alleleFunctionalImpacts;
 		_functionalImpactsData['dialog'] = true;
 		_functionalImpactsData['isInEdit'] = isInEdit;
 		_functionalImpactsData['rowIndex'] = index;
-		_functionalImpactsData['mainRowProps'] = rowProps;
+		_functionalImpactsData['mainRowProps'] = editorOptions;
 		setFunctionalImpactsData(() => ({
 			..._functionalImpactsData,
 		}));
-	};
-
-	const secondaryIdsEditor = (props) => {
-		if (props?.rowData?.alleleSecondaryIds) {
-			return (
-				<>
-					<div>
-						<Button
-							className="p-button-text"
-							onClick={(event) => {
-								handleSecondaryIdsOpenInEdit(event, props, true);
-							}}
-						>
-							<span style={{ textDecoration: 'underline' }}>
-								{`Secondary IDs(${props.rowData.alleleSecondaryIds.length}) `}
-								<i className="pi pi-user-edit" style={{ fontSize: '1em' }}></i>
-							</span>
-							&nbsp;&nbsp;&nbsp;&nbsp;
-							<EditMessageTooltip object="allele" />
-						</Button>
-					</div>
-					<ErrorMessageComponent
-						errorMessages={errorMessagesRef.current[props.rowIndex]}
-						errorField={'alleleSecondaryIds'}
-						style={{ fontSize: '1em' }}
-					/>
-				</>
-			);
-		} else {
-			return (
-				<>
-					<div>
-						<Button
-							className="p-button-text"
-							onClick={(event) => {
-								handleSecondaryIdsOpenInEdit(event, props, true);
-							}}
-						>
-							<span style={{ textDecoration: 'underline' }}>
-								Add Secondary ID
-								<i className="pi pi-user-edit" style={{ fontSize: '1em' }}></i>
-							</span>
-							&nbsp;&nbsp;&nbsp;&nbsp;
-							<EditMessageTooltip object="allele" />
-						</Button>
-					</div>
-					<ErrorMessageComponent
-						errorMessages={errorMessagesRef.current[props.rowIndex]}
-						errorField={'alleleSecondaryIds'}
-						style={{ fontSize: '1em' }}
-					/>
-				</>
-			);
-		}
 	};
 
 	const handleSecondaryIdsOpen = (alleleSecondaryIds) => {
@@ -996,15 +408,15 @@ export const AllelesTable = () => {
 		}));
 	};
 
-	const handleSecondaryIdsOpenInEdit = (event, rowProps, isInEdit) => {
-		const { rowIndex } = rowProps;
+	const handleSecondaryIdsOpenInEdit = (event, editorOptions, isInEdit) => {
+		const { rowIndex } = editorOptions;
 		const index = rowIndex;
 		let _secondaryIdsData = {};
-		_secondaryIdsData['originalSecondaryIds'] = rowProps.rowData.alleleSecondaryIds;
+		_secondaryIdsData['originalSecondaryIds'] = editorOptions.rowData.alleleSecondaryIds;
 		_secondaryIdsData['dialog'] = true;
 		_secondaryIdsData['isInEdit'] = isInEdit;
 		_secondaryIdsData['rowIndex'] = index;
-		_secondaryIdsData['mainRowProps'] = rowProps;
+		_secondaryIdsData['mainRowProps'] = editorOptions;
 		setSecondaryIdsData(() => ({
 			..._secondaryIdsData,
 		}));
@@ -1034,7 +446,8 @@ export const AllelesTable = () => {
 				filterConfig: FILTER_CONFIGS.modinternalidFilterConfig,
 			},
 			{
-				field: 'alleleFullName.displayText',
+				field: 'alleleFullName',
+				columnKey: 'alleleFullName.displayText',
 				header: 'Name',
 				body: (rowData) => (
 					<TextDialogTemplate
@@ -1044,12 +457,23 @@ export const AllelesTable = () => {
 						underline={false}
 					/>
 				),
-				editor: (props) => fullNameEditor(props),
+				editor: (editorOptions) => (
+					<DialogTriggerEditor
+						editorOptions={editorOptions}
+						errorMessagesRef={errorMessagesRef}
+						onOpenInEdit={handleFullNameOpenInEdit}
+						errorField="alleleFullName"
+						displayHtml={editorOptions.rowData.alleleFullName?.displayText}
+						addText="Add Full Name"
+						tooltipObject="allele"
+					/>
+				),
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.alleleNameFilterConfig,
 			},
 			{
-				field: 'alleleSymbol.displayText',
+				field: 'alleleSymbol',
+				columnKey: 'alleleSymbol.displayText',
 				header: 'Symbol',
 				body: (rowData) => (
 					<TextDialogTemplate
@@ -1059,12 +483,23 @@ export const AllelesTable = () => {
 						underline={false}
 					/>
 				),
-				editor: (props) => symbolEditor(props),
+				editor: (editorOptions) => (
+					<DialogTriggerEditor
+						editorOptions={editorOptions}
+						errorMessagesRef={errorMessagesRef}
+						onOpenInEdit={handleSymbolOpenInEdit}
+						errorField="alleleSymbol"
+						displayHtml={editorOptions.rowData.alleleSymbol?.displayText}
+						addText="Add Symbol"
+						tooltipObject="allele"
+					/>
+				),
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.alleleSymbolFilterConfig,
 			},
 			{
-				field: 'alleleSynonyms.displayText',
+				field: 'alleleSynonyms',
+				columnKey: 'alleleSynonyms.displayText',
 				header: 'Synonyms',
 				body: (rowData) => (
 					<ListDialogTemplate
@@ -1074,12 +509,26 @@ export const AllelesTable = () => {
 						underline={false}
 					/>
 				),
-				editor: (props) => synonymsEditor(props),
+				editor: (editorOptions) => {
+					const count = editorOptions.rowData.alleleSynonyms?.length;
+					return (
+						<DialogTriggerEditor
+							editorOptions={editorOptions}
+							errorMessagesRef={errorMessagesRef}
+							onOpenInEdit={handleSynonymsOpenInEdit}
+							errorField="alleleSynonyms"
+							displayText={count ? `Synonyms(${count}) ` : null}
+							addText="Add Synonym"
+							tooltipObject="allele"
+						/>
+					);
+				},
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.alleleSynonymsFilterConfig,
 			},
 			{
-				field: 'alleleSecondaryIds.secondaryId',
+				field: 'alleleSecondaryIds',
+				columnKey: 'alleleSecondaryIds.secondaryId',
 				header: 'Secondary IDs',
 				body: (rowData) => (
 					<ListDialogTemplate
@@ -1088,12 +537,26 @@ export const AllelesTable = () => {
 						getTextField={(entity) => entity?.secondaryId}
 					/>
 				),
-				editor: (props) => secondaryIdsEditor(props),
+				editor: (editorOptions) => {
+					const count = editorOptions.rowData.alleleSecondaryIds?.length;
+					return (
+						<DialogTriggerEditor
+							editorOptions={editorOptions}
+							errorMessagesRef={errorMessagesRef}
+							onOpenInEdit={handleSecondaryIdsOpenInEdit}
+							errorField="alleleSecondaryIds"
+							displayText={count ? `Secondary IDs(${count}) ` : null}
+							addText="Add Secondary ID"
+							tooltipObject="allele"
+						/>
+					);
+				},
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.alleleSecondaryIdsFilterConfig,
 			},
 			{
-				field: 'alleleNomenclatureEvents.nomenclatureEvent.name',
+				field: 'alleleNomenclatureEvents',
+				columnKey: 'alleleNomenclatureEvents.nomenclatureEvent.name',
 				header: 'Nomenclature Events',
 				body: (rowData) => (
 					<ListDialogTemplate
@@ -1104,18 +567,33 @@ export const AllelesTable = () => {
 				),
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.alleleNomenclatureEventsFilterConfig,
-				editor: (props) => nomenclatureEventsEditor(props),
+				editor: (editorOptions) => {
+					const count = editorOptions.rowData.alleleNomenclatureEvents?.length;
+					return (
+						<DialogTriggerEditor
+							editorOptions={editorOptions}
+							errorMessagesRef={errorMessagesRef}
+							onOpenInEdit={handleNomenclatureEventsOpenInEdit}
+							errorField="alleleNomenclatureEvents"
+							displayText={count ? `Nomenclature Events(${count}) ` : null}
+							addText="Add Nomenclature Event"
+							tooltipObject="allele"
+						/>
+					);
+				},
 			},
 			{
-				field: 'taxon.name',
+				field: 'taxon',
+				columnKey: 'taxon.name',
 				header: 'Taxon',
 				sortable: true,
 				body: (rowData) => <OntologyTermTemplate term={rowData.taxon} />,
 				filterConfig: FILTER_CONFIGS.taxonFilterConfig,
-				editor: (props) => <TaxonTableEditor rowProps={props} errorMessagesRef={errorMessagesRef} />,
+				editor: (editorOptions) => <TaxonTableEditor editorOptions={editorOptions} errorMessagesRef={errorMessagesRef} />,
 			},
 			{
-				field: 'alleleMutationTypes.mutationTypes.name',
+				field: 'alleleMutationTypes',
+				columnKey: 'alleleMutationTypes.mutationTypes.name',
 				header: 'Mutation Types',
 				body: (rowData) => (
 					<NestedListDialogTemplate
@@ -1125,12 +603,26 @@ export const AllelesTable = () => {
 						getTextString={(item) => `${item.name} (${item.curie})`}
 					/>
 				),
-				editor: (props) => mutationTypesEditor(props),
+				editor: (editorOptions) => {
+					const count = editorOptions.rowData.alleleMutationTypes?.length;
+					return (
+						<DialogTriggerEditor
+							editorOptions={editorOptions}
+							errorMessagesRef={errorMessagesRef}
+							onOpenInEdit={handleMutationTypesOpenInEdit}
+							errorField="alleleMutationTypes"
+							displayText={count ? `Mutation Types(${count}) ` : null}
+							addText="Add Mutation Type"
+							tooltipObject="allele"
+						/>
+					);
+				},
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.alleleMutationFilterConfig,
 			},
 			{
-				field: 'alleleFunctionalImpacts.functionalImpacts.name',
+				field: 'alleleFunctionalImpacts',
+				columnKey: 'alleleFunctionalImpacts.functionalImpacts.name',
 				header: 'Functional Impacts',
 				body: (rowData) => (
 					<NestedListDialogTemplate
@@ -1140,12 +632,26 @@ export const AllelesTable = () => {
 						getTextString={(item) => item.name}
 					/>
 				),
-				editor: (props) => functionalImpactsEditor(props),
+				editor: (editorOptions) => {
+					const count = editorOptions.rowData.alleleFunctionalImpacts?.length;
+					return (
+						<DialogTriggerEditor
+							editorOptions={editorOptions}
+							errorMessagesRef={errorMessagesRef}
+							onOpenInEdit={handleFunctionalImpactsOpenInEdit}
+							errorField="alleleFunctionalImpacts"
+							displayText={count ? `Functional Impacts(${count}) ` : null}
+							addText="Add Functional Impact"
+							tooltipObject="allele"
+						/>
+					);
+				},
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.alleleFunctionalImpactsFilterConfig,
 			},
 			{
-				field: 'alleleGermlineTransmissionStatus.germlineTransmissionStatus.name',
+				field: 'alleleGermlineTransmissionStatus',
+				columnKey: 'alleleGermlineTransmissionStatus.germlineTransmissionStatus.name',
 				header: 'Germline Transmission Status',
 				body: (rowData) => (
 					<TextDialogTemplate
@@ -1154,12 +660,23 @@ export const AllelesTable = () => {
 						text={rowData.alleleGermlineTransmissionStatus?.germlineTransmissionStatus?.name}
 					/>
 				),
-				editor: (props) => germlineTransmissionStatusEditor(props),
+				editor: (editorOptions) => (
+					<DialogTriggerEditor
+						editorOptions={editorOptions}
+						errorMessagesRef={errorMessagesRef}
+						onOpenInEdit={handleGermlineTransmissionStatusOpenInEdit}
+						errorField="alleleGermlineTransmissionStatus"
+						displayText={editorOptions.rowData.alleleGermlineTransmissionStatus?.germlineTransmissionStatus?.name}
+						addText="Add Germline Transmission Status"
+						tooltipObject="allele"
+					/>
+				),
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.alleleGermlineTransmissionStatusFilterConfig,
 			},
 			{
-				field: 'alleleDatabaseStatus.databaseStatus.name',
+				field: 'alleleDatabaseStatus',
+				columnKey: 'alleleDatabaseStatus.databaseStatus.name',
 				header: 'Database Status',
 				body: (rowData) => (
 					<TextDialogTemplate
@@ -1168,12 +685,23 @@ export const AllelesTable = () => {
 						text={rowData.alleleDatabaseStatus?.databaseStatus?.name}
 					/>
 				),
-				editor: (props) => databaseStatusEditor(props),
+				editor: (editorOptions) => (
+					<DialogTriggerEditor
+						editorOptions={editorOptions}
+						errorMessagesRef={errorMessagesRef}
+						onOpenInEdit={handleDatabaseStatusOpenInEdit}
+						errorField="alleleDatabaseStatus"
+						displayText={editorOptions.rowData.alleleDatabaseStatus?.databaseStatus?.name}
+						addText="Add Database Status"
+						tooltipObject="allele"
+					/>
+				),
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.alleleDatabaseStatusFilterConfig,
 			},
 			{
-				field: 'references.primaryCrossReferenceCurie',
+				field: 'references',
+				columnKey: 'references.primaryCrossReferenceCurie',
 				header: 'References',
 				body: (rowData) => (
 					<TruncatedReferencesTemplate
@@ -1184,10 +712,11 @@ export const AllelesTable = () => {
 				),
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.referencesFilterConfig,
-				editor: (props) => <ReferencesTableEditor rowProps={props} errorMessagesRef={errorMessagesRef} />,
+				editor: (editorOptions) => <ReferencesTableEditor editorOptions={editorOptions} errorMessagesRef={errorMessagesRef} />,
 			},
 			{
-				field: 'alleleInheritanceModes.inheritanceMode.name',
+				field: 'alleleInheritanceModes',
+				columnKey: 'alleleInheritanceModes.inheritanceMode.name',
 				header: 'Inheritance Modes',
 				body: (rowData) => (
 					<ListDialogTemplate
@@ -1198,15 +727,29 @@ export const AllelesTable = () => {
 				),
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.alleleInheritanceModesFilterConfig,
-				editor: (props) => inheritanceModesEditor(props),
+				editor: (editorOptions) => {
+					const count = editorOptions.rowData.alleleInheritanceModes?.length;
+					return (
+						<DialogTriggerEditor
+							editorOptions={editorOptions}
+							errorMessagesRef={errorMessagesRef}
+							onOpenInEdit={handleInheritanceModesOpenInEdit}
+							errorField="alleleInheritanceModes"
+							displayText={count ? `Inheritance Modes(${count}) ` : null}
+							addText="Add Inheritance Mode"
+							tooltipObject="allele"
+						/>
+					);
+				},
 			},
 			{
-				field: 'inCollection.name',
+				field: 'inCollection',
+				columnKey: 'inCollection.name',
 				header: 'In Collection',
 				sortable: true,
 				body: (rowData) => <StringTemplate string={rowData.inCollection?.name} />,
 				filterConfig: FILTER_CONFIGS.inCollectionFilterConfig,
-				editor: (props) => <InCollectionTableEditor rowProps={props} errorMessagesRef={errorMessagesRef} />,
+				editor: (editorOptions) => <InCollectionTableEditor editorOptions={editorOptions} errorMessagesRef={errorMessagesRef} />,
 			},
 			{
 				field: 'isExtinct',
@@ -1214,19 +757,33 @@ export const AllelesTable = () => {
 				body: (rowData) => <BooleanTemplate value={rowData.isExtinct} />,
 				filterConfig: FILTER_CONFIGS.isExtinctFilterConfig,
 				sortable: true,
-				editor: (props) => (
-					<BooleanTableEditor rowProps={props} errorMessagesRef={errorMessagesRef} field={'isExtinct'} />
+				editor: (editorOptions) => (
+					<BooleanTableEditor editorOptions={editorOptions} errorMessagesRef={errorMessagesRef} field={'isExtinct'} />
 				),
 			},
 			{
-				field: 'relatedNotes.freeText',
+				field: 'relatedNotes',
+				columnKey: 'relatedNotes.freeText',
 				header: 'Related Notes',
 				body: (rowData) => (
 					<CountDialogTemplate entities={rowData.relatedNotes} handleOpen={handleRelatedNotesOpen} text={'Notes'} />
 				),
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.relatedNotesFilterConfig,
-				editor: relatedNotesEditor,
+				editor: (editorOptions) => {
+					const count = editorOptions.rowData.relatedNotes?.length;
+					return (
+						<DialogTriggerEditor
+							editorOptions={editorOptions}
+							errorMessagesRef={errorMessagesRef}
+							onOpenInEdit={handleRelatedNotesOpenInEdit}
+							errorField="relatedNotes"
+							displayText={count ? `Notes(${count}) ` : null}
+							addText="Add Note"
+							tooltipObject="allele"
+						/>
+					);
+				},
 			},
 			{
 				field: 'dataProvider.abbreviation',
@@ -1279,8 +836,8 @@ export const AllelesTable = () => {
 				filter: true,
 				filterConfig: FILTER_CONFIGS.internalFilterConfig,
 				sortable: true,
-				editor: (props) => (
-					<BooleanTableEditor rowProps={props} errorMessagesRef={errorMessagesRef} field={'internal'} />
+				editor: (editorOptions) => (
+					<BooleanTableEditor editorOptions={editorOptions} errorMessagesRef={errorMessagesRef} field={'internal'} />
 				),
 			},
 			{
@@ -1290,8 +847,8 @@ export const AllelesTable = () => {
 				filter: true,
 				filterConfig: FILTER_CONFIGS.obsoleteFilterConfig,
 				sortable: true,
-				editor: (props) => (
-					<BooleanTableEditor rowProps={props} errorMessagesRef={errorMessagesRef} field={'obsolete'} />
+				editor: (editorOptions) => (
+					<BooleanTableEditor editorOptions={editorOptions} errorMessagesRef={errorMessagesRef} field={'obsolete'} />
 				),
 			},
 		],

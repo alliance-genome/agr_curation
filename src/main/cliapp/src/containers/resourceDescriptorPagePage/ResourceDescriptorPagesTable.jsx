@@ -70,7 +70,7 @@ export const ResourceDescriptorPagesTable = () => {
 				<AutocompleteEditor
 					search={resourceDescriptorSearch}
 					initialValue={props.rowData.resourceDescriptor?.prefix}
-					rowProps={props}
+					editorOptions={props}
 					fieldName="resourceDescriptor"
 					subField="prefix"
 					valueDisplay={(item, setAutocompleteHoverItem, op, query) => (

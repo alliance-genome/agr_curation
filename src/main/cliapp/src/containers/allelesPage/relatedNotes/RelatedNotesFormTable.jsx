@@ -96,7 +96,7 @@ export const RelatedNotesFormTable = ({
 				editor={(props) => {
 					return (
 						<InternalEditor
-							props={props}
+							editorOptions={props}
 							rowIndex={props.rowIndex}
 							errorMessages={errorMessages}
 							dataKey={props?.rowData?.dataKey}
@@ -112,7 +112,7 @@ export const RelatedNotesFormTable = ({
 				editor={(props) => {
 					return (
 						<ReferencesEditor
-							props={props}
+							editorOptions={props}
 							errorMessages={errorMessages}
 							dataKey={props?.rowData?.dataKey}
 							onChange={referencesOnChangeHandler}

@@ -31,7 +31,6 @@ export const NomenclatureEventsEditDialog = ({
 	const toast_topright = useRef(null);
 
 	const showDialogHandler = () => {
-		dataKeyCounter.current = 0;
 		let _localNomenclatureEvents = cloneNomenclatureEvents(originalNomenclatureEvents);
 		setLocalNomenclatureEvents(_localNomenclatureEvents);
 
@@ -133,11 +132,8 @@ export const NomenclatureEventsEditDialog = ({
 		for (const ne of _localNomenclatureEvents) {
 			delete ne.dataKey;
 		}
-		mainRowProps.rowData.alleleNomenclatureEvents = _localNomenclatureEvents;
-		let updatedAnnotations = [...mainRowProps.props.value];
-		updatedAnnotations[rowIndex].alleleNomenclatureEvents = _localNomenclatureEvents;
 		if (mainRowProps.editorCallback) {
-			mainRowProps.editorCallback(_localNomenclatureEvents?.[0]?.nomenclatureEvent?.name ?? null);
+			mainRowProps.editorCallback(_localNomenclatureEvents);
 		}
 
 		const errorMessagesCopy = structuredClone(errorMessagesMainRow);
@@ -286,7 +282,7 @@ export const NomenclatureEventsEditDialog = ({
 						editor={(props) => {
 							return (
 								<ControlledVocabularyEditor
-									props={props}
+									editorOptions={props}
 									onChangeHandler={nomenclatureEventOnChangeHandler}
 									errorMessages={errorMessages}
 									dataKey={props?.rowData?.dataKey}
@@ -297,7 +293,7 @@ export const NomenclatureEventsEditDialog = ({
 								/>
 							);
 						}}
-						field="nomenclatureEvent.name"
+						field="nomenclatureEvent"
 						header="Nomenclature Event"
 						headerClassName="surface-0"
 					/>
@@ -312,7 +308,7 @@ export const NomenclatureEventsEditDialog = ({
 								/>
 							);
 						}}
-						field="evidence.curie"
+						field="evidence"
 						header="Evidence"
 						headerClassName="surface-0"
 					/>
@@ -320,7 +316,7 @@ export const NomenclatureEventsEditDialog = ({
 						editor={(props) => {
 							return (
 								<InternalEditor
-									props={props}
+									editorOptions={props}
 									rowIndex={props.rowIndex}
 									errorMessages={errorMessages}
 									dataKey={props?.rowData?.dataKey}
@@ -336,7 +332,7 @@ export const NomenclatureEventsEditDialog = ({
 						editor={(props) => {
 							return (
 								<ObsoleteEditor
-									props={props}
+									editorOptions={props}
 									obsoleteOnChangeHandler={obsoleteOnChangeHandler}
 									errorMessages={errorMessages}
 									dataKey={props?.rowData?.dataKey}

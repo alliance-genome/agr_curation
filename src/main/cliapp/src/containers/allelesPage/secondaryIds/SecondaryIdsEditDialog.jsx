@@ -30,7 +30,6 @@ export const SecondaryIdsEditDialog = ({
 	const toast_topright = useRef(null);
 
 	const showDialogHandler = () => {
-		dataKeyCounter.current = 0;
 		let _localSecondaryIds = cloneSecondaryIds(originalSecondaryIds);
 		setLocalSecondaryIds(_localSecondaryIds);
 
@@ -122,11 +121,8 @@ export const SecondaryIdsEditDialog = ({
 		for (const sid of _localSecondaryIds) {
 			delete sid.dataKey;
 		}
-		mainRowProps.rowData.alleleSecondaryIds = _localSecondaryIds;
-		let updatedAnnotations = [...mainRowProps.props.value];
-		updatedAnnotations[rowIndex].alleleSecondaryIds = _localSecondaryIds;
 		if (mainRowProps.editorCallback) {
-			mainRowProps.editorCallback(_localSecondaryIds?.[0]?.secondaryId ?? null);
+			mainRowProps.editorCallback(_localSecondaryIds);
 		}
 
 		const errorMessagesCopy = structuredClone(errorMessagesMainRow);
@@ -286,7 +282,7 @@ export const SecondaryIdsEditDialog = ({
 						editor={(props) => {
 							return (
 								<InternalEditor
-									props={props}
+									editorOptions={props}
 									rowIndex={props.rowIndex}
 									errorMessages={errorMessages}
 									dataKey={props?.rowData?.dataKey}
@@ -309,7 +305,7 @@ export const SecondaryIdsEditDialog = ({
 								/>
 							);
 						}}
-						field="evidence.curie"
+						field="evidence"
 						header="Evidence"
 						headerClassName="surface-0"
 					/>

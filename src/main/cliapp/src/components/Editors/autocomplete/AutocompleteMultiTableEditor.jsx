@@ -32,7 +32,7 @@ export const AutocompleteMultiTableEditor = ({
 			<AutocompleteMultiEditor
 				search={search}
 				initialValue={editorOptions.rowData[field]}
-				rowProps={editorOptions}
+				editorOptions={editorOptions}
 				fieldName={field}
 				subField={subField}
 				valueDisplay={valueDisplay}

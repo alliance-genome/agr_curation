@@ -89,7 +89,7 @@ export const NomenclatureEventsFormTable = ({
 				editor={(props) => {
 					return (
 						<InternalEditor
-							props={props}
+							editorOptions={props}
 							rowIndex={props.rowIndex}
 							errorMessages={errorMessages}
 							dataKey={props?.rowData?.dataKey}
@@ -105,7 +105,7 @@ export const NomenclatureEventsFormTable = ({
 				editor={(props) => {
 					return (
 						<ObsoleteEditor
-							props={props}
+							editorOptions={props}
 							rowIndex={props.rowIndex}
 							errorMessages={errorMessages}
 							dataKey={props?.rowData?.dataKey}

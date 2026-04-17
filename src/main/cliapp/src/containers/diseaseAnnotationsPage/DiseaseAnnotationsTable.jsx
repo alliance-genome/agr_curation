@@ -30,8 +30,7 @@ import { StringTemplate } from '../../components/Templates/StringTemplate';
 import { NotEditor } from '../../components/Editors/NotEditor';
 import { ControlledVocabularyTableEditor } from '../../components/Editors/controlledVocabulary/ControlledVocabularyTableEditor';
 import { BooleanTableEditor } from '../../components/Editors/boolean/BooleanTableEditor';
-import { RelatedNotesTableEditor } from '../../components/Editors/RelatedNotesTableEditor';
-import { ConditionRelationsTableEditor } from '../../components/Editors/ConditionRelationsTableEditor';
+import { DialogTriggerEditor } from '../../components/Editors/DialogTriggerEditor';
 import { ConditionRelationHandleTableEditor } from '../../components/Editors/ConditionRelationHandleTableEditor';
 import { DiseaseAnnotationSubjectTableEditor } from '../../components/Editors/autocomplete/DiseaseAnnotationSubjectTableEditor';
 import { AutocompleteMultiTableEditor } from '../../components/Editors/autocomplete/AutocompleteMultiTableEditor';
@@ -384,13 +383,19 @@ export const DiseaseAnnotationsTable = () => {
 				),
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.relatedNotesFilterConfig,
-				editor: (editorOptions) => (
-					<RelatedNotesTableEditor
-						editorOptions={editorOptions}
-						errorMessagesRef={errorMessagesRef}
-						onOpenInEdit={handleRelatedNotesOpenInEdit}
-					/>
-				),
+				editor: (editorOptions) => {
+					const count = editorOptions.rowData.relatedNotes?.length;
+					return (
+						<DialogTriggerEditor
+							editorOptions={editorOptions}
+							errorMessagesRef={errorMessagesRef}
+							onOpenInEdit={handleRelatedNotesOpenInEdit}
+							errorField="relatedNotes"
+							displayText={count ? `Notes(${count}) ` : null}
+							addText="Add Note"
+						/>
+					);
+				},
 			},
 			{
 				field: 'conditionRelations',
@@ -429,14 +434,20 @@ export const DiseaseAnnotationsTable = () => {
 				},
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.daConditionRelationsSummaryFilterConfig,
-				editor: (editorOptions) => (
-					<ConditionRelationsTableEditor
-						editorOptions={editorOptions}
-						errorMessagesRef={errorMessagesRef}
-						onOpenInEdit={handleConditionRelationsOpenInEdit}
-						isHandle={!!editorOptions.rowData?.conditionRelations?.[0]?.handle}
-					/>
-				),
+				editor: (editorOptions) => {
+					if (editorOptions.rowData?.conditionRelations?.[0]?.handle) return null;
+					const count = editorOptions.rowData?.conditionRelations?.length;
+					return (
+						<DialogTriggerEditor
+							editorOptions={editorOptions}
+							errorMessagesRef={errorMessagesRef}
+							onOpenInEdit={handleConditionRelationsOpenInEdit}
+							errorField="conditionRelations"
+							displayText={count ? `Conditions (${count})` : null}
+							addText="Add Condition"
+						/>
+					);
+				},
 			},
 			{
 				field: 'geneticSex',

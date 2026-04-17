@@ -153,7 +153,7 @@ export const FullNameFormTable = ({
 				editor={(props) => {
 					return (
 						<InternalEditor
-							props={props}
+							editorOptions={props}
 							rowIndex={props.rowIndex}
 							dataKey={props.rowData?.dataKey}
 							errorMessages={errorMessages}

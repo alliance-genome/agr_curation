@@ -34,7 +34,6 @@ export const RelatedNotesEditDialog = ({
 	const toast_topright = useRef(null);
 
 	const showDialogHandler = () => {
-		dataKeyCounter.current = 0;
 		let _localRelatedNotes = cloneNotes(originalRelatedNotes);
 		setLocalRelatedNotes(_localRelatedNotes);
 

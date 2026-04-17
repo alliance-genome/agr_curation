@@ -29,7 +29,7 @@ export const evidenceEditorTemplate = (props, errorMessages) => {
 			<AutocompleteMultiEditor
 				search={evidenceSearch}
 				initialValue={props.rowData.evidence}
-				rowProps={props}
+				editorOptions={props}
 				fieldName="evidence"
 				subField="curie"
 				valueDisplay={(item, setAutocompleteHoverItem, op, query) => (

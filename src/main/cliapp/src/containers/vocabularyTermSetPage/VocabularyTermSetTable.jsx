@@ -78,7 +78,7 @@ export const VocabularyTermSetTable = () => {
 				<AutocompleteEditor
 					search={vocabularySearch}
 					initialValue={props.rowData.vocabularyTermSetVocabulary?.name}
-					rowProps={props}
+					editorOptions={props}
 					fieldName="vocabularyTermSetVocabulary"
 					subField={'name'}
 					valueDisplay={(item, setAutocompleteSelectedItem, op, query) => (
@@ -128,7 +128,7 @@ export const VocabularyTermSetTable = () => {
 					fieldName="memberTerms"
 					subField="name"
 					initialValue={props.rowData.memberTerms}
-					rowProps={props}
+					editorOptions={props}
 					search={memberTermSearch}
 					onValueChangeHandler={onMemberTermsChange}
 					valueDisplay={(item, setAutocompleteSelectedItem, op, query) => (

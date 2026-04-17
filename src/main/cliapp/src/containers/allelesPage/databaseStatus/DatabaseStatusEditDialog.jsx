@@ -30,7 +30,6 @@ export const DatabaseStatusEditDialog = ({
 	const toast_topright = useRef(null);
 
 	const showDialogHandler = () => {
-		dataKeyCounter.current = 0;
 		let _localDatabaseStatuses = cloneDatabaseStatuses(originalDatabaseStatuses);
 		setLocalDatabaseStatuses(_localDatabaseStatuses);
 
@@ -123,11 +122,8 @@ export const DatabaseStatusEditDialog = ({
 		for (const ds of _localDatabaseStatuses) {
 			delete ds.dataKey;
 		}
-		mainRowProps.rowData.alleleDatabaseStatus = _localDatabaseStatuses[0] ? _localDatabaseStatuses[0] : null;
-		let updatedAnnotations = [...mainRowProps.props.value];
-		updatedAnnotations[rowIndex].alleleDatabaseStatus = _localDatabaseStatuses[0] ? _localDatabaseStatuses[0] : null;
 		if (mainRowProps.editorCallback) {
-			mainRowProps.editorCallback(_localDatabaseStatuses[0]?.databaseStatus?.name ?? null);
+			mainRowProps.editorCallback(_localDatabaseStatuses[0] || null);
 		}
 
 		const errorMessagesCopy = structuredClone(errorMessagesMainRow);
@@ -276,7 +272,7 @@ export const DatabaseStatusEditDialog = ({
 						editor={(props) => {
 							return (
 								<ControlledVocabularyEditor
-									props={props}
+									editorOptions={props}
 									onChangeHandler={databaseStatusOnChangeHandler}
 									errorMessages={errorMessages}
 									dataKey={props?.rowData?.dataKey}
@@ -295,7 +291,7 @@ export const DatabaseStatusEditDialog = ({
 						editor={(props) => {
 							return (
 								<InternalEditor
-									props={props}
+									editorOptions={props}
 									rowIndex={props.rowIndex}
 									errorMessages={errorMessages}
 									dataKey={props?.rowData?.dataKey}
@@ -318,7 +314,7 @@ export const DatabaseStatusEditDialog = ({
 								/>
 							);
 						}}
-						field="evidence.curie"
+						field="evidence"
 						header="Evidence"
 						headerClassName="surface-0"
 					/>

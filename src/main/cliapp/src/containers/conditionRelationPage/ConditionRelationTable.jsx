@@ -109,7 +109,7 @@ export const ConditionRelationTable = () => {
 				<AutocompleteEditor
 					search={referenceSearch}
 					initialValue={() => getRefString(props.rowData.singleReference)}
-					rowProps={props}
+					editorOptions={props}
 					fieldName="singleReference"
 					valueDisplay={(item, setAutocompleteHoverItem, op, query) => (
 						<LiteratureAutocompleteTemplate
@@ -149,7 +149,7 @@ export const ConditionRelationTable = () => {
 				<AutocompleteMultiEditor
 					search={conditionRelationSearch}
 					initialValue={props.rowData.conditions}
-					rowProps={props}
+					editorOptions={props}
 					fieldName="conditions"
 					subField="conditionSummary"
 					valueDisplay={(item, setAutocompleteHoverItem, op, query) => (

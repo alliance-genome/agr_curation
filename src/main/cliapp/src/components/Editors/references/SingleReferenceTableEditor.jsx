@@ -10,7 +10,7 @@ export const SingleReferenceTableEditor = ({ editorOptions, errorMessages, onCha
 			<AutocompleteEditor
 				search={referenceSearch}
 				initialValue={editorOptions.rowData?.curie}
-				rowProps={editorOptions}
+				editorOptions={editorOptions}
 				fieldName="references"
 				valueDisplay={(item, setAutocompleteHoverItem, op, query) => (
 					<LiteratureAutocompleteTemplate

@@ -34,7 +34,7 @@ export const EvidenceCodeEditor = ({ props, errorMessages, onChangeHandler, data
 			<AutocompleteEditor
 				search={evidenceSearch}
 				initialValue={props.rowData.evidenceCode}
-				rowProps={props}
+				editorOptions={props}
 				fieldName="evidenceCode"
 				valueDisplay={(item, setAutocompleteHoverItem, op, query) => (
 					<EvidenceAutocompleteTemplate

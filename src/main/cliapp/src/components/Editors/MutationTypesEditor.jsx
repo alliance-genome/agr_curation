@@ -21,7 +21,7 @@ export const MutationTypesEditor = ({ props, errorMessages, onChange, dataKey })
 			<AutocompleteMultiEditor
 				search={mutationTypeSearch}
 				initialValue={props?.rowData?.mutationTypes}
-				rowProps={props}
+				editorOptions={props}
 				fieldName="mutationTypes"
 				subField="curie"
 				valueDisplay={(item, setAutocompleteHoverItem, op, query) => (

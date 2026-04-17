@@ -22,7 +22,7 @@ export const ReferencesEditor = ({ editorOptions, errorMessages, onChange, dataK
 			<AutocompleteMultiEditor
 				search={referenceSearch}
 				initialValue={editorOptions?.rowData?.references}
-				rowProps={editorOptions}
+				editorOptions={editorOptions}
 				fieldName="references"
 				subField="curie"
 				valueDisplay={(item, setAutocompleteHoverItem, op, query) => (

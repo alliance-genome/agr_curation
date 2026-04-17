@@ -33,7 +33,7 @@ export const AutocompleteSingleTableEditor = ({
 			<AutocompleteEditor
 				search={search}
 				initialValue={initialValue ?? editorOptions.rowData[field]?.[subField]}
-				rowProps={editorOptions}
+				editorOptions={editorOptions}
 				fieldName={field}
 				subField={subField}
 				valueDisplay={valueDisplay}

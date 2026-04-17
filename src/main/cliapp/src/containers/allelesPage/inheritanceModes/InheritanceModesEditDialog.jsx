@@ -33,7 +33,6 @@ export const InheritanceModesEditDialog = ({
 	const toast_topright = useRef(null);
 
 	const showDialogHandler = () => {
-		dataKeyCounter.current = 0;
 		let _localInheritanceModes = cloneInheritanceModes(originalInheritanceModes);
 		setLocalInheritanceModes(_localInheritanceModes);
 
@@ -142,11 +141,8 @@ export const InheritanceModesEditDialog = ({
 		for (const im of _localInheritanceModes) {
 			delete im.dataKey;
 		}
-		mainRowProps.rowData.alleleInheritanceModes = _localInheritanceModes;
-		let updatedAnnotations = [...mainRowProps.props.value];
-		updatedAnnotations[rowIndex].alleleInheritanceModes = _localInheritanceModes;
 		if (mainRowProps.editorCallback) {
-			mainRowProps.editorCallback(_localInheritanceModes?.[0]?.inheritanceMode?.name ?? null);
+			mainRowProps.editorCallback(_localInheritanceModes);
 		}
 
 		const errorMessagesCopy = structuredClone(errorMessagesMainRow);
@@ -292,7 +288,7 @@ export const InheritanceModesEditDialog = ({
 						editor={(props) => {
 							return (
 								<ControlledVocabularyEditor
-									props={props}
+									editorOptions={props}
 									onChangeHandler={inheritanceModeOnChangeHandler}
 									errorMessages={errorMessages}
 									dataKey={props?.rowData?.dataKey}
@@ -303,7 +299,7 @@ export const InheritanceModesEditDialog = ({
 								/>
 							);
 						}}
-						field="inheritanceMode.name"
+						field="inheritanceMode"
 						header="Inheritance Mode"
 						headerClassName="surface-0"
 					/>
@@ -318,7 +314,7 @@ export const InheritanceModesEditDialog = ({
 								/>
 							);
 						}}
-						field="phenotypeTerm.curie"
+						field="phenotypeTerm"
 						header="Phenotype Term"
 						headerClassName="surface-0"
 					/>
@@ -345,7 +341,7 @@ export const InheritanceModesEditDialog = ({
 						editor={(props) => {
 							return (
 								<InternalEditor
-									props={props}
+									editorOptions={props}
 									rowIndex={props.rowIndex}
 									errorMessages={errorMessages}
 									dataKey={props?.rowData?.dataKey}
@@ -368,7 +364,7 @@ export const InheritanceModesEditDialog = ({
 								/>
 							);
 						}}
-						field="evidence.curie"
+						field="evidence"
 						header="Evidence"
 						headerClassName="surface-0"
 					/>

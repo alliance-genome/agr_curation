@@ -35,7 +35,6 @@ export const ConditionRelationsEditDialog = ({
 	const toast_topright = useRef(null);
 
 	const showDialogHandler = () => {
-		dataKeyCounter.current = 0;
 		let _localConditionRelations = cloneRelations(originalConditionRelations);
 		setLocalConditionRelations(_localConditionRelations);
 
@@ -304,7 +303,7 @@ export const ConditionRelationsEditDialog = ({
 									<AutocompleteMultiEditor
 										search={conditionSearch}
 										initialValue={editorOptions.rowData.conditions}
-										rowProps={editorOptions}
+										editorOptions={editorOptions}
 										fieldName="conditions"
 										subField="conditionSummary"
 										valueDisplay={(item, setAutocompleteHoverItem, op, query) => (

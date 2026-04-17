@@ -9,7 +9,7 @@ export const AutocompleteEditor = ({
 	search,
 	initialValue,
 	name,
-	rowProps,
+	editorOptions,
 	classNames,
 	fieldName,
 	subField = 'curie',
@@ -47,9 +47,9 @@ export const AutocompleteEditor = ({
 				disabled={disabled}
 				suggestions={suggestions}
 				itemTemplate={itemTemplate}
-				completeMethod={(event) => search(event, setSuggestions, setQuery, rowProps)}
+				completeMethod={(event) => search(event, setSuggestions, setQuery, editorOptions)}
 				onHide={(e) => op.current.hide(e)}
-				onChange={(e) => onValueChangeHandler(e, setFieldValue, rowProps, fieldName)}
+				onChange={(e) => onValueChangeHandler(e, setFieldValue, editorOptions, fieldName)}
 				className={classNames}
 			/>
 			<EditorTooltip op={op} autocompleteHoverItem={autocompleteHoverItem} dataType={fieldName} />
