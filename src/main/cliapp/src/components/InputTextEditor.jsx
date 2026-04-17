@@ -1,24 +1,15 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { InputText } from 'primereact/inputtext';
+import { useSyncedState } from '../hooks/useSyncedState';
 
-export function InputTextEditor({ rowProps, fieldName }) {
-	const [fieldValue, setFieldValue] = useState(rowProps.rowData[fieldName] ? rowProps.rowData[fieldName] : '');
+export function InputTextEditor({ editorOptions, fieldName }) {
+	const [fieldValue, setFieldValue] = useSyncedState(editorOptions.rowData[fieldName] ?? '');
 
-	const editorChange = (event) => {
-		let updatedConditions = [...rowProps.props.value];
-		if (event.target.value || event.target.value === '') {
-			updatedConditions[rowProps.rowIndex][fieldName] = event.target.value;
-			setFieldValue(updatedConditions[rowProps.rowIndex][fieldName]);
-		}
-	};
 	const onChange = (e) => {
-		// setSelectedValue(e.value)
-		editorChange(e);
+		const value = e.target.value;
+		setFieldValue(value);
+		editorOptions.editorCallback(value);
 	};
 
-	return (
-		<>
-			<InputText aria-label={fieldName} value={fieldValue} onChange={(e) => onChange(e)} style={{ width: '100%' }} />
-		</>
-	);
+	return <InputText aria-label={fieldName} value={fieldValue} onChange={onChange} style={{ width: '100%' }} />;
 }

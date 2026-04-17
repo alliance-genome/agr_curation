@@ -1,26 +1,23 @@
-import React, { useState } from 'react';
 import { InputText } from 'primereact/inputtext';
-import { ErrorMessageComponent } from '../Error/ErrorMessageComponent';
+import { useSyncedState } from '../../hooks/useSyncedState';
 
-export function StringListEditor({ rowProps, fieldName }) {
-	const initialValue = Array.isArray(rowProps.rowData[fieldName]) ? rowProps.rowData[fieldName].join(', ') : '';
-	const [fieldValue, setFieldValue] = useState(initialValue);
+export function StringListEditor({ editorOptions, fieldName }) {
+	const initialValue = Array.isArray(editorOptions.rowData[fieldName])
+		? editorOptions.rowData[fieldName].join(', ')
+		: '';
+	const [fieldValue, setFieldValue] = useSyncedState(initialValue);
 
 	const onChange = (e) => {
 		const value = e.target.value;
 		setFieldValue(value);
-		let updatedEntities = [...rowProps.props.value];
-		updatedEntities[rowProps.rowIndex][fieldName] = value
+		const asArray = value
 			? value
 					.split(',')
 					.map((s) => s.trim())
 					.filter((s) => s.length > 0)
 			: [];
+		editorOptions.editorCallback(asArray);
 	};
 
-	return (
-		<>
-			<InputText aria-label={fieldName} value={fieldValue} onChange={onChange} style={{ width: '100%' }} />
-		</>
-	);
+	return <InputText aria-label={fieldName} value={fieldValue} onChange={onChange} style={{ width: '100%' }} />;
 }

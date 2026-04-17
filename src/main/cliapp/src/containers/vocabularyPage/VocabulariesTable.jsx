@@ -9,7 +9,7 @@ import { NewVocabularyForm } from '../../containers/controlledVocabularyPage/New
 import { ErrorMessageComponent } from '../../components/Error/ErrorMessageComponent';
 import { getDefaultTableState } from '../../service/TableStateService';
 import { FILTER_CONFIGS } from '../../constants/FilterFields';
-import { InputTextEditor } from '../../components/InputTextEditor';
+import { InputTextTableEditor } from '../../components/Editors/text/InputTextTableEditor';
 import { TrueFalseDropdown } from '../../components/TrueFalseDropDownSelector';
 import { useGetTableData } from '../../service/useGetTableData';
 import { useGetUserSettings } from '../../service/useGetUserSettings';
@@ -48,22 +48,13 @@ export const VocabulariesTable = () => {
 		},
 	});
 
-	const stringEditor = (props, field) => {
-		return (
-			<>
-				<InputTextEditor rowProps={props} fieldName={field} />
-				<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={field} />
-			</>
-		);
-	};
-
 	const obsoleteEditorTemplate = (props) => {
 		return (
 			<>
 				<TrueFalseDropdown
 					options={obsoleteTerms?.terms || []}
 					editorChange={onObsoleteEditorValueChange}
-					props={props}
+					editorOptions={props}
 					field={'obsolete'}
 				/>
 				<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={'obsolete'} />
@@ -86,7 +77,9 @@ export const VocabulariesTable = () => {
 				sortable: true,
 				body: (rowData) => <StringTemplate string={rowData.name} />,
 				filterConfig: FILTER_CONFIGS.nameFilterConfig,
-				editor: (props) => stringEditor(props, 'name'),
+				editor: (editorOptions) => (
+					<InputTextTableEditor editorOptions={editorOptions} field="name" errorMessagesRef={errorMessagesRef} />
+				),
 			},
 			{
 				field: 'vocabularyDescription',
@@ -94,7 +87,13 @@ export const VocabulariesTable = () => {
 				sortable: true,
 				body: (rowData) => <StringTemplate string={rowData.vocabularyDescription} />,
 				filterConfig: FILTER_CONFIGS.vocabularyDescriptionFilterConfig,
-				editor: (props) => stringEditor(props, 'vocabularyDescription'),
+				editor: (editorOptions) => (
+					<InputTextTableEditor
+						editorOptions={editorOptions}
+						field="vocabularyDescription"
+						errorMessagesRef={errorMessagesRef}
+					/>
+				),
 			},
 			{
 				field: 'obsolete',

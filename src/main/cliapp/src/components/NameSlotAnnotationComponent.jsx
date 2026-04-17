@@ -18,7 +18,7 @@ export const synonymUrlTemplate = (rowData) => {
 export const synonymUrlEditorTemplate = (props, errorMessages) => {
 	return (
 		<>
-			<InputTextEditor rowProps={props} fieldName={'synonymUrl'} />
+			<InputTextEditor editorOptions={props} fieldName={'synonymUrl'} />
 			<DialogErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={'synonymUrl'} />
 		</>
 	);
@@ -31,7 +31,7 @@ export const displayTextTemplate = (rowData) => {
 export const displayTextEditorTemplate = (props, errorMessages) => {
 	return (
 		<>
-			<InputTextEditor rowProps={props} fieldName={'displayText'} />
+			<InputTextEditor editorOptions={props} fieldName={'displayText'} />
 			<DialogErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={'displayText'} />
 		</>
 	);
@@ -44,7 +44,7 @@ export const formatTextTemplate = (rowData) => {
 export const formatTextEditorTemplate = (props, errorMessages) => {
 	return (
 		<>
-			<InputTextEditor rowProps={props} fieldName={'formatText'} />
+			<InputTextEditor editorOptions={props} fieldName={'formatText'} />
 			<DialogErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={'formatText'} />
 		</>
 	);

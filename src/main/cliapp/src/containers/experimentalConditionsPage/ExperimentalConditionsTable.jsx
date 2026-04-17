@@ -1,6 +1,6 @@
 import React, { useRef, useState, useMemo } from 'react';
 import { GenericDataTable } from '../../components/GenericDataTable/GenericDataTable';
-import { InputTextEditor } from '../../components/InputTextEditor';
+import { InputTextTableEditor } from '../../components/Editors/text/InputTextTableEditor';
 import { AutocompleteEditor } from '../../components/Autocomplete/AutocompleteEditor';
 import { useMutation } from '@tanstack/react-query';
 import { Toast } from 'primereact/toast';
@@ -70,15 +70,6 @@ export const ExperimentalConditionsTable = () => {
 		newConditionDispatch({ type: 'OPEN_DIALOG' });
 	};
 
-	const freeTextEditor = (props, fieldname) => {
-		return (
-			<>
-				<InputTextEditor rowProps={props} fieldName={fieldname} />
-				<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={fieldname} />
-			</>
-		);
-	};
-
 	const onInternalEditorValueChange = (props, event) => {
 		let updatedAnnotations = [...props.props.value];
 		if (event.value || event.value === '') {
@@ -92,7 +83,7 @@ export const ExperimentalConditionsTable = () => {
 				<TrueFalseDropdown
 					options={booleanTerms?.terms || []}
 					editorChange={onInternalEditorValueChange}
-					props={props}
+					editorOptions={props}
 					field={'internal'}
 				/>
 				<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={'internal'} />
@@ -182,7 +173,8 @@ export const ExperimentalConditionsTable = () => {
 				filterConfig: FILTER_CONFIGS.conditionRelationSummaryFilterConfig,
 			},
 			{
-				field: 'conditionClass.name',
+				field: 'conditionClass',
+				columnKey: 'conditionClass.name',
 				header: 'Class',
 				sortable: true,
 				body: (rowData) => <OntologyTermTemplate term={rowData.conditionClass} />,
@@ -190,7 +182,8 @@ export const ExperimentalConditionsTable = () => {
 				editor: (props) => conditionClassEditorTemplate(props, curieAutocompleteFields),
 			},
 			{
-				field: 'conditionId.name',
+				field: 'conditionId',
+				columnKey: 'conditionId.name',
 				header: 'Condition Term',
 				sortable: true,
 				body: (rowData) => <OntologyTermTemplate term={rowData.conditionId} />,
@@ -204,7 +197,8 @@ export const ExperimentalConditionsTable = () => {
 					),
 			},
 			{
-				field: 'conditionGeneOntology.name',
+				field: 'conditionGeneOntology',
+				columnKey: 'conditionGeneOntology.name',
 				header: 'Gene Ontology',
 				sortable: true,
 				body: (rowData) => <OntologyTermTemplate term={rowData.conditionGeneOntology} />,
@@ -213,7 +207,8 @@ export const ExperimentalConditionsTable = () => {
 					singleOntologyEditorTemplate(props, 'conditionGeneOntology', Endpoints.Ontology.GO, curieAutocompleteFields),
 			},
 			{
-				field: 'conditionChemical.name',
+				field: 'conditionChemical',
+				columnKey: 'conditionChemical.name',
 				header: 'Chemical',
 				sortable: true,
 				body: (rowData) => <OntologyTermTemplate term={rowData.conditionChemical} />,
@@ -227,7 +222,8 @@ export const ExperimentalConditionsTable = () => {
 					),
 			},
 			{
-				field: 'conditionAnatomy.name',
+				field: 'conditionAnatomy',
+				columnKey: 'conditionAnatomy.name',
 				header: 'Anatomy',
 				sortable: true,
 				body: (rowData) => <OntologyTermTemplate term={rowData.conditionAnatomy} />,
@@ -241,7 +237,8 @@ export const ExperimentalConditionsTable = () => {
 					),
 			},
 			{
-				field: 'conditionTaxon.name',
+				field: 'conditionTaxon',
+				columnKey: 'conditionTaxon.name',
 				header: 'Condition Taxon',
 				sortable: true,
 				body: (rowData) => <OntologyTermTemplate term={rowData.conditionTaxon} />,
@@ -255,7 +252,13 @@ export const ExperimentalConditionsTable = () => {
 				sortable: true,
 				body: (rowData) => <NumberTemplate number={rowData.conditionQuantity} />,
 				filterConfig: FILTER_CONFIGS.conditionQuantityFilterConfig,
-				editor: (props) => freeTextEditor(props, 'conditionQuantity'),
+				editor: (editorOptions) => (
+					<InputTextTableEditor
+						editorOptions={editorOptions}
+						field="conditionQuantity"
+						errorMessagesRef={errorMessagesRef}
+					/>
+				),
 			},
 			{
 				field: 'conditionFreeText',
@@ -263,7 +266,13 @@ export const ExperimentalConditionsTable = () => {
 				sortable: true,
 				body: (rowData) => <StringTemplate string={rowData.conditionFreeText} />,
 				filterConfig: FILTER_CONFIGS.conditionFreeTextFilterConfig,
-				editor: (props) => freeTextEditor(props, 'conditionFreeText'),
+				editor: (editorOptions) => (
+					<InputTextTableEditor
+						editorOptions={editorOptions}
+						field="conditionFreeText"
+						errorMessagesRef={errorMessagesRef}
+					/>
+				),
 			},
 			{
 				field: 'internal',

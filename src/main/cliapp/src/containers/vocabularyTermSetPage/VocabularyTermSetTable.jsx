@@ -10,7 +10,7 @@ import { VocabularyTermSetService } from '../../service/VocabularyTermSetService
 import { VocabTermAutocompleteTemplate } from '../../components/Autocomplete/VocabTermAutocompleteTemplate';
 import { NewVocabularyTermSetForm } from './NewVocabularyTermSetForm';
 import { useNewVocabularyTermSetReducer } from './useNewVocabularyTermSetReducer';
-import { InputTextEditor } from '../../components/InputTextEditor';
+import { InputTextTableEditor } from '../../components/Editors/text/InputTextTableEditor';
 import { GenericDataTable } from '../../components/GenericDataTable/GenericDataTable';
 import { AutocompleteEditor } from '../../components/Autocomplete/AutocompleteEditor';
 import {
@@ -145,27 +145,6 @@ export const VocabularyTermSetTable = () => {
 		);
 	};
 
-	const nameEditor = (props) => {
-		return (
-			<>
-				<InputTextEditor rowProps={props} fieldName={'name'} />
-				<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={'name'} />
-			</>
-		);
-	};
-
-	const descriptionEditor = (props) => {
-		return (
-			<>
-				<InputTextEditor rowProps={props} fieldName={'vocabularyTermSetDescription'} />
-				<ErrorMessageComponent
-					errorMessages={errorMessagesRef.current[props.rowIndex]}
-					errorField={'vocabularyTermSetDescription'}
-				/>
-			</>
-		);
-	};
-
 	const columns = useMemo(
 		() => [
 			{
@@ -174,10 +153,13 @@ export const VocabularyTermSetTable = () => {
 				body: (rowData) => <StringTemplate string={rowData.name} />,
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.nameFilterConfig,
-				editor: (props) => nameEditor(props),
+				editor: (editorOptions) => (
+					<InputTextTableEditor editorOptions={editorOptions} field="name" errorMessagesRef={errorMessagesRef} />
+				),
 			},
 			{
-				field: 'vocabularyTermSetVocabulary.name',
+				field: 'vocabularyTermSetVocabulary',
+				columnKey: 'vocabularyTermSetVocabulary.name',
 				header: 'Vocabulary',
 				sortable: true,
 				body: (rowData) => <StringTemplate string={rowData.vocabularyTermSetVocabulary?.name} />,
@@ -185,7 +167,8 @@ export const VocabularyTermSetTable = () => {
 				editor: (props) => vocabularyEditorTemplate(props),
 			},
 			{
-				field: 'memberTerms.name',
+				field: 'memberTerms',
+				columnKey: 'memberTerms.name',
 				header: 'Member Terms',
 				sortable: true,
 				body: (rowData) => <StringListTemplate list={rowData.memberTerms?.map((memberTerm) => memberTerm?.name)} />,
@@ -198,7 +181,13 @@ export const VocabularyTermSetTable = () => {
 				body: (rowData) => <StringTemplate string={rowData.vocabularyTermSetDescription} />,
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.vocabularyTermSetDescriptionFilterConfig,
-				editor: (props) => descriptionEditor(props),
+				editor: (editorOptions) => (
+					<InputTextTableEditor
+						editorOptions={editorOptions}
+						field="vocabularyTermSetDescription"
+						errorMessagesRef={errorMessagesRef}
+					/>
+				),
 			},
 			{
 				field: 'vocabularyLabel',

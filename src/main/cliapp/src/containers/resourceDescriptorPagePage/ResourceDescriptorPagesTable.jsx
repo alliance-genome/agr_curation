@@ -11,7 +11,7 @@ import { ResourceDescriptorPageService } from '../../service/ResourceDescriptorP
 import { Endpoints } from '../../constants/Endpoints';
 
 import { StringTemplate } from '../../components/Templates/StringTemplate';
-import { InputTextEditor } from '../../components/InputTextEditor';
+import { InputTextTableEditor } from '../../components/Editors/text/InputTextTableEditor';
 import { AutocompleteEditor } from '../../components/Autocomplete/AutocompleteEditor';
 import { ErrorMessageComponent } from '../../components/Error/ErrorMessageComponent';
 import { buildAutocompleteFilter, autocompleteSearch, defaultAutocompleteOnChange } from '../../utils/utils';
@@ -40,15 +40,6 @@ export const ResourceDescriptorPagesTable = () => {
 			return resourceDescriptorPageService.saveResourceDescriptorPage(updatedResourceDescriptorPage);
 		},
 	});
-
-	const stringEditor = (props, field) => {
-		return (
-			<>
-				<InputTextEditor rowProps={props} fieldName={field} />
-				<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={field} />
-			</>
-		);
-	};
 
 	const resourceDescriptorSearch = (event, setFiltered, setQuery) => {
 		const autocompleteFields = ['prefix', 'name'];
@@ -91,7 +82,8 @@ export const ResourceDescriptorPagesTable = () => {
 	const columns = useMemo(
 		() => [
 			{
-				field: 'resourceDescriptor.prefix',
+				field: 'resourceDescriptor',
+				columnKey: 'resourceDescriptor.prefix',
 				header: 'Resource Descriptor',
 				sortable: true,
 				body: (rowData) => (
@@ -106,7 +98,9 @@ export const ResourceDescriptorPagesTable = () => {
 				sortable: true,
 				body: (rowData) => <StringTemplate string={rowData.name} />,
 				filterConfig: FILTER_CONFIGS.nameFilterConfig,
-				editor: (props) => stringEditor(props, 'name'),
+				editor: (editorOptions) => (
+					<InputTextTableEditor editorOptions={editorOptions} field="name" errorMessagesRef={errorMessagesRef} />
+				),
 			},
 			{
 				field: 'urlTemplate',
@@ -114,7 +108,9 @@ export const ResourceDescriptorPagesTable = () => {
 				sortable: true,
 				body: (rowData) => <StringTemplate string={rowData.urlTemplate} />,
 				filterConfig: FILTER_CONFIGS.urlTemplateFilterConfig,
-				editor: (props) => stringEditor(props, 'urlTemplate'),
+				editor: (editorOptions) => (
+					<InputTextTableEditor editorOptions={editorOptions} field="urlTemplate" errorMessagesRef={errorMessagesRef} />
+				),
 			},
 			{
 				field: 'pageDescription',
@@ -122,7 +118,13 @@ export const ResourceDescriptorPagesTable = () => {
 				sortable: true,
 				body: (rowData) => <StringTemplate string={rowData.pageDescription} />,
 				filterConfig: FILTER_CONFIGS.pageDescriptionFilterConfig,
-				editor: (props) => stringEditor(props, 'pageDescription'),
+				editor: (editorOptions) => (
+					<InputTextTableEditor
+						editorOptions={editorOptions}
+						field="pageDescription"
+						errorMessagesRef={errorMessagesRef}
+					/>
+				),
 			},
 			{
 				field: 'updatedBy.uniqueId',

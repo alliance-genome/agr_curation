@@ -14,7 +14,7 @@ import { ExConAutocompleteTemplate } from '../../components/Autocomplete/ExConAu
 import { LiteratureAutocompleteTemplate } from '../../components/Autocomplete/LiteratureAutocompleteTemplate';
 import { NewRelationForm } from './NewRelationForm';
 import { useNewRelationReducer } from './useNewRelationReducer';
-import { InputTextEditor } from '../../components/InputTextEditor';
+import { InputTextTableEditor } from '../../components/Editors/text/InputTextTableEditor';
 import { GenericDataTable } from '../../components/GenericDataTable/GenericDataTable';
 import {
 	defaultAutocompleteOnChange,
@@ -78,7 +78,7 @@ export const ConditionRelationTable = () => {
 					field="conditionRelationType"
 					options={conditionRelationTypeTerms}
 					editorChange={onConditionRelationTypeValueChange}
-					props={props}
+					editorOptions={props}
 					showClear={false}
 					placeholderText={props.rowData.conditionRelationType.name}
 				/>
@@ -167,15 +167,6 @@ export const ConditionRelationTable = () => {
 		);
 	};
 
-	const handleEditor = (props) => {
-		return (
-			<>
-				<InputTextEditor rowProps={props} fieldName={'handle'} />
-				<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={'handle'} />
-			</>
-		);
-	};
-
 	const columns = useMemo(
 		() => [
 			{
@@ -184,10 +175,13 @@ export const ConditionRelationTable = () => {
 				sortable: true,
 				body: (rowData) => rowData.handle,
 				filterConfig: FILTER_CONFIGS.conditionRelationHandleFilterConfig,
-				editor: (props) => handleEditor(props),
+				editor: (editorOptions) => (
+					<InputTextTableEditor editorOptions={editorOptions} field="handle" errorMessagesRef={errorMessagesRef} />
+				),
 			},
 			{
-				field: 'singleReference.primaryCrossReferenceCurie',
+				field: 'singleReference',
+				columnKey: 'singleReference.primaryCrossReferenceCurie',
 				header: 'Reference',
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.singleReferenceFilterConfig,
@@ -195,14 +189,16 @@ export const ConditionRelationTable = () => {
 				body: (rowData) => <SingleReferenceTemplate singleReference={rowData.singleReference} />,
 			},
 			{
-				field: 'conditionRelationType.name',
+				field: 'conditionRelationType',
+				columnKey: 'conditionRelationType.name',
 				header: 'Relation',
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.conditionRelationTypeFilterConfig,
 				editor: (props) => conditionRelationTypeEditor(props),
 			},
 			{
-				field: 'conditions.conditionSummary',
+				field: 'conditions',
+				columnKey: 'conditions.conditionSummary',
 				header: 'Experimental Conditions',
 				sortable: true,
 				body: (rowData) => (
