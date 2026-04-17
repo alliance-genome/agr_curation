@@ -270,7 +270,9 @@ export const RelatedNotesEditDialog = ({
 					cellMemo={false}
 				>
 					<Column
-						editor={(editorOptions) => <DeleteAction deletionHandler={handleDeleteRelatedNote} id={editorOptions?.rowData?.dataKey} />}
+						editor={(editorOptions) => (
+							<DeleteAction deletionHandler={handleDeleteRelatedNote} id={editorOptions?.rowData?.dataKey} />
+						)}
 						className="max-w-4rem"
 						bodyClassName="text-center"
 						headerClassName="surface-0"

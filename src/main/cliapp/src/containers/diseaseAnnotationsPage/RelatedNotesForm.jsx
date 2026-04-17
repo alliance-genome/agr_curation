@@ -104,7 +104,12 @@ export const RelatedNotesForm = ({ dispatch, relatedNotes, showRelatedNotes, err
 
 	const handleDeleteRelatedNote = (event, editorOptions) => {
 		event.preventDefault();
-		dispatch({ type: 'DELETE_ROW', tableType: 'relatedNotes', showType: 'showRelatedNotes', index: editorOptions.rowIndex });
+		dispatch({
+			type: 'DELETE_ROW',
+			tableType: 'relatedNotes',
+			showType: 'showRelatedNotes',
+			index: editorOptions.rowIndex,
+		});
 	};
 
 	const deleteAction = (editorOptions) => {

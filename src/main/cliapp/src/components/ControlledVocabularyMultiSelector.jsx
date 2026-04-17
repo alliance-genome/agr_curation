@@ -1,7 +1,13 @@
 import React, { useState } from 'react';
 import { MultiSelect } from 'primereact/multiselect';
 
-export function ControlledVocabularyMultiSelectDropdown({ field, options, editorChange, editorOptions, placeholderText }) {
+export function ControlledVocabularyMultiSelectDropdown({
+	field,
+	options,
+	editorChange,
+	editorOptions,
+	placeholderText,
+}) {
 	const [selectedValues, setSelectedValues] = useState(editorOptions.rowData[field]);
 
 	const onShow = () => {

@@ -41,11 +41,7 @@ import { useControlledVocabularyService } from '../../service/useControlledVocab
 import { useVocabularyTermSetService } from '../../service/useVocabularyTermSetService';
 import { ErrorMessageComponent } from '../../components/Error/ErrorMessageComponent';
 import { Button } from 'primereact/button';
-import {
-	getRefString,
-	getIdentifier,
-	setNewEntity,
-} from '../../utils/utils';
+import { getRefString, getIdentifier, setNewEntity } from '../../utils/utils';
 import { diseaseQualifiersSort, evidenceCodesSort } from '../../components/Templates/utils/sortMethods';
 import { useNewAnnotationReducer } from './useNewAnnotationReducer';
 import { NewAnnotationForm } from './NewAnnotationForm';
@@ -190,9 +186,6 @@ export const DiseaseAnnotationsTable = () => {
 		}));
 	};
 
-
-
-
 	const getRelationTermSet = (editorOptions) => {
 		let diseaseRelationTerms = relationsTerms;
 		if (editorOptions.rowData?.diseaseAnnotationSubject?.type === 'Gene') {
@@ -206,17 +199,19 @@ export const DiseaseAnnotationsTable = () => {
 		return diseaseRelationTerms;
 	};
 
-
-
 	const uniqueIdEditorTemplate = (editorOptions) => {
 		return (
 			<>
-				<EllipsisTableCell otherClasses={`c${editorOptions.rowData.id}`}>{editorOptions.rowData.uniqueId}</EllipsisTableCell>
-				<ErrorMessageComponent errorMessages={errorMessagesRef.current[editorOptions.rowIndex]} errorField={'uniqueId'} />
+				<EllipsisTableCell otherClasses={`c${editorOptions.rowData.id}`}>
+					{editorOptions.rowData.uniqueId}
+				</EllipsisTableCell>
+				<ErrorMessageComponent
+					errorMessages={errorMessagesRef.current[editorOptions.rowIndex]}
+					errorField={'uniqueId'}
+				/>
 			</>
 		);
 	};
-
 
 	const columns = useMemo(
 		() => [
@@ -280,7 +275,9 @@ export const DiseaseAnnotationsTable = () => {
 				body: (rowData) => <NotTemplate value={rowData.negated} />,
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.negatedFilterConfig,
-				editor: (editorOptions) => <NotEditor value={editorOptions.value} editorChange={editorOptions.editorCallback} />,
+				editor: (editorOptions) => (
+					<NotEditor value={editorOptions.value} editorChange={editorOptions.editorCallback} />
+				),
 			},
 			{
 				field: 'diseaseAnnotationObject',
@@ -294,7 +291,13 @@ export const DiseaseAnnotationsTable = () => {
 						editorOptions={editorOptions}
 						field="diseaseAnnotationObject"
 						endpoint={Endpoints.Ontology.DO}
-						autocompleteFields={['curie', 'name', 'crossReferences.referencedCurie', 'secondaryIdentifiers', 'synonyms.name']}
+						autocompleteFields={[
+							'curie',
+							'name',
+							'crossReferences.referencedCurie',
+							'secondaryIdentifiers',
+							'synonyms.name',
+						]}
 						filterName="diseaseFilter"
 						otherFilters={{ obsoleteFilter: { obsolete: { queryString: false } } }}
 						errorMessagesRef={errorMessagesRef}
@@ -316,7 +319,12 @@ export const DiseaseAnnotationsTable = () => {
 						autocompleteFields={['curie', 'cross_references.curie']}
 						filterName="curieFilter"
 						valueDisplay={(item, setAutocompleteHoverItem, op, query) => (
-							<LiteratureAutocompleteTemplate item={item} setAutocompleteHoverItem={setAutocompleteHoverItem} op={op} query={query} />
+							<LiteratureAutocompleteTemplate
+								item={item}
+								setAutocompleteHoverItem={setAutocompleteHoverItem}
+								op={op}
+								query={query}
+							/>
 						)}
 						errorMessagesRef={errorMessagesRef}
 						initialValue={getRefString(editorOptions.rowData.evidenceItem)}
@@ -343,9 +351,17 @@ export const DiseaseAnnotationsTable = () => {
 						endpoint={Endpoints.Ontology.ECO}
 						autocompleteFields={['curie', 'name', 'abbreviation']}
 						filterName="evidenceFilter"
-						otherFilters={{ obsoleteFilter: { obsolete: { queryString: false } }, subsetFilter: { subsets: { queryString: 'agr_eco_terms' } } }}
+						otherFilters={{
+							obsoleteFilter: { obsolete: { queryString: false } },
+							subsetFilter: { subsets: { queryString: 'agr_eco_terms' } },
+						}}
 						valueDisplay={(item, setAutocompleteHoverItem, op, query) => (
-							<EvidenceAutocompleteTemplate item={item} setAutocompleteHoverItem={setAutocompleteHoverItem} op={op} query={query} />
+							<EvidenceAutocompleteTemplate
+								item={item}
+								setAutocompleteHoverItem={setAutocompleteHoverItem}
+								op={op}
+								query={query}
+							/>
 						)}
 						errorMessagesRef={errorMessagesRef}
 					/>
@@ -364,11 +380,30 @@ export const DiseaseAnnotationsTable = () => {
 						field="with"
 						subField="primaryExternalId"
 						endpoint={Endpoints.Entity.GENE}
-						autocompleteFields={['geneSymbol.formatText', 'geneSymbol.displayText', 'geneFullName.formatText', 'geneFullName.displayText', 'primaryExternalId', 'modInternalId', 'curie', 'crossReferences.referencedCurie', 'geneSynonyms.formatText', 'geneSynonyms.displayText', 'geneSystematicName.formatText', 'geneSystematicName.displayText', 'geneSecondaryIds.secondaryId']}
+						autocompleteFields={[
+							'geneSymbol.formatText',
+							'geneSymbol.displayText',
+							'geneFullName.formatText',
+							'geneFullName.displayText',
+							'primaryExternalId',
+							'modInternalId',
+							'curie',
+							'crossReferences.referencedCurie',
+							'geneSynonyms.formatText',
+							'geneSynonyms.displayText',
+							'geneSystematicName.formatText',
+							'geneSystematicName.displayText',
+							'geneSecondaryIds.secondaryId',
+						]}
 						filterName="withFilter"
 						otherFilters={{ taxonFilter: { 'taxon.curie': { queryString: 'NCBITaxon:9606' } } }}
 						valueDisplay={(item, setAutocompleteHoverItem, op, query) => (
-							<SubjectAutocompleteTemplate item={item} setAutocompleteHoverItem={setAutocompleteHoverItem} op={op} query={query} />
+							<SubjectAutocompleteTemplate
+								item={item}
+								setAutocompleteHoverItem={setAutocompleteHoverItem}
+								op={op}
+								query={query}
+							/>
 						)}
 						errorMessagesRef={errorMessagesRef}
 					/>
@@ -502,11 +537,22 @@ export const DiseaseAnnotationsTable = () => {
 							field="sgdStrainBackground"
 							subField="primaryExternalId"
 							endpoint={Endpoints.Entity.AGM}
-							autocompleteFields={['name', 'curie', 'primaryExternalId', 'modInternalId', 'crossReferences.referencedCurie']}
+							autocompleteFields={[
+								'name',
+								'curie',
+								'primaryExternalId',
+								'modInternalId',
+								'crossReferences.referencedCurie',
+							]}
 							filterName="sgdStrainBackgroundFilter"
 							otherFilters={{ taxonFilter: { 'taxon.name': { queryString: 'Saccharomyces cerevisiae' } } }}
 							valueDisplay={(item, setAutocompleteHoverItem, op, query) => (
-								<SubjectAutocompleteTemplate item={item} setAutocompleteHoverItem={setAutocompleteHoverItem} op={op} query={query} />
+								<SubjectAutocompleteTemplate
+									item={item}
+									setAutocompleteHoverItem={setAutocompleteHoverItem}
+									op={op}
+									query={query}
+								/>
 							)}
 							initialValue={getIdentifier(editorOptions.rowData.sgdStrainBackground)}
 							errorMessagesRef={errorMessagesRef}
@@ -560,10 +606,25 @@ export const DiseaseAnnotationsTable = () => {
 						field="diseaseGeneticModifierAgms"
 						subField="primaryExternalId"
 						endpoint={Endpoints.Entity.AGM}
-						autocompleteFields={['agmFullName.formatText', 'agmSynonyms.formatText', 'agmFullName.displayText', 'agmSynonyms.displayText', 'agmSecondaryIds.secondaryId', 'curie', 'primaryExternalId', 'modInternalId', 'crossReferences.referencedCurie']}
+						autocompleteFields={[
+							'agmFullName.formatText',
+							'agmSynonyms.formatText',
+							'agmFullName.displayText',
+							'agmSynonyms.displayText',
+							'agmSecondaryIds.secondaryId',
+							'curie',
+							'primaryExternalId',
+							'modInternalId',
+							'crossReferences.referencedCurie',
+						]}
 						filterName="geneticModifierAgmsFilter"
 						valueDisplay={(item, setAutocompleteHoverItem, op, query) => (
-							<SubjectAutocompleteTemplate item={item} setAutocompleteHoverItem={setAutocompleteHoverItem} op={op} query={query} />
+							<SubjectAutocompleteTemplate
+								item={item}
+								setAutocompleteHoverItem={setAutocompleteHoverItem}
+								op={op}
+								query={query}
+							/>
 						)}
 						errorMessagesRef={errorMessagesRef}
 						uiErrorMessagesRef={uiErrorMessagesRef}
@@ -583,10 +644,26 @@ export const DiseaseAnnotationsTable = () => {
 						field="diseaseGeneticModifierAlleles"
 						subField="primaryExternalId"
 						endpoint={Endpoints.Entity.ALLELE}
-						autocompleteFields={['alleleSymbol.formatText', 'alleleFullName.formatText', 'alleleFullName.displayText', 'alleleSynonyms.formatText', 'alleleSynonyms.displayText', 'curie', 'primaryExternalId', 'modInternalId', 'crossReferences.referencedCurie', 'alleleSecondaryIds.secondaryId']}
+						autocompleteFields={[
+							'alleleSymbol.formatText',
+							'alleleFullName.formatText',
+							'alleleFullName.displayText',
+							'alleleSynonyms.formatText',
+							'alleleSynonyms.displayText',
+							'curie',
+							'primaryExternalId',
+							'modInternalId',
+							'crossReferences.referencedCurie',
+							'alleleSecondaryIds.secondaryId',
+						]}
 						filterName="geneticModifierAllelesFilter"
 						valueDisplay={(item, setAutocompleteHoverItem, op, query) => (
-							<SubjectAutocompleteTemplate item={item} setAutocompleteHoverItem={setAutocompleteHoverItem} op={op} query={query} />
+							<SubjectAutocompleteTemplate
+								item={item}
+								setAutocompleteHoverItem={setAutocompleteHoverItem}
+								op={op}
+								query={query}
+							/>
 						)}
 						errorMessagesRef={errorMessagesRef}
 						uiErrorMessagesRef={uiErrorMessagesRef}
@@ -606,10 +683,29 @@ export const DiseaseAnnotationsTable = () => {
 						field="diseaseGeneticModifierGenes"
 						subField="primaryExternalId"
 						endpoint={Endpoints.Entity.GENE}
-						autocompleteFields={['geneSymbol.formatText', 'geneSymbol.displayText', 'geneFullName.formatText', 'geneFullName.displayText', 'geneSynonyms.formatText', 'geneSynonyms.displayText', 'geneSystematicName.formatText', 'geneSystematicName.displayText', 'geneSecondaryIds.secondaryId', 'curie', 'primaryExternalId', 'modInternalId', 'crossReferences.referencedCurie']}
+						autocompleteFields={[
+							'geneSymbol.formatText',
+							'geneSymbol.displayText',
+							'geneFullName.formatText',
+							'geneFullName.displayText',
+							'geneSynonyms.formatText',
+							'geneSynonyms.displayText',
+							'geneSystematicName.formatText',
+							'geneSystematicName.displayText',
+							'geneSecondaryIds.secondaryId',
+							'curie',
+							'primaryExternalId',
+							'modInternalId',
+							'crossReferences.referencedCurie',
+						]}
 						filterName="geneticModifierGenesFilter"
 						valueDisplay={(item, setAutocompleteHoverItem, op, query) => (
-							<SubjectAutocompleteTemplate item={item} setAutocompleteHoverItem={setAutocompleteHoverItem} op={op} query={query} />
+							<SubjectAutocompleteTemplate
+								item={item}
+								setAutocompleteHoverItem={setAutocompleteHoverItem}
+								op={op}
+								query={query}
+							/>
 						)}
 						errorMessagesRef={errorMessagesRef}
 						uiErrorMessagesRef={uiErrorMessagesRef}
@@ -638,10 +734,28 @@ export const DiseaseAnnotationsTable = () => {
 							field="assertedGenes"
 							subField="primaryExternalId"
 							endpoint={Endpoints.Entity.GENE}
-							autocompleteFields={['geneSymbol.formatText', 'geneSymbol.displayText', 'geneFullName.formatText', 'geneFullName.displayText', 'curie', 'primaryExternalId', 'modInternalId', 'crossReferences.referencedCurie', 'geneSynonyms.formatText', 'geneSynonyms.displayText', 'geneSystematicName.formatText', 'geneSystematicName.displayText']}
+							autocompleteFields={[
+								'geneSymbol.formatText',
+								'geneSymbol.displayText',
+								'geneFullName.formatText',
+								'geneFullName.displayText',
+								'curie',
+								'primaryExternalId',
+								'modInternalId',
+								'crossReferences.referencedCurie',
+								'geneSynonyms.formatText',
+								'geneSynonyms.displayText',
+								'geneSystematicName.formatText',
+								'geneSystematicName.displayText',
+							]}
 							filterName="assertedGenesFilter"
 							valueDisplay={(item, setAutocompleteHoverItem, op, query) => (
-								<SubjectAutocompleteTemplate item={item} setAutocompleteHoverItem={setAutocompleteHoverItem} op={op} query={query} />
+								<SubjectAutocompleteTemplate
+									item={item}
+									setAutocompleteHoverItem={setAutocompleteHoverItem}
+									op={op}
+									query={query}
+								/>
 							)}
 							errorMessagesRef={errorMessagesRef}
 						/>
@@ -670,10 +784,27 @@ export const DiseaseAnnotationsTable = () => {
 							field="assertedAlleles"
 							subField="primaryExternalId"
 							endpoint={Endpoints.Entity.ALLELE}
-							autocompleteFields={['alleleSymbol.formatText', 'alleleSymbol.displayText', 'alleleFullName.formatText', 'alleleFullName.displayText', 'curie', 'primaryExternalId', 'modInternalId', 'crossReferences.referencedCurie', 'alleleSecondaryIds.secondaryId', 'alleleSynonyms.formatText', 'alleleSynonyms.displayText']}
+							autocompleteFields={[
+								'alleleSymbol.formatText',
+								'alleleSymbol.displayText',
+								'alleleFullName.formatText',
+								'alleleFullName.displayText',
+								'curie',
+								'primaryExternalId',
+								'modInternalId',
+								'crossReferences.referencedCurie',
+								'alleleSecondaryIds.secondaryId',
+								'alleleSynonyms.formatText',
+								'alleleSynonyms.displayText',
+							]}
 							filterName="assertedAllelesFilter"
 							valueDisplay={(item, setAutocompleteHoverItem, op, query) => (
-								<SubjectAutocompleteTemplate item={item} setAutocompleteHoverItem={setAutocompleteHoverItem} op={op} query={query} />
+								<SubjectAutocompleteTemplate
+									item={item}
+									setAutocompleteHoverItem={setAutocompleteHoverItem}
+									op={op}
+									query={query}
+								/>
 							)}
 							errorMessagesRef={errorMessagesRef}
 						/>

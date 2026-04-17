@@ -27,7 +27,10 @@ export const ReferencesTableEditor = ({ editorOptions, errorMessagesRef }) => {
 				)}
 				onValueChangeHandler={onReferenceValueChange}
 			/>
-			<ErrorMessageComponent errorMessages={errorMessagesRef.current[editorOptions.rowIndex]} errorField={'references'} />
+			<ErrorMessageComponent
+				errorMessages={errorMessagesRef.current[editorOptions.rowIndex]}
+				errorField={'references'}
+			/>
 		</>
 	);
 };

@@ -26,7 +26,10 @@ export const InCollectionTableEditor = ({ editorOptions, errorMessagesRef }) => 
 					/>
 				)}
 			/>
-			<ErrorMessageComponent errorMessages={errorMessagesRef.current[editorOptions.rowIndex]} errorField="inCollection" />
+			<ErrorMessageComponent
+				errorMessages={errorMessagesRef.current[editorOptions.rowIndex]}
+				errorField="inCollection"
+			/>
 		</>
 	);
 };

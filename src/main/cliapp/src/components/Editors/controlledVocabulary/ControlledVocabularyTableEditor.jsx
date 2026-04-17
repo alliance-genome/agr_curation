@@ -1,7 +1,13 @@
 import { ControlledVocabularyDropdown } from '../../ControlledVocabularySelector';
 import { ErrorMessageComponent } from '../../Error/ErrorMessageComponent';
 
-export const ControlledVocabularyTableEditor = ({ editorOptions, field, options, showClear = true, errorMessagesRef }) => {
+export const ControlledVocabularyTableEditor = ({
+	editorOptions,
+	field,
+	options,
+	showClear = true,
+	errorMessagesRef,
+}) => {
 	return (
 		<>
 			<ControlledVocabularyDropdown

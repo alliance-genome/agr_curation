@@ -18,7 +18,10 @@ export const VariantTypeTableEditor = ({ editorOptions, errorMessagesRef }) => {
 				fieldName="variantType"
 				onValueChangeHandler={onVariantTypeValueChange}
 			/>
-			<ErrorMessageComponent errorMessages={errorMessagesRef.current[editorOptions.rowIndex]} errorField="variantType" />
+			<ErrorMessageComponent
+				errorMessages={errorMessagesRef.current[editorOptions.rowIndex]}
+				errorField="variantType"
+			/>
 		</>
 	);
 };

@@ -757,7 +757,9 @@ export const NewAnnotationForm = ({
 									<div className={widgetColumnSize}>
 										<NotEditor
 											value={newAnnotation.negated}
-											editorChange={(newValue) => onDropdownFieldChange({ target: { name: 'negated', value: newValue } })}
+											editorChange={(newValue) =>
+												onDropdownFieldChange({ target: { name: 'negated', value: newValue } })
+											}
 										/>
 									</div>
 									<div className={fieldDetailsColumnSize}>

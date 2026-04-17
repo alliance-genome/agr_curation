@@ -51,9 +51,9 @@ const subjectValueDisplay = (item, setAutocompleteHoverItem, op, query) => (
 );
 
 export const DiseaseAnnotationSubjectTableEditor = ({ editorOptions, errorMessagesRef, uiErrorMessagesRef }) => {
-	const endpoint=getEndpoint(editorOptions.rowData);
-	const autocompleteFields=getAutocompleteFields(editorOptions.rowData);
-	const initialValue=getIdentifier(editorOptions.rowData.diseaseAnnotationSubject);
+	const endpoint = getEndpoint(editorOptions.rowData);
+	const autocompleteFields = getAutocompleteFields(editorOptions.rowData);
+	const initialValue = getIdentifier(editorOptions.rowData.diseaseAnnotationSubject);
 
 	return (
 		<AutocompleteSingleTableEditor
