@@ -1147,6 +1147,36 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 			}
 		}
 
+		// Variant notes
+		if (!allVariantIds.isEmpty()) {
+			String variantNotesQueryString = """
+				SELECT ben.submittedobject_id AS variant_id, n.freetext
+				FROM biologicalentity_note ben
+				JOIN note n ON n.id = ben.relatednotes_id
+				WHERE ben.submittedobject_id IN :variantIds
+				""";
+			Query variantNotesQuery = entityManager.createNativeQuery(variantNotesQueryString);
+			variantNotesQuery.setParameter("variantIds", allVariantIds);
+			List<Object[]> variantNotesResults = variantNotesQuery.getResultList();
+
+			Map<Long, List<Note>> variantNotesMap = new HashMap<>();
+			for (Object[] row : variantNotesResults) {
+				Long variantId = (Long) row[0];
+				Note note = new Note();
+				note.setFreeText((String) row[1]);
+				variantNotesMap.computeIfAbsent(variantId, k -> new ArrayList<>()).add(note);
+			}
+
+			for (Map<Long, Variant> variantMap : alleleVariantMap.values()) {
+				for (Map.Entry<Long, Variant> entry : variantMap.entrySet()) {
+					List<Note> notes = variantNotesMap.get(entry.getKey());
+					if (notes != null) {
+						entry.getValue().setRelatedNotes(notes);
+					}
+				}
+			}
+		}
+
 		// Build documents
 		List<AlleleSummaryDocument> docs = new ArrayList<>();
 		for (Allele allele : alleles) {
