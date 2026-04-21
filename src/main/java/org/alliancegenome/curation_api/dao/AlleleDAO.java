@@ -481,6 +481,14 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 			JOIN crossreference cr ON cr.id = gecr.crossreferences_id
 			WHERE aga.alleleassociationsubject_id IN :alleleIds
 			AND aga.internal = false AND aga.obsolete = false
+			UNION
+			SELECT DISTINCT aga.alleleassociationsubject_id AS allele_id, cr.referencedcurie AS xref
+			FROM allelegeneassociation aga
+			JOIN vocabularyterm v ON v.id = aga.relation_id AND v.name = 'is_allele_of'
+			JOIN gene g ON g.id = aga.allelegeneassociationobject_id
+			JOIN crossreference cr ON cr.id = g.gcrpcrossreference_id
+			WHERE aga.alleleassociationsubject_id IN :alleleIds
+			AND aga.internal = false AND aga.obsolete = false
 			""";
 		Query geneCrossRefsQuery = entityManager.createNativeQuery(geneCrossRefsQueryString);
 		geneCrossRefsQuery.setParameter("alleleIds", alleleIds);

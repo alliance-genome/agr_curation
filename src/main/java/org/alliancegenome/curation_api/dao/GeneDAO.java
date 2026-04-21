@@ -274,6 +274,11 @@ public class GeneDAO extends BaseSQLDAO<Gene> {
 			FROM genomicentity_crossreference gc
 			JOIN crossreference cr ON cr.id = gc.crossreferences_id
 			WHERE gc.genomicentity_id IN :geneIds
+			UNION
+			SELECT g.id, cr.referencedcurie
+			FROM gene g
+			JOIN crossreference cr ON cr.id = g.gcrpcrossreference_id
+			WHERE g.id IN :geneIds
 			""", geneIds);
 	}
 
