@@ -4,23 +4,16 @@ import { Toast } from 'primereact/toast';
 import { SearchService } from '../../service/SearchService';
 import { Endpoints } from '../../constants/Endpoints';
 import { Messages } from 'primereact/messages';
-import { ErrorMessageComponent } from '../../components/Error/ErrorMessageComponent';
 import { Button } from 'primereact/button';
 import { VocabularyTermSetService } from '../../service/VocabularyTermSetService';
 import { VocabTermAutocompleteTemplate } from '../../components/Autocomplete/VocabTermAutocompleteTemplate';
 import { NewVocabularyTermSetForm } from './NewVocabularyTermSetForm';
 import { useNewVocabularyTermSetReducer } from './useNewVocabularyTermSetReducer';
 import { InputTextTableEditor } from '../../components/Editors/text/InputTextTableEditor';
+import { AutocompleteSingleTableEditor } from '../../components/Editors/autocomplete/AutocompleteSingleTableEditor';
+import { AutocompleteMultiTableEditor } from '../../components/Editors/autocomplete/AutocompleteMultiTableEditor';
 import { GenericDataTable } from '../../components/GenericDataTable/GenericDataTable';
-import { AutocompleteEditor } from '../../components/Autocomplete/AutocompleteEditor';
-import {
-	autocompleteSearch,
-	buildAutocompleteFilter,
-	defaultAutocompleteOnChange,
-	multipleAutocompleteOnChange,
-	setNewEntity,
-} from '../../utils/utils';
-import { AutocompleteMultiEditor } from '../../components/Autocomplete/AutocompleteMultiEditor';
+import { setNewEntity } from '../../utils/utils';
 import { getDefaultTableState } from '../../service/TableStateService';
 import { FILTER_CONFIGS } from '../../constants/FilterFields';
 import { useGetTableData } from '../../service/useGetTableData';
@@ -59,92 +52,6 @@ export const VocabularyTermSetTable = () => {
 		newVocabularyTermSetDispatch({ type: 'OPEN_DIALOG' });
 	};
 
-	const onVocabularyChange = (event, setFieldValue, props) => {
-		defaultAutocompleteOnChange(props, event, 'vocabularyTermSetVocabulary', setFieldValue, 'name');
-	};
-	const vocabularySearch = (event, setFiltered, setQuery) => {
-		const autocompleteFields = ['name'];
-		const endpoint = Endpoints.Vocabulary.VOCABULARY;
-		const filterName = 'vocabularyFilter';
-		const filter = buildAutocompleteFilter(event, autocompleteFields);
-
-		setQuery(event.query);
-		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered);
-	};
-
-	const vocabularyEditorTemplate = (props) => {
-		return (
-			<>
-				<AutocompleteEditor
-					search={vocabularySearch}
-					initialValue={props.rowData.vocabularyTermSetVocabulary?.name}
-					editorOptions={props}
-					fieldName="vocabularyTermSetVocabulary"
-					subField={'name'}
-					valueDisplay={(item, setAutocompleteSelectedItem, op, query) => (
-						<VocabTermAutocompleteTemplate
-							item={item}
-							setAutocompleteSelectedItem={setAutocompleteSelectedItem}
-							op={op}
-							query={query}
-						/>
-					)}
-					onValueChangeHandler={onVocabularyChange}
-				/>
-				<ErrorMessageComponent
-					errorMessages={errorMessagesRef.current[props.rowIndex]}
-					errorField={'vocabularyTermSetVocabulary'}
-				/>
-			</>
-		);
-	};
-
-	const onMemberTermsChange = (event, setFieldValue, props) => {
-		multipleAutocompleteOnChange(props, event, 'memberTerms', setFieldValue);
-	};
-
-	const memberTermSearch = (event, setFiltered, setInputValue, props) => {
-		const autocompleteFields = ['name'];
-		const endpoint = Endpoints.Vocabulary.TERM;
-		const filterName = 'memberTermsFilter';
-		const filter = buildAutocompleteFilter(event, autocompleteFields);
-		const otherFilters = {
-			vocabularyFilter: {
-				'vocabulary.name': {
-					queryString: props.props.value[props.rowIndex].vocabularyTermSetVocabulary.name,
-				},
-			},
-		};
-
-		setInputValue(event.query);
-		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered, otherFilters);
-	};
-
-	const memberTermsEditorTemplate = (props) => {
-		return (
-			<>
-				<AutocompleteMultiEditor
-					name="memberTerms"
-					fieldName="memberTerms"
-					subField="name"
-					initialValue={props.rowData.memberTerms}
-					editorOptions={props}
-					search={memberTermSearch}
-					onValueChangeHandler={onMemberTermsChange}
-					valueDisplay={(item, setAutocompleteSelectedItem, op, query) => (
-						<VocabTermAutocompleteTemplate
-							item={item}
-							setAutocompleteSelectedItem={setAutocompleteSelectedItem}
-							op={op}
-							query={query}
-						/>
-					)}
-				/>
-				<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField="memberTerms" />
-			</>
-		);
-	};
-
 	const columns = useMemo(
 		() => [
 			{
@@ -164,7 +71,25 @@ export const VocabularyTermSetTable = () => {
 				sortable: true,
 				body: (rowData) => <StringTemplate string={rowData.vocabularyTermSetVocabulary?.name} />,
 				filterConfig: FILTER_CONFIGS.vocabularyFieldSetFilterConfig,
-				editor: (props) => vocabularyEditorTemplate(props),
+				editor: (editorOptions) => (
+					<AutocompleteSingleTableEditor
+						editorOptions={editorOptions}
+						errorMessagesRef={errorMessagesRef}
+						field="vocabularyTermSetVocabulary"
+						subField="name"
+						endpoint={Endpoints.Vocabulary.VOCABULARY}
+						autocompleteFields={['name']}
+						filterName="vocabularyFilter"
+						valueDisplay={(item, setAutocompleteSelectedItem, op, query) => (
+							<VocabTermAutocompleteTemplate
+								item={item}
+								setAutocompleteSelectedItem={setAutocompleteSelectedItem}
+								op={op}
+								query={query}
+							/>
+						)}
+					/>
+				),
 			},
 			{
 				field: 'memberTerms',
@@ -173,7 +98,32 @@ export const VocabularyTermSetTable = () => {
 				sortable: true,
 				body: (rowData) => <StringListTemplate list={rowData.memberTerms?.map((memberTerm) => memberTerm?.name)} />,
 				filterConfig: FILTER_CONFIGS.vocabularyMemberTermsFilterConfig,
-				editor: (props) => memberTermsEditorTemplate(props),
+				editor: (editorOptions) => (
+					<AutocompleteMultiTableEditor
+						editorOptions={editorOptions}
+						errorMessagesRef={errorMessagesRef}
+						field="memberTerms"
+						subField="name"
+						endpoint={Endpoints.Vocabulary.TERM}
+						autocompleteFields={['name']}
+						filterName="memberTermsFilter"
+						otherFilters={{
+							vocabularyFilter: {
+								'vocabulary.name': {
+									queryString: editorOptions.rowData.vocabularyTermSetVocabulary?.name,
+								},
+							},
+						}}
+						valueDisplay={(item, setAutocompleteSelectedItem, op, query) => (
+							<VocabTermAutocompleteTemplate
+								item={item}
+								setAutocompleteSelectedItem={setAutocompleteSelectedItem}
+								op={op}
+								query={query}
+							/>
+						)}
+					/>
+				),
 			},
 			{
 				field: 'vocabularyTermSetDescription',
