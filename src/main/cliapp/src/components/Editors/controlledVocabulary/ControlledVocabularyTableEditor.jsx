@@ -7,6 +7,8 @@ export const ControlledVocabularyTableEditor = ({
 	options,
 	showClear = true,
 	errorMessagesRef,
+	dataKey,
+	placeholderField = 'name',
 }) => {
 	return (
 		<>
@@ -16,7 +18,8 @@ export const ControlledVocabularyTableEditor = ({
 				editorChange={(editorOptions, event) => editorOptions.editorCallback(event.value)}
 				editorOptions={editorOptions}
 				showClear={showClear}
-				placeholderText={editorOptions.rowData[field]?.name}
+				placeholderText={editorOptions.rowData[field]?.[placeholderField]}
+				dataKey={dataKey}
 			/>
 			<ErrorMessageComponent errorMessages={errorMessagesRef.current[editorOptions.rowIndex]} errorField={field} />
 		</>

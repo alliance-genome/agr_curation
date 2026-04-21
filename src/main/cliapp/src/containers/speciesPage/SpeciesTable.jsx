@@ -5,10 +5,10 @@ import { Toast } from 'primereact/toast';
 import { getDefaultTableState } from '../../service/TableStateService';
 import { FILTER_CONFIGS } from '../../constants/FilterFields';
 import { CommaSeparatedArrayTemplate } from '../../components/Templates/CommaSeparatedArrayTemplate';
+import { StringTemplate } from '../../components/Templates/StringTemplate';
 import { InputTextTableEditor } from '../../components/Editors/text/InputTextTableEditor';
 import { StringListTableEditor } from '../../components/Editors/text/StringListTableEditor';
-import { ControlledVocabularyDropdown } from '../../components/ControlledVocabularySelector';
-import { ErrorMessageComponent } from '../../components/Error/ErrorMessageComponent';
+import { ControlledVocabularyTableEditor } from '../../components/Editors/controlledVocabulary/ControlledVocabularyTableEditor';
 import { useGetTableData } from '../../service/useGetTableData';
 import { useGetUserSettings } from '../../service/useGetUserSettings';
 import { useOrganizationService } from '../../service/useOrganizationService';
@@ -42,28 +42,6 @@ export const SpeciesTable = () => {
 			return speciesService.saveSpecies(updatedSpecies);
 		},
 	});
-
-	const onDataProviderEditorValueChange = (props, event) => {
-		let updatedEntities = [...props.props.value];
-		updatedEntities[props.rowIndex].dataProvider = event.value;
-	};
-
-	const dataProviderEditor = (props) => {
-		return (
-			<>
-				<ControlledVocabularyDropdown
-					field="dataProvider"
-					options={organizations}
-					editorChange={onDataProviderEditorValueChange}
-					editorOptions={props}
-					showClear={false}
-					dataKey="id"
-					placeholderText={props.rowData.dataProvider?.abbreviation}
-				/>
-				<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField="dataProvider" />
-			</>
-		);
-	};
 
 	const columns = useMemo(
 		() => [
@@ -121,8 +99,19 @@ export const SpeciesTable = () => {
 				header: 'Data Provider',
 				sortable: true,
 				filter: true,
+				body: (rowData) => <StringTemplate string={rowData.dataProvider?.abbreviation} />,
 				filterConfig: FILTER_CONFIGS.speciesDataProviderFilterConfig,
-				editor: (props) => dataProviderEditor(props),
+				editor: (editorOptions) => (
+					<ControlledVocabularyTableEditor
+						editorOptions={editorOptions}
+						field="dataProvider"
+						options={organizations}
+						errorMessagesRef={errorMessagesRef}
+						showClear={false}
+						dataKey="id"
+						placeholderField="abbreviation"
+					/>
+				),
 			},
 			{
 				field: 'phylogeneticOrder',
