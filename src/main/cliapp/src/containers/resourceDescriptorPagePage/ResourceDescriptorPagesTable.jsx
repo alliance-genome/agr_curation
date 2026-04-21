@@ -12,9 +12,7 @@ import { Endpoints } from '../../constants/Endpoints';
 
 import { StringTemplate } from '../../components/Templates/StringTemplate';
 import { InputTextTableEditor } from '../../components/Editors/text/InputTextTableEditor';
-import { AutocompleteEditor } from '../../components/Autocomplete/AutocompleteEditor';
-import { ErrorMessageComponent } from '../../components/Error/ErrorMessageComponent';
-import { buildAutocompleteFilter, autocompleteSearch, defaultAutocompleteOnChange } from '../../utils/utils';
+import { AutocompleteSingleTableEditor } from '../../components/Editors/autocomplete/AutocompleteSingleTableEditor';
 
 export const ResourceDescriptorPagesTable = () => {
 	const [isInEditMode, setIsInEditMode] = useState(false);
@@ -41,44 +39,6 @@ export const ResourceDescriptorPagesTable = () => {
 		},
 	});
 
-	const resourceDescriptorSearch = (event, setFiltered, setQuery) => {
-		const autocompleteFields = ['prefix', 'name'];
-		const endpoint = Endpoints.Resource.DESCRIPTOR;
-		const filterName = 'resourceDescriptorFilter';
-		const filter = buildAutocompleteFilter(event, autocompleteFields);
-
-		setQuery(event.query);
-		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered);
-	};
-
-	const onResourceDescriptorValueChange = (event, setFieldValue, props) => {
-		defaultAutocompleteOnChange(props, event, 'resourceDescriptor', setFieldValue, 'prefix');
-	};
-
-	const resourceDescriptorEditorTemplate = (props) => {
-		return (
-			<>
-				<AutocompleteEditor
-					search={resourceDescriptorSearch}
-					initialValue={props.rowData.resourceDescriptor?.prefix}
-					editorOptions={props}
-					fieldName="resourceDescriptor"
-					subField="prefix"
-					valueDisplay={(item, setAutocompleteHoverItem, op, query) => (
-						<div>
-							{item.prefix} ({item.name})
-						</div>
-					)}
-					onValueChangeHandler={onResourceDescriptorValueChange}
-				/>
-				<ErrorMessageComponent
-					errorMessages={errorMessagesRef.current[props.rowIndex]}
-					errorField="resourceDescriptor"
-				/>
-			</>
-		);
-	};
-
 	const columns = useMemo(
 		() => [
 			{
@@ -90,7 +50,22 @@ export const ResourceDescriptorPagesTable = () => {
 					<StringTemplate string={`${rowData.resourceDescriptor?.prefix} (${rowData.resourceDescriptor?.name})`} />
 				),
 				filterConfig: FILTER_CONFIGS.resourceDescriptorFilterConfig,
-				editor: (props) => resourceDescriptorEditorTemplate(props),
+				editor: (editorOptions) => (
+					<AutocompleteSingleTableEditor
+						editorOptions={editorOptions}
+						errorMessagesRef={errorMessagesRef}
+						field="resourceDescriptor"
+						subField="prefix"
+						endpoint={Endpoints.Resource.DESCRIPTOR}
+						autocompleteFields={['prefix', 'name']}
+						filterName="resourceDescriptorFilter"
+						valueDisplay={(item) => (
+							<div>
+								{item.prefix} ({item.name})
+							</div>
+						)}
+					/>
+				),
 			},
 			{
 				field: 'name',
