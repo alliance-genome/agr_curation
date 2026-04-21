@@ -1,24 +1,17 @@
 import React, { useRef, useState, useMemo } from 'react';
 import { GenericDataTable } from '../../components/GenericDataTable/GenericDataTable';
 import { InputTextTableEditor } from '../../components/Editors/text/InputTextTableEditor';
-import { AutocompleteEditor } from '../../components/Autocomplete/AutocompleteEditor';
+import { AutocompleteSingleTableEditor } from '../../components/Editors/autocomplete/AutocompleteSingleTableEditor';
+import { BooleanTableEditor } from '../../components/Editors/boolean/BooleanTableEditor';
 import { useMutation } from '@tanstack/react-query';
 import { Toast } from 'primereact/toast';
 import { SearchService } from '../../service/SearchService';
 import { Endpoints } from '../../constants/Endpoints';
-import { ErrorMessageComponent } from '../../components/Error/ErrorMessageComponent';
 import { ExperimentalConditionService } from '../../service/ExperimentalConditionService';
 import { Button } from 'primereact/button';
-import { TrueFalseDropdown } from '../../components/TrueFalseDropDownSelector';
 import { NewConditionForm } from './NewConditionForm';
-import { useControlledVocabularyService } from '../../service/useControlledVocabularyService';
 import { useNewConditionReducer } from './useNewConditionReducer';
-import {
-	defaultAutocompleteOnChange,
-	autocompleteSearch,
-	buildAutocompleteFilter,
-	setNewEntity,
-} from '../../utils/utils';
+import { setNewEntity } from '../../utils/utils';
 import { getDefaultTableState } from '../../service/TableStateService';
 import { FILTER_CONFIGS } from '../../constants/FilterFields';
 import { useGetTableData } from '../../service/useGetTableData';
@@ -36,7 +29,6 @@ export const ExperimentalConditionsTable = () => {
 	const { newConditionState, newConditionDispatch } = useNewConditionReducer();
 	const [experimentalConditions, setExperimentalConditions] = useState([]);
 
-	const booleanTerms = useControlledVocabularyService('generic_boolean_terms');
 	const searchService = new SearchService();
 	const toast_topleft = useRef(null);
 	const toast_topright = useRef(null);
@@ -70,92 +62,6 @@ export const ExperimentalConditionsTable = () => {
 		newConditionDispatch({ type: 'OPEN_DIALOG' });
 	};
 
-	const onInternalEditorValueChange = (props, event) => {
-		let updatedAnnotations = [...props.props.value];
-		if (event.value || event.value === '') {
-			updatedAnnotations[props.rowIndex].internal = JSON.parse(event.value.name);
-		}
-	};
-
-	const internalEditor = (props) => {
-		return (
-			<>
-				<TrueFalseDropdown
-					options={booleanTerms?.terms || []}
-					editorChange={onInternalEditorValueChange}
-					editorOptions={props}
-					field={'internal'}
-				/>
-				<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={'internal'} />
-			</>
-		);
-	};
-
-	const onConditionClassValueChange = (event, setFieldValue, props) => {
-		defaultAutocompleteOnChange(props, event, 'conditionClass', setFieldValue);
-	};
-
-	const conditionClassSearch = (event, setFiltered, setQuery) => {
-		const endpoint = Endpoints.Ontology.ZECO;
-		const filterName = 'conditionClassEditorFilter';
-		const filter = buildAutocompleteFilter(event, curieAutocompleteFields);
-		const otherFilters = {
-			subsetFilter: {
-				subsets: {
-					queryString: 'ZECO_0000267',
-				},
-			},
-		};
-
-		setQuery(event.query);
-		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered, otherFilters);
-	};
-
-	const conditionClassEditorTemplate = (props) => {
-		return (
-			<>
-				<AutocompleteEditor
-					search={conditionClassSearch}
-					initialValue={props.rowData.conditionClass?.curie}
-					editorOptions={props}
-					fieldName="conditionClass"
-					onValueChangeHandler={onConditionClassValueChange}
-				/>
-				<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField="conditionClass" />
-			</>
-		);
-	};
-
-	const onSingleOntologyValueChange = (event, setFieldValue, props, fieldName) => {
-		defaultAutocompleteOnChange(props, event, fieldName, setFieldValue);
-	};
-
-	const singleOntologySearch = (event, setFiltered, endpoint, autocomplete, setQuery) => {
-		const filterName = 'singleOntologyFilter';
-		const filter = buildAutocompleteFilter(event, autocomplete);
-
-		setQuery(event.query);
-		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered);
-	};
-
-	const singleOntologyEditorTemplate = (props, fieldname, endpoint, autocomplete) => {
-		return (
-			<>
-				<AutocompleteEditor
-					search={(event, setFiltered, setQuery) =>
-						singleOntologySearch(event, setFiltered, endpoint, autocomplete, setQuery)
-					}
-					initialValue={props.rowData[fieldname]?.curie}
-					editorOptions={props}
-					filterName="singleOntologyFilter"
-					fieldName={fieldname}
-					onValueChangeHandler={onSingleOntologyValueChange}
-				/>
-				<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={fieldname} />
-			</>
-		);
-	};
-
 	const columns = useMemo(
 		() => [
 			{
@@ -179,7 +85,19 @@ export const ExperimentalConditionsTable = () => {
 				sortable: true,
 				body: (rowData) => <OntologyTermTemplate term={rowData.conditionClass} />,
 				filterConfig: FILTER_CONFIGS.conditionClassFilterConfig,
-				editor: (props) => conditionClassEditorTemplate(props, curieAutocompleteFields),
+				editor: (editorOptions) => (
+					<AutocompleteSingleTableEditor
+						editorOptions={editorOptions}
+						errorMessagesRef={errorMessagesRef}
+						field="conditionClass"
+						endpoint={Endpoints.Ontology.ZECO}
+						autocompleteFields={curieAutocompleteFields}
+						filterName="conditionClassEditorFilter"
+						otherFilters={{
+							subsetFilter: { subsets: { queryString: 'ZECO_0000267' } },
+						}}
+					/>
+				),
 			},
 			{
 				field: 'conditionId',
@@ -188,13 +106,16 @@ export const ExperimentalConditionsTable = () => {
 				sortable: true,
 				body: (rowData) => <OntologyTermTemplate term={rowData.conditionId} />,
 				filterConfig: FILTER_CONFIGS.conditionIdFilterConfig,
-				editor: (props) =>
-					singleOntologyEditorTemplate(
-						props,
-						'conditionId',
-						Endpoints.Ontology.EXPERIMENTAL_CONDITION,
-						curieAutocompleteFields
-					),
+				editor: (editorOptions) => (
+					<AutocompleteSingleTableEditor
+						editorOptions={editorOptions}
+						errorMessagesRef={errorMessagesRef}
+						field="conditionId"
+						endpoint={Endpoints.Ontology.EXPERIMENTAL_CONDITION}
+						autocompleteFields={curieAutocompleteFields}
+						filterName="conditionIdFilter"
+					/>
+				),
 			},
 			{
 				field: 'conditionGeneOntology',
@@ -203,8 +124,16 @@ export const ExperimentalConditionsTable = () => {
 				sortable: true,
 				body: (rowData) => <OntologyTermTemplate term={rowData.conditionGeneOntology} />,
 				filterConfig: FILTER_CONFIGS.conditionGeneOntologyFilterConfig,
-				editor: (props) =>
-					singleOntologyEditorTemplate(props, 'conditionGeneOntology', Endpoints.Ontology.GO, curieAutocompleteFields),
+				editor: (editorOptions) => (
+					<AutocompleteSingleTableEditor
+						editorOptions={editorOptions}
+						errorMessagesRef={errorMessagesRef}
+						field="conditionGeneOntology"
+						endpoint={Endpoints.Ontology.GO}
+						autocompleteFields={curieAutocompleteFields}
+						filterName="conditionGeneOntologyFilter"
+					/>
+				),
 			},
 			{
 				field: 'conditionChemical',
@@ -213,13 +142,16 @@ export const ExperimentalConditionsTable = () => {
 				sortable: true,
 				body: (rowData) => <OntologyTermTemplate term={rowData.conditionChemical} />,
 				filterConfig: FILTER_CONFIGS.conditionChemicalFilterConfig,
-				editor: (props) =>
-					singleOntologyEditorTemplate(
-						props,
-						'conditionChemical',
-						Endpoints.Ontology.CHEMICAL,
-						curieAutocompleteFields
-					),
+				editor: (editorOptions) => (
+					<AutocompleteSingleTableEditor
+						editorOptions={editorOptions}
+						errorMessagesRef={errorMessagesRef}
+						field="conditionChemical"
+						endpoint={Endpoints.Ontology.CHEMICAL}
+						autocompleteFields={curieAutocompleteFields}
+						filterName="conditionChemicalFilter"
+					/>
+				),
 			},
 			{
 				field: 'conditionAnatomy',
@@ -228,13 +160,16 @@ export const ExperimentalConditionsTable = () => {
 				sortable: true,
 				body: (rowData) => <OntologyTermTemplate term={rowData.conditionAnatomy} />,
 				filterConfig: FILTER_CONFIGS.conditionAnatomyFilterConfig,
-				editor: (props) =>
-					singleOntologyEditorTemplate(
-						props,
-						'conditionAnatomy',
-						Endpoints.Ontology.ANATOMICAL,
-						curieAutocompleteFields
-					),
+				editor: (editorOptions) => (
+					<AutocompleteSingleTableEditor
+						editorOptions={editorOptions}
+						errorMessagesRef={errorMessagesRef}
+						field="conditionAnatomy"
+						endpoint={Endpoints.Ontology.ANATOMICAL}
+						autocompleteFields={curieAutocompleteFields}
+						filterName="conditionAnatomyFilter"
+					/>
+				),
 			},
 			{
 				field: 'conditionTaxon',
@@ -243,8 +178,16 @@ export const ExperimentalConditionsTable = () => {
 				sortable: true,
 				body: (rowData) => <OntologyTermTemplate term={rowData.conditionTaxon} />,
 				filterConfig: FILTER_CONFIGS.conditionTaxonFilterConfig,
-				editor: (props) =>
-					singleOntologyEditorTemplate(props, 'conditionTaxon', Endpoints.Ontology.NCBI_TAXON, curieAutocompleteFields),
+				editor: (editorOptions) => (
+					<AutocompleteSingleTableEditor
+						editorOptions={editorOptions}
+						errorMessagesRef={errorMessagesRef}
+						field="conditionTaxon"
+						endpoint={Endpoints.Ontology.NCBI_TAXON}
+						autocompleteFields={curieAutocompleteFields}
+						filterName="conditionTaxonFilter"
+					/>
+				),
 			},
 			{
 				field: 'conditionQuantity',
@@ -280,11 +223,17 @@ export const ExperimentalConditionsTable = () => {
 				body: (rowData) => <BooleanTemplate value={rowData.internal} />,
 				filterConfig: FILTER_CONFIGS.internalFilterConfig,
 				sortable: true,
-				editor: (props) => internalEditor(props),
+				editor: (editorOptions) => (
+					<BooleanTableEditor
+						editorOptions={editorOptions}
+						errorMessagesRef={errorMessagesRef}
+						field="internal"
+					/>
+				),
 			},
 		],
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-		[booleanTerms]
+		[]
 	);
 
 	const DEFAULT_COLUMN_WIDTH = 10;
