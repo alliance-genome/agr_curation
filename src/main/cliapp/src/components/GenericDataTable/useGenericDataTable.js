@@ -168,16 +168,47 @@ export const useGenericDataTable = ({
 			});
 		}
 
+		// Optimistic update: apply the user's edit synchronously so the row renders
+		// the new values immediately while the server round-trip is in flight.
+		// Uses the full rowData (not updatedRow) so display fields like .name / .curie
+		// on nested objects stay intact — updatedRow has been stripped to {id} / {curie}
+		// for the server payload.
+		const optimisticRow = structuredClone(rowData);
+		const rowKey = optimisticRow.id ?? optimisticRow.curie;
+		setEntities((previousEntities) => {
+			const nextEntities = [...previousEntities];
+			nextEntities[index] = optimisticRow;
+			return nextEntities;
+		});
+
+		// Replace the row at its current position by id/curie — guards against pagination,
+		// sorting, or parallel edits changing which row lives at `index` between save and response.
+		const replaceRowByKey = (newRow) => {
+			setEntities((previousEntities) => {
+				const liveIndex = previousEntities.findIndex(
+					(candidateRow) => (candidateRow?.id ?? candidateRow?.curie) === rowKey
+				);
+				if (liveIndex === -1) return previousEntities;
+				const nextEntities = [...previousEntities];
+				nextEntities[liveIndex] = newRow;
+				return nextEntities;
+			});
+		};
+
 		mutation.mutate(updatedRow, {
 			onSuccess: (response, variables, context) => {
 				toast_topright.current.show({ severity: 'success', summary: 'Successful', detail: 'Row Updated' });
 
-				let _entities = structuredClone(entities);
-				_entities[index] = response.data.entity;
-				setEntities(_entities);
-				const errorMessagesCopy = structuredClone(errorMessages);
-				errorMessagesCopy[index] = {};
-				setErrorMessages({ ...errorMessagesCopy });
+				// Reconcile with server entity (fills in computed fields like dbDateUpdated).
+				// If the server didn't return an entity, keep the optimistic row as-is.
+				if (response?.data?.entity) {
+					replaceRowByKey(response.data.entity);
+				}
+				setErrorMessages((previousErrorMessages) => {
+					const nextErrorMessages = structuredClone(previousErrorMessages);
+					nextErrorMessages[index] = {};
+					return nextErrorMessages;
+				});
 			},
 			onError: (error, variables, context) => {
 				setIsInEditMode(true);
@@ -202,25 +233,24 @@ export const useGenericDataTable = ({
 					setExceptionDialog(true);
 				}
 
-				let _entities = structuredClone(entities);
+				// entities already holds the full optimistic row from the update above; leave as-is.
+				// Always clear this row's errorMessages bucket first so a previous attempt's
+				// errors don't linger, then populate with any new ones from the server.
+				setErrorMessages((previousErrorMessages) => {
+					const nextErrorMessages = structuredClone(previousErrorMessages);
+					nextErrorMessages[index] = {};
+					if (error.response.data.errorMessages !== undefined) {
+						Object.keys(error.response.data.errorMessages).forEach((field) => {
+							nextErrorMessages[index][field] = {
+								severity: 'error',
+								message: error.response.data.errorMessages[field],
+							};
+						});
+					}
+					return nextErrorMessages;
+				});
 
-				const errorMessagesCopy = structuredClone(errorMessages);
-				errorMessagesCopy[index] = {};
-				if (error.response.data.errorMessages !== undefined) {
-					Object.keys(error.response.data.errorMessages).forEach((field) => {
-						let messageObject = {
-							severity: 'error',
-							message: error.response.data.errorMessages[field],
-						};
-						errorMessagesCopy[index][field] = messageObject;
-					});
-					setErrorMessages({ ...errorMessagesCopy });
-				}
-
-				setEntities(_entities);
-				let key = _entities[index].id ? _entities[index].id : _entities[index].curie;
-				let _editingRows = { ...editingRows, ...{ [`${key}`]: true } };
-				setEditingRows(_editingRows);
+				setEditingRows({ ...editingRows, [`${rowKey}`]: true });
 			},
 		});
 	};

@@ -2,7 +2,7 @@ import { TrueFalseDropdown } from '../../TrueFalseDropDownSelector';
 import { ErrorMessageComponent } from '../../Error/ErrorMessageComponent';
 import { useControlledVocabularyService } from '../../../service/useControlledVocabularyService';
 
-export const BooleanTableEditor = ({ editorOptions, errorMessagesRef, field, showClear = true }) => {
+export const BooleanTableEditor = ({ editorOptions, errorMessagesRef, field, showClear = false }) => {
 	const booleanTerms = useControlledVocabularyService('generic_boolean_terms');
 
 	return (

@@ -3,8 +3,6 @@ import { TableEditorErrors } from '../../Error/TableEditorErrors';
 import { SearchService } from '../../../service/SearchService';
 import { autocompleteSearch, buildAutocompleteFilter, multipleAutocompleteOnChange } from '../../../utils/utils';
 
-const searchService = new SearchService();
-
 export const AutocompleteMultiTableEditor = ({
 	editorOptions,
 	errorMessagesRef,
@@ -16,11 +14,13 @@ export const AutocompleteMultiTableEditor = ({
 	filterName,
 	otherFilters,
 	valueDisplay,
+	initialValue,
 }) => {
 	const search = (event, setFiltered, setInputValue) => {
 		const filter = buildAutocompleteFilter(event, autocompleteFields);
+		const resolvedOtherFilters = typeof otherFilters === 'function' ? otherFilters(editorOptions) : otherFilters;
 		setInputValue(event.query);
-		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered, otherFilters);
+		autocompleteSearch(new SearchService(), endpoint, filterName, filter, setFiltered, resolvedOtherFilters);
 	};
 
 	const onValueChange = (event, setFieldValue, editorOptions) => {
@@ -31,7 +31,7 @@ export const AutocompleteMultiTableEditor = ({
 		<>
 			<AutocompleteMultiEditor
 				search={search}
-				initialValue={editorOptions.rowData[field]}
+				initialValue={initialValue ?? editorOptions.rowData[field]}
 				editorOptions={editorOptions}
 				fieldName={field}
 				subField={subField}

@@ -5,7 +5,7 @@ export const ControlledVocabularyTableEditor = ({
 	editorOptions,
 	field,
 	options,
-	showClear = true,
+	showClear = false,
 	errorMessagesRef,
 	dataKey,
 	placeholderField = 'name',

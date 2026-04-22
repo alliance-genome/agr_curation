@@ -107,13 +107,13 @@ export const VocabularyTermSetTable = () => {
 						endpoint={Endpoints.Vocabulary.TERM}
 						autocompleteFields={['name']}
 						filterName="memberTermsFilter"
-						otherFilters={{
+						otherFilters={(opts) => ({
 							vocabularyFilter: {
 								'vocabulary.name': {
-									queryString: editorOptions.rowData.vocabularyTermSetVocabulary?.name,
+									queryString: opts.rowData.vocabularyTermSetVocabulary?.name,
 								},
 							},
-						}}
+						})}
 						valueDisplay={(item, setAutocompleteSelectedItem, op, query) => (
 							<VocabTermAutocompleteTemplate
 								item={item}
@@ -203,7 +203,7 @@ export const VocabularyTermSetTable = () => {
 				setTableState={setTableState}
 				columns={columns}
 				isEditable={true}
-				idFields={['vocabularyTermSetVocabulary, memberTerms']}
+				idFields={['vocabularyTermSetVocabulary', 'memberTerms']}
 				mutation={mutation}
 				isInEditMode={isInEditMode}
 				setIsInEditMode={setIsInEditMode}

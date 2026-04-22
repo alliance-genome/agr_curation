@@ -880,7 +880,6 @@ export const DiseaseAnnotationsTable = () => {
 			geneRelationTerms,
 			geneticSexTerms,
 			annotationTypeTerms,
-			booleanTerms,
 			geneticModifierRelationTerms,
 			diseaseQualifiersTerms,
 		]

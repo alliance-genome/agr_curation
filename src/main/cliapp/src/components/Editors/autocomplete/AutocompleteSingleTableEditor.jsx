@@ -3,8 +3,6 @@ import { TableEditorErrors } from '../../Error/TableEditorErrors';
 import { SearchService } from '../../../service/SearchService';
 import { autocompleteSearch, buildAutocompleteFilter, defaultAutocompleteOnChange } from '../../../utils/utils';
 
-const searchService = new SearchService();
-
 export const AutocompleteSingleTableEditor = ({
 	editorOptions,
 	errorMessagesRef,
@@ -20,8 +18,9 @@ export const AutocompleteSingleTableEditor = ({
 }) => {
 	const search = (event, setFiltered, setQuery) => {
 		const filter = buildAutocompleteFilter(event, autocompleteFields);
+		const resolvedOtherFilters = typeof otherFilters === 'function' ? otherFilters(editorOptions) : otherFilters;
 		setQuery(event.query);
-		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered, otherFilters);
+		autocompleteSearch(new SearchService(), endpoint, filterName, filter, setFiltered, resolvedOtherFilters);
 	};
 
 	const onValueChange = (event, setFieldValue, editorOptions) => {

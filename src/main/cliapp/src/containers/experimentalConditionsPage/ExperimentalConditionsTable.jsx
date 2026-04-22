@@ -92,7 +92,7 @@ export const ExperimentalConditionsTable = () => {
 						field="conditionClass"
 						endpoint={Endpoints.Ontology.ZECO}
 						autocompleteFields={curieAutocompleteFields}
-						filterName="conditionClassEditorFilter"
+						filterName="conditionClassFilter"
 						otherFilters={{
 							subsetFilter: { subsets: { queryString: 'ZECO_0000267' } },
 						}}

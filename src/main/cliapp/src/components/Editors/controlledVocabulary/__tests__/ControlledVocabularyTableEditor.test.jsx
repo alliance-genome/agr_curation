@@ -45,35 +45,35 @@ describe('ControlledVocabularyTableEditor', () => {
 		expect(editorOptions.editorCallback).toHaveBeenCalledWith(mockOptions[1]);
 	});
 
-	it('should render with showClear enabled by default', () => {
+	it('should not render clear button by default', () => {
 		const editorOptions = makeEditorOptions({ relation: { id: 1, name: 'is_model_of' } });
 		const result = render(
 			<ControlledVocabularyTableEditor
 				editorOptions={editorOptions}
 				field="relation"
 				options={mockOptions}
-				errorMessagesRef={emptyErrorMessagesRef}
-			/>
-		);
-
-		const clearButton = result.container.querySelector('.p-dropdown-clear-icon');
-		expect(clearButton).toBeInTheDocument();
-	});
-
-	it('should not render clear button when showClear is false', () => {
-		const editorOptions = makeEditorOptions({ relation: { id: 1, name: 'is_model_of' } });
-		const result = render(
-			<ControlledVocabularyTableEditor
-				editorOptions={editorOptions}
-				field="relation"
-				options={mockOptions}
-				showClear={false}
 				errorMessagesRef={emptyErrorMessagesRef}
 			/>
 		);
 
 		const clearButton = result.container.querySelector('.p-dropdown-clear-icon');
 		expect(clearButton).not.toBeInTheDocument();
+	});
+
+	it('should render clear button when showClear is true', () => {
+		const editorOptions = makeEditorOptions({ relation: { id: 1, name: 'is_model_of' } });
+		const result = render(
+			<ControlledVocabularyTableEditor
+				editorOptions={editorOptions}
+				field="relation"
+				options={mockOptions}
+				showClear={true}
+				errorMessagesRef={emptyErrorMessagesRef}
+			/>
+		);
+
+		const clearButton = result.container.querySelector('.p-dropdown-clear-icon');
+		expect(clearButton).toBeInTheDocument();
 	});
 
 	it('should display error messages when present', () => {
@@ -107,5 +107,44 @@ describe('ControlledVocabularyTableEditor', () => {
 
 		const dropdown = result.container.querySelector('.p-dropdown');
 		expect(dropdown).toBeInTheDocument();
+	});
+
+	it('should match the current value by id when dataKey="id" is supplied', () => {
+		// Separate object references with the same id — reproduces the SpeciesTable case
+		// where rowData.dataProvider and options come from different queries.
+		const currentOption = { id: 2, name: 'is_implicated_in' };
+		const editorOptions = makeEditorOptions({ relation: { id: 2, name: 'is_implicated_in' } });
+		const result = render(
+			<ControlledVocabularyTableEditor
+				editorOptions={editorOptions}
+				field="relation"
+				options={[mockOptions[0], currentOption, mockOptions[2]]}
+				errorMessagesRef={emptyErrorMessagesRef}
+				dataKey="id"
+			/>
+		);
+
+		const label = result.container.querySelector('.p-dropdown-label');
+		expect(label).toHaveTextContent('is_implicated_in');
+	});
+
+	it('should use placeholderField to derive placeholder text when no value is selected', () => {
+		// placeholder is only visible when the dropdown has no value
+		const editorOptions = makeEditorOptions({
+			dataProvider: { abbreviation: 'ZFIN', name: 'Zebrafish Information Network' },
+		});
+		// Intentionally no matching option (no dataKey, different ref) so the dropdown shows placeholder
+		const result = render(
+			<ControlledVocabularyTableEditor
+				editorOptions={editorOptions}
+				field="dataProvider"
+				options={[]}
+				errorMessagesRef={emptyErrorMessagesRef}
+				placeholderField="abbreviation"
+			/>
+		);
+
+		const label = result.container.querySelector('.p-dropdown-label');
+		expect(label).toHaveTextContent('ZFIN');
 	});
 });

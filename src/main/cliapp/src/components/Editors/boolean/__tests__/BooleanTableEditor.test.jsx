@@ -51,10 +51,25 @@ describe('BooleanTableEditor', () => {
 		expect(result.getByText('Invalid value')).toBeInTheDocument();
 	});
 
-	it('should render with showClear enabled by default', () => {
+	it('should not render clear button by default', () => {
 		const editorOptions = makeEditorOptions({ internal: true });
 		const result = render(
 			<BooleanTableEditor editorOptions={editorOptions} field="internal" errorMessagesRef={emptyErrorMessagesRef} />
+		);
+
+		const clearButton = result.container.querySelector('.p-dropdown-clear-icon');
+		expect(clearButton).not.toBeInTheDocument();
+	});
+
+	it('should render clear button when showClear is true', () => {
+		const editorOptions = makeEditorOptions({ internal: true });
+		const result = render(
+			<BooleanTableEditor
+				editorOptions={editorOptions}
+				field="internal"
+				errorMessagesRef={emptyErrorMessagesRef}
+				showClear={true}
+			/>
 		);
 
 		const clearButton = result.container.querySelector('.p-dropdown-clear-icon');
