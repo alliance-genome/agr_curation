@@ -18,7 +18,7 @@ export function ConditionRelationHandleDropdown({
 
 	const onShow = () => {
 		setSelectedValue(editorOptions.rowData[field]);
-		const singleReferenceCurie = editorOptions.value[0]?.singleReference?.curie;
+		const singleReferenceCurie = editorOptions.rowData.conditionRelations?.[0]?.singleReference?.curie;
 		if (singleReferenceCurie) {
 			searchService
 				.find(Endpoints.Annotation.CONDITION_RELATION, 15, 0, {

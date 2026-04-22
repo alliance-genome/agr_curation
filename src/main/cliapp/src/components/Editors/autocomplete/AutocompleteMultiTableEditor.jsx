@@ -16,11 +16,13 @@ export const AutocompleteMultiTableEditor = ({
 	valueDisplay,
 	initialValue,
 }) => {
+	const searchService = new SearchService();
+
 	const search = (event, setFiltered, setInputValue) => {
 		const filter = buildAutocompleteFilter(event, autocompleteFields);
 		const resolvedOtherFilters = typeof otherFilters === 'function' ? otherFilters(editorOptions) : otherFilters;
 		setInputValue(event.query);
-		autocompleteSearch(new SearchService(), endpoint, filterName, filter, setFiltered, resolvedOtherFilters);
+		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered, resolvedOtherFilters);
 	};
 
 	const onValueChange = (event, setFieldValue, editorOptions) => {

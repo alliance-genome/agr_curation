@@ -136,7 +136,10 @@ export const useGenericDataTable = ({
 			setIsInEditMode(false);
 		}
 
-		let updatedRow = structuredClone(event.newData ?? event.data);
+		// optimisticRow keeps the full nested data (needed for rendering display fields
+		// like .name); updatedRow is a shallow copy stripped to {id}/{curie} for the server.
+		const optimisticRow = structuredClone(event.newData ?? event.data);
+		let updatedRow = { ...optimisticRow };
 
 		if (tableName === 'Disease Annotations') {
 			validateBioEntityFields(updatedRow, setUiErrorMessages, event, setIsInEditMode, closeRowRef, areUiErrors);
@@ -147,33 +150,22 @@ export const useGenericDataTable = ({
 			return;
 		}
 
-		const rowData = event.newData ?? event.data;
 		if (curieFields) {
 			curieFields.forEach((field) => {
-				if (rowData[field] && Object.keys(rowData[field]).length >= 1) {
-					const curie = trimWhitespace(rowData[field].curie);
-					updatedRow[field] = {};
-					updatedRow[field].curie = curie;
+				if (optimisticRow[field] && Object.keys(optimisticRow[field]).length >= 1) {
+					updatedRow[field] = { curie: trimWhitespace(optimisticRow[field].curie) };
 				}
 			});
 		}
 
 		if (idFields) {
 			idFields.forEach((field) => {
-				if (rowData[field] && Object.keys(rowData[field]).length >= 1) {
-					const id = rowData[field].id;
-					updatedRow[field] = {};
-					updatedRow[field].id = id;
+				if (optimisticRow[field] && Object.keys(optimisticRow[field]).length >= 1) {
+					updatedRow[field] = { id: optimisticRow[field].id };
 				}
 			});
 		}
 
-		// Optimistic update: apply the user's edit synchronously so the row renders
-		// the new values immediately while the server round-trip is in flight.
-		// Uses the full rowData (not updatedRow) so display fields like .name / .curie
-		// on nested objects stay intact — updatedRow has been stripped to {id} / {curie}
-		// for the server payload.
-		const optimisticRow = structuredClone(rowData);
 		const rowKey = optimisticRow.id ?? optimisticRow.curie;
 		setEntities((previousEntities) => {
 			const nextEntities = [...previousEntities];

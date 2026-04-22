@@ -50,6 +50,10 @@ import { FILTER_CONFIGS } from '../../constants/FilterFields';
 import { useGetTableData } from '../../service/useGetTableData';
 import { useGetUserSettings } from '../../service/useGetUserSettings';
 
+const subjectValueDisplay = (item, setAutocompleteHoverItem, op, query) => (
+	<SubjectAutocompleteTemplate item={item} setAutocompleteHoverItem={setAutocompleteHoverItem} op={op} query={query} />
+);
+
 export const DiseaseAnnotationsTable = () => {
 	const [isInEditMode, setIsInEditMode] = useState(false); //needs better name
 	const [totalRecords, setTotalRecords] = useState(0);
@@ -397,14 +401,7 @@ export const DiseaseAnnotationsTable = () => {
 						]}
 						filterName="withFilter"
 						otherFilters={{ taxonFilter: { 'taxon.curie': { queryString: 'NCBITaxon:9606' } } }}
-						valueDisplay={(item, setAutocompleteHoverItem, op, query) => (
-							<SubjectAutocompleteTemplate
-								item={item}
-								setAutocompleteHoverItem={setAutocompleteHoverItem}
-								op={op}
-								query={query}
-							/>
-						)}
+						valueDisplay={subjectValueDisplay}
 						errorMessagesRef={errorMessagesRef}
 					/>
 				),
@@ -546,14 +543,7 @@ export const DiseaseAnnotationsTable = () => {
 							]}
 							filterName="sgdStrainBackgroundFilter"
 							otherFilters={{ taxonFilter: { 'taxon.name': { queryString: 'Saccharomyces cerevisiae' } } }}
-							valueDisplay={(item, setAutocompleteHoverItem, op, query) => (
-								<SubjectAutocompleteTemplate
-									item={item}
-									setAutocompleteHoverItem={setAutocompleteHoverItem}
-									op={op}
-									query={query}
-								/>
-							)}
+							valueDisplay={subjectValueDisplay}
 							initialValue={getIdentifier(editorOptions.rowData.sgdStrainBackground)}
 							errorMessagesRef={errorMessagesRef}
 							uiErrorMessagesRef={uiErrorMessagesRef}
@@ -618,14 +608,7 @@ export const DiseaseAnnotationsTable = () => {
 							'crossReferences.referencedCurie',
 						]}
 						filterName="geneticModifierAgmsFilter"
-						valueDisplay={(item, setAutocompleteHoverItem, op, query) => (
-							<SubjectAutocompleteTemplate
-								item={item}
-								setAutocompleteHoverItem={setAutocompleteHoverItem}
-								op={op}
-								query={query}
-							/>
-						)}
+						valueDisplay={subjectValueDisplay}
 						errorMessagesRef={errorMessagesRef}
 						uiErrorMessagesRef={uiErrorMessagesRef}
 					/>
@@ -657,14 +640,7 @@ export const DiseaseAnnotationsTable = () => {
 							'alleleSecondaryIds.secondaryId',
 						]}
 						filterName="geneticModifierAllelesFilter"
-						valueDisplay={(item, setAutocompleteHoverItem, op, query) => (
-							<SubjectAutocompleteTemplate
-								item={item}
-								setAutocompleteHoverItem={setAutocompleteHoverItem}
-								op={op}
-								query={query}
-							/>
-						)}
+						valueDisplay={subjectValueDisplay}
 						errorMessagesRef={errorMessagesRef}
 						uiErrorMessagesRef={uiErrorMessagesRef}
 					/>
@@ -699,14 +675,7 @@ export const DiseaseAnnotationsTable = () => {
 							'crossReferences.referencedCurie',
 						]}
 						filterName="geneticModifierGenesFilter"
-						valueDisplay={(item, setAutocompleteHoverItem, op, query) => (
-							<SubjectAutocompleteTemplate
-								item={item}
-								setAutocompleteHoverItem={setAutocompleteHoverItem}
-								op={op}
-								query={query}
-							/>
-						)}
+						valueDisplay={subjectValueDisplay}
 						errorMessagesRef={errorMessagesRef}
 						uiErrorMessagesRef={uiErrorMessagesRef}
 					/>
@@ -749,14 +718,7 @@ export const DiseaseAnnotationsTable = () => {
 								'geneSystematicName.displayText',
 							]}
 							filterName="assertedGenesFilter"
-							valueDisplay={(item, setAutocompleteHoverItem, op, query) => (
-								<SubjectAutocompleteTemplate
-									item={item}
-									setAutocompleteHoverItem={setAutocompleteHoverItem}
-									op={op}
-									query={query}
-								/>
-							)}
+							valueDisplay={subjectValueDisplay}
 							errorMessagesRef={errorMessagesRef}
 						/>
 					);
@@ -798,14 +760,7 @@ export const DiseaseAnnotationsTable = () => {
 								'alleleSynonyms.displayText',
 							]}
 							filterName="assertedAllelesFilter"
-							valueDisplay={(item, setAutocompleteHoverItem, op, query) => (
-								<SubjectAutocompleteTemplate
-									item={item}
-									setAutocompleteHoverItem={setAutocompleteHoverItem}
-									op={op}
-									query={query}
-								/>
-							)}
+							valueDisplay={subjectValueDisplay}
 							errorMessagesRef={errorMessagesRef}
 						/>
 					);

@@ -16,11 +16,13 @@ export const AutocompleteSingleTableEditor = ({
 	valueDisplay,
 	initialValue,
 }) => {
+	const searchService = new SearchService();
+
 	const search = (event, setFiltered, setQuery) => {
 		const filter = buildAutocompleteFilter(event, autocompleteFields);
 		const resolvedOtherFilters = typeof otherFilters === 'function' ? otherFilters(editorOptions) : otherFilters;
 		setQuery(event.query);
-		autocompleteSearch(new SearchService(), endpoint, filterName, filter, setFiltered, resolvedOtherFilters);
+		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered, resolvedOtherFilters);
 	};
 
 	const onValueChange = (event, setFieldValue, editorOptions) => {
