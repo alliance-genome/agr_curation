@@ -416,7 +416,7 @@ const modTableSettings = {
 export function getModTableState(table, defaultColumnWidths, defaultColumnNames) {
 	const cognitoToken = JSON.parse(localStorage.getItem('cognito-token-storage'));
 	const mod = cognitoToken?.accessToken?.payload?.['cognito:groups']?.filter((group) => group.includes('Staff'));
-	const modTableState = global.structuredClone(
+	const modTableState = structuredClone(
 		modTableSettings[mod] ? modTableSettings[mod][table] : modTableSettings['Default'][table]
 	);
 	modTableState.columnWidths = defaultColumnWidths;

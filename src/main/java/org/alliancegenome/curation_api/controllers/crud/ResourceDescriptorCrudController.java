@@ -28,4 +28,9 @@ public class ResourceDescriptorCrudController extends BaseEntityCrudController<R
 		return resourceDescriptorService.getById(id);
 	}
 
+	@Override
+	public ObjectResponse<ResourceDescriptor> update(ResourceDescriptor entity) {
+		return resourceDescriptorService.update(entity);
+	}
+
 }
