@@ -255,7 +255,7 @@ function containsMatch(inputValue, selectedItem) {
 
 export function filterDropDownObject(inputValue, object) {
 	const trimmedValue = trimWhitespace(inputValue.toLowerCase());
-	let _object = global.structuredClone(object);
+	let _object = structuredClone(object);
 
 	if (_object.geneSystematicName) {
 		if (containsMatch(trimmedValue, _object.geneSystematicName.displayText.toString().toLowerCase()) === 0)
@@ -406,7 +406,7 @@ export function validateBioEntityFields(
 				message: 'Must select from autosuggest',
 			};
 			setUiErrorMessages((uiErrorMessages) => {
-				const _uiErrorMessages = global.structuredClone(uiErrorMessages);
+				const _uiErrorMessages = structuredClone(uiErrorMessages);
 				if (!_uiErrorMessages[event.index]) _uiErrorMessages[event.index] = {};
 				_uiErrorMessages[event.index][field] = errorObject;
 				return _uiErrorMessages;
@@ -416,7 +416,7 @@ export function validateBioEntityFields(
 			areUiErrors.current = true;
 		} else {
 			setUiErrorMessages((uiErrorMessages) => {
-				const _uiErrorMessages = global.structuredClone(uiErrorMessages);
+				const _uiErrorMessages = structuredClone(uiErrorMessages);
 				if (_uiErrorMessages[event.index]) _uiErrorMessages[event.index][field] = null;
 				return _uiErrorMessages;
 			});
@@ -475,7 +475,7 @@ export function validateFormBioEntityFields(newAnnotationForm, uiErrorMessages, 
 }
 
 export const removeInvalidFilters = (currentFilters) => {
-	const currentFiltersCopy = global.structuredClone(currentFilters);
+	const currentFiltersCopy = structuredClone(currentFilters);
 
 	if (currentFiltersCopy && Object.keys(currentFiltersCopy).length > 0) {
 		const invalidFilters = [];
@@ -513,7 +513,7 @@ export const removeInvalidFilters = (currentFilters) => {
 };
 
 export const removeInvalidSorts = (currentSorts) => {
-	const currentSortsCopy = global.structuredClone(currentSorts);
+	const currentSortsCopy = structuredClone(currentSorts);
 
 	let invalidSorts = [];
 	if (!currentSortsCopy || currentSortsCopy.length === 0) {
