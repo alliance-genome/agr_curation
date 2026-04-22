@@ -137,7 +137,7 @@ public class Gene extends GenomicEntity {
 	@IndexedEmbedded(includePaths = { "secondaryId", "evidence.curie", "secondaryId_keyword", "evidence.curie_keyword"})
 	@OneToMany(mappedBy = "singleGene", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonManagedReference
-	@JsonView({ CurationView.FieldsAndLists.class, CurationView.GeneView.class, CurationView.GeneSummaryDocument.class })
+	@JsonView({ CurationView.FieldsAndLists.class, CurationView.GeneView.class, CurationView.GeneSummaryDocument.class, CurationView.GeneCacheDocument.class })
 	private List<GeneSecondaryIdSlotAnnotation> geneSecondaryIds;
 
 	@OneToMany(mappedBy = "alleleGeneAssociationObject", cascade = CascadeType.ALL, orphanRemoval = true)
