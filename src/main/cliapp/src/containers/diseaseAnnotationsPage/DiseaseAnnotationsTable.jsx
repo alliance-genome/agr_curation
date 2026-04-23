@@ -30,8 +30,8 @@ import { BooleanTableEditor } from '../../components/Editors/boolean/BooleanTabl
 import { DialogTriggerEditor } from '../../components/Editors/DialogTriggerEditor';
 import { ConditionRelationHandleTableEditor } from '../../components/Editors/ConditionRelationHandleTableEditor';
 import { BiologicalEntityTableEditor } from '../../components/Editors/biologicalEntity/BiologicalEntityTableEditor';
-import { DiseaseTableEditor } from '../../components/Editors/disease/DiseaseTableEditor';
-import { EvidenceCodesTableEditor } from '../../components/Editors/evidenceCode/EvidenceCodesTableEditor';
+import { DiseaseTableEditor } from '../../components/Editors/ontology/DiseaseTableEditor';
+import { EvidenceCodesTableEditor } from '../../components/Editors/ontology/EvidenceCodesTableEditor';
 import { WithTableEditor } from '../../components/Editors/gene/WithTableEditor';
 import { AssertedGenesTableEditor } from '../../components/Editors/gene/AssertedGenesTableEditor';
 import { DiseaseGeneticModifierGenesTableEditor } from '../../components/Editors/gene/DiseaseGeneticModifierGenesTableEditor';

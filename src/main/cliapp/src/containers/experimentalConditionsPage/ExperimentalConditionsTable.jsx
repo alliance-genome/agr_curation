@@ -1,8 +1,14 @@
 import React, { useRef, useState, useMemo } from 'react';
 import { GenericDataTable } from '../../components/GenericDataTable/GenericDataTable';
 import { InputTextTableEditor } from '../../components/Editors/text/InputTextTableEditor';
-import { AutocompleteSingleTableEditor } from '../../components/Editors/autocomplete/AutocompleteSingleTableEditor';
+import { ConditionClassTableEditor } from '../../components/Editors/ontology/ConditionClassTableEditor';
+import { ConditionIdTableEditor } from '../../components/Editors/ontology/ConditionIdTableEditor';
+import { ConditionGeneOntologyTableEditor } from '../../components/Editors/ontology/ConditionGeneOntologyTableEditor';
+import { ConditionChemicalTableEditor } from '../../components/Editors/ontology/ConditionChemicalTableEditor';
+import { ConditionAnatomyTableEditor } from '../../components/Editors/ontology/ConditionAnatomyTableEditor';
+import { ConditionTaxonTableEditor } from '../../components/Editors/ontology/ConditionTaxonTableEditor';
 import { BooleanTableEditor } from '../../components/Editors/boolean/BooleanTableEditor';
+import { curieAutocompleteFields } from '../../components/Editors/ontology/utils';
 import { useMutation } from '@tanstack/react-query';
 import { Toast } from 'primereact/toast';
 import { SearchService } from '../../service/SearchService';
@@ -36,14 +42,6 @@ export const ExperimentalConditionsTable = () => {
 	errorMessagesRef.current = errorMessages;
 
 	let experimentalConditionService = new ExperimentalConditionService();
-
-	const curieAutocompleteFields = [
-		'curie',
-		'name',
-		'crossReferences.referencedCurie',
-		'secondaryIdentifiers',
-		'synonyms.name',
-	];
 
 	const sortMapping = {
 		'conditionGeneOntology.name': ['conditionGeneOntology.curie', 'conditionGeneOntology.namespace'],
@@ -86,17 +84,7 @@ export const ExperimentalConditionsTable = () => {
 				body: (rowData) => <OntologyTermTemplate term={rowData.conditionClass} />,
 				filterConfig: FILTER_CONFIGS.conditionClassFilterConfig,
 				editor: (editorOptions) => (
-					<AutocompleteSingleTableEditor
-						editorOptions={editorOptions}
-						errorMessagesRef={errorMessagesRef}
-						field="conditionClass"
-						endpoint={Endpoints.Ontology.ZECO}
-						autocompleteFields={curieAutocompleteFields}
-						filterName="conditionClassFilter"
-						otherFilters={{
-							subsetFilter: { subsets: { queryString: 'ZECO_0000267' } },
-						}}
-					/>
+					<ConditionClassTableEditor editorOptions={editorOptions} errorMessagesRef={errorMessagesRef} />
 				),
 			},
 			{
@@ -107,14 +95,7 @@ export const ExperimentalConditionsTable = () => {
 				body: (rowData) => <OntologyTermTemplate term={rowData.conditionId} />,
 				filterConfig: FILTER_CONFIGS.conditionIdFilterConfig,
 				editor: (editorOptions) => (
-					<AutocompleteSingleTableEditor
-						editorOptions={editorOptions}
-						errorMessagesRef={errorMessagesRef}
-						field="conditionId"
-						endpoint={Endpoints.Ontology.EXPERIMENTAL_CONDITION}
-						autocompleteFields={curieAutocompleteFields}
-						filterName="conditionIdFilter"
-					/>
+					<ConditionIdTableEditor editorOptions={editorOptions} errorMessagesRef={errorMessagesRef} />
 				),
 			},
 			{
@@ -125,14 +106,7 @@ export const ExperimentalConditionsTable = () => {
 				body: (rowData) => <OntologyTermTemplate term={rowData.conditionGeneOntology} />,
 				filterConfig: FILTER_CONFIGS.conditionGeneOntologyFilterConfig,
 				editor: (editorOptions) => (
-					<AutocompleteSingleTableEditor
-						editorOptions={editorOptions}
-						errorMessagesRef={errorMessagesRef}
-						field="conditionGeneOntology"
-						endpoint={Endpoints.Ontology.GO}
-						autocompleteFields={curieAutocompleteFields}
-						filterName="conditionGeneOntologyFilter"
-					/>
+					<ConditionGeneOntologyTableEditor editorOptions={editorOptions} errorMessagesRef={errorMessagesRef} />
 				),
 			},
 			{
@@ -143,14 +117,7 @@ export const ExperimentalConditionsTable = () => {
 				body: (rowData) => <OntologyTermTemplate term={rowData.conditionChemical} />,
 				filterConfig: FILTER_CONFIGS.conditionChemicalFilterConfig,
 				editor: (editorOptions) => (
-					<AutocompleteSingleTableEditor
-						editorOptions={editorOptions}
-						errorMessagesRef={errorMessagesRef}
-						field="conditionChemical"
-						endpoint={Endpoints.Ontology.CHEMICAL}
-						autocompleteFields={curieAutocompleteFields}
-						filterName="conditionChemicalFilter"
-					/>
+					<ConditionChemicalTableEditor editorOptions={editorOptions} errorMessagesRef={errorMessagesRef} />
 				),
 			},
 			{
@@ -161,14 +128,7 @@ export const ExperimentalConditionsTable = () => {
 				body: (rowData) => <OntologyTermTemplate term={rowData.conditionAnatomy} />,
 				filterConfig: FILTER_CONFIGS.conditionAnatomyFilterConfig,
 				editor: (editorOptions) => (
-					<AutocompleteSingleTableEditor
-						editorOptions={editorOptions}
-						errorMessagesRef={errorMessagesRef}
-						field="conditionAnatomy"
-						endpoint={Endpoints.Ontology.ANATOMICAL}
-						autocompleteFields={curieAutocompleteFields}
-						filterName="conditionAnatomyFilter"
-					/>
+					<ConditionAnatomyTableEditor editorOptions={editorOptions} errorMessagesRef={errorMessagesRef} />
 				),
 			},
 			{
@@ -179,14 +139,7 @@ export const ExperimentalConditionsTable = () => {
 				body: (rowData) => <OntologyTermTemplate term={rowData.conditionTaxon} />,
 				filterConfig: FILTER_CONFIGS.conditionTaxonFilterConfig,
 				editor: (editorOptions) => (
-					<AutocompleteSingleTableEditor
-						editorOptions={editorOptions}
-						errorMessagesRef={errorMessagesRef}
-						field="conditionTaxon"
-						endpoint={Endpoints.Ontology.NCBI_TAXON}
-						autocompleteFields={curieAutocompleteFields}
-						filterName="conditionTaxonFilter"
-					/>
+					<ConditionTaxonTableEditor editorOptions={editorOptions} errorMessagesRef={errorMessagesRef} />
 				),
 			},
 			{
@@ -224,11 +177,7 @@ export const ExperimentalConditionsTable = () => {
 				filterConfig: FILTER_CONFIGS.internalFilterConfig,
 				sortable: true,
 				editor: (editorOptions) => (
-					<BooleanTableEditor
-						editorOptions={editorOptions}
-						errorMessagesRef={errorMessagesRef}
-						field="internal"
-					/>
+					<BooleanTableEditor editorOptions={editorOptions} errorMessagesRef={errorMessagesRef} field="internal" />
 				),
 			},
 		],
