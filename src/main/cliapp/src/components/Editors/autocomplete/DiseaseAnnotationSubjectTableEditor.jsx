@@ -2,7 +2,8 @@ import { AutocompleteSingleTableEditor } from './AutocompleteSingleTableEditor';
 import { SubjectAutocompleteTemplate } from '../../Autocomplete/SubjectAutocompleteTemplate';
 import { Endpoints } from '../../../constants/Endpoints';
 import { getIdentifier } from '../../../utils/utils';
-
+//This editor is isolated because it has to be functional for AGMs, Genes, and Alleles
+//Could potentially be reused in future multi-subject annotation tables
 const getEndpoint = (rowData) => {
 	if (rowData?.type === 'GeneDiseaseAnnotation') return Endpoints.Entity.GENE;
 	if (rowData?.type === 'AlleleDiseaseAnnotation') return Endpoints.Entity.ALLELE;
