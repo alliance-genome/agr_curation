@@ -17,6 +17,15 @@ export const referenceSearchConfig = {
 	),
 };
 
+// Single-reference pickers (DA.evidenceItem, ConditionRelation.singleReference)
+// use singleReferenceFilter. Multi-reference (AllelesTable.references) keeps
+// curieFilter above — the backend may treat the two filter names differently
+// for multi-select.
+export const singleReferenceSearchConfig = {
+	...referenceSearchConfig,
+	filterName: 'singleReferenceFilter',
+};
+
 export const referenceSearch = (event, setFiltered, setInputValue) => {
 	const searchService = new SearchService();
 	const filter = buildAutocompleteFilter(event, referenceSearchConfig.autocompleteFields);
@@ -25,6 +34,19 @@ export const referenceSearch = (event, setFiltered, setInputValue) => {
 		searchService,
 		referenceSearchConfig.endpoint,
 		referenceSearchConfig.filterName,
+		filter,
+		setFiltered
+	);
+};
+
+export const singleReferenceSearch = (event, setFiltered, setInputValue) => {
+	const searchService = new SearchService();
+	const filter = buildAutocompleteFilter(event, singleReferenceSearchConfig.autocompleteFields);
+	setInputValue(event.query);
+	autocompleteSearch(
+		searchService,
+		singleReferenceSearchConfig.endpoint,
+		singleReferenceSearchConfig.filterName,
 		filter,
 		setFiltered
 	);

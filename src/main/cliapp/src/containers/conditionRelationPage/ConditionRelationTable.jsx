@@ -7,16 +7,14 @@ import { Messages } from 'primereact/messages';
 import { useControlledVocabularyService } from '../../service/useControlledVocabularyService';
 import { Button } from 'primereact/button';
 import { ConditionRelationService } from '../../service/ConditionRelationService';
-import { ExConAutocompleteTemplate } from '../../components/Autocomplete/ExConAutocompleteTemplate';
-import { LiteratureAutocompleteTemplate } from '../../components/Autocomplete/LiteratureAutocompleteTemplate';
 import { NewRelationForm } from './NewRelationForm';
 import { useNewRelationReducer } from './useNewRelationReducer';
 import { InputTextTableEditor } from '../../components/Editors/text/InputTextTableEditor';
-import { AutocompleteSingleTableEditor } from '../../components/Editors/autocomplete/AutocompleteSingleTableEditor';
-import { AutocompleteMultiTableEditor } from '../../components/Editors/autocomplete/AutocompleteMultiTableEditor';
+import { SingleReferenceTableEditor } from '../../components/Editors/references/SingleReferenceTableEditor';
+import { ConditionsTableEditor } from '../../components/Editors/experimentalCondition/ConditionsTableEditor';
 import { ControlledVocabularyTableEditor } from '../../components/Editors/controlledVocabulary/ControlledVocabularyTableEditor';
 import { GenericDataTable } from '../../components/GenericDataTable/GenericDataTable';
-import { getRefString, setNewEntity } from '../../utils/utils';
+import { setNewEntity } from '../../utils/utils';
 import { getDefaultTableState } from '../../service/TableStateService';
 import { FILTER_CONFIGS } from '../../constants/FilterFields';
 import { useGetTableData } from '../../service/useGetTableData';
@@ -76,22 +74,10 @@ export const ConditionRelationTable = () => {
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.singleReferenceFilterConfig,
 				editor: (editorOptions) => (
-					<AutocompleteSingleTableEditor
+					<SingleReferenceTableEditor
 						editorOptions={editorOptions}
-						errorMessagesRef={errorMessagesRef}
 						field="singleReference"
-						endpoint={Endpoints.Document.LITERATURE_REFERENCE}
-						autocompleteFields={['curie', 'cross_references.curie']}
-						filterName="singleReferenceFilter"
-						initialValue={getRefString(editorOptions.rowData.singleReference)}
-						valueDisplay={(item, setAutocompleteHoverItem, op, query) => (
-							<LiteratureAutocompleteTemplate
-								item={item}
-								setAutocompleteHoverItem={setAutocompleteHoverItem}
-								op={op}
-								query={query}
-							/>
-						)}
+						errorMessagesRef={errorMessagesRef}
 					/>
 				),
 				body: (rowData) => <SingleReferenceTemplate singleReference={rowData.singleReference} />,
@@ -128,23 +114,7 @@ export const ConditionRelationTable = () => {
 				),
 				filterConfig: FILTER_CONFIGS.experimentalConditionFilterConfig,
 				editor: (editorOptions) => (
-					<AutocompleteMultiTableEditor
-						editorOptions={editorOptions}
-						errorMessagesRef={errorMessagesRef}
-						field="conditions"
-						subField="conditionSummary"
-						endpoint={Endpoints.Annotation.EXPERIMENTAL_CONDITION}
-						autocompleteFields={['conditionSummary']}
-						filterName="experimentalConditionFilter"
-						valueDisplay={(item, setAutocompleteHoverItem, op, query) => (
-							<ExConAutocompleteTemplate
-								item={item}
-								setAutocompleteHoverItem={setAutocompleteHoverItem}
-								op={op}
-								query={query}
-							/>
-						)}
-					/>
+					<ConditionsTableEditor editorOptions={editorOptions} errorMessagesRef={errorMessagesRef} />
 				),
 			},
 		],

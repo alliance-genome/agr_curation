@@ -1,6 +1,6 @@
 import { AutocompleteSingleTableEditor } from '../autocomplete/AutocompleteSingleTableEditor';
 import { getRefString } from '../../../utils/utils';
-import { referenceSearchConfig } from './utils';
+import { singleReferenceSearchConfig } from './utils';
 
 export const SingleReferenceTableEditor = ({
 	editorOptions,
@@ -14,6 +14,6 @@ export const SingleReferenceTableEditor = ({
 		initialValue={getRefString(editorOptions.rowData[field])}
 		errorMessagesRef={errorMessagesRef}
 		uiErrorMessagesRef={uiErrorMessagesRef}
-		{...referenceSearchConfig}
+		{...singleReferenceSearchConfig}
 	/>
 );
