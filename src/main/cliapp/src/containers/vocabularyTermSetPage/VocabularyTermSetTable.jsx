@@ -6,12 +6,11 @@ import { Endpoints } from '../../constants/Endpoints';
 import { Messages } from 'primereact/messages';
 import { Button } from 'primereact/button';
 import { VocabularyTermSetService } from '../../service/VocabularyTermSetService';
-import { VocabTermAutocompleteTemplate } from '../../components/Autocomplete/VocabTermAutocompleteTemplate';
 import { NewVocabularyTermSetForm } from './NewVocabularyTermSetForm';
 import { useNewVocabularyTermSetReducer } from './useNewVocabularyTermSetReducer';
 import { InputTextTableEditor } from '../../components/Editors/text/InputTextTableEditor';
-import { AutocompleteSingleTableEditor } from '../../components/Editors/autocomplete/AutocompleteSingleTableEditor';
-import { AutocompleteMultiTableEditor } from '../../components/Editors/autocomplete/AutocompleteMultiTableEditor';
+import { VocabularyTableEditor } from '../../components/Editors/vocabulary/VocabularyTableEditor';
+import { MemberTermsTableEditor } from '../../components/Editors/vocabularyTerm/MemberTermsTableEditor';
 import { GenericDataTable } from '../../components/GenericDataTable/GenericDataTable';
 import { setNewEntity } from '../../utils/utils';
 import { getDefaultTableState } from '../../service/TableStateService';
@@ -72,23 +71,7 @@ export const VocabularyTermSetTable = () => {
 				body: (rowData) => <StringTemplate string={rowData.vocabularyTermSetVocabulary?.name} />,
 				filterConfig: FILTER_CONFIGS.vocabularyFieldSetFilterConfig,
 				editor: (editorOptions) => (
-					<AutocompleteSingleTableEditor
-						editorOptions={editorOptions}
-						errorMessagesRef={errorMessagesRef}
-						field="vocabularyTermSetVocabulary"
-						subField="name"
-						endpoint={Endpoints.Vocabulary.VOCABULARY}
-						autocompleteFields={['name']}
-						filterName="vocabularyFilter"
-						valueDisplay={(item, setAutocompleteSelectedItem, op, query) => (
-							<VocabTermAutocompleteTemplate
-								item={item}
-								setAutocompleteSelectedItem={setAutocompleteSelectedItem}
-								op={op}
-								query={query}
-							/>
-						)}
-					/>
+					<VocabularyTableEditor editorOptions={editorOptions} errorMessagesRef={errorMessagesRef} />
 				),
 			},
 			{
@@ -99,30 +82,7 @@ export const VocabularyTermSetTable = () => {
 				body: (rowData) => <StringListTemplate list={rowData.memberTerms?.map((memberTerm) => memberTerm?.name)} />,
 				filterConfig: FILTER_CONFIGS.vocabularyMemberTermsFilterConfig,
 				editor: (editorOptions) => (
-					<AutocompleteMultiTableEditor
-						editorOptions={editorOptions}
-						errorMessagesRef={errorMessagesRef}
-						field="memberTerms"
-						subField="name"
-						endpoint={Endpoints.Vocabulary.TERM}
-						autocompleteFields={['name']}
-						filterName="memberTermsFilter"
-						otherFilters={(opts) => ({
-							vocabularyFilter: {
-								'vocabulary.name': {
-									queryString: opts.rowData.vocabularyTermSetVocabulary?.name,
-								},
-							},
-						})}
-						valueDisplay={(item, setAutocompleteSelectedItem, op, query) => (
-							<VocabTermAutocompleteTemplate
-								item={item}
-								setAutocompleteSelectedItem={setAutocompleteSelectedItem}
-								op={op}
-								query={query}
-							/>
-						)}
-					/>
+					<MemberTermsTableEditor editorOptions={editorOptions} errorMessagesRef={errorMessagesRef} />
 				),
 			},
 			{
