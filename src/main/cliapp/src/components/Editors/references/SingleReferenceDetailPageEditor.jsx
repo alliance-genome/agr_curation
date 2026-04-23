@@ -4,7 +4,7 @@ import { FormErrorMessageComponent } from '../../Error/FormErrorMessageComponent
 import { referenceSearch } from './utils';
 import { AutocompleteFormEditor } from '../../Autocomplete/AutocompleteFormEditor';
 
-export const SingleReferenceFormEditor = ({ reference, onReferenceValueChange, errorMessages }) => {
+export const SingleReferenceDetailPageEditor = ({ reference, onReferenceValueChange, errorMessages }) => {
 	return (
 		<>
 			<AutocompleteFormEditor

@@ -1,11 +1,17 @@
-import { FormFieldWrapper } from '../FormFieldWrapper';
+import { DetailPageFieldWrapper } from '../DetailPageFieldWrapper';
 
-export const DateFormTemplate = ({ date, fieldName, widgetColumnSize, labelColumnSize, fieldDetailsColumnSize }) => {
+export const DateDetailPageTemplate = ({
+	date,
+	fieldName,
+	widgetColumnSize,
+	labelColumnSize,
+	fieldDetailsColumnSize,
+}) => {
 	if (!date) date = <i>No data</i>;
 
 	return (
 		<>
-			<FormFieldWrapper
+			<DetailPageFieldWrapper
 				labelColumnSize={labelColumnSize}
 				fieldDetailsColumnSize={fieldDetailsColumnSize}
 				widgetColumnSize={widgetColumnSize}

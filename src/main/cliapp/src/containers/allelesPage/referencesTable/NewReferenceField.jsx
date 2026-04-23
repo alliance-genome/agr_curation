@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Button } from 'primereact/button';
 import { addDataKey, generateCrossRefSearchField } from '../utils';
-import { SingleReferenceFormEditor } from '../../../components/Editors/references/SingleReferenceFormEditor';
+import { SingleReferenceDetailPageEditor } from '../../../components/Editors/references/SingleReferenceDetailPageEditor';
 import { Splitter, SplitterPanel } from 'primereact/splitter';
 import { SingleReferenceAdditionalFieldData } from '../../../components/FieldData/SingleReferenceAdditionalFieldData';
 
@@ -54,7 +54,7 @@ export const NewReferenceField = ({ state, dispatch }) => {
 	return (
 		<Splitter gutterSize="0" className="border-none surface-ground">
 			<SplitterPanel size={20}>
-				<SingleReferenceFormEditor
+				<SingleReferenceDetailPageEditor
 					reference={reference}
 					onReferenceValueChange={referencesOnChangeHandler}
 					errorMessages={state.entityStates.references.errorMessages}

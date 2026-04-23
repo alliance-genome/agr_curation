@@ -3,9 +3,9 @@ import { AutocompleteFormEditor } from '../../Autocomplete/AutocompleteFormEdito
 import { taxonSearch } from './utils';
 import { FormErrorMessageComponent } from '../../Error/FormErrorMessageComponent';
 import { TaxonAdditionalFieldData } from '../../FieldData/TaxonAdditionalFieldData';
-import { FormFieldWrapper } from '../../FormFieldWrapper';
+import { DetailPageFieldWrapper } from '../../DetailPageFieldWrapper';
 
-export const TaxonFormEditor = ({
+export const TaxonDetailPageEditor = ({
 	taxon,
 	onTaxonValueChange,
 	widgetColumnSize,
@@ -15,7 +15,7 @@ export const TaxonFormEditor = ({
 }) => {
 	return (
 		<>
-			<FormFieldWrapper
+			<DetailPageFieldWrapper
 				labelColumnSize={labelColumnSize}
 				fieldDetailsColumnSize={fieldDetailsColumnSize}
 				widgetColumnSize={widgetColumnSize}
