@@ -12,7 +12,7 @@ import { Endpoints } from '../../constants/Endpoints';
 
 import { StringTemplate } from '../../components/Templates/StringTemplate';
 import { InputTextTableEditor } from '../../components/Editors/text/InputTextTableEditor';
-import { AutocompleteSingleTableEditor } from '../../components/Editors/autocomplete/AutocompleteSingleTableEditor';
+import { ResourceDescriptorTableEditor } from '../../components/Editors/resourceDescriptor/ResourceDescriptorTableEditor';
 
 export const ResourceDescriptorPagesTable = () => {
 	const [isInEditMode, setIsInEditMode] = useState(false);
@@ -51,20 +51,7 @@ export const ResourceDescriptorPagesTable = () => {
 				),
 				filterConfig: FILTER_CONFIGS.resourceDescriptorFilterConfig,
 				editor: (editorOptions) => (
-					<AutocompleteSingleTableEditor
-						editorOptions={editorOptions}
-						errorMessagesRef={errorMessagesRef}
-						field="resourceDescriptor"
-						subField="prefix"
-						endpoint={Endpoints.Resource.DESCRIPTOR}
-						autocompleteFields={['prefix', 'name']}
-						filterName="resourceDescriptorFilter"
-						valueDisplay={(item) => (
-							<div>
-								{item.prefix} ({item.name})
-							</div>
-						)}
-					/>
+					<ResourceDescriptorTableEditor editorOptions={editorOptions} errorMessagesRef={errorMessagesRef} />
 				),
 			},
 			{
