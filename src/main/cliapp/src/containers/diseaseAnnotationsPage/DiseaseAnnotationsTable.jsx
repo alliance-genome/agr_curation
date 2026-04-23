@@ -2,10 +2,7 @@ import React, { useRef, useState, useMemo } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { Toast } from 'primereact/toast';
 
-import { SubjectAutocompleteTemplate } from '../../components/Autocomplete/SubjectAutocompleteTemplate';
 import { SearchService } from '../../service/SearchService';
-import { EvidenceAutocompleteTemplate } from '../../components/Autocomplete/EvidenceAutocompleteTemplate';
-import { LiteratureAutocompleteTemplate } from '../../components/Autocomplete/LiteratureAutocompleteTemplate';
 import { EllipsisTableCell } from '../../components/EllipsisTableCell';
 import { GenericDataTable } from '../../components/GenericDataTable/GenericDataTable';
 import { Endpoints } from '../../constants/Endpoints';
@@ -32,16 +29,24 @@ import { ControlledVocabularyTableEditor } from '../../components/Editors/contro
 import { BooleanTableEditor } from '../../components/Editors/boolean/BooleanTableEditor';
 import { DialogTriggerEditor } from '../../components/Editors/DialogTriggerEditor';
 import { ConditionRelationHandleTableEditor } from '../../components/Editors/ConditionRelationHandleTableEditor';
-import { DiseaseAnnotationSubjectTableEditor } from '../../components/Editors/autocomplete/DiseaseAnnotationSubjectTableEditor';
-import { AutocompleteMultiTableEditor } from '../../components/Editors/autocomplete/AutocompleteMultiTableEditor';
-import { AutocompleteSingleTableEditor } from '../../components/Editors/autocomplete/AutocompleteSingleTableEditor';
+import { BiologicalEntityTableEditor } from '../../components/Editors/biologicalEntity/BiologicalEntityTableEditor';
+import { DiseaseTableEditor } from '../../components/Editors/disease/DiseaseTableEditor';
+import { EvidenceCodesTableEditor } from '../../components/Editors/evidenceCode/EvidenceCodesTableEditor';
+import { WithTableEditor } from '../../components/Editors/gene/WithTableEditor';
+import { AssertedGenesTableEditor } from '../../components/Editors/gene/AssertedGenesTableEditor';
+import { DiseaseGeneticModifierGenesTableEditor } from '../../components/Editors/gene/DiseaseGeneticModifierGenesTableEditor';
+import { AssertedAllelesTableEditor } from '../../components/Editors/allele/AssertedAllelesTableEditor';
+import { DiseaseGeneticModifierAllelesTableEditor } from '../../components/Editors/allele/DiseaseGeneticModifierAllelesTableEditor';
+import { SgdStrainBackgroundTableEditor } from '../../components/Editors/agm/SgdStrainBackgroundTableEditor';
+import { DiseaseGeneticModifierAgmsTableEditor } from '../../components/Editors/agm/DiseaseGeneticModifierAgmsTableEditor';
+import { SingleReferenceTableEditor } from '../../components/Editors/references/SingleReferenceTableEditor';
 import { ControlledVocabularyMultiSelectTableEditor } from '../../components/Editors/controlledVocabulary/ControlledVocabularyMultiSelectTableEditor';
 
 import { useControlledVocabularyService } from '../../service/useControlledVocabularyService';
 import { useVocabularyTermSetService } from '../../service/useVocabularyTermSetService';
 import { ErrorMessageComponent } from '../../components/Error/ErrorMessageComponent';
 import { Button } from 'primereact/button';
-import { getRefString, getIdentifier, setNewEntity } from '../../utils/utils';
+import { setNewEntity } from '../../utils/utils';
 import { diseaseQualifiersSort, evidenceCodesSort } from '../../components/Templates/utils/sortMethods';
 import { useNewAnnotationReducer } from './useNewAnnotationReducer';
 import { NewAnnotationForm } from './NewAnnotationForm';
@@ -49,10 +54,6 @@ import { getDefaultTableState } from '../../service/TableStateService';
 import { FILTER_CONFIGS } from '../../constants/FilterFields';
 import { useGetTableData } from '../../service/useGetTableData';
 import { useGetUserSettings } from '../../service/useGetUserSettings';
-
-const subjectValueDisplay = (item, setAutocompleteHoverItem, op, query) => (
-	<SubjectAutocompleteTemplate item={item} setAutocompleteHoverItem={setAutocompleteHoverItem} op={op} query={query} />
-);
 
 export const DiseaseAnnotationsTable = () => {
 	const [isInEditMode, setIsInEditMode] = useState(false); //needs better name
@@ -249,7 +250,7 @@ export const DiseaseAnnotationsTable = () => {
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.diseaseAnnotationSubjectFieldConfig,
 				editor: (editorOptions) => (
-					<DiseaseAnnotationSubjectTableEditor
+					<BiologicalEntityTableEditor
 						editorOptions={editorOptions}
 						errorMessagesRef={errorMessagesRef}
 						uiErrorMessagesRef={uiErrorMessagesRef}
@@ -291,21 +292,7 @@ export const DiseaseAnnotationsTable = () => {
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.diseaseAnnotationObjectFilterConfig,
 				editor: (editorOptions) => (
-					<AutocompleteSingleTableEditor
-						editorOptions={editorOptions}
-						field="diseaseAnnotationObject"
-						endpoint={Endpoints.Ontology.DO}
-						autocompleteFields={[
-							'curie',
-							'name',
-							'crossReferences.referencedCurie',
-							'secondaryIdentifiers',
-							'synonyms.name',
-						]}
-						filterName="diseaseFilter"
-						otherFilters={{ obsoleteFilter: { obsolete: { queryString: false } } }}
-						errorMessagesRef={errorMessagesRef}
-					/>
+					<DiseaseTableEditor editorOptions={editorOptions} errorMessagesRef={errorMessagesRef} />
 				),
 			},
 			{
@@ -316,22 +303,10 @@ export const DiseaseAnnotationsTable = () => {
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.evidenceItemFilterConfig,
 				editor: (editorOptions) => (
-					<AutocompleteSingleTableEditor
+					<SingleReferenceTableEditor
 						editorOptions={editorOptions}
 						field="evidenceItem"
-						endpoint={Endpoints.Document.LITERATURE_REFERENCE}
-						autocompleteFields={['curie', 'cross_references.curie']}
-						filterName="curieFilter"
-						valueDisplay={(item, setAutocompleteHoverItem, op, query) => (
-							<LiteratureAutocompleteTemplate
-								item={item}
-								setAutocompleteHoverItem={setAutocompleteHoverItem}
-								op={op}
-								query={query}
-							/>
-						)}
 						errorMessagesRef={errorMessagesRef}
-						initialValue={getRefString(editorOptions.rowData.evidenceItem)}
 					/>
 				),
 			},
@@ -349,26 +324,7 @@ export const DiseaseAnnotationsTable = () => {
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.evidenceCodesFilterConfig,
 				editor: (editorOptions) => (
-					<AutocompleteMultiTableEditor
-						editorOptions={editorOptions}
-						field="evidenceCodes"
-						endpoint={Endpoints.Ontology.ECO}
-						autocompleteFields={['curie', 'name', 'abbreviation']}
-						filterName="evidenceFilter"
-						otherFilters={{
-							obsoleteFilter: { obsolete: { queryString: false } },
-							subsetFilter: { subsets: { queryString: 'agr_eco_terms' } },
-						}}
-						valueDisplay={(item, setAutocompleteHoverItem, op, query) => (
-							<EvidenceAutocompleteTemplate
-								item={item}
-								setAutocompleteHoverItem={setAutocompleteHoverItem}
-								op={op}
-								query={query}
-							/>
-						)}
-						errorMessagesRef={errorMessagesRef}
-					/>
+					<EvidenceCodesTableEditor editorOptions={editorOptions} errorMessagesRef={errorMessagesRef} />
 				),
 			},
 			{
@@ -379,31 +335,7 @@ export const DiseaseAnnotationsTable = () => {
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.withFilterConfig,
 				editor: (editorOptions) => (
-					<AutocompleteMultiTableEditor
-						editorOptions={editorOptions}
-						field="with"
-						subField="primaryExternalId"
-						endpoint={Endpoints.Entity.GENE}
-						autocompleteFields={[
-							'geneSymbol.formatText',
-							'geneSymbol.displayText',
-							'geneFullName.formatText',
-							'geneFullName.displayText',
-							'primaryExternalId',
-							'modInternalId',
-							'curie',
-							'crossReferences.referencedCurie',
-							'geneSynonyms.formatText',
-							'geneSynonyms.displayText',
-							'geneSystematicName.formatText',
-							'geneSystematicName.displayText',
-							'geneSecondaryIds.secondaryId',
-						]}
-						filterName="withFilter"
-						otherFilters={{ taxonFilter: { 'taxon.curie': { queryString: 'NCBITaxon:9606' } } }}
-						valueDisplay={subjectValueDisplay}
-						errorMessagesRef={errorMessagesRef}
-					/>
+					<WithTableEditor editorOptions={editorOptions} errorMessagesRef={errorMessagesRef} />
 				),
 			},
 			{
@@ -529,22 +461,8 @@ export const DiseaseAnnotationsTable = () => {
 				editor: (editorOptions) => {
 					if (editorOptions.rowData.type !== 'GeneDiseaseAnnotation') return null;
 					return (
-						<AutocompleteSingleTableEditor
+						<SgdStrainBackgroundTableEditor
 							editorOptions={editorOptions}
-							field="sgdStrainBackground"
-							subField="primaryExternalId"
-							endpoint={Endpoints.Entity.AGM}
-							autocompleteFields={[
-								'name',
-								'curie',
-								'primaryExternalId',
-								'modInternalId',
-								'crossReferences.referencedCurie',
-							]}
-							filterName="sgdStrainBackgroundFilter"
-							otherFilters={{ taxonFilter: { 'taxon.name': { queryString: 'Saccharomyces cerevisiae' } } }}
-							valueDisplay={subjectValueDisplay}
-							initialValue={getIdentifier(editorOptions.rowData.sgdStrainBackground)}
 							errorMessagesRef={errorMessagesRef}
 							uiErrorMessagesRef={uiErrorMessagesRef}
 						/>
@@ -591,24 +509,8 @@ export const DiseaseAnnotationsTable = () => {
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.geneticModifierAgmsFilterConfig,
 				editor: (editorOptions) => (
-					<AutocompleteMultiTableEditor
+					<DiseaseGeneticModifierAgmsTableEditor
 						editorOptions={editorOptions}
-						field="diseaseGeneticModifierAgms"
-						subField="primaryExternalId"
-						endpoint={Endpoints.Entity.AGM}
-						autocompleteFields={[
-							'agmFullName.formatText',
-							'agmSynonyms.formatText',
-							'agmFullName.displayText',
-							'agmSynonyms.displayText',
-							'agmSecondaryIds.secondaryId',
-							'curie',
-							'primaryExternalId',
-							'modInternalId',
-							'crossReferences.referencedCurie',
-						]}
-						filterName="geneticModifierAgmsFilter"
-						valueDisplay={subjectValueDisplay}
 						errorMessagesRef={errorMessagesRef}
 						uiErrorMessagesRef={uiErrorMessagesRef}
 					/>
@@ -622,25 +524,8 @@ export const DiseaseAnnotationsTable = () => {
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.geneticModifierAllelesFilterConfig,
 				editor: (editorOptions) => (
-					<AutocompleteMultiTableEditor
+					<DiseaseGeneticModifierAllelesTableEditor
 						editorOptions={editorOptions}
-						field="diseaseGeneticModifierAlleles"
-						subField="primaryExternalId"
-						endpoint={Endpoints.Entity.ALLELE}
-						autocompleteFields={[
-							'alleleSymbol.formatText',
-							'alleleFullName.formatText',
-							'alleleFullName.displayText',
-							'alleleSynonyms.formatText',
-							'alleleSynonyms.displayText',
-							'curie',
-							'primaryExternalId',
-							'modInternalId',
-							'crossReferences.referencedCurie',
-							'alleleSecondaryIds.secondaryId',
-						]}
-						filterName="geneticModifierAllelesFilter"
-						valueDisplay={subjectValueDisplay}
 						errorMessagesRef={errorMessagesRef}
 						uiErrorMessagesRef={uiErrorMessagesRef}
 					/>
@@ -654,28 +539,8 @@ export const DiseaseAnnotationsTable = () => {
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.geneticModifierGenesFilterConfig,
 				editor: (editorOptions) => (
-					<AutocompleteMultiTableEditor
+					<DiseaseGeneticModifierGenesTableEditor
 						editorOptions={editorOptions}
-						field="diseaseGeneticModifierGenes"
-						subField="primaryExternalId"
-						endpoint={Endpoints.Entity.GENE}
-						autocompleteFields={[
-							'geneSymbol.formatText',
-							'geneSymbol.displayText',
-							'geneFullName.formatText',
-							'geneFullName.displayText',
-							'geneSynonyms.formatText',
-							'geneSynonyms.displayText',
-							'geneSystematicName.formatText',
-							'geneSystematicName.displayText',
-							'geneSecondaryIds.secondaryId',
-							'curie',
-							'primaryExternalId',
-							'modInternalId',
-							'crossReferences.referencedCurie',
-						]}
-						filterName="geneticModifierGenesFilter"
-						valueDisplay={subjectValueDisplay}
 						errorMessagesRef={errorMessagesRef}
 						uiErrorMessagesRef={uiErrorMessagesRef}
 					/>
@@ -697,31 +562,7 @@ export const DiseaseAnnotationsTable = () => {
 				filterConfig: FILTER_CONFIGS.assertedGenesFilterConfig,
 				editor: (editorOptions) => {
 					if (editorOptions.rowData.type === 'GeneDiseaseAnnotation') return null;
-					return (
-						<AutocompleteMultiTableEditor
-							editorOptions={editorOptions}
-							field="assertedGenes"
-							subField="primaryExternalId"
-							endpoint={Endpoints.Entity.GENE}
-							autocompleteFields={[
-								'geneSymbol.formatText',
-								'geneSymbol.displayText',
-								'geneFullName.formatText',
-								'geneFullName.displayText',
-								'curie',
-								'primaryExternalId',
-								'modInternalId',
-								'crossReferences.referencedCurie',
-								'geneSynonyms.formatText',
-								'geneSynonyms.displayText',
-								'geneSystematicName.formatText',
-								'geneSystematicName.displayText',
-							]}
-							filterName="assertedGenesFilter"
-							valueDisplay={subjectValueDisplay}
-							errorMessagesRef={errorMessagesRef}
-						/>
-					);
+					return <AssertedGenesTableEditor editorOptions={editorOptions} errorMessagesRef={errorMessagesRef} />;
 				},
 			},
 			{
@@ -740,30 +581,7 @@ export const DiseaseAnnotationsTable = () => {
 				filterConfig: FILTER_CONFIGS.assertedAllelesFilterConfig,
 				editor: (editorOptions) => {
 					if (editorOptions.rowData.type !== 'AGMDiseaseAnnotation') return null;
-					return (
-						<AutocompleteMultiTableEditor
-							editorOptions={editorOptions}
-							field="assertedAlleles"
-							subField="primaryExternalId"
-							endpoint={Endpoints.Entity.ALLELE}
-							autocompleteFields={[
-								'alleleSymbol.formatText',
-								'alleleSymbol.displayText',
-								'alleleFullName.formatText',
-								'alleleFullName.displayText',
-								'curie',
-								'primaryExternalId',
-								'modInternalId',
-								'crossReferences.referencedCurie',
-								'alleleSecondaryIds.secondaryId',
-								'alleleSynonyms.formatText',
-								'alleleSynonyms.displayText',
-							]}
-							filterName="assertedAllelesFilter"
-							valueDisplay={subjectValueDisplay}
-							errorMessagesRef={errorMessagesRef}
-						/>
-					);
+					return <AssertedAllelesTableEditor editorOptions={editorOptions} errorMessagesRef={errorMessagesRef} />;
 				},
 			},
 			{
