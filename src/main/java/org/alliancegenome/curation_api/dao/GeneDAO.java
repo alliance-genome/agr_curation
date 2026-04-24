@@ -259,15 +259,13 @@ public class GeneDAO extends BaseSQLDAO<Gene> {
 		if (CollectionUtils.isEmpty(geneIds)) {
 			return new HashMap<>();
 		}
-		Query query = entityManager.createNativeQuery("""
+		List<Object[]> rows = runJdbcQuery("""
 			SELECT singlegene_id, displaytext FROM slotannotation
 			WHERE slotannotationtype = 'GeneSystematicNameSlotAnnotation' AND singlegene_id IN :geneIds
-			""");
-		query.setParameter("geneIds", geneIds);
-		List<Object[]> rows = query.getResultList();
+			""", geneIds);
 		Map<Long, String> result = new HashMap<>();
 		for (Object[] row : rows) {
-			Long id = ((Number) row[0]).longValue();
+			Long id = (Long) row[0];
 			String name = (String) row[1];
 			if (name != null) {
 				result.put(id, name);
