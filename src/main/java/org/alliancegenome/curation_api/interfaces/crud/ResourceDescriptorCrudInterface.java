@@ -10,6 +10,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
+import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
@@ -26,5 +27,11 @@ public interface ResourceDescriptorCrudInterface extends BaseIdCrudInterface<Res
 	@Path("/{id}")
 	@JsonView(CurationView.ResourceDescriptorView.class)
 	ObjectResponse<ResourceDescriptor> getById(@PathParam("id") Long id);
+
+	@Override
+	@PUT
+	@Path("/")
+	@JsonView(CurationView.ResourceDescriptorView.class)
+	ObjectResponse<ResourceDescriptor> update(ResourceDescriptor entity);
 
 }
