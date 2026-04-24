@@ -77,7 +77,20 @@ public abstract class BaseOntologyTermService<E extends OntologyTerm, D extends 
 		handleDefinitionUrls(term, inTerm);
 		handleSecondaryIds(term, inTerm);
 		handleSynonyms(term, inTerm);
-		handleCrossReferences(term, inTerm);
+		/*
+			Only reference_crossreference has overlap — 384 crossreference records are shared between ontologyterm_crossreference and reference_crossreference.
+			All other 21 tables have zero overlap.
+
+			The shared records are all PMID (PubMed) crossreferences. This makes sense — the same PMID crossreference row is being linked to both an ontology
+			term and a reference, meaning the same crossreference record is reused rather than duplicated.
+			
+			So if the expectation is that ontology crossreferences should be completely isolated and not referenced elsewhere, these 384 PMID records in
+			reference_crossreference would be the violations to address. You'd likely need to create separate crossreference rows for the references vs. the
+			ontology terms so they don't share the same row.
+
+			When CHEBI goes to delete crossrefs pubmedId are shared with Reference table and hence failing CHEBI load
+		*/
+		//handleCrossReferences(term, inTerm);
 
 		if (newTerm) {
 			return dao.persist(term);
