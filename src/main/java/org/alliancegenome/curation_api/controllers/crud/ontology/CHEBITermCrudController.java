@@ -21,7 +21,6 @@ public class CHEBITermCrudController extends BaseOntologyTermController<CHEBITer
 	public void init() {
 		GenericOntologyLoadConfig config = new GenericOntologyLoadConfig();
 		config.setLoadOnlyIRIPrefix("CHEBI");
-		config.setCalculateClosure(true);
 		setService(chebiTermService, CHEBITerm.class, config);
 	}
 
