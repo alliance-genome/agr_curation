@@ -20,6 +20,7 @@ import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.Person;
 import org.alliancegenome.curation_api.model.entities.ResourceDescriptorPage;
 import org.alliancegenome.curation_api.model.entities.Synonym;
+import org.alliancegenome.curation_api.model.entities.ontology.CHEBITerm;
 import org.alliancegenome.curation_api.model.entities.ontology.OntologyTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.OntologyTermClosure;
 import org.alliancegenome.curation_api.response.ObjectListResponse;
@@ -89,8 +90,12 @@ public abstract class BaseOntologyTermService<E extends OntologyTerm, D extends 
 			ontology terms so they don't share the same row.
 
 			When CHEBI goes to delete crossrefs pubmedId are shared with Reference table and hence failing CHEBI load
+
+			This should handled with the CHEBI closure ticket SCRUM-5251
 		*/
-		//handleCrossReferences(term, inTerm);
+		if (!(inTerm instanceof CHEBITerm)) {
+			handleCrossReferences(term, inTerm);
+		}
 
 		if (newTerm) {
 			return dao.persist(term);
