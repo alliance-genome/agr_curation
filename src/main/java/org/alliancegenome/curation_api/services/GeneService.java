@@ -368,6 +368,7 @@ public class GeneService extends SubmittedObjectCrudService<Gene, GeneDTO, GeneD
 		CompletableFuture<List<Object[]>> baseInfoFuture = CompletableFuture.supplyAsync(() -> geneDAO.getBaseGeneInfo(geneIds), executor);
 		CompletableFuture<Map<Long, Set<String>>> soAncestorsFuture = CompletableFuture.supplyAsync(() -> geneDAO.getSoTermAncestors(geneIds), executor);
 		CompletableFuture<Map<Long, Set<String>>> synonymsFuture = CompletableFuture.supplyAsync(() -> geneDAO.getGeneSynonyms(geneIds), executor);
+		CompletableFuture<Map<Long, String>> systematicNamesFuture = CompletableFuture.supplyAsync(() -> geneDAO.getGeneSystematicNames(geneIds), executor);
 		CompletableFuture<Map<Long, Set<String>>> secondaryIdsFuture = CompletableFuture.supplyAsync(() -> geneDAO.getGeneSecondaryIds(geneIds), executor);
 		CompletableFuture<Map<Long, Set<String>>> crossRefsFuture = CompletableFuture.supplyAsync(() -> geneDAO.getGeneCrossReferences(geneIds), executor);
 		CompletableFuture<Map<Long, Set<String>>> chromosomesFuture = CompletableFuture.supplyAsync(() -> geneDAO.getGeneChromosomes(geneIds), executor);
@@ -385,7 +386,7 @@ public class GeneService extends SubmittedObjectCrudService<Gene, GeneDTO, GeneD
 		CompletableFuture<Map<Long, Set<String>>> modelsFuture = CompletableFuture.supplyAsync(() -> geneDAO.getGeneModels(geneIds), executor);
 		CompletableFuture<Map<Long, Set<String>>> diseaseAgrSlimFuture = CompletableFuture.supplyAsync(() -> geneDAO.getGeneDiseaseAgrSlim(geneIds), executor);
 
-		CompletableFuture.allOf(baseInfoFuture, soAncestorsFuture, synonymsFuture, secondaryIdsFuture,
+		CompletableFuture.allOf(baseInfoFuture, soAncestorsFuture, synonymsFuture, systematicNamesFuture, secondaryIdsFuture,
 			crossRefsFuture, chromosomesFuture, allelesFuture, phenotypesFuture, directDiseaseFuture,
 			strictOrthoFuture, orthoDiseaseFuture, goFuture, subcellularFuture, anatomicalFuture,
 			anatomicalSlimFuture, whereExpressedFuture, descriptionFuture, modelsFuture, diseaseAgrSlimFuture).join();
@@ -394,6 +395,7 @@ public class GeneService extends SubmittedObjectCrudService<Gene, GeneDTO, GeneD
 		List<Object[]> baseInfoRows = baseInfoFuture.join();
 		Map<Long, Set<String>> soAncestors = soAncestorsFuture.join();
 		Map<Long, Set<String>> synonyms = synonymsFuture.join();
+		Map<Long, String> systematicNames = systematicNamesFuture.join();
 		Map<Long, Set<String>> secondaryIds = secondaryIdsFuture.join();
 		Map<Long, Set<String>> crossRefs = crossRefsFuture.join();
 		Map<Long, Set<String>> chromosomes = chromosomesFuture.join();
@@ -476,6 +478,7 @@ public class GeneService extends SubmittedObjectCrudService<Gene, GeneDTO, GeneD
 				geneSynonyms.add(doc.getSymbol());
 			}
 			doc.setSynonyms(geneSynonyms);
+			doc.setSystematicName(systematicNames.get(id));
 			doc.setSecondaryIds(secondaryIds.getOrDefault(id, new HashSet<>()));
 			doc.setCrossReferences(crossRefs.getOrDefault(id, new HashSet<>()));
 			doc.setChromosomes(chromosomes.getOrDefault(id, new HashSet<>()));
