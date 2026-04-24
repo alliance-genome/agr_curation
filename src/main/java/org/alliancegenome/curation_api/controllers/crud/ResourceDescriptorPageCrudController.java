@@ -28,4 +28,9 @@ public class ResourceDescriptorPageCrudController extends BaseEntityCrudControll
 		return resourceDescriptorPageService.getById(id);
 	}
 
+	@Override
+	public ObjectResponse<ResourceDescriptorPage> update(ResourceDescriptorPage entity) {
+		return resourceDescriptorPageService.update(entity);
+	}
+
 }

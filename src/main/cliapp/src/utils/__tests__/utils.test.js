@@ -1,6 +1,4 @@
-import { describe, expect, it } from '@jest/globals';
 import { getRefString, removeInvalidFilters, removeInvalidSorts } from '../utils';
-import 'core-js/features/structured-clone';
 
 describe('removeInvalidFilters', () => {
 	it('All Valid fields', () => {
