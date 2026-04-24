@@ -36,6 +36,7 @@ public class AlleleSummaryDocument extends AVSParentDocument {
 	private Set<String> constructKnockdownComponents;
 	private Set<String> geneCrossReferences;
 	private Set<String> geneSynonyms;
+	private String geneSystematicName;
 	private Set<String> phenotypeStatements;
 
 	public void setAlleleOfGene(Gene alleleOfGene) {
@@ -56,6 +57,7 @@ public class AlleleSummaryDocument extends AVSParentDocument {
 		constructKnockdownComponents = null;
 		geneCrossReferences = null;
 		geneSynonyms = null;
+		geneSystematicName = null;
 		phenotypeStatements = null;
 	}
 }

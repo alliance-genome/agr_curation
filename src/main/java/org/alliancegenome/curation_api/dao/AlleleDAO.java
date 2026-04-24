@@ -472,6 +472,29 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 			}
 		}
 
+		// Gene systematic name per allele (via allele -> gene association)
+		String geneSystematicNameQueryString = """
+			SELECT DISTINCT aga.alleleassociationsubject_id AS allele_id, sa.displaytext AS systematic_name
+			FROM allelegeneassociation aga
+			JOIN vocabularyterm v ON v.id = aga.relation_id AND v.name = 'is_allele_of'
+			JOIN slotannotation sa ON sa.singlegene_id = aga.allelegeneassociationobject_id
+				AND sa.slotannotationtype = 'GeneSystematicNameSlotAnnotation'
+			WHERE aga.alleleassociationsubject_id IN :alleleIds
+			AND aga.internal = false AND aga.obsolete = false
+			""";
+		Query geneSystematicNameQuery = entityManager.createNativeQuery(geneSystematicNameQueryString);
+		geneSystematicNameQuery.setParameter("alleleIds", alleleIds);
+		List<Object[]> geneSystematicNameResults = geneSystematicNameQuery.getResultList();
+
+		Map<Long, String> alleleGeneSystematicNameMap = new HashMap<>();
+		for (Object[] row : geneSystematicNameResults) {
+			Long alleleId = (Long) row[0];
+			String systematicName = (String) row[1];
+			if (systematicName != null) {
+				alleleGeneSystematicNameMap.put(alleleId, systematicName);
+			}
+		}
+
 		// Gene cross references per allele (via allele -> gene association)
 		String geneCrossRefsQueryString = """
 			SELECT DISTINCT aga.alleleassociationsubject_id AS allele_id, cr.referencedcurie AS xref
@@ -1202,6 +1225,7 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 			doc.setConstructKnockdownComponents(alleleConstructKnockdownComponentsMap.get(allele.getId()));
 			doc.setGeneCrossReferences(alleleGeneCrossRefsMap.get(allele.getId()));
 			doc.setGeneSynonyms(alleleGeneSynonymsMap.get(allele.getId()));
+			doc.setGeneSystematicName(alleleGeneSystematicNameMap.get(allele.getId()));
 			doc.setPhenotypeStatements(allelePhenotypeStatementsMap.get(allele.getId()));
 			docs.add(doc);
 		}
