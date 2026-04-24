@@ -95,8 +95,8 @@ export const useGenericDataTable = ({
 	const onRowEditInit = (event) => {
 		setIsInEditMode(true);
 		const index = event.index % tableState.rows;
-		let _originalRows = global.structuredClone(originalRows);
-		_originalRows[index] = global.structuredClone(entities[index]);
+		let _originalRows = structuredClone(originalRows);
+		_originalRows[index] = structuredClone(entities[index]);
 		setOriginalRows(_originalRows);
 	};
 
@@ -136,7 +136,7 @@ export const useGenericDataTable = ({
 			setIsInEditMode(false);
 		}
 
-		let updatedRow = global.structuredClone(event.data); //deep copy
+		let updatedRow = structuredClone(event.data); //deep copy
 
 		if (tableName === 'Disease Annotations') {
 			validateBioEntityFields(updatedRow, setUiErrorMessages, event, setIsInEditMode, closeRowRef, areUiErrors);
@@ -171,10 +171,10 @@ export const useGenericDataTable = ({
 			onSuccess: (response, variables, context) => {
 				toast_topright.current.show({ severity: 'success', summary: 'Successful', detail: 'Row Updated' });
 
-				let _entities = global.structuredClone(entities);
+				let _entities = structuredClone(entities);
 				_entities[index] = response.data.entity;
 				setEntities(_entities);
-				const errorMessagesCopy = global.structuredClone(errorMessages);
+				const errorMessagesCopy = structuredClone(errorMessages);
 				errorMessagesCopy[index] = {};
 				setErrorMessages({ ...errorMessagesCopy });
 			},
@@ -201,9 +201,9 @@ export const useGenericDataTable = ({
 					setExceptionDialog(true);
 				}
 
-				let _entities = global.structuredClone(entities);
+				let _entities = structuredClone(entities);
 
-				const errorMessagesCopy = global.structuredClone(errorMessages);
+				const errorMessagesCopy = structuredClone(errorMessages);
 				errorMessagesCopy[index] = {};
 				if (error.response.data.errorMessages !== undefined) {
 					Object.keys(error.response.data.errorMessages).forEach((field) => {
@@ -247,7 +247,7 @@ export const useGenericDataTable = ({
 					sticky: false,
 				},
 			]);
-			let _entities = global.structuredClone(entities);
+			let _entities = structuredClone(entities);
 			if (editingRows[idToDelete]) {
 				let _editingRows = { ...editingRows };
 				delete _editingRows[idToDelete];
@@ -272,7 +272,7 @@ export const useGenericDataTable = ({
 	};
 	const handleDeprecation = (entityToDeprecate) => {
 		areUiErrors.current = false;
-		let updatedRow = global.structuredClone(entityToDeprecate); //deep copy
+		let updatedRow = structuredClone(entityToDeprecate); //deep copy
 		updatedRow.obsolete = true;
 
 		let deprecatedIndex = entities
@@ -285,10 +285,10 @@ export const useGenericDataTable = ({
 			onSuccess: (response, variables, context) => {
 				toast_topright.current.show({ severity: 'success', summary: 'Successful', detail: 'Row Deprecated' });
 
-				let _entities = global.structuredClone(entities);
+				let _entities = structuredClone(entities);
 				_entities[deprecatedIndex] = response.data.entity;
 				setEntities(_entities);
-				const errorMessagesCopy = global.structuredClone(errorMessages);
+				const errorMessagesCopy = structuredClone(errorMessages);
 				errorMessagesCopy[deprecatedIndex] = {};
 				setErrorMessages({ ...errorMessagesCopy });
 			},
@@ -305,9 +305,9 @@ export const useGenericDataTable = ({
 					setExceptionDialog(true);
 				}
 
-				let _entities = global.structuredClone(entities);
+				let _entities = structuredClone(entities);
 
-				const errorMessagesCopy = global.structuredClone(errorMessages);
+				const errorMessagesCopy = structuredClone(errorMessages);
 				errorMessagesCopy[deprecatedIndex] = {};
 				if (error.response.data.errorMessages !== undefined) {
 					Object.keys(error.response.data.errorMessages).forEach((field) => {
