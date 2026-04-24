@@ -255,6 +255,27 @@ public class GeneDAO extends BaseSQLDAO<Gene> {
 			""", geneIds);
 	}
 
+	public Map<Long, String> getGeneSystematicNames(List<Long> geneIds) {
+		if (CollectionUtils.isEmpty(geneIds)) {
+			return new HashMap<>();
+		}
+		Query query = entityManager.createNativeQuery("""
+			SELECT singlegene_id, displaytext FROM slotannotation
+			WHERE slotannotationtype = 'GeneSystematicNameSlotAnnotation' AND singlegene_id IN :geneIds
+			""");
+		query.setParameter("geneIds", geneIds);
+		List<Object[]> rows = query.getResultList();
+		Map<Long, String> result = new HashMap<>();
+		for (Object[] row : rows) {
+			Long id = ((Number) row[0]).longValue();
+			String name = (String) row[1];
+			if (name != null) {
+				result.put(id, name);
+			}
+		}
+		return result;
+	}
+
 	public Map<Long, Set<String>> getGeneSecondaryIds(List<Long> geneIds) {
 		if (CollectionUtils.isEmpty(geneIds)) {
 			return new HashMap<>();

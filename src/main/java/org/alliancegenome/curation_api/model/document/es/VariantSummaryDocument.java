@@ -24,4 +24,5 @@ public class VariantSummaryDocument extends AVSParentDocument {
 	private List<Variant> variantList;
 	private HashSet<String> geneSynonyms;
 	private HashSet<String> geneCrossReferences;
+	private HashSet<String> geneSystematicNames;
 }
