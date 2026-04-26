@@ -1,3 +1,5 @@
+@use "../variables" as *;
+
 .card {
     background-color: var(--surface-card);
     padding: 1.5rem;
