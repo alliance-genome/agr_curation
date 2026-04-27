@@ -61,7 +61,7 @@ export const InheritanceModesFormTable = ({
 				editor={(props) => {
 					return (
 						<ControlledVocabularyEditor
-							props={props}
+							editorOptions={props}
 							onChangeHandler={inheritanceModeOnChangeHandler}
 							errorMessages={errorMessages}
 							rowIndex={props.rowIndex}
@@ -115,7 +115,7 @@ export const InheritanceModesFormTable = ({
 				editor={(props) => {
 					return (
 						<InternalEditor
-							props={props}
+							editorOptions={props}
 							rowIndex={props.rowIndex}
 							errorMessages={errorMessages}
 							dataKey={props?.rowData?.dataKey}

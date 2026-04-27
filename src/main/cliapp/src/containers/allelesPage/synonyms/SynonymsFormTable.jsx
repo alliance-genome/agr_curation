@@ -98,7 +98,7 @@ export const SynonymsFormTable = ({
 				editor={(props) => {
 					return (
 						<ControlledVocabularyEditor
-							props={props}
+							editorOptions={props}
 							onChangeHandler={synonymScopeOnChangeHandler}
 							errorMessages={errorMessages}
 							dataKey={props?.rowData?.dataKey}
@@ -117,7 +117,7 @@ export const SynonymsFormTable = ({
 				editor={(props) => {
 					return (
 						<ControlledVocabularyEditor
-							props={props}
+							editorOptions={props}
 							onChangeHandler={nameTypeOnChangeHandler}
 							errorMessages={errorMessages}
 							dataKey={props?.rowData?.dataKey}
@@ -153,7 +153,7 @@ export const SynonymsFormTable = ({
 				editor={(props) => {
 					return (
 						<InternalEditor
-							props={props}
+							editorOptions={props}
 							rowIndex={props.rowIndex}
 							errorMessages={errorMessages}
 							dataKey={props?.rowData?.dataKey}

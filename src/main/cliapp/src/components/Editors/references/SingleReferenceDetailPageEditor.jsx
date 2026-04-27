@@ -1,15 +1,15 @@
 import React from 'react';
 import { LiteratureAutocompleteTemplate } from '../../Autocomplete/LiteratureAutocompleteTemplate';
 import { FormErrorMessageComponent } from '../../Error/FormErrorMessageComponent';
-import { referenceSearch } from './utils';
+import { singleReferenceSearch } from './utils';
 import { AutocompleteFormEditor } from '../../Autocomplete/AutocompleteFormEditor';
 
-export const SingleReferenceFormEditor = ({ reference, onReferenceValueChange, errorMessages }) => {
+export const SingleReferenceDetailPageEditor = ({ reference, onReferenceValueChange, errorMessages }) => {
 	return (
 		<>
 			<AutocompleteFormEditor
 				inputClassNames="w-20rem"
-				search={referenceSearch}
+				search={singleReferenceSearch}
 				name="singleReference"
 				fieldName="singleReference"
 				initialValue={reference}

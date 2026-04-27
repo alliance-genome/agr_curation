@@ -1,22 +1,20 @@
 import React, { useRef, useState, useMemo } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { GenericDataTable } from '../../components/GenericDataTable/GenericDataTable';
-import { ErrorMessageComponent } from '../../components/Error/ErrorMessageComponent';
 import { VariantService } from '../../service/VariantService';
 import { RelatedNotesEditDialog } from '../../components/RelatedNotesEditDialog';
 import { RelatedNotesReadOnlyDialog } from '../../components/RelatedNotesReadOnlyDialog';
+import { DialogTriggerEditor } from '../../components/Editors/DialogTriggerEditor';
 import { TaxonTableEditor } from '../../components/Editors/taxon/TaxonTableEditor';
 import { VariantTypeTableEditor } from '../../components/Editors/variantType/VariantTypeTableEditor';
 import { SourceGeneralConsequenceTableEditor } from '../../components/Editors/sourceGeneralConsequence/SourceGeneralConsequenceTableEditor';
 import { BooleanTableEditor } from '../../components/Editors/boolean/BooleanTableEditor';
+import { ControlledVocabularyTableEditor } from '../../components/Editors/controlledVocabulary/ControlledVocabularyTableEditor';
 
 import { Toast } from 'primereact/toast';
-import { Button } from 'primereact/button';
-import { EditMessageTooltip } from '../../components/EditMessageTooltip';
 import { getDefaultTableState } from '../../service/TableStateService';
 import { FILTER_CONFIGS } from '../../constants/FilterFields';
 import { useControlledVocabularyService } from '../../service/useControlledVocabularyService';
-import { ControlledVocabularyDropdown } from '../../components/ControlledVocabularySelector';
 
 import { CrossReferencesTemplate } from '../../components/Templates/CrossReferencesTemplate';
 import { StringTemplate } from '../../components/Templates/StringTemplate';
@@ -68,27 +66,6 @@ export const VariantsTable = () => {
 
 	const variantStatusTerms = useControlledVocabularyService('variant_status');
 
-	const onVariantStatusEditorValueChange = (props, event) => {
-		let updatedVariants = [...props.props.value];
-		updatedVariants[props.rowIndex].variantStatus = event.value;
-	};
-
-	const variantStatusEditor = (props) => {
-		return (
-			<>
-				<ControlledVocabularyDropdown
-					field="variantStatus"
-					options={variantStatusTerms}
-					editorChange={onVariantStatusEditorValueChange}
-					props={props}
-					showClear={true}
-					placeholderText={props.rowData.variantStatus?.name}
-				/>
-				<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={'variantStatus'} />
-			</>
-		);
-	};
-
 	const handleRelatedNotesOpen = (relatedNotes) => {
 		let _relatedNotesData = {};
 		_relatedNotesData['originalRelatedNotes'] = relatedNotes;
@@ -99,72 +76,18 @@ export const VariantsTable = () => {
 		}));
 	};
 
-	const handleRelatedNotesOpenInEdit = (event, rowProps, isInEdit) => {
-		const { rowIndex } = rowProps;
+	const handleRelatedNotesOpenInEdit = (event, editorOptions, isInEdit) => {
+		const { rowIndex } = editorOptions;
 		const index = rowIndex;
 		let _relatedNotesData = {};
-		_relatedNotesData['originalRelatedNotes'] = rowProps.rowData.relatedNotes;
+		_relatedNotesData['originalRelatedNotes'] = editorOptions.rowData.relatedNotes;
 		_relatedNotesData['dialog'] = true;
 		_relatedNotesData['isInEdit'] = isInEdit;
 		_relatedNotesData['rowIndex'] = index;
-		_relatedNotesData['mainRowProps'] = rowProps;
+		_relatedNotesData['mainRowProps'] = editorOptions;
 		setRelatedNotesData(() => ({
 			..._relatedNotesData,
 		}));
-	};
-
-	const relatedNotesEditor = (props) => {
-		if (props?.rowData?.relatedNotes) {
-			return (
-				<>
-					<div>
-						<Button
-							className="p-button-text"
-							onClick={(event) => {
-								handleRelatedNotesOpenInEdit(event, props, true);
-							}}
-						>
-							<span style={{ textDecoration: 'underline' }}>
-								{`Notes(${props.rowData.relatedNotes.length}) `}
-								<i className="pi pi-user-edit" style={{ fontSize: '1em' }}></i>
-							</span>
-							&nbsp;&nbsp;&nbsp;&nbsp;
-							<EditMessageTooltip object="variant" />
-						</Button>
-					</div>
-					<ErrorMessageComponent
-						errorMessages={errorMessagesRef.current[props.rowIndex]}
-						errorField={'relatedNotes'}
-						style={{ fontSize: '1em' }}
-					/>
-				</>
-			);
-		} else {
-			return (
-				<>
-					<div>
-						<Button
-							className="p-button-text"
-							onClick={(event) => {
-								handleRelatedNotesOpenInEdit(event, props, true);
-							}}
-						>
-							<span style={{ textDecoration: 'underline' }}>
-								Add Note
-								<i className="pi pi-user-edit" style={{ fontSize: '1em' }}></i>
-							</span>
-							&nbsp;&nbsp;&nbsp;&nbsp;
-							<EditMessageTooltip />
-						</Button>
-					</div>
-					<ErrorMessageComponent
-						errorMessages={errorMessagesRef.current[props.rowIndex]}
-						errorField={'relatedNotes'}
-						style={{ fontSize: '1em' }}
-					/>
-				</>
-			);
-		}
 	};
 
 	const columns = useMemo(
@@ -191,38 +114,66 @@ export const VariantsTable = () => {
 				filterConfig: FILTER_CONFIGS.modinternalidFilterConfig,
 			},
 			{
-				field: 'taxon.name',
+				field: 'taxon',
+				columnKey: 'taxon.name',
 				header: 'Taxon',
 				sortable: true,
 				body: (rowData) => <OntologyTermTemplate term={rowData.taxon} />,
 				filterConfig: FILTER_CONFIGS.taxonFilterConfig,
-				editor: (props) => <TaxonTableEditor rowProps={props} errorMessagesRef={errorMessagesRef} />,
+				editor: (editorOptions) => (
+					<TaxonTableEditor editorOptions={editorOptions} errorMessagesRef={errorMessagesRef} />
+				),
 			},
 			{
-				field: 'variantType.name',
+				field: 'variantType',
+				columnKey: 'variantType.name',
 				header: 'Variant Type',
 				sortable: true,
 				body: (rowData) => <OntologyTermTemplate term={rowData.variantType} />,
 				filterConfig: FILTER_CONFIGS.variantTypeFilterConfig,
-				editor: (props) => <VariantTypeTableEditor rowProps={props} errorMessagesRef={errorMessagesRef} />,
+				editor: (editorOptions) => (
+					<VariantTypeTableEditor editorOptions={editorOptions} errorMessagesRef={errorMessagesRef} />
+				),
 			},
 			{
-				field: 'variantStatus.name',
+				field: 'variantStatus',
+				columnKey: 'variantStatus.name',
 				header: 'Variant Status',
 				sortable: true,
 				body: (rowData) => <StringTemplate string={rowData.variantStatus?.name} />,
 				filterConfig: FILTER_CONFIGS.variantStatusFilterConfig,
-				editor: (props) => variantStatusEditor(props),
+				editor: (editorOptions) => (
+					<ControlledVocabularyTableEditor
+						editorOptions={editorOptions}
+						field="variantStatus"
+						options={variantStatusTerms}
+						errorMessagesRef={errorMessagesRef}
+					/>
+				),
 			},
 			{
-				field: 'relatedNotes.freeText',
+				field: 'relatedNotes',
+				columnKey: 'relatedNotes.freeText',
 				header: 'Related Notes',
 				sortable: true,
 				body: (rowData) => (
 					<CountDialogTemplate entities={rowData.relatedNotes} handleOpen={handleRelatedNotesOpen} text={'Notes'} />
 				),
 				filterConfig: FILTER_CONFIGS.relatedNotesFilterConfig,
-				editor: relatedNotesEditor,
+				editor: (editorOptions) => {
+					const count = editorOptions.rowData.relatedNotes?.length;
+					return (
+						<DialogTriggerEditor
+							editorOptions={editorOptions}
+							errorMessagesRef={errorMessagesRef}
+							onOpenInEdit={handleRelatedNotesOpenInEdit}
+							errorField="relatedNotes"
+							displayText={count ? `Notes(${count}) ` : null}
+							addText="Add Note"
+							tooltipObject="variant"
+						/>
+					);
+				},
 			},
 			{
 				field: 'references.primaryCrossReferenceCurie',
@@ -234,12 +185,15 @@ export const VariantsTable = () => {
 				),
 			},
 			{
-				field: 'sourceGeneralConsequence.name',
+				field: 'sourceGeneralConsequence',
+				columnKey: 'sourceGeneralConsequence.name',
 				header: 'Source General Consequence',
 				sortable: true,
 				body: (rowData) => <OntologyTermTemplate term={rowData.sourceGeneralConsequence} />,
 				filterConfig: FILTER_CONFIGS.sourceGeneralConsequenceFilterConfig,
-				editor: (props) => <SourceGeneralConsequenceTableEditor rowProps={props} errorMessagesRef={errorMessagesRef} />,
+				editor: (editorOptions) => (
+					<SourceGeneralConsequenceTableEditor editorOptions={editorOptions} errorMessagesRef={errorMessagesRef} />
+				),
 			},
 			{
 				field: 'synonyms',
@@ -300,9 +254,9 @@ export const VariantsTable = () => {
 				body: (rowData) => <BooleanTemplate value={rowData.internal} />,
 				filterConfig: FILTER_CONFIGS.internalFilterConfig,
 				sortable: true,
-				editor: (props) => (
+				editor: (editorOptions) => (
 					<BooleanTableEditor
-						rowProps={props}
+						editorOptions={editorOptions}
 						errorMessagesRef={errorMessagesRef}
 						field={'internal'}
 						showClear={false}
@@ -316,9 +270,9 @@ export const VariantsTable = () => {
 				body: (rowData) => <BooleanTemplate value={rowData.obsolete} />,
 				filterConfig: FILTER_CONFIGS.obsoleteFilterConfig,
 				sortable: true,
-				editor: (props) => (
+				editor: (editorOptions) => (
 					<BooleanTableEditor
-						rowProps={props}
+						editorOptions={editorOptions}
 						errorMessagesRef={errorMessagesRef}
 						field={'obsolete'}
 						showClear={false}

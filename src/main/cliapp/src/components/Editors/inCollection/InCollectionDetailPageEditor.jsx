@@ -4,9 +4,9 @@ import { inCollectionSearch } from './utils';
 import { FormErrorMessageComponent } from '../../Error/FormErrorMessageComponent';
 import { InCollectionAdditionalFieldData } from '../../FieldData/InCollectionAdditionalFieldData';
 import { VocabTermAutocompleteTemplate } from '../../Autocomplete/VocabTermAutocompleteTemplate';
-import { FormFieldWrapper } from '../../FormFieldWrapper';
+import { DetailPageFieldWrapper } from '../../DetailPageFieldWrapper';
 
-export const InCollectionFormEditor = ({
+export const InCollectionDetailPageEditor = ({
 	inCollection,
 	onInCollectionValueChange,
 	widgetColumnSize,
@@ -16,7 +16,7 @@ export const InCollectionFormEditor = ({
 }) => {
 	return (
 		<>
-			<FormFieldWrapper
+			<DetailPageFieldWrapper
 				labelColumnSize={labelColumnSize}
 				fieldDetailsColumnSize={fieldDetailsColumnSize}
 				widgetColumnSize={widgetColumnSize}

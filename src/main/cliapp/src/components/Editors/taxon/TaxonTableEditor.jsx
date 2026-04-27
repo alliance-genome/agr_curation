@@ -1,24 +1,12 @@
-import React from 'react';
-import { AutocompleteEditor } from '../../Autocomplete/AutocompleteEditor';
-import { ErrorMessageComponent } from '../../Error/ErrorMessageComponent';
-import { taxonSearch } from './utils';
-import { defaultAutocompleteOnChange } from '../../../utils/utils';
+import { AutocompleteSingleTableEditor } from '../autocomplete/AutocompleteSingleTableEditor';
+import { taxonSearchConfig } from './utils';
 
-export const TaxonTableEditor = ({ rowProps, errorMessagesRef }) => {
-	const onTaxonValueChange = (event, setFieldValue, props) => {
-		defaultAutocompleteOnChange(props, event, 'taxon', setFieldValue);
-	};
-
-	return (
-		<>
-			<AutocompleteEditor
-				search={taxonSearch}
-				initialValue={rowProps.rowData.taxon?.curie}
-				rowProps={rowProps}
-				fieldName="taxon"
-				onValueChangeHandler={onTaxonValueChange}
-			/>
-			<ErrorMessageComponent errorMessages={errorMessagesRef.current[rowProps.rowIndex]} errorField="taxon" />
-		</>
-	);
-};
+export const TaxonTableEditor = ({ editorOptions, errorMessagesRef, uiErrorMessagesRef }) => (
+	<AutocompleteSingleTableEditor
+		editorOptions={editorOptions}
+		field="taxon"
+		errorMessagesRef={errorMessagesRef}
+		uiErrorMessagesRef={uiErrorMessagesRef}
+		{...taxonSearchConfig}
+	/>
+);

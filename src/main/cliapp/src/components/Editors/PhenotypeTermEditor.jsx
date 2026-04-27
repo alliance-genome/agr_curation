@@ -20,7 +20,7 @@ export const PhenotypeTermEditor = ({ props, errorMessages, onChange, dataKey })
 			<AutocompleteEditor
 				search={phenotypeTermSearch}
 				initialValue={props.rowData.phenotypeTerm?.curie}
-				rowProps={props}
+				editorOptions={props}
 				fieldName="phenotypeTerm"
 				onValueChangeHandler={onChange}
 			/>

@@ -1,28 +1,19 @@
-import React from 'react';
-import { AutocompleteEditor } from '../../Autocomplete/AutocompleteEditor';
-import { LiteratureAutocompleteTemplate } from '../../Autocomplete/LiteratureAutocompleteTemplate';
-import { referenceSearch } from './utils';
-import { DialogErrorMessageComponent } from '../../Error/DialogErrorMessageComponent';
+import { AutocompleteSingleTableEditor } from '../autocomplete/AutocompleteSingleTableEditor';
+import { getRefString } from '../../../utils/utils';
+import { singleReferenceSearchConfig } from './utils';
 
-export const SingleReferenceTableEditor = ({ props, errorMessages, onChange }) => {
-	return (
-		<>
-			<AutocompleteEditor
-				search={referenceSearch}
-				initialValue={props.rowData?.curie}
-				rowProps={props}
-				fieldName="references"
-				valueDisplay={(item, setAutocompleteHoverItem, op, query) => (
-					<LiteratureAutocompleteTemplate
-						item={item}
-						setAutocompleteHoverItem={setAutocompleteHoverItem}
-						op={op}
-						query={query}
-					/>
-				)}
-				onValueChangeHandler={onChange}
-			/>
-			<DialogErrorMessageComponent errorMessages={errorMessages[props?.rowIndex]} errorField={'select'} />
-		</>
-	);
-};
+export const SingleReferenceTableEditor = ({
+	editorOptions,
+	field = 'evidenceItem',
+	errorMessagesRef,
+	uiErrorMessagesRef,
+}) => (
+	<AutocompleteSingleTableEditor
+		editorOptions={editorOptions}
+		field={field}
+		initialValue={getRefString(editorOptions.rowData[field])}
+		errorMessagesRef={errorMessagesRef}
+		uiErrorMessagesRef={uiErrorMessagesRef}
+		{...singleReferenceSearchConfig}
+	/>
+);

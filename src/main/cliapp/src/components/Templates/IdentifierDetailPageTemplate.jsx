@@ -1,6 +1,6 @@
-import { FormFieldWrapper } from '../FormFieldWrapper';
+import { DetailPageFieldWrapper } from '../DetailPageFieldWrapper';
 
-export const IdentifierFormTemplate = ({
+export const IdentifierDetailPageTemplate = ({
 	identifier,
 	label,
 	widgetColumnSize,
@@ -10,7 +10,7 @@ export const IdentifierFormTemplate = ({
 }) => {
 	return (
 		<>
-			<FormFieldWrapper
+			<DetailPageFieldWrapper
 				labelColumnSize={labelColumnSize}
 				fieldDetailsColumnSize={fieldDetailsColumnSize}
 				widgetColumnSize={widgetColumnSize}

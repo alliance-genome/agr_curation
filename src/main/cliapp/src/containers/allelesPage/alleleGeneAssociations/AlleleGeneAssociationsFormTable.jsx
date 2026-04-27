@@ -89,7 +89,7 @@ export const AlleleGeneAssociationsFormTable = ({
 					editor={(props) => {
 						return (
 							<VocabularyTermSetEditor
-								props={props}
+								editorOptions={props}
 								onChangeHandler={alleleGeneRelationOnChangeHandler}
 								errorMessages={errorMessages}
 								dataKey={props?.rowData?.dataKey}

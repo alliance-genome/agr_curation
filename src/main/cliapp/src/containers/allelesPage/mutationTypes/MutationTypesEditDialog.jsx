@@ -31,7 +31,6 @@ export const MutationTypesEditDialog = ({
 	const toast_topright = useRef(null);
 
 	const showDialogHandler = () => {
-		dataKeyCounter.current = 0;
 		let _localMutationTypes = cloneMutationTypes(originalMutationTypes);
 		setLocalMutationTypes(_localMutationTypes);
 
@@ -123,11 +122,8 @@ export const MutationTypesEditDialog = ({
 		for (const mt of _localMutationTypes) {
 			delete mt.dataKey;
 		}
-		mainRowProps.rowData.alleleMutationTypes = _localMutationTypes;
-		let updatedAnnotations = [...mainRowProps.props.value];
-		updatedAnnotations[rowIndex].alleleMutationTypes = _localMutationTypes;
 		if (mainRowProps.editorCallback) {
-			mainRowProps.editorCallback(_localMutationTypes?.[0]?.mutationTypes?.[0]?.name ?? null);
+			mainRowProps.editorCallback(_localMutationTypes);
 		}
 
 		const errorMessagesCopy = structuredClone(errorMessagesMainRow);
@@ -276,7 +272,7 @@ export const MutationTypesEditDialog = ({
 								/>
 							);
 						}}
-						field="mutationType.curie"
+						field="mutationTypes"
 						header="Mutation Types"
 						headerClassName="surface-0"
 					/>
@@ -284,7 +280,7 @@ export const MutationTypesEditDialog = ({
 						editor={(props) => {
 							return (
 								<InternalEditor
-									props={props}
+									editorOptions={props}
 									rowIndex={props.rowIndex}
 									errorMessages={errorMessages}
 									dataKey={props?.rowData?.dataKey}
@@ -307,7 +303,7 @@ export const MutationTypesEditDialog = ({
 								/>
 							);
 						}}
-						field="evidence.curie"
+						field="evidence"
 						header="Evidence"
 						headerClassName="surface-0"
 					/>

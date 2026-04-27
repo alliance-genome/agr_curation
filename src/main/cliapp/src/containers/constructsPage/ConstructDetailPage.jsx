@@ -8,12 +8,12 @@ import { ConstructService } from '../../service/ConstructService';
 import ErrorBoundary from '../../components/Error/ErrorBoundary';
 import { StickyHeader } from '../../components/StickyHeader';
 import { useConstructReducer } from './useConstructReducer';
-import { IdentifierFormTemplate } from '../../components/Templates/IdentifierFormTemplate';
-import { DataProviderFormTemplate } from '../../components/Templates/DataProviderFormTemplate';
-import { UserFormTemplate } from '../../components/Templates/UserFormTemplate';
-import { DateFormTemplate } from '../../components/Templates/DateFormTemplate';
+import { IdentifierDetailPageTemplate } from '../../components/Templates/IdentifierDetailPageTemplate';
+import { DataProviderDetailPageTemplate } from '../../components/Templates/DataProviderDetailPageTemplate';
+import { UserDetailPageTemplate } from '../../components/Templates/UserDetailPageTemplate';
+import { DateDetailPageTemplate } from '../../components/Templates/DateDetailPageTemplate';
 import { Divider } from 'primereact/divider';
-import { FormFieldWrapper } from '../../components/FormFieldWrapper';
+import { DetailPageFieldWrapper } from '../../components/DetailPageFieldWrapper';
 import { SymbolForm } from './symbol/SymbolForm';
 import { FullNameForm } from './fullName/FullNameForm';
 import { SynonymsForm } from './synonyms/SynonymsForm';
@@ -79,7 +79,7 @@ export default function ConstructDetailPage() {
 					</Splitter>
 				</StickyHeader>
 				<form className="mt-8">
-					<IdentifierFormTemplate
+					<IdentifierDetailPageTemplate
 						identifier={constructState.construct?.primaryExternalId}
 						label="Primary External ID"
 						widgetColumnSize={widgetColumnSize}
@@ -90,7 +90,7 @@ export default function ConstructDetailPage() {
 
 					<Divider />
 
-					<IdentifierFormTemplate
+					<IdentifierDetailPageTemplate
 						identifier={constructState.construct?.modInternalId}
 						label="MOD Internal ID"
 						widgetColumnSize={widgetColumnSize}
@@ -101,7 +101,7 @@ export default function ConstructDetailPage() {
 
 					<Divider />
 
-					<IdentifierFormTemplate
+					<IdentifierDetailPageTemplate
 						identifier={constructState.construct?.uniqueId}
 						label="Unique ID"
 						widgetColumnSize={widgetColumnSize}
@@ -140,7 +140,7 @@ export default function ConstructDetailPage() {
 
 					<Divider />
 
-					<DataProviderFormTemplate
+					<DataProviderDetailPageTemplate
 						dataProvider={constructState.construct?.dataProvider?.abbreviation}
 						widgetColumnSize={widgetColumnSize}
 						labelColumnSize={labelColumnSize}
@@ -149,7 +149,7 @@ export default function ConstructDetailPage() {
 
 					<Divider />
 
-					<UserFormTemplate
+					<UserDetailPageTemplate
 						user={constructState.construct?.createdBy?.uniqueId}
 						fieldName="Created By"
 						widgetColumnSize={widgetColumnSize}
@@ -159,7 +159,7 @@ export default function ConstructDetailPage() {
 
 					<Divider />
 
-					<DateFormTemplate
+					<DateDetailPageTemplate
 						date={constructState.construct?.dateCreated}
 						fieldName="Date Created"
 						widgetColumnSize={widgetColumnSize}
@@ -169,7 +169,7 @@ export default function ConstructDetailPage() {
 
 					<Divider />
 
-					<UserFormTemplate
+					<UserDetailPageTemplate
 						user={constructState.construct?.updatedBy?.uniqueId}
 						fieldName="Updated By"
 						widgetColumnSize={widgetColumnSize}
@@ -179,7 +179,7 @@ export default function ConstructDetailPage() {
 
 					<Divider />
 
-					<DateFormTemplate
+					<DateDetailPageTemplate
 						date={constructState.construct?.dateUpdated}
 						fieldName="Date Updated"
 						widgetColumnSize={widgetColumnSize}
@@ -189,7 +189,7 @@ export default function ConstructDetailPage() {
 
 					<Divider />
 
-					<FormFieldWrapper
+					<DetailPageFieldWrapper
 						labelColumnSize={labelColumnSize}
 						fieldDetailsColumnSize={fieldDetailsColumnSize}
 						widgetColumnSize={widgetColumnSize}
@@ -200,7 +200,7 @@ export default function ConstructDetailPage() {
 
 					<Divider />
 
-					<FormFieldWrapper
+					<DetailPageFieldWrapper
 						labelColumnSize={labelColumnSize}
 						fieldDetailsColumnSize={fieldDetailsColumnSize}
 						widgetColumnSize={widgetColumnSize}

@@ -8,14 +8,14 @@ import { useParams } from 'react-router-dom';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { AlleleService } from '../../service/AlleleService';
 import ErrorBoundary from '../../components/Error/ErrorBoundary';
-import { TaxonFormEditor } from '../../components/Editors/taxon/TaxonFormEditor';
+import { TaxonDetailPageEditor } from '../../components/Editors/taxon/TaxonDetailPageEditor';
 import { useAlleleReducer } from './useAlleleReducer';
-import { InCollectionFormEditor } from '../../components/Editors/inCollection/InCollectionFormEditor';
-import { BooleanFormEditor } from '../../components/Editors/boolean/BooleanFormEditor';
-import { IdentifierFormTemplate } from '../../components/Templates/IdentifierFormTemplate';
-import { DataProviderFormTemplate } from '../../components/Templates/DataProviderFormTemplate';
-import { DateFormTemplate } from '../../components/Templates/DateFormTemplate';
-import { UserFormTemplate } from '../../components/Templates/UserFormTemplate';
+import { InCollectionDetailPageEditor } from '../../components/Editors/inCollection/InCollectionDetailPageEditor';
+import { BooleanDetailPageEditor } from '../../components/Editors/boolean/BooleanDetailPageEditor';
+import { IdentifierDetailPageTemplate } from '../../components/Templates/IdentifierDetailPageTemplate';
+import { DataProviderDetailPageTemplate } from '../../components/Templates/DataProviderDetailPageTemplate';
+import { DateDetailPageTemplate } from '../../components/Templates/DateDetailPageTemplate';
+import { UserDetailPageTemplate } from '../../components/Templates/UserDetailPageTemplate';
 import { SynonymsForm } from './synonyms/SynonymsForm';
 import { FullNameForm } from './fullName/FullNameForm';
 import { MutationTypesForm } from './mutationTypes/MutationTypesForm';
@@ -197,7 +197,7 @@ export default function AlleleDetailPage() {
 					</Splitter>
 				</StickyHeader>
 				<form className="mt-8">
-					<IdentifierFormTemplate
+					<IdentifierDetailPageTemplate
 						identifier={alleleState.allele?.curie}
 						label="Curie"
 						widgetColumnSize={widgetColumnSize}
@@ -207,7 +207,7 @@ export default function AlleleDetailPage() {
 
 					<Divider />
 
-					<IdentifierFormTemplate
+					<IdentifierDetailPageTemplate
 						identifier={alleleState.allele?.primaryExternalId}
 						label="Primary External ID"
 						widgetColumnSize={widgetColumnSize}
@@ -217,7 +217,7 @@ export default function AlleleDetailPage() {
 
 					<Divider />
 
-					<IdentifierFormTemplate
+					<IdentifierDetailPageTemplate
 						identifier={alleleState.allele?.modInternalId}
 						label="MOD Internal ID"
 						widgetColumnSize={widgetColumnSize}
@@ -247,7 +247,7 @@ export default function AlleleDetailPage() {
 
 					<Divider />
 
-					<TaxonFormEditor
+					<TaxonDetailPageEditor
 						taxon={alleleState.allele?.taxon}
 						onTaxonValueChange={onTaxonValueChange}
 						widgetColumnSize={widgetColumnSize}
@@ -282,7 +282,7 @@ export default function AlleleDetailPage() {
 
 					<Divider />
 
-					<InCollectionFormEditor
+					<InCollectionDetailPageEditor
 						inCollection={alleleState.allele?.inCollection}
 						onInCollectionValueChange={onInCollectionValueChange}
 						widgetColumnSize={widgetColumnSize}
@@ -293,7 +293,7 @@ export default function AlleleDetailPage() {
 
 					<Divider />
 
-					<BooleanFormEditor
+					<BooleanDetailPageEditor
 						value={alleleState.allele?.isExtinct}
 						name={'isExtinct'}
 						label={'Is Extinct'}
@@ -315,7 +315,7 @@ export default function AlleleDetailPage() {
 
 					<Divider />
 
-					<DataProviderFormTemplate
+					<DataProviderDetailPageTemplate
 						dataProvider={alleleState.allele?.dataProvider?.abbreviation}
 						widgetColumnSize={widgetColumnSize}
 						labelColumnSize={labelColumnSize}
@@ -324,7 +324,7 @@ export default function AlleleDetailPage() {
 
 					<Divider />
 
-					<UserFormTemplate
+					<UserDetailPageTemplate
 						user={alleleState.allele?.updatedBy?.uniqueId}
 						fieldName="Updated By"
 						widgetColumnSize={widgetColumnSize}
@@ -334,7 +334,7 @@ export default function AlleleDetailPage() {
 
 					<Divider />
 
-					<DateFormTemplate
+					<DateDetailPageTemplate
 						date={alleleState.allele?.dateUpdated}
 						fieldName="Date Updated"
 						widgetColumnSize={widgetColumnSize}
@@ -344,7 +344,7 @@ export default function AlleleDetailPage() {
 
 					<Divider />
 
-					<UserFormTemplate
+					<UserDetailPageTemplate
 						user={alleleState.allele?.createdBy?.uniqueId}
 						fieldName="Created By"
 						widgetColumnSize={widgetColumnSize}
@@ -354,7 +354,7 @@ export default function AlleleDetailPage() {
 
 					<Divider />
 
-					<DateFormTemplate
+					<DateDetailPageTemplate
 						date={alleleState.allele?.dateCreated}
 						fieldName="Date Created"
 						widgetColumnSize={widgetColumnSize}
@@ -364,7 +364,7 @@ export default function AlleleDetailPage() {
 
 					<Divider />
 
-					<BooleanFormEditor
+					<BooleanDetailPageEditor
 						value={alleleState.allele?.internal}
 						name={'internal'}
 						label={'Internal'}
@@ -377,7 +377,7 @@ export default function AlleleDetailPage() {
 
 					<Divider />
 
-					<BooleanFormEditor
+					<BooleanDetailPageEditor
 						value={alleleState.allele?.obsolete}
 						name={'obsolete'}
 						label={'Obsolete'}

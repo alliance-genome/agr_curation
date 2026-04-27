@@ -55,7 +55,7 @@ export const GermlineTransmissionStatusFormTable = ({
 				editor={(props) => {
 					return (
 						<ControlledVocabularyEditor
-							props={props}
+							editorOptions={props}
 							onChangeHandler={germlineTransmissionStatusOnChangeHandler}
 							errorMessages={errorMessages}
 							dataKey={props?.rowData?.dataKey}
@@ -73,7 +73,7 @@ export const GermlineTransmissionStatusFormTable = ({
 				editor={(props) => {
 					return (
 						<InternalEditor
-							props={props}
+							editorOptions={props}
 							rowIndex={props.rowIndex}
 							errorMessages={errorMessages}
 							dataKey={props?.rowData?.dataKey}

@@ -1,10 +1,10 @@
 import { FormErrorMessageComponent } from '../../Error/FormErrorMessageComponent';
 import { Dropdown } from 'primereact/dropdown';
 import { BooleanAdditionalFieldData } from '../../FieldData/BooleanAdditionalFieldData';
-import { FormFieldWrapper } from '../../FormFieldWrapper';
+import { DetailPageFieldWrapper } from '../../DetailPageFieldWrapper';
 import { useControlledVocabularyService } from '../../../service/useControlledVocabularyService';
 
-export const BooleanFormEditor = ({
+export const BooleanDetailPageEditor = ({
 	value,
 	name,
 	label,
@@ -19,7 +19,7 @@ export const BooleanFormEditor = ({
 
 	return (
 		<>
-			<FormFieldWrapper
+			<DetailPageFieldWrapper
 				labelColumnSize={labelColumnSize}
 				fieldDetailsColumnSize={fieldDetailsColumnSize}
 				widgetColumnSize={widgetColumnSize}

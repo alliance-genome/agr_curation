@@ -34,7 +34,6 @@ export const RelatedNotesEditDialog = ({
 	const toast_topright = useRef(null);
 
 	const showDialogHandler = () => {
-		dataKeyCounter.current = 0;
 		let _localRelatedNotes = cloneNotes(originalRelatedNotes);
 		setLocalRelatedNotes(_localRelatedNotes);
 
@@ -75,11 +74,11 @@ export const RelatedNotesEditDialog = ({
 		return _clonableNotes;
 	};
 
-	const noteTypeOnChangeHandler = (props, event) => {
-		props.editorCallback(event.value);
+	const noteTypeOnChangeHandler = (editorOptions, event) => {
+		editorOptions.editorCallback(event.value);
 		setLocalRelatedNotes((prev) => {
 			const updated = [...prev];
-			updated[props.rowIndex] = { ...updated[props.rowIndex], noteType: event.value };
+			updated[editorOptions.rowIndex] = { ...updated[editorOptions.rowIndex], noteType: event.value };
 			return updated;
 		});
 	};
@@ -92,20 +91,20 @@ export const RelatedNotesEditDialog = ({
 		});
 	};
 
-	const referencesOnChangeHandler = (event, setFieldValue, props) => {
-		multipleAutocompleteOnChange(props, event, 'references', setFieldValue);
+	const referencesOnChangeHandler = (event, setFieldValue, editorOptions) => {
+		multipleAutocompleteOnChange(editorOptions, event, 'references', setFieldValue);
 		setLocalRelatedNotes((prev) => {
 			const updated = [...prev];
-			updated[props.rowIndex] = { ...updated[props.rowIndex], references: event.target.value };
+			updated[editorOptions.rowIndex] = { ...updated[editorOptions.rowIndex], references: event.target.value };
 			return updated;
 		});
 	};
 
-	const internalOnChangeHandler = (props, event) => {
-		props.editorCallback(event.target.value?.name);
+	const internalOnChangeHandler = (editorOptions, event) => {
+		editorOptions.editorCallback(event.target.value?.name);
 		setLocalRelatedNotes((prev) => {
 			const updated = [...prev];
-			updated[props.rowIndex] = { ...updated[props.rowIndex], internal: event.target?.value?.name };
+			updated[editorOptions.rowIndex] = { ...updated[editorOptions.rowIndex], internal: event.target?.value?.name };
 			return updated;
 		});
 	};
@@ -137,11 +136,8 @@ export const RelatedNotesEditDialog = ({
 		for (const note of _localRelatedNotes) {
 			delete note.dataKey;
 		}
-		mainRowProps.rowData.relatedNotes = _localRelatedNotes;
-		let updatedAnnotations = [...mainRowProps.props.value];
-		updatedAnnotations[rowIndex].relatedNotes = _localRelatedNotes;
 		if (mainRowProps.editorCallback) {
-			mainRowProps.editorCallback(_localRelatedNotes?.[0]?.freeText ?? null);
+			mainRowProps.editorCallback(_localRelatedNotes);
 		}
 
 		const errorMessagesCopy = structuredClone(errorMessagesMainRow);
@@ -274,38 +270,40 @@ export const RelatedNotesEditDialog = ({
 					cellMemo={false}
 				>
 					<Column
-						editor={(props) => <DeleteAction deletionHandler={handleDeleteRelatedNote} id={props?.rowData?.dataKey} />}
+						editor={(editorOptions) => (
+							<DeleteAction deletionHandler={handleDeleteRelatedNote} id={editorOptions?.rowData?.dataKey} />
+						)}
 						className="max-w-4rem"
 						bodyClassName="text-center"
 						headerClassName="surface-0"
 						frozen
 					/>
 					<Column
-						editor={(props) => {
+						editor={(editorOptions) => {
 							return (
 								<VocabularyTermSetEditor
-									props={props}
+									editorOptions={editorOptions}
 									onChangeHandler={noteTypeOnChangeHandler}
 									errorMessages={errorMessages}
-									dataKey={props?.rowData?.dataKey}
+									dataKey={editorOptions?.rowData?.dataKey}
 									vocabType={noteTypeVocabularyTermSet}
 									field="noteType"
 									showClear={false}
 								/>
 							);
 						}}
-						field="noteType.name"
+						field="noteType"
 						header="Note Type"
 						headerClassName="surface-0"
 					/>
 					<Column
-						editor={(props) => {
+						editor={(editorOptions) => {
 							return (
 								<TableInputTextAreaEditor
-									value={props.value}
-									rowIndex={props.rowIndex}
+									value={editorOptions.value}
+									rowIndex={editorOptions.rowIndex}
 									errorMessages={errorMessages}
-									dataKey={props?.rowData?.dataKey}
+									dataKey={editorOptions?.rowData?.dataKey}
 									textOnChangeHandler={textOnChangeHandler}
 									field="freeText"
 									rows={5}
@@ -320,30 +318,30 @@ export const RelatedNotesEditDialog = ({
 					/>
 					{showReferences && (
 						<Column
-							editor={(props) => {
+							editor={(editorOptions) => {
 								return (
 									<ReferencesEditor
-										props={props}
+										editorOptions={editorOptions}
 										errorMessages={errorMessages}
 										onChange={referencesOnChangeHandler}
-										dataKey={props?.rowData?.dataKey}
+										dataKey={editorOptions?.rowData?.dataKey}
 									/>
 								);
 							}}
-							field="evidence.curie"
+							field="evidence"
 							header="Evidence"
 							headerClassName="surface-0"
 							className="wrap-word max-w-25rem"
 						/>
 					)}
 					<Column
-						editor={(props) => {
+						editor={(editorOptions) => {
 							return (
 								<InternalEditor
-									props={props}
-									rowIndex={props.rowIndex}
+									editorOptions={editorOptions}
+									rowIndex={editorOptions.rowIndex}
 									errorMessages={errorMessages}
-									dataKey={props?.rowData?.dataKey}
+									dataKey={editorOptions?.rowData?.dataKey}
 									internalOnChangeHandler={internalOnChangeHandler}
 								/>
 							);

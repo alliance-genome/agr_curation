@@ -27,7 +27,7 @@ export const FunctionalImpactsEditor = ({ props, errorMessages, onChange, dataKe
 			<AutocompleteMultiEditor
 				search={functionalImpactSearch}
 				initialValue={props?.rowData?.functionalImpacts}
-				rowProps={props}
+				editorOptions={props}
 				fieldName="functionalImpacts"
 				subField="name"
 				valueDisplay={(item, setAutocompleteSelectedItem, op, query) => (

@@ -62,7 +62,7 @@ export const NomenclatureEventsFormTable = ({
 				editor={(props) => {
 					return (
 						<ControlledVocabularyEditor
-							props={props}
+							editorOptions={props}
 							onChangeHandler={nomenclatureEventOnChangeHandler}
 							errorMessages={errorMessages}
 							rowIndex={props.rowIndex}
@@ -89,7 +89,7 @@ export const NomenclatureEventsFormTable = ({
 				editor={(props) => {
 					return (
 						<InternalEditor
-							props={props}
+							editorOptions={props}
 							rowIndex={props.rowIndex}
 							errorMessages={errorMessages}
 							dataKey={props?.rowData?.dataKey}
@@ -105,7 +105,7 @@ export const NomenclatureEventsFormTable = ({
 				editor={(props) => {
 					return (
 						<ObsoleteEditor
-							props={props}
+							editorOptions={props}
 							rowIndex={props.rowIndex}
 							errorMessages={errorMessages}
 							dataKey={props?.rowData?.dataKey}

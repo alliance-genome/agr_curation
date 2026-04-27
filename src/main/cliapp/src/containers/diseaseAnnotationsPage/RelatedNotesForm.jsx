@@ -28,94 +28,97 @@ export const RelatedNotesForm = ({ dispatch, relatedNotes, showRelatedNotes, err
 		dispatch({ type: 'ADD_NEW_NOTE', count });
 	};
 
-	const onInternalEditorValueChange = (props, event) => {
+	const onInternalEditorValueChange = (editorOptions, event) => {
 		dispatch({
 			type: 'EDIT_ROW',
 			tableType: 'relatedNotes',
 			field: 'internal',
-			index: props.rowIndex,
+			index: editorOptions.rowIndex,
 			value: event.value.name,
 		});
 	};
 
-	const internalEditor = (props) => {
+	const internalEditor = (editorOptions) => {
 		return (
 			<>
 				<TrueFalseDropdown
 					options={booleanTerms?.terms || []}
 					editorChange={onInternalEditorValueChange}
-					props={props}
+					editorOptions={editorOptions}
 					field={'internal'}
 				/>
-				<FormErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={'internal'} />
+				<FormErrorMessageComponent errorMessages={errorMessages[editorOptions.rowIndex]} errorField={'internal'} />
 			</>
 		);
 	};
 
-	const onNoteTypeEditorValueChange = (props, event) => {
+	const onNoteTypeEditorValueChange = (editorOptions, event) => {
 		dispatch({
 			type: 'EDIT_ROW',
 			tableType: 'relatedNotes',
 			field: 'noteType',
-			index: props.rowIndex,
+			index: editorOptions.rowIndex,
 			value: event.target.value,
 		});
 	};
 
-	console.log('noteTypeTerms', noteTypeTerms);
-
-	const noteTypeEditor = (props) => {
+	const noteTypeEditor = (editorOptions) => {
 		return (
 			<>
 				<ControlledVocabularyDropdown
 					field="noteType"
 					options={noteTypeTerms}
 					editorChange={onNoteTypeEditorValueChange}
-					props={props}
+					editorOptions={editorOptions}
 					showClear={false}
 					dataKey="id"
 				/>
-				<DialogErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={'noteType'} />
+				<DialogErrorMessageComponent errorMessages={errorMessages[editorOptions.rowIndex]} errorField={'noteType'} />
 			</>
 		);
 	};
 
-	const onFreeTextEditorValueChange = (event, props) => {
+	const onFreeTextEditorValueChange = (event, editorOptions) => {
 		dispatch({
 			type: 'EDIT_ROW',
 			tableType: 'relatedNotes',
 			field: 'freeText',
-			index: props.rowIndex,
+			index: editorOptions.rowIndex,
 			value: event.target.value,
 		});
 	};
 
-	const freeTextEditor = (props, fieldName, errorMessages) => {
+	const freeTextEditor = (editorOptions, fieldName, errorMessages) => {
 		return (
 			<>
 				<InputTextAreaEditor
-					initalValue={props.value}
-					editorChange={(e) => onFreeTextEditorValueChange(e, props)}
+					initalValue={editorOptions.value}
+					editorChange={(e) => onFreeTextEditorValueChange(e, editorOptions)}
 					rows={5}
 					columns={30}
 				/>
-				<DialogErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={fieldName} />
+				<DialogErrorMessageComponent errorMessages={errorMessages[editorOptions.rowIndex]} errorField={fieldName} />
 			</>
 		);
 	};
 
-	const handleDeleteRelatedNote = (event, props) => {
+	const handleDeleteRelatedNote = (event, editorOptions) => {
 		event.preventDefault();
-		dispatch({ type: 'DELETE_ROW', tableType: 'relatedNotes', showType: 'showRelatedNotes', index: props.rowIndex });
+		dispatch({
+			type: 'DELETE_ROW',
+			tableType: 'relatedNotes',
+			showType: 'showRelatedNotes',
+			index: editorOptions.rowIndex,
+		});
 	};
 
-	const deleteAction = (props) => {
+	const deleteAction = (editorOptions) => {
 		return (
 			<Button
 				icon="pi pi-trash"
 				className="p-button-text"
 				onClick={(event) => {
-					handleDeleteRelatedNote(event, props);
+					handleDeleteRelatedNote(event, editorOptions);
 				}}
 			/>
 		);
@@ -135,8 +138,8 @@ export const RelatedNotesForm = ({ dispatch, relatedNotes, showRelatedNotes, err
 					ref={tableRef}
 				>
 					<Column
-						editor={(props) => deleteAction(props)}
-						body={(props) => deleteAction(props)}
+						editor={(editorOptions) => deleteAction(editorOptions)}
+						body={(editorOptions) => deleteAction(editorOptions)}
 						style={{ maxWidth: '4rem' }}
 						frozen
 						headerClassName="surface-0"
@@ -145,7 +148,7 @@ export const RelatedNotesForm = ({ dispatch, relatedNotes, showRelatedNotes, err
 					<Column editor={noteTypeEditor} field="noteType.name" header="Note Type" headerClassName="surface-0" />
 					<Column editor={internalEditor} field="internal" header="Internal" headerClassName="surface-0" />
 					<Column
-						editor={(props) => freeTextEditor(props, 'freeText', errorMessages)}
+						editor={(editorOptions) => freeTextEditor(editorOptions, 'freeText', errorMessages)}
 						field="freeText"
 						header="Text"
 						headerClassName="surface-0"

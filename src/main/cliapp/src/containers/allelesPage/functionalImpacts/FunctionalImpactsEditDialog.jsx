@@ -33,7 +33,6 @@ export const FunctionalImpactsEditDialog = ({
 	const toast_topright = useRef(null);
 
 	const showDialogHandler = () => {
-		dataKeyCounter.current = 0;
 		let _localFunctionalImpacts = cloneFunctionalImpacts(originalFunctionalImpacts);
 		setLocalFunctionalImpacts(_localFunctionalImpacts);
 
@@ -142,11 +141,8 @@ export const FunctionalImpactsEditDialog = ({
 		for (const fi of _localFunctionalImpacts) {
 			delete fi.dataKey;
 		}
-		mainRowProps.rowData.alleleFunctionalImpacts = _localFunctionalImpacts;
-		let updatedAnnotations = [...mainRowProps.props.value];
-		updatedAnnotations[rowIndex].alleleFunctionalImpacts = _localFunctionalImpacts;
 		if (mainRowProps.editorCallback) {
-			mainRowProps.editorCallback(_localFunctionalImpacts?.[0]?.functionalImpacts?.[0]?.name ?? null);
+			mainRowProps.editorCallback(_localFunctionalImpacts);
 		}
 
 		const errorMessagesCopy = structuredClone(errorMessagesMainRow);
@@ -299,7 +295,7 @@ export const FunctionalImpactsEditDialog = ({
 								/>
 							);
 						}}
-						field="functionalImpacts.name"
+						field="functionalImpacts"
 						header="Functional Impacts"
 						headerClassName="surface-0"
 					/>
@@ -314,7 +310,7 @@ export const FunctionalImpactsEditDialog = ({
 								/>
 							);
 						}}
-						field="phenotypeTerm.curie"
+						field="phenotypeTerm"
 						header="Phenotype Term"
 						headerClassName="surface-0"
 					/>
@@ -341,7 +337,7 @@ export const FunctionalImpactsEditDialog = ({
 						editor={(props) => {
 							return (
 								<InternalEditor
-									props={props}
+									editorOptions={props}
 									rowIndex={props.rowIndex}
 									errorMessages={errorMessages}
 									dataKey={props?.rowData?.dataKey}
@@ -364,7 +360,7 @@ export const FunctionalImpactsEditDialog = ({
 								/>
 							);
 						}}
-						field="evidence.curie"
+						field="evidence"
 						header="Evidence"
 						headerClassName="surface-0"
 					/>

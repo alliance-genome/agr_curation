@@ -31,7 +31,6 @@ export const GermlineTransmissionStatusEditDialog = ({
 	const toast_topright = useRef(null);
 
 	const showDialogHandler = () => {
-		dataKeyCounter.current = 0;
 		let _localGermlineTransmissionStatuses = cloneGermlineTransmissionStatuses(originalGermlineTransmissionStatuses);
 		setLocalGermlineTransmissionStatuses(_localGermlineTransmissionStatuses);
 
@@ -124,15 +123,8 @@ export const GermlineTransmissionStatusEditDialog = ({
 		for (const gts of _localGermlineTransmissionStatuses) {
 			delete gts.dataKey;
 		}
-		mainRowProps.rowData.alleleGermlineTransmissionStatus = _localGermlineTransmissionStatuses[0]
-			? _localGermlineTransmissionStatuses[0]
-			: null;
-		let updatedAnnotations = [...mainRowProps.props.value];
-		updatedAnnotations[rowIndex].alleleGermlineTransmissionStatus = _localGermlineTransmissionStatuses[0]
-			? _localGermlineTransmissionStatuses[0]
-			: null;
 		if (mainRowProps.editorCallback) {
-			mainRowProps.editorCallback(_localGermlineTransmissionStatuses[0]?.germlineTransmissionStatus?.name ?? null);
+			mainRowProps.editorCallback(_localGermlineTransmissionStatuses[0] || null);
 		}
 
 		const errorMessagesCopy = structuredClone(errorMessagesMainRow);
@@ -284,7 +276,7 @@ export const GermlineTransmissionStatusEditDialog = ({
 						editor={(props) => {
 							return (
 								<ControlledVocabularyEditor
-									props={props}
+									editorOptions={props}
 									onChangeHandler={germlineTransmissionStatusOnChangeHandler}
 									errorMessages={errorMessages}
 									dataKey={props?.rowData?.dataKey}
@@ -303,7 +295,7 @@ export const GermlineTransmissionStatusEditDialog = ({
 						editor={(props) => {
 							return (
 								<InternalEditor
-									props={props}
+									editorOptions={props}
 									rowIndex={props.rowIndex}
 									errorMessages={errorMessages}
 									dataKey={props?.rowData?.dataKey}
@@ -326,7 +318,7 @@ export const GermlineTransmissionStatusEditDialog = ({
 								/>
 							);
 						}}
-						field="evidence.curie"
+						field="evidence"
 						header="Evidence"
 						headerClassName="surface-0"
 					/>

@@ -4,23 +4,15 @@ import { Toast } from 'primereact/toast';
 import { SearchService } from '../../service/SearchService';
 import { Endpoints } from '../../constants/Endpoints';
 import { Messages } from 'primereact/messages';
-import { ErrorMessageComponent } from '../../components/Error/ErrorMessageComponent';
 import { Button } from 'primereact/button';
 import { VocabularyTermSetService } from '../../service/VocabularyTermSetService';
-import { VocabTermAutocompleteTemplate } from '../../components/Autocomplete/VocabTermAutocompleteTemplate';
 import { NewVocabularyTermSetForm } from './NewVocabularyTermSetForm';
 import { useNewVocabularyTermSetReducer } from './useNewVocabularyTermSetReducer';
-import { InputTextEditor } from '../../components/InputTextEditor';
+import { InputTextTableEditor } from '../../components/Editors/text/InputTextTableEditor';
+import { VocabularyTableEditor } from '../../components/Editors/vocabulary/VocabularyTableEditor';
+import { MemberTermsTableEditor } from '../../components/Editors/vocabularyTerm/MemberTermsTableEditor';
 import { GenericDataTable } from '../../components/GenericDataTable/GenericDataTable';
-import { AutocompleteEditor } from '../../components/Autocomplete/AutocompleteEditor';
-import {
-	autocompleteSearch,
-	buildAutocompleteFilter,
-	defaultAutocompleteOnChange,
-	multipleAutocompleteOnChange,
-	setNewEntity,
-} from '../../utils/utils';
-import { AutocompleteMultiEditor } from '../../components/Autocomplete/AutocompleteMultiEditor';
+import { setNewEntity } from '../../utils/utils';
 import { getDefaultTableState } from '../../service/TableStateService';
 import { FILTER_CONFIGS } from '../../constants/FilterFields';
 import { useGetTableData } from '../../service/useGetTableData';
@@ -59,113 +51,6 @@ export const VocabularyTermSetTable = () => {
 		newVocabularyTermSetDispatch({ type: 'OPEN_DIALOG' });
 	};
 
-	const onVocabularyChange = (event, setFieldValue, props) => {
-		defaultAutocompleteOnChange(props, event, 'vocabularyTermSetVocabulary', setFieldValue, 'name');
-	};
-	const vocabularySearch = (event, setFiltered, setQuery) => {
-		const autocompleteFields = ['name'];
-		const endpoint = Endpoints.Vocabulary.VOCABULARY;
-		const filterName = 'vocabularyFilter';
-		const filter = buildAutocompleteFilter(event, autocompleteFields);
-
-		setQuery(event.query);
-		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered);
-	};
-
-	const vocabularyEditorTemplate = (props) => {
-		return (
-			<>
-				<AutocompleteEditor
-					search={vocabularySearch}
-					initialValue={props.rowData.vocabularyTermSetVocabulary?.name}
-					rowProps={props}
-					fieldName="vocabularyTermSetVocabulary"
-					subField={'name'}
-					valueDisplay={(item, setAutocompleteSelectedItem, op, query) => (
-						<VocabTermAutocompleteTemplate
-							item={item}
-							setAutocompleteSelectedItem={setAutocompleteSelectedItem}
-							op={op}
-							query={query}
-						/>
-					)}
-					onValueChangeHandler={onVocabularyChange}
-				/>
-				<ErrorMessageComponent
-					errorMessages={errorMessagesRef.current[props.rowIndex]}
-					errorField={'vocabularyTermSetVocabulary'}
-				/>
-			</>
-		);
-	};
-
-	const onMemberTermsChange = (event, setFieldValue, props) => {
-		multipleAutocompleteOnChange(props, event, 'memberTerms', setFieldValue);
-	};
-
-	const memberTermSearch = (event, setFiltered, setInputValue, props) => {
-		const autocompleteFields = ['name'];
-		const endpoint = Endpoints.Vocabulary.TERM;
-		const filterName = 'memberTermsFilter';
-		const filter = buildAutocompleteFilter(event, autocompleteFields);
-		const otherFilters = {
-			vocabularyFilter: {
-				'vocabulary.name': {
-					queryString: props.props.value[props.rowIndex].vocabularyTermSetVocabulary.name,
-				},
-			},
-		};
-
-		setInputValue(event.query);
-		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered, otherFilters);
-	};
-
-	const memberTermsEditorTemplate = (props) => {
-		return (
-			<>
-				<AutocompleteMultiEditor
-					name="memberTerms"
-					fieldName="memberTerms"
-					subField="name"
-					initialValue={props.rowData.memberTerms}
-					rowProps={props}
-					search={memberTermSearch}
-					onValueChangeHandler={onMemberTermsChange}
-					valueDisplay={(item, setAutocompleteSelectedItem, op, query) => (
-						<VocabTermAutocompleteTemplate
-							item={item}
-							setAutocompleteSelectedItem={setAutocompleteSelectedItem}
-							op={op}
-							query={query}
-						/>
-					)}
-				/>
-				<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField="memberTerms" />
-			</>
-		);
-	};
-
-	const nameEditor = (props) => {
-		return (
-			<>
-				<InputTextEditor rowProps={props} fieldName={'name'} />
-				<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={'name'} />
-			</>
-		);
-	};
-
-	const descriptionEditor = (props) => {
-		return (
-			<>
-				<InputTextEditor rowProps={props} fieldName={'vocabularyTermSetDescription'} />
-				<ErrorMessageComponent
-					errorMessages={errorMessagesRef.current[props.rowIndex]}
-					errorField={'vocabularyTermSetDescription'}
-				/>
-			</>
-		);
-	};
-
 	const columns = useMemo(
 		() => [
 			{
@@ -174,23 +59,31 @@ export const VocabularyTermSetTable = () => {
 				body: (rowData) => <StringTemplate string={rowData.name} />,
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.nameFilterConfig,
-				editor: (props) => nameEditor(props),
+				editor: (editorOptions) => (
+					<InputTextTableEditor editorOptions={editorOptions} field="name" errorMessagesRef={errorMessagesRef} />
+				),
 			},
 			{
-				field: 'vocabularyTermSetVocabulary.name',
+				field: 'vocabularyTermSetVocabulary',
+				columnKey: 'vocabularyTermSetVocabulary.name',
 				header: 'Vocabulary',
 				sortable: true,
 				body: (rowData) => <StringTemplate string={rowData.vocabularyTermSetVocabulary?.name} />,
 				filterConfig: FILTER_CONFIGS.vocabularyFieldSetFilterConfig,
-				editor: (props) => vocabularyEditorTemplate(props),
+				editor: (editorOptions) => (
+					<VocabularyTableEditor editorOptions={editorOptions} errorMessagesRef={errorMessagesRef} />
+				),
 			},
 			{
-				field: 'memberTerms.name',
+				field: 'memberTerms',
+				columnKey: 'memberTerms.name',
 				header: 'Member Terms',
 				sortable: true,
 				body: (rowData) => <StringListTemplate list={rowData.memberTerms?.map((memberTerm) => memberTerm?.name)} />,
 				filterConfig: FILTER_CONFIGS.vocabularyMemberTermsFilterConfig,
-				editor: (props) => memberTermsEditorTemplate(props),
+				editor: (editorOptions) => (
+					<MemberTermsTableEditor editorOptions={editorOptions} errorMessagesRef={errorMessagesRef} />
+				),
 			},
 			{
 				field: 'vocabularyTermSetDescription',
@@ -198,7 +91,13 @@ export const VocabularyTermSetTable = () => {
 				body: (rowData) => <StringTemplate string={rowData.vocabularyTermSetDescription} />,
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.vocabularyTermSetDescriptionFilterConfig,
-				editor: (props) => descriptionEditor(props),
+				editor: (editorOptions) => (
+					<InputTextTableEditor
+						editorOptions={editorOptions}
+						field="vocabularyTermSetDescription"
+						errorMessagesRef={errorMessagesRef}
+					/>
+				),
 			},
 			{
 				field: 'vocabularyLabel',
@@ -264,7 +163,7 @@ export const VocabularyTermSetTable = () => {
 				setTableState={setTableState}
 				columns={columns}
 				isEditable={true}
-				idFields={['vocabularyTermSetVocabulary, memberTerms']}
+				idFields={['vocabularyTermSetVocabulary', 'memberTerms']}
 				mutation={mutation}
 				isInEditMode={isInEditMode}
 				setIsInEditMode={setIsInEditMode}

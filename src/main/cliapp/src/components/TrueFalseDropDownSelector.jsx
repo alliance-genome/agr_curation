@@ -1,16 +1,16 @@
 import { useState } from 'react';
 import { Dropdown } from 'primereact/dropdown';
 
-export function TrueFalseDropdown({ field, options, showClear = false, editorChange, props }) {
-	const [selectedValue, setSelectedValue] = useState(props.rowData[field]);
+export function TrueFalseDropdown({ field, options, showClear = false, editorChange, editorOptions }) {
+	const [selectedValue, setSelectedValue] = useState(editorOptions.rowData[field]);
 
 	const onShow = () => {
-		setSelectedValue(props.rowData[field]);
+		setSelectedValue(editorOptions.rowData[field]);
 	};
 
 	const onChange = (e) => {
 		setSelectedValue(e.value);
-		editorChange(props, e);
+		editorChange(editorOptions, e);
 	};
 
 	return (

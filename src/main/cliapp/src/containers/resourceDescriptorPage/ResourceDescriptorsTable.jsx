@@ -12,9 +12,8 @@ import { Endpoints } from '../../constants/Endpoints';
 
 import { StringTemplate } from '../../components/Templates/StringTemplate';
 import { CommaSeparatedArrayTemplate } from '../../components/Templates/CommaSeparatedArrayTemplate';
-import { InputTextEditor } from '../../components/InputTextEditor';
-import { StringListTextAreaEditor } from '../../components/Editors/StringListTextAreaEditor';
-import { ErrorMessageComponent } from '../../components/Error/ErrorMessageComponent';
+import { InputTextTableEditor } from '../../components/Editors/text/InputTextTableEditor';
+import { StringListTextAreaTableEditor } from '../../components/Editors/text/StringListTextAreaTableEditor';
 
 export const ResourceDescriptorsTable = () => {
 	const [isInEditMode, setIsInEditMode] = useState(false);
@@ -41,15 +40,6 @@ export const ResourceDescriptorsTable = () => {
 		},
 	});
 
-	const stringEditor = (props, field) => {
-		return (
-			<>
-				<InputTextEditor rowProps={props} fieldName={field} />
-				<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={field} />
-			</>
-		);
-	};
-
 	const columns = useMemo(
 		() => [
 			{
@@ -58,7 +48,9 @@ export const ResourceDescriptorsTable = () => {
 				sortable: true,
 				body: (rowData) => <StringTemplate string={rowData.prefix} />,
 				filterConfig: FILTER_CONFIGS.prefixFilterConfig,
-				editor: (props) => stringEditor(props, 'prefix'),
+				editor: (editorOptions) => (
+					<InputTextTableEditor editorOptions={editorOptions} field="prefix" errorMessagesRef={errorMessagesRef} />
+				),
 			},
 			{
 				field: 'name',
@@ -66,18 +58,22 @@ export const ResourceDescriptorsTable = () => {
 				sortable: true,
 				body: (rowData) => <StringTemplate string={rowData.name} />,
 				filterConfig: FILTER_CONFIGS.nameFilterConfig,
-				editor: (props) => stringEditor(props, 'name'),
+				editor: (editorOptions) => (
+					<InputTextTableEditor editorOptions={editorOptions} field="name" errorMessagesRef={errorMessagesRef} />
+				),
 			},
 			{
 				field: 'synonyms',
 				header: 'Synonyms',
 				body: (rowData) => <CommaSeparatedArrayTemplate array={rowData.synonyms} />,
 				filterConfig: FILTER_CONFIGS.synonymsFilterConfig,
-				editor: (props) => (
-					<>
-						<StringListTextAreaEditor rowProps={props} fieldName="synonyms" rows={5} />
-						<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField="synonyms" />
-					</>
+				editor: (editorOptions) => (
+					<StringListTextAreaTableEditor
+						editorOptions={editorOptions}
+						field="synonyms"
+						errorMessagesRef={errorMessagesRef}
+						rows={5}
+					/>
 				),
 			},
 			{
@@ -86,7 +82,9 @@ export const ResourceDescriptorsTable = () => {
 				sortable: true,
 				body: (rowData) => <StringTemplate string={rowData.idPattern} />,
 				filterConfig: FILTER_CONFIGS.idPatternFilterConfig,
-				editor: (props) => stringEditor(props, 'idPattern'),
+				editor: (editorOptions) => (
+					<InputTextTableEditor editorOptions={editorOptions} field="idPattern" errorMessagesRef={errorMessagesRef} />
+				),
 			},
 			{
 				field: 'idExample',
@@ -94,7 +92,9 @@ export const ResourceDescriptorsTable = () => {
 				sortable: true,
 				body: (rowData) => <StringTemplate string={rowData.idExample} />,
 				filterConfig: FILTER_CONFIGS.idExampleFilterConfig,
-				editor: (props) => stringEditor(props, 'idExample'),
+				editor: (editorOptions) => (
+					<InputTextTableEditor editorOptions={editorOptions} field="idExample" errorMessagesRef={errorMessagesRef} />
+				),
 			},
 			{
 				field: 'defaultUrlTemplate',
@@ -102,7 +102,13 @@ export const ResourceDescriptorsTable = () => {
 				sortable: true,
 				body: (rowData) => <StringTemplate string={rowData.defaultUrlTemplate} />,
 				filterConfig: FILTER_CONFIGS.defaultUrlTemplateFilterConfig,
-				editor: (props) => stringEditor(props, 'defaultUrlTemplate'),
+				editor: (editorOptions) => (
+					<InputTextTableEditor
+						editorOptions={editorOptions}
+						field="defaultUrlTemplate"
+						errorMessagesRef={errorMessagesRef}
+					/>
+				),
 			},
 			{
 				field: 'updatedBy.uniqueId',

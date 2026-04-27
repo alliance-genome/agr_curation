@@ -1,4 +1,4 @@
-export const FormFieldWrapper = ({
+export const DetailPageFieldWrapper = ({
 	formField,
 	errorField,
 	additionalDataField,

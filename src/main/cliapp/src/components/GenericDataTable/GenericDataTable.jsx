@@ -131,18 +131,21 @@ export const GenericDataTable = (props) => {
 		const filteredColumns = filterColumns(orderedColumns, tableState.selectedColumnNames);
 		return filteredColumns.map((col) => {
 			if (col) {
+				const key = col.columnKey || col.field;
 				return (
 					<Column
 						style={{
-							minWidth: `${tableState.columnWidths[col.field]}vw`,
-							maxWidth: `${tableState.columnWidths[col.field]}vw`,
+							minWidth: `${tableState.columnWidths[key]}vw`,
+							maxWidth: `${tableState.columnWidths[key]}vw`,
 							padding: '4px 10px 4px',
 						}}
 						headerClassName="surface-0"
 						showClearButton={false}
-						columnKey={col.field}
-						key={col.field}
+						columnKey={key}
+						key={key}
 						field={col.field}
+						sortField={col.sortField || col.columnKey}
+						filterField={col.filterField || col.columnKey}
 						header={col.header}
 						body={col.body}
 						sortable={col.sortable && !isInEditMode}

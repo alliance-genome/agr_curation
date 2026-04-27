@@ -1,31 +1,26 @@
-import React from 'react';
 import { TrueFalseDropdown } from '../../TrueFalseDropDownSelector';
 import { ErrorMessageComponent } from '../../Error/ErrorMessageComponent';
 import { useControlledVocabularyService } from '../../../service/useControlledVocabularyService';
 
-export const BooleanTableEditor = ({ rowProps, errorMessagesRef, field, showClear = true }) => {
+export const BooleanTableEditor = ({ editorOptions, errorMessagesRef, field, showClear = false }) => {
 	const booleanTerms = useControlledVocabularyService('generic_boolean_terms');
-
-	const editorChange = (props, event) => {
-		let updatedEntities = [...props.props.value];
-
-		if (event.value && event.value !== '') {
-			updatedEntities[props.rowIndex][field] = JSON.parse(event.value.name);
-		} else {
-			updatedEntities[props.rowIndex][field] = null;
-		}
-	};
 
 	return (
 		<>
 			<TrueFalseDropdown
 				options={booleanTerms?.terms || []}
-				editorChange={editorChange}
-				props={rowProps}
+				editorChange={(editorOptions, event) => {
+					if (event.value && event.value !== '') {
+						editorOptions.editorCallback(JSON.parse(event.value.name));
+					} else {
+						editorOptions.editorCallback(null);
+					}
+				}}
+				editorOptions={editorOptions}
 				field={field}
 				showClear={showClear}
 			/>
-			<ErrorMessageComponent errorMessages={errorMessagesRef.current[rowProps.rowIndex]} errorField={field} />
+			<ErrorMessageComponent errorMessages={errorMessagesRef.current[editorOptions.rowIndex]} errorField={field} />
 		</>
 	);
 };

@@ -2,14 +2,9 @@ import React, { useRef, useState, useMemo } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { Toast } from 'primereact/toast';
 
-import { AutocompleteEditor } from '../../components/Autocomplete/AutocompleteEditor';
-import { SubjectAutocompleteTemplate } from '../../components/Autocomplete/SubjectAutocompleteTemplate';
-import { EvidenceAutocompleteTemplate } from '../../components/Autocomplete/EvidenceAutocompleteTemplate';
-import { LiteratureAutocompleteTemplate } from '../../components/Autocomplete/LiteratureAutocompleteTemplate';
-import { EditMessageTooltip } from '../../components/EditMessageTooltip';
+import { SearchService } from '../../service/SearchService';
 import { EllipsisTableCell } from '../../components/EllipsisTableCell';
 import { GenericDataTable } from '../../components/GenericDataTable/GenericDataTable';
-import { SearchService } from '../../service/SearchService';
 import { Endpoints } from '../../constants/Endpoints';
 import { DiseaseAnnotationService } from '../../service/DiseaseAnnotationService';
 import { RelatedNotesEditDialog } from '../../components/RelatedNotesEditDialog';
@@ -30,28 +25,31 @@ import { TextDialogTemplate } from '../../components/Templates/dialog/TextDialog
 import { StringTemplate } from '../../components/Templates/StringTemplate';
 
 import { NotEditor } from '../../components/Editors/NotEditor';
+import { ControlledVocabularyTableEditor } from '../../components/Editors/controlledVocabulary/ControlledVocabularyTableEditor';
+import { BooleanTableEditor } from '../../components/Editors/boolean/BooleanTableEditor';
+import { DialogTriggerEditor } from '../../components/Editors/DialogTriggerEditor';
+import { ConditionRelationHandleTableEditor } from '../../components/Editors/ConditionRelationHandleTableEditor';
+import { BiologicalEntityTableEditor } from '../../components/Editors/biologicalEntity/BiologicalEntityTableEditor';
+import { DiseaseTableEditor } from '../../components/Editors/ontology/DiseaseTableEditor';
+import { EvidenceCodesTableEditor } from '../../components/Editors/ontology/EvidenceCodesTableEditor';
+import { WithTableEditor } from '../../components/Editors/gene/WithTableEditor';
+import { AssertedGenesTableEditor } from '../../components/Editors/gene/AssertedGenesTableEditor';
+import { DiseaseGeneticModifierGenesTableEditor } from '../../components/Editors/gene/DiseaseGeneticModifierGenesTableEditor';
+import { AssertedAllelesTableEditor } from '../../components/Editors/allele/AssertedAllelesTableEditor';
+import { DiseaseGeneticModifierAllelesTableEditor } from '../../components/Editors/allele/DiseaseGeneticModifierAllelesTableEditor';
+import { SgdStrainBackgroundTableEditor } from '../../components/Editors/agm/SgdStrainBackgroundTableEditor';
+import { DiseaseGeneticModifierAgmsTableEditor } from '../../components/Editors/agm/DiseaseGeneticModifierAgmsTableEditor';
+import { SingleReferenceTableEditor } from '../../components/Editors/references/SingleReferenceTableEditor';
+import { ControlledVocabularyMultiSelectTableEditor } from '../../components/Editors/controlledVocabulary/ControlledVocabularyMultiSelectTableEditor';
 
-import { ControlledVocabularyDropdown } from '../../components/ControlledVocabularySelector';
-import { ConditionRelationHandleDropdown } from '../../components/ConditionRelationHandleSelector';
-import { ControlledVocabularyMultiSelectDropdown } from '../../components/ControlledVocabularyMultiSelector';
 import { useControlledVocabularyService } from '../../service/useControlledVocabularyService';
 import { useVocabularyTermSetService } from '../../service/useVocabularyTermSetService';
 import { ErrorMessageComponent } from '../../components/Error/ErrorMessageComponent';
-import { TrueFalseDropdown } from '../../components/TrueFalseDropDownSelector';
 import { Button } from 'primereact/button';
-import {
-	getRefString,
-	autocompleteSearch,
-	buildAutocompleteFilter,
-	defaultAutocompleteOnChange,
-	multipleAutocompleteOnChange,
-	getIdentifier,
-	setNewEntity,
-} from '../../utils/utils';
+import { setNewEntity } from '../../utils/utils';
 import { diseaseQualifiersSort, evidenceCodesSort } from '../../components/Templates/utils/sortMethods';
 import { useNewAnnotationReducer } from './useNewAnnotationReducer';
 import { NewAnnotationForm } from './NewAnnotationForm';
-import { AutocompleteMultiEditor } from '../../components/Autocomplete/AutocompleteMultiEditor';
 import { getDefaultTableState } from '../../service/TableStateService';
 import { FILTER_CONFIGS } from '../../constants/FilterFields';
 import { useGetTableData } from '../../service/useGetTableData';
@@ -65,7 +63,7 @@ export const DiseaseAnnotationsTable = () => {
 		isInEdit: false,
 		dialog: false,
 		rowIndex: null,
-		mailRowProps: {},
+		mainRowProps: {},
 	});
 	const [relatedNotesData, setRelatedNotesData] = useState({
 		relatedNotes: [],
@@ -193,957 +191,31 @@ export const DiseaseAnnotationsTable = () => {
 		}));
 	};
 
-	const relatedNotesEditor = (props) => {
-		if (props?.rowData?.relatedNotes) {
-			return (
-				<>
-					<div>
-						<Button
-							className="p-button-text"
-							onClick={(event) => {
-								handleRelatedNotesOpenInEdit(event, props, true);
-							}}
-						>
-							<span style={{ textDecoration: 'underline' }}>
-								{`Notes(${props.rowData.relatedNotes.length}) `}
-								<i className="pi pi-user-edit" style={{ fontSize: '1em' }}></i>
-							</span>
-							&nbsp;&nbsp;&nbsp;&nbsp;
-							<EditMessageTooltip />
-						</Button>
-					</div>
-					<ErrorMessageComponent
-						errorMessages={errorMessagesRef.current[props.rowIndex]}
-						errorField={'relatedNotes'}
-						style={{ fontSize: '1em' }}
-					/>
-				</>
-			);
-		} else {
-			return (
-				<>
-					<div>
-						<Button
-							className="p-button-text"
-							onClick={(event) => {
-								handleRelatedNotesOpenInEdit(event, props, true);
-							}}
-						>
-							<span style={{ textDecoration: 'underline' }}>
-								Add Note
-								<i className="pi pi-user-edit" style={{ fontSize: '1em' }}></i>
-							</span>
-							&nbsp;&nbsp;&nbsp;&nbsp;
-							<EditMessageTooltip />
-						</Button>
-					</div>
-					<ErrorMessageComponent
-						errorMessages={errorMessagesRef.current[props.rowIndex]}
-						errorField={'relatedNotes'}
-						style={{ fontSize: '1em' }}
-					/>
-				</>
-			);
-		}
-	};
-
-	const conditionRelationsEditor = (props) => {
-		if (props.rowData?.conditionRelations) {
-			const handle = props.rowData.conditionRelations[0]?.handle;
-
-			if (handle) return null;
-
-			return (
-				<>
-					<div>
-						<Button
-							className="p-button-text"
-							onClick={(event) => {
-								handleConditionRelationsOpenInEdit(event, props, true);
-							}}
-						>
-							<span style={{ textDecoration: 'underline' }}>
-								{!handle && `Conditions (${props.rowData.conditionRelations.length})`}
-								{handle && handle}
-								<i className="pi pi-user-edit" style={{ fontSize: '1em' }}></i>
-							</span>
-							&nbsp;&nbsp;&nbsp;&nbsp;
-							<EditMessageTooltip />
-						</Button>
-					</div>
-					<ErrorMessageComponent
-						errorMessages={errorMessagesRef.current[props.rowIndex]}
-						errorField={'conditionRelations'}
-						style={{ fontSize: '1em' }}
-					/>
-				</>
-			);
-		} else {
-			return (
-				<>
-					<div>
-						<Button
-							className="p-button-text"
-							onClick={(event) => {
-								handleConditionRelationsOpenInEdit(event, props, true);
-							}}
-						>
-							<span style={{ textDecoration: 'underline' }}>
-								Add Condition
-								<i className="pi pi-user-edit" style={{ fontSize: '1em' }}></i>
-							</span>
-							&nbsp;&nbsp;&nbsp;&nbsp;
-							<EditMessageTooltip />
-						</Button>
-					</div>
-				</>
-			);
-		}
-	};
-
-	const conditionRelationHandleEditor = (props) => {
-		if (props.rowData?.conditionRelations && props.rowData.conditionRelations[0]?.handle) {
-			return (
-				<>
-					<ConditionRelationHandleDropdown
-						field="conditionRelationHandle"
-						editorChange={onConditionRelationHandleEditorValueChange}
-						props={props}
-						showClear={false}
-						placeholderText={props.rowData.conditionRelations[0].handle}
-					/>
-					<ErrorMessageComponent
-						errorMessages={errorMessagesRef.current[props.rowIndex]}
-						errorField={'conditionRelationHandle'}
-					/>
-				</>
-			);
-		}
-	};
-
-	const onConditionRelationHandleEditorValueChange = (props, event) => {
-		let updatedAnnotations = [...props.props.value];
-		if (typeof event.value === 'object') {
-			updatedAnnotations[props.rowIndex].conditionRelations[0] = event.value;
-		} else {
-			updatedAnnotations[props.rowIndex].conditionRelations[0].handle = event.value;
-		}
-	};
-
-	const onRelationEditorValueChange = (props, event) => {
-		let updatedAnnotations = [...props.props.value];
-		if (event.value || event.value === '') {
-			updatedAnnotations[props.rowIndex].relation = event.value;
-		}
-	};
-
-	const getRelationTermSet = (props) => {
+	const getRelationTermSet = (editorOptions) => {
 		let diseaseRelationTerms = relationsTerms;
-		if (props.rowData?.diseaseAnnotationSubject?.type === 'Gene') {
+		if (editorOptions.rowData?.diseaseAnnotationSubject?.type === 'Gene') {
 			diseaseRelationTerms = geneRelationTerms;
-		} else if (props.rowData?.diseaseAnnotationSubject?.type === 'Allele') {
+		} else if (editorOptions.rowData?.diseaseAnnotationSubject?.type === 'Allele') {
 			diseaseRelationTerms = alleleRelationTerms;
-		} else if (props.rowData?.diseaseAnnotationSubject?.type === 'AffectedGenomicModel') {
+		} else if (editorOptions.rowData?.diseaseAnnotationSubject?.type === 'AffectedGenomicModel') {
 			diseaseRelationTerms = agmRelationTerms;
 		}
 
 		return diseaseRelationTerms;
 	};
 
-	const relationEditor = (props) => {
-		let diseaseRelationTerms = getRelationTermSet(props);
+	const uniqueIdEditorTemplate = (editorOptions) => {
 		return (
 			<>
-				<ControlledVocabularyDropdown
-					field="relation"
-					options={diseaseRelationTerms}
-					editorChange={onRelationEditorValueChange}
-					props={props}
-					showClear={false}
-					placeholderText={props.rowData.relation.name}
-				/>
-				<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={'relation'} />
-			</>
-		);
-	};
-
-	const onGeneticSexEditorValueChange = (props, event) => {
-		let updatedAnnotations = [...props.props.value];
-		updatedAnnotations[props.rowIndex].geneticSex = event.value;
-	};
-
-	const geneticSexEditor = (props) => {
-		return (
-			<>
-				<ControlledVocabularyDropdown
-					field="geneticSex"
-					options={geneticSexTerms}
-					editorChange={onGeneticSexEditorValueChange}
-					props={props}
-					showClear={true}
-					placeholderText={props.rowData.geneticSex?.name}
-				/>
-				<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={'geneticSex'} />
-			</>
-		);
-	};
-
-	const onAnnotationTypeEditorValueChange = (props, event) => {
-		let updatedAnnotations = [...props.props.value];
-		updatedAnnotations[props.rowIndex].annotationType = event.value;
-	};
-
-	const annotationTypeEditor = (props) => {
-		return (
-			<>
-				<ControlledVocabularyDropdown
-					field="annotationType"
-					options={annotationTypeTerms}
-					editorChange={onAnnotationTypeEditorValueChange}
-					props={props}
-					showClear={true}
-					placeholderText={props.rowData.annotationType?.name}
-				/>
-				<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={'annotationType'} />
-			</>
-		);
-	};
-
-	const onGeneticModifierRelationEditorValueChange = (props, event) => {
-		let updatedAnnotations = [...props.props.value];
-		updatedAnnotations[props.rowIndex].diseaseGeneticModifierRelation = event.value;
-	};
-
-	const geneticModifierRelationEditor = (props) => {
-		return (
-			<>
-				<ControlledVocabularyDropdown
-					field="diseaseGeneticModifierRelation"
-					options={geneticModifierRelationTerms}
-					editorChange={onGeneticModifierRelationEditorValueChange}
-					props={props}
-					showClear={true}
-					placeholderText={props.rowData.diseaseGeneticModifierRelation?.name}
-				/>
+				<EllipsisTableCell otherClasses={`c${editorOptions.rowData.id}`}>
+					{editorOptions.rowData.uniqueId}
+				</EllipsisTableCell>
 				<ErrorMessageComponent
-					errorMessages={errorMessagesRef.current[props.rowIndex]}
-					errorField={'diseaseGeneticModifierRelation'}
+					errorMessages={errorMessagesRef.current[editorOptions.rowIndex]}
+					errorField={'uniqueId'}
 				/>
 			</>
 		);
-	};
-
-	const onDiseaseQualifiersEditorValueChange = (props, event) => {
-		let updatedAnnotations = [...props.props.value];
-		if (event.value || event.value === '') {
-			updatedAnnotations[props.rowIndex].diseaseQualifiers = event.value;
-		}
-	};
-
-	const diseaseQualifiersEditor = (props) => {
-		let placeholderText = '';
-		if (props.rowData.diseaseQualifiers) {
-			let placeholderTextElements = [];
-			props.rowData.diseaseQualifiers.forEach((x, i) => placeholderTextElements.push(x.name));
-			placeholderText = placeholderTextElements.join();
-		}
-		return (
-			<>
-				<ControlledVocabularyMultiSelectDropdown
-					options={diseaseQualifiersTerms}
-					editorChange={onDiseaseQualifiersEditorValueChange}
-					props={props}
-					placeholderText={placeholderText}
-				/>
-				<ErrorMessageComponent
-					errorMessages={errorMessagesRef.current[props.rowIndex]}
-					errorField={'diseaseQualifiers'}
-				/>
-			</>
-		);
-	};
-
-	const onNegatedEditorValueChange = (event, props) => {
-		if (event.target.value === undefined || event.target.value === null) return;
-
-		props.editorCallback(event.target.value);
-
-		setDiseaseAnnotations((prevDiseaseAnnotations) => {
-			prevDiseaseAnnotations[props.rowIndex].negated = event.target.value;
-			return prevDiseaseAnnotations;
-		});
-	};
-
-	const onInternalEditorValueChange = (props, event) => {
-		let updatedAnnotations = [...props.props.value];
-		if (event.value || event.value === '') {
-			updatedAnnotations[props.rowIndex].internal = JSON.parse(event.value.name);
-		}
-	};
-
-	const internalEditor = (props) => {
-		return (
-			<>
-				<TrueFalseDropdown
-					options={booleanTerms?.terms || []}
-					editorChange={onInternalEditorValueChange}
-					props={props}
-					field={'internal'}
-				/>
-				<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={'internal'} />
-			</>
-		);
-	};
-
-	const onObsoleteEditorValueChange = (props, event) => {
-		let updatedAnnotations = [...props.props.value];
-		if (event.value || event.value === '') {
-			updatedAnnotations[props.rowIndex].obsolete = JSON.parse(event.value.name);
-		}
-	};
-
-	const obsoleteEditor = (props) => {
-		return (
-			<>
-				<TrueFalseDropdown
-					options={booleanTerms?.terms || []}
-					editorChange={onObsoleteEditorValueChange}
-					props={props}
-					field={'obsolete'}
-				/>
-				<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={'obsolete'} />
-			</>
-		);
-	};
-
-	const onSubjectValueChange = (event, setFieldValue, props) => {
-		defaultAutocompleteOnChange(props, event, 'diseaseAnnotationSubject', setFieldValue, 'primaryExternalId');
-	};
-
-	const subjectSearch = (event, setFiltered, setQuery, props) => {
-		const autocompleteFields = getSubjectAutocompleteFields(props);
-		const endpoint = getSubjectEndpoint(props);
-		const filterName = 'diseaseAnnotationSubjectFilter';
-		const filter = buildAutocompleteFilter(event, autocompleteFields);
-		setQuery(event.query);
-		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered);
-	};
-
-	const subjectEditorTemplate = (props) => {
-		return (
-			<>
-				<AutocompleteEditor
-					initialValue={getIdentifier(props.rowData.diseaseAnnotationSubject)}
-					search={subjectSearch}
-					rowProps={props}
-					searchService={searchService}
-					subField="primaryExternalId"
-					fieldName="diseaseAnnotationSubject"
-					valueDisplay={(item, setAutocompleteHoverItem, op, query) => (
-						<SubjectAutocompleteTemplate
-							item={item}
-							setAutocompleteHoverItem={setAutocompleteHoverItem}
-							op={op}
-							query={query}
-						/>
-					)}
-					onValueChangeHandler={onSubjectValueChange}
-				/>
-				<ErrorMessageComponent
-					errorMessages={errorMessagesRef.current[props.rowIndex]}
-					errorField={'diseaseAnnotationSubject'}
-				/>
-				<ErrorMessageComponent
-					errorMessages={uiErrorMessagesRef.current[props.rowIndex]}
-					errorField={'diseaseAnnotationSubject'}
-				/>
-			</>
-		);
-	};
-
-	const getSubjectEndpoint = (props) => {
-		if (props.rowData?.type === 'GeneDiseaseAnnotation') return Endpoints.Entity.GENE;
-		if (props.rowData?.type === 'AlleleDiseaseAnnotation') return Endpoints.Entity.ALLELE;
-		if (props.rowData?.type === 'AGMDiseaseAnnotation') return Endpoints.Entity.AGM;
-		return Endpoints.Entity.BIOLOGICAL_ENTITY;
-	};
-
-	const getSubjectAutocompleteFields = (props) => {
-		let subjectFields = ['curie', 'primaryExternalId', 'modInternalId', 'crossReferences.referencedCurie'];
-		if (props.rowData.type === 'AGMDiseaseAnnotation') {
-			subjectFields.push(
-				'agmFullName.formatText',
-				'agmFullName.displayText',
-				'agmSynonyms.formatText',
-				'agmSynonyms.displayText',
-				'agmSecondaryIds.secondaryId'
-			);
-		} else if (props.rowData.type === 'AlleleDiseaseAnnotation') {
-			subjectFields.push(
-				'alleleFullName.formatText',
-				'alleleFullName.displayText',
-				'alleleSymbol.formatText',
-				'alleleSymbol.displayText',
-				'alleleSynonyms.formatText',
-				'alleleSynonyms.displayText',
-				'alleleSecondaryIds.secondaryId'
-			);
-		} else if (props.rowData.type === 'GeneDiseaseAnnotation') {
-			subjectFields.push(
-				'geneFullName.formatText',
-				'geneFullName.displayText',
-				'geneSymbol.formatText',
-				'geneSymbol.displayText',
-				'geneSynonyms.formatText',
-				'geneSynonyms.displayText',
-				'geneSystematicName.formatText',
-				'geneSystematicName.displayText',
-				'geneSecondaryIds.secondaryId'
-			);
-		}
-		return subjectFields;
-	};
-	const onSgdStrainBackgroundValueChange = (event, setFieldValue, props) => {
-		defaultAutocompleteOnChange(props, event, 'sgdStrainBackground', setFieldValue, 'primaryExternalId');
-	};
-
-	const sgdStrainBackgroundSearch = (event, setFiltered, setQuery) => {
-		const autocompleteFields = [
-			'name',
-			'curie',
-			'primaryExternalId',
-			'modInternalId',
-			'crossReferences.referencedCurie',
-		];
-		const endpoint = Endpoints.Entity.AGM;
-		const filterName = 'sgdStrainBackgroundFilter';
-		const filter = buildAutocompleteFilter(event, autocompleteFields);
-		const otherFilters = {
-			taxonFilter: {
-				'taxon.name': {
-					queryString: 'Saccharomyces cerevisiae',
-				},
-			},
-		};
-		setQuery(event.query);
-		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered, otherFilters);
-	};
-
-	const sgdStrainBackgroundEditorTemplate = (props) => {
-		return (
-			<>
-				<AutocompleteEditor
-					rowProps={props}
-					initialValue={getIdentifier(props.rowData.sgdStrainBackground)}
-					search={sgdStrainBackgroundSearch}
-					searchService={searchService}
-					fieldName="sgdStrainBackground"
-					subField="primaryExternalId"
-					valueDisplay={(item, setAutocompleteHoverItem, op, query) => (
-						<SubjectAutocompleteTemplate
-							item={item}
-							setAutocompleteHoverItem={setAutocompleteHoverItem}
-							op={op}
-							query={query}
-						/>
-					)}
-					onValueChangeHandler={onSgdStrainBackgroundValueChange}
-				/>
-				<ErrorMessageComponent
-					errorMessages={errorMessagesRef.current[props.rowIndex]}
-					errorField={'sgdStrainBackground'}
-				/>
-				<ErrorMessageComponent
-					errorMessages={uiErrorMessagesRef.current[props.rowIndex]}
-					errorField={'sgdStrainBackground'}
-				/>
-			</>
-		);
-	};
-
-	const onGeneticModifierAgmsValueChange = (event, setFieldValue, props) => {
-		multipleAutocompleteOnChange(props, event, 'diseaseGeneticModifierAgms', setFieldValue);
-	};
-
-	const geneticModifierAgmsSearch = (event, setFiltered, setInputValue) => {
-		const autocompleteFields = [
-			'agmFullName.formatText',
-			'agmSynonyms.formatText',
-			'agmFullName.displayText',
-			'agmSynonyms.displayText',
-			'agmSecondaryIds.secondaryId',
-			'curie',
-			'primaryExternalId',
-			'modInternalId',
-			'crossReferences.referencedCurie',
-		];
-		const endpoint = Endpoints.Entity.AGM;
-		const filterName = 'geneticModifierAgmsFilter';
-		const filter = buildAutocompleteFilter(event, autocompleteFields);
-		setInputValue(event.query);
-		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered);
-	};
-
-	const geneticModifierAgmsEditorTemplate = (props) => {
-		return (
-			<>
-				<AutocompleteMultiEditor
-					search={geneticModifierAgmsSearch}
-					initialValue={props.rowData.diseaseGeneticModifierAgms}
-					rowProps={props}
-					fieldName="diseaseGeneticModifierAgms"
-					subField="primaryExternalId"
-					valueDisplay={(item, setAutocompleteHoverItem, op, query) => (
-						<SubjectAutocompleteTemplate
-							item={item}
-							setAutocompleteHoverItem={setAutocompleteHoverItem}
-							op={op}
-							query={query}
-						/>
-					)}
-					onValueChangeHandler={onGeneticModifierAgmsValueChange}
-				/>
-				<ErrorMessageComponent
-					errorMessages={errorMessagesRef.current[props.rowIndex]}
-					errorField={'diseaseGeneticModifierAgms'}
-				/>
-				<ErrorMessageComponent
-					errorMessages={uiErrorMessagesRef.current[props.rowIndex]}
-					errorField={'diseaseGeneticModifierAgms'}
-				/>
-			</>
-		);
-	};
-
-	const onGeneticModifierAllelesValueChange = (event, setFieldValue, props) => {
-		multipleAutocompleteOnChange(props, event, 'diseaseGeneticModifierAlleles', setFieldValue);
-	};
-
-	const geneticModifierAllelesSearch = (event, setFiltered, setInputValue) => {
-		const autocompleteFields = [
-			'alleleSymbol.formatText',
-			'alleleFullName.formatText',
-			'alleleFullName.displayText',
-			'alleleSynonyms.formatText',
-			'alleleSynonyms.displayText',
-			'curie',
-			'primaryExternalId',
-			'modInternalId',
-			'crossReferences.referencedCurie',
-			'alleleSecondaryIds.secondaryId',
-		];
-		const endpoint = Endpoints.Entity.ALLELE;
-		const filterName = 'geneticModifierAllelesFilter';
-		const filter = buildAutocompleteFilter(event, autocompleteFields);
-		setInputValue(event.query);
-		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered);
-	};
-
-	const geneticModifierAllelesEditorTemplate = (props) => {
-		return (
-			<>
-				<AutocompleteMultiEditor
-					search={geneticModifierAllelesSearch}
-					initialValue={props.rowData.diseaseGeneticModifierAlleles}
-					rowProps={props}
-					fieldName="diseaseGeneticModifierAlleles"
-					subField="primaryExternalId"
-					valueDisplay={(item, setAutocompleteHoverItem, op, query) => (
-						<SubjectAutocompleteTemplate
-							item={item}
-							setAutocompleteHoverItem={setAutocompleteHoverItem}
-							op={op}
-							query={query}
-						/>
-					)}
-					onValueChangeHandler={onGeneticModifierAllelesValueChange}
-				/>
-				<ErrorMessageComponent
-					errorMessages={errorMessagesRef.current[props.rowIndex]}
-					errorField={'diseaseGeneticModifierAlleles'}
-				/>
-				<ErrorMessageComponent
-					errorMessages={uiErrorMessagesRef.current[props.rowIndex]}
-					errorField={'diseaseGeneticModifierAlleles'}
-				/>
-			</>
-		);
-	};
-
-	const onGeneticModifierGenesValueChange = (event, setFieldValue, props) => {
-		multipleAutocompleteOnChange(props, event, 'diseaseGeneticModifierGenes', setFieldValue);
-	};
-
-	const geneticModifierGenesSearch = (event, setFiltered, setInputValue) => {
-		const autocompleteFields = [
-			'geneSymbol.formatText',
-			'geneSymbol.displayText',
-			'geneFullName.formatText',
-			'geneFullName.displayText',
-			'geneSynonyms.formatText',
-			'geneSynonyms.displayText',
-			'geneSystematicName.formatText',
-			'geneSystematicName.displayText',
-			'geneSecondaryIds.secondaryId',
-			'curie',
-			'primaryExternalId',
-			'modInternalId',
-			'crossReferences.referencedCurie',
-		];
-		const endpoint = Endpoints.Entity.GENE;
-		const filterName = 'geneticModifierGenesFilter';
-		const filter = buildAutocompleteFilter(event, autocompleteFields);
-		setInputValue(event.query);
-		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered);
-	};
-
-	const geneticModifierGenesEditorTemplate = (props) => {
-		return (
-			<>
-				<AutocompleteMultiEditor
-					search={geneticModifierGenesSearch}
-					initialValue={props.rowData.diseaseGeneticModifierGenes}
-					rowProps={props}
-					fieldName="diseaseGeneticModifierGenes"
-					subField="primaryExternalId"
-					valueDisplay={(item, setAutocompleteHoverItem, op, query) => (
-						<SubjectAutocompleteTemplate
-							item={item}
-							setAutocompleteHoverItem={setAutocompleteHoverItem}
-							op={op}
-							query={query}
-						/>
-					)}
-					onValueChangeHandler={onGeneticModifierGenesValueChange}
-				/>
-				<ErrorMessageComponent
-					errorMessages={errorMessagesRef.current[props.rowIndex]}
-					errorField={'diseaseGeneticModifierGenes'}
-				/>
-				<ErrorMessageComponent
-					errorMessages={uiErrorMessagesRef.current[props.rowIndex]}
-					errorField={'diseaseGeneticModifierGenes'}
-				/>
-			</>
-		);
-	};
-
-	const onAssertedAlleleValueChange = (event, setFieldValue, props) => {
-		multipleAutocompleteOnChange(props, event, 'assertedAlleles', setFieldValue);
-	};
-
-	const assertedAllelesSearch = (event, setFiltered, setInputValue) => {
-		const autocompleteFields = [
-			'alleleSymbol.formatText',
-			'alleleSymbol.displayText',
-			'alleleFullName.formatText',
-			'alleleFullName.displayText',
-			'curie',
-			'primaryExternalId',
-			'modInternalId',
-			'crossReferences.referencedCurie',
-			'alleleSecondaryIds.secondaryId',
-			'alleleSynonyms.formatText',
-			'alleleSynonyms.displayText',
-		];
-		const endpoint = Endpoints.Entity.ALLELE;
-		const filterName = 'assertedAllelesFilter';
-		const filter = buildAutocompleteFilter(event, autocompleteFields);
-		setInputValue(event.query);
-		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered);
-	};
-
-	const assertedAllelesEditorTemplate = (props) => {
-		if (props.rowData.type === 'AGMDiseaseAnnotation') {
-			return (
-				<>
-					<AutocompleteMultiEditor
-						search={assertedAllelesSearch}
-						initialValue={props.rowData.assertedAlleles}
-						rowProps={props}
-						fieldName="assertedAlleles"
-						subField="primaryExternalId"
-						valueDisplay={(item, setAutocompleteHoverItem, op, query) => (
-							<SubjectAutocompleteTemplate
-								item={item}
-								setAutocompleteHoverItem={setAutocompleteHoverItem}
-								op={op}
-								query={query}
-							/>
-						)}
-						onValueChangeHandler={onAssertedAlleleValueChange}
-					/>
-					<ErrorMessageComponent
-						errorMessages={errorMessagesRef.current[props.rowIndex]}
-						errorField={'assertedAlleles'}
-					/>
-				</>
-			);
-		} else {
-			return null;
-		}
-	};
-
-	const onDiseaseValueChange = (event, setFieldValue, props) => {
-		defaultAutocompleteOnChange(props, event, 'diseaseAnnotationObject', setFieldValue);
-	};
-
-	const diseaseSearch = (event, setFiltered, setQuery) => {
-		const autocompleteFields = [
-			'curie',
-			'name',
-			'crossReferences.referencedCurie',
-			'secondaryIdentifiers',
-			'synonyms.name',
-		];
-		const endpoint = Endpoints.Ontology.DO;
-		const filterName = 'diseaseFilter';
-		const filter = buildAutocompleteFilter(event, autocompleteFields);
-		const otherFilters = {
-			obsoleteFilter: {
-				obsolete: {
-					queryString: false,
-				},
-			},
-		};
-		setQuery(event.query);
-		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered, otherFilters);
-	};
-
-	const diseaseEditorTemplate = (props) => {
-		return (
-			<>
-				<AutocompleteEditor
-					search={diseaseSearch}
-					initialValue={props.rowData.diseaseAnnotationObject?.curie}
-					rowProps={props}
-					fieldName="diseaseAnnotationObject"
-					onValueChangeHandler={onDiseaseValueChange}
-				/>
-				<ErrorMessageComponent
-					errorMessages={errorMessagesRef.current[props.rowIndex]}
-					errorField={'diseaseAnnotationObject'}
-				/>
-			</>
-		);
-	};
-
-	const onAssertedGeneValueChange = (event, setFieldValue, props) => {
-		multipleAutocompleteOnChange(props, event, 'assertedGenes', setFieldValue);
-	};
-
-	const assertedGenesSearch = (event, setFiltered, setInputValue) => {
-		const autocompleteFields = [
-			'geneSymbol.formatText',
-			'geneSymbol.displayText',
-			'geneFullName.formatText',
-			'geneFullName.displayText',
-			'curie',
-			'primaryExternalId',
-			'modInternalId',
-			'crossReferences.referencedCurie',
-			'geneSynonyms.formatText',
-			'geneSynonyms.displayText',
-			'geneSystematicName.formatText',
-			'geneSystematicName.displayText',
-		];
-		const endpoint = Endpoints.Entity.GENE;
-		const filterName = 'assertedGenesFilter';
-		const filter = buildAutocompleteFilter(event, autocompleteFields);
-
-		setInputValue(event.query);
-		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered);
-	};
-
-	const assertedGenesEditorTemplate = (props) => {
-		if (props.rowData.type === 'GeneDiseaseAnnotation') {
-			return null;
-		} else {
-			return (
-				<>
-					<AutocompleteMultiEditor
-						search={assertedGenesSearch}
-						initialValue={props.rowData.assertedGenes}
-						rowProps={props}
-						fieldName="assertedGenes"
-						subField="primaryExternalId"
-						valueDisplay={(item, setAutocompleteHoverItem, op, query) => (
-							<SubjectAutocompleteTemplate
-								item={item}
-								setAutocompleteHoverItem={setAutocompleteHoverItem}
-								op={op}
-								query={query}
-							/>
-						)}
-						onValueChangeHandler={onAssertedGeneValueChange}
-					/>
-					<ErrorMessageComponent
-						errorMessages={errorMessagesRef.current[props.rowIndex]}
-						errorField={'assertedGenes'}
-					/>
-				</>
-			);
-		}
-	};
-
-	const onWithValueChange = (event, setFieldValue, props) => {
-		multipleAutocompleteOnChange(props, event, 'with', setFieldValue);
-	};
-
-	const withSearch = (event, setFiltered, setInputValue) => {
-		const autocompleteFields = [
-			'geneSymbol.formatText',
-			'geneSymbol.displayText',
-			'geneFullName.formatText',
-			'geneFullName.displayText',
-			'primaryExternalId',
-			'modInternalId',
-			'curie',
-			'crossReferences.referencedCurie',
-			'geneSynonyms.formatText',
-			'geneSynonyms.displayText',
-			'geneSystematicName.formatText',
-			'geneSystematicName.displayText',
-			'geneSecondaryIds.secondaryId',
-		];
-		const endpoint = Endpoints.Entity.GENE;
-		const filterName = 'withFilter';
-		const filter = buildAutocompleteFilter(event, autocompleteFields);
-		const otherFilters = {
-			taxonFilter: {
-				'taxon.curie': {
-					queryString: 'NCBITaxon:9606',
-				},
-			},
-		};
-
-		setInputValue(event.query);
-		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered, otherFilters);
-	};
-	const withEditorTemplate = (props) => {
-		return (
-			<>
-				<AutocompleteMultiEditor
-					search={withSearch}
-					initialValue={props.rowData.with}
-					rowProps={props}
-					fieldName="with"
-					subField="primaryExternalId"
-					valueDisplay={(item, setAutocompleteHoverItem, op, query) => (
-						<SubjectAutocompleteTemplate
-							item={item}
-							setAutocompleteHoverItem={setAutocompleteHoverItem}
-							op={op}
-							query={query}
-						/>
-					)}
-					onValueChangeHandler={onWithValueChange}
-				/>
-				<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField="with" />
-			</>
-		);
-	};
-
-	const onEvidenceValueChange = (event, setFieldValue, props) => {
-		multipleAutocompleteOnChange(props, event, 'evidenceCodes', setFieldValue);
-	};
-
-	const evidenceSearch = (event, setFiltered, setInputValue) => {
-		const autocompleteFields = ['curie', 'name', 'abbreviation'];
-		const endpoint = Endpoints.Ontology.ECO;
-		const filterName = 'evidenceFilter';
-		const filter = buildAutocompleteFilter(event, autocompleteFields);
-		const otherFilters = {
-			obsoleteFilter: {
-				obsolete: {
-					queryString: false,
-				},
-			},
-			subsetFilter: {
-				subsets: {
-					queryString: 'agr_eco_terms',
-				},
-			},
-		};
-
-		setInputValue(event.query);
-		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered, otherFilters);
-	};
-
-	const evidenceEditorTemplate = (props) => {
-		return (
-			<>
-				<AutocompleteMultiEditor
-					search={evidenceSearch}
-					initialValue={props.rowData.evidenceCodes}
-					rowProps={props}
-					fieldName="evidenceCodes"
-					valueDisplay={(item, setAutocompleteHoverItem, op, query) => (
-						<EvidenceAutocompleteTemplate
-							item={item}
-							setAutocompleteHoverItem={setAutocompleteHoverItem}
-							op={op}
-							query={query}
-						/>
-					)}
-					onValueChangeHandler={onEvidenceValueChange}
-				/>
-				<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField="evidenceCodes" />
-			</>
-		);
-	};
-
-	const onReferenceValueChange = (event, setFieldValue, props) => {
-		defaultAutocompleteOnChange(props, event, 'evidenceItem', setFieldValue);
-	};
-
-	const referenceSearch = (event, setFiltered, setQuery) => {
-		const autocompleteFields = ['curie', 'cross_references.curie'];
-		const endpoint = Endpoints.Document.LITERATURE_REFERENCE;
-		const filterName = 'curieFilter';
-		const filter = buildAutocompleteFilter(event, autocompleteFields);
-		setQuery(event.query);
-		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered);
-	};
-
-	const referenceEditorTemplate = (props) => {
-		return (
-			<>
-				<AutocompleteEditor
-					search={referenceSearch}
-					initialValue={() => getRefString(props.rowData.evidenceItem)}
-					rowProps={props}
-					fieldName="evidenceItem"
-					valueDisplay={(item, setAutocompleteHoverItem, op, query) => (
-						<LiteratureAutocompleteTemplate
-							item={item}
-							setAutocompleteHoverItem={setAutocompleteHoverItem}
-							op={op}
-							query={query}
-						/>
-					)}
-					onValueChangeHandler={onReferenceValueChange}
-				/>
-				<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={'evidenceItem'} />
-			</>
-		);
-	};
-
-	const uniqueIdEditorTemplate = (props) => {
-		return (
-			<>
-				<EllipsisTableCell otherClasses={`c${props.rowData.id}`}>{props.rowData.uniqueId}</EllipsisTableCell>
-				<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={'uniqueId'} />
-			</>
-		);
-	};
-
-	const sgdStrainBackgroundEditorSelector = (props) => {
-		if (props.rowData.type === 'GeneDiseaseAnnotation') {
-			return sgdStrainBackgroundEditorTemplate(props);
-		} else {
-			return null;
-		}
 	};
 
 	const columns = useMemo(
@@ -1154,7 +226,7 @@ export const DiseaseAnnotationsTable = () => {
 				body: (rowData) => <IdTemplate id={rowData.uniqueId} />,
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.uniqueidFilterConfig,
-				editor: (props) => uniqueIdEditorTemplate(props),
+				editor: (editorOptions) => uniqueIdEditorTemplate(editorOptions),
 			},
 			{
 				field: 'primaryExternalId',
@@ -1171,19 +243,36 @@ export const DiseaseAnnotationsTable = () => {
 				filterConfig: FILTER_CONFIGS.modinternalidFilterConfig,
 			},
 			{
-				field: 'diseaseAnnotationSubject.symbol',
+				field: 'diseaseAnnotationSubject',
+				columnKey: 'diseaseAnnotationSubject.symbol',
 				header: 'Subject',
 				body: (rowData) => <GenomicEntityTemplate genomicEntity={rowData.diseaseAnnotationSubject} />,
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.diseaseAnnotationSubjectFieldConfig,
-				editor: (props) => subjectEditorTemplate(props),
+				editor: (editorOptions) => (
+					<BiologicalEntityTableEditor
+						editorOptions={editorOptions}
+						errorMessagesRef={errorMessagesRef}
+						uiErrorMessagesRef={uiErrorMessagesRef}
+					/>
+				),
 			},
 			{
-				field: 'relation.name',
+				field: 'relation',
+				columnKey: 'relation.name',
 				header: 'Disease Relation',
+				body: (rowData) => rowData.relation?.name,
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.relationFilterConfig,
-				editor: (props) => relationEditor(props),
+				editor: (editorOptions) => (
+					<ControlledVocabularyTableEditor
+						editorOptions={editorOptions}
+						field="relation"
+						options={getRelationTermSet(editorOptions)}
+						showClear={false}
+						errorMessagesRef={errorMessagesRef}
+					/>
+				),
 			},
 			{
 				field: 'negated',
@@ -1191,26 +280,39 @@ export const DiseaseAnnotationsTable = () => {
 				body: (rowData) => <NotTemplate value={rowData.negated} />,
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.negatedFilterConfig,
-				editor: (props) => <NotEditor props={props} value={props.value} editorChange={onNegatedEditorValueChange} />,
+				editor: (editorOptions) => (
+					<NotEditor value={editorOptions.value} editorChange={editorOptions.editorCallback} />
+				),
 			},
 			{
-				field: 'diseaseAnnotationObject.name',
+				field: 'diseaseAnnotationObject',
+				columnKey: 'diseaseAnnotationObject.name',
 				header: 'Disease',
 				body: (rowData) => <OntologyTermTemplate term={rowData.diseaseAnnotationObject} />,
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.diseaseAnnotationObjectFilterConfig,
-				editor: (props) => diseaseEditorTemplate(props),
+				editor: (editorOptions) => (
+					<DiseaseTableEditor editorOptions={editorOptions} errorMessagesRef={errorMessagesRef} />
+				),
 			},
 			{
-				field: 'evidenceItem.primaryCrossReferenceCurie',
+				field: 'evidenceItem',
+				columnKey: 'evidenceItem.primaryCrossReferenceCurie',
 				header: 'Reference',
 				body: (rowData) => <SingleReferenceTemplate singleReference={rowData.evidenceItem} />,
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.evidenceItemFilterConfig,
-				editor: (props) => referenceEditorTemplate(props),
+				editor: (editorOptions) => (
+					<SingleReferenceTableEditor
+						editorOptions={editorOptions}
+						field="evidenceItem"
+						errorMessagesRef={errorMessagesRef}
+					/>
+				),
 			},
 			{
-				field: 'evidenceCodes.abbreviation',
+				field: 'evidenceCodes',
+				columnKey: 'evidenceCodes.abbreviation',
 				header: 'Evidence Code',
 				body: (rowData) => (
 					<ObjectListTemplate
@@ -1221,28 +323,47 @@ export const DiseaseAnnotationsTable = () => {
 				),
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.evidenceCodesFilterConfig,
-				editor: (props) => evidenceEditorTemplate(props),
+				editor: (editorOptions) => (
+					<EvidenceCodesTableEditor editorOptions={editorOptions} errorMessagesRef={errorMessagesRef} />
+				),
 			},
 			{
-				field: 'with.geneSymbol.displayText',
+				field: 'with',
+				columnKey: 'with.geneSymbol.displayText',
 				header: 'With',
 				body: (rowData) => <GenomicEntityListTemplate genomicEntities={rowData.with} />,
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.withFilterConfig,
-				editor: (props) => withEditorTemplate(props),
+				editor: (editorOptions) => (
+					<WithTableEditor editorOptions={editorOptions} errorMessagesRef={errorMessagesRef} />
+				),
 			},
 			{
-				field: 'relatedNotes.freeText',
+				field: 'relatedNotes',
+				columnKey: 'relatedNotes.freeText',
 				header: 'Related Notes',
 				body: (rowData) => (
 					<CountDialogTemplate entities={rowData.relatedNotes} handleOpen={handleRelatedNotesOpen} text={'Notes'} />
 				),
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.relatedNotesFilterConfig,
-				editor: relatedNotesEditor,
+				editor: (editorOptions) => {
+					const count = editorOptions.rowData.relatedNotes?.length;
+					return (
+						<DialogTriggerEditor
+							editorOptions={editorOptions}
+							errorMessagesRef={errorMessagesRef}
+							onOpenInEdit={handleRelatedNotesOpenInEdit}
+							errorField="relatedNotes"
+							displayText={count ? `Notes(${count}) ` : null}
+							addText="Add Note"
+						/>
+					);
+				},
 			},
 			{
-				field: 'conditionRelations.handle',
+				field: 'conditionRelations',
+				columnKey: 'conditionRelations.handle',
 				header: 'Experiments',
 				body: (rowData) => {
 					if (!rowData.conditionRelations?.[0]?.handle) return null;
@@ -1257,10 +378,13 @@ export const DiseaseAnnotationsTable = () => {
 				},
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.daConditionRelationsHandleFilterConfig,
-				editor: (props) => conditionRelationHandleEditor(props),
+				editor: (editorOptions) => (
+					<ConditionRelationHandleTableEditor editorOptions={editorOptions} errorMessagesRef={errorMessagesRef} />
+				),
 			},
 			{
-				field: 'conditionRelations.uniqueId',
+				field: 'conditionRelations',
+				columnKey: 'conditionRelations.uniqueId',
 				header: 'Experimental Conditions',
 				body: (rowData) => {
 					if (rowData.conditionRelations?.[0]?.handle) return null;
@@ -1274,17 +398,40 @@ export const DiseaseAnnotationsTable = () => {
 				},
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.daConditionRelationsSummaryFilterConfig,
-				editor: (props) => conditionRelationsEditor(props),
+				editor: (editorOptions) => {
+					if (editorOptions.rowData?.conditionRelations?.[0]?.handle) return null;
+					const count = editorOptions.rowData?.conditionRelations?.length;
+					return (
+						<DialogTriggerEditor
+							editorOptions={editorOptions}
+							errorMessagesRef={errorMessagesRef}
+							onOpenInEdit={handleConditionRelationsOpenInEdit}
+							errorField="conditionRelations"
+							displayText={count ? `Conditions (${count})` : null}
+							addText="Add Condition"
+						/>
+					);
+				},
 			},
 			{
-				field: 'geneticSex.name',
+				field: 'geneticSex',
+				columnKey: 'geneticSex.name',
 				header: 'Genetic Sex',
+				body: (rowData) => rowData.geneticSex?.name,
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.geneticSexFilterConfig,
-				editor: (props) => geneticSexEditor(props),
+				editor: (editorOptions) => (
+					<ControlledVocabularyTableEditor
+						editorOptions={editorOptions}
+						field="geneticSex"
+						options={geneticSexTerms}
+						errorMessagesRef={errorMessagesRef}
+					/>
+				),
 			},
 			{
-				field: 'diseaseQualifiers.name',
+				field: 'diseaseQualifiers',
+				columnKey: 'diseaseQualifiers.name',
 				header: 'Disease Qualifiers',
 				body: (rowData) => (
 					<ObjectListTemplate
@@ -1295,53 +442,109 @@ export const DiseaseAnnotationsTable = () => {
 				),
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.diseaseQualifiersFilterConfig,
-				editor: (props) => diseaseQualifiersEditor(props),
+				editor: (editorOptions) => (
+					<ControlledVocabularyMultiSelectTableEditor
+						editorOptions={editorOptions}
+						field="diseaseQualifiers"
+						options={diseaseQualifiersTerms}
+						errorMessagesRef={errorMessagesRef}
+					/>
+				),
 			},
 			{
-				field: 'sgdStrainBackground.name',
+				field: 'sgdStrainBackground',
+				columnKey: 'sgdStrainBackground.name',
 				header: 'SGD Strain Background',
 				body: (rowData) => <GenomicEntityTemplate genomicEntity={rowData.sgdStrainBackground} />,
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.sgdStrainBackgroundFilterConfig,
-				editor: (props) => sgdStrainBackgroundEditorSelector(props),
+				editor: (editorOptions) => {
+					if (editorOptions.rowData.type !== 'GeneDiseaseAnnotation') return null;
+					return (
+						<SgdStrainBackgroundTableEditor
+							editorOptions={editorOptions}
+							errorMessagesRef={errorMessagesRef}
+							uiErrorMessagesRef={uiErrorMessagesRef}
+						/>
+					);
+				},
 			},
 			{
-				field: 'annotationType.name',
+				field: 'annotationType',
+				columnKey: 'annotationType.name',
 				header: 'Annotation Type',
+				body: (rowData) => rowData.annotationType?.name,
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.annotationTypeFilterConfig,
-				editor: (props) => annotationTypeEditor(props),
+				editor: (editorOptions) => (
+					<ControlledVocabularyTableEditor
+						editorOptions={editorOptions}
+						field="annotationType"
+						options={annotationTypeTerms}
+						errorMessagesRef={errorMessagesRef}
+					/>
+				),
 			},
 			{
-				field: 'diseaseGeneticModifierRelation.name',
+				field: 'diseaseGeneticModifierRelation',
+				columnKey: 'diseaseGeneticModifierRelation.name',
 				header: 'Genetic Modifier Relation',
+				body: (rowData) => rowData.diseaseGeneticModifierRelation?.name,
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.geneticModifierRelationFilterConfig,
-				editor: (props) => geneticModifierRelationEditor(props),
+				editor: (editorOptions) => (
+					<ControlledVocabularyTableEditor
+						editorOptions={editorOptions}
+						field="diseaseGeneticModifierRelation"
+						options={geneticModifierRelationTerms}
+						errorMessagesRef={errorMessagesRef}
+					/>
+				),
 			},
 			{
-				field: 'diseaseGeneticModifierAgms.name',
+				field: 'diseaseGeneticModifierAgms',
+				columnKey: 'diseaseGeneticModifierAgms.name',
 				header: 'Genetic Modifier AGMs',
 				body: (rowData) => <GenomicEntityListTemplate genomicEntities={rowData.diseaseGeneticModifierAgms} />,
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.geneticModifierAgmsFilterConfig,
-				editor: (props) => geneticModifierAgmsEditorTemplate(props),
+				editor: (editorOptions) => (
+					<DiseaseGeneticModifierAgmsTableEditor
+						editorOptions={editorOptions}
+						errorMessagesRef={errorMessagesRef}
+						uiErrorMessagesRef={uiErrorMessagesRef}
+					/>
+				),
 			},
 			{
-				field: 'diseaseGeneticModifierAlleles.alleleSymbol.displayText',
+				field: 'diseaseGeneticModifierAlleles',
+				columnKey: 'diseaseGeneticModifierAlleles.alleleSymbol.displayText',
 				header: 'Genetic Modifier Alleles',
 				body: (rowData) => <GenomicEntityListTemplate genomicEntities={rowData.diseaseGeneticModifierAlleles} />,
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.geneticModifierAllelesFilterConfig,
-				editor: (props) => geneticModifierAllelesEditorTemplate(props),
+				editor: (editorOptions) => (
+					<DiseaseGeneticModifierAllelesTableEditor
+						editorOptions={editorOptions}
+						errorMessagesRef={errorMessagesRef}
+						uiErrorMessagesRef={uiErrorMessagesRef}
+					/>
+				),
 			},
 			{
-				field: 'diseaseGeneticModifierGenes.geneSymbol.displayText',
+				field: 'diseaseGeneticModifierGenes',
+				columnKey: 'diseaseGeneticModifierGenes.geneSymbol.displayText',
 				header: 'Genetic Modifier Genes',
 				body: (rowData) => <GenomicEntityListTemplate genomicEntities={rowData.diseaseGeneticModifierGenes} />,
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.geneticModifierGenesFilterConfig,
-				editor: (props) => geneticModifierGenesEditorTemplate(props),
+				editor: (editorOptions) => (
+					<DiseaseGeneticModifierGenesTableEditor
+						editorOptions={editorOptions}
+						errorMessagesRef={errorMessagesRef}
+						uiErrorMessagesRef={uiErrorMessagesRef}
+					/>
+				),
 			},
 			{
 				field: 'inferredGene.geneSymbol.displayText',
@@ -1351,12 +554,16 @@ export const DiseaseAnnotationsTable = () => {
 				filterConfig: FILTER_CONFIGS.inferredGeneFilterConfig,
 			},
 			{
-				field: 'assertedGenes.geneSymbol.displayText',
+				field: 'assertedGenes',
+				columnKey: 'assertedGenes.geneSymbol.displayText',
 				header: 'Asserted Genes',
 				body: (rowData) => <GenomicEntityListTemplate genomicEntities={rowData.assertedGenes} />,
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.assertedGenesFilterConfig,
-				editor: (props) => assertedGenesEditorTemplate(props),
+				editor: (editorOptions) => {
+					if (editorOptions.rowData.type === 'GeneDiseaseAnnotation') return null;
+					return <AssertedGenesTableEditor editorOptions={editorOptions} errorMessagesRef={errorMessagesRef} />;
+				},
 			},
 			{
 				field: 'inferredAllele.alleleSymbol.displayText',
@@ -1366,12 +573,16 @@ export const DiseaseAnnotationsTable = () => {
 				filterConfig: FILTER_CONFIGS.inferredAlleleFilterConfig,
 			},
 			{
-				field: 'assertedAlleles.alleleSymbol.displayText',
+				field: 'assertedAlleles',
+				columnKey: 'assertedAlleles.alleleSymbol.displayText',
 				header: 'Asserted Alleles',
 				body: (rowData) => <GenomicEntityListTemplate genomicEntities={rowData.assertedAlleles} />,
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.assertedAllelesFilterConfig,
-				editor: (props) => assertedAllelesEditorTemplate(props),
+				editor: (editorOptions) => {
+					if (editorOptions.rowData.type !== 'AGMDiseaseAnnotation') return null;
+					return <AssertedAllelesTableEditor editorOptions={editorOptions} errorMessagesRef={errorMessagesRef} />;
+				},
 			},
 			{
 				field: 'dataProvider.abbreviation',
@@ -1419,7 +630,9 @@ export const DiseaseAnnotationsTable = () => {
 				body: (rowData) => <BooleanTemplate value={rowData.internal} />,
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.internalFilterConfig,
-				editor: (props) => internalEditor(props),
+				editor: (editorOptions) => (
+					<BooleanTableEditor editorOptions={editorOptions} field="internal" errorMessagesRef={errorMessagesRef} />
+				),
 			},
 			{
 				field: 'obsolete',
@@ -1427,7 +640,9 @@ export const DiseaseAnnotationsTable = () => {
 				body: (rowData) => <BooleanTemplate value={rowData.obsolete} />,
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.obsoleteFilterConfig,
-				editor: (props) => obsoleteEditor(props),
+				editor: (editorOptions) => (
+					<BooleanTableEditor editorOptions={editorOptions} field="obsolete" errorMessagesRef={errorMessagesRef} />
+				),
 			},
 		],
 		// eslint-disable-next-line react-hooks/exhaustive-deps
@@ -1438,7 +653,6 @@ export const DiseaseAnnotationsTable = () => {
 			geneRelationTerms,
 			geneticSexTerms,
 			annotationTypeTerms,
-			booleanTerms,
 			geneticModifierRelationTerms,
 			diseaseQualifiersTerms,
 		]

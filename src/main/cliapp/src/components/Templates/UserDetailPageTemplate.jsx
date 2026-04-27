@@ -1,11 +1,17 @@
-import { FormFieldWrapper } from '../FormFieldWrapper';
+import { DetailPageFieldWrapper } from '../DetailPageFieldWrapper';
 
-export const UserFormTemplate = ({ user, fieldName, widgetColumnSize, labelColumnSize, fieldDetailsColumnSize }) => {
+export const UserDetailPageTemplate = ({
+	user,
+	fieldName,
+	widgetColumnSize,
+	labelColumnSize,
+	fieldDetailsColumnSize,
+}) => {
 	if (!user) user = <i>No data</i>;
 
 	return (
 		<>
-			<FormFieldWrapper
+			<DetailPageFieldWrapper
 				labelColumnSize={labelColumnSize}
 				fieldDetailsColumnSize={fieldDetailsColumnSize}
 				widgetColumnSize={widgetColumnSize}

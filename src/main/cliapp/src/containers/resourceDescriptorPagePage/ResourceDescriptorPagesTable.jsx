@@ -11,10 +11,8 @@ import { ResourceDescriptorPageService } from '../../service/ResourceDescriptorP
 import { Endpoints } from '../../constants/Endpoints';
 
 import { StringTemplate } from '../../components/Templates/StringTemplate';
-import { InputTextEditor } from '../../components/InputTextEditor';
-import { AutocompleteEditor } from '../../components/Autocomplete/AutocompleteEditor';
-import { ErrorMessageComponent } from '../../components/Error/ErrorMessageComponent';
-import { buildAutocompleteFilter, autocompleteSearch, defaultAutocompleteOnChange } from '../../utils/utils';
+import { InputTextTableEditor } from '../../components/Editors/text/InputTextTableEditor';
+import { ResourceDescriptorTableEditor } from '../../components/Editors/resourceDescriptor/ResourceDescriptorTableEditor';
 
 export const ResourceDescriptorPagesTable = () => {
 	const [isInEditMode, setIsInEditMode] = useState(false);
@@ -41,64 +39,20 @@ export const ResourceDescriptorPagesTable = () => {
 		},
 	});
 
-	const stringEditor = (props, field) => {
-		return (
-			<>
-				<InputTextEditor rowProps={props} fieldName={field} />
-				<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={field} />
-			</>
-		);
-	};
-
-	const resourceDescriptorSearch = (event, setFiltered, setQuery) => {
-		const autocompleteFields = ['prefix', 'name'];
-		const endpoint = Endpoints.Resource.DESCRIPTOR;
-		const filterName = 'resourceDescriptorFilter';
-		const filter = buildAutocompleteFilter(event, autocompleteFields);
-
-		setQuery(event.query);
-		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered);
-	};
-
-	const onResourceDescriptorValueChange = (event, setFieldValue, props) => {
-		defaultAutocompleteOnChange(props, event, 'resourceDescriptor', setFieldValue, 'prefix');
-	};
-
-	const resourceDescriptorEditorTemplate = (props) => {
-		return (
-			<>
-				<AutocompleteEditor
-					search={resourceDescriptorSearch}
-					initialValue={props.rowData.resourceDescriptor?.prefix}
-					rowProps={props}
-					fieldName="resourceDescriptor"
-					subField="prefix"
-					valueDisplay={(item, setAutocompleteHoverItem, op, query) => (
-						<div>
-							{item.prefix} ({item.name})
-						</div>
-					)}
-					onValueChangeHandler={onResourceDescriptorValueChange}
-				/>
-				<ErrorMessageComponent
-					errorMessages={errorMessagesRef.current[props.rowIndex]}
-					errorField="resourceDescriptor"
-				/>
-			</>
-		);
-	};
-
 	const columns = useMemo(
 		() => [
 			{
-				field: 'resourceDescriptor.prefix',
+				field: 'resourceDescriptor',
+				columnKey: 'resourceDescriptor.prefix',
 				header: 'Resource Descriptor',
 				sortable: true,
 				body: (rowData) => (
 					<StringTemplate string={`${rowData.resourceDescriptor?.prefix} (${rowData.resourceDescriptor?.name})`} />
 				),
 				filterConfig: FILTER_CONFIGS.resourceDescriptorFilterConfig,
-				editor: (props) => resourceDescriptorEditorTemplate(props),
+				editor: (editorOptions) => (
+					<ResourceDescriptorTableEditor editorOptions={editorOptions} errorMessagesRef={errorMessagesRef} />
+				),
 			},
 			{
 				field: 'name',
@@ -106,7 +60,9 @@ export const ResourceDescriptorPagesTable = () => {
 				sortable: true,
 				body: (rowData) => <StringTemplate string={rowData.name} />,
 				filterConfig: FILTER_CONFIGS.nameFilterConfig,
-				editor: (props) => stringEditor(props, 'name'),
+				editor: (editorOptions) => (
+					<InputTextTableEditor editorOptions={editorOptions} field="name" errorMessagesRef={errorMessagesRef} />
+				),
 			},
 			{
 				field: 'urlTemplate',
@@ -114,7 +70,9 @@ export const ResourceDescriptorPagesTable = () => {
 				sortable: true,
 				body: (rowData) => <StringTemplate string={rowData.urlTemplate} />,
 				filterConfig: FILTER_CONFIGS.urlTemplateFilterConfig,
-				editor: (props) => stringEditor(props, 'urlTemplate'),
+				editor: (editorOptions) => (
+					<InputTextTableEditor editorOptions={editorOptions} field="urlTemplate" errorMessagesRef={errorMessagesRef} />
+				),
 			},
 			{
 				field: 'pageDescription',
@@ -122,7 +80,13 @@ export const ResourceDescriptorPagesTable = () => {
 				sortable: true,
 				body: (rowData) => <StringTemplate string={rowData.pageDescription} />,
 				filterConfig: FILTER_CONFIGS.pageDescriptionFilterConfig,
-				editor: (props) => stringEditor(props, 'pageDescription'),
+				editor: (editorOptions) => (
+					<InputTextTableEditor
+						editorOptions={editorOptions}
+						field="pageDescription"
+						errorMessagesRef={errorMessagesRef}
+					/>
+				),
 			},
 			{
 				field: 'updatedBy.uniqueId',

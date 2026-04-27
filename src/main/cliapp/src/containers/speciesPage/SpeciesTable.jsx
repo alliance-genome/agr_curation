@@ -5,10 +5,10 @@ import { Toast } from 'primereact/toast';
 import { getDefaultTableState } from '../../service/TableStateService';
 import { FILTER_CONFIGS } from '../../constants/FilterFields';
 import { CommaSeparatedArrayTemplate } from '../../components/Templates/CommaSeparatedArrayTemplate';
-import { InputTextEditor } from '../../components/InputTextEditor';
-import { StringListEditor } from '../../components/Editors/StringListEditor';
-import { ControlledVocabularyDropdown } from '../../components/ControlledVocabularySelector';
-import { ErrorMessageComponent } from '../../components/Error/ErrorMessageComponent';
+import { StringTemplate } from '../../components/Templates/StringTemplate';
+import { InputTextTableEditor } from '../../components/Editors/text/InputTextTableEditor';
+import { StringListTableEditor } from '../../components/Editors/text/StringListTableEditor';
+import { ControlledVocabularyTableEditor } from '../../components/Editors/controlledVocabulary/ControlledVocabularyTableEditor';
 import { useGetTableData } from '../../service/useGetTableData';
 import { useGetUserSettings } from '../../service/useGetUserSettings';
 import { useOrganizationService } from '../../service/useOrganizationService';
@@ -43,37 +43,6 @@ export const SpeciesTable = () => {
 		},
 	});
 
-	const stringEditor = (props, field) => {
-		return (
-			<>
-				<InputTextEditor rowProps={props} fieldName={field} />
-				<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={field} />
-			</>
-		);
-	};
-
-	const onDataProviderEditorValueChange = (props, event) => {
-		let updatedEntities = [...props.props.value];
-		updatedEntities[props.rowIndex].dataProvider = event.value;
-	};
-
-	const dataProviderEditor = (props) => {
-		return (
-			<>
-				<ControlledVocabularyDropdown
-					field="dataProvider"
-					options={organizations}
-					editorChange={onDataProviderEditorValueChange}
-					props={props}
-					showClear={false}
-					dataKey="id"
-					placeholderText={props.rowData.dataProvider?.abbreviation}
-				/>
-				<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField="dataProvider" />
-			</>
-		);
-	};
-
 	const columns = useMemo(
 		() => [
 			{
@@ -89,7 +58,9 @@ export const SpeciesTable = () => {
 				sortable: true,
 				filter: true,
 				filterConfig: FILTER_CONFIGS.speciesFullNameFilterConfig,
-				editor: (props) => stringEditor(props, 'fullName'),
+				editor: (editorOptions) => (
+					<InputTextTableEditor editorOptions={editorOptions} field="fullName" errorMessagesRef={errorMessagesRef} />
+				),
 			},
 			{
 				field: 'displayName',
@@ -97,7 +68,9 @@ export const SpeciesTable = () => {
 				sortable: true,
 				filter: true,
 				filterConfig: FILTER_CONFIGS.speciesDisplayNameFilterConfig,
-				editor: (props) => stringEditor(props, 'displayName'),
+				editor: (editorOptions) => (
+					<InputTextTableEditor editorOptions={editorOptions} field="displayName" errorMessagesRef={errorMessagesRef} />
+				),
 			},
 			{
 				field: 'abbreviation',
@@ -105,7 +78,13 @@ export const SpeciesTable = () => {
 				sortable: true,
 				filter: true,
 				filterConfig: FILTER_CONFIGS.speciesAbbreviationFilterConfig,
-				editor: (props) => stringEditor(props, 'abbreviation'),
+				editor: (editorOptions) => (
+					<InputTextTableEditor
+						editorOptions={editorOptions}
+						field="abbreviation"
+						errorMessagesRef={errorMessagesRef}
+					/>
+				),
 			},
 			{
 				field: 'commonNames',
@@ -114,33 +93,58 @@ export const SpeciesTable = () => {
 				filter: true,
 				body: (rowData) => <CommaSeparatedArrayTemplate array={rowData.commonNames} />,
 				filterConfig: FILTER_CONFIGS.speciesCommonNameFilterConfig,
-				editor: (props) => (
-					<>
-						<StringListEditor rowProps={props} fieldName="commonNames" />
-						<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField="commonNames" />
-					</>
+				editor: (editorOptions) => (
+					<StringListTableEditor
+						editorOptions={editorOptions}
+						field="commonNames"
+						errorMessagesRef={errorMessagesRef}
+					/>
 				),
 			},
 			{
-				field: 'dataProvider.abbreviation',
+				field: 'dataProvider',
+				columnKey: 'dataProvider.abbreviation',
 				header: 'Data Provider',
 				sortable: true,
 				filter: true,
+				body: (rowData) => <StringTemplate string={rowData.dataProvider?.abbreviation} />,
 				filterConfig: FILTER_CONFIGS.speciesDataProviderFilterConfig,
-				editor: (props) => dataProviderEditor(props),
+				editor: (editorOptions) => (
+					<ControlledVocabularyTableEditor
+						editorOptions={editorOptions}
+						field="dataProvider"
+						options={organizations}
+						errorMessagesRef={errorMessagesRef}
+						showClear={false}
+						dataKey="id"
+						placeholderField="abbreviation"
+					/>
+				),
 			},
 			{
 				field: 'phylogeneticOrder',
 				header: 'Phylogenetic Order',
 				sortable: true,
-				editor: (props) => stringEditor(props, 'phylogeneticOrder'),
+				editor: (editorOptions) => (
+					<InputTextTableEditor
+						editorOptions={editorOptions}
+						field="phylogeneticOrder"
+						errorMessagesRef={errorMessagesRef}
+					/>
+				),
 			},
 			{
 				field: 'assembly_curie',
 				header: 'Assembly',
 				sortable: false,
 				//filterConfig: FILTER_CONFIGS.speciesAssemblyFilterConfig
-				editor: (props) => stringEditor(props, 'assembly_curie'),
+				editor: (editorOptions) => (
+					<InputTextTableEditor
+						editorOptions={editorOptions}
+						field="assembly_curie"
+						errorMessagesRef={errorMessagesRef}
+					/>
+				),
 			},
 		],
 		// eslint-disable-next-line react-hooks/exhaustive-deps

@@ -36,7 +36,7 @@ export const GeneEditor = ({ props, errorMessages, onChange, dataKey, fieldName 
 			<AutocompleteEditor
 				search={geneSearch}
 				initialValue={getIdentifier(props?.rowData?.[fieldName])}
-				rowProps={props}
+				editorOptions={props}
 				fieldName={fieldName}
 				subField="primaryExternalId"
 				valueDisplay={(item, setAutocompleteHoverItem, op, query) => (

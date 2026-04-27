@@ -99,7 +99,7 @@ export const FullNameFormTable = ({
 				editor={(props) => {
 					return (
 						<ControlledVocabularyEditor
-							props={props}
+							editorOptions={props}
 							onChangeHandler={synonymScopeOnChangeHandler}
 							errorMessages={errorMessages}
 							dataKey={props?.rowData?.dataKey}
@@ -117,7 +117,7 @@ export const FullNameFormTable = ({
 				editor={(props) => {
 					return (
 						<VocabularyTermSetEditor
-							props={props}
+							editorOptions={props}
 							onChangeHandler={nameTypeOnChangeHandler}
 							errorMessages={errorMessages}
 							dataKey={props?.rowData?.dataKey}
@@ -153,7 +153,7 @@ export const FullNameFormTable = ({
 				editor={(props) => {
 					return (
 						<InternalEditor
-							props={props}
+							editorOptions={props}
 							rowIndex={props.rowIndex}
 							dataKey={props.rowData?.dataKey}
 							errorMessages={errorMessages}

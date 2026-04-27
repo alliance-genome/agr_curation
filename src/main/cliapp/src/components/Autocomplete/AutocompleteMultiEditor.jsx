@@ -3,11 +3,14 @@ import { AutoComplete } from 'primereact/autocomplete';
 import { onSelectionOver } from '../../utils/utils';
 import { EditorTooltip } from './EditorTooltip';
 import { getIdentifier } from '../../utils/utils';
+import { useSyncedState } from '../../hooks/useSyncedState';
+
+const EMPTY_ARRAY = [];
 
 export const AutocompleteMultiEditor = ({
 	search,
 	initialValue,
-	rowProps,
+	editorOptions,
 	classNames,
 	fieldName,
 	subField = 'curie',
@@ -17,8 +20,7 @@ export const AutocompleteMultiEditor = ({
 	disabled,
 }) => {
 	const [suggestions, setSuggestions] = useState([]);
-	const [fieldValue, setFieldValue] = useState(initialValue);
-
+	const [fieldValue, setFieldValue] = useSyncedState(initialValue ?? EMPTY_ARRAY);
 	const [inputValue, setInputValue] = useState(initialValue);
 	const [autocompleteHoverItem, setAutocompleteHoverItem] = useState({});
 	const op = useRef(null);
@@ -49,9 +51,9 @@ export const AutocompleteMultiEditor = ({
 				disabled={disabled}
 				suggestions={suggestions}
 				itemTemplate={itemTemplate}
-				completeMethod={(event) => search(event, setSuggestions, setInputValue, rowProps)}
+				completeMethod={(event) => search(event, setSuggestions, setInputValue, editorOptions)}
 				onHide={(e) => op.current.hide(e)}
-				onChange={(e) => onValueChangeHandler(e, setFieldValue, rowProps)}
+				onChange={(e) => onValueChangeHandler(e, setFieldValue, editorOptions)}
 				className={classNames}
 			/>
 			<EditorTooltip op={op} autocompleteHoverItem={autocompleteHoverItem} dataType={fieldName} />

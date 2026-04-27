@@ -35,7 +35,6 @@ export const SynonymsEditDialog = ({
 	const synonymTypeTerms = useControlledVocabularyService('name_type');
 
 	const showDialogHandler = () => {
-		dataKeyCounter.current = 0;
 		let _localSynonyms = cloneSynonyms(originalSynonyms);
 		setLocalSynonyms(_localSynonyms);
 
@@ -148,11 +147,8 @@ export const SynonymsEditDialog = ({
 		for (const syn of _localSynonyms) {
 			delete syn.dataKey;
 		}
-		mainRowProps.rowData[field] = _localSynonyms;
-		let updatedAnnotations = [...mainRowProps.props.value];
-		updatedAnnotations[rowIndex][field] = _localSynonyms;
 		if (mainRowProps.editorCallback) {
-			mainRowProps.editorCallback(_localSynonyms?.[0]?.displayText ?? null);
+			mainRowProps.editorCallback(_localSynonyms);
 		}
 
 		const errorMessagesCopy = structuredClone(errorMessagesMainRow);
@@ -336,7 +332,7 @@ export const SynonymsEditDialog = ({
 						editor={(props) => {
 							return (
 								<ControlledVocabularyEditor
-									props={props}
+									editorOptions={props}
 									onChangeHandler={synonymScopeOnChangeHandler}
 									errorMessages={errorMessages}
 									dataKey={props?.rowData?.dataKey}
@@ -355,7 +351,7 @@ export const SynonymsEditDialog = ({
 						editor={(props) => {
 							return (
 								<ControlledVocabularyEditor
-									props={props}
+									editorOptions={props}
 									onChangeHandler={nameTypeOnChangeHandler}
 									errorMessages={errorMessages}
 									dataKey={props?.rowData?.dataKey}
@@ -392,7 +388,7 @@ export const SynonymsEditDialog = ({
 						editor={(props) => {
 							return (
 								<InternalEditor
-									props={props}
+									editorOptions={props}
 									rowIndex={props.rowIndex}
 									errorMessages={errorMessages}
 									dataKey={props?.rowData?.dataKey}
@@ -415,7 +411,7 @@ export const SynonymsEditDialog = ({
 								/>
 							);
 						}}
-						field="evidence.curie"
+						field="evidence"
 						header="Evidence"
 						headerClassName="surface-0"
 					/>

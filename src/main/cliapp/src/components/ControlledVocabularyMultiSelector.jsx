@@ -1,11 +1,22 @@
 import React, { useState } from 'react';
 import { MultiSelect } from 'primereact/multiselect';
 
-export function ControlledVocabularyMultiSelectDropdown({ options, editorChange, props, placeholderText }) {
-	const [selectedValues, setSelectedValues] = useState(props.rowData.diseaseQualifiers);
+export function ControlledVocabularyMultiSelectDropdown({
+	field,
+	options,
+	editorChange,
+	editorOptions,
+	placeholderText,
+}) {
+	const [selectedValues, setSelectedValues] = useState(editorOptions.rowData[field]);
+
+	const onShow = () => {
+		setSelectedValues(editorOptions.rowData[field]);
+	};
+
 	const onChange = (e) => {
 		setSelectedValues(e.value);
-		editorChange(props, e);
+		editorChange(editorOptions, e);
 	};
 
 	return (
@@ -13,6 +24,7 @@ export function ControlledVocabularyMultiSelectDropdown({ options, editorChange,
 			<MultiSelect
 				value={selectedValues}
 				options={options}
+				onShow={onShow}
 				onChange={(e) => onChange(e)}
 				display="chip"
 				optionLabel="name"

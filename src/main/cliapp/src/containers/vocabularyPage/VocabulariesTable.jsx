@@ -3,14 +3,12 @@ import { useMutation } from '@tanstack/react-query';
 import { Toast } from 'primereact/toast';
 import { Button } from 'primereact/button';
 import { VocabularyService } from '../../service/VocabularyService';
-import { useControlledVocabularyService } from '../../service/useControlledVocabularyService';
 import { GenericDataTable } from '../../components/GenericDataTable/GenericDataTable';
 import { NewVocabularyForm } from '../../containers/controlledVocabularyPage/NewVocabularyForm';
-import { ErrorMessageComponent } from '../../components/Error/ErrorMessageComponent';
 import { getDefaultTableState } from '../../service/TableStateService';
 import { FILTER_CONFIGS } from '../../constants/FilterFields';
-import { InputTextEditor } from '../../components/InputTextEditor';
-import { TrueFalseDropdown } from '../../components/TrueFalseDropDownSelector';
+import { InputTextTableEditor } from '../../components/Editors/text/InputTextTableEditor';
+import { BooleanTableEditor } from '../../components/Editors/boolean/BooleanTableEditor';
 import { useGetTableData } from '../../service/useGetTableData';
 import { useGetUserSettings } from '../../service/useGetUserSettings';
 import { SearchService } from '../../service/SearchService';
@@ -35,8 +33,6 @@ export const VocabulariesTable = () => {
 
 	const searchService = new SearchService();
 
-	const obsoleteTerms = useControlledVocabularyService('generic_boolean_terms');
-
 	let vocabularyService = new VocabularyService();
 
 	const mutation = useMutation({
@@ -48,36 +44,6 @@ export const VocabulariesTable = () => {
 		},
 	});
 
-	const stringEditor = (props, field) => {
-		return (
-			<>
-				<InputTextEditor rowProps={props} fieldName={field} />
-				<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={field} />
-			</>
-		);
-	};
-
-	const obsoleteEditorTemplate = (props) => {
-		return (
-			<>
-				<TrueFalseDropdown
-					options={obsoleteTerms?.terms || []}
-					editorChange={onObsoleteEditorValueChange}
-					props={props}
-					field={'obsolete'}
-				/>
-				<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={'obsolete'} />
-			</>
-		);
-	};
-
-	const onObsoleteEditorValueChange = (props, event) => {
-		let updatedTerms = [...props.props.value];
-		if (event.value || event.value === '') {
-			updatedTerms[props.rowIndex].obsolete = JSON.parse(event.value.name);
-		}
-	};
-
 	const columns = useMemo(
 		() => [
 			{
@@ -86,7 +52,9 @@ export const VocabulariesTable = () => {
 				sortable: true,
 				body: (rowData) => <StringTemplate string={rowData.name} />,
 				filterConfig: FILTER_CONFIGS.nameFilterConfig,
-				editor: (props) => stringEditor(props, 'name'),
+				editor: (editorOptions) => (
+					<InputTextTableEditor editorOptions={editorOptions} field="name" errorMessagesRef={errorMessagesRef} />
+				),
 			},
 			{
 				field: 'vocabularyDescription',
@@ -94,7 +62,13 @@ export const VocabulariesTable = () => {
 				sortable: true,
 				body: (rowData) => <StringTemplate string={rowData.vocabularyDescription} />,
 				filterConfig: FILTER_CONFIGS.vocabularyDescriptionFilterConfig,
-				editor: (props) => stringEditor(props, 'vocabularyDescription'),
+				editor: (editorOptions) => (
+					<InputTextTableEditor
+						editorOptions={editorOptions}
+						field="vocabularyDescription"
+						errorMessagesRef={errorMessagesRef}
+					/>
+				),
 			},
 			{
 				field: 'obsolete',
@@ -102,7 +76,9 @@ export const VocabulariesTable = () => {
 				sortable: true,
 				body: (rowData) => <BooleanTemplate value={rowData.obsolete} />,
 				filterConfig: FILTER_CONFIGS.obsoleteFilterConfig,
-				editor: (props) => obsoleteEditorTemplate(props),
+				editor: (editorOptions) => (
+					<BooleanTableEditor editorOptions={editorOptions} errorMessagesRef={errorMessagesRef} field="obsolete" />
+				),
 			},
 			{
 				field: 'vocabularyLabel',
@@ -113,7 +89,7 @@ export const VocabulariesTable = () => {
 			},
 		],
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-		[obsoleteTerms]
+		[]
 	);
 
 	const DEFAULT_COLUMN_WIDTH = 20;

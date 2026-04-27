@@ -5,10 +5,9 @@ import { Toast } from 'primereact/toast';
 
 import { useControlledVocabularyService } from '../../service/useControlledVocabularyService';
 import { VocabularyService } from '../../service/VocabularyService';
-import { TrueFalseDropdown } from '../../components/TrueFalseDropDownSelector';
-import { ErrorMessageComponent } from '../../components/Error/ErrorMessageComponent';
-import { InputTextEditor } from '../../components/InputTextEditor';
-import { ControlledVocabularyDropdown } from '../../components/ControlledVocabularySelector';
+import { InputTextTableEditor } from '../../components/Editors/text/InputTextTableEditor';
+import { ControlledVocabularyTableEditor } from '../../components/Editors/controlledVocabulary/ControlledVocabularyTableEditor';
+import { BooleanTableEditor } from '../../components/Editors/boolean/BooleanTableEditor';
 import { NewTermForm } from '../../containers/controlledVocabularyPage/NewTermForm';
 import { NewVocabularyForm } from '../../containers/controlledVocabularyPage/NewVocabularyForm';
 import { Button } from 'primereact/button';
@@ -116,99 +115,6 @@ export const ControlledVocabularyTable = () => {
 		);
 	};
 
-	const onNameEditorValueChange = (props, event) => {
-		let updatedTerms = [...props.props.value];
-		if (event.target.value || event.target.value === '') {
-			updatedTerms[props.rowIndex].name = event.target.value;
-		}
-	};
-
-	const nameEditorTemplate = (props) => {
-		return (
-			<>
-				<InputTextEditor editorChange={onNameEditorValueChange} rowProps={props} fieldName={'name'} />
-				<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={'name'} />
-			</>
-		);
-	};
-
-	const onAbbreviationEditorValueChange = (props, event) => {
-		let updatedTerms = [...props.props.value];
-		if (event.target.value || event.target.value === '') {
-			updatedTerms[props.rowIndex].abbreviation = event.target.value;
-		}
-	};
-
-	const abbreviationEditorTemplate = (props) => {
-		return (
-			<>
-				<InputTextEditor editorChange={onAbbreviationEditorValueChange} rowProps={props} fieldName={'abbreviation'} />
-				<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={'abbreviation'} />
-			</>
-		);
-	};
-
-	const onVocabularyNameEditorValueChange = (props, event) => {
-		let updatedTerms = [...props.props.value];
-		if (event.value || event.value === '') {
-			updatedTerms[props.rowIndex].vocabulary = event.value;
-		}
-	};
-
-	const vocabularyEditorTemplate = (props) => {
-		return (
-			<>
-				<ControlledVocabularyDropdown
-					options={vocabularies}
-					editorChange={onVocabularyNameEditorValueChange}
-					props={props}
-					placeholderText={props.rowData.vocabulary.name}
-				/>
-				<ErrorMessageComponent
-					errorMessages={errorMessagesRef.current[props.rowIndex]}
-					errorField={'vocabulary.name'}
-				/>
-			</>
-		);
-	};
-
-	const onDefinitionEditorValueChange = (props, event) => {
-		let updatedTerms = [...props.props.value];
-		if (event.target.value || event.target.value === '') {
-			updatedTerms[props.rowIndex].definition = event.target.value;
-		}
-	};
-
-	const definitionEditorTemplate = (props) => {
-		return (
-			<>
-				<InputTextEditor editorChange={onDefinitionEditorValueChange} rowProps={props} fieldName={'definition'} />
-				<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={'definition'} />
-			</>
-		);
-	};
-
-	const onObsoleteEditorValueChange = (props, event) => {
-		let updatedTerms = [...props.props.value];
-		if (event.value || event.value === '') {
-			updatedTerms[props.rowIndex].obsolete = JSON.parse(event.value.name);
-		}
-	};
-
-	const obsoleteEditorTemplate = (props) => {
-		return (
-			<>
-				<TrueFalseDropdown
-					options={obsoleteTerms?.terms || []}
-					editorChange={onObsoleteEditorValueChange}
-					props={props}
-					field={'obsolete'}
-				/>
-				<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={'obsolete'} />
-			</>
-		);
-	};
-
 	const columns = useMemo(
 		() => [
 			{
@@ -222,7 +128,9 @@ export const ControlledVocabularyTable = () => {
 				header: 'Name',
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.nameFilterConfig,
-				editor: (props) => nameEditorTemplate(props),
+				editor: (editorOptions) => (
+					<InputTextTableEditor editorOptions={editorOptions} field="name" errorMessagesRef={errorMessagesRef} />
+				),
 				body: (rowData) => <StringTemplate string={rowData.name} />,
 			},
 			{
@@ -230,7 +138,13 @@ export const ControlledVocabularyTable = () => {
 				header: 'Abbreviation',
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.abbreviationFilterConfig,
-				editor: (props) => abbreviationEditorTemplate(props),
+				editor: (editorOptions) => (
+					<InputTextTableEditor
+						editorOptions={editorOptions}
+						field="abbreviation"
+						errorMessagesRef={errorMessagesRef}
+					/>
+				),
 				body: (rowData) => <StringTemplate string={rowData.abbreviation} />,
 			},
 			{
@@ -241,11 +155,19 @@ export const ControlledVocabularyTable = () => {
 				body: (rowData) => <StringListTemplate list={rowData.synonyms} />,
 			},
 			{
-				field: 'vocabulary.name',
+				field: 'vocabulary',
+				columnKey: 'vocabulary.name',
 				header: 'Vocabulary',
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.vocabularyNameFilterConfig,
-				editor: (props) => vocabularyEditorTemplate(props),
+				editor: (editorOptions) => (
+					<ControlledVocabularyTableEditor
+						editorOptions={editorOptions}
+						field="vocabulary"
+						options={vocabularies}
+						errorMessagesRef={errorMessagesRef}
+					/>
+				),
 				body: (rowData) => <StringTemplate string={rowData.vocabulary?.name} />,
 			},
 			{
@@ -253,7 +175,9 @@ export const ControlledVocabularyTable = () => {
 				header: 'Definition',
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.definitionFilterConfig,
-				editor: (props) => definitionEditorTemplate(props),
+				editor: (editorOptions) => (
+					<InputTextTableEditor editorOptions={editorOptions} field="definition" errorMessagesRef={errorMessagesRef} />
+				),
 				body: (rowData) => <StringTemplate string={rowData.definition} />,
 			},
 			{
@@ -292,12 +216,14 @@ export const ControlledVocabularyTable = () => {
 				header: 'Obsolete',
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.obsoleteFilterConfig,
-				editor: (props) => obsoleteEditorTemplate(props),
+				editor: (editorOptions) => (
+					<BooleanTableEditor editorOptions={editorOptions} errorMessagesRef={errorMessagesRef} field="obsolete" />
+				),
 				body: (rowData) => <BooleanTemplate value={rowData.obsolete} />,
 			},
 		],
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-		[obsoleteTerms, vocabularies]
+		[vocabularies]
 	);
 
 	const DEFAULT_COLUMN_WIDTH = 13;

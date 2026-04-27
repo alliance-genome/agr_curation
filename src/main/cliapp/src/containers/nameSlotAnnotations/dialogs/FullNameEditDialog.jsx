@@ -37,7 +37,6 @@ export const FullNameEditDialog = ({
 	const fullNameTypeTerms = useVocabularyTermSetService('full_name_type');
 
 	const showDialogHandler = () => {
-		dataKeyCounter.current = 0;
 		let _localFullNames = cloneFullNames(originalFullNames);
 		setLocalFullNames(_localFullNames);
 
@@ -150,11 +149,8 @@ export const FullNameEditDialog = ({
 		for (const fn of _localFullNames) {
 			delete fn.dataKey;
 		}
-		mainRowProps.rowData[field] = _localFullNames[0] ? _localFullNames[0] : null;
-		let updatedAnnotations = [...mainRowProps.props.value];
-		updatedAnnotations[rowIndex][field] = _localFullNames[0] ? _localFullNames[0] : null;
 		if (mainRowProps.editorCallback) {
-			mainRowProps.editorCallback(_localFullNames[0]?.displayText ?? null);
+			mainRowProps.editorCallback(_localFullNames[0] || null);
 		}
 
 		const errorMessagesCopy = structuredClone(errorMessagesMainRow);
@@ -242,7 +238,7 @@ export const FullNameEditDialog = ({
 					field="nameType"
 					options={fullNameTypeTerms}
 					editorChange={nameTypeOnChangeHandler}
-					props={props}
+					editorOptions={props}
 					showClear={false}
 					dataKey="id"
 				/>
@@ -359,7 +355,7 @@ export const FullNameEditDialog = ({
 						editor={(props) => {
 							return (
 								<ControlledVocabularyEditor
-									props={props}
+									editorOptions={props}
 									onChangeHandler={synonymScopeOnChangeHandler}
 									errorMessages={errorMessages}
 									dataKey={props?.rowData?.dataKey}
@@ -397,7 +393,7 @@ export const FullNameEditDialog = ({
 						editor={(props) => {
 							return (
 								<InternalEditor
-									props={props}
+									editorOptions={props}
 									rowIndex={props.rowIndex}
 									errorMessages={errorMessages}
 									dataKey={props?.rowData?.dataKey}
@@ -420,7 +416,7 @@ export const FullNameEditDialog = ({
 								/>
 							);
 						}}
-						field="evidence.curie"
+						field="evidence"
 						header="Evidence"
 						headerClassName="surface-0"
 					/>

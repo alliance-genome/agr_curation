@@ -1,6 +1,6 @@
-import { FormFieldWrapper } from '../FormFieldWrapper';
+import { DetailPageFieldWrapper } from '../DetailPageFieldWrapper';
 
-export const DataProviderFormTemplate = ({
+export const DataProviderDetailPageTemplate = ({
 	dataProvider,
 	widgetColumnSize,
 	labelColumnSize,
@@ -10,7 +10,7 @@ export const DataProviderFormTemplate = ({
 
 	return (
 		<>
-			<FormFieldWrapper
+			<DetailPageFieldWrapper
 				labelColumnSize={labelColumnSize}
 				fieldDetailsColumnSize={fieldDetailsColumnSize}
 				widgetColumnSize={widgetColumnSize}

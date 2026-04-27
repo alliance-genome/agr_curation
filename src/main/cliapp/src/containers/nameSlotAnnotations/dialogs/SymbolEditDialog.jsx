@@ -36,7 +36,6 @@ export const SymbolEditDialog = ({
 	const symbolNameTypeTerms = useVocabularyTermSetService('symbol_name_type');
 
 	const showDialogHandler = () => {
-		dataKeyCounter.current = 0;
 		let _localSymbols = cloneSymbols(originalSymbols);
 		setLocalSymbols(_localSymbols);
 
@@ -128,11 +127,8 @@ export const SymbolEditDialog = ({
 		for (const sym of _localSymbols) {
 			delete sym.dataKey;
 		}
-		mainRowProps.rowData[field] = _localSymbols[0] ? _localSymbols[0] : null;
-		let updatedAnnotations = [...mainRowProps.props.value];
-		updatedAnnotations[rowIndex][field] = _localSymbols[0] ? _localSymbols[0] : null;
 		if (mainRowProps.editorCallback) {
-			mainRowProps.editorCallback(_localSymbols[0]?.displayText ?? null);
+			mainRowProps.editorCallback(_localSymbols[0] || null);
 		}
 
 		const errorMessagesCopy = structuredClone(errorMessagesMainRow);
@@ -220,7 +216,7 @@ export const SymbolEditDialog = ({
 					field="nameType"
 					options={symbolNameTypeTerms}
 					editorChange={nameTypeOnChangeHandler}
-					props={props}
+					editorOptions={props}
 					showClear={false}
 					dataKey="id"
 				/>
@@ -323,7 +319,7 @@ export const SymbolEditDialog = ({
 						editor={(props) => {
 							return (
 								<ControlledVocabularyEditor
-									props={props}
+									editorOptions={props}
 									onChangeHandler={synonymScopeOnChangeHandler}
 									errorMessages={errorMessages}
 									dataKey={props?.rowData?.dataKey}
@@ -361,7 +357,7 @@ export const SymbolEditDialog = ({
 						editor={(props) => {
 							return (
 								<InternalEditor
-									props={props}
+									editorOptions={props}
 									rowIndex={props.rowIndex}
 									errorMessages={errorMessages}
 									dataKey={props?.rowData?.dataKey}
@@ -384,7 +380,7 @@ export const SymbolEditDialog = ({
 								/>
 							);
 						}}
-						field="evidence.curie"
+						field="evidence"
 						header="Evidence"
 						headerClassName="surface-0"
 					/>
