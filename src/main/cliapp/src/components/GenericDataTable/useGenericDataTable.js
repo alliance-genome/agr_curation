@@ -242,7 +242,7 @@ export const useGenericDataTable = ({
 					return nextErrorMessages;
 				});
 
-				setEditingRows({ ...editingRows, [`${rowKey}`]: true });
+				setEditingRows((previousEditingRows) => ({ ...previousEditingRows, [`${rowKey}`]: true }));
 			},
 		});
 	};
