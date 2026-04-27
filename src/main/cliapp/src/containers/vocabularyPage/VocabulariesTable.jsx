@@ -77,11 +77,7 @@ export const VocabulariesTable = () => {
 				body: (rowData) => <BooleanTemplate value={rowData.obsolete} />,
 				filterConfig: FILTER_CONFIGS.obsoleteFilterConfig,
 				editor: (editorOptions) => (
-					<BooleanTableEditor
-						editorOptions={editorOptions}
-						errorMessagesRef={errorMessagesRef}
-						field="obsolete"
-					/>
+					<BooleanTableEditor editorOptions={editorOptions} errorMessagesRef={errorMessagesRef} field="obsolete" />
 				),
 			},
 			{

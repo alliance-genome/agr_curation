@@ -55,11 +55,7 @@ describe('StringListTextAreaTableEditor', () => {
 			current: { 0: { synonyms: { severity: 'error', message: 'Invalid synonym' } } },
 		};
 		const result = render(
-			<StringListTextAreaTableEditor
-				editorOptions={editorOptions}
-				field="synonyms"
-				errorMessagesRef={errorRef}
-			/>
+			<StringListTextAreaTableEditor editorOptions={editorOptions} field="synonyms" errorMessagesRef={errorRef} />
 		);
 
 		expect(result.getByText('Invalid synonym')).toBeInTheDocument();

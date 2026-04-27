@@ -139,7 +139,11 @@ export const ControlledVocabularyTable = () => {
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.abbreviationFilterConfig,
 				editor: (editorOptions) => (
-					<InputTextTableEditor editorOptions={editorOptions} field="abbreviation" errorMessagesRef={errorMessagesRef} />
+					<InputTextTableEditor
+						editorOptions={editorOptions}
+						field="abbreviation"
+						errorMessagesRef={errorMessagesRef}
+					/>
 				),
 				body: (rowData) => <StringTemplate string={rowData.abbreviation} />,
 			},
@@ -213,11 +217,7 @@ export const ControlledVocabularyTable = () => {
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.obsoleteFilterConfig,
 				editor: (editorOptions) => (
-					<BooleanTableEditor
-						editorOptions={editorOptions}
-						errorMessagesRef={errorMessagesRef}
-						field="obsolete"
-					/>
+					<BooleanTableEditor editorOptions={editorOptions} errorMessagesRef={errorMessagesRef} field="obsolete" />
 				),
 				body: (rowData) => <BooleanTemplate value={rowData.obsolete} />,
 			},

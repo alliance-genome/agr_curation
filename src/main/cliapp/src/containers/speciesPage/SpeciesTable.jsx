@@ -79,7 +79,11 @@ export const SpeciesTable = () => {
 				filter: true,
 				filterConfig: FILTER_CONFIGS.speciesAbbreviationFilterConfig,
 				editor: (editorOptions) => (
-					<InputTextTableEditor editorOptions={editorOptions} field="abbreviation" errorMessagesRef={errorMessagesRef} />
+					<InputTextTableEditor
+						editorOptions={editorOptions}
+						field="abbreviation"
+						errorMessagesRef={errorMessagesRef}
+					/>
 				),
 			},
 			{
@@ -90,7 +94,11 @@ export const SpeciesTable = () => {
 				body: (rowData) => <CommaSeparatedArrayTemplate array={rowData.commonNames} />,
 				filterConfig: FILTER_CONFIGS.speciesCommonNameFilterConfig,
 				editor: (editorOptions) => (
-					<StringListTableEditor editorOptions={editorOptions} field="commonNames" errorMessagesRef={errorMessagesRef} />
+					<StringListTableEditor
+						editorOptions={editorOptions}
+						field="commonNames"
+						errorMessagesRef={errorMessagesRef}
+					/>
 				),
 			},
 			{
