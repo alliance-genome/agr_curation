@@ -1,5 +1,5 @@
 import { AutocompleteMultiTableEditor } from '../autocomplete/AutocompleteMultiTableEditor';
-import { referenceSearchConfig } from './utils';
+import { multiReferenceSearchConfig } from './utils';
 
 export const ReferencesTableEditor = ({ editorOptions, errorMessagesRef, uiErrorMessagesRef }) => (
 	<AutocompleteMultiTableEditor
@@ -7,6 +7,6 @@ export const ReferencesTableEditor = ({ editorOptions, errorMessagesRef, uiError
 		field="references"
 		errorMessagesRef={errorMessagesRef}
 		uiErrorMessagesRef={uiErrorMessagesRef}
-		{...referenceSearchConfig}
+		{...multiReferenceSearchConfig}
 	/>
 );

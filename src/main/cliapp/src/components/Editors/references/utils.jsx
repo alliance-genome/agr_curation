@@ -3,10 +3,9 @@ import { SearchService } from '../../../service/SearchService';
 import { Endpoints } from '../../../constants/Endpoints';
 import { LiteratureAutocompleteTemplate } from '../../Autocomplete/LiteratureAutocompleteTemplate';
 
-export const referenceSearchConfig = {
+const referenceSearchConfig = {
 	endpoint: Endpoints.Document.LITERATURE_REFERENCE,
 	autocompleteFields: ['curie', 'cross_references.curie'],
-	filterName: 'curieFilter',
 	valueDisplay: (item, setAutocompleteHoverItem, op, query) => (
 		<LiteratureAutocompleteTemplate
 			item={item}
@@ -17,23 +16,24 @@ export const referenceSearchConfig = {
 	),
 };
 
-// Single-reference pickers (DA.evidenceItem, ConditionRelation.singleReference)
-// use singleReferenceFilter. Multi-reference (AllelesTable.references) keeps
-// curieFilter above — the backend may treat the two filter names differently
-// for multi-select.
 export const singleReferenceSearchConfig = {
 	...referenceSearchConfig,
 	filterName: 'singleReferenceFilter',
 };
 
-export const referenceSearch = (event, setFiltered, setInputValue) => {
+export const multiReferenceSearchConfig = {
+	...referenceSearchConfig,
+	filterName: 'multiReferenceFilter',
+};
+
+export const multiReferenceSearch = (event, setFiltered, setInputValue) => {
 	const searchService = new SearchService();
-	const filter = buildAutocompleteFilter(event, referenceSearchConfig.autocompleteFields);
+	const filter = buildAutocompleteFilter(event, multiReferenceSearchConfig.autocompleteFields);
 	setInputValue(event.query);
 	autocompleteSearch(
 		searchService,
-		referenceSearchConfig.endpoint,
-		referenceSearchConfig.filterName,
+		multiReferenceSearchConfig.endpoint,
+		multiReferenceSearchConfig.filterName,
 		filter,
 		setFiltered
 	);
