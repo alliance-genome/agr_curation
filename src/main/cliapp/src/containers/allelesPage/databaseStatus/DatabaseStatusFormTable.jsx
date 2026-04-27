@@ -55,7 +55,7 @@ export const DatabaseStatusFormTable = ({
 				editor={(props) => {
 					return (
 						<ControlledVocabularyEditor
-							props={props}
+							editorOptions={props}
 							onChangeHandler={databaseStatusOnChangeHandler}
 							errorMessages={errorMessages}
 							dataKey={props?.rowData?.dataKey}

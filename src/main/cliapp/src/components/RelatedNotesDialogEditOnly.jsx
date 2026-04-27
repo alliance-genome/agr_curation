@@ -91,7 +91,7 @@ export const RelatedNotesDialogEditOnly = ({
 		return (
 			<>
 				<VocabularyTermSetEditor
-					props={props}
+					editorOptions={props}
 					onChangeHandler={onNoteTypeEditorValueChange}
 					errorMessages={errorMessages}
 					rowIndex={props.rowIndex}
@@ -277,7 +277,7 @@ export const RelatedNotesDialogEditOnly = ({
 						editor={(props) => {
 							return (
 								<InternalEditor
-									props={props}
+									editorOptions={props}
 									errorMessages={errorMessages}
 									internalOnChangeHandler={internalOnChangeHandler}
 									rowIndex={props.rowData.rowIndex}

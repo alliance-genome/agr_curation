@@ -89,7 +89,7 @@ export const SymbolFormTable = ({
 				editor={(props) => {
 					return (
 						<ControlledVocabularyEditor
-							props={props}
+							editorOptions={props}
 							onChangeHandler={synonymScopeOnChangeHandler}
 							errorMessages={errorMessages}
 							rowIndex={props.rowIndex}
@@ -108,7 +108,7 @@ export const SymbolFormTable = ({
 				editor={(props) => {
 					return (
 						<VocabularyTermSetEditor
-							props={props}
+							editorOptions={props}
 							onChangeHandler={nameTypeOnChangeHandler}
 							errorMessages={errorMessages}
 							rowIndex={props.rowIndex}

@@ -58,7 +58,7 @@ export const RelatedNotesFormTable = ({
 				editor={(props) => {
 					return (
 						<VocabularyTermSetEditor
-							props={props}
+							editorOptions={props}
 							onChangeHandler={noteTypeOnChangeHandler}
 							errorMessages={errorMessages}
 							rowIndex={props.rowIndex}
