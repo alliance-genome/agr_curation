@@ -2,18 +2,15 @@ import { buildAutocompleteFilter, autocompleteSearch } from '../../../utils/util
 import { SearchService } from '../../../service/SearchService';
 import { Endpoints } from '../../../constants/Endpoints';
 
+export const taxonSearchConfig = {
+	endpoint: Endpoints.Ontology.NCBI_TAXON,
+	autocompleteFields: ['curie', 'name', 'crossReferences.referencedCurie', 'secondaryIdentifiers', 'synonyms.name'],
+	filterName: 'taxonFilter',
+};
+
 export const taxonSearch = (event, setFiltered, setQuery) => {
 	const searchService = new SearchService();
-	const autocompleteFields = [
-		'curie',
-		'name',
-		'crossReferences.referencedCurie',
-		'secondaryIdentifiers',
-		'synonyms.name',
-	];
-	const endpoint = Endpoints.Ontology.NCBI_TAXON;
-	const filterName = 'taxonFilter';
 	setQuery(event.query);
-	const filter = buildAutocompleteFilter(event, autocompleteFields);
-	autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered);
+	const filter = buildAutocompleteFilter(event, taxonSearchConfig.autocompleteFields);
+	autocompleteSearch(searchService, taxonSearchConfig.endpoint, taxonSearchConfig.filterName, filter, setFiltered);
 };

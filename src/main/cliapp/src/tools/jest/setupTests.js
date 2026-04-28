@@ -1,6 +1,10 @@
 import '@testing-library/jest-dom';
 import { server } from './server.js';
 
+if (typeof structuredClone === 'undefined') {
+	global.structuredClone = (val) => JSON.parse(JSON.stringify(val));
+}
+
 const localStorageMock = (function () {
 	let store = {};
 
@@ -30,7 +34,7 @@ const localStorageMock = (function () {
 Object.defineProperty(global, 'localStorage', { value: localStorageMock });
 Object.defineProperty(global.window, 'crypto', {
 	value: {
-		randomUUID: jest.fn().mockReturnValue('mock-uuid-1234'),
+		randomUUID: vi.fn().mockReturnValue('mock-uuid-1234'),
 	},
 });
 
@@ -56,8 +60,8 @@ beforeAll(() => {
 });
 
 beforeEach(() => {
-	mockConsoleError = jest.spyOn(console, 'error');
-	mockConsoleWarn = jest.spyOn(console, 'warn');
+	mockConsoleError = vi.spyOn(console, 'error');
+	mockConsoleWarn = vi.spyOn(console, 'warn');
 	mockConsoleError.mockImplementation(() => {});
 	mockConsoleWarn.mockImplementation(() => {});
 });

@@ -2,12 +2,21 @@ import { buildAutocompleteFilter, autocompleteSearch } from '../../../utils/util
 import { SearchService } from '../../../service/SearchService';
 import { Endpoints } from '../../../constants/Endpoints';
 
+export const sourceGeneralConsequenceSearchConfig = {
+	endpoint: Endpoints.Ontology.SO,
+	autocompleteFields: ['curie', 'name', 'secondaryIdentifiers', 'synonyms.name'],
+	filterName: 'sourceGeneralConsequenceFilter',
+};
+
 export const sourceGeneralConsequenceSearch = (event, setFiltered, setQuery) => {
 	const searchService = new SearchService();
-	const autocompleteFields = ['curie', 'name', 'secondaryIdentifiers', 'synonyms.name'];
-	const endpoint = Endpoints.Ontology.SO;
-	const filterName = 'sourceGeneralConsequenceFilter';
 	setQuery(event.query);
-	const filter = buildAutocompleteFilter(event, autocompleteFields);
-	autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered);
+	const filter = buildAutocompleteFilter(event, sourceGeneralConsequenceSearchConfig.autocompleteFields);
+	autocompleteSearch(
+		searchService,
+		sourceGeneralConsequenceSearchConfig.endpoint,
+		sourceGeneralConsequenceSearchConfig.filterName,
+		filter,
+		setFiltered
+	);
 };
