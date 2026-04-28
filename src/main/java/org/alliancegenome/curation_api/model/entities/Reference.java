@@ -51,7 +51,6 @@ public class Reference extends InformationContentEntity {
 			@Index(name = "reference_crossreference_crossreferences_index", columnList = "crossReferences_id")
 		}
 	)
-	@EqualsAndHashCode.Include
 	private Set<CrossReference> crossReferences;
 
 	@JsonView({CurationView.FieldsOnly.class, CurationView.ForPublic.class})
