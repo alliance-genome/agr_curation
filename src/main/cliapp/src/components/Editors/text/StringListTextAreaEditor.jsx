@@ -1,6 +1,6 @@
 import React from 'react';
 import { InputTextarea } from 'primereact/inputtextarea';
-import { useSyncedState } from '../../hooks/useSyncedState';
+import { useSyncedState } from '../../../hooks/useSyncedState';
 
 export function StringListTextAreaEditor({ editorOptions, fieldName, rows = 5 }) {
 	const initialValue = Array.isArray(editorOptions.rowData[fieldName])

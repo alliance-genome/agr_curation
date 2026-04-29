@@ -5,7 +5,7 @@ import { Row } from 'primereact/row';
 import { DeleteAction } from '../../../components/Actions/DeletionAction';
 import { InternalEditor } from '../../../components/Editors/InternalEditor';
 import { EvidenceEditor } from '../../../components/Editors/EvidenceEditor';
-import { TableInputTextEditor } from '../../../components/Editors/TableInputTextEditor';
+import { TableInputTextEditor } from '../../../components/Editors/text/TableInputTextEditor';
 
 export const SecondaryIdsFormTable = ({
 	secondaryIds,

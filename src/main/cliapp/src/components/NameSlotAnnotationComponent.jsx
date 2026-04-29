@@ -1,7 +1,7 @@
 import React from 'react';
 import { EllipsisTableCell } from './EllipsisTableCell';
 import { DialogErrorMessageComponent } from './Error/DialogErrorMessageComponent';
-import { InputTextEditor } from './InputTextEditor';
+import { InputTextEditor } from './Editors/text/InputTextEditor';
 
 export const synonymScopeTemplate = (rowData) => {
 	return <EllipsisTableCell>{rowData.synonymScope?.name}</EllipsisTableCell>;

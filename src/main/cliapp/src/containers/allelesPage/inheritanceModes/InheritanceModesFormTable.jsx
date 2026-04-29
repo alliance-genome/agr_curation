@@ -7,7 +7,7 @@ import { InternalEditor } from '../../../components/Editors/InternalEditor';
 import { EvidenceEditor } from '../../../components/Editors/EvidenceEditor';
 import { PhenotypeTermEditor } from '../../../components/Editors/PhenotypeTermEditor';
 import { ControlledVocabularyEditor } from '../../../components/Editors/ControlledVocabularyEditor';
-import { TableInputTextAreaEditor } from '../../../components/Editors/TableInputTextAreaEditor';
+import { TableInputTextAreaEditor } from '../../../components/Editors/text/TableInputTextAreaEditor';
 
 export const InheritanceModesFormTable = ({
 	inheritanceModes,

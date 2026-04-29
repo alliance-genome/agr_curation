@@ -1,5 +1,5 @@
 import { InputText } from 'primereact/inputtext';
-import { useSyncedState } from '../../hooks/useSyncedState';
+import { useSyncedState } from '../../../hooks/useSyncedState';
 
 export function StringListEditor({ editorOptions, fieldName }) {
 	const initialValue = Array.isArray(editorOptions.rowData[fieldName])

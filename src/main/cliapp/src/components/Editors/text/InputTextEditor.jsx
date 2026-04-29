@@ -1,6 +1,6 @@
 import React from 'react';
 import { InputText } from 'primereact/inputtext';
-import { useSyncedState } from '../hooks/useSyncedState';
+import { useSyncedState } from '../../../hooks/useSyncedState';
 
 export function InputTextEditor({ editorOptions, fieldName }) {
 	const [fieldValue, setFieldValue] = useSyncedState(editorOptions.rowData[fieldName] ?? '');

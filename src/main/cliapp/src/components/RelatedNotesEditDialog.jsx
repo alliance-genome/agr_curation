@@ -11,7 +11,7 @@ import { DeleteAction } from './Actions/DeletionAction';
 import { InternalEditor } from './Editors/InternalEditor';
 import { ReferencesEditor } from './Editors/ReferencesEditor';
 import { VocabularyTermSetEditor } from './Editors/VocabularyTermSetEditor';
-import { TableInputTextAreaEditor } from './Editors/TableInputTextAreaEditor';
+import { TableInputTextAreaEditor } from './Editors/text/TableInputTextAreaEditor';
 import { Endpoints } from '../constants/Endpoints';
 import { multipleAutocompleteOnChange } from '../utils/utils';
 

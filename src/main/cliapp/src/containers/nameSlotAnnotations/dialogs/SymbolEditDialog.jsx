@@ -8,7 +8,7 @@ import { ColumnGroup } from 'primereact/columngroup';
 import { Row } from 'primereact/row';
 import { DialogErrorMessageComponent } from '../../../components/Error/DialogErrorMessageComponent';
 import { ValidationService } from '../../../service/ValidationService';
-import { TableInputTextEditor } from '../../../components/Editors/TableInputTextEditor';
+import { TableInputTextEditor } from '../../../components/Editors/text/TableInputTextEditor';
 import { InternalEditor } from '../../../components/Editors/InternalEditor';
 import { EvidenceEditor } from '../../../components/Editors/EvidenceEditor';
 import { ControlledVocabularyEditor } from '../../../components/Editors/ControlledVocabularyEditor';

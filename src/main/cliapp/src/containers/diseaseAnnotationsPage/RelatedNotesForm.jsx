@@ -3,7 +3,7 @@ import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { Button } from 'primereact/button';
 import { Toast } from 'primereact/toast';
-import { InputTextAreaEditor } from '../../components/InputTextAreaEditor';
+import { InputTextAreaEditor } from '../../components/Editors/text/InputTextAreaEditor';
 import { DialogErrorMessageComponent } from '../../components/Error/DialogErrorMessageComponent';
 import { BooleanDropdown } from '../../components/Editors/dropdown/boolean/BooleanDropdown';
 import { useControlledVocabularyService } from '../../service/useControlledVocabularyService';

@@ -12,7 +12,7 @@ import { InternalEditor } from '../../../components/Editors/InternalEditor';
 import { EvidenceEditor } from '../../../components/Editors/EvidenceEditor';
 import { FunctionalImpactsEditor } from '../../../components/Editors/FunctionalImpactsEditor';
 import { PhenotypeTermEditor } from '../../../components/Editors/PhenotypeTermEditor';
-import { TableInputTextAreaEditor } from '../../../components/Editors/TableInputTextAreaEditor';
+import { TableInputTextAreaEditor } from '../../../components/Editors/text/TableInputTextAreaEditor';
 import { Endpoints } from '../../../constants/Endpoints';
 import { defaultAutocompleteOnChange, multipleAutocompleteOnChange } from '../../../utils/utils';
 

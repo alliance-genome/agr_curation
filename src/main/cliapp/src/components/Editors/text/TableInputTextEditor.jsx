@@ -1,5 +1,5 @@
 import { InputText } from 'primereact/inputtext';
-import { DialogErrorMessageComponent } from '../Error/DialogErrorMessageComponent';
+import { DialogErrorMessageComponent } from '../../Error/DialogErrorMessageComponent';
 import { useState } from 'react';
 
 export const TableInputTextEditor = ({

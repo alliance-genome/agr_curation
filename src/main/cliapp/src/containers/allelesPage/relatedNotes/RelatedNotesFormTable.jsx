@@ -6,7 +6,7 @@ import { DeleteAction } from '../../../components/Actions/DeletionAction';
 import { InternalEditor } from '../../../components/Editors/InternalEditor';
 import { ReferencesEditor } from '../../../components/Editors/ReferencesEditor';
 import { VocabularyTermSetEditor } from '../../../components/Editors/VocabularyTermSetEditor';
-import { TableInputTextAreaEditor } from '../../../components/Editors/TableInputTextAreaEditor';
+import { TableInputTextAreaEditor } from '../../../components/Editors/text/TableInputTextAreaEditor';
 
 export const RelatedNotesFormTable = ({
 	relatedNotes,

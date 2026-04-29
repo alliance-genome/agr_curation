@@ -7,7 +7,7 @@ import { Endpoints } from '../constants/Endpoints';
 import { ColumnGroup } from 'primereact/columngroup';
 import { Row } from 'primereact/row';
 import { DeleteAction } from './Actions/DeletionAction';
-import { InputTextAreaEditor } from './InputTextAreaEditor';
+import { InputTextAreaEditor } from './Editors/text/InputTextAreaEditor';
 import { DialogErrorMessageComponent } from './Error/DialogErrorMessageComponent';
 import { InternalEditor } from './Editors/InternalEditor';
 import { ValidationService } from '../service/ValidationService';

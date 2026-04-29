@@ -2,7 +2,7 @@ import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { ColumnGroup } from 'primereact/columngroup';
 import { Row } from 'primereact/row';
-import { TableInputTextEditor } from '../../../components/Editors/TableInputTextEditor';
+import { TableInputTextEditor } from '../../../components/Editors/text/TableInputTextEditor';
 import { InternalEditor } from '../../../components/Editors/InternalEditor';
 import { EvidenceEditor } from '../../../components/Editors/EvidenceEditor';
 import { ControlledVocabularyEditor } from '../../../components/Editors/ControlledVocabularyEditor';
