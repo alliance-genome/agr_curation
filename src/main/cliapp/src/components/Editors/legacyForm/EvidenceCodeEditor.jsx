@@ -1,9 +1,9 @@
-import { AutocompleteEditor } from './autocomplete/base/AutocompleteEditor';
-import { buildAutocompleteFilter, autocompleteSearch } from '../../utils/utils';
-import { SearchService } from '../../service/SearchService';
-import { EvidenceAutocompleteTemplate } from './autocomplete/base/templates/EvidenceAutocompleteTemplate';
-import { ErrorMessageComponent } from '../Error/ErrorMessageComponent';
-import { Endpoints } from '../../constants/Endpoints';
+import { AutocompleteEditor } from '../autocomplete/base/AutocompleteEditor';
+import { buildAutocompleteFilter, autocompleteSearch } from '../../../utils/utils';
+import { SearchService } from '../../../service/SearchService';
+import { EvidenceAutocompleteTemplate } from '../autocomplete/base/templates/EvidenceAutocompleteTemplate';
+import { ErrorMessageComponent } from '../../Error/ErrorMessageComponent';
+import { Endpoints } from '../../../constants/Endpoints';
 
 const evidenceSearch = (event, setFiltered, setInputValue) => {
 	const searchService = new SearchService();

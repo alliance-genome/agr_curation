@@ -1,6 +1,6 @@
-import { DialogErrorMessageComponent } from '../Error/DialogErrorMessageComponent';
-import { ControlledVocabularyDropdown } from './dropdown/vocabulary/ControlledVocabularyDropdown';
-import { useVocabularyTermSetService } from '../../service/useVocabularyTermSetService';
+import { DialogErrorMessageComponent } from '../../Error/DialogErrorMessageComponent';
+import { ControlledVocabularyDropdown } from '../dropdown/vocabulary/ControlledVocabularyDropdown';
+import { useVocabularyTermSetService } from '../../../service/useVocabularyTermSetService';
 
 export const VocabularyTermSetEditor = ({
 	editorOptions,

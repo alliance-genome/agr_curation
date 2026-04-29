@@ -1,9 +1,9 @@
-import { AutocompleteMultiEditor } from './autocomplete/base/AutocompleteMultiEditor';
-import { SearchService } from '../../service/SearchService';
-import { autocompleteSearch, buildAutocompleteFilter } from '../../utils/utils';
-import { LiteratureAutocompleteTemplate } from './autocomplete/base/templates/LiteratureAutocompleteTemplate';
-import { DialogErrorMessageComponent } from '../Error/DialogErrorMessageComponent';
-import { Endpoints } from '../../constants/Endpoints';
+import { AutocompleteMultiEditor } from '../autocomplete/base/AutocompleteMultiEditor';
+import { SearchService } from '../../../service/SearchService';
+import { autocompleteSearch, buildAutocompleteFilter } from '../../../utils/utils';
+import { LiteratureAutocompleteTemplate } from '../autocomplete/base/templates/LiteratureAutocompleteTemplate';
+import { DialogErrorMessageComponent } from '../../Error/DialogErrorMessageComponent';
+import { Endpoints } from '../../../constants/Endpoints';
 
 const evidenceSearch = (event, setFiltered, setInputValue) => {
 	const searchService = new SearchService();

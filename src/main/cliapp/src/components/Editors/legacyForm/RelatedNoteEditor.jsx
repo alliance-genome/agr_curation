@@ -1,7 +1,7 @@
 import React from 'react';
-import { ErrorMessageComponent } from '../Error/ErrorMessageComponent';
+import { ErrorMessageComponent } from '../../Error/ErrorMessageComponent';
 import { Button } from 'primereact/button';
-import { EditMessageTooltip } from '../EditMessageTooltip';
+import { EditMessageTooltip } from '../../EditMessageTooltip';
 
 export const RelatedNoteEditor = ({ rowProps, relatedNote, errorMessages, setRelatedNotesData, dataKey }) => {
 	const handleRelatedNotesOpenInEdit = (event, rows, rowIndex) => {

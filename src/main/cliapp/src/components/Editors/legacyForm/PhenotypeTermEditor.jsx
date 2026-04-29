@@ -1,8 +1,8 @@
-import { AutocompleteEditor } from './autocomplete/base/AutocompleteEditor';
-import { SearchService } from '../../service/SearchService';
-import { autocompleteSearch, buildAutocompleteFilter } from '../../utils/utils';
-import { DialogErrorMessageComponent } from '../Error/DialogErrorMessageComponent';
-import { Endpoints } from '../../constants/Endpoints';
+import { AutocompleteEditor } from '../autocomplete/base/AutocompleteEditor';
+import { SearchService } from '../../../service/SearchService';
+import { autocompleteSearch, buildAutocompleteFilter } from '../../../utils/utils';
+import { DialogErrorMessageComponent } from '../../Error/DialogErrorMessageComponent';
+import { Endpoints } from '../../../constants/Endpoints';
 
 const phenotypeTermSearch = (event, setFiltered, setInputValue) => {
 	const searchService = new SearchService();

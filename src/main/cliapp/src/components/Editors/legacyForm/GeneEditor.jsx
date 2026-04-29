@@ -1,10 +1,10 @@
-import { AutocompleteEditor } from './autocomplete/base/AutocompleteEditor';
-import { SearchService } from '../../service/SearchService';
-import { autocompleteSearch, buildAutocompleteFilter } from '../../utils/utils';
-import { SubjectAutocompleteTemplate } from './autocomplete/base/templates/SubjectAutocompleteTemplate';
-import { DialogErrorMessageComponent } from '../Error/DialogErrorMessageComponent';
-import { getIdentifier } from '../../utils/utils';
-import { Endpoints } from '../../constants/Endpoints';
+import { AutocompleteEditor } from '../autocomplete/base/AutocompleteEditor';
+import { SearchService } from '../../../service/SearchService';
+import { autocompleteSearch, buildAutocompleteFilter } from '../../../utils/utils';
+import { SubjectAutocompleteTemplate } from '../autocomplete/base/templates/SubjectAutocompleteTemplate';
+import { DialogErrorMessageComponent } from '../../Error/DialogErrorMessageComponent';
+import { getIdentifier } from '../../../utils/utils';
+import { Endpoints } from '../../../constants/Endpoints';
 
 const geneSearch = (event, setFiltered, setInputValue) => {
 	const searchService = new SearchService();

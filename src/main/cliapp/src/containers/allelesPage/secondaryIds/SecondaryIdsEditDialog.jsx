@@ -9,8 +9,8 @@ import { Row } from 'primereact/row';
 import { ValidationService } from '../../../service/ValidationService';
 import { DeleteAction } from '../../../components/Actions/DeletionAction';
 import { TableInputTextEditor } from '../../../components/Editors/text/TableInputTextEditor';
-import { InternalEditor } from '../../../components/Editors/InternalEditor';
-import { EvidenceEditor } from '../../../components/Editors/EvidenceEditor';
+import { InternalEditor } from '../../../components/Editors/legacyForm/InternalEditor';
+import { EvidenceEditor } from '../../../components/Editors/legacyForm/EvidenceEditor';
 import { Endpoints } from '../../../constants/Endpoints';
 
 export const SecondaryIdsEditDialog = ({

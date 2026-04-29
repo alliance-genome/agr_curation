@@ -1,6 +1,6 @@
-import { DialogErrorMessageComponent } from '../Error/DialogErrorMessageComponent';
-import { useControlledVocabularyService } from '../../service/useControlledVocabularyService';
-import { BooleanDropdown } from './dropdown/boolean/BooleanDropdown';
+import { DialogErrorMessageComponent } from '../../Error/DialogErrorMessageComponent';
+import { useControlledVocabularyService } from '../../../service/useControlledVocabularyService';
+import { BooleanDropdown } from '../dropdown/boolean/BooleanDropdown';
 
 export const InternalEditor = ({ editorOptions, internalOnChangeHandler, errorMessages, dataKey }) => {
 	const booleanTerms = useControlledVocabularyService('generic_boolean_terms');

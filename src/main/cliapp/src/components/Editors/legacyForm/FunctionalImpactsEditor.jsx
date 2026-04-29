@@ -1,9 +1,9 @@
-import { AutocompleteMultiEditor } from './autocomplete/base/AutocompleteMultiEditor';
-import { SearchService } from '../../service/SearchService';
-import { autocompleteSearch, buildAutocompleteFilter } from '../../utils/utils';
-import { VocabTermAutocompleteTemplate } from './autocomplete/base/templates/VocabTermAutocompleteTemplate';
-import { DialogErrorMessageComponent } from '../Error/DialogErrorMessageComponent';
-import { Endpoints } from '../../constants/Endpoints';
+import { AutocompleteMultiEditor } from '../autocomplete/base/AutocompleteMultiEditor';
+import { SearchService } from '../../../service/SearchService';
+import { autocompleteSearch, buildAutocompleteFilter } from '../../../utils/utils';
+import { VocabTermAutocompleteTemplate } from '../autocomplete/base/templates/VocabTermAutocompleteTemplate';
+import { DialogErrorMessageComponent } from '../../Error/DialogErrorMessageComponent';
+import { Endpoints } from '../../../constants/Endpoints';
 
 const functionalImpactSearch = (event, setFiltered, setQuery) => {
 	const searchService = new SearchService();
