@@ -8,7 +8,7 @@ import { CommaSeparatedArrayTemplate } from '../../components/Templates/CommaSep
 import { StringTemplate } from '../../components/Templates/StringTemplate';
 import { InputTextTableEditor } from '../../components/Editors/text/InputTextTableEditor';
 import { StringListTableEditor } from '../../components/Editors/text/StringListTableEditor';
-import { ControlledVocabularyTableEditor } from '../../components/Editors/controlledVocabulary/ControlledVocabularyTableEditor';
+import { ControlledVocabularyTableEditor } from '../../components/Editors/dropdown/vocabulary/ControlledVocabularyTableEditor';
 import { useGetTableData } from '../../service/useGetTableData';
 import { useGetUserSettings } from '../../service/useGetUserSettings';
 import { useOrganizationService } from '../../service/useOrganizationService';

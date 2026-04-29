@@ -12,7 +12,7 @@ import { useNewRelationReducer } from './useNewRelationReducer';
 import { InputTextTableEditor } from '../../components/Editors/text/InputTextTableEditor';
 import { SingleReferenceTableEditor } from '../../components/Editors/references/SingleReferenceTableEditor';
 import { ConditionsTableEditor } from '../../components/Editors/experimentalCondition/ConditionsTableEditor';
-import { ControlledVocabularyTableEditor } from '../../components/Editors/controlledVocabulary/ControlledVocabularyTableEditor';
+import { ControlledVocabularyTableEditor } from '../../components/Editors/dropdown/vocabulary/ControlledVocabularyTableEditor';
 import { GenericDataTable } from '../../components/GenericDataTable/GenericDataTable';
 import { setNewEntity } from '../../utils/utils';
 import { getDefaultTableState } from '../../service/TableStateService';

@@ -1,7 +1,7 @@
-import { ConditionRelationHandleDropdown } from '../ConditionRelationHandleSelector';
-import { ErrorMessageComponent } from '../Error/ErrorMessageComponent';
+import { ConditionHandleDropdown } from './ConditionHandleDropdown';
+import { ErrorMessageComponent } from '../../../Error/ErrorMessageComponent';
 
-export const ConditionRelationHandleTableEditor = ({ editorOptions, errorMessagesRef }) => {
+export const ConditionHandleTableEditor = ({ editorOptions, errorMessagesRef }) => {
 	if (!editorOptions.rowData?.conditionRelations || !editorOptions.rowData.conditionRelations[0]?.handle) {
 		return null;
 	}
@@ -18,7 +18,7 @@ export const ConditionRelationHandleTableEditor = ({ editorOptions, errorMessage
 
 	return (
 		<>
-			<ConditionRelationHandleDropdown
+			<ConditionHandleDropdown
 				field="conditionRelationHandle"
 				editorChange={onValueChange}
 				editorOptions={editorOptions}

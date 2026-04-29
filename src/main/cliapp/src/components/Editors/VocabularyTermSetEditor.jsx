@@ -1,5 +1,5 @@
 import { DialogErrorMessageComponent } from '../Error/DialogErrorMessageComponent';
-import { ControlledVocabularyDropdown } from '../ControlledVocabularySelector';
+import { ControlledVocabularyDropdown } from './dropdown/vocabulary/ControlledVocabularyDropdown';
 import { useVocabularyTermSetService } from '../../service/useVocabularyTermSetService';
 
 export const VocabularyTermSetEditor = ({

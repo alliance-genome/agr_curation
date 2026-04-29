@@ -7,7 +7,7 @@ import { ConditionGeneOntologyTableEditor } from '../../components/Editors/ontol
 import { ConditionChemicalTableEditor } from '../../components/Editors/ontology/ConditionChemicalTableEditor';
 import { ConditionAnatomyTableEditor } from '../../components/Editors/ontology/ConditionAnatomyTableEditor';
 import { ConditionTaxonTableEditor } from '../../components/Editors/ontology/ConditionTaxonTableEditor';
-import { BooleanTableEditor } from '../../components/Editors/boolean/BooleanTableEditor';
+import { BooleanTableEditor } from '../../components/Editors/dropdown/boolean/BooleanTableEditor';
 import { curieAutocompleteFields } from '../../components/Editors/ontology/utils';
 import { useMutation } from '@tanstack/react-query';
 import { Toast } from 'primereact/toast';

@@ -4,9 +4,9 @@ import { Column } from 'primereact/column';
 import { Button } from 'primereact/button';
 import { Toast } from 'primereact/toast';
 import { DialogErrorMessageComponent } from '../../components/Error/DialogErrorMessageComponent';
-import { TrueFalseDropdown } from '../../components/TrueFalseDropDownSelector';
+import { BooleanDropdown } from '../../components/Editors/dropdown/boolean/BooleanDropdown';
 import { useControlledVocabularyService } from '../../service/useControlledVocabularyService';
-import { ControlledVocabularyDropdown } from '../../components/ControlledVocabularySelector';
+import { ControlledVocabularyDropdown } from '../../components/Editors/dropdown/vocabulary/ControlledVocabularyDropdown';
 import { FormErrorMessageComponent } from '../../components/Error/FormErrorMessageComponent';
 import { ExConAutocompleteTemplate } from '../../components/Autocomplete/ExConAutocompleteTemplate';
 import { AutocompleteMultiEditor } from '../../components/Autocomplete/AutocompleteMultiEditor';
@@ -125,7 +125,7 @@ export const ConditionRelationsForm = ({
 	const internalEditor = (editorOptions) => {
 		return (
 			<>
-				<TrueFalseDropdown
+				<BooleanDropdown
 					options={booleanTerms?.terms || []}
 					editorChange={onInternalEditorValueChange}
 					editorOptions={editorOptions}

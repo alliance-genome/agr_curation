@@ -1,8 +1,8 @@
-import { FormErrorMessageComponent } from '../../Error/FormErrorMessageComponent';
+import { FormErrorMessageComponent } from '../../../Error/FormErrorMessageComponent';
 import { Dropdown } from 'primereact/dropdown';
-import { BooleanAdditionalFieldData } from '../../FieldData/BooleanAdditionalFieldData';
-import { DetailPageFieldWrapper } from '../../DetailPageFieldWrapper';
-import { useControlledVocabularyService } from '../../../service/useControlledVocabularyService';
+import { BooleanAdditionalFieldData } from '../../../FieldData/BooleanAdditionalFieldData';
+import { DetailPageFieldWrapper } from '../../../DetailPageFieldWrapper';
+import { useControlledVocabularyService } from '../../../../service/useControlledVocabularyService';
 
 export const BooleanDetailPageEditor = ({
 	value,

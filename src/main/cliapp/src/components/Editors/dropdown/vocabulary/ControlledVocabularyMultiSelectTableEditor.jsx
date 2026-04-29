@@ -1,5 +1,5 @@
-import { ControlledVocabularyMultiSelectDropdown } from '../../ControlledVocabularyMultiSelector';
-import { ErrorMessageComponent } from '../../Error/ErrorMessageComponent';
+import { ControlledVocabularyMultiSelectDropdown } from './ControlledVocabularyMultiSelectDropdown';
+import { ErrorMessageComponent } from '../../../Error/ErrorMessageComponent';
 
 export const ControlledVocabularyMultiSelectTableEditor = ({ editorOptions, field, options, errorMessagesRef }) => {
 	const values = editorOptions.rowData[field];

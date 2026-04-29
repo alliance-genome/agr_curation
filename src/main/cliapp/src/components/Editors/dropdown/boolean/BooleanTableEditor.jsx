@@ -1,13 +1,13 @@
-import { TrueFalseDropdown } from '../../TrueFalseDropDownSelector';
-import { ErrorMessageComponent } from '../../Error/ErrorMessageComponent';
-import { useControlledVocabularyService } from '../../../service/useControlledVocabularyService';
+import { BooleanDropdown } from './BooleanDropdown';
+import { ErrorMessageComponent } from '../../../Error/ErrorMessageComponent';
+import { useControlledVocabularyService } from '../../../../service/useControlledVocabularyService';
 
 export const BooleanTableEditor = ({ editorOptions, errorMessagesRef, field, showClear = false }) => {
 	const booleanTerms = useControlledVocabularyService('generic_boolean_terms');
 
 	return (
 		<>
-			<TrueFalseDropdown
+			<BooleanDropdown
 				options={booleanTerms?.terms || []}
 				editorChange={(editorOptions, event) => {
 					if (event.value && event.value !== '') {

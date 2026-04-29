@@ -1,6 +1,6 @@
 import { DialogErrorMessageComponent } from '../Error/DialogErrorMessageComponent';
 import { useControlledVocabularyService } from '../../service/useControlledVocabularyService';
-import { ControlledVocabularyDropdown } from '../ControlledVocabularySelector';
+import { ControlledVocabularyDropdown } from './dropdown/vocabulary/ControlledVocabularyDropdown';
 
 export const ControlledVocabularyEditor = ({
 	editorOptions,

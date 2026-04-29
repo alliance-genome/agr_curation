@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Dropdown } from 'primereact/dropdown';
 
-export function TrueFalseDropdown({ field, options, showClear = false, editorChange, editorOptions }) {
+export function BooleanDropdown({ field, options, showClear = false, editorChange, editorOptions }) {
 	const [selectedValue, setSelectedValue] = useState(editorOptions.rowData[field]);
 
 	const onShow = () => {

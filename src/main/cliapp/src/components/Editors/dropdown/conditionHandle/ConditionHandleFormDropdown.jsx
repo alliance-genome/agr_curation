@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { Dropdown } from 'primereact/dropdown';
-import { ExperimentsSearchService } from '../service/ExperimentsSearchService';
-import { Endpoints } from '../constants/Endpoints';
+import { ExperimentsSearchService } from '../../../../service/ExperimentsSearchService';
+import { Endpoints } from '../../../../constants/Endpoints';
 
-export function ConditionRelationHandleFormDropdown({
+export function ConditionHandleFormDropdown({
 	editorChange,
 	referenceCurie,
 	value,

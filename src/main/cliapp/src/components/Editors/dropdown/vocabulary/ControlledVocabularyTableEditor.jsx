@@ -1,5 +1,5 @@
-import { ControlledVocabularyDropdown } from '../../ControlledVocabularySelector';
-import { ErrorMessageComponent } from '../../Error/ErrorMessageComponent';
+import { ControlledVocabularyDropdown } from './ControlledVocabularyDropdown';
+import { ErrorMessageComponent } from '../../../Error/ErrorMessageComponent';
 
 export const ControlledVocabularyTableEditor = ({
 	editorOptions,

@@ -1,7 +1,7 @@
 import { render, fireEvent } from '@testing-library/react';
 import { ControlledVocabularyTableEditor } from '../ControlledVocabularyTableEditor';
-import { makeEditorOptions, emptyErrorMessagesRef } from '../../../../tools/jest/editorTestUtils';
-import '../../../../tools/jest/setupTests';
+import { makeEditorOptions, emptyErrorMessagesRef } from '../../../../../tools/jest/editorTestUtils';
+import '../../../../../tools/jest/setupTests';
 
 const mockOptions = [
 	{ id: 1, name: 'is_model_of' },

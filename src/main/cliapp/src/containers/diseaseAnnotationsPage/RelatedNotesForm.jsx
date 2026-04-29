@@ -5,10 +5,10 @@ import { Button } from 'primereact/button';
 import { Toast } from 'primereact/toast';
 import { InputTextAreaEditor } from '../../components/InputTextAreaEditor';
 import { DialogErrorMessageComponent } from '../../components/Error/DialogErrorMessageComponent';
-import { TrueFalseDropdown } from '../../components/TrueFalseDropDownSelector';
+import { BooleanDropdown } from '../../components/Editors/dropdown/boolean/BooleanDropdown';
 import { useControlledVocabularyService } from '../../service/useControlledVocabularyService';
 import { useVocabularyTermSetService } from '../../service/useVocabularyTermSetService';
-import { ControlledVocabularyDropdown } from '../../components/ControlledVocabularySelector';
+import { ControlledVocabularyDropdown } from '../../components/Editors/dropdown/vocabulary/ControlledVocabularyDropdown';
 import { FormErrorMessageComponent } from '../../components/Error/FormErrorMessageComponent';
 
 export const RelatedNotesForm = ({ dispatch, relatedNotes, showRelatedNotes, errorMessages, editingRows }) => {
@@ -41,7 +41,7 @@ export const RelatedNotesForm = ({ dispatch, relatedNotes, showRelatedNotes, err
 	const internalEditor = (editorOptions) => {
 		return (
 			<>
-				<TrueFalseDropdown
+				<BooleanDropdown
 					options={booleanTerms?.terms || []}
 					editorChange={onInternalEditorValueChange}
 					editorOptions={editorOptions}

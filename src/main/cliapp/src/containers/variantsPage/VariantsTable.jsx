@@ -8,8 +8,8 @@ import { DialogTriggerEditor } from '../../components/Editors/DialogTriggerEdito
 import { TaxonTableEditor } from '../../components/Editors/taxon/TaxonTableEditor';
 import { VariantTypeTableEditor } from '../../components/Editors/variantType/VariantTypeTableEditor';
 import { SourceGeneralConsequenceTableEditor } from '../../components/Editors/sourceGeneralConsequence/SourceGeneralConsequenceTableEditor';
-import { BooleanTableEditor } from '../../components/Editors/boolean/BooleanTableEditor';
-import { ControlledVocabularyTableEditor } from '../../components/Editors/controlledVocabulary/ControlledVocabularyTableEditor';
+import { BooleanTableEditor } from '../../components/Editors/dropdown/boolean/BooleanTableEditor';
+import { ControlledVocabularyTableEditor } from '../../components/Editors/dropdown/vocabulary/ControlledVocabularyTableEditor';
 
 import { Toast } from 'primereact/toast';
 import { getDefaultTableState } from '../../service/TableStateService';

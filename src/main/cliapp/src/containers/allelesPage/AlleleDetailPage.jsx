@@ -11,7 +11,7 @@ import ErrorBoundary from '../../components/Error/ErrorBoundary';
 import { TaxonDetailPageEditor } from '../../components/Editors/taxon/TaxonDetailPageEditor';
 import { useAlleleReducer } from './useAlleleReducer';
 import { InCollectionDetailPageEditor } from '../../components/Editors/inCollection/InCollectionDetailPageEditor';
-import { BooleanDetailPageEditor } from '../../components/Editors/boolean/BooleanDetailPageEditor';
+import { BooleanDetailPageEditor } from '../../components/Editors/dropdown/boolean/BooleanDetailPageEditor';
 import { IdentifierDetailPageTemplate } from '../../components/Templates/IdentifierDetailPageTemplate';
 import { DataProviderDetailPageTemplate } from '../../components/Templates/DataProviderDetailPageTemplate';
 import { DateDetailPageTemplate } from '../../components/Templates/DateDetailPageTemplate';

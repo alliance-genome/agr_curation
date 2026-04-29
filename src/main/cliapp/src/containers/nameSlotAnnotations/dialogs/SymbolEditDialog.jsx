@@ -13,7 +13,7 @@ import { InternalEditor } from '../../../components/Editors/InternalEditor';
 import { EvidenceEditor } from '../../../components/Editors/EvidenceEditor';
 import { ControlledVocabularyEditor } from '../../../components/Editors/ControlledVocabularyEditor';
 import { useVocabularyTermSetService } from '../../../service/useVocabularyTermSetService';
-import { ControlledVocabularyDropdown } from '../../../components/ControlledVocabularySelector';
+import { ControlledVocabularyDropdown } from '../../../components/Editors/dropdown/vocabulary/ControlledVocabularyDropdown';
 
 export const SymbolEditDialog = ({
 	field,

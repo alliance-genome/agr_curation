@@ -1,6 +1,6 @@
 import { render, fireEvent } from '@testing-library/react';
 import { NotEditor } from '../NotEditor';
-import '../../../tools/jest/setupTests';
+import '../../../../../tools/jest/setupTests';
 
 describe('NotEditor', () => {
 	it('should display "NOT" as the placeholder text when the initial value is true', () => {

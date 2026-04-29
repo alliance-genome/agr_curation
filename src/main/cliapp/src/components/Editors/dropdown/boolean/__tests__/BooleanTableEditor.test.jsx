@@ -1,9 +1,9 @@
 import { render, fireEvent } from '@testing-library/react';
 import { BooleanTableEditor } from '../BooleanTableEditor';
-import { makeEditorOptions, emptyErrorMessagesRef } from '../../../../tools/jest/editorTestUtils';
-import '../../../../tools/jest/setupTests';
+import { makeEditorOptions, emptyErrorMessagesRef } from '../../../../../tools/jest/editorTestUtils';
+import '../../../../../tools/jest/setupTests';
 
-vi.mock('../../../../service/useControlledVocabularyService', () => ({
+vi.mock('../../../../../service/useControlledVocabularyService', () => ({
 	useControlledVocabularyService: () => ({
 		terms: [
 			{ text: 'true', name: 'true' },

@@ -1,7 +1,7 @@
 import { render } from '@testing-library/react';
 import { ControlledVocabularyMultiSelectTableEditor } from '../ControlledVocabularyMultiSelectTableEditor';
-import { makeEditorOptions, emptyErrorMessagesRef } from '../../../../tools/jest/editorTestUtils';
-import '../../../../tools/jest/setupTests';
+import { makeEditorOptions, emptyErrorMessagesRef } from '../../../../../tools/jest/editorTestUtils';
+import '../../../../../tools/jest/setupTests';
 
 const mockOptions = [
 	{ id: 1, name: 'susceptibility' },
