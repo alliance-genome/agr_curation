@@ -12,7 +12,7 @@ import { Endpoints } from '../../constants/Endpoints';
 
 import { StringTemplate } from '../../components/Templates/StringTemplate';
 import { InputTextTableEditor } from '../../components/Editors/text/InputTextTableEditor';
-import { ResourceDescriptorTableEditor } from '../../components/Editors/resourceDescriptor/ResourceDescriptorTableEditor';
+import { ResourceDescriptorTableEditor } from '../../components/Editors/autocomplete/resourceDescriptor/ResourceDescriptorTableEditor';
 
 export const ResourceDescriptorPagesTable = () => {
 	const [isInEditMode, setIsInEditMode] = useState(false);
