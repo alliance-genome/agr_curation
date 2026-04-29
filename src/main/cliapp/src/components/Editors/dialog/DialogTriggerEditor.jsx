@@ -1,6 +1,6 @@
 import { Button } from 'primereact/button';
-import { EditMessageTooltip } from '../EditMessageTooltip';
-import { ErrorMessageComponent } from '../Error/ErrorMessageComponent';
+import { EditMessageTooltip } from '../../EditMessageTooltip';
+import { ErrorMessageComponent } from '../../Error/ErrorMessageComponent';
 
 export const DialogTriggerEditor = ({
 	editorOptions,

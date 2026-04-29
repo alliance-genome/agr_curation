@@ -28,7 +28,7 @@ import { SynonymsEditDialog } from '../nameSlotAnnotations/dialogs/SynonymsEditD
 import { SynonymsReadOnlyDialog } from '../nameSlotAnnotations/dialogs/SynonymsReadOnlyDialog';
 import { RelatedNotesEditDialog } from '../../components/RelatedNotesEditDialog';
 import { RelatedNotesReadOnlyDialog } from '../../components/RelatedNotesReadOnlyDialog';
-import { DialogTriggerEditor } from '../../components/Editors/DialogTriggerEditor';
+import { DialogTriggerEditor } from '../../components/Editors/dialog/DialogTriggerEditor';
 import { TaxonTableEditor } from '../../components/Editors/autocomplete/taxon/TaxonTableEditor';
 import { InCollectionTableEditor } from '../../components/Editors/autocomplete/inCollection/InCollectionTableEditor';
 import { ReferencesTableEditor } from '../../components/Editors/autocomplete/references/ReferencesTableEditor';

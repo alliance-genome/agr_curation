@@ -27,7 +27,7 @@ import { StringTemplate } from '../../components/Templates/StringTemplate';
 import { NotEditor } from '../../components/Editors/dropdown/not/NotEditor';
 import { ControlledVocabularyTableEditor } from '../../components/Editors/dropdown/vocabulary/ControlledVocabularyTableEditor';
 import { BooleanTableEditor } from '../../components/Editors/dropdown/boolean/BooleanTableEditor';
-import { DialogTriggerEditor } from '../../components/Editors/DialogTriggerEditor';
+import { DialogTriggerEditor } from '../../components/Editors/dialog/DialogTriggerEditor';
 import { ConditionHandleTableEditor } from '../../components/Editors/dropdown/conditionHandle/ConditionHandleTableEditor';
 import { BiologicalEntityTableEditor } from '../../components/Editors/autocomplete/biologicalEntity/BiologicalEntityTableEditor';
 import { DiseaseTableEditor } from '../../components/Editors/autocomplete/ontology/DiseaseTableEditor';
