@@ -426,6 +426,7 @@ export const DiseaseAnnotationsTable = () => {
 						field="geneticSex"
 						options={geneticSexTerms}
 						errorMessagesRef={errorMessagesRef}
+						showClear={true}
 					/>
 				),
 			},
@@ -482,6 +483,7 @@ export const DiseaseAnnotationsTable = () => {
 						field="annotationType"
 						options={annotationTypeTerms}
 						errorMessagesRef={errorMessagesRef}
+						showClear={true}
 					/>
 				),
 			},
@@ -498,6 +500,7 @@ export const DiseaseAnnotationsTable = () => {
 						field="diseaseGeneticModifierRelation"
 						options={geneticModifierRelationTerms}
 						errorMessagesRef={errorMessagesRef}
+						showClear={true}
 					/>
 				),
 			},

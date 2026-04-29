@@ -764,7 +764,7 @@ export const AllelesTable = () => {
 				filterConfig: FILTER_CONFIGS.isExtinctFilterConfig,
 				sortable: true,
 				editor: (editorOptions) => (
-					<BooleanTableEditor editorOptions={editorOptions} errorMessagesRef={errorMessagesRef} field={'isExtinct'} />
+					<BooleanTableEditor editorOptions={editorOptions} errorMessagesRef={errorMessagesRef} field={'isExtinct'} showClear={true}/>
 				),
 			},
 			{
