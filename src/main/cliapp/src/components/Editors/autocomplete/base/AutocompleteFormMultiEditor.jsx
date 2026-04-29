@@ -1,35 +1,34 @@
 import React, { useRef, useState } from 'react';
 import { AutoComplete } from 'primereact/autocomplete';
-import { onSelectionOver } from '../../utils/utils';
+import { onSelectionOver } from '../../../../utils/utils';
 import { EditorTooltip } from './EditorTooltip';
-import { getIdentifier } from '../../utils/utils';
-import { useSyncedState } from '../../hooks/useSyncedState';
+import { getIdentifier } from '../../../../utils/utils';
 
-export const AutocompleteEditor = ({
+export const AutocompleteFormMultiEditor = ({
 	search,
 	initialValue,
 	name,
-	editorOptions,
+	rowProps,
 	classNames,
 	fieldName,
 	subField = 'curie',
 	valueDisplay,
 	onValueChangeHandler,
+	customRef,
 	disabled,
 }) => {
 	const [suggestions, setSuggestions] = useState([]);
-	const [fieldValue, setFieldValue] = useSyncedState(initialValue);
-	const [query, setQuery] = useState(initialValue);
+	const [inputValue, setInputValue] = useState(initialValue);
 	const [autocompleteHoverItem, setAutocompleteHoverItem] = useState({});
 	const op = useRef(null);
 
 	const itemTemplate = (item) => {
-		if (valueDisplay) return valueDisplay(item, setAutocompleteHoverItem, op, query);
+		if (valueDisplay) return valueDisplay(item, setAutocompleteHoverItem, op, inputValue);
 
 		return (
 			<div>
 				<div
-					onMouseOver={(event) => onSelectionOver(event, item, query, op, setAutocompleteHoverItem)}
+					onMouseOver={(event) => onSelectionOver(event, item, inputValue, op, setAutocompleteHoverItem)}
 					dangerouslySetInnerHTML={{ __html: item.name + ' (' + getIdentifier(item) + ') ' }}
 				/>
 			</div>
@@ -39,17 +38,18 @@ export const AutocompleteEditor = ({
 	return (
 		<div>
 			<AutoComplete
-				aria-label={fieldName}
+				ref={customRef}
 				name={name}
+				multiple={true}
 				panelStyle={{ width: '15%', display: 'flex', maxHeight: '350px' }}
 				field={subField}
-				value={fieldValue}
+				value={initialValue}
 				disabled={disabled}
 				suggestions={suggestions}
 				itemTemplate={itemTemplate}
-				completeMethod={(event) => search(event, setSuggestions, setQuery, editorOptions)}
+				completeMethod={(event) => search(event, setSuggestions, setInputValue, rowProps)}
 				onHide={(e) => op.current.hide(e)}
-				onChange={(e) => onValueChangeHandler(e, setFieldValue, editorOptions, fieldName)}
+				onChange={(e) => onValueChangeHandler(e)}
 				className={classNames}
 			/>
 			<EditorTooltip op={op} autocompleteHoverItem={autocompleteHoverItem} dataType={fieldName} />

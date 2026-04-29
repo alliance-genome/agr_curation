@@ -1,9 +1,9 @@
-import { AutocompleteEditor } from '../../Autocomplete/AutocompleteEditor';
-import { TableEditorErrors } from '../../Error/TableEditorErrors';
-import { SearchService } from '../../../service/SearchService';
-import { autocompleteSearch, buildAutocompleteFilter, defaultAutocompleteOnChange } from '../../../utils/utils';
+import { AutocompleteMultiEditor } from './AutocompleteMultiEditor';
+import { TableEditorErrors } from '../../../Error/TableEditorErrors';
+import { SearchService } from '../../../../service/SearchService';
+import { autocompleteSearch, buildAutocompleteFilter, multipleAutocompleteOnChange } from '../../../../utils/utils';
 
-export const AutocompleteSingleTableEditor = ({
+export const AutocompleteMultiTableEditor = ({
 	editorOptions,
 	errorMessagesRef,
 	uiErrorMessagesRef,
@@ -18,22 +18,22 @@ export const AutocompleteSingleTableEditor = ({
 }) => {
 	const searchService = new SearchService();
 
-	const search = (event, setFiltered, setQuery) => {
+	const search = (event, setFiltered, setInputValue) => {
 		const filter = buildAutocompleteFilter(event, autocompleteFields);
 		const resolvedOtherFilters = typeof otherFilters === 'function' ? otherFilters(editorOptions) : otherFilters;
-		setQuery(event.query);
+		setInputValue(event.query);
 		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered, resolvedOtherFilters);
 	};
 
 	const onValueChange = (event, setFieldValue, editorOptions) => {
-		defaultAutocompleteOnChange(editorOptions, event, field, setFieldValue, subField);
+		multipleAutocompleteOnChange(editorOptions, event, field, setFieldValue);
 	};
 
 	return (
 		<>
-			<AutocompleteEditor
+			<AutocompleteMultiEditor
 				search={search}
-				initialValue={initialValue ?? editorOptions.rowData[field]?.[subField]}
+				initialValue={initialValue ?? editorOptions.rowData[field]}
 				editorOptions={editorOptions}
 				fieldName={field}
 				subField={subField}

@@ -1,4 +1,4 @@
-import { AutocompleteSingleTableEditor } from '../autocomplete/AutocompleteSingleTableEditor';
+import { AutocompleteSingleTableEditor } from '../autocomplete/base/AutocompleteSingleTableEditor';
 import { conditionIdSearchConfig } from './utils';
 
 export const ConditionIdTableEditor = ({ editorOptions, errorMessagesRef, uiErrorMessagesRef }) => (

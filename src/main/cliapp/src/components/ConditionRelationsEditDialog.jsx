@@ -11,10 +11,10 @@ import { DeleteAction } from './Actions/DeletionAction';
 import { InternalEditor } from './Editors/InternalEditor';
 import { ControlledVocabularyEditor } from './Editors/ControlledVocabularyEditor';
 import { DialogErrorMessageComponent } from './Error/DialogErrorMessageComponent';
-import { ExConAutocompleteTemplate } from './Autocomplete/ExConAutocompleteTemplate';
+import { ExConAutocompleteTemplate } from './Editors/autocomplete/base/templates/ExConAutocompleteTemplate';
 import { SearchService } from '../service/SearchService';
 import { autocompleteSearch, buildAutocompleteFilter, multipleAutocompleteOnChange } from '../utils/utils';
-import { AutocompleteMultiEditor } from './Autocomplete/AutocompleteMultiEditor';
+import { AutocompleteMultiEditor } from './Editors/autocomplete/base/AutocompleteMultiEditor';
 import { Endpoints } from '../constants/Endpoints';
 
 export const ConditionRelationsEditDialog = ({

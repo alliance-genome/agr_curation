@@ -1,4 +1,4 @@
-import { SubjectAutocompleteTemplate } from '../../Autocomplete/SubjectAutocompleteTemplate';
+import { SubjectAutocompleteTemplate } from '../autocomplete/base/templates/SubjectAutocompleteTemplate';
 import { Endpoints } from '../../../constants/Endpoints';
 
 // Biological entities (Gene/Allele/AGM) are searched via a row-type-aware

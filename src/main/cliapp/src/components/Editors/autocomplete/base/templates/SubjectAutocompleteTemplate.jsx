@@ -1,5 +1,5 @@
 import React from 'react';
-import { onSelectionOver, getIdentifier } from '../../utils/utils';
+import { onSelectionOver, getIdentifier } from '../../../../../utils/utils';
 
 export const SubjectAutocompleteTemplate = ({ item, setAutocompleteHoverItem, op, query }) => {
 	if (item.geneSymbol) {

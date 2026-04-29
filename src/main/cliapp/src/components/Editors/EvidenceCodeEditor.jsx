@@ -1,7 +1,7 @@
-import { AutocompleteEditor } from '../Autocomplete/AutocompleteEditor';
+import { AutocompleteEditor } from './autocomplete/base/AutocompleteEditor';
 import { buildAutocompleteFilter, autocompleteSearch } from '../../utils/utils';
 import { SearchService } from '../../service/SearchService';
-import { EvidenceAutocompleteTemplate } from '../Autocomplete/EvidenceAutocompleteTemplate';
+import { EvidenceAutocompleteTemplate } from './autocomplete/base/templates/EvidenceAutocompleteTemplate';
 import { ErrorMessageComponent } from '../Error/ErrorMessageComponent';
 import { Endpoints } from '../../constants/Endpoints';
 

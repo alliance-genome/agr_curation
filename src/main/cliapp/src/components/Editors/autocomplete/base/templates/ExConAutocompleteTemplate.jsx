@@ -1,5 +1,5 @@
 import React from 'react';
-import { onSelectionOver } from '../../utils/utils';
+import { onSelectionOver } from '../../../../../utils/utils';
 
 export const ExConAutocompleteTemplate = ({ item, setAutocompleteHoverItem, op, query }) => {
 	return (

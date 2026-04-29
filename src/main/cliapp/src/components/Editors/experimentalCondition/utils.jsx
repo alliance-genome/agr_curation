@@ -1,7 +1,7 @@
 import { buildAutocompleteFilter, autocompleteSearch } from '../../../utils/utils';
 import { SearchService } from '../../../service/SearchService';
 import { Endpoints } from '../../../constants/Endpoints';
-import { ExConAutocompleteTemplate } from '../../Autocomplete/ExConAutocompleteTemplate';
+import { ExConAutocompleteTemplate } from '../autocomplete/base/templates/ExConAutocompleteTemplate';
 
 export const conditionsSearchConfig = {
 	endpoint: Endpoints.Annotation.EXPERIMENTAL_CONDITION,

@@ -1,7 +1,7 @@
 import { buildAutocompleteFilter, autocompleteSearch } from '../../../utils/utils';
 import { SearchService } from '../../../service/SearchService';
 import { Endpoints } from '../../../constants/Endpoints';
-import { SubjectAutocompleteTemplate } from '../../Autocomplete/SubjectAutocompleteTemplate';
+import { SubjectAutocompleteTemplate } from '../autocomplete/base/templates/SubjectAutocompleteTemplate';
 
 const agmValueDisplay = (item, setAutocompleteHoverItem, op, query) => (
 	<SubjectAutocompleteTemplate item={item} setAutocompleteHoverItem={setAutocompleteHoverItem} op={op} query={query} />

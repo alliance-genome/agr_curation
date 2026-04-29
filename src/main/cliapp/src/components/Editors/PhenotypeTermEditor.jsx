@@ -1,4 +1,4 @@
-import { AutocompleteEditor } from '../Autocomplete/AutocompleteEditor';
+import { AutocompleteEditor } from './autocomplete/base/AutocompleteEditor';
 import { SearchService } from '../../service/SearchService';
 import { autocompleteSearch, buildAutocompleteFilter } from '../../utils/utils';
 import { DialogErrorMessageComponent } from '../Error/DialogErrorMessageComponent';

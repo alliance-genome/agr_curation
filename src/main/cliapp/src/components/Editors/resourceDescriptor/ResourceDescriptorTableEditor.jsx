@@ -1,4 +1,4 @@
-import { AutocompleteSingleTableEditor } from '../autocomplete/AutocompleteSingleTableEditor';
+import { AutocompleteSingleTableEditor } from '../autocomplete/base/AutocompleteSingleTableEditor';
 import { resourceDescriptorSearchConfig } from './utils';
 
 export const ResourceDescriptorTableEditor = ({ editorOptions, errorMessagesRef, uiErrorMessagesRef }) => (

@@ -1,8 +1,8 @@
-import { AutocompleteMultiEditor } from '../Autocomplete/AutocompleteMultiEditor';
+import { AutocompleteMultiEditor } from './autocomplete/base/AutocompleteMultiEditor';
 import { SearchService } from '../../service/SearchService';
 import { autocompleteSearch, buildAutocompleteFilter } from '../../utils/utils';
 import { DialogErrorMessageComponent } from '../Error/DialogErrorMessageComponent';
-import { LiteratureAutocompleteTemplate } from '../Autocomplete/LiteratureAutocompleteTemplate';
+import { LiteratureAutocompleteTemplate } from './autocomplete/base/templates/LiteratureAutocompleteTemplate';
 import { Endpoints } from '../../constants/Endpoints';
 
 const referenceSearch = (event, setFiltered, setInputValue) => {

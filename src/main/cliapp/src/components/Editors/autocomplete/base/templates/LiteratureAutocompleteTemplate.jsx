@@ -1,5 +1,5 @@
 import React from 'react';
-import { onSelectionOver, getRefString } from '../../utils/utils';
+import { onSelectionOver, getRefString } from '../../../../../utils/utils';
 
 export const LiteratureAutocompleteTemplate = ({ item, setAutocompleteHoverItem, op, query }) => {
 	return (

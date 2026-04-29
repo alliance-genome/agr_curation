@@ -1,4 +1,4 @@
-import { AutocompleteSingleTableEditor } from '../autocomplete/AutocompleteSingleTableEditor';
+import { AutocompleteSingleTableEditor } from '../autocomplete/base/AutocompleteSingleTableEditor';
 import { taxonSearchConfig } from './utils';
 
 export const TaxonTableEditor = ({ editorOptions, errorMessagesRef, uiErrorMessagesRef }) => (

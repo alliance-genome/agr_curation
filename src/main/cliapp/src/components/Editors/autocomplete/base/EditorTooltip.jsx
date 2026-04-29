@@ -1,6 +1,6 @@
 import React from 'react';
 import { Tooltip } from 'primereact/tooltip';
-import { getIdentifier } from '../../utils/utils';
+import { getIdentifier } from '../../../../utils/utils';
 
 export const EditorTooltip = ({ op, autocompleteHoverItem }) => {
 	const identifier = getIdentifier(autocompleteHoverItem);

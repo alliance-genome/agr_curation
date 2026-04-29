@@ -1,16 +1,16 @@
 import React, { useRef, useState } from 'react';
 import { AutoComplete } from 'primereact/autocomplete';
-import { onSelectionOver } from '../../utils/utils';
+import { onSelectionOver } from '../../../../utils/utils';
 import { EditorTooltip } from './EditorTooltip';
-import { getIdentifier } from '../../utils/utils';
+import { getIdentifier } from '../../../../utils/utils';
+import { useSyncedState } from '../../../../hooks/useSyncedState';
 
-export const AutocompleteFormEditor = ({
+export const AutocompleteEditor = ({
 	search,
 	initialValue,
 	name,
-	rowProps,
+	editorOptions,
 	classNames,
-	inputClassNames,
 	fieldName,
 	subField = 'curie',
 	valueDisplay,
@@ -18,6 +18,7 @@ export const AutocompleteFormEditor = ({
 	disabled,
 }) => {
 	const [suggestions, setSuggestions] = useState([]);
+	const [fieldValue, setFieldValue] = useSyncedState(initialValue);
 	const [query, setQuery] = useState(initialValue);
 	const [autocompleteHoverItem, setAutocompleteHoverItem] = useState({});
 	const op = useRef(null);
@@ -38,18 +39,18 @@ export const AutocompleteFormEditor = ({
 	return (
 		<div>
 			<AutoComplete
+				aria-label={fieldName}
 				name={name}
 				panelStyle={{ width: '15%', display: 'flex', maxHeight: '350px' }}
 				field={subField}
-				value={initialValue}
+				value={fieldValue}
 				disabled={disabled}
 				suggestions={suggestions}
 				itemTemplate={itemTemplate}
-				completeMethod={(event) => search(event, setSuggestions, setQuery, rowProps)}
-				onHide={(e) => op.current?.hide(e)}
-				onChange={(e) => onValueChangeHandler(e)}
+				completeMethod={(event) => search(event, setSuggestions, setQuery, editorOptions)}
+				onHide={(e) => op.current.hide(e)}
+				onChange={(e) => onValueChangeHandler(e, setFieldValue, editorOptions, fieldName)}
 				className={classNames}
-				inputClassName={inputClassNames}
 			/>
 			<EditorTooltip op={op} autocompleteHoverItem={autocompleteHoverItem} dataType={fieldName} />
 		</div>

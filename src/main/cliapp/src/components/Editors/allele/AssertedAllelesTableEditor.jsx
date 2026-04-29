@@ -1,4 +1,4 @@
-import { AutocompleteMultiTableEditor } from '../autocomplete/AutocompleteMultiTableEditor';
+import { AutocompleteMultiTableEditor } from '../autocomplete/base/AutocompleteMultiTableEditor';
 import { assertedAllelesSearchConfig } from './utils';
 
 export const AssertedAllelesTableEditor = ({ editorOptions, errorMessagesRef, uiErrorMessagesRef }) => (

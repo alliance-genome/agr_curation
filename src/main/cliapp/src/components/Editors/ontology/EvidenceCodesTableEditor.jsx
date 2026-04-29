@@ -1,4 +1,4 @@
-import { AutocompleteMultiTableEditor } from '../autocomplete/AutocompleteMultiTableEditor';
+import { AutocompleteMultiTableEditor } from '../autocomplete/base/AutocompleteMultiTableEditor';
 import { evidenceCodesSearchConfig } from './utils';
 
 export const EvidenceCodesTableEditor = ({ editorOptions, errorMessagesRef, uiErrorMessagesRef }) => (

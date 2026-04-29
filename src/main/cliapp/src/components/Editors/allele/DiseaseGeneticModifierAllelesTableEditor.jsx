@@ -1,4 +1,4 @@
-import { AutocompleteMultiTableEditor } from '../autocomplete/AutocompleteMultiTableEditor';
+import { AutocompleteMultiTableEditor } from '../autocomplete/base/AutocompleteMultiTableEditor';
 import { diseaseGeneticModifierAllelesSearchConfig } from './utils';
 
 export const DiseaseGeneticModifierAllelesTableEditor = ({ editorOptions, errorMessagesRef, uiErrorMessagesRef }) => (

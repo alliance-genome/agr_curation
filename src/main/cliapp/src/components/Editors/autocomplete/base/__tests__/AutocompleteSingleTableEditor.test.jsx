@@ -1,7 +1,7 @@
 import { render } from '@testing-library/react';
 import { AutocompleteSingleTableEditor } from '../AutocompleteSingleTableEditor';
-import { makeEditorOptions, emptyErrorMessagesRef } from '../../../../tools/jest/editorTestUtils';
-import '../../../../tools/jest/setupTests';
+import { makeEditorOptions, emptyErrorMessagesRef } from '../../../../../tools/jest/editorTestUtils';
+import '../../../../../tools/jest/setupTests';
 
 describe('AutocompleteSingleTableEditor', () => {
 	it('should render an autocomplete component', () => {

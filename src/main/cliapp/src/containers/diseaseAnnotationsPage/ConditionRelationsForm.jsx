@@ -8,8 +8,8 @@ import { BooleanDropdown } from '../../components/Editors/dropdown/boolean/Boole
 import { useControlledVocabularyService } from '../../service/useControlledVocabularyService';
 import { ControlledVocabularyDropdown } from '../../components/Editors/dropdown/vocabulary/ControlledVocabularyDropdown';
 import { FormErrorMessageComponent } from '../../components/Error/FormErrorMessageComponent';
-import { ExConAutocompleteTemplate } from '../../components/Autocomplete/ExConAutocompleteTemplate';
-import { AutocompleteMultiEditor } from '../../components/Autocomplete/AutocompleteMultiEditor';
+import { ExConAutocompleteTemplate } from '../../components/Editors/autocomplete/base/templates/ExConAutocompleteTemplate';
+import { AutocompleteMultiEditor } from '../../components/Editors/autocomplete/base/AutocompleteMultiEditor';
 import { autocompleteSearch, buildAutocompleteFilter } from '../../utils/utils';
 import { Endpoints } from '../../constants/Endpoints';
 

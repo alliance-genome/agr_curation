@@ -1,9 +1,9 @@
 import React from 'react';
-import { AutocompleteFormEditor } from '../../Autocomplete/AutocompleteFormEditor';
+import { AutocompleteFormEditor } from '../autocomplete/base/AutocompleteFormEditor';
 import { inCollectionSearch } from './utils';
 import { FormErrorMessageComponent } from '../../Error/FormErrorMessageComponent';
 import { InCollectionAdditionalFieldData } from '../../FieldData/InCollectionAdditionalFieldData';
-import { VocabTermAutocompleteTemplate } from '../../Autocomplete/VocabTermAutocompleteTemplate';
+import { VocabTermAutocompleteTemplate } from '../autocomplete/base/templates/VocabTermAutocompleteTemplate';
 import { DetailPageFieldWrapper } from '../../DetailPageFieldWrapper';
 
 export const InCollectionDetailPageEditor = ({

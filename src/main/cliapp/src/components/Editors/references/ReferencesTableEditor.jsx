@@ -1,4 +1,4 @@
-import { AutocompleteMultiTableEditor } from '../autocomplete/AutocompleteMultiTableEditor';
+import { AutocompleteMultiTableEditor } from '../autocomplete/base/AutocompleteMultiTableEditor';
 import { multiReferenceSearchConfig } from './utils';
 
 export const ReferencesTableEditor = ({ editorOptions, errorMessagesRef, uiErrorMessagesRef }) => (

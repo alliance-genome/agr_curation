@@ -1,4 +1,4 @@
-import { AutocompleteSingleTableEditor } from '../autocomplete/AutocompleteSingleTableEditor';
+import { AutocompleteSingleTableEditor } from '../autocomplete/base/AutocompleteSingleTableEditor';
 import { conditionGeneOntologySearchConfig } from './utils';
 
 export const ConditionGeneOntologyTableEditor = ({ editorOptions, errorMessagesRef, uiErrorMessagesRef }) => (

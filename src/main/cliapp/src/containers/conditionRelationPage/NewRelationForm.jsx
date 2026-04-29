@@ -6,14 +6,14 @@ import { InputText } from 'primereact/inputtext';
 import { Dropdown } from 'primereact/dropdown';
 import { Toast } from 'primereact/toast';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { AutocompleteEditor } from '../../components/Autocomplete/AutocompleteEditor';
-import { LiteratureAutocompleteTemplate } from '../../components/Autocomplete/LiteratureAutocompleteTemplate';
-import { ExConAutocompleteTemplate } from '../../components/Autocomplete/ExConAutocompleteTemplate';
+import { AutocompleteEditor } from '../../components/Editors/autocomplete/base/AutocompleteEditor';
+import { LiteratureAutocompleteTemplate } from '../../components/Editors/autocomplete/base/templates/LiteratureAutocompleteTemplate';
+import { ExConAutocompleteTemplate } from '../../components/Editors/autocomplete/base/templates/ExConAutocompleteTemplate';
 import { FormErrorMessageComponent } from '../../components/Error/FormErrorMessageComponent';
 import { classNames } from 'primereact/utils';
 import { autocompleteSearch, buildAutocompleteFilter } from '../../utils/utils';
 import { Endpoints } from '../../constants/Endpoints';
-import { AutocompleteMultiEditor } from '../../components/Autocomplete/AutocompleteMultiEditor';
+import { AutocompleteMultiEditor } from '../../components/Editors/autocomplete/base/AutocompleteMultiEditor';
 import ErrorBoundary from '../../components/Error/ErrorBoundary';
 
 export const NewRelationForm = ({

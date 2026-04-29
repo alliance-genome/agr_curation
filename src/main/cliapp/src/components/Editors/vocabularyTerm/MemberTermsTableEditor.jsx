@@ -1,4 +1,4 @@
-import { AutocompleteMultiTableEditor } from '../autocomplete/AutocompleteMultiTableEditor';
+import { AutocompleteMultiTableEditor } from '../autocomplete/base/AutocompleteMultiTableEditor';
 import { memberTermsSearchConfig, buildMemberTermsOtherFilters } from './utils';
 
 export const MemberTermsTableEditor = ({ editorOptions, errorMessagesRef, uiErrorMessagesRef }) => {

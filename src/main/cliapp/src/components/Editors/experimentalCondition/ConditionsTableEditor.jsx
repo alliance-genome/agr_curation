@@ -1,4 +1,4 @@
-import { AutocompleteMultiTableEditor } from '../autocomplete/AutocompleteMultiTableEditor';
+import { AutocompleteMultiTableEditor } from '../autocomplete/base/AutocompleteMultiTableEditor';
 import { conditionsSearchConfig } from './utils';
 
 export const ConditionsTableEditor = ({ editorOptions, errorMessagesRef, uiErrorMessagesRef }) => (

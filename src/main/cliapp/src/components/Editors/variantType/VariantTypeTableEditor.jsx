@@ -1,4 +1,4 @@
-import { AutocompleteSingleTableEditor } from '../autocomplete/AutocompleteSingleTableEditor';
+import { AutocompleteSingleTableEditor } from '../autocomplete/base/AutocompleteSingleTableEditor';
 import { variantTypeSearchConfig } from './utils';
 
 export const VariantTypeTableEditor = ({ editorOptions, errorMessagesRef, uiErrorMessagesRef }) => (

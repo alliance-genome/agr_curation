@@ -1,7 +1,7 @@
 import { buildAutocompleteFilter, autocompleteSearch } from '../../../utils/utils';
 import { SearchService } from '../../../service/SearchService';
 import { Endpoints } from '../../../constants/Endpoints';
-import { VocabTermAutocompleteTemplate } from '../../Autocomplete/VocabTermAutocompleteTemplate';
+import { VocabTermAutocompleteTemplate } from '../autocomplete/base/templates/VocabTermAutocompleteTemplate';
 
 export const inCollectionSearchConfig = {
 	endpoint: Endpoints.Vocabulary.TERM,

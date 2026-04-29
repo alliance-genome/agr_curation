@@ -1,5 +1,5 @@
 import React from 'react';
-import { AutocompleteFormEditor } from '../../Autocomplete/AutocompleteFormEditor';
+import { AutocompleteFormEditor } from '../autocomplete/base/AutocompleteFormEditor';
 import { taxonSearch } from './utils';
 import { FormErrorMessageComponent } from '../../Error/FormErrorMessageComponent';
 import { TaxonAdditionalFieldData } from '../../FieldData/TaxonAdditionalFieldData';

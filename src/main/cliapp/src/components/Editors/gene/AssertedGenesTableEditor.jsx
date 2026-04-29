@@ -1,4 +1,4 @@
-import { AutocompleteMultiTableEditor } from '../autocomplete/AutocompleteMultiTableEditor';
+import { AutocompleteMultiTableEditor } from '../autocomplete/base/AutocompleteMultiTableEditor';
 import { assertedGenesSearchConfig } from './utils';
 
 export const AssertedGenesTableEditor = ({ editorOptions, errorMessagesRef, uiErrorMessagesRef }) => (

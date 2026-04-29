@@ -1,7 +1,7 @@
 import { buildAutocompleteFilter, autocompleteSearch } from '../../../utils/utils';
 import { SearchService } from '../../../service/SearchService';
 import { Endpoints } from '../../../constants/Endpoints';
-import { LiteratureAutocompleteTemplate } from '../../Autocomplete/LiteratureAutocompleteTemplate';
+import { LiteratureAutocompleteTemplate } from '../autocomplete/base/templates/LiteratureAutocompleteTemplate';
 
 const referenceSearchConfig = {
 	endpoint: Endpoints.Document.LITERATURE_REFERENCE,

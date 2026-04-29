@@ -1,7 +1,7 @@
 import { render } from '@testing-library/react';
 import { AutocompleteMultiTableEditor } from '../AutocompleteMultiTableEditor';
-import { makeEditorOptions, emptyErrorMessagesRef } from '../../../../tools/jest/editorTestUtils';
-import '../../../../tools/jest/setupTests';
+import { makeEditorOptions, emptyErrorMessagesRef } from '../../../../../tools/jest/editorTestUtils';
+import '../../../../../tools/jest/setupTests';
 
 describe('AutocompleteMultiTableEditor', () => {
 	it('should render an autocomplete component', () => {

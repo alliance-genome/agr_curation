@@ -1,5 +1,5 @@
 import React from 'react';
-import { onSelectionOver } from '../../utils/utils';
+import { onSelectionOver } from '../../../../../utils/utils';
 
 export const EvidenceAutocompleteTemplate = ({ item, setAutocompleteHoverItem, op, query }) => {
 	return (

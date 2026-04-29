@@ -1,8 +1,8 @@
 import React from 'react';
-import { LiteratureAutocompleteTemplate } from '../../Autocomplete/LiteratureAutocompleteTemplate';
+import { LiteratureAutocompleteTemplate } from '../autocomplete/base/templates/LiteratureAutocompleteTemplate';
 import { FormErrorMessageComponent } from '../../Error/FormErrorMessageComponent';
 import { singleReferenceSearch } from './utils';
-import { AutocompleteFormEditor } from '../../Autocomplete/AutocompleteFormEditor';
+import { AutocompleteFormEditor } from '../autocomplete/base/AutocompleteFormEditor';
 
 export const SingleReferenceDetailPageEditor = ({ reference, onReferenceValueChange, errorMessages }) => {
 	return (

@@ -1,7 +1,7 @@
-import { AutocompleteMultiEditor } from '../Autocomplete/AutocompleteMultiEditor';
+import { AutocompleteMultiEditor } from './autocomplete/base/AutocompleteMultiEditor';
 import { SearchService } from '../../service/SearchService';
 import { autocompleteSearch, buildAutocompleteFilter } from '../../utils/utils';
-import { LiteratureAutocompleteTemplate } from '../Autocomplete/LiteratureAutocompleteTemplate';
+import { LiteratureAutocompleteTemplate } from './autocomplete/base/templates/LiteratureAutocompleteTemplate';
 import { DialogErrorMessageComponent } from '../Error/DialogErrorMessageComponent';
 import { Endpoints } from '../../constants/Endpoints';
 

@@ -1,4 +1,4 @@
-import { AutocompleteSingleTableEditor } from '../autocomplete/AutocompleteSingleTableEditor';
+import { AutocompleteSingleTableEditor } from '../autocomplete/base/AutocompleteSingleTableEditor';
 import { sourceGeneralConsequenceSearchConfig } from './utils';
 
 export const SourceGeneralConsequenceTableEditor = ({ editorOptions, errorMessagesRef, uiErrorMessagesRef }) => (

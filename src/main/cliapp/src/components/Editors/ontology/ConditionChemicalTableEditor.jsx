@@ -1,4 +1,4 @@
-import { AutocompleteSingleTableEditor } from '../autocomplete/AutocompleteSingleTableEditor';
+import { AutocompleteSingleTableEditor } from '../autocomplete/base/AutocompleteSingleTableEditor';
 import { conditionChemicalSearchConfig } from './utils';
 
 export const ConditionChemicalTableEditor = ({ editorOptions, errorMessagesRef, uiErrorMessagesRef }) => (

@@ -1,4 +1,4 @@
-import { AutocompleteSingleTableEditor } from '../autocomplete/AutocompleteSingleTableEditor';
+import { AutocompleteSingleTableEditor } from '../autocomplete/base/AutocompleteSingleTableEditor';
 import { getIdentifier } from '../../../utils/utils';
 import { sgdStrainBackgroundSearchConfig } from './utils';
 

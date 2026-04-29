@@ -1,7 +1,7 @@
 import { buildAutocompleteFilter, autocompleteSearch } from '../../../utils/utils';
 import { SearchService } from '../../../service/SearchService';
 import { Endpoints } from '../../../constants/Endpoints';
-import { EvidenceAutocompleteTemplate } from '../../Autocomplete/EvidenceAutocompleteTemplate';
+import { EvidenceAutocompleteTemplate } from '../autocomplete/base/templates/EvidenceAutocompleteTemplate';
 
 export const curieAutocompleteFields = [
 	'curie',
