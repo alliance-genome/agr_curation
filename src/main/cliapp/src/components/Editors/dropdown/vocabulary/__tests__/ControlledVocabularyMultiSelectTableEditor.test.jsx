@@ -1,6 +1,6 @@
 import { render } from '@testing-library/react';
 import { ControlledVocabularyMultiSelectTableEditor } from '../ControlledVocabularyMultiSelectTableEditor';
-import { makeEditorOptions, emptyErrorMessagesRef } from '../../../../../tools/jest/editorTestUtils';
+import { makeEditorOptions, emptyErrorMessagesRef } from '../../../__tests__/editorTestUtils';
 import '../../../../../tools/jest/setupTests';
 
 const mockOptions = [
