@@ -148,6 +148,7 @@ export const VariantsTable = () => {
 						field="variantStatus"
 						options={variantStatusTerms}
 						errorMessagesRef={errorMessagesRef}
+						showClear={true}
 					/>
 				),
 			},
