@@ -170,7 +170,6 @@ export const ConditionRelationTable = () => {
 				setTableState={setTableState}
 				columns={columns}
 				isEditable={true}
-				curieFields={['singleReference']}
 				mutation={mutation}
 				isInEditMode={isInEditMode}
 				setIsInEditMode={setIsInEditMode}
