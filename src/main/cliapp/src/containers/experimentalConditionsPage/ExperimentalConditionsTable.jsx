@@ -25,7 +25,6 @@ import { useGetUserSettings } from '../../service/useGetUserSettings';
 import { IdTemplate } from '../../components/Templates/IdTemplate';
 import { StringTemplate } from '../../components/Templates/StringTemplate';
 import { BooleanTemplate } from '../../components/Templates/BooleanTemplate';
-import { NumberTemplate } from '../../components/Templates/NumberTemplate';
 import { OntologyTermTemplate } from '../../components/Templates/OntologyTermTemplate';
 
 export const ExperimentalConditionsTable = () => {
@@ -146,7 +145,7 @@ export const ExperimentalConditionsTable = () => {
 				field: 'conditionQuantity',
 				header: 'Quantity',
 				sortable: true,
-				body: (rowData) => <NumberTemplate number={rowData.conditionQuantity} />,
+				body: (rowData) => <StringTemplate string={rowData.conditionQuantity} />,
 				filterConfig: FILTER_CONFIGS.conditionQuantityFilterConfig,
 				editor: (editorOptions) => (
 					<InputTextTableEditor
