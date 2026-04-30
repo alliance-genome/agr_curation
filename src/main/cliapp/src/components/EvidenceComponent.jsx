@@ -1,7 +1,7 @@
 import React from 'react';
 import { EllipsisTableCell } from './EllipsisTableCell';
 import { ListTableCell } from './ListTableCell';
-import { AutocompleteMultiEditor } from './Autocomplete/AutocompleteMultiEditor';
+import { AutocompleteMultiEditor } from './Editors/autocomplete/base/AutocompleteMultiEditor';
 import { DialogErrorMessageComponent } from './Error/DialogErrorMessageComponent';
 import { SearchService } from '../service/SearchService';
 import {
@@ -10,7 +10,7 @@ import {
 	multipleAutocompleteOnChange,
 	getRefStrings,
 } from '../utils/utils';
-import { LiteratureAutocompleteTemplate } from './Autocomplete/LiteratureAutocompleteTemplate';
+import { LiteratureAutocompleteTemplate } from './Editors/autocomplete/base/templates/LiteratureAutocompleteTemplate';
 import { Endpoints } from '../constants/Endpoints';
 
 export const evidenceTemplate = (rowData) => {

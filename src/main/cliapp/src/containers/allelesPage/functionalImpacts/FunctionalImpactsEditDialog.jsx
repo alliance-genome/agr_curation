@@ -8,11 +8,11 @@ import { ColumnGroup } from 'primereact/columngroup';
 import { Row } from 'primereact/row';
 import { ValidationService } from '../../../service/ValidationService';
 import { DeleteAction } from '../../../components/Actions/DeletionAction';
-import { InternalEditor } from '../../../components/Editors/InternalEditor';
-import { EvidenceEditor } from '../../../components/Editors/EvidenceEditor';
-import { FunctionalImpactsEditor } from '../../../components/Editors/FunctionalImpactsEditor';
-import { PhenotypeTermEditor } from '../../../components/Editors/PhenotypeTermEditor';
-import { TableInputTextAreaEditor } from '../../../components/Editors/TableInputTextAreaEditor';
+import { InternalEditor } from '../../../components/Editors/legacyForm/InternalEditor';
+import { EvidenceEditor } from '../../../components/Editors/legacyForm/EvidenceEditor';
+import { FunctionalImpactsEditor } from '../../../components/Editors/legacyForm/FunctionalImpactsEditor';
+import { PhenotypeTermEditor } from '../../../components/Editors/legacyForm/PhenotypeTermEditor';
+import { TableInputTextAreaEditor } from '../../../components/Editors/text/TableInputTextAreaEditor';
 import { Endpoints } from '../../../constants/Endpoints';
 import { defaultAutocompleteOnChange, multipleAutocompleteOnChange } from '../../../utils/utils';
 

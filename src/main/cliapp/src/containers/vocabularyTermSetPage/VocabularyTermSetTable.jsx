@@ -9,8 +9,8 @@ import { VocabularyTermSetService } from '../../service/VocabularyTermSetService
 import { NewVocabularyTermSetForm } from './NewVocabularyTermSetForm';
 import { useNewVocabularyTermSetReducer } from './useNewVocabularyTermSetReducer';
 import { InputTextTableEditor } from '../../components/Editors/text/InputTextTableEditor';
-import { VocabularyTableEditor } from '../../components/Editors/vocabulary/VocabularyTableEditor';
-import { MemberTermsTableEditor } from '../../components/Editors/vocabularyTerm/MemberTermsTableEditor';
+import { VocabularyTableEditor } from '../../components/Editors/autocomplete/vocabulary/VocabularyTableEditor';
+import { MemberTermsTableEditor } from '../../components/Editors/autocomplete/vocabularyTerm/MemberTermsTableEditor';
 import { GenericDataTable } from '../../components/GenericDataTable/GenericDataTable';
 import { setNewEntity } from '../../utils/utils';
 import { getDefaultTableState } from '../../service/TableStateService';

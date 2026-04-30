@@ -7,11 +7,11 @@ import { Endpoints } from '../constants/Endpoints';
 import { ColumnGroup } from 'primereact/columngroup';
 import { Row } from 'primereact/row';
 import { DeleteAction } from './Actions/DeletionAction';
-import { InputTextAreaEditor } from './InputTextAreaEditor';
+import { InputTextAreaEditor } from './Editors/text/InputTextAreaEditor';
 import { DialogErrorMessageComponent } from './Error/DialogErrorMessageComponent';
-import { InternalEditor } from './Editors/InternalEditor';
+import { InternalEditor } from './Editors/legacyForm/InternalEditor';
 import { ValidationService } from '../service/ValidationService';
-import { VocabularyTermSetEditor } from './Editors/VocabularyTermSetEditor';
+import { VocabularyTermSetEditor } from './Editors/legacyForm/VocabularyTermSetEditor';
 import { validate } from '../utils/utils';
 import { addDataKey } from '../containers/allelesPage/utils';
 

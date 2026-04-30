@@ -3,11 +3,11 @@ import { Column } from 'primereact/column';
 import { ColumnGroup } from 'primereact/columngroup';
 import { Row } from 'primereact/row';
 import { DeleteAction } from '../../../components/Actions/DeletionAction';
-import { InternalEditor } from '../../../components/Editors/InternalEditor';
-import { EvidenceEditor } from '../../../components/Editors/EvidenceEditor';
-import { PhenotypeTermEditor } from '../../../components/Editors/PhenotypeTermEditor';
-import { ControlledVocabularyEditor } from '../../../components/Editors/ControlledVocabularyEditor';
-import { TableInputTextAreaEditor } from '../../../components/Editors/TableInputTextAreaEditor';
+import { InternalEditor } from '../../../components/Editors/legacyForm/InternalEditor';
+import { EvidenceEditor } from '../../../components/Editors/legacyForm/EvidenceEditor';
+import { PhenotypeTermEditor } from '../../../components/Editors/legacyForm/PhenotypeTermEditor';
+import { ControlledVocabularyEditor } from '../../../components/Editors/legacyForm/ControlledVocabularyEditor';
+import { TableInputTextAreaEditor } from '../../../components/Editors/text/TableInputTextAreaEditor';
 
 export const InheritanceModesFormTable = ({
 	inheritanceModes,

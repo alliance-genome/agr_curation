@@ -3,10 +3,10 @@ import { Column } from 'primereact/column';
 import { ColumnGroup } from 'primereact/columngroup';
 import { Row } from 'primereact/row';
 import { DeleteAction } from '../../../components/Actions/DeletionAction';
-import { InternalEditor } from '../../../components/Editors/InternalEditor';
-import { ReferencesEditor } from '../../../components/Editors/ReferencesEditor';
-import { VocabularyTermSetEditor } from '../../../components/Editors/VocabularyTermSetEditor';
-import { TableInputTextAreaEditor } from '../../../components/Editors/TableInputTextAreaEditor';
+import { InternalEditor } from '../../../components/Editors/legacyForm/InternalEditor';
+import { ReferencesEditor } from '../../../components/Editors/legacyForm/ReferencesEditor';
+import { VocabularyTermSetEditor } from '../../../components/Editors/legacyForm/VocabularyTermSetEditor';
+import { TableInputTextAreaEditor } from '../../../components/Editors/text/TableInputTextAreaEditor';
 
 export const RelatedNotesFormTable = ({
 	relatedNotes,

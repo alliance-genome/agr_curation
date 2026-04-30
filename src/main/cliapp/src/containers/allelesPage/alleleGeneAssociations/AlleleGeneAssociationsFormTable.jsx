@@ -2,12 +2,12 @@ import { useState } from 'react';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { DeleteAction } from '../../../components/Actions/DeletionAction';
-import { EvidenceEditor } from '../../../components/Editors/EvidenceEditor';
-import { GeneEditor } from '../../../components/Editors/GeneEditor';
-import { RelatedNoteEditor } from '../../../components/Editors/RelatedNoteEditor';
-import { EvidenceCodeEditor } from '../../../components/Editors/EvidenceCodeEditor';
+import { EvidenceEditor } from '../../../components/Editors/legacyForm/EvidenceEditor';
+import { GeneEditor } from '../../../components/Editors/legacyForm/GeneEditor';
+import { RelatedNoteEditor } from '../../../components/Editors/legacyForm/RelatedNoteEditor';
+import { EvidenceCodeEditor } from '../../../components/Editors/legacyForm/EvidenceCodeEditor';
 import { RelatedNotesDialogEditOnly } from '../../../components/RelatedNotesDialogEditOnly';
-import { VocabularyTermSetEditor } from '../../../components/Editors/VocabularyTermSetEditor';
+import { VocabularyTermSetEditor } from '../../../components/Editors/legacyForm/VocabularyTermSetEditor';
 import { RelationshipFilterTemplate } from './RelationshipFilterTemplate';
 
 export const AlleleGeneAssociationsFormTable = ({

@@ -28,11 +28,11 @@ import { SynonymsEditDialog } from '../nameSlotAnnotations/dialogs/SynonymsEditD
 import { SynonymsReadOnlyDialog } from '../nameSlotAnnotations/dialogs/SynonymsReadOnlyDialog';
 import { RelatedNotesEditDialog } from '../../components/RelatedNotesEditDialog';
 import { RelatedNotesReadOnlyDialog } from '../../components/RelatedNotesReadOnlyDialog';
-import { DialogTriggerEditor } from '../../components/Editors/DialogTriggerEditor';
-import { TaxonTableEditor } from '../../components/Editors/taxon/TaxonTableEditor';
-import { InCollectionTableEditor } from '../../components/Editors/inCollection/InCollectionTableEditor';
-import { ReferencesTableEditor } from '../../components/Editors/references/ReferencesTableEditor';
-import { BooleanTableEditor } from '../../components/Editors/boolean/BooleanTableEditor';
+import { DialogTriggerEditor } from '../../components/Editors/dialog/DialogTriggerEditor';
+import { TaxonTableEditor } from '../../components/Editors/autocomplete/taxon/TaxonTableEditor';
+import { InCollectionTableEditor } from '../../components/Editors/autocomplete/inCollection/InCollectionTableEditor';
+import { ReferencesTableEditor } from '../../components/Editors/autocomplete/references/ReferencesTableEditor';
+import { BooleanTableEditor } from '../../components/Editors/dropdown/boolean/BooleanTableEditor';
 
 import { TruncatedReferencesTemplate } from '../../components/Templates/reference/TruncatedReferencesTemplate';
 import { IdTemplate } from '../../components/Templates/IdTemplate';

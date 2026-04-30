@@ -1,5 +1,5 @@
 import React from 'react';
-import { StringListTextAreaEditor } from '../StringListTextAreaEditor';
+import { StringListTextAreaEditor } from './StringListTextAreaEditor';
 import { ErrorMessageComponent } from '../../Error/ErrorMessageComponent';
 
 export const StringListTextAreaTableEditor = ({ editorOptions, field, errorMessagesRef, rows = 5 }) => {

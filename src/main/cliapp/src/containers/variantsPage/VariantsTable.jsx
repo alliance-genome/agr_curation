@@ -4,12 +4,12 @@ import { GenericDataTable } from '../../components/GenericDataTable/GenericDataT
 import { VariantService } from '../../service/VariantService';
 import { RelatedNotesEditDialog } from '../../components/RelatedNotesEditDialog';
 import { RelatedNotesReadOnlyDialog } from '../../components/RelatedNotesReadOnlyDialog';
-import { DialogTriggerEditor } from '../../components/Editors/DialogTriggerEditor';
-import { TaxonTableEditor } from '../../components/Editors/taxon/TaxonTableEditor';
-import { VariantTypeTableEditor } from '../../components/Editors/variantType/VariantTypeTableEditor';
-import { SourceGeneralConsequenceTableEditor } from '../../components/Editors/sourceGeneralConsequence/SourceGeneralConsequenceTableEditor';
-import { BooleanTableEditor } from '../../components/Editors/boolean/BooleanTableEditor';
-import { ControlledVocabularyTableEditor } from '../../components/Editors/controlledVocabulary/ControlledVocabularyTableEditor';
+import { DialogTriggerEditor } from '../../components/Editors/dialog/DialogTriggerEditor';
+import { TaxonTableEditor } from '../../components/Editors/autocomplete/taxon/TaxonTableEditor';
+import { VariantTypeTableEditor } from '../../components/Editors/autocomplete/variantType/VariantTypeTableEditor';
+import { SourceGeneralConsequenceTableEditor } from '../../components/Editors/autocomplete/sourceGeneralConsequence/SourceGeneralConsequenceTableEditor';
+import { BooleanTableEditor } from '../../components/Editors/dropdown/boolean/BooleanTableEditor';
+import { ControlledVocabularyTableEditor } from '../../components/Editors/dropdown/vocabulary/ControlledVocabularyTableEditor';
 
 import { Toast } from 'primereact/toast';
 import { getDefaultTableState } from '../../service/TableStateService';

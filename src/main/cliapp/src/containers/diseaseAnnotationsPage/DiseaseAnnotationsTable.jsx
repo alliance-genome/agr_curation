@@ -24,23 +24,23 @@ import { CountDialogTemplate } from '../../components/Templates/dialog/CountDial
 import { TextDialogTemplate } from '../../components/Templates/dialog/TextDialogTemplate';
 import { StringTemplate } from '../../components/Templates/StringTemplate';
 
-import { NotEditor } from '../../components/Editors/NotEditor';
-import { ControlledVocabularyTableEditor } from '../../components/Editors/controlledVocabulary/ControlledVocabularyTableEditor';
-import { BooleanTableEditor } from '../../components/Editors/boolean/BooleanTableEditor';
-import { DialogTriggerEditor } from '../../components/Editors/DialogTriggerEditor';
-import { ConditionRelationHandleTableEditor } from '../../components/Editors/ConditionRelationHandleTableEditor';
-import { BiologicalEntityTableEditor } from '../../components/Editors/biologicalEntity/BiologicalEntityTableEditor';
-import { DiseaseTableEditor } from '../../components/Editors/ontology/DiseaseTableEditor';
-import { EvidenceCodesTableEditor } from '../../components/Editors/ontology/EvidenceCodesTableEditor';
-import { WithTableEditor } from '../../components/Editors/gene/WithTableEditor';
-import { AssertedGenesTableEditor } from '../../components/Editors/gene/AssertedGenesTableEditor';
-import { DiseaseGeneticModifierGenesTableEditor } from '../../components/Editors/gene/DiseaseGeneticModifierGenesTableEditor';
-import { AssertedAllelesTableEditor } from '../../components/Editors/allele/AssertedAllelesTableEditor';
-import { DiseaseGeneticModifierAllelesTableEditor } from '../../components/Editors/allele/DiseaseGeneticModifierAllelesTableEditor';
-import { SgdStrainBackgroundTableEditor } from '../../components/Editors/agm/SgdStrainBackgroundTableEditor';
-import { DiseaseGeneticModifierAgmsTableEditor } from '../../components/Editors/agm/DiseaseGeneticModifierAgmsTableEditor';
-import { SingleReferenceTableEditor } from '../../components/Editors/references/SingleReferenceTableEditor';
-import { ControlledVocabularyMultiSelectTableEditor } from '../../components/Editors/controlledVocabulary/ControlledVocabularyMultiSelectTableEditor';
+import { NotEditor } from '../../components/Editors/dropdown/not/NotEditor';
+import { ControlledVocabularyTableEditor } from '../../components/Editors/dropdown/vocabulary/ControlledVocabularyTableEditor';
+import { BooleanTableEditor } from '../../components/Editors/dropdown/boolean/BooleanTableEditor';
+import { DialogTriggerEditor } from '../../components/Editors/dialog/DialogTriggerEditor';
+import { ConditionHandleTableEditor } from '../../components/Editors/dropdown/conditionHandle/ConditionHandleTableEditor';
+import { BiologicalEntityTableEditor } from '../../components/Editors/autocomplete/biologicalEntity/BiologicalEntityTableEditor';
+import { DiseaseTableEditor } from '../../components/Editors/autocomplete/ontology/DiseaseTableEditor';
+import { EvidenceCodesTableEditor } from '../../components/Editors/autocomplete/ontology/EvidenceCodesTableEditor';
+import { WithTableEditor } from '../../components/Editors/autocomplete/gene/WithTableEditor';
+import { AssertedGenesTableEditor } from '../../components/Editors/autocomplete/gene/AssertedGenesTableEditor';
+import { DiseaseGeneticModifierGenesTableEditor } from '../../components/Editors/autocomplete/gene/DiseaseGeneticModifierGenesTableEditor';
+import { AssertedAllelesTableEditor } from '../../components/Editors/autocomplete/allele/AssertedAllelesTableEditor';
+import { DiseaseGeneticModifierAllelesTableEditor } from '../../components/Editors/autocomplete/allele/DiseaseGeneticModifierAllelesTableEditor';
+import { SgdStrainBackgroundTableEditor } from '../../components/Editors/autocomplete/agm/SgdStrainBackgroundTableEditor';
+import { DiseaseGeneticModifierAgmsTableEditor } from '../../components/Editors/autocomplete/agm/DiseaseGeneticModifierAgmsTableEditor';
+import { SingleReferenceTableEditor } from '../../components/Editors/autocomplete/references/SingleReferenceTableEditor';
+import { ControlledVocabularyMultiSelectTableEditor } from '../../components/Editors/dropdown/vocabulary/ControlledVocabularyMultiSelectTableEditor';
 
 import { useControlledVocabularyService } from '../../service/useControlledVocabularyService';
 import { useVocabularyTermSetService } from '../../service/useVocabularyTermSetService';
@@ -379,7 +379,7 @@ export const DiseaseAnnotationsTable = () => {
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.daConditionRelationsHandleFilterConfig,
 				editor: (editorOptions) => (
-					<ConditionRelationHandleTableEditor editorOptions={editorOptions} errorMessagesRef={errorMessagesRef} />
+					<ConditionHandleTableEditor editorOptions={editorOptions} errorMessagesRef={errorMessagesRef} />
 				),
 			},
 			{

@@ -8,10 +8,10 @@ import { ColumnGroup } from 'primereact/columngroup';
 import { Row } from 'primereact/row';
 import { ValidationService } from '../../../service/ValidationService';
 import { DeleteAction } from '../../../components/Actions/DeletionAction';
-import { InternalEditor } from '../../../components/Editors/InternalEditor';
-import { ObsoleteEditor } from '../../../components/Editors/ObsoleteEditor';
-import { EvidenceEditor } from '../../../components/Editors/EvidenceEditor';
-import { ControlledVocabularyEditor } from '../../../components/Editors/ControlledVocabularyEditor';
+import { InternalEditor } from '../../../components/Editors/legacyForm/InternalEditor';
+import { ObsoleteEditor } from '../../../components/Editors/legacyForm/ObsoleteEditor';
+import { EvidenceEditor } from '../../../components/Editors/legacyForm/EvidenceEditor';
+import { ControlledVocabularyEditor } from '../../../components/Editors/legacyForm/ControlledVocabularyEditor';
 import { Endpoints } from '../../../constants/Endpoints';
 
 export const NomenclatureEventsEditDialog = ({

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Button } from 'primereact/button';
 import { addDataKey, generateCrossRefSearchField } from '../utils';
-import { SingleReferenceDetailPageEditor } from '../../../components/Editors/references/SingleReferenceDetailPageEditor';
+import { SingleReferenceDetailPageEditor } from '../../../components/Editors/autocomplete/references/SingleReferenceDetailPageEditor';
 import { Splitter, SplitterPanel } from 'primereact/splitter';
 import { SingleReferenceAdditionalFieldData } from '../../../components/FieldData/SingleReferenceAdditionalFieldData';
 

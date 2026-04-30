@@ -7,7 +7,7 @@ import { Dropdown } from 'primereact/dropdown';
 import { Toast } from 'primereact/toast';
 import { InputTextarea } from 'primereact/inputtextarea';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { AutocompleteEditor } from '../../components/Autocomplete/AutocompleteEditor';
+import { AutocompleteEditor } from '../../components/Editors/autocomplete/base/AutocompleteEditor';
 import { FormErrorMessageComponent } from '../../components/Error/FormErrorMessageComponent';
 import { classNames } from 'primereact/utils';
 import { autocompleteSearch, buildAutocompleteFilter } from '../../utils/utils';

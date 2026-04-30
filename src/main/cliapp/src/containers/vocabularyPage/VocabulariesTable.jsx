@@ -8,7 +8,7 @@ import { NewVocabularyForm } from '../../containers/controlledVocabularyPage/New
 import { getDefaultTableState } from '../../service/TableStateService';
 import { FILTER_CONFIGS } from '../../constants/FilterFields';
 import { InputTextTableEditor } from '../../components/Editors/text/InputTextTableEditor';
-import { BooleanTableEditor } from '../../components/Editors/boolean/BooleanTableEditor';
+import { BooleanTableEditor } from '../../components/Editors/dropdown/boolean/BooleanTableEditor';
 import { useGetTableData } from '../../service/useGetTableData';
 import { useGetUserSettings } from '../../service/useGetUserSettings';
 import { SearchService } from '../../service/SearchService';

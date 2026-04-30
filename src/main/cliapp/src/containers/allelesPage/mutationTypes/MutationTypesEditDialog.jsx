@@ -8,9 +8,9 @@ import { ColumnGroup } from 'primereact/columngroup';
 import { Row } from 'primereact/row';
 import { ValidationService } from '../../../service/ValidationService';
 import { DeleteAction } from '../../../components/Actions/DeletionAction';
-import { InternalEditor } from '../../../components/Editors/InternalEditor';
-import { EvidenceEditor } from '../../../components/Editors/EvidenceEditor';
-import { MutationTypesEditor } from '../../../components/Editors/MutationTypesEditor';
+import { InternalEditor } from '../../../components/Editors/legacyForm/InternalEditor';
+import { EvidenceEditor } from '../../../components/Editors/legacyForm/EvidenceEditor';
+import { MutationTypesEditor } from '../../../components/Editors/legacyForm/MutationTypesEditor';
 import { Endpoints } from '../../../constants/Endpoints';
 import { multipleAutocompleteOnChange } from '../../../utils/utils';
 

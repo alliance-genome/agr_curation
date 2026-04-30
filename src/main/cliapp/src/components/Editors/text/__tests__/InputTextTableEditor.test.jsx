@@ -1,6 +1,6 @@
 import { render, fireEvent } from '@testing-library/react';
 import { InputTextTableEditor } from '../InputTextTableEditor';
-import { makeEditorOptions, emptyErrorMessagesRef } from '../../../../tools/jest/editorTestUtils';
+import { makeEditorOptions, emptyErrorMessagesRef } from '../../__tests__/editorTestUtils';
 import '../../../../tools/jest/setupTests';
 
 describe('InputTextTableEditor', () => {

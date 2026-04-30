@@ -6,20 +6,20 @@ import { Toast } from 'primereact/toast';
 import { MultiSelect } from 'primereact/multiselect';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { FormErrorMessageComponent } from '../../components/Error/FormErrorMessageComponent';
-import { NotEditor } from '../../components/Editors/NotEditor';
+import { NotEditor } from '../../components/Editors/dropdown/not/NotEditor';
 import { classNames } from 'primereact/utils';
 import { DiseaseAnnotationService } from '../../service/DiseaseAnnotationService';
 import { Splitter, SplitterPanel } from 'primereact/splitter';
-import { LiteratureAutocompleteTemplate } from '../../components/Autocomplete/LiteratureAutocompleteTemplate';
-import { SubjectAutocompleteTemplate } from '../../components/Autocomplete/SubjectAutocompleteTemplate';
-import { EvidenceAutocompleteTemplate } from '../../components/Autocomplete/EvidenceAutocompleteTemplate';
+import { LiteratureAutocompleteTemplate } from '../../components/Editors/autocomplete/base/templates/LiteratureAutocompleteTemplate';
+import { SubjectAutocompleteTemplate } from '../../components/Editors/autocomplete/base/templates/SubjectAutocompleteTemplate';
+import { EvidenceAutocompleteTemplate } from '../../components/Editors/autocomplete/base/templates/EvidenceAutocompleteTemplate';
 import { RelatedNotesForm } from './RelatedNotesForm';
 import { ConditionRelationsForm } from './ConditionRelationsForm';
-import { ConditionRelationHandleFormDropdown } from '../../components/ConditionRelationHandleFormSelector';
-import { ControlledVocabularyFormDropdown } from '../../components/ControlledVocabularyFormSelector';
+import { ConditionHandleFormDropdown } from '../../components/Editors/dropdown/conditionHandle/ConditionHandleFormDropdown';
+import { ControlledVocabularyFormDropdown } from '../../components/Editors/dropdown/vocabulary/ControlledVocabularyFormDropdown';
 import { useControlledVocabularyService } from '../../service/useControlledVocabularyService';
-import { ControlledVocabularyFormMultiSelectDropdown } from '../../components/ControlledVocabularyFormMultiSelector';
-import { AutocompleteFormEditor } from '../../components/Autocomplete/AutocompleteFormEditor';
+import { ControlledVocabularyFormMultiSelectDropdown } from '../../components/Editors/dropdown/vocabulary/ControlledVocabularyFormMultiSelectDropdown';
+import { AutocompleteFormEditor } from '../../components/Editors/autocomplete/base/AutocompleteFormEditor';
 import {
 	autocompleteSearch,
 	buildAutocompleteFilter,
@@ -27,7 +27,7 @@ import {
 	validateFormBioEntityFields,
 	validateTable,
 } from '../../utils/utils';
-import { AutocompleteFormMultiEditor } from '../../components/Autocomplete/AutocompleteFormMultiEditor';
+import { AutocompleteFormMultiEditor } from '../../components/Editors/autocomplete/base/AutocompleteFormMultiEditor';
 import { SubjectAdditionalFieldData } from '../../components/FieldData/SubjectAdditionalFieldData';
 import { AssertedAllelesAdditionalFieldData } from '../../components/FieldData/AssertedAllelesAdditionalFieldData';
 import { DiseaseAdditionalFieldData } from '../../components/FieldData/DiseaseAdditionalFieldData';
@@ -949,7 +949,7 @@ export const NewAnnotationForm = ({
 										<label htmlFor="experiments">{required}Experiments</label>
 									</div>
 									<div className={widgetColumnSize}>
-										<ConditionRelationHandleFormDropdown
+										<ConditionHandleFormDropdown
 											name="experiments"
 											customRef={experimentsRef}
 											editorChange={onDropdownExperimentsFieldChange}
