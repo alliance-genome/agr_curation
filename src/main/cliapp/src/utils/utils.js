@@ -362,7 +362,7 @@ export function defaultAutocompleteOnChange(rowProps, event, fieldName, setField
 
 export function multipleAutocompleteOnChange(rowProps, event, fieldName, setFieldValue) {
 	if (!event.target.value) {
-		rowProps.editorCallback(null);
+		rowProps.editorCallback([]);
 		setFieldValue([]);
 		return;
 	}
@@ -380,7 +380,8 @@ const isPropValuesEqual = (subject, target, propName) => {
 
 export function getUniqueItemsByProperty(items, propName) {
 	return items.filter(
-		(item, index, array) => index === array.findIndex((foundItem) => isPropValuesEqual(foundItem, item, propName))
+		(item, index, array) =>
+			item[propName] == null || index === array.findIndex((foundItem) => isPropValuesEqual(foundItem, item, propName))
 	);
 }
 
