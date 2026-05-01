@@ -381,8 +381,7 @@ const isPropValuesEqual = (subject, target, propName) => {
 export function getUniqueItemsByProperty(items, propName) {
 	return items.filter(
 		(item, index, array) =>
-			item[propName] == null ||
-			index === array.findIndex((foundItem) => isPropValuesEqual(foundItem, item, propName))
+			item[propName] == null || index === array.findIndex((foundItem) => isPropValuesEqual(foundItem, item, propName))
 	);
 }
 
