@@ -255,6 +255,25 @@ public class GeneDAO extends BaseSQLDAO<Gene> {
 			""", geneIds);
 	}
 
+	public Map<Long, String> getGeneSystematicNames(List<Long> geneIds) {
+		if (CollectionUtils.isEmpty(geneIds)) {
+			return new HashMap<>();
+		}
+		List<Object[]> rows = runJdbcQuery("""
+			SELECT singlegene_id, displaytext FROM slotannotation
+			WHERE slotannotationtype = 'GeneSystematicNameSlotAnnotation' AND singlegene_id IN :geneIds
+			""", geneIds);
+		Map<Long, String> result = new HashMap<>();
+		for (Object[] row : rows) {
+			Long id = (Long) row[0];
+			String name = (String) row[1];
+			if (name != null) {
+				result.put(id, name);
+			}
+		}
+		return result;
+	}
+
 	public Map<Long, Set<String>> getGeneSecondaryIds(List<Long> geneIds) {
 		if (CollectionUtils.isEmpty(geneIds)) {
 			return new HashMap<>();
@@ -274,6 +293,11 @@ public class GeneDAO extends BaseSQLDAO<Gene> {
 			FROM genomicentity_crossreference gc
 			JOIN crossreference cr ON cr.id = gc.crossreferences_id
 			WHERE gc.genomicentity_id IN :geneIds
+			UNION
+			SELECT g.id, cr.referencedcurie
+			FROM gene g
+			JOIN crossreference cr ON cr.id = g.gcrpcrossreference_id
+			WHERE g.id IN :geneIds
 			""", geneIds);
 	}
 

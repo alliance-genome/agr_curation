@@ -26,10 +26,14 @@ jobs:
       )
 
     steps:
+      # For issue_comment events, actions/checkout defaults to the default branch.
+      # Explicitly check out the PR's merge ref so diff/log commands see the PR,
+      # matching pull_request event behavior.
       - name: Checkout repository
         uses: actions/checkout@v6
         with:
           fetch-depth: 0
+          ref: ${{ github.event_name == 'issue_comment' && format('refs/pull/{0}/merge', github.event.issue.number) || '' }}
 
       - name: Calculate PR size and skip trivial changes
         id: pr_size
@@ -240,11 +244,36 @@ jobs:
             Use `gh pr comment` for top-level feedback.
             Only post GitHub comments — do not submit review text as messages.
 
+          # Permission strategy:
+          #   The GitHub Actions runner is an ephemeral, isolated VM. The scoped GITHUB_TOKEN
+          #   has `contents: read, pull-requests: write, issues: write` and dies with the job.
+          #   A narrow --allowedTools allowlist caused Claude to burn turns and budget on
+          #   permission-denied tool calls (per anthropics/claude-code-action#957 the
+          #   allowlist only restricts Bash subcommands anyway — Read/Write/Grep/Glob are
+          #   always free).
+          #
+          #   We use --permission-mode bypassPermissions with a --disallowedTools blocklist
+          #   to close the obvious exfiltration and mutation paths while letting Claude
+          #   freely run read-only exploration commands. psql is intentionally NOT blocked:
+          #   the SSM tunnel above provides read-only access to the curation DB, which is
+          #   the whole point of this workflow.
+          #
+          #   See anthropics/claude-code#12232: --allowedTools is ignored in bypass mode,
+          #   so the blocklist is the only effective restriction here.
+          #
+          #   Note: workflow-level steps (curl, apt-get, nc, aws) above run at the runner
+          #   level, not via Claude, so the blocklist does not affect them.
+          #
+          #   This is NOT a hardened security boundary — a determined prompt-injection
+          #   attack could exfiltrate via interpreters (python -c, node -e, /dev/tcp, etc).
+          #   The model is: ephemeral runner + trusted-contributor repo + scoped token.
+          #   If the repo ever opens to untrusted contributors, revisit this config.
           claude_args: |
             --model ${{ vars.CLAUDE_PR_REVIEW_MODEL }}
             --max-turns 60
             --max-budget-usd 5.00
-            --allowedTools "Bash(gh pr comment:*),Bash(gh pr diff:*),Bash(gh pr view:*),Bash(git diff:*),Bash(git log:*),Bash(psql:*),Read,Glob,Grep"
+            --permission-mode bypassPermissions
+            --disallowedTools "WebFetch,WebSearch,Edit,Write,NotebookEdit,Bash(curl:*),Bash(wget:*),Bash(nc:*),Bash(ssh:*),Bash(scp:*),Bash(rsync:*),Bash(gh pr close:*),Bash(gh pr edit:*),Bash(gh pr review:*),Bash(gh api:*),Bash(env),Bash(printenv:*),Bash(sudo:*)"
 
       # Interactive mode: respond to @claude mentions on PRs.
       # Per official docs: no prompt, no --allowedTools — action auto-detects tag mode.
@@ -256,10 +285,14 @@ jobs:
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
           trigger_phrase: "@claude"
+          # See the permission strategy comment on the auto-review step above.
+          # Same blocklist applies to @claude interactive mentions.
           claude_args: |
             --model ${{ vars.CLAUDE_PR_REVIEW_MODEL }}
             --max-turns 60
             --max-budget-usd 5.00
+            --permission-mode bypassPermissions
+            --disallowedTools "WebFetch,WebSearch,Edit,Write,NotebookEdit,Bash(curl:*),Bash(wget:*),Bash(nc:*),Bash(ssh:*),Bash(scp:*),Bash(rsync:*),Bash(gh pr close:*),Bash(gh pr edit:*),Bash(gh pr review:*),Bash(gh api:*),Bash(env),Bash(printenv:*),Bash(sudo:*)"
             --append-system-prompt "When re-reviewing a PR after being asked to check again, ALWAYS run git log --oneline to check if new commits were pushed since your previous review. Read through all PR comments to find your earlier review(s) and note when they were posted. If new commits were pushed after your previous review, check whether those commits addressed the feedback from your earlier review. Frame your updated review accordingly — for example, note which issues from your earlier review have been addressed by the new commit(s) and which (if any) remain. Do NOT retract or call previous reviews inaccurate when subsequent commits fixed the issues that were flagged."
 
       - name: Cleanup

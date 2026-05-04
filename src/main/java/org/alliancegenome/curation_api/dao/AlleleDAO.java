@@ -18,7 +18,9 @@ import org.alliancegenome.curation_api.dao.base.BaseSQLDAO;
 import org.alliancegenome.curation_api.model.document.es.AlleleSummaryDocument;
 import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.AssemblyComponent;
+import org.alliancegenome.curation_api.model.entities.GenomeAssembly;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
+import org.alliancegenome.curation_api.model.entities.Reference;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.Note;
 import org.alliancegenome.curation_api.model.entities.Organization;
@@ -447,6 +449,83 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 			allele.setAlleleGeneAssociations(alleleGeneAssociations);
 		});
 
+		// Gene synonyms per allele (via allele -> gene association)
+		String geneSynonymsQueryString = """
+			SELECT DISTINCT aga.alleleassociationsubject_id AS allele_id, sa.displaytext AS synonym
+			FROM allelegeneassociation aga
+			JOIN vocabularyterm v ON v.id = aga.relation_id AND v.name = 'is_allele_of'
+			JOIN slotannotation sa ON sa.singlegene_id = aga.allelegeneassociationobject_id
+				AND sa.slotannotationtype = 'GeneSynonymSlotAnnotation'
+			WHERE aga.alleleassociationsubject_id IN :alleleIds
+			AND aga.internal = false AND aga.obsolete = false
+			""";
+		Query geneSynonymsQuery = entityManager.createNativeQuery(geneSynonymsQueryString);
+		geneSynonymsQuery.setParameter("alleleIds", alleleIds);
+		List<Object[]> geneSynonymsResults = geneSynonymsQuery.getResultList();
+
+		Map<Long, Set<String>> alleleGeneSynonymsMap = new HashMap<>();
+		for (Object[] row : geneSynonymsResults) {
+			Long alleleId = (Long) row[0];
+			String synonym = (String) row[1];
+			if (synonym != null) {
+				alleleGeneSynonymsMap.computeIfAbsent(alleleId, k -> new HashSet<>()).add(synonym);
+			}
+		}
+
+		// Gene systematic name per allele (via allele -> gene association)
+		String geneSystematicNameQueryString = """
+			SELECT DISTINCT aga.alleleassociationsubject_id AS allele_id, sa.displaytext AS systematic_name
+			FROM allelegeneassociation aga
+			JOIN vocabularyterm v ON v.id = aga.relation_id AND v.name = 'is_allele_of'
+			JOIN slotannotation sa ON sa.singlegene_id = aga.allelegeneassociationobject_id
+				AND sa.slotannotationtype = 'GeneSystematicNameSlotAnnotation'
+			WHERE aga.alleleassociationsubject_id IN :alleleIds
+			AND aga.internal = false AND aga.obsolete = false
+			""";
+		Query geneSystematicNameQuery = entityManager.createNativeQuery(geneSystematicNameQueryString);
+		geneSystematicNameQuery.setParameter("alleleIds", alleleIds);
+		List<Object[]> geneSystematicNameResults = geneSystematicNameQuery.getResultList();
+
+		Map<Long, String> alleleGeneSystematicNameMap = new HashMap<>();
+		for (Object[] row : geneSystematicNameResults) {
+			Long alleleId = (Long) row[0];
+			String systematicName = (String) row[1];
+			if (systematicName != null) {
+				alleleGeneSystematicNameMap.put(alleleId, systematicName);
+			}
+		}
+
+		// Gene cross references per allele (via allele -> gene association)
+		String geneCrossRefsQueryString = """
+			SELECT DISTINCT aga.alleleassociationsubject_id AS allele_id, cr.referencedcurie AS xref
+			FROM allelegeneassociation aga
+			JOIN vocabularyterm v ON v.id = aga.relation_id AND v.name = 'is_allele_of'
+			JOIN genomicentity_crossreference gecr ON gecr.genomicentity_id = aga.allelegeneassociationobject_id
+			JOIN crossreference cr ON cr.id = gecr.crossreferences_id
+			WHERE aga.alleleassociationsubject_id IN :alleleIds
+			AND aga.internal = false AND aga.obsolete = false
+			UNION
+			SELECT DISTINCT aga.alleleassociationsubject_id AS allele_id, cr.referencedcurie AS xref
+			FROM allelegeneassociation aga
+			JOIN vocabularyterm v ON v.id = aga.relation_id AND v.name = 'is_allele_of'
+			JOIN gene g ON g.id = aga.allelegeneassociationobject_id
+			JOIN crossreference cr ON cr.id = g.gcrpcrossreference_id
+			WHERE aga.alleleassociationsubject_id IN :alleleIds
+			AND aga.internal = false AND aga.obsolete = false
+			""";
+		Query geneCrossRefsQuery = entityManager.createNativeQuery(geneCrossRefsQueryString);
+		geneCrossRefsQuery.setParameter("alleleIds", alleleIds);
+		List<Object[]> geneCrossRefsResults = geneCrossRefsQuery.getResultList();
+
+		Map<Long, Set<String>> alleleGeneCrossRefsMap = new HashMap<>();
+		for (Object[] row : geneCrossRefsResults) {
+			Long alleleId = (Long) row[0];
+			String xref = (String) row[1];
+			if (xref != null) {
+				alleleGeneCrossRefsMap.computeIfAbsent(alleleId, k -> new HashSet<>()).add(xref);
+			}
+		}
+
 		// Variants
 		String variantQueryString = """
 			SELECT DISTINCT ava.alleleassociationsubject_id as allele_id,
@@ -474,7 +553,24 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 				sa_g.formattext as gene_symbol_format,
 				ot_taxon.curie as taxon_curie,
 				ot_taxon.name as taxon_name,
-				otc.severityorder as consequence_severity
+				otc.severityorder as consequence_severity,
+				be_ga.primaryexternalid as genome_assembly,
+				pvc.hgvscodingnomenclature as hgvs_coding,
+				pvc.hgvsproteinnomenclature as hgvs_protein,
+				cvg.referencesequence,
+				cvg.variantsequence,
+				cvg.paddedbase,
+				o.curie as variant_type_curie,
+				pvc.aminoacidreference,
+				pvc.aminoacidvariant,
+				pvc.codonreference,
+				pvc.codonvariant,
+				pvc.calculatedcdnastart,
+				pvc.calculatedcdnaend,
+				pvc.calculatedcdsstart,
+				pvc.calculatedcdsend,
+				pvc.calculatedproteinstart,
+				pvc.calculatedproteinend
 			FROM allelevariantassociation ava
 				JOIN variant v ON v.id = ava.allelevariantassociationobject_id
 				JOIN ontologyterm o ON o.id = v.varianttype_id
@@ -482,6 +578,8 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 				LEFT JOIN ontologyterm ot_taxon ON ot_taxon.id = be_v.taxon_id
 				JOIN curatedvariantgenomiclocation cvg ON cvg.variantassociationsubject_id = v.id
 				JOIN assemblycomponent ac ON cvg.variantgenomiclocationassociationobject_id = ac.id
+				LEFT JOIN genomeassembly ga ON ga.id = ac.genomeassembly_id
+				LEFT JOIN biologicalentity be_ga ON be_ga.id = ga.id
 				LEFT JOIN predictedvariantconsequence pvc ON pvc.variantgenomiclocation_id = cvg.id
 				LEFT JOIN predictedvariantconsequence_ontologyterm pvco ON pvco.predictedvariantconsequence_id = pvc.id
 				LEFT JOIN ontologyterm otc ON otc.id = pvco.vepconsequences_id
@@ -517,6 +615,7 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 				variant.setId(variantId);
 				SOTerm variantType = new SOTerm();
 				variantType.setName((String) row[2]);
+				variantType.setCurie((String) row[32]);
 				variant.setVariantType(variantType);
 				variant.setCuratedVariantGenomicLocations(new ArrayList<>());
 				if (row[23] != null) {
@@ -538,7 +637,15 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 				cvgla.setEnd((Integer) row[5]);
 				AssemblyComponent ac = new AssemblyComponent();
 				ac.setName((String) row[6]);
+				if (row[26] != null) {
+					GenomeAssembly genomeAssembly = new GenomeAssembly();
+					genomeAssembly.setPrimaryExternalId((String) row[26]);
+					ac.setGenomeAssembly(genomeAssembly);
+				}
 				cvgla.setVariantGenomicLocationAssociationObject(ac);
+				cvgla.setReferenceSequence(row[29] != null ? row[29].toString() : null);
+				cvgla.setVariantSequence(row[30] != null ? row[30].toString() : null);
+				cvgla.setPaddedBase(row[31] != null ? row[31].toString() : null);
 				cvgla.setVariantAssociationSubject(variant);
 				cvgla.setPredictedVariantConsequences(new ArrayList<>());
 				variant.getCuratedVariantGenomicLocations().add(cvgla);
@@ -597,6 +704,18 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 					pvc.setVariantTranscript(transcript);
 				}
 				pvc.setGeneLevelConsequence(row[18] != null ? (Boolean) row[18] : false);
+				pvc.setHgvsCodingNomenclature((String) row[27]);
+				pvc.setHgvsProteinNomenclature((String) row[28]);
+				pvc.setAminoAcidReference((String) row[33]);
+				pvc.setAminoAcidVariant((String) row[34]);
+				pvc.setCodonReference((String) row[35]);
+				pvc.setCodonVariant((String) row[36]);
+				pvc.setCalculatedCdnaStart((Integer) row[37]);
+				pvc.setCalculatedCdnaEnd((Integer) row[38]);
+				pvc.setCalculatedCdsStart((Integer) row[39]);
+				pvc.setCalculatedCdsEnd((Integer) row[40]);
+				pvc.setCalculatedProteinStart((Integer) row[41]);
+				pvc.setCalculatedProteinEnd((Integer) row[42]);
 				cvgla.getPredictedVariantConsequences().add(pvc);
 			}
 
@@ -675,7 +794,7 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 			}
 		}
 
-		// Sort vepConsequences by severity (most severe first)
+		// Sort vepConsequences by severity within each PVC, then sort PVCs by their most severe consequence
 		for (Map<Long, Variant> variantMap : alleleVariantMap.values()) {
 			for (Variant v : variantMap.values()) {
 				for (CuratedVariantGenomicLocationAssociation loc : v.getCuratedVariantGenomicLocations()) {
@@ -684,6 +803,14 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 							soTerm -> soTerm.getSeverityOrder() != null ? soTerm.getSeverityOrder() : Integer.MAX_VALUE
 						));
 					}
+					loc.getPredictedVariantConsequences().sort(Comparator.comparingInt(pvc -> {
+						if (pvc.getVepConsequences() == null || pvc.getVepConsequences().isEmpty()) {
+							return Integer.MAX_VALUE;
+						}
+						return pvc.getVepConsequences().stream()
+							.mapToInt(c -> c.getSeverityOrder() != null ? c.getSeverityOrder() : Integer.MAX_VALUE)
+							.min().orElse(Integer.MAX_VALUE);
+					}));
 				}
 			}
 		}
@@ -708,6 +835,70 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 		List<Object> phenotypeResults = phenotypeQuery.getResultList();
 
 		Set<Long> allelesWithPhenotype = phenotypeResults.stream().map(obj -> (Long) obj).collect(Collectors.toSet());
+
+		// Phenotype statements per allele (from direct allele annotations + AGM annotations + phenotype term names)
+		String phenotypeStatementsQueryString = """
+			SELECT DISTINCT allele_id, statement FROM (
+				SELECT apa.phenotypeannotationsubject_id AS allele_id, pa.phenotypeannotationobject AS statement
+				FROM allelephenotypeannotation apa
+				JOIN phenotypeannotation pa ON pa.id = apa.id
+				WHERE apa.phenotypeannotationsubject_id IN :alleleIds
+				AND pa.obsolete = false AND pa.internal = false
+				AND pa.phenotypeannotationobject IS NOT NULL
+				UNION
+				SELECT agmpa.inferredallele_id AS allele_id, pa.phenotypeannotationobject AS statement
+				FROM agmphenotypeannotation agmpa
+				JOIN phenotypeannotation pa ON pa.id = agmpa.id
+				WHERE agmpa.inferredallele_id IN :alleleIds
+				AND pa.obsolete = false AND pa.internal = false
+				AND pa.phenotypeannotationobject IS NOT NULL
+				UNION
+				SELECT agmpa_a.assertedalleles_id AS allele_id, pa.phenotypeannotationobject AS statement
+				FROM agmphenotypeannotation_allele agmpa_a
+				JOIN agmphenotypeannotation agmpa ON agmpa.id = agmpa_a.agmphenotypeannotation_id
+				JOIN phenotypeannotation pa ON pa.id = agmpa.id
+				WHERE agmpa_a.assertedalleles_id IN :alleleIds
+				AND pa.obsolete = false AND pa.internal = false
+				AND pa.phenotypeannotationobject IS NOT NULL
+				UNION
+				SELECT apa.phenotypeannotationsubject_id AS allele_id, ot.name AS statement
+				FROM allelephenotypeannotation apa
+				JOIN phenotypeannotation pa ON pa.id = apa.id
+				JOIN phenotypeannotation_ontologyterm pat ON pat.phenotypeannotation_id = pa.id
+				JOIN ontologyterm ot ON ot.id = pat.phenotypeterms_id
+				WHERE apa.phenotypeannotationsubject_id IN :alleleIds
+				AND pa.obsolete = false AND pa.internal = false
+				UNION
+				SELECT agmpa.inferredallele_id AS allele_id, ot.name AS statement
+				FROM agmphenotypeannotation agmpa
+				JOIN phenotypeannotation pa ON pa.id = agmpa.id
+				JOIN phenotypeannotation_ontologyterm pat ON pat.phenotypeannotation_id = pa.id
+				JOIN ontologyterm ot ON ot.id = pat.phenotypeterms_id
+				WHERE agmpa.inferredallele_id IN :alleleIds
+				AND pa.obsolete = false AND pa.internal = false
+				UNION
+				SELECT agmpa_a.assertedalleles_id AS allele_id, ot.name AS statement
+				FROM agmphenotypeannotation_allele agmpa_a
+				JOIN agmphenotypeannotation agmpa ON agmpa.id = agmpa_a.agmphenotypeannotation_id
+				JOIN phenotypeannotation pa ON pa.id = agmpa.id
+				JOIN phenotypeannotation_ontologyterm pat ON pat.phenotypeannotation_id = pa.id
+				JOIN ontologyterm ot ON ot.id = pat.phenotypeterms_id
+				WHERE agmpa_a.assertedalleles_id IN :alleleIds
+				AND pa.obsolete = false AND pa.internal = false
+			) sub WHERE statement IS NOT NULL
+			""";
+		Query phenotypeStatementsQuery = entityManager.createNativeQuery(phenotypeStatementsQueryString);
+		phenotypeStatementsQuery.setParameter("alleleIds", alleleIds);
+		List<Object[]> phenotypeStatementsResults = phenotypeStatementsQuery.getResultList();
+
+		Map<Long, Set<String>> allelePhenotypeStatementsMap = new HashMap<>();
+		for (Object[] row : phenotypeStatementsResults) {
+			Long alleleId = (Long) row[0];
+			String statement = (String) row[1];
+			if (statement != null) {
+				allelePhenotypeStatementsMap.computeIfAbsent(alleleId, k -> new HashSet<>()).add(statement);
+			}
+		}
 
 		// Disease existence
 		String diseaseQueryString = """
@@ -907,20 +1098,135 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 			}
 		}
 
+		// Construct IDs per allele
+		String constructIdsQueryString = """
+			SELECT DISTINCT aca.alleleassociationsubject_id AS allele_id,
+				COALESCE(r.primaryexternalid, r.modinternalid) AS construct_id
+			FROM alleleconstructassociation aca
+			JOIN reagent r ON r.id = aca.alleleconstructassociationobject_id
+			WHERE aca.alleleassociationsubject_id IN :alleleIds
+			AND aca.obsolete = false AND aca.internal = false
+			AND (r.primaryexternalid IS NOT NULL OR r.modinternalid IS NOT NULL)
+			""";
+		Query constructIdsQuery = entityManager.createNativeQuery(constructIdsQueryString);
+		constructIdsQuery.setParameter("alleleIds", alleleIds);
+		List<Object[]> constructIdsResults = constructIdsQuery.getResultList();
+
+		Map<Long, Set<String>> alleleConstructIdsMap = new HashMap<>();
+		for (Object[] row : constructIdsResults) {
+			Long alleleId = (Long) row[0];
+			String constructId = (String) row[1];
+			alleleConstructIdsMap.computeIfAbsent(alleleId, k -> new HashSet<>()).add(constructId);
+		}
+
+		// Variant references
+		Set<Long> allVariantIds = new HashSet<>();
+		for (Map<Long, Variant> variantMap : alleleVariantMap.values()) {
+			allVariantIds.addAll(variantMap.keySet());
+		}
+		if (!allVariantIds.isEmpty()) {
+			String variantRefsQueryString = """
+				SELECT vr.variant_id, r.id AS ref_id, be.curie, cr.referencedcurie, cr.displayname, rdp.name AS rdp_name, rdp.urltemplate
+				FROM variant_reference vr
+				JOIN reference r ON r.id = vr.references_id
+				JOIN biologicalentity be ON be.id = r.id
+				LEFT JOIN reference_crossreference rcr ON rcr.reference_id = r.id
+				LEFT JOIN crossreference cr ON cr.id = rcr.crossreferences_id
+				LEFT JOIN resourcedescriptorpage rdp ON rdp.id = cr.resourcedescriptorpage_id
+				WHERE vr.variant_id IN :variantIds
+				""";
+			Query variantRefsQuery = entityManager.createNativeQuery(variantRefsQueryString);
+			variantRefsQuery.setParameter("variantIds", allVariantIds);
+			List<Object[]> variantRefsResults = variantRefsQuery.getResultList();
+
+			Map<Long, Map<Long, Reference>> variantRefMap = new HashMap<>();
+			for (Object[] row : variantRefsResults) {
+				Long variantId = (Long) row[0];
+				Long refId = (Long) row[1];
+				String curie = (String) row[2];
+				Map<Long, Reference> refMap = variantRefMap.computeIfAbsent(variantId, k -> new HashMap<>());
+				Reference ref = refMap.get(refId);
+				if (ref == null) {
+					ref = new Reference();
+					ref.setCurie(curie);
+					ref.setCrossReferences(new HashSet<>());
+					refMap.put(refId, ref);
+				}
+				if (row[3] != null) {
+					CrossReference cr = new CrossReference();
+					cr.setReferencedCurie((String) row[3]);
+					cr.setDisplayName((String) row[4]);
+					if (row[5] != null) {
+						ResourceDescriptorPage rdp = new ResourceDescriptorPage();
+						rdp.setName((String) row[5]);
+						rdp.setUrlTemplate((String) row[6]);
+						cr.setResourceDescriptorPage(rdp);
+					}
+					if (ref.getCrossReferences().stream().noneMatch(c -> cr.getReferencedCurie().equals(c.getReferencedCurie()))) {
+						ref.getCrossReferences().add(cr);
+					}
+				}
+			}
+
+			for (Map<Long, Variant> variantMap : alleleVariantMap.values()) {
+				for (Map.Entry<Long, Variant> entry : variantMap.entrySet()) {
+					Map<Long, Reference> refMap = variantRefMap.get(entry.getKey());
+					if (refMap != null) {
+						entry.getValue().setReferences(new ArrayList<>(refMap.values()));
+					}
+				}
+			}
+		}
+
+		// Variant notes
+		if (!allVariantIds.isEmpty()) {
+			String variantNotesQueryString = """
+				SELECT ben.submittedobject_id AS variant_id, n.freetext
+				FROM biologicalentity_note ben
+				JOIN note n ON n.id = ben.relatednotes_id
+				WHERE ben.submittedobject_id IN :variantIds
+				""";
+			Query variantNotesQuery = entityManager.createNativeQuery(variantNotesQueryString);
+			variantNotesQuery.setParameter("variantIds", allVariantIds);
+			List<Object[]> variantNotesResults = variantNotesQuery.getResultList();
+
+			Map<Long, List<Note>> variantNotesMap = new HashMap<>();
+			for (Object[] row : variantNotesResults) {
+				Long variantId = (Long) row[0];
+				Note note = new Note();
+				note.setFreeText((String) row[1]);
+				variantNotesMap.computeIfAbsent(variantId, k -> new ArrayList<>()).add(note);
+			}
+
+			for (Map<Long, Variant> variantMap : alleleVariantMap.values()) {
+				for (Map.Entry<Long, Variant> entry : variantMap.entrySet()) {
+					List<Note> notes = variantNotesMap.get(entry.getKey());
+					if (notes != null) {
+						entry.getValue().setRelatedNotes(notes);
+					}
+				}
+			}
+		}
+
 		// Build documents
 		List<AlleleSummaryDocument> docs = new ArrayList<>();
 		for (Allele allele : alleles) {
 			AlleleSummaryDocument doc = new AlleleSummaryDocument();
 			doc.setAllele(allele);
-			doc.setVariants(new ArrayList<>(alleleVariantMap.getOrDefault(allele.getId(), new HashMap<>()).values()));
+			doc.setVariantList(new ArrayList<>(alleleVariantMap.getOrDefault(allele.getId(), new HashMap<>()).values()));
 			doc.setHasPhenotype(allelesWithPhenotype.contains(allele.getId()));
 			doc.setHasDisease(allelesWithDisease.contains(allele.getId()));
 			doc.setDiseases(alleleDiseaseNamesMap.get(allele.getId()));
 			doc.setDiseasesWithParents(alleleDiseaseWithParentsMap.get(allele.getId()));
 			doc.setDiseasesAgrSlim(alleleDiseaseAgrSlimMap.get(allele.getId()));
+			doc.setConstructs(alleleConstructIdsMap.get(allele.getId()));
 			doc.setConstructExpressedComponents(alleleConstructExpressedComponentsMap.get(allele.getId()));
 			doc.setConstructRegulatoryRegions(alleleConstructRegulatoryRegionsMap.get(allele.getId()));
 			doc.setConstructKnockdownComponents(alleleConstructKnockdownComponentsMap.get(allele.getId()));
+			doc.setGeneCrossReferences(alleleGeneCrossRefsMap.get(allele.getId()));
+			doc.setGeneSynonyms(alleleGeneSynonymsMap.get(allele.getId()));
+			doc.setGeneSystematicName(alleleGeneSystematicNameMap.get(allele.getId()));
+			doc.setPhenotypeStatements(allelePhenotypeStatementsMap.get(allele.getId()));
 			docs.add(doc);
 		}
 

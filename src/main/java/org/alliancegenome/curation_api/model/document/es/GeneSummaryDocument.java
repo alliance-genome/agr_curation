@@ -8,12 +8,12 @@ import com.fasterxml.jackson.annotation.JsonView;
 import lombok.Data;
 
 @Data
-@JsonView(CurationView.GeneSummaryDocument.class)
+@JsonView({ CurationView.GeneSummaryDocument.class, CurationView.GeneCacheDocument.class })
 public class GeneSummaryDocument extends ESDocument {
 
 	{
 		category = "gene_summary";
 	}
-	
+
 	private Gene gene;
 }

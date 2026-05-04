@@ -10,7 +10,9 @@ const initialConstructState = {
 const constructReducer = (draft, action) => {
 	switch (action.type) {
 		case 'SET':
-			const construct = action.value;
+			// Clone so generateCrossRefSearchFields (in-place mutation) doesn't run
+			// on a frozen object (immer freezes draft.construct after produce).
+			const construct = structuredClone(action.value);
 			generateCrossRefSearchFields(construct.references);
 			generateComponentSearchFields(construct.constructGenomicEntityAssociations);
 			draft.construct = construct;

@@ -2,6 +2,7 @@ package org.alliancegenome.curation_api.model.entities;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.constants.ReferenceConstants;
@@ -42,16 +43,15 @@ public class Reference extends InformationContentEntity {
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
-	@Fetch(FetchMode.JOIN)
-	@JsonView({CurationView.FieldsOnly.class, CurationView.ForPublic.class, CurationView.VariantSummaryDocument.class})
+	@Fetch(FetchMode.SUBSELECT)
+	@JsonView({CurationView.FieldsOnly.class, CurationView.ForPublic.class, CurationView.AlleleSummaryDocument.class, CurationView.VariantSummaryDocument.class})
 	@JoinTable(
 		indexes = {
 			@Index(name = "reference_crossreference_reference_index", columnList = "Reference_id"),
 			@Index(name = "reference_crossreference_crossreferences_index", columnList = "crossReferences_id")
 		}
 	)
-	@EqualsAndHashCode.Include
-	private List<CrossReference> crossReferences;
+	private Set<CrossReference> crossReferences;
 
 	@JsonView({CurationView.FieldsOnly.class, CurationView.ForPublic.class})
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
@@ -63,7 +63,7 @@ public class Reference extends InformationContentEntity {
 	 * Retrieve PMID if available in the crossReference collection otherwise MOD ID
 	 */
 	@Transient
-	@JsonView({CurationView.ForPublic.class, CurationView.GeneExpressionDocument.class, CurationView.VariantSummaryDocument.class, CurationView.SequenceSummaryDocument.class})
+	@JsonView({CurationView.ForPublic.class, CurationView.GeneExpressionDocument.class, CurationView.AlleleSummaryDocument.class, CurationView.VariantSummaryDocument.class, CurationView.SequenceSummaryDocument.class})
 	public String getReferenceID() {
 		return getReferenceID(true);
 	}

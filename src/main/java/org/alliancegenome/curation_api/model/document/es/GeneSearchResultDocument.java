@@ -26,6 +26,7 @@ public class GeneSearchResultDocument extends ESDocument {
 	private String symbol;
 	private String soTermId;
 	private String soTermName;
+	private String systematicName;
 	
 	private Set<String> chromosomes;
 	private Set<String> crossReferences;

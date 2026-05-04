@@ -3,7 +3,6 @@ package org.alliancegenome.curation_api;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import org.alliancegenome.curation_api.model.entities.CrossReference;
@@ -33,8 +32,8 @@ class IT_2000_ReferenceIdentity {
 		Reference reference2 = getReference("ref1", "xref2");
 		referenceSet.add(reference1);
 		referenceSet.add(reference2);
-		// make sure identical references are considered equals (in a collection)
-		assertEquals(referenceSet.size(), 2);
+		// make sure references with the same curie are considered equals (in a collection)
+		assertEquals(referenceSet.size(), 1);
 	}
 
 	@NotNull
@@ -45,7 +44,7 @@ class IT_2000_ReferenceIdentity {
 		crossReference.setReferencedCurie(xrefCurie);
 		crossReference.setDisplayName(xrefCurie);
 		
-		reference1.setCrossReferences(List.of(crossReference));
+		reference1.setCrossReferences(Set.of(crossReference));
 		return reference1;
 	}
 }

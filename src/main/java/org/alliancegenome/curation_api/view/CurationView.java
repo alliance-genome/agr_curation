@@ -115,6 +115,9 @@ public class CurationView {
 	public static class VariantDetailView extends VariantView {
 	}
 
+	public static class SpeciesView extends FieldsOnly {
+	}
+
 	public static class GeneInteractionView extends FieldsOnly {
 	}
 
@@ -152,6 +155,7 @@ public class CurationView {
 	public static class VariantSummaryDocument { }
 	public static class VariantSearchResultDocument { }
 	public static class SequenceSummaryDocument { }
+	public static class GeneCacheDocument { }
 
 	// View for Table Documents
 	public static class GeneToGeneOrthologyDocument { }
