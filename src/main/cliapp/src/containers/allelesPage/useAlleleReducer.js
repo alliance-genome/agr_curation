@@ -144,7 +144,7 @@ const processTable = (field, allele, draft) => {
 		return;
 	}
 
-	let clonableEntities = global.structuredClone(allele[field]);
+	let clonableEntities = structuredClone(allele[field]);
 	clonableEntities.forEach((entity, index) => {
 		addDataKey(entity);
 		draft.entityStates[field].editingRows[`${entity.dataKey}`] = true;
@@ -177,7 +177,9 @@ const processObject = (field, allele, draft) => {
 const alleleReducer = (draft, action) => {
 	switch (action.type) {
 		case 'SET':
-			const allele = action.value;
+			// Clone so generateCrossRefSearchFields (in-place mutation) doesn't run
+			// on a frozen object (immer freezes draft.allele after produce).
+			const allele = structuredClone(action.value);
 			generateCrossRefSearchFields(allele.references);
 			generateCurieSearchFields(allele.alleleGeneAssociations, 'evidence');
 
