@@ -23,6 +23,7 @@ import org.alliancegenome.curation_api.model.ingest.dto.GeneDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.slotAnnotions.NameSlotAnnotationDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.slotAnnotions.SecondaryIdSlotAnnotationDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
+import org.alliancegenome.curation_api.services.CrossReferenceService;
 import org.alliancegenome.curation_api.services.helpers.SlotAnnotationIdentityHelper;
 import org.alliancegenome.curation_api.services.ontology.SoTermService;
 import org.alliancegenome.curation_api.services.validation.dto.base.GenomicEntityDTOValidator;
@@ -47,6 +48,7 @@ public class GeneDTOValidator extends GenomicEntityDTOValidator<Gene, GeneDTO> {
 	@Inject GeneSynonymSlotAnnotationDTOValidator geneSynonymDtoValidator;
 	@Inject GeneSecondaryIdSlotAnnotationDTOValidator geneSecondaryIdDtoValidator;
 	@Inject CrossReferenceDTOValidator crossReferenceDtoValidator;
+	@Inject CrossReferenceService crossReferenceService;
 	@Inject SlotAnnotationIdentityHelper identityHelper;
 	@Inject SoTermService soTermService;
 
