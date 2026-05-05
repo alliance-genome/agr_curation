@@ -34,6 +34,7 @@ import org.alliancegenome.curation_api.services.validation.dto.slotAnnotations.G
 import org.alliancegenome.curation_api.services.validation.dto.slotAnnotations.GeneSystematicNameSlotAnnotationDTOValidator;
 import org.apache.commons.collections.CollectionUtils;
 
+import io.quarkus.logging.Log;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -110,7 +111,19 @@ public class GeneDTOValidator extends GenomicEntityDTOValidator<Gene, GeneDTO> {
 
 		if (gcrpCrossReference != null && CollectionUtils.isNotEmpty(gene.getCrossReferences())) {
 			String gcrpUniqueId = crossReferenceService.getCrossReferenceUniqueId(gcrpCrossReference);
-			gene.getCrossReferences().removeIf(xref -> gcrpUniqueId.equals(crossReferenceService.getCrossReferenceUniqueId(xref)));
+			List<CrossReference> xrefList = new ArrayList<>();
+			for (CrossReference xref : gene.getCrossReferences()) {
+				if (gcrpUniqueId.equals(crossReferenceService.getCrossReferenceUniqueId(xref))) {
+					try {
+						crossReferenceService.deleteById(xref.getId());
+					} catch (Exception e) {
+						Log.error("Unable to delete CrossReference " + e.getMessage());
+					}
+				} else {
+					xrefList.add(xref);
+				}
+			}
+			gene.setCrossReferences(xrefList);
 		}
 
 		response.convertWarningMessagesToMap();
