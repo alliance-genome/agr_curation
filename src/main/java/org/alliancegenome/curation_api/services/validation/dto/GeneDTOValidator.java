@@ -23,6 +23,7 @@ import org.alliancegenome.curation_api.model.ingest.dto.GeneDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.slotAnnotions.NameSlotAnnotationDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.slotAnnotions.SecondaryIdSlotAnnotationDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
+import org.alliancegenome.curation_api.services.CrossReferenceService;
 import org.alliancegenome.curation_api.services.helpers.SlotAnnotationIdentityHelper;
 import org.alliancegenome.curation_api.services.ontology.SoTermService;
 import org.alliancegenome.curation_api.services.validation.dto.base.GenomicEntityDTOValidator;
@@ -33,6 +34,7 @@ import org.alliancegenome.curation_api.services.validation.dto.slotAnnotations.G
 import org.alliancegenome.curation_api.services.validation.dto.slotAnnotations.GeneSystematicNameSlotAnnotationDTOValidator;
 import org.apache.commons.collections.CollectionUtils;
 
+import io.quarkus.logging.Log;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -47,6 +49,7 @@ public class GeneDTOValidator extends GenomicEntityDTOValidator<Gene, GeneDTO> {
 	@Inject GeneSynonymSlotAnnotationDTOValidator geneSynonymDtoValidator;
 	@Inject GeneSecondaryIdSlotAnnotationDTOValidator geneSecondaryIdDtoValidator;
 	@Inject CrossReferenceDTOValidator crossReferenceDtoValidator;
+	@Inject CrossReferenceService crossReferenceService;
 	@Inject SlotAnnotationIdentityHelper identityHelper;
 	@Inject SoTermService soTermService;
 
@@ -105,7 +108,25 @@ public class GeneDTOValidator extends GenomicEntityDTOValidator<Gene, GeneDTO> {
 			}
 		}
 		gene.setGcrpCrossReference(gcrpCrossReference);
-		
+
+		if (gcrpCrossReference != null && CollectionUtils.isNotEmpty(gene.getCrossReferences())) {
+			String gcrpUniqueId = crossReferenceService.getCrossReferenceUniqueId(gcrpCrossReference);
+			List<CrossReference> xrefList = new ArrayList<>();
+			for (CrossReference xref : gene.getCrossReferences()) {
+				if (gcrpUniqueId.equals(crossReferenceService.getCrossReferenceUniqueId(xref))) {
+					try {
+						crossReferenceService.deleteById(xref.getId());
+					} catch (Exception e) {
+						Log.error("Unable to delete CrossReference " + e.getMessage());
+					}
+				} else {
+					xrefList.add(xref);
+				}
+			}
+			gene.getCrossReferences().clear();
+			gene.getCrossReferences().addAll(xrefList);
+		}
+
 		response.convertWarningMessagesToMap();
 		response.convertErrorMessagesToMap();
 
