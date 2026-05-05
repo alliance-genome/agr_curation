@@ -123,7 +123,8 @@ public class GeneDTOValidator extends GenomicEntityDTOValidator<Gene, GeneDTO> {
 					xrefList.add(xref);
 				}
 			}
-			gene.setCrossReferences(xrefList);
+			gene.getCrossReferences().clear();
+			gene.getCrossReferences().addAll(xrefList);
 		}
 
 		response.convertWarningMessagesToMap();

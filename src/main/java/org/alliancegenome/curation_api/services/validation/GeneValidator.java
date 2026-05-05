@@ -106,7 +106,8 @@ public class GeneValidator extends GenomicEntityValidator<Gene> {
 					xrefList.add(xref);
 				}
 			}
-			dbEntity.setCrossReferences(xrefList);
+			dbEntity.getCrossReferences().clear();
+			dbEntity.getCrossReferences().addAll(xrefList);
 		}
 
 		response.convertErrorMessagesToMap();
