@@ -59,6 +59,63 @@ public class AlleleSummaryDocument extends AVSParentDocument {
 		geneSynonyms = null;
 		geneSystematicName = null;
 		phenotypeStatements = null;
+		dereferenceGeneCrossReferences();
+		dereferenceVariantAssociationSubjectReferences();
+	}
+
+	private void dereferenceVariantAssociationSubjectReferences() {
+		if (variantList == null) {
+			return;
+		}
+		for (Variant variant : variantList) {
+			if (variant == null) {
+				continue;
+			}
+			variant.setReferences(null);
+			if (variant.getCuratedVariantGenomicLocations() == null) {
+				continue;
+			}
+			variant.getCuratedVariantGenomicLocations().forEach(cvgla -> {
+				if (cvgla == null) {
+					return;
+				}
+				Variant subject = cvgla.getVariantAssociationSubject();
+				if (subject != null) {
+					subject.setReferences(null);
+				}
+			});
+		}
+	}
+
+	private void dereferenceGeneCrossReferences() {
+		if (alleleOfGene != null) {
+			alleleOfGene.setCrossReferences(null);
+		}
+		if (variantList == null) {
+			return;
+		}
+		for (Variant variant : variantList) {
+			if (variant == null || variant.getCuratedVariantGenomicLocations() == null) {
+				continue;
+			}
+			variant.getCuratedVariantGenomicLocations().forEach(cvgla -> {
+				if (cvgla == null || cvgla.getPredictedVariantConsequences() == null) {
+					return;
+				}
+				cvgla.getPredictedVariantConsequences().forEach(pvc -> {
+					if (pvc == null || pvc.getVariantTranscript() == null
+							|| pvc.getVariantTranscript().getTranscriptGeneAssociations() == null) {
+						return;
+					}
+					pvc.getVariantTranscript().getTranscriptGeneAssociations().forEach(tga -> {
+						Gene gene = tga.getTranscriptGeneAssociationObject();
+						if (gene != null) {
+							gene.setCrossReferences(null);
+						}
+					});
+				});
+			});
+		}
 	}
 }
 
