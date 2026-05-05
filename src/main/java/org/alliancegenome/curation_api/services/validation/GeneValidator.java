@@ -91,6 +91,11 @@ public class GeneValidator extends GenomicEntityValidator<Gene> {
 		CrossReference gcrpCrossReference = validateGcrpCrossReference(uiEntity.getGcrpCrossReference(), dbEntity.getGcrpCrossReference());
 		dbEntity.setGcrpCrossReference(gcrpCrossReference);
 
+		if (gcrpCrossReference != null && CollectionUtils.isNotEmpty(dbEntity.getCrossReferences())) {
+			String gcrpUniqueId = crossReferenceService.getCrossReferenceUniqueId(gcrpCrossReference);
+			dbEntity.getCrossReferences().removeIf(xref -> gcrpUniqueId.equals(crossReferenceService.getCrossReferenceUniqueId(xref)));
+		}
+
 		response.convertErrorMessagesToMap();
 
 		if (response.hasErrors()) {

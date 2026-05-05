@@ -105,7 +105,12 @@ public class GeneDTOValidator extends GenomicEntityDTOValidator<Gene, GeneDTO> {
 			}
 		}
 		gene.setGcrpCrossReference(gcrpCrossReference);
-		
+
+		if (gcrpCrossReference != null && CollectionUtils.isNotEmpty(gene.getCrossReferences())) {
+			String gcrpUniqueId = crossReferenceService.getCrossReferenceUniqueId(gcrpCrossReference);
+			gene.getCrossReferences().removeIf(xref -> gcrpUniqueId.equals(crossReferenceService.getCrossReferenceUniqueId(xref)));
+		}
+
 		response.convertWarningMessagesToMap();
 		response.convertErrorMessagesToMap();
 
