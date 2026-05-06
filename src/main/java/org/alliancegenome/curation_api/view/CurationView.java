@@ -10,6 +10,9 @@ public class CurationView {
 	public static class FieldsAndLists extends FieldsOnly {
 	}
 
+	public static class OntologyTermClosureView {
+	}
+
 	public static class ConditionRelationView extends FieldsOnly {
 	}
 
