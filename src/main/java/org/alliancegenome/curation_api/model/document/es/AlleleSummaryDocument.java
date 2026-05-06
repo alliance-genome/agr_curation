@@ -71,7 +71,6 @@ public class AlleleSummaryDocument extends AVSParentDocument {
 			if (variant == null) {
 				continue;
 			}
-			variant.setReferences(null);
 			if (variant.getCuratedVariantGenomicLocations() == null) {
 				continue;
 			}
