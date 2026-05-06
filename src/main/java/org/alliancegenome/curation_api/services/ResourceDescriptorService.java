@@ -12,6 +12,7 @@ import org.alliancegenome.curation_api.model.ingest.dto.ResourceDescriptorDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
+import org.alliancegenome.curation_api.services.validation.ResourceDescriptorValidator;
 import org.alliancegenome.curation_api.services.validation.dto.ResourceDescriptorDTOValidator;
 import org.apache.commons.collections4.ListUtils;
 
@@ -26,6 +27,7 @@ public class ResourceDescriptorService extends BaseEntityCrudService<ResourceDes
 
 	@Inject ResourceDescriptorDAO resourceDescriptorDAO;
 	@Inject ResourceDescriptorDTOValidator resourceDescriptorDtoValidator;
+	@Inject ResourceDescriptorValidator resourceDescriptorValidator;
 
 	Date prefixRequest;
 	HashMap<String, ResourceDescriptor> prefixCacheMap = new HashMap<>();
@@ -34,6 +36,13 @@ public class ResourceDescriptorService extends BaseEntityCrudService<ResourceDes
 	@PostConstruct
 	protected void init() {
 		setSQLDao(resourceDescriptorDAO);
+	}
+
+	@Override
+	@Transactional
+	public ObjectResponse<ResourceDescriptor> update(ResourceDescriptor uiEntity) {
+		ResourceDescriptor dbEntity = resourceDescriptorValidator.validateResourceDescriptorUpdate(uiEntity);
+		return new ObjectResponse<>(resourceDescriptorDAO.persist(dbEntity));
 	}
 
 	public List<String> getAllNames() {
