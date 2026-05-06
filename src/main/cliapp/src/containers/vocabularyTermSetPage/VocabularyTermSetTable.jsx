@@ -163,7 +163,6 @@ export const VocabularyTermSetTable = () => {
 				setTableState={setTableState}
 				columns={columns}
 				isEditable={true}
-				idFields={['vocabularyTermSetVocabulary', 'memberTerms']}
 				mutation={mutation}
 				isInEditMode={isInEditMode}
 				setIsInEditMode={setIsInEditMode}
