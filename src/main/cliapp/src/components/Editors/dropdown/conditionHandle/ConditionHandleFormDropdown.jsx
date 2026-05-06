@@ -1,0 +1,54 @@
+import React, { useState } from 'react';
+import { Dropdown } from 'primereact/dropdown';
+import { ExperimentsSearchService } from '../../../../service/ExperimentsSearchService';
+import { Endpoints } from '../../../../constants/Endpoints';
+
+export function ConditionHandleFormDropdown({
+	editorChange,
+	referenceCurie,
+	value,
+	name,
+	showClear,
+	placeholderText,
+	isEnabled,
+	customRef,
+}) {
+	const [selectedValue, setSelectedValue] = useState(value);
+	const experimentsSearchService = new ExperimentsSearchService();
+	const [handles, setHandles] = useState([]);
+
+	const onShow = () => {
+		experimentsSearchService
+			.findExperiments(Endpoints.Annotation.CONDITION_RELATION, 15, 0, { 'singleReference.curie': referenceCurie })
+			.then((data) => {
+				if (data.results?.length > 0) {
+					setHandles(data.results);
+				} else {
+					setHandles([]);
+				}
+			});
+	};
+
+	const onChange = (e) => {
+		setSelectedValue(e.value);
+		editorChange(e);
+	};
+
+	return (
+		<>
+			<Dropdown
+				ref={customRef}
+				name={name}
+				value={selectedValue}
+				disabled={!isEnabled}
+				options={handles}
+				onShow={onShow}
+				onChange={(e) => onChange(e)}
+				optionLabel="handle"
+				showClear={showClear}
+				placeholder={placeholderText}
+				style={{ width: '100%' }}
+			/>
+		</>
+	);
+}

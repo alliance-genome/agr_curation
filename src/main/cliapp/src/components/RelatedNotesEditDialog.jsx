@@ -1,0 +1,357 @@
+import { useRef, useState } from 'react';
+import { Dialog } from 'primereact/dialog';
+import { DataTable } from 'primereact/datatable';
+import { Column } from 'primereact/column';
+import { Button } from 'primereact/button';
+import { Toast } from 'primereact/toast';
+import { ColumnGroup } from 'primereact/columngroup';
+import { Row } from 'primereact/row';
+import { ValidationService } from '../service/ValidationService';
+import { DeleteAction } from './Actions/DeletionAction';
+import { InternalEditor } from './Editors/legacyForm/InternalEditor';
+import { ReferencesEditor } from './Editors/legacyForm/ReferencesEditor';
+import { VocabularyTermSetEditor } from './Editors/legacyForm/VocabularyTermSetEditor';
+import { TableInputTextAreaEditor } from './Editors/text/TableInputTextAreaEditor';
+import { Endpoints } from '../constants/Endpoints';
+import { multipleAutocompleteOnChange } from '../utils/utils';
+
+export const RelatedNotesEditDialog = ({
+	originalRelatedNotesData,
+	setOriginalRelatedNotesData,
+	errorMessagesMainRow,
+	setErrorMessagesMainRow,
+	noteTypeVocabularyTermSet,
+	showReferences = true,
+}) => {
+	const { originalRelatedNotes, isInEdit, dialog, rowIndex, mainRowProps } = originalRelatedNotesData;
+	const [localRelatedNotes, setLocalRelatedNotes] = useState(null);
+	const [editingRows, setEditingRows] = useState({});
+	const [errorMessages, setErrorMessages] = useState({});
+	const [isValidating, setIsValidating] = useState(false);
+	const validationService = new ValidationService();
+	const dataKeyCounter = useRef(0);
+	const tableRef = useRef(null);
+	const toast_topright = useRef(null);
+
+	const showDialogHandler = () => {
+		let _localRelatedNotes = cloneNotes(originalRelatedNotes);
+		setLocalRelatedNotes(_localRelatedNotes);
+
+		let rowsObject = {};
+		if (_localRelatedNotes) {
+			_localRelatedNotes.forEach((note) => {
+				rowsObject[`${note.dataKey}`] = true;
+			});
+		}
+		setEditingRows(rowsObject);
+		setErrorMessages({});
+	};
+
+	const onRowEditChange = () => {
+		return null;
+	};
+
+	const hideDialog = () => {
+		setErrorMessages({});
+		setOriginalRelatedNotesData((originalRelatedNotesData) => {
+			return {
+				...originalRelatedNotesData,
+				dialog: false,
+			};
+		});
+		setLocalRelatedNotes([]);
+	};
+
+	const cloneNotes = (clonableNotes) => {
+		let _clonableNotes = structuredClone(clonableNotes);
+		if (_clonableNotes) {
+			_clonableNotes.forEach((note) => {
+				note.dataKey = dataKeyCounter.current++;
+			});
+		} else {
+			_clonableNotes = [];
+		}
+		return _clonableNotes;
+	};
+
+	const noteTypeOnChangeHandler = (editorOptions, event) => {
+		editorOptions.editorCallback(event.value);
+		setLocalRelatedNotes((prev) => {
+			const updated = [...prev];
+			updated[editorOptions.rowIndex] = { ...updated[editorOptions.rowIndex], noteType: event.value };
+			return updated;
+		});
+	};
+
+	const textOnChangeHandler = (rowIndex, event, field) => {
+		setLocalRelatedNotes((prev) => {
+			const updated = [...prev];
+			updated[rowIndex] = { ...updated[rowIndex], [field]: event.target.value };
+			return updated;
+		});
+	};
+
+	const referencesOnChangeHandler = (event, setFieldValue, editorOptions) => {
+		multipleAutocompleteOnChange(editorOptions, event, 'references', setFieldValue);
+		setLocalRelatedNotes((prev) => {
+			const updated = [...prev];
+			updated[editorOptions.rowIndex] = { ...updated[editorOptions.rowIndex], references: event.target.value };
+			return updated;
+		});
+	};
+
+	const internalOnChangeHandler = (editorOptions, event) => {
+		editorOptions.editorCallback(event.target.value?.name);
+		setLocalRelatedNotes((prev) => {
+			const updated = [...prev];
+			updated[editorOptions.rowIndex] = { ...updated[editorOptions.rowIndex], internal: event.target?.value?.name };
+			return updated;
+		});
+	};
+
+	const createNewNoteHandler = () => {
+		const newKey = dataKeyCounter.current++;
+		const _localRelatedNotes = structuredClone(localRelatedNotes);
+		_localRelatedNotes.push({
+			dataKey: newKey,
+			noteType: {
+				name: '',
+			},
+			internal: false,
+		});
+		let _editingRows = { ...editingRows, ...{ [`${newKey}`]: true } };
+		setEditingRows(_editingRows);
+		setLocalRelatedNotes(_localRelatedNotes);
+	};
+
+	const handleDeleteRelatedNote = (e, dataKey) => {
+		let _localRelatedNotes = structuredClone(localRelatedNotes);
+		_localRelatedNotes = _localRelatedNotes.filter((note) => note.dataKey !== dataKey);
+		setLocalRelatedNotes(_localRelatedNotes);
+	};
+
+	const saveDataHandler = () => {
+		setErrorMessages({});
+		const _localRelatedNotes = structuredClone(localRelatedNotes);
+		for (const note of _localRelatedNotes) {
+			delete note.dataKey;
+		}
+		if (mainRowProps.editorCallback) {
+			mainRowProps.editorCallback(_localRelatedNotes);
+		}
+
+		const errorMessagesCopy = structuredClone(errorMessagesMainRow);
+		let messageObject = {
+			severity: 'warn',
+			message: 'Pending Edits!',
+		};
+		errorMessagesCopy[rowIndex] = {};
+		errorMessagesCopy[rowIndex]['relatedNotes'] = messageObject;
+		setErrorMessagesMainRow({ ...errorMessagesCopy });
+
+		setOriginalRelatedNotesData((originalRelatedNotesData) => {
+			return {
+				...originalRelatedNotesData,
+				dialog: false,
+			};
+		});
+	};
+
+	const cleanForValidation = (obj) => {
+		const _obj = structuredClone(obj);
+		delete _obj.dataKey;
+		delete _obj.updatedBy;
+		delete _obj.createdBy;
+		delete _obj.dateUpdated;
+		delete _obj.dateCreated;
+		if (_obj.references) {
+			_obj.references.forEach((ref) => {
+				delete ref.updatedBy;
+				delete ref.createdBy;
+				delete ref.dateUpdated;
+				delete ref.dateCreated;
+			});
+		}
+		return _obj;
+	};
+
+	const validateAndSave = async () => {
+		setIsValidating(true);
+		try {
+			let hasErrors = false;
+			const newErrorMessages = {};
+
+			for (let i = 0; i < localRelatedNotes.length; i++) {
+				const _note = cleanForValidation(localRelatedNotes[i]);
+				const result = await validationService.validate(Endpoints.Entity.NOTE, _note);
+				const dataKey = localRelatedNotes[i].dataKey;
+				if (result.isError) {
+					hasErrors = true;
+					newErrorMessages[dataKey] = {};
+					if (result.data) {
+						Object.keys(result.data).forEach((field) => {
+							newErrorMessages[dataKey][field] = {
+								severity: 'error',
+								message: result.data[field],
+							};
+						});
+					}
+				}
+			}
+
+			if (hasErrors) {
+				setErrorMessages(newErrorMessages);
+				toast_topright.current.show([
+					{
+						life: 7000,
+						severity: 'error',
+						summary: 'Validation error',
+						detail: 'Please fix validation errors before saving',
+						sticky: false,
+					},
+				]);
+			} else {
+				saveDataHandler();
+			}
+		} finally {
+			setIsValidating(false);
+		}
+	};
+
+	const footerTemplate = () => {
+		return (
+			<div>
+				<Button label="Cancel" icon="pi pi-times" onClick={hideDialog} className="p-button-text" />
+				<Button label="New Note" icon="pi pi-plus" onClick={createNewNoteHandler} />
+				<Button
+					label="Keep Edits"
+					icon={isValidating ? 'pi pi-spin pi-spinner' : 'pi pi-check'}
+					onClick={validateAndSave}
+					disabled={isValidating}
+				/>
+			</div>
+		);
+	};
+
+	let headerGroup = (
+		<ColumnGroup>
+			<Row>
+				<Column header="Actions" />
+				<Column header="Note Type" />
+				<Column header="Text" />
+				{showReferences && <Column header="Evidence" />}
+				<Column header="Internal" />
+			</Row>
+		</ColumnGroup>
+	);
+
+	return (
+		<div>
+			<Toast ref={toast_topright} position="top-right" />
+			<Dialog
+				visible={dialog && isInEdit}
+				className="w-8"
+				modal
+				onHide={hideDialog}
+				closable={false}
+				onShow={showDialogHandler}
+				footer={footerTemplate}
+			>
+				<h3>Related Notes</h3>
+				<DataTable
+					value={localRelatedNotes}
+					dataKey="dataKey"
+					showGridlines
+					editMode="row"
+					headerColumnGroup={headerGroup}
+					editingRows={editingRows}
+					onRowEditChange={onRowEditChange}
+					ref={tableRef}
+					cellMemo={false}
+				>
+					<Column
+						editor={(editorOptions) => (
+							<DeleteAction deletionHandler={handleDeleteRelatedNote} id={editorOptions?.rowData?.dataKey} />
+						)}
+						className="max-w-4rem"
+						bodyClassName="text-center"
+						headerClassName="surface-0"
+						frozen
+					/>
+					<Column
+						editor={(editorOptions) => {
+							return (
+								<VocabularyTermSetEditor
+									editorOptions={editorOptions}
+									onChangeHandler={noteTypeOnChangeHandler}
+									errorMessages={errorMessages}
+									dataKey={editorOptions?.rowData?.dataKey}
+									vocabType={noteTypeVocabularyTermSet}
+									field="noteType"
+									showClear={false}
+								/>
+							);
+						}}
+						field="noteType"
+						header="Note Type"
+						headerClassName="surface-0"
+					/>
+					<Column
+						editor={(editorOptions) => {
+							return (
+								<TableInputTextAreaEditor
+									value={editorOptions.value}
+									rowIndex={editorOptions.rowIndex}
+									errorMessages={errorMessages}
+									dataKey={editorOptions?.rowData?.dataKey}
+									textOnChangeHandler={textOnChangeHandler}
+									field="freeText"
+									rows={5}
+									columns={30}
+								/>
+							);
+						}}
+						field="freeText"
+						header="Text"
+						headerClassName="surface-0"
+						className="wrap-word max-w-35rem"
+					/>
+					{showReferences && (
+						<Column
+							editor={(editorOptions) => {
+								return (
+									<ReferencesEditor
+										editorOptions={editorOptions}
+										errorMessages={errorMessages}
+										onChange={referencesOnChangeHandler}
+										dataKey={editorOptions?.rowData?.dataKey}
+									/>
+								);
+							}}
+							field="evidence"
+							header="Evidence"
+							headerClassName="surface-0"
+							className="wrap-word max-w-25rem"
+						/>
+					)}
+					<Column
+						editor={(editorOptions) => {
+							return (
+								<InternalEditor
+									editorOptions={editorOptions}
+									rowIndex={editorOptions.rowIndex}
+									errorMessages={errorMessages}
+									dataKey={editorOptions?.rowData?.dataKey}
+									internalOnChangeHandler={internalOnChangeHandler}
+								/>
+							);
+						}}
+						field="internal"
+						header="Internal"
+						headerClassName="surface-0"
+					/>
+				</DataTable>
+			</Dialog>
+		</div>
+	);
+};
