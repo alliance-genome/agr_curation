@@ -31,18 +31,16 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema;
 	@Index(name = "ontologyclosure_updatedby_index", columnList = "updatedBy_id") })
 public class OntologyTermClosure extends AuditedObject {
 
-	@JsonView(CurationView.ForPublic.class)
 	private Integer distance;
 
-	@JsonView(CurationView.ForPublic.class)
 	@JdbcTypeCode(SqlTypes.JSON)
 	private Set<String> closureTypes = new HashSet<>();
 
-	@JsonView(CurationView.ForPublic.class)
+	@JsonView(CurationView.OntologyTermClosureView.class)
 	@ManyToOne
 	private OntologyTerm closureSubject;
 
-	@JsonView(CurationView.ForPublic.class)
+	@JsonView(CurationView.OntologyTermClosureView.class)
 	@ManyToOne
 	private OntologyTerm closureObject;
 

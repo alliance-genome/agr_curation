@@ -32,7 +32,8 @@ import lombok.Data;
 	CurationView.SequenceSummaryDocument.class,
 	CurationView.HTPDatasetSearchResultDocument.class,
 	CurationView.GeneExpressionDocument.class,
-	CurationView.TransgenicAllelesDocument.class
+	CurationView.TransgenicAllelesDocument.class,
+	CurationView.OntologyTermClosureView.class
 })
 public class SearchResponse<E> extends APIResponse {
 

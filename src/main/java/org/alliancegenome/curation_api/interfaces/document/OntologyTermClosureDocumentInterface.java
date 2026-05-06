@@ -32,6 +32,6 @@ public interface OntologyTermClosureDocumentInterface {
 
 	@POST
 	@Path("/byids")
-	@JsonView(CurationView.ForPublic.class)
+	@JsonView(CurationView.OntologyTermClosureView.class)
 	SearchResponse<OntologyTermClosure> findByIds(@RequestBody List<Long> ids);
 }
