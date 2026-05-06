@@ -5,8 +5,11 @@ import java.util.Objects;
 import java.util.Set;
 
 import org.alliancegenome.curation_api.model.entities.base.AuditedObject;
+import org.alliancegenome.curation_api.view.CurationView;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
+
+import com.fasterxml.jackson.annotation.JsonView;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Index;
@@ -28,14 +31,18 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema;
 	@Index(name = "ontologyclosure_updatedby_index", columnList = "updatedBy_id") })
 public class OntologyTermClosure extends AuditedObject {
 
+	@JsonView(CurationView.ForPublic.class)
 	private Integer distance;
 
+	@JsonView(CurationView.ForPublic.class)
 	@JdbcTypeCode(SqlTypes.JSON)
 	private Set<String> closureTypes = new HashSet<>();
 
+	@JsonView(CurationView.ForPublic.class)
 	@ManyToOne
 	private OntologyTerm closureSubject;
 
+	@JsonView(CurationView.ForPublic.class)
 	@ManyToOne
 	private OntologyTerm closureObject;
 
