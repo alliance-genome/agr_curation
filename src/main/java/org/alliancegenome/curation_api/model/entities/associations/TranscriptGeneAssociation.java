@@ -62,6 +62,7 @@ public class TranscriptGeneAssociation extends EvidenceAssociation {
 	@JsonIgnoreProperties({
 		"alleleGeneAssociations",
 		"constructGenomicEntityAssociations",
+		"crossReferences",
 		"sequenceTargetingReagentGeneAssociations",
 		"transcriptGeneAssociations"
 	})
