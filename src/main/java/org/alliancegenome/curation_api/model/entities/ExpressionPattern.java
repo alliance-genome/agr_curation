@@ -39,6 +39,6 @@ public class ExpressionPattern extends AuditedObject {
 
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-	@JsonView({ CurationView.FieldsOnly.class, CurationView.ForPublic.class })
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.ForPublic.class, CurationView.GeneExpressionDocument.class })
 	private AnatomicalSite whereExpressed;
 }
