@@ -56,7 +56,7 @@ public class Species extends AuditedObject {
 	@IndexedEmbedded(includePaths = {"name", "curie", "name_keyword", "curie_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@OneToOne
-	@JsonView({ CurationView.FieldsOnly.class })
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.SpeciesView.class })
 	@Fetch(FetchMode.JOIN)
 	private NCBITaxonTerm taxon;
 
@@ -78,7 +78,7 @@ public class Species extends AuditedObject {
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "commonNames_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
 	@ElementCollection
-	@JsonView({ CurationView.FieldsAndLists.class, CurationView.GeneSummaryDocument.class, CurationView.AlleleSummaryDocument.class })
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.FieldsAndLists.class, CurationView.SpeciesView.class, CurationView.GeneSummaryDocument.class, CurationView.AlleleSummaryDocument.class })
 	@JoinTable(indexes = @Index(name = "species_commonnames_species_id_index", columnList = "species_id"))
 	private List<String> commonNames;
 
