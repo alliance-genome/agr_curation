@@ -23,7 +23,11 @@ public class GeneToGeneOrthologyGeneratedDAO extends BaseSQLDAO<GeneToGeneOrthol
 				SELECT g.id
 				FROM genetogeneorthologygenerated g
 				INNER JOIN genetogeneorthology o ON g.id = o.id
+				INNER JOIN biologicalentity sg ON o.subjectgene_id = sg.id
+				INNER JOIN biologicalentity og ON o.objectgene_id = og.id
 				WHERE o.obsolete = false AND o.internal = false
+					AND sg.obsolete = false AND sg.internal = false
+					AND og.obsolete = false AND og.internal = false
 				ORDER BY g.id
 				""";
 
