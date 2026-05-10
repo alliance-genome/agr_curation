@@ -4,6 +4,7 @@ import java.util.HashMap;
 
 import org.alliancegenome.curation_api.interfaces.base.BaseIdCrudInterface;
 import org.alliancegenome.curation_api.model.entities.ResourceDescriptorPage;
+import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.view.CurationView;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
@@ -13,6 +14,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DefaultValue;
 import jakarta.ws.rs.POST;
+import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
@@ -29,4 +31,10 @@ public interface ResourceDescriptorPageCrudInterface extends BaseIdCrudInterface
 	@JsonView(CurationView.ResourceDescriptorPageView.class)
 	@Tag(name = "Elastic Search Browsing Endpoints")
 	SearchResponse<ResourceDescriptorPage> search(@DefaultValue("0") @QueryParam("page") Integer page, @DefaultValue("10") @QueryParam("limit") Integer limit, HashMap<String, Object> params);
+
+	@Override
+	@PUT
+	@Path("/")
+	@JsonView(CurationView.ResourceDescriptorPageView.class)
+	ObjectResponse<ResourceDescriptorPage> update(ResourceDescriptorPage entity);
 }

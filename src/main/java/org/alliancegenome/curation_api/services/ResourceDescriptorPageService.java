@@ -9,18 +9,21 @@ import org.alliancegenome.curation_api.model.entities.ResourceDescriptor;
 import org.alliancegenome.curation_api.model.entities.ResourceDescriptorPage;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
+import org.alliancegenome.curation_api.services.validation.ResourceDescriptorPageValidator;
 import org.apache.commons.collections.CollectionUtils;
 
 import io.quarkus.logging.Log;
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 
 @RequestScoped
 public class ResourceDescriptorPageService extends BaseEntityCrudService<ResourceDescriptorPage, ResourceDescriptorPageDAO> {
 
 	@Inject ResourceDescriptorPageDAO resourceDescriptorPageDAO;
 	@Inject ResourceDescriptorService resourceDescriptorService;
+	@Inject ResourceDescriptorPageValidator resourceDescriptorPageValidator;
 
 	HashMap<String, Date> resourceRequestMap = new HashMap<>();
 	HashMap<String, HashMap<String, ResourceDescriptorPage>> resourcePageCacheMap = new HashMap<>();
@@ -29,6 +32,13 @@ public class ResourceDescriptorPageService extends BaseEntityCrudService<Resourc
 	@PostConstruct
 	protected void init() {
 		setSQLDao(resourceDescriptorPageDAO);
+	}
+
+	@Override
+	@Transactional
+	public ObjectResponse<ResourceDescriptorPage> update(ResourceDescriptorPage uiEntity) {
+		ResourceDescriptorPage dbEntity = resourceDescriptorPageValidator.validateResourceDescriptorPageUpdate(uiEntity);
+		return new ObjectResponse<>(resourceDescriptorPageDAO.persist(dbEntity));
 	}
 
 	public ResourceDescriptorPage getPageForResourceDescriptor(String resourceDescriptorPrefix, String pageName) {
