@@ -31,11 +31,11 @@ public class AffectedGenomicModelDAO extends BaseSQLDAO<AffectedGenomicModel> {
 	@Inject AGMPhenotypeAnnotationDAO agmPhenotypeAnnotationDAO;
 	@Inject GenePhenotypeAnnotationDAO genePhenotypeAnnotationDAO;
 	@Inject HTPExpressionDatasetSampleAnnotationDAO htpExpressionDatasetSampleAnnotationDAO;
-	
+
 	protected AffectedGenomicModelDAO() {
 		super(AffectedGenomicModel.class);
 	}
-	
+
 	public Boolean hasReferencingDiseaseAnnotations(Long agmId) {
 		Map<String, Object> params = new HashMap<>();
 		params.put(EntityFieldConstants.DA_SUBJECT + ".id", agmId);
@@ -43,20 +43,20 @@ public class AffectedGenomicModelDAO extends BaseSQLDAO<AffectedGenomicModel> {
 		if (CollectionUtils.isNotEmpty(results)) {
 			return true;
 		}
-		
+
 		Map<String, Object> sbParams = new HashMap<>();
 		sbParams.put(EntityFieldConstants.STRAIN_BACKGROUND + ".id", agmId);
 		results = geneDiseaseAnnotationDAO.findIdsByParams(sbParams);
 		if (CollectionUtils.isNotEmpty(results)) {
 			return true;
 		}
-		
+
 		Map<String, Object> dgmParams = new HashMap<>();
 		dgmParams.put(EntityFieldConstants.DA_MODIFIER_AGMS + ".id", agmId);
 		results = diseaseAnnotationDAO.findIdsByParams(dgmParams);
 		return CollectionUtils.isNotEmpty(results);
 	}
-	
+
 	public Boolean hasReferencingPhenotypeAnnotations(Long agmId) {
 		Map<String, Object> params = new HashMap<>();
 		params.put(EntityFieldConstants.PA_SUBJECT + ".id", agmId);
@@ -64,13 +64,13 @@ public class AffectedGenomicModelDAO extends BaseSQLDAO<AffectedGenomicModel> {
 		if (CollectionUtils.isNotEmpty(results)) {
 			return true;
 		}
-		
+
 		Map<String, Object> sbParams = new HashMap<>();
 		sbParams.put(EntityFieldConstants.STRAIN_BACKGROUND + ".id", agmId);
 		results = genePhenotypeAnnotationDAO.findIdsByParams(sbParams);
 		return CollectionUtils.isNotEmpty(results);
 	}
-	
+
 	public Boolean hasReferencingHTPExpressionDatasetSampleAnnotation(Long agmId) {
 		Map<String, Object> params = new HashMap<>();
 		params.put(EntityFieldConstants.GENOMIC_INFORMATION_AGM + ".id", agmId);
@@ -211,7 +211,7 @@ public class AffectedGenomicModelDAO extends BaseSQLDAO<AffectedGenomicModel> {
 			SELECT singleagm_id, displaytext
 			FROM slotannotation
 			WHERE slotannotationtype = 'AgmSynonymSlotAnnotation'
-			  AND singleagm_id IN :ids
+			AND singleagm_id IN :ids
 			""";
 		Query q = entityManager.createNativeQuery(sql);
 		q.setParameter("ids", agmIds);
@@ -231,7 +231,7 @@ public class AffectedGenomicModelDAO extends BaseSQLDAO<AffectedGenomicModel> {
 			SELECT singleagm_id, secondaryid
 			FROM slotannotation
 			WHERE slotannotationtype = 'AgmSecondaryIdSlotAnnotation'
-			  AND singleagm_id IN :ids
+			AND singleagm_id IN :ids
 			""";
 		Query q = entityManager.createNativeQuery(sql);
 		q.setParameter("ids", agmIds);
@@ -429,9 +429,9 @@ public class AffectedGenomicModelDAO extends BaseSQLDAO<AffectedGenomicModel> {
 		// can blow past that once allele components are flattened. Chunk to stay safe.
 		Map<Long, List<String>> genesByAllele = new HashMap<>();
 		List<Long> alleleIdList = new ArrayList<>(allAlleleIds);
-		final int IN_CLAUSE_CHUNK = 10_000;
-		for (int from = 0; from < alleleIdList.size(); from += IN_CLAUSE_CHUNK) {
-			List<Long> chunk = alleleIdList.subList(from, Math.min(from + IN_CLAUSE_CHUNK, alleleIdList.size()));
+		final int inClauseChunk = 10_000;
+		for (int from = 0; from < alleleIdList.size(); from += inClauseChunk) {
+			List<Long> chunk = alleleIdList.subList(from, Math.min(from + inClauseChunk, alleleIdList.size()));
 			Query g = entityManager.createNativeQuery(geneSql);
 			g.setParameter("ids", chunk);
 			for (Object[] row : (List<Object[]>) g.getResultList()) {
