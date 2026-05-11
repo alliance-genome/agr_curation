@@ -12,10 +12,12 @@ import org.alliancegenome.curation_api.dao.AffectedGenomicModelDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.exceptions.ValidationException;
+import org.alliancegenome.curation_api.model.document.es.ModelSearchResultDocument;
 import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
 import org.alliancegenome.curation_api.model.entities.Note;
 import org.alliancegenome.curation_api.model.ingest.dto.AffectedGenomicModelDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
+import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.associations.ConstructGenomicEntityAssociationService;
 import org.alliancegenome.curation_api.services.base.SubmittedObjectCrudService;
 import org.alliancegenome.curation_api.services.validation.AffectedGenomicModelValidator;
@@ -140,6 +142,10 @@ public class AffectedGenomicModelService extends SubmittedObjectCrudService<Affe
 
 	public List<AffectedGenomicModel> findByIds(List<Long> ids) {
 		return agmDAO.findByIds(ids);
+	}
+
+	public SearchResponse<ModelSearchResultDocument> findAgmsForSummaryByIds(List<Long> ids) {
+		return agmDAO.findAgmsForSummaryByIds(ids);
 	}
 
 	public List<Long> getIdsByDataProvider(String dataProvider) {
