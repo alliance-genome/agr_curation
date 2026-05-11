@@ -118,6 +118,9 @@ public class CurationView {
 	public static class VariantDetailView extends VariantView {
 	}
 
+	public static class SpeciesView extends FieldsOnly {
+	}
+
 	public static class GeneInteractionView extends FieldsOnly {
 	}
 
