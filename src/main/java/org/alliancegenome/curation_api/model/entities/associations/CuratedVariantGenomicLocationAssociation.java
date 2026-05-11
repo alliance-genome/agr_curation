@@ -15,6 +15,7 @@ import org.alliancegenome.curation_api.view.CurationView;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmbedded;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
@@ -123,6 +124,7 @@ public class CuratedVariantGenomicLocationAssociation extends VariantGenomicLoca
 	@Transient
 	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	@JsonView({CurationView.VariantSummaryDocument.class})
+	@JsonIgnoreProperties({"crossReferences"})
 	public List<Gene> getOverlapGenes() {
 		if (predictedVariantConsequences == null) {
 			return Collections.emptyList();
