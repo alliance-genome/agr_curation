@@ -2,6 +2,16 @@
  
 https://agr-jira.atlassian.net/wiki/spaces/ATEAM/overview
 
+## v0.49.0
+* New features:
+   * Migrate curation frontend from Create React App to Vite (SCRUM-5928)
+   * Enable editing of Resource Descriptors curation table (SCRUM-5935)
+   * Enable editing of Species curation table (SCRUM-5936)
+   * Add AuditedObject properties, where expressed statement, and when expressed statement to Where Expressed and When Expressed pop-ups (SCRUM-5939)
+   * Create a new note type "MOD_provided_automated_gene_description" for Genes (SCRUM-5892)
+* Fixes and maintenance
+   * Fix failing CHEBI ontology load (SCRUM-5993)
+
 ## v0.48.0
 * New features:
    * Create user interface data table for LTP Expression data: read-only, with column sort & filter and pagination (SCRUM-5456)
