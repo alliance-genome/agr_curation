@@ -119,13 +119,21 @@ public class BaseSQLDAO<E extends AuditedObject> extends BaseEntityDAO<E> {
 
 	@Transactional
 	public int removeByIds(Collection<Long> ids) {
+		// SCRUM-6053: per-entity remove instead of JPQL bulk DELETE so cascade
+		// and orphanRemoval fire on @OneToMany child collections (esp. crossReferences).
+		// JPQL bulk DELETE bypasses JPA lifecycle (JPA spec section 4.10),
 		if (ids == null || ids.isEmpty()) {
 			return 0;
 		}
-		return entityManager
-			.createQuery("DELETE FROM " + myClass.getSimpleName() + " e WHERE e.id IN :ids")
-			.setParameter("ids", ids)
-			.executeUpdate();
+		int removed = 0;
+		for (Long id : ids) {
+			E entity = entityManager.find(myClass, id);
+			if (entity != null) {
+				entityManager.remove(entity);
+				removed++;
+			}
+		}
+		return removed;
 	}
 
 	public E find(Long id) {
