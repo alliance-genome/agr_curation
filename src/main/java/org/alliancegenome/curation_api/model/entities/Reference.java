@@ -43,7 +43,7 @@ public class Reference extends InformationContentEntity {
 
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
-	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+	@OneToMany(cascade = CascadeType.MERGE, orphanRemoval = true)
 	@Fetch(FetchMode.SUBSELECT)
 	@JsonView({CurationView.FieldsOnly.class, CurationView.ForPublic.class, CurationView.AlleleSummaryDocument.class, CurationView.VariantSummaryDocument.class})
 	@JoinTable(

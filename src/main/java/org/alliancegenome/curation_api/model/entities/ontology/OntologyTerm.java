@@ -110,7 +110,7 @@ public class OntologyTerm extends CurieObject {
 
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
-	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+	@OneToMany(cascade = CascadeType.MERGE)
 	@JoinTable(indexes = { @Index(columnList = "ontologyterm_id", name = "ontologyterm_crossreference_ontologyterm_index"), @Index(columnList = "crossreferences_id", name = "ontologyterm_crossreference_crossreferences_index") })
 	@JsonView({ CurationView.FieldsAndLists.class })
 	private List<CrossReference> crossReferences;

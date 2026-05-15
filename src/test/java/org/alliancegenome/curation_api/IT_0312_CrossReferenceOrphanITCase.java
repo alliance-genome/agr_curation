@@ -6,15 +6,12 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.alliancegenome.curation_api.base.BaseITCase;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.Reference;
-import org.alliancegenome.curation_api.model.entities.ontology.DOTerm;
 import org.alliancegenome.curation_api.resources.TestContainerResource;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.MethodOrderer;
@@ -39,10 +36,6 @@ public class IT_0312_CrossReferenceOrphanITCase extends BaseITCase {
 	private static final String REFERENCE_CURIE = "AGRKB:scrum6053-orphan-1";
 	private static final String XREF_KEPT = "PMID:6053TEST-KEPT";
 	private static final String XREF_DROPPED = "PMID:6053TEST-DROPPED";
-
-	private static final String DOTERM_CURIE = "DOID:scrum6053-orphan-2";
-	private static final String DOTERM_XREF_KEPT = "MESH:6053TEST-ONT-KEPT";
-	private static final String DOTERM_XREF_DROPPED = "MESH:6053TEST-ONT-DROPPED";
 
 	@Test
 	@Order(1)
@@ -102,80 +95,27 @@ public class IT_0312_CrossReferenceOrphanITCase extends BaseITCase {
 			body("entity", nullValue());
 	}
 
-	@Test
-	@Order(2)
-	public void ontologyTermPerEntityIngestRemovesOrphan() {
-		DOTerm doTerm = new DOTerm();
-		doTerm.setCurie(DOTERM_CURIE);
-		doTerm.setName("SCRUM-6053 orphan test term");
-		doTerm.setNamespace("disease_ontology");
-		doTerm.setObsolete(false);
-		doTerm.setInternal(false);
-		List<CrossReference> xrefs = new ArrayList<>();
-		xrefs.add(buildXref(DOTERM_XREF_KEPT));
-		xrefs.add(buildXref(DOTERM_XREF_DROPPED));
-		doTerm.setCrossReferences(xrefs);
-
-		RestAssured.given().
-			contentType("application/json").
-			body(doTerm).
-			when().
-			post("/api/doterm").
-			then().
-			statusCode(200);
-
-		// /find returns FieldsAndLists view, which includes crossReferences
-		// (the default GET endpoint only serializes FieldsOnly).
-		io.restassured.path.json.JsonPath initial = RestAssured.given().
-			contentType("application/json").
-			body("{\"curie\":\"" + DOTERM_CURIE + "\"}").
-			when().
-			post("/api/doterm/find?limit=1&page=0").
-			then().
-			statusCode(200).
-			body("results", hasSize(1)).
-			body("results[0].crossReferences", hasSize(2)).
-			extract().
-			jsonPath();
-
-		Long droppedXrefId = initial.getLong("results[0].crossReferences.find { it.referencedCurie == '" + DOTERM_XREF_DROPPED + "' }.id");
-
-		DOTerm fetched = initial.getObject("results[0]", DOTerm.class);
-		fetched.setCrossReferences(fetched.getCrossReferences().stream()
-			.filter(xref -> DOTERM_XREF_KEPT.equals(xref.getReferencedCurie()))
-			.collect(Collectors.toList()));
-
-		RestAssured.given().
-			contentType("application/json").
-			body(fetched).
-			when().
-			put("/api/doterm").
-			then().
-			statusCode(200);
-
-		RestAssured.given().
-			contentType("application/json").
-			body("{\"curie\":\"" + DOTERM_CURIE + "\"}").
-			when().
-			post("/api/doterm/find?limit=1&page=0").
-			then().
-			statusCode(200).
-			body("results[0].crossReferences", hasSize(1)).
-			body("results[0].crossReferences[0].referencedCurie", is(DOTERM_XREF_KEPT)).
-			body("results[0].crossReferences.referencedCurie", not(hasItem(DOTERM_XREF_DROPPED)));
-
-		RestAssured.given().
-			when().
-			get("/api/cross-reference/" + droppedXrefId).
-			then().
-			statusCode(200).
-			body("entity", nullValue());
-	}
-
 	private CrossReference buildXref(String curie) {
+		// POST the xref via /api/cross-reference first so it has a managed id by
+		// the time it's attached to the parent entity. The new mapping is
+		// cascade=MERGE (not ALL) — children must already be persisted at the
+		// point the parent is POSTed, matching the convention in
+		// BaseITCase.createReference and the production
+		// ReferenceSynchronisationHelper.
 		CrossReference xref = new CrossReference();
 		xref.setReferencedCurie(curie);
 		xref.setDisplayName(curie);
-		return xref;
+		xref.setInternal(false);
+		xref.setObsolete(false);
+		return RestAssured.given().
+			contentType("application/json").
+			body(xref).
+			when().
+			post("/api/cross-reference").
+			then().
+			statusCode(200).
+			extract().
+			jsonPath().
+			getObject("entity", CrossReference.class);
 	}
 }

@@ -49,13 +49,13 @@ public class ExternalDataBaseEntity extends CurieObject {
 
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
-	@OneToOne(cascade = CascadeType.ALL)
+	@OneToOne(cascade = CascadeType.MERGE)
 	@JsonView({ CurationView.FieldsOnly.class })
 	private CrossReference preferredCrossReference;
 
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
-	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+	@OneToMany(cascade = CascadeType.MERGE)
 	@JoinTable(indexes = {
 		@Index(columnList = "externaldatabaseentity_id", name = "externaldbentity_crossreference_externaldbentity_index"),
 		@Index(columnList = "crossreferences_id", name = "externaldbentity_crossreference_crossreferences_index")
