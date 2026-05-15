@@ -26,6 +26,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorColumn;
 import jakarta.persistence.ElementCollection;
@@ -109,8 +110,7 @@ public class OntologyTerm extends CurieObject {
 
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
-	@ManyToMany
-	@org.hibernate.annotations.OnDelete(action = org.hibernate.annotations.OnDeleteAction.CASCADE)
+	@OneToMany(cascade = CascadeType.MERGE)
 	@JoinTable(indexes = { @Index(columnList = "ontologyterm_id", name = "ontologyterm_crossreference_ontologyterm_index"), @Index(columnList = "crossreferences_id", name = "ontologyterm_crossreference_crossreferences_index") })
 	@JsonView({ CurationView.FieldsAndLists.class })
 	private List<CrossReference> crossReferences;
