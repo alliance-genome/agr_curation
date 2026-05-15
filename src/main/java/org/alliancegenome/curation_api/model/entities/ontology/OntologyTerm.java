@@ -89,7 +89,7 @@ public class OntologyTerm extends CurieObject {
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "subsets_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
 	@ElementCollection
-	@JsonView({ CurationView.FieldsAndLists.class })
+	@JsonView({ CurationView.FieldsAndLists.class, CurationView.DiseaseSummaryDocument.class })
 	@JoinTable(indexes = @Index(name = "ontologyterm_subsets_ontologyterm_index", columnList = "ontologyterm_id"))
 	private List<String> subsets;
 
