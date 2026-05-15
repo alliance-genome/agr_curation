@@ -46,6 +46,13 @@ public class DiseaseSummaryDocumentBuilder {
 			doc.getCrossReferenceLinkUrls().add(map);
 		}
 
+		Set<String> closureIDs = doTerm.getAncestors().stream()
+			.filter(closure -> closure.getClosureTypes().contains("is_a") || closure.getClosureTypes().contains("part_of"))
+			.map(closure -> closure.getClosureObject().getCurie())
+			.collect(Collectors.toSet());
+		closureIDs.add(doTerm.getCurie());
+		doc.setParentClosureIDs(closureIDs);
+
 		return doc;
 	}
 
