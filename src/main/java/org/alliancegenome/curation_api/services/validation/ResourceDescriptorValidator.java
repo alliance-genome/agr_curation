@@ -53,11 +53,7 @@ public class ResourceDescriptorValidator extends AuditedObjectValidator<Resource
 
 		dbEntity.setSynonyms(uiEntity.getSynonyms());
 
-		if (StringUtils.isBlank(uiEntity.getIdPattern())) {
-			addMessageResponse("idPattern", ValidationConstants.REQUIRED_MESSAGE);
-		} else {
-			dbEntity.setIdPattern(uiEntity.getIdPattern());
-		}
+		dbEntity.setIdPattern(uiEntity.getIdPattern());
 
 		dbEntity.setIdExample(uiEntity.getIdExample());
 
