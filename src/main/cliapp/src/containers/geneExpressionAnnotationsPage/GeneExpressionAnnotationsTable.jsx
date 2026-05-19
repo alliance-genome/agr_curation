@@ -1,4 +1,6 @@
 import React, { useRef, useState, useMemo } from 'react';
+import { useMutation } from '@tanstack/react-query';
+import { Toast } from 'primereact/toast';
 
 import { GenericDataTable } from '../../components/GenericDataTable/GenericDataTable';
 import { IdTemplate } from '../../components/Templates/IdTemplate';
@@ -9,11 +11,19 @@ import { StringTemplate } from '../../components/Templates/StringTemplate';
 import { TextDialogTemplate } from '../../components/Templates/dialog/TextDialogTemplate';
 import { SingleReferenceTemplate } from '../../components/Templates/reference/SingleReferenceTemplate';
 import { CrossReferencesTemplate } from '../../components/Templates/CrossReferencesTemplate';
+import { BooleanTableEditor } from '../../components/Editors/dropdown/boolean/BooleanTableEditor';
+import { ControlledVocabularyTableEditor } from '../../components/Editors/dropdown/vocabulary/ControlledVocabularyTableEditor';
+import { DialogTriggerEditor } from '../../components/Editors/dialog/DialogTriggerEditor';
+import { CountDialogTemplate } from '../../components/Templates/dialog/CountDialogTemplate';
+import { RelatedNotesEditDialog } from '../../components/RelatedNotesEditDialog';
+import { RelatedNotesReadOnlyDialog } from '../../components/RelatedNotesReadOnlyDialog';
 import { getDefaultTableState } from '../../service/TableStateService';
 import { FILTER_CONFIGS } from '../../constants/FilterFields';
 import { useGetTableData } from '../../service/useGetTableData';
 import { useGetUserSettings } from '../../service/useGetUserSettings';
+import { useControlledVocabularyService } from '../../service/useControlledVocabularyService';
 import { SearchService } from '../../service/SearchService';
+import { GeneExpressionAnnotationService } from '../../service/GeneExpressionAnnotationService';
 import { Endpoints } from '../../constants/Endpoints';
 import { WhereExpressedDialog } from './WhereExpressedDialog';
 import { WhenExpressedDialog } from './WhenExpressedDialog';
@@ -35,8 +45,47 @@ export const GeneExpressionAnnotationsTable = () => {
 	const toast_topleft = useRef(null);
 	const toast_topright = useRef(null);
 
+	let geneExpressionAnnotationService = new GeneExpressionAnnotationService();
+
+	const expressionRelationTerms = useControlledVocabularyService('gene_expression');
+
+	const mutation = useMutation({
+		mutationFn: (updatedAnnotation) => {
+			if (!geneExpressionAnnotationService) {
+				geneExpressionAnnotationService = new GeneExpressionAnnotationService();
+			}
+			return geneExpressionAnnotationService.saveGeneExpressionAnnotation(updatedAnnotation);
+		},
+	});
+
 	const [whereExpressedData, setWhereExpressedData] = useState({ data: null, dialog: false });
 	const [whenExpressedData, setWhenExpressedData] = useState({ data: null, dialog: false });
+	const [relatedNotesData, setRelatedNotesData] = useState({
+		relatedNotes: [],
+		isInEdit: false,
+		dialog: false,
+		rowIndex: null,
+		mainRowProps: {},
+	});
+
+	const handleRelatedNotesOpen = (relatedNotes) => {
+		setRelatedNotesData({
+			originalRelatedNotes: relatedNotes,
+			dialog: true,
+			isInEdit: false,
+		});
+	};
+
+	const handleRelatedNotesOpenInEdit = (event, rowProps, isInEdit) => {
+		const { rowIndex } = rowProps;
+		setRelatedNotesData({
+			originalRelatedNotes: rowProps?.rowData?.relatedNotes,
+			dialog: true,
+			isInEdit,
+			rowIndex,
+			mainRowProps: rowProps,
+		});
+	};
 
 	const handleWhereExpressedOpen = (anatomicalSite, statement) => {
 		setWhereExpressedData({ data: anatomicalSite, statement, dialog: true });
@@ -63,12 +112,6 @@ export const GeneExpressionAnnotationsTable = () => {
 			if (withHandle.length > 0) {
 				return <StringTemplate string={withHandle[0].handle} />;
 			}
-		}
-	};
-
-	const relatedNotesTemplate = (rowData) => {
-		if (rowData?.relatedNotes) {
-			return <StringTemplate string={`Notes (${rowData.relatedNotes.length})`} />;
 		}
 	};
 
@@ -159,11 +202,21 @@ export const GeneExpressionAnnotationsTable = () => {
 				filterConfig: FILTER_CONFIGS.uniqueidFilterConfig,
 			},
 			{
-				field: 'relation.name',
+				field: 'relation',
+				columnKey: 'relation.name',
 				header: 'Expression Relation',
 				body: (rowData) => <StringTemplate string={rowData.relation?.name} />,
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.geaRelationFilterConfig,
+				editor: (editorOptions) => (
+					<ControlledVocabularyTableEditor
+						editorOptions={editorOptions}
+						field="relation"
+						options={expressionRelationTerms}
+						errorMessagesRef={errorMessagesRef}
+						showClear={false}
+					/>
+				),
 			},
 			{
 				field: 'whereExpressedStatement',
@@ -192,11 +245,27 @@ export const GeneExpressionAnnotationsTable = () => {
 				filterConfig: FILTER_CONFIGS.geaWhenExpressedFilterConfig,
 			},
 			{
-				field: 'relatedNotes.freeText',
+				field: 'relatedNotes',
+				columnKey: 'relatedNotes.freeText',
 				header: 'Related Notes',
-				body: relatedNotesTemplate,
+				body: (rowData) => (
+					<CountDialogTemplate entities={rowData.relatedNotes} handleOpen={handleRelatedNotesOpen} text={'Notes'} />
+				),
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.relatedNotesFilterConfig,
+				editor: (editorOptions) => {
+					const count = editorOptions.rowData.relatedNotes?.length;
+					return (
+						<DialogTriggerEditor
+							editorOptions={editorOptions}
+							errorMessagesRef={errorMessagesRef}
+							onOpenInEdit={handleRelatedNotesOpenInEdit}
+							errorField="relatedNotes"
+							displayText={count ? `Notes(${count}) ` : null}
+							addText="Add Note"
+						/>
+					);
+				},
 			},
 			{
 				field: 'crossReferences.displayName',
@@ -281,6 +350,9 @@ export const GeneExpressionAnnotationsTable = () => {
 				body: (rowData) => <BooleanTemplate value={rowData.internal} />,
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.internalFilterConfig,
+				editor: (editorOptions) => (
+					<BooleanTableEditor editorOptions={editorOptions} field="internal" errorMessagesRef={errorMessagesRef} />
+				),
 			},
 			{
 				field: 'obsolete',
@@ -288,10 +360,13 @@ export const GeneExpressionAnnotationsTable = () => {
 				body: (rowData) => <BooleanTemplate value={rowData.obsolete} />,
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.obsoleteFilterConfig,
+				editor: (editorOptions) => (
+					<BooleanTableEditor editorOptions={editorOptions} field="obsolete" errorMessagesRef={errorMessagesRef} />
+				),
 			},
 		],
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-		[]
+		[expressionRelationTerms]
 	);
 
 	const DEFAULT_COLUMN_WIDTH = 10;
@@ -322,6 +397,8 @@ export const GeneExpressionAnnotationsTable = () => {
 	return (
 		<>
 			<div className="card">
+				<Toast ref={toast_topleft} position="top-left" />
+				<Toast ref={toast_topright} position="top-right" />
 				<GenericDataTable
 					endpoint={SEARCH_ENDPOINT}
 					tableName="Gene Expression Annotations"
@@ -333,7 +410,8 @@ export const GeneExpressionAnnotationsTable = () => {
 					setTableState={setTableState}
 					columns={columns}
 					toasts={{ toast_topleft, toast_topright }}
-					isEditable={false}
+					isEditable={true}
+					mutation={mutation}
 					isInEditMode={isInEditMode}
 					setIsInEditMode={setIsInEditMode}
 					sortMapping={sortMapping}
@@ -349,6 +427,17 @@ export const GeneExpressionAnnotationsTable = () => {
 			</div>
 			<WhereExpressedDialog whereExpressedData={whereExpressedData} setWhereExpressedData={setWhereExpressedData} />
 			<WhenExpressedDialog whenExpressedData={whenExpressedData} setWhenExpressedData={setWhenExpressedData} />
+			<RelatedNotesEditDialog
+				originalRelatedNotesData={relatedNotesData}
+				setOriginalRelatedNotesData={setRelatedNotesData}
+				errorMessagesMainRow={errorMessages}
+				setErrorMessagesMainRow={setErrorMessages}
+				noteTypeVocabularyTermSet="expression_annotation_note_type"
+			/>
+			<RelatedNotesReadOnlyDialog
+				originalRelatedNotesData={relatedNotesData}
+				setOriginalRelatedNotesData={setRelatedNotesData}
+			/>
 		</>
 	);
 };
