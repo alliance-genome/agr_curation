@@ -96,11 +96,7 @@ export const GenomeAssembliesTable = () => {
 				header: 'Related Notes',
 				sortable: true,
 				body: (rowData) => (
-					<CountDialogTemplate
-						entities={rowData.relatedNotes}
-						handleOpen={handleRelatedNotesOpen}
-						text={'Notes'}
-					/>
+					<CountDialogTemplate entities={rowData.relatedNotes} handleOpen={handleRelatedNotesOpen} text={'Notes'} />
 				),
 				filterConfig: FILTER_CONFIGS.relatedNotesFilterConfig,
 			},
