@@ -259,7 +259,7 @@ export const GeneExpressionAnnotationsTable = () => {
 				header: 'Annotation Date Created',
 				body: (rowData) => <StringTemplate string={rowData.dateCreated} />,
 				sortable: true,
-				filterConfig: FILTER_CONFIGS.dataCreatedFilterConfig,
+				filterConfig: FILTER_CONFIGS.dateCreatedFilterConfig,
 			},
 			{
 				field: 'updatedBy.uniqueId',

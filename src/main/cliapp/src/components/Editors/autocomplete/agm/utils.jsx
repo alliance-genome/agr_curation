@@ -2,6 +2,7 @@ import { buildAutocompleteFilter, autocompleteSearch } from '../../../../utils/u
 import { SearchService } from '../../../../service/SearchService';
 import { Endpoints } from '../../../../constants/Endpoints';
 import { SubjectAutocompleteTemplate } from '../base/templates/SubjectAutocompleteTemplate';
+import { AUTOCOMPLETE_CONFIGS, getAutocompleteFields } from '../../../../constants/FilterFields';
 
 const agmValueDisplay = (item, setAutocompleteHoverItem, op, query) => (
 	<SubjectAutocompleteTemplate item={item} setAutocompleteHoverItem={setAutocompleteHoverItem} op={op} query={query} />
@@ -9,7 +10,7 @@ const agmValueDisplay = (item, setAutocompleteHoverItem, op, query) => (
 
 export const sgdStrainBackgroundSearchConfig = {
 	endpoint: Endpoints.Entity.AGM,
-	autocompleteFields: ['name', 'curie', 'primaryExternalId', 'modInternalId', 'crossReferences.referencedCurie'],
+	autocompleteFields: getAutocompleteFields(AUTOCOMPLETE_CONFIGS.biologicalEntityAutocompleteConfig),
 	filterName: 'sgdStrainBackgroundFilter',
 	otherFilters: { taxonFilter: { 'taxon.name': { queryString: 'Saccharomyces cerevisiae' } } },
 	valueDisplay: agmValueDisplay,
@@ -17,17 +18,7 @@ export const sgdStrainBackgroundSearchConfig = {
 
 export const diseaseGeneticModifierAgmsSearchConfig = {
 	endpoint: Endpoints.Entity.AGM,
-	autocompleteFields: [
-		'agmFullName.formatText',
-		'agmSynonyms.formatText',
-		'agmFullName.displayText',
-		'agmSynonyms.displayText',
-		'agmSecondaryIds.secondaryId',
-		'curie',
-		'primaryExternalId',
-		'modInternalId',
-		'crossReferences.referencedCurie',
-	],
+	autocompleteFields: getAutocompleteFields(AUTOCOMPLETE_CONFIGS.biologicalEntityAutocompleteConfig),
 	filterName: 'geneticModifierAgmsFilter',
 	valueDisplay: agmValueDisplay,
 };
