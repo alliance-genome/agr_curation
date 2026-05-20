@@ -41,6 +41,13 @@ public class ResourceDescriptorPageService extends BaseEntityCrudService<Resourc
 		return new ObjectResponse<>(resourceDescriptorPageDAO.persist(dbEntity));
 	}
 
+	@Override
+	@Transactional
+	public ObjectResponse<ResourceDescriptorPage> create(ResourceDescriptorPage uiEntity) {
+		ResourceDescriptorPage dbEntity = resourceDescriptorPageValidator.validateResourceDescriptorPageCreate(uiEntity);
+		return new ObjectResponse<>(resourceDescriptorPageDAO.persist(dbEntity));
+	}
+
 	public ResourceDescriptorPage getPageForResourceDescriptor(String resourceDescriptorPrefix, String pageName) {
 
 		ResourceDescriptorPage page = null;
