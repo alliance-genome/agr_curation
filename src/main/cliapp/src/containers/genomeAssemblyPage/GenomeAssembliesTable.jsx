@@ -126,7 +126,7 @@ export const GenomeAssembliesTable = () => {
 				header: 'Date Created',
 				sortable: true,
 				body: (rowData) => <StringTemplate string={rowData.dateCreated} />,
-				filterConfig: FILTER_CONFIGS.dataCreatedFilterConfig,
+				filterConfig: FILTER_CONFIGS.dateCreatedFilterConfig,
 			},
 			{
 				field: 'internal',
