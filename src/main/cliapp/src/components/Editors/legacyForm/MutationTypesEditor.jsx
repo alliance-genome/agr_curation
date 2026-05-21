@@ -4,10 +4,11 @@ import { autocompleteSearch, buildAutocompleteFilter } from '../../../utils/util
 import { SubjectAutocompleteTemplate } from '../autocomplete/base/templates/SubjectAutocompleteTemplate';
 import { DialogErrorMessageComponent } from '../../Error/DialogErrorMessageComponent';
 import { Endpoints } from '../../../constants/Endpoints';
+import { AUTOCOMPLETE_CONFIGS, getAutocompleteFields } from '../../../constants/FilterFields';
 
 const mutationTypeSearch = (event, setFiltered, setInputValue) => {
 	const searchService = new SearchService();
-	const autocompleteFields = ['name', 'curie'];
+	const autocompleteFields = getAutocompleteFields(AUTOCOMPLETE_CONFIGS.ontologyTermAutocompleteConfig);
 	const endpoint = Endpoints.Ontology.SO;
 	const filterName = 'mutationTypeFilter';
 	const filter = buildAutocompleteFilter(event, autocompleteFields);

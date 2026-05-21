@@ -21,6 +21,7 @@ import { ConstructsPage, ConstructDetailPage } from './containers/constructsPage
 import { ProfilePage } from './containers/profilePage';
 import { MoleculesPage } from './containers/moleculesPage';
 import { SpeciesPage } from './containers/speciesPage';
+import { GenomeAssembliesPage } from './containers/genomeAssemblyPage';
 import { ReferencePage } from './containers/referencePage';
 import { ControlledVocabularyPage } from './containers/controlledVocabularyPage';
 import { VocabulariesPage } from './containers/vocabularyPage';
@@ -180,6 +181,14 @@ export default function AppRoutes() {
 						element={
 							<ErrorBoundary>
 								<SpeciesPage />
+							</ErrorBoundary>
+						}
+					/>
+					<Route
+						path="/genomeassemblies"
+						element={
+							<ErrorBoundary>
+								<GenomeAssembliesPage />
 							</ErrorBoundary>
 						}
 					/>

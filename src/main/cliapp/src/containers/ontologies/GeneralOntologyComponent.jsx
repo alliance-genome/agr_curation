@@ -90,7 +90,7 @@ export const GeneralOntologyComponent = ({ name, endpoint, showNamespace, showAb
 		header: 'Secondary IDs',
 		sortable: true,
 		body: (rowData) => <StringListTemplate list={rowData.secondaryIdentifiers} />,
-		filterConfig: FILTER_CONFIGS.secondaryIdsFilterConfig,
+		filterConfig: FILTER_CONFIGS.secondaryIdentifiersFilterConfig,
 	});
 	columns.push({
 		field: 'obsolete',

@@ -12,6 +12,7 @@ import { AutocompleteMultiEditor } from '../../components/Editors/autocomplete/b
 import { AutocompleteEditor } from '../../components/Editors/autocomplete/base/AutocompleteEditor';
 import { autocompleteSearch, buildAutocompleteFilter } from '../../utils/utils';
 import { Endpoints } from '../../constants/Endpoints';
+import { AUTOCOMPLETE_CONFIGS, getAutocompleteFields } from '../../constants/FilterFields';
 import ErrorBoundary from '../../components/Error/ErrorBoundary';
 
 export const NewVocabularyTermSetForm = ({
@@ -96,7 +97,7 @@ export const NewVocabularyTermSetForm = ({
 		});
 	};
 	const vocabularySearch = (event, setFiltered, setQuery) => {
-		const autocompleteFields = ['name'];
+		const autocompleteFields = getAutocompleteFields(AUTOCOMPLETE_CONFIGS.nameOnlyAutocompleteConfig);
 		const endpoint = Endpoints.Vocabulary.VOCABULARY;
 		const filterName = 'vocabularyFilter';
 		const filter = buildAutocompleteFilter(event, autocompleteFields);
@@ -115,7 +116,7 @@ export const NewVocabularyTermSetForm = ({
 	};
 
 	const memberTermSearch = (event, setFiltered, setInputValue, props) => {
-		const autocompleteFields = ['name'];
+		const autocompleteFields = getAutocompleteFields(AUTOCOMPLETE_CONFIGS.nameOnlyAutocompleteConfig);
 		const endpoint = Endpoints.Vocabulary.TERM;
 		const filterName = 'memberTermsFilter';
 		const filter = buildAutocompleteFilter(event, autocompleteFields);

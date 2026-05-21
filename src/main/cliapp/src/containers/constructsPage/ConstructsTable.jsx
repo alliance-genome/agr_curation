@@ -155,14 +155,14 @@ export const ConstructsTable = () => {
 				header: 'Primary External ID',
 				sortable: { isInEditMode },
 				body: (rowData) => <IdTemplate id={rowData.primaryExternalId} />,
-				filterConfig: FILTER_CONFIGS.primaryexternalidFilterConfig,
+				filterConfig: FILTER_CONFIGS.primaryExternalIdFilterConfig,
 			},
 			{
 				field: 'modInternalId',
 				header: 'MOD Internal ID',
 				sortable: { isInEditMode },
 				body: (rowData) => <IdTemplate id={rowData.modInternalId} />,
-				filterConfig: FILTER_CONFIGS.modinternalidFilterConfig,
+				filterConfig: FILTER_CONFIGS.modInternalIdFilterConfig,
 			},
 			{
 				field: 'constructSymbol.displayText',
@@ -212,7 +212,7 @@ export const ConstructsTable = () => {
 				field: 'secondaryIdentifiers',
 				header: 'Secondary IDs',
 				sortable: true,
-				filterConfig: FILTER_CONFIGS.secondaryIdsFilterConfig,
+				filterConfig: FILTER_CONFIGS.secondaryIdentifiersFilterConfig,
 				body: (rowData) => <StringListTemplate list={rowData.secondaryIdentifiers} />,
 			},
 			{
@@ -291,7 +291,7 @@ export const ConstructsTable = () => {
 				sortable: { isInEditMode },
 				filter: true,
 				body: (rowData) => <StringTemplate string={rowData.dateCreated} />,
-				filterConfig: FILTER_CONFIGS.dataCreatedFilterConfig,
+				filterConfig: FILTER_CONFIGS.dateCreatedFilterConfig,
 			},
 			{
 				field: 'internal',

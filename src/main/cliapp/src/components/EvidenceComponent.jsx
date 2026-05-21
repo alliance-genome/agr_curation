@@ -12,6 +12,7 @@ import {
 } from '../utils/utils';
 import { LiteratureAutocompleteTemplate } from './Editors/autocomplete/base/templates/LiteratureAutocompleteTemplate';
 import { Endpoints } from '../constants/Endpoints';
+import { AUTOCOMPLETE_CONFIGS, getAutocompleteFields } from '../constants/FilterFields';
 
 export const evidenceTemplate = (rowData) => {
 	if (rowData && rowData.evidence) {
@@ -53,7 +54,7 @@ export const onEvidenceValueChange = (event, setFieldValue, props) => {
 
 export const evidenceSearch = (event, setFiltered, setInputValue) => {
 	const searchService = new SearchService();
-	const autocompleteFields = ['curie', 'cross_references.curie'];
+	const autocompleteFields = getAutocompleteFields(AUTOCOMPLETE_CONFIGS.referenceAutocompleteConfig);
 	const endpoint = Endpoints.Document.LITERATURE_REFERENCE;
 	const filterName = 'evidenceFilter';
 	const filter = buildAutocompleteFilter(event, autocompleteFields);
