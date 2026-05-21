@@ -55,15 +55,12 @@ export const NewResourceDescriptorPageForm = ({
 	};
 
 	const onResourceDescriptorChange = (event) => {
-		const value = event.target?.value;
-		const resolved = value && typeof value === 'object' ? value : null;
-		setResourceDescriptorPage((prev) => ({ ...prev, resourceDescriptor: resolved }));
+		setResourceDescriptorPage((prev) => ({ ...prev, resourceDescriptor: event.target?.value }));
 	};
 
 	const onInternalChange = (value) => {
-		if (value === undefined || value === null || value === '') return;
-		const parsed = typeof value === 'string' ? JSON.parse(value) : value;
-		setResourceDescriptorPage((prev) => ({ ...prev, internal: parsed }));
+		if (value === undefined || value === null) return;
+		setResourceDescriptorPage((prev) => ({ ...prev, internal: value }));
 	};
 
 	const hideDialog = () => {
@@ -213,11 +210,7 @@ export const NewResourceDescriptorPageForm = ({
 						<label htmlFor="internal">Internal</label>
 						<Dropdown
 							id="internal"
-							value={
-								resourceDescriptorPage.internal === null || resourceDescriptorPage.internal === undefined
-									? null
-									: String(resourceDescriptorPage.internal)
-							}
+							value={resourceDescriptorPage.internal}
 							options={booleanTerms?.terms || []}
 							optionLabel="text"
 							optionValue="name"

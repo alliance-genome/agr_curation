@@ -68,9 +68,8 @@ export const NewResourceDescriptorForm = ({
 	};
 
 	const onInternalChange = (value) => {
-		if (value === undefined || value === null || value === '') return;
-		const parsed = typeof value === 'string' ? JSON.parse(value) : value;
-		setResourceDescriptor((prev) => ({ ...prev, internal: parsed }));
+		if (value === undefined || value === null) return;
+		setResourceDescriptor((prev) => ({ ...prev, internal: value }));
 	};
 
 	const hideDialog = () => {
@@ -224,11 +223,7 @@ export const NewResourceDescriptorForm = ({
 						<label htmlFor="internal">Internal</label>
 						<Dropdown
 							id="internal"
-							value={
-								resourceDescriptor.internal === null || resourceDescriptor.internal === undefined
-									? null
-									: String(resourceDescriptor.internal)
-							}
+							value={resourceDescriptor.internal}
 							options={booleanTerms?.terms || []}
 							optionLabel="text"
 							optionValue="name"
