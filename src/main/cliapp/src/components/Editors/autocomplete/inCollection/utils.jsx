@@ -2,10 +2,11 @@ import { buildAutocompleteFilter, autocompleteSearch } from '../../../../utils/u
 import { SearchService } from '../../../../service/SearchService';
 import { Endpoints } from '../../../../constants/Endpoints';
 import { VocabTermAutocompleteTemplate } from '../base/templates/VocabTermAutocompleteTemplate';
+import { AUTOCOMPLETE_CONFIGS, getAutocompleteFields } from '../../../../constants/FilterFields';
 
 export const inCollectionSearchConfig = {
 	endpoint: Endpoints.Vocabulary.TERM,
-	autocompleteFields: ['name'],
+	autocompleteFields: getAutocompleteFields(AUTOCOMPLETE_CONFIGS.nameOnlyAutocompleteConfig),
 	filterName: 'inCollectionFilter',
 	otherFilters: {
 		vocabularyFilter: {

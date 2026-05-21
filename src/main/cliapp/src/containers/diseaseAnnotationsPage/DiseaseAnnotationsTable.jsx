@@ -233,14 +233,14 @@ export const DiseaseAnnotationsTable = () => {
 				header: 'MOD Annotation ID',
 				body: (rowData) => <IdTemplate id={rowData.primaryExternalId} />,
 				sortable: true,
-				filterConfig: FILTER_CONFIGS.primaryexternalidFilterConfig,
+				filterConfig: FILTER_CONFIGS.primaryExternalIdFilterConfig,
 			},
 			{
 				field: 'modInternalId',
 				header: 'MOD Internal ID',
 				body: (rowData) => <IdTemplate id={rowData.modInternalId} />,
 				sortable: true,
-				filterConfig: FILTER_CONFIGS.modinternalidFilterConfig,
+				filterConfig: FILTER_CONFIGS.modInternalIdFilterConfig,
 			},
 			{
 				field: 'diseaseAnnotationSubject',
@@ -625,7 +625,7 @@ export const DiseaseAnnotationsTable = () => {
 				header: 'Date Created',
 				sortable: true,
 				body: (rowData) => <StringTemplate string={rowData.dateCreated} />,
-				filterConfig: FILTER_CONFIGS.dataCreatedFilterConfig,
+				filterConfig: FILTER_CONFIGS.dateCreatedFilterConfig,
 			},
 			{
 				field: 'internal',

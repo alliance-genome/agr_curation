@@ -2,22 +2,7 @@ import { buildAutocompleteFilter, autocompleteSearch } from '../../../../utils/u
 import { SearchService } from '../../../../service/SearchService';
 import { Endpoints } from '../../../../constants/Endpoints';
 import { SubjectAutocompleteTemplate } from '../base/templates/SubjectAutocompleteTemplate';
-
-const baseGeneAutocompleteFields = [
-	'geneSymbol.formatText',
-	'geneSymbol.displayText',
-	'geneFullName.formatText',
-	'geneFullName.displayText',
-	'geneSynonyms.formatText',
-	'geneSynonyms.displayText',
-	'geneSystematicName.formatText',
-	'geneSystematicName.displayText',
-	'geneSecondaryIds.secondaryId',
-	'curie',
-	'primaryExternalId',
-	'modInternalId',
-	'crossReferences.referencedCurie',
-];
+import { AUTOCOMPLETE_CONFIGS, getAutocompleteFields } from '../../../../constants/FilterFields';
 
 const geneValueDisplay = (item, setAutocompleteHoverItem, op, query) => (
 	<SubjectAutocompleteTemplate item={item} setAutocompleteHoverItem={setAutocompleteHoverItem} op={op} query={query} />
@@ -25,7 +10,7 @@ const geneValueDisplay = (item, setAutocompleteHoverItem, op, query) => (
 
 export const withSearchConfig = {
 	endpoint: Endpoints.Entity.GENE,
-	autocompleteFields: baseGeneAutocompleteFields,
+	autocompleteFields: getAutocompleteFields(AUTOCOMPLETE_CONFIGS.biologicalEntityAutocompleteConfig),
 	filterName: 'withFilter',
 	otherFilters: { taxonFilter: { 'taxon.curie': { queryString: 'NCBITaxon:9606' } } },
 	valueDisplay: geneValueDisplay,
@@ -33,28 +18,14 @@ export const withSearchConfig = {
 
 export const assertedGenesSearchConfig = {
 	endpoint: Endpoints.Entity.GENE,
-	// assertedGenes intentionally omits geneSecondaryIds.secondaryId (matches legacy filter behavior).
-	autocompleteFields: [
-		'geneSymbol.formatText',
-		'geneSymbol.displayText',
-		'geneFullName.formatText',
-		'geneFullName.displayText',
-		'curie',
-		'primaryExternalId',
-		'modInternalId',
-		'crossReferences.referencedCurie',
-		'geneSynonyms.formatText',
-		'geneSynonyms.displayText',
-		'geneSystematicName.formatText',
-		'geneSystematicName.displayText',
-	],
+	autocompleteFields: getAutocompleteFields(AUTOCOMPLETE_CONFIGS.assertedGenesAutocompleteConfig),
 	filterName: 'assertedGenesFilter',
 	valueDisplay: geneValueDisplay,
 };
 
 export const diseaseGeneticModifierGenesSearchConfig = {
 	endpoint: Endpoints.Entity.GENE,
-	autocompleteFields: baseGeneAutocompleteFields,
+	autocompleteFields: getAutocompleteFields(AUTOCOMPLETE_CONFIGS.biologicalEntityAutocompleteConfig),
 	filterName: 'geneticModifierGenesFilter',
 	valueDisplay: geneValueDisplay,
 };

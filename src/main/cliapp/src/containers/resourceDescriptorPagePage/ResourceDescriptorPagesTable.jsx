@@ -128,7 +128,7 @@ export const ResourceDescriptorPagesTable = () => {
 				sortable: true,
 				filter: true,
 				body: (rowData) => <StringTemplate string={rowData.dateCreated} />,
-				filterConfig: FILTER_CONFIGS.dataCreatedFilterConfig,
+				filterConfig: FILTER_CONFIGS.dateCreatedFilterConfig,
 			},
 			{
 				field: 'updatedBy.uniqueId',

@@ -2,6 +2,7 @@ import { buildAutocompleteFilter, autocompleteSearch } from '../../../../utils/u
 import { SearchService } from '../../../../service/SearchService';
 import { Endpoints } from '../../../../constants/Endpoints';
 import { SubjectAutocompleteTemplate } from '../base/templates/SubjectAutocompleteTemplate';
+import { AUTOCOMPLETE_CONFIGS, getAutocompleteFields } from '../../../../constants/FilterFields';
 
 const alleleValueDisplay = (item, setAutocompleteHoverItem, op, query) => (
 	<SubjectAutocompleteTemplate item={item} setAutocompleteHoverItem={setAutocompleteHoverItem} op={op} query={query} />
@@ -9,38 +10,14 @@ const alleleValueDisplay = (item, setAutocompleteHoverItem, op, query) => (
 
 export const assertedAllelesSearchConfig = {
 	endpoint: Endpoints.Entity.ALLELE,
-	autocompleteFields: [
-		'alleleSymbol.formatText',
-		'alleleSymbol.displayText',
-		'alleleFullName.formatText',
-		'alleleFullName.displayText',
-		'curie',
-		'primaryExternalId',
-		'modInternalId',
-		'crossReferences.referencedCurie',
-		'alleleSecondaryIds.secondaryId',
-		'alleleSynonyms.formatText',
-		'alleleSynonyms.displayText',
-	],
+	autocompleteFields: getAutocompleteFields(AUTOCOMPLETE_CONFIGS.biologicalEntityAutocompleteConfig),
 	filterName: 'assertedAllelesFilter',
 	valueDisplay: alleleValueDisplay,
 };
 
 export const diseaseGeneticModifierAllelesSearchConfig = {
 	endpoint: Endpoints.Entity.ALLELE,
-	// Modifier variant intentionally omits alleleSymbol.displayText (matches legacy behavior).
-	autocompleteFields: [
-		'alleleSymbol.formatText',
-		'alleleFullName.formatText',
-		'alleleFullName.displayText',
-		'alleleSynonyms.formatText',
-		'alleleSynonyms.displayText',
-		'curie',
-		'primaryExternalId',
-		'modInternalId',
-		'crossReferences.referencedCurie',
-		'alleleSecondaryIds.secondaryId',
-	],
+	autocompleteFields: getAutocompleteFields(AUTOCOMPLETE_CONFIGS.biologicalEntityAutocompleteConfig),
 	filterName: 'geneticModifierAllelesFilter',
 	valueDisplay: alleleValueDisplay,
 };
