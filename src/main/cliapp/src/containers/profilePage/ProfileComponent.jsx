@@ -47,66 +47,82 @@ export const ProfileComponent = () => {
 	const personSettingsService = new PersonSettingsService();
 	const booleanTerms = useControlledVocabularyService('generic_boolean_terms');
 
-	let deleteLocalStorage = (result, success, key) => {
-		if (result.status !== 200) success = false;
-		localStorage.removeItem(key);
-	};
-
-	const globalResetHandler = () => {
-		let success = true;
-		if (localUserInfo?.settings) {
-			for (let setting of localUserInfo.settings) {
+	const globalResetHandler = async () => {
+		if (!localUserInfo?.settings?.length) return;
+		const results = await Promise.allSettled(
+			localUserInfo.settings.map((setting) =>
 				personSettingsService
 					.deleteUserSettings(setting.settingsKey)
-					.then((result) => deleteLocalStorage(result, success, setting.settingsKey));
-			}
-			if (success) {
-				toast_topright.current.show([
-					{
-						life: 7000,
-						severity: 'success',
-						summary: 'Update success: ',
-						detail: 'Application state has been reset',
-						sticky: false,
-					},
-				]);
-				queryClient.invalidateQueries({
-					queryKey: [QUERY_KEYS.USER_INFO],
-				});
+					.then((result) => ({ settingsKey: setting.settingsKey, result }))
+			)
+		);
+
+		let failureCount = 0;
+		for (const settled of results) {
+			if (settled.status === 'fulfilled' && settled.value.result.status === 200) {
+				localStorage.removeItem(settled.value.settingsKey);
 			} else {
-				toast_topright.current.show([
-					{
-						life: 7000,
-						severity: 'error',
-						summary: 'Update error: ',
-						detail: 'An error has occured while trying to reset your application state',
-						sticky: false,
-					},
-				]);
+				failureCount++;
 			}
 		}
-	};
 
-	const resetTableState = (settingsKey) => {
-		let success = true;
-		personSettingsService
-			.deleteUserSettings(settingsKey)
-			.then((result) => deleteLocalStorage(result, success, settingsKey));
-		if (success) {
-			toast_topright.current.show([
+		queryClient.invalidateQueries({
+			queryKey: [QUERY_KEYS.USER_INFO],
+		});
+
+		if (failureCount === 0) {
+			toast_topright.current?.show([
 				{
 					life: 7000,
 					severity: 'success',
 					summary: 'Update success: ',
-					detail: 'Table state has been reset',
+					detail: 'Application state has been reset',
 					sticky: false,
 				},
 			]);
-			queryClient.invalidateQueries({
-				queryKey: [QUERY_KEYS.USER_INFO],
-			});
 		} else {
-			toast_topright.current.show([
+			toast_topright.current?.show([
+				{
+					life: 7000,
+					severity: 'error',
+					summary: 'Update error: ',
+					detail: `Failed to reset ${failureCount} of ${results.length} settings`,
+					sticky: false,
+				},
+			]);
+		}
+	};
+
+	const resetTableState = async (settingsKey) => {
+		try {
+			const result = await personSettingsService.deleteUserSettings(settingsKey);
+			if (result.status === 200) {
+				localStorage.removeItem(settingsKey);
+				queryClient.invalidateQueries({
+					queryKey: [QUERY_KEYS.USER_INFO],
+				});
+				toast_topright.current?.show([
+					{
+						life: 7000,
+						severity: 'success',
+						summary: 'Update success: ',
+						detail: 'Table state has been reset',
+						sticky: false,
+					},
+				]);
+			} else {
+				toast_topright.current?.show([
+					{
+						life: 7000,
+						severity: 'error',
+						summary: 'Update error: ',
+						detail: 'An error has occured while trying to reset your table state',
+						sticky: false,
+					},
+				]);
+			}
+		} catch (error) {
+			toast_topright.current?.show([
 				{
 					life: 7000,
 					severity: 'error',
