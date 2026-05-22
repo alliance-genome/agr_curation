@@ -34,6 +34,7 @@ quarkus.flyway.validate-on-migrate=false
 quarkus.flyway.baseline-version=0.3.0
 quarkus.flyway.baseline-on-migrate=true
 quarkus.flyway.clean-disabled=true
+quarkus.flyway.out-of-order=true
 
 quarkus.elasticsearch.protocol = http
 
