@@ -33,6 +33,12 @@ public interface ResourceDescriptorPageCrudInterface extends BaseIdCrudInterface
 	SearchResponse<ResourceDescriptorPage> search(@DefaultValue("0") @QueryParam("page") Integer page, @DefaultValue("10") @QueryParam("limit") Integer limit, HashMap<String, Object> params);
 
 	@Override
+	@POST
+	@Path("/")
+	@JsonView(CurationView.ResourceDescriptorPageView.class)
+	ObjectResponse<ResourceDescriptorPage> create(ResourceDescriptorPage entity);
+
+	@Override
 	@PUT
 	@Path("/")
 	@JsonView(CurationView.ResourceDescriptorPageView.class)

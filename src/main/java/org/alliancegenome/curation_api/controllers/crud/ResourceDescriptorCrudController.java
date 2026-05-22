@@ -29,6 +29,11 @@ public class ResourceDescriptorCrudController extends BaseEntityCrudController<R
 	}
 
 	@Override
+	public ObjectResponse<ResourceDescriptor> create(ResourceDescriptor entity) {
+		return resourceDescriptorService.create(entity);
+	}
+
+	@Override
 	public ObjectResponse<ResourceDescriptor> update(ResourceDescriptor entity) {
 		return resourceDescriptorService.update(entity);
 	}

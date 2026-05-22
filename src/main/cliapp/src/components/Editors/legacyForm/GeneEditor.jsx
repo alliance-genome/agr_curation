@@ -5,23 +5,11 @@ import { SubjectAutocompleteTemplate } from '../autocomplete/base/templates/Subj
 import { DialogErrorMessageComponent } from '../../Error/DialogErrorMessageComponent';
 import { getIdentifier } from '../../../utils/utils';
 import { Endpoints } from '../../../constants/Endpoints';
+import { AUTOCOMPLETE_CONFIGS, getAutocompleteFields } from '../../../constants/FilterFields';
 
 const geneSearch = (event, setFiltered, setInputValue) => {
 	const searchService = new SearchService();
-	const autocompleteFields = [
-		'curie',
-		'primaryExternalId',
-		'crossReferences.referencedCurie',
-		'geneFullName.formatText',
-		'geneFullName.displayText',
-		'geneSymbol.formatText',
-		'geneSymbol.displayText',
-		'geneSynonyms.formatText',
-		'geneSynonyms.displayText',
-		'geneSystematicName.formatText',
-		'geneSystematicName.displayText',
-		'geneSecondaryIds.secondaryId',
-	];
+	const autocompleteFields = getAutocompleteFields(AUTOCOMPLETE_CONFIGS.biologicalEntityAutocompleteConfig);
 	const endpoint = Endpoints.Entity.GENE;
 	const filterName = 'objectFilter';
 	const filter = buildAutocompleteFilter(event, autocompleteFields);
