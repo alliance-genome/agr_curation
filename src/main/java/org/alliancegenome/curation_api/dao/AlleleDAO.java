@@ -282,7 +282,7 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 			sp.abbreviation,
 			sp.fullname,
 			sp.displayname,
-			sp.assembly_curie
+			ga_be.primaryExternalId
 			FROM Allele a
 			INNER JOIN BiologicalEntity b ON b.id = a.id
 			INNER JOIN SlotAnnotation s ON a.id = s.singleallele_id
@@ -293,6 +293,8 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 			INNER JOIN resourceDescriptorPage rd ON rd.id = cr.resourcedescriptorpage_id
 			INNER JOIN organization org ON org.id = b.dataprovider_id
 			LEFT JOIN species sp ON sp.taxon_id = ot.id
+			LEFT JOIN genomeassembly ga ON ga.id = sp.genomeassembly_id
+			LEFT JOIN biologicalentity ga_be ON ga_be.id = ga.id
 			WHERE a.id IN :alleleIds
 			""";
 
@@ -334,7 +336,11 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 					species.setAbbreviation((String) row[16]);
 					species.setFullName((String) row[17]);
 					species.setDisplayName((String) row[18]);
-					species.setAssembly_curie((String) row[19]);
+					if (row[19] != null) {
+						GenomeAssembly genomeAssembly = new GenomeAssembly();
+						genomeAssembly.setPrimaryExternalId((String) row[19]);
+						species.setGenomeAssembly(genomeAssembly);
+					}
 					term.setSpecies(species);
 				}
 				allele.setTaxon(term);

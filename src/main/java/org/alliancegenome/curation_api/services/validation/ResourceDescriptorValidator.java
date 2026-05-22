@@ -5,6 +5,7 @@ import org.alliancegenome.curation_api.dao.ResourceDescriptorDAO;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.ResourceDescriptor;
 import org.alliancegenome.curation_api.response.ObjectResponse;
+import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.validation.base.AuditedObjectValidator;
 import org.apache.commons.lang3.StringUtils;
 
@@ -38,11 +39,27 @@ public class ResourceDescriptorValidator extends AuditedObjectValidator<Resource
 		return validateResourceDescriptor(uiEntity, dbEntity);
 	}
 
+	public ResourceDescriptor validateResourceDescriptorCreate(ResourceDescriptor uiEntity) {
+		response = new ObjectResponse<>(uiEntity);
+		errorMessage = "Could not create Resource Descriptor";
+
+		ResourceDescriptor dbEntity = new ResourceDescriptor();
+		dbEntity = (ResourceDescriptor) validateAuditedObjectFields(uiEntity, dbEntity, true);
+
+		return validateResourceDescriptor(uiEntity, dbEntity);
+	}
+
 	private ResourceDescriptor validateResourceDescriptor(ResourceDescriptor uiEntity, ResourceDescriptor dbEntity) {
 		if (StringUtils.isBlank(uiEntity.getPrefix())) {
 			addMessageResponse("prefix", ValidationConstants.REQUIRED_MESSAGE);
 		} else {
-			dbEntity.setPrefix(uiEntity.getPrefix());
+			SearchResponse<ResourceDescriptor> existing = resourceDescriptorDAO.findByField("prefix", uiEntity.getPrefix());
+			ResourceDescriptor existingMatch = existing == null ? null : existing.getSingleResult();
+			if (existingMatch != null && !existingMatch.getId().equals(uiEntity.getId())) {
+				addMessageResponse("prefix", "A Resource Descriptor with this prefix already exists");
+			} else {
+				dbEntity.setPrefix(uiEntity.getPrefix());
+			}
 		}
 
 		if (StringUtils.isBlank(uiEntity.getName())) {

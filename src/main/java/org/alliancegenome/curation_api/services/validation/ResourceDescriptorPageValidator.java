@@ -41,6 +41,16 @@ public class ResourceDescriptorPageValidator extends AuditedObjectValidator<Reso
 		return validateResourceDescriptorPage(uiEntity, dbEntity);
 	}
 
+	public ResourceDescriptorPage validateResourceDescriptorPageCreate(ResourceDescriptorPage uiEntity) {
+		response = new ObjectResponse<>(uiEntity);
+		errorMessage = "Could not create Resource Descriptor Page";
+
+		ResourceDescriptorPage dbEntity = new ResourceDescriptorPage();
+		dbEntity = (ResourceDescriptorPage) validateAuditedObjectFields(uiEntity, dbEntity, true);
+
+		return validateResourceDescriptorPage(uiEntity, dbEntity);
+	}
+
 	private ResourceDescriptorPage validateResourceDescriptorPage(ResourceDescriptorPage uiEntity, ResourceDescriptorPage dbEntity) {
 		if (uiEntity.getResourceDescriptor() == null || uiEntity.getResourceDescriptor().getId() == null) {
 			addMessageResponse("resourceDescriptor", ValidationConstants.REQUIRED_MESSAGE);

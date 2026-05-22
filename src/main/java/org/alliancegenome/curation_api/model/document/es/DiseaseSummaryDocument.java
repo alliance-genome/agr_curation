@@ -26,4 +26,5 @@ public class DiseaseSummaryDocument extends ESDocument {
 	private Set<OntologyTerm> children;
 	private List<Map<String, String>> crossReferenceLinkUrls;
 	private List<Map<String, String>> sourceReferenceLinkUrls;
+	private Set<String> parentClosureIDs;
 }

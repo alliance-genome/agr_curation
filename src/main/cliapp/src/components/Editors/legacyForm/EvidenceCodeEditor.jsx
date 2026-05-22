@@ -4,10 +4,11 @@ import { SearchService } from '../../../service/SearchService';
 import { EvidenceAutocompleteTemplate } from '../autocomplete/base/templates/EvidenceAutocompleteTemplate';
 import { ErrorMessageComponent } from '../../Error/ErrorMessageComponent';
 import { Endpoints } from '../../../constants/Endpoints';
+import { AUTOCOMPLETE_CONFIGS, getAutocompleteFields } from '../../../constants/FilterFields';
 
 const evidenceSearch = (event, setFiltered, setInputValue) => {
 	const searchService = new SearchService();
-	const autocompleteFields = ['curie', 'name', 'abbreviation'];
+	const autocompleteFields = getAutocompleteFields(AUTOCOMPLETE_CONFIGS.evidenceCodeAutocompleteConfig);
 	const endpoint = Endpoints.Ontology.ECO;
 	const filterName = 'evidenceFilter';
 	const filter = buildAutocompleteFilter(event, autocompleteFields);

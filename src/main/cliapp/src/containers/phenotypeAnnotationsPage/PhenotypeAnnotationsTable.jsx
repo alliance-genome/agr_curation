@@ -170,7 +170,7 @@ export const PhenotypeAnnotationsTable = () => {
 				field: 'dateCreated',
 				header: 'Date Created',
 				sortable: true,
-				filterConfig: FILTER_CONFIGS.dataCreatedFilterConfig,
+				filterConfig: FILTER_CONFIGS.dateCreatedFilterConfig,
 			},
 			{
 				field: 'internal',

@@ -2,25 +2,22 @@ import { buildAutocompleteFilter, autocompleteSearch } from '../../../../utils/u
 import { SearchService } from '../../../../service/SearchService';
 import { Endpoints } from '../../../../constants/Endpoints';
 import { EvidenceAutocompleteTemplate } from '../base/templates/EvidenceAutocompleteTemplate';
+import { AUTOCOMPLETE_CONFIGS, getAutocompleteFields } from '../../../../constants/FilterFields';
 
-export const curieAutocompleteFields = [
-	'curie',
-	'name',
-	'crossReferences.referencedCurie',
-	'secondaryIdentifiers',
-	'synonyms.name',
-];
+export const ontologyTermAutocompleteFields = getAutocompleteFields(
+	AUTOCOMPLETE_CONFIGS.ontologyTermAutocompleteConfig
+);
 
 export const diseaseSearchConfig = {
 	endpoint: Endpoints.Ontology.DO,
-	autocompleteFields: curieAutocompleteFields,
+	autocompleteFields: ontologyTermAutocompleteFields,
 	filterName: 'diseaseFilter',
 	otherFilters: { obsoleteFilter: { obsolete: { queryString: false } } },
 };
 
 export const evidenceCodesSearchConfig = {
 	endpoint: Endpoints.Ontology.ECO,
-	autocompleteFields: ['curie', 'name', 'abbreviation'],
+	autocompleteFields: getAutocompleteFields(AUTOCOMPLETE_CONFIGS.evidenceCodeAutocompleteConfig),
 	filterName: 'evidenceFilter',
 	otherFilters: {
 		obsoleteFilter: { obsolete: { queryString: false } },
@@ -38,38 +35,38 @@ export const evidenceCodesSearchConfig = {
 
 export const conditionClassSearchConfig = {
 	endpoint: Endpoints.Ontology.ZECO,
-	autocompleteFields: curieAutocompleteFields,
+	autocompleteFields: ontologyTermAutocompleteFields,
 	filterName: 'conditionClassFilter',
 	otherFilters: { subsetFilter: { subsets: { queryString: 'ZECO_0000267' } } },
 };
 
 export const conditionIdSearchConfig = {
 	endpoint: Endpoints.Ontology.EXPERIMENTAL_CONDITION,
-	autocompleteFields: curieAutocompleteFields,
+	autocompleteFields: ontologyTermAutocompleteFields,
 	filterName: 'conditionIdFilter',
 };
 
 export const conditionGeneOntologySearchConfig = {
 	endpoint: Endpoints.Ontology.GO,
-	autocompleteFields: curieAutocompleteFields,
+	autocompleteFields: ontologyTermAutocompleteFields,
 	filterName: 'conditionGeneOntologyFilter',
 };
 
 export const conditionChemicalSearchConfig = {
 	endpoint: Endpoints.Ontology.CHEMICAL,
-	autocompleteFields: curieAutocompleteFields,
+	autocompleteFields: ontologyTermAutocompleteFields,
 	filterName: 'conditionChemicalFilter',
 };
 
 export const conditionAnatomySearchConfig = {
 	endpoint: Endpoints.Ontology.ANATOMICAL,
-	autocompleteFields: curieAutocompleteFields,
+	autocompleteFields: ontologyTermAutocompleteFields,
 	filterName: 'conditionAnatomyFilter',
 };
 
 export const conditionTaxonSearchConfig = {
 	endpoint: Endpoints.Ontology.NCBI_TAXON,
-	autocompleteFields: curieAutocompleteFields,
+	autocompleteFields: ontologyTermAutocompleteFields,
 	filterName: 'conditionTaxonFilter',
 };
 
