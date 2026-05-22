@@ -105,13 +105,6 @@ public class Species extends AuditedObject {
 	@JsonView({CurationView.FieldsOnly.class, CurationView.ForPublic.class, CurationView.GeneExpressionDocument.class, CurationView.TransgenicAllelesDocument.class})
 	private Integer phylogeneticOrder;
 
-	// //@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
-	// //@KeywordField(name = "assembly_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	// @JsonView({ CurationView.FieldsOnly.class, CurationView.GeneSummaryDocument.class, CurationView.AlleleSummaryDocument.class })
-	// //CHECKSTYLE:OFF: MemberName
-	// private String assembly_curie;
-	// //CHECKSTYLE:ON: MemberName
-
 	@IndexedEmbedded(includePaths = {"curie", "curie_keyword", "primaryExternalId", "primaryExternalId_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
