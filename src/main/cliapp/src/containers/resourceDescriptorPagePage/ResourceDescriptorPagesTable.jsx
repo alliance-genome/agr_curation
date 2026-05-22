@@ -96,26 +96,6 @@ export const ResourceDescriptorPagesTable = () => {
 				),
 			},
 			{
-				field: 'internal',
-				header: 'Internal',
-				sortable: true,
-				body: (rowData) => <BooleanTemplate value={rowData.internal} />,
-				filterConfig: FILTER_CONFIGS.internalFilterConfig,
-				editor: (editorOptions) => (
-					<BooleanTableEditor editorOptions={editorOptions} errorMessagesRef={errorMessagesRef} field="internal" />
-				),
-			},
-			{
-				field: 'obsolete',
-				header: 'Obsolete',
-				sortable: true,
-				body: (rowData) => <BooleanTemplate value={rowData.obsolete} />,
-				filterConfig: FILTER_CONFIGS.obsoleteFilterConfig,
-				editor: (editorOptions) => (
-					<BooleanTableEditor editorOptions={editorOptions} errorMessagesRef={errorMessagesRef} field="obsolete" />
-				),
-			},
-			{
 				field: 'createdBy.uniqueId',
 				header: 'Created By',
 				sortable: true,
@@ -144,6 +124,26 @@ export const ResourceDescriptorPagesTable = () => {
 				filter: true,
 				body: (rowData) => <StringTemplate string={rowData.dateUpdated} />,
 				filterConfig: FILTER_CONFIGS.dateUpdatedFilterConfig,
+			},
+			{
+				field: 'internal',
+				header: 'Internal',
+				sortable: true,
+				body: (rowData) => <BooleanTemplate value={rowData.internal} />,
+				filterConfig: FILTER_CONFIGS.internalFilterConfig,
+				editor: (editorOptions) => (
+					<BooleanTableEditor editorOptions={editorOptions} errorMessagesRef={errorMessagesRef} field="internal" />
+				),
+			},
+			{
+				field: 'obsolete',
+				header: 'Obsolete',
+				sortable: true,
+				body: (rowData) => <BooleanTemplate value={rowData.obsolete} />,
+				filterConfig: FILTER_CONFIGS.obsoleteFilterConfig,
+				editor: (editorOptions) => (
+					<BooleanTableEditor editorOptions={editorOptions} errorMessagesRef={errorMessagesRef} field="obsolete" />
+				),
 			},
 		],
 		// eslint-disable-next-line react-hooks/exhaustive-deps
