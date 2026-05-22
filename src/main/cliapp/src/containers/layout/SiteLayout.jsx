@@ -253,6 +253,7 @@ export const SiteLayout = (props) => {
 						{ label: 'Gene Expression Annotations', icon: 'pi pi-fw pi-home', to: '/geneExpressionAnnotations' },
 						{ label: 'Gene Genetic Interactions', icon: 'pi pi-fw pi-home', to: '/geneGeneticInteractions' },
 						{ label: 'Gene Molecular Interactions', icon: 'pi pi-fw pi-home', to: '/geneMolecularInteractions' },
+						{ label: 'Genome Assemblies', icon: 'pi pi-fw pi-home', to: '/genomeassemblies' },
 						{ label: 'Literature References', icon: 'pi pi-fw pi-home', to: '/references' },
 						{ label: 'Molecules', icon: 'pi pi-fw pi-home', to: '/molecules' },
 						{ label: 'Phenotype Annotations', icon: 'pi pi-fw pi-home', to: '/phenotypeAnnotations' },

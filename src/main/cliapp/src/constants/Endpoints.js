@@ -6,6 +6,7 @@ export const Endpoints = Object.freeze({
 		BIOLOGICAL_ENTITY: 'biologicalentity',
 		CONSTRUCT: 'construct',
 		GENE: 'gene',
+		GENOME_ASSEMBLY: 'genomeassembly',
 		MOLECULE: 'molecule',
 		NOTE: 'note',
 		SPECIES: 'species',
