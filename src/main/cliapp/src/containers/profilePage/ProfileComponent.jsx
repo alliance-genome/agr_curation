@@ -59,7 +59,7 @@ export const ProfileComponent = () => {
 
 		let failureCount = 0;
 		for (const settled of results) {
-			if (settled.status === 'fulfilled' && settled.value.result.status === 200) {
+			if (settled.status === 'fulfilled') {
 				localStorage.removeItem(settled.value.settingsKey);
 			} else {
 				failureCount++;
@@ -95,32 +95,20 @@ export const ProfileComponent = () => {
 
 	const resetTableState = async (settingsKey) => {
 		try {
-			const result = await personSettingsService.deleteUserSettings(settingsKey);
-			if (result.status === 200) {
-				localStorage.removeItem(settingsKey);
-				queryClient.invalidateQueries({
-					queryKey: [QUERY_KEYS.USER_INFO],
-				});
-				toast_topright.current?.show([
-					{
-						life: 7000,
-						severity: 'success',
-						summary: 'Update success: ',
-						detail: 'Table state has been reset',
-						sticky: false,
-					},
-				]);
-			} else {
-				toast_topright.current?.show([
-					{
-						life: 7000,
-						severity: 'error',
-						summary: 'Update error: ',
-						detail: 'An error has occured while trying to reset your table state',
-						sticky: false,
-					},
-				]);
-			}
+			await personSettingsService.deleteUserSettings(settingsKey);
+			localStorage.removeItem(settingsKey);
+			queryClient.invalidateQueries({
+				queryKey: [QUERY_KEYS.USER_INFO],
+			});
+			toast_topright.current?.show([
+				{
+					life: 7000,
+					severity: 'success',
+					summary: 'Update success: ',
+					detail: 'Table state has been reset',
+					sticky: false,
+				},
+			]);
 		} catch (error) {
 			toast_topright.current?.show([
 				{
