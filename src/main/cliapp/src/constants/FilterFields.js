@@ -663,7 +663,7 @@ export const FIELD_SETS = Object.freeze({
 	},
 	speciesAssemblyFieldSet: {
 		filterName: 'speciesAssemblyFilter',
-		fields: ['assembly_curie'],
+		fields: ['genomeAssembly.curie', 'genomeAssembly.primaryExternalId'],
 	},
 	subtypeFieldSet: {
 		filterName: 'subtypeFilter',

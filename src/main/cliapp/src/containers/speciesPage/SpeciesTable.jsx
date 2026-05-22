@@ -6,12 +6,14 @@ import { getDefaultTableState } from '../../service/TableStateService';
 import { FILTER_CONFIGS } from '../../constants/FilterFields';
 import { CommaSeparatedArrayTemplate } from '../../components/Templates/CommaSeparatedArrayTemplate';
 import { StringTemplate } from '../../components/Templates/StringTemplate';
+import { IdTemplate } from '../../components/Templates/IdTemplate';
 import { InputTextTableEditor } from '../../components/Editors/text/InputTextTableEditor';
 import { StringListTableEditor } from '../../components/Editors/text/StringListTableEditor';
 import { ControlledVocabularyTableEditor } from '../../components/Editors/dropdown/vocabulary/ControlledVocabularyTableEditor';
 import { useGetTableData } from '../../service/useGetTableData';
 import { useGetUserSettings } from '../../service/useGetUserSettings';
 import { useOrganizationService } from '../../service/useOrganizationService';
+import { useGenomeAssemblyService } from '../../service/useGenomeAssemblyService';
 
 import { SearchService } from '../../service/SearchService';
 import { SpeciesService } from '../../service/SpeciesService';
@@ -33,6 +35,7 @@ export const SpeciesTable = () => {
 	let speciesService = new SpeciesService();
 
 	const organizations = useOrganizationService();
+	const genomeAssemblies = useGenomeAssemblyService();
 
 	const mutation = useMutation({
 		mutationFn: (updatedSpecies) => {
@@ -134,21 +137,34 @@ export const SpeciesTable = () => {
 				),
 			},
 			{
-				field: 'assembly_curie',
+				field: 'genomeAssembly',
+				columnKey: 'genomeAssembly.primaryExternalId',
 				header: 'Assembly',
-				sortable: false,
-				//filterConfig: FILTER_CONFIGS.speciesAssemblyFilterConfig
-				editor: (editorOptions) => (
-					<InputTextTableEditor
-						editorOptions={editorOptions}
-						field="assembly_curie"
-						errorMessagesRef={errorMessagesRef}
-					/>
-				),
+				sortable: true,
+				filter: true,
+				filterConfig: FILTER_CONFIGS.speciesAssemblyFilterConfig,
+				body: (rowData) => <IdTemplate id={rowData.genomeAssembly?.primaryExternalId} />,
+				editor: (editorOptions) => {
+					const taxonCurie = editorOptions.rowData?.taxon?.curie;
+					const filteredAssemblies = genomeAssemblies.filter(
+						(assembly) => !taxonCurie || assembly.taxon?.curie === taxonCurie
+					);
+					return (
+						<ControlledVocabularyTableEditor
+							editorOptions={editorOptions}
+							field="genomeAssembly"
+							options={filteredAssemblies}
+							errorMessagesRef={errorMessagesRef}
+							showClear={true}
+							dataKey="id"
+							placeholderField="primaryExternalId"
+						/>
+					);
+				},
 			},
 		],
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-		[organizations]
+		[organizations, genomeAssemblies]
 	);
 
 	const DEFAULT_COLUMN_WIDTH = 10;
