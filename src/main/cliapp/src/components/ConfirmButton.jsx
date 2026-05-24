@@ -12,10 +12,16 @@ export const ConfirmButton = ({
 	disabled = false,
 }) => {
 	const [visible, setVisible] = useState(false);
+	const [pending, setPending] = useState(false);
 
-	const accept = () => {
+	const accept = async () => {
 		if (acceptHandler) {
-			acceptHandler();
+			setPending(true);
+			try {
+				await acceptHandler();
+			} finally {
+				setPending(false);
+			}
 		}
 	};
 
@@ -37,7 +43,12 @@ export const ConfirmButton = ({
 				reject={reject}
 			/>
 
-			<Button className={buttonClassName} onClick={() => setVisible(true)} label={buttonText} disabled={disabled} />
+			<Button
+				className={buttonClassName}
+				onClick={() => setVisible(true)}
+				label={buttonText}
+				disabled={disabled || pending}
+			/>
 		</>
 	);
 };
