@@ -61,6 +61,7 @@ export const ProfileComponent = () => {
 		for (const settled of results) {
 			if (settled.status === 'fulfilled') {
 				localStorage.removeItem(settled.value.settingsKey);
+				queryClient.removeQueries({ queryKey: [settled.value.settingsKey] });
 			} else {
 				failureCount++;
 			}
@@ -97,6 +98,7 @@ export const ProfileComponent = () => {
 		try {
 			await personSettingsService.deleteUserSettings(settingsKey);
 			localStorage.removeItem(settingsKey);
+			queryClient.removeQueries({ queryKey: [settingsKey] });
 			queryClient.invalidateQueries({
 				queryKey: [QUERY_KEYS.USER_INFO],
 			});
