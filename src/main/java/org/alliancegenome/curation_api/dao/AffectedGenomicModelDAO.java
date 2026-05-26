@@ -175,7 +175,9 @@ public class AffectedGenomicModelDAO extends BaseSQLDAO<AffectedGenomicModel> {
 			doc.setNameKey(composeWithSpecies(fullFormat, speciesAbbrev));
 			doc.setSpecies(speciesFull);
 			if (urlTemplate != null && xrefCurie != null) {
-				doc.setModCrossRefCompleteUrl(urlTemplate.replace("[%s]", xrefCurie));
+				int colon = xrefCurie.indexOf(":");
+				String localId = colon >= 0 ? xrefCurie.substring(colon + 1) : xrefCurie;
+				doc.setModCrossRefCompleteUrl(urlTemplate.replace("[%s]", localId));
 			}
 
 			docMap.put(id, doc);
