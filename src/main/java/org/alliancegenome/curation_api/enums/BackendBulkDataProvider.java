@@ -6,7 +6,7 @@ public enum BackendBulkDataProvider {
 
 	RGD("NCBITaxon:10116", "RGD:", 10116, "RGD", "RGD", "Rattus", false, false, false, false),
 	MGI("NCBITaxon:10090", "MGI:", 10090, "MGI", "MGI", "Mus", true, false, true, false),
-	SGD("NCBITaxon:4932", "SGD:", 4932, "SGD", "SGD", "Saccharomyces", true, false, false, false),
+	SGD("NCBITaxon:559292", "SGD:", 559292, "SGD", "SGD", "Saccharomyces", true, false, false, false),
 	HUMAN("NCBITaxon:9606", "HGNC:", 9606, "RGD", "RGD", "Homo", false, false, false, false),
 	ZFIN("NCBITaxon:7955", "ZFIN:", 7955, "ZFIN", "ZFIN", "Danio", true, false, true, false),
 	FB("NCBITaxon:7227", "FB:", 7227, "FB", "FB", "Drosophila", true, false, false, false),
