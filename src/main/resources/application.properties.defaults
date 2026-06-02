@@ -34,6 +34,7 @@ quarkus.flyway.validate-on-migrate=false
 quarkus.flyway.baseline-version=0.3.0
 quarkus.flyway.baseline-on-migrate=true
 quarkus.flyway.clean-disabled=true
+quarkus.flyway.out-of-order=true
 
 quarkus.elasticsearch.protocol = http
 
@@ -88,6 +89,7 @@ quarkus.oidc.enabled=true
 quarkus.oidc.authentication.user-info-required=false
 %dev.quarkus.oidc.enabled=false
 %test.quarkus.oidc.enabled=false
+%test.quarkus.test.class-orderer=org.junit.jupiter.api.ClassOrderer$OrderAnnotation
 
 cognito.domain =
 cognito.user-pool-id=

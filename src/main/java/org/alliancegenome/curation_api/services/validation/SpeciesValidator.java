@@ -1,9 +1,11 @@
 package org.alliancegenome.curation_api.services.validation;
 
 import org.alliancegenome.curation_api.constants.ValidationConstants;
+import org.alliancegenome.curation_api.dao.GenomeAssemblyDAO;
 import org.alliancegenome.curation_api.dao.SpeciesDAO;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
+import org.alliancegenome.curation_api.model.entities.GenomeAssembly;
 import org.alliancegenome.curation_api.model.entities.Organization;
 import org.alliancegenome.curation_api.model.entities.Species;
 import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
@@ -18,6 +20,7 @@ import jakarta.inject.Inject;
 public class SpeciesValidator extends AuditedObjectValidator<Species> {
 
 	@Inject SpeciesDAO speciesDAO;
+	@Inject GenomeAssemblyDAO genomeAssemblyDAO;
 
 	private String errorMessage;
 
@@ -86,11 +89,8 @@ public class SpeciesValidator extends AuditedObjectValidator<Species> {
 			dbEntity.setPhylogeneticOrder(uiEntity.getPhylogeneticOrder());
 		}
 
-		if (StringUtils.isBlank(uiEntity.getAssembly_curie())) {
-			addMessageResponse("assembly_curie", ValidationConstants.REQUIRED_MESSAGE);
-		} else {
-			dbEntity.setAssembly_curie(uiEntity.getAssembly_curie());
-		}
+		GenomeAssembly genomeAssembly = validateGenomeAssembly(uiEntity.getGenomeAssembly(), dbEntity.getGenomeAssembly());
+		dbEntity.setGenomeAssembly(genomeAssembly);
 
 		dbEntity.setCommonNames(uiEntity.getCommonNames());
 
@@ -100,5 +100,27 @@ public class SpeciesValidator extends AuditedObjectValidator<Species> {
 		}
 
 		return dbEntity;
+	}
+
+	private GenomeAssembly validateGenomeAssembly(GenomeAssembly uiAssembly, GenomeAssembly dbAssembly) {
+		if (uiAssembly == null) {
+			return null;
+		}
+
+		GenomeAssembly assembly = null;
+		if (uiAssembly.getId() != null) {
+			assembly = genomeAssemblyDAO.find(uiAssembly.getId());
+		}
+		if (assembly == null) {
+			addMessageResponse("genomeAssembly", ValidationConstants.INVALID_MESSAGE);
+			return null;
+		}
+
+		if (assembly.getObsolete()) {
+			addMessageResponse("genomeAssembly", ValidationConstants.OBSOLETE_MESSAGE);
+			return null;
+		}
+
+		return assembly;
 	}
 }

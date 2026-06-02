@@ -28,11 +28,13 @@ import lombok.Data;
 	CurationView.DiseaseSearchResultDocument.class,
 	CurationView.AlleleSummaryDocument.class,
 	CurationView.ModelDocument.class,
+	CurationView.ModelSearchResultDocument.class,
 	CurationView.VariantSummaryDocument.class,
 	CurationView.SequenceSummaryDocument.class,
 	CurationView.HTPDatasetSearchResultDocument.class,
 	CurationView.GeneExpressionDocument.class,
-	CurationView.TransgenicAllelesDocument.class
+	CurationView.TransgenicAllelesDocument.class,
+	CurationView.OntologyTermClosureView.class
 })
 public class SearchResponse<E> extends APIResponse {
 

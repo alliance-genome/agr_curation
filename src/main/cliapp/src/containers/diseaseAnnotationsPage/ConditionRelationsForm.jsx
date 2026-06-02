@@ -12,6 +12,7 @@ import { ExConAutocompleteTemplate } from '../../components/Editors/autocomplete
 import { AutocompleteMultiEditor } from '../../components/Editors/autocomplete/base/AutocompleteMultiEditor';
 import { autocompleteSearch, buildAutocompleteFilter } from '../../utils/utils';
 import { Endpoints } from '../../constants/Endpoints';
+import { AUTOCOMPLETE_CONFIGS, getAutocompleteFields } from '../../constants/FilterFields';
 
 export const ConditionRelationsForm = ({
 	dispatch,
@@ -79,7 +80,7 @@ export const ConditionRelationsForm = ({
 	};
 
 	const conditionSearch = (event, setFiltered, setInputValue) => {
-		const autocompleteFields = ['conditionSummary'];
+		const autocompleteFields = getAutocompleteFields(AUTOCOMPLETE_CONFIGS.experimentalConditionAutocompleteConfig);
 		const endpoint = Endpoints.Annotation.EXPERIMENTAL_CONDITION;
 		const filterName = 'conditionSummaryFilter';
 		const filter = buildAutocompleteFilter(event, autocompleteFields);

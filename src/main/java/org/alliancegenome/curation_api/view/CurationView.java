@@ -10,6 +10,9 @@ public class CurationView {
 	public static class FieldsAndLists extends FieldsOnly {
 	}
 
+	public static class OntologyTermClosureView {
+	}
+
 	public static class ConditionRelationView extends FieldsOnly {
 	}
 
@@ -146,6 +149,7 @@ public class CurationView {
 	public static class GeneSearchResultDocument { }
 	public static class GOSearchResultDocument { }
 	public static class HTPDatasetSearchResultDocument { }
+	public static class ModelSearchResultDocument { }
 
 	// Views for summary pages
 	public static class DiseaseSummaryDocument { }

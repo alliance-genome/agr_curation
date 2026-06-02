@@ -2,10 +2,11 @@ import { buildAutocompleteFilter, autocompleteSearch } from '../../../../utils/u
 import { SearchService } from '../../../../service/SearchService';
 import { Endpoints } from '../../../../constants/Endpoints';
 import { ExConAutocompleteTemplate } from '../base/templates/ExConAutocompleteTemplate';
+import { AUTOCOMPLETE_CONFIGS, getAutocompleteFields } from '../../../../constants/FilterFields';
 
 export const conditionsSearchConfig = {
 	endpoint: Endpoints.Annotation.EXPERIMENTAL_CONDITION,
-	autocompleteFields: ['conditionSummary'],
+	autocompleteFields: getAutocompleteFields(AUTOCOMPLETE_CONFIGS.experimentalConditionAutocompleteConfig),
 	filterName: 'experimentalConditionFilter',
 	valueDisplay: (item, setAutocompleteHoverItem, op, query) => (
 		<ExConAutocompleteTemplate item={item} setAutocompleteHoverItem={setAutocompleteHoverItem} op={op} query={query} />

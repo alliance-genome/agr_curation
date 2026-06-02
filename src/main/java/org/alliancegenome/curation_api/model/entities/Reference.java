@@ -22,11 +22,12 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexingDe
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.KeywordField;
 import com.fasterxml.jackson.annotation.JsonView;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Index;
 import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Transient;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -42,7 +43,7 @@ public class Reference extends InformationContentEntity {
 
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
-	@ManyToMany
+	@OneToMany(cascade = CascadeType.MERGE, orphanRemoval = true)
 	@Fetch(FetchMode.SUBSELECT)
 	@JsonView({CurationView.FieldsOnly.class, CurationView.ForPublic.class, CurationView.AlleleSummaryDocument.class, CurationView.VariantSummaryDocument.class})
 	@JoinTable(
@@ -60,7 +61,8 @@ public class Reference extends InformationContentEntity {
 	private String shortCitation;
 
 	/**
-	 * Retrieve PMID if available in the crossReference collection otherwise MOD ID
+	 * Display priority: PMID if present in crossReferences, else PubMod ID (MOD-prefixed),
+	 * else the reference's own AGRKB curie.
 	 */
 	@Transient
 	@JsonView({CurationView.ForPublic.class, CurationView.GeneExpressionDocument.class, CurationView.AlleleSummaryDocument.class, CurationView.VariantSummaryDocument.class, CurationView.SequenceSummaryDocument.class})
@@ -69,7 +71,7 @@ public class Reference extends InformationContentEntity {
 	}
 
 	/**
-	 * Retrieve PUB MOD ID
+	 * Display priority: PubMod ID (MOD-prefixed) if present in crossReferences, else the reference's own AGRKB curie.
 	 */
 	@Transient
 	@JsonView({CurationView.ForPublic.class, CurationView.GeneExpressionDocument.class})
@@ -79,10 +81,6 @@ public class Reference extends InformationContentEntity {
 
 	@Transient
 	private String getReferenceID(boolean pubmedIdFirst) {
-		if (CollectionUtils.isEmpty(getCrossReferences())) {
-			return null;
-		}
-
 		List<String> primaryXrefOrder = ReferenceConstants.primaryXrefOrder;
 		if (!pubmedIdFirst) {
 			String pmid = "PMID";
@@ -94,17 +92,15 @@ public class Reference extends InformationContentEntity {
 			}
 		}
 
-		for (String prefix : primaryXrefOrder) {
-			Optional<CrossReference> opt = getCrossReferences().stream().filter(reference -> reference.getReferencedCurie().startsWith(prefix + ":")).findFirst();
-			if (opt.isPresent()) {
-				return opt.map(CrossReference::getReferencedCurie).orElse(null);
+		if (CollectionUtils.isNotEmpty(getCrossReferences())) {
+			for (String prefix : primaryXrefOrder) {
+				Optional<CrossReference> opt = getCrossReferences().stream().filter(reference -> reference.getReferencedCurie().startsWith(prefix + ":")).findFirst();
+				if (opt.isPresent()) {
+					return opt.map(CrossReference::getReferencedCurie).orElse(null);
+				}
 			}
 		}
 
-		List<String> referencedCuries = getCrossReferences().stream()
-			.map(CrossReference::getReferencedCurie)
-			.sorted()
-			.toList();
-		return referencedCuries.get(0);
+		return getCurie();
 	}
 }

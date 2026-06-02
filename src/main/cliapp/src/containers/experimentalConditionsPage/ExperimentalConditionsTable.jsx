@@ -8,7 +8,7 @@ import { ConditionChemicalTableEditor } from '../../components/Editors/autocompl
 import { ConditionAnatomyTableEditor } from '../../components/Editors/autocomplete/ontology/ConditionAnatomyTableEditor';
 import { ConditionTaxonTableEditor } from '../../components/Editors/autocomplete/ontology/ConditionTaxonTableEditor';
 import { BooleanTableEditor } from '../../components/Editors/dropdown/boolean/BooleanTableEditor';
-import { curieAutocompleteFields } from '../../components/Editors/autocomplete/ontology/utils';
+import { ontologyTermAutocompleteFields } from '../../components/Editors/autocomplete/ontology/utils';
 import { useMutation } from '@tanstack/react-query';
 import { Toast } from 'primereact/toast';
 import { SearchService } from '../../service/SearchService';
@@ -260,7 +260,7 @@ export const ExperimentalConditionsTable = () => {
 				setNewExperimentalCondition={(newExCon, queryClient) =>
 					setNewEntity(tableState, setExperimentalConditions, newExCon, queryClient)
 				}
-				curieAutocompleteFields={curieAutocompleteFields}
+				ontologyTermAutocompleteFields={ontologyTermAutocompleteFields}
 			/>
 		</div>
 	);
