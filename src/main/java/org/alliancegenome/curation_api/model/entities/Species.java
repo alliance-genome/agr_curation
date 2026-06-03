@@ -108,7 +108,7 @@ public class Species extends AuditedObject {
 	@IndexedEmbedded(includePaths = {"curie", "curie_keyword", "primaryExternalId", "primaryExternalId_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@Fetch(FetchMode.JOIN)
+	@Fetch(FetchMode.SELECT)
 	@JsonView({ CurationView.FieldsOnly.class, CurationView.GeneSummaryDocument.class, CurationView.AlleleSummaryDocument.class })
 	private GenomeAssembly genomeAssembly;
 }
