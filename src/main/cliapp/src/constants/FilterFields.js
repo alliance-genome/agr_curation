@@ -53,6 +53,34 @@ export const FIELD_SETS = Object.freeze({
 		filterName: 'alleleSymbolFilter',
 		fields: ['alleleSymbol.displayText', 'alleleSymbol.formatText'],
 	},
+	alleleAssociationSubjectFieldSet: {
+		filterName: 'alleleAssociationSubjectFilter',
+		fields: [
+			'alleleAssociationSubject.alleleSymbol.displayText',
+			'alleleAssociationSubject.alleleSymbol.formatText',
+			'alleleAssociationSubject.curie',
+			'alleleAssociationSubject.primaryExternalId',
+			'alleleAssociationSubject.modInternalId',
+		],
+	},
+	alleleGeneAssociationObjectFieldSet: {
+		filterName: 'alleleGeneAssociationObjectFilter',
+		fields: [
+			'alleleGeneAssociationObject.geneSymbol.displayText',
+			'alleleGeneAssociationObject.geneSymbol.formatText',
+			'alleleGeneAssociationObject.curie',
+			'alleleGeneAssociationObject.primaryExternalId',
+			'alleleGeneAssociationObject.modInternalId',
+		],
+	},
+	alleleGeneRelationFieldSet: {
+		filterName: 'alleleGeneRelationFilter',
+		fields: ['relation.name'],
+	},
+	alleleGeneDataProviderFieldSet: {
+		filterName: 'alleleGeneDataProviderFilter',
+		fields: ['dataProvider.abbreviation'],
+	},
 	alleleSynonymsFieldSet: {
 		filterName: 'alleleSynonymsFilter',
 		fields: ['alleleSynonyms.displayText', 'alleleSynonyms.formatText'],
@@ -289,6 +317,10 @@ export const FIELD_SETS = Object.freeze({
 	evidenceCodesFieldSet: {
 		filterName: 'evidenceCodesFilter',
 		fields: ['evidenceCodes.abbreviation', 'evidenceCodes.name', 'evidenceCodes.curie'],
+	},
+	evidenceCodeFieldSet: {
+		filterName: 'evidenceCodeFilter',
+		fields: ['evidenceCode.curie', 'evidenceCode.name', 'evidenceCode.abbreviation'],
 	},
 	experimentalConditionFieldSet: {
 		filterName: 'experimentalConditionFilter',
@@ -853,6 +885,19 @@ export const FILTER_CONFIGS = Object.freeze({
 	},
 	alleleSecondaryIdsFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.alleleSecondaryIdsFieldSet] },
 	alleleSymbolFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.alleleSymbolFieldSet] },
+	alleleAssociationSubjectFilterConfig: {
+		filterComponentType: 'input',
+		fieldSets: [FIELD_SETS.alleleAssociationSubjectFieldSet],
+	},
+	alleleGeneAssociationObjectFilterConfig: {
+		filterComponentType: 'input',
+		fieldSets: [FIELD_SETS.alleleGeneAssociationObjectFieldSet],
+	},
+	alleleGeneRelationFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.alleleGeneRelationFieldSet] },
+	alleleGeneDataProviderFilterConfig: {
+		filterComponentType: 'input',
+		fieldSets: [FIELD_SETS.alleleGeneDataProviderFieldSet],
+	},
 	alleleSynonymsFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.alleleSynonymsFieldSet] },
 	assertedAllelesFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.assertedAllelesFieldSet] },
 	assertedGenesFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.assertedGenesFieldSet] },
@@ -1211,6 +1256,7 @@ export const FILTER_CONFIGS = Object.freeze({
 		aggregationFieldSet: FIELD_SETS.daAggregationFieldSet,
 		useKeywordFields: true,
 	},
+	evidenceCodeFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.evidenceCodeFieldSet] },
 	variantDataProviderFilterConfig: {
 		filterComponentType: 'multiselect',
 		fieldSets: [FIELD_SETS.dataProviderFieldSet],
