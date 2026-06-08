@@ -2,6 +2,21 @@
  
 https://agr-jira.atlassian.net/wiki/spaces/ATEAM/overview
 
+## v0.50.0
+* New features:
+   * Create a Genome Assemblies curation data table (read only) (SCRUM-6082)
+   * Change Species table Assembly entry from free text to database assembly object; drop down editing instead of free text (SCRUM-6081)
+   * Enable CRUD operations on Resource Descriptors in A-Team curation system and retire agr_schemas resource_descriptors.yaml (SCRUM-5419)
+* Fixes and maintenance
+   * Curation Global State Reset not working properly (SCRUM-6111)
+   * Production has 2.4M orphaned crossreference rows (10.4% of table) (SCRUM-6053)
+   * Resource Descriptor table requiring ID pattern to save (SCRUM-6050)
+   * Vocabulary Term Sets Table save fails with "Not able to deserialize data provided" (SCRUM-6039)
+   * Curation Experimental conditions table "Quantity" field displaying NaN despite displaying strings (SCRUM-6029)
+   * Experiments table save fails with "Not able to deserialize data provided" (SCRUM-6023)
+   * Alleles table References editor only allows one entry after deleting all existing references (SCRUM-6022)
+   * Refactor Table Editors into Reusable Components (and state refactor) (SCRUM-3769)
+
 ## v0.49.0
 * New features:
    * Migrate curation frontend from Create React App to Vite (SCRUM-5928)
