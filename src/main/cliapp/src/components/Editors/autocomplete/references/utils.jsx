@@ -2,10 +2,11 @@ import { buildAutocompleteFilter, autocompleteSearch } from '../../../../utils/u
 import { SearchService } from '../../../../service/SearchService';
 import { Endpoints } from '../../../../constants/Endpoints';
 import { LiteratureAutocompleteTemplate } from '../base/templates/LiteratureAutocompleteTemplate';
+import { AUTOCOMPLETE_CONFIGS, getAutocompleteFields } from '../../../../constants/FilterFields';
 
 const referenceSearchConfig = {
 	endpoint: Endpoints.Document.LITERATURE_REFERENCE,
-	autocompleteFields: ['curie', 'cross_references.curie'],
+	autocompleteFields: getAutocompleteFields(AUTOCOMPLETE_CONFIGS.referenceAutocompleteConfig),
 	valueDisplay: (item, setAutocompleteHoverItem, op, query) => (
 		<LiteratureAutocompleteTemplate
 			item={item}

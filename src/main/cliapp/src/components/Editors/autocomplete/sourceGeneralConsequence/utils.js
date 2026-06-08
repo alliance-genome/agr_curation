@@ -1,10 +1,11 @@
 import { buildAutocompleteFilter, autocompleteSearch } from '../../../../utils/utils';
 import { SearchService } from '../../../../service/SearchService';
 import { Endpoints } from '../../../../constants/Endpoints';
+import { AUTOCOMPLETE_CONFIGS, getAutocompleteFields } from '../../../../constants/FilterFields';
 
 export const sourceGeneralConsequenceSearchConfig = {
 	endpoint: Endpoints.Ontology.SO,
-	autocompleteFields: ['curie', 'name', 'secondaryIdentifiers', 'synonyms.name'],
+	autocompleteFields: getAutocompleteFields(AUTOCOMPLETE_CONFIGS.ontologyTermAutocompleteConfig),
 	filterName: 'sourceGeneralConsequenceFilter',
 };
 

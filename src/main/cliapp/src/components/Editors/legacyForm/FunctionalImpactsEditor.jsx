@@ -4,10 +4,11 @@ import { autocompleteSearch, buildAutocompleteFilter } from '../../../utils/util
 import { VocabTermAutocompleteTemplate } from '../autocomplete/base/templates/VocabTermAutocompleteTemplate';
 import { DialogErrorMessageComponent } from '../../Error/DialogErrorMessageComponent';
 import { Endpoints } from '../../../constants/Endpoints';
+import { AUTOCOMPLETE_CONFIGS, getAutocompleteFields } from '../../../constants/FilterFields';
 
 const functionalImpactSearch = (event, setFiltered, setQuery) => {
 	const searchService = new SearchService();
-	const autocompleteFields = ['name'];
+	const autocompleteFields = getAutocompleteFields(AUTOCOMPLETE_CONFIGS.nameOnlyAutocompleteConfig);
 	const endpoint = Endpoints.Vocabulary.TERM;
 	const filterName = 'functionalImpactFilter';
 	const otherFilters = {

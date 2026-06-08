@@ -19,7 +19,7 @@ describe('removeInvalidFilters', () => {
 					tokenOperator: 'OR',
 				},
 			},
-			primaryexternalidFilter: {
+			primaryExternalIdFilter: {
 				primaryExternalId: {
 					queryString: 's',
 					tokenOperator: 'AND',
@@ -48,7 +48,7 @@ describe('removeInvalidFilters', () => {
 					tokenOperator: 'OR',
 				},
 			},
-			primaryexternalidFilter: {
+			primaryExternalIdFilter: {
 				primaryExternalId: {
 					queryString: 's',
 					tokenOperator: 'AND',
@@ -71,7 +71,7 @@ describe('removeInvalidFilters', () => {
 					tokenOperator: 'OR',
 				},
 			},
-			primaryexternalidFilter: {
+			primaryExternalIdFilter: {
 				primaryExternalId: {
 					queryString: 's',
 					tokenOperator: 'AND',
@@ -98,7 +98,7 @@ describe('removeInvalidFilters', () => {
 					tokenOperator: 'OR',
 				},
 			},
-			primaryexternalidFilter: {
+			primaryExternalIdFilter: {
 				invalidPrimaryExternalId: {
 					queryString: 's',
 					tokenOperator: 'AND',

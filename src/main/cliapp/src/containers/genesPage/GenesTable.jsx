@@ -208,14 +208,14 @@ export const GenesTable = () => {
 				header: 'Primary External ID',
 				sortable: true,
 				body: (rowData) => <IdTemplate id={rowData.primaryExternalId} />,
-				filterConfig: FILTER_CONFIGS.primaryexternalidFilterConfig,
+				filterConfig: FILTER_CONFIGS.primaryExternalIdFilterConfig,
 			},
 			{
 				field: 'modInternalId',
 				header: 'MOD Internal ID',
 				sortable: true,
 				body: (rowData) => <IdTemplate id={rowData.modInternalId} />,
-				filterConfig: FILTER_CONFIGS.modinternalidFilterConfig,
+				filterConfig: FILTER_CONFIGS.modInternalIdFilterConfig,
 			},
 			{
 				field: 'geneFullName.displayText',
@@ -364,7 +364,7 @@ export const GenesTable = () => {
 				sortable: true,
 				filter: true,
 				body: (rowData) => <StringTemplate string={rowData.dateCreated} />,
-				filterConfig: FILTER_CONFIGS.dataCreatedFilterConfig,
+				filterConfig: FILTER_CONFIGS.dateCreatedFilterConfig,
 			},
 			{
 				field: 'internal',

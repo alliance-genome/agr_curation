@@ -1,10 +1,11 @@
 import { buildAutocompleteFilter, autocompleteSearch } from '../../../../utils/utils';
 import { SearchService } from '../../../../service/SearchService';
 import { Endpoints } from '../../../../constants/Endpoints';
+import { AUTOCOMPLETE_CONFIGS, getAutocompleteFields } from '../../../../constants/FilterFields';
 
 export const resourceDescriptorSearchConfig = {
 	endpoint: Endpoints.Resource.DESCRIPTOR,
-	autocompleteFields: ['prefix', 'name'],
+	autocompleteFields: getAutocompleteFields(AUTOCOMPLETE_CONFIGS.resourceDescriptorAutocompleteConfig),
 	filterName: 'resourceDescriptorFilter',
 	valueDisplay: (item) => (
 		<div>

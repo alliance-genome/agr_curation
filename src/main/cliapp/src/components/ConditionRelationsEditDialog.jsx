@@ -16,6 +16,7 @@ import { SearchService } from '../service/SearchService';
 import { autocompleteSearch, buildAutocompleteFilter, multipleAutocompleteOnChange } from '../utils/utils';
 import { AutocompleteMultiEditor } from './Editors/autocomplete/base/AutocompleteMultiEditor';
 import { Endpoints } from '../constants/Endpoints';
+import { AUTOCOMPLETE_CONFIGS, getAutocompleteFields } from '../constants/FilterFields';
 
 export const ConditionRelationsEditDialog = ({
 	originalConditionRelationsData,
@@ -94,15 +95,9 @@ export const ConditionRelationsEditDialog = ({
 	};
 
 	const conditionSearch = (event, setFiltered, setInputValue) => {
-		const autocompleteFields = [
-			'conditionSummary',
-			'conditionId.curie',
-			'conditionClass.curie',
-			'conditionTaxon.curie',
-			'conditionGeneOntology.curie',
-			'conditionChemical.curie',
-			'conditionAnatomy.curie',
-		];
+		const autocompleteFields = getAutocompleteFields(
+			AUTOCOMPLETE_CONFIGS.experimentalConditionDetailedAutocompleteConfig
+		);
 		const endpoint = Endpoints.Annotation.EXPERIMENTAL_CONDITION;
 		const filterName = 'conditionSummaryFilter';
 		const filter = buildAutocompleteFilter(event, autocompleteFields);

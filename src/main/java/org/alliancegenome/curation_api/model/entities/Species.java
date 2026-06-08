@@ -48,7 +48,8 @@ import lombok.ToString;
 		@Index(name = "species_createdby_index", columnList = "createdBy_id"),
 		@Index(name = "species_updatedby_index", columnList = "updatedBy_id"),
 		@Index(name = "species_dataprovider_index", columnList = "dataProvider_id"),
-		@Index(name = "species_dataprovidercrossreference_index", columnList = "dataProviderCrossReference_id")
+		@Index(name = "species_dataprovidercrossreference_index", columnList = "dataProviderCrossReference_id"),
+		@Index(name = "species_genomeassembly_index", columnList = "genomeassembly_id")
 })
 @AGRCurationSchemaVersion(min = "2.0.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AuditedObject.class })
 public class Species extends AuditedObject {
@@ -104,10 +105,10 @@ public class Species extends AuditedObject {
 	@JsonView({CurationView.FieldsOnly.class, CurationView.ForPublic.class, CurationView.GeneExpressionDocument.class, CurationView.TransgenicAllelesDocument.class})
 	private Integer phylogeneticOrder;
 
-	//@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
-	//@KeywordField(name = "assembly_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
+	@IndexedEmbedded(includePaths = {"curie", "curie_keyword", "primaryExternalId", "primaryExternalId_keyword"})
+	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
+	@ManyToOne
+	@Fetch(FetchMode.SELECT)
 	@JsonView({ CurationView.FieldsOnly.class, CurationView.GeneSummaryDocument.class, CurationView.AlleleSummaryDocument.class })
-	//CHECKSTYLE:OFF: MemberName
-	private String assembly_curie;
-	//CHECKSTYLE:ON: MemberName
+	private GenomeAssembly genomeAssembly;
 }

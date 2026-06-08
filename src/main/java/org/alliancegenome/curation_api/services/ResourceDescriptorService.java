@@ -45,6 +45,13 @@ public class ResourceDescriptorService extends BaseEntityCrudService<ResourceDes
 		return new ObjectResponse<>(resourceDescriptorDAO.persist(dbEntity));
 	}
 
+	@Override
+	@Transactional
+	public ObjectResponse<ResourceDescriptor> create(ResourceDescriptor uiEntity) {
+		ResourceDescriptor dbEntity = resourceDescriptorValidator.validateResourceDescriptorCreate(uiEntity);
+		return new ObjectResponse<>(resourceDescriptorDAO.persist(dbEntity));
+	}
+
 	public List<String> getAllNames() {
 		List<String> names = resourceDescriptorDAO.findAllNames();
 		names.removeIf(Objects::isNull);
