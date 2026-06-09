@@ -56,10 +56,7 @@ export const useGetUserSettings = (key, defaultValue, isTable = true) => {
 					);
 					if (newColumns?.length > 0) {
 						updatedSettings.orderedColumnNames = [...updatedSettings.orderedColumnNames, ...newColumns];
-						updatedSettings.selectedColumnNames = [
-							...(updatedSettings.selectedColumnNames || []),
-							...newColumns,
-						];
+						updatedSettings.selectedColumnNames = [...(updatedSettings.selectedColumnNames || []), ...newColumns];
 						updatedSettings.columnWidths = { ...defaultValue.columnWidths, ...updatedSettings.columnWidths };
 					}
 				}
