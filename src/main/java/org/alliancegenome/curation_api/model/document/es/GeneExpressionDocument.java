@@ -2,14 +2,16 @@ package org.alliancegenome.curation_api.model.document.es;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 
+import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.GeneExpressionAnnotation;
 import org.alliancegenome.curation_api.view.CurationView;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
-import groovy.transform.EqualsAndHashCode;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -20,6 +22,7 @@ public class GeneExpressionDocument extends ESDocument {
 	}
 	private GeneExpressionAnnotation geneExpressionAnnotation;
 	private List<String> referenceId;
+	private Set<CrossReference> referenceXrefs;
 	private List<String> uberonTermIds;
 	private List<String> goTermIds;
 	private List<String> termIds;
