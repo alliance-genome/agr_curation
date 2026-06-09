@@ -3,6 +3,9 @@ import React, { useRef, useState, useMemo } from 'react';
 import { GenericDataTable } from '../../components/GenericDataTable/GenericDataTable';
 import { GenomicEntityTemplate } from '../../components/Templates/genomicEntity/GenomicEntityTemplate';
 import { BooleanTemplate } from '../../components/Templates/BooleanTemplate';
+import { OntologyTermTemplate } from '../../components/Templates/OntologyTermTemplate';
+import { StringTemplate } from '../../components/Templates/StringTemplate';
+import { TruncatedReferencesTemplate } from '../../components/Templates/reference/TruncatedReferencesTemplate';
 import { getDefaultTableState } from '../../service/TableStateService';
 import { FILTER_CONFIGS } from '../../constants/FilterFields';
 import { useGetTableData } from '../../service/useGetTableData';
@@ -42,6 +45,13 @@ export const AlleleGeneAssociationsTable = () => {
 	const columns = useMemo(
 		() => [
 			{
+				field: 'alleleAssociationSubject.taxon.name',
+				header: 'Taxon',
+				sortable: true,
+				body: (rowData) => <OntologyTermTemplate term={rowData.alleleAssociationSubject?.taxon} />,
+				filterConfig: FILTER_CONFIGS.alleleAssociationSubjectTaxonFilterConfig,
+			},
+			{
 				field: 'alleleAssociationSubject.alleleSymbol.displayText',
 				header: 'Allele',
 				body: (rowData) => <GenomicEntityTemplate genomicEntity={rowData.alleleAssociationSubject} />,
@@ -62,16 +72,58 @@ export const AlleleGeneAssociationsTable = () => {
 				filterConfig: FILTER_CONFIGS.alleleGeneAssociationObjectFilterConfig,
 			},
 			{
+				field: 'relatedNote.freeText',
+				header: 'Notes',
+				sortable: true,
+				body: (rowData) => <StringTemplate string={rowData.relatedNote?.freeText} />,
+				filterConfig: FILTER_CONFIGS.relatedNoteFilterConfig,
+			},
+			{
 				field: 'evidenceCode.curie',
 				header: 'Evidence Code',
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.evidenceCodeFilterConfig,
 			},
 			{
+				field: 'evidence.curie',
+				header: 'Evidence',
+				body: (rowData) => <TruncatedReferencesTemplate references={rowData.evidence} />,
+				sortable: true,
+				filterConfig: FILTER_CONFIGS.evidenceFilterConfig,
+			},
+			{
 				field: 'dataProvider.abbreviation',
 				header: 'Data Provider',
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.alleleGeneDataProviderFilterConfig,
+			},
+			{
+				field: 'updatedBy.uniqueId',
+				header: 'Updated By',
+				sortable: true,
+				body: (rowData) => <StringTemplate string={rowData.updatedBy?.uniqueId} />,
+				filterConfig: FILTER_CONFIGS.updatedByFilterConfig,
+			},
+			{
+				field: 'dateUpdated',
+				header: 'Date Updated',
+				sortable: true,
+				body: (rowData) => <StringTemplate string={rowData.dateUpdated} />,
+				filterConfig: FILTER_CONFIGS.dateUpdatedFilterConfig,
+			},
+			{
+				field: 'createdBy.uniqueId',
+				header: 'Created By',
+				sortable: true,
+				body: (rowData) => <StringTemplate string={rowData.createdBy?.uniqueId} />,
+				filterConfig: FILTER_CONFIGS.createdByFilterConfig,
+			},
+			{
+				field: 'dateCreated',
+				header: 'Date Created',
+				sortable: true,
+				body: (rowData) => <StringTemplate string={rowData.dateCreated} />,
+				filterConfig: FILTER_CONFIGS.dateCreatedFilterConfig,
 			},
 			{
 				field: 'internal',
@@ -87,12 +139,6 @@ export const AlleleGeneAssociationsTable = () => {
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.obsoleteFilterConfig,
 			},
-			{
-				field: 'dateCreated',
-				header: 'Date Created',
-				sortable: true,
-				filterConfig: FILTER_CONFIGS.dataCreatedFilterConfig,
-			},
 		],
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 		[]
@@ -103,7 +149,7 @@ export const AlleleGeneAssociationsTable = () => {
 	const defaultFilters = { obsoleteFilter: { obsolete: { queryString: 'false' } } };
 
 	const initialTableState = useMemo(
-		() => getDefaultTableState('AlleleGeneAssociations', columns, DEFAULT_COLUMN_WIDTH, defaultFilters),
+		() => getDefaultTableState('AlleleGeneAssociations_v2', columns, DEFAULT_COLUMN_WIDTH, defaultFilters),
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 		[columns]
 	);
