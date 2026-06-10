@@ -4,7 +4,7 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.alliancegenome.curation_api.model.mati.IdentifiersRange;
+import org.alliancegenome.mati.entity.IdentifiersRange;
 import org.alliancegenome.mati.interfaces.IdentifierResourceRESTInterface;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.jwt.JsonWebToken;
@@ -84,7 +84,7 @@ public class MatiService {
 		}
 		long firstCtr = range.getFirst().getCounter();
 		long lastCtr = range.getLast().getCounter();
-		String code = range.getFirst().getSubdomainCode();
+		String code = range.getFirst().getSubdomain_code();
 
 		long actual = lastCtr - firstCtr + 1;
 		if (actual != n) {
