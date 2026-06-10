@@ -109,6 +109,6 @@ public class Species extends AuditedObject {
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
 	@Fetch(FetchMode.SELECT)
-	@JsonView({ CurationView.FieldsOnly.class, CurationView.GeneSummaryDocument.class, CurationView.AlleleSummaryDocument.class })
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.GeneSummaryDocument.class, CurationView.AlleleSummaryDocument.class, CurationView.VariantSummaryDocument.class })
 	private GenomeAssembly genomeAssembly;
 }
