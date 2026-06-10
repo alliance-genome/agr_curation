@@ -38,6 +38,14 @@ public interface SystemControllerInterface {
 	@Path("/updatedauniqueids")
 	void updateDiseaseAnnotationUniqueIds();
 
+	// SCRUM-6078 backfill endpoint. Mints AGRKB curies for every
+	// DiseaseAnnotation whose curie is currently NULL, in batches.
+	// Idempotent. Remove after rollout on alpha/beta/prod.
+	@GET
+	@Path("/mintdacuries")
+	void mintExistingDiseaseAnnotationCuries(
+		@DefaultValue("1000") @QueryParam("batchSize") Integer batchSize);
+
 	@DELETE
 	@Path("/deletedUnusedConditionsAndExperiments")
 	void deleteUnusedConditionsAndExperiments();
