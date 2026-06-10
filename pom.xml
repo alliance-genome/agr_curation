@@ -20,6 +20,7 @@
 		<surefire-plugin.version>3.0.0-M7</surefire-plugin.version>
 		<maven-checkstyle-plugin.version>3.3.1</maven-checkstyle-plugin.version>
 		<checkstyle.version>10.17.0</checkstyle.version>
+		<mati.version>v0.23.0</mati.version>
 	</properties>
 	<scm>
 		<connection>scm:git:git@github.com:alliance-genome/agr_curation.git</connection>
@@ -166,6 +167,29 @@
 		<dependency>
 			<groupId>io.quarkus</groupId>
 			<artifactId>quarkus-oidc</artifactId>
+		</dependency>
+		<dependency>
+		<groupId>org.alliancegenome</groupId>
+		<artifactId>agr_mati</artifactId>
+		<version>${mati.version}</version>
+		<exclusions>
+			<exclusion>
+				<groupId>io.quarkus</groupId>
+				<artifactId>*</artifactId>
+			</exclusion>
+		</exclusions>
+	</dependency>
+		<dependency>
+			<groupId>io.quarkus</groupId>
+			<artifactId>quarkus-resteasy-client</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>io.quarkus</groupId>
+			<artifactId>quarkus-resteasy-client-jackson</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>io.quarkus</groupId>
+			<artifactId>quarkus-resteasy-client-oidc-filter</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>io.quarkus</groupId>

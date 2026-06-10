@@ -23,6 +23,7 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmb
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexingDependency;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.KeywordField;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonView;
 
 import jakarta.persistence.ElementCollection;
@@ -109,6 +110,8 @@ public class Species extends AuditedObject {
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
 	@Fetch(FetchMode.SELECT)
-	@JsonView({ CurationView.FieldsOnly.class, CurationView.GeneSummaryDocument.class, CurationView.AlleleSummaryDocument.class })
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.GeneSummaryDocument.class, CurationView.AlleleSummaryDocument.class, CurationView.VariantSummaryDocument.class })
+	// Break the species -> genomeAssembly -> taxon -> species cycle during JSON serialization: GenomeAssembly inherits taxon from BiologicalEntity, and BiologicalEntity.taxon is exposed in the same views as this field, so without this annotation Jackson loops until the stack overflows.
+	@JsonIgnoreProperties("taxon")
 	private GenomeAssembly genomeAssembly;
 }
