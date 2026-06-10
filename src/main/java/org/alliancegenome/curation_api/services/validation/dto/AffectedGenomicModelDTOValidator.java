@@ -8,7 +8,7 @@ import java.util.Map;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.AffectedGenomicModelDAO;
 import org.alliancegenome.curation_api.dao.SynonymDAO;
-import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
+import org.alliancegenome.curation_api.model.entities.Species;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
 import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
@@ -44,7 +44,7 @@ public class AffectedGenomicModelDTOValidator extends GenomicEntityDTOValidator<
 	@Inject AgmSecondaryIdSlotAnnotationDTOValidator agmSecondaryIdDtoValidator;
 
 	@Transactional
-	public ObjectResponse<AffectedGenomicModel> validateAffectedGenomicModelDTO(AffectedGenomicModelDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
+	public ObjectResponse<AffectedGenomicModel> validateAffectedGenomicModelDTO(AffectedGenomicModelDTO dto, Species species) throws ValidationException {
 		response = new ObjectResponse<AffectedGenomicModel>();
 		
 		AffectedGenomicModel agm = findDatabaseObject(affectedGenomicModelDAO, "primaryExternalId", "primary_external_id", dto.getPrimaryExternalId());
@@ -52,7 +52,7 @@ public class AffectedGenomicModelDTOValidator extends GenomicEntityDTOValidator<
 			agm = new AffectedGenomicModel();
 		}
 		
-		agm = validateGenomicEntityDTO(agm, dto, dataProvider, VocabularyConstants.AGM_NOTE_TYPES_VOCABULARY_TERM_SET);
+		agm = validateGenomicEntityDTO(agm, dto, species, VocabularyConstants.AGM_NOTE_TYPES_VOCABULARY_TERM_SET);
 
 		AgmFullNameSlotAnnotation fullName = validateAgmFullName(agm, dto);
 		agm.setAgmFullName(fullName);

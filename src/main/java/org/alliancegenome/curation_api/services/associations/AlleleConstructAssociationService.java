@@ -11,7 +11,7 @@ import org.alliancegenome.curation_api.dao.AlleleDAO;
 import org.alliancegenome.curation_api.dao.NoteDAO;
 import org.alliancegenome.curation_api.dao.PersonDAO;
 import org.alliancegenome.curation_api.dao.associations.AlleleConstructAssociationDAO;
-import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
+import org.alliancegenome.curation_api.model.entities.Species;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.interfaces.crud.BaseUpsertServiceInterface;
@@ -72,13 +72,13 @@ public class AlleleConstructAssociationService extends BaseAssociationDTOCrudSer
 
 	@Override
 	@Transactional
-	public ObjectResponse<AlleleConstructAssociation> upsert(AlleleConstructAssociationDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
-		return alleleConstructAssociationDtoValidator.validateAlleleConstructAssociationDTO(dto, dataProvider);
+	public ObjectResponse<AlleleConstructAssociation> upsert(AlleleConstructAssociationDTO dto, Species species) throws ValidationException {
+		return alleleConstructAssociationDtoValidator.validateAlleleConstructAssociationDTO(dto, species);
 	}
 
-	public List<Long> getAssociationsByDataProvider(BackendBulkDataProvider dataProvider) {
+	public List<Long> getAssociationsByDataProvider(Species species) {
 		Map<String, Object> params = new HashMap<>();
-		params.put(EntityFieldConstants.ALLELE_ASSOCIATION_SUBJECT_DATA_PROVIDER, dataProvider.sourceOrganization);
+		params.put(EntityFieldConstants.ALLELE_ASSOCIATION_SUBJECT_DATA_PROVIDER, species.getDataProvider().getAbbreviation());
 		List<Long> associationIds = alleleConstructAssociationDAO.findIdsByParams(params);
 		associationIds.removeIf(Objects::isNull);
 

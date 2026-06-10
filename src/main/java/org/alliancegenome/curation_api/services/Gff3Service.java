@@ -21,7 +21,7 @@ import org.alliancegenome.curation_api.dao.associations.TranscriptGeneAssociatio
 import org.alliancegenome.curation_api.dao.associations.TranscriptGenomicLocationAssociationDAO;
 import org.alliancegenome.curation_api.dao.ontology.SoTermDAO;
 import org.alliancegenome.curation_api.dao.loads.BulkLoadFileExceptionDAO;
-import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
+import org.alliancegenome.curation_api.model.entities.Species;
 import org.alliancegenome.curation_api.exceptions.KnownIssueValidationException;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException.ObjectUpdateExceptionData;
@@ -96,7 +96,7 @@ public class Gff3Service {
 	private Map<String, Transcript> transcriptCache = new HashMap<>();
 
 	@Transactional
-	public void loadExonLocationAssociations(ImmutablePair<Gff3DTO, Map<String, String>> gffEntryPair, List<Long> idsAdded, BackendBulkDataProvider dataProvider, String assemblyId) throws ValidationException {
+	public void loadExonLocationAssociations(ImmutablePair<Gff3DTO, Map<String, String>> gffEntryPair, List<Long> idsAdded, Species species, String assemblyId) throws ValidationException {
 		Gff3DTO gffEntry = gffEntryPair.getKey();
 
 		if (StringUtils.isBlank(assemblyId)) {
@@ -107,14 +107,14 @@ public class Gff3Service {
 			throw new ObjectValidationException(gffEntry, "Invalid Type: " + gffEntry.getType() + " for Exon Location");
 		}
 
-		String uniqueId = Gff3UniqueIdHelper.getExonOrCodingSequenceUniqueId(gffEntry, gffEntryPair.getValue(), dataProvider);
+		String uniqueId = Gff3UniqueIdHelper.getExonOrCodingSequenceUniqueId(gffEntry, gffEntryPair.getValue(), species);
 		SearchResponse<Exon> response = exonDAO.findByField("uniqueId", uniqueId);
 		if (response == null || response.getSingleResult() == null) {
 			throw new ObjectValidationException(gffEntry, "uniqueId - " + ValidationConstants.INVALID_MESSAGE + " (" + uniqueId + ")");
 		}
 		Exon exon = response.getSingleResult();
 
-		ExonGenomicLocationAssociation exonLocation = gff3DtoValidator.validateExonLocation(gffEntry, exon, assemblyId, dataProvider);
+		ExonGenomicLocationAssociation exonLocation = gff3DtoValidator.validateExonLocation(gffEntry, exon, assemblyId, species);
 		if (exonLocation != null) {
 			idsAdded.add(exonLocation.getId());
 			exonLocationService.addAssociationToSubject(exonLocation);
@@ -123,7 +123,7 @@ public class Gff3Service {
 	}
 
 	@Transactional
-	public void loadCDSLocationAssociations(ImmutablePair<Gff3DTO, Map<String, String>> gffEntryPair, List<Long> idsAdded, BackendBulkDataProvider dataProvider, String assemblyId) throws ValidationException {
+	public void loadCDSLocationAssociations(ImmutablePair<Gff3DTO, Map<String, String>> gffEntryPair, List<Long> idsAdded, Species species, String assemblyId) throws ValidationException {
 		Gff3DTO gffEntry = gffEntryPair.getKey();
 		Map<String, String> attributes = gffEntryPair.getValue();
 		if (StringUtils.isBlank(assemblyId)) {
@@ -134,14 +134,14 @@ public class Gff3Service {
 			throw new ObjectValidationException(gffEntry, "Invalid Type: " + gffEntry.getType() + " for CDS Location");
 		}
 
-		String uniqueId = Gff3UniqueIdHelper.getExonOrCodingSequenceUniqueId(gffEntry, attributes, dataProvider);
+		String uniqueId = Gff3UniqueIdHelper.getExonOrCodingSequenceUniqueId(gffEntry, attributes, species);
 		SearchResponse<CodingSequence> response = cdsDAO.findByField("uniqueId", uniqueId);
 		if (response == null || response.getSingleResult() == null) {
 			throw new ObjectValidationException(gffEntry, "uniqueId - " + ValidationConstants.INVALID_MESSAGE + " (" + uniqueId + ")");
 		}
 		CodingSequence cds = response.getSingleResult();
 
-		CodingSequenceGenomicLocationAssociation cdsLocation = gff3DtoValidator.validateCdsLocation(gffEntry, cds, assemblyId, dataProvider);
+		CodingSequenceGenomicLocationAssociation cdsLocation = gff3DtoValidator.validateCdsLocation(gffEntry, cds, assemblyId, species);
 		if (cdsLocation != null) {
 			idsAdded.add(cdsLocation.getId());
 			cdsLocationService.addAssociationToSubject(cdsLocation);
@@ -150,7 +150,7 @@ public class Gff3Service {
 	}
 
 	@Transactional
-	public void loadTranscriptLocationAssociations(ImmutablePair<Gff3DTO, Map<String, String>> gffEntryPair, List<Long> idsAdded, BackendBulkDataProvider dataProvider, String assemblyId) throws ValidationException {
+	public void loadTranscriptLocationAssociations(ImmutablePair<Gff3DTO, Map<String, String>> gffEntryPair, List<Long> idsAdded, Species species, String assemblyId) throws ValidationException {
 		Gff3DTO gffEntry = gffEntryPair.getKey();
 		Map<String, String> attributes = gffEntryPair.getValue();
 		if (StringUtils.isBlank(assemblyId)) {
@@ -170,7 +170,7 @@ public class Gff3Service {
 		}
 		Transcript transcript = response.getSingleResult();
 
-		TranscriptGenomicLocationAssociation transcriptLocation = gff3DtoValidator.validateTranscriptLocation(gffEntry, transcript, assemblyId, dataProvider);
+		TranscriptGenomicLocationAssociation transcriptLocation = gff3DtoValidator.validateTranscriptLocation(gffEntry, transcript, assemblyId, species);
 		if (transcriptLocation != null) {
 			idsAdded.add(transcriptLocation.getId());
 			transcriptLocationService.addAssociationToSubject(transcriptLocation);
@@ -178,7 +178,7 @@ public class Gff3Service {
 	}
 
 	@Transactional
-	public void loadGeneLocationAssociations(ImmutablePair<Gff3DTO, Map<String, String>> gffEntryPair, List<Long> idsAdded, BackendBulkDataProvider dataProvider, String assemblyId) throws ValidationException {
+	public void loadGeneLocationAssociations(ImmutablePair<Gff3DTO, Map<String, String>> gffEntryPair, List<Long> idsAdded, Species species, String assemblyId) throws ValidationException {
 		Gff3DTO gffEntry = gffEntryPair.getKey();
 		Map<String, String> attributes = gffEntryPair.getValue();
 		if (StringUtils.isBlank(assemblyId)) {
@@ -206,7 +206,7 @@ public class Gff3Service {
 			throw new KnownIssueValidationException(ValidationConstants.UNRECOGNIZED_MESSAGE + " (" + attributes.get(identifyingAttribute) + ")");
 		}
 
-		GeneGenomicLocationAssociation geneLocation = gff3DtoValidator.validateGeneLocation(gffEntry, gene, assemblyId, dataProvider);
+		GeneGenomicLocationAssociation geneLocation = gff3DtoValidator.validateGeneLocation(gffEntry, gene, assemblyId, species);
 		if (geneLocation != null) {
 			idsAdded.add(geneLocation.getId());
 			geneLocationService.addAssociationToSubject(geneLocation);
@@ -214,7 +214,7 @@ public class Gff3Service {
 	}
 
 	@Transactional
-	public void loadExonParentChildAssociations(ImmutablePair<Gff3DTO, Map<String, String>> gffEntryPair, List<Long> idsAdded, BackendBulkDataProvider dataProvider) throws ValidationException {
+	public void loadExonParentChildAssociations(ImmutablePair<Gff3DTO, Map<String, String>> gffEntryPair, List<Long> idsAdded, Species species) throws ValidationException {
 		Gff3DTO gffEntry = gffEntryPair.getKey();
 
 		if (!StringUtils.equals(gffEntry.getType(), "exon") && !StringUtils.equals(gffEntry.getType(), "noncoding_exon")) {
@@ -222,7 +222,7 @@ public class Gff3Service {
 		}
 
 		Map<String, String> attributes = gffEntryPair.getValue();
-		String uniqueId = Gff3UniqueIdHelper.getExonOrCodingSequenceUniqueId(gffEntry, attributes, dataProvider);
+		String uniqueId = Gff3UniqueIdHelper.getExonOrCodingSequenceUniqueId(gffEntry, attributes, species);
 		SearchResponse<Exon> response = exonDAO.findByField("uniqueId", uniqueId);
 		if (response == null || response.getSingleResult() == null) {
 			throw new ObjectValidationException(gffEntry, "uniqueId - " + ValidationConstants.INVALID_MESSAGE + " (" + uniqueId + ")");
@@ -238,7 +238,7 @@ public class Gff3Service {
 	}
 
 	@Transactional
-	public void loadCDSParentChildAssociations(ImmutablePair<Gff3DTO, Map<String, String>> gffEntryPair, List<Long> idsAdded, BackendBulkDataProvider dataProvider) throws ValidationException {
+	public void loadCDSParentChildAssociations(ImmutablePair<Gff3DTO, Map<String, String>> gffEntryPair, List<Long> idsAdded, Species species) throws ValidationException {
 		Gff3DTO gffEntry = gffEntryPair.getKey();
 		Map<String, String> attributes = gffEntryPair.getValue();
 
@@ -246,7 +246,7 @@ public class Gff3Service {
 			throw new ObjectValidationException(gffEntry, "Invalid Type: " + gffEntry.getType() + " for CDS Transcript Associations");
 		}
 
-		String uniqueId = Gff3UniqueIdHelper.getExonOrCodingSequenceUniqueId(gffEntry, attributes, dataProvider);
+		String uniqueId = Gff3UniqueIdHelper.getExonOrCodingSequenceUniqueId(gffEntry, attributes, species);
 		SearchResponse<CodingSequence> response = cdsDAO.findByField("uniqueId", uniqueId);
 		if (response == null || response.getSingleResult() == null) {
 			throw new ObjectValidationException(gffEntry, "uniqueId - " + ValidationConstants.INVALID_MESSAGE + " (" + uniqueId + ")");
@@ -261,7 +261,7 @@ public class Gff3Service {
 	}
 
 	@Transactional
-	public void loadGeneParentChildAssociations(ImmutablePair<Gff3DTO, Map<String, String>> gffEntryPair, List<Long> idsAdded, BackendBulkDataProvider dataProvider, Map<String, String> geneIdCurieMap) throws ValidationException {
+	public void loadGeneParentChildAssociations(ImmutablePair<Gff3DTO, Map<String, String>> gffEntryPair, List<Long> idsAdded, Species species, Map<String, String> geneIdCurieMap) throws ValidationException {
 		Gff3DTO gffEntry = gffEntryPair.getKey();
 		if (!Gff3Constants.TRANSCRIPT_TYPES.contains(gffEntry.getType())) {
 			throw new ObjectValidationException(gffEntry, "Invalid Type: " + gffEntry.getType() + " for Gene Transcript Associations");
@@ -291,7 +291,7 @@ public class Gff3Service {
 			List<Long> entityIdsAdded,
 			List<Long> locationIdsAdded,
 			List<Long> associationIdsAdded,
-			BackendBulkDataProvider dataProvider,
+			Species species,
 			String assemblyId,
 			BulkLoadFileHistory history,
 			ProcessDisplayHelper ph) {
@@ -302,7 +302,7 @@ public class Gff3Service {
 		Set<String> uniqueIds = new HashSet<>();
 		Set<String> parentIds = new HashSet<>();
 		for (ImmutablePair<Gff3DTO, Map<String, String>> pair : batch) {
-			uniqueIds.add(Gff3UniqueIdHelper.getExonOrCodingSequenceUniqueId(pair.getKey(), pair.getValue(), dataProvider));
+			uniqueIds.add(Gff3UniqueIdHelper.getExonOrCodingSequenceUniqueId(pair.getKey(), pair.getValue(), species));
 			String parent = pair.getValue().get("Parent");
 			if (parent != null && !transcriptCache.containsKey(parent)) {
 				parentIds.add(parent);
@@ -330,7 +330,7 @@ public class Gff3Service {
 		for (ImmutablePair<Gff3DTO, Map<String, String>> pair : batch) {
 			Gff3DTO gffEntry = pair.getKey();
 			Map<String, String> attributes = pair.getValue();
-			String uniqueId = Gff3UniqueIdHelper.getExonOrCodingSequenceUniqueId(gffEntry, attributes, dataProvider);
+			String uniqueId = Gff3UniqueIdHelper.getExonOrCodingSequenceUniqueId(gffEntry, attributes, species);
 
 			// Phase 1: Entity
 			Exon exon = null;
@@ -349,8 +349,8 @@ public class Gff3Service {
 					exon.setName(attributes.get("Name"));
 				}
 
-				exon.setDataProvider(organizationService.getByAbbr(dataProvider.sourceOrganization).getEntity());
-				exon.setTaxon(ncbiTaxonTermService.getByCurie(dataProvider.canonicalTaxonCurie).getEntity());
+				exon.setDataProvider(organizationService.getByAbbr(species.getDataProvider().getAbbreviation()).getEntity());
+				exon.setTaxon(ncbiTaxonTermService.getByCurie(species.getTaxon().getCurie()).getEntity());
 
 				exon = exonDAO.persist(exon);
 				entityIdsAdded.add(exon.getId());
@@ -370,7 +370,7 @@ public class Gff3Service {
 			if (exon != null && assemblyId != null) {
 				try {
 					ExonGenomicLocationAssociation existingLocation = locationAssocMap.get(exon.getId());
-					ExonGenomicLocationAssociation exonLocation = gff3DtoValidator.validateExonLocation(gffEntry, exon, assemblyId, dataProvider, existingLocation);
+					ExonGenomicLocationAssociation exonLocation = gff3DtoValidator.validateExonLocation(gffEntry, exon, assemblyId, species, existingLocation);
 					if (exonLocation != null) {
 						locationIdsAdded.add(exonLocation.getId());
 					}
@@ -422,7 +422,7 @@ public class Gff3Service {
 			List<Long> entityIdsAdded,
 			List<Long> locationIdsAdded,
 			List<Long> associationIdsAdded,
-			BackendBulkDataProvider dataProvider,
+			Species species,
 			String assemblyId,
 			BulkLoadFileHistory history,
 			ProcessDisplayHelper ph) {
@@ -433,7 +433,7 @@ public class Gff3Service {
 		Set<String> uniqueIds = new HashSet<>();
 		Set<String> parentIds = new HashSet<>();
 		for (ImmutablePair<Gff3DTO, Map<String, String>> pair : batch) {
-			uniqueIds.add(Gff3UniqueIdHelper.getExonOrCodingSequenceUniqueId(pair.getKey(), pair.getValue(), dataProvider));
+			uniqueIds.add(Gff3UniqueIdHelper.getExonOrCodingSequenceUniqueId(pair.getKey(), pair.getValue(), species));
 			String parent = pair.getValue().get("Parent");
 			if (parent != null && !transcriptCache.containsKey(parent)) {
 				parentIds.add(parent);
@@ -461,7 +461,7 @@ public class Gff3Service {
 		for (ImmutablePair<Gff3DTO, Map<String, String>> pair : batch) {
 			Gff3DTO gffEntry = pair.getKey();
 			Map<String, String> attributes = pair.getValue();
-			String uniqueId = Gff3UniqueIdHelper.getExonOrCodingSequenceUniqueId(gffEntry, attributes, dataProvider);
+			String uniqueId = Gff3UniqueIdHelper.getExonOrCodingSequenceUniqueId(gffEntry, attributes, species);
 
 			// Phase 1: Entity
 			CodingSequence cds = null;
@@ -480,8 +480,8 @@ public class Gff3Service {
 					cds.setName(attributes.get("Name"));
 				}
 
-				cds.setDataProvider(organizationService.getByAbbr(dataProvider.sourceOrganization).getEntity());
-				cds.setTaxon(ncbiTaxonTermService.getByCurie(dataProvider.canonicalTaxonCurie).getEntity());
+				cds.setDataProvider(organizationService.getByAbbr(species.getDataProvider().getAbbreviation()).getEntity());
+				cds.setTaxon(ncbiTaxonTermService.getByCurie(species.getTaxon().getCurie()).getEntity());
 
 				cds = cdsDAO.persist(cds);
 				entityIdsAdded.add(cds.getId());
@@ -501,7 +501,7 @@ public class Gff3Service {
 			if (cds != null && assemblyId != null) {
 				try {
 					CodingSequenceGenomicLocationAssociation existingLocation = locationAssocMap.get(cds.getId());
-					CodingSequenceGenomicLocationAssociation cdsLocation = gff3DtoValidator.validateCdsLocation(gffEntry, cds, assemblyId, dataProvider, existingLocation);
+					CodingSequenceGenomicLocationAssociation cdsLocation = gff3DtoValidator.validateCdsLocation(gffEntry, cds, assemblyId, species, existingLocation);
 					if (cdsLocation != null) {
 						locationIdsAdded.add(cdsLocation.getId());
 					}
@@ -560,7 +560,7 @@ public class Gff3Service {
 			List<Long> entityIdsAdded,
 			List<Long> locationIdsAdded,
 			List<Long> associationIdsAdded,
-			BackendBulkDataProvider dataProvider,
+			Species species,
 			String assemblyId,
 			Map<String, String> geneIdCurieMap,
 			BulkLoadFileHistory history,
@@ -645,8 +645,8 @@ public class Gff3Service {
 					transcript.setTranscriptId(null);
 				}
 
-				transcript.setDataProvider(organizationService.getByAbbr(dataProvider.sourceOrganization).getEntity());
-				transcript.setTaxon(ncbiTaxonTermService.getByCurie(dataProvider.canonicalTaxonCurie).getEntity());
+				transcript.setDataProvider(organizationService.getByAbbr(species.getDataProvider().getAbbreviation()).getEntity());
+				transcript.setTaxon(ncbiTaxonTermService.getByCurie(species.getTaxon().getCurie()).getEntity());
 
 				transcript = transcriptDAO.persist(transcript);
 				transcriptCache.put(attributes.get("ID"), transcript);
@@ -667,7 +667,7 @@ public class Gff3Service {
 			if (transcript != null && assemblyId != null) {
 				try {
 					TranscriptGenomicLocationAssociation existingLocation = locationAssocMap.get(transcript.getId());
-					TranscriptGenomicLocationAssociation transcriptLocation = gff3DtoValidator.validateTranscriptLocation(gffEntry, transcript, assemblyId, dataProvider, existingLocation);
+					TranscriptGenomicLocationAssociation transcriptLocation = gff3DtoValidator.validateTranscriptLocation(gffEntry, transcript, assemblyId, species, existingLocation);
 					if (transcriptLocation != null) {
 						locationIdsAdded.add(transcriptLocation.getId());
 					}
@@ -716,12 +716,12 @@ public class Gff3Service {
 		}
 	}
 
-	public Map<String, String> getGeneIdCurieMap(List<Gff3DTO> gffData, BackendBulkDataProvider dataProvider) {
+	public Map<String, String> getGeneIdCurieMap(List<Gff3DTO> gffData, Species species) {
 		Map<String, String> geneIdCurieMap = new HashMap<>();
 
 		for (Gff3DTO gffEntry : gffData) {
 			if (Gff3Constants.GENE_TYPES.contains(gffEntry.getType())) {
-				Map<String, String> attributes = Gff3AttributesHelper.getAttributes(gffEntry, dataProvider);
+				Map<String, String> attributes = Gff3AttributesHelper.getAttributes(gffEntry, species);
 				if (attributes.containsKey("gene_id") && attributes.containsKey("ID")) {
 					geneIdCurieMap.put(attributes.get("ID"), attributes.get("gene_id"));
 				}

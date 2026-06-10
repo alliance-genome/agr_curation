@@ -5,7 +5,7 @@ import java.util.Set;
 
 import org.alliancegenome.curation_api.dao.AllelePhenotypeAnnotationDAO;
 import org.alliancegenome.curation_api.dao.ConditionRelationDAO;
-import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
+import org.alliancegenome.curation_api.model.entities.Species;
 import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.AllelePhenotypeAnnotation;
@@ -46,14 +46,14 @@ public class AllelePhenotypeAnnotationService extends BaseAnnotationCrudService<
 	}
 
 	@Transactional
-	public AllelePhenotypeAnnotation upsertPrimaryAnnotation(Allele subject, PhenotypeFmsDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
-		AllelePhenotypeAnnotation annotation = allelePhenotypeAnnotationFmsDtoValidator.validatePrimaryAnnotation(subject, dto, dataProvider);
+	public AllelePhenotypeAnnotation upsertPrimaryAnnotation(Allele subject, PhenotypeFmsDTO dto, Species species) throws ValidationException {
+		AllelePhenotypeAnnotation annotation = allelePhenotypeAnnotationFmsDtoValidator.validatePrimaryAnnotation(subject, dto, species);
 		return allelePhenotypeAnnotationDAO.persist(annotation);
 	}
 
 	@Transactional
-	public List<AllelePhenotypeAnnotation> addInferredOrAssertedEntities(Allele primaryAnnotationSubject, PhenotypeFmsDTO secondaryAnnotationDto, BackendBulkDataProvider dataProvider, Set<Long> idsAdded) throws ValidationException {
-		List<AllelePhenotypeAnnotation> annotations = allelePhenotypeAnnotationFmsDtoValidator.validateInferredOrAssertedEntities(primaryAnnotationSubject, secondaryAnnotationDto, dataProvider, idsAdded);
+	public List<AllelePhenotypeAnnotation> addInferredOrAssertedEntities(Allele primaryAnnotationSubject, PhenotypeFmsDTO secondaryAnnotationDto, Species species, Set<Long> idsAdded) throws ValidationException {
+		List<AllelePhenotypeAnnotation> annotations = allelePhenotypeAnnotationFmsDtoValidator.validateInferredOrAssertedEntities(primaryAnnotationSubject, secondaryAnnotationDto, species, idsAdded);
 		for (AllelePhenotypeAnnotation annotation : annotations) {
 			allelePhenotypeAnnotationDAO.persist(annotation);
 		}
@@ -68,7 +68,7 @@ public class AllelePhenotypeAnnotationService extends BaseAnnotationCrudService<
 		return ret;
 	}
 
-	public List<Long> getAnnotationIdsByDataProvider(BackendBulkDataProvider dataProvider) {
-		return phenotypeAnnotationService.getAnnotationIdsByDataProvider(allelePhenotypeAnnotationDAO, dataProvider);
+	public List<Long> getAnnotationIdsByDataProvider(Species species) {
+		return phenotypeAnnotationService.getAnnotationIdsByDataProvider(allelePhenotypeAnnotationDAO, species);
 	}
 }

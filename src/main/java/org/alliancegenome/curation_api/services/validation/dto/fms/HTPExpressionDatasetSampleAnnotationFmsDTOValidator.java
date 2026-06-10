@@ -9,7 +9,7 @@ import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.AnatomicalSiteDAO;
 import org.alliancegenome.curation_api.dao.HTPExpressionDatasetSampleAnnotationDAO;
-import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
+import org.alliancegenome.curation_api.model.entities.Species;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
 import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
@@ -64,7 +64,7 @@ public class HTPExpressionDatasetSampleAnnotationFmsDTOValidator {
 	@Inject AnatomicalSiteDAO anatomicalSiteDAO;
 
 	@Transactional
-	public ObjectResponse<HTPExpressionDatasetSampleAnnotation> validateHTPExpressionDatasetSampleAnnotationFmsDTO(HTPExpressionDatasetSampleAnnotationFmsDTO dto, BackendBulkDataProvider backendBulkDataProvider) throws ValidationException {
+	public ObjectResponse<HTPExpressionDatasetSampleAnnotation> validateHTPExpressionDatasetSampleAnnotationFmsDTO(HTPExpressionDatasetSampleAnnotationFmsDTO dto, Species species) throws ValidationException {
 		ObjectResponse<HTPExpressionDatasetSampleAnnotation> htpSampleAnnotationResponse = new ObjectResponse<>();
 		HTPExpressionDatasetSampleAnnotation htpSampleAnnotation;
 
@@ -242,8 +242,8 @@ public class HTPExpressionDatasetSampleAnnotationFmsDTOValidator {
 
 		if (StringUtils.isNotEmpty(dto.getTaxonId())) {
 			ObjectResponse<NCBITaxonTerm> taxonResponse = ncbiTaxonTermService.getByCurie(dto.getTaxonId());
-			if (taxonResponse.getEntity() == null || backendBulkDataProvider != null && (backendBulkDataProvider.name().equals("RGD") || backendBulkDataProvider.name().equals("HUMAN")) && !taxonResponse.getEntity().getCurie().equals(backendBulkDataProvider.canonicalTaxonCurie)) {
-				htpSampleAnnotationResponse.addErrorMessage("taxonId", ValidationConstants.INVALID_MESSAGE + " (" + dto.getTaxonId() + ") for " + backendBulkDataProvider.name() + " load");
+			if (taxonResponse.getEntity() == null || species != null && (species.getDisplayName().equals("RGD") || species.getDisplayName().equals("HUMAN")) && !taxonResponse.getEntity().getCurie().equals(species.getTaxon().getCurie())) {
+				htpSampleAnnotationResponse.addErrorMessage("taxonId", ValidationConstants.INVALID_MESSAGE + " (" + dto.getTaxonId() + ") for " + species.getDisplayName() + " load");
 			}
 			htpSampleAnnotation.setTaxon(taxonResponse.getEntity());
 		}
@@ -269,7 +269,7 @@ public class HTPExpressionDatasetSampleAnnotationFmsDTOValidator {
 			htpSampleAnnotation.setRelatedNotes(relatedNotes);
 		}
 		
-		htpSampleAnnotation.setDataProvider(organizationService.getByAbbr(backendBulkDataProvider.sourceOrganization).getEntity());
+		htpSampleAnnotation.setDataProvider(organizationService.getByAbbr(species.getDataProvider().getAbbreviation()).getEntity());
 
 		if (htpSampleAnnotationResponse.hasErrors()) {
 			throw new ObjectValidationException(dto, htpSampleAnnotationResponse.errorMessagesString());

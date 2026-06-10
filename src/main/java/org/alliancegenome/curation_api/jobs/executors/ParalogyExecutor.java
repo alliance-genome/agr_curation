@@ -6,13 +6,14 @@ import java.util.List;
 import java.util.zip.GZIPInputStream;
 
 import org.alliancegenome.curation_api.dao.GeneToGeneParalogyDAO;
-import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
+import org.alliancegenome.curation_api.model.entities.Species;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.entities.GeneToGeneParalogy;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkFMSLoad;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.ParalogyIngestFmsDTO;
 import org.alliancegenome.curation_api.services.GeneToGeneParalogyService;
+import org.alliancegenome.curation_api.services.SpeciesService;
 import org.apache.commons.lang3.StringUtils;
 
 import io.quarkus.logging.Log;
@@ -24,6 +25,7 @@ public class ParalogyExecutor extends LoadFileExecutor {
 
 	@Inject GeneToGeneParalogyService geneToGeneParalogyService;
 	@Inject GeneToGeneParalogyDAO geneToGeneParalogyDAO;
+	@Inject SpeciesService speciesService;
 
 	public void execLoad(BulkLoadFileHistory bulkLoadFileHistory) {
 		try {
@@ -39,8 +41,8 @@ public class ParalogyExecutor extends LoadFileExecutor {
 			}
 
 			List<Long> paralogyIdsLoaded = new ArrayList<>();
-			BackendBulkDataProvider dataProvider = BackendBulkDataProvider.valueOf(fms.getFmsDataSubType());
-			List<Long> paralogyPairsBefore = geneToGeneParalogyService.getAllParalogyPairIdsBySubjectGeneDataProvider(dataProvider);
+			Species species = speciesService.getByDisplayName(fms.getFmsDataSubType());
+			List<Long> paralogyPairsBefore = geneToGeneParalogyService.getAllParalogyPairIdsBySubjectGeneDataProvider(species);
 			Log.debug("runLoad: Before: total " + paralogyPairsBefore.size());
 
 			bulkLoadFileDAO.merge(bulkLoadFileHistory.getBulkLoadFile());
@@ -48,7 +50,7 @@ public class ParalogyExecutor extends LoadFileExecutor {
 			bulkLoadFileHistory.setCount(paralogyData.getData().size());
 			updateHistory(bulkLoadFileHistory);
 
-			boolean success = runLoad(geneToGeneParalogyService, bulkLoadFileHistory, dataProvider, paralogyData.getData(), paralogyIdsLoaded, false);
+			boolean success = runLoad(geneToGeneParalogyService, bulkLoadFileHistory, species, paralogyData.getData(), paralogyIdsLoaded, false);
 
 			if (success) {
 				runCleanup(geneToGeneParalogyService, bulkLoadFileHistory, fms.getFmsDataSubType(), paralogyPairsBefore, paralogyIdsLoaded, fms.getFmsDataType());

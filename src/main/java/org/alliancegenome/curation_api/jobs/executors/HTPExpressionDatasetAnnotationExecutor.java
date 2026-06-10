@@ -7,7 +7,7 @@ import java.util.zip.GZIPInputStream;
 
 import org.alliancegenome.curation_api.dao.ExternalDataBaseEntityDAO;
 import org.alliancegenome.curation_api.dao.HTPExpressionDatasetAnnotationDAO;
-import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
+import org.alliancegenome.curation_api.model.entities.Species;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException.ObjectUpdateExceptionData;
@@ -22,6 +22,7 @@ import org.alliancegenome.curation_api.response.LoadHistoryResponce;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.ExternalDataBaseEntityService;
 import org.alliancegenome.curation_api.services.HTPExpressionDatasetAnnotationService;
+import org.alliancegenome.curation_api.services.SpeciesService;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
 import org.apache.commons.lang3.StringUtils;
 
@@ -36,6 +37,7 @@ public class HTPExpressionDatasetAnnotationExecutor extends LoadFileExecutor {
 	@Inject ExternalDataBaseEntityDAO externalDataBaseEntityDAO;
 	@Inject HTPExpressionDatasetAnnotationService htpExpressionDatasetAnnotationService;
 	@Inject HTPExpressionDatasetAnnotationDAO htpExpressionDatasetAnnotationDAO;
+	@Inject SpeciesService speciesService;
 	
 	public void execLoad(BulkLoadFileHistory bulkLoadFileHistory) {
 		try {
@@ -50,19 +52,19 @@ public class HTPExpressionDatasetAnnotationExecutor extends LoadFileExecutor {
 				bulkLoadFileHistory.getBulkLoadFile().setAllianceMemberReleaseVersion(htpExpressionDatasetData.getMetaData().getRelease());
 			}
 
-			BackendBulkDataProvider dataProvider = BackendBulkDataProvider.valueOf(fms.getFmsDataSubType());
+			Species species = speciesService.getByDisplayName(fms.getFmsDataSubType());
 			List<Long> htpAnnotationsIdsLoaded = new ArrayList<>();
-			List<Long> previousIds = htpExpressionDatasetAnnotationService.getAnnotationIdsByDataProvider(dataProvider.name());
+			List<Long> previousIds = htpExpressionDatasetAnnotationService.getAnnotationIdsByDataProvider(species.getDisplayName());
 			
 			bulkLoadFileDAO.merge(bulkLoadFileHistory.getBulkLoadFile());
 
 			bulkLoadFileHistory.setCount(htpExpressionDatasetData.getData().size());
 			updateHistory(bulkLoadFileHistory);
 			
-			boolean success = runLoad(bulkLoadFileHistory, dataProvider, htpExpressionDatasetData.getData(), htpAnnotationsIdsLoaded);
-			
+			boolean success = runLoad(bulkLoadFileHistory, species, htpExpressionDatasetData.getData(), htpAnnotationsIdsLoaded);
+
 			if (success) {
-				runCleanup(htpExpressionDatasetAnnotationService, bulkLoadFileHistory, dataProvider.name(), previousIds, htpAnnotationsIdsLoaded, fms.getFmsDataType());
+				runCleanup(htpExpressionDatasetAnnotationService, bulkLoadFileHistory, species.getDisplayName(), previousIds, htpAnnotationsIdsLoaded, fms.getFmsDataType());
 			}
 			bulkLoadFileHistory.finishLoad();
 
@@ -75,15 +77,15 @@ public class HTPExpressionDatasetAnnotationExecutor extends LoadFileExecutor {
 		}
 	}
 
-	private boolean runLoad(BulkLoadFileHistory history, BackendBulkDataProvider dataProvider, List<HTPExpressionDatasetAnnotationFmsDTO> htpDatasetAnnotations, List<Long> htpAnnotationsIdsLoaded) {
+	private boolean runLoad(BulkLoadFileHistory history, Species species, List<HTPExpressionDatasetAnnotationFmsDTO> htpDatasetAnnotations, List<Long> htpAnnotationsIdsLoaded) {
 		ProcessDisplayHelper ph = new ProcessDisplayHelper();
 		ph.addDisplayHandler(loadProcessDisplayService);
-		ph.startProcess("HTP Expression Dataset Annotation DTO Update for " + dataProvider.name(), htpDatasetAnnotations.size() * 2);
+		ph.startProcess("HTP Expression Dataset Annotation DTO Update for " + species.getDisplayName(), htpDatasetAnnotations.size() * 2);
 
 		updateHistory(history);
 		for (HTPExpressionDatasetAnnotationFmsDTO dto : htpDatasetAnnotations) {
 			try {
-				ObjectResponse<HTPExpressionDatasetAnnotation> dbObject = htpExpressionDatasetAnnotationService.upsert(dto, dataProvider);
+				ObjectResponse<HTPExpressionDatasetAnnotation> dbObject = htpExpressionDatasetAnnotationService.upsert(dto, species);
 				history.incrementCompleted();
 				if (dbObject.getEntity() != null) {
 					htpAnnotationsIdsLoaded.add(dbObject.getEntity().getId());
@@ -119,9 +121,9 @@ public class HTPExpressionDatasetAnnotationExecutor extends LoadFileExecutor {
 		List<Long> htpAnnotationsIdsLoaded = new ArrayList<>();
 
 		BulkLoadFileHistory history = new BulkLoadFileHistory(htpDataset.size());
-		BackendBulkDataProvider dataProvider = BackendBulkDataProvider.valueOf(dataProviderName);
+		Species species = speciesService.getByDisplayName(dataProviderName);
 		history = bulkLoadFileHistoryDAO.persist(history);
-		runLoad(history, dataProvider, htpDataset, htpAnnotationsIdsLoaded);
+		runLoad(history, species, htpDataset, htpAnnotationsIdsLoaded);
 		history.finishLoad();
 
 		return new LoadHistoryResponce(history);

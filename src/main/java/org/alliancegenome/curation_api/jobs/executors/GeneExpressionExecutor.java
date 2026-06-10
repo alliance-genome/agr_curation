@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.zip.GZIPInputStream;
 
-import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
+import org.alliancegenome.curation_api.model.entities.Species;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
@@ -23,6 +23,7 @@ import org.alliancegenome.curation_api.model.ingest.dto.fms.GeneExpressionIngest
 import org.alliancegenome.curation_api.response.APIResponse;
 import org.alliancegenome.curation_api.response.LoadHistoryResponce;
 import org.alliancegenome.curation_api.services.GeneExpressionAnnotationService;
+import org.alliancegenome.curation_api.services.SpeciesService;
 import org.alliancegenome.curation_api.services.GeneExpressionExperimentService;
 import org.alliancegenome.curation_api.services.helpers.annotations.GeneExpressionAnnotationUniqueIdHelper;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
@@ -37,6 +38,7 @@ public class GeneExpressionExecutor extends LoadFileExecutor {
 	@Inject GeneExpressionAnnotationService geneExpressionAnnotationService;
 	@Inject GeneExpressionExperimentService geneExpressionExperimentService;
 	@Inject GeneExpressionAnnotationUniqueIdHelper geneExpressionAnnotationUniqueIdHelper;
+	@Inject SpeciesService speciesService;
 	static final String ANNOTATIONS = "Annotations";
 	static final String EXPERIMENTS = "Experiments";
 
@@ -44,7 +46,7 @@ public class GeneExpressionExecutor extends LoadFileExecutor {
 	public void execLoad(BulkLoadFileHistory bulkLoadFileHistory) {
 		try {
 			BulkFMSLoad fms = (BulkFMSLoad) bulkLoadFileHistory.getBulkLoad();
-			BackendBulkDataProvider dataProvider = BackendBulkDataProvider.valueOf(fms.getFmsDataSubType());
+			Species species = speciesService.getByDisplayName(fms.getFmsDataSubType());
 
 			GeneExpressionIngestFmsDTO geneExpressionIngestFmsDTO = mapper.readValue(new GZIPInputStream(new FileInputStream(bulkLoadFileHistory.getBulkLoadFile().getLocalFilePath())), GeneExpressionIngestFmsDTO.class);
 			bulkLoadFileHistory.getBulkLoadFile().setRecordCount(geneExpressionIngestFmsDTO.getData().size());
@@ -57,17 +59,17 @@ public class GeneExpressionExecutor extends LoadFileExecutor {
 			bulkLoadFileDAO.merge(bulkLoadFileHistory.getBulkLoadFile());
 
 			List<Long> annotationIdsLoaded = new ArrayList<>();
-			List<Long> annotationIdsBefore = geneExpressionAnnotationService.getAnnotationIdsByDataProvider(dataProvider);
+			List<Long> annotationIdsBefore = geneExpressionAnnotationService.getAnnotationIdsByDataProvider(species);
 
 			List<Long> experimentIdsLoaded = new ArrayList<>();
-			List<Long> experimentIdsBefore = geneExpressionExperimentService.getExperimentIdsByDataProvider(dataProvider);
+			List<Long> experimentIdsBefore = geneExpressionExperimentService.getExperimentIdsByDataProvider(species);
 
-			boolean success = runLoad(geneExpressionAnnotationService, bulkLoadFileHistory, dataProvider, consolidateFMSDTOs(geneExpressionIngestFmsDTO.getData()), annotationIdsLoaded, ANNOTATIONS);
+			boolean success = runLoad(geneExpressionAnnotationService, bulkLoadFileHistory, species, consolidateFMSDTOs(geneExpressionIngestFmsDTO.getData()), annotationIdsLoaded, ANNOTATIONS);
 
 			if (success) {
-				runCleanup(geneExpressionAnnotationService, bulkLoadFileHistory, dataProvider.name(), annotationIdsBefore, annotationIdsLoaded, ANNOTATIONS);
-				loadExperiments(bulkLoadFileHistory, dataProvider, experimentIdsLoaded);
-				runCleanup(geneExpressionExperimentService, bulkLoadFileHistory, dataProvider.name(), experimentIdsBefore, experimentIdsLoaded, EXPERIMENTS);
+				runCleanup(geneExpressionAnnotationService, bulkLoadFileHistory, species.getDisplayName(), annotationIdsBefore, annotationIdsLoaded, ANNOTATIONS);
+				loadExperiments(bulkLoadFileHistory, species, experimentIdsLoaded);
+				runCleanup(geneExpressionExperimentService, bulkLoadFileHistory, species.getDisplayName(), experimentIdsBefore, experimentIdsLoaded, EXPERIMENTS);
 			}
 
 			bulkLoadFileHistory.finishLoad();
@@ -84,19 +86,19 @@ public class GeneExpressionExecutor extends LoadFileExecutor {
 		List<Long> idsLoaded = new ArrayList<>();
 		BulkLoadFileHistory history = new BulkLoadFileHistory(objectList.size());
 		history = bulkLoadFileHistoryDAO.persist(history);
-		BackendBulkDataProvider dataProvider = null;
+		Species species = null;
 		if (dataProviderName != null) {
-			dataProvider = BackendBulkDataProvider.valueOf(dataProviderName);
+			species = speciesService.getByDisplayName(dataProviderName);
 		}
-		boolean success = runLoad(service, history, dataProvider, consolidateFMSDTOs(objectList), idsLoaded, true, ANNOTATIONS);
+		boolean success = runLoad(service, history, species, consolidateFMSDTOs(objectList), idsLoaded, true, ANNOTATIONS);
 		if (success) {
-			loadExperiments(history, dataProvider, new ArrayList<>());
+			loadExperiments(history, species, new ArrayList<>());
 		}
 		history.finishLoad();
 		return new LoadHistoryResponce(history);
 	}
 
-	private void loadExperiments(BulkLoadFileHistory history, BackendBulkDataProvider dataProvider, List<Long> experimentIdsLoaded) {
+	private void loadExperiments(BulkLoadFileHistory history, Species species, List<Long> experimentIdsLoaded) {
 		ProcessDisplayHelper ph = new ProcessDisplayHelper();
 		Map<String, Set<String>> experiments = geneExpressionAnnotationService.getExperiments();
 		Map<String, Set<CrossReferenceFmsDTO>> crossReferences = geneExpressionAnnotationService.getCrossReferences();
@@ -104,7 +106,7 @@ public class GeneExpressionExecutor extends LoadFileExecutor {
 		history.setCount(EXPERIMENTS, geneExpressionAnnotationService.getExperiments().size());
 		for (String experimentId: experiments.keySet()) {
 			try {
-				GeneExpressionExperiment experiment = geneExpressionExperimentService.upsert(experimentId, experiments.get(experimentId), dataProvider, crossReferences.get(experimentId));
+				GeneExpressionExperiment experiment = geneExpressionExperimentService.upsert(experimentId, experiments.get(experimentId), species, crossReferences.get(experimentId));
 				if (experiment != null) {
 					experimentIdsLoaded.add(experiment.getId());
 					history.incrementCompleted(EXPERIMENTS);

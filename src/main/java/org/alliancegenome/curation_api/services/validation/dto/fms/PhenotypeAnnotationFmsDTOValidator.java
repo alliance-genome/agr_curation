@@ -14,7 +14,7 @@ import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.ConditionRelationDAO;
 import org.alliancegenome.curation_api.dao.ExternalDatabaseReferenceDAO;
 import org.alliancegenome.curation_api.dao.base.BaseSQLDAO;
-import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
+import org.alliancegenome.curation_api.model.entities.Species;
 import org.alliancegenome.curation_api.model.entities.ConditionRelation;
 import org.alliancegenome.curation_api.model.entities.ExternalDatabaseReference;
 import org.alliancegenome.curation_api.model.entities.InformationContentEntity;
@@ -66,7 +66,7 @@ public class PhenotypeAnnotationFmsDTOValidator {
 		this.inferredAlleleIds = inferredAlleleIds;
 	}
 
-	public <E extends PhenotypeAnnotation> ObjectResponse<E> validatePhenotypeAnnotation(E annotation, PhenotypeFmsDTO dto, BackendBulkDataProvider beDataProvider) {
+	public <E extends PhenotypeAnnotation> ObjectResponse<E> validatePhenotypeAnnotation(E annotation, PhenotypeFmsDTO dto, Species beSpecies) {
 
 		ObjectResponse<E> paResponse = new ObjectResponse<E>();
 
@@ -105,7 +105,7 @@ public class PhenotypeAnnotationFmsDTOValidator {
 			annotation.setConditionRelations(null);
 		}
 
-		annotation.setDataProvider(organizationService.getByAbbr(beDataProvider.sourceOrganization).getEntity());
+		annotation.setDataProvider(organizationService.getByAbbr(beSpecies.getDataProvider().getAbbreviation()).getEntity());
 		annotation.setRelation(vocabularyTermService.getTermInVocabulary(VocabularyConstants.PHENOTYPE_RELATION_VOCABULARY, "has_phenotype").getEntity());
 
 		OffsetDateTime creationDate = null;

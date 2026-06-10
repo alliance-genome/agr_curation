@@ -14,7 +14,7 @@ import org.alliancegenome.curation_api.dao.NoteDAO;
 import org.alliancegenome.curation_api.dao.PersonDAO;
 import org.alliancegenome.curation_api.dao.VariantDAO;
 import org.alliancegenome.curation_api.dao.associations.AlleleVariantAssociationDAO;
-import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
+import org.alliancegenome.curation_api.model.entities.Species;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.Variant;
@@ -69,9 +69,9 @@ public class AlleleVariantAssociationService extends BaseEntityCrudService<Allel
 		return new ObjectResponse<AlleleVariantAssociation>(aga);
 	}
 
-	public List<Long> getAssociationsByDataProvider(BackendBulkDataProvider dataProvider) {
+	public List<Long> getAssociationsByDataProvider(Species species) {
 		Map<String, Object> params = new HashMap<>();
-		params.put(EntityFieldConstants.ALLELE_ASSOCIATION_SUBJECT_DATA_PROVIDER, dataProvider.sourceOrganization);
+		params.put(EntityFieldConstants.ALLELE_ASSOCIATION_SUBJECT_DATA_PROVIDER, species.getDataProvider().getAbbreviation());
 		List<Long> associationIds = alleleVariantAssociationDAO.findIdsByParams(params);
 		associationIds.removeIf(Objects::isNull);
 

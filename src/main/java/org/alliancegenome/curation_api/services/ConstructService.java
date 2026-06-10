@@ -10,7 +10,7 @@ import java.util.Set;
 
 import org.alliancegenome.curation_api.constants.EntityFieldConstants;
 import org.alliancegenome.curation_api.dao.ConstructDAO;
-import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
+import org.alliancegenome.curation_api.model.entities.Species;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
@@ -78,8 +78,8 @@ public class ConstructService extends SubmittedObjectCrudService<Construct, Cons
 
 	@Override
 	@Transactional
-	public ObjectResponse<Construct> upsert(ConstructDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
-		return constructDtoValidator.validateConstructDTO(dto, dataProvider);
+	public ObjectResponse<Construct> upsert(ConstructDTO dto, Species species) throws ValidationException {
+		return constructDtoValidator.validateConstructDTO(dto, species);
 	}
 
 	@Override
@@ -133,9 +133,9 @@ public class ConstructService extends SubmittedObjectCrudService<Construct, Cons
 		return null;
 	}
 
-	public List<Long> getConstructIdsByDataProvider(BackendBulkDataProvider dataProvider) {
+	public List<Long> getConstructIdsByDataProvider(Species species) {
 		Map<String, Object> params = new HashMap<>();
-		params.put(EntityFieldConstants.DATA_PROVIDER, dataProvider.sourceOrganization);
+		params.put(EntityFieldConstants.DATA_PROVIDER, species.getDataProvider().getAbbreviation());
 		List<Long> constructIds = constructDAO.findIdsByParams(params);
 		constructIds.removeIf(Objects::isNull);
 

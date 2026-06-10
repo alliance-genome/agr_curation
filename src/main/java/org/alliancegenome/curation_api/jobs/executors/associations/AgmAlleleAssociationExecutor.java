@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
+import org.alliancegenome.curation_api.model.entities.Species;
 import org.alliancegenome.curation_api.jobs.executors.LoadFileExecutor;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkManualLoad;
@@ -26,8 +26,8 @@ public class AgmAlleleAssociationExecutor extends LoadFileExecutor {
 	public void execLoad(BulkLoadFileHistory bulkLoadFileHistory, Boolean cleanUp) {
 
 		BulkManualLoad manual = (BulkManualLoad) bulkLoadFileHistory.getBulkLoad();
-		BackendBulkDataProvider dataProvider = manual.getDataProvider();
-		log.info("Running with dataProvider: " + dataProvider.name());
+		Species species = manual.getSpecies();
+		log.info("Running with dataProvider: " + species.getDisplayName());
 
 		IngestDTO ingestDto = readIngestFile(bulkLoadFileHistory, AgmAlleleAssociationDTO.class);
 		if (ingestDto == null) {
@@ -42,7 +42,7 @@ public class AgmAlleleAssociationExecutor extends LoadFileExecutor {
 		List<Long> associationIdsLoaded = new ArrayList<>();
 		List<Long> associationIdsBefore = new ArrayList<>();
 		if (cleanUp) {
-			associationIdsBefore.addAll(agmAlleleAssociationService.getAssociationsByDataProvider(dataProvider));
+			associationIdsBefore.addAll(agmAlleleAssociationService.getAssociationsByDataProvider(species));
 			associationIdsBefore.removeIf(Objects::isNull);
 		}
 
@@ -53,11 +53,11 @@ public class AgmAlleleAssociationExecutor extends LoadFileExecutor {
 		bulkLoadFileHistory.setCount(countType, associations.size());
 		updateHistory(bulkLoadFileHistory);
 
-		agmAlleleAssociationService.preloadAssociationKeys(dataProvider);
+		agmAlleleAssociationService.preloadAssociationKeys(species);
 
-		boolean success = runLoad(agmAlleleAssociationService, bulkLoadFileHistory, dataProvider, associations, associationIdsLoaded, countType);
+		boolean success = runLoad(agmAlleleAssociationService, bulkLoadFileHistory, species, associations, associationIdsLoaded, countType);
 		if (success && cleanUp) {
-			runCleanup(agmAlleleAssociationService, bulkLoadFileHistory, dataProvider.name(), associationIdsBefore, associationIdsLoaded, countType);
+			runCleanup(agmAlleleAssociationService, bulkLoadFileHistory, species.getDisplayName(), associationIdsBefore, associationIdsLoaded, countType);
 		}
 		bulkLoadFileHistory.finishLoad();
 		updateHistory(bulkLoadFileHistory);

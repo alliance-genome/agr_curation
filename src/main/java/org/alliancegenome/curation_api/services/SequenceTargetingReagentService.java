@@ -9,7 +9,7 @@ import java.util.Objects;
 
 import org.alliancegenome.curation_api.constants.EntityFieldConstants;
 import org.alliancegenome.curation_api.dao.SequenceTargetingReagentDAO;
-import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
+import org.alliancegenome.curation_api.model.entities.Species;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.interfaces.crud.BaseUpsertServiceInterface;
@@ -43,8 +43,8 @@ public class SequenceTargetingReagentService extends SubmittedObjectCrudService<
 
 	@Override
 	@Transactional
-	public ObjectResponse<SequenceTargetingReagent> upsert(SequenceTargetingReagentFmsDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
-		return strDtoValidator.validateStrFmsDTO(dto, dataProvider);
+	public ObjectResponse<SequenceTargetingReagent> upsert(SequenceTargetingReagentFmsDTO dto, Species species) throws ValidationException {
+		return strDtoValidator.validateStrFmsDTO(dto, species);
 	}
 
 	@Override
@@ -92,9 +92,9 @@ public class SequenceTargetingReagentService extends SubmittedObjectCrudService<
 		return null;
 	}
 
-	public List<Long> getIdsByDataProvider(String dataProvider) {
+	public List<Long> getIdsByDataProvider(String species) {
 		Map<String, Object> params = new HashMap<>();
-		params.put(EntityFieldConstants.DATA_PROVIDER, dataProvider);
+		params.put(EntityFieldConstants.DATA_PROVIDER, species);
 		List<Long> ids = strDAO.findIdsByParams(params);
 		ids.removeIf(Objects::isNull);
 		return ids;

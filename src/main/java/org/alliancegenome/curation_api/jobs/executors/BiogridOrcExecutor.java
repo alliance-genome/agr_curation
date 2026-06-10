@@ -9,7 +9,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.GZIPInputStream;
 
-import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
+import org.alliancegenome.curation_api.model.entities.Species;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.exceptions.KnownIssueValidationException;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
@@ -20,6 +20,7 @@ import org.alliancegenome.curation_api.model.ingest.dto.fms.BiogridOrcFmsDTO;
 import org.alliancegenome.curation_api.response.APIResponse;
 import org.alliancegenome.curation_api.response.LoadHistoryResponce;
 import org.alliancegenome.curation_api.services.GeneService;
+import org.alliancegenome.curation_api.services.SpeciesService;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
@@ -38,6 +39,7 @@ import jakarta.inject.Inject;
 public class BiogridOrcExecutor extends LoadFileExecutor {
 
 	@Inject GeneService geneService;
+	@Inject SpeciesService speciesService;
 
 	public void execLoad(BulkLoadFileHistory bulkLoadFileHistory) {
 		try (TarArchiveInputStream tarInputStream = new TarArchiveInputStream(
@@ -47,7 +49,7 @@ public class BiogridOrcExecutor extends LoadFileExecutor {
 			List<BiogridOrcFmsDTO> biogridData = new ArrayList<>();
 			String name = bulkLoadFileHistory.getBulkLoad().getName();
 			String dataProviderName = name.substring(0, name.indexOf(" "));
-			BackendBulkDataProvider dataProvider = BackendBulkDataProvider.valueOf(dataProviderName);
+			Species species = speciesService.getByDisplayName(dataProviderName);
 
 			while ((tarEntry = tarInputStream.getNextEntry()) != null) {
 
@@ -71,7 +73,7 @@ public class BiogridOrcExecutor extends LoadFileExecutor {
 				biogridData.addAll(it.readAll());
 
 			}
-			runLoad(bulkLoadFileHistory, biogridData, dataProvider);
+			runLoad(bulkLoadFileHistory, biogridData, species);
 			
 			bulkLoadFileHistory.finishLoad();
 			updateHistory(bulkLoadFileHistory);
@@ -83,15 +85,15 @@ public class BiogridOrcExecutor extends LoadFileExecutor {
 		}
 	}
 
-	private void runLoad(BulkLoadFileHistory history, List<BiogridOrcFmsDTO> biogridList, BackendBulkDataProvider dataProvider) {
+	private void runLoad(BulkLoadFileHistory history, List<BiogridOrcFmsDTO> biogridList, Species species) {
 		ProcessDisplayHelper ph = new ProcessDisplayHelper();
 		ph.addDisplayHandler(loadProcessDisplayService);
 		if (CollectionUtils.isNotEmpty(biogridList)) {
 			Set<String> entrezIds = populateEntrezIdsFromFiles(biogridList);
-			
+
 			String loadMessage = "BioGRID-ORCS cross-reference update";
-			if (dataProvider != null) {
-				loadMessage = loadMessage + " for " + dataProvider.name();
+			if (species != null) {
+				loadMessage = loadMessage + " for " + species.getDisplayName();
 			}
 			ph.startProcess(loadMessage, entrezIds.size());
 			
@@ -100,7 +102,7 @@ public class BiogridOrcExecutor extends LoadFileExecutor {
 			
 			for (String entrezId : entrezIds) {
 				try {
-					geneService.addBiogridXref(entrezId, dataProvider);
+					geneService.addBiogridXref(entrezId, species);
 					history.incrementCompleted();
 				} catch (ObjectUpdateException e) {
 					history.incrementFailed();
@@ -137,11 +139,11 @@ public class BiogridOrcExecutor extends LoadFileExecutor {
 	public APIResponse runLoadApi(String dataProviderName, List<BiogridOrcFmsDTO> biogridDTOs) {
 		BulkLoadFileHistory history = new BulkLoadFileHistory(biogridDTOs.size());
 		history = bulkLoadFileHistoryDAO.persist(history);
-		BackendBulkDataProvider dataProvider = null;
+		Species species = null;
 		if (dataProviderName != null) {
-			dataProvider = BackendBulkDataProvider.valueOf(dataProviderName);
+			species = speciesService.getByDisplayName(dataProviderName);
 		}
-		runLoad(history, biogridDTOs, dataProvider);
+		runLoad(history, biogridDTOs, species);
 		history.finishLoad();
 
 		return new LoadHistoryResponce(history);

@@ -7,7 +7,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.zip.GZIPInputStream;
 
-import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
+import org.alliancegenome.curation_api.model.entities.Species;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException.ObjectUpdateExceptionData;
@@ -20,6 +20,7 @@ import org.alliancegenome.curation_api.model.ingest.dto.fms.PhenotypeIngestFmsDT
 import org.alliancegenome.curation_api.response.APIResponse;
 import org.alliancegenome.curation_api.response.LoadHistoryResponce;
 import org.alliancegenome.curation_api.services.PhenotypeAnnotationService;
+import org.alliancegenome.curation_api.services.SpeciesService;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -31,12 +32,13 @@ import jakarta.inject.Inject;
 public class PhenotypeAnnotationExecutor extends LoadFileExecutor {
 
 	@Inject PhenotypeAnnotationService phenotypeAnnotationService;
+	@Inject SpeciesService speciesService;
 
 	public void execLoad(BulkLoadFileHistory bulkLoadFileHistory) {
 		try {
 
 			BulkFMSLoad fmsLoad = (BulkFMSLoad) bulkLoadFileHistory.getBulkLoad();
-			BackendBulkDataProvider dataProvider = BackendBulkDataProvider.valueOf(fmsLoad.getFmsDataSubType());
+			Species species = speciesService.getByDisplayName(fmsLoad.getFmsDataSubType());
 
 			PhenotypeIngestFmsDTO phenotypeData = mapper.readValue(new GZIPInputStream(new FileInputStream(bulkLoadFileHistory.getBulkLoadFile().getLocalFilePath())), PhenotypeIngestFmsDTO.class);
 			bulkLoadFileHistory.getBulkLoadFile().setRecordCount(phenotypeData.getData().size());
@@ -53,13 +55,13 @@ public class PhenotypeAnnotationExecutor extends LoadFileExecutor {
 			updateHistory(bulkLoadFileHistory);
 
 			Set<Long> annotationIdsLoaded = new HashSet<>();
-			List<Long> annotationIdsBefore = phenotypeAnnotationService.getAnnotationIdsByDataProvider(dataProvider);
+			List<Long> annotationIdsBefore = phenotypeAnnotationService.getAnnotationIdsByDataProvider(species);
 
-			phenotypeAnnotationService.preloadUniqueIds(dataProvider);
+			phenotypeAnnotationService.preloadUniqueIds(species);
 
-			runLoad(bulkLoadFileHistory, phenotypeData.getData(), annotationIdsLoaded, dataProvider);
-			
-			runCleanup(phenotypeAnnotationService, bulkLoadFileHistory, dataProvider.name(), annotationIdsBefore, annotationIdsLoaded.stream().collect(Collectors.toList()), "phenotype annotation");
+			runLoad(bulkLoadFileHistory, phenotypeData.getData(), annotationIdsLoaded, species);
+
+			runCleanup(phenotypeAnnotationService, bulkLoadFileHistory, species.getDisplayName(), annotationIdsBefore, annotationIdsLoaded.stream().collect(Collectors.toList()), "phenotype annotation");
 
 			bulkLoadFileHistory.finishLoad();
 			updateHistory(bulkLoadFileHistory);
@@ -75,33 +77,33 @@ public class PhenotypeAnnotationExecutor extends LoadFileExecutor {
 		Set<Long> annotationIdsLoaded = new HashSet<>();
 		BulkLoadFileHistory history = new BulkLoadFileHistory(annotations.size());
 		history = bulkLoadFileHistoryDAO.persist(history);
-		BackendBulkDataProvider dataProvider = BackendBulkDataProvider.valueOf(dataProviderName);
-		runLoad(history, annotations, annotationIdsLoaded, dataProvider);
+		Species species = speciesService.getByDisplayName(dataProviderName);
+		runLoad(history, annotations, annotationIdsLoaded, species);
 		history.finishLoad();
 
 		return new LoadHistoryResponce(history);
 	}
 
-	private void runLoad(BulkLoadFileHistory history, List<PhenotypeFmsDTO> annotations, Set<Long> idsAdded, BackendBulkDataProvider dataProvider) {
+	private void runLoad(BulkLoadFileHistory history, List<PhenotypeFmsDTO> annotations, Set<Long> idsAdded, Species species) {
 		ProcessDisplayHelper ph = new ProcessDisplayHelper();
 		ph.addDisplayHandler(loadProcessDisplayService);
-		ph.startProcess("PhenotypeAnnotation update for " + dataProvider.name(), annotations.size());
+		ph.startProcess("PhenotypeAnnotation update for " + species.getDisplayName(), annotations.size());
 
-		loadPrimaryAnnotations(history, annotations, idsAdded, dataProvider, ph);
-		loadSecondaryAnnotations(history, annotations, idsAdded, dataProvider, ph);
+		loadPrimaryAnnotations(history, annotations, idsAdded, species, ph);
+		loadSecondaryAnnotations(history, annotations, idsAdded, species, ph);
 
 		ph.finishProcess();
 
 	}
 	
-	private void loadSecondaryAnnotations(BulkLoadFileHistory history, List<PhenotypeFmsDTO> annotations, Set<Long> idsAdded, BackendBulkDataProvider dataProvider, ProcessDisplayHelper ph) {
+	private void loadSecondaryAnnotations(BulkLoadFileHistory history, List<PhenotypeFmsDTO> annotations, Set<Long> idsAdded, Species species, ProcessDisplayHelper ph) {
 		for (PhenotypeFmsDTO dto : annotations) {
 			if (CollectionUtils.isEmpty(dto.getPrimaryGeneticEntityIds())) {
 				continue;
 			}
 
 			try {
-				phenotypeAnnotationService.addInferredOrAssertedEntities(dto, dataProvider, idsAdded);
+				phenotypeAnnotationService.addInferredOrAssertedEntities(dto, species, idsAdded);
 				history.incrementCompleted();
 			} catch (ObjectUpdateException e) {
 				history.incrementFailed();
@@ -121,14 +123,14 @@ public class PhenotypeAnnotationExecutor extends LoadFileExecutor {
 		updateHistory(history);
 	}
 
-	private void loadPrimaryAnnotations(BulkLoadFileHistory history, List<PhenotypeFmsDTO> annotations, Set<Long> idsAdded, BackendBulkDataProvider dataProvider, ProcessDisplayHelper ph) {
+	private void loadPrimaryAnnotations(BulkLoadFileHistory history, List<PhenotypeFmsDTO> annotations, Set<Long> idsAdded, Species species, ProcessDisplayHelper ph) {
 		for (PhenotypeFmsDTO dto : annotations) {
 			if (CollectionUtils.isNotEmpty(dto.getPrimaryGeneticEntityIds())) {
 				continue;
 			}
 
 			try {
-				Long primaryAnnotationId = phenotypeAnnotationService.upsertPrimaryAnnotation(dto, dataProvider);
+				Long primaryAnnotationId = phenotypeAnnotationService.upsertPrimaryAnnotation(dto, species);
 				if (primaryAnnotationId != null) {
 					history.incrementCompleted();
 					if (idsAdded != null) {

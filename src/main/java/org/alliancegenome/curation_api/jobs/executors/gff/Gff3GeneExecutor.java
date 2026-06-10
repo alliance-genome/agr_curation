@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.zip.GZIPInputStream;
 
-import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
+import org.alliancegenome.curation_api.model.entities.Species;
 import org.alliancegenome.curation_api.exceptions.KnownIssueValidationException;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException.ObjectUpdateExceptionData;
@@ -16,6 +16,7 @@ import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHist
 import org.alliancegenome.curation_api.model.ingest.dto.fms.Gff3DTO;
 import org.alliancegenome.curation_api.response.APIResponse;
 import org.alliancegenome.curation_api.response.LoadHistoryResponce;
+import org.alliancegenome.curation_api.services.SpeciesService;
 import org.alliancegenome.curation_api.services.associations.GeneGenomicLocationAssociationService;
 import org.alliancegenome.curation_api.services.helpers.Gff3AttributesHelper;
 import org.alliancegenome.curation_api.services.validation.dto.Gff3DtoValidator;
@@ -38,6 +39,8 @@ public class Gff3GeneExecutor extends Gff3Executor {
 	GeneGenomicLocationAssociationService geneLocationService;
 	@Inject
 	Gff3DtoValidator gff3DtoValidator;
+	@Inject
+	SpeciesService speciesService;
 
 	public void execLoad(BulkLoadFileHistory bulkLoadFileHistory) throws Exception {
 		try {
@@ -63,18 +66,18 @@ public class Gff3GeneExecutor extends Gff3Executor {
 			gffRawData.clear();
 
 			BulkFMSLoad fmsLoad = (BulkFMSLoad) bulkLoadFileHistory.getBulkLoad();
-			BackendBulkDataProvider dataProvider = BackendBulkDataProvider.valueOf(fmsLoad.getFmsDataSubType());
+			Species species = speciesService.getByDisplayName(fmsLoad.getFmsDataSubType());
 
-			List<ImmutablePair<Gff3DTO, Map<String, String>>> preProcessedGeneGffData = Gff3AttributesHelper.getGeneGffData(gffFileData, dataProvider);
+			List<ImmutablePair<Gff3DTO, Map<String, String>>> preProcessedGeneGffData = Gff3AttributesHelper.getGeneGffData(gffFileData, species);
 
 			gffFileData.clear();
 
 			List<Long> locationIdsAdded = new ArrayList<>();
-			String assemblyId = loadGenomeAssemblyFromGFF(bulkLoadFileHistory, gffHeaderData, dataProvider);
+			String assemblyId = loadGenomeAssemblyFromGFF(bulkLoadFileHistory, gffHeaderData, species);
 
-			boolean success = runLoad(bulkLoadFileHistory, gffHeaderData, preProcessedGeneGffData, locationIdsAdded, dataProvider, assemblyId);
+			boolean success = runLoad(bulkLoadFileHistory, gffHeaderData, preProcessedGeneGffData, locationIdsAdded, species, assemblyId);
 			if (success) {
-				runCleanup(geneLocationService, bulkLoadFileHistory, dataProvider.name(), geneLocationService.getIdsByDataProvider(dataProvider), locationIdsAdded, "GFF gene genomic location association");
+				runCleanup(geneLocationService, bulkLoadFileHistory, species.getDisplayName(), geneLocationService.getIdsByDataProvider(species), locationIdsAdded, "GFF gene genomic location association");
 			}
 			bulkLoadFileHistory.finishLoad();
 			updateHistory(bulkLoadFileHistory);
@@ -84,11 +87,11 @@ public class Gff3GeneExecutor extends Gff3Executor {
 		}
 	}
 
-	private boolean runLoad(BulkLoadFileHistory history, List<String> gffHeaderData, List<ImmutablePair<Gff3DTO, Map<String, String>>> gffData, List<Long> locationIdsAdded, BackendBulkDataProvider dataProvider, String assemblyId) {
+	private boolean runLoad(BulkLoadFileHistory history, List<String> gffHeaderData, List<ImmutablePair<Gff3DTO, Map<String, String>>> gffData, List<Long> locationIdsAdded, Species species, String assemblyId) {
 
 		ProcessDisplayHelper ph = new ProcessDisplayHelper();
 		ph.addDisplayHandler(loadProcessDisplayService);
-		ph.startProcess("GFF Gene update for " + dataProvider.name(), gffData.size());
+		ph.startProcess("GFF Gene update for " + species.getDisplayName(), gffData.size());
 
 		String countType = "Locations";
 		history.setCount(countType, gffData.size());
@@ -98,7 +101,7 @@ public class Gff3GeneExecutor extends Gff3Executor {
 			if (assemblyId != null) {
 				countType = "Locations";
 				try {
-					gff3Service.loadGeneLocationAssociations(gff3EntryPair, locationIdsAdded, dataProvider, assemblyId);
+					gff3Service.loadGeneLocationAssociations(gff3EntryPair, locationIdsAdded, species, assemblyId);
 					history.incrementCompleted(countType);
 				} catch (ObjectUpdateException e) {
 					history.incrementFailed(countType);
@@ -121,11 +124,11 @@ public class Gff3GeneExecutor extends Gff3Executor {
 
 	public APIResponse runLoadApi(String dataProviderName, String assemblyName, List<Gff3DTO> gffData) {
 		List<Long> idsAdded = new ArrayList<>();
-		BackendBulkDataProvider dataProvider = BackendBulkDataProvider.valueOf(dataProviderName);
-		List<ImmutablePair<Gff3DTO, Map<String, String>>> preProcessedGeneGffData = Gff3AttributesHelper.getGeneGffData(gffData, dataProvider);
+		Species species = speciesService.getByDisplayName(dataProviderName);
+		List<ImmutablePair<Gff3DTO, Map<String, String>>> preProcessedGeneGffData = Gff3AttributesHelper.getGeneGffData(gffData, species);
 		BulkLoadFileHistory history = new BulkLoadFileHistory();
 		history = bulkLoadFileHistoryDAO.persist(history);
-		runLoad(history, null, preProcessedGeneGffData, idsAdded, dataProvider, assemblyName);
+		runLoad(history, null, preProcessedGeneGffData, idsAdded, species, assemblyName);
 		history.finishLoad();
 
 		return new LoadHistoryResponce(history);

@@ -4,7 +4,7 @@ import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import org.alliancegenome.curation_api.dao.ExonDAO;
-import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
+import org.alliancegenome.curation_api.model.entities.Species;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.Exon;
 import org.alliancegenome.curation_api.model.entities.Note;
@@ -79,14 +79,14 @@ public class ExonService extends BaseEntityCrudService<Exon, ExonDAO> {
 		return null;
 	}
 
-	public List<Long> getIdsByDataProvider(BackendBulkDataProvider dataProvider) {
-		String taxon = needsTaxonFilter(dataProvider) ? dataProvider.canonicalTaxonCurie : null;
-		return exonDAO.findIdsByDataProvider(dataProvider.sourceOrganization, taxon);
+	public List<Long> getIdsByDataProvider(Species species) {
+		String taxon = needsTaxonFilter(species) ? species.getTaxon().getCurie() : null;
+		return exonDAO.findIdsByDataProvider(species.getDataProvider().getAbbreviation(), taxon);
 	}
 
-	private boolean needsTaxonFilter(BackendBulkDataProvider dataProvider) {
-		return StringUtils.equals(dataProvider.sourceOrganization, "RGD")
-			|| StringUtils.equals(dataProvider.sourceOrganization, "XB");
+	private boolean needsTaxonFilter(Species species) {
+		return StringUtils.equals(species.getDataProvider().getAbbreviation(), "RGD")
+			|| StringUtils.equals(species.getDataProvider().getAbbreviation(), "XB");
 	}
 
 	@Override

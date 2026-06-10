@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.zip.GZIPInputStream;
 
-import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
+import org.alliancegenome.curation_api.model.entities.Species;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.jobs.util.CsvSchemaBuilder;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkFMSLoad;
@@ -15,6 +15,7 @@ import org.alliancegenome.curation_api.model.ingest.dto.fms.Gff3DTO;
 import org.alliancegenome.curation_api.response.APIResponse;
 import org.alliancegenome.curation_api.response.LoadHistoryResponce;
 import org.alliancegenome.curation_api.services.ExonService;
+import org.alliancegenome.curation_api.services.SpeciesService;
 import org.alliancegenome.curation_api.services.associations.ExonGenomicLocationAssociationService;
 import org.alliancegenome.curation_api.services.associations.TranscriptExonAssociationService;
 import org.alliancegenome.curation_api.services.helpers.Gff3AttributesHelper;
@@ -39,6 +40,8 @@ public class Gff3ExonExecutor extends Gff3Executor {
 	ExonGenomicLocationAssociationService exonLocationService;
 	@Inject
 	TranscriptExonAssociationService transcriptExonService;
+	@Inject
+	SpeciesService speciesService;
 
 	public void execLoad(BulkLoadFileHistory bulkLoadFileHistory) throws Exception {
 		try {
@@ -64,9 +67,9 @@ public class Gff3ExonExecutor extends Gff3Executor {
 			gffRawData.clear();
 
 			BulkFMSLoad fmsLoad = (BulkFMSLoad) bulkLoadFileHistory.getBulkLoad();
-			BackendBulkDataProvider dataProvider = BackendBulkDataProvider.valueOf(fmsLoad.getFmsDataSubType());
+			Species species = speciesService.getByDisplayName(fmsLoad.getFmsDataSubType());
 
-			List<ImmutablePair<Gff3DTO, Map<String, String>>> preProcessedExonGffData = Gff3AttributesHelper.getExonGffData(gffFileData, dataProvider);
+			List<ImmutablePair<Gff3DTO, Map<String, String>>> preProcessedExonGffData = Gff3AttributesHelper.getExonGffData(gffFileData, species);
 
 			gffFileData.clear();
 
@@ -74,13 +77,13 @@ public class Gff3ExonExecutor extends Gff3Executor {
 			List<Long> locationIdsAdded = new ArrayList<>();
 			List<Long> associationIdsAdded = new ArrayList<>();
 
-			String assemblyId = loadGenomeAssemblyFromGFF(bulkLoadFileHistory, gffHeaderData, dataProvider);
+			String assemblyId = loadGenomeAssemblyFromGFF(bulkLoadFileHistory, gffHeaderData, species);
 
-			boolean success = runLoad(bulkLoadFileHistory, gffHeaderData, preProcessedExonGffData, entityIdsAdded, locationIdsAdded, associationIdsAdded, dataProvider, assemblyId);
+			boolean success = runLoad(bulkLoadFileHistory, gffHeaderData, preProcessedExonGffData, entityIdsAdded, locationIdsAdded, associationIdsAdded, species, assemblyId);
 			if (success) {
-				runCleanup(exonLocationService, bulkLoadFileHistory, dataProvider.name(), exonLocationService.getIdsByDataProvider(dataProvider), locationIdsAdded, "GFF exon genomic location association");
-				runCleanup(transcriptExonService, bulkLoadFileHistory, dataProvider.name(), transcriptExonService.getIdsByDataProvider(dataProvider), associationIdsAdded, "GFF transcript exon association");
-				runCleanup(exonService, bulkLoadFileHistory, dataProvider.name(), exonService.getIdsByDataProvider(dataProvider), entityIdsAdded, "GFF exon");
+				runCleanup(exonLocationService, bulkLoadFileHistory, species.getDisplayName(), exonLocationService.getIdsByDataProvider(species), locationIdsAdded, "GFF exon genomic location association");
+				runCleanup(transcriptExonService, bulkLoadFileHistory, species.getDisplayName(), transcriptExonService.getIdsByDataProvider(species), associationIdsAdded, "GFF transcript exon association");
+				runCleanup(exonService, bulkLoadFileHistory, species.getDisplayName(), exonService.getIdsByDataProvider(species), entityIdsAdded, "GFF exon");
 			}
 			bulkLoadFileHistory.finishLoad();
 			updateHistory(bulkLoadFileHistory);
@@ -90,12 +93,12 @@ public class Gff3ExonExecutor extends Gff3Executor {
 		}
 	}
 
-	private boolean runLoad(BulkLoadFileHistory history, List<String> gffHeaderData, List<ImmutablePair<Gff3DTO, Map<String, String>>> gffData, List<Long> entityIdsAdded, List<Long> locationIdsAdded, List<Long> associationIdsAdded, BackendBulkDataProvider dataProvider,
+	private boolean runLoad(BulkLoadFileHistory history, List<String> gffHeaderData, List<ImmutablePair<Gff3DTO, Map<String, String>>> gffData, List<Long> entityIdsAdded, List<Long> locationIdsAdded, List<Long> associationIdsAdded, Species species,
 			String assemblyId) {
 
 		ProcessDisplayHelper ph = new ProcessDisplayHelper();
 		ph.addDisplayHandler(loadProcessDisplayService);
-		ph.startProcess("GFF Exon update for " + dataProvider.name(), gffData.size());
+		ph.startProcess("GFF Exon update for " + species.getDisplayName(), gffData.size());
 
 		history.setCount("Entities", gffData.size());
 		history.setCount("Locations", gffData.size());
@@ -107,7 +110,7 @@ public class Gff3ExonExecutor extends Gff3Executor {
 			int end = Math.min(i + batchSize, gffData.size());
 			List<ImmutablePair<Gff3DTO, Map<String, String>>> batch = gffData.subList(i, end);
 
-			gff3Service.loadExonBatch(batch, entityIdsAdded, locationIdsAdded, associationIdsAdded, dataProvider, assemblyId, history, ph);
+			gff3Service.loadExonBatch(batch, entityIdsAdded, locationIdsAdded, associationIdsAdded, species, assemblyId, history, ph);
 
 			if (Thread.currentThread().isInterrupted()) {
 				history.setErrorMessage(ApiErrorException.INTERRUPTED_MESSAGE);
@@ -121,11 +124,11 @@ public class Gff3ExonExecutor extends Gff3Executor {
 
 	public APIResponse runLoadApi(String dataProviderName, String assemblyName, List<Gff3DTO> gffData) {
 		List<Long> idsAdded = new ArrayList<Long>();
-		BackendBulkDataProvider dataProvider = BackendBulkDataProvider.valueOf(dataProviderName);
-		List<ImmutablePair<Gff3DTO, Map<String, String>>> preProcessedExonGffData = Gff3AttributesHelper.getExonGffData(gffData, dataProvider);
+		Species species = speciesService.getByDisplayName(dataProviderName);
+		List<ImmutablePair<Gff3DTO, Map<String, String>>> preProcessedExonGffData = Gff3AttributesHelper.getExonGffData(gffData, species);
 		BulkLoadFileHistory history = new BulkLoadFileHistory();
 		history = bulkLoadFileHistoryDAO.persist(history);
-		runLoad(history, null, preProcessedExonGffData, idsAdded, idsAdded, idsAdded, dataProvider, assemblyName);
+		runLoad(history, null, preProcessedExonGffData, idsAdded, idsAdded, idsAdded, species, assemblyName);
 		history.finishLoad();
 
 		return new LoadHistoryResponce(history);

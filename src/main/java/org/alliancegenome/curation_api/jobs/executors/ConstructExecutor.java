@@ -6,7 +6,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
+import org.alliancegenome.curation_api.model.entities.Species;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkManualLoad;
 import org.alliancegenome.curation_api.model.ingest.dto.ConstructDTO;
@@ -31,7 +31,7 @@ public class ConstructExecutor extends LoadFileExecutor {
 	public void execLoad(BulkLoadFileHistory bulkLoadFileHistory, Boolean cleanUp) {
 
 		BulkManualLoad manual = (BulkManualLoad) bulkLoadFileHistory.getBulkLoad();
-		Log.info("Running with: " + manual.getDataProvider().name());
+		Log.info("Running with: " + manual.getSpecies().getDisplayName());
 
 		IngestDTO ingestDto = readIngestFile(bulkLoadFileHistory, ConstructDTO.class);
 		if (ingestDto == null) {
@@ -43,12 +43,12 @@ public class ConstructExecutor extends LoadFileExecutor {
 			return;
 		}
 
-		BackendBulkDataProvider dataProvider = manual.getDataProvider();
+		Species species = manual.getSpecies();
 
 		List<Long> constructIdsLoaded = new ArrayList<>();
 		List<Long> constructIdsBefore = new ArrayList<>();
 		if (cleanUp) {
-			constructIdsBefore.addAll(constructService.getConstructIdsByDataProvider(dataProvider));
+			constructIdsBefore.addAll(constructService.getConstructIdsByDataProvider(species));
 			Log.debug("runLoad: Before: total " + constructIdsBefore.size());
 		}
 
@@ -65,9 +65,9 @@ public class ConstructExecutor extends LoadFileExecutor {
 
 		constructService.preLoadReferences(refList);
 
-		boolean success = runLoad(constructService, bulkLoadFileHistory, dataProvider, constructs, constructIdsLoaded);
+		boolean success = runLoad(constructService, bulkLoadFileHistory, species, constructs, constructIdsLoaded);
 		if (success && cleanUp) {
-			runCleanup(constructService, bulkLoadFileHistory, dataProvider.name(), constructIdsBefore, constructIdsLoaded, "construct");
+			runCleanup(constructService, bulkLoadFileHistory, species.getDisplayName(), constructIdsBefore, constructIdsLoaded, "construct");
 		}
 		bulkLoadFileHistory.finishLoad();
 		updateHistory(bulkLoadFileHistory);
