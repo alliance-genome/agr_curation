@@ -149,7 +149,7 @@ export const AlleleGeneAssociationsTable = () => {
 	const defaultFilters = { obsoleteFilter: { obsolete: { queryString: 'false' } } };
 
 	const initialTableState = useMemo(
-		() => getDefaultTableState('AlleleGeneAssociations_v2', columns, DEFAULT_COLUMN_WIDTH, defaultFilters),
+		() => getDefaultTableState('AlleleGeneAssociations', columns, DEFAULT_COLUMN_WIDTH, defaultFilters),
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 		[columns]
 	);
