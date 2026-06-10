@@ -63,7 +63,7 @@ public class Species extends AuditedObject {
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "fullName_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({ CurationView.FieldsOnly.class, CurationView.GeneSummaryDocument.class, CurationView.GeneCacheDocument.class, CurationView.AlleleSummaryDocument.class, CurationView.ForPublic.class, CurationView.GeneExpressionDocument.class, CurationView.TransgenicAllelesDocument.class })
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.GeneSummaryDocument.class, CurationView.GeneCacheDocument.class, CurationView.AlleleSummaryDocument.class, CurationView.VariantSummaryDocument.class, CurationView.ForPublic.class, CurationView.GeneExpressionDocument.class, CurationView.TransgenicAllelesDocument.class })
 	private String fullName;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
