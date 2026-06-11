@@ -1,6 +1,5 @@
 package org.alliancegenome.curation_api.services;
 
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,13 +7,12 @@ import org.alliancegenome.mati.entity.IdentifiersRange;
 import org.alliancegenome.mati.interfaces.IdentifierResourceRESTInterface;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.jwt.JsonWebToken;
-import org.eclipse.microprofile.rest.client.RestClientBuilder;
 
-import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.core.Response;
 import lombok.extern.log4j.Log4j2;
+import si.mazi.rescu.RestProxyFactory;
 
 /**
  * Thin wrapper around agr_mati's {@link IdentifierResourceRESTInterface}. MaTI
@@ -28,7 +26,6 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 @ApplicationScoped
 public class MatiService {
-
 	public static final String SUBDOMAIN_DISEASE_ANNOTATION = "disease_annotation";
 
 	@ConfigProperty(name = "mati.url")
@@ -37,22 +34,8 @@ public class MatiService {
 	@Inject
 	JsonWebToken jsonWebToken;
 
-	// agr_mati's resource interface returns jakarta.ws.rs.core.Response, so it
-	// must be driven by the MicroProfile REST client (which exposes the raw
-	// Response for readEntity) rather than rescu's RestProxyFactory, which can
-	// only Jackson-deserialize the body into the declared return type.
-	//
-	// Built in @PostConstruct, not as a field initializer: instance-field
-	// initializers run in the constructor, before CDI injects matiUrl.
-	private IdentifierResourceRESTInterface matiApi;
-
-	@PostConstruct
-	void initMatiApi() {
-		matiApi = RestClientBuilder.newBuilder()
-			.baseUri(URI.create(matiUrl))
-			.build(IdentifierResourceRESTInterface.class);
-	}
-
+	private IdentifierResourceRESTInterface matiApi = RestProxyFactory.createProxy(IdentifierResourceRESTInterface.class, matiUrl);
+	
 	/**
 	 * Mints {@code n} consecutive curies in the given subdomain. Counts are
 	 * advanced atomically by MaTI; once this method returns successfully, the
