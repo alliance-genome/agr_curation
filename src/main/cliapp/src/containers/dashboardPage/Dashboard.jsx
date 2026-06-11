@@ -35,17 +35,28 @@ export const Dashboard = () => {
 	return (
 		<>
 			<div className="grid nested dashboard">
-				<div className="col-4">
+				<div className="col-3">
 					<DataTable header="Entities" value={tableData.entity} sortField="name" sortOrder={1} showHeaders={false}>
 						<Column field="name" body={nameHyperlinkTemplate} />
 					</DataTable>
 				</div>
-				<div className="col-4">
+				<div className="col-3">
 					<DataTable header="Ontologies" value={tableData.ontology} sortField="name" sortOrder={1} showHeaders={false}>
 						<Column field="name" body={nameHyperlinkTemplate} />
 					</DataTable>
 				</div>
-				<div className="col-4">
+				<div className="col-3">
+					<DataTable
+						header="Associations"
+						value={tableData.association}
+						sortField="name"
+						sortOrder={1}
+						showHeaders={false}
+					>
+						<Column field="name" body={nameHyperlinkTemplate} />
+					</DataTable>
+				</div>
+				<div className="col-3">
 					<DataTable header="System" value={tableData.system} sortField="name" sortOrder={1} showHeaders={false}>
 						<Column field="name" body={nameHyperlinkTemplate} />
 					</DataTable>

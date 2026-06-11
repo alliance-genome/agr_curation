@@ -91,13 +91,15 @@ quarkus.oidc.authentication.user-info-required=false
 %test.quarkus.oidc.enabled=false
 %test.quarkus.test.class-orderer=org.junit.jupiter.api.ClassOrderer$OrderAnnotation
 
-cognito.domain =
 cognito.user-pool-id=
 quarkus.oidc.auth-server-url=https://cognito-idp.us-east-1.amazonaws.com/${cognito.user-pool-id}
 quarkus.oidc.token.issuer=https://cognito-idp.us-east-1.amazonaws.com/${cognito.user-pool-id}
 quarkus.oidc.client-id=""
 quarkus.oidc.user-info-path=""
 
+# SCRUM-6078 — base URL of the agr_mati service. MatiService builds its
+# REST client with this baseUri and forwards the caller's JWT as the
+# Authorization header (MaTI validates it against the same Cognito pool).
 mati.url = http://localhost:8081
 
 %dev.quarkus.live-reload.instrumentation = true

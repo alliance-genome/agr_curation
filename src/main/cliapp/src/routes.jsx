@@ -6,6 +6,7 @@ import { DashboardPage } from './containers/dashboardPage';
 
 import { DataLoadsPage } from './containers/dataLoadsPage/';
 import { ReportsPage } from './containers/reportsPage/';
+import { AlleleGeneAssociationsPage } from './containers/alleleGeneAssociationsPage';
 import { DiseaseAnnotationsPage } from './containers/diseaseAnnotationsPage';
 import { PhenotypeAnnotationsPage } from './containers/phenotypeAnnotationsPage';
 import { GeneExpressionAnnotationsPage } from './containers/geneExpressionAnnotationsPage';
@@ -61,6 +62,14 @@ export default function AppRoutes() {
 						element={
 							<ErrorBoundary>
 								<ProfilePage />
+							</ErrorBoundary>
+						}
+					/>
+					<Route
+						path="/alleleGeneAssociations"
+						element={
+							<ErrorBoundary>
+								<AlleleGeneAssociationsPage />
 							</ErrorBoundary>
 						}
 					/>
