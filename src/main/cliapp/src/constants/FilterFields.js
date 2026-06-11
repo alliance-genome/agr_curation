@@ -63,6 +63,10 @@ export const FIELD_SETS = Object.freeze({
 			'alleleAssociationSubject.modInternalId',
 		],
 	},
+	alleleAssociationSubjectTaxonFieldSet: {
+		filterName: 'alleleAssociationSubjectTaxonFilter',
+		fields: ['alleleAssociationSubject.taxon.curie', 'alleleAssociationSubject.taxon.name'],
+	},
 	alleleGeneAssociationObjectFieldSet: {
 		filterName: 'alleleGeneAssociationObjectFilter',
 		fields: [
@@ -605,6 +609,10 @@ export const FIELD_SETS = Object.freeze({
 		filterName: 'referencesFilter',
 		fields: ['references.curie', 'references.crossReferences.referencedCurie'],
 	},
+	relatedNoteFieldSet: {
+		filterName: 'relatedNoteFilter',
+		fields: ['relatedNote.freeText'],
+	},
 	relatedNotesFieldSet: {
 		filterName: 'relatedNotesFilter',
 		fields: ['relatedNotes.freeText'],
@@ -889,6 +897,10 @@ export const FILTER_CONFIGS = Object.freeze({
 		filterComponentType: 'input',
 		fieldSets: [FIELD_SETS.alleleAssociationSubjectFieldSet],
 	},
+	alleleAssociationSubjectTaxonFilterConfig: {
+		filterComponentType: 'input',
+		fieldSets: [FIELD_SETS.alleleAssociationSubjectTaxonFieldSet],
+	},
 	alleleGeneAssociationObjectFilterConfig: {
 		filterComponentType: 'input',
 		fieldSets: [FIELD_SETS.alleleGeneAssociationObjectFieldSet],
@@ -1047,6 +1059,7 @@ export const FILTER_CONFIGS = Object.freeze({
 	pageDescriptionFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.pageDescriptionFieldSet] },
 	prefixFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.prefixFieldSet] },
 	referencesFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.referencesFieldSet] },
+	relatedNoteFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.relatedNoteFieldSet] },
 	relatedNotesFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.relatedNotesFieldSet] },
 	resourceDescriptorFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.resourceDescriptorFieldSet] },
 	subsetsFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.subsetsFieldSet] },
