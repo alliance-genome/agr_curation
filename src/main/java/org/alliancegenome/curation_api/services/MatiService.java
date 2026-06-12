@@ -8,9 +8,9 @@ import org.alliancegenome.mati.interfaces.IdentifierResourceRESTInterface;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.jwt.JsonWebToken;
 
+import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
-import jakarta.ws.rs.core.Response;
 import lombok.extern.log4j.Log4j2;
 import si.mazi.rescu.RestProxyFactory;
 
@@ -34,8 +34,8 @@ public class MatiService {
 	@Inject
 	JsonWebToken jsonWebToken;
 
-	private IdentifierResourceRESTInterface matiApi = RestProxyFactory.createProxy(IdentifierResourceRESTInterface.class, matiUrl);
-
+	private IdentifierResourceRESTInterface matiApi;
+	
 	/**
 	 * Mints {@code n} consecutive curies in the given subdomain. Counts are
 	 * advanced atomically by MaTI; once this method returns successfully, the
@@ -47,6 +47,12 @@ public class MatiService {
 	 * @param n         how many curies to mint; must be &gt; 0
 	 * @return ordered list of {@code n} AGRKB curies
 	 */
+	
+	@PostConstruct
+	public void init() {
+		matiApi = RestProxyFactory.createProxy(IdentifierResourceRESTInterface.class, matiUrl);
+	}
+	
 	public List<String> mintCuries(String subdomain, int n) {
 		if (n <= 0) {
 			return List.of();
@@ -56,15 +62,8 @@ public class MatiService {
 		// validates it against the same Cognito user pool. getRawToken() returns
 		// the bare token, so prefix the standard "Bearer " scheme.
 		String authorization = "Bearer " + jsonWebToken.getRawToken();
-		IdentifiersRange range;
-		try (Response response = matiApi.increment(authorization, subdomain, n)) {
-			if (response.getStatus() >= 400) {
-				throw new IllegalStateException(
-					"MaTI POST /identifier failed for subdomain=" + subdomain
-						+ " (HTTP " + response.getStatus() + ")");
-			}
-			range = response.readEntity(IdentifiersRange.class);
-		}
+		IdentifiersRange range = matiApi.increment(authorization, subdomain, n);
+
 		long firstCtr = range.getFirst().getCounter();
 		long lastCtr = range.getLast().getCounter();
 		String code = range.getFirst().getSubdomain_code();
