@@ -50,7 +50,8 @@ public class AlleleGeneAssociation extends AlleleGenomicEntityAssociation {
 	@IndexedEmbedded(includePaths = {
 		"curie", "alleleSymbol.displayText", "alleleSymbol.formatText", "alleleFullName.displayText", "alleleFullName.formatText",
 		"curie_keyword", "alleleSymbol.displayText_keyword", "alleleSymbol.formatText_keyword", "alleleFullName.displayText_keyword",
-		"alleleFullName.formatText_keyword", "primaryExternalId", "primaryExternalId_keyword", "modInternalId", "modInternalId_keyword" })
+		"alleleFullName.formatText_keyword", "primaryExternalId", "primaryExternalId_keyword", "modInternalId", "modInternalId_keyword",
+		"taxon.curie", "taxon.name", "taxon.curie_keyword", "taxon.name_keyword" })
 	@ManyToOne
 	@JsonView({ CurationView.FieldsOnly.class, CurationView.ForPublic.class })
 	@JsonIgnoreProperties({"alleleGeneAssociations", "alleleVariantAssociations"})

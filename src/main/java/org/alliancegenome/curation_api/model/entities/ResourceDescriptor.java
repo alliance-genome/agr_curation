@@ -48,7 +48,7 @@ public class ResourceDescriptor extends AuditedObject {
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "prefix_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({ CurationView.FieldsOnly.class, CurationView.ForPublic.class, CurationView.TransgenicAllelesDocument.class, CurationView.ResourceDescriptorDocument.class })
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.ForPublic.class, CurationView.TransgenicAllelesDocument.class })
 	@Column(unique = true, nullable = false)
 	@EqualsAndHashCode.Include
 	protected String prefix;
@@ -64,7 +64,7 @@ public class ResourceDescriptor extends AuditedObject {
 	@ElementCollection
 	@JoinTable(indexes = @Index(columnList = "resourcedescriptor_id"))
 	@Fetch(FetchMode.JOIN)
-	@JsonView({ CurationView.ResourceDescriptorView.class, CurationView.FieldsAndLists.class, CurationView.ResourceDescriptorDocument.class })
+	@JsonView({ CurationView.ResourceDescriptorView.class, CurationView.FieldsAndLists.class, CurationView.ForPublic.class })
 	@Column(columnDefinition = "TEXT")
 	private List<String> synonyms;
 
@@ -82,13 +82,13 @@ public class ResourceDescriptor extends AuditedObject {
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "defaultUrlTemplate_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({ CurationView.FieldsOnly.class, CurationView.ForPublic.class, CurationView.TransgenicAllelesDocument.class, CurationView.ResourceDescriptorDocument.class })
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.ForPublic.class, CurationView.TransgenicAllelesDocument.class })
 	@EqualsAndHashCode.Include
 	private String defaultUrlTemplate;
 
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@OneToMany(mappedBy = "resourceDescriptor", cascade = CascadeType.ALL)
-	@JsonView({ CurationView.ResourceDescriptorView.class, CurationView.FieldsAndLists.class, CurationView.ResourceDescriptorDocument.class })
+	@JsonView({ CurationView.ResourceDescriptorView.class, CurationView.FieldsAndLists.class })
 	private List<ResourceDescriptorPage> resourcePages;
 }

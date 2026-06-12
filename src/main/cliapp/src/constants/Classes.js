@@ -240,8 +240,9 @@ export const CLASSES = Object.freeze({
 	},
 	AlleleGeneAssociation: {
 		name: 'Allele Gene Associations',
+		link: '/#/alleleGeneAssociations',
 		type: 'association',
-		hasTable: false,
+		hasTable: true,
 	},
 	AlleleVariantAssociation: {
 		name: 'Allele Variant Associations',
