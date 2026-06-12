@@ -8,7 +8,7 @@ import org.alliancegenome.mati.interfaces.IdentifierResourceRESTInterface;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.jwt.JsonWebToken;
 
-import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.core.Response;
 import lombok.extern.log4j.Log4j2;
@@ -24,7 +24,7 @@ import si.mazi.rescu.RestProxyFactory;
  * e.g. AGRKB:100000000000001 for disease_annotation counter 1.
  */
 @Log4j2
-@ApplicationScoped
+@RequestScoped
 public class MatiService {
 	public static final String SUBDOMAIN_DISEASE_ANNOTATION = "disease_annotation";
 
@@ -35,7 +35,7 @@ public class MatiService {
 	JsonWebToken jsonWebToken;
 
 	private IdentifierResourceRESTInterface matiApi = RestProxyFactory.createProxy(IdentifierResourceRESTInterface.class, matiUrl);
-	
+
 	/**
 	 * Mints {@code n} consecutive curies in the given subdomain. Counts are
 	 * advanced atomically by MaTI; once this method returns successfully, the
