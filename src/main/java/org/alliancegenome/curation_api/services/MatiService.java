@@ -8,7 +8,6 @@ import org.alliancegenome.mati.interfaces.IdentifierResourceRESTInterface;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.jwt.JsonWebToken;
 
-import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.core.Response;
@@ -36,7 +35,7 @@ public class MatiService {
 	JsonWebToken jsonWebToken;
 
 	private IdentifierResourceRESTInterface matiApi = RestProxyFactory.createProxy(IdentifierResourceRESTInterface.class, matiUrl);
-	
+
 	/**
 	 * Mints {@code n} consecutive curies in the given subdomain. Counts are
 	 * advanced atomically by MaTI; once this method returns successfully, the
