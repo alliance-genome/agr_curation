@@ -11,7 +11,7 @@ import org.eclipse.microprofile.jwt.JsonWebToken;
 import org.eclipse.microprofile.rest.client.RestClientBuilder;
 
 import jakarta.annotation.PostConstruct;
-import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.core.Response;
 import lombok.extern.log4j.Log4j2;
@@ -26,7 +26,7 @@ import lombok.extern.log4j.Log4j2;
  * e.g. AGRKB:100000000000001 for disease_annotation counter 1.
  */
 @Log4j2
-@ApplicationScoped
+@RequestScoped
 public class MatiService {
 
 	public static final String SUBDOMAIN_DISEASE_ANNOTATION = "disease_annotation";
