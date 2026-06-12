@@ -1,10 +1,13 @@
 package org.alliancegenome.curation_api.model.document.builders;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.alliancegenome.curation_api.constants.ReferenceConstants;
 import org.alliancegenome.curation_api.model.document.es.GeneExpressionDocument;
 import org.alliancegenome.curation_api.model.entities.AnatomicalSite;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
@@ -31,7 +34,7 @@ public class GeneExpressionDocumentBuilder {
 	public static final String UBERON__POST_EMBRYONIC_PRE_ADULT = "PostEmbryonicPreAdult";
 
 	public static final String GO_CELLULAR_OTHER = "otherLocations";
-	
+
 	public GeneExpressionDocument buildDocument(GeneExpressionAnnotation annotation) {
 
 		List<String> uberonTermIds = new ArrayList<>();
@@ -97,6 +100,12 @@ public class GeneExpressionDocumentBuilder {
 		expressionDocument.setTermIds(termIds);
 		if (annotation.getEvidenceItem() != null && annotation.getEvidenceItem() instanceof Reference reference) {
 			expressionDocument.setReferenceId(List.of(reference.getReferenceID()));
+			CrossReference priorityXref = findPriorityReferenceXref(reference);
+			if (priorityXref != null) {
+				Set<CrossReference> xrefs = new LinkedHashSet<>();
+				xrefs.add(priorityXref);
+				expressionDocument.setReferenceXrefs(xrefs);
+			}
 		}
 		expressionDocument.setPhylogeneticSortingIndex(annotation.getExpressionAnnotationSubject().getTaxon().getSpecies().getPhylogeneticOrder());
 		
@@ -108,6 +117,34 @@ public class GeneExpressionDocumentBuilder {
 		}
 		return expressionDocument;
 
+	}
+
+	/**
+	 * Walk Reference.crossReferences in ReferenceConstants.primaryXrefOrder and return the
+	 * first matching CrossReference (carries pre-linked resourceDescriptorPage). Falls back
+	 * to a transient CrossReference wrapping the reference's own AGRKB curie when no
+	 * priority-prefixed xref is attached — matches Reference.getReferenceID() semantics.
+	 */
+	private CrossReference findPriorityReferenceXref(Reference reference) {
+		if (reference == null) {
+			return null;
+		}
+		if (CollectionUtils.isNotEmpty(reference.getCrossReferences())) {
+			for (String prefix : ReferenceConstants.primaryXrefOrder) {
+				for (CrossReference xref : reference.getCrossReferences()) {
+					if (xref.getReferencedCurie() != null && xref.getReferencedCurie().startsWith(prefix + ":")) {
+						return xref;
+					}
+				}
+			}
+		}
+		if (reference.getCurie() == null) {
+			return null;
+		}
+		CrossReference fallback = new CrossReference();
+		fallback.setReferencedCurie(reference.getCurie());
+		fallback.setDisplayName(reference.getCurie());
+		return fallback;
 	}
 
 	public List<GeneExpressionDocument> consolidateExpressionDocuments(List<GeneExpressionDocument> documents) {
@@ -133,10 +170,14 @@ public class GeneExpressionDocumentBuilder {
 
 				List<CrossReference> allCrossReferences = new ArrayList<>();
 				List<String> allReferenceIds = new ArrayList<>();
+				Set<CrossReference> allReferenceXrefs = new LinkedHashSet<>();
 
-				// logic behind this consolidation is to have 1:1 mapping for reference and crossReference for consolidated annotations, 
+				// logic behind this consolidation is to have 1:1 mapping for reference and crossReference for consolidated annotations,
 				// which is useful while deconsolidating later for download endpoint
 				for (GeneExpressionDocument doc : group) {
+					if (CollectionUtils.isNotEmpty(doc.getReferenceXrefs())) {
+						allReferenceXrefs.addAll(doc.getReferenceXrefs());
+					}
 					int annotationSize = Math.max(
 						CollectionUtils.isNotEmpty(doc.getGeneExpressionAnnotation().getCrossReferences()) ? doc.getGeneExpressionAnnotation().getCrossReferences().size() : 0,
 						CollectionUtils.isNotEmpty(doc.getReferenceId()) ? doc.getReferenceId().size() : 0
@@ -159,6 +200,9 @@ public class GeneExpressionDocumentBuilder {
 
 				consolidated.getGeneExpressionAnnotation().setCrossReferences(allCrossReferences);
 				consolidated.setReferenceId(allReferenceIds);
+				if (!allReferenceXrefs.isEmpty()) {
+					consolidated.setReferenceXrefs(allReferenceXrefs);
+				}
 
 				consolidatedDocuments.add(consolidated);
 			}
