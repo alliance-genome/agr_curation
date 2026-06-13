@@ -8,7 +8,6 @@ import java.util.zip.GZIPInputStream;
 
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
-import org.alliancegenome.curation_api.exceptions.ObjectUpdateException.ObjectUpdateExceptionData;
 import org.alliancegenome.curation_api.jobs.util.CsvSchemaBuilder;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkFMSLoad;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
@@ -77,8 +76,8 @@ public class Gff3ExonExecutor extends Gff3Executor {
 
 		String assemblyId = loadGenomeAssemblyFromGFF(gffHeaderData);
 
-		if (assemblyId == null) {
-			addException(bulkLoadFileHistory, new ObjectUpdateExceptionData(null, "GFF Header does not contain assembly", null));
+		if (!validateGffAssemblyMatchesSpecies(bulkLoadFileHistory, dataProvider, assemblyId)) {
+			return;
 		}
 
 		boolean success = runLoad(bulkLoadFileHistory, gffHeaderData, preProcessedExonGffData, entityIdsAdded, locationIdsAdded, associationIdsAdded, dataProvider, assemblyId);

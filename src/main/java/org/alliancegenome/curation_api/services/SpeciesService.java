@@ -1,8 +1,13 @@
 package org.alliancegenome.curation_api.services;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import org.alliancegenome.curation_api.constants.EntityFieldConstants;
 import org.alliancegenome.curation_api.dao.SpeciesDAO;
 import org.alliancegenome.curation_api.model.entities.Species;
 import org.alliancegenome.curation_api.response.ObjectResponse;
+import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
 import org.alliancegenome.curation_api.services.validation.SpeciesValidator;
 
@@ -21,6 +26,17 @@ public class SpeciesService extends BaseEntityCrudService<Species, SpeciesDAO> {
 	@PostConstruct
 	protected void init() {
 		setSQLDao(speciesDAO);
+	}
+
+	/**
+	 * Returns the Species curated for the given taxon curie (e.g. "NCBITaxon:6239"),
+	 * or null if none exists. Taxon -> Species is one-to-one, so at most one match.
+	 */
+	public Species getByTaxonCurie(String taxonCurie) {
+		Map<String, Object> params = new HashMap<>();
+		params.put(EntityFieldConstants.TAXON, taxonCurie);
+		SearchResponse<Species> resp = speciesDAO.findByParams(params);
+		return resp == null ? null : resp.getSingleResult();
 	}
 
 	@Override
