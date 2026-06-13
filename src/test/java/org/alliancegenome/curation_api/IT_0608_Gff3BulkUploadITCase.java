@@ -1,13 +1,19 @@
 package org.alliancegenome.curation_api;
 
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.HashMap;
 
 import org.alliancegenome.curation_api.base.BaseITCase;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
+import org.alliancegenome.curation_api.model.entities.GenomeAssembly;
+import org.alliancegenome.curation_api.model.entities.Species;
 import org.alliancegenome.curation_api.resources.TestContainerResource;
+import org.alliancegenome.curation_api.response.SearchResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.MethodOrderer;
@@ -19,6 +25,7 @@ import org.junit.jupiter.api.TestMethodOrder;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusIntegrationTest;
 import io.restassured.RestAssured;
+import io.restassured.common.mapper.TypeRef;
 import io.restassured.config.HttpClientConfig;
 import io.restassured.config.RestAssuredConfig;
 
@@ -41,7 +48,9 @@ public class IT_0608_Gff3BulkUploadITCase extends BaseITCase {
 					.setParam("http.connection.timeout", 100000));
 	}
 
+	private final String officialAssembly = "WBcel235";
 	private final String transcriptBulkPostEndpoint = "/api/transcript/bulk/WB_WBcel235/transcripts";
+	private final String transcriptWrongAssemblyEndpoint = "/api/transcript/bulk/WB_GRCh38/transcripts";
 	private final String exonBulkPostEndpoint = "/api/exon/bulk/WB_WBcel235/exons";
 	private final String cdsBulkPostEndpoint = "/api/cds/bulk/WB_WBcel235/codingSequences";
 	private final String geneLocationBulkPostEndpoint = "/api/genegenomiclocation/bulk/WB_WBcel235/geneLocations";
@@ -61,6 +70,45 @@ public class IT_0608_Gff3BulkUploadITCase extends BaseITCase {
 		createSoTerm("SO:0000147", "exon", false);
 		createSoTerm("SO:0000316", "CDS", false);
 		createGene(geneCurie, "NCBITaxon:6239", getVocabularyTerm(getVocabulary(VocabularyConstants.NAME_TYPE_VOCABULARY), "nomenclature_symbol"), false);
+		// SCRUM-6080: GFF loads now fail unless the load assembly matches the official
+		// assembly designated on the Species row. The WB GFF loads below all use
+		// assembly "WBcel235", so designate that as C. elegans' official assembly.
+		createGenomeAssembly(officialAssembly, "NCBITaxon:6239", "WB");
+		setSpeciesOfficialAssembly("NCBITaxon:6239", officialAssembly);
+	}
+
+	private void createGenomeAssembly(String primaryExternalId, String taxonCurie, String dataProviderAbbreviation) {
+		GenomeAssembly assembly = new GenomeAssembly();
+		assembly.setPrimaryExternalId(primaryExternalId);
+		assembly.setTaxon(getNCBITaxonTerm(taxonCurie));
+		assembly.setDataProvider(getOrganization(dataProviderAbbreviation));
+		RestAssured.given().
+			contentType("application/json").
+			body(assembly).
+			when().
+			post("/api/genomeassembly").
+			then().
+			statusCode(200);
+	}
+
+	private void setSpeciesOfficialAssembly(String taxonCurie, String assemblyPrimaryExternalId) throws Exception {
+		SearchResponse<Species> resp = RestAssured.given().
+			contentType("application/json").
+			body("{\"taxon.curie\": \"" + taxonCurie + "\"}").
+			when().
+			post("/api/species/find").
+			then().
+			statusCode(200).
+			extract().body().as(new TypeRef<SearchResponse<Species>>() { });
+		Species species = resp.getSingleResult();
+		species.setGenomeAssembly(getGenomeAssembly(assemblyPrimaryExternalId));
+		RestAssured.given().
+			contentType("application/json").
+			body(species).
+			when().
+			put("/api/species").
+			then().
+			statusCode(200);
 	}
 	
 	@Test
@@ -303,6 +351,23 @@ public class IT_0608_Gff3BulkUploadITCase extends BaseITCase {
 		HashMap<String, HashMap<String, Integer>> params = new HashMap<>();
 		params.put("Locations", createCountParams(1, 0, 0, 1));
 		checkBulkLoadRecordCounts(geneLocationBulkPostEndpoint, gffDataTestFilePath + "UR_01_unrecognised_gene.json", params);
+	}
+
+	@Test
+	@Order(10)
+	public void gff3DataBulkUploadAssemblyMismatchFails() throws Exception {
+		// SCRUM-6080: loading against an assembly (GRCh38) that is not the official
+		// assembly (WBcel235) designated for C. elegans must fail the whole load.
+		String content = Files.readString(Path.of(gffDataTestFilePath + "GFF_01_transcript.json"));
+		RestAssured.given().
+			contentType("application/json").
+			body(content).
+			when().
+			post(transcriptWrongAssemblyEndpoint).
+			then().
+			statusCode(200).
+			body("history.bulkloadStatus", is("FAILED")).
+			body("history.errorMessage", containsString("does not match the official assembly"));
 	}
 
 }
