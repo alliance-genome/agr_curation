@@ -76,7 +76,7 @@ public class AssemblyComponentService extends BaseEntityCrudService<AssemblyComp
 		}
 		AssemblyComponent assemblyComponent = new AssemblyComponent();
 		assemblyComponent.setName(name);
-		GenomeAssembly genomeAssembly = genomeAssemblyService.getOrCreate(assemblyId, dataProvider);
+		GenomeAssembly genomeAssembly = genomeAssemblyService.findByName(assemblyId, dataProvider);
 		assemblyComponent.setGenomeAssembly(genomeAssembly);
 		assemblyComponent.setTaxon(ncbiTaxonTermService.getByCurie(taxonCurie).getEntity());
 		assemblyComponent.setDataProvider(organizationService.getByAbbr(dataProvider.sourceOrganization).getEntity());

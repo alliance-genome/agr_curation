@@ -11,7 +11,6 @@ import org.alliancegenome.curation_api.model.entities.GenomeAssembly;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
-import org.alliancegenome.curation_api.services.ontology.NcbiTaxonTermService;
 import org.apache.commons.lang3.StringUtils;
 
 import jakarta.annotation.PostConstruct;
@@ -22,8 +21,6 @@ import jakarta.inject.Inject;
 public class GenomeAssemblyService extends BaseEntityCrudService<GenomeAssembly, GenomeAssemblyDAO> {
 
 	@Inject GenomeAssemblyDAO genomeAssemblyDAO;
-	@Inject OrganizationService organizationService;
-	@Inject NcbiTaxonTermService ncbiTaxonTermService;
 
 	@Override
 	@PostConstruct
@@ -31,28 +28,23 @@ public class GenomeAssemblyService extends BaseEntityCrudService<GenomeAssembly,
 		setSQLDao(genomeAssemblyDAO);
 	}
 	
-	public GenomeAssembly getOrCreate(String assemblyName, BackendBulkDataProvider dataProvider) {
-
-		if (StringUtils.isNotBlank(assemblyName)) {
-			Map<String, Object> params = new HashMap<>();
-			params.put("primaryExternalId", assemblyName);
-			params.put(EntityFieldConstants.DATA_PROVIDER, dataProvider.sourceOrganization);
-			params.put(EntityFieldConstants.TAXON, dataProvider.canonicalTaxonCurie);
-	
-			SearchResponse<GenomeAssembly> resp = genomeAssemblyDAO.findByParams(params);
-			if (resp == null || resp.getSingleResult() == null) {
-				GenomeAssembly assembly = new GenomeAssembly();
-				assembly.setPrimaryExternalId(assemblyName);
-				assembly.setDataProvider(organizationService.getByAbbr(dataProvider.sourceOrganization).getEntity());
-				assembly.setTaxon(ncbiTaxonTermService.getByCurie(dataProvider.canonicalTaxonCurie).getEntity());
-	
-				return genomeAssemblyDAO.persist(assembly);
-			} else {
-				return resp.getSingleResult();
-			}
-		} else {
+	/**
+	 * Looks up an existing GenomeAssembly by its name (primaryExternalId) for the
+	 * given data provider's organization and taxon. Returns null if none exists.
+	 * Assemblies are not auto-created here: a GFF load that references an unknown
+	 * assembly is failed by the caller (see Gff3Executor.validateGffAssembly).
+	 */
+	public GenomeAssembly findByName(String assemblyName, BackendBulkDataProvider dataProvider) {
+		if (StringUtils.isBlank(assemblyName)) {
 			return null;
 		}
+		Map<String, Object> params = new HashMap<>();
+		params.put("primaryExternalId", assemblyName);
+		params.put(EntityFieldConstants.DATA_PROVIDER, dataProvider.sourceOrganization);
+		params.put(EntityFieldConstants.TAXON, dataProvider.canonicalTaxonCurie);
+
+		SearchResponse<GenomeAssembly> resp = genomeAssemblyDAO.findByParams(params);
+		return (resp == null) ? null : resp.getSingleResult();
 	}
 
 	public ObjectResponse<GenomeAssembly> deleteByIdentifier(String identifierString) {

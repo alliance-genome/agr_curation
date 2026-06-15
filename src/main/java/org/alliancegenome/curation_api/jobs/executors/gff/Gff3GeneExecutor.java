@@ -72,7 +72,7 @@ public class Gff3GeneExecutor extends Gff3Executor {
 		List<Long> locationIdsAdded = new ArrayList<>();
 		String assemblyId = loadGenomeAssemblyFromGFF(gffHeaderData);
 
-		if (!validateGffAssemblyMatchesSpecies(bulkLoadFileHistory, dataProvider, assemblyId)) {
+		if (!validateGffAssembly(bulkLoadFileHistory, dataProvider, assemblyId)) {
 			return;
 		}
 
@@ -127,7 +127,7 @@ public class Gff3GeneExecutor extends Gff3Executor {
 		BackendBulkDataProvider dataProvider = BackendBulkDataProvider.valueOf(dataProviderName);
 		BulkLoadFileHistory history = new BulkLoadFileHistory();
 		history = bulkLoadFileHistoryDAO.persist(history);
-		if (!validateGffAssemblyMatchesSpecies(history, dataProvider, assemblyName)) {
+		if (!validateGffAssembly(history, dataProvider, assemblyName)) {
 			return new LoadHistoryResponce(history);
 		}
 		List<ImmutablePair<Gff3DTO, Map<String, String>>> preProcessedGeneGffData = Gff3AttributesHelper.getGeneGffData(gffData, dataProvider);

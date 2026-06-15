@@ -77,7 +77,7 @@ public class Gff3TranscriptExecutor extends Gff3Executor {
 
 		String assemblyId = loadGenomeAssemblyFromGFF(gffHeaderData);
 
-		if (!validateGffAssemblyMatchesSpecies(bulkLoadFileHistory, dataProvider, assemblyId)) {
+		if (!validateGffAssembly(bulkLoadFileHistory, dataProvider, assemblyId)) {
 			return;
 		}
 
@@ -128,7 +128,7 @@ public class Gff3TranscriptExecutor extends Gff3Executor {
 		BackendBulkDataProvider dataProvider = BackendBulkDataProvider.valueOf(dataProviderName);
 		BulkLoadFileHistory history = new BulkLoadFileHistory();
 		history = bulkLoadFileHistoryDAO.persist(history);
-		if (!validateGffAssemblyMatchesSpecies(history, dataProvider, assemblyName)) {
+		if (!validateGffAssembly(history, dataProvider, assemblyName)) {
 			return new LoadHistoryResponce(history);
 		}
 		List<ImmutablePair<Gff3DTO, Map<String, String>>> preProcessedTranscriptGffData = Gff3AttributesHelper.getTranscriptGffData(gffData, dataProvider);

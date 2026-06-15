@@ -6,10 +6,9 @@ import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
 import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.jobs.executors.LoadFileExecutor;
-import org.alliancegenome.curation_api.model.entities.Species;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
 import org.alliancegenome.curation_api.services.Gff3Service;
-import org.alliancegenome.curation_api.services.SpeciesService;
+import org.alliancegenome.curation_api.services.GenomeAssemblyService;
 import org.apache.commons.lang3.StringUtils;
 
 import jakarta.enterprise.context.ApplicationScoped;
@@ -19,7 +18,7 @@ import jakarta.inject.Inject;
 public class Gff3Executor extends LoadFileExecutor {
 
 	@Inject Gff3Service gff3Service;
-	@Inject SpeciesService speciesService;
+	@Inject GenomeAssemblyService genomeAssemblyService;
 
 	public String loadGenomeAssemblyFromGFF(List<String> gffHeaderData) throws ValidationException {
 		for (String header : gffHeaderData) {
@@ -32,39 +31,26 @@ public class Gff3Executor extends LoadFileExecutor {
 	}
 
 	/**
-	 * SCRUM-6080: a GFF load may only proceed if the assembly declared in the file
-	 * header matches the official assembly designated for the species in the Species
-	 * table ({@link Species#getGenomeAssembly()}). On any mismatch the whole load is
-	 * failed and no records are imported.
+	 * SCRUM-6080: a GFF load may only proceed if a GenomeAssembly with the name
+	 * declared in the file header already exists for the load's data provider.
+	 * If the header carries no assembly, or no matching assembly exists, the whole
+	 * load is failed and no records are imported (assemblies are no longer
+	 * auto-created during a load).
 	 *
 	 * @return true if the load may proceed; false if the load was failed (the caller
 	 *         must return without importing).
 	 */
-	protected boolean validateGffAssemblyMatchesSpecies(BulkLoadFileHistory history, BackendBulkDataProvider dataProvider, String headerAssembly) {
+	protected boolean validateGffAssembly(BulkLoadFileHistory history, BackendBulkDataProvider dataProvider, String headerAssembly) {
 		if (StringUtils.isBlank(headerAssembly)) {
 			failLoad(history, new ObjectValidationException(null,
-				"GFF header contains no assembly (expected a '#!assembly <id>' line); cannot validate against the official assembly for "
+				"GFF header contains no assembly (expected a '#!assembly <id>' line) for "
 				+ dataProvider.name() + " - load aborted"));
 			return false;
 		}
 
-		Species species = speciesService.getByTaxonCurie(dataProvider.canonicalTaxonCurie);
-		String officialAssembly = (species != null && species.getGenomeAssembly() != null)
-			? species.getGenomeAssembly().getPrimaryExternalId()
-			: null;
-
-		if (officialAssembly == null) {
+		if (genomeAssemblyService.findByName(headerAssembly, dataProvider) == null) {
 			failLoad(history, new ObjectValidationException(null,
-				"No official assembly is designated in the Species table for " + dataProvider.name()
-				+ " (taxon " + dataProvider.canonicalTaxonCurie + "); cannot load GFF with header assembly '"
-				+ headerAssembly + "' - load aborted"));
-			return false;
-		}
-
-		if (!officialAssembly.equals(headerAssembly)) {
-			failLoad(history, new ObjectValidationException(null,
-				"GFF header assembly '" + headerAssembly + "' does not match the official assembly '" + officialAssembly
-				+ "' designated for " + dataProvider.name() + " in the Species table - load aborted"));
+				"No assembly with name " + headerAssembly + " found"));
 			return false;
 		}
 

@@ -356,8 +356,8 @@ public class IT_0608_Gff3BulkUploadITCase extends BaseITCase {
 	@Test
 	@Order(10)
 	public void gff3DataBulkUploadAssemblyMismatchFails() throws Exception {
-		// SCRUM-6080: loading against an assembly (GRCh38) that is not the official
-		// assembly (WBcel235) designated for C. elegans must fail the whole load.
+		// SCRUM-6080: loading against an assembly (GRCh38) for which no GenomeAssembly
+		// exists must fail the whole load (assemblies are not auto-created on load).
 		String content = Files.readString(Path.of(gffDataTestFilePath + "GFF_01_transcript.json"));
 		RestAssured.given().
 			contentType("application/json").
@@ -367,7 +367,7 @@ public class IT_0608_Gff3BulkUploadITCase extends BaseITCase {
 			then().
 			statusCode(200).
 			body("history.bulkloadStatus", is("FAILED")).
-			body("history.errorMessage", containsString("does not match the official assembly"));
+			body("history.errorMessage", containsString("No assembly with name GRCh38 found"));
 	}
 
 }
