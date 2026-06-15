@@ -17,6 +17,7 @@ import org.alliancegenome.curation_api.model.input.Pagination;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.ReferenceService;
+import org.alliancegenome.curation_api.services.ResourceDescriptorPageService;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
 import org.apache.commons.collections.CollectionUtils;
 
@@ -31,6 +32,7 @@ public class ReferenceSynchronisationHelper {
 	@Inject ReferenceService referenceService;
 	@Inject LiteratureReferenceDAO literatureReferenceDAO;
 	@Inject CrossReferenceDAO crossReferenceDAO;
+	@Inject ResourceDescriptorPageService resourceDescriptorPageService;
 
 	public Reference retrieveFromLiteratureService(String curie) {
 
@@ -96,18 +98,23 @@ public class ReferenceSynchronisationHelper {
 				curationSystemXrefMap.put(xref.getReferencedCurie(), xref);
 			}
 		}
-		
+
 		List<CrossReference> consolidatedXrefs = new ArrayList<>();
 		if (CollectionUtils.isNotEmpty(litRef.getCrossReferences())) {
 			for (LiteratureCrossReference litXref : litRef.getCrossReferences()) {
 				if (curationSystemXrefMap.containsKey(litXref.getCurie())) {
-					consolidatedXrefs.add(curationSystemXrefMap.get(litXref.getCurie()));
+					CrossReference existingXref = curationSystemXrefMap.get(litXref.getCurie());
+					if (existingXref.getResourceDescriptorPage() == null) {
+						existingXref.setResourceDescriptorPage(resourceDescriptorPageService.resolvePageForReferenceCurie(existingXref.getReferencedCurie()));
+					}
+					consolidatedXrefs.add(existingXref);
 				} else {
 					CrossReference xref = new CrossReference();
 					xref.setReferencedCurie(litXref.getCurie());
 					xref.setDisplayName(litXref.getCurie());
 					xref.setInternal(false);
 					xref.setObsolete(false);
+					xref.setResourceDescriptorPage(resourceDescriptorPageService.resolvePageForReferenceCurie(litXref.getCurie()));
 					consolidatedXrefs.add(crossReferenceDAO.persist(xref));
 				}
 			}
