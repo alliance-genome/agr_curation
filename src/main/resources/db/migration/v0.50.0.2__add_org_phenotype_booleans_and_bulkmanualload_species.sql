@@ -23,10 +23,10 @@ JOIN species s ON s.displayname = f.fmsdatasubtype
 WHERE bulkload.id = f.id AND bulkload.species_id IS NULL;
 
 UPDATE bulkload SET species_id = s.id
-FROM bulkurlload u
-JOIN species s ON bulkload.name LIKE s.displayname || ' %'
+FROM bulkurlload u, species s
 WHERE bulkload.id = u.id AND bulkload.species_id IS NULL
-AND bulkload.backendbulkloadtype = 'EXPRESSION_ATLAS';
+AND bulkload.backendbulkloadtype = 'EXPRESSION_ATLAS'
+AND bulkload.name LIKE s.displayname || ' %';
 
 ALTER TABLE bulkload ADD CONSTRAINT bulkload_species_id_fk FOREIGN KEY (species_id) REFERENCES species (id);
 CREATE INDEX bulkload_species_index ON bulkload USING btree(species_id);
