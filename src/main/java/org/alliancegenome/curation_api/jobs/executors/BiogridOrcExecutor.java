@@ -47,9 +47,7 @@ public class BiogridOrcExecutor extends LoadFileExecutor {
 			TarArchiveEntry tarEntry;
 
 			List<BiogridOrcFmsDTO> biogridData = new ArrayList<>();
-			String name = bulkLoadFileHistory.getBulkLoad().getName();
-			String dataProviderName = name.substring(0, name.indexOf(" "));
-			Species species = speciesService.getByDisplayName(dataProviderName);
+			Species species = bulkLoadFileHistory.getBulkLoad().getSpecies();
 
 			while ((tarEntry = tarInputStream.getNextEntry()) != null) {
 

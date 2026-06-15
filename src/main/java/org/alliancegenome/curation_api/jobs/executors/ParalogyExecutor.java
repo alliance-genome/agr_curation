@@ -13,7 +13,6 @@ import org.alliancegenome.curation_api.model.entities.bulkloads.BulkFMSLoad;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.ParalogyIngestFmsDTO;
 import org.alliancegenome.curation_api.services.GeneToGeneParalogyService;
-import org.alliancegenome.curation_api.services.SpeciesService;
 import org.apache.commons.lang3.StringUtils;
 
 import io.quarkus.logging.Log;
@@ -25,7 +24,6 @@ public class ParalogyExecutor extends LoadFileExecutor {
 
 	@Inject GeneToGeneParalogyService geneToGeneParalogyService;
 	@Inject GeneToGeneParalogyDAO geneToGeneParalogyDAO;
-	@Inject SpeciesService speciesService;
 
 	public void execLoad(BulkLoadFileHistory bulkLoadFileHistory) {
 		try {
@@ -41,7 +39,7 @@ public class ParalogyExecutor extends LoadFileExecutor {
 			}
 
 			List<Long> paralogyIdsLoaded = new ArrayList<>();
-			Species species = speciesService.getByDisplayName(fms.getFmsDataSubType());
+			Species species = bulkLoadFileHistory.getBulkLoad().getSpecies();
 			List<Long> paralogyPairsBefore = geneToGeneParalogyService.getAllParalogyPairIdsBySubjectGeneDataProvider(species);
 			Log.debug("runLoad: Before: total " + paralogyPairsBefore.size());
 

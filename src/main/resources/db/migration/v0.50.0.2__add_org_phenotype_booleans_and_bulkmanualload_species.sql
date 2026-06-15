@@ -10,15 +10,25 @@ UPDATE organization SET hasinferredgenephenotypeannotations = true WHERE abbrevi
 UPDATE organization SET hasinferredgenephenotypeannotations = true, hasassertedallelephenotypeannotations = true WHERE abbreviation = 'WB';
 UPDATE organization SET hasinferredgenephenotypeannotations = true WHERE abbreviation = 'XB';
 
-ALTER TABLE bulkmanualload ADD COLUMN species_id bigint;
+ALTER TABLE bulkload ADD COLUMN species_id bigint;
 
-UPDATE bulkmanualload SET species_id = (
-    SELECT s.id FROM species s WHERE s.displayname = bulkmanualload.dataprovider
-);
+UPDATE bulkload SET species_id = s.id
+FROM bulkmanualload bml
+JOIN species s ON s.displayname = bml.dataprovider
+WHERE bulkload.id = bml.id;
 
-DELETE FROM bulkmanualload WHERE species_id IS NULL;
+UPDATE bulkload SET species_id = s.id
+FROM bulkfmsload f
+JOIN species s ON s.displayname = f.fmsdatasubtype
+WHERE bulkload.id = f.id AND bulkload.species_id IS NULL;
 
-ALTER TABLE bulkmanualload ADD CONSTRAINT bulkmanualload_species_id_fk FOREIGN KEY (species_id) REFERENCES species (id);
-CREATE INDEX bulkmanualload_species_index ON bulkmanualload USING btree(species_id);
+UPDATE bulkload SET species_id = s.id
+FROM bulkurlload u
+JOIN species s ON bulkload.name LIKE s.displayname || ' %'
+WHERE bulkload.id = u.id AND bulkload.species_id IS NULL
+AND bulkload.backendbulkloadtype = 'EXPRESSION_ATLAS';
+
+ALTER TABLE bulkload ADD CONSTRAINT bulkload_species_id_fk FOREIGN KEY (species_id) REFERENCES species (id);
+CREATE INDEX bulkload_species_index ON bulkload USING btree(species_id);
 
 ALTER TABLE bulkmanualload DROP COLUMN dataprovider;

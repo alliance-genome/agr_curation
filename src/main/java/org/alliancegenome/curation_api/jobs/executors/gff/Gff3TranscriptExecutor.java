@@ -9,7 +9,6 @@ import java.util.zip.GZIPInputStream;
 import org.alliancegenome.curation_api.model.entities.Species;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.jobs.util.CsvSchemaBuilder;
-import org.alliancegenome.curation_api.model.entities.bulkloads.BulkFMSLoad;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.Gff3DTO;
 import org.alliancegenome.curation_api.response.APIResponse;
@@ -66,8 +65,7 @@ public class Gff3TranscriptExecutor extends Gff3Executor {
 			ph.finishProcess();
 			gffRawData.clear();
 
-			BulkFMSLoad fmsLoad = (BulkFMSLoad) bulkLoadFileHistory.getBulkLoad();
-			Species species = speciesService.getByDisplayName(fmsLoad.getFmsDataSubType());
+			Species species = bulkLoadFileHistory.getBulkLoad().getSpecies();
 
 			List<ImmutablePair<Gff3DTO, Map<String, String>>> preProcessedTranscriptGffData = Gff3AttributesHelper.getTranscriptGffData(gffFileData, species);
 			Map<String, String> geneIdCurieMap = gff3Service.getGeneIdCurieMap(gffFileData, species);

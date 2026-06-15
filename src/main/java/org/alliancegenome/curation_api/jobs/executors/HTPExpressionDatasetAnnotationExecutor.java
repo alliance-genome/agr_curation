@@ -52,7 +52,7 @@ public class HTPExpressionDatasetAnnotationExecutor extends LoadFileExecutor {
 				bulkLoadFileHistory.getBulkLoadFile().setAllianceMemberReleaseVersion(htpExpressionDatasetData.getMetaData().getRelease());
 			}
 
-			Species species = speciesService.getByDisplayName(fms.getFmsDataSubType());
+			Species species = bulkLoadFileHistory.getBulkLoad().getSpecies();
 			List<Long> htpAnnotationsIdsLoaded = new ArrayList<>();
 			List<Long> previousIds = htpExpressionDatasetAnnotationService.getAnnotationIdsByDataProvider(species.getDisplayName());
 			

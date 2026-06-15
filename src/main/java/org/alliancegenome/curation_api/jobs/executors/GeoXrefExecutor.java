@@ -10,10 +10,8 @@ import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.exceptions.KnownIssueValidationException;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException.ObjectUpdateExceptionData;
-import org.alliancegenome.curation_api.model.entities.bulkloads.BulkFMSLoad;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
 import org.alliancegenome.curation_api.services.GeneService;
-import org.alliancegenome.curation_api.services.SpeciesService;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
 import org.apache.commons.collections.CollectionUtils;
 
@@ -31,23 +29,19 @@ public class GeoXrefExecutor extends LoadFileExecutor {
 
 	@Inject
 	GeneService geneService;
-	@Inject
-	SpeciesService speciesService;
 
 	public void execLoad(BulkLoadFileHistory bulkLoadFileHistory) throws IOException {
 
-		BulkFMSLoad fms = (BulkFMSLoad) bulkLoadFileHistory.getBulkLoad();
-
 		XmlMapper mapper = new XmlMapper();
 		List<String> entrezIds = mapper.readValue(new GZIPInputStream(new FileInputStream(bulkLoadFileHistory.getBulkLoadFile().getLocalFilePath())), ESearchResult.class).getIdList().getIds();
-		
+
 		bulkLoadFileHistory.getBulkLoadFile().setRecordCount(entrezIds.size() + bulkLoadFileHistory.getBulkLoadFile().getRecordCount());
 		bulkLoadFileDAO.merge(bulkLoadFileHistory.getBulkLoadFile());
 
 		bulkLoadFileHistory.setCount(entrezIds.size());
 		updateHistory(bulkLoadFileHistory);
 
-		Species species = speciesService.getByDisplayName(fms.getFmsDataSubType());
+		Species species = bulkLoadFileHistory.getBulkLoad().getSpecies();
 
 		runLoad(bulkLoadFileHistory, species, entrezIds);
 

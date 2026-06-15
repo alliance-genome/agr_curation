@@ -8,11 +8,9 @@ import java.util.zip.GZIPInputStream;
 import org.alliancegenome.curation_api.dao.PredictedVariantConsequenceDAO;
 import org.alliancegenome.curation_api.model.entities.Species;
 import org.alliancegenome.curation_api.jobs.util.CsvSchemaBuilder;
-import org.alliancegenome.curation_api.model.entities.bulkloads.BulkFMSLoad;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.VepTxtDTO;
 import org.alliancegenome.curation_api.services.PredictedVariantConsequenceService;
-import org.alliancegenome.curation_api.services.SpeciesService;
 
 import com.fasterxml.jackson.databind.MappingIterator;
 import com.fasterxml.jackson.dataformat.csv.CsvMapper;
@@ -27,7 +25,6 @@ public class VepTranscriptExecutor extends LoadFileExecutor {
 
 	@Inject PredictedVariantConsequenceDAO predictedVariantConsequenceDAO;
 	@Inject PredictedVariantConsequenceService predictedVariantConsequenceService;
-	@Inject SpeciesService speciesService;
 
 	public void execLoad(BulkLoadFileHistory bulkLoadFileHistory) {
 		try {
@@ -38,8 +35,7 @@ public class VepTranscriptExecutor extends LoadFileExecutor {
 			List<VepTxtDTO> vepData = it.readAll();
 			
 
-			BulkFMSLoad fmsLoad = (BulkFMSLoad) bulkLoadFileHistory.getBulkLoad();
-			Species species = speciesService.getByDisplayName(fmsLoad.getFmsDataSubType());
+			Species species = bulkLoadFileHistory.getBulkLoad().getSpecies();
 
 			List<Long> consequenceIdsLoaded = new ArrayList<>();
 			List<Long> consequenceIdsBefore = predictedVariantConsequenceService.getIdsByDataProvider(species);

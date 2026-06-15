@@ -87,7 +87,7 @@ public class SequenceTargetingReagentFmsDTOValidator {
 		}
 		
 		if (beSpecies != null) {
-			sqtr.setDataProvider(organizationService.getByAbbr(beSpecies.getDataProvider().getAbbreviation()).getEntity());
+			sqtr.setDataProvider(beSpecies.getDataProvider());
 		}
 		
 		if (sqtrResponse.hasErrors()) {

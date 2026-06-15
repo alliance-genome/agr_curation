@@ -9,7 +9,6 @@ import org.alliancegenome.curation_api.model.entities.Species;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException.ObjectUpdateExceptionData;
-import org.alliancegenome.curation_api.model.entities.bulkloads.BulkFMSLoad;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.VariantFmsDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.VariantIngestFmsDTO;
@@ -37,15 +36,13 @@ public class VariantFmsExecutor extends LoadFileExecutor {
 
 	public void execLoad(BulkLoadFileHistory bulkLoadFileHistory) {
 		try {
-			BulkFMSLoad fms = (BulkFMSLoad) bulkLoadFileHistory.getBulkLoad();
-		
 			VariantIngestFmsDTO variantData = mapper.readValue(new GZIPInputStream(new FileInputStream(bulkLoadFileHistory.getBulkLoadFile().getLocalFilePath())), VariantIngestFmsDTO.class);
-			
+
 			if (variantData.getMetaData() != null && StringUtils.isNotBlank(variantData.getMetaData().getRelease())) {
 				bulkLoadFileHistory.getBulkLoadFile().setAllianceMemberReleaseVersion(variantData.getMetaData().getRelease());
 			}
-		
-			Species species = speciesService.getByDisplayName(fms.getFmsDataSubType());
+
+			Species species = bulkLoadFileHistory.getBulkLoad().getSpecies();
 
 			List<Long> entityIdsAdded = new ArrayList<>();
 			List<Long> locationIdsAdded = new ArrayList<>();

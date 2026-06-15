@@ -13,7 +13,6 @@ import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException.ObjectUpdateExceptionData;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.entities.SequenceTargetingReagent;
-import org.alliancegenome.curation_api.model.entities.bulkloads.BulkFMSLoad;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.SequenceTargetingReagentFmsDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.SequenceTargetingReagentIngestFmsDTO;
@@ -42,8 +41,6 @@ public class SequenceTargetingReagentExecutor extends LoadFileExecutor {
 
 		try {
 
-			BulkFMSLoad fms = (BulkFMSLoad) bulkLoadFileHistory.getBulkLoad();
-
 			SequenceTargetingReagentIngestFmsDTO sqtrIngestFmsDTO = mapper.readValue(new GZIPInputStream(new FileInputStream(bulkLoadFileHistory.getBulkLoadFile().getLocalFilePath())), SequenceTargetingReagentIngestFmsDTO.class);
 			bulkLoadFileHistory.getBulkLoadFile().setRecordCount(sqtrIngestFmsDTO.getData().size());
 
@@ -54,7 +51,7 @@ public class SequenceTargetingReagentExecutor extends LoadFileExecutor {
 				bulkLoadFileHistory.getBulkLoadFile().setAllianceMemberReleaseVersion(sqtrIngestFmsDTO.getMetaData().getRelease());
 			}
 
-			Species species = speciesService.getByDisplayName(fms.getFmsDataSubType());
+			Species species = bulkLoadFileHistory.getBulkLoad().getSpecies();
 
 			Map<String, List<Long>> idsAdded = new HashMap<String, List<Long>>();
 			idsAdded.put("SQTR", new ArrayList<Long>());
@@ -110,7 +107,7 @@ public class SequenceTargetingReagentExecutor extends LoadFileExecutor {
 		ph.startProcess("Sequence Targeting Reagent DTO Update for " + species.getDisplayName(), sqtrs.size() * 2);
 
 		loadSequenceTargetingReagents(history, sqtrs, sqtrIdsLoaded, species, ph);
-		loadSequenceTargetingReagentGeneAssociations(history, sqtrs, sqtrGeneAssociationIdsLoaded, species, ph);
+		loadSequenceTargetingReagentGeneAssociations(history, sqtrs, sqtrGeneAssociationIdsLoaded, ph);
 
 		ph.finishProcess();
 
@@ -143,12 +140,12 @@ public class SequenceTargetingReagentExecutor extends LoadFileExecutor {
 	}
 
 	private void loadSequenceTargetingReagentGeneAssociations(BulkLoadFileHistory history,
-			List<SequenceTargetingReagentFmsDTO> sqtrs, List<Long> idsLoaded, Species species,
+			List<SequenceTargetingReagentFmsDTO> sqtrs, List<Long> idsLoaded,
 			ProcessDisplayHelper ph) {
 
 		for (SequenceTargetingReagentFmsDTO dto : sqtrs) {
 			try {
-				List<Long> associationIds = sqtrGeneAssociationService.loadGeneAssociations(dto, species);
+				List<Long> associationIds = sqtrGeneAssociationService.loadGeneAssociations(dto);
 				history.incrementCompleted();
 				if (idsLoaded != null) {
 					idsLoaded.addAll(associationIds);

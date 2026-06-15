@@ -29,7 +29,7 @@ public class SequenceTargetingReagentGeneAssociationFmsDTOValidator {
 	@Inject
 	GeneService geneService;
 
-	public List<SequenceTargetingReagentGeneAssociation> validateSQTRGeneAssociationFmsDTO(SequenceTargetingReagentFmsDTO dto, Species beSpecies) throws ObjectValidationException {
+	public List<SequenceTargetingReagentGeneAssociation> validateSQTRGeneAssociationFmsDTO(SequenceTargetingReagentFmsDTO dto) throws ObjectValidationException {
 		List<SequenceTargetingReagentGeneAssociation> strGeneAssociations = new ArrayList<>();
 		ObjectResponse<SequenceTargetingReagent> sqtrResponse = new ObjectResponse<>();
 

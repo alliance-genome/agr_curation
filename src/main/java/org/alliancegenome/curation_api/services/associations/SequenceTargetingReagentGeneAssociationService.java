@@ -40,10 +40,10 @@ public class SequenceTargetingReagentGeneAssociationService extends BaseEntityCr
 	}
 
 	@Transactional
-	public List<Long> loadGeneAssociations(SequenceTargetingReagentFmsDTO dto, Species species) throws ValidationException {
+	public List<Long> loadGeneAssociations(SequenceTargetingReagentFmsDTO dto) throws ValidationException {
 
 		List<SequenceTargetingReagentGeneAssociation> associations = sequenceTargetingReagentGeneAssociationFmsDTOValidator
-				.validateSQTRGeneAssociationFmsDTO(dto, species);
+				.validateSQTRGeneAssociationFmsDTO(dto);
 
 		for (SequenceTargetingReagentGeneAssociation association : associations) {
 			if (association != null) {

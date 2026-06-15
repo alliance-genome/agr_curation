@@ -15,13 +15,11 @@ import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException.ObjectUpdateExceptionData;
 import org.alliancegenome.curation_api.jobs.util.CsvSchemaBuilder;
 import org.alliancegenome.curation_api.model.entities.GeneOntologyAnnotation;
-import org.alliancegenome.curation_api.model.entities.bulkloads.BulkFMSLoad;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
 import org.alliancegenome.curation_api.model.ingest.dto.GeneOntologyAnnotationDTO;
 import org.alliancegenome.curation_api.response.ObjectListResponse;
 import org.alliancegenome.curation_api.services.GeneOntologyAnnotationService;
 import org.alliancegenome.curation_api.services.OrganizationService;
-import org.alliancegenome.curation_api.services.SpeciesService;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
 import org.apache.commons.collections4.map.HashedMap;
 
@@ -41,13 +39,10 @@ public class GeneOntologyAnnotationExecutor extends LoadFileExecutor {
 	GeneOntologyAnnotationService geneOntologyAnnotationService;
 	@Inject
 	OrganizationService organizationService;
-	@Inject
-	SpeciesService speciesService;
 
 	public void execLoad(BulkLoadFileHistory bulkLoadFileHistory) throws IOException {
 
-		BulkFMSLoad fmsLoad = (BulkFMSLoad) bulkLoadFileHistory.getBulkLoad();
-		Species species = speciesService.getByDisplayName(fmsLoad.getFmsDataSubType());
+		Species species = bulkLoadFileHistory.getBulkLoad().getSpecies();
 
 		CsvSchema csvSchema = CsvSchemaBuilder.gafSchema();
 		CsvMapper csvMapper = new CsvMapper();

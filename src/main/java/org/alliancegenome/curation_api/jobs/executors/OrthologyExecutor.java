@@ -12,7 +12,6 @@ import org.alliancegenome.curation_api.model.entities.bulkloads.BulkFMSLoad;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
 import org.alliancegenome.curation_api.model.entities.orthology.GeneToGeneOrthologyGenerated;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.OrthologyIngestFmsDTO;
-import org.alliancegenome.curation_api.services.SpeciesService;
 import org.alliancegenome.curation_api.services.orthology.GeneToGeneOrthologyGeneratedService;
 import org.apache.commons.lang3.StringUtils;
 
@@ -26,7 +25,6 @@ public class OrthologyExecutor extends LoadFileExecutor {
 
 	@Inject GeneToGeneOrthologyGeneratedService generatedOrthologyService;
 	@Inject GeneToGeneOrthologyGeneratedDAO generatedOrthologyDAO;
-	@Inject SpeciesService speciesService;
 
 	public void execLoad(BulkLoadFileHistory bulkLoadFileHistory) {
 		try {
@@ -42,7 +40,7 @@ public class OrthologyExecutor extends LoadFileExecutor {
 			}
 
 			List<Long> orthoPairIdsLoaded = new ArrayList<>();
-			Species species = speciesService.getByDisplayName(fms.getFmsDataSubType());
+			Species species = bulkLoadFileHistory.getBulkLoad().getSpecies();
 			List<Long> orthoPairIdsBefore = generatedOrthologyService.getAllOrthologyPairIdsBySubjectGeneDataProvider(species);
 			log.debug("runLoad: Before: total " + orthoPairIdsBefore.size());
 

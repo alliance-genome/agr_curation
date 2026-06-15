@@ -13,7 +13,6 @@ import org.alliancegenome.curation_api.exceptions.ObjectUpdateException.ObjectUp
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkURLLoad;
 import org.alliancegenome.curation_api.services.GeneService;
-import org.alliancegenome.curation_api.services.SpeciesService;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
 import org.apache.commons.collections.CollectionUtils;
 
@@ -29,8 +28,6 @@ public class ExpressionAtlasExecutor extends LoadFileExecutor {
 
 	@Inject
 	GeneService geneService;
-	@Inject
-	SpeciesService speciesService;
 
 	public void execLoad(BulkLoadFileHistory bulkLoadFileHistory) throws IOException {
 
@@ -44,10 +41,7 @@ public class ExpressionAtlasExecutor extends LoadFileExecutor {
 			.map(sUrl -> sUrl.substring(sUrl.lastIndexOf("/") + 1))
 			.toList();
 
-		String name = bulkLoadFileHistory.getBulkLoad().getName();
-		String dataProviderName = name.substring(0, name.indexOf(" "));
-
-		Species species = speciesService.getByDisplayName(dataProviderName);
+		Species species = bulkLoadFileHistory.getBulkLoad().getSpecies();
 
 		runLoad(bulkLoadFileHistory, species, accessions);
 
