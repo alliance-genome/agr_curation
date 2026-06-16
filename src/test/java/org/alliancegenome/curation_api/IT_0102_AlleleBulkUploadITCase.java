@@ -61,12 +61,6 @@ public class IT_0102_AlleleBulkUploadITCase extends BaseITCase {
 		createSoTerm(requiredSoTerm2, "Test SOTerm2", false);
 		createMpTerm(requiredMpTerm, "Test MPTerm");
 		createMpTerm(requiredMpTerm2, "Test MPTerm2");
-		createNCBITaxonTerm("NCBITaxon:10116", "Rattus norvegicus", false);
-		createNCBITaxonTerm("NCBITaxon:9606", "Homo sapiens", false);
-		createOrganization("RGD", false);
-		createOrganization("HUMAN", false);
-		createSpecies("RGD", "NCBITaxon:10116", "RGD");
-		createSpecies("HUMAN", "NCBITaxon:9606", "HUMAN");
 	}
 	
 	@Test
