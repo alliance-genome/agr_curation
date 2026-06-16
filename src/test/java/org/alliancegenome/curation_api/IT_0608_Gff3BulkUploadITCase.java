@@ -11,9 +11,7 @@ import java.util.HashMap;
 import org.alliancegenome.curation_api.base.BaseITCase;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.model.entities.GenomeAssembly;
-import org.alliancegenome.curation_api.model.entities.Species;
 import org.alliancegenome.curation_api.resources.TestContainerResource;
-import org.alliancegenome.curation_api.response.SearchResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.MethodOrderer;
@@ -25,7 +23,6 @@ import org.junit.jupiter.api.TestMethodOrder;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusIntegrationTest;
 import io.restassured.RestAssured;
-import io.restassured.common.mapper.TypeRef;
 import io.restassured.config.HttpClientConfig;
 import io.restassured.config.RestAssuredConfig;
 
@@ -70,11 +67,10 @@ public class IT_0608_Gff3BulkUploadITCase extends BaseITCase {
 		createSoTerm("SO:0000147", "exon", false);
 		createSoTerm("SO:0000316", "CDS", false);
 		createGene(geneCurie, "NCBITaxon:6239", getVocabularyTerm(getVocabulary(VocabularyConstants.NAME_TYPE_VOCABULARY), "nomenclature_symbol"), false);
-		// SCRUM-6080: GFF loads now fail unless the load assembly matches the official
-		// assembly designated on the Species row. The WB GFF loads below all use
-		// assembly "WBcel235", so designate that as C. elegans' official assembly.
+		// SCRUM-6080: GFF loads now fail unless a GenomeAssembly with the load's
+		// assembly name already exists. The WB GFF loads below all use "WBcel235",
+		// so create that assembly for C. elegans / WB.
 		createGenomeAssembly(officialAssembly, "NCBITaxon:6239", "WB");
-		setSpeciesOfficialAssembly("NCBITaxon:6239", officialAssembly);
 	}
 
 	private void createGenomeAssembly(String primaryExternalId, String taxonCurie, String dataProviderAbbreviation) {
@@ -91,26 +87,6 @@ public class IT_0608_Gff3BulkUploadITCase extends BaseITCase {
 			statusCode(200);
 	}
 
-	private void setSpeciesOfficialAssembly(String taxonCurie, String assemblyPrimaryExternalId) throws Exception {
-		SearchResponse<Species> resp = RestAssured.given().
-			contentType("application/json").
-			body("{\"taxon.curie\": \"" + taxonCurie + "\"}").
-			when().
-			post("/api/species/find").
-			then().
-			statusCode(200).
-			extract().body().as(new TypeRef<SearchResponse<Species>>() { });
-		Species species = resp.getSingleResult();
-		species.setGenomeAssembly(getGenomeAssembly(assemblyPrimaryExternalId));
-		RestAssured.given().
-			contentType("application/json").
-			body(species).
-			when().
-			put("/api/species").
-			then().
-			statusCode(200);
-	}
-	
 	@Test
 	@Order(1)
 	public void gff3DataBulkUploadTranscriptEntity() throws Exception {
