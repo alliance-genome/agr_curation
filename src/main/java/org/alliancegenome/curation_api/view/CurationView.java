@@ -166,7 +166,6 @@ public class CurationView {
 	public static class GeneExpressionDocument { }
 	public static class ModelDocument { }
 	public static class TransgenicAllelesDocument { }
-	public static class ResourceDescriptorDocument { }
 
 	public static Class<?> viewLookup(String name) {
 		for (Class<?> innerClass : CurationView.class.getDeclaredClasses()) {

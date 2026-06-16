@@ -20,6 +20,7 @@
 		<surefire-plugin.version>3.0.0-M7</surefire-plugin.version>
 		<maven-checkstyle-plugin.version>3.3.1</maven-checkstyle-plugin.version>
 		<checkstyle.version>10.17.0</checkstyle.version>
+		<mati.version>v0.27.0</mati.version>
 	</properties>
 	<scm>
 		<connection>scm:git:git@github.com:alliance-genome/agr_curation.git</connection>
@@ -38,21 +39,6 @@
 			<name>Olin Blodgett</name>
 			<organization>Jackson Laboratory</organization>
 			<organizationUrl>http://www.jax.org</organizationUrl>
-		</developer>
-		<developer>
-			<name>Manuel Luypaert</name>
-			<organization>EMBL-EBI</organization>
-			<organizationUrl>https://www.ebi.ac.uk/</organizationUrl>
-		</developer>
-		<developer>
-			<name>Andrés Becerra</name>
-			<organization>EMBL-EBI</organization>
-			<organizationUrl>https://www.ebi.ac.uk/</organizationUrl>
-		</developer>
-		<developer>
-			<name>Mark Quinton-Tulloch</name>
-			<organization>EMBL-EBI</organization>
-			<organizationUrl>https://www.ebi.ac.uk/</organizationUrl>
 		</developer>
 		<developer>
 			<name>Chris Grove</name>
@@ -166,6 +152,16 @@
 		<dependency>
 			<groupId>io.quarkus</groupId>
 			<artifactId>quarkus-oidc</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.alliancegenome</groupId>
+			<artifactId>mati-entity</artifactId>
+			<version>${mati.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.alliancegenome</groupId>
+			<artifactId>mati-interfaces</artifactId>
+			<version>${mati.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>io.quarkus</groupId>
