@@ -50,9 +50,19 @@ public class IT_0103_AgmBulkUploadITCase extends BaseITCase {
 	private final String agmGetEndpoint = "/api/agm/";
 	private final String agmTestFilePath = "src/test/resources/bulk/03_agm/";
 
+	private void loadRequiredEntities() throws Exception {
+		createNCBITaxonTerm("NCBITaxon:10116", "Rattus norvegicus", false);
+		createNCBITaxonTerm("NCBITaxon:9606", "Homo sapiens", false);
+		createOrganization("RGD", false);
+		createOrganization("HUMAN", false);
+		createSpecies("RGD", "NCBITaxon:10116", "RGD");
+		createSpecies("HUMAN", "NCBITaxon:9606", "HUMAN");
+	}
+
 	@Test
 	@Order(1)
 	public void agmBulkUploadCheckFields() throws Exception {
+		loadRequiredEntities();
 		checkSuccessfulBulkLoad(agmBulkPostEndpoint, agmTestFilePath + "AF_01_all_fields.json");
 
 		RestAssured.given().
