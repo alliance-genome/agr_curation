@@ -74,9 +74,9 @@ public class Gff3ExonExecutor extends Gff3Executor {
 		List<Long> locationIdsAdded = new ArrayList<>();
 		List<Long> associationIdsAdded = new ArrayList<>();
 
-		String assemblyId = loadGenomeAssemblyFromGFF(gffHeaderData);
+		String assemblyId = loadGenomeAssemblyFromGFF(bulkLoadFileHistory, gffHeaderData, dataProvider);
 
-		if (validateGffAssemblyMatchesSpecies(bulkLoadFileHistory, dataProvider, assemblyId)) {
+		if (assemblyId != null) {
 			boolean success = runLoad(bulkLoadFileHistory, gffHeaderData, preProcessedExonGffData, entityIdsAdded, locationIdsAdded, associationIdsAdded, dataProvider, assemblyId);
 			if (success) {
 				runCleanup(exonLocationService, bulkLoadFileHistory, dataProvider.name(), exonLocationService.getIdsByDataProvider(dataProvider), locationIdsAdded, "GFF exon genomic location association");

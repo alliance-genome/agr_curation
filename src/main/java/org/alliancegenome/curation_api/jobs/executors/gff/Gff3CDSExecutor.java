@@ -75,9 +75,9 @@ public class Gff3CDSExecutor extends Gff3Executor {
 		List<Long> locationIdsAdded = new ArrayList<>();
 		List<Long> associationIdsAdded = new ArrayList<>();
 
-		String assemblyId = loadGenomeAssemblyFromGFF(gffHeaderData);
+		String assemblyId = loadGenomeAssemblyFromGFF(bulkLoadFileHistory, gffHeaderData, dataProvider);
 
-		if (validateGffAssemblyMatchesSpecies(bulkLoadFileHistory, dataProvider, assemblyId)) {
+		if (assemblyId != null) {
 			boolean success = runLoad(bulkLoadFileHistory, gffHeaderData, preProcessedCDSGffData, entityIdsAdded, locationIdsAdded, associationIdsAdded, dataProvider, assemblyId);
 			if (success) {
 				runCleanup(cdsLocationService, bulkLoadFileHistory, dataProvider.name(), cdsLocationService.getIdsByDataProvider(dataProvider), locationIdsAdded, "GFF coding sequence genomic location association");

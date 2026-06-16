@@ -75,9 +75,9 @@ public class Gff3TranscriptExecutor extends Gff3Executor {
 		List<Long> locationIdsAdded = new ArrayList<>();
 		List<Long> associationIdsAdded = new ArrayList<>();
 
-		String assemblyId = loadGenomeAssemblyFromGFF(gffHeaderData);
+		String assemblyId = loadGenomeAssemblyFromGFF(bulkLoadFileHistory, gffHeaderData, dataProvider);
 
-		if (validateGffAssemblyMatchesSpecies(bulkLoadFileHistory, dataProvider, assemblyId)) {
+		if (assemblyId != null) {
 			boolean success = runLoad(bulkLoadFileHistory, gffHeaderData, preProcessedTranscriptGffData, geneIdCurieMap, entityIdsAdded, locationIdsAdded, associationIdsAdded, dataProvider, assemblyId);
 			if (success) {
 				runCleanup(transcriptLocationService, bulkLoadFileHistory, dataProvider.name(), transcriptLocationService.getIdsByDataProvider(dataProvider), locationIdsAdded, "GFF transcript genomic location association");
