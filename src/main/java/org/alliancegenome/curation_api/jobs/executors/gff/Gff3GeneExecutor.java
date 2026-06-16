@@ -72,14 +72,11 @@ public class Gff3GeneExecutor extends Gff3Executor {
 		List<Long> locationIdsAdded = new ArrayList<>();
 		String assemblyId = loadGenomeAssemblyFromGFF(gffHeaderData);
 
-		if (!validateGffAssemblyMatchesSpecies(bulkLoadFileHistory, dataProvider, assemblyId)) {
-			return;
-		}
-
-		boolean success = runLoad(bulkLoadFileHistory, gffHeaderData, preProcessedGeneGffData, locationIdsAdded, dataProvider, assemblyId);
-
-		if (success) {
-			runCleanup(geneLocationService, bulkLoadFileHistory, dataProvider.name(), geneLocationService.getIdsByDataProvider(dataProvider), locationIdsAdded, "GFF gene genomic location association");
+		if (validateGffAssemblyMatchesSpecies(bulkLoadFileHistory, dataProvider, assemblyId)) {
+			boolean success = runLoad(bulkLoadFileHistory, gffHeaderData, preProcessedGeneGffData, locationIdsAdded, dataProvider, assemblyId);
+			if (success) {
+				runCleanup(geneLocationService, bulkLoadFileHistory, dataProvider.name(), geneLocationService.getIdsByDataProvider(dataProvider), locationIdsAdded, "GFF gene genomic location association");
+			}
 		}
 		bulkLoadFileHistory.finishLoad();
 		updateHistory(bulkLoadFileHistory);
