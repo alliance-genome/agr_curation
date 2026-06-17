@@ -45,7 +45,7 @@ public class Reference extends InformationContentEntity {
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@OneToMany(cascade = CascadeType.MERGE, orphanRemoval = true)
 	@Fetch(FetchMode.SUBSELECT)
-	@JsonView({CurationView.FieldsOnly.class, CurationView.ForPublic.class, CurationView.AlleleSummaryDocument.class, CurationView.VariantSummaryDocument.class})
+	@JsonView({CurationView.FieldsOnly.class, CurationView.ForPublic.class, CurationView.AlleleSummaryDocument.class, CurationView.VariantSummaryDocument.class, CurationView.TransgenicAllelesDocument.class})
 	@JoinTable(
 		indexes = {
 			@Index(name = "reference_crossreference_reference_index", columnList = "Reference_id"),
@@ -54,7 +54,7 @@ public class Reference extends InformationContentEntity {
 	)
 	private Set<CrossReference> crossReferences;
 
-	@JsonView({CurationView.FieldsOnly.class, CurationView.ForPublic.class, CurationView.AlleleSummaryDocument.class})
+	@JsonView({CurationView.FieldsOnly.class, CurationView.ForPublic.class, CurationView.AlleleSummaryDocument.class, CurationView.TransgenicAllelesDocument.class})
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "shortCitation_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
 	@Column(columnDefinition = "TEXT")
@@ -65,7 +65,7 @@ public class Reference extends InformationContentEntity {
 	 * else the reference's own AGRKB curie.
 	 */
 	@Transient
-	@JsonView({CurationView.ForPublic.class, CurationView.GeneExpressionDocument.class, CurationView.AlleleSummaryDocument.class, CurationView.VariantSummaryDocument.class, CurationView.SequenceSummaryDocument.class})
+	@JsonView({CurationView.ForPublic.class, CurationView.GeneExpressionDocument.class, CurationView.AlleleSummaryDocument.class, CurationView.VariantSummaryDocument.class, CurationView.SequenceSummaryDocument.class, CurationView.TransgenicAllelesDocument.class})
 	public String getReferenceID() {
 		return getReferenceID(true);
 	}
@@ -74,7 +74,7 @@ public class Reference extends InformationContentEntity {
 	 * Display priority: PubMod ID (MOD-prefixed) if present in crossReferences, else the reference's own AGRKB curie.
 	 */
 	@Transient
-	@JsonView({CurationView.ForPublic.class, CurationView.GeneExpressionDocument.class, CurationView.AlleleSummaryDocument.class})
+	@JsonView({CurationView.ForPublic.class, CurationView.GeneExpressionDocument.class, CurationView.AlleleSummaryDocument.class, CurationView.TransgenicAllelesDocument.class})
 	public String getPubModID() {
 		return getReferenceID(false);
 	}

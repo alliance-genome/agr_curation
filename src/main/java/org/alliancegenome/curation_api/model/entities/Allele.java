@@ -84,7 +84,7 @@ public class Allele extends GenomicEntity {
 		@Index(name = "allele_reference_references_index", columnList = "references_id"),
 		@Index(name = "allele_reference_allele_references_index", columnList = "allele_id, references_id")
 	})
-	@JsonView({ CurationView.FieldsAndLists.class, CurationView.AlleleView.class, CurationView.AlleleDetailView.class, CurationView.AlleleSummaryDocument.class })
+	@JsonView({ CurationView.FieldsAndLists.class, CurationView.AlleleView.class, CurationView.AlleleDetailView.class, CurationView.AlleleSummaryDocument.class, CurationView.TransgenicAllelesDocument.class })
 	private List<Reference> references;
 
 	@IndexedEmbedded(includePaths = {"name", "name_keyword"})
