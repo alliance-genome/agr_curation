@@ -547,6 +547,10 @@ export const FIELD_SETS = Object.freeze({
 		filterName: 'modInternalIdFilter',
 		fields: ['modInternalId'],
 	},
+	curieFieldSet: {
+		filterName: 'curieFilter',
+		fields: ['curie'],
+	},
 	nameFieldSet: {
 		filterName: 'nameFilter',
 		fields: ['name'],
@@ -1031,6 +1035,7 @@ export const FILTER_CONFIGS = Object.freeze({
 		fieldSets: [FIELD_SETS.literatureCrossReferenceFieldSet],
 	},
 	primaryExternalIdFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.primaryExternalIdFieldSet] },
+	curieFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.curieFieldSet] },
 	modInternalIdFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.modInternalIdFieldSet] },
 	nameFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.nameFieldSet] },
 	namespaceFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.namespaceFieldSet] },
