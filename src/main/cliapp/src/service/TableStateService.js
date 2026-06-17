@@ -6,6 +6,7 @@ const modTableSettings = {
 			rows: 10,
 			multiSortMeta: [],
 			selectedColumnNames: [
+				'Curie',
 				'Subject',
 				'Disease Relation',
 				'NOT',
@@ -62,6 +63,7 @@ const modTableSettings = {
 			rows: 10,
 			multiSortMeta: [],
 			selectedColumnNames: [
+				'Curie',
 				'Subject',
 				'Disease Relation',
 				'NOT',
@@ -111,6 +113,7 @@ const modTableSettings = {
 			first: 0,
 			multiSortMeta: [{ field: 'dateCreated', order: -1 }],
 			selectedColumnNames: [
+				'Curie',
 				'MOD Annotation ID',
 				'Subject',
 				'Asserted Genes',
@@ -171,6 +174,7 @@ const modTableSettings = {
 			rows: 10,
 			multiSortMeta: [],
 			selectedColumnNames: [
+				'Curie',
 				'Obsolete',
 				'Reference',
 				'Subject',
@@ -224,6 +228,7 @@ const modTableSettings = {
 			rows: 10,
 			multiSortMeta: [],
 			selectedColumnNames: [
+				'Curie',
 				'Subject',
 				'Experiments',
 				'Disease Relation',
@@ -261,6 +266,7 @@ const modTableSettings = {
 			rows: 10,
 			multiSortMeta: [],
 			selectedColumnNames: [
+				'Curie',
 				'Subject',
 				'Disease Relation',
 				'Disease',
@@ -304,6 +310,7 @@ const modTableSettings = {
 			rows: 10,
 			multiSortMeta: [],
 			selectedColumnNames: [
+				'Curie',
 				'Internal',
 				'Obsolete',
 				'Subject',
@@ -351,6 +358,7 @@ const modTableSettings = {
 			rows: 10,
 			multiSortMeta: [],
 			selectedColumnNames: [
+				'Curie',
 				'Unique ID',
 				'MOD Annotation ID',
 				'Subject',
