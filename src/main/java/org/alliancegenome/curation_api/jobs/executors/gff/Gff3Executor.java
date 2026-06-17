@@ -3,8 +3,7 @@ package org.alliancegenome.curation_api.jobs.executors.gff;
 import java.util.List;
 
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
-import org.alliancegenome.curation_api.exceptions.ObjectUpdateException.ObjectUpdateExceptionData;
-import org.alliancegenome.curation_api.exceptions.ValidationException;
+import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
 import org.alliancegenome.curation_api.jobs.executors.LoadFileExecutor;
 import org.alliancegenome.curation_api.model.entities.GenomeAssembly;
 import org.alliancegenome.curation_api.model.entities.Species;
@@ -31,7 +30,7 @@ public class Gff3Executor extends LoadFileExecutor {
 	 * failed when the header carries no assembly, when no official assembly is designated
 	 * for the provider's taxon, or when the header assembly does not match it.
 	 */
-	public String loadGenomeAssemblyFromGFF(BulkLoadFileHistory history, List<String> gffHeaderData, BackendBulkDataProvider dataProvider) throws ValidationException {
+	public String loadGenomeAssemblyFromGFF(BulkLoadFileHistory history, List<String> gffHeaderData, BackendBulkDataProvider dataProvider) throws ObjectUpdateException {
 		String headerAssembly = null;
 		for (String header : gffHeaderData) {
 			if (header.startsWith("#!assembly")) {
@@ -41,29 +40,26 @@ public class Gff3Executor extends LoadFileExecutor {
 		}
 
 		if (StringUtils.isBlank(headerAssembly)) {
-			addException(history, new ObjectUpdateExceptionData(null,
+			throw new ObjectUpdateException(null,
 				"GFF header contains no assembly (expected a '#!assembly <id>' line) for "
-				+ dataProvider.name() + " - load aborted", null));
-			return null;
+					+ dataProvider.name() + " - load aborted");
 		}
 
 		Species species = speciesService.getByTaxonCurie(dataProvider.canonicalTaxonCurie);
 		GenomeAssembly officialAssembly = (species != null) ? species.getGenomeAssembly() : null;
 
 		if (officialAssembly == null) {
-			addException(history, new ObjectUpdateExceptionData(null,
+			throw new ObjectUpdateException(null,
 				"No official assembly is designated in the Species table for " + dataProvider.name()
-				+ " (taxon " + dataProvider.canonicalTaxonCurie + "); cannot load GFF with header assembly '"
-				+ headerAssembly + "' - load aborted", null));
-			return null;
+					+ " (taxon " + dataProvider.canonicalTaxonCurie + "); cannot load GFF with header assembly '"
+					+ headerAssembly + "' - load aborted");
 		}
 
 		if (!headerAssembly.equals(officialAssembly.getPrimaryExternalId())) {
-			addException(history, new ObjectUpdateExceptionData(null,
+			throw new ObjectUpdateException(null,
 				"GFF header assembly '" + headerAssembly + "' does not match the official assembly '"
-				+ officialAssembly.getPrimaryExternalId() + "' designated for " + dataProvider.name()
-				+ " in the Species table - load aborted", null));
-			return null;
+					+ officialAssembly.getPrimaryExternalId() + "' designated for " + dataProvider.name()
+					+ " in the Species table - load aborted");
 		}
 
 		return headerAssembly;

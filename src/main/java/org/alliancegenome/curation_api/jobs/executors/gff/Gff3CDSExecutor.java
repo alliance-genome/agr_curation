@@ -20,7 +20,6 @@ import org.alliancegenome.curation_api.services.associations.TranscriptCodingSeq
 import org.alliancegenome.curation_api.services.helpers.Gff3AttributesHelper;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
 import org.apache.commons.lang3.tuple.ImmutablePair;
-
 import com.fasterxml.jackson.databind.MappingIterator;
 import com.fasterxml.jackson.dataformat.csv.CsvMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvParser;
@@ -41,58 +40,58 @@ public class Gff3CDSExecutor extends Gff3Executor {
 	TranscriptCodingSequenceAssociationService transcriptCdsService;
 
 	public void execLoad(BulkLoadFileHistory bulkLoadFileHistory) throws Exception {
+		try {
+			CsvSchema gff3Schema = CsvSchemaBuilder.gff3Schema();
+			CsvMapper csvMapper = new CsvMapper();
+			MappingIterator<Gff3DTO> it = csvMapper.enable(CsvParser.Feature.INSERT_NULLS_FOR_MISSING_COLUMNS).readerFor(Gff3DTO.class).with(gff3Schema).readValues(new GZIPInputStream(new FileInputStream(bulkLoadFileHistory.getBulkLoadFile().getLocalFilePath())));
 
-		CsvSchema gff3Schema = CsvSchemaBuilder.gff3Schema();
-		CsvMapper csvMapper = new CsvMapper();
-		MappingIterator<Gff3DTO> it = csvMapper.enable(CsvParser.Feature.INSERT_NULLS_FOR_MISSING_COLUMNS).readerFor(Gff3DTO.class).with(gff3Schema).readValues(new GZIPInputStream(new FileInputStream(bulkLoadFileHistory.getBulkLoadFile().getLocalFilePath())));
-
-		Log.info("Loading GFF Data into Memory");
-		List<Gff3DTO> gffRawData = it.readAll();
-		Log.info("Finished Loading GFF Data into Memory");
-		List<String> gffHeaderData = new ArrayList<>();
-		List<Gff3DTO> gffFileData = new ArrayList<>();
-		ProcessDisplayHelper ph = new ProcessDisplayHelper();
-		ph.startProcess("GFF CDS header pre-processing", gffRawData.size());
-		for (Gff3DTO gffLine : gffRawData) {
-			if (gffLine.getSeqId().startsWith("#")) {
-				gffHeaderData.add(gffLine.getSeqId());
-			} else {
-				gffFileData.add(gffLine);
+			Log.info("Loading GFF Data into Memory");
+			List<Gff3DTO> gffRawData = it.readAll();
+			Log.info("Finished Loading GFF Data into Memory");
+			List<String> gffHeaderData = new ArrayList<>();
+			List<Gff3DTO> gffFileData = new ArrayList<>();
+			ProcessDisplayHelper ph = new ProcessDisplayHelper();
+			ph.startProcess("GFF CDS header pre-processing", gffRawData.size());
+			for (Gff3DTO gffLine : gffRawData) {
+				if (gffLine.getSeqId().startsWith("#")) {
+					gffHeaderData.add(gffLine.getSeqId());
+				} else {
+					gffFileData.add(gffLine);
+				}
+				ph.progressProcess();
 			}
-			ph.progressProcess();
-		}
-		ph.finishProcess();
-		gffRawData.clear();
+			ph.finishProcess();
+			gffRawData.clear();
 
-		BulkFMSLoad fmsLoad = (BulkFMSLoad) bulkLoadFileHistory.getBulkLoad();
-		BackendBulkDataProvider dataProvider = BackendBulkDataProvider.valueOf(fmsLoad.getFmsDataSubType());
+			BulkFMSLoad fmsLoad = (BulkFMSLoad) bulkLoadFileHistory.getBulkLoad();
+			BackendBulkDataProvider dataProvider = BackendBulkDataProvider.valueOf(fmsLoad.getFmsDataSubType());
 
-		List<ImmutablePair<Gff3DTO, Map<String, String>>> preProcessedCDSGffData = Gff3AttributesHelper.getCDSGffData(gffFileData, dataProvider);
+			List<ImmutablePair<Gff3DTO, Map<String, String>>> preProcessedCDSGffData = Gff3AttributesHelper.getCDSGffData(gffFileData, dataProvider);
 
-		gffFileData.clear();
+			gffFileData.clear();
 
-		List<Long> entityIdsAdded = new ArrayList<>();
-		List<Long> locationIdsAdded = new ArrayList<>();
-		List<Long> associationIdsAdded = new ArrayList<>();
+			List<Long> entityIdsAdded = new ArrayList<>();
+			List<Long> locationIdsAdded = new ArrayList<>();
+			List<Long> associationIdsAdded = new ArrayList<>();
 
-		String assemblyId = loadGenomeAssemblyFromGFF(bulkLoadFileHistory, gffHeaderData, dataProvider);
+			String assemblyId = loadGenomeAssemblyFromGFF(bulkLoadFileHistory, gffHeaderData, dataProvider);
 
-		if (assemblyId != null) {
 			boolean success = runLoad(bulkLoadFileHistory, gffHeaderData, preProcessedCDSGffData, entityIdsAdded, locationIdsAdded, associationIdsAdded, dataProvider, assemblyId);
 			if (success) {
 				runCleanup(cdsLocationService, bulkLoadFileHistory, dataProvider.name(), cdsLocationService.getIdsByDataProvider(dataProvider), locationIdsAdded, "GFF coding sequence genomic location association");
 				runCleanup(transcriptCdsService, bulkLoadFileHistory, dataProvider.name(), transcriptCdsService.getIdsByDataProvider(dataProvider), associationIdsAdded, "GFF transcript coding sequence association");
 				runCleanup(cdsService, bulkLoadFileHistory, dataProvider.name(), cdsService.getIdsByDataProvider(dataProvider), entityIdsAdded, "GFF coding sequence");
 			}
+			bulkLoadFileHistory.finishLoad();
+			updateHistory(bulkLoadFileHistory);
+			updateExceptions(bulkLoadFileHistory);
+		} catch (Exception e) {
+			failLoad(bulkLoadFileHistory, e);
 		}
-		bulkLoadFileHistory.finishLoad();
-		updateHistory(bulkLoadFileHistory);
-		updateExceptions(bulkLoadFileHistory);
-
 	}
 
 	private boolean runLoad(BulkLoadFileHistory history, List<String> gffHeaderData, List<ImmutablePair<Gff3DTO, Map<String, String>>> gffData, List<Long> entityIdsAdded, List<Long> locationIdsAdded, List<Long> associationIdsAdded, BackendBulkDataProvider dataProvider,
-			String assemblyId) {
+							String assemblyId) {
 
 		ProcessDisplayHelper ph = new ProcessDisplayHelper();
 		ph.addDisplayHandler(loadProcessDisplayService);
@@ -131,5 +130,4 @@ public class Gff3CDSExecutor extends Gff3Executor {
 
 		return new LoadHistoryResponce(history);
 	}
-
 }

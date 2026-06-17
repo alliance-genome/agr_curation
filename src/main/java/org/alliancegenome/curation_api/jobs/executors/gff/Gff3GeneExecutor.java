@@ -40,48 +40,48 @@ public class Gff3GeneExecutor extends Gff3Executor {
 	Gff3DtoValidator gff3DtoValidator;
 
 	public void execLoad(BulkLoadFileHistory bulkLoadFileHistory) throws Exception {
-
-		CsvSchema gff3Schema = CsvSchemaBuilder.gff3Schema();
-		CsvMapper csvMapper = new CsvMapper();
-		MappingIterator<Gff3DTO> it = csvMapper.enable(CsvParser.Feature.INSERT_NULLS_FOR_MISSING_COLUMNS).readerFor(Gff3DTO.class).with(gff3Schema).readValues(new GZIPInputStream(new FileInputStream(bulkLoadFileHistory.getBulkLoadFile().getLocalFilePath())));
-		Log.info("Loading GFF Data into Memory");
-		List<Gff3DTO> gffRawData = it.readAll();
-		Log.info("Finished Loading GFF Data into Memory");
-		List<String> gffHeaderData = new ArrayList<>();
-		List<Gff3DTO> gffFileData = new ArrayList<>();
-		ProcessDisplayHelper ph = new ProcessDisplayHelper();
-		ph.startProcess("GFF Gene header pre-processing", gffRawData.size());
-		for (Gff3DTO gffLine : gffRawData) {
-			if (gffLine.getSeqId().startsWith("#")) {
-				gffHeaderData.add(gffLine.getSeqId());
-			} else {
-				gffFileData.add(gffLine);
+		try {
+			CsvSchema gff3Schema = CsvSchemaBuilder.gff3Schema();
+			CsvMapper csvMapper = new CsvMapper();
+			MappingIterator<Gff3DTO> it = csvMapper.enable(CsvParser.Feature.INSERT_NULLS_FOR_MISSING_COLUMNS).readerFor(Gff3DTO.class).with(gff3Schema).readValues(new GZIPInputStream(new FileInputStream(bulkLoadFileHistory.getBulkLoadFile().getLocalFilePath())));
+			Log.info("Loading GFF Data into Memory");
+			List<Gff3DTO> gffRawData = it.readAll();
+			Log.info("Finished Loading GFF Data into Memory");
+			List<String> gffHeaderData = new ArrayList<>();
+			List<Gff3DTO> gffFileData = new ArrayList<>();
+			ProcessDisplayHelper ph = new ProcessDisplayHelper();
+			ph.startProcess("GFF Gene header pre-processing", gffRawData.size());
+			for (Gff3DTO gffLine : gffRawData) {
+				if (gffLine.getSeqId().startsWith("#")) {
+					gffHeaderData.add(gffLine.getSeqId());
+				} else {
+					gffFileData.add(gffLine);
+				}
+				ph.progressProcess();
 			}
-			ph.progressProcess();
-		}
-		ph.finishProcess();
-		gffRawData.clear();
+			ph.finishProcess();
+			gffRawData.clear();
 
-		BulkFMSLoad fmsLoad = (BulkFMSLoad) bulkLoadFileHistory.getBulkLoad();
-		BackendBulkDataProvider dataProvider = BackendBulkDataProvider.valueOf(fmsLoad.getFmsDataSubType());
+			BulkFMSLoad fmsLoad = (BulkFMSLoad) bulkLoadFileHistory.getBulkLoad();
+			BackendBulkDataProvider dataProvider = BackendBulkDataProvider.valueOf(fmsLoad.getFmsDataSubType());
 
-		List<ImmutablePair<Gff3DTO, Map<String, String>>> preProcessedGeneGffData = Gff3AttributesHelper.getGeneGffData(gffFileData, dataProvider);
+			List<ImmutablePair<Gff3DTO, Map<String, String>>> preProcessedGeneGffData = Gff3AttributesHelper.getGeneGffData(gffFileData, dataProvider);
 
-		gffFileData.clear();
+			gffFileData.clear();
 
-		List<Long> locationIdsAdded = new ArrayList<>();
-		String assemblyId = loadGenomeAssemblyFromGFF(bulkLoadFileHistory, gffHeaderData, dataProvider);
+			List<Long> locationIdsAdded = new ArrayList<>();
+			String assemblyId = loadGenomeAssemblyFromGFF(bulkLoadFileHistory, gffHeaderData, dataProvider);
 
-		if (assemblyId != null) {
 			boolean success = runLoad(bulkLoadFileHistory, gffHeaderData, preProcessedGeneGffData, locationIdsAdded, dataProvider, assemblyId);
 			if (success) {
 				runCleanup(geneLocationService, bulkLoadFileHistory, dataProvider.name(), geneLocationService.getIdsByDataProvider(dataProvider), locationIdsAdded, "GFF gene genomic location association");
 			}
+			bulkLoadFileHistory.finishLoad();
+			updateHistory(bulkLoadFileHistory);
+			updateExceptions(bulkLoadFileHistory);
+		} catch (Exception e) {
+			failLoad(bulkLoadFileHistory, e);
 		}
-		bulkLoadFileHistory.finishLoad();
-		updateHistory(bulkLoadFileHistory);
-		updateExceptions(bulkLoadFileHistory);
-
 	}
 
 	private boolean runLoad(BulkLoadFileHistory history, List<String> gffHeaderData, List<ImmutablePair<Gff3DTO, Map<String, String>>> gffData, List<Long> locationIdsAdded, BackendBulkDataProvider dataProvider, String assemblyId) {
