@@ -3,7 +3,7 @@ package org.alliancegenome.curation_api.jobs.executors.gff;
 import java.util.List;
 
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
-import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
+import org.alliancegenome.curation_api.exceptions.ObjectUpdateException.ObjectUpdateExceptionData;
 import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.jobs.executors.LoadFileExecutor;
 import org.alliancegenome.curation_api.model.entities.GenomeAssembly;
@@ -41,9 +41,9 @@ public class Gff3Executor extends LoadFileExecutor {
 		}
 
 		if (StringUtils.isBlank(headerAssembly)) {
-			failLoad(history, new ObjectValidationException(null,
+			addException(history, new ObjectUpdateExceptionData(null,
 				"GFF header contains no assembly (expected a '#!assembly <id>' line) for "
-				+ dataProvider.name() + " - load aborted"));
+				+ dataProvider.name() + " - load aborted", null));
 			return null;
 		}
 
@@ -51,18 +51,18 @@ public class Gff3Executor extends LoadFileExecutor {
 		GenomeAssembly officialAssembly = (species != null) ? species.getGenomeAssembly() : null;
 
 		if (officialAssembly == null) {
-			failLoad(history, new ObjectValidationException(null,
+			addException(history, new ObjectUpdateExceptionData(null,
 				"No official assembly is designated in the Species table for " + dataProvider.name()
 				+ " (taxon " + dataProvider.canonicalTaxonCurie + "); cannot load GFF with header assembly '"
-				+ headerAssembly + "' - load aborted"));
+				+ headerAssembly + "' - load aborted", null));
 			return null;
 		}
 
 		if (!headerAssembly.equals(officialAssembly.getPrimaryExternalId())) {
-			failLoad(history, new ObjectValidationException(null,
+			addException(history, new ObjectUpdateExceptionData(null,
 				"GFF header assembly '" + headerAssembly + "' does not match the official assembly '"
 				+ officialAssembly.getPrimaryExternalId() + "' designated for " + dataProvider.name()
-				+ " in the Species table - load aborted"));
+				+ " in the Species table - load aborted", null));
 			return null;
 		}
 
