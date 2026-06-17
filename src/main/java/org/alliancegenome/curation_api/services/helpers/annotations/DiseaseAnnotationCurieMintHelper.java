@@ -36,6 +36,30 @@ public class DiseaseAnnotationCurieMintHelper {
 	@Inject MatiService matiService;
 	@Inject EntityManager entityManager;
 
+	/**
+	 * SCRUM-6170 — mints and assigns a single AGRKB curie to {@code annotation}
+	 * iff it does not already have one, returning {@code true} if a curie was
+	 * minted.
+	 *
+	 * Called from the disease-annotation create/upsert paths just before the
+	 * entity is persisted, so the curie is written in the caller's transaction
+	 * (no {@code @Transactional} of its own here). Re-loads of an existing
+	 * annotation resolve to the managed entity, which already carries its curie,
+	 * so this is a no-op for them — the AGRKB id stays stable across loads.
+	 *
+	 * Crash safety: MaTI advances its sequence at the POST inside
+	 * {@link MatiService#mintCuries}. If the caller's transaction rolls back
+	 * after this returns, the minted curie is burned (a gap in the AGRKB
+	 * sequence). AGRKB ids are not required to be gapless, so this is acceptable.
+	 */
+	public boolean mintCurieIfAbsent(DiseaseAnnotation annotation) {
+		if (annotation == null || annotation.getCurie() != null) {
+			return false;
+		}
+		annotation.setCurie(matiService.mintCurie(MatiService.SUBDOMAIN_DISEASE_ANNOTATION));
+		return true;
+	}
+
 	public void mintMissingCuries(int batchSize) {
 		if (batchSize <= 0) {
 			throw new IllegalArgumentException("batchSize must be > 0, got " + batchSize);
