@@ -54,7 +54,7 @@ public class Reference extends InformationContentEntity {
 	)
 	private Set<CrossReference> crossReferences;
 
-	@JsonView({CurationView.FieldsOnly.class, CurationView.ForPublic.class})
+	@JsonView({CurationView.FieldsOnly.class, CurationView.ForPublic.class, CurationView.AlleleSummaryDocument.class})
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "shortCitation_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
 	@Column(columnDefinition = "TEXT")
@@ -74,7 +74,7 @@ public class Reference extends InformationContentEntity {
 	 * Display priority: PubMod ID (MOD-prefixed) if present in crossReferences, else the reference's own AGRKB curie.
 	 */
 	@Transient
-	@JsonView({CurationView.ForPublic.class, CurationView.GeneExpressionDocument.class})
+	@JsonView({CurationView.ForPublic.class, CurationView.GeneExpressionDocument.class, CurationView.AlleleSummaryDocument.class})
 	public String getPubModID() {
 		return getReferenceID(false);
 	}
