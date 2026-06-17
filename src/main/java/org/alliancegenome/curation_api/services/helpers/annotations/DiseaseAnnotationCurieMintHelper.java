@@ -51,13 +51,25 @@ public class DiseaseAnnotationCurieMintHelper {
 	 * {@link MatiService#mintCuries}. If the caller's transaction rolls back
 	 * after this returns, the minted curie is burned (a gap in the AGRKB
 	 * sequence). AGRKB ids are not required to be gapless, so this is acceptable.
+	 *
+	 * Availability: minting must never block annotation create/upsert. If MaTI
+	 * is unreachable (or otherwise fails), the annotation is persisted without a
+	 * curie and a {@code NULL} curie is left for the next re-load or the
+	 * SCRUM-6078 backfill to fill in — both target {@code NULL}-curie rows. This
+	 * also keeps the integration tests (which run without a MaTI server) green.
 	 */
 	public boolean mintCurieIfAbsent(DiseaseAnnotation annotation) {
 		if (annotation == null || annotation.getCurie() != null) {
 			return false;
 		}
-		annotation.setCurie(matiService.mintCurie(MatiService.SUBDOMAIN_DISEASE_ANNOTATION));
-		return true;
+		try {
+			annotation.setCurie(matiService.mintCurie(MatiService.SUBDOMAIN_DISEASE_ANNOTATION));
+			return true;
+		} catch (Exception e) {
+			log.warn("Failed to mint AGRKB curie for disease annotation; persisting without one "
+				+ "(curie will be backfilled on the next re-load)", e);
+			return false;
+		}
 	}
 
 	public void mintMissingCuries(int batchSize) {
