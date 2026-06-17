@@ -56,6 +56,14 @@ public class DiseaseAnnotationService extends BaseAnnotationCrudService<DiseaseA
 		curieMintHelper.mintMissingCuries(batchSize);
 	}
 
+	// SCRUM-6170: mint an AGRKB curie for a newly created/loaded disease
+	// annotation that does not yet have one. No-op when the annotation already
+	// has a curie (e.g. an existing annotation resolved during a re-load), so
+	// the AGRKB id stays tied to the annotation across loads.
+	public boolean mintCurieIfAbsent(DiseaseAnnotation annotation) {
+		return curieMintHelper.mintCurieIfAbsent(annotation);
+	}
+
 	public List<Long> getAllReferencedConditionRelationIds() {
 		return getAllReferencedConditionRelationIds(diseaseAnnotationDAO);
 	}

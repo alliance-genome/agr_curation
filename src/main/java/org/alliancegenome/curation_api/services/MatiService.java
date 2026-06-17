@@ -35,7 +35,7 @@ public class MatiService {
 	JsonWebToken jsonWebToken;
 
 	private IdentifierResourceRESTInterface matiApi;
-	
+
 	/**
 	 * Mints {@code n} consecutive curies in the given subdomain. Counts are
 	 * advanced atomically by MaTI; once this method returns successfully, the
@@ -47,12 +47,23 @@ public class MatiService {
 	 * @param n         how many curies to mint; must be &gt; 0
 	 * @return ordered list of {@code n} AGRKB curies
 	 */
-	
+
 	@PostConstruct
 	public void init() {
 		matiApi = RestProxyFactory.createProxy(IdentifierResourceRESTInterface.class, matiUrl);
 	}
-	
+
+	/**
+	 * Mints a single curie in the given subdomain. Convenience wrapper around
+	 * {@link #mintCuries(String, int)} for callers that need exactly one.
+	 *
+	 * @param subdomain MaTI subdomain name (e.g. "disease_annotation")
+	 * @return a single AGRKB curie
+	 */
+	public String mintCurie(String subdomain) {
+		return mintCuries(subdomain, 1).getFirst();
+	}
+
 	public List<String> mintCuries(String subdomain, int n) {
 		if (n <= 0) {
 			return List.of();
