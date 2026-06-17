@@ -48,6 +48,30 @@ public class ResourceDescriptorPageService extends BaseEntityCrudService<Resourc
 		return new ObjectResponse<>(resourceDescriptorPageDAO.persist(dbEntity));
 	}
 
+	/**
+	 * Resolve the ResourceDescriptorPage for a reference-style curie ({@code PREFIX:localId}):
+	 * tries {@code (prefix, "reference")} first, then falls back to {@code (prefix, "default")}.
+	 * Returns null for malformed curies (null, missing colon, empty prefix) and for prefixes
+	 * with no matching resource descriptor. Use this anywhere a CrossReference is constructed
+	 * from a curie and we want the persisted resourceDescriptorPage link.
+	 */
+	public ResourceDescriptorPage resolvePageForReferenceCurie(String curie) {
+		if (curie == null) {
+			return null;
+		}
+		int colon = curie.indexOf(':');
+		if (colon <= 0) {
+			// no colon, or empty prefix (curie starts with ':')
+			return null;
+		}
+		String prefix = curie.substring(0, colon);
+		ResourceDescriptorPage page = getPageForResourceDescriptor(prefix, "reference");
+		if (page == null) {
+			page = getPageForResourceDescriptor(prefix, "default");
+		}
+		return page;
+	}
+
 	public ResourceDescriptorPage getPageForResourceDescriptor(String resourceDescriptorPrefix, String pageName) {
 
 		ResourceDescriptorPage page = null;

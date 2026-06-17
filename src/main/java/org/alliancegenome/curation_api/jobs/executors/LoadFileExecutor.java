@@ -397,14 +397,32 @@ public class LoadFileExecutor {
 		Set<String> errorMessages = new LinkedHashSet<String>();
 		errorMessages.add(e.getMessage());
 		errorMessages.add(e.getLocalizedMessage());
+		// ObjectUpdateException carries its message in its data payload rather than in the
+		// Throwable, so getMessage()/getLocalizedMessage() above are null for it. Pull the
+		// real message(s) from the data so the failure isn't recorded as "null".
+		if (e instanceof ObjectUpdateException oue && oue.getData() != null) {
+			errorMessages.add(oue.getData().getMessage());
+			if (oue.getData().getMessages() != null) {
+				errorMessages.addAll(oue.getData().getMessages());
+			}
+		}
 		Throwable cause = e.getCause();
-		while (e.getCause() != null) {
+		while (cause != null) {
 			errorMessages.add(cause.getMessage());
 			cause = cause.getCause();
 		}
-		bulkLoadFileHistory.setErrorMessage(String.join("|", errorMessages));
+		errorMessages.removeIf(msg -> msg == null);
+		String errorMessage = String.join("|", errorMessages);
+		bulkLoadFileHistory.setErrorMessage(errorMessage);
 		bulkLoadFileHistory.setBulkloadStatus(JobStatus.FAILED);
 		updateHistory(bulkLoadFileHistory);
+
+		// Also surface the failure in the exception list (bulkloadfileexception), not only
+		// as the errorMessage banner.
+		ObjectUpdateExceptionData exceptionData = (e instanceof ObjectUpdateException oueData && oueData.getData() != null)
+			? oueData.getData()
+			: new ObjectUpdateExceptionData(null, errorMessage, e.getStackTrace());
+		addException(bulkLoadFileHistory, exceptionData);
 	}
 
 	protected void failLoadAboveErrorRateCutoff(BulkLoadFileHistory bulkLoadFileHistory) {
