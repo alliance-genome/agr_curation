@@ -36,7 +36,6 @@ import org.alliancegenome.curation_api.model.entities.Reference;
 import org.alliancegenome.curation_api.model.entities.ResourceDescriptor;
 import org.alliancegenome.curation_api.model.entities.ResourceDescriptorPage;
 import org.alliancegenome.curation_api.model.entities.SequenceTargetingReagent;
-import org.alliancegenome.curation_api.model.entities.Species;
 import org.alliancegenome.curation_api.model.entities.Variant;
 import org.alliancegenome.curation_api.model.entities.Vocabulary;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
@@ -836,35 +835,6 @@ public class BaseITCase {
 		return response.getEntity();
 	}
 
-	public Species createSpecies(String displayName, String taxonCurie, String organizationAbbreviation) {
-		Organization dataProvider = getOrganization(organizationAbbreviation);
-
-		HashMap<String, Object> taxonMap = new HashMap<>();
-		taxonMap.put("curie", taxonCurie);
-
-		HashMap<String, Object> dpMap = new HashMap<>();
-		dpMap.put("id", dataProvider.getId());
-
-		HashMap<String, Object> speciesMap = new HashMap<>();
-		speciesMap.put("displayName", displayName);
-		speciesMap.put("fullName", displayName);
-		speciesMap.put("abbreviation", displayName);
-		speciesMap.put("phylogeneticOrder", 0);
-		speciesMap.put("taxon", taxonMap);
-		speciesMap.put("dataProvider", dpMap);
-
-		ObjectResponse<Species> response = RestAssured.given().
-				contentType("application/json").
-				body(speciesMap).
-				when().
-				post("/api/species").
-				then().
-				statusCode(200).
-				extract().body().as(getObjectResponseTypeRefSpecies());
-
-		return response.getEntity();
-	}
-
 	public SOTerm createSoTerm(String curie, String name, Boolean obsolete) {
 		SOTerm term = new SOTerm();
 		term.setCurie(curie);
@@ -1371,11 +1341,6 @@ public class BaseITCase {
 
 	private TypeRef<ObjectResponse<SequenceTargetingReagent>> getObjectResponseTypeRefSequenceTargetingReagent() {
 		return new TypeRef<ObjectResponse<SequenceTargetingReagent>>() {
-		};
-	}
-
-	private TypeRef<ObjectResponse<Species>> getObjectResponseTypeRefSpecies() {
-		return new TypeRef<ObjectResponse<Species>>() {
 		};
 	}
 
