@@ -29,7 +29,7 @@ public class MatiService {
 	public static final String SUBDOMAIN_DISEASE_ANNOTATION = "disease_annotation";
 
 	@ConfigProperty(name = "mati.url")
-	String matiUrl;
+	String matiURL;
 
 	@Inject
 	JsonWebToken jsonWebToken;
@@ -50,7 +50,7 @@ public class MatiService {
 
 	@PostConstruct
 	public void init() {
-		matiApi = RestProxyFactory.createProxy(IdentifierResourceRESTInterface.class, matiUrl);
+		matiApi = RestProxyFactory.createProxy(IdentifierResourceRESTInterface.class, matiURL + "/api");
 	}
 
 	/**
