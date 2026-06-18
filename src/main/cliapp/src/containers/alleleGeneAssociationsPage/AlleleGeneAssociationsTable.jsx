@@ -40,12 +40,17 @@ export const AlleleGeneAssociationsTable = () => {
 			'alleleGeneAssociationObject.geneSymbol.formatText',
 			'alleleGeneAssociationObject.primaryExternalId',
 		],
+		'relation.name': ['alleleAssociationSubject.primaryExternalId'],
+		'alleleAssociationSubject.taxon.name': ['alleleAssociationSubject.primaryExternalId'],
+		'alleleAssociationSubject.dataProvider.abbreviation': ['alleleAssociationSubject.primaryExternalId'],
+		'evidence.curie': ['evidence.primaryCrossReferenceCurie'],
 	};
 
 	const columns = useMemo(
 		() => [
 			{
 				field: 'alleleAssociationSubject.taxon.name',
+				columnKey: 'alleleAssociationSubject.taxon.name',
 				header: 'Taxon',
 				sortable: true,
 				body: (rowData) => <OntologyTermTemplate term={rowData.alleleAssociationSubject?.taxon} />,
@@ -60,6 +65,7 @@ export const AlleleGeneAssociationsTable = () => {
 			},
 			{
 				field: 'relation.name',
+				columnKey: 'relation.name',
 				header: 'Relation',
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.alleleGeneRelationFilterConfig,
@@ -92,7 +98,8 @@ export const AlleleGeneAssociationsTable = () => {
 				filterConfig: FILTER_CONFIGS.evidenceFilterConfig,
 			},
 			{
-				field: 'dataProvider.abbreviation',
+				field: 'alleleAssociationSubject.dataProvider.abbreviation',
+				columnKey: 'alleleAssociationSubject.dataProvider.abbreviation',
 				header: 'Data Provider',
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.alleleGeneDataProviderFilterConfig,
@@ -167,6 +174,7 @@ export const AlleleGeneAssociationsTable = () => {
 		setTotalRecords,
 		toast_topleft,
 		searchService,
+		sortMapping,
 	});
 
 	return (

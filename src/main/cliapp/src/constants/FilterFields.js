@@ -81,9 +81,17 @@ export const FIELD_SETS = Object.freeze({
 		filterName: 'alleleGeneRelationFilter',
 		fields: ['relation.name'],
 	},
+	alleleGeneAggregationFieldSet: {
+		filterName: 'alleleGeneAggregationFilter',
+		fields: ['alleleAssociationSubject.dataProvider.abbreviation', 'relation.name'],
+	},
 	alleleGeneDataProviderFieldSet: {
 		filterName: 'alleleGeneDataProviderFilter',
-		fields: ['dataProvider.abbreviation'],
+		fields: [
+			'alleleAssociationSubject.dataProvider.abbreviation',
+			'alleleAssociationSubject.dataProvider.fullName',
+			'alleleAssociationSubject.dataProvider.shortName',
+		],
 	},
 	alleleSynonymsFieldSet: {
 		filterName: 'alleleSynonymsFilter',
@@ -316,7 +324,7 @@ export const FIELD_SETS = Object.freeze({
 	},
 	evidenceFieldSet: {
 		filterName: 'evidenceFilter',
-		fields: ['evidence.curie', 'evidence.crossReferenceCuries'],
+		fields: ['evidence.curie', 'evidence.primaryCrossReferenceCurie', 'evidence.crossReferenceCuries'],
 	},
 	evidenceCodesFieldSet: {
 		filterName: 'evidenceCodesFilter',
@@ -909,10 +917,17 @@ export const FILTER_CONFIGS = Object.freeze({
 		filterComponentType: 'input',
 		fieldSets: [FIELD_SETS.alleleGeneAssociationObjectFieldSet],
 	},
-	alleleGeneRelationFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.alleleGeneRelationFieldSet] },
+	alleleGeneRelationFilterConfig: {
+		filterComponentType: 'multiselect',
+		fieldSets: [FIELD_SETS.alleleGeneRelationFieldSet],
+		aggregationFieldSet: FIELD_SETS.alleleGeneAggregationFieldSet,
+		useKeywordFields: true,
+	},
 	alleleGeneDataProviderFilterConfig: {
-		filterComponentType: 'input',
+		filterComponentType: 'multiselect',
 		fieldSets: [FIELD_SETS.alleleGeneDataProviderFieldSet],
+		aggregationFieldSet: FIELD_SETS.alleleGeneAggregationFieldSet,
+		useKeywordFields: true,
 	},
 	alleleSynonymsFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.alleleSynonymsFieldSet] },
 	assertedAllelesFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.assertedAllelesFieldSet] },
