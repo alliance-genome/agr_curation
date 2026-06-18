@@ -839,25 +839,27 @@ public class BaseITCase {
 	public Species createSpecies(String displayName, String taxonCurie, String organizationAbbreviation) {
 		Organization dataProvider = getOrganization(organizationAbbreviation);
 
-		String jsonBody = "{\"displayName\":\"" + displayName + "\","
-			+ "\"fullName\":\"" + displayName + "\","
-			+ "\"abbreviation\":\"" + displayName + "\","
-			+ "\"phylogeneticOrder\":0,"
-			+ "\"taxon\":{\"curie\":\"" + taxonCurie + "\"},"
-			+ "\"dataProvider\":{\"id\":" + dataProvider.getId() + "}}";
+		HashMap<String, Object> taxonMap = new HashMap<>();
+		taxonMap.put("curie", taxonCurie);
 
-		io.restassured.response.Response rawResponse = RestAssured.given().
+		HashMap<String, Object> dpMap = new HashMap<>();
+		dpMap.put("id", dataProvider.getId());
+
+		HashMap<String, Object> speciesMap = new HashMap<>();
+		speciesMap.put("displayName", displayName);
+		speciesMap.put("fullName", displayName);
+		speciesMap.put("abbreviation", displayName);
+		speciesMap.put("phylogeneticOrder", 0);
+		speciesMap.put("taxon", taxonMap);
+		speciesMap.put("dataProvider", dpMap);
+
+		ObjectResponse<Species> response = RestAssured.given().
 				contentType("application/json").
-				body(jsonBody).
+				body(speciesMap).
 				when().
-				post("/api/species");
-
-		if (rawResponse.statusCode() != 200) {
-			throw new RuntimeException("createSpecies failed with status " + rawResponse.statusCode()
-				+ ": " + rawResponse.body().asString());
-		}
-
-		ObjectResponse<Species> response = rawResponse.then().
+				post("/api/species").
+				then().
+				statusCode(200).
 				extract().body().as(getObjectResponseTypeRefSpecies());
 
 		return response.getEntity();
