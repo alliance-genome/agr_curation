@@ -837,7 +837,6 @@ public class BaseITCase {
 	}
 
 	public Species createSpecies(String displayName, String taxonCurie, String organizationAbbreviation) {
-		NCBITaxonTerm taxon = getNCBITaxonTerm(taxonCurie);
 		Organization dataProvider = getOrganization(organizationAbbreviation);
 
 		String jsonBody = "{\"displayName\":\"" + displayName + "\","
@@ -847,13 +846,18 @@ public class BaseITCase {
 			+ "\"taxon\":{\"curie\":\"" + taxonCurie + "\"},"
 			+ "\"dataProvider\":{\"id\":" + dataProvider.getId() + "}}";
 
-		ObjectResponse<Species> response = RestAssured.given().
+		io.restassured.response.Response rawResponse = RestAssured.given().
 				contentType("application/json").
 				body(jsonBody).
 				when().
-				post("/api/species").
-				then().
-				statusCode(200).
+				post("/api/species");
+
+		if (rawResponse.statusCode() != 200) {
+			throw new RuntimeException("createSpecies failed with status " + rawResponse.statusCode()
+				+ ": " + rawResponse.body().asString());
+		}
+
+		ObjectResponse<Species> response = rawResponse.then().
 				extract().body().as(getObjectResponseTypeRefSpecies());
 
 		return response.getEntity();
