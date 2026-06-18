@@ -46,7 +46,7 @@ public class GeneExpressionExperimentService extends BaseEntityCrudService<GeneE
 		setSQLDao(geneExpressionExperimentDAO);
 	}
 
-	public List<Long> getExperimentIdsByDataProvider(Species species) {
+	public List<Long> getExperimentIdsBySpecies(Species species) {
 		Map<String, Object> params = new HashMap<>();
 		params.put(EntityFieldConstants.DATA_PROVIDER, species.getDataProvider().getAbbreviation());
 		if (StringUtils.equals(species.getDataProvider().getAbbreviation(), "RGD") || StringUtils.equals(species.getDataProvider().getAbbreviation(), "XB")) {

@@ -42,7 +42,7 @@ public class ConstructGenomicEntityAssociationExecutor extends LoadFileExecutor 
 		List<Long> associationIdsLoaded = new ArrayList<>();
 		List<Long> associationIdsBefore = new ArrayList<>();
 		if (cleanUp) {
-			associationIdsBefore.addAll(constructGenomicEntityAssociationService.getAssociationsByDataProvider(species));
+			associationIdsBefore.addAll(constructGenomicEntityAssociationService.getAssociationsBySpecies(species));
 			associationIdsBefore.removeIf(Objects::isNull);
 		}
 

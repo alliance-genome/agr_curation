@@ -57,10 +57,10 @@ public class GeneExpressionExecutor extends LoadFileExecutor {
 			bulkLoadFileDAO.merge(bulkLoadFileHistory.getBulkLoadFile());
 
 			List<Long> annotationIdsLoaded = new ArrayList<>();
-			List<Long> annotationIdsBefore = geneExpressionAnnotationService.getAnnotationIdsByDataProvider(species);
+			List<Long> annotationIdsBefore = geneExpressionAnnotationService.getAnnotationIdsBySpecies(species);
 
 			List<Long> experimentIdsLoaded = new ArrayList<>();
-			List<Long> experimentIdsBefore = geneExpressionExperimentService.getExperimentIdsByDataProvider(species);
+			List<Long> experimentIdsBefore = geneExpressionExperimentService.getExperimentIdsBySpecies(species);
 
 			boolean success = runLoad(geneExpressionAnnotationService, bulkLoadFileHistory, species, consolidateFMSDTOs(geneExpressionIngestFmsDTO.getData()), annotationIdsLoaded, ANNOTATIONS);
 

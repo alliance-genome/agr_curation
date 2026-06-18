@@ -176,7 +176,7 @@ public class GeneService extends SubmittedObjectCrudService<Gene, GeneDTO, GeneD
 		return null;
 	}
 
-	public List<Long> getIdsByDataProvider(Species species) {
+	public List<Long> getIdsBySpecies(Species species) {
 		Map<String, Object> params = new HashMap<>();
 		params.put(EntityFieldConstants.DATA_PROVIDER, species.getDataProvider().getAbbreviation());
 		if (StringUtils.equals(species.getDataProvider().getAbbreviation(), "RGD")) {

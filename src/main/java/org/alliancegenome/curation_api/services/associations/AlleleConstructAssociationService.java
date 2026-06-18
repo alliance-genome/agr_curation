@@ -76,7 +76,7 @@ public class AlleleConstructAssociationService extends BaseAssociationDTOCrudSer
 		return alleleConstructAssociationDtoValidator.validateAlleleConstructAssociationDTO(dto, species);
 	}
 
-	public List<Long> getAssociationsByDataProvider(Species species) {
+	public List<Long> getAssociationsBySpecies(Species species) {
 		Map<String, Object> params = new HashMap<>();
 		params.put(EntityFieldConstants.ALLELE_ASSOCIATION_SUBJECT_DATA_PROVIDER, species.getDataProvider().getAbbreviation());
 		List<Long> associationIds = alleleConstructAssociationDAO.findIdsByParams(params);

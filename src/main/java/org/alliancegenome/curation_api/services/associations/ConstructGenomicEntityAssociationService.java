@@ -76,7 +76,7 @@ public class ConstructGenomicEntityAssociationService extends BaseAssociationDTO
 		return constructGenomicEntityAssociationDtoValidator.validateConstructGenomicEntityAssociationDTO(dto, species);
 	}
 
-	public List<Long> getAssociationsByDataProvider(Species species) {
+	public List<Long> getAssociationsBySpecies(Species species) {
 		Map<String, Object> params = new HashMap<>();
 		params.put(EntityFieldConstants.CONSTRUCT_ASSOCIATION_SUBJECT_DATA_PROVIDER, species.getDataProvider().getAbbreviation());
 		List<Long> associationIds = constructGenomicEntityAssociationDAO.findIdsByParams(params);

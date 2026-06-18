@@ -58,7 +58,7 @@ public class GenePhenotypeAnnotationService extends BaseAnnotationCrudService<Ge
 		return ret;
 	}
 
-	public List<Long> getAnnotationIdsByDataProvider(Species species) {
-		return phenotypeAnnotationService.getAnnotationIdsByDataProvider(genePhenotypeAnnotationDAO, species);
+	public List<Long> getAnnotationIdsBySpecies(Species species) {
+		return phenotypeAnnotationService.getAnnotationIdsBySpecies(genePhenotypeAnnotationDAO, species);
 	}
 }

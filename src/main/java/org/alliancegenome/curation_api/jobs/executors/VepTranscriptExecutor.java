@@ -38,7 +38,7 @@ public class VepTranscriptExecutor extends LoadFileExecutor {
 			Species species = bulkLoadFileHistory.getBulkLoad().getSpecies();
 
 			List<Long> consequenceIdsLoaded = new ArrayList<>();
-			List<Long> consequenceIdsBefore = predictedVariantConsequenceService.getIdsByDataProvider(species);
+			List<Long> consequenceIdsBefore = predictedVariantConsequenceService.getIdsBySpecies(species);
 			
 			bulkLoadFileHistory.setCount(vepData.size());
 			updateHistory(bulkLoadFileHistory);

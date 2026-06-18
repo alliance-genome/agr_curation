@@ -37,7 +37,7 @@ public class TranscriptCodingSequenceAssociationService extends BaseEntityCrudSe
 	}
 
 
-	public List<Long> getIdsByDataProvider(Species species) {
+	public List<Long> getIdsBySpecies(Species species) {
 		String taxon = needsTaxonFilter(species) ? species.getTaxon().getCurie() : null;
 		return transcriptCodingSequenceAssociationDAO.findIdsByDataProvider(species.getDataProvider().getAbbreviation(), taxon);
 	}

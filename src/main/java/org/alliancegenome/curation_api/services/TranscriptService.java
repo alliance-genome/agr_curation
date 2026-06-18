@@ -35,7 +35,7 @@ public class TranscriptService extends BaseEntityCrudService<Transcript, Transcr
 		setSQLDao(transcriptDAO);
 	}
 
-	public List<Long> getIdsByDataProvider(Species species) {
+	public List<Long> getIdsBySpecies(Species species) {
 		String taxon = needsTaxonFilter(species) ? species.getTaxon().getCurie() : null;
 		return transcriptDAO.findIdsByDataProvider(species.getDataProvider().getAbbreviation(), taxon);
 	}

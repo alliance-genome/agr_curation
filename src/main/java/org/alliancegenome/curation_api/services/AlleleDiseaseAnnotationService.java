@@ -67,8 +67,8 @@ public class AlleleDiseaseAnnotationService extends BaseAnnotationDTOCrudService
 		return ret;
 	}
 
-	public List<Long> getAnnotationIdsByDataProvider(Species species) {
-		return diseaseAnnotationService.getAnnotationIdsByDataProvider(alleleDiseaseAnnotationDAO, species);
+	public List<Long> getAnnotationIdsBySpecies(Species species) {
+		return diseaseAnnotationService.getAnnotationIdsBySpecies(alleleDiseaseAnnotationDAO, species);
 	}
 
 	public List<String> getGeneDiseaseAnnotationList() {

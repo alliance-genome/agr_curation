@@ -68,7 +68,7 @@ public class AllelePhenotypeAnnotationService extends BaseAnnotationCrudService<
 		return ret;
 	}
 
-	public List<Long> getAnnotationIdsByDataProvider(Species species) {
-		return phenotypeAnnotationService.getAnnotationIdsByDataProvider(allelePhenotypeAnnotationDAO, species);
+	public List<Long> getAnnotationIdsBySpecies(Species species) {
+		return phenotypeAnnotationService.getAnnotationIdsBySpecies(allelePhenotypeAnnotationDAO, species);
 	}
 }

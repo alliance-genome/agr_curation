@@ -53,7 +53,7 @@ public class PhenotypeAnnotationExecutor extends LoadFileExecutor {
 			updateHistory(bulkLoadFileHistory);
 
 			Set<Long> annotationIdsLoaded = new HashSet<>();
-			List<Long> annotationIdsBefore = phenotypeAnnotationService.getAnnotationIdsByDataProvider(species);
+			List<Long> annotationIdsBefore = phenotypeAnnotationService.getAnnotationIdsBySpecies(species);
 
 			phenotypeAnnotationService.preloadUniqueIds(species);
 

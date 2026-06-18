@@ -45,7 +45,7 @@ public class AgmDiseaseAnnotationExecutor extends LoadFileExecutor {
 		List<Long> annotationIdsLoaded = new ArrayList<>();
 		List<Long> annotationIdsBefore = new ArrayList<>();
 		if (cleanUp) {
-			annotationIdsBefore.addAll(agmDiseaseAnnotationService.getAnnotationIdsByDataProvider(species));
+			annotationIdsBefore.addAll(agmDiseaseAnnotationService.getAnnotationIdsBySpecies(species));
 			annotationIdsBefore.removeIf(Objects::isNull);
 		}
 

@@ -40,7 +40,7 @@ public class PredictedVariantConsequenceService extends BaseEntityCrudService<Pr
 		setSQLDao(predictedVariantConsequenceDAO);
 	}
 
-	public List<Long> getIdsByDataProvider(Species species) {
+	public List<Long> getIdsBySpecies(Species species) {
 		Map<String, Object> params = new HashMap<>();
 		params.put("variantTranscript." + EntityFieldConstants.DATA_PROVIDER, species.getDataProvider().getAbbreviation());
 		if (StringUtils.equals(species.getDataProvider().getAbbreviation(), "RGD")) {

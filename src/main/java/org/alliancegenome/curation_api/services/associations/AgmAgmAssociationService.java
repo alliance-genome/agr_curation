@@ -59,7 +59,7 @@ public class AgmAgmAssociationService extends BaseAssociationDTOCrudService<AgmA
 		return agmAgmAssociationDtoValidator.validateAgmAgmAssociationDTO(dto, species);
 	}
 
-	public List<Long> getAssociationsByDataProvider(Species species) {
+	public List<Long> getAssociationsBySpecies(Species species) {
 		Map<String, Object> params = new HashMap<>();
 		params.put(EntityFieldConstants.AGM_ASSOCIATION_SUBJECT_DATA_PROVIDER, species.getDataProvider().getAbbreviation());
 		List<Long> associationIds = agmAgmAssociationDAO.findIdsByParams(params);

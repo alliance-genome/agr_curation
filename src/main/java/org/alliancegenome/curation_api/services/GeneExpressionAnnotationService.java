@@ -44,7 +44,7 @@ public class GeneExpressionAnnotationService extends BaseAnnotationCrudService<G
 		crossReferences = new HashMap<>();
 	}
 
-	public List<Long> getAnnotationIdsByDataProvider(Species species) {
+	public List<Long> getAnnotationIdsBySpecies(Species species) {
 		Map<String, Object> params = new HashMap<>();
 		params.put(EntityFieldConstants.DATA_PROVIDER, species.getDataProvider().getAbbreviation());
 		if (StringUtils.equals(species.getDataProvider().getAbbreviation(), "RGD") || StringUtils.equals(species.getDataProvider().getAbbreviation(), "XB")) {

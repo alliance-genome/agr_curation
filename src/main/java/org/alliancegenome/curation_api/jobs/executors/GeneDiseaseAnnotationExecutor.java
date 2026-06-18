@@ -45,7 +45,7 @@ public class GeneDiseaseAnnotationExecutor extends LoadFileExecutor {
 		List<Long> annotationIdsLoaded = new ArrayList<>();
 		List<Long> annotationIdsBefore = new ArrayList<>();
 		if (cleanUp) {
-			annotationIdsBefore.addAll(geneDiseaseAnnotationService.getAnnotationIdsByDataProvider(species));
+			annotationIdsBefore.addAll(geneDiseaseAnnotationService.getAnnotationIdsBySpecies(species));
 			annotationIdsBefore.removeIf(Objects::isNull);
 		}
 

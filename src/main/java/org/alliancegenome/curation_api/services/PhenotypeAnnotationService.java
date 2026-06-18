@@ -81,15 +81,15 @@ public class PhenotypeAnnotationService extends BaseAnnotationCrudService<Phenot
 		return getAllReferencedConditionRelationIds(phenotypeAnnotationDAO);
 	}
 
-	public List<Long> getAnnotationIdsByDataProvider(Species species) {
+	public List<Long> getAnnotationIdsBySpecies(Species species) {
 		List<Long> existingPhenotypeAnnotationIds = new ArrayList<>();
-		existingPhenotypeAnnotationIds.addAll(getAnnotationIdsByDataProvider(agmPhenotypeAnnotationDAO, species));
-		existingPhenotypeAnnotationIds.addAll(getAnnotationIdsByDataProvider(genePhenotypeAnnotationDAO, species));
-		existingPhenotypeAnnotationIds.addAll(getAnnotationIdsByDataProvider(allelePhenotypeAnnotationDAO, species));
+		existingPhenotypeAnnotationIds.addAll(getAnnotationIdsBySpecies(agmPhenotypeAnnotationDAO, species));
+		existingPhenotypeAnnotationIds.addAll(getAnnotationIdsBySpecies(genePhenotypeAnnotationDAO, species));
+		existingPhenotypeAnnotationIds.addAll(getAnnotationIdsBySpecies(allelePhenotypeAnnotationDAO, species));
 		return existingPhenotypeAnnotationIds;
 	}
 
-	protected <D extends BaseSQLDAO<?>> List<Long> getAnnotationIdsByDataProvider(D dao, Species species) {
+	protected <D extends BaseSQLDAO<?>> List<Long> getAnnotationIdsBySpecies(D dao, Species species) {
 		Map<String, Object> params = new HashMap<>();
 		params.put(EntityFieldConstants.DATA_PROVIDER, species.getDataProvider().getAbbreviation());
 

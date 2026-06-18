@@ -55,7 +55,7 @@ public class AgmAlleleAssociationService extends BaseAssociationDTOCrudService<A
 		agmAlleleAssociationDtoValidator.preloadAssociationKeys(keys[0], keys[1]);
 	}
 
-	public List<Long> getAssociationsByDataProvider(Species species) {
+	public List<Long> getAssociationsBySpecies(Species species) {
 		Map<String, Object> params = new HashMap<>();
 		params.put(EntityFieldConstants.AGM_ASSOCIATION_SUBJECT_DATA_PROVIDER, species.getDataProvider().getAbbreviation());
 		List<Long> associationIds = agmAlleleAssociationDAO.findIdsByParams(params);

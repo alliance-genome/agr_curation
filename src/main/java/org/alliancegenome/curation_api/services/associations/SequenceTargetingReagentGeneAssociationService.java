@@ -95,7 +95,7 @@ public class SequenceTargetingReagentGeneAssociationService extends BaseEntityCr
 
 	}
 
-	public List<Long> getIdsByDataProvider(Species species) {
+	public List<Long> getIdsBySpecies(Species species) {
 		Map<String, Object> params = new HashMap<>();
 		params.put(EntityFieldConstants.SQTR_ASSOCIATION_SUBJECT_DATA_PROVIDER, species.getDataProvider().getAbbreviation());
 		List<Long> ids = sequenceTargetingReagentGeneAssociationDAO.findIdsByParams(params);

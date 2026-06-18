@@ -35,7 +35,7 @@ public class ExonGenomicLocationAssociationService extends BaseEntityCrudService
 	}
 
 
-	public List<Long> getIdsByDataProvider(Species species) {
+	public List<Long> getIdsBySpecies(Species species) {
 		String taxon = needsTaxonFilter(species) ? species.getTaxon().getCurie() : null;
 		return exonGenomicLocationAssociationDAO.findIdsByDataProvider(species.getDataProvider().getAbbreviation(), taxon);
 	}

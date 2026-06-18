@@ -83,7 +83,7 @@ public class SequenceTargetingReagentExecutor extends LoadFileExecutor {
 		Map<String, List<Long>> previousIds = new HashMap<>();
 
 		previousIds.put("SQTR", sqtrService.getIdsByDataProvider(species.getDisplayName()));
-		previousIds.put("SQTRGeneAssociation", sqtrGeneAssociationService.getIdsByDataProvider(species));
+		previousIds.put("SQTRGeneAssociation", sqtrGeneAssociationService.getIdsBySpecies(species));
 
 		return previousIds;
 	}

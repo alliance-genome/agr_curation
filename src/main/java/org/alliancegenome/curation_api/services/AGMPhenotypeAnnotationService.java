@@ -68,7 +68,7 @@ public class AGMPhenotypeAnnotationService extends BaseAnnotationCrudService<AGM
 		return ret;
 	}
 
-	public List<Long> getAnnotationIdsByDataProvider(Species species) {
-		return phenotypeAnnotationService.getAnnotationIdsByDataProvider(agmPhenotypeAnnotationDAO, species);
+	public List<Long> getAnnotationIdsBySpecies(Species species) {
+		return phenotypeAnnotationService.getAnnotationIdsBySpecies(agmPhenotypeAnnotationDAO, species);
 	}
 }

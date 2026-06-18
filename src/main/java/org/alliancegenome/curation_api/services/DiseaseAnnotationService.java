@@ -68,7 +68,7 @@ public class DiseaseAnnotationService extends BaseAnnotationCrudService<DiseaseA
 		return getAllReferencedConditionRelationIds(diseaseAnnotationDAO);
 	}
 
-	protected <D extends BaseSQLDAO<?>> List<Long> getAnnotationIdsByDataProvider(D dao, Species species) {
+	protected <D extends BaseSQLDAO<?>> List<Long> getAnnotationIdsBySpecies(D dao, Species species) {
 		Map<String, Object> params = new HashMap<>();
 		params.put(EntityFieldConstants.DATA_PROVIDER, species.getDataProvider().getAbbreviation());
 

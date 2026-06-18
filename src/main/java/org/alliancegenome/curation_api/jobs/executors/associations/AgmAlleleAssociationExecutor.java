@@ -42,7 +42,7 @@ public class AgmAlleleAssociationExecutor extends LoadFileExecutor {
 		List<Long> associationIdsLoaded = new ArrayList<>();
 		List<Long> associationIdsBefore = new ArrayList<>();
 		if (cleanUp) {
-			associationIdsBefore.addAll(agmAlleleAssociationService.getAssociationsByDataProvider(species));
+			associationIdsBefore.addAll(agmAlleleAssociationService.getAssociationsBySpecies(species));
 			associationIdsBefore.removeIf(Objects::isNull);
 		}
 

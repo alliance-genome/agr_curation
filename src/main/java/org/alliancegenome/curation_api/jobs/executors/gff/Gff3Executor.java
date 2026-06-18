@@ -47,7 +47,7 @@ public class Gff3Executor extends LoadFileExecutor {
 		if (officialAssembly == null) {
 			throw new ObjectUpdateException(null,
 				"No official assembly is designated in the Species table for " + species.getDisplayName()
-					+ " (taxon " + species.getTaxon().getCurie() + "); cannot load GFF with header assembly '"
+					+ "; cannot load GFF with header assembly '"
 					+ headerAssembly + "' - load aborted");
 		}
 

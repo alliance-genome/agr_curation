@@ -42,7 +42,7 @@ public class AlleleConstructAssociationExecutor extends LoadFileExecutor {
 		List<Long> associationIdsLoaded = new ArrayList<>();
 		List<Long> associationIdsBefore = new ArrayList<>();
 		if (cleanUp) {
-			associationIdsBefore.addAll(alleleConstructAssociationService.getAssociationsByDataProvider(species));
+			associationIdsBefore.addAll(alleleConstructAssociationService.getAssociationsBySpecies(species));
 			associationIdsBefore.removeIf(Objects::isNull);
 		}
 

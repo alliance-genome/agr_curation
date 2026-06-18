@@ -46,7 +46,7 @@ public class GeneExecutor extends LoadFileExecutor {
 		List<Long> geneIdsLoaded = new ArrayList<>();
 		List<Long> geneIdsBefore = new ArrayList<>();
 		if (cleanUp) {
-			geneIdsBefore.addAll(geneService.getIdsByDataProvider(species));
+			geneIdsBefore.addAll(geneService.getIdsBySpecies(species));
 			log.debug("runLoad: Before: total " + geneIdsBefore.size());
 		}
 

@@ -66,8 +66,8 @@ public class AGMDiseaseAnnotationService extends BaseAnnotationDTOCrudService<AG
 		return ret;
 	}
 
-	public List<Long> getAnnotationIdsByDataProvider(Species species) {
-		return diseaseAnnotationService.getAnnotationIdsByDataProvider(agmDiseaseAnnotationDAO, species);
+	public List<Long> getAnnotationIdsBySpecies(Species species) {
+		return diseaseAnnotationService.getAnnotationIdsBySpecies(agmDiseaseAnnotationDAO, species);
 	}
 
 	public List<String> getGeneDiseaseAnnotationList() {

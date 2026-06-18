@@ -133,7 +133,7 @@ public class ConstructService extends SubmittedObjectCrudService<Construct, Cons
 		return null;
 	}
 
-	public List<Long> getConstructIdsByDataProvider(Species species) {
+	public List<Long> getConstructIdsBySpecies(Species species) {
 		Map<String, Object> params = new HashMap<>();
 		params.put(EntityFieldConstants.DATA_PROVIDER, species.getDataProvider().getAbbreviation());
 		List<Long> constructIds = constructDAO.findIdsByParams(params);
