@@ -842,6 +842,9 @@ public class BaseITCase {
 
 		Species species = new Species();
 		species.setDisplayName(displayName);
+		species.setFullName(displayName);
+		species.setAbbreviation(displayName);
+		species.setPhylogeneticOrder(0);
 		species.setTaxon(taxon);
 		species.setDataProvider(dataProvider);
 
