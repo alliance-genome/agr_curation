@@ -52,7 +52,31 @@ public class Gff3AttributesHelper {
 		
 		return attributes;
 	}
-	
+
+	/**
+	 * SCRUM-6205: returns the MOD curie carried in the GFF {@code Dbxref} attribute, i.e. the
+	 * first comma-separated token whose prefix matches the load's data provider
+	 * ({@code dataProvider.name() + ":"}, e.g. {@code ZFIN:}), or null if there is none.
+	 *
+	 * NCBI RefSeq-shaped GFFs (e.g. the ZFIN GRCz12tu file) keep the real MOD curie only in
+	 * {@code Dbxref=GeneID:192301,ZFIN:ZDB-GENE-020419-25}, while {@code ID}/{@code gene_id}
+	 * hold RefSeq-style values that match nothing in our store. This is a provider-scoped
+	 * fallback only — {@code GeneID:}/{@code GenBank:} tokens are never adopted as the curie.
+	 */
+	public static String getModCurieFromDbxref(Map<String, String> attributes, BackendBulkDataProvider dataProvider) {
+		String dbxref = attributes.get("Dbxref");
+		if (StringUtils.isBlank(dbxref)) {
+			return null;
+		}
+		String prefix = dataProvider.name() + ":";
+		for (String token : dbxref.split(",")) {
+			if (token.startsWith(prefix)) {
+				return token;
+			}
+		}
+		return null;
+	}
+
 	public static List<ImmutablePair<Gff3DTO, Map<String, String>>> getExonGffData(List<Gff3DTO> gffData, BackendBulkDataProvider dataProvider) {
 		List<ImmutablePair<Gff3DTO, Map<String, String>>> retGffData = new ArrayList<>();
 		ProcessDisplayHelper ph = new ProcessDisplayHelper();
