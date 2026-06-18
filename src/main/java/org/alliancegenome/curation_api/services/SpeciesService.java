@@ -2,7 +2,6 @@ package org.alliancegenome.curation_api.services;
 
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Map;
 
 import org.alliancegenome.curation_api.constants.EntityFieldConstants;
 import org.alliancegenome.curation_api.dao.SpeciesDAO;
