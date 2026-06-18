@@ -64,6 +64,12 @@ public class AlleleDocumentController implements AlleleDocumentInterface {
 		if (response.getResults() != null) {
 			TransgenicAlleleDocumentBuilder builder = new TransgenicAlleleDocumentBuilder();
 			for (AlleleConstructAssociation association : response.getResults()) {
+				// Force-initialize the allele's references (size() loads the lazy collection) so they
+				// serialize onto the transgenic document. The deeper graph (crossReferences, resource
+				// descriptor pages) lazy-loads during JSON serialization, which depends on the request-scoped
+				// session staying open - do not make this method @Transactional or those fields will hit a
+				// LazyInitializationException.
+				association.getAlleleAssociationSubject().getReferences().size();
 				TransgenicAlleleDocument doc = builder.buildTransgenicAlleleDocument(association);
 				list.add(doc);
 			}
