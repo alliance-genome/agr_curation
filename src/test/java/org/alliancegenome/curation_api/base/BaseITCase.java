@@ -840,17 +840,16 @@ public class BaseITCase {
 		NCBITaxonTerm taxon = getNCBITaxonTerm(taxonCurie);
 		Organization dataProvider = getOrganization(organizationAbbreviation);
 
-		Species species = new Species();
-		species.setDisplayName(displayName);
-		species.setFullName(displayName);
-		species.setAbbreviation(displayName);
-		species.setPhylogeneticOrder(0);
-		species.setTaxon(taxon);
-		species.setDataProvider(dataProvider);
+		String jsonBody = "{\"displayName\":\"" + displayName + "\","
+			+ "\"fullName\":\"" + displayName + "\","
+			+ "\"abbreviation\":\"" + displayName + "\","
+			+ "\"phylogeneticOrder\":0,"
+			+ "\"taxon\":{\"curie\":\"" + taxonCurie + "\"},"
+			+ "\"dataProvider\":{\"id\":" + dataProvider.getId() + "}}";
 
 		ObjectResponse<Species> response = RestAssured.given().
 				contentType("application/json").
-				body(species).
+				body(jsonBody).
 				when().
 				post("/api/species").
 				then().
