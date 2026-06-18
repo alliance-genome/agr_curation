@@ -10,12 +10,11 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.zip.GZIPInputStream;
 
-import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
+import org.alliancegenome.curation_api.model.entities.Species;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException.ObjectUpdateExceptionData;
 import org.alliancegenome.curation_api.jobs.util.CsvSchemaBuilder;
 import org.alliancegenome.curation_api.model.entities.GeneOntologyAnnotation;
-import org.alliancegenome.curation_api.model.entities.bulkloads.BulkFMSLoad;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
 import org.alliancegenome.curation_api.model.ingest.dto.GeneOntologyAnnotationDTO;
 import org.alliancegenome.curation_api.response.ObjectListResponse;
@@ -43,8 +42,7 @@ public class GeneOntologyAnnotationExecutor extends LoadFileExecutor {
 
 	public void execLoad(BulkLoadFileHistory bulkLoadFileHistory) throws IOException {
 
-		BulkFMSLoad fmsLoad = (BulkFMSLoad) bulkLoadFileHistory.getBulkLoad();
-		BackendBulkDataProvider dataProvider = BackendBulkDataProvider.valueOf(fmsLoad.getFmsDataSubType());
+		Species species = bulkLoadFileHistory.getBulkLoad().getSpecies();
 
 		CsvSchema csvSchema = CsvSchemaBuilder.gafSchema();
 		CsvMapper csvMapper = new CsvMapper();
@@ -63,21 +61,22 @@ public class GeneOntologyAnnotationExecutor extends LoadFileExecutor {
 
 		String name = bulkLoadFileHistory.getBulkLoad().getName();
 
-		List<Long> gafIdsBefore = geneOntologyAnnotationService.getAllGafIdsPerProvider(dataProvider);
+		List<Long> gafIdsBefore = geneOntologyAnnotationService.getAllGafIdsPerProvider(species);
 		Log.info("Prior ID count: " + gafIdsBefore.size());
 		List<Long> gafIdsLoaded = new ArrayList<>();
 
 		Map<String, Set<String>> annotationMap = new HashedMap<>();
 
 		for (GeneOntologyAnnotationDTO annotation : gafData) {
-			if (annotation.getDb().equals(dataProvider.resourceDescriptor)) {
+			String dbMatch = "XB".equals(species.getDataProvider().getAbbreviation()) ? species.getDataProvider().getFullName() : species.getDataProvider().getAbbreviation();
+			if (annotation.getDb().equals(dbMatch)) {
 				String curie = annotation.getDbObjectId();
-				String prefix = dataProvider.curiePrefix;
-				if (dataProvider == BackendBulkDataProvider.HUMAN || dataProvider == BackendBulkDataProvider.MGI) {
+				String prefix = species.getDataProvider().getAbbreviation() + ":";
+				if ("HUMAN".equals(species.getDisplayName()) || "MGI".equals(species.getDisplayName())) {
 					prefix = "";
 				}
-				if (dataProvider == BackendBulkDataProvider.XB) {
-					prefix = dataProvider.resourceDescriptor + ":";
+				if ("XB".equals(species.getDataProvider().getAbbreviation())) {
+					prefix = species.getDataProvider().getFullName() + ":";
 				}
 				
 				annotation.setDbObjectId(prefix + annotation.getDbObjectId());
@@ -91,7 +90,7 @@ public class GeneOntologyAnnotationExecutor extends LoadFileExecutor {
 
 			} else {
 				// System.out.println("DB not found: " + annotation.getDb() + " " +
-				// dataProvider.resourceDescriptor);
+				// dbMatch);
 			}
 		}
 
@@ -126,7 +125,7 @@ public class GeneOntologyAnnotationExecutor extends LoadFileExecutor {
 		}
 		ph.finishProcess();
 
-		runCleanup(geneOntologyAnnotationService, bulkLoadFileHistory, dataProvider.name(), gafIdsBefore, gafIdsLoaded, "GAF Load");
+		runCleanup(geneOntologyAnnotationService, bulkLoadFileHistory, species.getDisplayName(), gafIdsBefore, gafIdsLoaded, "GAF Load");
 		updateHistory(bulkLoadFileHistory);
 		bulkLoadFileHistory.finishLoad();
 		updateHistory(bulkLoadFileHistory);

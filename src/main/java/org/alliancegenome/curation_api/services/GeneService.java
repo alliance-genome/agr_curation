@@ -16,7 +16,7 @@ import org.alliancegenome.curation_api.constants.EntityFieldConstants;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.dao.GeneDAO;
 import org.alliancegenome.curation_api.model.document.es.GeneSearchResultDocument;
-import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
+import org.alliancegenome.curation_api.model.entities.Species;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.exceptions.KnownIssueValidationException;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
@@ -88,8 +88,8 @@ public class GeneService extends SubmittedObjectCrudService<Gene, GeneDTO, GeneD
 	}
 
 	@Override
-	public ObjectResponse<Gene> upsert(GeneDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
-		return geneDtoValidator.validateGeneDTO(dto, dataProvider);
+	public ObjectResponse<Gene> upsert(GeneDTO dto, Species species) throws ValidationException {
+		return geneDtoValidator.validateGeneDTO(dto, species);
 	}
 
 	@Override
@@ -176,11 +176,11 @@ public class GeneService extends SubmittedObjectCrudService<Gene, GeneDTO, GeneD
 		return null;
 	}
 
-	public List<Long> getIdsByDataProvider(BackendBulkDataProvider dataProvider) {
+	public List<Long> getIdsBySpecies(Species species) {
 		Map<String, Object> params = new HashMap<>();
-		params.put(EntityFieldConstants.DATA_PROVIDER, dataProvider.sourceOrganization);
-		if (StringUtils.equals(dataProvider.sourceOrganization, "RGD")) {
-			params.put(EntityFieldConstants.TAXON, dataProvider.canonicalTaxonCurie);
+		params.put(EntityFieldConstants.DATA_PROVIDER, species.getDataProvider().getAbbreviation());
+		if (StringUtils.equals(species.getDataProvider().getAbbreviation(), "RGD")) {
+			params.put(EntityFieldConstants.TAXON, species.getTaxon().getCurie());
 		}
 		List<Long> ids = geneDAO.findIdsByParams(params);
 		ids.removeIf(Objects::isNull);
@@ -189,19 +189,19 @@ public class GeneService extends SubmittedObjectCrudService<Gene, GeneDTO, GeneD
 	}
 
 	@Transactional
-	public void addBiogridXref(String entrezId, BackendBulkDataProvider dataProvider) throws ValidationException {
-		NCBITaxonTerm taxon = ncbiTaxonTermService.getByCurie(dataProvider.canonicalTaxonCurie).getEntity();
+	public void addBiogridXref(String entrezId, Species species) throws ValidationException {
+		NCBITaxonTerm taxon = ncbiTaxonTermService.getByCurie(species.getTaxon().getCurie()).getEntity();
 		if (taxon == null) {
-			throw new ObjectValidationException(entrezId, "dataProvider - canonical taxon: " + ValidationConstants.INVALID_MESSAGE + " (" + dataProvider.canonicalTaxonCurie + " not found)");
+			throw new ObjectValidationException(entrezId, "dataProvider - canonical taxon: " + ValidationConstants.INVALID_MESSAGE + " (" + species.getTaxon().getCurie() + " not found)");
 		}
 
 		Gene allianceGene = null;
 		SearchResponse<Gene> searchResponse = findByField("crossReferences.referencedCurie", "NCBI_Gene:" + entrezId);
 		if (searchResponse != null) {
-			// Need to check that returned gene belongs to MOD corresponding to taxon
 			for (Gene searchResult : searchResponse.getResults()) {
-				String resultDataProviderCoreGenus = BackendBulkDataProvider.getCoreGenus(searchResult.getDataProvider().getAbbreviation());
-				if (taxon.getName().startsWith(resultDataProviderCoreGenus + " ")) {
+				String resultTaxonName = searchResult.getTaxon() != null ? searchResult.getTaxon().getName() : null;
+				String resultCoreGenus = resultTaxonName != null && resultTaxonName.contains(" ") ? resultTaxonName.substring(0, resultTaxonName.indexOf(" ")) : null;
+				if (resultCoreGenus != null && taxon.getName().startsWith(resultCoreGenus + " ")) {
 					allianceGene = searchResult;
 					break;
 				}
@@ -224,19 +224,19 @@ public class GeneService extends SubmittedObjectCrudService<Gene, GeneDTO, GeneD
 	}
 
 	@Transactional
-	public void addGeoXref(String entrezId, BackendBulkDataProvider dataProvider) throws ValidationException {
-		NCBITaxonTerm taxon = ncbiTaxonTermService.getByCurie(dataProvider.canonicalTaxonCurie).getEntity();
+	public void addGeoXref(String entrezId, Species species) throws ValidationException {
+		NCBITaxonTerm taxon = ncbiTaxonTermService.getByCurie(species.getTaxon().getCurie()).getEntity();
 		if (taxon == null) {
-			throw new ObjectValidationException(entrezId, "dataProvider - canonical taxon: " + ValidationConstants.INVALID_MESSAGE + " (" + dataProvider.canonicalTaxonCurie + " not found)");
+			throw new ObjectValidationException(entrezId, "dataProvider - canonical taxon: " + ValidationConstants.INVALID_MESSAGE + " (" + species.getTaxon().getCurie() + " not found)");
 		}
 
 		Gene allianceGene = null;
 		SearchResponse<Gene> searchResponse = findByField("crossReferences.referencedCurie", "NCBI_Gene:" + entrezId);
 		if (searchResponse != null) {
-			// Need to check that returned gene belongs to MOD corresponding to taxon
 			for (Gene searchResult : searchResponse.getResults()) {
-				String resultDataProviderCoreGenus = BackendBulkDataProvider.getCoreGenus(searchResult.getDataProvider().getAbbreviation());
-				if (taxon.getName().startsWith(resultDataProviderCoreGenus + " ")) {
+				String resultTaxonName = searchResult.getTaxon() != null ? searchResult.getTaxon().getName() : null;
+				String resultCoreGenus = resultTaxonName != null && resultTaxonName.contains(" ") ? resultTaxonName.substring(0, resultTaxonName.indexOf(" ")) : null;
+				if (resultCoreGenus != null && taxon.getName().startsWith(resultCoreGenus + " ")) {
 					allianceGene = searchResult;
 					break;
 				}
@@ -259,25 +259,24 @@ public class GeneService extends SubmittedObjectCrudService<Gene, GeneDTO, GeneD
 	}
 
 	@Transactional
-	public void addExpressionAtlasXref(String identifier, BackendBulkDataProvider dataProvider) throws ValidationException {
-		NCBITaxonTerm taxon = ncbiTaxonTermService.getByCurie(dataProvider.canonicalTaxonCurie).getEntity();
+	public void addExpressionAtlasXref(String identifier, Species species) throws ValidationException {
+		NCBITaxonTerm taxon = ncbiTaxonTermService.getByCurie(species.getTaxon().getCurie()).getEntity();
 		if (taxon == null) {
-			throw new ObjectValidationException(identifier, "dataProvider - canonical taxon: " + ValidationConstants.INVALID_MESSAGE + " (" + dataProvider.canonicalTaxonCurie + " not found)");
+			throw new ObjectValidationException(identifier, "dataProvider - canonical taxon: " + ValidationConstants.INVALID_MESSAGE + " (" + species.getTaxon().getCurie() + " not found)");
 		}
 
-		
 		String searchField;
 		String searchValue;
 		String referencedCurie;
 		String resourceDescriptorPrefix;
-		switch (dataProvider) {
-			case FB -> {
+		switch (species.getDisplayName()) {
+			case "FB" -> {
 				searchField = "primaryExternalId";
 				searchValue = "FB:" + identifier;
 				referencedCurie = searchValue;
 				resourceDescriptorPrefix = "FB";
 			}
-			case SGD -> {
+			case "SGD" -> {
 				searchField = "geneSymbol.displayText";
 				searchValue = identifier;
 				referencedCurie = "SGD:" + identifier;
@@ -290,14 +289,14 @@ public class GeneService extends SubmittedObjectCrudService<Gene, GeneDTO, GeneD
 				resourceDescriptorPrefix = "ENSEMBL";
 			}
 		}
-		
+
 		Gene allianceGene = null;
 		SearchResponse<Gene> searchResponse = findByField(searchField, searchValue);
 		if (searchResponse != null) {
-			// Need to check that returned gene belongs to MOD corresponding to taxon
 			for (Gene searchResult : searchResponse.getResults()) {
-				String resultDataProviderCoreGenus = BackendBulkDataProvider.getCoreGenus(searchResult.getDataProvider().getAbbreviation());
-				if (taxon.getName().startsWith(resultDataProviderCoreGenus + " ")) {
+				String resultTaxonName = searchResult.getTaxon() != null ? searchResult.getTaxon().getName() : null;
+				String resultCoreGenus = resultTaxonName != null && resultTaxonName.contains(" ") ? resultTaxonName.substring(0, resultTaxonName.indexOf(" ")) : null;
+				if (resultCoreGenus != null && taxon.getName().startsWith(resultCoreGenus + " ")) {
 					allianceGene = searchResult;
 					break;
 				}

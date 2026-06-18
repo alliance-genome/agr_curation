@@ -6,7 +6,7 @@ import java.util.Map;
 
 import org.alliancegenome.curation_api.constants.EntityFieldConstants;
 import org.alliancegenome.curation_api.dao.GenomeAssemblyDAO;
-import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
+import org.alliancegenome.curation_api.model.entities.Species;
 import org.alliancegenome.curation_api.model.entities.GenomeAssembly;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
@@ -31,20 +31,20 @@ public class GenomeAssemblyService extends BaseEntityCrudService<GenomeAssembly,
 		setSQLDao(genomeAssemblyDAO);
 	}
 	
-	public GenomeAssembly getOrCreate(String assemblyName, BackendBulkDataProvider dataProvider) {
+	public GenomeAssembly getOrCreate(String assemblyName, Species species) {
 
 		if (StringUtils.isNotBlank(assemblyName)) {
 			Map<String, Object> params = new HashMap<>();
 			params.put("primaryExternalId", assemblyName);
-			params.put(EntityFieldConstants.DATA_PROVIDER, dataProvider.sourceOrganization);
-			params.put(EntityFieldConstants.TAXON, dataProvider.canonicalTaxonCurie);
+			params.put(EntityFieldConstants.DATA_PROVIDER, species.getDataProvider().getAbbreviation());
+			params.put(EntityFieldConstants.TAXON, species.getTaxon().getCurie());
 	
 			SearchResponse<GenomeAssembly> resp = genomeAssemblyDAO.findByParams(params);
 			if (resp == null || resp.getSingleResult() == null) {
 				GenomeAssembly assembly = new GenomeAssembly();
 				assembly.setPrimaryExternalId(assemblyName);
-				assembly.setDataProvider(organizationService.getByAbbr(dataProvider.sourceOrganization).getEntity());
-				assembly.setTaxon(ncbiTaxonTermService.getByCurie(dataProvider.canonicalTaxonCurie).getEntity());
+				assembly.setDataProvider(organizationService.getByAbbr(species.getDataProvider().getAbbreviation()).getEntity());
+				assembly.setTaxon(ncbiTaxonTermService.getByCurie(species.getTaxon().getCurie()).getEntity());
 	
 				return genomeAssemblyDAO.persist(assembly);
 			} else {

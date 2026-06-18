@@ -9,7 +9,7 @@ import java.util.Objects;
 
 import org.alliancegenome.curation_api.constants.EntityFieldConstants;
 import org.alliancegenome.curation_api.dao.AlleleDAO;
-import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
+import org.alliancegenome.curation_api.model.entities.Species;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.interfaces.base.BasePopularityInterface;
@@ -71,8 +71,8 @@ public class AlleleService extends SubmittedObjectCrudService<Allele, AlleleDTO,
 	}
 
 	@Override
-	public ObjectResponse<Allele> upsert(AlleleDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
-		return alleleDtoValidator.validateAlleleDTO(dto, dataProvider);
+	public ObjectResponse<Allele> upsert(AlleleDTO dto, Species species) throws ValidationException {
+		return alleleDtoValidator.validateAlleleDTO(dto, species);
 	}
 
 	@Override
@@ -143,9 +143,9 @@ public class AlleleService extends SubmittedObjectCrudService<Allele, AlleleDTO,
 		return null;
 	}
 
-	public List<Long> getIdsByDataProvider(String dataProvider) {
+	public List<Long> getIdsByDataProvider(String species) {
 		Map<String, Object> params = new HashMap<>();
-		params.put(EntityFieldConstants.DATA_PROVIDER, dataProvider);
+		params.put(EntityFieldConstants.DATA_PROVIDER, species);
 		List<Long> ids = alleleDAO.findIdsByParams(params);
 		ids.removeIf(Objects::isNull);
 		return ids;

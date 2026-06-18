@@ -15,7 +15,7 @@ import org.alliancegenome.curation_api.dao.NoteDAO;
 import org.alliancegenome.curation_api.dao.VariantDAO;
 import org.alliancegenome.curation_api.dao.associations.AlleleVariantAssociationDAO;
 import org.alliancegenome.curation_api.dao.associations.CuratedVariantGenomicLocationAssociationDAO;
-import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
+import org.alliancegenome.curation_api.model.entities.Species;
 import org.alliancegenome.curation_api.enums.ChromosomeAccessionEnum;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
 import org.alliancegenome.curation_api.exceptions.ValidationException;
@@ -76,7 +76,7 @@ public class VariantFmsDTOValidator {
 	@Inject ReferenceService referenceService;
 
 	@Transactional
-	public Long validateVariant(VariantFmsDTO dto, List<Long> idsAdded, BackendBulkDataProvider dataProvider) throws ValidationException {
+	public Long validateVariant(VariantFmsDTO dto, List<Long> idsAdded, Species species) throws ValidationException {
 
 		ObjectResponse<Variant> variantResponse = new ObjectResponse<Variant>();
 		Variant variant = new Variant();
@@ -128,8 +128,8 @@ public class VariantFmsDTOValidator {
 
 		variant.setModInternalId(modInternalId);
 		variant.setVariantType(variantType);
-		variant.setDataProvider(organizationService.getByAbbr(dataProvider.name()).getEntity());
-		variant.setTaxon(ncbiTaxonTermService.getByCurie(dataProvider.canonicalTaxonCurie).getEntity());
+		variant.setDataProvider(organizationService.getByAbbr(species.getDisplayName()).getEntity());
+		variant.setTaxon(ncbiTaxonTermService.getByCurie(species.getTaxon().getCurie()).getEntity());
 
 		SOTerm consequence = null;
 		if (StringUtils.isNotBlank(dto.getConsequence())) {

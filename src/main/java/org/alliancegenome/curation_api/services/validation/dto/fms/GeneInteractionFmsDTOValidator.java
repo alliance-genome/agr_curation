@@ -10,7 +10,6 @@ import java.util.Objects;
 
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.dao.CrossReferenceDAO;
-import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.enums.PsiMiTabPrefixEnum;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.Gene;
@@ -206,8 +205,9 @@ public class GeneInteractionFmsDTOValidator extends BaseDTOValidator {
 				if (searchResponse != null) {
 					for (Gene searchResult : searchResponse.getResults()) {
 						if (!searchResult.getObsolete()) {
-							String resultDataProviderCoreGenus = BackendBulkDataProvider.getCoreGenus(searchResult.getDataProvider().getAbbreviation());
-							if (taxon.getName().startsWith(resultDataProviderCoreGenus + " ")) {
+							String resultGeneTaxonGenus = searchResult.getTaxon() != null && searchResult.getTaxon().getName() != null
+								? searchResult.getTaxon().getName().substring(0, searchResult.getTaxon().getName().indexOf(" ")) : null;
+							if (resultGeneTaxonGenus != null && taxon.getName().startsWith(resultGeneTaxonGenus + " ")) {
 								allianceGene = searchResult;
 								break;
 							}

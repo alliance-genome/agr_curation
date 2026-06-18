@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Objects;
 
 import org.alliancegenome.curation_api.dao.AGMDiseaseAnnotationDAO;
-import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
+import org.alliancegenome.curation_api.model.entities.Species;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkManualLoad;
 import org.alliancegenome.curation_api.model.ingest.dto.AGMDiseaseAnnotationDTO;
@@ -29,8 +29,8 @@ public class AgmDiseaseAnnotationExecutor extends LoadFileExecutor {
 	public void execLoad(BulkLoadFileHistory bulkLoadFileHistory, Boolean cleanUp) {
 
 		BulkManualLoad manual = (BulkManualLoad) bulkLoadFileHistory.getBulkLoad();
-		BackendBulkDataProvider dataProvider = manual.getDataProvider();
-		log.info("Running with dataProvider: " + dataProvider.name());
+		Species species = manual.getSpecies();
+		log.info("Running with dataProvider: " + species.getDisplayName());
 
 		IngestDTO ingestDto = readIngestFile(bulkLoadFileHistory, AGMDiseaseAnnotationDTO.class);
 		if (ingestDto == null) {
@@ -45,7 +45,7 @@ public class AgmDiseaseAnnotationExecutor extends LoadFileExecutor {
 		List<Long> annotationIdsLoaded = new ArrayList<>();
 		List<Long> annotationIdsBefore = new ArrayList<>();
 		if (cleanUp) {
-			annotationIdsBefore.addAll(agmDiseaseAnnotationService.getAnnotationIdsByDataProvider(dataProvider));
+			annotationIdsBefore.addAll(agmDiseaseAnnotationService.getAnnotationIdsBySpecies(species));
 			annotationIdsBefore.removeIf(Objects::isNull);
 		}
 
@@ -53,9 +53,9 @@ public class AgmDiseaseAnnotationExecutor extends LoadFileExecutor {
 		bulkLoadFileDAO.merge(bulkLoadFileHistory.getBulkLoadFile());
 
 		String countType = "AGM Disease Annotations";
-		boolean success = runLoad(agmDiseaseAnnotationService, bulkLoadFileHistory, dataProvider, annotations, annotationIdsLoaded, countType);
+		boolean success = runLoad(agmDiseaseAnnotationService, bulkLoadFileHistory, species, annotations, annotationIdsLoaded, countType);
 		if (success && cleanUp) {
-			runCleanup(diseaseAnnotationService, bulkLoadFileHistory, dataProvider.name(), annotationIdsBefore, annotationIdsLoaded, countType);
+			runCleanup(diseaseAnnotationService, bulkLoadFileHistory, species.getDisplayName(), annotationIdsBefore, annotationIdsLoaded, countType);
 		}
 		bulkLoadFileHistory.finishLoad();
 		updateHistory(bulkLoadFileHistory);

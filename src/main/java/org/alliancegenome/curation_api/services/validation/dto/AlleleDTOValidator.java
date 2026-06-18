@@ -8,7 +8,7 @@ import java.util.Map;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.AlleleDAO;
-import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
+import org.alliancegenome.curation_api.model.entities.Species;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
 import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.model.entities.Allele;
@@ -84,7 +84,7 @@ public class AlleleDTOValidator extends GenomicEntityDTOValidator<Allele, Allele
 	ReferenceService referenceService;
 
 	@Transactional
-	public ObjectResponse<Allele> validateAlleleDTO(AlleleDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
+	public ObjectResponse<Allele> validateAlleleDTO(AlleleDTO dto, Species species) throws ValidationException {
 		response = new ObjectResponse<>();
 
 		Allele allele = findDatabaseObject(alleleDAO, "primaryExternalId", "primary_external_id", dto.getPrimaryExternalId());
@@ -92,7 +92,7 @@ public class AlleleDTOValidator extends GenomicEntityDTOValidator<Allele, Allele
 			allele = new Allele();
 		}
 
-		allele = validateGenomicEntityDTO(allele, dto, dataProvider, VocabularyConstants.ALLELE_NOTE_TYPES_VOCABULARY_TERM_SET);
+		allele = validateGenomicEntityDTO(allele, dto, species, VocabularyConstants.ALLELE_NOTE_TYPES_VOCABULARY_TERM_SET);
 
 		VocabularyTerm inCollection = validateTermInVocabulary("in_collection_name", dto.getInCollectionName(), VocabularyConstants.ALLELE_COLLECTION_VOCABULARY);
 		allele.setInCollection(inCollection);

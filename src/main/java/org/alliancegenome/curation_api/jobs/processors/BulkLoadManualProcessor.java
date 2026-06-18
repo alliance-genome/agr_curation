@@ -4,10 +4,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.enums.BackendBulkLoadType;
 import org.alliancegenome.curation_api.enums.JobStatus;
 import org.alliancegenome.curation_api.jobs.events.StartedBulkLoadJobEvent;
+import org.alliancegenome.curation_api.model.entities.Species;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoad;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkManualLoad;
 import org.alliancegenome.curation_api.response.SearchResponse;
@@ -30,7 +30,7 @@ public class BulkLoadManualProcessor extends BulkLoadProcessor {
 		}
 	}
 
-	public void processBulkManualLoadFromDQM(MultipartFormDataInput input, BackendBulkLoadType loadType, BackendBulkDataProvider dataProvider, Boolean cleanUp) { // Triggered by the API
+	public void processBulkManualLoadFromDQM(MultipartFormDataInput input, BackendBulkLoadType loadType, Species species, Boolean cleanUp) {
 		Map<String, List<InputPart>> form = input.getFormDataMap();
 
 		if (form.containsKey(loadType)) {
@@ -42,7 +42,7 @@ public class BulkLoadManualProcessor extends BulkLoadProcessor {
 
 		HashMap<String, Object> params = new HashMap<String, Object>();
 		params.put("backendBulkLoadType", loadType);
-		params.put("dataProvider", dataProvider);
+		params.put("species", species);
 		SearchResponse<BulkManualLoad> load = bulkManualLoadDAO.findByParams(params);
 		if (load != null && load.getResults().size() == 1) {
 			bulkManualLoad = load.getResults().get(0);
@@ -50,7 +50,7 @@ public class BulkLoadManualProcessor extends BulkLoadProcessor {
 
 			startLoad(bulkManualLoad);
 
-			String filePath = fileHelper.saveIncomingFile(input, bulkManualLoad.getBackendBulkLoadType().toString() + "_" + bulkManualLoad.getDataProvider().toString());
+			String filePath = fileHelper.saveIncomingFile(input, bulkManualLoad.getBackendBulkLoadType().toString() + "_" + species.getDisplayName());
 			String localFilePath = fileHelper.compressInputFile(filePath);
 			processFilePath(bulkManualLoad, localFilePath, cleanUp);
 
