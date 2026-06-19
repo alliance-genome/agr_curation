@@ -51,7 +51,9 @@ public class AlleleGeneAssociation extends AlleleGenomicEntityAssociation {
 		"curie", "alleleSymbol.displayText", "alleleSymbol.formatText", "alleleFullName.displayText", "alleleFullName.formatText",
 		"curie_keyword", "alleleSymbol.displayText_keyword", "alleleSymbol.formatText_keyword", "alleleFullName.displayText_keyword",
 		"alleleFullName.formatText_keyword", "primaryExternalId", "primaryExternalId_keyword", "modInternalId", "modInternalId_keyword",
-		"taxon.curie", "taxon.name", "taxon.curie_keyword", "taxon.name_keyword" })
+		"taxon.curie", "taxon.name", "taxon.curie_keyword", "taxon.name_keyword",
+		"dataProvider.abbreviation", "dataProvider.fullName", "dataProvider.shortName",
+		"dataProvider.abbreviation_keyword", "dataProvider.fullName_keyword", "dataProvider.shortName_keyword" })
 	@ManyToOne
 	@JsonView({ CurationView.FieldsOnly.class, CurationView.ForPublic.class })
 	@JsonIgnoreProperties({"alleleGeneAssociations", "alleleVariantAssociations"})
