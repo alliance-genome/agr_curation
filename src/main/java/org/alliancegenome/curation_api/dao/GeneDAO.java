@@ -271,6 +271,39 @@ public class GeneDAO extends BaseSQLDAO<Gene> {
 					FROM allelegeneassociation aga
 					JOIN allele_reference ar ON ar.allele_id = aga.alleleassociationsubject_id
 					WHERE aga.allelegeneassociationobject_id IN :geneIds AND aga.obsolete = false AND aga.internal = false
+
+				-- Route 5: molecular/genetic interactions the gene takes part in (as subject or object); paper = the interaction's evidence reference
+				UNION SELECT gmi.geneassociationsubject_id, ie.evidence_id
+					FROM genemolecularinteraction gmi
+					JOIN genemolecularinteraction_informationcontententity ie ON ie.association_id = gmi.id
+					WHERE gmi.geneassociationsubject_id IN :geneIds AND gmi.obsolete = false AND gmi.internal = false
+				UNION SELECT gmi.genegeneassociationobject_id, ie.evidence_id
+					FROM genemolecularinteraction gmi
+					JOIN genemolecularinteraction_informationcontententity ie ON ie.association_id = gmi.id
+					WHERE gmi.genegeneassociationobject_id IN :geneIds AND gmi.obsolete = false AND gmi.internal = false
+				UNION SELECT ggi.geneassociationsubject_id, ie.evidence_id
+					FROM genegeneticinteraction ggi
+					JOIN genegeneticinteraction_informationcontententity ie ON ie.association_id = ggi.id
+					WHERE ggi.geneassociationsubject_id IN :geneIds AND ggi.obsolete = false AND ggi.internal = false
+				UNION SELECT ggi.genegeneassociationobject_id, ie.evidence_id
+					FROM genegeneticinteraction ggi
+					JOIN genegeneticinteraction_informationcontententity ie ON ie.association_id = ggi.id
+					WHERE ggi.genegeneassociationobject_id IN :geneIds AND ggi.obsolete = false AND ggi.internal = false
+
+				-- Route 6: gene is a construct component; papers via the construct's alleles, the construct's own references, and the gene-construct association's evidence
+				UNION SELECT cga.constructgenomicentityassociationobject_id, ar.references_id
+					FROM constructgenomicentityassociation cga
+					JOIN alleleconstructassociation aca ON aca.alleleconstructassociationobject_id = cga.constructassociationsubject_id
+					JOIN allele_reference ar ON ar.allele_id = aca.alleleassociationsubject_id
+					WHERE cga.constructgenomicentityassociationobject_id IN :geneIds AND cga.obsolete = false AND cga.internal = false AND aca.obsolete = false AND aca.internal = false
+				UNION SELECT cga.constructgenomicentityassociationobject_id, cr.references_id
+					FROM constructgenomicentityassociation cga
+					JOIN construct_reference cr ON cr.construct_id = cga.constructassociationsubject_id
+					WHERE cga.constructgenomicentityassociationobject_id IN :geneIds AND cga.obsolete = false AND cga.internal = false
+				UNION SELECT cga.constructgenomicentityassociationobject_id, ie.evidence_id
+					FROM constructgenomicentityassociation cga
+					JOIN constructgenomicentityassociation_informationcontententity ie ON ie.association_id = cga.id
+					WHERE cga.constructgenomicentityassociationobject_id IN :geneIds AND cga.obsolete = false AND cga.internal = false
 			)
 			SELECT DISTINCT gr.gene_id, ice.curie
 			FROM gene_refs gr
