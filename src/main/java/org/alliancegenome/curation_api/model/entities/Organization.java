@@ -69,4 +69,16 @@ public class Organization extends Agent {
 	@OneToOne
 	@JsonView({CurationView.FieldsOnly.class, CurationView.ForPublic.class})
 	private ResourceDescriptorPage homepageResourceDescriptorPage;
+
+	@JsonView({CurationView.FieldsOnly.class})
+	private Boolean hasInferredGenePhenotypeAnnotations = false;
+
+	@JsonView({CurationView.FieldsOnly.class})
+	private Boolean hasAssertedGenePhenotypeAnnotations = false;
+
+	@JsonView({CurationView.FieldsOnly.class})
+	private Boolean hasInferredAllelePhenotypeAnnotations = false;
+
+	@JsonView({CurationView.FieldsOnly.class})
+	private Boolean hasAssertedAllelePhenotypeAnnotations = false;
 }
