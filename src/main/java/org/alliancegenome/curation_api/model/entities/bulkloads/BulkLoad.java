@@ -8,6 +8,7 @@ import org.alliancegenome.curation_api.enums.BackendBulkLoadType;
 import org.alliancegenome.curation_api.enums.JobStatus;
 import org.alliancegenome.curation_api.enums.OntologyBulkLoadType;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
+import org.alliancegenome.curation_api.model.entities.Species;
 import org.alliancegenome.curation_api.model.entities.base.AuditedObject;
 import org.alliancegenome.curation_api.view.CurationView;
 
@@ -49,7 +50,8 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema;
 		@Index(name = "bulkload_updatedby_index", columnList = "updatedBy_id"),
 		@Index(name = "bulkload_backendBulkLoadType_index", columnList = "backendBulkLoadType"),
 		@Index(name = "bulkload_ontologyType_index", columnList = "ontologyType"),
-		@Index(name = "bulkload_bulkloadStatus_index", columnList = "bulkloadStatus")
+		@Index(name = "bulkload_bulkloadStatus_index", columnList = "bulkloadStatus"),
+		@Index(name = "bulkload_species_index", columnList = "species_id")
 	}
 )
 public abstract class BulkLoad extends AuditedObject {
@@ -91,5 +93,9 @@ public abstract class BulkLoad extends AuditedObject {
 
 	@ManyToMany(mappedBy = "dependencies")
 	private Set<BulkLoad> depends;
-	
+
+	@JsonView({ CurationView.FieldsOnly.class })
+	@ManyToOne
+	private Species species;
+
 }
