@@ -12,7 +12,8 @@ import org.alliancegenome.curation_api.dao.GeneDAO;
 import org.alliancegenome.curation_api.dao.GeneOntologyAnnotationDAO;
 import org.alliancegenome.curation_api.dao.SpeciesDAO;
 import org.alliancegenome.curation_api.dao.ontology.GoTermDAO;
-import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
+import org.alliancegenome.curation_api.model.entities.Species;
+import org.apache.commons.lang3.StringUtils;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.GeneOntologyAnnotation;
 import org.alliancegenome.curation_api.model.entities.Person;
@@ -115,12 +116,12 @@ public class GeneOntologyAnnotationService extends BaseEntityCrudService<GeneOnt
 		return gafDAO.remove(id);
 	}
 
-	public List<Long> getAllGafIdsPerProvider(BackendBulkDataProvider dataProvider) {
+	public List<Long> getAllGafIdsPerProvider(Species species) {
 		Map<String, Object> params = new HashMap<>();
-		if (dataProvider == BackendBulkDataProvider.HUMAN || dataProvider == BackendBulkDataProvider.RGD) {
-			params.put("singleGene.taxon.curie", dataProvider.canonicalTaxonCurie);
+		if (StringUtils.equals(species.getDisplayName(), "HUMAN") || StringUtils.equals(species.getDisplayName(), "RGD")) {
+			params.put("singleGene.taxon.curie", species.getTaxon().getCurie());
 		} else {
-			params.put("singleGene.taxon.species.dataProvider.abbreviation", dataProvider.sourceOrganization);
+			params.put("singleGene.taxon.species.dataProvider.abbreviation", species.getDataProvider().getAbbreviation());
 		}
 		return gafDAO.findIdsByParams(params);
 	}

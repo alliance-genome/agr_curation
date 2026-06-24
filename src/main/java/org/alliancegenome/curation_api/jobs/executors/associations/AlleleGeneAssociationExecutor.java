@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
+import org.alliancegenome.curation_api.model.entities.Species;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.exceptions.KnownIssueValidationException;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
@@ -36,8 +36,8 @@ public class AlleleGeneAssociationExecutor extends LoadFileExecutor {
 	public void execLoad(BulkLoadFileHistory bulkLoadFileHistory, Boolean cleanUp) {
 
 		BulkManualLoad manual = (BulkManualLoad) bulkLoadFileHistory.getBulkLoad();
-		BackendBulkDataProvider dataProvider = manual.getDataProvider();
-		log.info("Running with dataProvider: " + dataProvider.name());
+		Species species = manual.getSpecies();
+		log.info("Running with dataProvider: " + species.getDisplayName());
 
 		IngestDTO ingestDto = readIngestFile(bulkLoadFileHistory, AlleleGeneAssociationDTO.class);
 		if (ingestDto == null) {
@@ -52,7 +52,7 @@ public class AlleleGeneAssociationExecutor extends LoadFileExecutor {
 		List<Long> associationIdsLoaded = new ArrayList<>();
 		List<Long> associationIdsBefore = new ArrayList<>();
 		if (cleanUp) {
-			associationIdsBefore.addAll(alleleGeneAssociationService.getAssociationsByDataProvider(dataProvider));
+			associationIdsBefore.addAll(alleleGeneAssociationService.getAssociationsBySpecies(species));
 			associationIdsBefore.removeIf(Objects::isNull);
 		}
 
@@ -63,16 +63,16 @@ public class AlleleGeneAssociationExecutor extends LoadFileExecutor {
 		bulkLoadFileHistory.setCount(countType, associations.size());
 		updateHistory(bulkLoadFileHistory);
 		
-		boolean success = runLoad(bulkLoadFileHistory, dataProvider, associations, associationIdsLoaded, countType, cleanUp);
+		boolean success = runLoad(bulkLoadFileHistory, species, associations, associationIdsLoaded, countType, cleanUp);
 		if (success && cleanUp) {
-			runCleanup(alleleGeneAssociationService, bulkLoadFileHistory, dataProvider.name(), associationIdsBefore, associationIdsLoaded, countType);
+			runCleanup(alleleGeneAssociationService, bulkLoadFileHistory, species.getDisplayName(), associationIdsBefore, associationIdsLoaded, countType);
 		}
 		bulkLoadFileHistory.finishLoad();
 		updateHistory(bulkLoadFileHistory);
 		updateExceptions(bulkLoadFileHistory);
 	}
 	
-	protected boolean runLoad(BulkLoadFileHistory history, BackendBulkDataProvider dataProvider, List<AlleleGeneAssociationDTO> associationDtos, List<Long> idsAdded, String countType, boolean isFullLoad) {
+	protected boolean runLoad(BulkLoadFileHistory history, Species species, List<AlleleGeneAssociationDTO> associationDtos, List<Long> idsAdded, String countType, boolean isFullLoad) {
 		if (Thread.currentThread().isInterrupted()) {
 			history.setErrorMessage(ApiErrorException.INTERRUPTED_MESSAGE);
 			throw new RuntimeException(ApiErrorException.INTERRUPTED_MESSAGE);
@@ -81,8 +81,8 @@ public class AlleleGeneAssociationExecutor extends LoadFileExecutor {
 		ph.addDisplayHandler(loadProcessDisplayService);
 		if (CollectionUtils.isNotEmpty(associationDtos)) {
 			String loadMessage = "Allele Gene Association update";
-			if (dataProvider != null) {
-				loadMessage = loadMessage + " for " + dataProvider.name();
+			if (species != null) {
+				loadMessage = loadMessage + " for " + species.getDisplayName();
 			}
 			ph.startProcess(loadMessage, associationDtos.size());
 
@@ -92,7 +92,7 @@ public class AlleleGeneAssociationExecutor extends LoadFileExecutor {
 			for (AlleleGeneAssociationDTO dto : associationDtos) {
 				try {
 					
-					ObjectResponse<AlleleGeneAssociation> dbObject = alleleGeneAssociationService.upsert(dto, dataProvider, isAlleleOfAssociationMap, isFullLoad);
+					ObjectResponse<AlleleGeneAssociation> dbObject = alleleGeneAssociationService.upsert(dto, species, isAlleleOfAssociationMap, isFullLoad);
 					history.incrementCompleted(countType);
 					if (idsAdded != null) {
 						idsAdded.add(dbObject.getEntity().getId());

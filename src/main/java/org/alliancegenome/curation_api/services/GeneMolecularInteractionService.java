@@ -3,7 +3,7 @@ package org.alliancegenome.curation_api.services;
 import java.util.List;
 
 import org.alliancegenome.curation_api.dao.GeneMolecularInteractionDAO;
-import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
+import org.alliancegenome.curation_api.model.entities.Species;
 import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.interfaces.crud.BaseUpsertServiceInterface;
 import org.alliancegenome.curation_api.model.entities.GeneMolecularInteraction;
@@ -48,7 +48,7 @@ public class GeneMolecularInteractionService extends BaseEntityCrudService<GeneM
 
 	@Override
 	@Transactional
-	public ObjectResponse<GeneMolecularInteraction> upsert(PsiMiTabDTO dto, BackendBulkDataProvider backendBulkDataProvider) throws ValidationException {
+	public ObjectResponse<GeneMolecularInteraction> upsert(PsiMiTabDTO dto, Species species) throws ValidationException {
 		return geneMolInteractionValidator.validateGeneMolecularInteractionFmsDTO(dto);
 	}
 

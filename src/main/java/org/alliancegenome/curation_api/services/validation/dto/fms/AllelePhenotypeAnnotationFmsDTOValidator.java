@@ -7,7 +7,7 @@ import java.util.Set;
 
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.dao.AllelePhenotypeAnnotationDAO;
-import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
+import org.alliancegenome.curation_api.model.entities.Species;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
 import org.alliancegenome.curation_api.exceptions.ValidationException;
@@ -39,7 +39,7 @@ public class AllelePhenotypeAnnotationFmsDTOValidator extends PhenotypeAnnotatio
 
 	private HashMap<String, Long> genomicEntityIdCache = new HashMap<>();
 
-	public AllelePhenotypeAnnotation validatePrimaryAnnotation(Allele subject, PhenotypeFmsDTO dto, BackendBulkDataProvider dataProvider) throws ObjectValidationException {
+	public AllelePhenotypeAnnotation validatePrimaryAnnotation(Allele subject, PhenotypeFmsDTO dto, Species species) throws ObjectValidationException {
 
 		ObjectResponse<AllelePhenotypeAnnotation> apaResponse = new ObjectResponse<AllelePhenotypeAnnotation>();
 		AllelePhenotypeAnnotation annotation = new AllelePhenotypeAnnotation();
@@ -64,7 +64,7 @@ public class AllelePhenotypeAnnotationFmsDTOValidator extends PhenotypeAnnotatio
 		annotation.setAssertedGenes(null);
 		annotation.setInferredGene(null);
 
-		ObjectResponse<AllelePhenotypeAnnotation> paResponse = validatePhenotypeAnnotation(annotation, dto, dataProvider);
+		ObjectResponse<AllelePhenotypeAnnotation> paResponse = validatePhenotypeAnnotation(annotation, dto, species);
 		apaResponse.addErrorMessages(paResponse.getErrorMessages());
 		annotation = paResponse.getEntity();
 
@@ -76,9 +76,9 @@ public class AllelePhenotypeAnnotationFmsDTOValidator extends PhenotypeAnnotatio
 
 	}
 
-	public List<AllelePhenotypeAnnotation> validateInferredOrAssertedEntities(Allele primaryAnnotationSubject, PhenotypeFmsDTO dto, BackendBulkDataProvider dataProvider, Set<Long> idsAdded) throws ValidationException {
+	public List<AllelePhenotypeAnnotation> validateInferredOrAssertedEntities(Allele primaryAnnotationSubject, PhenotypeFmsDTO dto, Species species, Set<Long> idsAdded) throws ValidationException {
 		// Fast skip: check if the inferred gene is already set using pre-loaded maps only
-		if (existingUniqueIds != null && inferredGeneIds != null && dataProvider.hasInferredGenePhenotypeAnnotations && StringUtils.isNotBlank(dto.getObjectId())) {
+		if (existingUniqueIds != null && inferredGeneIds != null && species.getDataProvider().getHasInferredGenePhenotypeAnnotations() && StringUtils.isNotBlank(dto.getObjectId())) {
 			ObjectResponse<InformationContentEntity> quickRefResponse = validateReference(dto);
 			if (!quickRefResponse.hasErrors()) {
 				String quickRefString = quickRefResponse.getEntity() != null ? quickRefResponse.getEntity().getCurie() : null;
@@ -111,7 +111,7 @@ public class AllelePhenotypeAnnotationFmsDTOValidator extends PhenotypeAnnotatio
 
 			PhenotypeFmsDTO inferredPrimaryDTO = createPrimaryAnnotationDTO(dto, primaryAnnotationSubject.getIdentifier());
 			try {
-				Long createdPrimaryAnnotationId = phenotypeAnnotationService.upsertPrimaryAnnotation(inferredPrimaryDTO, dataProvider);
+				Long createdPrimaryAnnotationId = phenotypeAnnotationService.upsertPrimaryAnnotation(inferredPrimaryDTO, species);
 				idsAdded.add(createdPrimaryAnnotationId);
 				AllelePhenotypeAnnotation primaryAnnotation = allelePhenotypeAnnotationDAO.find(createdPrimaryAnnotationId);
 				primaryAnnotations = List.of(primaryAnnotation);
@@ -131,12 +131,12 @@ public class AllelePhenotypeAnnotationFmsDTOValidator extends PhenotypeAnnotatio
 			} else if (inferredOrAssertedEntity instanceof Gene) {
 				boolean alreadySet = true;
 				for (AllelePhenotypeAnnotation primaryAnnotation : primaryAnnotations) {
-					if (dataProvider.hasInferredGenePhenotypeAnnotations) {
+					if (species.getDataProvider().getHasInferredGenePhenotypeAnnotations()) {
 						if (primaryAnnotation.getInferredGene() == null || !primaryAnnotation.getInferredGene().getId().equals(inferredOrAssertedEntity.getId())) {
 							alreadySet = false;
 							break;
 						}
-					} else if (dataProvider.hasAssertedGenePhenotypeAnnotations) {
+					} else if (species.getDataProvider().getHasAssertedGenePhenotypeAnnotations()) {
 						if (primaryAnnotation.getAssertedGenes() == null || primaryAnnotation.getAssertedGenes().stream().noneMatch(g -> g.getId().equals(inferredOrAssertedEntity.getId()))) {
 							alreadySet = false;
 							break;
@@ -146,11 +146,11 @@ public class AllelePhenotypeAnnotationFmsDTOValidator extends PhenotypeAnnotatio
 				if (alreadySet) {
 					return new ArrayList<>();
 				}
-				Gene inferredOrAssertedGene = xrefHelper.addGenePhenotypeCrossReference(dataProvider, (Gene) inferredOrAssertedEntity);
+				Gene inferredOrAssertedGene = xrefHelper.addGenePhenotypeCrossReference(species, (Gene) inferredOrAssertedEntity);
 				for (AllelePhenotypeAnnotation primaryAnnotation : primaryAnnotations) {
-					if (dataProvider.hasInferredGenePhenotypeAnnotations) {
+					if (species.getDataProvider().getHasInferredGenePhenotypeAnnotations()) {
 						primaryAnnotation.setInferredGene(inferredOrAssertedGene);
-					} else if (dataProvider.hasAssertedGenePhenotypeAnnotations) {
+					} else if (species.getDataProvider().getHasAssertedGenePhenotypeAnnotations()) {
 						List<Gene> assertedGenes = primaryAnnotation.getAssertedGenes();
 						if (assertedGenes == null) {
 							assertedGenes = new ArrayList<>();

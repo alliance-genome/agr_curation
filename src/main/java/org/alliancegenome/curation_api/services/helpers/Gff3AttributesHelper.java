@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.alliancegenome.curation_api.constants.Gff3Constants;
-import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
+import org.alliancegenome.curation_api.model.entities.Species;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.Gff3DTO;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
 import org.apache.commons.collections.CollectionUtils;
@@ -15,7 +15,7 @@ import org.apache.commons.lang3.tuple.ImmutablePair;
 
 public class Gff3AttributesHelper {
 
-	public static Map<String, String> getAttributes(Gff3DTO dto, BackendBulkDataProvider dataProvider) {
+	public static Map<String, String> getAttributes(Gff3DTO dto, Species species) {
 		Map<String, String> attributes = new HashMap<String, String>();
 		if (CollectionUtils.isNotEmpty(dto.getAttributes())) {
 			for (String keyValue : dto.getAttributes()) {
@@ -30,7 +30,7 @@ public class Gff3AttributesHelper {
 		for (String key : List.of("ID", "Parent", "gene_id")) {
 			if (attributes.containsKey(key)) {
 				String idsString = attributes.get(key);
-				if (StringUtils.equals(dataProvider.sourceOrganization, "WB")) {
+				if (StringUtils.equals(species.getDataProvider().getAbbreviation(), "WB")) {
 					// Remove prefixes like Gene: and Transcript: from WB identifiers
 					idsString = idsString.replaceAll("Gene:", "");
 					idsString = idsString.replaceAll("Transcript:", "");
@@ -42,7 +42,7 @@ public class Gff3AttributesHelper {
 				for (String id : idsList) {
 					String[] idParts = id.split(":");
 					if (idParts.length == 1) {
-						id = dataProvider.name() + ':' + idParts[0];
+						id = species.getDisplayName() + ':' + idParts[0];
 					}
 					processedIdList.add(id);
 				}
@@ -52,38 +52,14 @@ public class Gff3AttributesHelper {
 		
 		return attributes;
 	}
-
-	/**
-	 * SCRUM-6205: returns the MOD curie carried in the GFF {@code Dbxref} attribute, i.e. the
-	 * first comma-separated token whose prefix matches the load's data provider
-	 * ({@code dataProvider.name() + ":"}, e.g. {@code ZFIN:}), or null if there is none.
-	 *
-	 * NCBI RefSeq-shaped GFFs (e.g. the ZFIN GRCz12tu file) keep the real MOD curie only in
-	 * {@code Dbxref=GeneID:192301,ZFIN:ZDB-GENE-020419-25}, while {@code ID}/{@code gene_id}
-	 * hold RefSeq-style values that match nothing in our store. This is a provider-scoped
-	 * fallback only — {@code GeneID:}/{@code GenBank:} tokens are never adopted as the curie.
-	 */
-	public static String getModCurieFromDbxref(Map<String, String> attributes, BackendBulkDataProvider dataProvider) {
-		String dbxref = attributes.get("Dbxref");
-		if (StringUtils.isBlank(dbxref)) {
-			return null;
-		}
-		String prefix = dataProvider.name() + ":";
-		for (String token : dbxref.split(",")) {
-			if (token.startsWith(prefix)) {
-				return token;
-			}
-		}
-		return null;
-	}
-
-	public static List<ImmutablePair<Gff3DTO, Map<String, String>>> getExonGffData(List<Gff3DTO> gffData, BackendBulkDataProvider dataProvider) {
+	
+	public static List<ImmutablePair<Gff3DTO, Map<String, String>>> getExonGffData(List<Gff3DTO> gffData, Species species) {
 		List<ImmutablePair<Gff3DTO, Map<String, String>>> retGffData = new ArrayList<>();
 		ProcessDisplayHelper ph = new ProcessDisplayHelper();
-		ph.startProcess("GFF Exon pre-processing for " + dataProvider.name(), gffData.size());
+		ph.startProcess("GFF Exon pre-processing for " + species.getDisplayName(), gffData.size());
 		for (Gff3DTO originalGffEntry : gffData) {
 			if (StringUtils.equals(originalGffEntry.getType(), "exon") || StringUtils.equals(originalGffEntry.getType(), "noncoding_exon")) {
-				processGffEntry(originalGffEntry, retGffData, dataProvider);
+				processGffEntry(originalGffEntry, retGffData, species);
 			}
 			ph.progressProcess();
 		}
@@ -91,13 +67,13 @@ public class Gff3AttributesHelper {
 		return retGffData;
 	}
 	
-	public static List<ImmutablePair<Gff3DTO, Map<String, String>>> getCDSGffData(List<Gff3DTO> gffData, BackendBulkDataProvider dataProvider) {
+	public static List<ImmutablePair<Gff3DTO, Map<String, String>>> getCDSGffData(List<Gff3DTO> gffData, Species species) {
 		List<ImmutablePair<Gff3DTO, Map<String, String>>> retGffData = new ArrayList<>();
 		ProcessDisplayHelper ph = new ProcessDisplayHelper();
-		ph.startProcess("GFF CDS pre-processing for " + dataProvider.name(), gffData.size());
+		ph.startProcess("GFF CDS pre-processing for " + species.getDisplayName(), gffData.size());
 		for (Gff3DTO originalGffEntry : gffData) {
 			if (StringUtils.equals(originalGffEntry.getType(), "CDS")) {
-				processGffEntry(originalGffEntry, retGffData, dataProvider);
+				processGffEntry(originalGffEntry, retGffData, species);
 			}
 			ph.progressProcess();
 		}
@@ -106,16 +82,16 @@ public class Gff3AttributesHelper {
 	}
 	
 	
-	public static List<ImmutablePair<Gff3DTO, Map<String, String>>> getTranscriptGffData(List<Gff3DTO> gffData, BackendBulkDataProvider dataProvider) {
+	public static List<ImmutablePair<Gff3DTO, Map<String, String>>> getTranscriptGffData(List<Gff3DTO> gffData, Species species) {
 		List<ImmutablePair<Gff3DTO, Map<String, String>>> retGffData = new ArrayList<>();
 		ProcessDisplayHelper ph = new ProcessDisplayHelper();
-		ph.startProcess("GFF Transcript pre-processing for " + dataProvider.name(), gffData.size());
+		ph.startProcess("GFF Transcript pre-processing for " + species.getDisplayName(), gffData.size());
 		for (Gff3DTO originalGffEntry : gffData) {
 			if (StringUtils.equals(originalGffEntry.getType(), "lnc_RNA")) {
 				originalGffEntry.setType("lncRNA");
 			}
 			if (Gff3Constants.TRANSCRIPT_TYPES.contains(originalGffEntry.getType())) {
-				processGffEntry(originalGffEntry, retGffData, dataProvider);
+				processGffEntry(originalGffEntry, retGffData, species);
 			}
 			ph.progressProcess();
 		}
@@ -124,13 +100,13 @@ public class Gff3AttributesHelper {
 	}
 	
 	
-	public static List<ImmutablePair<Gff3DTO, Map<String, String>>> getGeneGffData(List<Gff3DTO> gffData, BackendBulkDataProvider dataProvider) {
+	public static List<ImmutablePair<Gff3DTO, Map<String, String>>> getGeneGffData(List<Gff3DTO> gffData, Species species) {
 		List<ImmutablePair<Gff3DTO, Map<String, String>>> retGffData = new ArrayList<>();
 		ProcessDisplayHelper ph = new ProcessDisplayHelper();
-		ph.startProcess("GFF Gene pre-processing for " + dataProvider.name(), gffData.size());
+		ph.startProcess("GFF Gene pre-processing for " + species.getDisplayName(), gffData.size());
 		for (Gff3DTO originalGffEntry : gffData) {
 			if (Gff3Constants.GENE_TYPES.contains(originalGffEntry.getType())) {
-				processGffEntry(originalGffEntry, retGffData, dataProvider);
+				processGffEntry(originalGffEntry, retGffData, species);
 			}
 			ph.progressProcess();
 		}
@@ -138,8 +114,8 @@ public class Gff3AttributesHelper {
 		return retGffData;
 	}
 
-	private static void processGffEntry(Gff3DTO originalGffEntry, List<ImmutablePair<Gff3DTO, Map<String, String>>> retGffData, BackendBulkDataProvider dataProvider) {
-		Map<String, String> attributes = getAttributes(originalGffEntry, dataProvider);
+	private static void processGffEntry(Gff3DTO originalGffEntry, List<ImmutablePair<Gff3DTO, Map<String, String>>> retGffData, Species species) {
+		Map<String, String> attributes = getAttributes(originalGffEntry, species);
 		if (attributes.containsKey("Parent")) {
 			if (attributes.get("Parent").indexOf(",") > -1) {
 				for (String parent : attributes.get("Parent").split(",")) {
@@ -148,7 +124,7 @@ public class Gff3AttributesHelper {
 						attributesCopy.putAll(attributes);
 						String[] parentIdParts = parent.split(":");
 						if (parentIdParts.length == 1) {
-							parent = dataProvider.name() + ':' + parentIdParts[0];
+							parent = species.getDisplayName() + ':' + parentIdParts[0];
 						}
 						attributesCopy.put("Parent", parent);
 						retGffData.add(new ImmutablePair<>(originalGffEntry, attributesCopy));

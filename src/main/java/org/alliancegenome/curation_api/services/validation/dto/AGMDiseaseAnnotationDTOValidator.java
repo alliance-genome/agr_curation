@@ -5,7 +5,7 @@ import java.util.List;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.AGMDiseaseAnnotationDAO;
-import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
+import org.alliancegenome.curation_api.model.entities.Species;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
 import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.model.entities.AGMDiseaseAnnotation;
@@ -39,7 +39,7 @@ public class AGMDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOValida
 	@Inject
 	AlleleService alleleService;
 
-	public ObjectResponse<AGMDiseaseAnnotation> validateAGMDiseaseAnnotationDTO(AGMDiseaseAnnotationDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
+	public ObjectResponse<AGMDiseaseAnnotation> validateAGMDiseaseAnnotationDTO(AGMDiseaseAnnotationDTO dto, Species species) throws ValidationException {
 		response = new ObjectResponse<AGMDiseaseAnnotation>();
 		
 		AGMDiseaseAnnotation annotation = new AGMDiseaseAnnotation();
@@ -58,10 +58,10 @@ public class AGMDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOValida
 			annotation.setDiseaseAnnotationSubject(agm);
 			UniqueIdentifierHelper.setObsoleteAndInternal(dto, annotation);
 
-			if (dataProvider != null
-					&& (dataProvider.name().equals("RGD") || dataProvider.name().equals("HUMAN"))
-					&& (!agm.getTaxon().getCurie().equals(dataProvider.canonicalTaxonCurie) || !dataProvider.sourceOrganization.equals(agm.getDataProvider().getAbbreviation()))) {
-				response.addErrorMessage("agm_identifier", ValidationConstants.INVALID_MESSAGE + " (" + dto.getAgmIdentifier() + ") for " + dataProvider.name() + " load");
+			if (species != null
+					&& (species.getDisplayName().equals("RGD") || species.getDisplayName().equals("HUMAN"))
+					&& (!agm.getTaxon().getCurie().equals(species.getTaxon().getCurie()) || !species.getDataProvider().getAbbreviation().equals(agm.getDataProvider().getAbbreviation()))) {
+				response.addErrorMessage("agm_identifier", ValidationConstants.INVALID_MESSAGE + " (" + dto.getAgmIdentifier() + ") for " + species.getDisplayName() + " load");
 			}
 		}
 		annotation.setEvidenceItem(reference);

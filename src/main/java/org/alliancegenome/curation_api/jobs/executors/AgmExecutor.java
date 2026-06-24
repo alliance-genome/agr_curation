@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.alliancegenome.curation_api.dao.AffectedGenomicModelDAO;
-import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
+import org.alliancegenome.curation_api.model.entities.Species;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkManualLoad;
 import org.alliancegenome.curation_api.model.ingest.dto.AffectedGenomicModelDTO;
@@ -29,7 +29,7 @@ public class AgmExecutor extends LoadFileExecutor {
 	public void execLoad(BulkLoadFileHistory bulkLoadFileHistory, Boolean cleanUp) {
 
 		BulkManualLoad manual = (BulkManualLoad) bulkLoadFileHistory.getBulkLoad();
-		Log.info("Running with: " + manual.getDataProvider().name());
+		Log.info("Running with: " + manual.getSpecies().getDisplayName());
 
 		IngestDTO ingestDto = readIngestFile(bulkLoadFileHistory, AffectedGenomicModelDTO.class);
 		if (ingestDto == null) {
@@ -41,12 +41,12 @@ public class AgmExecutor extends LoadFileExecutor {
 			return;
 		}
 
-		BackendBulkDataProvider dataProvider = manual.getDataProvider();
+		Species species = manual.getSpecies();
 
 		List<Long> agmIdsLoaded = new ArrayList<>();
 		List<Long> agmIdsBefore = new ArrayList<>();
 		if (cleanUp) {
-			agmIdsBefore.addAll(affectedGenomicModelService.getIdsByDataProvider(dataProvider.name()));
+			agmIdsBefore.addAll(affectedGenomicModelService.getIdsByDataProvider(species.getDisplayName()));
 			Log.debug("runLoad: Before: total " + agmIdsBefore.size());
 		}
 
@@ -56,9 +56,9 @@ public class AgmExecutor extends LoadFileExecutor {
 		bulkLoadFileHistory.setCount(agms.size());
 		updateHistory(bulkLoadFileHistory);
 
-		boolean success = runLoad(affectedGenomicModelService, bulkLoadFileHistory, dataProvider, agms, agmIdsLoaded);
+		boolean success = runLoad(affectedGenomicModelService, bulkLoadFileHistory, species, agms, agmIdsLoaded);
 		if (success && cleanUp) {
-			runCleanup(affectedGenomicModelService, bulkLoadFileHistory, dataProvider.name(), agmIdsBefore, agmIdsLoaded, "AGM");
+			runCleanup(affectedGenomicModelService, bulkLoadFileHistory, species.getDisplayName(), agmIdsBefore, agmIdsLoaded, "AGM");
 		}
 		bulkLoadFileHistory.finishLoad();
 		updateHistory(bulkLoadFileHistory);
