@@ -23,6 +23,7 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmb
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexingDependency;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.KeywordField;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonView;
 
 import jakarta.persistence.ElementCollection;
@@ -63,17 +64,17 @@ public class Species extends AuditedObject {
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "fullName_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({ CurationView.FieldsOnly.class, CurationView.GeneSummaryDocument.class, CurationView.GeneCacheDocument.class, CurationView.AlleleSummaryDocument.class, CurationView.ForPublic.class, CurationView.GeneExpressionDocument.class, CurationView.TransgenicAllelesDocument.class })
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.GeneSummaryDocument.class, CurationView.GeneCacheDocument.class, CurationView.AlleleSummaryDocument.class, CurationView.VariantSummaryDocument.class, CurationView.ForPublic.class, CurationView.GeneExpressionDocument.class, CurationView.TransgenicAllelesDocument.class, CurationView.GeneToGeneOrthologyDocument.class })
 	private String fullName;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "abbreviation_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({ CurationView.FieldsOnly.class, CurationView.GeneSummaryDocument.class, CurationView.GeneCacheDocument.class, CurationView.AlleleSummaryDocument.class, CurationView.ForPublic.class, CurationView.GeneExpressionDocument.class, CurationView.TransgenicAllelesDocument.class })
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.GeneSummaryDocument.class, CurationView.GeneCacheDocument.class, CurationView.AlleleSummaryDocument.class, CurationView.ForPublic.class, CurationView.GeneExpressionDocument.class, CurationView.TransgenicAllelesDocument.class, CurationView.GeneToGeneOrthologyDocument.class })
 	private String abbreviation;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "displayName_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({ CurationView.FieldsOnly.class, CurationView.GeneSummaryDocument.class, CurationView.GeneCacheDocument.class, CurationView.AlleleSummaryDocument.class, CurationView.ForPublic.class, CurationView.GeneExpressionDocument.class, CurationView.TransgenicAllelesDocument.class })
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.GeneSummaryDocument.class, CurationView.GeneCacheDocument.class, CurationView.AlleleSummaryDocument.class, CurationView.ForPublic.class, CurationView.GeneExpressionDocument.class, CurationView.TransgenicAllelesDocument.class, CurationView.GeneToGeneOrthologyDocument.class })
 	private String displayName;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
@@ -108,7 +109,9 @@ public class Species extends AuditedObject {
 	@IndexedEmbedded(includePaths = {"curie", "curie_keyword", "primaryExternalId", "primaryExternalId_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@Fetch(FetchMode.JOIN)
-	@JsonView({ CurationView.FieldsOnly.class, CurationView.GeneSummaryDocument.class, CurationView.AlleleSummaryDocument.class })
+	@Fetch(FetchMode.SELECT)
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.GeneSummaryDocument.class, CurationView.AlleleSummaryDocument.class, CurationView.VariantSummaryDocument.class })
+	// Break the species -> genomeAssembly -> taxon -> species cycle during JSON serialization: GenomeAssembly inherits taxon from BiologicalEntity, and BiologicalEntity.taxon is exposed in the same views as this field, so without this annotation Jackson loops until the stack overflows.
+	@JsonIgnoreProperties("taxon")
 	private GenomeAssembly genomeAssembly;
 }

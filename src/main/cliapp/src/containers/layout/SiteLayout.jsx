@@ -245,6 +245,7 @@ export const SiteLayout = (props) => {
 					items: [
 						{ label: 'Affected Genomic Models', icon: 'pi pi-fw pi-home', to: '/agms' },
 						{ label: 'Alleles', icon: 'pi pi-fw pi-home', to: '/alleles' },
+						{ label: 'Allele Gene Associations', icon: 'pi pi-fw pi-home', to: '/alleleGeneAssociations' },
 						{ label: 'Constructs', icon: 'pi pi-fw pi-home', to: '/constructs' },
 						{ label: 'Disease Annotations', icon: 'pi pi-fw pi-home', to: '/diseaseAnnotations' },
 						{ label: 'Experimental Conditions', icon: 'pi pi-fw pi-home', to: '/experimentalConditions' },
@@ -420,7 +421,7 @@ export const SiteLayout = (props) => {
 						{
 							label: 'MaTI Swagger UI',
 							icon: 'pi pi-fw pi-home',
-							url: apiVersion?.matiHost + '/q/swagger-ui/',
+							url: apiVersion?.matiHost + '/swagger-ui',
 							target: '_blank',
 						},
 						{ label: 'Site Health', icon: 'pi pi-fw pi-plus', to: '/healthpage' },

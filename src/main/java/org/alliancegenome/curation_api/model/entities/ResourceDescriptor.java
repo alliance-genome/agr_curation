@@ -64,7 +64,7 @@ public class ResourceDescriptor extends AuditedObject {
 	@ElementCollection
 	@JoinTable(indexes = @Index(columnList = "resourcedescriptor_id"))
 	@Fetch(FetchMode.JOIN)
-	@JsonView({ CurationView.ResourceDescriptorView.class, CurationView.FieldsAndLists.class })
+	@JsonView({ CurationView.ResourceDescriptorView.class, CurationView.FieldsAndLists.class, CurationView.ForPublic.class })
 	@Column(columnDefinition = "TEXT")
 	private List<String> synonyms;
 

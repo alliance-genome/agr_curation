@@ -212,6 +212,117 @@ public class GeneDAO extends BaseSQLDAO<Gene> {
 			.getResultList();
 	}
 
+	/**
+	 * Collects the comprehensive set of AGRKB reference curies (papers) associated with each gene,
+	 * unioned across every route by which a gene is tied to a Reference, for the gene_summary doc.
+	 * The reference AGRKB curie lives on informationcontententity.curie (Reference extends
+	 * InformationContentEntity, not BiologicalEntity), so join informationcontententity for the curie.
+	 */
+	public Map<Long, Set<String>> getReferencesByGeneIds(List<Long> geneIds) {
+		Map<Long, Set<String>> referencesByGene = new HashMap<>();
+		if (CollectionUtils.isEmpty(geneIds)) {
+			return referencesByGene;
+		}
+
+		String referencesQueryString = """
+			WITH gene_refs AS (
+
+				-- Route 1: gene is the direct annotation subject (disease/phenotype/expression); paper = the annotation's evidence reference
+				SELECT gda.diseaseannotationsubject_id AS gene_id, da.evidenceitem_id AS ref_id
+					FROM genediseaseannotation gda JOIN diseaseannotation da ON da.id = gda.id
+					WHERE gda.diseaseannotationsubject_id IN :geneIds AND da.evidenceitem_id IS NOT NULL AND da.obsolete = false AND da.internal = false
+				UNION SELECT gpa.phenotypeannotationsubject_id, pa.evidenceitem_id
+					FROM genephenotypeannotation gpa JOIN phenotypeannotation pa ON pa.id = gpa.id
+					WHERE gpa.phenotypeannotationsubject_id IN :geneIds AND pa.evidenceitem_id IS NOT NULL AND pa.obsolete = false AND pa.internal = false
+				UNION SELECT gea.expressionannotationsubject_id, gea.evidenceitem_id
+					FROM geneexpressionannotation gea
+					WHERE gea.expressionannotationsubject_id IN :geneIds AND gea.evidenceitem_id IS NOT NULL AND gea.obsolete = false AND gea.internal = false
+
+				-- Route 2: an allele's annotation rolled up to its gene (inferred or asserted gene); paper = the annotation's evidence reference
+				UNION SELECT apa.inferredgene_id, pa.evidenceitem_id
+					FROM allelephenotypeannotation apa JOIN phenotypeannotation pa ON pa.id = apa.id
+					WHERE apa.inferredgene_id IN :geneIds AND pa.evidenceitem_id IS NOT NULL AND pa.obsolete = false AND pa.internal = false
+				UNION SELECT apag.assertedgenes_id, pa.evidenceitem_id
+					FROM allelephenotypeannotation_gene apag JOIN phenotypeannotation pa ON pa.id = apag.allelephenotypeannotation_id
+					WHERE apag.assertedgenes_id IN :geneIds AND pa.evidenceitem_id IS NOT NULL AND pa.obsolete = false AND pa.internal = false
+				UNION SELECT ada.inferredgene_id, da.evidenceitem_id
+					FROM allelediseaseannotation ada JOIN diseaseannotation da ON da.id = ada.id
+					WHERE ada.inferredgene_id IN :geneIds AND da.evidenceitem_id IS NOT NULL AND da.obsolete = false AND da.internal = false
+				UNION SELECT adag.assertedgenes_id, da.evidenceitem_id
+					FROM allelediseaseannotation_gene adag JOIN diseaseannotation da ON da.id = adag.allelediseaseannotation_id
+					WHERE adag.assertedgenes_id IN :geneIds AND da.evidenceitem_id IS NOT NULL AND da.obsolete = false AND da.internal = false
+
+				-- Route 3: an AGM (model) annotation rolled up to gene (inferred or asserted gene); paper = the annotation's evidence reference
+				UNION SELECT apa.inferredgene_id, pa.evidenceitem_id
+					FROM agmphenotypeannotation apa JOIN phenotypeannotation pa ON pa.id = apa.id
+					WHERE apa.inferredgene_id IN :geneIds AND pa.evidenceitem_id IS NOT NULL AND pa.obsolete = false AND pa.internal = false
+				UNION SELECT apag.assertedgenes_id, pa.evidenceitem_id
+					FROM agmphenotypeannotation_gene apag JOIN phenotypeannotation pa ON pa.id = apag.agmphenotypeannotation_id
+					WHERE apag.assertedgenes_id IN :geneIds AND pa.evidenceitem_id IS NOT NULL AND pa.obsolete = false AND pa.internal = false
+				UNION SELECT ada.inferredgene_id, da.evidenceitem_id
+					FROM agmdiseaseannotation ada JOIN diseaseannotation da ON da.id = ada.id
+					WHERE ada.inferredgene_id IN :geneIds AND da.evidenceitem_id IS NOT NULL AND da.obsolete = false AND da.internal = false
+				UNION SELECT adag.assertedgenes_id, da.evidenceitem_id
+					FROM agmdiseaseannotation_gene adag JOIN diseaseannotation da ON da.id = adag.agmdiseaseannotation_id
+					WHERE adag.assertedgenes_id IN :geneIds AND da.evidenceitem_id IS NOT NULL AND da.obsolete = false AND da.internal = false
+
+				-- Route 4: papers linked directly to the gene's alleles (allele_reference), rolled up through allelegeneassociation
+				UNION SELECT aga.allelegeneassociationobject_id, ar.references_id
+					FROM allelegeneassociation aga
+					JOIN allele_reference ar ON ar.allele_id = aga.alleleassociationsubject_id
+					WHERE aga.allelegeneassociationobject_id IN :geneIds AND aga.obsolete = false AND aga.internal = false
+
+				-- Route 5: molecular/genetic interactions the gene takes part in (as subject or object); paper = the interaction's evidence reference
+				UNION SELECT gmi.geneassociationsubject_id, ie.evidence_id
+					FROM genemolecularinteraction gmi
+					JOIN genemolecularinteraction_informationcontententity ie ON ie.association_id = gmi.id
+					WHERE gmi.geneassociationsubject_id IN :geneIds AND gmi.obsolete = false AND gmi.internal = false
+				UNION SELECT gmi.genegeneassociationobject_id, ie.evidence_id
+					FROM genemolecularinteraction gmi
+					JOIN genemolecularinteraction_informationcontententity ie ON ie.association_id = gmi.id
+					WHERE gmi.genegeneassociationobject_id IN :geneIds AND gmi.obsolete = false AND gmi.internal = false
+				UNION SELECT ggi.geneassociationsubject_id, ie.evidence_id
+					FROM genegeneticinteraction ggi
+					JOIN genegeneticinteraction_informationcontententity ie ON ie.association_id = ggi.id
+					WHERE ggi.geneassociationsubject_id IN :geneIds AND ggi.obsolete = false AND ggi.internal = false
+				UNION SELECT ggi.genegeneassociationobject_id, ie.evidence_id
+					FROM genegeneticinteraction ggi
+					JOIN genegeneticinteraction_informationcontententity ie ON ie.association_id = ggi.id
+					WHERE ggi.genegeneassociationobject_id IN :geneIds AND ggi.obsolete = false AND ggi.internal = false
+
+				-- Route 6: gene is a construct component; papers via the construct's alleles, the construct's own references, and the gene-construct association's evidence
+				UNION SELECT cga.constructgenomicentityassociationobject_id, ar.references_id
+					FROM constructgenomicentityassociation cga
+					JOIN alleleconstructassociation aca ON aca.alleleconstructassociationobject_id = cga.constructassociationsubject_id
+					JOIN allele_reference ar ON ar.allele_id = aca.alleleassociationsubject_id
+					WHERE cga.constructgenomicentityassociationobject_id IN :geneIds AND cga.obsolete = false AND cga.internal = false AND aca.obsolete = false AND aca.internal = false
+				UNION SELECT cga.constructgenomicentityassociationobject_id, cr.references_id
+					FROM constructgenomicentityassociation cga
+					JOIN construct_reference cr ON cr.construct_id = cga.constructassociationsubject_id
+					WHERE cga.constructgenomicentityassociationobject_id IN :geneIds AND cga.obsolete = false AND cga.internal = false
+				UNION SELECT cga.constructgenomicentityassociationobject_id, ie.evidence_id
+					FROM constructgenomicentityassociation cga
+					JOIN constructgenomicentityassociation_informationcontententity ie ON ie.association_id = cga.id
+					WHERE cga.constructgenomicentityassociationobject_id IN :geneIds AND cga.obsolete = false AND cga.internal = false
+			)
+			SELECT DISTINCT gr.gene_id, ice.curie
+			FROM gene_refs gr
+			JOIN reference r ON r.id = gr.ref_id
+			JOIN informationcontententity ice ON ice.id = r.id
+			WHERE ice.curie IS NOT NULL
+			""";
+		Query referencesQuery = entityManager.createNativeQuery(referencesQueryString);
+		referencesQuery.setParameter("geneIds", geneIds);
+		List<Object[]> referencesResults = referencesQuery.getResultList();
+
+		for (Object[] row : referencesResults) {
+			Long geneId = ((Number) row[0]).longValue();
+			String referenceCurie = (String) row[1];
+			referencesByGene.computeIfAbsent(geneId, key -> new HashSet<>()).add(referenceCurie);
+		}
+		return referencesByGene;
+	}
+
 	// --- Batch SQL methods for GeneSearchResultDocument assembly ---
 
 	public List<Object[]> getBaseGeneInfo(List<Long> geneIds) {

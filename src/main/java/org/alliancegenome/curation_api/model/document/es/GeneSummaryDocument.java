@@ -1,5 +1,7 @@
 package org.alliancegenome.curation_api.model.document.es;
 
+import java.util.Set;
+
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.view.CurationView;
 
@@ -16,4 +18,7 @@ public class GeneSummaryDocument extends ESDocument {
 	}
 
 	private Gene gene;
+
+	@JsonView(CurationView.GeneSummaryDocument.class)
+	private Set<String> references;
 }

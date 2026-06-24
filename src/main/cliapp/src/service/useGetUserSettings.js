@@ -13,6 +13,14 @@ export const useGetUserSettings = (key, defaultValue, isTable = true) => {
 			stickyObject.multiSortMeta = removeInvalidSorts(stickyObject.multiSortMeta);
 			if (!stickyObject.orderedColumnNames) stickyObject.orderedColumnNames = defaultValue.selectedColumnNames;
 			if (!stickyObject.columnWidths) stickyObject.columnWidths = defaultValue.columnWidths;
+			const newColumns = defaultValue.orderedColumnNames?.filter(
+				(col) => !stickyObject.orderedColumnNames.includes(col)
+			);
+			if (newColumns?.length > 0) {
+				stickyObject.orderedColumnNames = [...stickyObject.orderedColumnNames, ...newColumns];
+				stickyObject.selectedColumnNames = [...(stickyObject.selectedColumnNames || []), ...newColumns];
+				stickyObject.columnWidths = { ...defaultValue.columnWidths, ...stickyObject.columnWidths };
+			}
 		}
 
 		return stickyObject;
@@ -43,6 +51,14 @@ export const useGetUserSettings = (key, defaultValue, isTable = true) => {
 					if (!updatedSettings.orderedColumnNames)
 						updatedSettings.orderedColumnNames = defaultValue.selectedColumnNames;
 					if (!updatedSettings.columnWidths) updatedSettings.columnWidths = defaultValue.columnWidths;
+					const newColumns = defaultValue.orderedColumnNames?.filter(
+						(col) => !updatedSettings.orderedColumnNames.includes(col)
+					);
+					if (newColumns?.length > 0) {
+						updatedSettings.orderedColumnNames = [...updatedSettings.orderedColumnNames, ...newColumns];
+						updatedSettings.selectedColumnNames = [...(updatedSettings.selectedColumnNames || []), ...newColumns];
+						updatedSettings.columnWidths = { ...defaultValue.columnWidths, ...updatedSettings.columnWidths };
+					}
 				}
 				setSettings(updatedSettings);
 				localStorage.setItem(key, JSON.stringify(updatedSettings));
