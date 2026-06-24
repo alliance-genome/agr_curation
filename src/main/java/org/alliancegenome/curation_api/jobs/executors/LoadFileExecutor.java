@@ -265,7 +265,10 @@ public class LoadFileExecutor {
 				} catch (Exception e) {
 					e.printStackTrace();
 					history.incrementFailed(countType);
-					addException(history, new ObjectUpdateExceptionData(dtoObject, e.getMessage(), e.getStackTrace()));
+					// SCRUM-6219: e is typically Quarkus' ArcUndeclaredThrowableException, whose own
+					// getMessage() is the opaque "Error invoking subclass method". Record the unwrapped
+					// cause-chain message so the real underlying error is captured, not the wrapper.
+					addException(history, new ObjectUpdateExceptionData(dtoObject, unwrapExceptionMessage(e), e.getStackTrace()));
 				}
 				if (terminateFailing && history.getErrorRate(countType) > 0.25) {
 					Log.error("Failure Rate > 25% aborting load");
@@ -423,6 +426,33 @@ public class LoadFileExecutor {
 			? oueData.getData()
 			: new ObjectUpdateExceptionData(null, errorMessage, e.getStackTrace());
 		addException(bulkLoadFileHistory, exceptionData);
+	}
+
+	/**
+	 * SCRUM-6219: builds a meaningful message from an exception whose own getMessage() may be an
+	 * opaque wrapper (e.g. Quarkus' ArcUndeclaredThrowableException -> "Error invoking subclass
+	 * method", thrown when an exception escapes an intercepted @Transactional/CDI subclass method).
+	 * Walks the full cause chain and joins the distinct non-null messages so the real underlying
+	 * error (FK violation, Hibernate Search failure, etc.) is recorded rather than the wrapper.
+	 * Also extracts ObjectUpdateException data messages (which live in the payload, not the
+	 * Throwable) at every level of the chain. Mirrors the unwrapping already done in failLoad().
+	 */
+	protected String unwrapExceptionMessage(Throwable e) {
+		Set<String> messages = new LinkedHashSet<>();
+		Throwable cause = e;
+		while (cause != null) {
+			messages.add(cause.getMessage());
+			messages.add(cause.getLocalizedMessage());
+			if (cause instanceof ObjectUpdateException oue && oue.getData() != null) {
+				messages.add(oue.getData().getMessage());
+				if (oue.getData().getMessages() != null) {
+					messages.addAll(oue.getData().getMessages());
+				}
+			}
+			cause = cause.getCause();
+		}
+		messages.removeIf(msg -> msg == null);
+		return messages.isEmpty() ? e.toString() : String.join("|", messages);
 	}
 
 	protected void failLoadAboveErrorRateCutoff(BulkLoadFileHistory bulkLoadFileHistory) {
