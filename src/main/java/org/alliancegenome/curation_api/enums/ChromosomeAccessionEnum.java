@@ -121,7 +121,36 @@ public enum ChromosomeAccessionEnum {
 	ZFIN_23("23", "RefSeq:NC_007134.7", "GRCz11"),
 	ZFIN_24("24", "RefSeq:NC_007135.7", "GRCz11"),
 	ZFIN_25("25", "RefSeq:NC_007136.7", "GRCz11"),
-	ZFIN_MT("MT", "RefSeq:NC_002333.2", "GRCz11");
+	ZFIN_MT("MT", "RefSeq:NC_002333.2", "GRCz11"),
+	// SCRUM-6236: ZFIN GRCz12tu (NCBI GCF_049306965.1). Chromosomes 1-25 have new RefSeq
+	// accessions; MT (NC_002333.2) is unchanged from GRCz11. NOTE: getChromosomeAccessionEnum()
+	// keys on accession only, so the reused MT accession resolves to GRCz11 first.
+	ZFIN_GRCz12tu_1("1", "RefSeq:NC_133176.1", "GRCz12tu"),
+	ZFIN_GRCz12tu_2("2", "RefSeq:NC_133177.1", "GRCz12tu"),
+	ZFIN_GRCz12tu_3("3", "RefSeq:NC_133178.1", "GRCz12tu"),
+	ZFIN_GRCz12tu_4("4", "RefSeq:NC_133179.1", "GRCz12tu"),
+	ZFIN_GRCz12tu_5("5", "RefSeq:NC_133180.1", "GRCz12tu"),
+	ZFIN_GRCz12tu_6("6", "RefSeq:NC_133181.1", "GRCz12tu"),
+	ZFIN_GRCz12tu_7("7", "RefSeq:NC_133182.1", "GRCz12tu"),
+	ZFIN_GRCz12tu_8("8", "RefSeq:NC_133183.1", "GRCz12tu"),
+	ZFIN_GRCz12tu_9("9", "RefSeq:NC_133184.1", "GRCz12tu"),
+	ZFIN_GRCz12tu_10("10", "RefSeq:NC_133185.1", "GRCz12tu"),
+	ZFIN_GRCz12tu_11("11", "RefSeq:NC_133186.1", "GRCz12tu"),
+	ZFIN_GRCz12tu_12("12", "RefSeq:NC_133187.1", "GRCz12tu"),
+	ZFIN_GRCz12tu_13("13", "RefSeq:NC_133188.1", "GRCz12tu"),
+	ZFIN_GRCz12tu_14("14", "RefSeq:NC_133189.1", "GRCz12tu"),
+	ZFIN_GRCz12tu_15("15", "RefSeq:NC_133190.1", "GRCz12tu"),
+	ZFIN_GRCz12tu_16("16", "RefSeq:NC_133191.1", "GRCz12tu"),
+	ZFIN_GRCz12tu_17("17", "RefSeq:NC_133192.1", "GRCz12tu"),
+	ZFIN_GRCz12tu_18("18", "RefSeq:NC_133193.1", "GRCz12tu"),
+	ZFIN_GRCz12tu_19("19", "RefSeq:NC_133194.1", "GRCz12tu"),
+	ZFIN_GRCz12tu_20("20", "RefSeq:NC_133195.1", "GRCz12tu"),
+	ZFIN_GRCz12tu_21("21", "RefSeq:NC_133196.1", "GRCz12tu"),
+	ZFIN_GRCz12tu_22("22", "RefSeq:NC_133197.1", "GRCz12tu"),
+	ZFIN_GRCz12tu_23("23", "RefSeq:NC_133198.1", "GRCz12tu"),
+	ZFIN_GRCz12tu_24("24", "RefSeq:NC_133199.1", "GRCz12tu"),
+	ZFIN_GRCz12tu_25("25", "RefSeq:NC_133200.1", "GRCz12tu"),
+	ZFIN_GRCz12tu_MT("MT", "RefSeq:NC_002333.2", "GRCz12tu");
 
 
 	public String chromosomeName;
