@@ -3,6 +3,7 @@ import { SORT_FIELDS } from '../constants/SortFields';
 
 import { FIELD_SETS } from '../constants/FilterFields';
 import { Endpoints } from '../constants/Endpoints';
+import { getModTaxa, getCanonicalTaxa } from '../constants/speciesTaxa';
 import { ValidationService } from '../service/ValidationService';
 
 export function returnSorted(event, originalSort) {
@@ -340,6 +341,47 @@ export function buildAutocompleteFilter(event, autocompleteFields) {
 	});
 
 	return filter;
+}
+
+// Resolve the taxon curies the current curator's autocompletes should be limited
+// to: the union of their MOD species (from the cognito `*Staff` groups)
+// The MOD->taxa mapping comes from the Species table via the
+// speciesTaxa cache (loaded by useSpeciesTaxa); returns [] until it has loaded.
+// See constants/speciesTaxa.js (SCRUM-6220).
+export function getCuratorTaxonCuries() {
+	let groups = [];
+	try {
+		const cognitoToken = JSON.parse(localStorage.getItem('cognito-token-storage'));
+		groups = cognitoToken?.accessToken?.payload?.['cognito:groups'] || [];
+	} catch (e) {
+		groups = [];
+	}
+	const taxa = groups
+		.filter((group) => group.includes('Staff'))
+		.map((group) => group.replace('Staff', ''))
+		.flatMap((mod) => getModTaxa(mod) || []);
+	const unique = [...new Set(taxa)];
+	return unique.length > 0 ? unique : [...getCanonicalTaxa()];
+}
+
+// Build an `otherFilters` fragment that constrains an entity autocomplete to the
+// curator's species (a hard constraint). The taxon curies are OR'd within one
+// filter group, which `BaseSQLDAO.searchByParams` AND's against the typed-query
+// filter. Use for the Gene/Allele/AGM subject / genetic-modifier / asserted fields.
+// Returns an empty object (no species narrowing) when the species cache has not
+// loaded yet, so an early search degrades to unfiltered rather than an empty query.
+export function buildCuratorSpeciesFilter() {
+	const taxa = getCuratorTaxonCuries();
+	if (taxa.length === 0) return {};
+	return {
+		speciesFilter: {
+			'taxon.curie': {
+				queryString: taxa.join(' '),
+				tokenOperator: 'OR',
+				useKeywordFields: true,
+			},
+		},
+	};
 }
 
 export function defaultAutocompleteOnChange(rowProps, event, fieldName, setFieldValue, subField = 'curie') {
