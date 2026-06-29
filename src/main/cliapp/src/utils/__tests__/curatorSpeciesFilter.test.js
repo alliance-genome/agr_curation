@@ -16,10 +16,21 @@ const SPECIES = [
 	{ dataProvider: { abbreviation: 'XB' }, taxon: { curie: 'NCBITaxon:8355' } },
 	{ dataProvider: { abbreviation: 'XB' }, taxon: { curie: 'NCBITaxon:8364' } },
 ];
-const CANONICAL = ['NCBITaxon:10116', 'NCBITaxon:9606', 'NCBITaxon:10090', 'NCBITaxon:559292', 'NCBITaxon:6239', 'NCBITaxon:8355', 'NCBITaxon:8364'];
+const CANONICAL = [
+	'NCBITaxon:10116',
+	'NCBITaxon:9606',
+	'NCBITaxon:10090',
+	'NCBITaxon:559292',
+	'NCBITaxon:6239',
+	'NCBITaxon:8355',
+	'NCBITaxon:8364',
+];
 
 const setCognitoGroups = (groups) => {
-	localStorage.setItem('cognito-token-storage', JSON.stringify({ accessToken: { payload: { 'cognito:groups': groups } } }));
+	localStorage.setItem(
+		'cognito-token-storage',
+		JSON.stringify({ accessToken: { payload: { 'cognito:groups': groups } } })
+	);
 };
 
 describe('getCuratorTaxonCuries (SCRUM-6220)', () => {
@@ -77,7 +88,9 @@ describe('buildCuratorSpeciesFilter (SCRUM-6220)', () => {
 	it('produces a multi-value OR keyword filter for a multi-taxon MOD', () => {
 		setCognitoGroups(['XBStaff']);
 		expect(buildCuratorSpeciesFilter()).toEqual({
-			speciesFilter: { 'taxon.curie': { queryString: 'NCBITaxon:8355 NCBITaxon:8364', tokenOperator: 'OR', useKeywordFields: true } },
+			speciesFilter: {
+				'taxon.curie': { queryString: 'NCBITaxon:8355 NCBITaxon:8364', tokenOperator: 'OR', useKeywordFields: true },
+			},
 		});
 	});
 
