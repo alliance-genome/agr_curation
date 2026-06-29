@@ -118,6 +118,11 @@ export const EntityCountsComponent = () => {
 							header="Database Association Count"
 							body={(rowData) => <NumberTemplate number={rowData.dbCount} />}
 						/>
+						<Column
+							field="esCount"
+							header="Search index Term Count"
+							body={(rowData) => <NumberTemplate number={rowData.esCount} />}
+						/>
 					</DataTable>
 				</div>
 				<div className="col-3">

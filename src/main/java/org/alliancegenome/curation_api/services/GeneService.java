@@ -337,6 +337,10 @@ public class GeneService extends SubmittedObjectCrudService<Gene, GeneDTO, GeneD
 		return geneDAO.findByIds(ids);
 	}
 
+	public Map<Long, Set<String>> getReferencesByGeneIds(List<Long> ids) {
+		return geneDAO.getReferencesByGeneIds(ids);
+	}
+
 	// --- Batch assembly for GeneSearchResultDocument ---
 
 	private static final Set<String> BIOTYPE_LEVEL_0 = Set.of(

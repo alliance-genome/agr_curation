@@ -15,13 +15,13 @@ public class ResourceDescriptorDAO extends BaseSQLDAO<ResourceDescriptor> {
 	protected ResourceDescriptorDAO() {
 		super(ResourceDescriptor.class);
 	}
-	
+
 	public List<String> findAllNames() {
 		SearchResponse<ResourceDescriptor> response = findAll();
 		List<ResourceDescriptor> resourceDescriptors = response.getResults();
 		List<String> resourceDescriptorNames = resourceDescriptors.stream().map(ResourceDescriptor::getName).collect(Collectors.toList());
-		
+
 		return resourceDescriptorNames;
 	}
-	
+
 }

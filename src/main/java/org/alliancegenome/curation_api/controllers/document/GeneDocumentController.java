@@ -3,6 +3,8 @@ package org.alliancegenome.curation_api.controllers.document;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.alliancegenome.curation_api.interfaces.document.GeneDocumentInterface;
 import org.alliancegenome.curation_api.model.document.es.GeneSearchResultDocument;
@@ -78,9 +80,11 @@ public class GeneDocumentController implements GeneDocumentInterface {
 
 		ArrayList<GeneSummaryDocument> list = new ArrayList<>();
 		if (genes != null) {
+			Map<Long, Set<String>> referencesByGene = geneService.getReferencesByGeneIds(ids);
 			for (Gene gene : genes) {
 				GeneSummaryDocument doc = new GeneSummaryDocument();
 				doc.setGene(gene);
+				doc.setReferences(referencesByGene.get(gene.getId()));
 				list.add(doc);
 			}
 		}

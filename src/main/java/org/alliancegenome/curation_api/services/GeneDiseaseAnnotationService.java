@@ -46,6 +46,7 @@ public class GeneDiseaseAnnotationService extends BaseAnnotationDTOCrudService<G
 	@Transactional
 	public ObjectResponse<GeneDiseaseAnnotation> create(GeneDiseaseAnnotation uiEntity) {
 		GeneDiseaseAnnotation dbEntity = geneDiseaseValidator.validateAnnotationCreate(uiEntity);
+		diseaseAnnotationService.mintCurieIfAbsent(dbEntity);
 		return new ObjectResponse<>(geneDiseaseAnnotationDAO.persist(dbEntity));
 	}
 
@@ -53,6 +54,7 @@ public class GeneDiseaseAnnotationService extends BaseAnnotationDTOCrudService<G
 	@Transactional
 	public ObjectResponse<GeneDiseaseAnnotation> upsert(GeneDiseaseAnnotationDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
 		ObjectResponse<GeneDiseaseAnnotation> resp = geneDiseaseAnnotationDtoValidator.validateGeneDiseaseAnnotationDTO(dto, dataProvider);
+		diseaseAnnotationService.mintCurieIfAbsent(resp.getEntity());
 		geneDiseaseAnnotationDAO.persist(resp.getEntity());
 		return resp;
 	}
