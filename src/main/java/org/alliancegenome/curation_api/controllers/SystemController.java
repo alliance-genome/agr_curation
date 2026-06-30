@@ -44,6 +44,11 @@ public class SystemController implements SystemControllerInterface {
 	}
 
 	@Override
+	public void mintExistingDiseaseAnnotationCuries(Integer batchSize) {
+		diseaseAnnotationService.mintMissingCuries(batchSize);
+	}
+
+	@Override
 	public void deleteUnusedConditionsAndExperiments() {
 		List<Long> inUseCrIds = diseaseAnnotationService.getAllReferencedConditionRelationIds();
 		inUseCrIds.addAll(phenotypeAnnotationService.getAllReferencedConditionRelationIds());

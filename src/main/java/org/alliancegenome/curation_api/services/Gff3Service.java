@@ -203,6 +203,15 @@ public class Gff3Service {
 		
 		Gene gene = geneService.findByIdentifierString(geneCurie);
 		if (gene == null) {
+			// SCRUM-6205: RefSeq-shaped GFFs (e.g. ZFIN GRCz12tu) carry the MOD curie only in
+			// Dbxref; the prefixed gene_id/ID match nothing. Fall back to the provider-scoped
+			// Dbxref curie before skipping. Existing files resolve above and never reach here.
+			String dbxrefCurie = Gff3AttributesHelper.getModCurieFromDbxref(attributes, dataProvider);
+			if (dbxrefCurie != null) {
+				gene = geneService.findByIdentifierString(dbxrefCurie);
+			}
+		}
+		if (gene == null) {
 			throw new KnownIssueValidationException(ValidationConstants.UNRECOGNIZED_MESSAGE + " (" + attributes.get(identifyingAttribute) + ")");
 		}
 
@@ -724,6 +733,13 @@ public class Gff3Service {
 				Map<String, String> attributes = Gff3AttributesHelper.getAttributes(gffEntry, dataProvider);
 				if (attributes.containsKey("gene_id") && attributes.containsKey("ID")) {
 					geneIdCurieMap.put(attributes.get("ID"), attributes.get("gene_id"));
+				} else if (attributes.containsKey("ID")) {
+					// SCRUM-6205: RefSeq genes have no gene_id; map the gene's ID (e.g. gene-rpl24)
+					// to the MOD curie from Dbxref so a transcript's Parent resolves to the gene.
+					String dbxrefCurie = Gff3AttributesHelper.getModCurieFromDbxref(attributes, dataProvider);
+					if (dbxrefCurie != null) {
+						geneIdCurieMap.put(attributes.get("ID"), dbxrefCurie);
+					}
 				}
 			}
 		}
