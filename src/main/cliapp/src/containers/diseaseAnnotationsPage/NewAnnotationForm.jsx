@@ -43,6 +43,7 @@ import { GeneticModifierGenesAdditionalFieldData } from '../../components/FieldD
 import ErrorBoundary from '../../components/Error/ErrorBoundary';
 import { ConfirmButton } from '../../components/ConfirmButton';
 import { getDefaultFormState, getModFormFields } from '../../service/TableStateService';
+import { getEffectiveStaffGroups } from '../../utils/affiliation';
 import { useGetUserSettings } from '../../service/useGetUserSettings';
 import { useVocabularyTermSetService } from '../../service/useVocabularyTermSetService';
 import { Endpoints } from '../../constants/Endpoints';
@@ -108,8 +109,8 @@ export const NewAnnotationForm = ({
 		'Genetic Modifier Genes',
 		'Internal',
 	];
-	const cognitoToken = JSON.parse(localStorage.getItem('cognito-token-storage'));
-	const mod = cognitoToken?.accessToken?.payload?.['cognito:groups']?.filter((group) => group.includes('Staff'));
+	// Effective MOD honors a tester's client-side affiliation override (SCRUM-2831).
+	const mod = getEffectiveStaffGroups();
 	let defaultUserSettings = getDefaultFormState('DiseaseAnnotations', newAnnotationOptionalFields, undefined);
 	const { settings: settingsKey, mutate: setSettingsKey } = useGetUserSettings(
 		'DiseaseAnnotationsFormSettings',
