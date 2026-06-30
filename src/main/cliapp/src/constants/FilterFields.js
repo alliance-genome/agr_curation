@@ -249,7 +249,6 @@ export const FIELD_SETS = Object.freeze({
 		filterName: 'crossReferencesFilter',
 		fields: [
 			'crossReferences.displayName',
-			'crossReferences.resourceDescriptorPage.name',
 			'crossReferences.referencedCurie',
 		],
 	},
