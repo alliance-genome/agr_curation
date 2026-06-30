@@ -247,10 +247,7 @@ export const FIELD_SETS = Object.freeze({
 	},
 	crossReferencesFieldSet: {
 		filterName: 'crossReferencesFilter',
-		fields: [
-			'crossReferences.displayName',
-			'crossReferences.referencedCurie',
-		],
+		fields: ['crossReferences.displayName', 'crossReferences.referencedCurie'],
 	},
 	// Ontology-term indexes embed crossReferences with @IndexedEmbedded(includeDepth=1),
 	// so the depth-2 path crossReferences.resourceDescriptorPage.name is NOT indexed
