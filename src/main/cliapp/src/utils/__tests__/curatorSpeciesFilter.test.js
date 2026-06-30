@@ -72,6 +72,12 @@ describe('getCuratorTaxonCuries (SCRUM-6220)', () => {
 		setCognitoGroups(['RGDStaff']);
 		expect(getCuratorTaxonCuries()).toEqual([]);
 	});
+
+	it('narrows to the overridden MOD taxa when an affiliation override is active (SCRUM-2831)', () => {
+		setCognitoGroups(['RGDStaff', 'Tester']);
+		localStorage.setItem('affiliation-override', 'WBStaff');
+		expect(getCuratorTaxonCuries()).toEqual(['NCBITaxon:6239']);
+	});
 });
 
 describe('buildCuratorSpeciesFilter (SCRUM-6220)', () => {

@@ -4,6 +4,7 @@ import { SORT_FIELDS } from '../constants/SortFields';
 import { FIELD_SETS } from '../constants/FilterFields';
 import { Endpoints } from '../constants/Endpoints';
 import { getModTaxa, getCanonicalTaxa } from '../constants/speciesTaxa';
+import { getEffectiveStaffGroups } from './affiliation';
 import { ValidationService } from '../service/ValidationService';
 
 export function returnSorted(event, originalSort) {
@@ -349,13 +350,9 @@ export function buildAutocompleteFilter(event, autocompleteFields) {
 // speciesTaxa cache (loaded by useSpeciesTaxa); returns [] until it has loaded.
 // See constants/speciesTaxa.js (SCRUM-6220).
 export function getCuratorTaxonCuries() {
-	let groups = [];
-	try {
-		const cognitoToken = JSON.parse(localStorage.getItem('cognito-token-storage'));
-		groups = cognitoToken?.accessToken?.payload?.['cognito:groups'] || [];
-	} catch (e) {
-		groups = [];
-	}
+	// Effective groups honor a tester's client-side affiliation override (SCRUM-2831),
+	// so subject / bio-entity autocompletes narrow to the overridden MOD's species.
+	const groups = getEffectiveStaffGroups();
 	const taxa = groups
 		.filter((group) => group.includes('Staff'))
 		.map((group) => group.replace('Staff', ''))
