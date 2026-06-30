@@ -40,10 +40,8 @@ export const AlleleGeneAssociationsTable = () => {
 			'alleleGeneAssociationObject.geneSymbol.formatText',
 			'alleleGeneAssociationObject.primaryExternalId',
 		],
-		'relation.name': ['alleleAssociationSubject.primaryExternalId'],
 		'alleleAssociationSubject.taxon.name': ['alleleAssociationSubject.primaryExternalId'],
 		'alleleAssociationSubject.dataProvider.abbreviation': ['alleleAssociationSubject.primaryExternalId'],
-		'evidence.curie': ['evidence.primaryCrossReferenceCurie'],
 	};
 
 	const columns = useMemo(
@@ -67,7 +65,6 @@ export const AlleleGeneAssociationsTable = () => {
 				field: 'relation.name',
 				columnKey: 'relation.name',
 				header: 'Relation',
-				sortable: true,
 				filterConfig: FILTER_CONFIGS.alleleGeneRelationFilterConfig,
 			},
 			{
@@ -94,7 +91,6 @@ export const AlleleGeneAssociationsTable = () => {
 				field: 'evidence.curie',
 				header: 'Evidence',
 				body: (rowData) => <TruncatedReferencesTemplate references={rowData.evidence} />,
-				sortable: true,
 				filterConfig: FILTER_CONFIGS.evidenceFilterConfig,
 			},
 			{
