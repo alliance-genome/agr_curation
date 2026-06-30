@@ -1,13 +1,6 @@
  /* TODO: this works for now. Try fixing the issue with overrides at some point in the future */
 /* Fix button text visibility issues across all themes */
 
-/* Constrain MultiSelect filter panel width — PrimeReact's DomHandler.alignOverlay()
-   sets min-width via JS after panelStyle is applied, so !important is required */
-.filter-multiselect-panel {
-    min-width: 0 !important;
-    max-width: 30vw !important;
-}
-
 /* Primary button fixes - default PrimeReact buttons */
 .p-button {
     color: var(--primary-color-text) !important;
