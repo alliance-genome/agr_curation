@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.zip.GZIPInputStream;
 
 import org.alliancegenome.curation_api.dao.orthology.GeneToGeneOrthologyGeneratedDAO;
-import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
+import org.alliancegenome.curation_api.model.entities.Species;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkFMSLoad;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
@@ -40,8 +40,8 @@ public class OrthologyExecutor extends LoadFileExecutor {
 			}
 
 			List<Long> orthoPairIdsLoaded = new ArrayList<>();
-			BackendBulkDataProvider dataProvider = BackendBulkDataProvider.valueOf(fms.getFmsDataSubType());
-			List<Long> orthoPairIdsBefore = generatedOrthologyService.getAllOrthologyPairIdsBySubjectGeneDataProvider(dataProvider);
+			Species species = bulkLoadFileHistory.getBulkLoad().getSpecies();
+			List<Long> orthoPairIdsBefore = generatedOrthologyService.getAllOrthologyPairIdsBySubjectGeneDataProvider(species);
 			log.debug("runLoad: Before: total " + orthoPairIdsBefore.size());
 
 			bulkLoadFileDAO.merge(bulkLoadFileHistory.getBulkLoadFile());
@@ -49,7 +49,7 @@ public class OrthologyExecutor extends LoadFileExecutor {
 			bulkLoadFileHistory.setCount(orthologyData.getData().size());
 			updateHistory(bulkLoadFileHistory);
 
-			boolean success = runLoad(generatedOrthologyService, bulkLoadFileHistory, dataProvider, orthologyData.getData(), orthoPairIdsLoaded);
+			boolean success = runLoad(generatedOrthologyService, bulkLoadFileHistory, species, orthologyData.getData(), orthoPairIdsLoaded);
 			if (success) {
 				runCleanup(generatedOrthologyService, bulkLoadFileHistory, fms.getFmsDataSubType(), orthoPairIdsBefore, orthoPairIdsLoaded, fms.getFmsDataType());
 			}

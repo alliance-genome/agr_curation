@@ -215,7 +215,7 @@ public class IT_0603_PhenotypeAnnotationBulkUploadFmsITCase extends BaseITCase {
 	public void agmPhenotypeAnnotationAddSecondaryAnnotationFields() throws Exception {
 		// Tests that secondary annotations are added to primary annotations as
 		// asserted/inferred entities
-		// as dictated by rules in BackendBulkDataProvider
+		// as dictated by rules in Species entity configuration
 		checkSuccessfulBulkLoad(phenotypeAnnotationBulkPostEndpoint, phenotypeAnnotationTestFilePath
 				+ "AS_01_add_secondary_allele_annotation_to_primary_agm_annotation.json", 3);
 

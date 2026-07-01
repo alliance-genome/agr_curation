@@ -1,7 +1,7 @@
 package org.alliancegenome.curation_api.services.validation.dto.fms;
 
 import org.alliancegenome.curation_api.dao.GenePhenotypeAnnotationDAO;
-import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
+import org.alliancegenome.curation_api.model.entities.Species;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
 import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.model.entities.Gene;
@@ -28,7 +28,7 @@ public class GenePhenotypeAnnotationFmsDTOValidator extends PhenotypeAnnotationF
 	@Inject GenePhenotypeAnnotationXrefHelper xrefHelper;
 	
 	@Transactional
-	public GenePhenotypeAnnotation validatePrimaryAnnotation(Gene subject, PhenotypeFmsDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
+	public GenePhenotypeAnnotation validatePrimaryAnnotation(Gene subject, PhenotypeFmsDTO dto, Species species) throws ValidationException {
 
 		ObjectResponse<GenePhenotypeAnnotation> apaResponse = new ObjectResponse<GenePhenotypeAnnotation>();
 		GenePhenotypeAnnotation annotation = new GenePhenotypeAnnotation();
@@ -45,13 +45,13 @@ public class GenePhenotypeAnnotationFmsDTOValidator extends PhenotypeAnnotationF
 			annotation = annotationSearch.getSingleResult();
 		}
 
-		subject = xrefHelper.addGenePhenotypeCrossReference(dataProvider, subject);
+		subject = xrefHelper.addGenePhenotypeCrossReference(species, subject);
 		
 		annotation.setUniqueId(uniqueId);
 		annotation.setEvidenceItem(reference);
 		annotation.setPhenotypeAnnotationSubject(subject);
 
-		ObjectResponse<GenePhenotypeAnnotation> paResponse = validatePhenotypeAnnotation(annotation, dto, dataProvider);
+		ObjectResponse<GenePhenotypeAnnotation> paResponse = validatePhenotypeAnnotation(annotation, dto, species);
 		apaResponse.addErrorMessages(paResponse.getErrorMessages());
 		annotation = paResponse.getEntity();
 

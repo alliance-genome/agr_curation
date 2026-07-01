@@ -3,7 +3,7 @@ package org.alliancegenome.curation_api.services.validation.dto;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.VariantDAO;
-import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
+import org.alliancegenome.curation_api.model.entities.Species;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
 import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.model.entities.Variant;
@@ -26,7 +26,7 @@ public class VariantDTOValidator extends GenomicEntityDTOValidator<Variant, Vari
 	@Inject SoTermService soTermService;
 
 	@Transactional
-	public ObjectResponse<Variant> validateVariantDTO(VariantDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
+	public ObjectResponse<Variant> validateVariantDTO(VariantDTO dto, Species species) throws ValidationException {
 		response = new ObjectResponse<Variant>();
 		
 		Variant variant = null;
@@ -46,7 +46,7 @@ public class VariantDTOValidator extends GenomicEntityDTOValidator<Variant, Vari
 			variant = new Variant();
 		}
 
-		variant = validateGenomicEntityDTO(variant, dto, dataProvider, VocabularyConstants.VARIANT_NOTE_TYPES_VOCABULARY_TERM_SET);
+		variant = validateGenomicEntityDTO(variant, dto, species, VocabularyConstants.VARIANT_NOTE_TYPES_VOCABULARY_TERM_SET);
 		
 		SOTerm variantType = validateRequiredOntologyTerm(soTermService, "variant_type_curie", dto.getVariantTypeCurie());
 		variant.setVariantType(variantType);

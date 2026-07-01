@@ -7,7 +7,7 @@ import java.util.Objects;
 
 import org.alliancegenome.curation_api.constants.EntityFieldConstants;
 import org.alliancegenome.curation_api.dao.HTPExpressionDatasetSampleAnnotationDAO;
-import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
+import org.alliancegenome.curation_api.model.entities.Species;
 import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.interfaces.crud.BaseUpsertServiceInterface;
 import org.alliancegenome.curation_api.model.entities.HTPExpressionDatasetSampleAnnotation;
@@ -34,13 +34,13 @@ public class HTPExpressionDatasetSampleAnnotationService extends BaseEntityCrudS
 	}
 	@Override
 	@Transactional
-	public ObjectResponse<HTPExpressionDatasetSampleAnnotation> upsert(HTPExpressionDatasetSampleAnnotationFmsDTO htpExpressionDatasetSampleAnnotationData, BackendBulkDataProvider backendBulkDataProvider) throws ValidationException {
-		return htpExpressionDatasetSampleAnnotationFmsDtoValidator.validateHTPExpressionDatasetSampleAnnotationFmsDTO(htpExpressionDatasetSampleAnnotationData, backendBulkDataProvider);
+	public ObjectResponse<HTPExpressionDatasetSampleAnnotation> upsert(HTPExpressionDatasetSampleAnnotationFmsDTO htpExpressionDatasetSampleAnnotationData, Species species) throws ValidationException {
+		return htpExpressionDatasetSampleAnnotationFmsDtoValidator.validateHTPExpressionDatasetSampleAnnotationFmsDTO(htpExpressionDatasetSampleAnnotationData, species);
 	}
 
-	public List<Long> getAnnotationIdsByDataProvider(String dataProvider) {
+	public List<Long> getAnnotationIdsByDataProvider(String species) {
 		Map<String, Object> params = new HashMap<>();
-		params.put(EntityFieldConstants.DATA_PROVIDER, dataProvider);
+		params.put(EntityFieldConstants.DATA_PROVIDER, species);
 		List<Long> ids = htpExpressionDatasetSampleAnnotationDAO.findIdsByParams(params);
 		ids.removeIf(Objects::isNull);
 		return ids;

@@ -6,14 +6,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.zip.GZIPInputStream;
 
-import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
+import org.alliancegenome.curation_api.model.entities.Species;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.jobs.util.CsvSchemaBuilder;
-import org.alliancegenome.curation_api.model.entities.bulkloads.BulkFMSLoad;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.Gff3DTO;
 import org.alliancegenome.curation_api.response.APIResponse;
 import org.alliancegenome.curation_api.response.LoadHistoryResponce;
+import org.alliancegenome.curation_api.services.SpeciesService;
 import org.alliancegenome.curation_api.services.TranscriptService;
 import org.alliancegenome.curation_api.services.associations.TranscriptGeneAssociationService;
 import org.alliancegenome.curation_api.services.associations.TranscriptGenomicLocationAssociationService;
@@ -39,6 +39,8 @@ public class Gff3TranscriptExecutor extends Gff3Executor {
 	TranscriptGenomicLocationAssociationService transcriptLocationService;
 	@Inject
 	TranscriptGeneAssociationService transcriptGeneService;
+	@Inject
+	SpeciesService speciesService;
 
 	public void execLoad(BulkLoadFileHistory bulkLoadFileHistory) throws Exception {
 		try {
@@ -63,11 +65,10 @@ public class Gff3TranscriptExecutor extends Gff3Executor {
 			ph.finishProcess();
 			gffRawData.clear();
 
-			BulkFMSLoad fmsLoad = (BulkFMSLoad) bulkLoadFileHistory.getBulkLoad();
-			BackendBulkDataProvider dataProvider = BackendBulkDataProvider.valueOf(fmsLoad.getFmsDataSubType());
+			Species species = bulkLoadFileHistory.getBulkLoad().getSpecies();
 
-			List<ImmutablePair<Gff3DTO, Map<String, String>>> preProcessedTranscriptGffData = Gff3AttributesHelper.getTranscriptGffData(gffFileData, dataProvider);
-			Map<String, String> geneIdCurieMap = gff3Service.getGeneIdCurieMap(gffFileData, dataProvider);
+			List<ImmutablePair<Gff3DTO, Map<String, String>>> preProcessedTranscriptGffData = Gff3AttributesHelper.getTranscriptGffData(gffFileData, species);
+			Map<String, String> geneIdCurieMap = gff3Service.getGeneIdCurieMap(gffFileData, species);
 
 			gffFileData.clear();
 
@@ -75,13 +76,13 @@ public class Gff3TranscriptExecutor extends Gff3Executor {
 			List<Long> locationIdsAdded = new ArrayList<>();
 			List<Long> associationIdsAdded = new ArrayList<>();
 
-			String assemblyId = loadGenomeAssemblyFromGFF(bulkLoadFileHistory, gffHeaderData, dataProvider);
+			String assemblyId = loadGenomeAssemblyFromGFF(bulkLoadFileHistory, gffHeaderData, species);
 
-			boolean success = runLoad(bulkLoadFileHistory, gffHeaderData, preProcessedTranscriptGffData, geneIdCurieMap, entityIdsAdded, locationIdsAdded, associationIdsAdded, dataProvider, assemblyId);
+			boolean success = runLoad(bulkLoadFileHistory, gffHeaderData, preProcessedTranscriptGffData, geneIdCurieMap, entityIdsAdded, locationIdsAdded, associationIdsAdded, species, assemblyId);
 			if (success) {
-				runCleanup(transcriptLocationService, bulkLoadFileHistory, dataProvider.name(), transcriptLocationService.getIdsByDataProvider(dataProvider), locationIdsAdded, "GFF transcript genomic location association");
-				runCleanup(transcriptGeneService, bulkLoadFileHistory, dataProvider.name(), transcriptGeneService.getIdsByDataProvider(dataProvider), associationIdsAdded, "GFF transcript gene association");
-				runCleanup(transcriptService, bulkLoadFileHistory, dataProvider.name(), transcriptService.getIdsByDataProvider(dataProvider), entityIdsAdded, "GFF transcript");
+				runCleanup(transcriptLocationService, bulkLoadFileHistory, species.getDisplayName(), transcriptLocationService.getIdsBySpecies(species), locationIdsAdded, "GFF transcript genomic location association");
+				runCleanup(transcriptGeneService, bulkLoadFileHistory, species.getDisplayName(), transcriptGeneService.getIdsBySpecies(species), associationIdsAdded, "GFF transcript gene association");
+				runCleanup(transcriptService, bulkLoadFileHistory, species.getDisplayName(), transcriptService.getIdsBySpecies(species), entityIdsAdded, "GFF transcript");
 			}
 			bulkLoadFileHistory.finishLoad();
 			updateHistory(bulkLoadFileHistory);
@@ -92,11 +93,11 @@ public class Gff3TranscriptExecutor extends Gff3Executor {
 	}
 
 	private boolean runLoad(BulkLoadFileHistory history, List<String> gffHeaderData, List<ImmutablePair<Gff3DTO, Map<String, String>>> gffData, Map<String, String> geneIdCurieMap, List<Long> entityIdsAdded, List<Long> locationIdsAdded, List<Long> associationIdsAdded,
-			BackendBulkDataProvider dataProvider, String assemblyId) {
+			Species species, String assemblyId) {
 
 		ProcessDisplayHelper ph = new ProcessDisplayHelper();
 		ph.addDisplayHandler(loadProcessDisplayService);
-		ph.startProcess("GFF Transcript update for " + dataProvider.name(), gffData.size());
+		ph.startProcess("GFF Transcript update for " + species.getDisplayName(), gffData.size());
 
 		history.setCount("Entities", gffData.size());
 		history.setCount("Locations", gffData.size());
@@ -108,7 +109,7 @@ public class Gff3TranscriptExecutor extends Gff3Executor {
 			int end = Math.min(i + batchSize, gffData.size());
 			List<ImmutablePair<Gff3DTO, Map<String, String>>> batch = gffData.subList(i, end);
 
-			gff3Service.loadTranscriptBatch(batch, entityIdsAdded, locationIdsAdded, associationIdsAdded, dataProvider, assemblyId, geneIdCurieMap, history, ph);
+			gff3Service.loadTranscriptBatch(batch, entityIdsAdded, locationIdsAdded, associationIdsAdded, species, assemblyId, geneIdCurieMap, history, ph);
 
 			if (Thread.currentThread().isInterrupted()) {
 				history.setErrorMessage(ApiErrorException.INTERRUPTED_MESSAGE);
@@ -122,12 +123,12 @@ public class Gff3TranscriptExecutor extends Gff3Executor {
 
 	public APIResponse runLoadApi(String dataProviderName, String assemblyName, List<Gff3DTO> gffData) {
 		List<Long> idsAdded = new ArrayList<>();
-		BackendBulkDataProvider dataProvider = BackendBulkDataProvider.valueOf(dataProviderName);
-		List<ImmutablePair<Gff3DTO, Map<String, String>>> preProcessedTranscriptGffData = Gff3AttributesHelper.getTranscriptGffData(gffData, dataProvider);
-		Map<String, String> geneIdCurieMap = gff3Service.getGeneIdCurieMap(gffData, dataProvider);
+		Species species = speciesService.getByDisplayName(dataProviderName);
+		List<ImmutablePair<Gff3DTO, Map<String, String>>> preProcessedTranscriptGffData = Gff3AttributesHelper.getTranscriptGffData(gffData, species);
+		Map<String, String> geneIdCurieMap = gff3Service.getGeneIdCurieMap(gffData, species);
 		BulkLoadFileHistory history = new BulkLoadFileHistory();
 		history = bulkLoadFileHistoryDAO.persist(history);
-		runLoad(history, null, preProcessedTranscriptGffData, geneIdCurieMap, idsAdded, idsAdded, idsAdded, dataProvider, assemblyName);
+		runLoad(history, null, preProcessedTranscriptGffData, geneIdCurieMap, idsAdded, idsAdded, idsAdded, species, assemblyName);
 		history.finishLoad();
 
 		return new LoadHistoryResponce(history);

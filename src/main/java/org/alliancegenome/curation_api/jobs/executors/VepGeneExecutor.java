@@ -7,18 +7,18 @@ import java.util.stream.Collectors;
 import java.util.zip.GZIPInputStream;
 
 import org.alliancegenome.curation_api.dao.PredictedVariantConsequenceDAO;
-import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
+import org.alliancegenome.curation_api.model.entities.Species;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.exceptions.KnownIssueValidationException;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException.ObjectUpdateExceptionData;
 import org.alliancegenome.curation_api.jobs.util.CsvSchemaBuilder;
-import org.alliancegenome.curation_api.model.entities.bulkloads.BulkFMSLoad;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.VepTxtDTO;
 import org.alliancegenome.curation_api.response.APIResponse;
 import org.alliancegenome.curation_api.response.LoadHistoryResponce;
 import org.alliancegenome.curation_api.services.PredictedVariantConsequenceService;
+import org.alliancegenome.curation_api.services.SpeciesService;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections4.ListUtils;
@@ -37,6 +37,7 @@ public class VepGeneExecutor extends LoadFileExecutor {
 
 	@Inject PredictedVariantConsequenceDAO predictedVariantConsequenceDAO;
 	@Inject PredictedVariantConsequenceService predictedVariantConsequenceService;
+	@Inject SpeciesService speciesService;
 
 	public void execLoad(BulkLoadFileHistory bulkLoadFileHistory) {
 		try {
@@ -47,18 +48,17 @@ public class VepGeneExecutor extends LoadFileExecutor {
 			List<VepTxtDTO> vepData = it.readAll();
 			
 
-			BulkFMSLoad fmsLoad = (BulkFMSLoad) bulkLoadFileHistory.getBulkLoad();
-			BackendBulkDataProvider dataProvider = BackendBulkDataProvider.valueOf(fmsLoad.getFmsDataSubType());
+			Species species = bulkLoadFileHistory.getBulkLoad().getSpecies();
 
 			List<Long> consequenceIdsLoaded = new ArrayList<>();
-			List<Long> consequenceIdsBefore = predictedVariantConsequenceService.getGeneLevelIdsByDataProvider(dataProvider);
+			List<Long> consequenceIdsBefore = predictedVariantConsequenceService.getGeneLevelIdsByDataProvider(species);
 			
 			bulkLoadFileHistory.setCount(vepData.size());
 			updateHistory(bulkLoadFileHistory);
 			
-			boolean success = runLoad(bulkLoadFileHistory, dataProvider, vepData, consequenceIdsLoaded);
+			boolean success = runLoad(bulkLoadFileHistory, species, vepData, consequenceIdsLoaded);
 			if (success) {
-				runCleanup(predictedVariantConsequenceService, bulkLoadFileHistory, dataProvider.name(), consequenceIdsBefore, consequenceIdsLoaded, "gene-level predicted variant consequences");
+				runCleanup(predictedVariantConsequenceService, bulkLoadFileHistory, species.getDisplayName(), consequenceIdsBefore, consequenceIdsLoaded, "gene-level predicted variant consequences");
 			}
 			bulkLoadFileHistory.finishLoad();
 			updateHistory(bulkLoadFileHistory);
@@ -70,7 +70,7 @@ public class VepGeneExecutor extends LoadFileExecutor {
 		}
 	}
 	
-	protected boolean runLoad(BulkLoadFileHistory history, BackendBulkDataProvider dataProvider, List<VepTxtDTO> objectList, List<Long> idsUpdated) {
+	protected boolean runLoad(BulkLoadFileHistory history, Species species, List<VepTxtDTO> objectList, List<Long> idsUpdated) {
 		if (Thread.currentThread().isInterrupted()) {
 			history.setErrorMessage(ApiErrorException.INTERRUPTED_MESSAGE);
 			throw new RuntimeException(ApiErrorException.INTERRUPTED_MESSAGE);
@@ -80,8 +80,8 @@ public class VepGeneExecutor extends LoadFileExecutor {
 		ph.addDisplayHandler(loadProcessDisplayService);
 		if (CollectionUtils.isNotEmpty(objectList)) {
 			String loadMessage = objectList.get(0).getClass().getSimpleName() + " update";
-			if (dataProvider != null) {
-				loadMessage = loadMessage + " for " + dataProvider.name();
+			if (species != null) {
+				loadMessage = loadMessage + " for " + species.getDisplayName();
 			}
 			ph.startProcess(loadMessage, objectList.size());
 			
@@ -171,11 +171,11 @@ public class VepGeneExecutor extends LoadFileExecutor {
 		List<Long> idsLoaded = new ArrayList<>();
 		BulkLoadFileHistory history = new BulkLoadFileHistory(consequenceData.size());
 		history = bulkLoadFileHistoryDAO.persist(history);
-		BackendBulkDataProvider dataProvider = null;
+		Species species = null;
 		if (dataProviderName != null) {
-			dataProvider = BackendBulkDataProvider.valueOf(dataProviderName);
+			species = speciesService.getByDisplayName(dataProviderName);
 		}
-		runLoad(history, dataProvider, consequenceData, idsLoaded);
+		runLoad(history, species, consequenceData, idsLoaded);
 		history.finishLoad();
 		return new LoadHistoryResponce(history);
 	}

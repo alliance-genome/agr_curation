@@ -19,7 +19,7 @@ import org.alliancegenome.curation_api.dao.associations.TranscriptExonAssociatio
 import org.alliancegenome.curation_api.dao.associations.TranscriptGeneAssociationDAO;
 import org.alliancegenome.curation_api.dao.associations.TranscriptGenomicLocationAssociationDAO;
 import org.alliancegenome.curation_api.dao.ontology.SoTermDAO;
-import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
+import org.alliancegenome.curation_api.model.entities.Species;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
 import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.model.entities.AssemblyComponent;
@@ -75,7 +75,7 @@ public class Gff3DtoValidator {
 	@Inject OrganizationService organizationService;
 	
 	@Transactional
-	public void validateExonEntry(Gff3DTO dto, Map<String, String> attributes, List<Long> idsAdded, BackendBulkDataProvider dataProvider) throws ValidationException {
+	public void validateExonEntry(Gff3DTO dto, Map<String, String> attributes, List<Long> idsAdded, Species species) throws ValidationException {
 
 		Exon exon = null;
 
@@ -83,7 +83,7 @@ public class Gff3DtoValidator {
 			throw new ObjectValidationException(dto, "Invalid Type: " + dto.getType() + " for Exon Entity");
 		}
 		
-		String uniqueId = Gff3UniqueIdHelper.getExonOrCodingSequenceUniqueId(dto, attributes, dataProvider);
+		String uniqueId = Gff3UniqueIdHelper.getExonOrCodingSequenceUniqueId(dto, attributes, species);
 		SearchResponse<Exon> searchResponse = exonDAO.findByField("uniqueId", uniqueId);
 		if (searchResponse != null && searchResponse.getSingleResult() != null) {
 			exon = searchResponse.getSingleResult();
@@ -96,7 +96,7 @@ public class Gff3DtoValidator {
 			exon.setName(attributes.get("Name"));
 		}
 		
-		ObjectResponse<Exon> exonResponse = validateGenomicEntity(exon, dto, attributes, dataProvider);
+		ObjectResponse<Exon> exonResponse = validateGenomicEntity(exon, dto, attributes, species);
 	
 		if (exonResponse.hasErrors()) {
 			throw new ObjectValidationException(dto, exonResponse.errorMessagesString());
@@ -109,7 +109,7 @@ public class Gff3DtoValidator {
 	}
 	
 	@Transactional
-	public void validateCdsEntry(Gff3DTO dto, Map<String, String> attributes, List<Long> idsAdded, BackendBulkDataProvider dataProvider) throws ValidationException {
+	public void validateCdsEntry(Gff3DTO dto, Map<String, String> attributes, List<Long> idsAdded, Species species) throws ValidationException {
 
 		CodingSequence cds = null;
 		
@@ -117,7 +117,7 @@ public class Gff3DtoValidator {
 			throw new ObjectValidationException(dto, "Invalid Type: " + dto.getType() + " for CDS Entity");
 		}
 		
-		String uniqueId = Gff3UniqueIdHelper.getExonOrCodingSequenceUniqueId(dto, attributes, dataProvider);
+		String uniqueId = Gff3UniqueIdHelper.getExonOrCodingSequenceUniqueId(dto, attributes, species);
 		SearchResponse<CodingSequence> searchResponse = codingSequenceDAO.findByField("uniqueId", uniqueId);
 		if (searchResponse != null && searchResponse.getSingleResult() != null) {
 			cds = searchResponse.getSingleResult();
@@ -130,7 +130,7 @@ public class Gff3DtoValidator {
 			cds.setName(attributes.get("Name"));
 		}
 		
-		ObjectResponse<CodingSequence> cdsResponse = validateGenomicEntity(cds, dto, attributes, dataProvider);
+		ObjectResponse<CodingSequence> cdsResponse = validateGenomicEntity(cds, dto, attributes, species);
 	
 		if (cdsResponse.hasErrors()) {
 			throw new ObjectValidationException(dto, cdsResponse.errorMessagesString());
@@ -143,7 +143,7 @@ public class Gff3DtoValidator {
 	}
 	
 	@Transactional
-	public void validateTranscriptEntry(Gff3DTO dto, Map<String, String> attributes, List<Long> idsAdded, BackendBulkDataProvider dataProvider) throws ValidationException {
+	public void validateTranscriptEntry(Gff3DTO dto, Map<String, String> attributes, List<Long> idsAdded, Species species) throws ValidationException {
 
 		if (!Gff3Constants.TRANSCRIPT_TYPES.contains(dto.getType())) {
 			throw new ObjectValidationException(dto, "Invalid Type: " + dto.getType() + " for Transcript Entity");
@@ -171,7 +171,7 @@ public class Gff3DtoValidator {
 			transcript.setName(null);
 		}
 		
-		ObjectResponse<Transcript> transcriptResponse = validateGenomicEntity(transcript, dto, attributes, dataProvider);
+		ObjectResponse<Transcript> transcriptResponse = validateGenomicEntity(transcript, dto, attributes, species);
 		if (!attributes.containsKey("ID")) {
 			transcriptResponse.addErrorMessage("attributes - ID", ValidationConstants.REQUIRED_MESSAGE);
 		}
@@ -192,11 +192,11 @@ public class Gff3DtoValidator {
 		}
 	}
 	
-	private <E extends GenomicEntity> ObjectResponse<E> validateGenomicEntity(E entity, Gff3DTO dto, Map<String, String> attributes, BackendBulkDataProvider dataProvider) {
+	private <E extends GenomicEntity> ObjectResponse<E> validateGenomicEntity(E entity, Gff3DTO dto, Map<String, String> attributes, Species species) {
 		ObjectResponse<E> geResponse = new ObjectResponse<E>();
 		
-		entity.setDataProvider(organizationService.getByAbbr(dataProvider.sourceOrganization).getEntity());
-		entity.setTaxon(ncbiTaxonTermService.getByCurie(dataProvider.canonicalTaxonCurie).getEntity());
+		entity.setDataProvider(organizationService.getByAbbr(species.getDataProvider().getAbbreviation()).getEntity());
+		entity.setTaxon(ncbiTaxonTermService.getByCurie(species.getTaxon().getCurie()).getEntity());
 		
 		geResponse.setEntity(entity);
 		
@@ -204,11 +204,11 @@ public class Gff3DtoValidator {
 	}
 
 	@Transactional
-	public CodingSequenceGenomicLocationAssociation validateCdsLocation(Gff3DTO gffEntry, CodingSequence cds, String assemblyId, BackendBulkDataProvider dataProvider) throws ObjectValidationException {
+	public CodingSequenceGenomicLocationAssociation validateCdsLocation(Gff3DTO gffEntry, CodingSequence cds, String assemblyId, Species species) throws ObjectValidationException {
 		AssemblyComponent assemblyComponent = null;
 		CodingSequenceGenomicLocationAssociation locationAssociation = new CodingSequenceGenomicLocationAssociation();
 		if (StringUtils.isNotBlank(gffEntry.getSeqId())) {
-			assemblyComponent = assemblyComponentService.fetchOrCreate(gffEntry.getSeqId(), assemblyId, dataProvider.canonicalTaxonCurie, dataProvider);
+			assemblyComponent = assemblyComponentService.fetchOrCreate(gffEntry.getSeqId(), assemblyId, species.getTaxon().getCurie(), species);
 			Map<String, Object> params = new HashMap<>();
 			params.put(EntityFieldConstants.CODING_SEQUENCE_ASSOCIATION_SUBJECT + ".id", cds.getId());
 			params.put(EntityFieldConstants.CODING_SEQUENCE_GENOMIC_LOCATION_ASSOCIATION_OBJECT + ".name", assemblyComponent.getName());
@@ -232,11 +232,11 @@ public class Gff3DtoValidator {
 	}
 
 	@Transactional
-	public CodingSequenceGenomicLocationAssociation validateCdsLocation(Gff3DTO gffEntry, CodingSequence cds, String assemblyId, BackendBulkDataProvider dataProvider, CodingSequenceGenomicLocationAssociation existingAssociation) throws ObjectValidationException {
+	public CodingSequenceGenomicLocationAssociation validateCdsLocation(Gff3DTO gffEntry, CodingSequence cds, String assemblyId, Species species, CodingSequenceGenomicLocationAssociation existingAssociation) throws ObjectValidationException {
 		AssemblyComponent assemblyComponent = null;
 		CodingSequenceGenomicLocationAssociation locationAssociation = existingAssociation != null ? existingAssociation : new CodingSequenceGenomicLocationAssociation();
 		if (StringUtils.isNotBlank(gffEntry.getSeqId())) {
-			assemblyComponent = assemblyComponentService.fetchOrCreate(gffEntry.getSeqId(), assemblyId, dataProvider.canonicalTaxonCurie, dataProvider);
+			assemblyComponent = assemblyComponentService.fetchOrCreate(gffEntry.getSeqId(), assemblyId, species.getTaxon().getCurie(), species);
 			locationAssociation.setCodingSequenceGenomicLocationAssociationObject(assemblyComponent);
 		}
 		locationAssociation.setCodingSequenceAssociationSubject(cds);
@@ -252,11 +252,11 @@ public class Gff3DtoValidator {
 	}
 
 	@Transactional
-	public ExonGenomicLocationAssociation validateExonLocation(Gff3DTO gffEntry, Exon exon, String assemblyId, BackendBulkDataProvider dataProvider) throws ObjectValidationException {
+	public ExonGenomicLocationAssociation validateExonLocation(Gff3DTO gffEntry, Exon exon, String assemblyId, Species species) throws ObjectValidationException {
 		AssemblyComponent assemblyComponent = null;
 		ExonGenomicLocationAssociation locationAssociation = new ExonGenomicLocationAssociation();
 		if (StringUtils.isNotBlank(gffEntry.getSeqId())) {
-			assemblyComponent = assemblyComponentService.fetchOrCreate(gffEntry.getSeqId(), assemblyId, dataProvider.canonicalTaxonCurie, dataProvider);
+			assemblyComponent = assemblyComponentService.fetchOrCreate(gffEntry.getSeqId(), assemblyId, species.getTaxon().getCurie(), species);
 			Map<String, Object> params = new HashMap<>();
 			params.put(EntityFieldConstants.EXON_ASSOCIATION_SUBJECT + ".id", exon.getId());
 			params.put(EntityFieldConstants.EXON_GENOMIC_LOCATION_ASSOCIATION_OBJECT + ".name", assemblyComponent.getName());
@@ -279,11 +279,11 @@ public class Gff3DtoValidator {
 	}
 
 	@Transactional
-	public ExonGenomicLocationAssociation validateExonLocation(Gff3DTO gffEntry, Exon exon, String assemblyId, BackendBulkDataProvider dataProvider, ExonGenomicLocationAssociation existingAssociation) throws ObjectValidationException {
+	public ExonGenomicLocationAssociation validateExonLocation(Gff3DTO gffEntry, Exon exon, String assemblyId, Species species, ExonGenomicLocationAssociation existingAssociation) throws ObjectValidationException {
 		AssemblyComponent assemblyComponent = null;
 		ExonGenomicLocationAssociation locationAssociation = existingAssociation != null ? existingAssociation : new ExonGenomicLocationAssociation();
 		if (StringUtils.isNotBlank(gffEntry.getSeqId())) {
-			assemblyComponent = assemblyComponentService.fetchOrCreate(gffEntry.getSeqId(), assemblyId, dataProvider.canonicalTaxonCurie, dataProvider);
+			assemblyComponent = assemblyComponentService.fetchOrCreate(gffEntry.getSeqId(), assemblyId, species.getTaxon().getCurie(), species);
 			locationAssociation.setExonGenomicLocationAssociationObject(assemblyComponent);
 		}
 		locationAssociation.setExonAssociationSubject(exon);
@@ -298,11 +298,11 @@ public class Gff3DtoValidator {
 	}
 
 	@Transactional
-	public TranscriptGenomicLocationAssociation validateTranscriptLocation(Gff3DTO gffEntry, Transcript transcript, String assemblyId, BackendBulkDataProvider dataProvider) throws ObjectValidationException {
+	public TranscriptGenomicLocationAssociation validateTranscriptLocation(Gff3DTO gffEntry, Transcript transcript, String assemblyId, Species species) throws ObjectValidationException {
 		AssemblyComponent assemblyComponent = null;
 		TranscriptGenomicLocationAssociation locationAssociation = new TranscriptGenomicLocationAssociation();
 		if (StringUtils.isNotBlank(gffEntry.getSeqId())) {
-			assemblyComponent = assemblyComponentService.fetchOrCreate(gffEntry.getSeqId(), assemblyId, dataProvider.canonicalTaxonCurie, dataProvider);
+			assemblyComponent = assemblyComponentService.fetchOrCreate(gffEntry.getSeqId(), assemblyId, species.getTaxon().getCurie(), species);
 			Map<String, Object> params = new HashMap<>();
 			params.put(EntityFieldConstants.TRANSCRIPT_ASSOCIATION_SUBJECT + ".id", transcript.getId());
 			params.put(EntityFieldConstants.TRANSCRIPT_GENOMIC_LOCATION_ASSOCIATION_OBJECT_ASSEMBLY, assemblyId);
@@ -325,11 +325,11 @@ public class Gff3DtoValidator {
 	}
 
 	@Transactional
-	public TranscriptGenomicLocationAssociation validateTranscriptLocation(Gff3DTO gffEntry, Transcript transcript, String assemblyId, BackendBulkDataProvider dataProvider, TranscriptGenomicLocationAssociation existingAssociation) throws ObjectValidationException {
+	public TranscriptGenomicLocationAssociation validateTranscriptLocation(Gff3DTO gffEntry, Transcript transcript, String assemblyId, Species species, TranscriptGenomicLocationAssociation existingAssociation) throws ObjectValidationException {
 		AssemblyComponent assemblyComponent = null;
 		TranscriptGenomicLocationAssociation locationAssociation = existingAssociation != null ? existingAssociation : new TranscriptGenomicLocationAssociation();
 		if (StringUtils.isNotBlank(gffEntry.getSeqId())) {
-			assemblyComponent = assemblyComponentService.fetchOrCreate(gffEntry.getSeqId(), assemblyId, dataProvider.canonicalTaxonCurie, dataProvider);
+			assemblyComponent = assemblyComponentService.fetchOrCreate(gffEntry.getSeqId(), assemblyId, species.getTaxon().getCurie(), species);
 			locationAssociation.setTranscriptGenomicLocationAssociationObject(assemblyComponent);
 		}
 		locationAssociation.setTranscriptAssociationSubject(transcript);
@@ -367,11 +367,11 @@ public class Gff3DtoValidator {
 	}
 
 	@Transactional
-	public GeneGenomicLocationAssociation validateGeneLocation(Gff3DTO gffEntry, Gene gene, String assemblyId, BackendBulkDataProvider dataProvider) throws ObjectValidationException {
+	public GeneGenomicLocationAssociation validateGeneLocation(Gff3DTO gffEntry, Gene gene, String assemblyId, Species species) throws ObjectValidationException {
 		AssemblyComponent assemblyComponent = null;
 		GeneGenomicLocationAssociation locationAssociation = new GeneGenomicLocationAssociation();
 		if (StringUtils.isNotBlank(gffEntry.getSeqId())) {
-			assemblyComponent = assemblyComponentService.fetchOrCreate(gffEntry.getSeqId(), assemblyId, dataProvider.canonicalTaxonCurie, dataProvider);
+			assemblyComponent = assemblyComponentService.fetchOrCreate(gffEntry.getSeqId(), assemblyId, species.getTaxon().getCurie(), species);
 			Map<String, Object> params = new HashMap<>();
 			params.put(EntityFieldConstants.GENE_ASSOCIATION_SUBJECT + ".id", gene.getId());
 			params.put(EntityFieldConstants.GENE_GENOMIC_LOCATION_ASSOCIATION_OBJECT_ASSEMBLY, assemblyId);

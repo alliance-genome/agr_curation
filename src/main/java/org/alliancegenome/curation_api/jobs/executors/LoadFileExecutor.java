@@ -13,7 +13,7 @@ import org.alliancegenome.curation_api.config.RestDefaultObjectMapper;
 import org.alliancegenome.curation_api.dao.loads.BulkLoadFileDAO;
 import org.alliancegenome.curation_api.dao.loads.BulkLoadFileExceptionDAO;
 import org.alliancegenome.curation_api.dao.loads.BulkLoadFileHistoryDAO;
-import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
+import org.alliancegenome.curation_api.model.entities.Species;
 import org.alliancegenome.curation_api.enums.JobStatus;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.exceptions.KnownIssueValidationException;
@@ -31,6 +31,7 @@ import org.alliancegenome.curation_api.response.APIResponse;
 import org.alliancegenome.curation_api.response.LoadHistoryResponce;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.APIVersionInfoService;
+import org.alliancegenome.curation_api.services.SpeciesService;
 import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
 import org.alliancegenome.curation_api.services.processing.LoadProcessDisplayService;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
@@ -58,6 +59,8 @@ public class LoadFileExecutor {
 	APIVersionInfoService apiVersionInfoService;
 	@Inject
 	SlackNotifier slackNotifier;
+	@Inject
+	SpeciesService speciesService;
 
 	record IdObject(long id) {
 	}
@@ -196,38 +199,38 @@ public class LoadFileExecutor {
 		List<Long> idsLoaded = new ArrayList<>();
 		BulkLoadFileHistory history = new BulkLoadFileHistory(objectList.size());
 		history = bulkLoadFileHistoryDAO.persist(history);
-		BackendBulkDataProvider dataProvider = null;
+		Species species = null;
 		if (dataProviderName != null) {
-			dataProvider = BackendBulkDataProvider.valueOf(dataProviderName);
+			species = speciesService.getByDisplayName(dataProviderName);
 		}
-		runLoad(service, history, dataProvider, objectList, idsLoaded, true, "Records");
+		runLoad(service, history, species, objectList, idsLoaded, true, "Records");
 		history.finishLoad();
 		return new LoadHistoryResponce(history);
 	}
 
-	protected <E extends AuditedObject, T extends BaseDTO> boolean runLoad(BaseUpsertServiceInterface<E, T> service, BulkLoadFileHistory history, BackendBulkDataProvider dataProvider, List<T> objectList, List<Long> idsAdded) {
-		return runLoad(service, history, dataProvider, objectList, idsAdded, true, "Records");
+	protected <E extends AuditedObject, T extends BaseDTO> boolean runLoad(BaseUpsertServiceInterface<E, T> service, BulkLoadFileHistory history, Species species, List<T> objectList, List<Long> idsAdded) {
+		return runLoad(service, history, species, objectList, idsAdded, true, "Records");
 	}
 
-	protected <E extends AuditedObject, T extends BaseDTO> boolean runLoad(BaseUpsertServiceInterface<E, T> service, BulkLoadFileHistory history, BackendBulkDataProvider dataProvider, List<T> objectList, List<Long> idsAdded, Boolean terminateFailing) {
-		return runLoad(service, history, dataProvider, objectList, idsAdded, terminateFailing, "Records");
+	protected <E extends AuditedObject, T extends BaseDTO> boolean runLoad(BaseUpsertServiceInterface<E, T> service, BulkLoadFileHistory history, Species species, List<T> objectList, List<Long> idsAdded, Boolean terminateFailing) {
+		return runLoad(service, history, species, objectList, idsAdded, terminateFailing, "Records");
 	}
 
-	protected <E extends AuditedObject, T extends BaseDTO> boolean runLoad(BaseUpsertServiceInterface<E, T> service, BulkLoadFileHistory history, BackendBulkDataProvider dataProvider, List<T> objectList, List<Long> idsAdded, String countType) {
-		return runLoad(service, history, dataProvider, objectList, idsAdded, true, countType);
+	protected <E extends AuditedObject, T extends BaseDTO> boolean runLoad(BaseUpsertServiceInterface<E, T> service, BulkLoadFileHistory history, Species species, List<T> objectList, List<Long> idsAdded, String countType) {
+		return runLoad(service, history, species, objectList, idsAdded, true, countType);
 	}
 
-	protected <E extends AuditedObject, T extends BaseDTO> boolean runLoad(BaseUpsertServiceInterface<E, T> service, BulkLoadFileHistory history, BackendBulkDataProvider dataProvider, List<T> objectList, List<Long> idsAdded, Boolean terminateFailing, String countType) {
+	protected <E extends AuditedObject, T extends BaseDTO> boolean runLoad(BaseUpsertServiceInterface<E, T> service, BulkLoadFileHistory history, Species species, List<T> objectList, List<Long> idsAdded, Boolean terminateFailing, String countType) {
 		String dataType = "";
 		if (CollectionUtils.isNotEmpty(objectList)) {
 			dataType = objectList.get(0).getClass().getSimpleName();
 			dataType = dataType.replace("FmsDTO", "");
 			dataType = dataType.replace("DTO", "");
 		}
-		return runLoad(service, history, dataProvider, objectList, idsAdded, terminateFailing, countType, dataType);
+		return runLoad(service, history, species, objectList, idsAdded, terminateFailing, countType, dataType);
 	}
 
-	protected <E extends AuditedObject, T extends BaseDTO> boolean runLoad(BaseUpsertServiceInterface<E, T> service, BulkLoadFileHistory history, BackendBulkDataProvider dataProvider, List<T> objectList, List<Long> idsAdded, Boolean terminateFailing, String countType, String dataType) {
+	protected <E extends AuditedObject, T extends BaseDTO> boolean runLoad(BaseUpsertServiceInterface<E, T> service, BulkLoadFileHistory history, Species species, List<T> objectList, List<Long> idsAdded, Boolean terminateFailing, String countType, String dataType) {
 		if (Thread.currentThread().isInterrupted()) {
 			history.setErrorMessage(ApiErrorException.INTERRUPTED_MESSAGE);
 			throw new RuntimeException(ApiErrorException.INTERRUPTED_MESSAGE);
@@ -236,8 +239,8 @@ public class LoadFileExecutor {
 		ph.addDisplayHandler(loadProcessDisplayService);
 		if (CollectionUtils.isNotEmpty(objectList)) {
 			String loadMessage = dataType + " update";
-			if (dataProvider != null) {
-				loadMessage = loadMessage + " for " + dataProvider.name();
+			if (species != null) {
+				loadMessage = loadMessage + " for " + species.getDisplayName();
 			}
 			ph.startProcess(loadMessage, objectList.size());
 
@@ -245,7 +248,7 @@ public class LoadFileExecutor {
 			updateHistory(history);
 			for (T dtoObject : objectList) {
 				try {
-					ObjectResponse<E> dbObject = service.upsert(dtoObject, dataProvider);
+					ObjectResponse<E> dbObject = service.upsert(dtoObject, species);
 					if (dbObject.hasWarnings()) {
 						for (Entry<String, String> entry : dbObject.getWarningMessages().entrySet()) {
 							history.incrementWarnings(countType);

@@ -6,9 +6,8 @@ import java.util.List;
 import java.util.zip.GZIPInputStream;
 
 import org.alliancegenome.curation_api.dao.PredictedVariantConsequenceDAO;
-import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
+import org.alliancegenome.curation_api.model.entities.Species;
 import org.alliancegenome.curation_api.jobs.util.CsvSchemaBuilder;
-import org.alliancegenome.curation_api.model.entities.bulkloads.BulkFMSLoad;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.VepTxtDTO;
 import org.alliancegenome.curation_api.services.PredictedVariantConsequenceService;
@@ -36,18 +35,17 @@ public class VepTranscriptExecutor extends LoadFileExecutor {
 			List<VepTxtDTO> vepData = it.readAll();
 			
 
-			BulkFMSLoad fmsLoad = (BulkFMSLoad) bulkLoadFileHistory.getBulkLoad();
-			BackendBulkDataProvider dataProvider = BackendBulkDataProvider.valueOf(fmsLoad.getFmsDataSubType());
+			Species species = bulkLoadFileHistory.getBulkLoad().getSpecies();
 
 			List<Long> consequenceIdsLoaded = new ArrayList<>();
-			List<Long> consequenceIdsBefore = predictedVariantConsequenceService.getIdsByDataProvider(dataProvider);
+			List<Long> consequenceIdsBefore = predictedVariantConsequenceService.getIdsBySpecies(species);
 			
 			bulkLoadFileHistory.setCount(vepData.size());
 			updateHistory(bulkLoadFileHistory);
 			
-			boolean success = runLoad(predictedVariantConsequenceService, bulkLoadFileHistory, dataProvider, vepData, consequenceIdsLoaded);
+			boolean success = runLoad(predictedVariantConsequenceService, bulkLoadFileHistory, species, vepData, consequenceIdsLoaded);
 			if (success) {
-				runCleanup(predictedVariantConsequenceService, bulkLoadFileHistory, dataProvider.name(), consequenceIdsBefore, consequenceIdsLoaded, "predicted variant consequences");
+				runCleanup(predictedVariantConsequenceService, bulkLoadFileHistory, species.getDisplayName(), consequenceIdsBefore, consequenceIdsLoaded, "predicted variant consequences");
 			}
 			bulkLoadFileHistory.finishLoad();
 			updateHistory(bulkLoadFileHistory);

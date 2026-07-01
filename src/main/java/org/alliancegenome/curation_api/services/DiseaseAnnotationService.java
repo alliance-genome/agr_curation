@@ -9,7 +9,7 @@ import org.alliancegenome.curation_api.constants.EntityFieldConstants;
 import org.alliancegenome.curation_api.dao.DiseaseAnnotationDAO;
 import org.alliancegenome.curation_api.dao.PersonDAO;
 import org.alliancegenome.curation_api.dao.base.BaseSQLDAO;
-import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
+import org.alliancegenome.curation_api.model.entities.Species;
 import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.base.BaseAnnotationCrudService;
@@ -68,21 +68,21 @@ public class DiseaseAnnotationService extends BaseAnnotationCrudService<DiseaseA
 		return getAllReferencedConditionRelationIds(diseaseAnnotationDAO);
 	}
 
-	protected <D extends BaseSQLDAO<?>> List<Long> getAnnotationIdsByDataProvider(D dao, BackendBulkDataProvider dataProvider) {
+	protected <D extends BaseSQLDAO<?>> List<Long> getAnnotationIdsBySpecies(D dao, Species species) {
 		Map<String, Object> params = new HashMap<>();
-		params.put(EntityFieldConstants.DATA_PROVIDER, dataProvider.sourceOrganization);
+		params.put(EntityFieldConstants.DATA_PROVIDER, species.getDataProvider().getAbbreviation());
 
-		if (StringUtils.equals(dataProvider.sourceOrganization, "RGD")) {
-			params.put(EntityFieldConstants.DA_SUBJECT_TAXON, dataProvider.canonicalTaxonCurie);
+		if (StringUtils.equals(species.getDataProvider().getAbbreviation(), "RGD")) {
+			params.put(EntityFieldConstants.DA_SUBJECT_TAXON, species.getTaxon().getCurie());
 		}
 
 		List<Long> annotationIds = dao.findIdsByParams(params);
 		annotationIds.removeIf(Objects::isNull);
 
-		if (StringUtils.equals(dataProvider.toString(), "HUMAN")) {
+		if (StringUtils.equals(species.getDisplayName(), "HUMAN")) {
 			Map<String, Object> newParams = new HashMap<>();
-			newParams.put(EntityFieldConstants.SECONDARY_DATA_PROVIDER, dataProvider.sourceOrganization);
-			newParams.put(EntityFieldConstants.DA_SUBJECT_TAXON, dataProvider.canonicalTaxonCurie);
+			newParams.put(EntityFieldConstants.SECONDARY_DATA_PROVIDER, species.getDataProvider().getAbbreviation());
+			newParams.put(EntityFieldConstants.DA_SUBJECT_TAXON, species.getTaxon().getCurie());
 			List<Long> additionalIds = dao.findIdsByParams(newParams);
 			annotationIds.addAll(additionalIds);
 		}

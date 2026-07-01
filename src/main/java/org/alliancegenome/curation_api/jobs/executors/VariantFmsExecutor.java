@@ -5,16 +5,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.zip.GZIPInputStream;
 
-import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
+import org.alliancegenome.curation_api.model.entities.Species;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException.ObjectUpdateExceptionData;
-import org.alliancegenome.curation_api.model.entities.bulkloads.BulkFMSLoad;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.VariantFmsDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.VariantIngestFmsDTO;
 import org.alliancegenome.curation_api.response.APIResponse;
 import org.alliancegenome.curation_api.response.LoadHistoryResponce;
+import org.alliancegenome.curation_api.services.SpeciesService;
 import org.alliancegenome.curation_api.services.VariantService;
 import org.alliancegenome.curation_api.services.associations.AlleleVariantAssociationService;
 import org.alliancegenome.curation_api.services.associations.CuratedVariantGenomicLocationAssociationService;
@@ -32,32 +32,31 @@ public class VariantFmsExecutor extends LoadFileExecutor {
 	@Inject CuratedVariantGenomicLocationAssociationService curatedVariantGenomicLocationAssociationService;
 	@Inject AlleleVariantAssociationService alleleVariantAssociationService;
 	@Inject VariantFmsDTOValidator variantFmsDtoValidator;
+	@Inject SpeciesService speciesService;
 
 	public void execLoad(BulkLoadFileHistory bulkLoadFileHistory) {
 		try {
-			BulkFMSLoad fms = (BulkFMSLoad) bulkLoadFileHistory.getBulkLoad();
-		
 			VariantIngestFmsDTO variantData = mapper.readValue(new GZIPInputStream(new FileInputStream(bulkLoadFileHistory.getBulkLoadFile().getLocalFilePath())), VariantIngestFmsDTO.class);
-			
+
 			if (variantData.getMetaData() != null && StringUtils.isNotBlank(variantData.getMetaData().getRelease())) {
 				bulkLoadFileHistory.getBulkLoadFile().setAllianceMemberReleaseVersion(variantData.getMetaData().getRelease());
 			}
-		
-			BackendBulkDataProvider dataProvider = BackendBulkDataProvider.valueOf(fms.getFmsDataSubType());
-		
+
+			Species species = bulkLoadFileHistory.getBulkLoad().getSpecies();
+
 			List<Long> entityIdsAdded = new ArrayList<>();
 			List<Long> locationIdsAdded = new ArrayList<>();
 			List<Long> associationIdsAdded = new ArrayList<>();
-			
+
 			bulkLoadFileDAO.merge(bulkLoadFileHistory.getBulkLoadFile());
-		
+
 			updateHistory(bulkLoadFileHistory);
-			
-			boolean success = runLoad(bulkLoadFileHistory, variantData.getData(), entityIdsAdded, locationIdsAdded, associationIdsAdded, dataProvider);
+
+			boolean success = runLoad(bulkLoadFileHistory, variantData.getData(), entityIdsAdded, locationIdsAdded, associationIdsAdded, species);
 			if (success) {
-				runCleanup(alleleVariantAssociationService, bulkLoadFileHistory, dataProvider.name(), alleleVariantAssociationService.getAssociationsByDataProvider(dataProvider), associationIdsAdded, "Allele variant association");
-				runCleanup(curatedVariantGenomicLocationAssociationService, bulkLoadFileHistory, dataProvider.name(), curatedVariantGenomicLocationAssociationService.getIdsByDataProvider(dataProvider), locationIdsAdded, "Curated variant genomic location association");
-				runCleanup(variantService, bulkLoadFileHistory, dataProvider.name(), variantService.getIdsByDataProvider(dataProvider.name()), entityIdsAdded, "Variant");
+				runCleanup(alleleVariantAssociationService, bulkLoadFileHistory, species.getDisplayName(), alleleVariantAssociationService.getAssociationsBySpecies(species), associationIdsAdded, "Allele variant association");
+				runCleanup(curatedVariantGenomicLocationAssociationService, bulkLoadFileHistory, species.getDisplayName(), curatedVariantGenomicLocationAssociationService.getIdsBySpecies(species), locationIdsAdded, "Curated variant genomic location association");
+				runCleanup(variantService, bulkLoadFileHistory, species.getDisplayName(), variantService.getIdsByDataProvider(species.getDisplayName()), entityIdsAdded, "Variant");
 			}
 			bulkLoadFileHistory.finishLoad();
 			updateHistory(bulkLoadFileHistory);
@@ -74,11 +73,11 @@ public class VariantFmsExecutor extends LoadFileExecutor {
 			List<Long> entityIdsAdded,
 			List<Long> locationIdsAdded,
 			List<Long> associationIdsAdded,
-			BackendBulkDataProvider dataProvider) {
+			Species species) {
 
 		ProcessDisplayHelper ph = new ProcessDisplayHelper();
 		ph.addDisplayHandler(loadProcessDisplayService);
-		ph.startProcess("Variant update for " + dataProvider.name(), data.size());
+		ph.startProcess("Variant update for " + species.getDisplayName(), data.size());
 		
 		history.setCount("Entities", data.size());
 		history.setCount("Locations", data.size());
@@ -90,7 +89,7 @@ public class VariantFmsExecutor extends LoadFileExecutor {
 			countType = "Entities";
 			Long variantId = null;
 			try {
-				variantId = variantFmsDtoValidator.validateVariant(dto, entityIdsAdded, dataProvider);
+				variantId = variantFmsDtoValidator.validateVariant(dto, entityIdsAdded, species);
 				history.incrementCompleted(countType);
 			} catch (ObjectUpdateException e) {
 				history.incrementFailed(countType);
@@ -139,10 +138,10 @@ public class VariantFmsExecutor extends LoadFileExecutor {
 
 	public APIResponse runLoadApi(String dataProviderName, List<VariantFmsDTO> gffData) {
 		List<Long> idsAdded = new ArrayList<>();
-		BackendBulkDataProvider dataProvider = BackendBulkDataProvider.valueOf(dataProviderName);
+		Species species = speciesService.getByDisplayName(dataProviderName);
 		BulkLoadFileHistory history = new BulkLoadFileHistory();
 		history = bulkLoadFileHistoryDAO.persist(history);
-		runLoad(history, gffData, idsAdded, idsAdded, idsAdded, dataProvider);
+		runLoad(history, gffData, idsAdded, idsAdded, idsAdded, species);
 		history.finishLoad();
 		
 		return new LoadHistoryResponce(history);

@@ -8,7 +8,7 @@ import java.util.Objects;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.associations.AlleleGeneAssociationDAO;
-import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
+import org.alliancegenome.curation_api.model.entities.Species;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
 import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.model.entities.Allele;
@@ -31,11 +31,11 @@ public class AlleleGeneAssociationDTOValidator extends AlleleGenomicEntityAssoci
 	@Inject AlleleService alleleService;
 	@Inject GeneService geneService;
 	
-	public ObjectResponse<AlleleGeneAssociation> validateAlleleGeneAssociationDTO(AlleleGeneAssociationDTO dto, BackendBulkDataProvider beDataProvider) throws ValidationException {
-		return validateAlleleGeneAssociationDTO(dto, beDataProvider, null, false);
+	public ObjectResponse<AlleleGeneAssociation> validateAlleleGeneAssociationDTO(AlleleGeneAssociationDTO dto, Species beSpecies) throws ValidationException {
+		return validateAlleleGeneAssociationDTO(dto, beSpecies, null, false);
 	}
 	
-	public ObjectResponse<AlleleGeneAssociation> validateAlleleGeneAssociationDTO(AlleleGeneAssociationDTO dto, BackendBulkDataProvider beDataProvider, Map<Long, Long> isAlleleOfAssociationMap, boolean isFullLoad) throws ValidationException {
+	public ObjectResponse<AlleleGeneAssociation> validateAlleleGeneAssociationDTO(AlleleGeneAssociationDTO dto, Species beSpecies, Map<Long, Long> isAlleleOfAssociationMap, boolean isFullLoad) throws ValidationException {
 		response = new ObjectResponse<AlleleGeneAssociation>();
 		
 		List<Long> subjectIds = null;
@@ -95,8 +95,8 @@ public class AlleleGeneAssociationDTOValidator extends AlleleGenomicEntityAssoci
 			Allele subject = alleleService.findByIdentifierString(dto.getAlleleIdentifier());
 			if (subject == null) {
 				response.addErrorMessage("allele_identifier", ValidationConstants.INVALID_MESSAGE + " (" + dto.getAlleleIdentifier() + ")");
-			} else if (beDataProvider != null && !subject.getDataProvider().getAbbreviation().equals(beDataProvider.sourceOrganization)) {
-				response.addErrorMessage("allele_identifier", ValidationConstants.INVALID_MESSAGE + " for " + beDataProvider.name() + " load (" + dto.getAlleleIdentifier() + ")");
+			} else if (beSpecies != null && !subject.getDataProvider().getAbbreviation().equals(beSpecies.getDataProvider().getAbbreviation())) {
+				response.addErrorMessage("allele_identifier", ValidationConstants.INVALID_MESSAGE + " for " + beSpecies.getDisplayName() + " load (" + dto.getAlleleIdentifier() + ")");
 			} else {
 				association.setAlleleAssociationSubject(subject);
 			}
@@ -113,8 +113,8 @@ public class AlleleGeneAssociationDTOValidator extends AlleleGenomicEntityAssoci
 			Gene object = geneService.findByIdentifierString(dto.getGeneIdentifier());
 			if (object == null) {
 				response.addErrorMessage("gene_identifier", ValidationConstants.INVALID_MESSAGE + " (" + dto.getGeneIdentifier() + ")");
-			} else if (beDataProvider != null && !object.getDataProvider().getAbbreviation().equals(beDataProvider.sourceOrganization)) {
-				response.addErrorMessage("gene_identifier", ValidationConstants.INVALID_MESSAGE + " for " + beDataProvider.name() + " load (" + dto.getGeneIdentifier() + ")");
+			} else if (beSpecies != null && !object.getDataProvider().getAbbreviation().equals(beSpecies.getDataProvider().getAbbreviation())) {
+				response.addErrorMessage("gene_identifier", ValidationConstants.INVALID_MESSAGE + " for " + beSpecies.getDisplayName() + " load (" + dto.getGeneIdentifier() + ")");
 			} else {
 				association.setAlleleGeneAssociationObject(object);
 			}

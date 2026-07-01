@@ -14,7 +14,7 @@ import org.alliancegenome.curation_api.dao.GenePhenotypeAnnotationDAO;
 import org.alliancegenome.curation_api.dao.PersonDAO;
 import org.alliancegenome.curation_api.dao.PhenotypeAnnotationDAO;
 import org.alliancegenome.curation_api.dao.base.BaseSQLDAO;
-import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
+import org.alliancegenome.curation_api.model.entities.Species;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
 import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.model.entities.AGMPhenotypeAnnotation;
@@ -81,30 +81,30 @@ public class PhenotypeAnnotationService extends BaseAnnotationCrudService<Phenot
 		return getAllReferencedConditionRelationIds(phenotypeAnnotationDAO);
 	}
 
-	public List<Long> getAnnotationIdsByDataProvider(BackendBulkDataProvider dataProvider) {
+	public List<Long> getAnnotationIdsBySpecies(Species species) {
 		List<Long> existingPhenotypeAnnotationIds = new ArrayList<>();
-		existingPhenotypeAnnotationIds.addAll(getAnnotationIdsByDataProvider(agmPhenotypeAnnotationDAO, dataProvider));
-		existingPhenotypeAnnotationIds.addAll(getAnnotationIdsByDataProvider(genePhenotypeAnnotationDAO, dataProvider));
-		existingPhenotypeAnnotationIds.addAll(getAnnotationIdsByDataProvider(allelePhenotypeAnnotationDAO, dataProvider));
+		existingPhenotypeAnnotationIds.addAll(getAnnotationIdsBySpecies(agmPhenotypeAnnotationDAO, species));
+		existingPhenotypeAnnotationIds.addAll(getAnnotationIdsBySpecies(genePhenotypeAnnotationDAO, species));
+		existingPhenotypeAnnotationIds.addAll(getAnnotationIdsBySpecies(allelePhenotypeAnnotationDAO, species));
 		return existingPhenotypeAnnotationIds;
 	}
 
-	protected <D extends BaseSQLDAO<?>> List<Long> getAnnotationIdsByDataProvider(D dao, BackendBulkDataProvider dataProvider) {
+	protected <D extends BaseSQLDAO<?>> List<Long> getAnnotationIdsBySpecies(D dao, Species species) {
 		Map<String, Object> params = new HashMap<>();
-		params.put(EntityFieldConstants.DATA_PROVIDER, dataProvider.sourceOrganization);
+		params.put(EntityFieldConstants.DATA_PROVIDER, species.getDataProvider().getAbbreviation());
 
-		if (StringUtils.equals(dataProvider.sourceOrganization, "RGD") || StringUtils.equals(dataProvider.sourceOrganization, "XB")) {
-			params.put(EntityFieldConstants.PA_SUBJECT_TAXON, dataProvider.canonicalTaxonCurie);
+		if (StringUtils.equals(species.getDataProvider().getAbbreviation(), "RGD") || StringUtils.equals(species.getDataProvider().getAbbreviation(), "XB")) {
+			params.put(EntityFieldConstants.PA_SUBJECT_TAXON, species.getTaxon().getCurie());
 		}
 
 		List<Long> annotationIds = dao.findIdsByParams(params);
 		return annotationIds;
 	}
 
-	public void preloadUniqueIds(BackendBulkDataProvider dataProvider) {
-		existingUniqueIds = phenotypeAnnotationDAO.findUniqueIdsByDataProvider(dataProvider.sourceOrganization);
-		Map<String, Long> inferredGeneIds = phenotypeAnnotationDAO.findInferredGeneIdsByDataProvider(dataProvider.sourceOrganization);
-		Map<String, Long> inferredAlleleIds = phenotypeAnnotationDAO.findInferredAlleleIdsByDataProvider(dataProvider.sourceOrganization);
+	public void preloadUniqueIds(Species species) {
+		existingUniqueIds = phenotypeAnnotationDAO.findUniqueIdsByDataProvider(species.getDataProvider().getAbbreviation());
+		Map<String, Long> inferredGeneIds = phenotypeAnnotationDAO.findInferredGeneIdsByDataProvider(species.getDataProvider().getAbbreviation());
+		Map<String, Long> inferredAlleleIds = phenotypeAnnotationDAO.findInferredAlleleIdsByDataProvider(species.getDataProvider().getAbbreviation());
 		genePhenotypeAnnotationFmsDtoValidator.setExistingUniqueIds(existingUniqueIds);
 		allelePhenotypeAnnotationFmsDtoValidator.setExistingUniqueIds(existingUniqueIds);
 		allelePhenotypeAnnotationFmsDtoValidator.setInferredGeneIds(inferredGeneIds);
@@ -121,7 +121,7 @@ public class PhenotypeAnnotationService extends BaseAnnotationCrudService<Phenot
 	}
 
 	@Transactional
-	public Long upsertPrimaryAnnotation(PhenotypeFmsDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
+	public Long upsertPrimaryAnnotation(PhenotypeFmsDTO dto, Species species) throws ValidationException {
 		if (StringUtils.isBlank(dto.getObjectId())) {
 			throw new ObjectValidationException(dto, "objectId - " + ValidationConstants.REQUIRED_MESSAGE);
 		}
@@ -150,13 +150,13 @@ public class PhenotypeAnnotationService extends BaseAnnotationCrudService<Phenot
 
 		Long annotationId;
 		if (phenotypeAnnotationSubject instanceof AffectedGenomicModel) {
-			AGMPhenotypeAnnotation annotation = agmPhenotypeAnnotationService.upsertPrimaryAnnotation((AffectedGenomicModel) phenotypeAnnotationSubject, dto, dataProvider);
+			AGMPhenotypeAnnotation annotation = agmPhenotypeAnnotationService.upsertPrimaryAnnotation((AffectedGenomicModel) phenotypeAnnotationSubject, dto, species);
 			annotationId = annotation.getId();
 		} else if (phenotypeAnnotationSubject instanceof Allele) {
-			AllelePhenotypeAnnotation annotation = allelePhenotypeAnnotationService.upsertPrimaryAnnotation((Allele) phenotypeAnnotationSubject, dto, dataProvider);
+			AllelePhenotypeAnnotation annotation = allelePhenotypeAnnotationService.upsertPrimaryAnnotation((Allele) phenotypeAnnotationSubject, dto, species);
 			annotationId = annotation.getId();
 		} else if (phenotypeAnnotationSubject instanceof Gene) {
-			GenePhenotypeAnnotation annotation = genePhenotypeAnnotationService.upsertPrimaryAnnotation((Gene) phenotypeAnnotationSubject, dto, dataProvider);
+			GenePhenotypeAnnotation annotation = genePhenotypeAnnotationService.upsertPrimaryAnnotation((Gene) phenotypeAnnotationSubject, dto, species);
 			annotationId = annotation.getId();
 		} else {
 			throw new ObjectValidationException(dto, "objectId - " + ValidationConstants.INVALID_TYPE_MESSAGE + " (" + dto.getObjectId() + ")");
@@ -186,7 +186,7 @@ public class PhenotypeAnnotationService extends BaseAnnotationCrudService<Phenot
 		return AnnotationUniqueIdHelper.getPhenotypeAnnotationUniqueId(dto, subjectIdentifier, refString);
 	}
 
-	public void addInferredOrAssertedEntities(PhenotypeFmsDTO dto, BackendBulkDataProvider dataProvider, Set<Long> idsAdded) throws ValidationException {
+	public void addInferredOrAssertedEntities(PhenotypeFmsDTO dto, Species species, Set<Long> idsAdded) throws ValidationException {
 		for (String primaryGeneticEntityCurie : dto.getPrimaryGeneticEntityIds()) {
 			GenomicEntity primaryAnnotationSubject = genomicEntityService.findByIdentifierString(primaryGeneticEntityCurie);
 			if (primaryAnnotationSubject == null) {
@@ -194,9 +194,9 @@ public class PhenotypeAnnotationService extends BaseAnnotationCrudService<Phenot
 			}
 
 			if (primaryAnnotationSubject instanceof AffectedGenomicModel) {
-				agmPhenotypeAnnotationService.addInferredOrAssertedEntities((AffectedGenomicModel) primaryAnnotationSubject, dto, dataProvider, idsAdded);
+				agmPhenotypeAnnotationService.addInferredOrAssertedEntities((AffectedGenomicModel) primaryAnnotationSubject, dto, species, idsAdded);
 			} else if (primaryAnnotationSubject instanceof Allele) {
-				allelePhenotypeAnnotationService.addInferredOrAssertedEntities((Allele) primaryAnnotationSubject, dto, dataProvider, idsAdded);
+				allelePhenotypeAnnotationService.addInferredOrAssertedEntities((Allele) primaryAnnotationSubject, dto, species, idsAdded);
 			} else {
 				throw new ObjectValidationException(dto, "primaryGeneticEntityIds - " + ValidationConstants.INVALID_TYPE_MESSAGE + " (" + primaryGeneticEntityCurie + ")");
 			}
