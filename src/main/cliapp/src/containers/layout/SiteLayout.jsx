@@ -13,6 +13,7 @@ import { AppConfig } from '../../AppConfig';
 import { CommandPalette } from '../../components/CommandPalette/CommandPalette';
 
 import { useApiVersion, useUserInfo } from '../../service/SiteQueryHooks';
+import { clearAffiliationOverride } from '../../utils/affiliation';
 
 import PrimeReact from 'primereact/api';
 import { Tooltip } from 'primereact/tooltip';
@@ -107,6 +108,7 @@ export const SiteLayout = (props) => {
 		try {
 			removeCookie('cognito-token-cookie', { path: '/' });
 			localStorage.removeItem('cognito-token-storage');
+			clearAffiliationOverride();
 			sessionStorage.setItem('cognito-just-logged-out', 'true');
 			setAuthState({ isAuthenticated: false });
 			await signOut();
