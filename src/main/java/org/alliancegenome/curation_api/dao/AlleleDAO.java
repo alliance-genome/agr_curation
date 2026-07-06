@@ -1214,6 +1214,57 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 			}
 		}
 
+		// Allele references
+		String alleleRefsQueryString = """
+			SELECT ar.allele_id, r.id AS ref_id, ice.curie, r.shortcitation, cr.referencedcurie, cr.displayname, rdp.name AS rdp_name, rdp.urltemplate
+			FROM allele_reference ar
+			JOIN reference r ON r.id = ar.references_id
+			JOIN informationcontententity ice ON ice.id = r.id
+			LEFT JOIN reference_crossreference rcr ON rcr.reference_id = r.id
+			LEFT JOIN crossreference cr ON cr.id = rcr.crossreferences_id
+			LEFT JOIN resourcedescriptorpage rdp ON rdp.id = cr.resourcedescriptorpage_id
+			WHERE ar.allele_id IN :alleleIds
+			""";
+		Query alleleRefsQuery = entityManager.createNativeQuery(alleleRefsQueryString);
+		alleleRefsQuery.setParameter("alleleIds", alleleIds);
+		List<Object[]> alleleRefsResults = alleleRefsQuery.getResultList();
+
+		Map<Long, Map<Long, Reference>> alleleRefMap = new HashMap<>();
+		for (Object[] row : alleleRefsResults) {
+			Long alleleId = (Long) row[0];
+			Long refId = (Long) row[1];
+			Map<Long, Reference> refMap = alleleRefMap.computeIfAbsent(alleleId, k -> new HashMap<>());
+			Reference ref = refMap.get(refId);
+			if (ref == null) {
+				ref = new Reference();
+				ref.setCurie((String) row[2]);
+				ref.setShortCitation((String) row[3]);
+				ref.setCrossReferences(new HashSet<>());
+				refMap.put(refId, ref);
+			}
+			if (row[4] != null) {
+				CrossReference cr = new CrossReference();
+				cr.setReferencedCurie((String) row[4]);
+				cr.setDisplayName((String) row[5]);
+				if (row[6] != null) {
+					ResourceDescriptorPage rdp = new ResourceDescriptorPage();
+					rdp.setName((String) row[6]);
+					rdp.setUrlTemplate((String) row[7]);
+					cr.setResourceDescriptorPage(rdp);
+				}
+				if (ref.getCrossReferences().stream().noneMatch(c -> cr.getReferencedCurie().equals(c.getReferencedCurie()))) {
+					ref.getCrossReferences().add(cr);
+				}
+			}
+		}
+
+		for (Map.Entry<Long, Map<Long, Reference>> entry : alleleRefMap.entrySet()) {
+			Allele allele = alleleMap.get(entry.getKey());
+			if (allele != null) {
+				allele.setReferences(new ArrayList<>(entry.getValue().values()));
+			}
+		}
+
 		// Build documents
 		List<AlleleSummaryDocument> docs = new ArrayList<>();
 		for (Allele allele : alleles) {

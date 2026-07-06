@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.alliancegenome.curation_api.dao.ReferenceDAO;
 import org.alliancegenome.curation_api.model.entities.Reference;
@@ -28,7 +29,12 @@ public class ReferenceService extends BaseEntityCrudService<Reference, Reference
 
 	Integer referenceRequest = 0;
 	Date referenceRequestShallow;
-	HashMap<String, Reference> referenceCacheMap = new HashMap<>();
+	// SCRUM-6219: cache Reference *ids*, not entities. A load runs many per-record
+	// transactions in one request scope, so a cached Reference entity is detached in
+	// later transactions; indexing the owning Allele then fails to lazily initialize
+	// Reference.crossReferences ("no session") and the load rolls back. Caching ids and
+	// re-fetching per transaction keeps every Reference attached to the current session.
+	HashMap<String, Long> referenceCacheMap = new HashMap<>();
 	HashMap<String, Reference> shallowReferenceCacheMap = new HashMap<>();
 
 	@Override
@@ -63,12 +69,23 @@ public class ReferenceService extends BaseEntityCrudService<Reference, Reference
 		}
 		
 		if (referenceCacheMap.containsKey(curieOrXref)) {
-			return referenceCacheMap.get(curieOrXref);
+			Long cachedId = referenceCacheMap.get(curieOrXref);
+			// Negative cache hit: previously resolved to no reference.
+			if (cachedId == null) {
+				return null;
+			}
+			// Re-fetch by id so the Reference is attached to the current transaction's
+			// session (a cached entity would be detached). find() returns null if the id
+			// was never committed (e.g. a rolled-back create) — fall through and re-resolve.
+			reference = referenceDAO.find(cachedId);
+			if (reference != null) {
+				return reference;
+			}
 		}
-		
+
 		Log.debug("Reference not cached, caching reference: (" + curieOrXref + ")");
 		reference = findOrCreateReference(curieOrXref);
-		referenceCacheMap.put(curieOrXref, reference);
+		referenceCacheMap.put(curieOrXref, reference == null ? null : reference.getId());
 		referenceRequest++;
 
 		return reference;
@@ -76,7 +93,11 @@ public class ReferenceService extends BaseEntityCrudService<Reference, Reference
 	
 	public void cacheReferences() {
 		if (referenceCacheMap.isEmpty()) {
-			referenceCacheMap = referenceDAO.getReferenceMap(true);
+			// SCRUM-6219: cache ids only (entities would be detached in later per-record
+			// transactions). Re-fetched per lookup in retrieveFromDbOrLiteratureService.
+			for (Map.Entry<String, Reference> entry : referenceDAO.getReferenceMap(true).entrySet()) {
+				referenceCacheMap.put(entry.getKey(), entry.getValue() == null ? null : entry.getValue().getId());
+			}
 		}
 	}
 
@@ -92,7 +113,7 @@ public class ReferenceService extends BaseEntityCrudService<Reference, Reference
 				reference = shallowReferenceCacheMap.get(curieOrXref);
 			} else {
 				reference = findOrCreateReference(curieOrXref);
-				referenceCacheMap.put(curieOrXref, reference);
+				referenceCacheMap.put(curieOrXref, reference == null ? null : reference.getId());
 			}
 		}
 		return reference;
