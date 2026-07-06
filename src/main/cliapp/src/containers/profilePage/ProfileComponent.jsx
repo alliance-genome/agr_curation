@@ -2,17 +2,22 @@ import { useState, useRef } from 'react';
 import { Card } from 'primereact/card';
 import { DataTable } from 'primereact/datatable';
 import { Dropdown } from 'primereact/dropdown';
+import { Button } from 'primereact/button';
 import { Column } from 'primereact/column';
 import { useAuth } from '../../hooks/useAuth';
 import { Panel } from 'primereact/panel';
 import { Ripple } from 'primereact/ripple';
+import { Tooltip } from 'primereact/tooltip';
 import * as jose from 'jose';
-import { QUERY_KEYS, useRegenApiToken, useUserInfo } from '../../service/SiteQueryHooks';
+import { QUERY_KEYS, useApiVersion, useRegenApiToken, useUserInfo } from '../../service/SiteQueryHooks';
 import { ConfirmButton } from '../../components/ConfirmButton';
+import { useAffiliation } from '../../contexts/AffiliationContext';
+import { MOD_AFFILIATIONS, canSwitchAffiliation, getCognitoGroups, getTrueStaffGroups } from '../../utils/affiliation';
 import { useGetUserSettings } from '../../service/useGetUserSettings';
 import JsonView from 'react18-json-view';
 import 'react18-json-view/src/style.css';
 import 'react18-json-view/src/dark.css';
+import './ProfileComponent.css';
 import { PersonSettingsService } from '../../service/PersonSettingsService';
 import { useControlledVocabularyService } from '../../service/useControlledVocabularyService';
 import { Toast } from 'primereact/toast';
@@ -43,6 +48,16 @@ export const ProfileComponent = () => {
 	const { authState } = useAuth();
 	const toast_topright = useRef(null);
 	const { data: localUserInfo } = useUserInfo(authState);
+	const { data: apiVersion } = useApiVersion(authState);
+
+	// SCRUM-2831: client-side MOD affiliation switching for Tester / POTester users.
+	const { override, setOverride, reset } = useAffiliation();
+	const canSwitch = canSwitchAffiliation({
+		groups: getCognitoGroups(),
+		env: apiVersion?.env,
+		isDev: import.meta.env.DEV,
+	});
+	const selectedAffiliation = override || getTrueStaffGroups()[0] || null;
 
 	const personSettingsService = new PersonSettingsService();
 	const booleanTerms = useControlledVocabularyService('generic_boolean_terms');
@@ -137,6 +152,32 @@ export const ProfileComponent = () => {
 		return <p style={{ wordBreak: 'break-all' }}>{props.value}</p>;
 	};
 
+	// SCRUM-2831: Tester / POTester users get an inline MOD affiliation switcher on the
+	// Alliance Member row; everyone else just sees their true affiliation as plain text.
+	const affiliationTemplate = (props) => {
+		if (!canSwitch) return textTemplate(props);
+		return (
+			<div className="affiliation-switcher">
+				<Dropdown
+					value={selectedAffiliation}
+					options={MOD_AFFILIATIONS}
+					optionLabel="abbreviation"
+					optionValue="group"
+					placeholder="Select an affiliation"
+					onChange={(e) => setOverride(e.value)}
+				/>
+				<Button label="Reset Affiliation" icon="pi pi-undo" onClick={reset} disabled={!override} />
+				<Tooltip target=".affiliation-help" style={{ maxWidth: '24rem' }} />
+				<i
+					className="affiliation-help pi pi-question-circle"
+					style={{ cursor: 'help' }}
+					data-pr-position="right"
+					data-pr-tooltip="Temporarily switch the MOD affiliation used by the curation interface to test MOD-specific behavior. This change is local to your browser only — your true affiliation remains the source of truth. Please switch back to your default before doing any actual curation work."
+				/>
+			</div>
+		);
+	};
+
 	const headerTemplate = (options, props) => {
 		const toggleIcon = options.collapsed ? 'pi pi-chevron-down' : 'pi pi-chevron-up';
 		const className = `${options.className} justify-content-start`;
@@ -208,7 +249,7 @@ export const ProfileComponent = () => {
 		{
 			name: 'Alliance Member',
 			value: localUserInfo?.allianceMember?.fullName + ' (' + localUserInfo?.allianceMember?.abbreviation + ')',
-			template: textTemplate,
+			template: affiliationTemplate,
 		},
 		{ name: 'Cognito Email', value: localUserInfo?.authEmail, template: textTemplate },
 		{ name: 'Cognito Access Token', value: cognitoToken?.accessToken?.accessToken, template: textTemplate },
