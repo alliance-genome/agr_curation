@@ -65,6 +65,7 @@ export const AlleleGeneAssociationsTable = () => {
 				field: 'relation.name',
 				columnKey: 'relation.name',
 				header: 'Relation',
+				sortable: true,
 				filterConfig: FILTER_CONFIGS.alleleGeneRelationFilterConfig,
 			},
 			{
