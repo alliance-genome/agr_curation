@@ -117,7 +117,10 @@
 	color: var(--text-color-secondary);
 }
 
-.command-palette-trigger.layout-topbar-button {
+// Scoped under .layout-topbar so these win the specificity tie against the base
+// `.layout-topbar .layout-topbar-button` rules (both 0-2-0); otherwise the button
+// gets forced back to a 3rem circle, off-centering the icon and overflowing the badge.
+.layout-topbar .command-palette-trigger.layout-topbar-button {
 	width: auto;
 	border-radius: 8px;
 	gap: 0.5rem;

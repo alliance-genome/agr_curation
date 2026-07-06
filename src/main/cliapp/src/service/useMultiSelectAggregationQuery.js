@@ -11,10 +11,11 @@ export function useMultiSelectAggregationQuery({
 	fieldSet,
 }) {
 	const { data: aggData, isSuccess } = useQuery({
-		queryKey: [filterConfig?.aggregationFieldSet, currentFilters],
+		queryKey: [filterConfig?.aggregationFieldSet],
 		queryFn: () => searchService.search(endpoint, 0, 0, null, {}, {}, filterConfig?.aggregationFieldSet.fields),
 		placeholderData: (previousData) => previousData,
 		refetchOnWindowFocus: false,
+		staleTime: Infinity,
 	});
 
 	useEffect(() => {
@@ -32,7 +33,7 @@ export function useMultiSelectAggregationQuery({
 
 		if (currentFilters && currentFilters[fieldSet.filterName]) {
 			let newSelectedOptions = [];
-			let queryStrings = currentFilters[fieldSet.filterName][fieldSet.fields[0]].queryString.split(' ');
+			let queryStrings = currentFilters[fieldSet.filterName][fieldSet.fields[0]]?.queryString?.split(' ') || [];
 			for (let i in tmp) {
 				for (let j in queryStrings) {
 					if (tmp[i].optionLabel === queryStrings[j].toLowerCase()) {
@@ -40,7 +41,7 @@ export function useMultiSelectAggregationQuery({
 					}
 				}
 			}
-			if (newSelectedOptions.length > 0) setSelectedOptions(newSelectedOptions);
+			setSelectedOptions(newSelectedOptions);
 		} else {
 			setSelectedOptions([]);
 		}

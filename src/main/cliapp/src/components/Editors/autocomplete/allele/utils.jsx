@@ -1,4 +1,4 @@
-import { buildAutocompleteFilter, autocompleteSearch } from '../../../../utils/utils';
+import { buildAutocompleteFilter, autocompleteSearch, buildCuratorSpeciesFilter } from '../../../../utils/utils';
 import { SearchService } from '../../../../service/SearchService';
 import { Endpoints } from '../../../../constants/Endpoints';
 import { SubjectAutocompleteTemplate } from '../base/templates/SubjectAutocompleteTemplate';
@@ -12,6 +12,7 @@ export const assertedAllelesSearchConfig = {
 	endpoint: Endpoints.Entity.ALLELE,
 	autocompleteFields: getAutocompleteFields(AUTOCOMPLETE_CONFIGS.biologicalEntityAutocompleteConfig),
 	filterName: 'assertedAllelesFilter',
+	otherFilters: () => buildCuratorSpeciesFilter(),
 	valueDisplay: alleleValueDisplay,
 };
 
@@ -19,6 +20,7 @@ export const diseaseGeneticModifierAllelesSearchConfig = {
 	endpoint: Endpoints.Entity.ALLELE,
 	autocompleteFields: getAutocompleteFields(AUTOCOMPLETE_CONFIGS.biologicalEntityAutocompleteConfig),
 	filterName: 'geneticModifierAllelesFilter',
+	otherFilters: () => buildCuratorSpeciesFilter(),
 	valueDisplay: alleleValueDisplay,
 };
 
@@ -26,7 +28,8 @@ const buildSearchFn = (config) => (event, setFiltered, setInputValue) => {
 	const searchService = new SearchService();
 	setInputValue(event.query);
 	const filter = buildAutocompleteFilter(event, config.autocompleteFields);
-	autocompleteSearch(searchService, config.endpoint, config.filterName, filter, setFiltered, config.otherFilters);
+	const otherFilters = typeof config.otherFilters === 'function' ? config.otherFilters() : config.otherFilters;
+	autocompleteSearch(searchService, config.endpoint, config.filterName, filter, setFiltered, otherFilters);
 };
 
 export const assertedAllelesSearch = buildSearchFn(assertedAllelesSearchConfig);
