@@ -15,7 +15,6 @@ import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException.ObjectUpdateExceptionData;
 import org.alliancegenome.curation_api.jobs.util.CsvSchemaBuilder;
 import org.alliancegenome.curation_api.model.entities.GeneOntologyAnnotation;
-import org.alliancegenome.curation_api.model.entities.bulkloads.BulkFMSLoad;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
 import org.alliancegenome.curation_api.model.ingest.dto.GeneOntologyAnnotationDTO;
 import org.alliancegenome.curation_api.response.ObjectListResponse;
@@ -43,8 +42,12 @@ public class GeneOntologyAnnotationExecutor extends LoadFileExecutor {
 
 	public void execLoad(BulkLoadFileHistory bulkLoadFileHistory) throws IOException {
 
-		BulkFMSLoad fmsLoad = (BulkFMSLoad) bulkLoadFileHistory.getBulkLoad();
-		BackendBulkDataProvider dataProvider = BackendBulkDataProvider.valueOf(fmsLoad.getFmsDataSubType());
+		// SCRUM-6075: GAF loads can now be either FMS loads (HUMAN, XB) or URL loads
+		// (the GO consortium moved the MOD GAFs to direct download URLs). Derive the
+		// data provider from the load name ("<PROVIDER> GAF Load") instead of casting
+		// to BulkFMSLoad, so both load types are handled the same way.
+		String name = bulkLoadFileHistory.getBulkLoad().getName();
+		BackendBulkDataProvider dataProvider = BackendBulkDataProvider.valueOf(name.substring(0, name.indexOf(" ")));
 
 		CsvSchema csvSchema = CsvSchemaBuilder.gafSchema();
 		CsvMapper csvMapper = new CsvMapper();
@@ -61,8 +64,6 @@ public class GeneOntologyAnnotationExecutor extends LoadFileExecutor {
 		}
 		gafData.subList(0, gafHeaderData.size()).clear();
 
-		String name = bulkLoadFileHistory.getBulkLoad().getName();
-
 		List<Long> gafIdsBefore = geneOntologyAnnotationService.getAllGafIdsPerProvider(dataProvider);
 		Log.info("Prior ID count: " + gafIdsBefore.size());
 		List<Long> gafIdsLoaded = new ArrayList<>();
@@ -76,7 +77,7 @@ public class GeneOntologyAnnotationExecutor extends LoadFileExecutor {
 				if (dataProvider == BackendBulkDataProvider.HUMAN || dataProvider == BackendBulkDataProvider.MGI) {
 					prefix = "";
 				}
-				if (dataProvider == BackendBulkDataProvider.XB) {
+				if (dataProvider == BackendBulkDataProvider.XB || dataProvider == BackendBulkDataProvider.XBXL || dataProvider == BackendBulkDataProvider.XBXT) {
 					prefix = dataProvider.resourceDescriptor + ":";
 				}
 				
