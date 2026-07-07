@@ -76,7 +76,7 @@ export function FilterComponentMultiSelect({ isInEditMode, filterConfig, current
 						delim = ' ';
 					}
 					filter[fieldSet.fields[0]] = {
-						useKeywordFields: fieldSet.useKeywordFields,
+						useKeywordFields: filterConfig.useKeywordFields,
 						tokenOperator: 'OR',
 						queryString: queryString,
 					};
