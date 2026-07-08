@@ -20,5 +20,5 @@ public class GeneSummaryDocument extends ESDocument {
 	private Gene gene;
 
 	@JsonView(CurationView.GeneSummaryDocument.class)
-	private Set<String> references;
+	private Set<String> referenceCuries;
 }
