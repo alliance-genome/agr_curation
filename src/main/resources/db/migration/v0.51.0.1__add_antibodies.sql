@@ -104,3 +104,27 @@ INSERT INTO vocabularyterm (id, name, vocabulary_id) SELECT nextval('vocabularyt
 
 INSERT INTO vocabularytermset (id, name, vocabularylabel, vocabularytermsetvocabulary_id, vocabularytermsetdescription)
 	SELECT nextval('vocabularytermset_seq'), 'Antibody note types', 'antibody_note_type', id, 'Note types applicable to antibodies' FROM vocabulary WHERE vocabularylabel = 'note_type';
+
+INSERT INTO bulkloadgroup (id, name) VALUES (nextval('bulkloadgroup_seq'), 'Direct (LinkML) DQM Antibody Loads');
+
+INSERT INTO bulkload (id, backendbulkloadtype, name, bulkloadstatus, group_id)
+	SELECT nextval('bulkload_seq'), 'ANTIBODY', 'WB Antibody Load', 'STOPPED', id FROM bulkloadgroup WHERE name = 'Direct (LinkML) DQM Antibody Loads';
+INSERT INTO bulkload (id, backendbulkloadtype, name, bulkloadstatus, group_id)
+	SELECT nextval('bulkload_seq'), 'ANTIBODY', 'MGI Antibody Load', 'STOPPED', id FROM bulkloadgroup WHERE name = 'Direct (LinkML) DQM Antibody Loads';
+INSERT INTO bulkload (id, backendbulkloadtype, name, bulkloadstatus, group_id)
+	SELECT nextval('bulkload_seq'), 'ANTIBODY', 'FB Antibody Load', 'STOPPED', id FROM bulkloadgroup WHERE name = 'Direct (LinkML) DQM Antibody Loads';
+INSERT INTO bulkload (id, backendbulkloadtype, name, bulkloadstatus, group_id)
+	SELECT nextval('bulkload_seq'), 'ANTIBODY', 'XB Antibody Load', 'STOPPED', id FROM bulkloadgroup WHERE name = 'Direct (LinkML) DQM Antibody Loads';
+INSERT INTO bulkload (id, backendbulkloadtype, name, bulkloadstatus, group_id)
+	SELECT nextval('bulkload_seq'), 'ANTIBODY', 'ZFIN Antibody Load', 'STOPPED', id FROM bulkloadgroup WHERE name = 'Direct (LinkML) DQM Antibody Loads';
+
+INSERT INTO bulkmanualload (id, dataprovider)
+	SELECT id, 'WB' FROM bulkload WHERE name = 'WB Antibody Load';
+INSERT INTO bulkmanualload (id, dataprovider)
+	SELECT id, 'MGI' FROM bulkload WHERE name = 'MGI Antibody Load';
+INSERT INTO bulkmanualload (id, dataprovider)
+	SELECT id, 'FB' FROM bulkload WHERE name = 'FB Antibody Load';
+INSERT INTO bulkmanualload (id, dataprovider)
+	SELECT id, 'XB' FROM bulkload WHERE name = 'XB Antibody Load';
+INSERT INTO bulkmanualload (id, dataprovider)
+	SELECT id, 'ZFIN' FROM bulkload WHERE name = 'ZFIN Antibody Load';
