@@ -33,7 +33,10 @@ import lombok.ToString;
 
 @Inheritance(strategy = InheritanceType.JOINED)
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
-@JsonSubTypes({@JsonSubTypes.Type(value = Construct.class, name = "Construct")})
+@JsonSubTypes({
+	@JsonSubTypes.Type(value = Construct.class, name = "Construct"),
+	@JsonSubTypes.Type(value = Antibody.class, name = "Antibody")
+})
 @Entity
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
