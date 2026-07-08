@@ -128,3 +128,8 @@ INSERT INTO bulkmanualload (id, dataprovider)
 	SELECT id, 'XB' FROM bulkload WHERE name = 'XB Antibody Load';
 INSERT INTO bulkmanualload (id, dataprovider)
 	SELECT id, 'ZFIN' FROM bulkload WHERE name = 'ZFIN Antibody Load';
+
+INSERT INTO vocabularytermset_vocabularyterm (vocabularytermsets_id, memberterms_id)
+	SELECT (SELECT id FROM vocabularytermset WHERE vocabularylabel = 'antibody_note_type'), vt.id
+	FROM vocabularyterm vt JOIN vocabulary v ON v.id = vt.vocabulary_id
+	WHERE v.vocabularylabel = 'note_type' AND vt.name = 'comment';
