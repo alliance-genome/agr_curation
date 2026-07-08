@@ -1,0 +1,6 @@
+/* SCRUM-2831: inline MOD affiliation switcher on the Profile page's Alliance Member row. */
+.affiliation-switcher {
+	display: flex;
+	align-items: center;
+	gap: 1.5rem;
+}

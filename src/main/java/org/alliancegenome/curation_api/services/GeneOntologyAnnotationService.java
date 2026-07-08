@@ -117,7 +117,11 @@ public class GeneOntologyAnnotationService extends BaseEntityCrudService<GeneOnt
 
 	public List<Long> getAllGafIdsPerProvider(BackendBulkDataProvider dataProvider) {
 		Map<String, Object> params = new HashMap<>();
-		if (dataProvider == BackendBulkDataProvider.HUMAN || dataProvider == BackendBulkDataProvider.RGD) {
+		// SCRUM-6075: XBXL (X. laevis) and XBXT (X. tropicalis) share the "XB" data
+		// provider abbreviation but have distinct taxa, so scope their before-set by
+		// taxon; otherwise each Xenbase species load's cleanup would delete the other's.
+		if (dataProvider == BackendBulkDataProvider.HUMAN || dataProvider == BackendBulkDataProvider.RGD
+				|| dataProvider == BackendBulkDataProvider.XBXL || dataProvider == BackendBulkDataProvider.XBXT) {
 			params.put("singleGene.taxon.curie", dataProvider.canonicalTaxonCurie);
 		} else {
 			params.put("singleGene.taxon.species.dataProvider.abbreviation", dataProvider.sourceOrganization);
