@@ -25,6 +25,7 @@ import jakarta.persistence.Index;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -36,6 +37,14 @@ import lombok.ToString;
 @Schema(name = "antibody", description = "Antibody: an immunoglobulin reagent used for detection")
 @ToString(exclude = { "antibodyTargetGenes", "references", "crossReferences" }, callSuper = true)
 @AGRCurationSchemaVersion(min = "2.11.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { Reagent.class })
+@Table(indexes = {
+	@Index(name = "antibody_clonality_index", columnList = "clonality_id"),
+	@Index(name = "antibody_heavychainisotype_index", columnList = "heavychainisotype_id"),
+	@Index(name = "antibody_lightchainisotype_index", columnList = "lightchainisotype_id"),
+	@Index(name = "antibody_antigentaxon_index", columnList = "antigentaxon_id"),
+	@Index(name = "antibody_taxon_index", columnList = "taxon_id"),
+	@Index(name = "antibody_originalreference_index", columnList = "originalreference_id")
+})
 public class Antibody extends Reagent {
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
