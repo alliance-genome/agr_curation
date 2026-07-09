@@ -150,6 +150,7 @@ public class PhenotypeAnnotationFmsDTOValidator {
 					if (refCurie.startsWith("MIM:") || refCurie.startsWith("ORPHA:")) {
 						ExternalDatabaseReference externalDbRef = new ExternalDatabaseReference();
 						externalDbRef.setCurie(refCurie);
+						externalDbRef.setResourceDescriptorPage(resourceDescriptorPageService.resolvePageForReferenceCurie(refCurie));
 						reference = externalDatabaseReferenceDAO.persist(externalDbRef);
 					} else {
 						refResponse.addErrorMessage("evidence - publicationId", ValidationConstants.INVALID_MESSAGE + " (" + refCurie + ")");
