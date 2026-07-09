@@ -6,6 +6,7 @@ public enum BackendBulkLoadType {
 	ALLELE("json"),
 	AGM("json"),
 	CONSTRUCT("json"),
+	ANTIBODY("json"),
 	AGM_DISEASE_ANNOTATION("json"),
 	ALLELE_DISEASE_ANNOTATION("json"),
 	GENE_DISEASE_ANNOTATION("json"),
