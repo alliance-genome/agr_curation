@@ -98,7 +98,7 @@ quarkus.oidc.token.issuer=https://cognito-idp.us-east-1.amazonaws.com/${cognito.
 quarkus.oidc.client-id=""
 quarkus.oidc.user-info-path=""
 
-quarkus.oidc-client.auth-server-url=${cognito.domain}
+quarkus.oidc-client.auth-server-url=https://auth.alliancegenome.org
 quarkus.oidc-client.discovery-enabled=false
 quarkus.oidc-client.token-path=/oauth2/token
 quarkus.oidc-client.grant.type=client
