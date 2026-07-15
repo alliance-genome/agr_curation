@@ -32,6 +32,12 @@ public interface ResourceDescriptorPageCrudInterface extends BaseIdCrudInterface
 	@Tag(name = "Elastic Search Browsing Endpoints")
 	SearchResponse<ResourceDescriptorPage> search(@DefaultValue("0") @QueryParam("page") Integer page, @DefaultValue("10") @QueryParam("limit") Integer limit, HashMap<String, Object> params);
 
+	@POST
+	@Path("/findAllForPublic")
+	@JsonView(CurationView.ForPublic.class)
+	@Tag(name = "Public Web API Database Searching Endpoints")
+	SearchResponse<ResourceDescriptorPage> findAllForPublic(@DefaultValue("0") @QueryParam("page") Integer page, @DefaultValue("10") @QueryParam("limit") Integer limit, HashMap<String, Object> params);
+
 	@Override
 	@POST
 	@Path("/")

@@ -1,10 +1,13 @@
 package org.alliancegenome.curation_api.controllers.crud;
 
+import java.util.HashMap;
+
 import org.alliancegenome.curation_api.controllers.base.BaseEntityCrudController;
 import org.alliancegenome.curation_api.dao.ResourceDescriptorPageDAO;
 import org.alliancegenome.curation_api.interfaces.crud.ResourceDescriptorPageCrudInterface;
 import org.alliancegenome.curation_api.model.entities.ResourceDescriptorPage;
 import org.alliancegenome.curation_api.response.ObjectResponse;
+import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.ResourceDescriptorPageService;
 
 import jakarta.annotation.PostConstruct;
@@ -36,6 +39,11 @@ public class ResourceDescriptorPageCrudController extends BaseEntityCrudControll
 	@Override
 	public ObjectResponse<ResourceDescriptorPage> update(ResourceDescriptorPage entity) {
 		return resourceDescriptorPageService.update(entity);
+	}
+
+	@Override
+	public SearchResponse<ResourceDescriptorPage> findAllForPublic(Integer page, Integer limit, HashMap<String, Object> params) {
+		return find(page, limit, params);
 	}
 
 }
