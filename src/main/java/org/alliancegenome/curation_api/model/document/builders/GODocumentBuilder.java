@@ -45,7 +45,9 @@ public class GODocumentBuilder {
 				String speciesAbbreviation = gene.getTaxon().getSpecies().getAbbreviation();
 				String geneDisplayString = geneSymbol + " (" + speciesAbbreviation + ")";
 
-				String taxonName = gene.getTaxon().getName();
+				String taxonName = gene.getTaxon().getSpecies().getFullName() != null
+						? gene.getTaxon().getSpecies().getFullName()
+						: gene.getTaxon().getName();
 
 				genes.add(geneDisplayString);
 				associatedSpecies.add(taxonName);
