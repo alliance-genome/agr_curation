@@ -1,0 +1,21 @@
+src/main/java/org/alliancegenome/curation_api/model/entities/HTPExpressionDatasetAnnotation.java
+  s_46e6dd2afa1c44::t_ed663b75c28176 58-61,68,86
+src/main/resources/db/migration/v0.52.0.2__htp_dataset_annotation_join_fk_cascade.sql
+  s_46e6dd2afa1c44::t_8cef78c1388238 1-20
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "83a697efa99e1aee4d4b70a00f2fd038dd2588ca",
+  "prompts": {},
+  "sessions": {
+    "s_46e6dd2afa1c44": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "ecb54b08-882d-41f3-970b-1d137f8c882e",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Ketaki Kindre <kkindre@caltech.edu>"
+    }
+  }
+}
