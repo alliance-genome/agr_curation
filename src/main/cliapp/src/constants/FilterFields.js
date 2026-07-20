@@ -253,6 +253,15 @@ export const FIELD_SETS = Object.freeze({
 			'crossReferences.referencedCurie',
 		],
 	},
+	// Ontology-term indexes embed crossReferences with @IndexedEmbedded(includeDepth=1),
+	// so the depth-2 path crossReferences.resourceDescriptorPage.name is NOT indexed
+	// (biological-entity indexes include it explicitly via includePaths). Searching it
+	// throws a Hibernate Search "Unknown field" on /doterm and the other ontology
+	// endpoints (SCRUM-6220), so ontology autocompletes use this depth-1-only variant.
+	ontologyCrossReferencesFieldSet: {
+		filterName: 'crossReferencesFilter',
+		fields: ['crossReferences.displayName', 'crossReferences.referencedCurie'],
+	},
 	daConditionRelationsHandleFieldSet: {
 		filterName: 'daConditionRelationHandleFilter',
 		fields: ['conditionRelations.handle', 'conditionRelations.conditions.conditionSummary'],
@@ -1329,6 +1338,15 @@ export const FILTER_CONFIGS = Object.freeze({
 // single set of bridge fields routes to gene fields on Gene docs, allele fields
 // on Allele docs, etc.
 export const AUTOCOMPLETE_CONFIGS = Object.freeze({
+	// Bridged-only field set. Every path here exists on the index of every
+	// BiologicalEntity subtype: curie/primaryExternalId/modInternalId are native,
+	// crossReferences.* is native via GenomicEntity, and name/symbol/synonyms/
+	// secondaryIds are declared for all subtypes by BiologicalEntityTypeBridge.
+	// Therefore this config is safe to send to the per-type /gene, /allele, /agm
+	// endpoints AND the combined /biologicalentity endpoint.
+	// Do NOT add per-type slot-annotation paths (geneSymbol.*, geneSystematicName.*,
+	// alleleSymbol.*, agm*.* etc.) here: a single-type index rejects fields it does
+	// not have with a Hibernate Search "Unknown field" error
 	biologicalEntityAutocompleteConfig: {
 		fieldSets: [
 			FIELD_SETS.curieFieldSet,
@@ -1339,37 +1357,22 @@ export const AUTOCOMPLETE_CONFIGS = Object.freeze({
 			FIELD_SETS.symbolFieldSet,
 			FIELD_SETS.synonymsFieldSet,
 			FIELD_SETS.secondaryIdsBridgedFieldSet,
-			// geneSystematicName is the only commonly-searched name component not
-			// surfaced by BiologicalEntityTypeBridge (which only writes
-			// geneSymbol/geneFullName/geneSynonyms into the flat fields). Yeast
-			// curators identify genes by systematic name (e.g. YGR240C). The path
-			// resolves to nothing on non-Gene documents, so adding it is safe.
-			FIELD_SETS.geneSystematicNameFieldSet,
 		],
 	},
-	// Used for the disease-annotation Subject picker against the BIOLOGICAL_ENTITY
-	// endpoint, which aggregates Gene/Allele/AGM/Variant/SQTR/Transcript/etc. The
-	// bridge fields would match all subtypes; we scope to Gene/Allele/AGM by
-	// listing per-type slot-annotation paths instead. Paths that don't exist on a
-	// document type silently no-op, so non-Gene/Allele/AGM docs cannot match.
-	diseaseAnnotationSubjectAutocompleteConfig: {
+	// Gene-only autocomplete: the bridged fields plus geneSystematicName, which is
+	// indexed on Gene only (yeast curators identify genes by systematic name, e.g.
+	// YGR240C). Use solely for searches targeting the /gene endpoint.
+	geneAutocompleteConfig: {
 		fieldSets: [
 			FIELD_SETS.curieFieldSet,
 			FIELD_SETS.primaryExternalIdFieldSet,
 			FIELD_SETS.modInternalIdFieldSet,
 			FIELD_SETS.crossReferencesFieldSet,
-			FIELD_SETS.geneSymbolFieldSet,
-			FIELD_SETS.geneNameFieldSet,
-			FIELD_SETS.geneSynonymsFieldSet,
+			FIELD_SETS.nameFieldSet,
+			FIELD_SETS.symbolFieldSet,
+			FIELD_SETS.synonymsFieldSet,
+			FIELD_SETS.secondaryIdsBridgedFieldSet,
 			FIELD_SETS.geneSystematicNameFieldSet,
-			FIELD_SETS.geneSecondaryIdsFieldSet,
-			FIELD_SETS.alleleSymbolFieldSet,
-			FIELD_SETS.alleleNameFieldSet,
-			FIELD_SETS.alleleSynonymsFieldSet,
-			FIELD_SETS.alleleSecondaryIdsFieldSet,
-			FIELD_SETS.agmNameFieldSet,
-			FIELD_SETS.agmSynonymsFieldSet,
-			FIELD_SETS.agmSecondaryIdsFieldSet,
 		],
 	},
 	assertedGenesAutocompleteConfig: {
@@ -1390,7 +1393,7 @@ export const AUTOCOMPLETE_CONFIGS = Object.freeze({
 		fieldSets: [
 			FIELD_SETS.curieFieldSet,
 			FIELD_SETS.nameFieldSet,
-			FIELD_SETS.crossReferencesFieldSet,
+			FIELD_SETS.ontologyCrossReferencesFieldSet,
 			FIELD_SETS.secondaryIdentifiersFieldSet,
 			FIELD_SETS.ontologySynonymsFieldSet,
 		],

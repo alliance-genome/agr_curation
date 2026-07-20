@@ -67,6 +67,6 @@ public class AlleleGeneAssociation extends AlleleGenomicEntityAssociation {
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
 	@JsonView({ CurationView.FieldsOnly.class, CurationView.AlleleView.class, CurationView.ForPublic.class })
-	@JsonIgnoreProperties({ "alleleGeneAssociations", "constructGenomicEntityAssociations", "sequenceTargetingReagentGeneAssociations", "transcriptGeneAssociations" })
+	@JsonIgnoreProperties({ "alleleGeneAssociations", "constructGenomicEntityAssociations", "sequenceTargetingReagentGeneAssociations", "transcriptGeneAssociations", "geneGenomicLocationAssociations" })
 	private Gene alleleGeneAssociationObject;
 }

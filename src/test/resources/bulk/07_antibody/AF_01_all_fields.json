@@ -1,0 +1,35 @@
+[
+  {
+    "primary_external_id": "WB:AntibodyTest0001",
+    "internal": true,
+    "obsolete": true,
+    "created_by_curie": "ANTIBODYTEST:Person0001",
+    "updated_by_curie": "ANTIBODYTEST:Person0002",
+    "date_created": "2022-03-09T22:10:12+00:00",
+    "date_updated": "2022-03-10T22:10:12+00:00",
+    "name": "anti-WNT-4",
+    "clonality_name": "monoclonal",
+    "heavy_chain_isotype_name": "IgG",
+    "light_chain_isotype_name": "k",
+    "antigen_taxon_curie": "NCBITaxon:6239",
+    "taxon_curie": "NCBITaxon:9606",
+    "reference_curies": [
+      "PMID:25920550"
+    ],
+    "original_reference_curie": "PMID:25920550",
+    "secondary_identifiers": [
+      "WB:AntibodyTest-legacy-0001"
+    ],
+    "data_provider_dto": {
+      "internal": false,
+      "obsolete": false,
+      "source_organization_abbreviation": "WB",
+      "cross_reference_dto": {
+        "referenced_curie": "TEST:0001",
+        "page_area": "homepage",
+        "display_name": "TEST:0001",
+        "prefix": "TEST"
+      }
+    }
+  }
+]

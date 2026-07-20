@@ -1,5 +1,5 @@
 import { AutocompleteSingleTableEditor } from '../base/AutocompleteSingleTableEditor';
-import { getIdentifier } from '../../../../utils/utils';
+import { getIdentifier, buildCuratorSpeciesFilter } from '../../../../utils/utils';
 import { AUTOCOMPLETE_CONFIGS, getAutocompleteFields } from '../../../../constants/FilterFields';
 import { getBiologicalEntityEndpoint, biologicalEntityValueDisplay } from './utils';
 
@@ -9,8 +9,9 @@ export const BiologicalEntityTableEditor = ({ editorOptions, errorMessagesRef, u
 		field="diseaseAnnotationSubject"
 		subField="primaryExternalId"
 		endpoint={getBiologicalEntityEndpoint(editorOptions.rowData)}
-		autocompleteFields={getAutocompleteFields(AUTOCOMPLETE_CONFIGS.diseaseAnnotationSubjectAutocompleteConfig)}
+		autocompleteFields={getAutocompleteFields(AUTOCOMPLETE_CONFIGS.biologicalEntityAutocompleteConfig)}
 		filterName="diseaseAnnotationSubjectFilter"
+		otherFilters={buildCuratorSpeciesFilter}
 		initialValue={getIdentifier(editorOptions.rowData.diseaseAnnotationSubject)}
 		valueDisplay={biologicalEntityValueDisplay}
 		errorMessagesRef={errorMessagesRef}
