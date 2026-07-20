@@ -11,12 +11,23 @@ export function FilterComponentInputText({ isInEditMode, filterConfig, currentFi
 	);
 
 	useEffect(() => {
-		setFilterValue(
-			currentFilters && currentFilters[fieldSet.filterName]
-				? currentFilters[fieldSet.filterName][fieldSet.fields[0]].queryString
-				: ''
-		);
-	}, [filterValue, currentFilters, fieldSet]);
+		if (currentFilters && currentFilters[fieldSet.filterName]) {
+			const existingFilter = currentFilters[fieldSet.filterName];
+			const queryString = existingFilter[fieldSet.fields[0]]?.queryString;
+			setFilterValue(queryString || '');
+			// If saved filter is missing any fields (e.g. fieldSet was expanded), re-apply with all fields
+			if (queryString && fieldSet.fields.some((f) => !existingFilter[f])) {
+				const newFilter = {};
+				fieldSet.fields.forEach((key) => {
+					newFilter[key] = { queryString, tokenOperator: 'AND' };
+				});
+				onFilter({ ...currentFilters, [fieldSet.filterName]: newFilter });
+			}
+		} else {
+			setFilterValue('');
+		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [currentFilters, fieldSet]);
 
 	return (
 		<InputText

@@ -13,6 +13,7 @@ export function FilterComponentBinaryDropDown({ isInEditMode, filterConfig, curr
 			options={options.current}
 			showClear
 			placeholder="Select"
+			panelStyle={{ maxWidth: '30vw' }}
 			onChange={(e) => {
 				let filter = {};
 				if (e.target.value && e.target.value.length !== 0) {
