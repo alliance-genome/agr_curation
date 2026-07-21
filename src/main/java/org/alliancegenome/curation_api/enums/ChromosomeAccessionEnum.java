@@ -177,33 +177,7 @@ public enum ChromosomeAccessionEnum {
 	ZFIN_GRCz12tu_23("23", "RefSeq:NC_133198.1", "GRCz12tu"),
 	ZFIN_GRCz12tu_24("24", "RefSeq:NC_133199.1", "GRCz12tu"),
 	ZFIN_GRCz12tu_25("25", "RefSeq:NC_133200.1", "GRCz12tu"),
-	ZFIN_GRCz12tu_MT("MT", "RefSeq:NC_002333.2", "GRCz12tu"),
-	// SCRUM-6236: RGD GRCr8 (NCBI GCF_036323735.1). Chromosomes 1-20, X, Y have new RefSeq
-	// accessions (NC_086019.1-NC_086040.1). GRCr8 has no RefSeq mitochondrion accession
-	// (GenBank CM070413.1 only), so MT is not added here.
-	RGD_GRCr8_1("1", "RefSeq:NC_086019.1", "GRCr8"),
-	RGD_GRCr8_2("2", "RefSeq:NC_086020.1", "GRCr8"),
-	RGD_GRCr8_3("3", "RefSeq:NC_086021.1", "GRCr8"),
-	RGD_GRCr8_4("4", "RefSeq:NC_086022.1", "GRCr8"),
-	RGD_GRCr8_5("5", "RefSeq:NC_086023.1", "GRCr8"),
-	RGD_GRCr8_6("6", "RefSeq:NC_086024.1", "GRCr8"),
-	RGD_GRCr8_7("7", "RefSeq:NC_086025.1", "GRCr8"),
-	RGD_GRCr8_8("8", "RefSeq:NC_086026.1", "GRCr8"),
-	RGD_GRCr8_9("9", "RefSeq:NC_086027.1", "GRCr8"),
-	RGD_GRCr8_10("10", "RefSeq:NC_086028.1", "GRCr8"),
-	RGD_GRCr8_11("11", "RefSeq:NC_086029.1", "GRCr8"),
-	RGD_GRCr8_12("12", "RefSeq:NC_086030.1", "GRCr8"),
-	RGD_GRCr8_13("13", "RefSeq:NC_086031.1", "GRCr8"),
-	RGD_GRCr8_14("14", "RefSeq:NC_086032.1", "GRCr8"),
-	RGD_GRCr8_15("15", "RefSeq:NC_086033.1", "GRCr8"),
-	RGD_GRCr8_16("16", "RefSeq:NC_086034.1", "GRCr8"),
-	RGD_GRCr8_17("17", "RefSeq:NC_086035.1", "GRCr8"),
-	RGD_GRCr8_18("18", "RefSeq:NC_086036.1", "GRCr8"),
-	RGD_GRCr8_19("19", "RefSeq:NC_086037.1", "GRCr8"),
-	RGD_GRCr8_20("20", "RefSeq:NC_086038.1", "GRCr8"),
-	RGD_GRCr8_X("X", "RefSeq:NC_086039.1", "GRCr8"),
-	RGD_GRCr8_Y("Y", "RefSeq:NC_086040.1", "GRCr8");
-
+	ZFIN_GRCz12tu_MT("MT", "RefSeq:NC_002333.2", "GRCz12tu");
 
 	public String chromosomeName;
 	public String accession;
