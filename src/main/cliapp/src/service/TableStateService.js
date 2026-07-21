@@ -1,3 +1,5 @@
+import { getEffectiveStaffGroups } from '../utils/affiliation';
+
 const modTableSettings = {
 	RGDStaff: {
 		DiseaseAnnotations: {
@@ -422,8 +424,8 @@ const modTableSettings = {
 };
 
 export function getModTableState(table, defaultColumnWidths, defaultColumnNames) {
-	const cognitoToken = JSON.parse(localStorage.getItem('cognito-token-storage'));
-	const mod = cognitoToken?.accessToken?.payload?.['cognito:groups']?.filter((group) => group.includes('Staff'));
+	// Effective MOD honors a tester's client-side affiliation override (SCRUM-2831).
+	const mod = getEffectiveStaffGroups();
 	const modTableState = structuredClone(
 		modTableSettings[mod] ? modTableSettings[mod][table] : modTableSettings['Default'][table]
 	);
@@ -435,8 +437,8 @@ export function getModTableState(table, defaultColumnWidths, defaultColumnNames)
 }
 
 export function getModFormFields(table) {
-	const cognitoToken = JSON.parse(localStorage.getItem('cognito-token-storage'));
-	const mod = cognitoToken?.accessToken?.payload?.['cognito:groups']?.filter((group) => group.includes('Staff'));
+	// Effective MOD honors a tester's client-side affiliation override (SCRUM-2831).
+	const mod = getEffectiveStaffGroups();
 	const modFormFields = modTableSettings[mod]
 		? modTableSettings[mod][table]['selectedFormFields']
 		: modTableSettings['Default'][table]['selectedFormFields'];
