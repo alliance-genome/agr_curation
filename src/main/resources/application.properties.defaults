@@ -92,10 +92,21 @@ quarkus.oidc.authentication.user-info-required=false
 %test.quarkus.test.class-orderer=org.junit.jupiter.api.ClassOrderer$OrderAnnotation
 
 cognito.user-pool-id=
+cognito.domain=https://auth.alliancegenome.org
 quarkus.oidc.auth-server-url=https://cognito-idp.us-east-1.amazonaws.com/${cognito.user-pool-id}
 quarkus.oidc.token.issuer=https://cognito-idp.us-east-1.amazonaws.com/${cognito.user-pool-id}
 quarkus.oidc.client-id=""
 quarkus.oidc.user-info-path=""
+
+quarkus.oidc-client.auth-server-url=https://auth.alliancegenome.org
+quarkus.oidc-client.discovery-enabled=false
+quarkus.oidc-client.token-path=/oauth2/token
+quarkus.oidc-client.grant.type=client
+quarkus.oidc-client.scopes=curation-api/admin
+quarkus.oidc-client.client-id=6umhkcuinvjdlmtp5841ites7g
+quarkus.oidc-client.early-tokens-acquisition=false
+%dev.quarkus.oidc-client.enabled=false
+%test.quarkus.oidc-client.enabled=false
 
 # SCRUM-6078 — base URL of the agr_mati service. MatiService builds its
 # REST client with this baseUri and forwards the caller's JWT as the

@@ -23,6 +23,7 @@ import { AutocompleteFormEditor } from '../../components/Editors/autocomplete/ba
 import {
 	autocompleteSearch,
 	buildAutocompleteFilter,
+	buildCuratorSpeciesFilter,
 	validateRequiredFields,
 	validateFormBioEntityFields,
 	validateTable,
@@ -42,6 +43,7 @@ import { GeneticModifierGenesAdditionalFieldData } from '../../components/FieldD
 import ErrorBoundary from '../../components/Error/ErrorBoundary';
 import { ConfirmButton } from '../../components/ConfirmButton';
 import { getDefaultFormState, getModFormFields } from '../../service/TableStateService';
+import { getEffectiveStaffGroups } from '../../utils/affiliation';
 import { useGetUserSettings } from '../../service/useGetUserSettings';
 import { useVocabularyTermSetService } from '../../service/useVocabularyTermSetService';
 import { Endpoints } from '../../constants/Endpoints';
@@ -107,8 +109,8 @@ export const NewAnnotationForm = ({
 		'Genetic Modifier Genes',
 		'Internal',
 	];
-	const cognitoToken = JSON.parse(localStorage.getItem('cognito-token-storage'));
-	const mod = cognitoToken?.accessToken?.payload?.['cognito:groups']?.filter((group) => group.includes('Staff'));
+	// Effective MOD honors a tester's client-side affiliation override (SCRUM-2831).
+	const mod = getEffectiveStaffGroups();
 	let defaultUserSettings = getDefaultFormState('DiseaseAnnotations', newAnnotationOptionalFields, undefined);
 	const { settings: settingsKey, mutate: setSettingsKey } = useGetUserSettings(
 		'DiseaseAnnotationsFormSettings',
@@ -238,10 +240,13 @@ export const NewAnnotationForm = ({
 		const endpoint = Endpoints.Entity.AGM;
 		const filterName = 'sgdStrainBackgroundFilter';
 		const filter = buildAutocompleteFilter(event, autocompleteFields);
+		// SGD strain background is always Saccharomyces cerevisiae S288C; match by
+		// taxon curie (exact) rather than the brittle taxon.name full-text filter.
 		const otherFilters = {
 			taxonFilter: {
-				'taxon.name': {
-					queryString: 'Saccharomyces cerevisiae',
+				'taxon.curie': {
+					queryString: 'NCBITaxon:559292',
+					useKeywordFields: true,
 				},
 			},
 		};
@@ -255,7 +260,7 @@ export const NewAnnotationForm = ({
 		const filterName = 'geneticModifierAgmsFilter';
 		const filter = buildAutocompleteFilter(event, autocompleteFields);
 		setQuery(event.query);
-		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered);
+		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered, buildCuratorSpeciesFilter());
 	};
 
 	const geneticModifierAllelesSearch = (event, setFiltered, setQuery) => {
@@ -264,16 +269,16 @@ export const NewAnnotationForm = ({
 		const filterName = 'geneticModifierAllelesFilter';
 		const filter = buildAutocompleteFilter(event, autocompleteFields);
 		setQuery(event.query);
-		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered);
+		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered, buildCuratorSpeciesFilter());
 	};
 
 	const geneticModifierGenesSearch = (event, setFiltered, setQuery) => {
-		const autocompleteFields = getAutocompleteFields(AUTOCOMPLETE_CONFIGS.biologicalEntityAutocompleteConfig);
+		const autocompleteFields = getAutocompleteFields(AUTOCOMPLETE_CONFIGS.geneAutocompleteConfig);
 		const endpoint = Endpoints.Entity.GENE;
 		const filterName = 'geneticModifierGenesFilter';
 		const filter = buildAutocompleteFilter(event, autocompleteFields);
 		setQuery(event.query);
-		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered);
+		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered, buildCuratorSpeciesFilter());
 	};
 
 	const onSubjectChange = (event) => {
@@ -316,12 +321,12 @@ export const NewAnnotationForm = ({
 	};
 
 	const subjectSearch = (event, setFiltered, setQuery) => {
-		const autocompleteFields = getAutocompleteFields(AUTOCOMPLETE_CONFIGS.diseaseAnnotationSubjectAutocompleteConfig);
+		const autocompleteFields = getAutocompleteFields(AUTOCOMPLETE_CONFIGS.biologicalEntityAutocompleteConfig);
 		const endpoint = Endpoints.Entity.BIOLOGICAL_ENTITY;
 		const filterName = 'diseaseAnnotationSubjectFilter';
 		const filter = buildAutocompleteFilter(event, autocompleteFields);
 		setQuery(event.query);
-		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered);
+		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered, buildCuratorSpeciesFilter());
 	};
 
 	const onDiseaseChange = (event) => {
@@ -406,7 +411,7 @@ export const NewAnnotationForm = ({
 	};
 
 	const withSearch = (event, setFiltered, setInputValue) => {
-		const autocompleteFields = getAutocompleteFields(AUTOCOMPLETE_CONFIGS.biologicalEntityAutocompleteConfig);
+		const autocompleteFields = getAutocompleteFields(AUTOCOMPLETE_CONFIGS.geneAutocompleteConfig);
 		const endpoint = Endpoints.Entity.GENE;
 		const filterName = 'withFilter';
 		const filter = buildAutocompleteFilter(event, autocompleteFields);
@@ -456,7 +461,7 @@ export const NewAnnotationForm = ({
 		const filterName = 'assertedGenesFilter';
 		const filter = buildAutocompleteFilter(event, autocompleteFields);
 		setInputValue(event.query);
-		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered);
+		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered, buildCuratorSpeciesFilter());
 	};
 
 	const assertedAllelesSearch = (event, setFiltered, setInputValue) => {
@@ -465,7 +470,7 @@ export const NewAnnotationForm = ({
 		const filterName = 'assertedAllelesFilter';
 		const filter = buildAutocompleteFilter(event, autocompleteFields);
 		setInputValue(event.query);
-		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered);
+		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered, buildCuratorSpeciesFilter());
 	};
 
 	const updateFormFields = (updatedFields) => {

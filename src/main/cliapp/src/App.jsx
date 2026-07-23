@@ -3,6 +3,7 @@ import cognitoConfig from './cognitoAuthConfig';
 import { CookiesProvider } from 'react-cookie';
 
 import { Login } from './Login';
+import { AffiliationProvider } from './contexts/AffiliationContext';
 
 import AppRoutes from './routes';
 import './App.scss';
@@ -14,7 +15,9 @@ const App = () => {
 	return (
 		<CookiesProvider defaultSetOptions={{ path: '/' }}>
 			<Login>
-				<AppRoutes />
+				<AffiliationProvider>
+					<AppRoutes />
+				</AffiliationProvider>
 			</Login>
 		</CookiesProvider>
 	);

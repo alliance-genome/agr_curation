@@ -8,8 +8,9 @@ import org.alliancegenome.mati.interfaces.IdentifierResourceRESTInterface;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.jwt.JsonWebToken;
 
+import io.quarkus.arc.Arc;
 import jakarta.annotation.PostConstruct;
-import jakarta.enterprise.context.RequestScoped;
+import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import lombok.extern.log4j.Log4j2;
 import si.mazi.rescu.RestProxyFactory;
@@ -24,7 +25,7 @@ import si.mazi.rescu.RestProxyFactory;
  * e.g. AGRKB:100000000000001 for disease_annotation counter 1.
  */
 @Log4j2
-@RequestScoped
+@ApplicationScoped
 public class MatiService {
 	public static final String SUBDOMAIN_DISEASE_ANNOTATION = "disease_annotation";
 
@@ -33,6 +34,9 @@ public class MatiService {
 
 	@Inject
 	JsonWebToken jsonWebToken;
+
+	@Inject
+	AdminTokenService adminTokenService;
 
 	private IdentifierResourceRESTInterface matiApi;
 
@@ -69,10 +73,18 @@ public class MatiService {
 			return List.of();
 		}
 
-		// Forward the incoming caller's JWT as the Authorization header; MaTI
-		// validates it against the same Cognito user pool. getRawToken() returns
-		// the bare token, so prefix the standard "Bearer " scheme.
-		String authorization = "Bearer " + jsonWebToken.getRawToken();
+		// Forward the incoming curator's JWT as the Authorization header when one
+		// is present; MaTI validates it against the same Cognito user pool. On
+		// background/load paths there is no curator token, so fall back to the
+		// admin (machine-to-machine) token. getRawToken()/getAdminAccessToken()
+		// return the bare token, so prefix the standard "Bearer " scheme.
+		String curatorRawToken = getCuratorRawToken();
+		String authorization;
+		if (curatorRawToken != null && !curatorRawToken.isBlank()) {
+			authorization = "Bearer " + curatorRawToken;
+		} else {
+			authorization = "Bearer " + adminTokenService.getAdminAccessToken();
+		}
 		IdentifiersRange range = matiApi.increment(authorization, subdomain, n);
 
 		long firstCtr = range.getFirst().getCounter();
@@ -98,5 +110,22 @@ public class MatiService {
 			curies.add(String.format("AGRKB:%s%012d", code, c));
 		}
 		return curies;
+	}
+
+	/**
+	 * Returns the raw curator JWT if a request context is active and carries one,
+	 * otherwise {@code null}. JsonWebToken is request-scoped, so touching it with
+	 * no active request context (background/load threads) would throw; guard on
+	 * the request context first so a missing token cleanly means "use admin token".
+	 */
+	private String getCuratorRawToken() {
+		if (!Arc.container().requestContext().isActive()) {
+			return null;
+		}
+		try {
+			return jsonWebToken.getRawToken();
+		} catch (Exception e) {
+			return null;
+		}
 	}
 }
