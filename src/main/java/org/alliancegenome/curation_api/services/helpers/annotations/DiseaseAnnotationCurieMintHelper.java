@@ -72,17 +72,35 @@ public class DiseaseAnnotationCurieMintHelper {
 		}
 	}
 
-	public void mintMissingCuries(int batchSize) {
+	/**
+	 * @param batchSize how many annotations to mint per batch/MaTI call
+	 * @param maxToMint hard cap on the TOTAL number of annotations minted in
+	 *        this call; {@code 0} means no cap (mint every NULL-curie row).
+	 *        Bounding the total lets an operator work a large cold backfill
+	 *        through the table in safe chunks instead of in one run that could
+	 *        overwhelm the environment. Idempotent, so repeated capped calls
+	 *        pick up where the previous one left off.
+	 */
+	public void mintMissingCuries(int batchSize, int maxToMint) {
 		if (batchSize <= 0) {
 			throw new IllegalArgumentException("batchSize must be > 0, got " + batchSize);
 		}
+		if (maxToMint < 0) {
+			throw new IllegalArgumentException("maxToMint must be >= 0 (0 = no cap), got " + maxToMint);
+		}
 
 		long totalMissing = countMissing();
-		ProcessDisplayHelper pdh = new ProcessDisplayHelper();
-		pdh.startProcess("DiseaseAnnotation AGRKB curie mint", totalMissing);
+		// maxToMint == 0 means mint everything that is missing.
+		long target = maxToMint == 0 ? totalMissing : Math.min(totalMissing, maxToMint);
 
-		while (true) {
-			List<Long> batchIds = findMissingCurieIds(batchSize);
+		ProcessDisplayHelper pdh = new ProcessDisplayHelper();
+		pdh.startProcess("DiseaseAnnotation AGRKB curie mint", target);
+
+		long minted = 0;
+		while (minted < target) {
+			// Never fetch more than the remaining allowance towards the cap.
+			int thisBatch = (int) Math.min(batchSize, target - minted);
+			List<Long> batchIds = findMissingCurieIds(thisBatch);
 			if (batchIds.isEmpty()) {
 				break;
 			}
@@ -93,6 +111,7 @@ public class DiseaseAnnotationCurieMintHelper {
 
 			assignCuries(batchIds, curies);
 
+			minted += batchIds.size();
 			for (int i = 0; i < batchIds.size(); i++) {
 				pdh.progressProcess();
 			}

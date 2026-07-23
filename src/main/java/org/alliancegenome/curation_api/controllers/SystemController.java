@@ -44,8 +44,8 @@ public class SystemController implements SystemControllerInterface {
 	}
 
 	@Override
-	public void mintExistingDiseaseAnnotationCuries(Integer batchSize) {
-		diseaseAnnotationService.mintMissingCuries(batchSize);
+	public void mintExistingDiseaseAnnotationCuries(Integer batchSize, Integer maxToMint) {
+		diseaseAnnotationService.mintMissingCuries(batchSize, maxToMint);
 	}
 
 	@Override

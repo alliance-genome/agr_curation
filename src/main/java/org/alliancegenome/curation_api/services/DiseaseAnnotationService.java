@@ -52,8 +52,8 @@ public class DiseaseAnnotationService extends BaseAnnotationCrudService<DiseaseA
 	// SCRUM-6078 backfill: mints AGRKB curies for every DiseaseAnnotation
 	// with a NULL curie. Idempotent. Throwaway — remove together with the
 	// /system/mintdacuries endpoint once it has run on every environment.
-	public void mintMissingCuries(int batchSize) {
-		curieMintHelper.mintMissingCuries(batchSize);
+	public void mintMissingCuries(int batchSize, int maxToMint) {
+		curieMintHelper.mintMissingCuries(batchSize, maxToMint);
 	}
 
 	// SCRUM-6170: mint an AGRKB curie for a newly created/loaded disease
