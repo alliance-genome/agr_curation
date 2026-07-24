@@ -73,7 +73,6 @@ public class MatiService {
 		// validates it against the same Cognito user pool. getRawToken() returns
 		// the bare token, so prefix the standard "Bearer " scheme.
 		String authorization = "Bearer " + jsonWebToken.getRawToken();
-		log.info("Minting {} curies for subdomain={} with Authorization={}", n, subdomain, authorization);
 		IdentifiersRange range = matiApi.increment(authorization, subdomain, n);
 
 		long firstCtr = range.getFirst().getCounter();
