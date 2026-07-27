@@ -84,7 +84,7 @@ public class GeneDocumentController implements GeneDocumentInterface {
 			for (Gene gene : genes) {
 				GeneSummaryDocument doc = new GeneSummaryDocument();
 				doc.setGene(gene);
-				doc.setReferences(referencesByGene.get(gene.getId()));
+				doc.setReferenceCuries(referencesByGene.get(gene.getId()));
 				list.add(doc);
 			}
 		}

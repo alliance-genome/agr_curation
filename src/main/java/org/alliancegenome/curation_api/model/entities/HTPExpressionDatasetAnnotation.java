@@ -55,13 +55,17 @@ public class HTPExpressionDatasetAnnotation extends AuditedObject {
 
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
-	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+	// SCRUM-6268: no cascade REMOVE/orphanRemoval - this is a shared lookup row (found/created by curie,
+	// see ExternalDataBaseEntityFmsDTOValidator) that HTPExpressionDatasetSampleAnnotation.datasetIds may
+	// still reference independently, so deleting this annotation must not cascade-delete it.
+	@OneToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
 	@JsonView({ CurationView.FieldsOnly.class })
 	private ExternalDataBaseEntity htpExpressionDataset;
 
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
+	@OnDelete(action = OnDeleteAction.CASCADE)
 	@Fetch(FetchMode.JOIN)
 	@JoinTable(indexes = {
 		@Index(name = "htpdatasetannotation_externaldatabaseentity_htpdataset_index", columnList = "htpexpressiondatasetannotation_id"),
@@ -79,6 +83,7 @@ public class HTPExpressionDatasetAnnotation extends AuditedObject {
 	@IndexedEmbedded(includePaths = {"curie", "primaryCrossReferenceCurie", "crossReferences.referencedCurie", "curie_keyword", "primaryCrossReferenceCurie_keyword", "crossReferences.referencedCurie_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
+	@OnDelete(action = OnDeleteAction.CASCADE)
 	@Fetch(FetchMode.JOIN)
 	@JoinTable(indexes = {
 		@Index(name = "htpdatasetannotation_reference_htpdataset_index", columnList = "htpexpressiondatasetannotation_id"),

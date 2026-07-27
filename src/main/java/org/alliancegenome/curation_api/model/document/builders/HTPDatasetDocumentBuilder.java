@@ -88,7 +88,9 @@ public class HTPDatasetDocumentBuilder {
 			String species = new String();
 
 			for (HTPExpressionDatasetSampleAnnotation sampleAnnot : sampleAnnots) {
-				species = sampleAnnot.getTaxon().getName();
+				species = sampleAnnot.getTaxon().getSpecies() != null
+						? sampleAnnot.getTaxon().getSpecies().getFullName()
+						: sampleAnnot.getTaxon().getName();
 
 				if (sampleAnnot.getGeneticSex() != null) {
 					sex.add(sampleAnnot.getGeneticSex().getName());

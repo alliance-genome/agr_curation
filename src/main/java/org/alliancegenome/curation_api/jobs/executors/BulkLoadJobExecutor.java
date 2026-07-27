@@ -7,6 +7,7 @@ import static org.alliancegenome.curation_api.enums.BackendBulkLoadType.AGM_DISE
 import static org.alliancegenome.curation_api.enums.BackendBulkLoadType.ALLELE;
 import static org.alliancegenome.curation_api.enums.BackendBulkLoadType.ALLELE_ASSOCIATION;
 import static org.alliancegenome.curation_api.enums.BackendBulkLoadType.ALLELE_DISEASE_ANNOTATION;
+import static org.alliancegenome.curation_api.enums.BackendBulkLoadType.ANTIBODY;
 import static org.alliancegenome.curation_api.enums.BackendBulkLoadType.CONSTRUCT;
 import static org.alliancegenome.curation_api.enums.BackendBulkLoadType.CONSTRUCT_ASSOCIATION;
 import static org.alliancegenome.curation_api.enums.BackendBulkLoadType.DISEASE_ANNOTATION;
@@ -49,6 +50,7 @@ public class BulkLoadJobExecutor {
 	@Inject OrthologyExecutor orthologyExecutor;
 	@Inject OntologyExecutor ontologyExecutor;
 	@Inject ConstructExecutor constructExecutor;
+	@Inject AntibodyExecutor antibodyExecutor;
 	@Inject AlleleGeneAssociationExecutor alleleGeneAssociationExecutor;
 	@Inject AlleleConstructAssociationExecutor alleleConstructAssociationExecutor;
 	@Inject ConstructGenomicEntityAssociationExecutor constructGenomicEntityAssociationExecutor;
@@ -85,7 +87,7 @@ public class BulkLoadJobExecutor {
 
 		BackendBulkLoadType loadType = bulkLoadFileHistory.getBulkLoad().getBackendBulkLoadType();
 
-		List<BackendBulkLoadType> ingestTypes = List.of(AGM_DISEASE_ANNOTATION, ALLELE_DISEASE_ANNOTATION, GENE_DISEASE_ANNOTATION, DISEASE_ANNOTATION, AGM, ALLELE, GENE, VARIANT, CONSTRUCT, FULL_INGEST, ALLELE_ASSOCIATION, AGM_ASSOCIATION, AGM_AGM_ASSOCIATION, CONSTRUCT_ASSOCIATION);
+		List<BackendBulkLoadType> ingestTypes = List.of(AGM_DISEASE_ANNOTATION, ALLELE_DISEASE_ANNOTATION, GENE_DISEASE_ANNOTATION, DISEASE_ANNOTATION, AGM, ALLELE, GENE, VARIANT, CONSTRUCT, ANTIBODY, FULL_INGEST, ALLELE_ASSOCIATION, AGM_ASSOCIATION, AGM_AGM_ASSOCIATION, CONSTRUCT_ASSOCIATION);
 
 		if (ingestTypes.contains(loadType)) {
 
@@ -100,6 +102,9 @@ public class BulkLoadJobExecutor {
 			}
 			if (loadType == CONSTRUCT || loadType == FULL_INGEST) {
 				constructExecutor.execLoad(bulkLoadFileHistory, cleanUp);
+			}
+			if (loadType == ANTIBODY || loadType == FULL_INGEST) {
+				antibodyExecutor.execLoad(bulkLoadFileHistory, cleanUp);
 			}
 			if (loadType == VARIANT || loadType == FULL_INGEST) {
 				// TODO: re-enable once accepting direct submissions of variants by DQMs again and FMS load turned off

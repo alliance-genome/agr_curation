@@ -41,10 +41,17 @@ public interface SystemControllerInterface {
 	// SCRUM-6078 backfill endpoint. Mints AGRKB curies for every
 	// DiseaseAnnotation whose curie is currently NULL, in batches.
 	// Idempotent. Remove after rollout on alpha/beta/prod.
+	//
+	// maxToMint caps the TOTAL number of annotations minted in a single call
+	// so a cold full-table run cannot overwhelm the environment. 0 = no cap
+	// (mint every NULL-curie annotation). Because the backfill is idempotent,
+	// the endpoint can be called repeatedly with a bounded maxToMint to work
+	// through the table in safe chunks.
 	@GET
 	@Path("/mintdacuries")
 	void mintExistingDiseaseAnnotationCuries(
-		@DefaultValue("1000") @QueryParam("batchSize") Integer batchSize);
+		@DefaultValue("1000") @QueryParam("batchSize") Integer batchSize,
+		@DefaultValue("0") @QueryParam("maxToMint") Integer maxToMint);
 
 	@DELETE
 	@Path("/deletedUnusedConditionsAndExperiments")
