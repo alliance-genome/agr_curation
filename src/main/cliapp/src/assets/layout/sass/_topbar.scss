@@ -87,6 +87,35 @@
             margin-left: 1rem;
         }
     }
+
+    // SCRUM-2831: loud red header when a tester has overridden their MOD affiliation.
+    &.affiliation-override {
+        background-color: var(--red-600);
+
+        .layout-topbar-logo,
+        .layout-topbar-button,
+        .layout-topbar-button i,
+        .affiliation-override-message {
+            color: #ffffff;
+        }
+
+        // Keep the logo and icon buttons at their natural size so the message
+        // can't squeeze them out of shape.
+        .layout-topbar-logo,
+        .layout-topbar-button {
+            flex-shrink: 0;
+        }
+
+        // The message takes the free space between the left-hand buttons and the
+        // right-hand user menu, centered.
+        .affiliation-override-message {
+            flex: 1 1 auto;
+            min-width: 0;
+            margin: 0 1.5rem;
+            text-align: center;
+            font-weight: 600;
+        }
+    }
 }
 
 @media (max-width: 991px) {

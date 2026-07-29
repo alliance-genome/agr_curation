@@ -8,11 +8,16 @@ import { ProgressBar } from 'primereact/progressbar';
 import { useCopyToClipboard } from './hooks/useCopyToClipboard';
 import { useApiVersion, useUserInfo } from './service/SiteQueryHooks';
 import { useAuth } from './hooks/useAuth';
+import { useAffiliation } from './contexts/AffiliationContext';
+import { MOD_AFFILIATIONS } from './utils/affiliation';
 
 export const AppTopbar = (props) => {
 	const menu = useRef(null);
 	const [processingEvent, setProcessingEvent] = useState(null);
 	const { authState } = useAuth();
+	const { isOverridden, override } = useAffiliation();
+	// Human-facing abbreviation of the MOD currently being mocked (e.g. 'RGDStaff' -> 'RGD').
+	const mockedMod = MOD_AFFILIATIONS.find((affiliation) => affiliation.group === override)?.abbreviation;
 	const [cognitoToken] = useState(JSON.parse(localStorage.getItem('cognito-token-storage')));
 
 	const { data: userInfo } = useUserInfo(authState);
@@ -125,7 +130,7 @@ export const AppTopbar = (props) => {
 	];
 
 	return (
-		<div className="layout-topbar">
+		<div className={classNames('layout-topbar', { 'affiliation-override': isOverridden })}>
 			{props.authState?.isAuthenticated && (
 				<>
 					<Link to="/" className="layout-topbar-logo">
@@ -148,6 +153,12 @@ export const AppTopbar = (props) => {
 							{/Mac|iPhone|iPad|iPod/.test(navigator.userAgent) ? '⌘K' : 'Ctrl+K'}
 						</span>
 					</button>
+					{isOverridden && (
+						<span className="affiliation-override-message">
+							You are currently mocking the {mockedMod} affiliation. Please switch your Alliance member affiliation back
+							to your default before proceeding with actual curation work.
+						</span>
+					)}
 				</>
 			)}
 			<button

@@ -12,7 +12,7 @@ export const useGetTableData = ({
 	toast_topleft,
 	searchService,
 }) => {
-	const { data, isSuccess, isError, isPending } = useQuery({
+	const { data, isSuccess, isError, isPending, isFetching, isLoading } = useQuery({
 		queryKey: [tableState.tableKeyName, tableState.rows, tableState.page, tableState.multiSortMeta, tableState.filters],
 
 		queryFn: () =>
@@ -61,5 +61,5 @@ export const useGetTableData = ({
 		}
 	}, [data, setIsInEditMode, setEntities, setTotalRecords, toast_topleft, isError, isSuccess]);
 
-	return { data, isSuccess, isError, isPending };
+	return { data, isSuccess, isError, isPending, isFetching, isLoading };
 };
