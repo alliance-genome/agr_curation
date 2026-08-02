@@ -196,6 +196,11 @@ public class IT_2002_YeastStrainSpeciesResolutionITCase extends BaseITCase {
 		species.setAbbreviation(abbreviation);
 		species.setDisplayName(displayName);
 		species.setPhylogeneticOrder(phylogeneticOrder);
+		// SpeciesValidator.validateSpecies calls validateDataProvider(..., newEntity = false).
+		// That third argument is newEntity, not isRequired: with it false and no dataProvider
+		// supplied, the validator adds REQUIRED_MESSAGE and the create 400s. displayName is
+		// the MOD abbreviation here ("SGD"/"MGI"), which is also the organization abbreviation.
+		species.setDataProvider(getOrganization(displayName));
 
 		ObjectResponse<Species> response = RestAssured.given().
 			contentType("application/json").
