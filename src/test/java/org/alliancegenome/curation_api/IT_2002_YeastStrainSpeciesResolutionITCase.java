@@ -4,7 +4,9 @@ import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.alliancegenome.curation_api.base.BaseITCase;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
@@ -62,6 +64,18 @@ public class IT_2002_YeastStrainSpeciesResolutionITCase extends BaseITCase {
 	// A real taxon that is neither curated in `species` nor in the yeast strain list.
 	private static final String UNCURATED_TAXON = "NCBITaxon:7955";
 
+	/** The SGD strain taxa this test loads AGMs for, with their NCBI scientific names. */
+	private static final Map<String, String> STRAIN_TAXA = new LinkedHashMap<>() {
+		{
+			put("NCBITaxon:4932", "Saccharomyces cerevisiae");
+			put("NCBITaxon:285006", "Saccharomyces cerevisiae RM11-1a");
+			put("NCBITaxon:580239", "Saccharomyces cerevisiae SK1");
+			put("NCBITaxon:580240", "Saccharomyces cerevisiae W303");
+			put("NCBITaxon:658763", "Saccharomyces cerevisiae Sigma1278b");
+			put("NCBITaxon:947036", "Saccharomyces cerevisiae FL100");
+		}
+	};
+
 	private static final String MODEL_SUMMARY_ENDPOINT = "/api/model/document/summary/byids";
 	private static final String ALLELE_SUMMARY_ENDPOINT = "/api/allele/document/summary/byids";
 
@@ -82,6 +96,17 @@ public class IT_2002_YeastStrainSpeciesResolutionITCase extends BaseITCase {
 		dataProvider = getOrganization("SGD");
 		ResourceDescriptor resourceDescriptor = createResourceDescriptor("YEASTTEST");
 		resourceDescriptorPage = createResourceDescriptorPage("homepage", "http://example.com/yeast/[%s]", resourceDescriptor);
+
+		// Create the strain taxa up front rather than letting getNCBITaxonTerm resolve them.
+		// NcbiTaxonTermService.getByCurie falls back to downloading from eutils.ncbi.nlm.nih.gov
+		// when a taxon is not already in the database, and these six strain-level taxa are used
+		// by no other IT, so every one of them would be a live network call. Requesting them
+		// back to back trips NCBI's rate limit - downloadAndSave retries five times with no
+		// backoff and then returns null, which makes the AGM create fail validation with a 400.
+		// That is what failed CI here: the first four AGMs were created and the fifth was not.
+		for (Map.Entry<String, String> strainTaxon : STRAIN_TAXA.entrySet()) {
+			createNCBITaxonTerm(strainTaxon.getKey(), strainTaxon.getValue(), false);
+		}
 
 		// The IT database ships with no `species` rows: the v0.29.0.2 seed is guarded on
 		// ncbitaxonterm already being populated, which it is not at migration time. Create the
