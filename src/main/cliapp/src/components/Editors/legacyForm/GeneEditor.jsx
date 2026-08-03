@@ -9,7 +9,7 @@ import { AUTOCOMPLETE_CONFIGS, getAutocompleteFields } from '../../../constants/
 
 const geneSearch = (event, setFiltered, setInputValue) => {
 	const searchService = new SearchService();
-	const autocompleteFields = getAutocompleteFields(AUTOCOMPLETE_CONFIGS.biologicalEntityAutocompleteConfig);
+	const autocompleteFields = getAutocompleteFields(AUTOCOMPLETE_CONFIGS.geneAutocompleteConfig);
 	const endpoint = Endpoints.Entity.GENE;
 	const filterName = 'objectFilter';
 	const filter = buildAutocompleteFilter(event, autocompleteFields);
