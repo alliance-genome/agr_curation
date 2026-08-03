@@ -179,7 +179,6 @@ public enum ChromosomeAccessionEnum {
 	ZFIN_GRCz12tu_25("25", "RefSeq:NC_133200.1", "GRCz12tu"),
 	ZFIN_GRCz12tu_MT("MT", "RefSeq:NC_002333.2", "GRCz12tu");
 
-
 	public String chromosomeName;
 	public String accession;
 	public String assemblyIdentifier;

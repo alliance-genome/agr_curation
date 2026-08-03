@@ -41,6 +41,7 @@ export function FilterComponentMultiSelect({ isInEditMode, filterConfig, current
 		if (
 			fieldSet.filterName === 'dataProviderFilter' ||
 			fieldSet.filterName === 'secondaryDataProviderFilter' ||
+			fieldSet.filterName === 'alleleGeneDataProviderFilter' ||
 			fieldSet.filterName === 'evidenceCodesFilter'
 		) {
 			return upperCaseItemTemplate(option);
@@ -58,6 +59,8 @@ export function FilterComponentMultiSelect({ isInEditMode, filterConfig, current
 			display="chip"
 			optionLabel="optionLabel"
 			style={{ width: '100%', display: 'inline-flex' }}
+			panelClassName="filter-multiselect-panel"
+			panelStyle={{ maxWidth: '30vw' }}
 			itemTemplate={templateSelector}
 			filter
 			className={'multiselect-custom'}
@@ -73,7 +76,7 @@ export function FilterComponentMultiSelect({ isInEditMode, filterConfig, current
 						delim = ' ';
 					}
 					filter[fieldSet.fields[0]] = {
-						useKeywordFields: fieldSet.useKeywordFields,
+						useKeywordFields: filterConfig.useKeywordFields,
 						tokenOperator: 'OR',
 						queryString: queryString,
 					};
