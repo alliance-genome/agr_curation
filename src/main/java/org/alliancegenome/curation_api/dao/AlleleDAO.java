@@ -13,6 +13,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.alliancegenome.curation_api.constants.EntityFieldConstants;
+import org.alliancegenome.curation_api.constants.YeastStrainTaxonConstants;
 import org.alliancegenome.curation_api.dao.associations.AgmAlleleAssociationDAO;
 import org.alliancegenome.curation_api.dao.base.BaseSQLDAO;
 import org.alliancegenome.curation_api.model.document.es.AlleleSummaryDocument;
@@ -292,7 +293,12 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 			INNER JOIN CrossReference cr ON cr.id = b.dataprovidercrossreference_id
 			INNER JOIN resourceDescriptorPage rd ON rd.id = cr.resourcedescriptorpage_id
 			INNER JOIN organization org ON org.id = b.dataprovider_id
-			LEFT JOIN species sp ON sp.taxon_id = ot.id
+			-- SCRUM-6152: SGD strain-level taxa have no `species` row of their own, so they
+			-- resolve through the canonical S. cerevisiae taxon. Everything else joins as-is.
+			-- The allele's own taxon (ot) is unchanged - only the attached species resolves.
+			LEFT JOIN OntologyTerm ot_eff
+				ON ot_eff.curie = CASE WHEN ot.curie IN :strainTaxa THEN :canonicalTaxon ELSE ot.curie END
+			LEFT JOIN species sp ON sp.taxon_id = ot_eff.id
 			LEFT JOIN genomeassembly ga ON ga.id = sp.genomeassembly_id
 			LEFT JOIN biologicalentity ga_be ON ga_be.id = ga.id
 			WHERE a.id IN :alleleIds
@@ -300,6 +306,8 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 
 		Query query = entityManager.createNativeQuery(selectQuery);
 		query.setParameter("alleleIds", alleleIds);
+		query.setParameter("strainTaxa", YeastStrainTaxonConstants.SCE_STRAIN_TAXA);
+		query.setParameter("canonicalTaxon", YeastStrainTaxonConstants.CANONICAL_SCE_TAXON);
 		List<Object[]> results = query.getResultList();
 
 		List<Allele> alleles = buildAllelesFromResults(results);
