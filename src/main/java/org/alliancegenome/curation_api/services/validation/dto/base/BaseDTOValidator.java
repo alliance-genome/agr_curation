@@ -69,6 +69,19 @@ public class BaseDTOValidator<E extends Object> {
 	protected HashMap<String, HashMap<String, VocabularyTerm>> vocabularyTermCache = new HashMap<>();
 	protected HashMap<String, HashMap<String, OntologyTerm>> ontologyTermCache = new HashMap<>();
 
+	/**
+	 * Ontology terms are cached across the transactions of a single (bulk) load, so by the time a cached
+	 * term is attached to an entity in a later transaction its original session is gone. Force-initialize
+	 * every lazy collection that Hibernate Search reads while building a document for an entity embedding
+	 * this term, otherwise indexing fails at commit time with a LazyInitializationException (no session).
+	 */
+	private void initializeIndexedCollections(OntologyTerm ontologyTerm) {
+		ontologyTerm.getSecondaryIdentifiers().size();
+		ontologyTerm.getSynonyms().size();
+		ontologyTerm.getDefinitionUrls().size();
+		ontologyTerm.getSubsets().size();
+	}
+
 	protected String getCurieFromCache(String psiMiFormat) {
 		if (miCurieCache.containsKey(psiMiFormat)) {
 			return miCurieCache.get(psiMiFormat);
@@ -89,8 +102,7 @@ public class BaseDTOValidator<E extends Object> {
 			if (curie != null) {
 				MITerm miTerm = miTermService.findByCurie(curie);
 				if (miTerm != null) {
-					miTerm.getSecondaryIdentifiers().size();
-					miTerm.getSynonyms().size();
+					initializeIndexedCollections(miTerm);
 					miTermCache.put(curie, miTerm);
 					return miTerm;
 				}
@@ -286,9 +298,7 @@ public class BaseDTOValidator<E extends Object> {
 				return null;
 			}
 
-			ontologyTerm.getSecondaryIdentifiers().size();
-			ontologyTerm.getSynonyms().size();
-			ontologyTerm.getDefinitionUrls().size();
+			initializeIndexedCollections(ontologyTerm);
 			ontologyTermCache.get(service.getClass().getName()).put(curie, ontologyTerm);
 		}
 
@@ -325,8 +335,7 @@ public class BaseDTOValidator<E extends Object> {
 					return null;
 				}
 
-				ontologyTerm.getSecondaryIdentifiers().size();
-				ontologyTerm.getSynonyms().size();
+				initializeIndexedCollections(ontologyTerm);
 				ontologyTermCache.get(service.getClass().getName()).put(curie, ontologyTerm);
 			}
 			ontologyTerms.add(ontologyTerm);
