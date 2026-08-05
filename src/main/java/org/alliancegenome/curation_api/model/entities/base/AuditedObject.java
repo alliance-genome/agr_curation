@@ -85,14 +85,14 @@ public class AuditedObject implements Serializable {
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer", valueBridge = @ValueBridgeRef(type = BooleanValueBridge.class))
 	@KeywordField(name = "internal_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, valueBridge = @ValueBridgeRef(type = BooleanValueBridge.class))
-	@JsonView({ CurationView.FieldsOnly.class, CurationView.ForPublic.class })
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.ForPublic.class, CurationView.GeneSummaryDocument.class })
 	@Column(columnDefinition = "boolean default false")
 	@ColumnDefault("false")
 	private Boolean internal;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer", valueBridge = @ValueBridgeRef(type = BooleanValueBridge.class))
 	@KeywordField(name = "obsolete_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, valueBridge = @ValueBridgeRef(type = BooleanValueBridge.class))
-	@JsonView({ CurationView.FieldsOnly.class, CurationView.ForPublic.class })
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.ForPublic.class, CurationView.GeneSummaryDocument.class })
 	@Column(columnDefinition = "boolean default false")
 	@ColumnDefault("false")
 	private Boolean obsolete;
