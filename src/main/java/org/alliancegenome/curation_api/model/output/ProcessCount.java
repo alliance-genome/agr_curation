@@ -43,8 +43,21 @@ public class ProcessCount {
 	public void incrementWarnings() {
 		warnings++;
 	}
+	/**
+	 * SCRUM-6258: fraction of processed records that failed, in [0.0, 1.0].
+	 *
+	 * This used to read {@code return error / 1000;} - integer division on a Long, so it
+	 * returned 0 for any error count below 1000 and then jumped to whole numbers (131099
+	 * errors reported as 131.0). It was not a rate at all, which made the
+	 * "failure rate > 0.25" cutoff in LoadFileExecutor behave as "abort once 1000 net errors
+	 * accumulate", silent below that and wildly over the cutoff above it.
+	 */
 	public double getErrorRate() {
-		return error / 1000;
+		long processed = completed + failed + skipped;
+		if (processed <= 0) {
+			return 0.0;
+		}
+		return (double) failed / (double) processed;
 	}
 
 	public void add(ProcessCount count) {

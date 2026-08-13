@@ -1,0 +1,17 @@
+[
+	{
+		"seqId": "MT",
+		"source": "ZFIN",
+		"type": "mRNA",
+		"start": 1,
+		"end": 1000,
+		"strand": "+",
+		"phase": 0,
+		"attributes": [
+			"ID=ZDB-TSCRIPT-MTTEST.1",
+			"Parent=ZDB-GENE-MTTEST",
+			"Name=mt-test.1",
+			"transcript_id=ZFIN:ZDB-TSCRIPT-MTTEST.1"
+		]
+	}
+]

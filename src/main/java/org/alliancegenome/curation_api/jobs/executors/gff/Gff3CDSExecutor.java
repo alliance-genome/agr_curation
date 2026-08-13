@@ -109,6 +109,15 @@ public class Gff3CDSExecutor extends Gff3Executor {
 
 			gff3Service.loadCdsBatch(batch, entityIdsAdded, locationIdsAdded, associationIdsAdded, dataProvider, assemblyId, history, ph);
 
+			// SCRUM-6258: stop before cleanup when the batch failure rate is above the cutoff,
+			// rather than reporting FINISHED and then deleting records the load never replaced.
+			if (aboveErrorRateCutoff(history)) {
+				updateHistory(history);
+				failLoadAboveErrorRateCutoff(history);
+				ph.finishProcess();
+				return false;
+			}
+
 			if (Thread.currentThread().isInterrupted()) {
 				history.setErrorMessage(ApiErrorException.INTERRUPTED_MESSAGE);
 				throw new RuntimeException(ApiErrorException.INTERRUPTED_MESSAGE);

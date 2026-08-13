@@ -12,6 +12,7 @@ import org.alliancegenome.curation_api.services.Gff3Service;
 import org.alliancegenome.curation_api.services.SpeciesService;
 import org.apache.commons.lang3.StringUtils;
 
+import io.quarkus.logging.Log;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
@@ -20,6 +21,33 @@ public class Gff3Executor extends LoadFileExecutor {
 
 	@Inject Gff3Service gff3Service;
 	@Inject SpeciesService speciesService;
+
+	/** Matches the cutoff {@code LoadFileExecutor.runLoad} applies to non-GFF loads. */
+	protected static final double ERROR_RATE_CUTOFF = 0.25;
+
+	private static final List<String> GFF_COUNT_TYPES = List.of("Entities", "Locations", "Associations");
+
+	/**
+	 * SCRUM-6258: the GFF executors each drive their own batch loop rather than going through
+	 * {@code LoadFileExecutor.runLoad}, so until now nothing checked the failure rate and no GFF
+	 * load could ever abort on one. The ZFIN GFF Transcript load on beta reported
+	 * {@code FINISHED} with zero errorMessage while failing all 131,099 gene associations and
+	 * creating zero locations, then ran cleanup and deleted 49,089 transcripts.
+	 *
+	 * Returns true when any of the GFF count types is failing above the cutoff, so the caller
+	 * can stop and mark the load FAILED instead of carrying on into cleanup.
+	 */
+	protected boolean aboveErrorRateCutoff(BulkLoadFileHistory history) {
+		for (String countType : GFF_COUNT_TYPES) {
+			double errorRate = history.getErrorRate(countType);
+			if (errorRate > ERROR_RATE_CUTOFF) {
+				Log.error("GFF load failure rate for " + countType + " is " + errorRate
+					+ " (cutoff " + ERROR_RATE_CUTOFF + ") - aborting load");
+				return true;
+			}
+		}
+		return false;
+	}
 
 	/**
 	 * SCRUM-6080: parse the assembly declared in the GFF header ({@code #!assembly}) and
