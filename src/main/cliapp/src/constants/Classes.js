@@ -225,8 +225,9 @@ export const CLASSES = Object.freeze({
 	},
 	AgmAlleleAssociation: {
 		name: 'AGM Allele Associations',
+		link: '/#/agmAlleleAssociations',
 		type: 'association',
-		hasTable: false,
+		hasTable: true,
 	},
 	AgmSequenceTargetingReagentAssociation: {
 		name: 'AGM STR Associations',
