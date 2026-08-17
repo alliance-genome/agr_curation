@@ -114,16 +114,6 @@ public class Gff3GeneExecutor extends Gff3Executor {
 			}
 			ph.progressProcess();
 		}
-
-		// SCRUM-6258: see Gff3Executor.aboveErrorRateCutoff - GFF loads previously had no
-		// failure-rate cutoff at all and would report FINISHED however badly they had gone.
-		if (aboveErrorRateCutoff(history)) {
-			updateHistory(history);
-			failLoadAboveErrorRateCutoff(history);
-			ph.finishProcess();
-			return false;
-		}
-
 		updateHistory(history);
 		ph.finishProcess();
 		return true;
