@@ -560,7 +560,9 @@ public class Gff3Service {
 		BulkLoadFileException exception = new BulkLoadFileException();
 		exception.setException(data);
 		exception.setBulkLoadFileHistory(history);
-		bulkLoadFileExceptionDAO.persist(exception);
+		// SCRUM-6258: written in its own transaction, so the record-level reason survives even
+		// when the surrounding batch transaction rolls back (which is exactly when it matters).
+		bulkLoadFileExceptionDAO.persistInNewTransaction(exception);
 	}
 
 	@Transactional
