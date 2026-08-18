@@ -56,6 +56,10 @@ public class IngestDTO {
 	private List<ConstructDTO> constructIngestSet;
 
 	@JsonView({CurationView.FieldsAndLists.class})
+	@JsonProperty("transgenic_tool_ingest_set")
+	private List<TransgenicToolDTO> transgenicToolIngestSet;
+
+	@JsonView({CurationView.FieldsAndLists.class})
 	@JsonProperty("antibody_ingest_set")
 	private List<AntibodyDTO> antibodyIngestSet;
 

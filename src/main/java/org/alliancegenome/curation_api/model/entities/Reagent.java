@@ -35,7 +35,8 @@ import lombok.ToString;
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
 @JsonSubTypes({
 	@JsonSubTypes.Type(value = Construct.class, name = "Construct"),
-	@JsonSubTypes.Type(value = Antibody.class, name = "Antibody")
+	@JsonSubTypes.Type(value = Antibody.class, name = "Antibody"),
+	@JsonSubTypes.Type(value = TransgenicTool.class, name = "TransgenicTool")
 })
 @Entity
 @Data

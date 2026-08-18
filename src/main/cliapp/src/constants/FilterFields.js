@@ -285,6 +285,26 @@ export const FIELD_SETS = Object.freeze({
 		filterName: 'conditionTaxonFilter',
 		fields: ['conditionTaxon.curie', 'conditionTaxon.name'],
 	},
+	transgenicToolNameFieldSet: {
+		filterName: 'transgenicToolNameFilter',
+		fields: ['transgenicToolFullName.displayText', 'transgenicToolFullName.formatText'],
+	},
+	transgenicToolSymbolFieldSet: {
+		filterName: 'transgenicToolSymbolFilter',
+		fields: ['transgenicToolSymbol.displayText', 'transgenicToolSymbol.formatText'],
+	},
+	transgenicToolSynonymsFieldSet: {
+		filterName: 'transgenicToolSynonymsFilter',
+		fields: ['transgenicToolSynonyms.displayText', 'transgenicToolSynonyms.formatText'],
+	},
+	transgenicToolAggregationFieldSet: {
+		filterName: 'transgenicToolAggregationFilter',
+		fields: ['dataProvider.abbreviation'],
+	},
+	transgenicToolUsesFieldSet: {
+		filterName: 'transgenicToolUsesFilter',
+		fields: ['transgenicToolUses.componentSymbol', 'transgenicToolUses.relation.name'],
+	},
 	constructNameFieldSet: {
 		filterName: 'constructNameFilter',
 		fields: ['constructFullName.displayText', 'constructFullName.formatText'],
@@ -622,6 +642,10 @@ export const FIELD_SETS = Object.freeze({
 	internalFieldSet: {
 		filterName: 'internalFilter',
 		fields: ['internal'],
+	},
+	placeholderFieldSet: {
+		filterName: 'placeholderFilter',
+		fields: ['placeholder'],
 	},
 	isExtinctFieldSet: {
 		filterName: 'isExtinctFilter',
@@ -1071,6 +1095,19 @@ export const FILTER_CONFIGS = Object.freeze({
 	},
 	conditionQuantityFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.conditionQuantityFieldSet] },
 	conditionTaxonFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.conditionTaxonFieldSet] },
+	transgenicToolNameFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.transgenicToolNameFieldSet] },
+	transgenicToolSymbolFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.transgenicToolSymbolFieldSet] },
+	transgenicToolSynonymsFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.transgenicToolSynonymsFieldSet] },
+	transgenicToolUsesFilterConfig: {
+		filterComponentType: 'input',
+		fieldSets: [FIELD_SETS.transgenicToolUsesFieldSet],
+	},
+	transgenicToolDataProviderFilterConfig: {
+		filterComponentType: 'multiselect',
+		fieldSets: [FIELD_SETS.dataProviderFieldSet],
+		aggregationFieldSet: FIELD_SETS.transgenicToolAggregationFieldSet,
+		useKeywordFields: true,
+	},
 	constructNameFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.constructNameFieldSet] },
 	constructSymbolFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.constructSymbolFieldSet] },
 	constructSynonymsFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.constructSynonymsFieldSet] },
@@ -1334,6 +1371,7 @@ export const FILTER_CONFIGS = Object.freeze({
 
 	isExtinctFilterConfig: { filterComponentType: 'dropdown', fieldSets: [FIELD_SETS.isExtinctFieldSet] },
 	obsoleteFilterConfig: { filterComponentType: 'dropdown', fieldSets: [FIELD_SETS.obsoleteFieldSet] },
+	placeholderFilterConfig: { filterComponentType: 'dropdown', fieldSets: [FIELD_SETS.placeholderFieldSet] },
 	internalFilterConfig: { filterComponentType: 'dropdown', fieldSets: [FIELD_SETS.internalFieldSet] },
 	negatedFilterConfig: {
 		filterComponentType: 'dropdown',

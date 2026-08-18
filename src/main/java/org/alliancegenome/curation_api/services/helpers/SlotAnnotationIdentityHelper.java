@@ -19,6 +19,7 @@ import org.alliancegenome.curation_api.model.entities.slotAnnotations.ConstructC
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.NameSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.SecondaryIdSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.SlotAnnotation;
+import org.alliancegenome.curation_api.model.entities.slotAnnotations.TransgenicToolUseSlotAnnotation;
 import org.alliancegenome.curation_api.model.ingest.dto.NoteDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.slotAnnotions.AlleleFunctionalImpactSlotAnnotationDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.slotAnnotions.AlleleGermlineTransmissionStatusSlotAnnotationDTO;
@@ -27,6 +28,7 @@ import org.alliancegenome.curation_api.model.ingest.dto.slotAnnotions.AlleleMuta
 import org.alliancegenome.curation_api.model.ingest.dto.slotAnnotions.AlleleNomenclatureEventSlotAnnotationDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.slotAnnotions.ConstructComponentSlotAnnotationDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.slotAnnotions.NameSlotAnnotationDTO;
+import org.alliancegenome.curation_api.model.ingest.dto.slotAnnotions.TransgenicToolUseSlotAnnotationDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.slotAnnotions.SecondaryIdSlotAnnotationDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.slotAnnotions.SlotAnnotationDTO;
 import org.alliancegenome.curation_api.services.ReferenceService;
@@ -138,6 +140,24 @@ public class SlotAnnotationIdentityHelper {
 	}
 
 	public String constructComponentDtoIdentity(ConstructComponentSlotAnnotationDTO dto) {
+		String componentSymbol = StringUtils.isBlank(dto.getComponentSymbol()) ? "" : dto.getComponentSymbol();
+		String taxon = StringUtils.isBlank(dto.getTaxonCurie()) ? "" : dto.getTaxonCurie();
+		String taxonText = StringUtils.isBlank(dto.getTaxonText()) ? "" : dto.getTaxonText();
+		String notesIdentity = noteDtosIdentity(dto.getNoteDtos());
+
+		return StringUtils.join(List.of(componentSymbol, taxon, taxonText, notesIdentity), "|");
+	}
+
+	public static String transgenicToolUseIdentity(TransgenicToolUseSlotAnnotation annotation) {
+		String componentSymbol = StringUtils.isBlank(annotation.getComponentSymbol()) ? "" : annotation.getComponentSymbol();
+		String taxon = annotation.getTaxon() == null ? "" : annotation.getTaxon().getCurie();
+		String taxonText = StringUtils.isBlank(annotation.getTaxonText()) ? "" : annotation.getTaxonText();
+		String notesIdentity = notesIdentity(annotation.getRelatedNotes());
+
+		return StringUtils.join(List.of(componentSymbol, taxon, taxonText, notesIdentity), "|");
+	}
+
+	public String transgenicToolUseDtoIdentity(TransgenicToolUseSlotAnnotationDTO dto) {
 		String componentSymbol = StringUtils.isBlank(dto.getComponentSymbol()) ? "" : dto.getComponentSymbol();
 		String taxon = StringUtils.isBlank(dto.getTaxonCurie()) ? "" : dto.getTaxonCurie();
 		String taxonText = StringUtils.isBlank(dto.getTaxonText()) ? "" : dto.getTaxonText();

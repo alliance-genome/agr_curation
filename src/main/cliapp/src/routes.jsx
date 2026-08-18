@@ -21,6 +21,7 @@ import { AllelesPage, AlleleDetailPage } from './containers/allelesPage';
 import { GenesPage } from './containers/genesPage';
 import { VariantsPage } from './containers/variantsPage';
 import { ConstructsPage, ConstructDetailPage } from './containers/constructsPage';
+import { TransgenicToolsPage } from './containers/transgenicToolsPage';
 import { ProfilePage } from './containers/profilePage';
 import { MoleculesPage } from './containers/moleculesPage';
 import { SpeciesPage } from './containers/speciesPage';
@@ -184,6 +185,14 @@ export default function AppRoutes() {
 						element={
 							<ErrorBoundary>
 								<ConstructsPage />
+							</ErrorBoundary>
+						}
+					/>
+					<Route
+						path="/transgenicTools"
+						element={
+							<ErrorBoundary>
+								<TransgenicToolsPage />
 							</ErrorBoundary>
 						}
 					/>

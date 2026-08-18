@@ -12,6 +12,7 @@ export const Endpoints = Object.freeze({
 		MOLECULE: 'molecule',
 		NOTE: 'note',
 		SPECIES: 'species',
+		TRANSGENIC_TOOL: 'transgenictool',
 		VARIANT: 'variant',
 	}),
 
