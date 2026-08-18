@@ -22,6 +22,7 @@ import { LoadingOverlay } from '../../components/LoadingOverlay';
 import { NumberTemplate } from '../../components/Templates/NumberTemplate';
 import { StickyHeader } from '../../components/StickyHeader';
 import { Splitter, SplitterPanel } from 'primereact/splitter';
+import { isJobRunning, TERMINAL_JOB_STATUSES } from '../../constants/JobStatus';
 
 export const DataLoadsComponent = () => {
 	const { authState } = useAuth();
@@ -326,12 +327,7 @@ export const DataLoadsComponent = () => {
 	const loadFileActionBodyTemplate = (rowData, bulkload) => {
 		let ret = [];
 		// console.log(rowData);
-		if (
-			!rowData.bulkloadStatus ||
-			rowData.bulkloadStatus === 'FINISHED' ||
-			rowData.bulkloadStatus === 'FAILED' ||
-			rowData.bulkloadStatus === 'STOPPED'
-		) {
+		if (!isJobRunning(rowData.bulkloadStatus)) {
 			let retVal = fileWithinSchemaRange(rowData.bulkLoadFile.linkMLSchemaVersion, bulkload.backendBulkLoadType);
 			if (retVal.status || exemptTypes(bulkload.backendBulkLoadType)) {
 				ret.push(
@@ -364,12 +360,7 @@ export const DataLoadsComponent = () => {
 				/>
 			);
 		}
-		if (
-			!rowData.bulkloadStatus ||
-			rowData.bulkloadStatus === 'FINISHED' ||
-			rowData.bulkloadStatus === 'FAILED' ||
-			rowData.bulkloadStatus === 'STOPPED'
-		) {
+		if (!isJobRunning(rowData.bulkloadStatus)) {
 			ret.push(
 				<Button
 					key="delete"
@@ -398,12 +389,7 @@ export const DataLoadsComponent = () => {
 		);
 
 		if (rowData.type !== 'BulkManualLoad') {
-			if (
-				!rowData.bulkloadStatus ||
-				rowData.bulkloadStatus === 'FINISHED' ||
-				rowData.bulkloadStatus === 'FAILED' ||
-				rowData.bulkloadStatus === 'STOPPED'
-			) {
+			if (!isJobRunning(rowData.bulkloadStatus)) {
 				ret.push(
 					<Button
 						key="run"
@@ -637,7 +623,7 @@ export const DataLoadsComponent = () => {
 		let lastLoadedDates = new Map();
 		let filesWithoutDates = [];
 		files.forEach((file) => {
-			if (file.bulkloadStatus === 'FINISHED' || file.bulkloadStatus === 'STOPPED' || file.bulkloadStatus === 'FAILED') {
+			if (TERMINAL_JOB_STATUSES.includes(file.bulkloadStatus)) {
 				if (file.loadStarted) {
 					lastLoadedDates.set(file.loadStarted, file);
 				} else {
