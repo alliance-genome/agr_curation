@@ -1,0 +1,145 @@
+src/main/cliapp/src/constants/Classes.js
+  s_6b8af79fa05736::t_3155579ff3e61a 97
+src/main/cliapp/src/constants/Endpoints.js
+  s_6b8af79fa05736::t_2024b02af1604d 7
+src/main/cliapp/src/constants/FilterFields.js
+  s_6b8af79fa05736::t_c16cde3489fe5a 209-239,578-581,1000-1016,1247
+src/main/cliapp/src/containers/cassettesPage/CassettesPage.jsx
+  s_6b8af79fa05736::t_6fec6da2f35e50 1-8
+src/main/cliapp/src/containers/cassettesPage/CassettesTable.jsx
+  s_6b8af79fa05736::t_8ffad22397d115 1-406
+src/main/cliapp/src/containers/cassettesPage/GenomicComponentsDialog.jsx
+  s_6b8af79fa05736::t_ab152ebf21fc8e 1-190
+src/main/cliapp/src/containers/cassettesPage/index.js
+  s_6b8af79fa05736::t_bacd924b75b21e 1-3
+src/main/cliapp/src/containers/layout/SiteLayout.jsx
+  s_6b8af79fa05736::t_d0ce25f4c738fc 251
+src/main/cliapp/src/routes.jsx
+  s_6b8af79fa05736::t_c1be7aa5ce4394 22,181-188
+src/main/java/org/alliancegenome/curation_api/constants/EntityFieldConstants.java
+  s_6b8af79fa05736::t_2de8747c137c3f 28,54
+src/main/java/org/alliancegenome/curation_api/constants/VocabularyConstants.java
+  s_6b8af79fa05736::t_5f53ea6f1ed435 62-63,75-76
+src/main/java/org/alliancegenome/curation_api/controllers/crud/CassetteCrudController.java
+  s_6b8af79fa05736::t_302a9ba2252e78 1-38
+src/main/java/org/alliancegenome/curation_api/controllers/crud/associations/CassetteGenomicEntityAssociationCrudController.java
+  s_6b8af79fa05736::t_d2f47ac07277e2 1-58
+src/main/java/org/alliancegenome/curation_api/controllers/crud/slotAnnotations/CassetteComponentSlotAnnotationCrudController.java
+  s_6b8af79fa05736::t_a8a3c4c1498a71 1-40
+src/main/java/org/alliancegenome/curation_api/controllers/crud/slotAnnotations/CassetteFullNameSlotAnnotationCrudController.java
+  s_6b8af79fa05736::t_771767c004c7d9 1-40
+src/main/java/org/alliancegenome/curation_api/controllers/crud/slotAnnotations/CassetteSymbolSlotAnnotationCrudController.java
+  s_6b8af79fa05736::t_a0ca6d52ed88d9 1-40
+src/main/java/org/alliancegenome/curation_api/controllers/crud/slotAnnotations/CassetteSynonymSlotAnnotationCrudController.java
+  s_6b8af79fa05736::t_fd0f358039b652 1-40
+src/main/java/org/alliancegenome/curation_api/dao/CassetteDAO.java
+  s_6b8af79fa05736::t_ca0f645ee1bc4e 1-36
+src/main/java/org/alliancegenome/curation_api/dao/associations/CassetteGenomicEntityAssociationDAO.java
+  s_6b8af79fa05736::t_a9ba9fa90dbb78 1-15
+src/main/java/org/alliancegenome/curation_api/dao/slotAnnotations/CassetteComponentSlotAnnotationDAO.java
+  s_6b8af79fa05736::t_c4e63f0b7e4336 1-14
+src/main/java/org/alliancegenome/curation_api/dao/slotAnnotations/CassetteFullNameSlotAnnotationDAO.java
+  s_6b8af79fa05736::t_62daed98204793 1-14
+src/main/java/org/alliancegenome/curation_api/dao/slotAnnotations/CassetteSymbolSlotAnnotationDAO.java
+  s_6b8af79fa05736::t_964d12c702d649 1-14
+src/main/java/org/alliancegenome/curation_api/dao/slotAnnotations/CassetteSynonymSlotAnnotationDAO.java
+  s_6b8af79fa05736::t_e39b050599c978 1-14
+src/main/java/org/alliancegenome/curation_api/enums/BackendBulkLoadType.java
+  s_6b8af79fa05736::t_e361820bc72977 9,22
+src/main/java/org/alliancegenome/curation_api/interfaces/crud/CassetteCrudInterface.java
+  s_6b8af79fa05736::t_4d7e74277da87f 1-56
+src/main/java/org/alliancegenome/curation_api/interfaces/crud/associations/CassetteGenomicEntityAssociationCrudInterface.java
+  s_6b8af79fa05736::t_556decd4f01aa5 1-48
+src/main/java/org/alliancegenome/curation_api/interfaces/crud/slotAnnotations/CassetteComponentSlotAnnotationCrudInterface.java
+  s_6b8af79fa05736::t_d014151bf4bea5 1-40
+src/main/java/org/alliancegenome/curation_api/interfaces/crud/slotAnnotations/CassetteFullNameSlotAnnotationCrudInterface.java
+  s_6b8af79fa05736::t_364af0d15822c9 1-40
+src/main/java/org/alliancegenome/curation_api/interfaces/crud/slotAnnotations/CassetteSymbolSlotAnnotationCrudInterface.java
+  s_6b8af79fa05736::t_ccebac2468bc0c 1-40
+src/main/java/org/alliancegenome/curation_api/interfaces/crud/slotAnnotations/CassetteSynonymSlotAnnotationCrudInterface.java
+  s_6b8af79fa05736::t_ce3d8047baf84a 1-40
+src/main/java/org/alliancegenome/curation_api/jobs/executors/CassetteExecutor.java
+  s_6b8af79fa05736::t_134a6353a8494e 1-77
+src/main/java/org/alliancegenome/curation_api/jobs/executors/associations/CassetteGenomicEntityAssociationExecutor.java
+  s_6b8af79fa05736::t_2e92f5dc0e0c20 1-64
+src/main/java/org/alliancegenome/curation_api/model/entities/Cassette.java
+  s_6b8af79fa05736::t_58a9ec7d0e7d81 1-91
+src/main/java/org/alliancegenome/curation_api/model/entities/Reagent.java
+  s_6b8af79fa05736::t_f03819f1786684 38-39
+src/main/java/org/alliancegenome/curation_api/model/entities/associations/CassetteGenomicEntityAssociation.java
+  s_6b8af79fa05736::t_3213e01447c71d 1-98
+src/main/java/org/alliancegenome/curation_api/model/entities/slotAnnotations/CassetteComponentSlotAnnotation.java
+  s_6b8af79fa05736::t_1f4f7d9b616178 1-92
+src/main/java/org/alliancegenome/curation_api/model/entities/slotAnnotations/CassetteFullNameSlotAnnotation.java
+  s_6b8af79fa05736::t_91412732025315 1-28
+src/main/java/org/alliancegenome/curation_api/model/entities/slotAnnotations/CassetteSymbolSlotAnnotation.java
+  s_6b8af79fa05736::t_614d25bde53cfd 1-28
+src/main/java/org/alliancegenome/curation_api/model/entities/slotAnnotations/CassetteSynonymSlotAnnotation.java
+  s_6b8af79fa05736::t_35bc34f9fc881a 1-28
+src/main/java/org/alliancegenome/curation_api/model/ingest/dto/CassetteDTO.java
+  s_6b8af79fa05736::t_c26cac21990521 1-41
+src/main/java/org/alliancegenome/curation_api/model/ingest/dto/IngestDTO.java
+  s_6b8af79fa05736::t_7342a0436502a6 11,59-62,87-90
+src/main/java/org/alliancegenome/curation_api/model/ingest/dto/associations/CassetteGenomicEntityAssociationDTO.java
+  s_6b8af79fa05736::t_1aadaaa9e469dc 1-37
+src/main/java/org/alliancegenome/curation_api/model/ingest/dto/slotAnnotions/CassetteComponentSlotAnnotationDTO.java
+  s_6b8af79fa05736::t_0e12b2e749c8d8 1-41
+src/main/java/org/alliancegenome/curation_api/services/CassetteService.java
+  s_6b8af79fa05736::t_cff97c75bd2d82 1-174
+src/main/java/org/alliancegenome/curation_api/services/associations/CassetteGenomicEntityAssociationService.java
+  s_6b8af79fa05736::t_fb224dab832867 1-103
+src/main/java/org/alliancegenome/curation_api/services/helpers/CassetteUniqueIdHelper.java
+  s_6b8af79fa05736::t_c999100bd89ad6 1-79
+src/main/java/org/alliancegenome/curation_api/services/helpers/SlotAnnotationIdentityHelper.java
+  s_6b8af79fa05736::t_e7edca516e7202 18,29,151-168
+src/main/java/org/alliancegenome/curation_api/services/slotAnnotations/CassetteComponentSlotAnnotationService.java
+  s_6b8af79fa05736::t_88dbfeb882e6a1 1-40
+src/main/java/org/alliancegenome/curation_api/services/slotAnnotations/CassetteFullNameSlotAnnotationService.java
+  s_6b8af79fa05736::t_a9d1e43a2bbf51 1-40
+src/main/java/org/alliancegenome/curation_api/services/slotAnnotations/CassetteSymbolSlotAnnotationService.java
+  s_6b8af79fa05736::t_b4ec767b200afe 1-40
+src/main/java/org/alliancegenome/curation_api/services/slotAnnotations/CassetteSynonymSlotAnnotationService.java
+  s_6b8af79fa05736::t_3b97e8bac007de 1-40
+src/main/java/org/alliancegenome/curation_api/services/validation/CassetteValidator.java
+  s_6b8af79fa05736::t_ca25759bcb417c 1-321
+src/main/java/org/alliancegenome/curation_api/services/validation/associations/CassetteGenomicEntityAssociationValidator.java
+  s_6b8af79fa05736::t_c07f1733a795b3 1-141
+src/main/java/org/alliancegenome/curation_api/services/validation/dto/CassetteDTOValidator.java
+  s_6b8af79fa05736::t_8cca1fa6798033 1-272
+src/main/java/org/alliancegenome/curation_api/services/validation/dto/associations/CassetteGenomicEntityAssociationDTOValidator.java
+  s_6b8af79fa05736::t_461dbe52b30e54 1-127
+src/main/java/org/alliancegenome/curation_api/services/validation/dto/slotAnnotations/CassetteComponentSlotAnnotationDTOValidator.java
+  s_6b8af79fa05736::t_a852a357fc3caf 1-65
+src/main/java/org/alliancegenome/curation_api/services/validation/dto/slotAnnotations/CassetteComponentSlotAnnotationValidator.java
+  s_6b8af79fa05736::t_52702a1f381904 1-106
+src/main/java/org/alliancegenome/curation_api/services/validation/dto/slotAnnotations/CassetteFullNameSlotAnnotationDTOValidator.java
+  s_6b8af79fa05736::t_f5f9b60c780a21 1-25
+src/main/java/org/alliancegenome/curation_api/services/validation/dto/slotAnnotations/CassetteFullNameSlotAnnotationValidator.java
+  s_6b8af79fa05736::t_5f76d1c7112acd 1-68
+src/main/java/org/alliancegenome/curation_api/services/validation/dto/slotAnnotations/CassetteSymbolSlotAnnotationDTOValidator.java
+  s_6b8af79fa05736::t_4dfeba2e803d81 1-25
+src/main/java/org/alliancegenome/curation_api/services/validation/dto/slotAnnotations/CassetteSymbolSlotAnnotationValidator.java
+  s_6b8af79fa05736::t_a42a428b34d79f 1-68
+src/main/java/org/alliancegenome/curation_api/services/validation/dto/slotAnnotations/CassetteSynonymSlotAnnotationDTOValidator.java
+  s_6b8af79fa05736::t_8e540977246422 1-25
+src/main/java/org/alliancegenome/curation_api/services/validation/dto/slotAnnotations/CassetteSynonymSlotAnnotationValidator.java
+  s_6b8af79fa05736::t_3971450d877e95 1-68
+src/main/resources/db/migration/v0.52.0.4__add_cassettes.sql
+  s_6b8af79fa05736::t_6f913d232ba14e 1-86
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "c679245a0c8d770e39a9cc09bb03869c6bd87349",
+  "prompts": {},
+  "sessions": {
+    "s_6b8af79fa05736": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "97d2ee96-b897-43a8-b8bc-9c8cfab7c07a",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Ketaki Kindre <kkindre@caltech.edu>"
+    }
+  }
+}
