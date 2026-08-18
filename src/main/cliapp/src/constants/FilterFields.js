@@ -53,6 +53,51 @@ export const FIELD_SETS = Object.freeze({
 		filterName: 'alleleSymbolFilter',
 		fields: ['alleleSymbol.displayText', 'alleleSymbol.formatText'],
 	},
+	agmAlleleAggregationFieldSet: {
+		filterName: 'agmAlleleAggregationFilter',
+		fields: ['agmAssociationSubject.dataProvider.abbreviation', 'relation.name', 'zygosity.name'],
+	},
+	agmAssociationSubjectFieldSet: {
+		filterName: 'agmAssociationSubjectFilter',
+		fields: [
+			'agmAssociationSubject.agmFullName.displayText',
+			'agmAssociationSubject.agmFullName.formatText',
+			'agmAssociationSubject.name',
+			'agmAssociationSubject.curie',
+			'agmAssociationSubject.primaryExternalId',
+			'agmAssociationSubject.modInternalId',
+		],
+	},
+	agmAssociationSubjectTaxonFieldSet: {
+		filterName: 'agmAssociationSubjectTaxonFilter',
+		fields: ['agmAssociationSubject.taxon.curie', 'agmAssociationSubject.taxon.name'],
+	},
+	agmAlleleAssociationObjectFieldSet: {
+		filterName: 'agmAlleleAssociationObjectFilter',
+		fields: [
+			'agmAlleleAssociationObject.alleleSymbol.displayText',
+			'agmAlleleAssociationObject.alleleSymbol.formatText',
+			'agmAlleleAssociationObject.curie',
+			'agmAlleleAssociationObject.primaryExternalId',
+			'agmAlleleAssociationObject.modInternalId',
+		],
+	},
+	agmAlleleRelationFieldSet: {
+		filterName: 'agmAlleleRelationFilter',
+		fields: ['relation.name'],
+	},
+	agmAlleleDataProviderFieldSet: {
+		filterName: 'agmAlleleDataProviderFilter',
+		fields: [
+			'agmAssociationSubject.dataProvider.abbreviation',
+			'agmAssociationSubject.dataProvider.fullName',
+			'agmAssociationSubject.dataProvider.shortName',
+		],
+	},
+	zygosityFieldSet: {
+		filterName: 'zygosityFilter',
+		fields: ['zygosity.name'],
+	},
 	alleleAssociationSubjectFieldSet: {
 		filterName: 'alleleAssociationSubjectFilter',
 		fields: [
@@ -948,6 +993,36 @@ export const FILTER_CONFIGS = Object.freeze({
 	},
 	alleleSecondaryIdsFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.alleleSecondaryIdsFieldSet] },
 	alleleSymbolFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.alleleSymbolFieldSet] },
+	agmAssociationSubjectFilterConfig: {
+		filterComponentType: 'input',
+		fieldSets: [FIELD_SETS.agmAssociationSubjectFieldSet],
+	},
+	agmAssociationSubjectTaxonFilterConfig: {
+		filterComponentType: 'input',
+		fieldSets: [FIELD_SETS.agmAssociationSubjectTaxonFieldSet],
+	},
+	agmAlleleAssociationObjectFilterConfig: {
+		filterComponentType: 'input',
+		fieldSets: [FIELD_SETS.agmAlleleAssociationObjectFieldSet],
+	},
+	agmAlleleRelationFilterConfig: {
+		filterComponentType: 'multiselect',
+		fieldSets: [FIELD_SETS.agmAlleleRelationFieldSet],
+		aggregationFieldSet: FIELD_SETS.agmAlleleAggregationFieldSet,
+		useKeywordFields: true,
+	},
+	agmAlleleDataProviderFilterConfig: {
+		filterComponentType: 'multiselect',
+		fieldSets: [FIELD_SETS.agmAlleleDataProviderFieldSet],
+		aggregationFieldSet: FIELD_SETS.agmAlleleAggregationFieldSet,
+		useKeywordFields: true,
+	},
+	zygosityFilterConfig: {
+		filterComponentType: 'multiselect',
+		fieldSets: [FIELD_SETS.zygosityFieldSet],
+		aggregationFieldSet: FIELD_SETS.agmAlleleAggregationFieldSet,
+		useKeywordFields: true,
+	},
 	alleleAssociationSubjectFilterConfig: {
 		filterComponentType: 'input',
 		fieldSets: [FIELD_SETS.alleleAssociationSubjectFieldSet],

@@ -8,6 +8,7 @@ import { DataLoadsPage } from './containers/dataLoadsPage/';
 import { ReportsPage } from './containers/reportsPage/';
 import { AlleleGeneAssociationsPage } from './containers/alleleGeneAssociationsPage';
 import { AntibodiesPage } from './containers/antibodiesPage';
+import { AgmAlleleAssociationsPage } from './containers/agmAlleleAssociationsPage';
 import { DiseaseAnnotationsPage } from './containers/diseaseAnnotationsPage';
 import { PhenotypeAnnotationsPage } from './containers/phenotypeAnnotationsPage';
 import { GeneExpressionAnnotationsPage } from './containers/geneExpressionAnnotationsPage';
@@ -79,6 +80,10 @@ export default function AppRoutes() {
 						element={
 							<ErrorBoundary>
 								<AntibodiesPage />
+						path="/agmAlleleAssociations"
+						element={
+							<ErrorBoundary>
+								<AgmAlleleAssociationsPage />
 							</ErrorBoundary>
 						}
 					/>

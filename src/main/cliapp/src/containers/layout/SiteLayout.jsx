@@ -246,6 +246,7 @@ export const SiteLayout = (props) => {
 					//Add and update new items in alphabetical order
 					items: [
 						{ label: 'Affected Genomic Models', icon: 'pi pi-fw pi-home', to: '/agms' },
+						{ label: 'AGM Allele Associations', icon: 'pi pi-fw pi-home', to: '/agmAlleleAssociations' },
 						{ label: 'Alleles', icon: 'pi pi-fw pi-home', to: '/alleles' },
 						{ label: 'Allele Gene Associations', icon: 'pi pi-fw pi-home', to: '/alleleGeneAssociations' },
 						{ label: 'Antibodies', icon: 'pi pi-fw pi-home', to: '/antibodies' },
