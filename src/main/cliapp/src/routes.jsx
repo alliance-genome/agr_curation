@@ -80,6 +80,10 @@ export default function AppRoutes() {
 						element={
 							<ErrorBoundary>
 								<AntibodiesPage />
+							</ErrorBoundary>
+						}
+					/>
+					<Route
 						path="/agmAlleleAssociations"
 						element={
 							<ErrorBoundary>
