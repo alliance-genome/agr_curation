@@ -1,8 +1,10 @@
 export const Endpoints = Object.freeze({
 	Entity: Object.freeze({
 		AGM: 'agm',
+		AGM_ALLELE_ASSOCIATION: 'agmalleleassociation',
 		ALLELE: 'allele',
 		ALLELE_GENE_ASSOCIATION: 'allelegeneassociation',
+		ANTIBODY: 'antibody',
 		BIOLOGICAL_ENTITY: 'biologicalentity',
 		CASSETTE: 'cassette',
 		CONSTRUCT: 'construct',
