@@ -34,7 +34,13 @@ CREATE TABLE cassettegenomicentityassociation (
 	relation_id bigint
 );
 
-ALTER TABLE cassettegenomicentityassociation ADD CONSTRAINT cassettegenomicentityassociation_id_fk FOREIGN KEY (id) REFERENCES association (id);
+CREATE SEQUENCE cassettegenomicentityassociation_seq
+	START WITH 1
+	INCREMENT BY 50
+	NO MINVALUE
+	NO MAXVALUE
+	CACHE 1;
+
 ALTER TABLE cassettegenomicentityassociation ADD CONSTRAINT cassettegenomicentityassociation_createdby_id_fk FOREIGN KEY (createdby_id) REFERENCES person (id);
 ALTER TABLE cassettegenomicentityassociation ADD CONSTRAINT cassettegenomicentityassociation_updatedby_id_fk FOREIGN KEY (updatedby_id) REFERENCES person (id);
 ALTER TABLE cassettegenomicentityassociation ADD CONSTRAINT cassettegenomicentityassociation_subject_id_fk FOREIGN KEY (cassetteassociationsubject_id) REFERENCES cassette (id);
