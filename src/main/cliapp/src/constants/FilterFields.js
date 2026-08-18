@@ -199,6 +199,40 @@ export const FIELD_SETS = Object.freeze({
 			'assertedGenes.modInternalId',
 		],
 	},
+	antibodyAggregationFieldSet: {
+		filterName: 'antibodyAggregationFilter',
+		fields: ['dataProvider.abbreviation', 'clonality.name', 'heavyChainIsotype.name', 'lightChainIsotype.name'],
+	},
+	antibodyTargetGenesFieldSet: {
+		filterName: 'antibodyTargetGenesFilter',
+		fields: [
+			'antibodyTargetGenes.geneSymbol.displayText',
+			'antibodyTargetGenes.geneSymbol.formatText',
+			'antibodyTargetGenes.curie',
+			'antibodyTargetGenes.primaryExternalId',
+			'antibodyTargetGenes.modInternalId',
+		],
+	},
+	antigenTaxonFieldSet: {
+		filterName: 'antigenTaxonFilter',
+		fields: ['antigenTaxon.curie', 'antigenTaxon.name'],
+	},
+	clonalityFieldSet: {
+		filterName: 'clonalityFilter',
+		fields: ['clonality.name'],
+	},
+	heavyChainIsotypeFieldSet: {
+		filterName: 'heavyChainIsotypeFilter',
+		fields: ['heavyChainIsotype.name'],
+	},
+	lightChainIsotypeFieldSet: {
+		filterName: 'lightChainIsotypeFilter',
+		fields: ['lightChainIsotype.name'],
+	},
+	originalReferenceFieldSet: {
+		filterName: 'originalReferenceFilter',
+		fields: ['originalReference.curie'],
+	},
 	citationFieldSet: {
 		filterName: 'citationFilter',
 		fields: ['citation'],
@@ -1047,6 +1081,39 @@ export const FILTER_CONFIGS = Object.freeze({
 	constructGenomicComponentsFilterConfig: {
 		filterComponentType: 'input',
 		fieldSets: [FIELD_SETS.constructGenomicComponentsFieldSet],
+	},
+	antibodyDataProviderFilterConfig: {
+		filterComponentType: 'multiselect',
+		fieldSets: [FIELD_SETS.dataProviderFieldSet],
+		aggregationFieldSet: FIELD_SETS.antibodyAggregationFieldSet,
+		useKeywordFields: true,
+	},
+	antibodyTargetGenesFilterConfig: {
+		filterComponentType: 'input',
+		fieldSets: [FIELD_SETS.antibodyTargetGenesFieldSet],
+	},
+	antigenTaxonFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.antigenTaxonFieldSet] },
+	clonalityFilterConfig: {
+		filterComponentType: 'multiselect',
+		fieldSets: [FIELD_SETS.clonalityFieldSet],
+		aggregationFieldSet: FIELD_SETS.antibodyAggregationFieldSet,
+		useKeywordFields: true,
+	},
+	heavyChainIsotypeFilterConfig: {
+		filterComponentType: 'multiselect',
+		fieldSets: [FIELD_SETS.heavyChainIsotypeFieldSet],
+		aggregationFieldSet: FIELD_SETS.antibodyAggregationFieldSet,
+		useKeywordFields: true,
+	},
+	lightChainIsotypeFilterConfig: {
+		filterComponentType: 'multiselect',
+		fieldSets: [FIELD_SETS.lightChainIsotypeFieldSet],
+		aggregationFieldSet: FIELD_SETS.antibodyAggregationFieldSet,
+		useKeywordFields: true,
+	},
+	originalReferenceFilterConfig: {
+		filterComponentType: 'input',
+		fieldSets: [FIELD_SETS.originalReferenceFieldSet],
 	},
 	createdByFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.createdByFieldSet] },
 	crossReferenceFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.crossReferenceFieldSet] },
