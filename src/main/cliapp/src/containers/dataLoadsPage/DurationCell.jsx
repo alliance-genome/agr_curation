@@ -2,14 +2,14 @@ import { useState, useEffect } from 'react';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import duration from 'dayjs/plugin/duration';
-import { isBulkloadNotRunning } from '../../constants/JobStatus';
+import { isJobRunning } from '../../constants/JobStatus';
 
 dayjs.extend(utc);
 dayjs.extend(duration);
 
 export const DurationCell = ({ rowData }) => {
 	const [now, setNow] = useState(() => dayjs.utc());
-	const isRunning = !rowData.loadFinished && !isBulkloadNotRunning(rowData.bulkloadStatus);
+	const isRunning = !rowData.loadFinished && isJobRunning(rowData.bulkloadStatus);
 
 	useEffect(() => {
 		if (!isRunning) return;
