@@ -1,0 +1,19 @@
+src/main/cliapp/src/routes.jsx
+  s_71dfbdc3868607::t_62317545168c31 83-86
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "115c6fefa32567cbb837493a18d48a7d0adb0eae",
+  "prompts": {},
+  "sessions": {
+    "s_71dfbdc3868607": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "3ea75bd2-2fa8-4130-952e-cb1e5ca58a12",
+        "model": "unknown"
+      },
+      "human_author": "Ketaki Kindre <kkindre@caltech.edu>"
+    }
+  }
+}
