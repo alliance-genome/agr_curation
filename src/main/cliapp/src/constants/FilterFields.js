@@ -206,6 +206,37 @@ export const FIELD_SETS = Object.freeze({
 		filterName: 'conditionTaxonFilter',
 		fields: ['conditionTaxon.curie', 'conditionTaxon.name'],
 	},
+	cassetteNameFieldSet: {
+		filterName: 'cassetteNameFilter',
+		fields: ['cassetteFullName.displayText', 'cassetteFullName.formatText'],
+	},
+	cassetteSymbolFieldSet: {
+		filterName: 'cassetteSymbolFilter',
+		fields: ['cassetteSymbol.displayText', 'cassetteSymbol.formatText'],
+	},
+	cassetteSynonymsFieldSet: {
+		filterName: 'cassetteSynonymsFilter',
+		fields: ['cassetteSynonyms.displayText', 'cassetteSynonyms.formatText'],
+	},
+	cassetteAggregationFieldSet: {
+		filterName: 'cassetteAggregationFilter',
+		fields: ['dataProvider.abbreviation'],
+	},
+	cassetteComponentsFieldSet: {
+		filterName: 'cassetteComponentsFilter',
+		fields: ['cassetteComponents.componentSymbol', 'cassetteComponents.relation.name'],
+	},
+	cassetteGenomicComponentsFieldSet: {
+		filterName: 'cassetteGenomicComponentsFilter',
+		fields: [
+			'cassetteGenomicEntityAssociations.cassetteGenomicEntityAssociationObject.symbol',
+			'cassetteGenomicEntityAssociations.cassetteGenomicEntityAssociationObject.name',
+			'cassetteGenomicEntityAssociations.cassetteGenomicEntityAssociationObject.curie',
+			'cassetteGenomicEntityAssociations.cassetteGenomicEntityAssociationObject.primaryExternalId',
+			'cassetteGenomicEntityAssociations.cassetteGenomicEntityAssociationObject.modInternalId',
+			'cassetteGenomicEntityAssociations.relation.name',
+		],
+	},
 	constructNameFieldSet: {
 		filterName: 'constructNameFilter',
 		fields: ['constructFullName.displayText', 'constructFullName.formatText'],
@@ -543,6 +574,10 @@ export const FIELD_SETS = Object.freeze({
 	internalFieldSet: {
 		filterName: 'internalFilter',
 		fields: ['internal'],
+	},
+	placeholderFieldSet: {
+		filterName: 'placeholderFilter',
+		fields: ['placeholder'],
 	},
 	isExtinctFieldSet: {
 		filterName: 'isExtinctFilter',
@@ -962,6 +997,23 @@ export const FILTER_CONFIGS = Object.freeze({
 	},
 	conditionQuantityFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.conditionQuantityFieldSet] },
 	conditionTaxonFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.conditionTaxonFieldSet] },
+	cassetteNameFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.cassetteNameFieldSet] },
+	cassetteSymbolFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.cassetteSymbolFieldSet] },
+	cassetteSynonymsFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.cassetteSynonymsFieldSet] },
+	cassetteComponentsFilterConfig: {
+		filterComponentType: 'input',
+		fieldSets: [FIELD_SETS.cassetteComponentsFieldSet],
+	},
+	cassetteGenomicComponentsFilterConfig: {
+		filterComponentType: 'input',
+		fieldSets: [FIELD_SETS.cassetteGenomicComponentsFieldSet],
+	},
+	cassetteDataProviderFilterConfig: {
+		filterComponentType: 'multiselect',
+		fieldSets: [FIELD_SETS.dataProviderFieldSet],
+		aggregationFieldSet: FIELD_SETS.cassetteAggregationFieldSet,
+		useKeywordFields: true,
+	},
 	constructNameFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.constructNameFieldSet] },
 	constructSymbolFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.constructSymbolFieldSet] },
 	constructSynonymsFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.constructSynonymsFieldSet] },
@@ -1192,6 +1244,7 @@ export const FILTER_CONFIGS = Object.freeze({
 
 	isExtinctFilterConfig: { filterComponentType: 'dropdown', fieldSets: [FIELD_SETS.isExtinctFieldSet] },
 	obsoleteFilterConfig: { filterComponentType: 'dropdown', fieldSets: [FIELD_SETS.obsoleteFieldSet] },
+	placeholderFilterConfig: { filterComponentType: 'dropdown', fieldSets: [FIELD_SETS.placeholderFieldSet] },
 	internalFilterConfig: { filterComponentType: 'dropdown', fieldSets: [FIELD_SETS.internalFieldSet] },
 	negatedFilterConfig: {
 		filterComponentType: 'dropdown',

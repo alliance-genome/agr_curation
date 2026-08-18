@@ -1,0 +1,406 @@
+import React, { useRef, useState, useMemo } from 'react';
+import { GenericDataTable } from '../../components/GenericDataTable/GenericDataTable';
+import { ComponentsDialog } from '../constructsPage/ComponentsDialog';
+import { GenomicComponentsDialog } from './GenomicComponentsDialog';
+import { SymbolReadOnlyDialog } from '../nameSlotAnnotations/dialogs/SymbolReadOnlyDialog';
+import { FullNameReadOnlyDialog } from '../nameSlotAnnotations/dialogs/FullNameReadOnlyDialog';
+import { SynonymsReadOnlyDialog } from '../nameSlotAnnotations/dialogs/SynonymsReadOnlyDialog';
+import { Toast } from 'primereact/toast';
+import { getDefaultTableState } from '../../service/TableStateService';
+import { FILTER_CONFIGS } from '../../constants/FilterFields';
+import { useGetTableData } from '../../service/useGetTableData';
+import { useGetUserSettings } from '../../service/useGetUserSettings';
+import { IdTemplate } from '../../components/Templates/IdTemplate';
+import { TextDialogTemplate } from '../../components/Templates/dialog/TextDialogTemplate';
+import { ListDialogTemplate } from '../../components/Templates/dialog/ListDialogTemplate';
+import { StringListTemplate } from '../../components/Templates/StringListTemplate';
+import { BooleanTemplate } from '../../components/Templates/BooleanTemplate';
+import { TruncatedReferencesTemplate } from '../../components/Templates/reference/TruncatedReferencesTemplate';
+import { StringTemplate } from '../../components/Templates/StringTemplate';
+
+import { SearchService } from '../../service/SearchService';
+import { Endpoints } from '../../constants/Endpoints';
+
+export const CassettesTable = () => {
+	const toast_topleft = useRef(null);
+	const toast_topright = useRef(null);
+
+	const [synonymsData, setSynonymsData] = useState({
+		dialog: false,
+	});
+
+	const [symbolData, setSymbolData] = useState({
+		dialog: false,
+	});
+
+	const [fullNameData, setFullNameData] = useState({
+		dialog: false,
+	});
+
+	const [isInEditMode, setIsInEditMode] = useState(false);
+	const [errorMessages, setErrorMessages] = useState({});
+	const [totalRecords, setTotalRecords] = useState(0);
+	const [cassettes, setCassettes] = useState([]);
+
+	const searchService = new SearchService();
+
+	const errorMessagesRef = useRef();
+	errorMessagesRef.current = errorMessages;
+
+	const [componentsData, setComponentsData] = useState({
+		isInEdit: false,
+		dialog: false,
+		rowIndex: null,
+		mainRowProps: {},
+	});
+
+	const [genomicComponentsData, setGenomicComponentsData] = useState({
+		isInEdit: false,
+		dialog: false,
+		rowIndex: null,
+		mainRowProps: {},
+	});
+
+	const handleFullNameOpen = (cassetteFullName) => {
+		let _fullNameData = {};
+		_fullNameData['originalFullNames'] = [cassetteFullName];
+		_fullNameData['dialog'] = true;
+		setFullNameData(() => ({
+			..._fullNameData,
+		}));
+	};
+
+	const handleSynonymsOpen = (cassetteSynonyms) => {
+		let _synonymsData = {};
+		_synonymsData['originalSynonyms'] = cassetteSynonyms;
+		_synonymsData['dialog'] = true;
+		setSynonymsData(() => ({
+			..._synonymsData,
+		}));
+	};
+
+	const handleSymbolOpen = (cassetteSymbol) => {
+		let _symbolData = {};
+		_symbolData['originalSymbols'] = [cassetteSymbol];
+		_symbolData['dialog'] = true;
+		setSymbolData(() => ({
+			..._symbolData,
+		}));
+	};
+
+	const handleComponentsOpen = (cassetteComponents) => {
+		let _componentsData = {};
+		_componentsData['originalComponents'] = cassetteComponents;
+		_componentsData['dialog'] = true;
+		setComponentsData(() => ({
+			..._componentsData,
+		}));
+	};
+
+	const handleGenomicComponentsOpen = (cassetteGenomicEntityAssociations) => {
+		let _componentsData = {};
+		_componentsData['originalComponents'] = cassetteGenomicEntityAssociations;
+		_componentsData['dialog'] = true;
+		setGenomicComponentsData(() => ({
+			..._componentsData,
+		}));
+	};
+
+	const getComponentsTextString = (item) => {
+		let relationName = '';
+		if (item?.relation?.name) {
+			relationName = item.relation.name;
+			if (relationName.indexOf(' (RO:') !== -1) {
+				relationName = relationName.substring(0, relationName.indexOf(' (RO:'));
+			}
+		}
+		return relationName + ': ' + item.componentSymbol;
+	};
+
+	const getComponentsAssociationTextString = (item) => {
+		let symbolValue = '';
+		if (
+			item?.cassetteGenomicEntityAssociationObject?.geneSymbol ||
+			item?.cassetteGenomicEntityAssociationObject?.alleleSymbol
+		) {
+			symbolValue = item.cassetteGenomicEntityAssociationObject.geneSymbol
+				? item.cassetteGenomicEntityAssociationObject.geneSymbol.displayText
+				: item.cassetteGenomicEntityAssociationObject.alleleSymbol.displayText;
+		} else if (item?.cassetteGenomicEntityAssociationObject?.name) {
+			symbolValue = item.cassetteGenomicEntityAssociationObject.name;
+		} else {
+			symbolValue = item.cassetteGenomicEntityAssociationObject.curie;
+		}
+		let relationName = '';
+		if (item?.relation?.name) {
+			relationName = item.relation.name;
+			if (relationName.indexOf(' (RO:') !== -1) {
+				relationName = relationName.substring(0, relationName.indexOf(' (RO:'));
+			}
+		}
+		return relationName + ': ' + symbolValue;
+	};
+
+	const relatedNotesTemplate = (rowData) => {
+		if (rowData?.relatedNotes && rowData.relatedNotes.length > 0) {
+			return <StringTemplate string={`Notes (${rowData.relatedNotes.length})`} />;
+		}
+		return null;
+	};
+
+	const columns = useMemo(
+		() => [
+			{
+				field: 'curie',
+				header: 'Curie',
+				sortable: true,
+				body: (rowData) => <IdTemplate id={rowData.curie} />,
+				filterConfig: FILTER_CONFIGS.curieFilterConfig,
+			},
+			{
+				field: 'uniqueId',
+				header: 'Unique ID',
+				sortable: { isInEditMode },
+				body: (rowData) => <IdTemplate id={rowData.uniqueId} />,
+				filterConfig: FILTER_CONFIGS.uniqueidFilterConfig,
+			},
+			{
+				field: 'primaryExternalId',
+				header: 'Primary External ID',
+				sortable: { isInEditMode },
+				body: (rowData) => <IdTemplate id={rowData.primaryExternalId} />,
+				filterConfig: FILTER_CONFIGS.primaryExternalIdFilterConfig,
+			},
+			{
+				field: 'modInternalId',
+				header: 'MOD Internal ID',
+				sortable: { isInEditMode },
+				body: (rowData) => <IdTemplate id={rowData.modInternalId} />,
+				filterConfig: FILTER_CONFIGS.modInternalIdFilterConfig,
+			},
+			{
+				field: 'cassetteSymbol.displayText',
+				header: 'Symbol',
+				sortable: true,
+				body: (rowData) => (
+					<TextDialogTemplate
+						entity={rowData.cassetteSymbol}
+						handleOpen={handleSymbolOpen}
+						text={rowData.cassetteSymbol?.displayText}
+						underline={false}
+					/>
+				),
+				filter: true,
+				filterConfig: FILTER_CONFIGS.cassetteSymbolFilterConfig,
+			},
+			{
+				field: 'cassetteFullName.displayText',
+				header: 'Name',
+				sortable: true,
+				filter: true,
+				body: (rowData) => (
+					<TextDialogTemplate
+						entity={rowData.cassetteFullName}
+						handleOpen={handleFullNameOpen}
+						text={rowData.cassetteFullName?.displayText}
+						underline={false}
+					/>
+				),
+				filterConfig: FILTER_CONFIGS.cassetteNameFilterConfig,
+			},
+			{
+				field: 'cassetteSynonyms.displayText',
+				header: 'Synonyms',
+				body: (rowData) => (
+					<ListDialogTemplate
+						entities={rowData.cassetteSynonyms}
+						handleOpen={handleSynonymsOpen}
+						getTextField={(entity) => entity?.displayText}
+						underline={false}
+					/>
+				),
+				sortable: true,
+				filterConfig: FILTER_CONFIGS.cassetteSynonymsFilterConfig,
+			},
+			{
+				field: 'secondaryIdentifiers',
+				header: 'Secondary IDs',
+				sortable: true,
+				filterConfig: FILTER_CONFIGS.secondaryIdentifiersFilterConfig,
+				body: (rowData) => <StringListTemplate list={rowData.secondaryIdentifiers} />,
+			},
+			{
+				field: 'cassetteComponents.componentSymbol',
+				header: 'Free Text Components',
+				body: (rowData) => (
+					<ListDialogTemplate
+						entities={rowData.cassetteComponents}
+						handleOpen={handleComponentsOpen}
+						getTextField={getComponentsTextString}
+						underline={true}
+					/>
+				),
+				sortable: { isInEditMode },
+				filterConfig: FILTER_CONFIGS.cassetteComponentsFilterConfig,
+			},
+			{
+				field: 'cassetteGenomicEntityAssociations.cassetteGenomicEntityAssociationObject.symbol',
+				header: 'Genomic Entity Components',
+				body: (rowData) => (
+					<ListDialogTemplate
+						entities={rowData.cassetteGenomicEntityAssociations}
+						handleOpen={handleGenomicComponentsOpen}
+						getTextField={getComponentsAssociationTextString}
+						underline={true}
+					/>
+				),
+				sortable: { isInEditMode },
+				filterConfig: FILTER_CONFIGS.cassetteGenomicComponentsFilterConfig,
+			},
+			{
+				field: 'relatedNotes.freeText',
+				header: 'Related Notes',
+				sortable: false,
+				body: relatedNotesTemplate,
+				filterConfig: FILTER_CONFIGS.relatedNotesFilterConfig,
+			},
+			{
+				field: 'references.primaryCrossReferenceCurie',
+				header: 'References',
+				body: (rowData) => <TruncatedReferencesTemplate references={rowData.references} />,
+				sortable: false,
+				filterConfig: FILTER_CONFIGS.referencesFilterConfig,
+			},
+			{
+				field: 'dataProvider.abbreviation',
+				header: 'Data Provider',
+				sortable: { isInEditMode },
+				filterConfig: FILTER_CONFIGS.cassetteDataProviderFilterConfig,
+			},
+			{
+				field: 'updatedBy.uniqueId',
+				header: 'Updated By',
+				sortable: { isInEditMode },
+				body: (rowData) => <StringTemplate string={rowData.updatedBy?.uniqueId} />,
+				filterConfig: FILTER_CONFIGS.updatedByFilterConfig,
+			},
+			{
+				field: 'dateUpdated',
+				header: 'Date Updated',
+				sortable: { isInEditMode },
+				filter: true,
+				body: (rowData) => <StringTemplate string={rowData.dateUpdated} />,
+				filterConfig: FILTER_CONFIGS.dateUpdatedFilterConfig,
+			},
+			{
+				field: 'createdBy.uniqueId',
+				header: 'Created By',
+				sortable: { isInEditMode },
+				filter: true,
+				body: (rowData) => <StringTemplate string={rowData.createdBy?.uniqueId} />,
+				filterConfig: FILTER_CONFIGS.createdByFilterConfig,
+			},
+			{
+				field: 'dateCreated',
+				header: 'Date Created',
+				sortable: { isInEditMode },
+				filter: true,
+				body: (rowData) => <StringTemplate string={rowData.dateCreated} />,
+				filterConfig: FILTER_CONFIGS.dateCreatedFilterConfig,
+			},
+			{
+				field: 'internal',
+				header: 'Internal',
+				body: (rowData) => <BooleanTemplate value={rowData.internal} />,
+				filter: true,
+				filterConfig: FILTER_CONFIGS.internalFilterConfig,
+				sortable: { isInEditMode },
+			},
+			{
+				field: 'obsolete',
+				header: 'Obsolete',
+				body: (rowData) => <BooleanTemplate value={rowData.obsolete} />,
+				filter: true,
+				filterConfig: FILTER_CONFIGS.obsoleteFilterConfig,
+				sortable: { isInEditMode },
+			},
+			{
+				field: 'placeholder',
+				header: 'Placeholder',
+				body: (rowData) => <BooleanTemplate value={rowData.placeholder} />,
+				filter: true,
+				filterConfig: FILTER_CONFIGS.placeholderFilterConfig,
+				sortable: { isInEditMode },
+			},
+		],
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+		[]
+	);
+
+	const DEFAULT_COLUMN_WIDTH = 10;
+	const SEARCH_ENDPOINT = Endpoints.Entity.CASSETTE;
+
+	const initialTableState = useMemo(() => getDefaultTableState('Cassettes', columns, DEFAULT_COLUMN_WIDTH), [columns]);
+
+	const { settings: tableState, mutate: setTableState } = useGetUserSettings(
+		initialTableState.tableSettingsKeyName,
+		initialTableState
+	);
+
+	const { isFetching, isLoading } = useGetTableData({
+		tableState,
+		endpoint: SEARCH_ENDPOINT,
+		setIsInEditMode,
+		setEntities: setCassettes,
+		setTotalRecords,
+		toast_topleft,
+		searchService,
+	});
+
+	return (
+		<>
+			<div className="card">
+				<Toast ref={toast_topleft} position="top-left" />
+				<Toast ref={toast_topright} position="top-right" />
+				<GenericDataTable
+					dataKey="id"
+					endpoint={SEARCH_ENDPOINT}
+					tableName="Cassettes"
+					entities={cassettes}
+					setEntities={setCassettes}
+					totalRecords={totalRecords}
+					setTotalRecords={setTotalRecords}
+					tableState={tableState}
+					setTableState={setTableState}
+					columns={columns}
+					isEditable={false}
+					isInEditMode={isInEditMode}
+					setIsInEditMode={setIsInEditMode}
+					toasts={{ toast_topleft, toast_topright }}
+					errorObject={{ errorMessages, setErrorMessages }}
+					deletionEnabled={false}
+					deprecateOption={false}
+					modReset={false}
+					duplicationEnabled={false}
+					defaultColumnWidth={DEFAULT_COLUMN_WIDTH}
+					fetching={isFetching || isLoading}
+				/>
+			</div>
+			<FullNameReadOnlyDialog originalFullNameData={fullNameData} setOriginalFullNameData={setFullNameData} />
+			<SymbolReadOnlyDialog originalSymbolData={symbolData} setOriginalSymbolData={setSymbolData} />
+			<SynonymsReadOnlyDialog originalSynonymsData={synonymsData} setOriginalSynonymsData={setSynonymsData} />
+			<ComponentsDialog
+				originalComponentsData={componentsData}
+				setOriginalComponentsData={setComponentsData}
+				errorMessagesMainRow={errorMessages}
+				setErrorMessagesMainRow={setErrorMessages}
+			/>
+			<GenomicComponentsDialog
+				originalComponentsData={genomicComponentsData}
+				setOriginalComponentsData={setGenomicComponentsData}
+				errorMessagesMainRow={errorMessages}
+				setErrorMessagesMainRow={setErrorMessages}
+			/>
+		</>
+	);
+};

@@ -8,6 +8,7 @@ import org.alliancegenome.curation_api.model.ingest.dto.associations.AgmSequence
 import org.alliancegenome.curation_api.model.ingest.dto.associations.AlleleConstructAssociationDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.associations.AlleleGeneAssociationDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.associations.AlleleVariantAssociationDTO;
+import org.alliancegenome.curation_api.model.ingest.dto.associations.CassetteGenomicEntityAssociationDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.associations.ConstructGenomicEntityAssociationDTO;
 import org.alliancegenome.curation_api.view.CurationView;
 
@@ -56,6 +57,10 @@ public class IngestDTO {
 	private List<ConstructDTO> constructIngestSet;
 
 	@JsonView({CurationView.FieldsAndLists.class})
+	@JsonProperty("cassette_ingest_set")
+	private List<CassetteDTO> cassetteIngestSet;
+
+	@JsonView({CurationView.FieldsAndLists.class})
 	@JsonProperty("antibody_ingest_set")
 	private List<AntibodyDTO> antibodyIngestSet;
 
@@ -78,6 +83,10 @@ public class IngestDTO {
 	@JsonView({CurationView.FieldsAndLists.class})
 	@JsonProperty("construct_genomic_entity_association_ingest_set")
 	private List<ConstructGenomicEntityAssociationDTO> constructGenomicEntityAssociationIngestSet;
+
+	@JsonView({CurationView.FieldsAndLists.class})
+	@JsonProperty("cassette_genomic_entity_association_ingest_set")
+	private List<CassetteGenomicEntityAssociationDTO> cassetteGenomicEntityAssociationIngestSet;
 
 	@JsonView({CurationView.FieldsAndLists.class})
 	@JsonProperty("agm_sequence_targeting_reagent_association_ingest_set")

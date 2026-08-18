@@ -59,6 +59,8 @@ public final class VocabularyConstants {
 	public static final String CONSTRUCT_RELATION_VOCABULARY = "construct_relation";
 	public static final String CONSTRUCT_GENOMIC_ENTITY_RELATION_VOCABULARY_TERM_SET = "construct_genomic_entity_relation";
 
+	public static final String CASSETTE_GENOMIC_ENTITY_RELATION_VOCABULARY_TERM_SET = "cassette_genomic_entity_relation";
+
 	public static final String ANTIBODY_CLONALITY_VOCABULARY = "antibody_clonality";
 	public static final String ANTIBODY_HEAVY_CHAIN_ISOTYPE_VOCABULARY = "antibody_heavy_chain_isotype";
 	public static final String ANTIBODY_LIGHT_CHAIN_ISOTYPE_VOCABULARY = "antibody_light_chain_isotype";
@@ -70,6 +72,8 @@ public final class VocabularyConstants {
 	public static final String DISEASE_ANNOTATION_NOTE_TYPES_VOCABULARY_TERM_SET = "da_note_type";
 	public static final String GENE_NOTE_TYPES_VOCABULARY_TERM_SET = "gene_note_type";
 	public static final String CONSTRUCT_COMPONENT_NOTE_TYPES_VOCABULARY_TERM_SET = "construct_component_note_type";
+	public static final String CASSETTE_NOTE_TYPES_VOCABULARY_TERM_SET = "cassette_note_type";
+	public static final String CASSETTE_COMPONENT_NOTE_TYPES_VOCABULARY_TERM_SET = "cassette_component_note_type";
 	public static final String ANTIBODY_NOTE_TYPES_VOCABULARY_TERM_SET = "antibody_note_type";
 	public static final String VARIANT_NOTE_TYPES_VOCABULARY_TERM_SET = "variant_note_type";
 	public static final String ALLELE_GENOMIC_ENTITY_ASSOCIATION_NOTE_TYPES_VOCABULARY_TERM_SET = "allele_genomic_entity_association_note_type";

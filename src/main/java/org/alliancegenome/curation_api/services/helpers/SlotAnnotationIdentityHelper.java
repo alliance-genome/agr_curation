@@ -15,6 +15,7 @@ import org.alliancegenome.curation_api.model.entities.slotAnnotations.AlleleGerm
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.AlleleInheritanceModeSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.AlleleMutationTypeSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.AlleleNomenclatureEventSlotAnnotation;
+import org.alliancegenome.curation_api.model.entities.slotAnnotations.CassetteComponentSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.ConstructComponentSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.NameSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.SecondaryIdSlotAnnotation;
@@ -25,6 +26,7 @@ import org.alliancegenome.curation_api.model.ingest.dto.slotAnnotions.AlleleGerm
 import org.alliancegenome.curation_api.model.ingest.dto.slotAnnotions.AlleleInheritanceModeSlotAnnotationDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.slotAnnotions.AlleleMutationTypeSlotAnnotationDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.slotAnnotions.AlleleNomenclatureEventSlotAnnotationDTO;
+import org.alliancegenome.curation_api.model.ingest.dto.slotAnnotions.CassetteComponentSlotAnnotationDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.slotAnnotions.ConstructComponentSlotAnnotationDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.slotAnnotions.NameSlotAnnotationDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.slotAnnotions.SecondaryIdSlotAnnotationDTO;
@@ -138,6 +140,24 @@ public class SlotAnnotationIdentityHelper {
 	}
 
 	public String constructComponentDtoIdentity(ConstructComponentSlotAnnotationDTO dto) {
+		String componentSymbol = StringUtils.isBlank(dto.getComponentSymbol()) ? "" : dto.getComponentSymbol();
+		String taxon = StringUtils.isBlank(dto.getTaxonCurie()) ? "" : dto.getTaxonCurie();
+		String taxonText = StringUtils.isBlank(dto.getTaxonText()) ? "" : dto.getTaxonText();
+		String notesIdentity = noteDtosIdentity(dto.getNoteDtos());
+
+		return StringUtils.join(List.of(componentSymbol, taxon, taxonText, notesIdentity), "|");
+	}
+
+	public static String cassetteComponentIdentity(CassetteComponentSlotAnnotation annotation) {
+		String componentSymbol = StringUtils.isBlank(annotation.getComponentSymbol()) ? "" : annotation.getComponentSymbol();
+		String taxon = annotation.getTaxon() == null ? "" : annotation.getTaxon().getCurie();
+		String taxonText = StringUtils.isBlank(annotation.getTaxonText()) ? "" : annotation.getTaxonText();
+		String notesIdentity = notesIdentity(annotation.getRelatedNotes());
+
+		return StringUtils.join(List.of(componentSymbol, taxon, taxonText, notesIdentity), "|");
+	}
+
+	public String cassetteComponentDtoIdentity(CassetteComponentSlotAnnotationDTO dto) {
 		String componentSymbol = StringUtils.isBlank(dto.getComponentSymbol()) ? "" : dto.getComponentSymbol();
 		String taxon = StringUtils.isBlank(dto.getTaxonCurie()) ? "" : dto.getTaxonCurie();
 		String taxonText = StringUtils.isBlank(dto.getTaxonText()) ? "" : dto.getTaxonText();
