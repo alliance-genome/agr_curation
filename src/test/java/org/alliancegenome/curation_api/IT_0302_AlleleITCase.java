@@ -1,10 +1,14 @@
 package org.alliancegenome.curation_api;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.aMapWithSize;
 import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -38,6 +42,7 @@ import org.alliancegenome.curation_api.model.entities.slotAnnotations.AlleleNome
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.AlleleSecondaryIdSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.AlleleSymbolSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.AlleleSynonymSlotAnnotation;
+import org.alliancegenome.curation_api.model.entities.slotAnnotations.GeneSymbolSlotAnnotation;
 import org.alliancegenome.curation_api.resources.TestContainerResource;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.MethodOrderer;
@@ -49,6 +54,7 @@ import org.junit.jupiter.api.TestMethodOrder;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusIntegrationTest;
 import io.restassured.RestAssured;
+import io.restassured.response.Response;
 
 @QuarkusIntegrationTest
 @QuarkusTestResource(TestContainerResource.Initializer.class)
@@ -60,6 +66,11 @@ import io.restassured.RestAssured;
 public class IT_0302_AlleleITCase extends BaseITCase {
 
 	private static final String ALLELE = "Allele:0001";
+
+	// RESTEasy's reply when the response cannot be serialized ("deserialize" is its wording).
+	private static final String SERIALIZATION_FAILURE_BODY = "Not able to deserialize data provided.";
+
+	private static final String LAZY_INIT_ALLELE = "Allele:LazyInit0001";
 
 	private Vocabulary inheritanceModeVocabulary;
 	private Vocabulary germlineTransmissionStatusVocabulary;
@@ -1599,6 +1610,70 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 		RestAssured.given().
 				when().
 				delete("/api/allele/" + ALLELE).
+				then().
+				statusCode(200);
+	}
+
+	@Test
+	@Order(28)
+	public void updateAlleleDetailWithGeneAssociationEvidenceGraph() {
+		// SCRUM-6434: serializing the updateDetail response hit a lazy load on a closed session via
+		// alleleGeneAssociations -> alleleGeneAssociationObject -> geneSymbol -> evidence ->
+		// crossReferences. The only active test doing a successful updateDetail with a gene association.
+
+		// A null fixture would produce a 400 indistinguishable from the bug under test.
+		assertNotNull(symbolNameType, "symbolNameType fixture is null - loadRequiredEntities did not complete");
+		assertNotNull(geneAssociationRelation, "geneAssociationRelation fixture is null - loadRequiredEntities did not complete");
+
+		Gene evidenceGene = createGene("TEST:LazyInitGene1", "NCBITaxon:6239", symbolNameType, false);
+		// Unique xref rather than the shared PMID:TestXref default.
+		Reference geneSymbolEvidence = createReference("AGRKB:LazyInitTest1", "PMID:LazyInitTest1", false);
+		GeneSymbolSlotAnnotation evidenceGeneSymbol = evidenceGene.getGeneSymbol();
+		evidenceGeneSymbol.setEvidence(List.of(geneSymbolEvidence));
+		RestAssured.given().
+				contentType("application/json").
+				body(evidenceGene).
+				when().
+				put("/api/gene").
+				then().
+				statusCode(200).
+				body("entity.geneSymbol.evidence[0].curie", is(geneSymbolEvidence.getCurie()));
+
+		Allele allele = createAllele(LAZY_INIT_ALLELE, "NCBITaxon:6239", symbolNameType, false);
+		AlleleGeneAssociation geneAssociation = new AlleleGeneAssociation();
+		geneAssociation.setAlleleGeneAssociationObject(evidenceGene);
+		geneAssociation.setRelation(geneAssociationRelation);
+		allele.setAlleleGeneAssociations(List.of(geneAssociation));
+
+		// Assert the PUT body; a follow-up GET keeps the session open and never reproduces this.
+		Response response = RestAssured.given().
+				contentType("application/json").
+				body(allele).
+				when().
+				put("/api/allele/updateDetail").
+				then().
+				extract().response();
+
+		// Validation and serialization failures are both 400; only the latter is this bug.
+		String body = response.body().asString();
+		assertNotEquals(SERIALIZATION_FAILURE_BODY, body.trim(),
+				"Response serialization failed - the AlleleDetailView graph hit a LazyInitializationException "
+					+ "after the write transaction closed (SCRUM-6434)");
+		assertEquals(200, response.statusCode(), "updateDetail returned " + response.statusCode() + ": " + body);
+
+		assertThat(response.jsonPath().getList("entity.alleleGeneAssociations"), hasSize(1));
+		assertThat(response.jsonPath().getString("entity.alleleGeneAssociations[0].alleleGeneAssociationObject.primaryExternalId"),
+				is(evidenceGene.getPrimaryExternalId()));
+		assertThat(response.jsonPath().getString("entity.alleleGeneAssociations[0].alleleGeneAssociationObject.geneSymbol.evidence[0].curie"),
+				is(geneSymbolEvidence.getCurie()));
+		// crossReferences is the collection that actually threw.
+		assertThat(response.jsonPath().getString(
+				"entity.alleleGeneAssociations[0].alleleGeneAssociationObject.geneSymbol.evidence[0].crossReferences[0].referencedCurie"),
+				is("PMID:LazyInitTest1"));
+
+		RestAssured.given().
+				when().
+				delete("/api/allele/" + LAZY_INIT_ALLELE).
 				then().
 				statusCode(200);
 	}

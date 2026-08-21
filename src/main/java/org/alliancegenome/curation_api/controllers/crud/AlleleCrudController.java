@@ -37,7 +37,13 @@ public class AlleleCrudController extends SubmittedObjectCrudController<AlleleSe
 	}
 
 	public ObjectResponse<Allele> updateDetail(Allele entity) {
-		return alleleService.updateDetail(entity);
+		ObjectResponse<Allele> updated = alleleService.updateDetail(entity);
+
+		// Re-read outside the write transaction. AlleleDetailView reaches lazy collections through the
+		// association objects (gene/variant/construct), and those only load while the request-scoped
+		// session is still open - which it is not once the @Transactional write has committed.
+		// validateAlleleUpdate throws rather than returning a null entity, so the id is always present.
+		return alleleService.getById(updated.getEntity().getId());
 	}
 
 }
