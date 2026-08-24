@@ -94,21 +94,21 @@ export const GenomicComponentsDialog = ({
 	const componentTemplate = (rowData) => {
 		let componentDisplayValue = '';
 		if (
-			rowData.cassetteGenomicEntityAssociationObject.geneSymbol ||
-			rowData.cassetteGenomicEntityAssociationObject.alleleSymbol
+			rowData.cassetteAssociationObject.geneSymbol ||
+			rowData.cassetteAssociationObject.alleleSymbol
 		) {
-			let symbolValue = rowData.cassetteGenomicEntityAssociationObject.geneSymbol
-				? rowData.cassetteGenomicEntityAssociationObject.geneSymbol.displayText
-				: rowData.cassetteGenomicEntityAssociationObject.alleleSymbol.displayText;
-			componentDisplayValue = symbolValue + ' (' + getIdentifier(rowData.cassetteGenomicEntityAssociationObject) + ')';
-		} else if (rowData.cassetteGenomicEntityAssociationObject.name) {
+			let symbolValue = rowData.cassetteAssociationObject.geneSymbol
+				? rowData.cassetteAssociationObject.geneSymbol.displayText
+				: rowData.cassetteAssociationObject.alleleSymbol.displayText;
+			componentDisplayValue = symbolValue + ' (' + getIdentifier(rowData.cassetteAssociationObject) + ')';
+		} else if (rowData.cassetteAssociationObject.name) {
 			componentDisplayValue =
-				rowData.cassetteGenomicEntityAssociationObject.name +
+				rowData.cassetteAssociationObject.name +
 				' (' +
-				getIdentifier(rowData.cassetteGenomicEntityAssociationObject) +
+				getIdentifier(rowData.cassetteAssociationObject) +
 				')';
 		} else {
-			componentDisplayValue = getIdentifier(rowData.cassetteGenomicEntityAssociationObject);
+			componentDisplayValue = getIdentifier(rowData.cassetteAssociationObject);
 		}
 		return (
 			<>
@@ -155,7 +155,7 @@ export const GenomicComponentsDialog = ({
 					>
 						<Column field="relation.name" header="Relation" headerClassName="surface-0" />
 						<Column
-							field="cassetteGenomicEntityAssociationObject.primaryExternalId"
+							field="cassetteAssociationObject.primaryExternalId"
 							header="Component"
 							headerClassName="surface-0"
 							body={componentTemplate}

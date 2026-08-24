@@ -97,9 +97,9 @@ export const CassettesTable = () => {
 		}));
 	};
 
-	const handleGenomicComponentsOpen = (cassetteGenomicEntityAssociations) => {
+	const handleGenomicComponentsOpen = (cassetteAssociations) => {
 		let _componentsData = {};
-		_componentsData['originalComponents'] = cassetteGenomicEntityAssociations;
+		_componentsData['originalComponents'] = cassetteAssociations;
 		_componentsData['dialog'] = true;
 		setGenomicComponentsData(() => ({
 			..._componentsData,
@@ -120,16 +120,16 @@ export const CassettesTable = () => {
 	const getComponentsAssociationTextString = (item) => {
 		let symbolValue = '';
 		if (
-			item?.cassetteGenomicEntityAssociationObject?.geneSymbol ||
-			item?.cassetteGenomicEntityAssociationObject?.alleleSymbol
+			item?.cassetteAssociationObject?.geneSymbol ||
+			item?.cassetteAssociationObject?.alleleSymbol
 		) {
-			symbolValue = item.cassetteGenomicEntityAssociationObject.geneSymbol
-				? item.cassetteGenomicEntityAssociationObject.geneSymbol.displayText
-				: item.cassetteGenomicEntityAssociationObject.alleleSymbol.displayText;
-		} else if (item?.cassetteGenomicEntityAssociationObject?.name) {
-			symbolValue = item.cassetteGenomicEntityAssociationObject.name;
+			symbolValue = item.cassetteAssociationObject.geneSymbol
+				? item.cassetteAssociationObject.geneSymbol.displayText
+				: item.cassetteAssociationObject.alleleSymbol.displayText;
+		} else if (item?.cassetteAssociationObject?.name) {
+			symbolValue = item.cassetteAssociationObject.name;
 		} else {
-			symbolValue = item.cassetteGenomicEntityAssociationObject.curie;
+			symbolValue = item.cassetteAssociationObject.curie;
 		}
 		let relationName = '';
 		if (item?.relation?.name) {
@@ -244,11 +244,11 @@ export const CassettesTable = () => {
 				filterConfig: FILTER_CONFIGS.cassetteComponentsFilterConfig,
 			},
 			{
-				field: 'cassetteGenomicEntityAssociations.cassetteGenomicEntityAssociationObject.symbol',
+				field: 'cassetteAssociations.cassetteAssociationObject.symbol',
 				header: 'Genomic Entity Components',
 				body: (rowData) => (
 					<ListDialogTemplate
-						entities={rowData.cassetteGenomicEntityAssociations}
+						entities={rowData.cassetteAssociations}
 						handleOpen={handleGenomicComponentsOpen}
 						getTextField={getComponentsAssociationTextString}
 						underline={true}

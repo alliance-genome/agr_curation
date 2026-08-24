@@ -308,12 +308,12 @@ export const FIELD_SETS = Object.freeze({
 	cassetteGenomicComponentsFieldSet: {
 		filterName: 'cassetteGenomicComponentsFilter',
 		fields: [
-			'cassetteGenomicEntityAssociations.cassetteGenomicEntityAssociationObject.symbol',
-			'cassetteGenomicEntityAssociations.cassetteGenomicEntityAssociationObject.name',
-			'cassetteGenomicEntityAssociations.cassetteGenomicEntityAssociationObject.curie',
-			'cassetteGenomicEntityAssociations.cassetteGenomicEntityAssociationObject.primaryExternalId',
-			'cassetteGenomicEntityAssociations.cassetteGenomicEntityAssociationObject.modInternalId',
-			'cassetteGenomicEntityAssociations.relation.name',
+			'cassetteAssociations.cassetteAssociationObject.symbol',
+			'cassetteAssociations.cassetteAssociationObject.name',
+			'cassetteAssociations.cassetteAssociationObject.curie',
+			'cassetteAssociations.cassetteAssociationObject.primaryExternalId',
+			'cassetteAssociations.cassetteAssociationObject.modInternalId',
+			'cassetteAssociations.relation.name',
 		],
 	},
 	constructNameFieldSet: {

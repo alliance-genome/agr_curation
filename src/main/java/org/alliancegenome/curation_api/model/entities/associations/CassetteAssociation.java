@@ -37,7 +37,7 @@ import lombok.ToString;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(callSuper = true)
 @AGRCurationSchemaVersion(min = "2.2.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = {EvidenceAssociation.class})
-@Schema(name = "CassetteGenomicEntityAssociation", description = "CassetteGenomicEntityAssociation: a cassette genomic entity association")
+@Schema(name = "CassetteAssociation", description = "CassetteAssociation: a cassette association")
 
 @Table(indexes = {
 	@Index(columnList = "internal"),
@@ -45,11 +45,11 @@ import lombok.ToString;
 	@Index(columnList = "createdBy_id"),
 	@Index(columnList = "updatedBy_id"),
 	@Index(columnList = "cassetteassociationsubject_id"),
-	@Index(columnList = "cassettegenomicentityassociationobject_id"),
+	@Index(columnList = "cassetteassociationobject_id"),
 	@Index(columnList = "relation_id")
 })
 
-public class CassetteGenomicEntityAssociation extends EvidenceAssociation {
+public class CassetteAssociation extends EvidenceAssociation {
 
 	@IndexedEmbedded(includePaths = {
 		"curie", "cassetteSymbol.displayText", "cassetteSymbol.formatText",
@@ -58,7 +58,7 @@ public class CassetteGenomicEntityAssociation extends EvidenceAssociation {
 		"cassetteFullName.displayText_keyword", "cassetteFullName.formatText_keyword", "primaryExternalId_keyword", "modInternalId_keyword"})
 	@ManyToOne
 	@JsonView({CurationView.FieldsOnly.class})
-	@JsonIgnoreProperties("cassetteGenomicEntityAssociations")
+	@JsonIgnoreProperties("cassetteAssociations")
 	@Fetch(FetchMode.JOIN)
 	private Cassette cassetteAssociationSubject;
 
@@ -73,11 +73,11 @@ public class CassetteGenomicEntityAssociation extends EvidenceAssociation {
 	@ManyToOne
 	@JsonView({CurationView.FieldsOnly.class})
 	@JsonIgnoreProperties({
-		"alleleGeneAssociations", "constructGenomicEntityAssociations", "cassetteGenomicEntityAssociations", "sequenceTargetingReagentGeneAssociations",
+		"alleleGeneAssociations", "constructGenomicEntityAssociations", "cassetteAssociations", "sequenceTargetingReagentGeneAssociations",
 		"transcriptGenomicLocationAssociations", "exonGenomicLocationAssociations", "codingSequenceGenomicLocationAssociations",
 		"transcriptGeneAssociations", "geneGenomicLocationAssociations", "transcriptExonAssociations", "transcriptCodingSequenceAssociations"
 	})
-	private GenomicEntity cassetteGenomicEntityAssociationObject;
+	private GenomicEntity cassetteAssociationObject;
 
 	@IndexedEmbedded(includePaths = {"freeText", "noteType.name", "references.curie",
 		"references.primaryCrossReferenceCurie", "freeText_keyword", "noteType.name_keyword", "references.curie_keyword",
@@ -87,11 +87,11 @@ public class CassetteGenomicEntityAssociation extends EvidenceAssociation {
 	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonView({CurationView.FieldsAndLists.class})
 	@JoinTable(
-		joinColumns = @JoinColumn(name = "cassettegenomicentityassociation_id"),
+		joinColumns = @JoinColumn(name = "cassetteassociation_id"),
 		inverseJoinColumns = @JoinColumn(name = "relatedNotes_id"),
 		indexes = {
-			@Index(name = "cassettegeassociation_note_cgea_index", columnList = "cassettegenomicentityassociation_id"),
-			@Index(name = "cassettegeassociation_note_relatednotes_index", columnList = "relatedNotes_id")
+			@Index(name = "cassetteassociation_note_ca_index", columnList = "cassetteassociation_id"),
+			@Index(name = "cassetteassociation_note_relatednotes_index", columnList = "relatedNotes_id")
 		}
 	)
 	private List<Note> relatedNotes;

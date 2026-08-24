@@ -6,7 +6,7 @@ import java.util.List;
 
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
-import org.alliancegenome.curation_api.dao.associations.CassetteGenomicEntityAssociationDAO;
+import org.alliancegenome.curation_api.dao.associations.CassetteAssociationDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
 import org.alliancegenome.curation_api.exceptions.ValidationException;
@@ -14,8 +14,8 @@ import org.alliancegenome.curation_api.model.entities.Cassette;
 import org.alliancegenome.curation_api.model.entities.GenomicEntity;
 import org.alliancegenome.curation_api.model.entities.Note;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
-import org.alliancegenome.curation_api.model.entities.associations.CassetteGenomicEntityAssociation;
-import org.alliancegenome.curation_api.model.ingest.dto.associations.CassetteGenomicEntityAssociationDTO;
+import org.alliancegenome.curation_api.model.entities.associations.CassetteAssociation;
+import org.alliancegenome.curation_api.model.ingest.dto.associations.CassetteAssociationDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.CassetteService;
@@ -27,17 +27,17 @@ import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 
 @RequestScoped
-public class CassetteGenomicEntityAssociationDTOValidator extends EvidenceAssociationDTOValidator<CassetteGenomicEntityAssociation, CassetteGenomicEntityAssociationDTO> {
+public class CassetteAssociationDTOValidator extends EvidenceAssociationDTOValidator<CassetteAssociation, CassetteAssociationDTO> {
 
 	@Inject
 	CassetteService cassetteService;
 	@Inject
 	GenomicEntityService genomicEntityService;
 	@Inject
-	CassetteGenomicEntityAssociationDAO cassetteGenomicEntityAssociationDAO;
+	CassetteAssociationDAO cassetteAssociationDAO;
 
-	public ObjectResponse<CassetteGenomicEntityAssociation> validateCassetteGenomicEntityAssociationDTO(CassetteGenomicEntityAssociationDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
-		response = new ObjectResponse<CassetteGenomicEntityAssociation>();
+	public ObjectResponse<CassetteAssociation> validateCassetteAssociationDTO(CassetteAssociationDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
+		response = new ObjectResponse<CassetteAssociation>();
 
 		List<Long> subjectIds = null;
 		if (StringUtils.isBlank(dto.getCassetteIdentifier())) {
@@ -61,19 +61,19 @@ public class CassetteGenomicEntityAssociationDTOValidator extends EvidenceAssoci
 
 		VocabularyTerm relation = validateRequiredTermInVocabularyTermSet("relation_name", dto.getRelationName(), VocabularyConstants.CASSETTE_GENOMIC_ENTITY_RELATION_VOCABULARY_TERM_SET);
 
-		CassetteGenomicEntityAssociation association = null;
+		CassetteAssociation association = null;
 		if (subjectIds != null && subjectIds.size() == 1 && objectIds != null && objectIds.size() == 1 && relation != null) {
 			HashMap<String, Object> params = new HashMap<>();
 			params.put("cassetteAssociationSubject.id", subjectIds.get(0));
 			params.put("relation.id", relation.getId());
-			params.put("cassetteGenomicEntityAssociationObject.id", objectIds.get(0));
+			params.put("cassetteAssociationObject.id", objectIds.get(0));
 
-			SearchResponse<CassetteGenomicEntityAssociation> searchResponse = cassetteGenomicEntityAssociationDAO.findByParams(params);
+			SearchResponse<CassetteAssociation> searchResponse = cassetteAssociationDAO.findByParams(params);
 			if (searchResponse != null && searchResponse.getResults().size() == 1) {
 				association = searchResponse.getSingleResult();
 			} else {
 				if (association == null) {
-					association = new CassetteGenomicEntityAssociation();
+					association = new CassetteAssociation();
 				}
 
 				association.setRelation(relation);
@@ -95,7 +95,7 @@ public class CassetteGenomicEntityAssociationDTOValidator extends EvidenceAssoci
 					if (object == null) {
 						response.addErrorMessage("genomic_entity_identifier", ValidationConstants.INVALID_MESSAGE + " (" + dto.getGenomicEntityIdentifier() + ")");
 					} else {
-						association.setCassetteGenomicEntityAssociationObject(object);
+						association.setCassetteAssociationObject(object);
 					}
 				}
 
@@ -120,7 +120,7 @@ public class CassetteGenomicEntityAssociationDTOValidator extends EvidenceAssoci
 			throw new ObjectValidationException(dto, response.errorMessagesString());
 		}
 
-		response.setEntity(cassetteGenomicEntityAssociationDAO.persist(association));
+		response.setEntity(cassetteAssociationDAO.persist(association));
 
 		return response;
 	}

@@ -19,7 +19,7 @@ ALTER TABLE cassette_reference ADD CONSTRAINT cassette_reference_references_id_f
 CREATE INDEX cassette_reference_cassette_index ON cassette_reference USING btree (cassette_id);
 CREATE INDEX cassette_reference_references_index ON cassette_reference USING btree (references_id);
 
-CREATE TABLE cassettegenomicentityassociation (
+CREATE TABLE cassetteassociation (
 	id bigint PRIMARY KEY,
 	datecreated timestamp(6) with time zone,
 	dateupdated timestamp(6) with time zone,
@@ -30,52 +30,52 @@ CREATE TABLE cassettegenomicentityassociation (
 	createdby_id bigint,
 	updatedby_id bigint,
 	cassetteassociationsubject_id bigint,
-	cassettegenomicentityassociationobject_id bigint,
+	cassetteassociationobject_id bigint,
 	relation_id bigint
 );
 
-CREATE SEQUENCE cassettegenomicentityassociation_seq
+CREATE SEQUENCE cassetteassociation_seq
 	START WITH 1
 	INCREMENT BY 50
 	NO MINVALUE
 	NO MAXVALUE
 	CACHE 1;
 
-ALTER TABLE cassettegenomicentityassociation ADD CONSTRAINT cassettegenomicentityassociation_createdby_id_fk FOREIGN KEY (createdby_id) REFERENCES person (id);
-ALTER TABLE cassettegenomicentityassociation ADD CONSTRAINT cassettegenomicentityassociation_updatedby_id_fk FOREIGN KEY (updatedby_id) REFERENCES person (id);
-ALTER TABLE cassettegenomicentityassociation ADD CONSTRAINT cassettegenomicentityassociation_subject_id_fk FOREIGN KEY (cassetteassociationsubject_id) REFERENCES cassette (id);
-ALTER TABLE cassettegenomicentityassociation ADD CONSTRAINT cassettegenomicentityassociation_object_id_fk FOREIGN KEY (cassettegenomicentityassociationobject_id) REFERENCES genomicentity (id);
-ALTER TABLE cassettegenomicentityassociation ADD CONSTRAINT cassettegenomicentityassociation_relation_id_fk FOREIGN KEY (relation_id) REFERENCES vocabularyterm (id);
+ALTER TABLE cassetteassociation ADD CONSTRAINT cassetteassociation_createdby_id_fk FOREIGN KEY (createdby_id) REFERENCES person (id);
+ALTER TABLE cassetteassociation ADD CONSTRAINT cassetteassociation_updatedby_id_fk FOREIGN KEY (updatedby_id) REFERENCES person (id);
+ALTER TABLE cassetteassociation ADD CONSTRAINT cassetteassociation_subject_id_fk FOREIGN KEY (cassetteassociationsubject_id) REFERENCES cassette (id);
+ALTER TABLE cassetteassociation ADD CONSTRAINT cassetteassociation_object_id_fk FOREIGN KEY (cassetteassociationobject_id) REFERENCES genomicentity (id);
+ALTER TABLE cassetteassociation ADD CONSTRAINT cassetteassociation_relation_id_fk FOREIGN KEY (relation_id) REFERENCES vocabularyterm (id);
 
-CREATE INDEX cassettegenomicentityassociation_internal_index ON cassettegenomicentityassociation USING btree (internal);
-CREATE INDEX cassettegenomicentityassociation_obsolete_index ON cassettegenomicentityassociation USING btree (obsolete);
-CREATE INDEX cassettegenomicentityassociation_createdby_index ON cassettegenomicentityassociation USING btree (createdby_id);
-CREATE INDEX cassettegenomicentityassociation_updatedby_index ON cassettegenomicentityassociation USING btree (updatedby_id);
-CREATE INDEX cassettegenomicentityassociation_subject_index ON cassettegenomicentityassociation USING btree (cassetteassociationsubject_id);
-CREATE INDEX cassettegenomicentityassociation_object_index ON cassettegenomicentityassociation USING btree (cassettegenomicentityassociationobject_id);
-CREATE INDEX cassettegenomicentityassociation_relation_index ON cassettegenomicentityassociation USING btree (relation_id);
+CREATE INDEX cassetteassociation_internal_index ON cassetteassociation USING btree (internal);
+CREATE INDEX cassetteassociation_obsolete_index ON cassetteassociation USING btree (obsolete);
+CREATE INDEX cassetteassociation_createdby_index ON cassetteassociation USING btree (createdby_id);
+CREATE INDEX cassetteassociation_updatedby_index ON cassetteassociation USING btree (updatedby_id);
+CREATE INDEX cassetteassociation_subject_index ON cassetteassociation USING btree (cassetteassociationsubject_id);
+CREATE INDEX cassetteassociation_object_index ON cassetteassociation USING btree (cassetteassociationobject_id);
+CREATE INDEX cassetteassociation_relation_index ON cassetteassociation USING btree (relation_id);
 
-CREATE TABLE cassettegenomicentityassociation_note (
-	cassettegenomicentityassociation_id bigint NOT NULL,
+CREATE TABLE cassetteassociation_note (
+	cassetteassociation_id bigint NOT NULL,
 	relatednotes_id bigint NOT NULL UNIQUE
 );
 
-ALTER TABLE cassettegenomicentityassociation_note ADD CONSTRAINT cgeassociation_note_cgea_id_fk FOREIGN KEY (cassettegenomicentityassociation_id) REFERENCES cassettegenomicentityassociation (id);
-ALTER TABLE cassettegenomicentityassociation_note ADD CONSTRAINT cgeassociation_note_relatednotes_id_fk FOREIGN KEY (relatednotes_id) REFERENCES note (id);
+ALTER TABLE cassetteassociation_note ADD CONSTRAINT cassetteassociation_note_ca_id_fk FOREIGN KEY (cassetteassociation_id) REFERENCES cassetteassociation (id);
+ALTER TABLE cassetteassociation_note ADD CONSTRAINT cassetteassociation_note_relatednotes_id_fk FOREIGN KEY (relatednotes_id) REFERENCES note (id);
 
-CREATE INDEX cgeassociation_note_cgea_index ON cassettegenomicentityassociation_note USING btree (cassettegenomicentityassociation_id);
-CREATE INDEX cgeassociation_note_relatednotes_index ON cassettegenomicentityassociation_note USING btree (relatednotes_id);
+CREATE INDEX cassetteassociation_note_ca_index ON cassetteassociation_note USING btree (cassetteassociation_id);
+CREATE INDEX cassetteassociation_note_relatednotes_index ON cassetteassociation_note USING btree (relatednotes_id);
 
-CREATE TABLE cassettegenomicentityassociation_informationcontententity (
+CREATE TABLE cassetteassociation_informationcontententity (
 	association_id bigint NOT NULL,
 	evidence_id bigint NOT NULL
 );
 
-ALTER TABLE cassettegenomicentityassociation_informationcontententity ADD CONSTRAINT cgeassociation_ice_association_id_fk FOREIGN KEY (association_id) REFERENCES cassettegenomicentityassociation (id);
-ALTER TABLE cassettegenomicentityassociation_informationcontententity ADD CONSTRAINT cgeassociation_ice_evidence_id_fk FOREIGN KEY (evidence_id) REFERENCES informationcontententity (id);
+ALTER TABLE cassetteassociation_informationcontententity ADD CONSTRAINT cassetteassociation_ice_association_id_fk FOREIGN KEY (association_id) REFERENCES cassetteassociation (id);
+ALTER TABLE cassetteassociation_informationcontententity ADD CONSTRAINT cassetteassociation_ice_evidence_id_fk FOREIGN KEY (evidence_id) REFERENCES informationcontententity (id);
 
-CREATE INDEX cgeassociation_ice_association_index ON cassettegenomicentityassociation_informationcontententity USING btree (association_id);
-CREATE INDEX cgeassociation_ice_evidence_index ON cassettegenomicentityassociation_informationcontententity USING btree (evidence_id);
+CREATE INDEX cassetteassociation_ice_association_index ON cassetteassociation_informationcontententity USING btree (association_id);
+CREATE INDEX cassetteassociation_ice_evidence_index ON cassetteassociation_informationcontententity USING btree (evidence_id);
 
 INSERT INTO vocabulary (id, name, vocabularylabel) VALUES (nextval('vocabulary_seq'), 'Cassette Note Type', 'cassette_note_type');
 INSERT INTO vocabularyterm (id, name, vocabulary_id) SELECT nextval('vocabularyterm_seq'), 'comment', id FROM vocabulary WHERE vocabularylabel = 'cassette_note_type';

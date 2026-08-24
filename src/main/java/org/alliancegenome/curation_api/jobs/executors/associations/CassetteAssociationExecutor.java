@@ -9,8 +9,8 @@ import org.alliancegenome.curation_api.jobs.executors.LoadFileExecutor;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkManualLoad;
 import org.alliancegenome.curation_api.model.ingest.dto.IngestDTO;
-import org.alliancegenome.curation_api.model.ingest.dto.associations.CassetteGenomicEntityAssociationDTO;
-import org.alliancegenome.curation_api.services.associations.CassetteGenomicEntityAssociationService;
+import org.alliancegenome.curation_api.model.ingest.dto.associations.CassetteAssociationDTO;
+import org.alliancegenome.curation_api.services.associations.CassetteAssociationService;
 import org.apache.commons.collections.CollectionUtils;
 
 import jakarta.enterprise.context.ApplicationScoped;
@@ -19,9 +19,9 @@ import lombok.extern.jbosslog.JBossLog;
 
 @JBossLog
 @ApplicationScoped
-public class CassetteGenomicEntityAssociationExecutor extends LoadFileExecutor {
+public class CassetteAssociationExecutor extends LoadFileExecutor {
 
-	@Inject CassetteGenomicEntityAssociationService cassetteGenomicEntityAssociationService;
+	@Inject CassetteAssociationService cassetteAssociationService;
 
 	public void execLoad(BulkLoadFileHistory bulkLoadFileHistory, Boolean cleanUp) {
 
@@ -29,12 +29,12 @@ public class CassetteGenomicEntityAssociationExecutor extends LoadFileExecutor {
 		BackendBulkDataProvider dataProvider = manual.getDataProvider();
 		log.info("Running with dataProvider: " + dataProvider.name());
 
-		IngestDTO ingestDto = readIngestFile(bulkLoadFileHistory, CassetteGenomicEntityAssociationDTO.class);
+		IngestDTO ingestDto = readIngestFile(bulkLoadFileHistory, CassetteAssociationDTO.class);
 		if (ingestDto == null) {
 			return;
 		}
 
-		List<CassetteGenomicEntityAssociationDTO> associations = ingestDto.getCassetteGenomicEntityAssociationIngestSet();
+		List<CassetteAssociationDTO> associations = ingestDto.getCassetteAssociationIngestSet();
 		if (CollectionUtils.isEmpty(associations)) {
 			return;
 		}
@@ -42,7 +42,7 @@ public class CassetteGenomicEntityAssociationExecutor extends LoadFileExecutor {
 		List<Long> associationIdsLoaded = new ArrayList<>();
 		List<Long> associationIdsBefore = new ArrayList<>();
 		if (cleanUp) {
-			associationIdsBefore.addAll(cassetteGenomicEntityAssociationService.getAssociationsByDataProvider(dataProvider));
+			associationIdsBefore.addAll(cassetteAssociationService.getAssociationsByDataProvider(dataProvider));
 			associationIdsBefore.removeIf(Objects::isNull);
 		}
 
@@ -52,9 +52,9 @@ public class CassetteGenomicEntityAssociationExecutor extends LoadFileExecutor {
 		bulkLoadFileHistory.setCount(associations.size());
 		updateHistory(bulkLoadFileHistory);
 
-		boolean success = runLoad(cassetteGenomicEntityAssociationService, bulkLoadFileHistory, dataProvider, associations, associationIdsLoaded);
+		boolean success = runLoad(cassetteAssociationService, bulkLoadFileHistory, dataProvider, associations, associationIdsLoaded);
 		if (cleanUp && success) {
-			runCleanup(cassetteGenomicEntityAssociationService, bulkLoadFileHistory, dataProvider.name(), associationIdsBefore, associationIdsLoaded, "cassette genomic entity association");
+			runCleanup(cassetteAssociationService, bulkLoadFileHistory, dataProvider.name(), associationIdsBefore, associationIdsLoaded, "cassette association");
 		}
 		bulkLoadFileHistory.finishLoad();
 		updateHistory(bulkLoadFileHistory);

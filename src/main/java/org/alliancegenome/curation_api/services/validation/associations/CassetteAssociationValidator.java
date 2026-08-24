@@ -11,13 +11,13 @@ import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.CassetteDAO;
 import org.alliancegenome.curation_api.dao.GenomicEntityDAO;
-import org.alliancegenome.curation_api.dao.associations.CassetteGenomicEntityAssociationDAO;
+import org.alliancegenome.curation_api.dao.associations.CassetteAssociationDAO;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.Cassette;
 import org.alliancegenome.curation_api.model.entities.GenomicEntity;
 import org.alliancegenome.curation_api.model.entities.Note;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
-import org.alliancegenome.curation_api.model.entities.associations.CassetteGenomicEntityAssociation;
+import org.alliancegenome.curation_api.model.entities.associations.CassetteAssociation;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.helpers.NoteIdentityHelper;
 import org.alliancegenome.curation_api.services.validation.NoteValidator;
@@ -27,39 +27,39 @@ import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 
 @RequestScoped
-public class CassetteGenomicEntityAssociationValidator extends EvidenceAssociationValidator<CassetteGenomicEntityAssociation> {
+public class CassetteAssociationValidator extends EvidenceAssociationValidator<CassetteAssociation> {
 
 	@Inject
 	CassetteDAO cassetteDAO;
 	@Inject
 	GenomicEntityDAO genomicEntityDAO;
 	@Inject
-	CassetteGenomicEntityAssociationDAO cassetteGenomicEntityAssociationDAO;
+	CassetteAssociationDAO cassetteAssociationDAO;
 	@Inject
 	NoteValidator noteValidator;
 
 	private String errorMessage;
 
-	public ObjectResponse<CassetteGenomicEntityAssociation> validateCassetteGenomicEntityAssociation(CassetteGenomicEntityAssociation uiEntity) {
-		CassetteGenomicEntityAssociation geAssociation = validateCassetteGenomicEntityAssociation(uiEntity, false, false);
+	public ObjectResponse<CassetteAssociation> validateCassetteAssociation(CassetteAssociation uiEntity) {
+		CassetteAssociation geAssociation = validateCassetteAssociation(uiEntity, false, false);
 		response.setEntity(geAssociation);
 		return response;
 	}
 
-	public CassetteGenomicEntityAssociation validateCassetteGenomicEntityAssociation(CassetteGenomicEntityAssociation uiEntity, Boolean throwError, Boolean validateCassette) {
+	public CassetteAssociation validateCassetteAssociation(CassetteAssociation uiEntity, Boolean throwError, Boolean validateCassette) {
 		response = new ObjectResponse<>(uiEntity);
 		errorMessage = "Could not create/update Cassette GenomicEntity Association: [" + uiEntity.getId() + "]";
 
 		Long id = uiEntity.getId();
-		CassetteGenomicEntityAssociation dbEntity = null;
+		CassetteAssociation dbEntity = null;
 		if (id != null) {
-			dbEntity = cassetteGenomicEntityAssociationDAO.find(id);
+			dbEntity = cassetteAssociationDAO.find(id);
 			if (dbEntity == null) {
-				addMessageResponse("Could not find CassetteGenomicEntityAssociation with ID: [" + id + "]");
+				addMessageResponse("Could not find CassetteAssociation with ID: [" + id + "]");
 				throw new ApiErrorException(response);
 			}
 		} else {
-			dbEntity = new CassetteGenomicEntityAssociation();
+			dbEntity = new CassetteAssociation();
 		}
 
 		dbEntity = validateEvidenceAssociationFields(uiEntity, dbEntity);
@@ -69,8 +69,8 @@ public class CassetteGenomicEntityAssociationValidator extends EvidenceAssociati
 			dbEntity.setCassetteAssociationSubject(subject);
 		}
 
-		GenomicEntity object = validateRequiredEntity(genomicEntityDAO, "cassetteGenomicEntityAssociationObject", uiEntity.getCassetteGenomicEntityAssociationObject(), dbEntity.getCassetteGenomicEntityAssociationObject());
-		dbEntity.setCassetteGenomicEntityAssociationObject(object);
+		GenomicEntity object = validateRequiredEntity(genomicEntityDAO, "cassetteAssociationObject", uiEntity.getCassetteAssociationObject(), dbEntity.getCassetteAssociationObject());
+		dbEntity.setCassetteAssociationObject(object);
 
 		VocabularyTerm relation = validateRequiredTermInVocabularyTermSet("relation", VocabularyConstants.CASSETTE_GENOMIC_ENTITY_RELATION_VOCABULARY_TERM_SET, uiEntity.getRelation(), dbEntity.getRelation());
 		dbEntity.setRelation(relation);
@@ -98,7 +98,7 @@ public class CassetteGenomicEntityAssociationValidator extends EvidenceAssociati
 		return dbEntity;
 	}
 
-	public List<Note> validateRelatedNotes(CassetteGenomicEntityAssociation uiEntity, CassetteGenomicEntityAssociation dbEntity) {
+	public List<Note> validateRelatedNotes(CassetteAssociation uiEntity, CassetteAssociation dbEntity) {
 		String field = "relatedNotes";
 
 		List<Note> validatedNotes = new ArrayList<Note>();

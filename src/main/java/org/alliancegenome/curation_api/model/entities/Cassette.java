@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
-import org.alliancegenome.curation_api.model.entities.associations.CassetteGenomicEntityAssociation;
+import org.alliancegenome.curation_api.model.entities.associations.CassetteAssociation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.CassetteComponentSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.CassetteFullNameSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.CassetteSymbolSlotAnnotation;
@@ -35,7 +35,7 @@ import lombok.ToString;
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @Schema(name = "cassette", description = "Cassette: a cassette")
-@ToString(exclude = {"cassetteGenomicEntityAssociations", "cassetteComponents", "cassetteSymbol", "cassetteFullName", "cassetteSynonyms"}, callSuper = true)
+@ToString(exclude = {"cassetteAssociations", "cassetteComponents", "cassetteSymbol", "cassetteFullName", "cassetteSynonyms"}, callSuper = true)
 @AGRCurationSchemaVersion(min = "2.1.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { Reagent.class })
 
 public class Cassette extends Reagent {
@@ -80,12 +80,12 @@ public class Cassette extends Reagent {
 	private List<CassetteComponentSlotAnnotation> cassetteComponents;
 
 	@IndexedEmbedded(includePaths = {
-		"cassetteGenomicEntityAssociationObject.curie", "cassetteGenomicEntityAssociationObject.primaryExternalId", "cassetteGenomicEntityAssociationObject.modInternalId",
-		"cassetteGenomicEntityAssociationObject.name", "cassetteGenomicEntityAssociationObject.symbol", "relation.name", "cassetteGenomicEntityAssociationObject.curie_keyword",
-		"cassetteGenomicEntityAssociationObject.primaryExternalId_keyword", "cassetteGenomicEntityAssociationObject.modInternalId_keyword", "cassetteGenomicEntityAssociationObject.name_keyword",
-		"cassetteGenomicEntityAssociationObject.symbol_keyword", "relation.name_keyword"
+		"cassetteAssociationObject.curie", "cassetteAssociationObject.primaryExternalId", "cassetteAssociationObject.modInternalId",
+		"cassetteAssociationObject.name", "cassetteAssociationObject.symbol", "relation.name", "cassetteAssociationObject.curie_keyword",
+		"cassetteAssociationObject.primaryExternalId_keyword", "cassetteAssociationObject.modInternalId_keyword", "cassetteAssociationObject.name_keyword",
+		"cassetteAssociationObject.symbol_keyword", "relation.name_keyword"
 	})
 	@OneToMany(mappedBy = "cassetteAssociationSubject", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonView({ CurationView.FieldsAndLists.class })
-	private List<CassetteGenomicEntityAssociation> cassetteGenomicEntityAssociations;
+	private List<CassetteAssociation> cassetteAssociations;
 }

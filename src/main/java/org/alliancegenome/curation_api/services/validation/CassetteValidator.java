@@ -10,7 +10,7 @@ import org.alliancegenome.curation_api.dao.CassetteDAO;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.Cassette;
 import org.alliancegenome.curation_api.model.entities.Reference;
-import org.alliancegenome.curation_api.model.entities.associations.CassetteGenomicEntityAssociation;
+import org.alliancegenome.curation_api.model.entities.associations.CassetteAssociation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.CassetteComponentSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.CassetteFullNameSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.CassetteSymbolSlotAnnotation;
@@ -18,7 +18,7 @@ import org.alliancegenome.curation_api.model.entities.slotAnnotations.CassetteSy
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.helpers.CassetteUniqueIdHelper;
-import org.alliancegenome.curation_api.services.validation.associations.CassetteGenomicEntityAssociationValidator;
+import org.alliancegenome.curation_api.services.validation.associations.CassetteAssociationValidator;
 import org.alliancegenome.curation_api.services.validation.dto.slotAnnotations.CassetteComponentSlotAnnotationValidator;
 import org.alliancegenome.curation_api.services.validation.dto.slotAnnotations.CassetteFullNameSlotAnnotationValidator;
 import org.alliancegenome.curation_api.services.validation.dto.slotAnnotations.CassetteSymbolSlotAnnotationValidator;
@@ -37,7 +37,7 @@ public class CassetteValidator extends ReagentValidator {
 	@Inject CassetteSymbolSlotAnnotationValidator cassetteSymbolValidator;
 	@Inject CassetteFullNameSlotAnnotationValidator cassetteFullNameValidator;
 	@Inject CassetteSynonymSlotAnnotationValidator cassetteSynonymValidator;
-	@Inject CassetteGenomicEntityAssociationValidator cassetteGenomicEntityAssociationValidator;
+	@Inject CassetteAssociationValidator cassetteAssociationValidator;
 
 	private String errorMessage;
 
@@ -96,7 +96,7 @@ public class CassetteValidator extends ReagentValidator {
 		List<CassetteSynonymSlotAnnotation> synonyms = validateCassetteSynonyms(uiEntity, dbEntity);
 		List<CassetteComponentSlotAnnotation> components = validateCassetteComponents(uiEntity, dbEntity);
 
-		List<CassetteGenomicEntityAssociation> geAssociations = validateCassetteGenomicEntityAssociations(uiEntity, dbEntity);
+		List<CassetteAssociation> geAssociations = validateCassetteAssociations(uiEntity, dbEntity);
 
 		String uniqueId = validateUniqueId(uiEntity, dbEntity);
 		dbEntity.setUniqueId(uniqueId);
@@ -140,14 +140,14 @@ public class CassetteValidator extends ReagentValidator {
 			dbEntity.getCassetteComponents().addAll(components);
 		}
 
-		if (dbEntity.getCassetteGenomicEntityAssociations() != null) {
-			dbEntity.getCassetteGenomicEntityAssociations().clear();
+		if (dbEntity.getCassetteAssociations() != null) {
+			dbEntity.getCassetteAssociations().clear();
 		}
 		if (geAssociations != null) {
-			if (dbEntity.getCassetteGenomicEntityAssociations() == null) {
-				dbEntity.setCassetteGenomicEntityAssociations(new ArrayList<>());
+			if (dbEntity.getCassetteAssociations() == null) {
+				dbEntity.setCassetteAssociations(new ArrayList<>());
 			}
-			dbEntity.getCassetteGenomicEntityAssociations().addAll(geAssociations);
+			dbEntity.getCassetteAssociations().addAll(geAssociations);
 		}
 
 		return dbEntity;
@@ -286,15 +286,15 @@ public class CassetteValidator extends ReagentValidator {
 		return validatedComponents;
 	}
 
-	private List<CassetteGenomicEntityAssociation> validateCassetteGenomicEntityAssociations(Cassette uiEntity, Cassette dbEntity) {
-		String field = "cassetteGenomicEntityAssociations";
+	private List<CassetteAssociation> validateCassetteAssociations(Cassette uiEntity, Cassette dbEntity) {
+		String field = "cassetteAssociations";
 
-		List<CassetteGenomicEntityAssociation> validatedAssociations = new ArrayList<CassetteGenomicEntityAssociation>();
+		List<CassetteAssociation> validatedAssociations = new ArrayList<CassetteAssociation>();
 		Boolean allValid = true;
-		if (CollectionUtils.isNotEmpty(uiEntity.getCassetteGenomicEntityAssociations())) {
-			for (int ix = 0; ix < uiEntity.getCassetteGenomicEntityAssociations().size(); ix++) {
-				CassetteGenomicEntityAssociation gea = uiEntity.getCassetteGenomicEntityAssociations().get(ix);
-				ObjectResponse<CassetteGenomicEntityAssociation> geaResponse = cassetteGenomicEntityAssociationValidator.validateCassetteGenomicEntityAssociation(gea);
+		if (CollectionUtils.isNotEmpty(uiEntity.getCassetteAssociations())) {
+			for (int ix = 0; ix < uiEntity.getCassetteAssociations().size(); ix++) {
+				CassetteAssociation gea = uiEntity.getCassetteAssociations().get(ix);
+				ObjectResponse<CassetteAssociation> geaResponse = cassetteAssociationValidator.validateCassetteAssociation(gea);
 				if (geaResponse.getEntity() == null) {
 					allValid = false;
 					response.addErrorMessages(field, ix, geaResponse.getErrorMessages());

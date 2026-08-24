@@ -99,8 +99,8 @@ public class CassetteService extends SubmittedObjectCrudService<Cassette, Casset
 			if (forceDeprecate) {
 				deprecationReasons.add("Deprecation instead of deletion rule applied");
 			}
-			if (CollectionUtils.isNotEmpty(cassette.getCassetteGenomicEntityAssociations())) {
-				deprecationReasons.add("Cassette has genomic entity association(s)");
+			if (CollectionUtils.isNotEmpty(cassette.getCassetteAssociations())) {
+				deprecationReasons.add("Cassette has association(s)");
 			}
 			if (CollectionUtils.isNotEmpty(deprecationReasons)) {
 				if (!cassette.getObsolete()) {

@@ -16,7 +16,7 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @AGRCurationSchemaVersion(min = "2.14.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { EvidenceAssociationDTO.class, NoteDTO.class }, submitted = true)
-public class CassetteGenomicEntityAssociationDTO extends EvidenceAssociationDTO {
+public class CassetteAssociationDTO extends EvidenceAssociationDTO {
 
 	@JsonView({ CurationView.FieldsOnly.class })
 	@JsonProperty("cassette_identifier")
