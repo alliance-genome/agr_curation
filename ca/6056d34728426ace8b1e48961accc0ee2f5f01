@@ -1,0 +1,21 @@
+src/main/cliapp/src/containers/cassettesPage/CassettesTable.jsx
+  s_6b8af79fa05736::t_dad67791a9df6a 122
+src/main/cliapp/src/containers/cassettesPage/GenomicComponentsDialog.jsx
+  s_6b8af79fa05736::t_7d4433893417a9 96,103
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "ca6056d34728426ace8b1e48961accc0ee2f5f01",
+  "prompts": {},
+  "sessions": {
+    "s_6b8af79fa05736": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "97d2ee96-b897-43a8-b8bc-9c8cfab7c07a",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Ketaki Kindre <kkindre@caltech.edu>"
+    }
+  }
+}
