@@ -1,0 +1,51 @@
+src/main/cliapp/src/constants/FilterFields.js
+  s_6b8af79fa05736::t_e01a39ac5e3c77 311-316
+src/main/cliapp/src/containers/cassettesPage/CassettesTable.jsx
+  s_6b8af79fa05736::t_44751815c91c11 100,102,123-124,126-130,132,247,251
+src/main/cliapp/src/containers/cassettesPage/GenomicComponentsDialog.jsx
+  s_6b8af79fa05736::t_e6be6f070f12fe 97-98,100-104,106,108,111,158
+src/main/java/org/alliancegenome/curation_api/controllers/crud/associations/CassetteAssociationCrudController.java
+  s_6b8af79fa05736::t_a44c9ecf1e29e3 6-10,13,20-21,24,26,31,35-36,40-41,44-45,49-51,54,56
+src/main/java/org/alliancegenome/curation_api/dao/associations/CassetteAssociationDAO.java
+  s_6b8af79fa05736::t_5b6a312ea9c8e5 4,9,11-12
+src/main/java/org/alliancegenome/curation_api/interfaces/crud/associations/CassetteAssociationCrudInterface.java
+  s_6b8af79fa05736::t_f095bc4121f9bb 6-7,25-26,29,31,35,37,41,43,47
+src/main/java/org/alliancegenome/curation_api/jobs/executors/associations/CassetteAssociationExecutor.java
+  s_6b8af79fa05736::t_6c8bd19956895b 12-13,22,24,32,37,45,55,57
+src/main/java/org/alliancegenome/curation_api/model/entities/Cassette.java
+  s_6b8af79fa05736::t_87e2fc6cc1cda7 7,38,83-86,90
+src/main/java/org/alliancegenome/curation_api/model/entities/associations/CassetteAssociation.java
+  s_6b8af79fa05736::t_7e7aa87a2cbcee 40,48,52,61,76,80,90,93-94
+src/main/java/org/alliancegenome/curation_api/model/ingest/dto/IngestDTO.java
+  s_6b8af79fa05736::t_304f1bde99bb22 11,88-89
+src/main/java/org/alliancegenome/curation_api/model/ingest/dto/associations/CassetteAssociationDTO.java
+  s_6b8af79fa05736::t_c0b89f5d74813d 19
+src/main/java/org/alliancegenome/curation_api/services/CassetteService.java
+  s_6b8af79fa05736::t_8be7cb8dde0491 102-103
+src/main/java/org/alliancegenome/curation_api/services/associations/CassetteAssociationService.java
+  s_6b8af79fa05736::t_25bba977607323 12,16-17,22-23,31-32,35,37,39,52,56-57,61,65-67,72-73,79,85-86,91,93,98
+src/main/java/org/alliancegenome/curation_api/services/validation/CassetteValidator.java
+  s_6b8af79fa05736::t_85e79c40afefdd 13,21,40,99,143-144,147-148,150,289-290,292,294-297
+src/main/java/org/alliancegenome/curation_api/services/validation/associations/CassetteAssociationValidator.java
+  s_6b8af79fa05736::t_c886cd5dbf7b18 14,20,30,37,43-44,49,54,56,58,62,72-73,101
+src/main/java/org/alliancegenome/curation_api/services/validation/dto/associations/CassetteAssociationDTOValidator.java
+  s_6b8af79fa05736::t_c0252d64f3a25b 9,17-18,30,37,39-40,64,69,71,76,98,123
+src/main/resources/db/migration/v0.52.0.4__add_cassettes.sql
+  s_6b8af79fa05736::t_c2a0f9c9227f27 22,33,37,44-59,63-64,66-67,69,74-75,77-78
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "90cf934c8b9468a2fc1f20122b69cf226b8c604d",
+  "prompts": {},
+  "sessions": {
+    "s_6b8af79fa05736": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "97d2ee96-b897-43a8-b8bc-9c8cfab7c07a",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Ketaki Kindre <kkindre@caltech.edu>"
+    }
+  }
+}
