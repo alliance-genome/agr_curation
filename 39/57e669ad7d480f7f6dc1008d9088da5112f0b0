@@ -1,0 +1,21 @@
+src/main/cliapp/src/containers/transgenicToolsPage/__tests__/TransgenicToolsTable.test.jsx
+  s_6b8af79fa05736::t_8bcafb2a29b7c1 1-82
+src/main/cliapp/src/containers/transgenicToolsPage/mockData/mockData.js
+  s_6b8af79fa05736::t_4fbed71b213633 1-206
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "3957e669ad7d480f7f6dc1008d9088da5112f0b0",
+  "prompts": {},
+  "sessions": {
+    "s_6b8af79fa05736": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "97d2ee96-b897-43a8-b8bc-9c8cfab7c07a",
+        "model": "unknown"
+      },
+      "human_author": "Ketaki Kindre <kkindre@caltech.edu>"
+    }
+  }
+}
