@@ -38,7 +38,6 @@ public class CassetteService extends SubmittedObjectCrudService<Cassette, Casset
 	@Inject ReferenceService referenceService;
 	@Inject CassetteValidator cassetteValidator;
 	@Inject CassetteDTOValidator cassetteDtoValidator;
-	@Inject CassetteService cassetteService;
 	@Inject PersonService personService;
 	@Inject NoteService noteService;
 
