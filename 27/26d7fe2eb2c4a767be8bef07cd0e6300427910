@@ -1,0 +1,23 @@
+src/main/cliapp/src/constants/Classes.js
+  s_6b8af79fa05736::t_1b60f596ddca37 97-103
+src/main/cliapp/src/constants/FilterFields.js
+  s_6b8af79fa05736::t_9fbddb8257d2a4 1099-1106
+src/main/cliapp/src/containers/transgenicToolsPage/TransgenicToolsTable.jsx
+  s_6b8af79fa05736::t_66ec1cde7fe879 317-320
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "2726d7fe2eb2c4a767be8bef07cd0e6300427910",
+  "prompts": {},
+  "sessions": {
+    "s_6b8af79fa05736": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "97d2ee96-b897-43a8-b8bc-9c8cfab7c07a",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Ketaki Kindre <kkindre@caltech.edu>"
+    }
+  }
+}
