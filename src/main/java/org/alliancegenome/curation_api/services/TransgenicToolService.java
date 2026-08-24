@@ -38,7 +38,6 @@ public class TransgenicToolService extends SubmittedObjectCrudService<Transgenic
 	@Inject ReferenceService referenceService;
 	@Inject TransgenicToolValidator transgenicToolValidator;
 	@Inject TransgenicToolDTOValidator transgenicToolDtoValidator;
-	@Inject TransgenicToolService transgenicToolService;
 	@Inject PersonService personService;
 	@Inject NoteService noteService;
 
