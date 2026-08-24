@@ -93,20 +93,14 @@ export const GenomicComponentsDialog = ({
 
 	const componentTemplate = (rowData) => {
 		let componentDisplayValue = '';
-		if (
-			rowData.cassetteAssociationObject.geneSymbol ||
-			rowData.cassetteAssociationObject.alleleSymbol
-		) {
+		if (rowData.cassetteAssociationObject.geneSymbol || rowData.cassetteAssociationObject.alleleSymbol) {
 			let symbolValue = rowData.cassetteAssociationObject.geneSymbol
 				? rowData.cassetteAssociationObject.geneSymbol.displayText
 				: rowData.cassetteAssociationObject.alleleSymbol.displayText;
 			componentDisplayValue = symbolValue + ' (' + getIdentifier(rowData.cassetteAssociationObject) + ')';
 		} else if (rowData.cassetteAssociationObject.name) {
 			componentDisplayValue =
-				rowData.cassetteAssociationObject.name +
-				' (' +
-				getIdentifier(rowData.cassetteAssociationObject) +
-				')';
+				rowData.cassetteAssociationObject.name + ' (' + getIdentifier(rowData.cassetteAssociationObject) + ')';
 		} else {
 			componentDisplayValue = getIdentifier(rowData.cassetteAssociationObject);
 		}

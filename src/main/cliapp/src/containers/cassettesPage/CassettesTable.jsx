@@ -119,10 +119,7 @@ export const CassettesTable = () => {
 
 	const getComponentsAssociationTextString = (item) => {
 		let symbolValue = '';
-		if (
-			item?.cassetteAssociationObject?.geneSymbol ||
-			item?.cassetteAssociationObject?.alleleSymbol
-		) {
+		if (item?.cassetteAssociationObject?.geneSymbol || item?.cassetteAssociationObject?.alleleSymbol) {
 			symbolValue = item.cassetteAssociationObject.geneSymbol
 				? item.cassetteAssociationObject.geneSymbol.displayText
 				: item.cassetteAssociationObject.alleleSymbol.displayText;
