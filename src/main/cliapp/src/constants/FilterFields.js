@@ -1096,8 +1096,14 @@ export const FILTER_CONFIGS = Object.freeze({
 	conditionQuantityFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.conditionQuantityFieldSet] },
 	conditionTaxonFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.conditionTaxonFieldSet] },
 	transgenicToolNameFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.transgenicToolNameFieldSet] },
-	transgenicToolSymbolFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.transgenicToolSymbolFieldSet] },
-	transgenicToolSynonymsFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.transgenicToolSynonymsFieldSet] },
+	transgenicToolSymbolFilterConfig: {
+		filterComponentType: 'input',
+		fieldSets: [FIELD_SETS.transgenicToolSymbolFieldSet],
+	},
+	transgenicToolSynonymsFilterConfig: {
+		filterComponentType: 'input',
+		fieldSets: [FIELD_SETS.transgenicToolSynonymsFieldSet],
+	},
 	transgenicToolUsesFilterConfig: {
 		filterComponentType: 'input',
 		fieldSets: [FIELD_SETS.transgenicToolUsesFieldSet],

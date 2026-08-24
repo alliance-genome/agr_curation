@@ -314,7 +314,10 @@ export const TransgenicToolsTable = () => {
 	const DEFAULT_COLUMN_WIDTH = 10;
 	const SEARCH_ENDPOINT = Endpoints.Entity.TRANSGENIC_TOOL;
 
-	const initialTableState = useMemo(() => getDefaultTableState('TransgenicTools', columns, DEFAULT_COLUMN_WIDTH), [columns]);
+	const initialTableState = useMemo(
+		() => getDefaultTableState('TransgenicTools', columns, DEFAULT_COLUMN_WIDTH),
+		[columns]
+	);
 
 	const { settings: tableState, mutate: setTableState } = useGetUserSettings(
 		initialTableState.tableSettingsKeyName,
