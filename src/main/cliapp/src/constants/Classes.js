@@ -94,6 +94,7 @@ export const CLASSES = Object.freeze({
 		isIndexed: true,
 	},
 	Construct: { name: 'Constructs', link: '/#/constructs', type: 'entity', hasTable: true, isIndexed: true },
+	Antibody: { name: 'Antibodies', link: '/#/antibodies', type: 'entity', hasTable: true, isIndexed: true },
 	Molecule: { name: 'Molecules', link: '/#/molecules', type: 'entity', hasTable: true, isIndexed: true },
 	Reference: { name: 'Literature References', link: '/#/references', type: 'entity', hasTable: true, isIndexed: false },
 	SequenceTargetingReagent: {
