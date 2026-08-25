@@ -35,6 +35,6 @@ public class AlleleDatabaseStatusSlotAnnotation extends SlotAnnotation {
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@JsonView({ CurationView.FieldsOnly.class })
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.AlleleDetailView.class })
 	private VocabularyTerm databaseStatus;
 }

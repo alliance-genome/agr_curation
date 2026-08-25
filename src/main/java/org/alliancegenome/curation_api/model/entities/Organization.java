@@ -50,35 +50,35 @@ public class Organization extends Agent {
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "abbreviation_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({CurationView.FieldsOnly.class, CurationView.PersonSettingView.class, CurationView.ForPublic.class, CurationView.GeneSummaryDocument.class, CurationView.ModelDocument.class, CurationView.GeneExpressionDocument.class })
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.PersonSettingView.class, CurationView.ForPublic.class, CurationView.GeneSummaryDocument.class, CurationView.ModelDocument.class, CurationView.GeneExpressionDocument.class, CurationView.AlleleDetailView.class })
 	@Column(unique = true, nullable = false)
 	private String abbreviation;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "fullName_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({CurationView.FieldsOnly.class, CurationView.PersonSettingView.class, CurationView.GeneSummaryDocument.class})
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.PersonSettingView.class, CurationView.GeneSummaryDocument.class, CurationView.AlleleDetailView.class })
 	private String fullName;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "shortName_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({CurationView.FieldsOnly.class, CurationView.PersonSettingView.class, CurationView.GeneSummaryDocument.class})
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.PersonSettingView.class, CurationView.GeneSummaryDocument.class, CurationView.AlleleDetailView.class })
 	private String shortName;
 
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@OneToOne
-	@JsonView({CurationView.FieldsOnly.class, CurationView.ForPublic.class})
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.ForPublic.class, CurationView.AlleleDetailView.class })
 	private ResourceDescriptorPage homepageResourceDescriptorPage;
 
-	@JsonView({CurationView.FieldsOnly.class})
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.AlleleDetailView.class })
 	private Boolean hasInferredGenePhenotypeAnnotations = false;
 
-	@JsonView({CurationView.FieldsOnly.class})
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.AlleleDetailView.class })
 	private Boolean hasAssertedGenePhenotypeAnnotations = false;
 
-	@JsonView({CurationView.FieldsOnly.class})
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.AlleleDetailView.class })
 	private Boolean hasInferredAllelePhenotypeAnnotations = false;
 
-	@JsonView({CurationView.FieldsOnly.class})
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.AlleleDetailView.class })
 	private Boolean hasAssertedAllelePhenotypeAnnotations = false;
 }
