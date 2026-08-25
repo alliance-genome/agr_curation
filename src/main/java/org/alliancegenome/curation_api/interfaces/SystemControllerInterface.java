@@ -53,6 +53,20 @@ public interface SystemControllerInterface {
 		@DefaultValue("1000") @QueryParam("batchSize") Integer batchSize,
 		@DefaultValue("0") @QueryParam("maxToMint") Integer maxToMint);
 
+	// SCRUM-6173 backfill endpoint. Mints AGRKB curies (MaTI subdomain "allele", code 106)
+	// for every Allele whose curie is currently NULL. Idempotent.
+	//
+	// Every allele is in scope regardless of obsolete/internal, so this targets ~3.7M rows —
+	// roughly 38x the disease-annotation backfill. Create the partial index
+	//   CREATE INDEX CONCURRENTLY be_curie_null_idx ON biologicalentity (id) WHERE curie IS NULL;
+	// before a cold run and drop it afterwards, and work through the table with a bounded
+	// maxToMint rather than in one pass.
+	@GET
+	@Path("/mintallelecuries")
+	void mintExistingAlleleCuries(
+		@DefaultValue("1000") @QueryParam("batchSize") Integer batchSize,
+		@DefaultValue("0") @QueryParam("maxToMint") Integer maxToMint);
+
 	@DELETE
 	@Path("/deletedUnusedConditionsAndExperiments")
 	void deleteUnusedConditionsAndExperiments();
