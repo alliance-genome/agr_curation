@@ -1,0 +1,19 @@
+src/main/resources/db/migration/v0.52.0.6__cleanup_orphaned_disease_annotation_notes.sql
+  s_6b8af79fa05736::t_4592d7155022d1 1-49
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "490f5dd095479a7c2c2773e2c80179efdfc2952a",
+  "prompts": {},
+  "sessions": {
+    "s_6b8af79fa05736": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "97d2ee96-b897-43a8-b8bc-9c8cfab7c07a",
+        "model": "unknown"
+      },
+      "human_author": "Ketaki Kindre <kkindre@caltech.edu>"
+    }
+  }
+}
