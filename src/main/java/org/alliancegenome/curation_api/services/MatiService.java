@@ -27,8 +27,6 @@ import si.mazi.rescu.RestProxyFactory;
 @Log4j2
 @ApplicationScoped
 public class MatiService {
-	public static final String SUBDOMAIN_DISEASE_ANNOTATION = "disease_annotation";
-	public static final String SUBDOMAIN_ALLELE = "allele";
 
 	@ConfigProperty(name = "mati.url")
 	String matiURL;

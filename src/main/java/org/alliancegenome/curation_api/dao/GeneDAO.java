@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 import javax.sql.DataSource;
 
 import org.alliancegenome.curation_api.constants.EntityFieldConstants;
-import org.alliancegenome.curation_api.dao.base.BaseSQLDAO;
+import org.alliancegenome.curation_api.dao.base.BaseCurieSQLDAO;
 import org.alliancegenome.curation_api.dao.orthology.GeneToGeneOrthologyDAO;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.apache.commons.collections.CollectionUtils;
@@ -26,7 +26,7 @@ import jakarta.inject.Inject;
 import jakarta.persistence.Query;
 
 @ApplicationScoped
-public class GeneDAO extends BaseSQLDAO<Gene> {
+public class GeneDAO extends BaseCurieSQLDAO<Gene> {
 
 	@Inject DataSource dataSource;
 	@Inject AlleleDiseaseAnnotationDAO alleleDiseaseAnnotationDAO;

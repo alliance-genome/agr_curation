@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 import org.alliancegenome.curation_api.constants.EntityFieldConstants;
 import org.alliancegenome.curation_api.constants.YeastStrainTaxonConstants;
 import org.alliancegenome.curation_api.dao.associations.AgmAlleleAssociationDAO;
-import org.alliancegenome.curation_api.dao.base.BaseSQLDAO;
+import org.alliancegenome.curation_api.dao.base.BaseCurieSQLDAO;
 
 
 import org.alliancegenome.curation_api.model.document.es.AlleleSummaryDocument;
@@ -45,14 +45,12 @@ import org.alliancegenome.curation_api.model.input.Pagination;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.apache.commons.collections.CollectionUtils;
 
-import io.quarkus.logging.Log;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.persistence.Query;
-import jakarta.transaction.Transactional;
 
 @ApplicationScoped
-public class AlleleDAO extends BaseSQLDAO<Allele> {
+public class AlleleDAO extends BaseCurieSQLDAO<Allele> {
 
 	@Inject
 	GeneDiseaseAnnotationDAO geneDiseaseAnnotationDAO;
@@ -151,39 +149,7 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 		return list;
 	}
 
-	/**
-	 * SCRUM-6173 — assigns the given AGRKB curies to the given allele ids, positionally, in a
-	 * single transaction. Used by the backfill; each batch commits on its own so a long run is
-	 * resumable.
-	 *
-	 * Each allele is re-checked before assignment: a row may have disappeared, or acquired a curie
-	 * of its own, between the id fetch and here. dateUpdated is refreshed via the standard merge
-	 * path so audit triggers behave normally.
-	 */
-	@Transactional
-	public void assignCuries(List<Long> ids, List<String> curies) {
-		if (ids.size() != curies.size()) {
-			throw new IllegalStateException(
-				"id/curie size mismatch: ids=" + ids.size() + " curies=" + curies.size());
-		}
-		for (int i = 0; i < ids.size(); i++) {
-			Long id = ids.get(i);
-			String curie = curies.get(i);
-			Allele allele = find(id);
-			if (allele == null) {
-				Log.warn("Allele id=" + id + " disappeared between SELECT and assign; curie " + curie + " unused");
-				continue;
-			}
-			if (allele.getCurie() != null) {
-				Log.warn("Allele id=" + id + " already has curie=" + allele.getCurie() + "; skipping mint " + curie);
-				continue;
-			}
-			allele.setCurie(curie);
-			merge(allele);
-		}
-	}
-
-	/**
+/**
 	 * SCRUM-6173 — how many alleles still lack an AGRKB curie.
 	 *
 	 * The predicate is on {@code biologicalentity.curie}, not {@code allele}: Allele uses JOINED
