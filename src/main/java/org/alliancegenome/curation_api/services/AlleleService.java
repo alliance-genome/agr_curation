@@ -20,7 +20,6 @@ import org.alliancegenome.curation_api.model.ingest.dto.AlleleDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.base.SubmittedObjectCrudService;
-import org.alliancegenome.curation_api.services.helpers.alleles.AlleleCurieMintHelper;
 import org.alliancegenome.curation_api.services.validation.AlleleValidator;
 import org.alliancegenome.curation_api.services.validation.dto.AlleleDTOValidator;
 import org.apache.commons.collections.CollectionUtils;
@@ -36,8 +35,6 @@ public class AlleleService extends SubmittedObjectCrudService<Allele, AlleleDTO,
 
 	@Inject
 	AlleleDAO alleleDAO;
-	@Inject
-	AlleleCurieMintHelper curieMintHelper;
 	@Inject
 	AlleleValidator alleleValidator;
 	@Inject
@@ -64,17 +61,6 @@ public class AlleleService extends SubmittedObjectCrudService<Allele, AlleleDTO,
 	public ObjectResponse<Allele> updateDetail(Allele uiEntity) {
 		Allele dbEntity = alleleValidator.validateAlleleUpdate(uiEntity, true);
 		return new ObjectResponse<>(dbEntity);
-	}
-
-	/**
-	 * SCRUM-6173 backfill entry point, exposed via {@code /system/mintallelecuries}. Assigns
-	 * AGRKB curies to every allele whose curie is NULL, in batches. Idempotent; see
-	 * {@link AlleleCurieMintHelper#mintMissingCuries(int, int)} for the batching and cap
-	 * semantics. Not {@code @Transactional} here — the helper commits each batch on its own so
-	 * a long run is resumable.
-	 */
-	public void mintMissingCuries(int batchSize, int maxToMint) {
-		curieMintHelper.mintMissingCuries(batchSize, maxToMint);
 	}
 
 	@Override

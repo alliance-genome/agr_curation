@@ -9,9 +9,6 @@ import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
 
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.Query;
-import jakarta.transaction.Transactional;
 import lombok.extern.log4j.Log4j2;
 
 /**
@@ -33,11 +30,12 @@ import lombok.extern.log4j.Log4j2;
  *    they persist.
  *
  * 2. Scale. Every allele is in scope regardless of {@code obsolete} / {@code internal}, so
- *    the backfill predicate is a plain {@code curie IS NULL} over ~3.7M rows (vs ~96K
- *    disease annotations). Note the predicate is on {@code biologicalentity.curie}, not
- *    {@code allele} — see {@link #countMissing()}. Create the partial index below before a
- *    cold run, and drop it afterwards:
- *    {@code CREATE INDEX CONCURRENTLY be_curie_null_idx ON biologicalentity (id) WHERE curie IS NULL;}
+ *    the backfill covers ~3.7M rows (vs ~96K disease annotations). The batch fetch lives in
+ *    {@link org.alliancegenome.curation_api.dao.AlleleDAO#findIdsMissingCuries(int, long)} and is
+ *    driven from {@code allele} with a forward id cursor, so no extra index is needed: the allele
+ *    primary key drives the scan. A partial index on {@code biologicalentity (id) WHERE curie IS
+ *    NULL} would cover ~32M rows this job never touches (biologicalentity is ~35.9M rows, of which
+ *    exon and codingsequence alone are ~27M) and is not worth creating.
  */
 @Log4j2
 @RequestScoped
@@ -45,7 +43,6 @@ public class AlleleCurieMintHelper {
 
 	@Inject AlleleDAO alleleDAO;
 	@Inject MatiService matiService;
-	@Inject EntityManager entityManager;
 
 	/**
 	 * Mints and assigns a single AGRKB curie to {@code allele} iff it does not already have
@@ -54,9 +51,16 @@ public class AlleleCurieMintHelper {
 	 * Called from the allele validators just before the entity is persisted, so the curie is
 	 * written in the caller's transaction (no {@code @Transactional} of its own here). A
 	 * re-load resolves to the managed entity, which already carries its curie, so this is a
-	 * no-op for it — the AGRKB id stays stable across loads. {@code AlleleDTO} carries no
-	 * curie field and the validators never overwrite one, so a load cannot clobber an
-	 * existing id either.
+	 * no-op for it — the AGRKB id stays stable across loads. {@code AlleleDTO} carries no curie
+	 * field and the DTO validator chain never assigns one, so a load cannot clobber an existing
+	 * id either.
+	 *
+	 * The UI path is different and the caller must guard it: {@code AlleleValidator.validateAllele}
+	 * is shared by create and update, and its field-copy chain assigns
+	 * {@code setCurie(handleStringField(uiEntity.getCurie()))} unconditionally, so an update whose
+	 * payload omits curie nulls it. {@code AlleleValidator} therefore calls this only when
+	 * {@code dbEntity.getId() == null}; without that guard an allele's AGRKB id would silently
+	 * change on every such update.
 	 *
 	 * No {@code obsolete} / {@code internal} check: every allele gets an id, and an allele
 	 * obsoleted later keeps the one it already holds.
@@ -114,7 +118,7 @@ public class AlleleCurieMintHelper {
 			throw new IllegalArgumentException("maxToMint must be >= 0 (0 = no cap), got " + maxToMint);
 		}
 
-		long totalMissing = countMissing();
+		long totalMissing = alleleDAO.countMissingCuries();
 		// maxToMint == 0 means mint everything that is missing.
 		long target = maxToMint == 0 ? totalMissing : Math.min(totalMissing, maxToMint);
 
@@ -122,17 +126,21 @@ public class AlleleCurieMintHelper {
 		pdh.startProcess("Allele AGRKB curie mint", target);
 
 		long minted = 0;
+		// Cursor carried across batches so each fetch is proportional to the batch size rather than
+		// re-scanning from the top of the table — see AlleleDAO.findIdsMissingCuries.
+		long lastId = 0;
 		while (minted < target) {
 			// Never fetch more than the remaining allowance towards the cap.
 			int thisBatch = (int) Math.min(batchSize, target - minted);
-			List<Long> batchIds = findMissingCurieIds(thisBatch);
+			List<Long> batchIds = alleleDAO.findIdsMissingCuries(thisBatch, lastId);
 			if (batchIds.isEmpty()) {
 				break;
 			}
+			lastId = batchIds.get(batchIds.size() - 1);
 
 			List<String> curies = matiService.mintCuries(MatiService.SUBDOMAIN_ALLELE, batchIds.size());
 
-			assignCuries(batchIds, curies);
+			alleleDAO.assignCuries(batchIds, curies);
 
 			minted += batchIds.size();
 			for (int i = 0; i < batchIds.size(); i++) {
@@ -143,51 +151,4 @@ public class AlleleCurieMintHelper {
 		pdh.finishProcess();
 	}
 
-	private long countMissing() {
-		// curie lives on biologicalentity, not allele: Allele uses JOINED inheritance
-		// (Allele -> GenomicEntity -> BiologicalEntity -> SubmittedObject -> CurieObject) and the
-		// column is declared on CurieObject, so it lands on the biologicalentity table. Unlike
-		// diseaseannotation, the allele table has no curie column of its own.
-		Query q = entityManager.createNativeQuery(
-			"SELECT COUNT(*) FROM biologicalentity be JOIN allele a ON a.id = be.id WHERE be.curie IS NULL");
-		return ((Number) q.getSingleResult()).longValue();
-	}
-
-	@SuppressWarnings("unchecked")
-	private List<Long> findMissingCurieIds(int batchSize) {
-		// See countMissing() on why this joins biologicalentity for the curie predicate.
-		Query q = entityManager.createNativeQuery(
-			"SELECT be.id FROM biologicalentity be JOIN allele a ON a.id = be.id "
-				+ "WHERE be.curie IS NULL ORDER BY be.id LIMIT :limit");
-		q.setParameter("limit", batchSize);
-		List<Number> rows = q.getResultList();
-		return rows.stream().map(Number::longValue).toList();
-	}
-
-	/**
-	 * Persists the assignment in a single transaction. Each allele's dateUpdated is
-	 * refreshed via the standard merge path so audit triggers behave normally.
-	 */
-	@Transactional
-	public void assignCuries(List<Long> ids, List<String> curies) {
-		if (ids.size() != curies.size()) {
-			throw new IllegalStateException(
-				"id/curie size mismatch: ids=" + ids.size() + " curies=" + curies.size());
-		}
-		for (int i = 0; i < ids.size(); i++) {
-			Long id = ids.get(i);
-			String curie = curies.get(i);
-			Allele allele = alleleDAO.find(id);
-			if (allele == null) {
-				log.warn("Allele id={} disappeared between SELECT and assign; curie {} unused", id, curie);
-				continue;
-			}
-			if (allele.getCurie() != null) {
-				log.warn("Allele id={} already has curie={}; skipping mint {}", id, allele.getCurie(), curie);
-				continue;
-			}
-			allele.setCurie(curie);
-			alleleDAO.merge(allele);
-		}
-	}
 }

@@ -57,10 +57,9 @@ public interface SystemControllerInterface {
 	// for every Allele whose curie is currently NULL. Idempotent.
 	//
 	// Every allele is in scope regardless of obsolete/internal, so this targets ~3.7M rows —
-	// roughly 38x the disease-annotation backfill. Create the partial index
-	//   CREATE INDEX CONCURRENTLY be_curie_null_idx ON biologicalentity (id) WHERE curie IS NULL;
-	// before a cold run and drop it afterwards, and work through the table with a bounded
-	// maxToMint rather than in one pass.
+	// roughly 38x the disease-annotation backfill. No supporting index is needed (the batch fetch
+	// is driven from allele by a forward id cursor on the primary key), but work through the table
+	// with a bounded maxToMint rather than in one pass.
 	@GET
 	@Path("/mintallelecuries")
 	void mintExistingAlleleCuries(

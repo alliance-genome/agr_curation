@@ -145,9 +145,18 @@ public class AlleleValidator extends GenomicEntityValidator<Allele> {
 			throw new ApiErrorException(response);
 		}
 
-		// SCRUM-6173: mint an AGRKB curie for a new allele that has none. Set before persist so the
-		// curie is written by the same insert; a curator-supplied curie is left alone.
-		curieMintHelper.mintCurieIfAbsent(dbEntity);
+		// SCRUM-6173: mint an AGRKB curie for a NEW allele that has none, set before persist so the
+		// curie is written by the same insert. A curator-supplied curie is left alone.
+		//
+		// The getId() == null guard is load-bearing: validateAllele is shared by
+		// validateAlleleCreate and validateAlleleUpdate, and the field-copy chain above
+		// (validateGenomicEntityFields -> ... -> SubmittedObjectValidator.validateSubmittedObjectFields)
+		// assigns dbEntity.setCurie(handleStringField(uiEntity.getCurie())) unconditionally. So an
+		// update whose payload omits curie nulls it; without this guard the mint would then issue a
+		// fresh curie and the allele's AGRKB id would silently change on every such update.
+		if (dbEntity.getId() == null) {
+			curieMintHelper.mintCurieIfAbsent(dbEntity);
+		}
 		dbEntity = alleleDAO.persist(dbEntity);
 
 		if (symbol != null) {
