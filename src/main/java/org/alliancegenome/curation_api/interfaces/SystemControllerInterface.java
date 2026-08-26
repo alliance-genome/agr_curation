@@ -49,7 +49,7 @@ public interface SystemControllerInterface {
 	// through the table in safe chunks.
 	@GET
 	@Path("/mintdacuries")
-	void mintExistingDiseaseAnnotationCuries(
+	void mintMissingDiseaseAnnotationCuries(
 		@DefaultValue("1000") @QueryParam("batchSize") Integer batchSize,
 		@DefaultValue("0") @QueryParam("maxToMint") Integer maxToMint);
 
@@ -62,7 +62,7 @@ public interface SystemControllerInterface {
 	// with a bounded maxToMint rather than in one pass.
 	@GET
 	@Path("/mintallelecuries")
-	void mintExistingAlleleCuries(
+	void mintMissingAlleleCuries(
 		@DefaultValue("1000") @QueryParam("batchSize") Integer batchSize,
 		@DefaultValue("0") @QueryParam("maxToMint") Integer maxToMint);
 
