@@ -113,7 +113,7 @@ public class CurieMintService {
 			if (batchIds.isEmpty()) {
 				break;
 			}
-			lastId = batchIds.get(batchIds.size() - 1);
+			lastId = batchIds.getLast();
 
 			List<String> curies = matiService.mintCuries(subdomain.getSubdomainName(), batchIds.size());
 
