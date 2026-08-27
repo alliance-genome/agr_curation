@@ -149,60 +149,6 @@ public class AlleleDAO extends BaseCurieSQLDAO<Allele> {
 		return list;
 	}
 
-/**
-	 * SCRUM-6173 — how many alleles still lack an AGRKB curie.
-	 *
-	 * The predicate is on {@code biologicalentity.curie}, not {@code allele}: Allele uses JOINED
-	 * inheritance (Allele -> GenomicEntity -> BiologicalEntity -> SubmittedObject -> CurieObject)
-	 * and the column is declared on CurieObject, so it lands on the biologicalentity table. The
-	 * allele table has no curie column of its own.
-	 */
-	public long countMissingCuries() {
-		String sql = """
-				SELECT COUNT(*)
-				FROM biologicalentity be, allele as a
-				WHERE be.id = a.id and be.curie is NULL
-			""";
-
-		Query query = entityManager.createNativeQuery(sql);
-		return ((Number) query.getSingleResult()).longValue();
-	}
-
-	/**
-	 * SCRUM-6173 — the next {@code batchSize} allele ids that lack an AGRKB curie, in id order,
-	 * starting after {@code afterId}.
-	 *
-	 * The {@code afterId} cursor matters at allele scale. Re-running a bare
-	 * {@code WHERE curie IS NULL ORDER BY id LIMIT n} for every batch (as the disease-annotation
-	 * backfill does over ~96K rows) restarts the scan at the top of the table each time, so the
-	 * work grows with the number of batches already done — and the final empty batch that ends the
-	 * run has to walk everything. Driving from {@code allele} and carrying the cursor forward keeps
-	 * each batch proportional to the batch size instead.
-	 *
-	 * Pass 0 to start from the beginning. Rows skipped within a run (e.g. an allele that acquired a
-	 * curie between the SELECT and the assign) are not revisited by that run because the cursor has
-	 * moved past them; the next run starts from 0 again and picks them up.
-	 */
-	public List<Long> findIdsMissingCuries(int batchSize, long afterId) {
-		String sql = """
-				SELECT be.id
-				FROM biologicalentity be, allele as a
-				WHERE be.id = a.id and be.curie is NULL and a.id > :afterId
-				ORDER BY a.id
-				LIMIT :limit
-			""";
-
-		Query query = entityManager.createNativeQuery(sql);
-		query.setParameter("afterId", afterId);
-		query.setParameter("limit", batchSize);
-
-		List<Object> objects = query.getResultList();
-		List<Long> ids = new ArrayList<>();
-		objects.forEach(object -> ids.add(((Number) object).longValue()));
-
-		return ids;
-	}
-
 	public SearchResponse<AlleleSummaryDocument> findAllelesForSummary(Pagination pagination, Map<String, Object> params) {
 
 		String baseCountQuery = """
