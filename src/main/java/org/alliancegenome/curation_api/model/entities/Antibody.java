@@ -17,6 +17,7 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmb
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexingDependency;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.KeywordField;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonView;
 
 import jakarta.persistence.Column;
@@ -88,6 +89,13 @@ public class Antibody extends Reagent {
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
 	@JsonView({ CurationView.FieldsAndLists.class })
+	@JsonIgnoreProperties({
+		"geneGenomicLocationAssociations",
+		"alleleGeneAssociations",
+		"sequenceTargetingReagentGeneAssociations",
+		"transcriptGeneAssociations",
+		"constructGenomicEntityAssociations"
+	})
 	@JoinTable(indexes = {
 		@Index(name = "antibody_gene_antibody_index", columnList = "antibody_id"),
 		@Index(name = "antibody_gene_gene_index", columnList = "antibodytargetgenes_id")

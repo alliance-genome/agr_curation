@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 public class ObjectResponse<E> extends APIResponse {
 
 	@Schema(description = "The returned entity object")
-	@JsonView({ CurationView.FieldsOnly.class, CurationView.PersonSettingView.class })
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.PersonSettingView.class, CurationView.AlleleDetailView.class })
 	private E entity;
 	
 }
