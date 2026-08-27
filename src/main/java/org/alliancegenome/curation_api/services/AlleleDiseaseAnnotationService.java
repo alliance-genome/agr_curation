@@ -9,6 +9,7 @@ import org.alliancegenome.curation_api.model.entities.AlleleDiseaseAnnotation;
 import org.alliancegenome.curation_api.model.ingest.dto.AlleleDiseaseAnnotationDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.base.BaseAnnotationDTOCrudService;
+import org.alliancegenome.curation_api.services.helpers.annotations.DiseaseAnnotationCurieMintHelper;
 import org.alliancegenome.curation_api.services.validation.AlleleDiseaseAnnotationValidator;
 import org.alliancegenome.curation_api.services.validation.dto.AlleleDiseaseAnnotationDTOValidator;
 
@@ -28,6 +29,8 @@ public class AlleleDiseaseAnnotationService extends BaseAnnotationDTOCrudService
 	AlleleDiseaseAnnotationDTOValidator alleleDiseaseAnnotationDtoValidator;
 	@Inject
 	DiseaseAnnotationService diseaseAnnotationService;
+	@Inject
+	DiseaseAnnotationCurieMintHelper curieMintHelper;
 
 	@Override
 	@PostConstruct
@@ -46,7 +49,7 @@ public class AlleleDiseaseAnnotationService extends BaseAnnotationDTOCrudService
 	@Transactional
 	public ObjectResponse<AlleleDiseaseAnnotation> create(AlleleDiseaseAnnotation uiEntity) {
 		AlleleDiseaseAnnotation dbEntity = alleleDiseaseValidator.validateAnnotationCreate(uiEntity);
-		diseaseAnnotationService.mintCurieIfAbsent(dbEntity);
+		curieMintHelper.mintCurieIfAbsent(dbEntity);
 		return new ObjectResponse<>(alleleDiseaseAnnotationDAO.persist(dbEntity));
 	}
 
@@ -54,7 +57,7 @@ public class AlleleDiseaseAnnotationService extends BaseAnnotationDTOCrudService
 	@Transactional
 	public ObjectResponse<AlleleDiseaseAnnotation> upsert(AlleleDiseaseAnnotationDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
 		ObjectResponse<AlleleDiseaseAnnotation> resp = alleleDiseaseAnnotationDtoValidator.validateAlleleDiseaseAnnotationDTO(dto, dataProvider);
-		diseaseAnnotationService.mintCurieIfAbsent(resp.getEntity());
+		curieMintHelper.mintCurieIfAbsent(resp.getEntity());
 		alleleDiseaseAnnotationDAO.persist(resp.getEntity());
 		return resp;
 	}

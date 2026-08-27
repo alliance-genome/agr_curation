@@ -13,7 +13,6 @@ import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.base.BaseAnnotationCrudService;
-import org.alliancegenome.curation_api.services.helpers.annotations.DiseaseAnnotationCurieMintHelper;
 import org.alliancegenome.curation_api.services.helpers.annotations.DiseaseAnnotationUniqueIdUpdateHelper;
 import org.apache.commons.lang3.StringUtils;
 
@@ -28,7 +27,6 @@ public class DiseaseAnnotationService extends BaseAnnotationCrudService<DiseaseA
 	@Inject DiseaseAnnotationDAO diseaseAnnotationDAO;
 	@Inject PersonService personService;
 	@Inject DiseaseAnnotationUniqueIdUpdateHelper uniqueIdUpdateHelper;
-	@Inject DiseaseAnnotationCurieMintHelper curieMintHelper;
 	@Inject PersonDAO personDAO;
 
 	@Override
@@ -47,21 +45,6 @@ public class DiseaseAnnotationService extends BaseAnnotationCrudService<DiseaseA
 
 	public void updateUniqueIds() {
 		uniqueIdUpdateHelper.updateDiseaseAnnotationUniqueIds();
-	}
-
-	// SCRUM-6078 backfill: mints AGRKB curies for every DiseaseAnnotation
-	// with a NULL curie. Idempotent. Throwaway — remove together with the
-	// /system/mintdacuries endpoint once it has run on every environment.
-	public void mintMissingCuries(int batchSize, int maxToMint) {
-		curieMintHelper.mintMissingCuries(batchSize, maxToMint);
-	}
-
-	// SCRUM-6170: mint an AGRKB curie for a newly created/loaded disease
-	// annotation that does not yet have one. No-op when the annotation already
-	// has a curie (e.g. an existing annotation resolved during a re-load), so
-	// the AGRKB id stays tied to the annotation across loads.
-	public boolean mintCurieIfAbsent(DiseaseAnnotation annotation) {
-		return curieMintHelper.mintCurieIfAbsent(annotation);
 	}
 
 	public List<Long> getAllReferencedConditionRelationIds() {

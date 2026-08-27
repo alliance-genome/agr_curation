@@ -1,13 +1,21 @@
 package org.alliancegenome.curation_api;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.aMapWithSize;
 import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.nullValue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.alliancegenome.curation_api.base.BaseITCase;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
@@ -38,6 +46,7 @@ import org.alliancegenome.curation_api.model.entities.slotAnnotations.AlleleNome
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.AlleleSecondaryIdSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.AlleleSymbolSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.AlleleSynonymSlotAnnotation;
+import org.alliancegenome.curation_api.model.entities.slotAnnotations.GeneSymbolSlotAnnotation;
 import org.alliancegenome.curation_api.resources.TestContainerResource;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.MethodOrderer;
@@ -49,6 +58,7 @@ import org.junit.jupiter.api.TestMethodOrder;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusIntegrationTest;
 import io.restassured.RestAssured;
+import io.restassured.response.Response;
 
 @QuarkusIntegrationTest
 @QuarkusTestResource(TestContainerResource.Initializer.class)
@@ -60,6 +70,12 @@ import io.restassured.RestAssured;
 public class IT_0302_AlleleITCase extends BaseITCase {
 
 	private static final String ALLELE = "Allele:0001";
+
+	// RESTEasy's reply when the response cannot be serialized ("deserialize" is its wording).
+	private static final String SERIALIZATION_FAILURE_BODY = "Not able to deserialize data provided.";
+
+	private static final String LAZY_INIT_ALLELE = "Allele:LazyInit0001";
+	private static final String ROUND_TRIP_ALLELE = "Allele:RoundTrip0001";
 
 	private Vocabulary inheritanceModeVocabulary;
 	private Vocabulary germlineTransmissionStatusVocabulary;
@@ -1601,6 +1617,173 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 				delete("/api/allele/" + ALLELE).
 				then().
 				statusCode(200);
+	}
+
+	@Test
+	@Order(28)
+	public void updateAlleleDetailWithGeneAssociationEvidenceGraph() {
+		// SCRUM-6434: serializing the updateDetail response hit a lazy load on a closed session via
+		// alleleGeneAssociations -> alleleGeneAssociationObject -> geneSymbol -> evidence ->
+		// crossReferences. AlleleDetailView no longer reaches geneSymbol, which severs that path.
+		// The only active test doing a successful updateDetail with a gene association.
+
+		// A null fixture would produce a 400 indistinguishable from the bug under test.
+		assertNotNull(symbolNameType, "symbolNameType fixture is null - loadRequiredEntities did not complete");
+		assertNotNull(geneAssociationRelation, "geneAssociationRelation fixture is null - loadRequiredEntities did not complete");
+
+		Gene evidenceGene = createGene("TEST:LazyInitGene1", "NCBITaxon:6239", symbolNameType, false);
+		// Unique xref rather than the shared PMID:TestXref default.
+		Reference geneSymbolEvidence = createReference("AGRKB:LazyInitTest1", "PMID:LazyInitTest1", false);
+		GeneSymbolSlotAnnotation evidenceGeneSymbol = evidenceGene.getGeneSymbol();
+		evidenceGeneSymbol.setEvidence(List.of(geneSymbolEvidence));
+		RestAssured.given().
+				contentType("application/json").
+				body(evidenceGene).
+				when().
+				put("/api/gene").
+				then().
+				statusCode(200).
+				body("entity.geneSymbol.evidence[0].curie", is(geneSymbolEvidence.getCurie()));
+
+		Allele allele = createAllele(LAZY_INIT_ALLELE, "NCBITaxon:6239", symbolNameType, false);
+		AlleleGeneAssociation geneAssociation = new AlleleGeneAssociation();
+		geneAssociation.setAlleleGeneAssociationObject(evidenceGene);
+		geneAssociation.setRelation(geneAssociationRelation);
+		allele.setAlleleGeneAssociations(List.of(geneAssociation));
+
+		// Assert the PUT body; a follow-up GET keeps the session open and never reproduces this.
+		Response response = RestAssured.given().
+				contentType("application/json").
+				body(allele).
+				when().
+				put("/api/allele/updateDetail").
+				then().
+				extract().response();
+
+		// Validation and serialization failures are both 400; only the latter is this bug.
+		String body = response.body().asString();
+		assertNotEquals(SERIALIZATION_FAILURE_BODY, body.trim(),
+				"Response serialization failed - the AlleleDetailView graph hit a LazyInitializationException "
+					+ "after the write transaction closed (SCRUM-6434)");
+		assertEquals(200, response.statusCode(), "updateDetail returned " + response.statusCode() + ": " + body);
+
+		assertThat(response.jsonPath().getList("entity.alleleGeneAssociations"), hasSize(1));
+		assertThat(response.jsonPath().getString("entity.alleleGeneAssociations[0].alleleGeneAssociationObject.primaryExternalId"),
+				is(evidenceGene.getPrimaryExternalId()));
+		// The association object is pruned to identifiers: geneSymbol (and the evidence ->
+		// crossReferences chain under it) must NOT be serialized.
+		assertThat(response.jsonPath().get("entity.alleleGeneAssociations[0].alleleGeneAssociationObject.geneSymbol"),
+				is(nullValue()));
+
+		RestAssured.given().
+				when().
+				delete("/api/allele/" + LAZY_INIT_ALLELE).
+				then().
+				statusCode(200);
+	}
+
+	@Test
+	@Order(29)
+	public void alleleDetailViewExposesOnlyExpectedTopLevelFields() {
+		// AlleleDetailView no longer inherits FieldsOnly, so the response is an explicit opt-in list.
+		// Fail if it ever widens again - that is how the lazy branch got in (SCRUM-6434).
+		Set<String> allowed = Set.of(
+				"type", "id", "curie", "primaryExternalId", "modInternalId", "taxon", "inCollection", "isExtinct",
+				"references", "relatedNotes", "dataProvider", "dataProviderCrossReference",
+				"alleleSymbol", "alleleFullName", "alleleSynonyms", "alleleSecondaryIds", "alleleMutationTypes",
+				"alleleInheritanceModes", "alleleFunctionalImpacts", "alleleGermlineTransmissionStatus",
+				"alleleDatabaseStatus", "alleleNomenclatureEvents",
+				"alleleGeneAssociations", "alleleVariantAssociations", "alleleConstructAssociations",
+				"createdBy", "updatedBy", "dateCreated", "dateUpdated", "dbDateCreated", "dbDateUpdated",
+				"internal", "obsolete");
+
+		Allele allele = createAllele(ROUND_TRIP_ALLELE, "NCBITaxon:6239", symbolNameType, false);
+
+		Response get = RestAssured.given().
+				when().
+				get("/api/allele/" + ROUND_TRIP_ALLELE).
+				then().
+				statusCode(200).
+				extract().response();
+
+		Map<String, Object> entity = get.jsonPath().getMap("entity");
+		Set<String> actual = entity.keySet();
+		assertTrue(allowed.containsAll(actual), "unexpected fields in AlleleDetailView: " + removeAll(actual, allowed));
+		assertNotNull(allele.getId());
+	}
+
+	@Test
+	@Order(30)
+	public void updateDetailRoundTripPreservesAssociationsAndSlotAnnotations() {
+		// Guards the orphanRemoval data-loss path: anything the UI receives is PUT back verbatim, so a
+		// field missing from AlleleDetailView comes back absent and its rows are deleted.
+		assertNotNull(geneAssociationRelation, "geneAssociationRelation fixture is null");
+		assertNotNull(constructAssociationRelation, "constructAssociationRelation fixture is null");
+
+		Allele allele = getAllele(ROUND_TRIP_ALLELE);
+		// createAllele leaves references empty; set one so the round trip covers
+		// Reference.crossReferences, the collection this bug is about.
+		allele.setReferences(List.of(reference));
+
+		AlleleGeneAssociation ga = new AlleleGeneAssociation();
+		ga.setAlleleGeneAssociationObject(gene);
+		ga.setRelation(geneAssociationRelation);
+		allele.setAlleleGeneAssociations(List.of(ga));
+
+		AlleleConstructAssociation ca = new AlleleConstructAssociation();
+		ca.setAlleleConstructAssociationObject(construct);
+		ca.setRelation(constructAssociationRelation);
+		allele.setAlleleConstructAssociations(List.of(ca));
+
+		// reference2 is deliberately not in allele.references, so its crossReferences are reachable
+		// only through SlotAnnotation.evidence. Reusing reference here would hide a regression.
+		allele.setAlleleInheritanceModes(List.of(
+				createAlleleInheritanceModeSlotAnnotation(List.of(reference2), dominantInheritanceMode, mpTerm, "Round trip")));
+		allele.setAlleleSecondaryIds(List.of(
+				createAlleleSecondaryIdSlotAnnotation(List.of(reference2), "TEST:RoundTripSecondary")));
+
+		RestAssured.given().
+				contentType("application/json").
+				body(allele).
+				when().
+				put("/api/allele/updateDetail").
+				then().
+				statusCode(200);
+
+		// PUT the response body straight back, exactly as the detail page does on a second save.
+		Allele afterFirstSave = getAllele(ROUND_TRIP_ALLELE);
+		RestAssured.given().
+				contentType("application/json").
+				body(afterFirstSave).
+				when().
+				put("/api/allele/updateDetail").
+				then().
+				statusCode(200);
+
+		RestAssured.given().
+				when().
+				get("/api/allele/" + ROUND_TRIP_ALLELE).
+				then().
+				statusCode(200).
+				body("entity.alleleGeneAssociations", hasSize(1)).
+				body("entity.alleleConstructAssociations", hasSize(1)).
+				body("entity.alleleInheritanceModes", hasSize(1)).
+				body("entity.alleleSecondaryIds", hasSize(1)).
+				body("entity.alleleSecondaryIds[0].secondaryId", is("TEST:RoundTripSecondary")).
+				body("entity.alleleSecondaryIds[0].evidence[0].curie", is(reference2.getCurie())).
+				body("entity.references", hasSize(1));
+
+		RestAssured.given().
+				when().
+				delete("/api/allele/" + ROUND_TRIP_ALLELE).
+				then().
+				statusCode(200);
+	}
+
+	private static String removeAll(Set<String> actual, Set<String> allowed) {
+		Set<String> extra = new java.util.HashSet<>(actual);
+		extra.removeAll(allowed);
+		return extra.toString();
 	}
 
 	private AlleleMutationTypeSlotAnnotation createAlleleMutationTypeSlotAnnotation(List<InformationContentEntity> evidence, List<SOTerm> mutationTypes) {
