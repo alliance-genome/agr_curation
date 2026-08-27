@@ -3,6 +3,7 @@ package org.alliancegenome.curation_api.services.validation.dto.base;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.alliancegenome.curation_api.constants.CrossReferenceConstants;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.GenomicEntity;
@@ -37,6 +38,8 @@ public class GenomicEntityDTOValidator<E extends GenomicEntity, D extends Genomi
 			}
 		}
 
+		validatedXrefs.addAll(getAllianceDerivedXrefs(entity.getCrossReferences()));
+
 		List<CrossReference> xrefs = crossReferenceService.getUpdatedXrefList(validatedXrefs, entity.getCrossReferences());
 
 		if (entity.getCrossReferences() != null) {
@@ -50,6 +53,26 @@ public class GenomicEntityDTOValidator<E extends GenomicEntity, D extends Genomi
 		}
 		
 		return entity;
+	}
+
+	/**
+	 * Returns the existing cross references that the Alliance generates itself during annotation loads
+	 * rather than reading from the submission file. Submitted cross reference lists are authoritative,
+	 * so without carrying these forward an entity load deletes them (orphanRemoval) and the following
+	 * annotation load only restores them for records that changed.
+	 */
+	private List<CrossReference> getAllianceDerivedXrefs(List<CrossReference> existingXrefs) {
+		List<CrossReference> derivedXrefs = new ArrayList<>();
+		if (CollectionUtils.isEmpty(existingXrefs)) {
+			return derivedXrefs;
+		}
+		for (CrossReference existingXref : existingXrefs) {
+			if (existingXref.getResourceDescriptorPage() != null
+					&& CrossReferenceConstants.ALLIANCE_DERIVED_PAGE_AREAS.contains(existingXref.getResourceDescriptorPage().getName())) {
+				derivedXrefs.add(existingXref);
+			}
+		}
+		return derivedXrefs;
 	}
 
 }
