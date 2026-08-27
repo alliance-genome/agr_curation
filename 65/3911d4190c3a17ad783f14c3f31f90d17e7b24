@@ -1,0 +1,19 @@
+src/main/cliapp/src/constants/FilterFields.js
+  s_6b8af79fa05736::t_910339d8668b8e 234
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "653911d4190c3a17ad783f14c3f31f90d17e7b24",
+  "prompts": {},
+  "sessions": {
+    "s_6b8af79fa05736": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "97d2ee96-b897-43a8-b8bc-9c8cfab7c07a",
+        "model": "unknown"
+      },
+      "human_author": "Ketaki Kindre <kkindre@caltech.edu>"
+    }
+  }
+}
