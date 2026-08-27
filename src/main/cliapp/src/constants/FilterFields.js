@@ -231,7 +231,7 @@ export const FIELD_SETS = Object.freeze({
 	},
 	originalReferenceFieldSet: {
 		filterName: 'originalReferenceFilter',
-		fields: ['originalReference.curie'],
+		fields: ['originalReference.curie', 'originalReference.primaryCrossReferenceCurie'],
 	},
 	citationFieldSet: {
 		filterName: 'citationFilter',
