@@ -515,11 +515,14 @@ public class BaseSQLDAO<E extends AuditedObject> extends BaseEntityDAO<E> {
 										}
 										q.should(clause);
 									} else { // assume simple query
+										Boolean exactMatch = (Boolean) searchFilters.get(filterName).get(field).get("exactMatch");
 										BooleanPredicateClausesStep<?, ?> clause = p.bool();
 										if (useKeywordFields != null && useKeywordFields) {
 											clause.should(p.simpleQueryString().fields(field + "_keyword").matching(searchFilters.get(filterName).get(field).get("queryString").toString()).defaultOperator(booleanOperator).boost(boost + 500));
 										}
-										clause.should(p.simpleQueryString().fields(field).matching(searchFilters.get(filterName).get(field).get("queryString").toString()).defaultOperator(booleanOperator).boost(boost));
+										if (exactMatch == null || !exactMatch || useKeywordFields == null || !useKeywordFields) {
+											clause.should(p.simpleQueryString().fields(field).matching(searchFilters.get(filterName).get(field).get("queryString").toString()).defaultOperator(booleanOperator).boost(boost));
+										}
 										q.should(clause);
 									}
 									innerBoost--;

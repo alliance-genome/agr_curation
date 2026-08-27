@@ -72,12 +72,13 @@ export function FilterComponentMultiSelect({ isInEditMode, filterConfig, current
 				let delim = '';
 				if (e.target.value && e.target.value.length !== 0) {
 					for (let i in e.target.value) {
-						queryString += delim + e.target.value[i].optionLabel;
+						queryString += delim + '"' + e.target.value[i].optionLabel + '"';
 						delim = ' ';
 					}
 					filter[fieldSet.fields[0]] = {
 						useKeywordFields: filterConfig.useKeywordFields,
 						tokenOperator: 'OR',
+						exactMatch: true,
 						queryString: queryString,
 					};
 				} else {
