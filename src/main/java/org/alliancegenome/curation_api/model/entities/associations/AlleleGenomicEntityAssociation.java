@@ -33,18 +33,18 @@ public class AlleleGenomicEntityAssociation extends EvidenceAssociation {
 	@IndexedEmbedded(includePaths = { "name", "name_keyword" })
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@JsonView({ CurationView.FieldsOnly.class, CurationView.AlleleView.class })
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.AlleleView.class, CurationView.AlleleDetailView.class })
 	private VocabularyTerm relation;
 
 	@IndexedEmbedded(includePaths = { "curie", "name", "secondaryIdentifiers", "synonyms.name", "abbreviation", "curie_keyword", "name_keyword", "secondaryIdentifiers_keyword", "synonyms.name_keyword", "abbreviation_keyword" })
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@JsonView({ CurationView.FieldsOnly.class })
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.AlleleDetailView.class })
 	private ECOTerm evidenceCode;
 
 	@IndexedEmbedded(includePaths = { "freeText", "noteType.name", "references.curie", "references.primaryCrossReferenceCurie", "freeText_keyword", "noteType.name_keyword", "references.curie_keyword", "references.primaryCrossReferenceCurie_keyword" })
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-	@JsonView({ CurationView.FieldsOnly.class })
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.AlleleDetailView.class })
 	private Note relatedNote;
 }
