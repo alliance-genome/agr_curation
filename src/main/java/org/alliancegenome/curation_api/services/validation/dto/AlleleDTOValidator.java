@@ -8,7 +8,6 @@ import java.util.Map;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.AlleleDAO;
-import org.alliancegenome.curation_api.services.helpers.alleles.AlleleCurieMintHelper;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
 import org.alliancegenome.curation_api.exceptions.ValidationException;
@@ -46,6 +45,8 @@ import org.alliancegenome.curation_api.services.validation.dto.slotAnnotations.A
 import org.alliancegenome.curation_api.services.validation.dto.slotAnnotations.AlleleSecondaryIdSlotAnnotationDTOValidator;
 import org.alliancegenome.curation_api.services.validation.dto.slotAnnotations.AlleleSymbolSlotAnnotationDTOValidator;
 import org.alliancegenome.curation_api.services.validation.dto.slotAnnotations.AlleleSynonymSlotAnnotationDTOValidator;
+import org.alliancegenome.curation_api.enums.MatiSubdomain;
+import org.alliancegenome.curation_api.services.CurieMintService;
 import org.apache.commons.collections.CollectionUtils;
 
 import jakarta.enterprise.context.RequestScoped;
@@ -58,7 +59,7 @@ public class AlleleDTOValidator extends GenomicEntityDTOValidator<Allele, Allele
 	@Inject
 	AlleleDAO alleleDAO;
 	@Inject
-	AlleleCurieMintHelper curieMintHelper;
+	CurieMintService curieMintService;
 	@Inject
 	AlleleMutationTypeSlotAnnotationDTOValidator alleleMutationTypeDtoValidator;
 	@Inject
@@ -193,7 +194,7 @@ public class AlleleDTOValidator extends GenomicEntityDTOValidator<Allele, Allele
 		try {
 			// SCRUM-6173: mint an AGRKB curie for a new allele that has none. A re-load resolves to
 			// the managed entity, which already carries its curie, so this is a no-op there.
-			curieMintHelper.mintCurieIfAbsent(allele);
+			curieMintService.mintCurieIfAbsent(allele, MatiSubdomain.ALLELE);
 			response.setEntity(alleleDAO.persist(allele));
 			return response;
 		} catch (Exception e) {
