@@ -1087,6 +1087,7 @@ export const FILTER_CONFIGS = Object.freeze({
 		fieldSets: [FIELD_SETS.dataProviderFieldSet],
 		aggregationFieldSet: FIELD_SETS.antibodyAggregationFieldSet,
 		useKeywordFields: true,
+		matchQuery: true,
 	},
 	antibodyTargetGenesFilterConfig: {
 		filterComponentType: 'input',
@@ -1098,18 +1099,21 @@ export const FILTER_CONFIGS = Object.freeze({
 		fieldSets: [FIELD_SETS.clonalityFieldSet],
 		aggregationFieldSet: FIELD_SETS.antibodyAggregationFieldSet,
 		useKeywordFields: true,
+		matchQuery: true,
 	},
 	heavyChainIsotypeFilterConfig: {
 		filterComponentType: 'multiselect',
 		fieldSets: [FIELD_SETS.heavyChainIsotypeFieldSet],
 		aggregationFieldSet: FIELD_SETS.antibodyAggregationFieldSet,
 		useKeywordFields: true,
+		matchQuery: true,
 	},
 	lightChainIsotypeFilterConfig: {
 		filterComponentType: 'multiselect',
 		fieldSets: [FIELD_SETS.lightChainIsotypeFieldSet],
 		aggregationFieldSet: FIELD_SETS.antibodyAggregationFieldSet,
 		useKeywordFields: true,
+		matchQuery: true,
 	},
 	originalReferenceFilterConfig: {
 		filterComponentType: 'input',

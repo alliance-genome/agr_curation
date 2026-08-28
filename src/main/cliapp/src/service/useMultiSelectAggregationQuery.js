@@ -33,8 +33,8 @@ export function useMultiSelectAggregationQuery({
 
 		if (currentFilters && currentFilters[fieldSet.filterName]) {
 			let newSelectedOptions = [];
-			let rawQueryString = currentFilters[fieldSet.filterName][fieldSet.fields[0]]?.queryString || '';
-			let queryStrings = rawQueryString.match(/"([^"]*)"/g)?.map((s) => s.slice(1, -1)) || rawQueryString.split(' ');
+			const existingFieldFilter = currentFilters[fieldSet.filterName][fieldSet.fields[0]];
+			let queryStrings = existingFieldFilter?.queryStrings || existingFieldFilter?.queryString?.split(' ') || [];
 			for (let i in tmp) {
 				for (let j in queryStrings) {
 					if (tmp[i].optionLabel === queryStrings[j].toLowerCase()) {

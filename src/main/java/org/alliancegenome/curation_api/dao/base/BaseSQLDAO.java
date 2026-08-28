@@ -508,21 +508,29 @@ public class BaseSQLDAO<E extends AuditedObject> extends BaseEntityDAO<E> {
 									String queryType = (String) searchFilters.get(filterName).get(field).get("queryType");
 									if (queryType != null && queryType.equals("matchQuery")) {
 										BooleanPredicateClausesStep<?, ?> clause = p.bool();
-										if (useKeywordFields != null && useKeywordFields) {
+										List<String> queryStrings = (List<String>) searchFilters.get(filterName).get(field).get("queryStrings");
+										if (queryStrings != null) {
+											// Multiple exact values for the same field (e.g. a multiselect filter with
+											// several checkboxes selected): one match clause per value, OR'd together.
+											for (String value : queryStrings) {
+												if (useKeywordFields != null && useKeywordFields) {
+													clause.should(p.match().field(field + "_keyword").matching(value).boost(boost + 500));
+												} else {
+													clause.should(p.match().field(field).matching(value).boost(boost));
+												}
+											}
+										} else if (useKeywordFields != null && useKeywordFields) {
 											clause.should(p.match().field(field + "_keyword").matching(searchFilters.get(filterName).get(field).get("queryString").toString()).boost(boost + 500));
 										} else {
 											clause.should(p.match().field(field).matching(searchFilters.get(filterName).get(field).get("queryString").toString()).boost(boost));
 										}
 										q.should(clause);
 									} else { // assume simple query
-										Boolean exactMatch = (Boolean) searchFilters.get(filterName).get(field).get("exactMatch");
 										BooleanPredicateClausesStep<?, ?> clause = p.bool();
 										if (useKeywordFields != null && useKeywordFields) {
 											clause.should(p.simpleQueryString().fields(field + "_keyword").matching(searchFilters.get(filterName).get(field).get("queryString").toString()).defaultOperator(booleanOperator).boost(boost + 500));
 										}
-										if (exactMatch == null || !exactMatch || useKeywordFields == null || !useKeywordFields) {
-											clause.should(p.simpleQueryString().fields(field).matching(searchFilters.get(filterName).get(field).get("queryString").toString()).defaultOperator(booleanOperator).boost(boost));
-										}
+										clause.should(p.simpleQueryString().fields(field).matching(searchFilters.get(filterName).get(field).get("queryString").toString()).defaultOperator(booleanOperator).boost(boost));
 										q.should(clause);
 									}
 									innerBoost--;

@@ -68,19 +68,27 @@ export function FilterComponentMultiSelect({ isInEditMode, filterConfig, current
 			onChange={(e) => {
 				setSelectedOptions(e.target.value);
 				let filter = {};
-				let queryString = '';
-				let delim = '';
 				if (e.target.value && e.target.value.length !== 0) {
-					for (let i in e.target.value) {
-						queryString += delim + '"' + e.target.value[i].optionLabel + '"';
-						delim = ' ';
+					if (filterConfig.matchQuery) {
+						// Exact match per selected value, OR'd together, so e.g. "IgG" can't match "IgG1".
+						filter[fieldSet.fields[0]] = {
+							useKeywordFields: filterConfig.useKeywordFields,
+							queryType: 'matchQuery',
+							queryStrings: e.target.value.map((o) => o.optionLabel),
+						};
+					} else {
+						let queryString = '';
+						let delim = '';
+						for (let i in e.target.value) {
+							queryString += delim + e.target.value[i].optionLabel;
+							delim = ' ';
+						}
+						filter[fieldSet.fields[0]] = {
+							useKeywordFields: filterConfig.useKeywordFields,
+							tokenOperator: 'OR',
+							queryString: queryString,
+						};
 					}
-					filter[fieldSet.fields[0]] = {
-						useKeywordFields: filterConfig.useKeywordFields,
-						tokenOperator: 'OR',
-						exactMatch: true,
-						queryString: queryString,
-					};
 				} else {
 					filter = null;
 				}
