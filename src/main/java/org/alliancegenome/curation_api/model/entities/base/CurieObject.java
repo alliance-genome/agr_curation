@@ -3,7 +3,7 @@ package org.alliancegenome.curation_api.model.entities.base;
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.view.CurationView;
-import org.alliancegenome.curation_api.model.entities.interfaces.CurieCarrier;
+import org.alliancegenome.curation_api.model.entities.interfaces.CurieInterface;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.hibernate.search.engine.backend.types.Aggregable;
 import org.hibernate.search.engine.backend.types.Searchable;
@@ -25,7 +25,7 @@ import lombok.ToString;
 @ToString(callSuper = true)
 @AGRCurationSchemaVersion(min = "2.0.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = {AuditedObject.class})
 @Schema(name = "CurieObject", description = "CurieObject: a curie object")
-public class CurieObject extends AuditedObject implements CurieCarrier {
+public class CurieObject extends AuditedObject implements CurieInterface {
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "curie_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")

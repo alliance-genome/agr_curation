@@ -3,7 +3,7 @@ package org.alliancegenome.curation_api.dao.base;
 import java.util.List;
 
 import org.alliancegenome.curation_api.model.entities.base.AuditedObject;
-import org.alliancegenome.curation_api.model.entities.interfaces.CurieCarrier;
+import org.alliancegenome.curation_api.model.entities.interfaces.CurieInterface;
 
 import io.quarkus.logging.Log;
 import jakarta.persistence.TypedQuery;
@@ -23,7 +23,7 @@ import jakarta.transaction.Transactional;
  * {@code FROM allele}, while Allele keeps its curie on biologicalentity. Expressed over the entity
  * model there is nothing to get wrong, and one implementation serves all sixteen classes.
  */
-public abstract class BaseCurieSQLDAO<E extends AuditedObject & CurieCarrier> extends BaseSQLDAO<E> {
+public abstract class BaseCurieSQLDAO<E extends AuditedObject & CurieInterface> extends BaseSQLDAO<E> {
 
 	protected BaseCurieSQLDAO(Class<E> myClass) {
 		super(myClass);

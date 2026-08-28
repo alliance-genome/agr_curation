@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.alliancegenome.curation_api.dao.base.BaseCurieSQLDAO;
 import org.alliancegenome.curation_api.enums.MatiSubdomain;
-import org.alliancegenome.curation_api.model.entities.interfaces.CurieCarrier;
+import org.alliancegenome.curation_api.model.entities.interfaces.CurieInterface;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
 
 import jakarta.enterprise.context.RequestScoped;
@@ -54,7 +54,7 @@ public class CurieMintService {
 	 * in — both target NULL-curie rows. This also keeps the integration tests, which run without a
 	 * MaTI server, green.
 	 */
-	public boolean mintCurieIfAbsent(CurieCarrier entity, MatiSubdomain subdomain) {
+	public boolean mintCurieIfAbsent(CurieInterface entity, MatiSubdomain subdomain) {
 		if (entity == null || entity.getCurie() != null) {
 			return false;
 		}
