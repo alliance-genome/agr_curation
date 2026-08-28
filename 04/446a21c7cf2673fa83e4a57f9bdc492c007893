@@ -1,0 +1,25 @@
+src/main/cliapp/src/components/Filters/FilterComponentMultiSelect.jsx
+  s_6b8af79fa05736::t_a86352277fd34e 72-90
+src/main/cliapp/src/constants/FilterFields.js
+  s_6b8af79fa05736::t_19a7ce8888987e 1090,1102,1109,1116
+src/main/cliapp/src/service/useMultiSelectAggregationQuery.js
+  s_6b8af79fa05736::t_eb6064184f9262 36-37
+src/main/java/org/alliancegenome/curation_api/dao/base/BaseSQLDAO.java
+  s_6b8af79fa05736::t_722e61798d383d 511-522,533
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "04446a21c7cf2673fa83e4a57f9bdc492c007893",
+  "prompts": {},
+  "sessions": {
+    "s_6b8af79fa05736": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "97d2ee96-b897-43a8-b8bc-9c8cfab7c07a",
+        "model": "unknown"
+      },
+      "human_author": "Ketaki Kindre <kkindre@caltech.edu>"
+    }
+  }
+}
