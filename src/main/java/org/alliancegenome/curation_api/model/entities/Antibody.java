@@ -84,8 +84,12 @@ public class Antibody extends Reagent {
 	@JsonView({ CurationView.FieldsOnly.class })
 	private NCBITaxonTerm taxon;
 
-	@IndexedEmbedded(includePaths = { "primaryExternalId", "modInternalId", "symbol",
-		"primaryExternalId_keyword", "modInternalId_keyword", "symbol_keyword" })
+	@IndexedEmbedded(includePaths = {
+		"curie", "primaryExternalId", "modInternalId",
+		"curie_keyword", "primaryExternalId_keyword", "modInternalId_keyword",
+		"geneSymbol.formatText", "geneSymbol.displayText",
+		"geneSymbol.formatText_keyword", "geneSymbol.displayText_keyword"
+	})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
 	@JsonView({ CurationView.FieldsAndLists.class })
