@@ -6,15 +6,18 @@ import org.alliancegenome.curation_api.model.entities.base.AuditedObject;
 import org.alliancegenome.curation_api.model.entities.interfaces.CurieInterface;
 
 import io.quarkus.logging.Log;
-import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Root;
 import jakarta.transaction.Transactional;
 
 /**
  * SCRUM-6359 / SCRUM-6360 — the curie-minting persistence shared by every entity that carries an
  * AGRKB curie. A DAO gains all of it by extending this instead of {@link BaseSQLDAO} directly.
  *
- * Queries are JPQL over {@code myClass}, not native SQL over a table name. That is deliberate: the
- * curie column lives in nine different tables (biologicalentity, reagent, phenotypeannotation,
+ * Queries are built with the Criteria API over {@code myClass}, not native SQL over a table name.
+ * That is deliberate: the curie column lives in nine different tables (biologicalentity, reagent,
+ * phenotypeannotation,
  * diseaseannotation, geneexpressionannotation, geneexpressionexperiment, informationcontententity,
  * ontologyterm, externaldatabaseentity) because each entity inherits the field from whichever
  * ancestor declares it, under a JOINED inheritance strategy. Hand-written SQL has to get that
@@ -31,9 +34,11 @@ public abstract class BaseCurieSQLDAO<E extends AuditedObject & CurieInterface> 
 
 	/** How many rows of this entity type still lack an AGRKB curie. */
 	public long countMissingCuries() {
-		return entityManager
-			.createQuery("SELECT COUNT(e) FROM " + myClass.getSimpleName() + " e WHERE e.curie IS NULL", Long.class)
-			.getSingleResult();
+		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+		CriteriaQuery<Long> query = cb.createQuery(Long.class);
+		Root<E> root = query.from(myClass);
+		query.select(cb.count(root)).where(cb.isNull(root.get("curie")));
+		return entityManager.createQuery(query).getSingleResult();
 	}
 
 	/**
@@ -50,12 +55,13 @@ public abstract class BaseCurieSQLDAO<E extends AuditedObject & CurieInterface> 
 	 * past them; the next run starts from 0 again and picks them up.
 	 */
 	public List<Long> findIdsMissingCuries(int batchSize, long afterId) {
-		TypedQuery<Long> query = entityManager.createQuery(
-			"SELECT e.id FROM " + myClass.getSimpleName() + " e WHERE e.curie IS NULL AND e.id > :afterId ORDER BY e.id",
-			Long.class);
-		query.setParameter("afterId", afterId);
-		query.setMaxResults(batchSize);
-		return query.getResultList();
+		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+		CriteriaQuery<Long> query = cb.createQuery(Long.class);
+		Root<E> root = query.from(myClass);
+		query.select(root.get("id"))
+			.where(cb.isNull(root.get("curie")), cb.greaterThan(root.get("id"), afterId))
+			.orderBy(cb.asc(root.get("id")));
+		return entityManager.createQuery(query).setMaxResults(batchSize).getResultList();
 	}
 
 	/**
