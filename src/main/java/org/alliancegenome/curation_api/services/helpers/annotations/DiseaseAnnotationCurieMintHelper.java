@@ -9,9 +9,6 @@ import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
 
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.Query;
-import jakarta.transaction.Transactional;
 import lombok.extern.log4j.Log4j2;
 
 /**
@@ -27,6 +24,14 @@ import lombok.extern.log4j.Log4j2;
  * curies are lost — the corresponding annotations will be re-handled on
  * the next run with a fresh batch. Keep the batch small to bound the
  * blast radius.
+ *
+ * Status: the backfill has completed on alpha, beta and production (0 NULL-curie annotations
+ * on each as of 2026-08-26), so {@link #mintMissingCuries(int, int)} and
+ * {@code /system/mintdacuries} have served their purpose and could be dropped. They are kept
+ * deliberately: SCRUM-6358 registered subdomains for 16 classes, and this pair plus
+ * {@link org.alliancegenome.curation_api.services.helpers.alleles.AlleleCurieMintHelper} are
+ * the template the remaining backfills are built from. {@link #mintCurieIfAbsent} is
+ * permanent either way — new annotations need it on every create and load.
  */
 @Log4j2
 @RequestScoped
@@ -34,7 +39,6 @@ public class DiseaseAnnotationCurieMintHelper {
 
 	@Inject DiseaseAnnotationDAO diseaseAnnotationDAO;
 	@Inject MatiService matiService;
-	@Inject EntityManager entityManager;
 
 	/**
 	 * SCRUM-6170 — mints and assigns a single AGRKB curie to {@code annotation}
@@ -89,7 +93,7 @@ public class DiseaseAnnotationCurieMintHelper {
 			throw new IllegalArgumentException("maxToMint must be >= 0 (0 = no cap), got " + maxToMint);
 		}
 
-		long totalMissing = countMissing();
+		long totalMissing = diseaseAnnotationDAO.countMissingCuries();
 		// maxToMint == 0 means mint everything that is missing.
 		long target = maxToMint == 0 ? totalMissing : Math.min(totalMissing, maxToMint);
 
@@ -97,19 +101,23 @@ public class DiseaseAnnotationCurieMintHelper {
 		pdh.startProcess("DiseaseAnnotation AGRKB curie mint", target);
 
 		long minted = 0;
+		// Cursor carried across batches so each fetch is proportional to the batch size rather than
+		// re-scanning from the top of the table — see DiseaseAnnotationDAO.findIdsMissingCuries.
+		long lastId = 0;
 		while (minted < target) {
 			// Never fetch more than the remaining allowance towards the cap.
 			int thisBatch = (int) Math.min(batchSize, target - minted);
-			List<Long> batchIds = findMissingCurieIds(thisBatch);
+			List<Long> batchIds = diseaseAnnotationDAO.findIdsMissingCuries(thisBatch, lastId);
 			if (batchIds.isEmpty()) {
 				break;
 			}
+			lastId = batchIds.get(batchIds.size() - 1);
 
 			List<String> curies = matiService.mintCuries(
 				MatiService.SUBDOMAIN_DISEASE_ANNOTATION,
 				batchIds.size());
 
-			assignCuries(batchIds, curies);
+			diseaseAnnotationDAO.assignCuries(batchIds, curies);
 
 			minted += batchIds.size();
 			for (int i = 0; i < batchIds.size(); i++) {
@@ -120,46 +128,4 @@ public class DiseaseAnnotationCurieMintHelper {
 		pdh.finishProcess();
 	}
 
-	private long countMissing() {
-		Query q = entityManager.createNativeQuery(
-			"SELECT COUNT(*) FROM diseaseannotation WHERE curie IS NULL");
-		return ((Number) q.getSingleResult()).longValue();
-	}
-
-	@SuppressWarnings("unchecked")
-	private List<Long> findMissingCurieIds(int batchSize) {
-		Query q = entityManager.createNativeQuery(
-			"SELECT id FROM diseaseannotation WHERE curie IS NULL ORDER BY id LIMIT :limit");
-		q.setParameter("limit", batchSize);
-		List<Number> rows = q.getResultList();
-		return rows.stream().map(Number::longValue).toList();
-	}
-
-	/**
-	 * Persists the assignment in a single transaction. Each annotation's
-	 * dateUpdated is refreshed via the standard merge path so audit
-	 * triggers behave normally.
-	 */
-	@Transactional
-	public void assignCuries(List<Long> ids, List<String> curies) {
-		if (ids.size() != curies.size()) {
-			throw new IllegalStateException(
-				"id/curie size mismatch: ids=" + ids.size() + " curies=" + curies.size());
-		}
-		for (int i = 0; i < ids.size(); i++) {
-			Long id = ids.get(i);
-			String curie = curies.get(i);
-			DiseaseAnnotation da = diseaseAnnotationDAO.find(id);
-			if (da == null) {
-				log.warn("DA id={} disappeared between SELECT and assign; curie {} unused", id, curie);
-				continue;
-			}
-			if (da.getCurie() != null) {
-				log.warn("DA id={} already has curie={}; skipping mint {}", id, da.getCurie(), curie);
-				continue;
-			}
-			da.setCurie(curie);
-			diseaseAnnotationDAO.merge(da);
-		}
-	}
 }

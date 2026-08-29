@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.AlleleDAO;
+import org.alliancegenome.curation_api.services.helpers.alleles.AlleleCurieMintHelper;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.Construct;
@@ -52,6 +53,7 @@ import jakarta.inject.Inject;
 public class AlleleValidator extends GenomicEntityValidator<Allele> {
 
 	@Inject AlleleDAO alleleDAO;
+	@Inject AlleleCurieMintHelper curieMintHelper;
 	@Inject AlleleMutationTypeSlotAnnotationValidator alleleMutationTypeValidator;
 	@Inject AlleleInheritanceModeSlotAnnotationValidator alleleInheritanceModeValidator;
 	@Inject AlleleGermlineTransmissionStatusSlotAnnotationValidator alleleGermlineTransmissionStatusValidator;
@@ -143,6 +145,18 @@ public class AlleleValidator extends GenomicEntityValidator<Allele> {
 			throw new ApiErrorException(response);
 		}
 
+		// SCRUM-6173: mint an AGRKB curie for a NEW allele that has none, set before persist so the
+		// curie is written by the same insert. A curator-supplied curie is left alone.
+		//
+		// The getId() == null guard is load-bearing: validateAllele is shared by
+		// validateAlleleCreate and validateAlleleUpdate, and the field-copy chain above
+		// (validateGenomicEntityFields -> ... -> SubmittedObjectValidator.validateSubmittedObjectFields)
+		// assigns dbEntity.setCurie(handleStringField(uiEntity.getCurie())) unconditionally. So an
+		// update whose payload omits curie nulls it; without this guard the mint would then issue a
+		// fresh curie and the allele's AGRKB id would silently change on every such update.
+		if (dbEntity.getId() == null) {
+			curieMintHelper.mintCurieIfAbsent(dbEntity);
+		}
 		dbEntity = alleleDAO.persist(dbEntity);
 
 		if (symbol != null) {

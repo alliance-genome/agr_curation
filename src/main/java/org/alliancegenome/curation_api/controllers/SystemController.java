@@ -7,6 +7,8 @@ import org.alliancegenome.curation_api.dao.base.SystemSQLDAO;
 import org.alliancegenome.curation_api.interfaces.SystemControllerInterface;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.ConditionRelationService;
+import org.alliancegenome.curation_api.services.helpers.alleles.AlleleCurieMintHelper;
+import org.alliancegenome.curation_api.services.helpers.annotations.DiseaseAnnotationCurieMintHelper;
 import org.alliancegenome.curation_api.services.DiseaseAnnotationService;
 import org.alliancegenome.curation_api.services.ExperimentalConditionService;
 import org.alliancegenome.curation_api.services.PhenotypeAnnotationService;
@@ -19,6 +21,10 @@ public class SystemController implements SystemControllerInterface {
 
 	@Inject
 	SystemSQLDAO systemSQLDAO;
+	@Inject
+	AlleleCurieMintHelper alleleCurieMintHelper;
+	@Inject
+	DiseaseAnnotationCurieMintHelper diseaseAnnotationCurieMintHelper;
 	@Inject
 	DiseaseAnnotationService diseaseAnnotationService;
 	@Inject
@@ -44,8 +50,13 @@ public class SystemController implements SystemControllerInterface {
 	}
 
 	@Override
-	public void mintExistingDiseaseAnnotationCuries(Integer batchSize, Integer maxToMint) {
-		diseaseAnnotationService.mintMissingCuries(batchSize, maxToMint);
+	public void mintMissingDiseaseAnnotationCuries(Integer batchSize, Integer maxToMint) {
+		diseaseAnnotationCurieMintHelper.mintMissingCuries(batchSize, maxToMint);
+	}
+
+	@Override
+	public void mintMissingAlleleCuries(Integer batchSize, Integer maxToMint) {
+		alleleCurieMintHelper.mintMissingCuries(batchSize, maxToMint);
 	}
 
 	@Override
