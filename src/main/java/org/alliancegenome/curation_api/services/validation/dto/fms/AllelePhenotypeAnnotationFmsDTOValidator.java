@@ -21,7 +21,6 @@ import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.GenomicEntityService;
 import org.alliancegenome.curation_api.services.PhenotypeAnnotationService;
-import org.alliancegenome.curation_api.services.helpers.GenePhenotypeAnnotationXrefHelper;
 import org.alliancegenome.curation_api.services.helpers.annotations.AnnotationUniqueIdHelper;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -35,7 +34,6 @@ public class AllelePhenotypeAnnotationFmsDTOValidator extends PhenotypeAnnotatio
 	@Inject AllelePhenotypeAnnotationDAO allelePhenotypeAnnotationDAO;
 	@Inject GenomicEntityService genomicEntityService;
 	@Inject PhenotypeAnnotationService phenotypeAnnotationService;
-	@Inject GenePhenotypeAnnotationXrefHelper xrefHelper;
 
 	private HashMap<String, Long> genomicEntityIdCache = new HashMap<>();
 
@@ -90,6 +88,7 @@ public class AllelePhenotypeAnnotationFmsDTOValidator extends PhenotypeAnnotatio
 						return entity != null ? entity.getId() : null;
 					});
 					if (existingInferredGeneId != null && objectEntityId != null && existingInferredGeneId.equals(objectEntityId)) {
+						ensureGenePhenotypeCrossReference(dataProvider, objectEntityId);
 						idsAdded.add(existingUniqueIds.get(uniqueId));
 						return new ArrayList<>();
 					}
@@ -144,6 +143,7 @@ public class AllelePhenotypeAnnotationFmsDTOValidator extends PhenotypeAnnotatio
 					}
 				}
 				if (alreadySet) {
+					ensureGenePhenotypeCrossReference(dataProvider, (Gene) inferredOrAssertedEntity);
 					return new ArrayList<>();
 				}
 				Gene inferredOrAssertedGene = xrefHelper.addGenePhenotypeCrossReference(dataProvider, (Gene) inferredOrAssertedEntity);
