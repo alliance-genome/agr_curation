@@ -4,13 +4,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.alliancegenome.curation_api.dao.base.BaseSQLDAO;
+import org.alliancegenome.curation_api.dao.base.BaseCurieSQLDAO;
 import org.alliancegenome.curation_api.model.entities.PhenotypeAnnotation;
 
 import jakarta.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
-public class PhenotypeAnnotationDAO extends BaseSQLDAO<PhenotypeAnnotation> {
+public class PhenotypeAnnotationDAO extends BaseCurieSQLDAO<PhenotypeAnnotation> {
 
 	protected PhenotypeAnnotationDAO() {
 		super(PhenotypeAnnotation.class);

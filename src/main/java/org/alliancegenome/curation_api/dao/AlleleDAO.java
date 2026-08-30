@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 import org.alliancegenome.curation_api.constants.EntityFieldConstants;
 import org.alliancegenome.curation_api.constants.YeastStrainTaxonConstants;
 import org.alliancegenome.curation_api.dao.associations.AgmAlleleAssociationDAO;
-import org.alliancegenome.curation_api.dao.base.BaseSQLDAO;
+import org.alliancegenome.curation_api.dao.base.BaseCurieSQLDAO;
 
 
 import org.alliancegenome.curation_api.model.document.es.AlleleSummaryDocument;
@@ -45,14 +45,12 @@ import org.alliancegenome.curation_api.model.input.Pagination;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.apache.commons.collections.CollectionUtils;
 
-import io.quarkus.logging.Log;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.persistence.Query;
-import jakarta.transaction.Transactional;
 
 @ApplicationScoped
-public class AlleleDAO extends BaseSQLDAO<Allele> {
+public class AlleleDAO extends BaseCurieSQLDAO<Allele> {
 
 	@Inject
 	GeneDiseaseAnnotationDAO geneDiseaseAnnotationDAO;
@@ -149,92 +147,6 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 		});
 
 		return list;
-	}
-
-	/**
-	 * SCRUM-6173 — assigns the given AGRKB curies to the given allele ids, positionally, in a
-	 * single transaction. Used by the backfill; each batch commits on its own so a long run is
-	 * resumable.
-	 *
-	 * Each allele is re-checked before assignment: a row may have disappeared, or acquired a curie
-	 * of its own, between the id fetch and here. dateUpdated is refreshed via the standard merge
-	 * path so audit triggers behave normally.
-	 */
-	@Transactional
-	public void assignCuries(List<Long> ids, List<String> curies) {
-		if (ids.size() != curies.size()) {
-			throw new IllegalStateException(
-				"id/curie size mismatch: ids=" + ids.size() + " curies=" + curies.size());
-		}
-		for (int i = 0; i < ids.size(); i++) {
-			Long id = ids.get(i);
-			String curie = curies.get(i);
-			Allele allele = find(id);
-			if (allele == null) {
-				Log.warn("Allele id=" + id + " disappeared between SELECT and assign; curie " + curie + " unused");
-				continue;
-			}
-			if (allele.getCurie() != null) {
-				Log.warn("Allele id=" + id + " already has curie=" + allele.getCurie() + "; skipping mint " + curie);
-				continue;
-			}
-			allele.setCurie(curie);
-			merge(allele);
-		}
-	}
-
-	/**
-	 * SCRUM-6173 — how many alleles still lack an AGRKB curie.
-	 *
-	 * The predicate is on {@code biologicalentity.curie}, not {@code allele}: Allele uses JOINED
-	 * inheritance (Allele -> GenomicEntity -> BiologicalEntity -> SubmittedObject -> CurieObject)
-	 * and the column is declared on CurieObject, so it lands on the biologicalentity table. The
-	 * allele table has no curie column of its own.
-	 */
-	public long countMissingCuries() {
-		String sql = """
-				SELECT COUNT(*)
-				FROM biologicalentity be, allele as a
-				WHERE be.id = a.id and be.curie is NULL
-			""";
-
-		Query query = entityManager.createNativeQuery(sql);
-		return ((Number) query.getSingleResult()).longValue();
-	}
-
-	/**
-	 * SCRUM-6173 — the next {@code batchSize} allele ids that lack an AGRKB curie, in id order,
-	 * starting after {@code afterId}.
-	 *
-	 * The {@code afterId} cursor matters at allele scale. Re-running a bare
-	 * {@code WHERE curie IS NULL ORDER BY id LIMIT n} for every batch (as the disease-annotation
-	 * backfill does over ~96K rows) restarts the scan at the top of the table each time, so the
-	 * work grows with the number of batches already done — and the final empty batch that ends the
-	 * run has to walk everything. Driving from {@code allele} and carrying the cursor forward keeps
-	 * each batch proportional to the batch size instead.
-	 *
-	 * Pass 0 to start from the beginning. Rows skipped within a run (e.g. an allele that acquired a
-	 * curie between the SELECT and the assign) are not revisited by that run because the cursor has
-	 * moved past them; the next run starts from 0 again and picks them up.
-	 */
-	public List<Long> findIdsMissingCuries(int batchSize, long afterId) {
-		String sql = """
-				SELECT be.id
-				FROM biologicalentity be, allele as a
-				WHERE be.id = a.id and be.curie is NULL and a.id > :afterId
-				ORDER BY a.id
-				LIMIT :limit
-			""";
-
-		Query query = entityManager.createNativeQuery(sql);
-		query.setParameter("afterId", afterId);
-		query.setParameter("limit", batchSize);
-
-		List<Object> objects = query.getResultList();
-		List<Long> ids = new ArrayList<>();
-		objects.forEach(object -> ids.add(((Number) object).longValue()));
-
-		return ids;
 	}
 
 	public SearchResponse<AlleleSummaryDocument> findAllelesForSummary(Pagination pagination, Map<String, Object> params) {

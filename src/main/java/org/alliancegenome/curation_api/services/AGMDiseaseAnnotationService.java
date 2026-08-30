@@ -10,9 +10,9 @@ import org.alliancegenome.curation_api.model.entities.AGMDiseaseAnnotation;
 import org.alliancegenome.curation_api.model.ingest.dto.AGMDiseaseAnnotationDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.base.BaseAnnotationDTOCrudService;
-import org.alliancegenome.curation_api.services.helpers.annotations.DiseaseAnnotationCurieMintHelper;
 import org.alliancegenome.curation_api.services.validation.AGMDiseaseAnnotationValidator;
 import org.alliancegenome.curation_api.services.validation.dto.AGMDiseaseAnnotationDTOValidator;
+import org.alliancegenome.curation_api.enums.MatiSubdomain;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.RequestScoped;
@@ -26,7 +26,7 @@ public class AGMDiseaseAnnotationService extends BaseAnnotationDTOCrudService<AG
 	@Inject AGMDiseaseAnnotationValidator agmDiseaseValidator;
 	@Inject ConditionRelationDAO conditionRelationDAO;
 	@Inject DiseaseAnnotationService diseaseAnnotationService;
-	@Inject DiseaseAnnotationCurieMintHelper curieMintHelper;
+	@Inject CurieMintService curieMintService;
 	@Inject AGMDiseaseAnnotationDTOValidator agmDiseaseAnnotationDtoValidator;
 
 	@Override
@@ -46,7 +46,7 @@ public class AGMDiseaseAnnotationService extends BaseAnnotationDTOCrudService<AG
 	@Transactional
 	public ObjectResponse<AGMDiseaseAnnotation> create(AGMDiseaseAnnotation uiEntity) {
 		AGMDiseaseAnnotation dbEntity = agmDiseaseValidator.validateAnnotationCreate(uiEntity);
-		curieMintHelper.mintCurieIfAbsent(dbEntity);
+		curieMintService.mintCurieIfAbsent(dbEntity, MatiSubdomain.DISEASE_ANNOTATION);
 		return new ObjectResponse<>(agmDiseaseAnnotationDAO.persist(dbEntity));
 	}
 
@@ -55,7 +55,7 @@ public class AGMDiseaseAnnotationService extends BaseAnnotationDTOCrudService<AG
 	public ObjectResponse<AGMDiseaseAnnotation> upsert(AGMDiseaseAnnotationDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
 		ObjectResponse<AGMDiseaseAnnotation> resp = agmDiseaseAnnotationDtoValidator.validateAGMDiseaseAnnotationDTO(dto, dataProvider);
 
-		curieMintHelper.mintCurieIfAbsent(resp.getEntity());
+		curieMintService.mintCurieIfAbsent(resp.getEntity(), MatiSubdomain.DISEASE_ANNOTATION);
 		agmDiseaseAnnotationDAO.persist(resp.getEntity());
 		
 		return resp;
