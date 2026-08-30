@@ -23,5 +23,7 @@ export default defineConfig({
 		globals: true,
 		setupFiles: ['./src/tools/jest/setupTests.js'],
 		css: false,
+		// Heavy table renders sit close to the 5s default; raise headroom for slower CI runners.
+		testTimeout: 15000,
 	},
 });

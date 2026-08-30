@@ -49,7 +49,93 @@ public interface SystemControllerInterface {
 	// through the table in safe chunks.
 	@GET
 	@Path("/mintdacuries")
-	void mintExistingDiseaseAnnotationCuries(
+	void mintMissingDiseaseAnnotationCuries(
+		@DefaultValue("1000") @QueryParam("batchSize") Integer batchSize,
+		@DefaultValue("0") @QueryParam("maxToMint") Integer maxToMint);
+
+	// SCRUM-6173 backfill endpoint. Mints AGRKB curies (MaTI subdomain "allele", code 106)
+	// for every Allele whose curie is currently NULL. Idempotent.
+	//
+	// Every allele is in scope regardless of obsolete/internal, so this targets ~3.7M rows —
+	// roughly 38x the disease-annotation backfill. No supporting index is needed (the batch fetch
+	// is driven from allele by a forward id cursor on the primary key), but work through the table
+	// with a bounded maxToMint rather than in one pass.
+	@GET
+	@Path("/mintallelecuries")
+	void mintMissingAlleleCuries(
+		@DefaultValue("1000") @QueryParam("batchSize") Integer batchSize,
+		@DefaultValue("0") @QueryParam("maxToMint") Integer maxToMint);
+
+	// SCRUM-6359 / SCRUM-6360 backfill endpoints. Each mints AGRKB curies for every row of its
+	// class whose curie is currently NULL, from the MaTI subdomain registered for that class under
+	// SCRUM-6358. All of them share one implementation (CurieMintService + BaseCurieSQLDAO), so the
+	// semantics are identical everywhere: idempotent, resumable, batched, and capped by maxToMint
+	// (0 = no cap). Work large classes through the table in bounded chunks rather than one pass.
+	//
+	// Not covered here: molecular and genetic interactions and the two HTP expression classes,
+	// which have no curie column yet — see SCRUM-6463. Expression experiments and expression
+	// annotations are on hold pending direct submissions.
+
+	// Gene — 2.4M rows, subdomain GENE.
+	@GET
+	@Path("/mintgenecuries")
+	void mintMissingGeneCuries(
+		@DefaultValue("1000") @QueryParam("batchSize") Integer batchSize,
+		@DefaultValue("0") @QueryParam("maxToMint") Integer maxToMint);
+
+	// Variant — 101K rows, subdomain VARIANT.
+	@GET
+	@Path("/mintvariantcuries")
+	void mintMissingVariantCuries(
+		@DefaultValue("1000") @QueryParam("batchSize") Integer batchSize,
+		@DefaultValue("0") @QueryParam("maxToMint") Integer maxToMint);
+
+	// AffectedGenomicModel — 795K rows, subdomain AGM.
+	@GET
+	@Path("/mintagmcuries")
+	void mintMissingAgmCuries(
+		@DefaultValue("1000") @QueryParam("batchSize") Integer batchSize,
+		@DefaultValue("0") @QueryParam("maxToMint") Integer maxToMint);
+
+	// Construct — 237K rows, subdomain CONSTRUCT.
+	@GET
+	@Path("/mintconstructcuries")
+	void mintMissingConstructCuries(
+		@DefaultValue("1000") @QueryParam("batchSize") Integer batchSize,
+		@DefaultValue("0") @QueryParam("maxToMint") Integer maxToMint);
+
+	// Antibody — 27K rows, subdomain ANTIBODY.
+	@GET
+	@Path("/mintantibodycuries")
+	void mintMissingAntibodyCuries(
+		@DefaultValue("1000") @QueryParam("batchSize") Integer batchSize,
+		@DefaultValue("0") @QueryParam("maxToMint") Integer maxToMint);
+
+	// SequenceTargetingReagent — 31K rows, subdomain SEQUENCE_TARGETING_REAGENT.
+	@GET
+	@Path("/mintstrcuries")
+	void mintMissingStrCuries(
+		@DefaultValue("1000") @QueryParam("batchSize") Integer batchSize,
+		@DefaultValue("0") @QueryParam("maxToMint") Integer maxToMint);
+
+	// AssemblyComponent — 4K rows, subdomain ASSEMBLY_COMPONENT.
+	@GET
+	@Path("/mintassemblycomponentcuries")
+	void mintMissingAssemblyComponentCuries(
+		@DefaultValue("1000") @QueryParam("batchSize") Integer batchSize,
+		@DefaultValue("0") @QueryParam("maxToMint") Integer maxToMint);
+
+	// GenomeAssembly — 14 rows, subdomain GENOME_ASSEMBLY.
+	@GET
+	@Path("/mintgenomeassemblycuries")
+	void mintMissingGenomeAssemblyCuries(
+		@DefaultValue("1000") @QueryParam("batchSize") Integer batchSize,
+		@DefaultValue("0") @QueryParam("maxToMint") Integer maxToMint);
+
+	// PhenotypeAnnotation — 1.8M rows, subdomain PHENOTYPE_ANNOTATION.
+	@GET
+	@Path("/mintphenotypeannotationcuries")
+	void mintMissingPhenotypeAnnotationCuries(
 		@DefaultValue("1000") @QueryParam("batchSize") Integer batchSize,
 		@DefaultValue("0") @QueryParam("maxToMint") Integer maxToMint);
 

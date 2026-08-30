@@ -11,6 +11,7 @@ import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.base.BaseAnnotationDTOCrudService;
 import org.alliancegenome.curation_api.services.validation.AlleleDiseaseAnnotationValidator;
 import org.alliancegenome.curation_api.services.validation.dto.AlleleDiseaseAnnotationDTOValidator;
+import org.alliancegenome.curation_api.enums.MatiSubdomain;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.RequestScoped;
@@ -28,6 +29,8 @@ public class AlleleDiseaseAnnotationService extends BaseAnnotationDTOCrudService
 	AlleleDiseaseAnnotationDTOValidator alleleDiseaseAnnotationDtoValidator;
 	@Inject
 	DiseaseAnnotationService diseaseAnnotationService;
+	@Inject
+	CurieMintService curieMintService;
 
 	@Override
 	@PostConstruct
@@ -46,7 +49,7 @@ public class AlleleDiseaseAnnotationService extends BaseAnnotationDTOCrudService
 	@Transactional
 	public ObjectResponse<AlleleDiseaseAnnotation> create(AlleleDiseaseAnnotation uiEntity) {
 		AlleleDiseaseAnnotation dbEntity = alleleDiseaseValidator.validateAnnotationCreate(uiEntity);
-		diseaseAnnotationService.mintCurieIfAbsent(dbEntity);
+		curieMintService.mintCurieIfAbsent(dbEntity, MatiSubdomain.DISEASE_ANNOTATION);
 		return new ObjectResponse<>(alleleDiseaseAnnotationDAO.persist(dbEntity));
 	}
 
@@ -54,7 +57,7 @@ public class AlleleDiseaseAnnotationService extends BaseAnnotationDTOCrudService
 	@Transactional
 	public ObjectResponse<AlleleDiseaseAnnotation> upsert(AlleleDiseaseAnnotationDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
 		ObjectResponse<AlleleDiseaseAnnotation> resp = alleleDiseaseAnnotationDtoValidator.validateAlleleDiseaseAnnotationDTO(dto, dataProvider);
-		diseaseAnnotationService.mintCurieIfAbsent(resp.getEntity());
+		curieMintService.mintCurieIfAbsent(resp.getEntity(), MatiSubdomain.DISEASE_ANNOTATION);
 		alleleDiseaseAnnotationDAO.persist(resp.getEntity());
 		return resp;
 	}
