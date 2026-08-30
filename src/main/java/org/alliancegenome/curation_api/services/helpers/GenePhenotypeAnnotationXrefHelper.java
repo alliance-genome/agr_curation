@@ -37,6 +37,10 @@ public class GenePhenotypeAnnotationXrefHelper {
 		String pageName = Objects.equals("MGI", prefix) ? "gene_phenotypes_impc" : "gene/phenotypes";
 		
 		ResourceDescriptorPage rdp = rdpService.getPageForResourceDescriptor(prefix, pageName);
+		if (rdp == null) {
+			// No such page for this resource descriptor, so there is no URL to link to
+			return gene;
+		}
 		xref.setDisplayName(prefix);
 		xref.setReferencedCurie(gene.getIdentifier());
 		xref.setResourceDescriptorPage(rdp);
