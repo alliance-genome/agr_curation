@@ -1,0 +1,19 @@
+src/main/java/org/alliancegenome/curation_api/dao/base/BaseSQLDAO.java
+  s_6b8af79fa05736::t_682437e7ed9e22 511
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "c19d366212f1a5649294c0f19a4cf7fa4193b2ec",
+  "prompts": {},
+  "sessions": {
+    "s_6b8af79fa05736": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "97d2ee96-b897-43a8-b8bc-9c8cfab7c07a",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Ketaki Kindre <kkindre@caltech.edu>"
+    }
+  }
+}
