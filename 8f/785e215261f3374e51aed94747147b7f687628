@@ -1,0 +1,23 @@
+src/main/cliapp/src/components/Filters/FilterComponentMultiSelect.jsx
+  s_6b8af79fa05736::t_7f7fe71de8091a 72-78,80-84
+src/main/cliapp/src/constants/FilterFields.js
+  s_6b8af79fa05736::t_5063e8151dfb10 206-211,227-228,230,234,238,1095
+src/main/cliapp/src/service/useMultiSelectAggregationQuery.js
+  s_6b8af79fa05736::t_cb20e5c9802ba8 21-24,28,31,40-41
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "8f785e215261f3374e51aed94747147b7f687628",
+  "prompts": {},
+  "sessions": {
+    "s_6b8af79fa05736": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "97d2ee96-b897-43a8-b8bc-9c8cfab7c07a",
+        "model": "unknown"
+      },
+      "human_author": "Ketaki Kindre <kkindre@caltech.edu>"
+    }
+  }
+}
