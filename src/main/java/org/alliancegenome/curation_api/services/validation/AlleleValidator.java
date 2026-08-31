@@ -11,7 +11,6 @@ import java.util.stream.Collectors;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.AlleleDAO;
-import org.alliancegenome.curation_api.services.helpers.alleles.AlleleCurieMintHelper;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.Construct;
@@ -44,6 +43,8 @@ import org.alliancegenome.curation_api.services.validation.dto.slotAnnotations.A
 import org.alliancegenome.curation_api.services.validation.dto.slotAnnotations.AlleleSecondaryIdSlotAnnotationValidator;
 import org.alliancegenome.curation_api.services.validation.dto.slotAnnotations.AlleleSymbolSlotAnnotationValidator;
 import org.alliancegenome.curation_api.services.validation.dto.slotAnnotations.AlleleSynonymSlotAnnotationValidator;
+import org.alliancegenome.curation_api.enums.MatiSubdomain;
+import org.alliancegenome.curation_api.services.CurieMintService;
 import org.apache.commons.collections.CollectionUtils;
 
 import jakarta.enterprise.context.RequestScoped;
@@ -53,7 +54,7 @@ import jakarta.inject.Inject;
 public class AlleleValidator extends GenomicEntityValidator<Allele> {
 
 	@Inject AlleleDAO alleleDAO;
-	@Inject AlleleCurieMintHelper curieMintHelper;
+	@Inject CurieMintService curieMintService;
 	@Inject AlleleMutationTypeSlotAnnotationValidator alleleMutationTypeValidator;
 	@Inject AlleleInheritanceModeSlotAnnotationValidator alleleInheritanceModeValidator;
 	@Inject AlleleGermlineTransmissionStatusSlotAnnotationValidator alleleGermlineTransmissionStatusValidator;
@@ -155,7 +156,7 @@ public class AlleleValidator extends GenomicEntityValidator<Allele> {
 		// update whose payload omits curie nulls it; without this guard the mint would then issue a
 		// fresh curie and the allele's AGRKB id would silently change on every such update.
 		if (dbEntity.getId() == null) {
-			curieMintHelper.mintCurieIfAbsent(dbEntity);
+			curieMintService.mintCurieIfAbsent(dbEntity, MatiSubdomain.ALLELE);
 		}
 		dbEntity = alleleDAO.persist(dbEntity);
 

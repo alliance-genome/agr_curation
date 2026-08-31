@@ -9,9 +9,9 @@ import org.alliancegenome.curation_api.model.entities.AlleleDiseaseAnnotation;
 import org.alliancegenome.curation_api.model.ingest.dto.AlleleDiseaseAnnotationDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.base.BaseAnnotationDTOCrudService;
-import org.alliancegenome.curation_api.services.helpers.annotations.DiseaseAnnotationCurieMintHelper;
 import org.alliancegenome.curation_api.services.validation.AlleleDiseaseAnnotationValidator;
 import org.alliancegenome.curation_api.services.validation.dto.AlleleDiseaseAnnotationDTOValidator;
+import org.alliancegenome.curation_api.enums.MatiSubdomain;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.RequestScoped;
@@ -30,7 +30,7 @@ public class AlleleDiseaseAnnotationService extends BaseAnnotationDTOCrudService
 	@Inject
 	DiseaseAnnotationService diseaseAnnotationService;
 	@Inject
-	DiseaseAnnotationCurieMintHelper curieMintHelper;
+	CurieMintService curieMintService;
 
 	@Override
 	@PostConstruct
@@ -49,7 +49,7 @@ public class AlleleDiseaseAnnotationService extends BaseAnnotationDTOCrudService
 	@Transactional
 	public ObjectResponse<AlleleDiseaseAnnotation> create(AlleleDiseaseAnnotation uiEntity) {
 		AlleleDiseaseAnnotation dbEntity = alleleDiseaseValidator.validateAnnotationCreate(uiEntity);
-		curieMintHelper.mintCurieIfAbsent(dbEntity);
+		curieMintService.mintCurieIfAbsent(dbEntity, MatiSubdomain.DISEASE_ANNOTATION);
 		return new ObjectResponse<>(alleleDiseaseAnnotationDAO.persist(dbEntity));
 	}
 
@@ -57,7 +57,7 @@ public class AlleleDiseaseAnnotationService extends BaseAnnotationDTOCrudService
 	@Transactional
 	public ObjectResponse<AlleleDiseaseAnnotation> upsert(AlleleDiseaseAnnotationDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
 		ObjectResponse<AlleleDiseaseAnnotation> resp = alleleDiseaseAnnotationDtoValidator.validateAlleleDiseaseAnnotationDTO(dto, dataProvider);
-		curieMintHelper.mintCurieIfAbsent(resp.getEntity());
+		curieMintService.mintCurieIfAbsent(resp.getEntity(), MatiSubdomain.DISEASE_ANNOTATION);
 		alleleDiseaseAnnotationDAO.persist(resp.getEntity());
 		return resp;
 	}
