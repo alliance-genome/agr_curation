@@ -69,26 +69,19 @@ export function FilterComponentMultiSelect({ isInEditMode, filterConfig, current
 				setSelectedOptions(e.target.value);
 				let filter = {};
 				if (e.target.value && e.target.value.length !== 0) {
-					if (filterConfig.matchQuery) {
-						// Exact match per selected value, OR'd together, so e.g. "IgG" can't match "IgG1".
-						filter[fieldSet.fields[0]] = {
-							useKeywordFields: filterConfig.useKeywordFields,
-							queryType: 'matchQuery',
-							queryStrings: e.target.value.map((o) => o.optionLabel),
-						};
-					} else {
-						let queryString = '';
-						let delim = '';
-						for (let i in e.target.value) {
-							queryString += delim + e.target.value[i].optionLabel;
-							delim = ' ';
-						}
-						filter[fieldSet.fields[0]] = {
-							useKeywordFields: filterConfig.useKeywordFields,
-							tokenOperator: 'OR',
-							queryString: queryString,
-						};
+					// Quote each value so multi-word values (e.g. "hemizygous X-linked") match as a whole
+					// phrase instead of being split word-by-word.
+					let queryString = '';
+					let delim = '';
+					for (let i in e.target.value) {
+						queryString += delim + '"' + e.target.value[i].optionLabel + '"';
+						delim = ' ';
 					}
+					filter[fieldSet.fields[0]] = {
+						useKeywordFields: filterConfig.useKeywordFields,
+						tokenOperator: 'OR',
+						queryString: queryString,
+					};
 				} else {
 					filter = null;
 				}
