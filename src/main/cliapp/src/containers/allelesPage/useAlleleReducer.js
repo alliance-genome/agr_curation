@@ -194,7 +194,15 @@ const alleleReducer = (draft, action) => {
 			draft.allele = allele;
 			break;
 		case 'RESET':
-			draft.allele = initialAlleleState.allele;
+			// Cloned rather than assigned: immer freezes the state it produces, so handing it the
+			// module level object would freeze the initial state every reducer starts from.
+			draft.allele = structuredClone(initialAlleleState.allele);
+			Object.values(draft.entityStates).forEach((state) => {
+				const initialEntityState = initialAlleleState.entityStates[state.field];
+				state.show = initialEntityState.show;
+				state.editingRows = {};
+				state.errorMessages = {};
+			});
 			draft.errorMessages = {};
 			draft.submitted = false;
 			break;

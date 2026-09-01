@@ -89,6 +89,53 @@ export const addDataKey = (entity) => {
 	entity.dataKey = crypto.randomUUID();
 };
 
+/**
+ * Strips the placeholder objects the initial allele state carries so they are not sent as
+ * partially populated terms. The API reads `{ name: '' }` as a vocabulary term whose name it
+ * cannot find and rejects it, and `{ curie: '' }` as a taxon it silently resolves to null.
+ *
+ * @param {Object} allele
+ * @returns {Object} a copy with blank `taxon` and `inCollection` removed
+ */
+export const buildCreatePayload = (allele) => {
+	const payload = structuredClone(allele);
+
+	if (!payload.taxon?.curie) {
+		delete payload.taxon;
+	}
+	if (!payload.inCollection?.name) {
+		delete payload.inCollection;
+	}
+
+	return payload;
+};
+
+/**
+ * Checks the fields the API requires to create an allele, dispatching any messages so they
+ * render beside their field.
+ *
+ * @param {Object} allele
+ * @param {Function} dispatch - allele reducer dispatch
+ * @returns {boolean} whether any field is missing
+ */
+export const validateRequiredCreateFields = (allele, dispatch) => {
+	const errorMessages = {};
+
+	if (!allele.primaryExternalId?.trim()) {
+		errorMessages.primaryExternalId = 'Required';
+	}
+	if (!allele.taxon?.curie) {
+		errorMessages.taxon = 'Required';
+	}
+
+	dispatch({
+		type: 'UPDATE_ERROR_MESSAGES',
+		errorMessages,
+	});
+
+	return Object.keys(errorMessages).length > 0;
+};
+
 export const processErrors = (data, dispatch, allele) => {
 	const errorMap = data?.supplementalData?.errorMap;
 	const errorMessages = data?.errorMessages;
