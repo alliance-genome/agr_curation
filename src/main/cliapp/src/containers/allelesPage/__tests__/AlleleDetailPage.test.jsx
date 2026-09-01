@@ -59,7 +59,7 @@ describe('<AlleleDetailPage />', () => {
 		await renderPage();
 
 		await waitFor(() => {
-			expect(screen.getByRole('heading', { name: 'Symbol' })).toBeInTheDocument();
+			expect(screen.getByRole('heading', { name: 'Name' })).toBeInTheDocument();
 		});
 		expect(screen.queryByRole('heading', { name: 'Synonyms' })).not.toBeInTheDocument();
 		expect(screen.queryByRole('heading', { name: 'Curie' })).not.toBeInTheDocument();
@@ -69,15 +69,15 @@ describe('<AlleleDetailPage />', () => {
 
 	it('Shows a field the saved selection has never seen', async () => {
 		setLocalStorage(FORM_SETTINGS_KEY, {
-			selectedFormFields: ['Symbol'],
-			orderedFormFields: ['Symbol', 'Synonyms'],
+			selectedFormFields: ['Name'],
+			orderedFormFields: ['Name', 'Synonyms'],
 			formSettingsKeyName: FORM_SETTINGS_KEY,
 		});
 
 		await renderPage();
 
 		await waitFor(() => {
-			expect(screen.getByRole('heading', { name: 'Symbol' })).toBeInTheDocument();
+			expect(screen.getByRole('heading', { name: 'Name' })).toBeInTheDocument();
 		});
 		// Absent from the saved selection, but also absent from the fields it knew about.
 		expect(screen.getByRole('heading', { name: 'Date Created' })).toBeInTheDocument();

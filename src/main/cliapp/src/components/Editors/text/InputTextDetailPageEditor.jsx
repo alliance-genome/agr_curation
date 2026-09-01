@@ -15,6 +15,7 @@ import { DetailPageFieldWrapper } from '../../DetailPageFieldWrapper';
  * @param {string} props.labelColumnSize
  * @param {string} props.fieldDetailsColumnSize
  * @param {Object} [props.errorMessages]
+ * @param {boolean} [props.required]
  */
 export const InputTextDetailPageEditor = ({
 	value,
@@ -25,6 +26,7 @@ export const InputTextDetailPageEditor = ({
 	labelColumnSize,
 	fieldDetailsColumnSize,
 	errorMessages,
+	required = false,
 }) => {
 	return (
 		<DetailPageFieldWrapper
@@ -32,6 +34,7 @@ export const InputTextDetailPageEditor = ({
 			fieldDetailsColumnSize={fieldDetailsColumnSize}
 			widgetColumnSize={widgetColumnSize}
 			fieldName={label}
+			required={required}
 			formField={
 				<InputText
 					aria-label={name}

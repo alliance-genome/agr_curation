@@ -2,7 +2,7 @@ import { FormTableWrapper } from '../../../components/FormTableWrapper';
 import { useRef } from 'react';
 import { SymbolFormTable } from './SymbolFormTable';
 
-export const SymbolForm = ({ labelColumnSize, state, dispatch }) => {
+export const SymbolForm = ({ labelColumnSize, state, dispatch, required = false }) => {
 	const tableRef = useRef(null);
 
 	const symbols = [state.allele?.alleleSymbol];
@@ -82,6 +82,7 @@ export const SymbolForm = ({ labelColumnSize, state, dispatch }) => {
 				/>
 			}
 			tableName="Symbol"
+			required={required}
 			showTable={state.entityStates.alleleSymbol.show}
 		/>
 	);

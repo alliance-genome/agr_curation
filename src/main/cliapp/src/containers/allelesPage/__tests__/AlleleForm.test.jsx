@@ -116,9 +116,10 @@ describe('<AlleleForm />', () => {
 
 	it('Lists every toggleable field it can render', () => {
 		// Guards against a section being added to the form without being made hideable.
+		for (const field of ['Curie', 'Primary External ID', 'MOD Internal ID', 'Symbol', 'Taxon']) {
+			expect(ALLELE_TOGGLEABLE_FIELDS).toContain(field);
+		}
 		expect(ALLELE_TOGGLEABLE_FIELDS).toContain('Allele Gene Associations');
-		expect(ALLELE_TOGGLEABLE_FIELDS).not.toContain('Curie');
-		expect(ALLELE_TOGGLEABLE_FIELDS).not.toContain('Taxon');
 	});
 });
 

@@ -147,6 +147,7 @@ export const AlleleForm = ({ state, dispatch, isVisible, mode = 'detail' }) => {
 					<InputTextDetailPageEditor
 						value={state.allele?.primaryExternalId}
 						name="primaryExternalId"
+						required
 						label="Primary External ID"
 						onValueChange={onPrimaryExternalIdValueChange}
 						widgetColumnSize={widgetColumnSize}
@@ -180,7 +181,7 @@ export const AlleleForm = ({ state, dispatch, isVisible, mode = 'detail' }) => {
 			</FormSection>
 
 			<FormSection isVisible={isVisible('Symbol')}>
-				<SymbolForm state={state} dispatch={dispatch} labelColumnSize={labelColumnSize} />
+				<SymbolForm state={state} dispatch={dispatch} labelColumnSize={labelColumnSize} required={isCreate} />
 			</FormSection>
 
 			<FormSection isVisible={isVisible('Synonyms')}>
@@ -198,6 +199,7 @@ export const AlleleForm = ({ state, dispatch, isVisible, mode = 'detail' }) => {
 			<FormSection isVisible={isVisible('Taxon')}>
 				<TaxonDetailPageEditor
 					taxon={state.allele?.taxon}
+					required={isCreate}
 					onTaxonValueChange={onTaxonValueChange}
 					widgetColumnSize={widgetColumnSize}
 					labelColumnSize={labelColumnSize}
