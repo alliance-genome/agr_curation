@@ -33,14 +33,17 @@ import { AlleleGeneAssociationsForm } from './alleleGeneAssociations/AlleleGeneA
 import { validateRequiredAutosuggestField, processErrors } from './utils';
 import { FormFieldVisibilityMenu, FormSection, useFormFieldVisibility } from '../../components/FormFieldVisibility';
 
-// Curie, Primary External ID, MOD Internal ID and Taxon are deliberately absent: they identify
-// the allele and Taxon is required on save, so they always render.
+// Every section on the page, in display order.
 const ALLELE_TOGGLEABLE_FIELDS = [
+	'Curie',
+	'Primary External ID',
+	'MOD Internal ID',
 	'Name',
 	'Symbol',
 	'Synonyms',
 	'Secondary IDs',
 	'Nomenclature Events',
+	'Taxon',
 	'Mutation Types',
 	'Functional Impacts',
 	'Germline Transmission Status',
