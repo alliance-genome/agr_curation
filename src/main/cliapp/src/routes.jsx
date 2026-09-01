@@ -17,7 +17,7 @@ import { GeneMolecularInteractionsPage } from './containers/geneMolecularInterac
 import { ExperimentalConditionsPage } from './containers/experimentalConditionsPage';
 import { ConditionRelationPage } from './containers/conditionRelationPage';
 import { AffectedGenomicModelPage } from './containers/affectedGenomicModelPage';
-import { AllelesPage, AlleleDetailPage } from './containers/allelesPage';
+import { AllelesPage, AlleleDetailPage, AlleleCreatePage } from './containers/allelesPage';
 import { GenesPage } from './containers/genesPage';
 import { VariantsPage } from './containers/variantsPage';
 import { ConstructsPage, ConstructDetailPage } from './containers/constructsPage';
@@ -152,6 +152,14 @@ export default function AppRoutes() {
 						element={
 							<ErrorBoundary>
 								<AllelesPage />
+							</ErrorBoundary>
+						}
+					/>
+					<Route
+						path="/allele/create"
+						element={
+							<ErrorBoundary>
+								<AlleleCreatePage />
 							</ErrorBoundary>
 						}
 					/>
