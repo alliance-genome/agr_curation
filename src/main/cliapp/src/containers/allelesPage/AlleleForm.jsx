@@ -2,6 +2,7 @@ import { TaxonDetailPageEditor } from '../../components/Editors/autocomplete/tax
 import { InCollectionDetailPageEditor } from '../../components/Editors/autocomplete/inCollection/InCollectionDetailPageEditor';
 import { BooleanDetailPageEditor } from '../../components/Editors/dropdown/boolean/BooleanDetailPageEditor';
 import { IdentifierDetailPageTemplate } from '../../components/Templates/IdentifierDetailPageTemplate';
+import { InputTextDetailPageEditor } from '../../components/Editors/text/InputTextDetailPageEditor';
 import { DataProviderDetailPageTemplate } from '../../components/Templates/DataProviderDetailPageTemplate';
 import { DateDetailPageTemplate } from '../../components/Templates/DateDetailPageTemplate';
 import { UserDetailPageTemplate } from '../../components/Templates/UserDetailPageTemplate';
@@ -19,6 +20,7 @@ import { ReferencesForm } from './referencesTable/ReferencesForm';
 import { NomenclatureEventsForm } from './nomenclatureEvents/NomenclatureEventsForm';
 import { AlleleGeneAssociationsForm } from './alleleGeneAssociations/AlleleGeneAssociationsForm';
 import { FormSection } from '../../components/FormFieldVisibility';
+import { getEffectiveModAbbreviation } from '../../utils/affiliation';
 
 // Every section on the page, in display order.
 export const ALLELE_TOGGLEABLE_FIELDS = [
@@ -60,8 +62,20 @@ const fieldDetailsColumnSize = 'col-5';
  * @param {Object} props.state - allele reducer state
  * @param {Function} props.dispatch - allele reducer dispatch
  * @param {(field: string) => boolean} props.isVisible - whether a named section renders
+ * @param {'detail'|'create'} [props.mode] - 'create' drops the fields the server assigns and
+ *   makes the two identifiers editable
  */
-export const AlleleForm = ({ state, dispatch, isVisible }) => {
+export const AlleleForm = ({ state, dispatch, isVisible, mode = 'detail' }) => {
+	const isCreate = mode === 'create';
+
+	const onPrimaryExternalIdValueChange = (event) => {
+		dispatch({
+			type: 'EDIT',
+			field: 'primaryExternalId',
+			value: event.value,
+		});
+	};
+
 	const onTaxonValueChange = (event) => {
 		let value = {};
 		if (typeof event.value === 'object') {
@@ -118,7 +132,7 @@ export const AlleleForm = ({ state, dispatch, isVisible }) => {
 
 	return (
 		<form className="mt-8">
-			<FormSection isVisible={isVisible('Curie')}>
+			<FormSection isVisible={!isCreate && isVisible('Curie')}>
 				<IdentifierDetailPageTemplate
 					identifier={state.allele?.curie}
 					label="Curie"
@@ -129,16 +143,29 @@ export const AlleleForm = ({ state, dispatch, isVisible }) => {
 			</FormSection>
 
 			<FormSection isVisible={isVisible('Primary External ID')}>
-				<IdentifierDetailPageTemplate
-					identifier={state.allele?.primaryExternalId}
-					label="Primary External ID"
-					widgetColumnSize={widgetColumnSize}
-					labelColumnSize={labelColumnSize}
-					fieldDetailsColumnSize={fieldDetailsColumnSize}
-				/>
+				{isCreate ? (
+					<InputTextDetailPageEditor
+						value={state.allele?.primaryExternalId}
+						name="primaryExternalId"
+						label="Primary External ID"
+						onValueChange={onPrimaryExternalIdValueChange}
+						widgetColumnSize={widgetColumnSize}
+						labelColumnSize={labelColumnSize}
+						fieldDetailsColumnSize={fieldDetailsColumnSize}
+						errorMessages={state.errorMessages}
+					/>
+				) : (
+					<IdentifierDetailPageTemplate
+						identifier={state.allele?.primaryExternalId}
+						label="Primary External ID"
+						widgetColumnSize={widgetColumnSize}
+						labelColumnSize={labelColumnSize}
+						fieldDetailsColumnSize={fieldDetailsColumnSize}
+					/>
+				)}
 			</FormSection>
 
-			<FormSection isVisible={isVisible('MOD Internal ID')}>
+			<FormSection isVisible={!isCreate && isVisible('MOD Internal ID')}>
 				<IdentifierDetailPageTemplate
 					identifier={state.allele?.modInternalId}
 					label="MOD Internal ID"
@@ -238,14 +265,14 @@ export const AlleleForm = ({ state, dispatch, isVisible }) => {
 
 			<FormSection isVisible={isVisible('Data Provider')}>
 				<DataProviderDetailPageTemplate
-					dataProvider={state.allele?.dataProvider?.abbreviation}
+					dataProvider={isCreate ? getEffectiveModAbbreviation() : state.allele?.dataProvider?.abbreviation}
 					widgetColumnSize={widgetColumnSize}
 					labelColumnSize={labelColumnSize}
 					fieldDetailsColumnSize={fieldDetailsColumnSize}
 				/>
 			</FormSection>
 
-			<FormSection isVisible={isVisible('Updated By')}>
+			<FormSection isVisible={!isCreate && isVisible('Updated By')}>
 				<UserDetailPageTemplate
 					user={state.allele?.updatedBy?.uniqueId}
 					fieldName="Updated By"
@@ -255,7 +282,7 @@ export const AlleleForm = ({ state, dispatch, isVisible }) => {
 				/>
 			</FormSection>
 
-			<FormSection isVisible={isVisible('Date Updated')}>
+			<FormSection isVisible={!isCreate && isVisible('Date Updated')}>
 				<DateDetailPageTemplate
 					date={state.allele?.dateUpdated}
 					fieldName="Date Updated"
@@ -265,7 +292,7 @@ export const AlleleForm = ({ state, dispatch, isVisible }) => {
 				/>
 			</FormSection>
 
-			<FormSection isVisible={isVisible('Created By')}>
+			<FormSection isVisible={!isCreate && isVisible('Created By')}>
 				<UserDetailPageTemplate
 					user={state.allele?.createdBy?.uniqueId}
 					fieldName="Created By"
@@ -275,7 +302,7 @@ export const AlleleForm = ({ state, dispatch, isVisible }) => {
 				/>
 			</FormSection>
 
-			<FormSection isVisible={isVisible('Date Created')}>
+			<FormSection isVisible={!isCreate && isVisible('Date Created')}>
 				<DateDetailPageTemplate
 					date={state.allele?.dateCreated}
 					fieldName="Date Created"
