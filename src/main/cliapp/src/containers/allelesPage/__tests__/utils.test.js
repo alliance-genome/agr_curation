@@ -27,7 +27,11 @@ describe('buildCreatePayload', () => {
 	it('Tolerates the fields being absent altogether', () => {
 		const payload = buildCreatePayload({ primaryExternalId: 'WB:WBVar1' });
 
-		expect(payload).toEqual({ primaryExternalId: 'WB:WBVar1' });
+		expect(payload).toEqual({ primaryExternalId: 'WB:WBVar1', type: 'Allele' });
+	});
+
+	it('Sets the type discriminator the API deserializes on', () => {
+		expect(buildCreatePayload({}).type).toEqual('Allele');
 	});
 
 	it('Does not mutate the allele it is given', () => {

@@ -90,15 +90,20 @@ export const addDataKey = (entity) => {
 };
 
 /**
- * Strips the placeholder objects the initial allele state carries so they are not sent as
- * partially populated terms. The API reads `{ name: '' }` as a vocabulary term whose name it
- * cannot find and rejects it, and `{ curie: '' }` as a taxon it silently resolves to null.
+ * Shapes a new allele for the create endpoint.
+ *
+ * Adds the `type` discriminator BiologicalEntity declares through `@JsonTypeInfo`, which an
+ * allele loaded from the API already carries but a new one does not, and strips the placeholder
+ * objects the initial state holds: the API reads `{ name: '' }` as a vocabulary term whose name
+ * it cannot find and rejects it, and `{ curie: '' }` as a taxon it silently resolves to null.
  *
  * @param {Object} allele
- * @returns {Object} a copy with blank `taxon` and `inCollection` removed
+ * @returns {Object} a copy carrying `type` and without a blank `taxon` or `inCollection`
  */
 export const buildCreatePayload = (allele) => {
 	const payload = structuredClone(allele);
+
+	payload.type = 'Allele';
 
 	if (!payload.taxon?.curie) {
 		delete payload.taxon;
