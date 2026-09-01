@@ -45,12 +45,14 @@ describe('<AlleleDetailPage />', () => {
 			expect(screen.getByRole('heading', { name: 'Synonyms' })).toBeInTheDocument();
 		});
 		expect(screen.getByRole('heading', { name: 'Date Created' })).toBeInTheDocument();
+		expect(screen.getByRole('heading', { name: 'Curie' })).toBeInTheDocument();
+		expect(screen.getByRole('heading', { name: 'Taxon' })).toBeInTheDocument();
 	});
 
-	it('Hides a field the saved selection omits, and keeps identity fields visible', async () => {
+	it('Hides any field the saved selection omits, identifiers and Taxon included', async () => {
 		setLocalStorage(FORM_SETTINGS_KEY, {
-			selectedFormFields: ['Symbol', 'Taxon'],
-			orderedFormFields: ['Symbol', 'Synonyms', 'Taxon'],
+			selectedFormFields: ['Symbol'],
+			orderedFormFields: ['Curie', 'Primary External ID', 'Symbol', 'Synonyms', 'Taxon'],
 			formSettingsKeyName: FORM_SETTINGS_KEY,
 		});
 
@@ -60,9 +62,9 @@ describe('<AlleleDetailPage />', () => {
 			expect(screen.getByRole('heading', { name: 'Symbol' })).toBeInTheDocument();
 		});
 		expect(screen.queryByRole('heading', { name: 'Synonyms' })).not.toBeInTheDocument();
-		// Taxon and the identifiers are not toggleable, so they render regardless.
-		expect(screen.getByRole('heading', { name: 'Taxon' })).toBeInTheDocument();
-		expect(screen.getByRole('heading', { name: 'Curie' })).toBeInTheDocument();
+		expect(screen.queryByRole('heading', { name: 'Curie' })).not.toBeInTheDocument();
+		expect(screen.queryByRole('heading', { name: 'Primary External ID' })).not.toBeInTheDocument();
+		expect(screen.queryByRole('heading', { name: 'Taxon' })).not.toBeInTheDocument();
 	});
 
 	it('Shows a field the saved selection has never seen', async () => {
