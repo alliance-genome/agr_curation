@@ -12,14 +12,14 @@ import { StickyHeader } from '../../components/StickyHeader';
 import { LoadingOverlay } from '../../components/LoadingOverlay';
 import { validateRequiredAutosuggestField, processErrors } from './utils';
 import { FormFieldVisibilityMenu, useFormFieldVisibility } from '../../components/FormFieldVisibility';
-import { AlleleForm, ALLELE_TOGGLEABLE_FIELDS } from './AlleleForm';
+import { AlleleForm, ALLELE_DETAIL_TOGGLEABLE_FIELDS } from './AlleleForm';
 
 export default function AlleleDetailPage() {
 	const { identifier } = useParams();
 	const { alleleState, alleleDispatch } = useAlleleReducer();
 	const { visibleFields, setVisibleFields, showAllFields, isVisible } = useFormFieldVisibility(
-		'Allele',
-		ALLELE_TOGGLEABLE_FIELDS
+		'AlleleDetail',
+		ALLELE_DETAIL_TOGGLEABLE_FIELDS
 	);
 	const alleleService = new AlleleService();
 	const toastSuccess = useRef(null);
@@ -120,7 +120,7 @@ export default function AlleleDetailPage() {
 						</SplitterPanel>
 						<SplitterPanel size={35} className="flex align-items-center justify-content-end gap-2 py-3">
 							<FormFieldVisibilityMenu
-								toggleableFields={ALLELE_TOGGLEABLE_FIELDS}
+								toggleableFields={ALLELE_DETAIL_TOGGLEABLE_FIELDS}
 								visibleFields={visibleFields}
 								setVisibleFields={setVisibleFields}
 								showAllFields={showAllFields}

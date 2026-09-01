@@ -11,7 +11,7 @@ import {
 } from '../../../tools/jest/commonMswhandlers';
 import { alleleDetailData } from '../mockData/mockData.js';
 
-const FORM_SETTINGS_KEY = 'AlleleFormSettings';
+const FORM_SETTINGS_KEY = 'AlleleDetailFormSettings';
 
 const renderPage = () =>
 	renderWithClient(

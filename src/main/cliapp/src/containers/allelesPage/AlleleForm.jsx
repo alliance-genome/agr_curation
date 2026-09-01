@@ -22,8 +22,18 @@ import { AlleleGeneAssociationsForm } from './alleleGeneAssociations/AlleleGeneA
 import { FormSection } from '../../components/FormFieldVisibility';
 import { getEffectiveModAbbreviation } from '../../utils/affiliation';
 
+// The sections create mode does not render, so its menu does not offer them.
+const FIELDS_OMITTED_ON_CREATE = [
+	'Curie',
+	'MOD Internal ID',
+	'Updated By',
+	'Date Updated',
+	'Created By',
+	'Date Created',
+];
+
 // Every section on the page, in display order.
-export const ALLELE_TOGGLEABLE_FIELDS = [
+export const ALLELE_DETAIL_TOGGLEABLE_FIELDS = [
 	'Curie',
 	'Primary External ID',
 	'MOD Internal ID',
@@ -51,6 +61,15 @@ export const ALLELE_TOGGLEABLE_FIELDS = [
 	'Internal',
 	'Obsolete',
 ];
+
+// The fields the API will not accept as empty on create. These carry the required marker in
+// create mode, and the create form does not let a curator hide them.
+const FIELDS_REQUIRED_ON_CREATE = ['Primary External ID', 'Symbol', 'Taxon'];
+
+export const ALLELE_CREATE_TOGGLEABLE_FIELDS = ALLELE_DETAIL_TOGGLEABLE_FIELDS.filter(
+	(field) => !FIELDS_OMITTED_ON_CREATE.includes(field) && !FIELDS_REQUIRED_ON_CREATE.includes(field)
+);
+
 const labelColumnSize = 'col-3';
 const widgetColumnSize = 'col-4';
 const fieldDetailsColumnSize = 'col-5';

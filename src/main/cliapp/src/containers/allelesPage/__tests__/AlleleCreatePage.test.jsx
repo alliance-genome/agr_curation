@@ -36,7 +36,7 @@ describe('<AlleleCreatePage />', () => {
 		createAllele.mockReset();
 		createAllele.mockResolvedValue({ data: { entity: { curie: 'AGRKB:101000000000001' } } });
 		navigate.mockReset();
-		window.localStorage.removeItem('AlleleFormSettings');
+		window.localStorage.removeItem('AlleleCreateFormSettings');
 	});
 
 	it('Renders the create form rather than the detail fields', async () => {

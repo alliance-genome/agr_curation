@@ -1,7 +1,7 @@
 import React from 'react';
 import { screen } from '@testing-library/react';
 import { renderWithClient } from '../../../tools/jest/utils';
-import { AlleleForm, ALLELE_TOGGLEABLE_FIELDS } from '../AlleleForm';
+import { AlleleForm, ALLELE_CREATE_TOGGLEABLE_FIELDS, ALLELE_DETAIL_TOGGLEABLE_FIELDS } from '../AlleleForm';
 import { useAlleleReducer } from '../useAlleleReducer';
 
 const alwaysVisible = () => true;
@@ -114,12 +114,29 @@ describe('<AlleleForm />', () => {
 		expect(heading('Symbol')).toBeInTheDocument();
 	});
 
-	it('Lists every toggleable field it can render', () => {
+	it('Lists every toggleable field the detail page can render', () => {
 		// Guards against a section being added to the form without being made hideable.
 		for (const field of ['Curie', 'Primary External ID', 'MOD Internal ID', 'Symbol', 'Taxon']) {
-			expect(ALLELE_TOGGLEABLE_FIELDS).toContain(field);
+			expect(ALLELE_DETAIL_TOGGLEABLE_FIELDS).toContain(field);
 		}
-		expect(ALLELE_TOGGLEABLE_FIELDS).toContain('Allele Gene Associations');
+		expect(ALLELE_DETAIL_TOGGLEABLE_FIELDS).toContain('Allele Gene Associations');
+	});
+
+	it('Offers the create page only the fields create mode renders', () => {
+		for (const field of ['Curie', 'MOD Internal ID', 'Updated By', 'Date Updated', 'Created By', 'Date Created']) {
+			expect(ALLELE_DETAIL_TOGGLEABLE_FIELDS).toContain(field);
+			expect(ALLELE_CREATE_TOGGLEABLE_FIELDS).not.toContain(field);
+		}
+		expect(ALLELE_CREATE_TOGGLEABLE_FIELDS).toContain('Allele Gene Associations');
+		expect(ALLELE_CREATE_TOGGLEABLE_FIELDS).toContain('Data Provider');
+	});
+
+	it('Does not let the create page hide a required field', () => {
+		for (const field of ['Primary External ID', 'Symbol', 'Taxon']) {
+			// hideable while editing an existing allele, but not while creating one
+			expect(ALLELE_DETAIL_TOGGLEABLE_FIELDS).toContain(field);
+			expect(ALLELE_CREATE_TOGGLEABLE_FIELDS).not.toContain(field);
+		}
 	});
 });
 

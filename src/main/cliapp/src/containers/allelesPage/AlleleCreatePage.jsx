@@ -18,14 +18,14 @@ import {
 	validateRequiredCreateFields,
 } from './utils';
 import { FormFieldVisibilityMenu, useFormFieldVisibility } from '../../components/FormFieldVisibility';
-import { AlleleForm, ALLELE_TOGGLEABLE_FIELDS } from './AlleleForm';
+import { AlleleForm, ALLELE_CREATE_TOGGLEABLE_FIELDS } from './AlleleForm';
 
 export default function AlleleCreatePage() {
 	const navigate = useNavigate();
 	const { alleleState, alleleDispatch } = useAlleleReducer();
 	const { visibleFields, setVisibleFields, showAllFields, isVisible } = useFormFieldVisibility(
-		'Allele',
-		ALLELE_TOGGLEABLE_FIELDS
+		'AlleleCreate',
+		ALLELE_CREATE_TOGGLEABLE_FIELDS
 	);
 	const alleleService = new AlleleService();
 	const toastSuccess = useRef(null);
@@ -120,7 +120,7 @@ export default function AlleleCreatePage() {
 						</SplitterPanel>
 						<SplitterPanel size={55} className="flex align-items-center justify-content-end gap-2 pr-5 py-3">
 							<FormFieldVisibilityMenu
-								toggleableFields={ALLELE_TOGGLEABLE_FIELDS}
+								toggleableFields={ALLELE_CREATE_TOGGLEABLE_FIELDS}
 								visibleFields={visibleFields}
 								setVisibleFields={setVisibleFields}
 								showAllFields={showAllFields}
