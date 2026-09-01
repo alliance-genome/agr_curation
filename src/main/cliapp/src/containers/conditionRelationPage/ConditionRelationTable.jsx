@@ -63,9 +63,7 @@ export const ConditionRelationTable = () => {
 				sortable: true,
 				body: (rowData) => rowData.handle,
 				filterConfig: FILTER_CONFIGS.conditionRelationHandleFilterConfig,
-				editor: (editorOptions) => (
-					<InputTextTableEditor editorOptions={editorOptions} field="handle" errorMessagesRef={errorMessagesRef} />
-				),
+				editor: (editorOptions) => <InputTextTableEditor editorOptions={editorOptions} field="handle" />,
 			},
 			{
 				field: 'singleReference',

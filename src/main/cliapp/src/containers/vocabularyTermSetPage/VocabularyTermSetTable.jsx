@@ -59,9 +59,7 @@ export const VocabularyTermSetTable = () => {
 				body: (rowData) => <StringTemplate string={rowData.name} />,
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.nameFilterConfig,
-				editor: (editorOptions) => (
-					<InputTextTableEditor editorOptions={editorOptions} field="name" errorMessagesRef={errorMessagesRef} />
-				),
+				editor: (editorOptions) => <InputTextTableEditor editorOptions={editorOptions} field="name" />,
 			},
 			{
 				field: 'vocabularyTermSetVocabulary',
@@ -92,11 +90,7 @@ export const VocabularyTermSetTable = () => {
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.vocabularyTermSetDescriptionFilterConfig,
 				editor: (editorOptions) => (
-					<InputTextTableEditor
-						editorOptions={editorOptions}
-						field="vocabularyTermSetDescription"
-						errorMessagesRef={errorMessagesRef}
-					/>
+					<InputTextTableEditor editorOptions={editorOptions} field="vocabularyTermSetDescription" />
 				),
 			},
 			{

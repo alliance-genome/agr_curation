@@ -61,9 +61,7 @@ export const SpeciesTable = () => {
 				sortable: true,
 				filter: true,
 				filterConfig: FILTER_CONFIGS.speciesFullNameFilterConfig,
-				editor: (editorOptions) => (
-					<InputTextTableEditor editorOptions={editorOptions} field="fullName" errorMessagesRef={errorMessagesRef} />
-				),
+				editor: (editorOptions) => <InputTextTableEditor editorOptions={editorOptions} field="fullName" />,
 			},
 			{
 				field: 'displayName',
@@ -71,9 +69,7 @@ export const SpeciesTable = () => {
 				sortable: true,
 				filter: true,
 				filterConfig: FILTER_CONFIGS.speciesDisplayNameFilterConfig,
-				editor: (editorOptions) => (
-					<InputTextTableEditor editorOptions={editorOptions} field="displayName" errorMessagesRef={errorMessagesRef} />
-				),
+				editor: (editorOptions) => <InputTextTableEditor editorOptions={editorOptions} field="displayName" />,
 			},
 			{
 				field: 'abbreviation',
@@ -81,13 +77,7 @@ export const SpeciesTable = () => {
 				sortable: true,
 				filter: true,
 				filterConfig: FILTER_CONFIGS.speciesAbbreviationFilterConfig,
-				editor: (editorOptions) => (
-					<InputTextTableEditor
-						editorOptions={editorOptions}
-						field="abbreviation"
-						errorMessagesRef={errorMessagesRef}
-					/>
-				),
+				editor: (editorOptions) => <InputTextTableEditor editorOptions={editorOptions} field="abbreviation" />,
 			},
 			{
 				field: 'commonNames',
@@ -96,13 +86,7 @@ export const SpeciesTable = () => {
 				filter: true,
 				body: (rowData) => <CommaSeparatedArrayTemplate array={rowData.commonNames} />,
 				filterConfig: FILTER_CONFIGS.speciesCommonNameFilterConfig,
-				editor: (editorOptions) => (
-					<StringListTableEditor
-						editorOptions={editorOptions}
-						field="commonNames"
-						errorMessagesRef={errorMessagesRef}
-					/>
-				),
+				editor: (editorOptions) => <StringListTableEditor editorOptions={editorOptions} field="commonNames" />,
 			},
 			{
 				field: 'dataProvider',
@@ -128,13 +112,7 @@ export const SpeciesTable = () => {
 				field: 'phylogeneticOrder',
 				header: 'Phylogenetic Order',
 				sortable: true,
-				editor: (editorOptions) => (
-					<InputTextTableEditor
-						editorOptions={editorOptions}
-						field="phylogeneticOrder"
-						errorMessagesRef={errorMessagesRef}
-					/>
-				),
+				editor: (editorOptions) => <InputTextTableEditor editorOptions={editorOptions} field="phylogeneticOrder" />,
 			},
 			{
 				field: 'genomeAssembly',

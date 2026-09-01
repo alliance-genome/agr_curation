@@ -55,9 +55,7 @@ export const ResourceDescriptorsTable = () => {
 				sortable: true,
 				body: (rowData) => <StringTemplate string={rowData.prefix} />,
 				filterConfig: FILTER_CONFIGS.prefixFilterConfig,
-				editor: (editorOptions) => (
-					<InputTextTableEditor editorOptions={editorOptions} field="prefix" errorMessagesRef={errorMessagesRef} />
-				),
+				editor: (editorOptions) => <InputTextTableEditor editorOptions={editorOptions} field="prefix" />,
 			},
 			{
 				field: 'name',
@@ -65,9 +63,7 @@ export const ResourceDescriptorsTable = () => {
 				sortable: true,
 				body: (rowData) => <StringTemplate string={rowData.name} />,
 				filterConfig: FILTER_CONFIGS.nameFilterConfig,
-				editor: (editorOptions) => (
-					<InputTextTableEditor editorOptions={editorOptions} field="name" errorMessagesRef={errorMessagesRef} />
-				),
+				editor: (editorOptions) => <InputTextTableEditor editorOptions={editorOptions} field="name" />,
 			},
 			{
 				field: 'synonyms',
@@ -75,12 +71,7 @@ export const ResourceDescriptorsTable = () => {
 				body: (rowData) => <CommaSeparatedArrayTemplate array={rowData.synonyms} />,
 				filterConfig: FILTER_CONFIGS.synonymsFilterConfig,
 				editor: (editorOptions) => (
-					<StringListTextAreaTableEditor
-						editorOptions={editorOptions}
-						field="synonyms"
-						errorMessagesRef={errorMessagesRef}
-						rows={5}
-					/>
+					<StringListTextAreaTableEditor editorOptions={editorOptions} field="synonyms" rows={5} />
 				),
 			},
 			{
@@ -89,9 +80,7 @@ export const ResourceDescriptorsTable = () => {
 				sortable: true,
 				body: (rowData) => <StringTemplate string={rowData.idPattern} />,
 				filterConfig: FILTER_CONFIGS.idPatternFilterConfig,
-				editor: (editorOptions) => (
-					<InputTextTableEditor editorOptions={editorOptions} field="idPattern" errorMessagesRef={errorMessagesRef} />
-				),
+				editor: (editorOptions) => <InputTextTableEditor editorOptions={editorOptions} field="idPattern" />,
 			},
 			{
 				field: 'idExample',
@@ -99,9 +88,7 @@ export const ResourceDescriptorsTable = () => {
 				sortable: true,
 				body: (rowData) => <StringTemplate string={rowData.idExample} />,
 				filterConfig: FILTER_CONFIGS.idExampleFilterConfig,
-				editor: (editorOptions) => (
-					<InputTextTableEditor editorOptions={editorOptions} field="idExample" errorMessagesRef={errorMessagesRef} />
-				),
+				editor: (editorOptions) => <InputTextTableEditor editorOptions={editorOptions} field="idExample" />,
 			},
 			{
 				field: 'defaultUrlTemplate',
@@ -109,13 +96,7 @@ export const ResourceDescriptorsTable = () => {
 				sortable: true,
 				body: (rowData) => <StringTemplate string={rowData.defaultUrlTemplate} />,
 				filterConfig: FILTER_CONFIGS.defaultUrlTemplateFilterConfig,
-				editor: (editorOptions) => (
-					<InputTextTableEditor
-						editorOptions={editorOptions}
-						field="defaultUrlTemplate"
-						errorMessagesRef={errorMessagesRef}
-					/>
-				),
+				editor: (editorOptions) => <InputTextTableEditor editorOptions={editorOptions} field="defaultUrlTemplate" />,
 			},
 			{
 				field: 'createdBy.uniqueId',
