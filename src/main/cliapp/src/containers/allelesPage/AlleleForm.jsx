@@ -2,7 +2,6 @@ import { TaxonDetailPageEditor } from '../../components/Editors/autocomplete/tax
 import { InCollectionDetailPageEditor } from '../../components/Editors/autocomplete/inCollection/InCollectionDetailPageEditor';
 import { BooleanDetailPageEditor } from '../../components/Editors/dropdown/boolean/BooleanDetailPageEditor';
 import { IdentifierDetailPageTemplate } from '../../components/Templates/IdentifierDetailPageTemplate';
-import { InputTextDetailPageEditor } from '../../components/Editors/text/InputTextDetailPageEditor';
 import { DataProviderDetailPageTemplate } from '../../components/Templates/DataProviderDetailPageTemplate';
 import { DateDetailPageTemplate } from '../../components/Templates/DateDetailPageTemplate';
 import { UserDetailPageTemplate } from '../../components/Templates/UserDetailPageTemplate';
@@ -25,6 +24,7 @@ import { getEffectiveModAbbreviation } from '../../utils/affiliation';
 // The sections create mode does not render, so its menu does not offer them.
 const FIELDS_OMITTED_ON_CREATE = [
 	'Curie',
+	'Primary External ID',
 	'MOD Internal ID',
 	'Updated By',
 	'Date Updated',
@@ -64,7 +64,7 @@ export const ALLELE_DETAIL_TOGGLEABLE_FIELDS = [
 
 // The fields the API will not accept as empty on create. These carry the required marker in
 // create mode, and the create form does not let a curator hide them.
-const FIELDS_REQUIRED_ON_CREATE = ['Primary External ID', 'Symbol', 'Taxon'];
+const FIELDS_REQUIRED_ON_CREATE = ['Symbol', 'Taxon'];
 
 export const ALLELE_CREATE_TOGGLEABLE_FIELDS = ALLELE_DETAIL_TOGGLEABLE_FIELDS.filter(
 	(field) => !FIELDS_OMITTED_ON_CREATE.includes(field) && !FIELDS_REQUIRED_ON_CREATE.includes(field)
@@ -86,14 +86,6 @@ const fieldDetailsColumnSize = 'col-5';
  */
 export const AlleleForm = ({ state, dispatch, isVisible, mode = 'detail' }) => {
 	const isCreate = mode === 'create';
-
-	const onPrimaryExternalIdValueChange = (event) => {
-		dispatch({
-			type: 'EDIT',
-			field: 'primaryExternalId',
-			value: event.value,
-		});
-	};
 
 	const onTaxonValueChange = (event) => {
 		let value = {};
@@ -161,28 +153,14 @@ export const AlleleForm = ({ state, dispatch, isVisible, mode = 'detail' }) => {
 				/>
 			</FormSection>
 
-			<FormSection isVisible={isVisible('Primary External ID')}>
-				{isCreate ? (
-					<InputTextDetailPageEditor
-						value={state.allele?.primaryExternalId}
-						name="primaryExternalId"
-						required
-						label="Primary External ID"
-						onValueChange={onPrimaryExternalIdValueChange}
-						widgetColumnSize={widgetColumnSize}
-						labelColumnSize={labelColumnSize}
-						fieldDetailsColumnSize={fieldDetailsColumnSize}
-						errorMessages={state.errorMessages}
-					/>
-				) : (
-					<IdentifierDetailPageTemplate
-						identifier={state.allele?.primaryExternalId}
-						label="Primary External ID"
-						widgetColumnSize={widgetColumnSize}
-						labelColumnSize={labelColumnSize}
-						fieldDetailsColumnSize={fieldDetailsColumnSize}
-					/>
-				)}
+			<FormSection isVisible={!isCreate && isVisible('Primary External ID')}>
+				<IdentifierDetailPageTemplate
+					identifier={state.allele?.primaryExternalId}
+					label="Primary External ID"
+					widgetColumnSize={widgetColumnSize}
+					labelColumnSize={labelColumnSize}
+					fieldDetailsColumnSize={fieldDetailsColumnSize}
+				/>
 			</FormSection>
 
 			<FormSection isVisible={!isCreate && isVisible('MOD Internal ID')}>

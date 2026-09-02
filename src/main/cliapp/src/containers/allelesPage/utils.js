@@ -117,7 +117,8 @@ export const buildCreatePayload = (allele) => {
 
 /**
  * Checks the fields the API requires to create an allele, dispatching any messages so they
- * render beside their field.
+ * render beside their field. The allele's identifier is the curie the API mints, so neither
+ * MOD identifier is checked.
  *
  * @param {Object} allele
  * @param {Function} dispatch - allele reducer dispatch
@@ -126,9 +127,6 @@ export const buildCreatePayload = (allele) => {
 export const validateRequiredCreateFields = (allele, dispatch) => {
 	const errorMessages = {};
 
-	if (!allele.primaryExternalId?.trim()) {
-		errorMessages.primaryExternalId = 'Required';
-	}
 	if (!allele.taxon?.curie) {
 		errorMessages.taxon = 'Required';
 	}

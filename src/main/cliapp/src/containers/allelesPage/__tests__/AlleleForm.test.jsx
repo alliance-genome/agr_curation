@@ -53,16 +53,12 @@ describe('<AlleleForm />', () => {
 			expect(heading('Date Created')).not.toBeInTheDocument();
 		});
 
-		it('Renders Primary External ID as an input', async () => {
+		it('Drops both MOD identifiers', async () => {
 			await renderWithClient(<AlleleFormHarness mode="create" />);
 
-			expect(heading('Primary External ID')).toBeInTheDocument();
-			expect(screen.getByLabelText('primaryExternalId')).toBeInTheDocument();
-		});
-
-		it('Drops MOD Internal ID', async () => {
-			await renderWithClient(<AlleleFormHarness mode="create" />);
-
+			// the allele is identified by the curie the API mints
+			expect(heading('Primary External ID')).not.toBeInTheDocument();
+			expect(screen.queryByLabelText('primaryExternalId')).not.toBeInTheDocument();
 			expect(heading('MOD Internal ID')).not.toBeInTheDocument();
 			expect(screen.queryByLabelText('modInternalId')).not.toBeInTheDocument();
 		});
@@ -123,7 +119,15 @@ describe('<AlleleForm />', () => {
 	});
 
 	it('Offers the create page only the fields create mode renders', () => {
-		for (const field of ['Curie', 'MOD Internal ID', 'Updated By', 'Date Updated', 'Created By', 'Date Created']) {
+		for (const field of [
+			'Curie',
+			'Primary External ID',
+			'MOD Internal ID',
+			'Updated By',
+			'Date Updated',
+			'Created By',
+			'Date Created',
+		]) {
 			expect(ALLELE_DETAIL_TOGGLEABLE_FIELDS).toContain(field);
 			expect(ALLELE_CREATE_TOGGLEABLE_FIELDS).not.toContain(field);
 		}
@@ -132,7 +136,7 @@ describe('<AlleleForm />', () => {
 	});
 
 	it('Does not let the create page hide a required field', () => {
-		for (const field of ['Primary External ID', 'Symbol', 'Taxon']) {
+		for (const field of ['Symbol', 'Taxon']) {
 			// hideable while editing an existing allele, but not while creating one
 			expect(ALLELE_DETAIL_TOGGLEABLE_FIELDS).toContain(field);
 			expect(ALLELE_CREATE_TOGGLEABLE_FIELDS).not.toContain(field);

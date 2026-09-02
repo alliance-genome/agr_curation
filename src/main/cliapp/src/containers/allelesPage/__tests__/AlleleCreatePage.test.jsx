@@ -43,7 +43,9 @@ describe('<AlleleCreatePage />', () => {
 		await renderPage();
 
 		expect(heading('Add Allele')).toBeInTheDocument();
-		expect(screen.getByLabelText('primaryExternalId')).toBeInTheDocument();
+		expect(heading('Taxon')).toBeInTheDocument();
+		// no identifier is curated here; the API mints the curie
+		expect(screen.queryByLabelText('primaryExternalId')).not.toBeInTheDocument();
 		expect(heading('Curie')).not.toBeInTheDocument();
 		expect(heading('Date Created')).not.toBeInTheDocument();
 	});
@@ -57,7 +59,7 @@ describe('<AlleleCreatePage />', () => {
 		expect(button('Save & Add Another')).toBeInTheDocument();
 	});
 
-	it('Blocks a save with no identifier or taxon and sends no request', async () => {
+	it('Blocks a save with no taxon and sends no request', async () => {
 		const user = userEvent.setup();
 		await renderPage();
 
@@ -70,31 +72,18 @@ describe('<AlleleCreatePage />', () => {
 		expect(navigate).not.toHaveBeenCalled();
 	});
 
-	it('Blocks a save when only the identifier is set', async () => {
-		const user = userEvent.setup();
-		await renderPage();
-
-		await user.type(screen.getByLabelText('primaryExternalId'), 'WB:WBVar00000001');
-		await user.click(button('Save & Close'));
-
-		await waitFor(() => {
-			expect(screen.getAllByText('Required').length).toBeGreaterThan(0);
-		});
-		expect(createAllele).not.toHaveBeenCalled();
-	});
-
 	it('Clears a populated field', async () => {
 		const user = userEvent.setup();
-		await renderPage();
+		const { container } = await renderPage();
 
-		const identifier = screen.getByLabelText('primaryExternalId');
-		await user.type(identifier, 'WB:WBVar00000001');
-		expect(identifier).toHaveValue('WB:WBVar00000001');
+		const taxon = container.querySelector('input[name="taxon-input"]');
+		await user.type(taxon, 'NCBITaxon:6239');
+		expect(taxon).toHaveValue('NCBITaxon:6239');
 
 		await user.click(button('Clear'));
 
 		await waitFor(() => {
-			expect(screen.getByLabelText('primaryExternalId')).toHaveValue('');
+			expect(container.querySelector('input[name="taxon-input"]')).toHaveValue('');
 		});
 	});
 
@@ -102,7 +91,6 @@ describe('<AlleleCreatePage />', () => {
 		const user = userEvent.setup();
 		const { container } = await renderPage();
 
-		await user.type(screen.getByLabelText('primaryExternalId'), 'WB:WBVar00000001');
 		await user.type(container.querySelector('input[name="taxon-input"]'), 'NCBITaxon:6239');
 		await user.click(button('Save & Close'));
 
@@ -110,7 +98,7 @@ describe('<AlleleCreatePage />', () => {
 
 		const payload = createAllele.mock.calls[0][0];
 		expect(payload.type).toEqual('Allele');
-		expect(payload.primaryExternalId).toEqual('WB:WBVar00000001');
+		expect(payload).not.toHaveProperty('primaryExternalId');
 		expect(payload.taxon).toEqual({ curie: 'NCBITaxon:6239' });
 		// the blank inCollection the initial state carries would be rejected by the API
 		expect(payload).not.toHaveProperty('inCollection');
@@ -122,15 +110,15 @@ describe('<AlleleCreatePage />', () => {
 		const user = userEvent.setup();
 		const { container } = await renderPage();
 
-		await user.type(screen.getByLabelText('primaryExternalId'), 'WB:WBVar00000001');
-		await user.type(container.querySelector('input[name="taxon-input"]'), 'NCBITaxon:6239');
+		const taxon = container.querySelector('input[name="taxon-input"]');
+		await user.type(taxon, 'NCBITaxon:6239');
 		await user.click(button('Save & Add Another'));
 
 		await waitFor(() => expect(createAllele).toHaveBeenCalled());
 
 		expect(navigate).not.toHaveBeenCalled();
 		await waitFor(() => {
-			expect(screen.getByLabelText('primaryExternalId')).toHaveValue('');
+			expect(container.querySelector('input[name="taxon-input"]')).toHaveValue('');
 		});
 	});
 
@@ -169,7 +157,6 @@ describe('<AlleleCreatePage />', () => {
 		const { container } = await renderPage();
 
 		await user.click(button('Add Symbol'));
-		await user.type(screen.getByLabelText('primaryExternalId'), 'WB:WBVar00000001');
 		await user.type(container.querySelector('input[name="taxon-input"]'), 'NCBITaxon:6239');
 		await user.click(button('Save & Close'));
 

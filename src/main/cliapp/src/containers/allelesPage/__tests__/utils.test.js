@@ -46,36 +46,20 @@ describe('buildCreatePayload', () => {
 });
 
 describe('validateRequiredCreateFields', () => {
-	const valid = { primaryExternalId: 'WB:WBVar1', taxon: { curie: 'NCBITaxon:6239' } };
-
-	it('Reports both fields when neither is set', () => {
+	it('Reports a missing taxon', () => {
 		const dispatch = vi.fn();
 
 		expect(validateRequiredCreateFields({ taxon: { curie: '' } }, dispatch)).toBe(true);
 		expect(dispatch).toHaveBeenCalledWith({
 			type: 'UPDATE_ERROR_MESSAGES',
-			errorMessages: { primaryExternalId: 'Required', taxon: 'Required' },
+			errorMessages: { taxon: 'Required' },
 		});
 	});
 
-	it('Reports a whitespace only primary external id', () => {
+	it('Does not require either MOD identifier', () => {
 		const dispatch = vi.fn();
 
-		expect(validateRequiredCreateFields({ ...valid, primaryExternalId: '   ' }, dispatch)).toBe(true);
-		expect(dispatch.mock.calls[0][0].errorMessages).toEqual({ primaryExternalId: 'Required' });
-	});
-
-	it('Reports a missing taxon', () => {
-		const dispatch = vi.fn();
-
-		expect(validateRequiredCreateFields({ primaryExternalId: 'WB:WBVar1' }, dispatch)).toBe(true);
-		expect(dispatch.mock.calls[0][0].errorMessages).toEqual({ taxon: 'Required' });
-	});
-
-	it('Passes and clears messages when both are set', () => {
-		const dispatch = vi.fn();
-
-		expect(validateRequiredCreateFields(valid, dispatch)).toBe(false);
+		expect(validateRequiredCreateFields({ taxon: { curie: 'NCBITaxon:6239' } }, dispatch)).toBe(false);
 		expect(dispatch).toHaveBeenCalledWith({ type: 'UPDATE_ERROR_MESSAGES', errorMessages: {} });
 	});
 });
