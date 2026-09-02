@@ -7,10 +7,19 @@ import { renderWithClient } from '../../../tools/jest/utils';
 const createAllele = vi.fn();
 const navigate = vi.fn();
 
-// msw cannot intercept this app's fetch based ApiClient, so stub the service directly.
+// msw cannot intercept this app's fetch based ApiClient, so stub the services directly.
 vi.mock('../../../service/AlleleService', () => ({
 	AlleleService: class {
 		createAllele = createAllele;
+	},
+}));
+
+// Typing into an autocomplete fires PrimeReact's debounced completeMethod, which builds its own
+// SearchService. Left unstubbed it reaches ApiClient after the test has finished and throws in a
+// timer, failing whichever test happens to run next.
+vi.mock('../../../service/SearchService', () => ({
+	SearchService: class {
+		search = vi.fn(() => Promise.resolve({ results: [], totalResults: 0 }));
 	},
 }));
 
@@ -59,16 +68,30 @@ describe('<AlleleCreatePage />', () => {
 		expect(button('Save & Add Another')).toBeInTheDocument();
 	});
 
-	it('Blocks a save with no taxon and sends no request', async () => {
+	it('Sends an empty form to the API and shows the messages it returns', async () => {
 		const user = userEvent.setup();
+		// Symbol and taxon are validated server side, so an empty form is posted rather than
+		// stopped, and the response supplies the messages.
+		createAllele.mockRejectedValue({
+			response: {
+				status: 400,
+				statusText: 'Bad Request',
+				data: {
+					errorMessage: 'Could not create Allele',
+					errorMessages: { alleleSymbol: 'Required field is empty', taxon: 'Required field is empty' },
+					supplementalData: { errorMap: { alleleSymbol: 'Required field is empty' } },
+				},
+			},
+		});
+
 		await renderPage();
 
 		await user.click(button('Save & Close'));
 
+		await waitFor(() => expect(createAllele).toHaveBeenCalled());
 		await waitFor(() => {
-			expect(screen.getAllByText('Required').length).toBeGreaterThan(0);
+			expect(screen.getAllByText('Required field is empty').length).toBeGreaterThan(0);
 		});
-		expect(createAllele).not.toHaveBeenCalled();
 		expect(navigate).not.toHaveBeenCalled();
 	});
 
@@ -91,6 +114,7 @@ describe('<AlleleCreatePage />', () => {
 		const user = userEvent.setup();
 		const { container } = await renderPage();
 
+		await user.click(button('Add Symbol'));
 		await user.type(container.querySelector('input[name="taxon-input"]'), 'NCBITaxon:6239');
 		await user.click(button('Save & Close'));
 
@@ -110,6 +134,7 @@ describe('<AlleleCreatePage />', () => {
 		const user = userEvent.setup();
 		const { container } = await renderPage();
 
+		await user.click(button('Add Symbol'));
 		const taxon = container.querySelector('input[name="taxon-input"]');
 		await user.type(taxon, 'NCBITaxon:6239');
 		await user.click(button('Save & Add Another'));

@@ -1,4 +1,4 @@
-import { buildCreatePayload, validateRequiredCreateFields } from '../utils';
+import { buildCreatePayload, processErrors } from '../utils';
 
 describe('buildCreatePayload', () => {
 	it('Drops a taxon with no curie', () => {
@@ -45,21 +45,43 @@ describe('buildCreatePayload', () => {
 	});
 });
 
-describe('validateRequiredCreateFields', () => {
-	it('Reports a missing taxon', () => {
+describe('processErrors', () => {
+	// The API reports a required single-object slot annotation as a plain string keyed by the
+	// entity, and the entity itself is null when the curator never added one.
+	const symbolRequired = {
+		errorMessage: 'Could not create Allele',
+		errorMessages: { alleleSymbol: 'Required field is empty' },
+		supplementalData: { errorMap: { alleleSymbol: 'Required field is empty' } },
+	};
+
+	it('Survives a string error for an entity the allele does not have', () => {
 		const dispatch = vi.fn();
 
-		expect(validateRequiredCreateFields({ taxon: { curie: '' } }, dispatch)).toBe(true);
+		expect(() => processErrors(symbolRequired, dispatch, { alleleSymbol: null })).not.toThrow();
 		expect(dispatch).toHaveBeenCalledWith({
 			type: 'UPDATE_ERROR_MESSAGES',
-			errorMessages: { taxon: 'Required' },
+			errorMessages: { alleleSymbol: 'Required field is empty' },
 		});
 	});
 
-	it('Does not require either MOD identifier', () => {
+	it('Survives a string error for an entity the allele does have', () => {
 		const dispatch = vi.fn();
+		const allele = { alleleSymbol: { dataKey: 0, displayText: 'a' } };
 
-		expect(validateRequiredCreateFields({ taxon: { curie: 'NCBITaxon:6239' } }, dispatch)).toBe(false);
-		expect(dispatch).toHaveBeenCalledWith({ type: 'UPDATE_ERROR_MESSAGES', errorMessages: {} });
+		expect(() => processErrors(symbolRequired, dispatch, allele)).not.toThrow();
+	});
+
+	it('Still routes a per field error map to the row it belongs to', () => {
+		const dispatch = vi.fn();
+		const allele = { alleleSymbol: { dataKey: 'row-1' } };
+		const data = { supplementalData: { errorMap: { alleleSymbol: { nameType: 'Required' } } } };
+
+		processErrors(data, dispatch, allele);
+
+		expect(dispatch).toHaveBeenCalledWith({
+			type: 'UPDATE_TABLE_ERROR_MESSAGES',
+			entityType: 'alleleSymbol',
+			errorMessages: { 'row-1': { nameType: { severity: 'error', message: 'Required' } } },
+		});
 	});
 });

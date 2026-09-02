@@ -11,12 +11,7 @@ import { StickyHeader } from '../../components/StickyHeader';
 import { StickyFooter } from '../../components/StickyFooter';
 import { LoadingOverlay } from '../../components/LoadingOverlay';
 import { getIdentifier } from '../../utils/utils';
-import {
-	buildCreatePayload,
-	processErrors,
-	validateRequiredAutosuggestField,
-	validateRequiredCreateFields,
-} from './utils';
+import { buildCreatePayload, processErrors, validateRequiredAutosuggestField } from './utils';
 import { FormFieldVisibilityMenu, useFormFieldVisibility } from '../../components/FormFieldVisibility';
 import { AlleleForm, ALLELE_CREATE_TOGGLEABLE_FIELDS } from './AlleleForm';
 
@@ -41,10 +36,6 @@ export default function AlleleCreatePage() {
 		event.preventDefault();
 		alleleDispatch({ type: 'SUBMIT' });
 
-		// Required field messages are dispatched first so a failed check replaces any messages
-		// left over from an earlier save.
-		const areRequiredFieldErrors = validateRequiredCreateFields(alleleState.allele, alleleDispatch);
-
 		const areUiErrors = validateRequiredAutosuggestField(
 			alleleState.allele.alleleGeneAssociations,
 			alleleState.entityStates.alleleGeneAssociations.errorMessages,
@@ -53,7 +44,7 @@ export default function AlleleCreatePage() {
 			'alleleGeneAssociationObject'
 		);
 
-		if (areRequiredFieldErrors || areUiErrors) return;
+		if (areUiErrors) return;
 
 		alleleMutate(buildCreatePayload(alleleState.allele), {
 			onSuccess: (result) => {

@@ -115,30 +115,6 @@ export const buildCreatePayload = (allele) => {
 	return payload;
 };
 
-/**
- * Checks the fields the API requires to create an allele, dispatching any messages so they
- * render beside their field. The allele's identifier is the curie the API mints, so neither
- * MOD identifier is checked.
- *
- * @param {Object} allele
- * @param {Function} dispatch - allele reducer dispatch
- * @returns {boolean} whether any field is missing
- */
-export const validateRequiredCreateFields = (allele, dispatch) => {
-	const errorMessages = {};
-
-	if (!allele.taxon?.curie) {
-		errorMessages.taxon = 'Required';
-	}
-
-	dispatch({
-		type: 'UPDATE_ERROR_MESSAGES',
-		errorMessages,
-	});
-
-	return Object.keys(errorMessages).length > 0;
-};
-
 export const processErrors = (data, dispatch, allele) => {
 	const errorMap = data?.supplementalData?.errorMap;
 	const errorMessages = data?.errorMessages;
@@ -154,14 +130,15 @@ export const processErrors = (data, dispatch, allele) => {
 export const processErrorMap = (errorMap, dispatch, allele) => {
 	if (!errorMap) return;
 
-	let tableErrors;
-	let table;
 	Object.keys(errorMap).forEach((entityType) => {
-		tableErrors = errorMap[entityType];
-		table = allele[entityType];
-		if (typeof table === 'object') {
-			processTableErrors(tableErrors, dispatch, entityType, table);
+		const tableErrors = errorMap[entityType];
+		const table = allele[entityType];
+		// Neither a field level message (a string) nor an entity the curator never added (null)
+		// can be keyed to a row, so leave those to the page level error messages.
+		if (!table || typeof table !== 'object' || !tableErrors || typeof tableErrors !== 'object') {
+			return;
 		}
+		processTableErrors(tableErrors, dispatch, entityType, table);
 	});
 };
 
