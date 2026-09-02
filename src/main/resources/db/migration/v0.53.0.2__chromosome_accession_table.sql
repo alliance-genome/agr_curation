@@ -5,7 +5,7 @@ CREATE TABLE chromosomeaccession (
 	chromosomename varchar(255),
 	accession varchar(255),
 	assemblyidentifier varchar(255),
-	displayorder integer,
+	displayorder integer NOT NULL,
 	datecreated timestamp without time zone,
 	dateupdated timestamp without time zone,
 	dbdatecreated timestamp without time zone,

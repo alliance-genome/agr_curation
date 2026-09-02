@@ -22,7 +22,7 @@ public class ChromosomeAccessionService {
 			synchronized (this) {
 				if (cache == null) {
 					cache = chromosomeAccessionDAO.findAll().getResults().stream()
-						.sorted(Comparator.comparing(ChromosomeAccession::getDisplayOrder))
+						.sorted(Comparator.nullsLast(Comparator.comparing(ChromosomeAccession::getDisplayOrder)))
 						.toList();
 				}
 			}
