@@ -90,6 +90,20 @@ export const addDataKey = (entity) => {
 };
 
 /**
+ * An empty allele symbol, ready to be edited in the symbol table.
+ *
+ * @returns {Object} a symbol with blank text fields and no name type
+ */
+export const buildEmptyAlleleSymbol = () => ({
+	dataKey: 0,
+	synonymUrl: '',
+	internal: false,
+	nameType: null,
+	formatText: '',
+	displayText: '',
+});
+
+/**
  * Shapes a new allele for the create endpoint.
  *
  * Adds the `type` discriminator BiologicalEntity declares through `@JsonTypeInfo`, which an

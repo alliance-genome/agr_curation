@@ -108,13 +108,14 @@ describe('<AlleleCreatePage />', () => {
 		await waitFor(() => {
 			expect(container.querySelector('input[name="taxon-input"]')).toHaveValue('');
 		});
+		// the seeded symbol is part of a fresh form, so the reset leaves it in place
+		expect(screen.getByRole('columnheader', { name: 'Display Text' })).toBeInTheDocument();
 	});
 
 	it('Posts a payload without the blank placeholders and opens the new allele', async () => {
 		const user = userEvent.setup();
 		const { container } = await renderPage();
 
-		await user.click(button('Add Symbol'));
 		await user.type(container.querySelector('input[name="taxon-input"]'), 'NCBITaxon:6239');
 		await user.click(button('Save & Close'));
 
@@ -134,7 +135,6 @@ describe('<AlleleCreatePage />', () => {
 		const user = userEvent.setup();
 		const { container } = await renderPage();
 
-		await user.click(button('Add Symbol'));
 		const taxon = container.querySelector('input[name="taxon-input"]');
 		await user.type(taxon, 'NCBITaxon:6239');
 		await user.click(button('Save & Add Another'));
@@ -145,22 +145,15 @@ describe('<AlleleCreatePage />', () => {
 		await waitFor(() => {
 			expect(container.querySelector('input[name="taxon-input"]')).toHaveValue('');
 		});
+		expect(screen.getByRole('columnheader', { name: 'Display Text' })).toBeInTheDocument();
 	});
 
-	it('Adds a symbol', async () => {
-		const user = userEvent.setup();
+	it('Opens with an empty symbol and no button to add one', async () => {
 		await renderPage();
 
-		const addSymbol = button('Add Symbol');
-		expect(addSymbol).toBeEnabled();
-
-		await user.click(addSymbol);
-
-		await waitFor(() => {
-			expect(screen.getByRole('columnheader', { name: 'Display Text' })).toBeInTheDocument();
-		});
-		// an allele carries a single symbol, so adding a second is not offered
-		expect(button('Add Symbol')).toBeDisabled();
+		expect(screen.getByRole('columnheader', { name: 'Display Text' })).toBeInTheDocument();
+		// every allele carries exactly one symbol, so it is seeded rather than added
+		expect(screen.queryByRole('button', { name: 'Add Symbol' })).not.toBeInTheDocument();
 	});
 
 	it('Shows a nested slot annotation error beside the field it belongs to', async () => {
@@ -181,7 +174,6 @@ describe('<AlleleCreatePage />', () => {
 
 		const { container } = await renderPage();
 
-		await user.click(button('Add Symbol'));
 		await user.type(container.querySelector('input[name="taxon-input"]'), 'NCBITaxon:6239');
 		await user.click(button('Save & Close'));
 

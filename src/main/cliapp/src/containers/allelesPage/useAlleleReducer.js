@@ -1,5 +1,6 @@
 import { useImmerReducer } from 'use-immer';
-import { addDataKey, generateCrossRefSearchFields, generateCurieSearchFields } from './utils';
+import { useCallback, useMemo } from 'react';
+import { addDataKey, buildEmptyAlleleSymbol, generateCrossRefSearchFields, generateCurieSearchFields } from './utils';
 import { getUniqueItemsByProperty } from '../../utils/utils';
 import { Endpoints } from '../../constants/Endpoints';
 
@@ -136,6 +137,28 @@ const initialAlleleState = {
 	submitted: false,
 };
 
+/**
+ * The state a form starts from, and the state `RESET` returns to.
+ *
+ * Every allele carries a symbol, and the symbol table has no way to remove one, so create mode
+ * starts with an empty symbol open for editing instead of offering a button to add it.
+ *
+ * @param {string} mode 'create' or 'detail'
+ * @returns {Object} a fresh allele state
+ */
+const buildInitialAlleleState = (mode) => {
+	const initialState = structuredClone(initialAlleleState);
+
+	if (mode === 'create') {
+		const symbol = buildEmptyAlleleSymbol();
+		initialState.allele.alleleSymbol = symbol;
+		initialState.entityStates.alleleSymbol.show = true;
+		initialState.entityStates.alleleSymbol.editingRows = { [symbol.dataKey]: true };
+	}
+
+	return initialState;
+};
+
 const processTable = (field, allele, draft) => {
 	if (!allele) return;
 
@@ -174,7 +197,7 @@ const processObject = (field, allele, draft) => {
 	draft.entityStates[field].show = true;
 };
 
-const alleleReducer = (draft, action) => {
+const alleleReducer = (draft, action, initialState) => {
 	switch (action.type) {
 		case 'SET':
 			// Clone so generateCrossRefSearchFields (in-place mutation) doesn't run
@@ -195,12 +218,12 @@ const alleleReducer = (draft, action) => {
 			break;
 		case 'RESET':
 			// Cloned rather than assigned: immer freezes the state it produces, so handing it the
-			// module level object would freeze the initial state every reducer starts from.
-			draft.allele = structuredClone(initialAlleleState.allele);
+			// initial state object would freeze the state every reducer starts from.
+			draft.allele = structuredClone(initialState.allele);
 			Object.values(draft.entityStates).forEach((state) => {
-				const initialEntityState = initialAlleleState.entityStates[state.field];
+				const initialEntityState = initialState.entityStates[state.field];
 				state.show = initialEntityState.show;
-				state.editingRows = {};
+				state.editingRows = structuredClone(initialEntityState.editingRows);
 				state.errorMessages = {};
 			});
 			draft.errorMessages = {};
@@ -272,7 +295,15 @@ const alleleReducer = (draft, action) => {
 	}
 };
 
-export const useAlleleReducer = () => {
-	const [alleleState, alleleDispatch] = useImmerReducer(alleleReducer, initialAlleleState);
+/**
+ * Allele form state and its dispatch.
+ *
+ * @param {string} [mode] 'create' to start from a form seeded for a new allele, otherwise 'detail'
+ * @returns {{alleleState: Object, alleleDispatch: Function}}
+ */
+export const useAlleleReducer = (mode = 'detail') => {
+	const initialState = useMemo(() => buildInitialAlleleState(mode), [mode]);
+	const reducer = useCallback((draft, action) => alleleReducer(draft, action, initialState), [initialState]);
+	const [alleleState, alleleDispatch] = useImmerReducer(reducer, initialState);
 	return { alleleState, alleleDispatch };
 };

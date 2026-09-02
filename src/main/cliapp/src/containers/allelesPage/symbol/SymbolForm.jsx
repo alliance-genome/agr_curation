@@ -2,22 +2,16 @@ import { Button } from 'primereact/button';
 import { FormTableWrapper } from '../../../components/FormTableWrapper';
 import { useRef } from 'react';
 import { SymbolFormTable } from './SymbolFormTable';
+import { buildEmptyAlleleSymbol } from '../utils';
 
-export const SymbolForm = ({ labelColumnSize, state, dispatch, required = false }) => {
+export const SymbolForm = ({ labelColumnSize, state, dispatch, required = false, showAddButton = true }) => {
 	const tableRef = useRef(null);
 
 	const symbols = [state.allele?.alleleSymbol];
 
 	const createNewSymbolHandler = (e) => {
 		e.preventDefault();
-		const newSymbol = {
-			dataKey: 0,
-			synonymUrl: '',
-			internal: false,
-			nameType: null,
-			formatText: '',
-			displayText: '',
-		};
+		const newSymbol = buildEmptyAlleleSymbol();
 
 		dispatch({
 			type: 'ADD_OBJECT',
@@ -104,12 +98,14 @@ export const SymbolForm = ({ labelColumnSize, state, dispatch, required = false 
 			required={required}
 			showTable={state.entityStates.alleleSymbol.show}
 			button={
-				<Button
-					label="Add Symbol"
-					onClick={createNewSymbolHandler}
-					disabled={!!state.allele?.alleleSymbol}
-					className="w-4 p-button-text"
-				/>
+				showAddButton ? (
+					<Button
+						label="Add Symbol"
+						onClick={createNewSymbolHandler}
+						disabled={!!state.allele?.alleleSymbol}
+						className="w-4 p-button-text"
+					/>
+				) : null
 			}
 		/>
 	);

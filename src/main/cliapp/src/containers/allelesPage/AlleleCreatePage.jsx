@@ -17,7 +17,7 @@ import { AlleleForm, ALLELE_CREATE_TOGGLEABLE_FIELDS } from './AlleleForm';
 
 export default function AlleleCreatePage() {
 	const navigate = useNavigate();
-	const { alleleState, alleleDispatch } = useAlleleReducer();
+	const { alleleState, alleleDispatch } = useAlleleReducer('create');
 	const { visibleFields, setVisibleFields, showAllFields, isVisible } = useFormFieldVisibility(
 		'AlleleCreate',
 		ALLELE_CREATE_TOGGLEABLE_FIELDS

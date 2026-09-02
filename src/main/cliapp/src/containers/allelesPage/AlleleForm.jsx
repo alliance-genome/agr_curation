@@ -178,7 +178,13 @@ export const AlleleForm = ({ state, dispatch, isVisible, mode = 'detail' }) => {
 			</FormSection>
 
 			<FormSection isVisible={isVisible('Symbol')}>
-				<SymbolForm state={state} dispatch={dispatch} labelColumnSize={labelColumnSize} required={isCreate} />
+				<SymbolForm
+					state={state}
+					dispatch={dispatch}
+					labelColumnSize={labelColumnSize}
+					required={isCreate}
+					showAddButton={!isCreate}
+				/>
 			</FormSection>
 
 			<FormSection isVisible={isVisible('Synonyms')}>
