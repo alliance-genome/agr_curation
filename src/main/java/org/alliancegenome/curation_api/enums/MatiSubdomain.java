@@ -14,9 +14,10 @@ package org.alliancegenome.curation_api.enums;
  * The codes are recorded in MaTI's own migrations (V0003__SCRUM-2024.sql, V0004__SCRUM-6210.sql,
  * V0005__SCRUM-6358.sql) if a human needs to look one up.
  *
- * A subdomain is only mintable once its target class has somewhere to store a curie. The four
- * classes tracked by SCRUM-6463 — molecular and genetic interactions, HTP expression datasets and
- * samples — do not yet, so their entries are declared but unused.
+ * A subdomain is only mintable once its target class has somewhere to store a curie. SCRUM-6463
+ * added one to GeneGeneAssociation (both interaction classes) and to HTPExpressionDatasetAnnotation;
+ * HTPExpressionDatasetSampleAnnotation still has none, so HTP_EXPRESSION_SAMPLE remains unusable.
+ * Minting is not yet wired up for any of the three, so their entries are declared but unused.
  */
 public enum MatiSubdomain {
 
