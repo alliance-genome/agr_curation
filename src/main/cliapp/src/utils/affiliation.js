@@ -61,6 +61,19 @@ export function getEffectiveStaffGroups() {
 	return override ? [override] : getTrueStaffGroups();
 }
 
+/**
+ * The MOD abbreviation for the effective affiliation, matching the data provider the API
+ * assigns to a newly created entity.
+ *
+ * @returns {string} the abbreviation from {@link MOD_AFFILIATIONS}, or 'Alliance' when the
+ *   effective affiliation is not a MOD group
+ */
+export function getEffectiveModAbbreviation() {
+	const [group] = getEffectiveStaffGroups();
+	const affiliation = MOD_AFFILIATIONS.find((mod) => mod.group === group);
+	return affiliation ? affiliation.abbreviation : 'Alliance';
+}
+
 // True when an override is active and actually differs from the user's true affiliation.
 export function isAffiliationOverridden() {
 	const override = getAffiliationOverride();

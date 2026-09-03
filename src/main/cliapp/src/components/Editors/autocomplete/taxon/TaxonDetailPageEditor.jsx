@@ -12,6 +12,7 @@ export const TaxonDetailPageEditor = ({
 	labelColumnSize,
 	fieldDetailsColumnSize,
 	errorMessages,
+	required = false,
 }) => {
 	return (
 		<>
@@ -20,6 +21,7 @@ export const TaxonDetailPageEditor = ({
 				fieldDetailsColumnSize={fieldDetailsColumnSize}
 				widgetColumnSize={widgetColumnSize}
 				fieldName="Taxon"
+				required={required}
 				formField={
 					<AutocompleteFormEditor
 						name="taxon-input"
