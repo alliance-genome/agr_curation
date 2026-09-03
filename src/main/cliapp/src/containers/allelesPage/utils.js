@@ -89,29 +89,72 @@ export const addDataKey = (entity) => {
 	entity.dataKey = crypto.randomUUID();
 };
 
+/**
+ * An empty allele symbol, ready to be edited in the symbol table.
+ *
+ * @returns {Object} a symbol with blank text fields and no name type
+ */
+export const buildEmptyAlleleSymbol = () => ({
+	dataKey: 0,
+	synonymUrl: '',
+	internal: false,
+	nameType: null,
+	formatText: '',
+	displayText: '',
+});
+
+/**
+ * Shapes a new allele for the create endpoint.
+ *
+ * Adds the `type` discriminator BiologicalEntity declares through `@JsonTypeInfo`, which an
+ * allele loaded from the API already carries but a new one does not, and strips the placeholder
+ * objects the initial state holds: the API reads `{ name: '' }` as a vocabulary term whose name
+ * it cannot find and rejects it, and `{ curie: '' }` as a taxon it silently resolves to null.
+ *
+ * @param {Object} allele
+ * @returns {Object} a copy carrying `type` and without a blank `taxon` or `inCollection`
+ */
+export const buildCreatePayload = (allele) => {
+	const payload = structuredClone(allele);
+
+	payload.type = 'Allele';
+
+	if (!payload.taxon?.curie) {
+		delete payload.taxon;
+	}
+	if (!payload.inCollection?.name) {
+		delete payload.inCollection;
+	}
+
+	return payload;
+};
+
 export const processErrors = (data, dispatch, allele) => {
 	const errorMap = data?.supplementalData?.errorMap;
 	const errorMessages = data?.errorMessages;
 
-	processErrorMap(errorMap, dispatch, allele);
-
+	// Dispatched before the row level messages, which are keyed off the allele and can fail on an
+	// unexpected shape. These are the only messages some fields carry, so they go out first.
 	dispatch({
 		type: 'UPDATE_ERROR_MESSAGES',
 		errorMessages: errorMessages || {},
 	});
+
+	processErrorMap(errorMap, dispatch, allele);
 };
 
 export const processErrorMap = (errorMap, dispatch, allele) => {
 	if (!errorMap) return;
 
-	let tableErrors;
-	let table;
 	Object.keys(errorMap).forEach((entityType) => {
-		tableErrors = errorMap[entityType];
-		table = allele[entityType];
-		if (typeof table === 'object') {
-			processTableErrors(tableErrors, dispatch, entityType, table);
+		const tableErrors = errorMap[entityType];
+		const table = allele[entityType];
+		// Only an error map keyed by row or by field can be attached to a row. A plain string, or
+		// an entity the allele does not carry, stays in the flat error messages.
+		if (!table || typeof table !== 'object' || !tableErrors || typeof tableErrors !== 'object') {
+			return;
 		}
+		processTableErrors(tableErrors, dispatch, entityType, table);
 	});
 };
 
