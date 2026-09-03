@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.alliancegenome.curation_api.dao.base.BaseSQLDAO;
+import org.alliancegenome.curation_api.dao.base.BaseCurieSQLDAO;
 import org.alliancegenome.curation_api.model.entities.GeneGeneticInteraction;
 import org.apache.commons.collections.CollectionUtils;
 
@@ -14,7 +14,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.Query;
 
 @ApplicationScoped
-public class GeneGeneticInteractionDAO extends BaseSQLDAO<GeneGeneticInteraction> {
+public class GeneGeneticInteractionDAO extends BaseCurieSQLDAO<GeneGeneticInteraction> {
 
 	protected GeneGeneticInteractionDAO() {
 		super(GeneGeneticInteraction.class);

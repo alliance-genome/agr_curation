@@ -15,9 +15,10 @@ package org.alliancegenome.curation_api.enums;
  * V0005__SCRUM-6358.sql) if a human needs to look one up.
  *
  * A subdomain is only mintable once its target class has somewhere to store a curie. SCRUM-6463
- * added one to GeneGeneAssociation (both interaction classes) and to HTPExpressionDatasetAnnotation;
- * HTPExpressionDatasetSampleAnnotation still has none, so HTP_EXPRESSION_SAMPLE remains unusable.
- * Minting is not yet wired up for any of the three, so their entries are declared but unused.
+ * added one to the last classes that lacked it — GeneGeneAssociation, covering both interaction
+ * classes, and the two HTP expression annotations — so every subdomain here is now backed by a
+ * field. EXPRESSION_EXPERIMENT and EXPRESSION_ANNOTATION are the only unused entries left; they are
+ * on hold pending direct submissions.
  */
 public enum MatiSubdomain {
 
