@@ -25,5 +25,8 @@ export default defineConfig({
 		css: false,
 		// Heavy table renders sit close to the 5s default; raise headroom for slower CI runners.
 		testTimeout: 15000,
+		// Matched to testTimeout: the previous test's teardown lands inside the next test's hook
+		// window, so a loaded runner exhausts a hook budget left at the 10s default.
+		hookTimeout: 15000,
 	},
 });

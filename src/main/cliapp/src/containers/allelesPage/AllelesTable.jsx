@@ -1,4 +1,5 @@
 import React, { useRef, useState, useMemo } from 'react';
+import { useHref } from 'react-router-dom';
 import { useMutation } from '@tanstack/react-query';
 import { GenericDataTable } from '../../components/GenericDataTable/GenericDataTable';
 import { AlleleService } from '../../service/AlleleService';
@@ -43,6 +44,7 @@ import { NestedListDialogTemplate } from '../../components/Templates/dialog/Nest
 import { CountDialogTemplate } from '../../components/Templates/dialog/CountDialogTemplate';
 import { CrossReferencesTemplate } from '../../components/Templates/CrossReferencesTemplate';
 
+import { Button } from 'primereact/button';
 import { Toast } from 'primereact/toast';
 import { getDefaultTableState } from '../../service/TableStateService';
 import { FILTER_CONFIGS } from '../../constants/FilterFields';
@@ -57,6 +59,8 @@ export const AllelesTable = () => {
 
 	const [totalRecords, setTotalRecords] = useState(0);
 	const [alleles, setAlleles] = useState([]);
+	// resolved through the router so the hash and any basename are applied
+	const createAlleleHref = useHref('/allele/create');
 
 	const searchService = new SearchService();
 
@@ -887,6 +891,20 @@ export const AllelesTable = () => {
 		searchService,
 	});
 
+	const headerButtons = (disabled = false) => {
+		return (
+			<>
+				<Button
+					label="New Allele"
+					icon="pi pi-plus"
+					onClick={() => window.open(createAlleleHref, '_blank')}
+					disabled={disabled}
+				/>
+				&nbsp;&nbsp;
+			</>
+		);
+	};
+
 	return (
 		<>
 			<div className="card">
@@ -895,6 +913,7 @@ export const AllelesTable = () => {
 				<GenericDataTable
 					endpoint={SEARCH_ENDPOINT}
 					tableName="Alleles"
+					headerButtons={headerButtons}
 					entities={alleles}
 					setEntities={setAlleles}
 					totalRecords={totalRecords}

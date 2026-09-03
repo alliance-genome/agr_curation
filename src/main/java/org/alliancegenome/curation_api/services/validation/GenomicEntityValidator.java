@@ -17,8 +17,12 @@ public class GenomicEntityValidator<E extends GenomicEntity> extends BiologicalE
 	@Inject CrossReferenceService crossReferenceService;
 
 	public E validateGenomicEntityFields(E uiEntity, E dbEntity, String noteTypeVocabularyTermSet) {
+		return validateGenomicEntityFields(uiEntity, dbEntity, noteTypeVocabularyTermSet, true);
+	}
 
-		dbEntity = validateBiologicalEntityFields(uiEntity, dbEntity, noteTypeVocabularyTermSet);
+	public E validateGenomicEntityFields(E uiEntity, E dbEntity, String noteTypeVocabularyTermSet, boolean requireModIdentifier) {
+
+		dbEntity = validateBiologicalEntityFields(uiEntity, dbEntity, noteTypeVocabularyTermSet, requireModIdentifier);
 
 		List<CrossReference> xrefs = validateCrossReferences(uiEntity, dbEntity);
 		if (dbEntity.getCrossReferences() != null) {
