@@ -8,7 +8,7 @@ import { useSyncedState } from '../../../hooks/useSyncedState';
  * @param {string} [id] - DOM id, for label association
  * @param {string|null} value - the current text
  * @param {(value: string) => void} onChange - called with the raw string
- * @param {string} [name] - input name and aria-label
+ * @param {string} [name] - accessible name for the input
  * @param {boolean} [required]
  * @param {boolean} [invalid] - applies invalid styling
  * @param {boolean} [disabled]
@@ -26,7 +26,6 @@ export function TextInput({ id, value, onChange, name, required, invalid, disabl
 		<InputText
 			id={id}
 			aria-label={name}
-			name={name}
 			required={required}
 			value={displayValue}
 			onChange={handleChange}

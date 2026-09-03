@@ -22,7 +22,7 @@ const toArray = (text) =>
  * @param {(value: string[]) => void} onChange - called with trimmed, non-empty entries
  * @param {boolean} [multiline=false] - render a textarea instead of a single-line input
  * @param {number} [rows=5] - visible rows, when multiline
- * @param {string} [name] - input name and aria-label
+ * @param {string} [name] - accessible name for the input
  * @param {boolean} [invalid] - applies invalid styling
  * @param {boolean} [disabled]
  * @returns {JSX.Element}
@@ -41,7 +41,6 @@ export function StringListInput({ id, value, onChange, multiline = false, rows =
 		<Control
 			id={id}
 			aria-label={name}
-			name={name}
 			value={displayValue}
 			onChange={handleChange}
 			disabled={disabled}
