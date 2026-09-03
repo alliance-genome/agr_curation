@@ -133,12 +133,14 @@ export const processErrors = (data, dispatch, allele) => {
 	const errorMap = data?.supplementalData?.errorMap;
 	const errorMessages = data?.errorMessages;
 
-	processErrorMap(errorMap, dispatch, allele);
-
+	// Dispatched before the row level messages, which are keyed off the allele and can fail on an
+	// unexpected shape. These are the only messages some fields carry, so they go out first.
 	dispatch({
 		type: 'UPDATE_ERROR_MESSAGES',
 		errorMessages: errorMessages || {},
 	});
+
+	processErrorMap(errorMap, dispatch, allele);
 };
 
 export const processErrorMap = (errorMap, dispatch, allele) => {
@@ -147,8 +149,8 @@ export const processErrorMap = (errorMap, dispatch, allele) => {
 	Object.keys(errorMap).forEach((entityType) => {
 		const tableErrors = errorMap[entityType];
 		const table = allele[entityType];
-		// Neither a field level message (a string) nor an entity the curator never added (null)
-		// can be keyed to a row, so leave those to the page level error messages.
+		// Only an error map keyed by row or by field can be attached to a row. A plain string, or
+		// an entity the allele does not carry, stays in the flat error messages.
 		if (!table || typeof table !== 'object' || !tableErrors || typeof tableErrors !== 'object') {
 			return;
 		}

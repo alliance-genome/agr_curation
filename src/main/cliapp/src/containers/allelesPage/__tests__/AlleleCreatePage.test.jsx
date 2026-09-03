@@ -108,8 +108,21 @@ describe('<AlleleCreatePage />', () => {
 		await waitFor(() => {
 			expect(container.querySelector('input[name="taxon-input"]')).toHaveValue('');
 		});
-		// the seeded symbol is part of a fresh form, so the reset leaves it in place
-		expect(screen.getByRole('columnheader', { name: 'Display Text' })).toBeInTheDocument();
+	});
+
+	it('Blanks the symbol editors on clear', async () => {
+		const user = userEvent.setup();
+		const { container } = await renderPage();
+
+		await user.type(container.querySelector('#displayText'), 'abc-1');
+		expect(container.querySelector('#displayText')).toHaveValue('abc-1');
+
+		await user.click(button('Clear'));
+
+		// The row stays mounted across a reset, so its editors only blank if the row remounts.
+		await waitFor(() => {
+			expect(container.querySelector('#displayText')).toHaveValue('');
+		});
 	});
 
 	it('Posts a payload without the blank placeholders and opens the new allele', async () => {
@@ -145,13 +158,15 @@ describe('<AlleleCreatePage />', () => {
 		await waitFor(() => {
 			expect(container.querySelector('input[name="taxon-input"]')).toHaveValue('');
 		});
-		expect(screen.getByRole('columnheader', { name: 'Display Text' })).toBeInTheDocument();
+		// a fresh form still carries an empty symbol, ready to edit
+		expect(container.querySelector('#displayText')).toHaveValue('');
 	});
 
 	it('Opens with an empty symbol and no button to add one', async () => {
-		await renderPage();
+		const { container } = await renderPage();
 
 		expect(screen.getByRole('columnheader', { name: 'Display Text' })).toBeInTheDocument();
+		expect(container.querySelector('#displayText')).toHaveValue('');
 		// every allele carries exactly one symbol, so it is seeded rather than added
 		expect(screen.queryByRole('button', { name: 'Add Symbol' })).not.toBeInTheDocument();
 	});

@@ -71,6 +71,22 @@ describe('processErrors', () => {
 		expect(() => processErrors(symbolRequired, dispatch, allele)).not.toThrow();
 	});
 
+	it('Dispatches the flat messages before the ones keyed to a row', () => {
+		const dispatch = vi.fn();
+		// a row index the allele's table does not have, which cannot be keyed to a row
+		const data = {
+			errorMessages: { taxon: 'Required field is empty' },
+			supplementalData: { errorMap: { alleleSynonyms: { 3: { displayText: 'Required' } } } },
+		};
+
+		expect(() => processErrors(data, dispatch, { alleleSynonyms: [] })).toThrow();
+
+		expect(dispatch).toHaveBeenCalledWith({
+			type: 'UPDATE_ERROR_MESSAGES',
+			errorMessages: { taxon: 'Required field is empty' },
+		});
+	});
+
 	it('Still routes a per field error map to the row it belongs to', () => {
 		const dispatch = vi.fn();
 		const allele = { alleleSymbol: { dataKey: 'row-1' } };

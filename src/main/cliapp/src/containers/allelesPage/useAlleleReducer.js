@@ -217,8 +217,7 @@ const alleleReducer = (draft, action, initialState) => {
 			draft.allele = allele;
 			break;
 		case 'RESET':
-			// Cloned rather than assigned: immer freezes the state it produces, so handing it the
-			// initial state object would freeze the state every reducer starts from.
+			// Cloned so the state every reset starts from is never the object later mutated in place.
 			draft.allele = structuredClone(initialState.allele);
 			Object.values(draft.entityStates).forEach((state) => {
 				const initialEntityState = initialState.entityStates[state.field];
@@ -226,6 +225,13 @@ const alleleReducer = (draft, action, initialState) => {
 				state.editingRows = structuredClone(initialEntityState.editingRows);
 				state.errorMessages = {};
 			});
+			// A row's editors hold their input state for as long as the row stays mounted, and a
+			// seeded symbol row stays mounted across a reset. Its dataKey is the row's identity, so
+			// a fresh one remounts the editors on the blank symbol.
+			if (draft.allele.alleleSymbol) {
+				addDataKey(draft.allele.alleleSymbol);
+				draft.entityStates.alleleSymbol.editingRows = { [draft.allele.alleleSymbol.dataKey]: true };
+			}
 			draft.errorMessages = {};
 			draft.submitted = false;
 			break;
