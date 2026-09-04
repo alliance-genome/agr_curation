@@ -1,7 +1,7 @@
 -- SCRUM-6463 — the fourth of the classes tracked by this ticket gets its curie column, so the
 -- htp_expression_sample backfill endpoint has somewhere to write.
 --
--- Split from v0.53.0.2 only because that migration was already committed. Same treatment as the
+-- Split from v0.53.0.3 only because that migration was already committed. Same treatment as the
 -- other three: nullable, indexed, no unique constraint.
 --
 -- Note HTPExpressionDatasetSampleAnnotation extends AuditedObject in the Java entity model, not
