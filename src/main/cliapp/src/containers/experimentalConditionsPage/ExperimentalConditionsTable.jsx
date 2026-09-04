@@ -147,13 +147,7 @@ export const ExperimentalConditionsTable = () => {
 				sortable: true,
 				body: (rowData) => <StringTemplate string={rowData.conditionQuantity} />,
 				filterConfig: FILTER_CONFIGS.conditionQuantityFilterConfig,
-				editor: (editorOptions) => (
-					<InputTextTableEditor
-						editorOptions={editorOptions}
-						field="conditionQuantity"
-						errorMessagesRef={errorMessagesRef}
-					/>
-				),
+				editor: (editorOptions) => <InputTextTableEditor editorOptions={editorOptions} field="conditionQuantity" />,
 			},
 			{
 				field: 'conditionFreeText',
@@ -161,13 +155,7 @@ export const ExperimentalConditionsTable = () => {
 				sortable: true,
 				body: (rowData) => <StringTemplate string={rowData.conditionFreeText} />,
 				filterConfig: FILTER_CONFIGS.conditionFreeTextFilterConfig,
-				editor: (editorOptions) => (
-					<InputTextTableEditor
-						editorOptions={editorOptions}
-						field="conditionFreeText"
-						errorMessagesRef={errorMessagesRef}
-					/>
-				),
+				editor: (editorOptions) => <InputTextTableEditor editorOptions={editorOptions} field="conditionFreeText" />,
 			},
 			{
 				field: 'internal',
