@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter } from 'react-router-dom';
 import { screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { renderWithClient } from '../../../tools/jest/utils';
 import AlleleDetailPage from '../AlleleDetailPage';
 import { setLocalStorage } from '../../../tools/jest/setupTests';
@@ -90,5 +91,18 @@ describe('<AlleleDetailPage />', () => {
 		await waitFor(() => {
 			expect(container.querySelector('.p-multiselect[aria-label="formFieldToggle"]')).toBeInTheDocument();
 		});
+	});
+
+	it('Opens the create page in a new tab from the New Allele button', async () => {
+		const user = userEvent.setup();
+		const open = vi.spyOn(window, 'open').mockImplementation(() => null);
+
+		renderPage();
+
+		const newAllele = await screen.findByRole('button', { name: /New Allele/i });
+		await user.click(newAllele);
+
+		expect(open).toHaveBeenCalledWith('/allele/create', '_blank');
+		open.mockRestore();
 	});
 });

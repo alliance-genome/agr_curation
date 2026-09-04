@@ -112,7 +112,8 @@ export const buildEmptyAlleleSymbol = () => ({
  * it cannot find and rejects it, and `{ curie: '' }` as a taxon it silently resolves to null.
  *
  * @param {Object} allele
- * @returns {Object} a copy carrying `type` and without a blank `taxon` or `inCollection`
+ * @returns {Object} a copy carrying `type`, without a blank `taxon` or `inCollection`, and
+ *   without the association subjects the API assigns
  */
 export const buildCreatePayload = (allele) => {
 	const payload = structuredClone(allele);
@@ -125,6 +126,13 @@ export const buildCreatePayload = (allele) => {
 	if (!payload.inCollection?.name) {
 		delete payload.inCollection;
 	}
+
+	// The API sets each association's subject to the allele it persists, so the copy the form holds
+	// is never read. It also has to go: a nested allele carries no `type` discriminator, and Jackson
+	// rejects the whole payload over it before the request reaches validation.
+	payload.alleleGeneAssociations?.forEach((association) => {
+		delete association.alleleAssociationSubject;
+	});
 
 	return payload;
 };
