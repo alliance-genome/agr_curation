@@ -16,11 +16,11 @@ import org.alliancegenome.curation_api.dao.VariantDAO;
 import org.alliancegenome.curation_api.dao.associations.AlleleVariantAssociationDAO;
 import org.alliancegenome.curation_api.dao.associations.CuratedVariantGenomicLocationAssociationDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
-import org.alliancegenome.curation_api.enums.ChromosomeAccessionEnum;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
 import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.AssemblyComponent;
+import org.alliancegenome.curation_api.model.entities.ChromosomeAccession;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.Note;
 import org.alliancegenome.curation_api.model.entities.Reference;
@@ -34,6 +34,7 @@ import org.alliancegenome.curation_api.model.ingest.dto.fms.VariantFmsDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.AlleleService;
+import org.alliancegenome.curation_api.services.ChromosomeAccessionService;
 import org.alliancegenome.curation_api.services.CrossReferenceService;
 import org.alliancegenome.curation_api.services.OrganizationService;
 import org.alliancegenome.curation_api.services.ReferenceService;
@@ -61,6 +62,7 @@ public class VariantFmsDTOValidator {
 	@Inject NoteDAO noteDAO;
 	@Inject AlleleService alleleService;
 	@Inject AssemblyComponentDAO assemblyComponentDAO;
+	@Inject ChromosomeAccessionService chromosomeAccessionService;
 	@Inject CuratedVariantGenomicLocationAssociationDAO curatedVariantGenomicLocationAssociationDAO;
 	@Inject CuratedVariantGenomicLocationAssociationService curatedVariantGenomicLocationAssociationService;
 	@Inject AlleleVariantAssociationDAO alleleVariantAssociationDAO;
@@ -271,11 +273,11 @@ public class VariantFmsDTOValidator {
 		if (StringUtils.isBlank(dto.getSequenceOfReferenceAccessionNumber())) {
 			cvglaResponse.addErrorMessage("sequenceOfReferenceAccessionNumber", ValidationConstants.REQUIRED_MESSAGE);
 		} else {
-			ChromosomeAccessionEnum cae = ChromosomeAccessionEnum.getChromosomeAccessionEnum(dto.getSequenceOfReferenceAccessionNumber());
+			ChromosomeAccession cae = chromosomeAccessionService.getChromosomeAccessionByAccession(dto.getSequenceOfReferenceAccessionNumber());
 			if (cae != null) {
 				Map<String, Object> params = new HashMap<>();
-				params.put("name", cae.chromosomeName);
-				params.put("genomeAssembly.primaryExternalId", cae.assemblyIdentifier);
+				params.put("name", cae.getChromosomeName());
+				params.put("genomeAssembly.primaryExternalId", cae.getAssemblyIdentifier());
 				SearchResponse<AssemblyComponent> acResponse = assemblyComponentDAO.findByParams(params);
 				if (acResponse != null) {
 					chromosome = acResponse.getSingleResult();
