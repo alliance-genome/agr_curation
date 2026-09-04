@@ -7,6 +7,9 @@ import { useSyncedState } from '../../../../hooks/useSyncedState';
 
 const EMPTY_ARRAY = [];
 
+// `selectedItemTemplate` labels the chosen chips; PrimeReact falls back to `field` without it, so
+// editors that do not pass one keep the chips they had.
+
 export const AutocompleteMultiEditor = ({
 	search,
 	initialValue,
@@ -15,6 +18,7 @@ export const AutocompleteMultiEditor = ({
 	fieldName,
 	subField = 'curie',
 	valueDisplay,
+	selectedItemTemplate,
 	onValueChangeHandler,
 	customRef,
 	disabled,
@@ -51,6 +55,7 @@ export const AutocompleteMultiEditor = ({
 				disabled={disabled}
 				suggestions={suggestions}
 				itemTemplate={itemTemplate}
+				selectedItemTemplate={selectedItemTemplate}
 				completeMethod={(event) => search(event, setSuggestions, setInputValue, editorOptions)}
 				onHide={(e) => op.current.hide(e)}
 				onChange={(e) => onValueChangeHandler(e, setFieldValue, editorOptions)}
