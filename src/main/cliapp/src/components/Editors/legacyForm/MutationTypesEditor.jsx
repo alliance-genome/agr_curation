@@ -1,7 +1,6 @@
 import { AutocompleteMultiEditor } from '../autocomplete/base/AutocompleteMultiEditor';
 import { SearchService } from '../../../service/SearchService';
-import { autocompleteSearch, buildAutocompleteFilter } from '../../../utils/utils';
-import { SubjectAutocompleteTemplate } from '../autocomplete/base/templates/SubjectAutocompleteTemplate';
+import { autocompleteSearch, buildAutocompleteFilter, getIdentifier } from '../../../utils/utils';
 import { DialogErrorMessageComponent } from '../../Error/DialogErrorMessageComponent';
 import { Endpoints } from '../../../constants/Endpoints';
 import { AUTOCOMPLETE_CONFIGS, getAutocompleteFields } from '../../../constants/FilterFields';
@@ -16,6 +15,9 @@ const mutationTypeSearch = (event, setFiltered, setInputValue) => {
 	setInputValue(event.query);
 	autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered);
 };
+// Matches the suggestion list, so a term reads the same before and after it is chosen.
+const mutationTypeLabel = (term) => (term?.name ? `${term.name} (${getIdentifier(term)})` : getIdentifier(term));
+
 export const MutationTypesEditor = ({ props, errorMessages, onChange, dataKey }) => {
 	return (
 		<>
@@ -25,14 +27,7 @@ export const MutationTypesEditor = ({ props, errorMessages, onChange, dataKey })
 				editorOptions={props}
 				fieldName="mutationTypes"
 				subField="curie"
-				valueDisplay={(item, setAutocompleteHoverItem, op, query) => (
-					<SubjectAutocompleteTemplate
-						item={item}
-						setAutocompleteHoverItem={setAutocompleteHoverItem}
-						op={op}
-						query={query}
-					/>
-				)}
+				selectedItemTemplate={mutationTypeLabel}
 				onValueChangeHandler={onChange}
 			/>
 			<DialogErrorMessageComponent errorMessages={errorMessages[dataKey]} errorField={'mutationTypes'} />
