@@ -203,6 +203,12 @@ export const FIELD_SETS = Object.freeze({
 		filterName: 'antibodyAggregationFilter',
 		fields: ['dataProvider.abbreviation', 'clonality.name', 'heavyChainIsotype.name', 'lightChainIsotype.name'],
 	},
+	antibodyDataProviderFieldSet: {
+		// Dedicated field set (rather than the shared dataProviderFieldSet) so only Antibody's
+		// filter targets the keyword field directly -- see clonalityFieldSet for why.
+		filterName: 'dataProviderFilter',
+		fields: ['dataProvider.abbreviation_keyword'],
+	},
 	antibodyTargetGenesFieldSet: {
 		filterName: 'antibodyTargetGenesFilter',
 		fields: [
@@ -218,20 +224,22 @@ export const FIELD_SETS = Object.freeze({
 		fields: ['antigenTaxon.curie', 'antigenTaxon.name'],
 	},
 	clonalityFieldSet: {
+		// Targets the keyword field directly (not useKeywordFields) so this multiselect only ever
+		// matches a selected value exactly -- no analyzed-field fallback to bleed across e.g. IgG/IgG1.
 		filterName: 'clonalityFilter',
-		fields: ['clonality.name'],
+		fields: ['clonality.name_keyword'],
 	},
 	heavyChainIsotypeFieldSet: {
 		filterName: 'heavyChainIsotypeFilter',
-		fields: ['heavyChainIsotype.name'],
+		fields: ['heavyChainIsotype.name_keyword'],
 	},
 	lightChainIsotypeFieldSet: {
 		filterName: 'lightChainIsotypeFilter',
-		fields: ['lightChainIsotype.name'],
+		fields: ['lightChainIsotype.name_keyword'],
 	},
 	originalReferenceFieldSet: {
 		filterName: 'originalReferenceFilter',
-		fields: ['originalReference.curie'],
+		fields: ['originalReference.curie', 'originalReference.primaryCrossReferenceCurie'],
 	},
 	citationFieldSet: {
 		filterName: 'citationFilter',
@@ -338,6 +346,13 @@ export const FIELD_SETS = Object.freeze({
 	// throws a Hibernate Search "Unknown field" on /doterm and the other ontology
 	// endpoints (SCRUM-6220), so ontology autocompletes use this depth-1-only variant.
 	ontologyCrossReferencesFieldSet: {
+		filterName: 'crossReferencesFilter',
+		fields: ['crossReferences.displayName', 'crossReferences.referencedCurie'],
+	},
+	// Antibody.crossReferences is likewise @IndexedEmbedded without resourceDescriptorPage.name
+	// (see Antibody.java) -- same depth-2-not-indexed issue as ontologyCrossReferencesFieldSet above,
+	// so the Antibody table's Cross References filter needs the same depth-1-only variant.
+	antibodyCrossReferencesFieldSet: {
 		filterName: 'crossReferencesFilter',
 		fields: ['crossReferences.displayName', 'crossReferences.referencedCurie'],
 	},
@@ -1084,9 +1099,8 @@ export const FILTER_CONFIGS = Object.freeze({
 	},
 	antibodyDataProviderFilterConfig: {
 		filterComponentType: 'multiselect',
-		fieldSets: [FIELD_SETS.dataProviderFieldSet],
+		fieldSets: [FIELD_SETS.antibodyDataProviderFieldSet],
 		aggregationFieldSet: FIELD_SETS.antibodyAggregationFieldSet,
-		useKeywordFields: true,
 	},
 	antibodyTargetGenesFilterConfig: {
 		filterComponentType: 'input',
@@ -1097,19 +1111,16 @@ export const FILTER_CONFIGS = Object.freeze({
 		filterComponentType: 'multiselect',
 		fieldSets: [FIELD_SETS.clonalityFieldSet],
 		aggregationFieldSet: FIELD_SETS.antibodyAggregationFieldSet,
-		useKeywordFields: true,
 	},
 	heavyChainIsotypeFilterConfig: {
 		filterComponentType: 'multiselect',
 		fieldSets: [FIELD_SETS.heavyChainIsotypeFieldSet],
 		aggregationFieldSet: FIELD_SETS.antibodyAggregationFieldSet,
-		useKeywordFields: true,
 	},
 	lightChainIsotypeFilterConfig: {
 		filterComponentType: 'multiselect',
 		fieldSets: [FIELD_SETS.lightChainIsotypeFieldSet],
 		aggregationFieldSet: FIELD_SETS.antibodyAggregationFieldSet,
-		useKeywordFields: true,
 	},
 	originalReferenceFilterConfig: {
 		filterComponentType: 'input',
@@ -1118,6 +1129,10 @@ export const FILTER_CONFIGS = Object.freeze({
 	createdByFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.createdByFieldSet] },
 	crossReferenceFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.crossReferenceFieldSet] },
 	crossReferencesFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.crossReferencesFieldSet] },
+	antibodyCrossReferencesFilterConfig: {
+		filterComponentType: 'input',
+		fieldSets: [FIELD_SETS.antibodyCrossReferencesFieldSet],
+	},
 	curieFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.curieFieldSet] },
 
 	daConditionRelationsHandleFilterConfig: {
