@@ -31,6 +31,7 @@ import lombok.ToString;
 @AGRCurationSchemaVersion(min = "2.2.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { GeneInteraction.class })
 
 @Table(indexes = {
+	@Index(name = "GeneMolecularInteraction_curie_index", columnList = "curie"),
 	@Index(name = "GeneMolecularInteraction_internal_index", columnList = "internal"),
 	@Index(name = "GeneMolecularInteraction_obsolete_index", columnList = "obsolete"),
 	@Index(name = "GeneMolecularInteraction_interactionId_index", columnList = "interactionId"),

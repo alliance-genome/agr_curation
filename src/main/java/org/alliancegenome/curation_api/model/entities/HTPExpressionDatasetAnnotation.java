@@ -5,6 +5,7 @@ import java.util.List;
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.entities.base.AuditedObject;
+import org.alliancegenome.curation_api.model.entities.interfaces.CurieInterface;
 import org.alliancegenome.curation_api.view.CurationView;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.hibernate.annotations.Fetch;
@@ -44,6 +45,7 @@ import lombok.ToString;
 @Schema(name = "HTPExpressionDatasetAnnotation", description = "HTPExpressionDatasetAnnotation: a HTP expression dataset annotation")
 @AGRCurationSchemaVersion(min = "2.9.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AuditedObject.class })
 @Table(indexes = {
+	@Index(name = "htpdatasetannotation_curie_index", columnList = "curie"),
 	@Index(name = "htpdatasetannotation_htpExpressionDataset_index", columnList = "htpExpressionDataset_id"),
 	@Index(name = "htpdatasetannotation_relatednote_index", columnList = "relatednote_id"),
 	@Index(name = "htpdatasetannotation_dataprovider_index", columnList = "dataprovider_id"),
@@ -51,7 +53,14 @@ import lombok.ToString;
 	@Index(name = "htpdatasetannotation_createdby_index", columnList = "createdby_id"),
 	@Index(name = "htpdatasetannotation_updatedby_index", columnList = "updatedby_id")
 })
-public class HTPExpressionDatasetAnnotation extends AuditedObject {
+public class HTPExpressionDatasetAnnotation extends AuditedObject implements CurieInterface {
+
+	// SCRUM-6463 — AGRKB curie, minted from MaTI subdomain htp_expression_dataset. Nullable: rows that
+	// predate minting carry NULL until the backfill fills them in.
+	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
+	@KeywordField(name = "curie_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
+	@JsonView({ CurationView.FieldsOnly.class })
+	private String curie;
 
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
