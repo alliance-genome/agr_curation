@@ -154,7 +154,7 @@ export const AntibodiesTable = () => {
 				header: 'Cross References',
 				sortable: false,
 				body: (rowData) => <CrossReferencesTemplate list={rowData.crossReferences} />,
-				filterConfig: FILTER_CONFIGS.crossReferencesFilterConfig,
+				filterConfig: FILTER_CONFIGS.antibodyCrossReferencesFilterConfig,
 			},
 			{
 				field: 'dataProvider.abbreviation',
