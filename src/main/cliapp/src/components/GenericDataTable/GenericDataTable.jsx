@@ -18,6 +18,9 @@ import { useGenericDataTable } from './useGenericDataTable';
 
 import './styles.scss';
 import { DataTableFooter } from './DataTableFooter';
+import { TableEditorProvider } from '../Editors/fields/TableEditorContext';
+import { usePrimeRowEditStrategy } from '../Editors/fields/strategies/usePrimeRowEditStrategy';
+
 export const GenericDataTable = (props) => {
 	const {
 		tableName,
@@ -62,6 +65,8 @@ export const GenericDataTable = (props) => {
 		setToModDefault,
 		resetTableState,
 		exceptionMessage,
+		errorMessages,
+		uiErrorMessages,
 	} = useGenericDataTable(props);
 
 	const toast_topleft = useRef(null);
@@ -73,6 +78,7 @@ export const GenericDataTable = (props) => {
 	const [entityToDelete, setEntityToDelete] = useState(null);
 	const [deletionErrorMessage, setDeletionErrorMessage] = useState(null);
 	const [allowDelete, setAllowDelete] = useState(false);
+	const strategy = usePrimeRowEditStrategy({ errorMessages, uiErrorMessages });
 
 	const createMultiselectComponent = () => {
 		return (
@@ -294,106 +300,108 @@ export const GenericDataTable = (props) => {
 		<div className="card">
 			<Toast ref={toast_topleft} position="top-left" />
 			<Toast ref={toast_topright} position="top-right" />
-			<DataTable
-				dataKey={dataKey}
-				value={entities}
-				header={header}
-				ref={dataTable}
-				filterDisplay="row"
-				scrollHeight="62vh"
-				scrollable={true}
-				tableClassName="p-datatable-md"
-				editMode="row"
-				onRowEditInit={onRowEditInit}
-				onRowEditCancel={onRowEditCancel}
-				onRowEditSave={onRowEditSave}
-				editingRows={editingRows}
-				onRowEditChange={onRowEditChange}
-				sortMode="multiple"
-				removableSort={true}
-				onSort={onSort}
-				multiSortMeta={tableState.multiSortMeta}
-				onColReorder={colReorderHandler}
-				reorderableColumns={true}
-				resizableColumns={true}
-				columnResizeMode="expand"
-				showGridlines={true}
-				onColumnResizeEnd={handleColumnResizeEnd}
-				totalRecords={totalRecords}
-				lazy={true}
-				rowClassName={(props) => getRowClass(props)}
-				loading={fetching}
-				loadingIcon="pi pi-spin pi-spinner"
-				footer={
-					<DataTableFooter
-						first={tableState.first}
-						rows={tableState.rows}
-						totalRecords={totalRecords}
-						onLazyLoad={onLazyLoad}
-						isInEditMode={isInEditMode}
-					/>
-				}
-			>
-				{isEditable && (
-					<Column
-						field="rowEditor"
-						rowEditor
-						className={`text-center row-editor-column p-0 text-base`}
-						filter
-						filterElement={rowEditorFilterNameHeader}
-						showFilterMenu={false}
-						bodyStyle={{ textAlign: 'center' }}
-						frozen
-						headerClassName={`surface-0 row-editor-column sticky`}
-					/>
-				)}
-				{deletionEnabled && (
-					<Column
-						field="delete"
-						editor={(props) => deleteAction(props, true)}
-						body={(props) => deleteAction(props, isInEditMode)}
-						filterElement={rowEditorFilterNameHeader}
-						showFilterMenu={false}
-						className={`text-center p-0 action-column ${isEditable ? 'visible' : 'hidden'}`}
-						bodyStyle={{ textAlign: 'center' }}
-						frozen
-						headerClassName="surface-0 action-column sticky"
-					/>
-				)}
-				{duplicationEnabled && (
-					<Column
-						field="duplicate"
-						editor={(props) => (
-							<DuplicationAction props={props} handleDuplication={handleDuplication} disabled={true} />
-						)}
-						body={(props) => (
-							<DuplicationAction props={props} handleDuplication={handleDuplication} disabled={isInEditMode} />
-						)}
-						showFilterMenu={false}
-						className={`text-center p-0 action-column ${isEditable ? 'visible' : 'hidden'}`}
-						bodyStyle={{ textAlign: 'center' }}
-						frozen
-						headerClassName="surface-0 action-column sticky"
-					/>
-				)}
-				{hasDetails && (
-					<Column
-						field="details"
-						editor={(props) => (
-							<EntityDetailsAction endpoint={endpoint} identifier={getIdentifier(props.rowData)} disabled={true} />
-						)}
-						body={(props) => (
-							<EntityDetailsAction endpoint={endpoint} identifier={getIdentifier(props)} disabled={isInEditMode} />
-						)}
-						showFilterMenu={false}
-						className="text-center p-0 action-column"
-						bodyStyle={{ textAlign: 'center' }}
-						frozen
-						headerClassName="surface-0 action-column sticky"
-					/>
-				)}
-				{columnList}
-			</DataTable>
+			<TableEditorProvider strategy={strategy}>
+				<DataTable
+					dataKey={dataKey}
+					value={entities}
+					header={header}
+					ref={dataTable}
+					filterDisplay="row"
+					scrollHeight="62vh"
+					scrollable={true}
+					tableClassName="p-datatable-md"
+					editMode="row"
+					onRowEditInit={onRowEditInit}
+					onRowEditCancel={onRowEditCancel}
+					onRowEditSave={onRowEditSave}
+					editingRows={editingRows}
+					onRowEditChange={onRowEditChange}
+					sortMode="multiple"
+					removableSort={true}
+					onSort={onSort}
+					multiSortMeta={tableState.multiSortMeta}
+					onColReorder={colReorderHandler}
+					reorderableColumns={true}
+					resizableColumns={true}
+					columnResizeMode="expand"
+					showGridlines={true}
+					onColumnResizeEnd={handleColumnResizeEnd}
+					totalRecords={totalRecords}
+					lazy={true}
+					rowClassName={(props) => getRowClass(props)}
+					loading={fetching}
+					loadingIcon="pi pi-spin pi-spinner"
+					footer={
+						<DataTableFooter
+							first={tableState.first}
+							rows={tableState.rows}
+							totalRecords={totalRecords}
+							onLazyLoad={onLazyLoad}
+							isInEditMode={isInEditMode}
+						/>
+					}
+				>
+					{isEditable && (
+						<Column
+							field="rowEditor"
+							rowEditor
+							className={`text-center row-editor-column p-0 text-base`}
+							filter
+							filterElement={rowEditorFilterNameHeader}
+							showFilterMenu={false}
+							bodyStyle={{ textAlign: 'center' }}
+							frozen
+							headerClassName={`surface-0 row-editor-column sticky`}
+						/>
+					)}
+					{deletionEnabled && (
+						<Column
+							field="delete"
+							editor={(props) => deleteAction(props, true)}
+							body={(props) => deleteAction(props, isInEditMode)}
+							filterElement={rowEditorFilterNameHeader}
+							showFilterMenu={false}
+							className={`text-center p-0 action-column ${isEditable ? 'visible' : 'hidden'}`}
+							bodyStyle={{ textAlign: 'center' }}
+							frozen
+							headerClassName="surface-0 action-column sticky"
+						/>
+					)}
+					{duplicationEnabled && (
+						<Column
+							field="duplicate"
+							editor={(props) => (
+								<DuplicationAction props={props} handleDuplication={handleDuplication} disabled={true} />
+							)}
+							body={(props) => (
+								<DuplicationAction props={props} handleDuplication={handleDuplication} disabled={isInEditMode} />
+							)}
+							showFilterMenu={false}
+							className={`text-center p-0 action-column ${isEditable ? 'visible' : 'hidden'}`}
+							bodyStyle={{ textAlign: 'center' }}
+							frozen
+							headerClassName="surface-0 action-column sticky"
+						/>
+					)}
+					{hasDetails && (
+						<Column
+							field="details"
+							editor={(props) => (
+								<EntityDetailsAction endpoint={endpoint} identifier={getIdentifier(props.rowData)} disabled={true} />
+							)}
+							body={(props) => (
+								<EntityDetailsAction endpoint={endpoint} identifier={getIdentifier(props)} disabled={isInEditMode} />
+							)}
+							showFilterMenu={false}
+							className="text-center p-0 action-column"
+							bodyStyle={{ textAlign: 'center' }}
+							frozen
+							headerClassName="surface-0 action-column sticky"
+						/>
+					)}
+					{columnList}
+				</DataTable>
+			</TableEditorProvider>
 
 			<Dialog
 				visible={deleteDialog}
