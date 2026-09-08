@@ -3,9 +3,9 @@ package org.alliancegenome.curation_api.services;
 import java.util.List;
 
 import org.alliancegenome.curation_api.dao.base.BaseCurieSQLDAO;
-import org.alliancegenome.curation_api.enums.CurieSubdomain;
 import org.alliancegenome.curation_api.enums.MatiSubdomain;
 import org.alliancegenome.curation_api.model.entities.interfaces.CurieInterface;
+import org.alliancegenome.curation_api.util.CurieSubdomainResolver;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
 
 import jakarta.enterprise.context.RequestScoped;
@@ -35,7 +35,7 @@ public class CurieMintService {
 	/**
 	 * Mints and assigns a single AGRKB curie to {@code entity} iff it does not already have one,
 	 * returning {@code true} if a curie was minted. The MaTI subdomain is derived from the entity's
-	 * type via {@link CurieSubdomain}, so no call site names one.
+	 * type via {@link org.alliancegenome.curation_api.interfaces.CurieSubdomain}, so no call site names one.
 	 *
 	 * Call this immediately before the entity is persisted, so the curie is written in the caller's
 	 * transaction — this method deliberately has no {@code @Transactional} of its own. A re-load
@@ -61,12 +61,12 @@ public class CurieMintService {
 		if (entity == null || entity.getCurie() != null) {
 			return false;
 		}
-		return mintCurieIfAbsent(entity, CurieSubdomain.subdomainFor(entity));
+		return mintCurieIfAbsent(entity, CurieSubdomainResolver.subdomainFor(entity));
 	}
 
 	/**
 	 * Private on purpose. The subdomain an entity mints from is a property of the entity, so it is
-	 * resolved from {@link CurieSubdomain} rather than passed in: a caller that could name its own
+	 * resolved from {@link org.alliancegenome.curation_api.interfaces.CurieSubdomain} rather than passed in: a caller that could name its own
 	 * subdomain could name the wrong one, and nothing would fail — the curie would simply be drawn
 	 * from another entity's sequence. {@link #mintMissingCuries} still takes one explicitly because
 	 * a backfill is driven by a DAO rather than by an entity instance.
@@ -97,7 +97,7 @@ public class CurieMintService {
 	 * before the assignments commit, those curies are lost and the rows are re-handled on the next
 	 * run with a fresh batch. Keep the batch small to bound the blast radius.
 	 *
-	 * The MaTI subdomain is derived from the DAO's entity type via {@link CurieSubdomain}, so no
+	 * The MaTI subdomain is derived from the DAO's entity type via {@link org.alliancegenome.curation_api.interfaces.CurieSubdomain}, so no
 	 * endpoint names one.
 	 *
 	 * @param dao       the DAO for the entity type being backfilled
@@ -110,7 +110,7 @@ public class CurieMintService {
 		if (dao == null) {
 			throw new IllegalArgumentException("no DAO to backfill");
 		}
-		mintMissingCuries(dao, CurieSubdomain.subdomainForClass(dao.getEntityClass()), batchSize, maxToMint);
+		mintMissingCuries(dao, CurieSubdomainResolver.subdomainForClass(dao.getEntityClass()), batchSize, maxToMint);
 	}
 
 	/**

@@ -5,142 +5,127 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.Map;
 
-import org.alliancegenome.curation_api.enums.CurieSubdomain;
 import org.alliancegenome.curation_api.enums.MatiSubdomain;
 import org.alliancegenome.curation_api.model.entities.AGMDiseaseAnnotation;
+import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
 import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.AlleleDiseaseAnnotation;
 import org.alliancegenome.curation_api.model.entities.AllelePhenotypeAnnotation;
+import org.alliancegenome.curation_api.model.entities.Antibody;
+import org.alliancegenome.curation_api.model.entities.AssemblyComponent;
+import org.alliancegenome.curation_api.model.entities.Construct;
+import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.GeneDiseaseAnnotation;
 import org.alliancegenome.curation_api.model.entities.GeneGeneticInteraction;
 import org.alliancegenome.curation_api.model.entities.GeneMolecularInteraction;
+import org.alliancegenome.curation_api.model.entities.GenomeAssembly;
 import org.alliancegenome.curation_api.model.entities.HTPExpressionDatasetAnnotation;
 import org.alliancegenome.curation_api.model.entities.HTPExpressionDatasetSampleAnnotation;
+import org.alliancegenome.curation_api.model.entities.PhenotypeAnnotation;
 import org.alliancegenome.curation_api.model.entities.Reference;
-import org.alliancegenome.curation_api.model.entities.interfaces.CurieInterface;
+import org.alliancegenome.curation_api.model.entities.SequenceTargetingReagent;
+import org.alliancegenome.curation_api.model.entities.Variant;
+import org.alliancegenome.curation_api.util.CurieSubdomainResolver;
 import org.junit.jupiter.api.Test;
 
 /**
- * Pins the entity-to-subdomain mapping that CurieMintService.mintCurieIfAbsent(CurieInterface) now
- * derives instead of taking as an argument.
+ * Pins the @CurieSubdomain declarations that CurieMintService now reads off the entity instead of
+ * taking as an argument.
  *
- * Worth pinning because a wrong entry fails silently in the worst way: the write succeeds, the
- * entity gets a well-formed AGRKB curie, and the only symptom is that the id came out of another
- * entity's sequence. Nothing downstream would reject it.
+ * Worth pinning because a wrong or missing declaration fails silently in the worst way: the write
+ * succeeds, the entity gets a well-formed AGRKB curie, and the only symptom is that the id came out
+ * of another entity's sequence. Nothing downstream would reject it.
  *
- * The expectations below are the subdomains the call sites named before the mapping moved into
- * CurieSubdomain, so this also guards the refactor itself.
+ * The expectations below are the subdomains the call sites named before the mapping moved onto the
+ * entities, so this guards the move as well as future edits.
  */
 class CurieSubdomainTest {
 
-	private static final Map<CurieInterface, MatiSubdomain> EXPECTED_BY_ENTITY = Map.of(
-		new Gene(), MatiSubdomain.GENE,
-		new Allele(), MatiSubdomain.ALLELE,
-		new GeneMolecularInteraction(), MatiSubdomain.MOLECULAR_INTERACTION,
-		new GeneGeneticInteraction(), MatiSubdomain.GENETIC_INTERACTION,
-		new HTPExpressionDatasetAnnotation(), MatiSubdomain.HTP_EXPRESSION_DATASET,
-		new HTPExpressionDatasetSampleAnnotation(), MatiSubdomain.HTP_EXPRESSION_SAMPLE
-	);
+	/**
+	 * One entry per entity type that is minted for, which is also one per /system/mint*curies
+	 * endpoint: the backfill resolves its subdomain from the DAO's entity type, so every type here
+	 * must carry a declaration.
+	 */
+	private static final Map<Class<?>, MatiSubdomain> EXPECTED = Map.ofEntries(
+		Map.entry(Gene.class, MatiSubdomain.GENE),
+		Map.entry(Allele.class, MatiSubdomain.ALLELE),
+		Map.entry(Variant.class, MatiSubdomain.VARIANT),
+		Map.entry(AffectedGenomicModel.class, MatiSubdomain.AGM),
+		Map.entry(Construct.class, MatiSubdomain.CONSTRUCT),
+		Map.entry(Antibody.class, MatiSubdomain.ANTIBODY),
+		Map.entry(SequenceTargetingReagent.class, MatiSubdomain.SEQUENCE_TARGETING_REAGENT),
+		Map.entry(AssemblyComponent.class, MatiSubdomain.ASSEMBLY_COMPONENT),
+		Map.entry(GenomeAssembly.class, MatiSubdomain.GENOME_ASSEMBLY),
+		Map.entry(DiseaseAnnotation.class, MatiSubdomain.DISEASE_ANNOTATION),
+		Map.entry(PhenotypeAnnotation.class, MatiSubdomain.PHENOTYPE_ANNOTATION),
+		Map.entry(GeneMolecularInteraction.class, MatiSubdomain.MOLECULAR_INTERACTION),
+		Map.entry(GeneGeneticInteraction.class, MatiSubdomain.GENETIC_INTERACTION),
+		Map.entry(HTPExpressionDatasetAnnotation.class, MatiSubdomain.HTP_EXPRESSION_DATASET),
+		Map.entry(HTPExpressionDatasetSampleAnnotation.class, MatiSubdomain.HTP_EXPRESSION_SAMPLE));
 
 	@Test
-	void everyMintedEntityTypeResolvesToTheSubdomainItsCallSiteUsedToName() {
-		EXPECTED_BY_ENTITY.forEach((entity, expected) ->
-			assertEquals(expected, CurieSubdomain.subdomainFor(entity),
-				entity.getClass().getSimpleName() + " resolves to the wrong MaTI subdomain"));
+	void everyMintedEntityTypeDeclaresTheSubdomainItsCallSiteUsedToName() {
+		assertEquals(15, EXPECTED.size(), "one entry per minted entity type");
+		EXPECTED.forEach((entityClass, expected) ->
+			assertEquals(expected, CurieSubdomainResolver.subdomainForClass(entityClass),
+				entityClass.getSimpleName() + " declares the wrong MaTI subdomain"));
 	}
 
 	/**
 	 * The three disease annotation services each pass their own concrete subtype, none of which is
-	 * registered; they must all reach the single DISEASE_ANNOTATION entry on DiseaseAnnotation. This
-	 * is the case the superclass walk exists for, and the same walk is what makes a Hibernate proxy
-	 * resolve to the entity it stands in for.
+	 * annotated; they must all pick up the single declaration on DiseaseAnnotation. This is what
+	 * {@code @Inherited} buys, and the same mechanism is what makes a Hibernate proxy — a generated
+	 * subclass — resolve to the entity it stands in for.
 	 */
 	@Test
-	void annotationSubtypesResolveThroughTheirRegisteredAncestor() {
-		assertEquals(MatiSubdomain.DISEASE_ANNOTATION, CurieSubdomain.subdomainFor(new AGMDiseaseAnnotation()));
-		assertEquals(MatiSubdomain.DISEASE_ANNOTATION, CurieSubdomain.subdomainFor(new AlleleDiseaseAnnotation()));
-		assertEquals(MatiSubdomain.DISEASE_ANNOTATION, CurieSubdomain.subdomainFor(new GeneDiseaseAnnotation()));
-		assertEquals(MatiSubdomain.PHENOTYPE_ANNOTATION, CurieSubdomain.subdomainFor(new AllelePhenotypeAnnotation()));
+	void subtypesInheritTheirParentsDeclaration() {
+		assertEquals(MatiSubdomain.DISEASE_ANNOTATION, CurieSubdomainResolver.subdomainFor(new AGMDiseaseAnnotation()));
+		assertEquals(MatiSubdomain.DISEASE_ANNOTATION, CurieSubdomainResolver.subdomainFor(new AlleleDiseaseAnnotation()));
+		assertEquals(MatiSubdomain.DISEASE_ANNOTATION, CurieSubdomainResolver.subdomainFor(new GeneDiseaseAnnotation()));
+		assertEquals(MatiSubdomain.PHENOTYPE_ANNOTATION, CurieSubdomainResolver.subdomainFor(new AllelePhenotypeAnnotation()));
+	}
+
+	/**
+	 * Both interactions descend from GeneGeneAssociation, which carries no declaration, and each
+	 * declares its own. If one ever inherited the other's, minting would cross the two sequences.
+	 */
+	@Test
+	void siblingInteractionsKeepTheirOwnSubdomains() {
+		assertEquals(MatiSubdomain.MOLECULAR_INTERACTION, CurieSubdomainResolver.subdomainFor(new GeneMolecularInteraction()));
+		assertEquals(MatiSubdomain.GENETIC_INTERACTION, CurieSubdomainResolver.subdomainFor(new GeneGeneticInteraction()));
 	}
 
 	/**
 	 * A Reference carries a curie inherited from CurieObject but the Alliance does not mint one for
-	 * it on a write path, so it is deliberately unregistered. Resolution must fail loudly rather
-	 * than fall back to some default subdomain and burn ids from the wrong sequence.
+	 * it, so it is deliberately unannotated. Resolution must fail loudly rather than default to some
+	 * subdomain and burn ids from the wrong sequence.
 	 */
 	@Test
-	void unregisteredCurieCarrierIsRejectedRatherThanDefaulted() {
+	void unannotatedCurieCarrierIsRejectedRatherThanDefaulted() {
 		IllegalArgumentException e = assertThrows(IllegalArgumentException.class,
-			() -> CurieSubdomain.subdomainFor(new Reference()));
-		assertEquals(true, e.getMessage().contains("no MaTI subdomain is registered"),
+			() -> CurieSubdomainResolver.subdomainFor(new Reference()));
+		assertEquals(true, e.getMessage().contains("declares no @CurieSubdomain"),
 			"unexpected message: " + e.getMessage());
+		assertThrows(IllegalArgumentException.class,
+			() -> CurieSubdomainResolver.subdomainForClass(Reference.class));
 	}
 
 	@Test
-	void nullEntityIsRejected() {
-		assertThrows(IllegalArgumentException.class, () -> CurieSubdomain.subdomainFor(null));
+	void nullsAreRejected() {
+		assertThrows(IllegalArgumentException.class, () -> CurieSubdomainResolver.subdomainFor(null));
+		assertThrows(IllegalArgumentException.class, () -> CurieSubdomainResolver.subdomainForClass(null));
 	}
 
 	/**
-	 * The backfill resolves its subdomain from the DAO's entity type rather than from an instance, so
-	 * every DAO that extends BaseCurieSQLDAO must have its type argument registered. These are the
-	 * fifteen type arguments behind the /system/mint*curies endpoints, with the subdomains those
-	 * endpoints named before the mapping moved here.
-	 *
-	 * A miss on this path is the costliest kind: the endpoint would backfill an entire table out of
-	 * another entity's sequence, or fail outright, rather than affecting one record.
+	 * Two entities declaring the same subdomain would make minting ambiguous. Checked over the types
+	 * this test knows about rather than by scanning the classpath, so adding a minted entity means
+	 * adding it to EXPECTED above.
 	 */
 	@Test
-	void everyBackfillDaoEntityTypeResolvesToItsEndpointsSubdomain() {
-		Map<Class<?>, MatiSubdomain> daoEntityTypes = Map.ofEntries(
-			Map.entry(Gene.class, MatiSubdomain.GENE),
-			Map.entry(Allele.class, MatiSubdomain.ALLELE),
-			Map.entry(org.alliancegenome.curation_api.model.entities.Variant.class, MatiSubdomain.VARIANT),
-			Map.entry(org.alliancegenome.curation_api.model.entities.AffectedGenomicModel.class, MatiSubdomain.AGM),
-			Map.entry(org.alliancegenome.curation_api.model.entities.Construct.class, MatiSubdomain.CONSTRUCT),
-			Map.entry(org.alliancegenome.curation_api.model.entities.Antibody.class, MatiSubdomain.ANTIBODY),
-			Map.entry(org.alliancegenome.curation_api.model.entities.SequenceTargetingReagent.class,
-				MatiSubdomain.SEQUENCE_TARGETING_REAGENT),
-			Map.entry(org.alliancegenome.curation_api.model.entities.AssemblyComponent.class,
-				MatiSubdomain.ASSEMBLY_COMPONENT),
-			Map.entry(org.alliancegenome.curation_api.model.entities.GenomeAssembly.class,
-				MatiSubdomain.GENOME_ASSEMBLY),
-			Map.entry(org.alliancegenome.curation_api.model.entities.DiseaseAnnotation.class,
-				MatiSubdomain.DISEASE_ANNOTATION),
-			Map.entry(org.alliancegenome.curation_api.model.entities.PhenotypeAnnotation.class,
-				MatiSubdomain.PHENOTYPE_ANNOTATION),
-			Map.entry(GeneMolecularInteraction.class, MatiSubdomain.MOLECULAR_INTERACTION),
-			Map.entry(GeneGeneticInteraction.class, MatiSubdomain.GENETIC_INTERACTION),
-			Map.entry(HTPExpressionDatasetAnnotation.class, MatiSubdomain.HTP_EXPRESSION_DATASET),
-			Map.entry(HTPExpressionDatasetSampleAnnotation.class, MatiSubdomain.HTP_EXPRESSION_SAMPLE));
-
-		assertEquals(15, daoEntityTypes.size(), "one entry per /system/mint*curies endpoint");
-		daoEntityTypes.forEach((entityClass, expected) ->
-			assertEquals(expected, CurieSubdomain.subdomainForClass(entityClass),
-				entityClass.getSimpleName() + " backfills from the wrong MaTI subdomain"));
-	}
-
-	@Test
-	void everyRegisteredClassResolvesBackToItsOwnEntry() {
-		for (CurieSubdomain cs : CurieSubdomain.values()) {
-			assertEquals(cs, CurieSubdomain.forEntityClass(cs.getEntityClass()),
-				cs.name() + " does not resolve back to itself; another entry shadows its class");
-		}
-	}
-
-	@Test
-	void unregisteredEntityClassIsRejected() {
-		assertThrows(IllegalArgumentException.class, () -> CurieSubdomain.subdomainForClass(Reference.class));
-		assertThrows(IllegalArgumentException.class, () -> CurieSubdomain.subdomainForClass(null));
-	}
-
-	/** Two entries pointing at the same MaTI subdomain would make minting ambiguous. */
-	@Test
-	void noSubdomainIsRegisteredTwice() {
-		long distinct = java.util.Arrays.stream(CurieSubdomain.values())
-			.map(CurieSubdomain::getSubdomain).distinct().count();
-		assertEquals(CurieSubdomain.values().length, distinct,
-			"a MaTI subdomain is registered against more than one entity class");
+	void noSubdomainIsDeclaredTwice() {
+		long distinct = EXPECTED.values().stream().distinct().count();
+		assertEquals(EXPECTED.size(), distinct,
+			"a MaTI subdomain is declared on more than one entity class");
 	}
 }

@@ -3,7 +3,9 @@ package org.alliancegenome.curation_api.model.entities;
 import java.util.List;
 
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
+import org.alliancegenome.curation_api.enums.MatiSubdomain;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
+import org.alliancegenome.curation_api.interfaces.CurieSubdomain;
 import org.alliancegenome.curation_api.model.entities.base.AuditedObject;
 import org.alliancegenome.curation_api.model.entities.interfaces.CurieInterface;
 import org.alliancegenome.curation_api.view.CurationView;
@@ -53,6 +55,7 @@ import lombok.ToString;
 	@Index(name = "htpdatasetannotation_createdby_index", columnList = "createdby_id"),
 	@Index(name = "htpdatasetannotation_updatedby_index", columnList = "updatedby_id")
 })
+@CurieSubdomain(MatiSubdomain.HTP_EXPRESSION_DATASET)
 public class HTPExpressionDatasetAnnotation extends AuditedObject implements CurieInterface {
 
 	// SCRUM-6463 — AGRKB curie, minted from MaTI subdomain htp_expression_dataset. Nullable: rows that

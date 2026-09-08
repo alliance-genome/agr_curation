@@ -3,7 +3,9 @@ package org.alliancegenome.curation_api.model.entities;
 import java.util.List;
 
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
+import org.alliancegenome.curation_api.enums.MatiSubdomain;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
+import org.alliancegenome.curation_api.interfaces.CurieSubdomain;
 import org.alliancegenome.curation_api.model.entities.ontology.PhenotypeTerm;
 import org.alliancegenome.curation_api.view.CurationView;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
@@ -61,6 +63,7 @@ import lombok.EqualsAndHashCode;
 	@Index(name = "PhenotypeAnnotation_crossReference_index", columnList = "crossReference_id"),
 	@Index(name = "PhenotypeAnnotation_relation_index", columnList = "relation_id")
 })
+@CurieSubdomain(MatiSubdomain.PHENOTYPE_ANNOTATION)
 public abstract class PhenotypeAnnotation extends Annotation {
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
