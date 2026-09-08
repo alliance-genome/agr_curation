@@ -8,7 +8,6 @@ import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.CrossReferenceDAO;
 import org.alliancegenome.curation_api.dao.GeneDAO;
 import org.alliancegenome.curation_api.dao.ontology.SoTermDAO;
-import org.alliancegenome.curation_api.enums.MatiSubdomain;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.Gene;
@@ -130,7 +129,7 @@ public class GeneValidator extends GenomicEntityValidator<Gene> {
 		// whose payload omits curie nulls it; without this guard the mint would then issue a fresh curie
 		// and the gene's AGRKB id would silently change on every such update.
 		if (dbEntity.getId() == null) {
-			curieMintService.mintCurieIfAbsent(dbEntity, MatiSubdomain.GENE);
+			curieMintService.mintCurieIfAbsent(dbEntity);
 		}
 		dbEntity = geneDAO.persist(dbEntity);
 

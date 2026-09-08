@@ -3,6 +3,7 @@ package org.alliancegenome.curation_api.services;
 import java.util.List;
 
 import org.alliancegenome.curation_api.dao.base.BaseCurieSQLDAO;
+import org.alliancegenome.curation_api.enums.CurieSubdomain;
 import org.alliancegenome.curation_api.enums.MatiSubdomain;
 import org.alliancegenome.curation_api.model.entities.interfaces.CurieInterface;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
@@ -18,8 +19,9 @@ import lombok.extern.log4j.Log4j2;
  *
  * Two entry points:
  *
- * 1. {@link #mintCurieIfAbsent} on the create/upsert paths, for one entity at a time.
- * 2. {@link #mintMissingCuries} for the one-time backfill of rows that predate minting.
+ * 1. {@link #mintCurieIfAbsent(CurieInterface)} on the create/upsert paths, one entity at a time.
+ * 2. {@link #mintMissingCuries(BaseCurieSQLDAO, int, int)} for the one-time backfill of rows that
+ *    predate minting.
  *
  * The persistence lives in {@link BaseCurieSQLDAO}, which every curie-carrying DAO extends, so this
  * class holds only the MaTI interaction and the batch orchestration.
@@ -32,7 +34,8 @@ public class CurieMintService {
 
 	/**
 	 * Mints and assigns a single AGRKB curie to {@code entity} iff it does not already have one,
-	 * returning {@code true} if a curie was minted.
+	 * returning {@code true} if a curie was minted. The MaTI subdomain is derived from the entity's
+	 * type via {@link CurieSubdomain}, so no call site names one.
 	 *
 	 * Call this immediately before the entity is persisted, so the curie is written in the caller's
 	 * transaction — this method deliberately has no {@code @Transactional} of its own. A re-load
@@ -54,7 +57,21 @@ public class CurieMintService {
 	 * in — both target NULL-curie rows. This also keeps the integration tests, which run without a
 	 * MaTI server, green.
 	 */
-	public boolean mintCurieIfAbsent(CurieInterface entity, MatiSubdomain subdomain) {
+	public boolean mintCurieIfAbsent(CurieInterface entity) {
+		if (entity == null || entity.getCurie() != null) {
+			return false;
+		}
+		return mintCurieIfAbsent(entity, CurieSubdomain.subdomainFor(entity));
+	}
+
+	/**
+	 * Private on purpose. The subdomain an entity mints from is a property of the entity, so it is
+	 * resolved from {@link CurieSubdomain} rather than passed in: a caller that could name its own
+	 * subdomain could name the wrong one, and nothing would fail — the curie would simply be drawn
+	 * from another entity's sequence. {@link #mintMissingCuries} still takes one explicitly because
+	 * a backfill is driven by a DAO rather than by an entity instance.
+	 */
+	private boolean mintCurieIfAbsent(CurieInterface entity, MatiSubdomain subdomain) {
 		if (entity == null || entity.getCurie() != null) {
 			return false;
 		}
@@ -80,14 +97,29 @@ public class CurieMintService {
 	 * before the assignments commit, those curies are lost and the rows are re-handled on the next
 	 * run with a fresh batch. Keep the batch small to bound the blast radius.
 	 *
+	 * The MaTI subdomain is derived from the DAO's entity type via {@link CurieSubdomain}, so no
+	 * endpoint names one.
+	 *
 	 * @param dao       the DAO for the entity type being backfilled
-	 * @param subdomain the MaTI subdomain to mint from
 	 * @param batchSize how many rows to mint per batch, and so per MaTI call and per transaction
 	 * @param maxToMint hard cap on the TOTAL minted in this call; 0 means no cap. Bounding the total
 	 *                  lets an operator work a large backfill through the table in safe chunks
 	 *                  instead of one run that could overwhelm the environment.
 	 */
-	public void mintMissingCuries(BaseCurieSQLDAO<?> dao, MatiSubdomain subdomain, int batchSize, int maxToMint) {
+	public void mintMissingCuries(BaseCurieSQLDAO<?> dao, int batchSize, int maxToMint) {
+		if (dao == null) {
+			throw new IllegalArgumentException("no DAO to backfill");
+		}
+		mintMissingCuries(dao, CurieSubdomain.subdomainForClass(dao.getEntityClass()), batchSize, maxToMint);
+	}
+
+	/**
+	 * Private for the same reason as the two-arg {@link #mintCurieIfAbsent}: the subdomain follows
+	 * from the DAO's entity type, so deriving it removes the one thing a backfill endpoint could get
+	 * wrong. Naming the wrong subdomain matters more here than on a single mint — a whole table would
+	 * be backfilled out of another entity's sequence before anyone noticed.
+	 */
+	private void mintMissingCuries(BaseCurieSQLDAO<?> dao, MatiSubdomain subdomain, int batchSize, int maxToMint) {
 		if (batchSize <= 0) {
 			throw new IllegalArgumentException("batchSize must be > 0, got " + batchSize);
 		}

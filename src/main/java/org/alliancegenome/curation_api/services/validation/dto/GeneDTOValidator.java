@@ -9,7 +9,6 @@ import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.GeneDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
-import org.alliancegenome.curation_api.enums.MatiSubdomain;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
 import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
@@ -142,7 +141,7 @@ public class GeneDTOValidator extends GenomicEntityDTOValidator<Gene, GeneDTO> {
 		// field-copy chain assigns curie, so a re-load resolves to the stored gene whose curie is
 		// already set and this is a no-op — which is what keeps a gene's AGRKB id stable across the
 		// repeated import loads this ticket calls out.
-		curieMintService.mintCurieIfAbsent(gene, MatiSubdomain.GENE);
+		curieMintService.mintCurieIfAbsent(gene);
 		response.setEntity(geneDAO.persist(gene));
 
 		return response;

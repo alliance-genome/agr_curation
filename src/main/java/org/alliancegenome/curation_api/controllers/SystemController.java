@@ -25,7 +25,6 @@ import org.alliancegenome.curation_api.dao.GeneMolecularInteractionDAO;
 import org.alliancegenome.curation_api.dao.GeneGeneticInteractionDAO;
 import org.alliancegenome.curation_api.dao.HTPExpressionDatasetAnnotationDAO;
 import org.alliancegenome.curation_api.dao.HTPExpressionDatasetSampleAnnotationDAO;
-import org.alliancegenome.curation_api.enums.MatiSubdomain;
 import org.alliancegenome.curation_api.services.CurieMintService;
 
 import jakarta.enterprise.context.RequestScoped;
@@ -94,77 +93,77 @@ public class SystemController implements SystemControllerInterface {
 
 	@Override
 	public void mintMissingDiseaseAnnotationCuries(Integer batchSize, Integer maxToMint) {
-		curieMintService.mintMissingCuries(diseaseAnnotationDAO, MatiSubdomain.DISEASE_ANNOTATION, batchSize, maxToMint);
+		curieMintService.mintMissingCuries(diseaseAnnotationDAO, batchSize, maxToMint);
 	}
 
 	@Override
 	public void mintMissingAlleleCuries(Integer batchSize, Integer maxToMint) {
-		curieMintService.mintMissingCuries(alleleDAO, MatiSubdomain.ALLELE, batchSize, maxToMint);
+		curieMintService.mintMissingCuries(alleleDAO, batchSize, maxToMint);
 	}
 
 	@Override
 	public void mintMissingGeneCuries(Integer batchSize, Integer maxToMint) {
-		curieMintService.mintMissingCuries(geneDAO, MatiSubdomain.GENE, batchSize, maxToMint);
+		curieMintService.mintMissingCuries(geneDAO, batchSize, maxToMint);
 	}
 
 	@Override
 	public void mintMissingVariantCuries(Integer batchSize, Integer maxToMint) {
-		curieMintService.mintMissingCuries(variantDAO, MatiSubdomain.VARIANT, batchSize, maxToMint);
+		curieMintService.mintMissingCuries(variantDAO, batchSize, maxToMint);
 	}
 
 	@Override
 	public void mintMissingAgmCuries(Integer batchSize, Integer maxToMint) {
-		curieMintService.mintMissingCuries(affectedGenomicModelDAO, MatiSubdomain.AGM, batchSize, maxToMint);
+		curieMintService.mintMissingCuries(affectedGenomicModelDAO, batchSize, maxToMint);
 	}
 
 	@Override
 	public void mintMissingConstructCuries(Integer batchSize, Integer maxToMint) {
-		curieMintService.mintMissingCuries(constructDAO, MatiSubdomain.CONSTRUCT, batchSize, maxToMint);
+		curieMintService.mintMissingCuries(constructDAO, batchSize, maxToMint);
 	}
 
 	@Override
 	public void mintMissingAntibodyCuries(Integer batchSize, Integer maxToMint) {
-		curieMintService.mintMissingCuries(antibodyDAO, MatiSubdomain.ANTIBODY, batchSize, maxToMint);
+		curieMintService.mintMissingCuries(antibodyDAO, batchSize, maxToMint);
 	}
 
 	@Override
 	public void mintMissingStrCuries(Integer batchSize, Integer maxToMint) {
-		curieMintService.mintMissingCuries(sequenceTargetingReagentDAO, MatiSubdomain.SEQUENCE_TARGETING_REAGENT, batchSize, maxToMint);
+		curieMintService.mintMissingCuries(sequenceTargetingReagentDAO, batchSize, maxToMint);
 	}
 
 	@Override
 	public void mintMissingAssemblyComponentCuries(Integer batchSize, Integer maxToMint) {
-		curieMintService.mintMissingCuries(assemblyComponentDAO, MatiSubdomain.ASSEMBLY_COMPONENT, batchSize, maxToMint);
+		curieMintService.mintMissingCuries(assemblyComponentDAO, batchSize, maxToMint);
 	}
 
 	@Override
 	public void mintMissingGenomeAssemblyCuries(Integer batchSize, Integer maxToMint) {
-		curieMintService.mintMissingCuries(genomeAssemblyDAO, MatiSubdomain.GENOME_ASSEMBLY, batchSize, maxToMint);
+		curieMintService.mintMissingCuries(genomeAssemblyDAO, batchSize, maxToMint);
 	}
 
 	@Override
 	public void mintMissingPhenotypeAnnotationCuries(Integer batchSize, Integer maxToMint) {
-		curieMintService.mintMissingCuries(phenotypeAnnotationDAO, MatiSubdomain.PHENOTYPE_ANNOTATION, batchSize, maxToMint);
+		curieMintService.mintMissingCuries(phenotypeAnnotationDAO, batchSize, maxToMint);
 	}
 
 	@Override
 	public void mintMissingMolecularInteractionCuries(Integer batchSize, Integer maxToMint) {
-		curieMintService.mintMissingCuries(geneMolecularInteractionDAO, MatiSubdomain.MOLECULAR_INTERACTION, batchSize, maxToMint);
+		curieMintService.mintMissingCuries(geneMolecularInteractionDAO, batchSize, maxToMint);
 	}
 
 	@Override
 	public void mintMissingGeneticInteractionCuries(Integer batchSize, Integer maxToMint) {
-		curieMintService.mintMissingCuries(geneGeneticInteractionDAO, MatiSubdomain.GENETIC_INTERACTION, batchSize, maxToMint);
+		curieMintService.mintMissingCuries(geneGeneticInteractionDAO, batchSize, maxToMint);
 	}
 
 	@Override
 	public void mintMissingHTPExpressionSampleCuries(Integer batchSize, Integer maxToMint) {
-		curieMintService.mintMissingCuries(htpExpressionDatasetSampleAnnotationDAO, MatiSubdomain.HTP_EXPRESSION_SAMPLE, batchSize, maxToMint);
+		curieMintService.mintMissingCuries(htpExpressionDatasetSampleAnnotationDAO, batchSize, maxToMint);
 	}
 
 	@Override
 	public void mintMissingHTPExpressionDatasetCuries(Integer batchSize, Integer maxToMint) {
-		curieMintService.mintMissingCuries(htpExpressionDatasetAnnotationDAO, MatiSubdomain.HTP_EXPRESSION_DATASET, batchSize, maxToMint);
+		curieMintService.mintMissingCuries(htpExpressionDatasetAnnotationDAO, batchSize, maxToMint);
 	}
 
 	@Override
