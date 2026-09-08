@@ -8,6 +8,7 @@ import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.CrossReferenceDAO;
 import org.alliancegenome.curation_api.dao.GeneDAO;
 import org.alliancegenome.curation_api.dao.ontology.SoTermDAO;
+import org.alliancegenome.curation_api.enums.MatiSubdomain;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.Gene;
@@ -18,6 +19,7 @@ import org.alliancegenome.curation_api.model.entities.slotAnnotations.GeneSymbol
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.GeneSynonymSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.GeneSystematicNameSlotAnnotation;
 import org.alliancegenome.curation_api.response.ObjectResponse;
+import org.alliancegenome.curation_api.services.CurieMintService;
 import org.alliancegenome.curation_api.services.validation.dto.slotAnnotations.GeneFullNameSlotAnnotationValidator;
 import org.alliancegenome.curation_api.services.validation.dto.slotAnnotations.GeneSecondaryIdSlotAnnotationValidator;
 import org.alliancegenome.curation_api.services.validation.dto.slotAnnotations.GeneSymbolSlotAnnotationValidator;
@@ -34,6 +36,7 @@ import jakarta.inject.Inject;
 public class GeneValidator extends GenomicEntityValidator<Gene> {
 
 	@Inject GeneDAO geneDAO;
+	@Inject CurieMintService curieMintService;
 	@Inject SoTermDAO soTermDAO;
 	@Inject GeneSymbolSlotAnnotationValidator geneSymbolValidator;
 	@Inject GeneFullNameSlotAnnotationValidator geneFullNameValidator;
@@ -117,6 +120,18 @@ public class GeneValidator extends GenomicEntityValidator<Gene> {
 			throw new ApiErrorException(response);
 		}
 
+		// SCRUM-6502: mint an AGRKB curie for a NEW gene that has none, set before persist so the curie
+		// is written by the same insert. A curator-supplied curie is left alone.
+		//
+		// The getId() == null guard is load-bearing, as it is for alleles and AGMs: validateGene is
+		// shared by validateGeneCreate and validateGeneUpdate, and the field-copy chain above
+		// (validateGenomicEntityFields -> ... -> SubmittedObjectValidator.validateSubmittedObjectFields)
+		// assigns dbEntity.setCurie(handleStringField(uiEntity.getCurie())) unconditionally. So an update
+		// whose payload omits curie nulls it; without this guard the mint would then issue a fresh curie
+		// and the gene's AGRKB id would silently change on every such update.
+		if (dbEntity.getId() == null) {
+			curieMintService.mintCurieIfAbsent(dbEntity, MatiSubdomain.GENE);
+		}
 		dbEntity = geneDAO.persist(dbEntity);
 
 		if (symbol != null) {

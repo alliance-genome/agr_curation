@@ -9,6 +9,7 @@ import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.GeneDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
+import org.alliancegenome.curation_api.enums.MatiSubdomain;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
 import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
@@ -24,6 +25,7 @@ import org.alliancegenome.curation_api.model.ingest.dto.slotAnnotions.NameSlotAn
 import org.alliancegenome.curation_api.model.ingest.dto.slotAnnotions.SecondaryIdSlotAnnotationDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.CrossReferenceService;
+import org.alliancegenome.curation_api.services.CurieMintService;
 import org.alliancegenome.curation_api.services.helpers.SlotAnnotationIdentityHelper;
 import org.alliancegenome.curation_api.services.ontology.SoTermService;
 import org.alliancegenome.curation_api.services.validation.dto.base.GenomicEntityDTOValidator;
@@ -43,6 +45,7 @@ import jakarta.transaction.Transactional;
 public class GeneDTOValidator extends GenomicEntityDTOValidator<Gene, GeneDTO> {
 
 	@Inject GeneDAO geneDAO;
+	@Inject CurieMintService curieMintService;
 	@Inject GeneSymbolSlotAnnotationDTOValidator geneSymbolDtoValidator;
 	@Inject GeneFullNameSlotAnnotationDTOValidator geneFullNameDtoValidator;
 	@Inject GeneSystematicNameSlotAnnotationDTOValidator geneSystematicNameDtoValidator;
@@ -134,6 +137,12 @@ public class GeneDTOValidator extends GenomicEntityDTOValidator<Gene, GeneDTO> {
 			throw new ObjectValidationException(dto, response.errorMessagesString());
 		}
 
+		// SCRUM-6502: mint an AGRKB curie for a new gene that has none, in the same transaction as the
+		// insert below. No is-new guard is needed here, unlike GeneValidator: nothing in the DTO
+		// field-copy chain assigns curie, so a re-load resolves to the stored gene whose curie is
+		// already set and this is a no-op — which is what keeps a gene's AGRKB id stable across the
+		// repeated import loads this ticket calls out.
+		curieMintService.mintCurieIfAbsent(gene, MatiSubdomain.GENE);
 		response.setEntity(geneDAO.persist(gene));
 
 		return response;
