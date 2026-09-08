@@ -6,6 +6,7 @@ import java.util.List;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.AffectedGenomicModelDAO;
+import org.alliancegenome.curation_api.enums.MatiSubdomain;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
@@ -13,6 +14,7 @@ import org.alliancegenome.curation_api.model.entities.slotAnnotations.AgmFullNam
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.AgmSecondaryIdSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.AgmSynonymSlotAnnotation;
 import org.alliancegenome.curation_api.response.ObjectResponse;
+import org.alliancegenome.curation_api.services.CurieMintService;
 import org.alliancegenome.curation_api.services.validation.dto.slotAnnotations.AgmFullNameSlotAnnotationValidator;
 import org.alliancegenome.curation_api.services.validation.dto.slotAnnotations.AgmSecondaryIdSlotAnnotationValidator;
 import org.alliancegenome.curation_api.services.validation.dto.slotAnnotations.AgmSynonymSlotAnnotationValidator;
@@ -25,6 +27,7 @@ import jakarta.inject.Inject;
 public class AffectedGenomicModelValidator extends GenomicEntityValidator<AffectedGenomicModel> {
 
 	@Inject AffectedGenomicModelDAO affectedGenomicModelDAO;
+	@Inject CurieMintService curieMintService;
 	@Inject AgmFullNameSlotAnnotationValidator agmFullNameValidator;
 	@Inject AgmSynonymSlotAnnotationValidator agmSynonymValidator;
 	@Inject AgmSecondaryIdSlotAnnotationValidator agmSecondaryIdValidator;
@@ -79,6 +82,19 @@ public class AffectedGenomicModelValidator extends GenomicEntityValidator<Affect
 			throw new ApiErrorException(response);
 		}
 		
+		// SCRUM-6501: mint an AGRKB curie for a NEW AGM that has none, set before persist so the curie
+		// is written by the same insert. A curator-supplied curie is left alone.
+		//
+		// The getId() == null guard is load-bearing, as it is for alleles: validateAffectedGenomicModel
+		// is shared by validateAffectedGenomicModelCreate and validateAffectedGenomicModelUpdate, and
+		// the field-copy chain above (validateGenomicEntityFields -> ... ->
+		// SubmittedObjectValidator.validateSubmittedObjectFields) assigns
+		// dbEntity.setCurie(handleStringField(uiEntity.getCurie())) unconditionally. So an update whose
+		// payload omits curie nulls it; without this guard the mint would then issue a fresh curie and
+		// the AGM's AGRKB id would silently change on every such update.
+		if (dbEntity.getId() == null) {
+			curieMintService.mintCurieIfAbsent(dbEntity, MatiSubdomain.AGM);
+		}
 		dbEntity = affectedGenomicModelDAO.persist(dbEntity);
 		
 		if (fullName != null) {
