@@ -9,6 +9,7 @@ import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.AffectedGenomicModelDAO;
 import org.alliancegenome.curation_api.dao.SynonymDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
+import org.alliancegenome.curation_api.enums.MatiSubdomain;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
 import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
@@ -20,6 +21,7 @@ import org.alliancegenome.curation_api.model.ingest.dto.AffectedGenomicModelDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.slotAnnotions.NameSlotAnnotationDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.slotAnnotions.SecondaryIdSlotAnnotationDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
+import org.alliancegenome.curation_api.services.CurieMintService;
 import org.alliancegenome.curation_api.services.VocabularyTermService;
 import org.alliancegenome.curation_api.services.helpers.SlotAnnotationIdentityHelper;
 import org.alliancegenome.curation_api.services.validation.dto.base.GenomicEntityDTOValidator;
@@ -37,6 +39,7 @@ public class AffectedGenomicModelDTOValidator extends GenomicEntityDTOValidator<
 
 	@Inject AffectedGenomicModelDAO affectedGenomicModelDAO;
 	@Inject VocabularyTermService vocabularyTermService;
+	@Inject CurieMintService curieMintService;
 	@Inject SynonymDAO synonymDAO;
 	@Inject SlotAnnotationIdentityHelper identityHelper;
 	@Inject AgmFullNameSlotAnnotationDTOValidator agmFullNameDtoValidator;
@@ -89,6 +92,12 @@ public class AffectedGenomicModelDTOValidator extends GenomicEntityDTOValidator<
 			throw new ObjectValidationException(dto, response.errorMessagesString());
 		}
 
+		// SCRUM-6501: mint an AGRKB curie for a new AGM that has none, in the same transaction as the
+		// insert below. No is-new guard is needed here, unlike AffectedGenomicModelValidator: nothing
+		// in the DTO field-copy chain assigns curie, so a re-load resolves to the stored AGM whose
+		// curie is already set and this is a no-op — which is what keeps an AGM's AGRKB id stable
+		// across the repeated import loads this ticket calls out.
+		curieMintService.mintCurieIfAbsent(agm, MatiSubdomain.AGM);
 		response.setEntity(affectedGenomicModelDAO.persist(agm));
 		
 		return response;
