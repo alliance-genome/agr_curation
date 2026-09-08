@@ -52,9 +52,7 @@ export const VocabulariesTable = () => {
 				sortable: true,
 				body: (rowData) => <StringTemplate string={rowData.name} />,
 				filterConfig: FILTER_CONFIGS.nameFilterConfig,
-				editor: (editorOptions) => (
-					<InputTextTableEditor editorOptions={editorOptions} field="name" errorMessagesRef={errorMessagesRef} />
-				),
+				editor: (editorOptions) => <InputTextTableEditor editorOptions={editorOptions} field="name" />,
 			},
 			{
 				field: 'vocabularyDescription',
@@ -62,13 +60,7 @@ export const VocabulariesTable = () => {
 				sortable: true,
 				body: (rowData) => <StringTemplate string={rowData.vocabularyDescription} />,
 				filterConfig: FILTER_CONFIGS.vocabularyDescriptionFilterConfig,
-				editor: (editorOptions) => (
-					<InputTextTableEditor
-						editorOptions={editorOptions}
-						field="vocabularyDescription"
-						errorMessagesRef={errorMessagesRef}
-					/>
-				),
+				editor: (editorOptions) => <InputTextTableEditor editorOptions={editorOptions} field="vocabularyDescription" />,
 			},
 			{
 				field: 'obsolete',
