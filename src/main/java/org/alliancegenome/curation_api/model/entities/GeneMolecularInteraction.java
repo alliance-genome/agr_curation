@@ -1,7 +1,9 @@
 package org.alliancegenome.curation_api.model.entities;
 
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
+import org.alliancegenome.curation_api.enums.MatiSubdomain;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
+import org.alliancegenome.curation_api.interfaces.CurieSubdomain;
 import org.alliancegenome.curation_api.model.entities.ontology.MITerm;
 import org.alliancegenome.curation_api.view.CurationView;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
@@ -51,6 +53,7 @@ import lombok.ToString;
 	@Index(name = "GeneMolecularInteraction_detectionMethod_index", columnList = "detectionMethod_id")
 })
 
+@CurieSubdomain(MatiSubdomain.MOLECULAR_INTERACTION)
 public class GeneMolecularInteraction extends GeneInteraction {
 
 	@IndexedEmbedded(includePaths = {"curie", "name", "secondaryIdentifiers", "synonyms.name", "namespace",
