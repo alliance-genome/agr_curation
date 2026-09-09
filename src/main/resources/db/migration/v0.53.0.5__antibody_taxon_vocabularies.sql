@@ -145,6 +145,21 @@ JOIN vocabularyterm vt ON vt.name = o.curie
 JOIN vocabulary v ON v.id = vt.vocabulary_id AND v.vocabularylabel = 'antibody_antigen_taxon'
 WHERE a.antigentaxon_id = o.id;
 
+-- Fail loudly rather than silently losing data: a taxon/antigen taxon curie that didn't
+-- match a vocabulary term above leaves the new *term_id column NULL, and the DROP COLUMNs
+-- below are irreversible once run. Roll back the whole migration if that happened instead
+-- of quietly dropping the original value.
+DO $$
+DECLARE unmapped bigint;
+BEGIN
+	SELECT count(*) INTO unmapped FROM antibody
+	 WHERE (taxon_id IS NOT NULL AND taxonterm_id IS NULL)
+	    OR (antigentaxon_id IS NOT NULL AND antigentaxonterm_id IS NULL);
+	IF unmapped > 0 THEN
+		RAISE EXCEPTION 'v0.53.0.5: % antibody rows have a taxon curie with no matching vocabulary term', unmapped;
+	END IF;
+END $$;
+
 -- FK constraint names vary by environment (explicit "antibody_taxon_id_fk"-style names where
 -- v0.52.0.1 ran as a Flyway migration; Hibernate auto-DDL-generated hash names on environments
 -- where the antibody table was instead created by dev-mode auto-DDL) -- look them up dynamically.
@@ -171,7 +186,6 @@ BEGIN
 	END IF;
 END $$;
 
-DROP INDEX antibody_taxon_index;
-DROP INDEX antibody_antigentaxon_index;
+-- DROP COLUMN below also drops these indexes; no need for an explicit DROP INDEX first.
 ALTER TABLE antibody DROP COLUMN taxon_id;
 ALTER TABLE antibody DROP COLUMN antigentaxon_id;

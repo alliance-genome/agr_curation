@@ -219,12 +219,9 @@ export const FIELD_SETS = Object.freeze({
 			'antibodyTargetGenes.modInternalId',
 		],
 	},
-	antigenTaxonFieldSet: {
-		filterName: 'antigenTaxonFilter',
-		fields: ['antigenTaxon.curie', 'antigenTaxon.name'],
-	},
 	// Dedicated field sets for Antibody's Taxon/Antigen Taxon columns, which are VocabularyTerm
-	// (name/definition) rather than NCBITaxonTerm (curie/name) like the shared field sets above.
+	// (name/definition) rather than NCBITaxonTerm (curie/name) like the shared taxonFieldSet
+	// used by other tables' real taxon columns (Genes, Alleles, etc.).
 	antibodyTaxonFieldSet: {
 		filterName: 'taxonTermFilter',
 		fields: ['taxonTerm.name', 'taxonTerm.definition'],
@@ -1116,7 +1113,6 @@ export const FILTER_CONFIGS = Object.freeze({
 		filterComponentType: 'input',
 		fieldSets: [FIELD_SETS.antibodyTargetGenesFieldSet],
 	},
-	antigenTaxonFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.antigenTaxonFieldSet] },
 	antibodyTaxonFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.antibodyTaxonFieldSet] },
 	antibodyAntigenTaxonFilterConfig: {
 		filterComponentType: 'input',

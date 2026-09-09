@@ -14,7 +14,7 @@ import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-@AGRCurationSchemaVersion(min = "2.11.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { ReagentDTO.class, CrossReferenceDTO.class }, submitted = true)
+@AGRCurationSchemaVersion(min = "2.18.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { ReagentDTO.class, CrossReferenceDTO.class }, submitted = true)
 public class AntibodyDTO extends ReagentDTO {
 
 	@JsonView({ CurationView.FieldsOnly.class })

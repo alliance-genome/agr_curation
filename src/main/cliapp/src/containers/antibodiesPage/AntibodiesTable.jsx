@@ -83,6 +83,9 @@ export const AntibodiesTable = () => {
 			{
 				field: 'taxonTerm.name',
 				columnKey: 'taxonTerm.name',
+				// Displayed text is definition (falling back to name), so sort by that field too --
+				// otherwise clicking the header sorts by the raw NCBITaxon curie, not what's shown.
+				sortField: 'taxonTerm.definition',
 				header: 'Taxon',
 				sortable: true,
 				body: (rowData) => <StringTemplate string={rowData.taxonTerm?.definition || rowData.taxonTerm?.name} />,
@@ -91,6 +94,7 @@ export const AntibodiesTable = () => {
 			{
 				field: 'antigenTaxonTerm.name',
 				columnKey: 'antigenTaxonTerm.name',
+				sortField: 'antigenTaxonTerm.definition',
 				header: 'Antigen Taxon',
 				sortable: true,
 				body: (rowData) => (
