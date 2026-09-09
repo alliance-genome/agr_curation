@@ -11,7 +11,6 @@ import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.base.BaseAnnotationDTOCrudService;
 import org.alliancegenome.curation_api.services.validation.GeneDiseaseAnnotationValidator;
 import org.alliancegenome.curation_api.services.validation.dto.GeneDiseaseAnnotationDTOValidator;
-import org.alliancegenome.curation_api.enums.MatiSubdomain;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.RequestScoped;
@@ -49,7 +48,7 @@ public class GeneDiseaseAnnotationService extends BaseAnnotationDTOCrudService<G
 	@Transactional
 	public ObjectResponse<GeneDiseaseAnnotation> create(GeneDiseaseAnnotation uiEntity) {
 		GeneDiseaseAnnotation dbEntity = geneDiseaseValidator.validateAnnotationCreate(uiEntity);
-		curieMintService.mintCurieIfAbsent(dbEntity, MatiSubdomain.DISEASE_ANNOTATION);
+		curieMintService.mintCurieIfAbsent(dbEntity);
 		return new ObjectResponse<>(geneDiseaseAnnotationDAO.persist(dbEntity));
 	}
 
@@ -57,7 +56,7 @@ public class GeneDiseaseAnnotationService extends BaseAnnotationDTOCrudService<G
 	@Transactional
 	public ObjectResponse<GeneDiseaseAnnotation> upsert(GeneDiseaseAnnotationDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
 		ObjectResponse<GeneDiseaseAnnotation> resp = geneDiseaseAnnotationDtoValidator.validateGeneDiseaseAnnotationDTO(dto, dataProvider);
-		curieMintService.mintCurieIfAbsent(resp.getEntity(), MatiSubdomain.DISEASE_ANNOTATION);
+		curieMintService.mintCurieIfAbsent(resp.getEntity());
 		geneDiseaseAnnotationDAO.persist(resp.getEntity());
 		return resp;
 	}

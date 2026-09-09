@@ -9,7 +9,6 @@ import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.HTPExpressionDatasetAnnotationDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
-import org.alliancegenome.curation_api.enums.MatiSubdomain;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
 import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.model.entities.ExternalDataBaseEntity;
@@ -177,7 +176,7 @@ public class HTPExpressionDatasetAnnotationFmsDTOValidator {
 		// insert below. No is-new guard is needed, unlike AlleleValidator: this DTO carries no curie, so
 		// nothing above nulls one, and a re-load resolves to the stored entity whose curie is already
 		// set, making this a no-op there.
-		curieMintService.mintCurieIfAbsent(htpannotation, MatiSubdomain.HTP_EXPRESSION_DATASET);
+		curieMintService.mintCurieIfAbsent(htpannotation);
 		htpAnnotationResponse.setEntity(htpExpressionDatasetAnnotationDAO.persist(htpannotation));
 
 		return htpAnnotationResponse;

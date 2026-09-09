@@ -3,7 +3,9 @@ package org.alliancegenome.curation_api.model.entities;
 import java.util.List;
 
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
+import org.alliancegenome.curation_api.enums.MatiSubdomain;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
+import org.alliancegenome.curation_api.interfaces.CurieSubdomain;
 import org.alliancegenome.curation_api.model.entities.associations.AgmAgmAssociation;
 import org.alliancegenome.curation_api.model.entities.associations.AgmAlleleAssociation;
 import org.alliancegenome.curation_api.model.entities.associations.AgmSequenceTargetingReagentAssociation;
@@ -46,6 +48,7 @@ import lombok.ToString;
 		"parentalPopulations" }, callSuper = true)
 @Schema(name = "AffectedGenomicModel", description = "AffectedGenomicModel: an affected genomic model")
 @AGRCurationSchemaVersion(min = "2.12.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = {GenomicEntity.class}, partial = true)
+@CurieSubdomain(MatiSubdomain.AGM)
 public class AffectedGenomicModel extends GenomicEntity {
 
 	@OneToMany(mappedBy = "diseaseAnnotationSubject", cascade = CascadeType.ALL, orphanRemoval = true)
