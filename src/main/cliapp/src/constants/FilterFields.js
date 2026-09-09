@@ -201,7 +201,9 @@ export const FIELD_SETS = Object.freeze({
 	},
 	antibodyAggregationFieldSet: {
 		filterName: 'antibodyAggregationFilter',
-		fields: ['dataProvider.abbreviation', 'clonality.name', 'heavyChainIsotype.name', 'lightChainIsotype.name'],
+		// heavyChainIsotype uses name_original (case-preserving) rather than name so its picklist
+		// shows "IgG"/"IgA" instead of the name_keyword aggregation's lowercased "igg"/"iga".
+		fields: ['dataProvider.abbreviation', 'clonality.name', 'heavyChainIsotype.name_original', 'lightChainIsotype.name'],
 	},
 	antibodyDataProviderFieldSet: {
 		// Dedicated field set (rather than the shared dataProviderFieldSet) so only Antibody's
@@ -230,16 +232,21 @@ export const FIELD_SETS = Object.freeze({
 		fields: ['clonality.name_keyword'],
 	},
 	heavyChainIsotypeFieldSet: {
+		// Targets name_original_keyword (not name_keyword) so both the picklist and the exact-match
+		// filter preserve the term's original casing (IgG/IgA) instead of name_keyword's lowercased
+		// igg/iga -- see antibodyAggregationFieldSet.
 		filterName: 'heavyChainIsotypeFilter',
-		fields: ['heavyChainIsotype.name_keyword'],
+		fields: ['heavyChainIsotype.name_original_keyword'],
 	},
 	lightChainIsotypeFieldSet: {
 		filterName: 'lightChainIsotypeFilter',
 		fields: ['lightChainIsotype.name_keyword'],
 	},
 	originalReferenceFieldSet: {
+		// Includes all cross-references (not just the primary one) so any of the reference's IDs --
+		// PMID, PMCID, or a MOD paper ID (FB/WB/MGI/etc.) -- matches, same as the References filter.
 		filterName: 'originalReferenceFilter',
-		fields: ['originalReference.curie', 'originalReference.primaryCrossReferenceCurie'],
+		fields: ['originalReference.curie', 'originalReference.primaryCrossReferenceCurie', 'originalReference.crossReferences.referencedCurie'],
 	},
 	citationFieldSet: {
 		filterName: 'citationFilter',
