@@ -494,8 +494,7 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 			post("/api/allele").
 			then().
 			statusCode(400).
-			body("errorMessages", is(aMapWithSize(3))).
-			body("errorMessages.modInternalId", is(ValidationConstants.REQUIRED_UNLESS_OTHER_FIELD_POPULATED_MESSAGE + " primaryExternalId")).
+			body("errorMessages", is(aMapWithSize(2))).
 			body("errorMessages.taxon", is(ValidationConstants.REQUIRED_MESSAGE)).
 			body("errorMessages.alleleSymbol", is(ValidationConstants.REQUIRED_MESSAGE));
 	}
@@ -506,15 +505,24 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 		Allele allele = getAllele(ALLELE);
 		allele.setPrimaryExternalId(null);
 
+		// An allele is identified by its AGRKB curie, so neither MOD identifier is required.
 		RestAssured.given().
 			contentType("application/json").
 			body(allele).
 			when().
 			put("/api/allele").
 			then().
-			statusCode(400).
-			body("errorMessages", is(aMapWithSize(1))).
-			body("errorMessages.modInternalId", is(ValidationConstants.REQUIRED_UNLESS_OTHER_FIELD_POPULATED_MESSAGE + " primaryExternalId"));
+			statusCode(200);
+
+		// Restore the identifier the ordered tests that follow look this fixture up by.
+		allele.setPrimaryExternalId(ALLELE);
+		RestAssured.given().
+			contentType("application/json").
+			body(allele).
+			when().
+			put("/api/allele").
+			then().
+			statusCode(200);
 	}
 
 	@Test
@@ -565,9 +573,8 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 			when().
 			post("/api/allele").
 			then().
-			statusCode(400).
-			body("errorMessages", is(aMapWithSize(1))).
-			body("errorMessages.modInternalId", is(ValidationConstants.REQUIRED_UNLESS_OTHER_FIELD_POPULATED_MESSAGE + " primaryExternalId"));
+			statusCode(200).
+			body("entity.alleleSymbol.displayText", is(alleleSymbol.getDisplayText()));
 	}
 
 	@Test
@@ -576,15 +583,24 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 		Allele allele = getAllele(ALLELE);
 		allele.setPrimaryExternalId("");
 
+		// An allele is identified by its AGRKB curie, so neither MOD identifier is required.
 		RestAssured.given().
 			contentType("application/json").
 			body(allele).
 			when().
 			put("/api/allele").
 			then().
-			statusCode(400).
-			body("errorMessages", is(aMapWithSize(1))).
-			body("errorMessages.modInternalId", is(ValidationConstants.REQUIRED_UNLESS_OTHER_FIELD_POPULATED_MESSAGE + " primaryExternalId"));
+			statusCode(200);
+
+		// Restore the identifier the ordered tests that follow look this fixture up by.
+		allele.setPrimaryExternalId(ALLELE);
+		RestAssured.given().
+			contentType("application/json").
+			body(allele).
+			when().
+			put("/api/allele").
+			then().
+			statusCode(200);
 	}
 
 	@Test

@@ -9,6 +9,7 @@ import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.HTPExpressionDatasetAnnotationDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
+import org.alliancegenome.curation_api.enums.MatiSubdomain;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
 import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.model.entities.ExternalDataBaseEntity;
@@ -21,6 +22,7 @@ import org.alliancegenome.curation_api.model.ingest.dto.fms.PublicationFmsDTO;
 import org.alliancegenome.curation_api.model.input.Pagination;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
+import org.alliancegenome.curation_api.services.CurieMintService;
 import org.alliancegenome.curation_api.services.ExternalDataBaseEntityService;
 import org.alliancegenome.curation_api.services.OrganizationService;
 import org.alliancegenome.curation_api.services.ReferenceService;
@@ -41,6 +43,7 @@ public class HTPExpressionDatasetAnnotationFmsDTOValidator {
 	@Inject VocabularyTermService vocabularyTermService;
 	@Inject ExternalDataBaseEntityFmsDTOValidator externalDataBaseEntityFmsDtoValidator;
 	@Inject OrganizationService organizationService;
+	@Inject CurieMintService curieMintService;
 	
 	@Transactional
 	public ObjectResponse<HTPExpressionDatasetAnnotation> validateHTPExpressionDatasetAnnotationFmsDTO(HTPExpressionDatasetAnnotationFmsDTO dto, BackendBulkDataProvider backendBulkDataProvider) throws ValidationException {
@@ -170,6 +173,11 @@ public class HTPExpressionDatasetAnnotationFmsDTOValidator {
 			throw new ObjectValidationException(dto, htpAnnotationResponse.errorMessagesString());
 		}
 		
+		// SCRUM-6463 — mint an AGRKB curie for a record that has none, in the same transaction as the
+		// insert below. No is-new guard is needed, unlike AlleleValidator: this DTO carries no curie, so
+		// nothing above nulls one, and a re-load resolves to the stored entity whose curie is already
+		// set, making this a no-op there.
+		curieMintService.mintCurieIfAbsent(htpannotation, MatiSubdomain.HTP_EXPRESSION_DATASET);
 		htpAnnotationResponse.setEntity(htpExpressionDatasetAnnotationDAO.persist(htpannotation));
 
 		return htpAnnotationResponse;

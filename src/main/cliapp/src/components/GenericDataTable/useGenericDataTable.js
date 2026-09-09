@@ -449,5 +449,7 @@ export const useGenericDataTable = ({
 		resetTableState,
 		setExceptionDialog,
 		exceptionMessage,
+		errorMessages,
+		uiErrorMessages,
 	};
 };

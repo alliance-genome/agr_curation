@@ -13,6 +13,10 @@ import org.apache.commons.lang3.StringUtils;
 public class SubmittedObjectValidator<E extends SubmittedObject> extends AuditedObjectValidator<SubmittedObject> {
 
 	public E validateSubmittedObjectFields(E uiEntity, E dbEntity, String noteTypeVocabularyTermSet) {
+		return validateSubmittedObjectFields(uiEntity, dbEntity, noteTypeVocabularyTermSet, true);
+	}
+
+	public E validateSubmittedObjectFields(E uiEntity, E dbEntity, String noteTypeVocabularyTermSet, boolean requireModIdentifier) {
 		Boolean newEntity = false;
 		if (dbEntity.getId() == null) {
 			newEntity = true;
@@ -26,7 +30,7 @@ public class SubmittedObjectValidator<E extends SubmittedObject> extends Audited
 		String primaryExternalId = handleStringField(uiEntity.getPrimaryExternalId());
 		dbEntity.setPrimaryExternalId(primaryExternalId);
 
-		String modInternalId = validateModInternalId(uiEntity);
+		String modInternalId = validateModInternalId(uiEntity, requireModIdentifier);
 		dbEntity.setModInternalId(modInternalId);
 
 		Organization dataProvider = validateDataProvider(uiEntity.getDataProvider(), dbEntity.getDataProvider(), newEntity);
@@ -59,9 +63,13 @@ public class SubmittedObjectValidator<E extends SubmittedObject> extends Audited
 	}
 
 	public String validateModInternalId(E uiEntity) {
+		return validateModInternalId(uiEntity, true);
+	}
+
+	public String validateModInternalId(E uiEntity, boolean isRequired) {
 		String modInternalId = uiEntity.getModInternalId();
 		if (StringUtils.isBlank(modInternalId)) {
-			if (StringUtils.isBlank(uiEntity.getPrimaryExternalId())) {
+			if (isRequired && StringUtils.isBlank(uiEntity.getPrimaryExternalId())) {
 				addMessageResponse("modInternalId", ValidationConstants.REQUIRED_UNLESS_OTHER_FIELD_POPULATED_MESSAGE + " primaryExternalId");
 			}
 			return null;

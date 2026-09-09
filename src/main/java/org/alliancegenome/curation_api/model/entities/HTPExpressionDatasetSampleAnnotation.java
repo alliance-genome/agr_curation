@@ -5,6 +5,7 @@ import java.util.List;
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.entities.base.AuditedObject;
+import org.alliancegenome.curation_api.model.entities.interfaces.CurieInterface;
 import org.alliancegenome.curation_api.model.entities.ontology.MMOTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.OBITerm;
@@ -44,6 +45,7 @@ import lombok.ToString;
 @Schema(name = "HTPExpressionDatasetSampleAnnotation", description = "HTPExpressionDatasetSampleAnnotation: a HTP expression dataset sample annotation")
 @AGRCurationSchemaVersion(min = "2.9.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AuditedObject.class })
 @Table(indexes = {
+	@Index(name = "htpdatasample_curie_index", columnList = "curie"),
 	@Index(name = "htpdatasample_htpExpressionSample_index", columnList = "htpExpressionSample_id"),
 	@Index(name = "htpdatasample_htpExpressionSampleType_index", columnList = "htpExpressionSampleType_id"),
 	@Index(name = "htpdatasample_expressionAssayUsed_index", columnList = "expressionAssayUsed_id"),
@@ -58,7 +60,15 @@ import lombok.ToString;
 	@Index(name = "htpdatasample_createdby_index", columnList = "createdby_id"),
 	@Index(name = "htpdatasample_updatedby_index", columnList = "updatedby_id")
 })
-public class HTPExpressionDatasetSampleAnnotation extends AuditedObject {
+public class HTPExpressionDatasetSampleAnnotation extends AuditedObject implements CurieInterface {
+
+	// SCRUM-6463 — AGRKB curie, minted from MaTI subdomain htp_expression_sample. This class extends
+	// AuditedObject, so unlike its LinkML counterpart (which sits under SubmittedObject) it inherits no
+	// curie and has to declare its own. Nullable: rows predating minting stay NULL for the backfill.
+	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
+	@KeywordField(name = "curie_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
+	@JsonView({ CurationView.FieldsOnly.class })
+	private String curie;
 
 	@IndexedEmbedded(includePaths = {"curie", "preferredCrossReference.referencedCurie", "secondaryIdentifiers",
 	"curie_keyword", "preferredCrossReference.referencedCurie_keyword", "secondaryIdentifiers_keyword" })

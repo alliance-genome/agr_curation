@@ -32,9 +32,13 @@ const localStorageMock = (function () {
 })();
 
 Object.defineProperty(global, 'localStorage', { value: localStorageMock });
+let uuidCount = 0;
+
 Object.defineProperty(global.window, 'crypto', {
 	value: {
-		randomUUID: vi.fn().mockReturnValue('mock-uuid-1234'),
+		// Unique per call, as the real implementation is: rows are keyed by it, so a repeated
+		// value collapses every row of a table onto one key.
+		randomUUID: vi.fn(() => `mock-uuid-${++uuidCount}`),
 	},
 });
 

@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import org.alliancegenome.curation_api.dao.base.BaseSQLDAO;
+import org.alliancegenome.curation_api.dao.base.BaseCurieSQLDAO;
 import org.alliancegenome.curation_api.model.entities.AnatomicalSite;
 import org.alliancegenome.curation_api.model.entities.ExternalDataBaseEntity;
 import org.alliancegenome.curation_api.model.entities.HTPExpressionDatasetAnnotation;
@@ -18,7 +18,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.Query;
 
 @ApplicationScoped
-public class HTPExpressionDatasetAnnotationDAO extends BaseSQLDAO<HTPExpressionDatasetAnnotation> {
+public class HTPExpressionDatasetAnnotationDAO extends BaseCurieSQLDAO<HTPExpressionDatasetAnnotation> {
 
 	private static final int QUERY_BATCH_SIZE = 5000;
 

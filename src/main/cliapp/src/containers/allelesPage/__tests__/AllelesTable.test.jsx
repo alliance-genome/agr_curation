@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter } from 'react-router-dom';
-import { waitFor } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { renderWithClient } from '../../../tools/jest/utils';
 import { AllelesTable } from '../AllelesTable';
 import '../../../tools/jest/setupTests';
@@ -41,6 +42,23 @@ describe('<AllelesTable />', () => {
 
 		const tableTitle = await result.findByText(/Alleles Table/i);
 		expect(tableTitle).toBeInTheDocument();
+	});
+
+	it('Opens the create page in a new tab from the New Allele button', async () => {
+		const user = userEvent.setup();
+		const open = vi.spyOn(window, 'open').mockImplementation(() => null);
+
+		await renderWithClient(
+			<BrowserRouter>
+				<AllelesTable />
+			</BrowserRouter>
+		);
+
+		const newAllele = await screen.findByRole('button', { name: /New Allele/i });
+		await user.click(newAllele);
+
+		expect(open).toHaveBeenCalledWith('/allele/create', '_blank');
+		open.mockRestore();
 	});
 
 	it.skip('Contains Correct Table Data', async () => {

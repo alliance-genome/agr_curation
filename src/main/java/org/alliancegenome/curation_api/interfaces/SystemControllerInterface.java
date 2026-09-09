@@ -72,9 +72,7 @@ public interface SystemControllerInterface {
 	// semantics are identical everywhere: idempotent, resumable, batched, and capped by maxToMint
 	// (0 = no cap). Work large classes through the table in bounded chunks rather than one pass.
 	//
-	// Not covered here: molecular and genetic interactions and the two HTP expression classes,
-	// which have no curie column yet — see SCRUM-6463. Expression experiments and expression
-	// annotations are on hold pending direct submissions.
+	// Expression experiments and expression annotations are on hold pending direct submissions.
 
 	// Gene — 2.4M rows, subdomain GENE.
 	@GET
@@ -136,6 +134,39 @@ public interface SystemControllerInterface {
 	@GET
 	@Path("/mintphenotypeannotationcuries")
 	void mintMissingPhenotypeAnnotationCuries(
+		@DefaultValue("1000") @QueryParam("batchSize") Integer batchSize,
+		@DefaultValue("0") @QueryParam("maxToMint") Integer maxToMint);
+
+	// SCRUM-6463 backfill endpoints. Same implementation and same semantics as the ones above; these
+	// four were split out of SCRUM-6359/6360 because they had no curie column, which SCRUM-6463 added.
+	// The interactions take theirs from GeneGeneAssociation, the two HTP classes each declare their
+	// own. Both interaction tables are large, so work them through in bounded chunks.
+
+	// GeneMolecularInteraction — 1.8M rows, subdomain MOLECULAR_INTERACTION.
+	@GET
+	@Path("/mintmolecularinteractioncuries")
+	void mintMissingMolecularInteractionCuries(
+		@DefaultValue("1000") @QueryParam("batchSize") Integer batchSize,
+		@DefaultValue("0") @QueryParam("maxToMint") Integer maxToMint);
+
+	// GeneGeneticInteraction — 638K rows, subdomain GENETIC_INTERACTION.
+	@GET
+	@Path("/mintgeneticinteractioncuries")
+	void mintMissingGeneticInteractionCuries(
+		@DefaultValue("1000") @QueryParam("batchSize") Integer batchSize,
+		@DefaultValue("0") @QueryParam("maxToMint") Integer maxToMint);
+
+	// HTPExpressionDatasetSampleAnnotation — 464K rows, subdomain HTP_EXPRESSION_SAMPLE.
+	@GET
+	@Path("/minthtpexpressionsamplecuries")
+	void mintMissingHTPExpressionSampleCuries(
+		@DefaultValue("1000") @QueryParam("batchSize") Integer batchSize,
+		@DefaultValue("0") @QueryParam("maxToMint") Integer maxToMint);
+
+	// HTPExpressionDatasetAnnotation — 22K rows, subdomain HTP_EXPRESSION_DATASET.
+	@GET
+	@Path("/minthtpexpressiondatasetcuries")
+	void mintMissingHTPExpressionDatasetCuries(
 		@DefaultValue("1000") @QueryParam("batchSize") Integer batchSize,
 		@DefaultValue("0") @QueryParam("maxToMint") Integer maxToMint);
 
