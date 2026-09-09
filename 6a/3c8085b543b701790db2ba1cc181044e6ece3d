@@ -1,0 +1,19 @@
+src/main/cliapp/src/constants/FilterFields.js
+  s_e6a7e48d95f0da::t_22cff18aa9d138 206-211,254-258
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "6a3c8085b543b701790db2ba1cc181044e6ece3d",
+  "prompts": {},
+  "sessions": {
+    "s_e6a7e48d95f0da": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "0b1c323c-79a4-432b-8351-1956bb3e2d64",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Ketaki Kindre <kkindre@caltech.edu>"
+    }
+  }
+}
