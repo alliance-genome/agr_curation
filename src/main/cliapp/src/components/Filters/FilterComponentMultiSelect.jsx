@@ -68,9 +68,11 @@ export function FilterComponentMultiSelect({ isInEditMode, filterConfig, current
 			onChange={(e) => {
 				setSelectedOptions(e.target.value);
 				let filter = {};
-				let queryString = '';
-				let delim = '';
 				if (e.target.value && e.target.value.length !== 0) {
+					// Quote each value so multi-word values (e.g. "hemizygous X-linked") match as a whole
+					// phrase instead of being split word-by-word.
+					let queryString = '';
+					let delim = '';
 					for (let i in e.target.value) {
 						queryString += delim + '"' + e.target.value[i].optionLabel + '"';
 						delim = ' ';
