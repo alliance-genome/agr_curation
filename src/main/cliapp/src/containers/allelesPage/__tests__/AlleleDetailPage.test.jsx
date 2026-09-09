@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter } from 'react-router-dom';
 import { screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { renderWithClient } from '../../../tools/jest/utils';
 import AlleleDetailPage from '../AlleleDetailPage';
 import { setLocalStorage } from '../../../tools/jest/setupTests';
@@ -11,7 +12,7 @@ import {
 } from '../../../tools/jest/commonMswhandlers';
 import { alleleDetailData } from '../mockData/mockData.js';
 
-const FORM_SETTINGS_KEY = 'AlleleFormSettings';
+const FORM_SETTINGS_KEY = 'AlleleDetailFormSettings';
 
 const renderPage = () =>
 	renderWithClient(
@@ -59,7 +60,7 @@ describe('<AlleleDetailPage />', () => {
 		await renderPage();
 
 		await waitFor(() => {
-			expect(screen.getByRole('heading', { name: 'Symbol' })).toBeInTheDocument();
+			expect(screen.getByRole('heading', { name: 'Name' })).toBeInTheDocument();
 		});
 		expect(screen.queryByRole('heading', { name: 'Synonyms' })).not.toBeInTheDocument();
 		expect(screen.queryByRole('heading', { name: 'Curie' })).not.toBeInTheDocument();
@@ -69,15 +70,15 @@ describe('<AlleleDetailPage />', () => {
 
 	it('Shows a field the saved selection has never seen', async () => {
 		setLocalStorage(FORM_SETTINGS_KEY, {
-			selectedFormFields: ['Symbol'],
-			orderedFormFields: ['Symbol', 'Synonyms'],
+			selectedFormFields: ['Name'],
+			orderedFormFields: ['Name', 'Synonyms'],
 			formSettingsKeyName: FORM_SETTINGS_KEY,
 		});
 
 		await renderPage();
 
 		await waitFor(() => {
-			expect(screen.getByRole('heading', { name: 'Symbol' })).toBeInTheDocument();
+			expect(screen.getByRole('heading', { name: 'Name' })).toBeInTheDocument();
 		});
 		// Absent from the saved selection, but also absent from the fields it knew about.
 		expect(screen.getByRole('heading', { name: 'Date Created' })).toBeInTheDocument();
@@ -90,5 +91,18 @@ describe('<AlleleDetailPage />', () => {
 		await waitFor(() => {
 			expect(container.querySelector('.p-multiselect[aria-label="formFieldToggle"]')).toBeInTheDocument();
 		});
+	});
+
+	it('Opens the create page in a new tab from the New Allele button', async () => {
+		const user = userEvent.setup();
+		const open = vi.spyOn(window, 'open').mockImplementation(() => null);
+
+		renderPage();
+
+		const newAllele = await screen.findByRole('button', { name: /New Allele/i });
+		await user.click(newAllele);
+
+		expect(open).toHaveBeenCalledWith('/allele/create', '_blank');
+		open.mockRestore();
 	});
 });

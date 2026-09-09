@@ -7,6 +7,10 @@ import java.util.List;
 import org.alliancegenome.curation_api.dao.AlleleDAO;
 import org.alliancegenome.curation_api.dao.DiseaseAnnotationDAO;
 import org.alliancegenome.curation_api.dao.GeneDAO;
+import org.alliancegenome.curation_api.dao.GeneGeneticInteractionDAO;
+import org.alliancegenome.curation_api.dao.GeneMolecularInteractionDAO;
+import org.alliancegenome.curation_api.dao.HTPExpressionDatasetAnnotationDAO;
+import org.alliancegenome.curation_api.dao.HTPExpressionDatasetSampleAnnotationDAO;
 import org.alliancegenome.curation_api.dao.base.BaseCurieSQLDAO;
 import org.junit.jupiter.api.Test;
 
@@ -22,7 +26,12 @@ import org.junit.jupiter.api.Test;
 class DaoResolutionTest {
 
 	private static final List<Class<? extends BaseCurieSQLDAO<?>>> DAOS =
-		List.of(AlleleDAO.class, DiseaseAnnotationDAO.class, GeneDAO.class);
+		List.of(AlleleDAO.class, DiseaseAnnotationDAO.class, GeneDAO.class,
+			// SCRUM-6463 — the four classes wired up last. Both interaction DAOs already carried
+			// hand-written native SQL for other purposes, so they are the likeliest to reacquire a
+			// local countMissingCuries and quietly stop using the shared path.
+			GeneMolecularInteractionDAO.class, GeneGeneticInteractionDAO.class,
+			HTPExpressionDatasetAnnotationDAO.class, HTPExpressionDatasetSampleAnnotationDAO.class);
 
 	private static final List<String> SHARED_METHODS =
 		List.of("countMissingCuries", "findIdsMissingCuries", "assignCuries");

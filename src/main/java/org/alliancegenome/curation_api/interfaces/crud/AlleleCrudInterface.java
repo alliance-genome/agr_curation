@@ -60,7 +60,7 @@ public interface AlleleCrudInterface extends BaseSubmittedObjectCrudInterface<Al
 	@Override
 	@POST
 	@Path("/")
-	@JsonView(CurationView.AlleleView.class)
+	@JsonView(CurationView.AlleleDetailView.class)
 	ObjectResponse<Allele> create(Allele entity);
 
 	@Override

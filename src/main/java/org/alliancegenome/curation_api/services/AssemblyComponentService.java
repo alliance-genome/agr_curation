@@ -8,7 +8,6 @@ import java.util.Map;
 import org.alliancegenome.curation_api.constants.EntityFieldConstants;
 import org.alliancegenome.curation_api.dao.AssemblyComponentDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
-import org.alliancegenome.curation_api.enums.ChromosomeAccessionEnum;
 import org.alliancegenome.curation_api.model.entities.AssemblyComponent;
 import org.alliancegenome.curation_api.model.entities.GenomeAssembly;
 import org.alliancegenome.curation_api.response.ObjectResponse;
@@ -30,6 +29,7 @@ public class AssemblyComponentService extends BaseEntityCrudService<AssemblyComp
 	@Inject GenomeAssemblyService genomeAssemblyService;
 	@Inject NcbiTaxonTermService ncbiTaxonTermService;
 	@Inject OrganizationService organizationService;
+	@Inject ChromosomeAccessionService chromosomeAccessionService;
 
 	Date assemblyComponentRequest;
 	HashMap<String, AssemblyComponent> assemblyComponentCacheMap = new HashMap<>();
@@ -75,11 +75,11 @@ public class AssemblyComponentService extends BaseEntityCrudService<AssemblyComp
 			return assemblyComponentResponse.getSingleResult();
 		}
 
-		String primaryExternalId = ChromosomeAccessionEnum.getChromosomeAccession(name, assemblyId);
+		String primaryExternalId = chromosomeAccessionService.getChromosomeAccession(name, assemblyId);
 
 		// SCRUM-6258: a sequence can keep its accession across assembly versions - the
 		// mitochondrion is unchanged between GRCz11 and GRCz12tu (RefSeq:NC_002333.2) and
-		// between mRatBN7.2 and GRCr8 (RefSeq:NC_001665.2), so ChromosomeAccessionEnum maps
+		// between mRatBN7.2 and GRCr8 (RefSeq:NC_001665.2), so the chromosomeaccession table maps
 		// both assemblies of each pair to the same accession. The lookup above is scoped to a
 		// single assembly and therefore misses the component stored under the older one, but
 		// primaryExternalId is globally unique on BiologicalEntity, so persisting a second

@@ -21,6 +21,10 @@ import org.alliancegenome.curation_api.dao.SequenceTargetingReagentDAO;
 import org.alliancegenome.curation_api.dao.AssemblyComponentDAO;
 import org.alliancegenome.curation_api.dao.GenomeAssemblyDAO;
 import org.alliancegenome.curation_api.dao.PhenotypeAnnotationDAO;
+import org.alliancegenome.curation_api.dao.GeneMolecularInteractionDAO;
+import org.alliancegenome.curation_api.dao.GeneGeneticInteractionDAO;
+import org.alliancegenome.curation_api.dao.HTPExpressionDatasetAnnotationDAO;
+import org.alliancegenome.curation_api.dao.HTPExpressionDatasetSampleAnnotationDAO;
 import org.alliancegenome.curation_api.enums.MatiSubdomain;
 import org.alliancegenome.curation_api.services.CurieMintService;
 
@@ -56,6 +60,14 @@ public class SystemController implements SystemControllerInterface {
 	PhenotypeAnnotationDAO phenotypeAnnotationDAO;
 	@Inject
 	DiseaseAnnotationDAO diseaseAnnotationDAO;
+	@Inject
+	GeneMolecularInteractionDAO geneMolecularInteractionDAO;
+	@Inject
+	GeneGeneticInteractionDAO geneGeneticInteractionDAO;
+	@Inject
+	HTPExpressionDatasetAnnotationDAO htpExpressionDatasetAnnotationDAO;
+	@Inject
+	HTPExpressionDatasetSampleAnnotationDAO htpExpressionDatasetSampleAnnotationDAO;
 	@Inject
 	DiseaseAnnotationService diseaseAnnotationService;
 	@Inject
@@ -133,6 +145,26 @@ public class SystemController implements SystemControllerInterface {
 	@Override
 	public void mintMissingPhenotypeAnnotationCuries(Integer batchSize, Integer maxToMint) {
 		curieMintService.mintMissingCuries(phenotypeAnnotationDAO, MatiSubdomain.PHENOTYPE_ANNOTATION, batchSize, maxToMint);
+	}
+
+	@Override
+	public void mintMissingMolecularInteractionCuries(Integer batchSize, Integer maxToMint) {
+		curieMintService.mintMissingCuries(geneMolecularInteractionDAO, MatiSubdomain.MOLECULAR_INTERACTION, batchSize, maxToMint);
+	}
+
+	@Override
+	public void mintMissingGeneticInteractionCuries(Integer batchSize, Integer maxToMint) {
+		curieMintService.mintMissingCuries(geneGeneticInteractionDAO, MatiSubdomain.GENETIC_INTERACTION, batchSize, maxToMint);
+	}
+
+	@Override
+	public void mintMissingHTPExpressionSampleCuries(Integer batchSize, Integer maxToMint) {
+		curieMintService.mintMissingCuries(htpExpressionDatasetSampleAnnotationDAO, MatiSubdomain.HTP_EXPRESSION_SAMPLE, batchSize, maxToMint);
+	}
+
+	@Override
+	public void mintMissingHTPExpressionDatasetCuries(Integer batchSize, Integer maxToMint) {
+		curieMintService.mintMissingCuries(htpExpressionDatasetAnnotationDAO, MatiSubdomain.HTP_EXPRESSION_DATASET, batchSize, maxToMint);
 	}
 
 	@Override

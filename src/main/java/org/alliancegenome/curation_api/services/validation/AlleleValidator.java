@@ -107,7 +107,10 @@ public class AlleleValidator extends GenomicEntityValidator<Allele> {
 
 	public Allele validateAllele(Allele uiEntity, Allele dbEntity, Boolean updateAllAssociations) {
 
-		dbEntity = validateGenomicEntityFields(uiEntity, dbEntity, VocabularyConstants.ALLELE_NOTE_TYPES_VOCABULARY_TERM_SET);
+		// An allele is identified by its AGRKB curie, minted below for a new allele and already
+		// present on a loaded one, so neither MOD identifier is required. Passed for updates too:
+		// an allele created here has neither, and requiring one would reject its first edit.
+		dbEntity = validateGenomicEntityFields(uiEntity, dbEntity, VocabularyConstants.ALLELE_NOTE_TYPES_VOCABULARY_TERM_SET, false);
 
 		List<Reference> references = validateReferences(uiEntity, dbEntity);
 		dbEntity.setReferences(references);
