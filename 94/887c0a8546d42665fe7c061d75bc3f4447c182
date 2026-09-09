@@ -1,0 +1,27 @@
+src/main/cliapp/src/constants/FilterFields.js
+  s_e6a7e48d95f0da::t_f47b7ef234c0c0 223-224
+src/main/cliapp/src/containers/antibodiesPage/AntibodiesTable.jsx
+  s_e6a7e48d95f0da::t_b48dfc95e4a784 86-88,97
+src/main/java/org/alliancegenome/curation_api/constants/LinkMLSchemaConstants.java
+  s_e6a7e48d95f0da::t_011f2256c89ffc 8
+src/main/java/org/alliancegenome/curation_api/model/ingest/dto/AntibodyDTO.java
+  s_e6a7e48d95f0da::t_23b4f8fdaaf6cf 17
+src/main/resources/db/migration/v0.53.0.5__antibody_taxon_vocabularies.sql
+  s_e6a7e48d95f0da::t_30e9b9e3abb2de 148-162,189
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "94887c0a8546d42665fe7c061d75bc3f4447c182",
+  "prompts": {},
+  "sessions": {
+    "s_e6a7e48d95f0da": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "0b1c323c-79a4-432b-8351-1956bb3e2d64",
+        "model": "unknown"
+      },
+      "human_author": "Ketaki Kindre <kkindre@caltech.edu>"
+    }
+  }
+}
