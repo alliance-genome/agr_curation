@@ -8,7 +8,7 @@ import java.util.Set;
 
 import org.alliancegenome.curation_api.constants.EntityFieldConstants;
 import org.alliancegenome.curation_api.dao.AntibodyDAO;
-import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
+import org.alliancegenome.curation_api.model.entities.Species;
 import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.model.entities.Antibody;
 import org.alliancegenome.curation_api.model.ingest.dto.AntibodyDTO;
@@ -53,13 +53,13 @@ public class AntibodyService extends SubmittedObjectCrudService<Antibody, Antibo
 
 	@Override
 	@Transactional
-	public ObjectResponse<Antibody> upsert(AntibodyDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
-		return antibodyDtoValidator.validateAntibodyDTO(dto, dataProvider);
+	public ObjectResponse<Antibody> upsert(AntibodyDTO dto, Species species) throws ValidationException {
+		return antibodyDtoValidator.validateAntibodyDTO(dto, species);
 	}
 
-	public List<Long> getAntibodyIdsByDataProvider(BackendBulkDataProvider dataProvider) {
+	public List<Long> getAntibodyIdsByDataProvider(Species species) {
 		Map<String, Object> params = new HashMap<>();
-		params.put(EntityFieldConstants.DATA_PROVIDER, dataProvider.sourceOrganization);
+		params.put(EntityFieldConstants.DATA_PROVIDER, species.getDataProvider().getAbbreviation());
 		List<Long> antibodyIds = antibodyDAO.findIdsByParams(params);
 		antibodyIds.removeIf(Objects::isNull);
 

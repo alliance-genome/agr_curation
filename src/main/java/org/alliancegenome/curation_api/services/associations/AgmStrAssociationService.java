@@ -12,7 +12,7 @@ import org.alliancegenome.curation_api.dao.NoteDAO;
 import org.alliancegenome.curation_api.dao.PersonDAO;
 import org.alliancegenome.curation_api.dao.SequenceTargetingReagentDAO;
 import org.alliancegenome.curation_api.dao.associations.AgmSequenceTargetingReagentAssociationDAO;
-import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
+import org.alliancegenome.curation_api.model.entities.Species;
 import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.interfaces.crud.BaseUpsertServiceInterface;
 import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
@@ -49,13 +49,13 @@ public class AgmStrAssociationService extends BaseAssociationDTOCrudService<AgmS
 
 	@Override
 	@Transactional
-	public ObjectResponse<AgmSequenceTargetingReagentAssociation> upsert(AgmSequenceTargetingReagentAssociationDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
-		return agmStrAssociationDtoValidator.validateAgmSequenceTargetingReagentAssociationDTO(dto, dataProvider);
+	public ObjectResponse<AgmSequenceTargetingReagentAssociation> upsert(AgmSequenceTargetingReagentAssociationDTO dto, Species species) throws ValidationException {
+		return agmStrAssociationDtoValidator.validateAgmSequenceTargetingReagentAssociationDTO(dto, species);
 	}
 
-	public List<Long> getAssociationsByDataProvider(BackendBulkDataProvider dataProvider) {
+	public List<Long> getAssociationsBySpecies(Species species) {
 		Map<String, Object> params = new HashMap<>();
-		params.put(EntityFieldConstants.AGM_ASSOCIATION_SUBJECT_DATA_PROVIDER, dataProvider.sourceOrganization);
+		params.put(EntityFieldConstants.AGM_ASSOCIATION_SUBJECT_DATA_PROVIDER, species.getDataProvider().getAbbreviation());
 		List<Long> associationIds = agmStrAssociationDAO.findIdsByParams(params);
 		associationIds.removeIf(Objects::isNull);
 

@@ -2,7 +2,7 @@ package org.alliancegenome.curation_api.services.helpers;
 
 import java.util.Map;
 
-import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
+import org.alliancegenome.curation_api.model.entities.Species;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.Gff3DTO;
 
 import jakarta.enterprise.context.RequestScoped;
@@ -10,7 +10,7 @@ import jakarta.enterprise.context.RequestScoped;
 @RequestScoped
 public class Gff3UniqueIdHelper {
 
-	public static String getExonOrCodingSequenceUniqueId(Gff3DTO dto, Map<String, String> attributes, BackendBulkDataProvider dataProvider) {
+	public static String getExonOrCodingSequenceUniqueId(Gff3DTO dto, Map<String, String> attributes, Species species) {
 		UniqueIdGeneratorHelper uniqueId = new UniqueIdGeneratorHelper();
 		
 		if (attributes.containsKey("curie")) {

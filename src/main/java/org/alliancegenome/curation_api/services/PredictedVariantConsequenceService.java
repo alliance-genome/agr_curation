@@ -8,7 +8,7 @@ import java.util.Objects;
 
 import org.alliancegenome.curation_api.constants.EntityFieldConstants;
 import org.alliancegenome.curation_api.dao.PredictedVariantConsequenceDAO;
-import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
+import org.alliancegenome.curation_api.model.entities.Species;
 import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.interfaces.crud.BaseUpsertServiceInterface;
 import org.alliancegenome.curation_api.model.entities.Person;
@@ -40,22 +40,22 @@ public class PredictedVariantConsequenceService extends BaseEntityCrudService<Pr
 		setSQLDao(predictedVariantConsequenceDAO);
 	}
 
-	public List<Long> getIdsByDataProvider(BackendBulkDataProvider dataProvider) {
+	public List<Long> getIdsBySpecies(Species species) {
 		Map<String, Object> params = new HashMap<>();
-		params.put("variantTranscript." + EntityFieldConstants.DATA_PROVIDER, dataProvider.sourceOrganization);
-		if (StringUtils.equals(dataProvider.sourceOrganization, "RGD")) {
-			params.put("variantTranscript." + EntityFieldConstants.TAXON, dataProvider.canonicalTaxonCurie);
+		params.put("variantTranscript." + EntityFieldConstants.DATA_PROVIDER, species.getDataProvider().getAbbreviation());
+		if (StringUtils.equals(species.getDataProvider().getAbbreviation(), "RGD")) {
+			params.put("variantTranscript." + EntityFieldConstants.TAXON, species.getTaxon().getCurie());
 		}
 		List<Long> ids = predictedVariantConsequenceDAO.findIdsByParams(params);
 		ids.removeIf(Objects::isNull);
 		return ids;
 	}
 
-	public List<Long> getGeneLevelIdsByDataProvider(BackendBulkDataProvider dataProvider) {
+	public List<Long> getGeneLevelIdsByDataProvider(Species species) {
 		Map<String, Object> params = new HashMap<>();
-		params.put("variantTranscript." + EntityFieldConstants.DATA_PROVIDER, dataProvider.sourceOrganization);
-		if (StringUtils.equals(dataProvider.sourceOrganization, "RGD")) {
-			params.put("variantTranscript." + EntityFieldConstants.TAXON, dataProvider.canonicalTaxonCurie);
+		params.put("variantTranscript." + EntityFieldConstants.DATA_PROVIDER, species.getDataProvider().getAbbreviation());
+		if (StringUtils.equals(species.getDataProvider().getAbbreviation(), "RGD")) {
+			params.put("variantTranscript." + EntityFieldConstants.TAXON, species.getTaxon().getCurie());
 		}
 		params.put("geneLevelConsequence", true);
 		List<Long> ids = predictedVariantConsequenceDAO.findIdsByParams(params);
@@ -65,8 +65,8 @@ public class PredictedVariantConsequenceService extends BaseEntityCrudService<Pr
 
 	@Override
 	@Transactional
-	public ObjectResponse<PredictedVariantConsequence> upsert(VepTxtDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
-		return vepTranscriptFmsDtoValidator.validateTranscriptLevelConsequence(dto, dataProvider);
+	public ObjectResponse<PredictedVariantConsequence> upsert(VepTxtDTO dto, Species species) throws ValidationException {
+		return vepTranscriptFmsDtoValidator.validateTranscriptLevelConsequence(dto, species);
 	}
 
 	@Transactional

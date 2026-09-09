@@ -8,7 +8,7 @@ import java.util.Map;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.GeneDAO;
-import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
+import org.alliancegenome.curation_api.model.entities.Species;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
 import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
@@ -54,7 +54,7 @@ public class GeneDTOValidator extends GenomicEntityDTOValidator<Gene, GeneDTO> {
 	@Inject SoTermService soTermService;
 
 	@Transactional
-	public ObjectResponse<Gene> validateGeneDTO(GeneDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
+	public ObjectResponse<Gene> validateGeneDTO(GeneDTO dto, Species species) throws ValidationException {
 		response = new ObjectResponse<Gene>();
 		
 		Gene gene = findDatabaseObject(geneDAO, "primaryExternalId", "primary_external_id", dto.getPrimaryExternalId());
@@ -62,7 +62,7 @@ public class GeneDTOValidator extends GenomicEntityDTOValidator<Gene, GeneDTO> {
 			gene = new Gene();
 		}
 
-		gene = validateGenomicEntityDTO(gene, dto, dataProvider, VocabularyConstants.GENE_NOTE_TYPES_VOCABULARY_TERM_SET);
+		gene = validateGenomicEntityDTO(gene, dto, species, VocabularyConstants.GENE_NOTE_TYPES_VOCABULARY_TERM_SET);
 		
 		GeneSymbolSlotAnnotation symbol = validateGeneSymbol(gene, dto);
 		gene.setGeneSymbol(symbol);

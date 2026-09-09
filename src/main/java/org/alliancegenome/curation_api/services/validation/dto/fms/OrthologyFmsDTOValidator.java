@@ -9,7 +9,7 @@ import java.util.Set;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.orthology.GeneToGeneOrthologyGeneratedDAO;
-import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
+import org.alliancegenome.curation_api.model.entities.Species;
 import org.alliancegenome.curation_api.exceptions.KnownIssueValidationException;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
 import org.alliancegenome.curation_api.exceptions.ValidationException;
@@ -21,6 +21,7 @@ import org.alliancegenome.curation_api.model.ingest.dto.fms.OrthologyFmsDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.GeneService;
+import org.alliancegenome.curation_api.services.SpeciesService;
 import org.alliancegenome.curation_api.services.VocabularyTermService;
 import org.alliancegenome.curation_api.services.ontology.NcbiTaxonTermService;
 import org.apache.commons.collections.CollectionUtils;
@@ -55,6 +56,7 @@ public class OrthologyFmsDTOValidator {
 	@Inject GeneToGeneOrthologyGeneratedDAO generatedOrthologyDAO;
 	@Inject GeneService geneService;
 	@Inject NcbiTaxonTermService ncbiTaxonTermService;
+	@Inject SpeciesService speciesService;
 	@Inject VocabularyTermService vocabularyTermService;
 
 	@Transactional
@@ -255,7 +257,8 @@ public class OrthologyFmsDTOValidator {
 	private String convertToModCurie(String curie, Integer taxonId) {
 		curie = curie.replaceFirst("^DRSC:", "");
 		if (curie.indexOf(":") == -1) {
-			String prefix = BackendBulkDataProvider.getCuriePrefixFromTaxonId(taxonId);
+			Species sp = speciesService.getByTaxonCurie("NCBITaxon:" + taxonId);
+			String prefix = (sp != null) ? sp.getDataProvider().getAbbreviation() + ":" : null;
 			if (prefix != null) {
 				curie = prefix + curie;
 			}

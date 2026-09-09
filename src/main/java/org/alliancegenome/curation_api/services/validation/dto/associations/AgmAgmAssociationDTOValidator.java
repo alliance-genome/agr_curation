@@ -7,7 +7,7 @@ import org.alliancegenome.curation_api.constants.EntityFieldConstants;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.associations.AgmAgmAssociationDAO;
-import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
+import org.alliancegenome.curation_api.model.entities.Species;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
 import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
@@ -29,7 +29,7 @@ public class AgmAgmAssociationDTOValidator extends AuditedObjectDTOValidator<Agm
 	@Inject AgmAgmAssociationDAO agmAgmAssociationDAO;
 	@Inject AffectedGenomicModelService agmService;
 
-	public ObjectResponse<AgmAgmAssociation> validateAgmAgmAssociationDTO(AgmAgmAssociationDTO dto, BackendBulkDataProvider beDataProvider) throws ValidationException {
+	public ObjectResponse<AgmAgmAssociation> validateAgmAgmAssociationDTO(AgmAgmAssociationDTO dto, Species beSpecies) throws ValidationException {
 		response = new ObjectResponse<AgmAgmAssociation>();
 
 		List<Long> subjectIds = null;
@@ -78,8 +78,8 @@ public class AgmAgmAssociationDTOValidator extends AuditedObjectDTOValidator<Agm
 			AffectedGenomicModel subject = agmService.findByIdentifierString(dto.getAgmSubjectIdentifier());
 			if (subject == null) {
 				response.addErrorMessage("agm_identifier", ValidationConstants.INVALID_MESSAGE + " (" + dto.getAgmSubjectIdentifier() + ")");
-			} else if (beDataProvider != null && !subject.getDataProvider().getAbbreviation().equals(beDataProvider.sourceOrganization)) {
-				response.addErrorMessage("agm_identifier", ValidationConstants.INVALID_MESSAGE + " for " + beDataProvider.name() + " load (" + dto.getAgmSubjectIdentifier() + ")");
+			} else if (beSpecies != null && !subject.getDataProvider().getAbbreviation().equals(beSpecies.getDataProvider().getAbbreviation())) {
+				response.addErrorMessage("agm_identifier", ValidationConstants.INVALID_MESSAGE + " for " + beSpecies.getDisplayName() + " load (" + dto.getAgmSubjectIdentifier() + ")");
 			} else {
 				association.setAgmAssociationSubject(subject);
 			}
@@ -90,8 +90,8 @@ public class AgmAgmAssociationDTOValidator extends AuditedObjectDTOValidator<Agm
 			AffectedGenomicModel object = agmService.findByIdentifierString(dto.getAgmObjectIdentifier());
 			if (object == null) {
 				response.addErrorMessage("agm_object_identifier", ValidationConstants.INVALID_MESSAGE + " (" + dto.getAgmObjectIdentifier() + ")");
-			} else if (beDataProvider != null && !object.getDataProvider().getAbbreviation().equals(beDataProvider.sourceOrganization)) {
-				response.addErrorMessage("agm_object_identifier", ValidationConstants.INVALID_MESSAGE + " for " + beDataProvider.name() + " load (" + dto.getAgmObjectIdentifier() + ")");
+			} else if (beSpecies != null && !object.getDataProvider().getAbbreviation().equals(beSpecies.getDataProvider().getAbbreviation())) {
+				response.addErrorMessage("agm_object_identifier", ValidationConstants.INVALID_MESSAGE + " for " + beSpecies.getDisplayName() + " load (" + dto.getAgmObjectIdentifier() + ")");
 			} else {
 				association.setAgmAgmAssociationObject(object);
 			}

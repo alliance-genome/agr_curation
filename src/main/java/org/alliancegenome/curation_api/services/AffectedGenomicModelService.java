@@ -9,7 +9,7 @@ import java.util.Objects;
 
 import org.alliancegenome.curation_api.constants.EntityFieldConstants;
 import org.alliancegenome.curation_api.dao.AffectedGenomicModelDAO;
-import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
+import org.alliancegenome.curation_api.model.entities.Species;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.model.document.es.ModelSearchResultDocument;
@@ -63,8 +63,8 @@ public class AffectedGenomicModelService extends SubmittedObjectCrudService<Affe
 	}
 
 	@Override
-	public ObjectResponse<AffectedGenomicModel> upsert(AffectedGenomicModelDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
-		return agmDtoValidator.validateAffectedGenomicModelDTO(dto, dataProvider);
+	public ObjectResponse<AffectedGenomicModel> upsert(AffectedGenomicModelDTO dto, Species species) throws ValidationException {
+		return agmDtoValidator.validateAffectedGenomicModelDTO(dto, species);
 	}
 
 	@Override
@@ -148,9 +148,9 @@ public class AffectedGenomicModelService extends SubmittedObjectCrudService<Affe
 		return agmDAO.findAgmsForSummaryByIds(ids);
 	}
 
-	public List<Long> getIdsByDataProvider(String dataProvider) {
+	public List<Long> getIdsByDataProvider(String species) {
 		Map<String, Object> params = new HashMap<>();
-		params.put(EntityFieldConstants.DATA_PROVIDER, dataProvider);
+		params.put(EntityFieldConstants.DATA_PROVIDER, species);
 		List<Long> ids = agmDAO.findIdsByParams(params);
 		ids.removeIf(Objects::isNull);
 		return ids;

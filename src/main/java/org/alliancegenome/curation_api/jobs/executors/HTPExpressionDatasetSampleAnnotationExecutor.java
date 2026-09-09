@@ -7,7 +7,7 @@ import java.util.zip.GZIPInputStream;
 
 import org.alliancegenome.curation_api.dao.ExternalDataBaseEntityDAO;
 import org.alliancegenome.curation_api.dao.HTPExpressionDatasetSampleAnnotationDAO;
-import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
+import org.alliancegenome.curation_api.model.entities.Species;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.entities.HTPExpressionDatasetSampleAnnotation;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkFMSLoad;
@@ -41,19 +41,19 @@ public class HTPExpressionDatasetSampleAnnotationExecutor extends LoadFileExecut
 			bulkLoadFileHistory.getBulkLoadFile().setAllianceMemberReleaseVersion(htpExpressionDatasetSampleData.getMetaData().getRelease());
 			}
 
-			BackendBulkDataProvider dataProvider = BackendBulkDataProvider.valueOf(fms.getFmsDataSubType());
+			Species species = bulkLoadFileHistory.getBulkLoad().getSpecies();
 			List<Long> htpAnnotationsIdsLoaded = new ArrayList<>();
-			List<Long> previousIds = htpExpressionDatasetSampleAnnotationService.getAnnotationIdsByDataProvider(dataProvider.name());
+			List<Long> previousIds = htpExpressionDatasetSampleAnnotationService.getAnnotationIdsByDataProvider(species.getDisplayName());
 			
 			bulkLoadFileDAO.merge(bulkLoadFileHistory.getBulkLoadFile());
 
 			bulkLoadFileHistory.setCount((long) htpExpressionDatasetSampleData.getData().size());
 			updateHistory(bulkLoadFileHistory);
 			
-			boolean success = runLoad(htpExpressionDatasetSampleAnnotationService, bulkLoadFileHistory, dataProvider, htpExpressionDatasetSampleData.getData(), htpAnnotationsIdsLoaded);
-			
+			boolean success = runLoad(htpExpressionDatasetSampleAnnotationService, bulkLoadFileHistory, species, htpExpressionDatasetSampleData.getData(), htpAnnotationsIdsLoaded);
+
 			if (success) {
-				runCleanup(htpExpressionDatasetSampleAnnotationService, bulkLoadFileHistory, dataProvider.name(), previousIds, htpAnnotationsIdsLoaded, fms.getFmsDataType());
+				runCleanup(htpExpressionDatasetSampleAnnotationService, bulkLoadFileHistory, species.getDisplayName(), previousIds, htpAnnotationsIdsLoaded, fms.getFmsDataType());
 			}
 			bulkLoadFileHistory.finishLoad();
 

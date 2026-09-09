@@ -7,7 +7,7 @@ import java.util.Set;
 
 import org.alliancegenome.curation_api.constants.EntityFieldConstants;
 import org.alliancegenome.curation_api.dao.GeneExpressionAnnotationDAO;
-import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
+import org.alliancegenome.curation_api.model.entities.Species;
 import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.interfaces.crud.BaseUpsertServiceInterface;
 import org.alliancegenome.curation_api.model.entities.GeneExpressionAnnotation;
@@ -44,11 +44,11 @@ public class GeneExpressionAnnotationService extends BaseAnnotationCrudService<G
 		crossReferences = new HashMap<>();
 	}
 
-	public List<Long> getAnnotationIdsByDataProvider(BackendBulkDataProvider dataProvider) {
+	public List<Long> getAnnotationIdsBySpecies(Species species) {
 		Map<String, Object> params = new HashMap<>();
-		params.put(EntityFieldConstants.DATA_PROVIDER, dataProvider.sourceOrganization);
-		if (StringUtils.equals(dataProvider.sourceOrganization, "RGD") || StringUtils.equals(dataProvider.sourceOrganization, "XB")) {
-			params.put(EntityFieldConstants.EA_SUBJECT_TAXON, dataProvider.canonicalTaxonCurie);
+		params.put(EntityFieldConstants.DATA_PROVIDER, species.getDataProvider().getAbbreviation());
+		if (StringUtils.equals(species.getDataProvider().getAbbreviation(), "RGD") || StringUtils.equals(species.getDataProvider().getAbbreviation(), "XB")) {
+			params.put(EntityFieldConstants.EA_SUBJECT_TAXON, species.getTaxon().getCurie());
 		}
 		List<Long> annotationIds = geneExpressionAnnotationDAO.findIdsByParams(params);
 		return annotationIds;
@@ -56,8 +56,8 @@ public class GeneExpressionAnnotationService extends BaseAnnotationCrudService<G
 
 	@Transactional
 	@Override
-	public ObjectResponse<GeneExpressionAnnotation> upsert(ConsolidatedGeneExpressionFmsDTO consolidatedGeneExpressionFmsDTO, BackendBulkDataProvider dataProvider) throws ValidationException {
-		ObjectResponse<GeneExpressionAnnotation> resp = geneExpressionAnnotationFmsDTOValidator.validateAnnotation(consolidatedGeneExpressionFmsDTO, dataProvider, experiments, crossReferences);
+	public ObjectResponse<GeneExpressionAnnotation> upsert(ConsolidatedGeneExpressionFmsDTO consolidatedGeneExpressionFmsDTO, Species species) throws ValidationException {
+		ObjectResponse<GeneExpressionAnnotation> resp = geneExpressionAnnotationFmsDTOValidator.validateAnnotation(consolidatedGeneExpressionFmsDTO, species, experiments, crossReferences);
 		geneExpressionAnnotationDAO.persist(resp.getEntity());
 		return resp;
 	}

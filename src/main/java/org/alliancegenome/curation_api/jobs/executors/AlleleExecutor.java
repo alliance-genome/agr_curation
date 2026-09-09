@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.alliancegenome.curation_api.dao.AlleleDAO;
-import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
+import org.alliancegenome.curation_api.model.entities.Species;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkManualLoad;
 import org.alliancegenome.curation_api.model.ingest.dto.AlleleDTO;
@@ -25,7 +25,7 @@ public class AlleleExecutor extends LoadFileExecutor {
 	public void execLoad(BulkLoadFileHistory bulkLoadFileHistory, Boolean cleanUp) {
 
 		BulkManualLoad manual = (BulkManualLoad) bulkLoadFileHistory.getBulkLoad();
-		Log.info("Running with: " + manual.getDataProvider().name());
+		Log.info("Running with: " + manual.getSpecies().getDisplayName());
 
 		IngestDTO ingestDto = readIngestFile(bulkLoadFileHistory, AlleleDTO.class);
 		if (ingestDto == null) {
@@ -37,12 +37,12 @@ public class AlleleExecutor extends LoadFileExecutor {
 			return;
 		}
 
-		BackendBulkDataProvider dataProvider = manual.getDataProvider();
+		Species species = manual.getSpecies();
 
 		List<Long> alleleIdsLoaded = new ArrayList<>();
 		List<Long> alleleIdsBefore = new ArrayList<>();
 		if (cleanUp) {
-			alleleIdsBefore.addAll(alleleService.getIdsByDataProvider(dataProvider.name()));
+			alleleIdsBefore.addAll(alleleService.getIdsByDataProvider(species.getDisplayName()));
 			Log.debug("runLoad: Before: total " + alleleIdsBefore.size());
 		}
 
@@ -52,9 +52,9 @@ public class AlleleExecutor extends LoadFileExecutor {
 		bulkLoadFileHistory.setCount(alleles.size());
 		updateHistory(bulkLoadFileHistory);
 		
-		boolean success = runLoad(alleleService, bulkLoadFileHistory, dataProvider, alleles, alleleIdsLoaded);
+		boolean success = runLoad(alleleService, bulkLoadFileHistory, species, alleles, alleleIdsLoaded);
 		if (success && cleanUp) {
-			runCleanup(alleleService, bulkLoadFileHistory, dataProvider.name(), alleleIdsBefore, alleleIdsLoaded, "Allele");
+			runCleanup(alleleService, bulkLoadFileHistory, species.getDisplayName(), alleleIdsBefore, alleleIdsLoaded, "Allele");
 		}
 		bulkLoadFileHistory.finishLoad();
 		updateHistory(bulkLoadFileHistory);

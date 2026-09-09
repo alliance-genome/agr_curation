@@ -8,7 +8,7 @@ import org.alliancegenome.curation_api.dao.CrossReferenceDAO;
 import org.alliancegenome.curation_api.dao.MoleculeDAO;
 import org.alliancegenome.curation_api.dao.ResourceDescriptorPageDAO;
 import org.alliancegenome.curation_api.dao.SynonymDAO;
-import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
+import org.alliancegenome.curation_api.model.entities.Species;
 import org.alliancegenome.curation_api.exceptions.KnownIssueValidationException;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
 import org.alliancegenome.curation_api.exceptions.ValidationException;
@@ -64,7 +64,7 @@ public class MoleculeService extends BaseEntityCrudService<Molecule, MoleculeDAO
 
 	@Override
 	@Transactional
-	public ObjectResponse<Molecule> upsert(MoleculeFmsDTO dto, BackendBulkDataProvider backendBulkDataProvider) throws ValidationException {
+	public ObjectResponse<Molecule> upsert(MoleculeFmsDTO dto, Species species) throws ValidationException {
 		log.debug("processUpdate Molecule: ");
 
 		if (StringUtils.isBlank(dto.getId())) {

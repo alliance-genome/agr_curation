@@ -6,7 +6,7 @@ import java.util.List;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.AntibodyDAO;
-import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
+import org.alliancegenome.curation_api.model.entities.Species;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
 import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.model.entities.Antibody;
@@ -46,7 +46,7 @@ public class AntibodyDTOValidator extends ReagentDTOValidator<Antibody, Antibody
 	CrossReferenceService crossReferenceService;
 
 	@Transactional
-	public ObjectResponse<Antibody> validateAntibodyDTO(AntibodyDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
+	public ObjectResponse<Antibody> validateAntibodyDTO(AntibodyDTO dto, Species species) throws ValidationException {
 
 		response = new ObjectResponse<Antibody>();
 

@@ -8,7 +8,7 @@ import java.util.Map;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.ConstructDAO;
-import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
+import org.alliancegenome.curation_api.model.entities.Species;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
 import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.model.entities.Construct;
@@ -55,7 +55,7 @@ public class ConstructDTOValidator extends ReagentDTOValidator<Construct, Constr
 	ReferenceService referenceService;
 
 	@Transactional
-	public ObjectResponse<Construct> validateConstructDTO(ConstructDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
+	public ObjectResponse<Construct> validateConstructDTO(ConstructDTO dto, Species species) throws ValidationException {
 
 		response = new ObjectResponse<Construct>();
 

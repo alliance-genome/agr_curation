@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
+import org.alliancegenome.curation_api.model.entities.Species;
 import org.alliancegenome.curation_api.jobs.executors.LoadFileExecutor;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkManualLoad;
@@ -26,8 +26,8 @@ public class AlleleConstructAssociationExecutor extends LoadFileExecutor {
 	public void execLoad(BulkLoadFileHistory bulkLoadFileHistory, Boolean cleanUp) {
 
 		BulkManualLoad manual = (BulkManualLoad) bulkLoadFileHistory.getBulkLoad();
-		BackendBulkDataProvider dataProvider = manual.getDataProvider();
-		log.info("Running with dataProvider: " + dataProvider.name());
+		Species species = manual.getSpecies();
+		log.info("Running with dataProvider: " + species.getDisplayName());
 
 		IngestDTO ingestDto = readIngestFile(bulkLoadFileHistory, AlleleConstructAssociationDTO.class);
 		if (ingestDto == null) {
@@ -42,7 +42,7 @@ public class AlleleConstructAssociationExecutor extends LoadFileExecutor {
 		List<Long> associationIdsLoaded = new ArrayList<>();
 		List<Long> associationIdsBefore = new ArrayList<>();
 		if (cleanUp) {
-			associationIdsBefore.addAll(alleleConstructAssociationService.getAssociationsByDataProvider(dataProvider));
+			associationIdsBefore.addAll(alleleConstructAssociationService.getAssociationsBySpecies(species));
 			associationIdsBefore.removeIf(Objects::isNull);
 		}
 
@@ -53,9 +53,9 @@ public class AlleleConstructAssociationExecutor extends LoadFileExecutor {
 		bulkLoadFileHistory.setCount(countType, associations.size());
 		updateHistory(bulkLoadFileHistory);
 		
-		boolean success = runLoad(alleleConstructAssociationService, bulkLoadFileHistory, dataProvider, associations, associationIdsLoaded, countType);
+		boolean success = runLoad(alleleConstructAssociationService, bulkLoadFileHistory, species, associations, associationIdsLoaded, countType);
 		if (success && cleanUp) {
-			runCleanup(alleleConstructAssociationService, bulkLoadFileHistory, dataProvider.name(), associationIdsBefore, associationIdsLoaded, countType);
+			runCleanup(alleleConstructAssociationService, bulkLoadFileHistory, species.getDisplayName(), associationIdsBefore, associationIdsLoaded, countType);
 		}
 		bulkLoadFileHistory.finishLoad();
 		updateHistory(bulkLoadFileHistory);
