@@ -32,6 +32,14 @@ public abstract class BaseCurieSQLDAO<E extends AuditedObject & CurieInterface> 
 		super(myClass);
 	}
 
+	/**
+	 * The entity type this DAO serves, so {@code CurieMintService.mintMissingCuries} can resolve the
+	 * MaTI subdomain to backfill from instead of having every endpoint name it.
+	 */
+	public Class<E> getEntityClass() {
+		return myClass;
+	}
+
 	/** How many rows of this entity type still lack an AGRKB curie. */
 	public long countMissingCuries() {
 		CriteriaBuilder cb = entityManager.getCriteriaBuilder();

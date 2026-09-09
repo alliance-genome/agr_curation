@@ -43,7 +43,6 @@ import org.alliancegenome.curation_api.services.validation.dto.slotAnnotations.A
 import org.alliancegenome.curation_api.services.validation.dto.slotAnnotations.AlleleSecondaryIdSlotAnnotationValidator;
 import org.alliancegenome.curation_api.services.validation.dto.slotAnnotations.AlleleSymbolSlotAnnotationValidator;
 import org.alliancegenome.curation_api.services.validation.dto.slotAnnotations.AlleleSynonymSlotAnnotationValidator;
-import org.alliancegenome.curation_api.enums.MatiSubdomain;
 import org.alliancegenome.curation_api.services.CurieMintService;
 import org.apache.commons.collections.CollectionUtils;
 
@@ -159,7 +158,7 @@ public class AlleleValidator extends GenomicEntityValidator<Allele> {
 		// update whose payload omits curie nulls it; without this guard the mint would then issue a
 		// fresh curie and the allele's AGRKB id would silently change on every such update.
 		if (dbEntity.getId() == null) {
-			curieMintService.mintCurieIfAbsent(dbEntity, MatiSubdomain.ALLELE);
+			curieMintService.mintCurieIfAbsent(dbEntity);
 		}
 		dbEntity = alleleDAO.persist(dbEntity);
 
