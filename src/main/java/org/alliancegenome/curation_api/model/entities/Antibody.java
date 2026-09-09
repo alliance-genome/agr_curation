@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
-import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
 import org.alliancegenome.curation_api.view.CurationView;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.hibernate.search.engine.backend.types.Aggregable;
@@ -42,8 +41,8 @@ import lombok.ToString;
 	@Index(name = "antibody_clonality_index", columnList = "clonality_id"),
 	@Index(name = "antibody_heavychainisotype_index", columnList = "heavychainisotype_id"),
 	@Index(name = "antibody_lightchainisotype_index", columnList = "lightchainisotype_id"),
-	@Index(name = "antibody_antigentaxon_index", columnList = "antigentaxon_id"),
-	@Index(name = "antibody_taxon_index", columnList = "taxon_id"),
+	@Index(name = "antibody_antigentaxonterm_index", columnList = "antigentaxonterm_id"),
+	@Index(name = "antibody_taxonterm_index", columnList = "taxonterm_id"),
 	@Index(name = "antibody_originalreference_index", columnList = "originalreference_id")
 })
 public class Antibody extends Reagent {
@@ -72,17 +71,17 @@ public class Antibody extends Reagent {
 	@JsonView({ CurationView.FieldsOnly.class })
 	private VocabularyTerm lightChainIsotype;
 
-	@IndexedEmbedded(includePaths = { "name", "curie", "name_keyword", "curie_keyword" })
+	@IndexedEmbedded(includePaths = { "name", "definition", "name_keyword", "definition_keyword" })
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
 	@JsonView({ CurationView.FieldsOnly.class })
-	private NCBITaxonTerm antigenTaxon;
+	private VocabularyTerm antigenTaxonTerm;
 
-	@IndexedEmbedded(includePaths = { "name", "curie", "name_keyword", "curie_keyword" })
+	@IndexedEmbedded(includePaths = { "name", "definition", "name_keyword", "definition_keyword" })
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
 	@JsonView({ CurationView.FieldsOnly.class })
-	private NCBITaxonTerm taxon;
+	private VocabularyTerm taxonTerm;
 
 	@IndexedEmbedded(includePaths = { "primaryExternalId", "modInternalId", "symbol",
 		"primaryExternalId_keyword", "modInternalId_keyword", "symbol_keyword" })

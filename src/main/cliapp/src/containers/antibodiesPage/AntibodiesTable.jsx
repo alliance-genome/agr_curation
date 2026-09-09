@@ -10,7 +10,6 @@ import { IdTemplate } from '../../components/Templates/IdTemplate';
 import { StringTemplate } from '../../components/Templates/StringTemplate';
 import { StringListTemplate } from '../../components/Templates/StringListTemplate';
 import { BooleanTemplate } from '../../components/Templates/BooleanTemplate';
-import { OntologyTermTemplate } from '../../components/Templates/OntologyTermTemplate';
 import { GenomicEntityListTemplate } from '../../components/Templates/genomicEntity/GenomicEntityListTemplate';
 import { SingleReferenceTemplate } from '../../components/Templates/reference/SingleReferenceTemplate';
 import { TruncatedReferencesTemplate } from '../../components/Templates/reference/TruncatedReferencesTemplate';
@@ -82,20 +81,22 @@ export const AntibodiesTable = () => {
 				filterConfig: FILTER_CONFIGS.nameFilterConfig,
 			},
 			{
-				field: 'taxon.name',
-				columnKey: 'taxon.name',
+				field: 'taxonTerm.name',
+				columnKey: 'taxonTerm.name',
 				header: 'Taxon',
 				sortable: true,
-				body: (rowData) => <OntologyTermTemplate term={rowData.taxon} />,
-				filterConfig: FILTER_CONFIGS.taxonFilterConfig,
+				body: (rowData) => <StringTemplate string={rowData.taxonTerm?.definition || rowData.taxonTerm?.name} />,
+				filterConfig: FILTER_CONFIGS.antibodyTaxonFilterConfig,
 			},
 			{
-				field: 'antigenTaxon.name',
-				columnKey: 'antigenTaxon.name',
+				field: 'antigenTaxonTerm.name',
+				columnKey: 'antigenTaxonTerm.name',
 				header: 'Antigen Taxon',
 				sortable: true,
-				body: (rowData) => <OntologyTermTemplate term={rowData.antigenTaxon} />,
-				filterConfig: FILTER_CONFIGS.antigenTaxonFilterConfig,
+				body: (rowData) => (
+					<StringTemplate string={rowData.antigenTaxonTerm?.definition || rowData.antigenTaxonTerm?.name} />
+				),
+				filterConfig: FILTER_CONFIGS.antibodyAntigenTaxonFilterConfig,
 			},
 			{
 				field: 'clonality.name',

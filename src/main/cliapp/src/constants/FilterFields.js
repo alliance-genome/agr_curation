@@ -217,6 +217,16 @@ export const FIELD_SETS = Object.freeze({
 		filterName: 'antigenTaxonFilter',
 		fields: ['antigenTaxon.curie', 'antigenTaxon.name'],
 	},
+	// Dedicated field sets for Antibody's Taxon/Antigen Taxon columns, which are VocabularyTerm
+	// (name/definition) rather than NCBITaxonTerm (curie/name) like the shared field sets above.
+	antibodyTaxonFieldSet: {
+		filterName: 'taxonTermFilter',
+		fields: ['taxonTerm.name', 'taxonTerm.definition'],
+	},
+	antibodyAntigenTaxonFieldSet: {
+		filterName: 'antigenTaxonTermFilter',
+		fields: ['antigenTaxonTerm.name', 'antigenTaxonTerm.definition'],
+	},
 	clonalityFieldSet: {
 		filterName: 'clonalityFilter',
 		fields: ['clonality.name'],
@@ -1093,6 +1103,11 @@ export const FILTER_CONFIGS = Object.freeze({
 		fieldSets: [FIELD_SETS.antibodyTargetGenesFieldSet],
 	},
 	antigenTaxonFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.antigenTaxonFieldSet] },
+	antibodyTaxonFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.antibodyTaxonFieldSet] },
+	antibodyAntigenTaxonFilterConfig: {
+		filterComponentType: 'input',
+		fieldSets: [FIELD_SETS.antibodyAntigenTaxonFieldSet],
+	},
 	clonalityFilterConfig: {
 		filterComponentType: 'multiselect',
 		fieldSets: [FIELD_SETS.clonalityFieldSet],
