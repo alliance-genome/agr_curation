@@ -21,7 +21,7 @@ public class Gff3Executor extends LoadFileExecutor {
 	/**
 	 * SCRUM-6080: parse the assembly declared in the GFF header ({@code #!assembly}) and
 	 * validate it against the official assembly designated for the species in the Species
-	 * table ({@link Species#getGenomeAssembly()}). Returns the header assembly name only
+	 * table ({@code Species.getGenomeAssembly()}). Returns the header assembly name only
 	 * when it matches the official assembly; otherwise fails the whole load (via
 	 * {@code failLoad}) and returns {@code null} so the caller imports nothing. The load is
 	 * failed when the header carries no assembly, when no official assembly is designated

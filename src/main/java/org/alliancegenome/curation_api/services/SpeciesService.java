@@ -1,6 +1,5 @@
 package org.alliancegenome.curation_api.services;
 
-import java.util.Date;
 import java.util.HashMap;
 
 import org.alliancegenome.curation_api.constants.EntityFieldConstants;
@@ -23,7 +22,6 @@ public class SpeciesService extends BaseEntityCrudService<Species, SpeciesDAO> {
 	@Inject SpeciesDAO speciesDAO;
 	@Inject SpeciesValidator speciesValidator;
 
-	Date speciesRequest;
 	HashMap<String, Species> displayNameCacheMap = new HashMap<>();
 	HashMap<String, Species> taxonCurieCacheMap = new HashMap<>();
 
@@ -52,12 +50,8 @@ public class SpeciesService extends BaseEntityCrudService<Species, SpeciesDAO> {
 			return null;
 		}
 
-		if (speciesRequest != null) {
-			if (displayNameCacheMap.containsKey(displayName)) {
-				return displayNameCacheMap.get(displayName);
-			}
-		} else {
-			speciesRequest = new Date();
+		if (displayNameCacheMap.containsKey(displayName)) {
+			return displayNameCacheMap.get(displayName);
 		}
 
 		Log.debug("Species not cached, caching species: (" + displayName + ")");
@@ -75,12 +69,8 @@ public class SpeciesService extends BaseEntityCrudService<Species, SpeciesDAO> {
 			return null;
 		}
 
-		if (speciesRequest != null) {
-			if (taxonCurieCacheMap.containsKey(taxonCurie)) {
-				return taxonCurieCacheMap.get(taxonCurie);
-			}
-		} else {
-			speciesRequest = new Date();
+		if (taxonCurieCacheMap.containsKey(taxonCurie)) {
+			return taxonCurieCacheMap.get(taxonCurie);
 		}
 
 		Log.debug("Species not cached by taxon, caching species: (" + taxonCurie + ")");

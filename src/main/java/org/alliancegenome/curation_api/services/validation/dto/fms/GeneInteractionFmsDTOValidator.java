@@ -205,7 +205,7 @@ public class GeneInteractionFmsDTOValidator extends BaseDTOValidator {
 				if (searchResponse != null) {
 					for (Gene searchResult : searchResponse.getResults()) {
 						if (!searchResult.getObsolete()) {
-							String resultGeneTaxonGenus = searchResult.getTaxon() != null && searchResult.getTaxon().getName() != null
+							String resultGeneTaxonGenus = searchResult.getTaxon() != null && searchResult.getTaxon().getName() != null && searchResult.getTaxon().getName().contains(" ")
 								? searchResult.getTaxon().getName().substring(0, searchResult.getTaxon().getName().indexOf(" ")) : null;
 							if (resultGeneTaxonGenus != null && taxon.getName().startsWith(resultGeneTaxonGenus + " ")) {
 								allianceGene = searchResult;

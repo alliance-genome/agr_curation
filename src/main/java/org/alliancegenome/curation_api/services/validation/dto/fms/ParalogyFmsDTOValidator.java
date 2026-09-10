@@ -196,7 +196,10 @@ public class ParalogyFmsDTOValidator {
 		curie = curie.replaceFirst("^DRSC:", "");
 		if (curie.indexOf(":") == -1) {
 			Species sp = speciesService.getByTaxonCurie("NCBITaxon:" + taxonId);
-			String prefix = (sp != null) ? sp.getDataProvider().getAbbreviation() + ":" : null;
+			String prefix = null;
+			if (sp != null) {
+				prefix = (taxonId != null && taxonId == 9606) ? "HGNC:" : sp.getDataProvider().getAbbreviation() + ":";
+			}
 			if (prefix != null) {
 				curie = prefix + curie;
 			}

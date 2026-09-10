@@ -42,7 +42,7 @@ public class BulkLoadManualProcessor extends BulkLoadProcessor {
 
 		HashMap<String, Object> params = new HashMap<String, Object>();
 		params.put("backendBulkLoadType", loadType);
-		params.put("species", species);
+		params.put("species.id", species.getId());
 		SearchResponse<BulkManualLoad> load = bulkManualLoadDAO.findByParams(params);
 		if (load != null && load.getResults().size() == 1) {
 			bulkManualLoad = load.getResults().get(0);
