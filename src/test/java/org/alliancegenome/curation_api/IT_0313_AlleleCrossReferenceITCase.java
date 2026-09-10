@@ -117,6 +117,30 @@ public class IT_0313_AlleleCrossReferenceITCase extends BaseITCase {
 
 	@Test
 	@Order(3)
+	public void resourceDescriptorIsVisibleThroughBothViews() {
+		RestAssured.given().
+			when().
+			get("/api/allele/" + alleleId + "/cross-references").
+			then().
+			statusCode(200).
+			body("entities[0].resourceDescriptorPage.resourceDescriptor.prefix", is("XRSUB")).
+			body("entities[0].resourceDescriptorPage.resourceDescriptor.resourcePages", nullValue());
+
+		// find serializes AlleleView, which is what the Alleles table and its dialog read. The absent
+		// resourcePages pins that the descriptor's own lists stay out of both views.
+		RestAssured.given().
+			contentType("application/json").
+			body("{\"primaryExternalId\": \"" + ALLELE + "\"}").
+			when().
+			post("/api/allele/find?limit=1&page=0").
+			then().
+			statusCode(200).
+			body("results[0].crossReferences[0].resourceDescriptorPage.resourceDescriptor.prefix", is("XRSUB")).
+			body("results[0].crossReferences[0].resourceDescriptorPage.resourceDescriptor.resourcePages", nullValue());
+	}
+
+	@Test
+	@Order(4)
 	public void rejectedReplaceChangesNothing() {
 		CrossReference missingCurie = new CrossReference();
 		missingCurie.setDisplayName("no referenced curie");
@@ -144,7 +168,7 @@ public class IT_0313_AlleleCrossReferenceITCase extends BaseITCase {
 	}
 
 	@Test
-	@Order(4)
+	@Order(5)
 	public void replaceWithEmptyListClearsCrossReferences() {
 		RestAssured.given().
 			contentType("application/json").
@@ -164,7 +188,7 @@ public class IT_0313_AlleleCrossReferenceITCase extends BaseITCase {
 	}
 
 	@Test
-	@Order(5)
+	@Order(6)
 	public void unknownAlleleIsRejected() {
 		RestAssured.given().
 			when().

@@ -42,7 +42,7 @@ public class ResourceDescriptorPage extends AuditedObject {
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@JsonView({ CurationView.ResourceDescriptorPageView.class, CurationView.ForPublic.class, CurationView.TransgenicAllelesDocument.class })
+	@JsonView({ CurationView.ResourceDescriptorPageView.class, CurationView.CrossReferenceView.class, CurationView.AlleleView.class, CurationView.ForPublic.class, CurationView.TransgenicAllelesDocument.class })
 	private ResourceDescriptor resourceDescriptor;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
