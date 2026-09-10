@@ -10,6 +10,7 @@ import { IdTemplate } from '../../components/Templates/IdTemplate';
 import { StringTemplate } from '../../components/Templates/StringTemplate';
 import { StringListTemplate } from '../../components/Templates/StringListTemplate';
 import { BooleanTemplate } from '../../components/Templates/BooleanTemplate';
+import { OntologyTermTemplate } from '../../components/Templates/OntologyTermTemplate';
 import { GenomicEntityListTemplate } from '../../components/Templates/genomicEntity/GenomicEntityListTemplate';
 import { SingleReferenceTemplate } from '../../components/Templates/reference/SingleReferenceTemplate';
 import { TruncatedReferencesTemplate } from '../../components/Templates/reference/TruncatedReferencesTemplate';
@@ -81,25 +82,30 @@ export const AntibodiesTable = () => {
 				filterConfig: FILTER_CONFIGS.nameFilterConfig,
 			},
 			{
-				field: 'taxonTerm.name',
-				columnKey: 'taxonTerm.name',
+				field: 'hostTaxonTerm.name',
+				columnKey: 'hostTaxonTerm.name',
 				// Displayed text is definition (falling back to name), so sort by that field too --
 				// otherwise clicking the header sorts by the raw NCBITaxon curie, not what's shown.
-				sortField: 'taxonTerm.definition',
-				header: 'Taxon',
+				sortField: 'hostTaxonTerm.definition',
+				header: 'Host Taxon',
 				sortable: true,
-				body: (rowData) => <StringTemplate string={rowData.taxonTerm?.definition || rowData.taxonTerm?.name} />,
-				filterConfig: FILTER_CONFIGS.antibodyTaxonFilterConfig,
+				body: (rowData) => <StringTemplate string={rowData.hostTaxonTerm?.definition || rowData.hostTaxonTerm?.name} />,
+				filterConfig: FILTER_CONFIGS.antibodyHostTaxonFilterConfig,
 			},
 			{
-				field: 'antigenTaxonTerm.name',
-				columnKey: 'antigenTaxonTerm.name',
-				sortField: 'antigenTaxonTerm.definition',
+				// Exactly one of these is ever populated: antigenTaxon (NCBITaxonTerm) when the
+				// species is known, antigenTaxonTerm (VocabularyTerm) recording why it's absent
+				// (not specified, etc.) otherwise -- see antibodyAntigenTaxonFieldSet.
+				field: 'antigenTaxon.name',
+				columnKey: 'antigenTaxon.name',
 				header: 'Antigen Taxon',
-				sortable: true,
-				body: (rowData) => (
-					<StringTemplate string={rowData.antigenTaxonTerm?.definition || rowData.antigenTaxonTerm?.name} />
-				),
+				sortable: false,
+				body: (rowData) =>
+					rowData.antigenTaxon ? (
+						<OntologyTermTemplate term={rowData.antigenTaxon} />
+					) : (
+						<StringTemplate string={rowData.antigenTaxonTerm?.definition || rowData.antigenTaxonTerm?.name} />
+					),
 				filterConfig: FILTER_CONFIGS.antibodyAntigenTaxonFilterConfig,
 			},
 			{

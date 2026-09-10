@@ -12,6 +12,7 @@ import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.Antibody;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.Gene;
+import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
 import org.alliancegenome.curation_api.model.entities.Reference;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.response.ObjectResponse;
@@ -79,11 +80,14 @@ public class AntibodyValidator extends ReagentValidator {
 		VocabularyTerm lightChainIsotype = validateTermInVocabulary("lightChainIsotype", VocabularyConstants.ANTIBODY_LIGHT_CHAIN_ISOTYPE_VOCABULARY, uiEntity.getLightChainIsotype(), dbEntity.getLightChainIsotype());
 		dbEntity.setLightChainIsotype(lightChainIsotype);
 
+		NCBITaxonTerm antigenTaxon = validateTaxon(uiEntity.getAntigenTaxon(), dbEntity.getAntigenTaxon(), "antigenTaxon");
+		dbEntity.setAntigenTaxon(antigenTaxon);
+
 		VocabularyTerm antigenTaxonTerm = validateTermInVocabulary("antigenTaxonTerm", VocabularyConstants.ANTIBODY_ANTIGEN_TAXON_VOCABULARY, uiEntity.getAntigenTaxonTerm(), dbEntity.getAntigenTaxonTerm());
 		dbEntity.setAntigenTaxonTerm(antigenTaxonTerm);
 
-		VocabularyTerm taxonTerm = validateTermInVocabulary("taxonTerm", VocabularyConstants.ANTIBODY_TAXON_VOCABULARY, uiEntity.getTaxonTerm(), dbEntity.getTaxonTerm());
-		dbEntity.setTaxonTerm(taxonTerm);
+		VocabularyTerm hostTaxonTerm = validateTermInVocabulary("hostTaxonTerm", VocabularyConstants.ANTIBODY_HOST_TAXON_VOCABULARY, uiEntity.getHostTaxonTerm(), dbEntity.getHostTaxonTerm());
+		dbEntity.setHostTaxonTerm(hostTaxonTerm);
 
 		List<Gene> targetGenes = validateEntities(geneDAO, "antibodyTargetGenes", uiEntity.getAntibodyTargetGenes(), dbEntity.getAntibodyTargetGenes());
 		dbEntity.setAntibodyTargetGenes(targetGenes);

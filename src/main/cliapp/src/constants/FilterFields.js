@@ -219,16 +219,18 @@ export const FIELD_SETS = Object.freeze({
 			'antibodyTargetGenes.modInternalId',
 		],
 	},
-	// Dedicated field sets for Antibody's Taxon/Antigen Taxon columns, which are VocabularyTerm
-	// (name/definition) rather than NCBITaxonTerm (curie/name) like the shared taxonFieldSet
-	// used by other tables' real taxon columns (Genes, Alleles, etc.).
-	antibodyTaxonFieldSet: {
-		filterName: 'taxonTermFilter',
-		fields: ['taxonTerm.name', 'taxonTerm.definition'],
+	// Antibody's Host Taxon column is VocabularyTerm (name/definition), unlike the shared
+	// taxonFieldSet used by other tables' real taxon columns (Genes, Alleles, etc.).
+	antibodyHostTaxonFieldSet: {
+		filterName: 'hostTaxonTermFilter',
+		fields: ['hostTaxonTerm.name', 'hostTaxonTerm.definition'],
 	},
+	// Antigen Taxon is disjoint across two fields depending on whether the species is known:
+	// antigenTaxon (NCBITaxonTerm, real species) or antigenTaxonTerm (VocabularyTerm, "reason
+	// absent" CV -- not specified, etc.). Search across both; exactly one is ever populated.
 	antibodyAntigenTaxonFieldSet: {
-		filterName: 'antigenTaxonTermFilter',
-		fields: ['antigenTaxonTerm.name', 'antigenTaxonTerm.definition'],
+		filterName: 'antigenTaxonFilter',
+		fields: ['antigenTaxon.curie', 'antigenTaxon.name', 'antigenTaxonTerm.name', 'antigenTaxonTerm.definition'],
 	},
 	clonalityFieldSet: {
 		// Targets the keyword field directly (not useKeywordFields) so this multiselect only ever
@@ -1113,7 +1115,7 @@ export const FILTER_CONFIGS = Object.freeze({
 		filterComponentType: 'input',
 		fieldSets: [FIELD_SETS.antibodyTargetGenesFieldSet],
 	},
-	antibodyTaxonFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.antibodyTaxonFieldSet] },
+	antibodyHostTaxonFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.antibodyHostTaxonFieldSet] },
 	antibodyAntigenTaxonFilterConfig: {
 		filterComponentType: 'input',
 		fieldSets: [FIELD_SETS.antibodyAntigenTaxonFieldSet],

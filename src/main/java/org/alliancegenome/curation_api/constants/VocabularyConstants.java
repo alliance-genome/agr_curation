@@ -62,7 +62,7 @@ public final class VocabularyConstants {
 	public static final String ANTIBODY_CLONALITY_VOCABULARY = "antibody_clonality";
 	public static final String ANTIBODY_HEAVY_CHAIN_ISOTYPE_VOCABULARY = "antibody_heavy_chain_isotype";
 	public static final String ANTIBODY_LIGHT_CHAIN_ISOTYPE_VOCABULARY = "antibody_light_chain_isotype";
-	public static final String ANTIBODY_TAXON_VOCABULARY = "antibody_taxon";
+	public static final String ANTIBODY_HOST_TAXON_VOCABULARY = "antibody_host_taxon";
 	public static final String ANTIBODY_ANTIGEN_TAXON_VOCABULARY = "antibody_antigen_taxon";
 
 	public static final String NOTE_TYPE_VOCABULARY = "note_type";
