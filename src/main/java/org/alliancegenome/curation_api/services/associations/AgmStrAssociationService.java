@@ -12,6 +12,7 @@ import org.alliancegenome.curation_api.dao.NoteDAO;
 import org.alliancegenome.curation_api.dao.PersonDAO;
 import org.alliancegenome.curation_api.dao.SequenceTargetingReagentDAO;
 import org.alliancegenome.curation_api.dao.associations.AgmSequenceTargetingReagentAssociationDAO;
+import org.alliancegenome.curation_api.model.entities.Organization;
 import org.alliancegenome.curation_api.model.entities.Species;
 import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.interfaces.crud.BaseUpsertServiceInterface;
@@ -53,9 +54,9 @@ public class AgmStrAssociationService extends BaseAssociationDTOCrudService<AgmS
 		return agmStrAssociationDtoValidator.validateAgmSequenceTargetingReagentAssociationDTO(dto, species);
 	}
 
-	public List<Long> getAssociationsBySpecies(Species species) {
+	public List<Long> getAssociationsByDataProvider(Organization dataProvider) {
 		Map<String, Object> params = new HashMap<>();
-		params.put(EntityFieldConstants.AGM_ASSOCIATION_SUBJECT_DATA_PROVIDER, species.getDataProvider().getAbbreviation());
+		params.put(EntityFieldConstants.AGM_ASSOCIATION_SUBJECT_DATA_PROVIDER, dataProvider.getAbbreviation());
 		List<Long> associationIds = agmStrAssociationDAO.findIdsByParams(params);
 		associationIds.removeIf(Objects::isNull);
 

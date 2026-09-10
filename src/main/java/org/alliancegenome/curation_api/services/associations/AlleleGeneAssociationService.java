@@ -12,6 +12,7 @@ import org.alliancegenome.curation_api.dao.GeneDAO;
 import org.alliancegenome.curation_api.dao.NoteDAO;
 import org.alliancegenome.curation_api.dao.PersonDAO;
 import org.alliancegenome.curation_api.dao.associations.AlleleGeneAssociationDAO;
+import org.alliancegenome.curation_api.model.entities.Organization;
 import org.alliancegenome.curation_api.model.entities.Species;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.exceptions.ValidationException;
@@ -76,9 +77,9 @@ public class AlleleGeneAssociationService extends BaseAssociationDTOCrudService<
 		return alleleGeneAssociationDtoValidator.validateAlleleGeneAssociationDTO(dto, species, isAlleleOfAssociationMap, isFullLoad);
 	}
 
-	public List<Long> getAssociationsBySpecies(Species species) {
+	public List<Long> getAssociationsByDataProvider(Organization dataProvider) {
 		Map<String, Object> params = new HashMap<>();
-		params.put(EntityFieldConstants.ALLELE_ASSOCIATION_SUBJECT_DATA_PROVIDER, species.getDataProvider().getAbbreviation());
+		params.put(EntityFieldConstants.ALLELE_ASSOCIATION_SUBJECT_DATA_PROVIDER, dataProvider.getAbbreviation());
 		List<Long> associationIds = alleleGeneAssociationDAO.findIdsByParams(params);
 		associationIds.removeIf(Objects::isNull);
 

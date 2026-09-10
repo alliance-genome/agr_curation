@@ -44,7 +44,7 @@ public class AntibodyExecutor extends LoadFileExecutor {
 		List<Long> antibodyIdsLoaded = new ArrayList<>();
 		List<Long> antibodyIdsBefore = new ArrayList<>();
 		if (cleanUp) {
-			antibodyIdsBefore.addAll(antibodyService.getAntibodyIdsByDataProvider(species));
+			antibodyIdsBefore.addAll(antibodyService.getAntibodyIdsByDataProvider(species.getDataProvider()));
 			Log.debug("runLoad: Before: total " + antibodyIdsBefore.size());
 		}
 

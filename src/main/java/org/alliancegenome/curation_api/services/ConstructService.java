@@ -10,6 +10,7 @@ import java.util.Set;
 
 import org.alliancegenome.curation_api.constants.EntityFieldConstants;
 import org.alliancegenome.curation_api.dao.ConstructDAO;
+import org.alliancegenome.curation_api.model.entities.Organization;
 import org.alliancegenome.curation_api.model.entities.Species;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.exceptions.ValidationException;
@@ -133,9 +134,9 @@ public class ConstructService extends SubmittedObjectCrudService<Construct, Cons
 		return null;
 	}
 
-	public List<Long> getConstructIdsBySpecies(Species species) {
+	public List<Long> getConstructIdsByDataProvider(Organization dataProvider) {
 		Map<String, Object> params = new HashMap<>();
-		params.put(EntityFieldConstants.DATA_PROVIDER, species.getDataProvider().getAbbreviation());
+		params.put(EntityFieldConstants.DATA_PROVIDER, dataProvider.getAbbreviation());
 		List<Long> constructIds = constructDAO.findIdsByParams(params);
 		constructIds.removeIf(Objects::isNull);
 

@@ -8,6 +8,7 @@ import java.util.Set;
 
 import org.alliancegenome.curation_api.constants.EntityFieldConstants;
 import org.alliancegenome.curation_api.dao.AntibodyDAO;
+import org.alliancegenome.curation_api.model.entities.Organization;
 import org.alliancegenome.curation_api.model.entities.Species;
 import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.model.entities.Antibody;
@@ -57,9 +58,9 @@ public class AntibodyService extends SubmittedObjectCrudService<Antibody, Antibo
 		return antibodyDtoValidator.validateAntibodyDTO(dto, species);
 	}
 
-	public List<Long> getAntibodyIdsByDataProvider(Species species) {
+	public List<Long> getAntibodyIdsByDataProvider(Organization dataProvider) {
 		Map<String, Object> params = new HashMap<>();
-		params.put(EntityFieldConstants.DATA_PROVIDER, species.getDataProvider().getAbbreviation());
+		params.put(EntityFieldConstants.DATA_PROVIDER, dataProvider.getAbbreviation());
 		List<Long> antibodyIds = antibodyDAO.findIdsByParams(params);
 		antibodyIds.removeIf(Objects::isNull);
 

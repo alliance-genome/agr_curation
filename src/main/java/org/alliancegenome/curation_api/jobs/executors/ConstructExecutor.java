@@ -48,7 +48,7 @@ public class ConstructExecutor extends LoadFileExecutor {
 		List<Long> constructIdsLoaded = new ArrayList<>();
 		List<Long> constructIdsBefore = new ArrayList<>();
 		if (cleanUp) {
-			constructIdsBefore.addAll(constructService.getConstructIdsBySpecies(species));
+			constructIdsBefore.addAll(constructService.getConstructIdsByDataProvider(species.getDataProvider()));
 			Log.debug("runLoad: Before: total " + constructIdsBefore.size());
 		}
 

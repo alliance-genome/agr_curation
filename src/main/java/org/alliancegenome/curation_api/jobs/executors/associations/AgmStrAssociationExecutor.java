@@ -42,7 +42,7 @@ public class AgmStrAssociationExecutor extends LoadFileExecutor {
 		List<Long> associationIdsLoaded = new ArrayList<>();
 		List<Long> associationIdsBefore = new ArrayList<>();
 		if (cleanUp) {
-			associationIdsBefore.addAll(agmStrAssociationService.getAssociationsBySpecies(species));
+			associationIdsBefore.addAll(agmStrAssociationService.getAssociationsByDataProvider(species.getDataProvider()));
 			associationIdsBefore.removeIf(Objects::isNull);
 		}
 

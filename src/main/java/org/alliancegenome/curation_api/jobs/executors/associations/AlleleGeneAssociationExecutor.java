@@ -52,7 +52,7 @@ public class AlleleGeneAssociationExecutor extends LoadFileExecutor {
 		List<Long> associationIdsLoaded = new ArrayList<>();
 		List<Long> associationIdsBefore = new ArrayList<>();
 		if (cleanUp) {
-			associationIdsBefore.addAll(alleleGeneAssociationService.getAssociationsBySpecies(species));
+			associationIdsBefore.addAll(alleleGeneAssociationService.getAssociationsByDataProvider(species.getDataProvider()));
 			associationIdsBefore.removeIf(Objects::isNull);
 		}
 

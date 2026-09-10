@@ -9,9 +9,9 @@ import java.util.stream.Collectors;
 
 import org.alliancegenome.curation_api.constants.EntityFieldConstants;
 import org.alliancegenome.curation_api.dao.associations.SequenceTargetingReagentGeneAssociationDAO;
-import org.alliancegenome.curation_api.model.entities.Species;
 import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.model.entities.Gene;
+import org.alliancegenome.curation_api.model.entities.Organization;
 import org.alliancegenome.curation_api.model.entities.SequenceTargetingReagent;
 import org.alliancegenome.curation_api.model.entities.associations.SequenceTargetingReagentGeneAssociation;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.SequenceTargetingReagentFmsDTO;
@@ -95,9 +95,9 @@ public class SequenceTargetingReagentGeneAssociationService extends BaseEntityCr
 
 	}
 
-	public List<Long> getIdsBySpecies(Species species) {
+	public List<Long> getIdsByDataProvider(Organization dataProvider) {
 		Map<String, Object> params = new HashMap<>();
-		params.put(EntityFieldConstants.SQTR_ASSOCIATION_SUBJECT_DATA_PROVIDER, species.getDataProvider().getAbbreviation());
+		params.put(EntityFieldConstants.SQTR_ASSOCIATION_SUBJECT_DATA_PROVIDER, dataProvider.getAbbreviation());
 		List<Long> ids = sequenceTargetingReagentGeneAssociationDAO.findIdsByParams(params);
 		ids.removeIf(Objects::isNull);
 		return ids;
