@@ -34,10 +34,6 @@ public class AntibodyDTO extends ReagentDTO {
 	private String lightChainIsotypeName;
 
 	@JsonView({ CurationView.FieldsOnly.class })
-	@JsonProperty("antigen_taxon_curie")
-	private String antigenTaxonCurie;
-
-	@JsonView({ CurationView.FieldsOnly.class })
 	@JsonProperty("antigen_taxon_term_name")
 	private String antigenTaxonTermName;
 

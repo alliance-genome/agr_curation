@@ -12,7 +12,6 @@ import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.model.entities.Antibody;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.Gene;
-import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
 import org.alliancegenome.curation_api.model.entities.Reference;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.ingest.dto.AntibodyDTO;
@@ -86,9 +85,6 @@ public class AntibodyDTOValidator extends ReagentDTOValidator<Antibody, Antibody
 
 		VocabularyTerm lightChainIsotype = validateTermInVocabulary("light_chain_isotype_name", dto.getLightChainIsotypeName(), VocabularyConstants.ANTIBODY_LIGHT_CHAIN_ISOTYPE_VOCABULARY);
 		antibody.setLightChainIsotype(lightChainIsotype);
-
-		NCBITaxonTerm antigenTaxon = validateTaxon("antigen_taxon_curie", dto.getAntigenTaxonCurie());
-		antibody.setAntigenTaxon(antigenTaxon);
 
 		VocabularyTerm antigenTaxonTerm = validateTermInVocabulary("antigen_taxon_term_name", dto.getAntigenTaxonTermName(), VocabularyConstants.ANTIBODY_ANTIGEN_TAXON_VOCABULARY);
 		antibody.setAntigenTaxonTerm(antigenTaxonTerm);

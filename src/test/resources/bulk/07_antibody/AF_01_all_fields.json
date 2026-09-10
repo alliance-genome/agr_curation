@@ -11,7 +11,7 @@
     "clonality_name": "monoclonal",
     "heavy_chain_isotype_name": "IgG",
     "light_chain_isotype_name": "k",
-    "antigen_taxon_curie": "NCBITaxon:6239",
+    "antigen_taxon_term_name": "NCBITaxon:6239",
     "host_taxon_term_name": "NCBITaxon:9606",
     "reference_curies": [
       "PMID:25920550"

@@ -225,12 +225,10 @@ export const FIELD_SETS = Object.freeze({
 		filterName: 'hostTaxonTermFilter',
 		fields: ['hostTaxonTerm.name', 'hostTaxonTerm.definition'],
 	},
-	// Antigen Taxon is disjoint across two fields depending on whether the species is known:
-	// antigenTaxon (NCBITaxonTerm, real species) or antigenTaxonTerm (VocabularyTerm, "reason
-	// absent" CV -- not specified, etc.). Search across both; exactly one is ever populated.
+	// Antigen Taxon is VocabularyTerm (name/definition), same shape as Host Taxon above.
 	antibodyAntigenTaxonFieldSet: {
-		filterName: 'antigenTaxonFilter',
-		fields: ['antigenTaxon.curie', 'antigenTaxon.name', 'antigenTaxonTerm.name', 'antigenTaxonTerm.definition'],
+		filterName: 'antigenTaxonTermFilter',
+		fields: ['antigenTaxonTerm.name', 'antigenTaxonTerm.definition'],
 	},
 	clonalityFieldSet: {
 		// Targets the keyword field directly (not useKeywordFields) so this multiselect only ever

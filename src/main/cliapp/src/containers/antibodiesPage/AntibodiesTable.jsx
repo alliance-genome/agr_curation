@@ -10,7 +10,6 @@ import { IdTemplate } from '../../components/Templates/IdTemplate';
 import { StringTemplate } from '../../components/Templates/StringTemplate';
 import { StringListTemplate } from '../../components/Templates/StringListTemplate';
 import { BooleanTemplate } from '../../components/Templates/BooleanTemplate';
-import { OntologyTermTemplate } from '../../components/Templates/OntologyTermTemplate';
 import { GenomicEntityListTemplate } from '../../components/Templates/genomicEntity/GenomicEntityListTemplate';
 import { SingleReferenceTemplate } from '../../components/Templates/reference/SingleReferenceTemplate';
 import { TruncatedReferencesTemplate } from '../../components/Templates/reference/TruncatedReferencesTemplate';
@@ -93,19 +92,16 @@ export const AntibodiesTable = () => {
 				filterConfig: FILTER_CONFIGS.antibodyHostTaxonFilterConfig,
 			},
 			{
-				// Exactly one of these is ever populated: antigenTaxon (NCBITaxonTerm) when the
-				// species is known, antigenTaxonTerm (VocabularyTerm) recording why it's absent
-				// (not specified, etc.) otherwise -- see antibodyAntigenTaxonFieldSet.
-				field: 'antigenTaxon.name',
-				columnKey: 'antigenTaxon.name',
+				field: 'antigenTaxonTerm.name',
+				columnKey: 'antigenTaxonTerm.name',
+				// Displayed text is definition (falling back to name), so sort by that field too --
+				// otherwise clicking the header sorts by the raw NCBITaxon curie, not what's shown.
+				sortField: 'antigenTaxonTerm.definition',
 				header: 'Antigen Taxon',
-				sortable: false,
-				body: (rowData) =>
-					rowData.antigenTaxon ? (
-						<OntologyTermTemplate term={rowData.antigenTaxon} />
-					) : (
-						<StringTemplate string={rowData.antigenTaxonTerm?.definition || rowData.antigenTaxonTerm?.name} />
-					),
+				sortable: true,
+				body: (rowData) => (
+					<StringTemplate string={rowData.antigenTaxonTerm?.definition || rowData.antigenTaxonTerm?.name} />
+				),
 				filterConfig: FILTER_CONFIGS.antibodyAntigenTaxonFilterConfig,
 			},
 			{

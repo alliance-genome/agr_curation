@@ -60,7 +60,7 @@ public class IT_0107_AntibodyBulkUploadITCase extends BaseITCase {
 			body("entity.clonality.name", is("monoclonal")).
 			body("entity.heavyChainIsotype.name", is("IgG")).
 			body("entity.lightChainIsotype.name", is("k")).
-			body("entity.antigenTaxon.curie", is("NCBITaxon:6239")).
+			body("entity.antigenTaxonTerm.name", is("NCBITaxon:6239")).
 			body("entity.hostTaxonTerm.name", is("NCBITaxon:9606")).
 			body("entity.references[0].curie", is(reference)).
 			body("entity.references[0].crossReferences[0].referencedCurie", is(referenceXref)).
