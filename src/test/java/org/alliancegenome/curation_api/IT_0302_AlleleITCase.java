@@ -22,12 +22,15 @@ import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.Construct;
+import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.InformationContentEntity;
 import org.alliancegenome.curation_api.model.entities.Note;
 import org.alliancegenome.curation_api.model.entities.Organization;
 import org.alliancegenome.curation_api.model.entities.Person;
 import org.alliancegenome.curation_api.model.entities.Reference;
+import org.alliancegenome.curation_api.model.entities.ResourceDescriptor;
+import org.alliancegenome.curation_api.model.entities.ResourceDescriptorPage;
 import org.alliancegenome.curation_api.model.entities.Vocabulary;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.associations.AlleleConstructAssociation;
@@ -76,6 +79,7 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 
 	private static final String LAZY_INIT_ALLELE = "Allele:LazyInit0001";
 	private static final String ROUND_TRIP_ALLELE = "Allele:RoundTrip0001";
+	private static final String CROSS_REFERENCE_ALLELE = "Allele:CrossRef0001";
 
 	private Vocabulary inheritanceModeVocabulary;
 	private Vocabulary germlineTransmissionStatusVocabulary;
@@ -152,6 +156,8 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 	private VocabularyTerm geneAssociationRelation2;
 	private Construct construct;
 	private VocabularyTerm constructAssociationRelation;
+	private ResourceDescriptorPage crossReferencePage;
+	private ResourceDescriptorPage crossReferencePage2;
 
 
 	private void loadRequiredEntities() {
@@ -233,6 +239,9 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 		geneAssociationRelation2 = getVocabularyTerm(relationVocabulary, "duplication");
 		construct = createConstruct("TEST:AssociatedConstruct1", false, symbolNameType);
 		constructAssociationRelation = getVocabularyTerm(relationVocabulary, "contains");
+		ResourceDescriptor crossReferenceResourceDescriptor = createResourceDescriptor("XRTEST");
+		crossReferencePage = createResourceDescriptorPage("default", "http://test.org/[%s]", crossReferenceResourceDescriptor);
+		crossReferencePage2 = createResourceDescriptorPage("gene", "http://test.org/gene/[%s]", crossReferenceResourceDescriptor);
 	}
 
 	@Test
@@ -1896,6 +1905,117 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 		ane.setNomenclatureEvent(event);
 
 		return ane;
+	}
+
+
+	@Test
+	@Order(31)
+	public void alleleUpdateManagesCrossReferences() {
+		// PUT /allele serializes AlleleView, which carries crossReferences, so that endpoint owns them.
+		Allele allele = createAllele(CROSS_REFERENCE_ALLELE, "NCBITaxon:6239", symbolNameType, false);
+		// Reference.crossReferences is a lazy collection that is also in AlleleView, so attaching a reference
+		// makes this PUT serialize it after the write transaction closes. A 200 here pins that it holds.
+		allele.setReferences(List.of(reference));
+		allele.setCrossReferences(List.of(buildCrossReference("XRTEST:0001", crossReferencePage)));
+
+		RestAssured.given().
+				contentType("application/json").
+				body(allele).
+				when().
+				put("/api/allele").
+				then().
+				statusCode(200).
+				body("entity.crossReferences", hasSize(1)).
+				body("entity.crossReferences[0].referencedCurie", is("XRTEST:0001")).
+				body("entity.crossReferences[0].resourceDescriptorPage.name", is("default")).
+				body("entity.references", hasSize(1)).
+				body("entity.references[0].crossReferences", hasSize(1));
+
+		assertThat(storedCrossReferences(CROSS_REFERENCE_ALLELE), hasSize(1));
+
+		// A different list replaces the stored one; the dropped entry goes through orphanRemoval.
+		Allele update = getAllele(CROSS_REFERENCE_ALLELE);
+		update.setCrossReferences(List.of(buildCrossReference("XRTEST:0002", crossReferencePage2)));
+
+		RestAssured.given().
+				contentType("application/json").
+				body(update).
+				when().
+				put("/api/allele").
+				then().
+				statusCode(200).
+				body("entity.crossReferences", hasSize(1)).
+				body("entity.crossReferences[0].referencedCurie", is("XRTEST:0002")).
+				body("entity.crossReferences[0].resourceDescriptorPage.name", is("gene"));
+
+		// An empty list clears them, so this endpoint can delete the last one.
+		Allele clear = getAllele(CROSS_REFERENCE_ALLELE);
+		clear.setCrossReferences(List.of());
+
+		RestAssured.given().
+				contentType("application/json").
+				body(clear).
+				when().
+				put("/api/allele").
+				then().
+				statusCode(200).
+				body("entity", not(hasKey("crossReferences")));
+
+		assertThat(storedCrossReferences(CROSS_REFERENCE_ALLELE), is(nullValue()));
+	}
+
+	@Test
+	@Order(32)
+	public void updateDetailPreservesCrossReferences() {
+		// AlleleDetailView omits crossReferences, so a detail payload never carries them however it was built.
+		// The detail endpoint must leave the stored list alone rather than read its absence as a deletion.
+		Allele seed = getAllele(CROSS_REFERENCE_ALLELE);
+		seed.setCrossReferences(List.of(buildCrossReference("XRTEST:0003", crossReferencePage)));
+		RestAssured.given().
+				contentType("application/json").
+				body(seed).
+				when().
+				put("/api/allele").
+				then().
+				statusCode(200);
+		assertThat(storedCrossReferences(CROSS_REFERENCE_ALLELE), hasSize(1));
+
+		// Round trip the detail view the way the detail page does: GET it, then PUT the response straight back.
+		Allele detail = getAllele(CROSS_REFERENCE_ALLELE);
+		assertThat("AlleleDetailView is expected to omit crossReferences", detail.getCrossReferences(), is(nullValue()));
+
+		RestAssured.given().
+				contentType("application/json").
+				body(detail).
+				when().
+				put("/api/allele/updateDetail").
+				then().
+				statusCode(200);
+
+		assertThat("updateDetail deleted the allele's cross references",
+				storedCrossReferences(CROSS_REFERENCE_ALLELE), hasSize(1));
+	}
+
+	private CrossReference buildCrossReference(String referencedCurie, ResourceDescriptorPage page) {
+		CrossReference crossReference = new CrossReference();
+		crossReference.setReferencedCurie(referencedCurie);
+		crossReference.setDisplayName(referencedCurie);
+		crossReference.setResourceDescriptorPage(page);
+		return crossReference;
+	}
+
+	// GET /api/allele/{id} serializes AlleleDetailView, which omits crossReferences, so the stored list is
+	// read through find, which serializes AlleleView. Returns null when the allele has none, because
+	// NON_EMPTY drops the key.
+	private List<Map<String, Object>> storedCrossReferences(String primaryExternalId) {
+		return RestAssured.given().
+				contentType("application/json").
+				body("{\"primaryExternalId\": \"" + primaryExternalId + "\"}").
+				when().
+				post("/api/allele/find?limit=1&page=0").
+				then().
+				statusCode(200).
+				extract().jsonPath().getList("results[0].crossReferences");
 	}
 
 }

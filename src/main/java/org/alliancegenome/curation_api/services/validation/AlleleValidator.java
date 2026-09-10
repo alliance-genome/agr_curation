@@ -70,7 +70,7 @@ public class AlleleValidator extends GenomicEntityValidator<Allele> {
 	
 	private String errorMessage;
 
-	public Allele validateAlleleUpdate(Allele uiEntity, Boolean updateAllAssociations) {
+	public Allele validateAlleleUpdate(Allele uiEntity, Boolean updateAllAssociations, Boolean manageCrossReferences) {
 		response = new ObjectResponse<>(uiEntity);
 		errorMessage = "Could not update Allele: [" + uiEntity.getIdentifier() + "]";
 
@@ -88,7 +88,7 @@ public class AlleleValidator extends GenomicEntityValidator<Allele> {
 
 		dbEntity = (Allele) validateAuditedObjectFields(uiEntity, dbEntity, false);
 
-		return validateAllele(uiEntity, dbEntity, updateAllAssociations);
+		return validateAllele(uiEntity, dbEntity, updateAllAssociations, manageCrossReferences);
 	}
 
 	public Allele validateAlleleCreate(Allele uiEntity) {
@@ -101,15 +101,17 @@ public class AlleleValidator extends GenomicEntityValidator<Allele> {
 
 		dbEntity = (Allele) validateAuditedObjectFields(uiEntity, dbEntity, true);
 
-		return validateAllele(uiEntity, dbEntity, true);
+		// POST /allele serializes AlleleDetailView, which omits crossReferences, so the create payload never
+		// carries them; they are written through the allele's cross-references sub-resource.
+		return validateAllele(uiEntity, dbEntity, true, false);
 	}
 
-	public Allele validateAllele(Allele uiEntity, Allele dbEntity, Boolean updateAllAssociations) {
+	public Allele validateAllele(Allele uiEntity, Allele dbEntity, Boolean updateAllAssociations, Boolean manageCrossReferences) {
 
 		// An allele is identified by its AGRKB curie, minted below for a new allele and already
 		// present on a loaded one, so neither MOD identifier is required. Passed for updates too:
 		// an allele created here has neither, and requiring one would reject its first edit.
-		dbEntity = validateGenomicEntityFields(uiEntity, dbEntity, VocabularyConstants.ALLELE_NOTE_TYPES_VOCABULARY_TERM_SET, false);
+		dbEntity = validateGenomicEntityFields(uiEntity, dbEntity, VocabularyConstants.ALLELE_NOTE_TYPES_VOCABULARY_TERM_SET, false, manageCrossReferences);
 
 		List<Reference> references = validateReferences(uiEntity, dbEntity);
 		dbEntity.setReferences(references);
