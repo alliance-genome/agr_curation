@@ -10,7 +10,6 @@ import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.AnatomicalSiteDAO;
 import org.alliancegenome.curation_api.dao.HTPExpressionDatasetSampleAnnotationDAO;
 import org.alliancegenome.curation_api.model.entities.Species;
-import org.alliancegenome.curation_api.enums.MatiSubdomain;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
 import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
@@ -282,7 +281,7 @@ public class HTPExpressionDatasetSampleAnnotationFmsDTOValidator {
 		// insert below. No is-new guard is needed, unlike AlleleValidator: this DTO carries no curie, so
 		// nothing above nulls one, and a re-load resolves to the stored entity whose curie is already
 		// set, making this a no-op there.
-		curieMintService.mintCurieIfAbsent(htpSampleAnnotation, MatiSubdomain.HTP_EXPRESSION_SAMPLE);
+		curieMintService.mintCurieIfAbsent(htpSampleAnnotation);
 		HTPExpressionDatasetSampleAnnotation htp = htpExpressionDatasetSampleAnnotationDAO.persist(htpSampleAnnotation);
 		for (Long id : idsToRemove) {
 			anatomicalSiteDAO.remove(id);

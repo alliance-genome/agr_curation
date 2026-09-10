@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.alliancegenome.curation_api.dao.GeneGeneticInteractionDAO;
 import org.alliancegenome.curation_api.model.entities.Species;
-import org.alliancegenome.curation_api.enums.MatiSubdomain;
 import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.interfaces.crud.BaseUpsertServiceInterface;
 import org.alliancegenome.curation_api.model.entities.GeneGeneticInteraction;
@@ -62,14 +61,14 @@ public class GeneGeneticInteractionService extends BaseEntityCrudService<GeneGen
 	@Override
 	@Transactional
 	public ObjectResponse<GeneGeneticInteraction> create(GeneGeneticInteraction uiEntity) {
-		curieMintService.mintCurieIfAbsent(uiEntity, MatiSubdomain.GENETIC_INTERACTION);
+		curieMintService.mintCurieIfAbsent(uiEntity);
 		return super.create(uiEntity);
 	}
 
 	@Override
 	@Transactional
 	public ObjectListResponse<GeneGeneticInteraction> create(List<GeneGeneticInteraction> uiEntities) {
-		uiEntities.forEach(uiEntity -> curieMintService.mintCurieIfAbsent(uiEntity, MatiSubdomain.GENETIC_INTERACTION));
+		uiEntities.forEach(uiEntity -> curieMintService.mintCurieIfAbsent(uiEntity));
 		return super.create(uiEntities);
 	}
 }

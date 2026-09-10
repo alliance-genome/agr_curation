@@ -8,7 +8,6 @@ import java.util.Objects;
 import org.alliancegenome.curation_api.constants.EntityFieldConstants;
 import org.alliancegenome.curation_api.dao.HTPExpressionDatasetAnnotationDAO;
 import org.alliancegenome.curation_api.model.entities.Species;
-import org.alliancegenome.curation_api.enums.MatiSubdomain;
 import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.interfaces.crud.BaseUpsertServiceInterface;
 import org.alliancegenome.curation_api.model.entities.HTPExpressionDatasetAnnotation;
@@ -63,14 +62,14 @@ public class HTPExpressionDatasetAnnotationService extends BaseEntityCrudService
 	@Override
 	@Transactional
 	public ObjectResponse<HTPExpressionDatasetAnnotation> create(HTPExpressionDatasetAnnotation uiEntity) {
-		curieMintService.mintCurieIfAbsent(uiEntity, MatiSubdomain.HTP_EXPRESSION_DATASET);
+		curieMintService.mintCurieIfAbsent(uiEntity);
 		return super.create(uiEntity);
 	}
 
 	@Override
 	@Transactional
 	public ObjectListResponse<HTPExpressionDatasetAnnotation> create(List<HTPExpressionDatasetAnnotation> uiEntities) {
-		uiEntities.forEach(uiEntity -> curieMintService.mintCurieIfAbsent(uiEntity, MatiSubdomain.HTP_EXPRESSION_DATASET));
+		uiEntities.forEach(uiEntity -> curieMintService.mintCurieIfAbsent(uiEntity));
 		return super.create(uiEntities);
 	}
 }

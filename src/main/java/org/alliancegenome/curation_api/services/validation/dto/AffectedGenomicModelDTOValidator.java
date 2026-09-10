@@ -9,7 +9,6 @@ import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.AffectedGenomicModelDAO;
 import org.alliancegenome.curation_api.dao.SynonymDAO;
 import org.alliancegenome.curation_api.model.entities.Species;
-import org.alliancegenome.curation_api.enums.MatiSubdomain;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
 import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
@@ -97,7 +96,7 @@ public class AffectedGenomicModelDTOValidator extends GenomicEntityDTOValidator<
 		// in the DTO field-copy chain assigns curie, so a re-load resolves to the stored AGM whose
 		// curie is already set and this is a no-op — which is what keeps an AGM's AGRKB id stable
 		// across the repeated import loads this ticket calls out.
-		curieMintService.mintCurieIfAbsent(agm, MatiSubdomain.AGM);
+		curieMintService.mintCurieIfAbsent(agm);
 		response.setEntity(affectedGenomicModelDAO.persist(agm));
 		
 		return response;
