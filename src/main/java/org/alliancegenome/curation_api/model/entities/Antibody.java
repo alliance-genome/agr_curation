@@ -3,7 +3,9 @@ package org.alliancegenome.curation_api.model.entities;
 import java.util.List;
 
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
+import org.alliancegenome.curation_api.enums.MatiSubdomain;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
+import org.alliancegenome.curation_api.interfaces.CurieSubdomain;
 import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
 import org.alliancegenome.curation_api.view.CurationView;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
@@ -46,6 +48,7 @@ import lombok.ToString;
 	@Index(name = "antibody_taxon_index", columnList = "taxon_id"),
 	@Index(name = "antibody_originalreference_index", columnList = "originalreference_id")
 })
+@CurieSubdomain(MatiSubdomain.ANTIBODY)
 public class Antibody extends Reagent {
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")

@@ -7,7 +7,6 @@ import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.GeneMolecularInteractionDAO;
 import org.alliancegenome.curation_api.enums.PsiMiTabPrefixEnum;
-import org.alliancegenome.curation_api.enums.MatiSubdomain;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
 import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.model.entities.Gene;
@@ -156,7 +155,7 @@ public class GeneMolecularInteractionFmsDTOValidator extends GeneInteractionFmsD
 		// It has to sit here rather than earlier: the unchanged-record fast path above returns a detached
 		// stub that is never persisted, so minting before that point would burn a MaTI id for every
 		// unchanged row of a reload.
-		curieMintService.mintCurieIfAbsent(interaction, MatiSubdomain.MOLECULAR_INTERACTION);
+		curieMintService.mintCurieIfAbsent(interaction);
 		gmiResponse.setEntity(geneMolecularInteractionDAO.persist(interaction));
 
 		return gmiResponse;

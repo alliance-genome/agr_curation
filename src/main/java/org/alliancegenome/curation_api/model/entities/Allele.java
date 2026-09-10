@@ -3,7 +3,9 @@ package org.alliancegenome.curation_api.model.entities;
 import java.util.List;
 
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
+import org.alliancegenome.curation_api.enums.MatiSubdomain;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
+import org.alliancegenome.curation_api.interfaces.CurieSubdomain;
 import org.alliancegenome.curation_api.model.bridges.BooleanAndNullValueBridge;
 import org.alliancegenome.curation_api.model.entities.associations.AlleleConstructAssociation;
 import org.alliancegenome.curation_api.model.entities.associations.AlleleGeneAssociation;
@@ -66,6 +68,7 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema;
 )
 @AGRCurationSchemaVersion(min = "1.7.3", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { GenomicEntity.class }, partial = true)
 @Table(indexes = { @Index(name = "allele_inCollection_index", columnList = "inCollection_id") })
+@CurieSubdomain(MatiSubdomain.ALLELE)
 public class Allele extends GenomicEntity {
 
 	@GenericField(projectable = Projectable.YES, sortable = Sortable.YES)

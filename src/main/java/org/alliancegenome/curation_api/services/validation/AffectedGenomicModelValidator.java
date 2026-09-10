@@ -6,7 +6,6 @@ import java.util.List;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.AffectedGenomicModelDAO;
-import org.alliancegenome.curation_api.enums.MatiSubdomain;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
@@ -93,7 +92,7 @@ public class AffectedGenomicModelValidator extends GenomicEntityValidator<Affect
 		// payload omits curie nulls it; without this guard the mint would then issue a fresh curie and
 		// the AGM's AGRKB id would silently change on every such update.
 		if (dbEntity.getId() == null) {
-			curieMintService.mintCurieIfAbsent(dbEntity, MatiSubdomain.AGM);
+			curieMintService.mintCurieIfAbsent(dbEntity);
 		}
 		dbEntity = affectedGenomicModelDAO.persist(dbEntity);
 		
