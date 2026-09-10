@@ -1,0 +1,19 @@
+src/main/java/org/alliancegenome/curation_api/model/entities/Antibody.java
+  s_e6a7e48d95f0da::t_4f1a210919ddfb 41
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "744d87a10f37bd6c2fc6465f24b7a633f767b626",
+  "prompts": {},
+  "sessions": {
+    "s_e6a7e48d95f0da": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "0b1c323c-79a4-432b-8351-1956bb3e2d64",
+        "model": "unknown"
+      },
+      "human_author": "Ketaki Kindre <kkindre@caltech.edu>"
+    }
+  }
+}
