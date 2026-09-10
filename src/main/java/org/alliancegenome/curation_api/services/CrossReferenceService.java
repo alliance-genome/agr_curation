@@ -9,7 +9,9 @@ import org.alliancegenome.curation_api.dao.CrossReferenceDAO;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.ResourceDescriptorPage;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.CrossReferenceFmsDTO;
+import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
+import org.alliancegenome.curation_api.services.validation.CrossReferenceValidator;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -26,11 +28,19 @@ public class CrossReferenceService extends BaseEntityCrudService<CrossReference,
 	CrossReferenceDAO crossReferenceDAO;
 	@Inject
 	ResourceDescriptorPageService resourceDescriptorPageService;
+	@Inject
+	CrossReferenceValidator crossReferenceValidator;
 
 	@Override
 	@PostConstruct
 	protected void init() {
 		setSQLDao(crossReferenceDAO);
+	}
+
+	// Deliberately not @Transactional, and validated without persisting: BaseSQLDAO.persist opens its own
+	// transaction, so a write reached from here would commit an orphan cross reference on every call.
+	public ObjectResponse<CrossReference> validate(CrossReference uiEntity) {
+		return crossReferenceValidator.validateCrossReference(uiEntity, true, false);
 	}
 
 	public List<CrossReference> getMergedFmsXrefList(List<CrossReferenceFmsDTO> fmsCrossReferences, List<CrossReference> existingXrefs) {

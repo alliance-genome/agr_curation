@@ -17,6 +17,14 @@ public class CrossReferenceValidator extends AuditedObjectValidator<CrossReferen
 	@Inject CrossReferenceDAO crossReferenceDAO;
 
 	public ObjectResponse<CrossReference> validateCrossReference(CrossReference uiEntity, Boolean throwError) {
+		return validateCrossReference(uiEntity, throwError, true);
+	}
+
+	/**
+	 * @param persist whether to write the validated cross reference. Pass false to check a cross reference
+	 *        without storing it; the returned entity is then unmanaged and carries no id.
+	 */
+	public ObjectResponse<CrossReference> validateCrossReference(CrossReference uiEntity, Boolean throwError, Boolean persist) {
 		response = new ObjectResponse<>(uiEntity);
 		String errorTitle = "Could not create/update CrossReference: [" + uiEntity.getReferencedCurie() + "]";
 
@@ -56,7 +64,7 @@ public class CrossReferenceValidator extends AuditedObjectValidator<CrossReferen
 			return response;
 		}
 
-		response.setEntity(crossReferenceDAO.persist(dbEntity));
+		response.setEntity(persist ? crossReferenceDAO.persist(dbEntity) : dbEntity);
 
 		return response;
 	}

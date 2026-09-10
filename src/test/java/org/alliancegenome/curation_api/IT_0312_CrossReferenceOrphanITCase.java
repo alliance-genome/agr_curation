@@ -10,6 +10,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.alliancegenome.curation_api.base.BaseITCase;
+import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.Reference;
 import org.alliancegenome.curation_api.resources.TestContainerResource;
@@ -36,6 +37,7 @@ public class IT_0312_CrossReferenceOrphanITCase extends BaseITCase {
 	private static final String REFERENCE_CURIE = "AGRKB:scrum6053-orphan-1";
 	private static final String XREF_KEPT = "PMID:6053TEST-KEPT";
 	private static final String XREF_DROPPED = "PMID:6053TEST-DROPPED";
+	private static final String XREF_VALIDATED = "PMID:6503TEST-VALIDATE";
 
 	@Test
 	@Order(1)
@@ -93,6 +95,49 @@ public class IT_0312_CrossReferenceOrphanITCase extends BaseITCase {
 			then().
 			statusCode(200).
 			body("entity", nullValue());
+	}
+
+	@Test
+	@Order(2)
+	public void validateDoesNotPersist() {
+		CrossReference valid = new CrossReference();
+		valid.setReferencedCurie(XREF_VALIDATED);
+		valid.setDisplayName(XREF_VALIDATED);
+		valid.setInternal(false);
+		valid.setObsolete(false);
+
+		RestAssured.given().
+			contentType("application/json").
+			body(valid).
+			when().
+			post("/api/cross-reference/validate").
+			then().
+			statusCode(200).
+			body("entity.referencedCurie", is(XREF_VALIDATED)).
+			body("entity.id", nullValue());
+
+		CrossReference missingCurie = new CrossReference();
+		missingCurie.setInternal(false);
+		missingCurie.setObsolete(false);
+
+		RestAssured.given().
+			contentType("application/json").
+			body(missingCurie).
+			when().
+			post("/api/cross-reference/validate").
+			then().
+			statusCode(400).
+			body("errorMessages.referencedCurie", is(ValidationConstants.REQUIRED_MESSAGE));
+
+		// Neither call may leave a row behind.
+		RestAssured.given().
+			contentType("application/json").
+			body("{\"referencedCurie\": \"" + XREF_VALIDATED + "\"}").
+			when().
+			post("/api/cross-reference/find?limit=1&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(0));
 	}
 
 	private CrossReference buildXref(String curie) {
