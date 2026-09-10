@@ -6,9 +6,12 @@ import java.util.List;
 import java.util.Map;
 
 import org.alliancegenome.curation_api.dao.CrossReferenceDAO;
+import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
+import org.alliancegenome.curation_api.model.entities.GenomicEntity;
 import org.alliancegenome.curation_api.model.entities.ResourceDescriptorPage;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.CrossReferenceFmsDTO;
+import org.alliancegenome.curation_api.response.ObjectListResponse;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
 import org.alliancegenome.curation_api.services.validation.CrossReferenceValidator;
@@ -41,6 +44,28 @@ public class CrossReferenceService extends BaseEntityCrudService<CrossReference,
 	// transaction, so a write reached from here would commit an orphan cross reference on every call.
 	public ObjectResponse<CrossReference> validate(CrossReference uiEntity) {
 		return crossReferenceValidator.validateCrossReference(uiEntity, true, false);
+	}
+
+	/**
+	 * Replaces the owner's cross references with the given list, deleting any that are no longer present.
+	 * An empty list is a valid payload and clears them all.
+	 */
+	@Transactional
+	public ObjectListResponse<CrossReference> replaceForOwner(GenomicEntity owner, List<CrossReference> incomingXrefs) {
+		ObjectResponse<List<CrossReference>> validationResponse = new ObjectResponse<>();
+		List<CrossReference> validatedXrefs = crossReferenceValidator.validateCrossReferences(incomingXrefs, "crossReferences", validationResponse);
+		if (validatedXrefs == null) {
+			validationResponse.setErrorMessage("Could not update CrossReferences for: [" + owner.getId() + "]");
+			throw new ApiErrorException(validationResponse);
+		}
+
+		if (owner.getCrossReferences() == null) {
+			owner.setCrossReferences(new ArrayList<>());
+		}
+		owner.getCrossReferences().clear();
+		owner.getCrossReferences().addAll(validatedXrefs);
+
+		return new ObjectListResponse<>(new ArrayList<>(owner.getCrossReferences()));
 	}
 
 	public List<CrossReference> getMergedFmsXrefList(List<CrossReferenceFmsDTO> fmsCrossReferences, List<CrossReference> existingXrefs) {
