@@ -1,0 +1,37 @@
+src/main/cliapp/src/containers/antibodiesPage/AntibodiesTable.jsx
+  s_e6a7e48d95f0da::t_9c424d8f0fe979 13,85-86,89-90,92-93,96-100,102-108
+src/main/java/org/alliancegenome/curation_api/constants/VocabularyConstants.java
+  s_e6a7e48d95f0da::t_edd216dbccfa96 65
+src/main/java/org/alliancegenome/curation_api/model/entities/Antibody.java
+  s_e6a7e48d95f0da::t_17b67809e26a25 9,47,49,79-90,101
+src/main/java/org/alliancegenome/curation_api/model/ingest/dto/AntibodyDTO.java
+  s_e6a7e48d95f0da::t_3e1f450ca73d67 37-38,41-46
+src/main/java/org/alliancegenome/curation_api/services/validation/AntibodyValidator.java
+  s_e6a7e48d95f0da::t_7f8daf2ff3db3c 15,83-85,89-90
+src/main/java/org/alliancegenome/curation_api/services/validation/dto/AntibodyDTOValidator.java
+  s_e6a7e48d95f0da::t_016c89c030aa23 15,90-93,96-97
+src/main/resources/db/migration/v0.53.0.5__antibody_taxon_vocabularies.sql
+  s_e6a7e48d95f0da::t_dc0cf60f41af8b 1-19,21-52,55,57-59,81,84,87,90-94,96,104,107-110,114,116,120-122,137
+src/main/cliapp/src/constants/FilterFields.js
+  s_e6a7e48d95f0da::t_de6f805fd33be5 222-230,232-233,1118
+src/test/java/org/alliancegenome/curation_api/IT_0107_AntibodyBulkUploadITCase.java
+  s_e6a7e48d95f0da::t_b33aa03a2cfdc4 63-64
+src/test/resources/bulk/07_antibody/AF_01_all_fields.json
+  s_e6a7e48d95f0da::t_527930df33cb8e 14-15
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "00e53a277c4a562bcf8e4c2a45ec8e30276a138e",
+  "prompts": {},
+  "sessions": {
+    "s_e6a7e48d95f0da": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "0b1c323c-79a4-432b-8351-1956bb3e2d64",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Ketaki Kindre <kkindre@caltech.edu>"
+    }
+  }
+}
