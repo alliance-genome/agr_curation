@@ -4,7 +4,7 @@ import java.util.Objects;
 
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.associations.AlleleConstructAssociationDAO;
-import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
+import org.alliancegenome.curation_api.model.entities.Species;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
 import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.model.entities.Allele;
@@ -27,7 +27,7 @@ public class AlleleConstructAssociationDTOValidator extends AlleleGenomicEntityA
 	@Inject AlleleConstructAssociationDAO alleleConstructAssociationDAO;
 	@Inject AlleleService alleleService;
 	@Inject ConstructService constructService;
-	public ObjectResponse<AlleleConstructAssociation> validateAlleleConstructAssociationDTO(AlleleConstructAssociationDTO dto, BackendBulkDataProvider beDataProvider) throws ValidationException {
+	public ObjectResponse<AlleleConstructAssociation> validateAlleleConstructAssociationDTO(AlleleConstructAssociationDTO dto, Species beSpecies) throws ValidationException {
 		
 		response = new ObjectResponse<AlleleConstructAssociation>();
 

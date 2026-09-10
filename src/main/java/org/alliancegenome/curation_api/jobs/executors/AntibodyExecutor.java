@@ -6,7 +6,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
+import org.alliancegenome.curation_api.model.entities.Species;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkManualLoad;
 import org.alliancegenome.curation_api.model.ingest.dto.AntibodyDTO;
@@ -27,7 +27,7 @@ public class AntibodyExecutor extends LoadFileExecutor {
 	public void execLoad(BulkLoadFileHistory bulkLoadFileHistory, Boolean cleanUp) {
 
 		BulkManualLoad manual = (BulkManualLoad) bulkLoadFileHistory.getBulkLoad();
-		Log.info("Running with: " + manual.getDataProvider().name());
+		Log.info("Running with: " + manual.getSpecies().getDisplayName());
 
 		IngestDTO ingestDto = readIngestFile(bulkLoadFileHistory, AntibodyDTO.class);
 		if (ingestDto == null) {
@@ -39,12 +39,12 @@ public class AntibodyExecutor extends LoadFileExecutor {
 			return;
 		}
 
-		BackendBulkDataProvider dataProvider = manual.getDataProvider();
+		Species species = manual.getSpecies();
 
 		List<Long> antibodyIdsLoaded = new ArrayList<>();
 		List<Long> antibodyIdsBefore = new ArrayList<>();
 		if (cleanUp) {
-			antibodyIdsBefore.addAll(antibodyService.getAntibodyIdsByDataProvider(dataProvider));
+			antibodyIdsBefore.addAll(antibodyService.getAntibodyIdsByDataProvider(species.getDataProvider()));
 			Log.debug("runLoad: Before: total " + antibodyIdsBefore.size());
 		}
 
@@ -63,9 +63,9 @@ public class AntibodyExecutor extends LoadFileExecutor {
 
 		antibodyService.preLoadReferences(refList);
 
-		boolean success = runLoad(antibodyService, bulkLoadFileHistory, dataProvider, antibodies, antibodyIdsLoaded);
+		boolean success = runLoad(antibodyService, bulkLoadFileHistory, species, antibodies, antibodyIdsLoaded);
 		if (success && cleanUp) {
-			runCleanup(antibodyService, bulkLoadFileHistory, dataProvider.name(), antibodyIdsBefore, antibodyIdsLoaded, "antibody");
+			runCleanup(antibodyService, bulkLoadFileHistory, species.getDisplayName(), antibodyIdsBefore, antibodyIdsLoaded, "antibody");
 		}
 		bulkLoadFileHistory.finishLoad();
 		updateHistory(bulkLoadFileHistory);

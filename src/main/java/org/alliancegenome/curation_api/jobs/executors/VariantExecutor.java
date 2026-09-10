@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.alliancegenome.curation_api.dao.VariantDAO;
-import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
+import org.alliancegenome.curation_api.model.entities.Species;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkManualLoad;
 import org.alliancegenome.curation_api.model.ingest.dto.IngestDTO;
@@ -25,7 +25,7 @@ public class VariantExecutor extends LoadFileExecutor {
 	public void execLoad(BulkLoadFileHistory bulkLoadFileHistory, Boolean cleanUp) {
 
 		BulkManualLoad manual = (BulkManualLoad) bulkLoadFileHistory.getBulkLoad();
-		Log.info("Running with: " + manual.getDataProvider().name());
+		Log.info("Running with: " + manual.getSpecies().getDisplayName());
 
 		IngestDTO ingestDto = readIngestFile(bulkLoadFileHistory, VariantDTO.class);
 		if (ingestDto == null) {
@@ -37,12 +37,12 @@ public class VariantExecutor extends LoadFileExecutor {
 			return;
 		}
 
-		BackendBulkDataProvider dataProvider = manual.getDataProvider();
+		Species species = manual.getSpecies();
 
 		List<Long> variantIdsLoaded = new ArrayList<>();
 		List<Long> variantIdsBefore = new ArrayList<>();
 		if (cleanUp) {
-			variantIdsBefore.addAll(variantService.getIdsByDataProvider(dataProvider.name()));
+			variantIdsBefore.addAll(variantService.getIdsByDataProvider(species.getDisplayName()));
 			Log.debug("runLoad: Before: total " + variantIdsBefore.size());
 		}
 
@@ -52,9 +52,9 @@ public class VariantExecutor extends LoadFileExecutor {
 		bulkLoadFileHistory.setCount(variants.size());
 		updateHistory(bulkLoadFileHistory);
 		
-		boolean success = runLoad(variantService, bulkLoadFileHistory, dataProvider, variants, variantIdsLoaded);
+		boolean success = runLoad(variantService, bulkLoadFileHistory, species, variants, variantIdsLoaded);
 		if (success && cleanUp) {
-			runCleanup(variantService, bulkLoadFileHistory, dataProvider.name(), variantIdsBefore, variantIdsLoaded, "variant");
+			runCleanup(variantService, bulkLoadFileHistory, species.getDisplayName(), variantIdsBefore, variantIdsLoaded, "variant");
 		}
 		bulkLoadFileHistory.finishLoad();
 		updateHistory(bulkLoadFileHistory);

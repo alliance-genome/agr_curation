@@ -6,7 +6,7 @@ import java.util.List;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.associations.AgmSequenceTargetingReagentAssociationDAO;
-import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
+import org.alliancegenome.curation_api.model.entities.Species;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
 import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
@@ -31,7 +31,7 @@ public class AgmSequenceTargetingReagentAssociationDTOValidator extends AuditedO
 	@Inject AffectedGenomicModelService agmService;
 	@Inject SequenceTargetingReagentService strService;
 
-	public ObjectResponse<AgmSequenceTargetingReagentAssociation> validateAgmSequenceTargetingReagentAssociationDTO(AgmSequenceTargetingReagentAssociationDTO dto, BackendBulkDataProvider beDataProvider) throws ValidationException {
+	public ObjectResponse<AgmSequenceTargetingReagentAssociation> validateAgmSequenceTargetingReagentAssociationDTO(AgmSequenceTargetingReagentAssociationDTO dto, Species beSpecies) throws ValidationException {
 		response = new ObjectResponse<AgmSequenceTargetingReagentAssociation>();
 		
 		List<Long> subjectIds = null;
@@ -79,8 +79,8 @@ public class AgmSequenceTargetingReagentAssociationDTOValidator extends AuditedO
 			AffectedGenomicModel subject = agmService.findByIdentifierString(dto.getAgmSubjectIdentifier());
 			if (subject == null) {
 				response.addErrorMessage("agm_identifier", ValidationConstants.INVALID_MESSAGE + " (" + dto.getAgmSubjectIdentifier() + ")");
-			} else if (beDataProvider != null && !subject.getDataProvider().getAbbreviation().equals(beDataProvider.sourceOrganization)) {
-				response.addErrorMessage("agm_identifier", ValidationConstants.INVALID_MESSAGE + " for " + beDataProvider.name() + " load (" + dto.getAgmSubjectIdentifier() + ")");
+			} else if (beSpecies != null && !subject.getDataProvider().getAbbreviation().equals(beSpecies.getDataProvider().getAbbreviation())) {
+				response.addErrorMessage("agm_identifier", ValidationConstants.INVALID_MESSAGE + " for " + beSpecies.getDisplayName() + " load (" + dto.getAgmSubjectIdentifier() + ")");
 			} else {
 				association.setAgmAssociationSubject(subject);
 			}
@@ -91,8 +91,8 @@ public class AgmSequenceTargetingReagentAssociationDTOValidator extends AuditedO
 			SequenceTargetingReagent object = strService.findByIdentifierString(dto.getSequenceTargetingReagentIdentifier());
 			if (object == null) {
 				response.addErrorMessage("str_identifier", ValidationConstants.INVALID_MESSAGE + " (" + dto.getSequenceTargetingReagentIdentifier() + ")");
-			} else if (beDataProvider != null && !object.getDataProvider().getAbbreviation().equals(beDataProvider.sourceOrganization)) {
-				response.addErrorMessage("str_identifier", ValidationConstants.INVALID_MESSAGE + " for " + beDataProvider.name() + " load (" + dto.getSequenceTargetingReagentIdentifier() + ")");
+			} else if (beSpecies != null && !object.getDataProvider().getAbbreviation().equals(beSpecies.getDataProvider().getAbbreviation())) {
+				response.addErrorMessage("str_identifier", ValidationConstants.INVALID_MESSAGE + " for " + beSpecies.getDisplayName() + " load (" + dto.getSequenceTargetingReagentIdentifier() + ")");
 			} else {
 				association.setAgmSequenceTargetingReagentAssociationObject(object);
 			}

@@ -5,12 +5,11 @@ import java.io.IOException;
 import java.util.List;
 import java.util.zip.GZIPInputStream;
 
-import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
+import org.alliancegenome.curation_api.model.entities.Species;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.exceptions.KnownIssueValidationException;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException.ObjectUpdateExceptionData;
-import org.alliancegenome.curation_api.model.entities.bulkloads.BulkFMSLoad;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
 import org.alliancegenome.curation_api.services.GeneService;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
@@ -33,27 +32,25 @@ public class GeoXrefExecutor extends LoadFileExecutor {
 
 	public void execLoad(BulkLoadFileHistory bulkLoadFileHistory) throws IOException {
 
-		BulkFMSLoad fms = (BulkFMSLoad) bulkLoadFileHistory.getBulkLoad();
-
 		XmlMapper mapper = new XmlMapper();
 		List<String> entrezIds = mapper.readValue(new GZIPInputStream(new FileInputStream(bulkLoadFileHistory.getBulkLoadFile().getLocalFilePath())), ESearchResult.class).getIdList().getIds();
-		
+
 		bulkLoadFileHistory.getBulkLoadFile().setRecordCount(entrezIds.size() + bulkLoadFileHistory.getBulkLoadFile().getRecordCount());
 		bulkLoadFileDAO.merge(bulkLoadFileHistory.getBulkLoadFile());
 
 		bulkLoadFileHistory.setCount(entrezIds.size());
 		updateHistory(bulkLoadFileHistory);
 
-		BackendBulkDataProvider dataProvider = BackendBulkDataProvider.valueOf(fms.getFmsDataSubType());
+		Species species = bulkLoadFileHistory.getBulkLoad().getSpecies();
 
-		runLoad(bulkLoadFileHistory, dataProvider, entrezIds);
+		runLoad(bulkLoadFileHistory, species, entrezIds);
 
 		bulkLoadFileHistory.finishLoad();
 		updateHistory(bulkLoadFileHistory);
 		updateExceptions(bulkLoadFileHistory);
 	}
 
-	private void runLoad(BulkLoadFileHistory history, BackendBulkDataProvider dataProvider, List<String> entrezIds) {
+	private void runLoad(BulkLoadFileHistory history, Species species, List<String> entrezIds) {
 		if (Thread.currentThread().isInterrupted()) {
 			history.setErrorMessage(ApiErrorException.INTERRUPTED_MESSAGE);
 			throw new RuntimeException(ApiErrorException.INTERRUPTED_MESSAGE);
@@ -62,8 +59,8 @@ public class GeoXrefExecutor extends LoadFileExecutor {
 		ph.addDisplayHandler(loadProcessDisplayService);
 		if (CollectionUtils.isNotEmpty(entrezIds)) {
 			String loadMessage = "GEO cross-reference update";
-			if (dataProvider != null) {
-				loadMessage = loadMessage + " for " + dataProvider.name();
+			if (species != null) {
+				loadMessage = loadMessage + " for " + species.getDisplayName();
 			}
 			ph.startProcess(loadMessage, entrezIds.size());
 			
@@ -72,7 +69,7 @@ public class GeoXrefExecutor extends LoadFileExecutor {
 			
 			for (String entrezId : entrezIds) {
 				try {
-					geneService.addGeoXref(entrezId, dataProvider);
+					geneService.addGeoXref(entrezId, species);
 					history.incrementCompleted();
 				} catch (ObjectUpdateException e) {
 					history.incrementFailed();
