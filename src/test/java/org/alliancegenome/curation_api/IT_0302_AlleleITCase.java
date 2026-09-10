@@ -6,6 +6,7 @@ import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -2016,6 +2017,30 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 				then().
 				statusCode(200).
 				extract().jsonPath().getList("results[0].crossReferences");
+	}
+
+
+	@Test
+	@Order(33)
+	public void alleleDetailViewOmitsAssociationSubject() {
+		// ROUND_TRIP_ALLELE gains a gene association in order 30.
+		Response detail = RestAssured.given().
+				when().
+				get("/api/allele/" + ROUND_TRIP_ALLELE).
+				then().
+				statusCode(200).
+				extract().response();
+
+		assertThat(detail.jsonPath().getList("entity.alleleGeneAssociations"), hasSize(1));
+		assertThat("the allele detail view serialized a second copy of the allele under its own association",
+				detail.jsonPath().get("entity.alleleGeneAssociations[0].alleleAssociationSubject"), is(nullValue()));
+
+		// The association endpoints serialize FieldsAndLists and still carry the subject, which is what the
+		// Allele Gene Associations table renders from. Scoping the omission by view is what keeps that working.
+		Long alleleId = detail.jsonPath().getLong("entity.id");
+		Long geneId = detail.jsonPath().getLong("entity.alleleGeneAssociations[0].alleleGeneAssociationObject.id");
+		AlleleGeneAssociation association = getAlleleGeneAssociation(alleleId, geneAssociationRelation.getName(), geneId);
+		assertThat(association.getAlleleAssociationSubject(), notNullValue());
 	}
 
 }
