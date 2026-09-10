@@ -156,7 +156,7 @@ BEGIN
 	 WHERE (taxon_id IS NOT NULL AND hosttaxonterm_id IS NULL)
 	    OR (antigentaxon_id IS NOT NULL AND antigentaxonterm_id IS NULL);
 	IF unmapped > 0 THEN
-		RAISE EXCEPTION 'v0.53.0.5: % antibody rows have a taxon curie with no matching vocabulary term', unmapped;
+		RAISE EXCEPTION 'v0.53.0.7: % antibody rows have a taxon curie with no matching vocabulary term', unmapped;
 	END IF;
 END $$;
 
