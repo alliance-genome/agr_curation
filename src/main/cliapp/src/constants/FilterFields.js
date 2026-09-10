@@ -201,12 +201,14 @@ export const FIELD_SETS = Object.freeze({
 	},
 	antibodyAggregationFieldSet: {
 		filterName: 'antibodyAggregationFilter',
-		// heavyChainIsotype uses name_original (case-preserving) rather than name so its picklist
-		// shows "IgG"/"IgA" instead of the name_keyword aggregation's lowercased "igg"/"iga".
+		// heavyChainIsotype displays definition (not name -- name is the internal/search key, e.g.
+		// KO_consortium_allele's name vs. its "Knockout consortium allele" definition) via
+		// definition_original (case-preserving) so the picklist shows "IgG"/"IgA" rather than the
+		// definition_keyword aggregation's lowercased "igg"/"iga".
 		fields: [
 			'dataProvider.abbreviation',
 			'clonality.name',
-			'heavyChainIsotype.name_original',
+			'heavyChainIsotype.definition_original',
 			'lightChainIsotype.name',
 		],
 	},
@@ -237,11 +239,11 @@ export const FIELD_SETS = Object.freeze({
 		fields: ['clonality.name_keyword'],
 	},
 	heavyChainIsotypeFieldSet: {
-		// Targets name_original_keyword (not name_keyword) so both the picklist and the exact-match
-		// filter preserve the term's original casing (IgG/IgA) instead of name_keyword's lowercased
-		// igg/iga -- see antibodyAggregationFieldSet.
+		// Targets definition_original_keyword so both the picklist and the exact-match filter show
+		// and match on the term's display text (IgG/IgA), not its internal name/search key -- see
+		// antibodyAggregationFieldSet.
 		filterName: 'heavyChainIsotypeFilter',
-		fields: ['heavyChainIsotype.name_original_keyword'],
+		fields: ['heavyChainIsotype.definition_original_keyword'],
 	},
 	lightChainIsotypeFieldSet: {
 		filterName: 'lightChainIsotypeFilter',

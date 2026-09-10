@@ -48,10 +48,6 @@ public class VocabularyTerm extends AuditedObject {
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "name_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	// Case-preserving twin of name_keyword -- name_keyword is lowercased by sortNormalizer for
-	// case-insensitive search/sort, which is wrong for picklists (e.g. antibody heavy/light chain
-	// isotype) that must display the term's original casing (IgG, not igg).
-	@KeywordField(name = "name_original_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES)
 	@JsonView({ CurationView.FieldsOnly.class, CurationView.ForPublic.class, CurationView.GeneToGeneOrthologyDocument.class, CurationView.ModelDocument.class, CurationView.GeneExpressionDocument.class, CurationView.AlleleSummaryDocument.class, CurationView.GeneSummaryDocument.class, CurationView.VariantSummaryDocument.class, CurationView.SequenceSummaryDocument.class, CurationView.TransgenicAllelesDocument.class, CurationView.AlleleDetailView.class })
 	private String name;
 
@@ -62,6 +58,10 @@ public class VocabularyTerm extends AuditedObject {
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "definition_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
+	// Case-preserving twin of definition_keyword -- definition_keyword is lowercased by
+	// sortNormalizer for case-insensitive search/sort, which is wrong for picklists (e.g.
+	// antibody heavy chain isotype) that must display the term's original casing (IgG, not igg).
+	@KeywordField(name = "definition_original_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES)
 	@JsonView({ CurationView.FieldsOnly.class, CurationView.AlleleDetailView.class })
 	@Column(columnDefinition = "TEXT")
 	private String definition;

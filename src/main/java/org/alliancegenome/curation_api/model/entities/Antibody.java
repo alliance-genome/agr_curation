@@ -60,7 +60,7 @@ public class Antibody extends Reagent {
 	@JsonView({ CurationView.FieldsOnly.class })
 	private VocabularyTerm clonality;
 
-	@IndexedEmbedded(includePaths = { "name", "name_keyword", "name_original_keyword" })
+	@IndexedEmbedded(includePaths = { "name", "name_keyword", "definition", "definition_keyword", "definition_original_keyword" })
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
 	@JsonView({ CurationView.FieldsOnly.class })
