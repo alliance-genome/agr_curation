@@ -38,7 +38,7 @@ import lombok.ToString;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @Schema(name = "antibody", description = "Antibody: an immunoglobulin reagent used for detection")
 @ToString(exclude = { "antibodyTargetGenes", "references", "crossReferences" }, callSuper = true)
-@AGRCurationSchemaVersion(min = "2.11.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { Reagent.class })
+@AGRCurationSchemaVersion(min = "2.18.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { Reagent.class })
 @Table(indexes = {
 	@Index(name = "antibody_clonality_index", columnList = "clonality_id"),
 	@Index(name = "antibody_heavychainisotype_index", columnList = "heavychainisotype_id"),
