@@ -37,7 +37,7 @@ public class TranscriptExonAssociationService extends BaseEntityCrudService<Tran
 	}
 
 
-	public List<Long> getIdsBySpecies(Species species) {
+	public List<Long> getIdsByDataProvider(Species species) {
 		String taxon = needsTaxonFilter(species) ? species.getTaxon().getCurie() : null;
 		return transcriptExonAssociationDAO.findIdsByDataProvider(species.getDataProvider().getAbbreviation(), taxon);
 	}

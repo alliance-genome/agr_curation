@@ -79,7 +79,7 @@ public class ExonService extends BaseEntityCrudService<Exon, ExonDAO> {
 		return null;
 	}
 
-	public List<Long> getIdsBySpecies(Species species) {
+	public List<Long> getIdsByDataProvider(Species species) {
 		String taxon = needsTaxonFilter(species) ? species.getTaxon().getCurie() : null;
 		return exonDAO.findIdsByDataProvider(species.getDataProvider().getAbbreviation(), taxon);
 	}
