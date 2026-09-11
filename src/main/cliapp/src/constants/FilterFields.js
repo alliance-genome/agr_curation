@@ -219,9 +219,16 @@ export const FIELD_SETS = Object.freeze({
 			'antibodyTargetGenes.modInternalId',
 		],
 	},
-	antigenTaxonFieldSet: {
-		filterName: 'antigenTaxonFilter',
-		fields: ['antigenTaxon.curie', 'antigenTaxon.name'],
+	// Antibody's Host Taxon column is VocabularyTerm (name/definition), unlike the shared
+	// taxonFieldSet used by other tables' real taxon columns (Genes, Alleles, etc.).
+	antibodyHostTaxonFieldSet: {
+		filterName: 'hostTaxonTermFilter',
+		fields: ['hostTaxonTerm.name', 'hostTaxonTerm.definition'],
+	},
+	// Antigen Taxon is VocabularyTerm (name/definition), same shape as Host Taxon above.
+	antibodyAntigenTaxonFieldSet: {
+		filterName: 'antigenTaxonTermFilter',
+		fields: ['antigenTaxonTerm.name', 'antigenTaxonTerm.definition'],
 	},
 	clonalityFieldSet: {
 		// Targets the keyword field directly (not useKeywordFields) so this multiselect only ever
@@ -1106,7 +1113,11 @@ export const FILTER_CONFIGS = Object.freeze({
 		filterComponentType: 'input',
 		fieldSets: [FIELD_SETS.antibodyTargetGenesFieldSet],
 	},
-	antigenTaxonFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.antigenTaxonFieldSet] },
+	antibodyHostTaxonFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.antibodyHostTaxonFieldSet] },
+	antibodyAntigenTaxonFilterConfig: {
+		filterComponentType: 'input',
+		fieldSets: [FIELD_SETS.antibodyAntigenTaxonFieldSet],
+	},
 	clonalityFilterConfig: {
 		filterComponentType: 'multiselect',
 		fieldSets: [FIELD_SETS.clonalityFieldSet],

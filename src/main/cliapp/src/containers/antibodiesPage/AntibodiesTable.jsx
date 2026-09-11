@@ -10,7 +10,6 @@ import { IdTemplate } from '../../components/Templates/IdTemplate';
 import { StringTemplate } from '../../components/Templates/StringTemplate';
 import { StringListTemplate } from '../../components/Templates/StringListTemplate';
 import { BooleanTemplate } from '../../components/Templates/BooleanTemplate';
-import { OntologyTermTemplate } from '../../components/Templates/OntologyTermTemplate';
 import { GenomicEntityListTemplate } from '../../components/Templates/genomicEntity/GenomicEntityListTemplate';
 import { SingleReferenceTemplate } from '../../components/Templates/reference/SingleReferenceTemplate';
 import { TruncatedReferencesTemplate } from '../../components/Templates/reference/TruncatedReferencesTemplate';
@@ -82,20 +81,28 @@ export const AntibodiesTable = () => {
 				filterConfig: FILTER_CONFIGS.nameFilterConfig,
 			},
 			{
-				field: 'taxon.name',
-				columnKey: 'taxon.name',
-				header: 'Taxon',
+				field: 'hostTaxonTerm.name',
+				columnKey: 'hostTaxonTerm.name',
+				// Displayed text is definition (falling back to name), so sort by that field too --
+				// otherwise clicking the header sorts by the raw NCBITaxon curie, not what's shown.
+				sortField: 'hostTaxonTerm.definition',
+				header: 'Host Taxon',
 				sortable: true,
-				body: (rowData) => <OntologyTermTemplate term={rowData.taxon} />,
-				filterConfig: FILTER_CONFIGS.taxonFilterConfig,
+				body: (rowData) => <StringTemplate string={rowData.hostTaxonTerm?.definition || rowData.hostTaxonTerm?.name} />,
+				filterConfig: FILTER_CONFIGS.antibodyHostTaxonFilterConfig,
 			},
 			{
-				field: 'antigenTaxon.name',
-				columnKey: 'antigenTaxon.name',
+				field: 'antigenTaxonTerm.name',
+				columnKey: 'antigenTaxonTerm.name',
+				// Displayed text is definition (falling back to name), so sort by that field too --
+				// otherwise clicking the header sorts by the raw NCBITaxon curie, not what's shown.
+				sortField: 'antigenTaxonTerm.definition',
 				header: 'Antigen Taxon',
 				sortable: true,
-				body: (rowData) => <OntologyTermTemplate term={rowData.antigenTaxon} />,
-				filterConfig: FILTER_CONFIGS.antigenTaxonFilterConfig,
+				body: (rowData) => (
+					<StringTemplate string={rowData.antigenTaxonTerm?.definition || rowData.antigenTaxonTerm?.name} />
+				),
+				filterConfig: FILTER_CONFIGS.antibodyAntigenTaxonFilterConfig,
 			},
 			{
 				field: 'clonality.name',

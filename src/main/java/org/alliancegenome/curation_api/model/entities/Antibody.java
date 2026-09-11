@@ -6,7 +6,6 @@ import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.enums.MatiSubdomain;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.interfaces.CurieSubdomain;
-import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
 import org.alliancegenome.curation_api.view.CurationView;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.hibernate.search.engine.backend.types.Aggregable;
@@ -39,13 +38,13 @@ import lombok.ToString;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @Schema(name = "antibody", description = "Antibody: an immunoglobulin reagent used for detection")
 @ToString(exclude = { "antibodyTargetGenes", "references", "crossReferences" }, callSuper = true)
-@AGRCurationSchemaVersion(min = "2.11.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { Reagent.class })
+@AGRCurationSchemaVersion(min = "2.18.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { Reagent.class })
 @Table(indexes = {
 	@Index(name = "antibody_clonality_index", columnList = "clonality_id"),
 	@Index(name = "antibody_heavychainisotype_index", columnList = "heavychainisotype_id"),
 	@Index(name = "antibody_lightchainisotype_index", columnList = "lightchainisotype_id"),
-	@Index(name = "antibody_antigentaxon_index", columnList = "antigentaxon_id"),
-	@Index(name = "antibody_taxon_index", columnList = "taxon_id"),
+	@Index(name = "antibody_antigentaxonterm_index", columnList = "antigentaxonterm_id"),
+	@Index(name = "antibody_hosttaxonterm_index", columnList = "hosttaxonterm_id"),
 	@Index(name = "antibody_originalreference_index", columnList = "originalreference_id")
 })
 @CurieSubdomain(MatiSubdomain.ANTIBODY)
@@ -75,17 +74,17 @@ public class Antibody extends Reagent {
 	@JsonView({ CurationView.FieldsOnly.class })
 	private VocabularyTerm lightChainIsotype;
 
-	@IndexedEmbedded(includePaths = { "name", "curie", "name_keyword", "curie_keyword" })
+	@IndexedEmbedded(includePaths = { "name", "definition", "name_keyword", "definition_keyword" })
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
 	@JsonView({ CurationView.FieldsOnly.class })
-	private NCBITaxonTerm antigenTaxon;
+	private VocabularyTerm antigenTaxonTerm;
 
-	@IndexedEmbedded(includePaths = { "name", "curie", "name_keyword", "curie_keyword" })
+	@IndexedEmbedded(includePaths = { "name", "definition", "name_keyword", "definition_keyword" })
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
 	@JsonView({ CurationView.FieldsOnly.class })
-	private NCBITaxonTerm taxon;
+	private VocabularyTerm hostTaxonTerm;
 
 	@IndexedEmbedded(includePaths = {
 		"curie", "primaryExternalId", "modInternalId",
