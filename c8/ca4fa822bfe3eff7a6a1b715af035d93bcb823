@@ -1,0 +1,23 @@
+src/main/cliapp/src/constants/FilterFields.js
+  s_e6a7e48d95f0da::t_16568ad3584bcb 204,234
+src/main/cliapp/src/containers/antibodiesPage/AntibodiesTable.jsx
+  s_e6a7e48d95f0da::t_82b80baca58dbb 122
+src/main/java/org/alliancegenome/curation_api/model/entities/Antibody.java
+  s_e6a7e48d95f0da::t_2c65f2e61d05b3 66
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "c8ca4fa822bfe3eff7a6a1b715af035d93bcb823",
+  "prompts": {},
+  "sessions": {
+    "s_e6a7e48d95f0da": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "0b1c323c-79a4-432b-8351-1956bb3e2d64",
+        "model": "unknown"
+      },
+      "human_author": "Ketaki Kindre <kkindre@caltech.edu>"
+    }
+  }
+}
