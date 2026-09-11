@@ -119,7 +119,8 @@ public class Antibody extends Reagent {
 	})
 	private List<Reference> references;
 
-	@IndexedEmbedded(includePaths = { "curie", "primaryCrossReferenceCurie", "curie_keyword", "primaryCrossReferenceCurie_keyword" })
+	@IndexedEmbedded(includePaths = { "curie", "primaryCrossReferenceCurie", "crossReferences.referencedCurie",
+		"curie_keyword", "primaryCrossReferenceCurie_keyword", "crossReferences.referencedCurie_keyword" })
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
 	@JsonView({ CurationView.FieldsOnly.class })

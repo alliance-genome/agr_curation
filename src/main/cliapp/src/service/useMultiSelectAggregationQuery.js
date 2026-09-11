@@ -41,7 +41,9 @@ export function useMultiSelectAggregationQuery({
 			let queryStrings = rawQueryString.match(/"([^"]*)"/g)?.map((s) => s.slice(1, -1)) || rawQueryString.split(' ');
 			for (let i in tmp) {
 				for (let j in queryStrings) {
-					if (tmp[i].optionLabel === queryStrings[j].toLowerCase()) {
+					// optionLabel may preserve its original casing (e.g. heavyChainIsotype's "IgG"),
+					// so compare case-insensitively rather than assuming optionLabel is lowercase.
+					if (tmp[i].optionLabel.toLowerCase() === queryStrings[j].toLowerCase()) {
 						newSelectedOptions.push(tmp[i]);
 					}
 				}

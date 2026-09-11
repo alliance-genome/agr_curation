@@ -245,8 +245,14 @@ export const FIELD_SETS = Object.freeze({
 		fields: ['lightChainIsotype.name_keyword'],
 	},
 	originalReferenceFieldSet: {
+		// Includes all cross-references (not just the primary one) so any of the reference's IDs --
+		// PMID, PMCID, or a MOD paper ID (FB/WB/MGI/etc.) -- matches, same as the References filter.
 		filterName: 'originalReferenceFilter',
-		fields: ['originalReference.curie', 'originalReference.primaryCrossReferenceCurie'],
+		fields: [
+			'originalReference.curie',
+			'originalReference.primaryCrossReferenceCurie',
+			'originalReference.crossReferences.referencedCurie',
+		],
 	},
 	citationFieldSet: {
 		filterName: 'citationFilter',
