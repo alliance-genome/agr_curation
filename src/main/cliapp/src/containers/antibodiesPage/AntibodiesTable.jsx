@@ -117,15 +117,9 @@ export const AntibodiesTable = () => {
 			{
 				field: 'heavyChainIsotype.name',
 				columnKey: 'heavyChainIsotype.name',
-				// name is the term's internal/search key (e.g. KO_consortium_allele), not what's shown
-				// to curators -- display and sort by definition instead (e.g. "Knockout consortium
-				// allele"). Falls back to name for any term not yet backfilled with a definition.
-				sortField: 'heavyChainIsotype.definition',
 				header: 'Heavy Chain Isotype',
 				sortable: true,
-				body: (rowData) => (
-					<StringTemplate string={rowData.heavyChainIsotype?.definition || rowData.heavyChainIsotype?.name} />
-				),
+				body: (rowData) => <StringTemplate string={rowData.heavyChainIsotype?.name} />,
 				filterConfig: FILTER_CONFIGS.heavyChainIsotypeFilterConfig,
 			},
 			{

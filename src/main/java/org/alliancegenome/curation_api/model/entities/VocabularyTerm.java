@@ -58,10 +58,6 @@ public class VocabularyTerm extends AuditedObject {
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "definition_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	// Case-preserving twin of definition_keyword -- definition_keyword is lowercased by
-	// sortNormalizer for case-insensitive search/sort, which is wrong for picklists (e.g.
-	// antibody heavy chain isotype) that must display the term's original casing (IgG, not igg).
-	@KeywordField(name = "definition_original_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES)
 	@JsonView({ CurationView.FieldsOnly.class, CurationView.AlleleDetailView.class })
 	@Column(columnDefinition = "TEXT")
 	private String definition;
