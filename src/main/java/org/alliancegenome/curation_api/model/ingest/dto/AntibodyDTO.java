@@ -14,7 +14,7 @@ import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-@AGRCurationSchemaVersion(min = "2.11.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { ReagentDTO.class, CrossReferenceDTO.class }, submitted = true)
+@AGRCurationSchemaVersion(min = "2.18.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { ReagentDTO.class, CrossReferenceDTO.class }, submitted = true)
 public class AntibodyDTO extends ReagentDTO {
 
 	@JsonView({ CurationView.FieldsOnly.class })
@@ -34,12 +34,12 @@ public class AntibodyDTO extends ReagentDTO {
 	private String lightChainIsotypeName;
 
 	@JsonView({ CurationView.FieldsOnly.class })
-	@JsonProperty("antigen_taxon_curie")
-	private String antigenTaxonCurie;
+	@JsonProperty("antigen_taxon_term_name")
+	private String antigenTaxonTermName;
 
 	@JsonView({ CurationView.FieldsOnly.class })
-	@JsonProperty("taxon_curie")
-	private String taxonCurie;
+	@JsonProperty("host_taxon_term_name")
+	private String hostTaxonTermName;
 
 	@JsonView({ CurationView.FieldsAndLists.class })
 	@JsonProperty("antibody_target_gene_identifiers")
