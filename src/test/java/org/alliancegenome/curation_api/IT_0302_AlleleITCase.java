@@ -2023,24 +2023,50 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 	@Test
 	@Order(33)
 	public void alleleDetailViewOmitsAssociationSubject() {
-		// ROUND_TRIP_ALLELE gains a gene association in order 30.
+		Allele allele = getAllele(CROSS_REFERENCE_ALLELE);
+
+		AlleleGeneAssociation geneAssociation = new AlleleGeneAssociation();
+		geneAssociation.setAlleleGeneAssociationObject(gene);
+		geneAssociation.setRelation(geneAssociationRelation);
+		allele.setAlleleGeneAssociations(List.of(geneAssociation));
+
+		AlleleConstructAssociation constructAssociation = new AlleleConstructAssociation();
+		constructAssociation.setAlleleConstructAssociationObject(construct);
+		constructAssociation.setRelation(constructAssociationRelation);
+		allele.setAlleleConstructAssociations(List.of(constructAssociation));
+
+		RestAssured.given().
+				contentType("application/json").
+				body(allele).
+				when().
+				put("/api/allele/updateDetail").
+				then().
+				statusCode(200);
+
 		Response detail = RestAssured.given().
 				when().
-				get("/api/allele/" + ROUND_TRIP_ALLELE).
+				get("/api/allele/" + CROSS_REFERENCE_ALLELE).
 				then().
 				statusCode(200).
 				extract().response();
 
 		assertThat(detail.jsonPath().getList("entity.alleleGeneAssociations"), hasSize(1));
-		assertThat("the allele detail view serialized a second copy of the allele under its own association",
+		assertThat(detail.jsonPath().getList("entity.alleleConstructAssociations"), hasSize(1));
+		assertThat("the allele detail view serialized a second copy of the allele under its own gene association",
 				detail.jsonPath().get("entity.alleleGeneAssociations[0].alleleAssociationSubject"), is(nullValue()));
+		assertThat("the allele detail view serialized a second copy of the allele under its own construct association",
+				detail.jsonPath().get("entity.alleleConstructAssociations[0].alleleAssociationSubject"), is(nullValue()));
 
 		// The association endpoints serialize FieldsAndLists and still carry the subject, which is what the
 		// Allele Gene Associations table renders from. Scoping the omission by view is what keeps that working.
 		Long alleleId = detail.jsonPath().getLong("entity.id");
 		Long geneId = detail.jsonPath().getLong("entity.alleleGeneAssociations[0].alleleGeneAssociationObject.id");
-		AlleleGeneAssociation association = getAlleleGeneAssociation(alleleId, geneAssociationRelation.getName(), geneId);
-		assertThat(association.getAlleleAssociationSubject(), notNullValue());
+		AlleleGeneAssociation storedGeneAssociation = getAlleleGeneAssociation(alleleId, geneAssociationRelation.getName(), geneId);
+		assertThat(storedGeneAssociation.getAlleleAssociationSubject(), notNullValue());
+
+		Long constructId = detail.jsonPath().getLong("entity.alleleConstructAssociations[0].alleleConstructAssociationObject.id");
+		AlleleConstructAssociation storedConstructAssociation = getAlleleConstructAssociation(alleleId, constructAssociationRelation.getName(), constructId);
+		assertThat(storedConstructAssociation.getAlleleAssociationSubject(), notNullValue());
 	}
 
 }

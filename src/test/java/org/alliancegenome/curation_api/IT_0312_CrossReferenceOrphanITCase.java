@@ -127,14 +127,15 @@ public class IT_0312_CrossReferenceOrphanITCase extends BaseITCase {
 			post("/api/cross-reference/validate").
 			then().
 			statusCode(400).
-			body("errorMessages.referencedCurie", is(ValidationConstants.REQUIRED_MESSAGE));
+			body("errorMessages.referencedCurie", is(ValidationConstants.REQUIRED_MESSAGE)).
+			body("errorMessages.displayName", is(ValidationConstants.REQUIRED_MESSAGE));
 
-		// Neither call may leave a row behind.
+		// Neither call may leave a row behind. find only counts when both page and limit are 0.
 		RestAssured.given().
 			contentType("application/json").
 			body("{\"referencedCurie\": \"" + XREF_VALIDATED + "\"}").
 			when().
-			post("/api/cross-reference/find?limit=1&page=0").
+			post("/api/cross-reference/find?limit=0&page=0").
 			then().
 			statusCode(200).
 			body("totalResults", is(0));

@@ -5,8 +5,10 @@ import java.util.List;
 
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.dao.CrossReferenceDAO;
+import org.alliancegenome.curation_api.dao.ResourceDescriptorPageDAO;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
+import org.alliancegenome.curation_api.model.entities.ResourceDescriptorPage;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.validation.base.AuditedObjectValidator;
 import org.apache.commons.collections.CollectionUtils;
@@ -19,6 +21,7 @@ import jakarta.inject.Inject;
 public class CrossReferenceValidator extends AuditedObjectValidator<CrossReference> {
 
 	@Inject CrossReferenceDAO crossReferenceDAO;
+	@Inject ResourceDescriptorPageDAO resourceDescriptorPageDAO;
 
 	public ObjectResponse<CrossReference> validateCrossReference(CrossReference uiEntity, Boolean throwError) {
 		return validateCrossReference(uiEntity, throwError, true);
@@ -55,7 +58,9 @@ public class CrossReferenceValidator extends AuditedObjectValidator<CrossReferen
 
 	/**
 	 * @param persist whether to write the validated cross reference. Pass false to check a cross reference
-	 *        without storing it; the returned entity is then unmanaged and carries no id.
+	 *        without storing it. A payload with no id is then returned unmanaged and without one; a payload
+	 *        carrying an id returns the managed row it names, with the payload's values applied but not
+	 *        written, so the caller must not run inside a transaction that would flush them.
 	 */
 	public ObjectResponse<CrossReference> validateCrossReference(CrossReference uiEntity, Boolean throwError, Boolean persist) {
 		response = new ObjectResponse<>(uiEntity);
@@ -66,6 +71,14 @@ public class CrossReferenceValidator extends AuditedObjectValidator<CrossReferen
 		Boolean newEntity = true;
 		if (uiEntity.getId() != null) {
 			dbEntity = crossReferenceDAO.find(uiEntity.getId());
+			if (dbEntity == null) {
+				addMessageResponse("id", ValidationConstants.INVALID_MESSAGE);
+				if (throwError) {
+					response.setErrorMessage(errorTitle);
+					throw new ApiErrorException(response);
+				}
+				return response;
+			}
 			newEntity = false;
 		} else {
 			dbEntity = new CrossReference();
@@ -85,8 +98,14 @@ public class CrossReferenceValidator extends AuditedObjectValidator<CrossReferen
 		}
 		dbEntity.setDisplayName(uiEntity.getDisplayName());
 
+		// Resolved rather than taken from the payload: the association has no cascade, so an unresolved page
+		// would only fail once the transaction flushed, past the point an error response can be built.
 		if (uiEntity.getResourceDescriptorPage() != null) {
-			dbEntity.setResourceDescriptorPage(uiEntity.getResourceDescriptorPage());
+			ResourceDescriptorPage resourceDescriptorPage = validateEntity(resourceDescriptorPageDAO, "resourceDescriptorPage",
+				uiEntity.getResourceDescriptorPage(), dbEntity.getResourceDescriptorPage(), false);
+			if (resourceDescriptorPage != null) {
+				dbEntity.setResourceDescriptorPage(resourceDescriptorPage);
+			}
 		}
 
 		if (response.hasErrors()) {

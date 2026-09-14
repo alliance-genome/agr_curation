@@ -37,15 +37,19 @@ import io.restassured.RestAssured;
 public class IT_0313_AlleleCrossReferenceITCase extends BaseITCase {
 
 	private static final String ALLELE = "Allele:6503Xref0001";
+	private static final String OTHER_ALLELE = "Allele:6503Xref0002";
 	private static final String XREF_KEPT = "XRSUB:0001";
 	private static final String XREF_DROPPED = "XRSUB:0002";
+	private static final String XREF_REJECTED = "XRSUB:0003";
+	private static final String XREF_FOREIGN = "XRSUB:0005";
 
 	private Long alleleId;
+	private VocabularyTerm symbolNameType;
 	private ResourceDescriptorPage defaultPage;
 	private ResourceDescriptorPage genePage;
 
 	private void loadRequiredEntities() {
-		VocabularyTerm symbolNameType = getVocabularyTerm(getVocabulary(VocabularyConstants.NAME_TYPE_VOCABULARY), "nomenclature_symbol");
+		symbolNameType = getVocabularyTerm(getVocabulary(VocabularyConstants.NAME_TYPE_VOCABULARY), "nomenclature_symbol");
 		ResourceDescriptor resourceDescriptor = createResourceDescriptor("XRSUB");
 		defaultPage = createResourceDescriptorPage("default", "http://test.org/[%s]", resourceDescriptor);
 		genePage = createResourceDescriptorPage("gene", "http://test.org/gene/[%s]", resourceDescriptor);
@@ -149,7 +153,7 @@ public class IT_0313_AlleleCrossReferenceITCase extends BaseITCase {
 
 		RestAssured.given().
 			contentType("application/json").
-			body(List.of(buildXref("XRSUB:0003", defaultPage), missingCurie)).
+			body(List.of(buildXref(XREF_REJECTED, defaultPage), missingCurie)).
 			when().
 			put("/api/allele/" + alleleId + "/cross-references").
 			then().
@@ -157,7 +161,110 @@ public class IT_0313_AlleleCrossReferenceITCase extends BaseITCase {
 			body("errorMessages.crossReferences", notNullValue()).
 			body("supplementalData.errorMap.crossReferences.'1'.referencedCurie", is(ValidationConstants.REQUIRED_MESSAGE));
 
-		// The valid entry in that same payload must not have been stored, and the existing one must survive.
+		// The existing entry must survive.
+		RestAssured.given().
+			when().
+			get("/api/allele/" + alleleId + "/cross-references").
+			then().
+			statusCode(200).
+			body("entities", hasSize(1)).
+			body("entities[0].referencedCurie", is(XREF_KEPT));
+
+		// The valid entry in that same payload is persisted before the invalid one is reached, so the reject
+		// has to roll it back rather than leave a row nothing points at. find only counts when page and
+		// limit are both 0.
+		RestAssured.given().
+			contentType("application/json").
+			body("{\"referencedCurie\": \"" + XREF_REJECTED + "\"}").
+			when().
+			post("/api/cross-reference/find?limit=0&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(0));
+	}
+
+	@Test
+	@Order(5)
+	public void foreignCrossReferenceIsRejected() {
+		Long otherAlleleId = createAllele(OTHER_ALLELE, "NCBITaxon:6239", symbolNameType, false).getId();
+
+		RestAssured.given().
+			contentType("application/json").
+			body(List.of(buildXref(XREF_FOREIGN, defaultPage))).
+			when().
+			put("/api/allele/" + otherAlleleId + "/cross-references").
+			then().
+			statusCode(200).
+			body("entities", hasSize(1));
+
+		Long foreignId = RestAssured.given().
+			when().
+			get("/api/allele/" + otherAlleleId + "/cross-references").
+			then().
+			statusCode(200).
+			extract().
+			jsonPath().
+			getLong("entities[0].id");
+
+		// Nothing on a cross reference row records its owner, so an id has to be checked against the owner's
+		// own list. Claiming another allele's row would re-parent it and leave that allele's next save to
+		// orphan-delete it.
+		CrossReference claimed = buildXref(XREF_FOREIGN, defaultPage);
+		claimed.setId(foreignId);
+
+		RestAssured.given().
+			contentType("application/json").
+			body(List.of(claimed)).
+			when().
+			put("/api/allele/" + alleleId + "/cross-references").
+			then().
+			statusCode(400).
+			body("supplementalData.errorMap.crossReferences.'0'.id", is(ValidationConstants.INVALID_MESSAGE));
+
+		// An id that belongs to nothing is rejected the same way, rather than failing once the write flushes.
+		CrossReference unknown = buildXref(XREF_FOREIGN, defaultPage);
+		unknown.setId(-1L);
+
+		RestAssured.given().
+			contentType("application/json").
+			body(List.of(unknown)).
+			when().
+			put("/api/allele/" + alleleId + "/cross-references").
+			then().
+			statusCode(400).
+			body("supplementalData.errorMap.crossReferences.'0'.id", is(ValidationConstants.INVALID_MESSAGE));
+
+		// Both alleles keep what they had.
+		RestAssured.given().
+			when().
+			get("/api/allele/" + alleleId + "/cross-references").
+			then().
+			statusCode(200).
+			body("entities", hasSize(1)).
+			body("entities[0].referencedCurie", is(XREF_KEPT));
+
+		RestAssured.given().
+			when().
+			get("/api/allele/" + otherAlleleId + "/cross-references").
+			then().
+			statusCode(200).
+			body("entities", hasSize(1)).
+			body("entities[0].referencedCurie", is(XREF_FOREIGN));
+	}
+
+	@Test
+	@Order(6)
+	public void nullBodyIsRejected() {
+		// An empty list is a deliberate clear, so a missing list must not be read as one.
+		RestAssured.given().
+			contentType("application/json").
+			body("null").
+			when().
+			put("/api/allele/" + alleleId + "/cross-references").
+			then().
+			statusCode(400).
+			body("errorMessages.crossReferences", is(ValidationConstants.REQUIRED_MESSAGE));
+
 		RestAssured.given().
 			when().
 			get("/api/allele/" + alleleId + "/cross-references").
@@ -168,7 +275,7 @@ public class IT_0313_AlleleCrossReferenceITCase extends BaseITCase {
 	}
 
 	@Test
-	@Order(5)
+	@Order(7)
 	public void replaceWithEmptyListClearsCrossReferences() {
 		RestAssured.given().
 			contentType("application/json").
@@ -188,7 +295,7 @@ public class IT_0313_AlleleCrossReferenceITCase extends BaseITCase {
 	}
 
 	@Test
-	@Order(6)
+	@Order(8)
 	public void unknownAlleleIsRejected() {
 		RestAssured.given().
 			when().

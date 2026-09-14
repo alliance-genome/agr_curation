@@ -4,7 +4,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
+import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.dao.CrossReferenceDAO;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
@@ -40,28 +43,59 @@ public class CrossReferenceService extends BaseEntityCrudService<CrossReference,
 		setSQLDao(crossReferenceDAO);
 	}
 
-	// Deliberately not @Transactional, and validated without persisting: BaseSQLDAO.persist opens its own
-	// transaction, so a write reached from here would commit an orphan cross reference on every call.
+	// Validates without writing the cross reference, and stays non-@Transactional like the other validate
+	// endpoints. Auditing still reaches PersonService, which commits a Person of its own when the payload
+	// names one that is not stored yet.
 	public ObjectResponse<CrossReference> validate(CrossReference uiEntity) {
 		return crossReferenceValidator.validateCrossReference(uiEntity, true, false);
 	}
 
 	/**
 	 * Replaces the owner's cross references with the given list, deleting any that are no longer present.
-	 * An empty list is a valid payload and clears them all.
+	 * An empty list is a valid payload and clears them all; a null list is rejected, so a malformed request
+	 * cannot be read as a deletion.
+	 *
+	 * <p>An entry carrying an id must already belong to this owner. Cross reference rows are addressed by a
+	 * join table shared with references, ontology terms and vocabulary terms, and nothing on the row records
+	 * its owner, so an unchecked id would re-parent another entity's row onto this one and leave the previous
+	 * owner's next save to orphan-delete it.
 	 */
 	@Transactional
 	public ObjectListResponse<CrossReference> replaceForOwner(GenomicEntity owner, List<CrossReference> incomingXrefs) {
 		ObjectResponse<List<CrossReference>> validationResponse = new ObjectResponse<>();
-		List<CrossReference> validatedXrefs = crossReferenceValidator.validateCrossReferences(incomingXrefs, "crossReferences", validationResponse);
-		if (validatedXrefs == null) {
-			validationResponse.setErrorMessage("Could not update CrossReferences for: [" + owner.getId() + "]");
+		String errorTitle = "Could not update CrossReferences for: [" + owner.getId() + "]";
+
+		if (incomingXrefs == null) {
+			validationResponse.addErrorMessage("crossReferences", ValidationConstants.REQUIRED_MESSAGE);
+			validationResponse.setErrorMessage(errorTitle);
 			throw new ApiErrorException(validationResponse);
 		}
 
 		if (owner.getCrossReferences() == null) {
 			owner.setCrossReferences(new ArrayList<>());
 		}
+
+		Set<Long> ownedIds = owner.getCrossReferences().stream().map(CrossReference::getId).collect(Collectors.toSet());
+		boolean allOwned = true;
+		for (int ix = 0; ix < incomingXrefs.size(); ix++) {
+			Long incomingId = incomingXrefs.get(ix).getId();
+			if (incomingId != null && !ownedIds.contains(incomingId)) {
+				allOwned = false;
+				validationResponse.addErrorMessages("crossReferences", ix, Map.of("id", ValidationConstants.INVALID_MESSAGE));
+			}
+		}
+		if (!allOwned) {
+			validationResponse.convertMapToErrorMessages("crossReferences");
+			validationResponse.setErrorMessage(errorTitle);
+			throw new ApiErrorException(validationResponse);
+		}
+
+		List<CrossReference> validatedXrefs = crossReferenceValidator.validateCrossReferences(incomingXrefs, "crossReferences", validationResponse);
+		if (validatedXrefs == null) {
+			validationResponse.setErrorMessage(errorTitle);
+			throw new ApiErrorException(validationResponse);
+		}
+
 		owner.getCrossReferences().clear();
 		owner.getCrossReferences().addAll(validatedXrefs);
 

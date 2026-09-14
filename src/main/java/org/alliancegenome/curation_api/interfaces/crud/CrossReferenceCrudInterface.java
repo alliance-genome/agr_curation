@@ -24,6 +24,6 @@ public interface CrossReferenceCrudInterface extends BaseIdCrudInterface<CrossRe
 	@Operation(summary = "Validate cross reference", description = "Validate a cross reference entity without persisting it")
 	@POST
 	@Path("/validate")
-	@JsonView(CurationView.FieldsOnly.class)
+	@JsonView(CurationView.CrossReferenceView.class)
 	ObjectResponse<CrossReference> validate(CrossReference entity);
 }
