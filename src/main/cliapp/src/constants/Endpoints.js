@@ -7,6 +7,7 @@ export const Endpoints = Object.freeze({
 		ANTIBODY: 'antibody',
 		BIOLOGICAL_ENTITY: 'biologicalentity',
 		CONSTRUCT: 'construct',
+		CROSS_REFERENCE: 'cross-reference',
 		GENE: 'gene',
 		GENOME_ASSEMBLY: 'genomeassembly',
 		MOLECULE: 'molecule',
