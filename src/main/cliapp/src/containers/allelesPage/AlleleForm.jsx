@@ -18,6 +18,7 @@ import { GermilineTransmissionStatusForm } from './germlineTransmissionStatus/Ge
 import { ReferencesForm } from './referencesTable/ReferencesForm';
 import { NomenclatureEventsForm } from './nomenclatureEvents/NomenclatureEventsForm';
 import { AlleleGeneAssociationsForm } from './alleleGeneAssociations/AlleleGeneAssociationsForm';
+import { CrossReferencesForm } from './crossReferences/CrossReferencesForm';
 import { FormSection } from '../../components/FormFieldVisibility';
 import { getEffectiveModAbbreviation } from '../../utils/affiliation';
 
@@ -54,6 +55,7 @@ export const ALLELE_DETAIL_TOGGLEABLE_FIELDS = [
 	'Related Notes',
 	'Allele Gene Associations',
 	'Data Provider',
+	'Cross References',
 	'Updated By',
 	'Date Updated',
 	'Created By',
@@ -275,6 +277,10 @@ export const AlleleForm = ({ state, dispatch, isVisible, mode = 'detail' }) => {
 					labelColumnSize={labelColumnSize}
 					fieldDetailsColumnSize={fieldDetailsColumnSize}
 				/>
+			</FormSection>
+
+			<FormSection isVisible={isVisible('Cross References')}>
+				<CrossReferencesForm mode={mode} />
 			</FormSection>
 
 			<FormSection isVisible={!isCreate && isVisible('Updated By')}>

@@ -14,6 +14,8 @@ import { getIdentifier } from '../../utils/utils';
 import { buildCreatePayload, processErrors, validateRequiredAutosuggestField } from './utils';
 import { FormFieldVisibilityMenu, useFormFieldVisibility } from '../../components/FormFieldVisibility';
 import { AlleleForm, ALLELE_CREATE_TOGGLEABLE_FIELDS } from './AlleleForm';
+import { useAlleleCrossReferences } from './crossReferences/useAlleleCrossReferences';
+import { SubResourcesProvider } from '../../components/SubResourcesContext';
 
 export default function AlleleCreatePage() {
 	const navigate = useNavigate();
@@ -25,6 +27,7 @@ export default function AlleleCreatePage() {
 	const alleleService = new AlleleService();
 	const toastSuccess = useRef(null);
 	const toastError = useRef(null);
+	const crossReferences = useAlleleCrossReferences();
 
 	const { isPending: allelePostRequestIsLoading, mutate: alleleMutate } = useMutation({
 		mutationFn: (allele) => {
@@ -47,14 +50,35 @@ export default function AlleleCreatePage() {
 		if (areUiErrors) return;
 
 		alleleMutate(buildCreatePayload(alleleState.allele), {
-			onSuccess: (result) => {
+			onSuccess: async (result) => {
 				const allele = result?.data?.entity;
 				toastSuccess.current.show({ severity: 'success', summary: 'Successful', detail: 'Allele Created' });
+
+				// Cross references are written through their own sub-resource, so create is two calls. The
+				// allele exists by now, so a failure here leaves the work recoverable from its detail page
+				// rather than lost - which is why this keeps the curator here instead of navigating away.
+				if (crossReferences.crossReferences.length > 0) {
+					const outcome = await crossReferences.save(allele?.id);
+
+					if (!outcome.isSuccess) {
+						toastError.current.show([
+							{
+								life: 10000,
+								severity: 'error',
+								summary: 'Cross references not saved: ',
+								detail: `${outcome.message}. The allele was created - open its detail page to finish them.`,
+								sticky: false,
+							},
+						]);
+						return;
+					}
+				}
 
 				if (closeAfterSubmit) {
 					navigate(`/allele/${getIdentifier(allele)}`);
 				} else {
 					alleleDispatch({ type: 'RESET' });
+					crossReferences.setCrossReferences([]);
 				}
 			},
 			onError: (error) => {
@@ -91,6 +115,7 @@ export default function AlleleCreatePage() {
 	const handleClear = (event) => {
 		event.preventDefault();
 		alleleDispatch({ type: 'RESET' });
+		crossReferences.setCrossReferences([]);
 	};
 
 	const handleCancel = (event) => {
@@ -120,7 +145,9 @@ export default function AlleleCreatePage() {
 					</Splitter>
 				</StickyHeader>
 				<div className="pb-8">
-					<AlleleForm state={alleleState} dispatch={alleleDispatch} isVisible={isVisible} mode="create" />
+					<SubResourcesProvider value={{ crossReferences }}>
+						<AlleleForm state={alleleState} dispatch={alleleDispatch} isVisible={isVisible} mode="create" />
+					</SubResourcesProvider>
 				</div>
 				<StickyFooter>
 					<Splitter className="bg-primary-reverse border-none" gutterSize={0}>

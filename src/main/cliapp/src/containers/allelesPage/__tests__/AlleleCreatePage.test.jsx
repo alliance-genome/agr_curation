@@ -6,6 +6,7 @@ import { renderWithClient } from '../../../tools/jest/utils';
 
 const createAllele = vi.fn();
 const navigate = vi.fn();
+const replaceCrossReferencesForAllele = vi.fn();
 
 // msw cannot intercept this app's fetch based ApiClient, so stub the services directly.
 vi.mock('../../../service/AlleleService', () => ({
@@ -20,6 +21,14 @@ vi.mock('../../../service/AlleleService', () => ({
 vi.mock('../../../service/SearchService', () => ({
 	SearchService: class {
 		search = vi.fn(() => Promise.resolve({ results: [], totalResults: 0 }));
+		find = vi.fn(() => Promise.resolve({ results: [], totalResults: 0 }));
+	},
+}));
+
+vi.mock('../../../service/CrossReferenceService', () => ({
+	CrossReferenceService: class {
+		getCrossReferencesForAllele = vi.fn(() => Promise.resolve({ data: { entities: [] } }));
+		replaceCrossReferencesForAllele = replaceCrossReferencesForAllele;
 	},
 }));
 
@@ -43,8 +52,10 @@ const button = (name) => screen.getByRole('button', { name });
 describe('<AlleleCreatePage />', () => {
 	beforeEach(() => {
 		createAllele.mockReset();
-		createAllele.mockResolvedValue({ data: { entity: { curie: 'AGRKB:101000000000001' } } });
+		createAllele.mockResolvedValue({ data: { entity: { id: 4242, curie: 'AGRKB:101000000000001' } } });
 		navigate.mockReset();
+		replaceCrossReferencesForAllele.mockReset();
+		replaceCrossReferencesForAllele.mockResolvedValue({ data: { entities: [] } });
 		window.localStorage.removeItem('AlleleCreateFormSettings');
 	});
 
@@ -206,5 +217,47 @@ describe('<AlleleCreatePage />', () => {
 		await user.click(button('Cancel'));
 
 		expect(navigate).toHaveBeenCalledWith('/alleles');
+	});
+
+	// Cross references are written through their own sub-resource, so creating an allele that has
+	// them is two calls, and the second needs the id the first returns.
+	it('Saves cross references against the allele it just created', async () => {
+		const user = userEvent.setup();
+		await renderPage();
+
+		await user.click(button('Add Cross Reference'));
+		await user.click(button('Save & Close'));
+
+		await waitFor(() => expect(replaceCrossReferencesForAllele).toHaveBeenCalled());
+		expect(replaceCrossReferencesForAllele.mock.calls[0][0]).toBe(4242);
+		expect(navigate).toHaveBeenCalledWith('/allele/AGRKB:101000000000001');
+	});
+
+	it('Makes no second call when there are no cross references', async () => {
+		const user = userEvent.setup();
+		await renderPage();
+
+		await user.click(button('Save & Close'));
+
+		await waitFor(() => expect(navigate).toHaveBeenCalled());
+		expect(replaceCrossReferencesForAllele).not.toHaveBeenCalled();
+	});
+
+	// The allele exists by then, so the work is recoverable from its detail page. Navigating away
+	// would strand the curator's cross references with no way back to them.
+	it('Keeps the curator on the page when the cross references fail to save', async () => {
+		const user = userEvent.setup();
+		replaceCrossReferencesForAllele.mockRejectedValue({
+			response: { status: 400, statusText: 'Bad Request', data: { errorMessage: 'Could not update CrossReferences' } },
+		});
+
+		await renderPage();
+
+		await user.click(button('Add Cross Reference'));
+		await user.click(button('Save & Close'));
+
+		await waitFor(() => expect(replaceCrossReferencesForAllele).toHaveBeenCalled());
+		expect(navigate).not.toHaveBeenCalled();
+		expect(await screen.findByText(/Could not update CrossReferences/)).toBeInTheDocument();
 	});
 });
