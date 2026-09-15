@@ -36,7 +36,7 @@ public class CodingSequenceGenomicLocationAssociationService extends BaseEntityC
 	}
 
 
-	public List<Long> getIdsByDataProvider(Species species) {
+	public List<Long> getIdsBySpecies(Species species) {
 		String taxon = needsTaxonFilter(species.getDataProvider()) ? species.getTaxon().getCurie() : null;
 		return codingSequenceGenomicLocationAssociationDAO.findIdsByDataProvider(species.getDataProvider().getAbbreviation(), taxon);
 	}

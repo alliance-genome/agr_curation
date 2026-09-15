@@ -36,7 +36,7 @@ public class CodingSequenceService extends BaseEntityCrudService<CodingSequence,
 		setSQLDao(codingSequenceDAO);
 	}
 
-	public List<Long> getIdsByDataProvider(Species species) {
+	public List<Long> getIdsBySpecies(Species species) {
 		String taxon = needsTaxonFilter(species.getDataProvider()) ? species.getTaxon().getCurie() : null;
 		return codingSequenceDAO.findIdsByDataProvider(species.getDataProvider().getAbbreviation(), taxon);
 	}

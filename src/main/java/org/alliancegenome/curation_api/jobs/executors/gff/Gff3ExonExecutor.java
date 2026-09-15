@@ -79,9 +79,9 @@ public class Gff3ExonExecutor extends Gff3Executor {
 
 			boolean success = runLoad(bulkLoadFileHistory, gffHeaderData, preProcessedExonGffData, entityIdsAdded, locationIdsAdded, associationIdsAdded, species, assemblyId);
 			if (success) {
-				runCleanup(exonLocationService, bulkLoadFileHistory, species.getDisplayName(), exonLocationService.getIdsByDataProvider(species), locationIdsAdded, "GFF exon genomic location association");
-				runCleanup(transcriptExonService, bulkLoadFileHistory, species.getDisplayName(), transcriptExonService.getIdsByDataProvider(species), associationIdsAdded, "GFF transcript exon association");
-				runCleanup(exonService, bulkLoadFileHistory, species.getDisplayName(), exonService.getIdsByDataProvider(species), entityIdsAdded, "GFF exon");
+				runCleanup(exonLocationService, bulkLoadFileHistory, species.getDisplayName(), exonLocationService.getIdsBySpecies(species), locationIdsAdded, "GFF exon genomic location association");
+				runCleanup(transcriptExonService, bulkLoadFileHistory, species.getDisplayName(), transcriptExonService.getIdsBySpecies(species), associationIdsAdded, "GFF transcript exon association");
+				runCleanup(exonService, bulkLoadFileHistory, species.getDisplayName(), exonService.getIdsBySpecies(species), entityIdsAdded, "GFF exon");
 			}
 			bulkLoadFileHistory.finishLoad();
 			updateHistory(bulkLoadFileHistory);

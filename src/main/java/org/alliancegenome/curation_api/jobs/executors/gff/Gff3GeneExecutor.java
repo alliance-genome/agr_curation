@@ -75,7 +75,7 @@ public class Gff3GeneExecutor extends Gff3Executor {
 
 			boolean success = runLoad(bulkLoadFileHistory, gffHeaderData, preProcessedGeneGffData, locationIdsAdded, species, assemblyId);
 			if (success) {
-				runCleanup(geneLocationService, bulkLoadFileHistory, species.getDisplayName(), geneLocationService.getIdsByDataProvider(species), locationIdsAdded, "GFF gene genomic location association");
+				runCleanup(geneLocationService, bulkLoadFileHistory, species.getDisplayName(), geneLocationService.getIdsBySpecies(species), locationIdsAdded, "GFF gene genomic location association");
 			}
 			bulkLoadFileHistory.finishLoad();
 			updateHistory(bulkLoadFileHistory);

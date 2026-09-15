@@ -44,7 +44,7 @@ public class CuratedVariantGenomicLocationAssociationService extends BaseEntityC
 	}
 
 
-	public List<Long> getIdsByDataProvider(Species species) {
+	public List<Long> getIdsBySpecies(Species species) {
 		Map<String, Object> params = new HashMap<>();
 		params.put(EntityFieldConstants.VARIANT_ASSOCIATION_SUBJECT_DATA_PROVIDER, species.getDataProvider().getAbbreviation());
 		if (StringUtils.equals(species.getDataProvider().getAbbreviation(), "RGD")) {
