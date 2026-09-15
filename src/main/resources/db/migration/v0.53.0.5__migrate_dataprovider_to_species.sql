@@ -8,4 +8,6 @@ FROM species s
 WHERE bulkload.species_id IS NULL
 AND bulkload.name = s.displayname || ' GAF Load';
 
+UPDATE organization SET hasinferredallelephenotypeannotations = true WHERE abbreviation = 'MGI';
+
 ALTER TABLE bulkmanualload DROP COLUMN dataprovider;
