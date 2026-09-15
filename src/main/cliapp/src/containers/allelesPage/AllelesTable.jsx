@@ -25,6 +25,8 @@ import { FullNameEditDialog } from '../nameSlotAnnotations/dialogs/FullNameEditD
 import { FullNameReadOnlyDialog } from '../nameSlotAnnotations/dialogs/FullNameReadOnlyDialog';
 import { SecondaryIdsEditDialog } from './secondaryIds/SecondaryIdsEditDialog';
 import { SecondaryIdsReadOnlyDialog } from './secondaryIds/SecondaryIdsReadOnlyDialog';
+import { CrossReferencesEditDialog } from './crossReferences/CrossReferencesEditDialog';
+import { CrossReferencesReadOnlyDialog } from './crossReferences/CrossReferencesReadOnlyDialog';
 import { SynonymsEditDialog } from '../nameSlotAnnotations/dialogs/SynonymsEditDialog';
 import { SynonymsReadOnlyDialog } from '../nameSlotAnnotations/dialogs/SynonymsReadOnlyDialog';
 import { RelatedNotesEditDialog } from '../../components/RelatedNotesEditDialog';
@@ -42,7 +44,6 @@ import { TextDialogTemplate } from '../../components/Templates/dialog/TextDialog
 import { ListDialogTemplate } from '../../components/Templates/dialog/ListDialogTemplate';
 import { NestedListDialogTemplate } from '../../components/Templates/dialog/NestedListDialogTemplate';
 import { CountDialogTemplate } from '../../components/Templates/dialog/CountDialogTemplate';
-import { CrossReferencesTemplate } from '../../components/Templates/CrossReferencesTemplate';
 
 import { Toast } from 'primereact/toast';
 import { getDefaultTableState } from '../../service/TableStateService';
@@ -129,6 +130,13 @@ export const AllelesTable = () => {
 	});
 
 	const [secondaryIdsData, setSecondaryIdsData] = useState({
+		isInEdit: false,
+		dialog: false,
+		rowIndex: null,
+		mainRowProps: {},
+	});
+
+	const [crossReferencesData, setCrossReferencesData] = useState({
 		isInEdit: false,
 		dialog: false,
 		rowIndex: null,
@@ -420,6 +428,24 @@ export const AllelesTable = () => {
 		_secondaryIdsData['mainRowProps'] = editorOptions;
 		setSecondaryIdsData(() => ({
 			..._secondaryIdsData,
+		}));
+	};
+
+	const handleCrossReferencesOpen = (crossReferences) => {
+		setCrossReferencesData(() => ({
+			originalCrossReferences: crossReferences,
+			dialog: true,
+			isInEdit: false,
+		}));
+	};
+
+	const handleCrossReferencesOpenInEdit = (event, editorOptions, isInEdit) => {
+		setCrossReferencesData(() => ({
+			originalCrossReferences: editorOptions.rowData.crossReferences,
+			dialog: true,
+			isInEdit: isInEdit,
+			rowIndex: editorOptions.rowIndex,
+			mainRowProps: editorOptions,
 		}));
 	};
 
@@ -804,11 +830,35 @@ export const AllelesTable = () => {
 				filterConfig: FILTER_CONFIGS.alleleDataProviderFilterConfig,
 			},
 			{
-				field: 'crossReferences.displayName',
+				// field names the array the editor replaces, because editorCallback writes through
+				// ObjectUtils.mutateFieldData, which walks a dotted path instead of replacing it. columnKey
+				// keeps the string every persisted sort, filter, width and ordering setting was stored under.
+				field: 'crossReferences',
+				columnKey: 'crossReferences.displayName',
 				header: 'Cross References',
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.crossReferencesFilterConfig,
-				body: (rowData) => <CrossReferencesTemplate list={rowData.crossReferences} />,
+				body: (rowData) => (
+					<ListDialogTemplate
+						entities={rowData.crossReferences}
+						handleOpen={handleCrossReferencesOpen}
+						getTextField={(entity) => entity?.displayName}
+					/>
+				),
+				editor: (editorOptions) => {
+					const count = editorOptions.rowData.crossReferences?.length;
+					return (
+						<DialogTriggerEditor
+							editorOptions={editorOptions}
+							errorMessagesRef={errorMessagesRef}
+							onOpenInEdit={handleCrossReferencesOpenInEdit}
+							errorField="crossReferences"
+							displayText={count ? `Cross References(${count}) ` : null}
+							addText="Add Cross Reference"
+							tooltipObject="allele"
+						/>
+					);
+				},
 			},
 			{
 				field: 'updatedBy.uniqueId',
@@ -993,6 +1043,16 @@ export const AllelesTable = () => {
 			<SecondaryIdsReadOnlyDialog
 				originalSecondaryIdsData={secondaryIdsData}
 				setOriginalSecondaryIdsData={setSecondaryIdsData}
+			/>
+			<CrossReferencesEditDialog
+				originalCrossReferencesData={crossReferencesData}
+				setOriginalCrossReferencesData={setCrossReferencesData}
+				errorMessagesMainRow={errorMessages}
+				setErrorMessagesMainRow={setErrorMessages}
+			/>
+			<CrossReferencesReadOnlyDialog
+				originalCrossReferencesData={crossReferencesData}
+				setOriginalCrossReferencesData={setCrossReferencesData}
 			/>
 			<FunctionalImpactsEditDialog
 				originalFunctionalImpactsData={functionalImpactsData}
