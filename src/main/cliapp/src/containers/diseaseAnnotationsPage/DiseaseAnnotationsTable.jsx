@@ -384,9 +384,7 @@ export const DiseaseAnnotationsTable = () => {
 				},
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.daConditionRelationsHandleFilterConfig,
-				editor: (editorOptions) => (
-					<ConditionHandleTableEditor editorOptions={editorOptions} errorMessagesRef={errorMessagesRef} />
-				),
+				editor: (editorOptions) => <ConditionHandleTableEditor editorOptions={editorOptions} />,
 			},
 			{
 				field: 'conditionRelations',
