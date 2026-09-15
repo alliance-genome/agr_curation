@@ -14,6 +14,9 @@ export class DataLoadService extends BaseAuthService {
 		let endpoint = newLoad.type.toLowerCase();
 
 		newLoad.group = { id: newLoad.group };
+		if (newLoad.species) {
+			newLoad.species = { id: newLoad.species.id ?? newLoad.species };
+		}
 		for (const objectKey in newLoad) {
 			if (!newLoad[objectKey]) {
 				delete newLoad[objectKey];
@@ -26,6 +29,9 @@ export class DataLoadService extends BaseAuthService {
 		let endpoint = newLoad.type.toLowerCase();
 
 		newLoad.group = { id: newLoad.group };
+		if (newLoad.species) {
+			newLoad.species = { id: newLoad.species.id ?? newLoad.species };
+		}
 		for (const objectKey in newLoad) {
 			if (!newLoad[objectKey]) {
 				delete newLoad[objectKey];
@@ -184,9 +190,5 @@ export class DataLoadService extends BaseAuthService {
 			'ZFA',
 			'ZFS',
 		];
-	}
-
-	getDataProviders() {
-		return ['FB', 'MGI', 'HUMAN', 'RGD', 'SGD', 'WB', 'XB', 'ZFIN', 'SARSCoV2'];
 	}
 }
