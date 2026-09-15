@@ -277,7 +277,6 @@ export const DiseaseAnnotationsTable = () => {
 						field="relation"
 						options={getRelationTermSet(editorOptions)}
 						showClear={false}
-						errorMessagesRef={errorMessagesRef}
 					/>
 				),
 			},
@@ -432,7 +431,6 @@ export const DiseaseAnnotationsTable = () => {
 						editorOptions={editorOptions}
 						field="geneticSex"
 						options={geneticSexTerms}
-						errorMessagesRef={errorMessagesRef}
 						showClear={true}
 					/>
 				),
@@ -455,7 +453,6 @@ export const DiseaseAnnotationsTable = () => {
 						editorOptions={editorOptions}
 						field="diseaseQualifiers"
 						options={diseaseQualifiersTerms}
-						errorMessagesRef={errorMessagesRef}
 					/>
 				),
 			},
@@ -489,7 +486,6 @@ export const DiseaseAnnotationsTable = () => {
 						editorOptions={editorOptions}
 						field="annotationType"
 						options={annotationTypeTerms}
-						errorMessagesRef={errorMessagesRef}
 						showClear={true}
 					/>
 				),
@@ -506,7 +502,6 @@ export const DiseaseAnnotationsTable = () => {
 						editorOptions={editorOptions}
 						field="diseaseGeneticModifierRelation"
 						options={geneticModifierRelationTerms}
-						errorMessagesRef={errorMessagesRef}
 						showClear={true}
 					/>
 				),

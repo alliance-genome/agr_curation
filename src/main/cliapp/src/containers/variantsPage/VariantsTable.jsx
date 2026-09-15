@@ -147,7 +147,6 @@ export const VariantsTable = () => {
 						editorOptions={editorOptions}
 						field="variantStatus"
 						options={variantStatusTerms}
-						errorMessagesRef={errorMessagesRef}
 						showClear={true}
 					/>
 				),
