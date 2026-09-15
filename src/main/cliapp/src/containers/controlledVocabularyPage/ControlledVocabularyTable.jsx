@@ -206,9 +206,7 @@ export const ControlledVocabularyTable = () => {
 				header: 'Obsolete',
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.obsoleteFilterConfig,
-				editor: (editorOptions) => (
-					<BooleanTableEditor editorOptions={editorOptions} errorMessagesRef={errorMessagesRef} field="obsolete" />
-				),
+				editor: (editorOptions) => <BooleanTableEditor editorOptions={editorOptions} field="obsolete" />,
 				body: (rowData) => <BooleanTemplate value={rowData.obsolete} />,
 			},
 		],

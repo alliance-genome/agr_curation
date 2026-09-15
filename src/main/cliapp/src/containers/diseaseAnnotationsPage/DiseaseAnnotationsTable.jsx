@@ -640,9 +640,7 @@ export const DiseaseAnnotationsTable = () => {
 				body: (rowData) => <BooleanTemplate value={rowData.internal} />,
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.internalFilterConfig,
-				editor: (editorOptions) => (
-					<BooleanTableEditor editorOptions={editorOptions} field="internal" errorMessagesRef={errorMessagesRef} />
-				),
+				editor: (editorOptions) => <BooleanTableEditor editorOptions={editorOptions} field="internal" />,
 			},
 			{
 				field: 'obsolete',
@@ -650,9 +648,7 @@ export const DiseaseAnnotationsTable = () => {
 				body: (rowData) => <BooleanTemplate value={rowData.obsolete} />,
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.obsoleteFilterConfig,
-				editor: (editorOptions) => (
-					<BooleanTableEditor editorOptions={editorOptions} field="obsolete" errorMessagesRef={errorMessagesRef} />
-				),
+				editor: (editorOptions) => <BooleanTableEditor editorOptions={editorOptions} field="obsolete" />,
 			},
 		],
 		// eslint-disable-next-line react-hooks/exhaustive-deps
