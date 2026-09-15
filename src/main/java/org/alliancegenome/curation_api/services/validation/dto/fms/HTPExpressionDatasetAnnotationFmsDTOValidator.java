@@ -8,7 +8,7 @@ import java.util.Map;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.HTPExpressionDatasetAnnotationDAO;
-import org.alliancegenome.curation_api.model.entities.Species;
+import org.alliancegenome.curation_api.model.entities.Organization;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
 import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.model.entities.ExternalDataBaseEntity;
@@ -45,7 +45,7 @@ public class HTPExpressionDatasetAnnotationFmsDTOValidator {
 	@Inject CurieMintService curieMintService;
 	
 	@Transactional
-	public ObjectResponse<HTPExpressionDatasetAnnotation> validateHTPExpressionDatasetAnnotationFmsDTO(HTPExpressionDatasetAnnotationFmsDTO dto, Species species) throws ValidationException {
+	public ObjectResponse<HTPExpressionDatasetAnnotation> validateHTPExpressionDatasetAnnotationFmsDTO(HTPExpressionDatasetAnnotationFmsDTO dto, Organization dataProvider) throws ValidationException {
 		ObjectResponse<HTPExpressionDatasetAnnotation> htpAnnotationResponse = new ObjectResponse<>();
 
 		HTPExpressionDatasetAnnotation htpannotation;
@@ -166,7 +166,7 @@ public class HTPExpressionDatasetAnnotationFmsDTOValidator {
 			htpannotation.setRelatedNote(null);
 		}
 
-		htpannotation.setDataProvider(organizationService.getByAbbr(species.getDataProvider().getAbbreviation()).getEntity());
+		htpannotation.setDataProvider(organizationService.getByAbbr(dataProvider.getAbbreviation()).getEntity());
 
 		if (htpAnnotationResponse.hasErrors()) {
 			throw new ObjectValidationException(dto, htpAnnotationResponse.errorMessagesString());

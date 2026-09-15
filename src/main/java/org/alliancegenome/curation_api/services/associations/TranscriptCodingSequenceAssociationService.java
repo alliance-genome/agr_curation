@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import org.alliancegenome.curation_api.constants.EntityFieldConstants;
 import org.alliancegenome.curation_api.dao.PersonDAO;
 import org.alliancegenome.curation_api.dao.associations.TranscriptCodingSequenceAssociationDAO;
+import org.alliancegenome.curation_api.model.entities.Organization;
 import org.alliancegenome.curation_api.model.entities.Species;
 import org.alliancegenome.curation_api.model.entities.CodingSequence;
 import org.alliancegenome.curation_api.model.entities.Transcript;
@@ -38,13 +39,13 @@ public class TranscriptCodingSequenceAssociationService extends BaseEntityCrudSe
 
 
 	public List<Long> getIdsByDataProvider(Species species) {
-		String taxon = needsTaxonFilter(species) ? species.getTaxon().getCurie() : null;
+		String taxon = needsTaxonFilter(species.getDataProvider()) ? species.getTaxon().getCurie() : null;
 		return transcriptCodingSequenceAssociationDAO.findIdsByDataProvider(species.getDataProvider().getAbbreviation(), taxon);
 	}
 
-	private boolean needsTaxonFilter(Species species) {
-		return StringUtils.equals(species.getDataProvider().getAbbreviation(), "RGD")
-			|| StringUtils.equals(species.getDataProvider().getAbbreviation(), "XB");
+	private boolean needsTaxonFilter(Organization dataProvider) {
+		return StringUtils.equals(dataProvider.getAbbreviation(), "RGD")
+			|| StringUtils.equals(dataProvider.getAbbreviation(), "XB");
 	}
 
 	public ObjectResponse<TranscriptCodingSequenceAssociation> getLocationAssociation(Long transcriptId, Long assemblyComponentId) {

@@ -4,6 +4,7 @@ import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import org.alliancegenome.curation_api.dao.CodingSequenceDAO;
+import org.alliancegenome.curation_api.model.entities.Organization;
 import org.alliancegenome.curation_api.model.entities.Species;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.CodingSequence;
@@ -36,13 +37,13 @@ public class CodingSequenceService extends BaseEntityCrudService<CodingSequence,
 	}
 
 	public List<Long> getIdsByDataProvider(Species species) {
-		String taxon = needsTaxonFilter(species) ? species.getTaxon().getCurie() : null;
+		String taxon = needsTaxonFilter(species.getDataProvider()) ? species.getTaxon().getCurie() : null;
 		return codingSequenceDAO.findIdsByDataProvider(species.getDataProvider().getAbbreviation(), taxon);
 	}
 
-	private boolean needsTaxonFilter(Species species) {
-		return StringUtils.equals(species.getDataProvider().getAbbreviation(), "RGD")
-			|| StringUtils.equals(species.getDataProvider().getAbbreviation(), "XB");
+	private boolean needsTaxonFilter(Organization dataProvider) {
+		return StringUtils.equals(dataProvider.getAbbreviation(), "RGD")
+			|| StringUtils.equals(dataProvider.getAbbreviation(), "XB");
 	}
 
 	@Override

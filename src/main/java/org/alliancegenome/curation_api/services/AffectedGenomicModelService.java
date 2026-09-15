@@ -9,6 +9,7 @@ import java.util.Objects;
 
 import org.alliancegenome.curation_api.constants.EntityFieldConstants;
 import org.alliancegenome.curation_api.dao.AffectedGenomicModelDAO;
+import org.alliancegenome.curation_api.model.entities.Organization;
 import org.alliancegenome.curation_api.model.entities.Species;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.exceptions.ValidationException;
@@ -148,9 +149,9 @@ public class AffectedGenomicModelService extends SubmittedObjectCrudService<Affe
 		return agmDAO.findAgmsForSummaryByIds(ids);
 	}
 
-	public List<Long> getIdsByDataProvider(String species) {
+	public List<Long> getIdsByDataProvider(Organization dataProvider) {
 		Map<String, Object> params = new HashMap<>();
-		params.put(EntityFieldConstants.DATA_PROVIDER, species);
+		params.put(EntityFieldConstants.DATA_PROVIDER, dataProvider.getAbbreviation());
 		List<Long> ids = agmDAO.findIdsByParams(params);
 		ids.removeIf(Objects::isNull);
 		return ids;

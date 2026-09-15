@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import org.alliancegenome.curation_api.constants.EntityFieldConstants;
 import org.alliancegenome.curation_api.dao.PersonDAO;
 import org.alliancegenome.curation_api.dao.associations.TranscriptGenomicLocationAssociationDAO;
+import org.alliancegenome.curation_api.model.entities.Organization;
 import org.alliancegenome.curation_api.model.entities.Species;
 import org.alliancegenome.curation_api.model.entities.Transcript;
 import org.alliancegenome.curation_api.model.entities.associations.TranscriptGenomicLocationAssociation;
@@ -38,13 +39,13 @@ public class TranscriptGenomicLocationAssociationService extends BaseEntityCrudS
 
 
 	public List<Long> getIdsByDataProvider(Species species) {
-		String taxon = needsTaxonFilter(species) ? species.getTaxon().getCurie() : null;
+		String taxon = needsTaxonFilter(species.getDataProvider()) ? species.getTaxon().getCurie() : null;
 		return transcriptGenomicLocationAssociationDAO.findIdsByDataProvider(species.getDataProvider().getAbbreviation(), taxon);
 	}
 
-	private boolean needsTaxonFilter(Species species) {
-		return StringUtils.equals(species.getDataProvider().getAbbreviation(), "RGD")
-			|| StringUtils.equals(species.getDataProvider().getAbbreviation(), "XB");
+	private boolean needsTaxonFilter(Organization dataProvider) {
+		return StringUtils.equals(dataProvider.getAbbreviation(), "RGD")
+			|| StringUtils.equals(dataProvider.getAbbreviation(), "XB");
 	}
 
 	public ObjectResponse<TranscriptGenomicLocationAssociation> getLocationAssociation(Long transcriptId, Long assemblyComponentId) {

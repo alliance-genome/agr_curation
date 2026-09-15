@@ -9,6 +9,7 @@ import java.util.Objects;
 
 import org.alliancegenome.curation_api.constants.EntityFieldConstants;
 import org.alliancegenome.curation_api.dao.VariantDAO;
+import org.alliancegenome.curation_api.model.entities.Organization;
 import org.alliancegenome.curation_api.model.entities.Species;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.exceptions.ValidationException;
@@ -109,9 +110,9 @@ public class VariantService extends SubmittedObjectCrudService<Variant, VariantD
 		return null;
 	}
 
-	public List<Long> getIdsByDataProvider(String species) {
+	public List<Long> getIdsByDataProvider(Organization dataProvider) {
 		Map<String, Object> params = new HashMap<>();
-		params.put(EntityFieldConstants.DATA_PROVIDER, species);
+		params.put(EntityFieldConstants.DATA_PROVIDER, dataProvider.getAbbreviation());
 		List<Long> ids = variantDAO.findIdsByParams(params);
 		ids.removeIf(Objects::isNull);
 		return ids;

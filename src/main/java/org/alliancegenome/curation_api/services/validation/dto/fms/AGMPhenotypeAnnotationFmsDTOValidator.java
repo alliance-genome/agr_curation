@@ -65,7 +65,7 @@ public class AGMPhenotypeAnnotationFmsDTOValidator extends PhenotypeAnnotationFm
 		annotation.setInferredAllele(null);
 		annotation.setInferredGene(null);
 
-		ObjectResponse<AGMPhenotypeAnnotation> paResponse = validatePhenotypeAnnotation(annotation, dto, species);
+		ObjectResponse<AGMPhenotypeAnnotation> paResponse = validatePhenotypeAnnotation(annotation, dto, species.getDataProvider());
 		apaResponse.addErrorMessages(paResponse.getErrorMessages());
 		annotation = paResponse.getEntity();
 

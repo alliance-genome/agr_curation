@@ -43,7 +43,7 @@ public class HTPExpressionDatasetSampleAnnotationExecutor extends LoadFileExecut
 
 			Species species = bulkLoadFileHistory.getBulkLoad().getSpecies();
 			List<Long> htpAnnotationsIdsLoaded = new ArrayList<>();
-			List<Long> previousIds = htpExpressionDatasetSampleAnnotationService.getAnnotationIdsByDataProvider(species.getDisplayName());
+			List<Long> previousIds = htpExpressionDatasetSampleAnnotationService.getAnnotationIdsByDataProvider(species.getDataProvider());
 			
 			bulkLoadFileDAO.merge(bulkLoadFileHistory.getBulkLoadFile());
 

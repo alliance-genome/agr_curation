@@ -42,7 +42,7 @@ public class AlleleExecutor extends LoadFileExecutor {
 		List<Long> alleleIdsLoaded = new ArrayList<>();
 		List<Long> alleleIdsBefore = new ArrayList<>();
 		if (cleanUp) {
-			alleleIdsBefore.addAll(alleleService.getIdsByDataProvider(species.getDisplayName()));
+			alleleIdsBefore.addAll(alleleService.getIdsByDataProvider(species.getDataProvider()));
 			Log.debug("runLoad: Before: total " + alleleIdsBefore.size());
 		}
 

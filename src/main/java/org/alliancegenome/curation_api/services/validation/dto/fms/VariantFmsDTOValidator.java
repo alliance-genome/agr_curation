@@ -130,7 +130,7 @@ public class VariantFmsDTOValidator {
 
 		variant.setModInternalId(modInternalId);
 		variant.setVariantType(variantType);
-		variant.setDataProvider(organizationService.getByAbbr(species.getDisplayName()).getEntity());
+		variant.setDataProvider(organizationService.getByAbbr(species.getDataProvider().getAbbreviation()).getEntity());
 		variant.setTaxon(ncbiTaxonTermService.getByCurie(species.getTaxon().getCurie()).getEntity());
 
 		SOTerm consequence = null;

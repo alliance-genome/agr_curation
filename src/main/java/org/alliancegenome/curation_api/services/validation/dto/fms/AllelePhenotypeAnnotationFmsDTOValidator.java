@@ -62,7 +62,7 @@ public class AllelePhenotypeAnnotationFmsDTOValidator extends PhenotypeAnnotatio
 		annotation.setAssertedGenes(null);
 		annotation.setInferredGene(null);
 
-		ObjectResponse<AllelePhenotypeAnnotation> paResponse = validatePhenotypeAnnotation(annotation, dto, species);
+		ObjectResponse<AllelePhenotypeAnnotation> paResponse = validatePhenotypeAnnotation(annotation, dto, species.getDataProvider());
 		apaResponse.addErrorMessages(paResponse.getErrorMessages());
 		annotation = paResponse.getEntity();
 

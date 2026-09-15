@@ -42,7 +42,7 @@ public class VariantExecutor extends LoadFileExecutor {
 		List<Long> variantIdsLoaded = new ArrayList<>();
 		List<Long> variantIdsBefore = new ArrayList<>();
 		if (cleanUp) {
-			variantIdsBefore.addAll(variantService.getIdsByDataProvider(species.getDisplayName()));
+			variantIdsBefore.addAll(variantService.getIdsByDataProvider(species.getDataProvider()));
 			Log.debug("runLoad: Before: total " + variantIdsBefore.size());
 		}
 

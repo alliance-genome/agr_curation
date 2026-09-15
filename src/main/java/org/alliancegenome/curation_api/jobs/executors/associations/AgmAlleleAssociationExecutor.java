@@ -53,7 +53,7 @@ public class AgmAlleleAssociationExecutor extends LoadFileExecutor {
 		bulkLoadFileHistory.setCount(countType, associations.size());
 		updateHistory(bulkLoadFileHistory);
 
-		agmAlleleAssociationService.preloadAssociationKeys(species);
+		agmAlleleAssociationService.preloadAssociationKeys(species.getDataProvider());
 
 		boolean success = runLoad(agmAlleleAssociationService, bulkLoadFileHistory, species, associations, associationIdsLoaded, countType);
 		if (success && cleanUp) {

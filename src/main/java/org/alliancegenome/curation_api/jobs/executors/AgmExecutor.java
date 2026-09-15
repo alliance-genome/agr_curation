@@ -46,7 +46,7 @@ public class AgmExecutor extends LoadFileExecutor {
 		List<Long> agmIdsLoaded = new ArrayList<>();
 		List<Long> agmIdsBefore = new ArrayList<>();
 		if (cleanUp) {
-			agmIdsBefore.addAll(affectedGenomicModelService.getIdsByDataProvider(species.getDisplayName()));
+			agmIdsBefore.addAll(affectedGenomicModelService.getIdsByDataProvider(species.getDataProvider()));
 			Log.debug("runLoad: Before: total " + agmIdsBefore.size());
 		}
 

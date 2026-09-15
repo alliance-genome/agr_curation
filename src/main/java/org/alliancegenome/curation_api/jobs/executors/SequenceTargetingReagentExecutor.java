@@ -12,6 +12,7 @@ import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException.ObjectUpdateExceptionData;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.entities.SequenceTargetingReagent;
+import org.alliancegenome.curation_api.model.entities.Organization;
 import org.alliancegenome.curation_api.model.entities.Species;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.SequenceTargetingReagentFmsDTO;
@@ -57,7 +58,7 @@ public class SequenceTargetingReagentExecutor extends LoadFileExecutor {
 			idsAdded.put("SQTR", new ArrayList<Long>());
 			idsAdded.put("SQTRGeneAssociation", new ArrayList<Long>());
 
-			Map<String, List<Long>> previousIds = getPreviouslyLoadedIds(species);
+			Map<String, List<Long>> previousIds = getPreviouslyLoadedIds(species.getDataProvider());
 
 			bulkLoadFileDAO.merge(bulkLoadFileHistory.getBulkLoadFile());
 
@@ -79,11 +80,11 @@ public class SequenceTargetingReagentExecutor extends LoadFileExecutor {
 		}
 	}
 
-	private Map<String, List<Long>> getPreviouslyLoadedIds(Species species) {
+	private Map<String, List<Long>> getPreviouslyLoadedIds(Organization dataProvider) {
 		Map<String, List<Long>> previousIds = new HashMap<>();
 
-		previousIds.put("SQTR", sqtrService.getIdsByDataProvider(species.getDisplayName()));
-		previousIds.put("SQTRGeneAssociation", sqtrGeneAssociationService.getIdsByDataProvider(species.getDataProvider()));
+		previousIds.put("SQTR", sqtrService.getIdsByDataProvider(dataProvider));
+		previousIds.put("SQTRGeneAssociation", sqtrGeneAssociationService.getIdsByDataProvider(dataProvider));
 
 		return previousIds;
 	}

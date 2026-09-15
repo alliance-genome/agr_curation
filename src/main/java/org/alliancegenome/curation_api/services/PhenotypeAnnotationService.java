@@ -16,6 +16,7 @@ import org.alliancegenome.curation_api.dao.PersonDAO;
 import org.alliancegenome.curation_api.dao.CrossReferenceDAO;
 import org.alliancegenome.curation_api.dao.PhenotypeAnnotationDAO;
 import org.alliancegenome.curation_api.dao.base.BaseSQLDAO;
+import org.alliancegenome.curation_api.model.entities.Organization;
 import org.alliancegenome.curation_api.model.entities.Species;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
 import org.alliancegenome.curation_api.exceptions.ValidationException;
@@ -104,10 +105,10 @@ public class PhenotypeAnnotationService extends BaseAnnotationCrudService<Phenot
 		return annotationIds;
 	}
 
-	public void preloadUniqueIds(Species species) {
-		existingUniqueIds = phenotypeAnnotationDAO.findUniqueIdsByDataProvider(species.getDataProvider().getAbbreviation());
-		Map<String, Long> inferredGeneIds = phenotypeAnnotationDAO.findInferredGeneIdsByDataProvider(species.getDataProvider().getAbbreviation());
-		Map<String, Long> inferredAlleleIds = phenotypeAnnotationDAO.findInferredAlleleIdsByDataProvider(species.getDataProvider().getAbbreviation());
+	public void preloadUniqueIds(Organization dataProvider) {
+		existingUniqueIds = phenotypeAnnotationDAO.findUniqueIdsByDataProvider(dataProvider.getAbbreviation());
+		Map<String, Long> inferredGeneIds = phenotypeAnnotationDAO.findInferredGeneIdsByDataProvider(dataProvider.getAbbreviation());
+		Map<String, Long> inferredAlleleIds = phenotypeAnnotationDAO.findInferredAlleleIdsByDataProvider(dataProvider.getAbbreviation());
 		genePhenotypeAnnotationFmsDtoValidator.setExistingUniqueIds(existingUniqueIds);
 		allelePhenotypeAnnotationFmsDtoValidator.setExistingUniqueIds(existingUniqueIds);
 		allelePhenotypeAnnotationFmsDtoValidator.setInferredGeneIds(inferredGeneIds);
