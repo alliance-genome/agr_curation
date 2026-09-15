@@ -62,7 +62,7 @@ public class IT_2002_YeastStrainSpeciesResolutionITCase extends BaseITCase {
 
 	private static final String MOUSE_TAXON = "NCBITaxon:10090";
 	// A real taxon that is neither curated in `species` nor in the yeast strain list.
-	private static final String UNCURATED_TAXON = "NCBITaxon:7955";
+	private static final String UNCURATED_TAXON = "NCBITaxon:9615";
 
 	/** The SGD strain taxa this test loads AGMs for, with their NCBI scientific names. */
 	private static final Map<String, String> STRAIN_TAXA = new LinkedHashMap<>() {
@@ -107,6 +107,7 @@ public class IT_2002_YeastStrainSpeciesResolutionITCase extends BaseITCase {
 		for (Map.Entry<String, String> strainTaxon : STRAIN_TAXA.entrySet()) {
 			createNCBITaxonTerm(strainTaxon.getKey(), strainTaxon.getValue(), false);
 		}
+		createNCBITaxonTerm(UNCURATED_TAXON, "Canis lupus familiaris", false);
 
 		// The IT database ships with no `species` rows: the v0.29.0.2 seed is guarded on
 		// ncbitaxonterm already being populated, which it is not at migration time. Create the

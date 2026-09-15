@@ -1,7 +1,7 @@
 package org.alliancegenome.curation_api.services;
 
 import org.alliancegenome.curation_api.dao.GenomicEntityDAO;
-import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
+import org.alliancegenome.curation_api.model.entities.Species;
 import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.model.entities.GenomicEntity;
 import org.alliancegenome.curation_api.model.ingest.dto.GenomicEntityDTO;
@@ -30,7 +30,7 @@ public class GenomicEntityService extends SubmittedObjectCrudService<GenomicEnti
 	}
 
 	@Override
-	public ObjectResponse<GenomicEntity> upsert(GenomicEntityDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
+	public ObjectResponse<GenomicEntity> upsert(GenomicEntityDTO dto, Species species) throws ValidationException {
 		return null;
 	}
 

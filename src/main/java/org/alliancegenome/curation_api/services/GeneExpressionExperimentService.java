@@ -10,7 +10,7 @@ import java.util.Set;
 import org.alliancegenome.curation_api.constants.EntityFieldConstants;
 import org.alliancegenome.curation_api.dao.GeneExpressionAnnotationDAO;
 import org.alliancegenome.curation_api.dao.GeneExpressionExperimentDAO;
-import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
+import org.alliancegenome.curation_api.model.entities.Species;
 import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.GeneExpressionAnnotation;
@@ -46,17 +46,17 @@ public class GeneExpressionExperimentService extends BaseEntityCrudService<GeneE
 		setSQLDao(geneExpressionExperimentDAO);
 	}
 
-	public List<Long> getExperimentIdsByDataProvider(BackendBulkDataProvider dataProvider) {
+	public List<Long> getExperimentIdsBySpecies(Species species) {
 		Map<String, Object> params = new HashMap<>();
-		params.put(EntityFieldConstants.DATA_PROVIDER, dataProvider.sourceOrganization);
-		if (StringUtils.equals(dataProvider.sourceOrganization, "RGD") || StringUtils.equals(dataProvider.sourceOrganization, "XB")) {
-			params.put(EntityFieldConstants.EXP_EXPERIMENT_TAXON, dataProvider.canonicalTaxonCurie);
+		params.put(EntityFieldConstants.DATA_PROVIDER, species.getDataProvider().getAbbreviation());
+		if (StringUtils.equals(species.getDataProvider().getAbbreviation(), "RGD") || StringUtils.equals(species.getDataProvider().getAbbreviation(), "XB")) {
+			params.put(EntityFieldConstants.EXP_EXPERIMENT_TAXON, species.getTaxon().getCurie());
 		}
 		return geneExpressionExperimentDAO.findIdsByParams(params);
 	}
 
 	@Transactional
-	public GeneExpressionExperiment upsert(String experimentId, Set<String> geneExpressionAnnotationIds, BackendBulkDataProvider dataProvider, Set<CrossReferenceFmsDTO> crossReferences) throws ValidationException {
+	public GeneExpressionExperiment upsert(String experimentId, Set<String> geneExpressionAnnotationIds, Species species, Set<CrossReferenceFmsDTO> crossReferences) throws ValidationException {
 		GeneExpressionExperiment geneExpressionExperiment;
 		Set<GeneExpressionAnnotation> annotations;
 
@@ -72,7 +72,7 @@ public class GeneExpressionExperimentService extends BaseEntityCrudService<GeneE
 			geneExpressionExperiment = new GeneExpressionExperiment();
 			geneExpressionExperiment.setUniqueId(experimentId);
 		}
-		Organization organization = organizationService.getByAbbr(dataProvider.sourceOrganization).getEntity();
+		Organization organization = organizationService.getByAbbr(species.getDataProvider().getAbbreviation()).getEntity();
 		geneExpressionExperiment.setDataProvider(organization);
 		geneExpressionExperiment.setEntityAssayed(geneService.findByIdentifierString(geneId));
 		geneExpressionExperiment.setSingleReference(referenceService.getByCurie(referenceId).getEntity());
@@ -85,7 +85,7 @@ public class GeneExpressionExperimentService extends BaseEntityCrudService<GeneE
 			annotations = new HashSet<>();
 		}
 
-		if (dataProvider.name().equals("MGI") || dataProvider.name().equals("WB")) {
+		if (species.getDisplayName().equals("MGI") || species.getDisplayName().equals("WB")) {
 			if (geneExpressionExperiment.getCrossReferences() != null) {
 				geneExpressionExperiment.getCrossReferences().clear();
 			} else {

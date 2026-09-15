@@ -11,7 +11,7 @@ import java.util.Set;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.GeneExpressionAnnotationDAO;
-import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
+import org.alliancegenome.curation_api.model.entities.Species;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
 import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.model.entities.AnatomicalSite;
@@ -70,7 +70,7 @@ public class GeneExpressionAnnotationFmsDTOValidator {
 	@Inject OntologyTermService ontologyTermService;
 	@Inject CrossReferenceFmsDTOValidator crossReferenceFmsDTOValidator;
 
-	public ObjectResponse<GeneExpressionAnnotation> validateAnnotation(ConsolidatedGeneExpressionFmsDTO consolidatedGeneExpressionFmsDTO, BackendBulkDataProvider dataProvider, Map<String, Set<String>> experiments, Map<String, Set<CrossReferenceFmsDTO>> crossReferences) throws ValidationException {
+	public ObjectResponse<GeneExpressionAnnotation> validateAnnotation(ConsolidatedGeneExpressionFmsDTO consolidatedGeneExpressionFmsDTO, Species species, Map<String, Set<String>> experiments, Map<String, Set<CrossReferenceFmsDTO>> crossReferences) throws ValidationException {
 		ObjectResponse<GeneExpressionAnnotation> response = new ObjectResponse<>();
 		GeneExpressionAnnotation geneExpressionAnnotation = new GeneExpressionAnnotation();
 		String uniqueId = "empty";
@@ -95,7 +95,7 @@ public class GeneExpressionAnnotationFmsDTOValidator {
 			geneExpressionAnnotation.setExpressionPattern(new ExpressionPattern());
 		}
 
-		if (dataProvider.name().equals("ZFIN")) {
+		if (species.getDisplayName().equals("ZFIN")) {
 			if (ObjectUtils.isNotEmpty(consolidatedGeneExpressionFmsDTO.getCrossReferences())) {
 				Set<CrossReference> validatedCrossRefs = new HashSet<>();
 				for (CrossReferenceFmsDTO crossRefDto : consolidatedGeneExpressionFmsDTO.getCrossReferences()) {
@@ -168,7 +168,7 @@ public class GeneExpressionAnnotationFmsDTOValidator {
 			geneExpressionAnnotation.getExpressionPattern().setWhenExpressed(temporalContext);
 		}
 
-		geneExpressionAnnotation.setDataProvider(organizationService.getByAbbr(dataProvider.sourceOrganization).getEntity());
+		geneExpressionAnnotation.setDataProvider(organizationService.getByAbbr(species.getDataProvider().getAbbreviation()).getEntity());
 		geneExpressionAnnotation.setRelation(vocabularyTermService.getTermInVocabulary(VocabularyConstants.GENE_EXPRESSION_VOCABULARY, VocabularyConstants.GENE_EXPRESSION_RELATION_TERM).getEntity());
 		geneExpressionAnnotation.setObsolete(false);
 		geneExpressionAnnotation.setInternal(false);
@@ -184,7 +184,7 @@ public class GeneExpressionAnnotationFmsDTOValidator {
 			expressionIds.add(uniqueId);
 			experiments.put(experimentId, expressionIds);
 		}
-		if (dataProvider.name().equals("WB") || dataProvider.name().equals("MGI")) {
+		if (species.getDisplayName().equals("WB") || species.getDisplayName().equals("MGI")) {
 			if (crossReferences.containsKey(experimentId)) {
 				crossReferences.get(experimentId).addAll(consolidatedGeneExpressionFmsDTO.getCrossReferences());
 			} else {

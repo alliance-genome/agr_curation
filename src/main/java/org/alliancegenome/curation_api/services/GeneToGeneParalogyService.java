@@ -6,7 +6,7 @@ import java.util.Map;
 
 import org.alliancegenome.curation_api.constants.EntityFieldConstants;
 import org.alliancegenome.curation_api.dao.GeneToGeneParalogyDAO;
-import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
+import org.alliancegenome.curation_api.model.entities.Species;
 import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.interfaces.crud.BaseUpsertServiceInterface;
 import org.alliancegenome.curation_api.model.entities.GeneToGeneParalogy;
@@ -33,16 +33,16 @@ public class GeneToGeneParalogyService extends BaseEntityCrudService<GeneToGeneP
 	}
 
 	@Override
-	public ObjectResponse<GeneToGeneParalogy> upsert(ParalogyFmsDTO paralogyData, BackendBulkDataProvider backendBulkDataProvider) throws ValidationException {
+	public ObjectResponse<GeneToGeneParalogy> upsert(ParalogyFmsDTO paralogyData, Species species) throws ValidationException {
 		return paralogyFmsDtoValidator.validateParalogyFmsDTO(paralogyData);
 	}
 
-	public List<Long> getAllParalogyPairIdsBySubjectGeneDataProvider(BackendBulkDataProvider dataProvider) {
+	public List<Long> getAllParalogyPairIdsBySubjectGeneDataProvider(Species species) {
 		Map<String, Object> params = new HashMap<>();
-		params.put(EntityFieldConstants.SUBJECT_GENE_DATA_PROVIDER, dataProvider.sourceOrganization);
+		params.put(EntityFieldConstants.SUBJECT_GENE_DATA_PROVIDER, species.getDataProvider().getAbbreviation());
 
-		if (StringUtils.equals(dataProvider.sourceOrganization, "RGD") || StringUtils.equals(dataProvider.sourceOrganization, "XB")) {
-			params.put(EntityFieldConstants.SUBJECT_GENE_TAXON, dataProvider.canonicalTaxonCurie);
+		if (StringUtils.equals(species.getDataProvider().getAbbreviation(), "RGD") || StringUtils.equals(species.getDataProvider().getAbbreviation(), "XB")) {
+			params.put(EntityFieldConstants.SUBJECT_GENE_TAXON, species.getTaxon().getCurie());
 		}
 
 		List<Long> annotationIds = geneToGeneParalogyDAO.findIdsByParams(params);

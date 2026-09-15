@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.dao.SequenceTargetingReagentDAO;
-import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.SequenceTargetingReagent;
@@ -29,7 +28,7 @@ public class SequenceTargetingReagentGeneAssociationFmsDTOValidator {
 	@Inject
 	GeneService geneService;
 
-	public List<SequenceTargetingReagentGeneAssociation> validateSQTRGeneAssociationFmsDTO(SequenceTargetingReagentFmsDTO dto, BackendBulkDataProvider beDataProvider) throws ObjectValidationException {
+	public List<SequenceTargetingReagentGeneAssociation> validateSQTRGeneAssociationFmsDTO(SequenceTargetingReagentFmsDTO dto) throws ObjectValidationException {
 		List<SequenceTargetingReagentGeneAssociation> strGeneAssociations = new ArrayList<>();
 		ObjectResponse<SequenceTargetingReagent> sqtrResponse = new ObjectResponse<>();
 
