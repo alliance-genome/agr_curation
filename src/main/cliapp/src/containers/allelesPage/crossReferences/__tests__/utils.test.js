@@ -1,11 +1,34 @@
+const { getResourceDescriptor } = vi.hoisted(() => ({ getResourceDescriptor: vi.fn() }));
+
+vi.mock('../../../../service/ResourceDescriptorService', () => ({
+	ResourceDescriptorService: class {
+		getResourceDescriptor = getResourceDescriptor;
+	},
+}));
+
 import {
 	applyCrossReferenceFieldChange,
 	buildNewCrossReference,
 	derivePrefix,
 	findRow,
 	seedResourceDescriptor,
+	seedResourceDescriptors,
 	stripUiFields,
 } from '../utils';
+
+const rowWithPage = (pageId, descriptorId) => ({
+	referencedCurie: `PMID:${pageId}`,
+	resourceDescriptorPage: { id: pageId, name: 'default', resourceDescriptor: { id: descriptorId, prefix: 'PMID' } },
+});
+
+const descriptorWithPages = (id) => ({
+	id,
+	prefix: 'PMID',
+	resourcePages: [
+		{ id: 1, name: 'default' },
+		{ id: 2, name: 'gene' },
+	],
+});
 
 describe('buildNewCrossReference', () => {
 	it('Starts blank', () => {
@@ -68,6 +91,55 @@ describe('seedResourceDescriptor', () => {
 		seedResourceDescriptor(crossReference);
 
 		expect(crossReference).not.toHaveProperty('resourceDescriptor');
+	});
+});
+
+describe('seedResourceDescriptors', () => {
+	beforeEach(() => {
+		getResourceDescriptor.mockReset();
+	});
+
+	it('Replaces the nested descriptor with the loaded one, so the page dropdown has options', async () => {
+		getResourceDescriptor.mockResolvedValue({ data: { entity: descriptorWithPages(9) } });
+
+		const [row] = await seedResourceDescriptors([rowWithPage(1, 9)]);
+
+		expect(row.resourceDescriptor.resourcePages).toHaveLength(2);
+		expect(row.resourceDescriptorPage.id).toBe(1);
+	});
+
+	it('Reads each descriptor once however many rows share it', async () => {
+		getResourceDescriptor.mockResolvedValue({ data: { entity: descriptorWithPages(9) } });
+
+		const rows = await seedResourceDescriptors([rowWithPage(1, 9), rowWithPage(2, 9), rowWithPage(3, 12)]);
+
+		expect(getResourceDescriptor).toHaveBeenCalledTimes(2);
+		expect(getResourceDescriptor.mock.calls.map((call) => call[0]).sort((a, b) => a - b)).toEqual([9, 12]);
+		expect(rows).toHaveLength(3);
+	});
+
+	it('Keeps the nested descriptor when the read fails, rather than losing the row', async () => {
+		vi.spyOn(console, 'warn').mockImplementation(() => {});
+		getResourceDescriptor.mockRejectedValue(new Error('network'));
+
+		const [row] = await seedResourceDescriptors([rowWithPage(1, 9)]);
+
+		expect(row.resourceDescriptor).toEqual({ id: 9, prefix: 'PMID' });
+		expect(row.resourceDescriptorPage.id).toBe(1);
+
+		console.warn.mockRestore();
+	});
+
+	it('Reads nothing when no row carries a page', async () => {
+		const rows = await seedResourceDescriptors([{ referencedCurie: 'PMID:1' }]);
+
+		expect(getResourceDescriptor).not.toHaveBeenCalled();
+		expect(rows[0].resourceDescriptor).toBeNull();
+	});
+
+	it('Tolerates there being no rows', async () => {
+		expect(await seedResourceDescriptors(undefined)).toEqual([]);
+		expect(getResourceDescriptor).not.toHaveBeenCalled();
 	});
 });
 

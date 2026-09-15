@@ -1,4 +1,5 @@
 import { addDataKey } from '../utils';
+import { ResourceDescriptorService } from '../../../service/ResourceDescriptorService';
 
 /**
  * An empty cross reference, ready to be edited in the cross references table.
@@ -42,9 +43,9 @@ export const derivePrefix = (referencedCurie) => {
  * Lifts the descriptor a stored page belongs to onto the row itself, where the descriptor column
  * reads it.
  *
- * The descriptor arriving this way carries no `resourcePages`: those are on the resource descriptor
- * views, and a cross reference is serialized without them. Its pages become available once a
- * descriptor is chosen from the autosuggest, which reads a view that does carry them.
+ * The descriptor arriving this way carries no `resourcePages`: a cross reference is serialized
+ * without them, so the page dropdown has nothing to offer until they are fetched. Use
+ * `seedResourceDescriptors` to load rows for editing; this is the shape it builds on.
  *
  * @param {Object} crossReference
  * @returns {Object} a copy carrying `resourceDescriptor`; the argument is not modified
@@ -53,6 +54,44 @@ export const seedResourceDescriptor = (crossReference) => ({
 	...crossReference,
 	resourceDescriptor: crossReference.resourceDescriptorPage?.resourceDescriptor ?? null,
 });
+
+/**
+ * Seeds each row's descriptor and replaces it with the fully loaded one, so the page dropdown can
+ * offer that descriptor's other pages straight away rather than only after the curator re-picks it.
+ *
+ * Each distinct descriptor is read once however many rows share it. A descriptor that cannot be read
+ * keeps the one nested in the cross reference, which still names the descriptor and only costs that
+ * row its page choices - a failure here must not stop the rows loading.
+ *
+ * @param {Array<Object>} crossReferences
+ * @returns {Promise<Array<Object>>} the rows, each carrying `resourceDescriptor`
+ */
+export const seedResourceDescriptors = async (crossReferences) => {
+	const seededRows = (crossReferences ?? []).map(seedResourceDescriptor);
+
+	const descriptorIds = [...new Set(seededRows.map((row) => row.resourceDescriptor?.id).filter((id) => id != null))];
+	if (descriptorIds.length === 0) return seededRows;
+
+	const resourceDescriptorService = new ResourceDescriptorService();
+	const loadedDescriptors = new Map();
+
+	await Promise.all(
+		descriptorIds.map(async (descriptorId) => {
+			try {
+				const response = await resourceDescriptorService.getResourceDescriptor(descriptorId);
+				const descriptor = response?.data?.entity;
+				if (descriptor) loadedDescriptors.set(descriptorId, descriptor);
+			} catch (error) {
+				console.warn(`Could not load resource descriptor ${descriptorId}`, error);
+			}
+		})
+	);
+
+	return seededRows.map((row) => {
+		const loadedDescriptor = loadedDescriptors.get(row.resourceDescriptor?.id);
+		return loadedDescriptor ? { ...row, resourceDescriptor: loadedDescriptor } : row;
+	});
+};
 
 /**
  * Applies one field edit, keeping the page consistent with the descriptor.
