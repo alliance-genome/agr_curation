@@ -10,11 +10,12 @@ import { IdTemplate } from '../../components/Templates/IdTemplate';
 import { StringTemplate } from '../../components/Templates/StringTemplate';
 import { StringListTemplate } from '../../components/Templates/StringListTemplate';
 import { BooleanTemplate } from '../../components/Templates/BooleanTemplate';
-import { OntologyTermTemplate } from '../../components/Templates/OntologyTermTemplate';
 import { GenomicEntityListTemplate } from '../../components/Templates/genomicEntity/GenomicEntityListTemplate';
 import { SingleReferenceTemplate } from '../../components/Templates/reference/SingleReferenceTemplate';
 import { TruncatedReferencesTemplate } from '../../components/Templates/reference/TruncatedReferencesTemplate';
 import { CrossReferencesTemplate } from '../../components/Templates/CrossReferencesTemplate';
+import { CountDialogTemplate } from '../../components/Templates/dialog/CountDialogTemplate';
+import { RelatedNotesReadOnlyDialog } from '../../components/RelatedNotesReadOnlyDialog';
 
 import { SearchService } from '../../service/SearchService';
 import { Endpoints } from '../../constants/Endpoints';
@@ -30,11 +31,18 @@ export const AntibodiesTable = () => {
 	const toast_topleft = useRef(null);
 	const toast_topright = useRef(null);
 
-	const relatedNotesTemplate = (rowData) => {
-		if (rowData?.relatedNotes && rowData.relatedNotes.length > 0) {
-			return <StringTemplate string={`Notes (${rowData.relatedNotes.length})`} />;
-		}
-		return null;
+	const [relatedNotesData, setRelatedNotesData] = useState({
+		originalRelatedNotes: [],
+		dialog: false,
+		isInEdit: false,
+	});
+
+	const handleRelatedNotesOpen = (relatedNotes) => {
+		setRelatedNotesData({
+			originalRelatedNotes: relatedNotes,
+			dialog: true,
+			isInEdit: false,
+		});
 	};
 
 	const columns = useMemo(
@@ -82,20 +90,28 @@ export const AntibodiesTable = () => {
 				filterConfig: FILTER_CONFIGS.nameFilterConfig,
 			},
 			{
-				field: 'taxon.name',
-				columnKey: 'taxon.name',
-				header: 'Taxon',
+				field: 'hostTaxonTerm.name',
+				columnKey: 'hostTaxonTerm.name',
+				// Displayed text is definition (falling back to name), so sort by that field too --
+				// otherwise clicking the header sorts by the raw NCBITaxon curie, not what's shown.
+				sortField: 'hostTaxonTerm.definition',
+				header: 'Host Taxon',
 				sortable: true,
-				body: (rowData) => <OntologyTermTemplate term={rowData.taxon} />,
-				filterConfig: FILTER_CONFIGS.taxonFilterConfig,
+				body: (rowData) => <StringTemplate string={rowData.hostTaxonTerm?.definition || rowData.hostTaxonTerm?.name} />,
+				filterConfig: FILTER_CONFIGS.antibodyHostTaxonFilterConfig,
 			},
 			{
-				field: 'antigenTaxon.name',
-				columnKey: 'antigenTaxon.name',
+				field: 'antigenTaxonTerm.name',
+				columnKey: 'antigenTaxonTerm.name',
+				// Displayed text is definition (falling back to name), so sort by that field too --
+				// otherwise clicking the header sorts by the raw NCBITaxon curie, not what's shown.
+				sortField: 'antigenTaxonTerm.definition',
 				header: 'Antigen Taxon',
 				sortable: true,
-				body: (rowData) => <OntologyTermTemplate term={rowData.antigenTaxon} />,
-				filterConfig: FILTER_CONFIGS.antigenTaxonFilterConfig,
+				body: (rowData) => (
+					<StringTemplate string={rowData.antigenTaxonTerm?.definition || rowData.antigenTaxonTerm?.name} />
+				),
+				filterConfig: FILTER_CONFIGS.antibodyAntigenTaxonFilterConfig,
 			},
 			{
 				field: 'clonality.name',
@@ -146,7 +162,9 @@ export const AntibodiesTable = () => {
 				field: 'relatedNotes.freeText',
 				header: 'Related Notes',
 				sortable: false,
-				body: relatedNotesTemplate,
+				body: (rowData) => (
+					<CountDialogTemplate entities={rowData.relatedNotes} handleOpen={handleRelatedNotesOpen} text={'Notes'} />
+				),
 				filterConfig: FILTER_CONFIGS.relatedNotesFilterConfig,
 			},
 			{
@@ -231,32 +249,38 @@ export const AntibodiesTable = () => {
 	});
 
 	return (
-		<div className="card">
-			<Toast ref={toast_topleft} position="top-left" />
-			<Toast ref={toast_topright} position="top-right" />
-			<GenericDataTable
-				endpoint={SEARCH_ENDPOINT}
-				tableName="Antibodies"
-				entities={antibodies}
-				setEntities={setAntibodies}
-				totalRecords={totalRecords}
-				setTotalRecords={setTotalRecords}
-				tableState={tableState}
-				setTableState={setTableState}
-				columns={columns}
-				defaultColumnWidth={DEFAULT_COLUMN_WIDTH}
-				dataKey="curie"
-				isEditable={false}
-				isInEditMode={isInEditMode}
-				setIsInEditMode={setIsInEditMode}
-				toasts={{ toast_topleft, toast_topright }}
-				errorObject={{ errorMessages, setErrorMessages }}
-				deletionEnabled={false}
-				deprecateOption={false}
-				modReset={false}
-				duplicationEnabled={false}
-				fetching={isFetching || isLoading}
+		<>
+			<div className="card">
+				<Toast ref={toast_topleft} position="top-left" />
+				<Toast ref={toast_topright} position="top-right" />
+				<GenericDataTable
+					endpoint={SEARCH_ENDPOINT}
+					tableName="Antibodies"
+					entities={antibodies}
+					setEntities={setAntibodies}
+					totalRecords={totalRecords}
+					setTotalRecords={setTotalRecords}
+					tableState={tableState}
+					setTableState={setTableState}
+					columns={columns}
+					defaultColumnWidth={DEFAULT_COLUMN_WIDTH}
+					dataKey="curie"
+					isEditable={false}
+					isInEditMode={isInEditMode}
+					setIsInEditMode={setIsInEditMode}
+					toasts={{ toast_topleft, toast_topright }}
+					errorObject={{ errorMessages, setErrorMessages }}
+					deletionEnabled={false}
+					deprecateOption={false}
+					modReset={false}
+					duplicationEnabled={false}
+					fetching={isFetching || isLoading}
+				/>
+			</div>
+			<RelatedNotesReadOnlyDialog
+				originalRelatedNotesData={relatedNotesData}
+				setOriginalRelatedNotesData={setRelatedNotesData}
 			/>
-		</div>
+		</>
 	);
 };

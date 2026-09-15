@@ -10,6 +10,7 @@ import org.alliancegenome.curation_api.model.entities.Variant;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.SOTerm;
 import org.alliancegenome.curation_api.response.ObjectResponse;
+import org.alliancegenome.curation_api.services.CurieMintService;
 
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
@@ -18,6 +19,7 @@ import jakarta.inject.Inject;
 public class VariantValidator extends GenomicEntityValidator<Variant> {
 
 	@Inject VariantDAO variantDAO;
+	@Inject CurieMintService curieMintService;
 	@Inject CrossReferenceDAO crossReferenceDAO;
 	@Inject SoTermDAO soTermDAO;
 
@@ -73,6 +75,19 @@ public class VariantValidator extends GenomicEntityValidator<Variant> {
 			throw new ApiErrorException(response);
 		}
 
+		// SCRUM-6077: mint an AGRKB curie for a NEW variant that has none, set before persist so the
+		// curie is written by the same insert. A curator-supplied curie is left alone.
+		//
+		// The getId() == null guard is load-bearing, as it is for alleles, AGMs and genes:
+		// validateVariant is shared by validateVariantCreate and validateVariantUpdate, and the
+		// field-copy chain above (validateGenomicEntityFields -> ... ->
+		// SubmittedObjectValidator.validateSubmittedObjectFields) assigns
+		// dbEntity.setCurie(handleStringField(uiEntity.getCurie())) unconditionally. So an update whose
+		// payload omits curie nulls it; without this guard the mint would then issue a fresh curie and
+		// the variant's AGRKB id would silently change on every such update.
+		if (dbEntity.getId() == null) {
+			curieMintService.mintCurieIfAbsent(dbEntity);
+		}
 		dbEntity = variantDAO.persist(dbEntity);
 
 		return dbEntity;
