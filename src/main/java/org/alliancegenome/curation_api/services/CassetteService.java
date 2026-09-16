@@ -1,5 +1,12 @@
 package org.alliancegenome.curation_api.services;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+
+import org.alliancegenome.curation_api.constants.EntityFieldConstants;
 import org.alliancegenome.curation_api.dao.CassetteDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ValidationException;
@@ -14,6 +21,7 @@ import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
+import net.nilosplace.process_display.ProcessDisplayHelper;
 
 /**
  * SCRUM-6535.
@@ -29,6 +37,7 @@ public class CassetteService extends SubmittedObjectCrudService<Cassette, Casset
 	@Inject CassetteDAO cassetteDAO;
 	@Inject CassetteDTOValidator cassetteDtoValidator;
 	@Inject CassetteValidator cassetteValidator;
+	@Inject ReferenceService referenceService;
 
 	@Override
 	@PostConstruct
@@ -55,4 +64,28 @@ public class CassetteService extends SubmittedObjectCrudService<Cassette, Casset
 		return new ObjectResponse<>(cassetteDAO.persist(dbEntity));
 	}
 
+	/** Ids of the cassettes a given MOD owns, for the load's cleanup pass. */
+	public List<Long> getCassetteIdsByDataProvider(BackendBulkDataProvider dataProvider) {
+		Map<String, Object> params = new HashMap<>();
+		params.put(EntityFieldConstants.DATA_PROVIDER, dataProvider.sourceOrganization);
+		List<Long> ids = cassetteDAO.findIdsByParams(params);
+		ids.removeIf(Objects::isNull);
+
+		return ids;
+	}
+
+	/**
+	 * Resolves every reference the file names up front, so a load does not make one literature
+	 * service call per record.
+	 */
+	public void preLoadReferences(Set<String> refList) {
+		referenceService.cacheReferences();
+		ProcessDisplayHelper ph = new ProcessDisplayHelper();
+		ph.startProcess("Pre Load References", refList.size());
+		for (String curie : refList) {
+			referenceService.retrieveFromDbOrLiteratureService(curie);
+			ph.progressProcess();
+		}
+		ph.finishProcess();
+	}
 }

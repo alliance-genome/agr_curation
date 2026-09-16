@@ -8,8 +8,14 @@ import static org.alliancegenome.curation_api.enums.BackendBulkLoadType.ALLELE;
 import static org.alliancegenome.curation_api.enums.BackendBulkLoadType.ALLELE_ASSOCIATION;
 import static org.alliancegenome.curation_api.enums.BackendBulkLoadType.ALLELE_DISEASE_ANNOTATION;
 import static org.alliancegenome.curation_api.enums.BackendBulkLoadType.ANTIBODY;
+import static org.alliancegenome.curation_api.enums.BackendBulkLoadType.CASSETTE;
+import static org.alliancegenome.curation_api.enums.BackendBulkLoadType.CASSETTE_GENOMIC_ENTITY_ASSOCIATION;
+import static org.alliancegenome.curation_api.enums.BackendBulkLoadType.CASSETTE_STR_ASSOCIATION;
+import static org.alliancegenome.curation_api.enums.BackendBulkLoadType.CASSETTE_TRANSGENIC_TOOL_ASSOCIATION;
 import static org.alliancegenome.curation_api.enums.BackendBulkLoadType.CONSTRUCT;
 import static org.alliancegenome.curation_api.enums.BackendBulkLoadType.CONSTRUCT_ASSOCIATION;
+import static org.alliancegenome.curation_api.enums.BackendBulkLoadType.CONSTRUCT_CASSETTE_ASSOCIATION;
+import static org.alliancegenome.curation_api.enums.BackendBulkLoadType.TRANSGENIC_TOOL;
 import static org.alliancegenome.curation_api.enums.BackendBulkLoadType.DISEASE_ANNOTATION;
 import static org.alliancegenome.curation_api.enums.BackendBulkLoadType.FULL_INGEST;
 import static org.alliancegenome.curation_api.enums.BackendBulkLoadType.GENE;
@@ -20,6 +26,10 @@ import java.util.List;
 
 import org.alliancegenome.curation_api.enums.BackendBulkLoadType;
 import org.alliancegenome.curation_api.jobs.executors.associations.AgmAgmAssociationExecutor;
+import org.alliancegenome.curation_api.jobs.executors.associations.CassetteGenomicEntityAssociationExecutor;
+import org.alliancegenome.curation_api.jobs.executors.associations.CassetteStrAssociationExecutor;
+import org.alliancegenome.curation_api.jobs.executors.associations.CassetteTransgenicToolAssociationExecutor;
+import org.alliancegenome.curation_api.jobs.executors.associations.ConstructCassetteAssociationExecutor;
 import org.alliancegenome.curation_api.jobs.executors.associations.AgmAlleleAssociationExecutor;
 import org.alliancegenome.curation_api.jobs.executors.associations.AgmStrAssociationExecutor;
 import org.alliancegenome.curation_api.jobs.executors.associations.AlleleConstructAssociationExecutor;
@@ -50,6 +60,12 @@ public class BulkLoadJobExecutor {
 	@Inject OrthologyExecutor orthologyExecutor;
 	@Inject OntologyExecutor ontologyExecutor;
 	@Inject ConstructExecutor constructExecutor;
+	@Inject CassetteExecutor cassetteExecutor;
+	@Inject TransgenicToolExecutor transgenicToolExecutor;
+	@Inject ConstructCassetteAssociationExecutor constructCassetteAssociationExecutor;
+	@Inject CassetteGenomicEntityAssociationExecutor cassetteGenomicEntityAssociationExecutor;
+	@Inject CassetteTransgenicToolAssociationExecutor cassetteTransgenicToolAssociationExecutor;
+	@Inject CassetteStrAssociationExecutor cassetteStrAssociationExecutor;
 	@Inject AntibodyExecutor antibodyExecutor;
 	@Inject AlleleGeneAssociationExecutor alleleGeneAssociationExecutor;
 	@Inject AlleleConstructAssociationExecutor alleleConstructAssociationExecutor;
@@ -87,7 +103,7 @@ public class BulkLoadJobExecutor {
 
 		BackendBulkLoadType loadType = bulkLoadFileHistory.getBulkLoad().getBackendBulkLoadType();
 
-		List<BackendBulkLoadType> ingestTypes = List.of(AGM_DISEASE_ANNOTATION, ALLELE_DISEASE_ANNOTATION, GENE_DISEASE_ANNOTATION, DISEASE_ANNOTATION, AGM, ALLELE, GENE, VARIANT, CONSTRUCT, ANTIBODY, FULL_INGEST, ALLELE_ASSOCIATION, AGM_ASSOCIATION, AGM_AGM_ASSOCIATION, CONSTRUCT_ASSOCIATION);
+		List<BackendBulkLoadType> ingestTypes = List.of(AGM_DISEASE_ANNOTATION, ALLELE_DISEASE_ANNOTATION, GENE_DISEASE_ANNOTATION, DISEASE_ANNOTATION, AGM, ALLELE, GENE, VARIANT, CONSTRUCT, ANTIBODY, CASSETTE, TRANSGENIC_TOOL, FULL_INGEST, ALLELE_ASSOCIATION, AGM_ASSOCIATION, AGM_AGM_ASSOCIATION, CONSTRUCT_ASSOCIATION, CONSTRUCT_CASSETTE_ASSOCIATION, CASSETTE_GENOMIC_ENTITY_ASSOCIATION, CASSETTE_TRANSGENIC_TOOL_ASSOCIATION, CASSETTE_STR_ASSOCIATION);
 
 		if (ingestTypes.contains(loadType)) {
 
@@ -102,6 +118,12 @@ public class BulkLoadJobExecutor {
 			}
 			if (loadType == CONSTRUCT || loadType == FULL_INGEST) {
 				constructExecutor.execLoad(bulkLoadFileHistory, cleanUp);
+			}
+			if (loadType == TRANSGENIC_TOOL || loadType == FULL_INGEST) {
+				transgenicToolExecutor.execLoad(bulkLoadFileHistory, cleanUp);
+			}
+			if (loadType == CASSETTE || loadType == FULL_INGEST) {
+				cassetteExecutor.execLoad(bulkLoadFileHistory, cleanUp);
 			}
 			if (loadType == ANTIBODY || loadType == FULL_INGEST) {
 				antibodyExecutor.execLoad(bulkLoadFileHistory, cleanUp);
@@ -125,6 +147,18 @@ public class BulkLoadJobExecutor {
 			}
 			if (loadType == CONSTRUCT_ASSOCIATION || loadType == FULL_INGEST) {
 				constructGenomicEntityAssociationExecutor.execLoad(bulkLoadFileHistory, cleanUp);
+			}
+			if (loadType == CONSTRUCT_CASSETTE_ASSOCIATION || loadType == FULL_INGEST) {
+				constructCassetteAssociationExecutor.execLoad(bulkLoadFileHistory, cleanUp);
+			}
+			if (loadType == CASSETTE_GENOMIC_ENTITY_ASSOCIATION || loadType == FULL_INGEST) {
+				cassetteGenomicEntityAssociationExecutor.execLoad(bulkLoadFileHistory, cleanUp);
+			}
+			if (loadType == CASSETTE_TRANSGENIC_TOOL_ASSOCIATION || loadType == FULL_INGEST) {
+				cassetteTransgenicToolAssociationExecutor.execLoad(bulkLoadFileHistory, cleanUp);
+			}
+			if (loadType == CASSETTE_STR_ASSOCIATION || loadType == FULL_INGEST) {
+				cassetteStrAssociationExecutor.execLoad(bulkLoadFileHistory, cleanUp);
 			}
 			if (loadType == AGM_ASSOCIATION || loadType == FULL_INGEST) {
 				agmStrAssociationExecutor.execLoad(bulkLoadFileHistory, cleanUp);
