@@ -59,6 +59,18 @@ public final class VocabularyConstants {
 	public static final String CONSTRUCT_RELATION_VOCABULARY = "construct_relation";
 	public static final String CONSTRUCT_GENOMIC_ENTITY_RELATION_VOCABULARY_TERM_SET = "construct_genomic_entity_relation";
 
+	/**
+	 * SCRUM-6535: relation term sets for the new Constructs model (epic SCRUM-6382).
+	 *
+	 * The cassette_relation and new_construct_relation vocabularies these sit on already exist on
+	 * alpha but carry no term sets yet, and they were created through the curation UI rather than by
+	 * a migration in this repo, so the sets have to be added the same way before a load can use them.
+	 */
+	public static final String CASSETTE_GENOMIC_ENTITY_RELATION_VOCABULARY_TERM_SET = "cassette_genomic_entity_relation";
+	public static final String CASSETTE_TRANSGENIC_TOOL_RELATION_VOCABULARY_TERM_SET = "cassette_transgenic_tool_relation";
+	public static final String CASSETTE_STR_RELATION_VOCABULARY_TERM_SET = "cassette_str_relation";
+	public static final String CONSTRUCT_CASSETTE_RELATION_VOCABULARY_TERM_SET = "construct_cassette_relation";
+
 	public static final String ANTIBODY_CLONALITY_VOCABULARY = "antibody_clonality";
 	public static final String ANTIBODY_HEAVY_CHAIN_ISOTYPE_VOCABULARY = "antibody_heavy_chain_isotype";
 	public static final String ANTIBODY_LIGHT_CHAIN_ISOTYPE_VOCABULARY = "antibody_light_chain_isotype";
@@ -72,6 +84,11 @@ public final class VocabularyConstants {
 	public static final String DISEASE_ANNOTATION_NOTE_TYPES_VOCABULARY_TERM_SET = "da_note_type";
 	public static final String GENE_NOTE_TYPES_VOCABULARY_TERM_SET = "gene_note_type";
 	public static final String CONSTRUCT_COMPONENT_NOTE_TYPES_VOCABULARY_TERM_SET = "construct_component_note_type";
+	public static final String CASSETTE_NOTE_TYPES_VOCABULARY_TERM_SET = "cassette_note_type";
+	public static final String CASSETTE_COMPONENT_NOTE_TYPES_VOCABULARY_TERM_SET = "cassette_component_note_type";
+	public static final String CASSETTE_ASSOCIATION_NOTE_TYPES_VOCABULARY_TERM_SET = "cassette_association_note_type";
+	public static final String CONSTRUCT_CASSETTE_ASSOCIATION_NOTE_TYPES_VOCABULARY_TERM_SET = "construct_cassette_association_note_type";
+	public static final String TRANSGENIC_TOOL_NOTE_TYPES_VOCABULARY_TERM_SET = "transgenic_tool_note_type";
 	public static final String ANTIBODY_NOTE_TYPES_VOCABULARY_TERM_SET = "antibody_note_type";
 	public static final String VARIANT_NOTE_TYPES_VOCABULARY_TERM_SET = "variant_note_type";
 	public static final String ALLELE_GENOMIC_ENTITY_ASSOCIATION_NOTE_TYPES_VOCABULARY_TERM_SET = "allele_genomic_entity_association_note_type";

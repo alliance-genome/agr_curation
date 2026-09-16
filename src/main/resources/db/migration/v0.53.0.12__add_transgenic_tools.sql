@@ -34,7 +34,7 @@ CREATE TABLE transgenictool_reference (
 ALTER TABLE transgenictool_reference
 	ADD CONSTRAINT transgenictool_reference_transgenictool_id_fk FOREIGN KEY (transgenictool_id) REFERENCES transgenictool (id);
 ALTER TABLE transgenictool_reference
-	ADD CONSTRAINT transgenictool_reference_references_id_fk FOREIGN KEY (references_id) REFERENCES informationcontententity (id);
+	ADD CONSTRAINT transgenictool_reference_references_id_fk FOREIGN KEY (references_id) REFERENCES reference (id);
 CREATE INDEX transgenictool_reference_transgenictool_index ON transgenictool_reference USING btree (transgenictool_id);
 CREATE INDEX transgenictool_reference_references_index ON transgenictool_reference USING btree (references_id);
 

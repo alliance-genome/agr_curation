@@ -37,7 +37,7 @@ CREATE TABLE cassette_reference (
 ALTER TABLE cassette_reference
 	ADD CONSTRAINT cassette_reference_cassette_id_fk FOREIGN KEY (cassette_id) REFERENCES cassette (id);
 ALTER TABLE cassette_reference
-	ADD CONSTRAINT cassette_reference_references_id_fk FOREIGN KEY (references_id) REFERENCES informationcontententity (id);
+	ADD CONSTRAINT cassette_reference_references_id_fk FOREIGN KEY (references_id) REFERENCES reference (id);
 CREATE INDEX cassette_reference_cassette_index ON cassette_reference USING btree (cassette_id);
 CREATE INDEX cassette_reference_references_index ON cassette_reference USING btree (references_id);
 
