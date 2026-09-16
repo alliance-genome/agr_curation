@@ -57,6 +57,14 @@ public final class VocabularyConstants {
 	public static final String PARALOGY_PREDICTION_METHOD_VOCABULARY_TERM_SET = "paralogy_prediction_method";
 
 	public static final String CONSTRUCT_RELATION_VOCABULARY = "construct_relation";
+
+	/**
+	 * SCRUM-6535: the vocabularies the new Constructs model's relation term sets are drawn from.
+	 * Both labels already exist on alpha, created through the curation UI rather than by a migration
+	 * in this repo; only the term sets below are missing there.
+	 */
+	public static final String CASSETTE_RELATION_VOCABULARY = "cassette_relation";
+	public static final String NEW_CONSTRUCT_RELATION_VOCABULARY = "new_construct_relation";
 	public static final String CONSTRUCT_GENOMIC_ENTITY_RELATION_VOCABULARY_TERM_SET = "construct_genomic_entity_relation";
 
 	/**

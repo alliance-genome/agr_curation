@@ -1,0 +1,13 @@
+[
+  {
+    "primary_external_id": "WB:TransgenicToolMR01",
+    "transgenic_tool_use_dtos": [
+      {
+        "internal": false
+      }
+    ],
+    "data_provider_dto": {
+      "source_organization_abbreviation": "WB"
+    }
+  }
+]

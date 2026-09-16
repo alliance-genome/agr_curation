@@ -1,0 +1,8 @@
+[
+  {
+    "primary_external_id": "WB:CassetteIV04",
+    "cassette_symbol_dto": { "display_text": "Cs11", "format_text": "Cs11", "name_type_name": "nomenclature_symbol" },
+    "reference_curies": ["PMID:Invalid"],
+    "data_provider_dto": { "source_organization_abbreviation": "WB" }
+  }
+]

@@ -23,6 +23,7 @@ import org.alliancegenome.curation_api.model.entities.AllelePhenotypeAnnotation;
 import org.alliancegenome.curation_api.model.entities.AssemblyComponent;
 import org.alliancegenome.curation_api.model.entities.BiologicalEntity;
 import org.alliancegenome.curation_api.model.entities.ConditionRelation;
+import org.alliancegenome.curation_api.model.entities.Cassette;
 import org.alliancegenome.curation_api.model.entities.Construct;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.ExperimentalCondition;
@@ -37,6 +38,7 @@ import org.alliancegenome.curation_api.model.entities.ResourceDescriptor;
 import org.alliancegenome.curation_api.model.entities.ResourceDescriptorPage;
 import org.alliancegenome.curation_api.model.entities.SequenceTargetingReagent;
 import org.alliancegenome.curation_api.model.entities.Variant;
+import org.alliancegenome.curation_api.model.entities.TransgenicTool;
 import org.alliancegenome.curation_api.model.entities.Vocabulary;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.VocabularyTermSet;
@@ -58,6 +60,7 @@ import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.OBITerm;
 import org.alliancegenome.curation_api.model.entities.ontology.OntologyTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.OntologyTermClosure;
+import org.alliancegenome.curation_api.model.entities.ontology.FBCVTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.SOTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.StageTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.UBERONTerm;
@@ -854,6 +857,26 @@ public class BaseITCase {
 		return response.getEntity();
 	}
 
+	/** SCRUM-6535: FBcv 'experimental_tool_descriptor' terms, the range of the uses slot. */
+	public FBCVTerm createFbcvTerm(String curie, String name, Boolean obsolete) {
+		FBCVTerm term = new FBCVTerm();
+		term.setCurie(curie);
+		term.setName(name);
+		term.setObsolete(obsolete);
+		term.setSecondaryIdentifiers(List.of(curie + "secondary"));
+
+		ObjectResponse<FBCVTerm> response = RestAssured.given().
+				contentType("application/json").
+				body(term).
+				when().
+				post("/api/fbcvterm").
+				then().
+				statusCode(200).extract().
+				body().as(getObjectResponseTypeRefFBCVTerm());
+
+		return response.getEntity();
+	}
+
 	public StageTerm createStageTerm(String curie, String name) throws Exception {
 		StageTerm stageTerm = new StageTerm();
 		stageTerm.setCurie(curie);
@@ -1126,6 +1149,30 @@ public class BaseITCase {
 		return res.getEntity();
 	}
 
+	/** SCRUM-6535. */
+	public Cassette getCassette(String identifier) {
+		ObjectResponse<Cassette> res = RestAssured.given().
+				when().
+				get("/api/cassette/" + identifier).
+				then().
+				statusCode(200).
+				extract().body().as(getObjectResponseTypeRefCassette());
+
+		return res.getEntity();
+	}
+
+	/** SCRUM-6535. */
+	public TransgenicTool getTransgenicTool(String identifier) {
+		ObjectResponse<TransgenicTool> res = RestAssured.given().
+				when().
+				get("/api/transgenic-tool/" + identifier).
+				then().
+				statusCode(200).
+				extract().body().as(getObjectResponseTypeRefTransgenicTool());
+
+		return res.getEntity();
+	}
+
 	public ConstructGenomicEntityAssociation getConstructGenomicEntityAssociation(Long constructId, String relationName, Long genomicEntityId) {
 		ObjectResponse<ConstructGenomicEntityAssociation> res = RestAssured.given().
 			when().
@@ -1296,6 +1343,21 @@ public class BaseITCase {
 
 	public TypeRef<ObjectResponse<Construct>> getObjectResponseTypeRefConstruct() {
 		return new TypeRef<ObjectResponse<Construct>>() {
+		};
+	}
+
+	public TypeRef<ObjectResponse<FBCVTerm>> getObjectResponseTypeRefFBCVTerm() {
+		return new TypeRef<ObjectResponse<FBCVTerm>>() {
+		};
+	}
+
+	public TypeRef<ObjectResponse<Cassette>> getObjectResponseTypeRefCassette() {
+		return new TypeRef<ObjectResponse<Cassette>>() {
+		};
+	}
+
+	public TypeRef<ObjectResponse<TransgenicTool>> getObjectResponseTypeRefTransgenicTool() {
+		return new TypeRef<ObjectResponse<TransgenicTool>>() {
 		};
 	}
 
