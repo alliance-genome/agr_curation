@@ -1,0 +1,8 @@
+[
+  {
+    "primary_external_id": "WB:CassetteIV02",
+    "cassette_symbol_dto": { "display_text": "Cs9", "format_text": "Cs9", "name_type_name": "nomenclature_symbol" },
+    "cassette_component_dtos": [ { "component_symbol": "ccmp9", "relation_name": "is_regulated_by", "taxon_curie": "NCBITaxon:Invalid" } ],
+    "data_provider_dto": { "source_organization_abbreviation": "WB" }
+  }
+]
