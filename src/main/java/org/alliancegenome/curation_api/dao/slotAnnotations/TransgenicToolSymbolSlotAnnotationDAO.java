@@ -1,0 +1,15 @@
+package org.alliancegenome.curation_api.dao.slotAnnotations;
+
+import org.alliancegenome.curation_api.dao.base.BaseSQLDAO;
+import org.alliancegenome.curation_api.model.entities.slotAnnotations.TransgenicToolSymbolSlotAnnotation;
+
+import jakarta.enterprise.context.ApplicationScoped;
+
+/** SCRUM-6535. */
+@ApplicationScoped
+public class TransgenicToolSymbolSlotAnnotationDAO extends BaseSQLDAO<TransgenicToolSymbolSlotAnnotation> {
+
+	protected TransgenicToolSymbolSlotAnnotationDAO() {
+		super(TransgenicToolSymbolSlotAnnotation.class);
+	}
+}
