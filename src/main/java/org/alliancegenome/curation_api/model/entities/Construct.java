@@ -7,6 +7,7 @@ import org.alliancegenome.curation_api.enums.MatiSubdomain;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.interfaces.CurieSubdomain;
 import org.alliancegenome.curation_api.model.entities.associations.AlleleConstructAssociation;
+import org.alliancegenome.curation_api.model.entities.associations.ConstructCassetteAssociation;
 import org.alliancegenome.curation_api.model.entities.associations.ConstructGenomicEntityAssociation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.ConstructComponentSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.ConstructFullNameSlotAnnotation;
@@ -38,7 +39,7 @@ import lombok.ToString;
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @Schema(name = "construct", description = "Construct: a construct")
-@ToString(exclude = {"constructGenomicEntityAssociations", "alleleConstructAssociations", "constructComponents", "constructSymbol", "constructFullName", "constructSynonyms"}, callSuper = true)
+@ToString(exclude = {"constructSymbol", "constructFullName", "constructSynonyms", "constructComponents", "constructGenomicEntityAssociations", "constructCassetteAssociations", "alleleConstructAssociations"}, callSuper = true)
 @AGRCurationSchemaVersion(min = "2.1.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { Reagent.class })
 
 @CurieSubdomain(MatiSubdomain.CONSTRUCT)
@@ -92,6 +93,16 @@ public class Construct extends Reagent {
 	@OneToMany(mappedBy = "constructAssociationSubject", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonView({ CurationView.FieldsAndLists.class, CurationView.ConstructView.class, CurationView.TransgenicAllelesDocument.class })
 	private List<ConstructGenomicEntityAssociation> constructGenomicEntityAssociations;
+
+	@IndexedEmbedded(includePaths = {
+		"constructCassetteAssociationObject.curie", "constructCassetteAssociationObject.primaryExternalId", "constructCassetteAssociationObject.modInternalId",
+		"constructCassetteAssociationObject.cassetteSymbol.displayText", "constructCassetteAssociationObject.cassetteSymbol.formatText", "relation.name",
+		"constructCassetteAssociationObject.curie_keyword", "constructCassetteAssociationObject.primaryExternalId_keyword", "constructCassetteAssociationObject.modInternalId_keyword",
+		"constructCassetteAssociationObject.cassetteSymbol.displayText_keyword", "constructCassetteAssociationObject.cassetteSymbol.formatText_keyword", "relation.name_keyword"
+	})
+	@OneToMany(mappedBy = "constructAssociationSubject", cascade = CascadeType.ALL, orphanRemoval = true)
+	@JsonView({ CurationView.FieldsAndLists.class, CurationView.ConstructView.class })
+	private List<ConstructCassetteAssociation> constructCassetteAssociations;
 	
 	@OneToMany(mappedBy = "alleleConstructAssociationObject", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonView({ CurationView.FieldsAndLists.class, CurationView.ConstructDetailView.class })
