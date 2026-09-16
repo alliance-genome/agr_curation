@@ -1,0 +1,99 @@
+package org.alliancegenome.curation_api.model.entities.associations;
+
+import java.util.List;
+
+import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
+import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
+import org.alliancegenome.curation_api.model.entities.GenomicEntity;
+import org.alliancegenome.curation_api.model.entities.Note;
+import org.alliancegenome.curation_api.model.entities.ontology.SOTerm;
+import org.alliancegenome.curation_api.view.CurationView;
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
+import org.hibernate.search.mapper.pojo.automaticindexing.ReindexOnUpdate;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmbedded;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexingDependency;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonView;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Index;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+
+/**
+ * SCRUM-6535: a cassette component that is a curated genomic entity, so it carries a curie rather
+ * than only the symbol a CassetteComponentSlotAnnotation would hold.
+ */
+@Entity
+@Data
+@EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
+@ToString(callSuper = true)
+@AGRCurationSchemaVersion(min = "2.18.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = {CassetteAssociation.class})
+@Schema(name = "CassetteGenomicEntityAssociation", description = "CassetteGenomicEntityAssociation: a cassette genomic entity association")
+
+@Table(indexes = {
+	@Index(columnList = "internal"),
+	@Index(columnList = "obsolete"),
+	@Index(columnList = "createdBy_id"),
+	@Index(columnList = "updatedBy_id"),
+	@Index(columnList = "cassetteassociationsubject_id"),
+	@Index(columnList = "cassettegenomicentityassociationobject_id"),
+	@Index(columnList = "relation_id")
+})
+
+public class CassetteGenomicEntityAssociation extends CassetteAssociation {
+
+	@IndexedEmbedded(includeDepth = 1)
+	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
+	@ManyToOne
+	@JsonView({ CurationView.FieldsOnly.class })
+	@JsonIgnoreProperties({
+		"alleleGeneAssociations", "constructGenomicEntityAssociations", "sequenceTargetingReagentGeneAssociations",
+		"transcriptGenomicLocationAssociations", "exonGenomicLocationAssociations", "codingSequenceGenomicLocationAssociations",
+		"transcriptGeneAssociations", "geneGenomicLocationAssociations", "transcriptExonAssociations", "transcriptCodingSequenceAssociations"
+	})
+	private GenomicEntity cassetteGenomicEntityAssociationObject;
+
+	/** SO terms describing the nature of the component, as used by FlyBase et al. */
+	@IndexedEmbedded(includePaths = {"curie", "name", "curie_keyword", "name_keyword"})
+	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
+	@ManyToMany
+	@JsonView({ CurationView.FieldsAndLists.class })
+	@JoinTable(
+		name = "cassettegenomicentityassociation_soterm",
+		joinColumns = @JoinColumn(name = "cassettegenomicentityassociation_id"),
+		inverseJoinColumns = @JoinColumn(name = "componenttypes_id"),
+		indexes = {
+			@Index(name = "cassettegeassociation_soterm_cgea_index", columnList = "cassettegenomicentityassociation_id"),
+			@Index(name = "cassettegeassociation_soterm_componenttypes_index", columnList = "componenttypes_id")
+		}
+	)
+	private List<SOTerm> componentTypes;
+
+	@IndexedEmbedded(includePaths = {"freeText", "noteType.name", "references.curie",
+		"references.primaryCrossReferenceCurie", "freeText_keyword", "noteType.name_keyword", "references.curie_keyword",
+		"references.primaryCrossReferenceCurie_keyword"
+	})
+	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
+	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+	@JsonView({ CurationView.FieldsAndLists.class })
+	@JoinTable(
+		name = "cassettegenomicentityassociation_note",
+		joinColumns = @JoinColumn(name = "cassettegenomicentityassociation_id"),
+		inverseJoinColumns = @JoinColumn(name = "relatednotes_id"),
+		indexes = {
+			@Index(name = "cassettegeassociation_note_cgea_index", columnList = "cassettegenomicentityassociation_id"),
+			@Index(name = "cassettegeassociation_note_relatednotes_index", columnList = "relatednotes_id")
+		}
+	)
+	private List<Note> relatedNotes;
+}
