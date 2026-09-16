@@ -36,6 +36,7 @@ import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.AlleleService;
 import org.alliancegenome.curation_api.services.ChromosomeAccessionService;
 import org.alliancegenome.curation_api.services.CrossReferenceService;
+import org.alliancegenome.curation_api.services.CurieMintService;
 import org.alliancegenome.curation_api.services.OrganizationService;
 import org.alliancegenome.curation_api.services.ReferenceService;
 import org.alliancegenome.curation_api.services.VocabularyTermService;
@@ -59,6 +60,7 @@ import jakarta.transaction.Transactional;
 public class VariantFmsDTOValidator {
 
 	@Inject VariantDAO variantDAO;
+	@Inject CurieMintService curieMintService;
 	@Inject NoteDAO noteDAO;
 	@Inject AlleleService alleleService;
 	@Inject AssemblyComponentDAO assemblyComponentDAO;
@@ -247,6 +249,7 @@ public class VariantFmsDTOValidator {
 			throw new ObjectValidationException(dto, variantResponse.errorMessagesString());
 		}
 
+		curieMintService.mintCurieIfAbsent(variant);
 		variant = variantDAO.persist(variant);
 		if (variant != null) {
 			idsAdded.add(variant.getId());
