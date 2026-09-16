@@ -123,6 +123,30 @@ public class AlleleValidator extends GenomicEntityValidator<Allele> {
 			dbEntity.setIsExtinct(null);
 		}
 
+		if (uiEntity.getIsExtrachromosomal() != null) {
+			dbEntity.setIsExtrachromosomal(uiEntity.getIsExtrachromosomal());
+		} else {
+			dbEntity.setIsExtrachromosomal(null);
+		}
+
+		if (uiEntity.getIsIntegrated() != null) {
+			dbEntity.setIsIntegrated(uiEntity.getIsIntegrated());
+		} else {
+			dbEntity.setIsIntegrated(null);
+		}
+
+		if (uiEntity.getIsAberration() != null) {
+			dbEntity.setIsAberration(uiEntity.getIsAberration());
+		} else {
+			dbEntity.setIsAberration(null);
+		}
+
+		if (uiEntity.getIsBalancer() != null) {
+			dbEntity.setIsBalancer(uiEntity.getIsBalancer());
+		} else {
+			dbEntity.setIsBalancer(null);
+		}
+
 		AlleleSymbolSlotAnnotation symbol = validateAlleleSymbol(uiEntity, dbEntity);
 		AlleleFullNameSlotAnnotation fullName = validateAlleleFullName(uiEntity, dbEntity);
 		AlleleGermlineTransmissionStatusSlotAnnotation germlineTransmissionStatus = validateAlleleGermlineTransmissionStatus(uiEntity, dbEntity);

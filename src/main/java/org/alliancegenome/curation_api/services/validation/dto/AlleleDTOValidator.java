@@ -101,6 +101,10 @@ public class AlleleDTOValidator extends GenomicEntityDTOValidator<Allele, Allele
 		allele.setInCollection(inCollection);
 
 		allele.setIsExtinct(dto.getIsExtinct());
+		allele.setIsExtrachromosomal(dto.getIsExtrachromosomal());
+		allele.setIsIntegrated(dto.getIsIntegrated());
+		allele.setIsAberration(dto.getIsAberration());
+		allele.setIsBalancer(dto.getIsBalancer());
 
 		List<Reference> refs = validateOptionalEntities("reference_curies", dto.getReferenceCuries(), referenceService::retrieveFromDbOrLiteratureService);
 		allele.setReferences(refs);
