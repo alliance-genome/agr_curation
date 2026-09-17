@@ -1,0 +1,25 @@
+src/main/java/org/alliancegenome/curation_api/constants/VocabularyConstants.java
+  s_e6a7e48d95f0da::t_e4dd5a6fd8a1d3 65-66
+src/main/java/org/alliancegenome/curation_api/services/validation/AntibodyValidator.java
+  s_e6a7e48d95f0da::t_5fb2dcedab6a7f 82,85
+src/main/java/org/alliancegenome/curation_api/services/validation/dto/AntibodyDTOValidator.java
+  s_e6a7e48d95f0da::t_4df95102243580 89,92
+src/main/resources/db/migration/v0.53.0.12__unified_antibody_taxon_vocabulary.sql
+  s_e6a7e48d95f0da::t_55581968308a9b 1-87
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "36c6fb84c80429627cf2210e2c6ba5b828076ae6",
+  "prompts": {},
+  "sessions": {
+    "s_e6a7e48d95f0da": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "0b1c323c-79a4-432b-8351-1956bb3e2d64",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Ketaki Kindre <kkindre@caltech.edu>"
+    }
+  }
+}
