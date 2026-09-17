@@ -102,7 +102,7 @@ public class CassetteValidator extends ReagentValidator {
 			dbEntity.setReferences(null);
 		}
 
-		dbEntity = (Cassette) validateCommonReagentFields(uiEntity, dbEntity, VocabularyConstants.CASSETTE_NOTE_TYPES_VOCABULARY_TERM_SET);
+		dbEntity = (Cassette) validateCommonReagentFields(uiEntity, dbEntity, VocabularyConstants.CASSETTE_AND_TRANSGENIC_TOOL_NOTE_TYPES_VOCABULARY_TERM_SET);
 
 		CassetteSymbolSlotAnnotation symbol = validateCassetteSymbol(uiEntity);
 		CassetteFullNameSlotAnnotation fullName = validateCassetteFullName(uiEntity);

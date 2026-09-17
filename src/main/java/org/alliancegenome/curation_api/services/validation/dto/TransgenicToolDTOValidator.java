@@ -10,17 +10,20 @@ import org.alliancegenome.curation_api.dao.TransgenicToolDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
 import org.alliancegenome.curation_api.exceptions.ValidationException;
+import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.Reference;
 import org.alliancegenome.curation_api.model.entities.TransgenicTool;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.TransgenicToolFullNameSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.TransgenicToolSymbolSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.TransgenicToolSynonymSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.TransgenicToolUseSlotAnnotation;
+import org.alliancegenome.curation_api.model.ingest.dto.CrossReferenceDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.TransgenicToolDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.slotAnnotions.NameSlotAnnotationDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.slotAnnotions.TransgenicToolUseSlotAnnotationDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
+import org.alliancegenome.curation_api.services.CrossReferenceService;
 import org.alliancegenome.curation_api.services.ReferenceService;
 import org.alliancegenome.curation_api.services.helpers.SlotAnnotationIdentityHelper;
 import org.alliancegenome.curation_api.services.helpers.TransgenicToolUniqueIdHelper;
@@ -51,6 +54,8 @@ public class TransgenicToolDTOValidator extends ReagentDTOValidator<TransgenicTo
 	@Inject TransgenicToolDAO transgenicToolDAO;
 	@Inject SlotAnnotationIdentityHelper identityHelper;
 	@Inject ReferenceService referenceService;
+	@Inject CrossReferenceDTOValidator crossReferenceDtoValidator;
+	@Inject CrossReferenceService crossReferenceService;
 
 	@Transactional
 	public ObjectResponse<TransgenicTool> validateTransgenicToolDTO(TransgenicToolDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
@@ -77,10 +82,12 @@ public class TransgenicToolDTOValidator extends ReagentDTOValidator<TransgenicTo
 		transgenicTool.setUniqueId(uniqueId);
 		UniqueIdentifierHelper.setObsoleteAndInternal(dto, transgenicTool);
 
-		transgenicTool = validateReagentDTO(transgenicTool, dto, VocabularyConstants.TRANSGENIC_TOOL_NOTE_TYPES_VOCABULARY_TERM_SET);
+		transgenicTool = validateReagentDTO(transgenicTool, dto, VocabularyConstants.CASSETTE_AND_TRANSGENIC_TOOL_NOTE_TYPES_VOCABULARY_TERM_SET);
 
 		List<Reference> refs = validateOptionalEntities("reference_curies", dto.getReferenceCuries(), referenceService::retrieveFromDbOrLiteratureService);
 		transgenicTool.setReferences(refs);
+
+		transgenicTool.setCrossReferences(validateCrossReferences(dto, transgenicTool));
 
 		TransgenicToolSymbolSlotAnnotation symbol = validateTransgenicToolSymbol(transgenicTool, dto);
 		transgenicTool.setTransgenicToolSymbol(symbol);
@@ -256,5 +263,32 @@ public class TransgenicToolDTOValidator extends ReagentDTOValidator<TransgenicTo
 		}
 
 		return validatedUses;
+	}
+
+	/**
+	 * SCRUM-6535: mirrors AntibodyDTOValidator.validateCrossReferences.
+	 *
+	 * TransgenicTool is the only Reagent subclass besides Antibody that declares cross_references in
+	 * LinkML, so this step is required for the field to survive a load at all - without it the
+	 * submitted xrefs are parsed and silently dropped.
+	 *
+	 * getUpdatedXrefList reconciles against what the tool already holds rather than replacing the
+	 * list outright, so an xref that is unchanged keeps its identity across reloads.
+	 */
+	private List<CrossReference> validateCrossReferences(TransgenicToolDTO dto, TransgenicTool transgenicTool) {
+		List<CrossReference> validatedXrefs = new ArrayList<>();
+		if (CollectionUtils.isNotEmpty(dto.getCrossReferenceDtos())) {
+			for (CrossReferenceDTO xrefDto : dto.getCrossReferenceDtos()) {
+				ObjectResponse<CrossReference> xrefResponse = crossReferenceDtoValidator.validateCrossReferenceDTO(xrefDto, null);
+				if (xrefResponse.hasErrors()) {
+					response.addErrorMessage("cross_reference_dtos", xrefResponse.errorMessagesString());
+					break;
+				} else {
+					validatedXrefs.add(xrefResponse.getEntity());
+				}
+			}
+		}
+
+		return crossReferenceService.getUpdatedXrefList(validatedXrefs, transgenicTool.getCrossReferences());
 	}
 }

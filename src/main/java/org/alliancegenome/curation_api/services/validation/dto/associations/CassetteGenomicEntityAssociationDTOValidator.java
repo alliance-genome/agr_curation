@@ -119,7 +119,7 @@ public class CassetteGenomicEntityAssociationDTOValidator extends EvidenceAssoci
 				association.getRelatedNotes().clear();
 			}
 
-			List<Note> validatedNotes = validateNotes(dto.getNoteDtos(), VocabularyConstants.CASSETTE_ASSOCIATION_NOTE_TYPES_VOCABULARY_TERM_SET);
+			List<Note> validatedNotes = validateNotes(dto.getNoteDtos(), VocabularyConstants.CASSETTE_GENOMIC_ENTITY_ASSOCIATION_NOTE_TYPES_VOCABULARY_TERM_SET);
 			if (CollectionUtils.isNotEmpty(validatedNotes)) {
 				if (association.getRelatedNotes() == null) {
 					association.setRelatedNotes(new ArrayList<>());

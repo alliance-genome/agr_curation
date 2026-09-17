@@ -58,7 +58,7 @@ public class IT_0109_TransgenicToolBulkUploadITCase extends BaseITCase {
 
 	private void loadRequiredEntities() throws Exception {
 		Vocabulary noteTypeVocabulary = getVocabulary(VocabularyConstants.NOTE_TYPE_VOCABULARY);
-		addVocabularyTermToSet(VocabularyConstants.TRANSGENIC_TOOL_NOTE_TYPES_VOCABULARY_TERM_SET, "test_transgenic_tool_note", noteTypeVocabulary, false);
+		addVocabularyTermToSet(VocabularyConstants.CASSETTE_AND_TRANSGENIC_TOOL_NOTE_TYPES_VOCABULARY_TERM_SET, "test_transgenic_tool_note", noteTypeVocabulary, false);
 		// FBcv 'experimental_tool_descriptor' terms, the range of the uses slot.
 		createFbcvTerm("FBcv:0003010", "enhancer_trap", false);
 		createFbcvTerm("FBcv:0003011", "protein_trap", false);
