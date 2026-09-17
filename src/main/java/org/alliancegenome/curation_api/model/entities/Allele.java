@@ -101,6 +101,29 @@ public class Allele extends GenomicEntity {
 	@JsonView({ CurationView.FieldsOnly.class, CurationView.AlleleDetailView.class })
 	private Boolean isExtinct;
 
+	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer", valueBridge = @ValueBridgeRef(type = BooleanAndNullValueBridge.class))
+	@KeywordField(name = "isExtrachromosomal_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, valueBridge = @ValueBridgeRef(type = BooleanAndNullValueBridge.class))
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.AlleleDetailView.class })
+	private Boolean isExtrachromosomal;
+
+	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer", valueBridge = @ValueBridgeRef(type = BooleanAndNullValueBridge.class))
+	@KeywordField(name = "isIntegrated_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, valueBridge = @ValueBridgeRef(type = BooleanAndNullValueBridge.class))
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.AlleleDetailView.class })
+	private Boolean isIntegrated;
+
+	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer", valueBridge = @ValueBridgeRef(type = BooleanAndNullValueBridge.class))
+	@KeywordField(name = "isAberration_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, valueBridge = @ValueBridgeRef(type = BooleanAndNullValueBridge.class))
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.AlleleDetailView.class })
+	private Boolean isAberration;
+
+	// LinkML notes that balancers are a subtype of aberration, so this is only meaningful
+	// where isAberration is true. The schema states that in prose without encoding it as a
+	// rule, so it is not enforced here either.
+	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer", valueBridge = @ValueBridgeRef(type = BooleanAndNullValueBridge.class))
+	@KeywordField(name = "isBalancer_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, valueBridge = @ValueBridgeRef(type = BooleanAndNullValueBridge.class))
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.AlleleDetailView.class })
+	private Boolean isBalancer;
+
 	@OneToMany(mappedBy = "diseaseAnnotationSubject", cascade = CascadeType.ALL)
 	private List<AlleleDiseaseAnnotation> alleleDiseaseAnnotations;
 
