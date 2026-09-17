@@ -66,7 +66,7 @@
     ],
     "cassette_use_dtos": [
       {
-        "use_curies": ["FBcv:0003010"],
+        "use_curies": ["FBcv:0003012"],
         "evidence_curies": ["PMID:25920550"],
         "internal": true,
         "obsolete": true
