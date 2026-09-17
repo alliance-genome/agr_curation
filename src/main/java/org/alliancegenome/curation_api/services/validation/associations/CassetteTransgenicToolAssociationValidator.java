@@ -104,7 +104,7 @@ public class CassetteTransgenicToolAssociationValidator extends EvidenceAssociat
 		if (CollectionUtils.isNotEmpty(uiEntity.getRelatedNotes())) {
 			for (int ix = 0; ix < uiEntity.getRelatedNotes().size(); ix++) {
 				Note note = uiEntity.getRelatedNotes().get(ix);
-				ObjectResponse<Note> noteResponse = noteValidator.validateNote(note, VocabularyConstants.CASSETTE_ASSOCIATION_NOTE_TYPES_VOCABULARY_TERM_SET);
+				ObjectResponse<Note> noteResponse = noteValidator.validateNote(note, VocabularyConstants.CASSETTE_TRANSGENIC_TOOL_ASSOCIATION_NOTE_TYPES_VOCABULARY_TERM_SET);
 				if (noteResponse.getEntity() == null) {
 					allValid = false;
 					response.addErrorMessages(field, ix, noteResponse.getErrorMessages());

@@ -68,8 +68,11 @@ public class IT_0110_CassetteBulkUploadITCase extends BaseITCase {
 		Vocabulary noteTypeVocabulary = getVocabulary(VocabularyConstants.NOTE_TYPE_VOCABULARY);
 		noteType = addVocabularyTermToSet(VocabularyConstants.CASSETTE_COMPONENT_NOTE_TYPES_VOCABULARY_TERM_SET, "test_cassette_component_note", noteTypeVocabulary, false);
 		noteType2 = addVocabularyTermToSet(VocabularyConstants.CASSETTE_COMPONENT_NOTE_TYPES_VOCABULARY_TERM_SET, "test_cassette_component_summary", noteTypeVocabulary, false);
-		addVocabularyTermToSet(VocabularyConstants.CASSETTE_NOTE_TYPES_VOCABULARY_TERM_SET, "test_cassette_note", noteTypeVocabulary, false);
-		addVocabularyTermToSet(VocabularyConstants.CASSETTE_ASSOCIATION_NOTE_TYPES_VOCABULARY_TERM_SET, "test_cassette_association_note", noteTypeVocabulary, false);
+		addVocabularyTermToSet(VocabularyConstants.CASSETTE_AND_TRANSGENIC_TOOL_NOTE_TYPES_VOCABULARY_TERM_SET, "test_cassette_note", noteTypeVocabulary, false);
+		// One set per association type, as alpha has them; v0.53.0.15 creates all of these.
+		addVocabularyTermToSet(VocabularyConstants.CASSETTE_GENOMIC_ENTITY_ASSOCIATION_NOTE_TYPES_VOCABULARY_TERM_SET, "test_cassette_association_note", noteTypeVocabulary, false);
+		addVocabularyTermToSet(VocabularyConstants.CASSETTE_TRANSGENIC_TOOL_ASSOCIATION_NOTE_TYPES_VOCABULARY_TERM_SET, "test_cassette_association_note", noteTypeVocabulary, false);
+		addVocabularyTermToSet(VocabularyConstants.CASSETTE_STR_ASSOCIATION_NOTE_TYPES_VOCABULARY_TERM_SET, "test_cassette_association_note", noteTypeVocabulary, false);
 
 		Vocabulary relationVocabulary = createVocabulary(VocabularyConstants.CASSETTE_RELATION_VOCABULARY, false);
 		relation = createVocabularyTerm(relationVocabulary, "is_regulated_by", false);

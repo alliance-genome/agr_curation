@@ -82,7 +82,7 @@ public class CassetteDTOValidator extends ReagentDTOValidator<Cassette, Cassette
 		cassette.setUniqueId(uniqueId);
 		UniqueIdentifierHelper.setObsoleteAndInternal(dto, cassette);
 
-		cassette = validateReagentDTO(cassette, dto, VocabularyConstants.CASSETTE_NOTE_TYPES_VOCABULARY_TERM_SET);
+		cassette = validateReagentDTO(cassette, dto, VocabularyConstants.CASSETTE_AND_TRANSGENIC_TOOL_NOTE_TYPES_VOCABULARY_TERM_SET);
 
 		List<Reference> refs = validateOptionalEntities("reference_curies", dto.getReferenceCuries(), referenceService::retrieveFromDbOrLiteratureService);
 		cassette.setReferences(refs);

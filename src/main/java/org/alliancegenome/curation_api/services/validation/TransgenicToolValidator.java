@@ -8,6 +8,7 @@ import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.TransgenicToolDAO;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
+import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.Reference;
 import org.alliancegenome.curation_api.model.entities.TransgenicTool;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.TransgenicToolFullNameSlotAnnotation;
@@ -37,6 +38,7 @@ public class TransgenicToolValidator extends ReagentValidator {
 
 	@Inject TransgenicToolDAO transgenicToolDAO;
 	@Inject ReferenceValidator referenceValidator;
+	@Inject CrossReferenceValidator crossReferenceValidator;
 	@Inject TransgenicToolSymbolSlotAnnotationValidator transgenicToolSymbolValidator;
 	@Inject TransgenicToolFullNameSlotAnnotationValidator transgenicToolFullNameValidator;
 	@Inject TransgenicToolSynonymSlotAnnotationValidator transgenicToolSynonymValidator;
@@ -90,7 +92,9 @@ public class TransgenicToolValidator extends ReagentValidator {
 			dbEntity.setReferences(null);
 		}
 
-		dbEntity = (TransgenicTool) validateCommonReagentFields(uiEntity, dbEntity, VocabularyConstants.TRANSGENIC_TOOL_NOTE_TYPES_VOCABULARY_TERM_SET);
+		dbEntity = (TransgenicTool) validateCommonReagentFields(uiEntity, dbEntity, VocabularyConstants.CASSETTE_AND_TRANSGENIC_TOOL_NOTE_TYPES_VOCABULARY_TERM_SET);
+
+		dbEntity.setCrossReferences(validateCrossReferences(uiEntity, dbEntity));
 
 		TransgenicToolSymbolSlotAnnotation symbol = validateTransgenicToolSymbol(uiEntity);
 		TransgenicToolFullNameSlotAnnotation fullName = validateTransgenicToolFullName(uiEntity);
@@ -274,4 +278,34 @@ public class TransgenicToolValidator extends ReagentValidator {
 		return validatedUses;
 	}
 
+	/** SCRUM-6535: mirrors AntibodyValidator.validateCrossReferences, for the curation UI path. */
+	private List<CrossReference> validateCrossReferences(TransgenicTool uiEntity, TransgenicTool dbEntity) {
+		String field = "crossReferences";
+
+		List<CrossReference> validatedXrefs = new ArrayList<CrossReference>();
+		Boolean allValid = true;
+		if (CollectionUtils.isNotEmpty(uiEntity.getCrossReferences())) {
+			for (int ix = 0; ix < uiEntity.getCrossReferences().size(); ix++) {
+				CrossReference xref = uiEntity.getCrossReferences().get(ix);
+				ObjectResponse<CrossReference> xrefResponse = crossReferenceValidator.validateCrossReference(xref, false);
+				if (xrefResponse.hasErrors()) {
+					allValid = false;
+					response.addErrorMessages(field, ix, xrefResponse.getErrorMessages());
+				} else {
+					validatedXrefs.add(xrefResponse.getEntity());
+				}
+			}
+		}
+
+		if (!allValid) {
+			convertMapToErrorMessages(field);
+			return null;
+		}
+
+		if (CollectionUtils.isEmpty(validatedXrefs)) {
+			return null;
+		}
+
+		return validatedXrefs;
+	}
 }
