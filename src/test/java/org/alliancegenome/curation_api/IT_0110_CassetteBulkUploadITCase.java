@@ -82,8 +82,10 @@ public class IT_0110_CassetteBulkUploadITCase extends BaseITCase {
 		createVocabularyTermSet(VocabularyConstants.CASSETTE_TRANSGENIC_TOOL_RELATION_VOCABULARY_TERM_SET, relationVocabulary, List.of(relation, relation2, expresses));
 		createVocabularyTermSet(VocabularyConstants.CASSETTE_STR_RELATION_VOCABULARY_TERM_SET, relationVocabulary, List.of(expresses));
 
-		createFbcvTerm("FBcv:0003010", "enhancer_trap", false);
-		createFbcvTerm("FBcv:0003011", "protein_trap", false);
+		// Distinct curies from IT_0109's: the suite shares one database, and creating a term that
+		// already exists is a 500 rather than a no-op.
+		createFbcvTerm("FBcv:0003012", "cassette_enhancer_trap", false);
+		createFbcvTerm("FBcv:0003013", "cassette_protein_trap", false);
 	}
 
 	@Test
@@ -127,7 +129,7 @@ public class IT_0110_CassetteBulkUploadITCase extends BaseITCase {
 			body("entity.cassetteComponents[0].relatedNotes[0].freeText", is("Test cassette component note")).
 			body("entity.cassetteUses", hasSize(1)).
 			body("entity.cassetteUses[0].uses", hasSize(1)).
-			body("entity.cassetteUses[0].uses[0].curie", is("FBcv:0003010")).
+			body("entity.cassetteUses[0].uses[0].curie", is("FBcv:0003012")).
 			body("entity.dataProvider.abbreviation", is(dataProvider)).
 			body("entity.secondaryIdentifiers", hasSize(1));
 	}
@@ -161,7 +163,7 @@ public class IT_0110_CassetteBulkUploadITCase extends BaseITCase {
 			body("entity.cassetteComponents[0].relatedNotes", hasSize(1)).
 			body("entity.cassetteComponents[0].relatedNotes[0].noteType.name", is(noteType2.getName())).
 			body("entity.cassetteUses", hasSize(1)).
-			body("entity.cassetteUses[0].uses[0].curie", is("FBcv:0003011")).
+			body("entity.cassetteUses[0].uses[0].curie", is("FBcv:0003013")).
 			body("entity.dataProvider.abbreviation", is(dataProvider2));
 	}
 

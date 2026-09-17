@@ -52,7 +52,7 @@
     ],
     "cassette_use_dtos": [
       {
-        "use_curies": ["FBcv:0003011"],
+        "use_curies": ["FBcv:0003013"],
         "internal": false,
         "obsolete": false
       }

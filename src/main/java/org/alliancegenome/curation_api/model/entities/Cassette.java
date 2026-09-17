@@ -68,7 +68,7 @@ public class Cassette extends Reagent {
 	@IndexedEmbedded(includePaths = { "displayText", "formatText", "nameType.name", "synonymScope.name", "evidence.curie", "displayText_keyword", "formatText_keyword", "nameType.name_keyword", "synonymScope.name_keyword", "evidence.curie_keyword"})
 	@OneToMany(mappedBy = "singleCassette", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonManagedReference
-	@JsonView({ CurationView.FieldsAndLists.class })
+	@JsonView({ CurationView.FieldsAndLists.class, CurationView.CassetteView.class })
 	private List<CassetteSynonymSlotAnnotation> cassetteSynonyms;
 
 	@IndexedEmbedded(
@@ -79,7 +79,7 @@ public class Cassette extends Reagent {
 	)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
-	@JsonView({ CurationView.FieldsAndLists.class })
+	@JsonView({ CurationView.FieldsAndLists.class, CurationView.CassetteView.class })
 	@JoinTable(indexes = {
 		@Index(name = "cassette_reference_cassette_index", columnList = "cassette_id"),
 		@Index(name = "cassette_reference_references_index", columnList = "references_id")
@@ -89,13 +89,13 @@ public class Cassette extends Reagent {
 	@IndexedEmbedded(includePaths = { "relation.name", "relation.name_keyword", "componentSymbol", "taxon.curie", "taxonText", "componentSymbol_keyword", "taxon.curie_keyword", "taxonText_keyword"})
 	@OneToMany(mappedBy = "singleCassette", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonManagedReference
-	@JsonView({ CurationView.FieldsAndLists.class })
+	@JsonView({ CurationView.FieldsAndLists.class, CurationView.CassetteView.class })
 	private List<CassetteComponentSlotAnnotation> cassetteComponents;
 
 	@IndexedEmbedded(includePaths = { "uses.curie", "uses.name", "uses.curie_keyword", "uses.name_keyword" })
 	@OneToMany(mappedBy = "singleCassette", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonManagedReference
-	@JsonView({ CurationView.FieldsAndLists.class })
+	@JsonView({ CurationView.FieldsAndLists.class, CurationView.CassetteView.class })
 	private List<CassetteUseSlotAnnotation> cassetteUses;
 
 	@IndexedEmbedded(includePaths = {
@@ -105,7 +105,7 @@ public class Cassette extends Reagent {
 		"cassetteGenomicEntityAssociationObject.symbol_keyword", "relation.name_keyword"
 	})
 	@OneToMany(mappedBy = "cassetteAssociationSubject", cascade = CascadeType.ALL, orphanRemoval = true)
-	@JsonView({ CurationView.FieldsAndLists.class })
+	@JsonView({ CurationView.FieldsAndLists.class, CurationView.CassetteView.class })
 	private List<CassetteGenomicEntityAssociation> cassetteGenomicEntityAssociations;
 
 	@IndexedEmbedded(includePaths = {
@@ -114,7 +114,7 @@ public class Cassette extends Reagent {
 		"cassetteTransgenicToolAssociationObject.modInternalId_keyword", "relation.name_keyword"
 	})
 	@OneToMany(mappedBy = "cassetteAssociationSubject", cascade = CascadeType.ALL, orphanRemoval = true)
-	@JsonView({ CurationView.FieldsAndLists.class })
+	@JsonView({ CurationView.FieldsAndLists.class, CurationView.CassetteView.class })
 	private List<CassetteTransgenicToolAssociation> cassetteTransgenicToolAssociations;
 
 	@IndexedEmbedded(includePaths = {
@@ -123,6 +123,6 @@ public class Cassette extends Reagent {
 		"cassetteStrAssociationObject.modInternalId_keyword", "relation.name_keyword"
 	})
 	@OneToMany(mappedBy = "cassetteAssociationSubject", cascade = CascadeType.ALL, orphanRemoval = true)
-	@JsonView({ CurationView.FieldsAndLists.class })
+	@JsonView({ CurationView.FieldsAndLists.class, CurationView.CassetteView.class })
 	private List<CassetteStrAssociation> cassetteStrAssociations;
 }

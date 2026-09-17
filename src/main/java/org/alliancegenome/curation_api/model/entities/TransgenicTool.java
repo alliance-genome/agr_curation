@@ -60,13 +60,13 @@ public class TransgenicTool extends Reagent {
 	@IndexedEmbedded(includePaths = { "displayText", "formatText", "nameType.name", "synonymScope.name", "evidence.curie", "displayText_keyword", "formatText_keyword", "nameType.name_keyword", "synonymScope.name_keyword", "evidence.curie_keyword"})
 	@OneToMany(mappedBy = "singleTransgenicTool", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonManagedReference
-	@JsonView({ CurationView.FieldsAndLists.class })
+	@JsonView({ CurationView.FieldsAndLists.class, CurationView.TransgenicToolView.class })
 	private List<TransgenicToolSynonymSlotAnnotation> transgenicToolSynonyms;
 
 	@IndexedEmbedded(includePaths = { "uses.curie", "uses.name", "uses.curie_keyword", "uses.name_keyword" })
 	@OneToMany(mappedBy = "singleTransgenicTool", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonManagedReference
-	@JsonView({ CurationView.FieldsAndLists.class })
+	@JsonView({ CurationView.FieldsAndLists.class, CurationView.TransgenicToolView.class })
 	private List<TransgenicToolUseSlotAnnotation> transgenicToolUses;
 
 	@IndexedEmbedded(includePaths = {
@@ -75,7 +75,7 @@ public class TransgenicTool extends Reagent {
 	})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
-	@JsonView({ CurationView.FieldsAndLists.class })
+	@JsonView({ CurationView.FieldsAndLists.class, CurationView.TransgenicToolView.class })
 	@JoinTable(indexes = {
 		@Index(name = "transgenictool_reference_transgenictool_index", columnList = "transgenictool_id"),
 		@Index(name = "transgenictool_reference_references_index", columnList = "references_id")
@@ -85,7 +85,7 @@ public class TransgenicTool extends Reagent {
 	@IndexedEmbedded(includePaths = { "referencedCurie", "displayName", "referencedCurie_keyword", "displayName_keyword" })
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
-	@JsonView({ CurationView.FieldsAndLists.class })
+	@JsonView({ CurationView.FieldsAndLists.class, CurationView.TransgenicToolView.class })
 	@JoinTable(indexes = {
 		@Index(name = "transgenictool_crossreference_transgenictool_index", columnList = "transgenictool_id"),
 		@Index(name = "transgenictool_crossreference_crossreferences_index", columnList = "crossreferences_id")
