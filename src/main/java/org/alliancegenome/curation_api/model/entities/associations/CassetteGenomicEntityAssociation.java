@@ -67,7 +67,7 @@ public class CassetteGenomicEntityAssociation extends CassetteAssociation {
 	@IndexedEmbedded(includePaths = {"curie", "name", "curie_keyword", "name_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
-	@JsonView({ CurationView.FieldsAndLists.class })
+	@JsonView({ CurationView.FieldsAndLists.class , CurationView.CassetteView.class})
 	@JoinTable(
 		name = "cassettegenomicentityassociation_soterm",
 		joinColumns = @JoinColumn(name = "cassettegenomicentityassociation_id"),
@@ -85,7 +85,7 @@ public class CassetteGenomicEntityAssociation extends CassetteAssociation {
 	})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-	@JsonView({ CurationView.FieldsAndLists.class })
+	@JsonView({ CurationView.FieldsAndLists.class , CurationView.CassetteView.class})
 	@JoinTable(
 		name = "cassettegenomicentityassociation_note",
 		joinColumns = @JoinColumn(name = "cassettegenomicentityassociation_id"),

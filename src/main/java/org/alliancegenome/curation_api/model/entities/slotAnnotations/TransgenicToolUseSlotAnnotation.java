@@ -53,7 +53,7 @@ public class TransgenicToolUseSlotAnnotation extends SlotAnnotation {
 			@Index(name = "ttuseslotannotation_uses_index", columnList = "uses_id")
 		}
 	)
-	@JsonView({ CurationView.FieldsAndLists.class })
+	@JsonView({ CurationView.FieldsAndLists.class , CurationView.TransgenicToolView.class})
 	private List<FBCVTerm> uses;
 
 }

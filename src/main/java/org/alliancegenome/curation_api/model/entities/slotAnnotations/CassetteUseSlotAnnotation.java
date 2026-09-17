@@ -53,7 +53,7 @@ public class CassetteUseSlotAnnotation extends SlotAnnotation {
 			@Index(name = "cassetteuseslotannotation_uses_index", columnList = "uses_id")
 		}
 	)
-	@JsonView({ CurationView.FieldsAndLists.class })
+	@JsonView({ CurationView.FieldsAndLists.class , CurationView.CassetteView.class})
 	private List<FBCVTerm> uses;
 
 }
