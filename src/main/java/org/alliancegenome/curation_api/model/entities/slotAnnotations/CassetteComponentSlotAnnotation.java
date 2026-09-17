@@ -91,7 +91,7 @@ public class CassetteComponentSlotAnnotation extends SlotAnnotation {
 	})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-	@JsonView({CurationView.FieldsAndLists.class})
+	@JsonView({CurationView.FieldsAndLists.class, CurationView.CassetteView.class})
 	@JoinTable(
 			name = "cassettecomponentslotannotation_note",
 			joinColumns = @JoinColumn(name = "slotannotation_id"),

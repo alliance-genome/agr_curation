@@ -60,7 +60,7 @@ public class CassetteTransgenicToolAssociation extends CassetteAssociation {
 	})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-	@JsonView({ CurationView.FieldsAndLists.class })
+	@JsonView({ CurationView.FieldsAndLists.class , CurationView.CassetteView.class})
 	@JoinTable(
 		name = "cassettetransgenictoolassociation_note",
 		joinColumns = @JoinColumn(name = "cassettetransgenictoolassociation_id"),
