@@ -4,7 +4,8 @@ import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import org.alliancegenome.curation_api.dao.CodingSequenceDAO;
-import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
+import org.alliancegenome.curation_api.model.entities.Organization;
+import org.alliancegenome.curation_api.model.entities.Species;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.CodingSequence;
 import org.alliancegenome.curation_api.model.entities.Note;
@@ -35,14 +36,14 @@ public class CodingSequenceService extends BaseEntityCrudService<CodingSequence,
 		setSQLDao(codingSequenceDAO);
 	}
 
-	public List<Long> getIdsByDataProvider(BackendBulkDataProvider dataProvider) {
-		String taxon = needsTaxonFilter(dataProvider) ? dataProvider.canonicalTaxonCurie : null;
-		return codingSequenceDAO.findIdsByDataProvider(dataProvider.sourceOrganization, taxon);
+	public List<Long> getIdsBySpecies(Species species) {
+		String taxon = needsTaxonFilter(species.getDataProvider()) ? species.getTaxon().getCurie() : null;
+		return codingSequenceDAO.findIdsByDataProvider(species.getDataProvider().getAbbreviation(), taxon);
 	}
 
-	private boolean needsTaxonFilter(BackendBulkDataProvider dataProvider) {
-		return StringUtils.equals(dataProvider.sourceOrganization, "RGD")
-			|| StringUtils.equals(dataProvider.sourceOrganization, "XB");
+	private boolean needsTaxonFilter(Organization dataProvider) {
+		return StringUtils.equals(dataProvider.getAbbreviation(), "RGD")
+			|| StringUtils.equals(dataProvider.getAbbreviation(), "XB");
 	}
 
 	@Override

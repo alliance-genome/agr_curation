@@ -301,7 +301,7 @@ export const DataLoadsComponent = () => {
 
 	const showUploadConfirmDialog = (rowData) => {
 		setUploadLoadType(rowData.backendBulkLoadType);
-		setUploadSubType(rowData.dataProvider);
+		setUploadSubType(rowData.species?.displayName);
 		setUploadConfirmDialog(true);
 		//setUploadFile(event.files[0]);
 	};
@@ -501,7 +501,7 @@ export const DataLoadsComponent = () => {
 			}
 		}
 		if (showManualLoad) {
-			ret.push(<Column key="fmsDataType2" field="dataProvider" header="Load Data Provider" />);
+			ret.push(<Column key="fmsDataType2" field="species.displayName" header="Load Data Provider" />);
 		}
 
 		return ret;

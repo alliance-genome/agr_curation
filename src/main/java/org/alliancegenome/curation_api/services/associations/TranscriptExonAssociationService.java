@@ -9,7 +9,8 @@ import java.util.stream.Collectors;
 import org.alliancegenome.curation_api.constants.EntityFieldConstants;
 import org.alliancegenome.curation_api.dao.PersonDAO;
 import org.alliancegenome.curation_api.dao.associations.TranscriptExonAssociationDAO;
-import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
+import org.alliancegenome.curation_api.model.entities.Organization;
+import org.alliancegenome.curation_api.model.entities.Species;
 import org.alliancegenome.curation_api.model.entities.Exon;
 import org.alliancegenome.curation_api.model.entities.Transcript;
 import org.alliancegenome.curation_api.model.entities.associations.TranscriptExonAssociation;
@@ -37,14 +38,14 @@ public class TranscriptExonAssociationService extends BaseEntityCrudService<Tran
 	}
 
 
-	public List<Long> getIdsByDataProvider(BackendBulkDataProvider dataProvider) {
-		String taxon = needsTaxonFilter(dataProvider) ? dataProvider.canonicalTaxonCurie : null;
-		return transcriptExonAssociationDAO.findIdsByDataProvider(dataProvider.sourceOrganization, taxon);
+	public List<Long> getIdsBySpecies(Species species) {
+		String taxon = needsTaxonFilter(species.getDataProvider()) ? species.getTaxon().getCurie() : null;
+		return transcriptExonAssociationDAO.findIdsByDataProvider(species.getDataProvider().getAbbreviation(), taxon);
 	}
 
-	private boolean needsTaxonFilter(BackendBulkDataProvider dataProvider) {
-		return StringUtils.equals(dataProvider.sourceOrganization, "RGD")
-			|| StringUtils.equals(dataProvider.sourceOrganization, "XB");
+	private boolean needsTaxonFilter(Organization dataProvider) {
+		return StringUtils.equals(dataProvider.getAbbreviation(), "RGD")
+			|| StringUtils.equals(dataProvider.getAbbreviation(), "XB");
 	}
 
 	public ObjectResponse<TranscriptExonAssociation> getLocationAssociation(Long transcriptId, Long assemblyComponentId) {

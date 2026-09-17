@@ -3,7 +3,7 @@ package org.alliancegenome.curation_api.services.validation.dto;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.GeneDiseaseAnnotationDAO;
-import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
+import org.alliancegenome.curation_api.model.entities.Species;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
 import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
 import org.alliancegenome.curation_api.model.entities.Gene;
@@ -27,7 +27,7 @@ public class GeneDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOValid
 	@Inject GeneDiseaseAnnotationDAO geneDiseaseAnnotationDAO;
 	@Inject AffectedGenomicModelService affectedGenomicModelService;
 
-	public ObjectResponse<GeneDiseaseAnnotation> validateGeneDiseaseAnnotationDTO(GeneDiseaseAnnotationDTO dto, BackendBulkDataProvider dataProvider) throws ObjectValidationException {
+	public ObjectResponse<GeneDiseaseAnnotation> validateGeneDiseaseAnnotationDTO(GeneDiseaseAnnotationDTO dto, Species species) throws ObjectValidationException {
 		response = new ObjectResponse<GeneDiseaseAnnotation>();
 		
 		GeneDiseaseAnnotation annotation = new GeneDiseaseAnnotation();
@@ -45,10 +45,10 @@ public class GeneDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOValid
 			annotation.setDiseaseAnnotationSubject(gene);
 			UniqueIdentifierHelper.setObsoleteAndInternal(dto, annotation);
 
-			if (dataProvider != null
-					&& (dataProvider.name().equals("RGD") || dataProvider.name().equals("HUMAN"))
-					&& (!gene.getTaxon().getCurie().equals(dataProvider.canonicalTaxonCurie) || !dataProvider.sourceOrganization.equals(gene.getDataProvider().getAbbreviation()))) {
-				response.addErrorMessage("allele_identifier", ValidationConstants.INVALID_MESSAGE + " (" + dto.getGeneIdentifier() + ") for " + dataProvider.name() + " load");
+			if (species != null
+					&& (species.getDisplayName().equals("RGD") || species.getDisplayName().equals("HUMAN"))
+					&& (!gene.getTaxon().getCurie().equals(species.getTaxon().getCurie()) || !species.getDataProvider().getAbbreviation().equals(gene.getDataProvider().getAbbreviation()))) {
+				response.addErrorMessage("allele_identifier", ValidationConstants.INVALID_MESSAGE + " (" + dto.getGeneIdentifier() + ") for " + species.getDisplayName() + " load");
 			}
 		}
 		annotation.setEvidenceItem(reference);

@@ -5,7 +5,7 @@ import java.util.Set;
 
 import org.alliancegenome.curation_api.dao.AGMPhenotypeAnnotationDAO;
 import org.alliancegenome.curation_api.dao.ConditionRelationDAO;
-import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
+import org.alliancegenome.curation_api.model.entities.Species;
 import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.model.entities.AGMPhenotypeAnnotation;
 import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
@@ -46,14 +46,14 @@ public class AGMPhenotypeAnnotationService extends BaseAnnotationCrudService<AGM
 	}
 
 	@Transactional
-	public AGMPhenotypeAnnotation upsertPrimaryAnnotation(AffectedGenomicModel subject, PhenotypeFmsDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
-		AGMPhenotypeAnnotation annotation = agmPhenotypeAnnotationFmsDtoValidator.validatePrimaryAnnotation(subject, dto, dataProvider);
+	public AGMPhenotypeAnnotation upsertPrimaryAnnotation(AffectedGenomicModel subject, PhenotypeFmsDTO dto, Species species) throws ValidationException {
+		AGMPhenotypeAnnotation annotation = agmPhenotypeAnnotationFmsDtoValidator.validatePrimaryAnnotation(subject, dto, species);
 		return agmPhenotypeAnnotationDAO.persist(annotation);
 	}
 
 	@Transactional
-	public List<AGMPhenotypeAnnotation> addInferredOrAssertedEntities(AffectedGenomicModel primaryAnnotationSubject, PhenotypeFmsDTO secondaryAnnotationDto, BackendBulkDataProvider dataProvider, Set<Long> idsAdded) throws ValidationException {
-		List<AGMPhenotypeAnnotation> annotations = agmPhenotypeAnnotationFmsDtoValidator.validateInferredOrAssertedEntities(primaryAnnotationSubject, secondaryAnnotationDto, dataProvider, idsAdded);
+	public List<AGMPhenotypeAnnotation> addInferredOrAssertedEntities(AffectedGenomicModel primaryAnnotationSubject, PhenotypeFmsDTO secondaryAnnotationDto, Species species, Set<Long> idsAdded) throws ValidationException {
+		List<AGMPhenotypeAnnotation> annotations = agmPhenotypeAnnotationFmsDtoValidator.validateInferredOrAssertedEntities(primaryAnnotationSubject, secondaryAnnotationDto, species, idsAdded);
 		for (AGMPhenotypeAnnotation annotation : annotations) {
 			agmPhenotypeAnnotationDAO.persist(annotation);
 		}
@@ -68,7 +68,7 @@ public class AGMPhenotypeAnnotationService extends BaseAnnotationCrudService<AGM
 		return ret;
 	}
 
-	public List<Long> getAnnotationIdsByDataProvider(BackendBulkDataProvider dataProvider) {
-		return phenotypeAnnotationService.getAnnotationIdsByDataProvider(agmPhenotypeAnnotationDAO, dataProvider);
+	public List<Long> getAnnotationIdsBySpecies(Species species) {
+		return phenotypeAnnotationService.getAnnotationIdsBySpecies(agmPhenotypeAnnotationDAO, species);
 	}
 }

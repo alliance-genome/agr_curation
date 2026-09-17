@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.alliancegenome.curation_api.dao.GeneDAO;
-import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
+import org.alliancegenome.curation_api.model.entities.Species;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkManualLoad;
 import org.alliancegenome.curation_api.model.ingest.dto.GeneDTO;
@@ -30,8 +30,8 @@ public class GeneExecutor extends LoadFileExecutor {
 	public void execLoad(BulkLoadFileHistory bulkLoadFileHistory, Boolean cleanUp) {
 
 		BulkManualLoad manual = (BulkManualLoad) bulkLoadFileHistory.getBulkLoad();
-		BackendBulkDataProvider dataProvider = manual.getDataProvider();
-		log.info("Running with dataProvider : " + dataProvider.name());
+		Species species = manual.getSpecies();
+		log.info("Running with dataProvider : " + species.getDisplayName());
 
 		IngestDTO ingestDto = readIngestFile(bulkLoadFileHistory, GeneDTO.class);
 		if (ingestDto == null) {
@@ -46,7 +46,7 @@ public class GeneExecutor extends LoadFileExecutor {
 		List<Long> geneIdsLoaded = new ArrayList<>();
 		List<Long> geneIdsBefore = new ArrayList<>();
 		if (cleanUp) {
-			geneIdsBefore.addAll(geneService.getIdsByDataProvider(dataProvider));
+			geneIdsBefore.addAll(geneService.getIdsBySpecies(species));
 			log.debug("runLoad: Before: total " + geneIdsBefore.size());
 		}
 
@@ -56,9 +56,9 @@ public class GeneExecutor extends LoadFileExecutor {
 		bulkLoadFileHistory.setCount(genes.size());
 		updateHistory(bulkLoadFileHistory);
 		
-		boolean success = runLoad(geneService, bulkLoadFileHistory, dataProvider, genes, geneIdsLoaded);
+		boolean success = runLoad(geneService, bulkLoadFileHistory, species, genes, geneIdsLoaded);
 		if (success && cleanUp) {
-			runCleanup(geneService, bulkLoadFileHistory, dataProvider.name(), geneIdsBefore, geneIdsLoaded, "gene");
+			runCleanup(geneService, bulkLoadFileHistory, species.getDisplayName(), geneIdsBefore, geneIdsLoaded, "gene");
 		}
 		bulkLoadFileHistory.finishLoad();
 		updateHistory(bulkLoadFileHistory);

@@ -8,7 +8,8 @@ import java.util.stream.Collectors;
 
 import org.alliancegenome.curation_api.dao.PersonDAO;
 import org.alliancegenome.curation_api.dao.associations.CodingSequenceGenomicLocationAssociationDAO;
-import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
+import org.alliancegenome.curation_api.model.entities.Organization;
+import org.alliancegenome.curation_api.model.entities.Species;
 import org.alliancegenome.curation_api.model.entities.CodingSequence;
 import org.alliancegenome.curation_api.model.entities.associations.CodingSequenceGenomicLocationAssociation;
 import org.alliancegenome.curation_api.response.ObjectResponse;
@@ -35,14 +36,14 @@ public class CodingSequenceGenomicLocationAssociationService extends BaseEntityC
 	}
 
 
-	public List<Long> getIdsByDataProvider(BackendBulkDataProvider dataProvider) {
-		String taxon = needsTaxonFilter(dataProvider) ? dataProvider.canonicalTaxonCurie : null;
-		return codingSequenceGenomicLocationAssociationDAO.findIdsByDataProvider(dataProvider.sourceOrganization, taxon);
+	public List<Long> getIdsBySpecies(Species species) {
+		String taxon = needsTaxonFilter(species.getDataProvider()) ? species.getTaxon().getCurie() : null;
+		return codingSequenceGenomicLocationAssociationDAO.findIdsByDataProvider(species.getDataProvider().getAbbreviation(), taxon);
 	}
 
-	private boolean needsTaxonFilter(BackendBulkDataProvider dataProvider) {
-		return StringUtils.equals(dataProvider.sourceOrganization, "RGD")
-			|| StringUtils.equals(dataProvider.sourceOrganization, "XB");
+	private boolean needsTaxonFilter(Organization dataProvider) {
+		return StringUtils.equals(dataProvider.getAbbreviation(), "RGD")
+			|| StringUtils.equals(dataProvider.getAbbreviation(), "XB");
 	}
 
 	public ObjectResponse<CodingSequenceGenomicLocationAssociation> getLocationAssociation(Long codingSequenceId, Long assemblyComponentId) {

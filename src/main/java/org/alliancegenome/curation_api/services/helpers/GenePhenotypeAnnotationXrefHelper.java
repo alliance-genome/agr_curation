@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Objects;
 
 import org.alliancegenome.curation_api.dao.GeneDAO;
-import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
+import org.alliancegenome.curation_api.model.entities.Species;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.ResourceDescriptorPage;
@@ -24,9 +24,9 @@ public class GenePhenotypeAnnotationXrefHelper {
 	@Inject GeneDAO geneDAO;
 	
 	@Transactional
-	public Gene addGenePhenotypeCrossReference(BackendBulkDataProvider dataProvider, Gene gene) {
-	
-		if (Objects.equals("HUMAN", dataProvider.name()) || gene.getIdentifier().startsWith("HGNC:")) {
+	public Gene addGenePhenotypeCrossReference(Species species, Gene gene) {
+
+		if (Objects.equals("HUMAN", species.getDisplayName()) || gene.getIdentifier().startsWith("HGNC:")) {
 			return gene;
 		}
 

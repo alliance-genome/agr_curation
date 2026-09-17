@@ -13,7 +13,7 @@ import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.PredictedVariantConsequenceDAO;
 import org.alliancegenome.curation_api.dao.TranscriptDAO;
 import org.alliancegenome.curation_api.dao.associations.CuratedVariantGenomicLocationAssociationDAO;
-import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
+import org.alliancegenome.curation_api.model.entities.Species;
 import org.alliancegenome.curation_api.exceptions.KnownIssueValidationException;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
 import org.alliancegenome.curation_api.exceptions.ValidationException;
@@ -49,7 +49,7 @@ public class VepTranscriptFmsDTOValidator {
 	private static final Pattern PATHOGENICITY_PREDICTION_RESULT = Pattern.compile("^([\\w]+)\\(([\\d\\.]+)\\)$");
 	private static final Pattern POSITION_STRING = Pattern.compile("^[\\d\\?\\-]+$");
 	
-	public ObjectResponse<PredictedVariantConsequence> validateTranscriptLevelConsequence(VepTxtDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
+	public ObjectResponse<PredictedVariantConsequence> validateTranscriptLevelConsequence(VepTxtDTO dto, Species species) throws ValidationException {
 		ObjectResponse<PredictedVariantConsequence> response = new ObjectResponse<>();
 		PredictedVariantConsequence predictedVariantConsequence = new PredictedVariantConsequence();
 

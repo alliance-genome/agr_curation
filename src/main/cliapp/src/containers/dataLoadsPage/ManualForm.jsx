@@ -1,24 +1,34 @@
 import React from 'react';
-import { DataLoadService } from '../../service/DataLoadService';
 import { Dropdown } from 'primereact/dropdown';
+import { useQuery } from '@tanstack/react-query';
+import { SearchService } from '../../service/SearchService';
+import { Endpoints } from '../../constants/Endpoints';
 
 export const ManualForm = ({ hideManual, newBulkLoad, onChange }) => {
-	const dataLoadService = new DataLoadService();
+	const searchService = new SearchService();
 
-	const dataProviders = dataLoadService.getDataProviders();
+	const { data } = useQuery({
+		queryKey: ['manualLoadDataProviders'],
+		queryFn: () => searchService.find(Endpoints.Entity.SPECIES, 100, 0, {}),
+		staleTime: Infinity,
+		refetchOnWindowFocus: false,
+	});
+
 	return (
 		<>
 			{!hideManual.current && (
 				<div className="field">
-					<label htmlFor="dataProvider">Data Provider</label>
+					<label htmlFor="species">Data Provider</label>
 					<Dropdown
-						id="dataProvider"
-						value={newBulkLoad.dataProvider}
-						options={dataProviders}
+						id="species"
+						value={newBulkLoad.species?.id ?? newBulkLoad.species}
+						options={data?.results}
 						onChange={onChange}
 						placeholder={'Select Data Provider'}
 						className="p-col-12"
-						name="dataProvider"
+						name="species"
+						optionLabel="displayName"
+						optionValue="id"
 					/>
 				</div>
 			)}

@@ -5,7 +5,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
+import org.alliancegenome.curation_api.model.entities.Species;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.exceptions.KnownIssueValidationException;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
@@ -41,19 +41,16 @@ public class ExpressionAtlasExecutor extends LoadFileExecutor {
 			.map(sUrl -> sUrl.substring(sUrl.lastIndexOf("/") + 1))
 			.toList();
 
-		String name = bulkLoadFileHistory.getBulkLoad().getName();
-		String dataProviderName = name.substring(0, name.indexOf(" "));
-		
-		BackendBulkDataProvider dataProvider = BackendBulkDataProvider.valueOf(dataProviderName);
+		Species species = bulkLoadFileHistory.getBulkLoad().getSpecies();
 
-		runLoad(bulkLoadFileHistory, dataProvider, accessions);
+		runLoad(bulkLoadFileHistory, species, accessions);
 
 		bulkLoadFileHistory.finishLoad();
 		updateHistory(bulkLoadFileHistory);
 		updateExceptions(bulkLoadFileHistory);
 	}
 		
-	private void runLoad(BulkLoadFileHistory history, BackendBulkDataProvider dataProvider, List<String> identifiers) {
+	private void runLoad(BulkLoadFileHistory history, Species species, List<String> identifiers) {
 		if (Thread.currentThread().isInterrupted()) {
 			history.setErrorMessage(ApiErrorException.INTERRUPTED_MESSAGE);
 			throw new RuntimeException(ApiErrorException.INTERRUPTED_MESSAGE);
@@ -63,8 +60,8 @@ public class ExpressionAtlasExecutor extends LoadFileExecutor {
 		ph.addDisplayHandler(loadProcessDisplayService);
 		if (CollectionUtils.isNotEmpty(identifiers)) {
 			String loadMessage = "Expression Atlas cross-reference update";
-			if (dataProvider != null) {
-				loadMessage = loadMessage + " for " + dataProvider.name();
+			if (species != null) {
+				loadMessage = loadMessage + " for " + species.getDisplayName();
 			}
 			ph.startProcess(loadMessage, identifiers.size());
 			
@@ -73,7 +70,7 @@ public class ExpressionAtlasExecutor extends LoadFileExecutor {
 			
 			for (String identifier : identifiers) {
 				try {
-					geneService.addExpressionAtlasXref(identifier, dataProvider);
+					geneService.addExpressionAtlasXref(identifier, species);
 					history.incrementCompleted();
 				} catch (ObjectUpdateException e) {
 					history.incrementFailed();
