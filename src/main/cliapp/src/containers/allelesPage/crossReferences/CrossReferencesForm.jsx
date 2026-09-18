@@ -1,6 +1,7 @@
 import { useMemo, useRef } from 'react';
 import { Button } from 'primereact/button';
 import { Toast } from 'primereact/toast';
+import { Message } from 'primereact/message';
 import { FormTableWrapper } from '../../../components/FormTableWrapper';
 import { useSubResource } from '../../../components/SubResourcesContext';
 import { CrossReferencesTable } from './CrossReferencesTable';
@@ -17,7 +18,8 @@ import { applyCrossReferenceFieldChange, buildNewCrossReference } from './utils'
  * @param {'detail'|'create'} [props.mode]
  */
 export const CrossReferencesForm = ({ mode = 'detail' }) => {
-	const { crossReferences, setCrossReferences, errorMessages, isSaving, save } = useSubResource('crossReferences');
+	const { crossReferences, setCrossReferences, errorMessages, isLoading, loadError, isSaving, save } =
+		useSubResource('crossReferences');
 	const tableRef = useRef(null);
 	const toast = useRef(null);
 	const isDetail = mode === 'detail';
@@ -90,8 +92,17 @@ export const CrossReferencesForm = ({ mode = 'detail' }) => {
 								label="Save Cross References"
 								icon={isSaving ? 'pi pi-spin pi-spinner' : 'pi pi-check'}
 								onClick={saveHandler}
-								disabled={isSaving}
+								// Saving replaces the stored list with what is on screen, so it has to wait for
+								// the read. Saving a table that is still loading, or that failed to load, would
+								// submit an empty list and delete every cross reference the allele has.
+								disabled={isSaving || isLoading || Boolean(loadError)}
 								className="p-button-text"
+							/>
+						)}
+						{loadError && (
+							<Message
+								severity="error"
+								text="Could not load these cross references, so they cannot be saved. Reload the page to try again."
 							/>
 						)}
 					</div>

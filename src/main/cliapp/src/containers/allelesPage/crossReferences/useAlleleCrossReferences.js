@@ -39,7 +39,8 @@ const keyAndSeed = async (crossReferences) => {
 export const useAlleleCrossReferences = (alleleId) => {
 	const [crossReferences, setCrossReferences] = useState([]);
 	const [errorMessages, setErrorMessages] = useState({});
-	const [isLoading, setIsLoading] = useState(false);
+	const [isLoading, setIsLoading] = useState(Boolean(alleleId));
+	const [loadError, setLoadError] = useState(null);
 	const [isSaving, setIsSaving] = useState(false);
 	const crossReferenceService = useMemo(() => new CrossReferenceService(), []);
 
@@ -49,12 +50,16 @@ export const useAlleleCrossReferences = (alleleId) => {
 		let cancelled = false;
 		const load = async () => {
 			setIsLoading(true);
+			setLoadError(null);
 			try {
 				const response = await crossReferenceService.getCrossReferencesForAllele(alleleId);
 				const loaded = await keyAndSeed(response?.data?.entities ?? []);
 				if (!cancelled) setCrossReferences(loaded);
 			} catch (error) {
 				console.warn(`Could not load cross references for allele ${alleleId}`, error);
+				// Held rather than swallowed so the section can refuse to save. An empty table that failed
+				// to load is indistinguishable from an allele with none, and saving it would delete them.
+				if (!cancelled) setLoadError(error);
 			} finally {
 				if (!cancelled) setIsLoading(false);
 			}
@@ -97,5 +102,5 @@ export const useAlleleCrossReferences = (alleleId) => {
 		[alleleId, crossReferenceService, crossReferences]
 	);
 
-	return { crossReferences, setCrossReferences, errorMessages, isLoading, isSaving, save };
+	return { crossReferences, setCrossReferences, errorMessages, isLoading, loadError, isSaving, save };
 };
