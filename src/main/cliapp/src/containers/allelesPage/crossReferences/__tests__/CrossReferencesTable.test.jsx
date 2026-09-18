@@ -1,5 +1,5 @@
 import React from 'react';
-import { screen } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { renderWithClient } from '../../../../tools/jest/utils';
 
@@ -99,6 +99,38 @@ describe('CrossReferencesTable', () => {
 		expect(screen.queryByText('gene')).not.toBeInTheDocument();
 	});
 
+	// The autocomplete reports every keystroke. Applying half-typed text would clear the page through
+	// the merge rule, and the curator could not get it back.
+	it('Ignores half-typed descriptor text, so the row keeps its page', async () => {
+		const user = userEvent.setup();
+		const { onFieldChange } = renderTable();
+
+		await user.type(screen.getByLabelText('resourceDescriptor'), 'Z');
+
+		expect(onFieldChange).not.toHaveBeenCalled();
+		expect(pageInput()).toHaveValue('default');
+	});
+
+	it('Still applies a descriptor chosen from the suggestions', async () => {
+		const user = userEvent.setup();
+		const { onFieldChange } = renderTable();
+
+		// The autocomplete reports a selection as the object itself rather than as text.
+		await user.clear(screen.getByLabelText('resourceDescriptor'));
+
+		expect(onFieldChange).toHaveBeenCalledWith('row-1', 'resourceDescriptor', null);
+	});
+
+	// A page chosen from this dropdown carries no descriptor of its own, and a descriptor that failed
+	// to load offers nothing - either way the dropdown would find no match and claim nothing is set.
+	it('Shows a page that is set even when its descriptor offers no options', () => {
+		renderTable({
+			crossReferences: [buildRow({ resourceDescriptor: null, resourceDescriptorPage: { id: 7, name: 'orphaned' } })],
+		});
+
+		expect(pageInput()).toHaveValue('orphaned');
+	});
+
 	it('Tells the curator to choose a descriptor before a page', () => {
 		renderTable({ crossReferences: [buildRow({ resourceDescriptor: null, resourceDescriptorPage: null })] });
 
@@ -140,6 +172,23 @@ describe('CrossReferencesTable', () => {
 		await user.click(screen.getByRole('button', { name: '' }));
 
 		expect(deletionHandler).toHaveBeenCalledWith(expect.anything(), 'row-1');
+	});
+
+	// BooleanDropdown re-reads its value from editorOptions.rowData every time the dropdown opens, so
+	// handing it the frozen snapshot would show the curator the value they just replaced.
+	it('Shows the live internal value when the dropdown is reopened', async () => {
+		const user = userEvent.setup();
+		const { rerenderWith, container } = renderTable();
+		// the page dropdown is rendered first, the Internal one second
+		const internalRoot = () => container.querySelectorAll('.p-dropdown')[1];
+		const internalLabel = () => internalRoot().querySelector('.p-dropdown-label');
+
+		expect(internalLabel()).toHaveTextContent('false');
+
+		rerenderWith([buildRow({ internal: true })]);
+		await user.click(internalRoot());
+
+		await waitFor(() => expect(internalLabel()).toHaveTextContent('true'));
 	});
 
 	it('Offers Obsolete only when asked to', () => {

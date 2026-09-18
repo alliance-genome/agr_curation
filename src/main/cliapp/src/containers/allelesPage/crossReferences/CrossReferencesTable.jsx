@@ -47,21 +47,20 @@ export const CrossReferencesTable = ({
 
 	const descriptorChangeHandler = (row) => (event, setFieldValue) => {
 		const selected = event.target.value;
+		setFieldValue(typeof selected === 'object' ? selected?.prefix : selected);
 
-		if (!selected) {
-			setFieldValue('');
-			onFieldChange(row.dataKey, 'resourceDescriptor', null);
-			return;
-		}
+		// The autocomplete reports every keystroke, not only a selection. Half-typed text names no
+		// descriptor, and applying it would clear the page through the merge rule - which the curator
+		// could not then undo, because the page it cleared is the one they were keeping.
+		if (typeof selected === 'string' && selected !== '') return;
 
-		// A descriptor typed rather than chosen has no resourcePages, so the merge rule clears the page.
-		const descriptor = typeof selected === 'object' ? selected : { prefix: selected };
-		setFieldValue(descriptor.prefix);
-		onFieldChange(row.dataKey, 'resourceDescriptor', descriptor);
+		onFieldChange(row.dataKey, 'resourceDescriptor', selected || null);
 	};
 
+	// The boolean terms carry 'true'/'false' as their name, so the row holds a real boolean rather than
+	// the term or its text.
 	const booleanChangeHandler = (field) => (editorOptions, event) =>
-		onFieldChange(editorOptions?.rowData?.dataKey, field, event.target.value?.name);
+		onFieldChange(editorOptions?.rowData?.dataKey, field, event.target.value?.name === 'true');
 
 	return (
 		<DataTable
@@ -146,13 +145,20 @@ export const CrossReferencesTable = ({
 			<Column
 				editor={(props) => {
 					const row = resolveRow(props);
+					// The row's own page is always offered, even when the descriptor cannot list it: a page
+					// chosen from this dropdown carries no descriptor of its own, and a descriptor that is
+					// absent or failed to load offers nothing. Without it the dropdown finds no match for a
+					// page that is set and renders its placeholder, telling the curator there is none.
 					const pages = row.resourceDescriptor?.resourcePages ?? [];
+					const currentPage = row.resourceDescriptorPage;
+					const options =
+						currentPage && !pages.some((page) => page.id === currentPage.id) ? [currentPage, ...pages] : pages;
 					return (
 						<>
 							<Dropdown
 								aria-label="resourceDescriptorPage"
 								value={row.resourceDescriptorPage}
-								options={pages}
+								options={options}
 								optionLabel="name"
 								// Matches the stored page against the same page inside the descriptor by id. They are
 								// separate objects, so without this an existing page renders as nothing selected.
@@ -179,7 +185,7 @@ export const CrossReferencesTable = ({
 					const row = resolveRow(props);
 					return (
 						<InternalEditor
-							editorOptions={props}
+							editorOptions={{ ...props, rowData: row }}
 							rowIndex={props.rowIndex}
 							errorMessages={errorMessages}
 							dataKey={row.dataKey}
@@ -197,7 +203,7 @@ export const CrossReferencesTable = ({
 						const row = resolveRow(props);
 						return (
 							<ObsoleteEditor
-								editorOptions={props}
+								editorOptions={{ ...props, rowData: row }}
 								rowIndex={props.rowIndex}
 								errorMessages={errorMessages}
 								dataKey={row.dataKey}
