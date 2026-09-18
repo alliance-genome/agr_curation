@@ -58,13 +58,13 @@ public final class VocabularyConstants {
 
 	public static final String CONSTRUCT_RELATION_VOCABULARY = "construct_relation";
 
-	/**
-	 * SCRUM-6535: the vocabularies the new Constructs model's relation term sets are drawn from.
-	 * Both labels already exist on alpha, created through the curation UI rather than by a migration
-	 * in this repo; only the term sets below are missing there.
+	/*
+	 * SCRUM-6535: there is deliberately no CASSETTE_RELATION_VOCABULARY. An earlier version of this
+	 * file declared one and claimed the label existed on alpha; it does not. The new Constructs
+	 * model's relation term sets are built over construct_relation and new_construct_relation, which
+	 * already hold every term it needs, so no code has a vocabulary label to name here - v0.53.0.16
+	 * refers to them directly.
 	 */
-	public static final String CASSETTE_RELATION_VOCABULARY = "cassette_relation";
-	public static final String NEW_CONSTRUCT_RELATION_VOCABULARY = "new_construct_relation";
 	public static final String CONSTRUCT_GENOMIC_ENTITY_RELATION_VOCABULARY_TERM_SET = "construct_genomic_entity_relation";
 
 	/**
@@ -74,6 +74,12 @@ public final class VocabularyConstants {
 	 * alpha but carry no term sets yet, and they were created through the curation UI rather than by
 	 * a migration in this repo, so the sets have to be added the same way before a load can use them.
 	 */
+	/**
+	 * SCRUM-6535: components named only by symbol validate against their own set, separate from the
+	 * genomic entity associations', per Chris Grove on the ticket. The two carry the same terms
+	 * today but are curated independently.
+	 */
+	public static final String CASSETTE_FREE_TEXT_COMPONENT_RELATION_VOCABULARY_TERM_SET = "cassette_free_text_component_relation";
 	public static final String CASSETTE_GENOMIC_ENTITY_RELATION_VOCABULARY_TERM_SET = "cassette_genomic_entity_relation";
 	public static final String CASSETTE_TRANSGENIC_TOOL_RELATION_VOCABULARY_TERM_SET = "cassette_transgenic_tool_relation";
 	public static final String CASSETTE_STR_RELATION_VOCABULARY_TERM_SET = "cassette_str_relation";

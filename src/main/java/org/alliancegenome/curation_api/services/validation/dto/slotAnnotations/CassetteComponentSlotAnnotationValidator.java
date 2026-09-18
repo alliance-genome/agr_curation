@@ -62,7 +62,7 @@ public class CassetteComponentSlotAnnotationValidator extends SlotAnnotationVali
 		String componentSymbol = validateComponentSymbol(uiEntity);
 		dbEntity.setComponentSymbol(componentSymbol);
 
-		VocabularyTerm relation = validateRequiredTermInVocabularyTermSet("relation", VocabularyConstants.CASSETTE_GENOMIC_ENTITY_RELATION_VOCABULARY_TERM_SET, uiEntity.getRelation(), dbEntity.getRelation());
+		VocabularyTerm relation = validateRequiredTermInVocabularyTermSet("relation", VocabularyConstants.CASSETTE_FREE_TEXT_COMPONENT_RELATION_VOCABULARY_TERM_SET, uiEntity.getRelation(), dbEntity.getRelation());
 		dbEntity.setRelation(relation);
 
 		NCBITaxonTerm taxon = validateTaxon(uiEntity.getTaxon(), dbEntity.getTaxon());

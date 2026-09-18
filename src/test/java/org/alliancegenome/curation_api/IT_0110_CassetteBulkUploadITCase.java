@@ -4,7 +4,6 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 
 import java.time.OffsetDateTime;
-import java.util.List;
 
 import org.alliancegenome.curation_api.base.BaseITCase;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
@@ -74,13 +73,12 @@ public class IT_0110_CassetteBulkUploadITCase extends BaseITCase {
 		addVocabularyTermToSet(VocabularyConstants.CASSETTE_TRANSGENIC_TOOL_ASSOCIATION_NOTE_TYPES_VOCABULARY_TERM_SET, "test_cassette_association_note", noteTypeVocabulary, false);
 		addVocabularyTermToSet(VocabularyConstants.CASSETTE_STR_ASSOCIATION_NOTE_TYPES_VOCABULARY_TERM_SET, "test_cassette_association_note", noteTypeVocabulary, false);
 
-		Vocabulary relationVocabulary = createVocabulary(VocabularyConstants.CASSETTE_RELATION_VOCABULARY, false);
-		relation = createVocabularyTerm(relationVocabulary, "is_regulated_by", false);
-		relation2 = createVocabularyTerm(relationVocabulary, "targets", false);
-		VocabularyTerm expresses = createVocabularyTerm(relationVocabulary, "expresses", false);
-		createVocabularyTermSet(VocabularyConstants.CASSETTE_GENOMIC_ENTITY_RELATION_VOCABULARY_TERM_SET, relationVocabulary, List.of(relation, relation2, expresses));
-		createVocabularyTermSet(VocabularyConstants.CASSETTE_TRANSGENIC_TOOL_RELATION_VOCABULARY_TERM_SET, relationVocabulary, List.of(relation, relation2, expresses));
-		createVocabularyTermSet(VocabularyConstants.CASSETTE_STR_RELATION_VOCABULARY_TERM_SET, relationVocabulary, List.of(expresses));
+		// The relation term sets come from v0.53.0.16, over terms construct_relation already holds,
+		// so the test reads them rather than creating its own: creating a set whose label exists is
+		// a duplicate, not a no-op.
+		Vocabulary relationVocabulary = getVocabulary(VocabularyConstants.CONSTRUCT_RELATION_VOCABULARY);
+		relation = getVocabularyTerm(relationVocabulary, "is_regulated_by");
+		relation2 = getVocabularyTerm(relationVocabulary, "targets");
 
 		// Distinct curies from IT_0109's: the suite shares one database, and creating a term that
 		// already exists is a 500 rather than a no-op.

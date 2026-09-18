@@ -35,7 +35,7 @@ public class CassetteComponentSlotAnnotationDTOValidator extends SlotAnnotationD
 			annotation.setComponentSymbol(dto.getComponentSymbol());
 		}
 
-		VocabularyTerm relation = validateRequiredTermInVocabularyTermSet("relation_name", dto.getRelationName(), VocabularyConstants.CASSETTE_GENOMIC_ENTITY_RELATION_VOCABULARY_TERM_SET);
+		VocabularyTerm relation = validateRequiredTermInVocabularyTermSet("relation_name", dto.getRelationName(), VocabularyConstants.CASSETTE_FREE_TEXT_COMPONENT_RELATION_VOCABULARY_TERM_SET);
 		annotation.setRelation(relation);
 
 		NCBITaxonTerm taxon = validateTaxon("taxon_curie", dto.getTaxonCurie());

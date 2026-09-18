@@ -184,6 +184,14 @@ public class BulkLoadProcessor {
 	}
 
 	protected void endLoad(BulkLoad load, String message, JobStatus status) {
+		if (load == null) {
+			// Nothing to end. BulkLoadManualProcessor reaches here when /api/data/submit names a
+			// load type and data provider that no BulkManualLoad is configured for, which is a
+			// configuration gap rather than a fault in the request: without this guard the null
+			// dereference surfaced as a 500 and a stack trace instead of the message below.
+			Log.warn("endLoad called with no load" + (message == null ? "" : ": " + message));
+			return;
+		}
 		BulkLoad bulkLoad = bulkLoadDAO.find(load.getId());
 		bulkLoad.setErrorMessage(message);
 		bulkLoad.setBulkloadStatus(status);

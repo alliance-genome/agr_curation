@@ -5,14 +5,12 @@ import static org.hamcrest.Matchers.is;
 
 import java.time.OffsetDateTime;
 
-import java.util.List;
 
 import org.alliancegenome.curation_api.base.BaseITCase;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.model.entities.Construct;
 import org.alliancegenome.curation_api.model.entities.Cassette;
 import org.alliancegenome.curation_api.model.entities.Vocabulary;
-import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.resources.TestContainerResource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -68,12 +66,9 @@ public class IT_0204_ConstructCassetteAssociationBulkUploadITCase extends BaseIT
 		Vocabulary noteTypeVocabulary = getVocabulary(VocabularyConstants.NOTE_TYPE_VOCABULARY);
 		addVocabularyTermToSet(VocabularyConstants.CONSTRUCT_CASSETTE_ASSOCIATION_NOTE_TYPES_VOCABULARY_TERM_SET, noteType, noteTypeVocabulary, false);
 
-		// LinkML gives this relation as has_part (BFO:0000051), but the new_construct_relation
-		// vocabulary already on alpha holds has_component and three siblings instead. The test
-		// follows alpha; see the open question on the ticket.
-		Vocabulary relationVocabulary = createVocabulary(VocabularyConstants.NEW_CONSTRUCT_RELATION_VOCABULARY, false);
-		VocabularyTerm hasComponent = createVocabularyTerm(relationVocabulary, relationName, false);
-		createVocabularyTermSet(VocabularyConstants.CONSTRUCT_CASSETTE_RELATION_VOCABULARY_TERM_SET, relationVocabulary, List.of(hasComponent));
+		// construct_cassette_relation comes from v0.53.0.16, over new_construct_relation's terms.
+		// LinkML names has_part (BFO:0000051) for this relation, but has_part is in no vocabulary
+		// and has_component is what FlyBase submits; the set follows the data.
 	}
 
 	@Test
