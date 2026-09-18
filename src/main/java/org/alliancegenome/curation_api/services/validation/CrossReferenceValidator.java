@@ -98,9 +98,13 @@ public class CrossReferenceValidator extends AuditedObjectValidator<CrossReferen
 		}
 		dbEntity.setDisplayName(uiEntity.getDisplayName());
 
-		// Resolved rather than taken from the payload: the association has no cascade, so an unresolved page
-		// would only fail once the transaction flushed, past the point an error response can be built.
-		if (uiEntity.getResourceDescriptorPage() != null) {
+		// Applied whether or not the payload names one, as the other fields are, so a cleared page is
+		// stored as cleared. Resolved rather than taken from the payload when it does name one: the
+		// association has no cascade, so an unresolved page would only fail once the transaction flushed,
+		// past the point an error response can be built.
+		if (uiEntity.getResourceDescriptorPage() == null) {
+			dbEntity.setResourceDescriptorPage(null);
+		} else {
 			ResourceDescriptorPage resourceDescriptorPage = validateEntity(resourceDescriptorPageDAO, "resourceDescriptorPage",
 				uiEntity.getResourceDescriptorPage(), dbEntity.getResourceDescriptorPage(), false);
 			if (resourceDescriptorPage != null) {

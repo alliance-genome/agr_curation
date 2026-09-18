@@ -1,8 +1,10 @@
 package org.alliancegenome.curation_api;
 
 import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 
@@ -276,6 +278,53 @@ public class IT_0313_AlleleCrossReferenceITCase extends BaseITCase {
 
 	@Test
 	@Order(7)
+	public void clearingThePageStoresItCleared() {
+		CrossReference withoutPage = RestAssured.given().
+			when().
+			get("/api/allele/" + alleleId + "/cross-references").
+			then().
+			statusCode(200).
+			extract().
+			jsonPath().
+			getObject("entities[0]", CrossReference.class);
+		withoutPage.setResourceDescriptorPage(null);
+
+		// The page is applied whether or not the payload names one, so omitting it clears the stored one
+		// rather than leaving it in place.
+		RestAssured.given().
+			contentType("application/json").
+			body(List.of(withoutPage)).
+			when().
+			put("/api/allele/" + alleleId + "/cross-references").
+			then().
+			statusCode(200).
+			body("entities", hasSize(1)).
+			body("entities[0]", not(hasKey("resourceDescriptorPage")));
+
+		RestAssured.given().
+			when().
+			get("/api/allele/" + alleleId + "/cross-references").
+			then().
+			statusCode(200).
+			body("entities[0]", not(hasKey("resourceDescriptorPage"))).
+			body("entities[0].referencedCurie", is(XREF_KEPT));
+
+		// Put it back, so the tests after this one see the allele they expect.
+		CrossReference restored = buildXref(XREF_KEPT, defaultPage);
+		restored.setId(withoutPage.getId());
+
+		RestAssured.given().
+			contentType("application/json").
+			body(List.of(restored)).
+			when().
+			put("/api/allele/" + alleleId + "/cross-references").
+			then().
+			statusCode(200).
+			body("entities[0].resourceDescriptorPage.name", is("default"));
+	}
+
+	@Test
+	@Order(8)
 	public void replaceWithEmptyListClearsCrossReferences() {
 		RestAssured.given().
 			contentType("application/json").
@@ -295,7 +344,7 @@ public class IT_0313_AlleleCrossReferenceITCase extends BaseITCase {
 	}
 
 	@Test
-	@Order(8)
+	@Order(9)
 	public void unknownAlleleIsRejected() {
 		RestAssured.given().
 			when().
