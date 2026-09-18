@@ -57,7 +57,9 @@ export const AlleleGeneAssociationsTable = () => {
 			{
 				field: 'alleleAssociationSubject.alleleSymbol.displayText',
 				header: 'Allele',
-				body: (rowData) => <GenomicEntityTemplate genomicEntity={rowData.alleleAssociationSubject} />,
+				body: (rowData) => (
+					<GenomicEntityTemplate genomicEntity={rowData.alleleAssociationSubject} detailPage="allele" />
+				),
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.alleleAssociationSubjectFilterConfig,
 			},
