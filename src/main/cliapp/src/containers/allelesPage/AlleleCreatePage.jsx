@@ -28,12 +28,46 @@ export default function AlleleCreatePage() {
 	const toastSuccess = useRef(null);
 	const toastError = useRef(null);
 	const crossReferences = useAlleleCrossReferences();
+	// Held so that saving again after the cross references failed retries them against the allele that
+	// already exists, rather than creating a second one.
+	const createdAllele = useRef(null);
 
 	const { isPending: allelePostRequestIsLoading, mutate: alleleMutate } = useMutation({
 		mutationFn: (allele) => {
 			return alleleService.createAllele(allele);
 		},
 	});
+
+	// Cross references are written through their own sub-resource, so create is two calls. The allele
+	// exists by the time this runs, so a failure here leaves the work recoverable from its detail page
+	// rather than lost - which is why it keeps the curator here instead of navigating away.
+	const saveCrossReferences = async (allele, closeAfterSubmit) => {
+		if (crossReferences.crossReferences.length > 0) {
+			const outcome = await crossReferences.save(allele?.id);
+
+			if (!outcome.isSuccess) {
+				toastError.current.show([
+					{
+						life: 10000,
+						severity: 'error',
+						summary: 'Cross references not saved: ',
+						detail: `${outcome.message}. Allele ${getIdentifier(allele)} was created - fix the rows and save again, or finish them on its detail page.`,
+						sticky: false,
+					},
+				]);
+				return;
+			}
+		}
+
+		createdAllele.current = null;
+
+		if (closeAfterSubmit) {
+			navigate(`/allele/${getIdentifier(allele)}`);
+		} else {
+			alleleDispatch({ type: 'RESET' });
+			crossReferences.setCrossReferences([]);
+		}
+	};
 
 	const handleSubmit = (event, closeAfterSubmit) => {
 		event.preventDefault();
@@ -49,37 +83,18 @@ export default function AlleleCreatePage() {
 
 		if (areUiErrors) return;
 
+		if (createdAllele.current) {
+			saveCrossReferences(createdAllele.current, closeAfterSubmit);
+			return;
+		}
+
 		alleleMutate(buildCreatePayload(alleleState.allele), {
 			onSuccess: async (result) => {
 				const allele = result?.data?.entity;
+				createdAllele.current = allele;
 				toastSuccess.current.show({ severity: 'success', summary: 'Successful', detail: 'Allele Created' });
 
-				// Cross references are written through their own sub-resource, so create is two calls. The
-				// allele exists by now, so a failure here leaves the work recoverable from its detail page
-				// rather than lost - which is why this keeps the curator here instead of navigating away.
-				if (crossReferences.crossReferences.length > 0) {
-					const outcome = await crossReferences.save(allele?.id);
-
-					if (!outcome.isSuccess) {
-						toastError.current.show([
-							{
-								life: 10000,
-								severity: 'error',
-								summary: 'Cross references not saved: ',
-								detail: `${outcome.message}. The allele was created - open its detail page to finish them.`,
-								sticky: false,
-							},
-						]);
-						return;
-					}
-				}
-
-				if (closeAfterSubmit) {
-					navigate(`/allele/${getIdentifier(allele)}`);
-				} else {
-					alleleDispatch({ type: 'RESET' });
-					crossReferences.setCrossReferences([]);
-				}
+				await saveCrossReferences(allele, closeAfterSubmit);
 			},
 			onError: (error) => {
 				let message;
@@ -116,6 +131,7 @@ export default function AlleleCreatePage() {
 		event.preventDefault();
 		alleleDispatch({ type: 'RESET' });
 		crossReferences.setCrossReferences([]);
+		createdAllele.current = null;
 	};
 
 	const handleCancel = (event) => {

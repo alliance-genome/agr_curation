@@ -243,6 +243,28 @@ describe('<AlleleCreatePage />', () => {
 		expect(replaceCrossReferencesForAllele).not.toHaveBeenCalled();
 	});
 
+	// The obvious next move after the cross references are rejected is to fix them and save again. That
+	// must retry against the allele that already exists, not mint a second one.
+	it('Does not create a second allele when saving again after a cross reference failure', async () => {
+		const user = userEvent.setup();
+		replaceCrossReferencesForAllele.mockRejectedValueOnce({
+			response: { status: 400, statusText: 'Bad Request', data: { errorMessage: 'Could not update CrossReferences' } },
+		});
+
+		await renderPage();
+
+		await user.click(button('Add Cross Reference'));
+		await user.click(button('Save & Close'));
+		await waitFor(() => expect(replaceCrossReferencesForAllele).toHaveBeenCalledTimes(1));
+
+		await user.click(button('Save & Close'));
+
+		await waitFor(() => expect(replaceCrossReferencesForAllele).toHaveBeenCalledTimes(2));
+		expect(createAllele).toHaveBeenCalledTimes(1);
+		expect(replaceCrossReferencesForAllele.mock.calls[1][0]).toBe(4242);
+		expect(navigate).toHaveBeenCalledWith('/allele/AGRKB:101000000000001');
+	});
+
 	// The allele exists by then, so the work is recoverable from its detail page. Navigating away
 	// would strand the curator's cross references with no way back to them.
 	it('Keeps the curator on the page when the cross references fail to save', async () => {
