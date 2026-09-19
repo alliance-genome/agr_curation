@@ -57,7 +57,27 @@ public final class VocabularyConstants {
 	public static final String PARALOGY_PREDICTION_METHOD_VOCABULARY_TERM_SET = "paralogy_prediction_method";
 
 	public static final String CONSTRUCT_RELATION_VOCABULARY = "construct_relation";
+
+	/**
+	 * SCRUM-6535: the vocabularies the new Constructs model's relation term sets are drawn from.
+	 * Both labels already exist on alpha, created through the curation UI rather than by a migration
+	 * in this repo; only the term sets below are missing there.
+	 */
+	public static final String CASSETTE_RELATION_VOCABULARY = "cassette_relation";
+	public static final String NEW_CONSTRUCT_RELATION_VOCABULARY = "new_construct_relation";
 	public static final String CONSTRUCT_GENOMIC_ENTITY_RELATION_VOCABULARY_TERM_SET = "construct_genomic_entity_relation";
+
+	/**
+	 * SCRUM-6535: relation term sets for the new Constructs model (epic SCRUM-6382).
+	 *
+	 * The cassette_relation and new_construct_relation vocabularies these sit on already exist on
+	 * alpha but carry no term sets yet, and they were created through the curation UI rather than by
+	 * a migration in this repo, so the sets have to be added the same way before a load can use them.
+	 */
+	public static final String CASSETTE_GENOMIC_ENTITY_RELATION_VOCABULARY_TERM_SET = "cassette_genomic_entity_relation";
+	public static final String CASSETTE_TRANSGENIC_TOOL_RELATION_VOCABULARY_TERM_SET = "cassette_transgenic_tool_relation";
+	public static final String CASSETTE_STR_RELATION_VOCABULARY_TERM_SET = "cassette_str_relation";
+	public static final String CONSTRUCT_CASSETTE_RELATION_VOCABULARY_TERM_SET = "construct_cassette_relation";
 
 	public static final String ANTIBODY_CLONALITY_VOCABULARY = "antibody_clonality";
 	public static final String ANTIBODY_HEAVY_CHAIN_ISOTYPE_VOCABULARY = "antibody_heavy_chain_isotype";
@@ -72,6 +92,28 @@ public final class VocabularyConstants {
 	public static final String DISEASE_ANNOTATION_NOTE_TYPES_VOCABULARY_TERM_SET = "da_note_type";
 	public static final String GENE_NOTE_TYPES_VOCABULARY_TERM_SET = "gene_note_type";
 	public static final String CONSTRUCT_COMPONENT_NOTE_TYPES_VOCABULARY_TERM_SET = "construct_component_note_type";
+	/**
+	 * SCRUM-6535: note type sets for the new Constructs model. The labels are the ones curators
+	 * already created on alpha through the UI, not names invented here, so that v0.53.0.15 adds only
+	 * what is missing rather than a parallel set.
+	 *
+	 * One set covers the entity level notes of both Cassette and TransgenicTool: alpha names it
+	 * "Cassette &amp; Transgenic Tool Note Type", and it is the only one of the five carrying more
+	 * than a single member term. There is deliberately no separate cassette_note_type.
+	 */
+	public static final String CASSETTE_AND_TRANSGENIC_TOOL_NOTE_TYPES_VOCABULARY_TERM_SET = "transgenic_tool_note_type";
+	public static final String CASSETTE_COMPONENT_NOTE_TYPES_VOCABULARY_TERM_SET = "cassette_component_note_type";
+	public static final String CASSETTE_GENOMIC_ENTITY_ASSOCIATION_NOTE_TYPES_VOCABULARY_TERM_SET = "cassette_genomic_entity_association_note_type";
+	/**
+	 * Label deliberately lacks the _note_type suffix its four siblings carry. That is how the set was
+	 * created on alpha - its name is "Cassette Transgenic Tool Association Note Type" - and matching
+	 * it is what keeps this code working against the existing data. Worth a curator correcting at
+	 * source; changing it here alone would only break the lookup.
+	 */
+	public static final String CASSETTE_TRANSGENIC_TOOL_ASSOCIATION_NOTE_TYPES_VOCABULARY_TERM_SET = "cassette_transgenic_tool_association";
+	/** The one set with no counterpart on alpha; v0.53.0.15 creates it. */
+	public static final String CASSETTE_STR_ASSOCIATION_NOTE_TYPES_VOCABULARY_TERM_SET = "cassette_str_association_note_type";
+	public static final String CONSTRUCT_CASSETTE_ASSOCIATION_NOTE_TYPES_VOCABULARY_TERM_SET = "construct_cassette_association_note_type";
 	public static final String ANTIBODY_NOTE_TYPES_VOCABULARY_TERM_SET = "antibody_note_type";
 	public static final String VARIANT_NOTE_TYPES_VOCABULARY_TERM_SET = "variant_note_type";
 	public static final String ALLELE_GENOMIC_ENTITY_ASSOCIATION_NOTE_TYPES_VOCABULARY_TERM_SET = "allele_genomic_entity_association_note_type";

@@ -1,0 +1,55 @@
+[
+  {
+    "primary_external_id": "WB:TransgenicTool0001",
+    "internal": false,
+    "obsolete": false,
+    "created_by_curie": "CONSTRUCTTEST:Person0002",
+    "updated_by_curie": "CONSTRUCTTEST:Person0001",
+    "date_created": "2022-03-19T22:10:12+00:00",
+    "date_updated": "2022-03-20T22:10:12+00:00",
+    "reference_curies": ["PMID:25920551"],
+    "transgenic_tool_symbol_dto": {
+      "display_text": "Tt1a",
+      "format_text": "Tt<sup>1a</sup>",
+      "name_type_name": "systematic_name",
+      "evidence_curies": ["PMID:25920551"],
+      "internal": false,
+      "obsolete": false
+    },
+    "transgenic_tool_full_name_dto": {
+      "display_text": "Test transgenic tool 1a",
+      "format_text": "Test transgenic tool<sup>1a</sup>",
+      "name_type_name": "full_name",
+      "evidence_curies": ["PMID:25920551"],
+      "internal": false,
+      "obsolete": false
+    },
+    "transgenic_tool_synonym_dtos": [
+      {
+        "display_text": "Test transgenic tool synonym 1a",
+        "format_text": "Test transgenic tool synonym <sup>1a</sup>",
+        "name_type_name": "unspecified",
+        "internal": false,
+        "obsolete": false
+      }
+    ],
+    "transgenic_tool_use_dtos": [
+      {
+        "use_curies": ["FBcv:0003011"],
+        "internal": false,
+        "obsolete": false
+      }
+    ],
+    "data_provider_dto": {
+      "internal": false,
+      "obsolete": false,
+      "source_organization_abbreviation": "RGD",
+      "cross_reference_dto": {
+        "referenced_curie": "TEST2:0001",
+        "page_area": "homepage",
+        "display_name": "TEST2:0001",
+        "prefix": "TEST"
+      }
+    }
+  }
+]

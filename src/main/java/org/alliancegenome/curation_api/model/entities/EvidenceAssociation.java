@@ -34,7 +34,7 @@ public class EvidenceAssociation extends Association {
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
 	@Fetch(FetchMode.JOIN)
-	@JsonView({ CurationView.FieldsAndLists.class, CurationView.AlleleView.class, CurationView.GeneView.class, CurationView.ConstructView.class, CurationView.GeneInteractionView.class, CurationView.ForPublic.class })
+	@JsonView({ CurationView.FieldsAndLists.class, CurationView.AlleleView.class, CurationView.GeneView.class, CurationView.ConstructView.class, CurationView.GeneInteractionView.class, CurationView.ForPublic.class , CurationView.CassetteView.class, CurationView.TransgenicToolView.class})
 	@JoinTable(
 		joinColumns = @JoinColumn(name = "association_id"),
 		inverseJoinColumns = @JoinColumn(name = "evidence_id"),
