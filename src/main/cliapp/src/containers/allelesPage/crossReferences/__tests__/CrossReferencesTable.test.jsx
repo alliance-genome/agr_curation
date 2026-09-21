@@ -6,12 +6,19 @@ import { renderWithClient } from '../../../../tools/jest/utils';
 // The Internal and Obsolete editors resolve their boolean terms through a SearchService, and the
 // descriptor autocomplete builds one of its own. Left unstubbed they reach ApiClient after the test
 // has finished and throw in a timer.
+const { search } = vi.hoisted(() => ({ search: vi.fn() }));
+
 vi.mock('../../../../service/SearchService', () => ({
 	SearchService: class {
-		search = vi.fn(() => Promise.resolve({ results: [], totalResults: 0 }));
+		search = search;
 		find = vi.fn(() => Promise.resolve({ results: [], totalResults: 0 }));
 	},
 }));
+
+beforeEach(() => {
+	search.mockReset();
+	search.mockResolvedValue({ results: [], totalResults: 0 });
+});
 
 const { CrossReferencesTable } = await import('../CrossReferencesTable');
 
@@ -27,6 +34,7 @@ const PMID = {
 const ZFIN = {
 	id: 12,
 	prefix: 'ZFIN',
+	name: 'Zebrafish Information Network',
 	resourcePages: [{ id: 30, name: 'zfin-homepage' }],
 };
 
@@ -111,11 +119,23 @@ describe('CrossReferencesTable', () => {
 		expect(pageInput()).toHaveValue('default');
 	});
 
-	it('Still applies a descriptor chosen from the suggestions', async () => {
+	// The autocomplete reports a selection as the descriptor object itself, and only that shape reaches
+	// the row, so this has to go through the suggestion list rather than the clear path below.
+	it('Applies a descriptor chosen from the suggestions', async () => {
+		const user = userEvent.setup();
+		search.mockResolvedValue({ results: [ZFIN], totalResults: 1 });
+		const { onFieldChange } = renderTable();
+
+		await user.type(screen.getByLabelText('resourceDescriptor'), 'ZFI');
+		await user.click(await screen.findByText(/Zebrafish Information Network/));
+
+		expect(onFieldChange).toHaveBeenCalledWith('row-1', 'resourceDescriptor', ZFIN);
+	});
+
+	it('Clears the descriptor when the cell is emptied', async () => {
 		const user = userEvent.setup();
 		const { onFieldChange } = renderTable();
 
-		// The autocomplete reports a selection as the object itself rather than as text.
 		await user.clear(screen.getByLabelText('resourceDescriptor'));
 
 		expect(onFieldChange).toHaveBeenCalledWith('row-1', 'resourceDescriptor', null);

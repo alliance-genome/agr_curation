@@ -22,24 +22,6 @@ export const buildNewCrossReference = () => {
 };
 
 /**
- * The resource descriptor prefix a curie names, by the rule CrossReference.getPrefix() applies on
- * the API: everything before the first colon, or the whole curie when it holds none.
- *
- * The first colon rather than the last, because a curie can carry more of them - a stored example
- * is `DOI:10.1016/s0896-6273(04)00073-x`.
- *
- * @param {string} referencedCurie
- * @returns {string} the prefix, or '' when there is no curie to read one from
- */
-export const derivePrefix = (referencedCurie) => {
-	if (!referencedCurie) return '';
-
-	const separatorIndex = referencedCurie.indexOf(':');
-
-	return separatorIndex === -1 ? referencedCurie : referencedCurie.slice(0, separatorIndex);
-};
-
-/**
  * Lifts the descriptor a stored page belongs to onto the row itself, where the descriptor column
  * reads it.
  *

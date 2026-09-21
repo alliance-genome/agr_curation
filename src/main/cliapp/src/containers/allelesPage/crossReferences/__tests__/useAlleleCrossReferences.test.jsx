@@ -117,13 +117,16 @@ describe('useAlleleCrossReferences', () => {
 		expect(result.current.errorMessages).not.toHaveProperty(result.current.crossReferences[0].dataKey);
 	});
 
-	it('Keeps the rows when a read fails, rather than breaking the page', async () => {
+	// The section refuses to save while loadError is set. An empty table that failed to load looks
+	// exactly like an allele with no cross references, and saving it would delete every one it has.
+	it('Reports a failed read instead of looking like an allele with none', async () => {
 		vi.spyOn(console, 'warn').mockImplementation(() => {});
 		getCrossReferencesForAllele.mockRejectedValue(new Error('network'));
 
 		const { result } = renderHook(() => useAlleleCrossReferences(77));
 
 		await waitFor(() => expect(result.current.isLoading).toBe(false));
+		expect(result.current.loadError).toBeTruthy();
 		expect(result.current.crossReferences).toEqual([]);
 
 		console.warn.mockRestore();

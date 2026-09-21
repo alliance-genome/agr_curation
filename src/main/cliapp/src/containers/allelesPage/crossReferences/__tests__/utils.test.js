@@ -9,7 +9,6 @@ vi.mock('../../../../service/ResourceDescriptorService', () => ({
 import {
 	applyCrossReferenceFieldChange,
 	buildNewCrossReference,
-	derivePrefix,
 	findRow,
 	seedResourceDescriptor,
 	seedResourceDescriptors,
@@ -48,25 +47,6 @@ describe('buildNewCrossReference', () => {
 
 		expect(first.dataKey).toBeTruthy();
 		expect(second.dataKey).not.toBe(first.dataKey);
-	});
-});
-
-describe('derivePrefix', () => {
-	it('Reads the prefix off a curie', () => {
-		expect(derivePrefix('PMID:16980395')).toBe('PMID');
-	});
-
-	it('Splits on the first colon, not the last', () => {
-		expect(derivePrefix('DOI:10.1016/s0896-6273(04)00073-x')).toBe('DOI');
-	});
-
-	it('Returns the whole curie when it holds no colon, as the API does', () => {
-		expect(derivePrefix('FBrf0195387')).toBe('FBrf0195387');
-	});
-
-	it('Tolerates no curie', () => {
-		expect(derivePrefix('')).toBe('');
-		expect(derivePrefix(undefined)).toBe('');
 	});
 });
 
