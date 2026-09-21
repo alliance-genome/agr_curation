@@ -83,7 +83,7 @@ export const CrossReferencesForm = ({ mode = 'detail' }) => {
 					/>
 				}
 				tableName="Cross References"
-				showTable
+				showTable={crossReferences.length > 0}
 				button={
 					<div className="flex gap-2">
 						<Button label="Add Cross Reference" onClick={createNewCrossReferenceHandler} className="p-button-text" />

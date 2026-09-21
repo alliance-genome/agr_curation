@@ -93,6 +93,18 @@ describe('CrossReferencesForm', () => {
 		expect(screen.getByRole('button', { name: /Add Cross Reference/ })).toBeInTheDocument();
 	});
 
+	// Every other section of the form hides its table until it has a row, so an allele with no cross
+	// references shows the heading and the button alone.
+	it('Shows no table until there is a row', () => {
+		const { unmount } = renderForm({ crossReferences: [] });
+		expect(screen.queryByRole('columnheader', { name: 'Display Name' })).not.toBeInTheDocument();
+		expect(screen.getByRole('button', { name: /Add Cross Reference/ })).toBeInTheDocument();
+		unmount();
+
+		renderForm();
+		expect(screen.getByRole('columnheader', { name: 'Display Name' })).toBeInTheDocument();
+	});
+
 	it('Adds a blank row', async () => {
 		const user = userEvent.setup();
 		const { crossReferences } = renderForm();

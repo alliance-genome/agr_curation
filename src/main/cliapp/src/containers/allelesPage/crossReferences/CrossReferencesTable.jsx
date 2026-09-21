@@ -57,10 +57,10 @@ export const CrossReferencesTable = ({
 		onFieldChange(row.dataKey, 'resourceDescriptor', selected || null);
 	};
 
-	// The boolean terms carry 'true'/'false' as their name, so the row holds a real boolean rather than
-	// the term or its text.
+	// The boolean terms carry a real boolean as their name, so the row holds that rather than the term
+	// or its text.
 	const booleanChangeHandler = (field) => (editorOptions, event) =>
-		onFieldChange(editorOptions?.rowData?.dataKey, field, event.target.value?.name === 'true');
+		onFieldChange(editorOptions?.rowData?.dataKey, field, event.target.value?.name === true);
 
 	return (
 		<DataTable
@@ -106,6 +106,24 @@ export const CrossReferencesTable = ({
 				editor={(props) => {
 					const row = resolveRow(props);
 					return (
+						<TableInputTextEditor
+							value={row.referencedCurie}
+							rowIndex={props.rowIndex}
+							errorMessages={errorMessages}
+							dataKey={row.dataKey}
+							textOnChangeHandler={textChangeHandler(row, 'referencedCurie')}
+							field="referencedCurie"
+						/>
+					);
+				}}
+				field="referencedCurie"
+				header="Referenced Curie"
+				headerClassName="surface-0"
+			/>
+			<Column
+				editor={(props) => {
+					const row = resolveRow(props);
+					return (
 						<>
 							<AutocompleteEditor
 								search={resourceDescriptorSearch}
@@ -122,24 +140,6 @@ export const CrossReferencesTable = ({
 				}}
 				field="resourceDescriptor.prefix"
 				header="Resource Descriptor"
-				headerClassName="surface-0"
-			/>
-			<Column
-				editor={(props) => {
-					const row = resolveRow(props);
-					return (
-						<TableInputTextEditor
-							value={row.referencedCurie}
-							rowIndex={props.rowIndex}
-							errorMessages={errorMessages}
-							dataKey={row.dataKey}
-							textOnChangeHandler={textChangeHandler(row, 'referencedCurie')}
-							field="referencedCurie"
-						/>
-					);
-				}}
-				field="referencedCurie"
-				header="Referenced Curie"
 				headerClassName="surface-0"
 			/>
 			<Column

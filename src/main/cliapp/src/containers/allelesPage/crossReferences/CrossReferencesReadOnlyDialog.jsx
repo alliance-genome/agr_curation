@@ -29,14 +29,14 @@ export const CrossReferencesReadOnlyDialog = ({ originalCrossReferencesData, set
 			<DataTable value={localCrossReferences} dataKey="dataKey" showGridlines>
 				<Column field="displayName" header="Display Name" body={(rowData) => textTemplate(rowData.displayName)} />
 				<Column
-					field="resourceDescriptorPage.resourceDescriptor.prefix"
-					header="Resource Descriptor"
-					body={(rowData) => textTemplate(rowData.resourceDescriptorPage?.resourceDescriptor?.prefix)}
-				/>
-				<Column
 					field="referencedCurie"
 					header="Referenced Curie"
 					body={(rowData) => textTemplate(rowData.referencedCurie)}
+				/>
+				<Column
+					field="resourceDescriptorPage.resourceDescriptor.prefix"
+					header="Resource Descriptor"
+					body={(rowData) => textTemplate(rowData.resourceDescriptorPage?.resourceDescriptor?.prefix)}
 				/>
 				<Column
 					field="resourceDescriptorPage.name"

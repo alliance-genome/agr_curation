@@ -191,6 +191,19 @@ describe('CrossReferencesTable', () => {
 		await waitFor(() => expect(internalLabel()).toHaveTextContent('true'));
 	});
 
+	// The boolean terms carry a real boolean as their name, not the string 'true', so comparing against
+	// the string writes false for every selection and the value appears to revert.
+	it('Reports an internal selection as a boolean', async () => {
+		const user = userEvent.setup();
+		const { onFieldChange, container } = renderTable();
+		const internalRoot = () => container.querySelectorAll('.p-dropdown')[1];
+
+		await user.click(internalRoot());
+		await user.click(await screen.findByText('true'));
+
+		expect(onFieldChange).toHaveBeenCalledWith('row-1', 'internal', true);
+	});
+
 	it('Offers Obsolete only when asked to', () => {
 		const { unmount } = renderTable();
 		expect(screen.queryByText('Obsolete')).not.toBeInTheDocument();
