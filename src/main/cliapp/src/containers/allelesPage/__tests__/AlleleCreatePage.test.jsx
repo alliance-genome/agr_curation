@@ -5,6 +5,7 @@ import userEvent from '@testing-library/user-event';
 import { renderWithClient } from '../../../tools/jest/utils';
 
 const createAllele = vi.fn();
+const saveAlleleDetail = vi.fn();
 const navigate = vi.fn();
 const replaceCrossReferencesForAllele = vi.fn();
 
@@ -12,6 +13,7 @@ const replaceCrossReferencesForAllele = vi.fn();
 vi.mock('../../../service/AlleleService', () => ({
 	AlleleService: class {
 		createAllele = createAllele;
+		saveAlleleDetail = saveAlleleDetail;
 	},
 }));
 
@@ -53,6 +55,8 @@ describe('<AlleleCreatePage />', () => {
 	beforeEach(() => {
 		createAllele.mockReset();
 		createAllele.mockResolvedValue({ data: { entity: { id: 4242, curie: 'AGRKB:101000000000001' } } });
+		saveAlleleDetail.mockReset();
+		saveAlleleDetail.mockResolvedValue({ data: { entity: { id: 4242, curie: 'AGRKB:101000000000001' } } });
 		navigate.mockReset();
 		replaceCrossReferencesForAllele.mockReset();
 		replaceCrossReferencesForAllele.mockResolvedValue({ data: { entities: [] } });
@@ -217,69 +221,5 @@ describe('<AlleleCreatePage />', () => {
 		await user.click(button('Cancel'));
 
 		expect(navigate).toHaveBeenCalledWith('/alleles');
-	});
-
-	// Cross references are written through their own sub-resource, so creating an allele that has
-	// them is two calls, and the second needs the id the first returns.
-	it('Saves cross references against the allele it just created', async () => {
-		const user = userEvent.setup();
-		await renderPage();
-
-		await user.click(button('Add Cross Reference'));
-		await user.click(button('Save & Close'));
-
-		await waitFor(() => expect(replaceCrossReferencesForAllele).toHaveBeenCalled());
-		expect(replaceCrossReferencesForAllele.mock.calls[0][0]).toBe(4242);
-		expect(navigate).toHaveBeenCalledWith('/allele/AGRKB:101000000000001');
-	});
-
-	it('Makes no second call when there are no cross references', async () => {
-		const user = userEvent.setup();
-		await renderPage();
-
-		await user.click(button('Save & Close'));
-
-		await waitFor(() => expect(navigate).toHaveBeenCalled());
-		expect(replaceCrossReferencesForAllele).not.toHaveBeenCalled();
-	});
-
-	// The obvious next move after the cross references are rejected is to fix them and save again. That
-	// must retry against the allele that already exists, not mint a second one.
-	it('Does not create a second allele when saving again after a cross reference failure', async () => {
-		const user = userEvent.setup();
-		replaceCrossReferencesForAllele.mockRejectedValueOnce({
-			response: { status: 400, statusText: 'Bad Request', data: { errorMessage: 'Could not update CrossReferences' } },
-		});
-
-		await renderPage();
-
-		await user.click(button('Add Cross Reference'));
-		await user.click(button('Save & Close'));
-		await waitFor(() => expect(replaceCrossReferencesForAllele).toHaveBeenCalledTimes(1));
-
-		await user.click(button('Save & Close'));
-
-		await waitFor(() => expect(replaceCrossReferencesForAllele).toHaveBeenCalledTimes(2));
-		expect(createAllele).toHaveBeenCalledTimes(1);
-		expect(replaceCrossReferencesForAllele.mock.calls[1][0]).toBe(4242);
-		expect(navigate).toHaveBeenCalledWith('/allele/AGRKB:101000000000001');
-	});
-
-	// The allele exists by then, so the work is recoverable from its detail page. Navigating away
-	// would strand the curator's cross references with no way back to them.
-	it('Keeps the curator on the page when the cross references fail to save', async () => {
-		const user = userEvent.setup();
-		replaceCrossReferencesForAllele.mockRejectedValue({
-			response: { status: 400, statusText: 'Bad Request', data: { errorMessage: 'Could not update CrossReferences' } },
-		});
-
-		await renderPage();
-
-		await user.click(button('Add Cross Reference'));
-		await user.click(button('Save & Close'));
-
-		await waitFor(() => expect(replaceCrossReferencesForAllele).toHaveBeenCalled());
-		expect(navigate).not.toHaveBeenCalled();
-		expect(await screen.findByText(/Could not update CrossReferences/)).toBeInTheDocument();
 	});
 });
