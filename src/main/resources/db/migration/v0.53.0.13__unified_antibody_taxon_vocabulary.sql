@@ -77,7 +77,7 @@ BEGIN
 		SELECT vt.id FROM vocabularyterm vt JOIN vocabulary v ON v.id = vt.vocabulary_id WHERE v.vocabularylabel = 'antibody_taxon'
 	));
 	IF unmapped > 0 THEN
-		RAISE EXCEPTION 'v0.53.0.12: % antibody rows have a host/antigen taxon term not present in the unified antibody_taxon vocabulary', unmapped;
+		RAISE EXCEPTION 'v0.53.0.13: % antibody rows have a host/antigen taxon term not present in the unified antibody_taxon vocabulary', unmapped;
 	END IF;
 END $$;
 
