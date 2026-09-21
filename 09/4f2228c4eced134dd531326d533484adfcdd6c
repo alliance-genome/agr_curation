@@ -1,0 +1,19 @@
+src/main/resources/db/migration/v0.53.0.13__unified_antibody_taxon_vocabulary.sql
+  s_e6a7e48d95f0da::t_f5287863f88b8b 80
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "094f2228c4eced134dd531326d533484adfcdd6c",
+  "prompts": {},
+  "sessions": {
+    "s_e6a7e48d95f0da": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "0b1c323c-79a4-432b-8351-1956bb3e2d64",
+        "model": "unknown"
+      },
+      "human_author": "Ketaki Kindre <kkindre@caltech.edu>"
+    }
+  }
+}
