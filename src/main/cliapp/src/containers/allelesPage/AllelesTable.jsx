@@ -26,7 +26,6 @@ import { FullNameReadOnlyDialog } from '../nameSlotAnnotations/dialogs/FullNameR
 import { SecondaryIdsEditDialog } from './secondaryIds/SecondaryIdsEditDialog';
 import { SecondaryIdsReadOnlyDialog } from './secondaryIds/SecondaryIdsReadOnlyDialog';
 import { CrossReferencesEditDialog } from './crossReferences/CrossReferencesEditDialog';
-import { CrossReferencesReadOnlyDialog } from './crossReferences/CrossReferencesReadOnlyDialog';
 import { SynonymsEditDialog } from '../nameSlotAnnotations/dialogs/SynonymsEditDialog';
 import { SynonymsReadOnlyDialog } from '../nameSlotAnnotations/dialogs/SynonymsReadOnlyDialog';
 import { RelatedNotesEditDialog } from '../../components/RelatedNotesEditDialog';
@@ -43,6 +42,7 @@ import { BooleanTemplate } from '../../components/Templates/BooleanTemplate';
 import { TextDialogTemplate } from '../../components/Templates/dialog/TextDialogTemplate';
 import { ListDialogTemplate } from '../../components/Templates/dialog/ListDialogTemplate';
 import { NestedListDialogTemplate } from '../../components/Templates/dialog/NestedListDialogTemplate';
+import { CrossReferencesTemplate } from '../../components/Templates/CrossReferencesTemplate';
 import { CountDialogTemplate } from '../../components/Templates/dialog/CountDialogTemplate';
 
 import { Toast } from 'primereact/toast';
@@ -428,14 +428,6 @@ export const AllelesTable = () => {
 		_secondaryIdsData['mainRowProps'] = editorOptions;
 		setSecondaryIdsData(() => ({
 			..._secondaryIdsData,
-		}));
-	};
-
-	const handleCrossReferencesOpen = (crossReferences) => {
-		setCrossReferencesData(() => ({
-			originalCrossReferences: crossReferences,
-			dialog: true,
-			isInEdit: false,
 		}));
 	};
 
@@ -838,13 +830,7 @@ export const AllelesTable = () => {
 				header: 'Cross References',
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.crossReferencesFilterConfig,
-				body: (rowData) => (
-					<ListDialogTemplate
-						entities={rowData.crossReferences}
-						handleOpen={handleCrossReferencesOpen}
-						getTextField={(entity) => entity?.displayName}
-					/>
-				),
+				body: (rowData) => <CrossReferencesTemplate list={rowData.crossReferences} />,
 				editor: (editorOptions) => {
 					const count = editorOptions.rowData.crossReferences?.length;
 					return (
@@ -1049,10 +1035,6 @@ export const AllelesTable = () => {
 				setOriginalCrossReferencesData={setCrossReferencesData}
 				errorMessagesMainRow={errorMessages}
 				setErrorMessagesMainRow={setErrorMessages}
-			/>
-			<CrossReferencesReadOnlyDialog
-				originalCrossReferencesData={crossReferencesData}
-				setOriginalCrossReferencesData={setCrossReferencesData}
 			/>
 			<FunctionalImpactsEditDialog
 				originalFunctionalImpactsData={functionalImpactsData}
