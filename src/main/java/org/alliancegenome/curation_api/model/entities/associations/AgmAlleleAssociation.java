@@ -10,6 +10,7 @@ import org.alliancegenome.curation_api.model.entities.ontology.GENOTerm;
 import org.alliancegenome.curation_api.view.CurationView;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.hibernate.search.mapper.pojo.automaticindexing.ReindexOnUpdate;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmbedded;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexingDependency;
 
@@ -24,6 +25,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
+@Indexed
 @Entity
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
@@ -59,14 +61,19 @@ public class AgmAlleleAssociation extends Association {
 
 	@IndexedEmbedded(includePaths = {
 		"curie", "name", "curie_keyword", "name_keyword",
-		"primaryExternalId", "primaryExternalId_keyword", "modInternalId", "modInternalId_keyword" })
+		"primaryExternalId", "primaryExternalId_keyword", "modInternalId", "modInternalId_keyword",
+		"agmFullName.displayText", "agmFullName.formatText", "agmFullName.displayText_keyword", "agmFullName.formatText_keyword",
+		"taxon.curie", "taxon.name", "taxon.curie_keyword", "taxon.name_keyword",
+		"dataProvider.abbreviation", "dataProvider.fullName", "dataProvider.shortName",
+		"dataProvider.abbreviation_keyword", "dataProvider.fullName_keyword", "dataProvider.shortName_keyword" })
+	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
 	@JsonView({ CurationView.FieldsOnly.class })
 	@JsonIgnoreProperties({"components", "constructGenomicEntityAssociations", "agmSequenceTargetingReagentAssociations"})
 	private AffectedGenomicModel agmAssociationSubject;
 
-	@IndexedEmbedded(includePaths = {"curie", "name", "secondaryIdentifiers", "synonyms.name", "abbreviation",
-	"curie_keyword", "name_keyword", "secondaryIdentifiers_keyword", "synonyms.name_keyword", "abbreviation_keyword" })
+	@IndexedEmbedded(includePaths = {"curie", "name", "secondaryIdentifiers", "synonyms.name",
+	"curie_keyword", "name_keyword", "secondaryIdentifiers_keyword", "synonyms.name_keyword" })
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
 	@JsonView(CurationView.FieldsOnly.class)

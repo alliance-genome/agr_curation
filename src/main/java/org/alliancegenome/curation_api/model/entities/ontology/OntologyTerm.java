@@ -58,25 +58,24 @@ public class OntologyTerm extends CurieObject {
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "name_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({ CurationView.FieldsOnly.class, CurationView.ForPublic.class, CurationView.GeneToGeneOrthologyDocument.class, CurationView.GeneSummaryDocument.class, CurationView.GeneCacheDocument.class, CurationView.DiseaseSummaryDocument.class, CurationView.ModelDocument.class, CurationView.AlleleSummaryDocument.class,
-		CurationView.GeneExpressionDocument.class, CurationView.GeneExpressionDocument.class, CurationView.VariantSummaryDocument.class, CurationView.SequenceSummaryDocument.class })
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.ForPublic.class, CurationView.GeneToGeneOrthologyDocument.class, CurationView.GeneSummaryDocument.class, CurationView.GeneCacheDocument.class, CurationView.DiseaseSummaryDocument.class, CurationView.ModelDocument.class, CurationView.AlleleSummaryDocument.class, CurationView.GeneExpressionDocument.class, CurationView.GeneExpressionDocument.class, CurationView.VariantSummaryDocument.class, CurationView.SequenceSummaryDocument.class, CurationView.AlleleDetailView.class })
 	@Column(length = 2000)
 	protected String name;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "type_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView(CurationView.FieldsOnly.class)
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.AlleleDetailView.class })
 	private String type;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "namespace_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({ CurationView.FieldsOnly.class })
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.AlleleDetailView.class })
 	private String namespace;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "definition_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
 	@Column(columnDefinition = "TEXT")
-	@JsonView({ CurationView.FieldsOnly.class, CurationView.ForPublic.class, CurationView.DiseaseSummaryDocument.class })
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.ForPublic.class, CurationView.DiseaseSummaryDocument.class, CurationView.AlleleDetailView.class })
 	private String definition;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
@@ -125,7 +124,7 @@ public class OntologyTerm extends CurieObject {
 	@OneToMany(mappedBy = "closureObject")
 	private Set<OntologyTermClosure> descendants;
 
-	@JsonView(CurationView.FieldsOnly.class)
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.AlleleDetailView.class })
 	private Integer descendantCount = 0;
 
 	@Transient

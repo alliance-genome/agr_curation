@@ -7,19 +7,23 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.ConditionRelationDAO;
 import org.alliancegenome.curation_api.dao.ExternalDatabaseReferenceDAO;
+import org.alliancegenome.curation_api.dao.GeneDAO;
 import org.alliancegenome.curation_api.dao.base.BaseSQLDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.model.entities.ConditionRelation;
 import org.alliancegenome.curation_api.model.entities.ExternalDatabaseReference;
+import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.InformationContentEntity;
 import org.alliancegenome.curation_api.model.entities.PhenotypeAnnotation;
 import org.alliancegenome.curation_api.model.entities.ontology.PhenotypeTerm;
+import org.alliancegenome.curation_api.services.helpers.GenePhenotypeAnnotationXrefHelper;
 import org.alliancegenome.curation_api.services.helpers.annotations.AnnotationUniqueIdHelper;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.ConditionRelationFmsDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.PhenotypeFmsDTO;
@@ -49,10 +53,13 @@ public class PhenotypeAnnotationFmsDTOValidator {
 	@Inject VocabularyTermService vocabularyTermService;
 	@Inject ResourceDescriptorPageService resourceDescriptorPageService;
 	@Inject ExternalDatabaseReferenceDAO externalDatabaseReferenceDAO;
+	@Inject GenePhenotypeAnnotationXrefHelper xrefHelper;
+	@Inject GeneDAO geneDAO;
 
 	protected Map<String, Long> existingUniqueIds;
 	protected Map<String, Long> inferredGeneIds;
 	protected Map<String, Long> inferredAlleleIds;
+	protected Set<Long> geneIdsWithPhenotypeXref;
 
 	public void setExistingUniqueIds(Map<String, Long> existingUniqueIds) {
 		this.existingUniqueIds = existingUniqueIds;
@@ -64,6 +71,44 @@ public class PhenotypeAnnotationFmsDTOValidator {
 
 	public void setInferredAlleleIds(Map<String, Long> inferredAlleleIds) {
 		this.inferredAlleleIds = inferredAlleleIds;
+	}
+
+	public void setGeneIdsWithPhenotypeXref(Set<Long> geneIdsWithPhenotypeXref) {
+		this.geneIdsWithPhenotypeXref = geneIdsWithPhenotypeXref;
+	}
+
+	/**
+	 * Ensures the gene carries the Alliance-derived gene/phenotypes cross reference that the gene page
+	 * links to. Annotation loads skip records that are unchanged, so without this the cross reference is
+	 * only ever written for new or changed annotations and never restored for the rest. The preloaded
+	 * set holds the genes already dealt with, keeping this to one attempt per gene per load.
+	 */
+	protected void ensureGenePhenotypeCrossReference(BackendBulkDataProvider dataProvider, Gene gene) {
+		if (gene == null || gene.getId() == null) {
+			return;
+		}
+		if (geneIdsWithPhenotypeXref != null && geneIdsWithPhenotypeXref.contains(gene.getId())) {
+			return;
+		}
+		xrefHelper.addGenePhenotypeCrossReference(dataProvider, gene);
+		if (geneIdsWithPhenotypeXref != null) {
+			geneIdsWithPhenotypeXref.add(gene.getId());
+		}
+	}
+
+	protected void ensureGenePhenotypeCrossReference(BackendBulkDataProvider dataProvider, Long geneId) {
+		if (geneId == null) {
+			return;
+		}
+		if (geneIdsWithPhenotypeXref != null && geneIdsWithPhenotypeXref.contains(geneId)) {
+			return;
+		}
+		ensureGenePhenotypeCrossReference(dataProvider, geneDAO.find(geneId));
+		if (geneIdsWithPhenotypeXref != null) {
+			// Marked even when the id is not a gene, or the page does not exist for its resource
+			// descriptor, so that it is only looked up once per load rather than once per annotation
+			geneIdsWithPhenotypeXref.add(geneId);
+		}
 	}
 
 	public <E extends PhenotypeAnnotation> ObjectResponse<E> validatePhenotypeAnnotation(E annotation, PhenotypeFmsDTO dto, BackendBulkDataProvider beDataProvider) {

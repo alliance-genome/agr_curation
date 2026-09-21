@@ -8,6 +8,8 @@ import java.util.stream.Collectors;
 import org.alliancegenome.curation_api.model.document.es.HTPDatasetSearchResultDocument;
 import org.alliancegenome.curation_api.model.entities.HTPExpressionDatasetAnnotation;
 import org.alliancegenome.curation_api.model.entities.HTPExpressionDatasetSampleAnnotation;
+import org.alliancegenome.curation_api.model.entities.Synonym;
+import org.alliancegenome.curation_api.model.entities.ontology.MMOTerm;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -125,16 +127,21 @@ public class HTPDatasetDocumentBuilder {
 					sampleIds.add(sampleAnnot.getHtpExpressionSample().getCurie());
 				}
 
-				assays.addAll(
-						sampleAnnot
-								.getExpressionAssayUsed()
-								.getSynonyms()
-								.stream()
-								.filter(synonym -> {
-									return synonym.getIsDisplaySynonym();
-								}).map(synonym -> {
-									return synonym.getName();
-								}).collect(Collectors.toList()));
+				MMOTerm assay = sampleAnnot.getExpressionAssayUsed();
+				if (assay != null) {
+					List<String> displaySynonyms = assay.getSynonyms().stream()
+							.filter(Synonym::getIsDisplaySynonym)
+							.map(Synonym::getName)
+							.collect(Collectors.toList());
+					// Fall back to the term's own name when it has no display synonym,
+					// otherwise assays with no DISPLAY_SYNONYM (e.g. MMO:0000869, MMO:0000656)
+					// are silently dropped from the Assay facet (SCRUM-6314).
+					if (!displaySynonyms.isEmpty()) {
+						assays.addAll(displaySynonyms);
+					} else {
+						assays.add(assay.getName());
+					}
+				}
 			}
 
 			doc.setWhereExpressed(whereExpressed);

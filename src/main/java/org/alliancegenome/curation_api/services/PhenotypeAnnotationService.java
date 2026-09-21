@@ -6,12 +6,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.alliancegenome.curation_api.constants.CrossReferenceConstants;
 import org.alliancegenome.curation_api.constants.EntityFieldConstants;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.dao.AGMPhenotypeAnnotationDAO;
 import org.alliancegenome.curation_api.dao.AllelePhenotypeAnnotationDAO;
 import org.alliancegenome.curation_api.dao.GenePhenotypeAnnotationDAO;
 import org.alliancegenome.curation_api.dao.PersonDAO;
+import org.alliancegenome.curation_api.dao.CrossReferenceDAO;
 import org.alliancegenome.curation_api.dao.PhenotypeAnnotationDAO;
 import org.alliancegenome.curation_api.dao.base.BaseSQLDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
@@ -58,6 +60,7 @@ public class PhenotypeAnnotationService extends BaseAnnotationCrudService<Phenot
 	@Inject GenePhenotypeAnnotationFmsDTOValidator genePhenotypeAnnotationFmsDtoValidator;
 	@Inject AllelePhenotypeAnnotationFmsDTOValidator allelePhenotypeAnnotationFmsDtoValidator;
 	@Inject AGMPhenotypeAnnotationFmsDTOValidator agmPhenotypeAnnotationFmsDtoValidator;
+	@Inject CrossReferenceDAO crossReferenceDAO;
 
 	HashMap<String, List<PhenotypeFmsDTO>> unprocessedAnnotationsMap = new HashMap<>();
 	private HashMap<String, String> genomicEntityIdentifierCache = new HashMap<>();
@@ -111,6 +114,13 @@ public class PhenotypeAnnotationService extends BaseAnnotationCrudService<Phenot
 		agmPhenotypeAnnotationFmsDtoValidator.setExistingUniqueIds(existingUniqueIds);
 		agmPhenotypeAnnotationFmsDtoValidator.setInferredGeneIds(inferredGeneIds);
 		agmPhenotypeAnnotationFmsDtoValidator.setInferredAlleleIds(inferredAlleleIds);
+
+		// Shared across the three validators on purpose: each one that writes a missing cross reference
+		// records it here so the others do not write it again.
+		Set<Long> geneIdsWithPhenotypeXref = crossReferenceDAO.findGenomicEntityIdsByPageAreas(CrossReferenceConstants.ALLIANCE_DERIVED_PHENOTYPE_PAGE_AREAS);
+		genePhenotypeAnnotationFmsDtoValidator.setGeneIdsWithPhenotypeXref(geneIdsWithPhenotypeXref);
+		allelePhenotypeAnnotationFmsDtoValidator.setGeneIdsWithPhenotypeXref(geneIdsWithPhenotypeXref);
+		agmPhenotypeAnnotationFmsDtoValidator.setGeneIdsWithPhenotypeXref(geneIdsWithPhenotypeXref);
 	}
 
 	private String resolveIdentifier(String objectId) {

@@ -3,7 +3,7 @@ package org.alliancegenome.curation_api.dao;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.alliancegenome.curation_api.dao.base.BaseSQLDAO;
+import org.alliancegenome.curation_api.dao.base.BaseCurieSQLDAO;
 import org.alliancegenome.curation_api.model.entities.Variant;
 import org.alliancegenome.curation_api.response.ObjectListResponse;
 
@@ -11,7 +11,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.Query;
 
 @ApplicationScoped
-public class VariantDAO extends BaseSQLDAO<Variant> {
+public class VariantDAO extends BaseCurieSQLDAO<Variant> {
 
 	protected VariantDAO() {
 		super(Variant.class);

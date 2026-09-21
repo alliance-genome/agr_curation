@@ -48,17 +48,17 @@ public class VocabularyTerm extends AuditedObject {
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "name_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({ CurationView.FieldsOnly.class, CurationView.ForPublic.class, CurationView.GeneToGeneOrthologyDocument.class, CurationView.ModelDocument.class, CurationView.GeneExpressionDocument.class, CurationView.AlleleSummaryDocument.class, CurationView.GeneSummaryDocument.class, CurationView.VariantSummaryDocument.class, CurationView.SequenceSummaryDocument.class, CurationView.TransgenicAllelesDocument.class })
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.ForPublic.class, CurationView.GeneToGeneOrthologyDocument.class, CurationView.ModelDocument.class, CurationView.GeneExpressionDocument.class, CurationView.AlleleSummaryDocument.class, CurationView.GeneSummaryDocument.class, CurationView.VariantSummaryDocument.class, CurationView.SequenceSummaryDocument.class, CurationView.TransgenicAllelesDocument.class, CurationView.AlleleDetailView.class })
 	private String name;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "abbreviation_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({CurationView.FieldsOnly.class, CurationView.ForPublic.class, CurationView.GeneToGeneOrthologyDocument.class})
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.ForPublic.class, CurationView.GeneToGeneOrthologyDocument.class, CurationView.AlleleDetailView.class })
 	private String abbreviation;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "definition_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({CurationView.FieldsOnly.class})
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.AlleleDetailView.class })
 	@Column(columnDefinition = "TEXT")
 	private String definition;
 

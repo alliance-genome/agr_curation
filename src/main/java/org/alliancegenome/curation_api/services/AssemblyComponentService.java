@@ -8,7 +8,6 @@ import java.util.Map;
 import org.alliancegenome.curation_api.constants.EntityFieldConstants;
 import org.alliancegenome.curation_api.dao.AssemblyComponentDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
-import org.alliancegenome.curation_api.enums.ChromosomeAccessionEnum;
 import org.alliancegenome.curation_api.model.entities.AssemblyComponent;
 import org.alliancegenome.curation_api.model.entities.GenomeAssembly;
 import org.alliancegenome.curation_api.response.ObjectResponse;
@@ -30,6 +29,7 @@ public class AssemblyComponentService extends BaseEntityCrudService<AssemblyComp
 	@Inject GenomeAssemblyService genomeAssemblyService;
 	@Inject NcbiTaxonTermService ncbiTaxonTermService;
 	@Inject OrganizationService organizationService;
+	@Inject ChromosomeAccessionService chromosomeAccessionService;
 
 	Date assemblyComponentRequest;
 	HashMap<String, AssemblyComponent> assemblyComponentCacheMap = new HashMap<>();
@@ -74,13 +74,34 @@ public class AssemblyComponentService extends BaseEntityCrudService<AssemblyComp
 		if (assemblyComponentResponse != null && assemblyComponentResponse.getResults().size() > 0) {
 			return assemblyComponentResponse.getSingleResult();
 		}
+
+		String primaryExternalId = chromosomeAccessionService.getChromosomeAccession(name, assemblyId);
+
+		// SCRUM-6258: a sequence can keep its accession across assembly versions - the
+		// mitochondrion is unchanged between GRCz11 and GRCz12tu (RefSeq:NC_002333.2) and
+		// between mRatBN7.2 and GRCr8 (RefSeq:NC_001665.2), so the chromosomeaccession table maps
+		// both assemblies of each pair to the same accession. The lookup above is scoped to a
+		// single assembly and therefore misses the component stored under the older one, but
+		// primaryExternalId is globally unique on BiologicalEntity, so persisting a second
+		// component for the same accession violates biologicalentity_primaryexternalid_uk and
+		// fails the load. Reuse the existing component and re-point it at the assembly now
+		// being loaded.
+		if (primaryExternalId != null) {
+			SearchResponse<AssemblyComponent> existingByAccession = assemblyComponentDAO.findByField("primaryExternalId", primaryExternalId);
+			if (existingByAccession != null && existingByAccession.getResults().size() > 0) {
+				AssemblyComponent existingComponent = existingByAccession.getSingleResult();
+				Log.info("AssemblyComponent " + primaryExternalId + " (" + name + ") already exists under a different assembly; re-pointing it to " + assemblyId);
+				existingComponent.setGenomeAssembly(genomeAssemblyService.getOrCreate(assemblyId, dataProvider));
+				return assemblyComponentDAO.merge(existingComponent);
+			}
+		}
+
 		AssemblyComponent assemblyComponent = new AssemblyComponent();
 		assemblyComponent.setName(name);
 		GenomeAssembly genomeAssembly = genomeAssemblyService.getOrCreate(assemblyId, dataProvider);
 		assemblyComponent.setGenomeAssembly(genomeAssembly);
 		assemblyComponent.setTaxon(ncbiTaxonTermService.getByCurie(taxonCurie).getEntity());
 		assemblyComponent.setDataProvider(organizationService.getByAbbr(dataProvider.sourceOrganization).getEntity());
-		String primaryExternalId = ChromosomeAccessionEnum.getChromosomeAccession(name, assemblyId);
 		assemblyComponent.setPrimaryExternalId(primaryExternalId);
 		return assemblyComponentDAO.persist(assemblyComponent);
 	}

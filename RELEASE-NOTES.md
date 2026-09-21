@@ -2,6 +2,24 @@
  
 https://agr-jira.atlassian.net/wiki/spaces/ATEAM/overview
 
+## v0.52.0
+* New features:
+   * Enable MOD affiliation switching for "Tester" and "POTester" Okta group members (SCRUM-2831)
+   * Accommodate new GRCr8 genome assembly for Rat species: VEP work (SCRUM-5707)
+   * Accommodate changing GAF URLs (SCRUM-6075)
+   * Replace BackendBulkDataProvider enum with Species entity (SCRUM-6151)
+   * Create read-only table of Allele-Gene Associations in curation (SCRUM-6161)
+   * Enable AGRKB ID minting for new disease annotations (SCRUM-6170)
+   * Enable loading of Antibodies from DQM direct submissions to persistent store (SCRUM-6234)
+* Fixes and maintenance
+   * MGI Allele load on beta-curation throwing code errors: HSEARCH and foreign key violation errors (SCRUM-6216)
+   * MGI Allele load on beta-curation throwing code errors: Error invoking subclass method (SCRUM-6219)
+   * New disease annotation pop-up form unresponsive autosuggest fields (SCRUM-6220)
+   * VEP Transcript loads for new RGD and ZFIN assemblies are failing (SCRUM-6236)
+   * Failed deletions/clean up on FMS HTP Dataset load (SCRUM-6268)
+   * Disease annotation ID minting endpoint is crashing production curation (SCRUM-6276)
+   * Testing stage 9.1.0: S288C yeast strain name still showing up in facets for Gene Ontology and HTP Dataset Index search categories (SCRUM-6301)
+
 ## v0.49.0
 * New features:
    * Migrate curation frontend from Create React App to Vite (SCRUM-5928)

@@ -53,6 +53,51 @@ export const FIELD_SETS = Object.freeze({
 		filterName: 'alleleSymbolFilter',
 		fields: ['alleleSymbol.displayText', 'alleleSymbol.formatText'],
 	},
+	agmAlleleAggregationFieldSet: {
+		filterName: 'agmAlleleAggregationFilter',
+		fields: ['agmAssociationSubject.dataProvider.abbreviation', 'relation.name', 'zygosity.name'],
+	},
+	agmAssociationSubjectFieldSet: {
+		filterName: 'agmAssociationSubjectFilter',
+		fields: [
+			'agmAssociationSubject.agmFullName.displayText',
+			'agmAssociationSubject.agmFullName.formatText',
+			'agmAssociationSubject.name',
+			'agmAssociationSubject.curie',
+			'agmAssociationSubject.primaryExternalId',
+			'agmAssociationSubject.modInternalId',
+		],
+	},
+	agmAssociationSubjectTaxonFieldSet: {
+		filterName: 'agmAssociationSubjectTaxonFilter',
+		fields: ['agmAssociationSubject.taxon.curie', 'agmAssociationSubject.taxon.name'],
+	},
+	agmAlleleAssociationObjectFieldSet: {
+		filterName: 'agmAlleleAssociationObjectFilter',
+		fields: [
+			'agmAlleleAssociationObject.alleleSymbol.displayText',
+			'agmAlleleAssociationObject.alleleSymbol.formatText',
+			'agmAlleleAssociationObject.curie',
+			'agmAlleleAssociationObject.primaryExternalId',
+			'agmAlleleAssociationObject.modInternalId',
+		],
+	},
+	agmAlleleRelationFieldSet: {
+		filterName: 'agmAlleleRelationFilter',
+		fields: ['relation.name'],
+	},
+	agmAlleleDataProviderFieldSet: {
+		filterName: 'agmAlleleDataProviderFilter',
+		fields: [
+			'agmAssociationSubject.dataProvider.abbreviation',
+			'agmAssociationSubject.dataProvider.fullName',
+			'agmAssociationSubject.dataProvider.shortName',
+		],
+	},
+	zygosityFieldSet: {
+		filterName: 'zygosityFilter',
+		fields: ['zygosity.name'],
+	},
 	alleleAssociationSubjectFieldSet: {
 		filterName: 'alleleAssociationSubjectFilter',
 		fields: [
@@ -152,6 +197,61 @@ export const FIELD_SETS = Object.freeze({
 			'assertedGenes.curie',
 			'assertedGenes.primaryExternalId',
 			'assertedGenes.modInternalId',
+		],
+	},
+	antibodyAggregationFieldSet: {
+		filterName: 'antibodyAggregationFilter',
+		fields: ['dataProvider.abbreviation', 'clonality.name', 'heavyChainIsotype.name', 'lightChainIsotype.name'],
+	},
+	antibodyDataProviderFieldSet: {
+		// Dedicated field set (rather than the shared dataProviderFieldSet) so only Antibody's
+		// filter targets the keyword field directly -- see clonalityFieldSet for why.
+		filterName: 'dataProviderFilter',
+		fields: ['dataProvider.abbreviation_keyword'],
+	},
+	antibodyTargetGenesFieldSet: {
+		filterName: 'antibodyTargetGenesFilter',
+		fields: [
+			'antibodyTargetGenes.geneSymbol.displayText',
+			'antibodyTargetGenes.geneSymbol.formatText',
+			'antibodyTargetGenes.curie',
+			'antibodyTargetGenes.primaryExternalId',
+			'antibodyTargetGenes.modInternalId',
+		],
+	},
+	// Antibody's Host Taxon column is VocabularyTerm (name/definition), unlike the shared
+	// taxonFieldSet used by other tables' real taxon columns (Genes, Alleles, etc.).
+	antibodyHostTaxonFieldSet: {
+		filterName: 'hostTaxonTermFilter',
+		fields: ['hostTaxonTerm.name', 'hostTaxonTerm.definition'],
+	},
+	// Antigen Taxon is VocabularyTerm (name/definition), same shape as Host Taxon above.
+	antibodyAntigenTaxonFieldSet: {
+		filterName: 'antigenTaxonTermFilter',
+		fields: ['antigenTaxonTerm.name', 'antigenTaxonTerm.definition'],
+	},
+	clonalityFieldSet: {
+		// Targets the keyword field directly (not useKeywordFields) so this multiselect only ever
+		// matches a selected value exactly -- no analyzed-field fallback to bleed across e.g. IgG/IgG1.
+		filterName: 'clonalityFilter',
+		fields: ['clonality.name_keyword'],
+	},
+	heavyChainIsotypeFieldSet: {
+		filterName: 'heavyChainIsotypeFilter',
+		fields: ['heavyChainIsotype.name_keyword'],
+	},
+	lightChainIsotypeFieldSet: {
+		filterName: 'lightChainIsotypeFilter',
+		fields: ['lightChainIsotype.name_keyword'],
+	},
+	originalReferenceFieldSet: {
+		// Includes all cross-references (not just the primary one) so any of the reference's IDs --
+		// PMID, PMCID, or a MOD paper ID (FB/WB/MGI/etc.) -- matches, same as the References filter.
+		filterName: 'originalReferenceFilter',
+		fields: [
+			'originalReference.curie',
+			'originalReference.primaryCrossReferenceCurie',
+			'originalReference.crossReferences.referencedCurie',
 		],
 	},
 	citationFieldSet: {
@@ -259,6 +359,13 @@ export const FIELD_SETS = Object.freeze({
 	// throws a Hibernate Search "Unknown field" on /doterm and the other ontology
 	// endpoints (SCRUM-6220), so ontology autocompletes use this depth-1-only variant.
 	ontologyCrossReferencesFieldSet: {
+		filterName: 'crossReferencesFilter',
+		fields: ['crossReferences.displayName', 'crossReferences.referencedCurie'],
+	},
+	// Antibody.crossReferences is likewise @IndexedEmbedded without resourceDescriptorPage.name
+	// (see Antibody.java) -- same depth-2-not-indexed issue as ontologyCrossReferencesFieldSet above,
+	// so the Antibody table's Cross References filter needs the same depth-1-only variant.
+	antibodyCrossReferencesFieldSet: {
 		filterName: 'crossReferencesFilter',
 		fields: ['crossReferences.displayName', 'crossReferences.referencedCurie'],
 	},
@@ -914,6 +1021,36 @@ export const FILTER_CONFIGS = Object.freeze({
 	},
 	alleleSecondaryIdsFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.alleleSecondaryIdsFieldSet] },
 	alleleSymbolFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.alleleSymbolFieldSet] },
+	agmAssociationSubjectFilterConfig: {
+		filterComponentType: 'input',
+		fieldSets: [FIELD_SETS.agmAssociationSubjectFieldSet],
+	},
+	agmAssociationSubjectTaxonFilterConfig: {
+		filterComponentType: 'input',
+		fieldSets: [FIELD_SETS.agmAssociationSubjectTaxonFieldSet],
+	},
+	agmAlleleAssociationObjectFilterConfig: {
+		filterComponentType: 'input',
+		fieldSets: [FIELD_SETS.agmAlleleAssociationObjectFieldSet],
+	},
+	agmAlleleRelationFilterConfig: {
+		filterComponentType: 'multiselect',
+		fieldSets: [FIELD_SETS.agmAlleleRelationFieldSet],
+		aggregationFieldSet: FIELD_SETS.agmAlleleAggregationFieldSet,
+		useKeywordFields: true,
+	},
+	agmAlleleDataProviderFilterConfig: {
+		filterComponentType: 'multiselect',
+		fieldSets: [FIELD_SETS.agmAlleleDataProviderFieldSet],
+		aggregationFieldSet: FIELD_SETS.agmAlleleAggregationFieldSet,
+		useKeywordFields: true,
+	},
+	zygosityFilterConfig: {
+		filterComponentType: 'multiselect',
+		fieldSets: [FIELD_SETS.zygosityFieldSet],
+		aggregationFieldSet: FIELD_SETS.agmAlleleAggregationFieldSet,
+		useKeywordFields: true,
+	},
 	alleleAssociationSubjectFilterConfig: {
 		filterComponentType: 'input',
 		fieldSets: [FIELD_SETS.alleleAssociationSubjectFieldSet],
@@ -973,9 +1110,46 @@ export const FILTER_CONFIGS = Object.freeze({
 		filterComponentType: 'input',
 		fieldSets: [FIELD_SETS.constructGenomicComponentsFieldSet],
 	},
+	antibodyDataProviderFilterConfig: {
+		filterComponentType: 'multiselect',
+		fieldSets: [FIELD_SETS.antibodyDataProviderFieldSet],
+		aggregationFieldSet: FIELD_SETS.antibodyAggregationFieldSet,
+	},
+	antibodyTargetGenesFilterConfig: {
+		filterComponentType: 'input',
+		fieldSets: [FIELD_SETS.antibodyTargetGenesFieldSet],
+	},
+	antibodyHostTaxonFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.antibodyHostTaxonFieldSet] },
+	antibodyAntigenTaxonFilterConfig: {
+		filterComponentType: 'input',
+		fieldSets: [FIELD_SETS.antibodyAntigenTaxonFieldSet],
+	},
+	clonalityFilterConfig: {
+		filterComponentType: 'multiselect',
+		fieldSets: [FIELD_SETS.clonalityFieldSet],
+		aggregationFieldSet: FIELD_SETS.antibodyAggregationFieldSet,
+	},
+	heavyChainIsotypeFilterConfig: {
+		filterComponentType: 'multiselect',
+		fieldSets: [FIELD_SETS.heavyChainIsotypeFieldSet],
+		aggregationFieldSet: FIELD_SETS.antibodyAggregationFieldSet,
+	},
+	lightChainIsotypeFilterConfig: {
+		filterComponentType: 'multiselect',
+		fieldSets: [FIELD_SETS.lightChainIsotypeFieldSet],
+		aggregationFieldSet: FIELD_SETS.antibodyAggregationFieldSet,
+	},
+	originalReferenceFilterConfig: {
+		filterComponentType: 'input',
+		fieldSets: [FIELD_SETS.originalReferenceFieldSet],
+	},
 	createdByFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.createdByFieldSet] },
 	crossReferenceFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.crossReferenceFieldSet] },
 	crossReferencesFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.crossReferencesFieldSet] },
+	antibodyCrossReferencesFilterConfig: {
+		filterComponentType: 'input',
+		fieldSets: [FIELD_SETS.antibodyCrossReferencesFieldSet],
+	},
 	curieFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.curieFieldSet] },
 
 	daConditionRelationsHandleFilterConfig: {

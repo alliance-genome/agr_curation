@@ -10,7 +10,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.alliancegenome.curation_api.constants.EntityFieldConstants;
-import org.alliancegenome.curation_api.dao.base.BaseSQLDAO;
+import org.alliancegenome.curation_api.constants.YeastStrainTaxonConstants;
+import org.alliancegenome.curation_api.dao.base.BaseCurieSQLDAO;
 import org.alliancegenome.curation_api.model.document.es.ModelSearchResultDocument;
 import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
 import org.alliancegenome.curation_api.response.SearchResponse;
@@ -23,7 +24,7 @@ import lombok.extern.log4j.Log4j2;
 
 @Log4j2
 @ApplicationScoped
-public class AffectedGenomicModelDAO extends BaseSQLDAO<AffectedGenomicModel> {
+public class AffectedGenomicModelDAO extends BaseCurieSQLDAO<AffectedGenomicModel> {
 
 	@Inject DiseaseAnnotationDAO diseaseAnnotationDAO;
 	@Inject AGMDiseaseAnnotationDAO agmDiseaseAnnotationDAO;
@@ -145,7 +146,11 @@ public class AffectedGenomicModelDAO extends BaseSQLDAO<AffectedGenomicModel> {
 				ON sa_full.singleagm_id = a.id
 				AND sa_full.slotannotationtype = 'AgmFullNameSlotAnnotation'
 			LEFT JOIN ontologyterm ot ON ot.id = be.taxon_id
-			LEFT JOIN species sp ON sp.taxon_id = ot.id
+			-- SCRUM-6152: SGD strain-level taxa have no `species` row of their own, so they
+			-- resolve through the canonical S. cerevisiae taxon. Everything else joins as-is.
+			LEFT JOIN ontologyterm ot_eff
+				ON ot_eff.curie = CASE WHEN ot.curie IN :strainTaxa THEN :canonicalTaxon ELSE ot.curie END
+			LEFT JOIN species sp ON sp.taxon_id = ot_eff.id
 			LEFT JOIN crossreference cr ON cr.id = be.dataprovidercrossreference_id
 			LEFT JOIN resourcedescriptorpage rd ON rd.id = cr.resourcedescriptorpage_id
 			WHERE a.id IN :ids
@@ -153,6 +158,8 @@ public class AffectedGenomicModelDAO extends BaseSQLDAO<AffectedGenomicModel> {
 
 		Query rootQuery = entityManager.createNativeQuery(rootSql);
 		rootQuery.setParameter("ids", agmIds);
+		rootQuery.setParameter("strainTaxa", YeastStrainTaxonConstants.SCE_STRAIN_TAXA);
+		rootQuery.setParameter("canonicalTaxon", YeastStrainTaxonConstants.CANONICAL_SCE_TAXON);
 		List<Object[]> rootRows = rootQuery.getResultList();
 
 		for (Object[] row : rootRows) {

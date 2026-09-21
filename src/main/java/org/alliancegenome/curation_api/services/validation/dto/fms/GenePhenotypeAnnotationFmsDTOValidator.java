@@ -12,7 +12,6 @@ import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.GenomicEntityService;
 import org.alliancegenome.curation_api.services.PhenotypeAnnotationService;
-import org.alliancegenome.curation_api.services.helpers.GenePhenotypeAnnotationXrefHelper;
 import org.alliancegenome.curation_api.services.helpers.annotations.AnnotationUniqueIdHelper;
 
 import jakarta.enterprise.context.RequestScoped;
@@ -25,7 +24,6 @@ public class GenePhenotypeAnnotationFmsDTOValidator extends PhenotypeAnnotationF
 	@Inject GenePhenotypeAnnotationDAO genePhenotypeAnnotationDAO;
 	@Inject GenomicEntityService genomicEntityService;
 	@Inject PhenotypeAnnotationService phenotypeAnnotationService;
-	@Inject GenePhenotypeAnnotationXrefHelper xrefHelper;
 	
 	@Transactional
 	public GenePhenotypeAnnotation validatePrimaryAnnotation(Gene subject, PhenotypeFmsDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {

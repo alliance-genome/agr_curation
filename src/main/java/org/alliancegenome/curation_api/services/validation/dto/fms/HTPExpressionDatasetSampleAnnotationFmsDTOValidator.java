@@ -32,6 +32,7 @@ import org.alliancegenome.curation_api.model.ingest.dto.fms.WhereExpressedFmsDTO
 import org.alliancegenome.curation_api.model.input.Pagination;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
+import org.alliancegenome.curation_api.services.CurieMintService;
 import org.alliancegenome.curation_api.services.AffectedGenomicModelService;
 import org.alliancegenome.curation_api.services.AlleleService;
 import org.alliancegenome.curation_api.services.ExternalDataBaseEntityService;
@@ -62,6 +63,7 @@ public class HTPExpressionDatasetSampleAnnotationFmsDTOValidator {
 	@Inject AffectedGenomicModelService affectedGenomicModelService;
 	@Inject NcbiTaxonTermService ncbiTaxonTermService;
 	@Inject AnatomicalSiteDAO anatomicalSiteDAO;
+	@Inject CurieMintService curieMintService;
 
 	@Transactional
 	public ObjectResponse<HTPExpressionDatasetSampleAnnotation> validateHTPExpressionDatasetSampleAnnotationFmsDTO(HTPExpressionDatasetSampleAnnotationFmsDTO dto, BackendBulkDataProvider backendBulkDataProvider) throws ValidationException {
@@ -275,6 +277,11 @@ public class HTPExpressionDatasetSampleAnnotationFmsDTOValidator {
 			throw new ObjectValidationException(dto, htpSampleAnnotationResponse.errorMessagesString());
 		}
 
+		// SCRUM-6463 — mint an AGRKB curie for a record that has none, in the same transaction as the
+		// insert below. No is-new guard is needed, unlike AlleleValidator: this DTO carries no curie, so
+		// nothing above nulls one, and a re-load resolves to the stored entity whose curie is already
+		// set, making this a no-op there.
+		curieMintService.mintCurieIfAbsent(htpSampleAnnotation);
 		HTPExpressionDatasetSampleAnnotation htp = htpExpressionDatasetSampleAnnotationDAO.persist(htpSampleAnnotation);
 		for (Long id : idsToRemove) {
 			anatomicalSiteDAO.remove(id);

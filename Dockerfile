@@ -1,7 +1,8 @@
 ARG OVERWRITE_VERSION
 
 ### Stage 1: build UI
-FROM node:18 AS BUILD_UI_STAGE
+# Keep this identical to .nvmrc (a FROM line cannot read a file).
+FROM node:22 AS BUILD_UI_STAGE
 
 WORKDIR /agr_curation
 COPY src/main/cliapp ./cliapp

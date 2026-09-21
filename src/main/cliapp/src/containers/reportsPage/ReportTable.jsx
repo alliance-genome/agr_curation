@@ -3,6 +3,7 @@ import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { Button } from 'primereact/button';
 import { StatusTemplate } from './StatusTemplate';
+import { isJobRunning } from '../../constants/JobStatus';
 
 export const ReportTable = ({
 	curationReports,
@@ -60,12 +61,7 @@ export const ReportTable = ({
 	};
 
 	const PlayButton = ({ rowData }) => {
-		if (
-			!rowData.curationReportStatus ||
-			rowData.curationReportStatus === 'FINISHED' ||
-			rowData.curationReportStatus === 'FAILED' ||
-			rowData.curationReportStatus === 'STOPPED'
-		) {
+		if (!isJobRunning(rowData.curationReportStatus)) {
 			return (
 				<div className="col-2">
 					<Button
@@ -101,12 +97,7 @@ export const ReportTable = ({
 			/>
 		);
 
-		if (
-			!rowData.curationReportStatus ||
-			rowData.curationReportStatus === 'FINISHED' ||
-			rowData.curationReportStatus === 'FAILED' ||
-			rowData.curationReportStatus === 'STOPPED'
-		) {
+		if (!isJobRunning(rowData.curationReportStatus)) {
 			buttons.push(
 				<Button
 					key="run"

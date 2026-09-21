@@ -79,7 +79,7 @@ public class CurationView {
 	public static class AlleleView extends FieldsOnly {
 	}
 
-	public static class AlleleDetailView extends FieldsOnly {
+	public static class AlleleDetailView {
 	}
 
 	public static class SequenceTargetingReagentView extends FieldsOnly {

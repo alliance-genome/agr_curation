@@ -6,6 +6,7 @@ import { SearchService } from '../../service/SearchService';
 import { Endpoints } from '../../constants/Endpoints';
 import { useGetTableData } from '../../service/useGetTableData';
 import { useGetUserSettings } from '../../service/useGetUserSettings';
+import { NewAlleleButton } from './NewAlleleButton';
 import { MutationTypesEditDialog } from './mutationTypes/MutationTypesEditDialog';
 import { MutationTypesReadOnlyDialog } from './mutationTypes/MutationTypesReadOnlyDialog';
 import { FunctionalImpactsEditDialog } from './functionalImpacts/FunctionalImpactsEditDialog';
@@ -887,6 +888,15 @@ export const AllelesTable = () => {
 		searchService,
 	});
 
+	const headerButtons = (disabled = false) => {
+		return (
+			<>
+				<NewAlleleButton disabled={disabled} />
+				&nbsp;&nbsp;
+			</>
+		);
+	};
+
 	return (
 		<>
 			<div className="card">
@@ -895,6 +905,7 @@ export const AllelesTable = () => {
 				<GenericDataTable
 					endpoint={SEARCH_ENDPOINT}
 					tableName="Alleles"
+					headerButtons={headerButtons}
 					entities={alleles}
 					setEntities={setAlleles}
 					totalRecords={totalRecords}

@@ -67,6 +67,13 @@ public class NcbiTaxonTermService extends BaseOntologyTermService<NCBITaxonTerm,
 			if (taxon == null) {
 				Log.warn("Taxon ID could not be found");
 			}
+		} else {
+			// Taxa are cached beyond this transaction, so initialize the collections Hibernate Search
+			// reads while indexing entities referring to this taxon; the session is gone by then.
+			taxon.getSecondaryIdentifiers().size();
+			taxon.getSynonyms().size();
+			taxon.getDefinitionUrls().size();
+			taxon.getSubsets().size();
 		}
 		return taxon;
 	}
