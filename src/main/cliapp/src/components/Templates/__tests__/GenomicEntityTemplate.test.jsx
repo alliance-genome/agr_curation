@@ -1,4 +1,5 @@
 import { fireEvent, render } from '@testing-library/react';
+import { MemoryRouter } from 'react-router-dom';
 import { GenomicEntityTemplate } from '../genomicEntity/GenomicEntityTemplate';
 import '../../../tools/jest/setupTests';
 
@@ -101,5 +102,51 @@ describe('GenomicEntityTemplate', () => {
 
 		let superScript = container.querySelector('sup');
 		expect(superScript).toBeInTheDocument();
+	});
+
+	it('should link to the detail page when detailPage is provided', () => {
+		const genomicEntity = {
+			alleleSymbol: {
+				displayText: 'Allele Symbol',
+			},
+			primaryExternalId: 'ZFIN:ZDB-ALT-120806-2732',
+		};
+
+		const result = render(
+			<MemoryRouter>
+				<GenomicEntityTemplate genomicEntity={genomicEntity} detailPage="allele" />
+			</MemoryRouter>
+		);
+
+		const link = result.getByText('Allele Symbol (ZFIN:ZDB-ALT-120806-2732)').closest('a');
+		expect(link).toHaveAttribute('href', '/allele/ZFIN:ZDB-ALT-120806-2732');
+		expect(link).toHaveAttribute('target', '_blank');
+	});
+
+	it('should link to the detail page when genomicEntity has no displayable text', () => {
+		const genomicEntity = {
+			curie: 'CURIE',
+		};
+
+		const result = render(
+			<MemoryRouter>
+				<GenomicEntityTemplate genomicEntity={genomicEntity} detailPage="allele" />
+			</MemoryRouter>
+		);
+
+		expect(result.getByText('CURIE').closest('a')).toHaveAttribute('href', '/allele/CURIE');
+	});
+
+	it('should not link when detailPage is not provided', () => {
+		const genomicEntity = {
+			alleleSymbol: {
+				displayText: 'Allele Symbol',
+			},
+			curie: 'CURIE',
+		};
+
+		const { container } = render(<GenomicEntityTemplate genomicEntity={genomicEntity} />);
+
+		expect(container.querySelector('a')).toBeNull();
 	});
 });
