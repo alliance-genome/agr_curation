@@ -40,6 +40,9 @@ public class CurationView {
 	public static class ResourceDescriptorPageView extends FieldsOnly {
 	}
 
+	public static class CrossReferenceView extends FieldsOnly {
+	}
+
 	public static class NoteView extends FieldsAndLists {
 	}
 

@@ -3,6 +3,14 @@ import { DeletionService } from './DeletionService';
 import { Endpoints } from '../constants/Endpoints';
 
 export class ResourceDescriptorService extends BaseAuthService {
+	/**
+	 * Reads one resource descriptor, including its `resourcePages`. This endpoint serializes
+	 * `ResourceDescriptorView`, which carries them; the descriptor nested in a cross reference does not.
+	 */
+	async getResourceDescriptor(id) {
+		return this.api.get(`/resourcedescriptor/${id}`);
+	}
+
 	saveResourceDescriptor(updatedResourceDescriptor) {
 		return this.api.put(`/resourcedescriptor`, updatedResourceDescriptor);
 	}

@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Objects;
 
 import org.alliancegenome.curation_api.constants.EntityFieldConstants;
+import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.dao.AlleleDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
@@ -15,8 +16,10 @@ import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.interfaces.base.BasePopularityInterface;
 import org.alliancegenome.curation_api.model.document.es.AlleleSummaryDocument;
 import org.alliancegenome.curation_api.model.entities.Allele;
+import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.Note;
 import org.alliancegenome.curation_api.model.ingest.dto.AlleleDTO;
+import org.alliancegenome.curation_api.response.ObjectListResponse;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.base.SubmittedObjectCrudService;
@@ -43,6 +46,8 @@ public class AlleleService extends SubmittedObjectCrudService<Allele, AlleleDTO,
 	PersonService personService;
 	@Inject
 	NoteService noteService;
+	@Inject
+	CrossReferenceService crossReferenceService;
 
 	@Override
 	@PostConstruct
@@ -53,14 +58,40 @@ public class AlleleService extends SubmittedObjectCrudService<Allele, AlleleDTO,
 	@Override
 	@Transactional
 	public ObjectResponse<Allele> update(Allele uiEntity) {
-		Allele dbEntity = alleleValidator.validateAlleleUpdate(uiEntity, false);
+		// AlleleView carries crossReferences but not the associations, so this path manages the former only.
+		Allele dbEntity = alleleValidator.validateAlleleUpdate(uiEntity, false, true);
 		return new ObjectResponse<>(dbEntity);
 	}
 
 	@Transactional
 	public ObjectResponse<Allele> updateDetail(Allele uiEntity) {
-		Allele dbEntity = alleleValidator.validateAlleleUpdate(uiEntity, true);
+		// AlleleDetailView carries the associations but not crossReferences, so this path manages the associations
+		// only; cross references are written through the allele's cross-references sub-resource. Both flags are set
+		// explicitly rather than derived from one another - they are complementary for these two views by
+		// coincidence, not by rule.
+		Allele dbEntity = alleleValidator.validateAlleleUpdate(uiEntity, true, false);
 		return new ObjectResponse<>(dbEntity);
+	}
+
+	public ObjectListResponse<CrossReference> getCrossReferences(Long id) {
+		Allele allele = findAlleleOrThrow(id);
+		List<CrossReference> crossReferences = allele.getCrossReferences();
+		return new ObjectListResponse<>(crossReferences == null ? new ArrayList<>() : new ArrayList<>(crossReferences));
+	}
+
+	@Transactional
+	public ObjectListResponse<CrossReference> updateCrossReferences(Long id, List<CrossReference> crossReferences) {
+		return crossReferenceService.replaceForOwner(findAlleleOrThrow(id), crossReferences);
+	}
+
+	private Allele findAlleleOrThrow(Long id) {
+		Allele allele = alleleDAO.find(id);
+		if (allele == null) {
+			ObjectResponse<Allele> response = new ObjectResponse<>();
+			response.addErrorMessage("id", ValidationConstants.INVALID_MESSAGE);
+			throw new ApiErrorException(response);
+		}
+		return allele;
 	}
 
 	@Override
