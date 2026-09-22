@@ -1,0 +1,19 @@
+src/main/resources/db/migration/v0.53.0.14__rename_antibody_taxon_vocabulary_display_name.sql
+  s_57bf0afd875ae8::t_71301b20e893a3 1-8
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "fb4a1fa2d62ece87fd29f18a1c77d1bdf069e543",
+  "prompts": {},
+  "sessions": {
+    "s_57bf0afd875ae8": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "agent-a736e5cbe41c21f9d",
+        "model": "unknown"
+      },
+      "human_author": "Ketaki Kindre <kkindre@caltech.edu>"
+    }
+  }
+}
