@@ -43,11 +43,11 @@ public class ResourceDescriptorPage extends AuditedObject {
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	// A descriptor's own auditing people are dropped here because they reach back to a resource descriptor
-	// page: a person carries an alliance member, and a member carries its homepage page, whose descriptor is
-	// this same property. Left in, that closes a serialization loop as soon as a member's homepage descriptor
-	// is edited by a curator belonging to that member. Ignoring properties is view-independent, so this holds
-	// on every view the descriptor is reachable from.
+	// The descriptor's auditing people are dropped here because they reach back to a resource descriptor
+	// page: a person carries an alliance member, and a member carries its homepage page, whose descriptor
+	// is this same property. Ignoring properties is view-independent, so this holds on every view the
+	// descriptor is reachable from. The shorter page -> person -> member -> page loop is cut on
+	// Organization.homepageResourceDescriptorPage.
 	@JsonIgnoreProperties({ "createdBy", "updatedBy" })
 	@JsonView({ CurationView.ResourceDescriptorPageView.class, CurationView.CrossReferenceView.class, CurationView.AlleleView.class, CurationView.ForPublic.class, CurationView.TransgenicAllelesDocument.class })
 	private ResourceDescriptor resourceDescriptor;
