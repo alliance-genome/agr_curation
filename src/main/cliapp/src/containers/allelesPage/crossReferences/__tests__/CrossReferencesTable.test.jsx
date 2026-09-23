@@ -59,7 +59,7 @@ const renderTable = (props = {}) => {
 			crossReferences={crossReferences}
 			editingRows={Object.fromEntries(crossReferences.map((row) => [row.dataKey, true]))}
 			onRowEditChange={() => null}
-			errorMessages={{}}
+			errorMessages={props.errorMessages ?? {}}
 			deletionHandler={deletionHandler}
 			onFieldChange={onFieldChange}
 			showObsolete={props.showObsolete ?? false}
@@ -222,6 +222,44 @@ describe('CrossReferencesTable', () => {
 		await user.click(await screen.findByText('true'));
 
 		expect(onFieldChange).toHaveBeenCalledWith('row-1', 'internal', true);
+	});
+
+	it('Marks the curie, descriptor and page required, and the display name not', () => {
+		renderTable();
+
+		const marksRequired = (name) => screen.getByRole('columnheader', { name }).querySelector('.p-error') !== null;
+
+		expect(marksRequired('Referenced Curie')).toBe(true);
+		expect(marksRequired('Resource Descriptor')).toBe(true);
+		expect(marksRequired('Resource Descriptor Page')).toBe(true);
+		expect(marksRequired('Display Name')).toBe(false);
+	});
+
+	// The curie editor reads its value only on mount, so without being remounted it would keep showing
+	// an empty curie after choosing a descriptor started it with that descriptor's prefix.
+	it('Shows the curie a descriptor started once the descriptor changes', () => {
+		const { container, rerenderWith } = renderTable({
+			crossReferences: [buildRow({ referencedCurie: '', resourceDescriptor: null, resourceDescriptorPage: null })],
+		});
+		expect(container.querySelector('#referencedCurie')).toHaveValue('');
+
+		rerenderWith([buildRow({ referencedCurie: 'ZFIN:', resourceDescriptor: ZFIN, resourceDescriptorPage: null })]);
+
+		expect(container.querySelector('#referencedCurie')).toHaveValue('ZFIN:');
+	});
+
+	it('Shows the API errors under the curie and page they belong to', () => {
+		renderTable({
+			errorMessages: {
+				'row-1': {
+					referencedCurie: { severity: 'error', message: 'Prefix does not match the resource descriptor' },
+					resourceDescriptorPage: { severity: 'error', message: 'Required field is empty' },
+				},
+			},
+		});
+
+		expect(screen.getByText('Prefix does not match the resource descriptor')).toBeInTheDocument();
+		expect(screen.getByText('Required field is empty')).toBeInTheDocument();
 	});
 
 	it('Offers Obsolete only when asked to', () => {

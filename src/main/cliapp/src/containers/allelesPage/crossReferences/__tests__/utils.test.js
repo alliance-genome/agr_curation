@@ -208,6 +208,51 @@ describe('applyCrossReferenceFieldChange', () => {
 		expect(updated.resourceDescriptorPage).toBeNull();
 	});
 
+	it('Starts an empty curie with the chosen descriptor prefix', () => {
+		const updated = applyCrossReferenceFieldChange({}, 'resourceDescriptor', pmid);
+
+		expect(updated.referencedCurie).toBe('PMID:');
+	});
+
+	it('Leaves an empty curie empty for a descriptor with no prefix', () => {
+		const updated = applyCrossReferenceFieldChange({ referencedCurie: '' }, 'resourceDescriptor', {
+			id: 5,
+			resourcePages: [],
+		});
+
+		expect(updated.referencedCurie).toBe('');
+	});
+
+	it('Keeps a curie the curator typed', () => {
+		const updated = applyCrossReferenceFieldChange(
+			{ referencedCurie: 'PMID:123' },
+			'resourceDescriptor',
+			withoutDefault
+		);
+
+		expect(updated.referencedCurie).toBe('PMID:123');
+	});
+
+	it('Replaces the prefix a previous descriptor left', () => {
+		const updated = applyCrossReferenceFieldChange(
+			{ resourceDescriptor: pmid, referencedCurie: 'PMID:' },
+			'resourceDescriptor',
+			withoutDefault
+		);
+
+		expect(updated.referencedCurie).toBe('NODEF:');
+	});
+
+	it('Empties the prefix a descriptor left when that descriptor is cleared', () => {
+		const updated = applyCrossReferenceFieldChange(
+			{ resourceDescriptor: pmid, referencedCurie: 'PMID:' },
+			'resourceDescriptor',
+			null
+		);
+
+		expect(updated.referencedCurie).toBe('');
+	});
+
 	it('Leaves no page when the descriptor is cleared', () => {
 		const updated = applyCrossReferenceFieldChange(
 			{ resourceDescriptorPage: { id: 1, name: 'default' } },

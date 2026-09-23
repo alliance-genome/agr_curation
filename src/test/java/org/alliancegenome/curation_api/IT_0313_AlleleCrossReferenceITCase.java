@@ -420,6 +420,21 @@ public class IT_0313_AlleleCrossReferenceITCase extends BaseITCase {
 			body("entity.referencedCurie", is("XRSUB:0009"));
 	}
 
+	// Choosing a descriptor starts the curie with its prefix, so saving without typing an identifier sends
+	// the prefix alone.
+	@Test
+	@Order(14)
+	public void curieWithoutIdentifierIsRejected() {
+		RestAssured.given().
+			contentType("application/json").
+			body(List.of(buildXref("XRSUB:", defaultPage))).
+			when().
+			put("/api/allele/" + alleleId + "/cross-references").
+			then().
+			statusCode(400).
+			body("supplementalData.errorMap.crossReferences.'0'.referencedCurie", is(ValidationConstants.MISSING_LOCAL_ID_MESSAGE));
+	}
+
 	private CrossReference buildXref(String referencedCurie, ResourceDescriptorPage page) {
 		CrossReference crossReference = new CrossReference();
 		crossReference.setReferencedCurie(referencedCurie);

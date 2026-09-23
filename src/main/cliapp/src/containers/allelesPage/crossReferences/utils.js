@@ -77,13 +77,20 @@ export const seedResourceDescriptors = async (crossReferences) => {
 
 const DEFAULT_PAGE_NAME = 'default';
 
+// The curie a descriptor starts a row with: its prefix and the colon, ready for the local id.
+const curiePrefixFor = (resourceDescriptor) => (resourceDescriptor?.prefix ? `${resourceDescriptor.prefix}:` : '');
+
 /**
- * Applies one field edit, keeping the page consistent with the descriptor.
+ * Applies one field edit, keeping the page and curie consistent with the descriptor.
  *
  * Choosing a descriptor keeps the current page when that page is one of the descriptor's
  * `resourcePages`, matched by id. Otherwise the page becomes the descriptor's page named `default`, or
  * none when it has no such page, so a page cannot be submitted against a descriptor it does not belong
  * to. A descriptor typed rather than chosen carries no `resourcePages` and therefore leaves no page.
+ *
+ * Choosing or clearing a descriptor also sets the curie to that descriptor's prefix, or empties it,
+ * but only when the curie holds nothing the curator typed: it is empty or absent, or holds just the
+ * prefix the previous descriptor left. A curie the curator typed is never changed.
  *
  * @param {Object} crossReference
  * @param {string} field
@@ -101,6 +108,11 @@ export const applyCrossReferenceFieldChange = (crossReference, field, value) => 
 		updated.resourceDescriptorPage = keepsPage
 			? crossReference.resourceDescriptorPage
 			: pages.find((page) => page.name === DEFAULT_PAGE_NAME) ?? null;
+
+		const currentCurie = crossReference.referencedCurie ?? '';
+		if (currentCurie === '' || currentCurie === curiePrefixFor(crossReference.resourceDescriptor)) {
+			updated.referencedCurie = curiePrefixFor(value);
+		}
 	}
 
 	return updated;

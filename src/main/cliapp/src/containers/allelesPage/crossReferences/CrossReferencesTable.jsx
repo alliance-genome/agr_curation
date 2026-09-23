@@ -11,6 +11,7 @@ import {
 	resourceDescriptorSearchConfig,
 } from '../../../components/Editors/autocomplete/resourceDescriptor/utils';
 import { DialogErrorMessageComponent } from '../../../components/Error/DialogErrorMessageComponent';
+import { RequiredFieldMarker } from '../../../components/RequiredFieldMarker';
 import { findRow } from './utils';
 
 /**
@@ -107,6 +108,10 @@ export const CrossReferencesTable = ({
 					const row = resolveRow(props);
 					return (
 						<TableInputTextEditor
+							// The editor reads its value only when it mounts, and choosing a descriptor can start
+							// the curie with that descriptor's prefix. Keying it on the descriptor remounts it
+							// then, so the input shows the curie the row holds.
+							key={row.resourceDescriptor?.id ?? 'no-descriptor'}
 							value={row.referencedCurie}
 							rowIndex={props.rowIndex}
 							errorMessages={errorMessages}
@@ -117,7 +122,12 @@ export const CrossReferencesTable = ({
 					);
 				}}
 				field="referencedCurie"
-				header="Referenced Curie"
+				header={
+					<>
+						<RequiredFieldMarker />
+						Referenced Curie
+					</>
+				}
 				headerClassName="surface-0"
 			/>
 			<Column
@@ -139,7 +149,12 @@ export const CrossReferencesTable = ({
 					);
 				}}
 				field="resourceDescriptor.prefix"
-				header="Resource Descriptor"
+				header={
+					<>
+						<RequiredFieldMarker />
+						Resource Descriptor
+					</>
+				}
 				headerClassName="surface-0"
 			/>
 			<Column
@@ -177,7 +192,12 @@ export const CrossReferencesTable = ({
 					);
 				}}
 				field="resourceDescriptorPage.name"
-				header="Resource Descriptor Page"
+				header={
+					<>
+						<RequiredFieldMarker />
+						Resource Descriptor Page
+					</>
+				}
 				headerClassName="surface-0"
 			/>
 			<Column

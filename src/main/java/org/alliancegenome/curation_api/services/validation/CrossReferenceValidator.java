@@ -163,6 +163,11 @@ public class CrossReferenceValidator extends AuditedObjectValidator<CrossReferen
 			return;
 		}
 
+		if (StringUtils.isBlank(referencedCurie.substring(separatorIndex + 1))) {
+			addMessageResponse("referencedCurie", ValidationConstants.MISSING_LOCAL_ID_MESSAGE);
+			return;
+		}
+
 		if (resourceDescriptorPage == null || resourceDescriptorPage.getResourceDescriptor() == null) {
 			return;
 		}
