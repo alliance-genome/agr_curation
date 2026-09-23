@@ -1,10 +1,8 @@
 package org.alliancegenome.curation_api;
 
 import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 
@@ -13,6 +11,7 @@ import java.util.List;
 import org.alliancegenome.curation_api.base.BaseITCase;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
+import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.ResourceDescriptor;
 import org.alliancegenome.curation_api.model.entities.ResourceDescriptorPage;
@@ -278,7 +277,7 @@ public class IT_0313_AlleleCrossReferenceITCase extends BaseITCase {
 
 	@Test
 	@Order(7)
-	public void clearingThePageStoresItCleared() {
+	public void clearingThePageIsRejected() {
 		CrossReference withoutPage = RestAssured.given().
 			when().
 			get("/api/allele/" + alleleId + "/cross-references").
@@ -289,35 +288,18 @@ public class IT_0313_AlleleCrossReferenceITCase extends BaseITCase {
 			getObject("entities[0]", CrossReference.class);
 		withoutPage.setResourceDescriptorPage(null);
 
-		// The page is applied whether or not the payload names one, so omitting it clears the stored one
-		// rather than leaving it in place.
 		RestAssured.given().
 			contentType("application/json").
 			body(List.of(withoutPage)).
 			when().
 			put("/api/allele/" + alleleId + "/cross-references").
 			then().
-			statusCode(200).
-			body("entities", hasSize(1)).
-			body("entities[0]", not(hasKey("resourceDescriptorPage")));
+			statusCode(400).
+			body("supplementalData.errorMap.crossReferences.'0'.resourceDescriptorPage", is(ValidationConstants.REQUIRED_MESSAGE));
 
 		RestAssured.given().
 			when().
 			get("/api/allele/" + alleleId + "/cross-references").
-			then().
-			statusCode(200).
-			body("entities[0]", not(hasKey("resourceDescriptorPage"))).
-			body("entities[0].referencedCurie", is(XREF_KEPT));
-
-		// Put it back, so the tests after this one see the allele they expect.
-		CrossReference restored = buildXref(XREF_KEPT, defaultPage);
-		restored.setId(withoutPage.getId());
-
-		RestAssured.given().
-			contentType("application/json").
-			body(List.of(restored)).
-			when().
-			put("/api/allele/" + alleleId + "/cross-references").
 			then().
 			statusCode(200).
 			body("entities[0].resourceDescriptorPage.name", is("default"));
@@ -361,6 +343,81 @@ public class IT_0313_AlleleCrossReferenceITCase extends BaseITCase {
 			then().
 			statusCode(400).
 			body("errorMessages.id", is(ValidationConstants.INVALID_MESSAGE));
+	}
+
+	@Test
+	@Order(10)
+	public void curieWithoutPrefixIsRejected() {
+		RestAssured.given().
+			contentType("application/json").
+			body(List.of(buildXref("XRSUB0006", defaultPage))).
+			when().
+			put("/api/allele/" + alleleId + "/cross-references").
+			then().
+			statusCode(400).
+			body("supplementalData.errorMap.crossReferences.'0'.referencedCurie", is(ValidationConstants.MISSING_PREFIX_MESSAGE));
+	}
+
+	@Test
+	@Order(11)
+	public void curieUnderAnotherDescriptorIsRejected() {
+		RestAssured.given().
+			contentType("application/json").
+			body(List.of(buildXref("WB:0007", defaultPage))).
+			when().
+			put("/api/allele/" + alleleId + "/cross-references").
+			then().
+			statusCode(400).
+			body("supplementalData.errorMap.crossReferences.'0'.referencedCurie", is(ValidationConstants.PREFIX_MISMATCH_MESSAGE));
+	}
+
+	// The Alleles table saves cross references with the allele rather than through the sub-resource, so it
+	// has to hold them to the same rules.
+	@Test
+	@Order(12)
+	public void alleleSaveHoldsCrossReferencesToTheSameRules() {
+		Allele allele = getAllele(ALLELE);
+		allele.setCrossReferences(List.of(buildXref("XRSUB:0008", null)));
+
+		RestAssured.given().
+			contentType("application/json").
+			body(allele).
+			when().
+			put("/api/allele").
+			then().
+			statusCode(400).
+			body("supplementalData.errorMap.crossReferences.'0'.resourceDescriptorPage", is(ValidationConstants.REQUIRED_MESSAGE));
+
+		// Order 8 left the allele with none, and the rejected save must not have added one.
+		RestAssured.given().
+			when().
+			get("/api/allele/" + alleleId + "/cross-references").
+			then().
+			statusCode(200).
+			body("entities", nullValue());
+	}
+
+	// The Alleles table checks each row here before it stages it on the allele.
+	@Test
+	@Order(13)
+	public void validateHoldsCrossReferencesToTheSameRules() {
+		RestAssured.given().
+			contentType("application/json").
+			body(buildXref("WB:0009", defaultPage)).
+			when().
+			post("/api/cross-reference/validate").
+			then().
+			statusCode(400).
+			body("errorMessages.referencedCurie", is(ValidationConstants.PREFIX_MISMATCH_MESSAGE));
+
+		RestAssured.given().
+			contentType("application/json").
+			body(buildXref("XRSUB:0009", defaultPage)).
+			when().
+			post("/api/cross-reference/validate").
+			then().
+			statusCode(200).
+			body("entity.referencedCurie", is("XRSUB:0009"));
 	}
 
 	private CrossReference buildXref(String referencedCurie, ResourceDescriptorPage page) {
