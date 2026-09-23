@@ -131,6 +131,28 @@ public class AlleleDAO extends BaseCurieSQLDAO<Allele> {
 		return CollectionUtils.isNotEmpty(results);
 	}
 
+	/**
+	 * Whether a non-obsolete allele other than {@code excludeId} has this symbol display text and taxon.
+	 *
+	 * @param displayText symbol display text to match
+	 * @param taxonId id of the taxon to match
+	 * @param excludeId id of the allele being validated, or null for a new allele
+	 */
+	public Boolean hasAlleleWithSymbolAndTaxon(String displayText, Long taxonId, Long excludeId) {
+		String jpql = "SELECT COUNT(a) FROM Allele a WHERE a.alleleSymbol.displayText = :displayText"
+			+ " AND a.taxon.id = :taxonId AND (a.obsolete IS NULL OR a.obsolete = false)";
+		if (excludeId != null) {
+			jpql += " AND a.id <> :excludeId";
+		}
+		var query = entityManager.createQuery(jpql, Long.class)
+			.setParameter("displayText", displayText)
+			.setParameter("taxonId", taxonId);
+		if (excludeId != null) {
+			query.setParameter("excludeId", excludeId);
+		}
+		return query.getSingleResult() > 0;
+	}
+
 	public List<String> getAllAllelePrimaryExternalIds() {
 		String sql = """
 				SELECT be.primaryexternalid

@@ -1259,6 +1259,49 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 	}
 
 	@Test
+	@Order(16)
+	public void createOrEditAlleleWithDuplicateSymbolInTaxon() {
+		// createAlleleWithEmptyRequiredFields left a "Test symbol" allele in taxon; ALLELE moved to taxon2 in editAllele
+		Allele duplicate = new Allele();
+		duplicate.setPrimaryExternalId("ALLELE:0016");
+		duplicate.setTaxon(taxon);
+		duplicate.setAlleleSymbol(createAlleleSymbolSlotAnnotation(null, "Test symbol", symbolNameType, null, null));
+
+		RestAssured.given().
+			contentType("application/json").
+			body(duplicate).
+			when().
+			post("/api/allele").
+			then().
+			statusCode(400).
+			body("errorMessages", is(aMapWithSize(1))).
+			body("errorMessages.alleleSymbol", is(ValidationConstants.NON_UNIQUE_MESSAGE));
+
+		duplicate.setTaxon(taxon2);
+
+		RestAssured.given().
+			contentType("application/json").
+			body(duplicate).
+			when().
+			post("/api/allele").
+			then().
+			statusCode(200);
+
+		Allele allele = getAllele(ALLELE);
+		allele.setTaxon(taxon);
+		allele.getAlleleSymbol().setDisplayText("Test symbol");
+
+		RestAssured.given().
+			contentType("application/json").
+			body(allele).
+			when().
+			put("/api/allele").
+			then().
+			statusCode(400).
+			body("errorMessages.alleleSymbol", is(ValidationConstants.NON_UNIQUE_MESSAGE));
+	}
+
+	@Test
 	@Order(17)
 	public void editAlleleWithNullNonRequiredFieldsLevel2() {
 		// Level 2 done before 1 to avoid having to restore nulled fields
@@ -1421,7 +1464,7 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 		Allele allele = new Allele();
 		allele.setPrimaryExternalId("ALLELE:0019");
 		allele.setTaxon(taxon);
-		allele.setAlleleSymbol(alleleSymbol);
+		allele.setAlleleSymbol(createAlleleSymbolSlotAnnotation(List.of(reference), "Test symbol 0019", symbolNameType, exactSynonymScope, "https://test.org"));
 
 		RestAssured.given().
 			contentType("application/json").
@@ -1441,7 +1484,7 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 
 		AlleleMutationTypeSlotAnnotation minimalAlleleMutationType = createAlleleMutationTypeSlotAnnotation(null, List.of(soTerm));
 		AlleleInheritanceModeSlotAnnotation minimalAlleleInheritanceMode = createAlleleInheritanceModeSlotAnnotation(null, dominantInheritanceMode, null, null);
-		AlleleSymbolSlotAnnotation minimalAlleleSymbol = createAlleleSymbolSlotAnnotation(null, "Test symbol", symbolNameType, null, null);
+		AlleleSymbolSlotAnnotation minimalAlleleSymbol = createAlleleSymbolSlotAnnotation(null, "Test symbol 0020", symbolNameType, null, null);
 		AlleleFullNameSlotAnnotation minimalAlleleFullName = createAlleleFullNameSlotAnnotation(null, "Test name", fullNameType, null, null);
 		AlleleSynonymSlotAnnotation minimalAlleleSynonym = createAlleleSynonymSlotAnnotation(null, "Test synonym", systematicNameType, null, null);
 		AlleleSecondaryIdSlotAnnotation minimalAlleleSecondaryId = createAlleleSecondaryIdSlotAnnotation(null, "TEST:Secondary");
@@ -1479,7 +1522,7 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 		Allele allele = new Allele();
 		allele.setPrimaryExternalId("ALLELE:0021");
 		allele.setTaxon(taxon);
-		AlleleSymbolSlotAnnotation alleleSymbol = createAlleleSymbolSlotAnnotation(null, "Test symbol", symbolNameType, null, null);
+		AlleleSymbolSlotAnnotation alleleSymbol = createAlleleSymbolSlotAnnotation(null, "Test symbol 0021", symbolNameType, null, null);
 		allele.setAlleleSymbol(alleleSymbol);
 		Note note1 = createNote(noteType, "Test text", false, false, null);
 		Note note2 = createNote(noteType, "Test text", false, false, null);

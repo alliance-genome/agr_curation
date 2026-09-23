@@ -46,6 +46,7 @@ import org.alliancegenome.curation_api.services.validation.dto.slotAnnotations.A
 import org.alliancegenome.curation_api.services.validation.dto.slotAnnotations.AlleleSynonymSlotAnnotationValidator;
 import org.alliancegenome.curation_api.services.CurieMintService;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
@@ -109,6 +110,9 @@ public class AlleleValidator extends GenomicEntityValidator<Allele> {
 
 	public Allele validateAllele(Allele uiEntity, Allele dbEntity, Boolean updateAllAssociations, Boolean manageCrossReferences) {
 
+		String storedSymbolText = dbEntity.getAlleleSymbol() == null ? null : dbEntity.getAlleleSymbol().getDisplayText();
+		Long storedTaxonId = dbEntity.getTaxon() == null ? null : dbEntity.getTaxon().getId();
+
 		// An allele is identified by its AGRKB curie, minted below for a new allele and already
 		// present on a loaded one, so neither MOD identifier is required. Passed for updates too:
 		// an allele created here has neither, and requiring one would reject its first edit.
@@ -151,6 +155,7 @@ public class AlleleValidator extends GenomicEntityValidator<Allele> {
 		}
 
 		AlleleSymbolSlotAnnotation symbol = validateAlleleSymbol(uiEntity, dbEntity);
+		validateSymbolUniqueInTaxon(symbol, dbEntity, storedSymbolText, storedTaxonId);
 		AlleleFullNameSlotAnnotation fullName = validateAlleleFullName(uiEntity, dbEntity);
 		AlleleGermlineTransmissionStatusSlotAnnotation germlineTransmissionStatus = validateAlleleGermlineTransmissionStatus(uiEntity, dbEntity);
 		AlleleDatabaseStatusSlotAnnotation databaseStatus = validateAlleleDatabaseStatus(uiEntity, dbEntity);
@@ -487,6 +492,30 @@ public class AlleleValidator extends GenomicEntityValidator<Allele> {
 		}
 
 		return symbolResponse.getEntity();
+	}
+
+	/**
+	 * Rejects a symbol already used by another non-obsolete allele of the same taxon. An existing allele is
+	 * checked only when its symbol or taxon changes, so alleles loaded with a shared symbol stay editable.
+	 *
+	 * @param symbol validated symbol, or null when the symbol failed validation
+	 * @param dbEntity allele being validated, with its taxon already validated
+	 * @param storedSymbolText symbol display text stored before this request, or null for a new allele
+	 * @param storedTaxonId taxon id stored before this request, or null for a new allele
+	 */
+	private void validateSymbolUniqueInTaxon(AlleleSymbolSlotAnnotation symbol, Allele dbEntity, String storedSymbolText, Long storedTaxonId) {
+		if (symbol == null || StringUtils.isBlank(symbol.getDisplayText()) || dbEntity.getTaxon() == null) {
+			return;
+		}
+
+		Long taxonId = dbEntity.getTaxon().getId();
+		if (dbEntity.getId() != null && symbol.getDisplayText().equals(storedSymbolText) && taxonId.equals(storedTaxonId)) {
+			return;
+		}
+
+		if (alleleDAO.hasAlleleWithSymbolAndTaxon(symbol.getDisplayText(), taxonId, dbEntity.getId())) {
+			addMessageResponse("alleleSymbol", ValidationConstants.NON_UNIQUE_MESSAGE);
+		}
 	}
 
 	private AlleleFullNameSlotAnnotation validateAlleleFullName(Allele uiEntity, Allele dbEntity) {
