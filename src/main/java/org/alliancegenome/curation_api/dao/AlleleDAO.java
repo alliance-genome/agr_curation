@@ -131,6 +131,14 @@ public class AlleleDAO extends BaseCurieSQLDAO<Allele> {
 		return CollectionUtils.isNotEmpty(results);
 	}
 
+	public Boolean hasReferencingGeneGeneticInteractions(Long alleleId) {
+		String jpql = "SELECT COUNT(g) FROM GeneGeneticInteraction g"
+			+ " WHERE g.interactorAGeneticPerturbation.id = :alleleId OR g.interactorBGeneticPerturbation.id = :alleleId";
+		return entityManager.createQuery(jpql, Long.class)
+			.setParameter("alleleId", alleleId)
+			.getSingleResult() > 0;
+	}
+
 	/**
 	 * Whether a non-obsolete allele other than {@code excludeId} has this symbol display text and taxon.
 	 *

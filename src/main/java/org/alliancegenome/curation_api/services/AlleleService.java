@@ -114,6 +114,60 @@ public class AlleleService extends SubmittedObjectCrudService<Allele, AlleleDTO,
 		return ret;
 	}
 
+	/**
+	 * Hard-deletes an allele on a curator's request. The allele's own slot annotations, notes, cross references
+	 * and gene, variant and construct associations go with it. Disease, phenotype and HTP sample annotations,
+	 * AGM associations, constructs listing it as a component and genetic interactions that reference it block
+	 * the deletion.
+	 *
+	 * @param identifierString curie, primary external ID or MOD internal ID of the allele
+	 * @return response holding the deleted allele
+	 * @throws ApiErrorException when no allele matches or the allele is still referenced
+	 */
+	@Override
+	@Transactional
+	public ObjectResponse<Allele> deleteByIdentifier(String identifierString) {
+		Allele allele = findByIdentifierString(identifierString);
+		if (allele == null) {
+			ObjectResponse<Allele> response = new ObjectResponse<>();
+			response.setErrorMessage("Could not find Allele with identifier: " + identifierString);
+			throw new ApiErrorException(response);
+		}
+
+		List<String> referencingReasons = getReferencingAnnotationAndAgmReasons(allele.getId());
+		if (CollectionUtils.isNotEmpty(allele.getConstructGenomicEntityAssociations())) {
+			referencingReasons.add("Allele is a component of construct(s)");
+		}
+		if (alleleDAO.hasReferencingGeneGeneticInteractions(allele.getId())) {
+			referencingReasons.add("Allele is referenced by genetic interaction(s)");
+		}
+		if (CollectionUtils.isNotEmpty(referencingReasons)) {
+			ObjectResponse<Allele> response = new ObjectResponse<>();
+			response.setErrorMessage("Allele " + allele.getIdentifier() + " is in use and cannot be deleted: " + String.join("; ", referencingReasons));
+			throw new ApiErrorException(response);
+		}
+
+		alleleDAO.remove(allele.getId());
+		return new ObjectResponse<>(allele);
+	}
+
+	private List<String> getReferencingAnnotationAndAgmReasons(Long alleleId) {
+		List<String> reasons = new ArrayList<>();
+		if (alleleDAO.hasReferencingDiseaseAnnotations(alleleId)) {
+			reasons.add("Allele is referenced by disease annotation(s)");
+		}
+		if (alleleDAO.hasReferencingPhenotypeAnnotations(alleleId)) {
+			reasons.add("Allele is referenced by phenotype annotation(s)");
+		}
+		if (alleleDAO.hasReferencingHTPExpressionDatasetSampleAnnotation(alleleId)) {
+			reasons.add("Allele is referenced by HTP expression dataset annotation(s)");
+		}
+		if (alleleDAO.hasReferencingAgmAlleleAssociations(alleleId)) {
+			reasons.add("Allele has AGM association(s)");
+		}
+		return reasons;
+	}
+
 	@Override
 	@Transactional
 	public Allele deprecateOrDelete(Long id, Boolean throwApiError, String requestSource, Boolean forceDeprecate) {
@@ -123,18 +177,7 @@ public class AlleleService extends SubmittedObjectCrudService<Allele, AlleleDTO,
 			if (forceDeprecate) {
 				deprecationReasons.add("Deprecation instead of deletion rule applied");
 			}
-			if (alleleDAO.hasReferencingDiseaseAnnotations(id)) {
-				deprecationReasons.add("Allele is referenced by disease annotation(s)");
-			}
-			if (alleleDAO.hasReferencingPhenotypeAnnotations(id)) {
-				deprecationReasons.add("Allele is referenced by phenotype annotation(s)");
-			}
-			if (alleleDAO.hasReferencingHTPExpressionDatasetSampleAnnotation(id)) {
-				deprecationReasons.add("Allele is referenced by HTP expression dataset annotation(s)");
-			}
-			if (alleleDAO.hasReferencingAgmAlleleAssociations(id)) {
-				deprecationReasons.add("Allele has AGM association(s)");
-			}
+			deprecationReasons.addAll(getReferencingAnnotationAndAgmReasons(id));
 			if (CollectionUtils.isNotEmpty(allele.getAlleleGeneAssociations())) {
 				deprecationReasons.add("Allele has gene association(s)");
 			}
