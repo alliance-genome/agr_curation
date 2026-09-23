@@ -75,13 +75,15 @@ export const seedResourceDescriptors = async (crossReferences) => {
 	});
 };
 
+const DEFAULT_PAGE_NAME = 'default';
+
 /**
  * Applies one field edit, keeping the page consistent with the descriptor.
  *
  * Choosing a descriptor keeps the current page when that page is one of the descriptor's
- * `resourcePages`, matched by id, and clears it otherwise - so a page cannot be submitted against a
- * descriptor it does not belong to. A descriptor typed rather than chosen carries no `resourcePages`
- * and therefore always clears the page.
+ * `resourcePages`, matched by id. Otherwise the page becomes the descriptor's page named `default`, or
+ * none when it has no such page, so a page cannot be submitted against a descriptor it does not belong
+ * to. A descriptor typed rather than chosen carries no `resourcePages` and therefore leaves no page.
  *
  * @param {Object} crossReference
  * @param {string} field
@@ -92,10 +94,13 @@ export const applyCrossReferenceFieldChange = (crossReference, field, value) => 
 	const updated = { ...crossReference, [field]: value };
 
 	if (field === 'resourceDescriptor') {
+		const pages = value?.resourcePages ?? [];
 		const currentPageId = crossReference.resourceDescriptorPage?.id;
-		const keepsPage = currentPageId != null && (value?.resourcePages ?? []).some((page) => page.id === currentPageId);
+		const keepsPage = currentPageId != null && pages.some((page) => page.id === currentPageId);
 
-		updated.resourceDescriptorPage = keepsPage ? crossReference.resourceDescriptorPage : null;
+		updated.resourceDescriptorPage = keepsPage
+			? crossReference.resourceDescriptorPage
+			: pages.find((page) => page.name === DEFAULT_PAGE_NAME) ?? null;
 	}
 
 	return updated;

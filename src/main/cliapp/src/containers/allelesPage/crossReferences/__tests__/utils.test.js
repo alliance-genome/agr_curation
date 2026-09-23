@@ -124,7 +124,15 @@ describe('seedResourceDescriptors', () => {
 });
 
 describe('applyCrossReferenceFieldChange', () => {
-	const pmid = { id: 9, prefix: 'PMID', resourcePages: [{ id: 1, name: 'default' }] };
+	const pmid = {
+		id: 9,
+		prefix: 'PMID',
+		resourcePages: [
+			{ id: 1, name: 'default' },
+			{ id: 2, name: 'gene' },
+		],
+	};
+	const withoutDefault = { id: 12, prefix: 'NODEF', resourcePages: [{ id: 30, name: 'homepage' }] };
 
 	it('Sets a plain field without touching the rest', () => {
 		const updated = applyCrossReferenceFieldChange({ referencedCurie: 'PMID:1', internal: false }, 'internal', true);
@@ -141,28 +149,45 @@ describe('applyCrossReferenceFieldChange', () => {
 		expect(crossReference.internal).toBe(false);
 	});
 
+	// A page the curator chose stands, even when the descriptor has a default of its own.
 	it('Keeps a page the chosen descriptor owns', () => {
 		const updated = applyCrossReferenceFieldChange(
-			{ resourceDescriptorPage: { id: 1, name: 'default' } },
+			{ resourceDescriptorPage: { id: 2, name: 'gene' } },
 			'resourceDescriptor',
 			pmid
 		);
 
-		expect(updated.resourceDescriptorPage).toEqual({ id: 1, name: 'default' });
+		expect(updated.resourceDescriptorPage).toEqual({ id: 2, name: 'gene' });
 		expect(updated.resourceDescriptor).toBe(pmid);
 	});
 
-	it('Clears a page the chosen descriptor does not own', () => {
+	it('Defaults the page when there was none', () => {
+		const updated = applyCrossReferenceFieldChange({ resourceDescriptorPage: null }, 'resourceDescriptor', pmid);
+
+		expect(updated.resourceDescriptorPage).toEqual({ id: 1, name: 'default' });
+	});
+
+	it('Replaces a page the chosen descriptor does not own with its default', () => {
 		const updated = applyCrossReferenceFieldChange(
 			{ resourceDescriptorPage: { id: 77, name: 'gene' } },
 			'resourceDescriptor',
 			pmid
 		);
 
+		expect(updated.resourceDescriptorPage).toEqual({ id: 1, name: 'default' });
+	});
+
+	it('Leaves no page for a descriptor without a default', () => {
+		const updated = applyCrossReferenceFieldChange(
+			{ resourceDescriptorPage: { id: 1, name: 'default' } },
+			'resourceDescriptor',
+			withoutDefault
+		);
+
 		expect(updated.resourceDescriptorPage).toBeNull();
 	});
 
-	it('Clears the page for a descriptor typed rather than chosen', () => {
+	it('Leaves no page for a descriptor typed rather than chosen', () => {
 		const updated = applyCrossReferenceFieldChange(
 			{ resourceDescriptorPage: { id: 1, name: 'default' } },
 			'resourceDescriptor',
@@ -172,8 +197,23 @@ describe('applyCrossReferenceFieldChange', () => {
 		expect(updated.resourceDescriptorPage).toBeNull();
 	});
 
-	it('Leaves the page null when there was none to keep', () => {
-		const updated = applyCrossReferenceFieldChange({ resourceDescriptorPage: null }, 'resourceDescriptor', pmid);
+	// A descriptor object carrying no resourcePages offers no page to keep or to default to.
+	it('Leaves no page for a descriptor whose pages did not load', () => {
+		const updated = applyCrossReferenceFieldChange(
+			{ resourceDescriptorPage: { id: 1, name: 'default' } },
+			'resourceDescriptor',
+			{ id: 9, prefix: 'PMID' }
+		);
+
+		expect(updated.resourceDescriptorPage).toBeNull();
+	});
+
+	it('Leaves no page when the descriptor is cleared', () => {
+		const updated = applyCrossReferenceFieldChange(
+			{ resourceDescriptorPage: { id: 1, name: 'default' } },
+			'resourceDescriptor',
+			null
+		);
 
 		expect(updated.resourceDescriptorPage).toBeNull();
 	});
