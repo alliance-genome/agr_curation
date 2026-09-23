@@ -3,7 +3,7 @@ import { Toast } from 'primereact/toast';
 import { Splitter, SplitterPanel } from 'primereact/splitter';
 import { Button } from 'primereact/button';
 import { ProgressSpinner } from 'primereact/progressspinner';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { AlleleService } from '../../service/AlleleService';
 import ErrorBoundary from '../../components/Error/ErrorBoundary';
@@ -17,9 +17,11 @@ import { AlleleForm, ALLELE_DETAIL_TOGGLEABLE_FIELDS } from './AlleleForm';
 import { DuplicateAlleleButton, NewAlleleButton } from './NewAlleleButton';
 import { useAlleleCrossReferences } from './crossReferences/useAlleleCrossReferences';
 import { SubResourcesProvider } from '../../components/SubResourcesContext';
+import { useDeleteOrDeprecateDialogs } from '../../components/DeleteOrDeprecateDialogs';
 
 export default function AlleleDetailPage() {
 	const { identifier } = useParams();
+	const navigate = useNavigate();
 	const { alleleState, alleleDispatch } = useAlleleReducer();
 	const { visibleFields, setVisibleFields, showAllFields, isVisible } = useFormFieldVisibility(
 		'AlleleDetail',
@@ -69,8 +71,7 @@ export default function AlleleDetailPage() {
 		return data.errorMessage ? data.errorMessage : `${error.response.status} ${error.response.statusText}`;
 	};
 
-	const handleSubmit = async (event) => {
-		event.preventDefault();
+	const submitAllele = async (allele, successDetail) => {
 		alleleDispatch({
 			type: 'SUBMIT',
 		});
@@ -87,9 +88,7 @@ export default function AlleleDetailPage() {
 
 		// A cleared taxon is held as one with a blank curie, which the API resolves to none without reporting
 		// it missing. Sent without a taxon, the allele is reported as needing one.
-		const allelePayload = alleleState.allele.taxon?.curie
-			? alleleState.allele
-			: { ...alleleState.allele, taxon: undefined };
+		const allelePayload = allele.taxon?.curie ? allele : { ...allele, taxon: undefined };
 
 		let alleleResult = null;
 		let alleleError = null;
@@ -150,8 +149,31 @@ export default function AlleleDetailPage() {
 			return;
 		}
 
-		toastSuccess.current.show({ severity: 'success', summary: 'Successful', detail: 'Allele Saved' });
+		toastSuccess.current.show({ severity: 'success', summary: 'Successful', detail: successDetail });
 	};
+
+	const handleSubmit = (event) => {
+		event.preventDefault();
+		submitAllele(alleleState.allele, 'Allele Saved');
+	};
+
+	const deleteAllele = async (id, allele) => {
+		const result = await alleleService.deleteAllele(allele);
+		if (result.isError) {
+			toastError.current.show([
+				{ life: 7000, severity: 'error', summary: `Could not delete allele ${getIdentifier(allele)}`, sticky: false },
+			]);
+			return result.message ? result.message : null;
+		}
+		navigate('/alleles');
+		return null;
+	};
+
+	const { openDeleteOrDeprecateDialog, deleteOrDeprecateDialogs } = useDeleteOrDeprecateDialogs({
+		deprecateOption: true,
+		onDelete: deleteAllele,
+		onDeprecate: (allele) => submitAllele({ ...allele, obsolete: true }, 'Allele Deprecated'),
+	});
 
 	if (getRequestIsLoading)
 		return (
@@ -197,12 +219,20 @@ export default function AlleleDetailPage() {
 								className="p-button-text"
 								sourceIdentifier={alleleState.allele?.curie || getIdentifier(alleleState.allele) || identifier}
 							/>
+							<Button
+								label="Delete"
+								icon="pi pi-trash"
+								className="p-button-text"
+								disabled={!alleleState.allele?.id}
+								onClick={() => openDeleteOrDeprecateDialog(alleleState.allele.id, alleleState.allele)}
+							/>
 						</SplitterPanel>
 					</Splitter>
 				</StickyHeader>
 				<SubResourcesProvider value={{ crossReferences }}>
 					<AlleleForm state={alleleState} dispatch={alleleDispatch} isVisible={isVisible} />
 				</SubResourcesProvider>
+				{deleteOrDeprecateDialogs}
 			</ErrorBoundary>
 		</>
 	);
