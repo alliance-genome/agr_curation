@@ -1,0 +1,19 @@
+src/main/resources/db/migration/v0.54.0.1__armenian_hamster_taxon_term_definition.sql
+  s_90fe3c66eb3b97::t_bcfb90cc4f1db8 1-6
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "cdc373fa4cecb26af54c86900441b528e11e13bc",
+  "prompts": {},
+  "sessions": {
+    "s_90fe3c66eb3b97": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "64db8705-0fb3-46f5-be71-5247c76018af",
+        "model": "unknown"
+      },
+      "human_author": "Ketaki Kindre <kkindre@caltech.edu>"
+    }
+  }
+}
