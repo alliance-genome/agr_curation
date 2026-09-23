@@ -25,8 +25,6 @@ export const VocabulariesTable = () => {
 
 	const toast_topleft = useRef(null);
 	const toast_topright = useRef(null);
-	const errorMessagesRef = useRef();
-	errorMessagesRef.current = errorMessages;
 
 	const [vocabularies, setVocabularies] = useState([]);
 	const [newVocabularyDialog, setNewVocabularyDialog] = useState(false);
@@ -68,9 +66,7 @@ export const VocabulariesTable = () => {
 				sortable: true,
 				body: (rowData) => <BooleanTemplate value={rowData.obsolete} />,
 				filterConfig: FILTER_CONFIGS.obsoleteFilterConfig,
-				editor: (editorOptions) => (
-					<BooleanTableEditor editorOptions={editorOptions} errorMessagesRef={errorMessagesRef} field="obsolete" />
-				),
+				editor: (editorOptions) => <BooleanTableEditor editorOptions={editorOptions} field="obsolete" />,
 			},
 			{
 				field: 'vocabularyLabel',

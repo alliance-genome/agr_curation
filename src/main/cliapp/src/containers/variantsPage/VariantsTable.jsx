@@ -147,7 +147,6 @@ export const VariantsTable = () => {
 						editorOptions={editorOptions}
 						field="variantStatus"
 						options={variantStatusTerms}
-						errorMessagesRef={errorMessagesRef}
 						showClear={true}
 					/>
 				),
@@ -256,12 +255,7 @@ export const VariantsTable = () => {
 				filterConfig: FILTER_CONFIGS.internalFilterConfig,
 				sortable: true,
 				editor: (editorOptions) => (
-					<BooleanTableEditor
-						editorOptions={editorOptions}
-						errorMessagesRef={errorMessagesRef}
-						field={'internal'}
-						showClear={false}
-					/>
+					<BooleanTableEditor editorOptions={editorOptions} field={'internal'} showClear={false} />
 				),
 			},
 			{
@@ -272,12 +266,7 @@ export const VariantsTable = () => {
 				filterConfig: FILTER_CONFIGS.obsoleteFilterConfig,
 				sortable: true,
 				editor: (editorOptions) => (
-					<BooleanTableEditor
-						editorOptions={editorOptions}
-						errorMessagesRef={errorMessagesRef}
-						field={'obsolete'}
-						showClear={false}
-					/>
+					<BooleanTableEditor editorOptions={editorOptions} field={'obsolete'} showClear={false} />
 				),
 			},
 		],
