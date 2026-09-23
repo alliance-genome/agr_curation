@@ -950,6 +950,9 @@ export const AllelesTable = () => {
 					hasDetails={true}
 					duplicationEnabled={true}
 					handleDuplication={handleDuplication}
+					deletionEnabled={true}
+					deletionMethod={alleleService.deleteAllele}
+					deprecateOption={true}
 					mutation={mutation}
 					isInEditMode={isInEditMode}
 					setIsInEditMode={setIsInEditMode}

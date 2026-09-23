@@ -12,6 +12,13 @@ import {
 import { data } from '../mockData/mockData.js';
 
 const tableProps = vi.fn();
+const deleteEntity = vi.fn();
+
+vi.mock('../../../service/DeletionService', () => ({
+	DeletionService: class {
+		delete = deleteEntity;
+	},
+}));
 
 // The table's rows never load in this environment, so the props it is given stand in for its row actions.
 vi.mock('../../../components/GenericDataTable/GenericDataTable', () => ({
@@ -30,9 +37,11 @@ const renderTable = () =>
 		</BrowserRouter>
 	);
 
-describe('<AllelesTable /> duplication', () => {
+describe('<AllelesTable /> row actions', () => {
 	beforeEach(() => {
 		tableProps.mockReset();
+		deleteEntity.mockReset();
+		deleteEntity.mockResolvedValue({ isSuccess: true, isError: false });
 		setupFindHandler();
 		setupSettingsHandler();
 		setupSaveSettingsHandler();
@@ -68,5 +77,45 @@ describe('<AllelesTable /> duplication', () => {
 
 		expect(open).toHaveBeenCalledWith('/allele/create?from=FB%3AFBal0196303', '_blank');
 		open.mockRestore();
+	});
+
+	it('Offers deletion alongside deprecation', async () => {
+		await renderTable();
+
+		await waitFor(() => expect(tableProps).toHaveBeenCalled());
+		expect(latestProps().deletionEnabled).toBe(true);
+		expect(latestProps().deprecateOption).toBe(true);
+	});
+
+	it('Deletes a row by its curie', async () => {
+		await renderTable();
+
+		await waitFor(() => expect(tableProps).toHaveBeenCalled());
+		// called detached from the props, as the table calls it
+		const { deletionMethod } = latestProps();
+		await deletionMethod({ id: 1, curie: 'AGRKB:101000000000001', primaryExternalId: 'WB:WBVar1' });
+
+		expect(deleteEntity).toHaveBeenCalledWith('allele', 'AGRKB:101000000000001');
+	});
+
+	it('Deletes a row without a curie by its MOD identifier', async () => {
+		await renderTable();
+
+		await waitFor(() => expect(tableProps).toHaveBeenCalled());
+		const { deletionMethod } = latestProps();
+		await deletionMethod({ id: 1, primaryExternalId: 'WB:WBVar1' });
+
+		expect(deleteEntity).toHaveBeenCalledWith('allele', 'WB:WBVar1');
+	});
+
+	it('Hands back the reason a deletion was refused', async () => {
+		deleteEntity.mockResolvedValue({ isSuccess: false, isError: true, message: 'Allele WB:WBVar1 is in use' });
+		await renderTable();
+
+		await waitFor(() => expect(tableProps).toHaveBeenCalled());
+		const { deletionMethod } = latestProps();
+		const result = await deletionMethod({ id: 1, curie: 'AGRKB:101000000000001' });
+
+		expect(result).toEqual({ isSuccess: false, isError: true, message: 'Allele WB:WBVar1 is in use' });
 	});
 });
