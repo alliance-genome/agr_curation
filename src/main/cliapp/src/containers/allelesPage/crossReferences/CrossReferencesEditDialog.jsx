@@ -9,6 +9,7 @@ import {
 	applyCrossReferenceFieldChange,
 	buildNewCrossReference,
 	seedResourceDescriptors,
+	stripForValidation,
 	stripUiFields,
 } from './utils';
 import { addDataKey } from '../utils';
@@ -85,15 +86,6 @@ export const CrossReferencesEditDialog = ({
 		setLocalCrossReferences((previous) => previous.filter((crossReference) => crossReference.dataKey !== dataKey));
 	};
 
-	const cleanForValidation = (crossReference) => {
-		const cleaned = stripUiFields(crossReference);
-		delete cleaned.updatedBy;
-		delete cleaned.createdBy;
-		delete cleaned.dateUpdated;
-		delete cleaned.dateCreated;
-		return cleaned;
-	};
-
 	const saveDataHandler = () => {
 		setErrorMessages({});
 
@@ -122,7 +114,7 @@ export const CrossReferencesEditDialog = ({
 			for (const crossReference of localCrossReferences) {
 				const result = await validationService.validate(
 					Endpoints.Entity.CROSS_REFERENCE,
-					cleanForValidation(crossReference)
+					stripForValidation(crossReference)
 				);
 
 				if (result.isError) {

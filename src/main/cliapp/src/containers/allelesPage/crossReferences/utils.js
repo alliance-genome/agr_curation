@@ -147,3 +147,20 @@ export const stripUiFields = (crossReference) => {
 
 	return apiFields;
 };
+
+/**
+ * Drops the table's own fields and the audit fields, leaving what the validate endpoint checks.
+ *
+ * The validate endpoint stores the person `createdBy` or `updatedBy` names when it does not already
+ * know them, so a check that should write nothing sends neither. The audit dates go with them, since
+ * only the API sets those.
+ *
+ * @param {Object} crossReference
+ * @returns {Object} a copy without the table's own fields or the audit fields
+ */
+export const stripForValidation = (crossReference) => {
+	/* eslint-disable-next-line no-unused-vars */
+	const { createdBy, updatedBy, dateCreated, dateUpdated, ...checkedFields } = stripUiFields(crossReference);
+
+	return checkedFields;
+};

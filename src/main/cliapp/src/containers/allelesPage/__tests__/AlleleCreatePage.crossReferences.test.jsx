@@ -8,6 +8,7 @@ const createAllele = vi.fn();
 const saveAlleleDetail = vi.fn();
 const navigate = vi.fn();
 const replaceCrossReferencesForAllele = vi.fn();
+const validate = vi.fn();
 
 // msw cannot intercept this app's fetch based ApiClient, so stub the services directly.
 vi.mock('../../../service/AlleleService', () => ({
@@ -31,6 +32,12 @@ vi.mock('../../../service/CrossReferenceService', () => ({
 	CrossReferenceService: class {
 		getCrossReferencesForAllele = vi.fn(() => Promise.resolve({ data: { entities: [] } }));
 		replaceCrossReferencesForAllele = replaceCrossReferencesForAllele;
+	},
+}));
+
+vi.mock('../../../service/ValidationService', () => ({
+	ValidationService: class {
+		validate = validate;
 	},
 }));
 
@@ -59,7 +66,42 @@ describe('<AlleleCreatePage /> cross references', () => {
 		navigate.mockReset();
 		replaceCrossReferencesForAllele.mockReset();
 		replaceCrossReferencesForAllele.mockResolvedValue({ data: { entities: [] } });
+		validate.mockReset();
+		validate.mockResolvedValue({ isSuccess: true, isError: false, data: {} });
 		window.localStorage.removeItem('AlleleCreateFormSettings');
+	});
+
+	// The allele is written first, so a row the API would refuse has to stop the save before the
+	// allele exists without it.
+	it('Creates no allele when a cross reference fails its check', async () => {
+		const user = userEvent.setup();
+		validate.mockResolvedValue({
+			isSuccess: false,
+			isError: true,
+			data: { referencedCurie: 'Prefix does not match the resource descriptor' },
+		});
+
+		await renderPage();
+
+		await user.click(button('Add Cross Reference'));
+		await user.click(button('Save & Close'));
+
+		expect(await screen.findByText('Prefix does not match the resource descriptor')).toBeInTheDocument();
+		expect(screen.getByText('Some cross references are not valid')).toBeInTheDocument();
+		expect(createAllele).not.toHaveBeenCalled();
+		expect(replaceCrossReferencesForAllele).not.toHaveBeenCalled();
+	});
+
+	it('Checks the cross references before creating the allele', async () => {
+		const user = userEvent.setup();
+		await renderPage();
+
+		await user.click(button('Add Cross Reference'));
+		await user.click(button('Save & Close'));
+
+		await waitFor(() => expect(createAllele).toHaveBeenCalled());
+		expect(validate).toHaveBeenCalledTimes(1);
+		expect(validate.mock.invocationCallOrder[0]).toBeLessThan(createAllele.mock.invocationCallOrder[0]);
 	});
 
 	// Cross references are written through their own sub-resource, so creating an allele that has
@@ -84,6 +126,7 @@ describe('<AlleleCreatePage /> cross references', () => {
 
 		await waitFor(() => expect(navigate).toHaveBeenCalled());
 		expect(replaceCrossReferencesForAllele).not.toHaveBeenCalled();
+		expect(validate).not.toHaveBeenCalled();
 	});
 
 	// The obvious next move after the cross references are rejected is to fix them and save again. That

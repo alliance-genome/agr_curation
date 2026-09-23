@@ -1,9 +1,18 @@
 import { renderHook, act, waitFor } from '@testing-library/react';
 
-const { getCrossReferencesForAllele, replaceCrossReferencesForAllele, getResourceDescriptor } = vi.hoisted(() => ({
-	getCrossReferencesForAllele: vi.fn(),
-	replaceCrossReferencesForAllele: vi.fn(),
-	getResourceDescriptor: vi.fn(),
+const { getCrossReferencesForAllele, replaceCrossReferencesForAllele, getResourceDescriptor, validate } = vi.hoisted(
+	() => ({
+		getCrossReferencesForAllele: vi.fn(),
+		replaceCrossReferencesForAllele: vi.fn(),
+		getResourceDescriptor: vi.fn(),
+		validate: vi.fn(),
+	})
+);
+
+vi.mock('../../../../service/ValidationService', () => ({
+	ValidationService: class {
+		validate = validate;
+	},
 }));
 
 vi.mock('../../../../service/CrossReferenceService', () => ({
@@ -130,5 +139,73 @@ describe('useAlleleCrossReferences', () => {
 		expect(result.current.crossReferences).toEqual([]);
 
 		console.warn.mockRestore();
+	});
+
+	describe('validate', () => {
+		beforeEach(() => {
+			validate.mockReset();
+		});
+
+		const renderWithRows = async (rows) => {
+			getCrossReferencesForAllele.mockResolvedValue({ data: { entities: rows } });
+			const rendered = renderHook(() => useAlleleCrossReferences(77));
+			await waitFor(() => expect(rendered.result.current.crossReferences).toHaveLength(rows.length));
+			return rendered;
+		};
+
+		it('Sends each row without its audit fields', async () => {
+			validate.mockResolvedValue({ isSuccess: true, isError: false, data: {} });
+			const { result } = await renderWithRows([
+				{ ...storedCrossReference, createdBy: { uniqueId: 'someone' }, dateCreated: '2026-01-01' },
+			]);
+
+			let outcome;
+			await act(async () => {
+				outcome = await result.current.validate();
+			});
+
+			expect(outcome).toEqual({ isValid: true });
+			const sent = validate.mock.calls[0][1];
+			expect(sent).not.toHaveProperty('createdBy');
+			expect(sent).not.toHaveProperty('dateCreated');
+			expect(sent).not.toHaveProperty('dataKey');
+			expect(sent.referencedCurie).toBe('PMID:1');
+		});
+
+		it('Records the errors of a failing row against that row only', async () => {
+			validate.mockResolvedValueOnce({ isSuccess: true, isError: false, data: {} }).mockResolvedValueOnce({
+				isSuccess: false,
+				isError: true,
+				data: { referencedCurie: 'Prefix is missing' },
+			});
+			const { result } = await renderWithRows([storedCrossReference, { ...storedCrossReference, id: 501 }]);
+			const [firstKey, secondKey] = result.current.crossReferences.map((row) => row.dataKey);
+
+			let outcome;
+			await act(async () => {
+				outcome = await result.current.validate();
+			});
+
+			expect(outcome.isValid).toBe(false);
+			expect(result.current.errorMessages[secondKey]).toEqual({
+				referencedCurie: { severity: 'error', message: 'Prefix is missing' },
+			});
+			expect(result.current.errorMessages).not.toHaveProperty(firstKey);
+		});
+
+		it('Reports a check it could not make as a failure', async () => {
+			vi.spyOn(console, 'warn').mockImplementation(() => {});
+			validate.mockRejectedValue(new TypeError('network'));
+			const { result } = await renderWithRows([storedCrossReference]);
+
+			let outcome;
+			await act(async () => {
+				outcome = await result.current.validate();
+			});
+
+			expect(outcome.isValid).toBe(false);
+			expect(result.current.isValidating).toBe(false);
+			console.warn.mockRestore();
+		});
 	});
 });

@@ -12,6 +12,7 @@ import {
 	findRow,
 	seedResourceDescriptor,
 	seedResourceDescriptors,
+	stripForValidation,
 	stripUiFields,
 } from '../utils';
 
@@ -309,5 +310,34 @@ describe('stripUiFields', () => {
 		stripUiFields(crossReference);
 
 		expect(crossReference.dataKey).toBe('mock-uuid-1');
+	});
+});
+
+describe('stripForValidation', () => {
+	const row = {
+		dataKey: 'row-1',
+		resourceDescriptor: { id: 9, prefix: 'PMID' },
+		id: 500,
+		referencedCurie: 'PMID:1',
+		resourceDescriptorPage: { id: 1, name: 'default' },
+		createdBy: { uniqueId: 'someone' },
+		updatedBy: { uniqueId: 'someone' },
+		dateCreated: '2026-01-01',
+		dateUpdated: '2026-01-02',
+	};
+
+	it('Keeps what the API checks and drops the table and audit fields', () => {
+		expect(stripForValidation(row)).toEqual({
+			id: 500,
+			referencedCurie: 'PMID:1',
+			resourceDescriptorPage: { id: 1, name: 'default' },
+		});
+	});
+
+	it('Does not modify the row it is given', () => {
+		stripForValidation(row);
+
+		expect(row.createdBy).toEqual({ uniqueId: 'someone' });
+		expect(row.dataKey).toBe('row-1');
 	});
 });

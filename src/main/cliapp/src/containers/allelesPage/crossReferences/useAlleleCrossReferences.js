@@ -1,7 +1,9 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { CrossReferenceService } from '../../../service/CrossReferenceService';
+import { ValidationService } from '../../../service/ValidationService';
+import { Endpoints } from '../../../constants/Endpoints';
 import { addDataKey } from '../utils';
-import { seedResourceDescriptors, stripUiFields } from './utils';
+import { seedResourceDescriptors, stripForValidation, stripUiFields } from './utils';
 
 /**
  * Maps the API's index keyed cross reference errors onto the rows they belong to, so the table can
@@ -42,7 +44,9 @@ export const useAlleleCrossReferences = (alleleId) => {
 	const [isLoading, setIsLoading] = useState(Boolean(alleleId));
 	const [loadError, setLoadError] = useState(null);
 	const [isSaving, setIsSaving] = useState(false);
+	const [isValidating, setIsValidating] = useState(false);
 	const crossReferenceService = useMemo(() => new CrossReferenceService(), []);
+	const validationService = useMemo(() => new ValidationService(), []);
 
 	useEffect(() => {
 		if (!alleleId) return undefined;
@@ -102,5 +106,52 @@ export const useAlleleCrossReferences = (alleleId) => {
 		[alleleId, crossReferenceService, crossReferences]
 	);
 
-	return { crossReferences, setCrossReferences, errorMessages, isLoading, loadError, isSaving, save };
+	/**
+	 * Checks each row against the API's cross reference rules without writing anything, and records the
+	 * errors of each row that fails against that row.
+	 *
+	 * @returns {Promise<{isValid: boolean, message?: string}>}
+	 */
+	const validate = useCallback(async () => {
+		setIsValidating(true);
+		setErrorMessages({});
+		try {
+			const results = await Promise.all(
+				crossReferences.map((crossReference) =>
+					validationService.validate(Endpoints.Entity.CROSS_REFERENCE, stripForValidation(crossReference))
+				)
+			);
+
+			const rowErrors = {};
+			results.forEach((result, index) => {
+				if (!result.isError) return;
+
+				rowErrors[crossReferences[index].dataKey] = Object.fromEntries(
+					Object.entries(result.data ?? {}).map(([field, message]) => [field, { severity: 'error', message }])
+				);
+			});
+			setErrorMessages(rowErrors);
+
+			return Object.keys(rowErrors).length === 0
+				? { isValid: true }
+				: { isValid: false, message: 'Some cross references are not valid' };
+		} catch (error) {
+			console.warn('Could not validate cross references', error);
+			return { isValid: false, message: 'The cross references could not be checked' };
+		} finally {
+			setIsValidating(false);
+		}
+	}, [crossReferences, validationService]);
+
+	return {
+		crossReferences,
+		setCrossReferences,
+		errorMessages,
+		isLoading,
+		loadError,
+		isSaving,
+		isValidating,
+		save,
+		validate,
+	};
 };
