@@ -125,6 +125,7 @@ export class DataLoadService extends BaseAuthService {
 				'AGM',
 				// 'VARIANT',
 				'CONSTRUCT',
+				'ANTIBODY',
 				'ALLELE_ASSOCIATION',
 				'CONSTRUCT_ASSOCIATION',
 				'AGM_ASSOCIATION',
@@ -186,6 +187,6 @@ export class DataLoadService extends BaseAuthService {
 	}
 
 	getDataProviders() {
-		return ['FB', 'MGI', 'HUMAN', 'RGD', 'SGD', 'WB', 'XB', 'ZFIN', 'SARSCoV2'];
+		return ['FB', 'MGI', 'HUMAN', 'RGD', 'SGD', 'WB', 'XB', 'ZFIN'];
 	}
 }

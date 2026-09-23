@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 
 import org.alliancegenome.curation_api.constants.EntityFieldConstants;
 import org.alliancegenome.curation_api.constants.YeastStrainTaxonConstants;
-import org.alliancegenome.curation_api.dao.base.BaseSQLDAO;
+import org.alliancegenome.curation_api.dao.base.BaseCurieSQLDAO;
 import org.alliancegenome.curation_api.model.document.es.ModelSearchResultDocument;
 import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
 import org.alliancegenome.curation_api.response.SearchResponse;
@@ -24,7 +24,7 @@ import lombok.extern.log4j.Log4j2;
 
 @Log4j2
 @ApplicationScoped
-public class AffectedGenomicModelDAO extends BaseSQLDAO<AffectedGenomicModel> {
+public class AffectedGenomicModelDAO extends BaseCurieSQLDAO<AffectedGenomicModel> {
 
 	@Inject DiseaseAnnotationDAO diseaseAnnotationDAO;
 	@Inject AGMDiseaseAnnotationDAO agmDiseaseAnnotationDAO;

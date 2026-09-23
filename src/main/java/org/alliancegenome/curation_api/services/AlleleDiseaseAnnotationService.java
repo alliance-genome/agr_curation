@@ -28,6 +28,8 @@ public class AlleleDiseaseAnnotationService extends BaseAnnotationDTOCrudService
 	AlleleDiseaseAnnotationDTOValidator alleleDiseaseAnnotationDtoValidator;
 	@Inject
 	DiseaseAnnotationService diseaseAnnotationService;
+	@Inject
+	CurieMintService curieMintService;
 
 	@Override
 	@PostConstruct
@@ -46,7 +48,7 @@ public class AlleleDiseaseAnnotationService extends BaseAnnotationDTOCrudService
 	@Transactional
 	public ObjectResponse<AlleleDiseaseAnnotation> create(AlleleDiseaseAnnotation uiEntity) {
 		AlleleDiseaseAnnotation dbEntity = alleleDiseaseValidator.validateAnnotationCreate(uiEntity);
-		diseaseAnnotationService.mintCurieIfAbsent(dbEntity);
+		curieMintService.mintCurieIfAbsent(dbEntity);
 		return new ObjectResponse<>(alleleDiseaseAnnotationDAO.persist(dbEntity));
 	}
 
@@ -54,7 +56,7 @@ public class AlleleDiseaseAnnotationService extends BaseAnnotationDTOCrudService
 	@Transactional
 	public ObjectResponse<AlleleDiseaseAnnotation> upsert(AlleleDiseaseAnnotationDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
 		ObjectResponse<AlleleDiseaseAnnotation> resp = alleleDiseaseAnnotationDtoValidator.validateAlleleDiseaseAnnotationDTO(dto, dataProvider);
-		diseaseAnnotationService.mintCurieIfAbsent(resp.getEntity());
+		curieMintService.mintCurieIfAbsent(resp.getEntity());
 		alleleDiseaseAnnotationDAO.persist(resp.getEntity());
 		return resp;
 	}

@@ -40,6 +40,9 @@ public class CurationView {
 	public static class ResourceDescriptorPageView extends FieldsOnly {
 	}
 
+	public static class CrossReferenceView extends FieldsOnly {
+	}
+
 	public static class NoteView extends FieldsAndLists {
 	}
 
@@ -79,7 +82,7 @@ public class CurationView {
 	public static class AlleleView extends FieldsOnly {
 	}
 
-	public static class AlleleDetailView extends FieldsOnly {
+	public static class AlleleDetailView {
 	}
 
 	public static class SequenceTargetingReagentView extends FieldsOnly {

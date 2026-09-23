@@ -1,12 +1,17 @@
-import React from 'react';
-import { StringListTextAreaEditor } from './StringListTextAreaEditor';
-import { ErrorMessageComponent } from '../../Error/ErrorMessageComponent';
+import { TableField } from '../fields/TableField';
+import { StringListInput } from '../widgets/StringListInput';
 
-export const StringListTextAreaTableEditor = ({ editorOptions, field, errorMessagesRef, rows = 5 }) => {
-	return (
-		<>
-			<StringListTextAreaEditor editorOptions={editorOptions} fieldName={field} rows={rows} />
-			<ErrorMessageComponent errorMessages={errorMessagesRef.current[editorOptions.rowIndex]} errorField={field} />
-		</>
-	);
-};
+/**
+ * Comma-separated editor for a row's list of plain strings, rendered as a textarea,
+ * with its validation message.
+ *
+ * @param {object} editorOptions - PrimeReact column editor options
+ * @param {string} field - the row property being edited
+ * @param {number} [rows=5] - visible rows
+ * @returns {JSX.Element}
+ */
+export const StringListTextAreaTableEditor = ({ editorOptions, field, rows = 5 }) => (
+	<TableField editorOptions={editorOptions} field={field}>
+		{(binding) => <StringListInput {...binding} multiline rows={rows} />}
+	</TableField>
+);

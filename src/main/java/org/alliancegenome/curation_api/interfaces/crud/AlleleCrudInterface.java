@@ -6,8 +6,10 @@ import java.util.List;
 import org.alliancegenome.curation_api.interfaces.base.BaseSubmittedObjectCrudInterface;
 import org.alliancegenome.curation_api.interfaces.base.BaseUpsertControllerInterface;
 import org.alliancegenome.curation_api.model.entities.Allele;
+import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.ingest.dto.AlleleDTO;
 import org.alliancegenome.curation_api.response.APIResponse;
+import org.alliancegenome.curation_api.response.ObjectListResponse;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.view.CurationView;
@@ -32,6 +34,18 @@ import org.eclipse.microprofile.openapi.annotations.Operation;
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public interface AlleleCrudInterface extends BaseSubmittedObjectCrudInterface<Allele>, BaseUpsertControllerInterface<Allele, AlleleDTO> {
+
+	@Operation(summary = "Get cross references for allele", description = "Retrieve all cross references belonging to this allele")
+	@GET
+	@Path("/{id}/cross-references")
+	@JsonView(CurationView.CrossReferenceView.class)
+	ObjectListResponse<CrossReference> getCrossReferences(@PathParam("id") Long id);
+
+	@Operation(summary = "Replace cross references for allele", description = "Replace this allele's cross references with the submitted list, deleting any that are omitted")
+	@PUT
+	@Path("/{id}/cross-references")
+	@JsonView(CurationView.CrossReferenceView.class)
+	ObjectListResponse<CrossReference> updateCrossReferences(@PathParam("id") Long id, List<CrossReference> crossReferences);
 
 	@Operation(summary = "Bulk load allele data", description = "Bulk load allele records from a data provider submission")
 	@POST
@@ -60,7 +74,7 @@ public interface AlleleCrudInterface extends BaseSubmittedObjectCrudInterface<Al
 	@Override
 	@POST
 	@Path("/")
-	@JsonView(CurationView.AlleleView.class)
+	@JsonView(CurationView.AlleleDetailView.class)
 	ObjectResponse<Allele> create(Allele entity);
 
 	@Override

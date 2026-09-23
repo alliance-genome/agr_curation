@@ -55,7 +55,7 @@ public class AuditedObject implements Serializable {
 	@DocumentId
 	@GenericField(aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES)
 	@GeneratedValue(strategy = GenerationType.SEQUENCE)
-	@JsonView({ CurationView.FieldsOnly.class, CurationView.PersonSettingView.class, VocabularyTermSetView.class })
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.PersonSettingView.class, VocabularyTermSetView.class, CurationView.AlleleDetailView.class })
 	@EqualsAndHashCode.Include
 	protected Long id;
 
@@ -63,49 +63,49 @@ public class AuditedObject implements Serializable {
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
 	@Fetch(FetchMode.SELECT)
-	@JsonView(CurationView.FieldsOnly.class)
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.AlleleDetailView.class })
 	private Person createdBy;
 
 	@IndexedEmbedded(includePaths = { "uniqueId", "uniqueId_keyword" })
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
 	@Fetch(FetchMode.SELECT)
-	@JsonView(CurationView.FieldsOnly.class)
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.AlleleDetailView.class })
 	private Person updatedBy;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer", valueBridge = @ValueBridgeRef(type = OffsetDateTimeValueBridge.class))
 	@KeywordField(name = "dateCreated_keyword", sortable = Sortable.YES, searchable = Searchable.YES, aggregable = Aggregable.YES, valueBridge = @ValueBridgeRef(type = OffsetDateTimeValueBridge.class))
-	@JsonView({ CurationView.FieldsOnly.class, CurationView.ForPublic.class })
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.ForPublic.class, CurationView.AlleleDetailView.class })
 	private OffsetDateTime dateCreated;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer", valueBridge = @ValueBridgeRef(type = OffsetDateTimeValueBridge.class))
 	@KeywordField(name = "dateUpdated_keyword", sortable = Sortable.YES, searchable = Searchable.YES, aggregable = Aggregable.YES, valueBridge = @ValueBridgeRef(type = OffsetDateTimeValueBridge.class))
-	@JsonView(CurationView.FieldsOnly.class)
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.AlleleDetailView.class })
 	private OffsetDateTime dateUpdated;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer", valueBridge = @ValueBridgeRef(type = BooleanValueBridge.class))
 	@KeywordField(name = "internal_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, valueBridge = @ValueBridgeRef(type = BooleanValueBridge.class))
-	@JsonView({ CurationView.FieldsOnly.class, CurationView.ForPublic.class, CurationView.GeneSummaryDocument.class })
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.ForPublic.class, CurationView.GeneSummaryDocument.class, CurationView.AlleleDetailView.class })
 	@Column(columnDefinition = "boolean default false")
 	@ColumnDefault("false")
 	private Boolean internal;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer", valueBridge = @ValueBridgeRef(type = BooleanValueBridge.class))
 	@KeywordField(name = "obsolete_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, valueBridge = @ValueBridgeRef(type = BooleanValueBridge.class))
-	@JsonView({ CurationView.FieldsOnly.class, CurationView.ForPublic.class, CurationView.GeneSummaryDocument.class })
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.ForPublic.class, CurationView.GeneSummaryDocument.class, CurationView.AlleleDetailView.class })
 	@Column(columnDefinition = "boolean default false")
 	@ColumnDefault("false")
 	private Boolean obsolete;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer", valueBridge = @ValueBridgeRef(type = OffsetDateTimeValueBridge.class))
 	@KeywordField(name = "dbDateCreated_keyword", sortable = Sortable.YES, searchable = Searchable.YES, aggregable = Aggregable.YES, valueBridge = @ValueBridgeRef(type = OffsetDateTimeValueBridge.class))
-	@JsonView({ CurationView.FieldsOnly.class })
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.AlleleDetailView.class })
 	@CreationTimestamp
 	private OffsetDateTime dbDateCreated;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer", valueBridge = @ValueBridgeRef(type = OffsetDateTimeValueBridge.class))
 	@KeywordField(name = "dbDateUpdated_keyword", sortable = Sortable.YES, searchable = Searchable.YES, aggregable = Aggregable.YES, valueBridge = @ValueBridgeRef(type = OffsetDateTimeValueBridge.class))
-	@JsonView(CurationView.FieldsOnly.class)
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.AlleleDetailView.class })
 	@UpdateTimestamp
 	private OffsetDateTime dbDateUpdated;
 

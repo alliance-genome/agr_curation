@@ -128,9 +128,7 @@ export const ControlledVocabularyTable = () => {
 				header: 'Name',
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.nameFilterConfig,
-				editor: (editorOptions) => (
-					<InputTextTableEditor editorOptions={editorOptions} field="name" errorMessagesRef={errorMessagesRef} />
-				),
+				editor: (editorOptions) => <InputTextTableEditor editorOptions={editorOptions} field="name" />,
 				body: (rowData) => <StringTemplate string={rowData.name} />,
 			},
 			{
@@ -138,13 +136,7 @@ export const ControlledVocabularyTable = () => {
 				header: 'Abbreviation',
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.abbreviationFilterConfig,
-				editor: (editorOptions) => (
-					<InputTextTableEditor
-						editorOptions={editorOptions}
-						field="abbreviation"
-						errorMessagesRef={errorMessagesRef}
-					/>
-				),
+				editor: (editorOptions) => <InputTextTableEditor editorOptions={editorOptions} field="abbreviation" />,
 				body: (rowData) => <StringTemplate string={rowData.abbreviation} />,
 			},
 			{
@@ -175,9 +167,7 @@ export const ControlledVocabularyTable = () => {
 				header: 'Definition',
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.definitionFilterConfig,
-				editor: (editorOptions) => (
-					<InputTextTableEditor editorOptions={editorOptions} field="definition" errorMessagesRef={errorMessagesRef} />
-				),
+				editor: (editorOptions) => <InputTextTableEditor editorOptions={editorOptions} field="definition" />,
 				body: (rowData) => <StringTemplate string={rowData.definition} />,
 			},
 			{

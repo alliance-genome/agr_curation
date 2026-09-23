@@ -3,7 +3,9 @@ package org.alliancegenome.curation_api.model.entities;
 import java.util.List;
 
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
+import org.alliancegenome.curation_api.enums.MatiSubdomain;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
+import org.alliancegenome.curation_api.interfaces.CurieSubdomain;
 import org.alliancegenome.curation_api.model.entities.associations.AlleleVariantAssociation;
 import org.alliancegenome.curation_api.model.entities.associations.CuratedVariantGenomicLocationAssociation;
 import org.alliancegenome.curation_api.model.entities.ontology.SOTerm;
@@ -46,6 +48,7 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema;
 	@Index(name = "variant_variantstatus_index", columnList = "variantstatus_id"),
 	@Index(name = "variant_sourcegeneralconsequence_index", columnList = "sourcegeneralconsequence_id")
 })
+@CurieSubdomain(MatiSubdomain.VARIANT)
 public class Variant extends GenomicEntity {
 
 	@IndexedEmbedded(includePaths = {"curie", "name", "curie_keyword", "name_keyword"})

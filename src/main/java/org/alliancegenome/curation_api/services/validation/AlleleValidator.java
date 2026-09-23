@@ -43,6 +43,7 @@ import org.alliancegenome.curation_api.services.validation.dto.slotAnnotations.A
 import org.alliancegenome.curation_api.services.validation.dto.slotAnnotations.AlleleSecondaryIdSlotAnnotationValidator;
 import org.alliancegenome.curation_api.services.validation.dto.slotAnnotations.AlleleSymbolSlotAnnotationValidator;
 import org.alliancegenome.curation_api.services.validation.dto.slotAnnotations.AlleleSynonymSlotAnnotationValidator;
+import org.alliancegenome.curation_api.services.CurieMintService;
 import org.apache.commons.collections.CollectionUtils;
 
 import jakarta.enterprise.context.RequestScoped;
@@ -52,6 +53,7 @@ import jakarta.inject.Inject;
 public class AlleleValidator extends GenomicEntityValidator<Allele> {
 
 	@Inject AlleleDAO alleleDAO;
+	@Inject CurieMintService curieMintService;
 	@Inject AlleleMutationTypeSlotAnnotationValidator alleleMutationTypeValidator;
 	@Inject AlleleInheritanceModeSlotAnnotationValidator alleleInheritanceModeValidator;
 	@Inject AlleleGermlineTransmissionStatusSlotAnnotationValidator alleleGermlineTransmissionStatusValidator;
@@ -68,7 +70,7 @@ public class AlleleValidator extends GenomicEntityValidator<Allele> {
 	
 	private String errorMessage;
 
-	public Allele validateAlleleUpdate(Allele uiEntity, Boolean updateAllAssociations) {
+	public Allele validateAlleleUpdate(Allele uiEntity, Boolean updateAllAssociations, Boolean manageCrossReferences) {
 		response = new ObjectResponse<>(uiEntity);
 		errorMessage = "Could not update Allele: [" + uiEntity.getIdentifier() + "]";
 
@@ -86,7 +88,7 @@ public class AlleleValidator extends GenomicEntityValidator<Allele> {
 
 		dbEntity = (Allele) validateAuditedObjectFields(uiEntity, dbEntity, false);
 
-		return validateAllele(uiEntity, dbEntity, updateAllAssociations);
+		return validateAllele(uiEntity, dbEntity, updateAllAssociations, manageCrossReferences);
 	}
 
 	public Allele validateAlleleCreate(Allele uiEntity) {
@@ -99,12 +101,17 @@ public class AlleleValidator extends GenomicEntityValidator<Allele> {
 
 		dbEntity = (Allele) validateAuditedObjectFields(uiEntity, dbEntity, true);
 
-		return validateAllele(uiEntity, dbEntity, true);
+		// POST /allele serializes AlleleDetailView, which omits crossReferences, so the create payload never
+		// carries them; they are written through the allele's cross-references sub-resource.
+		return validateAllele(uiEntity, dbEntity, true, false);
 	}
 
-	public Allele validateAllele(Allele uiEntity, Allele dbEntity, Boolean updateAllAssociations) {
+	public Allele validateAllele(Allele uiEntity, Allele dbEntity, Boolean updateAllAssociations, Boolean manageCrossReferences) {
 
-		dbEntity = validateGenomicEntityFields(uiEntity, dbEntity, VocabularyConstants.ALLELE_NOTE_TYPES_VOCABULARY_TERM_SET);
+		// An allele is identified by its AGRKB curie, minted below for a new allele and already
+		// present on a loaded one, so neither MOD identifier is required. Passed for updates too:
+		// an allele created here has neither, and requiring one would reject its first edit.
+		dbEntity = validateGenomicEntityFields(uiEntity, dbEntity, VocabularyConstants.ALLELE_NOTE_TYPES_VOCABULARY_TERM_SET, false, manageCrossReferences);
 
 		List<Reference> references = validateReferences(uiEntity, dbEntity);
 		dbEntity.setReferences(references);
@@ -116,6 +123,30 @@ public class AlleleValidator extends GenomicEntityValidator<Allele> {
 			dbEntity.setIsExtinct(uiEntity.getIsExtinct());
 		} else {
 			dbEntity.setIsExtinct(null);
+		}
+
+		if (uiEntity.getIsExtrachromosomal() != null) {
+			dbEntity.setIsExtrachromosomal(uiEntity.getIsExtrachromosomal());
+		} else {
+			dbEntity.setIsExtrachromosomal(null);
+		}
+
+		if (uiEntity.getIsIntegrated() != null) {
+			dbEntity.setIsIntegrated(uiEntity.getIsIntegrated());
+		} else {
+			dbEntity.setIsIntegrated(null);
+		}
+
+		if (uiEntity.getIsAberration() != null) {
+			dbEntity.setIsAberration(uiEntity.getIsAberration());
+		} else {
+			dbEntity.setIsAberration(null);
+		}
+
+		if (uiEntity.getIsBalancer() != null) {
+			dbEntity.setIsBalancer(uiEntity.getIsBalancer());
+		} else {
+			dbEntity.setIsBalancer(null);
 		}
 
 		AlleleSymbolSlotAnnotation symbol = validateAlleleSymbol(uiEntity, dbEntity);
@@ -143,6 +174,18 @@ public class AlleleValidator extends GenomicEntityValidator<Allele> {
 			throw new ApiErrorException(response);
 		}
 
+		// SCRUM-6173: mint an AGRKB curie for a NEW allele that has none, set before persist so the
+		// curie is written by the same insert. A curator-supplied curie is left alone.
+		//
+		// The getId() == null guard is load-bearing: validateAllele is shared by
+		// validateAlleleCreate and validateAlleleUpdate, and the field-copy chain above
+		// (validateGenomicEntityFields -> ... -> SubmittedObjectValidator.validateSubmittedObjectFields)
+		// assigns dbEntity.setCurie(handleStringField(uiEntity.getCurie())) unconditionally. So an
+		// update whose payload omits curie nulls it; without this guard the mint would then issue a
+		// fresh curie and the allele's AGRKB id would silently change on every such update.
+		if (dbEntity.getId() == null) {
+			curieMintService.mintCurieIfAbsent(dbEntity);
+		}
 		dbEntity = alleleDAO.persist(dbEntity);
 
 		if (symbol != null) {

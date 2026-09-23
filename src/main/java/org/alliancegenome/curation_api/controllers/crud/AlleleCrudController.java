@@ -7,8 +7,10 @@ import org.alliancegenome.curation_api.dao.AlleleDAO;
 import org.alliancegenome.curation_api.interfaces.crud.AlleleCrudInterface;
 import org.alliancegenome.curation_api.jobs.executors.AlleleExecutor;
 import org.alliancegenome.curation_api.model.entities.Allele;
+import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.ingest.dto.AlleleDTO;
 import org.alliancegenome.curation_api.response.APIResponse;
+import org.alliancegenome.curation_api.response.ObjectListResponse;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.AlleleService;
 
@@ -38,6 +40,14 @@ public class AlleleCrudController extends SubmittedObjectCrudController<AlleleSe
 
 	public ObjectResponse<Allele> updateDetail(Allele entity) {
 		return alleleService.updateDetail(entity);
+	}
+
+	public ObjectListResponse<CrossReference> getCrossReferences(Long id) {
+		return alleleService.getCrossReferences(id);
+	}
+
+	public ObjectListResponse<CrossReference> updateCrossReferences(Long id, List<CrossReference> crossReferences) {
+		return alleleService.updateCrossReferences(id, crossReferences);
 	}
 
 }

@@ -5,14 +5,14 @@ import java.util.List;
 import java.util.Map;
 
 import org.alliancegenome.curation_api.constants.EntityFieldConstants;
-import org.alliancegenome.curation_api.dao.base.BaseSQLDAO;
+import org.alliancegenome.curation_api.dao.base.BaseCurieSQLDAO;
 import org.alliancegenome.curation_api.model.entities.Construct;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.Query;
 
 @ApplicationScoped
-public class ConstructDAO extends BaseSQLDAO<Construct> {
+public class ConstructDAO extends BaseCurieSQLDAO<Construct> {
 
 	protected ConstructDAO() {
 		super(Construct.class);

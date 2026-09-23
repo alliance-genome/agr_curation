@@ -14,6 +14,7 @@ import java.util.concurrent.Executors;
 
 import org.alliancegenome.curation_api.constants.EntityFieldConstants;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
+import org.alliancegenome.curation_api.constants.CrossReferenceConstants;
 import org.alliancegenome.curation_api.dao.GeneDAO;
 import org.alliancegenome.curation_api.model.document.es.GeneSearchResultDocument;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
@@ -87,9 +88,50 @@ public class GeneService extends SubmittedObjectCrudService<Gene, GeneDTO, GeneD
 		return upsert(dto, null);
 	}
 
+	// @Transactional is load-bearing for addGeneCardsXrefIfHumanGene below, not decoration.
+	// validateGeneDTO is itself @Transactional and ends in geneDAO.persist, and nothing above this
+	// method opens a transaction — neither GeneExecutor.execLoad, BulkLoadJobExecutor.process nor
+	// LoadFileExecutor.runLoad is annotated. Without this, the validator's transaction commits and
+	// its persistence context closes before we return, the gene is detached, and the helper's own
+	// @Transactional opens a fresh context in which entityManager.persist(gene) sees a detached
+	// entity with an assigned id and throws PersistentObjectException. Annotating here makes the
+	// helper's REQUIRED join this transaction, so the gene stays managed, and collapses what would
+	// otherwise be two transactions per human gene into one.
+	// The three sibling entry points (addGeoXref, addBiogridXref, addExpressionAtlasXref) are
+	// annotated for the same reason.
 	@Override
+	@Transactional
 	public ObjectResponse<Gene> upsert(GeneDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
-		return geneDtoValidator.validateGeneDTO(dto, dataProvider);
+		ObjectResponse<Gene> response = geneDtoValidator.validateGeneDTO(dto, dataProvider);
+		addGeneCardsXrefIfHumanGene(response.getEntity());
+		return response;
+	}
+
+	/**
+	 * SCRUM-6455: attach the GeneCards linkout to human genes as they load.
+	 *
+	 * Unlike the GEO, BioGRID and Expression Atlas xrefs, which each have their own load supplying
+	 * identifiers from a file, GeneCards needs no external data: the HGNC id it keys on is already
+	 * the gene's primaryExternalId. So it is derived here rather than given a load of its own.
+	 *
+	 * The HGNC: prefix is the human-gene test. Every human gene in production carries one — 44,662
+	 * of 44,662 under NCBITaxon:9606 — and no non-human gene does, so this leaves MOD genes alone
+	 * without needing to resolve a taxon.
+	 *
+	 * Failure is deliberately silent. The helper looks the page up in the database and returns null
+	 * when it is absent, which is the case until v0.53.0.6 has been applied to the environment. A
+	 * missing linkout must not fail a gene load or reject the record.
+	 */
+	private void addGeneCardsXrefIfHumanGene(Gene gene) {
+		if (gene == null || StringUtils.isBlank(gene.getPrimaryExternalId())
+				|| !gene.getPrimaryExternalId().startsWith("HGNC:")) {
+			return;
+		}
+		if (geneXrefHelper.addGeneCardsCrossReference(gene, gene.getPrimaryExternalId()) == null) {
+			Log.debug("GeneCards page (HGNC:" + CrossReferenceConstants.GENECARDS_PAGE_AREA
+				+ ") is not registered; skipping the GeneCards cross reference for "
+				+ gene.getPrimaryExternalId());
+		}
 	}
 
 	@Override

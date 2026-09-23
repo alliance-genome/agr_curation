@@ -1,6 +1,7 @@
 import {
 	AFFILIATION_OVERRIDE_KEY,
 	canSwitchAffiliation,
+	getEffectiveModAbbreviation,
 	getEffectiveStaffGroups,
 	getTrueStaffGroups,
 	isAffiliationOverridden,
@@ -41,6 +42,31 @@ describe('getEffectiveStaffGroups', () => {
 		setCognitoGroups(['WBStaff', 'Tester']);
 		localStorage.setItem(AFFILIATION_OVERRIDE_KEY, 'RGDStaff');
 		expect(getEffectiveStaffGroups()).toEqual(['RGDStaff']);
+	});
+});
+
+describe('getEffectiveModAbbreviation', () => {
+	afterEach(() => localStorage.clear());
+
+	it('maps the effective staff group to its MOD abbreviation', () => {
+		setCognitoGroups(['WBStaff', 'Tester']);
+		expect(getEffectiveModAbbreviation()).toEqual('WB');
+	});
+
+	it('follows an override', () => {
+		setCognitoGroups(['WBStaff', 'Tester']);
+		localStorage.setItem(AFFILIATION_OVERRIDE_KEY, 'RGDStaff');
+		expect(getEffectiveModAbbreviation()).toEqual('RGD');
+	});
+
+	it("falls back to 'Alliance' when the user has no MOD group", () => {
+		setCognitoGroups(['Tester']);
+		expect(getEffectiveModAbbreviation()).toEqual('Alliance');
+	});
+
+	it("falls back to 'Alliance' when there is no cognito token", () => {
+		localStorage.removeItem('cognito-token-storage');
+		expect(getEffectiveModAbbreviation()).toEqual('Alliance');
 	});
 });
 

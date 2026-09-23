@@ -15,6 +15,7 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmb
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexingDependency;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.KeywordField;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonView;
 
 import jakarta.persistence.Entity;
@@ -42,25 +43,31 @@ public class ResourceDescriptorPage extends AuditedObject {
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@JsonView({ CurationView.ResourceDescriptorPageView.class, CurationView.ForPublic.class, CurationView.TransgenicAllelesDocument.class })
+	// The descriptor's auditing people are dropped here because they reach back to a resource descriptor
+	// page: a person carries an alliance member, and a member carries its homepage page, whose descriptor
+	// is this same property. Ignoring properties is view-independent, so this holds on every view the
+	// descriptor is reachable from. The shorter page -> person -> member -> page loop is cut on
+	// Organization.homepageResourceDescriptorPage.
+	@JsonIgnoreProperties({ "createdBy", "updatedBy" })
+	@JsonView({ CurationView.ResourceDescriptorPageView.class, CurationView.CrossReferenceView.class, CurationView.AlleleView.class, CurationView.ForPublic.class, CurationView.TransgenicAllelesDocument.class })
 	private ResourceDescriptor resourceDescriptor;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "name_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({ CurationView.FieldsOnly.class, CurationView.ForPublic.class, CurationView.GeneSummaryDocument.class, CurationView.AlleleSummaryDocument.class, CurationView.ModelDocument.class, CurationView.TransgenicAllelesDocument.class })
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.ForPublic.class, CurationView.GeneSummaryDocument.class, CurationView.AlleleSummaryDocument.class, CurationView.ModelDocument.class, CurationView.TransgenicAllelesDocument.class, CurationView.AlleleDetailView.class })
 	@EqualsAndHashCode.Include
 	private String name;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "urlTemplate_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({ CurationView.FieldsOnly.class, CurationView.ForPublic.class, CurationView.GeneSummaryDocument.class, CurationView.AlleleSummaryDocument.class, CurationView.GeneExpressionDocument.class, CurationView.ModelDocument.class, CurationView.VariantSummaryDocument.class, CurationView.SequenceSummaryDocument.class, CurationView.TransgenicAllelesDocument.class })
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.ForPublic.class, CurationView.GeneSummaryDocument.class, CurationView.AlleleSummaryDocument.class, CurationView.GeneExpressionDocument.class, CurationView.ModelDocument.class, CurationView.VariantSummaryDocument.class, CurationView.SequenceSummaryDocument.class, CurationView.TransgenicAllelesDocument.class, CurationView.AlleleDetailView.class })
 	@EqualsAndHashCode.Include
 	private String urlTemplate;
 
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "pageDescription_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({ CurationView.FieldsOnly.class, CurationView.ForPublic.class })
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.ForPublic.class, CurationView.AlleleDetailView.class })
 	@EqualsAndHashCode.Include
 	private String pageDescription;
 }

@@ -3,7 +3,9 @@ package org.alliancegenome.curation_api.model.entities;
 import java.util.List;
 
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
+import org.alliancegenome.curation_api.enums.MatiSubdomain;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
+import org.alliancegenome.curation_api.interfaces.CurieSubdomain;
 import org.alliancegenome.curation_api.view.CurationView;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.hibernate.search.mapper.pojo.automaticindexing.ReindexOnUpdate;
@@ -29,6 +31,7 @@ import lombok.ToString;
 @ToString(callSuper = true)
 @Schema(name = "GenomeAssembly", description = "GenomeAssembly: a genome assembly")
 @AGRCurationSchemaVersion(min = "2.4.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { BiologicalEntity.class })
+@CurieSubdomain(MatiSubdomain.GENOME_ASSEMBLY)
 public class GenomeAssembly extends BiologicalEntity {
 
 	@IndexedEmbedded(includePaths = {"referencedCurie", "displayName", "resourceDescriptorPage.name", "referencedCurie_keyword", "displayName_keyword", "resourceDescriptorPage.name_keyword"})

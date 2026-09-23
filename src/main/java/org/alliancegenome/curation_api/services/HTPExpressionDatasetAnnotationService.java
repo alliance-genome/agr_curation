@@ -12,6 +12,7 @@ import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.interfaces.crud.BaseUpsertServiceInterface;
 import org.alliancegenome.curation_api.model.entities.HTPExpressionDatasetAnnotation;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.HTPExpressionDatasetAnnotationFmsDTO;
+import org.alliancegenome.curation_api.response.ObjectListResponse;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
 import org.alliancegenome.curation_api.services.validation.dto.fms.HTPExpressionDatasetAnnotationFmsDTOValidator;
@@ -19,12 +20,14 @@ import org.alliancegenome.curation_api.services.validation.dto.fms.HTPExpression
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 
 @RequestScoped
 public class HTPExpressionDatasetAnnotationService extends BaseEntityCrudService<HTPExpressionDatasetAnnotation, HTPExpressionDatasetAnnotationDAO> implements BaseUpsertServiceInterface<HTPExpressionDatasetAnnotation, HTPExpressionDatasetAnnotationFmsDTO> {
 	
 	@Inject HTPExpressionDatasetAnnotationDAO htpExpressionDatasetAnnotationDAO;
 	@Inject HTPExpressionDatasetAnnotationFmsDTOValidator htpExpressionDatasetAnnotationFmsDtoValidator;
+	@Inject CurieMintService curieMintService;
 
 	@Override
 	@PostConstruct
@@ -53,4 +56,20 @@ public class HTPExpressionDatasetAnnotationService extends BaseEntityCrudService
 		return htpExpressionDatasetAnnotationDAO.findByIds(ids);
 	}
 
+	// SCRUM-6463 — mint on the curator create paths. Both are exposed as REST endpoints (POST / and
+	// POST /multiple), so both need it. The bulk upsert path mints in the FMS DTO validator instead,
+	// which is where the persist lives for that route.
+	@Override
+	@Transactional
+	public ObjectResponse<HTPExpressionDatasetAnnotation> create(HTPExpressionDatasetAnnotation uiEntity) {
+		curieMintService.mintCurieIfAbsent(uiEntity);
+		return super.create(uiEntity);
+	}
+
+	@Override
+	@Transactional
+	public ObjectListResponse<HTPExpressionDatasetAnnotation> create(List<HTPExpressionDatasetAnnotation> uiEntities) {
+		uiEntities.forEach(uiEntity -> curieMintService.mintCurieIfAbsent(uiEntity));
+		return super.create(uiEntities);
+	}
 }

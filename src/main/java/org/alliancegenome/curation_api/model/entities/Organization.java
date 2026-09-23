@@ -12,6 +12,7 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmb
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexingDependency;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.KeywordField;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -50,35 +51,40 @@ public class Organization extends Agent {
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "abbreviation_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({CurationView.FieldsOnly.class, CurationView.PersonSettingView.class, CurationView.ForPublic.class, CurationView.GeneSummaryDocument.class, CurationView.ModelDocument.class, CurationView.GeneExpressionDocument.class })
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.PersonSettingView.class, CurationView.ForPublic.class, CurationView.GeneSummaryDocument.class, CurationView.ModelDocument.class, CurationView.GeneExpressionDocument.class, CurationView.AlleleDetailView.class })
 	@Column(unique = true, nullable = false)
 	private String abbreviation;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "fullName_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({CurationView.FieldsOnly.class, CurationView.PersonSettingView.class, CurationView.GeneSummaryDocument.class})
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.PersonSettingView.class, CurationView.GeneSummaryDocument.class, CurationView.AlleleDetailView.class })
 	private String fullName;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "shortName_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({CurationView.FieldsOnly.class, CurationView.PersonSettingView.class, CurationView.GeneSummaryDocument.class})
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.PersonSettingView.class, CurationView.GeneSummaryDocument.class, CurationView.AlleleDetailView.class })
 	private String shortName;
 
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@OneToOne
-	@JsonView({CurationView.FieldsOnly.class, CurationView.ForPublic.class})
+	// The page's auditing people are dropped here because a person carries this same alliance
+	// member, whose homepage is this page, closing a page -> person -> member -> page loop.
+	// allowSetters keeps them writable: ignoring them in both directions makes Jackson build a
+	// contextual deserializer for a type inside the cycle, leaving its id without a deserializer.
+	@JsonIgnoreProperties(value = { "createdBy", "updatedBy" }, allowSetters = true)
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.ForPublic.class, CurationView.AlleleDetailView.class })
 	private ResourceDescriptorPage homepageResourceDescriptorPage;
 
-	@JsonView({CurationView.FieldsOnly.class})
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.AlleleDetailView.class })
 	private Boolean hasInferredGenePhenotypeAnnotations = false;
 
-	@JsonView({CurationView.FieldsOnly.class})
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.AlleleDetailView.class })
 	private Boolean hasAssertedGenePhenotypeAnnotations = false;
 
-	@JsonView({CurationView.FieldsOnly.class})
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.AlleleDetailView.class })
 	private Boolean hasInferredAllelePhenotypeAnnotations = false;
 
-	@JsonView({CurationView.FieldsOnly.class})
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.AlleleDetailView.class })
 	private Boolean hasAssertedAllelePhenotypeAnnotations = false;
 }

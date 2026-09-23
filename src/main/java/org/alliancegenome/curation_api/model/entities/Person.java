@@ -45,23 +45,23 @@ public class Person extends Agent {
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "uniqueId_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
 	@Column(unique = true, length = 2000)
-	@JsonView({ CurationView.FieldsOnly.class })
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.AlleleDetailView.class })
 	@EqualsAndHashCode.Include
 	protected String uniqueId;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "firstName_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({ CurationView.FieldsOnly.class, CurationView.PersonSettingView.class })
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.PersonSettingView.class, CurationView.AlleleDetailView.class })
 	private String firstName;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "middleName_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({ CurationView.FieldsOnly.class, CurationView.PersonSettingView.class })
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.PersonSettingView.class, CurationView.AlleleDetailView.class })
 	private String middleName;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "lastName_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({ CurationView.FieldsOnly.class, CurationView.PersonSettingView.class })
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.PersonSettingView.class, CurationView.AlleleDetailView.class })
 	private String lastName;
 
 	@KeywordField(aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES)
@@ -76,13 +76,13 @@ public class Person extends Agent {
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "orcid_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({ CurationView.FieldsOnly.class, CurationView.PersonSettingView.class })
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.PersonSettingView.class, CurationView.AlleleDetailView.class })
 	@Column(unique = true)
 	private String orcid;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "primaryExternalId_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({ CurationView.FieldsOnly.class, CurationView.PersonSettingView.class })
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.PersonSettingView.class, CurationView.AlleleDetailView.class })
 	@Column(unique = true)
 	private String primaryExternalId;
 
@@ -91,7 +91,7 @@ public class Person extends Agent {
 	private List<PersonSetting> settings;
 
 	@ManyToOne
-	@JsonView({ CurationView.FieldsOnly.class, CurationView.PersonSettingView.class })
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.PersonSettingView.class, CurationView.AlleleDetailView.class })
 	private AllianceMember allianceMember;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")

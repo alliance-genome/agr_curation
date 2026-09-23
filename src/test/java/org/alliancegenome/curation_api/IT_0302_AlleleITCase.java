@@ -1,25 +1,37 @@
 package org.alliancegenome.curation_api;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.aMapWithSize;
 import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.nullValue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.alliancegenome.curation_api.base.BaseITCase;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.Construct;
+import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.InformationContentEntity;
 import org.alliancegenome.curation_api.model.entities.Note;
 import org.alliancegenome.curation_api.model.entities.Organization;
 import org.alliancegenome.curation_api.model.entities.Person;
 import org.alliancegenome.curation_api.model.entities.Reference;
+import org.alliancegenome.curation_api.model.entities.ResourceDescriptor;
+import org.alliancegenome.curation_api.model.entities.ResourceDescriptorPage;
 import org.alliancegenome.curation_api.model.entities.Vocabulary;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.associations.AlleleConstructAssociation;
@@ -38,6 +50,7 @@ import org.alliancegenome.curation_api.model.entities.slotAnnotations.AlleleNome
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.AlleleSecondaryIdSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.AlleleSymbolSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.AlleleSynonymSlotAnnotation;
+import org.alliancegenome.curation_api.model.entities.slotAnnotations.GeneSymbolSlotAnnotation;
 import org.alliancegenome.curation_api.resources.TestContainerResource;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.MethodOrderer;
@@ -49,6 +62,7 @@ import org.junit.jupiter.api.TestMethodOrder;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusIntegrationTest;
 import io.restassured.RestAssured;
+import io.restassured.response.Response;
 
 @QuarkusIntegrationTest
 @QuarkusTestResource(TestContainerResource.Initializer.class)
@@ -60,6 +74,13 @@ import io.restassured.RestAssured;
 public class IT_0302_AlleleITCase extends BaseITCase {
 
 	private static final String ALLELE = "Allele:0001";
+
+	// RESTEasy's reply when the response cannot be serialized ("deserialize" is its wording).
+	private static final String SERIALIZATION_FAILURE_BODY = "Not able to deserialize data provided.";
+
+	private static final String LAZY_INIT_ALLELE = "Allele:LazyInit0001";
+	private static final String ROUND_TRIP_ALLELE = "Allele:RoundTrip0001";
+	private static final String CROSS_REFERENCE_ALLELE = "Allele:CrossRef0001";
 
 	private Vocabulary inheritanceModeVocabulary;
 	private Vocabulary germlineTransmissionStatusVocabulary;
@@ -136,6 +157,8 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 	private VocabularyTerm geneAssociationRelation2;
 	private Construct construct;
 	private VocabularyTerm constructAssociationRelation;
+	private ResourceDescriptorPage crossReferencePage;
+	private ResourceDescriptorPage crossReferencePage2;
 
 
 	private void loadRequiredEntities() {
@@ -217,6 +240,9 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 		geneAssociationRelation2 = getVocabularyTerm(relationVocabulary, "duplication");
 		construct = createConstruct("TEST:AssociatedConstruct1", false, symbolNameType);
 		constructAssociationRelation = getVocabularyTerm(relationVocabulary, "contains");
+		ResourceDescriptor crossReferenceResourceDescriptor = createResourceDescriptor("XRTEST");
+		crossReferencePage = createResourceDescriptorPage("default", "http://test.org/[%s]", crossReferenceResourceDescriptor);
+		crossReferencePage2 = createResourceDescriptorPage("gene", "http://test.org/gene/[%s]", crossReferenceResourceDescriptor);
 	}
 
 	@Test
@@ -478,8 +504,7 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 			post("/api/allele").
 			then().
 			statusCode(400).
-			body("errorMessages", is(aMapWithSize(3))).
-			body("errorMessages.modInternalId", is(ValidationConstants.REQUIRED_UNLESS_OTHER_FIELD_POPULATED_MESSAGE + " primaryExternalId")).
+			body("errorMessages", is(aMapWithSize(2))).
 			body("errorMessages.taxon", is(ValidationConstants.REQUIRED_MESSAGE)).
 			body("errorMessages.alleleSymbol", is(ValidationConstants.REQUIRED_MESSAGE));
 	}
@@ -490,15 +515,24 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 		Allele allele = getAllele(ALLELE);
 		allele.setPrimaryExternalId(null);
 
+		// An allele is identified by its AGRKB curie, so neither MOD identifier is required.
 		RestAssured.given().
 			contentType("application/json").
 			body(allele).
 			when().
 			put("/api/allele").
 			then().
-			statusCode(400).
-			body("errorMessages", is(aMapWithSize(1))).
-			body("errorMessages.modInternalId", is(ValidationConstants.REQUIRED_UNLESS_OTHER_FIELD_POPULATED_MESSAGE + " primaryExternalId"));
+			statusCode(200);
+
+		// Restore the identifier the ordered tests that follow look this fixture up by.
+		allele.setPrimaryExternalId(ALLELE);
+		RestAssured.given().
+			contentType("application/json").
+			body(allele).
+			when().
+			put("/api/allele").
+			then().
+			statusCode(200);
 	}
 
 	@Test
@@ -549,9 +583,8 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 			when().
 			post("/api/allele").
 			then().
-			statusCode(400).
-			body("errorMessages", is(aMapWithSize(1))).
-			body("errorMessages.modInternalId", is(ValidationConstants.REQUIRED_UNLESS_OTHER_FIELD_POPULATED_MESSAGE + " primaryExternalId"));
+			statusCode(200).
+			body("entity.alleleSymbol.displayText", is(alleleSymbol.getDisplayText()));
 	}
 
 	@Test
@@ -560,15 +593,24 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 		Allele allele = getAllele(ALLELE);
 		allele.setPrimaryExternalId("");
 
+		// An allele is identified by its AGRKB curie, so neither MOD identifier is required.
 		RestAssured.given().
 			contentType("application/json").
 			body(allele).
 			when().
 			put("/api/allele").
 			then().
-			statusCode(400).
-			body("errorMessages", is(aMapWithSize(1))).
-			body("errorMessages.modInternalId", is(ValidationConstants.REQUIRED_UNLESS_OTHER_FIELD_POPULATED_MESSAGE + " primaryExternalId"));
+			statusCode(200);
+
+		// Restore the identifier the ordered tests that follow look this fixture up by.
+		allele.setPrimaryExternalId(ALLELE);
+		RestAssured.given().
+			contentType("application/json").
+			body(allele).
+			when().
+			put("/api/allele").
+			then().
+			statusCode(200);
 	}
 
 	@Test
@@ -1603,6 +1645,173 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 				statusCode(200);
 	}
 
+	@Test
+	@Order(28)
+	public void updateAlleleDetailWithGeneAssociationEvidenceGraph() {
+		// SCRUM-6434: serializing the updateDetail response hit a lazy load on a closed session via
+		// alleleGeneAssociations -> alleleGeneAssociationObject -> geneSymbol -> evidence ->
+		// crossReferences. AlleleDetailView no longer reaches geneSymbol, which severs that path.
+		// The only active test doing a successful updateDetail with a gene association.
+
+		// A null fixture would produce a 400 indistinguishable from the bug under test.
+		assertNotNull(symbolNameType, "symbolNameType fixture is null - loadRequiredEntities did not complete");
+		assertNotNull(geneAssociationRelation, "geneAssociationRelation fixture is null - loadRequiredEntities did not complete");
+
+		Gene evidenceGene = createGene("TEST:LazyInitGene1", "NCBITaxon:6239", symbolNameType, false);
+		// Unique xref rather than the shared PMID:TestXref default.
+		Reference geneSymbolEvidence = createReference("AGRKB:LazyInitTest1", "PMID:LazyInitTest1", false);
+		GeneSymbolSlotAnnotation evidenceGeneSymbol = evidenceGene.getGeneSymbol();
+		evidenceGeneSymbol.setEvidence(List.of(geneSymbolEvidence));
+		RestAssured.given().
+				contentType("application/json").
+				body(evidenceGene).
+				when().
+				put("/api/gene").
+				then().
+				statusCode(200).
+				body("entity.geneSymbol.evidence[0].curie", is(geneSymbolEvidence.getCurie()));
+
+		Allele allele = createAllele(LAZY_INIT_ALLELE, "NCBITaxon:6239", symbolNameType, false);
+		AlleleGeneAssociation geneAssociation = new AlleleGeneAssociation();
+		geneAssociation.setAlleleGeneAssociationObject(evidenceGene);
+		geneAssociation.setRelation(geneAssociationRelation);
+		allele.setAlleleGeneAssociations(List.of(geneAssociation));
+
+		// Assert the PUT body; a follow-up GET keeps the session open and never reproduces this.
+		Response response = RestAssured.given().
+				contentType("application/json").
+				body(allele).
+				when().
+				put("/api/allele/updateDetail").
+				then().
+				extract().response();
+
+		// Validation and serialization failures are both 400; only the latter is this bug.
+		String body = response.body().asString();
+		assertNotEquals(SERIALIZATION_FAILURE_BODY, body.trim(),
+				"Response serialization failed - the AlleleDetailView graph hit a LazyInitializationException "
+					+ "after the write transaction closed (SCRUM-6434)");
+		assertEquals(200, response.statusCode(), "updateDetail returned " + response.statusCode() + ": " + body);
+
+		assertThat(response.jsonPath().getList("entity.alleleGeneAssociations"), hasSize(1));
+		assertThat(response.jsonPath().getString("entity.alleleGeneAssociations[0].alleleGeneAssociationObject.primaryExternalId"),
+				is(evidenceGene.getPrimaryExternalId()));
+		// The association object is pruned to identifiers: geneSymbol (and the evidence ->
+		// crossReferences chain under it) must NOT be serialized.
+		assertThat(response.jsonPath().get("entity.alleleGeneAssociations[0].alleleGeneAssociationObject.geneSymbol"),
+				is(nullValue()));
+
+		RestAssured.given().
+				when().
+				delete("/api/allele/" + LAZY_INIT_ALLELE).
+				then().
+				statusCode(200);
+	}
+
+	@Test
+	@Order(29)
+	public void alleleDetailViewExposesOnlyExpectedTopLevelFields() {
+		// AlleleDetailView no longer inherits FieldsOnly, so the response is an explicit opt-in list.
+		// Fail if it ever widens again - that is how the lazy branch got in (SCRUM-6434).
+		Set<String> allowed = Set.of(
+				"type", "id", "curie", "primaryExternalId", "modInternalId", "taxon", "inCollection", "isExtinct",
+				"references", "relatedNotes", "dataProvider", "dataProviderCrossReference",
+				"alleleSymbol", "alleleFullName", "alleleSynonyms", "alleleSecondaryIds", "alleleMutationTypes",
+				"alleleInheritanceModes", "alleleFunctionalImpacts", "alleleGermlineTransmissionStatus",
+				"alleleDatabaseStatus", "alleleNomenclatureEvents",
+				"alleleGeneAssociations", "alleleVariantAssociations", "alleleConstructAssociations",
+				"createdBy", "updatedBy", "dateCreated", "dateUpdated", "dbDateCreated", "dbDateUpdated",
+				"internal", "obsolete");
+
+		Allele allele = createAllele(ROUND_TRIP_ALLELE, "NCBITaxon:6239", symbolNameType, false);
+
+		Response get = RestAssured.given().
+				when().
+				get("/api/allele/" + ROUND_TRIP_ALLELE).
+				then().
+				statusCode(200).
+				extract().response();
+
+		Map<String, Object> entity = get.jsonPath().getMap("entity");
+		Set<String> actual = entity.keySet();
+		assertTrue(allowed.containsAll(actual), "unexpected fields in AlleleDetailView: " + removeAll(actual, allowed));
+		assertNotNull(allele.getId());
+	}
+
+	@Test
+	@Order(30)
+	public void updateDetailRoundTripPreservesAssociationsAndSlotAnnotations() {
+		// Guards the orphanRemoval data-loss path: anything the UI receives is PUT back verbatim, so a
+		// field missing from AlleleDetailView comes back absent and its rows are deleted.
+		assertNotNull(geneAssociationRelation, "geneAssociationRelation fixture is null");
+		assertNotNull(constructAssociationRelation, "constructAssociationRelation fixture is null");
+
+		Allele allele = getAllele(ROUND_TRIP_ALLELE);
+		// createAllele leaves references empty; set one so the round trip covers
+		// Reference.crossReferences, the collection this bug is about.
+		allele.setReferences(List.of(reference));
+
+		AlleleGeneAssociation ga = new AlleleGeneAssociation();
+		ga.setAlleleGeneAssociationObject(gene);
+		ga.setRelation(geneAssociationRelation);
+		allele.setAlleleGeneAssociations(List.of(ga));
+
+		AlleleConstructAssociation ca = new AlleleConstructAssociation();
+		ca.setAlleleConstructAssociationObject(construct);
+		ca.setRelation(constructAssociationRelation);
+		allele.setAlleleConstructAssociations(List.of(ca));
+
+		// reference2 is deliberately not in allele.references, so its crossReferences are reachable
+		// only through SlotAnnotation.evidence. Reusing reference here would hide a regression.
+		allele.setAlleleInheritanceModes(List.of(
+				createAlleleInheritanceModeSlotAnnotation(List.of(reference2), dominantInheritanceMode, mpTerm, "Round trip")));
+		allele.setAlleleSecondaryIds(List.of(
+				createAlleleSecondaryIdSlotAnnotation(List.of(reference2), "TEST:RoundTripSecondary")));
+
+		RestAssured.given().
+				contentType("application/json").
+				body(allele).
+				when().
+				put("/api/allele/updateDetail").
+				then().
+				statusCode(200);
+
+		// PUT the response body straight back, exactly as the detail page does on a second save.
+		Allele afterFirstSave = getAllele(ROUND_TRIP_ALLELE);
+		RestAssured.given().
+				contentType("application/json").
+				body(afterFirstSave).
+				when().
+				put("/api/allele/updateDetail").
+				then().
+				statusCode(200);
+
+		RestAssured.given().
+				when().
+				get("/api/allele/" + ROUND_TRIP_ALLELE).
+				then().
+				statusCode(200).
+				body("entity.alleleGeneAssociations", hasSize(1)).
+				body("entity.alleleConstructAssociations", hasSize(1)).
+				body("entity.alleleInheritanceModes", hasSize(1)).
+				body("entity.alleleSecondaryIds", hasSize(1)).
+				body("entity.alleleSecondaryIds[0].secondaryId", is("TEST:RoundTripSecondary")).
+				body("entity.alleleSecondaryIds[0].evidence[0].curie", is(reference2.getCurie())).
+				body("entity.references", hasSize(1));
+
+		RestAssured.given().
+				when().
+				delete("/api/allele/" + ROUND_TRIP_ALLELE).
+				then().
+				statusCode(200);
+	}
+
+	private static String removeAll(Set<String> actual, Set<String> allowed) {
+		Set<String> extra = new java.util.HashSet<>(actual);
+		extra.removeAll(allowed);
+		return extra.toString();
+	}
+
 	private AlleleMutationTypeSlotAnnotation createAlleleMutationTypeSlotAnnotation(List<InformationContentEntity> evidence, List<SOTerm> mutationTypes) {
 		AlleleMutationTypeSlotAnnotation amt = new AlleleMutationTypeSlotAnnotation();
 		amt.setEvidence(evidence);
@@ -1697,6 +1906,167 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 		ane.setNomenclatureEvent(event);
 
 		return ane;
+	}
+
+
+	@Test
+	@Order(31)
+	public void alleleUpdateManagesCrossReferences() {
+		// PUT /allele serializes AlleleView, which carries crossReferences, so that endpoint owns them.
+		Allele allele = createAllele(CROSS_REFERENCE_ALLELE, "NCBITaxon:6239", symbolNameType, false);
+		// Reference.crossReferences is a lazy collection that is also in AlleleView, so attaching a reference
+		// makes this PUT serialize it after the write transaction closes. A 200 here pins that it holds.
+		allele.setReferences(List.of(reference));
+		allele.setCrossReferences(List.of(buildCrossReference("XRTEST:0001", crossReferencePage)));
+
+		RestAssured.given().
+				contentType("application/json").
+				body(allele).
+				when().
+				put("/api/allele").
+				then().
+				statusCode(200).
+				body("entity.crossReferences", hasSize(1)).
+				body("entity.crossReferences[0].referencedCurie", is("XRTEST:0001")).
+				body("entity.crossReferences[0].resourceDescriptorPage.name", is("default")).
+				body("entity.references", hasSize(1)).
+				body("entity.references[0].crossReferences", hasSize(1));
+
+		assertThat(storedCrossReferences(CROSS_REFERENCE_ALLELE), hasSize(1));
+
+		// A different list replaces the stored one; the dropped entry goes through orphanRemoval.
+		Allele update = getAllele(CROSS_REFERENCE_ALLELE);
+		update.setCrossReferences(List.of(buildCrossReference("XRTEST:0002", crossReferencePage2)));
+
+		RestAssured.given().
+				contentType("application/json").
+				body(update).
+				when().
+				put("/api/allele").
+				then().
+				statusCode(200).
+				body("entity.crossReferences", hasSize(1)).
+				body("entity.crossReferences[0].referencedCurie", is("XRTEST:0002")).
+				body("entity.crossReferences[0].resourceDescriptorPage.name", is("gene"));
+
+		// An empty list clears them, so this endpoint can delete the last one.
+		Allele clear = getAllele(CROSS_REFERENCE_ALLELE);
+		clear.setCrossReferences(List.of());
+
+		RestAssured.given().
+				contentType("application/json").
+				body(clear).
+				when().
+				put("/api/allele").
+				then().
+				statusCode(200).
+				body("entity", not(hasKey("crossReferences")));
+
+		assertThat(storedCrossReferences(CROSS_REFERENCE_ALLELE), is(nullValue()));
+	}
+
+	@Test
+	@Order(32)
+	public void updateDetailPreservesCrossReferences() {
+		// AlleleDetailView omits crossReferences, so a detail payload never carries them however it was built.
+		// The detail endpoint must leave the stored list alone rather than read its absence as a deletion.
+		Allele seed = getAllele(CROSS_REFERENCE_ALLELE);
+		seed.setCrossReferences(List.of(buildCrossReference("XRTEST:0003", crossReferencePage)));
+		RestAssured.given().
+				contentType("application/json").
+				body(seed).
+				when().
+				put("/api/allele").
+				then().
+				statusCode(200);
+		assertThat(storedCrossReferences(CROSS_REFERENCE_ALLELE), hasSize(1));
+
+		// Round trip the detail view the way the detail page does: GET it, then PUT the response straight back.
+		Allele detail = getAllele(CROSS_REFERENCE_ALLELE);
+		assertThat("AlleleDetailView is expected to omit crossReferences", detail.getCrossReferences(), is(nullValue()));
+
+		RestAssured.given().
+				contentType("application/json").
+				body(detail).
+				when().
+				put("/api/allele/updateDetail").
+				then().
+				statusCode(200);
+
+		assertThat("updateDetail deleted the allele's cross references",
+				storedCrossReferences(CROSS_REFERENCE_ALLELE), hasSize(1));
+	}
+
+	private CrossReference buildCrossReference(String referencedCurie, ResourceDescriptorPage page) {
+		CrossReference crossReference = new CrossReference();
+		crossReference.setReferencedCurie(referencedCurie);
+		crossReference.setDisplayName(referencedCurie);
+		crossReference.setResourceDescriptorPage(page);
+		return crossReference;
+	}
+
+	// GET /api/allele/{id} serializes AlleleDetailView, which omits crossReferences, so the stored list is
+	// read through find, which serializes AlleleView. Returns null when the allele has none, because
+	// NON_EMPTY drops the key.
+	private List<Map<String, Object>> storedCrossReferences(String primaryExternalId) {
+		return RestAssured.given().
+				contentType("application/json").
+				body("{\"primaryExternalId\": \"" + primaryExternalId + "\"}").
+				when().
+				post("/api/allele/find?limit=1&page=0").
+				then().
+				statusCode(200).
+				extract().jsonPath().getList("results[0].crossReferences");
+	}
+
+
+	@Test
+	@Order(33)
+	public void alleleDetailViewOmitsAssociationSubject() {
+		Allele allele = getAllele(CROSS_REFERENCE_ALLELE);
+
+		AlleleGeneAssociation geneAssociation = new AlleleGeneAssociation();
+		geneAssociation.setAlleleGeneAssociationObject(gene);
+		geneAssociation.setRelation(geneAssociationRelation);
+		allele.setAlleleGeneAssociations(List.of(geneAssociation));
+
+		AlleleConstructAssociation constructAssociation = new AlleleConstructAssociation();
+		constructAssociation.setAlleleConstructAssociationObject(construct);
+		constructAssociation.setRelation(constructAssociationRelation);
+		allele.setAlleleConstructAssociations(List.of(constructAssociation));
+
+		RestAssured.given().
+				contentType("application/json").
+				body(allele).
+				when().
+				put("/api/allele/updateDetail").
+				then().
+				statusCode(200);
+
+		Response detail = RestAssured.given().
+				when().
+				get("/api/allele/" + CROSS_REFERENCE_ALLELE).
+				then().
+				statusCode(200).
+				extract().response();
+
+		assertThat(detail.jsonPath().getList("entity.alleleGeneAssociations"), hasSize(1));
+		assertThat(detail.jsonPath().getList("entity.alleleConstructAssociations"), hasSize(1));
+		assertThat("the allele detail view serialized a second copy of the allele under its own gene association",
+				detail.jsonPath().get("entity.alleleGeneAssociations[0].alleleAssociationSubject"), is(nullValue()));
+		assertThat("the allele detail view serialized a second copy of the allele under its own construct association",
+				detail.jsonPath().get("entity.alleleConstructAssociations[0].alleleAssociationSubject"), is(nullValue()));
+
+		// The association endpoints serialize FieldsAndLists and still carry the subject, which is what the
+		// Allele Gene Associations table renders from. Scoping the omission by view is what keeps that working.
+		Long alleleId = detail.jsonPath().getLong("entity.id");
+		Long geneId = detail.jsonPath().getLong("entity.alleleGeneAssociations[0].alleleGeneAssociationObject.id");
+		AlleleGeneAssociation storedGeneAssociation = getAlleleGeneAssociation(alleleId, geneAssociationRelation.getName(), geneId);
+		assertThat(storedGeneAssociation.getAlleleAssociationSubject(), notNullValue());
+
+		Long constructId = detail.jsonPath().getLong("entity.alleleConstructAssociations[0].alleleConstructAssociationObject.id");
+		AlleleConstructAssociation storedConstructAssociation = getAlleleConstructAssociation(alleleId, constructAssociationRelation.getName(), constructId);
+		assertThat(storedConstructAssociation.getAlleleAssociationSubject(), notNullValue());
 	}
 
 }
