@@ -137,6 +137,70 @@ export const buildCreatePayload = (allele) => {
 	return payload;
 };
 
+// The fields a stored row carries that belong to it alone, and so cannot be carried onto a copy.
+const ROW_IDENTITY_FIELDS = [
+	'id',
+	'createdBy',
+	'updatedBy',
+	'dateCreated',
+	'dateUpdated',
+	'dbDateCreated',
+	'dbDateUpdated',
+];
+
+const copyRow = (row) => {
+	if (!row) return null;
+	const copy = structuredClone(row);
+	ROW_IDENTITY_FIELDS.forEach((field) => delete copy[field]);
+	return copy;
+};
+
+const copyRows = (rows) => (rows ?? []).map(copyRow);
+
+/**
+ * A new allele carrying the fields of a stored one that the create form edits, for the create page to
+ * start from.
+ *
+ * Left behind: everything that identifies the stored allele (its ids, secondary IDs and cross
+ * references), its data provider and audit fields, and the variant and construct associations the
+ * form does not edit. Each copied row, and a gene association's note, loses its own id and audit
+ * fields, so it is created afresh.
+ *
+ * @param {Object} allele an allele as the detail endpoint returns it
+ * @returns {Object} an allele without an id, not obsolete
+ */
+export const buildDuplicateAllele = (allele) => {
+	const alleleGeneAssociations = copyRows(allele.alleleGeneAssociations);
+	alleleGeneAssociations.forEach((association) => {
+		delete association.alleleAssociationSubject;
+		if (association.relatedNote) {
+			association.relatedNote = copyRow(association.relatedNote);
+		}
+	});
+
+	return {
+		type: 'Allele',
+		taxon: structuredClone(allele.taxon) ?? { curie: '' },
+		inCollection: structuredClone(allele.inCollection) ?? { name: '' },
+		isExtinct: allele.isExtinct ?? false,
+		internal: allele.internal ?? false,
+		obsolete: false,
+		references: structuredClone(allele.references) ?? [],
+		relatedNotes: copyRows(allele.relatedNotes),
+		alleleSymbol: copyRow(allele.alleleSymbol),
+		alleleFullName: copyRow(allele.alleleFullName),
+		alleleSynonyms: copyRows(allele.alleleSynonyms),
+		alleleSecondaryIds: [],
+		alleleMutationTypes: copyRows(allele.alleleMutationTypes),
+		alleleInheritanceModes: copyRows(allele.alleleInheritanceModes),
+		alleleFunctionalImpacts: copyRows(allele.alleleFunctionalImpacts),
+		alleleNomenclatureEvents: copyRows(allele.alleleNomenclatureEvents),
+		alleleGermlineTransmissionStatus: copyRow(allele.alleleGermlineTransmissionStatus),
+		alleleDatabaseStatus: copyRow(allele.alleleDatabaseStatus),
+		alleleGeneAssociations,
+	};
+};
+
 export const processErrors = (data, dispatch, allele) => {
 	const errorMap = data?.supplementalData?.errorMap;
 	const errorMessages = data?.errorMessages;

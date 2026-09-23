@@ -514,7 +514,9 @@ public class AlleleValidator extends GenomicEntityValidator<Allele> {
 		}
 
 		if (alleleDAO.hasAlleleWithSymbolAndTaxon(symbol.getDisplayText(), taxonId, dbEntity.getId())) {
-			addMessageResponse("alleleSymbol", ValidationConstants.NON_UNIQUE_MESSAGE);
+			// keyed by the symbol's field, as its own validation errors are, so the form shows it on the row
+			addMessageResponse("alleleSymbol", "displayText - " + ValidationConstants.NON_UNIQUE_MESSAGE);
+			response.addErrorMessages("alleleSymbol", Map.of("displayText", ValidationConstants.NON_UNIQUE_MESSAGE));
 		}
 	}
 

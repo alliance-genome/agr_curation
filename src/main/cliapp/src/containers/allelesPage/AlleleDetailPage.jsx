@@ -11,9 +11,10 @@ import { useAlleleReducer } from './useAlleleReducer';
 import { StickyHeader } from '../../components/StickyHeader';
 import { LoadingOverlay } from '../../components/LoadingOverlay';
 import { validateRequiredAutosuggestField, processErrors } from './utils';
+import { getIdentifier } from '../../utils/utils';
 import { FormFieldVisibilityMenu, useFormFieldVisibility } from '../../components/FormFieldVisibility';
 import { AlleleForm, ALLELE_DETAIL_TOGGLEABLE_FIELDS } from './AlleleForm';
-import { NewAlleleButton } from './NewAlleleButton';
+import { DuplicateAlleleButton, NewAlleleButton } from './NewAlleleButton';
 import { useAlleleCrossReferences } from './crossReferences/useAlleleCrossReferences';
 import { SubResourcesProvider } from '../../components/SubResourcesContext';
 
@@ -178,10 +179,10 @@ export default function AlleleDetailPage() {
 			<ErrorBoundary>
 				<StickyHeader>
 					<Splitter className="bg-primary-reverse border-none lg:h-5rem" gutterSize={0}>
-						<SplitterPanel size={45} className="flex justify-content-start ml-5 py-3 ">
+						<SplitterPanel size={40} className="flex justify-content-start ml-5 py-3 ">
 							<h1 dangerouslySetInnerHTML={{ __html: headerText() }} />
 						</SplitterPanel>
-						<SplitterPanel size={35} className="flex align-items-center justify-content-end gap-2 py-3">
+						<SplitterPanel size={30} className="flex align-items-center justify-content-end gap-2 py-3">
 							<FormFieldVisibilityMenu
 								toggleableFields={ALLELE_DETAIL_TOGGLEABLE_FIELDS}
 								visibleFields={visibleFields}
@@ -189,9 +190,13 @@ export default function AlleleDetailPage() {
 								showAllFields={showAllFields}
 							/>
 						</SplitterPanel>
-						<SplitterPanel size={20} className="flex align-items-center justify-content-start gap-2 pl-2 py-3">
+						<SplitterPanel size={30} className="flex align-items-center justify-content-start gap-2 pl-2 py-3">
 							<Button label="Save" icon="pi pi-check" severity="success" onClick={handleSubmit} />
 							<NewAlleleButton className="p-button-text" />
+							<DuplicateAlleleButton
+								className="p-button-text"
+								sourceIdentifier={alleleState.allele?.curie || getIdentifier(alleleState.allele) || identifier}
+							/>
 						</SplitterPanel>
 					</Splitter>
 				</StickyHeader>

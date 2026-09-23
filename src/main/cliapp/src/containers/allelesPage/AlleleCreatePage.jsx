@@ -1,9 +1,9 @@
-import { useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { Toast } from 'primereact/toast';
 import { Splitter, SplitterPanel } from 'primereact/splitter';
 import { Button } from 'primereact/button';
-import { useNavigate } from 'react-router-dom';
-import { useMutation } from '@tanstack/react-query';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { AlleleService } from '../../service/AlleleService';
 import ErrorBoundary from '../../components/Error/ErrorBoundary';
 import { useAlleleReducer } from './useAlleleReducer';
@@ -11,7 +11,7 @@ import { StickyHeader } from '../../components/StickyHeader';
 import { StickyFooter } from '../../components/StickyFooter';
 import { LoadingOverlay } from '../../components/LoadingOverlay';
 import { getIdentifier } from '../../utils/utils';
-import { buildCreatePayload, processErrors, validateRequiredAutosuggestField } from './utils';
+import { buildCreatePayload, buildDuplicateAllele, processErrors, validateRequiredAutosuggestField } from './utils';
 import { FormFieldVisibilityMenu, useFormFieldVisibility } from '../../components/FormFieldVisibility';
 import { AlleleForm, ALLELE_CREATE_TOGGLEABLE_FIELDS } from './AlleleForm';
 import { useAlleleCrossReferences } from './crossReferences/useAlleleCrossReferences';
@@ -31,6 +31,46 @@ export default function AlleleCreatePage() {
 	// Held so that saving again after the cross references failed retries them against the allele that
 	// already exists, rather than creating a second one.
 	const createdAllele = useRef(null);
+	// the allele a duplicate starts from, named in the URL the Duplicate buttons open
+	const [searchParams] = useSearchParams();
+	const sourceIdentifier = searchParams.get('from');
+
+	const {
+		isFetching: sourceAlleleIsLoading,
+		data: sourceAlleleData,
+		isError: sourceAlleleLoadFailed,
+	} = useQuery({
+		queryKey: ['alleleDuplicateSource', sourceIdentifier],
+		queryFn: () => alleleService.getAllele(sourceIdentifier),
+		enabled: Boolean(sourceIdentifier),
+		staleTime: Infinity,
+		retry: false,
+		refetchOnWindowFocus: false,
+		refetchOnReconnect: false,
+	});
+
+	// The form takes the source allele once; after that it holds the curator's edits, and a clear or a
+	// save and add another starts from a blank form.
+	const sourceAlleleApplied = useRef(false);
+
+	useEffect(() => {
+		if (!sourceIdentifier || sourceAlleleApplied.current) return;
+		if (!sourceAlleleData && !sourceAlleleLoadFailed) return;
+
+		sourceAlleleApplied.current = true;
+		const sourceAllele = sourceAlleleData?.data?.entity;
+		if (sourceAllele) {
+			alleleDispatch({ type: 'SET', value: buildDuplicateAllele(sourceAllele) });
+		} else {
+			toastError.current?.show({
+				life: 7000,
+				severity: 'error',
+				summary: 'Page error: ',
+				detail: `Could not load allele ${sourceIdentifier} to duplicate`,
+				sticky: false,
+			});
+		}
+	}, [sourceIdentifier, sourceAlleleData, sourceAlleleLoadFailed, alleleDispatch]);
 
 	const { isPending: allelePostRequestIsLoading, mutate: alleleMutate } = useMutation({
 		mutationFn: (allele) => {
@@ -166,7 +206,9 @@ export default function AlleleCreatePage() {
 		<>
 			<Toast ref={toastError} position="top-left" />
 			<Toast ref={toastSuccess} position="top-right" />
-			<LoadingOverlay isLoading={!!allelePostRequestIsLoading || !!allelePutRequestIsLoading} />
+			<LoadingOverlay
+				isLoading={!!allelePostRequestIsLoading || !!allelePutRequestIsLoading || sourceAlleleIsLoading}
+			/>
 			<ErrorBoundary>
 				<StickyHeader>
 					<Splitter className="bg-primary-reverse border-none lg:h-5rem" gutterSize={0}>
