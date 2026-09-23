@@ -65,10 +65,41 @@ export default function AlleleDetailPage() {
 
 		if (areUiErrors) return;
 
+		// Cross references are written through their own sub-resource after the allele, so edited rows are
+		// checked first: a row the API would refuse then stops the save before the allele is written.
+		if (crossReferences.isDirty) {
+			const check = await crossReferences.validate();
+			if (!check.isValid) {
+				toastError.current.show([
+					{ life: 7000, severity: 'error', summary: 'Allele not saved: ', detail: check.message, sticky: false },
+				]);
+				return;
+			}
+		}
+
 		alleleMutate(alleleState.allele, {
-			onSuccess: (result) => {
-				toastSuccess.current.show({ severity: 'success', summary: 'Successful', detail: 'Allele Saved' });
+			onSuccess: async (result) => {
 				alleleDispatch({ type: 'SET', value: result?.data?.entity });
+
+				// Only edited rows are written, so saving the allele leaves cross references the curator did
+				// not touch as they are.
+				if (crossReferences.isDirty) {
+					const outcome = await crossReferences.save();
+					if (!outcome.isSuccess) {
+						toastError.current.show([
+							{
+								life: 10000,
+								severity: 'error',
+								summary: 'Cross references not saved: ',
+								detail: `${outcome.message}. The allele's other changes were saved.`,
+								sticky: false,
+							},
+						]);
+						return;
+					}
+				}
+
+				toastSuccess.current.show({ severity: 'success', summary: 'Successful', detail: 'Allele Saved' });
 			},
 			onError: (error) => {
 				let message;
@@ -115,7 +146,9 @@ export default function AlleleDetailPage() {
 		<>
 			<Toast ref={toastError} position="top-left" />
 			<Toast ref={toastSuccess} position="top-right" />
-			<LoadingOverlay isLoading={!!allelePutRequestIsLoading} />
+			<LoadingOverlay
+				isLoading={!!allelePutRequestIsLoading || crossReferences.isSaving || crossReferences.isValidating}
+			/>
 			<ErrorBoundary>
 				<StickyHeader>
 					<Splitter className="bg-primary-reverse border-none lg:h-5rem" gutterSize={0}>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { screen, waitFor } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { renderWithClient } from '../../../../tools/jest/utils';
 import { SubResourcesProvider } from '../../../../components/SubResourcesContext';
@@ -28,10 +28,7 @@ const buildSubResource = (overrides = {}) => ({
 	crossReferences: [row],
 	setCrossReferences: vi.fn(),
 	errorMessages: {},
-	isLoading: false,
 	loadError: null,
-	isSaving: false,
-	save: vi.fn(() => Promise.resolve({ isSuccess: true })),
 	...overrides,
 });
 
@@ -45,52 +42,22 @@ const renderForm = (overrides = {}, mode = 'detail') => {
 	return { ...result, crossReferences };
 };
 
-const saveButton = () => screen.getByRole('button', { name: /Save Cross References/ });
-
 describe('CrossReferencesForm', () => {
-	it('Saves the rows and says so', async () => {
-		const user = userEvent.setup();
-		const { crossReferences } = renderForm();
+	// The page's own Save writes these rows along with the allele.
+	it('Offers no save of its own, on either page', () => {
+		const { unmount } = renderForm();
+		expect(screen.queryByRole('button', { name: /Save/ })).not.toBeInTheDocument();
+		unmount();
 
-		await user.click(saveButton());
-
-		await waitFor(() => expect(crossReferences.save).toHaveBeenCalled());
-		expect(await screen.findByText('Cross References Saved')).toBeInTheDocument();
+		renderForm({}, 'create');
+		expect(screen.queryByRole('button', { name: /Save/ })).not.toBeInTheDocument();
+		expect(screen.getByRole('button', { name: /Add Cross Reference/ })).toBeInTheDocument();
 	});
 
-	it('Reports a failed save without claiming success', async () => {
-		const user = userEvent.setup();
-		const { crossReferences } = renderForm({
-			save: vi.fn(() => Promise.resolve({ isSuccess: false, message: 'Could not update CrossReferences' })),
-		});
-
-		await user.click(saveButton());
-
-		await waitFor(() => expect(crossReferences.save).toHaveBeenCalled());
-		expect(await screen.findByText('Could not update CrossReferences')).toBeInTheDocument();
-		expect(screen.queryByText('Cross References Saved')).not.toBeInTheDocument();
-	});
-
-	// A save replaces the stored list with what is on screen, so saving a table that has not been read
-	// would submit an empty list and delete every cross reference the allele has.
-	it('Will not save while the rows are still loading', () => {
-		renderForm({ crossReferences: [], isLoading: true });
-
-		expect(saveButton()).toBeDisabled();
-	});
-
-	it('Will not save when the rows failed to load, and says why', () => {
+	it('Says so when the rows failed to load, since the page then cannot save them', () => {
 		renderForm({ crossReferences: [], loadError: new Error('network') });
 
-		expect(saveButton()).toBeDisabled();
 		expect(screen.getByText(/Could not load these cross references/)).toBeInTheDocument();
-	});
-
-	it('Offers no save on the create page, which has no allele to save against', () => {
-		renderForm({}, 'create');
-
-		expect(screen.queryByRole('button', { name: /Save Cross References/ })).not.toBeInTheDocument();
-		expect(screen.getByRole('button', { name: /Add Cross Reference/ })).toBeInTheDocument();
 	});
 
 	// Every other section of the form hides its table until it has a row, so an allele with no cross

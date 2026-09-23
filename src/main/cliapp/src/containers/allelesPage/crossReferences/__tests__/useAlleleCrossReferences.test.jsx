@@ -141,6 +141,78 @@ describe('useAlleleCrossReferences', () => {
 		console.warn.mockRestore();
 	});
 
+	// The page saves these rows only when they were edited, so an allele save leaves rows the curator
+	// never touched unwritten, audit trail included.
+	it('Reports edits as unsaved until they are written', async () => {
+		getCrossReferencesForAllele.mockResolvedValue({ data: { entities: [storedCrossReference] } });
+		replaceCrossReferencesForAllele.mockResolvedValue({ data: { entities: [storedCrossReference] } });
+
+		const { result } = renderHook(() => useAlleleCrossReferences(77));
+		await waitFor(() => expect(result.current.crossReferences).toHaveLength(1));
+		expect(result.current.isDirty).toBe(false);
+
+		act(() => {
+			result.current.setCrossReferences([]);
+		});
+		expect(result.current.isDirty).toBe(true);
+
+		await act(async () => {
+			await result.current.save();
+		});
+		expect(result.current.isDirty).toBe(false);
+	});
+
+	it('Keeps edits unsaved when writing them fails', async () => {
+		getCrossReferencesForAllele.mockResolvedValue({ data: { entities: [storedCrossReference] } });
+		replaceCrossReferencesForAllele.mockRejectedValue({ response: { data: { errorMessage: 'refused' } } });
+
+		const { result } = renderHook(() => useAlleleCrossReferences(77));
+		await waitFor(() => expect(result.current.crossReferences).toHaveLength(1));
+
+		act(() => {
+			result.current.setCrossReferences([]);
+		});
+		await act(async () => {
+			await result.current.save();
+		});
+
+		expect(result.current.isDirty).toBe(true);
+	});
+
+	// A save replaces the stored list with the rows held here, so saving rows that were never read would
+	// submit an empty list and delete every cross reference the allele has.
+	it('Refuses to save rows that failed to read', async () => {
+		vi.spyOn(console, 'warn').mockImplementation(() => {});
+		getCrossReferencesForAllele.mockRejectedValue(new Error('network'));
+
+		const { result } = renderHook(() => useAlleleCrossReferences(77));
+		await waitFor(() => expect(result.current.loadError).toBeTruthy());
+
+		let outcome;
+		await act(async () => {
+			outcome = await result.current.save();
+		});
+
+		expect(outcome.isSuccess).toBe(false);
+		expect(replaceCrossReferencesForAllele).not.toHaveBeenCalled();
+		console.warn.mockRestore();
+	});
+
+	it('Refuses to save rows that are still loading', async () => {
+		getCrossReferencesForAllele.mockReturnValue(new Promise(() => {}));
+
+		const { result } = renderHook(() => useAlleleCrossReferences(77));
+		expect(result.current.isLoading).toBe(true);
+
+		let outcome;
+		await act(async () => {
+			outcome = await result.current.save();
+		});
+
+		expect(outcome.isSuccess).toBe(false);
+		expect(replaceCrossReferencesForAllele).not.toHaveBeenCalled();
+	});
+
 	describe('validate', () => {
 		beforeEach(() => {
 			validate.mockReset();
