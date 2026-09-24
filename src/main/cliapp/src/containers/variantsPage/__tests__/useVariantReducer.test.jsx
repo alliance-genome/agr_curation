@@ -60,9 +60,7 @@ describe('useVariantReducer', () => {
 		it('Replaces a field value', () => {
 			const { result } = renderHook(() => useVariantReducer());
 
-			act(() =>
-				result.current.variantDispatch({ type: 'EDIT', field: 'variantType', value: { curie: 'SO:0000667' } })
-			);
+			act(() => result.current.variantDispatch({ type: 'EDIT', field: 'variantType', value: { curie: 'SO:0000667' } }));
 
 			expect(result.current.variantState.variant.variantType).toEqual({ curie: 'SO:0000667' });
 		});
@@ -124,9 +122,7 @@ describe('useVariantReducer', () => {
 					row: { dataKey: 'row-1', freeText: 'a note' },
 				})
 			);
-			act(() =>
-				result.current.variantDispatch({ type: 'DELETE_ROW', entityType: 'relatedNotes', dataKey: 'row-1' })
-			);
+			act(() => result.current.variantDispatch({ type: 'DELETE_ROW', entityType: 'relatedNotes', dataKey: 'row-1' }));
 
 			expect(result.current.variantState.variant.relatedNotes).toEqual([]);
 			expect(result.current.variantState.entityStates.relatedNotes.show).toBe(false);

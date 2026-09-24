@@ -31,9 +31,7 @@ export const VariantTypeDetailPageEditor = ({
 				/>
 			}
 			errorField={<FormErrorMessageComponent errorMessages={errorMessages} errorField={'variantType'} />}
-			additionalDataField={
-				<OntologyTermAdditionalFieldData curie={variantType?.curie} name={variantType?.name} />
-			}
+			additionalDataField={<OntologyTermAdditionalFieldData curie={variantType?.curie} name={variantType?.name} />}
 		/>
 	);
 };

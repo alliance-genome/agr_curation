@@ -728,11 +728,15 @@ public class IT_0309_VariantITCase extends BaseITCase {
 	@Order(25)
 	public void updateReturnsTheFieldsTheDetailPageReloads() {
 		// The detail page saves through the shared update endpoint and repopulates its form from
-		// the response, so the response has to carry every field the page renders.
+		// the response, so the response has to carry every field the page renders. Every asserted
+		// field is set here rather than inherited from an earlier test, which nulls some of them.
 		Variant variant = getVariant(VARIANT);
 		variant.setVariantType(variantTypeTerm);
+		variant.setTaxon(taxon2);
+		variant.setDataProvider(dataProvider2);
 		variant.setSynonyms(List.of("Detail page synonym"));
 		variant.setReferences(List.of(reference));
+		variant.setRelatedNotes(List.of(createNote(noteType, "Detail page note", false, false, reference)));
 
 		RestAssured.given().
 			contentType("application/json").
@@ -748,6 +752,7 @@ public class IT_0309_VariantITCase extends BaseITCase {
 			body("entity.references[0].curie", is(reference.getCurie())).
 			body("entity.taxon.curie", is(taxon2.getCurie())).
 			body("entity.relatedNotes", hasSize(1)).
+			body("entity.relatedNotes[0].freeText", is("Detail page note")).
 			body("entity.dataProvider.abbreviation", is(dataProvider2.getAbbreviation()));
 	}
 

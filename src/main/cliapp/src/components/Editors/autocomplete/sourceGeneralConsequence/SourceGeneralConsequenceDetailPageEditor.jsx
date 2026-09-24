@@ -28,9 +28,7 @@ export const SourceGeneralConsequenceDetailPageEditor = ({
 					onValueChangeHandler={onSourceGeneralConsequenceValueChange}
 				/>
 			}
-			errorField={
-				<FormErrorMessageComponent errorMessages={errorMessages} errorField={'sourceGeneralConsequence'} />
-			}
+			errorField={<FormErrorMessageComponent errorMessages={errorMessages} errorField={'sourceGeneralConsequence'} />}
 			additionalDataField={
 				<OntologyTermAdditionalFieldData
 					curie={sourceGeneralConsequence?.curie}
