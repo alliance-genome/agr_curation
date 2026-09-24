@@ -3,13 +3,20 @@ import { screen } from '@testing-library/react';
 import { renderWithClient } from '../../../tools/jest/utils';
 import { AlleleForm, ALLELE_CREATE_TOGGLEABLE_FIELDS, ALLELE_DETAIL_TOGGLEABLE_FIELDS } from '../AlleleForm';
 import { useAlleleReducer } from '../useAlleleReducer';
+import { useAlleleCrossReferences } from '../crossReferences/useAlleleCrossReferences';
+import { SubResourcesProvider } from '../../../components/SubResourcesContext';
 
 const alwaysVisible = () => true;
 
 // AlleleForm reads reducer state, so drive it through the real reducer rather than a literal.
 const AlleleFormHarness = ({ mode }) => {
 	const { alleleState, alleleDispatch } = useAlleleReducer();
-	return <AlleleForm state={alleleState} dispatch={alleleDispatch} isVisible={alwaysVisible} mode={mode} />;
+	const crossReferences = useAlleleCrossReferences();
+	return (
+		<SubResourcesProvider value={{ crossReferences }}>
+			<AlleleForm state={alleleState} dispatch={alleleDispatch} isVisible={alwaysVisible} mode={mode} />
+		</SubResourcesProvider>
+	);
 };
 
 const heading = (name) => screen.queryByRole('heading', { name });
@@ -146,10 +153,20 @@ describe('<AlleleForm />', () => {
 
 const AlleleFormHarnessWithoutMode = () => {
 	const { alleleState, alleleDispatch } = useAlleleReducer();
-	return <AlleleForm state={alleleState} dispatch={alleleDispatch} isVisible={alwaysVisible} />;
+	const crossReferences = useAlleleCrossReferences();
+	return (
+		<SubResourcesProvider value={{ crossReferences }}>
+			<AlleleForm state={alleleState} dispatch={alleleDispatch} isVisible={alwaysVisible} />
+		</SubResourcesProvider>
+	);
 };
 
 const AlleleFormHarnessWithVisibility = ({ mode, isVisible }) => {
 	const { alleleState, alleleDispatch } = useAlleleReducer();
-	return <AlleleForm state={alleleState} dispatch={alleleDispatch} isVisible={isVisible} mode={mode} />;
+	const crossReferences = useAlleleCrossReferences();
+	return (
+		<SubResourcesProvider value={{ crossReferences }}>
+			<AlleleForm state={alleleState} dispatch={alleleDispatch} isVisible={isVisible} mode={mode} />
+		</SubResourcesProvider>
+	);
 };

@@ -145,7 +145,7 @@ export const AntibodiesTable = () => {
 				filterConfig: FILTER_CONFIGS.antibodyTargetGenesFilterConfig,
 			},
 			{
-				field: 'originalReference.curie',
+				field: 'originalReference.primaryCrossReferenceCurie',
 				header: 'Original Reference',
 				sortable: true,
 				body: (rowData) => <SingleReferenceTemplate singleReference={rowData.originalReference} />,

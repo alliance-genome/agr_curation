@@ -14,6 +14,8 @@ import { validateRequiredAutosuggestField, processErrors } from './utils';
 import { FormFieldVisibilityMenu, useFormFieldVisibility } from '../../components/FormFieldVisibility';
 import { AlleleForm, ALLELE_DETAIL_TOGGLEABLE_FIELDS } from './AlleleForm';
 import { NewAlleleButton } from './NewAlleleButton';
+import { useAlleleCrossReferences } from './crossReferences/useAlleleCrossReferences';
+import { SubResourcesProvider } from '../../components/SubResourcesContext';
 
 export default function AlleleDetailPage() {
 	const { identifier } = useParams();
@@ -25,6 +27,7 @@ export default function AlleleDetailPage() {
 	const alleleService = new AlleleService();
 	const toastSuccess = useRef(null);
 	const toastError = useRef(null);
+	const crossReferences = useAlleleCrossReferences(alleleState.allele?.id);
 
 	const { isPending: getRequestIsLoading, data: alleleQueryData } = useQuery({
 		queryKey: [identifier],
@@ -133,7 +136,9 @@ export default function AlleleDetailPage() {
 						</SplitterPanel>
 					</Splitter>
 				</StickyHeader>
-				<AlleleForm state={alleleState} dispatch={alleleDispatch} isVisible={isVisible} />
+				<SubResourcesProvider value={{ crossReferences }}>
+					<AlleleForm state={alleleState} dispatch={alleleDispatch} isVisible={isVisible} />
+				</SubResourcesProvider>
 			</ErrorBoundary>
 		</>
 	);

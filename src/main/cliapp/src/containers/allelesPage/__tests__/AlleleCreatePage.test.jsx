@@ -5,12 +5,15 @@ import userEvent from '@testing-library/user-event';
 import { renderWithClient } from '../../../tools/jest/utils';
 
 const createAllele = vi.fn();
+const saveAlleleDetail = vi.fn();
 const navigate = vi.fn();
+const replaceCrossReferencesForAllele = vi.fn();
 
 // msw cannot intercept this app's fetch based ApiClient, so stub the services directly.
 vi.mock('../../../service/AlleleService', () => ({
 	AlleleService: class {
 		createAllele = createAllele;
+		saveAlleleDetail = saveAlleleDetail;
 	},
 }));
 
@@ -20,6 +23,14 @@ vi.mock('../../../service/AlleleService', () => ({
 vi.mock('../../../service/SearchService', () => ({
 	SearchService: class {
 		search = vi.fn(() => Promise.resolve({ results: [], totalResults: 0 }));
+		find = vi.fn(() => Promise.resolve({ results: [], totalResults: 0 }));
+	},
+}));
+
+vi.mock('../../../service/CrossReferenceService', () => ({
+	CrossReferenceService: class {
+		getCrossReferencesForAllele = vi.fn(() => Promise.resolve({ data: { entities: [] } }));
+		replaceCrossReferencesForAllele = replaceCrossReferencesForAllele;
 	},
 }));
 
@@ -43,8 +54,12 @@ const button = (name) => screen.getByRole('button', { name });
 describe('<AlleleCreatePage />', () => {
 	beforeEach(() => {
 		createAllele.mockReset();
-		createAllele.mockResolvedValue({ data: { entity: { curie: 'AGRKB:101000000000001' } } });
+		createAllele.mockResolvedValue({ data: { entity: { id: 4242, curie: 'AGRKB:101000000000001' } } });
+		saveAlleleDetail.mockReset();
+		saveAlleleDetail.mockResolvedValue({ data: { entity: { id: 4242, curie: 'AGRKB:101000000000001' } } });
 		navigate.mockReset();
+		replaceCrossReferencesForAllele.mockReset();
+		replaceCrossReferencesForAllele.mockResolvedValue({ data: { entities: [] } });
 		window.localStorage.removeItem('AlleleCreateFormSettings');
 	});
 
