@@ -64,7 +64,7 @@ public class PredictedVariantConsequenceService extends BaseEntityCrudService<Pr
 	}
 
 	@Override
-	@Transactional
+	@Transactional(rollbackOn = ValidationException.class)
 	public ObjectResponse<PredictedVariantConsequence> upsert(VepTxtDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
 		return vepTranscriptFmsDtoValidator.validateTranscriptLevelConsequence(dto, dataProvider);
 	}

@@ -100,7 +100,7 @@ public class GeneService extends SubmittedObjectCrudService<Gene, GeneDTO, GeneD
 	// The three sibling entry points (addGeoXref, addBiogridXref, addExpressionAtlasXref) are
 	// annotated for the same reason.
 	@Override
-	@Transactional
+	@Transactional(rollbackOn = ValidationException.class)
 	public ObjectResponse<Gene> upsert(GeneDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
 		ObjectResponse<Gene> response = geneDtoValidator.validateGeneDTO(dto, dataProvider);
 		addGeneCardsXrefIfHumanGene(response.getEntity());

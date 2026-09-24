@@ -50,7 +50,7 @@ public class AGMDiseaseAnnotationService extends BaseAnnotationDTOCrudService<AG
 	}
 
 	@Override
-	@Transactional
+	@Transactional(rollbackOn = ValidationException.class)
 	public ObjectResponse<AGMDiseaseAnnotation> upsert(AGMDiseaseAnnotationDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
 		ObjectResponse<AGMDiseaseAnnotation> resp = agmDiseaseAnnotationDtoValidator.validateAGMDiseaseAnnotationDTO(dto, dataProvider);
 

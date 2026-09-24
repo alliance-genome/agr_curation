@@ -55,7 +55,7 @@ public class GeneExpressionExperimentService extends BaseEntityCrudService<GeneE
 		return geneExpressionExperimentDAO.findIdsByParams(params);
 	}
 
-	@Transactional
+	@Transactional(rollbackOn = ValidationException.class)
 	public GeneExpressionExperiment upsert(String experimentId, Set<String> geneExpressionAnnotationIds, BackendBulkDataProvider dataProvider, Set<CrossReferenceFmsDTO> crossReferences) throws ValidationException {
 		GeneExpressionExperiment geneExpressionExperiment;
 		Set<GeneExpressionAnnotation> annotations;

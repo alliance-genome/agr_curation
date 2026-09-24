@@ -53,7 +53,7 @@ public class AlleleDiseaseAnnotationService extends BaseAnnotationDTOCrudService
 	}
 
 	@Override
-	@Transactional
+	@Transactional(rollbackOn = ValidationException.class)
 	public ObjectResponse<AlleleDiseaseAnnotation> upsert(AlleleDiseaseAnnotationDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
 		ObjectResponse<AlleleDiseaseAnnotation> resp = alleleDiseaseAnnotationDtoValidator.validateAlleleDiseaseAnnotationDTO(dto, dataProvider);
 		curieMintService.mintCurieIfAbsent(resp.getEntity());

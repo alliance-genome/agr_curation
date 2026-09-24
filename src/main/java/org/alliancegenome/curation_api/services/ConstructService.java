@@ -77,7 +77,7 @@ public class ConstructService extends SubmittedObjectCrudService<Construct, Cons
 	}
 
 	@Override
-	@Transactional
+	@Transactional(rollbackOn = ValidationException.class)
 	public ObjectResponse<Construct> upsert(ConstructDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
 		return constructDtoValidator.validateConstructDTO(dto, dataProvider);
 	}
