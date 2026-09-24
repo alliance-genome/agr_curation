@@ -66,7 +66,7 @@ public class Reagent extends SubmittedObject {
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "secondaryIdentifiers_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
 	@ElementCollection
-	@JsonView({CurationView.FieldsAndLists.class, CurationView.ConstructView.class})
+	@JsonView({CurationView.FieldsAndLists.class, CurationView.ConstructView.class, CurationView.CassetteView.class, CurationView.TransgenicToolView.class})
 	@JoinTable(indexes = @Index(name = "reagent_secondaryidentifiers_reagent_index", columnList = "reagent_id"))
 	private List<String> secondaryIdentifiers;
 

@@ -1,0 +1,72 @@
+[
+  {
+    "primary_external_id": "WB:Cassette0001",
+    "internal": false,
+    "obsolete": false,
+    "created_by_curie": "CONSTRUCTTEST:Person0002",
+    "updated_by_curie": "CONSTRUCTTEST:Person0001",
+    "date_created": "2022-03-19T22:10:12+00:00",
+    "date_updated": "2022-03-20T22:10:12+00:00",
+    "reference_curies": ["PMID:25920551"],
+    "cassette_symbol_dto": {
+      "display_text": "Cs1a",
+      "format_text": "Cs<sup>1a</sup>",
+      "name_type_name": "systematic_name",
+      "evidence_curies": ["PMID:25920551"],
+      "internal": false,
+      "obsolete": false
+    },
+    "cassette_full_name_dto": {
+      "display_text": "Test cassette 1a",
+      "format_text": "Test cassette<sup>1a</sup>",
+      "name_type_name": "full_name",
+      "internal": false,
+      "obsolete": false
+    },
+    "cassette_synonym_dtos": [
+      {
+        "display_text": "Test cassette synonym 1a",
+        "format_text": "Test cassette synonym <sup>1a</sup>",
+        "name_type_name": "unspecified",
+        "internal": false,
+        "obsolete": false
+      }
+    ],
+    "cassette_component_dtos": [
+      {
+        "component_symbol": "ccmp2",
+        "relation_name": "targets",
+        "taxon_curie": "NCBITaxon:6239",
+        "taxon_text": "Caenorhabditis elegans",
+        "note_dtos": [
+          {
+            "free_text": "Test cassette component note 2",
+            "note_type_name": "test_cassette_component_summary",
+            "internal": true,
+            "obsolete": false
+          }
+        ],
+        "internal": false,
+        "obsolete": false
+      }
+    ],
+    "cassette_use_dtos": [
+      {
+        "use_curies": ["FBcv:0003013"],
+        "internal": false,
+        "obsolete": false
+      }
+    ],
+    "data_provider_dto": {
+      "internal": false,
+      "obsolete": false,
+      "source_organization_abbreviation": "RGD",
+      "cross_reference_dto": {
+        "referenced_curie": "TEST2:0001",
+        "page_area": "homepage",
+        "display_name": "TEST2:0001",
+        "prefix": "TEST"
+      }
+    }
+  }
+]
