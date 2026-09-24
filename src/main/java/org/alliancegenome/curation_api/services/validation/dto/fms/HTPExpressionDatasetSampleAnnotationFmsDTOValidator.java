@@ -65,7 +65,7 @@ public class HTPExpressionDatasetSampleAnnotationFmsDTOValidator {
 	@Inject AnatomicalSiteDAO anatomicalSiteDAO;
 	@Inject CurieMintService curieMintService;
 
-	@Transactional
+	@Transactional(rollbackOn = ValidationException.class)
 	public ObjectResponse<HTPExpressionDatasetSampleAnnotation> validateHTPExpressionDatasetSampleAnnotationFmsDTO(HTPExpressionDatasetSampleAnnotationFmsDTO dto, BackendBulkDataProvider backendBulkDataProvider) throws ValidationException {
 		ObjectResponse<HTPExpressionDatasetSampleAnnotation> htpSampleAnnotationResponse = new ObjectResponse<>();
 		HTPExpressionDatasetSampleAnnotation htpSampleAnnotation;

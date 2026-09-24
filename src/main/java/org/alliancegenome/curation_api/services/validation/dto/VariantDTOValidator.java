@@ -27,7 +27,7 @@ public class VariantDTOValidator extends GenomicEntityDTOValidator<Variant, Vari
 	@Inject CurieMintService curieMintService;
 	@Inject SoTermService soTermService;
 
-	@Transactional
+	@Transactional(rollbackOn = ValidationException.class)
 	public ObjectResponse<Variant> validateVariantDTO(VariantDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
 		response = new ObjectResponse<Variant>();
 		

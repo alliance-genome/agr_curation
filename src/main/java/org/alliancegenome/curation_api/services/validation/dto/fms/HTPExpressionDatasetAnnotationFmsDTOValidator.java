@@ -44,7 +44,7 @@ public class HTPExpressionDatasetAnnotationFmsDTOValidator {
 	@Inject OrganizationService organizationService;
 	@Inject CurieMintService curieMintService;
 	
-	@Transactional
+	@Transactional(rollbackOn = ValidationException.class)
 	public ObjectResponse<HTPExpressionDatasetAnnotation> validateHTPExpressionDatasetAnnotationFmsDTO(HTPExpressionDatasetAnnotationFmsDTO dto, BackendBulkDataProvider backendBulkDataProvider) throws ValidationException {
 		ObjectResponse<HTPExpressionDatasetAnnotation> htpAnnotationResponse = new ObjectResponse<>();
 

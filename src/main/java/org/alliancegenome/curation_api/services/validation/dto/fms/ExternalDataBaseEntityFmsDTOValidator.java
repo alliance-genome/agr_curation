@@ -38,7 +38,7 @@ public class ExternalDataBaseEntityFmsDTOValidator {
 	@Inject CrossReferenceService crossReferenceService;
 	@Inject ResourceDescriptorPageService resourceDescriptorPageService;
 
-	@Transactional
+	@Transactional(rollbackOn = ValidationException.class)
 	public ExternalDataBaseEntity validateExternalDataBaseEntityFmsDTO(HTPIdFmsDTO dto) throws ValidationException {
 
 		ObjectResponse<ExternalDataBaseEntity> externalDBEntityResponse = new ObjectResponse<>();
