@@ -1,0 +1,47 @@
+src/main/java/org/alliancegenome/curation_api/services/validation/dto/AffectedGenomicModelDTOValidator.java
+  s_90fe3c66eb3b97::t_da41f58725ef85 48
+src/main/java/org/alliancegenome/curation_api/services/validation/dto/AlleleDTOValidator.java
+  s_90fe3c66eb3b97::t_4286d2ad1a402c 89
+src/main/java/org/alliancegenome/curation_api/services/validation/dto/ConstructDTOValidator.java
+  s_90fe3c66eb3b97::t_4c21de880d7374 57
+src/main/java/org/alliancegenome/curation_api/services/validation/dto/GeneDTOValidator.java
+  s_90fe3c66eb3b97::t_6fe056b0e4832f 58
+src/main/java/org/alliancegenome/curation_api/services/validation/dto/Gff3DtoValidator.java
+  s_90fe3c66eb3b97::t_6f8c2784b4e82c 77,111,145,206,234,254,281,300,327,347,369,396,434,467,477,510,515
+src/main/java/org/alliancegenome/curation_api/services/validation/dto/VariantDTOValidator.java
+  s_90fe3c66eb3b97::t_483864f1bf4d2f 30
+src/main/java/org/alliancegenome/curation_api/services/validation/dto/fms/ExternalDataBaseEntityFmsDTOValidator.java
+  s_90fe3c66eb3b97::t_c4e990c68d9702 41
+src/main/java/org/alliancegenome/curation_api/services/validation/dto/fms/GenePhenotypeAnnotationFmsDTOValidator.java
+  s_90fe3c66eb3b97::t_90aa5085c753bb 28
+src/main/java/org/alliancegenome/curation_api/services/validation/dto/fms/HTPExpressionDatasetAnnotationFmsDTOValidator.java
+  s_90fe3c66eb3b97::t_0cdf5df3bf92c3 47
+src/main/java/org/alliancegenome/curation_api/services/validation/dto/fms/HTPExpressionDatasetSampleAnnotationFmsDTOValidator.java
+  s_90fe3c66eb3b97::t_46aa7facea8c5f 68
+src/main/java/org/alliancegenome/curation_api/services/validation/dto/fms/OrthologyFmsDTOValidator.java
+  s_90fe3c66eb3b97::t_83d2b8cff60740 60
+src/main/java/org/alliancegenome/curation_api/services/validation/dto/fms/ParalogyFmsDTOValidator.java
+  s_90fe3c66eb3b97::t_6b49e2e1d7e2da 39
+src/main/java/org/alliancegenome/curation_api/services/validation/dto/fms/VariantFmsDTOValidator.java
+  s_90fe3c66eb3b97::t_9b6766046cfca8 82,261,352
+src/main/java/org/alliancegenome/curation_api/services/validation/dto/AntibodyDTOValidator.java
+  s_90fe3c66eb3b97::t_77ca4c9104a0c1 47
+src/main/resources/db/migration/v0.54.0.2__cleanup_orphaned_crossreferences.sql
+  s_90fe3c66eb3b97::t_2c70d5c58bb629 1-40
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "b4a21b6429abc61c3269f83efe1cf7f09607daf2",
+  "prompts": {},
+  "sessions": {
+    "s_90fe3c66eb3b97": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "64db8705-0fb3-46f5-be71-5247c76018af",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Ketaki Kindre <kkindre@caltech.edu>"
+    }
+  }
+}
