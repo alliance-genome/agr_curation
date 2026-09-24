@@ -1,6 +1,7 @@
 package org.alliancegenome.curation_api;
 
 import static org.hamcrest.Matchers.aMapWithSize;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
@@ -658,6 +659,105 @@ public class IT_0309_VariantITCase extends BaseITCase {
 
 	@Test
 	@Order(22)
+	public void editVariantReferencesAndSynonyms() {
+		Variant variant = getVariant(VARIANT);
+		variant.setReferences(List.of(reference, reference2));
+		variant.setSynonyms(List.of("Variant synonym 1", "Variant synonym 2"));
+
+		RestAssured.given().
+			contentType("application/json").
+			body(variant).
+			when().
+			put("/api/variant").
+			then().
+			statusCode(200);
+
+		RestAssured.given().
+			when().
+			get("/api/variant/" + VARIANT).
+			then().
+			statusCode(200).
+			body("entity.references", hasSize(2)).
+			body("entity.references.curie", containsInAnyOrder(reference.getCurie(), reference2.getCurie())).
+			body("entity.synonyms", hasSize(2)).
+			body("entity.synonyms", containsInAnyOrder("Variant synonym 1", "Variant synonym 2"));
+	}
+
+	@Test
+	@Order(23)
+	public void editVariantRemovingReferencesAndSynonyms() {
+		Variant variant = getVariant(VARIANT);
+		variant.setReferences(null);
+		variant.setSynonyms(null);
+
+		RestAssured.given().
+			contentType("application/json").
+			body(variant).
+			when().
+			put("/api/variant").
+			then().
+			statusCode(200);
+
+		RestAssured.given().
+			when().
+			get("/api/variant/" + VARIANT).
+			then().
+			statusCode(200).
+			body("entity", not(hasKey("references"))).
+			body("entity", not(hasKey("synonyms")));
+	}
+
+	@Test
+	@Order(24)
+	public void editVariantWithObsoleteReference() {
+		Variant variant = getVariant(VARIANT);
+		variant.setReferences(List.of(obsoleteReference));
+
+		RestAssured.given().
+			contentType("application/json").
+			body(variant).
+			when().
+			put("/api/variant").
+			then().
+			statusCode(400).
+			body("errorMessages", is(aMapWithSize(1))).
+			body("errorMessages.references", is("curie - " + ValidationConstants.OBSOLETE_MESSAGE));
+	}
+
+	@Test
+	@Order(25)
+	public void updateReturnsTheFieldsTheDetailPageReloads() {
+		// The detail page saves through the shared update endpoint and repopulates its form from
+		// the response, so the response has to carry every field the page renders. Every asserted
+		// field is set here rather than inherited from an earlier test, which nulls some of them.
+		Variant variant = getVariant(VARIANT);
+		variant.setVariantType(variantTypeTerm);
+		variant.setTaxon(taxon2);
+		variant.setDataProvider(dataProvider2);
+		variant.setSynonyms(List.of("Detail page synonym"));
+		variant.setReferences(List.of(reference));
+		variant.setRelatedNotes(List.of(createNote(noteType, "Detail page note", false, false, reference)));
+
+		RestAssured.given().
+			contentType("application/json").
+			body(variant).
+			when().
+			put("/api/variant").
+			then().
+			statusCode(200).
+			body("entity.variantType.curie", is(variantTypeTerm.getCurie())).
+			body("entity.synonyms", hasSize(1)).
+			body("entity.synonyms[0]", is("Detail page synonym")).
+			body("entity.references", hasSize(1)).
+			body("entity.references[0].curie", is(reference.getCurie())).
+			body("entity.taxon.curie", is(taxon2.getCurie())).
+			body("entity.relatedNotes", hasSize(1)).
+			body("entity.relatedNotes[0].freeText", is("Detail page note")).
+			body("entity.dataProvider.abbreviation", is(dataProvider2.getAbbreviation()));
+	}
+
+	@Test
+	@Order(26)
 	public void deleteVariant() {
 
 		RestAssured.given().

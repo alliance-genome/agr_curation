@@ -322,7 +322,7 @@ export const VariantsTable = () => {
 					setTableState={setTableState}
 					columns={columns}
 					isEditable={true}
-					hasDetails={false}
+					hasDetails={true}
 					mutation={mutation}
 					isInEditMode={isInEditMode}
 					setIsInEditMode={setIsInEditMode}
