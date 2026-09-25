@@ -296,7 +296,13 @@ export const DataLoadsComponent = () => {
 	};
 
 	const downloadFileExceptions = (id) => {
-		dataLoadService.downloadExceptions(id, setIsLoading);
+		dataLoadService.downloadExceptions(id, setIsLoading).catch((error) => {
+			toast.current.show({
+				severity: 'error',
+				summary: 'Error',
+				detail: `Exceptions download failed: ${error.message}`,
+			});
+		});
 	};
 
 	const showUploadConfirmDialog = (rowData) => {
