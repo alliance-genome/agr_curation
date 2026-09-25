@@ -49,7 +49,7 @@ public class GeneMolecularInteractionService extends BaseEntityCrudService<GeneM
 	}
 
 	@Override
-	@Transactional
+	@Transactional(rollbackOn = ValidationException.class)
 	public ObjectResponse<GeneMolecularInteraction> upsert(PsiMiTabDTO dto, BackendBulkDataProvider backendBulkDataProvider) throws ValidationException {
 		return geneMolInteractionValidator.validateGeneMolecularInteractionFmsDTO(dto);
 	}

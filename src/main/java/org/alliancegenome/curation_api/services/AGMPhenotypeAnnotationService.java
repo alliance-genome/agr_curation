@@ -45,7 +45,7 @@ public class AGMPhenotypeAnnotationService extends BaseAnnotationCrudService<AGM
 		return null;
 	}
 
-	@Transactional
+	@Transactional(rollbackOn = ValidationException.class)
 	public AGMPhenotypeAnnotation upsertPrimaryAnnotation(AffectedGenomicModel subject, PhenotypeFmsDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
 		AGMPhenotypeAnnotation annotation = agmPhenotypeAnnotationFmsDtoValidator.validatePrimaryAnnotation(subject, dto, dataProvider);
 		return agmPhenotypeAnnotationDAO.persist(annotation);

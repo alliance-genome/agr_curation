@@ -44,7 +44,7 @@ public class GenePhenotypeAnnotationService extends BaseAnnotationCrudService<Ge
 		return null;
 	}
 
-	@Transactional
+	@Transactional(rollbackOn = ValidationException.class)
 	public GenePhenotypeAnnotation upsertPrimaryAnnotation(Gene subject, PhenotypeFmsDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
 		GenePhenotypeAnnotation annotation = genePhenotypeAnnotationFmsDtoValidator.validatePrimaryAnnotation(subject, dto, dataProvider);
 		return genePhenotypeAnnotationDAO.persist(annotation);

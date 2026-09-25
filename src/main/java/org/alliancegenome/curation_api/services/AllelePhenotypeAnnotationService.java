@@ -45,7 +45,7 @@ public class AllelePhenotypeAnnotationService extends BaseAnnotationCrudService<
 		throw new UnsupportedOperationException("Not implemented yet.");
 	}
 
-	@Transactional
+	@Transactional(rollbackOn = ValidationException.class)
 	public AllelePhenotypeAnnotation upsertPrimaryAnnotation(Allele subject, PhenotypeFmsDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
 		AllelePhenotypeAnnotation annotation = allelePhenotypeAnnotationFmsDtoValidator.validatePrimaryAnnotation(subject, dto, dataProvider);
 		return allelePhenotypeAnnotationDAO.persist(annotation);

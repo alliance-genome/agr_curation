@@ -54,7 +54,7 @@ public class ConstructDTOValidator extends ReagentDTOValidator<Construct, Constr
 	@Inject
 	ReferenceService referenceService;
 
-	@Transactional
+	@Transactional(rollbackOn = ValidationException.class)
 	public ObjectResponse<Construct> validateConstructDTO(ConstructDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
 
 		response = new ObjectResponse<Construct>();

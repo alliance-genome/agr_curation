@@ -63,7 +63,7 @@ public class MoleculeService extends BaseEntityCrudService<Molecule, MoleculeDAO
 	}
 
 	@Override
-	@Transactional
+	@Transactional(rollbackOn = ValidationException.class)
 	public ObjectResponse<Molecule> upsert(MoleculeFmsDTO dto, BackendBulkDataProvider backendBulkDataProvider) throws ValidationException {
 		log.debug("processUpdate Molecule: ");
 

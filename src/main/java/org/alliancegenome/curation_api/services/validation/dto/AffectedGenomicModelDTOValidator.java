@@ -45,7 +45,7 @@ public class AffectedGenomicModelDTOValidator extends GenomicEntityDTOValidator<
 	@Inject AgmSynonymSlotAnnotationDTOValidator agmSynonymDtoValidator;
 	@Inject AgmSecondaryIdSlotAnnotationDTOValidator agmSecondaryIdDtoValidator;
 
-	@Transactional
+	@Transactional(rollbackOn = ValidationException.class)
 	public ObjectResponse<AffectedGenomicModel> validateAffectedGenomicModelDTO(AffectedGenomicModelDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
 		response = new ObjectResponse<AffectedGenomicModel>();
 		

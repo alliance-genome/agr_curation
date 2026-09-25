@@ -79,7 +79,7 @@ public class VariantFmsDTOValidator {
 	@Inject VariantNoteFmsDTOValidator variantNoteFmsDtoValidator;
 	@Inject ReferenceService referenceService;
 
-	@Transactional
+	@Transactional(rollbackOn = ValidationException.class)
 	public Long validateVariant(VariantFmsDTO dto, List<Long> idsAdded, BackendBulkDataProvider dataProvider) throws ValidationException {
 
 		ObjectResponse<Variant> variantResponse = new ObjectResponse<Variant>();
@@ -258,7 +258,7 @@ public class VariantFmsDTOValidator {
 		return variant.getId();
 	}
 
-	@Transactional
+	@Transactional(rollbackOn = ValidationException.class)
 	public void validateCuratedVariantGenomicLocationAssociation(VariantFmsDTO dto, List<Long> idsAdded, Long variantId) throws ValidationException {
 
 		CuratedVariantGenomicLocationAssociation association = new CuratedVariantGenomicLocationAssociation();
@@ -349,7 +349,7 @@ public class VariantFmsDTOValidator {
 
 	}
 
-	@Transactional
+	@Transactional(rollbackOn = ValidationException.class)
 	public void validateAlleleVariantAssociation(VariantFmsDTO dto, List<Long> idsAdded, Long variantId) throws ValidationException {
 
 		AlleleVariantAssociation association = new AlleleVariantAssociation();

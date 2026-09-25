@@ -57,7 +57,7 @@ public class OrthologyFmsDTOValidator {
 	@Inject NcbiTaxonTermService ncbiTaxonTermService;
 	@Inject VocabularyTermService vocabularyTermService;
 
-	@Transactional
+	@Transactional(rollbackOn = ValidationException.class)
 	public ObjectResponse<GeneToGeneOrthologyGenerated> validateOrthologyFmsDTO(OrthologyFmsDTO dto) throws ValidationException {
 
 		ObjectResponse<GeneToGeneOrthologyGenerated> orthologyResponse = new ObjectResponse<GeneToGeneOrthologyGenerated>();
