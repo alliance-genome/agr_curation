@@ -27,6 +27,9 @@ export const Endpoints = Object.freeze({
 	}),
 
 	SlotAnnotation: Object.freeze({
+		AGM_FULL_NAME: 'agmfullnameslotannotation',
+		AGM_SECONDARY_ID: 'agmsecondaryidslotannotation',
+		AGM_SYNONYM: 'agmsynonymslotannotation',
 		ALLELE_DATABASE_STATUS: 'alleledatabasestatusslotannotation',
 		ALLELE_FULL_NAME: 'allelefullnameslotannotation',
 		ALLELE_FUNCTIONAL_IMPACT: 'allelefunctionalimpactslotannotation',

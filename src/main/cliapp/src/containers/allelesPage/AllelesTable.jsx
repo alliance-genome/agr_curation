@@ -1021,6 +1021,8 @@ export const AllelesTable = () => {
 				setOriginalInheritanceModesData={setInheritanceModesData}
 			/>
 			<SecondaryIdsEditDialog
+				field="alleleSecondaryIds"
+				endpoint={Endpoints.SlotAnnotation.ALLELE_SECONDARY_ID}
 				originalSecondaryIdsData={secondaryIdsData}
 				setOriginalSecondaryIdsData={setSecondaryIdsData}
 				errorMessagesMainRow={errorMessages}
