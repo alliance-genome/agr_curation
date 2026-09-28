@@ -2,9 +2,13 @@ package org.alliancegenome.curation_api.services.validation.dto.fms;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
+import org.alliancegenome.curation_api.constants.EntityFieldConstants;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.AnatomicalSiteDAO;
@@ -90,6 +94,28 @@ public class HTPExpressionDatasetSampleAnnotationFmsDTOValidator {
 					htpSampleAnnotation = searchResponse.getSingleResult();
 				}
 			} else {
+				htpSampleAnnotation = new HTPExpressionDatasetSampleAnnotation();
+			}
+		} else if (StringUtils.isNotBlank(dto.getSampleTitle())) {
+			// SCRUM-6585 — no sampleId submitted (MGI): the record's identity is (dataProvider, sampleTitle, datasetIds).
+			// Without this lookup every load inserted a fresh row and the cleanup deleted the whole previous set.
+			Map<String, Object> params = new HashMap<>();
+			params.put(EntityFieldConstants.DATA_PROVIDER, backendBulkDataProvider.sourceOrganization);
+			params.put("htpExpressionSampleTitle", dto.getSampleTitle());
+			Set<String> datasetCuries = new HashSet<>();
+			if (CollectionUtils.isNotEmpty(dto.getDatasetIds())) {
+				params.put("datasetIds.curie", dto.getDatasetIds().get(0));
+				datasetCuries.addAll(dto.getDatasetIds());
+			}
+			htpSampleAnnotation = null;
+			for (HTPExpressionDatasetSampleAnnotation candidate : htpExpressionDatasetSampleAnnotationDAO.findByParams(params).getResults()) {
+				Set<String> candidateCuries = candidate.getDatasetIds() == null ? Set.of() : candidate.getDatasetIds().stream().map(ExternalDataBaseEntity::getCurie).collect(Collectors.toSet());
+				if (candidateCuries.equals(datasetCuries)) {
+					htpSampleAnnotation = candidate;
+					break;
+				}
+			}
+			if (htpSampleAnnotation == null) {
 				htpSampleAnnotation = new HTPExpressionDatasetSampleAnnotation();
 			}
 		} else {

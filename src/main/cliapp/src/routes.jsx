@@ -19,7 +19,7 @@ import { ConditionRelationPage } from './containers/conditionRelationPage';
 import { AffectedGenomicModelPage } from './containers/affectedGenomicModelPage';
 import { AllelesPage, AlleleDetailPage, AlleleCreatePage } from './containers/allelesPage';
 import { GenesPage } from './containers/genesPage';
-import { VariantsPage } from './containers/variantsPage';
+import { VariantsPage, VariantDetailPage } from './containers/variantsPage';
 import { ConstructsPage, ConstructDetailPage } from './containers/constructsPage';
 import { ProfilePage } from './containers/profilePage';
 import { MoleculesPage } from './containers/moleculesPage';
@@ -184,6 +184,14 @@ export default function AppRoutes() {
 						element={
 							<ErrorBoundary>
 								<VariantsPage />
+							</ErrorBoundary>
+						}
+					/>
+					<Route
+						path="/variant/:identifier"
+						element={
+							<ErrorBoundary>
+								<VariantDetailPage />
 							</ErrorBoundary>
 						}
 					/>
