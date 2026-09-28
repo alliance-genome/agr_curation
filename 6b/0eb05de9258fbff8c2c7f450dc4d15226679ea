@@ -1,0 +1,27 @@
+src/main/cliapp/src/constants/Endpoints.js
+  s_90fe3c66eb3b97::t_f2716c6c4d7518 30-32
+src/main/cliapp/src/containers/affectedGenomicModelPage/AffectedGenomicModelTable.jsx
+  s_90fe3c66eb3b97::t_3e4aa37754b726 2,13,16,21,23,25,27-30,35-36,41-52,75-88,98,104-117,119,127-139,163-164,176-186,190-191,202-215,219-220,229-242,247-248,253-261,264-265,270-272,325-327,336-338,342,384-385,394-402,404-412,414-421
+src/main/cliapp/src/containers/allelesPage/AllelesTable.jsx
+  s_90fe3c66eb3b97::t_5a9bec66e54816 1024-1025
+src/main/cliapp/src/containers/allelesPage/secondaryIds/SecondaryIdsEditDialog.jsx
+  s_90fe3c66eb3b97::t_c40d941cf0a878 16-17,135,172
+src/main/cliapp/src/service/AffectedGenomicModelService.js
+  s_90fe3c66eb3b97::t_edb290dc7d4276 1-22
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "6b0eb05de9258fbff8c2c7f450dc4d15226679ea",
+  "prompts": {},
+  "sessions": {
+    "s_90fe3c66eb3b97": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "64db8705-0fb3-46f5-be71-5247c76018af",
+        "model": "unknown"
+      },
+      "human_author": "Ketaki Kindre <kkindre@caltech.edu>"
+    }
+  }
+}
