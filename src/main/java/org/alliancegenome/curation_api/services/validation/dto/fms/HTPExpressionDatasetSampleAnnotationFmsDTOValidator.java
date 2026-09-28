@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -27,6 +28,7 @@ import org.alliancegenome.curation_api.model.entities.MicroarraySampleDetails;
 import org.alliancegenome.curation_api.model.entities.Note;
 import org.alliancegenome.curation_api.model.entities.TemporalContext;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
+import org.alliancegenome.curation_api.model.entities.ontology.AnatomicalTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.MMOTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.OBITerm;
@@ -97,8 +99,10 @@ public class HTPExpressionDatasetSampleAnnotationFmsDTOValidator {
 				htpSampleAnnotation = new HTPExpressionDatasetSampleAnnotation();
 			}
 		} else if (StringUtils.isNotBlank(dto.getSampleTitle())) {
-			// SCRUM-6585 — no sampleId submitted (MGI): the record's identity is (dataProvider, sampleTitle, datasetIds).
-			// Without this lookup every load inserted a fresh row and the cleanup deleted the whole previous set.
+			// SCRUM-6585 — no sampleId submitted (MGI): the record's identity is (dataProvider, sampleTitle, datasetIds,
+			// anatomical structure terms of the sample locations). Without this lookup every load inserted a fresh row
+			// and the cleanup deleted the whole previous set. The UBERON slim terms are deliberately not part of the
+			// identity: MGI re-maps them between releases, which would otherwise churn every affected sample.
 			Map<String, Object> params = new HashMap<>();
 			params.put(EntityFieldConstants.DATA_PROVIDER, backendBulkDataProvider.sourceOrganization);
 			params.put("htpExpressionSampleTitle", dto.getSampleTitle());
@@ -107,10 +111,19 @@ public class HTPExpressionDatasetSampleAnnotationFmsDTOValidator {
 				params.put("datasetIds.curie", dto.getDatasetIds().get(0));
 				datasetCuries.addAll(dto.getDatasetIds());
 			}
+			Set<String> structureCuries = new HashSet<>();
+			if (CollectionUtils.isNotEmpty(dto.getSampleLocations())) {
+				for (WhereExpressedFmsDTO location : dto.getSampleLocations()) {
+					if (StringUtils.isNotBlank(location.getAnatomicalStructureTermId())) {
+						structureCuries.add(location.getAnatomicalStructureTermId());
+					}
+				}
+			}
 			htpSampleAnnotation = null;
 			for (HTPExpressionDatasetSampleAnnotation candidate : htpExpressionDatasetSampleAnnotationDAO.findByParams(params).getResults()) {
-				Set<String> candidateCuries = candidate.getDatasetIds() == null ? Set.of() : candidate.getDatasetIds().stream().map(ExternalDataBaseEntity::getCurie).collect(Collectors.toSet());
-				if (candidateCuries.equals(datasetCuries)) {
+				Set<String> candidateDatasetCuries = candidate.getDatasetIds() == null ? Set.of() : candidate.getDatasetIds().stream().map(ExternalDataBaseEntity::getCurie).collect(Collectors.toSet());
+				Set<String> candidateStructureCuries = candidate.getHtpExpressionSampleLocations() == null ? Set.of() : candidate.getHtpExpressionSampleLocations().stream().map(AnatomicalSite::getAnatomicalStructure).filter(Objects::nonNull).map(AnatomicalTerm::getCurie).collect(Collectors.toSet());
+				if (candidateDatasetCuries.equals(datasetCuries) && candidateStructureCuries.equals(structureCuries)) {
 					htpSampleAnnotation = candidate;
 					break;
 				}
