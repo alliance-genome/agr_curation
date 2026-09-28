@@ -1,0 +1,83 @@
+src/main/java/org/alliancegenome/curation_api/services/AGMDiseaseAnnotationService.java
+  s_90fe3c66eb3b97::t_4fec090ef5e5a8 53
+src/main/java/org/alliancegenome/curation_api/services/AGMPhenotypeAnnotationService.java
+  s_90fe3c66eb3b97::t_2ead5132d93fdd 48
+src/main/java/org/alliancegenome/curation_api/services/AlleleDiseaseAnnotationService.java
+  s_90fe3c66eb3b97::t_7dbc967d44d346 56
+src/main/java/org/alliancegenome/curation_api/services/AllelePhenotypeAnnotationService.java
+  s_90fe3c66eb3b97::t_076e67293fa830 48
+src/main/java/org/alliancegenome/curation_api/services/AntibodyService.java
+  s_90fe3c66eb3b97::t_41aae65574181b 55
+src/main/java/org/alliancegenome/curation_api/services/ConstructService.java
+  s_90fe3c66eb3b97::t_6561c2845132a5 80
+src/main/java/org/alliancegenome/curation_api/services/GeneDiseaseAnnotationService.java
+  s_90fe3c66eb3b97::t_02465076c56aee 56
+src/main/java/org/alliancegenome/curation_api/services/GeneExpressionExperimentService.java
+  s_90fe3c66eb3b97::t_ef02f2e5420bc4 58
+src/main/java/org/alliancegenome/curation_api/services/GeneGeneticInteractionService.java
+  s_90fe3c66eb3b97::t_ee7647de421cda 53
+src/main/java/org/alliancegenome/curation_api/services/GeneMolecularInteractionService.java
+  s_90fe3c66eb3b97::t_0e9e6d4346cdb7 52
+src/main/java/org/alliancegenome/curation_api/services/GenePhenotypeAnnotationService.java
+  s_90fe3c66eb3b97::t_42e223e43ede33 47
+src/main/java/org/alliancegenome/curation_api/services/GeneService.java
+  s_90fe3c66eb3b97::t_040d87a360a174 103
+src/main/java/org/alliancegenome/curation_api/services/HTPExpressionDatasetSampleAnnotationService.java
+  s_90fe3c66eb3b97::t_859f4dc3b66678 38
+src/main/java/org/alliancegenome/curation_api/services/MoleculeService.java
+  s_90fe3c66eb3b97::t_c889b3e7f92ead 66
+src/main/java/org/alliancegenome/curation_api/services/PhenotypeAnnotationService.java
+  s_90fe3c66eb3b97::t_6aba95de53a1ec 133
+src/main/java/org/alliancegenome/curation_api/services/PredictedVariantConsequenceService.java
+  s_90fe3c66eb3b97::t_f9089b3add9563 67
+src/main/java/org/alliancegenome/curation_api/services/ResourceDescriptorService.java
+  s_90fe3c66eb3b97::t_6e09516d5e315d 61
+src/main/java/org/alliancegenome/curation_api/services/SequenceTargetingReagentService.java
+  s_90fe3c66eb3b97::t_8cdb5af481c0ed 45
+src/main/java/org/alliancegenome/curation_api/services/validation/dto/AffectedGenomicModelDTOValidator.java
+  s_90fe3c66eb3b97::t_bfc6e139d177da 48
+src/main/java/org/alliancegenome/curation_api/services/validation/dto/AlleleDTOValidator.java
+  s_90fe3c66eb3b97::t_3e704ee16f89ba 89
+src/main/java/org/alliancegenome/curation_api/services/validation/dto/AntibodyDTOValidator.java
+  s_90fe3c66eb3b97::t_28eb8c0ea02ada 47
+src/main/java/org/alliancegenome/curation_api/services/validation/dto/ConstructDTOValidator.java
+  s_90fe3c66eb3b97::t_12c66389b8f030 57
+src/main/java/org/alliancegenome/curation_api/services/validation/dto/GeneDTOValidator.java
+  s_90fe3c66eb3b97::t_ee15a461e95d95 58
+src/main/java/org/alliancegenome/curation_api/services/validation/dto/VariantDTOValidator.java
+  s_90fe3c66eb3b97::t_cb05e70c4cfa1a 30
+src/main/java/org/alliancegenome/curation_api/services/validation/dto/fms/ExternalDataBaseEntityFmsDTOValidator.java
+  s_90fe3c66eb3b97::t_a3841a820c2cc8 41
+src/main/java/org/alliancegenome/curation_api/services/validation/dto/fms/GenePhenotypeAnnotationFmsDTOValidator.java
+  s_90fe3c66eb3b97::t_5f7370d03d91e9 28
+src/main/java/org/alliancegenome/curation_api/services/validation/dto/fms/HTPExpressionDatasetAnnotationFmsDTOValidator.java
+  s_90fe3c66eb3b97::t_09c8fc2499cce6 47
+src/main/java/org/alliancegenome/curation_api/services/validation/dto/fms/HTPExpressionDatasetSampleAnnotationFmsDTOValidator.java
+  s_90fe3c66eb3b97::t_cc58427a92af2b 68
+src/main/java/org/alliancegenome/curation_api/services/validation/dto/fms/OrthologyFmsDTOValidator.java
+  s_90fe3c66eb3b97::t_1a91e90b0911cc 60
+src/main/java/org/alliancegenome/curation_api/services/validation/dto/fms/ParalogyFmsDTOValidator.java
+  s_90fe3c66eb3b97::t_2f2a5832a0e527 39
+src/main/java/org/alliancegenome/curation_api/services/validation/dto/fms/VariantFmsDTOValidator.java
+  s_90fe3c66eb3b97::t_426b99ffdc23f8 82,261,352
+src/main/java/org/alliancegenome/curation_api/exceptions/ValidationException.java
+  s_90fe3c66eb3b97::t_d9addbd8060df9 3,6-11
+src/main/resources/db/migration/v0.54.0.2__cleanup_orphaned_crossreferences.sql
+  s_90fe3c66eb3b97::t_b34dee03ebb895 3-10,13,39
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "eb0e4e5bc07a5a0061d0e1bbc001d4569792c328",
+  "prompts": {},
+  "sessions": {
+    "s_90fe3c66eb3b97": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "64db8705-0fb3-46f5-be71-5247c76018af",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Ketaki Kindre <kkindre@caltech.edu>"
+    }
+  }
+}
