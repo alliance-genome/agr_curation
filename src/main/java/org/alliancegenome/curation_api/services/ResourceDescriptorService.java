@@ -58,7 +58,7 @@ public class ResourceDescriptorService extends BaseEntityCrudService<ResourceDes
 		return names;
 	}
 
-	@Transactional(rollbackOn = ValidationException.class)
+	@Transactional
 	public ResourceDescriptor upsert(ResourceDescriptorDTO dto) throws ValidationException {
 		ResourceDescriptor rd = resourceDescriptorDtoValidator.validateResourceDescriptorDTO(dto);
 

@@ -55,7 +55,7 @@ public class GeneDTOValidator extends GenomicEntityDTOValidator<Gene, GeneDTO> {
 	@Inject SlotAnnotationIdentityHelper identityHelper;
 	@Inject SoTermService soTermService;
 
-	@Transactional(rollbackOn = ValidationException.class)
+	@Transactional
 	public ObjectResponse<Gene> validateGeneDTO(GeneDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
 		response = new ObjectResponse<Gene>();
 		

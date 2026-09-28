@@ -44,7 +44,7 @@ public class AntibodyDTOValidator extends ReagentDTOValidator<Antibody, Antibody
 	@Inject
 	CrossReferenceService crossReferenceService;
 
-	@Transactional(rollbackOn = ValidationException.class)
+	@Transactional
 	public ObjectResponse<Antibody> validateAntibodyDTO(AntibodyDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
 
 		response = new ObjectResponse<Antibody>();

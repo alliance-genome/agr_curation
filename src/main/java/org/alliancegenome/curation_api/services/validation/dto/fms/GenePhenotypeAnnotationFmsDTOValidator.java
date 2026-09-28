@@ -25,7 +25,7 @@ public class GenePhenotypeAnnotationFmsDTOValidator extends PhenotypeAnnotationF
 	@Inject GenomicEntityService genomicEntityService;
 	@Inject PhenotypeAnnotationService phenotypeAnnotationService;
 	
-	@Transactional(rollbackOn = ValidationException.class)
+	@Transactional
 	public GenePhenotypeAnnotation validatePrimaryAnnotation(Gene subject, PhenotypeFmsDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
 
 		ObjectResponse<GenePhenotypeAnnotation> apaResponse = new ObjectResponse<GenePhenotypeAnnotation>();

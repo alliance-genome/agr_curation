@@ -35,7 +35,7 @@ public class HTPExpressionDatasetSampleAnnotationService extends BaseEntityCrudS
 		setSQLDao(htpExpressionDatasetSampleAnnotationDAO);
 	}
 	@Override
-	@Transactional(rollbackOn = ValidationException.class)
+	@Transactional
 	public ObjectResponse<HTPExpressionDatasetSampleAnnotation> upsert(HTPExpressionDatasetSampleAnnotationFmsDTO htpExpressionDatasetSampleAnnotationData, BackendBulkDataProvider backendBulkDataProvider) throws ValidationException {
 		return htpExpressionDatasetSampleAnnotationFmsDtoValidator.validateHTPExpressionDatasetSampleAnnotationFmsDTO(htpExpressionDatasetSampleAnnotationData, backendBulkDataProvider);
 	}

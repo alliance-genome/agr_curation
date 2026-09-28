@@ -36,7 +36,7 @@ public class ParalogyFmsDTOValidator {
 	@Inject NcbiTaxonTermService ncbiTaxonTermService;
 	@Inject VocabularyTermService vocabularyTermService;
 
-	@Transactional(rollbackOn = ValidationException.class)
+	@Transactional
 	public ObjectResponse<GeneToGeneParalogy> validateParalogyFmsDTO(ParalogyFmsDTO dto) throws ValidationException {
 
 		ObjectResponse<GeneToGeneParalogy> paralogyResponse = new ObjectResponse<GeneToGeneParalogy>();

@@ -86,7 +86,7 @@ public class AlleleDTOValidator extends GenomicEntityDTOValidator<Allele, Allele
 	@Inject
 	ReferenceService referenceService;
 
-	@Transactional(rollbackOn = ValidationException.class)
+	@Transactional
 	public ObjectResponse<Allele> validateAlleleDTO(AlleleDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
 		response = new ObjectResponse<>();
 

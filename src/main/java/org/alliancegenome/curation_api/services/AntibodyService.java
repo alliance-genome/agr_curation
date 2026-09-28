@@ -52,7 +52,7 @@ public class AntibodyService extends SubmittedObjectCrudService<Antibody, Antibo
 	}
 
 	@Override
-	@Transactional(rollbackOn = ValidationException.class)
+	@Transactional
 	public ObjectResponse<Antibody> upsert(AntibodyDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
 		return antibodyDtoValidator.validateAntibodyDTO(dto, dataProvider);
 	}

@@ -42,7 +42,7 @@ public class SequenceTargetingReagentService extends SubmittedObjectCrudService<
 	}
 
 	@Override
-	@Transactional(rollbackOn = ValidationException.class)
+	@Transactional
 	public ObjectResponse<SequenceTargetingReagent> upsert(SequenceTargetingReagentFmsDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
 		return strDtoValidator.validateStrFmsDTO(dto, dataProvider);
 	}
