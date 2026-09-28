@@ -61,6 +61,13 @@ export const GeneGeneticInteractionsTable = () => {
 	const columns = useMemo(
 		() => [
 			{
+				field: 'curie',
+				header: 'Curie',
+				body: (rowData) => <IdTemplate id={rowData.curie} />,
+				sortable: true,
+				filterConfig: FILTER_CONFIGS.curieFilterConfig,
+			},
+			{
 				field: 'uniqueId',
 				header: 'Unique ID',
 				body: (rowData) => <IdTemplate id={rowData.uniqueId} />,

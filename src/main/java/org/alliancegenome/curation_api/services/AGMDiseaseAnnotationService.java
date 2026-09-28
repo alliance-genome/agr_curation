@@ -25,6 +25,7 @@ public class AGMDiseaseAnnotationService extends BaseAnnotationDTOCrudService<AG
 	@Inject AGMDiseaseAnnotationValidator agmDiseaseValidator;
 	@Inject ConditionRelationDAO conditionRelationDAO;
 	@Inject DiseaseAnnotationService diseaseAnnotationService;
+	@Inject CurieMintService curieMintService;
 	@Inject AGMDiseaseAnnotationDTOValidator agmDiseaseAnnotationDtoValidator;
 
 	@Override
@@ -44,7 +45,7 @@ public class AGMDiseaseAnnotationService extends BaseAnnotationDTOCrudService<AG
 	@Transactional
 	public ObjectResponse<AGMDiseaseAnnotation> create(AGMDiseaseAnnotation uiEntity) {
 		AGMDiseaseAnnotation dbEntity = agmDiseaseValidator.validateAnnotationCreate(uiEntity);
-		diseaseAnnotationService.mintCurieIfAbsent(dbEntity);
+		curieMintService.mintCurieIfAbsent(dbEntity);
 		return new ObjectResponse<>(agmDiseaseAnnotationDAO.persist(dbEntity));
 	}
 
@@ -53,7 +54,7 @@ public class AGMDiseaseAnnotationService extends BaseAnnotationDTOCrudService<AG
 	public ObjectResponse<AGMDiseaseAnnotation> upsert(AGMDiseaseAnnotationDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
 		ObjectResponse<AGMDiseaseAnnotation> resp = agmDiseaseAnnotationDtoValidator.validateAGMDiseaseAnnotationDTO(dto, dataProvider);
 
-		diseaseAnnotationService.mintCurieIfAbsent(resp.getEntity());
+		curieMintService.mintCurieIfAbsent(resp.getEntity());
 		agmDiseaseAnnotationDAO.persist(resp.getEntity());
 		
 		return resp;

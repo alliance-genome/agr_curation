@@ -18,21 +18,21 @@ import lombok.Data;
 public class APIResponse {
 
 	@org.eclipse.microprofile.openapi.annotations.media.Schema(description = "Single error message if the request failed")
-	@JsonView({ CurationView.FieldsOnly.class }) private String errorMessage;
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.AlleleDetailView.class }) private String errorMessage;
 	@org.eclipse.microprofile.openapi.annotations.media.Schema(description = "Single warning message for non-fatal issues")
-	@JsonView({ CurationView.FieldsOnly.class }) private String warningMessage;
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.AlleleDetailView.class }) private String warningMessage;
 
 	@org.eclipse.microprofile.openapi.annotations.media.Schema(description = "Field-level error messages keyed by field name")
-	@JsonView({ CurationView.FieldsOnly.class }) private Map<String, String> errorMessages;
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.AlleleDetailView.class }) private Map<String, String> errorMessages;
 	@org.eclipse.microprofile.openapi.annotations.media.Schema(description = "Field-level warning messages keyed by field name")
-	@JsonView({ CurationView.FieldsOnly.class }) private Map<String, String> warningMessages;
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.AlleleDetailView.class }) private Map<String, String> warningMessages;
 
 	@org.eclipse.microprofile.openapi.annotations.media.Schema(description = "Additional supplemental data returned with the response")
 	@org.eclipse.microprofile.graphql.Ignore
-	@JsonView({ CurationView.FieldsOnly.class }) private Map<String, Object> supplementalData = new HashMap<>();
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.AlleleDetailView.class }) private Map<String, Object> supplementalData = new HashMap<>();
 
 	@org.eclipse.microprofile.openapi.annotations.media.Schema(description = "Time taken to process the request")
-	@JsonView({ CurationView.FieldsOnly.class }) private String requestDuration;
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.AlleleDetailView.class }) private String requestDuration;
 
 	
 	public void addWarningMessage(String fieldName, String warningMessage) {

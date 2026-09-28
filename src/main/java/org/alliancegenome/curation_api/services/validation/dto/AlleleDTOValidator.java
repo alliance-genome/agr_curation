@@ -45,6 +45,7 @@ import org.alliancegenome.curation_api.services.validation.dto.slotAnnotations.A
 import org.alliancegenome.curation_api.services.validation.dto.slotAnnotations.AlleleSecondaryIdSlotAnnotationDTOValidator;
 import org.alliancegenome.curation_api.services.validation.dto.slotAnnotations.AlleleSymbolSlotAnnotationDTOValidator;
 import org.alliancegenome.curation_api.services.validation.dto.slotAnnotations.AlleleSynonymSlotAnnotationDTOValidator;
+import org.alliancegenome.curation_api.services.CurieMintService;
 import org.apache.commons.collections.CollectionUtils;
 
 import jakarta.enterprise.context.RequestScoped;
@@ -56,6 +57,8 @@ public class AlleleDTOValidator extends GenomicEntityDTOValidator<Allele, Allele
 
 	@Inject
 	AlleleDAO alleleDAO;
+	@Inject
+	CurieMintService curieMintService;
 	@Inject
 	AlleleMutationTypeSlotAnnotationDTOValidator alleleMutationTypeDtoValidator;
 	@Inject
@@ -98,6 +101,10 @@ public class AlleleDTOValidator extends GenomicEntityDTOValidator<Allele, Allele
 		allele.setInCollection(inCollection);
 
 		allele.setIsExtinct(dto.getIsExtinct());
+		allele.setIsExtrachromosomal(dto.getIsExtrachromosomal());
+		allele.setIsIntegrated(dto.getIsIntegrated());
+		allele.setIsAberration(dto.getIsAberration());
+		allele.setIsBalancer(dto.getIsBalancer());
 
 		List<Reference> refs = validateOptionalEntities("reference_curies", dto.getReferenceCuries(), referenceService::retrieveFromDbOrLiteratureService);
 		allele.setReferences(refs);
@@ -188,6 +195,9 @@ public class AlleleDTOValidator extends GenomicEntityDTOValidator<Allele, Allele
 		}
 
 		try {
+			// SCRUM-6173: mint an AGRKB curie for a new allele that has none. A re-load resolves to
+			// the managed entity, which already carries its curie, so this is a no-op there.
+			curieMintService.mintCurieIfAbsent(allele);
 			response.setEntity(alleleDAO.persist(allele));
 			return response;
 		} catch (Exception e) {

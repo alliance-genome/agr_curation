@@ -45,7 +45,7 @@ public class Reference extends InformationContentEntity {
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@OneToMany(cascade = CascadeType.MERGE, orphanRemoval = true)
 	@Fetch(FetchMode.SUBSELECT)
-	@JsonView({CurationView.FieldsOnly.class, CurationView.ForPublic.class, CurationView.AlleleSummaryDocument.class, CurationView.VariantSummaryDocument.class, CurationView.TransgenicAllelesDocument.class})
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.ForPublic.class, CurationView.AlleleSummaryDocument.class, CurationView.VariantSummaryDocument.class, CurationView.TransgenicAllelesDocument.class, CurationView.AlleleDetailView.class })
 	@JoinTable(
 		indexes = {
 			@Index(name = "reference_crossreference_reference_index", columnList = "Reference_id"),
@@ -54,7 +54,7 @@ public class Reference extends InformationContentEntity {
 	)
 	private Set<CrossReference> crossReferences;
 
-	@JsonView({CurationView.FieldsOnly.class, CurationView.ForPublic.class, CurationView.AlleleSummaryDocument.class, CurationView.TransgenicAllelesDocument.class})
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.ForPublic.class, CurationView.AlleleSummaryDocument.class, CurationView.TransgenicAllelesDocument.class, CurationView.AlleleDetailView.class })
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "shortCitation_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
 	@Column(columnDefinition = "TEXT")

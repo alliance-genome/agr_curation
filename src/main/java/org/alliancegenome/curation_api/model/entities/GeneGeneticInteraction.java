@@ -3,7 +3,9 @@ package org.alliancegenome.curation_api.model.entities;
 import java.util.List;
 
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
+import org.alliancegenome.curation_api.enums.MatiSubdomain;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
+import org.alliancegenome.curation_api.interfaces.CurieSubdomain;
 import org.alliancegenome.curation_api.view.CurationView;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.hibernate.annotations.Fetch;
@@ -40,6 +42,7 @@ import lombok.ToString;
 @AGRCurationSchemaVersion(min = "2.2.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { GeneInteraction.class })
 
 @Table(indexes = {
+	@Index(name = "GeneGeneticInteraction_curie_index", columnList = "curie"),
 	@Index(name = "GeneGeneticInteraction_internal_index", columnList = "internal"),
 	@Index(name = "GeneGeneticInteraction_obsolete_index", columnList = "obsolete"),
 	@Index(name = "GeneGeneticInteraction_interactionId_index", columnList = "interactionId"),
@@ -59,6 +62,7 @@ import lombok.ToString;
 	@Index(name = "GeneGeneticInteraction_interactorBGeneticPerturbation_index", columnList = "interactorBGeneticPerturbation_id")
 })
 
+@CurieSubdomain(MatiSubdomain.GENETIC_INTERACTION)
 public class GeneGeneticInteraction extends GeneInteraction {
 
 	@IndexedEmbedded(includePaths = {

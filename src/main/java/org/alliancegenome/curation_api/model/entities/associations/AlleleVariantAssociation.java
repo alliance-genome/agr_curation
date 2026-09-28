@@ -49,7 +49,7 @@ public class AlleleVariantAssociation extends AlleleGenomicEntityAssociation {
 		"curie_keyword", "alleleSymbol.displayText_keyword", "alleleSymbol.formatText_keyword", "alleleFullName.displayText_keyword",
 		"alleleFullName.formatText_keyword", "primaryExternalId", "primaryExternalId_keyword", "modInternalId", "modInternalId_keyword" })
 	@ManyToOne
-	@JsonView({ CurationView.FieldsOnly.class })
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.AlleleDetailView.class })
 	@JsonIgnoreProperties({"alleleGeneAssociations", "alleleVariantAssociations"})
 	@Fetch(FetchMode.JOIN)
 	private Allele alleleAssociationSubject;
@@ -58,7 +58,7 @@ public class AlleleVariantAssociation extends AlleleGenomicEntityAssociation {
 		"modInternalId", "modInternalId_keyword" })
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@JsonView({ CurationView.FieldsOnly.class, CurationView.AlleleView.class, CurationView.AlleleSummaryDocument.class })
-	@JsonIgnoreProperties({ "alleleVariantAssociations", "constructGenomicEntityAssociations", "curatedVariantGenomicLocations" })
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.AlleleView.class, CurationView.AlleleSummaryDocument.class, CurationView.AlleleDetailView.class })
+	@JsonIgnoreProperties({ "alleleVariantAssociations", "constructGenomicEntityAssociations", "curatedVariantGenomicLocations", "relatedNotes" })
 	private Variant alleleVariantAssociationObject;
 }

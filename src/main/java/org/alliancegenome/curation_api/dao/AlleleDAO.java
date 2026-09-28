@@ -15,7 +15,9 @@ import java.util.stream.Collectors;
 import org.alliancegenome.curation_api.constants.EntityFieldConstants;
 import org.alliancegenome.curation_api.constants.YeastStrainTaxonConstants;
 import org.alliancegenome.curation_api.dao.associations.AgmAlleleAssociationDAO;
-import org.alliancegenome.curation_api.dao.base.BaseSQLDAO;
+import org.alliancegenome.curation_api.dao.base.BaseCurieSQLDAO;
+
+
 import org.alliancegenome.curation_api.model.document.es.AlleleSummaryDocument;
 import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.AssemblyComponent;
@@ -48,7 +50,7 @@ import jakarta.inject.Inject;
 import jakarta.persistence.Query;
 
 @ApplicationScoped
-public class AlleleDAO extends BaseSQLDAO<Allele> {
+public class AlleleDAO extends BaseCurieSQLDAO<Allele> {
 
 	@Inject
 	GeneDiseaseAnnotationDAO geneDiseaseAnnotationDAO;

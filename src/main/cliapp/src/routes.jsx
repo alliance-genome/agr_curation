@@ -7,6 +7,8 @@ import { DashboardPage } from './containers/dashboardPage';
 import { DataLoadsPage } from './containers/dataLoadsPage/';
 import { ReportsPage } from './containers/reportsPage/';
 import { AlleleGeneAssociationsPage } from './containers/alleleGeneAssociationsPage';
+import { AntibodiesPage } from './containers/antibodiesPage';
+import { AgmAlleleAssociationsPage } from './containers/agmAlleleAssociationsPage';
 import { DiseaseAnnotationsPage } from './containers/diseaseAnnotationsPage';
 import { PhenotypeAnnotationsPage } from './containers/phenotypeAnnotationsPage';
 import { GeneExpressionAnnotationsPage } from './containers/geneExpressionAnnotationsPage';
@@ -15,7 +17,7 @@ import { GeneMolecularInteractionsPage } from './containers/geneMolecularInterac
 import { ExperimentalConditionsPage } from './containers/experimentalConditionsPage';
 import { ConditionRelationPage } from './containers/conditionRelationPage';
 import { AffectedGenomicModelPage } from './containers/affectedGenomicModelPage';
-import { AllelesPage, AlleleDetailPage } from './containers/allelesPage';
+import { AllelesPage, AlleleDetailPage, AlleleCreatePage } from './containers/allelesPage';
 import { GenesPage } from './containers/genesPage';
 import { VariantsPage } from './containers/variantsPage';
 import { ConstructsPage, ConstructDetailPage } from './containers/constructsPage';
@@ -70,6 +72,22 @@ export default function AppRoutes() {
 						element={
 							<ErrorBoundary>
 								<AlleleGeneAssociationsPage />
+							</ErrorBoundary>
+						}
+					/>
+					<Route
+						path="/antibodies"
+						element={
+							<ErrorBoundary>
+								<AntibodiesPage />
+							</ErrorBoundary>
+						}
+					/>
+					<Route
+						path="/agmAlleleAssociations"
+						element={
+							<ErrorBoundary>
+								<AgmAlleleAssociationsPage />
 							</ErrorBoundary>
 						}
 					/>
@@ -134,6 +152,14 @@ export default function AppRoutes() {
 						element={
 							<ErrorBoundary>
 								<AllelesPage />
+							</ErrorBoundary>
+						}
+					/>
+					<Route
+						path="/allele/create"
+						element={
+							<ErrorBoundary>
+								<AlleleCreatePage />
 							</ErrorBoundary>
 						}
 					/>

@@ -67,9 +67,7 @@ export const ResourceDescriptorPagesTable = () => {
 				sortable: true,
 				body: (rowData) => <StringTemplate string={rowData.name} />,
 				filterConfig: FILTER_CONFIGS.nameFilterConfig,
-				editor: (editorOptions) => (
-					<InputTextTableEditor editorOptions={editorOptions} field="name" errorMessagesRef={errorMessagesRef} />
-				),
+				editor: (editorOptions) => <InputTextTableEditor editorOptions={editorOptions} field="name" />,
 			},
 			{
 				field: 'urlTemplate',
@@ -77,9 +75,7 @@ export const ResourceDescriptorPagesTable = () => {
 				sortable: true,
 				body: (rowData) => <StringTemplate string={rowData.urlTemplate} />,
 				filterConfig: FILTER_CONFIGS.urlTemplateFilterConfig,
-				editor: (editorOptions) => (
-					<InputTextTableEditor editorOptions={editorOptions} field="urlTemplate" errorMessagesRef={errorMessagesRef} />
-				),
+				editor: (editorOptions) => <InputTextTableEditor editorOptions={editorOptions} field="urlTemplate" />,
 			},
 			{
 				field: 'pageDescription',
@@ -87,13 +83,7 @@ export const ResourceDescriptorPagesTable = () => {
 				sortable: true,
 				body: (rowData) => <StringTemplate string={rowData.pageDescription} />,
 				filterConfig: FILTER_CONFIGS.pageDescriptionFilterConfig,
-				editor: (editorOptions) => (
-					<InputTextTableEditor
-						editorOptions={editorOptions}
-						field="pageDescription"
-						errorMessagesRef={errorMessagesRef}
-					/>
-				),
+				editor: (editorOptions) => <InputTextTableEditor editorOptions={editorOptions} field="pageDescription" />,
 			},
 			{
 				field: 'createdBy.uniqueId',

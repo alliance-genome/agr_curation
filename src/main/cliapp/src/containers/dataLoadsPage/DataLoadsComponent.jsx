@@ -101,6 +101,7 @@ export const DataLoadsComponent = () => {
 		['AGM', ['AffectedGenomicModelDTO']],
 		// ['VARIANT', ['VariantDTO']],
 		['CONSTRUCT', ['ConstructDTO']],
+		['ANTIBODY', ['AntibodyDTO']],
 		[
 			'AGM_ASSOCIATION',
 			['AgmAgmAssociationDTO', 'AgmAlleleAssociationDTO', 'AgmSequenceTargetingReagentAssociationDTO'],

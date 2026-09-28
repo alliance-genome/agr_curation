@@ -125,6 +125,7 @@ export class DataLoadService extends BaseAuthService {
 				'AGM',
 				// 'VARIANT',
 				'CONSTRUCT',
+				'ANTIBODY',
 				'ALLELE_ASSOCIATION',
 				'CONSTRUCT_ASSOCIATION',
 				'AGM_ASSOCIATION',

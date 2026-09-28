@@ -3,7 +3,9 @@ package org.alliancegenome.curation_api.model.entities;
 import java.util.List;
 
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
+import org.alliancegenome.curation_api.enums.MatiSubdomain;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
+import org.alliancegenome.curation_api.interfaces.CurieSubdomain;
 import org.alliancegenome.curation_api.model.entities.associations.AlleleGeneAssociation;
 import org.alliancegenome.curation_api.model.entities.associations.ConstructGenomicEntityAssociation;
 import org.alliancegenome.curation_api.model.entities.associations.GeneGenomicLocationAssociation;
@@ -72,6 +74,7 @@ import lombok.ToString;
 		@Index(name = "gene_gcrpcrossreference_index", columnList = "gcrpcrossreference_id")
 	}
 )
+@CurieSubdomain(MatiSubdomain.GENE)
 public class Gene extends GenomicEntity {
 
 	@GenericField(projectable = Projectable.YES, sortable = Sortable.YES)

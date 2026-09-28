@@ -5,7 +5,9 @@ import java.util.List;
 import java.util.Objects;
 
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
+import org.alliancegenome.curation_api.enums.MatiSubdomain;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
+import org.alliancegenome.curation_api.interfaces.CurieSubdomain;
 import org.alliancegenome.curation_api.model.bridges.BooleanValueBridge;
 import org.alliancegenome.curation_api.model.entities.ontology.DOTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.ECOTerm;
@@ -78,6 +80,7 @@ import lombok.EqualsAndHashCode;
 	@Index(name = "DiseaseAnnotation_secondaryDataProvider_index", columnList = "secondaryDataProvider_id"),
 	@Index(name = "DiseaseAnnotation_secondaryDataProviderCrossReference_index", columnList = "secondaryDataProviderCrossReference_id")
 })
+@CurieSubdomain(MatiSubdomain.DISEASE_ANNOTATION)
 public abstract class DiseaseAnnotation extends Annotation {
 
 	@IndexedEmbedded(includePaths = {"curie", "name", "secondaryIdentifiers", "synonyms.name", "namespace",

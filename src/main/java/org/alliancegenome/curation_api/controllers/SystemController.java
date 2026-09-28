@@ -10,6 +10,22 @@ import org.alliancegenome.curation_api.services.ConditionRelationService;
 import org.alliancegenome.curation_api.services.DiseaseAnnotationService;
 import org.alliancegenome.curation_api.services.ExperimentalConditionService;
 import org.alliancegenome.curation_api.services.PhenotypeAnnotationService;
+import org.alliancegenome.curation_api.dao.DiseaseAnnotationDAO;
+import org.alliancegenome.curation_api.dao.AlleleDAO;
+import org.alliancegenome.curation_api.dao.GeneDAO;
+import org.alliancegenome.curation_api.dao.VariantDAO;
+import org.alliancegenome.curation_api.dao.AffectedGenomicModelDAO;
+import org.alliancegenome.curation_api.dao.ConstructDAO;
+import org.alliancegenome.curation_api.dao.AntibodyDAO;
+import org.alliancegenome.curation_api.dao.SequenceTargetingReagentDAO;
+import org.alliancegenome.curation_api.dao.AssemblyComponentDAO;
+import org.alliancegenome.curation_api.dao.GenomeAssemblyDAO;
+import org.alliancegenome.curation_api.dao.PhenotypeAnnotationDAO;
+import org.alliancegenome.curation_api.dao.GeneMolecularInteractionDAO;
+import org.alliancegenome.curation_api.dao.GeneGeneticInteractionDAO;
+import org.alliancegenome.curation_api.dao.HTPExpressionDatasetAnnotationDAO;
+import org.alliancegenome.curation_api.dao.HTPExpressionDatasetSampleAnnotationDAO;
+import org.alliancegenome.curation_api.services.CurieMintService;
 
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
@@ -19,6 +35,38 @@ public class SystemController implements SystemControllerInterface {
 
 	@Inject
 	SystemSQLDAO systemSQLDAO;
+	@Inject
+	CurieMintService curieMintService;
+	@Inject
+	AlleleDAO alleleDAO;
+	@Inject
+	GeneDAO geneDAO;
+	@Inject
+	VariantDAO variantDAO;
+	@Inject
+	AffectedGenomicModelDAO affectedGenomicModelDAO;
+	@Inject
+	ConstructDAO constructDAO;
+	@Inject
+	AntibodyDAO antibodyDAO;
+	@Inject
+	SequenceTargetingReagentDAO sequenceTargetingReagentDAO;
+	@Inject
+	AssemblyComponentDAO assemblyComponentDAO;
+	@Inject
+	GenomeAssemblyDAO genomeAssemblyDAO;
+	@Inject
+	PhenotypeAnnotationDAO phenotypeAnnotationDAO;
+	@Inject
+	DiseaseAnnotationDAO diseaseAnnotationDAO;
+	@Inject
+	GeneMolecularInteractionDAO geneMolecularInteractionDAO;
+	@Inject
+	GeneGeneticInteractionDAO geneGeneticInteractionDAO;
+	@Inject
+	HTPExpressionDatasetAnnotationDAO htpExpressionDatasetAnnotationDAO;
+	@Inject
+	HTPExpressionDatasetSampleAnnotationDAO htpExpressionDatasetSampleAnnotationDAO;
 	@Inject
 	DiseaseAnnotationService diseaseAnnotationService;
 	@Inject
@@ -44,8 +92,78 @@ public class SystemController implements SystemControllerInterface {
 	}
 
 	@Override
-	public void mintExistingDiseaseAnnotationCuries(Integer batchSize, Integer maxToMint) {
-		diseaseAnnotationService.mintMissingCuries(batchSize, maxToMint);
+	public void mintMissingDiseaseAnnotationCuries(Integer batchSize, Integer maxToMint) {
+		curieMintService.mintMissingCuries(diseaseAnnotationDAO, batchSize, maxToMint);
+	}
+
+	@Override
+	public void mintMissingAlleleCuries(Integer batchSize, Integer maxToMint) {
+		curieMintService.mintMissingCuries(alleleDAO, batchSize, maxToMint);
+	}
+
+	@Override
+	public void mintMissingGeneCuries(Integer batchSize, Integer maxToMint) {
+		curieMintService.mintMissingCuries(geneDAO, batchSize, maxToMint);
+	}
+
+	@Override
+	public void mintMissingVariantCuries(Integer batchSize, Integer maxToMint) {
+		curieMintService.mintMissingCuries(variantDAO, batchSize, maxToMint);
+	}
+
+	@Override
+	public void mintMissingAgmCuries(Integer batchSize, Integer maxToMint) {
+		curieMintService.mintMissingCuries(affectedGenomicModelDAO, batchSize, maxToMint);
+	}
+
+	@Override
+	public void mintMissingConstructCuries(Integer batchSize, Integer maxToMint) {
+		curieMintService.mintMissingCuries(constructDAO, batchSize, maxToMint);
+	}
+
+	@Override
+	public void mintMissingAntibodyCuries(Integer batchSize, Integer maxToMint) {
+		curieMintService.mintMissingCuries(antibodyDAO, batchSize, maxToMint);
+	}
+
+	@Override
+	public void mintMissingStrCuries(Integer batchSize, Integer maxToMint) {
+		curieMintService.mintMissingCuries(sequenceTargetingReagentDAO, batchSize, maxToMint);
+	}
+
+	@Override
+	public void mintMissingAssemblyComponentCuries(Integer batchSize, Integer maxToMint) {
+		curieMintService.mintMissingCuries(assemblyComponentDAO, batchSize, maxToMint);
+	}
+
+	@Override
+	public void mintMissingGenomeAssemblyCuries(Integer batchSize, Integer maxToMint) {
+		curieMintService.mintMissingCuries(genomeAssemblyDAO, batchSize, maxToMint);
+	}
+
+	@Override
+	public void mintMissingPhenotypeAnnotationCuries(Integer batchSize, Integer maxToMint) {
+		curieMintService.mintMissingCuries(phenotypeAnnotationDAO, batchSize, maxToMint);
+	}
+
+	@Override
+	public void mintMissingMolecularInteractionCuries(Integer batchSize, Integer maxToMint) {
+		curieMintService.mintMissingCuries(geneMolecularInteractionDAO, batchSize, maxToMint);
+	}
+
+	@Override
+	public void mintMissingGeneticInteractionCuries(Integer batchSize, Integer maxToMint) {
+		curieMintService.mintMissingCuries(geneGeneticInteractionDAO, batchSize, maxToMint);
+	}
+
+	@Override
+	public void mintMissingHTPExpressionSampleCuries(Integer batchSize, Integer maxToMint) {
+		curieMintService.mintMissingCuries(htpExpressionDatasetSampleAnnotationDAO, batchSize, maxToMint);
+	}
+
+	@Override
+	public void mintMissingHTPExpressionDatasetCuries(Integer batchSize, Integer maxToMint) {
+		curieMintService.mintMissingCuries(htpExpressionDatasetAnnotationDAO, batchSize, maxToMint);
 	}
 
 	@Override

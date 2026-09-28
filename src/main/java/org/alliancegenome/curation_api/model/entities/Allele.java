@@ -3,7 +3,9 @@ package org.alliancegenome.curation_api.model.entities;
 import java.util.List;
 
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
+import org.alliancegenome.curation_api.enums.MatiSubdomain;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
+import org.alliancegenome.curation_api.interfaces.CurieSubdomain;
 import org.alliancegenome.curation_api.model.bridges.BooleanAndNullValueBridge;
 import org.alliancegenome.curation_api.model.entities.associations.AlleleConstructAssociation;
 import org.alliancegenome.curation_api.model.entities.associations.AlleleGeneAssociation;
@@ -66,6 +68,7 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema;
 )
 @AGRCurationSchemaVersion(min = "1.7.3", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { GenomicEntity.class }, partial = true)
 @Table(indexes = { @Index(name = "allele_inCollection_index", columnList = "inCollection_id") })
+@CurieSubdomain(MatiSubdomain.ALLELE)
 public class Allele extends GenomicEntity {
 
 	@GenericField(projectable = Projectable.YES, sortable = Sortable.YES)
@@ -97,6 +100,29 @@ public class Allele extends GenomicEntity {
 	@KeywordField(name = "isExtinct_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, valueBridge = @ValueBridgeRef(type = BooleanAndNullValueBridge.class))
 	@JsonView({ CurationView.FieldsOnly.class, CurationView.AlleleDetailView.class })
 	private Boolean isExtinct;
+
+	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer", valueBridge = @ValueBridgeRef(type = BooleanAndNullValueBridge.class))
+	@KeywordField(name = "isExtrachromosomal_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, valueBridge = @ValueBridgeRef(type = BooleanAndNullValueBridge.class))
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.AlleleDetailView.class })
+	private Boolean isExtrachromosomal;
+
+	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer", valueBridge = @ValueBridgeRef(type = BooleanAndNullValueBridge.class))
+	@KeywordField(name = "isIntegrated_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, valueBridge = @ValueBridgeRef(type = BooleanAndNullValueBridge.class))
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.AlleleDetailView.class })
+	private Boolean isIntegrated;
+
+	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer", valueBridge = @ValueBridgeRef(type = BooleanAndNullValueBridge.class))
+	@KeywordField(name = "isAberration_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, valueBridge = @ValueBridgeRef(type = BooleanAndNullValueBridge.class))
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.AlleleDetailView.class })
+	private Boolean isAberration;
+
+	// LinkML notes that balancers are a subtype of aberration, so this is only meaningful
+	// where isAberration is true. The schema states that in prose without encoding it as a
+	// rule, so it is not enforced here either.
+	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer", valueBridge = @ValueBridgeRef(type = BooleanAndNullValueBridge.class))
+	@KeywordField(name = "isBalancer_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, valueBridge = @ValueBridgeRef(type = BooleanAndNullValueBridge.class))
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.AlleleDetailView.class })
+	private Boolean isBalancer;
 
 	@OneToMany(mappedBy = "diseaseAnnotationSubject", cascade = CascadeType.ALL)
 	private List<AlleleDiseaseAnnotation> alleleDiseaseAnnotations;

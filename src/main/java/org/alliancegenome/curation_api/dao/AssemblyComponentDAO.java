@@ -8,7 +8,7 @@ import org.alliancegenome.curation_api.constants.EntityFieldConstants;
 import org.alliancegenome.curation_api.dao.associations.CodingSequenceGenomicLocationAssociationDAO;
 import org.alliancegenome.curation_api.dao.associations.ExonGenomicLocationAssociationDAO;
 import org.alliancegenome.curation_api.dao.associations.TranscriptGenomicLocationAssociationDAO;
-import org.alliancegenome.curation_api.dao.base.BaseSQLDAO;
+import org.alliancegenome.curation_api.dao.base.BaseCurieSQLDAO;
 import org.alliancegenome.curation_api.model.entities.AssemblyComponent;
 import org.apache.commons.collections.CollectionUtils;
 
@@ -16,7 +16,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
 @ApplicationScoped
-public class AssemblyComponentDAO extends BaseSQLDAO<AssemblyComponent> {
+public class AssemblyComponentDAO extends BaseCurieSQLDAO<AssemblyComponent> {
 
 	@Inject CodingSequenceGenomicLocationAssociationDAO cdsGenomicLocationAssociationDAO;
 	@Inject ExonGenomicLocationAssociationDAO exonGenomicLocationAssociationDAO;

@@ -39,6 +39,22 @@ public class AlleleDTO extends GenomicEntityDTO {
 	@JsonProperty("is_extinct")
 	private Boolean isExtinct;
 
+	@JsonView({ CurationView.FieldsOnly.class })
+	@JsonProperty("is_extrachromosomal")
+	private Boolean isExtrachromosomal;
+
+	@JsonView({ CurationView.FieldsOnly.class })
+	@JsonProperty("is_integrated")
+	private Boolean isIntegrated;
+
+	@JsonView({ CurationView.FieldsOnly.class })
+	@JsonProperty("is_aberration")
+	private Boolean isAberration;
+
+	@JsonView({ CurationView.FieldsOnly.class })
+	@JsonProperty("is_balancer")
+	private Boolean isBalancer;
+
 	@JsonView({ CurationView.FieldsAndLists.class })
 	@JsonProperty("allele_mutation_type_dtos")
 	private List<AlleleMutationTypeSlotAnnotationDTO> alleleMutationTypeDtos;

@@ -15,6 +15,7 @@ import org.alliancegenome.curation_api.model.entities.Reference;
 import org.alliancegenome.curation_api.model.entities.ontology.MITerm;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.PsiMiTabDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
+import org.alliancegenome.curation_api.services.CurieMintService;
 import org.alliancegenome.curation_api.services.GeneMolecularInteractionService;
 import org.alliancegenome.curation_api.services.VocabularyTermService;
 import org.alliancegenome.curation_api.services.helpers.InteractionStringHelper;
@@ -30,6 +31,7 @@ public class GeneMolecularInteractionFmsDTOValidator extends GeneInteractionFmsD
 	@Inject GeneMolecularInteractionService geneMolecularInteractionService;
 	@Inject VocabularyTermService vocabularyTermService;
 	@Inject GeneMolecularInteractionDAO geneMolecularInteractionDAO;
+	@Inject CurieMintService curieMintService;
 
 	private Map<String, long[]> existingInteractionMap;
 	private ObjectResponse<GeneMolecularInteraction> gmiResponse;
@@ -145,6 +147,15 @@ public class GeneMolecularInteractionFmsDTOValidator extends GeneInteractionFmsD
 			throw new ObjectValidationException(dto, gmiResponse.errorMessagesList());
 		}
 		
+		// SCRUM-6463 — mint an AGRKB curie for a new interaction, in the same transaction as the insert
+		// below. No is-new guard is needed, unlike AlleleValidator: PsiMiTabDTO carries no curie, so
+		// nothing above nulls one, and a changed record resolves to the stored entity whose curie is
+		// already set, making this a no-op there.
+		//
+		// It has to sit here rather than earlier: the unchanged-record fast path above returns a detached
+		// stub that is never persisted, so minting before that point would burn a MaTI id for every
+		// unchanged row of a reload.
+		curieMintService.mintCurieIfAbsent(interaction);
 		gmiResponse.setEntity(geneMolecularInteractionDAO.persist(interaction));
 
 		return gmiResponse;

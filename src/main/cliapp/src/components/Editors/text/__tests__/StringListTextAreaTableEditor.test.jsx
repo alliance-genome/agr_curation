@@ -1,18 +1,12 @@
-import { render, fireEvent } from '@testing-library/react';
+import { fireEvent } from '@testing-library/react';
 import { StringListTextAreaTableEditor } from '../StringListTextAreaTableEditor';
-import { makeEditorOptions, emptyErrorMessagesRef } from '../../__tests__/editorTestUtils';
+import { makeEditorOptions, renderInTable } from '../../__tests__/editorTestUtils';
 import '../../../../tools/jest/setupTests';
 
 describe('StringListTextAreaTableEditor', () => {
 	it('should render a textarea joining the array with commas', () => {
 		const editorOptions = makeEditorOptions({ synonyms: ['alpha', 'beta', 'gamma'] });
-		const result = render(
-			<StringListTextAreaTableEditor
-				editorOptions={editorOptions}
-				field="synonyms"
-				errorMessagesRef={emptyErrorMessagesRef}
-			/>
-		);
+		const result = renderInTable(<StringListTextAreaTableEditor editorOptions={editorOptions} field="synonyms" />);
 
 		const textarea = result.container.querySelector('textarea');
 		expect(textarea.value).toBe('alpha, beta, gamma');
@@ -20,13 +14,7 @@ describe('StringListTextAreaTableEditor', () => {
 
 	it('should call editorCallback with parsed array on change', () => {
 		const editorOptions = makeEditorOptions({ synonyms: [] });
-		const result = render(
-			<StringListTextAreaTableEditor
-				editorOptions={editorOptions}
-				field="synonyms"
-				errorMessagesRef={emptyErrorMessagesRef}
-			/>
-		);
+		const result = renderInTable(<StringListTextAreaTableEditor editorOptions={editorOptions} field="synonyms" />);
 
 		const textarea = result.container.querySelector('textarea');
 		fireEvent.change(textarea, { target: { value: 'foo, bar, baz' } });
@@ -36,13 +24,8 @@ describe('StringListTextAreaTableEditor', () => {
 
 	it('should respect the rows prop', () => {
 		const editorOptions = makeEditorOptions({ synonyms: [] });
-		const result = render(
-			<StringListTextAreaTableEditor
-				editorOptions={editorOptions}
-				field="synonyms"
-				errorMessagesRef={emptyErrorMessagesRef}
-				rows={8}
-			/>
+		const result = renderInTable(
+			<StringListTextAreaTableEditor editorOptions={editorOptions} field="synonyms" rows={8} />
 		);
 
 		const textarea = result.container.querySelector('textarea');
@@ -51,12 +34,9 @@ describe('StringListTextAreaTableEditor', () => {
 
 	it('should display error messages when present', () => {
 		const editorOptions = makeEditorOptions({ synonyms: ['x'] });
-		const errorRef = {
-			current: { 0: { synonyms: { severity: 'error', message: 'Invalid synonym' } } },
-		};
-		const result = render(
-			<StringListTextAreaTableEditor editorOptions={editorOptions} field="synonyms" errorMessagesRef={errorRef} />
-		);
+		const result = renderInTable(<StringListTextAreaTableEditor editorOptions={editorOptions} field="synonyms" />, {
+			errorMessages: { 0: { synonyms: { severity: 'error', message: 'Invalid synonym' } } },
+		});
 
 		expect(result.getByText('Invalid synonym')).toBeInTheDocument();
 	});

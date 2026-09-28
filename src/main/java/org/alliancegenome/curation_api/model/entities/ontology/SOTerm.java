@@ -26,7 +26,7 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema;
 public class SOTerm extends OntologyTerm {
 
 	@GenericField(projectable = Projectable.YES, sortable = Sortable.YES)
-	@JsonView({ CurationView.FieldsOnly.class, CurationView.AlleleSummaryDocument.class, CurationView.VariantSummaryDocument.class })
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.AlleleSummaryDocument.class, CurationView.VariantSummaryDocument.class, CurationView.AlleleDetailView.class })
 	private Integer severityOrder;
 
 }

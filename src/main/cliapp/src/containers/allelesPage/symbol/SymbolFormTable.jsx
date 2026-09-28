@@ -109,6 +109,7 @@ export const SymbolFormTable = ({
 					return (
 						<VocabularyTermSetEditor
 							editorOptions={props}
+							dataKey={props?.rowData?.dataKey}
 							onChangeHandler={nameTypeOnChangeHandler}
 							errorMessages={errorMessages}
 							rowIndex={props.rowIndex}

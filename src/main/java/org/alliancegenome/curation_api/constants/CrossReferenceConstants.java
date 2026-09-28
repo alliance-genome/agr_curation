@@ -1,6 +1,5 @@
 package org.alliancegenome.curation_api.constants;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public final class CrossReferenceConstants {
@@ -9,13 +8,31 @@ public final class CrossReferenceConstants {
 		// Hidden from view, as it is a utility class
 	}
 
+	/** Page areas for the phenotype cross references generated during phenotype annotation loads. */
+	public static final String GENE_PHENOTYPES_PAGE_AREA = "gene/phenotypes";
+	public static final String GENE_PHENOTYPES_IMPC_PAGE_AREA = "gene/phenotypes_impc";
+
+	/** Page areas for the gene cross references generated during other loads. */
+	public static final String GENE_OTHER_EXPRESSION_PAGE_AREA = "gene/other_expression";
+	public static final String BIOGRID_ORCS_PAGE_AREA = "biogrid/orcs";
+	public static final String EXPRESSION_ATLAS_PAGE_AREA = "expression_atlas";
+
+	/**
+	 * SCRUM-6455: the GeneCards linkout, a page on the HGNC descriptor rather than a descriptor of
+	 * its own so that the curie and the descriptor agree. Deliberately namespaced under gene/ and
+	 * not called plain "gene": ALLIANCE_DERIVED_PAGE_AREAS is matched on the page name alone, and
+	 * several descriptors have a "gene" page holding submitted xrefs that loads must stay free to
+	 * replace.
+	 */
+	public static final String GENECARDS_PAGE_AREA = "gene/genecards";
+
 	/**
 	 * Page areas for the phenotype cross references the Alliance generates itself during phenotype
 	 * annotation loads (see GenePhenotypeAnnotationXrefHelper).
 	 */
 	public static final List<String> ALLIANCE_DERIVED_PHENOTYPE_PAGE_AREAS = List.of(
-		"gene/phenotypes",
-		"gene/phenotypes_impc"
+		GENE_PHENOTYPES_PAGE_AREA,
+		GENE_PHENOTYPES_IMPC_PAGE_AREA
 	);
 
 	/**
@@ -24,14 +41,13 @@ public final class CrossReferenceConstants {
 	 * submission file. Entity loads must not delete these, as the submitted cross reference list,
 	 * which is otherwise authoritative, never contains them.
 	 */
-	public static final List<String> ALLIANCE_DERIVED_PAGE_AREAS = buildDerivedPageAreas();
-
-	private static List<String> buildDerivedPageAreas() {
-		List<String> pageAreas = new ArrayList<>(ALLIANCE_DERIVED_PHENOTYPE_PAGE_AREAS);
-		pageAreas.add("gene/other_expression");
-		pageAreas.add("biogrid/orcs");
-		pageAreas.add("expression_atlas");
-		return List.copyOf(pageAreas);
-	}
+	public static final List<String> ALLIANCE_DERIVED_PAGE_AREAS = List.of(
+		GENE_PHENOTYPES_PAGE_AREA,
+		GENE_PHENOTYPES_IMPC_PAGE_AREA,
+		GENE_OTHER_EXPRESSION_PAGE_AREA,
+		BIOGRID_ORCS_PAGE_AREA,
+		EXPRESSION_ATLAS_PAGE_AREA,
+		GENECARDS_PAGE_AREA
+	);
 
 }

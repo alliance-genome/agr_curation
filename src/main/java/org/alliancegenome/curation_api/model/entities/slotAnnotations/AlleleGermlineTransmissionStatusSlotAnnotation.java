@@ -34,7 +34,7 @@ public class AlleleGermlineTransmissionStatusSlotAnnotation extends SlotAnnotati
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@JsonView({ CurationView.FieldsOnly.class })
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.AlleleDetailView.class })
 	private VocabularyTerm germlineTransmissionStatus;
 
 }

@@ -1,7 +1,9 @@
 package org.alliancegenome.curation_api.model.entities;
 
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
+import org.alliancegenome.curation_api.enums.MatiSubdomain;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
+import org.alliancegenome.curation_api.interfaces.CurieSubdomain;
 import org.alliancegenome.curation_api.view.CurationView;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.hibernate.search.mapper.pojo.automaticindexing.ReindexOnUpdate;
@@ -32,6 +34,7 @@ import lombok.ToString;
 		@Index(name = "assemblycomponent_name_index", columnList = "name")
 	}
 )
+@CurieSubdomain(MatiSubdomain.ASSEMBLY_COMPONENT)
 public class AssemblyComponent extends GenomicEntity {
 	@JsonView({ CurationView.FieldsOnly.class, CurationView.GeneSummaryDocument.class, CurationView.GeneCacheDocument.class, CurationView.AlleleSummaryDocument.class, CurationView.VariantSummaryDocument.class, CurationView.SequenceSummaryDocument.class })
 	private String name;
