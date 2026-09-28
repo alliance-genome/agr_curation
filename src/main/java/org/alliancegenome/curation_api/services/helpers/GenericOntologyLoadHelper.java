@@ -417,13 +417,16 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
 			}
 			term.getSecondaryIdentifiers().add(getString(annotation.getValue()));
 		} else if (key.equals("hasDbXref") || key.equals("database_cross_reference")) {
-			if (term.getCrossReferences() == null) {
-				term.setCrossReferences(new ArrayList<>());
+			String xrefCurie = getString(annotation.getValue());
+			if (xrefCurie.contains(":")) {
+				if (term.getCrossReferences() == null) {
+					term.setCrossReferences(new ArrayList<>());
+				}
+				CrossReference ref = new CrossReference();
+				ref.setReferencedCurie(xrefCurie);
+				ref.setDisplayName(xrefCurie);
+				term.getCrossReferences().add(ref);
 			}
-			CrossReference ref = new CrossReference();
-			ref.setReferencedCurie(getString(annotation.getValue()));
-			ref.setDisplayName(getString(annotation.getValue()));
-			term.getCrossReferences().add(ref);
 		} else if (key.equals("inSubset")) {
 			if (term.getSubsets() == null) {
 				term.setSubsets(new ArrayList<>());
