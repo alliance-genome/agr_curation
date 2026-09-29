@@ -277,7 +277,6 @@ export const DiseaseAnnotationsTable = () => {
 						field="relation"
 						options={getRelationTermSet(editorOptions)}
 						showClear={false}
-						errorMessagesRef={errorMessagesRef}
 					/>
 				),
 			},
@@ -385,9 +384,7 @@ export const DiseaseAnnotationsTable = () => {
 				},
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.daConditionRelationsHandleFilterConfig,
-				editor: (editorOptions) => (
-					<ConditionHandleTableEditor editorOptions={editorOptions} errorMessagesRef={errorMessagesRef} />
-				),
+				editor: (editorOptions) => <ConditionHandleTableEditor editorOptions={editorOptions} />,
 			},
 			{
 				field: 'conditionRelations',
@@ -432,7 +429,6 @@ export const DiseaseAnnotationsTable = () => {
 						editorOptions={editorOptions}
 						field="geneticSex"
 						options={geneticSexTerms}
-						errorMessagesRef={errorMessagesRef}
 						showClear={true}
 					/>
 				),
@@ -455,7 +451,6 @@ export const DiseaseAnnotationsTable = () => {
 						editorOptions={editorOptions}
 						field="diseaseQualifiers"
 						options={diseaseQualifiersTerms}
-						errorMessagesRef={errorMessagesRef}
 					/>
 				),
 			},
@@ -489,7 +484,6 @@ export const DiseaseAnnotationsTable = () => {
 						editorOptions={editorOptions}
 						field="annotationType"
 						options={annotationTypeTerms}
-						errorMessagesRef={errorMessagesRef}
 						showClear={true}
 					/>
 				),
@@ -506,7 +500,6 @@ export const DiseaseAnnotationsTable = () => {
 						editorOptions={editorOptions}
 						field="diseaseGeneticModifierRelation"
 						options={geneticModifierRelationTerms}
-						errorMessagesRef={errorMessagesRef}
 						showClear={true}
 					/>
 				),
@@ -640,9 +633,7 @@ export const DiseaseAnnotationsTable = () => {
 				body: (rowData) => <BooleanTemplate value={rowData.internal} />,
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.internalFilterConfig,
-				editor: (editorOptions) => (
-					<BooleanTableEditor editorOptions={editorOptions} field="internal" errorMessagesRef={errorMessagesRef} />
-				),
+				editor: (editorOptions) => <BooleanTableEditor editorOptions={editorOptions} field="internal" />,
 			},
 			{
 				field: 'obsolete',
@@ -650,9 +641,7 @@ export const DiseaseAnnotationsTable = () => {
 				body: (rowData) => <BooleanTemplate value={rowData.obsolete} />,
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.obsoleteFilterConfig,
-				editor: (editorOptions) => (
-					<BooleanTableEditor editorOptions={editorOptions} field="obsolete" errorMessagesRef={errorMessagesRef} />
-				),
+				editor: (editorOptions) => <BooleanTableEditor editorOptions={editorOptions} field="obsolete" />,
 			},
 		],
 		// eslint-disable-next-line react-hooks/exhaustive-deps
