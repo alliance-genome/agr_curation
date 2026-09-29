@@ -1,78 +1,83 @@
-import { render, fireEvent } from '@testing-library/react';
 import { BooleanTableEditor } from '../BooleanTableEditor';
-import { makeEditorOptions, emptyErrorMessagesRef } from '../../../__tests__/editorTestUtils';
+import { makeEditorOptions, renderInTable } from '../../../__tests__/editorTestUtils';
+import { pickOption } from '../../../widgets/__tests__/widgetTestUtils';
 import '../../../../../tools/jest/setupTests';
 
-vi.mock('../../../../../service/useControlledVocabularyService', () => ({
-	useControlledVocabularyService: () => ({
-		terms: [
-			{ text: 'true', name: 'true' },
-			{ text: 'false', name: 'false' },
-		],
-	}),
-}));
+// BooleanSelect carries its own true/false options, so no vocabulary mock is needed.
+const renderEditor = (rowData, { errorMessages, showClear } = {}) => {
+	const editorOptions = makeEditorOptions(rowData);
+	const result = renderInTable(
+		<BooleanTableEditor editorOptions={editorOptions} field="internal" showClear={showClear} />,
+		{ errorMessages }
+	);
+	return { ...result, editorOptions };
+};
 
 describe('BooleanTableEditor', () => {
-	it('should render a dropdown', () => {
-		const editorOptions = makeEditorOptions({ internal: true });
-		const result = render(
-			<BooleanTableEditor editorOptions={editorOptions} field="internal" errorMessagesRef={emptyErrorMessagesRef} />
-		);
+	it('should render the current value', () => {
+		const result = renderEditor({ internal: true });
 
-		const dropdown = result.container.querySelector('.p-dropdown');
-		expect(dropdown).toBeInTheDocument();
+		expect(result.container.querySelector('.p-dropdown-label')).toHaveTextContent('true');
 	});
 
-	it('should call editorCallback with parsed boolean when an option is selected', () => {
-		const editorOptions = makeEditorOptions({ internal: false });
-		const result = render(
-			<BooleanTableEditor editorOptions={editorOptions} field="internal" errorMessagesRef={emptyErrorMessagesRef} />
-		);
+	// false is a value, not an absence: it has to reach the label like any other.
+	it('should render a false value', () => {
+		const result = renderEditor({ internal: false });
 
-		const dropdown = result.container.querySelector('.p-dropdown');
-		fireEvent.click(dropdown);
+		expect(result.container.querySelector('.p-dropdown-label')).toHaveTextContent('false');
+	});
 
-		const option = result.getByText('true');
-		fireEvent.click(option);
+	it('should render an empty label when the field has no value', () => {
+		const result = renderEditor({ internal: null });
 
-		expect(editorOptions.editorCallback).toHaveBeenCalledWith(true);
+		expect(result.container.querySelector('.p-dropdown-label').textContent.trim()).toBe('');
+	});
+
+	it('should call editorCallback with a boolean when an option is selected', () => {
+		const result = renderEditor({ internal: false });
+
+		pickOption(result.container, 'true');
+
+		expect(result.editorOptions.editorCallback).toHaveBeenCalledWith(true);
+	});
+
+	// The value is a real boolean, so a truthiness check anywhere in the write path
+	// would swallow `false` and lose the edit silently.
+	it('should call editorCallback with false rather than dropping it', () => {
+		const result = renderEditor({ internal: true });
+
+		pickOption(result.container, 'false');
+
+		expect(result.editorOptions.editorCallback).toHaveBeenCalledWith(false);
 	});
 
 	it('should display error messages when present', () => {
-		const editorOptions = makeEditorOptions({ internal: true });
-		const errorRef = {
-			current: { 0: { internal: { severity: 'error', message: 'Invalid value' } } },
-		};
-
-		const result = render(
-			<BooleanTableEditor editorOptions={editorOptions} field="internal" errorMessagesRef={errorRef} />
+		const result = renderEditor(
+			{ internal: true },
+			{ errorMessages: { 0: { internal: { severity: 'error', message: 'Invalid value' } } } }
 		);
 
 		expect(result.getByText('Invalid value')).toBeInTheDocument();
 	});
 
-	it('should not render clear button by default', () => {
-		const editorOptions = makeEditorOptions({ internal: true });
-		const result = render(
-			<BooleanTableEditor editorOptions={editorOptions} field="internal" errorMessagesRef={emptyErrorMessagesRef} />
+	it('should mark the dropdown invalid when an error is present', () => {
+		const result = renderEditor(
+			{ internal: true },
+			{ errorMessages: { 0: { internal: { severity: 'error', message: 'Invalid value' } } } }
 		);
 
-		const clearButton = result.container.querySelector('.p-dropdown-clear-icon');
-		expect(clearButton).not.toBeInTheDocument();
+		expect(result.container.querySelector('.p-dropdown')).toHaveClass('p-invalid');
+	});
+
+	it('should not render clear button by default', () => {
+		const result = renderEditor({ internal: true });
+
+		expect(result.container.querySelector('.p-dropdown-clear-icon')).not.toBeInTheDocument();
 	});
 
 	it('should render clear button when showClear is true', () => {
-		const editorOptions = makeEditorOptions({ internal: true });
-		const result = render(
-			<BooleanTableEditor
-				editorOptions={editorOptions}
-				field="internal"
-				errorMessagesRef={emptyErrorMessagesRef}
-				showClear={true}
-			/>
-		);
+		const result = renderEditor({ internal: true }, { showClear: true });
 
-		const clearButton = result.container.querySelector('.p-dropdown-clear-icon');
-		expect(clearButton).toBeInTheDocument();
+		expect(result.container.querySelector('.p-dropdown-clear-icon')).toBeInTheDocument();
 	});
 });

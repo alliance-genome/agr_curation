@@ -36,8 +36,6 @@ export const ControlledVocabularyTable = () => {
 	const toast_topleft = useRef(null);
 	const toast_topright = useRef(null);
 	const [errorMessages, setErrorMessages] = useState({});
-	const errorMessagesRef = useRef();
-	errorMessagesRef.current = errorMessages;
 
 	const [isInEditMode, setIsInEditMode] = useState(false);
 	const [totalRecords, setTotalRecords] = useState(0);
@@ -153,12 +151,7 @@ export const ControlledVocabularyTable = () => {
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.vocabularyNameFilterConfig,
 				editor: (editorOptions) => (
-					<ControlledVocabularyTableEditor
-						editorOptions={editorOptions}
-						field="vocabulary"
-						options={vocabularies}
-						errorMessagesRef={errorMessagesRef}
-					/>
+					<ControlledVocabularyTableEditor editorOptions={editorOptions} field="vocabulary" options={vocabularies} />
 				),
 				body: (rowData) => <StringTemplate string={rowData.vocabulary?.name} />,
 			},
@@ -206,9 +199,7 @@ export const ControlledVocabularyTable = () => {
 				header: 'Obsolete',
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.obsoleteFilterConfig,
-				editor: (editorOptions) => (
-					<BooleanTableEditor editorOptions={editorOptions} errorMessagesRef={errorMessagesRef} field="obsolete" />
-				),
+				editor: (editorOptions) => <BooleanTableEditor editorOptions={editorOptions} field="obsolete" />,
 				body: (rowData) => <BooleanTemplate value={rowData.obsolete} />,
 			},
 		],
