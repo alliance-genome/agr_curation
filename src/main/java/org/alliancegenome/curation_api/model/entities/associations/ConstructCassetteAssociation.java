@@ -68,7 +68,7 @@ public class ConstructCassetteAssociation extends EvidenceAssociation {
 		"constructFullName.displayText_keyword", "constructFullName.formatText_keyword", "primaryExternalId_keyword", "modInternalId_keyword"})
 	@ManyToOne
 	@JsonView({CurationView.FieldsOnly.class})
-	@JsonIgnoreProperties({"constructGenomicEntityAssociations", "constructCassetteAssociations"})
+	@JsonIgnoreProperties({"constructGenomicEntityAssociations", "constructCassetteAssociations", "alleleConstructAssociations"})
 	@Fetch(FetchMode.JOIN)
 	private Construct constructAssociationSubject;
 
