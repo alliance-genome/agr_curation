@@ -68,12 +68,12 @@ public class IT_0110_CassetteBulkUploadITCase extends BaseITCase {
 		noteType = addVocabularyTermToSet(VocabularyConstants.CASSETTE_COMPONENT_NOTE_TYPES_VOCABULARY_TERM_SET, "test_cassette_component_note", noteTypeVocabulary, false);
 		noteType2 = addVocabularyTermToSet(VocabularyConstants.CASSETTE_COMPONENT_NOTE_TYPES_VOCABULARY_TERM_SET, "test_cassette_component_summary", noteTypeVocabulary, false);
 		addVocabularyTermToSet(VocabularyConstants.CASSETTE_AND_TRANSGENIC_TOOL_NOTE_TYPES_VOCABULARY_TERM_SET, "test_cassette_note", noteTypeVocabulary, false);
-		// One set per association type, as alpha has them; v0.53.0.15 creates all of these.
+		// One set per association type, as alpha has them; v0.54.0.7 creates all of these.
 		addVocabularyTermToSet(VocabularyConstants.CASSETTE_GENOMIC_ENTITY_ASSOCIATION_NOTE_TYPES_VOCABULARY_TERM_SET, "test_cassette_association_note", noteTypeVocabulary, false);
 		addVocabularyTermToSet(VocabularyConstants.CASSETTE_TRANSGENIC_TOOL_ASSOCIATION_NOTE_TYPES_VOCABULARY_TERM_SET, "test_cassette_association_note", noteTypeVocabulary, false);
 		addVocabularyTermToSet(VocabularyConstants.CASSETTE_STR_ASSOCIATION_NOTE_TYPES_VOCABULARY_TERM_SET, "test_cassette_association_note", noteTypeVocabulary, false);
 
-		// The relation term sets come from v0.53.0.16, over terms construct_relation already holds,
+		// The relation term sets come from v0.54.0.8, over terms construct_relation already holds,
 		// so the test reads them rather than creating its own: creating a set whose label exists is
 		// a duplicate, not a no-op.
 		Vocabulary relationVocabulary = getVocabulary(VocabularyConstants.CONSTRUCT_RELATION_VOCABULARY);

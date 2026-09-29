@@ -1,5 +1,5 @@
 -- SCRUM-6535: ConstructCassetteAssociation, joining a Construct to the Cassettes that are part of
--- it (epic SCRUM-6382). This is what makes the cassettes added in v0.53.0.13 reachable from a
+-- it (epic SCRUM-6382). This is what makes the cassettes added in v0.54.0.5 reachable from a
 -- construct.
 --
 -- Follows the current association convention, as in v0.38.0.34: a standalone table with its own

@@ -62,7 +62,7 @@ public final class VocabularyConstants {
 	 * SCRUM-6535: there is deliberately no CASSETTE_RELATION_VOCABULARY. An earlier version of this
 	 * file declared one and claimed the label existed on alpha; it does not. The new Constructs
 	 * model's relation term sets are built over construct_relation and new_construct_relation, which
-	 * already hold every term it needs, so no code has a vocabulary label to name here - v0.53.0.16
+	 * already hold every term it needs, so no code has a vocabulary label to name here - v0.54.0.8
 	 * refers to them directly.
 	 */
 	public static final String CONSTRUCT_GENOMIC_ENTITY_RELATION_VOCABULARY_TERM_SET = "construct_genomic_entity_relation";
@@ -100,7 +100,7 @@ public final class VocabularyConstants {
 	public static final String CONSTRUCT_COMPONENT_NOTE_TYPES_VOCABULARY_TERM_SET = "construct_component_note_type";
 	/**
 	 * SCRUM-6535: note type sets for the new Constructs model. The labels are the ones curators
-	 * already created on alpha through the UI, not names invented here, so that v0.53.0.15 adds only
+	 * already created on alpha through the UI, not names invented here, so that v0.54.0.7 adds only
 	 * what is missing rather than a parallel set.
 	 *
 	 * One set covers the entity level notes of both Cassette and TransgenicTool: alpha names it
@@ -117,7 +117,7 @@ public final class VocabularyConstants {
 	 * source; changing it here alone would only break the lookup.
 	 */
 	public static final String CASSETTE_TRANSGENIC_TOOL_ASSOCIATION_NOTE_TYPES_VOCABULARY_TERM_SET = "cassette_transgenic_tool_association";
-	/** The one set with no counterpart on alpha; v0.53.0.15 creates it. */
+	/** The one set with no counterpart on alpha; v0.54.0.7 creates it. */
 	public static final String CASSETTE_STR_ASSOCIATION_NOTE_TYPES_VOCABULARY_TERM_SET = "cassette_str_association_note_type";
 	public static final String CONSTRUCT_CASSETTE_ASSOCIATION_NOTE_TYPES_VOCABULARY_TERM_SET = "construct_cassette_association_note_type";
 	public static final String ANTIBODY_NOTE_TYPES_VOCABULARY_TERM_SET = "antibody_note_type";

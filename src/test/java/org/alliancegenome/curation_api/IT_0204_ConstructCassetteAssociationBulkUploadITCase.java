@@ -66,7 +66,7 @@ public class IT_0204_ConstructCassetteAssociationBulkUploadITCase extends BaseIT
 		Vocabulary noteTypeVocabulary = getVocabulary(VocabularyConstants.NOTE_TYPE_VOCABULARY);
 		addVocabularyTermToSet(VocabularyConstants.CONSTRUCT_CASSETTE_ASSOCIATION_NOTE_TYPES_VOCABULARY_TERM_SET, noteType, noteTypeVocabulary, false);
 
-		// construct_cassette_relation comes from v0.53.0.16, over new_construct_relation's terms.
+		// construct_cassette_relation comes from v0.54.0.8, over new_construct_relation's terms.
 		// LinkML names has_part (BFO:0000051) for this relation, but has_part is in no vocabulary
 		// and has_component is what FlyBase submits; the set follows the data.
 	}
