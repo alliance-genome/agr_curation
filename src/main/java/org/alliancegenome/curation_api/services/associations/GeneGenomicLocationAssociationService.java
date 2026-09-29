@@ -10,14 +10,14 @@ import java.util.stream.Collectors;
 import org.alliancegenome.curation_api.constants.EntityFieldConstants;
 import org.alliancegenome.curation_api.dao.PersonDAO;
 import org.alliancegenome.curation_api.dao.associations.GeneGenomicLocationAssociationDAO;
-import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
+import org.alliancegenome.curation_api.model.entities.Species;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.associations.GeneGenomicLocationAssociation;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.PersonService;
 import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
-import org.apache.commons.lang3.StringUtils;
+import org.alliancegenome.curation_api.services.SpeciesService;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.RequestScoped;
@@ -29,6 +29,7 @@ public class GeneGenomicLocationAssociationService extends BaseEntityCrudService
 	@Inject GeneGenomicLocationAssociationDAO geneGenomicLocationAssociationDAO;
 	@Inject PersonDAO personDAO;
 	@Inject PersonService personService;
+	@Inject SpeciesService speciesService;
 	
 	@Override
 	@PostConstruct
@@ -37,11 +38,11 @@ public class GeneGenomicLocationAssociationService extends BaseEntityCrudService
 	}
 
 
-	public List<Long> getIdsByDataProvider(BackendBulkDataProvider dataProvider) {
+	public List<Long> getIdsBySpecies(Species species) {
 		Map<String, Object> params = new HashMap<>();
-		params.put(EntityFieldConstants.GENE_ASSOCIATION_SUBJECT_DATA_PROVIDER, dataProvider.sourceOrganization);
-		if (StringUtils.equals(dataProvider.sourceOrganization, "RGD") || StringUtils.equals(dataProvider.sourceOrganization, "XB")) {
-			params.put(EntityFieldConstants.GENE_ASSOCIATION_SUBJECT_TAXON, dataProvider.canonicalTaxonCurie);
+		params.put(EntityFieldConstants.GENE_ASSOCIATION_SUBJECT_DATA_PROVIDER, species.getDataProvider().getAbbreviation());
+		if (speciesService.hasMultipleSpecies(species)) {
+			params.put(EntityFieldConstants.GENE_ASSOCIATION_SUBJECT_TAXON, species.getTaxon().getCurie());
 		}
 		List<Long> associationIds = geneGenomicLocationAssociationDAO.findIdsByParams(params);
 		associationIds.removeIf(Objects::isNull);

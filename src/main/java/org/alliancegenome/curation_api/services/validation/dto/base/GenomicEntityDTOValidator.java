@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.alliancegenome.curation_api.constants.CrossReferenceConstants;
-import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.GenomicEntity;
+import org.alliancegenome.curation_api.model.entities.Species;
 import org.alliancegenome.curation_api.model.ingest.dto.CrossReferenceDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.GenomicEntityDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
@@ -21,9 +21,9 @@ public class GenomicEntityDTOValidator<E extends GenomicEntity, D extends Genomi
 	@Inject CrossReferenceDTOValidator crossReferenceDtoValidator;
 	@Inject CrossReferenceService crossReferenceService;
 
-	public E validateGenomicEntityDTO(E entity, D dto, BackendBulkDataProvider dataProvider, String noteTypeVocabularyTermSet) {
+	public E validateGenomicEntityDTO(E entity, D dto, Species species, String noteTypeVocabularyTermSet) {
 
-		entity = validateBiologicalEntityDTO(entity, dto, dataProvider, noteTypeVocabularyTermSet);
+		entity = validateBiologicalEntityDTO(entity, dto, species, noteTypeVocabularyTermSet);
 		
 		List<CrossReference> validatedXrefs = new ArrayList<>();
 		if (CollectionUtils.isNotEmpty(dto.getCrossReferenceDtos())) {

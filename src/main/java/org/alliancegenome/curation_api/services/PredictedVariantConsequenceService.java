@@ -8,7 +8,7 @@ import java.util.Objects;
 
 import org.alliancegenome.curation_api.constants.EntityFieldConstants;
 import org.alliancegenome.curation_api.dao.PredictedVariantConsequenceDAO;
-import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
+import org.alliancegenome.curation_api.model.entities.Species;
 import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.interfaces.crud.BaseUpsertServiceInterface;
 import org.alliancegenome.curation_api.model.entities.Person;
@@ -18,7 +18,6 @@ import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
 import org.alliancegenome.curation_api.services.validation.dto.fms.VepGeneFmsDTOValidator;
 import org.alliancegenome.curation_api.services.validation.dto.fms.VepTranscriptFmsDTOValidator;
-import org.apache.commons.lang3.StringUtils;
 
 import io.quarkus.logging.Log;
 import jakarta.annotation.PostConstruct;
@@ -32,6 +31,7 @@ public class PredictedVariantConsequenceService extends BaseEntityCrudService<Pr
 	@Inject PredictedVariantConsequenceDAO predictedVariantConsequenceDAO;
 	@Inject VepTranscriptFmsDTOValidator vepTranscriptFmsDtoValidator;
 	@Inject VepGeneFmsDTOValidator vepGeneFmsDtoValidator;
+	@Inject SpeciesService speciesService;
 	@Inject PersonService personService;
 	
 	@Override
@@ -40,22 +40,22 @@ public class PredictedVariantConsequenceService extends BaseEntityCrudService<Pr
 		setSQLDao(predictedVariantConsequenceDAO);
 	}
 
-	public List<Long> getIdsByDataProvider(BackendBulkDataProvider dataProvider) {
+	public List<Long> getIdsBySpecies(Species species) {
 		Map<String, Object> params = new HashMap<>();
-		params.put("variantTranscript." + EntityFieldConstants.DATA_PROVIDER, dataProvider.sourceOrganization);
-		if (StringUtils.equals(dataProvider.sourceOrganization, "RGD")) {
-			params.put("variantTranscript." + EntityFieldConstants.TAXON, dataProvider.canonicalTaxonCurie);
+		params.put("variantTranscript." + EntityFieldConstants.DATA_PROVIDER, species.getDataProvider().getAbbreviation());
+		if (speciesService.hasMultipleSpecies(species)) {
+			params.put("variantTranscript." + EntityFieldConstants.TAXON, species.getTaxon().getCurie());
 		}
 		List<Long> ids = predictedVariantConsequenceDAO.findIdsByParams(params);
 		ids.removeIf(Objects::isNull);
 		return ids;
 	}
 
-	public List<Long> getGeneLevelIdsByDataProvider(BackendBulkDataProvider dataProvider) {
+	public List<Long> getGeneLevelIdsBySpecies(Species species) {
 		Map<String, Object> params = new HashMap<>();
-		params.put("variantTranscript." + EntityFieldConstants.DATA_PROVIDER, dataProvider.sourceOrganization);
-		if (StringUtils.equals(dataProvider.sourceOrganization, "RGD")) {
-			params.put("variantTranscript." + EntityFieldConstants.TAXON, dataProvider.canonicalTaxonCurie);
+		params.put("variantTranscript." + EntityFieldConstants.DATA_PROVIDER, species.getDataProvider().getAbbreviation());
+		if (speciesService.hasMultipleSpecies(species)) {
+			params.put("variantTranscript." + EntityFieldConstants.TAXON, species.getTaxon().getCurie());
 		}
 		params.put("geneLevelConsequence", true);
 		List<Long> ids = predictedVariantConsequenceDAO.findIdsByParams(params);
@@ -65,8 +65,8 @@ public class PredictedVariantConsequenceService extends BaseEntityCrudService<Pr
 
 	@Override
 	@Transactional
-	public ObjectResponse<PredictedVariantConsequence> upsert(VepTxtDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
-		return vepTranscriptFmsDtoValidator.validateTranscriptLevelConsequence(dto, dataProvider);
+	public ObjectResponse<PredictedVariantConsequence> upsert(VepTxtDTO dto, Species species) throws ValidationException {
+		return vepTranscriptFmsDtoValidator.validateTranscriptLevelConsequence(dto, species);
 	}
 
 	@Transactional

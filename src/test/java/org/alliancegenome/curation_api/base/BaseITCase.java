@@ -36,6 +36,7 @@ import org.alliancegenome.curation_api.model.entities.Reference;
 import org.alliancegenome.curation_api.model.entities.ResourceDescriptor;
 import org.alliancegenome.curation_api.model.entities.ResourceDescriptorPage;
 import org.alliancegenome.curation_api.model.entities.SequenceTargetingReagent;
+import org.alliancegenome.curation_api.model.entities.Species;
 import org.alliancegenome.curation_api.model.entities.Variant;
 import org.alliancegenome.curation_api.model.entities.Vocabulary;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
@@ -835,6 +836,54 @@ public class BaseITCase {
 		return response.getEntity();
 	}
 
+	public Species getSpecies(String displayName) {
+		SearchResponse<Species> response = RestAssured.given().
+				contentType("application/json").
+				body("{\"displayName\": \"" + displayName + "\"}").
+				when().
+				post("/api/species/find").
+				then().
+				statusCode(200).
+				extract().body().as(getSearchResponseTypeRefSpecies());
+
+		return response.getResults() == null || response.getResults().isEmpty() ? null : response.getResults().get(0);
+	}
+
+	public Species getOrCreateSpecies(String displayName, String taxonCurie, String organizationAbbreviation, String fullName, String abbreviation) {
+		Species species = getSpecies(displayName);
+		return species != null ? species : createSpecies(displayName, taxonCurie, organizationAbbreviation, fullName, abbreviation);
+	}
+
+	public Species createSpecies(String displayName, String taxonCurie, String organizationAbbreviation) {
+		return createSpecies(displayName, taxonCurie, organizationAbbreviation, displayName, displayName);
+	}
+
+	public Species createSpecies(String displayName, String taxonCurie, String organizationAbbreviation, String fullName, String abbreviation) {
+		NCBITaxonTerm taxon = new NCBITaxonTerm();
+		taxon.setCurie(taxonCurie);
+
+		Organization dataProvider = getOrganization(organizationAbbreviation);
+
+		Species species = new Species();
+		species.setDisplayName(displayName);
+		species.setFullName(fullName);
+		species.setAbbreviation(abbreviation);
+		species.setPhylogeneticOrder(0);
+		species.setTaxon(taxon);
+		species.setDataProvider(dataProvider);
+
+		ObjectResponse<Species> response = RestAssured.given().
+				contentType("application/json").
+				body(species).
+				when().
+				post("/api/species").
+				then().
+				statusCode(200).
+				extract().body().as(getObjectResponseTypeRefSpecies());
+
+		return response.getEntity();
+	}
+
 	public SOTerm createSoTerm(String curie, String name, Boolean obsolete) {
 		SOTerm term = new SOTerm();
 		term.setCurie(curie);
@@ -1341,6 +1390,16 @@ public class BaseITCase {
 
 	private TypeRef<ObjectResponse<SequenceTargetingReagent>> getObjectResponseTypeRefSequenceTargetingReagent() {
 		return new TypeRef<ObjectResponse<SequenceTargetingReagent>>() {
+		};
+	}
+
+	private TypeRef<SearchResponse<Species>> getSearchResponseTypeRefSpecies() {
+		return new TypeRef<SearchResponse<Species>>() {
+		};
+	}
+
+	private TypeRef<ObjectResponse<Species>> getObjectResponseTypeRefSpecies() {
+		return new TypeRef<ObjectResponse<Species>>() {
 		};
 	}
 

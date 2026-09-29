@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 import org.alliancegenome.curation_api.constants.EntityFieldConstants;
 import org.alliancegenome.curation_api.dao.PersonDAO;
 import org.alliancegenome.curation_api.dao.associations.CuratedVariantGenomicLocationAssociationDAO;
-import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
+import org.alliancegenome.curation_api.model.entities.Species;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.Variant;
 import org.alliancegenome.curation_api.model.entities.associations.CuratedVariantGenomicLocationAssociation;
@@ -20,8 +20,8 @@ import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.PersonService;
 import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
 import org.alliancegenome.curation_api.services.validation.dto.fms.VariantFmsDTOValidator;
+import org.alliancegenome.curation_api.services.SpeciesService;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
 
 import io.quarkus.logging.Log;
 import jakarta.annotation.PostConstruct;
@@ -35,6 +35,7 @@ public class CuratedVariantGenomicLocationAssociationService extends BaseEntityC
 	@Inject CuratedVariantGenomicLocationAssociationDAO curatedVariantGenomicLocationAssociationDAO;
 	@Inject VariantFmsDTOValidator variantFmsDtoValidator;
 	@Inject PersonDAO personDAO;
+	@Inject SpeciesService speciesService;
 	@Inject PersonService personService;
 
 	@Override
@@ -44,11 +45,11 @@ public class CuratedVariantGenomicLocationAssociationService extends BaseEntityC
 	}
 
 
-	public List<Long> getIdsByDataProvider(BackendBulkDataProvider dataProvider) {
+	public List<Long> getIdsBySpecies(Species species) {
 		Map<String, Object> params = new HashMap<>();
-		params.put(EntityFieldConstants.VARIANT_ASSOCIATION_SUBJECT_DATA_PROVIDER, dataProvider.sourceOrganization);
-		if (StringUtils.equals(dataProvider.sourceOrganization, "RGD")) {
-			params.put(EntityFieldConstants.VARIANT_ASSOCIATION_SUBJECT_TAXON, dataProvider.canonicalTaxonCurie);
+		params.put(EntityFieldConstants.VARIANT_ASSOCIATION_SUBJECT_DATA_PROVIDER, species.getDataProvider().getAbbreviation());
+		if (speciesService.hasMultipleSpecies(species)) {
+			params.put(EntityFieldConstants.VARIANT_ASSOCIATION_SUBJECT_TAXON, species.getTaxon().getCurie());
 		}
 		List<Long> associationIds = curatedVariantGenomicLocationAssociationDAO.findIdsByParams(params);
 		associationIds.removeIf(Objects::isNull);

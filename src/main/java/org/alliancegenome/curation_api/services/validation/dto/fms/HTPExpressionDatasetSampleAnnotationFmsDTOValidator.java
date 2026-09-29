@@ -13,7 +13,7 @@ import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.AnatomicalSiteDAO;
 import org.alliancegenome.curation_api.dao.HTPExpressionDatasetSampleAnnotationDAO;
-import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
+import org.alliancegenome.curation_api.model.entities.Species;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
 import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
@@ -45,6 +45,7 @@ import org.alliancegenome.curation_api.services.VocabularyTermService;
 import org.alliancegenome.curation_api.services.ontology.MmoTermService;
 import org.alliancegenome.curation_api.services.ontology.NcbiTaxonTermService;
 import org.alliancegenome.curation_api.services.ontology.ObiTermService;
+import org.alliancegenome.curation_api.services.SpeciesService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -68,9 +69,10 @@ public class HTPExpressionDatasetSampleAnnotationFmsDTOValidator {
 	@Inject NcbiTaxonTermService ncbiTaxonTermService;
 	@Inject AnatomicalSiteDAO anatomicalSiteDAO;
 	@Inject CurieMintService curieMintService;
+	@Inject SpeciesService speciesService;
 
 	@Transactional
-	public ObjectResponse<HTPExpressionDatasetSampleAnnotation> validateHTPExpressionDatasetSampleAnnotationFmsDTO(HTPExpressionDatasetSampleAnnotationFmsDTO dto, BackendBulkDataProvider backendBulkDataProvider) throws ValidationException {
+	public ObjectResponse<HTPExpressionDatasetSampleAnnotation> validateHTPExpressionDatasetSampleAnnotationFmsDTO(HTPExpressionDatasetSampleAnnotationFmsDTO dto, Species species) throws ValidationException {
 		ObjectResponse<HTPExpressionDatasetSampleAnnotation> htpSampleAnnotationResponse = new ObjectResponse<>();
 		HTPExpressionDatasetSampleAnnotation htpSampleAnnotation;
 
@@ -100,7 +102,7 @@ public class HTPExpressionDatasetSampleAnnotationFmsDTOValidator {
 			// SCRUM-6585 — no sampleId submitted (MGI): the record's identity is (dataProvider, sampleTitle, datasetIds).
 			// Without this lookup every load inserted a fresh row and the cleanup deleted the whole previous set.
 			Map<String, Object> params = new HashMap<>();
-			params.put(EntityFieldConstants.DATA_PROVIDER, backendBulkDataProvider.sourceOrganization);
+			params.put(EntityFieldConstants.DATA_PROVIDER, species.getDataProvider().getAbbreviation());
 			params.put("htpExpressionSampleTitle", dto.getSampleTitle());
 			Set<String> datasetCuries = new HashSet<>();
 			if (CollectionUtils.isNotEmpty(dto.getDatasetIds())) {
@@ -270,8 +272,8 @@ public class HTPExpressionDatasetSampleAnnotationFmsDTOValidator {
 
 		if (StringUtils.isNotEmpty(dto.getTaxonId())) {
 			ObjectResponse<NCBITaxonTerm> taxonResponse = ncbiTaxonTermService.getByCurie(dto.getTaxonId());
-			if (taxonResponse.getEntity() == null || backendBulkDataProvider != null && (backendBulkDataProvider.name().equals("RGD") || backendBulkDataProvider.name().equals("HUMAN")) && !taxonResponse.getEntity().getCurie().equals(backendBulkDataProvider.canonicalTaxonCurie)) {
-				htpSampleAnnotationResponse.addErrorMessage("taxonId", ValidationConstants.INVALID_MESSAGE + " (" + dto.getTaxonId() + ") for " + backendBulkDataProvider.name() + " load");
+			if (taxonResponse.getEntity() == null || species != null && speciesService.hasMultipleSpecies(species) && !taxonResponse.getEntity().getCurie().equals(species.getTaxon().getCurie())) {
+				htpSampleAnnotationResponse.addErrorMessage("taxonId", ValidationConstants.INVALID_MESSAGE + " (" + dto.getTaxonId() + ") for " + species.getDisplayName() + " load");
 			}
 			htpSampleAnnotation.setTaxon(taxonResponse.getEntity());
 		}
@@ -297,7 +299,7 @@ public class HTPExpressionDatasetSampleAnnotationFmsDTOValidator {
 			htpSampleAnnotation.setRelatedNotes(relatedNotes);
 		}
 		
-		htpSampleAnnotation.setDataProvider(organizationService.getByAbbr(backendBulkDataProvider.sourceOrganization).getEntity());
+		htpSampleAnnotation.setDataProvider(organizationService.getByAbbr(species.getDataProvider().getAbbreviation()).getEntity());
 
 		if (htpSampleAnnotationResponse.hasErrors()) {
 			throw new ObjectValidationException(dto, htpSampleAnnotationResponse.errorMessagesString());

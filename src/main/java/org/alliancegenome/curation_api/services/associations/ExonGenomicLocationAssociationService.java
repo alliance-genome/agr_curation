@@ -8,14 +8,14 @@ import java.util.stream.Collectors;
 
 import org.alliancegenome.curation_api.dao.PersonDAO;
 import org.alliancegenome.curation_api.dao.associations.ExonGenomicLocationAssociationDAO;
-import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
+import org.alliancegenome.curation_api.model.entities.Species;
 import org.alliancegenome.curation_api.model.entities.Exon;
 import org.alliancegenome.curation_api.model.entities.associations.ExonGenomicLocationAssociation;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
+import org.alliancegenome.curation_api.services.SpeciesService;
 import org.alliancegenome.curation_api.services.PersonService;
 import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
-import org.apache.commons.lang3.StringUtils;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.RequestScoped;
@@ -27,6 +27,7 @@ public class ExonGenomicLocationAssociationService extends BaseEntityCrudService
 	@Inject ExonGenomicLocationAssociationDAO exonGenomicLocationAssociationDAO;
 	@Inject PersonDAO personDAO;
 	@Inject PersonService personService;
+	@Inject SpeciesService speciesService;
 	
 	@Override
 	@PostConstruct
@@ -35,14 +36,9 @@ public class ExonGenomicLocationAssociationService extends BaseEntityCrudService
 	}
 
 
-	public List<Long> getIdsByDataProvider(BackendBulkDataProvider dataProvider) {
-		String taxon = needsTaxonFilter(dataProvider) ? dataProvider.canonicalTaxonCurie : null;
-		return exonGenomicLocationAssociationDAO.findIdsByDataProvider(dataProvider.sourceOrganization, taxon);
-	}
-
-	private boolean needsTaxonFilter(BackendBulkDataProvider dataProvider) {
-		return StringUtils.equals(dataProvider.sourceOrganization, "RGD")
-			|| StringUtils.equals(dataProvider.sourceOrganization, "XB");
+	public List<Long> getIdsBySpecies(Species species) {
+		String taxon = speciesService.getTaxonFilter(species);
+		return exonGenomicLocationAssociationDAO.findIdsByDataProvider(species.getDataProvider().getAbbreviation(), taxon);
 	}
 
 	public ObjectResponse<ExonGenomicLocationAssociation> getLocationAssociation(Long exonId, Long assemblyComponentId) {

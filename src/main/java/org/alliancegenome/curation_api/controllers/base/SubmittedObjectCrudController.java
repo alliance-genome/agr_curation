@@ -1,10 +1,10 @@
 package org.alliancegenome.curation_api.controllers.base;
 
 import org.alliancegenome.curation_api.dao.base.BaseEntityDAO;
-import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.interfaces.base.BaseSubmittedObjectCrudInterface;
 import org.alliancegenome.curation_api.interfaces.base.BaseUpsertControllerInterface;
+import org.alliancegenome.curation_api.model.entities.Species;
 import org.alliancegenome.curation_api.model.entities.base.SubmittedObject;
 import org.alliancegenome.curation_api.model.ingest.dto.base.BaseDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
@@ -25,8 +25,8 @@ public abstract class SubmittedObjectCrudController<S extends SubmittedObjectCru
 		return service.upsert(dto);
 	}
 
-	public ObjectResponse<E> upsert(T dto, BackendBulkDataProvider dataProvider) throws ValidationException {
-		return service.upsert(dto, dataProvider);
+	public ObjectResponse<E> upsert(T dto, Species species) throws ValidationException {
+		return service.upsert(dto, species);
 	}
 
 	@Override

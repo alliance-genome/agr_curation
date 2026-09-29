@@ -74,6 +74,16 @@ public class IT_0101_GeneBulkUploadITCase extends BaseITCase {
 		Vocabulary noteTypeVocab = getVocabulary("note_type");
 		noteTypeVocabTerm = getVocabularyTerm(noteTypeVocab, noteType);
 		createVocabularyTermSet(VocabularyConstants.GENE_NOTE_TYPES_VOCABULARY_TERM_SET, noteTypeVocab, List.of(noteTypeVocabTerm));
+		createNCBITaxonTerm("NCBITaxon:6239", "Caenorhabditis elegans", false);
+		createNCBITaxonTerm("NCBITaxon:10116", "Rattus norvegicus", false);
+		createNCBITaxonTerm("NCBITaxon:9606", "Homo sapiens", false);
+		createNCBITaxonTerm("NCBITaxon:7955", "Danio rerio", false);
+		createNCBITaxonTerm("NCBITaxon:7227", "Drosophila melanogaster", false);
+		createSpecies("WB", "NCBITaxon:6239", "WB");
+		createSpecies("RGD", "NCBITaxon:10116", "RGD");
+		createSpecies("HUMAN", "NCBITaxon:9606", "RGD");
+		createSpecies("ZFIN", "NCBITaxon:7955", "ZFIN");
+		createSpecies("FB", "NCBITaxon:7227", "FB");
 	}
 
 	@Test

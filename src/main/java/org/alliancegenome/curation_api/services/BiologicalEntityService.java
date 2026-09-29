@@ -1,7 +1,7 @@
 package org.alliancegenome.curation_api.services;
 
 import org.alliancegenome.curation_api.dao.BiologicalEntityDAO;
-import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
+import org.alliancegenome.curation_api.model.entities.Species;
 import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.model.entities.BiologicalEntity;
 import org.alliancegenome.curation_api.model.ingest.dto.BiologicalEntityDTO;
@@ -24,7 +24,7 @@ public class BiologicalEntityService extends SubmittedObjectCrudService<Biologic
 	}
 
 	@Override
-	public ObjectResponse<BiologicalEntity> upsert(BiologicalEntityDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
+	public ObjectResponse<BiologicalEntity> upsert(BiologicalEntityDTO dto, Species species) throws ValidationException {
 		return null;
 	}
 

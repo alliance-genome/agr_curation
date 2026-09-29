@@ -2,7 +2,7 @@ package org.alliancegenome.curation_api.services.validation.dto.fms;
 
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.dao.SequenceTargetingReagentDAO;
-import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
+import org.alliancegenome.curation_api.model.entities.Species;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
 import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.model.entities.SequenceTargetingReagent;
@@ -15,6 +15,7 @@ import org.alliancegenome.curation_api.services.OrganizationService;
 import org.alliancegenome.curation_api.services.SequenceTargetingReagentService;
 import org.alliancegenome.curation_api.services.VocabularyTermService;
 import org.alliancegenome.curation_api.services.ontology.NcbiTaxonTermService;
+import org.alliancegenome.curation_api.services.SpeciesService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -34,9 +35,10 @@ public class SequenceTargetingReagentFmsDTOValidator {
 	@Inject SequenceTargetingReagentService sqtrService;
 
 	@Inject VocabularyTermService vocabularyTermService;
+	@Inject SpeciesService speciesService;
 
 
-	public ObjectResponse<SequenceTargetingReagent> validateStrFmsDTO(SequenceTargetingReagentFmsDTO dto, BackendBulkDataProvider beDataProvider) throws ValidationException {
+	public ObjectResponse<SequenceTargetingReagent> validateStrFmsDTO(SequenceTargetingReagentFmsDTO dto, Species beSpecies) throws ValidationException {
 		ObjectResponse<SequenceTargetingReagent> sqtrResponse = new ObjectResponse<>();
 		
 		SequenceTargetingReagent sqtr;
@@ -68,8 +70,8 @@ public class SequenceTargetingReagentFmsDTOValidator {
 			if (taxonResponse.getEntity() == null) {
 				sqtrResponse.addErrorMessage("taxonId", ValidationConstants.INVALID_MESSAGE + " (" + dto.getTaxonId() + ")");
 			}
-			if (beDataProvider != null && (beDataProvider.name().equals("RGD") || beDataProvider.name().equals("HUMAN")) && !taxonResponse.getEntity().getCurie().equals(beDataProvider.canonicalTaxonCurie)) {
-				sqtrResponse.addErrorMessage("taxonId", ValidationConstants.INVALID_MESSAGE + " (" + dto.getTaxonId() + ") for " + beDataProvider.name() + " load");
+			if (beSpecies != null && speciesService.hasMultipleSpecies(beSpecies) && !taxonResponse.getEntity().getCurie().equals(beSpecies.getTaxon().getCurie())) {
+				sqtrResponse.addErrorMessage("taxonId", ValidationConstants.INVALID_MESSAGE + " (" + dto.getTaxonId() + ") for " + beSpecies.getDisplayName() + " load");
 			}
 			sqtr.setTaxon(taxonResponse.getEntity());
 		}
@@ -86,8 +88,8 @@ public class SequenceTargetingReagentFmsDTOValidator {
 			sqtr.setSecondaryIdentifiers(null);
 		}
 		
-		if (beDataProvider != null) {
-			sqtr.setDataProvider(organizationService.getByAbbr(beDataProvider.sourceOrganization).getEntity());
+		if (beSpecies != null) {
+			sqtr.setDataProvider(beSpecies.getDataProvider());
 		}
 		
 		if (sqtrResponse.hasErrors()) {

@@ -6,7 +6,7 @@ import java.util.Map;
 
 import org.alliancegenome.curation_api.constants.EntityFieldConstants;
 import org.alliancegenome.curation_api.dao.orthology.GeneToGeneOrthologyGeneratedDAO;
-import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
+import org.alliancegenome.curation_api.model.entities.Species;
 import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.interfaces.crud.BaseUpsertServiceInterface;
 import org.alliancegenome.curation_api.model.entities.orthology.GeneToGeneOrthologyGenerated;
@@ -14,7 +14,7 @@ import org.alliancegenome.curation_api.model.ingest.dto.fms.OrthologyFmsDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
 import org.alliancegenome.curation_api.services.validation.dto.fms.OrthologyFmsDTOValidator;
-import org.apache.commons.lang3.StringUtils;
+import org.alliancegenome.curation_api.services.SpeciesService;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.RequestScoped;
@@ -24,6 +24,7 @@ import jakarta.inject.Inject;
 public class GeneToGeneOrthologyGeneratedService extends BaseEntityCrudService<GeneToGeneOrthologyGenerated, GeneToGeneOrthologyGeneratedDAO> implements BaseUpsertServiceInterface<GeneToGeneOrthologyGenerated, OrthologyFmsDTO> {
 
 	@Inject GeneToGeneOrthologyGeneratedDAO geneToGeneOrthologyGeneratedDAO;
+	@Inject SpeciesService speciesService;
 	@Inject OrthologyFmsDTOValidator orthologyFmsDtoValidator;
 
 	@Override
@@ -33,7 +34,7 @@ public class GeneToGeneOrthologyGeneratedService extends BaseEntityCrudService<G
 	}
 
 	@Override
-	public ObjectResponse<GeneToGeneOrthologyGenerated> upsert(OrthologyFmsDTO orthoPair, BackendBulkDataProvider backendBulkDataProvider) throws ValidationException {
+	public ObjectResponse<GeneToGeneOrthologyGenerated> upsert(OrthologyFmsDTO orthoPair, Species species) throws ValidationException {
 		return orthologyFmsDtoValidator.validateOrthologyFmsDTO(orthoPair);
 	}
 
@@ -45,12 +46,12 @@ public class GeneToGeneOrthologyGeneratedService extends BaseEntityCrudService<G
 		return geneToGeneOrthologyGeneratedDAO.findByIds(ids);
 	}
 
-	public List<Long> getAllOrthologyPairIdsBySubjectGeneDataProvider(BackendBulkDataProvider dataProvider) {
+	public List<Long> getAllOrthologyPairIdsBySubjectGeneDataProvider(Species species) {
 		Map<String, Object> params = new HashMap<>();
-		params.put(EntityFieldConstants.SUBJECT_GENE_DATA_PROVIDER, dataProvider.sourceOrganization);
+		params.put(EntityFieldConstants.SUBJECT_GENE_DATA_PROVIDER, species.getDataProvider().getAbbreviation());
 
-		if (StringUtils.equals(dataProvider.sourceOrganization, "RGD") || StringUtils.equals(dataProvider.sourceOrganization, "XB")) {
-			params.put(EntityFieldConstants.SUBJECT_GENE_TAXON, dataProvider.canonicalTaxonCurie);
+		if (speciesService.hasMultipleSpecies(species)) {
+			params.put(EntityFieldConstants.SUBJECT_GENE_TAXON, species.getTaxon().getCurie());
 		}
 
 		List<Long> annotationIds = geneToGeneOrthologyGeneratedDAO.findIdsByParams(params);

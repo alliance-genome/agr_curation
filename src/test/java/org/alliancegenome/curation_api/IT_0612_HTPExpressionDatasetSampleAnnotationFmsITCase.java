@@ -48,6 +48,7 @@ public class IT_0612_HTPExpressionDatasetSampleAnnotationFmsITCase extends BaseI
 	private void loadRequiredEntities() throws Exception {
 		createMmoTerm(mmoTerm, "assay001");
 		createObiTerm(obiTermCurie, "sample001");
+		getOrCreateSpecies("MGI", "NCBITaxon:10090", "MGI", "Mus musculus", "Mmu");
 	}
 
 	@Test

@@ -7,7 +7,7 @@ import java.util.Map;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.associations.AgmAlleleAssociationDAO;
-import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
+import org.alliancegenome.curation_api.model.entities.Species;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
 import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
@@ -52,7 +52,7 @@ public class AgmAlleleAssociationDTOValidator extends AuditedObjectDTOValidator<
 		this.existingFullStateKeys = fullStateKeys;
 	}
 
-	public ObjectResponse<AgmAlleleAssociation> validateAgmAlleleAssociationDTO(AgmAlleleAssociationDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
+	public ObjectResponse<AgmAlleleAssociation> validateAgmAlleleAssociationDTO(AgmAlleleAssociationDTO dto, Species species) throws ValidationException {
 		response = new ObjectResponse<AgmAlleleAssociation>();
 
 		List<Long> subjectIds = null;
@@ -120,8 +120,8 @@ public class AgmAlleleAssociationDTOValidator extends AuditedObjectDTOValidator<
 					AffectedGenomicModel subject = agmCache.computeIfAbsent(dto.getAgmSubjectIdentifier(), agmService::findByIdentifierString);
 					if (subject == null) {
 						response.addErrorMessage("agm_identifier", ValidationConstants.INVALID_MESSAGE + " (" + dto.getAgmSubjectIdentifier() + ")");
-					} else if (dataProvider != null && !subject.getDataProvider().getAbbreviation().equals(dataProvider.sourceOrganization)) {
-						response.addErrorMessage("agm_identifier", ValidationConstants.INVALID_MESSAGE + " for " + dataProvider.name() + " load (" + dto.getAgmSubjectIdentifier() + ")");
+					} else if (species != null && !subject.getDataProvider().getAbbreviation().equals(species.getDataProvider().getAbbreviation())) {
+						response.addErrorMessage("agm_identifier", ValidationConstants.INVALID_MESSAGE + " for " + species.getDisplayName() + " load (" + dto.getAgmSubjectIdentifier() + ")");
 					} else {
 						association.setAgmAssociationSubject(subject);
 					}
@@ -132,8 +132,8 @@ public class AgmAlleleAssociationDTOValidator extends AuditedObjectDTOValidator<
 					Allele object = alleleCache.computeIfAbsent(dto.getAlleleIdentifier(), alleleService::findByIdentifierString);
 					if (object == null) {
 						response.addErrorMessage("allele_identifier", ValidationConstants.INVALID_MESSAGE + " (" + dto.getAlleleIdentifier() + ")");
-					} else if (dataProvider != null && !object.getDataProvider().getAbbreviation().equals(dataProvider.sourceOrganization)) {
-						response.addErrorMessage("allele_identifier", ValidationConstants.INVALID_MESSAGE + " for " + dataProvider.name() + " load (" + dto.getAlleleIdentifier() + ")");
+					} else if (species != null && !object.getDataProvider().getAbbreviation().equals(species.getDataProvider().getAbbreviation())) {
+						response.addErrorMessage("allele_identifier", ValidationConstants.INVALID_MESSAGE + " for " + species.getDisplayName() + " load (" + dto.getAlleleIdentifier() + ")");
 					} else {
 						association.setAgmAlleleAssociationObject(object);
 					}

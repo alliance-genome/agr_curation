@@ -9,7 +9,7 @@ import java.util.Objects;
 
 import org.alliancegenome.curation_api.constants.EntityFieldConstants;
 import org.alliancegenome.curation_api.dao.VariantDAO;
-import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
+import org.alliancegenome.curation_api.model.entities.Species;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.model.entities.Note;
@@ -36,6 +36,7 @@ public class VariantService extends SubmittedObjectCrudService<Variant, VariantD
 	@Inject VariantValidator variantValidator;
 	@Inject VariantDTOValidator variantDtoValidator;
 	@Inject DiseaseAnnotationService diseaseAnnotationService;
+	@Inject SpeciesService speciesService;
 	@Inject PersonService personService;
 
 	@Override
@@ -59,8 +60,8 @@ public class VariantService extends SubmittedObjectCrudService<Variant, VariantD
 	}
 
 	@Override
-	public ObjectResponse<Variant> upsert(VariantDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
-		return variantDtoValidator.validateVariantDTO(dto, dataProvider);
+	public ObjectResponse<Variant> upsert(VariantDTO dto, Species species) throws ValidationException {
+		return variantDtoValidator.validateVariantDTO(dto, species);
 	}
 
 	@Override
@@ -109,9 +110,13 @@ public class VariantService extends SubmittedObjectCrudService<Variant, VariantD
 		return null;
 	}
 
-	public List<Long> getIdsByDataProvider(String dataProvider) {
+	public List<Long> getIdsBySpecies(Species species) {
 		Map<String, Object> params = new HashMap<>();
-		params.put(EntityFieldConstants.DATA_PROVIDER, dataProvider);
+		params.put(EntityFieldConstants.DATA_PROVIDER, species.getDataProvider().getAbbreviation());
+		String taxon = speciesService.getTaxonFilter(species);
+		if (taxon != null) {
+			params.put(EntityFieldConstants.TAXON, taxon);
+		}
 		List<Long> ids = variantDAO.findIdsByParams(params);
 		ids.removeIf(Objects::isNull);
 		return ids;

@@ -9,15 +9,15 @@ import java.util.stream.Collectors;
 import org.alliancegenome.curation_api.constants.EntityFieldConstants;
 import org.alliancegenome.curation_api.dao.PersonDAO;
 import org.alliancegenome.curation_api.dao.associations.TranscriptCodingSequenceAssociationDAO;
-import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
+import org.alliancegenome.curation_api.model.entities.Species;
 import org.alliancegenome.curation_api.model.entities.CodingSequence;
 import org.alliancegenome.curation_api.model.entities.Transcript;
 import org.alliancegenome.curation_api.model.entities.associations.TranscriptCodingSequenceAssociation;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
+import org.alliancegenome.curation_api.services.SpeciesService;
 import org.alliancegenome.curation_api.services.PersonService;
 import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
-import org.apache.commons.lang3.StringUtils;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.RequestScoped;
@@ -29,6 +29,7 @@ public class TranscriptCodingSequenceAssociationService extends BaseEntityCrudSe
 	@Inject TranscriptCodingSequenceAssociationDAO transcriptCodingSequenceAssociationDAO;
 	@Inject PersonDAO personDAO;
 	@Inject PersonService personService;
+	@Inject SpeciesService speciesService;
 	
 	@Override
 	@PostConstruct
@@ -37,14 +38,9 @@ public class TranscriptCodingSequenceAssociationService extends BaseEntityCrudSe
 	}
 
 
-	public List<Long> getIdsByDataProvider(BackendBulkDataProvider dataProvider) {
-		String taxon = needsTaxonFilter(dataProvider) ? dataProvider.canonicalTaxonCurie : null;
-		return transcriptCodingSequenceAssociationDAO.findIdsByDataProvider(dataProvider.sourceOrganization, taxon);
-	}
-
-	private boolean needsTaxonFilter(BackendBulkDataProvider dataProvider) {
-		return StringUtils.equals(dataProvider.sourceOrganization, "RGD")
-			|| StringUtils.equals(dataProvider.sourceOrganization, "XB");
+	public List<Long> getIdsBySpecies(Species species) {
+		String taxon = speciesService.getTaxonFilter(species);
+		return transcriptCodingSequenceAssociationDAO.findIdsByDataProvider(species.getDataProvider().getAbbreviation(), taxon);
 	}
 
 	public ObjectResponse<TranscriptCodingSequenceAssociation> getLocationAssociation(Long transcriptId, Long assemblyComponentId) {

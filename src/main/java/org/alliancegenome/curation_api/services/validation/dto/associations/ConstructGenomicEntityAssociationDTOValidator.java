@@ -7,7 +7,7 @@ import java.util.List;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.associations.ConstructGenomicEntityAssociationDAO;
-import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
+import org.alliancegenome.curation_api.model.entities.Species;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
 import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.model.entities.Construct;
@@ -36,7 +36,7 @@ public class ConstructGenomicEntityAssociationDTOValidator extends EvidenceAssoc
 	@Inject
 	ConstructGenomicEntityAssociationDAO constructGenomicEntityAssociationDAO;
 
-	public ObjectResponse<ConstructGenomicEntityAssociation> validateConstructGenomicEntityAssociationDTO(ConstructGenomicEntityAssociationDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
+	public ObjectResponse<ConstructGenomicEntityAssociation> validateConstructGenomicEntityAssociationDTO(ConstructGenomicEntityAssociationDTO dto, Species species) throws ValidationException {
 		response = new ObjectResponse<ConstructGenomicEntityAssociation>();
 
 		List<Long> subjectIds = null;
@@ -82,8 +82,8 @@ public class ConstructGenomicEntityAssociationDTOValidator extends EvidenceAssoc
 					Construct subject = constructService.findByIdentifierString(dto.getConstructIdentifier());
 					if (subject == null) {
 						response.addErrorMessage("construct_identifier", ValidationConstants.INVALID_MESSAGE + " (" + dto.getConstructIdentifier() + ")");
-					} else if (dataProvider != null && !subject.getDataProvider().getAbbreviation().equals(dataProvider.sourceOrganization)) {
-						response.addErrorMessage("construct_identifier", ValidationConstants.INVALID_MESSAGE + " for " + dataProvider.name() + " load (" + dto.getConstructIdentifier() + ")");
+					} else if (species != null && !subject.getDataProvider().getAbbreviation().equals(species.getDataProvider().getAbbreviation())) {
+						response.addErrorMessage("construct_identifier", ValidationConstants.INVALID_MESSAGE + " for " + species.getDisplayName() + " load (" + dto.getConstructIdentifier() + ")");
 					} else {
 						association.setConstructAssociationSubject(subject);
 					}

@@ -9,14 +9,15 @@ import java.util.stream.Collectors;
 
 import org.alliancegenome.curation_api.constants.EntityFieldConstants;
 import org.alliancegenome.curation_api.dao.associations.SequenceTargetingReagentGeneAssociationDAO;
-import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ValidationException;
+import org.alliancegenome.curation_api.model.entities.Species;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.SequenceTargetingReagent;
 import org.alliancegenome.curation_api.model.entities.associations.SequenceTargetingReagentGeneAssociation;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.SequenceTargetingReagentFmsDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
+import org.alliancegenome.curation_api.services.SpeciesService;
 import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
 import org.alliancegenome.curation_api.services.validation.dto.fms.SequenceTargetingReagentGeneAssociationFmsDTOValidator;
 
@@ -32,6 +33,8 @@ public class SequenceTargetingReagentGeneAssociationService extends BaseEntityCr
 	SequenceTargetingReagentGeneAssociationDAO sequenceTargetingReagentGeneAssociationDAO;
 	@Inject
 	SequenceTargetingReagentGeneAssociationFmsDTOValidator sequenceTargetingReagentGeneAssociationFmsDTOValidator;
+	@Inject
+	SpeciesService speciesService;
 
 	@Override
 	@PostConstruct
@@ -40,10 +43,10 @@ public class SequenceTargetingReagentGeneAssociationService extends BaseEntityCr
 	}
 
 	@Transactional
-	public List<Long> loadGeneAssociations(SequenceTargetingReagentFmsDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
+	public List<Long> loadGeneAssociations(SequenceTargetingReagentFmsDTO dto) throws ValidationException {
 
 		List<SequenceTargetingReagentGeneAssociation> associations = sequenceTargetingReagentGeneAssociationFmsDTOValidator
-				.validateSQTRGeneAssociationFmsDTO(dto, dataProvider);
+				.validateSQTRGeneAssociationFmsDTO(dto);
 
 		for (SequenceTargetingReagentGeneAssociation association : associations) {
 			if (association != null) {
@@ -95,9 +98,13 @@ public class SequenceTargetingReagentGeneAssociationService extends BaseEntityCr
 
 	}
 
-	public List<Long> getIdsByDataProvider(BackendBulkDataProvider dataProvider) {
+	public List<Long> getIdsBySpecies(Species species) {
 		Map<String, Object> params = new HashMap<>();
-		params.put(EntityFieldConstants.SQTR_ASSOCIATION_SUBJECT_DATA_PROVIDER, dataProvider.sourceOrganization);
+		params.put(EntityFieldConstants.SQTR_ASSOCIATION_SUBJECT_DATA_PROVIDER, species.getDataProvider().getAbbreviation());
+		String taxon = speciesService.getTaxonFilter(species);
+		if (taxon != null) {
+			params.put(EntityFieldConstants.SQTR_ASSOCIATION_SUBJECT + "." + EntityFieldConstants.TAXON, taxon);
+		}
 		List<Long> ids = sequenceTargetingReagentGeneAssociationDAO.findIdsByParams(params);
 		ids.removeIf(Objects::isNull);
 		return ids;

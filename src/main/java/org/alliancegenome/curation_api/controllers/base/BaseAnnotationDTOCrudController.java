@@ -1,10 +1,10 @@
 package org.alliancegenome.curation_api.controllers.base;
 
 import org.alliancegenome.curation_api.dao.base.BaseSQLDAO;
-import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.interfaces.base.BaseUpsertControllerInterface;
 import org.alliancegenome.curation_api.model.entities.Annotation;
+import org.alliancegenome.curation_api.model.entities.Species;
 import org.alliancegenome.curation_api.model.ingest.dto.AnnotationDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.base.BaseAnnotationDTOCrudService;
@@ -27,8 +27,8 @@ public abstract class BaseAnnotationDTOCrudController<S extends BaseAnnotationDT
 		return service.upsert(dto);
 	}
 
-	public ObjectResponse<E> upsert(T dto, BackendBulkDataProvider dataProvider) throws ValidationException {
-		return service.upsert(dto, dataProvider);
+	public ObjectResponse<E> upsert(T dto, Species species) throws ValidationException {
+		return service.upsert(dto, species);
 	}
 
 }

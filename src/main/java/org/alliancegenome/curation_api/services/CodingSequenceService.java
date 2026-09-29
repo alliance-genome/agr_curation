@@ -4,7 +4,7 @@ import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import org.alliancegenome.curation_api.dao.CodingSequenceDAO;
-import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
+import org.alliancegenome.curation_api.model.entities.Species;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.CodingSequence;
 import org.alliancegenome.curation_api.model.entities.Note;
@@ -13,7 +13,6 @@ import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
 import org.alliancegenome.curation_api.services.validation.dto.Gff3DtoValidator;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
 
 import io.quarkus.logging.Log;
 import jakarta.annotation.PostConstruct;
@@ -27,6 +26,7 @@ public class CodingSequenceService extends BaseEntityCrudService<CodingSequence,
 	@Inject CodingSequenceDAO codingSequenceDAO;
 	@Inject PersonService personService;
 	@Inject Gff3DtoValidator gff3DtoValidator;
+	@Inject SpeciesService speciesService;
 	@Inject NoteService noteService;
 
 	@Override
@@ -35,14 +35,9 @@ public class CodingSequenceService extends BaseEntityCrudService<CodingSequence,
 		setSQLDao(codingSequenceDAO);
 	}
 
-	public List<Long> getIdsByDataProvider(BackendBulkDataProvider dataProvider) {
-		String taxon = needsTaxonFilter(dataProvider) ? dataProvider.canonicalTaxonCurie : null;
-		return codingSequenceDAO.findIdsByDataProvider(dataProvider.sourceOrganization, taxon);
-	}
-
-	private boolean needsTaxonFilter(BackendBulkDataProvider dataProvider) {
-		return StringUtils.equals(dataProvider.sourceOrganization, "RGD")
-			|| StringUtils.equals(dataProvider.sourceOrganization, "XB");
+	public List<Long> getIdsBySpecies(Species species) {
+		String taxon = speciesService.getTaxonFilter(species);
+		return codingSequenceDAO.findIdsByDataProvider(species.getDataProvider().getAbbreviation(), taxon);
 	}
 
 	@Override
