@@ -1,0 +1,43 @@
+src/main/cliapp/src/containers/affectedGenomicModelPage/secondaryIds/SecondaryIdsFormTable.jsx
+  s_90fe3c66eb3b97::t_b037b06e20c1f8 1-98
+src/main/cliapp/src/containers/affectedGenomicModelPage/synonyms/SynonymsFormTable.jsx
+  s_90fe3c66eb3b97::t_6bbd7c6768c27c 1-180
+src/main/cliapp/src/containers/affectedGenomicModelPage/AGMForm.jsx
+  s_90fe3c66eb3b97::t_f438b413687694 1-223
+src/main/cliapp/src/containers/affectedGenomicModelPage/AffectedGenomicModelDetailPage.jsx
+  s_90fe3c66eb3b97::t_00ac048bc7ece4 1-131
+src/main/cliapp/src/containers/affectedGenomicModelPage/AffectedGenomicModelTable.jsx
+  s_90fe3c66eb3b97::t_40a40fc6871b2e 385
+src/main/cliapp/src/containers/affectedGenomicModelPage/agmFullName/AgmFullNameForm.jsx
+  s_90fe3c66eb3b97::t_fce1963548bbcb 1-119
+src/main/cliapp/src/containers/affectedGenomicModelPage/agmFullName/AgmFullNameFormTable.jsx
+  s_90fe3c66eb3b97::t_7f403efa0f3bd0 1-187
+src/main/cliapp/src/containers/affectedGenomicModelPage/index.js
+  s_90fe3c66eb3b97::t_da82feef8f46a5 2,4
+src/main/cliapp/src/containers/affectedGenomicModelPage/secondaryIds/SecondaryIdsForm.jsx
+  s_90fe3c66eb3b97::t_bc18c0959bf43c 1-95
+src/main/cliapp/src/containers/affectedGenomicModelPage/synonyms/SynonymsForm.jsx
+  s_90fe3c66eb3b97::t_e0fe35fb9dfb89 1-122
+src/main/cliapp/src/containers/affectedGenomicModelPage/useAGMReducer.js
+  s_90fe3c66eb3b97::t_383fcff15c5c06 1-179
+src/main/cliapp/src/containers/affectedGenomicModelPage/utils.js
+  s_90fe3c66eb3b97::t_1a16418cd36b03 1-49
+src/main/cliapp/src/routes.jsx
+  s_90fe3c66eb3b97::t_5db9485df663b5 19,342-349
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "1c3f5b16aaaca49d0de17188037975a5573baa3c",
+  "prompts": {},
+  "sessions": {
+    "s_90fe3c66eb3b97": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "64db8705-0fb3-46f5-be71-5247c76018af",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Ketaki Kindre <kkindre@caltech.edu>"
+    }
+  }
+}
