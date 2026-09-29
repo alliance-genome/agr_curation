@@ -24,7 +24,7 @@ import lombok.EqualsAndHashCode;
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
-@AGRCurationSchemaVersion(min = "2.18.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { ReagentDTO.class, CassetteComponentSlotAnnotationDTO.class, CassetteUseSlotAnnotationDTO.class }, submitted = true)
+@AGRCurationSchemaVersion(min = "2.19.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { ReagentDTO.class, CassetteComponentSlotAnnotationDTO.class, CassetteUseSlotAnnotationDTO.class }, submitted = true)
 public class CassetteDTO extends ReagentDTO {
 
 	@JsonView({ CurationView.FieldsOnly.class })

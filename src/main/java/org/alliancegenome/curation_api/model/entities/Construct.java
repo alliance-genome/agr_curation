@@ -40,7 +40,7 @@ import lombok.ToString;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @Schema(name = "construct", description = "Construct: a construct")
 @ToString(exclude = {"constructSymbol", "constructFullName", "constructSynonyms", "constructComponents", "constructGenomicEntityAssociations", "constructCassetteAssociations", "alleleConstructAssociations"}, callSuper = true)
-@AGRCurationSchemaVersion(min = "2.1.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { Reagent.class })
+@AGRCurationSchemaVersion(min = "2.19.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { Reagent.class })
 
 @CurieSubdomain(MatiSubdomain.CONSTRUCT)
 public class Construct extends Reagent {
