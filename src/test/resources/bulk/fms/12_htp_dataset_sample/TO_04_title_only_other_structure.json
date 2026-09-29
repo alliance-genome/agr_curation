@@ -7,11 +7,11 @@
             "sampleTitle" : "TITLE ONLY SAMPLE",
             "assayType" : "HTPMMO:assay001",
             "sampleType" : "HTPOBI:sample001",
-            "abundance" : "title only abundance updated",
+            "abundance" : "title only abundance other structure",
             "sampleLocations" : [
                 {
-                    "whereExpressedStatement" : "trunk",
-                    "anatomicalStructureTermId" : "ANAT:001",
+                    "whereExpressedStatement" : "head",
+                    "anatomicalStructureTermId" : "ANAT:002",
                     "anatomicalStructureUberonSlimTermIds" : [
                         {"uberonTerm" : "UBERON:005"}
                     ]
