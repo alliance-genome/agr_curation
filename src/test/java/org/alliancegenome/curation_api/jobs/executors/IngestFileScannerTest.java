@@ -53,12 +53,12 @@ class IngestFileScannerTest {
 	void reportsOnlyTheIngestSetTheFileCarries() throws IOException {
 		String path = gzip("""
 			{
-			  "alliance_member_release_version": "2026_03",
-			  "cassette_ingest_set": [
-			    { "primary_external_id": "FB:FBtp0000001_cas", "internal": false },
-			    { "primary_external_id": "FB:FBtp0000002_cas", "internal": false }
-			  ],
-			  "linkml_version": "2.18.0"
+				"alliance_member_release_version": "2026_03",
+				"cassette_ingest_set": [
+					{ "primary_external_id": "FB:FBtp0000001_cas", "internal": false },
+					{ "primary_external_id": "FB:FBtp0000002_cas", "internal": false }
+				],
+				"linkml_version": "2.18.0"
 			}
 			""");
 
@@ -73,8 +73,8 @@ class IngestFileScannerTest {
 	void treatsAnEmptyIngestSetAsAbsent() throws IOException {
 		String path = gzip("""
 			{
-			  "gene_ingest_set": [],
-			  "cassette_ingest_set": [ { "primary_external_id": "FB:FBtp0000001_cas" } ]
+				"gene_ingest_set": [],
+				"cassette_ingest_set": [ { "primary_external_id": "FB:FBtp0000001_cas" } ]
 			}
 			""");
 
@@ -89,12 +89,12 @@ class IngestFileScannerTest {
 	void findsEveryPopulatedSetAndIgnoresNesting() throws IOException {
 		String path = gzip("""
 			{
-			  "gene_ingest_set": [
-			    { "gene_symbol_dto": { "display_text": "x", "evidence_curies": ["PMID:1"] } }
-			  ],
-			  "construct_ingest_set": [ { "primary_external_id": "FB:FBtp0000003" } ],
-			  "agm_sequence_targeting_reagent_association_ingest_set": [ { "agm_subject_identifier": "FB:FBal0000001" } ],
-			  "linkml_version": "2.18.0"
+				"gene_ingest_set": [
+					{ "gene_symbol_dto": { "display_text": "x", "evidence_curies": ["PMID:1"] } }
+				],
+				"construct_ingest_set": [ { "primary_external_id": "FB:FBtp0000003" } ],
+				"agm_sequence_targeting_reagent_association_ingest_set": [ { "agm_subject_identifier": "FB:FBal0000001" } ],
+				"linkml_version": "2.18.0"
 			}
 			""");
 
