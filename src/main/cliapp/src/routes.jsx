@@ -16,7 +16,7 @@ import { GeneGeneticInteractionsPage } from './containers/geneGeneticInteraction
 import { GeneMolecularInteractionsPage } from './containers/geneMolecularInteractionsPage/GeneMolecularInteractionsPage';
 import { ExperimentalConditionsPage } from './containers/experimentalConditionsPage';
 import { ConditionRelationPage } from './containers/conditionRelationPage';
-import { AffectedGenomicModelPage } from './containers/affectedGenomicModelPage';
+import { AffectedGenomicModelPage, AffectedGenomicModelDetailPage } from './containers/affectedGenomicModelPage';
 import { AllelesPage, AlleleDetailPage, AlleleCreatePage } from './containers/allelesPage';
 import { GenesPage } from './containers/genesPage';
 import { VariantsPage, VariantDetailPage } from './containers/variantsPage';
@@ -336,6 +336,14 @@ export default function AppRoutes() {
 						element={
 							<ErrorBoundary>
 								<AffectedGenomicModelPage />
+							</ErrorBoundary>
+						}
+					/>
+					<Route
+						path="/agm/:identifier"
+						element={
+							<ErrorBoundary>
+								<AffectedGenomicModelDetailPage />
 							</ErrorBoundary>
 						}
 					/>
