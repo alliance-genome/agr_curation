@@ -6,7 +6,10 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.alliancegenome.curation_api.dao.CassetteDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
+import org.alliancegenome.curation_api.jobs.util.AutomaticIndexingSuspender;
+import org.alliancegenome.curation_api.model.entities.Cassette;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkManualLoad;
 import org.alliancegenome.curation_api.model.ingest.dto.CassetteDTO;
@@ -23,6 +26,8 @@ import jakarta.inject.Inject;
 public class CassetteExecutor extends LoadFileExecutor {
 
 	@Inject CassetteService cassetteService;
+	@Inject CassetteDAO cassetteDAO;
+	@Inject AutomaticIndexingSuspender automaticIndexingSuspender;
 
 	public void execLoad(BulkLoadFileHistory bulkLoadFileHistory, Boolean cleanUp) {
 
@@ -61,9 +66,15 @@ public class CassetteExecutor extends LoadFileExecutor {
 
 		cassetteService.preLoadReferences(refList);
 
-		boolean success = runLoad(cassetteService, bulkLoadFileHistory, dataProvider, cassettes, idsLoaded);
-		if (success && cleanUp) {
-			runCleanup(cassetteService, bulkLoadFileHistory, dataProvider.name(), idsBefore, idsLoaded, "cassette");
+		// Indexed once at the end rather than per commit, see ConstructExecutor
+		automaticIndexingSuspender.suspend(Cassette.class);
+		try {
+			boolean success = runLoad(cassetteService, bulkLoadFileHistory, dataProvider, cassettes, idsLoaded);
+			if (success && cleanUp) {
+				runCleanup(cassetteService, bulkLoadFileHistory, dataProvider.name(), idsBefore, idsLoaded, "cassette");
+			}
+		} finally {
+			automaticIndexingSuspender.resumeAndReindex(Cassette.class, cassetteDAO);
 		}
 		bulkLoadFileHistory.finishLoad();
 		updateHistory(bulkLoadFileHistory);

@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CompletionStage;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -140,7 +141,9 @@ public class BaseSQLDAO<E extends AuditedObject> extends BaseEntityDAO<E> {
 		Log.debug("SqlDAO: find: " + id + " " + myClass);
 		if (id != null) {
 			E entity = entityManager.find(myClass, id);
-			Log.debug("Entity Found: " + entity);
+			// debugf, not concatenation: the message must not be built when debug is off, because the
+			// entity's toString walks lazy collections (a Reference loads its cross references)
+			Log.debugf("Entity Found: %s", entity);
 			return entity;
 		} else {
 			Log.debug("Input Param is null: " + id);
@@ -374,12 +377,12 @@ public class BaseSQLDAO<E extends AuditedObject> extends BaseEntityDAO<E> {
 		entityManager.getTransaction().commit();
 	}
 
-	public void reindex() {
-		reindex(myClass, 1000, 10000, 0, 4, 14400, 1);
+	public CompletionStage<?> reindex() {
+		return reindex(myClass, 1000, 10000, 0, 4, 14400, 1);
 	}
 
-	public void reindex(Integer batchSizeToLoadObjects, Integer idFetchSize, Integer limitIndexedObjectsTo, Integer threadsToLoadObjects, Integer transactionTimeout, Integer typesToIndexInParallel) {
-		reindex(myClass, batchSizeToLoadObjects, idFetchSize, limitIndexedObjectsTo, threadsToLoadObjects, transactionTimeout, typesToIndexInParallel);
+	public CompletionStage<?> reindex(Integer batchSizeToLoadObjects, Integer idFetchSize, Integer limitIndexedObjectsTo, Integer threadsToLoadObjects, Integer transactionTimeout, Integer typesToIndexInParallel) {
+		return reindex(myClass, batchSizeToLoadObjects, idFetchSize, limitIndexedObjectsTo, threadsToLoadObjects, transactionTimeout, typesToIndexInParallel);
 	}
 
 	public void reindexEverything(Integer batchSizeToLoadObjects, Integer idFetchSize, Integer limitIndexedObjectsTo, Integer threadsToLoadObjects, Integer transactionTimeout, Integer typesToIndexInParallel) {
@@ -421,7 +424,7 @@ public class BaseSQLDAO<E extends AuditedObject> extends BaseEntityDAO<E> {
 		indexer.start();
 	}
 
-	public void reindex(Class<?> objectClass, Integer batchSizeToLoadObjects, Integer idFetchSize, Integer limitIndexedObjectsTo, Integer threadsToLoadObjects, Integer transactionTimeout, Integer typesToIndexInParallel) {
+	public CompletionStage<?> reindex(Class<?> objectClass, Integer batchSizeToLoadObjects, Integer idFetchSize, Integer limitIndexedObjectsTo, Integer threadsToLoadObjects, Integer transactionTimeout, Integer typesToIndexInParallel) {
 
 		Log.debug("Starting Indexing for: " + objectClass);
 		MassIndexer indexer = searchSession.massIndexer(objectClass).batchSizeToLoadObjects(batchSizeToLoadObjects).idFetchSize(idFetchSize).dropAndCreateSchemaOnStart(true).mergeSegmentsOnFinish(false).typesToIndexInParallel(typesToIndexInParallel).threadsToLoadObjects(threadsToLoadObjects)
@@ -459,7 +462,7 @@ public class BaseSQLDAO<E extends AuditedObject> extends BaseEntityDAO<E> {
 		if (limitIndexedObjectsTo > 0) {
 			indexer.limitIndexedObjectsTo(limitIndexedObjectsTo);
 		}
-		indexer.start();
+		return indexer.start();
 	}
 
 	public SearchResponse<E> searchAll(Pagination pagination) {

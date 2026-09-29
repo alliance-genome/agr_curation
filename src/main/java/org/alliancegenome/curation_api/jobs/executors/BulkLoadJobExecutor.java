@@ -23,6 +23,7 @@ import static org.alliancegenome.curation_api.enums.BackendBulkLoadType.GENE_DIS
 import static org.alliancegenome.curation_api.enums.BackendBulkLoadType.VARIANT;
 
 import java.util.List;
+import java.util.Set;
 
 import org.alliancegenome.curation_api.enums.BackendBulkLoadType;
 import org.alliancegenome.curation_api.jobs.executors.associations.AgmAgmAssociationExecutor;
@@ -48,6 +49,8 @@ import lombok.extern.jbosslog.JBossLog;
 @JBossLog
 @ApplicationScoped
 public class BulkLoadJobExecutor {
+
+	@Inject IngestFileScanner ingestFileScanner;
 
 	@Inject AlleleDiseaseAnnotationExecutor alleleDiseaseAnnotationExecutor;
 	@Inject AgmDiseaseAnnotationExecutor agmDiseaseAnnotationExecutor;
@@ -107,62 +110,87 @@ public class BulkLoadJobExecutor {
 
 		if (ingestTypes.contains(loadType)) {
 
-			if (loadType == AGM || loadType == FULL_INGEST) {
+			// FULL_INGEST and CONSTRUCT both fan out to several executors, and each one would
+			// otherwise deserialise the whole submission just to find its own ingest set absent.
+			// On a 330MB file that is eighteen full parses to do one pass of real work. Scanning
+			// the top level keys first costs one streaming pass and lets the rest be skipped.
+			// Null means "do not know", which keeps the original run-everything behaviour.
+			Set<String> ingestSets = null;
+			if (fansOut(loadType)) {
+				ingestSets = scanIngestSets(bulkLoadFileHistory);
+				if (ingestSets != null && ingestSets.isEmpty()) {
+					// Previously this ran all eighteen executors, each returning early, and
+					// reported success having loaded nothing.
+					log.info("Load: " + bulkLoadFileHistory.getBulkLoad().getName() + " contains no recognised ingest set");
+					throw new Exception("Load: " + bulkLoadFileHistory.getBulkLoad().getName() + " contains no recognised ingest set");
+				}
+			}
+
+			if (loadType == AGM || runs(loadType, ingestSets, "agm_ingest_set")) {
 				agmExecutor.execLoad(bulkLoadFileHistory, cleanUp);
 			}
-			if (loadType == ALLELE || loadType == FULL_INGEST) {
+			if (loadType == ALLELE || runs(loadType, ingestSets, "allele_ingest_set")) {
 				alleleExecutor.execLoad(bulkLoadFileHistory, cleanUp);
 			}
-			if (loadType == GENE || loadType == FULL_INGEST) {
+			if (loadType == GENE || runs(loadType, ingestSets, "gene_ingest_set")) {
 				geneExecutor.execLoad(bulkLoadFileHistory, cleanUp);
 			}
-			if (loadType == CONSTRUCT || loadType == FULL_INGEST) {
+			if (runs(loadType, ingestSets, "construct_ingest_set")) {
 				constructExecutor.execLoad(bulkLoadFileHistory, cleanUp);
 			}
-			if (loadType == TRANSGENIC_TOOL || loadType == FULL_INGEST) {
+			if (loadType == TRANSGENIC_TOOL || runs(loadType, ingestSets, "transgenic_tool_ingest_set")) {
 				transgenicToolExecutor.execLoad(bulkLoadFileHistory, cleanUp);
 			}
-			if (loadType == CASSETTE || loadType == FULL_INGEST) {
+			if (loadType == CASSETTE || runs(loadType, ingestSets, "cassette_ingest_set")) {
 				cassetteExecutor.execLoad(bulkLoadFileHistory, cleanUp);
 			}
-			if (loadType == ANTIBODY || loadType == FULL_INGEST) {
+			if (loadType == ANTIBODY || runs(loadType, ingestSets, "antibody_ingest_set")) {
 				antibodyExecutor.execLoad(bulkLoadFileHistory, cleanUp);
 			}
-			if (loadType == VARIANT || loadType == FULL_INGEST) {
+			if (loadType == VARIANT || runs(loadType, ingestSets, "variant_ingest_set")) {
 				// TODO: re-enable once accepting direct submissions of variants by DQMs again and FMS load turned off
 				// variantExecutor.execLoad(bulkLoadFileHistory, cleanUp);
 			}
-			if (loadType == ALLELE_DISEASE_ANNOTATION || loadType == DISEASE_ANNOTATION || loadType == FULL_INGEST) {
+			if (loadType == ALLELE_DISEASE_ANNOTATION || loadType == DISEASE_ANNOTATION || runs(loadType, ingestSets, "disease_allele_ingest_set")) {
 				alleleDiseaseAnnotationExecutor.execLoad(bulkLoadFileHistory, cleanUp);
 			}
-			if (loadType == AGM_DISEASE_ANNOTATION || loadType == DISEASE_ANNOTATION || loadType == FULL_INGEST) {
+			if (loadType == AGM_DISEASE_ANNOTATION || loadType == DISEASE_ANNOTATION || runs(loadType, ingestSets, "disease_agm_ingest_set")) {
 				agmDiseaseAnnotationExecutor.execLoad(bulkLoadFileHistory, cleanUp);
 			}
-			if (loadType == GENE_DISEASE_ANNOTATION || loadType == DISEASE_ANNOTATION || loadType == FULL_INGEST) {
+			if (loadType == GENE_DISEASE_ANNOTATION || loadType == DISEASE_ANNOTATION || runs(loadType, ingestSets, "disease_gene_ingest_set")) {
 				geneDiseaseAnnotationExecutor.execLoad(bulkLoadFileHistory, cleanUp);
 			}
-			if (loadType == ALLELE_ASSOCIATION || loadType == FULL_INGEST) {
+			// Two executors behind one load type, so each is gated on its own ingest set.
+			if (loadType == ALLELE_ASSOCIATION || runs(loadType, ingestSets, "allele_gene_association_ingest_set")) {
 				alleleGeneAssociationExecutor.execLoad(bulkLoadFileHistory, cleanUp);
+			}
+			if (loadType == ALLELE_ASSOCIATION || runs(loadType, ingestSets, "allele_construct_association_ingest_set")) {
 				alleleConstructAssociationExecutor.execLoad(bulkLoadFileHistory, cleanUp);
 			}
-			if (loadType == CONSTRUCT_ASSOCIATION || loadType == FULL_INGEST) {
+			if (loadType == CONSTRUCT_ASSOCIATION || runs(loadType, ingestSets, "construct_genomic_entity_association_ingest_set")) {
 				constructGenomicEntityAssociationExecutor.execLoad(bulkLoadFileHistory, cleanUp);
 			}
-			if (loadType == CONSTRUCT_CASSETTE_ASSOCIATION || loadType == FULL_INGEST) {
+			if (loadType == CONSTRUCT_CASSETTE_ASSOCIATION || runs(loadType, ingestSets, "construct_cassette_association_ingest_set")) {
 				constructCassetteAssociationExecutor.execLoad(bulkLoadFileHistory, cleanUp);
 			}
-			if (loadType == CASSETTE_GENOMIC_ENTITY_ASSOCIATION || loadType == FULL_INGEST) {
+			if (loadType == CASSETTE_GENOMIC_ENTITY_ASSOCIATION || runs(loadType, ingestSets, "cassette_genomic_entity_association_ingest_set")) {
 				cassetteGenomicEntityAssociationExecutor.execLoad(bulkLoadFileHistory, cleanUp);
 			}
-			if (loadType == CASSETTE_TRANSGENIC_TOOL_ASSOCIATION || loadType == FULL_INGEST) {
+			if (loadType == CASSETTE_TRANSGENIC_TOOL_ASSOCIATION || runs(loadType, ingestSets, "cassette_transgenic_tool_association_ingest_set")) {
 				cassetteTransgenicToolAssociationExecutor.execLoad(bulkLoadFileHistory, cleanUp);
 			}
-			if (loadType == CASSETTE_STR_ASSOCIATION || loadType == FULL_INGEST) {
+			if (loadType == CASSETTE_STR_ASSOCIATION || runs(loadType, ingestSets, "cassette_str_association_ingest_set")) {
 				cassetteStrAssociationExecutor.execLoad(bulkLoadFileHistory, cleanUp);
 			}
-			if (loadType == AGM_ASSOCIATION || loadType == FULL_INGEST) {
+			// The AGM/STR set is named for sequence_targeting_reagent in the schema, not for
+			// the agmStr abbreviation the Java field uses.
+			if (loadType == AGM_ASSOCIATION || runs(loadType, ingestSets, "agm_sequence_targeting_reagent_association_ingest_set")) {
 				agmStrAssociationExecutor.execLoad(bulkLoadFileHistory, cleanUp);
+			}
+			if (loadType == AGM_ASSOCIATION || runs(loadType, ingestSets, "agm_allele_association_ingest_set")) {
 				agmAlleleAssociationExecutor.execLoad(bulkLoadFileHistory, cleanUp);
+			}
+			if (loadType == AGM_ASSOCIATION || runs(loadType, ingestSets, "agm_agm_association_ingest_set")) {
 				agmAgmAssociationExecutor.execLoad(bulkLoadFileHistory, cleanUp);
 			}
 
@@ -219,5 +247,65 @@ public class BulkLoadJobExecutor {
 			throw new Exception("Load: " + bulkLoadFileHistory.getBulkLoad().getName() + " for type " + bulkLoadFileHistory.getBulkLoad().getBackendBulkLoadType() + " not implemented");
 		}
 		log.info("Process Finished for: " + bulkLoadFileHistory.getBulkLoad().getName());
+	}
+
+	/**
+	 * The constructs model is submitted as a family of files that share one load type: a
+	 * CONSTRUCT_&lt;MOD&gt; submission may carry constructs, cassettes, transgenic tools or any of
+	 * their associations. Listing the sets it owns keeps CONSTRUCT from straying into the rest
+	 * of a FULL_INGEST when the two overlap in a single file.
+	 *
+	 * Two sets the MODs ship are deliberately absent because nothing can read them yet:
+	 * str_ingest_set, which has no LinkML DTO (only the FMS SequenceTargetingReagent path),
+	 * and transgenic_tool_transgenic_tool_association_ingest_set, which is still unimplemented.
+	 */
+	private static final Set<String> CONSTRUCT_MODEL_INGEST_SETS = Set.of(
+		"construct_ingest_set",
+		"cassette_ingest_set",
+		"transgenic_tool_ingest_set",
+		"construct_cassette_association_ingest_set",
+		"construct_genomic_entity_association_ingest_set",
+		"cassette_genomic_entity_association_ingest_set",
+		"cassette_transgenic_tool_association_ingest_set",
+		"cassette_str_association_ingest_set");
+
+	/** Load types that carry more than one kind of entity and so are dispatched by file content. */
+	boolean fansOut(BackendBulkLoadType loadType) {
+		return loadType == FULL_INGEST || loadType == CONSTRUCT;
+	}
+
+	/**
+	 * Whether a content dispatched load should run an executor, given the ingest sets its file
+	 * actually carries. The single type loads keep their own explicit check alongside this, so
+	 * an operator submitting CASSETTE still gets the cassette executor either way.
+	 *
+	 * A null set means the scan did not run or failed, in which case every executor the load
+	 * type owns runs, as it did before the scan existed.
+	 */
+	boolean runs(BackendBulkLoadType loadType, Set<String> ingestSets, String ingestSetName) {
+		if (!fansOut(loadType)) {
+			return false;
+		}
+		if (loadType == CONSTRUCT && !CONSTRUCT_MODEL_INGEST_SETS.contains(ingestSetName)) {
+			return false;
+		}
+		return ingestSets == null || ingestSets.contains(ingestSetName);
+	}
+
+	/**
+	 * Returns null rather than propagating, so a scan that cannot read the file degrades to
+	 * running every executor instead of failing the load outright. The executors themselves
+	 * still report a genuinely unreadable file.
+	 */
+	private Set<String> scanIngestSets(BulkLoadFileHistory bulkLoadFileHistory) {
+		String localFilePath = bulkLoadFileHistory.getBulkLoadFile().getLocalFilePath();
+		try {
+			Set<String> ingestSets = ingestFileScanner.presentIngestSets(localFilePath);
+			log.info("Ingest sets found in " + localFilePath + ": " + ingestSets);
+			return ingestSets;
+		} catch (Exception e) {
+			log.warn("Could not scan ingest sets in " + localFilePath + ", running all executors", e);
+			return null;
+		}
 	}
 }

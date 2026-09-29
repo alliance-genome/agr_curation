@@ -6,7 +6,10 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.alliancegenome.curation_api.dao.ConstructDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
+import org.alliancegenome.curation_api.jobs.util.AutomaticIndexingSuspender;
+import org.alliancegenome.curation_api.model.entities.Construct;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkManualLoad;
 import org.alliancegenome.curation_api.model.ingest.dto.ConstructDTO;
@@ -27,6 +30,12 @@ public class ConstructExecutor extends LoadFileExecutor {
 
 	@Inject
 	NcbiTaxonTermService ncbiTaxonTermService;
+
+	@Inject
+	ConstructDAO constructDAO;
+
+	@Inject
+	AutomaticIndexingSuspender automaticIndexingSuspender;
 
 	public void execLoad(BulkLoadFileHistory bulkLoadFileHistory, Boolean cleanUp) {
 
@@ -65,9 +74,16 @@ public class ConstructExecutor extends LoadFileExecutor {
 
 		constructService.preLoadReferences(refList);
 
-		boolean success = runLoad(constructService, bulkLoadFileHistory, dataProvider, constructs, constructIdsLoaded);
-		if (success && cleanUp) {
-			runCleanup(constructService, bulkLoadFileHistory, dataProvider.name(), constructIdsBefore, constructIdsLoaded, "construct");
+		// SCRUM-6535: indexing each construct as its transaction commits dominated the load time.
+		// Write the constructs unindexed and rebuild the construct index once at the end instead.
+		automaticIndexingSuspender.suspend(Construct.class);
+		try {
+			boolean success = runLoad(constructService, bulkLoadFileHistory, dataProvider, constructs, constructIdsLoaded);
+			if (success && cleanUp) {
+				runCleanup(constructService, bulkLoadFileHistory, dataProvider.name(), constructIdsBefore, constructIdsLoaded, "construct");
+			}
+		} finally {
+			automaticIndexingSuspender.resumeAndReindex(Construct.class, constructDAO);
 		}
 		bulkLoadFileHistory.finishLoad();
 		updateHistory(bulkLoadFileHistory);
