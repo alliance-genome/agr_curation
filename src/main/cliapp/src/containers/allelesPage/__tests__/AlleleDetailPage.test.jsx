@@ -31,12 +31,14 @@ describe('<AlleleDetailPage />', () => {
 		window.localStorage.removeItem(FORM_SETTINGS_KEY);
 	});
 
+	// Prominent by colour, at the same size as the header's Show all fields button.
 	it('Shows Save as a prominent action', async () => {
 		await renderPage();
 
 		const saveButton = await screen.findByRole('button', { name: 'Save' });
 		expect(saveButton).toHaveClass('p-button-success');
 		expect(saveButton).not.toHaveClass('p-button-text');
+		expect(saveButton).not.toHaveClass('p-button-lg');
 	});
 
 	it('Renders without crashing', async () => {

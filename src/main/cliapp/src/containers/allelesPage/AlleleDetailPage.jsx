@@ -149,8 +149,8 @@ export default function AlleleDetailPage() {
 								showAllFields={showAllFields}
 							/>
 						</SplitterPanel>
-						<SplitterPanel size={20} className="flex align-items-center justify-content-start gap-2 py-3">
-							<Button label="Save" icon="pi pi-check" severity="success" size="large" onClick={handleSubmit} />
+						<SplitterPanel size={20} className="flex align-items-center justify-content-start gap-2 pl-2 py-3">
+							<Button label="Save" icon="pi pi-check" severity="success" onClick={handleSubmit} />
 							<NewAlleleButton className="p-button-text" />
 						</SplitterPanel>
 					</Splitter>
