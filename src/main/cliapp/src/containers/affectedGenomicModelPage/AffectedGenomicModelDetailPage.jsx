@@ -107,7 +107,7 @@ export default function AffectedGenomicModelDetailPage() {
 			<LoadingOverlay isLoading={!!agmPutRequestIsLoading} />
 			<ErrorBoundary>
 				<StickyHeader>
-					<Splitter className="bg-primary-reverse border-none lg:h-5rem" gutterSize={0}>
+					<Splitter className="bg-primary-reverse border-none lg:min-h-5rem" gutterSize={0}>
 						<SplitterPanel size={45} className="flex justify-content-start ml-5 py-3 ">
 							<h1 dangerouslySetInnerHTML={{ __html: headerText() }} />
 						</SplitterPanel>
