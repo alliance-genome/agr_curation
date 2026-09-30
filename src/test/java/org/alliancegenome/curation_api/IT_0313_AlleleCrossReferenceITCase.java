@@ -435,6 +435,23 @@ public class IT_0313_AlleleCrossReferenceITCase extends BaseITCase {
 			body("supplementalData.errorMap.crossReferences.'0'.referencedCurie", is(ValidationConstants.MISSING_LOCAL_ID_MESSAGE));
 	}
 
+	// Other entity types need a display name only when there is no curie; an allele's always needs one.
+	@Test
+	@Order(15)
+	public void crossReferenceWithoutDisplayNameIsRejected() {
+		CrossReference withoutDisplayName = buildXref("XRSUB:0010", defaultPage);
+		withoutDisplayName.setDisplayName(null);
+
+		RestAssured.given().
+			contentType("application/json").
+			body(List.of(withoutDisplayName)).
+			when().
+			put("/api/allele/" + alleleId + "/cross-references").
+			then().
+			statusCode(400).
+			body("supplementalData.errorMap.crossReferences.'0'.displayName", is(ValidationConstants.REQUIRED_MESSAGE));
+	}
+
 	private CrossReference buildXref(String referencedCurie, ResourceDescriptorPage page) {
 		CrossReference crossReference = new CrossReference();
 		crossReference.setReferencedCurie(referencedCurie);

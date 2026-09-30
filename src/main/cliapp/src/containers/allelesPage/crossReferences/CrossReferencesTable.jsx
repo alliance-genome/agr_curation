@@ -100,7 +100,12 @@ export const CrossReferencesTable = ({
 					);
 				}}
 				field="displayName"
-				header="Display Name"
+				header={
+					<>
+						<RequiredFieldMarker />
+						Display Name
+					</>
+				}
 				headerClassName="surface-0"
 			/>
 			<Column

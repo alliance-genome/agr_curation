@@ -35,15 +35,15 @@ public class CrossReferenceValidator extends AuditedObjectValidator<CrossReferen
 	 * Validates each cross reference in turn, recording an entry's errors against targetResponse under
 	 * fieldName and that entry's index.
 	 *
-	 * @param requireResourceDescriptorPage see {@link #validateCrossReference(CrossReference, Boolean, Boolean, boolean)}
+	 * @param requireCompleteCrossReference see {@link #validateCrossReference(CrossReference, Boolean, Boolean, boolean)}
 	 * @return the validated cross references, or null when any entry failed
 	 */
-	public List<CrossReference> validateCrossReferences(List<CrossReference> uiXrefs, String fieldName, ObjectResponse<?> targetResponse, boolean requireResourceDescriptorPage) {
+	public List<CrossReference> validateCrossReferences(List<CrossReference> uiXrefs, String fieldName, ObjectResponse<?> targetResponse, boolean requireCompleteCrossReference) {
 		List<CrossReference> validatedXrefs = new ArrayList<>();
 		boolean allValid = true;
 		if (CollectionUtils.isNotEmpty(uiXrefs)) {
 			for (int ix = 0; ix < uiXrefs.size(); ix++) {
-				ObjectResponse<CrossReference> xrefResponse = validateCrossReference(uiXrefs.get(ix), false, true, requireResourceDescriptorPage);
+				ObjectResponse<CrossReference> xrefResponse = validateCrossReference(uiXrefs.get(ix), false, true, requireCompleteCrossReference);
 				if (xrefResponse.hasErrors()) {
 					allValid = false;
 					targetResponse.addErrorMessages(fieldName, ix, xrefResponse.getErrorMessages());
@@ -70,11 +70,12 @@ public class CrossReferenceValidator extends AuditedObjectValidator<CrossReferen
 	 *        without storing it. A payload with no id is then returned unmanaged and without one; a payload
 	 *        carrying an id returns the managed row it names, with the payload's values applied but not
 	 *        written, so the caller must not run inside a transaction that would flush them.
-	 * @param requireResourceDescriptorPage whether the cross reference must name a page, and its curie carry
-	 *        the prefix of that page's resource descriptor. Off for the entity types whose stored cross
-	 *        references do not all meet it, so that saving an unrelated field on one of them is not refused.
+	 * @param requireCompleteCrossReference whether the cross reference must have a display name and name a
+	 *        page, and its curie carry the prefix of that page's resource descriptor. Off for the entity types
+	 *        whose stored cross references do not all meet it, so that saving an unrelated field on one of
+	 *        them is not refused. Without it, a display name is required only when there is no curie.
 	 */
-	public ObjectResponse<CrossReference> validateCrossReference(CrossReference uiEntity, Boolean throwError, Boolean persist, boolean requireResourceDescriptorPage) {
+	public ObjectResponse<CrossReference> validateCrossReference(CrossReference uiEntity, Boolean throwError, Boolean persist, boolean requireCompleteCrossReference) {
 		response = new ObjectResponse<>(uiEntity);
 		String errorTitle = "Could not create/update CrossReference: [" + uiEntity.getReferencedCurie() + "]";
 
@@ -104,7 +105,7 @@ public class CrossReferenceValidator extends AuditedObjectValidator<CrossReferen
 		dbEntity.setReferencedCurie(uiEntity.getReferencedCurie());
 
 		if (StringUtils.isEmpty(uiEntity.getDisplayName())) {
-			if (StringUtils.isEmpty(uiEntity.getReferencedCurie())) {
+			if (requireCompleteCrossReference || StringUtils.isEmpty(uiEntity.getReferencedCurie())) {
 				addMessageResponse("displayName", ValidationConstants.REQUIRED_MESSAGE);
 			}
 		}
@@ -117,7 +118,7 @@ public class CrossReferenceValidator extends AuditedObjectValidator<CrossReferen
 		ResourceDescriptorPage resourceDescriptorPage = null;
 		if (uiEntity.getResourceDescriptorPage() == null) {
 			dbEntity.setResourceDescriptorPage(null);
-			if (requireResourceDescriptorPage) {
+			if (requireCompleteCrossReference) {
 				addMessageResponse("resourceDescriptorPage", ValidationConstants.REQUIRED_MESSAGE);
 			}
 		} else {
@@ -128,7 +129,7 @@ public class CrossReferenceValidator extends AuditedObjectValidator<CrossReferen
 			}
 		}
 
-		if (requireResourceDescriptorPage) {
+		if (requireCompleteCrossReference) {
 			// A page that resolved without a descriptor names no resource for the curie to belong to.
 			if (resourceDescriptorPage != null && resourceDescriptorPage.getResourceDescriptor() == null) {
 				addMessageResponse("resourceDescriptorPage", ValidationConstants.INVALID_MESSAGE);

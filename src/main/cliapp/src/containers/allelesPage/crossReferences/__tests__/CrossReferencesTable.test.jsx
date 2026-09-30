@@ -224,7 +224,7 @@ describe('CrossReferencesTable', () => {
 		expect(onFieldChange).toHaveBeenCalledWith('row-1', 'internal', true);
 	});
 
-	it('Marks the curie, descriptor and page required, and the display name not', () => {
+	it('Marks the display name, curie, descriptor and page required', () => {
 		renderTable();
 
 		const marksRequired = (name) => screen.getByRole('columnheader', { name }).querySelector('.p-error') !== null;
@@ -232,7 +232,7 @@ describe('CrossReferencesTable', () => {
 		expect(marksRequired('Referenced Curie')).toBe(true);
 		expect(marksRequired('Resource Descriptor')).toBe(true);
 		expect(marksRequired('Resource Descriptor Page')).toBe(true);
-		expect(marksRequired('Display Name')).toBe(false);
+		expect(marksRequired('Display Name')).toBe(true);
 	});
 
 	// The curie editor reads its value only on mount, so without being remounted it would keep showing

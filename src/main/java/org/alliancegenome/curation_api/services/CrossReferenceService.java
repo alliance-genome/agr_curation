@@ -62,7 +62,8 @@ public class CrossReferenceService extends BaseEntityCrudService<CrossReference,
 	 * the row records its owner, so an unchecked id would re-parent another entity's row onto this one and leave
 	 * the previous owner's next save to orphan-delete it.
 	 *
-	 * <p>Every entry must name a resource descriptor page, and its curie carry that page's descriptor prefix.
+	 * <p>Every entry must have a display name and name a resource descriptor page, and its curie carry that
+	 * page's descriptor prefix.
 	 */
 	@Transactional
 	public ObjectListResponse<CrossReference> replaceForOwner(GenomicEntity owner, List<CrossReference> incomingXrefs) {
