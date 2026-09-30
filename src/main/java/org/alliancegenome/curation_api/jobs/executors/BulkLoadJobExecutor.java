@@ -126,71 +126,71 @@ public class BulkLoadJobExecutor {
 				}
 			}
 
-			if (loadType == AGM || runs(loadType, ingestSets, "agm_ingest_set")) {
+			if (loadType == AGM || fileCarriesIngestSet(loadType, ingestSets, "agm_ingest_set")) {
 				agmExecutor.execLoad(bulkLoadFileHistory, cleanUp);
 			}
-			if (loadType == ALLELE || runs(loadType, ingestSets, "allele_ingest_set")) {
+			if (loadType == ALLELE || fileCarriesIngestSet(loadType, ingestSets, "allele_ingest_set")) {
 				alleleExecutor.execLoad(bulkLoadFileHistory, cleanUp);
 			}
-			if (loadType == GENE || runs(loadType, ingestSets, "gene_ingest_set")) {
+			if (loadType == GENE || fileCarriesIngestSet(loadType, ingestSets, "gene_ingest_set")) {
 				geneExecutor.execLoad(bulkLoadFileHistory, cleanUp);
 			}
-			if (runs(loadType, ingestSets, "construct_ingest_set")) {
+			if (fileCarriesIngestSet(loadType, ingestSets, "construct_ingest_set")) {
 				constructExecutor.execLoad(bulkLoadFileHistory, cleanUp);
 			}
-			if (loadType == TRANSGENIC_TOOL || runs(loadType, ingestSets, "transgenic_tool_ingest_set")) {
+			if (loadType == TRANSGENIC_TOOL || fileCarriesIngestSet(loadType, ingestSets, "transgenic_tool_ingest_set")) {
 				transgenicToolExecutor.execLoad(bulkLoadFileHistory, cleanUp);
 			}
-			if (loadType == CASSETTE || runs(loadType, ingestSets, "cassette_ingest_set")) {
+			if (loadType == CASSETTE || fileCarriesIngestSet(loadType, ingestSets, "cassette_ingest_set")) {
 				cassetteExecutor.execLoad(bulkLoadFileHistory, cleanUp);
 			}
-			if (loadType == ANTIBODY || runs(loadType, ingestSets, "antibody_ingest_set")) {
+			if (loadType == ANTIBODY || fileCarriesIngestSet(loadType, ingestSets, "antibody_ingest_set")) {
 				antibodyExecutor.execLoad(bulkLoadFileHistory, cleanUp);
 			}
-			if (loadType == VARIANT || runs(loadType, ingestSets, "variant_ingest_set")) {
+			if (loadType == VARIANT || fileCarriesIngestSet(loadType, ingestSets, "variant_ingest_set")) {
 				// TODO: re-enable once accepting direct submissions of variants by DQMs again and FMS load turned off
 				// variantExecutor.execLoad(bulkLoadFileHistory, cleanUp);
 			}
-			if (loadType == ALLELE_DISEASE_ANNOTATION || loadType == DISEASE_ANNOTATION || runs(loadType, ingestSets, "disease_allele_ingest_set")) {
+			if (loadType == ALLELE_DISEASE_ANNOTATION || loadType == DISEASE_ANNOTATION || fileCarriesIngestSet(loadType, ingestSets, "disease_allele_ingest_set")) {
 				alleleDiseaseAnnotationExecutor.execLoad(bulkLoadFileHistory, cleanUp);
 			}
-			if (loadType == AGM_DISEASE_ANNOTATION || loadType == DISEASE_ANNOTATION || runs(loadType, ingestSets, "disease_agm_ingest_set")) {
+			if (loadType == AGM_DISEASE_ANNOTATION || loadType == DISEASE_ANNOTATION || fileCarriesIngestSet(loadType, ingestSets, "disease_agm_ingest_set")) {
 				agmDiseaseAnnotationExecutor.execLoad(bulkLoadFileHistory, cleanUp);
 			}
-			if (loadType == GENE_DISEASE_ANNOTATION || loadType == DISEASE_ANNOTATION || runs(loadType, ingestSets, "disease_gene_ingest_set")) {
+			if (loadType == GENE_DISEASE_ANNOTATION || loadType == DISEASE_ANNOTATION || fileCarriesIngestSet(loadType, ingestSets, "disease_gene_ingest_set")) {
 				geneDiseaseAnnotationExecutor.execLoad(bulkLoadFileHistory, cleanUp);
 			}
 			// Two executors behind one load type, so each is gated on its own ingest set.
-			if (loadType == ALLELE_ASSOCIATION || runs(loadType, ingestSets, "allele_gene_association_ingest_set")) {
+			if (loadType == ALLELE_ASSOCIATION || fileCarriesIngestSet(loadType, ingestSets, "allele_gene_association_ingest_set")) {
 				alleleGeneAssociationExecutor.execLoad(bulkLoadFileHistory, cleanUp);
 			}
-			if (loadType == ALLELE_ASSOCIATION || runs(loadType, ingestSets, "allele_construct_association_ingest_set")) {
+			if (loadType == ALLELE_ASSOCIATION || fileCarriesIngestSet(loadType, ingestSets, "allele_construct_association_ingest_set")) {
 				alleleConstructAssociationExecutor.execLoad(bulkLoadFileHistory, cleanUp);
 			}
-			if (loadType == CONSTRUCT_ASSOCIATION || runs(loadType, ingestSets, "construct_genomic_entity_association_ingest_set")) {
+			if (loadType == CONSTRUCT_ASSOCIATION || fileCarriesIngestSet(loadType, ingestSets, "construct_genomic_entity_association_ingest_set")) {
 				constructGenomicEntityAssociationExecutor.execLoad(bulkLoadFileHistory, cleanUp);
 			}
-			if (loadType == CONSTRUCT_CASSETTE_ASSOCIATION || runs(loadType, ingestSets, "construct_cassette_association_ingest_set")) {
+			if (loadType == CONSTRUCT_CASSETTE_ASSOCIATION || fileCarriesIngestSet(loadType, ingestSets, "construct_cassette_association_ingest_set")) {
 				constructCassetteAssociationExecutor.execLoad(bulkLoadFileHistory, cleanUp);
 			}
-			if (loadType == CASSETTE_GENOMIC_ENTITY_ASSOCIATION || runs(loadType, ingestSets, "cassette_genomic_entity_association_ingest_set")) {
+			if (loadType == CASSETTE_GENOMIC_ENTITY_ASSOCIATION || fileCarriesIngestSet(loadType, ingestSets, "cassette_genomic_entity_association_ingest_set")) {
 				cassetteGenomicEntityAssociationExecutor.execLoad(bulkLoadFileHistory, cleanUp);
 			}
-			if (loadType == CASSETTE_TRANSGENIC_TOOL_ASSOCIATION || runs(loadType, ingestSets, "cassette_transgenic_tool_association_ingest_set")) {
+			if (loadType == CASSETTE_TRANSGENIC_TOOL_ASSOCIATION || fileCarriesIngestSet(loadType, ingestSets, "cassette_transgenic_tool_association_ingest_set")) {
 				cassetteTransgenicToolAssociationExecutor.execLoad(bulkLoadFileHistory, cleanUp);
 			}
-			if (loadType == CASSETTE_STR_ASSOCIATION || runs(loadType, ingestSets, "cassette_str_association_ingest_set")) {
+			if (loadType == CASSETTE_STR_ASSOCIATION || fileCarriesIngestSet(loadType, ingestSets, "cassette_str_association_ingest_set")) {
 				cassetteStrAssociationExecutor.execLoad(bulkLoadFileHistory, cleanUp);
 			}
 			// The AGM/STR set is named for sequence_targeting_reagent in the schema, not for
 			// the agmStr abbreviation the Java field uses.
-			if (loadType == AGM_ASSOCIATION || runs(loadType, ingestSets, "agm_sequence_targeting_reagent_association_ingest_set")) {
+			if (loadType == AGM_ASSOCIATION || fileCarriesIngestSet(loadType, ingestSets, "agm_sequence_targeting_reagent_association_ingest_set")) {
 				agmStrAssociationExecutor.execLoad(bulkLoadFileHistory, cleanUp);
 			}
-			if (loadType == AGM_ASSOCIATION || runs(loadType, ingestSets, "agm_allele_association_ingest_set")) {
+			if (loadType == AGM_ASSOCIATION || fileCarriesIngestSet(loadType, ingestSets, "agm_allele_association_ingest_set")) {
 				agmAlleleAssociationExecutor.execLoad(bulkLoadFileHistory, cleanUp);
 			}
-			if (loadType == AGM_ASSOCIATION || runs(loadType, ingestSets, "agm_agm_association_ingest_set")) {
+			if (loadType == AGM_ASSOCIATION || fileCarriesIngestSet(loadType, ingestSets, "agm_agm_association_ingest_set")) {
 				agmAgmAssociationExecutor.execLoad(bulkLoadFileHistory, cleanUp);
 			}
 
@@ -275,14 +275,15 @@ public class BulkLoadJobExecutor {
 	}
 
 	/**
-	 * Whether a content dispatched load should run an executor, given the ingest sets its file
-	 * actually carries. The single type loads keep their own explicit check alongside this, so
-	 * an operator submitting CASSETTE still gets the cassette executor either way.
+	 * Whether the file of a content dispatched load carries {@code ingestSetName}, and the load
+	 * type owns that set, so its executor should run. The single type loads keep their own
+	 * explicit check alongside this, so an operator submitting CASSETTE still gets the cassette
+	 * executor either way.
 	 *
 	 * A null set means the scan did not run or failed, in which case every executor the load
 	 * type owns runs, as it did before the scan existed.
 	 */
-	boolean runs(BackendBulkLoadType loadType, Set<String> ingestSets, String ingestSetName) {
+	boolean fileCarriesIngestSet(BackendBulkLoadType loadType, Set<String> ingestSets, String ingestSetName) {
 		if (!fansOut(loadType)) {
 			return false;
 		}

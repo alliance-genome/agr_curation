@@ -43,7 +43,7 @@ class BulkLoadJobExecutorFanOutTest {
 			"cassette_str_association_ingest_set");
 
 		for (String ingestSet : present) {
-			assertTrue(executor.runs(CONSTRUCT, present, ingestSet), ingestSet + " should run under CONSTRUCT");
+			assertTrue(executor.fileCarriesIngestSet(CONSTRUCT, present, ingestSet), ingestSet + " should run under CONSTRUCT");
 		}
 	}
 
@@ -55,14 +55,14 @@ class BulkLoadJobExecutorFanOutTest {
 	void constructDoesNotStrayOutsideItsModel() {
 		Set<String> present = Set.of("construct_ingest_set", "gene_ingest_set", "allele_ingest_set", "disease_gene_ingest_set");
 
-		assertTrue(executor.runs(CONSTRUCT, present, "construct_ingest_set"));
-		assertFalse(executor.runs(CONSTRUCT, present, "gene_ingest_set"));
-		assertFalse(executor.runs(CONSTRUCT, present, "allele_ingest_set"));
-		assertFalse(executor.runs(CONSTRUCT, present, "disease_gene_ingest_set"));
+		assertTrue(executor.fileCarriesIngestSet(CONSTRUCT, present, "construct_ingest_set"));
+		assertFalse(executor.fileCarriesIngestSet(CONSTRUCT, present, "gene_ingest_set"));
+		assertFalse(executor.fileCarriesIngestSet(CONSTRUCT, present, "allele_ingest_set"));
+		assertFalse(executor.fileCarriesIngestSet(CONSTRUCT, present, "disease_gene_ingest_set"));
 
 		// The same file under FULL_INGEST does reach all of them.
-		assertTrue(executor.runs(FULL_INGEST, present, "gene_ingest_set"));
-		assertTrue(executor.runs(FULL_INGEST, present, "allele_ingest_set"));
+		assertTrue(executor.fileCarriesIngestSet(FULL_INGEST, present, "gene_ingest_set"));
+		assertTrue(executor.fileCarriesIngestSet(FULL_INGEST, present, "allele_ingest_set"));
 	}
 
 	/** An ingest set the file does not carry must not schedule its executor. */
@@ -70,9 +70,9 @@ class BulkLoadJobExecutorFanOutTest {
 	void absentIngestSetsAreSkipped() {
 		Set<String> present = Set.of("cassette_ingest_set");
 
-		assertTrue(executor.runs(CONSTRUCT, present, "cassette_ingest_set"));
-		assertFalse(executor.runs(CONSTRUCT, present, "construct_ingest_set"));
-		assertFalse(executor.runs(FULL_INGEST, present, "gene_ingest_set"));
+		assertTrue(executor.fileCarriesIngestSet(CONSTRUCT, present, "cassette_ingest_set"));
+		assertFalse(executor.fileCarriesIngestSet(CONSTRUCT, present, "construct_ingest_set"));
+		assertFalse(executor.fileCarriesIngestSet(FULL_INGEST, present, "gene_ingest_set"));
 	}
 
 	/**
@@ -81,9 +81,9 @@ class BulkLoadJobExecutorFanOutTest {
 	 */
 	@Test
 	void aFailedScanRunsEverythingTheLoadTypeOwns() {
-		assertTrue(executor.runs(FULL_INGEST, null, "gene_ingest_set"));
-		assertTrue(executor.runs(CONSTRUCT, null, "cassette_ingest_set"));
-		assertFalse(executor.runs(CONSTRUCT, null, "gene_ingest_set"), "scope still applies without a scan");
+		assertTrue(executor.fileCarriesIngestSet(FULL_INGEST, null, "gene_ingest_set"));
+		assertTrue(executor.fileCarriesIngestSet(CONSTRUCT, null, "cassette_ingest_set"));
+		assertFalse(executor.fileCarriesIngestSet(CONSTRUCT, null, "gene_ingest_set"), "scope still applies without a scan");
 	}
 
 	/** Single type loads never reach this path; they are gated by their own equality check. */
@@ -91,7 +91,7 @@ class BulkLoadJobExecutorFanOutTest {
 	void singleTypeLoadsAreNotContentDispatched() {
 		Set<String> present = Set.of("cassette_ingest_set", "gene_ingest_set");
 
-		assertFalse(executor.runs(CASSETTE, present, "cassette_ingest_set"));
-		assertFalse(executor.runs(ALLELE, present, "allele_ingest_set"));
+		assertFalse(executor.fileCarriesIngestSet(CASSETTE, present, "cassette_ingest_set"));
+		assertFalse(executor.fileCarriesIngestSet(ALLELE, present, "allele_ingest_set"));
 	}
 }
