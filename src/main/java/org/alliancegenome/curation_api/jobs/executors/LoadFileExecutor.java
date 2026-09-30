@@ -127,7 +127,11 @@ public class LoadFileExecutor {
 		return true;
 	}
 
-	protected IngestDTO readIngestFile(BulkLoadFileHistory bulkLoadFileHistory, Class<?> dtoClass) {
+	/**
+	 * Parses the whole submission once. Each executor then checks the schema version against
+	 * its own DTO class with {@link #checkSchemaVersion}.
+	 */
+	protected IngestDTO readIngestFile(BulkLoadFileHistory bulkLoadFileHistory) {
 		try {
 			IngestDTO ingestDto = mapper.readValue(new GZIPInputStream(new FileInputStream(bulkLoadFileHistory.getBulkLoadFile().getLocalFilePath())), IngestDTO.class);
 			bulkLoadFileHistory.getBulkLoadFile().setLinkMLSchemaVersion(getVersionNumber(ingestDto.getLinkMLVersion()));
@@ -136,10 +140,6 @@ public class LoadFileExecutor {
 			}
 
 			bulkLoadFileDAO.merge(bulkLoadFileHistory.getBulkLoadFile());
-
-			if (!checkSchemaVersion(bulkLoadFileHistory, dtoClass)) {
-				return null;
-			}
 
 			return ingestDto;
 		} catch (Exception e) {

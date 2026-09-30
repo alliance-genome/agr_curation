@@ -22,13 +22,12 @@ public class VariantExecutor extends LoadFileExecutor {
 	@Inject VariantDAO variantDAO;
 	@Inject VariantService variantService;
 
-	public void execLoad(BulkLoadFileHistory bulkLoadFileHistory, Boolean cleanUp) {
+	public void execLoad(BulkLoadFileHistory bulkLoadFileHistory, IngestDTO ingestDto, Boolean cleanUp) {
 
 		BulkManualLoad manual = (BulkManualLoad) bulkLoadFileHistory.getBulkLoad();
 		Log.info("Running with: " + manual.getDataProvider().name());
 
-		IngestDTO ingestDto = readIngestFile(bulkLoadFileHistory, VariantDTO.class);
-		if (ingestDto == null) {
+		if (!checkSchemaVersion(bulkLoadFileHistory, VariantDTO.class)) {
 			return;
 		}
 

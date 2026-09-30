@@ -26,14 +26,13 @@ public class AgmDiseaseAnnotationExecutor extends LoadFileExecutor {
 	@Inject DiseaseAnnotationService diseaseAnnotationService;
 	@Inject AGMDiseaseAnnotationService agmDiseaseAnnotationService;
 
-	public void execLoad(BulkLoadFileHistory bulkLoadFileHistory, Boolean cleanUp) {
+	public void execLoad(BulkLoadFileHistory bulkLoadFileHistory, IngestDTO ingestDto, Boolean cleanUp) {
 
 		BulkManualLoad manual = (BulkManualLoad) bulkLoadFileHistory.getBulkLoad();
 		BackendBulkDataProvider dataProvider = manual.getDataProvider();
 		log.info("Running with dataProvider: " + dataProvider.name());
 
-		IngestDTO ingestDto = readIngestFile(bulkLoadFileHistory, AGMDiseaseAnnotationDTO.class);
-		if (ingestDto == null) {
+		if (!checkSchemaVersion(bulkLoadFileHistory, AGMDiseaseAnnotationDTO.class)) {
 			return;
 		}
 

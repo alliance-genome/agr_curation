@@ -27,14 +27,13 @@ public class GeneExecutor extends LoadFileExecutor {
 
 	@Inject NcbiTaxonTermService ncbiTaxonTermService;
 
-	public void execLoad(BulkLoadFileHistory bulkLoadFileHistory, Boolean cleanUp) {
+	public void execLoad(BulkLoadFileHistory bulkLoadFileHistory, IngestDTO ingestDto, Boolean cleanUp) {
 
 		BulkManualLoad manual = (BulkManualLoad) bulkLoadFileHistory.getBulkLoad();
 		BackendBulkDataProvider dataProvider = manual.getDataProvider();
 		log.info("Running with dataProvider : " + dataProvider.name());
 
-		IngestDTO ingestDto = readIngestFile(bulkLoadFileHistory, GeneDTO.class);
-		if (ingestDto == null) {
+		if (!checkSchemaVersion(bulkLoadFileHistory, GeneDTO.class)) {
 			return;
 		}
 

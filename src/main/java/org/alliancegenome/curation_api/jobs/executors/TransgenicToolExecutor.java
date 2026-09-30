@@ -29,13 +29,12 @@ public class TransgenicToolExecutor extends LoadFileExecutor {
 	@Inject TransgenicToolDAO transgenicToolDAO;
 	@Inject AutomaticIndexingSuspender automaticIndexingSuspender;
 
-	public void execLoad(BulkLoadFileHistory bulkLoadFileHistory, Boolean cleanUp) {
+	public void execLoad(BulkLoadFileHistory bulkLoadFileHistory, IngestDTO ingestDto, Boolean cleanUp) {
 
 		BulkManualLoad manual = (BulkManualLoad) bulkLoadFileHistory.getBulkLoad();
 		Log.info("Running with: " + manual.getDataProvider().name());
 
-		IngestDTO ingestDto = readIngestFile(bulkLoadFileHistory, TransgenicToolDTO.class);
-		if (ingestDto == null) {
+		if (!checkSchemaVersion(bulkLoadFileHistory, TransgenicToolDTO.class)) {
 			return;
 		}
 

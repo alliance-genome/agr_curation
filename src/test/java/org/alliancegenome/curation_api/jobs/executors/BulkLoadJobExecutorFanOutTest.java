@@ -75,17 +75,6 @@ class BulkLoadJobExecutorFanOutTest {
 		assertFalse(executor.fileCarriesIngestSet(FULL_INGEST, present, "gene_ingest_set"));
 	}
 
-	/**
-	 * A failed scan must degrade to the behaviour that predates it, running everything the load
-	 * type owns, rather than silently loading nothing.
-	 */
-	@Test
-	void aFailedScanRunsEverythingTheLoadTypeOwns() {
-		assertTrue(executor.fileCarriesIngestSet(FULL_INGEST, null, "gene_ingest_set"));
-		assertTrue(executor.fileCarriesIngestSet(CONSTRUCT, null, "cassette_ingest_set"));
-		assertFalse(executor.fileCarriesIngestSet(CONSTRUCT, null, "gene_ingest_set"), "scope still applies without a scan");
-	}
-
 	/** Single type loads never reach this path; they are gated by their own equality check. */
 	@Test
 	void singleTypeLoadsAreNotContentDispatched() {
