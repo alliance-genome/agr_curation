@@ -6,10 +6,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.alliancegenome.curation_api.dao.TransgenicToolDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
-import org.alliancegenome.curation_api.jobs.util.AutomaticIndexingSuspender;
-import org.alliancegenome.curation_api.model.entities.TransgenicTool;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkManualLoad;
 import org.alliancegenome.curation_api.model.ingest.dto.TransgenicToolDTO;
@@ -26,8 +23,6 @@ import jakarta.inject.Inject;
 public class TransgenicToolExecutor extends LoadFileExecutor {
 
 	@Inject TransgenicToolService transgenicToolService;
-	@Inject TransgenicToolDAO transgenicToolDAO;
-	@Inject AutomaticIndexingSuspender automaticIndexingSuspender;
 
 	public void execLoad(BulkLoadFileHistory bulkLoadFileHistory, IngestDTO ingestDto, Boolean cleanUp) {
 
@@ -65,15 +60,9 @@ public class TransgenicToolExecutor extends LoadFileExecutor {
 
 		transgenicToolService.preLoadReferences(refList);
 
-		// Indexed once at the end rather than per commit, see ConstructExecutor
-		automaticIndexingSuspender.suspend(TransgenicTool.class);
-		try {
-			boolean success = runLoad(transgenicToolService, bulkLoadFileHistory, dataProvider, transgenicTools, idsLoaded);
-			if (success && cleanUp) {
-				runCleanup(transgenicToolService, bulkLoadFileHistory, dataProvider.name(), idsBefore, idsLoaded, "transgenic tool");
-			}
-		} finally {
-			automaticIndexingSuspender.resumeAndReindex(TransgenicTool.class, transgenicToolDAO);
+		boolean success = runLoad(transgenicToolService, bulkLoadFileHistory, dataProvider, transgenicTools, idsLoaded);
+		if (success && cleanUp) {
+			runCleanup(transgenicToolService, bulkLoadFileHistory, dataProvider.name(), idsBefore, idsLoaded, "transgenic tool");
 		}
 		bulkLoadFileHistory.finishLoad();
 		updateHistory(bulkLoadFileHistory);
