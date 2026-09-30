@@ -22,6 +22,19 @@ export const buildNewCrossReference = () => {
 };
 
 /**
+ * The resource descriptor prefix a curie names: everything before the first colon, the same rule the API
+ * applies. A curie with no colon, or one that starts with it, names none.
+ *
+ * @param {string} referencedCurie
+ * @returns {string|null}
+ */
+export const curiePrefixOf = (referencedCurie) => {
+	const separatorIndex = typeof referencedCurie === 'string' ? referencedCurie.indexOf(':') : -1;
+
+	return separatorIndex > 0 ? referencedCurie.slice(0, separatorIndex) : null;
+};
+
+/**
  * Lifts the descriptor a stored page belongs to onto the row itself, where the descriptor column
  * reads it.
  *

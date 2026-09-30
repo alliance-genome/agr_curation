@@ -9,6 +9,7 @@ vi.mock('../../../../service/ResourceDescriptorService', () => ({
 import {
 	applyCrossReferenceFieldChange,
 	buildNewCrossReference,
+	curiePrefixOf,
 	findMissingRequiredFields,
 	findRow,
 	seedResourceDescriptor,
@@ -389,5 +390,19 @@ describe('findMissingRequiredFields', () => {
 		expect(Object.keys(missing['row-3']).sort()).toEqual(
 			['displayName', 'referencedCurie', 'resourceDescriptor', 'resourceDescriptorPage'].sort()
 		);
+	});
+});
+
+describe('curiePrefixOf', () => {
+	it('Reads everything before the first colon', () => {
+		expect(curiePrefixOf('PMID:123')).toBe('PMID');
+		expect(curiePrefixOf('DOI:10.1016/s0896-6273(04)00073-x')).toBe('DOI');
+	});
+
+	it('Finds no prefix without a colon, or before a leading one', () => {
+		expect(curiePrefixOf('PMID123')).toBeNull();
+		expect(curiePrefixOf(':123')).toBeNull();
+		expect(curiePrefixOf('')).toBeNull();
+		expect(curiePrefixOf(undefined)).toBeNull();
 	});
 });

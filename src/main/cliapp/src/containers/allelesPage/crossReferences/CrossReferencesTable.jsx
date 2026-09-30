@@ -12,7 +12,8 @@ import {
 } from '../../../components/Editors/autocomplete/resourceDescriptor/utils';
 import { DialogErrorMessageComponent } from '../../../components/Error/DialogErrorMessageComponent';
 import { RequiredFieldMarker } from '../../../components/RequiredFieldMarker';
-import { findRow } from './utils';
+import { curiePrefixOf, findRow } from './utils';
+import { useResourceDescriptorsByPrefix } from './useResourceDescriptorsByPrefix';
 
 /**
  * The editable cross references table, rendered by both the Alleles table dialog and the allele
@@ -43,6 +44,18 @@ export const CrossReferencesTable = ({
 	// is taken from the snapshot: it identifies the row and never changes.
 	const resolveRow = (editorOptions) =>
 		findRow(crossReferences, editorOptions?.rowData?.dataKey) ?? editorOptions?.rowData ?? {};
+
+	const resourceDescriptorsByPrefix = useResourceDescriptorsByPrefix();
+
+	// Leaving the curie cell sets the descriptor its prefix names, replacing one chosen before, since the
+	// two must match to save. It waits for the curator to leave the cell because a new descriptor remounts
+	// the curie editor, which would take the input from under them while they type.
+	const fillDescriptorFromCurie = (row) => () => {
+		const descriptor = resourceDescriptorsByPrefix.get(curiePrefixOf(row.referencedCurie));
+		if (descriptor && descriptor.id !== row.resourceDescriptor?.id) {
+			onFieldChange(row.dataKey, 'resourceDescriptor', descriptor);
+		}
+	};
 
 	const textChangeHandler = (row, field) => (rowIndex, event) => onFieldChange(row.dataKey, field, event.target.value);
 
@@ -112,18 +125,20 @@ export const CrossReferencesTable = ({
 				editor={(props) => {
 					const row = resolveRow(props);
 					return (
-						<TableInputTextEditor
-							// The editor reads its value only when it mounts, and choosing a descriptor can start
-							// the curie with that descriptor's prefix. Keying it on the descriptor remounts it
-							// then, so the input shows the curie the row holds.
-							key={row.resourceDescriptor?.id ?? 'no-descriptor'}
-							value={row.referencedCurie}
-							rowIndex={props.rowIndex}
-							errorMessages={errorMessages}
-							dataKey={row.dataKey}
-							textOnChangeHandler={textChangeHandler(row, 'referencedCurie')}
-							field="referencedCurie"
-						/>
+						<div onBlur={fillDescriptorFromCurie(row)}>
+							<TableInputTextEditor
+								// The editor reads its value only when it mounts, and choosing a descriptor can start
+								// the curie with that descriptor's prefix. Keying it on the descriptor remounts it
+								// then, so the input shows the curie the row holds.
+								key={row.resourceDescriptor?.id ?? 'no-descriptor'}
+								value={row.referencedCurie}
+								rowIndex={props.rowIndex}
+								errorMessages={errorMessages}
+								dataKey={row.dataKey}
+								textOnChangeHandler={textChangeHandler(row, 'referencedCurie')}
+								field="referencedCurie"
+							/>
+						</div>
 					);
 				}}
 				field="referencedCurie"

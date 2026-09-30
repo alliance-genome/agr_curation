@@ -98,13 +98,14 @@ describe('<AlleleDetailPage /> cross references', () => {
 		});
 	};
 
-	// Other sections of the page have their own editors, so these are found inside this one.
-	const crossReferencesSection = () => screen.getByRole('heading', { name: 'Cross References' }).closest('.col-12');
+	// Other sections of the page have their own editors, so a cross reference's are found in its row,
+	// reached from its descriptor cell.
+	const crossReferenceRow = () => screen.getByLabelText('resourceDescriptor').closest('tr');
 
 	// Editing the stored row leaves it complete, so what follows is the save rather than the required check.
 	const editCrossReference = async (user) => {
 		await waitForCrossReferencesToLoad();
-		await user.type(crossReferencesSection().querySelector('#displayName'), ' edited');
+		await user.type(crossReferenceRow().querySelector('#displayName'), ' edited');
 	};
 
 	const editCrossReferenceAndSave = async (user) => {
@@ -204,12 +205,12 @@ describe('<AlleleDetailPage /> cross references', () => {
 		await renderPage();
 
 		await waitForCrossReferencesToLoad();
-		await user.clear(crossReferencesSection().querySelector('#displayName'));
+		await user.clear(crossReferenceRow().querySelector('#displayName'));
 		await user.click(screen.getByRole('button', { name: 'Save' }));
 
 		expect(await screen.findByText('Some cross references are missing required fields')).toBeInTheDocument();
 		expect(screen.getByText('Allele not saved:')).toBeInTheDocument();
-		expect(within(crossReferencesSection()).getByText('Required field is empty')).toBeInTheDocument();
+		expect(within(crossReferenceRow()).getByText('Required field is empty')).toBeInTheDocument();
 		expect(saveAlleleDetail).not.toHaveBeenCalled();
 		expect(replaceCrossReferencesForAllele).not.toHaveBeenCalled();
 	});
@@ -219,7 +220,7 @@ describe('<AlleleDetailPage /> cross references', () => {
 		await renderPage();
 
 		await waitForCrossReferencesToLoad();
-		await user.clear(crossReferencesSection().querySelector('#displayName'));
+		await user.clear(crossReferenceRow().querySelector('#displayName'));
 		await user.click(screen.getByRole('button', { name: /Save Cross References/ }));
 
 		expect(await screen.findByText('Some cross references are missing required fields')).toBeInTheDocument();

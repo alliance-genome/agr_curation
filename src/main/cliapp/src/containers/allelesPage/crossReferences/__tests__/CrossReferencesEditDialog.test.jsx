@@ -2,10 +2,7 @@ import React from 'react';
 import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { renderWithClient } from '../../../../tools/jest/utils';
-
-// The descriptor autocomplete waits out its typing delay before it searches, then opens its panel, which
-// can take longer than a query's default one second on a busy machine.
-const SUGGESTIONS_TIMEOUT = 5000;
+import { Endpoints } from '../../../../constants/Endpoints';
 
 const { validate, getResourceDescriptor, search } = vi.hoisted(() => ({
 	validate: vi.fn(),
@@ -155,15 +152,20 @@ describe('CrossReferencesEditDialog', () => {
 		await waitFor(() => expect(getResourceDescriptor).toHaveBeenCalled());
 
 		// The new row is filled in, so it passes the required check and goes to the API with the stored one.
-		// Choosing the descriptor starts its curie with the prefix and picks the default page.
+		// Leaving its curie cell sets the descriptor the prefix names and that descriptor's default page.
 		await user.click(screen.getByRole('button', { name: /New Cross Reference/ }));
-		await user.type(screen.getAllByLabelText('resourceDescriptor')[1], 'PMI');
-		await user.click(await screen.findByText(/PubMed/, {}, { timeout: SUGGESTIONS_TIMEOUT }));
-		await user.type(document.querySelectorAll('#referencedCurie')[1], '123');
+		await waitFor(() =>
+			expect(search.mock.calls.some(([endpoint]) => endpoint === Endpoints.Resource.DESCRIPTOR)).toBe(true)
+		);
+		await user.type(document.querySelectorAll('#referencedCurie')[1], 'PMID:123');
 		await user.type(document.querySelectorAll('#displayName')[1], 'PMID:123');
 		await user.click(screen.getByRole('button', { name: /Keep Edits/ }));
 
 		await waitFor(() => expect(validate).toHaveBeenCalledTimes(2));
+		expect(validate.mock.calls[1][1]).toMatchObject({
+			referencedCurie: 'PMID:123',
+			resourceDescriptorPage: { id: 1, name: 'default' },
+		});
 	});
 
 	// The resource descriptor is not stored on a cross reference, so only this check reports it missing.
