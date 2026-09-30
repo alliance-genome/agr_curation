@@ -3,9 +3,14 @@ import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { renderWithClient } from '../../../../tools/jest/utils';
 
-const { validate, getResourceDescriptor } = vi.hoisted(() => ({
+// The descriptor autocomplete waits out its typing delay before it searches, then opens its panel, which
+// can take longer than a query's default one second on a busy machine.
+const SUGGESTIONS_TIMEOUT = 5000;
+
+const { validate, getResourceDescriptor, search } = vi.hoisted(() => ({
 	validate: vi.fn(),
 	getResourceDescriptor: vi.fn(),
+	search: vi.fn(),
 }));
 
 vi.mock('../../../../service/ValidationService', () => ({
@@ -22,7 +27,7 @@ vi.mock('../../../../service/ResourceDescriptorService', () => ({
 
 vi.mock('../../../../service/SearchService', () => ({
 	SearchService: class {
-		search = vi.fn(() => Promise.resolve({ results: [], totalResults: 0 }));
+		search = search;
 		find = vi.fn(() => Promise.resolve({ results: [], totalResults: 0 }));
 	},
 }));
@@ -32,6 +37,7 @@ const { CrossReferencesEditDialog } = await import('../CrossReferencesEditDialog
 const PMID = {
 	id: 9,
 	prefix: 'PMID',
+	name: 'PubMed',
 	resourcePages: [
 		{ id: 1, name: 'default' },
 		{ id: 2, name: 'gene' },
@@ -75,6 +81,8 @@ beforeEach(() => {
 	getResourceDescriptor.mockReset();
 	validate.mockResolvedValue({ isSuccess: true, isError: false, data: {} });
 	getResourceDescriptor.mockResolvedValue({ data: { entity: PMID } });
+	search.mockReset();
+	search.mockResolvedValue({ results: [PMID], totalResults: 1 });
 });
 
 describe('CrossReferencesEditDialog', () => {
@@ -146,10 +154,30 @@ describe('CrossReferencesEditDialog', () => {
 		renderDialog();
 		await waitFor(() => expect(getResourceDescriptor).toHaveBeenCalled());
 
+		// The new row is filled in, so it passes the required check and goes to the API with the stored one.
+		// Choosing the descriptor starts its curie with the prefix and picks the default page.
 		await user.click(screen.getByRole('button', { name: /New Cross Reference/ }));
+		await user.type(screen.getAllByLabelText('resourceDescriptor')[1], 'PMI');
+		await user.click(await screen.findByText(/PubMed/, {}, { timeout: SUGGESTIONS_TIMEOUT }));
+		await user.type(document.querySelectorAll('#referencedCurie')[1], '123');
+		await user.type(document.querySelectorAll('#displayName')[1], 'PMID:123');
 		await user.click(screen.getByRole('button', { name: /Keep Edits/ }));
 
 		await waitFor(() => expect(validate).toHaveBeenCalledTimes(2));
+	});
+
+	// The resource descriptor is not stored on a cross reference, so only this check reports it missing.
+	it('Marks a new row that leaves required fields empty, without sending anything to the API', async () => {
+		const user = userEvent.setup();
+		const { editorCallback } = renderDialog();
+		await waitFor(() => expect(getResourceDescriptor).toHaveBeenCalled());
+
+		await user.click(screen.getByRole('button', { name: /New Cross Reference/ }));
+		await user.click(screen.getByRole('button', { name: /Keep Edits/ }));
+
+		expect(await screen.findAllByText('Required field is empty')).toHaveLength(4);
+		expect(validate).not.toHaveBeenCalled();
+		expect(editorCallback).not.toHaveBeenCalled();
 	});
 
 	it('Closes without writing anything back on Cancel', async () => {

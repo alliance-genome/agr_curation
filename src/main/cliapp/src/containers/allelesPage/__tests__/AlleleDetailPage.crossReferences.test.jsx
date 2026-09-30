@@ -1,6 +1,6 @@
 import React from 'react';
 import { BrowserRouter } from 'react-router-dom';
-import { act, screen, waitFor } from '@testing-library/react';
+import { act, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { renderWithClient } from '../../../tools/jest/utils';
 import { alleleDetailData } from '../mockData/mockData.js';
@@ -54,6 +54,15 @@ const AlleleDetailPage = (await import('../AlleleDetailPage')).default;
 // The shared fixture carries no id, and the page reads and writes cross references by the allele's id.
 const storedAllele = { ...alleleDetailData.entity, id: 4242 };
 
+const storedCrossReference = {
+	id: 500,
+	displayName: 'PubMed 1',
+	referencedCurie: 'PMID:1',
+	resourceDescriptorPage: { id: 1, name: 'default', resourceDescriptor: { id: 9, prefix: 'PMID' } },
+	internal: false,
+	obsolete: false,
+};
+
 const renderPage = () =>
 	renderWithClient(
 		<BrowserRouter>
@@ -75,7 +84,7 @@ describe('<AlleleDetailPage /> cross references', () => {
 		});
 		getAllele.mockResolvedValue({ data: { entity: storedAllele } });
 		saveAlleleDetail.mockResolvedValue({ data: { entity: storedAllele } });
-		getCrossReferencesForAllele.mockResolvedValue({ data: { entities: [] } });
+		getCrossReferencesForAllele.mockResolvedValue({ data: { entities: [storedCrossReference] } });
 		replaceCrossReferencesForAllele.mockResolvedValue({ data: { entities: [] } });
 		validate.mockResolvedValue({ isSuccess: true, isError: false, data: {} });
 	});
@@ -89,19 +98,27 @@ describe('<AlleleDetailPage /> cross references', () => {
 		});
 	};
 
-	const addCrossReferenceAndSave = async (user) => {
+	// Other sections of the page have their own editors, so these are found inside this one.
+	const crossReferencesSection = () => screen.getByRole('heading', { name: 'Cross References' }).closest('.col-12');
+
+	// Editing the stored row leaves it complete, so what follows is the save rather than the required check.
+	const editCrossReference = async (user) => {
 		await waitForCrossReferencesToLoad();
-		await user.click(screen.getByRole('button', { name: 'Add Cross Reference' }));
+		await user.type(crossReferencesSection().querySelector('#displayName'), ' edited');
+	};
+
+	const editCrossReferenceAndSave = async (user) => {
+		await editCrossReference(user);
 		await user.click(screen.getByRole('button', { name: 'Save' }));
 	};
 
 	// Cross references are written through their own sub-resource, so the page's Save makes that call
-	// after the allele's, without checking the rows first.
+	// after the allele's, without sending the rows to the validate endpoint first.
 	it('Saves edited cross references along with the allele', async () => {
 		const user = userEvent.setup();
 		await renderPage();
 
-		await addCrossReferenceAndSave(user);
+		await editCrossReferenceAndSave(user);
 
 		await waitFor(() => expect(replaceCrossReferencesForAllele).toHaveBeenCalled());
 		expect(await screen.findByText('Allele Saved')).toBeInTheDocument();
@@ -117,20 +134,6 @@ describe('<AlleleDetailPage /> cross references', () => {
 	// stored row is loaded so its editors mount, and would mark it edited if any of them reported a change.
 	it('Leaves untouched cross references alone when the allele is saved', async () => {
 		const user = userEvent.setup();
-		getCrossReferencesForAllele.mockResolvedValue({
-			data: {
-				entities: [
-					{
-						id: 500,
-						displayName: 'PubMed 1',
-						referencedCurie: 'PMID:1',
-						resourceDescriptorPage: { id: 1, name: 'default', resourceDescriptor: { id: 9, prefix: 'PMID' } },
-						internal: false,
-						obsolete: false,
-					},
-				],
-			},
-		});
 		await renderPage();
 		await waitForCrossReferencesToLoad();
 		// The row's editors are mounted, so any of them reporting a change on mount would count as an edit.
@@ -150,8 +153,7 @@ describe('<AlleleDetailPage /> cross references', () => {
 		const user = userEvent.setup();
 		await renderPage();
 
-		await waitForCrossReferencesToLoad();
-		await user.click(screen.getByRole('button', { name: 'Add Cross Reference' }));
+		await editCrossReference(user);
 		await user.click(screen.getByRole('button', { name: /Save Cross References/ }));
 		expect(await screen.findByText('Cross References Saved')).toBeInTheDocument();
 		expect(replaceCrossReferencesForAllele).toHaveBeenCalledTimes(1);
@@ -171,8 +173,7 @@ describe('<AlleleDetailPage /> cross references', () => {
 		});
 		await renderPage();
 
-		await waitForCrossReferencesToLoad();
-		await user.click(screen.getByRole('button', { name: 'Add Cross Reference' }));
+		await editCrossReference(user);
 		await user.click(screen.getByRole('button', { name: /Save Cross References/ }));
 		expect(await screen.findByText('Could not update CrossReferences')).toBeInTheDocument();
 
@@ -189,11 +190,39 @@ describe('<AlleleDetailPage /> cross references', () => {
 		});
 		await renderPage();
 
-		await addCrossReferenceAndSave(user);
+		await editCrossReferenceAndSave(user);
 
 		expect(await screen.findByText(/Could not update CrossReferences/)).toBeInTheDocument();
 		expect(screen.getByText(/The allele's other changes were saved/)).toBeInTheDocument();
 		expect(saveAlleleDetail).toHaveBeenCalled();
 		expect(screen.queryByText('Allele Saved')).not.toBeInTheDocument();
+	});
+
+	// The check runs in the browser before anything is written, so the allele is not saved either.
+	it('Stops the whole save when an edited row is missing a required field', async () => {
+		const user = userEvent.setup();
+		await renderPage();
+
+		await waitForCrossReferencesToLoad();
+		await user.clear(crossReferencesSection().querySelector('#displayName'));
+		await user.click(screen.getByRole('button', { name: 'Save' }));
+
+		expect(await screen.findByText('Some cross references are missing required fields')).toBeInTheDocument();
+		expect(screen.getByText('Allele not saved:')).toBeInTheDocument();
+		expect(within(crossReferencesSection()).getByText('Required field is empty')).toBeInTheDocument();
+		expect(saveAlleleDetail).not.toHaveBeenCalled();
+		expect(replaceCrossReferencesForAllele).not.toHaveBeenCalled();
+	});
+
+	it('Refuses a section save while a row is missing a required field', async () => {
+		const user = userEvent.setup();
+		await renderPage();
+
+		await waitForCrossReferencesToLoad();
+		await user.clear(crossReferencesSection().querySelector('#displayName'));
+		await user.click(screen.getByRole('button', { name: /Save Cross References/ }));
+
+		expect(await screen.findByText('Some cross references are missing required fields')).toBeInTheDocument();
+		expect(replaceCrossReferencesForAllele).not.toHaveBeenCalled();
 	});
 });

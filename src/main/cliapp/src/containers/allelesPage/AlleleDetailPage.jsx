@@ -15,6 +15,7 @@ import { FormFieldVisibilityMenu, useFormFieldVisibility } from '../../component
 import { AlleleForm, ALLELE_DETAIL_TOGGLEABLE_FIELDS } from './AlleleForm';
 import { NewAlleleButton } from './NewAlleleButton';
 import { useAlleleCrossReferences } from './crossReferences/useAlleleCrossReferences';
+import { MISSING_REQUIRED_FIELDS_MESSAGE } from './crossReferences/utils';
 import { SubResourcesProvider } from '../../components/SubResourcesContext';
 
 export default function AlleleDetailPage() {
@@ -64,6 +65,21 @@ export default function AlleleDetailPage() {
 		);
 
 		if (areUiErrors) return;
+
+		// An edited row missing a required field would be refused after the allele saved, so the save stops
+		// here, before anything is written, as an incomplete gene association stops it above.
+		if (crossReferences.isDirty && !crossReferences.checkRequiredFields()) {
+			toastError.current.show([
+				{
+					life: 7000,
+					severity: 'error',
+					summary: 'Allele not saved: ',
+					detail: MISSING_REQUIRED_FIELDS_MESSAGE,
+					sticky: false,
+				},
+			]);
+			return;
+		}
 
 		alleleMutate(alleleState.allele, {
 			onSuccess: async (result) => {

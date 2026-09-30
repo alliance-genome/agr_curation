@@ -1,14 +1,21 @@
 import React from 'react';
 import { BrowserRouter } from 'react-router-dom';
-import { screen, waitFor } from '@testing-library/react';
+import { screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { renderWithClient } from '../../../tools/jest/utils';
+
+// The descriptor autocomplete waits out its typing delay before it searches, then opens its panel, which
+// can take longer than a query's default one second on a busy machine.
+const SUGGESTIONS_TIMEOUT = 5000;
 
 const createAllele = vi.fn();
 const saveAlleleDetail = vi.fn();
 const navigate = vi.fn();
 const replaceCrossReferencesForAllele = vi.fn();
 const validate = vi.fn();
+const search = vi.fn();
+
+const PMID = { id: 9, prefix: 'PMID', name: 'PubMed', resourcePages: [{ id: 1, name: 'default' }] };
 
 // msw cannot intercept this app's fetch based ApiClient, so stub the services directly.
 vi.mock('../../../service/AlleleService', () => ({
@@ -23,7 +30,7 @@ vi.mock('../../../service/AlleleService', () => ({
 // timer, failing whichever test happens to run next.
 vi.mock('../../../service/SearchService', () => ({
 	SearchService: class {
-		search = vi.fn(() => Promise.resolve({ results: [], totalResults: 0 }));
+		search = search;
 		find = vi.fn(() => Promise.resolve({ results: [], totalResults: 0 }));
 	},
 }));
@@ -57,6 +64,19 @@ const renderPage = () =>
 
 const button = (name) => screen.getByRole('button', { name });
 
+// Other sections of the page have their own editors, so these are found inside this one.
+const crossReferencesSection = () => screen.getByRole('heading', { name: 'Cross References' }).closest('.col-12');
+
+// Choosing the descriptor starts the curie with its prefix and picks its default page, so the row is
+// complete once the identifier and display name are typed.
+const addCompleteCrossReference = async (user) => {
+	await user.click(button('Add Cross Reference'));
+	await user.type(screen.getByLabelText('resourceDescriptor'), 'PMI');
+	await user.click(await screen.findByText(/PubMed/, {}, { timeout: SUGGESTIONS_TIMEOUT }));
+	await user.type(crossReferencesSection().querySelector('#referencedCurie'), '123');
+	await user.type(crossReferencesSection().querySelector('#displayName'), 'PMID:123');
+};
+
 describe('<AlleleCreatePage /> cross references', () => {
 	beforeEach(() => {
 		createAllele.mockReset();
@@ -68,6 +88,8 @@ describe('<AlleleCreatePage /> cross references', () => {
 		replaceCrossReferencesForAllele.mockResolvedValue({ data: { entities: [] } });
 		validate.mockReset();
 		validate.mockResolvedValue({ isSuccess: true, isError: false, data: {} });
+		search.mockReset();
+		search.mockResolvedValue({ results: [PMID], totalResults: 1 });
 		window.localStorage.removeItem('AlleleCreateFormSettings');
 	});
 
@@ -77,7 +99,7 @@ describe('<AlleleCreatePage /> cross references', () => {
 		const user = userEvent.setup();
 		await renderPage();
 
-		await user.click(button('Add Cross Reference'));
+		await addCompleteCrossReference(user);
 		await user.click(button('Save & Close'));
 
 		await waitFor(() => expect(replaceCrossReferencesForAllele).toHaveBeenCalled());
@@ -107,7 +129,7 @@ describe('<AlleleCreatePage /> cross references', () => {
 
 		await renderPage();
 
-		await user.click(button('Add Cross Reference'));
+		await addCompleteCrossReference(user);
 		await user.click(button('Save & Close'));
 		await waitFor(() => expect(replaceCrossReferencesForAllele).toHaveBeenCalledTimes(1));
 
@@ -129,7 +151,7 @@ describe('<AlleleCreatePage /> cross references', () => {
 
 		await renderPage();
 
-		await user.click(button('Add Cross Reference'));
+		await addCompleteCrossReference(user);
 		await user.click(button('Save & Close'));
 		await waitFor(() => expect(replaceCrossReferencesForAllele).toHaveBeenCalledTimes(1));
 
@@ -150,11 +172,40 @@ describe('<AlleleCreatePage /> cross references', () => {
 
 		await renderPage();
 
-		await user.click(button('Add Cross Reference'));
+		await addCompleteCrossReference(user);
 		await user.click(button('Save & Close'));
 
 		await waitFor(() => expect(replaceCrossReferencesForAllele).toHaveBeenCalled());
 		expect(navigate).not.toHaveBeenCalled();
 		expect(await screen.findByText(/Could not update CrossReferences/)).toBeInTheDocument();
+	});
+
+	// The check runs in the browser before anything is written, so no allele is created either.
+	it('Creates no allele while a cross reference is missing a required field', async () => {
+		const user = userEvent.setup();
+		await renderPage();
+
+		await user.click(button('Add Cross Reference'));
+		await user.click(button('Save & Close'));
+
+		expect(await screen.findByText('Some cross references are missing required fields')).toBeInTheDocument();
+		expect(screen.getByText('Allele not saved:')).toBeInTheDocument();
+		expect(within(crossReferencesSection()).getAllByText('Required field is empty')).toHaveLength(4);
+		expect(createAllele).not.toHaveBeenCalled();
+	});
+
+	// Choosing the descriptor starts the curie with its prefix, so a row left like that has no identifier.
+	it('Creates no allele while a cross reference curie holds only its prefix', async () => {
+		const user = userEvent.setup();
+		await renderPage();
+
+		await user.click(button('Add Cross Reference'));
+		await user.type(screen.getByLabelText('resourceDescriptor'), 'PMI');
+		await user.click(await screen.findByText(/PubMed/, {}, { timeout: SUGGESTIONS_TIMEOUT }));
+		await user.type(crossReferencesSection().querySelector('#displayName'), 'PMID');
+		await user.click(button('Save & Close'));
+
+		expect(await screen.findByText('Identifier after the prefix is missing')).toBeInTheDocument();
+		expect(createAllele).not.toHaveBeenCalled();
 	});
 });

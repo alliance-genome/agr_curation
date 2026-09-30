@@ -8,6 +8,8 @@ import { CrossReferencesTable } from './CrossReferencesTable';
 import {
 	applyCrossReferenceFieldChange,
 	buildNewCrossReference,
+	findMissingRequiredFields,
+	seedResourceDescriptor,
 	seedResourceDescriptors,
 	stripForValidation,
 	stripUiFields,
@@ -34,7 +36,9 @@ export const CrossReferencesEditDialog = ({
 	const toast_topright = useRef(null);
 
 	const showDialogHandler = async () => {
-		const clonedCrossReferences = structuredClone(originalCrossReferences) ?? [];
+		// Each stored row takes the descriptor nested in its page straight away, so it counts as having one
+		// before the full descriptor, with its pages, is read.
+		const clonedCrossReferences = (structuredClone(originalCrossReferences) ?? []).map(seedResourceDescriptor);
 		clonedCrossReferences.forEach(addDataKey);
 
 		setEditingRows(Object.fromEntries(clonedCrossReferences.map((crossReference) => [crossReference.dataKey, true])));
@@ -108,25 +112,29 @@ export const CrossReferencesEditDialog = ({
 	const validateAndSave = async () => {
 		setIsValidating(true);
 		try {
-			let hasErrors = false;
-			const newErrorMessages = {};
+			// Empty required fields are caught in the browser before any row goes to the API, which never
+			// reports a missing resource descriptor since it is not stored on a cross reference.
+			const newErrorMessages = findMissingRequiredFields(localCrossReferences);
+			let hasErrors = Object.keys(newErrorMessages).length > 0;
 
-			for (const crossReference of localCrossReferences) {
-				const result = await validationService.validate(
-					Endpoints.Entity.CROSS_REFERENCE,
-					stripForValidation(crossReference)
-				);
+			if (!hasErrors) {
+				for (const crossReference of localCrossReferences) {
+					const result = await validationService.validate(
+						Endpoints.Entity.CROSS_REFERENCE,
+						stripForValidation(crossReference)
+					);
 
-				if (result.isError) {
-					hasErrors = true;
-					newErrorMessages[crossReference.dataKey] = {};
-					if (result.data) {
-						Object.keys(result.data).forEach((field) => {
-							newErrorMessages[crossReference.dataKey][field] = {
-								severity: 'error',
-								message: result.data[field],
-							};
-						});
+					if (result.isError) {
+						hasErrors = true;
+						newErrorMessages[crossReference.dataKey] = {};
+						if (result.data) {
+							Object.keys(result.data).forEach((field) => {
+								newErrorMessages[crossReference.dataKey][field] = {
+									severity: 'error',
+									message: result.data[field],
+								};
+							});
+						}
 					}
 				}
 			}

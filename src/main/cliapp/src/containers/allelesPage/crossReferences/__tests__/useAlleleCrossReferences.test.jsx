@@ -203,4 +203,49 @@ describe('useAlleleCrossReferences', () => {
 		expect(outcome.isSuccess).toBe(false);
 		expect(replaceCrossReferencesForAllele).not.toHaveBeenCalled();
 	});
+
+	// The resource descriptor is not stored on a cross reference, so the API cannot report it missing.
+	it('Refuses to save a row missing a required field, and marks it', async () => {
+		getCrossReferencesForAllele.mockResolvedValue({ data: { entities: [storedCrossReference] } });
+		const { result } = renderHook(() => useAlleleCrossReferences(77));
+		await waitFor(() => expect(result.current.crossReferences).toHaveLength(1));
+		const rowKey = result.current.crossReferences[0].dataKey;
+
+		act(() => {
+			result.current.setCrossReferences((rows) => rows.map((row) => ({ ...row, resourceDescriptor: null })));
+		});
+
+		let outcome;
+		await act(async () => {
+			outcome = await result.current.save();
+		});
+
+		expect(outcome).toEqual({ isSuccess: false, message: 'Some cross references are missing required fields' });
+		expect(replaceCrossReferencesForAllele).not.toHaveBeenCalled();
+		expect(result.current.errorMessages[rowKey]).toEqual({
+			resourceDescriptor: { severity: 'error', message: 'Required field is empty' },
+		});
+	});
+
+	it('Reports whether the rows have their required fields, marking any that do not', async () => {
+		getCrossReferencesForAllele.mockResolvedValue({ data: { entities: [storedCrossReference] } });
+		const { result } = renderHook(() => useAlleleCrossReferences(77));
+		await waitFor(() => expect(result.current.crossReferences).toHaveLength(1));
+
+		let isComplete;
+		act(() => {
+			isComplete = result.current.checkRequiredFields();
+		});
+		expect(isComplete).toBe(true);
+
+		act(() => {
+			result.current.setCrossReferences((rows) => rows.map((row) => ({ ...row, displayName: '' })));
+		});
+		act(() => {
+			isComplete = result.current.checkRequiredFields();
+		});
+
+		expect(isComplete).toBe(false);
+		expect(Object.values(result.current.errorMessages)[0]).toHaveProperty('displayName');
+	});
 });

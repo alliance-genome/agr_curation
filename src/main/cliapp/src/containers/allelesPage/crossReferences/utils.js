@@ -118,6 +118,48 @@ export const applyCrossReferenceFieldChange = (crossReference, field, value) => 
 	return updated;
 };
 
+const REQUIRED_FIELDS = ['displayName', 'referencedCurie', 'resourceDescriptor', 'resourceDescriptorPage'];
+
+export const MISSING_REQUIRED_FIELDS_MESSAGE = 'Some cross references are missing required fields';
+
+const isEmptyValue = (value) => (typeof value === 'string' ? value.trim() === '' : value == null);
+
+// A curie holding only its prefix, as choosing a descriptor leaves it, names nothing yet.
+const lacksIdentifier = (curie) =>
+	typeof curie === 'string' && curie.includes(':') && curie.slice(curie.indexOf(':') + 1).trim() === '';
+
+/**
+ * The required fields each row leaves empty, as the per-row error messages the table renders, keyed by
+ * the row's `dataKey`. A row with every required field filled is left out. A curie that holds only its
+ * prefix counts as missing its identifier, reported in the API's words.
+ *
+ * The resource descriptor is not stored on a cross reference, so the API never reports it missing; this
+ * is the check that marks it.
+ *
+ * @param {Array<Object>} crossReferences
+ * @returns {Object} per-row error messages; empty when nothing is missing
+ */
+export const findMissingRequiredFields = (crossReferences) => {
+	const errorMessages = {};
+
+	(crossReferences ?? []).forEach((crossReference) => {
+		const rowErrors = Object.fromEntries(
+			REQUIRED_FIELDS.filter((field) => isEmptyValue(crossReference[field])).map((field) => [
+				field,
+				{ severity: 'error', message: 'Required field is empty' },
+			])
+		);
+
+		if (!rowErrors.referencedCurie && lacksIdentifier(crossReference.referencedCurie)) {
+			rowErrors.referencedCurie = { severity: 'error', message: 'Identifier after the prefix is missing' };
+		}
+
+		if (Object.keys(rowErrors).length > 0) errorMessages[crossReference.dataKey] = rowErrors;
+	});
+
+	return errorMessages;
+};
+
 /**
  * The row carrying a given key.
  *
