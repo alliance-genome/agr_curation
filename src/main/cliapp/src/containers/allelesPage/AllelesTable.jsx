@@ -783,12 +783,7 @@ export const AllelesTable = () => {
 				filterConfig: FILTER_CONFIGS.isExtinctFilterConfig,
 				sortable: true,
 				editor: (editorOptions) => (
-					<BooleanTableEditor
-						editorOptions={editorOptions}
-						errorMessagesRef={errorMessagesRef}
-						field={'isExtinct'}
-						showClear={true}
-					/>
+					<BooleanTableEditor editorOptions={editorOptions} field={'isExtinct'} showClear={true} />
 				),
 			},
 			{
@@ -884,9 +879,7 @@ export const AllelesTable = () => {
 				filter: true,
 				filterConfig: FILTER_CONFIGS.internalFilterConfig,
 				sortable: true,
-				editor: (editorOptions) => (
-					<BooleanTableEditor editorOptions={editorOptions} errorMessagesRef={errorMessagesRef} field={'internal'} />
-				),
+				editor: (editorOptions) => <BooleanTableEditor editorOptions={editorOptions} field={'internal'} />,
 			},
 			{
 				field: 'obsolete',
@@ -895,9 +888,7 @@ export const AllelesTable = () => {
 				filter: true,
 				filterConfig: FILTER_CONFIGS.obsoleteFilterConfig,
 				sortable: true,
-				editor: (editorOptions) => (
-					<BooleanTableEditor editorOptions={editorOptions} errorMessagesRef={errorMessagesRef} field={'obsolete'} />
-				),
+				editor: (editorOptions) => <BooleanTableEditor editorOptions={editorOptions} field={'obsolete'} />,
 			},
 		],
 		// eslint-disable-next-line react-hooks/exhaustive-deps
@@ -1021,6 +1012,8 @@ export const AllelesTable = () => {
 				setOriginalInheritanceModesData={setInheritanceModesData}
 			/>
 			<SecondaryIdsEditDialog
+				field="alleleSecondaryIds"
+				endpoint={Endpoints.SlotAnnotation.ALLELE_SECONDARY_ID}
 				originalSecondaryIdsData={secondaryIdsData}
 				setOriginalSecondaryIdsData={setSecondaryIdsData}
 				errorMessagesMainRow={errorMessages}
