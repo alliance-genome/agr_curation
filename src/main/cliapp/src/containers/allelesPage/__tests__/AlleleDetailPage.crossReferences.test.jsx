@@ -96,7 +96,7 @@ describe('<AlleleDetailPage /> cross references', () => {
 	};
 
 	// Cross references are written through their own sub-resource, so the page's Save makes that call
-	// after the allele's, having checked the rows first.
+	// after the allele's, without checking the rows first.
 	it('Saves edited cross references along with the allele', async () => {
 		const user = userEvent.setup();
 		await renderPage();
@@ -107,7 +107,7 @@ describe('<AlleleDetailPage /> cross references', () => {
 		expect(await screen.findByText('Allele Saved')).toBeInTheDocument();
 		expect(getCrossReferencesForAllele).toHaveBeenCalledWith(4242);
 		expect(replaceCrossReferencesForAllele.mock.calls[0][0]).toBe(4242);
-		expect(validate.mock.invocationCallOrder[0]).toBeLessThan(saveAlleleDetail.mock.invocationCallOrder[0]);
+		expect(validate).not.toHaveBeenCalled();
 		expect(saveAlleleDetail.mock.invocationCallOrder[0]).toBeLessThan(
 			replaceCrossReferencesForAllele.mock.invocationCallOrder[0]
 		);
@@ -141,23 +141,6 @@ describe('<AlleleDetailPage /> cross references', () => {
 
 		expect(await screen.findByText('Allele Saved')).toBeInTheDocument();
 		expect(validate).not.toHaveBeenCalled();
-		expect(replaceCrossReferencesForAllele).not.toHaveBeenCalled();
-	});
-
-	it('Saves nothing when an edited cross reference fails its check', async () => {
-		const user = userEvent.setup();
-		validate.mockResolvedValue({
-			isSuccess: false,
-			isError: true,
-			data: { resourceDescriptorPage: 'Required field is empty' },
-		});
-		await renderPage();
-
-		await addCrossReferenceAndSave(user);
-
-		expect(await screen.findByText('Some cross references are not valid')).toBeInTheDocument();
-		expect(screen.getByText('Required field is empty')).toBeInTheDocument();
-		expect(saveAlleleDetail).not.toHaveBeenCalled();
 		expect(replaceCrossReferencesForAllele).not.toHaveBeenCalled();
 	});
 

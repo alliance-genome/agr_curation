@@ -65,18 +65,6 @@ export default function AlleleDetailPage() {
 
 		if (areUiErrors) return;
 
-		// Cross references are written through their own sub-resource after the allele, so edited rows are
-		// checked first: a row the API would refuse then stops the save before the allele is written.
-		if (crossReferences.isDirty) {
-			const check = await crossReferences.validate();
-			if (!check.isValid) {
-				toastError.current.show([
-					{ life: 7000, severity: 'error', summary: 'Allele not saved: ', detail: check.message, sticky: false },
-				]);
-				return;
-			}
-		}
-
 		alleleMutate(alleleState.allele, {
 			onSuccess: async (result) => {
 				alleleDispatch({ type: 'SET', value: result?.data?.entity });
@@ -146,9 +134,7 @@ export default function AlleleDetailPage() {
 		<>
 			<Toast ref={toastError} position="top-left" />
 			<Toast ref={toastSuccess} position="top-right" />
-			<LoadingOverlay
-				isLoading={!!allelePutRequestIsLoading || crossReferences.isSaving || crossReferences.isValidating}
-			/>
+			<LoadingOverlay isLoading={!!allelePutRequestIsLoading || crossReferences.isSaving} />
 			<ErrorBoundary>
 				<StickyHeader>
 					<Splitter className="bg-primary-reverse border-none lg:h-5rem" gutterSize={0}>

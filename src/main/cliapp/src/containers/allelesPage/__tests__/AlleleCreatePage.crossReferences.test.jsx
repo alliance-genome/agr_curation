@@ -71,39 +71,6 @@ describe('<AlleleCreatePage /> cross references', () => {
 		window.localStorage.removeItem('AlleleCreateFormSettings');
 	});
 
-	// The allele is written first, so a row the API would refuse has to stop the save before the
-	// allele exists without it.
-	it('Creates no allele when a cross reference fails its check', async () => {
-		const user = userEvent.setup();
-		validate.mockResolvedValue({
-			isSuccess: false,
-			isError: true,
-			data: { referencedCurie: 'Prefix does not match the resource descriptor' },
-		});
-
-		await renderPage();
-
-		await user.click(button('Add Cross Reference'));
-		await user.click(button('Save & Close'));
-
-		expect(await screen.findByText('Prefix does not match the resource descriptor')).toBeInTheDocument();
-		expect(screen.getByText('Some cross references are not valid')).toBeInTheDocument();
-		expect(createAllele).not.toHaveBeenCalled();
-		expect(replaceCrossReferencesForAllele).not.toHaveBeenCalled();
-	});
-
-	it('Checks the cross references before creating the allele', async () => {
-		const user = userEvent.setup();
-		await renderPage();
-
-		await user.click(button('Add Cross Reference'));
-		await user.click(button('Save & Close'));
-
-		await waitFor(() => expect(createAllele).toHaveBeenCalled());
-		expect(validate).toHaveBeenCalledTimes(1);
-		expect(validate.mock.invocationCallOrder[0]).toBeLessThan(createAllele.mock.invocationCallOrder[0]);
-	});
-
 	// Cross references are written through their own sub-resource, so creating an allele that has
 	// them is two calls, and the second needs the id the first returns.
 	it('Saves cross references against the allele it just created', async () => {
@@ -116,6 +83,7 @@ describe('<AlleleCreatePage /> cross references', () => {
 		await waitFor(() => expect(replaceCrossReferencesForAllele).toHaveBeenCalled());
 		expect(replaceCrossReferencesForAllele.mock.calls[0][0]).toBe(4242);
 		expect(navigate).toHaveBeenCalledWith('/allele/AGRKB:101000000000001');
+		expect(validate).not.toHaveBeenCalled();
 	});
 
 	it('Makes no second call when there are no cross references', async () => {

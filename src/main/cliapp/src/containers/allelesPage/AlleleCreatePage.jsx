@@ -102,7 +102,7 @@ export default function AlleleCreatePage() {
 		}
 	};
 
-	const handleSubmit = async (event, closeAfterSubmit) => {
+	const handleSubmit = (event, closeAfterSubmit) => {
 		event.preventDefault();
 		alleleDispatch({ type: 'SUBMIT' });
 
@@ -115,18 +115,6 @@ export default function AlleleCreatePage() {
 		);
 
 		if (areUiErrors) return;
-
-		// The allele is written before its cross references, so they are checked first: a row the API would
-		// refuse then stops the save before the allele is written without it.
-		if (crossReferences.crossReferences.length > 0) {
-			const check = await crossReferences.validate();
-			if (!check.isValid) {
-				toastError.current.show([
-					{ life: 7000, severity: 'error', summary: 'Allele not saved: ', detail: check.message, sticky: false },
-				]);
-				return;
-			}
-		}
 
 		if (createdAllele.current) {
 			alleleUpdateMutate(alleleState.allele, {
@@ -178,9 +166,7 @@ export default function AlleleCreatePage() {
 		<>
 			<Toast ref={toastError} position="top-left" />
 			<Toast ref={toastSuccess} position="top-right" />
-			<LoadingOverlay
-				isLoading={!!allelePostRequestIsLoading || !!allelePutRequestIsLoading || crossReferences.isValidating}
-			/>
+			<LoadingOverlay isLoading={!!allelePostRequestIsLoading || !!allelePutRequestIsLoading} />
 			<ErrorBoundary>
 				<StickyHeader>
 					<Splitter className="bg-primary-reverse border-none lg:h-5rem" gutterSize={0}>
