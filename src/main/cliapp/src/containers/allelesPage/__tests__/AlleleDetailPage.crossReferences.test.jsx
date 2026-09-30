@@ -144,6 +144,44 @@ describe('<AlleleDetailPage /> cross references', () => {
 		expect(replaceCrossReferencesForAllele).not.toHaveBeenCalled();
 	});
 
+	// Saving the rows from their own section leaves nothing pending, so the page's Save that follows writes
+	// the allele alone rather than the same rows again.
+	it('Does not rewrite rows already saved from their own section', async () => {
+		const user = userEvent.setup();
+		await renderPage();
+
+		await waitForCrossReferencesToLoad();
+		await user.click(screen.getByRole('button', { name: 'Add Cross Reference' }));
+		await user.click(screen.getByRole('button', { name: /Save Cross References/ }));
+		expect(await screen.findByText('Cross References Saved')).toBeInTheDocument();
+		expect(replaceCrossReferencesForAllele).toHaveBeenCalledTimes(1);
+
+		await user.click(screen.getByRole('button', { name: 'Save' }));
+
+		expect(await screen.findByText('Allele Saved')).toBeInTheDocument();
+		expect(saveAlleleDetail).toHaveBeenCalledTimes(1);
+		expect(replaceCrossReferencesForAllele).toHaveBeenCalledTimes(1);
+	});
+
+	// A refused section save leaves the rows pending, so the page's Save tries them again.
+	it('Retries rows a failed section save left unsaved', async () => {
+		const user = userEvent.setup();
+		replaceCrossReferencesForAllele.mockRejectedValueOnce({
+			response: { data: { errorMessage: 'Could not update CrossReferences' } },
+		});
+		await renderPage();
+
+		await waitForCrossReferencesToLoad();
+		await user.click(screen.getByRole('button', { name: 'Add Cross Reference' }));
+		await user.click(screen.getByRole('button', { name: /Save Cross References/ }));
+		expect(await screen.findByText('Could not update CrossReferences')).toBeInTheDocument();
+
+		await user.click(screen.getByRole('button', { name: 'Save' }));
+
+		expect(await screen.findByText('Allele Saved')).toBeInTheDocument();
+		expect(replaceCrossReferencesForAllele).toHaveBeenCalledTimes(2);
+	});
+
 	it('Says the cross references failed without claiming the whole save did', async () => {
 		const user = userEvent.setup();
 		replaceCrossReferencesForAllele.mockRejectedValue({
