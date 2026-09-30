@@ -105,6 +105,13 @@ describe('CrossReferencesForm', () => {
 		expect(screen.getByRole('columnheader', { name: 'Display Name' })).toBeInTheDocument();
 	});
 
+	it('Shows its save as a prominent action', () => {
+		renderForm();
+
+		expect(saveButton()).toHaveClass('p-button-success');
+		expect(saveButton()).not.toHaveClass('p-button-text');
+	});
+
 	it('Adds a blank row', async () => {
 		const user = userEvent.setup();
 		const { crossReferences } = renderForm();

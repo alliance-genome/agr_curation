@@ -31,6 +31,14 @@ describe('<AlleleDetailPage />', () => {
 		window.localStorage.removeItem(FORM_SETTINGS_KEY);
 	});
 
+	it('Shows Save as a prominent action', async () => {
+		await renderPage();
+
+		const saveButton = await screen.findByRole('button', { name: 'Save' });
+		expect(saveButton).toHaveClass('p-button-success');
+		expect(saveButton).not.toHaveClass('p-button-text');
+	});
+
 	it('Renders without crashing', async () => {
 		let result = await renderPage();
 

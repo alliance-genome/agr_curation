@@ -96,7 +96,7 @@ export const CrossReferencesForm = ({ mode = 'detail' }) => {
 								// the read. Saving a table that is still loading, or that failed to load, would
 								// submit an empty list and delete every cross reference the allele has.
 								disabled={isSaving || isLoading || Boolean(loadError)}
-								className="p-button-text"
+								severity="success"
 							/>
 						)}
 						{loadError && (

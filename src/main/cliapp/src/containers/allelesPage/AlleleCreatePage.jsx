@@ -194,17 +194,12 @@ export default function AlleleCreatePage() {
 							<Button label="Clear" icon="pi pi-undo" className="p-button-text" onClick={handleClear} />
 							<Button label="Cancel" icon="pi pi-times" className="p-button-text" onClick={handleCancel} />
 						</SplitterPanel>
-						<SplitterPanel size={50} className="flex justify-content-end mr-5 py-3">
-							<Button
-								label="Save & Close"
-								icon="pi pi-check"
-								className="p-button-text"
-								onClick={handleSubmitAndClose}
-							/>
+						<SplitterPanel size={50} className="flex justify-content-end gap-2 mr-5 py-3">
+							<Button label="Save & Close" icon="pi pi-check" severity="success" onClick={handleSubmitAndClose} />
 							<Button
 								label="Save & Add Another"
 								icon="pi pi-check"
-								className="p-button-text"
+								severity="success"
 								onClick={handleSubmitAndAddAnother}
 							/>
 						</SplitterPanel>
