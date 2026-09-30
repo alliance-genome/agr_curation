@@ -15,7 +15,6 @@ import { buildCreatePayload, processErrors, validateRequiredAutosuggestField } f
 import { FormFieldVisibilityMenu, useFormFieldVisibility } from '../../components/FormFieldVisibility';
 import { AlleleForm, ALLELE_CREATE_TOGGLEABLE_FIELDS } from './AlleleForm';
 import { useAlleleCrossReferences } from './crossReferences/useAlleleCrossReferences';
-import { MISSING_REQUIRED_FIELDS_MESSAGE } from './crossReferences/utils';
 import { SubResourcesProvider } from '../../components/SubResourcesContext';
 
 export default function AlleleCreatePage() {
@@ -116,21 +115,6 @@ export default function AlleleCreatePage() {
 		);
 
 		if (areUiErrors) return;
-
-		// A row missing a required field would be refused after the allele was written, so the save stops
-		// here, before anything is written, as an incomplete gene association stops it above.
-		if (crossReferences.crossReferences.length > 0 && !crossReferences.checkRequiredFields()) {
-			toastError.current.show([
-				{
-					life: 7000,
-					severity: 'error',
-					summary: 'Allele not saved: ',
-					detail: MISSING_REQUIRED_FIELDS_MESSAGE,
-					sticky: false,
-				},
-			]);
-			return;
-		}
 
 		if (createdAllele.current) {
 			alleleUpdateMutate(alleleState.allele, {

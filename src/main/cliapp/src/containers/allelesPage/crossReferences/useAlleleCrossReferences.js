@@ -1,12 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { CrossReferenceService } from '../../../service/CrossReferenceService';
 import { addDataKey } from '../utils';
-import {
-	findMissingRequiredFields,
-	MISSING_REQUIRED_FIELDS_MESSAGE,
-	seedResourceDescriptors,
-	stripUiFields,
-} from './utils';
+import { seedResourceDescriptors, stripUiFields } from './utils';
 
 /**
  * Maps the API's index keyed cross reference errors onto the rows they belong to, so the table can
@@ -88,21 +83,8 @@ export const useAlleleCrossReferences = (alleleId) => {
 	}, [alleleId, crossReferenceService]);
 
 	/**
-	 * Marks each row's empty required fields against that row, and reports whether any were found. It runs
-	 * in the browser without calling the API, so a page can stop a save before writing anything.
-	 *
-	 * @returns {boolean} true when every row has its required fields
-	 */
-	const checkRequiredFields = useCallback(() => {
-		const missingFields = findMissingRequiredFields(crossReferences);
-		setErrorMessages(missingFields);
-		return Object.keys(missingFields).length === 0;
-	}, [crossReferences]);
-
-	/**
 	 * Replaces the allele's stored cross references with the rows held here. Refuses, without calling the
-	 * API, while the rows are still loading, after they failed to load, or while a row leaves a required
-	 * field empty.
+	 * API, while the rows are still loading or after they failed to load.
 	 *
 	 * @param {number} [targetAlleleId] the allele to write to, for create, which has none on load
 	 * @returns {Promise<{isSuccess: boolean, message?: string}>}
@@ -114,10 +96,6 @@ export const useAlleleCrossReferences = (alleleId) => {
 			// reference the allele has.
 			if (isLoading || loadError) {
 				return { isSuccess: false, message: 'These cross references have not been read, so they were not saved' };
-			}
-
-			if (!checkRequiredFields()) {
-				return { isSuccess: false, message: MISSING_REQUIRED_FIELDS_MESSAGE };
 			}
 
 			setIsSaving(true);
@@ -141,7 +119,7 @@ export const useAlleleCrossReferences = (alleleId) => {
 				setIsSaving(false);
 			}
 		},
-		[alleleId, crossReferenceService, crossReferences, isLoading, loadError, checkRequiredFields]
+		[alleleId, crossReferenceService, crossReferences, isLoading, loadError]
 	);
 
 	return {
@@ -152,7 +130,6 @@ export const useAlleleCrossReferences = (alleleId) => {
 		loadError,
 		isSaving,
 		isDirty,
-		checkRequiredFields,
 		save,
 	};
 };

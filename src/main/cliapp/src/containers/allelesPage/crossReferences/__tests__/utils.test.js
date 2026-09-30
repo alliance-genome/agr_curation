@@ -10,7 +10,6 @@ import {
 	applyCrossReferenceFieldChange,
 	buildNewCrossReference,
 	curiePrefixOf,
-	findMissingRequiredFields,
 	findRow,
 	seedResourceDescriptor,
 	seedResourceDescriptors,
@@ -341,55 +340,6 @@ describe('stripForValidation', () => {
 
 		expect(row.createdBy).toEqual({ uniqueId: 'someone' });
 		expect(row.dataKey).toBe('row-1');
-	});
-});
-
-describe('findMissingRequiredFields', () => {
-	const complete = {
-		dataKey: 'row-1',
-		displayName: 'PMID:1',
-		referencedCurie: 'PMID:1',
-		resourceDescriptor: { id: 9, prefix: 'PMID' },
-		resourceDescriptorPage: { id: 1, name: 'default' },
-	};
-
-	it('Leaves out a row with every required field filled', () => {
-		expect(findMissingRequiredFields([complete])).toEqual({});
-	});
-
-	it('Marks each empty required field against its row', () => {
-		const missing = findMissingRequiredFields([
-			complete,
-			{ ...complete, dataKey: 'row-2', displayName: '', resourceDescriptor: null },
-		]);
-
-		expect(Object.keys(missing)).toEqual(['row-2']);
-		expect(missing['row-2']).toEqual({
-			displayName: { severity: 'error', message: 'Required field is empty' },
-			resourceDescriptor: { severity: 'error', message: 'Required field is empty' },
-		});
-	});
-
-	it('Counts a field holding only spaces as empty', () => {
-		const missing = findMissingRequiredFields([{ ...complete, referencedCurie: '   ' }]);
-
-		expect(missing['row-1']).toHaveProperty('referencedCurie');
-	});
-
-	it('Reports a curie holding only its prefix as missing its identifier', () => {
-		const missing = findMissingRequiredFields([{ ...complete, referencedCurie: 'PMID: ' }]);
-
-		expect(missing['row-1']).toEqual({
-			referencedCurie: { severity: 'error', message: 'Identifier after the prefix is missing' },
-		});
-	});
-
-	it('Marks a new blank row on every required field', () => {
-		const missing = findMissingRequiredFields([{ dataKey: 'row-3', displayName: '', referencedCurie: '' }]);
-
-		expect(Object.keys(missing['row-3']).sort()).toEqual(
-			['displayName', 'referencedCurie', 'resourceDescriptor', 'resourceDescriptorPage'].sort()
-		);
 	});
 });
 

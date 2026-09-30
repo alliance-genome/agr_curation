@@ -1,6 +1,6 @@
 import React from 'react';
 import { BrowserRouter } from 'react-router-dom';
-import { screen, waitFor, within } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { renderWithClient } from '../../../tools/jest/utils';
 import { Endpoints } from '../../../constants/Endpoints';
@@ -181,37 +181,8 @@ describe('<AlleleCreatePage /> cross references', () => {
 		expect(await screen.findByText(/Could not update CrossReferences/)).toBeInTheDocument();
 	});
 
-	// The check runs in the browser before anything is written, so no allele is created either.
-	it('Creates no allele while a cross reference is missing a required field', async () => {
-		const user = userEvent.setup();
-		await renderPage();
-
-		await user.click(button('Add Cross Reference'));
-		await user.click(button('Save & Close'));
-
-		expect(await screen.findByText('Some cross references are missing required fields')).toBeInTheDocument();
-		expect(screen.getByText('Allele not saved:')).toBeInTheDocument();
-		expect(within(crossReferenceRow()).getAllByText('Required field is empty')).toHaveLength(4);
-		expect(createAllele).not.toHaveBeenCalled();
-	});
-
-	// A curie typed as just its prefix fills the descriptor but has no identifier.
-	it('Creates no allele while a cross reference curie holds only its prefix', async () => {
-		const user = userEvent.setup();
-		await renderPage();
-
-		await user.click(button('Add Cross Reference'));
-		await waitForDescriptors();
-		await user.type(crossReferenceRow().querySelector('#referencedCurie'), 'PMID:');
-		await user.type(crossReferenceRow().querySelector('#displayName'), 'PMID');
-		await user.click(button('Save & Close'));
-
-		expect(await screen.findByText('Identifier after the prefix is missing')).toBeInTheDocument();
-		expect(createAllele).not.toHaveBeenCalled();
-	});
-
-	// Clicking Save takes focus from the curie cell, and the descriptor it names is set before the save's
-	// required check reads the row, so a curie typed last still saves.
+	// Clicking Save takes focus from the curie cell, and the descriptor it names is set before the save
+	// reads the row, so a curie typed last is sent with its page.
 	it('Fills the descriptor from a curie typed last, in time for the save', async () => {
 		const user = userEvent.setup();
 		await renderPage();

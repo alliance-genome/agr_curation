@@ -102,7 +102,6 @@ describe('<AlleleDetailPage /> cross references', () => {
 	// reached from its descriptor cell.
 	const crossReferenceRow = () => screen.getByLabelText('resourceDescriptor').closest('tr');
 
-	// Editing the stored row leaves it complete, so what follows is the save rather than the required check.
 	const editCrossReference = async (user) => {
 		await waitForCrossReferencesToLoad();
 		await user.type(crossReferenceRow().querySelector('#displayName'), ' edited');
@@ -199,31 +198,26 @@ describe('<AlleleDetailPage /> cross references', () => {
 		expect(screen.queryByText('Allele Saved')).not.toBeInTheDocument();
 	});
 
-	// The check runs in the browser before anything is written, so the allele is not saved either.
-	it('Stops the whole save when an edited row is missing a required field', async () => {
+	// Incomplete rows are sent as they are, and the API's per-row errors mark the cells it rejected.
+	it('Sends a row missing a required field and marks the field the API rejects', async () => {
 		const user = userEvent.setup();
+		replaceCrossReferencesForAllele.mockRejectedValue({
+			response: {
+				status: 400,
+				data: {
+					errorMessage: 'Could not update CrossReferences',
+					supplementalData: { errorMap: { crossReferences: { 0: { displayName: 'Required field is empty' } } } },
+				},
+			},
+		});
 		await renderPage();
 
 		await waitForCrossReferencesToLoad();
 		await user.clear(crossReferenceRow().querySelector('#displayName'));
 		await user.click(screen.getByRole('button', { name: 'Save' }));
 
-		expect(await screen.findByText('Some cross references are missing required fields')).toBeInTheDocument();
-		expect(screen.getByText('Allele not saved:')).toBeInTheDocument();
-		expect(within(crossReferenceRow()).getByText('Required field is empty')).toBeInTheDocument();
-		expect(saveAlleleDetail).not.toHaveBeenCalled();
-		expect(replaceCrossReferencesForAllele).not.toHaveBeenCalled();
-	});
-
-	it('Refuses a section save while a row is missing a required field', async () => {
-		const user = userEvent.setup();
-		await renderPage();
-
-		await waitForCrossReferencesToLoad();
-		await user.clear(crossReferenceRow().querySelector('#displayName'));
-		await user.click(screen.getByRole('button', { name: /Save Cross References/ }));
-
-		expect(await screen.findByText('Some cross references are missing required fields')).toBeInTheDocument();
-		expect(replaceCrossReferencesForAllele).not.toHaveBeenCalled();
+		expect(await within(crossReferenceRow()).findByText('Required field is empty')).toBeInTheDocument();
+		expect(saveAlleleDetail).toHaveBeenCalled();
+		expect(replaceCrossReferencesForAllele.mock.calls[0][1][0].displayName).toBe('');
 	});
 });

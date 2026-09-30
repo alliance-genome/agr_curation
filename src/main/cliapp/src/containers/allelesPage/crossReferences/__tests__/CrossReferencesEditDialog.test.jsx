@@ -151,7 +151,6 @@ describe('CrossReferencesEditDialog', () => {
 		renderDialog();
 		await waitFor(() => expect(getResourceDescriptor).toHaveBeenCalled());
 
-		// The new row is filled in, so it passes the required check and goes to the API with the stored one.
 		// Leaving its curie cell sets the descriptor the prefix names and that descriptor's default page.
 		await user.click(screen.getByRole('button', { name: /New Cross Reference/ }));
 		await waitFor(() =>
@@ -166,20 +165,6 @@ describe('CrossReferencesEditDialog', () => {
 			referencedCurie: 'PMID:123',
 			resourceDescriptorPage: { id: 1, name: 'default' },
 		});
-	});
-
-	// The resource descriptor is not stored on a cross reference, so only this check reports it missing.
-	it('Marks a new row that leaves required fields empty, without sending anything to the API', async () => {
-		const user = userEvent.setup();
-		const { editorCallback } = renderDialog();
-		await waitFor(() => expect(getResourceDescriptor).toHaveBeenCalled());
-
-		await user.click(screen.getByRole('button', { name: /New Cross Reference/ }));
-		await user.click(screen.getByRole('button', { name: /Keep Edits/ }));
-
-		expect(await screen.findAllByText('Required field is empty')).toHaveLength(4);
-		expect(validate).not.toHaveBeenCalled();
-		expect(editorCallback).not.toHaveBeenCalled();
 	});
 
 	it('Closes without writing anything back on Cancel', async () => {
