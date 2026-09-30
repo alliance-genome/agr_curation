@@ -2,6 +2,29 @@
  
 https://agr-jira.atlassian.net/wiki/spaces/ATEAM/overview
 
+## v0.53.0
+* New features:
+   * Create new alleles through a create allele page reusing the allele detail form (SCRUM-6076)
+   * Toggle field visibility on the allele detail page (SCRUM-6171)
+   * Create read-only table of AGM-Allele Associations in curation (SCRUM-6162)
+   * Link the Allele-Gene Associations table to allele detail pages (SCRUM-6278)
+   * Mint AGRKB IDs for alleles (SCRUM-6173), variants (SCRUM-6077), AGMs (SCRUM-6501) and genes (SCRUM-6502) on load and on curator create
+   * Generalise AGRKB curie minting and add backfill endpoints (SCRUM-6358, SCRUM-6360)
+   * Add curies to interactions and HTP dataset annotations (SCRUM-6463)
+   * Show the Curie column on the tables that were missing it (SCRUM-6522)
+   * Convert the HUMAN GAF load to a direct DQM submission (SCRUM-6264)
+   * Move chromosome accession data from an enum into a database table (SCRUM-6283)
+   * Replace Antibody taxon/antigenTaxon with vocabulary-backed terms (SCRUM-6496)
+   * Link human gene pages to GeneCards (SCRUM-6455)
+   * Bring the Allele model up to LinkML 2.18.0 (SCRUM-6561)
+   * Add context-naive text widgets and a row-edit strategy for data table text columns (SCRUM-6506)
+* Fixes and maintenance
+   * Re-read allele after detail update to avoid uninitialized lazy-loaded collections (SCRUM-6434)
+   * Clean up orphaned disease annotation notes (SCRUM-6342)
+   * Add slotannotation.displaytext index to speed up the SGD Expression Atlas load (SCRUM-6290)
+   * Fix Antibodies page hang, filter matching and Cross References filter errors, and add Antibody to the bulk load type dropdown
+   * Remediate open npm Dependabot alerts in cliapp and move the UI build to Node 22
+
 ## v0.52.0
 * New features:
    * Enable MOD affiliation switching for "Tester" and "POTester" Okta group members (SCRUM-2831)
