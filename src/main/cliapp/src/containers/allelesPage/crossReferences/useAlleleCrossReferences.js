@@ -45,8 +45,9 @@ export const useAlleleCrossReferences = (alleleId) => {
 	const [isDirty, setIsDirty] = useState(false);
 	const crossReferenceService = useMemo(() => new CrossReferenceService(), []);
 
-	// Every change made through here counts as an edit, so a page saving the allele can leave rows the
-	// curator did not touch unwritten. Loading and saving set the rows directly and leave none pending.
+	// Any change made through here marks the section as a whole edited, so a page saving the allele can
+	// skip writing cross references when none have changed. Loading and saving set the rows directly and
+	// leave none pending.
 	const setCrossReferences = useCallback((update) => {
 		setIsDirty(true);
 		setStoredCrossReferences(update);

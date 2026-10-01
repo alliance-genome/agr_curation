@@ -69,8 +69,8 @@ export default function AlleleDetailPage() {
 			onSuccess: async (result) => {
 				alleleDispatch({ type: 'SET', value: result?.data?.entity });
 
-				// Only edited rows are written, so saving the allele leaves cross references the curator did
-				// not touch as they are.
+				// The cross references are written only when the section has been edited, and then as the whole
+				// list, so saving the allele alone leaves the stored ones as they are.
 				if (crossReferences.isDirty) {
 					const outcome = await crossReferences.save();
 					if (!outcome.isSuccess) {
