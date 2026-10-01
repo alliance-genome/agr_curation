@@ -39,8 +39,8 @@ public class BulkLoadProcessor {
 	@Inject BulkLoadDAO bulkLoadDAO;
 	@Inject BulkLoadFileDAO bulkLoadFileDAO;
 	@Inject BulkLoadFileHistoryDAO bulkLoadFileHistoryDAO;
-	
-	
+
+
 	@Inject BulkManualLoadDAO bulkManualLoadDAO;
 	@Inject BulkFMSLoadDAO bulkFMSLoadDAO;
 	@Inject BulkURLLoadDAO bulkURLLoadDAO;
@@ -74,7 +74,7 @@ public class BulkLoadProcessor {
 				bulkLoadFileHistoryDAO.merge(bulkLoadFileHistory);
 			}
 			// log.info("Saving File: " + bulkLoadFile);
-			
+
 		} else if (bulkLoadFile.getS3Path() == null && bulkLoadFile.getLocalFilePath() != null) {
 			String s3Path = fileHelper.uploadFileToS3(s3Bucket, s3PathPrefix, bulkLoadFile.generateS3MD5Path(bulkLoad), new File(bulkLoadFile.getLocalFilePath()));
 			bulkLoadFile.setS3Path(s3Path);
@@ -104,7 +104,7 @@ public class BulkLoadProcessor {
 
 		SearchResponse<BulkLoadFile> bulkLoadFiles = bulkLoadFileDAO.findByField("md5Sum", md5Sum);
 		BulkLoadFile bulkLoadFile;
-		
+
 		BulkLoadFileHistory history = new BulkLoadFileHistory();
 
 		if (bulkLoadFiles == null || bulkLoadFiles.getResults().size() == 0) {
@@ -113,7 +113,7 @@ public class BulkLoadProcessor {
 			bulkLoadFile.setRecordCount(0);
 			bulkLoadFile.setMd5Sum(md5Sum);
 			bulkLoadFile.setFileSize(inputFile.length());
-			
+
 			if (load.getBulkloadStatus() == JobStatus.FORCED_RUNNING) {
 				history.setBulkloadStatus(JobStatus.FORCED_PENDING);
 			}
@@ -184,14 +184,6 @@ public class BulkLoadProcessor {
 	}
 
 	protected void endLoad(BulkLoad load, String message, JobStatus status) {
-		if (load == null) {
-			// Nothing to end. BulkLoadManualProcessor reaches here when /api/data/submit names a
-			// load type and data provider that no BulkManualLoad is configured for, which is a
-			// configuration gap rather than a fault in the request: without this guard the null
-			// dereference surfaced as a 500 and a stack trace instead of the message below.
-			Log.warn("endLoad called with no load" + (message == null ? "" : ": " + message));
-			return;
-		}
 		BulkLoad bulkLoad = bulkLoadDAO.find(load.getId());
 		bulkLoad.setErrorMessage(message);
 		bulkLoad.setBulkloadStatus(status);
@@ -224,7 +216,7 @@ public class BulkLoadProcessor {
 		bulkLoadFileHistory.setBulkloadStatus(status);
 		bulkLoadFileHistory.setLoadFinished(LocalDateTime.now());
 		slackNotifier.slackalert(bulkLoadFileHistory);
-		
+
 		bulkLoadFileHistory.setRunningThreadName(null); // Clears the name once finished
 		bulkLoadFileHistoryDAO.merge(bulkLoadFileHistory);
 		bulkLoadFileHistory.getBulkLoad().setBulkloadStatus(status);
