@@ -2,18 +2,25 @@ package org.alliancegenome.curation_api.services.validation;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.dao.CrossReferenceDAO;
 import org.alliancegenome.curation_api.dao.ResourceDescriptorPageDAO;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
+import org.alliancegenome.curation_api.model.entities.ResourceDescriptor;
 import org.alliancegenome.curation_api.model.entities.ResourceDescriptorPage;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.validation.base.AuditedObjectValidator;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import io.quarkus.logging.Log;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 
@@ -22,6 +29,10 @@ public class CrossReferenceValidator extends AuditedObjectValidator<CrossReferen
 
 	@Inject CrossReferenceDAO crossReferenceDAO;
 	@Inject ResourceDescriptorPageDAO resourceDescriptorPageDAO;
+
+	// Each descriptor idPattern compiled once, keyed by its text. An empty entry marks one that does not
+	// compile, so it is reported once rather than on every cross reference checked against it.
+	private static final Map<String, Optional<Pattern>> COMPILED_ID_PATTERNS = new ConcurrentHashMap<>();
 
 	public ObjectResponse<CrossReference> validateCrossReference(CrossReference uiEntity, Boolean throwError) {
 		return validateCrossReference(uiEntity, throwError, true);
@@ -71,7 +82,8 @@ public class CrossReferenceValidator extends AuditedObjectValidator<CrossReferen
 	 *        carrying an id returns the managed row it names, with the payload's values applied but not
 	 *        written, so the caller must not run inside a transaction that would flush them.
 	 * @param requireCompleteCrossReference whether the cross reference must have a display name and name a
-	 *        page, and its curie carry the prefix of that page's resource descriptor. Off for the entity types
+	 *        page, and its curie match that page's resource descriptor: its idPattern, or for a descriptor
+	 *        without a pattern that compiles, its prefix followed by an identifier. Off for the entity types
 	 *        whose stored cross references do not all meet it, so that saving an unrelated field on one of
 	 *        them is not refused. Without it, a display name is required only when there is no curie.
 	 */
@@ -134,7 +146,9 @@ public class CrossReferenceValidator extends AuditedObjectValidator<CrossReferen
 			if (resourceDescriptorPage != null && resourceDescriptorPage.getResourceDescriptor() == null) {
 				addMessageResponse("resourceDescriptorPage", ValidationConstants.INVALID_MESSAGE);
 			}
-			validateReferencedCuriePrefix(uiEntity.getReferencedCurie(), resourceDescriptorPage);
+			if (resourceDescriptorPage != null) {
+				validateReferencedCurieAgainstDescriptor(uiEntity.getReferencedCurie(), resourceDescriptorPage.getResourceDescriptor());
+			}
 		}
 
 		if (response.hasErrors()) {
@@ -151,30 +165,44 @@ public class CrossReferenceValidator extends AuditedObjectValidator<CrossReferen
 	}
 
 	// The page builds the curie's link, so the curie has to belong to the resource the page's descriptor
-	// names. A page that is missing or has no descriptor has already been reported, so there is nothing to
-	// compare with.
-	private void validateReferencedCuriePrefix(String referencedCurie, ResourceDescriptorPage resourceDescriptorPage) {
-		if (StringUtils.isEmpty(referencedCurie)) {
+	// names. A missing curie, page or descriptor has already been reported, so there is nothing to compare.
+	private void validateReferencedCurieAgainstDescriptor(String referencedCurie, ResourceDescriptor resourceDescriptor) {
+		if (StringUtils.isEmpty(referencedCurie) || resourceDescriptor == null) {
 			return;
 		}
 
+		Pattern idPattern = compiledIdPattern(resourceDescriptor);
+		boolean matchesDescriptor = idPattern != null
+			? idPattern.matcher(referencedCurie).matches()
+			: carriesPrefix(referencedCurie, resourceDescriptor.getPrefix());
+
+		if (!matchesDescriptor) {
+			addMessageResponse("referencedCurie", ValidationConstants.CURIE_PATTERN_MISMATCH_MESSAGE);
+		}
+	}
+
+	// The descriptor's idPattern, or null when it has none or it does not compile.
+	private static Pattern compiledIdPattern(ResourceDescriptor resourceDescriptor) {
+		String idPattern = resourceDescriptor.getIdPattern();
+		if (StringUtils.isBlank(idPattern)) {
+			return null;
+		}
+
+		return COMPILED_ID_PATTERNS.computeIfAbsent(idPattern, patternText -> {
+			try {
+				return Optional.of(Pattern.compile(patternText));
+			} catch (PatternSyntaxException error) {
+				Log.warn("Resource descriptor " + resourceDescriptor.getPrefix() + " has an idPattern that does not compile, so its curies are checked by prefix: " + error.getDescription());
+				return Optional.empty();
+			}
+		}).orElse(null);
+	}
+
+	// Whether the curie is the prefix, a colon and a non-blank identifier.
+	private static boolean carriesPrefix(String referencedCurie, String prefix) {
 		int separatorIndex = referencedCurie.indexOf(':');
-		if (separatorIndex <= 0) {
-			addMessageResponse("referencedCurie", ValidationConstants.MISSING_PREFIX_MESSAGE);
-			return;
-		}
-
-		if (StringUtils.isBlank(referencedCurie.substring(separatorIndex + 1))) {
-			addMessageResponse("referencedCurie", ValidationConstants.MISSING_LOCAL_ID_MESSAGE);
-			return;
-		}
-
-		if (resourceDescriptorPage == null || resourceDescriptorPage.getResourceDescriptor() == null) {
-			return;
-		}
-
-		if (!referencedCurie.substring(0, separatorIndex).equals(resourceDescriptorPage.getResourceDescriptor().getPrefix())) {
-			addMessageResponse("referencedCurie", ValidationConstants.PREFIX_MISMATCH_MESSAGE);
-		}
+		return separatorIndex > 0
+			&& referencedCurie.substring(0, separatorIndex).equals(prefix)
+			&& StringUtils.isNotBlank(referencedCurie.substring(separatorIndex + 1));
 	}
 }

@@ -733,8 +733,8 @@ public class AlleleValidator extends GenomicEntityValidator<Allele> {
 		return validatedConstructAssociations;
 	}
 
-	// An allele's cross references must each have a display name, name a page and carry its descriptor's
-	// prefix. These rules are applied here rather than for every genomic entity because other types hold
+	// An allele's cross references must each have a display name, name a page and have a curie that matches
+	// its descriptor. These rules are applied here rather than for every genomic entity because other types hold
 	// stored rows that break them.
 	@Override
 	public List<CrossReference> validateCrossReferences(Allele uiEntity, Allele dbEntity) {

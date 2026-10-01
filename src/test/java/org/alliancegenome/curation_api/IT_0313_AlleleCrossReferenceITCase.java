@@ -48,12 +48,18 @@ public class IT_0313_AlleleCrossReferenceITCase extends BaseITCase {
 	private VocabularyTerm symbolNameType;
 	private ResourceDescriptorPage defaultPage;
 	private ResourceDescriptorPage genePage;
+	private ResourceDescriptorPage patternPage;
+	private ResourceDescriptorPage unusablePatternPage;
 
 	private void loadRequiredEntities() {
 		symbolNameType = getVocabularyTerm(getVocabulary(VocabularyConstants.NAME_TYPE_VOCABULARY), "nomenclature_symbol");
 		ResourceDescriptor resourceDescriptor = createResourceDescriptor("XRSUB");
 		defaultPage = createResourceDescriptorPage("default", "http://test.org/[%s]", resourceDescriptor);
 		genePage = createResourceDescriptorPage("gene", "http://test.org/gene/[%s]", resourceDescriptor);
+		ResourceDescriptor patternDescriptor = createResourceDescriptor("XRPAT", "^(XRPAT|xrpat):\\d+$");
+		patternPage = createResourceDescriptorPage("default", "http://test.org/pattern/[%s]", patternDescriptor);
+		ResourceDescriptor unusablePatternDescriptor = createResourceDescriptor("XRBAD", "^XRBAD:[\\d|[A-Z]+$");
+		unusablePatternPage = createResourceDescriptorPage("default", "http://test.org/bad/[%s]", unusablePatternDescriptor);
 		alleleId = createAllele(ALLELE, "NCBITaxon:6239", symbolNameType, false).getId();
 	}
 
@@ -345,6 +351,7 @@ public class IT_0313_AlleleCrossReferenceITCase extends BaseITCase {
 			body("errorMessages.id", is(ValidationConstants.INVALID_MESSAGE));
 	}
 
+	// XRSUB has no pattern, so its curies are checked by its prefix.
 	@Test
 	@Order(10)
 	public void curieWithoutPrefixIsRejected() {
@@ -355,7 +362,7 @@ public class IT_0313_AlleleCrossReferenceITCase extends BaseITCase {
 			put("/api/allele/" + alleleId + "/cross-references").
 			then().
 			statusCode(400).
-			body("supplementalData.errorMap.crossReferences.'0'.referencedCurie", is(ValidationConstants.MISSING_PREFIX_MESSAGE));
+			body("supplementalData.errorMap.crossReferences.'0'.referencedCurie", is(ValidationConstants.CURIE_PATTERN_MISMATCH_MESSAGE));
 	}
 
 	@Test
@@ -368,7 +375,7 @@ public class IT_0313_AlleleCrossReferenceITCase extends BaseITCase {
 			put("/api/allele/" + alleleId + "/cross-references").
 			then().
 			statusCode(400).
-			body("supplementalData.errorMap.crossReferences.'0'.referencedCurie", is(ValidationConstants.PREFIX_MISMATCH_MESSAGE));
+			body("supplementalData.errorMap.crossReferences.'0'.referencedCurie", is(ValidationConstants.CURIE_PATTERN_MISMATCH_MESSAGE));
 	}
 
 	// The Alleles table saves cross references with the allele rather than through the sub-resource, so it
@@ -408,7 +415,7 @@ public class IT_0313_AlleleCrossReferenceITCase extends BaseITCase {
 			post("/api/cross-reference/validate").
 			then().
 			statusCode(400).
-			body("errorMessages.referencedCurie", is(ValidationConstants.PREFIX_MISMATCH_MESSAGE));
+			body("errorMessages.referencedCurie", is(ValidationConstants.CURIE_PATTERN_MISMATCH_MESSAGE));
 
 		RestAssured.given().
 			contentType("application/json").
@@ -432,7 +439,7 @@ public class IT_0313_AlleleCrossReferenceITCase extends BaseITCase {
 			put("/api/allele/" + alleleId + "/cross-references").
 			then().
 			statusCode(400).
-			body("supplementalData.errorMap.crossReferences.'0'.referencedCurie", is(ValidationConstants.MISSING_LOCAL_ID_MESSAGE));
+			body("supplementalData.errorMap.crossReferences.'0'.referencedCurie", is(ValidationConstants.CURIE_PATTERN_MISMATCH_MESSAGE));
 	}
 
 	// Other entity types need a display name only when there is no curie; an allele's always needs one.
@@ -450,6 +457,53 @@ public class IT_0313_AlleleCrossReferenceITCase extends BaseITCase {
 			then().
 			statusCode(400).
 			body("supplementalData.errorMap.crossReferences.'0'.displayName", is(ValidationConstants.REQUIRED_MESSAGE));
+	}
+
+	// A descriptor's pattern decides which curies belong to it, so a curie it allows under another prefix is
+	// accepted and one with the descriptor's own prefix that it does not allow is rejected.
+	@Test
+	@Order(16)
+	public void curieIsCheckedAgainstTheDescriptorPattern() {
+		RestAssured.given().
+			contentType("application/json").
+			body(List.of(buildXref("XRPAT:abc", patternPage))).
+			when().
+			put("/api/allele/" + alleleId + "/cross-references").
+			then().
+			statusCode(400).
+			body("supplementalData.errorMap.crossReferences.'0'.referencedCurie", is(ValidationConstants.CURIE_PATTERN_MISMATCH_MESSAGE));
+
+		RestAssured.given().
+			contentType("application/json").
+			body(List.of(buildXref("xrpat:0016", patternPage))).
+			when().
+			put("/api/allele/" + alleleId + "/cross-references").
+			then().
+			statusCode(200).
+			body("entities[0].referencedCurie", is("xrpat:0016"));
+	}
+
+	// A pattern that does not compile cannot be applied, so the descriptor's curies are checked by prefix.
+	@Test
+	@Order(17)
+	public void curieUnderAPatternThatDoesNotCompileIsCheckedByPrefix() {
+		RestAssured.given().
+			contentType("application/json").
+			body(List.of(buildXref("XRSUB:0017", unusablePatternPage))).
+			when().
+			put("/api/allele/" + alleleId + "/cross-references").
+			then().
+			statusCode(400).
+			body("supplementalData.errorMap.crossReferences.'0'.referencedCurie", is(ValidationConstants.CURIE_PATTERN_MISMATCH_MESSAGE));
+
+		RestAssured.given().
+			contentType("application/json").
+			body(List.of(buildXref("XRBAD:0017", unusablePatternPage))).
+			when().
+			put("/api/allele/" + alleleId + "/cross-references").
+			then().
+			statusCode(200).
+			body("entities[0].referencedCurie", is("XRBAD:0017"));
 	}
 
 	private CrossReference buildXref(String referencedCurie, ResourceDescriptorPage page) {
