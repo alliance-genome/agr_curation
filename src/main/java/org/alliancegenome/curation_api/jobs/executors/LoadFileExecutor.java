@@ -128,8 +128,29 @@ public class LoadFileExecutor {
 	}
 
 	/**
-	 * Parses the whole submission once. Each executor then checks the schema version against
-	 * its own DTO class with {@link #checkSchemaVersion}.
+	 * Runs an ingest executor against the shared submission. The schema version is checked here,
+	 * against the executor's {@link #getIngestDtoClass()}, so no executor can skip it.
+	 */
+	public void execLoad(BulkLoadFileHistory bulkLoadFileHistory, IngestDTO ingestDto, Boolean cleanUp) {
+		if (!checkSchemaVersion(bulkLoadFileHistory, getIngestDtoClass())) {
+			return;
+		}
+		loadIngestSet(bulkLoadFileHistory, ingestDto, cleanUp);
+	}
+
+	/** The DTO class whose schema version range an ingest executor accepts. */
+	protected Class<?> getIngestDtoClass() {
+		throw new UnsupportedOperationException(getClass().getSimpleName() + " is not an ingest executor");
+	}
+
+	/** Loads this executor's ingest set from the shared submission, after the schema check. */
+	protected void loadIngestSet(BulkLoadFileHistory bulkLoadFileHistory, IngestDTO ingestDto, Boolean cleanUp) {
+		throw new UnsupportedOperationException(getClass().getSimpleName() + " is not an ingest executor");
+	}
+
+	/**
+	 * Parses the whole submission once; {@link #execLoad(BulkLoadFileHistory, IngestDTO, Boolean)}
+	 * then checks the schema version for each executor.
 	 */
 	protected IngestDTO readIngestFile(BulkLoadFileHistory bulkLoadFileHistory) {
 		try {

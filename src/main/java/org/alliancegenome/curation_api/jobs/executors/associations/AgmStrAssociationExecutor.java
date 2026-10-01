@@ -23,15 +23,17 @@ public class AgmStrAssociationExecutor extends LoadFileExecutor {
 
 	@Inject AgmStrAssociationService agmStrAssociationService;
 
-	public void execLoad(BulkLoadFileHistory bulkLoadFileHistory, IngestDTO ingestDto, Boolean cleanUp) {
+	@Override
+	protected Class<?> getIngestDtoClass() {
+		return AgmSequenceTargetingReagentAssociationDTO.class;
+	}
+
+	@Override
+	protected void loadIngestSet(BulkLoadFileHistory bulkLoadFileHistory, IngestDTO ingestDto, Boolean cleanUp) {
 
 		BulkManualLoad manual = (BulkManualLoad) bulkLoadFileHistory.getBulkLoad();
 		BackendBulkDataProvider dataProvider = manual.getDataProvider();
 		log.info("Running with dataProvider: " + dataProvider.name());
-
-		if (!checkSchemaVersion(bulkLoadFileHistory, AgmSequenceTargetingReagentAssociationDTO.class)) {
-			return;
-		}
 
 		List<AgmSequenceTargetingReagentAssociationDTO> associations = ingestDto.getAgmStrAssociationIngestSet();
 		if (CollectionUtils.isEmpty(associations)) {

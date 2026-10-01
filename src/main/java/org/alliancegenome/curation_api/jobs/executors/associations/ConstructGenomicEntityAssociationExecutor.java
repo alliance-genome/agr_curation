@@ -23,15 +23,17 @@ public class ConstructGenomicEntityAssociationExecutor extends LoadFileExecutor 
 
 	@Inject ConstructGenomicEntityAssociationService constructGenomicEntityAssociationService;
 
-	public void execLoad(BulkLoadFileHistory bulkLoadFileHistory, IngestDTO ingestDto, Boolean cleanUp) {
+	@Override
+	protected Class<?> getIngestDtoClass() {
+		return ConstructGenomicEntityAssociationDTO.class;
+	}
+
+	@Override
+	protected void loadIngestSet(BulkLoadFileHistory bulkLoadFileHistory, IngestDTO ingestDto, Boolean cleanUp) {
 
 		BulkManualLoad manual = (BulkManualLoad) bulkLoadFileHistory.getBulkLoad();
 		BackendBulkDataProvider dataProvider = manual.getDataProvider();
 		log.info("Running with dataProvider: " + dataProvider.name());
-
-		if (!checkSchemaVersion(bulkLoadFileHistory, ConstructGenomicEntityAssociationDTO.class)) {
-			return;
-		}
 
 		List<ConstructGenomicEntityAssociationDTO> associations = ingestDto.getConstructGenomicEntityAssociationIngestSet();
 		if (CollectionUtils.isEmpty(associations)) {

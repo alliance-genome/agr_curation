@@ -24,14 +24,16 @@ public class TransgenicToolExecutor extends LoadFileExecutor {
 
 	@Inject TransgenicToolService transgenicToolService;
 
-	public void execLoad(BulkLoadFileHistory bulkLoadFileHistory, IngestDTO ingestDto, Boolean cleanUp) {
+	@Override
+	protected Class<?> getIngestDtoClass() {
+		return TransgenicToolDTO.class;
+	}
+
+	@Override
+	protected void loadIngestSet(BulkLoadFileHistory bulkLoadFileHistory, IngestDTO ingestDto, Boolean cleanUp) {
 
 		BulkManualLoad manual = (BulkManualLoad) bulkLoadFileHistory.getBulkLoad();
 		Log.info("Running with: " + manual.getDataProvider().name());
-
-		if (!checkSchemaVersion(bulkLoadFileHistory, TransgenicToolDTO.class)) {
-			return;
-		}
 
 		List<TransgenicToolDTO> transgenicTools = ingestDto.getTransgenicToolIngestSet();
 		if (CollectionUtils.isEmpty(transgenicTools)) {

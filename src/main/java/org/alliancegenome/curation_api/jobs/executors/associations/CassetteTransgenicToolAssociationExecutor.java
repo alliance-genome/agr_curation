@@ -24,15 +24,17 @@ public class CassetteTransgenicToolAssociationExecutor extends LoadFileExecutor 
 
 	@Inject CassetteTransgenicToolAssociationService lCassetteTransgenicToolAssociationService;
 
-	public void execLoad(BulkLoadFileHistory bulkLoadFileHistory, IngestDTO ingestDto, Boolean cleanUp) {
+	@Override
+	protected Class<?> getIngestDtoClass() {
+		return CassetteTransgenicToolAssociationDTO.class;
+	}
+
+	@Override
+	protected void loadIngestSet(BulkLoadFileHistory bulkLoadFileHistory, IngestDTO ingestDto, Boolean cleanUp) {
 
 		BulkManualLoad manual = (BulkManualLoad) bulkLoadFileHistory.getBulkLoad();
 		BackendBulkDataProvider dataProvider = manual.getDataProvider();
 		log.info("Running with dataProvider: " + dataProvider.name());
-
-		if (!checkSchemaVersion(bulkLoadFileHistory, CassetteTransgenicToolAssociationDTO.class)) {
-			return;
-		}
 
 		List<CassetteTransgenicToolAssociationDTO> associations = ingestDto.getCassetteTransgenicToolAssociationIngestSet();
 		if (CollectionUtils.isEmpty(associations)) {

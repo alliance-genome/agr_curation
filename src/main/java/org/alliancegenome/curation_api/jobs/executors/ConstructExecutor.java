@@ -28,14 +28,16 @@ public class ConstructExecutor extends LoadFileExecutor {
 	@Inject
 	NcbiTaxonTermService ncbiTaxonTermService;
 
-	public void execLoad(BulkLoadFileHistory bulkLoadFileHistory, IngestDTO ingestDto, Boolean cleanUp) {
+	@Override
+	protected Class<?> getIngestDtoClass() {
+		return ConstructDTO.class;
+	}
+
+	@Override
+	protected void loadIngestSet(BulkLoadFileHistory bulkLoadFileHistory, IngestDTO ingestDto, Boolean cleanUp) {
 
 		BulkManualLoad manual = (BulkManualLoad) bulkLoadFileHistory.getBulkLoad();
 		Log.info("Running with: " + manual.getDataProvider().name());
-
-		if (!checkSchemaVersion(bulkLoadFileHistory, ConstructDTO.class)) {
-			return;
-		}
 
 		List<ConstructDTO> constructs = ingestDto.getConstructIngestSet();
 		if (CollectionUtils.isEmpty(constructs)) {

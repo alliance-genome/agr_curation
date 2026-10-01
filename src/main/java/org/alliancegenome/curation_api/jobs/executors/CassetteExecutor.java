@@ -24,14 +24,16 @@ public class CassetteExecutor extends LoadFileExecutor {
 
 	@Inject CassetteService cassetteService;
 
-	public void execLoad(BulkLoadFileHistory bulkLoadFileHistory, IngestDTO ingestDto, Boolean cleanUp) {
+	@Override
+	protected Class<?> getIngestDtoClass() {
+		return CassetteDTO.class;
+	}
+
+	@Override
+	protected void loadIngestSet(BulkLoadFileHistory bulkLoadFileHistory, IngestDTO ingestDto, Boolean cleanUp) {
 
 		BulkManualLoad manual = (BulkManualLoad) bulkLoadFileHistory.getBulkLoad();
 		Log.info("Running with: " + manual.getDataProvider().name());
-
-		if (!checkSchemaVersion(bulkLoadFileHistory, CassetteDTO.class)) {
-			return;
-		}
 
 		List<CassetteDTO> cassettes = ingestDto.getCassetteIngestSet();
 		if (CollectionUtils.isEmpty(cassettes)) {

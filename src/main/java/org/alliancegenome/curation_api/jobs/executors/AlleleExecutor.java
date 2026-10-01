@@ -22,14 +22,16 @@ public class AlleleExecutor extends LoadFileExecutor {
 	@Inject AlleleDAO alleleDAO;
 	@Inject AlleleService alleleService;
 
-	public void execLoad(BulkLoadFileHistory bulkLoadFileHistory, IngestDTO ingestDto, Boolean cleanUp) {
+	@Override
+	protected Class<?> getIngestDtoClass() {
+		return AlleleDTO.class;
+	}
+
+	@Override
+	protected void loadIngestSet(BulkLoadFileHistory bulkLoadFileHistory, IngestDTO ingestDto, Boolean cleanUp) {
 
 		BulkManualLoad manual = (BulkManualLoad) bulkLoadFileHistory.getBulkLoad();
 		Log.info("Running with: " + manual.getDataProvider().name());
-
-		if (!checkSchemaVersion(bulkLoadFileHistory, AlleleDTO.class)) {
-			return;
-		}
 
 		List<AlleleDTO> alleles = ingestDto.getAlleleIngestSet();
 		if (CollectionUtils.isEmpty(alleles)) {

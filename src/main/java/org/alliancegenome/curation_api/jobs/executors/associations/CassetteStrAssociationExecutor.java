@@ -24,15 +24,17 @@ public class CassetteStrAssociationExecutor extends LoadFileExecutor {
 
 	@Inject CassetteStrAssociationService lCassetteStrAssociationService;
 
-	public void execLoad(BulkLoadFileHistory bulkLoadFileHistory, IngestDTO ingestDto, Boolean cleanUp) {
+	@Override
+	protected Class<?> getIngestDtoClass() {
+		return CassetteStrAssociationDTO.class;
+	}
+
+	@Override
+	protected void loadIngestSet(BulkLoadFileHistory bulkLoadFileHistory, IngestDTO ingestDto, Boolean cleanUp) {
 
 		BulkManualLoad manual = (BulkManualLoad) bulkLoadFileHistory.getBulkLoad();
 		BackendBulkDataProvider dataProvider = manual.getDataProvider();
 		log.info("Running with dataProvider: " + dataProvider.name());
-
-		if (!checkSchemaVersion(bulkLoadFileHistory, CassetteStrAssociationDTO.class)) {
-			return;
-		}
 
 		List<CassetteStrAssociationDTO> associations = ingestDto.getCassetteStrAssociationIngestSet();
 		if (CollectionUtils.isEmpty(associations)) {

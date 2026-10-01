@@ -24,15 +24,17 @@ public class CassetteGenomicEntityAssociationExecutor extends LoadFileExecutor {
 
 	@Inject CassetteGenomicEntityAssociationService lCassetteGenomicEntityAssociationService;
 
-	public void execLoad(BulkLoadFileHistory bulkLoadFileHistory, IngestDTO ingestDto, Boolean cleanUp) {
+	@Override
+	protected Class<?> getIngestDtoClass() {
+		return CassetteGenomicEntityAssociationDTO.class;
+	}
+
+	@Override
+	protected void loadIngestSet(BulkLoadFileHistory bulkLoadFileHistory, IngestDTO ingestDto, Boolean cleanUp) {
 
 		BulkManualLoad manual = (BulkManualLoad) bulkLoadFileHistory.getBulkLoad();
 		BackendBulkDataProvider dataProvider = manual.getDataProvider();
 		log.info("Running with dataProvider: " + dataProvider.name());
-
-		if (!checkSchemaVersion(bulkLoadFileHistory, CassetteGenomicEntityAssociationDTO.class)) {
-			return;
-		}
 
 		List<CassetteGenomicEntityAssociationDTO> associations = ingestDto.getCassetteGenomicEntityAssociationIngestSet();
 		if (CollectionUtils.isEmpty(associations)) {

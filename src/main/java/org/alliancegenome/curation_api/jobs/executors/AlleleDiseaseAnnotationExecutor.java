@@ -26,15 +26,17 @@ public class AlleleDiseaseAnnotationExecutor extends LoadFileExecutor {
 	@Inject AlleleDiseaseAnnotationService alleleDiseaseAnnotationService;
 	@Inject DiseaseAnnotationService diseaseAnnotationService;
 
-	public void execLoad(BulkLoadFileHistory bulkLoadFileHistory, IngestDTO ingestDto, Boolean cleanUp) {
+	@Override
+	protected Class<?> getIngestDtoClass() {
+		return AlleleDiseaseAnnotationDTO.class;
+	}
+
+	@Override
+	protected void loadIngestSet(BulkLoadFileHistory bulkLoadFileHistory, IngestDTO ingestDto, Boolean cleanUp) {
 
 		BulkManualLoad manual = (BulkManualLoad) bulkLoadFileHistory.getBulkLoad();
 		BackendBulkDataProvider dataProvider = manual.getDataProvider();
 		log.info("Running with dataProvider: " + dataProvider.name());
-
-		if (!checkSchemaVersion(bulkLoadFileHistory, AlleleDiseaseAnnotationDTO.class)) {
-			return;
-		}
 
 		List<AlleleDiseaseAnnotationDTO> annotations = ingestDto.getDiseaseAlleleIngestSet();
 		if (CollectionUtils.isEmpty(annotations)) {

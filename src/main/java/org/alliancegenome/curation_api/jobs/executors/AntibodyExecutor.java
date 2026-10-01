@@ -24,14 +24,16 @@ public class AntibodyExecutor extends LoadFileExecutor {
 	@Inject
 	AntibodyService antibodyService;
 
-	public void execLoad(BulkLoadFileHistory bulkLoadFileHistory, IngestDTO ingestDto, Boolean cleanUp) {
+	@Override
+	protected Class<?> getIngestDtoClass() {
+		return AntibodyDTO.class;
+	}
+
+	@Override
+	protected void loadIngestSet(BulkLoadFileHistory bulkLoadFileHistory, IngestDTO ingestDto, Boolean cleanUp) {
 
 		BulkManualLoad manual = (BulkManualLoad) bulkLoadFileHistory.getBulkLoad();
 		Log.info("Running with: " + manual.getDataProvider().name());
-
-		if (!checkSchemaVersion(bulkLoadFileHistory, AntibodyDTO.class)) {
-			return;
-		}
 
 		List<AntibodyDTO> antibodies = ingestDto.getAntibodyIngestSet();
 		if (CollectionUtils.isEmpty(antibodies)) {

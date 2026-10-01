@@ -23,15 +23,17 @@ public class AgmAlleleAssociationExecutor extends LoadFileExecutor {
 	
 	@Inject AgmAlleleAssociationService agmAlleleAssociationService;
 
-	public void execLoad(BulkLoadFileHistory bulkLoadFileHistory, IngestDTO ingestDto, Boolean cleanUp) {
+	@Override
+	protected Class<?> getIngestDtoClass() {
+		return AgmAlleleAssociationDTO.class;
+	}
+
+	@Override
+	protected void loadIngestSet(BulkLoadFileHistory bulkLoadFileHistory, IngestDTO ingestDto, Boolean cleanUp) {
 
 		BulkManualLoad manual = (BulkManualLoad) bulkLoadFileHistory.getBulkLoad();
 		BackendBulkDataProvider dataProvider = manual.getDataProvider();
 		log.info("Running with dataProvider: " + dataProvider.name());
-
-		if (!checkSchemaVersion(bulkLoadFileHistory, AgmAlleleAssociationDTO.class)) {
-			return;
-		}
 
 		List<AgmAlleleAssociationDTO> associations = ingestDto.getAgmAlleleAssociationIngestSet();
 		if (CollectionUtils.isEmpty(associations)) {
