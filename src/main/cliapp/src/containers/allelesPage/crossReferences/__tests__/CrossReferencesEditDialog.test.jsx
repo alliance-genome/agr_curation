@@ -2,10 +2,12 @@ import React from 'react';
 import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { renderWithClient } from '../../../../tools/jest/utils';
+import { Endpoints } from '../../../../constants/Endpoints';
 
-const { validate, getResourceDescriptor } = vi.hoisted(() => ({
+const { validate, getResourceDescriptor, search } = vi.hoisted(() => ({
 	validate: vi.fn(),
 	getResourceDescriptor: vi.fn(),
+	search: vi.fn(),
 }));
 
 vi.mock('../../../../service/ValidationService', () => ({
@@ -22,7 +24,7 @@ vi.mock('../../../../service/ResourceDescriptorService', () => ({
 
 vi.mock('../../../../service/SearchService', () => ({
 	SearchService: class {
-		search = vi.fn(() => Promise.resolve({ results: [], totalResults: 0 }));
+		search = search;
 		find = vi.fn(() => Promise.resolve({ results: [], totalResults: 0 }));
 	},
 }));
@@ -32,6 +34,7 @@ const { CrossReferencesEditDialog } = await import('../CrossReferencesEditDialog
 const PMID = {
 	id: 9,
 	prefix: 'PMID',
+	name: 'PubMed',
 	resourcePages: [
 		{ id: 1, name: 'default' },
 		{ id: 2, name: 'gene' },
@@ -75,6 +78,8 @@ beforeEach(() => {
 	getResourceDescriptor.mockReset();
 	validate.mockResolvedValue({ isSuccess: true, isError: false, data: {} });
 	getResourceDescriptor.mockResolvedValue({ data: { entity: PMID } });
+	search.mockReset();
+	search.mockResolvedValue({ results: [PMID], totalResults: 1 });
 });
 
 describe('CrossReferencesEditDialog', () => {
@@ -146,10 +151,20 @@ describe('CrossReferencesEditDialog', () => {
 		renderDialog();
 		await waitFor(() => expect(getResourceDescriptor).toHaveBeenCalled());
 
+		// Leaving its curie cell sets the descriptor the prefix names and that descriptor's default page.
 		await user.click(screen.getByRole('button', { name: /New Cross Reference/ }));
+		await waitFor(() =>
+			expect(search.mock.calls.some(([endpoint]) => endpoint === Endpoints.Resource.DESCRIPTOR)).toBe(true)
+		);
+		await user.type(document.querySelectorAll('#referencedCurie')[1], 'PMID:123');
+		await user.type(document.querySelectorAll('#displayName')[1], 'PMID:123');
 		await user.click(screen.getByRole('button', { name: /Keep Edits/ }));
 
 		await waitFor(() => expect(validate).toHaveBeenCalledTimes(2));
+		expect(validate.mock.calls[1][1]).toMatchObject({
+			referencedCurie: 'PMID:123',
+			resourceDescriptorPage: { id: 1, name: 'default' },
+		});
 	});
 
 	it('Closes without writing anything back on Cancel', async () => {

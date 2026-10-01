@@ -13,6 +13,7 @@ import org.alliancegenome.curation_api.base.BaseITCase;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.Reference;
+import org.alliancegenome.curation_api.model.entities.ResourceDescriptorPage;
 import org.alliancegenome.curation_api.resources.TestContainerResource;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.MethodOrderer;
@@ -37,7 +38,7 @@ public class IT_0312_CrossReferenceOrphanITCase extends BaseITCase {
 	private static final String REFERENCE_CURIE = "AGRKB:scrum6053-orphan-1";
 	private static final String XREF_KEPT = "PMID:6053TEST-KEPT";
 	private static final String XREF_DROPPED = "PMID:6053TEST-DROPPED";
-	private static final String XREF_VALIDATED = "PMID:6503TEST-VALIDATE";
+	private static final String XREF_VALIDATED = "XRVAL:6503TEST-VALIDATE";
 
 	@Test
 	@Order(1)
@@ -100,9 +101,12 @@ public class IT_0312_CrossReferenceOrphanITCase extends BaseITCase {
 	@Test
 	@Order(2)
 	public void validateDoesNotPersist() {
+		ResourceDescriptorPage page = createResourceDescriptorPage("default", "http://test.org/[%s]", createResourceDescriptor("XRVAL"));
+
 		CrossReference valid = new CrossReference();
 		valid.setReferencedCurie(XREF_VALIDATED);
 		valid.setDisplayName(XREF_VALIDATED);
+		valid.setResourceDescriptorPage(page);
 		valid.setInternal(false);
 		valid.setObsolete(false);
 

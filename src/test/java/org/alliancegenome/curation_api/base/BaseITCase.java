@@ -783,9 +783,14 @@ public class BaseITCase {
 	}
 
 	public ResourceDescriptor createResourceDescriptor(String prefix) {
+		return createResourceDescriptor(prefix, null);
+	}
+
+	public ResourceDescriptor createResourceDescriptor(String prefix, String idPattern) {
 		ResourceDescriptor rd = new ResourceDescriptor();
 		rd.setPrefix(prefix);
 		rd.setName(prefix);
+		rd.setIdPattern(idPattern);
 		rd.setDefaultUrlTemplate("http://example.com/" + prefix + "/[%s]");
 
 		ObjectResponse<ResourceDescriptor> response = RestAssured.given().

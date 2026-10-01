@@ -8,7 +8,9 @@ import { CrossReferencesTable } from './CrossReferencesTable';
 import {
 	applyCrossReferenceFieldChange,
 	buildNewCrossReference,
+	seedResourceDescriptor,
 	seedResourceDescriptors,
+	stripForValidation,
 	stripUiFields,
 } from './utils';
 import { addDataKey } from '../utils';
@@ -33,7 +35,9 @@ export const CrossReferencesEditDialog = ({
 	const toast_topright = useRef(null);
 
 	const showDialogHandler = async () => {
-		const clonedCrossReferences = structuredClone(originalCrossReferences) ?? [];
+		// Each stored row takes the descriptor nested in its page straight away, so its descriptor cell is
+		// filled before the full descriptor, with its pages, is read.
+		const clonedCrossReferences = (structuredClone(originalCrossReferences) ?? []).map(seedResourceDescriptor);
 		clonedCrossReferences.forEach(addDataKey);
 
 		setEditingRows(Object.fromEntries(clonedCrossReferences.map((crossReference) => [crossReference.dataKey, true])));
@@ -85,15 +89,6 @@ export const CrossReferencesEditDialog = ({
 		setLocalCrossReferences((previous) => previous.filter((crossReference) => crossReference.dataKey !== dataKey));
 	};
 
-	const cleanForValidation = (crossReference) => {
-		const cleaned = stripUiFields(crossReference);
-		delete cleaned.updatedBy;
-		delete cleaned.createdBy;
-		delete cleaned.dateUpdated;
-		delete cleaned.dateCreated;
-		return cleaned;
-	};
-
 	const saveDataHandler = () => {
 		setErrorMessages({});
 
@@ -122,7 +117,7 @@ export const CrossReferencesEditDialog = ({
 			for (const crossReference of localCrossReferences) {
 				const result = await validationService.validate(
 					Endpoints.Entity.CROSS_REFERENCE,
-					cleanForValidation(crossReference)
+					stripForValidation(crossReference)
 				);
 
 				if (result.isError) {

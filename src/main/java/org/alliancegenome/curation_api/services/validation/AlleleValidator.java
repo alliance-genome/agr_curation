@@ -14,6 +14,7 @@ import org.alliancegenome.curation_api.dao.AlleleDAO;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.Construct;
+import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.Reference;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
@@ -730,5 +731,13 @@ public class AlleleValidator extends GenomicEntityValidator<Allele> {
 		}
 
 		return validatedConstructAssociations;
+	}
+
+	// An allele's cross references must each have a display name, name a page and have a curie that matches
+	// its descriptor. These rules are applied here rather than for every genomic entity because other types hold
+	// stored rows that break them.
+	@Override
+	public List<CrossReference> validateCrossReferences(Allele uiEntity, Allele dbEntity) {
+		return crossReferenceValidator.validateCrossReferences(uiEntity.getCrossReferences(), "crossReferences", response, true);
 	}
 }
