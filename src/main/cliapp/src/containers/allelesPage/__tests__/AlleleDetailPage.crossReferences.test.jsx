@@ -198,7 +198,6 @@ describe('<AlleleDetailPage /> cross references', () => {
 		expect(screen.queryByText('Allele Saved')).not.toBeInTheDocument();
 	});
 
-	// Incomplete rows are sent as they are, and the API's per-row errors mark the cells it rejected.
 	const alleleRejection = {
 		response: {
 			status: 400,
@@ -269,10 +268,24 @@ describe('<AlleleDetailPage /> cross references', () => {
 		await waitForCrossReferencesToLoad();
 		await user.click(screen.getByRole('button', { name: 'Save' }));
 
-		await waitFor(() => expect(saveAlleleDetail).toHaveBeenCalled());
+		expect(await screen.findByText('Allele Saved')).toBeInTheDocument();
 		expect(saveAlleleDetail.mock.calls[0][0].taxon).toBeUndefined();
 	});
 
+	it('Sends a chosen taxon as it is', async () => {
+		const user = userEvent.setup();
+		const taxon = { curie: 'NCBITaxon:6239', name: 'Caenorhabditis elegans' };
+		getAllele.mockResolvedValue({ data: { entity: { ...storedAllele, taxon } } });
+		await renderPage();
+
+		await waitForCrossReferencesToLoad();
+		await user.click(screen.getByRole('button', { name: 'Save' }));
+
+		expect(await screen.findByText('Allele Saved')).toBeInTheDocument();
+		expect(saveAlleleDetail.mock.calls[0][0].taxon).toEqual(taxon);
+	});
+
+	// Incomplete rows are sent as they are, and the API's per-row errors mark the cells it rejected.
 	it('Sends a row missing a required field and marks the field the API rejects', async () => {
 		const user = userEvent.setup();
 		replaceCrossReferencesForAllele.mockRejectedValue({

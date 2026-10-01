@@ -90,13 +90,14 @@ export default function AlleleDetailPage() {
 			? alleleState.allele
 			: { ...alleleState.allele, taxon: undefined };
 
+		let alleleResult = null;
 		let alleleError = null;
 		try {
-			const result = await saveAllele(allelePayload);
-			alleleDispatch({ type: 'SET', value: result?.data?.entity });
+			alleleResult = await saveAllele(allelePayload);
 		} catch (error) {
 			alleleError = error;
 		}
+		if (!alleleError) alleleDispatch({ type: 'SET', value: alleleResult?.data?.entity });
 
 		// The cross references are written only when the section has been edited, and then as the whole
 		// list, so saving the allele alone leaves the stored ones as they are. They are written whether or
