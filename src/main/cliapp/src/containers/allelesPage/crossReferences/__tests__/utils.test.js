@@ -9,9 +9,11 @@ vi.mock('../../../../service/ResourceDescriptorService', () => ({
 import {
 	applyCrossReferenceFieldChange,
 	buildNewCrossReference,
+	curiePrefixOf,
 	findRow,
 	seedResourceDescriptor,
 	seedResourceDescriptors,
+	stripForValidation,
 	stripUiFields,
 } from '../utils';
 
@@ -124,7 +126,15 @@ describe('seedResourceDescriptors', () => {
 });
 
 describe('applyCrossReferenceFieldChange', () => {
-	const pmid = { id: 9, prefix: 'PMID', resourcePages: [{ id: 1, name: 'default' }] };
+	const pmid = {
+		id: 9,
+		prefix: 'PMID',
+		resourcePages: [
+			{ id: 1, name: 'default' },
+			{ id: 2, name: 'gene' },
+		],
+	};
+	const withoutDefault = { id: 12, prefix: 'NODEF', resourcePages: [{ id: 30, name: 'homepage' }] };
 
 	it('Sets a plain field without touching the rest', () => {
 		const updated = applyCrossReferenceFieldChange({ referencedCurie: 'PMID:1', internal: false }, 'internal', true);
@@ -141,28 +151,45 @@ describe('applyCrossReferenceFieldChange', () => {
 		expect(crossReference.internal).toBe(false);
 	});
 
+	// A page the curator chose stands, even when the descriptor has a default of its own.
 	it('Keeps a page the chosen descriptor owns', () => {
 		const updated = applyCrossReferenceFieldChange(
-			{ resourceDescriptorPage: { id: 1, name: 'default' } },
+			{ resourceDescriptorPage: { id: 2, name: 'gene' } },
 			'resourceDescriptor',
 			pmid
 		);
 
-		expect(updated.resourceDescriptorPage).toEqual({ id: 1, name: 'default' });
+		expect(updated.resourceDescriptorPage).toEqual({ id: 2, name: 'gene' });
 		expect(updated.resourceDescriptor).toBe(pmid);
 	});
 
-	it('Clears a page the chosen descriptor does not own', () => {
+	it('Defaults the page when there was none', () => {
+		const updated = applyCrossReferenceFieldChange({ resourceDescriptorPage: null }, 'resourceDescriptor', pmid);
+
+		expect(updated.resourceDescriptorPage).toEqual({ id: 1, name: 'default' });
+	});
+
+	it('Replaces a page the chosen descriptor does not own with its default', () => {
 		const updated = applyCrossReferenceFieldChange(
 			{ resourceDescriptorPage: { id: 77, name: 'gene' } },
 			'resourceDescriptor',
 			pmid
 		);
 
+		expect(updated.resourceDescriptorPage).toEqual({ id: 1, name: 'default' });
+	});
+
+	it('Leaves no page for a descriptor without a default', () => {
+		const updated = applyCrossReferenceFieldChange(
+			{ resourceDescriptorPage: { id: 1, name: 'default' } },
+			'resourceDescriptor',
+			withoutDefault
+		);
+
 		expect(updated.resourceDescriptorPage).toBeNull();
 	});
 
-	it('Clears the page for a descriptor typed rather than chosen', () => {
+	it('Leaves no page for a descriptor typed rather than chosen', () => {
 		const updated = applyCrossReferenceFieldChange(
 			{ resourceDescriptorPage: { id: 1, name: 'default' } },
 			'resourceDescriptor',
@@ -172,8 +199,68 @@ describe('applyCrossReferenceFieldChange', () => {
 		expect(updated.resourceDescriptorPage).toBeNull();
 	});
 
-	it('Leaves the page null when there was none to keep', () => {
-		const updated = applyCrossReferenceFieldChange({ resourceDescriptorPage: null }, 'resourceDescriptor', pmid);
+	// A descriptor object carrying no resourcePages offers no page to keep or to default to.
+	it('Leaves no page for a descriptor whose pages did not load', () => {
+		const updated = applyCrossReferenceFieldChange(
+			{ resourceDescriptorPage: { id: 1, name: 'default' } },
+			'resourceDescriptor',
+			{ id: 9, prefix: 'PMID' }
+		);
+
+		expect(updated.resourceDescriptorPage).toBeNull();
+	});
+
+	it('Starts an empty curie with the chosen descriptor prefix', () => {
+		const updated = applyCrossReferenceFieldChange({}, 'resourceDescriptor', pmid);
+
+		expect(updated.referencedCurie).toBe('PMID:');
+	});
+
+	it('Leaves an empty curie empty for a descriptor with no prefix', () => {
+		const updated = applyCrossReferenceFieldChange({ referencedCurie: '' }, 'resourceDescriptor', {
+			id: 5,
+			resourcePages: [],
+		});
+
+		expect(updated.referencedCurie).toBe('');
+	});
+
+	it('Keeps a curie the curator typed', () => {
+		const updated = applyCrossReferenceFieldChange(
+			{ referencedCurie: 'PMID:123' },
+			'resourceDescriptor',
+			withoutDefault
+		);
+
+		expect(updated.referencedCurie).toBe('PMID:123');
+	});
+
+	it('Replaces the prefix a previous descriptor left', () => {
+		const updated = applyCrossReferenceFieldChange(
+			{ resourceDescriptor: pmid, referencedCurie: 'PMID:' },
+			'resourceDescriptor',
+			withoutDefault
+		);
+
+		expect(updated.referencedCurie).toBe('NODEF:');
+	});
+
+	it('Empties the prefix a descriptor left when that descriptor is cleared', () => {
+		const updated = applyCrossReferenceFieldChange(
+			{ resourceDescriptor: pmid, referencedCurie: 'PMID:' },
+			'resourceDescriptor',
+			null
+		);
+
+		expect(updated.referencedCurie).toBe('');
+	});
+
+	it('Leaves no page when the descriptor is cleared', () => {
+		const updated = applyCrossReferenceFieldChange(
+			{ resourceDescriptorPage: { id: 1, name: 'default' } },
+			'resourceDescriptor',
+			null
+		);
 
 		expect(updated.resourceDescriptorPage).toBeNull();
 	});
@@ -224,5 +311,48 @@ describe('stripUiFields', () => {
 		stripUiFields(crossReference);
 
 		expect(crossReference.dataKey).toBe('mock-uuid-1');
+	});
+});
+
+describe('stripForValidation', () => {
+	const row = {
+		dataKey: 'row-1',
+		resourceDescriptor: { id: 9, prefix: 'PMID' },
+		id: 500,
+		referencedCurie: 'PMID:1',
+		resourceDescriptorPage: { id: 1, name: 'default' },
+		createdBy: { uniqueId: 'someone' },
+		updatedBy: { uniqueId: 'someone' },
+		dateCreated: '2026-01-01',
+		dateUpdated: '2026-01-02',
+	};
+
+	it('Keeps what the API checks and drops the table and audit fields', () => {
+		expect(stripForValidation(row)).toEqual({
+			id: 500,
+			referencedCurie: 'PMID:1',
+			resourceDescriptorPage: { id: 1, name: 'default' },
+		});
+	});
+
+	it('Does not modify the row it is given', () => {
+		stripForValidation(row);
+
+		expect(row.createdBy).toEqual({ uniqueId: 'someone' });
+		expect(row.dataKey).toBe('row-1');
+	});
+});
+
+describe('curiePrefixOf', () => {
+	it('Reads everything before the first colon', () => {
+		expect(curiePrefixOf('PMID:123')).toBe('PMID');
+		expect(curiePrefixOf('DOI:10.1016/s0896-6273(04)00073-x')).toBe('DOI');
+	});
+
+	it('Finds no prefix without a colon, or before a leading one', () => {
+		expect(curiePrefixOf('PMID123')).toBeNull();
+		expect(curiePrefixOf(':123')).toBeNull();
+		expect(curiePrefixOf('')).toBeNull();
+		expect(curiePrefixOf(undefined)).toBeNull();
 	});
 });

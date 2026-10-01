@@ -37,12 +37,21 @@ const keyAndSeed = async (crossReferences) => {
  * @param {number} [alleleId] the allele to read on load. Create passes none and saves once it has one.
  */
 export const useAlleleCrossReferences = (alleleId) => {
-	const [crossReferences, setCrossReferences] = useState([]);
+	const [crossReferences, setStoredCrossReferences] = useState([]);
 	const [errorMessages, setErrorMessages] = useState({});
 	const [isLoading, setIsLoading] = useState(Boolean(alleleId));
 	const [loadError, setLoadError] = useState(null);
 	const [isSaving, setIsSaving] = useState(false);
+	const [isDirty, setIsDirty] = useState(false);
 	const crossReferenceService = useMemo(() => new CrossReferenceService(), []);
+
+	// Any change made through here marks the section as a whole edited, so a page saving the allele can
+	// skip writing cross references when none have changed. Loading and saving set the rows directly and
+	// leave none pending.
+	const setCrossReferences = useCallback((update) => {
+		setIsDirty(true);
+		setStoredCrossReferences(update);
+	}, []);
 
 	useEffect(() => {
 		if (!alleleId) return undefined;
@@ -54,11 +63,14 @@ export const useAlleleCrossReferences = (alleleId) => {
 			try {
 				const response = await crossReferenceService.getCrossReferencesForAllele(alleleId);
 				const loaded = await keyAndSeed(response?.data?.entities ?? []);
-				if (!cancelled) setCrossReferences(loaded);
+				if (!cancelled) {
+					setStoredCrossReferences(loaded);
+					setIsDirty(false);
+				}
 			} catch (error) {
 				console.warn(`Could not load cross references for allele ${alleleId}`, error);
-				// Held rather than swallowed so the section can refuse to save. An empty table that failed
-				// to load is indistinguishable from an allele with none, and saving it would delete them.
+				// Held rather than swallowed so saving can refuse. An empty table that failed to load is
+				// indistinguishable from an allele with none, and saving it would delete them.
 				if (!cancelled) setLoadError(error);
 			} finally {
 				if (!cancelled) setIsLoading(false);
@@ -72,13 +84,21 @@ export const useAlleleCrossReferences = (alleleId) => {
 	}, [alleleId, crossReferenceService]);
 
 	/**
-	 * Replaces the allele's stored cross references with the rows held here.
+	 * Replaces the allele's stored cross references with the rows held here. Refuses, without calling the
+	 * API, while the rows are still loading or after they failed to load.
 	 *
 	 * @param {number} [targetAlleleId] the allele to write to, for create, which has none on load
 	 * @returns {Promise<{isSuccess: boolean, message?: string}>}
 	 */
 	const save = useCallback(
 		async (targetAlleleId = alleleId) => {
+			// A save replaces the stored list with the rows held here, so it has to wait for the read. Rows
+			// still loading, or that failed to load, would submit an empty list and delete every cross
+			// reference the allele has.
+			if (isLoading || loadError) {
+				return { isSuccess: false, message: 'These cross references have not been read, so they were not saved' };
+			}
+
 			setIsSaving(true);
 			setErrorMessages({});
 			try {
@@ -86,7 +106,8 @@ export const useAlleleCrossReferences = (alleleId) => {
 					targetAlleleId,
 					crossReferences.map(stripUiFields)
 				);
-				setCrossReferences(await keyAndSeed(response?.data?.entities ?? []));
+				setStoredCrossReferences(await keyAndSeed(response?.data?.entities ?? []));
+				setIsDirty(false);
 				return { isSuccess: true };
 			} catch (error) {
 				const data = error?.response?.data;
@@ -99,8 +120,17 @@ export const useAlleleCrossReferences = (alleleId) => {
 				setIsSaving(false);
 			}
 		},
-		[alleleId, crossReferenceService, crossReferences]
+		[alleleId, crossReferenceService, crossReferences, isLoading, loadError]
 	);
 
-	return { crossReferences, setCrossReferences, errorMessages, isLoading, loadError, isSaving, save };
+	return {
+		crossReferences,
+		setCrossReferences,
+		errorMessages,
+		isLoading,
+		loadError,
+		isSaving,
+		isDirty,
+		save,
+	};
 };

@@ -46,9 +46,10 @@ public class CrossReferenceService extends BaseEntityCrudService<CrossReference,
 
 	// Validates without writing the cross reference, and stays non-@Transactional like the other validate
 	// endpoints. Auditing still reaches PersonService, which commits a Person of its own when the payload
-	// names one that is not stored yet.
+	// names one that is not stored yet. It holds the cross reference to the rules an allele's are held to,
+	// the one caller it has.
 	public ObjectResponse<CrossReference> validate(CrossReference uiEntity) {
-		return crossReferenceValidator.validateCrossReference(uiEntity, true, false);
+		return crossReferenceValidator.validateCrossReference(uiEntity, true, false, true);
 	}
 
 	/**
@@ -60,6 +61,9 @@ public class CrossReferenceService extends BaseEntityCrudService<CrossReference,
 	 * are addressed by a join table shared with references, ontology terms and vocabulary terms, and nothing on
 	 * the row records its owner, so an unchecked id would re-parent another entity's row onto this one and leave
 	 * the previous owner's next save to orphan-delete it.
+	 *
+	 * <p>Every entry must have a display name and name a resource descriptor page, and its curie match that
+	 * page's descriptor.
 	 */
 	@Transactional
 	public ObjectListResponse<CrossReference> replaceForOwner(GenomicEntity owner, List<CrossReference> incomingXrefs) {
@@ -108,7 +112,7 @@ public class CrossReferenceService extends BaseEntityCrudService<CrossReference,
 			throw new ApiErrorException(validationResponse);
 		}
 
-		List<CrossReference> validatedXrefs = crossReferenceValidator.validateCrossReferences(incomingXrefs, "crossReferences", validationResponse);
+		List<CrossReference> validatedXrefs = crossReferenceValidator.validateCrossReferences(incomingXrefs, "crossReferences", validationResponse, true);
 		if (validatedXrefs == null) {
 			validationResponse.setErrorMessage(errorTitle);
 			throw new ApiErrorException(validationResponse);

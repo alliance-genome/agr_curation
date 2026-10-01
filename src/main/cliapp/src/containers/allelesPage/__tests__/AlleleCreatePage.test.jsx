@@ -74,6 +74,15 @@ describe('<AlleleCreatePage />', () => {
 		expect(heading('Date Created')).not.toBeInTheDocument();
 	});
 
+	it('Shows both save actions as prominent, and the others not', async () => {
+		await renderPage();
+
+		expect(button('Save & Close')).toHaveClass('p-button-success');
+		expect(button('Save & Add Another')).toHaveClass('p-button-success');
+		expect(button('Clear')).not.toHaveClass('p-button-success');
+		expect(button('Cancel')).not.toHaveClass('p-button-success');
+	});
+
 	it('Offers all four actions', async () => {
 		await renderPage();
 

@@ -1,10 +1,8 @@
 package org.alliancegenome.curation_api;
 
 import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 
@@ -13,6 +11,7 @@ import java.util.List;
 import org.alliancegenome.curation_api.base.BaseITCase;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
+import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.ResourceDescriptor;
 import org.alliancegenome.curation_api.model.entities.ResourceDescriptorPage;
@@ -49,12 +48,18 @@ public class IT_0313_AlleleCrossReferenceITCase extends BaseITCase {
 	private VocabularyTerm symbolNameType;
 	private ResourceDescriptorPage defaultPage;
 	private ResourceDescriptorPage genePage;
+	private ResourceDescriptorPage patternPage;
+	private ResourceDescriptorPage unusablePatternPage;
 
 	private void loadRequiredEntities() {
 		symbolNameType = getVocabularyTerm(getVocabulary(VocabularyConstants.NAME_TYPE_VOCABULARY), "nomenclature_symbol");
 		ResourceDescriptor resourceDescriptor = createResourceDescriptor("XRSUB");
 		defaultPage = createResourceDescriptorPage("default", "http://test.org/[%s]", resourceDescriptor);
 		genePage = createResourceDescriptorPage("gene", "http://test.org/gene/[%s]", resourceDescriptor);
+		ResourceDescriptor patternDescriptor = createResourceDescriptor("XRPAT", "^(XRPAT|xrpat):\\d+$");
+		patternPage = createResourceDescriptorPage("default", "http://test.org/pattern/[%s]", patternDescriptor);
+		ResourceDescriptor unusablePatternDescriptor = createResourceDescriptor("XRBAD", "^XRBAD:[\\d|[A-Z]+$");
+		unusablePatternPage = createResourceDescriptorPage("default", "http://test.org/bad/[%s]", unusablePatternDescriptor);
 		alleleId = createAllele(ALLELE, "NCBITaxon:6239", symbolNameType, false).getId();
 	}
 
@@ -278,7 +283,7 @@ public class IT_0313_AlleleCrossReferenceITCase extends BaseITCase {
 
 	@Test
 	@Order(7)
-	public void clearingThePageStoresItCleared() {
+	public void clearingThePageIsRejected() {
 		CrossReference withoutPage = RestAssured.given().
 			when().
 			get("/api/allele/" + alleleId + "/cross-references").
@@ -289,35 +294,18 @@ public class IT_0313_AlleleCrossReferenceITCase extends BaseITCase {
 			getObject("entities[0]", CrossReference.class);
 		withoutPage.setResourceDescriptorPage(null);
 
-		// The page is applied whether or not the payload names one, so omitting it clears the stored one
-		// rather than leaving it in place.
 		RestAssured.given().
 			contentType("application/json").
 			body(List.of(withoutPage)).
 			when().
 			put("/api/allele/" + alleleId + "/cross-references").
 			then().
-			statusCode(200).
-			body("entities", hasSize(1)).
-			body("entities[0]", not(hasKey("resourceDescriptorPage")));
+			statusCode(400).
+			body("supplementalData.errorMap.crossReferences.'0'.resourceDescriptorPage", is(ValidationConstants.REQUIRED_MESSAGE));
 
 		RestAssured.given().
 			when().
 			get("/api/allele/" + alleleId + "/cross-references").
-			then().
-			statusCode(200).
-			body("entities[0]", not(hasKey("resourceDescriptorPage"))).
-			body("entities[0].referencedCurie", is(XREF_KEPT));
-
-		// Put it back, so the tests after this one see the allele they expect.
-		CrossReference restored = buildXref(XREF_KEPT, defaultPage);
-		restored.setId(withoutPage.getId());
-
-		RestAssured.given().
-			contentType("application/json").
-			body(List.of(restored)).
-			when().
-			put("/api/allele/" + alleleId + "/cross-references").
 			then().
 			statusCode(200).
 			body("entities[0].resourceDescriptorPage.name", is("default"));
@@ -361,6 +349,161 @@ public class IT_0313_AlleleCrossReferenceITCase extends BaseITCase {
 			then().
 			statusCode(400).
 			body("errorMessages.id", is(ValidationConstants.INVALID_MESSAGE));
+	}
+
+	// XRSUB has no pattern, so its curies are checked by its prefix.
+	@Test
+	@Order(10)
+	public void curieWithoutPrefixIsRejected() {
+		RestAssured.given().
+			contentType("application/json").
+			body(List.of(buildXref("XRSUB0006", defaultPage))).
+			when().
+			put("/api/allele/" + alleleId + "/cross-references").
+			then().
+			statusCode(400).
+			body("supplementalData.errorMap.crossReferences.'0'.referencedCurie", is(ValidationConstants.CURIE_PATTERN_MISMATCH_MESSAGE));
+	}
+
+	@Test
+	@Order(11)
+	public void curieUnderAnotherDescriptorIsRejected() {
+		RestAssured.given().
+			contentType("application/json").
+			body(List.of(buildXref("WB:0007", defaultPage))).
+			when().
+			put("/api/allele/" + alleleId + "/cross-references").
+			then().
+			statusCode(400).
+			body("supplementalData.errorMap.crossReferences.'0'.referencedCurie", is(ValidationConstants.CURIE_PATTERN_MISMATCH_MESSAGE));
+	}
+
+	// The Alleles table saves cross references with the allele rather than through the sub-resource, so it
+	// has to hold them to the same rules.
+	@Test
+	@Order(12)
+	public void alleleSaveHoldsCrossReferencesToTheSameRules() {
+		Allele allele = getAllele(ALLELE);
+		allele.setCrossReferences(List.of(buildXref("XRSUB:0008", null)));
+
+		RestAssured.given().
+			contentType("application/json").
+			body(allele).
+			when().
+			put("/api/allele").
+			then().
+			statusCode(400).
+			body("supplementalData.errorMap.crossReferences.'0'.resourceDescriptorPage", is(ValidationConstants.REQUIRED_MESSAGE));
+
+		// Order 8 left the allele with none, and the rejected save must not have added one.
+		RestAssured.given().
+			when().
+			get("/api/allele/" + alleleId + "/cross-references").
+			then().
+			statusCode(200).
+			body("entities", nullValue());
+	}
+
+	// The Alleles table checks each row here before it stages it on the allele.
+	@Test
+	@Order(13)
+	public void validateHoldsCrossReferencesToTheSameRules() {
+		RestAssured.given().
+			contentType("application/json").
+			body(buildXref("WB:0009", defaultPage)).
+			when().
+			post("/api/cross-reference/validate").
+			then().
+			statusCode(400).
+			body("errorMessages.referencedCurie", is(ValidationConstants.CURIE_PATTERN_MISMATCH_MESSAGE));
+
+		RestAssured.given().
+			contentType("application/json").
+			body(buildXref("XRSUB:0009", defaultPage)).
+			when().
+			post("/api/cross-reference/validate").
+			then().
+			statusCode(200).
+			body("entity.referencedCurie", is("XRSUB:0009"));
+	}
+
+	// Choosing a descriptor starts the curie with its prefix, so saving without typing an identifier sends
+	// the prefix alone.
+	@Test
+	@Order(14)
+	public void curieWithoutIdentifierIsRejected() {
+		RestAssured.given().
+			contentType("application/json").
+			body(List.of(buildXref("XRSUB:", defaultPage))).
+			when().
+			put("/api/allele/" + alleleId + "/cross-references").
+			then().
+			statusCode(400).
+			body("supplementalData.errorMap.crossReferences.'0'.referencedCurie", is(ValidationConstants.CURIE_PATTERN_MISMATCH_MESSAGE));
+	}
+
+	// Other entity types need a display name only when there is no curie; an allele's always needs one.
+	@Test
+	@Order(15)
+	public void crossReferenceWithoutDisplayNameIsRejected() {
+		CrossReference withoutDisplayName = buildXref("XRSUB:0010", defaultPage);
+		withoutDisplayName.setDisplayName(null);
+
+		RestAssured.given().
+			contentType("application/json").
+			body(List.of(withoutDisplayName)).
+			when().
+			put("/api/allele/" + alleleId + "/cross-references").
+			then().
+			statusCode(400).
+			body("supplementalData.errorMap.crossReferences.'0'.displayName", is(ValidationConstants.REQUIRED_MESSAGE));
+	}
+
+	// A descriptor's pattern decides which curies belong to it, so a curie it allows under another prefix is
+	// accepted and one with the descriptor's own prefix that it does not allow is rejected.
+	@Test
+	@Order(16)
+	public void curieIsCheckedAgainstTheDescriptorPattern() {
+		RestAssured.given().
+			contentType("application/json").
+			body(List.of(buildXref("XRPAT:abc", patternPage))).
+			when().
+			put("/api/allele/" + alleleId + "/cross-references").
+			then().
+			statusCode(400).
+			body("supplementalData.errorMap.crossReferences.'0'.referencedCurie", is(ValidationConstants.CURIE_PATTERN_MISMATCH_MESSAGE));
+
+		RestAssured.given().
+			contentType("application/json").
+			body(List.of(buildXref("xrpat:0016", patternPage))).
+			when().
+			put("/api/allele/" + alleleId + "/cross-references").
+			then().
+			statusCode(200).
+			body("entities[0].referencedCurie", is("xrpat:0016"));
+	}
+
+	// A pattern that does not compile cannot be applied, so the descriptor's curies are checked by prefix.
+	@Test
+	@Order(17)
+	public void curieUnderAPatternThatDoesNotCompileIsCheckedByPrefix() {
+		RestAssured.given().
+			contentType("application/json").
+			body(List.of(buildXref("XRSUB:0017", unusablePatternPage))).
+			when().
+			put("/api/allele/" + alleleId + "/cross-references").
+			then().
+			statusCode(400).
+			body("supplementalData.errorMap.crossReferences.'0'.referencedCurie", is(ValidationConstants.CURIE_PATTERN_MISMATCH_MESSAGE));
+
+		RestAssured.given().
+			contentType("application/json").
+			body(List.of(buildXref("XRBAD:0017", unusablePatternPage))).
+			when().
+			put("/api/allele/" + alleleId + "/cross-references").
+			then().
+			statusCode(200).
+			body("entities[0].referencedCurie", is("XRBAD:0017"));
 	}
 
 	private CrossReference buildXref(String referencedCurie, ResourceDescriptorPage page) {
