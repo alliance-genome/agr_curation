@@ -84,9 +84,15 @@ export default function AlleleDetailPage() {
 
 		if (areUiErrors) return;
 
+		// A cleared taxon is held as one with a blank curie, which the API resolves to none without reporting
+		// it missing. Sent without a taxon, the allele is reported as needing one.
+		const allelePayload = alleleState.allele.taxon?.curie
+			? alleleState.allele
+			: { ...alleleState.allele, taxon: undefined };
+
 		let alleleError = null;
 		try {
-			const result = await saveAllele(alleleState.allele);
+			const result = await saveAllele(allelePayload);
 			alleleDispatch({ type: 'SET', value: result?.data?.entity });
 		} catch (error) {
 			alleleError = error;

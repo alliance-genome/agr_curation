@@ -261,6 +261,18 @@ describe('<AlleleDetailPage /> cross references', () => {
 		expect(replaceCrossReferencesForAllele).not.toHaveBeenCalled();
 	});
 
+	it('Sends a cleared taxon as no taxon, so the API reports it missing', async () => {
+		const user = userEvent.setup();
+		getAllele.mockResolvedValue({ data: { entity: { ...storedAllele, taxon: { curie: '' } } } });
+		await renderPage();
+
+		await waitForCrossReferencesToLoad();
+		await user.click(screen.getByRole('button', { name: 'Save' }));
+
+		await waitFor(() => expect(saveAlleleDetail).toHaveBeenCalled());
+		expect(saveAlleleDetail.mock.calls[0][0].taxon).toBeUndefined();
+	});
+
 	it('Sends a row missing a required field and marks the field the API rejects', async () => {
 		const user = userEvent.setup();
 		replaceCrossReferencesForAllele.mockRejectedValue({
