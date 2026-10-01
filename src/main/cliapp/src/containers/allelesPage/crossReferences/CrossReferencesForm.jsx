@@ -10,9 +10,9 @@ import { applyCrossReferenceFieldChange, buildNewCrossReference } from './utils'
 /**
  * The allele detail and create pages' cross references section.
  *
- * It saves on its own button on the detail page, because cross references are written through their
- * own sub-resource rather than with the allele. Create has no allele to write to yet, so its rows
- * are saved by the page once the allele exists.
+ * Its rows are saved by the page along with the allele, and on the detail page also by this section's
+ * own button, which saves them alone. Cross references are written through their own sub-resource
+ * rather than in the allele payload, so either save makes that call itself.
  *
  * @param {Object} props
  * @param {'detail'|'create'} [props.mode]
@@ -96,7 +96,7 @@ export const CrossReferencesForm = ({ mode = 'detail' }) => {
 								// the read. Saving a table that is still loading, or that failed to load, would
 								// submit an empty list and delete every cross reference the allele has.
 								disabled={isSaving || isLoading || Boolean(loadError)}
-								className="p-button-text"
+								severity="success"
 							/>
 						)}
 						{loadError && (

@@ -1,5 +1,5 @@
 import React from 'react';
-import { screen, waitFor } from '@testing-library/react';
+import { act, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { renderWithClient } from '../../../../tools/jest/utils';
 
@@ -59,7 +59,7 @@ const renderTable = (props = {}) => {
 			crossReferences={crossReferences}
 			editingRows={Object.fromEntries(crossReferences.map((row) => [row.dataKey, true]))}
 			onRowEditChange={() => null}
-			errorMessages={{}}
+			errorMessages={props.errorMessages ?? {}}
 			deletionHandler={deletionHandler}
 			onFieldChange={onFieldChange}
 			showObsolete={props.showObsolete ?? false}
@@ -222,6 +222,103 @@ describe('CrossReferencesTable', () => {
 		await user.click(await screen.findByText('true'));
 
 		expect(onFieldChange).toHaveBeenCalledWith('row-1', 'internal', true);
+	});
+
+	it('Marks the display name, curie, descriptor and page required', () => {
+		renderTable();
+
+		const marksRequired = (name) => screen.getByRole('columnheader', { name }).querySelector('.p-error') !== null;
+
+		expect(marksRequired('Referenced Curie')).toBe(true);
+		expect(marksRequired('Resource Descriptor')).toBe(true);
+		expect(marksRequired('Resource Descriptor Page')).toBe(true);
+		expect(marksRequired('Display Name')).toBe(true);
+	});
+
+	// The curie editor reads its value only on mount, so without being remounted it would keep showing
+	// an empty curie after choosing a descriptor started it with that descriptor's prefix.
+	it('Shows the curie a descriptor started once the descriptor changes', () => {
+		const { container, rerenderWith } = renderTable({
+			crossReferences: [buildRow({ referencedCurie: '', resourceDescriptor: null, resourceDescriptorPage: null })],
+		});
+		expect(container.querySelector('#referencedCurie')).toHaveValue('');
+
+		rerenderWith([buildRow({ referencedCurie: 'ZFIN:', resourceDescriptor: ZFIN, resourceDescriptorPage: null })]);
+
+		expect(container.querySelector('#referencedCurie')).toHaveValue('ZFIN:');
+	});
+
+	it('Shows the API errors under the curie and page they belong to', () => {
+		renderTable({
+			errorMessages: {
+				'row-1': {
+					referencedCurie: { severity: 'error', message: 'Prefix does not match the resource descriptor' },
+					resourceDescriptorPage: { severity: 'error', message: 'Required field is empty' },
+				},
+			},
+		});
+
+		expect(screen.getByText('Prefix does not match the resource descriptor')).toBeInTheDocument();
+		expect(screen.getByText('Required field is empty')).toBeInTheDocument();
+	});
+
+	describe('filling the descriptor from the curie', () => {
+		// Resolved once the table has read the descriptors, so a blur finds them already there.
+		const renderWithDescriptors = async (rows) => {
+			search.mockResolvedValue({ results: [PMID, ZFIN], totalResults: 2 });
+			const rendered = renderTable({ crossReferences: rows });
+			await waitFor(() => expect(search).toHaveBeenCalled());
+			await act(async () => {
+				await new Promise((resolve) => setTimeout(resolve, 0));
+			});
+			return rendered;
+		};
+
+		const leaveCurieCell = async (user, container) => {
+			await user.click(container.querySelector('#referencedCurie'));
+			await user.tab();
+		};
+
+		// The prefix and descriptor must match to save, so the curie decides, over a descriptor chosen first.
+		it('Sets the descriptor the curie prefix names on leaving the curie cell', async () => {
+			const user = userEvent.setup();
+			const { container, onFieldChange } = await renderWithDescriptors([buildRow({ referencedCurie: 'ZFIN:9' })]);
+
+			await leaveCurieCell(user, container);
+
+			expect(onFieldChange).toHaveBeenCalledWith('row-1', 'resourceDescriptor', ZFIN);
+		});
+
+		it('Leaves the descriptor alone for a prefix no descriptor has', async () => {
+			const user = userEvent.setup();
+			const { container, onFieldChange } = await renderWithDescriptors([buildRow({ referencedCurie: 'NOPE:9' })]);
+
+			await leaveCurieCell(user, container);
+
+			expect(onFieldChange).not.toHaveBeenCalledWith('row-1', 'resourceDescriptor', expect.anything());
+		});
+
+		it('Does not set the descriptor the row already holds again', async () => {
+			const user = userEvent.setup();
+			const { container, onFieldChange } = await renderWithDescriptors([buildRow({ referencedCurie: 'PMID:1' })]);
+
+			await leaveCurieCell(user, container);
+
+			expect(onFieldChange).not.toHaveBeenCalledWith('row-1', 'resourceDescriptor', expect.anything());
+		});
+
+		// Setting it mid-word would remount the curie editor and take the input from the curator. The row
+		// already names ZFIN, so a fill made on each keystroke would show here before the cell is left.
+		it('Waits for the curator to leave the cell', async () => {
+			const user = userEvent.setup();
+			const { container, onFieldChange } = await renderWithDescriptors([buildRow({ referencedCurie: 'ZFIN:9' })]);
+
+			await user.type(container.querySelector('#referencedCurie'), '1');
+			expect(onFieldChange).not.toHaveBeenCalledWith('row-1', 'resourceDescriptor', expect.anything());
+
+			await user.tab();
+			expect(onFieldChange).toHaveBeenCalledWith('row-1', 'resourceDescriptor', ZFIN);
+		});
 	});
 
 	it('Offers Obsolete only when asked to', () => {

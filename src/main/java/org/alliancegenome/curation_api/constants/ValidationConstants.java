@@ -17,5 +17,6 @@ public final class ValidationConstants {
 	public static final String UNRECOGNIZED_MESSAGE = "Unrecognized entry"; // To be used instead of INVALID_MESSAGE when entry to be skipped instead of failed
 	public static final String AMBIGUOUS_MESSAGE = "Could not be unambiguously resolved";
 	public static final String WARNING_MISSING_MESSAGE = "WARNING: Skipped missing";
+	public static final String CURIE_PATTERN_MISMATCH_MESSAGE = "Does not match the resource descriptor's pattern";
 
 }

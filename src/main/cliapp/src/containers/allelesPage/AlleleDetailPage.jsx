@@ -66,9 +66,28 @@ export default function AlleleDetailPage() {
 		if (areUiErrors) return;
 
 		alleleMutate(alleleState.allele, {
-			onSuccess: (result) => {
-				toastSuccess.current.show({ severity: 'success', summary: 'Successful', detail: 'Allele Saved' });
+			onSuccess: async (result) => {
 				alleleDispatch({ type: 'SET', value: result?.data?.entity });
+
+				// The cross references are written only when the section has been edited, and then as the whole
+				// list, so saving the allele alone leaves the stored ones as they are.
+				if (crossReferences.isDirty) {
+					const outcome = await crossReferences.save();
+					if (!outcome.isSuccess) {
+						toastError.current.show([
+							{
+								life: 10000,
+								severity: 'error',
+								summary: 'Cross references not saved: ',
+								detail: `${outcome.message}. The allele's other changes were saved.`,
+								sticky: false,
+							},
+						]);
+						return;
+					}
+				}
+
+				toastSuccess.current.show({ severity: 'success', summary: 'Successful', detail: 'Allele Saved' });
 			},
 			onError: (error) => {
 				let message;
@@ -115,7 +134,7 @@ export default function AlleleDetailPage() {
 		<>
 			<Toast ref={toastError} position="top-left" />
 			<Toast ref={toastSuccess} position="top-right" />
-			<LoadingOverlay isLoading={!!allelePutRequestIsLoading} />
+			<LoadingOverlay isLoading={!!allelePutRequestIsLoading || crossReferences.isSaving} />
 			<ErrorBoundary>
 				<StickyHeader>
 					<Splitter className="bg-primary-reverse border-none lg:h-5rem" gutterSize={0}>
@@ -130,8 +149,8 @@ export default function AlleleDetailPage() {
 								showAllFields={showAllFields}
 							/>
 						</SplitterPanel>
-						<SplitterPanel size={20} className="flex align-items-center justify-content-start gap-2 py-3">
-							<Button label="Save" icon="pi pi-check" className="p-button-text" size="large" onClick={handleSubmit} />
+						<SplitterPanel size={20} className="flex align-items-center justify-content-start gap-2 pl-2 py-3">
+							<Button label="Save" icon="pi pi-check" severity="success" onClick={handleSubmit} />
 							<NewAlleleButton className="p-button-text" />
 						</SplitterPanel>
 					</Splitter>
