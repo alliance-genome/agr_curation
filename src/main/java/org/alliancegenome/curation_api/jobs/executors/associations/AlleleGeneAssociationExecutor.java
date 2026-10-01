@@ -34,6 +34,11 @@ public class AlleleGeneAssociationExecutor extends LoadFileExecutor {
 	@Inject AlleleGeneAssociationService alleleGeneAssociationService;
 
 	@Override
+	protected List<?> getIngestSet(IngestDTO ingestDto) {
+		return ingestDto.getAlleleGeneAssociationIngestSet();
+	}
+
+	@Override
 	protected Class<?> getIngestDtoClass() {
 		return AlleleGeneAssociationDTO.class;
 	}
@@ -46,9 +51,6 @@ public class AlleleGeneAssociationExecutor extends LoadFileExecutor {
 		log.info("Running with dataProvider: " + dataProvider.name());
 
 		List<AlleleGeneAssociationDTO> associations = ingestDto.getAlleleGeneAssociationIngestSet();
-		if (CollectionUtils.isEmpty(associations)) {
-			return;
-		}
 
 		List<Long> associationIdsLoaded = new ArrayList<>();
 		List<Long> associationIdsBefore = new ArrayList<>();

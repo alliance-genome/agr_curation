@@ -12,7 +12,6 @@ import org.alliancegenome.curation_api.model.entities.bulkloads.BulkManualLoad;
 import org.alliancegenome.curation_api.model.ingest.dto.TransgenicToolDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.IngestDTO;
 import org.alliancegenome.curation_api.services.TransgenicToolService;
-import org.apache.commons.collections.CollectionUtils;
 
 import io.quarkus.logging.Log;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -23,6 +22,11 @@ import jakarta.inject.Inject;
 public class TransgenicToolExecutor extends LoadFileExecutor {
 
 	@Inject TransgenicToolService transgenicToolService;
+
+	@Override
+	protected List<?> getIngestSet(IngestDTO ingestDto) {
+		return ingestDto.getTransgenicToolIngestSet();
+	}
 
 	@Override
 	protected Class<?> getIngestDtoClass() {
@@ -36,9 +40,6 @@ public class TransgenicToolExecutor extends LoadFileExecutor {
 		Log.info("Running with: " + manual.getDataProvider().name());
 
 		List<TransgenicToolDTO> transgenicTools = ingestDto.getTransgenicToolIngestSet();
-		if (CollectionUtils.isEmpty(transgenicTools)) {
-			return;
-		}
 
 		BackendBulkDataProvider dataProvider = manual.getDataProvider();
 

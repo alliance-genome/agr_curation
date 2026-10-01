@@ -11,7 +11,6 @@ import org.alliancegenome.curation_api.model.entities.bulkloads.BulkManualLoad;
 import org.alliancegenome.curation_api.model.ingest.dto.IngestDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.associations.CassetteTransgenicToolAssociationDTO;
 import org.alliancegenome.curation_api.services.associations.CassetteTransgenicToolAssociationService;
-import org.apache.commons.collections.CollectionUtils;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -23,6 +22,11 @@ import lombok.extern.jbosslog.JBossLog;
 public class CassetteTransgenicToolAssociationExecutor extends LoadFileExecutor {
 
 	@Inject CassetteTransgenicToolAssociationService lCassetteTransgenicToolAssociationService;
+
+	@Override
+	protected List<?> getIngestSet(IngestDTO ingestDto) {
+		return ingestDto.getCassetteTransgenicToolAssociationIngestSet();
+	}
 
 	@Override
 	protected Class<?> getIngestDtoClass() {
@@ -37,9 +41,6 @@ public class CassetteTransgenicToolAssociationExecutor extends LoadFileExecutor 
 		log.info("Running with dataProvider: " + dataProvider.name());
 
 		List<CassetteTransgenicToolAssociationDTO> associations = ingestDto.getCassetteTransgenicToolAssociationIngestSet();
-		if (CollectionUtils.isEmpty(associations)) {
-			return;
-		}
 
 		List<Long> associationIdsLoaded = new ArrayList<>();
 		List<Long> associationIdsBefore = new ArrayList<>();

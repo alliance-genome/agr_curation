@@ -12,7 +12,6 @@ import org.alliancegenome.curation_api.model.entities.bulkloads.BulkManualLoad;
 import org.alliancegenome.curation_api.model.ingest.dto.CassetteDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.IngestDTO;
 import org.alliancegenome.curation_api.services.CassetteService;
-import org.apache.commons.collections.CollectionUtils;
 
 import io.quarkus.logging.Log;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -23,6 +22,11 @@ import jakarta.inject.Inject;
 public class CassetteExecutor extends LoadFileExecutor {
 
 	@Inject CassetteService cassetteService;
+
+	@Override
+	protected List<?> getIngestSet(IngestDTO ingestDto) {
+		return ingestDto.getCassetteIngestSet();
+	}
 
 	@Override
 	protected Class<?> getIngestDtoClass() {
@@ -36,9 +40,6 @@ public class CassetteExecutor extends LoadFileExecutor {
 		Log.info("Running with: " + manual.getDataProvider().name());
 
 		List<CassetteDTO> cassettes = ingestDto.getCassetteIngestSet();
-		if (CollectionUtils.isEmpty(cassettes)) {
-			return;
-		}
 
 		BackendBulkDataProvider dataProvider = manual.getDataProvider();
 

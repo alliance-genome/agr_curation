@@ -11,7 +11,6 @@ import org.alliancegenome.curation_api.model.ingest.dto.GeneDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.IngestDTO;
 import org.alliancegenome.curation_api.services.GeneService;
 import org.alliancegenome.curation_api.services.ontology.NcbiTaxonTermService;
-import org.apache.commons.collections.CollectionUtils;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -28,6 +27,11 @@ public class GeneExecutor extends LoadFileExecutor {
 	@Inject NcbiTaxonTermService ncbiTaxonTermService;
 
 	@Override
+	protected List<?> getIngestSet(IngestDTO ingestDto) {
+		return ingestDto.getGeneIngestSet();
+	}
+
+	@Override
 	protected Class<?> getIngestDtoClass() {
 		return GeneDTO.class;
 	}
@@ -40,9 +44,6 @@ public class GeneExecutor extends LoadFileExecutor {
 		log.info("Running with dataProvider : " + dataProvider.name());
 
 		List<GeneDTO> genes = ingestDto.getGeneIngestSet();
-		if (CollectionUtils.isEmpty(genes)) {
-			return;
-		}
 
 		List<Long> geneIdsLoaded = new ArrayList<>();
 		List<Long> geneIdsBefore = new ArrayList<>();

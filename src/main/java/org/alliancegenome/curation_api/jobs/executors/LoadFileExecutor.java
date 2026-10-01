@@ -128,14 +128,24 @@ public class LoadFileExecutor {
 	}
 
 	/**
-	 * Runs an ingest executor against the shared submission. The schema version is checked here,
-	 * against the executor's {@link #getIngestDtoClass()}, so no executor can skip it.
+	 * Runs an ingest executor against the shared submission. An executor whose ingest set is
+	 * absent or empty does nothing, and is never schema checked: a set the file does not carry
+	 * cannot fail the load. Otherwise the schema version is checked here, against the executor's
+	 * {@link #getIngestDtoClass()}, so no executor can skip it.
 	 */
 	public void execLoad(BulkLoadFileHistory bulkLoadFileHistory, IngestDTO ingestDto, Boolean cleanUp) {
+		if (CollectionUtils.isEmpty(getIngestSet(ingestDto))) {
+			return;
+		}
 		if (!checkSchemaVersion(bulkLoadFileHistory, getIngestDtoClass())) {
 			return;
 		}
 		loadIngestSet(bulkLoadFileHistory, ingestDto, cleanUp);
+	}
+
+	/** The ingest set this executor loads from the submission. */
+	protected List<?> getIngestSet(IngestDTO ingestDto) {
+		throw new UnsupportedOperationException(getClass().getSimpleName() + " is not an ingest executor");
 	}
 
 	/** The DTO class whose schema version range an ingest executor accepts. */

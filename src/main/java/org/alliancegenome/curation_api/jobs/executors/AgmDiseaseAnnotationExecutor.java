@@ -12,7 +12,6 @@ import org.alliancegenome.curation_api.model.ingest.dto.AGMDiseaseAnnotationDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.IngestDTO;
 import org.alliancegenome.curation_api.services.AGMDiseaseAnnotationService;
 import org.alliancegenome.curation_api.services.DiseaseAnnotationService;
-import org.apache.commons.collections.CollectionUtils;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -27,6 +26,11 @@ public class AgmDiseaseAnnotationExecutor extends LoadFileExecutor {
 	@Inject AGMDiseaseAnnotationService agmDiseaseAnnotationService;
 
 	@Override
+	protected List<?> getIngestSet(IngestDTO ingestDto) {
+		return ingestDto.getDiseaseAgmIngestSet();
+	}
+
+	@Override
 	protected Class<?> getIngestDtoClass() {
 		return AGMDiseaseAnnotationDTO.class;
 	}
@@ -39,9 +43,6 @@ public class AgmDiseaseAnnotationExecutor extends LoadFileExecutor {
 		log.info("Running with dataProvider: " + dataProvider.name());
 
 		List<AGMDiseaseAnnotationDTO> annotations = ingestDto.getDiseaseAgmIngestSet();
-		if (CollectionUtils.isEmpty(annotations)) {
-			return;
-		}
 
 		List<Long> annotationIdsLoaded = new ArrayList<>();
 		List<Long> annotationIdsBefore = new ArrayList<>();

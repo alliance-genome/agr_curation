@@ -11,7 +11,6 @@ import org.alliancegenome.curation_api.model.ingest.dto.AffectedGenomicModelDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.IngestDTO;
 import org.alliancegenome.curation_api.services.AffectedGenomicModelService;
 import org.alliancegenome.curation_api.services.ontology.NcbiTaxonTermService;
-import org.apache.commons.collections.CollectionUtils;
 
 import io.quarkus.logging.Log;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -27,6 +26,11 @@ public class AgmExecutor extends LoadFileExecutor {
 	@Inject NcbiTaxonTermService ncbiTaxonTermService;
 
 	@Override
+	protected List<?> getIngestSet(IngestDTO ingestDto) {
+		return ingestDto.getAgmIngestSet();
+	}
+
+	@Override
 	protected Class<?> getIngestDtoClass() {
 		return AffectedGenomicModelDTO.class;
 	}
@@ -38,9 +42,6 @@ public class AgmExecutor extends LoadFileExecutor {
 		Log.info("Running with: " + manual.getDataProvider().name());
 
 		List<AffectedGenomicModelDTO> agms = ingestDto.getAgmIngestSet();
-		if (CollectionUtils.isEmpty(agms)) {
-			return;
-		}
 
 		BackendBulkDataProvider dataProvider = manual.getDataProvider();
 

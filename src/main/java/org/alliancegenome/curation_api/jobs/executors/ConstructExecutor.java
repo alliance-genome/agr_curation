@@ -13,7 +13,6 @@ import org.alliancegenome.curation_api.model.ingest.dto.ConstructDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.IngestDTO;
 import org.alliancegenome.curation_api.services.ConstructService;
 import org.alliancegenome.curation_api.services.ontology.NcbiTaxonTermService;
-import org.apache.commons.collections.CollectionUtils;
 
 import io.quarkus.logging.Log;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -29,6 +28,11 @@ public class ConstructExecutor extends LoadFileExecutor {
 	NcbiTaxonTermService ncbiTaxonTermService;
 
 	@Override
+	protected List<?> getIngestSet(IngestDTO ingestDto) {
+		return ingestDto.getConstructIngestSet();
+	}
+
+	@Override
 	protected Class<?> getIngestDtoClass() {
 		return ConstructDTO.class;
 	}
@@ -40,9 +44,6 @@ public class ConstructExecutor extends LoadFileExecutor {
 		Log.info("Running with: " + manual.getDataProvider().name());
 
 		List<ConstructDTO> constructs = ingestDto.getConstructIngestSet();
-		if (CollectionUtils.isEmpty(constructs)) {
-			return;
-		}
 
 		BackendBulkDataProvider dataProvider = manual.getDataProvider();
 

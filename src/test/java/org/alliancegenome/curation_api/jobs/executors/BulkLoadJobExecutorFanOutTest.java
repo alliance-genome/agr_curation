@@ -8,9 +8,20 @@ import static org.alliancegenome.curation_api.enums.BackendBulkLoadType.GENE;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.io.IOException;
+import java.lang.reflect.Field;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+import org.alliancegenome.curation_api.model.ingest.dto.IngestDTO;
 import org.junit.jupiter.api.Test;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * Pins which executors a content dispatched load reaches.
@@ -36,14 +47,14 @@ class BulkLoadJobExecutorFanOutTest {
 	/** A CONSTRUCT_<MOD> submission has to reach every entity in the constructs model. */
 	@Test
 	void constructReachesTheWholeConstructsModel() {
-		Set<String> present = Set.of(
+		List<String> constructsModel = List.of(
 			"construct_ingest_set", "cassette_ingest_set", "transgenic_tool_ingest_set",
 			"construct_cassette_association_ingest_set", "construct_genomic_entity_association_ingest_set",
 			"cassette_genomic_entity_association_ingest_set", "cassette_transgenic_tool_association_ingest_set",
 			"cassette_str_association_ingest_set");
 
-		for (String ingestSet : present) {
-			assertTrue(executor.fileCarriesIngestSet(CONSTRUCT, present, ingestSet), ingestSet + " should run under CONSTRUCT");
+		for (String ingestSet : constructsModel) {
+			assertTrue(executor.loadTypeOwnsIngestSet(CONSTRUCT, ingestSet), ingestSet + " should run under CONSTRUCT");
 		}
 	}
 
@@ -53,34 +64,44 @@ class BulkLoadJobExecutorFanOutTest {
 	 */
 	@Test
 	void constructDoesNotStrayOutsideItsModel() {
-		Set<String> present = Set.of("construct_ingest_set", "gene_ingest_set", "allele_ingest_set", "disease_gene_ingest_set");
+		assertTrue(executor.loadTypeOwnsIngestSet(CONSTRUCT, "construct_ingest_set"));
+		assertFalse(executor.loadTypeOwnsIngestSet(CONSTRUCT, "gene_ingest_set"));
+		assertFalse(executor.loadTypeOwnsIngestSet(CONSTRUCT, "allele_ingest_set"));
+		assertFalse(executor.loadTypeOwnsIngestSet(CONSTRUCT, "disease_gene_ingest_set"));
 
-		assertTrue(executor.fileCarriesIngestSet(CONSTRUCT, present, "construct_ingest_set"));
-		assertFalse(executor.fileCarriesIngestSet(CONSTRUCT, present, "gene_ingest_set"));
-		assertFalse(executor.fileCarriesIngestSet(CONSTRUCT, present, "allele_ingest_set"));
-		assertFalse(executor.fileCarriesIngestSet(CONSTRUCT, present, "disease_gene_ingest_set"));
-
-		// The same file under FULL_INGEST does reach all of them.
-		assertTrue(executor.fileCarriesIngestSet(FULL_INGEST, present, "gene_ingest_set"));
-		assertTrue(executor.fileCarriesIngestSet(FULL_INGEST, present, "allele_ingest_set"));
-	}
-
-	/** An ingest set the file does not carry must not schedule its executor. */
-	@Test
-	void absentIngestSetsAreSkipped() {
-		Set<String> present = Set.of("cassette_ingest_set");
-
-		assertTrue(executor.fileCarriesIngestSet(CONSTRUCT, present, "cassette_ingest_set"));
-		assertFalse(executor.fileCarriesIngestSet(CONSTRUCT, present, "construct_ingest_set"));
-		assertFalse(executor.fileCarriesIngestSet(FULL_INGEST, present, "gene_ingest_set"));
+		// FULL_INGEST does reach all of them.
+		assertTrue(executor.loadTypeOwnsIngestSet(FULL_INGEST, "gene_ingest_set"));
+		assertTrue(executor.loadTypeOwnsIngestSet(FULL_INGEST, "allele_ingest_set"));
 	}
 
 	/** Single type loads never reach this path; they are gated by their own equality check. */
 	@Test
 	void singleTypeLoadsAreNotContentDispatched() {
-		Set<String> present = Set.of("cassette_ingest_set", "gene_ingest_set");
+		assertFalse(executor.loadTypeOwnsIngestSet(CASSETTE, "cassette_ingest_set"));
+		assertFalse(executor.loadTypeOwnsIngestSet(ALLELE, "allele_ingest_set"));
+	}
 
-		assertFalse(executor.fileCarriesIngestSet(CASSETTE, present, "cassette_ingest_set"));
-		assertFalse(executor.fileCarriesIngestSet(ALLELE, present, "allele_ingest_set"));
+	/**
+	 * The dispatcher names ingest sets as strings, matched against CONSTRUCT_MODEL_INGEST_SETS, so a
+	 * misspelt name would silently keep that executor out of a CONSTRUCT load.
+	 */
+	@Test
+	void everySetTheDispatcherNamesIsAnIngestDtoProperty() throws IOException {
+		Set<String> properties = new HashSet<>();
+		for (Field field : IngestDTO.class.getDeclaredFields()) {
+			JsonProperty property = field.getAnnotation(JsonProperty.class);
+			if (property != null) {
+				properties.add(property.value());
+			}
+		}
+
+		String dispatcher = Files.readString(Path.of("src/main/java/org/alliancegenome/curation_api/jobs/executors/BulkLoadJobExecutor.java"));
+		Matcher names = Pattern.compile("\"(\\w+_ingest_set)\"").matcher(dispatcher);
+		int checked = 0;
+		while (names.find()) {
+			assertTrue(properties.contains(names.group(1)), names.group(1) + " is not an IngestDTO property");
+			checked++;
+		}
+		assertTrue(checked > 20, "expected the dispatcher's ingest set names, found " + checked);
 	}
 }

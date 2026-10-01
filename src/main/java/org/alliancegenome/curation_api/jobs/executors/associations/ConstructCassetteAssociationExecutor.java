@@ -11,7 +11,6 @@ import org.alliancegenome.curation_api.model.entities.bulkloads.BulkManualLoad;
 import org.alliancegenome.curation_api.model.ingest.dto.IngestDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.associations.ConstructCassetteAssociationDTO;
 import org.alliancegenome.curation_api.services.associations.ConstructCassetteAssociationService;
-import org.apache.commons.collections.CollectionUtils;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -23,6 +22,11 @@ import lombok.extern.jbosslog.JBossLog;
 public class ConstructCassetteAssociationExecutor extends LoadFileExecutor {
 
 	@Inject ConstructCassetteAssociationService lConstructCassetteAssociationService;
+
+	@Override
+	protected List<?> getIngestSet(IngestDTO ingestDto) {
+		return ingestDto.getConstructCassetteAssociationIngestSet();
+	}
 
 	@Override
 	protected Class<?> getIngestDtoClass() {
@@ -37,9 +41,6 @@ public class ConstructCassetteAssociationExecutor extends LoadFileExecutor {
 		log.info("Running with dataProvider: " + dataProvider.name());
 
 		List<ConstructCassetteAssociationDTO> associations = ingestDto.getConstructCassetteAssociationIngestSet();
-		if (CollectionUtils.isEmpty(associations)) {
-			return;
-		}
 
 		List<Long> associationIdsLoaded = new ArrayList<>();
 		List<Long> associationIdsBefore = new ArrayList<>();

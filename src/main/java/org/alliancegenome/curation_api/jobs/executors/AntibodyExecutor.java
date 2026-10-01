@@ -12,7 +12,6 @@ import org.alliancegenome.curation_api.model.entities.bulkloads.BulkManualLoad;
 import org.alliancegenome.curation_api.model.ingest.dto.AntibodyDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.IngestDTO;
 import org.alliancegenome.curation_api.services.AntibodyService;
-import org.apache.commons.collections.CollectionUtils;
 
 import io.quarkus.logging.Log;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -23,6 +22,11 @@ public class AntibodyExecutor extends LoadFileExecutor {
 
 	@Inject
 	AntibodyService antibodyService;
+
+	@Override
+	protected List<?> getIngestSet(IngestDTO ingestDto) {
+		return ingestDto.getAntibodyIngestSet();
+	}
 
 	@Override
 	protected Class<?> getIngestDtoClass() {
@@ -36,9 +40,6 @@ public class AntibodyExecutor extends LoadFileExecutor {
 		Log.info("Running with: " + manual.getDataProvider().name());
 
 		List<AntibodyDTO> antibodies = ingestDto.getAntibodyIngestSet();
-		if (CollectionUtils.isEmpty(antibodies)) {
-			return;
-		}
 
 		BackendBulkDataProvider dataProvider = manual.getDataProvider();
 
