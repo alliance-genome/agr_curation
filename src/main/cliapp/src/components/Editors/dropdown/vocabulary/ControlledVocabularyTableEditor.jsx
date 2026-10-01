@@ -9,7 +9,7 @@ import { VocabularySelect } from '../../widgets/VocabularySelect';
  * @param {string} field - the row property being edited
  * @param {object[]} options - the terms to choose from
  * @param {boolean} [showClear=false] - whether to offer a clear affordance
- * @param {string} [dataKey] - term property used to match the row's value against
+ * @param {string} [dataKey='id'] - term property used to match the row's value against
  *   `options` when they are not the same object instance
  * @param {string} [placeholderField='name'] - property of the row's value to show when the
  *   dropdown cannot match it against `options`, as when a vocabulary has not loaded
@@ -20,7 +20,7 @@ export const ControlledVocabularyTableEditor = ({
 	field,
 	options,
 	showClear = false,
-	dataKey,
+	dataKey = 'id',
 	placeholderField = 'name',
 }) => (
 	<TableField editorOptions={editorOptions} field={field}>
