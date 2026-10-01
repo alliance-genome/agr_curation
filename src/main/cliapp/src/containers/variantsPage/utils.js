@@ -79,3 +79,13 @@ export const processTableErrors = (tableErrors, dispatch, entityType, table) => 
 	});
 	dispatch({ type: 'UPDATE_TABLE_ERROR_MESSAGES', entityType: entityType, errorMessages: errors });
 };
+
+export const buildCreatePayload = (variant) => {
+	const payload = structuredClone(variant);
+
+	if (!payload.taxon?.curie) {
+		delete payload.taxon;
+	}
+
+	return payload;
+};

@@ -13,6 +13,18 @@ import { RelatedNotesForm } from './relatedNotes/RelatedNotesForm';
 import { ReferencesForm } from './references/ReferencesForm';
 import { SynonymsForm } from './synonyms/SynonymsForm';
 import { FormSection } from '../../components/FormFieldVisibility';
+import { getEffectiveModAbbreviation } from '../../utils/affiliation';
+
+const FIELDS_OMITTED_ON_CREATE = [
+	'Curie',
+	'Primary External ID',
+	'MOD Internal ID',
+	'Cross References',
+	'Updated By',
+	'Date Updated',
+	'Created By',
+	'Date Created',
+];
 
 // Every section on the page, in display order.
 export const VARIANT_DETAIL_TOGGLEABLE_FIELDS = [
@@ -36,6 +48,12 @@ export const VARIANT_DETAIL_TOGGLEABLE_FIELDS = [
 	'Obsolete',
 ];
 
+const FIELDS_REQUIRED_ON_CREATE = ['Taxon', 'Variant Type'];
+
+export const VARIANT_CREATE_TOGGLEABLE_FIELDS = VARIANT_DETAIL_TOGGLEABLE_FIELDS.filter(
+	(field) => !FIELDS_OMITTED_ON_CREATE.includes(field) && !FIELDS_REQUIRED_ON_CREATE.includes(field)
+);
+
 const labelColumnSize = 'col-3';
 const widgetColumnSize = 'col-4';
 const fieldDetailsColumnSize = 'col-5';
@@ -47,8 +65,11 @@ const fieldDetailsColumnSize = 'col-5';
  * @param {Object} props.state - variant reducer state
  * @param {Function} props.dispatch - variant reducer dispatch
  * @param {(field: string) => boolean} props.isVisible - whether a named section renders
+ * @param {'detail'|'create'} [props.mode] - 'create' drops the fields the server assigns
  */
-export const VariantForm = ({ state, dispatch, isVisible }) => {
+export const VariantForm = ({ state, dispatch, isVisible, mode = 'detail' }) => {
+	const isCreate = mode === 'create';
+
 	// An autosuggest hands back the selected object, or the raw string while the curator is still
 	// typing. The string is kept so the field shows what was typed and the API can reject it.
 	const onOntologyTermValueChange = (field) => (event) => {
@@ -69,7 +90,7 @@ export const VariantForm = ({ state, dispatch, isVisible }) => {
 
 	return (
 		<form className="mt-8">
-			<FormSection isVisible={isVisible('Curie')}>
+			<FormSection isVisible={!isCreate && isVisible('Curie')}>
 				<IdentifierDetailPageTemplate
 					identifier={state.variant?.curie}
 					label="Curie"
@@ -79,7 +100,7 @@ export const VariantForm = ({ state, dispatch, isVisible }) => {
 				/>
 			</FormSection>
 
-			<FormSection isVisible={isVisible('Primary External ID')}>
+			<FormSection isVisible={!isCreate && isVisible('Primary External ID')}>
 				<IdentifierDetailPageTemplate
 					identifier={state.variant?.primaryExternalId}
 					label="Primary External ID"
@@ -89,7 +110,7 @@ export const VariantForm = ({ state, dispatch, isVisible }) => {
 				/>
 			</FormSection>
 
-			<FormSection isVisible={isVisible('MOD Internal ID')}>
+			<FormSection isVisible={!isCreate && isVisible('MOD Internal ID')}>
 				<IdentifierDetailPageTemplate
 					identifier={state.variant?.modInternalId}
 					label="MOD Internal ID"
@@ -102,6 +123,7 @@ export const VariantForm = ({ state, dispatch, isVisible }) => {
 			<FormSection isVisible={isVisible('Taxon')}>
 				<TaxonDetailPageEditor
 					taxon={state.variant?.taxon}
+					required={isCreate}
 					onTaxonValueChange={onOntologyTermValueChange('taxon')}
 					widgetColumnSize={widgetColumnSize}
 					labelColumnSize={labelColumnSize}
@@ -167,7 +189,7 @@ export const VariantForm = ({ state, dispatch, isVisible }) => {
 
 			<FormSection isVisible={isVisible('Data Provider')}>
 				<DataProviderDetailPageTemplate
-					dataProvider={state.variant?.dataProvider?.abbreviation}
+					dataProvider={isCreate ? getEffectiveModAbbreviation() : state.variant?.dataProvider?.abbreviation}
 					widgetColumnSize={widgetColumnSize}
 					labelColumnSize={labelColumnSize}
 					fieldDetailsColumnSize={fieldDetailsColumnSize}
@@ -175,7 +197,7 @@ export const VariantForm = ({ state, dispatch, isVisible }) => {
 			</FormSection>
 
 			{/* Read only: the curation system has no cross reference editor, here or on the table. */}
-			<FormSection isVisible={isVisible('Cross References')}>
+			<FormSection isVisible={!isCreate && isVisible('Cross References')}>
 				<DetailPageFieldWrapper
 					labelColumnSize={labelColumnSize}
 					fieldDetailsColumnSize={fieldDetailsColumnSize}
@@ -186,7 +208,7 @@ export const VariantForm = ({ state, dispatch, isVisible }) => {
 				/>
 			</FormSection>
 
-			<FormSection isVisible={isVisible('Updated By')}>
+			<FormSection isVisible={!isCreate && isVisible('Updated By')}>
 				<UserDetailPageTemplate
 					user={state.variant?.updatedBy?.uniqueId}
 					fieldName="Updated By"
@@ -196,7 +218,7 @@ export const VariantForm = ({ state, dispatch, isVisible }) => {
 				/>
 			</FormSection>
 
-			<FormSection isVisible={isVisible('Date Updated')}>
+			<FormSection isVisible={!isCreate && isVisible('Date Updated')}>
 				<DateDetailPageTemplate
 					date={state.variant?.dateUpdated}
 					fieldName="Date Updated"
@@ -206,7 +228,7 @@ export const VariantForm = ({ state, dispatch, isVisible }) => {
 				/>
 			</FormSection>
 
-			<FormSection isVisible={isVisible('Created By')}>
+			<FormSection isVisible={!isCreate && isVisible('Created By')}>
 				<UserDetailPageTemplate
 					user={state.variant?.createdBy?.uniqueId}
 					fieldName="Created By"
@@ -216,7 +238,7 @@ export const VariantForm = ({ state, dispatch, isVisible }) => {
 				/>
 			</FormSection>
 
-			<FormSection isVisible={isVisible('Date Created')}>
+			<FormSection isVisible={!isCreate && isVisible('Date Created')}>
 				<DateDetailPageTemplate
 					date={state.variant?.dateCreated}
 					fieldName="Date Created"

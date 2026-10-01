@@ -6,6 +6,9 @@ import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.nullValue;
+import static org.hamcrest.Matchers.startsWith;
 
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -217,8 +220,7 @@ public class IT_0309_VariantITCase extends BaseITCase {
 			post("/api/variant").
 			then().
 			statusCode(400).
-			body("errorMessages", is(aMapWithSize(3))).
-			body("errorMessages.modInternalId", is(ValidationConstants.REQUIRED_UNLESS_OTHER_FIELD_POPULATED_MESSAGE + " primaryExternalId")).
+			body("errorMessages", is(aMapWithSize(2))).
 			body("errorMessages.taxon", is(ValidationConstants.REQUIRED_MESSAGE)).
 			body("errorMessages.variantType", is(ValidationConstants.REQUIRED_MESSAGE));
 	}
@@ -235,9 +237,16 @@ public class IT_0309_VariantITCase extends BaseITCase {
 			when().
 			put("/api/variant").
 			then().
-			statusCode(400).
-			body("errorMessages", is(aMapWithSize(1))).
-			body("errorMessages.modInternalId", is(ValidationConstants.REQUIRED_UNLESS_OTHER_FIELD_POPULATED_MESSAGE + " primaryExternalId"));
+			statusCode(200);
+
+		variant.setPrimaryExternalId(VARIANT);
+		RestAssured.given().
+			contentType("application/json").
+			body(variant).
+			when().
+			put("/api/variant").
+			then().
+			statusCode(200);
 	}
 	
 	@Test
@@ -274,9 +283,11 @@ public class IT_0309_VariantITCase extends BaseITCase {
 			when().
 			post("/api/variant").
 			then().
-			statusCode(400).
-			body("errorMessages", is(aMapWithSize(1))).
-			body("errorMessages.modInternalId", is(ValidationConstants.REQUIRED_UNLESS_OTHER_FIELD_POPULATED_MESSAGE + " primaryExternalId"));
+			statusCode(200).
+			body("entity.curie", startsWith("AGRKB:")).
+			body("entity.primaryExternalId", is(nullValue())).
+			body("entity.modInternalId", is(nullValue())).
+			body("entity.dataProvider.abbreviation", is(notNullValue()));
 	}
 	
 	@Test
@@ -291,9 +302,16 @@ public class IT_0309_VariantITCase extends BaseITCase {
 			when().
 			put("/api/variant").
 			then().
-			statusCode(400).
-			body("errorMessages", is(aMapWithSize(1))).
-			body("errorMessages.modInternalId", is(ValidationConstants.REQUIRED_UNLESS_OTHER_FIELD_POPULATED_MESSAGE + " primaryExternalId"));
+			statusCode(200);
+
+		variant.setPrimaryExternalId(VARIANT);
+		RestAssured.given().
+			contentType("application/json").
+			body(variant).
+			when().
+			put("/api/variant").
+			then().
+			statusCode(200);
 	}
 	
 	@Test

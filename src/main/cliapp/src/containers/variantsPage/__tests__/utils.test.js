@@ -1,6 +1,29 @@
-import { generateCrossRefSearchField, generateCrossRefSearchFields, processErrors } from '../utils';
+import { buildCreatePayload, generateCrossRefSearchField, generateCrossRefSearchFields, processErrors } from '../utils';
 
 describe('variantsPage utils', () => {
+	describe('buildCreatePayload', () => {
+		it('Drops a taxon with no curie', () => {
+			const payload = buildCreatePayload({ taxon: { curie: '' }, internal: false });
+
+			expect(payload).not.toHaveProperty('taxon');
+			expect(payload.internal).toBe(false);
+		});
+
+		it('Keeps a populated taxon', () => {
+			const payload = buildCreatePayload({ taxon: { curie: 'NCBITaxon:6239' } });
+
+			expect(payload.taxon).toEqual({ curie: 'NCBITaxon:6239' });
+		});
+
+		it('Leaves the variant it was given untouched', () => {
+			const variant = { taxon: { curie: '' } };
+
+			buildCreatePayload(variant);
+
+			expect(variant.taxon).toEqual({ curie: '' });
+		});
+	});
+
 	describe('generateCrossRefSearchField', () => {
 		it('Joins the referenced curies of a loaded reference', () => {
 			const reference = {

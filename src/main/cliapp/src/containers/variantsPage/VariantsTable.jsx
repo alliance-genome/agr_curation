@@ -30,6 +30,7 @@ import { TruncatedReferencesTemplate } from '../../components/Templates/referenc
 
 import { SearchService } from '../../service/SearchService';
 import { Endpoints } from '../../constants/Endpoints';
+import { NewVariantButton } from './NewVariantButton';
 
 export const VariantsTable = () => {
 	const [isInEditMode, setIsInEditMode] = useState(false);
@@ -294,6 +295,15 @@ export const VariantsTable = () => {
 		searchService,
 	});
 
+	const headerButtons = (disabled = false) => {
+		return (
+			<>
+				<NewVariantButton disabled={disabled} />
+				&nbsp;&nbsp;
+			</>
+		);
+	};
+
 	return (
 		<>
 			<div className="card">
@@ -303,6 +313,7 @@ export const VariantsTable = () => {
 					dataKey="id"
 					endpoint={SEARCH_ENDPOINT}
 					tableName="Variants"
+					headerButtons={headerButtons}
 					entities={variants}
 					setEntities={setVariants}
 					totalRecords={totalRecords}
