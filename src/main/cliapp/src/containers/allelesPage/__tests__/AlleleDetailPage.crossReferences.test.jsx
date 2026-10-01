@@ -199,6 +199,68 @@ describe('<AlleleDetailPage /> cross references', () => {
 	});
 
 	// Incomplete rows are sent as they are, and the API's per-row errors mark the cells it rejected.
+	const alleleRejection = {
+		response: {
+			status: 400,
+			statusText: 'Bad Request',
+			data: { errorMessage: 'Could not update Allele', errorMessages: { taxon: 'Taxon is not valid' } },
+		},
+	};
+
+	// The cross references are written whether or not the allele saved, so the errors of both show together.
+	it('Reports the allele and cross reference errors together when both are rejected', async () => {
+		const user = userEvent.setup();
+		saveAlleleDetail.mockRejectedValue(alleleRejection);
+		replaceCrossReferencesForAllele.mockRejectedValue({
+			response: {
+				status: 400,
+				data: {
+					errorMessage: 'Could not update CrossReferences',
+					supplementalData: { errorMap: { crossReferences: { 0: { displayName: 'Required field is empty' } } } },
+				},
+			},
+		});
+		await renderPage();
+
+		await waitForCrossReferencesToLoad();
+		await user.clear(crossReferenceRow().querySelector('#displayName'));
+		await user.click(screen.getByRole('button', { name: 'Save' }));
+
+		expect(await screen.findByText('Cross references not saved:')).toBeInTheDocument();
+		expect(screen.getByText('Allele not saved:')).toBeInTheDocument();
+		expect(screen.getByText('Could not update Allele')).toBeInTheDocument();
+		expect(screen.getByText('Taxon is not valid')).toBeInTheDocument();
+		expect(within(crossReferenceRow()).getByText('Required field is empty')).toBeInTheDocument();
+		expect(replaceCrossReferencesForAllele).toHaveBeenCalledTimes(1);
+		expect(screen.queryByText('Allele Saved')).not.toBeInTheDocument();
+	});
+
+	it('Says the cross references were saved when only the allele is rejected', async () => {
+		const user = userEvent.setup();
+		saveAlleleDetail.mockRejectedValue(alleleRejection);
+		await renderPage();
+
+		await editCrossReferenceAndSave(user);
+
+		expect(await screen.findByText(/The cross references were saved/)).toBeInTheDocument();
+		expect(screen.getByText('Allele not saved:')).toBeInTheDocument();
+		expect(screen.getByText('Taxon is not valid')).toBeInTheDocument();
+		expect(replaceCrossReferencesForAllele).toHaveBeenCalledTimes(1);
+	});
+
+	it('Sends no cross references for a rejected allele when the section was not edited', async () => {
+		const user = userEvent.setup();
+		saveAlleleDetail.mockRejectedValue(alleleRejection);
+		await renderPage();
+
+		await waitForCrossReferencesToLoad();
+		await user.click(screen.getByRole('button', { name: 'Save' }));
+
+		expect(await screen.findByText('Could not update Allele')).toBeInTheDocument();
+		expect(screen.getByText('Page error:')).toBeInTheDocument();
+		expect(replaceCrossReferencesForAllele).not.toHaveBeenCalled();
+	});
+
 	it('Sends a row missing a required field and marks the field the API rejects', async () => {
 		const user = userEvent.setup();
 		replaceCrossReferencesForAllele.mockRejectedValue({
