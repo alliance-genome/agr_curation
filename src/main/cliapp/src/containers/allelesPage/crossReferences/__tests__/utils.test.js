@@ -8,6 +8,7 @@ vi.mock('../../../../service/ResourceDescriptorService', () => ({
 
 import {
 	applyCrossReferenceFieldChange,
+	buildDuplicateCrossReferences,
 	buildNewCrossReference,
 	curiePrefixOf,
 	findRow,
@@ -354,5 +355,51 @@ describe('curiePrefixOf', () => {
 		expect(curiePrefixOf(':123')).toBeNull();
 		expect(curiePrefixOf('')).toBeNull();
 		expect(curiePrefixOf(undefined)).toBeNull();
+	});
+});
+
+describe('buildDuplicateCrossReferences', () => {
+	const page = { id: 40, name: 'allele', resourceDescriptor: { id: 30, prefix: 'WB' } };
+	const stored = () => ({
+		id: 50,
+		referencedCurie: 'WB:WBVar1',
+		displayName: 'WB:WBVar1',
+		internal: true,
+		obsolete: true,
+		createdBy: { uniqueId: 'curator' },
+		dateCreated: '2024-01-01T00:00:00Z',
+		dbDateUpdated: '2024-01-02T00:00:00Z',
+		resourceDescriptorPage: page,
+	});
+
+	it('Keeps the page and internal flag but not the curie, display name, obsolete flag, id or audit fields', () => {
+		const [copy] = buildDuplicateCrossReferences([stored()]);
+
+		expect(copy.resourceDescriptorPage).toEqual(page);
+		expect(copy.internal).toBe(true);
+		expect(copy.obsolete).toBe(false);
+		expect(copy.referencedCurie).toEqual('');
+		expect(copy.displayName).toEqual('');
+		['id', 'createdBy', 'dateCreated', 'dbDateUpdated'].forEach((field) => expect(copy).not.toHaveProperty(field));
+	});
+
+	it('Gives every copy its own dataKey', () => {
+		const copies = buildDuplicateCrossReferences([stored(), stored()]);
+
+		expect(copies[0].dataKey).toBeTruthy();
+		expect(copies[1].dataKey).toBeTruthy();
+		expect(copies[0].dataKey).not.toEqual(copies[1].dataKey);
+	});
+
+	it('Copies nothing from an allele without cross references', () => {
+		expect(buildDuplicateCrossReferences(undefined)).toEqual([]);
+		expect(buildDuplicateCrossReferences([])).toEqual([]);
+	});
+
+	it('Does not mutate the rows it is given', () => {
+		const rows = [stored()];
+		buildDuplicateCrossReferences(rows);
+
+		expect(rows).toEqual([stored()]);
 	});
 });

@@ -1,10 +1,11 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Toast } from 'primereact/toast';
 import { Splitter, SplitterPanel } from 'primereact/splitter';
 import { Button } from 'primereact/button';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { AlleleService } from '../../service/AlleleService';
+import { CrossReferenceService } from '../../service/CrossReferenceService';
 import ErrorBoundary from '../../components/Error/ErrorBoundary';
 import { useAlleleReducer } from './useAlleleReducer';
 import { StickyHeader } from '../../components/StickyHeader';
@@ -15,6 +16,7 @@ import { buildCreatePayload, buildDuplicateAllele, processErrors, validateRequir
 import { FormFieldVisibilityMenu, useFormFieldVisibility } from '../../components/FormFieldVisibility';
 import { AlleleForm, ALLELE_CREATE_TOGGLEABLE_FIELDS } from './AlleleForm';
 import { useAlleleCrossReferences } from './crossReferences/useAlleleCrossReferences';
+import { buildDuplicateCrossReferences, seedResourceDescriptors } from './crossReferences/utils';
 import { SubResourcesProvider } from '../../components/SubResourcesContext';
 
 export default function AlleleCreatePage() {
@@ -52,6 +54,11 @@ export default function AlleleCreatePage() {
 	// The form takes the source allele once; after that it holds the curator's edits, and a clear or a
 	// save and add another starts from a blank form.
 	const sourceAlleleApplied = useRef(false);
+	const [sourceCrossReferencesLoading, setSourceCrossReferencesLoading] = useState(false);
+	const crossReferenceService = useMemo(() => new CrossReferenceService(), []);
+	const { setCrossReferences } = crossReferences;
+
+	const crossReferencesVisible = isVisible('Cross References');
 
 	useEffect(() => {
 		if (!sourceIdentifier || sourceAlleleApplied.current) return;
@@ -59,9 +66,7 @@ export default function AlleleCreatePage() {
 
 		sourceAlleleApplied.current = true;
 		const sourceAllele = sourceAlleleData?.data?.entity;
-		if (sourceAllele) {
-			alleleDispatch({ type: 'SET', value: buildDuplicateAllele(sourceAllele) });
-		} else {
+		if (!sourceAllele) {
 			toastError.current?.show({
 				life: 7000,
 				severity: 'error',
@@ -69,8 +74,44 @@ export default function AlleleCreatePage() {
 				detail: `Could not load allele ${sourceIdentifier} to duplicate`,
 				sticky: false,
 			});
+			return;
 		}
-	}, [sourceIdentifier, sourceAlleleData, sourceAlleleLoadFailed, alleleDispatch]);
+
+		alleleDispatch({ type: 'SET', value: buildDuplicateAllele(sourceAllele) });
+
+		// The copied rows keep the source's pages but not its curies, which the curator fills in for the new
+		// allele. A hidden section could not show them, so it gets none.
+		if (!crossReferencesVisible) return;
+
+		const copySourceCrossReferences = async () => {
+			setSourceCrossReferencesLoading(true);
+			try {
+				const response = await crossReferenceService.getCrossReferencesForAllele(sourceAllele.id);
+				const copies = await seedResourceDescriptors(buildDuplicateCrossReferences(response?.data?.entities));
+				if (copies.length > 0) setCrossReferences(copies);
+			} catch (error) {
+				console.warn(`Could not load cross references for allele ${sourceAllele.id}`, error);
+				toastError.current?.show({
+					life: 7000,
+					severity: 'warn',
+					summary: 'Cross references not copied: ',
+					detail: `Could not load the cross references of allele ${getIdentifier(sourceAllele)}`,
+					sticky: false,
+				});
+			} finally {
+				setSourceCrossReferencesLoading(false);
+			}
+		};
+		copySourceCrossReferences();
+	}, [
+		sourceIdentifier,
+		sourceAlleleData,
+		sourceAlleleLoadFailed,
+		alleleDispatch,
+		crossReferencesVisible,
+		crossReferenceService,
+		setCrossReferences,
+	]);
 
 	const { isPending: allelePostRequestIsLoading, mutate: alleleMutate } = useMutation({
 		mutationFn: (allele) => {
@@ -207,7 +248,10 @@ export default function AlleleCreatePage() {
 			<Toast ref={toastError} position="top-left" />
 			<Toast ref={toastSuccess} position="top-right" />
 			<LoadingOverlay isLoading={!!allelePostRequestIsLoading || !!allelePutRequestIsLoading} />
-			<LoadingOverlay isLoading={sourceAlleleIsLoading} message="Loading allele to duplicate..." />
+			<LoadingOverlay
+				isLoading={sourceAlleleIsLoading || sourceCrossReferencesLoading}
+				message="Loading allele to duplicate..."
+			/>
 			<ErrorBoundary>
 				<StickyHeader>
 					<Splitter className="bg-primary-reverse border-none lg:h-5rem" gutterSize={0}>

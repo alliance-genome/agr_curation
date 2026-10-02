@@ -161,9 +161,10 @@ const copyRows = (rows) => (rows?.length ? rows.map(copyRow) : undefined);
  * A new allele carrying the fields of a stored one that the create form edits, for the create page to
  * start from.
  *
- * Left behind: everything that identifies the stored allele (its ids, secondary IDs and cross
- * references), its data provider and audit fields, and the variant and construct associations the
- * form does not edit. Each copied row, and a gene association's note, loses its own id and audit
+ * Left behind: everything that identifies the stored allele (its ids and secondary IDs), its data
+ * provider and audit fields, and the variant and construct associations the form does not edit. Cross
+ * references are written through their own sub-resource and copied separately; see
+ * buildDuplicateCrossReferences. Each copied row, and a gene association's note, loses its own id and audit
  * fields, so it is created afresh. A list with no rows is left unset, as the detail endpoint leaves
  * it, so its section starts hidden.
  *
