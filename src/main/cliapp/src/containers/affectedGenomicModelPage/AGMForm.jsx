@@ -1,6 +1,4 @@
 import { TaxonDetailPageEditor } from '../../components/Editors/autocomplete/taxon/TaxonDetailPageEditor';
-import { VariantTypeDetailPageEditor } from '../../components/Editors/autocomplete/variantType/VariantTypeDetailPageEditor';
-import { SourceGeneralConsequenceDetailPageEditor } from '../../components/Editors/autocomplete/sourceGeneralConsequence/SourceGeneralConsequenceDetailPageEditor';
 import { ControlledVocabularyDetailPageEditor } from '../../components/Editors/dropdown/vocabulary/ControlledVocabularyDetailPageEditor';
 import { BooleanDetailPageEditor } from '../../components/Editors/dropdown/boolean/BooleanDetailPageEditor';
 import { IdentifierDetailPageTemplate } from '../../components/Templates/IdentifierDetailPageTemplate';
@@ -9,35 +7,21 @@ import { DateDetailPageTemplate } from '../../components/Templates/DateDetailPag
 import { UserDetailPageTemplate } from '../../components/Templates/UserDetailPageTemplate';
 import { CrossReferencesTemplate } from '../../components/Templates/CrossReferencesTemplate';
 import { DetailPageFieldWrapper } from '../../components/DetailPageFieldWrapper';
-import { RelatedNotesForm } from './relatedNotes/RelatedNotesForm';
-import { ReferencesForm } from './references/ReferencesForm';
+import { AgmFullNameForm } from './agmFullName/AgmFullNameForm';
 import { SynonymsForm } from './synonyms/SynonymsForm';
+import { SecondaryIdsForm } from './secondaryIds/SecondaryIdsForm';
 import { FormSection } from '../../components/FormFieldVisibility';
-import { getEffectiveModAbbreviation } from '../../utils/affiliation';
-
-const FIELDS_OMITTED_ON_CREATE = [
-	'Curie',
-	'Primary External ID',
-	'MOD Internal ID',
-	'Cross References',
-	'Updated By',
-	'Date Updated',
-	'Created By',
-	'Date Created',
-];
 
 // Every section on the page, in display order.
-export const VARIANT_DETAIL_TOGGLEABLE_FIELDS = [
+export const AGM_DETAIL_TOGGLEABLE_FIELDS = [
 	'Curie',
 	'Primary External ID',
 	'MOD Internal ID',
-	'Taxon',
-	'Variant Type',
-	'Variant Status',
-	'Related Notes',
-	'References',
-	'Source General Consequence',
+	'Name',
 	'Synonyms',
+	'Secondary IDs',
+	'Sub Type',
+	'Taxon',
 	'Data Provider',
 	'Cross References',
 	'Updated By',
@@ -48,28 +32,19 @@ export const VARIANT_DETAIL_TOGGLEABLE_FIELDS = [
 	'Obsolete',
 ];
 
-const FIELDS_REQUIRED_ON_CREATE = ['Taxon', 'Variant Type'];
-
-export const VARIANT_CREATE_TOGGLEABLE_FIELDS = VARIANT_DETAIL_TOGGLEABLE_FIELDS.filter(
-	(field) => !FIELDS_OMITTED_ON_CREATE.includes(field) && !FIELDS_REQUIRED_ON_CREATE.includes(field)
-);
-
 const labelColumnSize = 'col-3';
 const widgetColumnSize = 'col-4';
 const fieldDetailsColumnSize = 'col-5';
 
 /**
- * The variant field sections, in display order.
+ * The AGM field sections, in display order.
  *
  * @param {Object} props
- * @param {Object} props.state - variant reducer state
- * @param {Function} props.dispatch - variant reducer dispatch
+ * @param {Object} props.state - AGM reducer state
+ * @param {Function} props.dispatch - AGM reducer dispatch
  * @param {(field: string) => boolean} props.isVisible - whether a named section renders
- * @param {'detail'|'create'} [props.mode] - 'create' drops the fields the server assigns
  */
-export const VariantForm = ({ state, dispatch, isVisible, mode = 'detail' }) => {
-	const isCreate = mode === 'create';
-
+export const AGMForm = ({ state, dispatch, isVisible }) => {
 	// An autosuggest hands back the selected object, or the raw string while the curator is still
 	// typing. The string is kept so the field shows what was typed and the API can reject it.
 	const onOntologyTermValueChange = (field) => (event) => {
@@ -90,9 +65,9 @@ export const VariantForm = ({ state, dispatch, isVisible, mode = 'detail' }) => 
 
 	return (
 		<form className="mt-8">
-			<FormSection isVisible={!isCreate && isVisible('Curie')}>
+			<FormSection isVisible={isVisible('Curie')}>
 				<IdentifierDetailPageTemplate
-					identifier={state.variant?.curie}
+					identifier={state.agm?.curie}
 					label="Curie"
 					widgetColumnSize={widgetColumnSize}
 					labelColumnSize={labelColumnSize}
@@ -100,9 +75,9 @@ export const VariantForm = ({ state, dispatch, isVisible, mode = 'detail' }) => 
 				/>
 			</FormSection>
 
-			<FormSection isVisible={!isCreate && isVisible('Primary External ID')}>
+			<FormSection isVisible={isVisible('Primary External ID')}>
 				<IdentifierDetailPageTemplate
-					identifier={state.variant?.primaryExternalId}
+					identifier={state.agm?.primaryExternalId}
 					label="Primary External ID"
 					widgetColumnSize={widgetColumnSize}
 					labelColumnSize={labelColumnSize}
@@ -110,9 +85,9 @@ export const VariantForm = ({ state, dispatch, isVisible, mode = 'detail' }) => 
 				/>
 			</FormSection>
 
-			<FormSection isVisible={!isCreate && isVisible('MOD Internal ID')}>
+			<FormSection isVisible={isVisible('MOD Internal ID')}>
 				<IdentifierDetailPageTemplate
-					identifier={state.variant?.modInternalId}
+					identifier={state.agm?.modInternalId}
 					label="MOD Internal ID"
 					widgetColumnSize={widgetColumnSize}
 					labelColumnSize={labelColumnSize}
@@ -120,10 +95,35 @@ export const VariantForm = ({ state, dispatch, isVisible, mode = 'detail' }) => 
 				/>
 			</FormSection>
 
+			<FormSection isVisible={isVisible('Name')}>
+				<AgmFullNameForm labelColumnSize={labelColumnSize} state={state} dispatch={dispatch} />
+			</FormSection>
+
+			<FormSection isVisible={isVisible('Synonyms')}>
+				<SynonymsForm labelColumnSize={labelColumnSize} state={state} dispatch={dispatch} />
+			</FormSection>
+
+			<FormSection isVisible={isVisible('Secondary IDs')}>
+				<SecondaryIdsForm state={state} dispatch={dispatch} />
+			</FormSection>
+
+			<FormSection isVisible={isVisible('Sub Type')}>
+				<ControlledVocabularyDetailPageEditor
+					value={state.agm?.subtype}
+					name="subtype"
+					label="Sub Type"
+					vocabularyLabel="agm_subtype"
+					onValueChange={onFieldValueChange('subtype')}
+					widgetColumnSize={widgetColumnSize}
+					labelColumnSize={labelColumnSize}
+					fieldDetailsColumnSize={fieldDetailsColumnSize}
+					errorMessages={state.errorMessages}
+				/>
+			</FormSection>
+
 			<FormSection isVisible={isVisible('Taxon')}>
 				<TaxonDetailPageEditor
-					taxon={state.variant?.taxon}
-					required={isCreate}
+					taxon={state.agm?.taxon}
 					onTaxonValueChange={onOntologyTermValueChange('taxon')}
 					widgetColumnSize={widgetColumnSize}
 					labelColumnSize={labelColumnSize}
@@ -132,64 +132,9 @@ export const VariantForm = ({ state, dispatch, isVisible, mode = 'detail' }) => 
 				/>
 			</FormSection>
 
-			<FormSection isVisible={isVisible('Variant Type')}>
-				<VariantTypeDetailPageEditor
-					variantType={state.variant?.variantType}
-					required
-					onVariantTypeValueChange={onOntologyTermValueChange('variantType')}
-					widgetColumnSize={widgetColumnSize}
-					labelColumnSize={labelColumnSize}
-					fieldDetailsColumnSize={fieldDetailsColumnSize}
-					errorMessages={state.errorMessages}
-				/>
-			</FormSection>
-
-			<FormSection isVisible={isVisible('Variant Status')}>
-				<ControlledVocabularyDetailPageEditor
-					value={state.variant?.variantStatus}
-					name="variantStatus"
-					label="Variant Status"
-					vocabularyLabel="variant_status"
-					onValueChange={onFieldValueChange('variantStatus')}
-					widgetColumnSize={widgetColumnSize}
-					labelColumnSize={labelColumnSize}
-					fieldDetailsColumnSize={fieldDetailsColumnSize}
-					errorMessages={state.errorMessages}
-				/>
-			</FormSection>
-
-			<FormSection isVisible={isVisible('Related Notes')}>
-				<RelatedNotesForm state={state} dispatch={dispatch} />
-			</FormSection>
-
-			<FormSection isVisible={isVisible('References')}>
-				<ReferencesForm state={state} dispatch={dispatch} />
-			</FormSection>
-
-			<FormSection isVisible={isVisible('Source General Consequence')}>
-				<SourceGeneralConsequenceDetailPageEditor
-					sourceGeneralConsequence={state.variant?.sourceGeneralConsequence}
-					onSourceGeneralConsequenceValueChange={onOntologyTermValueChange('sourceGeneralConsequence')}
-					widgetColumnSize={widgetColumnSize}
-					labelColumnSize={labelColumnSize}
-					fieldDetailsColumnSize={fieldDetailsColumnSize}
-					errorMessages={state.errorMessages}
-				/>
-			</FormSection>
-
-			<FormSection isVisible={isVisible('Synonyms')}>
-				<SynonymsForm
-					state={state}
-					dispatch={dispatch}
-					widgetColumnSize={widgetColumnSize}
-					labelColumnSize={labelColumnSize}
-					fieldDetailsColumnSize={fieldDetailsColumnSize}
-				/>
-			</FormSection>
-
 			<FormSection isVisible={isVisible('Data Provider')}>
 				<DataProviderDetailPageTemplate
-					dataProvider={isCreate ? getEffectiveModAbbreviation() : state.variant?.dataProvider?.abbreviation}
+					dataProvider={state.agm?.dataProvider?.abbreviation}
 					widgetColumnSize={widgetColumnSize}
 					labelColumnSize={labelColumnSize}
 					fieldDetailsColumnSize={fieldDetailsColumnSize}
@@ -197,20 +142,20 @@ export const VariantForm = ({ state, dispatch, isVisible, mode = 'detail' }) => 
 			</FormSection>
 
 			{/* Read only: the curation system has no cross reference editor, here or on the table. */}
-			<FormSection isVisible={!isCreate && isVisible('Cross References')}>
+			<FormSection isVisible={isVisible('Cross References')}>
 				<DetailPageFieldWrapper
 					labelColumnSize={labelColumnSize}
 					fieldDetailsColumnSize={fieldDetailsColumnSize}
 					widgetColumnSize={widgetColumnSize}
 					fieldName="Cross References"
-					formField={<CrossReferencesTemplate list={state.variant?.crossReferences} />}
+					formField={<CrossReferencesTemplate list={state.agm?.crossReferences} />}
 					showAdditionalData={false}
 				/>
 			</FormSection>
 
-			<FormSection isVisible={!isCreate && isVisible('Updated By')}>
+			<FormSection isVisible={isVisible('Updated By')}>
 				<UserDetailPageTemplate
-					user={state.variant?.updatedBy?.uniqueId}
+					user={state.agm?.updatedBy?.uniqueId}
 					fieldName="Updated By"
 					widgetColumnSize={widgetColumnSize}
 					labelColumnSize={labelColumnSize}
@@ -218,9 +163,9 @@ export const VariantForm = ({ state, dispatch, isVisible, mode = 'detail' }) => 
 				/>
 			</FormSection>
 
-			<FormSection isVisible={!isCreate && isVisible('Date Updated')}>
+			<FormSection isVisible={isVisible('Date Updated')}>
 				<DateDetailPageTemplate
-					date={state.variant?.dateUpdated}
+					date={state.agm?.dateUpdated}
 					fieldName="Date Updated"
 					widgetColumnSize={widgetColumnSize}
 					labelColumnSize={labelColumnSize}
@@ -228,9 +173,9 @@ export const VariantForm = ({ state, dispatch, isVisible, mode = 'detail' }) => 
 				/>
 			</FormSection>
 
-			<FormSection isVisible={!isCreate && isVisible('Created By')}>
+			<FormSection isVisible={isVisible('Created By')}>
 				<UserDetailPageTemplate
-					user={state.variant?.createdBy?.uniqueId}
+					user={state.agm?.createdBy?.uniqueId}
 					fieldName="Created By"
 					widgetColumnSize={widgetColumnSize}
 					labelColumnSize={labelColumnSize}
@@ -238,9 +183,9 @@ export const VariantForm = ({ state, dispatch, isVisible, mode = 'detail' }) => 
 				/>
 			</FormSection>
 
-			<FormSection isVisible={!isCreate && isVisible('Date Created')}>
+			<FormSection isVisible={isVisible('Date Created')}>
 				<DateDetailPageTemplate
-					date={state.variant?.dateCreated}
+					date={state.agm?.dateCreated}
 					fieldName="Date Created"
 					widgetColumnSize={widgetColumnSize}
 					labelColumnSize={labelColumnSize}
@@ -250,7 +195,7 @@ export const VariantForm = ({ state, dispatch, isVisible, mode = 'detail' }) => 
 
 			<FormSection isVisible={isVisible('Internal')}>
 				<BooleanDetailPageEditor
-					value={state.variant?.internal}
+					value={state.agm?.internal}
 					name={'internal'}
 					label={'Internal'}
 					onValueChange={onFieldValueChange('internal')}
@@ -263,7 +208,7 @@ export const VariantForm = ({ state, dispatch, isVisible, mode = 'detail' }) => 
 
 			<FormSection isVisible={isVisible('Obsolete')}>
 				<BooleanDetailPageEditor
-					value={state.variant?.obsolete}
+					value={state.agm?.obsolete}
 					name={'obsolete'}
 					label={'Obsolete'}
 					onValueChange={onFieldValueChange('obsolete')}
