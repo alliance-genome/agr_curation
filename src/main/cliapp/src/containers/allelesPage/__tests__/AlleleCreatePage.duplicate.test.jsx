@@ -148,16 +148,20 @@ describe('<AlleleCreatePage /> duplicating an allele', () => {
 		expect(payload.taxon.curie).toEqual('NCBITaxon:6239');
 	});
 
-	it('Shows a duplicate symbol rejection beside the symbol', async () => {
+	it('Shows a duplicate symbol rejection on both the symbol and the taxon', async () => {
 		const user = userEvent.setup();
+		const notUniqueInTaxon = 'Another allele in this taxon already has this symbol';
+		// the shape AlleleValidator returns for a symbol another allele of the taxon already has
 		createAllele.mockRejectedValue({
 			response: {
 				status: 400,
 				statusText: 'Bad Request',
 				data: {
 					errorMessage: 'Could not create Allele',
-					errorMessages: { alleleSymbol: 'displayText - Field value is not unique' },
-					supplementalData: { errorMap: { alleleSymbol: { displayText: 'Field value is not unique' } } },
+					errorMessages: { alleleSymbol: `displayText - ${notUniqueInTaxon}`, taxon: notUniqueInTaxon },
+					supplementalData: {
+						errorMap: { alleleSymbol: { displayText: notUniqueInTaxon }, taxon: notUniqueInTaxon },
+					},
 				},
 			},
 		});
@@ -166,7 +170,8 @@ describe('<AlleleCreatePage /> duplicating an allele', () => {
 		await waitFor(() => expect(container.querySelector('#displayText')).toHaveValue('abc-1'), FORM_LOAD_WAIT);
 		await user.click(button('Save & Close'));
 
-		await waitFor(() => expect(screen.getByText('Field value is not unique')).toBeInTheDocument(), FORM_LOAD_WAIT);
+		// once beside the symbol's display text, once under the taxon
+		await waitFor(() => expect(screen.getAllByText(notUniqueInTaxon)).toHaveLength(2), FORM_LOAD_WAIT);
 		expect(navigate).not.toHaveBeenCalled();
 	});
 

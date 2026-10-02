@@ -1283,9 +1283,10 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 			post("/api/allele").
 			then().
 			statusCode(400).
-			body("errorMessages", is(aMapWithSize(1))).
-			body("errorMessages.alleleSymbol", is("displayText - " + ValidationConstants.NON_UNIQUE_MESSAGE)).
-			body("supplementalData.errorMap.alleleSymbol.displayText", is(ValidationConstants.NON_UNIQUE_MESSAGE));
+			body("errorMessages", is(aMapWithSize(2))).
+			body("errorMessages.alleleSymbol", is("displayText - " + ValidationConstants.ALLELE_SYMBOL_NOT_UNIQUE_IN_TAXON_MESSAGE)).
+			body("errorMessages.taxon", is(ValidationConstants.ALLELE_SYMBOL_NOT_UNIQUE_IN_TAXON_MESSAGE)).
+			body("supplementalData.errorMap.alleleSymbol.displayText", is(ValidationConstants.ALLELE_SYMBOL_NOT_UNIQUE_IN_TAXON_MESSAGE));
 
 		duplicate.setTaxon(taxon2);
 
@@ -1308,7 +1309,8 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 			put("/api/allele").
 			then().
 			statusCode(400).
-			body("errorMessages.alleleSymbol", is("displayText - " + ValidationConstants.NON_UNIQUE_MESSAGE));
+			body("errorMessages.alleleSymbol", is("displayText - " + ValidationConstants.ALLELE_SYMBOL_NOT_UNIQUE_IN_TAXON_MESSAGE)).
+			body("errorMessages.taxon", is(ValidationConstants.ALLELE_SYMBOL_NOT_UNIQUE_IN_TAXON_MESSAGE));
 	}
 
 	@Test
