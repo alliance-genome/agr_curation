@@ -50,13 +50,13 @@ import lombok.ToString;
 @Schema(name = "ConstructCassetteAssociation", description = "ConstructCassetteAssociation: a construct cassette association")
 
 @Table(indexes = {
-	@Index(columnList = "internal"),
-	@Index(columnList = "obsolete"),
-	@Index(columnList = "createdBy_id"),
-	@Index(columnList = "updatedBy_id"),
-	@Index(columnList = "constructassociationsubject_id"),
-	@Index(columnList = "constructcassetteassociationobject_id"),
-	@Index(columnList = "relation_id")
+	@Index(name = "constructcassetteassoc_internal_index", columnList = "internal"),
+	@Index(name = "constructcassetteassoc_obsolete_index", columnList = "obsolete"),
+	@Index(name = "constructcassetteassoc_createdby_index", columnList = "createdBy_id"),
+	@Index(name = "constructcassetteassoc_updatedby_index", columnList = "updatedBy_id"),
+	@Index(name = "constructcassetteassoc_subject_index", columnList = "constructassociationsubject_id"),
+	@Index(name = "constructcassetteassoc_object_index", columnList = "constructcassetteassociationobject_id"),
+	@Index(name = "constructcassetteassoc_relation_index", columnList = "relation_id")
 })
 
 public class ConstructCassetteAssociation extends EvidenceAssociation {
