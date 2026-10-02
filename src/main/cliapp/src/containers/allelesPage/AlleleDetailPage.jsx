@@ -43,11 +43,30 @@ export default function AlleleDetailPage() {
 		}
 	}, [alleleQueryData, alleleDispatch]);
 
-	const { isPending: allelePutRequestIsLoading, mutate: alleleMutate } = useMutation({
+	const { isPending: allelePutRequestIsLoading, mutateAsync: saveAllele } = useMutation({
 		mutationFn: (allele) => {
 			return alleleService.saveAlleleDetail(allele);
 		},
 	});
+
+	/**
+	 * Marks a rejected allele's field errors on the form.
+	 *
+	 * @param {Object} error the rejected request's error
+	 * @returns {string} the message describing the rejection
+	 */
+	const reportAlleleErrors = (error) => {
+		const data = error?.response?.data;
+
+		try {
+			processErrors(data, alleleDispatch, alleleState.allele);
+		} catch (processingError) {
+			console.error(processingError);
+		}
+
+		//toast will still display even if 500 error and no errorMessages
+		return data.errorMessage ? data.errorMessage : `${error.response.status} ${error.response.statusText}`;
+	};
 
 	const handleSubmit = async (event) => {
 		event.preventDefault();
@@ -65,51 +84,72 @@ export default function AlleleDetailPage() {
 
 		if (areUiErrors) return;
 
-		alleleMutate(alleleState.allele, {
-			onSuccess: async (result) => {
-				alleleDispatch({ type: 'SET', value: result?.data?.entity });
+		// A cleared taxon is held as one with a blank curie, which the API resolves to none without reporting
+		// it missing. Sent without a taxon, the allele is reported as needing one.
+		const allelePayload = alleleState.allele.taxon?.curie
+			? alleleState.allele
+			: { ...alleleState.allele, taxon: undefined };
 
-				// The cross references are written only when the section has been edited, and then as the whole
-				// list, so saving the allele alone leaves the stored ones as they are.
-				if (crossReferences.isDirty) {
-					const outcome = await crossReferences.save();
-					if (!outcome.isSuccess) {
-						toastError.current.show([
-							{
-								life: 10000,
-								severity: 'error',
-								summary: 'Cross references not saved: ',
-								detail: `${outcome.message}. The allele's other changes were saved.`,
-								sticky: false,
-							},
-						]);
-						return;
-					}
-				}
+		let alleleResult = null;
+		let alleleError = null;
+		try {
+			alleleResult = await saveAllele(allelePayload);
+		} catch (error) {
+			alleleError = error;
+		}
+		if (!alleleError) alleleDispatch({ type: 'SET', value: alleleResult?.data?.entity });
 
-				toastSuccess.current.show({ severity: 'success', summary: 'Successful', detail: 'Allele Saved' });
-			},
-			onError: (error) => {
-				let message;
-				const data = error?.response?.data;
+		// The cross references are written only when the section has been edited, and then as the whole
+		// list, so saving the allele alone leaves the stored ones as they are. They are written whether or
+		// not the allele saved, so the errors of both are reported together.
+		const crossReferencesOutcome = crossReferences.isDirty ? await crossReferences.save() : null;
 
-				if (data.errorMessage) {
-					message = error.response.data.errorMessage;
-				} else {
-					//toast will still display even if 500 error and no errorMessages
-					message = `${error.response.status} ${error.response.statusText}`;
-				}
+		if (alleleError) {
+			const alleleMessage = reportAlleleErrors(alleleError);
+
+			if (!crossReferencesOutcome) {
 				toastError.current.show([
-					{ life: 7000, severity: 'error', summary: 'Page error: ', detail: message, sticky: false },
+					{ life: 7000, severity: 'error', summary: 'Page error: ', detail: alleleMessage, sticky: false },
 				]);
+			} else if (crossReferencesOutcome.isSuccess) {
+				toastError.current.show([
+					{
+						life: 10000,
+						severity: 'error',
+						summary: 'Allele not saved: ',
+						detail: `${alleleMessage}. The cross references were saved.`,
+						sticky: false,
+					},
+				]);
+			} else {
+				toastError.current.show([
+					{ life: 10000, severity: 'error', summary: 'Allele not saved: ', detail: alleleMessage, sticky: false },
+					{
+						life: 10000,
+						severity: 'error',
+						summary: 'Cross references not saved: ',
+						detail: crossReferencesOutcome.message,
+						sticky: false,
+					},
+				]);
+			}
+			return;
+		}
 
-				try {
-					processErrors(data, alleleDispatch, alleleState.allele);
-				} catch (e) {
-					console.error(e);
-				}
-			},
-		});
+		if (crossReferencesOutcome && !crossReferencesOutcome.isSuccess) {
+			toastError.current.show([
+				{
+					life: 10000,
+					severity: 'error',
+					summary: 'Cross references not saved: ',
+					detail: `${crossReferencesOutcome.message}. The allele's other changes were saved.`,
+					sticky: false,
+				},
+			]);
+			return;
+		}
+
+		toastSuccess.current.show({ severity: 'success', summary: 'Successful', detail: 'Allele Saved' });
 	};
 
 	if (getRequestIsLoading)

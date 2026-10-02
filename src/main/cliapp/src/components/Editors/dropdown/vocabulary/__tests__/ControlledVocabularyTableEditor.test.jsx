@@ -72,10 +72,19 @@ describe('ControlledVocabularyTableEditor', () => {
 	// The row's term and the option come from separate queries, so they are distinct
 	// objects. Only dataKey matches them; the deep-equality fallback would fail on
 	// the differing label.
-	it('should match the current value by id when dataKey is supplied', () => {
-		const result = renderEditor({ relation: { id: 2, name: 'STALE LABEL' } }, { dataKey: 'id' });
+	it('should match the current value by id by default', () => {
+		const result = renderEditor({ relation: { id: 2, name: 'STALE LABEL' } });
 
 		expect(result.container.querySelector('.p-dropdown-label')).toHaveTextContent('is_implicated_in');
+	});
+
+	it('should match the current value by the supplied dataKey', () => {
+		const result = renderEditor(
+			{ relation: { id: 99, name: 'STALE LABEL', curie: 'X:3' } },
+			{ options: TERMS.map((term) => ({ ...term, curie: `X:${term.id}` })), dataKey: 'curie' }
+		);
+
+		expect(result.container.querySelector('.p-dropdown-label')).toHaveTextContent('is_marker_for');
 	});
 
 	// A vocabulary that has not loaded leaves nothing to match against, so the row's
