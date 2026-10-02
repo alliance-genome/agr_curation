@@ -3,11 +3,16 @@ import { BrowserRouter } from 'react-router-dom';
 import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { renderWithClient } from '../../../tools/jest/utils';
+import { Endpoints } from '../../../constants/Endpoints';
 
 const createAllele = vi.fn();
 const saveAlleleDetail = vi.fn();
 const navigate = vi.fn();
 const replaceCrossReferencesForAllele = vi.fn();
+const validate = vi.fn();
+const search = vi.fn();
+
+const PMID = { id: 9, prefix: 'PMID', name: 'PubMed', resourcePages: [{ id: 1, name: 'default' }] };
 
 // msw cannot intercept this app's fetch based ApiClient, so stub the services directly.
 vi.mock('../../../service/AlleleService', () => ({
@@ -22,7 +27,7 @@ vi.mock('../../../service/AlleleService', () => ({
 // timer, failing whichever test happens to run next.
 vi.mock('../../../service/SearchService', () => ({
 	SearchService: class {
-		search = vi.fn(() => Promise.resolve({ results: [], totalResults: 0 }));
+		search = search;
 		find = vi.fn(() => Promise.resolve({ results: [], totalResults: 0 }));
 	},
 }));
@@ -31,6 +36,12 @@ vi.mock('../../../service/CrossReferenceService', () => ({
 	CrossReferenceService: class {
 		getCrossReferencesForAllele = vi.fn(() => Promise.resolve({ data: { entities: [] } }));
 		replaceCrossReferencesForAllele = replaceCrossReferencesForAllele;
+	},
+}));
+
+vi.mock('../../../service/ValidationService', () => ({
+	ValidationService: class {
+		validate = validate;
 	},
 }));
 
@@ -50,6 +61,23 @@ const renderPage = () =>
 
 const button = (name) => screen.getByRole('button', { name });
 
+// Other sections of the page have their own editors, so a cross reference's are found in its row,
+// reached from its descriptor cell.
+const crossReferenceRow = () => screen.getByLabelText('resourceDescriptor').closest('tr');
+
+// The table reads every descriptor when it first shows a row, so a curie's can be filled in from then on.
+const waitForDescriptors = () =>
+	waitFor(() => expect(search.mock.calls.some(([endpoint]) => endpoint === Endpoints.Resource.DESCRIPTOR)).toBe(true));
+
+// Leaving the curie cell sets the descriptor its prefix names and that descriptor's default page, so the
+// row is complete once the curie and display name are typed.
+const addCompleteCrossReference = async (user) => {
+	await user.click(button('Add Cross Reference'));
+	await waitForDescriptors();
+	await user.type(crossReferenceRow().querySelector('#referencedCurie'), 'PMID:123');
+	await user.type(crossReferenceRow().querySelector('#displayName'), 'PMID:123');
+};
+
 describe('<AlleleCreatePage /> cross references', () => {
 	beforeEach(() => {
 		createAllele.mockReset();
@@ -59,6 +87,10 @@ describe('<AlleleCreatePage /> cross references', () => {
 		navigate.mockReset();
 		replaceCrossReferencesForAllele.mockReset();
 		replaceCrossReferencesForAllele.mockResolvedValue({ data: { entities: [] } });
+		validate.mockReset();
+		validate.mockResolvedValue({ isSuccess: true, isError: false, data: {} });
+		search.mockReset();
+		search.mockResolvedValue({ results: [PMID], totalResults: 1 });
 		window.localStorage.removeItem('AlleleCreateFormSettings');
 	});
 
@@ -68,12 +100,13 @@ describe('<AlleleCreatePage /> cross references', () => {
 		const user = userEvent.setup();
 		await renderPage();
 
-		await user.click(button('Add Cross Reference'));
+		await addCompleteCrossReference(user);
 		await user.click(button('Save & Close'));
 
 		await waitFor(() => expect(replaceCrossReferencesForAllele).toHaveBeenCalled());
 		expect(replaceCrossReferencesForAllele.mock.calls[0][0]).toBe(4242);
 		expect(navigate).toHaveBeenCalledWith('/allele/AGRKB:101000000000001');
+		expect(validate).not.toHaveBeenCalled();
 	});
 
 	it('Makes no second call when there are no cross references', async () => {
@@ -84,6 +117,7 @@ describe('<AlleleCreatePage /> cross references', () => {
 
 		await waitFor(() => expect(navigate).toHaveBeenCalled());
 		expect(replaceCrossReferencesForAllele).not.toHaveBeenCalled();
+		expect(validate).not.toHaveBeenCalled();
 	});
 
 	// The obvious next move after the cross references are rejected is to fix them and save again. That
@@ -96,7 +130,7 @@ describe('<AlleleCreatePage /> cross references', () => {
 
 		await renderPage();
 
-		await user.click(button('Add Cross Reference'));
+		await addCompleteCrossReference(user);
 		await user.click(button('Save & Close'));
 		await waitFor(() => expect(replaceCrossReferencesForAllele).toHaveBeenCalledTimes(1));
 
@@ -118,7 +152,7 @@ describe('<AlleleCreatePage /> cross references', () => {
 
 		await renderPage();
 
-		await user.click(button('Add Cross Reference'));
+		await addCompleteCrossReference(user);
 		await user.click(button('Save & Close'));
 		await waitFor(() => expect(replaceCrossReferencesForAllele).toHaveBeenCalledTimes(1));
 
@@ -139,11 +173,29 @@ describe('<AlleleCreatePage /> cross references', () => {
 
 		await renderPage();
 
-		await user.click(button('Add Cross Reference'));
+		await addCompleteCrossReference(user);
 		await user.click(button('Save & Close'));
 
 		await waitFor(() => expect(replaceCrossReferencesForAllele).toHaveBeenCalled());
 		expect(navigate).not.toHaveBeenCalled();
 		expect(await screen.findByText(/Could not update CrossReferences/)).toBeInTheDocument();
+	});
+
+	// Clicking Save takes focus from the curie cell, and the descriptor it names is set before the save
+	// reads the row, so a curie typed last is sent with its page.
+	it('Fills the descriptor from a curie typed last, in time for the save', async () => {
+		const user = userEvent.setup();
+		await renderPage();
+
+		await user.click(button('Add Cross Reference'));
+		await waitForDescriptors();
+		await user.type(crossReferenceRow().querySelector('#displayName'), 'PMID:123');
+		await user.type(crossReferenceRow().querySelector('#referencedCurie'), 'PMID:123');
+		await user.click(button('Save & Close'));
+
+		await waitFor(() => expect(replaceCrossReferencesForAllele).toHaveBeenCalled());
+		const [sentRow] = replaceCrossReferencesForAllele.mock.calls[0][1];
+		expect(sentRow.resourceDescriptorPage).toEqual({ id: 1, name: 'default' });
+		expect(sentRow.referencedCurie).toBe('PMID:123');
 	});
 });

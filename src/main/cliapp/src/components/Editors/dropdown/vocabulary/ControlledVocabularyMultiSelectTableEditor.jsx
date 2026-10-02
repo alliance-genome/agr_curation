@@ -3,7 +3,8 @@ import { VocabularyMultiSelect } from '../../widgets/VocabularyMultiSelect';
 
 /**
  * Multi-select over a supplied list of vocabulary terms for a row's `field`, with its
- * validation message. Stores the whole selected terms.
+ * validation message. Stores the whole selected terms, matching the row's terms to
+ * `options` by `id`.
  *
  * @param {object} editorOptions - PrimeReact column editor options
  * @param {string} field - the row property being edited
@@ -12,6 +13,6 @@ import { VocabularyMultiSelect } from '../../widgets/VocabularyMultiSelect';
  */
 export const ControlledVocabularyMultiSelectTableEditor = ({ editorOptions, field, options }) => (
 	<TableField editorOptions={editorOptions} field={field}>
-		{(binding) => <VocabularyMultiSelect {...binding} options={options} />}
+		{(binding) => <VocabularyMultiSelect {...binding} options={options} dataKey="id" />}
 	</TableField>
 );

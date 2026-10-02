@@ -18,5 +18,6 @@ public final class ValidationConstants {
 	public static final String AMBIGUOUS_MESSAGE = "Could not be unambiguously resolved";
 	public static final String CURIE_MINT_FAILED_MESSAGE = "Could not mint an AGRKB curie, please try again";
 	public static final String WARNING_MISSING_MESSAGE = "WARNING: Skipped missing";
+	public static final String CURIE_PATTERN_MISMATCH_MESSAGE = "Does not match the resource descriptor's pattern";
 
 }
