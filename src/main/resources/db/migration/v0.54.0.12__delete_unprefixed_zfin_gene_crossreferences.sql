@@ -8,13 +8,19 @@
 -- and none of those genes has a prefixed twin on the same page. Each is referenced only from
 -- genomicentity_crossreference.
 --
--- Scoped to ZDB- curies so unrelated unprefixed values (e.g. curator test input) are left alone.
--- The cross reference itself is only deleted once nothing references it, checked against every
--- column with a foreign key to crossreference (verified against pg_constraint).
+-- Scoped to ZDB- curies so unrelated unprefixed values (e.g. curator test input) are left alone,
+-- and to cross references of obsolete genomic entities, so one created on a live gene before this
+-- runs is kept for fixing rather than deleted. The cross reference itself is only deleted once
+-- nothing references it, checked against every column with a foreign key to crossreference
+-- (verified against pg_constraint).
 
 CREATE TEMPORARY TABLE unprefixed_zfin_crossreference ON COMMIT DROP AS
-	SELECT id FROM crossreference
-	WHERE referencedcurie NOT LIKE '%:%' AND referencedcurie LIKE 'ZDB-%';
+	SELECT c.id FROM crossreference c
+	WHERE c.referencedcurie NOT LIKE '%:%' AND c.referencedcurie LIKE 'ZDB-%'
+	AND EXISTS (SELECT 1 FROM genomicentity_crossreference gc JOIN biologicalentity be ON be.id = gc.genomicentity_id
+		WHERE gc.crossreferences_id = c.id AND be.obsolete)
+	AND NOT EXISTS (SELECT 1 FROM genomicentity_crossreference gc JOIN biologicalentity be ON be.id = gc.genomicentity_id
+		WHERE gc.crossreferences_id = c.id AND NOT be.obsolete);
 
 DELETE FROM genomicentity_crossreference x
 	USING unprefixed_zfin_crossreference u
