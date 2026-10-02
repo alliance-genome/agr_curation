@@ -206,9 +206,8 @@ export default function AlleleCreatePage() {
 		<>
 			<Toast ref={toastError} position="top-left" />
 			<Toast ref={toastSuccess} position="top-right" />
-			<LoadingOverlay
-				isLoading={!!allelePostRequestIsLoading || !!allelePutRequestIsLoading || sourceAlleleIsLoading}
-			/>
+			<LoadingOverlay isLoading={!!allelePostRequestIsLoading || !!allelePutRequestIsLoading} />
+			<LoadingOverlay isLoading={sourceAlleleIsLoading} message="Loading allele to duplicate..." />
 			<ErrorBoundary>
 				<StickyHeader>
 					<Splitter className="bg-primary-reverse border-none lg:h-5rem" gutterSize={0}>

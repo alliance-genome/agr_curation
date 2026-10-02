@@ -94,6 +94,22 @@ describe('<AlleleCreatePage /> duplicating an allele', () => {
 		);
 	});
 
+	it('Says the copy is loading, not saving, while the allele is fetched', async () => {
+		let resolveAllele;
+		getAllele.mockReturnValue(new Promise((resolve) => (resolveAllele = resolve)));
+		const { container } = await renderPage();
+
+		await waitFor(
+			() => expect(screen.getByRole('heading', { name: 'Loading allele to duplicate...' })).toBeInTheDocument(),
+			FORM_LOAD_WAIT
+		);
+		expect(screen.queryByText('Saving in progress...')).not.toBeInTheDocument();
+
+		resolveAllele({ data: { entity: sourceAllele } });
+		await waitFor(() => expect(container.querySelector('#displayText')).toHaveValue('abc-1'), FORM_LOAD_WAIT);
+		expect(screen.queryByText('Loading allele to duplicate...')).not.toBeInTheDocument();
+	});
+
 	it('Creates a new allele rather than sending the stored one back', async () => {
 		const user = userEvent.setup();
 		const { container } = await renderPage();
