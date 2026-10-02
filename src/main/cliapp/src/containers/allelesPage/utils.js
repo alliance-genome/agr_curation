@@ -155,7 +155,7 @@ const copyRow = (row) => {
 	return copy;
 };
 
-const copyRows = (rows) => (rows ?? []).map(copyRow);
+const copyRows = (rows) => (rows?.length ? rows.map(copyRow) : undefined);
 
 /**
  * A new allele carrying the fields of a stored one that the create form edits, for the create page to
@@ -164,14 +164,15 @@ const copyRows = (rows) => (rows ?? []).map(copyRow);
  * Left behind: everything that identifies the stored allele (its ids, secondary IDs and cross
  * references), its data provider and audit fields, and the variant and construct associations the
  * form does not edit. Each copied row, and a gene association's note, loses its own id and audit
- * fields, so it is created afresh.
+ * fields, so it is created afresh. A list with no rows is left unset, as the detail endpoint leaves
+ * it, so its section starts hidden.
  *
  * @param {Object} allele an allele as the detail endpoint returns it
- * @returns {Object} an allele without an id, not obsolete
+ * @returns {Object} an allele without an id, not obsolete, carrying only the lists that have rows
  */
 export const buildDuplicateAllele = (allele) => {
 	const alleleGeneAssociations = copyRows(allele.alleleGeneAssociations);
-	alleleGeneAssociations.forEach((association) => {
+	alleleGeneAssociations?.forEach((association) => {
 		delete association.alleleAssociationSubject;
 		if (association.relatedNote) {
 			association.relatedNote = copyRow(association.relatedNote);
@@ -185,12 +186,11 @@ export const buildDuplicateAllele = (allele) => {
 		isExtinct: allele.isExtinct ?? false,
 		internal: allele.internal ?? false,
 		obsolete: false,
-		references: structuredClone(allele.references) ?? [],
+		references: allele.references?.length ? structuredClone(allele.references) : undefined,
 		relatedNotes: copyRows(allele.relatedNotes),
 		alleleSymbol: copyRow(allele.alleleSymbol),
 		alleleFullName: copyRow(allele.alleleFullName),
 		alleleSynonyms: copyRows(allele.alleleSynonyms),
-		alleleSecondaryIds: [],
 		alleleMutationTypes: copyRows(allele.alleleMutationTypes),
 		alleleInheritanceModes: copyRows(allele.alleleInheritanceModes),
 		alleleFunctionalImpacts: copyRows(allele.alleleFunctionalImpacts),

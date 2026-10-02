@@ -94,6 +94,27 @@ describe('<AlleleCreatePage /> duplicating an allele', () => {
 		);
 	});
 
+	it('Shows only the sections the copied allele has rows for', async () => {
+		getAllele.mockResolvedValue({
+			data: {
+				entity: {
+					...sourceAllele,
+					alleleMutationTypes: [
+						{ id: 10, internal: false, mutationTypes: [{ curie: 'SO:0001', name: 'point_mutation' }] },
+					],
+					alleleFunctionalImpacts: [],
+				},
+			},
+		});
+		const { container } = await renderPage();
+
+		await waitFor(() => expect(container.querySelector('#displayText')).toHaveValue('abc-1'), FORM_LOAD_WAIT);
+		expect(screen.getByRole('columnheader', { name: 'Mutation Types' })).toBeInTheDocument();
+		expect(screen.queryByRole('columnheader', { name: 'Functional Impacts' })).not.toBeInTheDocument();
+		expect(screen.queryByRole('columnheader', { name: 'Inheritance Mode' })).not.toBeInTheDocument();
+		expect(screen.getByRole('button', { name: 'Add Functional Impact' })).toBeInTheDocument();
+	});
+
 	it('Says the copy is loading, not saving, while the allele is fetched', async () => {
 		let resolveAllele;
 		getAllele.mockReturnValue(new Promise((resolve) => (resolveAllele = resolve)));

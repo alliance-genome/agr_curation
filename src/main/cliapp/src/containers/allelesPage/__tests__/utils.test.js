@@ -198,7 +198,7 @@ describe('buildDuplicateAllele', () => {
 			(field) => expect(duplicate).not.toHaveProperty(field)
 		);
 		Object.keys(audit).forEach((field) => expect(duplicate).not.toHaveProperty(field));
-		expect(duplicate.alleleSecondaryIds).toEqual([]);
+		expect(duplicate.alleleSecondaryIds).toBeUndefined();
 		expect(duplicate).not.toHaveProperty('alleleVariantAssociations');
 		expect(duplicate).not.toHaveProperty('alleleConstructAssociations');
 		expect(duplicate.obsolete).toBe(false);
@@ -241,8 +241,23 @@ describe('buildDuplicateAllele', () => {
 		expect(duplicate.taxon).toEqual({ curie: '' });
 		expect(duplicate.inCollection).toEqual({ name: '' });
 		expect(duplicate.alleleSymbol).toBeNull();
-		expect(duplicate.alleleSynonyms).toEqual([]);
-		expect(duplicate.alleleGeneAssociations).toEqual([]);
+		expect(duplicate.alleleSynonyms).toBeUndefined();
+		expect(duplicate.references).toBeUndefined();
+		expect(duplicate.alleleGeneAssociations).toBeUndefined();
+	});
+
+	it('Leaves a list with no rows unset, as the detail endpoint does', () => {
+		const duplicate = buildDuplicateAllele({
+			alleleFunctionalImpacts: [],
+			alleleGeneAssociations: [],
+			references: [],
+			alleleMutationTypes: [{ id: 10, mutationTypes: [{ curie: 'SO:0001' }] }],
+		});
+
+		expect(duplicate.alleleFunctionalImpacts).toBeUndefined();
+		expect(duplicate.alleleGeneAssociations).toBeUndefined();
+		expect(duplicate.references).toBeUndefined();
+		expect(duplicate.alleleMutationTypes).toEqual([{ mutationTypes: [{ curie: 'SO:0001' }] }]);
 	});
 
 	it('Does not mutate the allele it is given', () => {
