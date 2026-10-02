@@ -10,7 +10,6 @@ import org.alliancegenome.curation_api.model.entities.bulkloads.BulkManualLoad;
 import org.alliancegenome.curation_api.model.ingest.dto.IngestDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.VariantDTO;
 import org.alliancegenome.curation_api.services.VariantService;
-import org.apache.commons.collections.CollectionUtils;
 
 import io.quarkus.logging.Log;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -22,20 +21,23 @@ public class VariantExecutor extends LoadFileExecutor {
 	@Inject VariantDAO variantDAO;
 	@Inject VariantService variantService;
 
-	public void execLoad(BulkLoadFileHistory bulkLoadFileHistory, Boolean cleanUp) {
+	@Override
+	protected List<?> getIngestSet(IngestDTO ingestDto) {
+		return ingestDto.getVariantIngestSet();
+	}
+
+	@Override
+	protected Class<?> getIngestDtoClass() {
+		return VariantDTO.class;
+	}
+
+	@Override
+	protected void loadIngestSet(BulkLoadFileHistory bulkLoadFileHistory, IngestDTO ingestDto, Boolean cleanUp) {
 
 		BulkManualLoad manual = (BulkManualLoad) bulkLoadFileHistory.getBulkLoad();
 		Log.info("Running with: " + manual.getDataProvider().name());
 
-		IngestDTO ingestDto = readIngestFile(bulkLoadFileHistory, VariantDTO.class);
-		if (ingestDto == null) {
-			return;
-		}
-
 		List<VariantDTO> variants = ingestDto.getVariantIngestSet();
-		if (CollectionUtils.isEmpty(variants)) {
-			return;
-		}
 
 		BackendBulkDataProvider dataProvider = manual.getDataProvider();
 

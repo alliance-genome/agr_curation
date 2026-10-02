@@ -12,7 +12,6 @@ import org.alliancegenome.curation_api.model.ingest.dto.GeneDiseaseAnnotationDTO
 import org.alliancegenome.curation_api.model.ingest.dto.IngestDTO;
 import org.alliancegenome.curation_api.services.DiseaseAnnotationService;
 import org.alliancegenome.curation_api.services.GeneDiseaseAnnotationService;
-import org.apache.commons.collections.CollectionUtils;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -26,21 +25,24 @@ public class GeneDiseaseAnnotationExecutor extends LoadFileExecutor {
 	@Inject GeneDiseaseAnnotationService geneDiseaseAnnotationService;
 	@Inject DiseaseAnnotationService diseaseAnnotationService;
 
-	public void execLoad(BulkLoadFileHistory bulkLoadFileHistory, Boolean cleanUp) {
+	@Override
+	protected List<?> getIngestSet(IngestDTO ingestDto) {
+		return ingestDto.getDiseaseGeneIngestSet();
+	}
+
+	@Override
+	protected Class<?> getIngestDtoClass() {
+		return GeneDiseaseAnnotationDTO.class;
+	}
+
+	@Override
+	protected void loadIngestSet(BulkLoadFileHistory bulkLoadFileHistory, IngestDTO ingestDto, Boolean cleanUp) {
 
 		BulkManualLoad manual = (BulkManualLoad) bulkLoadFileHistory.getBulkLoad();
 		BackendBulkDataProvider dataProvider = manual.getDataProvider();
 		log.info("Running with dataProvider: " + dataProvider.name());
 
-		IngestDTO ingestDto = readIngestFile(bulkLoadFileHistory, GeneDiseaseAnnotationDTO.class);
-		if (ingestDto == null) {
-			return;
-		}
-
 		List<GeneDiseaseAnnotationDTO> annotations = ingestDto.getDiseaseGeneIngestSet();
-		if (CollectionUtils.isEmpty(annotations)) {
-			return;
-		}
 
 		List<Long> annotationIdsLoaded = new ArrayList<>();
 		List<Long> annotationIdsBefore = new ArrayList<>();

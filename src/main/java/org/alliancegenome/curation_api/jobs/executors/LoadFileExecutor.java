@@ -127,7 +127,42 @@ public class LoadFileExecutor {
 		return true;
 	}
 
-	protected IngestDTO readIngestFile(BulkLoadFileHistory bulkLoadFileHistory, Class<?> dtoClass) {
+	/**
+	 * Runs an ingest executor against the shared submission. An executor whose ingest set is
+	 * absent or empty does nothing, and is never schema checked: a set the file does not carry
+	 * cannot fail the load. Otherwise the schema version is checked here, against the executor's
+	 * {@link #getIngestDtoClass()}, so no executor can skip it.
+	 */
+	public void execLoad(BulkLoadFileHistory bulkLoadFileHistory, IngestDTO ingestDto, Boolean cleanUp) {
+		if (CollectionUtils.isEmpty(getIngestSet(ingestDto))) {
+			return;
+		}
+		if (!checkSchemaVersion(bulkLoadFileHistory, getIngestDtoClass())) {
+			return;
+		}
+		loadIngestSet(bulkLoadFileHistory, ingestDto, cleanUp);
+	}
+
+	/** The ingest set this executor loads from the submission. */
+	protected List<?> getIngestSet(IngestDTO ingestDto) {
+		throw new UnsupportedOperationException(getClass().getSimpleName() + " is not an ingest executor");
+	}
+
+	/** The DTO class whose schema version range an ingest executor accepts. */
+	protected Class<?> getIngestDtoClass() {
+		throw new UnsupportedOperationException(getClass().getSimpleName() + " is not an ingest executor");
+	}
+
+	/** Loads this executor's ingest set from the shared submission, after the schema check. */
+	protected void loadIngestSet(BulkLoadFileHistory bulkLoadFileHistory, IngestDTO ingestDto, Boolean cleanUp) {
+		throw new UnsupportedOperationException(getClass().getSimpleName() + " is not an ingest executor");
+	}
+
+	/**
+	 * Parses the whole submission once; {@link #execLoad(BulkLoadFileHistory, IngestDTO, Boolean)}
+	 * then checks the schema version for each executor.
+	 */
+	protected IngestDTO readIngestFile(BulkLoadFileHistory bulkLoadFileHistory) {
 		try {
 			IngestDTO ingestDto = mapper.readValue(new GZIPInputStream(new FileInputStream(bulkLoadFileHistory.getBulkLoadFile().getLocalFilePath())), IngestDTO.class);
 			bulkLoadFileHistory.getBulkLoadFile().setLinkMLSchemaVersion(getVersionNumber(ingestDto.getLinkMLVersion()));
@@ -136,10 +171,6 @@ public class LoadFileExecutor {
 			}
 
 			bulkLoadFileDAO.merge(bulkLoadFileHistory.getBulkLoadFile());
-
-			if (!checkSchemaVersion(bulkLoadFileHistory, dtoClass)) {
-				return null;
-			}
 
 			return ingestDto;
 		} catch (Exception e) {
