@@ -13,7 +13,6 @@ import org.alliancegenome.curation_api.model.ingest.dto.ConstructDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.IngestDTO;
 import org.alliancegenome.curation_api.services.ConstructService;
 import org.alliancegenome.curation_api.services.ontology.NcbiTaxonTermService;
-import org.apache.commons.collections.CollectionUtils;
 
 import io.quarkus.logging.Log;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -28,20 +27,23 @@ public class ConstructExecutor extends LoadFileExecutor {
 	@Inject
 	NcbiTaxonTermService ncbiTaxonTermService;
 
-	public void execLoad(BulkLoadFileHistory bulkLoadFileHistory, Boolean cleanUp) {
+	@Override
+	protected List<?> getIngestSet(IngestDTO ingestDto) {
+		return ingestDto.getConstructIngestSet();
+	}
+
+	@Override
+	protected Class<?> getIngestDtoClass() {
+		return ConstructDTO.class;
+	}
+
+	@Override
+	protected void loadIngestSet(BulkLoadFileHistory bulkLoadFileHistory, IngestDTO ingestDto, Boolean cleanUp) {
 
 		BulkManualLoad manual = (BulkManualLoad) bulkLoadFileHistory.getBulkLoad();
 		Log.info("Running with: " + manual.getDataProvider().name());
 
-		IngestDTO ingestDto = readIngestFile(bulkLoadFileHistory, ConstructDTO.class);
-		if (ingestDto == null) {
-			return;
-		}
-
 		List<ConstructDTO> constructs = ingestDto.getConstructIngestSet();
-		if (CollectionUtils.isEmpty(constructs)) {
-			return;
-		}
 
 		BackendBulkDataProvider dataProvider = manual.getDataProvider();
 

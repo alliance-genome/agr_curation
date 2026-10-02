@@ -33,21 +33,24 @@ public class AlleleGeneAssociationExecutor extends LoadFileExecutor {
 
 	@Inject AlleleGeneAssociationService alleleGeneAssociationService;
 
-	public void execLoad(BulkLoadFileHistory bulkLoadFileHistory, Boolean cleanUp) {
+	@Override
+	protected List<?> getIngestSet(IngestDTO ingestDto) {
+		return ingestDto.getAlleleGeneAssociationIngestSet();
+	}
+
+	@Override
+	protected Class<?> getIngestDtoClass() {
+		return AlleleGeneAssociationDTO.class;
+	}
+
+	@Override
+	protected void loadIngestSet(BulkLoadFileHistory bulkLoadFileHistory, IngestDTO ingestDto, Boolean cleanUp) {
 
 		BulkManualLoad manual = (BulkManualLoad) bulkLoadFileHistory.getBulkLoad();
 		BackendBulkDataProvider dataProvider = manual.getDataProvider();
 		log.info("Running with dataProvider: " + dataProvider.name());
 
-		IngestDTO ingestDto = readIngestFile(bulkLoadFileHistory, AlleleGeneAssociationDTO.class);
-		if (ingestDto == null) {
-			return;
-		}
-
 		List<AlleleGeneAssociationDTO> associations = ingestDto.getAlleleGeneAssociationIngestSet();
-		if (CollectionUtils.isEmpty(associations)) {
-			return;
-		}
 
 		List<Long> associationIdsLoaded = new ArrayList<>();
 		List<Long> associationIdsBefore = new ArrayList<>();

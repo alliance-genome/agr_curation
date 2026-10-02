@@ -1,0 +1,8 @@
+[
+  {
+    "primary_external_id": "WB:CassetteMR02",
+    "cassette_symbol_dto": { "display_text": "Cs2", "format_text": "Cs2", "name_type_name": "nomenclature_symbol" },
+    "cassette_component_dtos": [ { "relation_name": "is_regulated_by" } ],
+    "data_provider_dto": { "source_organization_abbreviation": "WB" }
+  }
+]
