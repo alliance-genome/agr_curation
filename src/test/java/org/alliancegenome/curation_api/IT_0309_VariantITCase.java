@@ -8,7 +8,6 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
-import static org.hamcrest.Matchers.startsWith;
 
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -274,6 +273,7 @@ public class IT_0309_VariantITCase extends BaseITCase {
 	@Order(6)
 	public void createVariantWithEmptyRequiredFields() {
 		Variant variant = new Variant();
+		variant.setCurie("AGRKB:103000000000006");
 		variant.setPrimaryExternalId("");
 		variant.setTaxon(taxon);
 		variant.setVariantType(variantTypeTerm);
@@ -284,7 +284,7 @@ public class IT_0309_VariantITCase extends BaseITCase {
 			post("/api/variant").
 			then().
 			statusCode(200).
-			body("entity.curie", startsWith("AGRKB:")).
+			body("entity.curie", is("AGRKB:103000000000006")).
 			body("entity.primaryExternalId", is(nullValue())).
 			body("entity.modInternalId", is(nullValue())).
 			body("entity.dataProvider.abbreviation", is(notNullValue()));

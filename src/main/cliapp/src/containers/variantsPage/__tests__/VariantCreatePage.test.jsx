@@ -117,6 +117,7 @@ describe('<VariantCreatePage />', () => {
 		await waitFor(() => expect(createVariant).toHaveBeenCalled());
 
 		const payload = createVariant.mock.calls[0][0];
+		expect(payload.type).toEqual('Variant');
 		expect(payload).not.toHaveProperty('taxon');
 		expect(payload).not.toHaveProperty('primaryExternalId');
 		expect(payload).not.toHaveProperty('curie');

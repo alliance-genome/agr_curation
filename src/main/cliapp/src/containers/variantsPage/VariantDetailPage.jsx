@@ -10,7 +10,7 @@ import ErrorBoundary from '../../components/Error/ErrorBoundary';
 import { useVariantReducer } from './useVariantReducer';
 import { StickyHeader } from '../../components/StickyHeader';
 import { LoadingOverlay } from '../../components/LoadingOverlay';
-import { processErrors } from './utils';
+import { buildSavePayload, processErrors } from './utils';
 import { FormFieldVisibilityMenu, useFormFieldVisibility } from '../../components/FormFieldVisibility';
 import { VariantForm, VARIANT_DETAIL_TOGGLEABLE_FIELDS } from './VariantForm';
 import { NewVariantButton } from './NewVariantButton';
@@ -52,7 +52,7 @@ export default function VariantDetailPage() {
 			type: 'SUBMIT',
 		});
 
-		variantMutate(variantState.variant, {
+		variantMutate(buildSavePayload(variantState.variant), {
 			onSuccess: (result) => {
 				toastSuccess.current.show({ severity: 'success', summary: 'Successful', detail: 'Variant Saved' });
 				variantDispatch({ type: 'SET', value: result?.data?.entity });

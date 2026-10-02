@@ -1,12 +1,49 @@
-import { buildCreatePayload, generateCrossRefSearchField, generateCrossRefSearchFields, processErrors } from '../utils';
+import {
+	buildCreatePayload,
+	buildSavePayload,
+	generateCrossRefSearchField,
+	generateCrossRefSearchFields,
+	processErrors,
+} from '../utils';
 
 describe('variantsPage utils', () => {
+	describe('buildSavePayload', () => {
+		it('Types a reference picked from the literature search, which carries no type', () => {
+			const payload = buildSavePayload({ references: [{ curie: 'AGRKB:101000000507617' }] });
+
+			expect(payload.references[0].type).toEqual('Reference');
+		});
+
+		it('Types the references on a related note', () => {
+			const payload = buildSavePayload({
+				relatedNotes: [{ freeText: 'n', references: [{ curie: 'AGRKB:101000000507617' }] }],
+			});
+
+			expect(payload.relatedNotes[0].references[0].type).toEqual('Reference');
+		});
+
+		it('Keeps a type the reference already has', () => {
+			const payload = buildSavePayload({ references: [{ curie: 'AGRKB:1', type: 'LiteratureReference' }] });
+
+			expect(payload.references[0].type).toEqual('LiteratureReference');
+		});
+
+		it('Tolerates notes and references being absent or null', () => {
+			expect(() => buildSavePayload({ relatedNotes: [{ freeText: 'n', references: null }] })).not.toThrow();
+			expect(() => buildSavePayload({})).not.toThrow();
+		});
+	});
+
 	describe('buildCreatePayload', () => {
 		it('Drops a taxon with no curie', () => {
 			const payload = buildCreatePayload({ taxon: { curie: '' }, internal: false });
 
 			expect(payload).not.toHaveProperty('taxon');
 			expect(payload.internal).toBe(false);
+		});
+
+		it('Sets the type the API needs to deserialize a variant', () => {
+			expect(buildCreatePayload({}).type).toEqual('Variant');
 		});
 
 		it('Keeps a populated taxon', () => {

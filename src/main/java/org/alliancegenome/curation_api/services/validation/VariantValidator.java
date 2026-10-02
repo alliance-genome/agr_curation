@@ -58,6 +58,7 @@ public class VariantValidator extends GenomicEntityValidator<Variant> {
 		errorMessage = "Could not create Variant";
 
 		Variant dbEntity = new Variant();
+		dbEntity.setCurie(validateCurie(uiEntity));
 
 		dbEntity = (Variant) validateAuditedObjectFields(uiEntity, dbEntity, true);
 
@@ -103,6 +104,11 @@ public class VariantValidator extends GenomicEntityValidator<Variant> {
 		// the variant's AGRKB id would silently change on every such update.
 		if (dbEntity.getId() == null) {
 			curieMintService.mintCurieIfAbsent(dbEntity);
+			if (dbEntity.getIdentifier() == null) {
+				addMessageResponse("curie", ValidationConstants.CURIE_MINT_FAILED_MESSAGE);
+				response.setErrorMessage(errorMessage + ": " + ValidationConstants.CURIE_MINT_FAILED_MESSAGE);
+				throw new ApiErrorException(response);
+			}
 		}
 		dbEntity = variantDAO.persist(dbEntity);
 

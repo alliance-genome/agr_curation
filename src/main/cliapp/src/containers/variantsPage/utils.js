@@ -80,8 +80,25 @@ export const processTableErrors = (tableErrors, dispatch, entityType, table) => 
 	dispatch({ type: 'UPDATE_TABLE_ERROR_MESSAGES', entityType: entityType, errorMessages: errors });
 };
 
-export const buildCreatePayload = (variant) => {
+const addReferenceType = (references) => {
+	references?.forEach((reference) => {
+		if (reference && !reference.type) reference.type = 'Reference';
+	});
+};
+
+export const buildSavePayload = (variant) => {
 	const payload = structuredClone(variant);
+
+	addReferenceType(payload.references);
+	payload.relatedNotes?.forEach((note) => addReferenceType(note.references));
+
+	return payload;
+};
+
+export const buildCreatePayload = (variant) => {
+	const payload = buildSavePayload(variant);
+
+	payload.type = 'Variant';
 
 	if (!payload.taxon?.curie) {
 		delete payload.taxon;
