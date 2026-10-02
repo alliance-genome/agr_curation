@@ -16,10 +16,10 @@ import { GeneGeneticInteractionsPage } from './containers/geneGeneticInteraction
 import { GeneMolecularInteractionsPage } from './containers/geneMolecularInteractionsPage/GeneMolecularInteractionsPage';
 import { ExperimentalConditionsPage } from './containers/experimentalConditionsPage';
 import { ConditionRelationPage } from './containers/conditionRelationPage';
-import { AffectedGenomicModelPage } from './containers/affectedGenomicModelPage';
+import { AffectedGenomicModelPage, AffectedGenomicModelDetailPage } from './containers/affectedGenomicModelPage';
 import { AllelesPage, AlleleDetailPage, AlleleCreatePage } from './containers/allelesPage';
 import { GenesPage } from './containers/genesPage';
-import { VariantsPage, VariantDetailPage } from './containers/variantsPage';
+import { VariantsPage, VariantDetailPage, VariantCreatePage } from './containers/variantsPage';
 import { ConstructsPage, ConstructDetailPage } from './containers/constructsPage';
 import { ProfilePage } from './containers/profilePage';
 import { MoleculesPage } from './containers/moleculesPage';
@@ -188,6 +188,14 @@ export default function AppRoutes() {
 						}
 					/>
 					<Route
+						path="/variant/create"
+						element={
+							<ErrorBoundary>
+								<VariantCreatePage />
+							</ErrorBoundary>
+						}
+					/>
+					<Route
 						path="/variant/:identifier"
 						element={
 							<ErrorBoundary>
@@ -336,6 +344,14 @@ export default function AppRoutes() {
 						element={
 							<ErrorBoundary>
 								<AffectedGenomicModelPage />
+							</ErrorBoundary>
+						}
+					/>
+					<Route
+						path="/agm/:identifier"
+						element={
+							<ErrorBoundary>
+								<AffectedGenomicModelDetailPage />
 							</ErrorBoundary>
 						}
 					/>

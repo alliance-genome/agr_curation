@@ -5,57 +5,56 @@ import { Button } from 'primereact/button';
 import { ProgressSpinner } from 'primereact/progressspinner';
 import { useParams } from 'react-router-dom';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { VariantService } from '../../service/VariantService';
+import { AffectedGenomicModelService } from '../../service/AffectedGenomicModelService';
 import ErrorBoundary from '../../components/Error/ErrorBoundary';
-import { useVariantReducer } from './useVariantReducer';
+import { useAGMReducer } from './useAGMReducer';
 import { StickyHeader } from '../../components/StickyHeader';
 import { LoadingOverlay } from '../../components/LoadingOverlay';
-import { buildSavePayload, processErrors } from './utils';
+import { processErrors } from './utils';
 import { FormFieldVisibilityMenu, useFormFieldVisibility } from '../../components/FormFieldVisibility';
-import { VariantForm, VARIANT_DETAIL_TOGGLEABLE_FIELDS } from './VariantForm';
-import { NewVariantButton } from './NewVariantButton';
+import { AGMForm, AGM_DETAIL_TOGGLEABLE_FIELDS } from './AGMForm';
 
-export default function VariantDetailPage() {
+export default function AffectedGenomicModelDetailPage() {
 	const { identifier } = useParams();
-	const { variantState, variantDispatch } = useVariantReducer();
+	const { agmState, agmDispatch } = useAGMReducer();
 	const { visibleFields, setVisibleFields, showAllFields, isVisible } = useFormFieldVisibility(
-		'VariantDetail',
-		VARIANT_DETAIL_TOGGLEABLE_FIELDS
+		'AGMDetail',
+		AGM_DETAIL_TOGGLEABLE_FIELDS
 	);
-	const variantService = useMemo(() => new VariantService(), []);
+	const agmService = useMemo(() => new AffectedGenomicModelService(), []);
 	const toastSuccess = useRef(null);
 	const toastError = useRef(null);
 
-	const { isPending: getRequestIsLoading, data: variantQueryData } = useQuery({
+	const { isPending: getRequestIsLoading, data: agmQueryData } = useQuery({
 		queryKey: [identifier],
-		queryFn: () => variantService.getVariant(identifier),
+		queryFn: () => agmService.getAGM(identifier),
 		placeholderData: (previousData) => previousData,
 		refetchOnWindowFocus: false,
 	});
 
 	// Handle query success in useEffect (v5 removed onSuccess from useQuery)
 	useEffect(() => {
-		if (variantQueryData) {
-			variantDispatch({ type: 'SET', value: variantQueryData?.data?.entity });
+		if (agmQueryData) {
+			agmDispatch({ type: 'SET', value: agmQueryData?.data?.entity });
 		}
-	}, [variantQueryData, variantDispatch]);
+	}, [agmQueryData, agmDispatch]);
 
-	const { isPending: variantPutRequestIsLoading, mutate: variantMutate } = useMutation({
-		mutationFn: (variant) => {
-			return variantService.saveVariant(variant);
+	const { isPending: agmPutRequestIsLoading, mutate: agmMutate } = useMutation({
+		mutationFn: (agm) => {
+			return agmService.saveAGM(agm);
 		},
 	});
 
 	const handleSubmit = async (event) => {
 		event.preventDefault();
-		variantDispatch({
+		agmDispatch({
 			type: 'SUBMIT',
 		});
 
-		variantMutate(buildSavePayload(variantState.variant), {
+		agmMutate(agmState.agm, {
 			onSuccess: (result) => {
-				toastSuccess.current.show({ severity: 'success', summary: 'Successful', detail: 'Variant Saved' });
-				variantDispatch({ type: 'SET', value: result?.data?.entity });
+				toastSuccess.current.show({ severity: 'success', summary: 'Successful', detail: 'AGM Saved' });
+				agmDispatch({ type: 'SET', value: result?.data?.entity });
 			},
 			onError: (error) => {
 				let message;
@@ -72,7 +71,7 @@ export default function VariantDetailPage() {
 				]);
 
 				try {
-					processErrors(data, variantDispatch, variantState.variant);
+					processErrors(data, agmDispatch, agmState.agm);
 				} catch (e) {
 					console.error(e);
 				}
@@ -88,33 +87,33 @@ export default function VariantDetailPage() {
 		);
 
 	const headerText = () => {
-		let prefix = 'Variant: ';
-		if (variantState.variant?.variantType?.name && variantState.variant?.primaryExternalId) {
-			return `${prefix} ${variantState.variant.variantType.name} (${variantState.variant.primaryExternalId})`;
+		let prefix = 'AGM: ';
+		if (agmState.agm?.agmFullName?.displayText && agmState.agm?.primaryExternalId) {
+			return `${prefix} ${agmState.agm.agmFullName.displayText} (${agmState.agm.primaryExternalId})`;
 		}
-		if (variantState.variant?.primaryExternalId) {
-			return `${prefix} ${variantState.variant.primaryExternalId}`;
+		if (agmState.agm?.primaryExternalId) {
+			return `${prefix} ${agmState.agm.primaryExternalId}`;
 		}
-		if (variantState.variant?.curie) {
-			return `${prefix} ${variantState.variant.curie}`;
+		if (agmState.agm?.curie) {
+			return `${prefix} ${agmState.agm.curie}`;
 		}
-		return 'Variant Detail Page';
+		return 'AGM Detail Page';
 	};
 
 	return (
 		<>
 			<Toast ref={toastError} position="top-left" />
 			<Toast ref={toastSuccess} position="top-right" />
-			<LoadingOverlay isLoading={!!variantPutRequestIsLoading} />
+			<LoadingOverlay isLoading={!!agmPutRequestIsLoading} />
 			<ErrorBoundary>
 				<StickyHeader>
-					<Splitter className="bg-primary-reverse border-none lg:h-5rem" gutterSize={0}>
+					<Splitter className="bg-primary-reverse border-none lg:min-h-5rem" gutterSize={0}>
 						<SplitterPanel size={45} className="flex justify-content-start ml-5 py-3 ">
 							<h1 dangerouslySetInnerHTML={{ __html: headerText() }} />
 						</SplitterPanel>
 						<SplitterPanel size={35} className="flex align-items-center justify-content-end gap-2 py-3">
 							<FormFieldVisibilityMenu
-								toggleableFields={VARIANT_DETAIL_TOGGLEABLE_FIELDS}
+								toggleableFields={AGM_DETAIL_TOGGLEABLE_FIELDS}
 								visibleFields={visibleFields}
 								setVisibleFields={setVisibleFields}
 								showAllFields={showAllFields}
@@ -122,11 +121,10 @@ export default function VariantDetailPage() {
 						</SplitterPanel>
 						<SplitterPanel size={20} className="flex align-items-center justify-content-start gap-2 py-3">
 							<Button label="Save" icon="pi pi-check" className="p-button-text" size="large" onClick={handleSubmit} />
-							<NewVariantButton className="p-button-text" />
 						</SplitterPanel>
 					</Splitter>
 				</StickyHeader>
-				<VariantForm state={variantState} dispatch={variantDispatch} isVisible={isVisible} />
+				<AGMForm state={agmState} dispatch={agmDispatch} isVisible={isVisible} />
 			</ErrorBoundary>
 		</>
 	);

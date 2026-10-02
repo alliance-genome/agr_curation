@@ -1,3 +1,4 @@
+import { fireEvent } from '@testing-library/react';
 import { ControlledVocabularyMultiSelectTableEditor } from '../ControlledVocabularyMultiSelectTableEditor';
 import { makeEditorOptions, renderInTable } from '../../../__tests__/editorTestUtils';
 import { pickOption } from '../../../widgets/__tests__/widgetTestUtils';
@@ -8,6 +9,11 @@ const TERMS = [
 	{ id: 2, name: 'ameliorates' },
 	{ id: 3, name: 'exacerbates' },
 ];
+
+const ROW_TERMS = TERMS.map(({ id, name }) => ({ id, name, internal: false }));
+
+const checkedOptionLabels = () =>
+	[...document.querySelectorAll('.p-multiselect-item[aria-selected="true"]')].map((node) => node.textContent);
 
 const chipLabels = (container) =>
 	[...container.querySelectorAll('.p-multiselect-token-label')].map((node) => node.textContent);
@@ -53,6 +59,24 @@ describe('ControlledVocabularyMultiSelectTableEditor', () => {
 		pickOption(result.container, 'ameliorates', { multi: true });
 
 		expect(result.editorOptions.editorCallback).toHaveBeenCalledWith([]);
+	});
+
+	// The row's terms and the options come from separate queries, so they are distinct
+	// objects with different fields. Only an id match ties them together.
+	it('should check the options that match the row terms by id', () => {
+		const result = renderEditor({ diseaseQualifiers: [ROW_TERMS[0], ROW_TERMS[2]] });
+
+		fireEvent.click(result.container.querySelector('.p-multiselect'));
+
+		expect(checkedOptionLabels()).toEqual(['susceptibility', 'exacerbates']);
+	});
+
+	it('should remove a row term rather than add it again when its option is picked', () => {
+		const result = renderEditor({ diseaseQualifiers: [ROW_TERMS[0], ROW_TERMS[1]] });
+
+		pickOption(result.container, 'ameliorates', { multi: true });
+
+		expect(result.editorOptions.editorCallback).toHaveBeenCalledWith([ROW_TERMS[0]]);
 	});
 
 	it('should display error messages when present', () => {
