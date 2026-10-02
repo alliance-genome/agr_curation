@@ -150,7 +150,7 @@ describe('<AlleleCreatePage /> duplicating an allele', () => {
 
 	it('Shows a duplicate symbol rejection on both the symbol and the taxon', async () => {
 		const user = userEvent.setup();
-		const notUniqueInTaxon = 'Another allele in this taxon already has this symbol';
+		const notUniqueInTaxon = 'Another allele is already using this taxon/symbol combination';
 		// the shape AlleleValidator returns for a symbol another allele of the taxon already has
 		createAllele.mockRejectedValue({
 			response: {
