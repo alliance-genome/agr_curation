@@ -36,13 +36,13 @@ import lombok.ToString;
 @Schema(name = "CassetteTransgenicToolAssociation", description = "CassetteTransgenicToolAssociation: a cassette component that is a known transgenic tool.")
 
 @Table(indexes = {
-	@Index(columnList = "internal"),
-	@Index(columnList = "obsolete"),
-	@Index(columnList = "createdBy_id"),
-	@Index(columnList = "updatedBy_id"),
-	@Index(columnList = "cassetteassociationsubject_id"),
-	@Index(columnList = "cassettetransgenictoolassociationobject_id"),
-	@Index(columnList = "relation_id")
+	@Index(name = "cassettettassoc_internal_index", columnList = "internal"),
+	@Index(name = "cassettettassoc_obsolete_index", columnList = "obsolete"),
+	@Index(name = "cassettettassoc_createdby_index", columnList = "createdBy_id"),
+	@Index(name = "cassettettassoc_updatedby_index", columnList = "updatedBy_id"),
+	@Index(name = "cassettettassoc_subject_index", columnList = "cassetteassociationsubject_id"),
+	@Index(name = "cassettettassoc_object_index", columnList = "cassettetransgenictoolassociationobject_id"),
+	@Index(name = "cassettettassoc_relation_index", columnList = "relation_id")
 })
 
 public class CassetteTransgenicToolAssociation extends CassetteAssociation {

@@ -41,13 +41,13 @@ import lombok.ToString;
 @Schema(name = "CassetteGenomicEntityAssociation", description = "CassetteGenomicEntityAssociation: a cassette genomic entity association")
 
 @Table(indexes = {
-	@Index(columnList = "internal"),
-	@Index(columnList = "obsolete"),
-	@Index(columnList = "createdBy_id"),
-	@Index(columnList = "updatedBy_id"),
-	@Index(columnList = "cassetteassociationsubject_id"),
-	@Index(columnList = "cassettegenomicentityassociationobject_id"),
-	@Index(columnList = "relation_id")
+	@Index(name = "cassettegea_internal_index", columnList = "internal"),
+	@Index(name = "cassettegea_obsolete_index", columnList = "obsolete"),
+	@Index(name = "cassettegea_createdby_index", columnList = "createdBy_id"),
+	@Index(name = "cassettegea_updatedby_index", columnList = "updatedBy_id"),
+	@Index(name = "cassettegea_subject_index", columnList = "cassetteassociationsubject_id"),
+	@Index(name = "cassettegea_object_index", columnList = "cassettegenomicentityassociationobject_id"),
+	@Index(name = "cassettegea_relation_index", columnList = "relation_id")
 })
 
 public class CassetteGenomicEntityAssociation extends CassetteAssociation {
