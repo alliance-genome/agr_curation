@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.alliancegenome.curation_api.constants.ValidationConstants;
-import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.ConstructDAO;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.Construct;
@@ -89,7 +88,7 @@ public class ConstructValidator extends ReagentValidator {
 			dbEntity.setReferences(null);
 		}
 
-		dbEntity = (Construct) validateCommonReagentFields(uiEntity, dbEntity, VocabularyConstants.CONSTRUCT_NOTE_TYPES_VOCABULARY_TERM_SET);
+		dbEntity = (Construct) validateCommonReagentFields(uiEntity, dbEntity, null);
 
 		ConstructSymbolSlotAnnotation symbol = validateConstructSymbol(uiEntity, dbEntity);
 		ConstructFullNameSlotAnnotation fullName = validateConstructFullName(uiEntity, dbEntity);
