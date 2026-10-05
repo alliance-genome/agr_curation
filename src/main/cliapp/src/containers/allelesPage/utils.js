@@ -211,7 +211,7 @@ const SINGLE_VALUE_FIELD_VALUES = {
 	obsolete: (allele) => allele?.obsolete ?? null,
 };
 
-const SINGLE_VALUE_FIELDS = Object.keys(SINGLE_VALUE_FIELD_VALUES);
+export const SINGLE_VALUE_FIELDS = Object.keys(SINGLE_VALUE_FIELD_VALUES);
 
 /**
  * The single-value fields whose value on the form differs from the allele as last saved.

@@ -70,6 +70,18 @@ const storedCrossReference = {
 	obsolete: false,
 };
 
+// An edit to the allele alone, so the page's Save has something to write.
+const markAlleleExtinct = async (user) => {
+	const isExtinctRow = screen.getByRole('heading', { name: 'Is Extinct' }).closest('.grid');
+	await user.click(isExtinctRow.querySelector('.p-dropdown'));
+	const panel = await waitFor(() => {
+		const openPanel = document.querySelector('.p-dropdown-panel');
+		expect(openPanel).not.toBeNull();
+		return openPanel;
+	});
+	await user.click(within(panel).getByText('true'));
+};
+
 const renderPage = () =>
 	renderWithClient(
 		<BrowserRouter>
@@ -136,6 +148,7 @@ describe('<AlleleDetailPage /> cross references', () => {
 		await editCrossReference(user);
 
 		expect(screen.getByRole('button', { name: /Save Cross References/ })).toBeEnabled();
+		expect(screen.getByRole('button', { name: 'Save' })).toBeEnabled();
 		expect(within(crossReferencesSection()).getByText('Pending Edits!')).toBeInTheDocument();
 	});
 
@@ -188,7 +201,8 @@ describe('<AlleleDetailPage /> cross references', () => {
 		// The row's editors are mounted, so any of them reporting a change on mount would count as an edit.
 		expect(screen.getByDisplayValue('PMID:1')).toBeInTheDocument();
 
-		await waitFor(() => expect(screen.getByRole('button', { name: 'Save' })).toBeInTheDocument());
+		await waitFor(() => expect(screen.getByRole('button', { name: 'Save' })).toBeDisabled());
+		await markAlleleExtinct(user);
 		await user.click(screen.getByRole('button', { name: 'Save' }));
 
 		expect(await screen.findByText('Allele Saved')).toBeInTheDocument();
@@ -196,8 +210,8 @@ describe('<AlleleDetailPage /> cross references', () => {
 		expect(replaceCrossReferencesForAllele).not.toHaveBeenCalled();
 	});
 
-	// Saving the rows from their own section leaves nothing pending, so the page's Save that follows writes
-	// the allele alone rather than the same rows again.
+	// Saving the rows from their own section leaves them with nothing pending, so the page's Save that
+	// follows writes the allele alone rather than the same rows again.
 	it('Does not rewrite rows already saved from their own section', async () => {
 		const user = userEvent.setup();
 		await renderPage();
@@ -207,6 +221,7 @@ describe('<AlleleDetailPage /> cross references', () => {
 		expect(await screen.findByText('Cross References Saved')).toBeInTheDocument();
 		expect(replaceCrossReferencesForAllele).toHaveBeenCalledTimes(1);
 
+		await markAlleleExtinct(user);
 		await user.click(screen.getByRole('button', { name: 'Save' }));
 
 		expect(await screen.findByText('Allele Saved')).toBeInTheDocument();
@@ -304,6 +319,7 @@ describe('<AlleleDetailPage /> cross references', () => {
 		await renderPage();
 
 		await waitForCrossReferencesToLoad();
+		await markAlleleExtinct(user);
 		await user.click(screen.getByRole('button', { name: 'Save' }));
 
 		expect(await screen.findByText('Could not update Allele')).toBeInTheDocument();
@@ -317,6 +333,7 @@ describe('<AlleleDetailPage /> cross references', () => {
 		await renderPage();
 
 		await waitForCrossReferencesToLoad();
+		await markAlleleExtinct(user);
 		await user.click(screen.getByRole('button', { name: 'Save' }));
 
 		expect(await screen.findByText('Allele Saved')).toBeInTheDocument();
@@ -330,6 +347,7 @@ describe('<AlleleDetailPage /> cross references', () => {
 		await renderPage();
 
 		await waitForCrossReferencesToLoad();
+		await markAlleleExtinct(user);
 		await user.click(screen.getByRole('button', { name: 'Save' }));
 
 		expect(await screen.findByText('Allele Saved')).toBeInTheDocument();

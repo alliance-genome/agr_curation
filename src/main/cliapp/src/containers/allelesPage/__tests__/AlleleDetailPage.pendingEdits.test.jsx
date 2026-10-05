@@ -124,6 +124,59 @@ describe('<AlleleDetailPage /> single-value pending edits', { timeout: 30000 }, 
 		expect(within(fieldRow('Taxon')).getByText('Pending Edits!')).toBeInTheDocument();
 	});
 
+	it('Keeps Save inactive until something is edited', async () => {
+		await renderLoadedPage();
+
+		expect(screen.getByRole('button', { name: 'Save' })).toBeDisabled();
+	});
+
+	it('Activates Save for a changed single-value field and deactivates it once saved', async () => {
+		const user = userEvent.setup();
+		const { container } = await renderLoadedPage();
+
+		await changeTaxon(user, container, 'NCBITaxon:6239');
+		expect(screen.getByRole('button', { name: 'Save' })).toBeEnabled();
+
+		await user.click(screen.getByRole('button', { name: 'Save' }));
+
+		await waitFor(() => expect(screen.getByText('Allele Saved')).toBeInTheDocument(), FORM_LOAD_WAIT);
+		expect(screen.getByRole('button', { name: 'Save' })).toBeDisabled();
+	});
+
+	it('Deactivates Save when a changed field is changed back', async () => {
+		const user = userEvent.setup();
+		const { container } = await renderLoadedPage();
+
+		await changeTaxon(user, container, 'NCBITaxon:6239');
+		await changeTaxon(user, container, SAVED_TAXON);
+
+		expect(screen.getByRole('button', { name: 'Save' })).toBeDisabled();
+	});
+
+	it('Activates Save for an edit to a field it does not mark', async () => {
+		const user = userEvent.setup();
+		await renderLoadedPage();
+
+		const symbolRow = screen.getByRole('heading', { name: 'Symbol' }).closest('.grid').parentElement;
+		await user.type(within(symbolRow).getAllByDisplayValue(loadedAllele.alleleSymbol.displayText)[0], '-edited');
+
+		expect(screen.getByRole('button', { name: 'Save' })).toBeEnabled();
+		expect(screen.queryByText('Pending Edits!')).not.toBeInTheDocument();
+	});
+
+	it('Keeps Save active when the allele is not saved', async () => {
+		const user = userEvent.setup();
+		saveAlleleDetail.mockRejectedValueOnce({ response: { data: { errorMessage: 'Allele could not be saved' } } });
+		await renderLoadedPage();
+
+		const symbolRow = screen.getByRole('heading', { name: 'Symbol' }).closest('.grid').parentElement;
+		await user.type(within(symbolRow).getAllByDisplayValue(loadedAllele.alleleSymbol.displayText)[0], '-edited');
+		await user.click(screen.getByRole('button', { name: 'Save' }));
+
+		await waitFor(() => expect(screen.getByText('Allele could not be saved')).toBeInTheDocument(), FORM_LOAD_WAIT);
+		expect(screen.getByRole('button', { name: 'Save' })).toBeEnabled();
+	});
+
 	it('Leaves a deprecated allele obsolete without marking it, keeping other pending edits', async () => {
 		const user = userEvent.setup();
 		const { container } = await renderLoadedPage();

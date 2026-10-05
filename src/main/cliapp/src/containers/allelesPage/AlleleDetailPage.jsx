@@ -208,6 +208,7 @@ export default function AlleleDetailPage() {
 	});
 
 	const pendingFields = getPendingSingleValueFields(alleleState.allele, savedAllele.current);
+	const hasPendingEdits = pendingFields.size > 0 || alleleState.hasOtherPendingEdits || crossReferences.isDirty;
 
 	if (getRequestIsLoading)
 		return (
@@ -247,7 +248,13 @@ export default function AlleleDetailPage() {
 							/>
 						</SplitterPanel>
 						<SplitterPanel size={30} className="flex align-items-center justify-content-start gap-2 pl-2 py-3">
-							<Button label="Save" icon="pi pi-check" severity="success" onClick={handleSubmit} />
+							<Button
+								label="Save"
+								icon="pi pi-check"
+								severity="success"
+								onClick={handleSubmit}
+								disabled={!hasPendingEdits}
+							/>
 							<NewAlleleButton className="p-button-text" />
 							<DuplicateAlleleButton
 								className="p-button-text"
