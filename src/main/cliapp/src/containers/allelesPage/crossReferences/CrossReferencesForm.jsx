@@ -18,7 +18,7 @@ import { applyCrossReferenceFieldChange, buildNewCrossReference } from './utils'
  * @param {'detail'|'create'} [props.mode]
  */
 export const CrossReferencesForm = ({ mode = 'detail' }) => {
-	const { crossReferences, setCrossReferences, errorMessages, isLoading, loadError, isSaving, save } =
+	const { crossReferences, setCrossReferences, errorMessages, isLoading, loadError, isSaving, isDirty, save } =
 		useSubResource('crossReferences');
 	const tableRef = useRef(null);
 	const toast = useRef(null);
@@ -84,6 +84,7 @@ export const CrossReferencesForm = ({ mode = 'detail' }) => {
 				}
 				tableName="Cross References"
 				showTable={crossReferences.length > 0}
+				isPending={isDetail && isDirty}
 				button={
 					<div className="flex gap-2">
 						<Button label="Add Cross Reference" onClick={createNewCrossReferenceHandler} className="p-button-text" />
@@ -94,8 +95,9 @@ export const CrossReferencesForm = ({ mode = 'detail' }) => {
 								onClick={saveHandler}
 								// Saving replaces the stored list with what is on screen, so it has to wait for
 								// the read. Saving a table that is still loading, or that failed to load, would
-								// submit an empty list and delete every cross reference the allele has.
-								disabled={isSaving || isLoading || Boolean(loadError)}
+								// submit an empty list and delete every cross reference the allele has. With nothing
+								// edited there is nothing to save.
+								disabled={!isDirty || isSaving || isLoading || Boolean(loadError)}
 								severity="success"
 							/>
 						)}
