@@ -486,6 +486,10 @@ public class BaseITCase {
 	}
 
 	public Gene createGeneWithXref(String primaryExternalId, String taxonCurie, VocabularyTerm symbolNameTerm, Boolean obsolete, Organization dataProvider, String xrefCurie) {
+		return createGeneWithXref(primaryExternalId, taxonCurie, symbolNameTerm, obsolete, dataProvider, xrefCurie, null);
+	}
+
+	public Gene createGeneWithXref(String primaryExternalId, String taxonCurie, VocabularyTerm symbolNameTerm, Boolean obsolete, Organization dataProvider, String xrefCurie, String gcrpXrefCurie) {
 		Gene gene = new Gene();
 		gene.setPrimaryExternalId(primaryExternalId);
 		gene.setTaxon(getNCBITaxonTerm(taxonCurie));
@@ -507,6 +511,13 @@ public class BaseITCase {
 			xref.setReferencedCurie(xrefCurie);
 			xref.setDisplayName(xrefCurie);
 			gene.setCrossReferences(List.of(xref));
+		}
+
+		if (StringUtils.isNotBlank(gcrpXrefCurie)) {
+			CrossReference gcrpXref = new CrossReference();
+			gcrpXref.setReferencedCurie(gcrpXrefCurie);
+			gcrpXref.setDisplayName(gcrpXrefCurie);
+			gene.setGcrpCrossReference(gcrpXref);
 		}
 
 		ObjectResponse<Gene> response = given().
