@@ -66,6 +66,8 @@ public class AlleleDAO extends BaseCurieSQLDAO<Allele> {
 	AgmAlleleAssociationDAO agmAlleleAssociationDAO;
 	@Inject
 	HTPExpressionDatasetSampleAnnotationDAO htpExpressionDatasetSampleAnnotationDAO;
+	@Inject
+	GeneGeneticInteractionDAO geneGeneticInteractionDAO;
 
 	protected AlleleDAO() {
 		super(Allele.class);
@@ -132,11 +134,12 @@ public class AlleleDAO extends BaseCurieSQLDAO<Allele> {
 	}
 
 	public Boolean hasReferencingGeneGeneticInteractions(Long alleleId) {
-		String jpql = "SELECT COUNT(g) FROM GeneGeneticInteraction g"
-			+ " WHERE g.interactorAGeneticPerturbation.id = :alleleId OR g.interactorBGeneticPerturbation.id = :alleleId";
-		return entityManager.createQuery(jpql, Long.class)
-			.setParameter("alleleId", alleleId)
-			.getSingleResult() > 0;
+		Map<String, Object> params = new HashMap<>();
+		params.put("query_operator", "or");
+		params.put("interactorAGeneticPerturbation.id", alleleId);
+		params.put("interactorBGeneticPerturbation.id", alleleId);
+		List<Long> results = geneGeneticInteractionDAO.findIdsByParams(params);
+		return CollectionUtils.isNotEmpty(results);
 	}
 
 	/**
@@ -147,18 +150,12 @@ public class AlleleDAO extends BaseCurieSQLDAO<Allele> {
 	 * @param excludeId id of the allele being validated, or null for a new allele
 	 */
 	public Boolean hasAlleleWithSymbolAndTaxon(String displayText, Long taxonId, Long excludeId) {
-		String jpql = "SELECT COUNT(a) FROM Allele a WHERE a.alleleSymbol.displayText = :displayText"
-			+ " AND a.taxon.id = :taxonId AND (a.obsolete IS NULL OR a.obsolete = false)";
-		if (excludeId != null) {
-			jpql += " AND a.id <> :excludeId";
-		}
-		var query = entityManager.createQuery(jpql, Long.class)
-			.setParameter("displayText", displayText)
-			.setParameter("taxonId", taxonId);
-		if (excludeId != null) {
-			query.setParameter("excludeId", excludeId);
-		}
-		return query.getSingleResult() > 0;
+		Map<String, Object> params = new HashMap<>();
+		params.put("alleleSymbol.displayText", displayText);
+		params.put("taxon.id", taxonId);
+		params.put("obsolete", false);
+		List<Long> results = findIdsByParams(params);
+		return results.stream().anyMatch(id -> !id.equals(excludeId));
 	}
 
 	public List<String> getAllAllelePrimaryExternalIds() {
