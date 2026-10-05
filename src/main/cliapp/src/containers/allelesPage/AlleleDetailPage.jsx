@@ -10,7 +10,7 @@ import ErrorBoundary from '../../components/Error/ErrorBoundary';
 import { useAlleleReducer } from './useAlleleReducer';
 import { StickyHeader } from '../../components/StickyHeader';
 import { LoadingOverlay } from '../../components/LoadingOverlay';
-import { validateRequiredAutosuggestField, processErrors } from './utils';
+import { validateRequiredAutosuggestField, processErrors, getPendingSingleValueFields } from './utils';
 import { getIdentifier } from '../../utils/utils';
 import { FormFieldVisibilityMenu, useFormFieldVisibility } from '../../components/FormFieldVisibility';
 import { AlleleForm, ALLELE_DETAIL_TOGGLEABLE_FIELDS } from './AlleleForm';
@@ -207,6 +207,8 @@ export default function AlleleDetailPage() {
 		onDeprecate: deprecateAllele,
 	});
 
+	const pendingFields = getPendingSingleValueFields(alleleState.allele, savedAllele.current);
+
 	if (getRequestIsLoading)
 		return (
 			<div className="flex align-items-center justify-content-center h-screen">
@@ -262,7 +264,12 @@ export default function AlleleDetailPage() {
 					</Splitter>
 				</StickyHeader>
 				<SubResourcesProvider value={{ crossReferences }}>
-					<AlleleForm state={alleleState} dispatch={alleleDispatch} isVisible={isVisible} />
+					<AlleleForm
+						state={alleleState}
+						dispatch={alleleDispatch}
+						isVisible={isVisible}
+						pendingFields={pendingFields}
+					/>
 				</SubResourcesProvider>
 				{deleteOrDeprecateDialogs}
 			</ErrorBoundary>

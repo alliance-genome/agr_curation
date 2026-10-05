@@ -202,6 +202,33 @@ export const buildDuplicateAllele = (allele) => {
 	};
 };
 
+// The value each single-value field is compared by, with an unset or blank value read as none.
+const SINGLE_VALUE_FIELD_VALUES = {
+	taxon: (allele) => allele?.taxon?.curie || null,
+	inCollection: (allele) => allele?.inCollection?.name || null,
+	isExtinct: (allele) => allele?.isExtinct ?? null,
+	internal: (allele) => allele?.internal ?? null,
+	obsolete: (allele) => allele?.obsolete ?? null,
+};
+
+const SINGLE_VALUE_FIELDS = Object.keys(SINGLE_VALUE_FIELD_VALUES);
+
+/**
+ * The single-value fields whose value on the form differs from the allele as last saved.
+ *
+ * @param {Object} allele the allele as the form holds it
+ * @param {Object} [savedAllele] the allele as the API last returned it
+ * @returns {Set<string>} the pending fields' names, none while there is no saved allele
+ */
+export const getPendingSingleValueFields = (allele, savedAllele) => {
+	if (!savedAllele) return new Set();
+	return new Set(
+		SINGLE_VALUE_FIELDS.filter(
+			(field) => SINGLE_VALUE_FIELD_VALUES[field](allele) !== SINGLE_VALUE_FIELD_VALUES[field](savedAllele)
+		)
+	);
+};
+
 export const processErrors = (data, dispatch, allele) => {
 	const errorMap = data?.supplementalData?.errorMap;
 	const errorMessages = data?.errorMessages;
