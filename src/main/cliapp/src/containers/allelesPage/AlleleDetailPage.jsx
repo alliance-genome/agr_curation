@@ -31,6 +31,8 @@ export default function AlleleDetailPage() {
 	const toastSuccess = useRef(null);
 	const toastError = useRef(null);
 	const crossReferences = useAlleleCrossReferences(alleleState.allele?.id);
+	// The allele as the API last returned it, without the form's unsaved edits.
+	const savedAllele = useRef(null);
 
 	const { isPending: getRequestIsLoading, data: alleleQueryData } = useQuery({
 		queryKey: [identifier],
@@ -42,6 +44,7 @@ export default function AlleleDetailPage() {
 	// Handle query success in useEffect (v5 removed onSuccess from useQuery)
 	useEffect(() => {
 		if (alleleQueryData) {
+			savedAllele.current = alleleQueryData?.data?.entity;
 			alleleDispatch({ type: 'SET', value: alleleQueryData?.data?.entity });
 		}
 	}, [alleleQueryData, alleleDispatch]);
@@ -71,7 +74,8 @@ export default function AlleleDetailPage() {
 		return data.errorMessage ? data.errorMessage : `${error.response.status} ${error.response.statusText}`;
 	};
 
-	const submitAllele = async (allele, successDetail) => {
+	const handleSubmit = async (event) => {
+		event.preventDefault();
 		alleleDispatch({
 			type: 'SUBMIT',
 		});
@@ -88,7 +92,9 @@ export default function AlleleDetailPage() {
 
 		// A cleared taxon is held as one with a blank curie, which the API resolves to none without reporting
 		// it missing. Sent without a taxon, the allele is reported as needing one.
-		const allelePayload = allele.taxon?.curie ? allele : { ...allele, taxon: undefined };
+		const allelePayload = alleleState.allele.taxon?.curie
+			? alleleState.allele
+			: { ...alleleState.allele, taxon: undefined };
 
 		let alleleResult = null;
 		let alleleError = null;
@@ -97,7 +103,10 @@ export default function AlleleDetailPage() {
 		} catch (error) {
 			alleleError = error;
 		}
-		if (!alleleError) alleleDispatch({ type: 'SET', value: alleleResult?.data?.entity });
+		if (!alleleError) {
+			savedAllele.current = alleleResult?.data?.entity;
+			alleleDispatch({ type: 'SET', value: alleleResult?.data?.entity });
+		}
 
 		// The cross references are written only when the section has been edited, and then as the whole
 		// list, so saving the allele alone leaves the stored ones as they are. They are written whether or
@@ -149,12 +158,35 @@ export default function AlleleDetailPage() {
 			return;
 		}
 
-		toastSuccess.current.show({ severity: 'success', summary: 'Successful', detail: successDetail });
+		toastSuccess.current.show({ severity: 'success', summary: 'Successful', detail: 'Allele Saved' });
 	};
 
-	const handleSubmit = (event) => {
-		event.preventDefault();
-		submitAllele(alleleState.allele, 'Allele Saved');
+	/**
+	 * Deprecates the allele as last saved, so the form's unsaved edits and cross references are not written
+	 * with it. They stay on the form, which then shows the allele as obsolete; a refused deprecation leaves the
+	 * form as it was.
+	 */
+	const deprecateAllele = async () => {
+		try {
+			const result = await saveAllele({ ...savedAllele.current, obsolete: true });
+			savedAllele.current = result?.data?.entity;
+		} catch (error) {
+			const data = error?.response?.data;
+			toastError.current.show([
+				{
+					life: 7000,
+					severity: 'error',
+					summary: 'Allele not deprecated: ',
+					detail:
+						data?.errorMessage ??
+						(error?.response ? `${error.response.status} ${error.response.statusText}`.trim() : error?.message),
+					sticky: false,
+				},
+			]);
+			return;
+		}
+		alleleDispatch({ type: 'EDIT', field: 'obsolete', value: true });
+		toastSuccess.current.show({ severity: 'success', summary: 'Successful', detail: 'Allele Deprecated' });
 	};
 
 	const deleteAllele = async (id, allele) => {
@@ -172,7 +204,7 @@ export default function AlleleDetailPage() {
 	const { openDeleteOrDeprecateDialog, deleteOrDeprecateDialogs } = useDeleteOrDeprecateDialogs({
 		deprecateOption: true,
 		onDelete: deleteAllele,
-		onDeprecate: (allele) => submitAllele({ ...allele, obsolete: true }, 'Allele Deprecated'),
+		onDeprecate: deprecateAllele,
 	});
 
 	if (getRequestIsLoading)

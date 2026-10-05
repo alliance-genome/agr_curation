@@ -135,4 +135,51 @@ describe('<AlleleDetailPage /> header actions', { timeout: 30000 }, () => {
 		expect(deleteAllele).not.toHaveBeenCalled();
 		expect(navigate).not.toHaveBeenCalled();
 	});
+
+	it('Deprecates the allele as last saved, leaving unsaved edits on the form', async () => {
+		const user = userEvent.setup();
+		const savedSymbol = alleleDetailData.entity.alleleSymbol.displayText;
+		// a format text unlike the display text, so the display text input is the only one showing it
+		getAllele.mockResolvedValue({
+			data: {
+				entity: { ...loadedAllele, alleleSymbol: { ...loadedAllele.alleleSymbol, formatText: 'saved-format-text' } },
+			},
+		});
+		await renderLoadedPage();
+
+		const symbolInput = screen.getByDisplayValue(savedSymbol);
+		await user.clear(symbolInput);
+		await user.type(symbolInput, 'unsaved-symbol');
+		await user.click(screen.getByRole('button', { name: 'Delete' }));
+		await user.click(within(dialog()).getByRole('button', { name: 'Deprecate' }));
+
+		await waitFor(() => expect(screen.getByText('Allele Deprecated')).toBeInTheDocument(), FORM_LOAD_WAIT);
+		const deprecated = saveAlleleDetail.mock.calls[0][0];
+		expect(deprecated.obsolete).toBe(true);
+		expect(deprecated.alleleSymbol.displayText).toEqual(savedSymbol);
+
+		// the edit is still on the form, now alongside the obsolete flag
+		await user.click(screen.getByRole('button', { name: 'Save' }));
+		await waitFor(() => expect(saveAlleleDetail).toHaveBeenCalledTimes(2), FORM_LOAD_WAIT);
+		const saved = saveAlleleDetail.mock.calls[1][0];
+		expect(saved.obsolete).toBe(true);
+		expect(saved.alleleSymbol.displayText).toEqual('unsaved-symbol');
+	});
+
+	it('Leaves the form as it was when the deprecation is refused', async () => {
+		const user = userEvent.setup();
+		saveAlleleDetail.mockRejectedValueOnce({ response: { data: { errorMessage: 'Allele could not be saved' } } });
+		await renderLoadedPage();
+
+		await user.click(screen.getByRole('button', { name: 'Delete' }));
+		await user.click(within(dialog()).getByRole('button', { name: 'Deprecate' }));
+
+		await waitFor(() => expect(screen.getByText('Allele not deprecated:')).toBeInTheDocument(), FORM_LOAD_WAIT);
+		expect(screen.getByText('Allele could not be saved')).toBeInTheDocument();
+		expect(screen.queryByText('Allele Deprecated')).not.toBeInTheDocument();
+
+		await user.click(screen.getByRole('button', { name: 'Save' }));
+		await waitFor(() => expect(saveAlleleDetail).toHaveBeenCalledTimes(2), FORM_LOAD_WAIT);
+		expect(saveAlleleDetail.mock.calls[1][0].obsolete).toBe(false);
+	});
 });
