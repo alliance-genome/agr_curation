@@ -1,5 +1,12 @@
+import { Message } from 'primereact/message';
 import { RequiredFieldMarker } from './RequiredFieldMarker';
 
+/**
+ * A detail page field row: its label, editor, errors and additional data.
+ *
+ * @param {Object} props
+ * @param {boolean} [props.isPending] - highlights the row and says it has pending edits
+ */
 export const DetailPageFieldWrapper = ({
 	formField,
 	errorField,
@@ -10,9 +17,10 @@ export const DetailPageFieldWrapper = ({
 	fieldName,
 	showAdditionalData = true,
 	required = false,
+	isPending = false,
 }) => {
 	return (
-		<div className="grid">
+		<div className={isPending ? 'grid bg-yellow-50 border-left-3 border-yellow-500' : 'grid'}>
 			<div className={labelColumnSize}>
 				<h2 htmlFor={fieldName?.toLowerCase()}>
 					{required && <RequiredFieldMarker />}
@@ -22,6 +30,7 @@ export const DetailPageFieldWrapper = ({
 			<div className={widgetColumnSize}>
 				{formField}
 				{errorField}
+				{isPending && <Message severity="warn" text="Pending Edits!" />}
 			</div>
 			{showAdditionalData && <div className={fieldDetailsColumnSize}>{additionalDataField}</div>}
 		</div>
