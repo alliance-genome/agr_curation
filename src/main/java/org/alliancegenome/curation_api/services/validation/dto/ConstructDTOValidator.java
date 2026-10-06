@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.alliancegenome.curation_api.constants.ValidationConstants;
-import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.ConstructDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
@@ -79,7 +78,7 @@ public class ConstructDTOValidator extends ReagentDTOValidator<Construct, Constr
 		construct.setUniqueId(uniqueId);
 		UniqueIdentifierHelper.setObsoleteAndInternal(dto, construct);
 
-		construct = validateReagentDTO(construct, dto, VocabularyConstants.CONSTRUCT_NOTE_TYPES_VOCABULARY_TERM_SET);
+		construct = validateReagentDTO(construct, dto, null);
 
 		List<Reference> refs = validateOptionalEntities("reference_curies", dto.getReferenceCuries(), referenceService::retrieveFromDbOrLiteratureService);
 
