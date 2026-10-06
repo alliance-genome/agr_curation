@@ -614,9 +614,7 @@ export const AllelesTable = () => {
 				sortable: true,
 				body: (rowData) => <OntologyTermTemplate term={rowData.taxon} />,
 				filterConfig: FILTER_CONFIGS.taxonFilterConfig,
-				editor: (editorOptions) => (
-					<TaxonTableEditor editorOptions={editorOptions} errorMessagesRef={errorMessagesRef} />
-				),
+				editor: (editorOptions) => <TaxonTableEditor editorOptions={editorOptions} />,
 			},
 			{
 				field: 'alleleMutationTypes',
@@ -778,9 +776,7 @@ export const AllelesTable = () => {
 				sortable: true,
 				body: (rowData) => <StringTemplate string={rowData.inCollection?.name} />,
 				filterConfig: FILTER_CONFIGS.inCollectionFilterConfig,
-				editor: (editorOptions) => (
-					<InCollectionTableEditor editorOptions={editorOptions} errorMessagesRef={errorMessagesRef} />
-				),
+				editor: (editorOptions) => <InCollectionTableEditor editorOptions={editorOptions} />,
 			},
 			{
 				field: 'isExtinct',

@@ -256,13 +256,7 @@ export const DiseaseAnnotationsTable = () => {
 				body: (rowData) => <GenomicEntityTemplate genomicEntity={rowData.diseaseAnnotationSubject} />,
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.diseaseAnnotationSubjectFieldConfig,
-				editor: (editorOptions) => (
-					<BiologicalEntityTableEditor
-						editorOptions={editorOptions}
-						errorMessagesRef={errorMessagesRef}
-						uiErrorMessagesRef={uiErrorMessagesRef}
-					/>
-				),
+				editor: (editorOptions) => <BiologicalEntityTableEditor editorOptions={editorOptions} />,
 			},
 			{
 				field: 'relation',
@@ -297,9 +291,7 @@ export const DiseaseAnnotationsTable = () => {
 				body: (rowData) => <OntologyTermTemplate term={rowData.diseaseAnnotationObject} />,
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.diseaseAnnotationObjectFilterConfig,
-				editor: (editorOptions) => (
-					<DiseaseTableEditor editorOptions={editorOptions} errorMessagesRef={errorMessagesRef} />
-				),
+				editor: (editorOptions) => <DiseaseTableEditor editorOptions={editorOptions} />,
 			},
 			{
 				field: 'evidenceItem',
@@ -308,13 +300,7 @@ export const DiseaseAnnotationsTable = () => {
 				body: (rowData) => <SingleReferenceTemplate singleReference={rowData.evidenceItem} />,
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.evidenceItemFilterConfig,
-				editor: (editorOptions) => (
-					<SingleReferenceTableEditor
-						editorOptions={editorOptions}
-						field="evidenceItem"
-						errorMessagesRef={errorMessagesRef}
-					/>
-				),
+				editor: (editorOptions) => <SingleReferenceTableEditor editorOptions={editorOptions} field="evidenceItem" />,
 			},
 			{
 				field: 'evidenceCodes',
@@ -463,13 +449,7 @@ export const DiseaseAnnotationsTable = () => {
 				filterConfig: FILTER_CONFIGS.sgdStrainBackgroundFilterConfig,
 				editor: (editorOptions) => {
 					if (editorOptions.rowData.type !== 'GeneDiseaseAnnotation') return null;
-					return (
-						<SgdStrainBackgroundTableEditor
-							editorOptions={editorOptions}
-							errorMessagesRef={errorMessagesRef}
-							uiErrorMessagesRef={uiErrorMessagesRef}
-						/>
-					);
+					return <SgdStrainBackgroundTableEditor editorOptions={editorOptions} />;
 				},
 			},
 			{

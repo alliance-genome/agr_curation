@@ -71,13 +71,7 @@ export const ConditionRelationTable = () => {
 				header: 'Reference',
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.singleReferenceFilterConfig,
-				editor: (editorOptions) => (
-					<SingleReferenceTableEditor
-						editorOptions={editorOptions}
-						field="singleReference"
-						errorMessagesRef={errorMessagesRef}
-					/>
-				),
+				editor: (editorOptions) => <SingleReferenceTableEditor editorOptions={editorOptions} field="singleReference" />,
 				body: (rowData) => <SingleReferenceTemplate singleReference={rowData.singleReference} />,
 			},
 			{

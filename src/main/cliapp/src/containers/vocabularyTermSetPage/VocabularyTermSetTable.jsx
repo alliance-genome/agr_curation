@@ -68,9 +68,7 @@ export const VocabularyTermSetTable = () => {
 				sortable: true,
 				body: (rowData) => <StringTemplate string={rowData.vocabularyTermSetVocabulary?.name} />,
 				filterConfig: FILTER_CONFIGS.vocabularyFieldSetFilterConfig,
-				editor: (editorOptions) => (
-					<VocabularyTableEditor editorOptions={editorOptions} errorMessagesRef={errorMessagesRef} />
-				),
+				editor: (editorOptions) => <VocabularyTableEditor editorOptions={editorOptions} />,
 			},
 			{
 				field: 'memberTerms',
