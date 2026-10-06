@@ -21,6 +21,8 @@ import jakarta.inject.Inject;
 @ApplicationScoped
 public class TransgenicToolExecutor extends LoadFileExecutor {
 
+	private static final String INGEST_SET = "transgenic_tool_ingest_set";
+
 	@Inject TransgenicToolService transgenicToolService;
 
 	@Override
@@ -61,9 +63,9 @@ public class TransgenicToolExecutor extends LoadFileExecutor {
 
 		transgenicToolService.preLoadReferences(refList);
 
-		boolean success = runLoad(transgenicToolService, bulkLoadFileHistory, dataProvider, transgenicTools, idsLoaded, "Transgenic Tools");
+		boolean success = runLoad(transgenicToolService, bulkLoadFileHistory, dataProvider, transgenicTools, idsLoaded, countLabel(INGEST_SET));
 		if (success && cleanUp) {
-			runCleanup(transgenicToolService, bulkLoadFileHistory, dataProvider.name(), idsBefore, idsLoaded, "Transgenic Tools");
+			runCleanup(transgenicToolService, bulkLoadFileHistory, dataProvider.name(), idsBefore, idsLoaded, countLabel(INGEST_SET));
 		}
 		bulkLoadFileHistory.finishLoad();
 		updateHistory(bulkLoadFileHistory);

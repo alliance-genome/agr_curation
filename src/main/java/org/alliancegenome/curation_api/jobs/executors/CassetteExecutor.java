@@ -21,6 +21,8 @@ import jakarta.inject.Inject;
 @ApplicationScoped
 public class CassetteExecutor extends LoadFileExecutor {
 
+	private static final String INGEST_SET = "cassette_ingest_set";
+
 	@Inject CassetteService cassetteService;
 
 	@Override
@@ -61,9 +63,9 @@ public class CassetteExecutor extends LoadFileExecutor {
 
 		cassetteService.preLoadReferences(refList);
 
-		boolean success = runLoad(cassetteService, bulkLoadFileHistory, dataProvider, cassettes, idsLoaded, "Cassettes");
+		boolean success = runLoad(cassetteService, bulkLoadFileHistory, dataProvider, cassettes, idsLoaded, countLabel(INGEST_SET));
 		if (success && cleanUp) {
-			runCleanup(cassetteService, bulkLoadFileHistory, dataProvider.name(), idsBefore, idsLoaded, "Cassettes");
+			runCleanup(cassetteService, bulkLoadFileHistory, dataProvider.name(), idsBefore, idsLoaded, countLabel(INGEST_SET));
 		}
 		bulkLoadFileHistory.finishLoad();
 		updateHistory(bulkLoadFileHistory);

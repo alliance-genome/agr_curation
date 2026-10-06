@@ -21,6 +21,8 @@ import lombok.extern.jbosslog.JBossLog;
 @ApplicationScoped
 public class CassetteGenomicEntityAssociationExecutor extends LoadFileExecutor {
 
+	private static final String INGEST_SET = "cassette_genomic_entity_association_ingest_set";
+
 	@Inject CassetteGenomicEntityAssociationService lCassetteGenomicEntityAssociationService;
 
 	@Override
@@ -52,12 +54,11 @@ public class CassetteGenomicEntityAssociationExecutor extends LoadFileExecutor {
 		bulkLoadFileHistory.getBulkLoadFile().setRecordCount(associations.size() + bulkLoadFileHistory.getBulkLoadFile().getRecordCount());
 		bulkLoadFileDAO.merge(bulkLoadFileHistory.getBulkLoadFile());
 
-		bulkLoadFileHistory.setCount(associations.size());
 		updateHistory(bulkLoadFileHistory);
 
-		boolean success = runLoad(lCassetteGenomicEntityAssociationService, bulkLoadFileHistory, dataProvider, associations, associationIdsLoaded);
+		boolean success = runLoad(lCassetteGenomicEntityAssociationService, bulkLoadFileHistory, dataProvider, associations, associationIdsLoaded, countLabel(INGEST_SET));
 		if (cleanUp && success) {
-			runCleanup(lCassetteGenomicEntityAssociationService, bulkLoadFileHistory, dataProvider.name(), associationIdsBefore, associationIdsLoaded, "cassette genomic entity association");
+			runCleanup(lCassetteGenomicEntityAssociationService, bulkLoadFileHistory, dataProvider.name(), associationIdsBefore, associationIdsLoaded, countLabel(INGEST_SET));
 		}
 		bulkLoadFileHistory.finishLoad();
 		updateHistory(bulkLoadFileHistory);
