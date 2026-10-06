@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter } from 'react-router-dom';
+import { BrowserRouter, MemoryRouter, Route, Routes } from 'react-router-dom';
 import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { renderWithClient } from '../../../tools/jest/utils';
@@ -113,6 +113,25 @@ describe('<AlleleDetailPage />', () => {
 		await user.click(newAllele);
 
 		expect(open).toHaveBeenCalledWith('/allele/create', '_blank');
+		open.mockRestore();
+	});
+
+	it('Opens the create page for a copy by the identifier in the URL before the allele loads', async () => {
+		const user = userEvent.setup();
+		const open = vi.spyOn(window, 'open').mockImplementation(() => null);
+
+		renderWithClient(
+			<MemoryRouter initialEntries={['/allele/MGI:5146840']}>
+				<Routes>
+					<Route path="/allele/:identifier" element={<AlleleDetailPage />} />
+				</Routes>
+			</MemoryRouter>
+		);
+
+		const duplicate = await screen.findByRole('button', { name: /Duplicate/i });
+		await user.click(duplicate);
+
+		expect(open).toHaveBeenCalledWith('/allele/create?from=MGI%3A5146840', '_blank');
 		open.mockRestore();
 	});
 });

@@ -15,6 +15,7 @@ import { buildCreatePayload, processErrors, validateRequiredAutosuggestField } f
 import { FormFieldVisibilityMenu, useFormFieldVisibility } from '../../components/FormFieldVisibility';
 import { AlleleForm, ALLELE_CREATE_TOGGLEABLE_FIELDS } from './AlleleForm';
 import { useAlleleCrossReferences } from './crossReferences/useAlleleCrossReferences';
+import { useDuplicateAlleleSource } from './useDuplicateAlleleSource';
 import { SubResourcesProvider } from '../../components/SubResourcesContext';
 
 export default function AlleleCreatePage() {
@@ -31,6 +32,12 @@ export default function AlleleCreatePage() {
 	// Held so that saving again after the cross references failed retries them against the allele that
 	// already exists, rather than creating a second one.
 	const createdAllele = useRef(null);
+	const { isLoading: duplicateSourceIsLoading } = useDuplicateAlleleSource({
+		alleleDispatch,
+		setCrossReferences: crossReferences.setCrossReferences,
+		crossReferencesVisible: isVisible('Cross References'),
+		toastError,
+	});
 
 	const { isPending: allelePostRequestIsLoading, mutate: alleleMutate } = useMutation({
 		mutationFn: (allele) => {
@@ -167,6 +174,7 @@ export default function AlleleCreatePage() {
 			<Toast ref={toastError} position="top-left" />
 			<Toast ref={toastSuccess} position="top-right" />
 			<LoadingOverlay isLoading={!!allelePostRequestIsLoading || !!allelePutRequestIsLoading} />
+			<LoadingOverlay isLoading={duplicateSourceIsLoading} message="Loading allele to duplicate..." />
 			<ErrorBoundary>
 				<StickyHeader>
 					<Splitter className="bg-primary-reverse border-none lg:h-5rem" gutterSize={0}>
