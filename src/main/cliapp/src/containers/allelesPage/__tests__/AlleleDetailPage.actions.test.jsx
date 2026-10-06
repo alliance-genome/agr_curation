@@ -95,7 +95,7 @@ describe('<AlleleDetailPage /> header actions', { timeout: 30000 }, () => {
 		const open = vi.spyOn(window, 'open').mockImplementation(() => null);
 
 		await renderLoadedPage();
-		await user.click(screen.getByRole('button', { name: /Duplicate/i }));
+		await user.click(screen.getByRole('button', { name: /Clone/i }));
 
 		expect(open).toHaveBeenCalledWith(`/allele/create?from=${encodeURIComponent(LOADED_CURIE)}`, '_blank');
 		open.mockRestore();

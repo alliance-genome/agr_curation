@@ -54,7 +54,7 @@ export const DuplicateAlleleButton = ({ sourceIdentifier, disabled = false, clas
 
 	return (
 		<Button
-			label="Duplicate"
+			label="Clone"
 			icon="pi pi-copy"
 			className={className}
 			disabled={disabled || !sourceIdentifier}
