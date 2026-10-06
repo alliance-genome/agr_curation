@@ -1,4 +1,4 @@
-import { buildCreatePayload, processErrors } from '../utils';
+import { buildCreatePayload, buildDuplicateAllele, processErrors } from '../utils';
 
 describe('buildCreatePayload', () => {
 	it('Drops a taxon with no curie', () => {
@@ -137,5 +137,133 @@ describe('processErrors', () => {
 			entityType: 'alleleSymbol',
 			errorMessages: { 'row-1': { nameType: { severity: 'error', message: 'Required' } } },
 		});
+	});
+});
+
+describe('buildDuplicateAllele', () => {
+	const audit = {
+		createdBy: { uniqueId: 'curator' },
+		updatedBy: { uniqueId: 'curator' },
+		dateCreated: '2024-01-01T00:00:00Z',
+		dateUpdated: '2024-01-02T00:00:00Z',
+		dbDateCreated: '2024-01-01T00:00:00Z',
+		dbDateUpdated: '2024-01-02T00:00:00Z',
+	};
+	const gene = { id: 9, primaryExternalId: 'WB:WBGene1', type: 'Gene' };
+	const reference = { id: 5, curie: 'AGRKB:101000000000005' };
+	const source = () => ({
+		...audit,
+		type: 'Allele',
+		id: 1,
+		curie: 'AGRKB:101000000000001',
+		primaryExternalId: 'WB:WBVar1',
+		modInternalId: 'WBVar1',
+		dataProvider: { abbreviation: 'WB' },
+		dataProviderCrossReference: { id: 2, referencedCurie: 'WB:WBVar1' },
+		obsolete: true,
+		internal: true,
+		isExtinct: true,
+		taxon: { curie: 'NCBITaxon:6239' },
+		inCollection: { name: 'WB_curated_alleles' },
+		references: [reference],
+		relatedNotes: [{ ...audit, id: 3, freeText: 'a note' }],
+		alleleSymbol: { ...audit, id: 4, displayText: 'abc-1', formatText: 'abc-1' },
+		alleleFullName: { ...audit, id: 6, displayText: 'full name', formatText: 'full name' },
+		alleleSynonyms: [{ ...audit, id: 7, displayText: 'synonym' }],
+		alleleSecondaryIds: [{ ...audit, id: 8, secondaryId: 'WB:WBVar0' }],
+		alleleMutationTypes: [{ ...audit, id: 10, mutationTypes: [{ curie: 'SO:0001' }] }],
+		alleleInheritanceModes: [{ ...audit, id: 11, inheritanceMode: { name: 'dominant' } }],
+		alleleFunctionalImpacts: [{ ...audit, id: 12, functionalImpacts: [{ name: 'amorph' }] }],
+		alleleNomenclatureEvents: [{ ...audit, id: 13, nomenclatureEvent: { name: 'symbol_updated' } }],
+		alleleGermlineTransmissionStatus: { ...audit, id: 14, germlineTransmissionStatus: { name: 'cell_line' } },
+		alleleDatabaseStatus: { ...audit, id: 15, databaseStatus: { name: 'approved' } },
+		alleleGeneAssociations: [
+			{
+				...audit,
+				id: 16,
+				alleleAssociationSubject: { id: 1 },
+				alleleGeneAssociationObject: gene,
+				evidence: [reference],
+				relatedNote: { ...audit, id: 19, freeText: 'association note' },
+			},
+		],
+		alleleVariantAssociations: [{ id: 17 }],
+		alleleConstructAssociations: [{ id: 18 }],
+	});
+
+	it('Leaves behind what identifies the stored allele', () => {
+		const duplicate = buildDuplicateAllele(source());
+
+		['id', 'curie', 'primaryExternalId', 'modInternalId', 'dataProvider', 'dataProviderCrossReference'].forEach(
+			(field) => expect(duplicate).not.toHaveProperty(field)
+		);
+		Object.keys(audit).forEach((field) => expect(duplicate).not.toHaveProperty(field));
+		expect(duplicate.alleleSecondaryIds).toBeUndefined();
+		expect(duplicate).not.toHaveProperty('alleleVariantAssociations');
+		expect(duplicate).not.toHaveProperty('alleleConstructAssociations');
+		expect(duplicate.obsolete).toBe(false);
+	});
+
+	it('Copies the fields the create form edits', () => {
+		const duplicate = buildDuplicateAllele(source());
+
+		expect(duplicate.type).toEqual('Allele');
+		expect(duplicate.taxon).toEqual({ curie: 'NCBITaxon:6239' });
+		expect(duplicate.inCollection).toEqual({ name: 'WB_curated_alleles' });
+		expect(duplicate.internal).toBe(true);
+		expect(duplicate.isExtinct).toBe(true);
+		expect(duplicate.references).toEqual([reference]);
+		expect(duplicate.alleleSymbol).toEqual({ displayText: 'abc-1', formatText: 'abc-1' });
+		expect(duplicate.alleleFullName).toEqual({ displayText: 'full name', formatText: 'full name' });
+		expect(duplicate.alleleSynonyms).toEqual([{ displayText: 'synonym' }]);
+		expect(duplicate.relatedNotes).toEqual([{ freeText: 'a note' }]);
+		expect(duplicate.alleleMutationTypes).toEqual([{ mutationTypes: [{ curie: 'SO:0001' }] }]);
+		expect(duplicate.alleleInheritanceModes).toEqual([{ inheritanceMode: { name: 'dominant' } }]);
+		expect(duplicate.alleleFunctionalImpacts).toEqual([{ functionalImpacts: [{ name: 'amorph' }] }]);
+		expect(duplicate.alleleNomenclatureEvents).toEqual([{ nomenclatureEvent: { name: 'symbol_updated' } }]);
+		expect(duplicate.alleleGermlineTransmissionStatus).toEqual({ germlineTransmissionStatus: { name: 'cell_line' } });
+		expect(duplicate.alleleDatabaseStatus).toEqual({ databaseStatus: { name: 'approved' } });
+	});
+
+	it('Copies gene associations and their notes without ids or the stored allele as subject', () => {
+		const [association] = buildDuplicateAllele(source()).alleleGeneAssociations;
+
+		expect(association).toEqual({
+			alleleGeneAssociationObject: gene,
+			evidence: [reference],
+			relatedNote: { freeText: 'association note' },
+		});
+	});
+
+	it('Starts from the create form defaults for fields the stored allele lacks', () => {
+		const duplicate = buildDuplicateAllele({ taxon: null, alleleSymbol: null });
+
+		expect(duplicate.taxon).toEqual({ curie: '' });
+		expect(duplicate.inCollection).toEqual({ name: '' });
+		expect(duplicate.alleleSymbol).toBeNull();
+		expect(duplicate.alleleSynonyms).toBeUndefined();
+		expect(duplicate.references).toBeUndefined();
+		expect(duplicate.alleleGeneAssociations).toBeUndefined();
+	});
+
+	it('Leaves a list with no rows unset, as the detail endpoint does', () => {
+		const duplicate = buildDuplicateAllele({
+			alleleFunctionalImpacts: [],
+			alleleGeneAssociations: [],
+			references: [],
+			alleleMutationTypes: [{ id: 10, mutationTypes: [{ curie: 'SO:0001' }] }],
+		});
+
+		expect(duplicate.alleleFunctionalImpacts).toBeUndefined();
+		expect(duplicate.alleleGeneAssociations).toBeUndefined();
+		expect(duplicate.references).toBeUndefined();
+		expect(duplicate.alleleMutationTypes).toEqual([{ mutationTypes: [{ curie: 'SO:0001' }] }]);
+	});
+
+	it('Does not mutate the allele it is given', () => {
+		const stored = source();
+		buildDuplicateAllele(stored);
+
+		expect(stored).toEqual(source());
 	});
 });
