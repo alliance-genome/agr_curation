@@ -31,6 +31,7 @@ const buildSubResource = (overrides = {}) => ({
 	isLoading: false,
 	loadError: null,
 	isSaving: false,
+	isDirty: true,
 	save: vi.fn(() => Promise.resolve({ isSuccess: true })),
 	...overrides,
 });
@@ -84,6 +85,30 @@ describe('CrossReferencesForm', () => {
 
 		expect(saveButton()).toBeDisabled();
 		expect(screen.getByText(/Could not load these cross references/)).toBeInTheDocument();
+	});
+
+	it('Will not save when nothing has been edited', () => {
+		renderForm({ isDirty: false });
+
+		expect(saveButton()).toBeDisabled();
+	});
+
+	it('Marks the section as having pending edits once edited', () => {
+		renderForm();
+
+		expect(screen.getByText('Pending Edits!')).toBeInTheDocument();
+	});
+
+	it('Shows no pending edits when nothing has been edited', () => {
+		renderForm({ isDirty: false });
+
+		expect(screen.queryByText('Pending Edits!')).not.toBeInTheDocument();
+	});
+
+	it('Shows no pending edits on the create page, where every row is unsaved', () => {
+		renderForm({}, 'create');
+
+		expect(screen.queryByText('Pending Edits!')).not.toBeInTheDocument();
 	});
 
 	it('Offers no save on the create page, which has no allele to save against', () => {

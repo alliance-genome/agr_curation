@@ -1,4 +1,4 @@
-import { buildCreatePayload, buildDuplicateAllele, processErrors } from '../utils';
+import { buildCreatePayload, buildDuplicateAllele, getPendingSingleValueFields, processErrors } from '../utils';
 
 describe('buildCreatePayload', () => {
 	it('Drops a taxon with no curie', () => {
@@ -265,5 +265,56 @@ describe('buildDuplicateAllele', () => {
 		buildDuplicateAllele(stored);
 
 		expect(stored).toEqual(source());
+	});
+});
+
+describe('getPendingSingleValueFields', () => {
+	const saved = {
+		taxon: { curie: 'NCBITaxon:10090', name: 'Mus musculus' },
+		inCollection: { name: 'EUCOMM' },
+		isExtinct: false,
+		internal: false,
+		obsolete: false,
+	};
+
+	it('Finds none before the allele has been saved', () => {
+		expect(getPendingSingleValueFields({ ...saved, internal: true }, null).size).toBe(0);
+	});
+
+	it('Finds none when every field matches the saved allele', () => {
+		expect(getPendingSingleValueFields(structuredClone(saved), saved).size).toBe(0);
+	});
+
+	it('Finds each changed field', () => {
+		const pending = getPendingSingleValueFields(
+			{
+				...saved,
+				taxon: { curie: 'NCBITaxon:6239' },
+				inCollection: { name: 'KOMP' },
+				isExtinct: null,
+				internal: true,
+				obsolete: true,
+			},
+			saved
+		);
+
+		expect([...pending]).toEqual(['taxon', 'inCollection', 'isExtinct', 'internal', 'obsolete']);
+	});
+
+	it('Compares a taxon and a collection by their curie and name alone', () => {
+		const allele = {
+			...saved,
+			taxon: { curie: 'NCBITaxon:10090', name: 'Mus musculus', obsolete: false },
+			inCollection: { name: 'EUCOMM', id: 3 },
+		};
+
+		expect(getPendingSingleValueFields(allele, saved).size).toBe(0);
+	});
+
+	it('Reads a blank or missing value as none', () => {
+		const unset = { taxon: { curie: '' }, inCollection: undefined, isExtinct: undefined };
+
+		expect(getPendingSingleValueFields(unset, { isExtinct: null }).size).toBe(0);
+		expect([...getPendingSingleValueFields(unset, saved)]).toEqual(expect.arrayContaining(['taxon', 'inCollection']));
 	});
 });

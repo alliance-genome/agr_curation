@@ -14,6 +14,7 @@ export const BooleanDetailPageEditor = ({
 	fieldDetailsColumnSize,
 	errorMessages,
 	showClear = false,
+	isPending = false,
 }) => {
 	const booleanTerms = useControlledVocabularyService('generic_boolean_terms');
 
@@ -23,6 +24,7 @@ export const BooleanDetailPageEditor = ({
 				labelColumnSize={labelColumnSize}
 				fieldDetailsColumnSize={fieldDetailsColumnSize}
 				widgetColumnSize={widgetColumnSize}
+				isPending={isPending}
 				fieldName={label}
 				formField={
 					<Dropdown

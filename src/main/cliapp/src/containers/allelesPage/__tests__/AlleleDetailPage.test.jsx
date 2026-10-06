@@ -128,7 +128,7 @@ describe('<AlleleDetailPage />', () => {
 			</MemoryRouter>
 		);
 
-		const duplicate = await screen.findByRole('button', { name: /Duplicate/i });
+		const duplicate = await screen.findByRole('button', { name: /Clone/i });
 		await user.click(duplicate);
 
 		expect(open).toHaveBeenCalledWith('/allele/create?from=MGI%3A5146840', '_blank');
