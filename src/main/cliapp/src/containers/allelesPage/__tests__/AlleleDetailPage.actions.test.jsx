@@ -65,6 +65,18 @@ const renderLoadedPage = async () => {
 
 const dialog = () => screen.getByRole('dialog');
 
+// An edit to the allele alone, so the page's Save has something to write.
+const markAlleleExtinct = async (user) => {
+	const isExtinctRow = screen.getByRole('heading', { name: 'Is Extinct' }).closest('.grid');
+	await user.click(isExtinctRow.querySelector('.p-dropdown'));
+	const panel = await waitFor(() => {
+		const openPanel = document.querySelector('.p-dropdown-panel');
+		expect(openPanel).not.toBeNull();
+		return openPanel;
+	});
+	await user.click(within(panel).getByText('true'));
+};
+
 // every test here loads and renders the whole detail form before acting on it
 describe('<AlleleDetailPage /> header actions', { timeout: 30000 }, () => {
 	beforeEach(() => {
@@ -83,7 +95,7 @@ describe('<AlleleDetailPage /> header actions', { timeout: 30000 }, () => {
 		const open = vi.spyOn(window, 'open').mockImplementation(() => null);
 
 		await renderLoadedPage();
-		await user.click(screen.getByRole('button', { name: /Duplicate/i }));
+		await user.click(screen.getByRole('button', { name: /Clone/i }));
 
 		expect(open).toHaveBeenCalledWith(`/allele/create?from=${encodeURIComponent(LOADED_CURIE)}`, '_blank');
 		open.mockRestore();
@@ -177,7 +189,9 @@ describe('<AlleleDetailPage /> header actions', { timeout: 30000 }, () => {
 		await waitFor(() => expect(screen.getByText('Allele not deprecated:')).toBeInTheDocument(), FORM_LOAD_WAIT);
 		expect(screen.getByText('Allele could not be saved')).toBeInTheDocument();
 		expect(screen.queryByText('Allele Deprecated')).not.toBeInTheDocument();
+		expect(screen.getByRole('button', { name: 'Save' })).toBeDisabled();
 
+		await markAlleleExtinct(user);
 		await user.click(screen.getByRole('button', { name: 'Save' }));
 		await waitFor(() => expect(saveAlleleDetail).toHaveBeenCalledTimes(2), FORM_LOAD_WAIT);
 		expect(saveAlleleDetail.mock.calls[1][0].obsolete).toBe(false);

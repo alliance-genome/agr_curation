@@ -9,8 +9,9 @@ import { AlleleService } from '../../service/AlleleService';
 import ErrorBoundary from '../../components/Error/ErrorBoundary';
 import { useAlleleReducer } from './useAlleleReducer';
 import { StickyHeader } from '../../components/StickyHeader';
+import { FitTextHeading } from '../../components/FitTextHeading';
 import { LoadingOverlay } from '../../components/LoadingOverlay';
-import { validateRequiredAutosuggestField, processErrors } from './utils';
+import { validateRequiredAutosuggestField, processErrors, getPendingSingleValueFields } from './utils';
 import { getIdentifier } from '../../utils/utils';
 import { FormFieldVisibilityMenu, useFormFieldVisibility } from '../../components/FormFieldVisibility';
 import { AlleleForm, ALLELE_DETAIL_TOGGLEABLE_FIELDS } from './AlleleForm';
@@ -207,6 +208,9 @@ export default function AlleleDetailPage() {
 		onDeprecate: deprecateAllele,
 	});
 
+	const pendingFields = getPendingSingleValueFields(alleleState.allele, savedAllele.current);
+	const hasPendingEdits = pendingFields.size > 0 || alleleState.hasOtherPendingEdits || crossReferences.isDirty;
+
 	if (getRequestIsLoading)
 		return (
 			<div className="flex align-items-center justify-content-center h-screen">
@@ -233,8 +237,8 @@ export default function AlleleDetailPage() {
 			<ErrorBoundary>
 				<StickyHeader>
 					<Splitter className="bg-primary-reverse border-none lg:h-5rem" gutterSize={0}>
-						<SplitterPanel size={40} className="flex justify-content-start ml-5 py-3 ">
-							<h1 dangerouslySetInnerHTML={{ __html: headerText() }} />
+						<SplitterPanel size={40} className="flex justify-content-start min-w-0 ml-5 py-3 ">
+							<FitTextHeading html={headerText()} />
 						</SplitterPanel>
 						<SplitterPanel size={30} className="flex align-items-center justify-content-end gap-2 py-3">
 							<FormFieldVisibilityMenu
@@ -245,7 +249,13 @@ export default function AlleleDetailPage() {
 							/>
 						</SplitterPanel>
 						<SplitterPanel size={30} className="flex align-items-center justify-content-start gap-2 pl-2 py-3">
-							<Button label="Save" icon="pi pi-check" severity="success" onClick={handleSubmit} />
+							<Button
+								label="Save"
+								icon="pi pi-check"
+								severity="success"
+								onClick={handleSubmit}
+								disabled={!hasPendingEdits}
+							/>
 							<NewAlleleButton className="p-button-text" />
 							<DuplicateAlleleButton
 								className="p-button-text"
@@ -262,7 +272,12 @@ export default function AlleleDetailPage() {
 					</Splitter>
 				</StickyHeader>
 				<SubResourcesProvider value={{ crossReferences }}>
-					<AlleleForm state={alleleState} dispatch={alleleDispatch} isVisible={isVisible} />
+					<AlleleForm
+						state={alleleState}
+						dispatch={alleleDispatch}
+						isVisible={isVisible}
+						pendingFields={pendingFields}
+					/>
 				</SubResourcesProvider>
 				{deleteOrDeprecateDialogs}
 			</ErrorBoundary>

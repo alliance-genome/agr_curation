@@ -13,6 +13,7 @@ export const TaxonDetailPageEditor = ({
 	fieldDetailsColumnSize,
 	errorMessages,
 	required = false,
+	isPending = false,
 }) => {
 	return (
 		<>
@@ -20,6 +21,7 @@ export const TaxonDetailPageEditor = ({
 				labelColumnSize={labelColumnSize}
 				fieldDetailsColumnSize={fieldDetailsColumnSize}
 				widgetColumnSize={widgetColumnSize}
+				isPending={isPending}
 				fieldName="Taxon"
 				required={required}
 				formField={
