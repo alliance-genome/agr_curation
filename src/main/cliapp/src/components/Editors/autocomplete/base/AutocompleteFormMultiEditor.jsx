@@ -1,7 +1,7 @@
 import React, { useRef, useState } from 'react';
 import { AutoComplete } from 'primereact/autocomplete';
 import { onSelectionOver } from '../../../../utils/utils';
-import { EditorTooltip } from './EditorTooltip';
+import { EditorTooltip } from '../../widgets/EditorTooltip';
 import { getIdentifier } from '../../../../utils/utils';
 
 export const AutocompleteFormMultiEditor = ({
