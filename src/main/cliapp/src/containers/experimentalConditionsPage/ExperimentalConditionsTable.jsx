@@ -163,9 +163,7 @@ export const ExperimentalConditionsTable = () => {
 				body: (rowData) => <BooleanTemplate value={rowData.internal} />,
 				filterConfig: FILTER_CONFIGS.internalFilterConfig,
 				sortable: true,
-				editor: (editorOptions) => (
-					<BooleanTableEditor editorOptions={editorOptions} errorMessagesRef={errorMessagesRef} field="internal" />
-				),
+				editor: (editorOptions) => <BooleanTableEditor editorOptions={editorOptions} field="internal" />,
 			},
 		],
 		// eslint-disable-next-line react-hooks/exhaustive-deps

@@ -30,6 +30,7 @@ import { TruncatedReferencesTemplate } from '../../components/Templates/referenc
 
 import { SearchService } from '../../service/SearchService';
 import { Endpoints } from '../../constants/Endpoints';
+import { NewVariantButton } from './NewVariantButton';
 
 export const VariantsTable = () => {
 	const [isInEditMode, setIsInEditMode] = useState(false);
@@ -147,7 +148,6 @@ export const VariantsTable = () => {
 						editorOptions={editorOptions}
 						field="variantStatus"
 						options={variantStatusTerms}
-						errorMessagesRef={errorMessagesRef}
 						showClear={true}
 					/>
 				),
@@ -256,12 +256,7 @@ export const VariantsTable = () => {
 				filterConfig: FILTER_CONFIGS.internalFilterConfig,
 				sortable: true,
 				editor: (editorOptions) => (
-					<BooleanTableEditor
-						editorOptions={editorOptions}
-						errorMessagesRef={errorMessagesRef}
-						field={'internal'}
-						showClear={false}
-					/>
+					<BooleanTableEditor editorOptions={editorOptions} field={'internal'} showClear={false} />
 				),
 			},
 			{
@@ -272,12 +267,7 @@ export const VariantsTable = () => {
 				filterConfig: FILTER_CONFIGS.obsoleteFilterConfig,
 				sortable: true,
 				editor: (editorOptions) => (
-					<BooleanTableEditor
-						editorOptions={editorOptions}
-						errorMessagesRef={errorMessagesRef}
-						field={'obsolete'}
-						showClear={false}
-					/>
+					<BooleanTableEditor editorOptions={editorOptions} field={'obsolete'} showClear={false} />
 				),
 			},
 		],
@@ -305,6 +295,15 @@ export const VariantsTable = () => {
 		searchService,
 	});
 
+	const headerButtons = (disabled = false) => {
+		return (
+			<>
+				<NewVariantButton disabled={disabled} />
+				&nbsp;&nbsp;
+			</>
+		);
+	};
+
 	return (
 		<>
 			<div className="card">
@@ -314,6 +313,7 @@ export const VariantsTable = () => {
 					dataKey="id"
 					endpoint={SEARCH_ENDPOINT}
 					tableName="Variants"
+					headerButtons={headerButtons}
 					entities={variants}
 					setEntities={setVariants}
 					totalRecords={totalRecords}
@@ -322,7 +322,7 @@ export const VariantsTable = () => {
 					setTableState={setTableState}
 					columns={columns}
 					isEditable={true}
-					hasDetails={false}
+					hasDetails={true}
 					mutation={mutation}
 					isInEditMode={isInEditMode}
 					setIsInEditMode={setIsInEditMode}

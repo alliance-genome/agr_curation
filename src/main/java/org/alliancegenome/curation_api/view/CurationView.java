@@ -40,6 +40,9 @@ public class CurationView {
 	public static class ResourceDescriptorPageView extends FieldsOnly {
 	}
 
+	public static class CrossReferenceView extends FieldsOnly {
+	}
+
 	public static class NoteView extends FieldsAndLists {
 	}
 
@@ -50,6 +53,19 @@ public class CurationView {
 	}
 
 	public static class ConstructDetailView extends ConstructView {
+	}
+
+	/** SCRUM-6535: the new Constructs model (epic SCRUM-6382). */
+	public static class CassetteView extends FieldsOnly {
+	}
+
+	public static class CassetteDetailView extends CassetteView {
+	}
+
+	public static class TransgenicToolView extends FieldsOnly {
+	}
+
+	public static class TransgenicToolDetailView extends TransgenicToolView {
 	}
 
 	public static class DiseaseAnnotation extends FieldsOnly {

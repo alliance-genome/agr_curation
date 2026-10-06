@@ -21,4 +21,7 @@ public class ReagentDTO extends SubmittedObjectDTO {
 	@JsonView({ CurationView.FieldsAndLists.class })
 	@JsonProperty("secondary_identifiers")
 	private List<String> secondaryIdentifiers;
+
+	@JsonView({ CurationView.FieldsOnly.class })
+	private Boolean placeholder;
 }

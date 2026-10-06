@@ -13,6 +13,7 @@ export const InCollectionDetailPageEditor = ({
 	labelColumnSize,
 	fieldDetailsColumnSize,
 	errorMessages,
+	isPending = false,
 }) => {
 	return (
 		<>
@@ -20,6 +21,7 @@ export const InCollectionDetailPageEditor = ({
 				labelColumnSize={labelColumnSize}
 				fieldDetailsColumnSize={fieldDetailsColumnSize}
 				widgetColumnSize={widgetColumnSize}
+				isPending={isPending}
 				fieldName="In Collection"
 				formField={
 					<AutocompleteFormEditor

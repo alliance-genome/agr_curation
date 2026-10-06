@@ -79,10 +79,10 @@ public class AntibodyValidator extends ReagentValidator {
 		VocabularyTerm lightChainIsotype = validateTermInVocabulary("lightChainIsotype", VocabularyConstants.ANTIBODY_LIGHT_CHAIN_ISOTYPE_VOCABULARY, uiEntity.getLightChainIsotype(), dbEntity.getLightChainIsotype());
 		dbEntity.setLightChainIsotype(lightChainIsotype);
 
-		VocabularyTerm antigenTaxonTerm = validateTermInVocabulary("antigenTaxonTerm", VocabularyConstants.ANTIBODY_ANTIGEN_TAXON_VOCABULARY, uiEntity.getAntigenTaxonTerm(), dbEntity.getAntigenTaxonTerm());
+		VocabularyTerm antigenTaxonTerm = validateTermInVocabularyTermSet("antigenTaxonTerm", VocabularyConstants.ANTIBODY_ANTIGEN_TAXON_VOCABULARY_TERM_SET, uiEntity.getAntigenTaxonTerm(), dbEntity.getAntigenTaxonTerm());
 		dbEntity.setAntigenTaxonTerm(antigenTaxonTerm);
 
-		VocabularyTerm hostTaxonTerm = validateTermInVocabulary("hostTaxonTerm", VocabularyConstants.ANTIBODY_HOST_TAXON_VOCABULARY, uiEntity.getHostTaxonTerm(), dbEntity.getHostTaxonTerm());
+		VocabularyTerm hostTaxonTerm = validateTermInVocabularyTermSet("hostTaxonTerm", VocabularyConstants.ANTIBODY_HOST_TAXON_VOCABULARY_TERM_SET, uiEntity.getHostTaxonTerm(), dbEntity.getHostTaxonTerm());
 		dbEntity.setHostTaxonTerm(hostTaxonTerm);
 
 		List<Gene> targetGenes = validateEntities(geneDAO, "antibodyTargetGenes", uiEntity.getAntibodyTargetGenes(), dbEntity.getAntibodyTargetGenes());

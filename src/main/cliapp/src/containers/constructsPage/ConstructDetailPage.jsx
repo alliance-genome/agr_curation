@@ -7,6 +7,7 @@ import { useQuery } from '@tanstack/react-query';
 import { ConstructService } from '../../service/ConstructService';
 import ErrorBoundary from '../../components/Error/ErrorBoundary';
 import { StickyHeader } from '../../components/StickyHeader';
+import { FitTextHeading } from '../../components/FitTextHeading';
 import { useConstructReducer } from './useConstructReducer';
 import { IdentifierDetailPageTemplate } from '../../components/Templates/IdentifierDetailPageTemplate';
 import { DataProviderDetailPageTemplate } from '../../components/Templates/DataProviderDetailPageTemplate';
@@ -72,8 +73,8 @@ export default function ConstructDetailPage() {
 			<ErrorBoundary>
 				<StickyHeader>
 					<Splitter className="bg-primary-reverse border-none lg:h-5rem" gutterSize={0}>
-						<SplitterPanel size={70} className="flex justify-content-start ml-5 py-3 ">
-							<h1 dangerouslySetInnerHTML={{ __html: headerText() }} />
+						<SplitterPanel size={70} className="flex justify-content-start min-w-0 ml-5 py-3 ">
+							<FitTextHeading html={headerText()} />
 						</SplitterPanel>
 						<SplitterPanel size={30} className="flex justify-content-start py-3"></SplitterPanel>
 					</Splitter>

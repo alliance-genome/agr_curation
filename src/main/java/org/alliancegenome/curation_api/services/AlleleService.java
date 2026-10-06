@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Objects;
 
 import org.alliancegenome.curation_api.constants.EntityFieldConstants;
+import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.dao.AlleleDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
@@ -15,8 +16,10 @@ import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.interfaces.base.BasePopularityInterface;
 import org.alliancegenome.curation_api.model.document.es.AlleleSummaryDocument;
 import org.alliancegenome.curation_api.model.entities.Allele;
+import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.Note;
 import org.alliancegenome.curation_api.model.ingest.dto.AlleleDTO;
+import org.alliancegenome.curation_api.response.ObjectListResponse;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.base.SubmittedObjectCrudService;
@@ -43,6 +46,8 @@ public class AlleleService extends SubmittedObjectCrudService<Allele, AlleleDTO,
 	PersonService personService;
 	@Inject
 	NoteService noteService;
+	@Inject
+	CrossReferenceService crossReferenceService;
 
 	@Override
 	@PostConstruct
@@ -53,14 +58,40 @@ public class AlleleService extends SubmittedObjectCrudService<Allele, AlleleDTO,
 	@Override
 	@Transactional
 	public ObjectResponse<Allele> update(Allele uiEntity) {
-		Allele dbEntity = alleleValidator.validateAlleleUpdate(uiEntity, false);
+		// AlleleView carries crossReferences but not the associations, so this path manages the former only.
+		Allele dbEntity = alleleValidator.validateAlleleUpdate(uiEntity, false, true);
 		return new ObjectResponse<>(dbEntity);
 	}
 
 	@Transactional
 	public ObjectResponse<Allele> updateDetail(Allele uiEntity) {
-		Allele dbEntity = alleleValidator.validateAlleleUpdate(uiEntity, true);
+		// AlleleDetailView carries the associations but not crossReferences, so this path manages the associations
+		// only; cross references are written through the allele's cross-references sub-resource. Both flags are set
+		// explicitly rather than derived from one another - they are complementary for these two views by
+		// coincidence, not by rule.
+		Allele dbEntity = alleleValidator.validateAlleleUpdate(uiEntity, true, false);
 		return new ObjectResponse<>(dbEntity);
+	}
+
+	public ObjectListResponse<CrossReference> getCrossReferences(Long id) {
+		Allele allele = findAlleleOrThrow(id);
+		List<CrossReference> crossReferences = allele.getCrossReferences();
+		return new ObjectListResponse<>(crossReferences == null ? new ArrayList<>() : new ArrayList<>(crossReferences));
+	}
+
+	@Transactional
+	public ObjectListResponse<CrossReference> updateCrossReferences(Long id, List<CrossReference> crossReferences) {
+		return crossReferenceService.replaceForOwner(findAlleleOrThrow(id), crossReferences);
+	}
+
+	private Allele findAlleleOrThrow(Long id) {
+		Allele allele = alleleDAO.find(id);
+		if (allele == null) {
+			ObjectResponse<Allele> response = new ObjectResponse<>();
+			response.addErrorMessage("id", ValidationConstants.INVALID_MESSAGE);
+			throw new ApiErrorException(response);
+		}
+		return allele;
 	}
 
 	@Override
@@ -83,6 +114,60 @@ public class AlleleService extends SubmittedObjectCrudService<Allele, AlleleDTO,
 		return ret;
 	}
 
+	/**
+	 * Hard-deletes an allele on a curator's request. The allele's own slot annotations, notes, cross references
+	 * and gene, variant and construct associations go with it. Disease, phenotype and HTP sample annotations,
+	 * AGM associations, constructs listing it as a component and genetic interactions that reference it block
+	 * the deletion.
+	 *
+	 * @param identifierString curie, primary external ID or MOD internal ID of the allele
+	 * @return response holding the deleted allele
+	 * @throws ApiErrorException when no allele matches or the allele is still referenced
+	 */
+	@Override
+	@Transactional
+	public ObjectResponse<Allele> deleteByIdentifier(String identifierString) {
+		Allele allele = findByIdentifierString(identifierString);
+		if (allele == null) {
+			ObjectResponse<Allele> response = new ObjectResponse<>();
+			response.setErrorMessage("Could not find Allele with identifier: " + identifierString);
+			throw new ApiErrorException(response);
+		}
+
+		List<String> referencingReasons = getReferencingAnnotationAndAgmReasons(allele.getId());
+		if (CollectionUtils.isNotEmpty(allele.getConstructGenomicEntityAssociations())) {
+			referencingReasons.add("Allele is a component of construct(s)");
+		}
+		if (alleleDAO.hasReferencingGeneGeneticInteractions(allele.getId())) {
+			referencingReasons.add("Allele is referenced by genetic interaction(s)");
+		}
+		if (CollectionUtils.isNotEmpty(referencingReasons)) {
+			ObjectResponse<Allele> response = new ObjectResponse<>();
+			response.setErrorMessage("Allele " + allele.getIdentifier() + " is in use and cannot be deleted: " + String.join("; ", referencingReasons));
+			throw new ApiErrorException(response);
+		}
+
+		alleleDAO.remove(allele.getId());
+		return new ObjectResponse<>(allele);
+	}
+
+	private List<String> getReferencingAnnotationAndAgmReasons(Long alleleId) {
+		List<String> reasons = new ArrayList<>();
+		if (alleleDAO.hasReferencingDiseaseAnnotations(alleleId)) {
+			reasons.add("Allele is referenced by disease annotation(s)");
+		}
+		if (alleleDAO.hasReferencingPhenotypeAnnotations(alleleId)) {
+			reasons.add("Allele is referenced by phenotype annotation(s)");
+		}
+		if (alleleDAO.hasReferencingHTPExpressionDatasetSampleAnnotation(alleleId)) {
+			reasons.add("Allele is referenced by HTP expression dataset annotation(s)");
+		}
+		if (alleleDAO.hasReferencingAgmAlleleAssociations(alleleId)) {
+			reasons.add("Allele has AGM association(s)");
+		}
+		return reasons;
+	}
+
 	@Override
 	@Transactional
 	public Allele deprecateOrDelete(Long id, Boolean throwApiError, String requestSource, Boolean forceDeprecate) {
@@ -92,18 +177,7 @@ public class AlleleService extends SubmittedObjectCrudService<Allele, AlleleDTO,
 			if (forceDeprecate) {
 				deprecationReasons.add("Deprecation instead of deletion rule applied");
 			}
-			if (alleleDAO.hasReferencingDiseaseAnnotations(id)) {
-				deprecationReasons.add("Allele is referenced by disease annotation(s)");
-			}
-			if (alleleDAO.hasReferencingPhenotypeAnnotations(id)) {
-				deprecationReasons.add("Allele is referenced by phenotype annotation(s)");
-			}
-			if (alleleDAO.hasReferencingHTPExpressionDatasetSampleAnnotation(id)) {
-				deprecationReasons.add("Allele is referenced by HTP expression dataset annotation(s)");
-			}
-			if (alleleDAO.hasReferencingAgmAlleleAssociations(id)) {
-				deprecationReasons.add("Allele has AGM association(s)");
-			}
+			deprecationReasons.addAll(getReferencingAnnotationAndAgmReasons(id));
 			if (CollectionUtils.isNotEmpty(allele.getAlleleGeneAssociations())) {
 				deprecationReasons.add("Allele has gene association(s)");
 			}

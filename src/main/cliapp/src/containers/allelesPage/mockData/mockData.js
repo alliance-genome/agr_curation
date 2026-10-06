@@ -24,6 +24,36 @@ export const data = {
 			obsolete: false,
 			dbDateUpdated: '2023-04-05T02:49:57.970413Z',
 			primaryExternalId: 'FB:FBal0196303',
+			crossReferences: [
+				{
+					internal: false,
+					obsolete: false,
+					id: 74200001,
+					referencedCurie: 'FB:FBal0196303',
+					displayName: 'FB:FBal0196303',
+					resourceDescriptorPage: {
+						internal: false,
+						obsolete: false,
+						id: 41750754,
+						name: 'allele',
+						urlTemplate: 'http://flybase.org/reports/[%s]',
+						resourceDescriptor: {
+							internal: false,
+							obsolete: false,
+							id: 41750753,
+							prefix: 'FB',
+							name: 'FlyBase',
+						},
+					},
+				},
+				{
+					internal: false,
+					obsolete: false,
+					id: 74200002,
+					referencedCurie: 'DOI:10.1016/s0896-6273(04)00073-x',
+					displayName: 'DOI:10.1016/s0896-6273(04)00073-x',
+				},
+			],
 			taxon: {
 				internal: false,
 				obsolete: false,

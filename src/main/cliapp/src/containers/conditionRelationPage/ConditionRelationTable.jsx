@@ -92,7 +92,6 @@ export const ConditionRelationTable = () => {
 						editorOptions={editorOptions}
 						field="conditionRelationType"
 						options={conditionRelationTypeTerms}
-						errorMessagesRef={errorMessagesRef}
 						showClear={false}
 					/>
 				),

@@ -33,8 +33,6 @@ export const ResourceDescriptorsTable = () => {
 
 	const toast_topleft = useRef(null);
 	const toast_topright = useRef(null);
-	const errorMessagesRef = useRef();
-	errorMessagesRef.current = errorMessages;
 
 	let resourceDescriptorService = new ResourceDescriptorService();
 
@@ -134,9 +132,7 @@ export const ResourceDescriptorsTable = () => {
 				sortable: true,
 				body: (rowData) => <BooleanTemplate value={rowData.internal} />,
 				filterConfig: FILTER_CONFIGS.internalFilterConfig,
-				editor: (editorOptions) => (
-					<BooleanTableEditor editorOptions={editorOptions} errorMessagesRef={errorMessagesRef} field="internal" />
-				),
+				editor: (editorOptions) => <BooleanTableEditor editorOptions={editorOptions} field="internal" />,
 			},
 			{
 				field: 'obsolete',
@@ -144,9 +140,7 @@ export const ResourceDescriptorsTable = () => {
 				sortable: true,
 				body: (rowData) => <BooleanTemplate value={rowData.obsolete} />,
 				filterConfig: FILTER_CONFIGS.obsoleteFilterConfig,
-				editor: (editorOptions) => (
-					<BooleanTableEditor editorOptions={editorOptions} errorMessagesRef={errorMessagesRef} field="obsolete" />
-				),
+				editor: (editorOptions) => <BooleanTableEditor editorOptions={editorOptions} field="obsolete" />,
 			},
 		],
 		// eslint-disable-next-line react-hooks/exhaustive-deps

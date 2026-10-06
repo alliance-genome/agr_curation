@@ -137,6 +137,98 @@ export const buildCreatePayload = (allele) => {
 	return payload;
 };
 
+// The fields a stored row carries that belong to it alone, and so cannot be carried onto a copy.
+const ROW_IDENTITY_FIELDS = [
+	'id',
+	'createdBy',
+	'updatedBy',
+	'dateCreated',
+	'dateUpdated',
+	'dbDateCreated',
+	'dbDateUpdated',
+];
+
+const copyRow = (row) => {
+	if (!row) return null;
+	const copy = structuredClone(row);
+	ROW_IDENTITY_FIELDS.forEach((field) => delete copy[field]);
+	return copy;
+};
+
+const copyRows = (rows) => (rows?.length ? rows.map(copyRow) : undefined);
+
+/**
+ * A new allele carrying the fields of a stored one that the create form edits, for the create page to
+ * start from.
+ *
+ * Left behind: everything that identifies the stored allele (its ids and secondary IDs), its data
+ * provider and audit fields, and the variant and construct associations the form does not edit. Cross
+ * references are written through their own sub-resource and copied separately; see
+ * buildDuplicateCrossReferences. Each copied row, and a gene association's note, loses its own id and audit
+ * fields, so it is created afresh. A list with no rows is left unset, as the detail endpoint leaves
+ * it, so its section starts hidden.
+ *
+ * @param {Object} allele an allele as the detail endpoint returns it
+ * @returns {Object} an allele without an id, not obsolete, carrying only the lists that have rows
+ */
+export const buildDuplicateAllele = (allele) => {
+	const alleleGeneAssociations = copyRows(allele.alleleGeneAssociations);
+	alleleGeneAssociations?.forEach((association) => {
+		delete association.alleleAssociationSubject;
+		if (association.relatedNote) {
+			association.relatedNote = copyRow(association.relatedNote);
+		}
+	});
+
+	return {
+		type: 'Allele',
+		taxon: structuredClone(allele.taxon) ?? { curie: '' },
+		inCollection: structuredClone(allele.inCollection) ?? { name: '' },
+		isExtinct: allele.isExtinct ?? false,
+		internal: allele.internal ?? false,
+		obsolete: false,
+		references: allele.references?.length ? structuredClone(allele.references) : undefined,
+		relatedNotes: copyRows(allele.relatedNotes),
+		alleleSymbol: copyRow(allele.alleleSymbol),
+		alleleFullName: copyRow(allele.alleleFullName),
+		alleleSynonyms: copyRows(allele.alleleSynonyms),
+		alleleMutationTypes: copyRows(allele.alleleMutationTypes),
+		alleleInheritanceModes: copyRows(allele.alleleInheritanceModes),
+		alleleFunctionalImpacts: copyRows(allele.alleleFunctionalImpacts),
+		alleleNomenclatureEvents: copyRows(allele.alleleNomenclatureEvents),
+		alleleGermlineTransmissionStatus: copyRow(allele.alleleGermlineTransmissionStatus),
+		alleleDatabaseStatus: copyRow(allele.alleleDatabaseStatus),
+		alleleGeneAssociations,
+	};
+};
+
+// The value each single-value field is compared by, with an unset or blank value read as none.
+const SINGLE_VALUE_FIELD_VALUES = {
+	taxon: (allele) => allele?.taxon?.curie || null,
+	inCollection: (allele) => allele?.inCollection?.name || null,
+	isExtinct: (allele) => allele?.isExtinct ?? null,
+	internal: (allele) => allele?.internal ?? null,
+	obsolete: (allele) => allele?.obsolete ?? null,
+};
+
+export const SINGLE_VALUE_FIELDS = Object.keys(SINGLE_VALUE_FIELD_VALUES);
+
+/**
+ * The single-value fields whose value on the form differs from the allele as last saved.
+ *
+ * @param {Object} allele the allele as the form holds it
+ * @param {Object} [savedAllele] the allele as the API last returned it
+ * @returns {Set<string>} the pending fields' names, none while there is no saved allele
+ */
+export const getPendingSingleValueFields = (allele, savedAllele) => {
+	if (!savedAllele) return new Set();
+	return new Set(
+		SINGLE_VALUE_FIELDS.filter(
+			(field) => SINGLE_VALUE_FIELD_VALUES[field](allele) !== SINGLE_VALUE_FIELD_VALUES[field](savedAllele)
+		)
+	);
+};
+
 export const processErrors = (data, dispatch, allele) => {
 	const errorMap = data?.supplementalData?.errorMap;
 	const errorMessages = data?.errorMessages;

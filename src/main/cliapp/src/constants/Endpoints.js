@@ -7,6 +7,7 @@ export const Endpoints = Object.freeze({
 		ANTIBODY: 'antibody',
 		BIOLOGICAL_ENTITY: 'biologicalentity',
 		CONSTRUCT: 'construct',
+		CROSS_REFERENCE: 'cross-reference',
 		GENE: 'gene',
 		GENOME_ASSEMBLY: 'genomeassembly',
 		MOLECULE: 'molecule',
@@ -26,6 +27,9 @@ export const Endpoints = Object.freeze({
 	}),
 
 	SlotAnnotation: Object.freeze({
+		AGM_FULL_NAME: 'agmfullnameslotannotation',
+		AGM_SECONDARY_ID: 'agmsecondaryidslotannotation',
+		AGM_SYNONYM: 'agmsynonymslotannotation',
 		ALLELE_DATABASE_STATUS: 'alleledatabasestatusslotannotation',
 		ALLELE_FULL_NAME: 'allelefullnameslotannotation',
 		ALLELE_FUNCTIONAL_IMPACT: 'allelefunctionalimpactslotannotation',

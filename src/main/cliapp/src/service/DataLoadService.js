@@ -67,11 +67,13 @@ export class DataLoadService extends BaseAuthService {
 
 	downloadExceptions(id, setIsLoading) {
 		setIsLoading(true);
-		this.api.get(`/bulkloadfilehistory/${id}/download`, { responseType: 'blob' }).then((response) => {
-			const match = response.headers['content-disposition'].match(/filename="([^"]+)"/);
-			saveAs(response.data, match[1]);
-			setIsLoading(false);
-		});
+		return this.api
+			.get(`/bulkloadfilehistory/${id}/download`, { responseType: 'blob' })
+			.then((response) => {
+				const match = response.headers['content-disposition'].match(/filename="([^"]+)"/);
+				saveAs(response.data, match[1]);
+			})
+			.finally(() => setIsLoading(false));
 	}
 
 	deleteLoadFile(id) {
@@ -187,6 +189,6 @@ export class DataLoadService extends BaseAuthService {
 	}
 
 	getDataProviders() {
-		return ['FB', 'MGI', 'HUMAN', 'RGD', 'SGD', 'WB', 'XB', 'ZFIN', 'SARSCoV2'];
+		return ['FB', 'MGI', 'HUMAN', 'RGD', 'SGD', 'WB', 'XB', 'ZFIN'];
 	}
 }

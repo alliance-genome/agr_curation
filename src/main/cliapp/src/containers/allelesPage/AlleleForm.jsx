@@ -18,6 +18,7 @@ import { GermilineTransmissionStatusForm } from './germlineTransmissionStatus/Ge
 import { ReferencesForm } from './referencesTable/ReferencesForm';
 import { NomenclatureEventsForm } from './nomenclatureEvents/NomenclatureEventsForm';
 import { AlleleGeneAssociationsForm } from './alleleGeneAssociations/AlleleGeneAssociationsForm';
+import { CrossReferencesForm } from './crossReferences/CrossReferencesForm';
 import { FormSection } from '../../components/FormFieldVisibility';
 import { getEffectiveModAbbreviation } from '../../utils/affiliation';
 
@@ -54,6 +55,7 @@ export const ALLELE_DETAIL_TOGGLEABLE_FIELDS = [
 	'Related Notes',
 	'Allele Gene Associations',
 	'Data Provider',
+	'Cross References',
 	'Updated By',
 	'Date Updated',
 	'Created By',
@@ -83,8 +85,9 @@ const fieldDetailsColumnSize = 'col-5';
  * @param {(field: string) => boolean} props.isVisible - whether a named section renders
  * @param {'detail'|'create'} [props.mode] - 'create' drops the fields the server assigns and
  *   makes the two identifiers editable
+ * @param {Set<string>} [props.pendingFields] - the single-value fields to mark as having pending edits
  */
-export const AlleleForm = ({ state, dispatch, isVisible, mode = 'detail' }) => {
+export const AlleleForm = ({ state, dispatch, isVisible, mode = 'detail', pendingFields }) => {
 	const isCreate = mode === 'create';
 
 	const onTaxonValueChange = (event) => {
@@ -203,6 +206,7 @@ export const AlleleForm = ({ state, dispatch, isVisible, mode = 'detail' }) => {
 				<TaxonDetailPageEditor
 					taxon={state.allele?.taxon}
 					required={isCreate}
+					isPending={pendingFields?.has('taxon')}
 					onTaxonValueChange={onTaxonValueChange}
 					widgetColumnSize={widgetColumnSize}
 					labelColumnSize={labelColumnSize}
@@ -239,6 +243,7 @@ export const AlleleForm = ({ state, dispatch, isVisible, mode = 'detail' }) => {
 				<InCollectionDetailPageEditor
 					inCollection={state.allele?.inCollection}
 					onInCollectionValueChange={onInCollectionValueChange}
+					isPending={pendingFields?.has('inCollection')}
 					widgetColumnSize={widgetColumnSize}
 					labelColumnSize={labelColumnSize}
 					fieldDetailsColumnSize={fieldDetailsColumnSize}
@@ -250,6 +255,7 @@ export const AlleleForm = ({ state, dispatch, isVisible, mode = 'detail' }) => {
 				<BooleanDetailPageEditor
 					value={state.allele?.isExtinct}
 					name={'isExtinct'}
+					isPending={pendingFields?.has('isExtinct')}
 					label={'Is Extinct'}
 					onValueChange={onIsExtinctValueChange}
 					widgetColumnSize={widgetColumnSize}
@@ -275,6 +281,10 @@ export const AlleleForm = ({ state, dispatch, isVisible, mode = 'detail' }) => {
 					labelColumnSize={labelColumnSize}
 					fieldDetailsColumnSize={fieldDetailsColumnSize}
 				/>
+			</FormSection>
+
+			<FormSection isVisible={isVisible('Cross References')}>
+				<CrossReferencesForm mode={mode} />
 			</FormSection>
 
 			<FormSection isVisible={!isCreate && isVisible('Updated By')}>
@@ -321,6 +331,7 @@ export const AlleleForm = ({ state, dispatch, isVisible, mode = 'detail' }) => {
 				<BooleanDetailPageEditor
 					value={state.allele?.internal}
 					name={'internal'}
+					isPending={pendingFields?.has('internal')}
 					label={'Internal'}
 					onValueChange={onInternalValueChange}
 					widgetColumnSize={widgetColumnSize}
@@ -334,6 +345,7 @@ export const AlleleForm = ({ state, dispatch, isVisible, mode = 'detail' }) => {
 				<BooleanDetailPageEditor
 					value={state.allele?.obsolete}
 					name={'obsolete'}
+					isPending={pendingFields?.has('obsolete')}
 					label={'Obsolete'}
 					onValueChange={onObsoleteValueChange}
 					widgetColumnSize={widgetColumnSize}

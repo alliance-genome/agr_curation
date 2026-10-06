@@ -14,6 +14,7 @@ import org.alliancegenome.curation_api.dao.AlleleDAO;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.Construct;
+import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.Reference;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
@@ -45,6 +46,7 @@ import org.alliancegenome.curation_api.services.validation.dto.slotAnnotations.A
 import org.alliancegenome.curation_api.services.validation.dto.slotAnnotations.AlleleSynonymSlotAnnotationValidator;
 import org.alliancegenome.curation_api.services.CurieMintService;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
@@ -70,7 +72,7 @@ public class AlleleValidator extends GenomicEntityValidator<Allele> {
 	
 	private String errorMessage;
 
-	public Allele validateAlleleUpdate(Allele uiEntity, Boolean updateAllAssociations) {
+	public Allele validateAlleleUpdate(Allele uiEntity, Boolean updateAllAssociations, Boolean manageCrossReferences) {
 		response = new ObjectResponse<>(uiEntity);
 		errorMessage = "Could not update Allele: [" + uiEntity.getIdentifier() + "]";
 
@@ -88,7 +90,7 @@ public class AlleleValidator extends GenomicEntityValidator<Allele> {
 
 		dbEntity = (Allele) validateAuditedObjectFields(uiEntity, dbEntity, false);
 
-		return validateAllele(uiEntity, dbEntity, updateAllAssociations);
+		return validateAllele(uiEntity, dbEntity, updateAllAssociations, manageCrossReferences);
 	}
 
 	public Allele validateAlleleCreate(Allele uiEntity) {
@@ -101,15 +103,20 @@ public class AlleleValidator extends GenomicEntityValidator<Allele> {
 
 		dbEntity = (Allele) validateAuditedObjectFields(uiEntity, dbEntity, true);
 
-		return validateAllele(uiEntity, dbEntity, true);
+		// POST /allele serializes AlleleDetailView, which omits crossReferences, so the create payload never
+		// carries them; they are written through the allele's cross-references sub-resource.
+		return validateAllele(uiEntity, dbEntity, true, false);
 	}
 
-	public Allele validateAllele(Allele uiEntity, Allele dbEntity, Boolean updateAllAssociations) {
+	public Allele validateAllele(Allele uiEntity, Allele dbEntity, Boolean updateAllAssociations, Boolean manageCrossReferences) {
+
+		String storedSymbolText = dbEntity.getAlleleSymbol() == null ? null : dbEntity.getAlleleSymbol().getDisplayText();
+		Long storedTaxonId = dbEntity.getTaxon() == null ? null : dbEntity.getTaxon().getId();
 
 		// An allele is identified by its AGRKB curie, minted below for a new allele and already
 		// present on a loaded one, so neither MOD identifier is required. Passed for updates too:
 		// an allele created here has neither, and requiring one would reject its first edit.
-		dbEntity = validateGenomicEntityFields(uiEntity, dbEntity, VocabularyConstants.ALLELE_NOTE_TYPES_VOCABULARY_TERM_SET, false);
+		dbEntity = validateGenomicEntityFields(uiEntity, dbEntity, VocabularyConstants.ALLELE_NOTE_TYPES_VOCABULARY_TERM_SET, false, manageCrossReferences);
 
 		List<Reference> references = validateReferences(uiEntity, dbEntity);
 		dbEntity.setReferences(references);
@@ -148,6 +155,7 @@ public class AlleleValidator extends GenomicEntityValidator<Allele> {
 		}
 
 		AlleleSymbolSlotAnnotation symbol = validateAlleleSymbol(uiEntity, dbEntity);
+		validateSymbolUniqueInTaxon(symbol, dbEntity, storedSymbolText, storedTaxonId);
 		AlleleFullNameSlotAnnotation fullName = validateAlleleFullName(uiEntity, dbEntity);
 		AlleleGermlineTransmissionStatusSlotAnnotation germlineTransmissionStatus = validateAlleleGermlineTransmissionStatus(uiEntity, dbEntity);
 		AlleleDatabaseStatusSlotAnnotation databaseStatus = validateAlleleDatabaseStatus(uiEntity, dbEntity);
@@ -486,6 +494,35 @@ public class AlleleValidator extends GenomicEntityValidator<Allele> {
 		return symbolResponse.getEntity();
 	}
 
+	/**
+	 * Rejects a symbol already used by another non-obsolete allele of the same taxon. An existing allele is
+	 * checked only when its symbol or taxon changes, so alleles loaded with a shared symbol stay editable.
+	 *
+	 * @param symbol validated symbol, or null when the symbol failed validation
+	 * @param dbEntity allele being validated, with its taxon already validated
+	 * @param storedSymbolText symbol display text stored before this request, or null for a new allele
+	 * @param storedTaxonId taxon id stored before this request, or null for a new allele
+	 */
+	private void validateSymbolUniqueInTaxon(AlleleSymbolSlotAnnotation symbol, Allele dbEntity, String storedSymbolText, Long storedTaxonId) {
+		if (symbol == null || StringUtils.isBlank(symbol.getDisplayText()) || dbEntity.getTaxon() == null) {
+			return;
+		}
+
+		Long taxonId = dbEntity.getTaxon().getId();
+		if (dbEntity.getId() != null && symbol.getDisplayText().equals(storedSymbolText) && taxonId.equals(storedTaxonId)) {
+			return;
+		}
+
+		if (alleleDAO.hasAlleleWithSymbolAndTaxon(symbol.getDisplayText(), taxonId, dbEntity.getId())) {
+			// reported on the taxon and on the symbol's display text, keyed as the symbol's own errors are so the
+			// form shows it on the symbol row
+			String message = ValidationConstants.ALLELE_SYMBOL_NOT_UNIQUE_IN_TAXON_MESSAGE;
+			addMessageResponse("alleleSymbol", "displayText - " + message);
+			response.addErrorMessages("alleleSymbol", Map.of("displayText", message));
+			addMessageResponse("taxon", message);
+		}
+	}
+
 	private AlleleFullNameSlotAnnotation validateAlleleFullName(Allele uiEntity, Allele dbEntity) {
 		if (uiEntity.getAlleleFullName() == null) {
 			return null;
@@ -728,5 +765,13 @@ public class AlleleValidator extends GenomicEntityValidator<Allele> {
 		}
 
 		return validatedConstructAssociations;
+	}
+
+	// An allele's cross references must each have a display name, name a page and have a curie that matches
+	// its descriptor. These rules are applied here rather than for every genomic entity because other types hold
+	// stored rows that break them.
+	@Override
+	public List<CrossReference> validateCrossReferences(Allele uiEntity, Allele dbEntity) {
+		return crossReferenceValidator.validateCrossReferences(uiEntity.getCrossReferences(), "crossReferences", response, true);
 	}
 }
