@@ -83,6 +83,7 @@
         "prefix": "TEST"
       }
     },
-    "secondary_identifiers": ["secondary_test"]
+    "secondary_identifiers": ["secondary_test"],
+    "placeholder": true
   }
 ]
