@@ -42,7 +42,7 @@ class BulkLoadJobExecutorFanOutTest {
 	private static final List<String> CONSTRUCT_ASSOCIATION_SETS = List.of(
 		"construct_cassette_association_ingest_set", "construct_genomic_entity_association_ingest_set",
 		"cassette_genomic_entity_association_ingest_set", "cassette_transgenic_tool_association_ingest_set",
-		"cassette_str_association_ingest_set");
+		"cassette_str_association_ingest_set", "transgenic_tool_transgenic_tool_association_ingest_set");
 
 	private final BulkLoadJobExecutor executor = new BulkLoadJobExecutor();
 

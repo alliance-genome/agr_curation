@@ -31,6 +31,7 @@ import org.alliancegenome.curation_api.jobs.executors.associations.CassetteGenom
 import org.alliancegenome.curation_api.jobs.executors.associations.CassetteStrAssociationExecutor;
 import org.alliancegenome.curation_api.jobs.executors.associations.CassetteTransgenicToolAssociationExecutor;
 import org.alliancegenome.curation_api.jobs.executors.associations.ConstructCassetteAssociationExecutor;
+import org.alliancegenome.curation_api.jobs.executors.associations.TransgenicToolTransgenicToolAssociationExecutor;
 import org.alliancegenome.curation_api.jobs.executors.associations.AgmAlleleAssociationExecutor;
 import org.alliancegenome.curation_api.jobs.executors.associations.AgmStrAssociationExecutor;
 import org.alliancegenome.curation_api.jobs.executors.associations.AlleleConstructAssociationExecutor;
@@ -70,6 +71,7 @@ public class BulkLoadJobExecutor {
 	@Inject CassetteGenomicEntityAssociationExecutor cassetteGenomicEntityAssociationExecutor;
 	@Inject CassetteTransgenicToolAssociationExecutor cassetteTransgenicToolAssociationExecutor;
 	@Inject CassetteStrAssociationExecutor cassetteStrAssociationExecutor;
+	@Inject TransgenicToolTransgenicToolAssociationExecutor transgenicToolTransgenicToolAssociationExecutor;
 	@Inject AntibodyExecutor antibodyExecutor;
 	@Inject AlleleGeneAssociationExecutor alleleGeneAssociationExecutor;
 	@Inject AlleleConstructAssociationExecutor alleleConstructAssociationExecutor;
@@ -177,6 +179,9 @@ public class BulkLoadJobExecutor {
 			if (loadType == CASSETTE_STR_ASSOCIATION || loadTypeOwnsIngestSet(loadType, "cassette_str_association_ingest_set")) {
 				cassetteStrAssociationExecutor.execLoad(bulkLoadFileHistory, ingestDto, cleanUp);
 			}
+			if (loadTypeOwnsIngestSet(loadType, "transgenic_tool_transgenic_tool_association_ingest_set")) {
+				transgenicToolTransgenicToolAssociationExecutor.execLoad(bulkLoadFileHistory, ingestDto, cleanUp);
+			}
 			// The AGM/STR set is named for sequence_targeting_reagent in the schema, not for
 			// the agmStr abbreviation the Java field uses.
 			if (loadType == AGM_ASSOCIATION || loadTypeOwnsIngestSet(loadType, "agm_sequence_targeting_reagent_association_ingest_set")) {
@@ -250,9 +255,8 @@ public class BulkLoadJobExecutor {
 	 * CONSTRUCT_ASSOCIATION_&lt;MOD&gt; submission carries their associations. Listing the sets each
 	 * owns keeps them from straying into the rest of a FULL_INGEST when the two overlap in a file.
 	 *
-	 * Two sets the MODs ship are deliberately absent because nothing can read them yet:
-	 * str_ingest_set, which has no LinkML DTO (only the FMS SequenceTargetingReagent path),
-	 * and transgenic_tool_transgenic_tool_association_ingest_set, which is still unimplemented.
+	 * One set the MODs ship is deliberately absent because nothing can read it yet:
+	 * str_ingest_set, which has no LinkML DTO (only the FMS SequenceTargetingReagent path).
 	 */
 	private static final Set<String> CONSTRUCT_INGEST_SETS = Set.of(
 		"construct_ingest_set",
@@ -264,7 +268,8 @@ public class BulkLoadJobExecutor {
 		"construct_genomic_entity_association_ingest_set",
 		"cassette_genomic_entity_association_ingest_set",
 		"cassette_transgenic_tool_association_ingest_set",
-		"cassette_str_association_ingest_set");
+		"cassette_str_association_ingest_set",
+		"transgenic_tool_transgenic_tool_association_ingest_set");
 
 	/** Load types that carry more than one kind of entity and so are dispatched by file content. */
 	boolean fansOut(BackendBulkLoadType loadType) {
