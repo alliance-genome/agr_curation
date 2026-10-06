@@ -129,7 +129,8 @@ public class IT_0110_CassetteBulkUploadITCase extends BaseITCase {
 			body("entity.cassetteUses[0].uses", hasSize(1)).
 			body("entity.cassetteUses[0].uses[0].curie", is("FBcv:0003012")).
 			body("entity.dataProvider.abbreviation", is(dataProvider)).
-			body("entity.secondaryIdentifiers", hasSize(1));
+			body("entity.secondaryIdentifiers", hasSize(1)).
+			body("entity.placeholder", is(true));
 	}
 
 	@Test
@@ -162,7 +163,9 @@ public class IT_0110_CassetteBulkUploadITCase extends BaseITCase {
 			body("entity.cassetteComponents[0].relatedNotes[0].noteType.name", is(noteType2.getName())).
 			body("entity.cassetteUses", hasSize(1)).
 			body("entity.cassetteUses[0].uses[0].curie", is("FBcv:0003013")).
-			body("entity.dataProvider.abbreviation", is(dataProvider2));
+			body("entity.dataProvider.abbreviation", is(dataProvider2)).
+			// UD_01 leaves placeholder out, which keeps the flag AF_01 set (MGI never sends it)
+			body("entity.placeholder", is(true));
 	}
 
 	/**
