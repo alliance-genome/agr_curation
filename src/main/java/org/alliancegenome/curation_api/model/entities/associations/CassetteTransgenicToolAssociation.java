@@ -51,7 +51,7 @@ public class CassetteTransgenicToolAssociation extends CassetteAssociation {
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
 	@JsonView({ CurationView.FieldsOnly.class })
-	@JsonIgnoreProperties({"cassetteTransgenicToolAssociations"})
+	@JsonIgnoreProperties({"cassetteTransgenicToolAssociations", "transgenicToolTransgenicToolAssociations"})
 	private TransgenicTool cassetteTransgenicToolAssociationObject;
 
 	@IndexedEmbedded(includePaths = {"freeText", "noteType.name", "references.curie",
