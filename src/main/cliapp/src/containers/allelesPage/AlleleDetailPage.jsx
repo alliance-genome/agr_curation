@@ -9,6 +9,7 @@ import { AlleleService } from '../../service/AlleleService';
 import ErrorBoundary from '../../components/Error/ErrorBoundary';
 import { useAlleleReducer } from './useAlleleReducer';
 import { StickyHeader } from '../../components/StickyHeader';
+import { FitTextHeading } from '../../components/FitTextHeading';
 import { LoadingOverlay } from '../../components/LoadingOverlay';
 import { validateRequiredAutosuggestField, processErrors, getPendingSingleValueFields } from './utils';
 import { getIdentifier } from '../../utils/utils';
@@ -236,8 +237,8 @@ export default function AlleleDetailPage() {
 			<ErrorBoundary>
 				<StickyHeader>
 					<Splitter className="bg-primary-reverse border-none lg:h-5rem" gutterSize={0}>
-						<SplitterPanel size={40} className="flex justify-content-start ml-5 py-3 ">
-							<h1 dangerouslySetInnerHTML={{ __html: headerText() }} />
+						<SplitterPanel size={40} className="flex justify-content-start min-w-0 ml-5 py-3 ">
+							<FitTextHeading html={headerText()} />
 						</SplitterPanel>
 						<SplitterPanel size={30} className="flex align-items-center justify-content-end gap-2 py-3">
 							<FormFieldVisibilityMenu
