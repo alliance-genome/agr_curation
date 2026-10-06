@@ -57,8 +57,6 @@ public class ConstructExecutor extends LoadFileExecutor {
 		bulkLoadFileHistory.getBulkLoadFile().setRecordCount(constructs.size() + bulkLoadFileHistory.getBulkLoadFile().getRecordCount());
 		bulkLoadFileDAO.merge(bulkLoadFileHistory.getBulkLoadFile());
 
-		bulkLoadFileHistory.setCount("Deleted", constructs.size());
-
 		updateHistory(bulkLoadFileHistory);
 		
 		Set<String> refList = constructs.stream()
@@ -67,9 +65,9 @@ public class ConstructExecutor extends LoadFileExecutor {
 
 		constructService.preLoadReferences(refList);
 
-		boolean success = runLoad(constructService, bulkLoadFileHistory, dataProvider, constructs, constructIdsLoaded);
+		boolean success = runLoad(constructService, bulkLoadFileHistory, dataProvider, constructs, constructIdsLoaded, "Constructs");
 		if (success && cleanUp) {
-			runCleanup(constructService, bulkLoadFileHistory, dataProvider.name(), constructIdsBefore, constructIdsLoaded, "construct");
+			runCleanup(constructService, bulkLoadFileHistory, dataProvider.name(), constructIdsBefore, constructIdsLoaded, "Constructs");
 		}
 		bulkLoadFileHistory.finishLoad();
 		updateHistory(bulkLoadFileHistory);

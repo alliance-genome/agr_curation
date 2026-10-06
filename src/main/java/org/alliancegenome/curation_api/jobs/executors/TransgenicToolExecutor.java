@@ -53,8 +53,6 @@ public class TransgenicToolExecutor extends LoadFileExecutor {
 		bulkLoadFileHistory.getBulkLoadFile().setRecordCount(transgenicTools.size() + bulkLoadFileHistory.getBulkLoadFile().getRecordCount());
 		bulkLoadFileDAO.merge(bulkLoadFileHistory.getBulkLoadFile());
 
-		bulkLoadFileHistory.setCount("Deleted", transgenicTools.size());
-
 		updateHistory(bulkLoadFileHistory);
 
 		Set<String> refList = transgenicTools.stream()
@@ -63,9 +61,9 @@ public class TransgenicToolExecutor extends LoadFileExecutor {
 
 		transgenicToolService.preLoadReferences(refList);
 
-		boolean success = runLoad(transgenicToolService, bulkLoadFileHistory, dataProvider, transgenicTools, idsLoaded);
+		boolean success = runLoad(transgenicToolService, bulkLoadFileHistory, dataProvider, transgenicTools, idsLoaded, "Transgenic Tools");
 		if (success && cleanUp) {
-			runCleanup(transgenicToolService, bulkLoadFileHistory, dataProvider.name(), idsBefore, idsLoaded, "transgenic tool");
+			runCleanup(transgenicToolService, bulkLoadFileHistory, dataProvider.name(), idsBefore, idsLoaded, "Transgenic Tools");
 		}
 		bulkLoadFileHistory.finishLoad();
 		updateHistory(bulkLoadFileHistory);
