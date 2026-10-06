@@ -1,5 +1,5 @@
 import { fireEvent, waitFor } from '@testing-library/react';
-import { makeEditorOptions, renderInTable, emptyErrorMessagesRef } from '../../__tests__/editorTestUtils';
+import { makeEditorOptions, renderInTable } from '../../__tests__/editorTestUtils';
 import { SearchService } from '../../../../service/SearchService';
 import { AUTOCOMPLETE_CONFIGS, getAutocompleteFields } from '../../../../constants/FilterFields';
 import { setSpeciesTaxaCache } from '../../../../constants/speciesTaxa';
@@ -296,9 +296,7 @@ const setCuratorGroups = (groups) =>
 	);
 
 const searchParamsFor = async (Editor, row = {}) => {
-	const result = renderInTable(
-		<Editor editorOptions={makeEditorOptions(row)} errorMessagesRef={emptyErrorMessagesRef} />
-	);
+	const result = renderInTable(<Editor editorOptions={makeEditorOptions(row)} />);
 	fireEvent.change(result.container.querySelector('input'), { target: { value: QUERY } });
 	await waitFor(() => expect(SearchService.prototype.search).toHaveBeenCalled(), { timeout: 3000 });
 	return SearchService.prototype.search.mock.calls[0];

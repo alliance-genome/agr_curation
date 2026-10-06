@@ -33,8 +33,6 @@ export const VocabularyTermSetTable = () => {
 	const toast_topleft = useRef(null);
 	const toast_topright = useRef(null);
 	const [errorMessages, setErrorMessages] = useState({});
-	const errorMessagesRef = useRef();
-	errorMessagesRef.current = errorMessages;
 
 	let vocabularyTermSetService = new VocabularyTermSetService();
 
@@ -77,9 +75,7 @@ export const VocabularyTermSetTable = () => {
 				sortable: true,
 				body: (rowData) => <StringListTemplate list={rowData.memberTerms?.map((memberTerm) => memberTerm?.name)} />,
 				filterConfig: FILTER_CONFIGS.vocabularyMemberTermsFilterConfig,
-				editor: (editorOptions) => (
-					<MemberTermsTableEditor editorOptions={editorOptions} errorMessagesRef={errorMessagesRef} />
-				),
+				editor: (editorOptions) => <MemberTermsTableEditor editorOptions={editorOptions} />,
 			},
 			{
 				field: 'vocabularyTermSetDescription',

@@ -89,8 +89,6 @@ export const DiseaseAnnotationsTable = () => {
 	errorMessagesRef.current = errorMessages;
 
 	const [uiErrorMessages, setUiErrorMessages] = useState([]);
-	const uiErrorMessagesRef = useRef();
-	uiErrorMessagesRef.current = uiErrorMessages;
 
 	const searchService = new SearchService();
 
@@ -315,9 +313,7 @@ export const DiseaseAnnotationsTable = () => {
 				),
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.evidenceCodesFilterConfig,
-				editor: (editorOptions) => (
-					<EvidenceCodesTableEditor editorOptions={editorOptions} errorMessagesRef={errorMessagesRef} />
-				),
+				editor: (editorOptions) => <EvidenceCodesTableEditor editorOptions={editorOptions} />,
 			},
 			{
 				field: 'with',
@@ -326,9 +322,7 @@ export const DiseaseAnnotationsTable = () => {
 				body: (rowData) => <GenomicEntityListTemplate genomicEntities={rowData.with} />,
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.withFilterConfig,
-				editor: (editorOptions) => (
-					<WithTableEditor editorOptions={editorOptions} errorMessagesRef={errorMessagesRef} />
-				),
+				editor: (editorOptions) => <WithTableEditor editorOptions={editorOptions} />,
 			},
 			{
 				field: 'relatedNotes',
@@ -491,13 +485,7 @@ export const DiseaseAnnotationsTable = () => {
 				body: (rowData) => <GenomicEntityListTemplate genomicEntities={rowData.diseaseGeneticModifierAgms} />,
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.geneticModifierAgmsFilterConfig,
-				editor: (editorOptions) => (
-					<DiseaseGeneticModifierAgmsTableEditor
-						editorOptions={editorOptions}
-						errorMessagesRef={errorMessagesRef}
-						uiErrorMessagesRef={uiErrorMessagesRef}
-					/>
-				),
+				editor: (editorOptions) => <DiseaseGeneticModifierAgmsTableEditor editorOptions={editorOptions} />,
 			},
 			{
 				field: 'diseaseGeneticModifierAlleles',
@@ -506,13 +494,7 @@ export const DiseaseAnnotationsTable = () => {
 				body: (rowData) => <GenomicEntityListTemplate genomicEntities={rowData.diseaseGeneticModifierAlleles} />,
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.geneticModifierAllelesFilterConfig,
-				editor: (editorOptions) => (
-					<DiseaseGeneticModifierAllelesTableEditor
-						editorOptions={editorOptions}
-						errorMessagesRef={errorMessagesRef}
-						uiErrorMessagesRef={uiErrorMessagesRef}
-					/>
-				),
+				editor: (editorOptions) => <DiseaseGeneticModifierAllelesTableEditor editorOptions={editorOptions} />,
 			},
 			{
 				field: 'diseaseGeneticModifierGenes',
@@ -521,13 +503,7 @@ export const DiseaseAnnotationsTable = () => {
 				body: (rowData) => <GenomicEntityListTemplate genomicEntities={rowData.diseaseGeneticModifierGenes} />,
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.geneticModifierGenesFilterConfig,
-				editor: (editorOptions) => (
-					<DiseaseGeneticModifierGenesTableEditor
-						editorOptions={editorOptions}
-						errorMessagesRef={errorMessagesRef}
-						uiErrorMessagesRef={uiErrorMessagesRef}
-					/>
-				),
+				editor: (editorOptions) => <DiseaseGeneticModifierGenesTableEditor editorOptions={editorOptions} />,
 			},
 			{
 				field: 'inferredGene.geneSymbol.displayText',
@@ -545,7 +521,7 @@ export const DiseaseAnnotationsTable = () => {
 				filterConfig: FILTER_CONFIGS.assertedGenesFilterConfig,
 				editor: (editorOptions) => {
 					if (editorOptions.rowData.type === 'GeneDiseaseAnnotation') return null;
-					return <AssertedGenesTableEditor editorOptions={editorOptions} errorMessagesRef={errorMessagesRef} />;
+					return <AssertedGenesTableEditor editorOptions={editorOptions} />;
 				},
 			},
 			{
@@ -564,7 +540,7 @@ export const DiseaseAnnotationsTable = () => {
 				filterConfig: FILTER_CONFIGS.assertedAllelesFilterConfig,
 				editor: (editorOptions) => {
 					if (editorOptions.rowData.type !== 'AGMDiseaseAnnotation') return null;
-					return <AssertedAllelesTableEditor editorOptions={editorOptions} errorMessagesRef={errorMessagesRef} />;
+					return <AssertedAllelesTableEditor editorOptions={editorOptions} />;
 				},
 			},
 			{

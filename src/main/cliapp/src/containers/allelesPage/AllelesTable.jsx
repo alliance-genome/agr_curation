@@ -737,9 +737,7 @@ export const AllelesTable = () => {
 				),
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.referencesFilterConfig,
-				editor: (editorOptions) => (
-					<ReferencesTableEditor editorOptions={editorOptions} errorMessagesRef={errorMessagesRef} />
-				),
+				editor: (editorOptions) => <ReferencesTableEditor editorOptions={editorOptions} />,
 			},
 			{
 				field: 'alleleInheritanceModes',
