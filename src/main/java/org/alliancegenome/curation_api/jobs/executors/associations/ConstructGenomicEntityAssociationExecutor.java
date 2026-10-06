@@ -20,6 +20,8 @@ import lombok.extern.jbosslog.JBossLog;
 @ApplicationScoped
 public class ConstructGenomicEntityAssociationExecutor extends LoadFileExecutor {
 
+	private static final String INGEST_SET = "construct_genomic_entity_association_ingest_set";
+
 	@Inject ConstructGenomicEntityAssociationService constructGenomicEntityAssociationService;
 
 	@Override
@@ -51,12 +53,11 @@ public class ConstructGenomicEntityAssociationExecutor extends LoadFileExecutor 
 		bulkLoadFileHistory.getBulkLoadFile().setRecordCount(associations.size() + bulkLoadFileHistory.getBulkLoadFile().getRecordCount());
 		bulkLoadFileDAO.merge(bulkLoadFileHistory.getBulkLoadFile());
 
-		bulkLoadFileHistory.setCount(associations.size());
 		updateHistory(bulkLoadFileHistory);
 
-		boolean success = runLoad(constructGenomicEntityAssociationService, bulkLoadFileHistory, dataProvider, associations, associationIdsLoaded);
+		boolean success = runLoad(constructGenomicEntityAssociationService, bulkLoadFileHistory, dataProvider, associations, associationIdsLoaded, countLabel(INGEST_SET));
 		if (cleanUp && success) {
-			runCleanup(constructGenomicEntityAssociationService, bulkLoadFileHistory, dataProvider.name(), associationIdsBefore, associationIdsLoaded, "construct genomic entity association");
+			runCleanup(constructGenomicEntityAssociationService, bulkLoadFileHistory, dataProvider.name(), associationIdsBefore, associationIdsLoaded, countLabel(INGEST_SET));
 		}
 		bulkLoadFileHistory.finishLoad();
 		updateHistory(bulkLoadFileHistory);
