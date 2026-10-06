@@ -17,7 +17,7 @@ export const FormTableWrapper = ({
 	isPending = false,
 }) => {
 	return (
-		<div className={isPending ? 'grid bg-yellow-50 border-left-3 border-yellow-500' : 'grid'}>
+		<div className={isPending ? 'grid border-left-3 border-yellow-500' : 'grid'}>
 			<div className="col-12">
 				<div className="mb-3 grid">
 					{/* The grid's gutter, so the title lines up with the table's left edge below it. */}

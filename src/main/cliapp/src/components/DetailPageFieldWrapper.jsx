@@ -20,7 +20,7 @@ export const DetailPageFieldWrapper = ({
 	isPending = false,
 }) => {
 	return (
-		<div className={isPending ? 'grid bg-yellow-50 border-left-3 border-yellow-500' : 'grid'}>
+		<div className={isPending ? 'grid border-left-3 border-yellow-500' : 'grid'}>
 			<div className={labelColumnSize}>
 				<h2 htmlFor={fieldName?.toLowerCase()}>
 					{required && <RequiredFieldMarker />}

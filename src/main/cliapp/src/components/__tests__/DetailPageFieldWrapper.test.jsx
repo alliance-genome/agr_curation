@@ -20,13 +20,13 @@ describe('DetailPageFieldWrapper', () => {
 		const { container } = renderWrapper();
 
 		expect(screen.queryByText('Pending Edits!')).not.toBeInTheDocument();
-		expect(container.firstChild).not.toHaveClass('bg-yellow-50');
+		expect(container.firstChild).not.toHaveClass('border-left-3');
 	});
 
 	it('Highlights the field and says it has pending edits when pending', () => {
 		const { container } = renderWrapper({ isPending: true });
 
 		expect(screen.getByText('Pending Edits!')).toBeInTheDocument();
-		expect(container.firstChild).toHaveClass('bg-yellow-50');
+		expect(container.firstChild).toHaveClass('border-left-3');
 	});
 });
