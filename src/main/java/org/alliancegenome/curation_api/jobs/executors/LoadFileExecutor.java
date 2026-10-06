@@ -7,6 +7,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.zip.GZIPInputStream;
 
 import org.alliancegenome.curation_api.config.RestDefaultObjectMapper;
@@ -234,6 +235,17 @@ public class LoadFileExecutor {
 		runLoad(service, history, dataProvider, objectList, idsLoaded, true, "Records");
 		history.finishLoad();
 		return new LoadHistoryResponce(history);
+	}
+
+	/**
+	 * The history count label for an ingest set: its name without "_ingest_set", underscores as
+	 * spaces and each word capitalised, so cassette_genomic_entity_association_ingest_set counts as
+	 * "Cassette Genomic Entity Association". Executors sharing one history count apart this way.
+	 */
+	protected static String countLabel(String ingestSetName) {
+		return Arrays.stream(StringUtils.removeEnd(ingestSetName, "_ingest_set").split("_"))
+			.map(StringUtils::capitalize)
+			.collect(Collectors.joining(" "));
 	}
 
 	protected <E extends AuditedObject, T extends BaseDTO> boolean runLoad(BaseUpsertServiceInterface<E, T> service, BulkLoadFileHistory history, BackendBulkDataProvider dataProvider, List<T> objectList, List<Long> idsAdded) {
