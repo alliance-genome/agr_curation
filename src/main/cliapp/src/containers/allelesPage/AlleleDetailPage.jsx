@@ -220,11 +220,12 @@ export default function AlleleDetailPage() {
 
 	const headerText = () => {
 		let prefix = 'Allele: ';
-		if (alleleState.allele?.alleleSymbol?.displayText && alleleState.allele?.primaryExternalId) {
-			return `${prefix} ${alleleState.allele.alleleSymbol.displayText} (${alleleState.allele.primaryExternalId})`;
+		const alleleIdentifier = getIdentifier(alleleState.allele);
+		if (alleleState.allele?.alleleSymbol?.displayText && alleleIdentifier) {
+			return `${prefix} ${alleleState.allele.alleleSymbol.displayText} (${alleleIdentifier})`;
 		}
-		if (alleleState.allele?.primaryExternalId) {
-			return `${prefix} ${alleleState.allele.primaryExternalId}`;
+		if (alleleIdentifier) {
+			return `${prefix} ${alleleIdentifier}`;
 		}
 		return 'Allele Detail Page';
 	};
