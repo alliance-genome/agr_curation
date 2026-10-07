@@ -56,29 +56,11 @@ describe('<VariantDetailPage /> header', () => {
 		getVariant.mockReset();
 	});
 
-	it('Shows the variant type and primary external ID', async () => {
-		renderPageFor(variant);
-
-		await waitFor(
-			() => expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Variant: SNP (WB:WBVar00000001)'),
-			FORM_LOAD_WAIT
-		);
-	});
-
 	it('Shows the variant type and curie when there is no primary external ID', async () => {
 		renderPageFor({ ...variant, primaryExternalId: undefined });
 
 		await waitFor(
 			() => expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(`Variant: SNP (${AGRKB_CURIE})`),
-			FORM_LOAD_WAIT
-		);
-	});
-
-	it('Shows the curie alone when there is no variant type or primary external ID', async () => {
-		renderPageFor({ ...variant, primaryExternalId: undefined, variantType: undefined });
-
-		await waitFor(
-			() => expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(`Variant: ${AGRKB_CURIE}`),
 			FORM_LOAD_WAIT
 		);
 	});

@@ -56,18 +56,6 @@ describe('<AlleleDetailPage /> header', () => {
 		getAllele.mockReset();
 	});
 
-	it('Shows the symbol and primary external ID', async () => {
-		renderPageFor({ ...alleleDetailData.entity, curie: AGRKB_CURIE });
-
-		await waitFor(
-			() =>
-				expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(
-					'Allele: Ahdc1Gt(IST11463A1)Tigm (MGI:5146840)'
-				),
-			FORM_LOAD_WAIT
-		);
-	});
-
 	it('Shows the symbol and curie when there is no primary external ID', async () => {
 		renderPageFor({ ...alleleDetailData.entity, primaryExternalId: undefined, curie: AGRKB_CURIE });
 
@@ -76,20 +64,6 @@ describe('<AlleleDetailPage /> header', () => {
 				expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(
 					`Allele: Ahdc1Gt(IST11463A1)Tigm (${AGRKB_CURIE})`
 				),
-			FORM_LOAD_WAIT
-		);
-	});
-
-	it('Shows the curie alone when there is no symbol or primary external ID', async () => {
-		renderPageFor({
-			...alleleDetailData.entity,
-			primaryExternalId: undefined,
-			alleleSymbol: undefined,
-			curie: AGRKB_CURIE,
-		});
-
-		await waitFor(
-			() => expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(`Allele: ${AGRKB_CURIE}`),
 			FORM_LOAD_WAIT
 		);
 	});

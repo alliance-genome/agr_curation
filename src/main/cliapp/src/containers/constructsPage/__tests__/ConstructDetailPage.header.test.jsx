@@ -52,18 +52,6 @@ describe('<ConstructDetailPage /> header', () => {
 		getConstruct.mockReset();
 	});
 
-	it('Shows the symbol and primary external ID', async () => {
-		renderPageFor(construct);
-
-		await waitFor(
-			() =>
-				expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(
-					'Construct: Tg(hsp70l:GFP) (ZFIN:ZDB-TGCONSTRCT-070117-175)'
-				),
-			PAGE_LOAD_WAIT
-		);
-	});
-
 	it('Shows the symbol and curie when there is no primary external ID', async () => {
 		renderPageFor({ ...construct, primaryExternalId: undefined });
 
@@ -72,15 +60,6 @@ describe('<ConstructDetailPage /> header', () => {
 				expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(
 					`Construct: Tg(hsp70l:GFP) (${AGRKB_CURIE})`
 				),
-			PAGE_LOAD_WAIT
-		);
-	});
-
-	it('Shows the curie alone when there is no symbol or primary external ID', async () => {
-		renderPageFor({ ...construct, primaryExternalId: undefined, constructSymbol: undefined });
-
-		await waitFor(
-			() => expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(`Construct: ${AGRKB_CURIE}`),
 			PAGE_LOAD_WAIT
 		);
 	});

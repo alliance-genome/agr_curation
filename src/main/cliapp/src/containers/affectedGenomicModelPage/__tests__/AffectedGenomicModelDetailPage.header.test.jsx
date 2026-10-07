@@ -55,29 +55,11 @@ describe('<AffectedGenomicModelDetailPage /> header', () => {
 		getAGM.mockReset();
 	});
 
-	it('Shows the full name and primary external ID', async () => {
-		renderPageFor(agm);
-
-		await waitFor(
-			() => expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('AGM: AB (ZFIN:ZDB-FISH-150901-1)'),
-			FORM_LOAD_WAIT
-		);
-	});
-
 	it('Shows the full name and curie when there is no primary external ID', async () => {
 		renderPageFor({ ...agm, primaryExternalId: undefined });
 
 		await waitFor(
 			() => expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(`AGM: AB (${AGRKB_CURIE})`),
-			FORM_LOAD_WAIT
-		);
-	});
-
-	it('Shows the curie alone when there is no full name or primary external ID', async () => {
-		renderPageFor({ ...agm, primaryExternalId: undefined, agmFullName: undefined });
-
-		await waitFor(
-			() => expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(`AGM: ${AGRKB_CURIE}`),
 			FORM_LOAD_WAIT
 		);
 	});

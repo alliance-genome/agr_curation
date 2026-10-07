@@ -9,7 +9,7 @@ import { AlleleService } from '../../service/AlleleService';
 import ErrorBoundary from '../../components/Error/ErrorBoundary';
 import { useAlleleReducer } from './useAlleleReducer';
 import { StickyHeader } from '../../components/StickyHeader';
-import { FitTextHeading } from '../../components/FitTextHeading';
+import { DetailPageHeading } from '../../components/DetailPageHeading';
 import { LoadingOverlay } from '../../components/LoadingOverlay';
 import { validateRequiredAutosuggestField, processErrors, getPendingSingleValueFields } from './utils';
 import { getIdentifier } from '../../utils/utils';
@@ -218,18 +218,6 @@ export default function AlleleDetailPage() {
 			</div>
 		);
 
-	const headerText = () => {
-		let prefix = 'Allele: ';
-		const alleleIdentifier = getIdentifier(alleleState.allele);
-		if (alleleState.allele?.alleleSymbol?.displayText && alleleIdentifier) {
-			return `${prefix} ${alleleState.allele.alleleSymbol.displayText} (${alleleIdentifier})`;
-		}
-		if (alleleIdentifier) {
-			return `${prefix} ${alleleIdentifier}`;
-		}
-		return 'Allele Detail Page';
-	};
-
 	return (
 		<>
 			<Toast ref={toastError} position="top-left" />
@@ -239,7 +227,11 @@ export default function AlleleDetailPage() {
 				<StickyHeader>
 					<Splitter className="bg-primary-reverse border-none lg:h-5rem" gutterSize={0}>
 						<SplitterPanel size={40} className="flex justify-content-start min-w-0 ml-5 py-3 ">
-							<FitTextHeading html={headerText()} />
+							<DetailPageHeading
+								entityType="Allele"
+								entity={alleleState.allele}
+								label={alleleState.allele?.alleleSymbol?.displayText}
+							/>
 						</SplitterPanel>
 						<SplitterPanel size={30} className="flex align-items-center justify-content-end gap-2 py-3">
 							<FormFieldVisibilityMenu

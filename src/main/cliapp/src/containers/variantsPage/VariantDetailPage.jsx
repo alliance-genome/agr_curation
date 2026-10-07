@@ -9,13 +9,12 @@ import { VariantService } from '../../service/VariantService';
 import ErrorBoundary from '../../components/Error/ErrorBoundary';
 import { useVariantReducer } from './useVariantReducer';
 import { StickyHeader } from '../../components/StickyHeader';
-import { FitTextHeading } from '../../components/FitTextHeading';
+import { DetailPageHeading } from '../../components/DetailPageHeading';
 import { LoadingOverlay } from '../../components/LoadingOverlay';
 import { buildSavePayload, processErrors } from './utils';
 import { FormFieldVisibilityMenu, useFormFieldVisibility } from '../../components/FormFieldVisibility';
 import { VariantForm, VARIANT_DETAIL_TOGGLEABLE_FIELDS } from './VariantForm';
 import { NewVariantButton } from './NewVariantButton';
-import { getIdentifier } from '../../utils/utils';
 
 export default function VariantDetailPage() {
 	const { identifier } = useParams();
@@ -89,18 +88,6 @@ export default function VariantDetailPage() {
 			</div>
 		);
 
-	const headerText = () => {
-		let prefix = 'Variant: ';
-		const variantIdentifier = getIdentifier(variantState.variant);
-		if (variantState.variant?.variantType?.name && variantIdentifier) {
-			return `${prefix} ${variantState.variant.variantType.name} (${variantIdentifier})`;
-		}
-		if (variantIdentifier) {
-			return `${prefix} ${variantIdentifier}`;
-		}
-		return 'Variant Detail Page';
-	};
-
 	return (
 		<>
 			<Toast ref={toastError} position="top-left" />
@@ -110,7 +97,11 @@ export default function VariantDetailPage() {
 				<StickyHeader>
 					<Splitter className="bg-primary-reverse border-none lg:h-5rem" gutterSize={0}>
 						<SplitterPanel size={45} className="flex justify-content-start min-w-0 ml-5 py-3 ">
-							<FitTextHeading html={headerText()} />
+							<DetailPageHeading
+								entityType="Variant"
+								entity={variantState.variant}
+								label={variantState.variant?.variantType?.name}
+							/>
 						</SplitterPanel>
 						<SplitterPanel size={35} className="flex align-items-center justify-content-end gap-2 py-3">
 							<FormFieldVisibilityMenu
