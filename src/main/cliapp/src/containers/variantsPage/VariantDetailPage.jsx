@@ -15,6 +15,7 @@ import { buildSavePayload, processErrors } from './utils';
 import { FormFieldVisibilityMenu, useFormFieldVisibility } from '../../components/FormFieldVisibility';
 import { VariantForm, VARIANT_DETAIL_TOGGLEABLE_FIELDS } from './VariantForm';
 import { NewVariantButton } from './NewVariantButton';
+import { getIdentifier } from '../../utils/utils';
 
 export default function VariantDetailPage() {
 	const { identifier } = useParams();
@@ -90,14 +91,12 @@ export default function VariantDetailPage() {
 
 	const headerText = () => {
 		let prefix = 'Variant: ';
-		if (variantState.variant?.variantType?.name && variantState.variant?.primaryExternalId) {
-			return `${prefix} ${variantState.variant.variantType.name} (${variantState.variant.primaryExternalId})`;
+		const variantIdentifier = getIdentifier(variantState.variant);
+		if (variantState.variant?.variantType?.name && variantIdentifier) {
+			return `${prefix} ${variantState.variant.variantType.name} (${variantIdentifier})`;
 		}
-		if (variantState.variant?.primaryExternalId) {
-			return `${prefix} ${variantState.variant.primaryExternalId}`;
-		}
-		if (variantState.variant?.curie) {
-			return `${prefix} ${variantState.variant.curie}`;
+		if (variantIdentifier) {
+			return `${prefix} ${variantIdentifier}`;
 		}
 		return 'Variant Detail Page';
 	};
