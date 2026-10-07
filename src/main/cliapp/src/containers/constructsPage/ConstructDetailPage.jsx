@@ -22,6 +22,7 @@ import { SecondaryIdsForm } from './secondaryIds/SecondaryIdsForm';
 import { ReferencesForm } from './references/ReferencesForm';
 import { FreeTextComponentsForm } from './components/FreeTextComponentsForm';
 import { ComponentAssociationsForm } from './genomicAssociations/ComponentAssociationsForm';
+import { getIdentifier } from '../../utils/utils';
 
 export default function ConstructDetailPage() {
 	const { identifier } = useParams();
@@ -57,11 +58,12 @@ export default function ConstructDetailPage() {
 
 	const headerText = () => {
 		let prefix = 'Construct: ';
-		if (constructState.construct?.constructSymbol?.displayText && constructState.construct?.primaryExternalId) {
-			return `${prefix} ${constructState.construct.constructSymbol.displayText} (${constructState.construct.primaryExternalId})`;
+		const constructIdentifier = getIdentifier(constructState.construct);
+		if (constructState.construct?.constructSymbol?.displayText && constructIdentifier) {
+			return `${prefix} ${constructState.construct.constructSymbol.displayText} (${constructIdentifier})`;
 		}
-		if (constructState.construct?.primaryExternalId) {
-			return `${prefix} ${constructState.construct.primaryExternalId}`;
+		if (constructIdentifier) {
+			return `${prefix} ${constructIdentifier}`;
 		}
 		return 'Construct Detail Page';
 	};
