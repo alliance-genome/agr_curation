@@ -141,7 +141,8 @@ const initialAlleleState = {
 	},
 	errorMessages: {},
 	submitted: false,
-	// Whether any field other than the single-value ones has been edited since the allele was last set or reset.
+	// Whether any field other than the single-value ones and single-object sections has been edited since the
+	// allele was last set or reset.
 	hasOtherPendingEdits: false,
 };
 
@@ -269,7 +270,7 @@ const alleleReducer = (draft, action, initialState) => {
 			break;
 		case 'EDIT_OBJECT':
 			draft.allele[action.entityType][action.field] = action.value;
-			draft.hasOtherPendingEdits = true;
+			if (!SINGLE_VALUE_FIELDS.includes(action.entityType)) draft.hasOtherPendingEdits = true;
 			break;
 		case 'ADD_ROW':
 			draft.allele[action.entityType].unshift(action.row);
@@ -284,7 +285,7 @@ const alleleReducer = (draft, action, initialState) => {
 			draft.allele[action.entityType] = action.value;
 			draft.entityStates[action.entityType].editingRows[`${action.value.dataKey}`] = true;
 			draft.entityStates[action.entityType].show = true;
-			draft.hasOtherPendingEdits = true;
+			if (!SINGLE_VALUE_FIELDS.includes(action.entityType)) draft.hasOtherPendingEdits = true;
 			break;
 		case 'DELETE_ROW':
 			draft.allele[action.entityType] = draft.allele[action.entityType].filter((row) => row.dataKey !== action.dataKey);
@@ -297,7 +298,7 @@ const alleleReducer = (draft, action, initialState) => {
 		case 'DELETE_OBJECT':
 			draft.allele[action.entityType] = null;
 			draft.entityStates[action.entityType].show = false;
-			draft.hasOtherPendingEdits = true;
+			if (!SINGLE_VALUE_FIELDS.includes(action.entityType)) draft.hasOtherPendingEdits = true;
 			break;
 		case 'UPDATE_ERROR_MESSAGES':
 			draft.errorMessages = action.errorMessages;

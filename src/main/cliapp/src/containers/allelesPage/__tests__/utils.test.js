@@ -318,3 +318,79 @@ describe('getPendingSingleValueFields', () => {
 		expect([...getPendingSingleValueFields(unset, saved)]).toEqual(expect.arrayContaining(['taxon', 'inCollection']));
 	});
 });
+
+describe('getPendingSingleValueFields single-object sections', () => {
+	const references = [{ curie: 'AGRKB:101' }, { curie: 'AGRKB:102' }];
+	const saved = {
+		alleleSymbol: {
+			id: 1,
+			dataKey: 'saved-symbol',
+			displayText: 'Pax6<sup>Sey</sup>',
+			formatText: 'Pax6<Sey>',
+			synonymUrl: null,
+			nameType: { id: 7, name: 'nomenclature_symbol' },
+			synonymScope: null,
+			internal: false,
+			evidence: references,
+		},
+		alleleFullName: null,
+		alleleGermlineTransmissionStatus: {
+			id: 2,
+			germlineTransmissionStatus: { id: 8, name: 'cell_line' },
+			internal: false,
+			evidence: [],
+		},
+		alleleDatabaseStatus: { id: 3, databaseStatus: { id: 9, name: 'approved' }, internal: false },
+	};
+
+	it('Finds none when each section matches the saved allele apart from its ids and term objects', () => {
+		const allele = structuredClone(saved);
+		allele.alleleSymbol.dataKey = 'form-symbol';
+		allele.alleleSymbol.synonymUrl = '';
+		allele.alleleSymbol.nameType = { name: 'nomenclature_symbol', definition: 'a fuller term' };
+		allele.alleleSymbol.evidence = [...references].reverse();
+		allele.alleleGermlineTransmissionStatus.evidence = undefined;
+
+		expect(getPendingSingleValueFields(allele, saved).size).toBe(0);
+	});
+
+	it('Finds a section with any curator-editable field changed', () => {
+		const symbolEdits = [
+			{ displayText: 'Pax6' },
+			{ formatText: 'Pax6' },
+			{ synonymUrl: 'https://example.org' },
+			{ nameType: { name: 'systematic_name' } },
+			{ synonymScope: { name: 'exact' } },
+			{ internal: true },
+			{ evidence: [references[0]] },
+		];
+
+		symbolEdits.forEach((symbolEdit) => {
+			const allele = { ...saved, alleleSymbol: { ...saved.alleleSymbol, ...symbolEdit } };
+			expect([...getPendingSingleValueFields(allele, saved)]).toEqual(['alleleSymbol']);
+		});
+
+		const allele = {
+			...saved,
+			alleleGermlineTransmissionStatus: {
+				...saved.alleleGermlineTransmissionStatus,
+				germlineTransmissionStatus: { name: 'germline' },
+			},
+			alleleDatabaseStatus: { ...saved.alleleDatabaseStatus, internal: true },
+		};
+		expect([...getPendingSingleValueFields(allele, saved)]).toEqual([
+			'alleleGermlineTransmissionStatus',
+			'alleleDatabaseStatus',
+		]);
+	});
+
+	it('Finds a section that has been added or deleted', () => {
+		const allele = {
+			...saved,
+			alleleFullName: { dataKey: 0, displayText: '', formatText: '', synonymUrl: '', internal: false },
+			alleleDatabaseStatus: null,
+		};
+
+		expect([...getPendingSingleValueFields(allele, saved)]).toEqual(['alleleFullName', 'alleleDatabaseStatus']);
+	});
+});
