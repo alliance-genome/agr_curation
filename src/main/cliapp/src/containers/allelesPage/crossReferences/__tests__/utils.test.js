@@ -12,6 +12,7 @@ import {
 	buildNewCrossReference,
 	curiePrefixOf,
 	findRow,
+	haveSameCrossReferences,
 	seedResourceDescriptor,
 	seedResourceDescriptors,
 	stripForValidation,
@@ -401,5 +402,54 @@ describe('buildDuplicateCrossReferences', () => {
 		buildDuplicateCrossReferences(rows);
 
 		expect(rows).toEqual([stored()]);
+	});
+});
+
+describe('haveSameCrossReferences', () => {
+	const stored = {
+		id: 500,
+		referencedCurie: 'PMID:1',
+		displayName: 'PMID 1',
+		resourceDescriptor: { id: 9, prefix: 'PMID' },
+		resourceDescriptorPage: { id: 1, name: 'default' },
+		internal: false,
+		obsolete: false,
+	};
+
+	it('Matches rows that differ only in the fields the table adds', () => {
+		const onScreen = { ...stored, dataKey: 'row-1', resourceDescriptor: descriptorWithPages(9) };
+
+		expect(haveSameCrossReferences([onScreen], [stored])).toBe(true);
+		expect(haveSameCrossReferences([], [])).toBe(true);
+	});
+
+	it('Reads a blank curie or display name as none', () => {
+		const blank = { ...stored, referencedCurie: '', displayName: '' };
+		const unset = { ...stored, referencedCurie: null, displayName: null };
+
+		expect(haveSameCrossReferences([blank], [unset])).toBe(true);
+	});
+
+	it('Tells apart rows with any curator-editable field changed', () => {
+		const edits = [
+			{ referencedCurie: 'PMID:2' },
+			{ displayName: 'PMID 2' },
+			{ resourceDescriptor: { id: 10 } },
+			{ resourceDescriptorPage: { id: 2 } },
+			{ internal: true },
+			{ obsolete: true },
+		];
+
+		edits.forEach((edit) => {
+			expect(haveSameCrossReferences([{ ...stored, ...edit }], [stored])).toBe(false);
+		});
+	});
+
+	it('Tells apart lists with a row added, removed or moved', () => {
+		const other = { ...stored, id: 501, referencedCurie: 'PMID:2' };
+
+		expect(haveSameCrossReferences([stored, buildNewCrossReference()], [stored])).toBe(false);
+		expect(haveSameCrossReferences([], [stored])).toBe(false);
+		expect(haveSameCrossReferences([other, stored], [stored, other])).toBe(false);
 	});
 });

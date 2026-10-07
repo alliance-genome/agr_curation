@@ -117,6 +117,29 @@ describe('useAlleleReducer', () => {
 			expect(result.current.alleleState.hasOtherPendingEdits).toBe(true);
 		});
 
+		it('Stays unset for edits to a single-object section', () => {
+			const { result } = renderLoaded();
+
+			act(() =>
+				result.current.alleleDispatch({
+					type: 'ADD_OBJECT',
+					entityType: 'alleleFullName',
+					value: { dataKey: 'name-1', displayText: '' },
+				})
+			);
+			act(() =>
+				result.current.alleleDispatch({
+					type: 'EDIT_OBJECT',
+					entityType: 'alleleFullName',
+					field: 'displayText',
+					value: 'a name',
+				})
+			);
+			act(() => result.current.alleleDispatch({ type: 'DELETE_OBJECT', entityType: 'alleleFullName' }));
+
+			expect(result.current.alleleState.hasOtherPendingEdits).toBe(false);
+		});
+
 		it('Is cleared when the allele is set again', () => {
 			const { result } = renderLoaded();
 

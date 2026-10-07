@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { CrossReferenceService } from '../../../service/CrossReferenceService';
 import { addDataKey } from '../utils';
-import { seedResourceDescriptors, stripUiFields } from './utils';
+import { haveSameCrossReferences, seedResourceDescriptors, stripUiFields } from './utils';
 
 /**
  * Maps the API's index keyed cross reference errors onto the rows they belong to, so the table can
@@ -37,20 +37,25 @@ const keyAndSeed = async (crossReferences) => {
  * @param {number} [alleleId] the allele to read on load. Create passes none and saves once it has one.
  */
 export const useAlleleCrossReferences = (alleleId) => {
-	const [crossReferences, setStoredCrossReferences] = useState([]);
+	const [crossReferences, setCrossReferences] = useState([]);
+	// The rows as last loaded or saved from the API, which the rows on screen are compared with.
+	const [savedCrossReferences, setSavedCrossReferences] = useState([]);
 	const [errorMessages, setErrorMessages] = useState({});
 	const [isLoading, setIsLoading] = useState(Boolean(alleleId));
 	const [loadError, setLoadError] = useState(null);
 	const [isSaving, setIsSaving] = useState(false);
-	const [isDirty, setIsDirty] = useState(false);
 	const crossReferenceService = useMemo(() => new CrossReferenceService(), []);
 
-	// Any change made through here marks the section as a whole edited, so a page saving the allele can
-	// skip writing cross references when none have changed. Loading and saving set the rows directly and
-	// leave none pending.
-	const setCrossReferences = useCallback((update) => {
-		setIsDirty(true);
-		setStoredCrossReferences(update);
+	// Whether the rows differ from those last loaded or saved from the API, so a page saving the allele can skip writing
+	// cross references when none have changed.
+	const isDirty = useMemo(
+		() => !haveSameCrossReferences(crossReferences, savedCrossReferences),
+		[crossReferences, savedCrossReferences]
+	);
+
+	const showSavedCrossReferences = useCallback((rows) => {
+		setCrossReferences(rows);
+		setSavedCrossReferences(rows);
 	}, []);
 
 	useEffect(() => {
@@ -64,8 +69,7 @@ export const useAlleleCrossReferences = (alleleId) => {
 				const response = await crossReferenceService.getCrossReferencesForAllele(alleleId);
 				const loaded = await keyAndSeed(response?.data?.entities ?? []);
 				if (!cancelled) {
-					setStoredCrossReferences(loaded);
-					setIsDirty(false);
+					showSavedCrossReferences(loaded);
 				}
 			} catch (error) {
 				console.warn(`Could not load cross references for allele ${alleleId}`, error);
@@ -81,7 +85,7 @@ export const useAlleleCrossReferences = (alleleId) => {
 		return () => {
 			cancelled = true;
 		};
-	}, [alleleId, crossReferenceService]);
+	}, [alleleId, crossReferenceService, showSavedCrossReferences]);
 
 	/**
 	 * Replaces the allele's stored cross references with the rows held here. Refuses, without calling the
@@ -106,8 +110,7 @@ export const useAlleleCrossReferences = (alleleId) => {
 					targetAlleleId,
 					crossReferences.map(stripUiFields)
 				);
-				setStoredCrossReferences(await keyAndSeed(response?.data?.entities ?? []));
-				setIsDirty(false);
+				showSavedCrossReferences(await keyAndSeed(response?.data?.entities ?? []));
 				return { isSuccess: true };
 			} catch (error) {
 				const data = error?.response?.data;
@@ -120,7 +123,7 @@ export const useAlleleCrossReferences = (alleleId) => {
 				setIsSaving(false);
 			}
 		},
-		[alleleId, crossReferenceService, crossReferences, isLoading, loadError]
+		[alleleId, crossReferenceService, crossReferences, isLoading, loadError, showSavedCrossReferences]
 	);
 
 	return {

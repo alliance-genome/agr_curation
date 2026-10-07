@@ -202,19 +202,52 @@ export const buildDuplicateAllele = (allele) => {
 	};
 };
 
-// The value each single-value field is compared by, with an unset or blank value read as none.
+const evidenceCuries = (slotAnnotation) =>
+	Array.isArray(slotAnnotation.evidence) ? slotAnnotation.evidence.map((reference) => reference?.curie).sort() : [];
+
+// A single-object section's curator-editable fields, as a string to compare by, or none when it is unset.
+const nameSlotAnnotationValue = (nameSlotAnnotation) =>
+	nameSlotAnnotation
+		? JSON.stringify([
+				nameSlotAnnotation.displayText || null,
+				nameSlotAnnotation.formatText || null,
+				nameSlotAnnotation.synonymUrl || null,
+				nameSlotAnnotation.nameType?.name ?? null,
+				nameSlotAnnotation.synonymScope?.name ?? null,
+				nameSlotAnnotation.internal ?? null,
+				evidenceCuries(nameSlotAnnotation),
+			])
+		: null;
+
+const statusSlotAnnotationValue = (statusSlotAnnotation, statusField) =>
+	statusSlotAnnotation
+		? JSON.stringify([
+				statusSlotAnnotation[statusField]?.name ?? null,
+				statusSlotAnnotation.internal ?? null,
+				evidenceCuries(statusSlotAnnotation),
+			])
+		: null;
+
+// The value each single-value field and single-object section is compared by, with an unset or blank
+// value read as none.
 const SINGLE_VALUE_FIELD_VALUES = {
 	taxon: (allele) => allele?.taxon?.curie || null,
 	inCollection: (allele) => allele?.inCollection?.name || null,
 	isExtinct: (allele) => allele?.isExtinct ?? null,
 	internal: (allele) => allele?.internal ?? null,
 	obsolete: (allele) => allele?.obsolete ?? null,
+	alleleFullName: (allele) => nameSlotAnnotationValue(allele?.alleleFullName),
+	alleleSymbol: (allele) => nameSlotAnnotationValue(allele?.alleleSymbol),
+	alleleGermlineTransmissionStatus: (allele) =>
+		statusSlotAnnotationValue(allele?.alleleGermlineTransmissionStatus, 'germlineTransmissionStatus'),
+	alleleDatabaseStatus: (allele) => statusSlotAnnotationValue(allele?.alleleDatabaseStatus, 'databaseStatus'),
 };
 
 export const SINGLE_VALUE_FIELDS = Object.keys(SINGLE_VALUE_FIELD_VALUES);
 
 /**
- * The single-value fields whose value on the form differs from the allele as last saved.
+ * The single-value fields and single-object sections whose value on the form differs from the allele as
+ * last saved.
  *
  * @param {Object} allele the allele as the form holds it
  * @param {Object} [savedAllele] the allele as the API last returned it
