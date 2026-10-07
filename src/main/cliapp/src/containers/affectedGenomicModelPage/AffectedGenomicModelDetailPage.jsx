@@ -14,6 +14,7 @@ import { LoadingOverlay } from '../../components/LoadingOverlay';
 import { processErrors } from './utils';
 import { FormFieldVisibilityMenu, useFormFieldVisibility } from '../../components/FormFieldVisibility';
 import { AGMForm, AGM_DETAIL_TOGGLEABLE_FIELDS } from './AGMForm';
+import { getIdentifier } from '../../utils/utils';
 
 export default function AffectedGenomicModelDetailPage() {
 	const { identifier } = useParams();
@@ -89,14 +90,12 @@ export default function AffectedGenomicModelDetailPage() {
 
 	const headerText = () => {
 		let prefix = 'AGM: ';
-		if (agmState.agm?.agmFullName?.displayText && agmState.agm?.primaryExternalId) {
-			return `${prefix} ${agmState.agm.agmFullName.displayText} (${agmState.agm.primaryExternalId})`;
+		const agmIdentifier = getIdentifier(agmState.agm);
+		if (agmState.agm?.agmFullName?.displayText && agmIdentifier) {
+			return `${prefix} ${agmState.agm.agmFullName.displayText} (${agmIdentifier})`;
 		}
-		if (agmState.agm?.primaryExternalId) {
-			return `${prefix} ${agmState.agm.primaryExternalId}`;
-		}
-		if (agmState.agm?.curie) {
-			return `${prefix} ${agmState.agm.curie}`;
+		if (agmIdentifier) {
+			return `${prefix} ${agmIdentifier}`;
 		}
 		return 'AGM Detail Page';
 	};
