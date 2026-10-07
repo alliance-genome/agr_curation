@@ -85,7 +85,8 @@ const fieldDetailsColumnSize = 'col-5';
  * @param {(field: string) => boolean} props.isVisible - whether a named section renders
  * @param {'detail'|'create'} [props.mode] - 'create' drops the fields the server assigns and
  *   makes the two identifiers editable
- * @param {Set<string>} [props.pendingFields] - the single-value fields to mark as having pending edits
+ * @param {Set<string>} [props.pendingFields] - the single-value fields and single-object sections to mark as
+ *   having pending edits
  */
 export const AlleleForm = ({ state, dispatch, isVisible, mode = 'detail', pendingFields }) => {
 	const isCreate = mode === 'create';
@@ -177,7 +178,7 @@ export const AlleleForm = ({ state, dispatch, isVisible, mode = 'detail', pendin
 			</FormSection>
 
 			<FormSection isVisible={isVisible('Name')}>
-				<FullNameForm state={state} dispatch={dispatch} />
+				<FullNameForm state={state} dispatch={dispatch} isPending={pendingFields?.has('alleleFullName')} />
 			</FormSection>
 
 			<FormSection isVisible={isVisible('Symbol')}>
@@ -186,6 +187,7 @@ export const AlleleForm = ({ state, dispatch, isVisible, mode = 'detail', pendin
 					dispatch={dispatch}
 					labelColumnSize={labelColumnSize}
 					required={isCreate}
+					isPending={pendingFields?.has('alleleSymbol')}
 					showAddButton={!isCreate}
 				/>
 			</FormSection>
@@ -224,11 +226,15 @@ export const AlleleForm = ({ state, dispatch, isVisible, mode = 'detail', pendin
 			</FormSection>
 
 			<FormSection isVisible={isVisible('Germline Transmission Status')}>
-				<GermilineTransmissionStatusForm state={state} dispatch={dispatch} />
+				<GermilineTransmissionStatusForm
+					state={state}
+					dispatch={dispatch}
+					isPending={pendingFields?.has('alleleGermlineTransmissionStatus')}
+				/>
 			</FormSection>
 
 			<FormSection isVisible={isVisible('Database Status')}>
-				<DatabaseStatusForm state={state} dispatch={dispatch} />
+				<DatabaseStatusForm state={state} dispatch={dispatch} isPending={pendingFields?.has('alleleDatabaseStatus')} />
 			</FormSection>
 
 			<FormSection isVisible={isVisible('Inheritance Modes')}>

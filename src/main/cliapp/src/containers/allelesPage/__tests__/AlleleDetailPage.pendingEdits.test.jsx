@@ -58,6 +58,13 @@ const renderLoadedPage = async () => {
 
 const fieldRow = (fieldName) => screen.getByRole('heading', { name: fieldName }).closest('.grid');
 
+// A table section, from its title down to its table.
+const sectionOf = (tableName) => screen.getByRole('heading', { name: tableName }).closest('.grid').parentElement;
+
+// The symbol's display text input, found by its saved text, which its format text input also holds.
+const symbolDisplayTextInput = () =>
+	within(sectionOf('Symbol')).getAllByDisplayValue(loadedAllele.alleleSymbol.displayText)[0];
+
 const taxonInput = (container) => container.querySelector('input[name="taxon-input"]');
 
 const changeTaxon = async (user, container, curie) => {
@@ -157,11 +164,49 @@ describe('<AlleleDetailPage /> single-value pending edits', { timeout: 30000 }, 
 		const user = userEvent.setup();
 		await renderLoadedPage();
 
-		const symbolRow = screen.getByRole('heading', { name: 'Symbol' }).closest('.grid').parentElement;
-		await user.type(within(symbolRow).getAllByDisplayValue(loadedAllele.alleleSymbol.displayText)[0], '-edited');
+		await user.click(screen.getByRole('button', { name: 'Add Synonym' }));
 
 		expect(screen.getByRole('button', { name: 'Save' })).toBeEnabled();
 		expect(screen.queryByText('Pending Edits!')).not.toBeInTheDocument();
+	});
+
+	it('Marks an edited single-object section and activates Save, clearing both when changed back', async () => {
+		const user = userEvent.setup();
+		await renderLoadedPage();
+
+		const displayTextInput = symbolDisplayTextInput();
+		await user.type(displayTextInput, '-edited');
+
+		expect(within(sectionOf('Symbol')).getByText('Pending Edits!')).toBeInTheDocument();
+		expect(screen.getAllByText('Pending Edits!')).toHaveLength(1);
+		expect(screen.getByRole('button', { name: 'Save' })).toBeEnabled();
+
+		await user.type(displayTextInput, '{Backspace>7/}');
+
+		expect(screen.queryByText('Pending Edits!')).not.toBeInTheDocument();
+		expect(screen.getByRole('button', { name: 'Save' })).toBeDisabled();
+	});
+
+	it('Clears a single-object section mark once the allele is saved', async () => {
+		const user = userEvent.setup();
+		await renderLoadedPage();
+
+		await user.type(symbolDisplayTextInput(), '-edited');
+		await user.click(screen.getByRole('button', { name: 'Save' }));
+
+		await waitFor(() => expect(screen.getByText('Allele Saved')).toBeInTheDocument(), FORM_LOAD_WAIT);
+		expect(screen.queryByText('Pending Edits!')).not.toBeInTheDocument();
+	});
+
+	it('Marks a deleted single-object section', async () => {
+		const user = userEvent.setup();
+		await renderLoadedPage();
+
+		await user.click(sectionOf('Name').querySelector('.pi-trash').closest('button'));
+
+		expect(within(sectionOf('Name')).getByText('Pending Edits!')).toBeInTheDocument();
+		expect(screen.getAllByText('Pending Edits!')).toHaveLength(1);
+		expect(screen.getByRole('button', { name: 'Save' })).toBeEnabled();
 	});
 
 	it('Keeps Save active when the allele is not saved', async () => {
@@ -169,8 +214,7 @@ describe('<AlleleDetailPage /> single-value pending edits', { timeout: 30000 }, 
 		saveAlleleDetail.mockRejectedValueOnce({ response: { data: { errorMessage: 'Allele could not be saved' } } });
 		await renderLoadedPage();
 
-		const symbolRow = screen.getByRole('heading', { name: 'Symbol' }).closest('.grid').parentElement;
-		await user.type(within(symbolRow).getAllByDisplayValue(loadedAllele.alleleSymbol.displayText)[0], '-edited');
+		await user.type(symbolDisplayTextInput(), '-edited');
 		await user.click(screen.getByRole('button', { name: 'Save' }));
 
 		await waitFor(() => expect(screen.getByText('Allele could not be saved')).toBeInTheDocument(), FORM_LOAD_WAIT);
