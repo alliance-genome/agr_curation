@@ -1,0 +1,23 @@
+src/main/cliapp/src/containers/affectedGenomicModelPage/AGMForm.jsx
+  s_90fe3c66eb3b97::t_416c9ad1d8095e 1,11,37-61,73,75-76,97,108-134,137,165,177,196,207,217,227,237
+src/main/cliapp/src/containers/affectedGenomicModelPage/AffectedGenomicModelCreateDialog.jsx
+  s_90fe3c66eb3b97::t_475c95f27085d3 1-176
+src/main/cliapp/src/containers/affectedGenomicModelPage/AffectedGenomicModelTable.jsx
+  s_90fe3c66eb3b97::t_ca8ef0333ba9ab 31-32,41,372-385,394,445-448
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "8a34f7337aa974929ba7ed469c04325eb7a28e31",
+  "prompts": {},
+  "sessions": {
+    "s_90fe3c66eb3b97": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "64db8705-0fb3-46f5-be71-5247c76018af",
+        "model": "unknown"
+      },
+      "human_author": "Ketaki Kindre <kkindre@caltech.edu>"
+    }
+  }
+}
