@@ -15,6 +15,7 @@ import { buildCreatePayload, processErrors, validateRequiredAutosuggestField } f
 import { FormFieldVisibilityMenu, useFormFieldVisibility } from '../../components/FormFieldVisibility';
 import { AlleleForm, ALLELE_CREATE_TOGGLEABLE_FIELDS } from './AlleleForm';
 import { useAlleleCrossReferences } from './crossReferences/useAlleleCrossReferences';
+import { useAlleleReferences } from './referencesTable/useAlleleReferences';
 import { useDuplicateAlleleSource } from './useDuplicateAlleleSource';
 import { SubResourcesProvider } from '../../components/SubResourcesContext';
 
@@ -29,13 +30,15 @@ export default function AlleleCreatePage() {
 	const toastSuccess = useRef(null);
 	const toastError = useRef(null);
 	const crossReferences = useAlleleCrossReferences();
-	// Held so that saving again after the cross references failed retries them against the allele that
+	const references = useAlleleReferences();
+	// Held so that saving again after the cross references or references failed retries them against the allele that
 	// already exists, rather than creating a second one.
 	const createdAllele = useRef(null);
 	const { isLoading: duplicateSourceIsLoading } = useDuplicateAlleleSource({
 		alleleDispatch,
 		setCrossReferences: crossReferences.setCrossReferences,
 		crossReferencesVisible: isVisible('Cross References'),
+		setReferences: references.setReferences,
 		toastError,
 	});
 
@@ -46,7 +49,7 @@ export default function AlleleCreatePage() {
 	});
 
 	// Saving again once the allele exists updates it rather than creating another. updateDetail rather
-	// than the plain allele endpoint, because that one manages cross references from its payload and
+	// than the plain allele endpoint, because that one manages cross references and references from its payload and
 	// this page never carries them there - it would read their absence as an instruction to clear them.
 	const { isPending: allelePutRequestIsLoading, mutate: alleleUpdateMutate } = useMutation({
 		mutationFn: (allele) => {
@@ -75,28 +78,35 @@ export default function AlleleCreatePage() {
 		}
 	};
 
-	// Cross references are written through their own sub-resource, so create is two calls. The allele
-	// exists by the time this runs, so a failure here leaves the work recoverable from its detail page
-	// rather than lost - which is why it keeps the curator here instead of navigating away.
-	const saveCrossReferences = async (allele, closeAfterSubmit) => {
-		if (crossReferences.crossReferences.length > 0) {
-			const outcome = await crossReferences.save(allele?.id);
+	// Cross references and references are written through their own sub-resources, so create takes several calls.
+	// The allele exists by the time this runs, so a failure here leaves the work recoverable from its detail page
+	// rather than lost - which is why it keeps the curator here instead of navigating away. Each list is written
+	// only when it differs from what this allele has stored, so saving again skips a list that already saved and
+	// writes one the curator has since changed or emptied.
+	const saveSubResources = async (allele, closeAfterSubmit) => {
+		const subResourceOutcomes = [];
+		if (crossReferences.isDirty) {
+			subResourceOutcomes.push({ label: 'Cross references', outcome: await crossReferences.save(allele?.id) });
+		}
+		if (references.isDirty) {
+			subResourceOutcomes.push({ label: 'References', outcome: await references.save(allele?.id) });
+		}
+		const failedSubResources = subResourceOutcomes.filter(({ outcome }) => !outcome.isSuccess);
 
-			if (!outcome.isSuccess) {
-				// The form takes on the saved allele, so the fields carry the ids that saving again needs
-				// and an edit made while fixing the rows is sent as an update rather than dropped.
-				alleleDispatch({ type: 'SET', value: allele });
-				toastError.current.show([
-					{
-						life: 10000,
-						severity: 'error',
-						summary: 'Cross references not saved: ',
-						detail: `${outcome.message}. Allele ${getIdentifier(allele)} was created - fix the rows and save again, or finish them on its detail page.`,
-						sticky: false,
-					},
-				]);
-				return;
-			}
+		if (failedSubResources.length > 0) {
+			// The form takes on the saved allele, so the fields carry the ids that saving again needs
+			// and an edit made while fixing the rows is sent as an update rather than dropped.
+			alleleDispatch({ type: 'SET', value: allele });
+			toastError.current.show(
+				failedSubResources.map(({ label, outcome }) => ({
+					life: 10000,
+					severity: 'error',
+					summary: `${label} not saved: `,
+					detail: `${outcome.message}. Allele ${getIdentifier(allele)} was created - fix the rows and save again, or finish them on its detail page.`,
+					sticky: false,
+				}))
+			);
+			return;
 		}
 
 		createdAllele.current = null;
@@ -105,7 +115,8 @@ export default function AlleleCreatePage() {
 			navigate(`/allele/${getIdentifier(allele)}`);
 		} else {
 			alleleDispatch({ type: 'RESET' });
-			crossReferences.setCrossReferences([]);
+			crossReferences.reset();
+			references.reset();
 		}
 	};
 
@@ -130,7 +141,7 @@ export default function AlleleCreatePage() {
 					createdAllele.current = allele;
 					alleleDispatch({ type: 'SET', value: allele });
 
-					await saveCrossReferences(allele, closeAfterSubmit);
+					await saveSubResources(allele, closeAfterSubmit);
 				},
 				onError: showSaveError,
 			});
@@ -143,7 +154,7 @@ export default function AlleleCreatePage() {
 				createdAllele.current = allele;
 				toastSuccess.current.show({ severity: 'success', summary: 'Successful', detail: 'Allele Created' });
 
-				await saveCrossReferences(allele, closeAfterSubmit);
+				await saveSubResources(allele, closeAfterSubmit);
 			},
 			onError: showSaveError,
 		});
@@ -160,7 +171,8 @@ export default function AlleleCreatePage() {
 	const handleClear = (event) => {
 		event.preventDefault();
 		alleleDispatch({ type: 'RESET' });
-		crossReferences.setCrossReferences([]);
+		crossReferences.reset();
+		references.reset();
 		createdAllele.current = null;
 	};
 
@@ -192,7 +204,7 @@ export default function AlleleCreatePage() {
 					</Splitter>
 				</StickyHeader>
 				<div className="pb-8">
-					<SubResourcesProvider value={{ crossReferences }}>
+					<SubResourcesProvider value={{ crossReferences, references }}>
 						<AlleleForm state={alleleState} dispatch={alleleDispatch} isVisible={isVisible} mode="create" />
 					</SubResourcesProvider>
 				</div>

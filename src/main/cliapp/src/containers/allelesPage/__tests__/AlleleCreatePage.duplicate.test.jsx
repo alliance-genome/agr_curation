@@ -24,6 +24,14 @@ vi.mock('../../../service/SearchService', () => ({
 	},
 }));
 
+// The source's references are read through their own sub-resource; this allele has none.
+vi.mock('../../../service/ReferenceService', () => ({
+	ReferenceService: class {
+		getReferencesForAllele = vi.fn(() => Promise.resolve({ data: { entities: [] } }));
+		replaceReferencesForAllele = vi.fn();
+	},
+}));
+
 vi.mock('../../../service/CrossReferenceService', () => ({
 	CrossReferenceService: class {
 		getCrossReferencesForAllele = vi.fn(() => Promise.resolve({ data: { entities: [] } }));

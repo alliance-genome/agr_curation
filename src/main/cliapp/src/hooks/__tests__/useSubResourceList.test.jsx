@@ -104,6 +104,31 @@ describe('useSubResourceList', () => {
 		expect(result.current.isDirty).toBe(false);
 	});
 
+	// A create form saves one entity's rows and then starts the next, which has none stored.
+	it('Starts over with nothing stored on reset, so the next rows are judged against none', async () => {
+		replace.mockResolvedValue({ data: { entities: [{ curie: 'W:1' }] } });
+
+		const { result } = renderHook(() => useSubResourceList(options));
+		act(() => {
+			result.current.setRows([{ curie: 'W:1', dataKey: 'new-row' }]);
+		});
+		await act(async () => {
+			await result.current.save(9);
+		});
+		expect(result.current.isDirty).toBe(false);
+
+		act(() => {
+			result.current.reset();
+		});
+		expect(result.current.rows).toEqual([]);
+		expect(result.current.isDirty).toBe(false);
+
+		act(() => {
+			result.current.setRows([{ curie: 'W:1', dataKey: 'next-row' }]);
+		});
+		expect(result.current.isDirty).toBe(true);
+	});
+
 	it('Writes to the owner it is given, and reads nothing without one', async () => {
 		replace.mockResolvedValue({ data: { entities: [] } });
 

@@ -1,28 +1,33 @@
 import { FormTableWrapper } from '../../../components/FormTableWrapper';
+import { useSubResource } from '../../../components/SubResourcesContext';
 import { ReferencesFormTable } from './ReferencesFormTable';
 import { useRef } from 'react';
 import { NewReferenceField } from './NewReferenceField';
 
-export const ReferencesForm = ({ state, dispatch }) => {
+/**
+ * The allele detail and create pages' references section. Its rows are written through the allele's
+ * references sub-resource rather than in the allele payload.
+ */
+export const ReferencesForm = () => {
+	const { references, setReferences, errorMessages } = useSubResource('references');
 	const tableRef = useRef(null);
-	const entityType = 'references';
 
-	const onRowEditChange = (e) => {
+	const onRowEditChange = () => {
 		return null;
 	};
 
-	const deletionHandler = (e, dataKey) => {
-		e.preventDefault();
-		dispatch({ type: 'DELETE_ROW', entityType: entityType, dataKey });
+	const deletionHandler = (event, dataKey) => {
+		event.preventDefault();
+		setReferences((previous) => previous.filter((reference) => reference.dataKey !== dataKey));
 	};
 
 	return (
 		<FormTableWrapper
 			table={
 				<ReferencesFormTable
-					references={state.allele[entityType]}
-					editingRows={state.entityStates[entityType].editingRows}
-					errorMessages={state.entityStates[entityType].errorMessages}
+					references={references}
+					editingRows={{}}
+					errorMessages={errorMessages}
 					onRowEditChange={onRowEditChange}
 					tableRef={tableRef}
 					deletionHandler={deletionHandler}
@@ -30,8 +35,8 @@ export const ReferencesForm = ({ state, dispatch }) => {
 				/>
 			}
 			tableName="References"
-			showTable={state.entityStates[entityType].show}
-			button={<NewReferenceField state={state} dispatch={dispatch} />}
+			showTable={references.length > 0}
+			button={<NewReferenceField />}
 			includeField={true}
 		/>
 	);

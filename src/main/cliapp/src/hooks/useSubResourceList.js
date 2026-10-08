@@ -55,6 +55,15 @@ export const useSubResourceList = ({ ownerId, label, errorField, load, replace, 
 		setSavedRows(loadedRows);
 	}, []);
 
+	/**
+	 * Empties the rows and forgets those last saved, so the list starts over as one with nothing stored,
+	 * as a create form does for its next entity.
+	 */
+	const reset = useCallback(() => {
+		showSavedRows([]);
+		setErrorMessages({});
+	}, [showSavedRows]);
+
 	useEffect(() => {
 		if (!ownerId) return undefined;
 
@@ -129,5 +138,6 @@ export const useSubResourceList = ({ ownerId, label, errorField, load, replace, 
 		isSaving,
 		isDirty,
 		save,
+		reset,
 	};
 };

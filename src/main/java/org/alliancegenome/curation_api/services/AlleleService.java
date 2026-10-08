@@ -60,17 +60,18 @@ public class AlleleService extends SubmittedObjectCrudService<Allele, AlleleDTO,
 	@Override
 	@Transactional
 	public ObjectResponse<Allele> update(Allele uiEntity) {
-		// AlleleView carries crossReferences but not the associations, so this path manages the former only.
+		// AlleleView carries crossReferences and references but not the associations, so this path manages those
+		// only.
 		Allele dbEntity = alleleValidator.validateAlleleUpdate(uiEntity, false, true);
 		return new ObjectResponse<>(dbEntity);
 	}
 
 	@Transactional
 	public ObjectResponse<Allele> updateDetail(Allele uiEntity) {
-		// AlleleDetailView carries the associations but not crossReferences, so this path manages the associations
-		// only; cross references are written through the allele's cross-references sub-resource. Both flags are set
-		// explicitly rather than derived from one another - they are complementary for these two views by
-		// coincidence, not by rule.
+		// AlleleDetailView carries the associations but not crossReferences or references, so this path manages the
+		// associations only; cross references and references are written through the allele's sub-resources. Both
+		// flags are set explicitly rather than derived from one another - they are complementary for these two
+		// views by coincidence, not by rule.
 		Allele dbEntity = alleleValidator.validateAlleleUpdate(uiEntity, true, false);
 		return new ObjectResponse<>(dbEntity);
 	}

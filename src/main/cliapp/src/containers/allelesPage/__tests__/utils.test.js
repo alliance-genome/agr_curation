@@ -201,6 +201,8 @@ describe('buildDuplicateAllele', () => {
 		expect(duplicate.alleleSecondaryIds).toBeUndefined();
 		expect(duplicate).not.toHaveProperty('alleleVariantAssociations');
 		expect(duplicate).not.toHaveProperty('alleleConstructAssociations');
+		// References are written through their own sub-resource and copied separately.
+		expect(duplicate).not.toHaveProperty('references');
 		expect(duplicate.obsolete).toBe(false);
 	});
 
@@ -212,7 +214,6 @@ describe('buildDuplicateAllele', () => {
 		expect(duplicate.inCollection).toEqual({ name: 'WB_curated_alleles' });
 		expect(duplicate.internal).toBe(true);
 		expect(duplicate.isExtinct).toBe(true);
-		expect(duplicate.references).toEqual([reference]);
 		expect(duplicate.alleleSymbol).toEqual({ displayText: 'abc-1', formatText: 'abc-1' });
 		expect(duplicate.alleleFullName).toEqual({ displayText: 'full name', formatText: 'full name' });
 		expect(duplicate.alleleSynonyms).toEqual([{ displayText: 'synonym' }]);
@@ -242,7 +243,6 @@ describe('buildDuplicateAllele', () => {
 		expect(duplicate.inCollection).toEqual({ name: '' });
 		expect(duplicate.alleleSymbol).toBeNull();
 		expect(duplicate.alleleSynonyms).toBeUndefined();
-		expect(duplicate.references).toBeUndefined();
 		expect(duplicate.alleleGeneAssociations).toBeUndefined();
 	});
 
@@ -250,13 +250,11 @@ describe('buildDuplicateAllele', () => {
 		const duplicate = buildDuplicateAllele({
 			alleleFunctionalImpacts: [],
 			alleleGeneAssociations: [],
-			references: [],
 			alleleMutationTypes: [{ id: 10, mutationTypes: [{ curie: 'SO:0001' }] }],
 		});
 
 		expect(duplicate.alleleFunctionalImpacts).toBeUndefined();
 		expect(duplicate.alleleGeneAssociations).toBeUndefined();
-		expect(duplicate.references).toBeUndefined();
 		expect(duplicate.alleleMutationTypes).toEqual([{ mutationTypes: [{ curie: 'SO:0001' }] }]);
 	});
 

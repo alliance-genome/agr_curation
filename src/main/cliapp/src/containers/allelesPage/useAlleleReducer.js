@@ -1,13 +1,6 @@
 import { useImmerReducer } from 'use-immer';
 import { useCallback, useMemo } from 'react';
-import {
-	addDataKey,
-	buildEmptyAlleleSymbol,
-	generateCrossRefSearchFields,
-	generateCurieSearchFields,
-	SINGLE_VALUE_FIELDS,
-} from './utils';
-import { getUniqueItemsByProperty } from '../../utils/utils';
+import { addDataKey, buildEmptyAlleleSymbol, generateCurieSearchFields, SINGLE_VALUE_FIELDS } from './utils';
 import { Endpoints } from '../../constants/Endpoints';
 
 const initialAlleleState = {
@@ -26,7 +19,6 @@ const initialAlleleState = {
 		alleleGeneAssociations: [],
 		alleleDatabaseStatus: null,
 		alleleGermlineTransmissionStatus: null,
-		references: [],
 		inCollection: {
 			name: '',
 		},
@@ -124,13 +116,6 @@ const initialAlleleState = {
 			editingRows: {},
 			type: 'table',
 		},
-		references: {
-			field: 'references',
-			show: false,
-			errorMessages: {},
-			editingRows: {},
-			type: 'table',
-		},
 		alleleGeneAssociations: {
 			field: 'alleleGeneAssociations',
 			show: false,
@@ -209,10 +194,9 @@ const processObject = (field, allele, draft) => {
 const alleleReducer = (draft, action, initialState) => {
 	switch (action.type) {
 		case 'SET':
-			// Clone so generateCrossRefSearchFields (in-place mutation) doesn't run
+			// Clone so generateCurieSearchFields (in-place mutation) doesn't run
 			// on a frozen object (immer freezes draft.allele after produce).
 			const allele = structuredClone(action.value);
-			generateCrossRefSearchFields(allele.references);
 			generateCurieSearchFields(allele.alleleGeneAssociations, 'evidence');
 
 			let states = Object.values(draft.entityStates);
@@ -274,9 +258,6 @@ const alleleReducer = (draft, action, initialState) => {
 			break;
 		case 'ADD_ROW':
 			draft.allele[action.entityType].unshift(action.row);
-			if (action.entityType === 'references') {
-				draft.allele[action.entityType] = getUniqueItemsByProperty(draft.allele[action.entityType], 'curie');
-			}
 			draft.entityStates[action.entityType].editingRows[`${action.row.dataKey}`] = true;
 			draft.entityStates[action.entityType].show = true;
 			draft.hasOtherPendingEdits = true;

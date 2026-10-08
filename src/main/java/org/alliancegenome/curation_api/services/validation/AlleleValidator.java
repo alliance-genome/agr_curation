@@ -74,7 +74,7 @@ public class AlleleValidator extends GenomicEntityValidator<Allele> {
 	
 	private String errorMessage;
 
-	public Allele validateAlleleUpdate(Allele uiEntity, Boolean updateAllAssociations, Boolean manageCrossReferences) {
+	public Allele validateAlleleUpdate(Allele uiEntity, Boolean updateAllAssociations, Boolean manageSubResourceFields) {
 		response = new ObjectResponse<>(uiEntity);
 		errorMessage = "Could not update Allele: [" + uiEntity.getIdentifier() + "]";
 
@@ -92,7 +92,7 @@ public class AlleleValidator extends GenomicEntityValidator<Allele> {
 
 		dbEntity = (Allele) validateAuditedObjectFields(uiEntity, dbEntity, false);
 
-		return validateAllele(uiEntity, dbEntity, updateAllAssociations, manageCrossReferences);
+		return validateAllele(uiEntity, dbEntity, updateAllAssociations, manageSubResourceFields);
 	}
 
 	public Allele validateAlleleCreate(Allele uiEntity) {
@@ -105,12 +105,17 @@ public class AlleleValidator extends GenomicEntityValidator<Allele> {
 
 		dbEntity = (Allele) validateAuditedObjectFields(uiEntity, dbEntity, true);
 
-		// POST /allele serializes AlleleDetailView, which omits crossReferences, so the create payload never
-		// carries them; they are written through the allele's cross-references sub-resource.
+		// POST /allele serializes AlleleDetailView, which omits crossReferences and references, so the create
+		// payload never carries them; they are written through the allele's sub-resources.
 		return validateAllele(uiEntity, dbEntity, true, false);
 	}
 
-	public Allele validateAllele(Allele uiEntity, Allele dbEntity, Boolean updateAllAssociations, Boolean manageCrossReferences) {
+	/**
+	 * @param manageSubResourceFields whether the calling endpoint's JSON view carries crossReferences and
+	 *        references. An endpoint whose view omits them leaves the stored ones as they are; they are written
+	 *        through the allele's cross-references and references sub-resources instead.
+	 */
+	public Allele validateAllele(Allele uiEntity, Allele dbEntity, Boolean updateAllAssociations, Boolean manageSubResourceFields) {
 
 		String storedSymbolText = dbEntity.getAlleleSymbol() == null ? null : dbEntity.getAlleleSymbol().getDisplayText();
 		Long storedTaxonId = dbEntity.getTaxon() == null ? null : dbEntity.getTaxon().getId();
@@ -118,10 +123,12 @@ public class AlleleValidator extends GenomicEntityValidator<Allele> {
 		// An allele is identified by its AGRKB curie, minted below for a new allele and already
 		// present on a loaded one, so neither MOD identifier is required. Passed for updates too:
 		// an allele created here has neither, and requiring one would reject its first edit.
-		dbEntity = validateGenomicEntityFields(uiEntity, dbEntity, VocabularyConstants.ALLELE_NOTE_TYPES_VOCABULARY_TERM_SET, false, manageCrossReferences);
+		dbEntity = validateGenomicEntityFields(uiEntity, dbEntity, VocabularyConstants.ALLELE_NOTE_TYPES_VOCABULARY_TERM_SET, false, manageSubResourceFields);
 
-		List<Reference> references = validateReferences(uiEntity, dbEntity);
-		dbEntity.setReferences(references);
+		if (manageSubResourceFields) {
+			List<Reference> references = validateReferences(uiEntity, dbEntity);
+			dbEntity.setReferences(references);
+		}
 
 		VocabularyTerm inCollection = validateTermInVocabulary("inCollection", VocabularyConstants.ALLELE_COLLECTION_VOCABULARY, uiEntity.getInCollection(), dbEntity.getInCollection());
 		dbEntity.setInCollection(inCollection);
