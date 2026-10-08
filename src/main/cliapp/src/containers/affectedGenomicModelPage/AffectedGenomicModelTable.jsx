@@ -372,12 +372,7 @@ export const AffectedGenomicModelTable = () => {
 	const headerButtons = (disabled = false) => {
 		return (
 			<>
-				<Button
-					label="New AGM"
-					icon="pi pi-plus"
-					disabled={disabled}
-					onClick={() => setCreateDialogVisible(true)}
-				/>
+				<Button label="New AGM" icon="pi pi-plus" disabled={disabled} onClick={() => setCreateDialogVisible(true)} />
 				&nbsp;&nbsp;
 			</>
 		);
@@ -442,10 +437,7 @@ export const AffectedGenomicModelTable = () => {
 				originalSecondaryIdsData={secondaryIdsData}
 				setOriginalSecondaryIdsData={setSecondaryIdsData}
 			/>
-			<AffectedGenomicModelCreateDialog
-				visible={createDialogVisible}
-				onHide={() => setCreateDialogVisible(false)}
-			/>
+			<AffectedGenomicModelCreateDialog visible={createDialogVisible} onHide={() => setCreateDialogVisible(false)} />
 		</>
 	);
 };
