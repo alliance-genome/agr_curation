@@ -1,0 +1,19 @@
+src/main/cliapp/src/containers/affectedGenomicModelPage/AGMForm.jsx
+  s_90fe3c66eb3b97::t_cf20bada9e1a50 123-131
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "d166b0bdf22210cfd7c56026650d10949b151d3b",
+  "prompts": {},
+  "sessions": {
+    "s_90fe3c66eb3b97": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "64db8705-0fb3-46f5-be71-5247c76018af",
+        "model": "unknown"
+      },
+      "human_author": "Ketaki Kindre <kkindre@caltech.edu>"
+    }
+  }
+}
