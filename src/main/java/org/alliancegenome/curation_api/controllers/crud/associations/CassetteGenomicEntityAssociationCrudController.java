@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.alliancegenome.curation_api.controllers.base.BaseEntityCrudController;
 import org.alliancegenome.curation_api.dao.associations.CassetteGenomicEntityAssociationDAO;
+import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.interfaces.crud.associations.CassetteGenomicEntityAssociationCrudInterface;
 import org.alliancegenome.curation_api.jobs.executors.associations.CassetteGenomicEntityAssociationExecutor;
 import org.alliancegenome.curation_api.model.entities.associations.CassetteGenomicEntityAssociation;
@@ -46,7 +47,9 @@ public class CassetteGenomicEntityAssociationCrudController extends
 
 	@Override
 	public APIResponse updateCassetteGenomicEntityAssociations(String dataProvider, List<CassetteGenomicEntityAssociationDTO> associations) {
-		return lCassetteGenomicEntityAssociationExecutor.runLoadApi(lCassetteGenomicEntityAssociationService, dataProvider, associations);
+		APIResponse response = lCassetteGenomicEntityAssociationExecutor.runLoadApi(lCassetteGenomicEntityAssociationService, dataProvider, associations);
+		lCassetteGenomicEntityAssociationExecutor.reindexSubjects(BackendBulkDataProvider.valueOf(dataProvider));
+		return response;
 	}
 
 	public ObjectResponse<CassetteGenomicEntityAssociation> getAssociation(Long subjectId, String relationName, Long objectId) {

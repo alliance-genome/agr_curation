@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import org.alliancegenome.curation_api.dao.CassetteDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.jobs.executors.LoadFileExecutor;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
@@ -24,6 +25,7 @@ public class CassetteTransgenicToolAssociationExecutor extends LoadFileExecutor 
 	private static final String INGEST_SET = "cassette_transgenic_tool_association_ingest_set";
 
 	@Inject CassetteTransgenicToolAssociationService lCassetteTransgenicToolAssociationService;
+	@Inject CassetteDAO cassetteDAO;
 
 	@Override
 	protected List<?> getIngestSet(IngestDTO ingestDto) {
@@ -60,9 +62,18 @@ public class CassetteTransgenicToolAssociationExecutor extends LoadFileExecutor 
 		if (cleanUp && success) {
 			runCleanup(lCassetteTransgenicToolAssociationService, bulkLoadFileHistory, dataProvider.name(), associationIdsBefore, associationIdsLoaded, countLabel(INGEST_SET));
 		}
+		reindexSubjects(dataProvider);
 		bulkLoadFileHistory.finishLoad();
 		updateHistory(bulkLoadFileHistory);
 		updateExceptions(bulkLoadFileHistory);
+	}
+
+	/**
+	 * The service skips automatic indexing of cassettes while associations are upserted (see its upsert),
+	 * so index the provider's cassettes once now, including those whose associations were cleaned up.
+	 */
+	public void reindexSubjects(BackendBulkDataProvider dataProvider) {
+		cassetteDAO.reindexDataProvider(dataProvider.sourceOrganization);
 	}
 
 }

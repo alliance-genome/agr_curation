@@ -423,6 +423,34 @@ public class BaseSQLDAO<E extends AuditedObject> extends BaseEntityDAO<E> {
 		indexer.start();
 	}
 
+	/**
+	 * Switches off automatic indexing of this DAO's entity type for the current transaction's session.
+	 * For bulk association loads: each new association would otherwise make Hibernate Search rebuild
+	 * the containing entity's document (e.g. the Cassette embedding its associations) at every commit.
+	 * The load reindexes the type once afterwards with {@link #reindexDataProvider(String)}.
+	 */
+	public void skipAutomaticIndexing() {
+		searchSession.indexingPlanFilter(context -> context.exclude(myClass));
+	}
+
+	/**
+	 * Reindexes this DAO's entities that belong to one data provider and waits until it is done. Other
+	 * providers' documents are left as they are: nothing is purged or recreated.
+	 */
+	public void reindexDataProvider(String dataProviderAbbreviation) {
+		Log.info("Reindexing " + dataProviderAbbreviation + " " + myClass.getSimpleName() + " documents");
+		MassIndexer indexer = searchSession.massIndexer(myClass).purgeAllOnStart(false).dropAndCreateSchemaOnStart(false).mergeSegmentsOnFinish(false)
+			.batchSizeToLoadObjects(1000).threadsToLoadObjects(4);
+		indexer.type(myClass).reindexOnly("e.dataProvider.abbreviation = :dataProvider").param("dataProvider", dataProviderAbbreviation);
+		try {
+			indexer.startAndWait();
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+			throw new RuntimeException(ApiErrorException.INTERRUPTED_MESSAGE, e);
+		}
+		Log.info("Reindexed " + dataProviderAbbreviation + " " + myClass.getSimpleName() + " documents");
+	}
+
 	public void reindex(Class<?> objectClass, Integer batchSizeToLoadObjects, Integer idFetchSize, Integer limitIndexedObjectsTo, Integer threadsToLoadObjects, Integer transactionTimeout, Integer typesToIndexInParallel) {
 
 		Log.debug("Starting Indexing for: " + objectClass);

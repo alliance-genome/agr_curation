@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Objects;
 
 import org.alliancegenome.curation_api.constants.EntityFieldConstants;
+import org.alliancegenome.curation_api.dao.ConstructDAO;
 import org.alliancegenome.curation_api.dao.associations.ConstructCassetteAssociationDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ValidationException;
@@ -31,6 +32,7 @@ public class ConstructCassetteAssociationService extends BaseAssociationDTOCrudS
 	@Inject ConstructCassetteAssociationDAO lConstructCassetteAssociationDAO;
 	@Inject ConstructCassetteAssociationValidator lConstructCassetteAssociationValidator;
 	@Inject ConstructCassetteAssociationDTOValidator lConstructCassetteAssociationDtoValidator;
+	@Inject ConstructDAO constructDAO;
 
 	@Override
 	@PostConstruct
@@ -56,6 +58,8 @@ public class ConstructCassetteAssociationService extends BaseAssociationDTOCrudS
 	@Override
 	@Transactional
 	public ObjectResponse<ConstructCassetteAssociation> upsert(ConstructCassetteAssociationDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
+		// The constructs are reindexed once after the load, not at every association's commit
+		constructDAO.skipAutomaticIndexing();
 		return lConstructCassetteAssociationDtoValidator.validateConstructCassetteAssociationDTO(dto, dataProvider);
 	}
 

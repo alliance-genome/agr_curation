@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Objects;
 
 import org.alliancegenome.curation_api.constants.EntityFieldConstants;
+import org.alliancegenome.curation_api.dao.CassetteDAO;
 import org.alliancegenome.curation_api.dao.associations.CassetteTransgenicToolAssociationDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ValidationException;
@@ -31,6 +32,7 @@ public class CassetteTransgenicToolAssociationService extends BaseAssociationDTO
 	@Inject CassetteTransgenicToolAssociationDAO lCassetteTransgenicToolAssociationDAO;
 	@Inject CassetteTransgenicToolAssociationValidator lCassetteTransgenicToolAssociationValidator;
 	@Inject CassetteTransgenicToolAssociationDTOValidator lCassetteTransgenicToolAssociationDtoValidator;
+	@Inject CassetteDAO cassetteDAO;
 
 	@Override
 	@PostConstruct
@@ -56,6 +58,8 @@ public class CassetteTransgenicToolAssociationService extends BaseAssociationDTO
 	@Override
 	@Transactional
 	public ObjectResponse<CassetteTransgenicToolAssociation> upsert(CassetteTransgenicToolAssociationDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
+		// The cassettes are reindexed once after the load, not at every association's commit
+		cassetteDAO.skipAutomaticIndexing();
 		return lCassetteTransgenicToolAssociationDtoValidator.validateCassetteTransgenicToolAssociationDTO(dto, dataProvider);
 	}
 

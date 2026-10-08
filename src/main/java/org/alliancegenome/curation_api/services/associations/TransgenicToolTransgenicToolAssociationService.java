@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Objects;
 
 import org.alliancegenome.curation_api.constants.EntityFieldConstants;
+import org.alliancegenome.curation_api.dao.TransgenicToolDAO;
 import org.alliancegenome.curation_api.dao.associations.TransgenicToolTransgenicToolAssociationDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ValidationException;
@@ -29,6 +30,7 @@ public class TransgenicToolTransgenicToolAssociationService extends BaseAssociat
 
 	@Inject TransgenicToolTransgenicToolAssociationDAO transgenicToolTransgenicToolAssociationDAO;
 	@Inject TransgenicToolTransgenicToolAssociationDTOValidator transgenicToolTransgenicToolAssociationDtoValidator;
+	@Inject TransgenicToolDAO transgenicToolDAO;
 
 	@Override
 	@PostConstruct
@@ -39,6 +41,8 @@ public class TransgenicToolTransgenicToolAssociationService extends BaseAssociat
 	@Override
 	@Transactional
 	public ObjectResponse<TransgenicToolTransgenicToolAssociation> upsert(TransgenicToolTransgenicToolAssociationDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
+		// The transgenic tools are reindexed once after the load, not at every association's commit
+		transgenicToolDAO.skipAutomaticIndexing();
 		return transgenicToolTransgenicToolAssociationDtoValidator.validateTransgenicToolTransgenicToolAssociationDTO(dto, dataProvider);
 	}
 

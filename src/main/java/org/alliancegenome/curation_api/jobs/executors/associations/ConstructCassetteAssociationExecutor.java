@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import org.alliancegenome.curation_api.dao.ConstructDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.jobs.executors.LoadFileExecutor;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
@@ -24,6 +25,7 @@ public class ConstructCassetteAssociationExecutor extends LoadFileExecutor {
 	private static final String INGEST_SET = "construct_cassette_association_ingest_set";
 
 	@Inject ConstructCassetteAssociationService lConstructCassetteAssociationService;
+	@Inject ConstructDAO constructDAO;
 
 	@Override
 	protected List<?> getIngestSet(IngestDTO ingestDto) {
@@ -60,9 +62,18 @@ public class ConstructCassetteAssociationExecutor extends LoadFileExecutor {
 		if (cleanUp && success) {
 			runCleanup(lConstructCassetteAssociationService, bulkLoadFileHistory, dataProvider.name(), associationIdsBefore, associationIdsLoaded, countLabel(INGEST_SET));
 		}
+		reindexSubjects(dataProvider);
 		bulkLoadFileHistory.finishLoad();
 		updateHistory(bulkLoadFileHistory);
 		updateExceptions(bulkLoadFileHistory);
+	}
+
+	/**
+	 * The service skips automatic indexing of constructs while associations are upserted (see its upsert),
+	 * so index the provider's constructs once now, including those whose associations were cleaned up.
+	 */
+	public void reindexSubjects(BackendBulkDataProvider dataProvider) {
+		constructDAO.reindexDataProvider(dataProvider.sourceOrganization);
 	}
 
 }

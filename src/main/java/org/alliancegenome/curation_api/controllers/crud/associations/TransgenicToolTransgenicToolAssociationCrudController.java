@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.alliancegenome.curation_api.controllers.base.BaseEntityCrudController;
 import org.alliancegenome.curation_api.dao.associations.TransgenicToolTransgenicToolAssociationDAO;
+import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.interfaces.crud.associations.TransgenicToolTransgenicToolAssociationCrudInterface;
 import org.alliancegenome.curation_api.jobs.executors.associations.TransgenicToolTransgenicToolAssociationExecutor;
 import org.alliancegenome.curation_api.model.entities.associations.TransgenicToolTransgenicToolAssociation;
@@ -37,6 +38,8 @@ public class TransgenicToolTransgenicToolAssociationCrudController extends
 
 	@Override
 	public APIResponse updateTransgenicToolTransgenicToolAssociations(String dataProvider, List<TransgenicToolTransgenicToolAssociationDTO> associationData) {
-		return transgenicToolTransgenicToolAssociationExecutor.runLoadApi(transgenicToolTransgenicToolAssociationService, dataProvider, associationData);
+		APIResponse response = transgenicToolTransgenicToolAssociationExecutor.runLoadApi(transgenicToolTransgenicToolAssociationService, dataProvider, associationData);
+		transgenicToolTransgenicToolAssociationExecutor.reindexSubjects(BackendBulkDataProvider.valueOf(dataProvider));
+		return response;
 	}
 }
