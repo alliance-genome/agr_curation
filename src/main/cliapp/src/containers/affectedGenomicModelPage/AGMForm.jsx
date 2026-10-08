@@ -120,7 +120,15 @@ export const AGMForm = ({ state, dispatch, isVisible, mode = 'detail' }) => {
 							/>
 						}
 						errorField={
-							<FormErrorMessageComponent errorMessages={state.errorMessages} errorField="primaryExternalId" />
+							// AffectedGenomicModelValidator's "needs one of the two" check always keys its
+							// message modInternalId, even though this field - not the read-only MOD
+							// Internal ID - is where a curator actually satisfies it on create.
+							<FormErrorMessageComponent
+								errorMessages={{
+									primaryExternalId: state.errorMessages?.primaryExternalId || state.errorMessages?.modInternalId,
+								}}
+								errorField="primaryExternalId"
+							/>
 						}
 					/>
 				) : (
