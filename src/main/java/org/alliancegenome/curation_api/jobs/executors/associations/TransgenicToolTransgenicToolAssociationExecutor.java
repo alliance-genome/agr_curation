@@ -22,7 +22,9 @@ import lombok.extern.jbosslog.JBossLog;
 @ApplicationScoped
 public class TransgenicToolTransgenicToolAssociationExecutor extends LoadFileExecutor {
 
-	private static final String INGEST_SET = "transgenic_tool_transgenic_tool_association_ingest_set";
+	// Named by hand rather than countLabel(): "Transgenic Tool Transgenic Tool Association" does not
+	// show where one tool ends and the other begins.
+	private static final String COUNT_LABEL = "Transgenic Tool-Transgenic Tool-Association";
 
 	@Inject TransgenicToolTransgenicToolAssociationService transgenicToolTransgenicToolAssociationService;
 	@Inject TransgenicToolDAO transgenicToolDAO;
@@ -58,9 +60,9 @@ public class TransgenicToolTransgenicToolAssociationExecutor extends LoadFileExe
 
 		updateHistory(bulkLoadFileHistory);
 
-		boolean success = runLoad(transgenicToolTransgenicToolAssociationService, bulkLoadFileHistory, dataProvider, associations, associationIdsLoaded, countLabel(INGEST_SET));
+		boolean success = runLoad(transgenicToolTransgenicToolAssociationService, bulkLoadFileHistory, dataProvider, associations, associationIdsLoaded, COUNT_LABEL);
 		if (cleanUp && success) {
-			runCleanup(transgenicToolTransgenicToolAssociationService, bulkLoadFileHistory, dataProvider.name(), associationIdsBefore, associationIdsLoaded, countLabel(INGEST_SET));
+			runCleanup(transgenicToolTransgenicToolAssociationService, bulkLoadFileHistory, dataProvider.name(), associationIdsBefore, associationIdsLoaded, COUNT_LABEL);
 		}
 		reindexSubjects(dataProvider);
 		bulkLoadFileHistory.finishLoad();
