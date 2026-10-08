@@ -45,6 +45,7 @@ import org.alliancegenome.curation_api.services.validation.dto.slotAnnotations.A
 import org.alliancegenome.curation_api.services.validation.dto.slotAnnotations.AlleleSymbolSlotAnnotationValidator;
 import org.alliancegenome.curation_api.services.validation.dto.slotAnnotations.AlleleSynonymSlotAnnotationValidator;
 import org.alliancegenome.curation_api.services.CurieMintService;
+import org.alliancegenome.curation_api.services.ReferenceService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -69,6 +70,7 @@ public class AlleleValidator extends GenomicEntityValidator<Allele> {
 	@Inject AlleleConstructAssociationValidator alleleConstructAssociationValidator;
 	@Inject AlleleGeneAssociationValidator alleleGeneAssociationValidator;
 	@Inject ReferenceValidator referenceValidator;
+	@Inject ReferenceService referenceService;
 	
 	private String errorMessage;
 
@@ -308,6 +310,73 @@ public class AlleleValidator extends GenomicEntityValidator<Allele> {
 			}
 		}
 		return dbEntity;
+	}
+
+	/**
+	 * Resolves the references an allele's references sub-resource is to hold, in submitted order. Each entry
+	 * names a stored reference by its curie, or by one of its cross reference curies, and is looked up in the
+	 * database or the literature service; the entry's other fields are ignored, so nothing on the stored
+	 * reference is taken from it. A reference the allele does not already hold must not be obsolete, and no
+	 * reference may be named twice. A cross reference curie does not resolve to an obsolete reference, so an
+	 * obsolete reference the allele already holds is kept only when named by its own curie.
+	 *
+	 * @param dbEntity the allele the references belong to
+	 * @param incomingReferences the submitted references
+	 * @return the resolved references, one per submitted entry
+	 * @throws ApiErrorException when the list is missing or any entry cannot be resolved, with each entry's
+	 *         errors keyed by its index
+	 */
+	public List<Reference> validateReferenceReplacement(Allele dbEntity, List<Reference> incomingReferences) {
+		response = new ObjectResponse<>();
+		String field = "references";
+		String errorTitle = "Could not update References for: [" + dbEntity.getId() + "]";
+
+		if (incomingReferences == null) {
+			addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
+			response.setErrorMessage(errorTitle);
+			throw new ApiErrorException(response);
+		}
+
+		Set<Long> heldIds = new HashSet<>();
+		if (dbEntity.getReferences() != null) {
+			dbEntity.getReferences().forEach(reference -> heldIds.add(reference.getId()));
+		}
+
+		List<Reference> resolvedReferences = new ArrayList<>();
+		Set<Long> seenIds = new HashSet<>();
+		boolean allValid = true;
+		for (int ix = 0; ix < incomingReferences.size(); ix++) {
+			Reference incomingReference = incomingReferences.get(ix);
+			String curie = incomingReference == null ? null : incomingReference.getCurie();
+			if (StringUtils.isBlank(curie)) {
+				allValid = false;
+				response.addErrorMessages(field, ix, Map.of("curie", ValidationConstants.REQUIRED_MESSAGE));
+				continue;
+			}
+
+			Reference reference = referenceService.retrieveFromDbOrLiteratureService(curie);
+			if (reference == null) {
+				allValid = false;
+				response.addErrorMessages(field, ix, Map.of("curie", ValidationConstants.INVALID_MESSAGE));
+			} else if (!seenIds.add(reference.getId())) {
+				// Two curies can name the same reference, so duplicates are found by the reference they resolve to.
+				allValid = false;
+				response.addErrorMessages(field, ix, Map.of("curie", ValidationConstants.DUPLICATE_MESSAGE));
+			} else if (Boolean.TRUE.equals(reference.getObsolete()) && !heldIds.contains(reference.getId())) {
+				allValid = false;
+				response.addErrorMessages(field, ix, Map.of("curie", ValidationConstants.OBSOLETE_MESSAGE));
+			} else {
+				resolvedReferences.add(reference);
+			}
+		}
+
+		if (!allValid) {
+			convertMapToErrorMessages(field);
+			response.setErrorMessage(errorTitle);
+			throw new ApiErrorException(response);
+		}
+
+		return resolvedReferences;
 	}
 
 	private ObjectResponse<Reference> validateReference(Reference uiEntity, List<String> previousCuries) {

@@ -43,6 +43,9 @@ public class CurationView {
 	public static class CrossReferenceView extends FieldsOnly {
 	}
 
+	public static class ReferenceView extends FieldsOnly {
+	}
+
 	public static class NoteView extends FieldsAndLists {
 	}
 

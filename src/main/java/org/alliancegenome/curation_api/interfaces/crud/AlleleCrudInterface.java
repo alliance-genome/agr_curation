@@ -7,6 +7,7 @@ import org.alliancegenome.curation_api.interfaces.base.BaseSubmittedObjectCrudIn
 import org.alliancegenome.curation_api.interfaces.base.BaseUpsertControllerInterface;
 import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
+import org.alliancegenome.curation_api.model.entities.Reference;
 import org.alliancegenome.curation_api.model.ingest.dto.AlleleDTO;
 import org.alliancegenome.curation_api.response.APIResponse;
 import org.alliancegenome.curation_api.response.ObjectListResponse;
@@ -46,6 +47,18 @@ public interface AlleleCrudInterface extends BaseSubmittedObjectCrudInterface<Al
 	@Path("/{id}/cross-references")
 	@JsonView(CurationView.CrossReferenceView.class)
 	ObjectListResponse<CrossReference> updateCrossReferences(@PathParam("id") Long id, List<CrossReference> crossReferences);
+
+	@Operation(summary = "Get references for allele", description = "Retrieve all references attached to this allele")
+	@GET
+	@Path("/{id}/references")
+	@JsonView(CurationView.ReferenceView.class)
+	ObjectListResponse<Reference> getReferences(@PathParam("id") Long id);
+
+	@Operation(summary = "Replace references for allele", description = "Replace this allele's references with the submitted list, detaching any that are omitted")
+	@PUT
+	@Path("/{id}/references")
+	@JsonView(CurationView.ReferenceView.class)
+	ObjectListResponse<Reference> updateReferences(@PathParam("id") Long id, List<Reference> references);
 
 	@Operation(summary = "Bulk load allele data", description = "Bulk load allele records from a data provider submission")
 	@POST
