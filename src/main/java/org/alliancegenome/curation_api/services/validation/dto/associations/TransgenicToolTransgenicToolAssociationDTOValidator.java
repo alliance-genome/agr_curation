@@ -6,6 +6,7 @@ import java.util.List;
 import org.alliancegenome.curation_api.constants.EntityFieldConstants;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
+import org.alliancegenome.curation_api.dao.TransgenicToolDAO;
 import org.alliancegenome.curation_api.dao.associations.TransgenicToolTransgenicToolAssociationDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
@@ -32,6 +33,7 @@ import jakarta.inject.Inject;
 public class TransgenicToolTransgenicToolAssociationDTOValidator extends AuditedObjectDTOValidator<TransgenicToolTransgenicToolAssociation, TransgenicToolTransgenicToolAssociationDTO> {
 
 	@Inject TransgenicToolService transgenicToolService;
+	@Inject TransgenicToolDAO transgenicToolDAO;
 	@Inject TransgenicToolTransgenicToolAssociationDAO transgenicToolTransgenicToolAssociationDAO;
 
 	public ObjectResponse<TransgenicToolTransgenicToolAssociation> validateTransgenicToolTransgenicToolAssociationDTO(TransgenicToolTransgenicToolAssociationDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
@@ -79,12 +81,12 @@ public class TransgenicToolTransgenicToolAssociationDTOValidator extends Audited
 		association.setRelation(relation);
 
 		if (association.getTransgenicToolAssociationSubject() == null && subjectIds != null && subjectIds.size() == 1) {
-			TransgenicTool subject = validateTransgenicTool("transgenic_tool_subject_identifier", dto.getTransgenicToolSubjectIdentifier(), dataProvider);
+			TransgenicTool subject = validateTransgenicTool("transgenic_tool_subject_identifier", dto.getTransgenicToolSubjectIdentifier(), subjectIds.get(0), dataProvider);
 			association.setTransgenicToolAssociationSubject(subject);
 		}
 
 		if (association.getTransgenicToolTransgenicToolAssociationObject() == null && objectIds != null && objectIds.size() == 1) {
-			TransgenicTool object = validateTransgenicTool("transgenic_tool_object_identifier", dto.getTransgenicToolObjectIdentifier(), dataProvider);
+			TransgenicTool object = validateTransgenicTool("transgenic_tool_object_identifier", dto.getTransgenicToolObjectIdentifier(), objectIds.get(0), dataProvider);
 			association.setTransgenicToolTransgenicToolAssociationObject(object);
 		}
 
@@ -99,9 +101,12 @@ public class TransgenicToolTransgenicToolAssociationDTOValidator extends Audited
 		return response;
 	}
 
-	/** The tool behind an identifier, or null with an error when it is unknown or another provider's. */
-	private TransgenicTool validateTransgenicTool(String field, String identifier, BackendBulkDataProvider dataProvider) {
-		TransgenicTool tool = transgenicToolService.findByIdentifierString(identifier);
+	/**
+	 * The tool with the id already resolved from {@code identifier}, or null with an error when it is
+	 * unknown or another provider's. Fetched by id rather than looked up by identifier a second time.
+	 */
+	private TransgenicTool validateTransgenicTool(String field, String identifier, Long id, BackendBulkDataProvider dataProvider) {
+		TransgenicTool tool = transgenicToolDAO.find(id);
 		if (tool == null) {
 			response.addErrorMessage(field, ValidationConstants.INVALID_MESSAGE + " (" + identifier + ")");
 			return null;
