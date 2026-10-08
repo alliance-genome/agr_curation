@@ -9,7 +9,7 @@ import { AffectedGenomicModelService } from '../../service/AffectedGenomicModelS
 import ErrorBoundary from '../../components/Error/ErrorBoundary';
 import { useAGMReducer } from './useAGMReducer';
 import { StickyHeader } from '../../components/StickyHeader';
-import { FitTextHeading } from '../../components/FitTextHeading';
+import { DetailPageHeading } from '../../components/DetailPageHeading';
 import { LoadingOverlay } from '../../components/LoadingOverlay';
 import { processErrors } from './utils';
 import { FormFieldVisibilityMenu, useFormFieldVisibility } from '../../components/FormFieldVisibility';
@@ -87,20 +87,6 @@ export default function AffectedGenomicModelDetailPage() {
 			</div>
 		);
 
-	const headerText = () => {
-		let prefix = 'AGM: ';
-		if (agmState.agm?.agmFullName?.displayText && agmState.agm?.primaryExternalId) {
-			return `${prefix} ${agmState.agm.agmFullName.displayText} (${agmState.agm.primaryExternalId})`;
-		}
-		if (agmState.agm?.primaryExternalId) {
-			return `${prefix} ${agmState.agm.primaryExternalId}`;
-		}
-		if (agmState.agm?.curie) {
-			return `${prefix} ${agmState.agm.curie}`;
-		}
-		return 'AGM Detail Page';
-	};
-
 	return (
 		<>
 			<Toast ref={toastError} position="top-left" />
@@ -110,7 +96,11 @@ export default function AffectedGenomicModelDetailPage() {
 				<StickyHeader>
 					<Splitter className="bg-primary-reverse border-none lg:min-h-5rem" gutterSize={0}>
 						<SplitterPanel size={45} className="flex justify-content-start min-w-0 ml-5 py-3 ">
-							<FitTextHeading html={headerText()} />
+							<DetailPageHeading
+								entityType="AGM"
+								entity={agmState.agm}
+								label={agmState.agm?.agmFullName?.displayText}
+							/>
 						</SplitterPanel>
 						<SplitterPanel size={35} className="flex align-items-center justify-content-end gap-2 py-3">
 							<FormFieldVisibilityMenu
