@@ -21,6 +21,8 @@ import lombok.extern.jbosslog.JBossLog;
 @ApplicationScoped
 public class ConstructCassetteAssociationExecutor extends LoadFileExecutor {
 
+	private static final String INGEST_SET = "construct_cassette_association_ingest_set";
+
 	@Inject ConstructCassetteAssociationService lConstructCassetteAssociationService;
 
 	@Override
@@ -52,12 +54,11 @@ public class ConstructCassetteAssociationExecutor extends LoadFileExecutor {
 		bulkLoadFileHistory.getBulkLoadFile().setRecordCount(associations.size() + bulkLoadFileHistory.getBulkLoadFile().getRecordCount());
 		bulkLoadFileDAO.merge(bulkLoadFileHistory.getBulkLoadFile());
 
-		bulkLoadFileHistory.setCount(associations.size());
 		updateHistory(bulkLoadFileHistory);
 
-		boolean success = runLoad(lConstructCassetteAssociationService, bulkLoadFileHistory, dataProvider, associations, associationIdsLoaded);
+		boolean success = runLoad(lConstructCassetteAssociationService, bulkLoadFileHistory, dataProvider, associations, associationIdsLoaded, countLabel(INGEST_SET));
 		if (cleanUp && success) {
-			runCleanup(lConstructCassetteAssociationService, bulkLoadFileHistory, dataProvider.name(), associationIdsBefore, associationIdsLoaded, "construct cassette association");
+			runCleanup(lConstructCassetteAssociationService, bulkLoadFileHistory, dataProvider.name(), associationIdsBefore, associationIdsLoaded, countLabel(INGEST_SET));
 		}
 		bulkLoadFileHistory.finishLoad();
 		updateHistory(bulkLoadFileHistory);

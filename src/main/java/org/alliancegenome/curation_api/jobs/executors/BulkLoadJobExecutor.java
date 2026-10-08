@@ -31,6 +31,7 @@ import org.alliancegenome.curation_api.jobs.executors.associations.CassetteGenom
 import org.alliancegenome.curation_api.jobs.executors.associations.CassetteStrAssociationExecutor;
 import org.alliancegenome.curation_api.jobs.executors.associations.CassetteTransgenicToolAssociationExecutor;
 import org.alliancegenome.curation_api.jobs.executors.associations.ConstructCassetteAssociationExecutor;
+import org.alliancegenome.curation_api.jobs.executors.associations.TransgenicToolTransgenicToolAssociationExecutor;
 import org.alliancegenome.curation_api.jobs.executors.associations.AgmAlleleAssociationExecutor;
 import org.alliancegenome.curation_api.jobs.executors.associations.AgmStrAssociationExecutor;
 import org.alliancegenome.curation_api.jobs.executors.associations.AlleleConstructAssociationExecutor;
@@ -70,6 +71,7 @@ public class BulkLoadJobExecutor {
 	@Inject CassetteGenomicEntityAssociationExecutor cassetteGenomicEntityAssociationExecutor;
 	@Inject CassetteTransgenicToolAssociationExecutor cassetteTransgenicToolAssociationExecutor;
 	@Inject CassetteStrAssociationExecutor cassetteStrAssociationExecutor;
+	@Inject TransgenicToolTransgenicToolAssociationExecutor transgenicToolTransgenicToolAssociationExecutor;
 	@Inject AntibodyExecutor antibodyExecutor;
 	@Inject AlleleGeneAssociationExecutor alleleGeneAssociationExecutor;
 	@Inject AlleleConstructAssociationExecutor alleleConstructAssociationExecutor;
@@ -162,7 +164,7 @@ public class BulkLoadJobExecutor {
 			if (loadType == ALLELE_ASSOCIATION || loadTypeOwnsIngestSet(loadType, "allele_construct_association_ingest_set")) {
 				alleleConstructAssociationExecutor.execLoad(bulkLoadFileHistory, ingestDto, cleanUp);
 			}
-			if (loadType == CONSTRUCT_ASSOCIATION || loadTypeOwnsIngestSet(loadType, "construct_genomic_entity_association_ingest_set")) {
+			if (loadTypeOwnsIngestSet(loadType, "construct_genomic_entity_association_ingest_set")) {
 				constructGenomicEntityAssociationExecutor.execLoad(bulkLoadFileHistory, ingestDto, cleanUp);
 			}
 			if (loadType == CONSTRUCT_CASSETTE_ASSOCIATION || loadTypeOwnsIngestSet(loadType, "construct_cassette_association_ingest_set")) {
@@ -176,6 +178,9 @@ public class BulkLoadJobExecutor {
 			}
 			if (loadType == CASSETTE_STR_ASSOCIATION || loadTypeOwnsIngestSet(loadType, "cassette_str_association_ingest_set")) {
 				cassetteStrAssociationExecutor.execLoad(bulkLoadFileHistory, ingestDto, cleanUp);
+			}
+			if (loadTypeOwnsIngestSet(loadType, "transgenic_tool_transgenic_tool_association_ingest_set")) {
+				transgenicToolTransgenicToolAssociationExecutor.execLoad(bulkLoadFileHistory, ingestDto, cleanUp);
 			}
 			// The AGM/STR set is named for sequence_targeting_reagent in the schema, not for
 			// the agmStr abbreviation the Java field uses.
@@ -245,40 +250,49 @@ public class BulkLoadJobExecutor {
 	}
 
 	/**
-	 * The constructs model is submitted as a family of files that share one load type: a
-	 * CONSTRUCT_&lt;MOD&gt; submission may carry constructs, cassettes, transgenic tools or any of
-	 * their associations. Listing the sets it owns keeps CONSTRUCT from straying into the rest
-	 * of a FULL_INGEST when the two overlap in a single file.
+	 * The constructs model is submitted as a family of files, split over two load types: a
+	 * CONSTRUCT_&lt;MOD&gt; submission carries constructs, cassettes and transgenic tools, and a
+	 * CONSTRUCT_ASSOCIATION_&lt;MOD&gt; submission carries their associations. Listing the sets each
+	 * owns keeps them from straying into the rest of a FULL_INGEST when the two overlap in a file.
 	 *
-	 * Two sets the MODs ship are deliberately absent because nothing can read them yet:
-	 * str_ingest_set, which has no LinkML DTO (only the FMS SequenceTargetingReagent path),
-	 * and transgenic_tool_transgenic_tool_association_ingest_set, which is still unimplemented.
+	 * One set the MODs ship is deliberately absent because nothing can read it yet:
+	 * str_ingest_set, which has no LinkML DTO (only the FMS SequenceTargetingReagent path).
 	 */
-	private static final Set<String> CONSTRUCT_MODEL_INGEST_SETS = Set.of(
+	private static final Set<String> CONSTRUCT_INGEST_SETS = Set.of(
 		"construct_ingest_set",
 		"cassette_ingest_set",
-		"transgenic_tool_ingest_set",
+		"transgenic_tool_ingest_set");
+
+	private static final Set<String> CONSTRUCT_ASSOCIATION_INGEST_SETS = Set.of(
 		"construct_cassette_association_ingest_set",
 		"construct_genomic_entity_association_ingest_set",
 		"cassette_genomic_entity_association_ingest_set",
 		"cassette_transgenic_tool_association_ingest_set",
-		"cassette_str_association_ingest_set");
+		"cassette_str_association_ingest_set",
+		"transgenic_tool_transgenic_tool_association_ingest_set");
 
 	/** Load types that carry more than one kind of entity and so are dispatched by file content. */
 	boolean fansOut(BackendBulkLoadType loadType) {
-		return loadType == FULL_INGEST || loadType == CONSTRUCT;
+		return loadType == FULL_INGEST || loadType == CONSTRUCT || loadType == CONSTRUCT_ASSOCIATION;
 	}
 
 	/**
 	 * Whether a content dispatched load type owns {@code ingestSetName}, so the fan-out hands the
-	 * submission to that set's executor. FULL_INGEST owns every set; CONSTRUCT owns only the
-	 * constructs model sets. The single type loads keep their own explicit check alongside this,
-	 * so an operator submitting CASSETTE still gets the cassette executor either way.
+	 * submission to that set's executor. FULL_INGEST owns every set; CONSTRUCT and
+	 * CONSTRUCT_ASSOCIATION own only their part of the constructs model. The single type loads keep
+	 * their own explicit check alongside this, so an operator submitting CASSETTE still gets the
+	 * cassette executor either way.
 	 */
 	boolean loadTypeOwnsIngestSet(BackendBulkLoadType loadType, String ingestSetName) {
 		if (!fansOut(loadType)) {
 			return false;
 		}
-		return loadType != CONSTRUCT || CONSTRUCT_MODEL_INGEST_SETS.contains(ingestSetName);
+		if (loadType == CONSTRUCT) {
+			return CONSTRUCT_INGEST_SETS.contains(ingestSetName);
+		}
+		if (loadType == CONSTRUCT_ASSOCIATION) {
+			return CONSTRUCT_ASSOCIATION_INGEST_SETS.contains(ingestSetName);
+		}
+		return true;
 	}
 }

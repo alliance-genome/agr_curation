@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
+import org.alliancegenome.curation_api.model.entities.associations.TransgenicToolTransgenicToolAssociation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.TransgenicToolFullNameSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.TransgenicToolSymbolSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.TransgenicToolSynonymSlotAnnotation;
@@ -41,7 +42,7 @@ import lombok.ToString;
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @Schema(name = "TransgenicTool", description = "TransgenicTool: a transgenic tool")
-@ToString(exclude = {"transgenicToolSymbol", "transgenicToolFullName", "transgenicToolSynonyms", "transgenicToolUses"}, callSuper = true)
+@ToString(exclude = {"transgenicToolSymbol", "transgenicToolFullName", "transgenicToolSynonyms", "transgenicToolUses", "transgenicToolTransgenicToolAssociations"}, callSuper = true)
 @AGRCurationSchemaVersion(min = "2.19.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { Reagent.class })
 public class TransgenicTool extends Reagent {
 
@@ -91,5 +92,20 @@ public class TransgenicTool extends Reagent {
 		@Index(name = "transgenictool_crossreference_crossreferences_index", columnList = "crossreferences_id")
 	})
 	private List<CrossReference> crossReferences;
+
+	/**
+	 * SCRUM-6543: the compatible tools this tool was submitted as the subject of. The relation is
+	 * symmetrical but associations are stored as submitted, so a tool can also be the object of
+	 * associations listed on the other tool.
+	 */
+	@IndexedEmbedded(includePaths = {
+		"transgenicToolTransgenicToolAssociationObject.curie", "transgenicToolTransgenicToolAssociationObject.primaryExternalId",
+		"transgenicToolTransgenicToolAssociationObject.modInternalId", "relation.name",
+		"transgenicToolTransgenicToolAssociationObject.curie_keyword", "transgenicToolTransgenicToolAssociationObject.primaryExternalId_keyword",
+		"transgenicToolTransgenicToolAssociationObject.modInternalId_keyword", "relation.name_keyword"
+	})
+	@OneToMany(mappedBy = "transgenicToolAssociationSubject", cascade = CascadeType.ALL, orphanRemoval = true)
+	@JsonView({ CurationView.FieldsAndLists.class, CurationView.TransgenicToolView.class })
+	private List<TransgenicToolTransgenicToolAssociation> transgenicToolTransgenicToolAssociations;
 
 }

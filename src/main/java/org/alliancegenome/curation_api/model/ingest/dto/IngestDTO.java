@@ -13,6 +13,7 @@ import org.alliancegenome.curation_api.model.ingest.dto.associations.CassetteStr
 import org.alliancegenome.curation_api.model.ingest.dto.associations.CassetteTransgenicToolAssociationDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.associations.ConstructCassetteAssociationDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.associations.ConstructGenomicEntityAssociationDTO;
+import org.alliancegenome.curation_api.model.ingest.dto.associations.TransgenicToolTransgenicToolAssociationDTO;
 import org.alliancegenome.curation_api.view.CurationView;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -100,6 +101,9 @@ public class IngestDTO {
 
 	@JsonProperty("cassette_str_association_ingest_set")
 	private List<CassetteStrAssociationDTO> cassetteStrAssociationIngestSet;
+
+	@JsonProperty("transgenic_tool_transgenic_tool_association_ingest_set")
+	private List<TransgenicToolTransgenicToolAssociationDTO> transgenicToolTransgenicToolAssociationIngestSet;
 
 	@JsonView({CurationView.FieldsAndLists.class})
 	@JsonProperty("agm_sequence_targeting_reagent_association_ingest_set")

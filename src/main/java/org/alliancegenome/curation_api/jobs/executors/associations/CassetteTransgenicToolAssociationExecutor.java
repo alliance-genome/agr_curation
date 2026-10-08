@@ -21,6 +21,8 @@ import lombok.extern.jbosslog.JBossLog;
 @ApplicationScoped
 public class CassetteTransgenicToolAssociationExecutor extends LoadFileExecutor {
 
+	private static final String INGEST_SET = "cassette_transgenic_tool_association_ingest_set";
+
 	@Inject CassetteTransgenicToolAssociationService lCassetteTransgenicToolAssociationService;
 
 	@Override
@@ -52,12 +54,11 @@ public class CassetteTransgenicToolAssociationExecutor extends LoadFileExecutor 
 		bulkLoadFileHistory.getBulkLoadFile().setRecordCount(associations.size() + bulkLoadFileHistory.getBulkLoadFile().getRecordCount());
 		bulkLoadFileDAO.merge(bulkLoadFileHistory.getBulkLoadFile());
 
-		bulkLoadFileHistory.setCount(associations.size());
 		updateHistory(bulkLoadFileHistory);
 
-		boolean success = runLoad(lCassetteTransgenicToolAssociationService, bulkLoadFileHistory, dataProvider, associations, associationIdsLoaded);
+		boolean success = runLoad(lCassetteTransgenicToolAssociationService, bulkLoadFileHistory, dataProvider, associations, associationIdsLoaded, countLabel(INGEST_SET));
 		if (cleanUp && success) {
-			runCleanup(lCassetteTransgenicToolAssociationService, bulkLoadFileHistory, dataProvider.name(), associationIdsBefore, associationIdsLoaded, "cassette transgenic tool association");
+			runCleanup(lCassetteTransgenicToolAssociationService, bulkLoadFileHistory, dataProvider.name(), associationIdsBefore, associationIdsLoaded, countLabel(INGEST_SET));
 		}
 		bulkLoadFileHistory.finishLoad();
 		updateHistory(bulkLoadFileHistory);

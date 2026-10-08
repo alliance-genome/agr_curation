@@ -161,6 +161,32 @@ export const applyCrossReferenceFieldChange = (crossReference, field, value) => 
 	return updated;
 };
 
+// A row's identity and curator-editable fields, as a string to compare by, with a blank value read as none.
+const crossReferenceValue = (crossReference) =>
+	JSON.stringify([
+		crossReference.id ?? null,
+		crossReference.referencedCurie || null,
+		crossReference.displayName || null,
+		crossReference.resourceDescriptor?.id ?? null,
+		crossReference.resourceDescriptorPage?.id ?? null,
+		crossReference.internal ?? null,
+		crossReference.obsolete ?? null,
+	]);
+
+/**
+ * Whether two lists of cross references hold the same rows, in the same order, ignoring the fields the
+ * table adds.
+ *
+ * @param {Object[]} crossReferences
+ * @param {Object[]} otherCrossReferences
+ * @returns {boolean}
+ */
+export const haveSameCrossReferences = (crossReferences, otherCrossReferences) =>
+	crossReferences.length === otherCrossReferences.length &&
+	crossReferences.every(
+		(crossReference, index) => crossReferenceValue(crossReference) === crossReferenceValue(otherCrossReferences[index])
+	);
+
 /**
  * The row carrying a given key.
  *

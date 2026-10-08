@@ -153,6 +153,34 @@ describe('useAlleleCrossReferences', () => {
 		expect(result.current.isDirty).toBe(false);
 	});
 
+	it('Reports no unsaved edits once the rows are changed back to those last read', async () => {
+		getCrossReferencesForAllele.mockResolvedValue({ data: { entities: [storedCrossReference] } });
+
+		const { result } = renderHook(() => useAlleleCrossReferences(77));
+		await waitFor(() => expect(result.current.crossReferences).toHaveLength(1));
+		const loadedRows = result.current.crossReferences;
+
+		act(() => {
+			result.current.setCrossReferences([...loadedRows, { dataKey: 'new-row', referencedCurie: '' }]);
+		});
+		expect(result.current.isDirty).toBe(true);
+
+		act(() => {
+			result.current.setCrossReferences([...loadedRows]);
+		});
+		expect(result.current.isDirty).toBe(false);
+
+		act(() => {
+			result.current.setCrossReferences([{ ...loadedRows[0], displayName: 'PMID:1 edited' }]);
+		});
+		expect(result.current.isDirty).toBe(true);
+
+		act(() => {
+			result.current.setCrossReferences([{ ...loadedRows[0], displayName: 'PMID:1' }]);
+		});
+		expect(result.current.isDirty).toBe(false);
+	});
+
 	it('Keeps edits unsaved when writing them fails', async () => {
 		getCrossReferencesForAllele.mockResolvedValue({ data: { entities: [storedCrossReference] } });
 		replaceCrossReferencesForAllele.mockRejectedValue({ response: { data: { errorMessage: 'refused' } } });
