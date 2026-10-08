@@ -1,0 +1,19 @@
+src/main/cliapp/src/containers/affectedGenomicModelPage/AffectedGenomicModelTable.jsx
+  s_90fe3c66eb3b97::t_78b6c18d1ccce4 375,440
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "7172e339f2e82e18e1621982696e7539289c8bf1",
+  "prompts": {},
+  "sessions": {
+    "s_90fe3c66eb3b97": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "64db8705-0fb3-46f5-be71-5247c76018af",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Ketaki Kindre <kkindre@caltech.edu>"
+    }
+  }
+}
