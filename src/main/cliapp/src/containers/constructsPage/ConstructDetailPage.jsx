@@ -7,7 +7,7 @@ import { useQuery } from '@tanstack/react-query';
 import { ConstructService } from '../../service/ConstructService';
 import ErrorBoundary from '../../components/Error/ErrorBoundary';
 import { StickyHeader } from '../../components/StickyHeader';
-import { FitTextHeading } from '../../components/FitTextHeading';
+import { DetailPageHeading } from '../../components/DetailPageHeading';
 import { useConstructReducer } from './useConstructReducer';
 import { IdentifierDetailPageTemplate } from '../../components/Templates/IdentifierDetailPageTemplate';
 import { DataProviderDetailPageTemplate } from '../../components/Templates/DataProviderDetailPageTemplate';
@@ -55,17 +55,6 @@ export default function ConstructDetailPage() {
 			</div>
 		);
 
-	const headerText = () => {
-		let prefix = 'Construct: ';
-		if (constructState.construct?.constructSymbol?.displayText && constructState.construct?.primaryExternalId) {
-			return `${prefix} ${constructState.construct.constructSymbol.displayText} (${constructState.construct.primaryExternalId})`;
-		}
-		if (constructState.construct?.primaryExternalId) {
-			return `${prefix} ${constructState.construct.primaryExternalId}`;
-		}
-		return 'Construct Detail Page';
-	};
-
 	return (
 		<>
 			<Toast ref={toastError} position="top-left" />
@@ -74,7 +63,11 @@ export default function ConstructDetailPage() {
 				<StickyHeader>
 					<Splitter className="bg-primary-reverse border-none lg:h-5rem" gutterSize={0}>
 						<SplitterPanel size={70} className="flex justify-content-start min-w-0 ml-5 py-3 ">
-							<FitTextHeading html={headerText()} />
+							<DetailPageHeading
+								entityType="Construct"
+								entity={constructState.construct}
+								label={constructState.construct?.constructSymbol?.displayText}
+							/>
 						</SplitterPanel>
 						<SplitterPanel size={30} className="flex justify-content-start py-3"></SplitterPanel>
 					</Splitter>
