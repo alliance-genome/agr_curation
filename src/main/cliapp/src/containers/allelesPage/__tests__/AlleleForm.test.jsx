@@ -72,6 +72,15 @@ describe('<AlleleForm />', () => {
 			expect(screen.queryByLabelText('modInternalId')).not.toBeInTheDocument();
 		});
 
+		it('Offers no section saves, which need an allele to save against', async () => {
+			await renderWithClient(<AlleleFormHarness mode="create" />);
+
+			expect(screen.queryByRole('button', { name: /Save References/ })).not.toBeInTheDocument();
+			expect(screen.queryByRole('button', { name: /Save Cross References/ })).not.toBeInTheDocument();
+			expect(screen.getByRole('button', { name: 'Add Reference' })).toBeInTheDocument();
+			expect(screen.getByRole('button', { name: 'Add Cross Reference' })).toBeInTheDocument();
+		});
+
 		it('Keeps the curatable fields, Internal and Obsolete', async () => {
 			await renderWithClient(<AlleleFormHarness mode="create" />);
 
