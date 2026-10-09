@@ -24,7 +24,7 @@ public class CassetteTransgenicToolAssociationExecutor extends LoadFileExecutor 
 
 	private static final String INGEST_SET = "cassette_transgenic_tool_association_ingest_set";
 
-	@Inject CassetteTransgenicToolAssociationService lCassetteTransgenicToolAssociationService;
+	@Inject CassetteTransgenicToolAssociationService cassetteTransgenicToolAssociationService;
 	@Inject CassetteDAO cassetteDAO;
 
 	@Override
@@ -49,7 +49,7 @@ public class CassetteTransgenicToolAssociationExecutor extends LoadFileExecutor 
 		List<Long> associationIdsLoaded = new ArrayList<>();
 		List<Long> associationIdsBefore = new ArrayList<>();
 		if (cleanUp) {
-			associationIdsBefore.addAll(lCassetteTransgenicToolAssociationService.getAssociationsByDataProvider(dataProvider));
+			associationIdsBefore.addAll(cassetteTransgenicToolAssociationService.getAssociationsByDataProvider(dataProvider));
 			associationIdsBefore.removeIf(Objects::isNull);
 		}
 
@@ -58,9 +58,9 @@ public class CassetteTransgenicToolAssociationExecutor extends LoadFileExecutor 
 
 		updateHistory(bulkLoadFileHistory);
 
-		boolean success = runLoad(lCassetteTransgenicToolAssociationService, bulkLoadFileHistory, dataProvider, associations, associationIdsLoaded, countLabel(INGEST_SET));
+		boolean success = runLoad(cassetteTransgenicToolAssociationService, bulkLoadFileHistory, dataProvider, associations, associationIdsLoaded, countLabel(INGEST_SET));
 		if (cleanUp && success) {
-			runCleanup(lCassetteTransgenicToolAssociationService, bulkLoadFileHistory, dataProvider.name(), associationIdsBefore, associationIdsLoaded, countLabel(INGEST_SET));
+			runCleanup(cassetteTransgenicToolAssociationService, bulkLoadFileHistory, dataProvider.name(), associationIdsBefore, associationIdsLoaded, countLabel(INGEST_SET));
 		}
 		reindexSubjects(dataProvider);
 		bulkLoadFileHistory.finishLoad();

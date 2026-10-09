@@ -22,37 +22,37 @@ import jakarta.inject.Inject;
 public class CassetteStrAssociationCrudController extends
 	BaseEntityCrudController<CassetteStrAssociationService, CassetteStrAssociation, CassetteStrAssociationDAO> implements CassetteStrAssociationCrudInterface {
 
-	@Inject CassetteStrAssociationService lCassetteStrAssociationService;
-	@Inject CassetteStrAssociationExecutor lCassetteStrAssociationExecutor;
+	@Inject CassetteStrAssociationService cassetteStrAssociationService;
+	@Inject CassetteStrAssociationExecutor cassetteStrAssociationExecutor;
 
 	@Override
 	@PostConstruct
 	protected void init() {
-		setService(lCassetteStrAssociationService);
+		setService(cassetteStrAssociationService);
 	}
 
 	@Override
 	public ObjectResponse<CassetteStrAssociation> update(CassetteStrAssociation entity) {
-		return lCassetteStrAssociationService.upsert(entity);
+		return cassetteStrAssociationService.upsert(entity);
 	}
 
 	@Override
 	public ObjectResponse<CassetteStrAssociation> create(CassetteStrAssociation entity) {
-		return lCassetteStrAssociationService.upsert(entity);
+		return cassetteStrAssociationService.upsert(entity);
 	}
 
 	public ObjectResponse<CassetteStrAssociation> validate(CassetteStrAssociation entity) {
-		return lCassetteStrAssociationService.validate(entity);
+		return cassetteStrAssociationService.validate(entity);
 	}
 
 	@Override
 	public APIResponse updateCassetteStrAssociations(String dataProvider, List<CassetteStrAssociationDTO> associations) {
-		APIResponse response = lCassetteStrAssociationExecutor.runLoadApi(lCassetteStrAssociationService, dataProvider, associations);
-		lCassetteStrAssociationExecutor.reindexSubjects(BackendBulkDataProvider.valueOf(dataProvider));
+		APIResponse response = cassetteStrAssociationExecutor.runLoadApi(cassetteStrAssociationService, dataProvider, associations);
+		cassetteStrAssociationExecutor.reindexSubjects(BackendBulkDataProvider.valueOf(dataProvider));
 		return response;
 	}
 
 	public ObjectResponse<CassetteStrAssociation> getAssociation(Long subjectId, String relationName, Long objectId) {
-		return lCassetteStrAssociationService.getAssociation(subjectId, relationName, objectId);
+		return cassetteStrAssociationService.getAssociation(subjectId, relationName, objectId);
 	}
 }

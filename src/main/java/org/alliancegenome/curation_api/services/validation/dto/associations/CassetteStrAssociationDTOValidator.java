@@ -39,7 +39,7 @@ public class CassetteStrAssociationDTOValidator extends EvidenceAssociationDTOVa
 
 	@Inject CassetteService cassetteService;
 	@Inject SequenceTargetingReagentService sequenceTargetingReagentService;
-	@Inject CassetteStrAssociationDAO lCassetteStrAssociationDAO;
+	@Inject CassetteStrAssociationDAO cassetteStrAssociationDAO;
 	@Inject CassetteDAO cassetteDAO;
 	@Inject SequenceTargetingReagentDAO sequenceTargetingReagentDAO;
 
@@ -75,7 +75,7 @@ public class CassetteStrAssociationDTOValidator extends EvidenceAssociationDTOVa
 			params.put("relation.id", relation.getId());
 			params.put("cassetteStrAssociationObject.id", objectIds.get(0));
 
-			SearchResponse<CassetteStrAssociation> searchResponse = lCassetteStrAssociationDAO.findByParams(params);
+			SearchResponse<CassetteStrAssociation> searchResponse = cassetteStrAssociationDAO.findByParams(params);
 			if (searchResponse != null && searchResponse.getResults().size() == 1) {
 				association = searchResponse.getSingleResult();
 			} else {
@@ -126,7 +126,7 @@ public class CassetteStrAssociationDTOValidator extends EvidenceAssociationDTOVa
 			throw new ObjectValidationException(dto, response.errorMessagesString());
 		}
 
-		response.setEntity(lCassetteStrAssociationDAO.persist(association));
+		response.setEntity(cassetteStrAssociationDAO.persist(association));
 
 		return response;
 	}

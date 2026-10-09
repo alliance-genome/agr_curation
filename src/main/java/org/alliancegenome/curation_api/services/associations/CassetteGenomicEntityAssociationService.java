@@ -29,29 +29,29 @@ import jakarta.transaction.Transactional;
 public class CassetteGenomicEntityAssociationService extends BaseAssociationDTOCrudService<CassetteGenomicEntityAssociation, CassetteGenomicEntityAssociationDTO, CassetteGenomicEntityAssociationDAO>
 	implements BaseUpsertServiceInterface<CassetteGenomicEntityAssociation, CassetteGenomicEntityAssociationDTO> {
 
-	@Inject CassetteGenomicEntityAssociationDAO lCassetteGenomicEntityAssociationDAO;
-	@Inject CassetteGenomicEntityAssociationValidator lCassetteGenomicEntityAssociationValidator;
-	@Inject CassetteGenomicEntityAssociationDTOValidator lCassetteGenomicEntityAssociationDtoValidator;
+	@Inject CassetteGenomicEntityAssociationDAO cassetteGenomicEntityAssociationDAO;
+	@Inject CassetteGenomicEntityAssociationValidator cassetteGenomicEntityAssociationValidator;
+	@Inject CassetteGenomicEntityAssociationDTOValidator cassetteGenomicEntityAssociationDtoValidator;
 	@Inject CassetteDAO cassetteDAO;
 
 	@Override
 	@PostConstruct
 	protected void init() {
-		setSQLDao(lCassetteGenomicEntityAssociationDAO);
+		setSQLDao(cassetteGenomicEntityAssociationDAO);
 	}
 
 	@Transactional
 	public ObjectResponse<CassetteGenomicEntityAssociation> upsert(CassetteGenomicEntityAssociation uiEntity) {
-		CassetteGenomicEntityAssociation dbEntity = lCassetteGenomicEntityAssociationValidator.validateCassetteGenomicEntityAssociation(uiEntity, true, true);
+		CassetteGenomicEntityAssociation dbEntity = cassetteGenomicEntityAssociationValidator.validateCassetteGenomicEntityAssociation(uiEntity, true, true);
 		if (dbEntity == null) {
 			return null;
 		}
-		dbEntity = lCassetteGenomicEntityAssociationDAO.persist(dbEntity);
+		dbEntity = cassetteGenomicEntityAssociationDAO.persist(dbEntity);
 		return new ObjectResponse<>(dbEntity);
 	}
 
 	public ObjectResponse<CassetteGenomicEntityAssociation> validate(CassetteGenomicEntityAssociation uiEntity) {
-		CassetteGenomicEntityAssociation association = lCassetteGenomicEntityAssociationValidator.validateCassetteGenomicEntityAssociation(uiEntity, true, false);
+		CassetteGenomicEntityAssociation association = cassetteGenomicEntityAssociationValidator.validateCassetteGenomicEntityAssociation(uiEntity, true, false);
 		return new ObjectResponse<CassetteGenomicEntityAssociation>(association);
 	}
 
@@ -60,14 +60,14 @@ public class CassetteGenomicEntityAssociationService extends BaseAssociationDTOC
 	public ObjectResponse<CassetteGenomicEntityAssociation> upsert(CassetteGenomicEntityAssociationDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
 		// The cassettes are reindexed once after the load, not at every association's commit
 		cassetteDAO.skipAutomaticIndexing();
-		return lCassetteGenomicEntityAssociationDtoValidator.validateCassetteGenomicEntityAssociationDTO(dto, dataProvider);
+		return cassetteGenomicEntityAssociationDtoValidator.validateCassetteGenomicEntityAssociationDTO(dto, dataProvider);
 	}
 
 	/** Ids of the associations a given MOD owns, for the load's cleanup pass. */
 	public List<Long> getAssociationsByDataProvider(BackendBulkDataProvider dataProvider) {
 		Map<String, Object> params = new HashMap<>();
 		params.put(EntityFieldConstants.CASSETTE_ASSOCIATION_SUBJECT_DATA_PROVIDER, dataProvider.sourceOrganization);
-		List<Long> associationIds = lCassetteGenomicEntityAssociationDAO.findIdsByParams(params);
+		List<Long> associationIds = cassetteGenomicEntityAssociationDAO.findIdsByParams(params);
 		associationIds.removeIf(Objects::isNull);
 
 		return associationIds;
@@ -81,7 +81,7 @@ public class CassetteGenomicEntityAssociationService extends BaseAssociationDTOC
 		params.put("relation.name", relationName);
 		params.put("cassetteGenomicEntityAssociationObject.id", objectId);
 
-		SearchResponse<CassetteGenomicEntityAssociation> resp = lCassetteGenomicEntityAssociationDAO.findByParams(params);
+		SearchResponse<CassetteGenomicEntityAssociation> resp = cassetteGenomicEntityAssociationDAO.findByParams(params);
 		if (resp != null && resp.getSingleResult() != null) {
 			association = resp.getSingleResult();
 		}

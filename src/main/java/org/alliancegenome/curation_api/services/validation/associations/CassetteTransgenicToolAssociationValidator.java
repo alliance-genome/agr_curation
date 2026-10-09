@@ -32,7 +32,7 @@ public class CassetteTransgenicToolAssociationValidator extends EvidenceAssociat
 
 	@Inject CassetteDAO cassetteDAO;
 	@Inject TransgenicToolDAO transgenicToolDAO;
-	@Inject CassetteTransgenicToolAssociationDAO lCassetteTransgenicToolAssociationDAO;
+	@Inject CassetteTransgenicToolAssociationDAO cassetteTransgenicToolAssociationDAO;
 	@Inject NoteValidator noteValidator;
 
 	private String errorMessage;
@@ -50,7 +50,7 @@ public class CassetteTransgenicToolAssociationValidator extends EvidenceAssociat
 		Long id = uiEntity.getId();
 		CassetteTransgenicToolAssociation dbEntity = null;
 		if (id != null) {
-			dbEntity = lCassetteTransgenicToolAssociationDAO.find(id);
+			dbEntity = cassetteTransgenicToolAssociationDAO.find(id);
 			if (dbEntity == null) {
 				addMessageResponse("Could not find CassetteTransgenicToolAssociation with ID: [" + id + "]");
 				throw new ApiErrorException(response);

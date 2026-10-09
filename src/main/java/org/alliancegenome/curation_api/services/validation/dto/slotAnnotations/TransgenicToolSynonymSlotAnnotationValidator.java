@@ -14,8 +14,8 @@ import jakarta.inject.Inject;
 @RequestScoped
 public class TransgenicToolSynonymSlotAnnotationValidator extends NameSlotAnnotationValidator<TransgenicToolSynonymSlotAnnotation> {
 
-	@Inject TransgenicToolSynonymSlotAnnotationDAO lTransgenicToolSynonymDAO;
-	@Inject TransgenicToolDAO lTransgenicToolDAO;
+	@Inject TransgenicToolSynonymSlotAnnotationDAO transgenicToolSynonymDAO;
+	@Inject TransgenicToolDAO transgenicToolDAO;
 
 	public ObjectResponse<TransgenicToolSynonymSlotAnnotation> validateTransgenicToolSynonymSlotAnnotation(TransgenicToolSynonymSlotAnnotation uiEntity) {
 		TransgenicToolSynonymSlotAnnotation annotation = validateTransgenicToolSynonymSlotAnnotation(uiEntity, false, false);
@@ -32,7 +32,7 @@ public class TransgenicToolSynonymSlotAnnotationValidator extends NameSlotAnnota
 		TransgenicToolSynonymSlotAnnotation dbEntity = null;
 		Boolean newEntity;
 		if (id != null) {
-			dbEntity = lTransgenicToolSynonymDAO.find(id);
+			dbEntity = transgenicToolSynonymDAO.find(id);
 			newEntity = false;
 			if (dbEntity == null) {
 				addMessageResponse("Could not find TransgenicToolSynonymSlotAnnotation with ID: [" + id + "]");
@@ -47,7 +47,7 @@ public class TransgenicToolSynonymSlotAnnotationValidator extends NameSlotAnnota
 
 
 		if (validateTransgenicTool) {
-			TransgenicTool singleTransgenicTool = validateRequiredEntity(lTransgenicToolDAO, "singleTransgenicTool", uiEntity.getSingleTransgenicTool(), dbEntity.getSingleTransgenicTool());
+			TransgenicTool singleTransgenicTool = validateRequiredEntity(transgenicToolDAO, "singleTransgenicTool", uiEntity.getSingleTransgenicTool(), dbEntity.getSingleTransgenicTool());
 			dbEntity.setSingleTransgenicTool(singleTransgenicTool);
 		}
 

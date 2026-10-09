@@ -39,7 +39,7 @@ public class CassetteTransgenicToolAssociationDTOValidator extends EvidenceAssoc
 
 	@Inject CassetteService cassetteService;
 	@Inject TransgenicToolService transgenicToolService;
-	@Inject CassetteTransgenicToolAssociationDAO lCassetteTransgenicToolAssociationDAO;
+	@Inject CassetteTransgenicToolAssociationDAO cassetteTransgenicToolAssociationDAO;
 	@Inject CassetteDAO cassetteDAO;
 	@Inject TransgenicToolDAO transgenicToolDAO;
 
@@ -75,7 +75,7 @@ public class CassetteTransgenicToolAssociationDTOValidator extends EvidenceAssoc
 			params.put("relation.id", relation.getId());
 			params.put("cassetteTransgenicToolAssociationObject.id", objectIds.get(0));
 
-			SearchResponse<CassetteTransgenicToolAssociation> searchResponse = lCassetteTransgenicToolAssociationDAO.findByParams(params);
+			SearchResponse<CassetteTransgenicToolAssociation> searchResponse = cassetteTransgenicToolAssociationDAO.findByParams(params);
 			if (searchResponse != null && searchResponse.getResults().size() == 1) {
 				association = searchResponse.getSingleResult();
 			} else {
@@ -126,7 +126,7 @@ public class CassetteTransgenicToolAssociationDTOValidator extends EvidenceAssoc
 			throw new ObjectValidationException(dto, response.errorMessagesString());
 		}
 
-		response.setEntity(lCassetteTransgenicToolAssociationDAO.persist(association));
+		response.setEntity(cassetteTransgenicToolAssociationDAO.persist(association));
 
 		return response;
 	}

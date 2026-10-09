@@ -22,37 +22,37 @@ import jakarta.inject.Inject;
 public class CassetteTransgenicToolAssociationCrudController extends
 	BaseEntityCrudController<CassetteTransgenicToolAssociationService, CassetteTransgenicToolAssociation, CassetteTransgenicToolAssociationDAO> implements CassetteTransgenicToolAssociationCrudInterface {
 
-	@Inject CassetteTransgenicToolAssociationService lCassetteTransgenicToolAssociationService;
-	@Inject CassetteTransgenicToolAssociationExecutor lCassetteTransgenicToolAssociationExecutor;
+	@Inject CassetteTransgenicToolAssociationService cassetteTransgenicToolAssociationService;
+	@Inject CassetteTransgenicToolAssociationExecutor cassetteTransgenicToolAssociationExecutor;
 
 	@Override
 	@PostConstruct
 	protected void init() {
-		setService(lCassetteTransgenicToolAssociationService);
+		setService(cassetteTransgenicToolAssociationService);
 	}
 
 	@Override
 	public ObjectResponse<CassetteTransgenicToolAssociation> update(CassetteTransgenicToolAssociation entity) {
-		return lCassetteTransgenicToolAssociationService.upsert(entity);
+		return cassetteTransgenicToolAssociationService.upsert(entity);
 	}
 
 	@Override
 	public ObjectResponse<CassetteTransgenicToolAssociation> create(CassetteTransgenicToolAssociation entity) {
-		return lCassetteTransgenicToolAssociationService.upsert(entity);
+		return cassetteTransgenicToolAssociationService.upsert(entity);
 	}
 
 	public ObjectResponse<CassetteTransgenicToolAssociation> validate(CassetteTransgenicToolAssociation entity) {
-		return lCassetteTransgenicToolAssociationService.validate(entity);
+		return cassetteTransgenicToolAssociationService.validate(entity);
 	}
 
 	@Override
 	public APIResponse updateCassetteTransgenicToolAssociations(String dataProvider, List<CassetteTransgenicToolAssociationDTO> associations) {
-		APIResponse response = lCassetteTransgenicToolAssociationExecutor.runLoadApi(lCassetteTransgenicToolAssociationService, dataProvider, associations);
-		lCassetteTransgenicToolAssociationExecutor.reindexSubjects(BackendBulkDataProvider.valueOf(dataProvider));
+		APIResponse response = cassetteTransgenicToolAssociationExecutor.runLoadApi(cassetteTransgenicToolAssociationService, dataProvider, associations);
+		cassetteTransgenicToolAssociationExecutor.reindexSubjects(BackendBulkDataProvider.valueOf(dataProvider));
 		return response;
 	}
 
 	public ObjectResponse<CassetteTransgenicToolAssociation> getAssociation(Long subjectId, String relationName, Long objectId) {
-		return lCassetteTransgenicToolAssociationService.getAssociation(subjectId, relationName, objectId);
+		return cassetteTransgenicToolAssociationService.getAssociation(subjectId, relationName, objectId);
 	}
 }

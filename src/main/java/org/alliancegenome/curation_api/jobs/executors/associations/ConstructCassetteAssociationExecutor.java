@@ -24,7 +24,7 @@ public class ConstructCassetteAssociationExecutor extends LoadFileExecutor {
 
 	private static final String INGEST_SET = "construct_cassette_association_ingest_set";
 
-	@Inject ConstructCassetteAssociationService lConstructCassetteAssociationService;
+	@Inject ConstructCassetteAssociationService constructCassetteAssociationService;
 	@Inject ConstructDAO constructDAO;
 
 	@Override
@@ -49,7 +49,7 @@ public class ConstructCassetteAssociationExecutor extends LoadFileExecutor {
 		List<Long> associationIdsLoaded = new ArrayList<>();
 		List<Long> associationIdsBefore = new ArrayList<>();
 		if (cleanUp) {
-			associationIdsBefore.addAll(lConstructCassetteAssociationService.getAssociationsByDataProvider(dataProvider));
+			associationIdsBefore.addAll(constructCassetteAssociationService.getAssociationsByDataProvider(dataProvider));
 			associationIdsBefore.removeIf(Objects::isNull);
 		}
 
@@ -58,9 +58,9 @@ public class ConstructCassetteAssociationExecutor extends LoadFileExecutor {
 
 		updateHistory(bulkLoadFileHistory);
 
-		boolean success = runLoad(lConstructCassetteAssociationService, bulkLoadFileHistory, dataProvider, associations, associationIdsLoaded, countLabel(INGEST_SET));
+		boolean success = runLoad(constructCassetteAssociationService, bulkLoadFileHistory, dataProvider, associations, associationIdsLoaded, countLabel(INGEST_SET));
 		if (cleanUp && success) {
-			runCleanup(lConstructCassetteAssociationService, bulkLoadFileHistory, dataProvider.name(), associationIdsBefore, associationIdsLoaded, countLabel(INGEST_SET));
+			runCleanup(constructCassetteAssociationService, bulkLoadFileHistory, dataProvider.name(), associationIdsBefore, associationIdsLoaded, countLabel(INGEST_SET));
 		}
 		reindexSubjects(dataProvider);
 		bulkLoadFileHistory.finishLoad();

@@ -32,7 +32,7 @@ public class ConstructCassetteAssociationValidator extends EvidenceAssociationVa
 
 	@Inject ConstructDAO constructDAO;
 	@Inject CassetteDAO cassetteDAO;
-	@Inject ConstructCassetteAssociationDAO lConstructCassetteAssociationDAO;
+	@Inject ConstructCassetteAssociationDAO constructCassetteAssociationDAO;
 	@Inject NoteValidator noteValidator;
 
 	private String errorMessage;
@@ -50,7 +50,7 @@ public class ConstructCassetteAssociationValidator extends EvidenceAssociationVa
 		Long id = uiEntity.getId();
 		ConstructCassetteAssociation dbEntity = null;
 		if (id != null) {
-			dbEntity = lConstructCassetteAssociationDAO.find(id);
+			dbEntity = constructCassetteAssociationDAO.find(id);
 			if (dbEntity == null) {
 				addMessageResponse("Could not find ConstructCassetteAssociation with ID: [" + id + "]");
 				throw new ApiErrorException(response);

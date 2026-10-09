@@ -29,29 +29,29 @@ import jakarta.transaction.Transactional;
 public class ConstructCassetteAssociationService extends BaseAssociationDTOCrudService<ConstructCassetteAssociation, ConstructCassetteAssociationDTO, ConstructCassetteAssociationDAO>
 	implements BaseUpsertServiceInterface<ConstructCassetteAssociation, ConstructCassetteAssociationDTO> {
 
-	@Inject ConstructCassetteAssociationDAO lConstructCassetteAssociationDAO;
-	@Inject ConstructCassetteAssociationValidator lConstructCassetteAssociationValidator;
-	@Inject ConstructCassetteAssociationDTOValidator lConstructCassetteAssociationDtoValidator;
+	@Inject ConstructCassetteAssociationDAO constructCassetteAssociationDAO;
+	@Inject ConstructCassetteAssociationValidator constructCassetteAssociationValidator;
+	@Inject ConstructCassetteAssociationDTOValidator constructCassetteAssociationDtoValidator;
 	@Inject ConstructDAO constructDAO;
 
 	@Override
 	@PostConstruct
 	protected void init() {
-		setSQLDao(lConstructCassetteAssociationDAO);
+		setSQLDao(constructCassetteAssociationDAO);
 	}
 
 	@Transactional
 	public ObjectResponse<ConstructCassetteAssociation> upsert(ConstructCassetteAssociation uiEntity) {
-		ConstructCassetteAssociation dbEntity = lConstructCassetteAssociationValidator.validateConstructCassetteAssociation(uiEntity, true, true);
+		ConstructCassetteAssociation dbEntity = constructCassetteAssociationValidator.validateConstructCassetteAssociation(uiEntity, true, true);
 		if (dbEntity == null) {
 			return null;
 		}
-		dbEntity = lConstructCassetteAssociationDAO.persist(dbEntity);
+		dbEntity = constructCassetteAssociationDAO.persist(dbEntity);
 		return new ObjectResponse<>(dbEntity);
 	}
 
 	public ObjectResponse<ConstructCassetteAssociation> validate(ConstructCassetteAssociation uiEntity) {
-		ConstructCassetteAssociation association = lConstructCassetteAssociationValidator.validateConstructCassetteAssociation(uiEntity, true, false);
+		ConstructCassetteAssociation association = constructCassetteAssociationValidator.validateConstructCassetteAssociation(uiEntity, true, false);
 		return new ObjectResponse<ConstructCassetteAssociation>(association);
 	}
 
@@ -60,14 +60,14 @@ public class ConstructCassetteAssociationService extends BaseAssociationDTOCrudS
 	public ObjectResponse<ConstructCassetteAssociation> upsert(ConstructCassetteAssociationDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
 		// The constructs are reindexed once after the load, not at every association's commit
 		constructDAO.skipAutomaticIndexing();
-		return lConstructCassetteAssociationDtoValidator.validateConstructCassetteAssociationDTO(dto, dataProvider);
+		return constructCassetteAssociationDtoValidator.validateConstructCassetteAssociationDTO(dto, dataProvider);
 	}
 
 	/** Ids of the associations a given MOD owns, for the load's cleanup pass. */
 	public List<Long> getAssociationsByDataProvider(BackendBulkDataProvider dataProvider) {
 		Map<String, Object> params = new HashMap<>();
 		params.put(EntityFieldConstants.CONSTRUCT_ASSOCIATION_SUBJECT_DATA_PROVIDER, dataProvider.sourceOrganization);
-		List<Long> associationIds = lConstructCassetteAssociationDAO.findIdsByParams(params);
+		List<Long> associationIds = constructCassetteAssociationDAO.findIdsByParams(params);
 		associationIds.removeIf(Objects::isNull);
 
 		return associationIds;
@@ -81,7 +81,7 @@ public class ConstructCassetteAssociationService extends BaseAssociationDTOCrudS
 		params.put("relation.name", relationName);
 		params.put("constructCassetteAssociationObject.id", objectId);
 
-		SearchResponse<ConstructCassetteAssociation> resp = lConstructCassetteAssociationDAO.findByParams(params);
+		SearchResponse<ConstructCassetteAssociation> resp = constructCassetteAssociationDAO.findByParams(params);
 		if (resp != null && resp.getSingleResult() != null) {
 			association = resp.getSingleResult();
 		}

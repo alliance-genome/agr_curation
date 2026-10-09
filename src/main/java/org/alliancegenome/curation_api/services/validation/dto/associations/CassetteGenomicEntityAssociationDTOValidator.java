@@ -41,7 +41,7 @@ public class CassetteGenomicEntityAssociationDTOValidator extends EvidenceAssoci
 
 	@Inject CassetteService cassetteService;
 	@Inject GenomicEntityService genomicEntityService;
-	@Inject CassetteGenomicEntityAssociationDAO lCassetteGenomicEntityAssociationDAO;
+	@Inject CassetteGenomicEntityAssociationDAO cassetteGenomicEntityAssociationDAO;
 	@Inject SoTermService soTermService;
 	@Inject CassetteDAO cassetteDAO;
 	@Inject GenomicEntityDAO genomicEntityDAO;
@@ -78,7 +78,7 @@ public class CassetteGenomicEntityAssociationDTOValidator extends EvidenceAssoci
 			params.put("relation.id", relation.getId());
 			params.put("cassetteGenomicEntityAssociationObject.id", objectIds.get(0));
 
-			SearchResponse<CassetteGenomicEntityAssociation> searchResponse = lCassetteGenomicEntityAssociationDAO.findByParams(params);
+			SearchResponse<CassetteGenomicEntityAssociation> searchResponse = cassetteGenomicEntityAssociationDAO.findByParams(params);
 			if (searchResponse != null && searchResponse.getResults().size() == 1) {
 				association = searchResponse.getSingleResult();
 			} else {
@@ -136,7 +136,7 @@ public class CassetteGenomicEntityAssociationDTOValidator extends EvidenceAssoci
 			throw new ObjectValidationException(dto, response.errorMessagesString());
 		}
 
-		response.setEntity(lCassetteGenomicEntityAssociationDAO.persist(association));
+		response.setEntity(cassetteGenomicEntityAssociationDAO.persist(association));
 
 		return response;
 	}

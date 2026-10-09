@@ -32,7 +32,7 @@ public class CassetteStrAssociationValidator extends EvidenceAssociationValidato
 
 	@Inject CassetteDAO cassetteDAO;
 	@Inject SequenceTargetingReagentDAO sequenceTargetingReagentDAO;
-	@Inject CassetteStrAssociationDAO lCassetteStrAssociationDAO;
+	@Inject CassetteStrAssociationDAO cassetteStrAssociationDAO;
 	@Inject NoteValidator noteValidator;
 
 	private String errorMessage;
@@ -50,7 +50,7 @@ public class CassetteStrAssociationValidator extends EvidenceAssociationValidato
 		Long id = uiEntity.getId();
 		CassetteStrAssociation dbEntity = null;
 		if (id != null) {
-			dbEntity = lCassetteStrAssociationDAO.find(id);
+			dbEntity = cassetteStrAssociationDAO.find(id);
 			if (dbEntity == null) {
 				addMessageResponse("Could not find CassetteStrAssociation with ID: [" + id + "]");
 				throw new ApiErrorException(response);

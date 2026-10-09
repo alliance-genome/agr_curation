@@ -29,29 +29,29 @@ import jakarta.transaction.Transactional;
 public class CassetteTransgenicToolAssociationService extends BaseAssociationDTOCrudService<CassetteTransgenicToolAssociation, CassetteTransgenicToolAssociationDTO, CassetteTransgenicToolAssociationDAO>
 	implements BaseUpsertServiceInterface<CassetteTransgenicToolAssociation, CassetteTransgenicToolAssociationDTO> {
 
-	@Inject CassetteTransgenicToolAssociationDAO lCassetteTransgenicToolAssociationDAO;
-	@Inject CassetteTransgenicToolAssociationValidator lCassetteTransgenicToolAssociationValidator;
-	@Inject CassetteTransgenicToolAssociationDTOValidator lCassetteTransgenicToolAssociationDtoValidator;
+	@Inject CassetteTransgenicToolAssociationDAO cassetteTransgenicToolAssociationDAO;
+	@Inject CassetteTransgenicToolAssociationValidator cassetteTransgenicToolAssociationValidator;
+	@Inject CassetteTransgenicToolAssociationDTOValidator cassetteTransgenicToolAssociationDtoValidator;
 	@Inject CassetteDAO cassetteDAO;
 
 	@Override
 	@PostConstruct
 	protected void init() {
-		setSQLDao(lCassetteTransgenicToolAssociationDAO);
+		setSQLDao(cassetteTransgenicToolAssociationDAO);
 	}
 
 	@Transactional
 	public ObjectResponse<CassetteTransgenicToolAssociation> upsert(CassetteTransgenicToolAssociation uiEntity) {
-		CassetteTransgenicToolAssociation dbEntity = lCassetteTransgenicToolAssociationValidator.validateCassetteTransgenicToolAssociation(uiEntity, true, true);
+		CassetteTransgenicToolAssociation dbEntity = cassetteTransgenicToolAssociationValidator.validateCassetteTransgenicToolAssociation(uiEntity, true, true);
 		if (dbEntity == null) {
 			return null;
 		}
-		dbEntity = lCassetteTransgenicToolAssociationDAO.persist(dbEntity);
+		dbEntity = cassetteTransgenicToolAssociationDAO.persist(dbEntity);
 		return new ObjectResponse<>(dbEntity);
 	}
 
 	public ObjectResponse<CassetteTransgenicToolAssociation> validate(CassetteTransgenicToolAssociation uiEntity) {
-		CassetteTransgenicToolAssociation association = lCassetteTransgenicToolAssociationValidator.validateCassetteTransgenicToolAssociation(uiEntity, true, false);
+		CassetteTransgenicToolAssociation association = cassetteTransgenicToolAssociationValidator.validateCassetteTransgenicToolAssociation(uiEntity, true, false);
 		return new ObjectResponse<CassetteTransgenicToolAssociation>(association);
 	}
 
@@ -60,14 +60,14 @@ public class CassetteTransgenicToolAssociationService extends BaseAssociationDTO
 	public ObjectResponse<CassetteTransgenicToolAssociation> upsert(CassetteTransgenicToolAssociationDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
 		// The cassettes are reindexed once after the load, not at every association's commit
 		cassetteDAO.skipAutomaticIndexing();
-		return lCassetteTransgenicToolAssociationDtoValidator.validateCassetteTransgenicToolAssociationDTO(dto, dataProvider);
+		return cassetteTransgenicToolAssociationDtoValidator.validateCassetteTransgenicToolAssociationDTO(dto, dataProvider);
 	}
 
 	/** Ids of the associations a given MOD owns, for the load's cleanup pass. */
 	public List<Long> getAssociationsByDataProvider(BackendBulkDataProvider dataProvider) {
 		Map<String, Object> params = new HashMap<>();
 		params.put(EntityFieldConstants.CASSETTE_ASSOCIATION_SUBJECT_DATA_PROVIDER, dataProvider.sourceOrganization);
-		List<Long> associationIds = lCassetteTransgenicToolAssociationDAO.findIdsByParams(params);
+		List<Long> associationIds = cassetteTransgenicToolAssociationDAO.findIdsByParams(params);
 		associationIds.removeIf(Objects::isNull);
 
 		return associationIds;
@@ -81,7 +81,7 @@ public class CassetteTransgenicToolAssociationService extends BaseAssociationDTO
 		params.put("relation.name", relationName);
 		params.put("cassetteTransgenicToolAssociationObject.id", objectId);
 
-		SearchResponse<CassetteTransgenicToolAssociation> resp = lCassetteTransgenicToolAssociationDAO.findByParams(params);
+		SearchResponse<CassetteTransgenicToolAssociation> resp = cassetteTransgenicToolAssociationDAO.findByParams(params);
 		if (resp != null && resp.getSingleResult() != null) {
 			association = resp.getSingleResult();
 		}

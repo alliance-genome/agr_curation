@@ -39,7 +39,7 @@ public class ConstructCassetteAssociationDTOValidator extends EvidenceAssociatio
 
 	@Inject ConstructService constructService;
 	@Inject CassetteService cassetteService;
-	@Inject ConstructCassetteAssociationDAO lConstructCassetteAssociationDAO;
+	@Inject ConstructCassetteAssociationDAO constructCassetteAssociationDAO;
 	@Inject ConstructDAO constructDAO;
 	@Inject CassetteDAO cassetteDAO;
 
@@ -75,7 +75,7 @@ public class ConstructCassetteAssociationDTOValidator extends EvidenceAssociatio
 			params.put("relation.id", relation.getId());
 			params.put("constructCassetteAssociationObject.id", objectIds.get(0));
 
-			SearchResponse<ConstructCassetteAssociation> searchResponse = lConstructCassetteAssociationDAO.findByParams(params);
+			SearchResponse<ConstructCassetteAssociation> searchResponse = constructCassetteAssociationDAO.findByParams(params);
 			if (searchResponse != null && searchResponse.getResults().size() == 1) {
 				association = searchResponse.getSingleResult();
 			} else {
@@ -126,7 +126,7 @@ public class ConstructCassetteAssociationDTOValidator extends EvidenceAssociatio
 			throw new ObjectValidationException(dto, response.errorMessagesString());
 		}
 
-		response.setEntity(lConstructCassetteAssociationDAO.persist(association));
+		response.setEntity(constructCassetteAssociationDAO.persist(association));
 
 		return response;
 	}

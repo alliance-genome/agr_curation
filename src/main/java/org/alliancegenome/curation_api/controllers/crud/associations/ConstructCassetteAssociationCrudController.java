@@ -22,37 +22,37 @@ import jakarta.inject.Inject;
 public class ConstructCassetteAssociationCrudController extends
 	BaseEntityCrudController<ConstructCassetteAssociationService, ConstructCassetteAssociation, ConstructCassetteAssociationDAO> implements ConstructCassetteAssociationCrudInterface {
 
-	@Inject ConstructCassetteAssociationService lConstructCassetteAssociationService;
-	@Inject ConstructCassetteAssociationExecutor lConstructCassetteAssociationExecutor;
+	@Inject ConstructCassetteAssociationService constructCassetteAssociationService;
+	@Inject ConstructCassetteAssociationExecutor constructCassetteAssociationExecutor;
 
 	@Override
 	@PostConstruct
 	protected void init() {
-		setService(lConstructCassetteAssociationService);
+		setService(constructCassetteAssociationService);
 	}
 
 	@Override
 	public ObjectResponse<ConstructCassetteAssociation> update(ConstructCassetteAssociation entity) {
-		return lConstructCassetteAssociationService.upsert(entity);
+		return constructCassetteAssociationService.upsert(entity);
 	}
 
 	@Override
 	public ObjectResponse<ConstructCassetteAssociation> create(ConstructCassetteAssociation entity) {
-		return lConstructCassetteAssociationService.upsert(entity);
+		return constructCassetteAssociationService.upsert(entity);
 	}
 
 	public ObjectResponse<ConstructCassetteAssociation> validate(ConstructCassetteAssociation entity) {
-		return lConstructCassetteAssociationService.validate(entity);
+		return constructCassetteAssociationService.validate(entity);
 	}
 
 	@Override
 	public APIResponse updateConstructCassetteAssociations(String dataProvider, List<ConstructCassetteAssociationDTO> associations) {
-		APIResponse response = lConstructCassetteAssociationExecutor.runLoadApi(lConstructCassetteAssociationService, dataProvider, associations);
-		lConstructCassetteAssociationExecutor.reindexSubjects(BackendBulkDataProvider.valueOf(dataProvider));
+		APIResponse response = constructCassetteAssociationExecutor.runLoadApi(constructCassetteAssociationService, dataProvider, associations);
+		constructCassetteAssociationExecutor.reindexSubjects(BackendBulkDataProvider.valueOf(dataProvider));
 		return response;
 	}
 
 	public ObjectResponse<ConstructCassetteAssociation> getAssociation(Long subjectId, String relationName, Long objectId) {
-		return lConstructCassetteAssociationService.getAssociation(subjectId, relationName, objectId);
+		return constructCassetteAssociationService.getAssociation(subjectId, relationName, objectId);
 	}
 }

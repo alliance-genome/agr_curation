@@ -34,7 +34,7 @@ public class CassetteGenomicEntityAssociationValidator extends EvidenceAssociati
 
 	@Inject CassetteDAO cassetteDAO;
 	@Inject GenomicEntityDAO genomicEntityDAO;
-	@Inject CassetteGenomicEntityAssociationDAO lCassetteGenomicEntityAssociationDAO;
+	@Inject CassetteGenomicEntityAssociationDAO cassetteGenomicEntityAssociationDAO;
 	@Inject NoteValidator noteValidator;
 	@Inject SoTermDAO soTermDAO;
 
@@ -53,7 +53,7 @@ public class CassetteGenomicEntityAssociationValidator extends EvidenceAssociati
 		Long id = uiEntity.getId();
 		CassetteGenomicEntityAssociation dbEntity = null;
 		if (id != null) {
-			dbEntity = lCassetteGenomicEntityAssociationDAO.find(id);
+			dbEntity = cassetteGenomicEntityAssociationDAO.find(id);
 			if (dbEntity == null) {
 				addMessageResponse("Could not find CassetteGenomicEntityAssociation with ID: [" + id + "]");
 				throw new ApiErrorException(response);

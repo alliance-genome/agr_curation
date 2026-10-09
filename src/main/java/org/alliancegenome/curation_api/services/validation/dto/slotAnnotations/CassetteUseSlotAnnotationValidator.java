@@ -21,8 +21,8 @@ import jakarta.inject.Inject;
 @RequestScoped
 public class CassetteUseSlotAnnotationValidator extends SlotAnnotationValidator<CassetteUseSlotAnnotation> {
 
-	@Inject CassetteUseSlotAnnotationDAO lCassetteUseDAO;
-	@Inject CassetteDAO lCassetteDAO;
+	@Inject CassetteUseSlotAnnotationDAO cassetteUseDAO;
+	@Inject CassetteDAO cassetteDAO;
 	@Inject FbcvTermDAO fbcvTermDAO;
 
 	public ObjectResponse<CassetteUseSlotAnnotation> validateCassetteUseSlotAnnotation(CassetteUseSlotAnnotation uiEntity) {
@@ -40,7 +40,7 @@ public class CassetteUseSlotAnnotationValidator extends SlotAnnotationValidator<
 		CassetteUseSlotAnnotation dbEntity = null;
 		Boolean newEntity;
 		if (id != null) {
-			dbEntity = lCassetteUseDAO.find(id);
+			dbEntity = cassetteUseDAO.find(id);
 			newEntity = false;
 			if (dbEntity == null) {
 				addMessageResponse("Could not find CassetteUseSlotAnnotation with ID: [" + id + "]");
@@ -54,7 +54,7 @@ public class CassetteUseSlotAnnotationValidator extends SlotAnnotationValidator<
 		dbEntity = (CassetteUseSlotAnnotation) validateSlotAnnotationFields(uiEntity, dbEntity, newEntity);
 
 		if (validateCassette) {
-			Cassette singleCassette = validateRequiredEntity(lCassetteDAO, "singleCassette", uiEntity.getSingleCassette(), dbEntity.getSingleCassette());
+			Cassette singleCassette = validateRequiredEntity(cassetteDAO, "singleCassette", uiEntity.getSingleCassette(), dbEntity.getSingleCassette());
 			dbEntity.setSingleCassette(singleCassette);
 		}
 

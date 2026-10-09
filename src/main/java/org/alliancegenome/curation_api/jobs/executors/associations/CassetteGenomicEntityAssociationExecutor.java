@@ -24,7 +24,7 @@ public class CassetteGenomicEntityAssociationExecutor extends LoadFileExecutor {
 
 	private static final String INGEST_SET = "cassette_genomic_entity_association_ingest_set";
 
-	@Inject CassetteGenomicEntityAssociationService lCassetteGenomicEntityAssociationService;
+	@Inject CassetteGenomicEntityAssociationService cassetteGenomicEntityAssociationService;
 	@Inject CassetteDAO cassetteDAO;
 
 	@Override
@@ -49,7 +49,7 @@ public class CassetteGenomicEntityAssociationExecutor extends LoadFileExecutor {
 		List<Long> associationIdsLoaded = new ArrayList<>();
 		List<Long> associationIdsBefore = new ArrayList<>();
 		if (cleanUp) {
-			associationIdsBefore.addAll(lCassetteGenomicEntityAssociationService.getAssociationsByDataProvider(dataProvider));
+			associationIdsBefore.addAll(cassetteGenomicEntityAssociationService.getAssociationsByDataProvider(dataProvider));
 			associationIdsBefore.removeIf(Objects::isNull);
 		}
 
@@ -58,9 +58,9 @@ public class CassetteGenomicEntityAssociationExecutor extends LoadFileExecutor {
 
 		updateHistory(bulkLoadFileHistory);
 
-		boolean success = runLoad(lCassetteGenomicEntityAssociationService, bulkLoadFileHistory, dataProvider, associations, associationIdsLoaded, countLabel(INGEST_SET));
+		boolean success = runLoad(cassetteGenomicEntityAssociationService, bulkLoadFileHistory, dataProvider, associations, associationIdsLoaded, countLabel(INGEST_SET));
 		if (cleanUp && success) {
-			runCleanup(lCassetteGenomicEntityAssociationService, bulkLoadFileHistory, dataProvider.name(), associationIdsBefore, associationIdsLoaded, countLabel(INGEST_SET));
+			runCleanup(cassetteGenomicEntityAssociationService, bulkLoadFileHistory, dataProvider.name(), associationIdsBefore, associationIdsLoaded, countLabel(INGEST_SET));
 		}
 		reindexSubjects(dataProvider);
 		bulkLoadFileHistory.finishLoad();

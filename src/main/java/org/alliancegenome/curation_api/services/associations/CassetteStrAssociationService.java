@@ -29,29 +29,29 @@ import jakarta.transaction.Transactional;
 public class CassetteStrAssociationService extends BaseAssociationDTOCrudService<CassetteStrAssociation, CassetteStrAssociationDTO, CassetteStrAssociationDAO>
 	implements BaseUpsertServiceInterface<CassetteStrAssociation, CassetteStrAssociationDTO> {
 
-	@Inject CassetteStrAssociationDAO lCassetteStrAssociationDAO;
-	@Inject CassetteStrAssociationValidator lCassetteStrAssociationValidator;
-	@Inject CassetteStrAssociationDTOValidator lCassetteStrAssociationDtoValidator;
+	@Inject CassetteStrAssociationDAO cassetteStrAssociationDAO;
+	@Inject CassetteStrAssociationValidator cassetteStrAssociationValidator;
+	@Inject CassetteStrAssociationDTOValidator cassetteStrAssociationDtoValidator;
 	@Inject CassetteDAO cassetteDAO;
 
 	@Override
 	@PostConstruct
 	protected void init() {
-		setSQLDao(lCassetteStrAssociationDAO);
+		setSQLDao(cassetteStrAssociationDAO);
 	}
 
 	@Transactional
 	public ObjectResponse<CassetteStrAssociation> upsert(CassetteStrAssociation uiEntity) {
-		CassetteStrAssociation dbEntity = lCassetteStrAssociationValidator.validateCassetteStrAssociation(uiEntity, true, true);
+		CassetteStrAssociation dbEntity = cassetteStrAssociationValidator.validateCassetteStrAssociation(uiEntity, true, true);
 		if (dbEntity == null) {
 			return null;
 		}
-		dbEntity = lCassetteStrAssociationDAO.persist(dbEntity);
+		dbEntity = cassetteStrAssociationDAO.persist(dbEntity);
 		return new ObjectResponse<>(dbEntity);
 	}
 
 	public ObjectResponse<CassetteStrAssociation> validate(CassetteStrAssociation uiEntity) {
-		CassetteStrAssociation association = lCassetteStrAssociationValidator.validateCassetteStrAssociation(uiEntity, true, false);
+		CassetteStrAssociation association = cassetteStrAssociationValidator.validateCassetteStrAssociation(uiEntity, true, false);
 		return new ObjectResponse<CassetteStrAssociation>(association);
 	}
 
@@ -60,14 +60,14 @@ public class CassetteStrAssociationService extends BaseAssociationDTOCrudService
 	public ObjectResponse<CassetteStrAssociation> upsert(CassetteStrAssociationDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
 		// The cassettes are reindexed once after the load, not at every association's commit
 		cassetteDAO.skipAutomaticIndexing();
-		return lCassetteStrAssociationDtoValidator.validateCassetteStrAssociationDTO(dto, dataProvider);
+		return cassetteStrAssociationDtoValidator.validateCassetteStrAssociationDTO(dto, dataProvider);
 	}
 
 	/** Ids of the associations a given MOD owns, for the load's cleanup pass. */
 	public List<Long> getAssociationsByDataProvider(BackendBulkDataProvider dataProvider) {
 		Map<String, Object> params = new HashMap<>();
 		params.put(EntityFieldConstants.CASSETTE_ASSOCIATION_SUBJECT_DATA_PROVIDER, dataProvider.sourceOrganization);
-		List<Long> associationIds = lCassetteStrAssociationDAO.findIdsByParams(params);
+		List<Long> associationIds = cassetteStrAssociationDAO.findIdsByParams(params);
 		associationIds.removeIf(Objects::isNull);
 
 		return associationIds;
@@ -81,7 +81,7 @@ public class CassetteStrAssociationService extends BaseAssociationDTOCrudService
 		params.put("relation.name", relationName);
 		params.put("cassetteStrAssociationObject.id", objectId);
 
-		SearchResponse<CassetteStrAssociation> resp = lCassetteStrAssociationDAO.findByParams(params);
+		SearchResponse<CassetteStrAssociation> resp = cassetteStrAssociationDAO.findByParams(params);
 		if (resp != null && resp.getSingleResult() != null) {
 			association = resp.getSingleResult();
 		}

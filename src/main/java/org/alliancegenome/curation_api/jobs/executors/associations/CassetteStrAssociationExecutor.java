@@ -24,7 +24,7 @@ public class CassetteStrAssociationExecutor extends LoadFileExecutor {
 
 	private static final String INGEST_SET = "cassette_str_association_ingest_set";
 
-	@Inject CassetteStrAssociationService lCassetteStrAssociationService;
+	@Inject CassetteStrAssociationService cassetteStrAssociationService;
 	@Inject CassetteDAO cassetteDAO;
 
 	@Override
@@ -49,7 +49,7 @@ public class CassetteStrAssociationExecutor extends LoadFileExecutor {
 		List<Long> associationIdsLoaded = new ArrayList<>();
 		List<Long> associationIdsBefore = new ArrayList<>();
 		if (cleanUp) {
-			associationIdsBefore.addAll(lCassetteStrAssociationService.getAssociationsByDataProvider(dataProvider));
+			associationIdsBefore.addAll(cassetteStrAssociationService.getAssociationsByDataProvider(dataProvider));
 			associationIdsBefore.removeIf(Objects::isNull);
 		}
 
@@ -58,9 +58,9 @@ public class CassetteStrAssociationExecutor extends LoadFileExecutor {
 
 		updateHistory(bulkLoadFileHistory);
 
-		boolean success = runLoad(lCassetteStrAssociationService, bulkLoadFileHistory, dataProvider, associations, associationIdsLoaded, countLabel(INGEST_SET));
+		boolean success = runLoad(cassetteStrAssociationService, bulkLoadFileHistory, dataProvider, associations, associationIdsLoaded, countLabel(INGEST_SET));
 		if (cleanUp && success) {
-			runCleanup(lCassetteStrAssociationService, bulkLoadFileHistory, dataProvider.name(), associationIdsBefore, associationIdsLoaded, countLabel(INGEST_SET));
+			runCleanup(cassetteStrAssociationService, bulkLoadFileHistory, dataProvider.name(), associationIdsBefore, associationIdsLoaded, countLabel(INGEST_SET));
 		}
 		reindexSubjects(dataProvider);
 		bulkLoadFileHistory.finishLoad();
