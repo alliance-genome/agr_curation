@@ -3,7 +3,7 @@ import { getIdentifier, buildCuratorSpeciesFilter } from '../../../../utils/util
 import { AUTOCOMPLETE_CONFIGS, getAutocompleteFields } from '../../../../constants/FilterFields';
 import { getBiologicalEntityEndpoint, biologicalEntityValueDisplay } from './utils';
 
-export const BiologicalEntityTableEditor = ({ editorOptions, errorMessagesRef, uiErrorMessagesRef }) => (
+export const BiologicalEntityTableEditor = ({ editorOptions }) => (
 	<AutocompleteSingleTableEditor
 		editorOptions={editorOptions}
 		field="diseaseAnnotationSubject"
@@ -14,7 +14,5 @@ export const BiologicalEntityTableEditor = ({ editorOptions, errorMessagesRef, u
 		otherFilters={buildCuratorSpeciesFilter}
 		initialValue={getIdentifier(editorOptions.rowData.diseaseAnnotationSubject)}
 		valueDisplay={biologicalEntityValueDisplay}
-		errorMessagesRef={errorMessagesRef}
-		uiErrorMessagesRef={uiErrorMessagesRef}
 	/>
 );

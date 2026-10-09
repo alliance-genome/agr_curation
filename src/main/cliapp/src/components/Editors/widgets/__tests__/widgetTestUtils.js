@@ -19,3 +19,13 @@ export const pickOption = (container, optionLabel, { multi = false } = {}) => {
 /** Type into whichever text control the widget rendered. */
 export const typeInto = (container, value) =>
 	fireEvent.change(container.querySelector('input, textarea'), { target: { value } });
+
+/** Remove the first token from a multi-select autocomplete. */
+export const removeFirstToken = (container) => fireEvent.click(container.querySelector('.p-autocomplete-token-icon'));
+
+/** A search function that synchronously offers the given suggestions. */
+export const searchReturning = (...items) =>
+	vi.fn((event, setSuggestions, setQuery) => {
+		setQuery(event.query);
+		setSuggestions(items);
+	});

@@ -32,8 +32,6 @@ export const ResourceDescriptorPagesTable = () => {
 
 	const toast_topleft = useRef(null);
 	const toast_topright = useRef(null);
-	const errorMessagesRef = useRef();
-	errorMessagesRef.current = errorMessages;
 
 	let resourceDescriptorPageService = new ResourceDescriptorPageService();
 
@@ -57,9 +55,7 @@ export const ResourceDescriptorPagesTable = () => {
 					<StringTemplate string={`${rowData.resourceDescriptor?.prefix} (${rowData.resourceDescriptor?.name})`} />
 				),
 				filterConfig: FILTER_CONFIGS.resourceDescriptorFilterConfig,
-				editor: (editorOptions) => (
-					<ResourceDescriptorTableEditor editorOptions={editorOptions} errorMessagesRef={errorMessagesRef} />
-				),
+				editor: (editorOptions) => <ResourceDescriptorTableEditor editorOptions={editorOptions} />,
 			},
 			{
 				field: 'name',
