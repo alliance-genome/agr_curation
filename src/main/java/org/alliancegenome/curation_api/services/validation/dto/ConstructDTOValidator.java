@@ -21,6 +21,7 @@ import org.alliancegenome.curation_api.model.ingest.dto.slotAnnotions.ConstructC
 import org.alliancegenome.curation_api.model.ingest.dto.slotAnnotions.NameSlotAnnotationDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
+import org.alliancegenome.curation_api.services.CurieMintService;
 import org.alliancegenome.curation_api.services.ReferenceService;
 import org.alliancegenome.curation_api.services.helpers.ConstructUniqueIdHelper;
 import org.alliancegenome.curation_api.services.helpers.SlotAnnotationIdentityHelper;
@@ -52,6 +53,8 @@ public class ConstructDTOValidator extends ReagentDTOValidator<Construct, Constr
 	SlotAnnotationIdentityHelper identityHelper;
 	@Inject
 	ReferenceService referenceService;
+	@Inject
+	CurieMintService curieMintService;
 
 	@Transactional
 	public ObjectResponse<Construct> validateConstructDTO(ConstructDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
@@ -118,6 +121,11 @@ public class ConstructDTOValidator extends ReagentDTOValidator<Construct, Constr
 		if (response.hasErrors()) {
 			throw new ObjectValidationException(dto, response.errorMessagesString());
 		}
+
+		// SCRUM-6536: mint an AGRKB curie for a construct that has none, in this transaction. Nothing in
+		// the DTO field-copy chain assigns curie, so a re-load of a construct that already has one is a
+		// no-op and its AGRKB id stays stable; one loaded before minting was wired in gets its curie here.
+		curieMintService.mintCurieIfAbsent(construct);
 
 		if (!existing) {
 			construct = constructDAO.persist(construct);
