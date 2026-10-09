@@ -53,9 +53,7 @@ quarkus.micrometer.export.json.enabled=true
 quarkus.micrometer.export.json.path=api/metrics.json
 
 quarkus.hibernate-search-orm.elasticsearch.schema-management.required-status-wait-timeout=180S
-quarkus.hibernate-search-orm.elasticsearch.schema-management.settings-file = hibernate/production-index-settings.json
-%test.quarkus.hibernate-search-orm.elasticsearch.schema-management.settings-file = hibernate/test-index-settings.json
-%dev.quarkus.hibernate-search-orm.elasticsearch.schema-management.settings-file = hibernate/dev-index-settings.json
+quarkus.hibernate-search-orm.elasticsearch.schema-management.settings-file = hibernate/index-settings.json
 
 quarkus.vertx.max-worker-execute-time=PT4H
 quarkus.transaction-manager.default-transaction-timeout = PT4H
