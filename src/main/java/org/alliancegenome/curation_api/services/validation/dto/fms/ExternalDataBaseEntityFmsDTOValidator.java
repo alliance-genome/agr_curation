@@ -90,6 +90,8 @@ public class ExternalDataBaseEntityFmsDTOValidator {
 			mergedXrefUniqueIdsMap.put(crossReferenceService.getCrossReferenceUniqueId(mergedXref), mergedXref);
 		}
 
+		Set<Long> stalePreferredXrefIds = new HashSet<>();
+
 		if (externalDBEntity.getPreferredCrossReference() != null) {
 			if (dto.getPreferredCrossReference() != null) {
 				CrossReference incomingPreferredXref = createNewCrossReference(dto.getPreferredCrossReference());
@@ -97,6 +99,7 @@ public class ExternalDataBaseEntityFmsDTOValidator {
 				String currentXrefUniqueId = crossReferenceService.getCrossReferenceUniqueId(externalDBEntity.getPreferredCrossReference());
 
 				if (!incomingXrefUniqueId.equals(currentXrefUniqueId)) {
+					stalePreferredXrefIds.add(externalDBEntity.getPreferredCrossReference().getId());
 					externalDBEntity.setPreferredCrossReference(null);
 					if (mergedXrefUniqueIdsMap.containsKey(incomingXrefUniqueId)) {
 						externalDBEntity.setPreferredCrossReference(mergedXrefUniqueIdsMap.get(incomingXrefUniqueId));
@@ -105,6 +108,7 @@ public class ExternalDataBaseEntityFmsDTOValidator {
 					}
 				}
 			} else {
+				stalePreferredXrefIds.add(externalDBEntity.getPreferredCrossReference().getId());
 				externalDBEntity.setPreferredCrossReference(null);
 			}
 		} else {
@@ -121,10 +125,20 @@ public class ExternalDataBaseEntityFmsDTOValidator {
 
 		externalDataBaseEntityDAO.persist(externalDBEntity);
 
+		Set<Long> xrefIdsToRemove = new HashSet<>();
 		for (Long currentId : currentXrefIds) {
 			if (!mergedXrefIds.contains(currentId)) {
-				crossReferenceDAO.remove(currentId);
+				xrefIdsToRemove.add(currentId);
 			}
+		}
+		xrefIdsToRemove.addAll(stalePreferredXrefIds);
+		xrefIdsToRemove.removeAll(mergedXrefIds);
+		if (externalDBEntity.getPreferredCrossReference() != null) {
+			xrefIdsToRemove.remove(externalDBEntity.getPreferredCrossReference().getId());
+		}
+
+		for (Long idToRemove : xrefIdsToRemove) {
+			crossReferenceDAO.remove(idToRemove);
 		}
 
 		if (externalDBEntityResponse.hasErrors()) {

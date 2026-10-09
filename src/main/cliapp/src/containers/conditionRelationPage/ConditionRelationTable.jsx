@@ -35,8 +35,6 @@ export const ConditionRelationTable = () => {
 	const toast_topleft = useRef(null);
 	const toast_topright = useRef(null);
 	const [errorMessages, setErrorMessages] = useState({});
-	const errorMessagesRef = useRef();
-	errorMessagesRef.current = errorMessages;
 
 	let conditionRelationService = new ConditionRelationService();
 
@@ -71,13 +69,7 @@ export const ConditionRelationTable = () => {
 				header: 'Reference',
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.singleReferenceFilterConfig,
-				editor: (editorOptions) => (
-					<SingleReferenceTableEditor
-						editorOptions={editorOptions}
-						field="singleReference"
-						errorMessagesRef={errorMessagesRef}
-					/>
-				),
+				editor: (editorOptions) => <SingleReferenceTableEditor editorOptions={editorOptions} field="singleReference" />,
 				body: (rowData) => <SingleReferenceTemplate singleReference={rowData.singleReference} />,
 			},
 			{
@@ -110,9 +102,7 @@ export const ConditionRelationTable = () => {
 					/>
 				),
 				filterConfig: FILTER_CONFIGS.experimentalConditionFilterConfig,
-				editor: (editorOptions) => (
-					<ConditionsTableEditor editorOptions={editorOptions} errorMessagesRef={errorMessagesRef} />
-				),
+				editor: (editorOptions) => <ConditionsTableEditor editorOptions={editorOptions} />,
 			},
 		],
 		// eslint-disable-next-line react-hooks/exhaustive-deps
