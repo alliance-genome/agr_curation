@@ -28,6 +28,8 @@ import { DialogTriggerEditor } from '../../components/Editors/dialog/DialogTrigg
 import { TaxonTableEditor } from '../../components/Editors/autocomplete/taxon/TaxonTableEditor';
 import { BooleanTableEditor } from '../../components/Editors/dropdown/boolean/BooleanTableEditor';
 import { ControlledVocabularyTableEditor } from '../../components/Editors/dropdown/vocabulary/ControlledVocabularyTableEditor';
+import { Button } from 'primereact/button';
+import { AffectedGenomicModelCreateDialog } from './AffectedGenomicModelCreateDialog';
 
 export const AffectedGenomicModelTable = () => {
 	const [isInEditMode, setIsInEditMode] = useState(false);
@@ -36,6 +38,7 @@ export const AffectedGenomicModelTable = () => {
 	errorMessagesRef.current = errorMessages;
 	const [totalRecords, setTotalRecords] = useState(0);
 	const [agms, setAgms] = useState([]);
+	const [createDialogVisible, setCreateDialogVisible] = useState(false);
 
 	const searchService = new SearchService();
 	let agmService = new AffectedGenomicModelService();
@@ -364,6 +367,15 @@ export const AffectedGenomicModelTable = () => {
 		searchService,
 	});
 
+	const headerButtons = (disabled = false) => {
+		return (
+			<>
+				<Button label="New AGM" icon="pi pi-plus" disabled={disabled} onClick={() => setCreateDialogVisible(true)} />
+				&nbsp;&nbsp;
+			</>
+		);
+	};
+
 	return (
 		<>
 			<div className="card">
@@ -372,6 +384,7 @@ export const AffectedGenomicModelTable = () => {
 				<GenericDataTable
 					endpoint={SEARCH_ENDPOINT}
 					tableName="Affected Genomic Models"
+					headerButtons={headerButtons}
 					entities={agms}
 					setEntities={setAgms}
 					totalRecords={totalRecords}
@@ -422,6 +435,7 @@ export const AffectedGenomicModelTable = () => {
 				originalSecondaryIdsData={secondaryIdsData}
 				setOriginalSecondaryIdsData={setSecondaryIdsData}
 			/>
+			<AffectedGenomicModelCreateDialog visible={createDialogVisible} onHide={() => setCreateDialogVisible(false)} />
 		</>
 	);
 };
