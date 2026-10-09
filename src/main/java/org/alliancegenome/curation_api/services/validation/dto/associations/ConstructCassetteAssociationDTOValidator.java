@@ -6,6 +6,8 @@ import java.util.List;
 
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
+import org.alliancegenome.curation_api.dao.ConstructDAO;
+import org.alliancegenome.curation_api.dao.CassetteDAO;
 import org.alliancegenome.curation_api.dao.associations.ConstructCassetteAssociationDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
@@ -38,6 +40,8 @@ public class ConstructCassetteAssociationDTOValidator extends EvidenceAssociatio
 	@Inject ConstructService constructService;
 	@Inject CassetteService cassetteService;
 	@Inject ConstructCassetteAssociationDAO lConstructCassetteAssociationDAO;
+	@Inject ConstructDAO constructDAO;
+	@Inject CassetteDAO cassetteDAO;
 
 	public ObjectResponse<ConstructCassetteAssociation> validateConstructCassetteAssociationDTO(ConstructCassetteAssociationDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
 		response = new ObjectResponse<ConstructCassetteAssociation>();
@@ -82,7 +86,7 @@ public class ConstructCassetteAssociationDTOValidator extends EvidenceAssociatio
 				association.setRelation(relation);
 
 				if (!StringUtils.isBlank(dto.getConstructIdentifier())) {
-					Construct subject = constructService.findByIdentifierString(dto.getConstructIdentifier());
+					Construct subject = constructDAO.find(subjectIds.get(0));
 					if (subject == null) {
 						response.addErrorMessage("construct_identifier", ValidationConstants.INVALID_MESSAGE + " (" + dto.getConstructIdentifier() + ")");
 					} else if (dataProvider != null && !subject.getDataProvider().getAbbreviation().equals(dataProvider.sourceOrganization)) {
@@ -93,7 +97,7 @@ public class ConstructCassetteAssociationDTOValidator extends EvidenceAssociatio
 				}
 
 				if (!StringUtils.isBlank(dto.getCassetteIdentifier())) {
-					Cassette object = cassetteService.findByIdentifierString(dto.getCassetteIdentifier());
+					Cassette object = cassetteDAO.find(objectIds.get(0));
 					if (object == null) {
 						response.addErrorMessage("cassette_identifier", ValidationConstants.INVALID_MESSAGE + " (" + dto.getCassetteIdentifier() + ")");
 					} else {

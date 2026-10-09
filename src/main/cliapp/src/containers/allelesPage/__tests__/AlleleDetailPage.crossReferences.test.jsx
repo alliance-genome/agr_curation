@@ -152,6 +152,22 @@ describe('<AlleleDetailPage /> cross references', () => {
 		expect(within(crossReferencesSection()).getByText('Pending Edits!')).toBeInTheDocument();
 	});
 
+	it('Clears the mark and the section save when an added row is deleted again', async () => {
+		const user = userEvent.setup();
+		await renderPage();
+		await waitForCrossReferencesToLoad();
+
+		await user.click(screen.getByRole('button', { name: 'Add Cross Reference' }));
+		expect(within(crossReferencesSection()).getByText('Pending Edits!')).toBeInTheDocument();
+
+		const rows = crossReferencesSection().parentElement.querySelectorAll('tbody tr');
+		await user.click(rows[rows.length - 1].querySelector('.pi-trash').closest('button'));
+
+		expect(within(crossReferencesSection()).queryByText('Pending Edits!')).not.toBeInTheDocument();
+		expect(screen.getByRole('button', { name: /Save Cross References/ })).toBeDisabled();
+		expect(screen.getByRole('button', { name: 'Save' })).toBeDisabled();
+	});
+
 	// Also edits the taxon, so it outlasts the default timeout under load.
 	it(
 		'Clears the cross references mark on their own save, leaving other pending edits marked',

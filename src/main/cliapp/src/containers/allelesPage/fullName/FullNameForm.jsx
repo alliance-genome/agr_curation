@@ -3,7 +3,7 @@ import { FormTableWrapper } from '../../../components/FormTableWrapper';
 import { FullNameFormTable } from './FullNameFormTable';
 import { useRef } from 'react';
 
-export const FullNameForm = ({ labelColumnSize, state, dispatch }) => {
+export const FullNameForm = ({ labelColumnSize, state, dispatch, isPending = false }) => {
 	const tableRef = useRef(null);
 
 	const fullNameArray = [state.allele?.alleleFullName];
@@ -105,6 +105,7 @@ export const FullNameForm = ({ labelColumnSize, state, dispatch }) => {
 				/>
 			}
 			tableName="Name"
+			isPending={isPending}
 			showTable={state.entityStates.alleleFullName.show}
 			button={
 				<Button

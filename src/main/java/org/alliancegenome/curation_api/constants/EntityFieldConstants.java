@@ -26,6 +26,7 @@ public final class EntityFieldConstants {
 	public static final String CODING_SEQUENCE_ASSOCIATION_SUBJECT = "codingSequenceAssociationSubject";
 	public static final String CONSTRUCT_ASSOCIATION_SUBJECT = "constructAssociationSubject";
 	public static final String CASSETTE_ASSOCIATION_SUBJECT = "cassetteAssociationSubject";
+	public static final String TRANSGENIC_TOOL_ASSOCIATION_SUBJECT = "transgenicToolAssociationSubject";
 	public static final String EXON_ASSOCIATION_SUBJECT = "exonAssociationSubject";
 	public static final String GENE_ASSOCIATION_SUBJECT = "geneAssociationSubject";
 	public static final String VARIANT_ASSOCIATION_SUBJECT = "variantAssociationSubject";
@@ -52,6 +53,7 @@ public final class EntityFieldConstants {
 	public static final String CODING_SEQUENCE_ASSOCIATION_SUBJECT_DATA_PROVIDER = CODING_SEQUENCE_ASSOCIATION_SUBJECT + "." + DATA_PROVIDER;
 	public static final String CONSTRUCT_ASSOCIATION_SUBJECT_DATA_PROVIDER = CONSTRUCT_ASSOCIATION_SUBJECT + "." + DATA_PROVIDER;
 	public static final String CASSETTE_ASSOCIATION_SUBJECT_DATA_PROVIDER = CASSETTE_ASSOCIATION_SUBJECT + "." + DATA_PROVIDER;
+	public static final String TRANSGENIC_TOOL_ASSOCIATION_SUBJECT_DATA_PROVIDER = TRANSGENIC_TOOL_ASSOCIATION_SUBJECT + "." + DATA_PROVIDER;
 	public static final String EXON_ASSOCIATION_SUBJECT_DATA_PROVIDER = EXON_ASSOCIATION_SUBJECT + "." + DATA_PROVIDER;
 	public static final String GENE_ASSOCIATION_SUBJECT_DATA_PROVIDER = GENE_ASSOCIATION_SUBJECT + "." + DATA_PROVIDER;
 	public static final String VARIANT_ASSOCIATION_SUBJECT_DATA_PROVIDER = VARIANT_ASSOCIATION_SUBJECT + "." + DATA_PROVIDER;
