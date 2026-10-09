@@ -21,6 +21,9 @@ import lombok.extern.jbosslog.JBossLog;
 @ApplicationScoped
 public class CassetteStrAssociationExecutor extends LoadFileExecutor {
 
+	// Named by hand rather than countLabel(), which would capitalise the abbreviation STR as "Str".
+	private static final String COUNT_LABEL = "Cassette STR Association";
+
 	@Inject CassetteStrAssociationService lCassetteStrAssociationService;
 
 	@Override
@@ -52,12 +55,11 @@ public class CassetteStrAssociationExecutor extends LoadFileExecutor {
 		bulkLoadFileHistory.getBulkLoadFile().setRecordCount(associations.size() + bulkLoadFileHistory.getBulkLoadFile().getRecordCount());
 		bulkLoadFileDAO.merge(bulkLoadFileHistory.getBulkLoadFile());
 
-		bulkLoadFileHistory.setCount(associations.size());
 		updateHistory(bulkLoadFileHistory);
 
-		boolean success = runLoad(lCassetteStrAssociationService, bulkLoadFileHistory, dataProvider, associations, associationIdsLoaded);
+		boolean success = runLoad(lCassetteStrAssociationService, bulkLoadFileHistory, dataProvider, associations, associationIdsLoaded, COUNT_LABEL);
 		if (cleanUp && success) {
-			runCleanup(lCassetteStrAssociationService, bulkLoadFileHistory, dataProvider.name(), associationIdsBefore, associationIdsLoaded, "cassette STR association");
+			runCleanup(lCassetteStrAssociationService, bulkLoadFileHistory, dataProvider.name(), associationIdsBefore, associationIdsLoaded, COUNT_LABEL);
 		}
 		bulkLoadFileHistory.finishLoad();
 		updateHistory(bulkLoadFileHistory);

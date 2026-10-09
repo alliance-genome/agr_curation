@@ -6,6 +6,8 @@ import java.util.List;
 
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
+import org.alliancegenome.curation_api.dao.CassetteDAO;
+import org.alliancegenome.curation_api.dao.TransgenicToolDAO;
 import org.alliancegenome.curation_api.dao.associations.CassetteTransgenicToolAssociationDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
@@ -38,6 +40,8 @@ public class CassetteTransgenicToolAssociationDTOValidator extends EvidenceAssoc
 	@Inject CassetteService cassetteService;
 	@Inject TransgenicToolService transgenicToolService;
 	@Inject CassetteTransgenicToolAssociationDAO lCassetteTransgenicToolAssociationDAO;
+	@Inject CassetteDAO cassetteDAO;
+	@Inject TransgenicToolDAO transgenicToolDAO;
 
 	public ObjectResponse<CassetteTransgenicToolAssociation> validateCassetteTransgenicToolAssociationDTO(CassetteTransgenicToolAssociationDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
 		response = new ObjectResponse<CassetteTransgenicToolAssociation>();
@@ -82,7 +86,7 @@ public class CassetteTransgenicToolAssociationDTOValidator extends EvidenceAssoc
 				association.setRelation(relation);
 
 				if (!StringUtils.isBlank(dto.getCassetteIdentifier())) {
-					Cassette subject = cassetteService.findByIdentifierString(dto.getCassetteIdentifier());
+					Cassette subject = cassetteDAO.find(subjectIds.get(0));
 					if (subject == null) {
 						response.addErrorMessage("cassette_identifier", ValidationConstants.INVALID_MESSAGE + " (" + dto.getCassetteIdentifier() + ")");
 					} else if (dataProvider != null && !subject.getDataProvider().getAbbreviation().equals(dataProvider.sourceOrganization)) {
@@ -93,7 +97,7 @@ public class CassetteTransgenicToolAssociationDTOValidator extends EvidenceAssoc
 				}
 
 				if (!StringUtils.isBlank(dto.getTransgenicToolIdentifier())) {
-					TransgenicTool object = transgenicToolService.findByIdentifierString(dto.getTransgenicToolIdentifier());
+					TransgenicTool object = transgenicToolDAO.find(objectIds.get(0));
 					if (object == null) {
 						response.addErrorMessage("transgenic_tool_identifier", ValidationConstants.INVALID_MESSAGE + " (" + dto.getTransgenicToolIdentifier() + ")");
 					} else {

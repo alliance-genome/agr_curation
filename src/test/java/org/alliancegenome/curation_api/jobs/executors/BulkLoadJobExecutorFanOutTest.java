@@ -3,6 +3,7 @@ package org.alliancegenome.curation_api.jobs.executors;
 import static org.alliancegenome.curation_api.enums.BackendBulkLoadType.ALLELE;
 import static org.alliancegenome.curation_api.enums.BackendBulkLoadType.CASSETTE;
 import static org.alliancegenome.curation_api.enums.BackendBulkLoadType.CONSTRUCT;
+import static org.alliancegenome.curation_api.enums.BackendBulkLoadType.CONSTRUCT_ASSOCIATION;
 import static org.alliancegenome.curation_api.enums.BackendBulkLoadType.FULL_INGEST;
 import static org.alliancegenome.curation_api.enums.BackendBulkLoadType.GENE;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -26,13 +27,22 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 /**
  * Pins which executors a content dispatched load reaches.
  *
- * The constructs model arrives as a family of files sharing one load type, so CONSTRUCT has to
- * fan out the way FULL_INGEST does. Getting the scope wrong is silent in both directions: too
+ * The constructs model arrives as a family of files split over two load types, so CONSTRUCT
+ * (entities) and CONSTRUCT_ASSOCIATION (their associations) have to fan out the way FULL_INGEST
+ * does. Getting the scope wrong is silent in both directions: too
  * narrow and a submitted ingest set is skipped while the load still reports success, too wide
  * and a CONSTRUCT submission starts running gene or allele executors over a file that has
  * nothing for them.
  */
 class BulkLoadJobExecutorFanOutTest {
+
+	private static final List<String> CONSTRUCT_SETS = List.of(
+		"construct_ingest_set", "cassette_ingest_set", "transgenic_tool_ingest_set");
+
+	private static final List<String> CONSTRUCT_ASSOCIATION_SETS = List.of(
+		"construct_cassette_association_ingest_set", "construct_genomic_entity_association_ingest_set",
+		"cassette_genomic_entity_association_ingest_set", "cassette_transgenic_tool_association_ingest_set",
+		"cassette_str_association_ingest_set", "transgenic_tool_transgenic_tool_association_ingest_set");
 
 	private final BulkLoadJobExecutor executor = new BulkLoadJobExecutor();
 
@@ -40,22 +50,33 @@ class BulkLoadJobExecutorFanOutTest {
 	void constructAndFullIngestAreTheContentDispatchedTypes() {
 		assertTrue(executor.fansOut(FULL_INGEST));
 		assertTrue(executor.fansOut(CONSTRUCT));
+		assertTrue(executor.fansOut(CONSTRUCT_ASSOCIATION));
 		assertFalse(executor.fansOut(CASSETTE), "single type loads keep their own explicit check");
 		assertFalse(executor.fansOut(GENE));
 	}
 
-	/** A CONSTRUCT_<MOD> submission has to reach every entity in the constructs model. */
+	/** A CONSTRUCT_<MOD> submission reaches the constructs model entities, not their associations. */
 	@Test
-	void constructReachesTheWholeConstructsModel() {
-		List<String> constructsModel = List.of(
-			"construct_ingest_set", "cassette_ingest_set", "transgenic_tool_ingest_set",
-			"construct_cassette_association_ingest_set", "construct_genomic_entity_association_ingest_set",
-			"cassette_genomic_entity_association_ingest_set", "cassette_transgenic_tool_association_ingest_set",
-			"cassette_str_association_ingest_set");
-
-		for (String ingestSet : constructsModel) {
+	void constructReachesTheConstructsModelEntities() {
+		for (String ingestSet : CONSTRUCT_SETS) {
 			assertTrue(executor.loadTypeOwnsIngestSet(CONSTRUCT, ingestSet), ingestSet + " should run under CONSTRUCT");
 		}
+		for (String ingestSet : CONSTRUCT_ASSOCIATION_SETS) {
+			assertFalse(executor.loadTypeOwnsIngestSet(CONSTRUCT, ingestSet), ingestSet + " should run under CONSTRUCT_ASSOCIATION, not CONSTRUCT");
+		}
+	}
+
+	/** A CONSTRUCT_ASSOCIATION_<MOD> submission reaches every association in the constructs model, and no entity. */
+	@Test
+	void constructAssociationReachesTheConstructsModelAssociations() {
+		for (String ingestSet : CONSTRUCT_ASSOCIATION_SETS) {
+			assertTrue(executor.loadTypeOwnsIngestSet(CONSTRUCT_ASSOCIATION, ingestSet), ingestSet + " should run under CONSTRUCT_ASSOCIATION");
+		}
+		for (String ingestSet : CONSTRUCT_SETS) {
+			assertFalse(executor.loadTypeOwnsIngestSet(CONSTRUCT_ASSOCIATION, ingestSet), ingestSet + " should run under CONSTRUCT, not CONSTRUCT_ASSOCIATION");
+		}
+		assertFalse(executor.loadTypeOwnsIngestSet(CONSTRUCT_ASSOCIATION, "allele_construct_association_ingest_set"), "allele construct associations stay with ALLELE_ASSOCIATION");
+		assertFalse(executor.loadTypeOwnsIngestSet(CONSTRUCT_ASSOCIATION, "gene_ingest_set"));
 	}
 
 	/**
@@ -82,8 +103,8 @@ class BulkLoadJobExecutorFanOutTest {
 	}
 
 	/**
-	 * The dispatcher names ingest sets as strings, matched against CONSTRUCT_MODEL_INGEST_SETS, so a
-	 * misspelt name would silently keep that executor out of a CONSTRUCT load.
+	 * The dispatcher names ingest sets as strings, matched against CONSTRUCT_INGEST_SETS and
+	 * CONSTRUCT_ASSOCIATION_INGEST_SETS, so a misspelt name would silently keep that executor out of a load.
 	 */
 	@Test
 	void everySetTheDispatcherNamesIsAnIngestDtoProperty() throws IOException {

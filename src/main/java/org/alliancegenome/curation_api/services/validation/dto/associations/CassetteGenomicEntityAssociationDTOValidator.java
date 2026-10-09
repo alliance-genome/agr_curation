@@ -6,6 +6,8 @@ import java.util.List;
 
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
+import org.alliancegenome.curation_api.dao.CassetteDAO;
+import org.alliancegenome.curation_api.dao.GenomicEntityDAO;
 import org.alliancegenome.curation_api.dao.associations.CassetteGenomicEntityAssociationDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
@@ -41,6 +43,8 @@ public class CassetteGenomicEntityAssociationDTOValidator extends EvidenceAssoci
 	@Inject GenomicEntityService genomicEntityService;
 	@Inject CassetteGenomicEntityAssociationDAO lCassetteGenomicEntityAssociationDAO;
 	@Inject SoTermService soTermService;
+	@Inject CassetteDAO cassetteDAO;
+	@Inject GenomicEntityDAO genomicEntityDAO;
 
 	public ObjectResponse<CassetteGenomicEntityAssociation> validateCassetteGenomicEntityAssociationDTO(CassetteGenomicEntityAssociationDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
 		response = new ObjectResponse<CassetteGenomicEntityAssociation>();
@@ -85,7 +89,7 @@ public class CassetteGenomicEntityAssociationDTOValidator extends EvidenceAssoci
 				association.setRelation(relation);
 
 				if (!StringUtils.isBlank(dto.getCassetteIdentifier())) {
-					Cassette subject = cassetteService.findByIdentifierString(dto.getCassetteIdentifier());
+					Cassette subject = cassetteDAO.find(subjectIds.get(0));
 					if (subject == null) {
 						response.addErrorMessage("cassette_identifier", ValidationConstants.INVALID_MESSAGE + " (" + dto.getCassetteIdentifier() + ")");
 					} else if (dataProvider != null && !subject.getDataProvider().getAbbreviation().equals(dataProvider.sourceOrganization)) {
@@ -96,7 +100,7 @@ public class CassetteGenomicEntityAssociationDTOValidator extends EvidenceAssoci
 				}
 
 				if (!StringUtils.isBlank(dto.getGenomicEntityIdentifier())) {
-					GenomicEntity object = genomicEntityService.findByIdentifierString(dto.getGenomicEntityIdentifier());
+					GenomicEntity object = genomicEntityDAO.find(objectIds.get(0));
 					if (object == null) {
 						response.addErrorMessage("genomic_entity_identifier", ValidationConstants.INVALID_MESSAGE + " (" + dto.getGenomicEntityIdentifier() + ")");
 					} else {

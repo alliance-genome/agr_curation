@@ -121,9 +121,7 @@ export const VariantsTable = () => {
 				sortable: true,
 				body: (rowData) => <OntologyTermTemplate term={rowData.taxon} />,
 				filterConfig: FILTER_CONFIGS.taxonFilterConfig,
-				editor: (editorOptions) => (
-					<TaxonTableEditor editorOptions={editorOptions} errorMessagesRef={errorMessagesRef} />
-				),
+				editor: (editorOptions) => <TaxonTableEditor editorOptions={editorOptions} />,
 			},
 			{
 				field: 'variantType',
@@ -132,9 +130,7 @@ export const VariantsTable = () => {
 				sortable: true,
 				body: (rowData) => <OntologyTermTemplate term={rowData.variantType} />,
 				filterConfig: FILTER_CONFIGS.variantTypeFilterConfig,
-				editor: (editorOptions) => (
-					<VariantTypeTableEditor editorOptions={editorOptions} errorMessagesRef={errorMessagesRef} />
-				),
+				editor: (editorOptions) => <VariantTypeTableEditor editorOptions={editorOptions} />,
 			},
 			{
 				field: 'variantStatus',
@@ -192,9 +188,7 @@ export const VariantsTable = () => {
 				sortable: true,
 				body: (rowData) => <OntologyTermTemplate term={rowData.sourceGeneralConsequence} />,
 				filterConfig: FILTER_CONFIGS.sourceGeneralConsequenceFilterConfig,
-				editor: (editorOptions) => (
-					<SourceGeneralConsequenceTableEditor editorOptions={editorOptions} errorMessagesRef={errorMessagesRef} />
-				),
+				editor: (editorOptions) => <SourceGeneralConsequenceTableEditor editorOptions={editorOptions} />,
 			},
 			{
 				field: 'synonyms',

@@ -2,6 +2,7 @@ package org.alliancegenome.curation_api;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.aMapWithSize;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
@@ -22,6 +23,7 @@ import org.alliancegenome.curation_api.base.BaseITCase;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.model.entities.Allele;
+import org.alliancegenome.curation_api.model.entities.AlleleDiseaseAnnotation;
 import org.alliancegenome.curation_api.model.entities.Construct;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.Gene;
@@ -36,6 +38,9 @@ import org.alliancegenome.curation_api.model.entities.Vocabulary;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.associations.AlleleConstructAssociation;
 import org.alliancegenome.curation_api.model.entities.associations.AlleleGeneAssociation;
+import org.alliancegenome.curation_api.model.entities.associations.ConstructGenomicEntityAssociation;
+import org.alliancegenome.curation_api.model.entities.ontology.DOTerm;
+import org.alliancegenome.curation_api.model.entities.ontology.ECOTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.MPTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.PhenotypeTerm;
@@ -81,6 +86,10 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 	private static final String LAZY_INIT_ALLELE = "Allele:LazyInit0001";
 	private static final String ROUND_TRIP_ALLELE = "Allele:RoundTrip0001";
 	private static final String CROSS_REFERENCE_ALLELE = "Allele:CrossRef0001";
+	private static final String REFERENCED_ALLELE = "Allele:DeleteReferenced0001";
+	private static final String REFERENCING_DISEASE_ANNOTATION = "ADA:DeleteReferenced0001";
+	private static final String UNREFERENCED_ALLELE = "Allele:DeleteUnreferenced0001";
+	private static final String CONSTRUCT_COMPONENT_ALLELE = "Allele:DeleteComponent0001";
 
 	private Vocabulary inheritanceModeVocabulary;
 	private Vocabulary germlineTransmissionStatusVocabulary;
@@ -1259,6 +1268,52 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 	}
 
 	@Test
+	@Order(16)
+	public void createOrEditAlleleWithDuplicateSymbolInTaxon() {
+		// createAlleleWithEmptyRequiredFields left a "Test symbol" allele in taxon; ALLELE moved to taxon2 in editAllele
+		Allele duplicate = new Allele();
+		duplicate.setPrimaryExternalId("ALLELE:0016");
+		duplicate.setTaxon(taxon);
+		duplicate.setAlleleSymbol(createAlleleSymbolSlotAnnotation(null, "Test symbol", symbolNameType, null, null));
+
+		RestAssured.given().
+			contentType("application/json").
+			body(duplicate).
+			when().
+			post("/api/allele").
+			then().
+			statusCode(400).
+			body("errorMessages", is(aMapWithSize(2))).
+			body("errorMessages.alleleSymbol", is("displayText - " + ValidationConstants.ALLELE_SYMBOL_NOT_UNIQUE_IN_TAXON_MESSAGE)).
+			body("errorMessages.taxon", is(ValidationConstants.ALLELE_SYMBOL_NOT_UNIQUE_IN_TAXON_MESSAGE)).
+			body("supplementalData.errorMap.alleleSymbol.displayText", is(ValidationConstants.ALLELE_SYMBOL_NOT_UNIQUE_IN_TAXON_MESSAGE));
+
+		duplicate.setTaxon(taxon2);
+
+		RestAssured.given().
+			contentType("application/json").
+			body(duplicate).
+			when().
+			post("/api/allele").
+			then().
+			statusCode(200);
+
+		Allele allele = getAllele(ALLELE);
+		allele.setTaxon(taxon);
+		allele.getAlleleSymbol().setDisplayText("Test symbol");
+
+		RestAssured.given().
+			contentType("application/json").
+			body(allele).
+			when().
+			put("/api/allele").
+			then().
+			statusCode(400).
+			body("errorMessages.alleleSymbol", is("displayText - " + ValidationConstants.ALLELE_SYMBOL_NOT_UNIQUE_IN_TAXON_MESSAGE)).
+			body("errorMessages.taxon", is(ValidationConstants.ALLELE_SYMBOL_NOT_UNIQUE_IN_TAXON_MESSAGE));
+	}
+
+	@Test
 	@Order(17)
 	public void editAlleleWithNullNonRequiredFieldsLevel2() {
 		// Level 2 done before 1 to avoid having to restore nulled fields
@@ -1421,7 +1476,7 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 		Allele allele = new Allele();
 		allele.setPrimaryExternalId("ALLELE:0019");
 		allele.setTaxon(taxon);
-		allele.setAlleleSymbol(alleleSymbol);
+		allele.setAlleleSymbol(createAlleleSymbolSlotAnnotation(List.of(reference), "Test symbol 0019", symbolNameType, exactSynonymScope, "https://test.org"));
 
 		RestAssured.given().
 			contentType("application/json").
@@ -1441,7 +1496,7 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 
 		AlleleMutationTypeSlotAnnotation minimalAlleleMutationType = createAlleleMutationTypeSlotAnnotation(null, List.of(soTerm));
 		AlleleInheritanceModeSlotAnnotation minimalAlleleInheritanceMode = createAlleleInheritanceModeSlotAnnotation(null, dominantInheritanceMode, null, null);
-		AlleleSymbolSlotAnnotation minimalAlleleSymbol = createAlleleSymbolSlotAnnotation(null, "Test symbol", symbolNameType, null, null);
+		AlleleSymbolSlotAnnotation minimalAlleleSymbol = createAlleleSymbolSlotAnnotation(null, "Test symbol 0020", symbolNameType, null, null);
 		AlleleFullNameSlotAnnotation minimalAlleleFullName = createAlleleFullNameSlotAnnotation(null, "Test name", fullNameType, null, null);
 		AlleleSynonymSlotAnnotation minimalAlleleSynonym = createAlleleSynonymSlotAnnotation(null, "Test synonym", systematicNameType, null, null);
 		AlleleSecondaryIdSlotAnnotation minimalAlleleSecondaryId = createAlleleSecondaryIdSlotAnnotation(null, "TEST:Secondary");
@@ -1479,7 +1534,7 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 		Allele allele = new Allele();
 		allele.setPrimaryExternalId("ALLELE:0021");
 		allele.setTaxon(taxon);
-		AlleleSymbolSlotAnnotation alleleSymbol = createAlleleSymbolSlotAnnotation(null, "Test symbol", symbolNameType, null, null);
+		AlleleSymbolSlotAnnotation alleleSymbol = createAlleleSymbolSlotAnnotation(null, "Test symbol 0021", symbolNameType, null, null);
 		allele.setAlleleSymbol(alleleSymbol);
 		Note note1 = createNote(noteType, "Test text", false, false, null);
 		Note note2 = createNote(noteType, "Test text", false, false, null);
@@ -2067,6 +2122,123 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 		Long constructId = detail.jsonPath().getLong("entity.alleleConstructAssociations[0].alleleConstructAssociationObject.id");
 		AlleleConstructAssociation storedConstructAssociation = getAlleleConstructAssociation(alleleId, constructAssociationRelation.getName(), constructId);
 		assertThat(storedConstructAssociation.getAlleleAssociationSubject(), notNullValue());
+	}
+
+	@Test
+	@Order(34)
+	public void deleteAlleleReferencedByDiseaseAnnotation() {
+		Allele allele = createAllele(REFERENCED_ALLELE, "NCBITaxon:6239", symbolNameType, false);
+		DOTerm doTerm = createDoTerm("DOID:DeleteReferenced0001", false);
+		ECOTerm ecoTerm = createEcoTerm("ECO:DeleteReferenced0001", "Test evidence code", false, true);
+		Vocabulary diseaseRelationVocabulary = getVocabulary(VocabularyConstants.DISEASE_RELATION_VOCABULARY);
+
+		AlleleDiseaseAnnotation diseaseAnnotation = new AlleleDiseaseAnnotation();
+		diseaseAnnotation.setPrimaryExternalId(REFERENCING_DISEASE_ANNOTATION);
+		diseaseAnnotation.setDiseaseAnnotationSubject(allele);
+		diseaseAnnotation.setRelation(getVocabularyTerm(diseaseRelationVocabulary, "is_implicated_in"));
+		diseaseAnnotation.setNegated(false);
+		diseaseAnnotation.setDiseaseAnnotationObject(doTerm);
+		diseaseAnnotation.setEvidenceCodes(List.of(ecoTerm));
+		diseaseAnnotation.setEvidenceItem(reference);
+
+		RestAssured.given().
+			contentType("application/json").
+			body(diseaseAnnotation).
+			when().
+			post("/api/allele-disease-annotation").
+			then().
+			statusCode(200);
+
+		RestAssured.given().
+			when().
+			delete("/api/allele/" + REFERENCED_ALLELE).
+			then().
+			statusCode(400).
+			body("errorMessage", containsString("Allele is referenced by disease annotation(s)"));
+
+		RestAssured.given().
+			when().
+			get("/api/allele/" + REFERENCED_ALLELE).
+			then().
+			statusCode(200).
+			body("entity.primaryExternalId", is(REFERENCED_ALLELE));
+
+		RestAssured.given().
+			when().
+			get("/api/allele-disease-annotation/findBy/" + REFERENCING_DISEASE_ANNOTATION).
+			then().
+			statusCode(200).
+			body("entity.diseaseAnnotationSubject.primaryExternalId", is(REFERENCED_ALLELE));
+	}
+
+	@Test
+	@Order(35)
+	public void deleteAlleleWithOnlyOwnAssociations() {
+		Allele allele = createAllele(UNREFERENCED_ALLELE, "NCBITaxon:6239", symbolNameType, false);
+		AlleleGeneAssociation geneAssociation = new AlleleGeneAssociation();
+		geneAssociation.setAlleleGeneAssociationObject(gene);
+		geneAssociation.setRelation(geneAssociationRelation);
+		allele.setAlleleGeneAssociations(List.of(geneAssociation));
+
+		RestAssured.given().
+			contentType("application/json").
+			body(allele).
+			when().
+			put("/api/allele/updateDetail").
+			then().
+			statusCode(200);
+
+		RestAssured.given().
+			when().
+			delete("/api/allele/" + UNREFERENCED_ALLELE).
+			then().
+			statusCode(200);
+
+		RestAssured.given().
+			when().
+			get("/api/allele/" + UNREFERENCED_ALLELE).
+			then().
+			statusCode(200).
+			body("entity", is(nullValue()));
+	}
+
+	@Test
+	@Order(36)
+	public void deleteUnknownAllele() {
+		RestAssured.given().
+			when().
+			delete("/api/allele/Allele:DoesNotExist0001").
+			then().
+			statusCode(400).
+			body("errorMessage", is("Could not find Allele with identifier: Allele:DoesNotExist0001"));
+	}
+
+	@Test
+	@Order(37)
+	public void deleteAlleleThatIsAConstructComponent() {
+		Allele allele = createAllele(CONSTRUCT_COMPONENT_ALLELE, "NCBITaxon:6239", symbolNameType, false);
+		Construct componentConstruct = createConstruct("TEST:DeleteComponentConstruct1", false, symbolNameType);
+		Vocabulary constructRelationVocabulary = getVocabulary(VocabularyConstants.CONSTRUCT_RELATION_VOCABULARY);
+
+		ConstructGenomicEntityAssociation association = new ConstructGenomicEntityAssociation();
+		association.setConstructAssociationSubject(componentConstruct);
+		association.setConstructGenomicEntityAssociationObject(allele);
+		association.setRelation(getVocabularyTerm(constructRelationVocabulary, "is_regulated_by"));
+
+		RestAssured.given().
+			contentType("application/json").
+			body(association).
+			when().
+			post("/api/constructgenomicentityassociation").
+			then().
+			statusCode(200);
+
+		RestAssured.given().
+			when().
+			delete("/api/allele/" + CONSTRUCT_COMPONENT_ALLELE).
+			then().
+			statusCode(400).
+			body("errorMessage", containsString("Allele is a component of construct(s)"));
 	}
 
 }

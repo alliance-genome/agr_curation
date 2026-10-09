@@ -74,5 +74,5 @@ public class Reagent extends SubmittedObject {
 	@KeywordField(name = "placeholder_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, valueBridge = @ValueBridgeRef(type = BooleanValueBridge.class))
 	@JsonView({ CurationView.FieldsOnly.class, CurationView.ForPublic.class, CurationView.TransgenicAllelesDocument.class, CurationView.AlleleDetailView.class })
 	@Column(columnDefinition = "boolean default false", nullable = false)
-	private Boolean placeholder;
+	private Boolean placeholder = false;
 }

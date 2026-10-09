@@ -1,7 +1,7 @@
 import { AutocompleteMultiTableEditor } from '../base/AutocompleteMultiTableEditor';
 import { memberTermsSearchConfig, buildMemberTermsOtherFilters } from './utils';
 
-export const MemberTermsTableEditor = ({ editorOptions, errorMessagesRef, uiErrorMessagesRef }) => {
+export const MemberTermsTableEditor = ({ editorOptions }) => {
 	const vocabularyName = editorOptions.rowData.vocabularyTermSetVocabulary?.name;
 	return (
 		<AutocompleteMultiTableEditor
@@ -10,8 +10,6 @@ export const MemberTermsTableEditor = ({ editorOptions, errorMessagesRef, uiErro
 			field="memberTerms"
 			subField="name"
 			otherFilters={vocabularyName ? buildMemberTermsOtherFilters(vocabularyName) : undefined}
-			errorMessagesRef={errorMessagesRef}
-			uiErrorMessagesRef={uiErrorMessagesRef}
 		/>
 	);
 };

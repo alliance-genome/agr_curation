@@ -6,7 +6,7 @@ import { SearchService } from '../../service/SearchService';
 import { Endpoints } from '../../constants/Endpoints';
 import { useGetTableData } from '../../service/useGetTableData';
 import { useGetUserSettings } from '../../service/useGetUserSettings';
-import { NewAlleleButton } from './NewAlleleButton';
+import { NewAlleleButton, useOpenAlleleCreatePage } from './NewAlleleButton';
 import { MutationTypesEditDialog } from './mutationTypes/MutationTypesEditDialog';
 import { MutationTypesReadOnlyDialog } from './mutationTypes/MutationTypesReadOnlyDialog';
 import { FunctionalImpactsEditDialog } from './functionalImpacts/FunctionalImpactsEditDialog';
@@ -46,6 +46,7 @@ import { CrossReferencesTemplate } from '../../components/Templates/CrossReferen
 import { CountDialogTemplate } from '../../components/Templates/dialog/CountDialogTemplate';
 
 import { Toast } from 'primereact/toast';
+import { getIdentifier } from '../../utils/utils';
 import { getDefaultTableState } from '../../service/TableStateService';
 import { FILTER_CONFIGS } from '../../constants/FilterFields';
 import { StringTemplate } from '../../components/Templates/StringTemplate';
@@ -61,6 +62,11 @@ export const AllelesTable = () => {
 	const [alleles, setAlleles] = useState([]);
 
 	const searchService = new SearchService();
+	const openAlleleCreatePage = useOpenAlleleCreatePage();
+
+	const handleDuplication = (rowData) => {
+		openAlleleCreatePage(rowData.curie || getIdentifier(rowData));
+	};
 
 	const [relatedNotesData, setRelatedNotesData] = useState({
 		relatedNotes: [],
@@ -608,9 +614,7 @@ export const AllelesTable = () => {
 				sortable: true,
 				body: (rowData) => <OntologyTermTemplate term={rowData.taxon} />,
 				filterConfig: FILTER_CONFIGS.taxonFilterConfig,
-				editor: (editorOptions) => (
-					<TaxonTableEditor editorOptions={editorOptions} errorMessagesRef={errorMessagesRef} />
-				),
+				editor: (editorOptions) => <TaxonTableEditor editorOptions={editorOptions} />,
 			},
 			{
 				field: 'alleleMutationTypes',
@@ -733,9 +737,7 @@ export const AllelesTable = () => {
 				),
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.referencesFilterConfig,
-				editor: (editorOptions) => (
-					<ReferencesTableEditor editorOptions={editorOptions} errorMessagesRef={errorMessagesRef} />
-				),
+				editor: (editorOptions) => <ReferencesTableEditor editorOptions={editorOptions} />,
 			},
 			{
 				field: 'alleleInheritanceModes',
@@ -772,9 +774,7 @@ export const AllelesTable = () => {
 				sortable: true,
 				body: (rowData) => <StringTemplate string={rowData.inCollection?.name} />,
 				filterConfig: FILTER_CONFIGS.inCollectionFilterConfig,
-				editor: (editorOptions) => (
-					<InCollectionTableEditor editorOptions={editorOptions} errorMessagesRef={errorMessagesRef} />
-				),
+				editor: (editorOptions) => <InCollectionTableEditor editorOptions={editorOptions} />,
 			},
 			{
 				field: 'isExtinct',
@@ -942,6 +942,11 @@ export const AllelesTable = () => {
 					columns={columns}
 					isEditable={true}
 					hasDetails={true}
+					duplicationEnabled={true}
+					handleDuplication={handleDuplication}
+					deletionEnabled={true}
+					deletionMethod={alleleService.deleteAllele}
+					deprecateOption={true}
 					mutation={mutation}
 					isInEditMode={isInEditMode}
 					setIsInEditMode={setIsInEditMode}

@@ -43,6 +43,13 @@ vi.mock('../../../service/ResourceDescriptorService', () => ({
 	},
 }));
 
+vi.mock('../../../service/SearchService', () => ({
+	SearchService: class {
+		search = vi.fn(() => Promise.resolve({ results: [], totalResults: 0 }));
+		find = vi.fn(() => Promise.resolve({ results: [], totalResults: 0 }));
+	},
+}));
+
 vi.mock('../../../service/ValidationService', () => ({
 	ValidationService: class {
 		validate = validate;
@@ -61,6 +68,18 @@ const storedCrossReference = {
 	resourceDescriptorPage: { id: 1, name: 'default', resourceDescriptor: { id: 9, prefix: 'PMID' } },
 	internal: false,
 	obsolete: false,
+};
+
+// An edit to the allele alone, so the page's Save has something to write.
+const markAlleleExtinct = async (user) => {
+	const isExtinctRow = screen.getByRole('heading', { name: 'Is Extinct' }).closest('.grid');
+	await user.click(isExtinctRow.querySelector('.p-dropdown'));
+	const panel = await waitFor(() => {
+		const openPanel = document.querySelector('.p-dropdown-panel');
+		expect(openPanel).not.toBeNull();
+		return openPanel;
+	});
+	await user.click(within(panel).getByText('true'));
 };
 
 const renderPage = () =>
@@ -112,6 +131,65 @@ describe('<AlleleDetailPage /> cross references', () => {
 		await user.click(screen.getByRole('button', { name: 'Save' }));
 	};
 
+	const crossReferencesSection = () => screen.getByRole('heading', { name: 'Cross References' }).closest('.grid');
+
+	it('Keeps the section save inactive and marks nothing until the cross references are edited', async () => {
+		await renderPage();
+		await waitForCrossReferencesToLoad();
+
+		expect(screen.getByRole('button', { name: /Save Cross References/ })).toBeDisabled();
+		expect(screen.queryByText('Pending Edits!')).not.toBeInTheDocument();
+	});
+
+	it('Marks edited cross references as pending and offers their save', async () => {
+		const user = userEvent.setup();
+		await renderPage();
+
+		await editCrossReference(user);
+
+		expect(screen.getByRole('button', { name: /Save Cross References/ })).toBeEnabled();
+		expect(screen.getByRole('button', { name: 'Save' })).toBeEnabled();
+		expect(within(crossReferencesSection()).getByText('Pending Edits!')).toBeInTheDocument();
+	});
+
+	it('Clears the mark and the section save when an added row is deleted again', async () => {
+		const user = userEvent.setup();
+		await renderPage();
+		await waitForCrossReferencesToLoad();
+
+		await user.click(screen.getByRole('button', { name: 'Add Cross Reference' }));
+		expect(within(crossReferencesSection()).getByText('Pending Edits!')).toBeInTheDocument();
+
+		const rows = crossReferencesSection().parentElement.querySelectorAll('tbody tr');
+		await user.click(rows[rows.length - 1].querySelector('.pi-trash').closest('button'));
+
+		expect(within(crossReferencesSection()).queryByText('Pending Edits!')).not.toBeInTheDocument();
+		expect(screen.getByRole('button', { name: /Save Cross References/ })).toBeDisabled();
+		expect(screen.getByRole('button', { name: 'Save' })).toBeDisabled();
+	});
+
+	// Also edits the taxon, so it outlasts the default timeout under load.
+	it(
+		'Clears the cross references mark on their own save, leaving other pending edits marked',
+		{ timeout: 30000 },
+		async () => {
+			const user = userEvent.setup();
+			const { container } = await renderPage();
+
+			await editCrossReference(user);
+			const taxon = container.querySelector('input[name="taxon-input"]');
+			await user.clear(taxon);
+			await user.type(taxon, 'NCBITaxon:6239');
+			await user.click(screen.getByRole('button', { name: /Save Cross References/ }));
+
+			expect(await screen.findByText('Cross References Saved')).toBeInTheDocument();
+			expect(within(crossReferencesSection()).queryByText('Pending Edits!')).not.toBeInTheDocument();
+			expect(screen.getByRole('button', { name: /Save Cross References/ })).toBeDisabled();
+			const taxonRow = screen.getByRole('heading', { name: 'Taxon' }).closest('.grid');
+			expect(within(taxonRow).getByText('Pending Edits!')).toBeInTheDocument();
+		}
+	);
+
 	// Cross references are written through their own sub-resource, so the page's Save makes that call
 	// after the allele's, without sending the rows to the validate endpoint first.
 	it('Saves edited cross references along with the allele', async () => {
@@ -139,7 +217,8 @@ describe('<AlleleDetailPage /> cross references', () => {
 		// The row's editors are mounted, so any of them reporting a change on mount would count as an edit.
 		expect(screen.getByDisplayValue('PMID:1')).toBeInTheDocument();
 
-		await waitFor(() => expect(screen.getByRole('button', { name: 'Save' })).toBeInTheDocument());
+		await waitFor(() => expect(screen.getByRole('button', { name: 'Save' })).toBeDisabled());
+		await markAlleleExtinct(user);
 		await user.click(screen.getByRole('button', { name: 'Save' }));
 
 		expect(await screen.findByText('Allele Saved')).toBeInTheDocument();
@@ -147,8 +226,8 @@ describe('<AlleleDetailPage /> cross references', () => {
 		expect(replaceCrossReferencesForAllele).not.toHaveBeenCalled();
 	});
 
-	// Saving the rows from their own section leaves nothing pending, so the page's Save that follows writes
-	// the allele alone rather than the same rows again.
+	// Saving the rows from their own section leaves them with nothing pending, so the page's Save that
+	// follows writes the allele alone rather than the same rows again.
 	it('Does not rewrite rows already saved from their own section', async () => {
 		const user = userEvent.setup();
 		await renderPage();
@@ -158,6 +237,7 @@ describe('<AlleleDetailPage /> cross references', () => {
 		expect(await screen.findByText('Cross References Saved')).toBeInTheDocument();
 		expect(replaceCrossReferencesForAllele).toHaveBeenCalledTimes(1);
 
+		await markAlleleExtinct(user);
 		await user.click(screen.getByRole('button', { name: 'Save' }));
 
 		expect(await screen.findByText('Allele Saved')).toBeInTheDocument();
@@ -176,6 +256,8 @@ describe('<AlleleDetailPage /> cross references', () => {
 		await editCrossReference(user);
 		await user.click(screen.getByRole('button', { name: /Save Cross References/ }));
 		expect(await screen.findByText('Could not update CrossReferences')).toBeInTheDocument();
+		expect(within(crossReferencesSection()).getByText('Pending Edits!')).toBeInTheDocument();
+		expect(screen.getByRole('button', { name: /Save Cross References/ })).toBeEnabled();
 
 		await user.click(screen.getByRole('button', { name: 'Save' }));
 
@@ -253,6 +335,7 @@ describe('<AlleleDetailPage /> cross references', () => {
 		await renderPage();
 
 		await waitForCrossReferencesToLoad();
+		await markAlleleExtinct(user);
 		await user.click(screen.getByRole('button', { name: 'Save' }));
 
 		expect(await screen.findByText('Could not update Allele')).toBeInTheDocument();
@@ -266,6 +349,7 @@ describe('<AlleleDetailPage /> cross references', () => {
 		await renderPage();
 
 		await waitForCrossReferencesToLoad();
+		await markAlleleExtinct(user);
 		await user.click(screen.getByRole('button', { name: 'Save' }));
 
 		expect(await screen.findByText('Allele Saved')).toBeInTheDocument();
@@ -279,6 +363,7 @@ describe('<AlleleDetailPage /> cross references', () => {
 		await renderPage();
 
 		await waitForCrossReferencesToLoad();
+		await markAlleleExtinct(user);
 		await user.click(screen.getByRole('button', { name: 'Save' }));
 
 		expect(await screen.findByText('Allele Saved')).toBeInTheDocument();
