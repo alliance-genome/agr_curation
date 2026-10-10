@@ -6,6 +6,7 @@ export const Endpoints = Object.freeze({
 		ALLELE_GENE_ASSOCIATION: 'allelegeneassociation',
 		ANTIBODY: 'antibody',
 		BIOLOGICAL_ENTITY: 'biologicalentity',
+		CASSETTE: 'cassette',
 		CONSTRUCT: 'construct',
 		CROSS_REFERENCE: 'cross-reference',
 		GENE: 'gene',
