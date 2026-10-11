@@ -1,12 +1,10 @@
 import { AutocompleteSingleTableEditor } from '../base/AutocompleteSingleTableEditor';
 import { conditionAnatomySearchConfig } from './utils';
 
-export const ConditionAnatomyTableEditor = ({ editorOptions, errorMessagesRef, uiErrorMessagesRef }) => (
+export const ConditionAnatomyTableEditor = ({ editorOptions }) => (
 	<AutocompleteSingleTableEditor
 		editorOptions={editorOptions}
 		field="conditionAnatomy"
-		errorMessagesRef={errorMessagesRef}
-		uiErrorMessagesRef={uiErrorMessagesRef}
 		{...conditionAnatomySearchConfig}
 	/>
 );

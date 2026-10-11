@@ -37,8 +37,6 @@ export const ExperimentalConditionsTable = () => {
 	const searchService = new SearchService();
 	const toast_topleft = useRef(null);
 	const toast_topright = useRef(null);
-	const errorMessagesRef = useRef();
-	errorMessagesRef.current = errorMessages;
 
 	let experimentalConditionService = new ExperimentalConditionService();
 
@@ -82,9 +80,7 @@ export const ExperimentalConditionsTable = () => {
 				sortable: true,
 				body: (rowData) => <OntologyTermTemplate term={rowData.conditionClass} />,
 				filterConfig: FILTER_CONFIGS.conditionClassFilterConfig,
-				editor: (editorOptions) => (
-					<ConditionClassTableEditor editorOptions={editorOptions} errorMessagesRef={errorMessagesRef} />
-				),
+				editor: (editorOptions) => <ConditionClassTableEditor editorOptions={editorOptions} />,
 			},
 			{
 				field: 'conditionId',
@@ -93,9 +89,7 @@ export const ExperimentalConditionsTable = () => {
 				sortable: true,
 				body: (rowData) => <OntologyTermTemplate term={rowData.conditionId} />,
 				filterConfig: FILTER_CONFIGS.conditionIdFilterConfig,
-				editor: (editorOptions) => (
-					<ConditionIdTableEditor editorOptions={editorOptions} errorMessagesRef={errorMessagesRef} />
-				),
+				editor: (editorOptions) => <ConditionIdTableEditor editorOptions={editorOptions} />,
 			},
 			{
 				field: 'conditionGeneOntology',
@@ -104,9 +98,7 @@ export const ExperimentalConditionsTable = () => {
 				sortable: true,
 				body: (rowData) => <OntologyTermTemplate term={rowData.conditionGeneOntology} />,
 				filterConfig: FILTER_CONFIGS.conditionGeneOntologyFilterConfig,
-				editor: (editorOptions) => (
-					<ConditionGeneOntologyTableEditor editorOptions={editorOptions} errorMessagesRef={errorMessagesRef} />
-				),
+				editor: (editorOptions) => <ConditionGeneOntologyTableEditor editorOptions={editorOptions} />,
 			},
 			{
 				field: 'conditionChemical',
@@ -115,9 +107,7 @@ export const ExperimentalConditionsTable = () => {
 				sortable: true,
 				body: (rowData) => <OntologyTermTemplate term={rowData.conditionChemical} />,
 				filterConfig: FILTER_CONFIGS.conditionChemicalFilterConfig,
-				editor: (editorOptions) => (
-					<ConditionChemicalTableEditor editorOptions={editorOptions} errorMessagesRef={errorMessagesRef} />
-				),
+				editor: (editorOptions) => <ConditionChemicalTableEditor editorOptions={editorOptions} />,
 			},
 			{
 				field: 'conditionAnatomy',
@@ -126,9 +116,7 @@ export const ExperimentalConditionsTable = () => {
 				sortable: true,
 				body: (rowData) => <OntologyTermTemplate term={rowData.conditionAnatomy} />,
 				filterConfig: FILTER_CONFIGS.conditionAnatomyFilterConfig,
-				editor: (editorOptions) => (
-					<ConditionAnatomyTableEditor editorOptions={editorOptions} errorMessagesRef={errorMessagesRef} />
-				),
+				editor: (editorOptions) => <ConditionAnatomyTableEditor editorOptions={editorOptions} />,
 			},
 			{
 				field: 'conditionTaxon',
@@ -137,9 +125,7 @@ export const ExperimentalConditionsTable = () => {
 				sortable: true,
 				body: (rowData) => <OntologyTermTemplate term={rowData.conditionTaxon} />,
 				filterConfig: FILTER_CONFIGS.conditionTaxonFilterConfig,
-				editor: (editorOptions) => (
-					<ConditionTaxonTableEditor editorOptions={editorOptions} errorMessagesRef={errorMessagesRef} />
-				),
+				editor: (editorOptions) => <ConditionTaxonTableEditor editorOptions={editorOptions} />,
 			},
 			{
 				field: 'conditionQuantity',
