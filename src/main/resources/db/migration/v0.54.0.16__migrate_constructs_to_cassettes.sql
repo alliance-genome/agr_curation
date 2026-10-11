@@ -7,24 +7,20 @@
 -- invent structure the data does not contain. A construct already linked to a cassette is skipped,
 -- so the script is a no-op where the migration has been run before (e.g. by hand on a local copy).
 --
--- Components are relabelled in place rather than copied: SlotAnnotation is SINGLE_TABLE, so
--- changing the discriminator and repointing singleconstruct_id -> singlecassette_id preserves the
--- row id, and with it every slotannotation_informationcontententity row that hangs off it. Their
--- notes are the exception: CassetteComponentSlotAnnotation maps its notes to
--- cassettecomponentslotannotation_note, not slotannotation_note, so those join rows are moved
--- across.
+-- Everything is copied; the constructs are left exactly as they were. Their components and genomic
+-- entity associations are still read from the construct: by AlleleDAO for the transgenic allele
+-- components, by the construct load, which rebuilds them from each submission, and by
+-- ConstructValidator for the construct uniqueId. Moving them would empty the first and have the
+-- next load put them back. The cassettes are therefore a snapshot of the constructs at the time of
+-- the migration; keeping them in step with later construct submissions is left to the loads.
 --
 -- Nothing the construct keeps is shared with the cassette. Notes and cross references are owned
 -- rows with orphan removal on the entity side, so a row linked from both would be deleted by
 -- whichever one drops it first, and the other then fails on its foreign key. The data provider
--- cross reference and the genomic entity association notes are therefore cloned, not linked.
---
--- Genomic entity associations are copied, not moved, because they live in a different table. The
--- originals are left in place: deletion is the one step with no cheap reversal, and nothing reads
--- both sets at once.
+-- cross reference and all notes are therefore cloned, not linked.
 --
 -- Flyway runs the script in one transaction; the checks in step 8b raise an exception, and so roll
--- everything back, if a component is left behind or a row ends up shared. The cassette and
+-- everything back, if a component or association is not copied or a row ends up shared. The cassette and
 -- construct search indexes need a reindex afterwards (/api/cassette/reindex, /api/construct/reindex).
 
 -- ---------------------------------------------------------------------------------------------
@@ -186,43 +182,67 @@ FROM mig_fullname mf
 JOIN slotannotation_informationcontententity si ON si.slotannotation_id = mf.source_id;
 
 -- ---------------------------------------------------------------------------------------------
--- 4. Components: relabel in place, remapping the relation to cassette_relation
+-- 4. Components: copied, with their evidence and clones of their notes, the relation remapped to
+--    cassette_relation
+--
+-- A component whose relation has no cassette_relation counterpart is not copied rather than copied
+-- with a wrong or null relation; step 8b fails the migration if there is any.
 -- ---------------------------------------------------------------------------------------------
 
--- A component whose relation has no cassette_relation counterpart is left untouched rather than
--- migrated with a wrong or null relation; the verification below counts any such stragglers.
-UPDATE slotannotation s
-   SET slotannotationtype = 'CassetteComponentSlotAnnotation',
-       singlecassette_id  = mc.cassette_id,
-       singleconstruct_id = NULL,
-       relation_id        = cr.id
-FROM mig_cassette mc,
-     vocabularyterm old,
-     vocabulary cv,
-     vocabularyterm cr
-WHERE s.singleconstruct_id = mc.construct_id
-  AND s.slotannotationtype = 'ConstructComponentSlotAnnotation'
-  AND old.id = s.relation_id
-  AND cv.vocabularylabel = 'cassette_relation'
-  AND cr.vocabulary_id = cv.id
-  AND cr.name = old.name;
+CREATE TEMP TABLE mig_component ON COMMIT DROP AS
+SELECT s.id AS source_id,
+       mc.cassette_id,
+       (SELECT greatest(max(id), (SELECT last_value FROM slotannotation_seq)) FROM slotannotation)
+         + 1000 + row_number() OVER (ORDER BY s.id) AS new_id,
+       cr.id AS new_relation_id,
+       s.componentsymbol, s.taxon_id, s.taxontext,
+       s.internal, s.obsolete, s.createdby_id, s.updatedby_id, s.datecreated, s.dateupdated
+FROM mig_cassette mc
+JOIN slotannotation s ON s.singleconstruct_id = mc.construct_id
+                     AND s.slotannotationtype = 'ConstructComponentSlotAnnotation'
+JOIN vocabularyterm old ON old.id = s.relation_id
+JOIN vocabulary cv ON cv.vocabularylabel = 'cassette_relation'
+JOIN vocabularyterm cr ON cr.vocabulary_id = cv.id AND cr.name = old.name;
 
--- Move the relabelled components' notes to the join table the cassette component maps
+INSERT INTO slotannotation (id, slotannotationtype, singlecassette_id, componentsymbol, taxon_id, taxontext,
+                            relation_id, internal, obsolete, createdby_id, updatedby_id,
+                            datecreated, dateupdated, dbdatecreated, dbdateupdated)
+SELECT new_id, 'CassetteComponentSlotAnnotation', cassette_id, componentsymbol, taxon_id, taxontext,
+       new_relation_id, coalesce(internal, false), coalesce(obsolete, false), createdby_id, updatedby_id,
+       datecreated, dateupdated, now(), now()
+FROM mig_component;
+
+INSERT INTO slotannotation_informationcontententity (slotannotation_id, evidence_id)
+SELECT mc.new_id, si.evidence_id
+FROM mig_component mc
+JOIN slotannotation_informationcontententity si ON si.slotannotation_id = mc.source_id;
+
+CREATE TEMP TABLE mig_component_note ON COMMIT DROP AS
+SELECT mc.new_id AS component_id,
+       sn.relatednotes_id AS source_id,
+       (SELECT greatest(max(id), (SELECT last_value FROM note_seq)) FROM note)
+         + 1000 + row_number() OVER (ORDER BY mc.new_id, sn.relatednotes_id) AS new_id
+FROM mig_component mc
+JOIN slotannotation_note sn ON sn.slotannotation_id = mc.source_id;
+
+INSERT INTO note (id, freetext, notetype_id, internal, obsolete,
+                  createdby_id, updatedby_id, datecreated, dateupdated, dbdatecreated, dbdateupdated)
+SELECT mn.new_id, n.freetext, n.notetype_id, coalesce(n.internal, false), coalesce(n.obsolete, false),
+       n.createdby_id, n.updatedby_id, n.datecreated, n.dateupdated, now(), now()
+FROM mig_component_note mn
+JOIN note n ON n.id = mn.source_id;
+
+INSERT INTO note_reference (note_id, references_id)
+SELECT mn.new_id, nr.references_id
+FROM mig_component_note mn
+JOIN note_reference nr ON nr.note_id = mn.source_id;
+
 INSERT INTO cassettecomponentslotannotation_note (slotannotation_id, relatednotes_id)
-SELECT sn.slotannotation_id, sn.relatednotes_id
-FROM slotannotation_note sn
-JOIN slotannotation s ON s.id = sn.slotannotation_id
-WHERE s.slotannotationtype = 'CassetteComponentSlotAnnotation'
-  AND s.singlecassette_id IN (SELECT cassette_id FROM mig_cassette);
-
-DELETE FROM slotannotation_note sn
-USING slotannotation s
-WHERE s.id = sn.slotannotation_id
-  AND s.slotannotationtype = 'CassetteComponentSlotAnnotation'
-  AND s.singlecassette_id IN (SELECT cassette_id FROM mig_cassette);
+SELECT component_id, new_id FROM mig_component_note;
 
 -- ---------------------------------------------------------------------------------------------
--- 5. Genomic entity associations: copied, with their evidence, and with clones of their notes
+-- 5. Genomic entity associations: copied, with their evidence and clones of their notes, the
+--    relation remapped to cassette_relation
 -- ---------------------------------------------------------------------------------------------
 
 CREATE TEMP TABLE mig_gea ON COMMIT DROP AS
@@ -254,10 +274,10 @@ SELECT mg.new_id AS association_id,
 FROM mig_gea mg
 JOIN constructgenomicentityassociation_note n ON n.constructgenomicentityassociation_id = mg.source_id;
 
-INSERT INTO note (id, freetext, notetype_id, internal, obsolete, created, lastupdated,
+INSERT INTO note (id, freetext, notetype_id, internal, obsolete,
                   createdby_id, updatedby_id, datecreated, dateupdated, dbdatecreated, dbdateupdated)
 SELECT mn.new_id, n.freetext, n.notetype_id, coalesce(n.internal, false), coalesce(n.obsolete, false),
-       n.created, n.lastupdated, n.createdby_id, n.updatedby_id, n.datecreated, n.dateupdated, now(), now()
+       n.createdby_id, n.updatedby_id, n.datecreated, n.dateupdated, now(), now()
 FROM mig_gea_note mn
 JOIN note n ON n.id = mn.source_id;
 
@@ -341,7 +361,8 @@ DECLARE
   n_constructs  bigint;
   n_cassettes   bigint;
   n_links       bigint;
-  n_left        bigint;
+  n_comp_source bigint;
+  n_comp_copied bigint;
   n_gea_source  bigint;
   n_gea_copied  bigint;
   n_no_uniqueid bigint;
@@ -352,10 +373,11 @@ BEGIN
   SELECT count(*) INTO n_cassettes FROM cassette WHERE id IN (SELECT cassette_id FROM mig_cassette);
   SELECT count(*) INTO n_links FROM constructcassetteassociation
    WHERE constructcassetteassociationobject_id IN (SELECT cassette_id FROM mig_cassette);
-  -- components whose relation has no cassette_relation counterpart stay on the construct
-  SELECT count(*) INTO n_left FROM slotannotation
+  -- components and associations whose relation has no cassette_relation counterpart are not copied
+  SELECT count(*) INTO n_comp_source FROM slotannotation
    WHERE slotannotationtype = 'ConstructComponentSlotAnnotation'
      AND singleconstruct_id IN (SELECT construct_id FROM mig_construct);
+  SELECT count(*) INTO n_comp_copied FROM mig_component;
   SELECT count(*) INTO n_gea_source FROM constructgenomicentityassociation
    WHERE constructassociationsubject_id IN (SELECT construct_id FROM mig_construct);
   SELECT count(*) INTO n_gea_copied FROM mig_gea;
@@ -368,16 +390,20 @@ BEGIN
     FROM cassettegenomicentityassociation_note cn
     JOIN constructgenomicentityassociation_note gn ON gn.relatednotes_id = cn.relatednotes_id
    WHERE cn.cassettegenomicentityassociation_id IN (SELECT new_id FROM mig_gea);
+  SELECT n_shared_note + count(*) INTO n_shared_note
+    FROM cassettecomponentslotannotation_note cn
+    JOIN slotannotation_note sn ON sn.relatednotes_id = cn.relatednotes_id
+   WHERE cn.slotannotation_id IN (SELECT new_id FROM mig_component);
 
-  RAISE NOTICE 'constructs: %, cassettes: %, construct-cassette links: %, genomic entity associations copied: % of %',
-    n_constructs, n_cassettes, n_links, n_gea_copied, n_gea_source;
+  RAISE NOTICE 'constructs: %, cassettes: %, construct-cassette links: %, components copied: % of %, genomic entity associations copied: % of %',
+    n_constructs, n_cassettes, n_links, n_comp_copied, n_comp_source, n_gea_copied, n_gea_source;
 
   IF n_cassettes <> n_constructs OR n_links <> n_constructs THEN
     RAISE EXCEPTION 'expected % cassettes and links, found % and %', n_constructs, n_cassettes, n_links;
   END IF;
-  IF n_left > 0 OR n_gea_copied <> n_gea_source THEN
-    RAISE EXCEPTION 'relations without a cassette_relation counterpart: % components left on constructs, % of % genomic entity associations copied',
-      n_left, n_gea_copied, n_gea_source;
+  IF n_comp_copied <> n_comp_source OR n_gea_copied <> n_gea_source THEN
+    RAISE EXCEPTION 'relations without a cassette_relation counterpart: % of % components and % of % genomic entity associations copied',
+      n_comp_copied, n_comp_source, n_gea_copied, n_gea_source;
   END IF;
   IF n_no_uniqueid > 0 THEN
     RAISE EXCEPTION '% cassettes without a uniqueid', n_no_uniqueid;
