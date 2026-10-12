@@ -45,7 +45,6 @@ import org.alliancegenome.curation_api.services.validation.dto.slotAnnotations.A
 import org.alliancegenome.curation_api.services.validation.dto.slotAnnotations.AlleleSymbolSlotAnnotationValidator;
 import org.alliancegenome.curation_api.services.validation.dto.slotAnnotations.AlleleSynonymSlotAnnotationValidator;
 import org.alliancegenome.curation_api.services.CurieMintService;
-import org.alliancegenome.curation_api.services.ReferenceService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -70,7 +69,6 @@ public class AlleleValidator extends GenomicEntityValidator<Allele> {
 	@Inject AlleleConstructAssociationValidator alleleConstructAssociationValidator;
 	@Inject AlleleGeneAssociationValidator alleleGeneAssociationValidator;
 	@Inject ReferenceValidator referenceValidator;
-	@Inject ReferenceService referenceService;
 	
 	private String errorMessage;
 
@@ -320,18 +318,16 @@ public class AlleleValidator extends GenomicEntityValidator<Allele> {
 	}
 
 	/**
-	 * Resolves the references an allele's references sub-resource is to hold, in submitted order. Each entry
-	 * names a stored reference by its curie, or by one of its cross reference curies, and is looked up in the
-	 * database or the literature service; the entry's other fields are ignored, so nothing on the stored
-	 * reference is taken from it. A reference the allele does not already hold must not be obsolete, and no
-	 * reference may be named twice. A cross reference curie does not resolve to an obsolete reference, so an
-	 * obsolete reference the allele already holds is kept only when named by its own curie.
+	 * Resolves the references an allele's references sub-resource is to hold, in submitted order, with the same
+	 * rules as references saved through the allele itself, and no reference named twice. Two curies can name the
+	 * same reference, so duplicates are found by the reference they resolve to. Duplicates are reported once every
+	 * entry resolves.
 	 *
 	 * @param dbEntity the allele the references belong to
 	 * @param incomingReferences the submitted references
 	 * @return the resolved references, one per submitted entry
-	 * @throws ApiErrorException when the list is missing or any entry cannot be resolved, with each entry's
-	 *         errors keyed by its index
+	 * @throws ApiErrorException when the list is missing or any entry cannot be resolved or is a duplicate, with
+	 *         each entry's errors keyed by its index
 	 */
 	public List<Reference> validateReferenceReplacement(Allele dbEntity, List<Reference> incomingReferences) {
 		response = new ObjectResponse<>();
@@ -344,36 +340,15 @@ public class AlleleValidator extends GenomicEntityValidator<Allele> {
 			throw new ApiErrorException(response);
 		}
 
-		Set<Long> heldIds = new HashSet<>();
-		if (dbEntity.getReferences() != null) {
-			dbEntity.getReferences().forEach(reference -> heldIds.add(reference.getId()));
-		}
-
-		List<Reference> resolvedReferences = new ArrayList<>();
-		Set<Long> seenIds = new HashSet<>();
-		boolean allValid = true;
-		for (int ix = 0; ix < incomingReferences.size(); ix++) {
-			Reference incomingReference = incomingReferences.get(ix);
-			String curie = incomingReference == null ? null : incomingReference.getCurie();
-			if (StringUtils.isBlank(curie)) {
-				allValid = false;
-				response.addErrorMessages(field, ix, Map.of("curie", ValidationConstants.REQUIRED_MESSAGE));
-				continue;
-			}
-
-			Reference reference = referenceService.retrieveFromDbOrLiteratureService(curie);
-			if (reference == null) {
-				allValid = false;
-				response.addErrorMessages(field, ix, Map.of("curie", ValidationConstants.INVALID_MESSAGE));
-			} else if (!seenIds.add(reference.getId())) {
-				// Two curies can name the same reference, so duplicates are found by the reference they resolve to.
-				allValid = false;
-				response.addErrorMessages(field, ix, Map.of("curie", ValidationConstants.DUPLICATE_MESSAGE));
-			} else if (Boolean.TRUE.equals(reference.getObsolete()) && !heldIds.contains(reference.getId())) {
-				allValid = false;
-				response.addErrorMessages(field, ix, Map.of("curie", ValidationConstants.OBSOLETE_MESSAGE));
-			} else {
-				resolvedReferences.add(reference);
+		List<Reference> resolvedReferences = resolveReferences(incomingReferences, dbEntity.getReferences(), field);
+		boolean allValid = resolvedReferences != null;
+		if (allValid) {
+			Set<Long> seenIds = new HashSet<>();
+			for (int ix = 0; ix < resolvedReferences.size(); ix++) {
+				if (!seenIds.add(resolvedReferences.get(ix).getId())) {
+					allValid = false;
+					response.addErrorMessages(field, ix, Map.of("curie", ValidationConstants.DUPLICATE_MESSAGE));
+				}
 			}
 		}
 
@@ -386,52 +361,63 @@ public class AlleleValidator extends GenomicEntityValidator<Allele> {
 		return resolvedReferences;
 	}
 
-	private ObjectResponse<Reference> validateReference(Reference uiEntity, List<String> previousCuries) {
-		ObjectResponse<Reference> singleRefResponse = referenceValidator.validateReference(uiEntity);
-		if (singleRefResponse.getEntity() == null) {
-			return singleRefResponse;
-		}
-
-		if (singleRefResponse.getEntity().getObsolete() && (CollectionUtils.isEmpty(previousCuries) || !previousCuries.contains(singleRefResponse.getEntity().getCurie()))) {
-			singleRefResponse.setEntity(null);
-			singleRefResponse.addErrorMessage("curie", ValidationConstants.OBSOLETE_MESSAGE);
-		}
-
-		return singleRefResponse;
-	}
-
 	public List<Reference> validateReferences(Allele uiEntity, Allele dbEntity) {
 		String field = "references";
 
-		List<Reference> validatedReferences = new ArrayList<Reference>();
-		List<String> previousReferenceCuries = new ArrayList<String>();
-		if (CollectionUtils.isNotEmpty(dbEntity.getReferences())) {
-			previousReferenceCuries = dbEntity.getReferences().stream().map(Reference::getCurie).collect(Collectors.toList());
+		if (CollectionUtils.isEmpty(uiEntity.getReferences())) {
+			return null;
 		}
 
-		Boolean allValid = true;
-		if (CollectionUtils.isNotEmpty(uiEntity.getReferences())) {
-			for (int ix = 0; ix < uiEntity.getReferences().size(); ix++) {
-				ObjectResponse<Reference> refResponse = validateReference(uiEntity.getReferences().get(ix), previousReferenceCuries);
-				if (refResponse.getEntity() == null) {
-					allValid = false;
-					response.addErrorMessages(field, ix, refResponse.getErrorMessages());
-				} else {
-					validatedReferences.add(refResponse.getEntity());
-				}
-			}
-		}
-
-		if (!allValid) {
+		List<Reference> validatedReferences = resolveReferences(uiEntity.getReferences(), dbEntity.getReferences(), field);
+		if (validatedReferences == null) {
 			convertMapToErrorMessages(field);
 			return null;
 		}
 
-		if (CollectionUtils.isEmpty(validatedReferences)) {
-			return null;
+		return validatedReferences;
+	}
+
+	/**
+	 * Resolves each submitted reference to the stored one it names, by its curie or one of its cross reference
+	 * curies. An entry must name a reference that exists, and a reference the allele does not already hold must
+	 * not be obsolete. A cross reference curie does not resolve to an obsolete reference, so an obsolete reference
+	 * the allele already holds is kept only when named by its own curie.
+	 *
+	 * @param incomingReferences the submitted references
+	 * @param heldReferences the references the allele holds now
+	 * @param field the field each entry's errors are recorded under, keyed by its index
+	 * @return the resolved references in submitted order, or null when any entry is rejected
+	 */
+	private List<Reference> resolveReferences(List<Reference> incomingReferences, List<Reference> heldReferences, String field) {
+		Set<Long> heldIds = new HashSet<>();
+		if (heldReferences != null) {
+			heldReferences.forEach(reference -> heldIds.add(reference.getId()));
 		}
 
-		return validatedReferences;
+		List<Reference> resolvedReferences = new ArrayList<>();
+		boolean allValid = true;
+		for (int ix = 0; ix < incomingReferences.size(); ix++) {
+			Reference incomingReference = incomingReferences.get(ix);
+			if (incomingReference == null || StringUtils.isBlank(incomingReference.getCurie())) {
+				allValid = false;
+				response.addErrorMessages(field, ix, Map.of("curie", ValidationConstants.REQUIRED_MESSAGE));
+				continue;
+			}
+
+			ObjectResponse<Reference> referenceResponse = referenceValidator.validateReference(incomingReference);
+			Reference reference = referenceResponse.getEntity();
+			if (reference == null) {
+				allValid = false;
+				response.addErrorMessages(field, ix, referenceResponse.getErrorMessages());
+			} else if (Boolean.TRUE.equals(reference.getObsolete()) && !heldIds.contains(reference.getId())) {
+				allValid = false;
+				response.addErrorMessages(field, ix, Map.of("curie", ValidationConstants.OBSOLETE_MESSAGE));
+			} else {
+				resolvedReferences.add(reference);
+			}
+		}
+
+		return allValid ? resolvedReferences : null;
 	}
 
 	private List<AlleleMutationTypeSlotAnnotation> validateAlleleMutationTypes(Allele uiEntity, Allele dbEntity) {
