@@ -10,6 +10,7 @@ import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.SequenceTargetingReagentFmsDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
+import org.alliancegenome.curation_api.services.CurieMintService;
 import org.alliancegenome.curation_api.services.GeneService;
 import org.alliancegenome.curation_api.services.OrganizationService;
 import org.alliancegenome.curation_api.services.SequenceTargetingReagentService;
@@ -34,6 +35,8 @@ public class SequenceTargetingReagentFmsDTOValidator {
 	@Inject SequenceTargetingReagentService sqtrService;
 
 	@Inject VocabularyTermService vocabularyTermService;
+
+	@Inject CurieMintService curieMintService;
 
 
 	public ObjectResponse<SequenceTargetingReagent> validateStrFmsDTO(SequenceTargetingReagentFmsDTO dto, BackendBulkDataProvider beDataProvider) throws ValidationException {
@@ -94,6 +97,10 @@ public class SequenceTargetingReagentFmsDTOValidator {
 			throw new ObjectValidationException(dto, sqtrResponse.errorMessagesString());
 		}
 
+		// Mint an AGRKB curie for a reagent that has none, in this transaction. Nothing above assigns
+		// curie, so a re-load of a reagent that already has one is a no-op and its AGRKB id stays stable;
+		// one loaded before minting was wired in gets its curie here.
+		curieMintService.mintCurieIfAbsent(sqtr);
 		sqtrResponse.setEntity(sqtrDAO.persist(sqtr));
 
 		return sqtrResponse;
