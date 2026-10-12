@@ -22,7 +22,10 @@ import { SearchService } from '../../service/SearchService';
 import { Endpoints } from '../../constants/Endpoints';
 import { relationName, identifierOf, genomicEntityLabel, associationStrings, useStrings } from './utils';
 
-export const CassettesTable = () => {
+// tableName is the title, and without spaces the key the table's settings are saved under, so a
+// table embedded elsewhere (the cassettes of one construct) keeps its own columns, filters and page.
+// fixedFilters restrict every search, see useGetTableData.
+export const CassettesTable = ({ tableName = 'Cassettes', fixedFilters }) => {
 	const toast_topleft = useRef(null);
 	const toast_topright = useRef(null);
 
@@ -304,7 +307,10 @@ export const CassettesTable = () => {
 	const DEFAULT_COLUMN_WIDTH = 10;
 	const SEARCH_ENDPOINT = Endpoints.Entity.CASSETTE;
 
-	const initialTableState = useMemo(() => getDefaultTableState('Cassettes', columns, DEFAULT_COLUMN_WIDTH), [columns]);
+	const initialTableState = useMemo(
+		() => getDefaultTableState(tableName.replace(/\s+/g, ''), columns, DEFAULT_COLUMN_WIDTH),
+		[tableName, columns]
+	);
 
 	const { settings: tableState, mutate: setTableState } = useGetUserSettings(
 		initialTableState.tableSettingsKeyName,
@@ -314,6 +320,7 @@ export const CassettesTable = () => {
 	const { isFetching, isLoading } = useGetTableData({
 		tableState,
 		endpoint: SEARCH_ENDPOINT,
+		fixedFilters,
 		setIsInEditMode,
 		setEntities: setCassettes,
 		setTotalRecords,
@@ -329,7 +336,7 @@ export const CassettesTable = () => {
 				<GenericDataTable
 					dataKey="id"
 					endpoint={SEARCH_ENDPOINT}
-					tableName="Cassettes"
+					tableName={tableName}
 					entities={cassettes}
 					setEntities={setCassettes}
 					totalRecords={totalRecords}
