@@ -11,11 +11,27 @@ import { Button } from 'primereact/button';
 import { RelatedNotesReadOnlyDialog } from '../../components/RelatedNotesReadOnlyDialog';
 import { getIdentifier } from '../../utils/utils';
 
+// "symbol (identifier)" of a gene or allele, "name (identifier)" of another genomic entity.
+const genomicEntityDisplayValue = (genomicEntity) => {
+	if (genomicEntity.geneSymbol || genomicEntity.alleleSymbol) {
+		const symbolValue = genomicEntity.geneSymbol
+			? genomicEntity.geneSymbol.displayText
+			: genomicEntity.alleleSymbol.displayText;
+		return symbolValue + ' (' + getIdentifier(genomicEntity) + ')';
+	}
+	if (genomicEntity.name) {
+		return genomicEntity.name + ' (' + getIdentifier(genomicEntity) + ')';
+	}
+	return getIdentifier(genomicEntity);
+};
+
 /**
- * Read-only pop-up listing genomic entity associations: those of a construct, or of a cassette.
+ * Read-only pop-up listing component associations: the genomic entity associations of a construct
+ * or a cassette, or the transgenic tool associations of a cassette.
  *
- * @param {string} [props.objectField] - the association's genomic entity field
+ * @param {string} [props.objectField] - the association's component field
  * @param {string} [props.title] - the pop-up's heading
+ * @param {Function} [props.getComponentLabel] - the text shown for a component
  */
 export const GenomicComponentsDialog = ({
 	originalComponentsData,
@@ -24,6 +40,7 @@ export const GenomicComponentsDialog = ({
 	setErrorMessagesMainRow,
 	objectField = 'constructGenomicEntityAssociationObject',
 	title = 'Component Associations',
+	getComponentLabel = genomicEntityDisplayValue,
 }) => {
 	const { originalComponents, dialog } = originalComponentsData;
 	const [localComponents, setLocalComponents] = useState(null);
@@ -100,18 +117,7 @@ export const GenomicComponentsDialog = ({
 	};
 
 	const componentTemplate = (rowData) => {
-		const genomicEntity = rowData[objectField] || {};
-		let componentDisplayValue = '';
-		if (genomicEntity.geneSymbol || genomicEntity.alleleSymbol) {
-			let symbolValue = genomicEntity.geneSymbol
-				? genomicEntity.geneSymbol.displayText
-				: genomicEntity.alleleSymbol.displayText;
-			componentDisplayValue = symbolValue + ' (' + getIdentifier(genomicEntity) + ')';
-		} else if (genomicEntity.name) {
-			componentDisplayValue = genomicEntity.name + ' (' + getIdentifier(genomicEntity) + ')';
-		} else {
-			componentDisplayValue = getIdentifier(genomicEntity);
-		}
+		const componentDisplayValue = getComponentLabel(rowData[objectField] || {});
 		return (
 			<>
 				<div
