@@ -38,4 +38,21 @@ describe('<GenomicComponentsDialog />', () => {
 		expect(await within(dialog).findByText('expresses')).toBeInTheDocument();
 		expect(within(dialog).getAllByText('croc (FB:FBgn0014143)').length).toBeGreaterThan(0);
 	});
+
+	it('shows a component with the label it is given', async () => {
+		const sfGFP = { primaryExternalId: 'FB:FBto0000063', transgenicToolSymbol: { displayText: 'sfGFP' } };
+		const result = renderDialog(
+			[{ id: 3, relation: { name: 'tagged_with' }, cassetteTransgenicToolAssociationObject: sfGFP }],
+			{
+				objectField: 'cassetteTransgenicToolAssociationObject',
+				title: 'Transgenic Tool Components',
+				getComponentLabel: (tool) => `${tool.transgenicToolSymbol.displayText} (${tool.primaryExternalId})`,
+			}
+		);
+
+		const dialog = await result.findByRole('dialog');
+		expect(within(dialog).getByText('Transgenic Tool Components')).toBeInTheDocument();
+		expect(await within(dialog).findByText('tagged_with')).toBeInTheDocument();
+		expect(within(dialog).getAllByText('sfGFP (FB:FBto0000063)').length).toBeGreaterThan(0);
+	});
 });
