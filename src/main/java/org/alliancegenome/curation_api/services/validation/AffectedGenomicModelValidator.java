@@ -67,7 +67,9 @@ public class AffectedGenomicModelValidator extends GenomicEntityValidator<Affect
 
 	private AffectedGenomicModel validateAffectedGenomicModel(AffectedGenomicModel uiEntity, AffectedGenomicModel dbEntity) {
 
-		dbEntity = validateGenomicEntityFields(uiEntity, dbEntity, VocabularyConstants.AGM_NOTE_TYPES_VOCABULARY_TERM_SET);
+		// A curator-created AGM has no MOD of record to supply a primaryExternalId/modInternalId - the
+		// AGRKB curie minted below is its identifier. Same opt-out Allele uses, and for the same reason.
+		dbEntity = validateGenomicEntityFields(uiEntity, dbEntity, VocabularyConstants.AGM_NOTE_TYPES_VOCABULARY_TERM_SET, false);
 
 		AgmFullNameSlotAnnotation fullName = validateAgmFullName(uiEntity, dbEntity);
 		List<AgmSynonymSlotAnnotation> synonyms = validateAgmSynonyms(uiEntity, dbEntity);
