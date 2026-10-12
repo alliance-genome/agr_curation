@@ -285,6 +285,20 @@ export const data = {
 					displayText: 'KPot273',
 				},
 			],
+			constructCassetteAssociations: [
+				{
+					internal: false,
+					obsolete: false,
+					id: 1244701,
+					relation: { id: 1, name: 'has_component' },
+					constructCassetteAssociationObject: {
+						type: 'Cassette',
+						id: 200061199,
+						primaryExternalId: 'WB:WBCnstr00000001_cas',
+						cassetteSymbol: { formatText: 'KP273', displayText: 'KP273' },
+					},
+				},
+			],
 			constructGenomicEntityAssociations: [
 				{
 					internal: false,

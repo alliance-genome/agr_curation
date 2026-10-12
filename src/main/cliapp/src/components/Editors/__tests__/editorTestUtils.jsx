@@ -8,8 +8,6 @@ export const makeEditorOptions = (rowData, rowIndex = 0) => ({
 	editorCallback: vi.fn(),
 });
 
-export const emptyErrorMessagesRef = { current: {} };
-
 /**
  * Renders a table editor under the strategy a main table supplies, which is where
  * it gets its row addressing and its error maps.

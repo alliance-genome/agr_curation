@@ -270,9 +270,7 @@ export const AffectedGenomicModelTable = () => {
 				sortable: true,
 				body: (rowData) => <OntologyTermTemplate term={rowData.taxon} />,
 				filterConfig: FILTER_CONFIGS.taxonFilterConfig,
-				editor: (editorOptions) => (
-					<TaxonTableEditor editorOptions={editorOptions} errorMessagesRef={errorMessagesRef} />
-				),
+				editor: (editorOptions) => <TaxonTableEditor editorOptions={editorOptions} />,
 			},
 			{
 				field: 'dataProvider.abbreviation',
