@@ -64,29 +64,29 @@ export const ReferencesForm = ({ mode = 'detail' }) => {
 				tableName="References"
 				showTable={references.length > 0}
 				isPending={isDetail && isDirty}
+				titleAction={
+					isDetail && (
+						<Button
+							label="Save References"
+							icon={isSaving ? 'pi pi-spin pi-spinner' : 'pi pi-check'}
+							onClick={saveHandler}
+							// Saving replaces the stored list with what is on screen, so it has to wait for
+							// the read. Saving a table that is still loading, or that failed to load, would
+							// submit an empty list and detach every reference the allele has. With nothing
+							// edited there is nothing to save.
+							disabled={!isDirty || isSaving || isLoading || Boolean(loadError)}
+							severity="success"
+						/>
+					)
+				}
 				button={
 					<>
 						<NewReferenceField />
-						{isDetail && (
-							<div className="flex gap-2">
-								<Button
-									label="Save References"
-									icon={isSaving ? 'pi pi-spin pi-spinner' : 'pi pi-check'}
-									onClick={saveHandler}
-									// Saving replaces the stored list with what is on screen, so it has to wait for
-									// the read. Saving a table that is still loading, or that failed to load, would
-									// submit an empty list and detach every reference the allele has. With nothing
-									// edited there is nothing to save.
-									disabled={!isDirty || isSaving || isLoading || Boolean(loadError)}
-									severity="success"
-								/>
-								{loadError && (
-									<Message
-										severity="error"
-										text="Could not load these references, so they cannot be saved. Reload the page to try again."
-									/>
-								)}
-							</div>
+						{loadError && (
+							<Message
+								severity="error"
+								text="Could not load these references, so they cannot be saved. Reload the page to try again."
+							/>
 						)}
 					</>
 				}
