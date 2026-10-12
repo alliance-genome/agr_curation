@@ -1,6 +1,7 @@
 import React, { useRef, useState, useMemo } from 'react';
 import { GenericDataTable } from '../../components/GenericDataTable/GenericDataTable';
 import { ComponentsDialog } from '../constructsPage/ComponentsDialog';
+import { GenomicComponentsDialog } from '../constructsPage/GenomicComponentsDialog';
 import { SymbolReadOnlyDialog } from '../nameSlotAnnotations/dialogs/SymbolReadOnlyDialog';
 import { FullNameReadOnlyDialog } from '../nameSlotAnnotations/dialogs/FullNameReadOnlyDialog';
 import { SynonymsReadOnlyDialog } from '../nameSlotAnnotations/dialogs/SynonymsReadOnlyDialog';
@@ -44,6 +45,13 @@ export const CassettesTable = () => {
 		mainRowProps: {},
 	});
 
+	const [genomicEntityComponentsData, setGenomicEntityComponentsData] = useState({
+		isInEdit: false,
+		dialog: false,
+		rowIndex: null,
+		mainRowProps: {},
+	});
+
 	const [isInEditMode, setIsInEditMode] = useState(false);
 	const [errorMessages, setErrorMessages] = useState({});
 	const [totalRecords, setTotalRecords] = useState(0);
@@ -70,7 +78,14 @@ export const CassettesTable = () => {
 		setComponentsData({ originalComponents: cassetteComponents, dialog: true });
 	};
 
+	const handleGenomicEntityComponentsOpen = (cassetteGenomicEntityAssociations) => {
+		setGenomicEntityComponentsData({ originalComponents: cassetteGenomicEntityAssociations, dialog: true });
+	};
+
 	const getComponentsTextString = (item) => relationName(item) + ': ' + item.componentSymbol;
+
+	const getGenomicEntityComponentsTextString = (association) =>
+		relationName(association) + ': ' + genomicEntityLabel(association?.cassetteGenomicEntityAssociationObject);
 
 	const columns = useMemo(
 		() => [
@@ -164,12 +179,11 @@ export const CassettesTable = () => {
 				field: 'cassetteGenomicEntityAssociations.cassetteGenomicEntityAssociationObject.symbol',
 				header: 'Genomic Entity Components',
 				body: (rowData) => (
-					<StringListTemplate
-						list={associationStrings(
-							rowData.cassetteGenomicEntityAssociations,
-							'cassetteGenomicEntityAssociationObject',
-							genomicEntityLabel
-						)}
+					<ListDialogTemplate
+						entities={rowData.cassetteGenomicEntityAssociations}
+						handleOpen={handleGenomicEntityComponentsOpen}
+						getTextField={getGenomicEntityComponentsTextString}
+						underline={true}
 					/>
 				),
 				sortable: { isInEditMode },
@@ -341,6 +355,14 @@ export const CassettesTable = () => {
 				setOriginalComponentsData={setComponentsData}
 				errorMessagesMainRow={errorMessages}
 				setErrorMessagesMainRow={setErrorMessages}
+			/>
+			<GenomicComponentsDialog
+				originalComponentsData={genomicEntityComponentsData}
+				setOriginalComponentsData={setGenomicEntityComponentsData}
+				errorMessagesMainRow={errorMessages}
+				setErrorMessagesMainRow={setErrorMessages}
+				objectField="cassetteGenomicEntityAssociationObject"
+				title="Genomic Entity Components"
 			/>
 		</>
 	);

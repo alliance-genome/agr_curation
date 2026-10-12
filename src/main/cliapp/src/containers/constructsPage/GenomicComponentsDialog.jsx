@@ -11,11 +11,19 @@ import { Button } from 'primereact/button';
 import { RelatedNotesReadOnlyDialog } from '../../components/RelatedNotesReadOnlyDialog';
 import { getIdentifier } from '../../utils/utils';
 
+/**
+ * Read-only pop-up listing genomic entity associations: those of a construct, or of a cassette.
+ *
+ * @param {string} [props.objectField] - the association's genomic entity field
+ * @param {string} [props.title] - the pop-up's heading
+ */
 export const GenomicComponentsDialog = ({
 	originalComponentsData,
 	setOriginalComponentsData,
 	errorMessagesMainRow,
 	setErrorMessagesMainRow,
+	objectField = 'constructGenomicEntityAssociationObject',
+	title = 'Component Associations',
 }) => {
 	const { originalComponents, dialog } = originalComponentsData;
 	const [localComponents, setLocalComponents] = useState(null);
@@ -92,23 +100,17 @@ export const GenomicComponentsDialog = ({
 	};
 
 	const componentTemplate = (rowData) => {
+		const genomicEntity = rowData[objectField] || {};
 		let componentDisplayValue = '';
-		if (
-			rowData.constructGenomicEntityAssociationObject.geneSymbol ||
-			rowData.constructGenomicEntityAssociationObject.alleleSymbol
-		) {
-			let symbolValue = rowData.constructGenomicEntityAssociationObject.geneSymbol
-				? rowData.constructGenomicEntityAssociationObject.geneSymbol.displayText
-				: rowData.constructGenomicEntityAssociationObject.alleleSymbol.displayText;
-			componentDisplayValue = symbolValue + ' (' + getIdentifier(rowData.constructGenomicEntityAssociationObject) + ')';
-		} else if (rowData.constructGenomicEntityAssociationObject.name) {
-			componentDisplayValue =
-				rowData.constructGenomicEntityAssociationObject.name +
-				' (' +
-				getIdentifier(rowData.constructGenomicEntityAssociationObject) +
-				')';
+		if (genomicEntity.geneSymbol || genomicEntity.alleleSymbol) {
+			let symbolValue = genomicEntity.geneSymbol
+				? genomicEntity.geneSymbol.displayText
+				: genomicEntity.alleleSymbol.displayText;
+			componentDisplayValue = symbolValue + ' (' + getIdentifier(genomicEntity) + ')';
+		} else if (genomicEntity.name) {
+			componentDisplayValue = genomicEntity.name + ' (' + getIdentifier(genomicEntity) + ')';
 		} else {
-			componentDisplayValue = getIdentifier(rowData.constructGenomicEntityAssociationObject);
+			componentDisplayValue = getIdentifier(genomicEntity);
 		}
 		return (
 			<>
@@ -144,7 +146,7 @@ export const GenomicComponentsDialog = ({
 		<>
 			<div>
 				<Dialog visible={dialog} className="w-8" modal onHide={hideDialog} closable={true} onShow={showDialogHandler}>
-					<h3>Component Associations</h3>
+					<h3>{title}</h3>
 					<DataTable
 						value={localComponents}
 						dataKey="dataKey"
@@ -155,7 +157,7 @@ export const GenomicComponentsDialog = ({
 					>
 						<Column field="relation.name" header="Relation" headerClassName="surface-0" />
 						<Column
-							field="constructGenomicEntityAssociationObject.primaryExternalId"
+							field={`${objectField}.primaryExternalId`}
 							header="Component"
 							headerClassName="surface-0"
 							body={componentTemplate}
