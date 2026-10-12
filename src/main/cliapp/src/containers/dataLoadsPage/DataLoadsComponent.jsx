@@ -567,10 +567,9 @@ export const DataLoadsComponent = () => {
 	};
 
 	const countsTemplate = (rowData) => {
-		let countsArray = [];
-		for (let count in rowData.counts) {
-			countsArray.push({ ...rowData.counts[count], name: count });
-		}
+		const countsArray = Object.keys(rowData.counts || {})
+			.sort((a, b) => a.localeCompare(b))
+			.map((count) => ({ ...rowData.counts[count], name: count }));
 
 		return (
 			<DataTable key="countsTable" value={countsArray}>
