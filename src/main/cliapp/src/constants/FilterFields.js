@@ -306,6 +306,59 @@ export const FIELD_SETS = Object.freeze({
 		filterName: 'conditionTaxonFilter',
 		fields: ['conditionTaxon.curie', 'conditionTaxon.name'],
 	},
+	cassetteNameFieldSet: {
+		filterName: 'cassetteNameFilter',
+		fields: ['cassetteFullName.displayText', 'cassetteFullName.formatText'],
+	},
+	cassetteSymbolFieldSet: {
+		filterName: 'cassetteSymbolFilter',
+		fields: ['cassetteSymbol.displayText', 'cassetteSymbol.formatText'],
+	},
+	cassetteSynonymsFieldSet: {
+		filterName: 'cassetteSynonymsFilter',
+		fields: ['cassetteSynonyms.displayText', 'cassetteSynonyms.formatText'],
+	},
+	cassetteAggregationFieldSet: {
+		filterName: 'cassetteAggregationFilter',
+		fields: ['dataProvider.abbreviation'],
+	},
+	cassetteComponentsFieldSet: {
+		filterName: 'cassetteComponentsFilter',
+		fields: ['cassetteComponents.componentSymbol', 'cassetteComponents.relation.name'],
+	},
+	cassetteGenomicEntityAssociationsFieldSet: {
+		filterName: 'cassetteGenomicEntityAssociationsFilter',
+		fields: [
+			'cassetteGenomicEntityAssociations.cassetteGenomicEntityAssociationObject.symbol',
+			'cassetteGenomicEntityAssociations.cassetteGenomicEntityAssociationObject.name',
+			'cassetteGenomicEntityAssociations.cassetteGenomicEntityAssociationObject.curie',
+			'cassetteGenomicEntityAssociations.cassetteGenomicEntityAssociationObject.primaryExternalId',
+			'cassetteGenomicEntityAssociations.cassetteGenomicEntityAssociationObject.modInternalId',
+			'cassetteGenomicEntityAssociations.relation.name',
+		],
+	},
+	cassetteTransgenicToolAssociationsFieldSet: {
+		filterName: 'cassetteTransgenicToolAssociationsFilter',
+		fields: [
+			'cassetteTransgenicToolAssociations.cassetteTransgenicToolAssociationObject.curie',
+			'cassetteTransgenicToolAssociations.cassetteTransgenicToolAssociationObject.primaryExternalId',
+			'cassetteTransgenicToolAssociations.cassetteTransgenicToolAssociationObject.modInternalId',
+			'cassetteTransgenicToolAssociations.relation.name',
+		],
+	},
+	cassetteStrAssociationsFieldSet: {
+		filterName: 'cassetteStrAssociationsFilter',
+		fields: [
+			'cassetteStrAssociations.cassetteStrAssociationObject.curie',
+			'cassetteStrAssociations.cassetteStrAssociationObject.primaryExternalId',
+			'cassetteStrAssociations.cassetteStrAssociationObject.modInternalId',
+			'cassetteStrAssociations.relation.name',
+		],
+	},
+	cassetteUsesFieldSet: {
+		filterName: 'cassetteUsesFilter',
+		fields: ['cassetteUses.uses.name', 'cassetteUses.uses.curie'],
+	},
 	constructNameFieldSet: {
 		filterName: 'constructNameFilter',
 		fields: ['constructFullName.displayText', 'constructFullName.formatText'],
@@ -650,6 +703,10 @@ export const FIELD_SETS = Object.freeze({
 	internalFieldSet: {
 		filterName: 'internalFilter',
 		fields: ['internal'],
+	},
+	placeholderFieldSet: {
+		filterName: 'placeholderFilter',
+		fields: ['placeholder'],
 	},
 	isExtinctFieldSet: {
 		filterName: 'isExtinctFilter',
@@ -1099,6 +1156,23 @@ export const FILTER_CONFIGS = Object.freeze({
 	},
 	conditionQuantityFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.conditionQuantityFieldSet] },
 	conditionTaxonFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.conditionTaxonFieldSet] },
+	cassetteNameFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.cassetteNameFieldSet] },
+	cassetteSymbolFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.cassetteSymbolFieldSet] },
+	cassetteSynonymsFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.cassetteSynonymsFieldSet] },
+	cassetteComponentsFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.cassetteComponentsFieldSet] },
+	cassetteGenomicEntityAssociationsFilterConfig: {
+		filterComponentType: 'input',
+		fieldSets: [FIELD_SETS.cassetteGenomicEntityAssociationsFieldSet],
+	},
+	cassetteTransgenicToolAssociationsFilterConfig: {
+		filterComponentType: 'input',
+		fieldSets: [FIELD_SETS.cassetteTransgenicToolAssociationsFieldSet],
+	},
+	cassetteStrAssociationsFilterConfig: {
+		filterComponentType: 'input',
+		fieldSets: [FIELD_SETS.cassetteStrAssociationsFieldSet],
+	},
+	cassetteUsesFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.cassetteUsesFieldSet] },
 	constructNameFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.constructNameFieldSet] },
 	constructSymbolFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.constructSymbolFieldSet] },
 	constructSynonymsFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.constructSynonymsFieldSet] },
@@ -1367,6 +1441,7 @@ export const FILTER_CONFIGS = Object.freeze({
 	isExtinctFilterConfig: { filterComponentType: 'dropdown', fieldSets: [FIELD_SETS.isExtinctFieldSet] },
 	obsoleteFilterConfig: { filterComponentType: 'dropdown', fieldSets: [FIELD_SETS.obsoleteFieldSet] },
 	internalFilterConfig: { filterComponentType: 'dropdown', fieldSets: [FIELD_SETS.internalFieldSet] },
+	placeholderFilterConfig: { filterComponentType: 'dropdown', fieldSets: [FIELD_SETS.placeholderFieldSet] },
 	negatedFilterConfig: {
 		filterComponentType: 'dropdown',
 		fieldSets: [FIELD_SETS.negatedFieldSet],
@@ -1398,6 +1473,12 @@ export const FILTER_CONFIGS = Object.freeze({
 		filterComponentType: 'multiselect',
 		fieldSets: [FIELD_SETS.dataProviderFieldSet],
 		aggregationFieldSet: FIELD_SETS.alleleAggregationFieldSet,
+		useKeywordFields: true,
+	},
+	cassetteDataProviderFilterConfig: {
+		filterComponentType: 'multiselect',
+		fieldSets: [FIELD_SETS.dataProviderFieldSet],
+		aggregationFieldSet: FIELD_SETS.cassetteAggregationFieldSet,
 		useKeywordFields: true,
 	},
 	constructDataProviderFilterConfig: {
