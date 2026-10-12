@@ -1,4 +1,4 @@
-import { useRef, useEffect, useMemo } from 'react';
+import { useRef, useEffect, useMemo, useState } from 'react';
 import { Toast } from 'primereact/toast';
 import { Splitter, SplitterPanel } from 'primereact/splitter';
 import { Button } from 'primereact/button';
@@ -14,6 +14,7 @@ import { LoadingOverlay } from '../../components/LoadingOverlay';
 import { processErrors } from './utils';
 import { FormFieldVisibilityMenu, useFormFieldVisibility } from '../../components/FormFieldVisibility';
 import { AGMForm, AGM_DETAIL_TOGGLEABLE_FIELDS } from './AGMForm';
+import { AffectedGenomicModelCreateDialog } from './AffectedGenomicModelCreateDialog';
 
 export default function AffectedGenomicModelDetailPage() {
 	const { identifier } = useParams();
@@ -25,6 +26,7 @@ export default function AffectedGenomicModelDetailPage() {
 	const agmService = useMemo(() => new AffectedGenomicModelService(), []);
 	const toastSuccess = useRef(null);
 	const toastError = useRef(null);
+	const [createDialogVisible, setCreateDialogVisible] = useState(false);
 
 	const { isPending: getRequestIsLoading, data: agmQueryData } = useQuery({
 		queryKey: [identifier],
@@ -112,11 +114,18 @@ export default function AffectedGenomicModelDetailPage() {
 						</SplitterPanel>
 						<SplitterPanel size={20} className="flex align-items-center justify-content-start gap-2 py-3">
 							<Button label="Save" icon="pi pi-check" className="p-button-text" size="large" onClick={handleSubmit} />
+							<Button
+								label="New AGM"
+								icon="pi pi-plus"
+								className="p-button-text"
+								onClick={() => setCreateDialogVisible(true)}
+							/>
 						</SplitterPanel>
 					</Splitter>
 				</StickyHeader>
 				<AGMForm state={agmState} dispatch={agmDispatch} isVisible={isVisible} />
 			</ErrorBoundary>
+			<AffectedGenomicModelCreateDialog visible={createDialogVisible} onHide={() => setCreateDialogVisible(false)} />
 		</>
 	);
 }

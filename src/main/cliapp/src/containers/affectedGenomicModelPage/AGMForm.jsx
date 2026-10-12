@@ -1,4 +1,3 @@
-import { InputText } from 'primereact/inputtext';
 import { TaxonDetailPageEditor } from '../../components/Editors/autocomplete/taxon/TaxonDetailPageEditor';
 import { ControlledVocabularyDetailPageEditor } from '../../components/Editors/dropdown/vocabulary/ControlledVocabularyDetailPageEditor';
 import { BooleanDetailPageEditor } from '../../components/Editors/dropdown/boolean/BooleanDetailPageEditor';
@@ -8,7 +7,6 @@ import { DateDetailPageTemplate } from '../../components/Templates/DateDetailPag
 import { UserDetailPageTemplate } from '../../components/Templates/UserDetailPageTemplate';
 import { CrossReferencesTemplate } from '../../components/Templates/CrossReferencesTemplate';
 import { DetailPageFieldWrapper } from '../../components/DetailPageFieldWrapper';
-import { FormErrorMessageComponent } from '../../components/Error/FormErrorMessageComponent';
 import { AgmFullNameForm } from './agmFullName/AgmFullNameForm';
 import { SynonymsForm } from './synonyms/SynonymsForm';
 import { SecondaryIdsForm } from './secondaryIds/SecondaryIdsForm';
@@ -35,11 +33,13 @@ export const AGM_DETAIL_TOGGLEABLE_FIELDS = [
 ];
 
 // The sections create mode does not render, so its menu does not offer them. Cross References has
-// no editor here or on the table, so a brand new AGM has nothing to show there either. MOD
-// Internal ID stays read-only/omitted even on create - Primary External ID covers the server's
-// identifier requirement below, and the two are alternatives, not both needed from a curator.
+// no editor here or on the table, so a brand new AGM has nothing to show there either. A
+// curator-created AGM has no MOD of record, so it has neither a Primary External ID nor a MOD
+// Internal ID - AffectedGenomicModelValidator opts out of requiring either (same as Allele), and
+// the AGRKB curie minted on create is its identifier instead.
 const FIELDS_OMITTED_ON_CREATE = [
 	'Curie',
+	'Primary External ID',
 	'MOD Internal ID',
 	'Cross References',
 	'Updated By',
@@ -48,12 +48,9 @@ const FIELDS_OMITTED_ON_CREATE = [
 	'Date Created',
 ];
 
-// The fields the API will not accept as empty on create. Sub Type and Taxon are required
-// directly; Primary External ID stands in for AffectedGenomicModelValidator's "modInternalId or
-// primaryExternalId" identifier check (read-only elsewhere, editable here for that reason - unlike
-// Allele, which opts out of this check entirely). These carry the required marker in create mode,
-// and the create form does not let a curator hide them.
-const FIELDS_REQUIRED_ON_CREATE = ['Primary External ID', 'Sub Type', 'Taxon'];
+// The fields the API will not accept as empty on create. These carry the required marker in
+// create mode, and the create form does not let a curator hide them.
+const FIELDS_REQUIRED_ON_CREATE = ['Sub Type', 'Taxon'];
 
 export const AGM_CREATE_TOGGLEABLE_FIELDS = AGM_DETAIL_TOGGLEABLE_FIELDS.filter(
 	(field) => !FIELDS_OMITTED_ON_CREATE.includes(field) && !FIELDS_REQUIRED_ON_CREATE.includes(field)
@@ -104,42 +101,14 @@ export const AGMForm = ({ state, dispatch, isVisible, mode = 'detail' }) => {
 				/>
 			</FormSection>
 
-			<FormSection isVisible={isVisible('Primary External ID')}>
-				{isCreate ? (
-					<DetailPageFieldWrapper
-						labelColumnSize={labelColumnSize}
-						fieldDetailsColumnSize={fieldDetailsColumnSize}
-						widgetColumnSize={widgetColumnSize}
-						fieldName="Primary External ID"
-						required
-						showAdditionalData={false}
-						formField={
-							<InputText
-								value={state.agm?.primaryExternalId || ''}
-								onChange={(event) => dispatch({ type: 'EDIT', field: 'primaryExternalId', value: event.target.value })}
-							/>
-						}
-						errorField={
-							// AffectedGenomicModelValidator's "needs one of the two" check always keys its
-							// message modInternalId, even though this field - not the read-only MOD
-							// Internal ID - is where a curator actually satisfies it on create.
-							<FormErrorMessageComponent
-								errorMessages={{
-									primaryExternalId: state.errorMessages?.primaryExternalId || state.errorMessages?.modInternalId,
-								}}
-								errorField="primaryExternalId"
-							/>
-						}
-					/>
-				) : (
-					<IdentifierDetailPageTemplate
-						identifier={state.agm?.primaryExternalId}
-						label="Primary External ID"
-						widgetColumnSize={widgetColumnSize}
-						labelColumnSize={labelColumnSize}
-						fieldDetailsColumnSize={fieldDetailsColumnSize}
-					/>
-				)}
+			<FormSection isVisible={!isCreate && isVisible('Primary External ID')}>
+				<IdentifierDetailPageTemplate
+					identifier={state.agm?.primaryExternalId}
+					label="Primary External ID"
+					widgetColumnSize={widgetColumnSize}
+					labelColumnSize={labelColumnSize}
+					fieldDetailsColumnSize={fieldDetailsColumnSize}
+				/>
 			</FormSection>
 
 			<FormSection isVisible={!isCreate && isVisible('MOD Internal ID')}>
