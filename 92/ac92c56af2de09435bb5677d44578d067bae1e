@@ -1,0 +1,19 @@
+src/test/java/org/alliancegenome/curation_api/IT_0303_AffectedGenomicModelITCase.java
+  s_90fe3c66eb3b97::t_3de03ee0e260f4 227,231,237-238,245-255,293,302,309-319
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "92ac92c56af2de09435bb5677d44578d067bae1e",
+  "prompts": {},
+  "sessions": {
+    "s_90fe3c66eb3b97": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "64db8705-0fb3-46f5-be71-5247c76018af",
+        "model": "unknown"
+      },
+      "human_author": "Ketaki Kindre <kkindre@caltech.edu>"
+    }
+  }
+}
