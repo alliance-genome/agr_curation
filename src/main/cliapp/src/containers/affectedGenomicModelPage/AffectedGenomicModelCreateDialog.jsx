@@ -3,11 +3,13 @@ import { Dialog } from 'primereact/dialog';
 import { Button } from 'primereact/button';
 import { Splitter, SplitterPanel } from 'primereact/splitter';
 import { Toast } from 'primereact/toast';
+import { useNavigate } from 'react-router-dom';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import ErrorBoundary from '../../components/Error/ErrorBoundary';
 import { AffectedGenomicModelService } from '../../service/AffectedGenomicModelService';
 import { useAGMReducer } from './useAGMReducer';
 import { processErrors } from './utils';
+import { getIdentifier } from '../../utils/utils';
 import { FormFieldVisibilityMenu, useFormFieldVisibility } from '../../components/FormFieldVisibility';
 import { AGMForm, AGM_CREATE_TOGGLEABLE_FIELDS } from './AGMForm';
 
@@ -22,6 +24,7 @@ import { AGMForm, AGM_CREATE_TOGGLEABLE_FIELDS } from './AGMForm';
  * @param {() => void} props.onHide
  */
 export const AffectedGenomicModelCreateDialog = ({ visible, onHide }) => {
+	const navigate = useNavigate();
 	const { agmState, agmDispatch } = useAGMReducer();
 	const { visibleFields, setVisibleFields, showAllFields, isVisible } = useFormFieldVisibility(
 		'AGMCreate',
@@ -82,14 +85,19 @@ export const AffectedGenomicModelCreateDialog = ({ visible, onHide }) => {
 		}
 
 		mutate(payload, {
-			onSuccess: () => {
+			onSuccess: (result) => {
 				// The table's search query is keyed on 'AffectedGenomicModels' (getDefaultTableState's
 				// tableKeyName), so this is what brings the new row into view without a manual refetch.
 				queryClient.invalidateQueries({ queryKey: ['AffectedGenomicModels'] });
 				toastSuccess.current.show({ severity: 'success', summary: 'Successful', detail: 'AGM Created' });
 
 				if (closeAfterSubmit) {
-					closeDialog();
+					resetForm();
+					onHide();
+					// Same as Allele/Variant's create pages: land on the new record's detail page
+					// rather than just closing. A curator-created AGM has no MOD identifier, so this
+					// is its minted AGRKB curie.
+					navigate(`/agm/${getIdentifier(result?.data?.entity)}`);
 				} else {
 					resetForm();
 				}
