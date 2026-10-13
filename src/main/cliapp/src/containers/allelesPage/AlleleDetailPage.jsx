@@ -123,7 +123,7 @@ export default function AlleleDetailPage() {
 		}
 		const savedLabels = subResourceOutcomes.filter(({ outcome }) => outcome.isSuccess).map(({ label }) => label);
 		const failedSubResources = subResourceOutcomes.filter(({ outcome }) => !outcome.isSuccess);
-		const failureToast = ({ label, outcome }, detail) => ({
+		const failureToast = ({ label }, detail) => ({
 			life: 10000,
 			severity: 'error',
 			summary: `${label.charAt(0).toUpperCase()}${label.slice(1)} not saved: `,
