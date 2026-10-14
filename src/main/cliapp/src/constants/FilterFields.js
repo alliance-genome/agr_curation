@@ -375,19 +375,14 @@ export const FIELD_SETS = Object.freeze({
 		filterName: 'constructAggregationFilter',
 		fields: ['dataProvider.abbreviation'],
 	},
-	constructComponentsFieldSet: {
-		filterName: 'constructComponentsFilter',
-		fields: ['constructComponents.componentSymbol', 'constructComponents.relation.name'],
-	},
-	constructGenomicComponentsFieldSet: {
-		filterName: 'constructGenomicComponentsFilter',
+	constructCassettesFieldSet: {
+		filterName: 'constructCassettesFilter',
 		fields: [
-			'constructGenomicEntityAssociations.constructGenomicEntityAssociationObject.symbol',
-			'constructGenomicEntityAssociations.constructGenomicEntityAssociationObject.name',
-			'constructGenomicEntityAssociations.constructGenomicEntityAssociationObject.curie',
-			'constructGenomicEntityAssociations.constructGenomicEntityAssociationObject.primaryExternalId',
-			'constructGenomicEntityAssociations.constructGenomicEntityAssociationObject.modInternalId',
-			'constructGenomicEntityAssociations.relation.name',
+			'constructCassetteAssociations.constructCassetteAssociationObject.cassetteSymbol.displayText',
+			'constructCassetteAssociations.constructCassetteAssociationObject.cassetteSymbol.formatText',
+			'constructCassetteAssociations.constructCassetteAssociationObject.primaryExternalId',
+			'constructCassetteAssociations.constructCassetteAssociationObject.modInternalId',
+			'constructCassetteAssociations.relation.name',
 		],
 	},
 	crossReferenceFieldSet: {
@@ -1176,13 +1171,9 @@ export const FILTER_CONFIGS = Object.freeze({
 	constructNameFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.constructNameFieldSet] },
 	constructSymbolFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.constructSymbolFieldSet] },
 	constructSynonymsFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.constructSynonymsFieldSet] },
-	constructComponentsFilterConfig: {
+	constructCassettesFilterConfig: {
 		filterComponentType: 'input',
-		fieldSets: [FIELD_SETS.constructComponentsFieldSet],
-	},
-	constructGenomicComponentsFilterConfig: {
-		filterComponentType: 'input',
-		fieldSets: [FIELD_SETS.constructGenomicComponentsFieldSet],
+		fieldSets: [FIELD_SETS.constructCassettesFieldSet],
 	},
 	antibodyDataProviderFilterConfig: {
 		filterComponentType: 'multiselect',

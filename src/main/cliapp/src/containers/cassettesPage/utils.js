@@ -12,6 +12,15 @@ export const genomicEntityLabel = (genomicEntity) =>
 	genomicEntity?.name ||
 	identifierOf(genomicEntity);
 
+export const transgenicToolLabel = (transgenicTool) =>
+	transgenicTool?.transgenicToolSymbol?.displayText || identifierOf(transgenicTool);
+
+// "symbol (identifier)" for the Transgenic Tool Components pop-up, or just the identifier without a symbol.
+export const transgenicToolDisplayValue = (transgenicTool) => {
+	const symbol = transgenicTool?.transgenicToolSymbol?.displayText;
+	return symbol ? `${symbol} (${identifierOf(transgenicTool)})` : identifierOf(transgenicTool);
+};
+
 // "relation: label" for each association, the label taken from the association's object.
 export const associationStrings = (associations, objectField, label) =>
 	(associations || []).map((association) => `${relationName(association)}: ${label(association?.[objectField])}`);

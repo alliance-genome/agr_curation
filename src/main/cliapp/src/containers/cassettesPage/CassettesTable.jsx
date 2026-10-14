@@ -1,6 +1,7 @@
 import React, { useRef, useState, useMemo } from 'react';
 import { GenericDataTable } from '../../components/GenericDataTable/GenericDataTable';
 import { ComponentsDialog } from '../constructsPage/ComponentsDialog';
+import { GenomicComponentsDialog } from '../constructsPage/GenomicComponentsDialog';
 import { SymbolReadOnlyDialog } from '../nameSlotAnnotations/dialogs/SymbolReadOnlyDialog';
 import { FullNameReadOnlyDialog } from '../nameSlotAnnotations/dialogs/FullNameReadOnlyDialog';
 import { SynonymsReadOnlyDialog } from '../nameSlotAnnotations/dialogs/SynonymsReadOnlyDialog';
@@ -19,9 +20,20 @@ import { StringTemplate } from '../../components/Templates/StringTemplate';
 
 import { SearchService } from '../../service/SearchService';
 import { Endpoints } from '../../constants/Endpoints';
-import { relationName, identifierOf, genomicEntityLabel, associationStrings, useStrings } from './utils';
+import {
+	relationName,
+	identifierOf,
+	genomicEntityLabel,
+	transgenicToolLabel,
+	transgenicToolDisplayValue,
+	associationStrings,
+	useStrings,
+} from './utils';
 
-export const CassettesTable = () => {
+// tableName is the title, and without spaces the key the table's settings are saved under, so a
+// table embedded elsewhere (the cassettes of one construct) keeps its own columns, filters and page.
+// fixedFilters restrict every search, see useGetTableData.
+export const CassettesTable = ({ tableName = 'Cassettes', fixedFilters }) => {
 	const toast_topleft = useRef(null);
 	const toast_topright = useRef(null);
 
@@ -38,6 +50,20 @@ export const CassettesTable = () => {
 	});
 
 	const [componentsData, setComponentsData] = useState({
+		isInEdit: false,
+		dialog: false,
+		rowIndex: null,
+		mainRowProps: {},
+	});
+
+	const [genomicEntityComponentsData, setGenomicEntityComponentsData] = useState({
+		isInEdit: false,
+		dialog: false,
+		rowIndex: null,
+		mainRowProps: {},
+	});
+
+	const [transgenicToolComponentsData, setTransgenicToolComponentsData] = useState({
 		isInEdit: false,
 		dialog: false,
 		rowIndex: null,
@@ -70,7 +96,21 @@ export const CassettesTable = () => {
 		setComponentsData({ originalComponents: cassetteComponents, dialog: true });
 	};
 
+	const handleGenomicEntityComponentsOpen = (cassetteGenomicEntityAssociations) => {
+		setGenomicEntityComponentsData({ originalComponents: cassetteGenomicEntityAssociations, dialog: true });
+	};
+
+	const handleTransgenicToolComponentsOpen = (cassetteTransgenicToolAssociations) => {
+		setTransgenicToolComponentsData({ originalComponents: cassetteTransgenicToolAssociations, dialog: true });
+	};
+
 	const getComponentsTextString = (item) => relationName(item) + ': ' + item.componentSymbol;
+
+	const getTransgenicToolComponentsTextString = (association) =>
+		relationName(association) + ': ' + transgenicToolLabel(association?.cassetteTransgenicToolAssociationObject);
+
+	const getGenomicEntityComponentsTextString = (association) =>
+		relationName(association) + ': ' + genomicEntityLabel(association?.cassetteGenomicEntityAssociationObject);
 
 	const columns = useMemo(
 		() => [
@@ -164,12 +204,11 @@ export const CassettesTable = () => {
 				field: 'cassetteGenomicEntityAssociations.cassetteGenomicEntityAssociationObject.symbol',
 				header: 'Genomic Entity Components',
 				body: (rowData) => (
-					<StringListTemplate
-						list={associationStrings(
-							rowData.cassetteGenomicEntityAssociations,
-							'cassetteGenomicEntityAssociationObject',
-							genomicEntityLabel
-						)}
+					<ListDialogTemplate
+						entities={rowData.cassetteGenomicEntityAssociations}
+						handleOpen={handleGenomicEntityComponentsOpen}
+						getTextField={getGenomicEntityComponentsTextString}
+						underline={true}
 					/>
 				),
 				sortable: { isInEditMode },
@@ -179,12 +218,11 @@ export const CassettesTable = () => {
 				field: 'cassetteTransgenicToolAssociations.cassetteTransgenicToolAssociationObject.primaryExternalId',
 				header: 'Transgenic Tool Components',
 				body: (rowData) => (
-					<StringListTemplate
-						list={associationStrings(
-							rowData.cassetteTransgenicToolAssociations,
-							'cassetteTransgenicToolAssociationObject',
-							(tool) => tool?.transgenicToolSymbol?.displayText || identifierOf(tool)
-						)}
+					<ListDialogTemplate
+						entities={rowData.cassetteTransgenicToolAssociations}
+						handleOpen={handleTransgenicToolComponentsOpen}
+						getTextField={getTransgenicToolComponentsTextString}
+						underline={true}
 					/>
 				),
 				sortable: { isInEditMode },
@@ -290,7 +328,10 @@ export const CassettesTable = () => {
 	const DEFAULT_COLUMN_WIDTH = 10;
 	const SEARCH_ENDPOINT = Endpoints.Entity.CASSETTE;
 
-	const initialTableState = useMemo(() => getDefaultTableState('Cassettes', columns, DEFAULT_COLUMN_WIDTH), [columns]);
+	const initialTableState = useMemo(
+		() => getDefaultTableState(tableName.replace(/\s+/g, ''), columns, DEFAULT_COLUMN_WIDTH),
+		[tableName, columns]
+	);
 
 	const { settings: tableState, mutate: setTableState } = useGetUserSettings(
 		initialTableState.tableSettingsKeyName,
@@ -300,6 +341,7 @@ export const CassettesTable = () => {
 	const { isFetching, isLoading } = useGetTableData({
 		tableState,
 		endpoint: SEARCH_ENDPOINT,
+		fixedFilters,
 		setIsInEditMode,
 		setEntities: setCassettes,
 		setTotalRecords,
@@ -315,7 +357,7 @@ export const CassettesTable = () => {
 				<GenericDataTable
 					dataKey="id"
 					endpoint={SEARCH_ENDPOINT}
-					tableName="Cassettes"
+					tableName={tableName}
 					entities={cassettes}
 					setEntities={setCassettes}
 					totalRecords={totalRecords}
@@ -341,6 +383,23 @@ export const CassettesTable = () => {
 				setOriginalComponentsData={setComponentsData}
 				errorMessagesMainRow={errorMessages}
 				setErrorMessagesMainRow={setErrorMessages}
+			/>
+			<GenomicComponentsDialog
+				originalComponentsData={genomicEntityComponentsData}
+				setOriginalComponentsData={setGenomicEntityComponentsData}
+				errorMessagesMainRow={errorMessages}
+				setErrorMessagesMainRow={setErrorMessages}
+				objectField="cassetteGenomicEntityAssociationObject"
+				title="Genomic Entity Components"
+			/>
+			<GenomicComponentsDialog
+				originalComponentsData={transgenicToolComponentsData}
+				setOriginalComponentsData={setTransgenicToolComponentsData}
+				errorMessagesMainRow={errorMessages}
+				setErrorMessagesMainRow={setErrorMessages}
+				objectField="cassetteTransgenicToolAssociationObject"
+				title="Transgenic Tool Components"
+				getComponentLabel={transgenicToolDisplayValue}
 			/>
 		</>
 	);

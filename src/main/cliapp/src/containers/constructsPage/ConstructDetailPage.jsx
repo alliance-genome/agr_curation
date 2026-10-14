@@ -20,8 +20,7 @@ import { FullNameForm } from './fullName/FullNameForm';
 import { SynonymsForm } from './synonyms/SynonymsForm';
 import { SecondaryIdsForm } from './secondaryIds/SecondaryIdsForm';
 import { ReferencesForm } from './references/ReferencesForm';
-import { FreeTextComponentsForm } from './components/FreeTextComponentsForm';
-import { ComponentAssociationsForm } from './genomicAssociations/ComponentAssociationsForm';
+import { CassettesForm } from './cassettes/CassettesForm';
 
 export default function ConstructDetailPage() {
 	const { identifier } = useParams();
@@ -72,7 +71,8 @@ export default function ConstructDetailPage() {
 						<SplitterPanel size={30} className="flex justify-content-start py-3"></SplitterPanel>
 					</Splitter>
 				</StickyHeader>
-				<form className="mt-8">
+				{/* The page saves nothing, and Enter in the Cassettes table's filters must not submit and reload it. */}
+				<form className="mt-8" onSubmit={(event) => event.preventDefault()}>
 					<IdentifierDetailPageTemplate
 						identifier={constructState.construct?.primaryExternalId}
 						label="Primary External ID"
@@ -126,11 +126,7 @@ export default function ConstructDetailPage() {
 
 					<Divider />
 
-					<FreeTextComponentsForm state={constructState} />
-
-					<Divider />
-
-					<ComponentAssociationsForm state={constructState} />
+					<CassettesForm state={constructState} />
 
 					<Divider />
 
