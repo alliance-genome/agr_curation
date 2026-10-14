@@ -19,6 +19,8 @@ import { ControlledVocabularyDropdown } from '../../../components/Editors/dropdo
 export const FullNameEditDialog = ({
 	field,
 	endpoint,
+	title = 'Full Name',
+	nameTypeVocabularyTermSet = 'full_name_type',
 	originalFullNameData,
 	setOriginalFullNameData,
 	errorMessagesMainRow,
@@ -34,7 +36,7 @@ export const FullNameEditDialog = ({
 	const tableRef = useRef(null);
 	const toast_topright = useRef(null);
 
-	const fullNameTypeTerms = useVocabularyTermSetService('full_name_type');
+	const fullNameTypeTerms = useVocabularyTermSetService(nameTypeVocabularyTermSet);
 
 	const showDialogHandler = () => {
 		let _localFullNames = cloneFullNames(originalFullNames);
@@ -296,7 +298,7 @@ export const FullNameEditDialog = ({
 				onShow={showDialogHandler}
 				footer={footerTemplate}
 			>
-				<h3>Full Name</h3>
+				<h3>{title}</h3>
 				<DataTable
 					value={localFullNames}
 					dataKey="dataKey"
