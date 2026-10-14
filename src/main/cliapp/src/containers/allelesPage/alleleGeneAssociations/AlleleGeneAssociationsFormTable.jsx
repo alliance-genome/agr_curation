@@ -22,7 +22,7 @@ export const AlleleGeneAssociationsFormTable = ({
 	geneOnChangeHandler,
 	evidenceCodeOnChangeHandler,
 	relatedNoteOnChangeHandler,
-	dispatch,
+	setErrorMessages,
 }) => {
 	const [rows, setRows] = useState(5);
 	const [first, setFirst] = useState(0);
@@ -195,12 +195,11 @@ export const AlleleGeneAssociationsFormTable = ({
 				relatedNotesData={relatedNotesData}
 				setRelatedNotesData={setRelatedNotesData}
 				tableErrorMessages={errorMessages}
-				dispatch={dispatch}
+				setTableErrorMessages={setErrorMessages}
 				singleValue={true}
 				onChange={relatedNoteOnChangeHandler}
 				defaultValues={{ noteType: 'comment' }}
 				errorField="relatedNote"
-				entityType="alleleGeneAssociations"
 				noteTypeVocabType="allele_genomic_entity_association_note_type"
 			/>
 		</>

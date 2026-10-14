@@ -103,12 +103,15 @@ public class AlleleValidator extends GenomicEntityValidator<Allele> {
 
 		dbEntity = (Allele) validateAuditedObjectFields(uiEntity, dbEntity, true);
 
-		// POST /allele serializes AlleleDetailView, which omits crossReferences and references, so the create
-		// payload never carries them; they are written through the allele's sub-resources.
+		// POST /allele serializes AlleleDetailView, which omits crossReferences, references and gene associations,
+		// so the create payload never carries them; they are written through the allele's sub-resources.
 		return validateAllele(uiEntity, dbEntity, true, false);
 	}
 
 	/**
+	 * Gene associations are left as they are stored; they are written through the allele's gene associations
+	 * sub-resource.
+	 *
 	 * @param manageSubResourceFields whether the calling endpoint's JSON view carries crossReferences and
 	 *        references. An endpoint whose view omits them leaves the stored ones as they are; they are written
 	 *        through the allele's cross-references and references sub-resources instead.
@@ -173,10 +176,8 @@ public class AlleleValidator extends GenomicEntityValidator<Allele> {
 		List<AlleleMutationTypeSlotAnnotation> mutationTypes = validateAlleleMutationTypes(uiEntity, dbEntity);
 		List<AlleleNomenclatureEventSlotAnnotation> nomenclatureEvents = validateAlleleNomenclatureEvents(uiEntity, dbEntity);
 
-		List<AlleleGeneAssociation> geneAssociations = null;
 		List<AlleleConstructAssociation> constructAssociations = null;
 		if (updateAllAssociations) { // This should contain logic for all fields only returned in AlleleDetailView
-			geneAssociations = validateAlleleGeneAssociations(uiEntity, dbEntity);
 			constructAssociations = validateAlleleConstructAssociations(uiEntity, dbEntity);
 		}
 
@@ -294,16 +295,6 @@ public class AlleleValidator extends GenomicEntityValidator<Allele> {
 		}
 
 		if (updateAllAssociations) { // This should contain logic for all fields only returned in AlleleDetailView
-			if (dbEntity.getAlleleGeneAssociations() != null) {
-				dbEntity.getAlleleGeneAssociations().clear();
-			}
-			if (geneAssociations != null) {
-				if (dbEntity.getAlleleGeneAssociations() == null) {
-					dbEntity.setAlleleGeneAssociations(new ArrayList<>());
-				}
-				dbEntity.getAlleleGeneAssociations().addAll(geneAssociations);
-			}
-			
 			if (dbEntity.getAlleleConstructAssociations() != null) {
 				dbEntity.getAlleleConstructAssociations().clear();
 			}
@@ -696,29 +687,6 @@ public class AlleleValidator extends GenomicEntityValidator<Allele> {
 		return validatedFunctionalImpacts;
 	}
 
-	private List<AlleleGeneAssociation> validateAlleleGeneAssociations(Allele uiEntity, Allele dbEntity) {
-		String field = "alleleGeneAssociations";
-
-		List<AlleleGeneAssociation> uiAssociations = uiEntity.getAlleleGeneAssociations();
-
-		List<AlleleGeneAssociation> validatedGeneAssociations = new ArrayList<AlleleGeneAssociation>();
-		if (CollectionUtils.isNotEmpty(uiAssociations)) {
-			validatedGeneAssociations = resolveGeneAssociations(uiAssociations, dbEntity, null, field);
-		}
-		detachOmittedGeneAssociations(dbEntity, uiAssociations);
-
-		if (validatedGeneAssociations == null) {
-			convertMapToErrorMessages(field);
-			return null;
-		}
-
-		if (CollectionUtils.isEmpty(validatedGeneAssociations)) {
-			return null;
-		}
-
-		return validatedGeneAssociations;
-	}
-
 	/**
 	 * Validates the gene associations an allele's gene associations sub-resource is to hold, in submitted order.
 	 * An entry with an id updates that association, which must be one the allele holds and no other entry names;
@@ -760,13 +728,13 @@ public class AlleleValidator extends GenomicEntityValidator<Allele> {
 	}
 
 	/**
-	 * Validates each submitted gene association and assigns it to the allele. An allele has at most one
+	 * Validates each submitted gene association and assigns it to the allele. Every entry must be present, an
+	 * entry's id must be one of the allele's associations and named by no other entry, the allele has at most one
 	 * association with the is_allele_of relation, and no two of its associations share an identity.
 	 *
 	 * @param incomingAssociations the submitted associations
 	 * @param dbEntity the allele the associations belong to
-	 * @param heldIds the ids of the associations the allele holds; when given, every entry must be non-null and
-	 *        name each held id at most once, and any id must be one of these. Null skips these checks.
+	 * @param heldIds the ids of the associations the allele holds
 	 * @param field the field each entry's errors are recorded under, keyed by its index
 	 * @return the validated associations in submitted order, or null when any entry is rejected
 	 */
@@ -778,22 +746,20 @@ public class AlleleValidator extends GenomicEntityValidator<Allele> {
 		Set<Long> seenIds = new HashSet<>();
 		for (int ix = 0; ix < incomingAssociations.size(); ix++) {
 			AlleleGeneAssociation ga = incomingAssociations.get(ix);
-			if (heldIds != null) {
-				if (ga == null) {
-					allValid = false;
-					response.addErrorMessages(field, ix, Map.of("alleleGeneAssociationObject", ValidationConstants.REQUIRED_MESSAGE));
-					continue;
-				}
-				if (ga.getId() != null && !heldIds.contains(ga.getId())) {
-					allValid = false;
-					response.addErrorMessages(field, ix, Map.of("id", ValidationConstants.INVALID_MESSAGE));
-					continue;
-				}
-				if (ga.getId() != null && !seenIds.add(ga.getId())) {
-					allValid = false;
-					response.addErrorMessages(field, ix, Map.of("id", ValidationConstants.DUPLICATE_MESSAGE));
-					continue;
-				}
+			if (ga == null) {
+				allValid = false;
+				response.addErrorMessages(field, ix, Map.of("alleleGeneAssociationObject", ValidationConstants.REQUIRED_MESSAGE));
+				continue;
+			}
+			if (ga.getId() != null && !heldIds.contains(ga.getId())) {
+				allValid = false;
+				response.addErrorMessages(field, ix, Map.of("id", ValidationConstants.INVALID_MESSAGE));
+				continue;
+			}
+			if (ga.getId() != null && !seenIds.add(ga.getId())) {
+				allValid = false;
+				response.addErrorMessages(field, ix, Map.of("id", ValidationConstants.DUPLICATE_MESSAGE));
+				continue;
 			}
 			ObjectResponse<AlleleGeneAssociation> gaResponse = alleleGeneAssociationValidator.validateAlleleGeneAssociation(ga);
 			if (gaResponse.getEntity() == null) {
@@ -833,23 +799,21 @@ public class AlleleValidator extends GenomicEntityValidator<Allele> {
 	 * lists, so removing them from the allele deletes them.
 	 *
 	 * @param dbEntity the allele the associations belong to
-	 * @param incomingAssociations the submitted associations; null leaves every gene's list as it is
+	 * @param incomingAssociations the submitted associations
 	 */
 	private void detachOmittedGeneAssociations(Allele dbEntity, List<AlleleGeneAssociation> incomingAssociations) {
 		List<AlleleGeneAssociation> dbAssociations = dbEntity.getAlleleGeneAssociations();
 		if (CollectionUtils.isNotEmpty(dbAssociations)) {
 			Set<Long> idsToDelete = new HashSet<>(dbAssociations.stream().map(AlleleGeneAssociation::getId).collect(Collectors.toList()));
-			if (incomingAssociations != null) {
-				Set<Long> uiIDs = new HashSet<>(incomingAssociations.stream().map(AlleleGeneAssociation::getId).filter(id -> id != null).collect(Collectors.toList()));
-				idsToDelete.removeAll(uiIDs);
-				for (AlleleGeneAssociation ga : dbAssociations) {
-					if (idsToDelete.contains(ga.getId())) {
-						Gene gene = ga.getAlleleGeneAssociationObject();
-						List<AlleleGeneAssociation> geneAssociations = gene.getAlleleGeneAssociations();
-						geneAssociations.removeIf(geneAGA -> {
-							return idsToDelete.contains(geneAGA.getId());
-						});
-					}
+			Set<Long> uiIDs = new HashSet<>(incomingAssociations.stream().map(AlleleGeneAssociation::getId).filter(id -> id != null).collect(Collectors.toList()));
+			idsToDelete.removeAll(uiIDs);
+			for (AlleleGeneAssociation ga : dbAssociations) {
+				if (idsToDelete.contains(ga.getId())) {
+					Gene gene = ga.getAlleleGeneAssociationObject();
+					List<AlleleGeneAssociation> geneAssociations = gene.getAlleleGeneAssociations();
+					geneAssociations.removeIf(geneAGA -> {
+						return idsToDelete.contains(geneAGA.getId());
+					});
 				}
 			}
 		}

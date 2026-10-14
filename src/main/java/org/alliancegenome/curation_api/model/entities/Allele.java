@@ -216,7 +216,7 @@ public class Allele extends GenomicEntity {
 	private List<AlleleNomenclatureEventSlotAnnotation> alleleNomenclatureEvents;
 
 	@OneToMany(mappedBy = "alleleAssociationSubject", cascade = CascadeType.ALL, orphanRemoval = true)
-	@JsonView({ CurationView.FieldsAndLists.class, CurationView.AlleleDetailView.class })
+	@JsonView({ CurationView.FieldsAndLists.class })
 	private List<AlleleGeneAssociation> alleleGeneAssociations;
 
 	@IndexedEmbedded(

@@ -15,12 +15,14 @@ import java.util.List;
 import org.alliancegenome.curation_api.base.BaseITCase;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
+import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.Reference;
 import org.alliancegenome.curation_api.model.entities.Vocabulary;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.associations.AlleleGeneAssociation;
 import org.alliancegenome.curation_api.model.entities.ontology.ECOTerm;
+import org.alliancegenome.curation_api.model.entities.slotAnnotations.AlleleSymbolSlotAnnotation;
 import org.alliancegenome.curation_api.resources.TestContainerResource;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.MethodOrderer;
@@ -45,6 +47,7 @@ public class IT_0316_AlleleGeneAssociationSubResourceITCase extends BaseITCase {
 
 	private static final String ALLELE = "Allele:6628Aga0001";
 	private static final String OTHER_ALLELE = "Allele:6628Aga0002";
+	private static final String CREATED_ALLELE = "Allele:6628Aga0003";
 	private static final String EVIDENCE = "AGRKB:6628000001";
 	private static final String EVIDENCE_XREF = "PMID:6628000001";
 	private static final String NOTE_REFERENCE = "AGRKB:6628000002";
@@ -57,6 +60,7 @@ public class IT_0316_AlleleGeneAssociationSubResourceITCase extends BaseITCase {
 	private Gene gene3;
 	private VocabularyTerm isAlleleOf;
 	private VocabularyTerm duplication;
+	private VocabularyTerm contains;
 	private VocabularyTerm noteType;
 	private ECOTerm ecoTerm;
 	private ECOTerm ecoTerm2;
@@ -73,6 +77,7 @@ public class IT_0316_AlleleGeneAssociationSubResourceITCase extends BaseITCase {
 		Vocabulary relationVocabulary = getVocabulary(VocabularyConstants.ALLELE_RELATION_VOCABULARY);
 		isAlleleOf = getVocabularyTerm(relationVocabulary, "is_allele_of");
 		duplication = getVocabularyTerm(relationVocabulary, "duplication");
+		contains = getVocabularyTerm(relationVocabulary, "contains");
 		noteType = getVocabularyTerm(getVocabulary(VocabularyConstants.NOTE_TYPE_VOCABULARY), "comment");
 		ecoTerm = createEcoTerm("ECO:6628AGA01", "6628 evidence code", false, true);
 		ecoTerm2 = createEcoTerm("ECO:6628AGA02", "6628 evidence code 2", false, true);
@@ -328,6 +333,71 @@ public class IT_0316_AlleleGeneAssociationSubResourceITCase extends BaseITCase {
 			then().
 			statusCode(400).
 			body("errorMessages.id", is(ValidationConstants.INVALID_MESSAGE));
+	}
+
+	@Test
+	@Order(15)
+	public void relationOutsideTheAlleleGeneSetIsRejected() {
+		// "contains" relates an allele to a construct, not a gene.
+		put(alleleId, buildAssociation(null, gene, contains)).
+			then().
+			statusCode(400).
+			body("supplementalData.errorMap.alleleGeneAssociations.'0'.relation", is(ValidationConstants.INVALID_MESSAGE));
+
+		RestAssured.given().
+			when().
+			get(endpoint(alleleId)).
+			then().
+			statusCode(200).
+			body("entities", nullValue());
+	}
+
+	@Test
+	@Order(16)
+	public void alleleSavesIgnoreGeneAssociationsInTheirBody() {
+		Long heldId = idOf(put(alleleId, buildAssociation(null, gene, isAlleleOf)).then().statusCode(200).extract().response(), gene);
+
+		Allele allele = getAllele(ALLELE);
+		allele.setAlleleGeneAssociations(List.of(buildAssociation(null, gene2, duplication)));
+		RestAssured.given().
+			contentType("application/json").
+			body(allele).
+			when().
+			put("/api/allele/updateDetail").
+			then().
+			statusCode(200);
+
+		assertHoldsOnly(alleleId, heldId);
+
+		// Built here rather than with createAllele, which sends no gene associations.
+		Allele newAllele = new Allele();
+		newAllele.setPrimaryExternalId(CREATED_ALLELE);
+		newAllele.setTaxon(allele.getTaxon());
+		newAllele.setAlleleSymbol(buildSymbol(allele));
+		newAllele.setAlleleGeneAssociations(List.of(buildAssociation(null, gene2, duplication)));
+		Long createdId = RestAssured.given().
+			contentType("application/json").
+			body(newAllele).
+			when().
+			post("/api/allele").
+			then().
+			statusCode(200).
+			extract().jsonPath().getLong("entity.id");
+
+		RestAssured.given().
+			when().
+			get(endpoint(createdId)).
+			then().
+			statusCode(200).
+			body("entities", nullValue());
+	}
+
+	private AlleleSymbolSlotAnnotation buildSymbol(Allele source) {
+		AlleleSymbolSlotAnnotation symbol = new AlleleSymbolSlotAnnotation();
+		symbol.setNameType(source.getAlleleSymbol().getNameType());
+		symbol.setDisplayText(CREATED_ALLELE);
+		symbol.setFormatText(CREATED_ALLELE);
+		return symbol;
 	}
 
 	private String endpoint(Long id) {

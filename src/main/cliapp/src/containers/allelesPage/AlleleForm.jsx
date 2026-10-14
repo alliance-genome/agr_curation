@@ -277,7 +277,7 @@ export const AlleleForm = ({ state, dispatch, isVisible, mode = 'detail', pendin
 			</FormSection>
 
 			<FormSection isVisible={isVisible('Allele Gene Associations')}>
-				<AlleleGeneAssociationsForm state={state} dispatch={dispatch} />
+				<AlleleGeneAssociationsForm />
 			</FormSection>
 
 			<FormSection isVisible={isVisible('Data Provider')}>

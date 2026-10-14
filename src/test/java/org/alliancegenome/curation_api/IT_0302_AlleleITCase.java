@@ -161,9 +161,7 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 	private Organization obsoleteDataProvider;
 	private Organization nonPersistedOrganization;
 	private Gene gene;
-	private Gene gene2;
 	private VocabularyTerm geneAssociationRelation;
-	private VocabularyTerm geneAssociationRelation2;
 	private Construct construct;
 	private VocabularyTerm constructAssociationRelation;
 	private ResourceDescriptorPage crossReferencePage;
@@ -243,10 +241,8 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 		nonPersistedOrganization.setAbbreviation("INV");
 		VocabularyTerm symbolNameType = getVocabularyTerm(nameTypeVocabulary, "nomenclature_symbol");
 		gene = createGene("TEST:AssociatedGene1", "NCBITaxon:6239", symbolNameType, false);
-		gene2 = createGene("TEST:AssociatedGene2", "NCBITaxon:6239", symbolNameType, false);
 		Vocabulary relationVocabulary = getVocabulary(VocabularyConstants.ALLELE_RELATION_VOCABULARY);
 		geneAssociationRelation = getVocabularyTerm(relationVocabulary, "is_allele_of");
-		geneAssociationRelation2 = getVocabularyTerm(relationVocabulary, "duplication");
 		construct = createConstruct("TEST:AssociatedConstruct1", false, symbolNameType);
 		constructAssociationRelation = getVocabularyTerm(relationVocabulary, "contains");
 		ResourceDescriptor crossReferenceResourceDescriptor = createResourceDescriptor("XRTEST");
@@ -1587,13 +1583,6 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 	public void updateAlleleDetailWithNewAssociations() {
 		Allele allele = getAllele(ALLELE);
 
-		AlleleGeneAssociation geneAssociation = new AlleleGeneAssociation();
-		geneAssociation.setAlleleGeneAssociationObject(gene);
-		geneAssociation.setRelation(geneAssociationRelation);
-		Reference reference = createReference("AGRKB:AssocTest1", false);
-		geneAssociation.setEvidence(List.of(reference));
-		allele.setAlleleGeneAssociations(List.of(geneAssociation));
-		
 		AlleleConstructAssociation constructAssociation = new AlleleConstructAssociation();
 		constructAssociation.setAlleleConstructAssociationObject(construct);
 		constructAssociation.setRelation(constructAssociationRelation);
@@ -1612,8 +1601,6 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 			get("/api/allele/" + ALLELE).
 			then().
 			statusCode(200).
-			body("entity", hasKey("alleleGeneAssociations")).
-			body("entity.alleleGeneAssociations[0].alleleGeneAssociationObject.primaryExternalId", is(gene.getPrimaryExternalId())).
 			body("entity.alleleConstructAssociations[0].alleleConstructAssociationObject.primaryExternalId", is(construct.getPrimaryExternalId()));
 	}
 
@@ -1622,7 +1609,6 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 	public void updateAlleleDetailRemoveAssociations() {
 		Allele allele = getAllele(ALLELE);
 
-		allele.setAlleleGeneAssociations(null);
 		allele.setAlleleConstructAssociations(null);
 
 		RestAssured.given().
@@ -1638,85 +1624,7 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 			get("/api/allele/" + ALLELE).
 			then().
 			statusCode(200).
-			body("entity", not(hasKey("alleleGeneAssociations"))).
 			body("entity", not(hasKey("alleleConstructAssociations")));
-	}
-
-	//@Test
-	@Order(24)
-	public void updateAlleleDetailWithInvalidAssociations() {
-		Allele allele = getAllele(ALLELE);
-
-		AlleleGeneAssociation geneAssociation = new AlleleGeneAssociation();
-		geneAssociation.setAlleleGeneAssociationObject(gene);
-		geneAssociation.setRelation(dominantInheritanceMode);
-		allele.setAlleleGeneAssociations(List.of(geneAssociation));
-
-		RestAssured.given().
-			contentType("application/json").
-			body(allele).
-			when().
-			put("/api/allele/updateDetail").
-			then().
-			statusCode(400).
-			body("errorMessages", is(aMapWithSize(1))).
-			body("errorMessages.alleleGeneAssociations", is("relation - " + ValidationConstants.INVALID_MESSAGE));
-	}
-
-	@Test
-	@Order(25)
-	public void updateAlleleDetailsWithMultipleIsAlleleOfAssociations() {
-		Allele allele = getAllele(ALLELE);
-
-		AlleleGeneAssociation geneAssociation = new AlleleGeneAssociation();
-		geneAssociation.setAlleleGeneAssociationObject(gene);
-		geneAssociation.setRelation(geneAssociationRelation);
-
-		AlleleGeneAssociation geneAssociation2 = new AlleleGeneAssociation();
-		geneAssociation2.setAlleleGeneAssociationObject(gene2);
-		geneAssociation2.setRelation(geneAssociationRelation);
-
-		allele.setAlleleGeneAssociations(List.of(geneAssociation, geneAssociation2));
-
-		RestAssured.given().
-			contentType("application/json").
-			body(allele).
-			when().
-			put("/api/allele/updateDetail").
-			then().
-			statusCode(400).
-			body("errorMessages", is(aMapWithSize(1))).
-			body("errorMessages.alleleGeneAssociations", is("relation - " + ValidationConstants.DUPLICATE_RELATION_PREFIX + " " + VocabularyConstants.ALLELE_OF_VOCABULARY_TERM));
-	}
-
-	@Test
-	@Order(26)
-	public void updateAlleleDetailsWithDuplicateAssociation() {
-		Allele allele = getAllele(ALLELE);
-
-		AlleleGeneAssociation geneAssociation = new AlleleGeneAssociation();
-		geneAssociation.setAlleleGeneAssociationObject(gene);
-		geneAssociation.setRelation(geneAssociationRelation);
-
-		AlleleGeneAssociation geneAssociation2 = new AlleleGeneAssociation();
-		geneAssociation2.setAlleleGeneAssociationObject(gene2);
-		geneAssociation2.setRelation(geneAssociationRelation2);
-
-		AlleleGeneAssociation geneAssociation3 = new AlleleGeneAssociation();
-		geneAssociation3.setAlleleGeneAssociationObject(gene2);
-		geneAssociation3.setRelation(geneAssociationRelation2);
-
-		allele.setAlleleGeneAssociations(List.of(geneAssociation, geneAssociation2, geneAssociation3));
-
-		RestAssured.given().
-			contentType("application/json").
-			body(allele).
-			when().
-			put("/api/allele/updateDetail").
-			then().
-			statusCode(400).
-			body("errorMessages", is(aMapWithSize(1))).
-			body("errorMessages.alleleGeneAssociations", is("relation - " + ValidationConstants.DUPLICATE_MESSAGE + " (Allele:0001|duplication|TEST:AssociatedGene2)"));
 	}
 
 	@Test
@@ -1732,11 +1640,10 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 
 	@Test
 	@Order(28)
-	public void updateAlleleDetailWithGeneAssociationEvidenceGraph() {
-		// SCRUM-6434: serializing the updateDetail response hit a lazy load on a closed session via
-		// alleleGeneAssociations -> alleleGeneAssociationObject -> geneSymbol -> evidence ->
-		// crossReferences. AlleleDetailView no longer reaches geneSymbol, which severs that path.
-		// The only active test doing a successful updateDetail with a gene association.
+	public void putGeneAssociationsWithEvidenceGraph() {
+		// SCRUM-6434: serializing a written gene association hit a lazy load on a closed session via
+		// alleleGeneAssociationObject -> geneSymbol -> evidence -> crossReferences. The gene associations
+		// sub-resource serializes a view that does not reach geneSymbol, which severs that path.
 
 		// A null fixture would produce a 400 indistinguishable from the bug under test.
 		assertNotNull(symbolNameType, "symbolNameType fixture is null - loadRequiredEntities did not complete");
@@ -1760,31 +1667,25 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 		AlleleGeneAssociation geneAssociation = new AlleleGeneAssociation();
 		geneAssociation.setAlleleGeneAssociationObject(evidenceGene);
 		geneAssociation.setRelation(geneAssociationRelation);
-		allele.setAlleleGeneAssociations(List.of(geneAssociation));
 
 		// Assert the PUT body; a follow-up GET keeps the session open and never reproduces this.
-		Response response = RestAssured.given().
-				contentType("application/json").
-				body(allele).
-				when().
-				put("/api/allele/updateDetail").
+		Response response = putGeneAssociations(allele.getId(), geneAssociation).
 				then().
 				extract().response();
 
 		// Validation and serialization failures are both 400; only the latter is this bug.
 		String body = response.body().asString();
 		assertNotEquals(SERIALIZATION_FAILURE_BODY, body.trim(),
-				"Response serialization failed - the AlleleDetailView graph hit a LazyInitializationException "
+				"Response serialization failed - the gene association graph hit a LazyInitializationException "
 					+ "after the write transaction closed (SCRUM-6434)");
-		assertEquals(200, response.statusCode(), "updateDetail returned " + response.statusCode() + ": " + body);
+		assertEquals(200, response.statusCode(), "the gene associations PUT returned " + response.statusCode() + ": " + body);
 
-		assertThat(response.jsonPath().getList("entity.alleleGeneAssociations"), hasSize(1));
-		assertThat(response.jsonPath().getString("entity.alleleGeneAssociations[0].alleleGeneAssociationObject.primaryExternalId"),
+		assertThat(response.jsonPath().getList("entities"), hasSize(1));
+		assertThat(response.jsonPath().getString("entities[0].alleleGeneAssociationObject.primaryExternalId"),
 				is(evidenceGene.getPrimaryExternalId()));
 		// The association object is pruned to identifiers: geneSymbol (and the evidence ->
 		// crossReferences chain under it) must NOT be serialized.
-		assertThat(response.jsonPath().get("entity.alleleGeneAssociations[0].alleleGeneAssociationObject.geneSymbol"),
-				is(nullValue()));
+		assertThat(response.jsonPath().get("entities[0].alleleGeneAssociationObject.geneSymbol"), is(nullValue()));
 
 		RestAssured.given().
 				when().
@@ -1804,7 +1705,7 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 				"alleleSymbol", "alleleFullName", "alleleSynonyms", "alleleSecondaryIds", "alleleMutationTypes",
 				"alleleInheritanceModes", "alleleFunctionalImpacts", "alleleGermlineTransmissionStatus",
 				"alleleDatabaseStatus", "alleleNomenclatureEvents",
-				"alleleGeneAssociations", "alleleVariantAssociations", "alleleConstructAssociations",
+				"alleleVariantAssociations", "alleleConstructAssociations",
 				"createdBy", "updatedBy", "dateCreated", "dateUpdated", "dbDateCreated", "dbDateUpdated",
 				"internal", "obsolete");
 
@@ -1832,7 +1733,7 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 		assertNotNull(constructAssociationRelation, "constructAssociationRelation fixture is null");
 
 		Allele allele = getAllele(ROUND_TRIP_ALLELE);
-		// The detail payload never carries references, so both saves must leave this one in place.
+		// The detail payload never carries references or gene associations, so both saves must leave these in place.
 		RestAssured.given().
 				contentType("application/json").
 				body(new Reference[] { reference }).
@@ -1844,7 +1745,9 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 		AlleleGeneAssociation ga = new AlleleGeneAssociation();
 		ga.setAlleleGeneAssociationObject(gene);
 		ga.setRelation(geneAssociationRelation);
-		allele.setAlleleGeneAssociations(List.of(ga));
+		putGeneAssociations(allele.getId(), ga).
+				then().
+				statusCode(200);
 
 		AlleleConstructAssociation ca = new AlleleConstructAssociation();
 		ca.setAlleleConstructAssociationObject(construct);
@@ -1881,7 +1784,6 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 				get("/api/allele/" + ROUND_TRIP_ALLELE).
 				then().
 				statusCode(200).
-				body("entity.alleleGeneAssociations", hasSize(1)).
 				body("entity.alleleConstructAssociations", hasSize(1)).
 				body("entity.alleleInheritanceModes", hasSize(1)).
 				body("entity.alleleSecondaryIds", hasSize(1)).
@@ -1898,9 +1800,26 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 
 		RestAssured.given().
 				when().
+				get("/api/allele/" + allele.getId() + "/gene-associations").
+				then().
+				statusCode(200).
+				body("entities", hasSize(1)).
+				body("entities[0].alleleGeneAssociationObject.primaryExternalId", is(gene.getPrimaryExternalId()));
+
+		RestAssured.given().
+				when().
 				delete("/api/allele/" + ROUND_TRIP_ALLELE).
 				then().
 				statusCode(200);
+	}
+
+	// Gene associations are written through the allele's own sub-resource, not with the allele.
+	private Response putGeneAssociations(Long alleleId, AlleleGeneAssociation... associations) {
+		return RestAssured.given().
+				contentType("application/json").
+				body(associations).
+				when().
+				put("/api/allele/" + alleleId + "/gene-associations");
 	}
 
 	private static String removeAll(Set<String> actual, Set<String> allowed) {
@@ -2125,7 +2044,10 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 		AlleleGeneAssociation geneAssociation = new AlleleGeneAssociation();
 		geneAssociation.setAlleleGeneAssociationObject(gene);
 		geneAssociation.setRelation(geneAssociationRelation);
-		allele.setAlleleGeneAssociations(List.of(geneAssociation));
+		Response geneAssociations = putGeneAssociations(allele.getId(), geneAssociation).
+				then().
+				statusCode(200).
+				extract().response();
 
 		AlleleConstructAssociation constructAssociation = new AlleleConstructAssociation();
 		constructAssociation.setAlleleConstructAssociationObject(construct);
@@ -2147,17 +2069,16 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 				statusCode(200).
 				extract().response();
 
-		assertThat(detail.jsonPath().getList("entity.alleleGeneAssociations"), hasSize(1));
 		assertThat(detail.jsonPath().getList("entity.alleleConstructAssociations"), hasSize(1));
-		assertThat("the allele detail view serialized a second copy of the allele under its own gene association",
-				detail.jsonPath().get("entity.alleleGeneAssociations[0].alleleAssociationSubject"), is(nullValue()));
+		assertThat("the gene associations sub-resource serialized a second copy of the allele under its own gene association",
+				geneAssociations.jsonPath().get("entities[0].alleleAssociationSubject"), is(nullValue()));
 		assertThat("the allele detail view serialized a second copy of the allele under its own construct association",
 				detail.jsonPath().get("entity.alleleConstructAssociations[0].alleleAssociationSubject"), is(nullValue()));
 
 		// The association endpoints serialize FieldsAndLists and still carry the subject, which is what the
 		// Allele Gene Associations table renders from. Scoping the omission by view is what keeps that working.
 		Long alleleId = detail.jsonPath().getLong("entity.id");
-		Long geneId = detail.jsonPath().getLong("entity.alleleGeneAssociations[0].alleleGeneAssociationObject.id");
+		Long geneId = geneAssociations.jsonPath().getLong("entities[0].alleleGeneAssociationObject.id");
 		AlleleGeneAssociation storedGeneAssociation = getAlleleGeneAssociation(alleleId, geneAssociationRelation.getName(), geneId);
 		assertThat(storedGeneAssociation.getAlleleAssociationSubject(), notNullValue());
 
@@ -2220,13 +2141,8 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 		AlleleGeneAssociation geneAssociation = new AlleleGeneAssociation();
 		geneAssociation.setAlleleGeneAssociationObject(gene);
 		geneAssociation.setRelation(geneAssociationRelation);
-		allele.setAlleleGeneAssociations(List.of(geneAssociation));
 
-		RestAssured.given().
-			contentType("application/json").
-			body(allele).
-			when().
-			put("/api/allele/updateDetail").
+		putGeneAssociations(allele.getId(), geneAssociation).
 			then().
 			statusCode(200);
 

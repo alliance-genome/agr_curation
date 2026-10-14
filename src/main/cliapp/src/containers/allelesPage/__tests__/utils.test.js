@@ -45,44 +45,6 @@ describe('buildCreatePayload', () => {
 	});
 });
 
-describe('buildCreatePayload gene associations', () => {
-	const withAssociation = () => ({
-		alleleGeneAssociations: [
-			{
-				dataKey: 'row-1',
-				relation: { name: 'is_allele_of' },
-				alleleGeneAssociationObject: { primaryExternalId: 'GENE:1' },
-				// the form seeds this with the allele being edited; on create it has no `type`, which
-				// Jackson rejects for the polymorphic BiologicalEntity
-				alleleAssociationSubject: { alleleSymbol: { displayText: 'abc-1' } },
-			},
-		],
-	});
-
-	it('Drops the subject the API assigns anyway', () => {
-		const payload = buildCreatePayload(withAssociation());
-
-		expect(payload.alleleGeneAssociations[0]).not.toHaveProperty('alleleAssociationSubject');
-	});
-
-	it('Keeps the rest of the association intact', () => {
-		const payload = buildCreatePayload(withAssociation());
-
-		expect(payload.alleleGeneAssociations[0].relation).toEqual({ name: 'is_allele_of' });
-		expect(payload.alleleGeneAssociations[0].alleleGeneAssociationObject).toEqual({ primaryExternalId: 'GENE:1' });
-	});
-
-	it('Does not mutate the allele the form holds', () => {
-		const allele = withAssociation();
-
-		buildCreatePayload(allele);
-
-		expect(allele.alleleGeneAssociations[0].alleleAssociationSubject).toEqual({
-			alleleSymbol: { displayText: 'abc-1' },
-		});
-	});
-});
-
 describe('processErrors', () => {
 	// The API reports a required single-object slot annotation as a plain string keyed by the
 	// entity, and the entity itself is null when the curator never added one.
@@ -201,8 +163,9 @@ describe('buildDuplicateAllele', () => {
 		expect(duplicate.alleleSecondaryIds).toBeUndefined();
 		expect(duplicate).not.toHaveProperty('alleleVariantAssociations');
 		expect(duplicate).not.toHaveProperty('alleleConstructAssociations');
-		// References are written through their own sub-resource and copied separately.
+		// References and gene associations are written through their own sub-resources and copied separately.
 		expect(duplicate).not.toHaveProperty('references');
+		expect(duplicate).not.toHaveProperty('alleleGeneAssociations');
 		expect(duplicate.obsolete).toBe(false);
 	});
 
@@ -224,16 +187,6 @@ describe('buildDuplicateAllele', () => {
 		expect(duplicate.alleleNomenclatureEvents).toEqual([{ nomenclatureEvent: { name: 'symbol_updated' } }]);
 		expect(duplicate.alleleGermlineTransmissionStatus).toEqual({ germlineTransmissionStatus: { name: 'cell_line' } });
 		expect(duplicate.alleleDatabaseStatus).toEqual({ databaseStatus: { name: 'approved' } });
-	});
-
-	it('Copies gene associations and their notes without ids or the stored allele as subject', () => {
-		const [association] = buildDuplicateAllele(source()).alleleGeneAssociations;
-
-		expect(association).toEqual({
-			alleleGeneAssociationObject: gene,
-			evidence: [reference],
-			relatedNote: { freeText: 'association note' },
-		});
 	});
 
 	it('Starts from the create form defaults for fields the stored allele lacks', () => {

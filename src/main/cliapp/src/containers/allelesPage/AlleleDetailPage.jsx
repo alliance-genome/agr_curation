@@ -11,13 +11,14 @@ import { useAlleleReducer } from './useAlleleReducer';
 import { StickyHeader } from '../../components/StickyHeader';
 import { DetailPageHeading } from '../../components/DetailPageHeading';
 import { LoadingOverlay } from '../../components/LoadingOverlay';
-import { validateRequiredAutosuggestField, processErrors, getPendingSingleValueFields } from './utils';
+import { processErrors, getPendingSingleValueFields } from './utils';
 import { getIdentifier } from '../../utils/utils';
 import { FormFieldVisibilityMenu, useFormFieldVisibility } from '../../components/FormFieldVisibility';
 import { AlleleForm, ALLELE_DETAIL_TOGGLEABLE_FIELDS } from './AlleleForm';
 import { DuplicateAlleleButton, NewAlleleButton } from './NewAlleleButton';
 import { useAlleleCrossReferences } from './crossReferences/useAlleleCrossReferences';
 import { useAlleleReferences } from './referencesTable/useAlleleReferences';
+import { useAlleleGeneAssociations } from './alleleGeneAssociations/useAlleleGeneAssociations';
 import { SubResourcesProvider } from '../../components/SubResourcesContext';
 import { useDeleteOrDeprecateDialogs } from '../../components/DeleteOrDeprecateDialogs';
 
@@ -34,6 +35,7 @@ export default function AlleleDetailPage() {
 	const toastError = useRef(null);
 	const crossReferences = useAlleleCrossReferences(alleleState.allele?.id);
 	const references = useAlleleReferences(alleleState.allele?.id);
+	const alleleGeneAssociations = useAlleleGeneAssociations(alleleState.allele?.id);
 	// The allele as the API last returned it, without the form's unsaved edits.
 	const savedAllele = useRef(null);
 
@@ -83,16 +85,6 @@ export default function AlleleDetailPage() {
 			type: 'SUBMIT',
 		});
 
-		const areUiErrors = validateRequiredAutosuggestField(
-			alleleState.allele.alleleGeneAssociations,
-			alleleState.entityStates.alleleGeneAssociations.errorMessages,
-			alleleDispatch,
-			'alleleGeneAssociations',
-			'alleleGeneAssociationObject'
-		);
-
-		if (areUiErrors) return;
-
 		// A cleared taxon is held as one with a blank curie, which the API resolves to none without reporting
 		// it missing. Sent without a taxon, the allele is reported as needing one.
 		const allelePayload = alleleState.allele.taxon?.curie
@@ -111,15 +103,21 @@ export default function AlleleDetailPage() {
 			alleleDispatch({ type: 'SET', value: alleleResult?.data?.entity });
 		}
 
-		// Cross references and references are each written only when their section has been edited, and then as
-		// the whole list, so saving the allele alone leaves the stored ones as they are. They are written whether
-		// or not the allele saved, so the errors of all of them are reported together.
+		// Cross references, references and gene associations are each written only when their section has been
+		// edited, and then as the whole list, so saving the allele alone leaves the stored ones as they are. They are
+		// written whether or not the allele saved, so the errors of all of them are reported together.
 		const subResourceOutcomes = [];
 		if (crossReferences.isDirty) {
 			subResourceOutcomes.push({ label: 'cross references', outcome: await crossReferences.save() });
 		}
 		if (references.isDirty) {
 			subResourceOutcomes.push({ label: 'references', outcome: await references.save() });
+		}
+		if (alleleGeneAssociations.isDirty) {
+			subResourceOutcomes.push({ label: 'gene associations', outcome: await alleleGeneAssociations.save() });
+		} else {
+			// Unchanged rows are not written, so the marks a past save or a note edit left on them are cleared here.
+			alleleGeneAssociations.setErrorMessages({});
 		}
 		const savedLabels = subResourceOutcomes.filter(({ outcome }) => outcome.isSuccess).map(({ label }) => label);
 		const failedSubResources = subResourceOutcomes.filter(({ outcome }) => !outcome.isSuccess);
@@ -145,7 +143,9 @@ export default function AlleleDetailPage() {
 						severity: 'error',
 						summary: 'Allele not saved: ',
 						detail:
-							savedLabels.length > 0 ? `${alleleMessage}. The ${savedLabels.join(' and ')} were saved.` : alleleMessage,
+							savedLabels.length > 0
+								? `${alleleMessage}. The ${new Intl.ListFormat('en').format(savedLabels)} were saved.`
+								: alleleMessage,
 						sticky: false,
 					},
 					...failedSubResources.map((failure) => failureToast(failure, failure.outcome.message)),
@@ -167,9 +167,9 @@ export default function AlleleDetailPage() {
 	};
 
 	/**
-	 * Deprecates the allele as last saved, so the form's unsaved edits, cross references and references are not
-	 * written with it. They stay on the form, which then shows the allele as obsolete; a refused deprecation leaves
-	 * the form as it was.
+	 * Deprecates the allele as last saved, so the form's unsaved edits, cross references, references and gene
+	 * associations are not written with it. They stay on the form, which then shows the allele as obsolete; a
+	 * refused deprecation leaves the form as it was.
 	 */
 	const deprecateAllele = async () => {
 		try {
@@ -214,7 +214,11 @@ export default function AlleleDetailPage() {
 
 	const pendingFields = getPendingSingleValueFields(alleleState.allele, savedAllele.current);
 	const hasPendingEdits =
-		pendingFields.size > 0 || alleleState.hasOtherPendingEdits || crossReferences.isDirty || references.isDirty;
+		pendingFields.size > 0 ||
+		alleleState.hasOtherPendingEdits ||
+		crossReferences.isDirty ||
+		references.isDirty ||
+		alleleGeneAssociations.isDirty;
 
 	if (getRequestIsLoading)
 		return (
@@ -227,7 +231,14 @@ export default function AlleleDetailPage() {
 		<>
 			<Toast ref={toastError} position="top-left" />
 			<Toast ref={toastSuccess} position="top-right" />
-			<LoadingOverlay isLoading={!!allelePutRequestIsLoading || crossReferences.isSaving || references.isSaving} />
+			<LoadingOverlay
+				isLoading={
+					!!allelePutRequestIsLoading ||
+					crossReferences.isSaving ||
+					references.isSaving ||
+					alleleGeneAssociations.isSaving
+				}
+			/>
 			<ErrorBoundary>
 				<StickyHeader>
 					<Splitter className="bg-primary-reverse border-none lg:h-5rem" gutterSize={0}>
@@ -269,7 +280,7 @@ export default function AlleleDetailPage() {
 						</SplitterPanel>
 					</Splitter>
 				</StickyHeader>
-				<SubResourcesProvider value={{ crossReferences, references }}>
+				<SubResourcesProvider value={{ crossReferences, references, alleleGeneAssociations }}>
 					<AlleleForm
 						state={alleleState}
 						dispatch={alleleDispatch}
