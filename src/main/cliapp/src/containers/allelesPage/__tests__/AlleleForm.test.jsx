@@ -79,8 +79,10 @@ describe('<AlleleForm />', () => {
 
 			expect(screen.queryByRole('button', { name: /Save References/ })).not.toBeInTheDocument();
 			expect(screen.queryByRole('button', { name: /Save Cross References/ })).not.toBeInTheDocument();
+			expect(screen.queryByRole('button', { name: /Save Gene Associations/ })).not.toBeInTheDocument();
 			expect(screen.getByRole('button', { name: 'Add Reference' })).toBeInTheDocument();
 			expect(screen.getByRole('button', { name: 'Add Cross Reference' })).toBeInTheDocument();
+			expect(screen.getByRole('button', { name: 'Add Gene Association' })).toBeInTheDocument();
 		});
 
 		it('Keeps the curatable fields, Internal and Obsolete', async () => {

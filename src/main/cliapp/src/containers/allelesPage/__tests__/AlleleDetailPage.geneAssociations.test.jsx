@@ -264,4 +264,158 @@ describe('<AlleleDetailPage /> gene associations', { timeout: 30000 }, () => {
 		).toBeInTheDocument();
 		expect(replaceGeneAssociationsForAllele).not.toHaveBeenCalled();
 	});
+
+	const geneAssociationsSection = () =>
+		screen.getByRole('heading', { name: 'Allele Gene Associations' }).closest('.grid');
+	const sectionOf = (name) => screen.getByRole('heading', { name }).closest('.grid');
+
+	it('Keeps Save Gene Associations inactive and marks nothing until the gene associations are edited', async () => {
+		await renderPage();
+		await waitForAssociationsToLoad();
+
+		expect(screen.getByRole('button', { name: /Save Gene Associations/ })).toBeDisabled();
+		expect(screen.queryByText('Pending Edits!')).not.toBeInTheDocument();
+	});
+
+	it('Marks edited gene associations as pending and offers their save', async () => {
+		const user = userEvent.setup();
+		await renderPage();
+
+		await deleteFirstAssociation(user);
+
+		expect(within(geneAssociationsSection()).getByText('Pending Edits!')).toBeInTheDocument();
+		expect(screen.getByRole('button', { name: /Save Gene Associations/ })).toBeEnabled();
+		expect(screen.getByRole('button', { name: 'Save' })).toBeEnabled();
+	});
+
+	it('Clears the mark and both saves when an added row is deleted again', async () => {
+		const user = userEvent.setup();
+		await renderPage();
+		await waitForAssociationsToLoad();
+
+		await user.click(screen.getByRole('button', { name: 'Add Gene Association' }));
+		expect(within(geneAssociationsSection()).getByText('Pending Edits!')).toBeInTheDocument();
+
+		// A new row is added at the top of the table.
+		const addedRow = associationRow('WB:WBGene31').closest('tbody').querySelector('tr');
+		expect(within(addedRow).queryByDisplayValue('WB:WBGene31')).not.toBeInTheDocument();
+		await user.click(addedRow.querySelector('.pi-trash').closest('button'));
+
+		expect(within(geneAssociationsSection()).queryByText('Pending Edits!')).not.toBeInTheDocument();
+		expect(screen.getByRole('button', { name: /Save Gene Associations/ })).toBeDisabled();
+		expect(screen.getByRole('button', { name: 'Save' })).toBeDisabled();
+	});
+
+	it('Clears the gene associations mark on their own save, leaving other pending edits marked', async () => {
+		const user = userEvent.setup();
+		await renderPage();
+
+		await deleteFirstAssociation(user);
+		await user.click(screen.getByRole('button', { name: 'Add Cross Reference' }));
+		await user.click(screen.getByText('AGRKB:101').closest('tr').querySelector('.pi-trash').closest('button'));
+		await markAlleleExtinct(user);
+		await user.click(screen.getByRole('button', { name: /Save Gene Associations/ }));
+
+		expect(await screen.findByText('Gene Associations Saved')).toBeInTheDocument();
+		expect(replaceGeneAssociationsForAllele).toHaveBeenCalledWith(4242, [storedAssociations[1]]);
+		expect(saveAlleleDetail).not.toHaveBeenCalled();
+		expect(replaceReferencesForAllele).not.toHaveBeenCalled();
+		expect(within(geneAssociationsSection()).queryByText('Pending Edits!')).not.toBeInTheDocument();
+		expect(screen.getByRole('button', { name: /Save Gene Associations/ })).toBeDisabled();
+		expect(within(sectionOf('Cross References')).getByText('Pending Edits!')).toBeInTheDocument();
+		expect(within(sectionOf('References')).getByText('Pending Edits!')).toBeInTheDocument();
+		expect(within(sectionOf('Is Extinct')).getByText('Pending Edits!')).toBeInTheDocument();
+		expect(screen.getByRole('button', { name: 'Save' })).toBeEnabled();
+	});
+
+	it('Keeps the mark and shows the rejected row when Save Gene Associations is refused', async () => {
+		const user = userEvent.setup();
+		replaceGeneAssociationsForAllele.mockRejectedValue({
+			response: {
+				status: 400,
+				data: {
+					errorMessage: 'Could not update Gene Associations',
+					supplementalData: {
+						errorMap: { alleleGeneAssociations: { 0: { alleleGeneAssociationObject: 'Not a valid entry' } } },
+					},
+				},
+			},
+		});
+		await renderPage();
+
+		await deleteFirstAssociation(user);
+		await user.click(screen.getByRole('button', { name: /Save Gene Associations/ }));
+
+		expect(await screen.findByText('Could not update Gene Associations')).toBeInTheDocument();
+		expect(within(geneAssociationsSection()).getByText('Pending Edits!')).toBeInTheDocument();
+		expect(within(associationRow('WB:WBGene32')).getByText('Not a valid entry')).toBeInTheDocument();
+		expect(screen.getByRole('button', { name: /Save Gene Associations/ })).toBeEnabled();
+	});
+
+	it('Keeps Save Gene Associations inactive when the gene associations failed to load, even once edited', async () => {
+		const user = userEvent.setup();
+		getGeneAssociationsForAllele.mockRejectedValue(new Error('unavailable'));
+		await renderPage();
+		await waitForAssociationsToLoad();
+
+		await user.click(screen.getByRole('button', { name: 'Add Gene Association' }));
+
+		expect(within(geneAssociationsSection()).getByText('Pending Edits!')).toBeInTheDocument();
+		expect(screen.getByRole('button', { name: /Save Gene Associations/ })).toBeDisabled();
+		expect(replaceGeneAssociationsForAllele).not.toHaveBeenCalled();
+	});
+
+	it('Refuses a section save while a row has no gene picked, keeping the mark', async () => {
+		const user = userEvent.setup();
+		await renderPage();
+		await waitForAssociationsToLoad();
+
+		await user.click(screen.getByRole('button', { name: 'Add Gene Association' }));
+		await user.click(screen.getByRole('button', { name: /Save Gene Associations/ }));
+
+		expect(await screen.findByText('Select each gene from the autosuggest', { exact: false })).toBeInTheDocument();
+		expect(screen.getByText('Must select alleleGeneAssociationObject from autosuggest')).toBeInTheDocument();
+		expect(within(geneAssociationsSection()).getByText('Pending Edits!')).toBeInTheDocument();
+		expect(screen.getByRole('button', { name: /Save Gene Associations/ })).toBeEnabled();
+		expect(replaceGeneAssociationsForAllele).not.toHaveBeenCalled();
+	});
+
+	// Saving the rows from their own section leaves them with nothing pending, so the page's Save that
+	// follows writes the allele alone rather than the same rows again.
+	it('Does not rewrite rows already saved from their own section', async () => {
+		const user = userEvent.setup();
+		await renderPage();
+
+		await deleteFirstAssociation(user);
+		await user.click(screen.getByRole('button', { name: /Save Gene Associations/ }));
+		expect(await screen.findByText('Gene Associations Saved')).toBeInTheDocument();
+		expect(replaceGeneAssociationsForAllele).toHaveBeenCalledTimes(1);
+
+		await markAlleleExtinct(user);
+		await user.click(screen.getByRole('button', { name: 'Save' }));
+
+		expect(await screen.findByText('Allele Saved')).toBeInTheDocument();
+		expect(saveAlleleDetail).toHaveBeenCalledTimes(1);
+		expect(replaceGeneAssociationsForAllele).toHaveBeenCalledTimes(1);
+	});
+
+	// A refused section save leaves the rows pending, so the page's Save tries them again.
+	it('Retries rows a failed section save left unsaved', async () => {
+		const user = userEvent.setup();
+		replaceGeneAssociationsForAllele.mockRejectedValueOnce({
+			response: { data: { errorMessage: 'Could not update Gene Associations' } },
+		});
+		await renderPage();
+
+		await deleteFirstAssociation(user);
+		await user.click(screen.getByRole('button', { name: /Save Gene Associations/ }));
+		expect(await screen.findByText('Could not update Gene Associations')).toBeInTheDocument();
+		expect(within(geneAssociationsSection()).getByText('Pending Edits!')).toBeInTheDocument();
+		expect(screen.getByRole('button', { name: /Save Gene Associations/ })).toBeEnabled();
+
+		await user.click(screen.getByRole('button', { name: 'Save' }));
+
+		expect(await screen.findByText('Allele Saved')).toBeInTheDocument();
+		expect(replaceGeneAssociationsForAllele).toHaveBeenCalledTimes(2);
+	});
 });
