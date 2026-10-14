@@ -47,7 +47,11 @@ import lombok.ToString;
 
 public class CassetteTransgenicToolAssociation extends CassetteAssociation {
 
-	@IndexedEmbedded(includeDepth = 1)
+	// Depth 1 plus the symbol, which the cassette table shows and filters on.
+	@IndexedEmbedded(includeDepth = 1, includePaths = {
+		"transgenicToolSymbol.displayText", "transgenicToolSymbol.formatText",
+		"transgenicToolSymbol.displayText_keyword", "transgenicToolSymbol.formatText_keyword"
+	})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
 	@JsonView({ CurationView.FieldsOnly.class })
