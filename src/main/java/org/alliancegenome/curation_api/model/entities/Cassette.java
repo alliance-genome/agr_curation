@@ -110,8 +110,10 @@ public class Cassette extends Reagent {
 
 	@IndexedEmbedded(includePaths = {
 		"cassetteTransgenicToolAssociationObject.curie", "cassetteTransgenicToolAssociationObject.primaryExternalId", "cassetteTransgenicToolAssociationObject.modInternalId",
+		"cassetteTransgenicToolAssociationObject.transgenicToolSymbol.displayText", "cassetteTransgenicToolAssociationObject.transgenicToolSymbol.formatText",
 		"relation.name", "cassetteTransgenicToolAssociationObject.curie_keyword", "cassetteTransgenicToolAssociationObject.primaryExternalId_keyword",
-		"cassetteTransgenicToolAssociationObject.modInternalId_keyword", "relation.name_keyword"
+		"cassetteTransgenicToolAssociationObject.modInternalId_keyword", "cassetteTransgenicToolAssociationObject.transgenicToolSymbol.displayText_keyword",
+		"cassetteTransgenicToolAssociationObject.transgenicToolSymbol.formatText_keyword", "relation.name_keyword"
 	})
 	@OneToMany(mappedBy = "cassetteAssociationSubject", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonView({ CurationView.FieldsAndLists.class, CurationView.CassetteView.class })
@@ -119,8 +121,8 @@ public class Cassette extends Reagent {
 
 	@IndexedEmbedded(includePaths = {
 		"cassetteStrAssociationObject.curie", "cassetteStrAssociationObject.primaryExternalId", "cassetteStrAssociationObject.modInternalId",
-		"relation.name", "cassetteStrAssociationObject.curie_keyword", "cassetteStrAssociationObject.primaryExternalId_keyword",
-		"cassetteStrAssociationObject.modInternalId_keyword", "relation.name_keyword"
+		"cassetteStrAssociationObject.name", "relation.name", "cassetteStrAssociationObject.curie_keyword", "cassetteStrAssociationObject.primaryExternalId_keyword",
+		"cassetteStrAssociationObject.modInternalId_keyword", "cassetteStrAssociationObject.name_keyword", "relation.name_keyword"
 	})
 	@OneToMany(mappedBy = "cassetteAssociationSubject", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonView({ CurationView.FieldsAndLists.class, CurationView.CassetteView.class })
