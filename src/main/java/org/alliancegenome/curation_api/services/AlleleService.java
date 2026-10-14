@@ -19,6 +19,7 @@ import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.Note;
 import org.alliancegenome.curation_api.model.entities.Reference;
+import org.alliancegenome.curation_api.model.entities.associations.AlleleGeneAssociation;
 import org.alliancegenome.curation_api.model.ingest.dto.AlleleDTO;
 import org.alliancegenome.curation_api.response.ObjectListResponse;
 import org.alliancegenome.curation_api.response.ObjectResponse;
@@ -109,6 +110,41 @@ public class AlleleService extends SubmittedObjectCrudService<Allele, AlleleDTO,
 		resolvedReferences.forEach(reference -> Hibernate.initialize(reference.getCrossReferences()));
 
 		return new ObjectListResponse<>(new ArrayList<>(allele.getReferences()));
+	}
+
+	public ObjectListResponse<AlleleGeneAssociation> getGeneAssociations(Long id) {
+		Allele allele = findAlleleOrThrow(id);
+		List<AlleleGeneAssociation> geneAssociations = allele.getAlleleGeneAssociations();
+		return new ObjectListResponse<>(geneAssociations == null ? new ArrayList<>() : new ArrayList<>(geneAssociations));
+	}
+
+	@Transactional
+	public ObjectListResponse<AlleleGeneAssociation> updateGeneAssociations(Long id, List<AlleleGeneAssociation> geneAssociations) {
+		Allele allele = findAlleleOrThrow(id);
+		List<AlleleGeneAssociation> validatedAssociations = alleleValidator.validateGeneAssociationReplacement(allele, geneAssociations);
+
+		if (allele.getAlleleGeneAssociations() == null) {
+			allele.setAlleleGeneAssociations(new ArrayList<>());
+		}
+		allele.getAlleleGeneAssociations().clear();
+		allele.getAlleleGeneAssociations().addAll(validatedAssociations);
+
+		// The response is serialized after this transaction closes, so the cross references of each association's
+		// evidence and note references are loaded while it is open.
+		for (AlleleGeneAssociation association : validatedAssociations) {
+			if (association.getEvidence() != null) {
+				association.getEvidence().forEach(evidence -> {
+					if (evidence instanceof Reference reference) {
+						Hibernate.initialize(reference.getCrossReferences());
+					}
+				});
+			}
+			if (association.getRelatedNote() != null && association.getRelatedNote().getReferences() != null) {
+				association.getRelatedNote().getReferences().forEach(reference -> Hibernate.initialize(reference.getCrossReferences()));
+			}
+		}
+
+		return new ObjectListResponse<>(new ArrayList<>(allele.getAlleleGeneAssociations()));
 	}
 
 	private Allele findAlleleOrThrow(Long id) {
