@@ -50,7 +50,7 @@ const storedCrossReference = {
 	obsolete: false,
 };
 
-const renderDialog = (originalCrossReferences = [storedCrossReference]) => {
+const renderDialog = (originalCrossReferences = [storedCrossReference], extraProps = {}) => {
 	const editorCallback = vi.fn();
 	const setOriginalCrossReferencesData = vi.fn();
 	const setErrorMessagesMainRow = vi.fn();
@@ -67,6 +67,7 @@ const renderDialog = (originalCrossReferences = [storedCrossReference]) => {
 			setOriginalCrossReferencesData={setOriginalCrossReferencesData}
 			errorMessagesMainRow={{}}
 			setErrorMessagesMainRow={setErrorMessagesMainRow}
+			{...extraProps}
 		/>
 	);
 
@@ -183,5 +184,31 @@ describe('CrossReferencesEditDialog', () => {
 
 		await waitFor(() => expect(screen.getByRole('button', { name: /Keep Edits/ })).toBeInTheDocument());
 		expect(getResourceDescriptor).not.toHaveBeenCalled();
+	});
+
+	it('Writes a single cross reference back, keyed to its field, in single mode', async () => {
+		const user = userEvent.setup();
+		const { editorCallback, setErrorMessagesMainRow } = renderDialog([storedCrossReference], {
+			field: 'gcrpCrossReference',
+			single: true,
+		});
+		await waitFor(() => expect(getResourceDescriptor).toHaveBeenCalled());
+
+		expect(screen.getByRole('button', { name: /New Cross Reference/ })).toBeDisabled();
+		await user.click(screen.getByRole('button', { name: /Keep Edits/ }));
+
+		await waitFor(() => expect(editorCallback).toHaveBeenCalledTimes(1));
+		expect(editorCallback.mock.calls[0][0]).toMatchObject({ id: 500, referencedCurie: 'PMID:1' });
+		const [stamped] = setErrorMessagesMainRow.mock.calls[0];
+		expect(stamped[3].gcrpCrossReference).toEqual({ severity: 'warn', message: 'Pending Edits!' });
+	});
+
+	it('Writes null back when the single cross reference is removed', async () => {
+		const user = userEvent.setup();
+		const { editorCallback } = renderDialog([], { field: 'gcrpCrossReference', single: true });
+
+		await user.click(await screen.findByRole('button', { name: /Keep Edits/ }));
+
+		await waitFor(() => expect(editorCallback).toHaveBeenCalledWith(null));
 	});
 });

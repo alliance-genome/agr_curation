@@ -49,7 +49,7 @@ public class ResourceDescriptorPage extends AuditedObject {
 	// descriptor is reachable from. The shorter page -> person -> member -> page loop is cut on
 	// Organization.homepageResourceDescriptorPage.
 	@JsonIgnoreProperties({ "createdBy", "updatedBy" })
-	@JsonView({ CurationView.ResourceDescriptorPageView.class, CurationView.CrossReferenceView.class, CurationView.AlleleView.class, CurationView.ForPublic.class, CurationView.TransgenicAllelesDocument.class })
+	@JsonView({ CurationView.ResourceDescriptorPageView.class, CurationView.CrossReferenceView.class, CurationView.AlleleView.class, CurationView.GeneView.class, CurationView.ForPublic.class, CurationView.TransgenicAllelesDocument.class })
 	private ResourceDescriptor resourceDescriptor;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
