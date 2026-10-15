@@ -16,10 +16,13 @@ import {
 import { addDataKey } from '../utils';
 
 /**
- * Stages an allele's cross references into its table row. Nothing is written here - the row's own
+ * Stages a row's cross references into its table row. Nothing is written here - the row's own
  * save issues the PUT, so a row edit that is cancelled discards these edits with the rest.
  */
 export const CrossReferencesEditDialog = ({
+	field = 'crossReferences',
+	title = 'Cross References',
+	single = false,
 	originalCrossReferencesData,
 	setOriginalCrossReferencesData,
 	errorMessagesMainRow,
@@ -93,7 +96,8 @@ export const CrossReferencesEditDialog = ({
 		setErrorMessages({});
 
 		if (mainRowProps.editorCallback) {
-			mainRowProps.editorCallback(localCrossReferences.map(stripUiFields));
+			const crossReferences = localCrossReferences.map(stripUiFields);
+			mainRowProps.editorCallback(single ? crossReferences[0] ?? null : crossReferences);
 		}
 
 		// Keyed to match both DialogTriggerEditor's errorField and the key the API reports cross
@@ -101,7 +105,7 @@ export const CrossReferencesEditDialog = ({
 		const errorMessagesCopy = structuredClone(errorMessagesMainRow);
 		errorMessagesCopy[rowIndex] = {
 			...errorMessagesCopy[rowIndex],
-			crossReferences: { severity: 'warn', message: 'Pending Edits!' },
+			[field]: { severity: 'warn', message: 'Pending Edits!' },
 		};
 		setErrorMessagesMainRow({ ...errorMessagesCopy });
 
@@ -157,7 +161,12 @@ export const CrossReferencesEditDialog = ({
 		return (
 			<div>
 				<Button label="Cancel" icon="pi pi-times" onClick={hideDialog} className="p-button-text" />
-				<Button label="New Cross Reference" icon="pi pi-plus" onClick={createNewCrossReferenceHandler} />
+				<Button
+					label="New Cross Reference"
+					icon="pi pi-plus"
+					onClick={createNewCrossReferenceHandler}
+					disabled={single && localCrossReferences.length > 0}
+				/>
 				<Button
 					label="Keep Edits"
 					icon={isValidating ? 'pi pi-spin pi-spinner' : 'pi pi-check'}
@@ -180,7 +189,7 @@ export const CrossReferencesEditDialog = ({
 				onShow={showDialogHandler}
 				footer={footerTemplate}
 			>
-				<h3>Cross References</h3>
+				<h3>{title}</h3>
 				<CrossReferencesTable
 					crossReferences={localCrossReferences}
 					editingRows={editingRows}
