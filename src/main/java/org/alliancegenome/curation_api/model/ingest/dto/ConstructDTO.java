@@ -16,7 +16,7 @@ import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-@AGRCurationSchemaVersion(min = "1.10.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { ReagentDTO.class, ConstructComponentSlotAnnotationDTO.class }, submitted = true)
+@AGRCurationSchemaVersion(min = "2.19.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { ReagentDTO.class, ConstructComponentSlotAnnotationDTO.class }, submitted = true)
 public class ConstructDTO extends ReagentDTO {
 
 	@JsonView({ CurationView.FieldsOnly.class })

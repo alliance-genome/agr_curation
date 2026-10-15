@@ -4,6 +4,7 @@ import org.alliancegenome.curation_api.controllers.base.BaseEntityCrudController
 import org.alliancegenome.curation_api.dao.CrossReferenceDAO;
 import org.alliancegenome.curation_api.interfaces.crud.CrossReferenceCrudInterface;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
+import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.CrossReferenceService;
 
 import jakarta.annotation.PostConstruct;
@@ -20,5 +21,9 @@ public class CrossReferenceCrudController extends BaseEntityCrudController<Cross
 	@PostConstruct
 	protected void init() {
 		setService(crossReferenceService);
+	}
+
+	public ObjectResponse<CrossReference> validate(CrossReference entity) {
+		return crossReferenceService.validate(entity);
 	}
 }

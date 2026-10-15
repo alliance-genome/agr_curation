@@ -1,4 +1,4 @@
-import { fireEvent } from '@testing-library/react';
+import { fireEvent, screen } from '@testing-library/react';
 
 /**
  * Helpers for the widget unit tests.
@@ -9,6 +9,23 @@ import { fireEvent } from '@testing-library/react';
  * strategy the entity adapters resolve their rows and errors through.
  */
 
+/** Open a PrimeReact Dropdown or MultiSelect and click an option by its visible label. */
+export const pickOption = (container, optionLabel, { multi = false } = {}) => {
+	fireEvent.click(container.querySelector(multi ? '.p-multiselect' : '.p-dropdown'));
+	const selector = multi ? '.p-multiselect-item, .p-multiselect-item *' : '.p-dropdown-item, .p-dropdown-item *';
+	fireEvent.click(screen.getByText(optionLabel, { selector }));
+};
+
 /** Type into whichever text control the widget rendered. */
 export const typeInto = (container, value) =>
 	fireEvent.change(container.querySelector('input, textarea'), { target: { value } });
+
+/** Remove the first token from a multi-select autocomplete. */
+export const removeFirstToken = (container) => fireEvent.click(container.querySelector('.p-autocomplete-token-icon'));
+
+/** A search function that synchronously offers the given suggestions. */
+export const searchReturning = (...items) =>
+	vi.fn((event, setSuggestions, setQuery) => {
+		setQuery(event.query);
+		setSuggestions(items);
+	});

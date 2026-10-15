@@ -11,9 +11,10 @@ import { DeleteAction } from '../../../components/Actions/DeletionAction';
 import { TableInputTextEditor } from '../../../components/Editors/text/TableInputTextEditor';
 import { InternalEditor } from '../../../components/Editors/legacyForm/InternalEditor';
 import { EvidenceEditor } from '../../../components/Editors/legacyForm/EvidenceEditor';
-import { Endpoints } from '../../../constants/Endpoints';
 
 export const SecondaryIdsEditDialog = ({
+	field,
+	endpoint,
 	originalSecondaryIdsData,
 	setOriginalSecondaryIdsData,
 	errorMessagesMainRow,
@@ -131,7 +132,7 @@ export const SecondaryIdsEditDialog = ({
 			message: 'Pending Edits!',
 		};
 		errorMessagesCopy[rowIndex] = {};
-		errorMessagesCopy[rowIndex]['alleleSecondaryIds'] = messageObject;
+		errorMessagesCopy[rowIndex][field] = messageObject;
 		setErrorMessagesMainRow({ ...errorMessagesCopy });
 
 		setOriginalSecondaryIdsData((originalSecondaryIdsData) => {
@@ -168,7 +169,7 @@ export const SecondaryIdsEditDialog = ({
 
 			for (let i = 0; i < localSecondaryIds.length; i++) {
 				const _sid = cleanForValidation(localSecondaryIds[i]);
-				const result = await validationService.validate(Endpoints.SlotAnnotation.ALLELE_SECONDARY_ID, _sid);
+				const result = await validationService.validate(endpoint, _sid);
 				const dataKey = localSecondaryIds[i].dataKey;
 				if (result.isError) {
 					hasErrors = true;

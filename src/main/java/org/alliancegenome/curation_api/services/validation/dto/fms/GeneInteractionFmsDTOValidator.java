@@ -202,24 +202,29 @@ public class GeneInteractionFmsDTOValidator extends BaseDTOValidator {
 					return response;
 				}
 
-				SearchResponse<Gene> searchResponse = geneService.findByField("crossReferences.referencedCurie", convertedCurie);
-				if (searchResponse != null) {
-					for (Gene searchResult : searchResponse.getResults()) {
-						if (!searchResult.getObsolete()) {
-							String resultDataProviderCoreGenus = BackendBulkDataProvider.getCoreGenus(searchResult.getDataProvider().getAbbreviation());
-							if (taxon.getName().startsWith(resultDataProviderCoreGenus + " ")) {
-								allianceGene = searchResult;
-								break;
-							}
-							if (StringUtils.equals(taxonCurie, "NCBITaxon:9606") && StringUtils.equals(searchResult.getDataProvider().getAbbreviation(), "RGD")) {
-								allianceGene = searchResult;
-								break;
-							}
-							if (StringUtils.equals(taxonCurie, "NCBITaxon:2697049") && StringUtils.equals(searchResult.getDataProvider().getAbbreviation(), "Alliance")) {
-								allianceGene = searchResult;
-								break;
+				for (String xrefField : List.of("crossReferences.referencedCurie", "gcrpCrossReference.referencedCurie")) {
+					SearchResponse<Gene> searchResponse = geneService.findByField(xrefField, convertedCurie);
+					if (searchResponse != null) {
+						for (Gene searchResult : searchResponse.getResults()) {
+							if (!searchResult.getObsolete()) {
+								String resultDataProviderCoreGenus = BackendBulkDataProvider.getCoreGenus(searchResult.getDataProvider().getAbbreviation());
+								if (taxon.getName().startsWith(resultDataProviderCoreGenus + " ")) {
+									allianceGene = searchResult;
+									break;
+								}
+								if (StringUtils.equals(taxonCurie, "NCBITaxon:9606") && StringUtils.equals(searchResult.getDataProvider().getAbbreviation(), "RGD")) {
+									allianceGene = searchResult;
+									break;
+								}
+								if (StringUtils.equals(taxonCurie, "NCBITaxon:2697049") && StringUtils.equals(searchResult.getDataProvider().getAbbreviation(), "Alliance")) {
+									allianceGene = searchResult;
+									break;
+								}
 							}
 						}
+					}
+					if (allianceGene != null) {
+						break;
 					}
 				}
 				if (allianceGene != null) {

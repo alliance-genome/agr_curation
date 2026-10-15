@@ -66,7 +66,7 @@ public class Reagent extends SubmittedObject {
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "secondaryIdentifiers_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
 	@ElementCollection
-	@JsonView({CurationView.FieldsAndLists.class, CurationView.ConstructView.class})
+	@JsonView({CurationView.FieldsAndLists.class, CurationView.ConstructView.class, CurationView.CassetteView.class, CurationView.TransgenicToolView.class})
 	@JoinTable(indexes = @Index(name = "reagent_secondaryidentifiers_reagent_index", columnList = "reagent_id"))
 	private List<String> secondaryIdentifiers;
 
@@ -74,5 +74,5 @@ public class Reagent extends SubmittedObject {
 	@KeywordField(name = "placeholder_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, valueBridge = @ValueBridgeRef(type = BooleanValueBridge.class))
 	@JsonView({ CurationView.FieldsOnly.class, CurationView.ForPublic.class, CurationView.TransgenicAllelesDocument.class, CurationView.AlleleDetailView.class })
 	@Column(columnDefinition = "boolean default false", nullable = false)
-	private Boolean placeholder;
+	private Boolean placeholder = false;
 }

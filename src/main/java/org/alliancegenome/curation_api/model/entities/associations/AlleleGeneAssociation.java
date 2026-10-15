@@ -55,7 +55,7 @@ public class AlleleGeneAssociation extends AlleleGenomicEntityAssociation {
 		"dataProvider.abbreviation", "dataProvider.fullName", "dataProvider.shortName",
 		"dataProvider.abbreviation_keyword", "dataProvider.fullName_keyword", "dataProvider.shortName_keyword" })
 	@ManyToOne
-	@JsonView({ CurationView.FieldsOnly.class, CurationView.ForPublic.class, CurationView.AlleleDetailView.class })
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.ForPublic.class })
 	@JsonIgnoreProperties({"alleleGeneAssociations", "alleleVariantAssociations"})
 	@Fetch(FetchMode.JOIN)
 	private Allele alleleAssociationSubject;

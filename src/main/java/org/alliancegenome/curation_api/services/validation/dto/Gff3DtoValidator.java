@@ -51,7 +51,6 @@ import org.apache.commons.lang3.StringUtils;
 
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
-import jakarta.transaction.Transactional;
 
 @RequestScoped
 public class Gff3DtoValidator {
@@ -74,7 +73,6 @@ public class Gff3DtoValidator {
 	@Inject VocabularyTermService vocabularyTermService;
 	@Inject OrganizationService organizationService;
 	
-	@Transactional
 	public void validateExonEntry(Gff3DTO dto, Map<String, String> attributes, List<Long> idsAdded, BackendBulkDataProvider dataProvider) throws ValidationException {
 
 		Exon exon = null;
@@ -108,7 +106,6 @@ public class Gff3DtoValidator {
 		}
 	}
 	
-	@Transactional
 	public void validateCdsEntry(Gff3DTO dto, Map<String, String> attributes, List<Long> idsAdded, BackendBulkDataProvider dataProvider) throws ValidationException {
 
 		CodingSequence cds = null;
@@ -142,7 +139,6 @@ public class Gff3DtoValidator {
 		}
 	}
 	
-	@Transactional
 	public void validateTranscriptEntry(Gff3DTO dto, Map<String, String> attributes, List<Long> idsAdded, BackendBulkDataProvider dataProvider) throws ValidationException {
 
 		if (!Gff3Constants.TRANSCRIPT_TYPES.contains(dto.getType())) {
@@ -203,7 +199,6 @@ public class Gff3DtoValidator {
 		return geResponse;
 	}
 
-	@Transactional
 	public CodingSequenceGenomicLocationAssociation validateCdsLocation(Gff3DTO gffEntry, CodingSequence cds, String assemblyId, BackendBulkDataProvider dataProvider) throws ObjectValidationException {
 		AssemblyComponent assemblyComponent = null;
 		CodingSequenceGenomicLocationAssociation locationAssociation = new CodingSequenceGenomicLocationAssociation();
@@ -231,7 +226,6 @@ public class Gff3DtoValidator {
 		return cdsLocationDAO.persist(locationResponse.getEntity());
 	}
 
-	@Transactional
 	public CodingSequenceGenomicLocationAssociation validateCdsLocation(Gff3DTO gffEntry, CodingSequence cds, String assemblyId, BackendBulkDataProvider dataProvider, CodingSequenceGenomicLocationAssociation existingAssociation) throws ObjectValidationException {
 		AssemblyComponent assemblyComponent = null;
 		CodingSequenceGenomicLocationAssociation locationAssociation = existingAssociation != null ? existingAssociation : new CodingSequenceGenomicLocationAssociation();
@@ -251,7 +245,6 @@ public class Gff3DtoValidator {
 		return cdsLocationDAO.persist(locationResponse.getEntity());
 	}
 
-	@Transactional
 	public ExonGenomicLocationAssociation validateExonLocation(Gff3DTO gffEntry, Exon exon, String assemblyId, BackendBulkDataProvider dataProvider) throws ObjectValidationException {
 		AssemblyComponent assemblyComponent = null;
 		ExonGenomicLocationAssociation locationAssociation = new ExonGenomicLocationAssociation();
@@ -278,7 +271,6 @@ public class Gff3DtoValidator {
 		return exonLocationDAO.persist(locationResponse.getEntity());
 	}
 
-	@Transactional
 	public ExonGenomicLocationAssociation validateExonLocation(Gff3DTO gffEntry, Exon exon, String assemblyId, BackendBulkDataProvider dataProvider, ExonGenomicLocationAssociation existingAssociation) throws ObjectValidationException {
 		AssemblyComponent assemblyComponent = null;
 		ExonGenomicLocationAssociation locationAssociation = existingAssociation != null ? existingAssociation : new ExonGenomicLocationAssociation();
@@ -297,7 +289,6 @@ public class Gff3DtoValidator {
 		return exonLocationDAO.persist(locationResponse.getEntity());
 	}
 
-	@Transactional
 	public TranscriptGenomicLocationAssociation validateTranscriptLocation(Gff3DTO gffEntry, Transcript transcript, String assemblyId, BackendBulkDataProvider dataProvider) throws ObjectValidationException {
 		AssemblyComponent assemblyComponent = null;
 		TranscriptGenomicLocationAssociation locationAssociation = new TranscriptGenomicLocationAssociation();
@@ -324,7 +315,6 @@ public class Gff3DtoValidator {
 		return transcriptLocationDAO.persist(locationResponse.getEntity());
 	}
 
-	@Transactional
 	public TranscriptGenomicLocationAssociation validateTranscriptLocation(Gff3DTO gffEntry, Transcript transcript, String assemblyId, BackendBulkDataProvider dataProvider, TranscriptGenomicLocationAssociation existingAssociation) throws ObjectValidationException {
 		AssemblyComponent assemblyComponent = null;
 		TranscriptGenomicLocationAssociation locationAssociation = existingAssociation != null ? existingAssociation : new TranscriptGenomicLocationAssociation();
@@ -344,7 +334,6 @@ public class Gff3DtoValidator {
 		return transcriptLocationDAO.persist(locationResponse.getEntity());
 	}
 
-	@Transactional
 	public TranscriptGeneAssociation validateTranscriptGeneAssociation(Gff3DTO gffEntry, Transcript transcript, Gene parentGene, TranscriptGeneAssociation existingAssociation) throws ObjectValidationException {
 		TranscriptGeneAssociation association;
 		boolean newAssociation;
@@ -366,7 +355,6 @@ public class Gff3DtoValidator {
 		}
 	}
 
-	@Transactional
 	public GeneGenomicLocationAssociation validateGeneLocation(Gff3DTO gffEntry, Gene gene, String assemblyId, BackendBulkDataProvider dataProvider) throws ObjectValidationException {
 		AssemblyComponent assemblyComponent = null;
 		GeneGenomicLocationAssociation locationAssociation = new GeneGenomicLocationAssociation();
@@ -393,7 +381,6 @@ public class Gff3DtoValidator {
 		return geneLocationDAO.persist(locationResponse.getEntity());
 	}
 	
-	@Transactional
 	public TranscriptGeneAssociation validateTranscriptGeneAssociation(Gff3DTO gffEntry, Transcript transcript, Map<String, String> attributes, Map<String, String> geneIdCurieMap) throws ObjectValidationException {
 		TranscriptGeneAssociation association = new TranscriptGeneAssociation();
 		boolean newAssociation = true;
@@ -431,7 +418,6 @@ public class Gff3DtoValidator {
 		}
 	}
 	
-	@Transactional
 	public TranscriptCodingSequenceAssociation validateTranscriptCodingSequenceAssociation(Gff3DTO gffEntry, CodingSequence cds, Map<String, String> attributes) throws ObjectValidationException {
 		TranscriptCodingSequenceAssociation association = new TranscriptCodingSequenceAssociation();
 		
@@ -464,7 +450,6 @@ public class Gff3DtoValidator {
 		return transcriptCdsDAO.persist(association);
 	}
 
-	@Transactional
 	public TranscriptCodingSequenceAssociation validateTranscriptCodingSequenceAssociation(Gff3DTO gffEntry, CodingSequence cds, Transcript parentTranscript, TranscriptCodingSequenceAssociation existingAssociation) throws ObjectValidationException {
 		TranscriptCodingSequenceAssociation association = existingAssociation != null ? existingAssociation : new TranscriptCodingSequenceAssociation();
 		association.setTranscriptAssociationSubject(parentTranscript);
@@ -474,7 +459,6 @@ public class Gff3DtoValidator {
 		return transcriptCdsDAO.persist(association);
 	}
 
-	@Transactional
 	public TranscriptExonAssociation validateTranscriptExonAssociation(Gff3DTO gffEntry, Exon exon, Map<String, String> attributes) throws ObjectValidationException {
 		TranscriptExonAssociation association = new TranscriptExonAssociation();
 		
@@ -507,12 +491,10 @@ public class Gff3DtoValidator {
 		return transcriptExonDAO.persist(association);
 	}
 
-	@Transactional
 	public TranscriptExonAssociation validateTranscriptExonAssociation(Gff3DTO gffEntry, Exon exon, Transcript parentTranscript) throws ObjectValidationException {
 		return validateTranscriptExonAssociation(gffEntry, exon, parentTranscript, null);
 	}
 
-	@Transactional
 	public TranscriptExonAssociation validateTranscriptExonAssociation(Gff3DTO gffEntry, Exon exon, Transcript parentTranscript, TranscriptExonAssociation existingAssociation) throws ObjectValidationException {
 		TranscriptExonAssociation association = existingAssociation != null ? existingAssociation : new TranscriptExonAssociation();
 		association.setTranscriptAssociationSubject(parentTranscript);

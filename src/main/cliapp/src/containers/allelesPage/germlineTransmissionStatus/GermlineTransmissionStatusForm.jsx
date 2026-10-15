@@ -3,7 +3,7 @@ import { FormTableWrapper } from '../../../components/FormTableWrapper';
 import { useRef } from 'react';
 import { GermlineTransmissionStatusFormTable } from './GermlineTransmissionStatusFormTable';
 
-export const GermilineTransmissionStatusForm = ({ labelColumnSize, state, dispatch }) => {
+export const GermilineTransmissionStatusForm = ({ labelColumnSize, state, dispatch, isPending = false }) => {
 	const tableRef = useRef(null);
 	const entityType = 'alleleGermlineTransmissionStatus';
 	const germlineTransmissionStatusArray = [state.allele?.[entityType]];
@@ -80,6 +80,7 @@ export const GermilineTransmissionStatusForm = ({ labelColumnSize, state, dispat
 				/>
 			}
 			tableName="Germline Transmission Status"
+			isPending={isPending}
 			showTable={state.entityStates[entityType].show}
 			button={
 				<Button

@@ -7,6 +7,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.zip.GZIPInputStream;
 
 import org.alliancegenome.curation_api.config.RestDefaultObjectMapper;
@@ -127,7 +128,42 @@ public class LoadFileExecutor {
 		return true;
 	}
 
-	protected IngestDTO readIngestFile(BulkLoadFileHistory bulkLoadFileHistory, Class<?> dtoClass) {
+	/**
+	 * Runs an ingest executor against the shared submission. An executor whose ingest set is
+	 * absent or empty does nothing, and is never schema checked: a set the file does not carry
+	 * cannot fail the load. Otherwise the schema version is checked here, against the executor's
+	 * {@link #getIngestDtoClass()}, so no executor can skip it.
+	 */
+	public void execLoad(BulkLoadFileHistory bulkLoadFileHistory, IngestDTO ingestDto, Boolean cleanUp) {
+		if (CollectionUtils.isEmpty(getIngestSet(ingestDto))) {
+			return;
+		}
+		if (!checkSchemaVersion(bulkLoadFileHistory, getIngestDtoClass())) {
+			return;
+		}
+		loadIngestSet(bulkLoadFileHistory, ingestDto, cleanUp);
+	}
+
+	/** The ingest set this executor loads from the submission. */
+	protected List<?> getIngestSet(IngestDTO ingestDto) {
+		throw new UnsupportedOperationException(getClass().getSimpleName() + " is not an ingest executor");
+	}
+
+	/** The DTO class whose schema version range an ingest executor accepts. */
+	protected Class<?> getIngestDtoClass() {
+		throw new UnsupportedOperationException(getClass().getSimpleName() + " is not an ingest executor");
+	}
+
+	/** Loads this executor's ingest set from the shared submission, after the schema check. */
+	protected void loadIngestSet(BulkLoadFileHistory bulkLoadFileHistory, IngestDTO ingestDto, Boolean cleanUp) {
+		throw new UnsupportedOperationException(getClass().getSimpleName() + " is not an ingest executor");
+	}
+
+	/**
+	 * Parses the whole submission once; {@link #execLoad(BulkLoadFileHistory, IngestDTO, Boolean)}
+	 * then checks the schema version for each executor.
+	 */
+	protected IngestDTO readIngestFile(BulkLoadFileHistory bulkLoadFileHistory) {
 		try {
 			IngestDTO ingestDto = mapper.readValue(new GZIPInputStream(new FileInputStream(bulkLoadFileHistory.getBulkLoadFile().getLocalFilePath())), IngestDTO.class);
 			bulkLoadFileHistory.getBulkLoadFile().setLinkMLSchemaVersion(getVersionNumber(ingestDto.getLinkMLVersion()));
@@ -136,10 +172,6 @@ public class LoadFileExecutor {
 			}
 
 			bulkLoadFileDAO.merge(bulkLoadFileHistory.getBulkLoadFile());
-
-			if (!checkSchemaVersion(bulkLoadFileHistory, dtoClass)) {
-				return null;
-			}
 
 			return ingestDto;
 		} catch (Exception e) {
@@ -203,6 +235,17 @@ public class LoadFileExecutor {
 		runLoad(service, history, dataProvider, objectList, idsLoaded, true, "Records");
 		history.finishLoad();
 		return new LoadHistoryResponce(history);
+	}
+
+	/**
+	 * The history count label for an ingest set: its name without "_ingest_set", underscores as
+	 * spaces and each word capitalised, so cassette_genomic_entity_association_ingest_set counts as
+	 * "Cassette Genomic Entity Association". Executors sharing one history count apart this way.
+	 */
+	protected static String countLabel(String ingestSetName) {
+		return Arrays.stream(StringUtils.removeEnd(ingestSetName, "_ingest_set").split("_"))
+			.map(StringUtils::capitalize)
+			.collect(Collectors.joining(" "));
 	}
 
 	protected <E extends AuditedObject, T extends BaseDTO> boolean runLoad(BaseUpsertServiceInterface<E, T> service, BulkLoadFileHistory history, BackendBulkDataProvider dataProvider, List<T> objectList, List<Long> idsAdded) {

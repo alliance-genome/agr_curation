@@ -1,0 +1,35 @@
+{
+    "data": [
+        {
+            "datasetIds" : [
+                 "GEO:GSE38764"
+            ],
+            "sampleTitle" : "TITLE ONLY SAMPLE",
+            "assayType" : "HTPMMO:assay001",
+            "sampleType" : "HTPOBI:sample001",
+            "abundance" : "title only abundance",
+            "sampleLocations" : [
+                {
+                    "whereExpressedStatement" : "trunk",
+                    "anatomicalStructureTermId" : "ANAT:001",
+                    "anatomicalStructureUberonSlimTermIds" : [
+                        {"uberonTerm" : "UBERON:004"}
+                    ]
+                }
+            ]
+        }
+    ],
+    "metaData": {
+        "dataProvider": {
+        "crossReference": {
+            "id": "FB",
+            "pages": [
+            "homepage"
+            ]
+        },
+        "type": "curated"
+        },
+        "dateProduced": "2024-07-12T12:36:21-04:00",
+        "release": "2024_03"
+    }
+}

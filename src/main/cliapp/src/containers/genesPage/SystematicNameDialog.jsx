@@ -15,7 +15,7 @@ import {
 } from '../../components/NameSlotAnnotationComponent';
 
 export const SystematicNameDialog = ({ originalSystematicNameData, setOriginalSystematicNameData }) => {
-	const { originalSystematicNames, dialog } = originalSystematicNameData;
+	const { originalSystematicNames, isInEdit, dialog } = originalSystematicNameData;
 	const tableRef = useRef(null);
 
 	const hideDialog = () => {
@@ -49,7 +49,7 @@ export const SystematicNameDialog = ({ originalSystematicNameData, setOriginalSy
 
 	return (
 		<div>
-			<Dialog visible={dialog} className="w-10" modal onHide={hideDialog} closable={true}>
+			<Dialog visible={dialog && !isInEdit} className="w-10" modal onHide={hideDialog} closable={true}>
 				<h3>Systematic Name</h3>
 				<DataTable
 					value={originalSystematicNames}

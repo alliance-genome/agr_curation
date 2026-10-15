@@ -140,7 +140,9 @@ public class BaseSQLDAO<E extends AuditedObject> extends BaseEntityDAO<E> {
 		Log.debug("SqlDAO: find: " + id + " " + myClass);
 		if (id != null) {
 			E entity = entityManager.find(myClass, id);
-			Log.debug("Entity Found: " + entity);
+			// debugf, not concatenation: the message must not be built when debug is off, because the
+			// entity's toString walks lazy collections (a Reference loads its cross references)
+			Log.debugf("Entity Found: %s", entity);
 			return entity;
 		} else {
 			Log.debug("Input Param is null: " + id);

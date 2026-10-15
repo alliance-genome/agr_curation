@@ -48,6 +48,7 @@ import lombok.ToString;
 @AGRCurationSchemaVersion(min = "2.9.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AuditedObject.class })
 @Table(indexes = {
 	@Index(name = "htpdatasample_curie_index", columnList = "curie"),
+	@Index(name = "htpdatasample_htpExpressionSampleTitle_index", columnList = "htpExpressionSampleTitle"),
 	@Index(name = "htpdatasample_htpExpressionSample_index", columnList = "htpExpressionSample_id"),
 	@Index(name = "htpdatasample_htpExpressionSampleType_index", columnList = "htpExpressionSampleType_id"),
 	@Index(name = "htpdatasample_expressionAssayUsed_index", columnList = "expressionAssayUsed_id"),

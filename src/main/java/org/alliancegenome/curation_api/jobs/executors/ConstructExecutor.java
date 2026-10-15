@@ -13,7 +13,6 @@ import org.alliancegenome.curation_api.model.ingest.dto.ConstructDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.IngestDTO;
 import org.alliancegenome.curation_api.services.ConstructService;
 import org.alliancegenome.curation_api.services.ontology.NcbiTaxonTermService;
-import org.apache.commons.collections.CollectionUtils;
 
 import io.quarkus.logging.Log;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -22,26 +21,31 @@ import jakarta.inject.Inject;
 @ApplicationScoped
 public class ConstructExecutor extends LoadFileExecutor {
 
+	private static final String INGEST_SET = "construct_ingest_set";
+
 	@Inject
 	ConstructService constructService;
 
 	@Inject
 	NcbiTaxonTermService ncbiTaxonTermService;
 
-	public void execLoad(BulkLoadFileHistory bulkLoadFileHistory, Boolean cleanUp) {
+	@Override
+	protected List<?> getIngestSet(IngestDTO ingestDto) {
+		return ingestDto.getConstructIngestSet();
+	}
+
+	@Override
+	protected Class<?> getIngestDtoClass() {
+		return ConstructDTO.class;
+	}
+
+	@Override
+	protected void loadIngestSet(BulkLoadFileHistory bulkLoadFileHistory, IngestDTO ingestDto, Boolean cleanUp) {
 
 		BulkManualLoad manual = (BulkManualLoad) bulkLoadFileHistory.getBulkLoad();
 		Log.info("Running with: " + manual.getDataProvider().name());
 
-		IngestDTO ingestDto = readIngestFile(bulkLoadFileHistory, ConstructDTO.class);
-		if (ingestDto == null) {
-			return;
-		}
-
 		List<ConstructDTO> constructs = ingestDto.getConstructIngestSet();
-		if (CollectionUtils.isEmpty(constructs)) {
-			return;
-		}
 
 		BackendBulkDataProvider dataProvider = manual.getDataProvider();
 
@@ -55,8 +59,6 @@ public class ConstructExecutor extends LoadFileExecutor {
 		bulkLoadFileHistory.getBulkLoadFile().setRecordCount(constructs.size() + bulkLoadFileHistory.getBulkLoadFile().getRecordCount());
 		bulkLoadFileDAO.merge(bulkLoadFileHistory.getBulkLoadFile());
 
-		bulkLoadFileHistory.setCount("Deleted", constructs.size());
-
 		updateHistory(bulkLoadFileHistory);
 		
 		Set<String> refList = constructs.stream()
@@ -65,9 +67,9 @@ public class ConstructExecutor extends LoadFileExecutor {
 
 		constructService.preLoadReferences(refList);
 
-		boolean success = runLoad(constructService, bulkLoadFileHistory, dataProvider, constructs, constructIdsLoaded);
+		boolean success = runLoad(constructService, bulkLoadFileHistory, dataProvider, constructs, constructIdsLoaded, countLabel(INGEST_SET));
 		if (success && cleanUp) {
-			runCleanup(constructService, bulkLoadFileHistory, dataProvider.name(), constructIdsBefore, constructIdsLoaded, "construct");
+			runCleanup(constructService, bulkLoadFileHistory, dataProvider.name(), constructIdsBefore, constructIdsLoaded, countLabel(INGEST_SET));
 		}
 		bulkLoadFileHistory.finishLoad();
 		updateHistory(bulkLoadFileHistory);

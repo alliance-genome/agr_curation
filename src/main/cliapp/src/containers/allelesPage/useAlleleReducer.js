@@ -1,6 +1,12 @@
 import { useImmerReducer } from 'use-immer';
 import { useCallback, useMemo } from 'react';
-import { addDataKey, buildEmptyAlleleSymbol, generateCrossRefSearchFields, generateCurieSearchFields } from './utils';
+import {
+	addDataKey,
+	buildEmptyAlleleSymbol,
+	generateCrossRefSearchFields,
+	generateCurieSearchFields,
+	SINGLE_VALUE_FIELDS,
+} from './utils';
 import { getUniqueItemsByProperty } from '../../utils/utils';
 import { Endpoints } from '../../constants/Endpoints';
 
@@ -135,6 +141,9 @@ const initialAlleleState = {
 	},
 	errorMessages: {},
 	submitted: false,
+	// Whether any field other than the single-value ones and single-object sections has been edited since the
+	// allele was last set or reset.
+	hasOtherPendingEdits: false,
 };
 
 /**
@@ -215,6 +224,7 @@ const alleleReducer = (draft, action, initialState) => {
 			});
 
 			draft.allele = allele;
+			draft.hasOtherPendingEdits = false;
 			break;
 		case 'RESET':
 			// Cloned so the state every reset starts from is never the object later mutated in place.
@@ -234,27 +244,33 @@ const alleleReducer = (draft, action, initialState) => {
 			}
 			draft.errorMessages = {};
 			draft.submitted = false;
+			draft.hasOtherPendingEdits = false;
 			break;
 		case 'EDIT':
 			draft.allele[action.field] = action.value;
+			if (!SINGLE_VALUE_FIELDS.includes(action.field)) draft.hasOtherPendingEdits = true;
 			break;
 		case 'EDIT_ROW':
 			draft.allele[action.entityType][action.index][action.field] = action.value;
+			draft.hasOtherPendingEdits = true;
 			break;
 		case 'EDIT_FILTERABLE_ROW':
 			const row = draft.allele[action.entityType].find((row) => row.dataKey === action.dataKey);
 			if (row) {
 				row[action.field] = action.value;
+				draft.hasOtherPendingEdits = true;
 			}
 			break;
 		case 'REPLACE_ROW':
 			const index = draft.allele[action.entityType].findIndex((row) => row.dataKey === action.dataKey);
 			if (index !== -1) {
 				draft.allele[action.entityType][index] = action.newRow;
+				draft.hasOtherPendingEdits = true;
 			}
 			break;
 		case 'EDIT_OBJECT':
 			draft.allele[action.entityType][action.field] = action.value;
+			if (!SINGLE_VALUE_FIELDS.includes(action.entityType)) draft.hasOtherPendingEdits = true;
 			break;
 		case 'ADD_ROW':
 			draft.allele[action.entityType].unshift(action.row);
@@ -263,22 +279,26 @@ const alleleReducer = (draft, action, initialState) => {
 			}
 			draft.entityStates[action.entityType].editingRows[`${action.row.dataKey}`] = true;
 			draft.entityStates[action.entityType].show = true;
+			draft.hasOtherPendingEdits = true;
 			break;
 		case 'ADD_OBJECT':
 			draft.allele[action.entityType] = action.value;
 			draft.entityStates[action.entityType].editingRows[`${action.value.dataKey}`] = true;
 			draft.entityStates[action.entityType].show = true;
+			if (!SINGLE_VALUE_FIELDS.includes(action.entityType)) draft.hasOtherPendingEdits = true;
 			break;
 		case 'DELETE_ROW':
 			draft.allele[action.entityType] = draft.allele[action.entityType].filter((row) => row.dataKey !== action.dataKey);
 			if (draft.allele[action.entityType].length === 0) {
 				draft.entityStates[action.entityType].show = false;
 			}
+			draft.hasOtherPendingEdits = true;
 			break;
 
 		case 'DELETE_OBJECT':
 			draft.allele[action.entityType] = null;
 			draft.entityStates[action.entityType].show = false;
+			if (!SINGLE_VALUE_FIELDS.includes(action.entityType)) draft.hasOtherPendingEdits = true;
 			break;
 		case 'UPDATE_ERROR_MESSAGES':
 			draft.errorMessages = action.errorMessages;

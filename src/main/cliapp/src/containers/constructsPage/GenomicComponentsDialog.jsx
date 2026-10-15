@@ -11,11 +11,36 @@ import { Button } from 'primereact/button';
 import { RelatedNotesReadOnlyDialog } from '../../components/RelatedNotesReadOnlyDialog';
 import { getIdentifier } from '../../utils/utils';
 
+// "symbol (identifier)" of a gene or allele, "name (identifier)" of another genomic entity.
+const genomicEntityDisplayValue = (genomicEntity) => {
+	if (genomicEntity.geneSymbol || genomicEntity.alleleSymbol) {
+		const symbolValue = genomicEntity.geneSymbol
+			? genomicEntity.geneSymbol.displayText
+			: genomicEntity.alleleSymbol.displayText;
+		return symbolValue + ' (' + getIdentifier(genomicEntity) + ')';
+	}
+	if (genomicEntity.name) {
+		return genomicEntity.name + ' (' + getIdentifier(genomicEntity) + ')';
+	}
+	return getIdentifier(genomicEntity);
+};
+
+/**
+ * Read-only pop-up listing component associations: the genomic entity associations of a construct
+ * or a cassette, or the transgenic tool associations of a cassette.
+ *
+ * @param {string} [props.objectField] - the association's component field
+ * @param {string} [props.title] - the pop-up's heading
+ * @param {Function} [props.getComponentLabel] - the text shown for a component
+ */
 export const GenomicComponentsDialog = ({
 	originalComponentsData,
 	setOriginalComponentsData,
 	errorMessagesMainRow,
 	setErrorMessagesMainRow,
+	objectField = 'constructGenomicEntityAssociationObject',
+	title = 'Component Associations',
+	getComponentLabel = genomicEntityDisplayValue,
 }) => {
 	const { originalComponents, dialog } = originalComponentsData;
 	const [localComponents, setLocalComponents] = useState(null);
@@ -92,24 +117,7 @@ export const GenomicComponentsDialog = ({
 	};
 
 	const componentTemplate = (rowData) => {
-		let componentDisplayValue = '';
-		if (
-			rowData.constructGenomicEntityAssociationObject.geneSymbol ||
-			rowData.constructGenomicEntityAssociationObject.alleleSymbol
-		) {
-			let symbolValue = rowData.constructGenomicEntityAssociationObject.geneSymbol
-				? rowData.constructGenomicEntityAssociationObject.geneSymbol.displayText
-				: rowData.constructGenomicEntityAssociationObject.alleleSymbol.displayText;
-			componentDisplayValue = symbolValue + ' (' + getIdentifier(rowData.constructGenomicEntityAssociationObject) + ')';
-		} else if (rowData.constructGenomicEntityAssociationObject.name) {
-			componentDisplayValue =
-				rowData.constructGenomicEntityAssociationObject.name +
-				' (' +
-				getIdentifier(rowData.constructGenomicEntityAssociationObject) +
-				')';
-		} else {
-			componentDisplayValue = getIdentifier(rowData.constructGenomicEntityAssociationObject);
-		}
+		const componentDisplayValue = getComponentLabel(rowData[objectField] || {});
 		return (
 			<>
 				<div
@@ -144,7 +152,7 @@ export const GenomicComponentsDialog = ({
 		<>
 			<div>
 				<Dialog visible={dialog} className="w-8" modal onHide={hideDialog} closable={true} onShow={showDialogHandler}>
-					<h3>Component Associations</h3>
+					<h3>{title}</h3>
 					<DataTable
 						value={localComponents}
 						dataKey="dataKey"
@@ -155,7 +163,7 @@ export const GenomicComponentsDialog = ({
 					>
 						<Column field="relation.name" header="Relation" headerClassName="surface-0" />
 						<Column
-							field="constructGenomicEntityAssociationObject.primaryExternalId"
+							field={`${objectField}.primaryExternalId`}
 							header="Component"
 							headerClassName="surface-0"
 							body={componentTemplate}

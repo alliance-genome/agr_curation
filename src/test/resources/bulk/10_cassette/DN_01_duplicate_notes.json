@@ -1,0 +1,17 @@
+[
+  {
+    "primary_external_id": "WB:CassetteDN01",
+    "cassette_symbol_dto": { "display_text": "Cs12", "format_text": "Cs12", "name_type_name": "nomenclature_symbol" },
+    "cassette_component_dtos": [
+      {
+        "component_symbol": "ccmp12",
+        "relation_name": "is_regulated_by",
+        "note_dtos": [
+          { "free_text": "Duplicate note", "note_type_name": "test_cassette_component_note" },
+          { "free_text": "Duplicate note", "note_type_name": "test_cassette_component_note" }
+        ]
+      }
+    ],
+    "data_provider_dto": { "source_organization_abbreviation": "WB" }
+  }
+]

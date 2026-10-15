@@ -11,7 +11,6 @@ import org.alliancegenome.curation_api.model.ingest.dto.GeneDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.IngestDTO;
 import org.alliancegenome.curation_api.services.GeneService;
 import org.alliancegenome.curation_api.services.ontology.NcbiTaxonTermService;
-import org.apache.commons.collections.CollectionUtils;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -27,21 +26,24 @@ public class GeneExecutor extends LoadFileExecutor {
 
 	@Inject NcbiTaxonTermService ncbiTaxonTermService;
 
-	public void execLoad(BulkLoadFileHistory bulkLoadFileHistory, Boolean cleanUp) {
+	@Override
+	protected List<?> getIngestSet(IngestDTO ingestDto) {
+		return ingestDto.getGeneIngestSet();
+	}
+
+	@Override
+	protected Class<?> getIngestDtoClass() {
+		return GeneDTO.class;
+	}
+
+	@Override
+	protected void loadIngestSet(BulkLoadFileHistory bulkLoadFileHistory, IngestDTO ingestDto, Boolean cleanUp) {
 
 		BulkManualLoad manual = (BulkManualLoad) bulkLoadFileHistory.getBulkLoad();
 		BackendBulkDataProvider dataProvider = manual.getDataProvider();
 		log.info("Running with dataProvider : " + dataProvider.name());
 
-		IngestDTO ingestDto = readIngestFile(bulkLoadFileHistory, GeneDTO.class);
-		if (ingestDto == null) {
-			return;
-		}
-
 		List<GeneDTO> genes = ingestDto.getGeneIngestSet();
-		if (CollectionUtils.isEmpty(genes)) {
-			return;
-		}
 
 		List<Long> geneIdsLoaded = new ArrayList<>();
 		List<Long> geneIdsBefore = new ArrayList<>();

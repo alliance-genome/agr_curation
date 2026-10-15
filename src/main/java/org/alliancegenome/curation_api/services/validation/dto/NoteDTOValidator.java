@@ -3,6 +3,7 @@ package org.alliancegenome.curation_api.services.validation.dto;
 import java.util.List;
 
 import org.alliancegenome.curation_api.constants.ValidationConstants;
+import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.model.entities.Note;
 import org.alliancegenome.curation_api.model.entities.Reference;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
@@ -31,7 +32,10 @@ public class NoteDTOValidator extends AuditedObjectDTOValidator<Note, NoteDTO> {
 		}
 		note.setFreeText(dto.getFreeText());
 
-		VocabularyTerm noteType = validateRequiredTermInVocabularyTermSet("note_type_name", dto.getNoteTypeName(), noteTypeVocabularyTermSet);
+		// No term set means any note type, as in NoteValidator for notes edited in the UI
+		VocabularyTerm noteType = StringUtils.isBlank(noteTypeVocabularyTermSet)
+			? validateRequiredTermInVocabulary("note_type_name", dto.getNoteTypeName(), VocabularyConstants.NOTE_TYPE_VOCABULARY)
+			: validateRequiredTermInVocabularyTermSet("note_type_name", dto.getNoteTypeName(), noteTypeVocabularyTermSet);
 		note.setNoteType(noteType);
 
 		List<Reference> references = validateOptionalEntities("evidence_curies", dto.getEvidenceCuries(), referenceService::retrieveFromDbOrLiteratureService);

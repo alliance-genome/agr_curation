@@ -6,7 +6,9 @@ export const Endpoints = Object.freeze({
 		ALLELE_GENE_ASSOCIATION: 'allelegeneassociation',
 		ANTIBODY: 'antibody',
 		BIOLOGICAL_ENTITY: 'biologicalentity',
+		CASSETTE: 'cassette',
 		CONSTRUCT: 'construct',
+		CROSS_REFERENCE: 'cross-reference',
 		GENE: 'gene',
 		GENOME_ASSEMBLY: 'genomeassembly',
 		MOLECULE: 'molecule',
@@ -26,6 +28,9 @@ export const Endpoints = Object.freeze({
 	}),
 
 	SlotAnnotation: Object.freeze({
+		AGM_FULL_NAME: 'agmfullnameslotannotation',
+		AGM_SECONDARY_ID: 'agmsecondaryidslotannotation',
+		AGM_SYNONYM: 'agmsynonymslotannotation',
 		ALLELE_DATABASE_STATUS: 'alleledatabasestatusslotannotation',
 		ALLELE_FULL_NAME: 'allelefullnameslotannotation',
 		ALLELE_FUNCTIONAL_IMPACT: 'allelefunctionalimpactslotannotation',
@@ -36,6 +41,11 @@ export const Endpoints = Object.freeze({
 		ALLELE_SECONDARY_ID: 'allelesecondaryidslotannotation',
 		ALLELE_SYMBOL: 'allelesymbolslotannotation',
 		ALLELE_SYNONYM: 'allelesynonymslotannotation',
+		GENE_FULL_NAME: 'genefullnameslotannotation',
+		GENE_SECONDARY_ID: 'genesecondaryidslotannotation',
+		GENE_SYMBOL: 'genesymbolslotannotation',
+		GENE_SYNONYM: 'genesynonymslotannotation',
+		GENE_SYSTEMATIC_NAME: 'genesystematicnameslotannotation',
 	}),
 
 	Ontology: Object.freeze({
