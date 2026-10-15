@@ -21,6 +21,15 @@ public class InformationContentEntityValidator extends AuditedObjectValidator<In
 		return response;
 	}
 
+	/**
+	 * Resolves the stored entity a submitted one names by its curie, or by one of its cross reference curies, from
+	 * the database or the literature service. The submitted entry only names the entity: none of its other fields
+	 * are read, and the stored entity is returned as it is.
+	 *
+	 * @param uiEntity the submitted entity
+	 * @param throwError not consulted: an entity that cannot be resolved is returned as null
+	 * @return the stored entity, or null when none matches
+	 */
 	public InformationContentEntity validateInformationContentEntity(InformationContentEntity uiEntity, Boolean throwError) {
 		response = new ObjectResponse<>(uiEntity);
 		String errorTitle = "Could not update InformationContentEntity: [" + uiEntity.getCurie() + "]";
@@ -35,8 +44,6 @@ public class InformationContentEntityValidator extends AuditedObjectValidator<In
 			addMessageResponse("curie", ValidationConstants.INVALID_MESSAGE);
 			return null;
 		}
-
-		dbEntity = validateAuditedObjectFields(uiEntity, dbEntity, false);
 
 		if (response.hasErrors()) {
 			if (throwError) {

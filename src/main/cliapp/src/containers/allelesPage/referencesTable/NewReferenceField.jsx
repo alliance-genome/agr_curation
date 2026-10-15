@@ -1,51 +1,34 @@
 import { useState } from 'react';
 import { Button } from 'primereact/button';
-import { addDataKey, generateCrossRefSearchField } from '../utils';
 import { SingleReferenceDetailPageEditor } from '../../../components/Editors/autocomplete/references/SingleReferenceDetailPageEditor';
 import { Splitter, SplitterPanel } from 'primereact/splitter';
 import { SingleReferenceAdditionalFieldData } from '../../../components/FieldData/SingleReferenceAdditionalFieldData';
+import { useSubResource } from '../../../components/SubResourcesContext';
+import { prepareReferences } from './utils';
 
-export const NewReferenceField = ({ state, dispatch }) => {
+/**
+ * The references section's picker. Adds the chosen reference to the section's rows, unless a row
+ * already holds it.
+ */
+export const NewReferenceField = () => {
+	const { setReferences } = useSubResource('references');
 	const [reference, setReference] = useState(null);
+	const [errorMessages, setErrorMessages] = useState({});
 
 	const createNewReferenceHandler = (event) => {
 		event.preventDefault();
 
 		if (!reference || typeof reference === 'string') {
-			const errorMessages = {
-				references: 'Must select reference from dropdown',
-			};
-
-			dispatch({
-				type: 'UPDATE_TABLE_ERROR_MESSAGES',
-				entityType: 'references',
-				errorMessages,
-			});
-
+			setErrorMessages({ references: 'Must select reference from dropdown' });
 			return;
 		}
 
-		const searchString = generateCrossRefSearchField(reference);
-
-		const newReference = {
-			...reference,
-			shortCitation: reference.short_citation,
-			crossReferencesFilter: searchString,
-		};
-
-		addDataKey(newReference);
-
-		dispatch({
-			type: 'ADD_ROW',
-			row: newReference,
-			entityType: 'references',
-		});
+		const [newReference] = prepareReferences([reference]);
+		setReferences((previous) =>
+			previous.some((row) => row.curie === newReference.curie) ? previous : [newReference, ...previous]
+		);
 		setReference(null);
-		dispatch({
-			type: 'UPDATE_TABLE_ERROR_MESSAGES',
-			entityType: 'references',
-			errorMessages: {},
-		});
+		setErrorMessages({});
 	};
 
 	const referencesOnChangeHandler = (event) => {
@@ -57,7 +40,7 @@ export const NewReferenceField = ({ state, dispatch }) => {
 				<SingleReferenceDetailPageEditor
 					reference={reference}
 					onReferenceValueChange={referencesOnChangeHandler}
-					errorMessages={state.entityStates.references.errorMessages}
+					errorMessages={errorMessages}
 				/>
 			</SplitterPanel>
 			<SplitterPanel size={20}>

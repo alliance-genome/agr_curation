@@ -1,11 +1,3 @@
-export const generateCrossRefSearchFields = (references) => {
-	if (references) {
-		references.forEach((reference) => {
-			reference.crossReferencesFilter = generateCrossRefSearchField(reference);
-		});
-	}
-};
-
 export const generateCrossRefSearchField = (reference) => {
 	const { crossReferences, curieField } = getCrossReferences(reference);
 
@@ -163,10 +155,10 @@ const copyRows = (rows) => (rows?.length ? rows.map(copyRow) : undefined);
  *
  * Left behind: everything that identifies the stored allele (its ids and secondary IDs), its data
  * provider and audit fields, and the variant and construct associations the form does not edit. Cross
- * references are written through their own sub-resource and copied separately; see
- * buildDuplicateCrossReferences. Each copied row, and a gene association's note, loses its own id and audit
- * fields, so it is created afresh. A list with no rows is left unset, as the detail endpoint leaves
- * it, so its section starts hidden.
+ * references and references are written through their own sub-resources and copied separately; see
+ * buildDuplicateCrossReferences and useDuplicateAlleleSource. Each copied row, and a gene association's
+ * note, loses its own id and audit fields, so it is created afresh. A list with no rows is left unset, as
+ * the detail endpoint leaves it, so its section starts hidden.
  *
  * @param {Object} allele an allele as the detail endpoint returns it
  * @returns {Object} an allele without an id, not obsolete, carrying only the lists that have rows
@@ -187,7 +179,6 @@ export const buildDuplicateAllele = (allele) => {
 		isExtinct: allele.isExtinct ?? false,
 		internal: allele.internal ?? false,
 		obsolete: false,
-		references: allele.references?.length ? structuredClone(allele.references) : undefined,
 		relatedNotes: copyRows(allele.relatedNotes),
 		alleleSymbol: copyRow(allele.alleleSymbol),
 		alleleFullName: copyRow(allele.alleleFullName),

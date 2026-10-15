@@ -298,7 +298,7 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 			body("entity.obsolete", is(false)).
 			body("entity.inCollection.name", is(mmpInCollection.getName())).
 			body("entity.isExtinct", is(false)).
-			body("entity.references[0].curie", is(reference.getCurie())).
+			body("entity", not(hasKey("references"))).
 			body("entity.dateCreated", is(datetime.toString())).
 			body("entity.createdBy.uniqueId", is("Local|Dev User|test@alliancegenome.org")).
 			body("entity.updatedBy.uniqueId", is("Local|Dev User|test@alliancegenome.org")).
@@ -344,6 +344,14 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 			body("entity.alleleNomenclatureEvents[0].evidence[0].curie", is(reference.getCurie())).
 			body("entity.alleleNomenclatureEvents[0].nomenclatureEvent.name", is(dataMergedEvent.getName())).
 			body("entity.dataProvider.abbreviation", is(dataProvider.getAbbreviation()));
+
+		// The create endpoint does not write references; they are written through the references sub-resource.
+		RestAssured.given().
+			when().
+			get("/api/allele/" + getAllele(ALLELE).getId() + "/references").
+			then().
+			statusCode(200).
+			body("entities", nullValue());
 	}
 
 	@Test
@@ -448,7 +456,6 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 			statusCode(200).
 			body("entity.primaryExternalId", is(ALLELE)).
 			body("entity.inCollection.name", is(wgsInCollection.getName())).
-			body("entity.references[0].curie", is(reference2.getCurie())).
 			body("entity.dateCreated", is(datetime2.toString())).
 			body("entity.createdBy.uniqueId", is(person.getUniqueId())).
 			body("entity.updatedBy.uniqueId", is("Local|Dev User|test@alliancegenome.org")).
@@ -499,6 +506,15 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 			body("entity.alleleNomenclatureEvents[0].evidence[0].curie", is(reference2.getCurie())).
 			body("entity.alleleNomenclatureEvents[0].nomenclatureEvent.name", is(symbolUpdatedEvent.getName())).
 			body("entity.dataProvider.abbreviation", is(dataProvider2.getAbbreviation()));
+
+		// The allele table's endpoint writes references from its payload.
+		RestAssured.given().
+			when().
+			get("/api/allele/" + allele.getId() + "/references").
+			then().
+			statusCode(200).
+			body("entities", hasSize(1)).
+			body("entities[0].curie", is(reference2.getCurie()));
 	}
 
 	@Test
@@ -909,10 +925,9 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 			post("/api/allele").
 			then().
 			statusCode(400).
-			body("errorMessages", is(aMapWithSize(15))).
+			body("errorMessages", is(aMapWithSize(14))).
 			body("errorMessages.taxon", is(ValidationConstants.INVALID_MESSAGE)).
 			body("errorMessages.inCollection", is(ValidationConstants.INVALID_MESSAGE)).
-			body("errorMessages.references", is("curie - " + ValidationConstants.INVALID_MESSAGE)).
 			body("errorMessages.alleleMutationTypes", is(String.join(" | ", List.of(
 					"evidence - " + ValidationConstants.INVALID_MESSAGE,
 					"mutationTypes - " + ValidationConstants.INVALID_MESSAGE)))).
@@ -1118,10 +1133,9 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 			post("/api/allele").
 			then().
 			statusCode(400).
-			body("errorMessages", is(aMapWithSize(15))).
+			body("errorMessages", is(aMapWithSize(14))).
 			body("errorMessages.taxon", is(ValidationConstants.OBSOLETE_MESSAGE)).
 			body("errorMessages.inCollection", is(ValidationConstants.OBSOLETE_MESSAGE)).
-			body("errorMessages.references", is("curie - " + ValidationConstants.OBSOLETE_MESSAGE)).
 			body("errorMessages.alleleMutationTypes", is(String.join(" | ", List.of(
 					"evidence - " + ValidationConstants.OBSOLETE_MESSAGE,
 					"mutationTypes - " + ValidationConstants.OBSOLETE_MESSAGE)))).
@@ -1424,6 +1438,16 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 	public void editAlleleWithNullNonRequiredFieldsLevel1() {
 		Allele allele = getAllele(ALLELE);
 
+		// Earlier edits leave the allele with no references, so one is attached for the null payload to clear.
+		RestAssured.given().
+			contentType("application/json").
+			body(new Reference[] { reference2 }).
+			when().
+			put("/api/allele/" + allele.getId() + "/references").
+			then().
+			statusCode(200).
+			body("entities", hasSize(1));
+
 		allele.setInCollection(null);
 		allele.setReferences(null);
 		allele.setIsExtinct(null);
@@ -1454,7 +1478,6 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 			then().
 			statusCode(200).
 			body("entity", not(hasKey("inCollection"))).
-			body("entity", not(hasKey("references"))).
 			body("entity", not(hasKey("isExtinct"))).
 			body("entity", not(hasKey("dateCreated"))).
 			body("entity", not(hasKey("alleleMutationTypes"))).
@@ -1468,6 +1491,13 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 			body("entity", not(hasKey("alleleNomenclatureEvents"))).
 			body("entity", not(hasKey("relatedNotes"))).
 			body("entity", not(hasKey("dataProviderCrossReference")));
+
+		RestAssured.given().
+			when().
+			get("/api/allele/" + allele.getId() + "/references").
+			then().
+			statusCode(200).
+			body("entities", nullValue());
 	}
 
 	@Test
@@ -1770,7 +1800,7 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 		// Fail if it ever widens again - that is how the lazy branch got in (SCRUM-6434).
 		Set<String> allowed = Set.of(
 				"type", "id", "curie", "primaryExternalId", "modInternalId", "taxon", "inCollection", "isExtinct",
-				"references", "relatedNotes", "dataProvider", "dataProviderCrossReference",
+				"relatedNotes", "dataProvider", "dataProviderCrossReference",
 				"alleleSymbol", "alleleFullName", "alleleSynonyms", "alleleSecondaryIds", "alleleMutationTypes",
 				"alleleInheritanceModes", "alleleFunctionalImpacts", "alleleGermlineTransmissionStatus",
 				"alleleDatabaseStatus", "alleleNomenclatureEvents",
@@ -1802,9 +1832,14 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 		assertNotNull(constructAssociationRelation, "constructAssociationRelation fixture is null");
 
 		Allele allele = getAllele(ROUND_TRIP_ALLELE);
-		// createAllele leaves references empty; set one so the round trip covers
-		// Reference.crossReferences, the collection this bug is about.
-		allele.setReferences(List.of(reference));
+		// The detail payload never carries references, so both saves must leave this one in place.
+		RestAssured.given().
+				contentType("application/json").
+				body(new Reference[] { reference }).
+				when().
+				put("/api/allele/" + allele.getId() + "/references").
+				then().
+				statusCode(200);
 
 		AlleleGeneAssociation ga = new AlleleGeneAssociation();
 		ga.setAlleleGeneAssociationObject(gene);
@@ -1816,8 +1851,8 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 		ca.setRelation(constructAssociationRelation);
 		allele.setAlleleConstructAssociations(List.of(ca));
 
-		// reference2 is deliberately not in allele.references, so its crossReferences are reachable
-		// only through SlotAnnotation.evidence. Reusing reference here would hide a regression.
+		// reference2's crossReferences are reachable only through SlotAnnotation.evidence, the path that
+		// serializes Reference.crossReferences under AlleleDetailView.
 		allele.setAlleleInheritanceModes(List.of(
 				createAlleleInheritanceModeSlotAnnotation(List.of(reference2), dominantInheritanceMode, mpTerm, "Round trip")));
 		allele.setAlleleSecondaryIds(List.of(
@@ -1851,8 +1886,15 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 				body("entity.alleleInheritanceModes", hasSize(1)).
 				body("entity.alleleSecondaryIds", hasSize(1)).
 				body("entity.alleleSecondaryIds[0].secondaryId", is("TEST:RoundTripSecondary")).
-				body("entity.alleleSecondaryIds[0].evidence[0].curie", is(reference2.getCurie())).
-				body("entity.references", hasSize(1));
+				body("entity.alleleSecondaryIds[0].evidence[0].curie", is(reference2.getCurie()));
+
+		RestAssured.given().
+				when().
+				get("/api/allele/" + allele.getId() + "/references").
+				then().
+				statusCode(200).
+				body("entities", hasSize(1)).
+				body("entities[0].curie", is(reference.getCurie()));
 
 		RestAssured.given().
 				when().

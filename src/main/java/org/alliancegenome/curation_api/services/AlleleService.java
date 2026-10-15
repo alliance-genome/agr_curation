@@ -18,6 +18,7 @@ import org.alliancegenome.curation_api.model.document.es.AlleleSummaryDocument;
 import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.Note;
+import org.alliancegenome.curation_api.model.entities.Reference;
 import org.alliancegenome.curation_api.model.ingest.dto.AlleleDTO;
 import org.alliancegenome.curation_api.response.ObjectListResponse;
 import org.alliancegenome.curation_api.response.ObjectResponse;
@@ -26,6 +27,7 @@ import org.alliancegenome.curation_api.services.base.SubmittedObjectCrudService;
 import org.alliancegenome.curation_api.services.validation.AlleleValidator;
 import org.alliancegenome.curation_api.services.validation.dto.AlleleDTOValidator;
 import org.apache.commons.collections.CollectionUtils;
+import org.hibernate.Hibernate;
 
 import io.quarkus.logging.Log;
 import jakarta.annotation.PostConstruct;
@@ -58,17 +60,18 @@ public class AlleleService extends SubmittedObjectCrudService<Allele, AlleleDTO,
 	@Override
 	@Transactional
 	public ObjectResponse<Allele> update(Allele uiEntity) {
-		// AlleleView carries crossReferences but not the associations, so this path manages the former only.
+		// AlleleView carries crossReferences and references but not the associations, so this path manages those
+		// only.
 		Allele dbEntity = alleleValidator.validateAlleleUpdate(uiEntity, false, true);
 		return new ObjectResponse<>(dbEntity);
 	}
 
 	@Transactional
 	public ObjectResponse<Allele> updateDetail(Allele uiEntity) {
-		// AlleleDetailView carries the associations but not crossReferences, so this path manages the associations
-		// only; cross references are written through the allele's cross-references sub-resource. Both flags are set
-		// explicitly rather than derived from one another - they are complementary for these two views by
-		// coincidence, not by rule.
+		// AlleleDetailView carries the associations but not crossReferences or references, so this path manages the
+		// associations only; cross references and references are written through the allele's sub-resources. Both
+		// flags are set explicitly rather than derived from one another - they are complementary for these two
+		// views by coincidence, not by rule.
 		Allele dbEntity = alleleValidator.validateAlleleUpdate(uiEntity, true, false);
 		return new ObjectResponse<>(dbEntity);
 	}
@@ -82,6 +85,30 @@ public class AlleleService extends SubmittedObjectCrudService<Allele, AlleleDTO,
 	@Transactional
 	public ObjectListResponse<CrossReference> updateCrossReferences(Long id, List<CrossReference> crossReferences) {
 		return crossReferenceService.replaceForOwner(findAlleleOrThrow(id), crossReferences);
+	}
+
+	public ObjectListResponse<Reference> getReferences(Long id) {
+		Allele allele = findAlleleOrThrow(id);
+		List<Reference> references = allele.getReferences();
+		return new ObjectListResponse<>(references == null ? new ArrayList<>() : new ArrayList<>(references));
+	}
+
+	@Transactional
+	public ObjectListResponse<Reference> updateReferences(Long id, List<Reference> references) {
+		Allele allele = findAlleleOrThrow(id);
+		List<Reference> resolvedReferences = alleleValidator.validateReferenceReplacement(allele, references);
+
+		if (allele.getReferences() == null) {
+			allele.setReferences(new ArrayList<>());
+		}
+		allele.getReferences().clear();
+		allele.getReferences().addAll(resolvedReferences);
+
+		// The response is serialized after this transaction closes, so each reference's cross references are
+		// loaded while it is open.
+		resolvedReferences.forEach(reference -> Hibernate.initialize(reference.getCrossReferences()));
+
+		return new ObjectListResponse<>(new ArrayList<>(allele.getReferences()));
 	}
 
 	private Allele findAlleleOrThrow(Long id) {

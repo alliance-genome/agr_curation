@@ -242,7 +242,7 @@ export const AlleleForm = ({ state, dispatch, isVisible, mode = 'detail', pendin
 			</FormSection>
 
 			<FormSection isVisible={isVisible('References')}>
-				<ReferencesForm state={state} dispatch={dispatch} />
+				<ReferencesForm mode={mode} />
 			</FormSection>
 
 			<FormSection isVisible={isVisible('In Collection')}>

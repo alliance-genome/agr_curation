@@ -4,6 +4,7 @@ import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.nullValue;
 
 import java.time.OffsetDateTime;
 
@@ -22,6 +23,7 @@ import io.quarkus.test.junit.QuarkusIntegrationTest;
 import io.restassured.RestAssured;
 import io.restassured.config.HttpClientConfig;
 import io.restassured.config.RestAssuredConfig;
+import io.restassured.response.ValidatableResponse;
 
 
 @QuarkusIntegrationTest
@@ -85,8 +87,6 @@ public class IT_0102_AlleleBulkUploadITCase extends BaseITCase {
 			body("entity.dateUpdated", is(OffsetDateTime.parse("2022-03-10T22:10:12Z").toString())).
 			body("entity.inCollection.name", is("Million_mutations_project")).
 			body("entity.isExtinct", is(false)).
-			body("entity.references", hasSize(1)).
-			body("entity.references[0].curie", is(requiredReference)).
 			body("entity.relatedNotes", hasSize(1)).
 			body("entity.relatedNotes[0].internal", is(false)).
 			body("entity.relatedNotes[0].obsolete", is(true)).
@@ -199,6 +199,10 @@ public class IT_0102_AlleleBulkUploadITCase extends BaseITCase {
 			body("entity.dataProviderCrossReference.referencedCurie", is("TEST:0001")).
 			body("entity.dataProviderCrossReference.displayName", is("TEST:0001")).
 			body("entity.dataProviderCrossReference.resourceDescriptorPage.name", is("homepage"));
+
+		getAlleleReferences("ALLELETEST:Allele0001").
+			body("entities", hasSize(1)).
+			body("entities[0].curie", is(requiredReference));
 	}
 	
 	@Test
@@ -221,8 +225,6 @@ public class IT_0102_AlleleBulkUploadITCase extends BaseITCase {
 			body("entity.dateUpdated", is(OffsetDateTime.parse("2022-03-20T22:10:12Z").toString())).
 			body("entity.inCollection.name", is("WGS_Yanai")).
 			body("entity.isExtinct", is(true)).
-			body("entity.references", hasSize(1)).
-			body("entity.references[0].curie", is(requiredReference2)).
 			body("entity.relatedNotes", hasSize(1)).
 			body("entity.relatedNotes[0].internal", is(true)).
 			body("entity.relatedNotes[0].obsolete", is(false)).
@@ -337,6 +339,10 @@ public class IT_0102_AlleleBulkUploadITCase extends BaseITCase {
 			body("entity.dataProviderCrossReference.referencedCurie", is("TEST2:0001")).
 			body("entity.dataProviderCrossReference.displayName", is("TEST2:0001")).
 			body("entity.dataProviderCrossReference.resourceDescriptorPage.name", is("homepage2"));
+
+		getAlleleReferences("ALLELETEST:Allele0001").
+			body("entities", hasSize(1)).
+			body("entities[0].curie", is(requiredReference2));
 	}
 	
 	@Test
@@ -445,7 +451,6 @@ public class IT_0102_AlleleBulkUploadITCase extends BaseITCase {
 			body("entity", not(hasKey("dateCreated"))).
 			body("entity", not(hasKey("dateUpdated"))).
 			body("entity", not(hasKey("inCollection"))).
-			body("entity", not(hasKey("references"))).
 			body("entity", not(hasKey("relatedNotes"))).
 			body("entity", not(hasKey("alleleMutationTypes"))).
 			body("entity", not(hasKey("alleleFullName"))).
@@ -457,6 +462,9 @@ public class IT_0102_AlleleBulkUploadITCase extends BaseITCase {
 			body("entity", not(hasKey("alleleDatabaseStatus"))).
 			body("entity", not(hasKey("alleleNomenclatureEvents"))).
 			body("entity", not(hasKey("dataProviderCrossReference")));
+
+		getAlleleReferences("ALLELETEST:Allele0001").
+			body("entities", nullValue());
 	}
 
 	@Test
@@ -554,7 +562,6 @@ public class IT_0102_AlleleBulkUploadITCase extends BaseITCase {
 			body("entity", not(hasKey("dateUpdated"))).
 			body("entity", not(hasKey("inheritanceMode"))).
 			body("entity", not(hasKey("inCollection"))).
-			body("entity", not(hasKey("references"))).
 			body("entity.relatedNotes[0]", not(hasKey("evidence"))).
 			body("entity.relatedNotes[0]", not(hasKey("createdBy"))).
 			body("entity.relatedNotes[0]", not(hasKey("updatedBy"))).
@@ -620,6 +627,9 @@ public class IT_0102_AlleleBulkUploadITCase extends BaseITCase {
 			body("entity.alleleNomenclatureEvents[0]", not(hasKey("updatedBy"))).
 			body("entity.alleleNomenclatureEvents[0]", not(hasKey("dateCreated"))).
 			body("entity.alleleNomenclatureEvents[0]", not(hasKey("dateUpdated")));
+
+		getAlleleReferences("ALLELETEST:Allele0001").
+			body("entities", nullValue());
 	}
 	
 	@Test
@@ -681,5 +691,14 @@ public class IT_0102_AlleleBulkUploadITCase extends BaseITCase {
 		checkWarningBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "IV_32_invalid_allele_database_status_evidence.json");
 		checkWarningBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "IV_34_invalid_allele_nomenclature_events_evidence.json");
 		checkWarningBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "IV_35_invalid_multiple_evidence_fields.json", 4);
+	}
+
+	// The detail endpoint omits references; they are read through the allele's references sub-resource.
+	private ValidatableResponse getAlleleReferences(String identifier) {
+		return RestAssured.given().
+			when().
+			get(alleleGetEndpoint + getAllele(identifier).getId() + "/references").
+			then().
+			statusCode(200);
 	}
 }

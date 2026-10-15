@@ -4,6 +4,7 @@ import { renderWithClient } from '../../../tools/jest/utils';
 import { AlleleForm, ALLELE_CREATE_TOGGLEABLE_FIELDS, ALLELE_DETAIL_TOGGLEABLE_FIELDS } from '../AlleleForm';
 import { useAlleleReducer } from '../useAlleleReducer';
 import { useAlleleCrossReferences } from '../crossReferences/useAlleleCrossReferences';
+import { useAlleleReferences } from '../referencesTable/useAlleleReferences';
 import { SubResourcesProvider } from '../../../components/SubResourcesContext';
 
 const alwaysVisible = () => true;
@@ -12,8 +13,9 @@ const alwaysVisible = () => true;
 const AlleleFormHarness = ({ mode }) => {
 	const { alleleState, alleleDispatch } = useAlleleReducer();
 	const crossReferences = useAlleleCrossReferences();
+	const references = useAlleleReferences();
 	return (
-		<SubResourcesProvider value={{ crossReferences }}>
+		<SubResourcesProvider value={{ crossReferences, references }}>
 			<AlleleForm state={alleleState} dispatch={alleleDispatch} isVisible={alwaysVisible} mode={mode} />
 		</SubResourcesProvider>
 	);
@@ -68,6 +70,15 @@ describe('<AlleleForm />', () => {
 			expect(screen.queryByLabelText('primaryExternalId')).not.toBeInTheDocument();
 			expect(heading('MOD Internal ID')).not.toBeInTheDocument();
 			expect(screen.queryByLabelText('modInternalId')).not.toBeInTheDocument();
+		});
+
+		it('Offers no section saves, which need an allele to save against', async () => {
+			await renderWithClient(<AlleleFormHarness mode="create" />);
+
+			expect(screen.queryByRole('button', { name: /Save References/ })).not.toBeInTheDocument();
+			expect(screen.queryByRole('button', { name: /Save Cross References/ })).not.toBeInTheDocument();
+			expect(screen.getByRole('button', { name: 'Add Reference' })).toBeInTheDocument();
+			expect(screen.getByRole('button', { name: 'Add Cross Reference' })).toBeInTheDocument();
 		});
 
 		it('Keeps the curatable fields, Internal and Obsolete', async () => {
@@ -154,8 +165,9 @@ describe('<AlleleForm />', () => {
 const AlleleFormHarnessWithoutMode = () => {
 	const { alleleState, alleleDispatch } = useAlleleReducer();
 	const crossReferences = useAlleleCrossReferences();
+	const references = useAlleleReferences();
 	return (
-		<SubResourcesProvider value={{ crossReferences }}>
+		<SubResourcesProvider value={{ crossReferences, references }}>
 			<AlleleForm state={alleleState} dispatch={alleleDispatch} isVisible={alwaysVisible} />
 		</SubResourcesProvider>
 	);
@@ -164,8 +176,9 @@ const AlleleFormHarnessWithoutMode = () => {
 const AlleleFormHarnessWithVisibility = ({ mode, isVisible }) => {
 	const { alleleState, alleleDispatch } = useAlleleReducer();
 	const crossReferences = useAlleleCrossReferences();
+	const references = useAlleleReferences();
 	return (
-		<SubResourcesProvider value={{ crossReferences }}>
+		<SubResourcesProvider value={{ crossReferences, references }}>
 			<AlleleForm state={alleleState} dispatch={alleleDispatch} isVisible={isVisible} mode={mode} />
 		</SubResourcesProvider>
 	);

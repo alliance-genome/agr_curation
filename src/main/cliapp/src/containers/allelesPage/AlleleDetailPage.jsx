@@ -17,6 +17,7 @@ import { FormFieldVisibilityMenu, useFormFieldVisibility } from '../../component
 import { AlleleForm, ALLELE_DETAIL_TOGGLEABLE_FIELDS } from './AlleleForm';
 import { DuplicateAlleleButton, NewAlleleButton } from './NewAlleleButton';
 import { useAlleleCrossReferences } from './crossReferences/useAlleleCrossReferences';
+import { useAlleleReferences } from './referencesTable/useAlleleReferences';
 import { SubResourcesProvider } from '../../components/SubResourcesContext';
 import { useDeleteOrDeprecateDialogs } from '../../components/DeleteOrDeprecateDialogs';
 
@@ -32,6 +33,7 @@ export default function AlleleDetailPage() {
 	const toastSuccess = useRef(null);
 	const toastError = useRef(null);
 	const crossReferences = useAlleleCrossReferences(alleleState.allele?.id);
+	const references = useAlleleReferences(alleleState.allele?.id);
 	// The allele as the API last returned it, without the form's unsaved edits.
 	const savedAllele = useRef(null);
 
@@ -109,53 +111,55 @@ export default function AlleleDetailPage() {
 			alleleDispatch({ type: 'SET', value: alleleResult?.data?.entity });
 		}
 
-		// The cross references are written only when the section has been edited, and then as the whole
-		// list, so saving the allele alone leaves the stored ones as they are. They are written whether or
-		// not the allele saved, so the errors of both are reported together.
-		const crossReferencesOutcome = crossReferences.isDirty ? await crossReferences.save() : null;
+		// Cross references and references are each written only when their section has been edited, and then as
+		// the whole list, so saving the allele alone leaves the stored ones as they are. They are written whether
+		// or not the allele saved, so the errors of all of them are reported together.
+		const subResourceOutcomes = [];
+		if (crossReferences.isDirty) {
+			subResourceOutcomes.push({ label: 'cross references', outcome: await crossReferences.save() });
+		}
+		if (references.isDirty) {
+			subResourceOutcomes.push({ label: 'references', outcome: await references.save() });
+		}
+		const savedLabels = subResourceOutcomes.filter(({ outcome }) => outcome.isSuccess).map(({ label }) => label);
+		const failedSubResources = subResourceOutcomes.filter(({ outcome }) => !outcome.isSuccess);
+		const failureToast = ({ label }, detail) => ({
+			life: 10000,
+			severity: 'error',
+			summary: `${label.charAt(0).toUpperCase()}${label.slice(1)} not saved: `,
+			detail,
+			sticky: false,
+		});
 
 		if (alleleError) {
 			const alleleMessage = reportAlleleErrors(alleleError);
 
-			if (!crossReferencesOutcome) {
+			if (subResourceOutcomes.length === 0) {
 				toastError.current.show([
 					{ life: 7000, severity: 'error', summary: 'Page error: ', detail: alleleMessage, sticky: false },
 				]);
-			} else if (crossReferencesOutcome.isSuccess) {
+			} else {
 				toastError.current.show([
 					{
 						life: 10000,
 						severity: 'error',
 						summary: 'Allele not saved: ',
-						detail: `${alleleMessage}. The cross references were saved.`,
+						detail:
+							savedLabels.length > 0 ? `${alleleMessage}. The ${savedLabels.join(' and ')} were saved.` : alleleMessage,
 						sticky: false,
 					},
-				]);
-			} else {
-				toastError.current.show([
-					{ life: 10000, severity: 'error', summary: 'Allele not saved: ', detail: alleleMessage, sticky: false },
-					{
-						life: 10000,
-						severity: 'error',
-						summary: 'Cross references not saved: ',
-						detail: crossReferencesOutcome.message,
-						sticky: false,
-					},
+					...failedSubResources.map((failure) => failureToast(failure, failure.outcome.message)),
 				]);
 			}
 			return;
 		}
 
-		if (crossReferencesOutcome && !crossReferencesOutcome.isSuccess) {
-			toastError.current.show([
-				{
-					life: 10000,
-					severity: 'error',
-					summary: 'Cross references not saved: ',
-					detail: `${crossReferencesOutcome.message}. The allele's other changes were saved.`,
-					sticky: false,
-				},
-			]);
+		if (failedSubResources.length > 0) {
+			toastError.current.show(
+				failedSubResources.map((failure) =>
+					failureToast(failure, `${failure.outcome.message}. The allele's other changes were saved.`)
+				)
+			);
 			return;
 		}
 
@@ -163,9 +167,9 @@ export default function AlleleDetailPage() {
 	};
 
 	/**
-	 * Deprecates the allele as last saved, so the form's unsaved edits and cross references are not written
-	 * with it. They stay on the form, which then shows the allele as obsolete; a refused deprecation leaves the
-	 * form as it was.
+	 * Deprecates the allele as last saved, so the form's unsaved edits, cross references and references are not
+	 * written with it. They stay on the form, which then shows the allele as obsolete; a refused deprecation leaves
+	 * the form as it was.
 	 */
 	const deprecateAllele = async () => {
 		try {
@@ -209,7 +213,8 @@ export default function AlleleDetailPage() {
 	});
 
 	const pendingFields = getPendingSingleValueFields(alleleState.allele, savedAllele.current);
-	const hasPendingEdits = pendingFields.size > 0 || alleleState.hasOtherPendingEdits || crossReferences.isDirty;
+	const hasPendingEdits =
+		pendingFields.size > 0 || alleleState.hasOtherPendingEdits || crossReferences.isDirty || references.isDirty;
 
 	if (getRequestIsLoading)
 		return (
@@ -222,7 +227,7 @@ export default function AlleleDetailPage() {
 		<>
 			<Toast ref={toastError} position="top-left" />
 			<Toast ref={toastSuccess} position="top-right" />
-			<LoadingOverlay isLoading={!!allelePutRequestIsLoading || crossReferences.isSaving} />
+			<LoadingOverlay isLoading={!!allelePutRequestIsLoading || crossReferences.isSaving || references.isSaving} />
 			<ErrorBoundary>
 				<StickyHeader>
 					<Splitter className="bg-primary-reverse border-none lg:h-5rem" gutterSize={0}>
@@ -264,7 +269,7 @@ export default function AlleleDetailPage() {
 						</SplitterPanel>
 					</Splitter>
 				</StickyHeader>
-				<SubResourcesProvider value={{ crossReferences }}>
+				<SubResourcesProvider value={{ crossReferences, references }}>
 					<AlleleForm
 						state={alleleState}
 						dispatch={alleleDispatch}
