@@ -157,7 +157,7 @@ export const AlleleGeneAssociationsForm = ({ labelColumnSize, mode = 'detail' })
 						<Button
 							label="Add Gene Association"
 							onClick={createNewGeneAssociationHandler}
-							className="w-6 p-button-text"
+							className="p-button-text -mt-3"
 						/>
 						{loadError && (
 							<Message
