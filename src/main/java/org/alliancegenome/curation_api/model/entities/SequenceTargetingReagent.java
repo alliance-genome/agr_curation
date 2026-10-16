@@ -23,6 +23,7 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmb
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexingDependency;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.KeywordField;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 
 import jakarta.persistence.CascadeType;
@@ -107,8 +108,11 @@ public class SequenceTargetingReagent extends GenomicEntity {
 	// Some STRs target several hundred genes, so search results carry only the first few targeted
 	// genes, reduced to what the table shows, and their total. The full associations are paged in by
 	// /sqtrgeneassociation/find and are all in the detail view.
+	// READ_ONLY: computed, so a client sending an STR back (an update, or a test reading one into this
+	// class) must not have to drop these first
 	@Transient
 	@JsonView({ CurationView.SequenceTargetingReagentView.class })
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	public List<TargetedGene> getTargetedGenesPreview() {
 		if (sequenceTargetingReagentGeneAssociations == null) {
 			return List.of();
@@ -138,6 +142,7 @@ public class SequenceTargetingReagent extends GenomicEntity {
 
 	@Transient
 	@JsonView({ CurationView.SequenceTargetingReagentView.class })
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	public int getTargetedGeneCount() {
 		return sequenceTargetingReagentGeneAssociations == null ? 0 : sequenceTargetingReagentGeneAssociations.size();
 	}
