@@ -1577,10 +1577,9 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 			body("errorMessages.relatedNotes", is("freeText - " + ValidationConstants.DUPLICATE_MESSAGE + " (Test text|comment|false|false)"));
 	}
 
-	//@Test
-	// Ignored because this test is not relevant for the AlleleGeneAssociation Load.
-	@Order(22)
-	public void updateAlleleDetailWithNewAssociations() {
+	@Test
+	@Order(23)
+	public void updateDetailIgnoresConstructAssociationsInItsBody() {
 		Allele allele = getAllele(ALLELE);
 
 		AlleleConstructAssociation constructAssociation = new AlleleConstructAssociation();
@@ -1596,35 +1595,7 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 			then().
 			statusCode(200);
 
-		RestAssured.given().
-			when().
-			get("/api/allele/" + ALLELE).
-			then().
-			statusCode(200).
-			body("entity.alleleConstructAssociations[0].alleleConstructAssociationObject.primaryExternalId", is(construct.getPrimaryExternalId()));
-	}
-
-	@Test
-	@Order(23)
-	public void updateAlleleDetailRemoveAssociations() {
-		Allele allele = getAllele(ALLELE);
-
-		allele.setAlleleConstructAssociations(null);
-
-		RestAssured.given().
-			contentType("application/json").
-			body(allele).
-			when().
-			put("/api/allele/updateDetail").
-			then().
-			statusCode(200);
-
-		RestAssured.given().
-			when().
-			get("/api/allele/" + ALLELE).
-			then().
-			statusCode(200).
-			body("entity", not(hasKey("alleleConstructAssociations")));
+		assertThat(storedConstructAssociations(ALLELE), is(nullValue()));
 	}
 
 	@Test
@@ -1705,7 +1676,7 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 				"alleleSymbol", "alleleFullName", "alleleSynonyms", "alleleSecondaryIds", "alleleMutationTypes",
 				"alleleInheritanceModes", "alleleFunctionalImpacts", "alleleGermlineTransmissionStatus",
 				"alleleDatabaseStatus", "alleleNomenclatureEvents",
-				"alleleVariantAssociations", "alleleConstructAssociations",
+				"alleleVariantAssociations",
 				"createdBy", "updatedBy", "dateCreated", "dateUpdated", "dbDateCreated", "dbDateUpdated",
 				"internal", "obsolete");
 
@@ -1733,7 +1704,8 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 		assertNotNull(constructAssociationRelation, "constructAssociationRelation fixture is null");
 
 		Allele allele = getAllele(ROUND_TRIP_ALLELE);
-		// The detail payload never carries references or gene associations, so both saves must leave these in place.
+		// The detail payload never carries references or gene and construct associations, so both saves must leave
+		// these in place.
 		RestAssured.given().
 				contentType("application/json").
 				body(new Reference[] { reference }).
@@ -1750,9 +1722,17 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 				statusCode(200);
 
 		AlleleConstructAssociation ca = new AlleleConstructAssociation();
+		ca.setAlleleAssociationSubject(allele);
 		ca.setAlleleConstructAssociationObject(construct);
 		ca.setRelation(constructAssociationRelation);
-		allele.setAlleleConstructAssociations(List.of(ca));
+		ca.setEvidence(List.of(reference));
+		RestAssured.given().
+				contentType("application/json").
+				body(ca).
+				when().
+				post("/api/alleleconstructassociation").
+				then().
+				statusCode(200);
 
 		// reference2's crossReferences are reachable only through SlotAnnotation.evidence, the path that
 		// serializes Reference.crossReferences under AlleleDetailView.
@@ -1784,7 +1764,6 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 				get("/api/allele/" + ROUND_TRIP_ALLELE).
 				then().
 				statusCode(200).
-				body("entity.alleleConstructAssociations", hasSize(1)).
 				body("entity.alleleInheritanceModes", hasSize(1)).
 				body("entity.alleleSecondaryIds", hasSize(1)).
 				body("entity.alleleSecondaryIds[0].secondaryId", is("TEST:RoundTripSecondary")).
@@ -1798,6 +1777,11 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 				body("entities", hasSize(1)).
 				body("entities[0].curie", is(reference.getCurie()));
 
+		assertThat(storedConstructAssociations(ROUND_TRIP_ALLELE), hasSize(1));
+		AlleleConstructAssociation storedConstructAssociation =
+				getAlleleConstructAssociation(allele.getId(), constructAssociationRelation.getName(), construct.getId());
+		assertThat(storedConstructAssociation.getEvidence(), hasSize(1));
+		assertEquals(reference.getCurie(), storedConstructAssociation.getEvidence().get(0).getCurie());
 		RestAssured.given().
 				when().
 				get("/api/allele/" + allele.getId() + "/gene-associations").
@@ -2021,6 +2005,19 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 		return crossReference;
 	}
 
+	// The allele's endpoints omit construct associations, so they are found by their subject. Returns null when the
+	// allele has none, because NON_EMPTY drops the key.
+	private List<Map<String, Object>> storedConstructAssociations(String primaryExternalId) {
+		return RestAssured.given().
+				contentType("application/json").
+				body("{\"alleleAssociationSubject.primaryExternalId\": \"" + primaryExternalId + "\"}").
+				when().
+				post("/api/alleleconstructassociation/find?limit=10&page=0").
+				then().
+				statusCode(200).
+				extract().jsonPath().getList("results");
+	}
+
 	// GET /api/allele/{id} serializes AlleleDetailView, which omits crossReferences, so the stored list is
 	// read through find, which serializes AlleleView. Returns null when the allele has none, because
 	// NON_EMPTY drops the key.
@@ -2038,7 +2035,7 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 
 	@Test
 	@Order(33)
-	public void alleleDetailViewOmitsAssociationSubject() {
+	public void geneAssociationsOmitTheirSubject() {
 		Allele allele = getAllele(CROSS_REFERENCE_ALLELE);
 
 		AlleleGeneAssociation geneAssociation = new AlleleGeneAssociation();
@@ -2049,42 +2046,14 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 				statusCode(200).
 				extract().response();
 
-		AlleleConstructAssociation constructAssociation = new AlleleConstructAssociation();
-		constructAssociation.setAlleleConstructAssociationObject(construct);
-		constructAssociation.setRelation(constructAssociationRelation);
-		allele.setAlleleConstructAssociations(List.of(constructAssociation));
-
-		RestAssured.given().
-				contentType("application/json").
-				body(allele).
-				when().
-				put("/api/allele/updateDetail").
-				then().
-				statusCode(200);
-
-		Response detail = RestAssured.given().
-				when().
-				get("/api/allele/" + CROSS_REFERENCE_ALLELE).
-				then().
-				statusCode(200).
-				extract().response();
-
-		assertThat(detail.jsonPath().getList("entity.alleleConstructAssociations"), hasSize(1));
 		assertThat("the gene associations sub-resource serialized a second copy of the allele under its own gene association",
 				geneAssociations.jsonPath().get("entities[0].alleleAssociationSubject"), is(nullValue()));
-		assertThat("the allele detail view serialized a second copy of the allele under its own construct association",
-				detail.jsonPath().get("entity.alleleConstructAssociations[0].alleleAssociationSubject"), is(nullValue()));
 
 		// The association endpoints serialize FieldsAndLists and still carry the subject, which is what the
 		// Allele Gene Associations table renders from. Scoping the omission by view is what keeps that working.
-		Long alleleId = detail.jsonPath().getLong("entity.id");
 		Long geneId = geneAssociations.jsonPath().getLong("entities[0].alleleGeneAssociationObject.id");
-		AlleleGeneAssociation storedGeneAssociation = getAlleleGeneAssociation(alleleId, geneAssociationRelation.getName(), geneId);
+		AlleleGeneAssociation storedGeneAssociation = getAlleleGeneAssociation(allele.getId(), geneAssociationRelation.getName(), geneId);
 		assertThat(storedGeneAssociation.getAlleleAssociationSubject(), notNullValue());
-
-		Long constructId = detail.jsonPath().getLong("entity.alleleConstructAssociations[0].alleleConstructAssociationObject.id");
-		AlleleConstructAssociation storedConstructAssociation = getAlleleConstructAssociation(alleleId, constructAssociationRelation.getName(), constructId);
-		assertThat(storedConstructAssociation.getAlleleAssociationSubject(), notNullValue());
 	}
 
 	@Test
