@@ -1,5 +1,6 @@
 package org.alliancegenome.curation_api.interfaces.crud.associations;
 
+import org.alliancegenome.curation_api.interfaces.base.BaseFindControllerInterface;
 import org.alliancegenome.curation_api.interfaces.base.BaseIdCrudInterface;
 import org.alliancegenome.curation_api.model.entities.associations.SequenceTargetingReagentGeneAssociation;
 import org.alliancegenome.curation_api.response.ObjectResponse;
@@ -20,7 +21,10 @@ import org.eclipse.microprofile.openapi.annotations.Operation;
 @Tag(name = "CRUD - SQTR Gene Associations")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public interface SequenceTargetingReagentGeneAssociationCrudInterface extends BaseIdCrudInterface<SequenceTargetingReagentGeneAssociation> {
+// find: a page of associations by field values, e.g. the targeted genes of one STR
+// ({"sequenceTargetingReagentAssociationSubject.id": <id>}), which can run to several hundred.
+public interface SequenceTargetingReagentGeneAssociationCrudInterface extends BaseIdCrudInterface<SequenceTargetingReagentGeneAssociation>,
+	BaseFindControllerInterface<SequenceTargetingReagentGeneAssociation> {
 
 	@Operation(summary = "Get sequence targeting reagent gene association by component IDs", description = "Look up a specific sequence targeting reagent gene association by its component entity IDs and relation")
 	@GET

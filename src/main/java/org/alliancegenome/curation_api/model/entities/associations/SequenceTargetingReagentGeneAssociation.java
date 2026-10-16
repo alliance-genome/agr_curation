@@ -67,6 +67,7 @@ public class SequenceTargetingReagentGeneAssociation extends EvidenceAssociation
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
 	@JsonView({ CurationView.FieldsOnly.class })
-	@JsonIgnoreProperties({ "alleleGeneAssociations", "constructGenomicEntityAssociations", "sequenceTargetingReagentGeneAssociations", "transcriptGeneAssociations" })
+	// geneGenomicLocationAssociations: several KB per gene, which a list of an STR's target genes does not need
+	@JsonIgnoreProperties({ "alleleGeneAssociations", "constructGenomicEntityAssociations", "sequenceTargetingReagentGeneAssociations", "transcriptGeneAssociations", "geneGenomicLocationAssociations" })
 	private Gene sequenceTargetingReagentGeneAssociationObject;
 }

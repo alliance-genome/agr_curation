@@ -9,6 +9,7 @@ import org.alliancegenome.curation_api.interfaces.CurieSubdomain;
 import org.alliancegenome.curation_api.model.entities.associations.AgmSequenceTargetingReagentAssociation;
 import org.alliancegenome.curation_api.model.entities.associations.SequenceTargetingReagentGeneAssociation;
 import org.alliancegenome.curation_api.view.CurationView;
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
@@ -32,6 +33,7 @@ import jakarta.persistence.Index;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.Transient;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -73,6 +75,17 @@ public class SequenceTargetingReagent extends GenomicEntity {
 	@JsonView({ CurationView.FieldsAndLists.class, CurationView.SequenceTargetingReagentView.class })
 	private List<String> secondaryIdentifiers;
 
+	// Indexed so the table can filter on the targeted genes. SHALLOW: a gene's symbol changing does
+	// not reindex every STR that targets it.
+	@IndexedEmbedded(includePaths = {
+		"sequenceTargetingReagentGeneAssociationObject.curie", "sequenceTargetingReagentGeneAssociationObject.primaryExternalId",
+		"sequenceTargetingReagentGeneAssociationObject.modInternalId", "sequenceTargetingReagentGeneAssociationObject.geneSymbol.displayText",
+		"sequenceTargetingReagentGeneAssociationObject.geneSymbol.formatText", "relation.name",
+		"sequenceTargetingReagentGeneAssociationObject.curie_keyword", "sequenceTargetingReagentGeneAssociationObject.primaryExternalId_keyword",
+		"sequenceTargetingReagentGeneAssociationObject.modInternalId_keyword", "sequenceTargetingReagentGeneAssociationObject.geneSymbol.displayText_keyword",
+		"sequenceTargetingReagentGeneAssociationObject.geneSymbol.formatText_keyword", "relation.name_keyword"
+	})
+	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@OneToMany(mappedBy = "sequenceTargetingReagentAssociationSubject", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonView({ CurationView.FieldsAndLists.class, CurationView.SequenceTargetingReagentDetailView.class })
 	private List<SequenceTargetingReagentGeneAssociation> sequenceTargetingReagentGeneAssociations;
@@ -80,4 +93,52 @@ public class SequenceTargetingReagent extends GenomicEntity {
 	@OneToMany(mappedBy = "agmSequenceTargetingReagentAssociationObject", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonView({ CurationView.FieldsAndLists.class, CurationView.SequenceTargetingReagentDetailView.class })
 	private List<AgmSequenceTargetingReagentAssociation> agmSequenceTargetingReagentAssociations;
+
+	/** How many targeted genes the search results show per STR; the rest are paged in a pop-up. */
+	public static final int TARGETED_GENES_PREVIEW_SIZE = 5;
+
+	/** A targeted gene as the search results show it: relation, gene symbol and gene identifier. */
+	public record TargetedGene(
+		@JsonView({ CurationView.SequenceTargetingReagentView.class }) String relation,
+		@JsonView({ CurationView.SequenceTargetingReagentView.class }) String geneSymbol,
+		@JsonView({ CurationView.SequenceTargetingReagentView.class }) String geneIdentifier) {
+	}
+
+	// Some STRs target several hundred genes, so search results carry only the first few targeted
+	// genes, reduced to what the table shows, and their total. The full associations are paged in by
+	// /sqtrgeneassociation/find and are all in the detail view.
+	@Transient
+	@JsonView({ CurationView.SequenceTargetingReagentView.class })
+	public List<TargetedGene> getTargetedGenesPreview() {
+		if (sequenceTargetingReagentGeneAssociations == null) {
+			return List.of();
+		}
+		return sequenceTargetingReagentGeneAssociations.stream()
+			.limit(TARGETED_GENES_PREVIEW_SIZE)
+			.map(association -> {
+				Gene gene = association.getSequenceTargetingReagentGeneAssociationObject();
+				return new TargetedGene(
+					association.getRelation() == null ? null : association.getRelation().getName(),
+					gene == null || gene.getGeneSymbol() == null ? null : gene.getGeneSymbol().getDisplayText(),
+					gene == null ? null : modIdentifier(gene));
+			})
+			.toList();
+	}
+
+	// The MOD identifier, which curators recognise, rather than the AGRKB curie getIdentifier() prefers.
+	private static String modIdentifier(Gene gene) {
+		if (StringUtils.isNotBlank(gene.getPrimaryExternalId())) {
+			return gene.getPrimaryExternalId();
+		}
+		if (StringUtils.isNotBlank(gene.getModInternalId())) {
+			return gene.getModInternalId();
+		}
+		return gene.getCurie();
+	}
+
+	@Transient
+	@JsonView({ CurationView.SequenceTargetingReagentView.class })
+	public int getTargetedGeneCount() {
+		return sequenceTargetingReagentGeneAssociations == null ? 0 : sequenceTargetingReagentGeneAssociations.size();
+	}
 }
