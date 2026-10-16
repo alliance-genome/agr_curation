@@ -105,6 +105,13 @@ export const CLASSES = Object.freeze({
 		isIndexed: true,
 	},
 	Species: { name: 'Species', link: '/#/species', type: 'entity', hasTable: true, isIndexed: true },
+	TransgenicTool: {
+		name: 'Transgenic Tools',
+		link: '/#/transgenicTools',
+		type: 'entity',
+		hasTable: true,
+		isIndexed: true,
+	},
 	Transcript: { name: 'Transcripts', type: 'entity', hasTable: false, isIndexed: false },
 	Exon: { name: 'Exons', type: 'entity', hasTable: false, isIndexed: false },
 	CodingSequence: {

@@ -16,6 +16,7 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmbedded;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexingDependency;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
 
@@ -100,12 +101,16 @@ public class TransgenicTool extends Reagent {
 	 */
 	@IndexedEmbedded(includePaths = {
 		"transgenicToolTransgenicToolAssociationObject.curie", "transgenicToolTransgenicToolAssociationObject.primaryExternalId",
-		"transgenicToolTransgenicToolAssociationObject.modInternalId", "relation.name",
+		"transgenicToolTransgenicToolAssociationObject.modInternalId", "transgenicToolTransgenicToolAssociationObject.transgenicToolSymbol.displayText",
+		"transgenicToolTransgenicToolAssociationObject.transgenicToolSymbol.formatText", "relation.name",
 		"transgenicToolTransgenicToolAssociationObject.curie_keyword", "transgenicToolTransgenicToolAssociationObject.primaryExternalId_keyword",
-		"transgenicToolTransgenicToolAssociationObject.modInternalId_keyword", "relation.name_keyword"
+		"transgenicToolTransgenicToolAssociationObject.modInternalId_keyword", "transgenicToolTransgenicToolAssociationObject.transgenicToolSymbol.displayText_keyword",
+		"transgenicToolTransgenicToolAssociationObject.transgenicToolSymbol.formatText_keyword", "relation.name_keyword"
 	})
 	@OneToMany(mappedBy = "transgenicToolAssociationSubject", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonView({ CurationView.FieldsAndLists.class, CurationView.TransgenicToolView.class })
+	// The subject is this tool itself; repeating it in each association multiplied the size of a search result.
+	@JsonIgnoreProperties({ "transgenicToolAssociationSubject" })
 	private List<TransgenicToolTransgenicToolAssociation> transgenicToolTransgenicToolAssociations;
 
 }

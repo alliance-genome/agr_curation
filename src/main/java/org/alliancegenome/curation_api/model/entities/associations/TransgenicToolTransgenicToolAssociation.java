@@ -73,6 +73,8 @@ public class TransgenicToolTransgenicToolAssociation extends Association {
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
 	@JsonView({ CurationView.FieldsOnly.class })
-	@JsonIgnoreProperties({"transgenicToolTransgenicToolAssociations"})
+	// The associated tool is identified by its symbol and ids; its lists (several KB each) are left out.
+	@JsonIgnoreProperties({ "transgenicToolTransgenicToolAssociations", "relatedNotes", "transgenicToolUses", "transgenicToolSynonyms",
+		"crossReferences", "references", "dataProviderCrossReference", "dataProvider", "transgenicToolFullName", "createdBy", "updatedBy" })
 	private TransgenicTool transgenicToolTransgenicToolAssociationObject;
 }
