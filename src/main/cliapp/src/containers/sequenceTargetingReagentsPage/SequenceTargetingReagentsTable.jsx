@@ -11,6 +11,8 @@ import { BooleanTemplate } from '../../components/Templates/BooleanTemplate';
 import { TruncatedReferencesTemplate } from '../../components/Templates/reference/TruncatedReferencesTemplate';
 import { CrossReferencesTemplate } from '../../components/Templates/CrossReferencesTemplate';
 import { StringTemplate } from '../../components/Templates/StringTemplate';
+import { CountDialogTemplate } from '../../components/Templates/dialog/CountDialogTemplate';
+import { RelatedNotesReadOnlyDialog } from '../../components/RelatedNotesReadOnlyDialog';
 import { SearchService } from '../../service/SearchService';
 import { Endpoints } from '../../constants/Endpoints';
 import { TargetedGenesTemplate } from './TargetedGenesTemplate';
@@ -22,6 +24,12 @@ export const SequenceTargetingReagentsTable = () => {
 
 	const [targetedGenesData, setTargetedGenesData] = useState({ dialog: false });
 
+	const [relatedNotesData, setRelatedNotesData] = useState({
+		originalRelatedNotes: [],
+		dialog: false,
+		isInEdit: false,
+	});
+
 	const [isInEditMode, setIsInEditMode] = useState(false);
 	const [errorMessages, setErrorMessages] = useState({});
 	const [totalRecords, setTotalRecords] = useState(0);
@@ -31,6 +39,10 @@ export const SequenceTargetingReagentsTable = () => {
 
 	const errorMessagesRef = useRef();
 	errorMessagesRef.current = errorMessages;
+
+	const handleRelatedNotesOpen = (relatedNotes) => {
+		setRelatedNotesData({ originalRelatedNotes: relatedNotes, dialog: true, isInEdit: false });
+	};
 
 	const handleTargetedGenesOpen = (sequenceTargetingReagent) => {
 		setTargetedGenesData({ sequenceTargetingReagent, dialog: true });
@@ -103,6 +115,15 @@ export const SequenceTargetingReagentsTable = () => {
 					<TargetedGenesTemplate sequenceTargetingReagent={rowData} handleOpen={handleTargetedGenesOpen} />
 				),
 				filterConfig: FILTER_CONFIGS.sequenceTargetingReagentTargetedGenesFilterConfig,
+			},
+			{
+				field: 'relatedNotes.freeText',
+				header: 'Related Notes',
+				sortable: false,
+				body: (rowData) => (
+					<CountDialogTemplate entities={rowData.relatedNotes} handleOpen={handleRelatedNotesOpen} text={'Notes'} />
+				),
+				filterConfig: FILTER_CONFIGS.relatedNotesFilterConfig,
 			},
 			{
 				field: 'references.primaryCrossReferenceCurie',
@@ -216,6 +237,10 @@ export const SequenceTargetingReagentsTable = () => {
 				/>
 			</div>
 			<TargetedGenesDialog targetedGenesData={targetedGenesData} setTargetedGenesData={setTargetedGenesData} />
+			<RelatedNotesReadOnlyDialog
+				originalRelatedNotesData={relatedNotesData}
+				setOriginalRelatedNotesData={setRelatedNotesData}
+			/>
 		</>
 	);
 };

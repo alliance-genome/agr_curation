@@ -15,6 +15,7 @@ export const data = {
 				{ relation: 'targets', geneSymbol: 'dre-mir-430a-1', geneIdentifier: 'ZFIN:ZDB-MIRNAG-081210-1' },
 				{ relation: 'targets', geneSymbol: 'dre-mir-430a-2', geneIdentifier: 'ZFIN:ZDB-MIRNAG-081210-2' },
 			],
+			relatedNotes: [{ id: 3001, freeText: 'Targets the miR-430 cluster.', noteType: { name: 'comment' } }],
 			internal: false,
 			obsolete: false,
 		},
