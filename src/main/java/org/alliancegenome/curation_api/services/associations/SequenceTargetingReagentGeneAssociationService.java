@@ -47,6 +47,11 @@ public class SequenceTargetingReagentGeneAssociationService extends BaseEntityCr
 
 		for (SequenceTargetingReagentGeneAssociation association : associations) {
 			if (association != null) {
+				// Persisted here rather than by cascade at commit, so its id is known: the load keeps the
+				// ids of the associations it loaded and its cleanup removes the others.
+				if (association.getId() == null) {
+					sequenceTargetingReagentGeneAssociationDAO.persist(association);
+				}
 				addAssociationToSQTR(association);
 				addAssociationToGene(association);
 			}
