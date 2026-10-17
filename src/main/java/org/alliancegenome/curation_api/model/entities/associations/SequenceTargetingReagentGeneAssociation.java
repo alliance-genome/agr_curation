@@ -14,7 +14,6 @@ import org.hibernate.search.mapper.pojo.automaticindexing.ReindexOnUpdate;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmbedded;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexingDependency;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonView;
 
 import jakarta.persistence.Entity;
@@ -47,10 +46,10 @@ import lombok.ToString;
 
 public class SequenceTargetingReagentGeneAssociation extends EvidenceAssociation {
 	
+	// Not in the STR detail view, where the STR is the parent of the association
 	@IndexedEmbedded(includePaths = {"name", "synonyms", "secondaryIdentifiers"})
-	@JsonIgnoreProperties("sequenceTargetingReagentGeneAssociations")
 	@ManyToOne
-	@JsonView({ CurationView.FieldsOnly.class })
+	@JsonView({ CurationView.FieldsAndLists.class, CurationView.GeneDetailView.class, CurationView.SequenceTargetingReagentGeneAssociationView.class })
 	@Fetch(FetchMode.JOIN)
 	private SequenceTargetingReagent sequenceTargetingReagentAssociationSubject;
 
@@ -65,8 +64,8 @@ public class SequenceTargetingReagentGeneAssociation extends EvidenceAssociation
 		"geneFullName.displayText_keyword", "geneFullName.formatText_keyword", "primaryExternalId", "primaryExternalId_keyword",
 		"modInternalId", "modInternalId_keyword" })
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
+	// In the STR views only, so a gene's own associations do not repeat the gene
 	@ManyToOne
-	@JsonView({ CurationView.FieldsOnly.class })
-	@JsonIgnoreProperties({ "alleleGeneAssociations", "constructGenomicEntityAssociations", "sequenceTargetingReagentGeneAssociations", "transcriptGeneAssociations" })
+	@JsonView({ CurationView.SequenceTargetingReagentView.class })
 	private Gene sequenceTargetingReagentGeneAssociationObject;
 }

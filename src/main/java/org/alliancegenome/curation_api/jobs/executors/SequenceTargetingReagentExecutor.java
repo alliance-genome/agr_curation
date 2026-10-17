@@ -66,7 +66,9 @@ public class SequenceTargetingReagentExecutor extends LoadFileExecutor {
 			
 			runLoad(bulkLoadFileHistory, dataProvider, sqtrIngestFmsDTO.getData(), idsAdded.get("SQTR"), idsAdded.get("SQTRGeneAssociation"));
 
-			runCleanup(sqtrService, bulkLoadFileHistory, dataProvider.name(), previousIds.get("SQTRGeneAssociation"), idsAdded.get("SQTRGeneAssociation"), "SQTR Gene Associations");
+			// SCRUM-6685: the gene association service, not the STR service, which looked the association
+			// ids up as STRs, found none and so never removed an association
+			runCleanup(sqtrGeneAssociationService, bulkLoadFileHistory, dataProvider.name(), previousIds.get("SQTRGeneAssociation"), idsAdded.get("SQTRGeneAssociation"), "SQTR Gene Associations");
 			runCleanup(sqtrService, bulkLoadFileHistory, dataProvider.name(), previousIds.get("SQTR"), idsAdded.get("SQTR"), "SQTR");
 
 			bulkLoadFileHistory.finishLoad();
