@@ -48,6 +48,16 @@ import lombok.ToString;
 @CurieSubdomain(MatiSubdomain.SEQUENCE_TARGETING_REAGENT)
 public class SequenceTargetingReagent extends GenomicEntity {
 
+	/** How many targeted genes the search results show per STR; the rest are paged in a pop-up. */
+	public static final int TARGETED_GENES_PREVIEW_SIZE = 5;
+
+	/** A targeted gene as the search results show it: relation, gene symbol and gene identifier. */
+	public record TargetedGene(
+		@JsonView({ CurationView.SequenceTargetingReagentView.class }) String relation,
+		@JsonView({ CurationView.SequenceTargetingReagentView.class }) String geneSymbol,
+		@JsonView({ CurationView.SequenceTargetingReagentView.class }) String geneIdentifier) {
+	}
+
 	@Column(columnDefinition = "TEXT")
 	@JsonView({ CurationView.FieldsOnly.class, CurationView.ForPublic.class })
 	private String name;
@@ -88,22 +98,14 @@ public class SequenceTargetingReagent extends GenomicEntity {
 	})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@OneToMany(mappedBy = "sequenceTargetingReagentAssociationSubject", cascade = CascadeType.ALL, orphanRemoval = true)
-	@JsonView({ CurationView.FieldsAndLists.class, CurationView.SequenceTargetingReagentDetailView.class })
+	// Detail view only: an STR nested in another response (an association's subject) leaves its
+	// associations out, which is what keeps the serialization from looping
+	@JsonView({ CurationView.SequenceTargetingReagentDetailView.class })
 	private List<SequenceTargetingReagentGeneAssociation> sequenceTargetingReagentGeneAssociations;
 
 	@OneToMany(mappedBy = "agmSequenceTargetingReagentAssociationObject", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonView({ CurationView.FieldsAndLists.class, CurationView.SequenceTargetingReagentDetailView.class })
 	private List<AgmSequenceTargetingReagentAssociation> agmSequenceTargetingReagentAssociations;
-
-	/** How many targeted genes the search results show per STR; the rest are paged in a pop-up. */
-	public static final int TARGETED_GENES_PREVIEW_SIZE = 5;
-
-	/** A targeted gene as the search results show it: relation, gene symbol and gene identifier. */
-	public record TargetedGene(
-		@JsonView({ CurationView.SequenceTargetingReagentView.class }) String relation,
-		@JsonView({ CurationView.SequenceTargetingReagentView.class }) String geneSymbol,
-		@JsonView({ CurationView.SequenceTargetingReagentView.class }) String geneIdentifier) {
-	}
 
 	// Some STRs target several hundred genes, so search results carry only the first few targeted
 	// genes, reduced to what the table shows, and their total. The full associations are paged in by
@@ -138,6 +140,15 @@ public class SequenceTargetingReagent extends GenomicEntity {
 			return gene.getModInternalId();
 		}
 		return gene.getCurie();
+	}
+
+	// The STR's own cross references are in the STR views. Declared here rather than on
+	// GenomicEntity.crossReferences, which genes share: a gene in an STR response (an STR gene
+	// association's gene) leaves its cross references out.
+	@Override
+	@JsonView({ CurationView.FieldsAndLists.class, CurationView.SequenceTargetingReagentView.class })
+	public List<CrossReference> getCrossReferences() {
+		return super.getCrossReferences();
 	}
 
 	@Transient
