@@ -96,6 +96,7 @@ public class IT_0610_VariantFmsITCase extends BaseITCase {
 			body("entity.taxon.curie", is("NCBITaxon:6239")).
 			body("entity.dataProvider.abbreviation", is("WB")).
 			body("entity.variantType.curie", is("SO:1000002")).
+			body("entity.uniqueId", is("NCBITaxon:6239|SO:1000002|WB|RefSeq:NC_003279.8|WBcel235|1|1000|T")).
 			body("entity.synonyms", is(List.of("Syn 1", "Syn 2"))).
 			body("entity.sourceGeneralConsequence.curie", is("SO:0001587")).
 			body("entity.curatedVariantGenomicLocations", hasSize(1)).
@@ -138,6 +139,7 @@ public class IT_0610_VariantFmsITCase extends BaseITCase {
 			body("entity.taxon.curie", is("NCBITaxon:6239")).
 			body("entity.dataProvider.abbreviation", is("WB")).
 			body("entity.variantType.curie", is("SO:1000008")).
+			body("entity.uniqueId", is("NCBITaxon:6239|SO:1000008|WB|RefSeq:NC_003279.8|WBcel235|1|1000|T")).
 			body("entity.synonyms", is(List.of("Syn 3", "Syn 4"))).
 			body("entity.sourceGeneralConsequence.curie", is("SO:0001578")).
 			body("entity.curatedVariantGenomicLocations", hasSize(1)).
