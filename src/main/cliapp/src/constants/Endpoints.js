@@ -9,6 +9,7 @@ export const Endpoints = Object.freeze({
 		CASSETTE: 'cassette',
 		TRANSGENIC_TOOL: 'transgenic-tool',
 		TRANSGENIC_TOOL_TRANSGENIC_TOOL_ASSOCIATION: 'transgenictooltransgenictoolassociation',
+		SEQUENCE_TARGETING_REAGENT: 'sqtr',
 		CONSTRUCT: 'construct',
 		CROSS_REFERENCE: 'cross-reference',
 		GENE: 'gene',

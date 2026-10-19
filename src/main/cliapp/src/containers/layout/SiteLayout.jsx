@@ -263,6 +263,7 @@ export const SiteLayout = (props) => {
 						{ label: 'Literature References', icon: 'pi pi-fw pi-home', to: '/references' },
 						{ label: 'Molecules', icon: 'pi pi-fw pi-home', to: '/molecules' },
 						{ label: 'Phenotype Annotations', icon: 'pi pi-fw pi-home', to: '/phenotypeAnnotations' },
+						{ label: 'Sequence Targeting Reagents', icon: 'pi pi-fw pi-home', to: '/sequenceTargetingReagents' },
 						{ label: 'Species', icon: 'pi pi-fw pi-home', to: '/species' },
 						{ label: 'Transgenic Tools', icon: 'pi pi-fw pi-home', to: '/transgenicTools' },
 						{ label: 'Variants', icon: 'pi pi-fw pi-home', to: '/variants' },

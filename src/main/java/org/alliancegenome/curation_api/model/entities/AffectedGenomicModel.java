@@ -101,7 +101,7 @@ public class AffectedGenomicModel extends GenomicEntity {
 		"agmSequenceTargetingReagentAssociationObject.secondaryIdentifiers_keyword"
 	})
 	@OneToMany(mappedBy = "agmAssociationSubject", cascade = CascadeType.ALL, orphanRemoval = true)
-	@JsonView({CurationView.FieldsAndLists.class, CurationView.AffectedGenomicModelDetailView.class})
+	@JsonView({CurationView.FieldsAndLists.class, CurationView.AffectedGenomicModelView.class, CurationView.AffectedGenomicModelDetailView.class})
 	private List<AgmSequenceTargetingReagentAssociation> agmSequenceTargetingReagentAssociations;
 
 	@OneToMany(mappedBy = "agmAssociationSubject", cascade = CascadeType.ALL, orphanRemoval = true)

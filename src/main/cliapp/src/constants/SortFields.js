@@ -117,6 +117,7 @@ export const SORT_FIELDS = Object.freeze([
 	'transgenicToolSynonyms.displayText',
 	'transgenicToolUses.uses.name',
 	'transgenicToolTransgenicToolAssociations.transgenicToolTransgenicToolAssociationObject.transgenicToolSymbol.displayText',
+	'sequenceTargetingReagentGeneAssociations.sequenceTargetingReagentGeneAssociationObject.geneSymbol.displayText',
 	'taxonText',
 	'constructCassetteAssociations.constructCassetteAssociationObject.cassetteSymbol.displayText',
 	'variantStatus.name',

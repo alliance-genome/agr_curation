@@ -45,6 +45,7 @@ import org.alliancegenome.curation_api.services.associations.AlleleVariantAssoci
 import org.alliancegenome.curation_api.services.associations.CuratedVariantGenomicLocationAssociationService;
 import org.alliancegenome.curation_api.services.helpers.HgvsIdentifierHelper;
 import org.alliancegenome.curation_api.services.helpers.NoteIdentityHelper;
+import org.alliancegenome.curation_api.services.helpers.VariantUniqueIdHelper;
 import org.alliancegenome.curation_api.services.ontology.NcbiTaxonTermService;
 import org.alliancegenome.curation_api.services.ontology.SoTermService;
 import org.apache.commons.codec.digest.DigestUtils;
@@ -250,6 +251,7 @@ public class VariantFmsDTOValidator {
 		}
 
 		curieMintService.mintCurieIfAbsent(variant);
+		variant.setUniqueId(VariantUniqueIdHelper.getVariantUniqueId(variant));
 		variant = variantDAO.persist(variant);
 		if (variant != null) {
 			idsAdded.add(variant.getId());

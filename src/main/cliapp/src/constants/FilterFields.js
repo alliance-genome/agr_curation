@@ -337,6 +337,21 @@ export const FIELD_SETS = Object.freeze({
 		filterName: 'transgenicToolAggregationFilter',
 		fields: ['dataProvider.abbreviation'],
 	},
+	sequenceTargetingReagentTargetedGenesFieldSet: {
+		filterName: 'sequenceTargetingReagentTargetedGenesFilter',
+		fields: [
+			'sequenceTargetingReagentGeneAssociations.sequenceTargetingReagentGeneAssociationObject.geneSymbol.displayText',
+			'sequenceTargetingReagentGeneAssociations.sequenceTargetingReagentGeneAssociationObject.geneSymbol.formatText',
+			'sequenceTargetingReagentGeneAssociations.sequenceTargetingReagentGeneAssociationObject.curie',
+			'sequenceTargetingReagentGeneAssociations.sequenceTargetingReagentGeneAssociationObject.primaryExternalId',
+			'sequenceTargetingReagentGeneAssociations.sequenceTargetingReagentGeneAssociationObject.modInternalId',
+			'sequenceTargetingReagentGeneAssociations.relation.name',
+		],
+	},
+	sequenceTargetingReagentAggregationFieldSet: {
+		filterName: 'sequenceTargetingReagentAggregationFilter',
+		fields: ['dataProvider.abbreviation'],
+	},
 	cassetteNameFieldSet: {
 		filterName: 'cassetteNameFilter',
 		fields: ['cassetteFullName.displayText', 'cassetteFullName.formatText'],
@@ -1521,6 +1536,16 @@ export const FILTER_CONFIGS = Object.freeze({
 		filterComponentType: 'multiselect',
 		fieldSets: [FIELD_SETS.dataProviderFieldSet],
 		aggregationFieldSet: FIELD_SETS.transgenicToolAggregationFieldSet,
+		useKeywordFields: true,
+	},
+	sequenceTargetingReagentTargetedGenesFilterConfig: {
+		filterComponentType: 'input',
+		fieldSets: [FIELD_SETS.sequenceTargetingReagentTargetedGenesFieldSet],
+	},
+	sequenceTargetingReagentDataProviderFilterConfig: {
+		filterComponentType: 'multiselect',
+		fieldSets: [FIELD_SETS.dataProviderFieldSet],
+		aggregationFieldSet: FIELD_SETS.sequenceTargetingReagentAggregationFieldSet,
 		useKeywordFields: true,
 	},
 	cassetteDataProviderFilterConfig: {

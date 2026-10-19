@@ -100,8 +100,9 @@ export const CLASSES = Object.freeze({
 	Reference: { name: 'Literature References', link: '/#/references', type: 'entity', hasTable: true, isIndexed: false },
 	SequenceTargetingReagent: {
 		name: 'Sequence Targeting Reagents',
+		link: '/#/sequenceTargetingReagents',
 		type: 'entity',
-		hasTable: false,
+		hasTable: true,
 		isIndexed: true,
 	},
 	Species: { name: 'Species', link: '/#/species', type: 'entity', hasTable: true, isIndexed: true },
