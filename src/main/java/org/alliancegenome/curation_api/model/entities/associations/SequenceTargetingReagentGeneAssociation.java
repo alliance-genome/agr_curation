@@ -46,10 +46,11 @@ import lombok.ToString;
 
 public class SequenceTargetingReagentGeneAssociation extends EvidenceAssociation {
 	
-	// Not in the STR detail view, where the STR is the parent of the association
+	// Not in the STR detail view, where the STR is the parent of the association, nor in the generic
+	// views, where a nested entity has its fields only
 	@IndexedEmbedded(includePaths = {"name", "synonyms", "secondaryIdentifiers"})
 	@ManyToOne
-	@JsonView({ CurationView.FieldsAndLists.class, CurationView.GeneDetailView.class, CurationView.SequenceTargetingReagentGeneAssociationView.class })
+	@JsonView({ CurationView.GeneDetailView.class, CurationView.SequenceTargetingReagentGeneAssociationView.class })
 	@Fetch(FetchMode.JOIN)
 	private SequenceTargetingReagent sequenceTargetingReagentAssociationSubject;
 

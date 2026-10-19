@@ -146,7 +146,7 @@ public class SequenceTargetingReagent extends GenomicEntity {
 	// GenomicEntity.crossReferences, which genes share: a gene in an STR response (an STR gene
 	// association's gene) leaves its cross references out.
 	@Override
-	@JsonView({ CurationView.FieldsAndLists.class, CurationView.SequenceTargetingReagentView.class })
+	@JsonView({ CurationView.SequenceTargetingReagentView.class })
 	public List<CrossReference> getCrossReferences() {
 		return super.getCrossReferences();
 	}

@@ -22,7 +22,7 @@ import com.fasterxml.jackson.databind.json.JsonMapper;
  * Which parts of an STR gene association each view serializes; the views alone keep the
  * serialization from looping, no properties are ignored:
  * - the association view (/sqtrgeneassociation/find and /findBy): STR, gene and evidence, without lists
- * - FieldsAndLists (a gene's own associations): the STR without its associations, not the gene
+ * - FieldsAndLists (a gene's own associations): neither the STR nor the gene, only the association's fields
  * - the STR detail view (an STR's own associations): the gene, not the STR
  */
 class SequenceTargetingReagentGeneAssociationJsonTest {
@@ -84,11 +84,10 @@ class SequenceTargetingReagentGeneAssociationJsonTest {
 	}
 
 	@Test
-	void fieldsAndListsHasTheStrWithoutItsAssociationsAndNotTheGene() throws Exception {
+	void fieldsAndListsHasNeitherTheStrNorTheGene() throws Exception {
 		String json = mapper.writerWithView(CurationView.FieldsAndLists.class).writeValueAsString(association());
 
-		assertTrue(json.contains("\"sequenceTargetingReagentAssociationSubject\":{"), json);
-		assertFalse(json.contains("\"sequenceTargetingReagentGeneAssociations\""), json);
+		assertFalse(json.contains("sequenceTargetingReagentAssociationSubject"), json);
 		assertFalse(json.contains("sequenceTargetingReagentGeneAssociationObject"), json);
 		assertTrue(json.contains("\"targets\""), json);
 	}
