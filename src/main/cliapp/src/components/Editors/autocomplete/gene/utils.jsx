@@ -24,6 +24,13 @@ export const assertedGenesSearchConfig = {
 	valueDisplay: geneValueDisplay,
 };
 
+export const alleleGeneObjectSearchConfig = {
+	endpoint: Endpoints.Entity.GENE,
+	autocompleteFields: getAutocompleteFields(AUTOCOMPLETE_CONFIGS.geneAutocompleteConfig),
+	filterName: 'objectFilter',
+	valueDisplay: geneValueDisplay,
+};
+
 export const diseaseGeneticModifierGenesSearchConfig = {
 	endpoint: Endpoints.Entity.GENE,
 	autocompleteFields: getAutocompleteFields(AUTOCOMPLETE_CONFIGS.geneAutocompleteConfig),

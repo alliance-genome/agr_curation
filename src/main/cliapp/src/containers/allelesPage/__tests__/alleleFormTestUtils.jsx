@@ -138,13 +138,15 @@ export const removeFirstTokenInColumn = (container, headerText, rowIndex = 0) =>
 };
 
 /**
- * Clicks the delete button in a row's Actions cell.
+ * Clicks the delete button in a row's first cell, where every form table puts it.
  *
  * @param {HTMLElement} container - the rendered table's container
  * @param {number} [rowIndex=0] - the body row, counting from the top
  */
 export const clickDeleteInRow = (container, rowIndex = 0) => {
-	const button = getCellByHeader(container, 'Actions', rowIndex).querySelector('button');
+	const row = container.querySelectorAll('tbody tr')[rowIndex];
+	if (!row) throw new Error(`No body row at index ${rowIndex}`);
+	const button = row.querySelector('td:first-child button');
 	if (!button) throw new Error(`No delete button in row ${rowIndex}`);
 	fireEvent.click(button);
 };

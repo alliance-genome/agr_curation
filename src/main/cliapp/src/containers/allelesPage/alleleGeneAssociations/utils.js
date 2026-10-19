@@ -30,8 +30,12 @@ export const stripGeneAssociation = (association) => {
 	return rest;
 };
 
-// Text typed into an autosuggest is held as a string until an entry is picked.
-const autosuggestValue = (value, key) => (typeof value === 'string' ? `typed:${value}` : value?.[key] ?? null);
+// Text typed into an autosuggest is held as an object carrying only the typed text. A typed gene has
+// no id, so it compares unequal to every picked gene; a typed evidence code compares by its curie.
+const autosuggestValue = (value, key) => {
+	if (!value) return null;
+	return value[key] ?? `typed:${JSON.stringify(value)}`;
+};
 
 const curies = (entities) => (Array.isArray(entities) ? entities.map((entity) => entity?.curie).sort() : []);
 
@@ -83,7 +87,8 @@ export const buildDuplicateGeneAssociations = (associations) =>
 	);
 
 /**
- * Marks each row whose gene was typed rather than picked from the autosuggest, or not given at all.
+ * Marks each row whose gene has no id: typed rather than picked from the autosuggest, or not given at
+ * all.
  *
  * @param {Object[]} associations
  * @param {Object} errorMessages the rows' current errors, keyed by `dataKey`
@@ -92,8 +97,7 @@ export const buildDuplicateGeneAssociations = (associations) =>
 export const markRowsMissingGene = (associations, errorMessages) => {
 	const fieldName = 'alleleGeneAssociationObject';
 	const missing = associations.filter((association) => {
-		const gene = association[fieldName];
-		return !gene || typeof gene === 'string';
+		return !association[fieldName]?.id;
 	});
 	if (missing.length === 0) return null;
 
