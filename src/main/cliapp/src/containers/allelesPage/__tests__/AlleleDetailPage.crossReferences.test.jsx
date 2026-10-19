@@ -22,15 +22,10 @@ const {
 vi.mock('../../../service/AlleleService', async () =>
 	(await import('./alleleServiceMocks')).mockAlleleService({ getAllele, saveAlleleDetail })
 );
-vi.mock('../../../service/CrossReferenceService', async () =>
-	(await import('./alleleServiceMocks')).mockCrossReferenceService({
-		get: getCrossReferencesForAllele,
-		replace: replaceCrossReferencesForAllele,
+vi.mock('../../../service/AlleleSubResourceService', async () =>
+	(await import('./alleleServiceMocks')).mockSubResourceService({
+		'cross-references': { get: getCrossReferencesForAllele, replace: replaceCrossReferencesForAllele },
 	})
-);
-vi.mock('../../../service/ReferenceService', async () => (await import('./alleleServiceMocks')).mockReferenceService());
-vi.mock('../../../service/AlleleGeneAssociationService', async () =>
-	(await import('./alleleServiceMocks')).mockGeneAssociationService()
 );
 vi.mock('../../../service/SearchService', async () => (await import('./alleleServiceMocks')).mockSearchService());
 

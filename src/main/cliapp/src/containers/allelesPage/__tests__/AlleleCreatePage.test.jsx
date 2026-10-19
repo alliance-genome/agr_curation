@@ -12,12 +12,10 @@ vi.mock('../../../service/AlleleService', async () =>
 	(await import('./alleleServiceMocks')).mockAlleleService({ createAllele, saveAlleleDetail })
 );
 vi.mock('../../../service/SearchService', async () => (await import('./alleleServiceMocks')).mockSearchService());
-vi.mock('../../../service/CrossReferenceService', async () =>
-	(await import('./alleleServiceMocks')).mockCrossReferenceService({ replace: replaceCrossReferencesForAllele })
-);
-vi.mock('../../../service/ReferenceService', async () => (await import('./alleleServiceMocks')).mockReferenceService());
-vi.mock('../../../service/AlleleGeneAssociationService', async () =>
-	(await import('./alleleServiceMocks')).mockGeneAssociationService()
+vi.mock('../../../service/AlleleSubResourceService', async () =>
+	(await import('./alleleServiceMocks')).mockSubResourceService({
+		'cross-references': { replace: replaceCrossReferencesForAllele },
+	})
 );
 
 vi.mock('react-router-dom', async (importOriginal) => ({

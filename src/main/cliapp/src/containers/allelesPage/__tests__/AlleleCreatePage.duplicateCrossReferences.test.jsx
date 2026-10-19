@@ -14,16 +14,11 @@ vi.mock('../../../service/AlleleService', async () =>
 	(await import('./alleleServiceMocks')).mockAlleleService({ createAllele, getAllele })
 );
 vi.mock('../../../service/SearchService', async () => (await import('./alleleServiceMocks')).mockSearchService());
-vi.mock('../../../service/CrossReferenceService', async () =>
-	(await import('./alleleServiceMocks')).mockCrossReferenceService({
-		get: getCrossReferencesForAllele,
-		replace: replaceCrossReferencesForAllele,
-	})
-);
 // The source's other sub-resources are read through their own endpoints; this allele has none.
-vi.mock('../../../service/ReferenceService', async () => (await import('./alleleServiceMocks')).mockReferenceService());
-vi.mock('../../../service/AlleleGeneAssociationService', async () =>
-	(await import('./alleleServiceMocks')).mockGeneAssociationService()
+vi.mock('../../../service/AlleleSubResourceService', async () =>
+	(await import('./alleleServiceMocks')).mockSubResourceService({
+		'cross-references': { get: getCrossReferencesForAllele, replace: replaceCrossReferencesForAllele },
+	})
 );
 
 const RESOURCE_DESCRIPTOR = { id: 30, prefix: 'WB', name: 'WormBase', resourcePages: [{ id: 40, name: 'allele' }] };

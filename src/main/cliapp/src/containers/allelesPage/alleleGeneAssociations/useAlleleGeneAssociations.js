@@ -1,5 +1,5 @@
 import { useCallback, useMemo } from 'react';
-import { AlleleGeneAssociationService } from '../../../service/AlleleGeneAssociationService';
+import { AlleleSubResourceService } from '../../../service/AlleleSubResourceService';
 import { useSubResourceList } from '../../../hooks/useSubResourceList';
 import { haveSameGeneAssociations, markRowsMissingGene, prepareGeneAssociations, stripGeneAssociation } from './utils';
 
@@ -11,15 +11,14 @@ import { haveSameGeneAssociations, markRowsMissingGene, prepareGeneAssociations,
  * @param {number} [alleleId] the allele to read on load. Create passes none and saves once it has one.
  */
 export const useAlleleGeneAssociations = (alleleId) => {
-	const geneAssociationService = useMemo(() => new AlleleGeneAssociationService(), []);
+	const subResourceService = useMemo(() => new AlleleSubResourceService(), []);
 	const load = useCallback(
-		(targetAlleleId) => geneAssociationService.getGeneAssociationsForAllele(targetAlleleId),
-		[geneAssociationService]
+		(targetAlleleId) => subResourceService.getList(targetAlleleId, 'gene-associations'),
+		[subResourceService]
 	);
 	const replace = useCallback(
-		(targetAlleleId, associations) =>
-			geneAssociationService.replaceGeneAssociationsForAllele(targetAlleleId, associations),
-		[geneAssociationService]
+		(targetAlleleId, associations) => subResourceService.replaceList(targetAlleleId, 'gene-associations', associations),
+		[subResourceService]
 	);
 
 	const { rows, setRows, save, errorMessages, setErrorMessages, isLoading, loadError, ...subResource } =

@@ -2,9 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { AlleleService } from '../../service/AlleleService';
-import { CrossReferenceService } from '../../service/CrossReferenceService';
-import { ReferenceService } from '../../service/ReferenceService';
-import { AlleleGeneAssociationService } from '../../service/AlleleGeneAssociationService';
+import { AlleleSubResourceService } from '../../service/AlleleSubResourceService';
 import { getIdentifier } from '../../utils/utils';
 import { buildDuplicateAllele } from './utils';
 import { buildDuplicateCrossReferences, seedResourceDescriptors } from './crossReferences/utils';
@@ -37,9 +35,7 @@ export const useDuplicateAlleleSource = ({
 	const [searchParams] = useSearchParams();
 	const sourceIdentifier = searchParams.get('from');
 	const alleleService = useMemo(() => new AlleleService(), []);
-	const crossReferenceService = useMemo(() => new CrossReferenceService(), []);
-	const referenceService = useMemo(() => new ReferenceService(), []);
-	const geneAssociationService = useMemo(() => new AlleleGeneAssociationService(), []);
+	const subResourceService = useMemo(() => new AlleleSubResourceService(), []);
 
 	const {
 		isFetching: sourceAlleleIsLoading,
@@ -82,7 +78,7 @@ export const useDuplicateAlleleSource = ({
 		const copySourceReferences = async () => {
 			setSourceReferencesLoading(true);
 			try {
-				const response = await referenceService.getReferencesForAllele(sourceAllele.id);
+				const response = await subResourceService.getList(sourceAllele.id, 'references');
 				const copies = prepareReferences(response?.data?.entities);
 				if (copies.length > 0) setReferences(copies);
 			} catch (error) {
@@ -103,7 +99,7 @@ export const useDuplicateAlleleSource = ({
 		const copySourceGeneAssociations = async () => {
 			setSourceGeneAssociationsLoading(true);
 			try {
-				const response = await geneAssociationService.getGeneAssociationsForAllele(sourceAllele.id);
+				const response = await subResourceService.getList(sourceAllele.id, 'gene-associations');
 				const copies = buildDuplicateGeneAssociations(response?.data?.entities);
 				if (copies.length > 0) setAlleleGeneAssociations(copies);
 			} catch (error) {
@@ -128,7 +124,7 @@ export const useDuplicateAlleleSource = ({
 		const copySourceCrossReferences = async () => {
 			setSourceCrossReferencesLoading(true);
 			try {
-				const response = await crossReferenceService.getCrossReferencesForAllele(sourceAllele.id);
+				const response = await subResourceService.getList(sourceAllele.id, 'cross-references');
 				const copies = await seedResourceDescriptors(buildDuplicateCrossReferences(response?.data?.entities));
 				if (copies.length > 0) setCrossReferences(copies);
 			} catch (error) {
@@ -151,11 +147,9 @@ export const useDuplicateAlleleSource = ({
 		sourceAlleleLoadFailed,
 		alleleDispatch,
 		crossReferencesVisible,
-		crossReferenceService,
+		subResourceService,
 		setCrossReferences,
-		referenceService,
 		setReferences,
-		geneAssociationService,
 		setAlleleGeneAssociations,
 		toastError,
 	]);

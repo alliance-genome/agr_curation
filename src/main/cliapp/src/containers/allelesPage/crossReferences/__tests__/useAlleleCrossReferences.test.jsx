@@ -6,12 +6,11 @@ const { getCrossReferencesForAllele, replaceCrossReferencesForAllele, getResourc
 	getResourceDescriptor: vi.fn(),
 }));
 
-vi.mock('../../../../service/CrossReferenceService', () => ({
-	CrossReferenceService: class {
-		getCrossReferencesForAllele = getCrossReferencesForAllele;
-		replaceCrossReferencesForAllele = replaceCrossReferencesForAllele;
-	},
-}));
+vi.mock('../../../../service/AlleleSubResourceService', async () =>
+	(await import('../../__tests__/alleleServiceMocks')).mockSubResourceService({
+		'cross-references': { get: getCrossReferencesForAllele, replace: replaceCrossReferencesForAllele },
+	})
+);
 
 vi.mock('../../../../service/ResourceDescriptorService', () => ({
 	ResourceDescriptorService: class {

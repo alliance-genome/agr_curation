@@ -1,5 +1,5 @@
 import { useCallback, useMemo } from 'react';
-import { CrossReferenceService } from '../../../service/CrossReferenceService';
+import { AlleleSubResourceService } from '../../../service/AlleleSubResourceService';
 import { useSubResourceList } from '../../../hooks/useSubResourceList';
 import { addDataKey } from '../utils';
 import { haveSameCrossReferences, seedResourceDescriptors, stripUiFields } from './utils';
@@ -17,15 +17,15 @@ const keyAndSeed = async (crossReferences) => {
  * @param {number} [alleleId] the allele to read on load. Create passes none and saves once it has one.
  */
 export const useAlleleCrossReferences = (alleleId) => {
-	const crossReferenceService = useMemo(() => new CrossReferenceService(), []);
+	const subResourceService = useMemo(() => new AlleleSubResourceService(), []);
 	const load = useCallback(
-		(targetAlleleId) => crossReferenceService.getCrossReferencesForAllele(targetAlleleId),
-		[crossReferenceService]
+		(targetAlleleId) => subResourceService.getList(targetAlleleId, 'cross-references'),
+		[subResourceService]
 	);
 	const replace = useCallback(
 		(targetAlleleId, crossReferences) =>
-			crossReferenceService.replaceCrossReferencesForAllele(targetAlleleId, crossReferences),
-		[crossReferenceService]
+			subResourceService.replaceList(targetAlleleId, 'cross-references', crossReferences),
+		[subResourceService]
 	);
 
 	const { rows, setRows, ...subResource } = useSubResourceList({

@@ -6,8 +6,8 @@
  * call and loads these inside the factory:
  *
  * ```js
- * vi.mock('../../../service/ReferenceService', async () =>
- * 	(await import('./alleleServiceMocks')).mockReferenceService({ get: getReferencesForAllele })
+ * vi.mock('../../../service/SearchService', async () =>
+ * 	(await import('./alleleServiceMocks')).mockSearchService({ search })
  * );
  * ```
  *
@@ -54,37 +54,20 @@ export const mockSearchService = ({ search } = {}) => ({
 });
 
 /**
- * @param {Object} [functions]
- * @param {Function} [functions.get] stands in for `getCrossReferencesForAllele`
- * @param {Function} [functions.replace] stands in for `replaceCrossReferencesForAllele`
+ * Routes each list's reads and writes to stand-ins of its own, keyed by the list's path under the allele, so a test
+ * can stub and check one list without the others:
+ *
+ * ```js
+ * mockSubResourceService({ references: { get: getReferencesForAllele, replace: replaceReferencesForAllele } })
+ * ```
+ *
+ * `get` is called with the allele's id and `replace` with the id and the rows.
+ *
+ * @param {Object<string, {get?: Function, replace?: Function}>} [lists]
  */
-export const mockCrossReferenceService = ({ get, replace } = {}) => ({
-	CrossReferenceService: class {
-		getCrossReferencesForAllele = get ?? vi.fn(emptyListResponse);
-		replaceCrossReferencesForAllele = replace ?? vi.fn(emptyListResponse);
-	},
-});
-
-/**
- * @param {Object} [functions]
- * @param {Function} [functions.get] stands in for `getReferencesForAllele`
- * @param {Function} [functions.replace] stands in for `replaceReferencesForAllele`
- */
-export const mockReferenceService = ({ get, replace } = {}) => ({
-	ReferenceService: class {
-		getReferencesForAllele = get ?? vi.fn(emptyListResponse);
-		replaceReferencesForAllele = replace ?? vi.fn(emptyListResponse);
-	},
-});
-
-/**
- * @param {Object} [functions]
- * @param {Function} [functions.get] stands in for `getGeneAssociationsForAllele`
- * @param {Function} [functions.replace] stands in for `replaceGeneAssociationsForAllele`
- */
-export const mockGeneAssociationService = ({ get, replace } = {}) => ({
-	AlleleGeneAssociationService: class {
-		getGeneAssociationsForAllele = get ?? vi.fn(emptyListResponse);
-		replaceGeneAssociationsForAllele = replace ?? vi.fn(emptyListResponse);
+export const mockSubResourceService = (lists = {}) => ({
+	AlleleSubResourceService: class {
+		getList = (alleleId, path) => (lists[path]?.get ?? emptyListResponse)(alleleId);
+		replaceList = (alleleId, path, rows) => (lists[path]?.replace ?? emptyListResponse)(alleleId, rows);
 	},
 });

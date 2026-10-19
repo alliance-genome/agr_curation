@@ -19,12 +19,8 @@ vi.mock('../../../service/AlleleService', async () =>
 );
 vi.mock('../../../service/SearchService', async () => (await import('./alleleServiceMocks')).mockSearchService());
 // The source's sub-resources are read through their own endpoints; this allele has none.
-vi.mock('../../../service/CrossReferenceService', async () =>
-	(await import('./alleleServiceMocks')).mockCrossReferenceService()
-);
-vi.mock('../../../service/ReferenceService', async () => (await import('./alleleServiceMocks')).mockReferenceService());
-vi.mock('../../../service/AlleleGeneAssociationService', async () =>
-	(await import('./alleleServiceMocks')).mockGeneAssociationService()
+vi.mock('../../../service/AlleleSubResourceService', async () =>
+	(await import('./alleleServiceMocks')).mockSubResourceService()
 );
 
 vi.mock('react-router-dom', async (importOriginal) => ({

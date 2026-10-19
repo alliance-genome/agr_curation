@@ -1,5 +1,5 @@
 import { useCallback, useMemo } from 'react';
-import { ReferenceService } from '../../../service/ReferenceService';
+import { AlleleSubResourceService } from '../../../service/AlleleSubResourceService';
 import { useSubResourceList } from '../../../hooks/useSubResourceList';
 import { haveSameReferences, prepareReferences, stripReference } from './utils';
 
@@ -11,14 +11,14 @@ import { haveSameReferences, prepareReferences, stripReference } from './utils';
  * @param {number} [alleleId] the allele to read on load. Create passes none and saves once it has one.
  */
 export const useAlleleReferences = (alleleId) => {
-	const referenceService = useMemo(() => new ReferenceService(), []);
+	const subResourceService = useMemo(() => new AlleleSubResourceService(), []);
 	const load = useCallback(
-		(targetAlleleId) => referenceService.getReferencesForAllele(targetAlleleId),
-		[referenceService]
+		(targetAlleleId) => subResourceService.getList(targetAlleleId, 'references'),
+		[subResourceService]
 	);
 	const replace = useCallback(
-		(targetAlleleId, references) => referenceService.replaceReferencesForAllele(targetAlleleId, references),
-		[referenceService]
+		(targetAlleleId, references) => subResourceService.replaceList(targetAlleleId, 'references', references),
+		[subResourceService]
 	);
 
 	const { rows, setRows, ...subResource } = useSubResourceList({
