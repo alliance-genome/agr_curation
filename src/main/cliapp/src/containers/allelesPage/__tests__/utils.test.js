@@ -1,6 +1,7 @@
 import {
 	buildCreatePayload,
 	buildDuplicateAllele,
+	capitalize,
 	generateCrossRefSearchField,
 	getPendingSingleValueFields,
 	processErrors,
@@ -360,5 +361,11 @@ describe('generateCrossRefSearchField', () => {
 
 	it('is empty for a reference without cross references, which the API sends without the key', () => {
 		expect(generateCrossRefSearchField({ curie: 'AGRKB:101' })).toBe('');
+	});
+});
+
+describe('capitalize', () => {
+	it('Puts the first letter in upper case and leaves the rest', () => {
+		expect(capitalize('gene associations')).toEqual('Gene associations');
 	});
 });

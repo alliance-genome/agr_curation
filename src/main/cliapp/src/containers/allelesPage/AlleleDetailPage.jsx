@@ -11,12 +11,12 @@ import { useAlleleReducer } from './useAlleleReducer';
 import { StickyHeader } from '../../components/StickyHeader';
 import { DetailPageHeading } from '../../components/DetailPageHeading';
 import { LoadingOverlay } from '../../components/LoadingOverlay';
-import { processErrors, getPendingSingleValueFields } from './utils';
+import { capitalize, processErrors, getPendingSingleValueFields } from './utils';
 import { getIdentifier } from '../../utils/utils';
 import { FormFieldVisibilityMenu, useFormFieldVisibility } from '../../components/FormFieldVisibility';
 import { AlleleForm, ALLELE_DETAIL_TOGGLEABLE_FIELDS } from './AlleleForm';
 import { DuplicateAlleleButton, NewAlleleButton } from './NewAlleleButton';
-import { useAlleleSubResource } from './useAlleleSubResource';
+import { useAlleleSubResources } from './useAlleleSubResources';
 import { SubResourcesProvider } from '../../components/SubResourcesContext';
 import { useDeleteOrDeprecateDialogs } from '../../components/DeleteOrDeprecateDialogs';
 
@@ -31,9 +31,12 @@ export default function AlleleDetailPage() {
 	const alleleService = new AlleleService();
 	const toastSuccess = useRef(null);
 	const toastError = useRef(null);
-	const crossReferences = useAlleleSubResource('crossReferences', alleleState.allele?.id);
-	const references = useAlleleSubResource('references', alleleState.allele?.id);
-	const alleleGeneAssociations = useAlleleSubResource('alleleGeneAssociations', alleleState.allele?.id);
+	const {
+		subResources,
+		saveDirty: saveSubResources,
+		isDirty: subResourcesAreDirty,
+		isSaving: subResourcesAreSaving,
+	} = useAlleleSubResources(alleleState.allele?.id);
 	// The allele as the API last returned it, without the form's unsaved edits.
 	const savedAllele = useRef(null);
 
@@ -101,28 +104,15 @@ export default function AlleleDetailPage() {
 			alleleDispatch({ type: 'SET', value: alleleResult?.data?.entity });
 		}
 
-		// Cross references, references and gene associations are each written only when their section has been
-		// edited, and then as the whole list, so saving the allele alone leaves the stored ones as they are. They are
-		// written whether or not the allele saved, so the errors of all of them are reported together.
-		const subResourceOutcomes = [];
-		if (crossReferences.isDirty) {
-			subResourceOutcomes.push({ label: 'cross references', outcome: await crossReferences.save() });
-		}
-		if (references.isDirty) {
-			subResourceOutcomes.push({ label: 'references', outcome: await references.save() });
-		}
-		if (alleleGeneAssociations.isDirty) {
-			subResourceOutcomes.push({ label: 'gene associations', outcome: await alleleGeneAssociations.save() });
-		} else {
-			// Unchanged rows are not written, so the marks a past save or a note edit left on them are cleared here.
-			alleleGeneAssociations.setErrorMessages({});
-		}
+		// The sub-resources are written whether or not the allele saved, so the errors of all of them are reported
+		// together.
+		const subResourceOutcomes = await saveSubResources();
 		const savedLabels = subResourceOutcomes.filter(({ outcome }) => outcome.isSuccess).map(({ label }) => label);
 		const failedSubResources = subResourceOutcomes.filter(({ outcome }) => !outcome.isSuccess);
 		const failureToast = ({ label }, detail) => ({
 			life: 10000,
 			severity: 'error',
-			summary: `${label.charAt(0).toUpperCase()}${label.slice(1)} not saved: `,
+			summary: `${capitalize(label)} not saved: `,
 			detail,
 			sticky: false,
 		});
@@ -211,12 +201,7 @@ export default function AlleleDetailPage() {
 	});
 
 	const pendingFields = getPendingSingleValueFields(alleleState.allele, savedAllele.current);
-	const hasPendingEdits =
-		pendingFields.size > 0 ||
-		alleleState.hasOtherPendingEdits ||
-		crossReferences.isDirty ||
-		references.isDirty ||
-		alleleGeneAssociations.isDirty;
+	const hasPendingEdits = pendingFields.size > 0 || alleleState.hasOtherPendingEdits || subResourcesAreDirty;
 
 	if (getRequestIsLoading)
 		return (
@@ -229,14 +214,7 @@ export default function AlleleDetailPage() {
 		<>
 			<Toast ref={toastError} position="top-left" />
 			<Toast ref={toastSuccess} position="top-right" />
-			<LoadingOverlay
-				isLoading={
-					!!allelePutRequestIsLoading ||
-					crossReferences.isSaving ||
-					references.isSaving ||
-					alleleGeneAssociations.isSaving
-				}
-			/>
+			<LoadingOverlay isLoading={!!allelePutRequestIsLoading || subResourcesAreSaving} />
 			<ErrorBoundary>
 				<StickyHeader>
 					<Splitter className="bg-primary-reverse border-none lg:h-5rem" gutterSize={0}>
@@ -278,7 +256,7 @@ export default function AlleleDetailPage() {
 						</SplitterPanel>
 					</Splitter>
 				</StickyHeader>
-				<SubResourcesProvider value={{ crossReferences, references, alleleGeneAssociations }}>
+				<SubResourcesProvider value={subResources}>
 					<AlleleForm
 						state={alleleState}
 						dispatch={alleleDispatch}

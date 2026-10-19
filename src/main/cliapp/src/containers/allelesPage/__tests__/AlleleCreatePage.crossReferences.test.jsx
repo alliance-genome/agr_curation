@@ -88,6 +88,22 @@ describe('<AlleleCreatePage /> cross references', () => {
 		expect(validate).not.toHaveBeenCalled();
 	});
 
+	it('Shows the save in progress until the cross references are written', async () => {
+		const user = userEvent.setup();
+		let finishWrite;
+		replaceCrossReferencesForAllele.mockReturnValue(new Promise((resolve) => (finishWrite = resolve)));
+		await renderPage();
+
+		await addCompleteCrossReference(user);
+		await user.click(button('Save & Close'));
+
+		await waitFor(() => expect(replaceCrossReferencesForAllele).toHaveBeenCalled());
+		expect(screen.getByText('Saving in progress...')).toBeInTheDocument();
+
+		finishWrite({ data: { entities: [] } });
+		await waitFor(() => expect(screen.queryByText('Saving in progress...')).not.toBeInTheDocument());
+	});
+
 	it('Makes no second call when there are no cross references', async () => {
 		const user = userEvent.setup();
 		await renderPage();

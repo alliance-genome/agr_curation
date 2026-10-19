@@ -48,6 +48,12 @@ export const addDataKey = (entity) => {
 };
 
 /**
+ * @param {string} text such as a sub-resource's label
+ * @returns {string} the text with its first letter in upper case, for the start of a message
+ */
+export const capitalize = (text) => `${text.charAt(0).toUpperCase()}${text.slice(1)}`;
+
+/**
  * An empty allele symbol, ready to be edited in the symbol table.
  *
  * @returns {Object} a symbol with blank text fields and no name type

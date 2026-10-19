@@ -11,10 +11,10 @@ import { StickyHeader } from '../../components/StickyHeader';
 import { StickyFooter } from '../../components/StickyFooter';
 import { LoadingOverlay } from '../../components/LoadingOverlay';
 import { getIdentifier } from '../../utils/utils';
-import { buildCreatePayload, processErrors } from './utils';
+import { buildCreatePayload, capitalize, processErrors } from './utils';
 import { FormFieldVisibilityMenu, useFormFieldVisibility } from '../../components/FormFieldVisibility';
 import { AlleleForm, ALLELE_CREATE_TOGGLEABLE_FIELDS } from './AlleleForm';
-import { useAlleleSubResource } from './useAlleleSubResource';
+import { useAlleleSubResources } from './useAlleleSubResources';
 import { useDuplicateAlleleSource } from './useDuplicateAlleleSource';
 import { SubResourcesProvider } from '../../components/SubResourcesContext';
 
@@ -28,18 +28,21 @@ export default function AlleleCreatePage() {
 	const alleleService = new AlleleService();
 	const toastSuccess = useRef(null);
 	const toastError = useRef(null);
-	const crossReferences = useAlleleSubResource('crossReferences');
-	const references = useAlleleSubResource('references');
-	const alleleGeneAssociations = useAlleleSubResource('alleleGeneAssociations');
-	// Held so that saving again after the cross references, references or gene associations failed retries them
-	// against the allele that already exists, rather than creating a second one.
+	const {
+		subResources,
+		saveDirty: saveDirtySubResources,
+		isSaving: subResourcesAreSaving,
+		resetAll: resetSubResources,
+	} = useAlleleSubResources();
+	// Held so that saving again after a sub-resource failed retries it against the allele that already exists,
+	// rather than creating a second one.
 	const createdAllele = useRef(null);
 	const { isLoading: duplicateSourceIsLoading } = useDuplicateAlleleSource({
 		alleleDispatch,
-		setCrossReferences: crossReferences.setRows,
+		setCrossReferences: subResources.crossReferences.setRows,
 		crossReferencesVisible: isVisible('Cross References'),
-		setReferences: references.setRows,
-		setAlleleGeneAssociations: alleleGeneAssociations.setRows,
+		setReferences: subResources.references.setRows,
+		setAlleleGeneAssociations: subResources.alleleGeneAssociations.setRows,
 		toastError,
 	});
 
@@ -80,29 +83,13 @@ export default function AlleleCreatePage() {
 		}
 	};
 
-	// Cross references, references and gene associations are written through their own sub-resources, so create
-	// takes several calls.
+	// The allele's sub-resources are written through their own endpoints, so create takes several calls.
 	// The allele exists by the time this runs, so a failure here leaves the work recoverable from its detail page
 	// rather than lost - which is why it keeps the curator here instead of navigating away. Each list is written
 	// only when it differs from what this allele has stored, so saving again skips a list that already saved and
 	// writes one the curator has since changed or emptied.
 	const saveSubResources = async (allele, closeAfterSubmit) => {
-		const subResourceOutcomes = [];
-		if (crossReferences.isDirty) {
-			subResourceOutcomes.push({ label: 'Cross references', outcome: await crossReferences.save(allele?.id) });
-		}
-		if (references.isDirty) {
-			subResourceOutcomes.push({ label: 'References', outcome: await references.save(allele?.id) });
-		}
-		if (alleleGeneAssociations.isDirty) {
-			subResourceOutcomes.push({
-				label: 'Gene associations',
-				outcome: await alleleGeneAssociations.save(allele?.id),
-			});
-		} else {
-			// Unchanged rows are not written, so the marks a past save or a note edit left on them are cleared here.
-			alleleGeneAssociations.setErrorMessages({});
-		}
+		const subResourceOutcomes = await saveDirtySubResources(allele?.id);
 		const failedSubResources = subResourceOutcomes.filter(({ outcome }) => !outcome.isSuccess);
 
 		if (failedSubResources.length > 0) {
@@ -113,7 +100,7 @@ export default function AlleleCreatePage() {
 				failedSubResources.map(({ label, outcome }) => ({
 					life: 10000,
 					severity: 'error',
-					summary: `${label} not saved: `,
+					summary: `${capitalize(label)} not saved: `,
 					detail: `${outcome.message}. Allele ${getIdentifier(allele)} was created - fix the rows and save again, or finish them on its detail page.`,
 					sticky: false,
 				}))
@@ -127,9 +114,7 @@ export default function AlleleCreatePage() {
 			navigate(`/allele/${getIdentifier(allele)}`);
 		} else {
 			alleleDispatch({ type: 'RESET' });
-			crossReferences.reset();
-			references.reset();
-			alleleGeneAssociations.reset();
+			resetSubResources();
 		}
 	};
 
@@ -174,9 +159,7 @@ export default function AlleleCreatePage() {
 	const handleClear = (event) => {
 		event.preventDefault();
 		alleleDispatch({ type: 'RESET' });
-		crossReferences.reset();
-		references.reset();
-		alleleGeneAssociations.reset();
+		resetSubResources();
 		createdAllele.current = null;
 	};
 
@@ -189,7 +172,9 @@ export default function AlleleCreatePage() {
 		<>
 			<Toast ref={toastError} position="top-left" />
 			<Toast ref={toastSuccess} position="top-right" />
-			<LoadingOverlay isLoading={!!allelePostRequestIsLoading || !!allelePutRequestIsLoading} />
+			<LoadingOverlay
+				isLoading={!!allelePostRequestIsLoading || !!allelePutRequestIsLoading || subResourcesAreSaving}
+			/>
 			<LoadingOverlay isLoading={duplicateSourceIsLoading} message="Loading allele to duplicate..." />
 			<ErrorBoundary>
 				<StickyHeader>
@@ -208,7 +193,7 @@ export default function AlleleCreatePage() {
 					</Splitter>
 				</StickyHeader>
 				<div className="pb-8">
-					<SubResourcesProvider value={{ crossReferences, references, alleleGeneAssociations }}>
+					<SubResourcesProvider value={subResources}>
 						<AlleleForm state={alleleState} dispatch={alleleDispatch} isVisible={isVisible} mode="create" />
 					</SubResourcesProvider>
 				</div>
