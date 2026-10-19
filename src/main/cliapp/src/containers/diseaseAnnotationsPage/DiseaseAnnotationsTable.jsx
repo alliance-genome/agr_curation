@@ -128,14 +128,11 @@ export const DiseaseAnnotationsTable = () => {
 		}
 
 		if (rowData.relatedNotes && rowData.relatedNotes.length > 0) {
-			newAnnotationDispatch({ type: 'SET_RELATED_NOTES_EDITING_ROWS', relatedNotes: rowData.relatedNotes });
+			newAnnotationDispatch({ type: 'SET_RELATED_NOTES_EDITING_ROWS' });
 		}
 
 		if (rowData.conditionRelations && rowData.conditionRelations.length > 0) {
-			newAnnotationDispatch({
-				type: 'SET_CONDITION_RELATIONS_EDITING_ROWS',
-				conditionRelations: rowData.conditionRelations,
-			});
+			newAnnotationDispatch({ type: 'SET_CONDITION_RELATIONS_EDITING_ROWS' });
 		}
 
 		handleNewAnnotationOpen();
