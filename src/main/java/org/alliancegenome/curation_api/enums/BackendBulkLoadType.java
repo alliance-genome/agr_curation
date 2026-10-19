@@ -16,7 +16,6 @@ public enum BackendBulkLoadType {
 	PHENOTYPE("json"),
 	MOLECULE("json"),
 	FULL_INGEST("json"),
-	RESOURCE_DESCRIPTOR("yaml"),
 	ORTHOLOGY("json"),
 	ALLELE_ASSOCIATION("json"),
 	CONSTRUCT_ASSOCIATION("json"),
