@@ -1,5 +1,14 @@
+import { getIdentifier } from '../../utils/utils';
+
 export const addDataKey = (entity) => {
 	entity.dataKey = crypto.randomUUID();
+};
+
+// STR has a plain name string, not a symbol/full-name slot annotation, so its label is built
+// directly rather than read off a displayText.
+export const strLabel = (str) => {
+	if (!str) return '';
+	return str.name ? `${str.name} (${getIdentifier(str)})` : getIdentifier(str);
 };
 
 export const processErrors = (data, dispatch, agm) => {

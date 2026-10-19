@@ -112,6 +112,7 @@ export const SORT_FIELDS = Object.freeze([
 	'vocabularyTermSetDescription',
 	'synonyms',
 	'secondaryIdentifiers',
+	'sequenceTargetingReagentGeneAssociations.sequenceTargetingReagentGeneAssociationObject.geneSymbol.displayText',
 	'taxonText',
 	'constructCassetteAssociations.constructCassetteAssociationObject.cassetteSymbol.displayText',
 	'variantStatus.name',
