@@ -229,6 +229,14 @@ const alleleReducer = (draft, action, initialState) => {
 			draft.allele[action.entityType][action.index][action.field] = action.value;
 			draft.hasOtherPendingEdits = true;
 			break;
+		case 'EDIT_ROW_BY_KEY': {
+			const row = draft.allele[action.entityType].find((candidate) => candidate.dataKey === action.dataKey);
+			if (row) {
+				row[action.field] = action.value;
+				draft.hasOtherPendingEdits = true;
+			}
+			break;
+		}
 		case 'EDIT_OBJECT':
 			draft.allele[action.entityType][action.field] = action.value;
 			if (!SINGLE_VALUE_FIELDS.includes(action.entityType)) draft.hasOtherPendingEdits = true;

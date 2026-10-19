@@ -103,6 +103,46 @@ describe('useAlleleReducer', () => {
 			expect(result.current.alleleState.hasOtherPendingEdits).toBe(true);
 		});
 
+		it('Is set by an edit to a row by its key', () => {
+			const { result } = renderHook(() => useAlleleReducer());
+			act(() =>
+				result.current.alleleDispatch({
+					type: 'SET',
+					value: { ...loadedAllele, alleleSynonyms: [{ displayText: 'a' }] },
+				})
+			);
+			const [{ dataKey }] = result.current.alleleState.allele.alleleSynonyms;
+			expect(dataKey).toBeDefined();
+
+			act(() =>
+				result.current.alleleDispatch({
+					type: 'EDIT_ROW_BY_KEY',
+					entityType: 'alleleSynonyms',
+					dataKey,
+					field: 'displayText',
+					value: 'b',
+				})
+			);
+
+			expect(result.current.alleleState.hasOtherPendingEdits).toBe(true);
+		});
+
+		it('Stays unset for an edit to a key no row has', () => {
+			const { result } = renderLoaded();
+
+			act(() =>
+				result.current.alleleDispatch({
+					type: 'EDIT_ROW_BY_KEY',
+					entityType: 'alleleSynonyms',
+					dataKey: 'gone',
+					field: 'displayText',
+					value: 'b',
+				})
+			);
+
+			expect(result.current.alleleState.hasOtherPendingEdits).toBe(false);
+		});
+
 		it('Is set by a table edit', () => {
 			const { result } = renderLoaded();
 
@@ -165,7 +205,7 @@ describe('useAlleleReducer', () => {
 		});
 	});
 
-	describe('EDIT_ROW, ADD_ROW and DELETE_ROW', () => {
+	describe('EDIT_ROW, EDIT_ROW_BY_KEY, ADD_ROW and DELETE_ROW', () => {
 		// The keys differ from the array positions, so a test that confuses the two fails.
 		const renderWithSynonyms = () => {
 			const hook = renderHook(() => useAlleleReducer());
@@ -198,6 +238,44 @@ describe('useAlleleReducer', () => {
 			expect(result.current.alleleState.allele.alleleSynonyms.map((row) => row.displayText)).toEqual([
 				'first',
 				'edited',
+			]);
+		});
+
+		it('Edits a row by its key', () => {
+			const { result } = renderWithSynonyms();
+
+			act(() =>
+				result.current.alleleDispatch({
+					type: 'EDIT_ROW_BY_KEY',
+					entityType: 'alleleSynonyms',
+					dataKey: 'k3',
+					field: 'displayText',
+					value: 'edited',
+				})
+			);
+
+			expect(result.current.alleleState.allele.alleleSynonyms.map((row) => row.displayText)).toEqual([
+				'first',
+				'edited',
+			]);
+		});
+
+		it('Ignores an edit to a key no row has', () => {
+			const { result } = renderWithSynonyms();
+
+			act(() =>
+				result.current.alleleDispatch({
+					type: 'EDIT_ROW_BY_KEY',
+					entityType: 'alleleSynonyms',
+					dataKey: 'gone',
+					field: 'displayText',
+					value: 'edited',
+				})
+			);
+
+			expect(result.current.alleleState.allele.alleleSynonyms.map((row) => row.displayText)).toEqual([
+				'first',
+				'second',
 			]);
 		});
 
