@@ -1,24 +1,38 @@
 import { renderHook, act, waitFor } from '@testing-library/react';
 
-const { getCrossReferencesForAllele, replaceCrossReferencesForAllele, getResourceDescriptor } = vi.hoisted(() => ({
+const {
+	getCrossReferencesForAllele,
+	replaceCrossReferencesForAllele,
+	getReferencesForAllele,
+	replaceReferencesForAllele,
+	getGeneAssociationsForAllele,
+	replaceGeneAssociationsForAllele,
+	getResourceDescriptor,
+} = vi.hoisted(() => ({
 	getCrossReferencesForAllele: vi.fn(),
 	replaceCrossReferencesForAllele: vi.fn(),
+	getReferencesForAllele: vi.fn(),
+	replaceReferencesForAllele: vi.fn(),
+	getGeneAssociationsForAllele: vi.fn(),
+	replaceGeneAssociationsForAllele: vi.fn(),
 	getResourceDescriptor: vi.fn(),
 }));
 
-vi.mock('../../../../service/AlleleSubResourceService', async () =>
-	(await import('../../__tests__/alleleServiceMocks')).mockSubResourceService({
+vi.mock('../../../service/AlleleSubResourceService', async () =>
+	(await import('./alleleServiceMocks')).mockSubResourceService({
 		'cross-references': { get: getCrossReferencesForAllele, replace: replaceCrossReferencesForAllele },
+		references: { get: getReferencesForAllele, replace: replaceReferencesForAllele },
+		'gene-associations': { get: getGeneAssociationsForAllele, replace: replaceGeneAssociationsForAllele },
 	})
 );
 
-vi.mock('../../../../service/ResourceDescriptorService', () => ({
+vi.mock('../../../service/ResourceDescriptorService', () => ({
 	ResourceDescriptorService: class {
 		getResourceDescriptor = getResourceDescriptor;
 	},
 }));
 
-const { useAlleleCrossReferences } = await import('../useAlleleCrossReferences');
+const { useAlleleSubResource } = await import('../useAlleleSubResource');
 
 const storedCrossReference = {
 	id: 500,
@@ -28,28 +42,34 @@ const storedCrossReference = {
 };
 
 beforeEach(() => {
-	getCrossReferencesForAllele.mockReset();
-	replaceCrossReferencesForAllele.mockReset();
-	getResourceDescriptor.mockReset();
+	[
+		getCrossReferencesForAllele,
+		replaceCrossReferencesForAllele,
+		getReferencesForAllele,
+		replaceReferencesForAllele,
+		getGeneAssociationsForAllele,
+		replaceGeneAssociationsForAllele,
+		getResourceDescriptor,
+	].forEach((stub) => stub.mockReset());
 	getResourceDescriptor.mockResolvedValue({
 		data: { entity: { id: 9, prefix: 'PMID', resourcePages: [{ id: 1, name: 'default' }] } },
 	});
 });
 
-describe('useAlleleCrossReferences', () => {
+describe('useAlleleSubResource cross references', () => {
 	it('Reads the allele cross references and keys them for the table', async () => {
 		getCrossReferencesForAllele.mockResolvedValue({ data: { entities: [storedCrossReference] } });
 
-		const { result } = renderHook(() => useAlleleCrossReferences(77));
+		const { result } = renderHook(() => useAlleleSubResource('crossReferences', 77));
 
-		await waitFor(() => expect(result.current.crossReferences).toHaveLength(1));
+		await waitFor(() => expect(result.current.rows).toHaveLength(1));
 		expect(getCrossReferencesForAllele).toHaveBeenCalledWith(77);
-		expect(result.current.crossReferences[0].dataKey).toBeTruthy();
-		expect(result.current.crossReferences[0].resourceDescriptor.resourcePages).toHaveLength(1);
+		expect(result.current.rows[0].dataKey).toBeTruthy();
+		expect(result.current.rows[0].resourceDescriptor.resourcePages).toHaveLength(1);
 	});
 
 	it('Reads nothing until there is an allele, which is how create starts', async () => {
-		renderHook(() => useAlleleCrossReferences());
+		renderHook(() => useAlleleSubResource('crossReferences'));
 
 		await waitFor(() => expect(getCrossReferencesForAllele).not.toHaveBeenCalled());
 	});
@@ -58,8 +78,8 @@ describe('useAlleleCrossReferences', () => {
 		getCrossReferencesForAllele.mockResolvedValue({ data: { entities: [storedCrossReference] } });
 		replaceCrossReferencesForAllele.mockResolvedValue({ data: { entities: [storedCrossReference] } });
 
-		const { result } = renderHook(() => useAlleleCrossReferences(77));
-		await waitFor(() => expect(result.current.crossReferences).toHaveLength(1));
+		const { result } = renderHook(() => useAlleleSubResource('crossReferences', 77));
+		await waitFor(() => expect(result.current.rows).toHaveLength(1));
 
 		let outcome;
 		await act(async () => {
@@ -71,13 +91,13 @@ describe('useAlleleCrossReferences', () => {
 		expect(alleleId).toBe(77);
 		expect(written[0]).not.toHaveProperty('dataKey');
 		expect(written[0]).not.toHaveProperty('resourceDescriptor');
-		expect(result.current.crossReferences[0].dataKey).toBeTruthy();
+		expect(result.current.rows[0].dataKey).toBeTruthy();
 	});
 
 	it('Writes to the allele it is given, which is how create saves', async () => {
 		replaceCrossReferencesForAllele.mockResolvedValue({ data: { entities: [] } });
 
-		const { result } = renderHook(() => useAlleleCrossReferences());
+		const { result } = renderHook(() => useAlleleSubResource('crossReferences'));
 		await act(async () => {
 			await result.current.save(123);
 		});
@@ -100,9 +120,9 @@ describe('useAlleleCrossReferences', () => {
 			},
 		});
 
-		const { result } = renderHook(() => useAlleleCrossReferences(77));
-		await waitFor(() => expect(result.current.crossReferences).toHaveLength(2));
-		const secondRowKey = result.current.crossReferences[1].dataKey;
+		const { result } = renderHook(() => useAlleleSubResource('crossReferences', 77));
+		await waitFor(() => expect(result.current.rows).toHaveLength(2));
+		const secondRowKey = result.current.rows[1].dataKey;
 
 		let outcome;
 		await act(async () => {
@@ -113,7 +133,7 @@ describe('useAlleleCrossReferences', () => {
 		expect(result.current.errorMessages[secondRowKey]).toEqual({
 			referencedCurie: { severity: 'error', message: 'Required field is empty' },
 		});
-		expect(result.current.errorMessages).not.toHaveProperty(result.current.crossReferences[0].dataKey);
+		expect(result.current.errorMessages).not.toHaveProperty(result.current.rows[0].dataKey);
 	});
 
 	// The section refuses to save while loadError is set. An empty table that failed to load looks
@@ -122,11 +142,11 @@ describe('useAlleleCrossReferences', () => {
 		vi.spyOn(console, 'warn').mockImplementation(() => {});
 		getCrossReferencesForAllele.mockRejectedValue(new Error('network'));
 
-		const { result } = renderHook(() => useAlleleCrossReferences(77));
+		const { result } = renderHook(() => useAlleleSubResource('crossReferences', 77));
 
 		await waitFor(() => expect(result.current.isLoading).toBe(false));
 		expect(result.current.loadError).toBeTruthy();
-		expect(result.current.crossReferences).toEqual([]);
+		expect(result.current.rows).toEqual([]);
 
 		console.warn.mockRestore();
 	});
@@ -137,12 +157,12 @@ describe('useAlleleCrossReferences', () => {
 		getCrossReferencesForAllele.mockResolvedValue({ data: { entities: [storedCrossReference] } });
 		replaceCrossReferencesForAllele.mockResolvedValue({ data: { entities: [storedCrossReference] } });
 
-		const { result } = renderHook(() => useAlleleCrossReferences(77));
-		await waitFor(() => expect(result.current.crossReferences).toHaveLength(1));
+		const { result } = renderHook(() => useAlleleSubResource('crossReferences', 77));
+		await waitFor(() => expect(result.current.rows).toHaveLength(1));
 		expect(result.current.isDirty).toBe(false);
 
 		act(() => {
-			result.current.setCrossReferences([]);
+			result.current.setRows([]);
 		});
 		expect(result.current.isDirty).toBe(true);
 
@@ -155,27 +175,27 @@ describe('useAlleleCrossReferences', () => {
 	it('Reports no unsaved edits once the rows are changed back to those last read', async () => {
 		getCrossReferencesForAllele.mockResolvedValue({ data: { entities: [storedCrossReference] } });
 
-		const { result } = renderHook(() => useAlleleCrossReferences(77));
-		await waitFor(() => expect(result.current.crossReferences).toHaveLength(1));
-		const loadedRows = result.current.crossReferences;
+		const { result } = renderHook(() => useAlleleSubResource('crossReferences', 77));
+		await waitFor(() => expect(result.current.rows).toHaveLength(1));
+		const loadedRows = result.current.rows;
 
 		act(() => {
-			result.current.setCrossReferences([...loadedRows, { dataKey: 'new-row', referencedCurie: '' }]);
+			result.current.setRows([...loadedRows, { dataKey: 'new-row', referencedCurie: '' }]);
 		});
 		expect(result.current.isDirty).toBe(true);
 
 		act(() => {
-			result.current.setCrossReferences([...loadedRows]);
+			result.current.setRows([...loadedRows]);
 		});
 		expect(result.current.isDirty).toBe(false);
 
 		act(() => {
-			result.current.setCrossReferences([{ ...loadedRows[0], displayName: 'PMID:1 edited' }]);
+			result.current.setRows([{ ...loadedRows[0], displayName: 'PMID:1 edited' }]);
 		});
 		expect(result.current.isDirty).toBe(true);
 
 		act(() => {
-			result.current.setCrossReferences([{ ...loadedRows[0], displayName: 'PMID:1' }]);
+			result.current.setRows([{ ...loadedRows[0], displayName: 'PMID:1' }]);
 		});
 		expect(result.current.isDirty).toBe(false);
 	});
@@ -184,11 +204,11 @@ describe('useAlleleCrossReferences', () => {
 		getCrossReferencesForAllele.mockResolvedValue({ data: { entities: [storedCrossReference] } });
 		replaceCrossReferencesForAllele.mockRejectedValue({ response: { data: { errorMessage: 'refused' } } });
 
-		const { result } = renderHook(() => useAlleleCrossReferences(77));
-		await waitFor(() => expect(result.current.crossReferences).toHaveLength(1));
+		const { result } = renderHook(() => useAlleleSubResource('crossReferences', 77));
+		await waitFor(() => expect(result.current.rows).toHaveLength(1));
 
 		act(() => {
-			result.current.setCrossReferences([]);
+			result.current.setRows([]);
 		});
 		await act(async () => {
 			await result.current.save();
@@ -203,7 +223,7 @@ describe('useAlleleCrossReferences', () => {
 		vi.spyOn(console, 'warn').mockImplementation(() => {});
 		getCrossReferencesForAllele.mockRejectedValue(new Error('network'));
 
-		const { result } = renderHook(() => useAlleleCrossReferences(77));
+		const { result } = renderHook(() => useAlleleSubResource('crossReferences', 77));
 		await waitFor(() => expect(result.current.loadError).toBeTruthy());
 
 		let outcome;
@@ -219,7 +239,7 @@ describe('useAlleleCrossReferences', () => {
 	it('Refuses to save rows that are still loading', async () => {
 		getCrossReferencesForAllele.mockReturnValue(new Promise(() => {}));
 
-		const { result } = renderHook(() => useAlleleCrossReferences(77));
+		const { result } = renderHook(() => useAlleleSubResource('crossReferences', 77));
 		expect(result.current.isLoading).toBe(true);
 
 		let outcome;
@@ -229,5 +249,68 @@ describe('useAlleleCrossReferences', () => {
 
 		expect(outcome.isSuccess).toBe(false);
 		expect(replaceCrossReferencesForAllele).not.toHaveBeenCalled();
+	});
+});
+
+describe('useAlleleSubResource', () => {
+	it.each([
+		['crossReferences', getCrossReferencesForAllele, replaceCrossReferencesForAllele],
+		['references', getReferencesForAllele, replaceReferencesForAllele],
+		['alleleGeneAssociations', getGeneAssociationsForAllele, replaceGeneAssociationsForAllele],
+	])('Reads and writes %s through their own sub-resource', async (type, getList, replaceList) => {
+		getList.mockResolvedValue({ data: { entities: [] } });
+		replaceList.mockResolvedValue({ data: { entities: [] } });
+
+		const { result } = renderHook(() => useAlleleSubResource(type, 77));
+		await waitFor(() => expect(result.current.isLoading).toBe(false));
+		await act(async () => {
+			await result.current.save();
+		});
+
+		expect(getList).toHaveBeenCalledWith(77);
+		expect(replaceList).toHaveBeenCalledWith(77, []);
+	});
+});
+
+describe('useAlleleSubResource gene associations', () => {
+	const storedAssociation = {
+		id: 801,
+		relation: { name: 'is_allele_of' },
+		alleleGeneAssociationObject: { type: 'Gene', id: 31, primaryExternalId: 'WB:WBGene31' },
+	};
+
+	it('Refuses rows whose gene was typed rather than picked, and marks them', async () => {
+		getGeneAssociationsForAllele.mockResolvedValue({ data: { entities: [storedAssociation] } });
+
+		const { result } = renderHook(() => useAlleleSubResource('alleleGeneAssociations', 77));
+		await waitFor(() => expect(result.current.rows).toHaveLength(1));
+		const rowKey = result.current.rows[0].dataKey;
+
+		act(() => {
+			result.current.setRows([{ ...result.current.rows[0], alleleGeneAssociationObject: 'WB:WBGene3' }]);
+		});
+		let outcome;
+		await act(async () => {
+			outcome = await result.current.save();
+		});
+
+		expect(outcome).toEqual({ isSuccess: false, message: 'Select each gene from the autosuggest' });
+		expect(replaceGeneAssociationsForAllele).not.toHaveBeenCalled();
+		expect(result.current.errorMessages[rowKey]).toHaveProperty('alleleGeneAssociationObject');
+	});
+
+	it('Saves rows whose genes were all picked', async () => {
+		getGeneAssociationsForAllele.mockResolvedValue({ data: { entities: [storedAssociation] } });
+		replaceGeneAssociationsForAllele.mockResolvedValue({ data: { entities: [storedAssociation] } });
+
+		const { result } = renderHook(() => useAlleleSubResource('alleleGeneAssociations', 77));
+		await waitFor(() => expect(result.current.rows).toHaveLength(1));
+		let outcome;
+		await act(async () => {
+			outcome = await result.current.save();
+		});
+
+		expect(outcome).toEqual({ isSuccess: true });
+		expect(replaceGeneAssociationsForAllele).toHaveBeenCalledWith(77, [storedAssociation]);
 	});
 });

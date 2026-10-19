@@ -32,7 +32,7 @@ const Harness = ({ initialReferences = [] }) => {
 	const [references, setReferences] = useState(initialReferences);
 	heldReferences = references;
 	return (
-		<SubResourcesProvider value={{ references: { references, setReferences } }}>
+		<SubResourcesProvider value={{ references: { rows: references, setRows: setReferences } }}>
 			<NewReferenceField />
 		</SubResourcesProvider>
 	);

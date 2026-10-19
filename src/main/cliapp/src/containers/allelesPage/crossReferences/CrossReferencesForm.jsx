@@ -18,8 +18,16 @@ import { applyCrossReferenceFieldChange, buildNewCrossReference } from './utils'
  * @param {'detail'|'create'} [props.mode]
  */
 export const CrossReferencesForm = ({ mode = 'detail' }) => {
-	const { crossReferences, setCrossReferences, errorMessages, isLoading, loadError, isSaving, isDirty, save } =
-		useSubResource('crossReferences');
+	const {
+		rows: crossReferences,
+		setRows: setCrossReferences,
+		errorMessages,
+		isLoading,
+		loadError,
+		isSaving,
+		isDirty,
+		save,
+	} = useSubResource('crossReferences');
 	const tableRef = useRef(null);
 	const toast = useRef(null);
 	const isDetail = mode === 'detail';

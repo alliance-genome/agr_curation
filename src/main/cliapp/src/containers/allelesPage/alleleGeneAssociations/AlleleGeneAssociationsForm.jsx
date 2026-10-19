@@ -23,8 +23,8 @@ import { useVocabularyTermSetService } from '../../../service/useVocabularyTermS
  */
 export const AlleleGeneAssociationsForm = ({ labelColumnSize, mode = 'detail' }) => {
 	const {
-		alleleGeneAssociations,
-		setAlleleGeneAssociations,
+		rows: alleleGeneAssociations,
+		setRows: setAlleleGeneAssociations,
 		errorMessages,
 		setErrorMessages,
 		isLoading,

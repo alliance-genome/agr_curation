@@ -18,8 +18,16 @@ import { NewReferenceField } from './NewReferenceField';
  * @param {'detail'|'create'} [props.mode]
  */
 export const ReferencesForm = ({ mode = 'detail' }) => {
-	const { references, setReferences, errorMessages, isLoading, loadError, isSaving, isDirty, save } =
-		useSubResource('references');
+	const {
+		rows: references,
+		setRows: setReferences,
+		errorMessages,
+		isLoading,
+		loadError,
+		isSaving,
+		isDirty,
+		save,
+	} = useSubResource('references');
 	const tableRef = useRef(null);
 	const toast = useRef(null);
 	const isDetail = mode === 'detail';

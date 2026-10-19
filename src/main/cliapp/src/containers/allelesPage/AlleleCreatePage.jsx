@@ -14,9 +14,7 @@ import { getIdentifier } from '../../utils/utils';
 import { buildCreatePayload, processErrors } from './utils';
 import { FormFieldVisibilityMenu, useFormFieldVisibility } from '../../components/FormFieldVisibility';
 import { AlleleForm, ALLELE_CREATE_TOGGLEABLE_FIELDS } from './AlleleForm';
-import { useAlleleCrossReferences } from './crossReferences/useAlleleCrossReferences';
-import { useAlleleReferences } from './referencesTable/useAlleleReferences';
-import { useAlleleGeneAssociations } from './alleleGeneAssociations/useAlleleGeneAssociations';
+import { useAlleleSubResource } from './useAlleleSubResource';
 import { useDuplicateAlleleSource } from './useDuplicateAlleleSource';
 import { SubResourcesProvider } from '../../components/SubResourcesContext';
 
@@ -30,18 +28,18 @@ export default function AlleleCreatePage() {
 	const alleleService = new AlleleService();
 	const toastSuccess = useRef(null);
 	const toastError = useRef(null);
-	const crossReferences = useAlleleCrossReferences();
-	const references = useAlleleReferences();
-	const alleleGeneAssociations = useAlleleGeneAssociations();
+	const crossReferences = useAlleleSubResource('crossReferences');
+	const references = useAlleleSubResource('references');
+	const alleleGeneAssociations = useAlleleSubResource('alleleGeneAssociations');
 	// Held so that saving again after the cross references, references or gene associations failed retries them
 	// against the allele that already exists, rather than creating a second one.
 	const createdAllele = useRef(null);
 	const { isLoading: duplicateSourceIsLoading } = useDuplicateAlleleSource({
 		alleleDispatch,
-		setCrossReferences: crossReferences.setCrossReferences,
+		setCrossReferences: crossReferences.setRows,
 		crossReferencesVisible: isVisible('Cross References'),
-		setReferences: references.setReferences,
-		setAlleleGeneAssociations: alleleGeneAssociations.setAlleleGeneAssociations,
+		setReferences: references.setRows,
+		setAlleleGeneAssociations: alleleGeneAssociations.setRows,
 		toastError,
 	});
 

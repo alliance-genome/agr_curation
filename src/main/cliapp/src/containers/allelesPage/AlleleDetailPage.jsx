@@ -16,9 +16,7 @@ import { getIdentifier } from '../../utils/utils';
 import { FormFieldVisibilityMenu, useFormFieldVisibility } from '../../components/FormFieldVisibility';
 import { AlleleForm, ALLELE_DETAIL_TOGGLEABLE_FIELDS } from './AlleleForm';
 import { DuplicateAlleleButton, NewAlleleButton } from './NewAlleleButton';
-import { useAlleleCrossReferences } from './crossReferences/useAlleleCrossReferences';
-import { useAlleleReferences } from './referencesTable/useAlleleReferences';
-import { useAlleleGeneAssociations } from './alleleGeneAssociations/useAlleleGeneAssociations';
+import { useAlleleSubResource } from './useAlleleSubResource';
 import { SubResourcesProvider } from '../../components/SubResourcesContext';
 import { useDeleteOrDeprecateDialogs } from '../../components/DeleteOrDeprecateDialogs';
 
@@ -33,9 +31,9 @@ export default function AlleleDetailPage() {
 	const alleleService = new AlleleService();
 	const toastSuccess = useRef(null);
 	const toastError = useRef(null);
-	const crossReferences = useAlleleCrossReferences(alleleState.allele?.id);
-	const references = useAlleleReferences(alleleState.allele?.id);
-	const alleleGeneAssociations = useAlleleGeneAssociations(alleleState.allele?.id);
+	const crossReferences = useAlleleSubResource('crossReferences', alleleState.allele?.id);
+	const references = useAlleleSubResource('references', alleleState.allele?.id);
+	const alleleGeneAssociations = useAlleleSubResource('alleleGeneAssociations', alleleState.allele?.id);
 	// The allele as the API last returned it, without the form's unsaved edits.
 	const savedAllele = useRef(null);
 

@@ -118,6 +118,18 @@ export const seedResourceDescriptors = async (crossReferences) => {
 	});
 };
 
+/**
+ * Readies cross references for the cross references table: each is given its own `dataKey` in place, and
+ * the rows returned carry their full resource descriptors.
+ *
+ * @param {Object[]} crossReferences cross references as the API returns them
+ * @returns {Promise<Object[]>}
+ */
+export const prepareCrossReferences = async (crossReferences) => {
+	crossReferences.forEach(addDataKey);
+	return seedResourceDescriptors(crossReferences);
+};
+
 const DEFAULT_PAGE_NAME = 'default';
 
 // The curie a descriptor starts a row with: its prefix and the colon, ready for the local id.

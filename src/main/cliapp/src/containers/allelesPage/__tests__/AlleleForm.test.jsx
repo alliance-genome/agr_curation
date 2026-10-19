@@ -3,9 +3,7 @@ import { screen } from '@testing-library/react';
 import { renderWithClient } from '../../../tools/jest/utils';
 import { AlleleForm, ALLELE_CREATE_TOGGLEABLE_FIELDS, ALLELE_DETAIL_TOGGLEABLE_FIELDS } from '../AlleleForm';
 import { useAlleleReducer } from '../useAlleleReducer';
-import { useAlleleCrossReferences } from '../crossReferences/useAlleleCrossReferences';
-import { useAlleleReferences } from '../referencesTable/useAlleleReferences';
-import { useAlleleGeneAssociations } from '../alleleGeneAssociations/useAlleleGeneAssociations';
+import { useAlleleSubResource } from '../useAlleleSubResource';
 import { SubResourcesProvider } from '../../../components/SubResourcesContext';
 
 const alwaysVisible = () => true;
@@ -13,9 +11,9 @@ const alwaysVisible = () => true;
 // AlleleForm reads reducer state, so drive it through the real reducer rather than a literal.
 const AlleleFormHarness = ({ mode }) => {
 	const { alleleState, alleleDispatch } = useAlleleReducer();
-	const crossReferences = useAlleleCrossReferences();
-	const references = useAlleleReferences();
-	const alleleGeneAssociations = useAlleleGeneAssociations();
+	const crossReferences = useAlleleSubResource('crossReferences');
+	const references = useAlleleSubResource('references');
+	const alleleGeneAssociations = useAlleleSubResource('alleleGeneAssociations');
 	return (
 		<SubResourcesProvider value={{ crossReferences, references, alleleGeneAssociations }}>
 			<AlleleForm state={alleleState} dispatch={alleleDispatch} isVisible={alwaysVisible} mode={mode} />
@@ -168,9 +166,9 @@ describe('<AlleleForm />', () => {
 
 const AlleleFormHarnessWithoutMode = () => {
 	const { alleleState, alleleDispatch } = useAlleleReducer();
-	const crossReferences = useAlleleCrossReferences();
-	const references = useAlleleReferences();
-	const alleleGeneAssociations = useAlleleGeneAssociations();
+	const crossReferences = useAlleleSubResource('crossReferences');
+	const references = useAlleleSubResource('references');
+	const alleleGeneAssociations = useAlleleSubResource('alleleGeneAssociations');
 	return (
 		<SubResourcesProvider value={{ crossReferences, references, alleleGeneAssociations }}>
 			<AlleleForm state={alleleState} dispatch={alleleDispatch} isVisible={alwaysVisible} />
@@ -180,9 +178,9 @@ const AlleleFormHarnessWithoutMode = () => {
 
 const AlleleFormHarnessWithVisibility = ({ mode, isVisible }) => {
 	const { alleleState, alleleDispatch } = useAlleleReducer();
-	const crossReferences = useAlleleCrossReferences();
-	const references = useAlleleReferences();
-	const alleleGeneAssociations = useAlleleGeneAssociations();
+	const crossReferences = useAlleleSubResource('crossReferences');
+	const references = useAlleleSubResource('references');
+	const alleleGeneAssociations = useAlleleSubResource('alleleGeneAssociations');
 	return (
 		<SubResourcesProvider value={{ crossReferences, references, alleleGeneAssociations }}>
 			<AlleleForm state={alleleState} dispatch={alleleDispatch} isVisible={isVisible} mode={mode} />
