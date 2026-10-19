@@ -55,9 +55,6 @@ export const TransgenicToolsTable = () => {
 
 	const searchService = new SearchService();
 
-	const errorMessagesRef = useRef();
-	errorMessagesRef.current = errorMessages;
-
 	const handleSymbolOpen = (symbol) => setSymbolData({ originalSymbols: [symbol], dialog: true });
 	const handleFullNameOpen = (fullName) => setFullNameData({ originalFullNames: [fullName], dialog: true });
 	const handleSynonymsOpen = (synonyms) => setSynonymsData({ originalSynonyms: synonyms, dialog: true });

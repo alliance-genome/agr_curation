@@ -44,9 +44,6 @@ export const ConstructsTable = () => {
 
 	const searchService = new SearchService();
 
-	const errorMessagesRef = useRef();
-	errorMessagesRef.current = errorMessages;
-
 	const [cassettesData, setCassettesData] = useState({
 		dialog: false,
 	});
