@@ -154,6 +154,19 @@ describe('<SynonymsForm />', () => {
 		expect(getState().entityStates.alleleSynonyms.errorMessages).toEqual({ [secondKey]: { displayText: ERROR } });
 	});
 
+	it('shows an evidence error on its row', () => {
+		const { container, getState, dispatch } = renderForm();
+
+		dispatch({
+			type: 'UPDATE_TABLE_ERROR_MESSAGES',
+			entityType: 'alleleSynonyms',
+			errorMessages: { [savedRows(getState)[1].dataKey]: { evidence: ERROR } },
+		});
+
+		expect(getCellByHeader(container, 'Evidence', 1).textContent).toContain('second row is bad');
+		expect(getCellByHeader(container, 'Evidence', 0).textContent).not.toContain('second row is bad');
+	});
+
 	it('shows a row error on the row whose key it is stored under', () => {
 		const { container, getState, dispatch } = renderForm();
 
