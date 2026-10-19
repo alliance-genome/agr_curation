@@ -1,4 +1,4 @@
-import { buildAutocompleteFilter, autocompleteSearch } from '../../../../utils/utils';
+import { buildAutocompleteFilter, autocompleteSearch, getIdentifier } from '../../../../utils/utils';
 import { SearchService } from '../../../../service/SearchService';
 import { Endpoints } from '../../../../constants/Endpoints';
 import { EvidenceAutocompleteTemplate } from '../base/templates/EvidenceAutocompleteTemplate';
@@ -7,6 +7,21 @@ import { AUTOCOMPLETE_CONFIGS, getAutocompleteFields } from '../../../../constan
 export const ontologyTermAutocompleteFields = getAutocompleteFields(
 	AUTOCOMPLETE_CONFIGS.ontologyTermAutocompleteConfig
 );
+
+export const mutationTypesSearchConfig = {
+	endpoint: Endpoints.Ontology.SO,
+	autocompleteFields: ontologyTermAutocompleteFields,
+	filterName: 'mutationTypeFilter',
+};
+
+/**
+ * Token label for a mutation type. Matches the suggestion list, so a term reads the same
+ * before and after it is chosen.
+ *
+ * @param {object} term - a sequence ontology term
+ * @returns {string} the term name and identifier, or the identifier alone for a term without a name
+ */
+export const mutationTypeLabel = (term) => (term?.name ? `${term.name} (${getIdentifier(term)})` : getIdentifier(term));
 
 export const diseaseSearchConfig = {
 	endpoint: Endpoints.Ontology.DO,
@@ -77,6 +92,7 @@ const buildSearchFn = (config) => (event, setFiltered, setInputValue) => {
 	autocompleteSearch(searchService, config.endpoint, config.filterName, filter, setFiltered, config.otherFilters);
 };
 
+export const mutationTypesSearch = buildSearchFn(mutationTypesSearchConfig);
 export const diseaseSearch = buildSearchFn(diseaseSearchConfig);
 export const evidenceCodesSearch = buildSearchFn(evidenceCodesSearchConfig);
 export const conditionClassSearch = buildSearchFn(conditionClassSearchConfig);

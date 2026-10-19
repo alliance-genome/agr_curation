@@ -42,6 +42,18 @@ describe('<MutationTypesForm />', () => {
 		);
 	});
 
+	it('labels mutation type tokens with the term name and identifier', () => {
+		const { container } = renderForm();
+
+		const tokenLabels = [
+			...getCellByHeader(container, 'Mutation Types', 0).querySelectorAll('.p-autocomplete-token-label'),
+		];
+		expect(tokenLabels.map((label) => label.textContent)).toEqual([
+			'point_mutation (SO:0000001)',
+			'deletion (SO:0000002)',
+		]);
+	});
+
 	it('saves a picked mutation type alongside the existing ones', async () => {
 		const { container, getState } = renderForm();
 
