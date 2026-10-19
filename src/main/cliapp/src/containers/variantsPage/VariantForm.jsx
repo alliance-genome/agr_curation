@@ -19,6 +19,7 @@ const FIELDS_OMITTED_ON_CREATE = [
 	'Curie',
 	'Primary External ID',
 	'MOD Internal ID',
+	'Unique ID',
 	'Cross References',
 	'Updated By',
 	'Date Updated',
@@ -31,6 +32,7 @@ export const VARIANT_DETAIL_TOGGLEABLE_FIELDS = [
 	'Curie',
 	'Primary External ID',
 	'MOD Internal ID',
+	'Unique ID',
 	'Taxon',
 	'Variant Type',
 	'Variant Status',
@@ -114,6 +116,16 @@ export const VariantForm = ({ state, dispatch, isVisible, mode = 'detail' }) => 
 				<IdentifierDetailPageTemplate
 					identifier={state.variant?.modInternalId}
 					label="MOD Internal ID"
+					widgetColumnSize={widgetColumnSize}
+					labelColumnSize={labelColumnSize}
+					fieldDetailsColumnSize={fieldDetailsColumnSize}
+				/>
+			</FormSection>
+
+			<FormSection isVisible={!isCreate && isVisible('Unique ID')}>
+				<IdentifierDetailPageTemplate
+					identifier={state.variant?.uniqueId}
+					label="Unique ID"
 					widgetColumnSize={widgetColumnSize}
 					labelColumnSize={labelColumnSize}
 					fieldDetailsColumnSize={fieldDetailsColumnSize}

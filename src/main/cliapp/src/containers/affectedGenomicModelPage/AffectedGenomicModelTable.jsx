@@ -30,6 +30,8 @@ import { BooleanTableEditor } from '../../components/Editors/dropdown/boolean/Bo
 import { ControlledVocabularyTableEditor } from '../../components/Editors/dropdown/vocabulary/ControlledVocabularyTableEditor';
 import { Button } from 'primereact/button';
 import { AffectedGenomicModelCreateDialog } from './AffectedGenomicModelCreateDialog';
+import { AssociatedSTRsReadOnlyDialog } from './associatedSTRs/AssociatedSTRsReadOnlyDialog';
+import { strLabel } from './utils';
 
 export const AffectedGenomicModelTable = () => {
 	const [isInEditMode, setIsInEditMode] = useState(false);
@@ -68,6 +70,10 @@ export const AffectedGenomicModelTable = () => {
 	});
 
 	const [fullNameData, setFullNameData] = useState({
+		dialog: false,
+	});
+
+	const [associatedSTRsData, setAssociatedSTRsData] = useState({
 		dialog: false,
 	});
 
@@ -138,6 +144,13 @@ export const AffectedGenomicModelTable = () => {
 		setSecondaryIdsData(() => ({
 			..._secondaryIdsData,
 		}));
+	};
+
+	const handleAssociatedSTRsOpen = (agmSequenceTargetingReagentAssociations) => {
+		setAssociatedSTRsData({
+			originalAssociatedSTRs: agmSequenceTargetingReagentAssociations,
+			dialog: true,
+		});
 	};
 
 	const columns = useMemo(
@@ -284,6 +297,19 @@ export const AffectedGenomicModelTable = () => {
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.crossReferencesFilterConfig,
 				body: (rowData) => <CrossReferencesTemplate list={rowData.crossReferences} />,
+			},
+			{
+				field: 'agmSequenceTargetingReagentAssociations',
+				columnKey: 'agmSequenceTargetingReagentAssociations.agmSequenceTargetingReagentAssociationObject.name',
+				header: 'Associated STRs',
+				body: (rowData) => (
+					<ListDialogTemplate
+						entities={rowData.agmSequenceTargetingReagentAssociations}
+						handleOpen={handleAssociatedSTRsOpen}
+						getTextField={(association) => strLabel(association?.agmSequenceTargetingReagentAssociationObject)}
+						underline={false}
+					/>
+				),
 			},
 			{
 				field: 'updatedBy.uniqueId',
@@ -434,6 +460,10 @@ export const AffectedGenomicModelTable = () => {
 			<SecondaryIdsReadOnlyDialog
 				originalSecondaryIdsData={secondaryIdsData}
 				setOriginalSecondaryIdsData={setSecondaryIdsData}
+			/>
+			<AssociatedSTRsReadOnlyDialog
+				originalAssociatedSTRsData={associatedSTRsData}
+				setOriginalAssociatedSTRsData={setAssociatedSTRsData}
 			/>
 			<AffectedGenomicModelCreateDialog visible={createDialogVisible} onHide={() => setCreateDialogVisible(false)} />
 		</>
