@@ -3,18 +3,12 @@ package org.alliancegenome.curation_api.services;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Objects;
 
 import org.alliancegenome.curation_api.dao.ResourceDescriptorDAO;
-import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.model.entities.ResourceDescriptor;
-import org.alliancegenome.curation_api.model.ingest.dto.ResourceDescriptorDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
-import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
 import org.alliancegenome.curation_api.services.validation.ResourceDescriptorValidator;
-import org.alliancegenome.curation_api.services.validation.dto.ResourceDescriptorDTOValidator;
-import org.apache.commons.collections4.ListUtils;
 
 import io.quarkus.logging.Log;
 import jakarta.annotation.PostConstruct;
@@ -26,7 +20,6 @@ import jakarta.transaction.Transactional;
 public class ResourceDescriptorService extends BaseEntityCrudService<ResourceDescriptor, ResourceDescriptorDAO> {
 
 	@Inject ResourceDescriptorDAO resourceDescriptorDAO;
-	@Inject ResourceDescriptorDTOValidator resourceDescriptorDtoValidator;
 	@Inject ResourceDescriptorValidator resourceDescriptorValidator;
 
 	Date prefixRequest;
@@ -50,34 +43,6 @@ public class ResourceDescriptorService extends BaseEntityCrudService<ResourceDes
 	public ObjectResponse<ResourceDescriptor> create(ResourceDescriptor uiEntity) {
 		ResourceDescriptor dbEntity = resourceDescriptorValidator.validateResourceDescriptorCreate(uiEntity);
 		return new ObjectResponse<>(resourceDescriptorDAO.persist(dbEntity));
-	}
-
-	public List<String> getAllNames() {
-		List<String> names = resourceDescriptorDAO.findAllNames();
-		names.removeIf(Objects::isNull);
-		return names;
-	}
-
-	@Transactional
-	public ResourceDescriptor upsert(ResourceDescriptorDTO dto) throws ValidationException {
-		ResourceDescriptor rd = resourceDescriptorDtoValidator.validateResourceDescriptorDTO(dto);
-
-		if (rd == null) {
-			return null;
-		}
-
-		return resourceDescriptorDAO.persist(rd);
-	}
-
-	@Transactional
-	public void removeNonUpdatedResourceDescriptors(List<String> rdNamesBefore, List<String> rdNamesAfter) {
-		List<String> rdNamesToRemove = ListUtils.subtract(rdNamesBefore, rdNamesAfter);
-		for (String rdName : rdNamesToRemove) {
-			SearchResponse<ResourceDescriptor> rdResponse = resourceDescriptorDAO.findByField("name", rdName);
-			if (rdResponse != null && rdResponse.getSingleResult() != null) {
-				resourceDescriptorDAO.remove(rdResponse.getSingleResult().getId());
-			}
-		}
 	}
 
 	public ObjectResponse<ResourceDescriptor> getByPrefixOrSynonym(String prefix) {
