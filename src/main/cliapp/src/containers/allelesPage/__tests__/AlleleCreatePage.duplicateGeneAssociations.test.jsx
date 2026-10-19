@@ -1,8 +1,7 @@
 import React from 'react';
-import { MemoryRouter } from 'react-router-dom';
 import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { renderWithClient } from '../../../tools/jest/utils';
+import { DUPLICATE_SOURCE_ENTRY, FORM_LOAD_WAIT, renderInRouter, sourceAllele } from './alleleTestUtils';
 
 const createAllele = vi.fn();
 const getAllele = vi.fn();
@@ -12,42 +11,20 @@ const navigate = vi.fn();
 const saveAlleleDetail = vi.fn();
 const replaceCrossReferencesForAllele = vi.fn();
 
-// msw cannot intercept this app's fetch based ApiClient, so stub the services directly.
-vi.mock('../../../service/AlleleService', () => ({
-	AlleleService: class {
-		createAllele = createAllele;
-		getAllele = getAllele;
-		saveAlleleDetail = saveAlleleDetail;
-	},
-}));
-
-vi.mock('../../../service/SearchService', () => ({
-	SearchService: class {
-		search = vi.fn(() => Promise.resolve({ results: [], totalResults: 0 }));
-		find = vi.fn(() => Promise.resolve({ results: [], totalResults: 0 }));
-	},
-}));
-
-vi.mock('../../../service/CrossReferenceService', () => ({
-	CrossReferenceService: class {
-		getCrossReferencesForAllele = vi.fn(() => Promise.resolve({ data: { entities: [] } }));
-		replaceCrossReferencesForAllele = replaceCrossReferencesForAllele;
-	},
-}));
-
-vi.mock('../../../service/ReferenceService', () => ({
-	ReferenceService: class {
-		getReferencesForAllele = vi.fn(() => Promise.resolve({ data: { entities: [] } }));
-		replaceReferencesForAllele = vi.fn();
-	},
-}));
-
-vi.mock('../../../service/AlleleGeneAssociationService', () => ({
-	AlleleGeneAssociationService: class {
-		getGeneAssociationsForAllele = getGeneAssociationsForAllele;
-		replaceGeneAssociationsForAllele = replaceGeneAssociationsForAllele;
-	},
-}));
+vi.mock('../../../service/AlleleService', async () =>
+	(await import('./alleleServiceMocks')).mockAlleleService({ createAllele, getAllele, saveAlleleDetail })
+);
+vi.mock('../../../service/SearchService', async () => (await import('./alleleServiceMocks')).mockSearchService());
+vi.mock('../../../service/CrossReferenceService', async () =>
+	(await import('./alleleServiceMocks')).mockCrossReferenceService({ replace: replaceCrossReferencesForAllele })
+);
+vi.mock('../../../service/ReferenceService', async () => (await import('./alleleServiceMocks')).mockReferenceService());
+vi.mock('../../../service/AlleleGeneAssociationService', async () =>
+	(await import('./alleleServiceMocks')).mockGeneAssociationService({
+		get: getGeneAssociationsForAllele,
+		replace: replaceGeneAssociationsForAllele,
+	})
+);
 
 vi.mock('react-router-dom', async (importOriginal) => ({
 	...(await importOriginal()),
@@ -55,22 +32,6 @@ vi.mock('react-router-dom', async (importOriginal) => ({
 }));
 
 const AlleleCreatePage = (await import('../AlleleCreatePage')).default;
-
-// each wait follows a stubbed call through a full render of the form, which can outlast the default under load
-const FORM_LOAD_WAIT = { timeout: 5000 };
-
-const SOURCE_CURIE = 'AGRKB:101000000000001';
-
-const sourceAllele = {
-	type: 'Allele',
-	id: 1,
-	curie: SOURCE_CURIE,
-	primaryExternalId: 'WB:WBVar1',
-	internal: false,
-	obsolete: false,
-	taxon: { curie: 'NCBITaxon:6239', name: 'Caenorhabditis elegans' },
-	alleleSymbol: { id: 4, displayText: 'abc-1', formatText: 'abc-1', nameType: { name: 'nomenclature_symbol' } },
-};
 
 const storedAssociation = {
 	id: 801,
@@ -80,12 +41,7 @@ const storedAssociation = {
 	relatedNote: { id: 19, freeText: 'a note', noteType: { name: 'comment' }, internal: false },
 };
 
-const renderPage = () =>
-	renderWithClient(
-		<MemoryRouter initialEntries={[`/allele/create?from=${encodeURIComponent(SOURCE_CURIE)}`]}>
-			<AlleleCreatePage />
-		</MemoryRouter>
-	);
+const renderPage = () => renderInRouter(<AlleleCreatePage />, DUPLICATE_SOURCE_ENTRY);
 
 const waitForSourceToLoad = async (container) => {
 	await waitFor(() => expect(container.querySelector('#displayText')).toHaveValue('abc-1'), FORM_LOAD_WAIT);
