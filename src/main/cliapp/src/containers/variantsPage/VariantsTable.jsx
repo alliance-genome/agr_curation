@@ -115,6 +115,13 @@ export const VariantsTable = () => {
 				filterConfig: FILTER_CONFIGS.modInternalIdFilterConfig,
 			},
 			{
+				field: 'uniqueId',
+				header: 'Unique ID',
+				sortable: true,
+				body: (rowData) => <IdTemplate id={rowData.uniqueId} />,
+				filterConfig: FILTER_CONFIGS.uniqueidFilterConfig,
+			},
+			{
 				field: 'taxon',
 				columnKey: 'taxon.name',
 				header: 'Taxon',

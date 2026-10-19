@@ -16,6 +16,7 @@ import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.SOTerm;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.CurieMintService;
+import org.alliancegenome.curation_api.services.helpers.VariantUniqueIdHelper;
 import org.apache.commons.collections.CollectionUtils;
 
 import jakarta.enterprise.context.RequestScoped;
@@ -110,6 +111,7 @@ public class VariantValidator extends GenomicEntityValidator<Variant> {
 				throw new ApiErrorException(response);
 			}
 		}
+		dbEntity.setUniqueId(VariantUniqueIdHelper.getVariantUniqueId(dbEntity));
 		dbEntity = variantDAO.persist(dbEntity);
 
 		return dbEntity;
