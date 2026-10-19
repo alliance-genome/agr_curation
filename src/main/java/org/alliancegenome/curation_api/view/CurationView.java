@@ -107,6 +107,10 @@ public class CurationView {
 	public static class SequenceTargetingReagentDetailView extends SequenceTargetingReagentView {
 	}
 
+	// STR gene associations on their own (/sqtrgeneassociation/find and /findBy), with their STR and gene
+	public static class SequenceTargetingReagentGeneAssociationView extends SequenceTargetingReagentView {
+	}
+
 	public static class AlleleUpdate extends AlleleView {
 	}
 
