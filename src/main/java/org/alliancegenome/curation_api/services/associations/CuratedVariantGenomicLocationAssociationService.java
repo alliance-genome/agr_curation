@@ -19,6 +19,7 @@ import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.PersonService;
 import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
+import org.alliancegenome.curation_api.services.helpers.VariantUniqueIdHelper;
 import org.alliancegenome.curation_api.services.validation.dto.fms.VariantFmsDTOValidator;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -80,6 +81,7 @@ public class CuratedVariantGenomicLocationAssociationService extends BaseEntityC
 		List<CuratedVariantGenomicLocationAssociation> currentSubjectAssociations = variant.getCuratedVariantGenomicLocations();
 		if (currentSubjectAssociations == null) {
 			currentSubjectAssociations = new ArrayList<>();
+			variant.setCuratedVariantGenomicLocations(currentSubjectAssociations);
 		}
 
 		List<Long> currentSubjectAssociationIds = currentSubjectAssociations.stream()
@@ -88,6 +90,8 @@ public class CuratedVariantGenomicLocationAssociationService extends BaseEntityC
 		if (!currentSubjectAssociationIds.contains(association.getId())) {
 			currentSubjectAssociations.add(association);
 		}
+
+		variant.setUniqueId(VariantUniqueIdHelper.getVariantUniqueId(variant));
 	}
 
 	@Override
@@ -100,12 +104,19 @@ public class CuratedVariantGenomicLocationAssociationService extends BaseEntityC
 					cvgla.setUpdatedBy(personService.fetchByUniqueIdOrCreate(requestSource));
 					cvgla.setDateUpdated(OffsetDateTime.now());
 					cvgla.setObsolete(true);
-					return curatedVariantGenomicLocationAssociationDAO.persist(cvgla);
+					cvgla = curatedVariantGenomicLocationAssociationDAO.persist(cvgla);
+					refreshVariantUniqueId(cvgla.getVariantAssociationSubject());
+					return cvgla;
 				} else {
 					return cvgla;
 				}
 			} else {
+				Variant variant = cvgla.getVariantAssociationSubject();
 				curatedVariantGenomicLocationAssociationDAO.remove(id);
+				if (variant != null && variant.getCuratedVariantGenomicLocations() != null) {
+					variant.getCuratedVariantGenomicLocations().removeIf(location -> Objects.equals(location.getId(), id));
+				}
+				refreshVariantUniqueId(variant);
 			}
 		} else {
 			String errorMessage = "Could not find CuratedVariantGenomicLocationAssociation with id: " + id;
@@ -119,6 +130,10 @@ public class CuratedVariantGenomicLocationAssociationService extends BaseEntityC
 		return null;
 	}
 
-
+	private void refreshVariantUniqueId(Variant variant) {
+		if (variant != null) {
+			variant.setUniqueId(VariantUniqueIdHelper.getVariantUniqueId(variant));
+		}
+	}
 
 }
