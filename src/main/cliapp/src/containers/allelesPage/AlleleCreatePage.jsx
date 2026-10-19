@@ -10,7 +10,7 @@ import { useAlleleReducer } from './useAlleleReducer';
 import { StickyHeader } from '../../components/StickyHeader';
 import { StickyFooter } from '../../components/StickyFooter';
 import { LoadingOverlay } from '../../components/LoadingOverlay';
-import { getIdentifier } from '../../utils/utils';
+import { errorMessageOf, getIdentifier } from '../../utils/utils';
 import { buildCreatePayload, capitalize, processErrors } from './utils';
 import { FormFieldVisibilityMenu, useFormFieldVisibility } from '../../components/FormFieldVisibility';
 import { AlleleForm, ALLELE_CREATE_TOGGLEABLE_FIELDS } from './AlleleForm';
@@ -61,17 +61,9 @@ export default function AlleleCreatePage() {
 	});
 
 	const showSaveError = (error) => {
-		let message;
 		const data = error?.response?.data;
-
-		if (data?.errorMessage) {
-			message = data.errorMessage;
-		} else {
-			//toast will still display even if 500 error and no errorMessages
-			message = `${error.response?.status} ${error.response?.statusText}`;
-		}
 		toastError.current.show([
-			{ life: 7000, severity: 'error', summary: 'Page error: ', detail: message, sticky: false },
+			{ life: 7000, severity: 'error', summary: 'Page error: ', detail: errorMessageOf(error), sticky: false },
 		]);
 
 		try {

@@ -1,4 +1,4 @@
-import { getRefString, removeInvalidFilters, removeInvalidSorts } from '../utils';
+import { errorMessageOf, getRefString, removeInvalidFilters, removeInvalidSorts } from '../utils';
 
 describe('removeInvalidFilters', () => {
 	it('All Valid fields', () => {
@@ -222,5 +222,24 @@ describe('getRefString', () => {
 			crossReferences: [],
 		};
 		expect(getRefString(referenceItem)).toBe(referenceItem.curie);
+	});
+});
+
+describe('errorMessageOf', () => {
+	it("Gives the API's error message", () => {
+		expect(errorMessageOf({ response: { status: 400, data: { errorMessage: 'Could not update Allele' } } })).toEqual(
+			'Could not update Allele'
+		);
+	});
+
+	it('Gives the status when the API sends no message', () => {
+		expect(errorMessageOf({ response: { status: 500, statusText: 'Server Error', data: {} } })).toEqual(
+			'500 Server Error'
+		);
+		expect(errorMessageOf({ response: { status: 502, statusText: '' } })).toEqual('502');
+	});
+
+	it("Gives the error's own message when the request got no response", () => {
+		expect(errorMessageOf(new Error('Network Error'))).toEqual('Network Error');
 	});
 });

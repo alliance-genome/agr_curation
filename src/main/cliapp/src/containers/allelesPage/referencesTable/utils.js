@@ -1,4 +1,4 @@
-import { addDataKey, generateCrossRefSearchField, getShortCitation } from '../utils';
+import { addDataKey, generateCrossRefSearchField, getShortCitation, sortedCuries } from '../utils';
 
 /**
  * Readies references for the references table: each gets its own `dataKey`, the cross reference
@@ -25,8 +25,6 @@ export const prepareReferences = (references) =>
  * @returns {{ type: string, curie: string }}
  */
 export const stripReference = (reference) => ({ type: 'Reference', curie: reference.curie });
-
-const sortedCuries = (references) => references.map((reference) => reference.curie).sort();
 
 /**
  * Whether two lists hold the same references, by curie and in any order.

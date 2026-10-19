@@ -1,4 +1,4 @@
-import { addDataKey, copyRow } from '../utils';
+import { addDataKey, copyRow, sameRowsBy } from '../utils';
 import { ResourceDescriptorService } from '../../../service/ResourceDescriptorService';
 
 /**
@@ -181,11 +181,7 @@ const crossReferenceValue = (crossReference) =>
  * @param {Object[]} otherCrossReferences
  * @returns {boolean}
  */
-export const haveSameCrossReferences = (crossReferences, otherCrossReferences) =>
-	crossReferences.length === otherCrossReferences.length &&
-	crossReferences.every(
-		(crossReference, index) => crossReferenceValue(crossReference) === crossReferenceValue(otherCrossReferences[index])
-	);
+export const haveSameCrossReferences = sameRowsBy(crossReferenceValue);
 
 /**
  * Drops the fields the table keeps for itself, leaving what the API reads.

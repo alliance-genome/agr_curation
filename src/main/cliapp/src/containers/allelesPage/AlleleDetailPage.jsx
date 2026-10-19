@@ -12,7 +12,7 @@ import { StickyHeader } from '../../components/StickyHeader';
 import { DetailPageHeading } from '../../components/DetailPageHeading';
 import { LoadingOverlay } from '../../components/LoadingOverlay';
 import { capitalize, processErrors, getPendingSingleValueFields } from './utils';
-import { getIdentifier } from '../../utils/utils';
+import { errorMessageOf, getIdentifier } from '../../utils/utils';
 import { FormFieldVisibilityMenu, useFormFieldVisibility } from '../../components/FormFieldVisibility';
 import { AlleleForm, ALLELE_DETAIL_TOGGLEABLE_FIELDS } from './AlleleForm';
 import { DuplicateAlleleButton, NewAlleleButton } from './NewAlleleButton';
@@ -76,8 +76,7 @@ export default function AlleleDetailPage() {
 			console.error(processingError);
 		}
 
-		//toast will still display even if 500 error and no errorMessages
-		return data.errorMessage ? data.errorMessage : `${error.response.status} ${error.response.statusText}`;
+		return errorMessageOf(error);
 	};
 
 	const handleSubmit = async (event) => {
@@ -164,15 +163,12 @@ export default function AlleleDetailPage() {
 			const result = await saveAllele({ ...savedAllele.current, obsolete: true });
 			savedAllele.current = result?.data?.entity;
 		} catch (error) {
-			const data = error?.response?.data;
 			toastError.current.show([
 				{
 					life: 7000,
 					severity: 'error',
 					summary: 'Allele not deprecated: ',
-					detail:
-						data?.errorMessage ??
-						(error?.response ? `${error.response.status} ${error.response.statusText}`.trim() : error?.message),
+					detail: errorMessageOf(error),
 					sticky: false,
 				},
 			]);

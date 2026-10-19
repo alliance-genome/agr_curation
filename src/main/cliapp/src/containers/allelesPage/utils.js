@@ -54,6 +54,22 @@ export const addDataKey = (entity) => {
 export const capitalize = (text) => `${text.charAt(0).toUpperCase()}${text.slice(1)}`;
 
 /**
+ * @param {Object[]} [entities]
+ * @returns {string[]} the entities' curies in sorted order, to compare lists by whatever order they are in; none
+ *   when there is no list
+ */
+export const sortedCuries = (entities) =>
+	Array.isArray(entities) ? entities.map((entity) => entity?.curie).sort() : [];
+
+/**
+ * @param {(row: Object) => string} valueOf a row's value to compare by
+ * @returns {(rows: Object[], otherRows: Object[]) => boolean} whether two lists hold rows of the same value,
+ *   row by row
+ */
+export const sameRowsBy = (valueOf) => (rows, otherRows) =>
+	rows.length === otherRows.length && rows.every((row, index) => valueOf(row) === valueOf(otherRows[index]));
+
+/**
  * An empty allele symbol, ready to be edited in the symbol table.
  *
  * @returns {Object} a symbol with blank text fields and no name type
@@ -146,9 +162,6 @@ export const buildDuplicateAllele = (allele) => ({
 	alleleDatabaseStatus: copyRow(allele.alleleDatabaseStatus),
 });
 
-const evidenceCuries = (slotAnnotation) =>
-	Array.isArray(slotAnnotation.evidence) ? slotAnnotation.evidence.map((reference) => reference?.curie).sort() : [];
-
 // A single-object section's curator-editable fields, as a string to compare by, or none when it is unset.
 const nameSlotAnnotationValue = (nameSlotAnnotation) =>
 	nameSlotAnnotation
@@ -159,7 +172,7 @@ const nameSlotAnnotationValue = (nameSlotAnnotation) =>
 				nameSlotAnnotation.nameType?.name ?? null,
 				nameSlotAnnotation.synonymScope?.name ?? null,
 				nameSlotAnnotation.internal ?? null,
-				evidenceCuries(nameSlotAnnotation),
+				sortedCuries(nameSlotAnnotation.evidence),
 			])
 		: null;
 
@@ -168,7 +181,7 @@ const statusSlotAnnotationValue = (statusSlotAnnotation, statusField) =>
 		? JSON.stringify([
 				statusSlotAnnotation[statusField]?.name ?? null,
 				statusSlotAnnotation.internal ?? null,
-				evidenceCuries(statusSlotAnnotation),
+				sortedCuries(statusSlotAnnotation.evidence),
 			])
 		: null;
 
