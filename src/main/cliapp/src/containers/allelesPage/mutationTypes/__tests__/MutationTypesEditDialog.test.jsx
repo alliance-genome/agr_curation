@@ -72,9 +72,13 @@ const cellByHeader = (rowIndex, headerText) => {
 };
 
 const getButton = (label) => {
-	const button = [...document.querySelectorAll('.p-dialog button')].find((b) => b.textContent.trim() === label);
+	const button = [...document.querySelectorAll('.p-dialog button')].find(
+		(candidate) => candidate.textContent.trim() === label
+	);
 	if (!button) {
-		const seen = [...document.querySelectorAll('.p-dialog button')].map((b) => `"${b.textContent.trim()}"`).join(', ');
+		const seen = [...document.querySelectorAll('.p-dialog button')]
+			.map((candidate) => `"${candidate.textContent.trim()}"`)
+			.join(', ');
 		throw new Error(`No button labelled "${label}". Saw: ${seen}`);
 	}
 	return button;
@@ -130,7 +134,9 @@ describe('<MutationTypesEditDialog />', () => {
 		fireEvent.click(bodyRows()[0].querySelector('button'));
 		const dropdown = cellByHeader(0, 'Internal').querySelector('.p-dropdown');
 		fireEvent.click(dropdown);
-		fireEvent.click([...document.querySelectorAll('.p-dropdown-item')].find((li) => li.textContent.trim() === 'true'));
+		fireEvent.click(
+			[...document.querySelectorAll('.p-dropdown-item')].find((option) => option.textContent.trim() === 'true')
+		);
 		keepEdits();
 
 		await waitFor(() => expect(editorCallback).toHaveBeenCalled());
@@ -144,7 +150,9 @@ describe('<MutationTypesEditDialog />', () => {
 
 		const dropdown = cellByHeader(1, 'Internal').querySelector('.p-dropdown');
 		fireEvent.click(dropdown);
-		fireEvent.click([...document.querySelectorAll('.p-dropdown-item')].find((li) => li.textContent.trim() === 'true'));
+		fireEvent.click(
+			[...document.querySelectorAll('.p-dropdown-item')].find((option) => option.textContent.trim() === 'true')
+		);
 		keepEdits();
 
 		await waitFor(() => expect(editorCallback).toHaveBeenCalled());
@@ -173,7 +181,9 @@ describe('<MutationTypesEditDialog />', () => {
 
 		const dropdown = cellByHeader(0, 'Internal').querySelector('.p-dropdown');
 		fireEvent.click(dropdown);
-		fireEvent.click([...document.querySelectorAll('.p-dropdown-item')].find((li) => li.textContent.trim() === 'true'));
+		fireEvent.click(
+			[...document.querySelectorAll('.p-dropdown-item')].find((option) => option.textContent.trim() === 'true')
+		);
 		fireEvent.click(getButton('Cancel'));
 
 		expect(editorCallback).not.toHaveBeenCalled();

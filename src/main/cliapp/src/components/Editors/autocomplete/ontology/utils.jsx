@@ -23,6 +23,12 @@ export const mutationTypesSearchConfig = {
  */
 export const mutationTypeLabel = (term) => (term?.name ? `${term.name} (${getIdentifier(term)})` : getIdentifier(term));
 
+export const phenotypeTermSearchConfig = {
+	endpoint: Endpoints.Ontology.PHENOTYPE,
+	autocompleteFields: ontologyTermAutocompleteFields,
+	filterName: 'phenotypeTermFilter',
+};
+
 export const diseaseSearchConfig = {
 	endpoint: Endpoints.Ontology.DO,
 	autocompleteFields: ontologyTermAutocompleteFields,
