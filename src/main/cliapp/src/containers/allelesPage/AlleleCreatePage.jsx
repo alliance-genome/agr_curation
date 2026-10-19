@@ -39,10 +39,8 @@ export default function AlleleCreatePage() {
 	const createdAllele = useRef(null);
 	const { isLoading: duplicateSourceIsLoading } = useDuplicateAlleleSource({
 		alleleDispatch,
-		setCrossReferences: subResources.crossReferences.setRows,
-		crossReferencesVisible: isVisible('Cross References'),
-		setReferences: subResources.references.setRows,
-		setAlleleGeneAssociations: subResources.alleleGeneAssociations.setRows,
+		subResources,
+		isVisible,
 		toastError,
 	});
 

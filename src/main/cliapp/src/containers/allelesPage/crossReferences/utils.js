@@ -1,4 +1,4 @@
-import { addDataKey } from '../utils';
+import { addDataKey, copyRow } from '../utils';
 import { ResourceDescriptorService } from '../../../service/ResourceDescriptorService';
 
 /**
@@ -21,17 +21,6 @@ export const buildNewCrossReference = () => {
 	return crossReference;
 };
 
-// The fields a stored cross reference carries that belong to it alone, and so cannot be carried onto a copy.
-const DUPLICATE_DROPPED_FIELDS = [
-	'id',
-	'createdBy',
-	'updatedBy',
-	'dateCreated',
-	'dateUpdated',
-	'dbDateCreated',
-	'dbDateUpdated',
-];
-
 /**
  * Copies of an allele's cross references for a new allele. Each keeps its page, and so its resource
  * descriptor, and its internal flag, but not the curie and display name that identify the copied allele,
@@ -42,8 +31,7 @@ const DUPLICATE_DROPPED_FIELDS = [
  */
 export const buildDuplicateCrossReferences = (crossReferences) =>
 	(crossReferences ?? []).map((crossReference) => {
-		const copy = structuredClone(crossReference);
-		DUPLICATE_DROPPED_FIELDS.forEach((field) => delete copy[field]);
+		const copy = copyRow(crossReference);
 		copy.referencedCurie = '';
 		copy.displayName = '';
 		copy.obsolete = false;

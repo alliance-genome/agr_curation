@@ -1,6 +1,13 @@
-import { haveSameCrossReferences, prepareCrossReferences, stripUiFields } from './crossReferences/utils';
+import {
+	buildDuplicateCrossReferences,
+	haveSameCrossReferences,
+	prepareCrossReferences,
+	seedResourceDescriptors,
+	stripUiFields,
+} from './crossReferences/utils';
 import { haveSameReferences, prepareReferences, stripReference } from './referencesTable/utils';
 import {
+	buildDuplicateGeneAssociations,
 	haveSameGeneAssociations,
 	markRowsMissingGene,
 	prepareGeneAssociations,
@@ -20,6 +27,10 @@ import {
  * - `markUnsavableRows`, optional: marks rows that cannot be saved as they are, returning the rows' errors
  *   with them marked, or null when there are none; while it marks any, a save is refused with
  *   `unsavableRowsMessage`
+ *
+ * and `useDuplicateAlleleSource`:
+ * - `buildCopies` turns the rows a source allele holds, as the API returns them, into rows for a new allele
+ * - `copyOnlyWhenVisible`, optional: the form field whose section must be shown for the rows to be copied
  */
 export const ALLELE_SUB_RESOURCES = {
 	crossReferences: {
@@ -29,6 +40,10 @@ export const ALLELE_SUB_RESOURCES = {
 		prepare: prepareCrossReferences,
 		strip: stripUiFields,
 		isSame: haveSameCrossReferences,
+		// The copies keep the source's pages but not its curies, which the curator fills in for the new allele.
+		// A hidden section could not show them, so it gets none.
+		buildCopies: async (crossReferences) => seedResourceDescriptors(buildDuplicateCrossReferences(crossReferences)),
+		copyOnlyWhenVisible: 'Cross References',
 	},
 	references: {
 		path: 'references',
@@ -37,6 +52,7 @@ export const ALLELE_SUB_RESOURCES = {
 		prepare: prepareReferences,
 		strip: stripReference,
 		isSame: haveSameReferences,
+		buildCopies: prepareReferences,
 	},
 	alleleGeneAssociations: {
 		path: 'gene-associations',
@@ -45,6 +61,7 @@ export const ALLELE_SUB_RESOURCES = {
 		prepare: prepareGeneAssociations,
 		strip: stripGeneAssociation,
 		isSame: haveSameGeneAssociations,
+		buildCopies: buildDuplicateGeneAssociations,
 		markUnsavableRows: markRowsMissingGene,
 		unsavableRowsMessage: 'Select each gene from the autosuggest',
 	},
