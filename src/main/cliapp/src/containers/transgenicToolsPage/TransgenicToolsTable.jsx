@@ -23,7 +23,10 @@ import { SearchService } from '../../service/SearchService';
 import { Endpoints } from '../../constants/Endpoints';
 import { transgenicToolDisplayValue } from '../cassettesPage/utils';
 import { TransgenicToolUsesDialog } from './TransgenicToolUsesDialog';
-import { toolAssociationText, useTermTexts } from './utils';
+import { associatedToolText, toolAssociationsFindParams, useTermTexts } from './utils';
+
+// A tool has a dozen associations at most, so the pop-up fetches them in one page.
+const ASSOCIATIONS_LIMIT = 100;
 
 export const TransgenicToolsTable = () => {
 	const toast_topleft = useRef(null);
@@ -59,8 +62,24 @@ export const TransgenicToolsTable = () => {
 	const handleFullNameOpen = (fullName) => setFullNameData({ originalFullNames: [fullName], dialog: true });
 	const handleSynonymsOpen = (synonyms) => setSynonymsData({ originalSynonyms: synonyms, dialog: true });
 	const handleUsesOpen = (uses) => setUsesData({ originalUses: uses, dialog: true });
-	const handleAssociationsOpen = (associations) =>
-		setAssociationsData({ originalComponents: associations, dialog: true });
+	// The search results carry the associated tools reduced to relation, symbol and identifier; the
+	// associations themselves, with both tools and their audit fields, are fetched when the pop-up opens.
+	const handleAssociationsOpen = (transgenicTool) =>
+		searchService
+			.find(
+				Endpoints.Entity.TRANSGENIC_TOOL_TRANSGENIC_TOOL_ASSOCIATION,
+				ASSOCIATIONS_LIMIT,
+				0,
+				toolAssociationsFindParams(transgenicTool.id)
+			)
+			.then((response) => setAssociationsData({ originalComponents: response?.results || [], dialog: true }))
+			.catch((error) =>
+				toast_topright.current?.show({
+					severity: 'error',
+					summary: 'Transgenic Tool Associations',
+					detail: error?.message || 'The associations could not be loaded',
+				})
+			);
 	const handleRelatedNotesOpen = (relatedNotes) =>
 		setRelatedNotesData({ originalRelatedNotes: relatedNotes, dialog: true, isInEdit: false });
 
@@ -171,9 +190,9 @@ export const TransgenicToolsTable = () => {
 				sortable: { isInEditMode },
 				body: (rowData) => (
 					<ListDialogTemplate
-						entities={rowData.transgenicToolTransgenicToolAssociations}
-						handleOpen={handleAssociationsOpen}
-						getTextField={toolAssociationText}
+						entities={rowData.associatedTransgenicTools}
+						handleOpen={() => handleAssociationsOpen(rowData)}
+						getTextField={associatedToolText}
 						underline={true}
 					/>
 				),

@@ -15,16 +15,7 @@ export const data = {
 					evidence: [{ curie: 'AGRKB:101000000720200' }],
 				},
 			],
-			transgenicToolTransgenicToolAssociations: [
-				{
-					id: 6001,
-					relation: { name: 'is_compatible_with' },
-					transgenicToolTransgenicToolAssociationObject: {
-						primaryExternalId: 'FB:FBto0000150',
-						transgenicToolSymbol: { displayText: 'GAL80' },
-					},
-				},
-			],
+			associatedTransgenicTools: [{ relation: 'is_compatible_with', symbol: 'GAL80', identifier: 'FB:FBto0000150' }],
 			relatedNotes: [{ id: 7001, freeText: 'A monomeric GFP.', noteType: { name: 'summary' } }],
 			dataProvider: { abbreviation: 'FB' },
 			placeholder: false,
