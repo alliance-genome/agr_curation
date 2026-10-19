@@ -2,17 +2,19 @@ import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { Dropdown } from 'primereact/dropdown';
 import { DeleteAction } from '../../../components/Actions/DeletionAction';
-import { TableInputTextEditor } from '../../../components/Editors/text/TableInputTextEditor';
-import { InternalEditor } from '../../../components/Editors/legacyForm/InternalEditor';
-import { ObsoleteEditor } from '../../../components/Editors/legacyForm/ObsoleteEditor';
-import { AutocompleteEditor } from '../../../components/Editors/autocomplete/base/AutocompleteEditor';
+import { TableEditorProvider } from '../../../components/Editors/fields/TableEditorContext';
+import { TableField } from '../../../components/Editors/fields/TableField';
+import { useDataKeyRowsStrategy } from '../../../components/Editors/fields/strategies/useDataKeyRowsStrategy';
+import { TextInput } from '../../../components/Editors/widgets/TextInput';
+import { SingleAutocomplete } from '../../../components/Editors/widgets/SingleAutocomplete';
+import { InputTextTableEditor } from '../../../components/Editors/text/InputTextTableEditor';
+import { BooleanTableEditor } from '../../../components/Editors/dropdown/boolean/BooleanTableEditor';
 import {
 	resourceDescriptorSearch,
 	resourceDescriptorSearchConfig,
 } from '../../../components/Editors/autocomplete/resourceDescriptor/utils';
-import { DialogErrorMessageComponent } from '../../../components/Error/DialogErrorMessageComponent';
 import { RequiredFieldMarker } from '../../../components/RequiredFieldMarker';
-import { curiePrefixOf, findRow } from './utils';
+import { curiePrefixOf } from './utils';
 import { useResourceDescriptorsByPrefix } from './useResourceDescriptorsByPrefix';
 
 /**
@@ -27,7 +29,7 @@ import { useResourceDescriptorsByPrefix } from './useResourceDescriptorsByPrefix
  * @param {Object} props.errorMessages per row messages, keyed by `dataKey` then field
  * @param {Function} props.deletionHandler `(event, dataKey)`
  * @param {Function} props.onFieldChange `(dataKey, field, value)`
- * @param {boolean} [props.showObsolete] the ticket makes Obsolete editable only, so create passes false
+ * @param {boolean} [props.showObsolete] offers the Obsolete column; the create page leaves it out
  */
 export const CrossReferencesTable = ({
 	crossReferences,
@@ -39,17 +41,19 @@ export const CrossReferencesTable = ({
 	onFieldChange,
 	showObsolete = false,
 }) => {
-	// PrimeReact snapshots an editor's rowData when the row opens and never refreshes it while the row
-	// stays open, so every editor reads the live row out of the owning state instead. Only the dataKey
-	// is taken from the snapshot: it identifies the row and never changes.
-	const resolveRow = (editorOptions) =>
-		findRow(crossReferences, editorOptions?.rowData?.dataKey) ?? editorOptions?.rowData ?? {};
+	// Editors read and write rows by dataKey through the owning state, never through the row data PrimeReact
+	// captured when the row opened.
+	const strategy = useDataKeyRowsStrategy({
+		rows: crossReferences,
+		errors: errorMessages,
+		write: ({ rowKey, field, value }) => onFieldChange(rowKey, field, value),
+	});
 
 	const resourceDescriptorsByPrefix = useResourceDescriptorsByPrefix();
 
 	// Leaving the curie cell sets the descriptor its prefix names, replacing one chosen before, since the
-	// two must match to save. It waits for the curator to leave the cell because a new descriptor remounts
-	// the curie editor, which would take the input from under them while they type.
+	// two must match to save. It waits for the curator to leave the cell because a half-edited prefix can
+	// name another descriptor, and choosing it would replace the page through the merge rule.
 	const fillDescriptorFromCurie = (row) => () => {
 		const descriptor = resourceDescriptorsByPrefix.get(curiePrefixOf(row.referencedCurie));
 		if (descriptor && descriptor.id !== row.resourceDescriptor?.id) {
@@ -57,205 +61,147 @@ export const CrossReferencesTable = ({
 		}
 	};
 
-	const textChangeHandler = (row, field) => (rowIndex, event) => onFieldChange(row.dataKey, field, event.target.value);
-
-	const descriptorChangeHandler = (row) => (event, setFieldValue) => {
-		const selected = event.target.value;
-		setFieldValue(typeof selected === 'object' ? selected?.prefix : selected);
-
-		// The autocomplete reports every keystroke, not only a selection. Half-typed text names no
-		// descriptor, and applying it would clear the page through the merge rule - which the curator
-		// could not then undo, because the page it cleared is the one they were keeping.
-		if (typeof selected === 'string' && selected !== '') return;
-
-		onFieldChange(row.dataKey, 'resourceDescriptor', selected || null);
+	// The autocomplete reports every keystroke as free text, not only a selection. Half-typed text names no
+	// descriptor, and storing it would clear the page through the merge rule - which the curator could not
+	// then undo, because the page it cleared is the one they were keeping. So only a picked descriptor, or
+	// an emptied input, is stored.
+	const storeDescriptor = (onChange) => (descriptor) => {
+		if (descriptor && descriptor.id == null) return;
+		onChange(descriptor);
 	};
 
-	// The boolean terms carry a real boolean as their name, so the row holds that rather than the term
-	// or its text.
-	const booleanChangeHandler = (field) => (editorOptions, event) =>
-		onFieldChange(editorOptions?.rowData?.dataKey, field, event.target.value?.name === true);
-
 	return (
-		<DataTable
-			value={crossReferences}
-			dataKey="dataKey"
-			showGridlines
-			editMode="row"
-			size="small"
-			editingRows={editingRows}
-			onRowEditChange={onRowEditChange}
-			ref={tableRef}
-			cellMemo={false}
-			resizableColumns
-			columnResizeMode="expand"
-		>
-			<Column
-				editor={(props) => <DeleteAction deletionHandler={deletionHandler} id={props?.rowData?.dataKey} />}
-				header="Actions"
-				className="max-w-4rem"
-				bodyClassName="text-center"
-				headerClassName="surface-0"
-				frozen
-			/>
-			<Column
-				editor={(props) => {
-					const row = resolveRow(props);
-					return (
-						<TableInputTextEditor
-							value={row.displayName}
-							rowIndex={props.rowIndex}
-							errorMessages={errorMessages}
-							dataKey={row.dataKey}
-							textOnChangeHandler={textChangeHandler(row, 'displayName')}
-							field="displayName"
-						/>
-					);
-				}}
-				field="displayName"
-				header={
-					<>
-						<RequiredFieldMarker />
-						Display Name
-					</>
-				}
-				headerClassName="surface-0"
-			/>
-			<Column
-				editor={(props) => {
-					const row = resolveRow(props);
-					return (
-						<div onBlur={fillDescriptorFromCurie(row)}>
-							<TableInputTextEditor
-								// The editor reads its value only when it mounts, and choosing a descriptor can start
-								// the curie with that descriptor's prefix. Keying it on the descriptor remounts it
-								// then, so the input shows the curie the row holds.
-								key={row.resourceDescriptor?.id ?? 'no-descriptor'}
-								value={row.referencedCurie}
-								rowIndex={props.rowIndex}
-								errorMessages={errorMessages}
-								dataKey={row.dataKey}
-								textOnChangeHandler={textChangeHandler(row, 'referencedCurie')}
-								field="referencedCurie"
-							/>
-						</div>
-					);
-				}}
-				field="referencedCurie"
-				header={
-					<>
-						<RequiredFieldMarker />
-						Referenced Curie
-					</>
-				}
-				headerClassName="surface-0"
-			/>
-			<Column
-				editor={(props) => {
-					const row = resolveRow(props);
-					return (
-						<>
-							<AutocompleteEditor
-								search={resourceDescriptorSearch}
-								initialValue={row.resourceDescriptor?.prefix}
-								editorOptions={props}
-								fieldName="resourceDescriptor"
-								subField="prefix"
-								valueDisplay={resourceDescriptorSearchConfig.valueDisplay}
-								onValueChangeHandler={descriptorChangeHandler(row)}
-							/>
-							<DialogErrorMessageComponent errorMessages={errorMessages[row.dataKey]} errorField="resourceDescriptor" />
-						</>
-					);
-				}}
-				field="resourceDescriptor.prefix"
-				header={
-					<>
-						<RequiredFieldMarker />
-						Resource Descriptor
-					</>
-				}
-				headerClassName="surface-0"
-			/>
-			<Column
-				editor={(props) => {
-					const row = resolveRow(props);
-					// The row's own page is always offered, even when the descriptor cannot list it: a page
-					// chosen from this dropdown carries no descriptor of its own, and a descriptor that is
-					// absent or failed to load offers nothing. Without it the dropdown finds no match for a
-					// page that is set and renders its placeholder, telling the curator there is none.
-					const pages = row.resourceDescriptor?.resourcePages ?? [];
-					const currentPage = row.resourceDescriptorPage;
-					const options =
-						currentPage && !pages.some((page) => page.id === currentPage.id) ? [currentPage, ...pages] : pages;
-					return (
-						<>
-							<Dropdown
-								aria-label="resourceDescriptorPage"
-								value={row.resourceDescriptorPage}
-								options={options}
-								optionLabel="name"
-								// Matches the stored page against the same page inside the descriptor by id. They are
-								// separate objects, so without this an existing page renders as nothing selected.
-								dataKey="id"
-								filter
-								showClear
-								placeholder={row.resourceDescriptor ? 'Select a page' : 'Select a resource descriptor first'}
-								onChange={(event) => onFieldChange(row.dataKey, 'resourceDescriptorPage', event.value)}
-								style={{ width: '100%' }}
-							/>
-							<DialogErrorMessageComponent
-								errorMessages={errorMessages[row.dataKey]}
-								errorField="resourceDescriptorPage"
-							/>
-						</>
-					);
-				}}
-				field="resourceDescriptorPage.name"
-				header={
-					<>
-						<RequiredFieldMarker />
-						Resource Descriptor Page
-					</>
-				}
-				headerClassName="surface-0"
-			/>
-			<Column
-				editor={(props) => {
-					const row = resolveRow(props);
-					return (
-						<InternalEditor
-							editorOptions={{ ...props, rowData: row }}
-							rowIndex={props.rowIndex}
-							errorMessages={errorMessages}
-							dataKey={row.dataKey}
-							internalOnChangeHandler={booleanChangeHandler('internal')}
-						/>
-					);
-				}}
-				field="internal"
-				header="Internal"
-				headerClassName="surface-0"
-			/>
-			{showObsolete && (
+		<TableEditorProvider strategy={strategy}>
+			<DataTable
+				value={crossReferences}
+				dataKey="dataKey"
+				showGridlines
+				editMode="row"
+				size="small"
+				editingRows={editingRows}
+				onRowEditChange={onRowEditChange}
+				ref={tableRef}
+				cellMemo={false}
+				resizableColumns
+				columnResizeMode="expand"
+			>
 				<Column
-					editor={(props) => {
-						const row = resolveRow(props);
-						return (
-							<ObsoleteEditor
-								editorOptions={{ ...props, rowData: row }}
-								rowIndex={props.rowIndex}
-								errorMessages={errorMessages}
-								dataKey={row.dataKey}
-								obsoleteOnChangeHandler={booleanChangeHandler('obsolete')}
-							/>
-						);
-					}}
-					field="obsolete"
-					header="Obsolete"
+					editor={(editorOptions) => (
+						<DeleteAction deletionHandler={deletionHandler} id={editorOptions?.rowData?.dataKey} />
+					)}
+					header="Actions"
+					className="max-w-4rem"
+					bodyClassName="text-center"
+					headerClassName="surface-0"
+					frozen
+				/>
+				<Column
+					editor={(editorOptions) => <InputTextTableEditor editorOptions={editorOptions} field="displayName" />}
+					field="displayName"
+					header={
+						<>
+							<RequiredFieldMarker />
+							Display Name
+						</>
+					}
 					headerClassName="surface-0"
 				/>
-			)}
-		</DataTable>
+				<Column
+					editor={(editorOptions) => (
+						<TableField editorOptions={editorOptions} field="referencedCurie">
+							{(binding) => (
+								<div onBlur={fillDescriptorFromCurie(binding.row)}>
+									<TextInput {...binding} />
+								</div>
+							)}
+						</TableField>
+					)}
+					field="referencedCurie"
+					header={
+						<>
+							<RequiredFieldMarker />
+							Referenced Curie
+						</>
+					}
+					headerClassName="surface-0"
+				/>
+				<Column
+					editor={(editorOptions) => (
+						<TableField editorOptions={editorOptions} field="resourceDescriptor">
+							{(binding) => (
+								<SingleAutocomplete
+									{...binding}
+									onChange={storeDescriptor(binding.onChange)}
+									search={resourceDescriptorSearch}
+									subField="prefix"
+									valueDisplay={resourceDescriptorSearchConfig.valueDisplay}
+								/>
+							)}
+						</TableField>
+					)}
+					field="resourceDescriptor.prefix"
+					header={
+						<>
+							<RequiredFieldMarker />
+							Resource Descriptor
+						</>
+					}
+					headerClassName="surface-0"
+				/>
+				<Column
+					editor={(editorOptions) => (
+						<TableField editorOptions={editorOptions} field="resourceDescriptorPage">
+							{({ value, row, onChange, invalid, name }) => {
+								// The row's own page is always offered, even when the descriptor cannot list it: a page
+								// chosen from this dropdown carries no descriptor of its own, and a descriptor that is
+								// absent or failed to load offers nothing. Without it the dropdown finds no match for a
+								// page that is set and renders its placeholder, telling the curator there is none.
+								const pages = row?.resourceDescriptor?.resourcePages ?? [];
+								const options = value && !pages.some((page) => page.id === value.id) ? [value, ...pages] : pages;
+								return (
+									<Dropdown
+										aria-label={name}
+										value={value}
+										options={options}
+										optionLabel="name"
+										// Matches the stored page against the same page inside the descriptor by id. They are
+										// separate objects, so without this an existing page renders as nothing selected.
+										dataKey="id"
+										filter
+										showClear
+										placeholder={row?.resourceDescriptor ? 'Select a page' : 'Select a resource descriptor first'}
+										onChange={(event) => onChange(event.value ?? null)}
+										className={invalid ? 'p-invalid' : undefined}
+										style={{ width: '100%' }}
+									/>
+								);
+							}}
+						</TableField>
+					)}
+					field="resourceDescriptorPage.name"
+					header={
+						<>
+							<RequiredFieldMarker />
+							Resource Descriptor Page
+						</>
+					}
+					headerClassName="surface-0"
+				/>
+				<Column
+					editor={(editorOptions) => <BooleanTableEditor editorOptions={editorOptions} field="internal" />}
+					field="internal"
+					header="Internal"
+					headerClassName="surface-0"
+				/>
+				{showObsolete && (
+					<Column
+						editor={(editorOptions) => <BooleanTableEditor editorOptions={editorOptions} field="obsolete" />}
+						field="obsolete"
+						header="Obsolete"
+						headerClassName="surface-0"
+					/>
+				)}
+			</DataTable>
+		</TableEditorProvider>
 	);
 };

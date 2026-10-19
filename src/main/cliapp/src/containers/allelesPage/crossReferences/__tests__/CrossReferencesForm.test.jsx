@@ -150,9 +150,9 @@ describe('CrossReferencesForm', () => {
 
 	it('Removes the row it is asked to delete, by dataKey', async () => {
 		const user = userEvent.setup();
-		const { crossReferences } = renderForm();
+		const { crossReferences, container } = renderForm();
 
-		await user.click(screen.getByRole('button', { name: '' }));
+		await user.click(container.querySelector('.pi-trash').closest('button'));
 
 		const updater = crossReferences.setCrossReferences.mock.calls[0][0];
 		expect(updater([row, { ...row, dataKey: 'row-2' }])).toEqual([{ ...row, dataKey: 'row-2' }]);

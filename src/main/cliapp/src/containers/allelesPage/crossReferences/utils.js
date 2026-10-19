@@ -188,18 +188,6 @@ export const haveSameCrossReferences = (crossReferences, otherCrossReferences) =
 	);
 
 /**
- * The row carrying a given key.
- *
- * Rows are looked up by key rather than read from an editor's `rowData`, which PrimeReact snapshots
- * when a row enters edit mode and does not refresh while that row stays open.
- *
- * @param {Array<Object>} rows
- * @param {string} dataKey
- * @returns {Object|undefined} the matching row, or undefined when there is none
- */
-export const findRow = (rows, dataKey) => rows?.find((row) => row.dataKey === dataKey);
-
-/**
  * Drops the fields the table keeps for itself, leaving what the API reads.
  *
  * `dataKey` is the table's row identity and `resourceDescriptor` scopes the page dropdown; neither

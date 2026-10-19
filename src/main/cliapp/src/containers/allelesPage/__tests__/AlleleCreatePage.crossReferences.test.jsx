@@ -74,8 +74,8 @@ const waitForDescriptors = () =>
 const addCompleteCrossReference = async (user) => {
 	await user.click(button('Add Cross Reference'));
 	await waitForDescriptors();
-	await user.type(crossReferenceRow().querySelector('#referencedCurie'), 'PMID:123');
-	await user.type(crossReferenceRow().querySelector('#displayName'), 'PMID:123');
+	await user.type(crossReferenceRow().querySelector('[aria-label="referencedCurie"]'), 'PMID:123');
+	await user.type(crossReferenceRow().querySelector('[aria-label="displayName"]'), 'PMID:123');
 };
 
 describe('<AlleleCreatePage /> cross references', () => {
@@ -189,8 +189,8 @@ describe('<AlleleCreatePage /> cross references', () => {
 
 		await user.click(button('Add Cross Reference'));
 		await waitForDescriptors();
-		await user.type(crossReferenceRow().querySelector('#displayName'), 'PMID:123');
-		await user.type(crossReferenceRow().querySelector('#referencedCurie'), 'PMID:123');
+		await user.type(crossReferenceRow().querySelector('[aria-label="displayName"]'), 'PMID:123');
+		await user.type(crossReferenceRow().querySelector('[aria-label="referencedCurie"]'), 'PMID:123');
 		await user.click(button('Save & Close'));
 
 		await waitFor(() => expect(replaceCrossReferencesForAllele).toHaveBeenCalled());
