@@ -25,6 +25,7 @@ const buildSubResource = (overrides = {}) => ({
 	rows: [row],
 	setRows: vi.fn(),
 	errorMessages: {},
+	setErrorMessages: vi.fn(),
 	isLoading: false,
 	loadError: null,
 	isSaving: false,

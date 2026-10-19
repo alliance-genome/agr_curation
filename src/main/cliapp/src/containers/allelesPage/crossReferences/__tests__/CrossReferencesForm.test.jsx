@@ -28,6 +28,7 @@ const buildSubResource = (overrides = {}) => ({
 	rows: [row],
 	setRows: vi.fn(),
 	errorMessages: {},
+	setErrorMessages: vi.fn(),
 	isLoading: false,
 	loadError: null,
 	isSaving: false,
@@ -148,7 +149,7 @@ describe('CrossReferencesForm', () => {
 		expect(updater([row])).toHaveLength(2);
 	});
 
-	it('Removes the row it is asked to delete, by dataKey', async () => {
+	it('Removes the row it is asked to delete, by dataKey, along with its marks', async () => {
 		const user = userEvent.setup();
 		const { crossReferences, container } = renderForm();
 
@@ -156,5 +157,7 @@ describe('CrossReferencesForm', () => {
 
 		const updater = crossReferences.setRows.mock.calls[0][0];
 		expect(updater([row, { ...row, dataKey: 'row-2' }])).toEqual([{ ...row, dataKey: 'row-2' }]);
+		const marksUpdater = crossReferences.setErrorMessages.mock.calls[0][0];
+		expect(marksUpdater({ [row.dataKey]: { referencedCurie: {} }, 'row-2': {} })).toEqual({ 'row-2': {} });
 	});
 });
