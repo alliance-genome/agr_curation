@@ -306,6 +306,37 @@ export const FIELD_SETS = Object.freeze({
 		filterName: 'conditionTaxonFilter',
 		fields: ['conditionTaxon.curie', 'conditionTaxon.name'],
 	},
+	transgenicToolSymbolFieldSet: {
+		filterName: 'transgenicToolSymbolFilter',
+		fields: ['transgenicToolSymbol.displayText', 'transgenicToolSymbol.formatText'],
+	},
+	transgenicToolFullNameFieldSet: {
+		filterName: 'transgenicToolFullNameFilter',
+		fields: ['transgenicToolFullName.displayText', 'transgenicToolFullName.formatText'],
+	},
+	transgenicToolSynonymsFieldSet: {
+		filterName: 'transgenicToolSynonymsFilter',
+		fields: ['transgenicToolSynonyms.displayText', 'transgenicToolSynonyms.formatText'],
+	},
+	transgenicToolUsesFieldSet: {
+		filterName: 'transgenicToolUsesFilter',
+		fields: ['transgenicToolUses.uses.name', 'transgenicToolUses.uses.curie'],
+	},
+	transgenicToolAssociationsFieldSet: {
+		filterName: 'transgenicToolAssociationsFilter',
+		fields: [
+			'transgenicToolTransgenicToolAssociations.transgenicToolTransgenicToolAssociationObject.transgenicToolSymbol.displayText',
+			'transgenicToolTransgenicToolAssociations.transgenicToolTransgenicToolAssociationObject.transgenicToolSymbol.formatText',
+			'transgenicToolTransgenicToolAssociations.transgenicToolTransgenicToolAssociationObject.curie',
+			'transgenicToolTransgenicToolAssociations.transgenicToolTransgenicToolAssociationObject.primaryExternalId',
+			'transgenicToolTransgenicToolAssociations.transgenicToolTransgenicToolAssociationObject.modInternalId',
+			'transgenicToolTransgenicToolAssociations.relation.name',
+		],
+	},
+	transgenicToolAggregationFieldSet: {
+		filterName: 'transgenicToolAggregationFilter',
+		fields: ['dataProvider.abbreviation'],
+	},
 	sequenceTargetingReagentTargetedGenesFieldSet: {
 		filterName: 'sequenceTargetingReagentTargetedGenesFilter',
 		fields: [
@@ -1482,6 +1513,29 @@ export const FILTER_CONFIGS = Object.freeze({
 		filterComponentType: 'multiselect',
 		fieldSets: [FIELD_SETS.dataProviderFieldSet],
 		aggregationFieldSet: FIELD_SETS.alleleAggregationFieldSet,
+		useKeywordFields: true,
+	},
+	transgenicToolSymbolFilterConfig: {
+		filterComponentType: 'input',
+		fieldSets: [FIELD_SETS.transgenicToolSymbolFieldSet],
+	},
+	transgenicToolFullNameFilterConfig: {
+		filterComponentType: 'input',
+		fieldSets: [FIELD_SETS.transgenicToolFullNameFieldSet],
+	},
+	transgenicToolSynonymsFilterConfig: {
+		filterComponentType: 'input',
+		fieldSets: [FIELD_SETS.transgenicToolSynonymsFieldSet],
+	},
+	transgenicToolUsesFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.transgenicToolUsesFieldSet] },
+	transgenicToolAssociationsFilterConfig: {
+		filterComponentType: 'input',
+		fieldSets: [FIELD_SETS.transgenicToolAssociationsFieldSet],
+	},
+	transgenicToolDataProviderFilterConfig: {
+		filterComponentType: 'multiselect',
+		fieldSets: [FIELD_SETS.dataProviderFieldSet],
+		aggregationFieldSet: FIELD_SETS.transgenicToolAggregationFieldSet,
 		useKeywordFields: true,
 	},
 	sequenceTargetingReagentTargetedGenesFilterConfig: {

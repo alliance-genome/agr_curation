@@ -11,6 +11,7 @@ import org.alliancegenome.curation_api.model.entities.slotAnnotations.Transgenic
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.TransgenicToolSymbolSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.TransgenicToolSynonymSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.TransgenicToolUseSlotAnnotation;
+import org.alliancegenome.curation_api.model.output.AssociatedTransgenicTool;
 import org.alliancegenome.curation_api.view.CurationView;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.hibernate.search.mapper.pojo.automaticindexing.ReindexOnUpdate;
@@ -19,6 +20,7 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmb
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexingDependency;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 
 import jakarta.persistence.CascadeType;
@@ -28,6 +30,7 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
+import jakarta.persistence.Transient;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -100,12 +103,27 @@ public class TransgenicTool extends Reagent {
 	 */
 	@IndexedEmbedded(includePaths = {
 		"transgenicToolTransgenicToolAssociationObject.curie", "transgenicToolTransgenicToolAssociationObject.primaryExternalId",
-		"transgenicToolTransgenicToolAssociationObject.modInternalId", "relation.name",
+		"transgenicToolTransgenicToolAssociationObject.modInternalId", "transgenicToolTransgenicToolAssociationObject.transgenicToolSymbol.displayText",
+		"transgenicToolTransgenicToolAssociationObject.transgenicToolSymbol.formatText", "relation.name",
 		"transgenicToolTransgenicToolAssociationObject.curie_keyword", "transgenicToolTransgenicToolAssociationObject.primaryExternalId_keyword",
-		"transgenicToolTransgenicToolAssociationObject.modInternalId_keyword", "relation.name_keyword"
+		"transgenicToolTransgenicToolAssociationObject.modInternalId_keyword", "transgenicToolTransgenicToolAssociationObject.transgenicToolSymbol.displayText_keyword",
+		"transgenicToolTransgenicToolAssociationObject.transgenicToolSymbol.formatText_keyword", "relation.name_keyword"
 	})
 	@OneToMany(mappedBy = "transgenicToolAssociationSubject", cascade = CascadeType.ALL, orphanRemoval = true)
-	@JsonView({ CurationView.FieldsAndLists.class, CurationView.TransgenicToolView.class })
+	// In no view: an association is only useful with the tool it points to, and a tool nested in a
+	// tool view would carry its associations again and loop (A -> B -> A). The tool views have
+	// associatedTransgenicTools instead, and the associations themselves, with both tools, come from
+	// /transgenictooltransgenictoolassociation/find.
 	private List<TransgenicToolTransgenicToolAssociation> transgenicToolTransgenicToolAssociations;
 
+	// The tools this one is submitted as compatible with, reduced to what the table shows; computed in
+	// AssociatedTransgenicTool. READ_ONLY: Jackson otherwise treats a getter-only List as settable
+	// through the getter and adds to the immutable list it returns, so reading tool JSON back (the ITs'
+	// getTransgenicTool, a PUT) fails with UnsupportedOperationException.
+	@Transient
+	@JsonView({ CurationView.TransgenicToolView.class })
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
+	public List<AssociatedTransgenicTool> getAssociatedTransgenicTools() {
+		return AssociatedTransgenicTool.fromAssociations(transgenicToolTransgenicToolAssociations);
+	}
 }
