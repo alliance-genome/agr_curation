@@ -106,6 +106,9 @@ public class CurationView {
 	public static class AlleleDetailView {
 	}
 
+	public static class AlleleGeneAssociationView extends AlleleDetailView {
+	}
+
 	public static class SequenceTargetingReagentView extends FieldsOnly {
 	}
 

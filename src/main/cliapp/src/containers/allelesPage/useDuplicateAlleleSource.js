@@ -4,10 +4,12 @@ import { useQuery } from '@tanstack/react-query';
 import { AlleleService } from '../../service/AlleleService';
 import { CrossReferenceService } from '../../service/CrossReferenceService';
 import { ReferenceService } from '../../service/ReferenceService';
+import { AlleleGeneAssociationService } from '../../service/AlleleGeneAssociationService';
 import { getIdentifier } from '../../utils/utils';
 import { buildDuplicateAllele } from './utils';
 import { buildDuplicateCrossReferences, seedResourceDescriptors } from './crossReferences/utils';
 import { prepareReferences } from './referencesTable/utils';
+import { buildDuplicateGeneAssociations } from './alleleGeneAssociations/utils';
 
 /**
  * Fills the allele create form from the allele named by the `from` search parameter, which the Duplicate
@@ -19,15 +21,17 @@ import { prepareReferences } from './referencesTable/utils';
  * @param {Function} params.setCrossReferences - replaces the create form's cross reference rows
  * @param {boolean} params.crossReferencesVisible - whether the form shows its Cross References section
  * @param {Function} params.setReferences - replaces the create form's reference rows
+ * @param {Function} params.setAlleleGeneAssociations - replaces the create form's gene association rows
  * @param {Object} params.toastError - ref to the toast that reports a source that cannot be loaded
- * @returns {{ isLoading: boolean }} `isLoading` is true while the source allele, its cross references or its
- *   references load
+ * @returns {{ isLoading: boolean }} `isLoading` is true while the source allele, its cross references, its
+ *   references or its gene associations load
  */
 export const useDuplicateAlleleSource = ({
 	alleleDispatch,
 	setCrossReferences,
 	crossReferencesVisible,
 	setReferences,
+	setAlleleGeneAssociations,
 	toastError,
 }) => {
 	const [searchParams] = useSearchParams();
@@ -35,6 +39,7 @@ export const useDuplicateAlleleSource = ({
 	const alleleService = useMemo(() => new AlleleService(), []);
 	const crossReferenceService = useMemo(() => new CrossReferenceService(), []);
 	const referenceService = useMemo(() => new ReferenceService(), []);
+	const geneAssociationService = useMemo(() => new AlleleGeneAssociationService(), []);
 
 	const {
 		isFetching: sourceAlleleIsLoading,
@@ -53,6 +58,7 @@ export const useDuplicateAlleleSource = ({
 	const sourceAlleleApplied = useRef(false);
 	const [sourceCrossReferencesLoading, setSourceCrossReferencesLoading] = useState(false);
 	const [sourceReferencesLoading, setSourceReferencesLoading] = useState(false);
+	const [sourceGeneAssociationsLoading, setSourceGeneAssociationsLoading] = useState(false);
 
 	useEffect(() => {
 		if (!sourceIdentifier || sourceAlleleApplied.current) return;
@@ -94,6 +100,27 @@ export const useDuplicateAlleleSource = ({
 		};
 		copySourceReferences();
 
+		const copySourceGeneAssociations = async () => {
+			setSourceGeneAssociationsLoading(true);
+			try {
+				const response = await geneAssociationService.getGeneAssociationsForAllele(sourceAllele.id);
+				const copies = buildDuplicateGeneAssociations(response?.data?.entities);
+				if (copies.length > 0) setAlleleGeneAssociations(copies);
+			} catch (error) {
+				console.warn(`Could not load gene associations for allele ${sourceAllele.id}`, error);
+				toastError.current?.show({
+					life: 7000,
+					severity: 'warn',
+					summary: 'Gene associations not copied: ',
+					detail: `Could not load the gene associations of allele ${getIdentifier(sourceAllele)}`,
+					sticky: false,
+				});
+			} finally {
+				setSourceGeneAssociationsLoading(false);
+			}
+		};
+		copySourceGeneAssociations();
+
 		// The copied rows keep the source's pages but not its curies, which the curator fills in for the new
 		// allele. A hidden section could not show them, so it gets none.
 		if (!crossReferencesVisible) return;
@@ -128,8 +155,13 @@ export const useDuplicateAlleleSource = ({
 		setCrossReferences,
 		referenceService,
 		setReferences,
+		geneAssociationService,
+		setAlleleGeneAssociations,
 		toastError,
 	]);
 
-	return { isLoading: sourceAlleleIsLoading || sourceCrossReferencesLoading || sourceReferencesLoading };
+	return {
+		isLoading:
+			sourceAlleleIsLoading || sourceCrossReferencesLoading || sourceReferencesLoading || sourceGeneAssociationsLoading,
+	};
 };

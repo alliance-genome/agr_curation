@@ -1,6 +1,6 @@
 import { useImmerReducer } from 'use-immer';
 import { useCallback, useMemo } from 'react';
-import { addDataKey, buildEmptyAlleleSymbol, generateCurieSearchFields, SINGLE_VALUE_FIELDS } from './utils';
+import { addDataKey, buildEmptyAlleleSymbol, SINGLE_VALUE_FIELDS } from './utils';
 import { Endpoints } from '../../constants/Endpoints';
 
 const initialAlleleState = {
@@ -16,7 +16,6 @@ const initialAlleleState = {
 		alleleInheritanceModes: [],
 		alleleFunctionalImpacts: [],
 		alleleNomenclatureEvents: [],
-		alleleGeneAssociations: [],
 		alleleDatabaseStatus: null,
 		alleleGermlineTransmissionStatus: null,
 		inCollection: {
@@ -116,13 +115,6 @@ const initialAlleleState = {
 			editingRows: {},
 			type: 'table',
 		},
-		alleleGeneAssociations: {
-			field: 'alleleGeneAssociations',
-			show: false,
-			errorMessages: {},
-			editingRows: {},
-			type: 'table',
-		},
 	},
 	errorMessages: {},
 	submitted: false,
@@ -194,10 +186,9 @@ const processObject = (field, allele, draft) => {
 const alleleReducer = (draft, action, initialState) => {
 	switch (action.type) {
 		case 'SET':
-			// Clone so generateCurieSearchFields (in-place mutation) doesn't run
-			// on a frozen object (immer freezes draft.allele after produce).
+			// Cloned so the row keys added below are not written to a frozen object (immer freezes
+			// draft.allele after produce).
 			const allele = structuredClone(action.value);
-			generateCurieSearchFields(allele.alleleGeneAssociations, 'evidence');
 
 			let states = Object.values(draft.entityStates);
 
@@ -237,20 +228,6 @@ const alleleReducer = (draft, action, initialState) => {
 		case 'EDIT_ROW':
 			draft.allele[action.entityType][action.index][action.field] = action.value;
 			draft.hasOtherPendingEdits = true;
-			break;
-		case 'EDIT_FILTERABLE_ROW':
-			const row = draft.allele[action.entityType].find((row) => row.dataKey === action.dataKey);
-			if (row) {
-				row[action.field] = action.value;
-				draft.hasOtherPendingEdits = true;
-			}
-			break;
-		case 'REPLACE_ROW':
-			const index = draft.allele[action.entityType].findIndex((row) => row.dataKey === action.dataKey);
-			if (index !== -1) {
-				draft.allele[action.entityType][index] = action.newRow;
-				draft.hasOtherPendingEdits = true;
-			}
 			break;
 		case 'EDIT_OBJECT':
 			draft.allele[action.entityType][action.field] = action.value;

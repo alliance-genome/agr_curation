@@ -4,6 +4,7 @@ import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.nullValue;
 
 import java.time.OffsetDateTime;
 
@@ -114,13 +115,13 @@ public class IT_0201_AlleleGeneAssociationBulkUploadITCase extends BaseITCase {
 		
 		RestAssured.given().
 			when().
-			get(alleleGetEndpoint + alleleCurie).
+			get(alleleGeneAssociationsEndpoint(alleleCurie)).
 			then().
 			statusCode(200).
-			body("entity.alleleGeneAssociations", hasSize(1)).
-			body("entity.alleleGeneAssociations[0].relation.name", is(relationName)).
-			body("entity.alleleGeneAssociations[0].alleleGeneAssociationObject.primaryExternalId", is(geneCurie)).
-			body("entity.alleleGeneAssociations[0].alleleAssociationSubject", not(hasKey("alleleGeneAssociations")));
+			body("entities", hasSize(1)).
+			body("entities[0].relation.name", is(relationName)).
+			body("entities[0].alleleGeneAssociationObject.primaryExternalId", is(geneCurie)).
+			body("entities[0].alleleAssociationSubject", nullValue());
 		
 		RestAssured.given().
 			when().
@@ -166,10 +167,10 @@ public class IT_0201_AlleleGeneAssociationBulkUploadITCase extends BaseITCase {
 		
 		RestAssured.given().
 			when().
-			get(alleleGetEndpoint + alleleCurie).
+			get(alleleGeneAssociationsEndpoint(alleleCurie)).
 			then().
 			statusCode(200).
-			body("entity.alleleGeneAssociations", hasSize(1));
+			body("entities", hasSize(1));
 		
 		RestAssured.given().
 			when().
@@ -270,5 +271,16 @@ public class IT_0201_AlleleGeneAssociationBulkUploadITCase extends BaseITCase {
 	@Order(9)
 	public void alleleGeneAssociationBulkUploadDuplicateIsAlleleOfRelation() throws Exception {
 		checkFailedBulkLoad(alleleGeneAssociationBulkPostEndpoint, alleleGeneAssociationTestFilePath + "DR_01_duplicate_relation.json");
+	}
+
+	// An allele's gene associations are read through its own sub-resource, which is addressed by the allele's id.
+	private String alleleGeneAssociationsEndpoint(String alleleIdentifier) {
+		Long alleleId = RestAssured.given().
+			when().
+			get(alleleGetEndpoint + alleleIdentifier).
+			then().
+			statusCode(200).
+			extract().jsonPath().getLong("entity.id");
+		return "/api/allele/" + alleleId + "/gene-associations";
 	}
 }
