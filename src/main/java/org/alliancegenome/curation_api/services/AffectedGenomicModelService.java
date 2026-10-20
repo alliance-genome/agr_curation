@@ -136,6 +136,48 @@ public class AffectedGenomicModelService extends SubmittedObjectCrudService<Affe
 		return null;
 	}
 
+	@Override
+	@Transactional
+	public ObjectResponse<AffectedGenomicModel> deleteByIdentifier(String identifierString) {
+		AffectedGenomicModel agm = findByIdentifierString(identifierString);
+		if (agm == null) {
+			ObjectResponse<AffectedGenomicModel> response = new ObjectResponse<>();
+			response.setErrorMessage("Could not find AGM with identifier: " + identifierString);
+			throw new ApiErrorException(response);
+		}
+
+		List<String> referencingReasons = new ArrayList<>();
+		if (agmDAO.hasReferencingDiseaseAnnotations(agm.getId())) {
+			referencingReasons.add("AGM is referenced by disease annotation(s)");
+		}
+		if (agmDAO.hasReferencingPhenotypeAnnotations(agm.getId())) {
+			referencingReasons.add("AGM is referenced by phenotype annotation(s)");
+		}
+		if (agmDAO.hasReferencingHTPExpressionDatasetSampleAnnotation(agm.getId())) {
+			referencingReasons.add("AGM is referenced by HTP expression dataset annotation(s)");
+		}
+		if (CollectionUtils.isNotEmpty(agm.getConstructGenomicEntityAssociations())) {
+			referencingReasons.add("AGM has construct association(s)");
+		}
+		if (CollectionUtils.isNotEmpty(agm.getAgmSequenceTargetingReagentAssociations())) {
+			referencingReasons.add("AGM has STR association(s)");
+		}
+		if (CollectionUtils.isNotEmpty(agm.getComponents())) {
+			referencingReasons.add("AGM has allele association(s)");
+		}
+		if (CollectionUtils.isNotEmpty(agm.getParentalPopulations())) {
+			referencingReasons.add("AGM has AGM association(s)");
+		}
+		if (CollectionUtils.isNotEmpty(referencingReasons)) {
+			ObjectResponse<AffectedGenomicModel> response = new ObjectResponse<>();
+			response.setErrorMessage("AGM " + agm.getIdentifier() + " is in use and cannot be deleted: " + String.join("; ", referencingReasons));
+			throw new ApiErrorException(response);
+		}
+
+		agmDAO.remove(agm.getId());
+		return new ObjectResponse<>(agm);
+	}
+
 	public List<Long> getAllIds() {
 		return agmDAO.getAllIds();
 	}
