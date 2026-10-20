@@ -158,7 +158,7 @@ describe('<AlleleCreatePage /> duplicating gene associations', { timeout: 30000 
 		expect(await screen.findByText('Gene associations not saved:', {}, FORM_LOAD_WAIT)).toBeInTheDocument();
 		expect(createAllele).toHaveBeenCalledTimes(1);
 		expect(replaceGeneAssociationsForAllele).not.toHaveBeenCalled();
-		expect(screen.getByText('Must select alleleGeneAssociationObject from autosuggest')).toBeInTheDocument();
+		expect(screen.getByText('Must select Gene from autosuggest')).toBeInTheDocument();
 		expect(navigate).not.toHaveBeenCalled();
 	});
 

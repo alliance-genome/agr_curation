@@ -101,7 +101,7 @@ export const markRowsMissingGene = (associations, errorMessages) => {
 	missing.forEach((association) => {
 		marked[association.dataKey] = {
 			...marked[association.dataKey],
-			[fieldName]: { message: `Must select ${fieldName} from autosuggest`, severity: 'error' },
+			[fieldName]: { message: 'Must select Gene from autosuggest', severity: 'error' },
 		};
 	});
 	return marked;
