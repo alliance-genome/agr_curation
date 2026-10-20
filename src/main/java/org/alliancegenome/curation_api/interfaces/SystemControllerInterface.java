@@ -170,6 +170,23 @@ public interface SystemControllerInterface {
 		@DefaultValue("1000") @QueryParam("batchSize") Integer batchSize,
 		@DefaultValue("0") @QueryParam("maxToMint") Integer maxToMint);
 
+	// SCRUM-6693 backfill endpoints. Same implementation and same semantics as the ones above, for the
+	// two classes of the new constructs model, whose MaTI subdomains SCRUM-6682 added.
+
+	// Cassette — 235K rows, subdomain CASSETTE.
+	@GET
+	@Path("/mintcassettecuries")
+	void mintMissingCassetteCuries(
+		@DefaultValue("1000") @QueryParam("batchSize") Integer batchSize,
+		@DefaultValue("0") @QueryParam("maxToMint") Integer maxToMint);
+
+	// TransgenicTool — 1.1K rows, subdomain TRANSGENIC_TOOL.
+	@GET
+	@Path("/minttransgenictoolcuries")
+	void mintMissingTransgenicToolCuries(
+		@DefaultValue("1000") @QueryParam("batchSize") Integer batchSize,
+		@DefaultValue("0") @QueryParam("maxToMint") Integer maxToMint);
+
 	@DELETE
 	@Path("/deletedUnusedConditionsAndExperiments")
 	void deleteUnusedConditionsAndExperiments();
