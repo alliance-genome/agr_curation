@@ -11,6 +11,49 @@ export const strLabel = (str) => {
 	return str.name ? `${str.name} (${getIdentifier(str)})` : getIdentifier(str);
 };
 
+const ROW_IDENTITY_FIELDS = [
+	'id',
+	'createdBy',
+	'updatedBy',
+	'dateCreated',
+	'dateUpdated',
+	'dbDateCreated',
+	'dbDateUpdated',
+];
+
+const copyRow = (row) => {
+	if (!row) return null;
+	const copy = structuredClone(row);
+	ROW_IDENTITY_FIELDS.forEach((field) => delete copy[field]);
+	return copy;
+};
+
+const copyRows = (rows) => (rows?.length ? rows.map(copyRow) : undefined);
+
+/**
+ * A new AGM carrying the fields of a stored one that the create form edits, for the create page
+ * to start from.
+ *
+ * Left behind: everything that identifies the stored AGM (its ids and secondary IDs), its data
+ * provider, cross references, STR associations and audit fields - none of which the create form
+ * edits. Each copied row loses its own id and audit fields, so it is created afresh.
+ *
+ * @param {Object} agm an AGM as the detail endpoint returns it
+ * @returns {Object} an AGM without an id, not obsolete, carrying only the fields the create form edits
+ */
+export const buildDuplicateAgm = (agm) => {
+	return {
+		type: 'AffectedGenomicModel',
+		taxon: structuredClone(agm.taxon) ?? { curie: '' },
+		subtype: structuredClone(agm.subtype) ?? null,
+		internal: agm.internal ?? false,
+		obsolete: false,
+		agmFullName: copyRow(agm.agmFullName),
+		agmSynonyms: copyRows(agm.agmSynonyms),
+		agmSecondaryIds: copyRows(agm.agmSecondaryIds),
+	};
+};
+
 export const processErrors = (data, dispatch, agm) => {
 	const errorMap = data?.supplementalData?.errorMap;
 	const errorMessages = data?.errorMessages;

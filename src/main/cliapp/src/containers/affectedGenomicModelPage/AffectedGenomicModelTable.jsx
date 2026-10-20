@@ -28,10 +28,10 @@ import { DialogTriggerEditor } from '../../components/Editors/dialog/DialogTrigg
 import { TaxonTableEditor } from '../../components/Editors/autocomplete/taxon/TaxonTableEditor';
 import { BooleanTableEditor } from '../../components/Editors/dropdown/boolean/BooleanTableEditor';
 import { ControlledVocabularyTableEditor } from '../../components/Editors/dropdown/vocabulary/ControlledVocabularyTableEditor';
-import { Button } from 'primereact/button';
-import { AffectedGenomicModelCreateDialog } from './AffectedGenomicModelCreateDialog';
 import { AssociatedSTRsReadOnlyDialog } from './associatedSTRs/AssociatedSTRsReadOnlyDialog';
 import { strLabel } from './utils';
+import { NewAGMButton, useOpenAGMCreatePage } from './NewAGMButton';
+import { getIdentifier } from '../../utils/utils';
 
 export const AffectedGenomicModelTable = () => {
 	const [isInEditMode, setIsInEditMode] = useState(false);
@@ -40,10 +40,14 @@ export const AffectedGenomicModelTable = () => {
 	errorMessagesRef.current = errorMessages;
 	const [totalRecords, setTotalRecords] = useState(0);
 	const [agms, setAgms] = useState([]);
-	const [createDialogVisible, setCreateDialogVisible] = useState(false);
 
 	const searchService = new SearchService();
 	let agmService = new AffectedGenomicModelService();
+	const openAGMCreatePage = useOpenAGMCreatePage();
+
+	const handleDuplication = (rowData) => {
+		openAGMCreatePage(rowData.curie || getIdentifier(rowData));
+	};
 
 	const mutation = useMutation({
 		mutationFn: (updatedAgm) => {
@@ -397,7 +401,7 @@ export const AffectedGenomicModelTable = () => {
 	const headerButtons = (disabled = false) => {
 		return (
 			<>
-				<Button label="New AGM" icon="pi pi-plus" disabled={disabled} onClick={() => setCreateDialogVisible(true)} />
+				<NewAGMButton disabled={disabled} />
 				&nbsp;&nbsp;
 			</>
 		);
@@ -428,6 +432,11 @@ export const AffectedGenomicModelTable = () => {
 					errorObject={{ errorMessages, setErrorMessages }}
 					defaultColumnWidth={DEFAULT_COLUMN_WIDTH}
 					fetching={isFetching || isLoading}
+					deletionEnabled={true}
+					deletionMethod={agmService.deleteAGM}
+					deprecateOption={true}
+					duplicationEnabled={true}
+					handleDuplication={handleDuplication}
 				/>
 			</div>
 			<FullNameEditDialog
@@ -466,7 +475,6 @@ export const AffectedGenomicModelTable = () => {
 				originalAssociatedSTRsData={associatedSTRsData}
 				setOriginalAssociatedSTRsData={setAssociatedSTRsData}
 			/>
-			<AffectedGenomicModelCreateDialog visible={createDialogVisible} onHide={() => setCreateDialogVisible(false)} />
 		</>
 	);
 };
