@@ -310,6 +310,7 @@ export const AffectedGenomicModelTable = () => {
 						underline={false}
 					/>
 				),
+				filterConfig: FILTER_CONFIGS.agmSequenceTargetingReagentAssociationsFilterConfig,
 			},
 			{
 				field: 'updatedBy.uniqueId',
