@@ -24,6 +24,7 @@ import org.alliancegenome.curation_api.model.ingest.dto.slotAnnotions.Transgenic
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.CrossReferenceService;
+import org.alliancegenome.curation_api.services.CurieMintService;
 import org.alliancegenome.curation_api.services.ReferenceService;
 import org.alliancegenome.curation_api.services.helpers.SlotAnnotationIdentityHelper;
 import org.alliancegenome.curation_api.services.helpers.TransgenicToolUniqueIdHelper;
@@ -52,6 +53,7 @@ public class TransgenicToolDTOValidator extends ReagentDTOValidator<TransgenicTo
 	@Inject TransgenicToolSynonymSlotAnnotationDTOValidator transgenicToolSynonymDtoValidator;
 	@Inject TransgenicToolUseSlotAnnotationDTOValidator transgenicToolUseDtoValidator;
 	@Inject TransgenicToolDAO transgenicToolDAO;
+	@Inject CurieMintService curieMintService;
 	@Inject SlotAnnotationIdentityHelper identityHelper;
 	@Inject ReferenceService referenceService;
 	@Inject CrossReferenceDTOValidator crossReferenceDtoValidator;
@@ -123,6 +125,11 @@ public class TransgenicToolDTOValidator extends ReagentDTOValidator<TransgenicTo
 		if (response.hasErrors()) {
 			throw new ObjectValidationException(dto, response.errorMessagesString());
 		}
+
+		// SCRUM-6693: mint an AGRKB curie for a transgenic tool that has none, in this transaction. Nothing in
+		// the DTO field-copy chain assigns curie, so a re-load of a transgenic tool that already has one is a
+		// no-op and its AGRKB id stays stable; one loaded before minting was wired in gets its curie here.
+		curieMintService.mintCurieIfAbsent(transgenicTool);
 
 		if (!existing) {
 			transgenicTool = transgenicToolDAO.persist(transgenicTool);

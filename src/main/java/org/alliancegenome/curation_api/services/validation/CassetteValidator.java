@@ -20,6 +20,7 @@ import org.alliancegenome.curation_api.model.entities.slotAnnotations.CassetteSy
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.CassetteUseSlotAnnotation;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
+import org.alliancegenome.curation_api.services.CurieMintService;
 import org.alliancegenome.curation_api.services.helpers.CassetteUniqueIdHelper;
 import org.alliancegenome.curation_api.services.validation.associations.CassetteGenomicEntityAssociationValidator;
 import org.alliancegenome.curation_api.services.validation.associations.CassetteStrAssociationValidator;
@@ -44,6 +45,7 @@ import jakarta.inject.Inject;
 public class CassetteValidator extends ReagentValidator {
 
 	@Inject CassetteDAO cassetteDAO;
+	@Inject CurieMintService curieMintService;
 	@Inject ReferenceValidator referenceValidator;
 	@Inject CassetteSymbolSlotAnnotationValidator cassetteSymbolValidator;
 	@Inject CassetteFullNameSlotAnnotationValidator cassetteFullNameValidator;
@@ -124,6 +126,14 @@ public class CassetteValidator extends ReagentValidator {
 			throw new ApiErrorException(response);
 		}
 
+		// SCRUM-6693: mint an AGRKB curie for a NEW cassette that has none, before persist so the insert
+		// writes it. A curator-supplied curie is left alone. The getId() == null guard is load-bearing, as
+		// for constructs: this serves create and update, and validateCommonReagentFields ->
+		// SubmittedObjectValidator copies the payload's curie unconditionally, so an update omitting curie
+		// nulls it and an unguarded mint would then silently replace the cassette's AGRKB id.
+		if (dbEntity.getId() == null) {
+			curieMintService.mintCurieIfAbsent(dbEntity);
+		}
 		dbEntity = cassetteDAO.persist(dbEntity);
 
 		if (symbol != null) {

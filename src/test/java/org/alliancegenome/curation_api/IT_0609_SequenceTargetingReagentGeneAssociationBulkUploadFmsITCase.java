@@ -74,7 +74,8 @@ public class IT_0609_SequenceTargetingReagentGeneAssociationBulkUploadFmsITCase 
 			body("entity.sequenceTargetingReagentGeneAssociations", hasSize(1)).
 			body("entity.sequenceTargetingReagentGeneAssociations[0].relation.name", is(relationName)).
 			body("entity.sequenceTargetingReagentGeneAssociations[0].sequenceTargetingReagentGeneAssociationObject.primaryExternalId", is(geneCurie)).
-			body("entity.sequenceTargetingReagentGeneAssociations[0].sequenceTargetingReagentAssociationSubject", not(hasKey("sequenceTargetingReagentGeneAssociations")));
+			// the STR of the STR's own associations is the STR itself, so it is not repeated
+			body("entity.sequenceTargetingReagentGeneAssociations[0]", not(hasKey("sequenceTargetingReagentAssociationSubject")));
 		
 		RestAssured.given().
 			when().
@@ -83,8 +84,9 @@ public class IT_0609_SequenceTargetingReagentGeneAssociationBulkUploadFmsITCase 
 			statusCode(200).
 			body("entity.sequenceTargetingReagentGeneAssociations", hasSize(1)).
 			body("entity.sequenceTargetingReagentGeneAssociations[0].relation.name", is(relationName)).
-			body("entity.sequenceTargetingReagentGeneAssociations[0].sequenceTargetingReagentGeneAssociationObject.primaryExternalId", is(geneCurie)).
-			body("entity.sequenceTargetingReagentGeneAssociations[0].sequenceTargetingReagentGeneAssociationObject", not(hasKey("sequenceTargetingReagentGeneAssociations")));
+			// the gene of the gene's own associations is the gene itself, so it is not repeated: the
+			// association's gene is serialized in the STR views only
+			body("entity.sequenceTargetingReagentGeneAssociations[0]", not(hasKey("sequenceTargetingReagentGeneAssociationObject")));
 	}
 
 	@Test

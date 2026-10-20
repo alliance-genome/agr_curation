@@ -16,6 +16,8 @@ import org.alliancegenome.curation_api.dao.GeneDAO;
 import org.alliancegenome.curation_api.dao.VariantDAO;
 import org.alliancegenome.curation_api.dao.AffectedGenomicModelDAO;
 import org.alliancegenome.curation_api.dao.ConstructDAO;
+import org.alliancegenome.curation_api.dao.CassetteDAO;
+import org.alliancegenome.curation_api.dao.TransgenicToolDAO;
 import org.alliancegenome.curation_api.dao.AntibodyDAO;
 import org.alliancegenome.curation_api.dao.SequenceTargetingReagentDAO;
 import org.alliancegenome.curation_api.dao.AssemblyComponentDAO;
@@ -67,6 +69,10 @@ public class SystemController implements SystemControllerInterface {
 	HTPExpressionDatasetAnnotationDAO htpExpressionDatasetAnnotationDAO;
 	@Inject
 	HTPExpressionDatasetSampleAnnotationDAO htpExpressionDatasetSampleAnnotationDAO;
+	@Inject
+	CassetteDAO cassetteDAO;
+	@Inject
+	TransgenicToolDAO transgenicToolDAO;
 	@Inject
 	DiseaseAnnotationService diseaseAnnotationService;
 	@Inject
@@ -164,6 +170,16 @@ public class SystemController implements SystemControllerInterface {
 	@Override
 	public void mintMissingHTPExpressionDatasetCuries(Integer batchSize, Integer maxToMint) {
 		curieMintService.mintMissingCuries(htpExpressionDatasetAnnotationDAO, batchSize, maxToMint);
+	}
+
+	@Override
+	public void mintMissingCassetteCuries(Integer batchSize, Integer maxToMint) {
+		curieMintService.mintMissingCuries(cassetteDAO, batchSize, maxToMint);
+	}
+
+	@Override
+	public void mintMissingTransgenicToolCuries(Integer batchSize, Integer maxToMint) {
+		curieMintService.mintMissingCuries(transgenicToolDAO, batchSize, maxToMint);
 	}
 
 	@Override
