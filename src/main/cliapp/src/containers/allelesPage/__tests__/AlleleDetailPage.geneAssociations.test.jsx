@@ -242,7 +242,7 @@ describe('<AlleleDetailPage /> gene associations', { timeout: 30000 }, () => {
 		await user.click(screen.getByRole('button', { name: 'Save' }));
 
 		expect(await screen.findByText('Select each gene from the autosuggest', { exact: false })).toBeInTheDocument();
-		expect(screen.getByText('Must select alleleGeneAssociationObject from autosuggest')).toBeInTheDocument();
+		expect(screen.getByText('Must select Gene from autosuggest')).toBeInTheDocument();
 		expect(replaceGeneAssociationsForAllele).not.toHaveBeenCalled();
 	});
 
@@ -374,7 +374,7 @@ describe('<AlleleDetailPage /> gene associations', { timeout: 30000 }, () => {
 		await user.click(screen.getByRole('button', { name: /Save Gene Associations/ }));
 
 		expect(await screen.findByText('Select each gene from the autosuggest', { exact: false })).toBeInTheDocument();
-		expect(screen.getByText('Must select alleleGeneAssociationObject from autosuggest')).toBeInTheDocument();
+		expect(screen.getByText('Must select Gene from autosuggest')).toBeInTheDocument();
 		expect(within(geneAssociationsSection()).getByText('Pending Edits!')).toBeInTheDocument();
 		expect(screen.getByRole('button', { name: /Save Gene Associations/ })).toBeEnabled();
 		expect(replaceGeneAssociationsForAllele).not.toHaveBeenCalled();
