@@ -3,7 +3,9 @@ package org.alliancegenome.curation_api.model.entities;
 import java.util.List;
 
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
+import org.alliancegenome.curation_api.enums.MatiSubdomain;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
+import org.alliancegenome.curation_api.interfaces.CurieSubdomain;
 import org.alliancegenome.curation_api.model.entities.associations.TransgenicToolTransgenicToolAssociation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.TransgenicToolFullNameSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.TransgenicToolSymbolSlotAnnotation;
@@ -33,9 +35,6 @@ import lombok.ToString;
 /**
  * SCRUM-6535: a commonly used sequence forming part of a Construct or Transgene, with properties
  * exploited to study another gene product or a biological process.
- *
- * No @CurieSubdomain: MaTI has no subdomain for transgenic tools, so AGRKB minting does not apply
- * to this class yet. See CurieSubdomain for the registry.
  */
 @Indexed
 @Entity
@@ -44,6 +43,7 @@ import lombok.ToString;
 @Schema(name = "TransgenicTool", description = "TransgenicTool: a transgenic tool")
 @ToString(exclude = {"transgenicToolSymbol", "transgenicToolFullName", "transgenicToolSynonyms", "transgenicToolUses", "transgenicToolTransgenicToolAssociations"}, callSuper = true)
 @AGRCurationSchemaVersion(min = "2.19.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { Reagent.class })
+@CurieSubdomain(MatiSubdomain.TRANSGENIC_TOOL)
 public class TransgenicTool extends Reagent {
 
 	@IndexedEmbedded(includePaths = { "displayText", "formatText", "nameType.name", "synonymScope.name", "evidence.curie", "displayText_keyword", "formatText_keyword", "nameType.name_keyword", "synonymScope.name_keyword", "evidence.curie_keyword"})

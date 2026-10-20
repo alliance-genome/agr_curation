@@ -24,6 +24,7 @@ import org.alliancegenome.curation_api.model.ingest.dto.slotAnnotions.CassetteUs
 import org.alliancegenome.curation_api.model.ingest.dto.slotAnnotions.NameSlotAnnotationDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
+import org.alliancegenome.curation_api.services.CurieMintService;
 import org.alliancegenome.curation_api.services.ReferenceService;
 import org.alliancegenome.curation_api.services.helpers.CassetteUniqueIdHelper;
 import org.alliancegenome.curation_api.services.helpers.SlotAnnotationIdentityHelper;
@@ -54,6 +55,7 @@ public class CassetteDTOValidator extends ReagentDTOValidator<Cassette, Cassette
 	@Inject CassetteComponentSlotAnnotationDTOValidator cassetteComponentDtoValidator;
 	@Inject CassetteUseSlotAnnotationDTOValidator cassetteUseDtoValidator;
 	@Inject CassetteDAO cassetteDAO;
+	@Inject CurieMintService curieMintService;
 	@Inject SlotAnnotationIdentityHelper identityHelper;
 	@Inject ReferenceService referenceService;
 
@@ -132,6 +134,11 @@ public class CassetteDTOValidator extends ReagentDTOValidator<Cassette, Cassette
 		if (response.hasErrors()) {
 			throw new ObjectValidationException(dto, response.errorMessagesString());
 		}
+
+		// SCRUM-6693: mint an AGRKB curie for a cassette that has none, in this transaction. Nothing in
+		// the DTO field-copy chain assigns curie, so a re-load of a cassette that already has one is a
+		// no-op and its AGRKB id stays stable; one loaded before minting was wired in gets its curie here.
+		curieMintService.mintCurieIfAbsent(cassette);
 
 		if (!existing) {
 			cassette = cassetteDAO.persist(cassette);
