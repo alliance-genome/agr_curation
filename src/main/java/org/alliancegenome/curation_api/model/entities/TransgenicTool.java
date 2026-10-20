@@ -9,8 +9,8 @@ import org.alliancegenome.curation_api.model.entities.slotAnnotations.Transgenic
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.TransgenicToolSymbolSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.TransgenicToolSynonymSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.TransgenicToolUseSlotAnnotation;
+import org.alliancegenome.curation_api.model.output.AssociatedTransgenicTool;
 import org.alliancegenome.curation_api.view.CurationView;
-import org.apache.commons.lang3.StringUtils;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.hibernate.search.mapper.pojo.automaticindexing.ReindexOnUpdate;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
@@ -48,13 +48,6 @@ import lombok.ToString;
 @ToString(exclude = {"transgenicToolSymbol", "transgenicToolFullName", "transgenicToolSynonyms", "transgenicToolUses", "transgenicToolTransgenicToolAssociations"}, callSuper = true)
 @AGRCurationSchemaVersion(min = "2.19.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { Reagent.class })
 public class TransgenicTool extends Reagent {
-
-	/** A compatible tool as the search results show it: relation, tool symbol and tool identifier. */
-	public record AssociatedTransgenicTool(
-		@JsonView({ CurationView.TransgenicToolView.class }) String relation,
-		@JsonView({ CurationView.TransgenicToolView.class }) String symbol,
-		@JsonView({ CurationView.TransgenicToolView.class }) String identifier) {
-	}
 
 	@IndexedEmbedded(includePaths = { "displayText", "formatText", "nameType.name", "synonymScope.name", "evidence.curie", "displayText_keyword", "formatText_keyword", "nameType.name_keyword", "synonymScope.name_keyword", "evidence.curie_keyword"})
 	@OneToOne(mappedBy = "singleTransgenicTool", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -123,34 +116,14 @@ public class TransgenicTool extends Reagent {
 	// /transgenictooltransgenictoolassociation/find.
 	private List<TransgenicToolTransgenicToolAssociation> transgenicToolTransgenicToolAssociations;
 
-	// The tools this one is submitted as compatible with, reduced to what the table shows (a tool has
-	// a dozen at most). READ_ONLY: computed, so a client sending a tool back need not drop it first.
+	// The tools this one is submitted as compatible with, reduced to what the table shows; computed in
+	// AssociatedTransgenicTool. READ_ONLY: Jackson otherwise treats a getter-only List as settable
+	// through the getter and adds to the immutable list it returns, so reading tool JSON back (the ITs'
+	// getTransgenicTool, a PUT) fails with UnsupportedOperationException.
 	@Transient
 	@JsonView({ CurationView.TransgenicToolView.class })
 	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 	public List<AssociatedTransgenicTool> getAssociatedTransgenicTools() {
-		if (transgenicToolTransgenicToolAssociations == null) {
-			return List.of();
-		}
-		return transgenicToolTransgenicToolAssociations.stream()
-			.map(association -> {
-				TransgenicTool tool = association.getTransgenicToolTransgenicToolAssociationObject();
-				return new AssociatedTransgenicTool(
-					association.getRelation() == null ? null : association.getRelation().getName(),
-					tool == null || tool.getTransgenicToolSymbol() == null ? null : tool.getTransgenicToolSymbol().getDisplayText(),
-					tool == null ? null : modIdentifier(tool));
-			})
-			.toList();
-	}
-
-	// The MOD identifier, which curators recognise, rather than the AGRKB curie getIdentifier() prefers.
-	private static String modIdentifier(TransgenicTool tool) {
-		if (StringUtils.isNotBlank(tool.getPrimaryExternalId())) {
-			return tool.getPrimaryExternalId();
-		}
-		if (StringUtils.isNotBlank(tool.getModInternalId())) {
-			return tool.getModInternalId();
-		}
-		return tool.getCurie();
+		return AssociatedTransgenicTool.fromAssociations(transgenicToolTransgenicToolAssociations);
 	}
 }
