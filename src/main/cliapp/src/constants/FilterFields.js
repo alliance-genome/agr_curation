@@ -23,6 +23,13 @@ export const FIELD_SETS = Object.freeze({
 		filterName: 'agmSecondaryIdsFilter',
 		fields: ['agmSecondaryIds.secondaryId', 'agmSecondaryIds.evidence.curie'],
 	},
+	agmSequenceTargetingReagentAssociationsFieldSet: {
+		filterName: 'agmSequenceTargetingReagentAssociationsFilter',
+		fields: [
+			'agmSequenceTargetingReagentAssociations.agmSequenceTargetingReagentAssociationObject.name',
+			'agmSequenceTargetingReagentAssociations.agmSequenceTargetingReagentAssociationObject.primaryExternalId',
+		],
+	},
 	agmSynonymsFieldSet: {
 		filterName: 'agmSynonymsFilter',
 		fields: ['agmSynonyms.displayText', 'agmSynonyms.formatText'],
@@ -1051,6 +1058,10 @@ export const FILTER_CONFIGS = Object.freeze({
 	},
 	agmNameFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.agmNameFieldSet] },
 	agmSecondaryIdsFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.agmSecondaryIdsFieldSet] },
+	agmSequenceTargetingReagentAssociationsFilterConfig: {
+		filterComponentType: 'input',
+		fieldSets: [FIELD_SETS.agmSequenceTargetingReagentAssociationsFieldSet],
+	},
 	agmSynonymsFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.agmSynonymsFieldSet] },
 	alleleFunctionalImpactsFilterConfig: {
 		filterComponentType: 'input',
