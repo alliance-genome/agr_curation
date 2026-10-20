@@ -17,6 +17,7 @@ import org.alliancegenome.curation_api.model.entities.slotAnnotations.Transgenic
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.TransgenicToolUseSlotAnnotation;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
+import org.alliancegenome.curation_api.services.CurieMintService;
 import org.alliancegenome.curation_api.services.helpers.TransgenicToolUniqueIdHelper;
 import org.alliancegenome.curation_api.services.validation.dto.slotAnnotations.TransgenicToolFullNameSlotAnnotationValidator;
 import org.alliancegenome.curation_api.services.validation.dto.slotAnnotations.TransgenicToolSymbolSlotAnnotationValidator;
@@ -37,6 +38,7 @@ import jakarta.inject.Inject;
 public class TransgenicToolValidator extends ReagentValidator {
 
 	@Inject TransgenicToolDAO transgenicToolDAO;
+	@Inject CurieMintService curieMintService;
 	@Inject ReferenceValidator referenceValidator;
 	@Inject CrossReferenceValidator crossReferenceValidator;
 	@Inject TransgenicToolSymbolSlotAnnotationValidator transgenicToolSymbolValidator;
@@ -111,6 +113,14 @@ public class TransgenicToolValidator extends ReagentValidator {
 			throw new ApiErrorException(response);
 		}
 
+		// SCRUM-6693: mint an AGRKB curie for a NEW transgenic tool that has none, before persist so the insert
+		// writes it. A curator-supplied curie is left alone. The getId() == null guard is load-bearing, as
+		// for constructs: this serves create and update, and validateCommonReagentFields ->
+		// SubmittedObjectValidator copies the payload's curie unconditionally, so an update omitting curie
+		// nulls it and an unguarded mint would then silently replace the transgenic tool's AGRKB id.
+		if (dbEntity.getId() == null) {
+			curieMintService.mintCurieIfAbsent(dbEntity);
+		}
 		dbEntity = transgenicToolDAO.persist(dbEntity);
 
 		if (symbol != null) {

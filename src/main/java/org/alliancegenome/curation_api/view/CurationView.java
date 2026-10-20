@@ -71,6 +71,11 @@ public class CurationView {
 	public static class TransgenicToolDetailView extends TransgenicToolView {
 	}
 
+	// Transgenic tool - transgenic tool associations on their own (/transgenictooltransgenictoolassociation/find
+	// and /findBy), with both tools, which have their fields only
+	public static class TransgenicToolTransgenicToolAssociationView extends FieldsOnly {
+	}
+
 	public static class DiseaseAnnotation extends FieldsOnly {
 	}
 
