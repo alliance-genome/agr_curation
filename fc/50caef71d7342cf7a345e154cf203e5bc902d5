@@ -1,0 +1,27 @@
+src/main/cliapp/src/constants/FilterFields.js
+  s_90fe3c66eb3b97::t_63fb80cedbcb63 26-32,1107-1110
+src/main/cliapp/src/containers/affectedGenomicModelPage/AffectedGenomicModelTable.jsx
+  s_90fe3c66eb3b97::t_ba0fc014c62b8d 313
+src/main/cliapp/src/containers/affectedGenomicModelPage/associatedSTRs/AssociatedSTRsTemplate.jsx
+  s_90fe3c66eb3b97::t_fc8304c43d2a15 1-4,7-8,13-16,19-26
+src/main/java/org/alliancegenome/curation_api/model/entities/AffectedGenomicModel.java
+  s_90fe3c66eb3b97::t_2222e9a21469e8 101-103
+src/main/java/org/alliancegenome/curation_api/model/entities/associations/AgmSequenceTargetingReagentAssociation.java
+  s_90fe3c66eb3b97::t_ab8cadb7a46400 62
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "fc50caef71d7342cf7a345e154cf203e5bc902d5",
+  "prompts": {},
+  "sessions": {
+    "s_90fe3c66eb3b97": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "64db8705-0fb3-46f5-be71-5247c76018af",
+        "model": "unknown"
+      },
+      "human_author": "Ketaki Kindre <kkindre@caltech.edu>"
+    }
+  }
+}
