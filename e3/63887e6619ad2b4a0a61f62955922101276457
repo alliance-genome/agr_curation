@@ -1,0 +1,37 @@
+src/main/cliapp/src/containers/affectedGenomicModelPage/AffectedGenomicModelCreatePage.jsx
+  s_90fe3c66eb3b97::t_449912ac37a302 3-4,10-12,17,19,30,107,114-132,134-153,156
+src/main/cliapp/src/containers/affectedGenomicModelPage/AffectedGenomicModelDetailPage.jsx
+  s_90fe3c66eb3b97::t_e77bfc19f94358 1,6,15,18-19,23,87-126,142,149,157,159-163,165-166,168-169,176
+src/main/cliapp/src/containers/affectedGenomicModelPage/AffectedGenomicModelTable.jsx
+  s_90fe3c66eb3b97::t_576659cef2afad 33-34,46-50,404,435-439
+src/main/cliapp/src/containers/affectedGenomicModelPage/NewAGMButton.jsx
+  s_90fe3c66eb3b97::t_10c4cd07049cc3 1-62
+src/main/cliapp/src/containers/affectedGenomicModelPage/index.js
+  s_90fe3c66eb3b97::t_30a213a60e4108 3,5
+src/main/cliapp/src/containers/affectedGenomicModelPage/useDuplicateAgmSource.js
+  s_90fe3c66eb3b97::t_e997e23284f1da 1-59
+src/main/cliapp/src/containers/affectedGenomicModelPage/utils.js
+  s_90fe3c66eb3b97::t_3aa4978107bd2e 14-56
+src/main/cliapp/src/routes.jsx
+  s_90fe3c66eb3b97::t_1555bb7962a305 19-23,381-388
+src/main/cliapp/src/service/AffectedGenomicModelService.js
+  s_90fe3c66eb3b97::t_7811381d02f386 4,17
+src/main/java/org/alliancegenome/curation_api/services/AffectedGenomicModelService.java
+  s_90fe3c66eb3b97::t_ad7ba3768a20b1 139-180
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "e363887e6619ad2b4a0a61f62955922101276457",
+  "prompts": {},
+  "sessions": {
+    "s_90fe3c66eb3b97": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "64db8705-0fb3-46f5-be71-5247c76018af",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Ketaki Kindre <kkindre@caltech.edu>"
+    }
+  }
+}
