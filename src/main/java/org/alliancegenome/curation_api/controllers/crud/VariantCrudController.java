@@ -11,6 +11,7 @@ import org.alliancegenome.curation_api.model.entities.Variant;
 import org.alliancegenome.curation_api.model.ingest.dto.VariantDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.VariantFmsDTO;
 import org.alliancegenome.curation_api.response.APIResponse;
+import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.VariantService;
 
 import jakarta.annotation.PostConstruct;
@@ -33,6 +34,16 @@ public class VariantCrudController extends SubmittedObjectCrudController<Variant
 	@PostConstruct
 	protected void init() {
 		setService(variantService);
+	}
+
+	@Override
+	public ObjectResponse<Variant> update(Variant entity) {
+		return variantService.getById(variantService.update(entity).getEntity().getId());
+	}
+
+	@Override
+	public ObjectResponse<Variant> create(Variant entity) {
+		return variantService.getById(variantService.create(entity).getEntity().getId());
 	}
 
 	@Override

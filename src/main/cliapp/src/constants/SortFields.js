@@ -19,6 +19,7 @@ export const SORT_FIELDS = Object.freeze([
 	'evidenceCodes.abbreviation',
 	'with.geneSymbol.displayText',
 	'relatedNotes.freeText',
+	'curatedVariantGenomicLocations.hgvs',
 	'conditionRelations.handle',
 	'conditionRelations.uniqueId',
 	'geneticSex.name',
