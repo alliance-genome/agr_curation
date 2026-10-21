@@ -11,6 +11,7 @@ import { BooleanTemplate } from '../../components/Templates/BooleanTemplate';
 import { TruncatedReferencesTemplate } from '../../components/Templates/reference/TruncatedReferencesTemplate';
 import { CrossReferencesTemplate } from '../../components/Templates/CrossReferencesTemplate';
 import { StringTemplate } from '../../components/Templates/StringTemplate';
+import { OntologyTermTemplate } from '../../components/Templates/OntologyTermTemplate';
 import { CountDialogTemplate } from '../../components/Templates/dialog/CountDialogTemplate';
 import { RelatedNotesReadOnlyDialog } from '../../components/RelatedNotesReadOnlyDialog';
 import { SearchService } from '../../service/SearchService';
@@ -103,7 +104,7 @@ export const SequenceTargetingReagentsTable = () => {
 				field: 'taxon.name',
 				header: 'Taxon',
 				sortable: { isInEditMode },
-				body: (rowData) => <StringTemplate string={rowData.taxon?.name} />,
+				body: (rowData) => <OntologyTermTemplate term={rowData.taxon} />,
 				filterConfig: FILTER_CONFIGS.taxonFilterConfig,
 			},
 			{
