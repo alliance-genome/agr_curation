@@ -86,7 +86,10 @@ public class TransgenicTool extends Reagent {
 	})
 	private List<Reference> references;
 
-	@IndexedEmbedded(includePaths = { "referencedCurie", "displayName", "referencedCurie_keyword", "displayName_keyword" })
+	// The same paths as GenomicEntity.crossReferences: the shared Cross References filter
+	// (crossReferencesFieldSet) also queries resourceDescriptorPage.name, and a field missing from the
+	// index fails the whole search (HSEARCH000610).
+	@IndexedEmbedded(includePaths = { "referencedCurie", "displayName", "resourceDescriptorPage.name", "referencedCurie_keyword", "displayName_keyword", "resourceDescriptorPage.name_keyword" })
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
 	@JsonView({ CurationView.FieldsAndLists.class, CurationView.TransgenicToolView.class })
