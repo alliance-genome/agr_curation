@@ -12,15 +12,8 @@ import org.alliancegenome.curation_api.dao.VariantDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.exceptions.ValidationException;
-import org.alliancegenome.curation_api.model.entities.AssemblyComponent;
-import org.alliancegenome.curation_api.model.entities.GenomeAssembly;
-import org.alliancegenome.curation_api.model.entities.GenomicEntity;
-import org.alliancegenome.curation_api.model.entities.InformationContentEntity;
 import org.alliancegenome.curation_api.model.entities.Note;
-import org.alliancegenome.curation_api.model.entities.PredictedVariantConsequence;
-import org.alliancegenome.curation_api.model.entities.Reference;
 import org.alliancegenome.curation_api.model.entities.Variant;
-import org.alliancegenome.curation_api.model.entities.associations.CuratedVariantGenomicLocationAssociation;
 import org.alliancegenome.curation_api.model.ingest.dto.VariantDTO;
 import org.alliancegenome.curation_api.response.ObjectListResponse;
 import org.alliancegenome.curation_api.response.ObjectResponse;
@@ -55,80 +48,14 @@ public class VariantService extends SubmittedObjectCrudService<Variant, VariantD
 	@Transactional
 	public ObjectResponse<Variant> update(Variant uiEntity) {
 		Variant dbEntity = variantValidator.validateVariantUpdate(uiEntity);
-		loadGenomicLocationLists(dbEntity);
-		return new ObjectResponse<Variant>(dbEntity);
+		return new ObjectResponse<>(dbEntity);
 	}
 
 	@Override
 	@Transactional
 	public ObjectResponse<Variant> create(Variant uiEntity) {
 		Variant dbEntity = variantValidator.validateVariantCreate(uiEntity);
-		loadGenomicLocationLists(dbEntity);
-		return new ObjectResponse<Variant>(dbEntity);
-	}
-
-	private void loadGenomicLocationLists(Variant variant) {
-		if (variant.getCuratedVariantGenomicLocations() == null) {
-			return;
-		}
-		for (CuratedVariantGenomicLocationAssociation location : variant.getCuratedVariantGenomicLocations()) {
-			loadEvidence(location.getEvidence());
-			AssemblyComponent chromosome = location.getVariantGenomicLocationAssociationObject();
-			if (chromosome != null) {
-				loadGenomicEntityLists(chromosome);
-				GenomeAssembly assembly = chromosome.getGenomeAssembly();
-				if (assembly != null) {
-					loadNotes(assembly.getRelatedNotes());
-					loadGenomicEntityLists(assembly.getSpecimenGenomicModel());
-				}
-			}
-			if (location.getPredictedVariantConsequences() != null) {
-				for (PredictedVariantConsequence consequence : location.getPredictedVariantConsequences()) {
-					if (consequence.getVepConsequences() != null) {
-						consequence.getVepConsequences().size();
-					}
-					loadGenomicEntityLists(consequence.getVariantTranscript());
-				}
-			}
-		}
-	}
-
-	private void loadGenomicEntityLists(GenomicEntity entity) {
-		if (entity == null) {
-			return;
-		}
-		loadNotes(entity.getRelatedNotes());
-		if (entity.getCrossReferences() != null) {
-			entity.getCrossReferences().size();
-		}
-	}
-
-	private void loadNotes(List<Note> notes) {
-		if (notes == null) {
-			return;
-		}
-		for (Note note : notes) {
-			if (note.getReferences() != null) {
-				note.getReferences().forEach(this::loadCrossReferences);
-			}
-		}
-	}
-
-	private void loadEvidence(List<InformationContentEntity> evidence) {
-		if (evidence == null) {
-			return;
-		}
-		for (InformationContentEntity entity : evidence) {
-			if (entity instanceof Reference reference) {
-				loadCrossReferences(reference);
-			}
-		}
-	}
-
-	private void loadCrossReferences(Reference reference) {
-		if (reference.getCrossReferences() != null) {
-			reference.getCrossReferences().size();
-		}
+		return new ObjectResponse<>(dbEntity);
 	}
 
 	@Override
