@@ -16,6 +16,18 @@ export class AlleleGeneAssociationService extends BaseAuthService {
 		return await deletionService.delete(Endpoints.Entity.ALLELE_GENE_ASSOCIATION, id);
 	}
 
+	async getGeneAssociationsForAllele(alleleId) {
+		return this.api.get(`/allele/${alleleId}/gene-associations`);
+	}
+
+	/**
+	 * Replaces an allele's gene associations with the submitted list. An entry with an id updates that
+	 * association, one without creates one, and any the list omits are deleted. An empty list deletes them all.
+	 */
+	async replaceGeneAssociationsForAllele(alleleId, associations) {
+		return this.api.put(`/allele/${alleleId}/gene-associations`, associations);
+	}
+
 	saveAlleleGeneAssociations(updatedAssociations) {
 		updatedAssociations.forEach((updatedAssociation) => {
 			this.saveAlleleGeneAssociation(updatedAssociation);

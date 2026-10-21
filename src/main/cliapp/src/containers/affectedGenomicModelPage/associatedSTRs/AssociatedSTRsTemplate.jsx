@@ -1,31 +1,28 @@
-import { EllipsisTableCell } from '../../../components/EllipsisTableCell';
-import { ListTableCell } from '../../../components/ListTableCell';
-import { Tooltip } from 'primereact/tooltip';
-import { strLabel } from '../utils';
+import { DataTable } from 'primereact/datatable';
+import { Column } from 'primereact/column';
+import { IdTemplate } from '../../../components/Templates/IdTemplate';
+import { getIdentifier } from '../../../utils/utils';
 
 /**
- * Read-only inline list of the STRs associated with an AGM, matching CrossReferencesTemplate's
- * convention for a system-managed association with no editor on the detail page.
+ * Read-only table of the STRs associated with an AGM. A stand-in for the eventual full
+ * association-details table; for now it mirrors the table cell's popup dialog.
  */
 export const AssociatedSTRsTemplate = ({ list }) => {
 	if (!list || list.length === 0) return null;
 
-	const targetClass = `a${crypto.randomUUID()}`;
-
-	const listTemplate = (association) => {
-		const str = association?.agmSequenceTargetingReagentAssociationObject;
-		if (!str) return null;
-		return <EllipsisTableCell> {strLabel(str)} </EllipsisTableCell>;
-	};
+	const strs = list
+		.map((association) => association?.agmSequenceTargetingReagentAssociationObject)
+		.filter(Boolean)
+		.sort((a, b) => (a.name || '').localeCompare(b.name || '') || getIdentifier(a).localeCompare(getIdentifier(b)));
 
 	return (
-		<>
-			<div className={`-my-2 p-1 ${targetClass}`}>
-				<ListTableCell template={listTemplate} listData={list} />
-			</div>
-			<Tooltip target={`.${targetClass}`} className="tooltip" mouseTrack position="bottom">
-				<ListTableCell template={listTemplate} listData={list} />
-			</Tooltip>
-		</>
+		<DataTable value={strs} dataKey="id" showGridlines>
+			<Column field="name" header="Name" />
+			<Column
+				field="primaryExternalId"
+				header="Primary External ID"
+				body={(rowData) => <IdTemplate id={getIdentifier(rowData)} />}
+			/>
+		</DataTable>
 	);
 };

@@ -62,7 +62,7 @@ public class IT_0202_AlleleConstructAssociationBulkUploadITCase extends BaseITCa
 	private final String alleleConstructAssociationBulkPostEndpoint = "/api/alleleconstructassociation/bulk/WB/associationFile";
 	private final String alleleConstructAssociationGetEndpoint = "/api/alleleconstructassociation/findBy";
 	private final String alleleConstructAssociationTestFilePath = "src/test/resources/bulk/AA02_allele_construct_association/";
-	private final String alleleGetEndpoint = "/api/allele/";
+	private final String alleleConstructAssociationFindEndpoint = "/api/alleleconstructassociation/find?limit=10&page=0";
 
 	private void loadRequiredEntities() throws Exception {
 		allele = getAllele(alleleCurie);
@@ -106,15 +106,18 @@ public class IT_0202_AlleleConstructAssociationBulkUploadITCase extends BaseITCa
 			body("entity.relatedNote.noteType.name", is(noteType)).
 			body("entity.relatedNote.references[0].curie", is(reference));
 		
+		// The allele's endpoints omit construct associations, so they are found by their subject.
 		RestAssured.given().
+			contentType("application/json").
+			body("{\"alleleAssociationSubject.primaryExternalId\": \"" + alleleCurie + "\"}").
 			when().
-			get(alleleGetEndpoint + alleleCurie).
+			post(alleleConstructAssociationFindEndpoint).
 			then().
 			statusCode(200).
-			body("entity.alleleConstructAssociations", hasSize(1)).
-			body("entity.alleleConstructAssociations[0].relation.name", is(relationName)).
-			body("entity.alleleConstructAssociations[0].alleleConstructAssociationObject.primaryExternalId", is(constructCurie)).
-			body("entity.alleleConstructAssociations[0].alleleAssociationSubject", not(hasKey("alleleConstructAssociations")));
+			body("results", hasSize(1)).
+			body("results[0].relation.name", is(relationName)).
+			body("results[0].alleleConstructAssociationObject.primaryExternalId", is(constructCurie)).
+			body("results[0].alleleAssociationSubject", not(hasKey("alleleConstructAssociations")));
 	}
 	
 	@Test
@@ -148,12 +151,15 @@ public class IT_0202_AlleleConstructAssociationBulkUploadITCase extends BaseITCa
 			body("entity.relatedNote.noteType.name", is(noteType2)).
 			body("entity.relatedNote.references[0].curie", is(reference2));
 		
+		// The allele's endpoints omit construct associations, so they are found by their subject.
 		RestAssured.given().
+			contentType("application/json").
+			body("{\"alleleAssociationSubject.primaryExternalId\": \"" + alleleCurie + "\"}").
 			when().
-			get(alleleGetEndpoint + alleleCurie).
+			post(alleleConstructAssociationFindEndpoint).
 			then().
 			statusCode(200).
-			body("entity.alleleConstructAssociations", hasSize(1));
+			body("results", hasSize(1));
 	}
 	
 	@Test

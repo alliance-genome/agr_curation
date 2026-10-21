@@ -8,6 +8,7 @@ import org.alliancegenome.curation_api.interfaces.base.BaseUpsertControllerInter
 import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.Reference;
+import org.alliancegenome.curation_api.model.entities.associations.AlleleGeneAssociation;
 import org.alliancegenome.curation_api.model.ingest.dto.AlleleDTO;
 import org.alliancegenome.curation_api.response.APIResponse;
 import org.alliancegenome.curation_api.response.ObjectListResponse;
@@ -59,6 +60,18 @@ public interface AlleleCrudInterface extends BaseSubmittedObjectCrudInterface<Al
 	@Path("/{id}/references")
 	@JsonView(CurationView.ReferenceView.class)
 	ObjectListResponse<Reference> updateReferences(@PathParam("id") Long id, List<Reference> references);
+
+	@Operation(summary = "Get gene associations for allele", description = "Retrieve all gene associations belonging to this allele")
+	@GET
+	@Path("/{id}/gene-associations")
+	@JsonView(CurationView.AlleleGeneAssociationView.class)
+	ObjectListResponse<AlleleGeneAssociation> getGeneAssociations(@PathParam("id") Long id);
+
+	@Operation(summary = "Replace gene associations for allele", description = "Replace this allele's gene associations with the submitted list, deleting any that are omitted")
+	@PUT
+	@Path("/{id}/gene-associations")
+	@JsonView(CurationView.AlleleGeneAssociationView.class)
+	ObjectListResponse<AlleleGeneAssociation> updateGeneAssociations(@PathParam("id") Long id, List<AlleleGeneAssociation> geneAssociations);
 
 	@Operation(summary = "Bulk load allele data", description = "Bulk load allele records from a data provider submission")
 	@POST

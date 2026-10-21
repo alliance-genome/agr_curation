@@ -20,7 +20,7 @@ import lombok.NoArgsConstructor;
 public class ObjectListResponse<E> extends APIResponse {
 
 	@Schema(description = "The list of returned entity objects")
-	@JsonView(CurationView.FieldsOnly.class)
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.AlleleDetailView.class })
 	private List<E> entities;
 
 	public ObjectListResponse(Set<E> set) {

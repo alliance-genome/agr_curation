@@ -5,6 +5,7 @@ import { AlleleForm, ALLELE_CREATE_TOGGLEABLE_FIELDS, ALLELE_DETAIL_TOGGLEABLE_F
 import { useAlleleReducer } from '../useAlleleReducer';
 import { useAlleleCrossReferences } from '../crossReferences/useAlleleCrossReferences';
 import { useAlleleReferences } from '../referencesTable/useAlleleReferences';
+import { useAlleleGeneAssociations } from '../alleleGeneAssociations/useAlleleGeneAssociations';
 import { SubResourcesProvider } from '../../../components/SubResourcesContext';
 
 const alwaysVisible = () => true;
@@ -14,8 +15,9 @@ const AlleleFormHarness = ({ mode }) => {
 	const { alleleState, alleleDispatch } = useAlleleReducer();
 	const crossReferences = useAlleleCrossReferences();
 	const references = useAlleleReferences();
+	const alleleGeneAssociations = useAlleleGeneAssociations();
 	return (
-		<SubResourcesProvider value={{ crossReferences, references }}>
+		<SubResourcesProvider value={{ crossReferences, references, alleleGeneAssociations }}>
 			<AlleleForm state={alleleState} dispatch={alleleDispatch} isVisible={alwaysVisible} mode={mode} />
 		</SubResourcesProvider>
 	);
@@ -77,8 +79,10 @@ describe('<AlleleForm />', () => {
 
 			expect(screen.queryByRole('button', { name: /Save References/ })).not.toBeInTheDocument();
 			expect(screen.queryByRole('button', { name: /Save Cross References/ })).not.toBeInTheDocument();
+			expect(screen.queryByRole('button', { name: /Save Gene Associations/ })).not.toBeInTheDocument();
 			expect(screen.getByRole('button', { name: 'Add Reference' })).toBeInTheDocument();
 			expect(screen.getByRole('button', { name: 'Add Cross Reference' })).toBeInTheDocument();
+			expect(screen.getByRole('button', { name: 'Add Gene Association' })).toBeInTheDocument();
 		});
 
 		it('Keeps the curatable fields, Internal and Obsolete', async () => {
@@ -166,8 +170,9 @@ const AlleleFormHarnessWithoutMode = () => {
 	const { alleleState, alleleDispatch } = useAlleleReducer();
 	const crossReferences = useAlleleCrossReferences();
 	const references = useAlleleReferences();
+	const alleleGeneAssociations = useAlleleGeneAssociations();
 	return (
-		<SubResourcesProvider value={{ crossReferences, references }}>
+		<SubResourcesProvider value={{ crossReferences, references, alleleGeneAssociations }}>
 			<AlleleForm state={alleleState} dispatch={alleleDispatch} isVisible={alwaysVisible} />
 		</SubResourcesProvider>
 	);
@@ -177,8 +182,9 @@ const AlleleFormHarnessWithVisibility = ({ mode, isVisible }) => {
 	const { alleleState, alleleDispatch } = useAlleleReducer();
 	const crossReferences = useAlleleCrossReferences();
 	const references = useAlleleReferences();
+	const alleleGeneAssociations = useAlleleGeneAssociations();
 	return (
-		<SubResourcesProvider value={{ crossReferences, references }}>
+		<SubResourcesProvider value={{ crossReferences, references, alleleGeneAssociations }}>
 			<AlleleForm state={alleleState} dispatch={alleleDispatch} isVisible={isVisible} mode={mode} />
 		</SubResourcesProvider>
 	);

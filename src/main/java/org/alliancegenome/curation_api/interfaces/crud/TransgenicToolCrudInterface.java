@@ -1,5 +1,6 @@
 package org.alliancegenome.curation_api.interfaces.crud;
 
+import java.util.HashMap;
 import java.util.List;
 
 import org.alliancegenome.curation_api.interfaces.base.BaseSubmittedObjectCrudInterface;
@@ -8,6 +9,7 @@ import org.alliancegenome.curation_api.model.entities.TransgenicTool;
 import org.alliancegenome.curation_api.model.ingest.dto.TransgenicToolDTO;
 import org.alliancegenome.curation_api.response.APIResponse;
 import org.alliancegenome.curation_api.response.ObjectResponse;
+import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.view.CurationView;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
@@ -15,12 +17,14 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import com.fasterxml.jackson.annotation.JsonView;
 
 import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.DefaultValue;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 
 /** SCRUM-6535. Mirrors ConstructCrudInterface. */
@@ -29,6 +33,20 @@ import jakarta.ws.rs.core.MediaType;
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public interface TransgenicToolCrudInterface extends BaseSubmittedObjectCrudInterface<TransgenicTool>, BaseUpsertControllerInterface<TransgenicTool, TransgenicToolDTO> {
+
+	@Override
+	@POST
+	@Path("/find")
+	@Tag(name = "Relational Database Browsing Endpoints")
+	@JsonView(CurationView.TransgenicToolView.class)
+	SearchResponse<TransgenicTool> find(@DefaultValue("0") @QueryParam("page") Integer page, @DefaultValue("10") @QueryParam("limit") Integer limit, HashMap<String, Object> params);
+
+	@Override
+	@POST
+	@Path("/search")
+	@Tag(name = "Elastic Search Browsing Endpoints")
+	@JsonView({ CurationView.TransgenicToolView.class })
+	SearchResponse<TransgenicTool> search(@DefaultValue("0") @QueryParam("page") Integer page, @DefaultValue("10") @QueryParam("limit") Integer limit, HashMap<String, Object> params);
 
 	@Override
 	@GET

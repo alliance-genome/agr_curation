@@ -139,5 +139,6 @@ export const useSubResourceList = ({ ownerId, label, errorField, load, replace, 
 		isDirty,
 		save,
 		reset,
+		setErrorMessages,
 	};
 };

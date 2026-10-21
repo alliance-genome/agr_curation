@@ -3,7 +3,9 @@ package org.alliancegenome.curation_api.model.entities;
 import java.util.List;
 
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
+import org.alliancegenome.curation_api.enums.MatiSubdomain;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
+import org.alliancegenome.curation_api.interfaces.CurieSubdomain;
 import org.alliancegenome.curation_api.model.entities.associations.CassetteGenomicEntityAssociation;
 import org.alliancegenome.curation_api.model.entities.associations.CassetteStrAssociation;
 import org.alliancegenome.curation_api.model.entities.associations.CassetteTransgenicToolAssociation;
@@ -40,9 +42,6 @@ import lombok.ToString;
  * the three association lists below, for components that are themselves curated entities with a
  * curie, and cassetteComponents, for components named only by symbol. LinkML requires at least one
  * of cassetteGenomicEntityAssociations or cassetteComponents to be populated.
- *
- * No {@code @CurieSubdomain}: MaTI has no subdomain for cassettes, so AGRKB minting does not apply
- * to this class, as it does not to {@link TransgenicTool}.
  */
 @Indexed
 @Entity
@@ -51,6 +50,7 @@ import lombok.ToString;
 @Schema(name = "cassette", description = "Cassette: a segment of a construct")
 @ToString(exclude = {"cassetteSymbol", "cassetteFullName", "cassetteSynonyms", "cassetteComponents", "cassetteUses", "cassetteGenomicEntityAssociations", "cassetteTransgenicToolAssociations", "cassetteStrAssociations"}, callSuper = true)
 @AGRCurationSchemaVersion(min = "2.19.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { Reagent.class })
+@CurieSubdomain(MatiSubdomain.CASSETTE)
 public class Cassette extends Reagent {
 
 	@IndexedEmbedded(includePaths = { "displayText", "formatText", "nameType.name", "synonymScope.name", "evidence.curie", "displayText_keyword", "formatText_keyword", "nameType.name_keyword", "synonymScope.name_keyword", "evidence.curie_keyword"})

@@ -1,6 +1,7 @@
 import { BaseAuthService } from './BaseAuthService';
 import { DeletionService } from './DeletionService';
 import { Endpoints } from '../constants/Endpoints';
+import { getIdentifier } from '../utils/utils';
 
 export class AffectedGenomicModelService extends BaseAuthService {
 	saveAGM(updatedAGM) {
@@ -13,7 +14,7 @@ export class AffectedGenomicModelService extends BaseAuthService {
 
 	async deleteAGM(agm) {
 		const deletionService = new DeletionService();
-		return await deletionService.delete(Endpoints.Entity.AGM, agm.id);
+		return await deletionService.delete(Endpoints.Entity.AGM, agm.curie || getIdentifier(agm));
 	}
 
 	async getAGM(identifier) {

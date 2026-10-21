@@ -115,6 +115,13 @@ export const CassettesTable = ({ tableName = 'Cassettes', fixedFilters }) => {
 	const columns = useMemo(
 		() => [
 			{
+				field: 'curie',
+				header: 'Curie',
+				sortable: { isInEditMode },
+				body: (rowData) => <IdTemplate id={rowData.curie} />,
+				filterConfig: FILTER_CONFIGS.curieFilterConfig,
+			},
+			{
 				field: 'uniqueId',
 				header: 'Unique ID',
 				sortable: { isInEditMode },

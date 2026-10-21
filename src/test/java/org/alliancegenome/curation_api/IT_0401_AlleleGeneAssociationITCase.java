@@ -5,6 +5,7 @@ import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.nullValue;
 
 import java.util.List;
 
@@ -140,13 +141,13 @@ public class IT_0401_AlleleGeneAssociationITCase extends BaseITCase {
 
 		RestAssured.given().
 			when().
-			get(alleleGetEndpoint + allele.getPrimaryExternalId()).
+			get(alleleGeneAssociationsEndpoint(allele.getPrimaryExternalId())).
 			then().
 			statusCode(200).
-			body("entity.alleleGeneAssociations", hasSize(1)).
-			body("entity.alleleGeneAssociations[0].relation.name", is(relation.getName())).
-			body("entity.alleleGeneAssociations[0].alleleGeneAssociationObject.primaryExternalId", is(gene.getPrimaryExternalId())).
-			body("entity.alleleGeneAssociations[0].alleleAssociationSubject", not(hasKey("alleleGeneAssociations")));
+			body("entities", hasSize(1)).
+			body("entities[0].relation.name", is(relation.getName())).
+			body("entities[0].alleleGeneAssociationObject.primaryExternalId", is(gene.getPrimaryExternalId())).
+			body("entities[0].alleleAssociationSubject", nullValue());
 		
 		RestAssured.given().
 			when().
@@ -540,5 +541,16 @@ public class IT_0401_AlleleGeneAssociationITCase extends BaseITCase {
 			body("entity", not(hasKey("evidence"))).
 			body("entity", not(hasKey("evidenceCode"))).
 			body("entity", not(hasKey("relatedNote")));
+	}
+
+	// An allele's gene associations are read through its own sub-resource, which is addressed by the allele's id.
+	private String alleleGeneAssociationsEndpoint(String alleleIdentifier) {
+		Long alleleId = RestAssured.given().
+			when().
+			get(alleleGetEndpoint + alleleIdentifier).
+			then().
+			statusCode(200).
+			extract().jsonPath().getLong("entity.id");
+		return "/api/allele/" + alleleId + "/gene-associations";
 	}
 }

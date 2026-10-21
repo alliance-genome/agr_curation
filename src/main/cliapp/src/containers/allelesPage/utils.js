@@ -42,41 +42,6 @@ export const generateCurieSearchField = (entities) => {
 	return curieStrings.join();
 };
 
-export const generateCurieSearchFields = (entities, subArrayField) => {
-	if (!entities) return;
-	entities.forEach((entity) => {
-		entity.evidenceCurieSearchFilter = generateCurieSearchField(entity[subArrayField]);
-	});
-};
-
-export const validateRequiredAutosuggestField = (table, errorMessages, dispatch, entityType, fieldName) => {
-	let areUiErrors = false;
-	const newErrorMessages = structuredClone(errorMessages);
-
-	for (let i = 0; i < table.length; i++) {
-		const row = table[i];
-		const fieldValue = row[fieldName];
-		if (!fieldValue || typeof fieldValue === 'string') {
-			const errorMessage = {
-				...newErrorMessages[row.dataKey],
-				[fieldName]: { message: `Must select ${fieldName} from autosuggest`, severity: 'error' },
-			};
-			newErrorMessages[row.dataKey] = errorMessage;
-			areUiErrors = true;
-		}
-	}
-
-	if (areUiErrors) {
-		dispatch({
-			type: 'UPDATE_TABLE_ERROR_MESSAGES',
-			entityType: entityType,
-			errorMessages: newErrorMessages,
-		});
-	}
-
-	return areUiErrors;
-};
-
 export const addDataKey = (entity) => {
 	entity.dataKey = crypto.randomUUID();
 };
@@ -104,8 +69,7 @@ export const buildEmptyAlleleSymbol = () => ({
  * it cannot find and rejects it, and `{ curie: '' }` as a taxon it silently resolves to null.
  *
  * @param {Object} allele
- * @returns {Object} a copy carrying `type`, without a blank `taxon` or `inCollection`, and
- *   without the association subjects the API assigns
+ * @returns {Object} a copy carrying `type`, without a blank `taxon` or `inCollection`
  */
 export const buildCreatePayload = (allele) => {
 	const payload = structuredClone(allele);
@@ -118,13 +82,6 @@ export const buildCreatePayload = (allele) => {
 	if (!payload.inCollection?.name) {
 		delete payload.inCollection;
 	}
-
-	// The API sets each association's subject to the allele it persists, so the copy the form holds
-	// is never read. It also has to go: a nested allele carries no `type` discriminator, and Jackson
-	// rejects the whole payload over it before the request reaches validation.
-	payload.alleleGeneAssociations?.forEach((association) => {
-		delete association.alleleAssociationSubject;
-	});
 
 	return payload;
 };
@@ -140,7 +97,7 @@ const ROW_IDENTITY_FIELDS = [
 	'dbDateUpdated',
 ];
 
-const copyRow = (row) => {
+export const copyRow = (row) => {
 	if (!row) return null;
 	const copy = structuredClone(row);
 	ROW_IDENTITY_FIELDS.forEach((field) => delete copy[field]);
@@ -155,43 +112,32 @@ const copyRows = (rows) => (rows?.length ? rows.map(copyRow) : undefined);
  *
  * Left behind: everything that identifies the stored allele (its ids and secondary IDs), its data
  * provider and audit fields, and the variant and construct associations the form does not edit. Cross
- * references and references are written through their own sub-resources and copied separately; see
- * buildDuplicateCrossReferences and useDuplicateAlleleSource. Each copied row, and a gene association's
- * note, loses its own id and audit fields, so it is created afresh. A list with no rows is left unset, as
- * the detail endpoint leaves it, so its section starts hidden.
+ * references, references and gene associations are written through their own sub-resources and copied
+ * separately; see buildDuplicateCrossReferences, buildDuplicateGeneAssociations and useDuplicateAlleleSource.
+ * Each copied row loses its own id and audit fields, so it is created afresh. A list with no rows is left
+ * unset, as the detail endpoint leaves it, so its section starts hidden.
  *
  * @param {Object} allele an allele as the detail endpoint returns it
  * @returns {Object} an allele without an id, not obsolete, carrying only the lists that have rows
  */
-export const buildDuplicateAllele = (allele) => {
-	const alleleGeneAssociations = copyRows(allele.alleleGeneAssociations);
-	alleleGeneAssociations?.forEach((association) => {
-		delete association.alleleAssociationSubject;
-		if (association.relatedNote) {
-			association.relatedNote = copyRow(association.relatedNote);
-		}
-	});
-
-	return {
-		type: 'Allele',
-		taxon: structuredClone(allele.taxon) ?? { curie: '' },
-		inCollection: structuredClone(allele.inCollection) ?? { name: '' },
-		isExtinct: allele.isExtinct ?? false,
-		internal: allele.internal ?? false,
-		obsolete: false,
-		relatedNotes: copyRows(allele.relatedNotes),
-		alleleSymbol: copyRow(allele.alleleSymbol),
-		alleleFullName: copyRow(allele.alleleFullName),
-		alleleSynonyms: copyRows(allele.alleleSynonyms),
-		alleleMutationTypes: copyRows(allele.alleleMutationTypes),
-		alleleInheritanceModes: copyRows(allele.alleleInheritanceModes),
-		alleleFunctionalImpacts: copyRows(allele.alleleFunctionalImpacts),
-		alleleNomenclatureEvents: copyRows(allele.alleleNomenclatureEvents),
-		alleleGermlineTransmissionStatus: copyRow(allele.alleleGermlineTransmissionStatus),
-		alleleDatabaseStatus: copyRow(allele.alleleDatabaseStatus),
-		alleleGeneAssociations,
-	};
-};
+export const buildDuplicateAllele = (allele) => ({
+	type: 'Allele',
+	taxon: structuredClone(allele.taxon) ?? { curie: '' },
+	inCollection: structuredClone(allele.inCollection) ?? { name: '' },
+	isExtinct: allele.isExtinct ?? false,
+	internal: allele.internal ?? false,
+	obsolete: false,
+	relatedNotes: copyRows(allele.relatedNotes),
+	alleleSymbol: copyRow(allele.alleleSymbol),
+	alleleFullName: copyRow(allele.alleleFullName),
+	alleleSynonyms: copyRows(allele.alleleSynonyms),
+	alleleMutationTypes: copyRows(allele.alleleMutationTypes),
+	alleleInheritanceModes: copyRows(allele.alleleInheritanceModes),
+	alleleFunctionalImpacts: copyRows(allele.alleleFunctionalImpacts),
+	alleleNomenclatureEvents: copyRows(allele.alleleNomenclatureEvents),
+	alleleGermlineTransmissionStatus: copyRow(allele.alleleGermlineTransmissionStatus),
+	alleleDatabaseStatus: copyRow(allele.alleleDatabaseStatus),
+});
 
 const evidenceCuries = (slotAnnotation) =>
 	Array.isArray(slotAnnotation.evidence) ? slotAnnotation.evidence.map((reference) => reference?.curie).sort() : [];

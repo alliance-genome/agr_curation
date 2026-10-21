@@ -16,12 +16,17 @@ import { GeneGeneticInteractionsPage } from './containers/geneGeneticInteraction
 import { GeneMolecularInteractionsPage } from './containers/geneMolecularInteractionsPage/GeneMolecularInteractionsPage';
 import { ExperimentalConditionsPage } from './containers/experimentalConditionsPage';
 import { ConditionRelationPage } from './containers/conditionRelationPage';
-import { AffectedGenomicModelPage, AffectedGenomicModelDetailPage } from './containers/affectedGenomicModelPage';
+import {
+	AffectedGenomicModelPage,
+	AffectedGenomicModelDetailPage,
+	AffectedGenomicModelCreatePage,
+} from './containers/affectedGenomicModelPage';
 import { AllelesPage, AlleleDetailPage, AlleleCreatePage } from './containers/allelesPage';
 import { GenesPage } from './containers/genesPage';
 import { VariantsPage, VariantDetailPage, VariantCreatePage } from './containers/variantsPage';
 import { ConstructsPage, ConstructDetailPage } from './containers/constructsPage';
 import { CassettesPage } from './containers/cassettesPage';
+import { TransgenicToolsPage } from './containers/transgenicToolsPage';
 import { SequenceTargetingReagentsPage } from './containers/sequenceTargetingReagentsPage';
 import { ProfilePage } from './containers/profilePage';
 import { MoleculesPage } from './containers/moleculesPage';
@@ -214,6 +219,14 @@ export default function AppRoutes() {
 						}
 					/>
 					<Route
+						path="/transgenicTools"
+						element={
+							<ErrorBoundary>
+								<TransgenicToolsPage />
+							</ErrorBoundary>
+						}
+					/>
+					<Route
 						path="/sequenceTargetingReagents"
 						element={
 							<ErrorBoundary>
@@ -362,6 +375,14 @@ export default function AppRoutes() {
 						element={
 							<ErrorBoundary>
 								<AffectedGenomicModelPage />
+							</ErrorBoundary>
+						}
+					/>
+					<Route
+						path="/agm/create"
+						element={
+							<ErrorBoundary>
+								<AffectedGenomicModelCreatePage />
 							</ErrorBoundary>
 						}
 					/>
