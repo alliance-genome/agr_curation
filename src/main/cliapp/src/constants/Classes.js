@@ -149,9 +149,10 @@ export const CLASSES = Object.freeze({
 	},
 	HTPExpressionDatasetAnnotation: {
 		name: 'HTP Expression Dataset Annotations',
+		link: '/#/htpExpressionDatasetAnnotations',
 		type: 'entity',
-		hasTable: false,
-		isIndexed: false,
+		hasTable: true,
+		isIndexed: true,
 	},
 	HTPExpressionDatasetSampleAnnotation: {
 		name: 'HTP Expression Dataset Sample Annotations',
