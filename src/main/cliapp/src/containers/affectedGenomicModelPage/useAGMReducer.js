@@ -125,6 +125,11 @@ const agmReducer = (draft, action, initialState) => {
 		case 'EDIT_ROW':
 			draft.agm[action.entityType][action.index][action.field] = action.value;
 			break;
+		case 'EDIT_ROW_BY_KEY': {
+			const row = draft.agm[action.entityType].find((candidate) => candidate.dataKey === action.dataKey);
+			if (row) row[action.field] = action.value;
+			break;
+		}
 		case 'EDIT_OBJECT':
 			draft.agm[action.entityType][action.field] = action.value;
 			break;

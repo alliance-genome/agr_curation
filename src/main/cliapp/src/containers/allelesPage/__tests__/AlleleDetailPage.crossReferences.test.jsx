@@ -123,7 +123,7 @@ describe('<AlleleDetailPage /> cross references', () => {
 
 	const editCrossReference = async (user) => {
 		await waitForCrossReferencesToLoad();
-		await user.type(crossReferenceRow().querySelector('#displayName'), ' edited');
+		await user.type(crossReferenceRow().querySelector('[aria-label="displayName"]'), ' edited');
 	};
 
 	const editCrossReferenceAndSave = async (user) => {
@@ -304,7 +304,7 @@ describe('<AlleleDetailPage /> cross references', () => {
 		await renderPage();
 
 		await waitForCrossReferencesToLoad();
-		await user.clear(crossReferenceRow().querySelector('#displayName'));
+		await user.clear(crossReferenceRow().querySelector('[aria-label="displayName"]'));
 		await user.click(screen.getByRole('button', { name: 'Save' }));
 
 		expect(await screen.findByText('Cross references not saved:')).toBeInTheDocument();
@@ -385,7 +385,7 @@ describe('<AlleleDetailPage /> cross references', () => {
 		await renderPage();
 
 		await waitForCrossReferencesToLoad();
-		await user.clear(crossReferenceRow().querySelector('#displayName'));
+		await user.clear(crossReferenceRow().querySelector('[aria-label="displayName"]'));
 		await user.click(screen.getByRole('button', { name: 'Save' }));
 
 		expect(await within(crossReferenceRow()).findByText('Required field is empty')).toBeInTheDocument();

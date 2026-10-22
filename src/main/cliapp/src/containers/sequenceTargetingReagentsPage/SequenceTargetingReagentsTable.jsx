@@ -38,9 +38,6 @@ export const SequenceTargetingReagentsTable = () => {
 
 	const searchService = new SearchService();
 
-	const errorMessagesRef = useRef();
-	errorMessagesRef.current = errorMessages;
-
 	const handleRelatedNotesOpen = (relatedNotes) => {
 		setRelatedNotesData({ originalRelatedNotes: relatedNotes, dialog: true, isInEdit: false });
 	};

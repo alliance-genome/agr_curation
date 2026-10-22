@@ -8,14 +8,28 @@ import { ColumnGroup } from 'primereact/columngroup';
 import { Row } from 'primereact/row';
 import { ValidationService } from '../../../service/ValidationService';
 import { DeleteAction } from '../../../components/Actions/DeletionAction';
-import { InternalEditor } from '../../../components/Editors/legacyForm/InternalEditor';
-import { EvidenceEditor } from '../../../components/Editors/legacyForm/EvidenceEditor';
-import { ControlledVocabularyEditor } from '../../../components/Editors/legacyForm/ControlledVocabularyEditor';
-import { PhenotypeTermEditor } from '../../../components/Editors/legacyForm/PhenotypeTermEditor';
-import { TableInputTextAreaEditor } from '../../../components/Editors/text/TableInputTextAreaEditor';
 import { Endpoints } from '../../../constants/Endpoints';
-import { defaultAutocompleteOnChange } from '../../../utils/utils';
+import { KEEP_ROWS_IN_EDIT_MODE, addDataKey } from '../utils';
+import { useControlledVocabularyService } from '../../../service/useControlledVocabularyService';
+import { TableEditorProvider } from '../../../components/Editors/fields/TableEditorContext';
+import { useLocalRowsStrategy } from '../../../components/Editors/fields/strategies/useLocalRowsStrategy';
+import { ControlledVocabularyTableEditor } from '../../../components/Editors/dropdown/vocabulary/ControlledVocabularyTableEditor';
+import { PhenotypeTermTableEditor } from '../../../components/Editors/autocomplete/ontology/PhenotypeTermTableEditor';
+import { InputTextAreaTableEditor } from '../../../components/Editors/text/InputTextAreaTableEditor';
+import { EvidenceTableEditor } from '../../../components/Editors/autocomplete/references/EvidenceTableEditor';
+import { BooleanTableEditor } from '../../../components/Editors/dropdown/boolean/BooleanTableEditor';
 
+/**
+ * Dialog for editing a main-table row's inheritance modes. Edits stay local until Keep Edits
+ * validates every row and hands them back through the row's editor callback.
+ *
+ * @param {object} originalInheritanceModesData - the row's inheritance modes, dialog
+ *   visibility, row index and PrimeReact editor options
+ * @param {Function} setOriginalInheritanceModesData - its setter
+ * @param {object} errorMessagesMainRow - the main table's errors, keyed by row index
+ * @param {Function} setErrorMessagesMainRow - its setter
+ * @returns {JSX.Element}
+ */
 export const InheritanceModesEditDialog = ({
 	originalInheritanceModesData,
 	setOriginalInheritanceModesData,
@@ -28,9 +42,15 @@ export const InheritanceModesEditDialog = ({
 	const [errorMessages, setErrorMessages] = useState({});
 	const [isValidating, setIsValidating] = useState(false);
 	const validationService = new ValidationService();
-	const dataKeyCounter = useRef(0);
 	const tableRef = useRef(null);
 	const toast_topright = useRef(null);
+
+	const strategy = useLocalRowsStrategy({
+		rows: localInheritanceModes,
+		setRows: setLocalInheritanceModes,
+		errors: errorMessages,
+	});
+	const inheritanceModeTerms = useControlledVocabularyService('allele_inheritance_mode');
 
 	const showDialogHandler = () => {
 		let _localInheritanceModes = cloneInheritanceModes(originalInheritanceModes);
@@ -44,10 +64,6 @@ export const InheritanceModesEditDialog = ({
 		}
 		setEditingRows(rowsObject);
 		setErrorMessages({});
-	};
-
-	const onRowEditChange = () => {
-		return null;
 	};
 
 	const hideDialog = () => {
@@ -65,7 +81,7 @@ export const InheritanceModesEditDialog = ({
 		let _clonableInheritanceModes = structuredClone(clonableInheritanceModes);
 		if (_clonableInheritanceModes) {
 			_clonableInheritanceModes.forEach((im) => {
-				im.dataKey = dataKeyCounter.current++;
+				addDataKey(im);
 			});
 		} else {
 			_clonableInheritanceModes = [];
@@ -73,58 +89,14 @@ export const InheritanceModesEditDialog = ({
 		return _clonableInheritanceModes;
 	};
 
-	const inheritanceModeOnChangeHandler = (props, event) => {
-		props.editorCallback(event.value);
-		setLocalInheritanceModes((prev) => {
-			const updated = [...prev];
-			updated[props.rowIndex] = { ...updated[props.rowIndex], inheritanceMode: event.value };
-			return updated;
-		});
-	};
-
-	const onPhenotypeTermValueChange = (event, setFieldValue, props) => {
-		defaultAutocompleteOnChange(props, event, 'phenotypeTerm', setFieldValue);
-		setLocalInheritanceModes((prev) => {
-			const updated = [...prev];
-			updated[props.rowIndex] = { ...updated[props.rowIndex], phenotypeTerm: event.value };
-			return updated;
-		});
-	};
-
-	const textOnChangeHandler = (rowIndex, event, field) => {
-		setLocalInheritanceModes((prev) => {
-			const updated = [...prev];
-			updated[rowIndex] = { ...updated[rowIndex], [field]: event.target.value };
-			return updated;
-		});
-	};
-
-	const internalOnChangeHandler = (props, event) => {
-		props.editorCallback(event.target.value?.name);
-		setLocalInheritanceModes((prev) => {
-			const updated = [...prev];
-			updated[props.rowIndex] = { ...updated[props.rowIndex], internal: event.target?.value?.name };
-			return updated;
-		});
-	};
-
-	const evidenceOnChangeHandler = (event, setFieldValue, props) => {
-		setFieldValue(event.target.value);
-		setLocalInheritanceModes((prev) => {
-			const updated = [...prev];
-			updated[props.rowIndex] = { ...updated[props.rowIndex], evidence: event.target.value };
-			return updated;
-		});
-	};
-
 	const createNewInheritanceModeHandler = () => {
-		const newKey = dataKeyCounter.current++;
 		const _localInheritanceModes = structuredClone(localInheritanceModes);
-		_localInheritanceModes.push({
-			dataKey: newKey,
+		const newRow = {
 			internal: false,
-		});
-		let _editingRows = { ...editingRows, ...{ [`${newKey}`]: true } };
+		};
+		addDataKey(newRow);
+		_localInheritanceModes.push(newRow);
+		let _editingRows = { ...editingRows, ...{ [`${newRow.dataKey}`]: true } };
 		setEditingRows(_editingRows);
 		setLocalInheritanceModes(_localInheritanceModes);
 	};
@@ -238,7 +210,7 @@ export const InheritanceModesEditDialog = ({
 		);
 	};
 
-	let headerGroup = (
+	const headerGroup = (
 		<ColumnGroup>
 			<Row>
 				<Column header="Actions" />
@@ -264,111 +236,69 @@ export const InheritanceModesEditDialog = ({
 				footer={footerTemplate}
 			>
 				<h3>Inheritance Modes</h3>
-				<DataTable
-					value={localInheritanceModes}
-					dataKey="dataKey"
-					showGridlines
-					editMode="row"
-					headerColumnGroup={headerGroup}
-					editingRows={editingRows}
-					onRowEditChange={onRowEditChange}
-					ref={tableRef}
-					cellMemo={false}
-				>
-					<Column
-						editor={(props) => (
-							<DeleteAction deletionHandler={handleDeleteInheritanceMode} id={props?.rowData?.dataKey} />
-						)}
-						className="max-w-4rem"
-						bodyClassName="text-center"
-						headerClassName="surface-0"
-						frozen
-					/>
-					<Column
-						editor={(props) => {
-							return (
-								<ControlledVocabularyEditor
-									editorOptions={props}
-									onChangeHandler={inheritanceModeOnChangeHandler}
-									errorMessages={errorMessages}
-									dataKey={props?.rowData?.dataKey}
-									rowIndex={props.rowIndex}
-									vocabType="allele_inheritance_mode"
+				<TableEditorProvider strategy={strategy}>
+					<DataTable
+						value={localInheritanceModes}
+						dataKey="dataKey"
+						showGridlines
+						editMode="row"
+						headerColumnGroup={headerGroup}
+						editingRows={editingRows}
+						onRowEditChange={KEEP_ROWS_IN_EDIT_MODE}
+						ref={tableRef}
+						cellMemo={false}
+					>
+						<Column
+							editor={(editorOptions) => (
+								<DeleteAction deletionHandler={handleDeleteInheritanceMode} id={editorOptions?.rowData?.dataKey} />
+							)}
+							className="max-w-4rem"
+							bodyClassName="text-center"
+							headerClassName="surface-0"
+							frozen
+						/>
+						<Column
+							editor={(editorOptions) => (
+								<ControlledVocabularyTableEditor
+									editorOptions={editorOptions}
 									field="inheritanceMode"
+									options={inheritanceModeTerms}
+									dataKey="id"
 									showClear={false}
 								/>
-							);
-						}}
-						field="inheritanceMode"
-						header="Inheritance Mode"
-						headerClassName="surface-0"
-					/>
-					<Column
-						editor={(props) => {
-							return (
-								<PhenotypeTermEditor
-									props={props}
-									errorMessages={errorMessages}
-									onChange={onPhenotypeTermValueChange}
-									dataKey={props?.rowData?.dataKey}
-								/>
-							);
-						}}
-						field="phenotypeTerm"
-						header="Phenotype Term"
-						headerClassName="surface-0"
-					/>
-					<Column
-						editor={(props) => {
-							return (
-								<TableInputTextAreaEditor
-									value={props.value}
-									rowIndex={props.rowIndex}
-									errorMessages={errorMessages}
-									dataKey={props?.rowData?.dataKey}
-									textOnChangeHandler={textOnChangeHandler}
-									field="phenotypeStatement"
-									rows={1}
-									columns={30}
-								/>
-							);
-						}}
-						field="phenotypeStatement"
-						header="Phenotype Statement"
-						headerClassName="surface-0"
-					/>
-					<Column
-						editor={(props) => {
-							return (
-								<InternalEditor
-									editorOptions={props}
-									rowIndex={props.rowIndex}
-									errorMessages={errorMessages}
-									dataKey={props?.rowData?.dataKey}
-									internalOnChangeHandler={internalOnChangeHandler}
-								/>
-							);
-						}}
-						field="internal"
-						header="Internal"
-						headerClassName="surface-0"
-					/>
-					<Column
-						editor={(props) => {
-							return (
-								<EvidenceEditor
-									props={props}
-									errorMessages={errorMessages}
-									onChange={evidenceOnChangeHandler}
-									dataKey={props?.rowData?.dataKey}
-								/>
-							);
-						}}
-						field="evidence"
-						header="Evidence"
-						headerClassName="surface-0"
-					/>
-				</DataTable>
+							)}
+							field="inheritanceMode"
+							header="Inheritance Mode"
+							headerClassName="surface-0"
+						/>
+						<Column
+							editor={(editorOptions) => <PhenotypeTermTableEditor editorOptions={editorOptions} />}
+							field="phenotypeTerm"
+							header="Phenotype Term"
+							headerClassName="surface-0"
+						/>
+						<Column
+							editor={(editorOptions) => (
+								<InputTextAreaTableEditor editorOptions={editorOptions} field="phenotypeStatement" rows={1} cols={30} />
+							)}
+							field="phenotypeStatement"
+							header="Phenotype Statement"
+							headerClassName="surface-0"
+						/>
+						<Column
+							editor={(editorOptions) => <BooleanTableEditor editorOptions={editorOptions} field="internal" />}
+							field="internal"
+							header="Internal"
+							headerClassName="surface-0"
+						/>
+						<Column
+							editor={(editorOptions) => <EvidenceTableEditor editorOptions={editorOptions} />}
+							field="evidence"
+							header="Evidence"
+							headerClassName="surface-0"
+						/>
+					</DataTable>
+				</TableEditorProvider>
 			</Dialog>
 		</div>
 	);

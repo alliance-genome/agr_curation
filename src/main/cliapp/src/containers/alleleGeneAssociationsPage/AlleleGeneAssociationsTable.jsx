@@ -19,12 +19,8 @@ export const AlleleGeneAssociationsTable = () => {
 	const [totalRecords, setTotalRecords] = useState(0);
 	const [alleleGeneAssociations, setAlleleGeneAssociations] = useState([]);
 	const [errorMessages, setErrorMessages] = useState({});
-	const errorMessagesRef = useRef();
-	errorMessagesRef.current = errorMessages;
 
 	const [uiErrorMessages, setUiErrorMessages] = useState([]);
-	const uiErrorMessagesRef = useRef();
-	uiErrorMessagesRef.current = uiErrorMessages;
 
 	const searchService = new SearchService();
 

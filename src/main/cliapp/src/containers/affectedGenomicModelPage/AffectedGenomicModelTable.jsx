@@ -24,7 +24,7 @@ import { SynonymsEditDialog } from '../nameSlotAnnotations/dialogs/SynonymsEditD
 import { SynonymsReadOnlyDialog } from '../nameSlotAnnotations/dialogs/SynonymsReadOnlyDialog';
 import { SecondaryIdsEditDialog } from '../allelesPage/secondaryIds/SecondaryIdsEditDialog';
 import { SecondaryIdsReadOnlyDialog } from '../allelesPage/secondaryIds/SecondaryIdsReadOnlyDialog';
-import { DialogTriggerEditor } from '../../components/Editors/dialog/DialogTriggerEditor';
+import { DialogTriggerTableEditor } from '../../components/Editors/dialog/DialogTriggerTableEditor';
 import { TaxonTableEditor } from '../../components/Editors/autocomplete/taxon/TaxonTableEditor';
 import { BooleanTableEditor } from '../../components/Editors/dropdown/boolean/BooleanTableEditor';
 import { ControlledVocabularyTableEditor } from '../../components/Editors/dropdown/vocabulary/ControlledVocabularyTableEditor';
@@ -36,8 +36,6 @@ import { getIdentifier } from '../../utils/utils';
 export const AffectedGenomicModelTable = () => {
 	const [isInEditMode, setIsInEditMode] = useState(false);
 	const [errorMessages, setErrorMessages] = useState({});
-	const errorMessagesRef = useRef();
-	errorMessagesRef.current = errorMessages;
 	const [totalRecords, setTotalRecords] = useState(0);
 	const [agms, setAgms] = useState([]);
 
@@ -194,9 +192,8 @@ export const AffectedGenomicModelTable = () => {
 					/>
 				),
 				editor: (editorOptions) => (
-					<DialogTriggerEditor
+					<DialogTriggerTableEditor
 						editorOptions={editorOptions}
-						errorMessagesRef={errorMessagesRef}
 						onOpenInEdit={handleFullNameOpenInEdit}
 						errorField="agmFullName"
 						displayHtml={editorOptions.rowData.agmFullName?.displayText}
@@ -222,9 +219,8 @@ export const AffectedGenomicModelTable = () => {
 				editor: (editorOptions) => {
 					const count = editorOptions.rowData.agmSynonyms?.length;
 					return (
-						<DialogTriggerEditor
+						<DialogTriggerTableEditor
 							editorOptions={editorOptions}
-							errorMessagesRef={errorMessagesRef}
 							onOpenInEdit={handleSynonymsOpenInEdit}
 							errorField="agmSynonyms"
 							displayText={count ? `Synonyms(${count}) ` : null}
@@ -249,9 +245,8 @@ export const AffectedGenomicModelTable = () => {
 				editor: (editorOptions) => {
 					const count = editorOptions.rowData.agmSecondaryIds?.length;
 					return (
-						<DialogTriggerEditor
+						<DialogTriggerTableEditor
 							editorOptions={editorOptions}
-							errorMessagesRef={errorMessagesRef}
 							onOpenInEdit={handleSecondaryIdsOpenInEdit}
 							errorField="agmSecondaryIds"
 							displayText={count ? `Secondary IDs(${count}) ` : null}
@@ -275,7 +270,6 @@ export const AffectedGenomicModelTable = () => {
 						editorOptions={editorOptions}
 						field="subtype"
 						options={subtypeTerms}
-						errorMessagesRef={errorMessagesRef}
 						showClear={false}
 					/>
 				),
@@ -354,9 +348,7 @@ export const AffectedGenomicModelTable = () => {
 				filter: true,
 				filterConfig: FILTER_CONFIGS.internalFilterConfig,
 				sortable: true,
-				editor: (editorOptions) => (
-					<BooleanTableEditor editorOptions={editorOptions} errorMessagesRef={errorMessagesRef} field={'internal'} />
-				),
+				editor: (editorOptions) => <BooleanTableEditor editorOptions={editorOptions} field={'internal'} />,
 			},
 			{
 				field: 'obsolete',
@@ -365,13 +357,11 @@ export const AffectedGenomicModelTable = () => {
 				filter: true,
 				filterConfig: FILTER_CONFIGS.obsoleteFilterConfig,
 				sortable: true,
-				editor: (editorOptions) => (
-					<BooleanTableEditor editorOptions={editorOptions} errorMessagesRef={errorMessagesRef} field={'obsolete'} />
-				),
+				editor: (editorOptions) => <BooleanTableEditor editorOptions={editorOptions} field={'obsolete'} />,
 			},
 		],
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-		[errorMessagesRef, subtypeTerms]
+		[subtypeTerms]
 	);
 
 	const DEFAULT_COLUMN_WIDTH = 100 / columns.length;

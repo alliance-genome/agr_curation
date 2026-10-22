@@ -2,14 +2,31 @@ import { useState } from 'react';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { DeleteAction } from '../../../components/Actions/DeletionAction';
-import { EvidenceEditor } from '../../../components/Editors/legacyForm/EvidenceEditor';
-import { GeneEditor } from '../../../components/Editors/legacyForm/GeneEditor';
-import { RelatedNoteEditor } from '../../../components/Editors/legacyForm/RelatedNoteEditor';
-import { EvidenceCodeEditor } from '../../../components/Editors/legacyForm/EvidenceCodeEditor';
 import { RelatedNotesDialogEditOnly } from '../../../components/RelatedNotesDialogEditOnly';
-import { VocabularyTermSetEditor } from '../../../components/Editors/legacyForm/VocabularyTermSetEditor';
+import { ControlledVocabularyTableEditor } from '../../../components/Editors/dropdown/vocabulary/ControlledVocabularyTableEditor';
+import { AlleleGeneObjectTableEditor } from '../../../components/Editors/autocomplete/gene/AlleleGeneObjectTableEditor';
+import { SingleEvidenceCodeTableEditor } from '../../../components/Editors/autocomplete/ontology/SingleEvidenceCodeTableEditor';
+import { DialogTriggerTableEditor } from '../../../components/Editors/dialog/DialogTriggerTableEditor';
+import { EvidenceTableEditor } from '../../../components/Editors/autocomplete/references/EvidenceTableEditor';
 import { RelationshipFilterTemplate } from './RelationshipFilterTemplate';
 
+/**
+ * Editable gene associations table, every row always in edit mode, paged and filterable. Its
+ * editors read and write rows through the table strategy its parent provides; a row's note is
+ * edited in a dialog.
+ *
+ * @param {object[]} alleleGeneAssociations - rows, each carrying a `dataKey`
+ * @param {object} editingRows - PrimeReact editing state, keyed by `dataKey`
+ * @param {Function} onRowEditChange - PrimeReact row-edit handler
+ * @param {object} tableRef - ref to the DataTable
+ * @param {Function} deletionHandler - `(event, dataKey)`
+ * @param {object} errorMessages - row errors, keyed by `dataKey` then field
+ * @param {Function} setErrorMessages - their setter
+ * @param {(notes: object[], editorOptions: object) => void} relatedNoteOnChangeHandler - stores
+ *   the note the dialog hands back
+ * @param {object[]} [relationTerms] - the allele_gene_relation term set, undefined until it loads
+ * @returns {JSX.Element}
+ */
 export const AlleleGeneAssociationsFormTable = ({
 	alleleGeneAssociations,
 	editingRows,
@@ -17,12 +34,9 @@ export const AlleleGeneAssociationsFormTable = ({
 	tableRef,
 	deletionHandler,
 	errorMessages,
-	evidenceOnChangeHandler,
-	alleleGeneRelationOnChangeHandler,
-	geneOnChangeHandler,
-	evidenceCodeOnChangeHandler,
-	relatedNoteOnChangeHandler,
 	setErrorMessages,
+	relatedNoteOnChangeHandler,
+	relationTerms,
 }) => {
 	const [rows, setRows] = useState(5);
 	const [first, setFirst] = useState(0);
@@ -36,11 +50,9 @@ export const AlleleGeneAssociationsFormTable = ({
 		dateUpdated: { value: null, matchMode: 'startsWith' },
 	});
 
+	// The shape handleRelatedNoteOpenInEdit writes and RelatedNotesDialogEditOnly reads.
 	const [relatedNotesData, setRelatedNotesData] = useState({
-		relatedNotes: [],
 		dialogIsVisible: false,
-		rowIndex: null,
-		mainRowProps: {},
 		errorMessages,
 	});
 	const onPage = (options) => {
@@ -50,6 +62,25 @@ export const AlleleGeneAssociationsFormTable = ({
 
 	const onFilter = (options) => {
 		setFilters(options.filters);
+	};
+
+	// PrimeReact keeps the row data it captured when the row opened, so the note is read from the
+	// current rows.
+	const currentRow = (editorOptions) =>
+		alleleGeneAssociations.find((association) => association.dataKey === editorOptions.rowData?.dataKey) ??
+		editorOptions.rowData;
+
+	// DialogTriggerTableEditor only reports the open, so the data the note dialog reads is built here.
+	const handleRelatedNoteOpenInEdit = (event, editorOptions) => {
+		event.preventDefault();
+		const relatedNote = currentRow(editorOptions)?.relatedNote;
+		setRelatedNotesData({
+			originalRelatedNotes: relatedNote ? [relatedNote] : undefined,
+			dialogIsVisible: true,
+			dataKey: editorOptions.rowData?.dataKey,
+			errorMessages,
+			rowProps: editorOptions,
+		});
 	};
 
 	return (
@@ -86,20 +117,15 @@ export const AlleleGeneAssociationsFormTable = ({
 					frozen
 				/>
 				<Column
-					editor={(props) => {
-						return (
-							<VocabularyTermSetEditor
-								editorOptions={props}
-								onChangeHandler={alleleGeneRelationOnChangeHandler}
-								errorMessages={errorMessages}
-								dataKey={props?.rowData?.dataKey}
-								rowIndex={props.rowIndex}
-								vocabType="allele_gene_relation"
-								field="relation"
-								showClear={false}
-							/>
-						);
-					}}
+					editor={(editorOptions) => (
+						<ControlledVocabularyTableEditor
+							editorOptions={editorOptions}
+							field="relation"
+							options={relationTerms}
+							dataKey="id"
+							showClear={false}
+						/>
+					)}
 					field="relation"
 					header="Relationship"
 					headerClassName="surface-0"
@@ -113,17 +139,7 @@ export const AlleleGeneAssociationsFormTable = ({
 					}}
 				/>
 				<Column
-					editor={(props) => {
-						return (
-							<GeneEditor
-								fieldName="alleleGeneAssociationObject"
-								props={props}
-								errorMessages={errorMessages}
-								onChange={geneOnChangeHandler}
-								dataKey={props?.rowData?.dataKey}
-							/>
-						);
-					}}
+					editor={(editorOptions) => <AlleleGeneObjectTableEditor editorOptions={editorOptions} />}
 					field="alleleGeneAssociationObject"
 					header="Gene"
 					headerClassName="surface-0"
@@ -134,18 +150,16 @@ export const AlleleGeneAssociationsFormTable = ({
 					showFilterMenu={false}
 				/>
 				<Column
-					editor={(props) => {
-						return (
-							<RelatedNoteEditor
-								rowProps={props}
-								relatedNote={props.rowData.relatedNote}
-								errorMessages={errorMessages}
-								dataKey={props?.rowData?.dataKey}
-								rows={props.rows}
-								setRelatedNotesData={setRelatedNotesData}
-							/>
-						);
-					}}
+					editor={(editorOptions) => (
+						<DialogTriggerTableEditor
+							editorOptions={editorOptions}
+							onOpenInEdit={handleRelatedNoteOpenInEdit}
+							errorField="relatedNote"
+							displayText={currentRow(editorOptions)?.relatedNote?.freeText}
+							addText="Add Note"
+							tooltipObject="allele"
+						/>
+					)}
 					field="relatedNote"
 					header="Note"
 					headerClassName="surface-0"
@@ -156,16 +170,7 @@ export const AlleleGeneAssociationsFormTable = ({
 					sortField="relatedNote.freeText"
 				/>
 				<Column
-					editor={(props) => {
-						return (
-							<EvidenceCodeEditor
-								props={props}
-								onChangeHandler={evidenceCodeOnChangeHandler}
-								errorMessages={errorMessages}
-								dataKey={props.rowData?.dataKey}
-							/>
-						);
-					}}
+					editor={(editorOptions) => <SingleEvidenceCodeTableEditor editorOptions={editorOptions} />}
 					filter
 					sortable
 					filterField="evidenceCode.curie"
@@ -176,13 +181,11 @@ export const AlleleGeneAssociationsFormTable = ({
 					headerClassName="surface-0"
 				/>
 				<Column
-					editor={(props) => {
-						return <EvidenceEditor props={props} errorMessages={errorMessages} onChange={evidenceOnChangeHandler} />;
-					}}
+					editor={(editorOptions) => <EvidenceTableEditor editorOptions={editorOptions} />}
 					filter
 					filterField="evidenceCurieSearchFilter"
 					showFilterMenu={false}
-					field="evidence.curie"
+					field="evidence"
 					sortable
 					sortField="evidenceCurieSearchFilter"
 					header="Evidence"

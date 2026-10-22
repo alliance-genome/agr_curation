@@ -3,24 +3,32 @@ import { Column } from 'primereact/column';
 import { ColumnGroup } from 'primereact/columngroup';
 import { Row } from 'primereact/row';
 import { DeleteAction } from '../../../components/Actions/DeletionAction';
-import { InternalEditor } from '../../../components/Editors/legacyForm/InternalEditor';
-import { EvidenceEditor } from '../../../components/Editors/legacyForm/EvidenceEditor';
-import { ObsoleteEditor } from '../../../components/Editors/legacyForm/ObsoleteEditor';
-import { ControlledVocabularyEditor } from '../../../components/Editors/legacyForm/ControlledVocabularyEditor';
+import { ControlledVocabularyTableEditor } from '../../../components/Editors/dropdown/vocabulary/ControlledVocabularyTableEditor';
+import { EvidenceTableEditor } from '../../../components/Editors/autocomplete/references/EvidenceTableEditor';
+import { BooleanTableEditor } from '../../../components/Editors/dropdown/boolean/BooleanTableEditor';
 
+/**
+ * Editable nomenclature events table, every row always in edit mode. Its editors read and write rows
+ * through the table strategy its parent provides.
+ *
+ * @param {object[]} nomenclatureEvents - rows, each carrying a `dataKey`
+ * @param {object} editingRows - PrimeReact editing state, keyed by `dataKey`
+ * @param {Function} onRowEditChange - PrimeReact row-edit handler
+ * @param {object} tableRef - ref to the DataTable
+ * @param {Function} deletionHandler - `(event, dataKey)`
+ * @param {object[]} [nomenclatureEventTerms] - the allele_nomenclature_event vocabulary terms,
+ *   undefined until they load
+ * @returns {JSX.Element}
+ */
 export const NomenclatureEventsFormTable = ({
 	nomenclatureEvents,
 	editingRows,
 	onRowEditChange,
 	tableRef,
 	deletionHandler,
-	errorMessages,
-	internalOnChangeHandler,
-	obsoleteOnChangeHandler,
-	nomenclatureEventOnChangeHandler,
-	evidenceOnChangeHandler,
+	nomenclatureEventTerms,
 }) => {
-	let headerGroup = (
+	const headerGroup = (
 		<ColumnGroup>
 			<Row>
 				<Column header="Actions" />
@@ -52,67 +60,42 @@ export const NomenclatureEventsFormTable = ({
 			ref={tableRef}
 		>
 			<Column
-				editor={(props) => <DeleteAction deletionHandler={deletionHandler} id={props?.rowData?.dataKey} />}
+				editor={(editorOptions) => (
+					<DeleteAction deletionHandler={deletionHandler} id={editorOptions?.rowData?.dataKey} />
+				)}
 				className="max-w-4rem"
 				bodyClassName="text-center"
 				headerClassName="surface-0"
 				frozen
 			/>
 			<Column
-				editor={(props) => {
-					return (
-						<ControlledVocabularyEditor
-							editorOptions={props}
-							onChangeHandler={nomenclatureEventOnChangeHandler}
-							errorMessages={errorMessages}
-							rowIndex={props.rowIndex}
-							dataKey={props?.rowData?.dataKey}
-							vocabType="allele_nomenclature_event"
-							field="nomenclatureEvent"
-							showClear={false}
-						/>
-					);
-				}}
+				editor={(editorOptions) => (
+					<ControlledVocabularyTableEditor
+						editorOptions={editorOptions}
+						field="nomenclatureEvent"
+						options={nomenclatureEventTerms}
+						dataKey="id"
+						showClear={false}
+					/>
+				)}
 				field="nomenclatureEvent"
 				header="Nomenclature Event"
 				headerClassName="surface-0"
 			/>
 			<Column
-				editor={(props) => {
-					return <EvidenceEditor props={props} errorMessages={errorMessages} onChange={evidenceOnChangeHandler} />;
-				}}
-				field="evidence.curie"
+				editor={(editorOptions) => <EvidenceTableEditor editorOptions={editorOptions} />}
+				field="evidence"
 				header="Evidence"
 				headerClassName="surface-0"
 			/>
 			<Column
-				editor={(props) => {
-					return (
-						<InternalEditor
-							editorOptions={props}
-							rowIndex={props.rowIndex}
-							errorMessages={errorMessages}
-							dataKey={props?.rowData?.dataKey}
-							internalOnChangeHandler={internalOnChangeHandler}
-						/>
-					);
-				}}
+				editor={(editorOptions) => <BooleanTableEditor editorOptions={editorOptions} field="internal" />}
 				field="internal"
 				header="Internal"
 				headerClassName="surface-0"
 			/>
 			<Column
-				editor={(props) => {
-					return (
-						<ObsoleteEditor
-							editorOptions={props}
-							rowIndex={props.rowIndex}
-							errorMessages={errorMessages}
-							dataKey={props?.rowData?.dataKey}
-							obsoleteOnChangeHandler={obsoleteOnChangeHandler}
-						/>
-					);
-				}}
+				editor={(editorOptions) => <BooleanTableEditor editorOptions={editorOptions} field="obsolete" />}
 				field="obsolete"
 				header="Obsolete"
 				headerClassName="surface-0"

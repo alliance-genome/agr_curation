@@ -581,15 +581,16 @@ export const validateTable = async (endpoint, errorType, table, dispatch) => {
 	if (!table) return false;
 	const validationService = new ValidationService();
 	const results = await validate(table, endpoint, validationService);
-	const errors = [];
+	const errors = {};
 	let anyErrors = false;
 	results.forEach((result, index) => {
 		const { isError, data } = result;
 		if (isError) {
-			errors[index] = {};
+			const { dataKey } = table[index];
+			errors[dataKey] = {};
 			if (!data) return;
 			Object.keys(data).forEach((field) => {
-				errors[index][field] = {
+				errors[dataKey][field] = {
 					severity: 'error',
 					message: data[field],
 				};

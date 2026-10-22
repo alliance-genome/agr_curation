@@ -4,7 +4,7 @@ import { GenericDataTable } from '../../components/GenericDataTable/GenericDataT
 import { VariantService } from '../../service/VariantService';
 import { RelatedNotesEditDialog } from '../../components/RelatedNotesEditDialog';
 import { RelatedNotesReadOnlyDialog } from '../../components/RelatedNotesReadOnlyDialog';
-import { DialogTriggerEditor } from '../../components/Editors/dialog/DialogTriggerEditor';
+import { DialogTriggerTableEditor } from '../../components/Editors/dialog/DialogTriggerTableEditor';
 import { TaxonTableEditor } from '../../components/Editors/autocomplete/taxon/TaxonTableEditor';
 import { VariantTypeTableEditor } from '../../components/Editors/autocomplete/variantType/VariantTypeTableEditor';
 import { SourceGeneralConsequenceTableEditor } from '../../components/Editors/autocomplete/sourceGeneralConsequence/SourceGeneralConsequenceTableEditor';
@@ -35,8 +35,6 @@ import { NewVariantButton } from './NewVariantButton';
 export const VariantsTable = () => {
 	const [isInEditMode, setIsInEditMode] = useState(false);
 	const [errorMessages, setErrorMessages] = useState({});
-	const errorMessagesRef = useRef();
-	errorMessagesRef.current = errorMessages;
 
 	const [totalRecords, setTotalRecords] = useState(0);
 	const [variants, setVariants] = useState([]);
@@ -167,9 +165,8 @@ export const VariantsTable = () => {
 				editor: (editorOptions) => {
 					const count = editorOptions.rowData.relatedNotes?.length;
 					return (
-						<DialogTriggerEditor
+						<DialogTriggerTableEditor
 							editorOptions={editorOptions}
-							errorMessagesRef={errorMessagesRef}
 							onOpenInEdit={handleRelatedNotesOpenInEdit}
 							errorField="relatedNotes"
 							displayText={count ? `Notes(${count}) ` : null}
@@ -273,7 +270,7 @@ export const VariantsTable = () => {
 			},
 		],
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-		[errorMessagesRef, variantStatusTerms]
+		[variantStatusTerms]
 	);
 
 	const DEFAULT_COLUMN_WIDTH = 10;

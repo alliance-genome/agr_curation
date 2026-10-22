@@ -11,7 +11,6 @@ import {
 	buildDuplicateCrossReferences,
 	buildNewCrossReference,
 	curiePrefixOf,
-	findRow,
 	haveSameCrossReferences,
 	seedResourceDescriptor,
 	seedResourceDescriptors,
@@ -265,22 +264,6 @@ describe('applyCrossReferenceFieldChange', () => {
 		);
 
 		expect(updated.resourceDescriptorPage).toBeNull();
-	});
-});
-
-describe('findRow', () => {
-	const rows = [{ dataKey: 'a' }, { dataKey: 'b' }];
-
-	it('Finds the row carrying the key', () => {
-		expect(findRow(rows, 'b')).toBe(rows[1]);
-	});
-
-	it('Returns undefined for a key no row carries', () => {
-		expect(findRow(rows, 'c')).toBeUndefined();
-	});
-
-	it('Tolerates there being no rows', () => {
-		expect(findRow(undefined, 'a')).toBeUndefined();
 	});
 });
 

@@ -8,14 +8,27 @@ import { ColumnGroup } from 'primereact/columngroup';
 import { Row } from 'primereact/row';
 import { ValidationService } from '../../../service/ValidationService';
 import { DeleteAction } from '../../../components/Actions/DeletionAction';
-import { InternalEditor } from '../../../components/Editors/legacyForm/InternalEditor';
-import { EvidenceEditor } from '../../../components/Editors/legacyForm/EvidenceEditor';
-import { FunctionalImpactsEditor } from '../../../components/Editors/legacyForm/FunctionalImpactsEditor';
-import { PhenotypeTermEditor } from '../../../components/Editors/legacyForm/PhenotypeTermEditor';
-import { TableInputTextAreaEditor } from '../../../components/Editors/text/TableInputTextAreaEditor';
 import { Endpoints } from '../../../constants/Endpoints';
-import { defaultAutocompleteOnChange, multipleAutocompleteOnChange } from '../../../utils/utils';
+import { KEEP_ROWS_IN_EDIT_MODE, addDataKey } from '../utils';
+import { TableEditorProvider } from '../../../components/Editors/fields/TableEditorContext';
+import { useLocalRowsStrategy } from '../../../components/Editors/fields/strategies/useLocalRowsStrategy';
+import { FunctionalImpactsTableEditor } from '../../../components/Editors/autocomplete/vocabularyTerm/FunctionalImpactsTableEditor';
+import { PhenotypeTermTableEditor } from '../../../components/Editors/autocomplete/ontology/PhenotypeTermTableEditor';
+import { InputTextAreaTableEditor } from '../../../components/Editors/text/InputTextAreaTableEditor';
+import { EvidenceTableEditor } from '../../../components/Editors/autocomplete/references/EvidenceTableEditor';
+import { BooleanTableEditor } from '../../../components/Editors/dropdown/boolean/BooleanTableEditor';
 
+/**
+ * Dialog for editing a main-table row's functional impacts. Edits stay local until Keep Edits
+ * validates every row and hands them back through the row's editor callback.
+ *
+ * @param {object} originalFunctionalImpactsData - the row's functional impacts, dialog
+ *   visibility, row index and PrimeReact editor options
+ * @param {Function} setOriginalFunctionalImpactsData - its setter
+ * @param {object} errorMessagesMainRow - the main table's errors, keyed by row index
+ * @param {Function} setErrorMessagesMainRow - its setter
+ * @returns {JSX.Element}
+ */
 export const FunctionalImpactsEditDialog = ({
 	originalFunctionalImpactsData,
 	setOriginalFunctionalImpactsData,
@@ -28,9 +41,14 @@ export const FunctionalImpactsEditDialog = ({
 	const [errorMessages, setErrorMessages] = useState({});
 	const [isValidating, setIsValidating] = useState(false);
 	const validationService = new ValidationService();
-	const dataKeyCounter = useRef(0);
 	const tableRef = useRef(null);
 	const toast_topright = useRef(null);
+
+	const strategy = useLocalRowsStrategy({
+		rows: localFunctionalImpacts,
+		setRows: setLocalFunctionalImpacts,
+		errors: errorMessages,
+	});
 
 	const showDialogHandler = () => {
 		let _localFunctionalImpacts = cloneFunctionalImpacts(originalFunctionalImpacts);
@@ -44,10 +62,6 @@ export const FunctionalImpactsEditDialog = ({
 		}
 		setEditingRows(rowsObject);
 		setErrorMessages({});
-	};
-
-	const onRowEditChange = () => {
-		return null;
 	};
 
 	const hideDialog = () => {
@@ -65,7 +79,7 @@ export const FunctionalImpactsEditDialog = ({
 		let _clonableFunctionalImpacts = structuredClone(clonableFunctionalImpacts);
 		if (_clonableFunctionalImpacts) {
 			_clonableFunctionalImpacts.forEach((fi) => {
-				fi.dataKey = dataKeyCounter.current++;
+				addDataKey(fi);
 			});
 		} else {
 			_clonableFunctionalImpacts = [];
@@ -73,58 +87,14 @@ export const FunctionalImpactsEditDialog = ({
 		return _clonableFunctionalImpacts;
 	};
 
-	const onFunctionalImpactsValueChange = (event, setFieldValue, props) => {
-		multipleAutocompleteOnChange(props, event, 'functionalImpacts', setFieldValue);
-		setLocalFunctionalImpacts((prev) => {
-			const updated = [...prev];
-			updated[props.rowIndex] = { ...updated[props.rowIndex], functionalImpacts: event.target.value };
-			return updated;
-		});
-	};
-
-	const onPhenotypeTermValueChange = (event, setFieldValue, props) => {
-		defaultAutocompleteOnChange(props, event, 'phenotypeTerm', setFieldValue);
-		setLocalFunctionalImpacts((prev) => {
-			const updated = [...prev];
-			updated[props.rowIndex] = { ...updated[props.rowIndex], phenotypeTerm: event.value };
-			return updated;
-		});
-	};
-
-	const textOnChangeHandler = (rowIndex, event, field) => {
-		setLocalFunctionalImpacts((prev) => {
-			const updated = [...prev];
-			updated[rowIndex] = { ...updated[rowIndex], [field]: event.target.value };
-			return updated;
-		});
-	};
-
-	const internalOnChangeHandler = (props, event) => {
-		props.editorCallback(event.target.value?.name);
-		setLocalFunctionalImpacts((prev) => {
-			const updated = [...prev];
-			updated[props.rowIndex] = { ...updated[props.rowIndex], internal: event.target?.value?.name };
-			return updated;
-		});
-	};
-
-	const evidenceOnChangeHandler = (event, setFieldValue, props) => {
-		setFieldValue(event.target.value);
-		setLocalFunctionalImpacts((prev) => {
-			const updated = [...prev];
-			updated[props.rowIndex] = { ...updated[props.rowIndex], evidence: event.target.value };
-			return updated;
-		});
-	};
-
 	const createNewFunctionalImpactHandler = () => {
-		const newKey = dataKeyCounter.current++;
 		const _localFunctionalImpacts = structuredClone(localFunctionalImpacts);
-		_localFunctionalImpacts.push({
-			dataKey: newKey,
+		const newRow = {
 			internal: false,
-		});
-		let _editingRows = { ...editingRows, ...{ [`${newKey}`]: true } };
+		};
+		addDataKey(newRow);
+		_localFunctionalImpacts.push(newRow);
+		let _editingRows = { ...editingRows, ...{ [`${newRow.dataKey}`]: true } };
 		setEditingRows(_editingRows);
 		setLocalFunctionalImpacts(_localFunctionalImpacts);
 	};
@@ -238,7 +208,7 @@ export const FunctionalImpactsEditDialog = ({
 		);
 	};
 
-	let headerGroup = (
+	const headerGroup = (
 		<ColumnGroup>
 			<Row>
 				<Column header="Actions" />
@@ -264,107 +234,61 @@ export const FunctionalImpactsEditDialog = ({
 				footer={footerTemplate}
 			>
 				<h3>Functional Impacts</h3>
-				<DataTable
-					value={localFunctionalImpacts}
-					dataKey="dataKey"
-					showGridlines
-					editMode="row"
-					headerColumnGroup={headerGroup}
-					editingRows={editingRows}
-					onRowEditChange={onRowEditChange}
-					ref={tableRef}
-					cellMemo={false}
-				>
-					<Column
-						editor={(props) => (
-							<DeleteAction deletionHandler={handleDeleteFunctionalImpact} id={props?.rowData?.dataKey} />
-						)}
-						className="max-w-4rem"
-						bodyClassName="text-center"
-						headerClassName="surface-0"
-						frozen
-					/>
-					<Column
-						editor={(props) => {
-							return (
-								<FunctionalImpactsEditor
-									props={props}
-									errorMessages={errorMessages}
-									onChange={onFunctionalImpactsValueChange}
-									dataKey={props?.rowData?.dataKey}
-								/>
-							);
-						}}
-						field="functionalImpacts"
-						header="Functional Impacts"
-						headerClassName="surface-0"
-					/>
-					<Column
-						editor={(props) => {
-							return (
-								<PhenotypeTermEditor
-									props={props}
-									errorMessages={errorMessages}
-									onChange={onPhenotypeTermValueChange}
-									dataKey={props?.rowData?.dataKey}
-								/>
-							);
-						}}
-						field="phenotypeTerm"
-						header="Phenotype Term"
-						headerClassName="surface-0"
-					/>
-					<Column
-						editor={(props) => {
-							return (
-								<TableInputTextAreaEditor
-									value={props.value}
-									rowIndex={props.rowIndex}
-									errorMessages={errorMessages}
-									dataKey={props?.rowData?.dataKey}
-									textOnChangeHandler={textOnChangeHandler}
-									field="phenotypeStatement"
-									rows={1}
-									columns={30}
-								/>
-							);
-						}}
-						field="phenotypeStatement"
-						header="Phenotype Statement"
-						headerClassName="surface-0"
-					/>
-					<Column
-						editor={(props) => {
-							return (
-								<InternalEditor
-									editorOptions={props}
-									rowIndex={props.rowIndex}
-									errorMessages={errorMessages}
-									dataKey={props?.rowData?.dataKey}
-									internalOnChangeHandler={internalOnChangeHandler}
-								/>
-							);
-						}}
-						field="internal"
-						header="Internal"
-						headerClassName="surface-0"
-					/>
-					<Column
-						editor={(props) => {
-							return (
-								<EvidenceEditor
-									props={props}
-									errorMessages={errorMessages}
-									onChange={evidenceOnChangeHandler}
-									dataKey={props?.rowData?.dataKey}
-								/>
-							);
-						}}
-						field="evidence"
-						header="Evidence"
-						headerClassName="surface-0"
-					/>
-				</DataTable>
+				<TableEditorProvider strategy={strategy}>
+					<DataTable
+						value={localFunctionalImpacts}
+						dataKey="dataKey"
+						showGridlines
+						editMode="row"
+						headerColumnGroup={headerGroup}
+						editingRows={editingRows}
+						onRowEditChange={KEEP_ROWS_IN_EDIT_MODE}
+						ref={tableRef}
+						cellMemo={false}
+					>
+						<Column
+							editor={(editorOptions) => (
+								<DeleteAction deletionHandler={handleDeleteFunctionalImpact} id={editorOptions?.rowData?.dataKey} />
+							)}
+							className="max-w-4rem"
+							bodyClassName="text-center"
+							headerClassName="surface-0"
+							frozen
+						/>
+						<Column
+							editor={(editorOptions) => <FunctionalImpactsTableEditor editorOptions={editorOptions} />}
+							field="functionalImpacts"
+							header="Functional Impacts"
+							headerClassName="surface-0"
+						/>
+						<Column
+							editor={(editorOptions) => <PhenotypeTermTableEditor editorOptions={editorOptions} />}
+							field="phenotypeTerm"
+							header="Phenotype Term"
+							headerClassName="surface-0"
+						/>
+						<Column
+							editor={(editorOptions) => (
+								<InputTextAreaTableEditor editorOptions={editorOptions} field="phenotypeStatement" rows={1} cols={30} />
+							)}
+							field="phenotypeStatement"
+							header="Phenotype Statement"
+							headerClassName="surface-0"
+						/>
+						<Column
+							editor={(editorOptions) => <BooleanTableEditor editorOptions={editorOptions} field="internal" />}
+							field="internal"
+							header="Internal"
+							headerClassName="surface-0"
+						/>
+						<Column
+							editor={(editorOptions) => <EvidenceTableEditor editorOptions={editorOptions} />}
+							field="evidence"
+							header="Evidence"
+							headerClassName="surface-0"
+						/>
+					</DataTable>
+				</TableEditorProvider>
 			</Dialog>
 		</div>
 	);

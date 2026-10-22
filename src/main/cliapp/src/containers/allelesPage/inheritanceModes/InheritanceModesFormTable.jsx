@@ -3,26 +3,34 @@ import { Column } from 'primereact/column';
 import { ColumnGroup } from 'primereact/columngroup';
 import { Row } from 'primereact/row';
 import { DeleteAction } from '../../../components/Actions/DeletionAction';
-import { InternalEditor } from '../../../components/Editors/legacyForm/InternalEditor';
-import { EvidenceEditor } from '../../../components/Editors/legacyForm/EvidenceEditor';
-import { PhenotypeTermEditor } from '../../../components/Editors/legacyForm/PhenotypeTermEditor';
-import { ControlledVocabularyEditor } from '../../../components/Editors/legacyForm/ControlledVocabularyEditor';
-import { TableInputTextAreaEditor } from '../../../components/Editors/text/TableInputTextAreaEditor';
+import { ControlledVocabularyTableEditor } from '../../../components/Editors/dropdown/vocabulary/ControlledVocabularyTableEditor';
+import { PhenotypeTermTableEditor } from '../../../components/Editors/autocomplete/ontology/PhenotypeTermTableEditor';
+import { InputTextAreaTableEditor } from '../../../components/Editors/text/InputTextAreaTableEditor';
+import { EvidenceTableEditor } from '../../../components/Editors/autocomplete/references/EvidenceTableEditor';
+import { BooleanTableEditor } from '../../../components/Editors/dropdown/boolean/BooleanTableEditor';
 
+/**
+ * Editable inheritance modes table, every row always in edit mode. Its editors read and write rows
+ * through the table strategy its parent provides.
+ *
+ * @param {object[]} inheritanceModes - rows, each carrying a `dataKey`
+ * @param {object} editingRows - PrimeReact editing state, keyed by `dataKey`
+ * @param {Function} onRowEditChange - PrimeReact row-edit handler
+ * @param {object} tableRef - ref to the DataTable
+ * @param {Function} deletionHandler - `(event, dataKey)`
+ * @param {object[]} [inheritanceModeTerms] - the allele_inheritance_mode vocabulary terms,
+ *   undefined until they load
+ * @returns {JSX.Element}
+ */
 export const InheritanceModesFormTable = ({
 	inheritanceModes,
 	editingRows,
 	onRowEditChange,
 	tableRef,
 	deletionHandler,
-	errorMessages,
-	internalOnChangeHandler,
-	inheritanceModeOnChangeHandler,
-	phenotypeTermOnChangeHandler,
-	textOnChangeHandler,
-	evidenceOnChangeHandler,
+	inheritanceModeTerms,
 }) => {
-	let headerGroup = (
+	const headerGroup = (
 		<ColumnGroup>
 			<Row>
 				<Column header="Actions" />
@@ -51,87 +59,52 @@ export const InheritanceModesFormTable = ({
 			ref={tableRef}
 		>
 			<Column
-				editor={(props) => <DeleteAction deletionHandler={deletionHandler} id={props?.rowData?.dataKey} />}
+				editor={(editorOptions) => (
+					<DeleteAction deletionHandler={deletionHandler} id={editorOptions?.rowData?.dataKey} />
+				)}
 				className="max-w-4rem"
 				bodyClassName="text-center"
 				headerClassName="surface-0"
 				frozen
 			/>
 			<Column
-				editor={(props) => {
-					return (
-						<ControlledVocabularyEditor
-							editorOptions={props}
-							onChangeHandler={inheritanceModeOnChangeHandler}
-							errorMessages={errorMessages}
-							rowIndex={props.rowIndex}
-							dataKey={props?.rowData?.dataKey}
-							vocabType="allele_inheritance_mode"
-							field="inheritanceMode"
-							showClear={false}
-						/>
-					);
-				}}
+				editor={(editorOptions) => (
+					<ControlledVocabularyTableEditor
+						editorOptions={editorOptions}
+						field="inheritanceMode"
+						options={inheritanceModeTerms}
+						dataKey="id"
+						showClear={false}
+					/>
+				)}
 				field="inheritanceMode"
 				header="Inheritance Mode"
 				headerClassName="surface-0"
 			/>
 			<Column
-				editor={(props) => {
-					return (
-						<PhenotypeTermEditor
-							props={props}
-							errorMessages={errorMessages}
-							dataKey={props?.rowData?.dataKey}
-							onChange={phenotypeTermOnChangeHandler}
-						/>
-					);
-				}}
+				editor={(editorOptions) => <PhenotypeTermTableEditor editorOptions={editorOptions} />}
 				field="phenotypeTerm"
 				header="Phenotype Term"
 				headerClassName="surface-0"
 			/>
 			<Column
-				editor={(props) => {
-					return (
-						<TableInputTextAreaEditor
-							value={props.value}
-							rowIndex={props.rowIndex}
-							errorMessages={errorMessages}
-							dataKey={props?.rowData?.dataKey}
-							textOnChangeHandler={textOnChangeHandler}
-							field="phenotypeStatement"
-							rows={1}
-							columns={30}
-						/>
-					);
-				}}
+				editor={(editorOptions) => (
+					<InputTextAreaTableEditor editorOptions={editorOptions} field="phenotypeStatement" rows={1} cols={30} />
+				)}
 				field="phenotypeStatement"
 				header="Phenotype Statement"
 				headerClassName="surface-0"
 				className="w-4"
 			/>
 			<Column
-				editor={(props) => {
-					return (
-						<InternalEditor
-							editorOptions={props}
-							rowIndex={props.rowIndex}
-							errorMessages={errorMessages}
-							dataKey={props?.rowData?.dataKey}
-							internalOnChangeHandler={internalOnChangeHandler}
-						/>
-					);
-				}}
+				editor={(editorOptions) => <BooleanTableEditor editorOptions={editorOptions} field="internal" />}
 				field="internal"
 				header="Internal"
 				headerClassName="surface-0"
 			/>
 			<Column
-				editor={(props) => {
-					return <EvidenceEditor props={props} errorMessages={errorMessages} onChange={evidenceOnChangeHandler} />;
-				}}
-				field="evidence.curie"
+				editor={(editorOptions) => <EvidenceTableEditor editorOptions={editorOptions} />}
+				field="evidence"
 				header="Evidence"
 				headerClassName="surface-0"
 			/>
