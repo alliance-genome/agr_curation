@@ -19,6 +19,7 @@ import org.alliancegenome.curation_api.model.ingest.dto.CrossReferenceDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.CrossReferenceService;
+import org.alliancegenome.curation_api.services.CurieMintService;
 import org.alliancegenome.curation_api.services.GeneService;
 import org.alliancegenome.curation_api.services.ReferenceService;
 import org.alliancegenome.curation_api.services.helpers.AntibodyUniqueIdHelper;
@@ -43,6 +44,8 @@ public class AntibodyDTOValidator extends ReagentDTOValidator<Antibody, Antibody
 	CrossReferenceDTOValidator crossReferenceDtoValidator;
 	@Inject
 	CrossReferenceService crossReferenceService;
+	@Inject
+	CurieMintService curieMintService;
 
 	@Transactional
 	public ObjectResponse<Antibody> validateAntibodyDTO(AntibodyDTO dto, BackendBulkDataProvider dataProvider) throws ValidationException {
@@ -116,6 +119,11 @@ public class AntibodyDTOValidator extends ReagentDTOValidator<Antibody, Antibody
 		if (response.hasErrors()) {
 			throw new ObjectValidationException(dto, response.errorMessagesString());
 		}
+
+		// Mint an AGRKB curie for an antibody that has none, in this transaction. Nothing in the DTO
+		// field-copy chain assigns curie, so a re-load of an antibody that already has one is a no-op and
+		// its AGRKB id stays stable; one loaded before minting was wired in gets its curie here.
+		curieMintService.mintCurieIfAbsent(antibody);
 
 		if (!existing) {
 			antibody = antibodyDAO.persist(antibody);
