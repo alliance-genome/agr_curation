@@ -1,0 +1,37 @@
+src/main/cliapp/src/constants/Classes.js
+  s_90fe3c66eb3b97::t_82b04a970aa771 152,154-155
+src/main/cliapp/src/constants/Endpoints.js
+  s_90fe3c66eb3b97::t_953bb482cabdb6 30
+src/main/cliapp/src/constants/FilterFields.js
+  s_90fe3c66eb3b97::t_26461071663b5d 347-354,1560-1569
+src/main/cliapp/src/constants/SortFields.js
+  s_90fe3c66eb3b97::t_ece049debe3201 120-121
+src/main/cliapp/src/containers/htpExpressionDatasetAnnotationsPage/HTPExpressionDatasetAnnotationsPage.jsx
+  s_90fe3c66eb3b97::t_ca2c955839c8de 1-8
+src/main/cliapp/src/containers/htpExpressionDatasetAnnotationsPage/HTPExpressionDatasetAnnotationsTable.jsx
+  s_90fe3c66eb3b97::t_63253b412388c9 1-165
+src/main/cliapp/src/containers/htpExpressionDatasetAnnotationsPage/index.js
+  s_90fe3c66eb3b97::t_c680e6b485b3b0 1-3
+src/main/cliapp/src/containers/layout/SiteLayout.jsx
+  s_90fe3c66eb3b97::t_54cc6da902cfe5 263-267
+src/main/cliapp/src/routes.jsx
+  s_90fe3c66eb3b97::t_f0dff6434c9894 30,228-235
+src/main/java/org/alliancegenome/curation_api/model/entities/HTPExpressionDatasetAnnotation.java
+  s_90fe3c66eb3b97::t_d893c648326cda 24,44
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "d5d9be00d993876eb0090eb37dddebf8e096aea3",
+  "prompts": {},
+  "sessions": {
+    "s_90fe3c66eb3b97": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "64db8705-0fb3-46f5-be71-5247c76018af",
+        "model": "unknown"
+      },
+      "human_author": "Ketaki Kindre <kkindre@caltech.edu>"
+    }
+  }
+}
