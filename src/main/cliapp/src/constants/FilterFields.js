@@ -352,6 +352,10 @@ export const FIELD_SETS = Object.freeze({
 		filterName: 'htpExpressionDatasetAnnotationCategoryTagsFilter',
 		fields: ['categoryTags.name'],
 	},
+	htpExpressionDatasetAnnotationNumberOfChannelsFieldSet: {
+		filterName: 'htpExpressionDatasetAnnotationNumberOfChannelsFilter',
+		fields: ['numberOfChannels'],
+	},
 	sequenceTargetingReagentTargetedGenesFieldSet: {
 		filterName: 'sequenceTargetingReagentTargetedGenesFilter',
 		fields: [
@@ -662,6 +666,10 @@ export const FIELD_SETS = Object.freeze({
 	geneTypeFieldSet: {
 		filterName: 'geneTypeFilter',
 		fields: ['geneType.curie', 'geneType.name'],
+	},
+	genomicLocationsFieldSet: {
+		filterName: 'genomicLocationsFilter',
+		fields: ['curatedVariantGenomicLocations.hgvs'],
 	},
 	gmiAggregationFieldSet: {
 		filterName: 'gmiAggregationFilter',
@@ -1322,6 +1330,7 @@ export const FILTER_CONFIGS = Object.freeze({
 	geneSynonymsFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.geneSynonymsFieldSet] },
 	geneSystematicNameFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.geneSystematicNameFieldSet] },
 	geneTypeFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.geneTypeFieldSet] },
+	genomicLocationsFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.genomicLocationsFieldSet] },
 	geneticModifierAgmsFilterConfig: {
 		filterComponentType: 'input',
 		fieldSets: [FIELD_SETS.geneticModifierAgmsFieldSet],
@@ -1566,6 +1575,10 @@ export const FILTER_CONFIGS = Object.freeze({
 	htpExpressionDatasetAnnotationCategoryTagsFilterConfig: {
 		filterComponentType: 'input',
 		fieldSets: [FIELD_SETS.htpExpressionDatasetAnnotationCategoryTagsFieldSet],
+	},
+	htpExpressionDatasetAnnotationNumberOfChannelsFilterConfig: {
+		filterComponentType: 'input',
+		fieldSets: [FIELD_SETS.htpExpressionDatasetAnnotationNumberOfChannelsFieldSet],
 	},
 	sequenceTargetingReagentTargetedGenesFilterConfig: {
 		filterComponentType: 'input',

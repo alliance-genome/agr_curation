@@ -1,6 +1,7 @@
 package org.alliancegenome.curation_api.services.validation;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -10,9 +11,14 @@ import org.alliancegenome.curation_api.dao.CrossReferenceDAO;
 import org.alliancegenome.curation_api.dao.VariantDAO;
 import org.alliancegenome.curation_api.dao.ontology.SoTermDAO;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
+import org.alliancegenome.curation_api.model.entities.AssemblyComponent;
+import org.alliancegenome.curation_api.model.entities.GenomeAssembly;
+import org.alliancegenome.curation_api.model.entities.GenomicEntity;
 import org.alliancegenome.curation_api.model.entities.Reference;
 import org.alliancegenome.curation_api.model.entities.Variant;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
+import org.alliancegenome.curation_api.model.entities.base.SubmittedObject;
+import org.alliancegenome.curation_api.model.entities.associations.CuratedVariantGenomicLocationAssociation;
 import org.alliancegenome.curation_api.model.entities.ontology.SOTerm;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.CurieMintService;
@@ -113,7 +119,7 @@ public class VariantValidator extends GenomicEntityValidator<Variant> {
 		}
 		dbEntity.setUniqueId(VariantUniqueIdHelper.getVariantUniqueId(dbEntity));
 		dbEntity = variantDAO.persist(dbEntity);
-
+		loadGenomicLocationLists(dbEntity);
 		return dbEntity;
 	}
 
@@ -167,4 +173,30 @@ public class VariantValidator extends GenomicEntityValidator<Variant> {
 		return singleRefResponse;
 	}
 
+	private void loadGenomicLocationLists(Variant variant) {
+		if (variant.getCuratedVariantGenomicLocations() == null) {
+			return;
+		}
+		for (CuratedVariantGenomicLocationAssociation location : variant.getCuratedVariantGenomicLocations()) {
+			AssemblyComponent chromosome = location.getVariantGenomicLocationAssociationObject();
+			GenomeAssembly assembly = chromosome.getGenomeAssembly();
+			List<Object> linkedEntities = new ArrayList<>(location.getEvidence());
+			linkedEntities.addAll(Arrays.asList(chromosome, assembly, assembly == null ? null : assembly.getSpecimenGenomicModel()));
+			location.getPredictedVariantConsequences().forEach(consequence -> {
+				consequence.getVepConsequences().size();
+				linkedEntities.add(consequence.getVariantTranscript());
+			});
+			for (Object entity : linkedEntities) {
+				if (entity instanceof SubmittedObject submittedObject) {
+					submittedObject.getRelatedNotes().forEach(note -> note.getReferences().forEach(reference -> reference.getCrossReferences().size()));
+				}
+				if (entity instanceof GenomicEntity genomicEntity) {
+					genomicEntity.getCrossReferences().size();
+				}
+				if (entity instanceof Reference reference) {
+					reference.getCrossReferences().size();
+				}
+			}
+		}
+	}
 }
