@@ -197,7 +197,7 @@ export default function AlleleDetailPage() {
 	});
 
 	const pendingFields = getPendingSingleValueFields(alleleState.allele, savedAllele.current);
-	const hasPendingEdits = pendingFields.size > 0 || alleleState.hasOtherPendingEdits || subResourcesAreDirty;
+	const hasPendingEdits = pendingFields.size > 0 || subResourcesAreDirty;
 
 	if (getRequestIsLoading)
 		return (

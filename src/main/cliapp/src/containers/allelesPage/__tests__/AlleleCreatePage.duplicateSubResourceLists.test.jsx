@@ -97,7 +97,7 @@ describe('<AlleleCreatePage /> duplicating sub-resource lists', { timeout: 30000
 				evidence: [{ type: 'Reference', curie: 'AGRKB:101' }],
 			},
 		]);
-		expect(createAllele.mock.calls[0][0].alleleMutationTypes ?? []).toEqual([]);
+		expect(createAllele.mock.calls[0][0]).not.toHaveProperty('alleleMutationTypes');
 		await waitFor(() => expect(navigate).toHaveBeenCalledWith('/allele/AGRKB:101000000000002'), FORM_LOAD_WAIT);
 	});
 
@@ -113,7 +113,7 @@ describe('<AlleleCreatePage /> duplicating sub-resource lists', { timeout: 30000
 		expect(replaceRelatedNotesForAllele).toHaveBeenCalledWith(4242, [
 			{ internal: false, freeText: 'a note', noteType: { name: 'comment' } },
 		]);
-		expect(createAllele.mock.calls[0][0].relatedNotes ?? []).toEqual([]);
+		expect(createAllele.mock.calls[0][0]).not.toHaveProperty('relatedNotes');
 	});
 
 	it('Copies no secondary IDs, which identify the source allele', async () => {

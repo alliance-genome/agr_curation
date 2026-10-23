@@ -172,7 +172,7 @@ describe.each(LISTS)('<AlleleDetailPage /> $title', { timeout: 60000 }, ({ path,
 		expect(await screen.findByText('Allele Saved')).toBeInTheDocument();
 		expect(replaceCalls()).toEqual([[path, storedAllele.id, [rows[1]]]]);
 		expect(replaceRows.mock.calls.every(([calledPath]) => calledPath === path)).toBe(true);
-		expect(saveAlleleDetail.mock.calls[0][0][errorField] ?? []).toEqual([]);
+		expect(saveAlleleDetail.mock.calls[0][0]).not.toHaveProperty(errorField);
 	});
 
 	// The text editors report their row by its index, which the form maps to the row held there.

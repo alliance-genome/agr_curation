@@ -190,7 +190,7 @@ const SINGLE_VALUE_FIELD_VALUES = {
 	alleleDatabaseStatus: (allele) => statusSlotAnnotationValue(allele?.alleleDatabaseStatus, 'databaseStatus'),
 };
 
-export const SINGLE_VALUE_FIELDS = Object.keys(SINGLE_VALUE_FIELD_VALUES);
+const SINGLE_VALUE_FIELDS = Object.keys(SINGLE_VALUE_FIELD_VALUES);
 
 /**
  * The single-value fields and single-object sections whose value on the form differs from the allele as
