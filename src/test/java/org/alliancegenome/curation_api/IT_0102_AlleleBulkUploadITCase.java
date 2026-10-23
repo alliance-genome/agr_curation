@@ -56,6 +56,7 @@ public class IT_0102_AlleleBulkUploadITCase extends BaseITCase {
 	private final String alleleBulkPostEndpointRGD = "/api/allele/bulk/RGD/alleles";
 	private final String alleleBulkPostEndpointHUMAN = "/api/allele/bulk/HUMAN/alleles";
 	private final String alleleGetEndpoint = "/api/allele/";
+	private final String alleleFindEndpoint = "/api/allele/find?limit=1&page=0";
 	private final String alleleTestFilePath = "src/test/resources/bulk/02_allele/";
 
 	private void loadRequiredEntities() throws Exception {
@@ -121,59 +122,6 @@ public class IT_0102_AlleleBulkUploadITCase extends BaseITCase {
 			body("entity.alleleFullName.updatedBy.uniqueId", is("ALLELETEST:Person0002")).
 			body("entity.alleleFullName.dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").toString())).
 			body("entity.alleleFullName.dateUpdated", is(OffsetDateTime.parse("2022-03-10T22:10:12Z").toString())).
-			body("entity.alleleSynonyms", hasSize(1)).
-			body("entity.alleleSynonyms[0].displayText", is("Test allele synonym 1")).
-			body("entity.alleleSynonyms[0].formatText", is("Test allele synonym <sup>1</sup>")).
-			body("entity.alleleSynonyms[0].synonymScope.name", is("exact")).
-			body("entity.alleleSynonyms[0].synonymUrl", is("https://alliancegenome.org/test")).
-			body("entity.alleleSynonyms[0].nameType.name", is("unspecified")).
-			body("entity.alleleSynonyms[0].evidence[0].curie", is(requiredReference)).
-			body("entity.alleleSynonyms[0].internal", is(true)).
-			body("entity.alleleSynonyms[0].obsolete", is(true)).
-			body("entity.alleleSynonyms[0].createdBy.uniqueId", is("ALLELETEST:Person0001")).
-			body("entity.alleleSynonyms[0].updatedBy.uniqueId", is("ALLELETEST:Person0002")).
-			body("entity.alleleSynonyms[0].dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").toString())).
-			body("entity.alleleSynonyms[0].dateUpdated", is(OffsetDateTime.parse("2022-03-10T22:10:12Z").toString())).
-			body("entity.alleleMutationTypes", hasSize(1)).
-			body("entity.alleleMutationTypes[0].evidence[0].curie", is(requiredReference)).
-			body("entity.alleleMutationTypes[0].mutationTypes[0].curie", is(requiredSoTerm)).
-			body("entity.alleleMutationTypes[0].internal", is(true)).
-			body("entity.alleleMutationTypes[0].obsolete", is(true)).
-			body("entity.alleleMutationTypes[0].createdBy.uniqueId", is("ALLELETEST:Person0001")).
-			body("entity.alleleMutationTypes[0].updatedBy.uniqueId", is("ALLELETEST:Person0002")).
-			body("entity.alleleMutationTypes[0].dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").toString())).
-			body("entity.alleleMutationTypes[0].dateUpdated", is(OffsetDateTime.parse("2022-03-10T22:10:12Z").toString())).
-			body("entity.alleleInheritanceModes", hasSize(1)).
-			body("entity.alleleInheritanceModes[0].evidence[0].curie", is(requiredReference)).
-			body("entity.alleleInheritanceModes[0].inheritanceMode.name", is("dominant")).
-			body("entity.alleleInheritanceModes[0].phenotypeTerm.curie", is(requiredMpTerm)).
-			body("entity.alleleInheritanceModes[0].phenotypeStatement", is("Phenotype statement")).
-			body("entity.alleleInheritanceModes[0].internal", is(true)).
-			body("entity.alleleInheritanceModes[0].obsolete", is(true)).
-			body("entity.alleleInheritanceModes[0].createdBy.uniqueId", is("ALLELETEST:Person0001")).
-			body("entity.alleleInheritanceModes[0].updatedBy.uniqueId", is("ALLELETEST:Person0002")).
-			body("entity.alleleInheritanceModes[0].dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").toString())).
-			body("entity.alleleInheritanceModes[0].dateUpdated", is(OffsetDateTime.parse("2022-03-10T22:10:12Z").toString())).
-			body("entity.alleleSecondaryIds", hasSize(1)).
-			body("entity.alleleSecondaryIds[0].evidence[0].curie", is(requiredReference)).
-			body("entity.alleleSecondaryIds[0].secondaryId", is("TEST:Secondary")).
-			body("entity.alleleSecondaryIds[0].internal", is(true)).
-			body("entity.alleleSecondaryIds[0].obsolete", is(true)).
-			body("entity.alleleSecondaryIds[0].createdBy.uniqueId", is("ALLELETEST:Person0001")).
-			body("entity.alleleSecondaryIds[0].updatedBy.uniqueId", is("ALLELETEST:Person0002")).
-			body("entity.alleleSecondaryIds[0].dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").toString())).
-			body("entity.alleleSecondaryIds[0].dateUpdated", is(OffsetDateTime.parse("2022-03-10T22:10:12Z").toString())).
-			body("entity.alleleFunctionalImpacts", hasSize(1)).
-			body("entity.alleleFunctionalImpacts[0].evidence[0].curie", is(requiredReference)).
-			body("entity.alleleFunctionalImpacts[0].functionalImpacts[0].name", is("cold_sensitive_hypermorphic")).
-			body("entity.alleleFunctionalImpacts[0].phenotypeTerm.curie", is(requiredMpTerm)).
-			body("entity.alleleFunctionalImpacts[0].phenotypeStatement", is("Phenotype statement")).
-			body("entity.alleleFunctionalImpacts[0].internal", is(true)).
-			body("entity.alleleFunctionalImpacts[0].obsolete", is(true)).
-			body("entity.alleleFunctionalImpacts[0].createdBy.uniqueId", is("ALLELETEST:Person0001")).
-			body("entity.alleleFunctionalImpacts[0].updatedBy.uniqueId", is("ALLELETEST:Person0002")).
-			body("entity.alleleFunctionalImpacts[0].dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").toString())).
-			body("entity.alleleFunctionalImpacts[0].dateUpdated", is(OffsetDateTime.parse("2022-03-10T22:10:12Z").toString())).
 			body("entity.alleleGermlineTransmissionStatus.germlineTransmissionStatus.name", is("cell_line")).
 			body("entity.alleleGermlineTransmissionStatus.internal", is(true)).
 			body("entity.alleleGermlineTransmissionStatus.obsolete", is(true)).
@@ -188,17 +136,72 @@ public class IT_0102_AlleleBulkUploadITCase extends BaseITCase {
 			body("entity.alleleDatabaseStatus.updatedBy.uniqueId", is("ALLELETEST:Person0002")).
 			body("entity.alleleDatabaseStatus.dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").toString())).
 			body("entity.alleleDatabaseStatus.dateUpdated", is(OffsetDateTime.parse("2022-03-10T22:10:12Z").toString())).
-			body("entity.alleleNomenclatureEvents[0].internal", is(true)).
-			body("entity.alleleNomenclatureEvents[0].nomenclatureEvent.name", is("data_merged")).
-			body("entity.alleleNomenclatureEvents[0].obsolete", is(true)).
-			body("entity.alleleNomenclatureEvents[0].createdBy.uniqueId", is("ALLELETEST:Person0001")).
-			body("entity.alleleNomenclatureEvents[0].updatedBy.uniqueId", is("ALLELETEST:Person0002")).
-			body("entity.alleleNomenclatureEvents[0].dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").toString())).
-			body("entity.alleleNomenclatureEvents[0].dateUpdated", is(OffsetDateTime.parse("2022-03-10T22:10:12Z").toString())).
 			body("entity.dataProvider.abbreviation", is(requiredDataProvider)).
 			body("entity.dataProviderCrossReference.referencedCurie", is("TEST:0001")).
 			body("entity.dataProviderCrossReference.displayName", is("TEST:0001")).
 			body("entity.dataProviderCrossReference.resourceDescriptorPage.name", is("homepage"));
+
+		findAlleleResponse("ALLELETEST:Allele0001").
+			body("results[0].alleleSynonyms", hasSize(1)).
+			body("results[0].alleleSynonyms[0].displayText", is("Test allele synonym 1")).
+			body("results[0].alleleSynonyms[0].formatText", is("Test allele synonym <sup>1</sup>")).
+			body("results[0].alleleSynonyms[0].synonymScope.name", is("exact")).
+			body("results[0].alleleSynonyms[0].synonymUrl", is("https://alliancegenome.org/test")).
+			body("results[0].alleleSynonyms[0].nameType.name", is("unspecified")).
+			body("results[0].alleleSynonyms[0].evidence[0].curie", is(requiredReference)).
+			body("results[0].alleleSynonyms[0].internal", is(true)).
+			body("results[0].alleleSynonyms[0].obsolete", is(true)).
+			body("results[0].alleleSynonyms[0].createdBy.uniqueId", is("ALLELETEST:Person0001")).
+			body("results[0].alleleSynonyms[0].updatedBy.uniqueId", is("ALLELETEST:Person0002")).
+			body("results[0].alleleSynonyms[0].dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").toString())).
+			body("results[0].alleleSynonyms[0].dateUpdated", is(OffsetDateTime.parse("2022-03-10T22:10:12Z").toString())).
+			body("results[0].alleleMutationTypes", hasSize(1)).
+			body("results[0].alleleMutationTypes[0].evidence[0].curie", is(requiredReference)).
+			body("results[0].alleleMutationTypes[0].mutationTypes[0].curie", is(requiredSoTerm)).
+			body("results[0].alleleMutationTypes[0].internal", is(true)).
+			body("results[0].alleleMutationTypes[0].obsolete", is(true)).
+			body("results[0].alleleMutationTypes[0].createdBy.uniqueId", is("ALLELETEST:Person0001")).
+			body("results[0].alleleMutationTypes[0].updatedBy.uniqueId", is("ALLELETEST:Person0002")).
+			body("results[0].alleleMutationTypes[0].dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").toString())).
+			body("results[0].alleleMutationTypes[0].dateUpdated", is(OffsetDateTime.parse("2022-03-10T22:10:12Z").toString())).
+			body("results[0].alleleInheritanceModes", hasSize(1)).
+			body("results[0].alleleInheritanceModes[0].evidence[0].curie", is(requiredReference)).
+			body("results[0].alleleInheritanceModes[0].inheritanceMode.name", is("dominant")).
+			body("results[0].alleleInheritanceModes[0].phenotypeTerm.curie", is(requiredMpTerm)).
+			body("results[0].alleleInheritanceModes[0].phenotypeStatement", is("Phenotype statement")).
+			body("results[0].alleleInheritanceModes[0].internal", is(true)).
+			body("results[0].alleleInheritanceModes[0].obsolete", is(true)).
+			body("results[0].alleleInheritanceModes[0].createdBy.uniqueId", is("ALLELETEST:Person0001")).
+			body("results[0].alleleInheritanceModes[0].updatedBy.uniqueId", is("ALLELETEST:Person0002")).
+			body("results[0].alleleInheritanceModes[0].dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").toString())).
+			body("results[0].alleleInheritanceModes[0].dateUpdated", is(OffsetDateTime.parse("2022-03-10T22:10:12Z").toString())).
+			body("results[0].alleleSecondaryIds", hasSize(1)).
+			body("results[0].alleleSecondaryIds[0].evidence[0].curie", is(requiredReference)).
+			body("results[0].alleleSecondaryIds[0].secondaryId", is("TEST:Secondary")).
+			body("results[0].alleleSecondaryIds[0].internal", is(true)).
+			body("results[0].alleleSecondaryIds[0].obsolete", is(true)).
+			body("results[0].alleleSecondaryIds[0].createdBy.uniqueId", is("ALLELETEST:Person0001")).
+			body("results[0].alleleSecondaryIds[0].updatedBy.uniqueId", is("ALLELETEST:Person0002")).
+			body("results[0].alleleSecondaryIds[0].dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").toString())).
+			body("results[0].alleleSecondaryIds[0].dateUpdated", is(OffsetDateTime.parse("2022-03-10T22:10:12Z").toString())).
+			body("results[0].alleleFunctionalImpacts", hasSize(1)).
+			body("results[0].alleleFunctionalImpacts[0].evidence[0].curie", is(requiredReference)).
+			body("results[0].alleleFunctionalImpacts[0].functionalImpacts[0].name", is("cold_sensitive_hypermorphic")).
+			body("results[0].alleleFunctionalImpacts[0].phenotypeTerm.curie", is(requiredMpTerm)).
+			body("results[0].alleleFunctionalImpacts[0].phenotypeStatement", is("Phenotype statement")).
+			body("results[0].alleleFunctionalImpacts[0].internal", is(true)).
+			body("results[0].alleleFunctionalImpacts[0].obsolete", is(true)).
+			body("results[0].alleleFunctionalImpacts[0].createdBy.uniqueId", is("ALLELETEST:Person0001")).
+			body("results[0].alleleFunctionalImpacts[0].updatedBy.uniqueId", is("ALLELETEST:Person0002")).
+			body("results[0].alleleFunctionalImpacts[0].dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").toString())).
+			body("results[0].alleleFunctionalImpacts[0].dateUpdated", is(OffsetDateTime.parse("2022-03-10T22:10:12Z").toString())).
+			body("results[0].alleleNomenclatureEvents[0].internal", is(true)).
+			body("results[0].alleleNomenclatureEvents[0].nomenclatureEvent.name", is("data_merged")).
+			body("results[0].alleleNomenclatureEvents[0].obsolete", is(true)).
+			body("results[0].alleleNomenclatureEvents[0].createdBy.uniqueId", is("ALLELETEST:Person0001")).
+			body("results[0].alleleNomenclatureEvents[0].updatedBy.uniqueId", is("ALLELETEST:Person0002")).
+			body("results[0].alleleNomenclatureEvents[0].dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").toString())).
+			body("results[0].alleleNomenclatureEvents[0].dateUpdated", is(OffsetDateTime.parse("2022-03-10T22:10:12Z").toString()));
 
 		getAlleleReferences("ALLELETEST:Allele0001").
 			body("entities", hasSize(1)).
@@ -259,59 +262,6 @@ public class IT_0102_AlleleBulkUploadITCase extends BaseITCase {
 			body("entity.alleleFullName.updatedBy.uniqueId", is("ALLELETEST:Person0001")).
 			body("entity.alleleFullName.dateCreated", is(OffsetDateTime.parse("2022-03-19T22:10:12Z").toString())).
 			body("entity.alleleFullName.dateUpdated", is(OffsetDateTime.parse("2022-03-20T22:10:12Z").toString())).
-			body("entity.alleleSynonyms", hasSize(1)).
-			body("entity.alleleSynonyms[0].displayText", is("Test allele synonym 1a")).
-			body("entity.alleleSynonyms[0].formatText", is("Test allele synonym <sup>1a</sup>")).
-			body("entity.alleleSynonyms[0].synonymScope.name", is("broad")).
-			body("entity.alleleSynonyms[0].synonymUrl", is("https://alliancegenome.org/test2")).
-			body("entity.alleleSynonyms[0].nameType.name", is("nomenclature_symbol")).
-			body("entity.alleleSynonyms[0].evidence[0].curie", is(requiredReference2)).
-			body("entity.alleleSynonyms[0].internal", is(false)).
-			body("entity.alleleSynonyms[0].obsolete", is(false)).
-			body("entity.alleleSynonyms[0].createdBy.uniqueId", is("ALLELETEST:Person0002")).
-			body("entity.alleleSynonyms[0].updatedBy.uniqueId", is("ALLELETEST:Person0001")).
-			body("entity.alleleSynonyms[0].dateCreated", is(OffsetDateTime.parse("2022-03-19T22:10:12Z").toString())).
-			body("entity.alleleSynonyms[0].dateUpdated", is(OffsetDateTime.parse("2022-03-20T22:10:12Z").toString())).
-			body("entity.alleleMutationTypes", hasSize(1)).
-			body("entity.alleleMutationTypes[0].evidence[0].curie", is(requiredReference2)).
-			body("entity.alleleMutationTypes[0].mutationTypes[0].curie", is(requiredSoTerm2)).
-			body("entity.alleleMutationTypes[0].internal", is(false)).
-			body("entity.alleleMutationTypes[0].obsolete", is(false)).
-			body("entity.alleleMutationTypes[0].createdBy.uniqueId", is("ALLELETEST:Person0002")).
-			body("entity.alleleMutationTypes[0].updatedBy.uniqueId", is("ALLELETEST:Person0001")).
-			body("entity.alleleMutationTypes[0].dateCreated", is(OffsetDateTime.parse("2022-03-19T22:10:12Z").toString())).
-			body("entity.alleleMutationTypes[0].dateUpdated", is(OffsetDateTime.parse("2022-03-20T22:10:12Z").toString())).
-			body("entity.alleleInheritanceModes", hasSize(1)).
-			body("entity.alleleInheritanceModes[0].evidence[0].curie", is(requiredReference2)).
-			body("entity.alleleInheritanceModes[0].inheritanceMode.name", is("recessive")).
-			body("entity.alleleInheritanceModes[0].phenotypeTerm.curie", is(requiredMpTerm2)).
-			body("entity.alleleInheritanceModes[0].phenotypeStatement", is("Phenotype statement 2")).
-			body("entity.alleleInheritanceModes[0].internal", is(false)).
-			body("entity.alleleInheritanceModes[0].obsolete", is(false)).
-			body("entity.alleleInheritanceModes[0].createdBy.uniqueId", is("ALLELETEST:Person0002")).
-			body("entity.alleleInheritanceModes[0].updatedBy.uniqueId", is("ALLELETEST:Person0001")).
-			body("entity.alleleInheritanceModes[0].dateCreated", is(OffsetDateTime.parse("2022-03-19T22:10:12Z").toString())).
-			body("entity.alleleInheritanceModes[0].dateUpdated", is(OffsetDateTime.parse("2022-03-20T22:10:12Z").toString())).
-			body("entity.alleleSecondaryIds", hasSize(1)).
-			body("entity.alleleSecondaryIds[0].evidence[0].curie", is(requiredReference2)).
-			body("entity.alleleSecondaryIds[0].secondaryId", is("TEST:Secondary2")).
-			body("entity.alleleSecondaryIds[0].internal", is(false)).
-			body("entity.alleleSecondaryIds[0].obsolete", is(false)).
-			body("entity.alleleSecondaryIds[0].createdBy.uniqueId", is("ALLELETEST:Person0002")).
-			body("entity.alleleSecondaryIds[0].updatedBy.uniqueId", is("ALLELETEST:Person0001")).
-			body("entity.alleleSecondaryIds[0].dateCreated", is(OffsetDateTime.parse("2022-03-19T22:10:12Z").toString())).
-			body("entity.alleleSecondaryIds[0].dateUpdated", is(OffsetDateTime.parse("2022-03-20T22:10:12Z").toString())).
-			body("entity.alleleFunctionalImpacts", hasSize(1)).
-			body("entity.alleleFunctionalImpacts[0].evidence[0].curie", is(requiredReference2)).
-			body("entity.alleleFunctionalImpacts[0].functionalImpacts[0].name", is("cold_sensitive_neomorphic")).
-			body("entity.alleleFunctionalImpacts[0].phenotypeTerm.curie", is(requiredMpTerm2)).
-			body("entity.alleleFunctionalImpacts[0].phenotypeStatement", is("Phenotype statement 2")).
-			body("entity.alleleFunctionalImpacts[0].internal", is(false)).
-			body("entity.alleleFunctionalImpacts[0].obsolete", is(false)).
-			body("entity.alleleFunctionalImpacts[0].createdBy.uniqueId", is("ALLELETEST:Person0002")).
-			body("entity.alleleFunctionalImpacts[0].updatedBy.uniqueId", is("ALLELETEST:Person0001")).
-			body("entity.alleleFunctionalImpacts[0].dateCreated", is(OffsetDateTime.parse("2022-03-19T22:10:12Z").toString())).
-			body("entity.alleleFunctionalImpacts[0].dateUpdated", is(OffsetDateTime.parse("2022-03-20T22:10:12Z").toString())).
 			body("entity.alleleGermlineTransmissionStatus.germlineTransmissionStatus.name", is("germline")).
 			body("entity.alleleGermlineTransmissionStatus.internal", is(false)).
 			body("entity.alleleGermlineTransmissionStatus.obsolete", is(false)).
@@ -327,18 +277,73 @@ public class IT_0102_AlleleBulkUploadITCase extends BaseITCase {
 			body("entity.alleleDatabaseStatus.updatedBy.uniqueId", is("ALLELETEST:Person0001")).
 			body("entity.alleleDatabaseStatus.dateCreated", is(OffsetDateTime.parse("2022-03-19T22:10:12Z").toString())).
 			body("entity.alleleDatabaseStatus.dateUpdated", is(OffsetDateTime.parse("2022-03-20T22:10:12Z").toString())).
-			body("entity.alleleNomenclatureEvents[0].nomenclatureEvent.name", is("symbol_updated")).
-			body("entity.alleleNomenclatureEvents[0].evidence[0].curie", is(requiredReference2)).
-			body("entity.alleleNomenclatureEvents[0].internal", is(false)).
-			body("entity.alleleNomenclatureEvents[0].obsolete", is(false)).
-			body("entity.alleleNomenclatureEvents[0].createdBy.uniqueId", is("ALLELETEST:Person0002")).
-			body("entity.alleleNomenclatureEvents[0].updatedBy.uniqueId", is("ALLELETEST:Person0001")).
-			body("entity.alleleNomenclatureEvents[0].dateCreated", is(OffsetDateTime.parse("2022-03-19T22:10:12Z").toString())).
-			body("entity.alleleNomenclatureEvents[0].dateUpdated", is(OffsetDateTime.parse("2022-03-20T22:10:12Z").toString())).
 			body("entity.dataProvider.abbreviation", is(requiredDataProviderRGD)).
 			body("entity.dataProviderCrossReference.referencedCurie", is("TEST2:0001")).
 			body("entity.dataProviderCrossReference.displayName", is("TEST2:0001")).
 			body("entity.dataProviderCrossReference.resourceDescriptorPage.name", is("homepage2"));
+
+		findAlleleResponse("ALLELETEST:Allele0001").
+			body("results[0].alleleSynonyms", hasSize(1)).
+			body("results[0].alleleSynonyms[0].displayText", is("Test allele synonym 1a")).
+			body("results[0].alleleSynonyms[0].formatText", is("Test allele synonym <sup>1a</sup>")).
+			body("results[0].alleleSynonyms[0].synonymScope.name", is("broad")).
+			body("results[0].alleleSynonyms[0].synonymUrl", is("https://alliancegenome.org/test2")).
+			body("results[0].alleleSynonyms[0].nameType.name", is("nomenclature_symbol")).
+			body("results[0].alleleSynonyms[0].evidence[0].curie", is(requiredReference2)).
+			body("results[0].alleleSynonyms[0].internal", is(false)).
+			body("results[0].alleleSynonyms[0].obsolete", is(false)).
+			body("results[0].alleleSynonyms[0].createdBy.uniqueId", is("ALLELETEST:Person0002")).
+			body("results[0].alleleSynonyms[0].updatedBy.uniqueId", is("ALLELETEST:Person0001")).
+			body("results[0].alleleSynonyms[0].dateCreated", is(OffsetDateTime.parse("2022-03-19T22:10:12Z").toString())).
+			body("results[0].alleleSynonyms[0].dateUpdated", is(OffsetDateTime.parse("2022-03-20T22:10:12Z").toString())).
+			body("results[0].alleleMutationTypes", hasSize(1)).
+			body("results[0].alleleMutationTypes[0].evidence[0].curie", is(requiredReference2)).
+			body("results[0].alleleMutationTypes[0].mutationTypes[0].curie", is(requiredSoTerm2)).
+			body("results[0].alleleMutationTypes[0].internal", is(false)).
+			body("results[0].alleleMutationTypes[0].obsolete", is(false)).
+			body("results[0].alleleMutationTypes[0].createdBy.uniqueId", is("ALLELETEST:Person0002")).
+			body("results[0].alleleMutationTypes[0].updatedBy.uniqueId", is("ALLELETEST:Person0001")).
+			body("results[0].alleleMutationTypes[0].dateCreated", is(OffsetDateTime.parse("2022-03-19T22:10:12Z").toString())).
+			body("results[0].alleleMutationTypes[0].dateUpdated", is(OffsetDateTime.parse("2022-03-20T22:10:12Z").toString())).
+			body("results[0].alleleInheritanceModes", hasSize(1)).
+			body("results[0].alleleInheritanceModes[0].evidence[0].curie", is(requiredReference2)).
+			body("results[0].alleleInheritanceModes[0].inheritanceMode.name", is("recessive")).
+			body("results[0].alleleInheritanceModes[0].phenotypeTerm.curie", is(requiredMpTerm2)).
+			body("results[0].alleleInheritanceModes[0].phenotypeStatement", is("Phenotype statement 2")).
+			body("results[0].alleleInheritanceModes[0].internal", is(false)).
+			body("results[0].alleleInheritanceModes[0].obsolete", is(false)).
+			body("results[0].alleleInheritanceModes[0].createdBy.uniqueId", is("ALLELETEST:Person0002")).
+			body("results[0].alleleInheritanceModes[0].updatedBy.uniqueId", is("ALLELETEST:Person0001")).
+			body("results[0].alleleInheritanceModes[0].dateCreated", is(OffsetDateTime.parse("2022-03-19T22:10:12Z").toString())).
+			body("results[0].alleleInheritanceModes[0].dateUpdated", is(OffsetDateTime.parse("2022-03-20T22:10:12Z").toString())).
+			body("results[0].alleleSecondaryIds", hasSize(1)).
+			body("results[0].alleleSecondaryIds[0].evidence[0].curie", is(requiredReference2)).
+			body("results[0].alleleSecondaryIds[0].secondaryId", is("TEST:Secondary2")).
+			body("results[0].alleleSecondaryIds[0].internal", is(false)).
+			body("results[0].alleleSecondaryIds[0].obsolete", is(false)).
+			body("results[0].alleleSecondaryIds[0].createdBy.uniqueId", is("ALLELETEST:Person0002")).
+			body("results[0].alleleSecondaryIds[0].updatedBy.uniqueId", is("ALLELETEST:Person0001")).
+			body("results[0].alleleSecondaryIds[0].dateCreated", is(OffsetDateTime.parse("2022-03-19T22:10:12Z").toString())).
+			body("results[0].alleleSecondaryIds[0].dateUpdated", is(OffsetDateTime.parse("2022-03-20T22:10:12Z").toString())).
+			body("results[0].alleleFunctionalImpacts", hasSize(1)).
+			body("results[0].alleleFunctionalImpacts[0].evidence[0].curie", is(requiredReference2)).
+			body("results[0].alleleFunctionalImpacts[0].functionalImpacts[0].name", is("cold_sensitive_neomorphic")).
+			body("results[0].alleleFunctionalImpacts[0].phenotypeTerm.curie", is(requiredMpTerm2)).
+			body("results[0].alleleFunctionalImpacts[0].phenotypeStatement", is("Phenotype statement 2")).
+			body("results[0].alleleFunctionalImpacts[0].internal", is(false)).
+			body("results[0].alleleFunctionalImpacts[0].obsolete", is(false)).
+			body("results[0].alleleFunctionalImpacts[0].createdBy.uniqueId", is("ALLELETEST:Person0002")).
+			body("results[0].alleleFunctionalImpacts[0].updatedBy.uniqueId", is("ALLELETEST:Person0001")).
+			body("results[0].alleleFunctionalImpacts[0].dateCreated", is(OffsetDateTime.parse("2022-03-19T22:10:12Z").toString())).
+			body("results[0].alleleFunctionalImpacts[0].dateUpdated", is(OffsetDateTime.parse("2022-03-20T22:10:12Z").toString())).
+			body("results[0].alleleNomenclatureEvents[0].nomenclatureEvent.name", is("symbol_updated")).
+			body("results[0].alleleNomenclatureEvents[0].evidence[0].curie", is(requiredReference2)).
+			body("results[0].alleleNomenclatureEvents[0].internal", is(false)).
+			body("results[0].alleleNomenclatureEvents[0].obsolete", is(false)).
+			body("results[0].alleleNomenclatureEvents[0].createdBy.uniqueId", is("ALLELETEST:Person0002")).
+			body("results[0].alleleNomenclatureEvents[0].updatedBy.uniqueId", is("ALLELETEST:Person0001")).
+			body("results[0].alleleNomenclatureEvents[0].dateCreated", is(OffsetDateTime.parse("2022-03-19T22:10:12Z").toString())).
+			body("results[0].alleleNomenclatureEvents[0].dateUpdated", is(OffsetDateTime.parse("2022-03-20T22:10:12Z").toString()));
 
 		getAlleleReferences("ALLELETEST:Allele0001").
 			body("entities", hasSize(1)).
@@ -452,16 +457,18 @@ public class IT_0102_AlleleBulkUploadITCase extends BaseITCase {
 			body("entity", not(hasKey("dateUpdated"))).
 			body("entity", not(hasKey("inCollection"))).
 			body("entity", not(hasKey("relatedNotes"))).
-			body("entity", not(hasKey("alleleMutationTypes"))).
 			body("entity", not(hasKey("alleleFullName"))).
-			body("entity", not(hasKey("alleleSynonyms"))).
-			body("entity", not(hasKey("alleleSecondaryIds"))).
-			body("entity", not(hasKey("alleleInheritanceModes"))).
-			body("entity", not(hasKey("alleleFunctionalImpacts"))).
 			body("entity", not(hasKey("alleleGermlineTransmissionStatus"))).
 			body("entity", not(hasKey("alleleDatabaseStatus"))).
-			body("entity", not(hasKey("alleleNomenclatureEvents"))).
 			body("entity", not(hasKey("dataProviderCrossReference")));
+
+		findAlleleResponse("ALLELETEST:Allele0001").
+			body("results[0]", not(hasKey("alleleMutationTypes"))).
+			body("results[0]", not(hasKey("alleleSynonyms"))).
+			body("results[0]", not(hasKey("alleleSecondaryIds"))).
+			body("results[0]", not(hasKey("alleleInheritanceModes"))).
+			body("results[0]", not(hasKey("alleleFunctionalImpacts"))).
+			body("results[0]", not(hasKey("alleleNomenclatureEvents")));
 
 		getAlleleReferences("ALLELETEST:Allele0001").
 			body("entities", nullValue());
@@ -483,11 +490,6 @@ public class IT_0102_AlleleBulkUploadITCase extends BaseITCase {
 			body("entity.relatedNotes[0]", not(hasKey("updatedBy"))).
 			body("entity.relatedNotes[0]", not(hasKey("dateCreated"))).
 			body("entity.relatedNotes[0]", not(hasKey("dateUpdated"))).
-			body("entity.alleleMutationTypes[0]", not(hasKey("evidence"))).
-			body("entity.alleleMutationTypes[0]", not(hasKey("createdBy"))).
-			body("entity.alleleMutationTypes[0]", not(hasKey("updatedBy"))).
-			body("entity.alleleMutationTypes[0]", not(hasKey("dateCreated"))).
-			body("entity.alleleMutationTypes[0]", not(hasKey("dateUpdated"))).
 			body("entity.alleleSymbol", not(hasKey("synonymScope"))).
 			body("entity.alleleSymbol", not(hasKey("synonymUrl"))).
 			body("entity.alleleSymbol", not(hasKey("evidence"))).
@@ -502,32 +504,6 @@ public class IT_0102_AlleleBulkUploadITCase extends BaseITCase {
 			body("entity.alleleFullName", not(hasKey("updatedBy"))).
 			body("entity.alleleFullName", not(hasKey("dateCreated"))).
 			body("entity.alleleFullName", not(hasKey("dateUpdated"))).
-			body("entity.alleleSynonyms[0]", not(hasKey("synonymScope"))).
-			body("entity.alleleSynonyms[0]", not(hasKey("synonymUrl"))).
-			body("entity.alleleSynonyms[0]", not(hasKey("evidence"))).
-			body("entity.alleleSynonyms[0]", not(hasKey("createdBy"))).
-			body("entity.alleleSynonyms[0]", not(hasKey("updatedBy"))).
-			body("entity.alleleSynonyms[0]", not(hasKey("dateCreated"))).
-			body("entity.alleleSynonyms[0]", not(hasKey("dateUpdated"))).
-			body("entity.alleleSecondaryIds[0]", not(hasKey("evidence"))).
-			body("entity.alleleSecondaryIds[0]", not(hasKey("createdBy"))).
-			body("entity.alleleSecondaryIds[0]", not(hasKey("updatedBy"))).
-			body("entity.alleleSecondaryIds[0]", not(hasKey("dateCreated"))).
-			body("entity.alleleSecondaryIds[0]", not(hasKey("dateUpdated"))).
-			body("entity.alleleInheritanceModes[0]", not(hasKey("evidence"))).
-			body("entity.alleleInheritanceModes[0]", not(hasKey("phenotypeTerm"))).
-			body("entity.alleleInheritanceModes[0]", not(hasKey("phenotypeStatement"))).
-			body("entity.alleleInheritanceModes[0]", not(hasKey("createdBy"))).
-			body("entity.alleleInheritanceModes[0]", not(hasKey("updatedBy"))).
-			body("entity.alleleInheritanceModes[0]", not(hasKey("dateCreated"))).
-			body("entity.alleleInheritanceModes[0]", not(hasKey("dateUpdated"))).
-			body("entity.alleleFunctionalImpacts[0]", not(hasKey("evidence"))).
-			body("entity.alleleFunctionalImpacts[0]", not(hasKey("phenotypeTerm"))).
-			body("entity.alleleFunctionalImpacts[0]", not(hasKey("phenotypeStatement"))).
-			body("entity.alleleFunctionalImpacts[0]", not(hasKey("createdBy"))).
-			body("entity.alleleFunctionalImpacts[0]", not(hasKey("updatedBy"))).
-			body("entity.alleleFunctionalImpacts[0]", not(hasKey("dateCreated"))).
-			body("entity.alleleFunctionalImpacts[0]", not(hasKey("dateUpdated"))).
 			body("entity.alleleGermlineTransmissionStatus", not(hasKey("evidence"))).
 			body("entity.alleleGermlineTransmissionStatus", not(hasKey("createdBy"))).
 			body("entity.alleleGermlineTransmissionStatus", not(hasKey("updatedBy"))).
@@ -537,12 +513,45 @@ public class IT_0102_AlleleBulkUploadITCase extends BaseITCase {
 			body("entity.alleleDatabaseStatus", not(hasKey("createdBy"))).
 			body("entity.alleleDatabaseStatus", not(hasKey("updatedBy"))).
 			body("entity.alleleDatabaseStatus", not(hasKey("dateCreated"))).
-			body("entity.alleleDatabaseStatus", not(hasKey("dateUpdated"))).
-			body("entity.alleleNomenclatureEvents[0]", not(hasKey("evidence"))).
-			body("entity.alleleNomenclatureEvents[0]", not(hasKey("createdBy"))).
-			body("entity.alleleNomenclatureEvents[0]", not(hasKey("updatedBy"))).
-			body("entity.alleleNomenclatureEvents[0]", not(hasKey("dateCreated"))).
-			body("entity.alleleNomenclatureEvents[0]", not(hasKey("dateUpdated")));
+			body("entity.alleleDatabaseStatus", not(hasKey("dateUpdated")));
+
+		findAlleleResponse("ALLELETEST:Allele0001").
+			body("results[0].alleleMutationTypes[0]", not(hasKey("evidence"))).
+			body("results[0].alleleMutationTypes[0]", not(hasKey("createdBy"))).
+			body("results[0].alleleMutationTypes[0]", not(hasKey("updatedBy"))).
+			body("results[0].alleleMutationTypes[0]", not(hasKey("dateCreated"))).
+			body("results[0].alleleMutationTypes[0]", not(hasKey("dateUpdated"))).
+			body("results[0].alleleSynonyms[0]", not(hasKey("synonymScope"))).
+			body("results[0].alleleSynonyms[0]", not(hasKey("synonymUrl"))).
+			body("results[0].alleleSynonyms[0]", not(hasKey("evidence"))).
+			body("results[0].alleleSynonyms[0]", not(hasKey("createdBy"))).
+			body("results[0].alleleSynonyms[0]", not(hasKey("updatedBy"))).
+			body("results[0].alleleSynonyms[0]", not(hasKey("dateCreated"))).
+			body("results[0].alleleSynonyms[0]", not(hasKey("dateUpdated"))).
+			body("results[0].alleleSecondaryIds[0]", not(hasKey("evidence"))).
+			body("results[0].alleleSecondaryIds[0]", not(hasKey("createdBy"))).
+			body("results[0].alleleSecondaryIds[0]", not(hasKey("updatedBy"))).
+			body("results[0].alleleSecondaryIds[0]", not(hasKey("dateCreated"))).
+			body("results[0].alleleSecondaryIds[0]", not(hasKey("dateUpdated"))).
+			body("results[0].alleleInheritanceModes[0]", not(hasKey("evidence"))).
+			body("results[0].alleleInheritanceModes[0]", not(hasKey("phenotypeTerm"))).
+			body("results[0].alleleInheritanceModes[0]", not(hasKey("phenotypeStatement"))).
+			body("results[0].alleleInheritanceModes[0]", not(hasKey("createdBy"))).
+			body("results[0].alleleInheritanceModes[0]", not(hasKey("updatedBy"))).
+			body("results[0].alleleInheritanceModes[0]", not(hasKey("dateCreated"))).
+			body("results[0].alleleInheritanceModes[0]", not(hasKey("dateUpdated"))).
+			body("results[0].alleleFunctionalImpacts[0]", not(hasKey("evidence"))).
+			body("results[0].alleleFunctionalImpacts[0]", not(hasKey("phenotypeTerm"))).
+			body("results[0].alleleFunctionalImpacts[0]", not(hasKey("phenotypeStatement"))).
+			body("results[0].alleleFunctionalImpacts[0]", not(hasKey("createdBy"))).
+			body("results[0].alleleFunctionalImpacts[0]", not(hasKey("updatedBy"))).
+			body("results[0].alleleFunctionalImpacts[0]", not(hasKey("dateCreated"))).
+			body("results[0].alleleFunctionalImpacts[0]", not(hasKey("dateUpdated"))).
+			body("results[0].alleleNomenclatureEvents[0]", not(hasKey("evidence"))).
+			body("results[0].alleleNomenclatureEvents[0]", not(hasKey("createdBy"))).
+			body("results[0].alleleNomenclatureEvents[0]", not(hasKey("updatedBy"))).
+			body("results[0].alleleNomenclatureEvents[0]", not(hasKey("dateCreated"))).
+			body("results[0].alleleNomenclatureEvents[0]", not(hasKey("dateUpdated")));
 	}
 	
 	@Test
@@ -567,11 +576,6 @@ public class IT_0102_AlleleBulkUploadITCase extends BaseITCase {
 			body("entity.relatedNotes[0]", not(hasKey("updatedBy"))).
 			body("entity.relatedNotes[0]", not(hasKey("dateCreated"))).
 			body("entity.relatedNotes[0]", not(hasKey("dateUpdated"))).
-			body("entity.alleleMutationTypes[0]", not(hasKey("evidence"))).
-			body("entity.alleleMutationTypes[0]", not(hasKey("createdBy"))).
-			body("entity.alleleMutationTypes[0]", not(hasKey("updatedBy"))).
-			body("entity.alleleMutationTypes[0]", not(hasKey("dateCreated"))).
-			body("entity.alleleMutationTypes[0]", not(hasKey("dateUpdated"))).
 			body("entity.alleleSymbol", not(hasKey("synonymScope"))).
 			body("entity.alleleSymbol", not(hasKey("synonymUrl"))).
 			body("entity.alleleSymbol", not(hasKey("evidence"))).
@@ -586,32 +590,6 @@ public class IT_0102_AlleleBulkUploadITCase extends BaseITCase {
 			body("entity.alleleFullName", not(hasKey("updatedBy"))).
 			body("entity.alleleFullName", not(hasKey("dateCreated"))).
 			body("entity.alleleFullName", not(hasKey("dateUpdated"))).
-			body("entity.alleleSynonyms[0]", not(hasKey("synonymScope"))).
-			body("entity.alleleSynonyms[0]", not(hasKey("synonymUrl"))).
-			body("entity.alleleSynonyms[0]", not(hasKey("evidence"))).
-			body("entity.alleleSynonyms[0]", not(hasKey("createdBy"))).
-			body("entity.alleleSynonyms[0]", not(hasKey("updatedBy"))).
-			body("entity.alleleSynonyms[0]", not(hasKey("dateCreated"))).
-			body("entity.alleleSynonyms[0]", not(hasKey("dateUpdated"))).
-			body("entity.alleleSecondaryIds[0]", not(hasKey("evidence"))).
-			body("entity.alleleSecondaryIds[0]", not(hasKey("createdBy"))).
-			body("entity.alleleSecondaryIds[0]", not(hasKey("updatedBy"))).
-			body("entity.alleleSecondaryIds[0]", not(hasKey("dateCreated"))).
-			body("entity.alleleSecondaryIds[0]", not(hasKey("dateUpdated"))).
-			body("entity.alleleInheritanceModes[0]", not(hasKey("evidence"))).
-			body("entity.alleleInheritanceModes[0]", not(hasKey("phenotypeTerm"))).
-			body("entity.alleleInheritanceModes[0]", not(hasKey("phenotypeStatement"))).
-			body("entity.alleleInheritanceModes[0]", not(hasKey("createdBy"))).
-			body("entity.alleleInheritanceModes[0]", not(hasKey("updatedBy"))).
-			body("entity.alleleInheritanceModes[0]", not(hasKey("dateCreated"))).
-			body("entity.alleleInheritanceModes[0]", not(hasKey("dateUpdated"))).
-			body("entity.alleleFunctionalImpacts[0]", not(hasKey("evidence"))).
-			body("entity.alleleFunctionalImpacts[0]", not(hasKey("phenotypeTerm"))).
-			body("entity.alleleFunctionalImpacts[0]", not(hasKey("phenotypeStatement"))).
-			body("entity.alleleFunctionalImpacts[0]", not(hasKey("createdBy"))).
-			body("entity.alleleFunctionalImpacts[0]", not(hasKey("updatedBy"))).
-			body("entity.alleleFunctionalImpacts[0]", not(hasKey("dateCreated"))).
-			body("entity.alleleFunctionalImpacts[0]", not(hasKey("dateUpdated"))).
 			body("entity.alleleGermlineTransmissionStatus", not(hasKey("evidence"))).
 			body("entity.alleleGermlineTransmissionStatus", not(hasKey("createdBy"))).
 			body("entity.alleleGermlineTransmissionStatus", not(hasKey("updatedBy"))).
@@ -621,12 +599,45 @@ public class IT_0102_AlleleBulkUploadITCase extends BaseITCase {
 			body("entity.alleleDatabaseStatus", not(hasKey("createdBy"))).
 			body("entity.alleleDatabaseStatus", not(hasKey("updatedBy"))).
 			body("entity.alleleDatabaseStatus", not(hasKey("dateCreated"))).
-			body("entity.alleleDatabaseStatus", not(hasKey("dateUpdated"))).
-			body("entity.alleleNomenclatureEvents[0]", not(hasKey("evidence"))).
-			body("entity.alleleNomenclatureEvents[0]", not(hasKey("createdBy"))).
-			body("entity.alleleNomenclatureEvents[0]", not(hasKey("updatedBy"))).
-			body("entity.alleleNomenclatureEvents[0]", not(hasKey("dateCreated"))).
-			body("entity.alleleNomenclatureEvents[0]", not(hasKey("dateUpdated")));
+			body("entity.alleleDatabaseStatus", not(hasKey("dateUpdated")));
+
+		findAlleleResponse("ALLELETEST:Allele0001").
+			body("results[0].alleleMutationTypes[0]", not(hasKey("evidence"))).
+			body("results[0].alleleMutationTypes[0]", not(hasKey("createdBy"))).
+			body("results[0].alleleMutationTypes[0]", not(hasKey("updatedBy"))).
+			body("results[0].alleleMutationTypes[0]", not(hasKey("dateCreated"))).
+			body("results[0].alleleMutationTypes[0]", not(hasKey("dateUpdated"))).
+			body("results[0].alleleSynonyms[0]", not(hasKey("synonymScope"))).
+			body("results[0].alleleSynonyms[0]", not(hasKey("synonymUrl"))).
+			body("results[0].alleleSynonyms[0]", not(hasKey("evidence"))).
+			body("results[0].alleleSynonyms[0]", not(hasKey("createdBy"))).
+			body("results[0].alleleSynonyms[0]", not(hasKey("updatedBy"))).
+			body("results[0].alleleSynonyms[0]", not(hasKey("dateCreated"))).
+			body("results[0].alleleSynonyms[0]", not(hasKey("dateUpdated"))).
+			body("results[0].alleleSecondaryIds[0]", not(hasKey("evidence"))).
+			body("results[0].alleleSecondaryIds[0]", not(hasKey("createdBy"))).
+			body("results[0].alleleSecondaryIds[0]", not(hasKey("updatedBy"))).
+			body("results[0].alleleSecondaryIds[0]", not(hasKey("dateCreated"))).
+			body("results[0].alleleSecondaryIds[0]", not(hasKey("dateUpdated"))).
+			body("results[0].alleleInheritanceModes[0]", not(hasKey("evidence"))).
+			body("results[0].alleleInheritanceModes[0]", not(hasKey("phenotypeTerm"))).
+			body("results[0].alleleInheritanceModes[0]", not(hasKey("phenotypeStatement"))).
+			body("results[0].alleleInheritanceModes[0]", not(hasKey("createdBy"))).
+			body("results[0].alleleInheritanceModes[0]", not(hasKey("updatedBy"))).
+			body("results[0].alleleInheritanceModes[0]", not(hasKey("dateCreated"))).
+			body("results[0].alleleInheritanceModes[0]", not(hasKey("dateUpdated"))).
+			body("results[0].alleleFunctionalImpacts[0]", not(hasKey("evidence"))).
+			body("results[0].alleleFunctionalImpacts[0]", not(hasKey("phenotypeTerm"))).
+			body("results[0].alleleFunctionalImpacts[0]", not(hasKey("phenotypeStatement"))).
+			body("results[0].alleleFunctionalImpacts[0]", not(hasKey("createdBy"))).
+			body("results[0].alleleFunctionalImpacts[0]", not(hasKey("updatedBy"))).
+			body("results[0].alleleFunctionalImpacts[0]", not(hasKey("dateCreated"))).
+			body("results[0].alleleFunctionalImpacts[0]", not(hasKey("dateUpdated"))).
+			body("results[0].alleleNomenclatureEvents[0]", not(hasKey("evidence"))).
+			body("results[0].alleleNomenclatureEvents[0]", not(hasKey("createdBy"))).
+			body("results[0].alleleNomenclatureEvents[0]", not(hasKey("updatedBy"))).
+			body("results[0].alleleNomenclatureEvents[0]", not(hasKey("dateCreated"))).
+			body("results[0].alleleNomenclatureEvents[0]", not(hasKey("dateUpdated")));
 
 		getAlleleReferences("ALLELETEST:Allele0001").
 			body("entities", nullValue());
@@ -691,6 +702,18 @@ public class IT_0102_AlleleBulkUploadITCase extends BaseITCase {
 		checkWarningBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "IV_32_invalid_allele_database_status_evidence.json");
 		checkWarningBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "IV_34_invalid_allele_nomenclature_events_evidence.json");
 		checkWarningBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "IV_35_invalid_multiple_evidence_fields.json", 4);
+	}
+
+	// The detail endpoint omits the slot annotation lists, so the allele with them is read through find, which
+	// serializes AlleleView.
+	private ValidatableResponse findAlleleResponse(String primaryExternalId) {
+		return RestAssured.given().
+			contentType("application/json").
+			body("{\"primaryExternalId\": \"" + primaryExternalId + "\"}").
+			when().
+			post(alleleFindEndpoint).
+			then().
+			statusCode(200);
 	}
 
 	// The detail endpoint omits references; they are read through the allele's references sub-resource.

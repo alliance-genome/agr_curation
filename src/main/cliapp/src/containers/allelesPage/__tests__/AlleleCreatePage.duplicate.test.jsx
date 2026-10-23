@@ -13,14 +13,16 @@ import {
 const createAllele = vi.fn();
 const getAllele = vi.fn();
 const navigate = vi.fn();
+const getMutationTypesForAllele = vi.fn();
 
 vi.mock('../../../service/AlleleService', async () =>
 	(await import('./alleleServiceMocks')).mockAlleleService({ createAllele, getAllele })
 );
 vi.mock('../../../service/SearchService', async () => (await import('./alleleServiceMocks')).mockSearchService());
-// The source's sub-resources are read through their own endpoints; this allele has none.
+// The source's sub-resources are read through their own endpoints; this allele has none unless a test gives it
+// mutation types.
 vi.mock('../../../service/AlleleSubResourceService', async () =>
-	(await import('./alleleServiceMocks')).mockSubResourceService()
+	(await import('./alleleServiceMocks')).mockSubResourceService({ mutationtypes: { get: getMutationTypesForAllele } })
 );
 
 vi.mock('react-router-dom', async (importOriginal) => ({
@@ -50,6 +52,8 @@ describe('<AlleleCreatePage /> duplicating an allele', () => {
 		getAllele.mockReset();
 		getAllele.mockResolvedValue({ data: { entity: sourceAllele } });
 		navigate.mockReset();
+		getMutationTypesForAllele.mockReset();
+		getMutationTypesForAllele.mockResolvedValue({ data: { entities: [] } });
 		window.localStorage.removeItem('AlleleCreateFormSettings');
 	});
 
@@ -65,21 +69,15 @@ describe('<AlleleCreatePage /> duplicating an allele', () => {
 	});
 
 	it('Shows only the sections the copied allele has rows for', async () => {
-		getAllele.mockResolvedValue({
+		getMutationTypesForAllele.mockResolvedValue({
 			data: {
-				entity: {
-					...sourceAllele,
-					alleleMutationTypes: [
-						{ id: 10, internal: false, mutationTypes: [{ curie: 'SO:0001', name: 'point_mutation' }] },
-					],
-					alleleFunctionalImpacts: [],
-				},
+				entities: [{ id: 10, internal: false, mutationTypes: [{ curie: 'SO:0001', name: 'point_mutation' }] }],
 			},
 		});
 		const { container } = await renderPage();
 
 		await waitFor(() => expect(container.querySelector('#displayText')).toHaveValue('abc-1'), FORM_LOAD_WAIT);
-		expect(screen.getByRole('columnheader', { name: 'Mutation Types' })).toBeInTheDocument();
+		expect(await screen.findByRole('columnheader', { name: 'Mutation Types' }, FORM_LOAD_WAIT)).toBeInTheDocument();
 		expect(screen.queryByRole('columnheader', { name: 'Functional Impacts' })).not.toBeInTheDocument();
 		expect(screen.queryByRole('columnheader', { name: 'Inheritance Mode' })).not.toBeInTheDocument();
 		expect(screen.getByRole('button', { name: 'Add Functional Impact' })).toBeInTheDocument();

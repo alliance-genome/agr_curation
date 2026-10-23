@@ -140,7 +140,7 @@ describe('<AlleleDetailPage /> single-value pending edits', { timeout: 30000 }, 
 		const user = userEvent.setup();
 		await renderLoadedPage();
 
-		await user.click(screen.getByRole('button', { name: 'Add Synonym' }));
+		await user.click(screen.getByRole('button', { name: 'Add Related Note' }));
 
 		expect(screen.getByRole('button', { name: 'Save' })).toBeEnabled();
 		expect(screen.queryByText('Pending Edits!')).not.toBeInTheDocument();

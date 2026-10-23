@@ -57,6 +57,7 @@ import org.alliancegenome.curation_api.model.entities.slotAnnotations.AlleleSymb
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.AlleleSynonymSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.GeneSymbolSlotAnnotation;
 import org.alliancegenome.curation_api.resources.TestContainerResource;
+import org.alliancegenome.curation_api.response.SearchResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
@@ -67,7 +68,9 @@ import org.junit.jupiter.api.TestMethodOrder;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusIntegrationTest;
 import io.restassured.RestAssured;
+import io.restassured.common.mapper.TypeRef;
 import io.restassured.response.Response;
+import io.restassured.response.ValidatableResponse;
 
 @QuarkusIntegrationTest
 @QuarkusTestResource(TestContainerResource.Initializer.class)
@@ -283,6 +286,33 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 			then().
 			statusCode(200);
 
+		// The create endpoint leaves the slot annotation lists to the allele's own sub-resources.
+		Long alleleId = getAllele(ALLELE).getId();
+		Map<String, List<?>> slotLists = Map.of(
+			"mutationtypes", List.of(alleleMutationType),
+			"inheritancemodes", List.of(alleleInheritanceMode),
+			"synonyms", List.of(alleleSynonym),
+			"secondaryids", List.of(alleleSecondaryId),
+			"functionalimpacts", List.of(alleleFunctionalImpact),
+			"nomenclatureevents", List.of(alleleNomenclatureEvent));
+		slotLists.forEach((path, rows) -> {
+			RestAssured.given().
+				when().
+				get("/api/allele/" + alleleId + "/" + path).
+				then().
+				statusCode(200).
+				body("entities", nullValue());
+
+			RestAssured.given().
+				contentType("application/json").
+				body(rows).
+				when().
+				put("/api/allele/" + alleleId + "/" + path).
+				then().
+				statusCode(200).
+				body("entities", hasSize(1));
+		});
+
 		RestAssured.given().
 			when().
 			get("/api/allele/" + ALLELE).
@@ -303,12 +333,6 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 			body("entity.relatedNotes[0].freeText", is(relatedNote.getFreeText())).
 			body("entity.relatedNotes[0].internal", is(false)).
 			body("entity.relatedNotes[0].references[0].curie", is(reference.getCurie())).
-			body("entity.alleleMutationTypes[0].evidence[0].curie", is(reference.getCurie())).
-			body("entity.alleleMutationTypes[0].mutationTypes[0].curie", is(soTerm.getCurie())).
-			body("entity.alleleInheritanceModes[0].evidence[0].curie", is(reference.getCurie())).
-			body("entity.alleleInheritanceModes[0].inheritanceMode.name", is(dominantInheritanceMode.getName())).
-			body("entity.alleleInheritanceModes[0].phenotypeTerm.curie", is(mpTerm.getCurie())).
-			body("entity.alleleInheritanceModes[0].phenotypeStatement", is("Phenotype statement")).
 			body("entity.alleleGermlineTransmissionStatus.evidence[0].curie", is(reference.getCurie())).
 			body("entity.alleleGermlineTransmissionStatus.germlineTransmissionStatus.name", is(cellLineGTS.getName())).
 			body("entity.alleleDatabaseStatus.evidence[0].curie", is(reference.getCurie())).
@@ -325,21 +349,35 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 			body("entity.alleleFullName.synonymScope.name", is(alleleFullName.getSynonymScope().getName())).
 			body("entity.alleleFullName.synonymUrl", is(alleleFullName.getSynonymUrl())).
 			body("entity.alleleFullName.evidence[0].curie", is(alleleFullName.getEvidence().get(0).getCurie())).
-			body("entity.alleleSynonyms[0].displayText", is(alleleSynonym.getDisplayText())).
-			body("entity.alleleSynonyms[0].formatText", is(alleleSynonym.getFormatText())).
-			body("entity.alleleSynonyms[0].nameType.name", is(alleleSynonym.getNameType().getName())).
-			body("entity.alleleSynonyms[0].synonymScope.name", is(alleleSynonym.getSynonymScope().getName())).
-			body("entity.alleleSynonyms[0].synonymUrl", is(alleleSynonym.getSynonymUrl())).
-			body("entity.alleleSynonyms[0].evidence[0].curie", is(alleleSynonym.getEvidence().get(0).getCurie())).
-			body("entity.alleleSecondaryIds[0].secondaryId", is(alleleSecondaryId.getSecondaryId())).
-			body("entity.alleleSecondaryIds[0].evidence[0].curie", is(alleleSecondaryId.getEvidence().get(0).getCurie())).
-			body("entity.alleleFunctionalImpacts[0].evidence[0].curie", is(reference.getCurie())).
-			body("entity.alleleFunctionalImpacts[0].functionalImpacts[0].name", is(hypermorphicFunctionalImpact.getName())).
-			body("entity.alleleFunctionalImpacts[0].phenotypeTerm.curie", is(mpTerm.getCurie())).
-			body("entity.alleleFunctionalImpacts[0].phenotypeStatement", is("Phenotype statement")).
-			body("entity.alleleNomenclatureEvents[0].evidence[0].curie", is(reference.getCurie())).
-			body("entity.alleleNomenclatureEvents[0].nomenclatureEvent.name", is(dataMergedEvent.getName())).
+			body("entity", not(hasKey("alleleMutationTypes"))).
+			body("entity", not(hasKey("alleleInheritanceModes"))).
+			body("entity", not(hasKey("alleleSynonyms"))).
+			body("entity", not(hasKey("alleleSecondaryIds"))).
+			body("entity", not(hasKey("alleleFunctionalImpacts"))).
+			body("entity", not(hasKey("alleleNomenclatureEvents"))).
 			body("entity.dataProvider.abbreviation", is(dataProvider.getAbbreviation()));
+
+		findAlleleResponse(ALLELE).
+			body("results[0].alleleMutationTypes[0].evidence[0].curie", is(reference.getCurie())).
+			body("results[0].alleleMutationTypes[0].mutationTypes[0].curie", is(soTerm.getCurie())).
+			body("results[0].alleleInheritanceModes[0].evidence[0].curie", is(reference.getCurie())).
+			body("results[0].alleleInheritanceModes[0].inheritanceMode.name", is(dominantInheritanceMode.getName())).
+			body("results[0].alleleInheritanceModes[0].phenotypeTerm.curie", is(mpTerm.getCurie())).
+			body("results[0].alleleInheritanceModes[0].phenotypeStatement", is("Phenotype statement")).
+			body("results[0].alleleSynonyms[0].displayText", is(alleleSynonym.getDisplayText())).
+			body("results[0].alleleSynonyms[0].formatText", is(alleleSynonym.getFormatText())).
+			body("results[0].alleleSynonyms[0].nameType.name", is(alleleSynonym.getNameType().getName())).
+			body("results[0].alleleSynonyms[0].synonymScope.name", is(alleleSynonym.getSynonymScope().getName())).
+			body("results[0].alleleSynonyms[0].synonymUrl", is(alleleSynonym.getSynonymUrl())).
+			body("results[0].alleleSynonyms[0].evidence[0].curie", is(alleleSynonym.getEvidence().get(0).getCurie())).
+			body("results[0].alleleSecondaryIds[0].secondaryId", is(alleleSecondaryId.getSecondaryId())).
+			body("results[0].alleleSecondaryIds[0].evidence[0].curie", is(alleleSecondaryId.getEvidence().get(0).getCurie())).
+			body("results[0].alleleFunctionalImpacts[0].evidence[0].curie", is(reference.getCurie())).
+			body("results[0].alleleFunctionalImpacts[0].functionalImpacts[0].name", is(hypermorphicFunctionalImpact.getName())).
+			body("results[0].alleleFunctionalImpacts[0].phenotypeTerm.curie", is(mpTerm.getCurie())).
+			body("results[0].alleleFunctionalImpacts[0].phenotypeStatement", is("Phenotype statement")).
+			body("results[0].alleleNomenclatureEvents[0].evidence[0].curie", is(reference.getCurie())).
+			body("results[0].alleleNomenclatureEvents[0].nomenclatureEvent.name", is(dataMergedEvent.getName()));
 
 		// The create endpoint does not write references; they are written through the references sub-resource.
 		RestAssured.given().
@@ -353,7 +391,7 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 	@Test
 	@Order(2)
 	public void editAllele() {
-		Allele allele = getAllele(ALLELE);
+		Allele allele = findAllele(ALLELE);
 		allele.setCreatedBy(person);
 		allele.setPrimaryExternalId(ALLELE);
 		allele.setTaxon(taxon2);
@@ -465,16 +503,10 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 			body("entity.relatedNotes[0].freeText", is(editedNote.getFreeText())).
 			body("entity.relatedNotes[0].internal", is(true)).
 			body("entity.relatedNotes[0].references[0].curie", is(reference2.getCurie())).
-			body("entity.alleleMutationTypes[0].mutationTypes[0].curie", is(editedMutationType.getMutationTypes().get(0).getCurie())).
-			body("entity.alleleMutationTypes[0].evidence[0].curie", is(editedMutationType.getEvidence().get(0).getCurie())).
 			body("entity.alleleGermlineTransmissionStatus.evidence[0].curie", is(reference2.getCurie())).
 			body("entity.alleleGermlineTransmissionStatus.germlineTransmissionStatus.name", is(germlineGTS.getName())).
 			body("entity.alleleDatabaseStatus.evidence[0].curie", is(reference2.getCurie())).
 			body("entity.alleleDatabaseStatus.databaseStatus.name", is(reservedDatabaseStatus.getName())).
-			body("entity.alleleInheritanceModes[0].evidence[0].curie", is(editedInheritanceMode.getEvidence().get(0).getCurie())).
-			body("entity.alleleInheritanceModes[0].inheritanceMode.name", is(editedInheritanceMode.getInheritanceMode().getName())).
-			body("entity.alleleInheritanceModes[0].phenotypeTerm.curie", is(editedInheritanceMode.getPhenotypeTerm().getCurie())).
-			body("entity.alleleInheritanceModes[0].phenotypeStatement", is(editedInheritanceMode.getPhenotypeStatement())).
 			body("entity.alleleSymbol.displayText", is(editedSymbol.getDisplayText())).
 			body("entity.alleleSymbol.formatText", is(editedSymbol.getFormatText())).
 			body("entity.alleleSymbol.nameType.name", is(editedSymbol.getNameType().getName())).
@@ -487,21 +519,29 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 			body("entity.alleleFullName.synonymScope.name", is(editedFullName.getSynonymScope().getName())).
 			body("entity.alleleFullName.synonymUrl", is(editedFullName.getSynonymUrl())).
 			body("entity.alleleFullName.evidence[0].curie", is(editedFullName.getEvidence().get(0).getCurie())).
-			body("entity.alleleSynonyms[0].displayText", is(editedSynonym.getDisplayText())).
-			body("entity.alleleSynonyms[0].formatText", is(editedSynonym.getFormatText())).
-			body("entity.alleleSynonyms[0].nameType.name", is(editedSynonym.getNameType().getName())).
-			body("entity.alleleSynonyms[0].synonymScope.name", is(editedSynonym.getSynonymScope().getName())).
-			body("entity.alleleSynonyms[0].synonymUrl", is(editedSynonym.getSynonymUrl())).
-			body("entity.alleleSynonyms[0].evidence[0].curie", is(editedSynonym.getEvidence().get(0).getCurie())).
-			body("entity.alleleSecondaryIds[0].secondaryId", is("TEST:Secondary2")).
-			body("entity.alleleSecondaryIds[0].evidence[0].curie", is(editedSecondaryId.getEvidence().get(0).getCurie())).
-			body("entity.alleleFunctionalImpacts[0].evidence[0].curie", is(reference2.getCurie())).
-			body("entity.alleleFunctionalImpacts[0].functionalImpacts[0].name", is(neomorphicFunctionalImpact.getName())).
-			body("entity.alleleFunctionalImpacts[0].phenotypeTerm.curie", is(mpTerm2.getCurie())).
-			body("entity.alleleFunctionalImpacts[0].phenotypeStatement", is("Edited phenotype statement")).
-			body("entity.alleleNomenclatureEvents[0].evidence[0].curie", is(reference2.getCurie())).
-			body("entity.alleleNomenclatureEvents[0].nomenclatureEvent.name", is(symbolUpdatedEvent.getName())).
 			body("entity.dataProvider.abbreviation", is(dataProvider2.getAbbreviation()));
+
+		findAlleleResponse(ALLELE).
+			body("results[0].alleleMutationTypes[0].mutationTypes[0].curie", is(editedMutationType.getMutationTypes().get(0).getCurie())).
+			body("results[0].alleleMutationTypes[0].evidence[0].curie", is(editedMutationType.getEvidence().get(0).getCurie())).
+			body("results[0].alleleInheritanceModes[0].evidence[0].curie", is(editedInheritanceMode.getEvidence().get(0).getCurie())).
+			body("results[0].alleleInheritanceModes[0].inheritanceMode.name", is(editedInheritanceMode.getInheritanceMode().getName())).
+			body("results[0].alleleInheritanceModes[0].phenotypeTerm.curie", is(editedInheritanceMode.getPhenotypeTerm().getCurie())).
+			body("results[0].alleleInheritanceModes[0].phenotypeStatement", is(editedInheritanceMode.getPhenotypeStatement())).
+			body("results[0].alleleSynonyms[0].displayText", is(editedSynonym.getDisplayText())).
+			body("results[0].alleleSynonyms[0].formatText", is(editedSynonym.getFormatText())).
+			body("results[0].alleleSynonyms[0].nameType.name", is(editedSynonym.getNameType().getName())).
+			body("results[0].alleleSynonyms[0].synonymScope.name", is(editedSynonym.getSynonymScope().getName())).
+			body("results[0].alleleSynonyms[0].synonymUrl", is(editedSynonym.getSynonymUrl())).
+			body("results[0].alleleSynonyms[0].evidence[0].curie", is(editedSynonym.getEvidence().get(0).getCurie())).
+			body("results[0].alleleSecondaryIds[0].secondaryId", is("TEST:Secondary2")).
+			body("results[0].alleleSecondaryIds[0].evidence[0].curie", is(editedSecondaryId.getEvidence().get(0).getCurie())).
+			body("results[0].alleleFunctionalImpacts[0].evidence[0].curie", is(reference2.getCurie())).
+			body("results[0].alleleFunctionalImpacts[0].functionalImpacts[0].name", is(neomorphicFunctionalImpact.getName())).
+			body("results[0].alleleFunctionalImpacts[0].phenotypeTerm.curie", is(mpTerm2.getCurie())).
+			body("results[0].alleleFunctionalImpacts[0].phenotypeStatement", is("Edited phenotype statement")).
+			body("results[0].alleleNomenclatureEvents[0].evidence[0].curie", is(reference2.getCurie())).
+			body("results[0].alleleNomenclatureEvents[0].nomenclatureEvent.name", is(symbolUpdatedEvent.getName()));
 
 		// The allele table's endpoint writes references from its payload.
 		RestAssured.given().
@@ -533,7 +573,7 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 	@Test
 	@Order(4)
 	public void editAlleleWithMissingPrimaryExternalId() {
-		Allele allele = getAllele(ALLELE);
+		Allele allele = findAllele(ALLELE);
 		allele.setPrimaryExternalId(null);
 
 		// An allele is identified by its AGRKB curie, so neither MOD identifier is required.
@@ -611,7 +651,7 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 	@Test
 	@Order(7)
 	public void editAlleleWithEmptyPrimaryExternalId() {
-		Allele allele = getAllele(ALLELE);
+		Allele allele = findAllele(ALLELE);
 		allele.setPrimaryExternalId("");
 
 		// An allele is identified by its AGRKB curie, so neither MOD identifier is required.
@@ -672,9 +712,7 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 			post("/api/allele").
 			then().
 			statusCode(400).
-			body("errorMessages", is(aMapWithSize(11))).
-			body("errorMessages.alleleMutationTypes", is("mutationTypes - " + ValidationConstants.REQUIRED_MESSAGE)).
-			body("errorMessages.alleleInheritanceModes", is("inheritanceMode - " + ValidationConstants.REQUIRED_MESSAGE)).
+			body("errorMessages", is(aMapWithSize(5))).
 			body("errorMessages.alleleSymbol", is(String.join(" | ", List.of(
 					"displayText - " + ValidationConstants.REQUIRED_MESSAGE,
 					"formatText - " + ValidationConstants.REQUIRED_MESSAGE,
@@ -683,15 +721,8 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 					"displayText - " + ValidationConstants.REQUIRED_MESSAGE,
 					"formatText - " + ValidationConstants.REQUIRED_MESSAGE,
 					"nameType - " + ValidationConstants.REQUIRED_MESSAGE)))).
-			body("errorMessages.alleleSynonyms", is(String.join(" | ", List.of(
-					"displayText - " + ValidationConstants.REQUIRED_MESSAGE,
-					"formatText - " + ValidationConstants.REQUIRED_MESSAGE,
-					"nameType - " + ValidationConstants.REQUIRED_MESSAGE)))).
-			body("errorMessages.alleleSecondaryIds", is("secondaryId - " + ValidationConstants.REQUIRED_MESSAGE)).
-			body("errorMessages.alleleFunctionalImpacts", is("functionalImpacts - " + ValidationConstants.REQUIRED_MESSAGE)).
 			body("errorMessages.alleleGermlineTransmissionStatus", is("germlineTransmissionStatus - " + ValidationConstants.REQUIRED_MESSAGE)).
 			body("errorMessages.alleleDatabaseStatus", is("databaseStatus - " + ValidationConstants.REQUIRED_MESSAGE)).
-			body("errorMessages.alleleNomenclatureEvents", is("nomenclatureEvent - " + ValidationConstants.REQUIRED_MESSAGE)).
 			body("errorMessages.relatedNotes", is(String.join(" | ", List.of(
 					"freeText - " + ValidationConstants.REQUIRED_MESSAGE,
 					"noteType - " + ValidationConstants.REQUIRED_MESSAGE))));
@@ -700,7 +731,7 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 	@Test
 	@Order(9)
 	public void editAlleleWithMissingRequiredFieldsLevel2() {
-		Allele allele = getAllele(ALLELE);
+		Allele allele = findAllele(ALLELE);
 
 		AlleleMutationTypeSlotAnnotation invalidMutationType = allele.getAlleleMutationTypes().get(0);
 		invalidMutationType.setMutationTypes(null);
@@ -805,24 +836,20 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 			post("/api/allele").
 			then().
 			statusCode(400).
-			body("errorMessages", is(aMapWithSize(5))).
+			body("errorMessages", is(aMapWithSize(3))).
 			body("errorMessages.alleleSymbol", is(String.join(" | ", List.of(
 					"displayText - " + ValidationConstants.REQUIRED_MESSAGE,
 					"formatText - " + ValidationConstants.REQUIRED_MESSAGE)))).
 			body("errorMessages.alleleFullName", is(String.join(" | ", List.of(
 					"displayText - " + ValidationConstants.REQUIRED_MESSAGE,
 					"formatText - " + ValidationConstants.REQUIRED_MESSAGE)))).
-			body("errorMessages.alleleSynonyms", is(String.join(" | ", List.of(
-					"displayText - " + ValidationConstants.REQUIRED_MESSAGE,
-					"formatText - " + ValidationConstants.REQUIRED_MESSAGE)))).
-			body("errorMessages.alleleSecondaryIds", is("secondaryId - " + ValidationConstants.REQUIRED_MESSAGE)).
 			body("errorMessages.relatedNotes", is("freeText - " + ValidationConstants.REQUIRED_MESSAGE));
 	}
 
 	@Test
 	@Order(11)
 	public void editAlleleWithEmptyRequiredFieldsLevel2() {
-		Allele allele = getAllele(ALLELE);
+		Allele allele = findAllele(ALLELE);
 
 		AlleleSymbolSlotAnnotation invalidSymbol = allele.getAlleleSymbol();
 		invalidSymbol.setDisplayText("");
@@ -851,17 +878,13 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 			post("/api/allele").
 			then().
 			statusCode(400).
-			body("errorMessages", is(aMapWithSize(5))).
+			body("errorMessages", is(aMapWithSize(3))).
 			body("errorMessages.alleleSymbol", is(String.join(" | ", List.of(
 					"displayText - " + ValidationConstants.REQUIRED_MESSAGE,
 					"formatText - " + ValidationConstants.REQUIRED_MESSAGE)))).
 			body("errorMessages.alleleFullName", is(String.join(" | ", List.of(
 					"displayText - " + ValidationConstants.REQUIRED_MESSAGE,
 					"formatText - " + ValidationConstants.REQUIRED_MESSAGE)))).
-			body("errorMessages.alleleSynonyms", is(String.join(" | ", List.of(
-					"displayText - " + ValidationConstants.REQUIRED_MESSAGE,
-					"formatText - " + ValidationConstants.REQUIRED_MESSAGE)))).
-			body("errorMessages.alleleSecondaryIds", is("secondaryId - " + ValidationConstants.REQUIRED_MESSAGE)).
 			body("errorMessages.relatedNotes", is("freeText - " + ValidationConstants.REQUIRED_MESSAGE));
 	}
 
@@ -921,16 +944,9 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 			post("/api/allele").
 			then().
 			statusCode(400).
-			body("errorMessages", is(aMapWithSize(14))).
+			body("errorMessages", is(aMapWithSize(8))).
 			body("errorMessages.taxon", is(ValidationConstants.INVALID_MESSAGE)).
 			body("errorMessages.inCollection", is(ValidationConstants.INVALID_MESSAGE)).
-			body("errorMessages.alleleMutationTypes", is(String.join(" | ", List.of(
-					"evidence - " + ValidationConstants.INVALID_MESSAGE,
-					"mutationTypes - " + ValidationConstants.INVALID_MESSAGE)))).
-			body("errorMessages.alleleInheritanceModes", is(String.join(" | ", List.of(
-					"evidence - " + ValidationConstants.INVALID_MESSAGE,
-					"inheritanceMode - " + ValidationConstants.INVALID_MESSAGE,
-					"phenotypeTerm - " + ValidationConstants.INVALID_MESSAGE)))).
 			body("errorMessages.alleleSymbol", is(String.join(" | ", List.of(
 					"evidence - " + ValidationConstants.INVALID_MESSAGE,
 					"nameType - " + ValidationConstants.INVALID_MESSAGE,
@@ -939,25 +955,13 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 					"evidence - " + ValidationConstants.INVALID_MESSAGE,
 					"nameType - " + ValidationConstants.INVALID_MESSAGE,
 					"synonymScope - " + ValidationConstants.INVALID_MESSAGE)))).
-			body("errorMessages.alleleSynonyms", is(String.join(" | ", List.of(
-					"evidence - " + ValidationConstants.INVALID_MESSAGE,
-					"nameType - " + ValidationConstants.INVALID_MESSAGE,
-					"synonymScope - " + ValidationConstants.INVALID_MESSAGE)))).
-			body("errorMessages.alleleSecondaryIds", is("evidence - " + ValidationConstants.INVALID_MESSAGE)).
 			body("errorMessages.dataProvider", is(ValidationConstants.INVALID_MESSAGE)).
-			body("errorMessages.alleleFunctionalImpacts", is(String.join(" | ", List.of(
-					"evidence - " + ValidationConstants.INVALID_MESSAGE,
-					"functionalImpacts - " + ValidationConstants.INVALID_MESSAGE,
-					"phenotypeTerm - " + ValidationConstants.INVALID_MESSAGE)))).
 			body("errorMessages.alleleGermlineTransmissionStatus", is(String.join(" | ", List.of(
 					"evidence - " + ValidationConstants.INVALID_MESSAGE,
 					"germlineTransmissionStatus - " + ValidationConstants.INVALID_MESSAGE)))).
 			body("errorMessages.alleleDatabaseStatus", is(String.join(" | ", List.of(
 					"databaseStatus - " + ValidationConstants.INVALID_MESSAGE,
 					"evidence - " + ValidationConstants.INVALID_MESSAGE)))).
-			body("errorMessages.alleleNomenclatureEvents", is(String.join(" | ", List.of(
-					"evidence - " + ValidationConstants.INVALID_MESSAGE,
-					"nomenclatureEvent - " + ValidationConstants.INVALID_MESSAGE)))).
 			body("errorMessages.relatedNotes", is(String.join(" | ", List.of(
 					"noteType - " + ValidationConstants.INVALID_MESSAGE,
 					"references - " + ValidationConstants.INVALID_MESSAGE))));
@@ -975,7 +979,7 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 		MPTerm nonPersistedMpTerm = new MPTerm();
 		nonPersistedMpTerm.setCurie("MP:Invalid");
 
-		Allele allele = getAllele(ALLELE);
+		Allele allele = findAllele(ALLELE);
 		allele.setTaxon(nonPersistedTaxon);
 		allele.setInCollection(dominantInheritanceMode);
 		allele.setReferences(List.of(nonPersistedReference));
@@ -1129,16 +1133,9 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 			post("/api/allele").
 			then().
 			statusCode(400).
-			body("errorMessages", is(aMapWithSize(14))).
+			body("errorMessages", is(aMapWithSize(8))).
 			body("errorMessages.taxon", is(ValidationConstants.OBSOLETE_MESSAGE)).
 			body("errorMessages.inCollection", is(ValidationConstants.OBSOLETE_MESSAGE)).
-			body("errorMessages.alleleMutationTypes", is(String.join(" | ", List.of(
-					"evidence - " + ValidationConstants.OBSOLETE_MESSAGE,
-					"mutationTypes - " + ValidationConstants.OBSOLETE_MESSAGE)))).
-			body("errorMessages.alleleInheritanceModes", is(String.join(" | ", List.of(
-					"evidence - " + ValidationConstants.OBSOLETE_MESSAGE,
-					"inheritanceMode - " + ValidationConstants.OBSOLETE_MESSAGE,
-					"phenotypeTerm - " + ValidationConstants.OBSOLETE_MESSAGE)))).
 			body("errorMessages.alleleSymbol", is(String.join(" | ", List.of(
 					"evidence - " + ValidationConstants.OBSOLETE_MESSAGE,
 					"nameType - " + ValidationConstants.OBSOLETE_MESSAGE,
@@ -1147,25 +1144,13 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 					"evidence - " + ValidationConstants.OBSOLETE_MESSAGE,
 					"nameType - " + ValidationConstants.OBSOLETE_MESSAGE,
 					"synonymScope - " + ValidationConstants.OBSOLETE_MESSAGE)))).
-			body("errorMessages.alleleSynonyms", is(String.join(" | ", List.of(
-					"evidence - " + ValidationConstants.OBSOLETE_MESSAGE,
-					"nameType - " + ValidationConstants.OBSOLETE_MESSAGE,
-					"synonymScope - " + ValidationConstants.OBSOLETE_MESSAGE)))).
-			body("errorMessages.alleleSecondaryIds", is("evidence - " + ValidationConstants.OBSOLETE_MESSAGE)).
 			body("errorMessages.dataProvider", is(ValidationConstants.OBSOLETE_MESSAGE)).
-			body("errorMessages.alleleFunctionalImpacts", is(String.join(" | ", List.of(
-					"evidence - " + ValidationConstants.OBSOLETE_MESSAGE,
-					"functionalImpacts - " + ValidationConstants.OBSOLETE_MESSAGE,
-					"phenotypeTerm - " + ValidationConstants.OBSOLETE_MESSAGE)))).
 			body("errorMessages.alleleGermlineTransmissionStatus", is(String.join(" | ", List.of(
 					"evidence - " + ValidationConstants.OBSOLETE_MESSAGE,
 					"germlineTransmissionStatus - " + ValidationConstants.OBSOLETE_MESSAGE)))).
 			body("errorMessages.alleleDatabaseStatus", is(String.join(" | ", List.of(
 					"databaseStatus - " + ValidationConstants.OBSOLETE_MESSAGE,
 					"evidence - " + ValidationConstants.OBSOLETE_MESSAGE)))).
-			body("errorMessages.alleleNomenclatureEvents", is(String.join(" | ", List.of(
-					"evidence - " + ValidationConstants.OBSOLETE_MESSAGE,
-					"nomenclatureEvent - " + ValidationConstants.OBSOLETE_MESSAGE)))).
 			body("errorMessages.relatedNotes", is(String.join(" | ", List.of(
 					"noteType - " + ValidationConstants.OBSOLETE_MESSAGE,
 					"references - " + ValidationConstants.OBSOLETE_MESSAGE))));
@@ -1174,7 +1159,7 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 	@Test
 	@Order(15)
 	public void editAlleleWithObsoleteFields() {
-		Allele allele = getAllele(ALLELE);
+		Allele allele = findAllele(ALLELE);
 		allele.setTaxon(obsoleteTaxon);
 		allele.setInCollection(obsoleteCollection);
 		allele.setReferences(List.of(obsoleteReference));
@@ -1327,7 +1312,7 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 	@Order(17)
 	public void editAlleleWithNullNonRequiredFieldsLevel2() {
 		// Level 2 done before 1 to avoid having to restore nulled fields
-		Allele allele = getAllele(ALLELE);
+		Allele allele = findAllele(ALLELE);
 
 		AlleleMutationTypeSlotAnnotation editedMutationType = allele.getAlleleMutationTypes().get(0);
 		editedMutationType.setEvidence(null);
@@ -1397,36 +1382,38 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 			get("/api/allele/" + ALLELE).
 			then().
 			statusCode(200).
-			body("entity", hasKey("alleleMutationTypes")).
-			body("entity", hasKey("alleleInheritanceModes")).
 			body("entity", hasKey("alleleSymbol")).
 			body("entity", hasKey("alleleFullName")).
-			body("entity", hasKey("alleleSynonyms")).
-			body("entity", hasKey("alleleSecondaryIds")).
-			body("entity", hasKey("alleleFunctionalImpacts")).
 			body("entity", hasKey("alleleGermlineTransmissionStatus")).
 			body("entity", hasKey("alleleDatabaseStatus")).
-			body("entity.alleleMutationTypes[0]", not(hasKey("evidence"))).
-			body("entity.alleleInheritanceModes[0]", not(hasKey("evidence"))).
-			body("entity.alleleInheritanceModes[0]", not(hasKey("phenotypeTerm"))).
-			body("entity.alleleInheritanceModes[0]", not(hasKey("phenotypeStatement"))).
 			body("entity.alleleSymbol", not(hasKey("evidence"))).
 			body("entity.alleleSymbol", not(hasKey("synonymScope"))).
 			body("entity.alleleSymbol", not(hasKey("synonymUrl"))).
 			body("entity.alleleFullName", not(hasKey("evidence"))).
 			body("entity.alleleFullName", not(hasKey("synonymScope"))).
 			body("entity.alleleFullName", not(hasKey("synonymUrl"))).
-			body("entity.alleleSynonyms[0]", not(hasKey("evidence"))).
-			body("entity.alleleSynonyms[0]", not(hasKey("synonymScope"))).
-			body("entity.alleleSynonyms[0]", not(hasKey("synonymUrl"))).
-			body("entity.alleleSecondaryIds[0]", not(hasKey("evidence"))).
-			body("entity.alleleFunctionalImpacts[0]", not(hasKey("evidence"))).
-			body("entity.alleleFunctionalImpacts[0]", not(hasKey("phenotypeTerm"))).
-			body("entity.alleleFunctionalImpacts[0]", not(hasKey("phenotypeStatement"))).
 			body("entity.alleleGermlineTransmissionStatus", not(hasKey("evidence"))).
 			body("entity.alleleDatabaseStatus", not(hasKey("evidence"))).
-			body("entity.alleleNomenclatureEvents[0]", not(hasKey("evidence"))).
 			body("entity.relatedNotes[0]", not(hasKey("references")));
+
+		findAlleleResponse(ALLELE).
+			body("results[0]", hasKey("alleleMutationTypes")).
+			body("results[0]", hasKey("alleleInheritanceModes")).
+			body("results[0]", hasKey("alleleSynonyms")).
+			body("results[0]", hasKey("alleleSecondaryIds")).
+			body("results[0]", hasKey("alleleFunctionalImpacts")).
+			body("results[0].alleleMutationTypes[0]", not(hasKey("evidence"))).
+			body("results[0].alleleInheritanceModes[0]", not(hasKey("evidence"))).
+			body("results[0].alleleInheritanceModes[0]", not(hasKey("phenotypeTerm"))).
+			body("results[0].alleleInheritanceModes[0]", not(hasKey("phenotypeStatement"))).
+			body("results[0].alleleSynonyms[0]", not(hasKey("evidence"))).
+			body("results[0].alleleSynonyms[0]", not(hasKey("synonymScope"))).
+			body("results[0].alleleSynonyms[0]", not(hasKey("synonymUrl"))).
+			body("results[0].alleleSecondaryIds[0]", not(hasKey("evidence"))).
+			body("results[0].alleleFunctionalImpacts[0]", not(hasKey("evidence"))).
+			body("results[0].alleleFunctionalImpacts[0]", not(hasKey("phenotypeTerm"))).
+			body("results[0].alleleFunctionalImpacts[0]", not(hasKey("phenotypeStatement"))).
+			body("results[0].alleleNomenclatureEvents[0]", not(hasKey("evidence")));
 	}
 
 	@Test
@@ -1476,17 +1463,19 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 			body("entity", not(hasKey("inCollection"))).
 			body("entity", not(hasKey("isExtinct"))).
 			body("entity", not(hasKey("dateCreated"))).
-			body("entity", not(hasKey("alleleMutationTypes"))).
-			body("entity", not(hasKey("alleleInheritanceModes"))).
 			body("entity", not(hasKey("alleleFullName"))).
-			body("entity", not(hasKey("alleleSynonyms"))).
-			body("entity", not(hasKey("alleleSecondaryIds"))).
-			body("entity", not(hasKey("alleleFunctionalImpacts"))).
 			body("entity", not(hasKey("alleleGermlineTransmissionStatus"))).
 			body("entity", not(hasKey("alleleDatabaseStatus"))).
-			body("entity", not(hasKey("alleleNomenclatureEvents"))).
 			body("entity", not(hasKey("relatedNotes"))).
 			body("entity", not(hasKey("dataProviderCrossReference")));
+
+		findAlleleResponse(ALLELE).
+			body("results[0]", not(hasKey("alleleMutationTypes"))).
+			body("results[0]", not(hasKey("alleleInheritanceModes"))).
+			body("results[0]", not(hasKey("alleleSynonyms"))).
+			body("results[0]", not(hasKey("alleleSecondaryIds"))).
+			body("results[0]", not(hasKey("alleleFunctionalImpacts"))).
+			body("results[0]", not(hasKey("alleleNomenclatureEvents")));
 
 		RestAssured.given().
 			when().
@@ -1673,9 +1662,7 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 		Set<String> allowed = Set.of(
 				"type", "id", "curie", "primaryExternalId", "modInternalId", "taxon", "inCollection", "isExtinct",
 				"relatedNotes", "dataProvider", "dataProviderCrossReference",
-				"alleleSymbol", "alleleFullName", "alleleSynonyms", "alleleSecondaryIds", "alleleMutationTypes",
-				"alleleInheritanceModes", "alleleFunctionalImpacts", "alleleGermlineTransmissionStatus",
-				"alleleDatabaseStatus", "alleleNomenclatureEvents",
+				"alleleSymbol", "alleleFullName", "alleleGermlineTransmissionStatus", "alleleDatabaseStatus",
 				"alleleVariantAssociations",
 				"createdBy", "updatedBy", "dateCreated", "dateUpdated", "dbDateCreated", "dbDateUpdated",
 				"internal", "obsolete");
@@ -1704,8 +1691,8 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 		assertNotNull(constructAssociationRelation, "constructAssociationRelation fixture is null");
 
 		Allele allele = getAllele(ROUND_TRIP_ALLELE);
-		// The detail payload never carries references or gene and construct associations, so both saves must leave
-		// these in place.
+		// The detail payload never carries references, slot annotation lists or gene and construct associations, so
+		// both saves must leave these in place.
 		RestAssured.given().
 				contentType("application/json").
 				body(new Reference[] { reference }).
@@ -1734,12 +1721,22 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 				then().
 				statusCode(200);
 
-		// reference2's crossReferences are reachable only through SlotAnnotation.evidence, the path that
-		// serializes Reference.crossReferences under AlleleDetailView.
-		allele.setAlleleInheritanceModes(List.of(
-				createAlleleInheritanceModeSlotAnnotation(List.of(reference2), dominantInheritanceMode, mpTerm, "Round trip")));
-		allele.setAlleleSecondaryIds(List.of(
-				createAlleleSecondaryIdSlotAnnotation(List.of(reference2), "TEST:RoundTripSecondary")));
+		// The slot annotation lists are written through their own sub-resources, so the detail saves below must
+		// leave them in place.
+		RestAssured.given().
+				contentType("application/json").
+				body(List.of(createAlleleInheritanceModeSlotAnnotation(List.of(reference2), dominantInheritanceMode, mpTerm, "Round trip"))).
+				when().
+				put("/api/allele/" + allele.getId() + "/inheritancemodes").
+				then().
+				statusCode(200);
+		RestAssured.given().
+				contentType("application/json").
+				body(List.of(createAlleleSecondaryIdSlotAnnotation(List.of(reference2), "TEST:RoundTripSecondary"))).
+				when().
+				put("/api/allele/" + allele.getId() + "/secondaryids").
+				then().
+				statusCode(200);
 
 		RestAssured.given().
 				contentType("application/json").
@@ -1761,13 +1758,18 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 
 		RestAssured.given().
 				when().
-				get("/api/allele/" + ROUND_TRIP_ALLELE).
+				get("/api/allele/" + allele.getId() + "/inheritancemodes").
 				then().
 				statusCode(200).
-				body("entity.alleleInheritanceModes", hasSize(1)).
-				body("entity.alleleSecondaryIds", hasSize(1)).
-				body("entity.alleleSecondaryIds[0].secondaryId", is("TEST:RoundTripSecondary")).
-				body("entity.alleleSecondaryIds[0].evidence[0].curie", is(reference2.getCurie()));
+				body("entities", hasSize(1));
+		RestAssured.given().
+				when().
+				get("/api/allele/" + allele.getId() + "/secondaryids").
+				then().
+				statusCode(200).
+				body("entities", hasSize(1)).
+				body("entities[0].secondaryId", is("TEST:RoundTripSecondary")).
+				body("entities[0].evidence[0].curie", is(reference2.getCurie()));
 
 		RestAssured.given().
 				when().
@@ -2030,6 +2032,22 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 				then().
 				statusCode(200).
 				extract().jsonPath().getList("results[0].crossReferences");
+	}
+
+	// GET /api/allele/{id} serializes AlleleDetailView, which omits the slot annotation lists written through
+	// the allele's own sub-resources, so the allele with them is read through find, which serializes AlleleView.
+	private ValidatableResponse findAlleleResponse(String primaryExternalId) {
+		return RestAssured.given().
+				contentType("application/json").
+				body("{\"primaryExternalId\": \"" + primaryExternalId + "\"}").
+				when().
+				post("/api/allele/find?limit=1&page=0").
+				then().
+				statusCode(200);
+	}
+
+	private Allele findAllele(String primaryExternalId) {
+		return findAlleleResponse(primaryExternalId).extract().body().as(new TypeRef<SearchResponse<Allele>>() { }).getResults().get(0);
 	}
 
 

@@ -67,6 +67,7 @@ export const useDuplicateAlleleSource = ({ alleleDispatch, subResources, isVisib
 		alleleDispatch({ type: 'SET', value: buildDuplicateAllele(sourceAllele) });
 
 		Object.entries(ALLELE_SUB_RESOURCES).forEach(async ([type, { path, label, buildCopies, copyOnlyWhenVisible }]) => {
+			if (!buildCopies) return;
 			if (copyOnlyWhenVisible && !formState.current.isVisible(copyOnlyWhenVisible)) return;
 
 			setListsLoading((count) => count + 1);

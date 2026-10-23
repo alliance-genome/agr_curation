@@ -133,12 +133,11 @@ const copyRows = (rows) => (rows?.length ? rows.map(copyRow) : undefined);
  * A new allele carrying the fields of a stored one that the create form edits, for the create page to
  * start from.
  *
- * Left behind: everything that identifies the stored allele (its ids and secondary IDs), its data
- * provider and audit fields, and the variant and construct associations the form does not edit. Cross
- * references, references and gene associations are written through their own sub-resources and copied
- * separately; see buildDuplicateCrossReferences, buildDuplicateGeneAssociations and useDuplicateAlleleSource.
- * Each copied row loses its own id and audit fields, so it is created afresh. A list with no rows is left
- * unset, as the detail endpoint leaves it, so its section starts hidden.
+ * Left behind: everything that identifies the stored allele (its ids), its data provider and audit fields,
+ * and the variant and construct associations the form does not edit. The lists in ALLELE_SUB_RESOURCES are
+ * written through their own sub-resources and copied separately; see useDuplicateAlleleSource. Each copied
+ * row loses its own id and audit fields, so it is created afresh. A list with no rows is left unset, as the
+ * detail endpoint leaves it, so its section starts hidden.
  *
  * @param {Object} allele an allele as the detail endpoint returns it
  * @returns {Object} an allele without an id, not obsolete, carrying only the lists that have rows
@@ -153,11 +152,6 @@ export const buildDuplicateAllele = (allele) => ({
 	relatedNotes: copyRows(allele.relatedNotes),
 	alleleSymbol: copyRow(allele.alleleSymbol),
 	alleleFullName: copyRow(allele.alleleFullName),
-	alleleSynonyms: copyRows(allele.alleleSynonyms),
-	alleleMutationTypes: copyRows(allele.alleleMutationTypes),
-	alleleInheritanceModes: copyRows(allele.alleleInheritanceModes),
-	alleleFunctionalImpacts: copyRows(allele.alleleFunctionalImpacts),
-	alleleNomenclatureEvents: copyRows(allele.alleleNomenclatureEvents),
 	alleleGermlineTransmissionStatus: copyRow(allele.alleleGermlineTransmissionStatus),
 	alleleDatabaseStatus: copyRow(allele.alleleDatabaseStatus),
 });

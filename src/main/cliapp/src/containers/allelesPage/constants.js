@@ -13,6 +13,34 @@ import {
 	prepareGeneAssociations,
 	stripGeneAssociation,
 } from './alleleGeneAssociations/utils';
+import {
+	buildSlotAnnotationCopies,
+	haveSameSlotAnnotationsBy,
+	prepareSlotAnnotations,
+	stripSlotAnnotation,
+} from './slotAnnotations/utils';
+import { sortedCuries } from './utils';
+
+/**
+ * A registry entry for one of the allele's slot annotation lists.
+ *
+ * @param {Object} options
+ * @param {string} options.path the list's path segment under the allele
+ * @param {string} options.label what the rows are, for messages
+ * @param {string} options.errorField the field the API keys the rows' errors under
+ * @param {(annotation: Object) => Array} options.fieldsOf the curator-editable fields of the list's own, compared
+ *   along with those every slot annotation has
+ * @param {boolean} [options.copy] whether a new allele copies the list
+ */
+const slotAnnotationList = ({ path, label, errorField, fieldsOf, copy = true }) => ({
+	path,
+	label,
+	errorField,
+	prepare: prepareSlotAnnotations,
+	strip: stripSlotAnnotation,
+	isSame: haveSameSlotAnnotationsBy(fieldsOf),
+	...(copy && { buildCopies: buildSlotAnnotationCopies }),
+});
 
 /**
  * The lists an allele holds through sub-resources of its own rather than in its payload, keyed by the name
@@ -29,7 +57,8 @@ import {
  *   `unsavableRowsMessage`
  *
  * and `useDuplicateAlleleSource`:
- * - `buildCopies` turns the rows a source allele holds, as the API returns them, into rows for a new allele
+ * - `buildCopies`, optional: turns the rows a source allele holds, as the API returns them, into rows for a new
+ *   allele; a list without it is not copied
  * - `copyOnlyWhenVisible`, optional: the form field whose section must be shown for the rows to be copied
  */
 export const ALLELE_SUB_RESOURCES = {
@@ -65,4 +94,56 @@ export const ALLELE_SUB_RESOURCES = {
 		markUnsavableRows: markRowsMissingGene,
 		unsavableRowsMessage: 'Select each gene from the autosuggest',
 	},
+	alleleSynonyms: slotAnnotationList({
+		path: 'synonyms',
+		label: 'synonyms',
+		errorField: 'alleleSynonyms',
+		fieldsOf: (synonym) => [
+			synonym.displayText || null,
+			synonym.formatText || null,
+			synonym.synonymUrl || null,
+			synonym.nameType?.name ?? null,
+			synonym.synonymScope?.name ?? null,
+		],
+	}),
+	// Secondary IDs identify the allele they belong to, so a new allele copies none.
+	alleleSecondaryIds: slotAnnotationList({
+		path: 'secondaryids',
+		label: 'secondary IDs',
+		errorField: 'alleleSecondaryIds',
+		fieldsOf: (secondaryId) => [secondaryId.secondaryId || null],
+		copy: false,
+	}),
+	alleleNomenclatureEvents: slotAnnotationList({
+		path: 'nomenclatureevents',
+		label: 'nomenclature events',
+		errorField: 'alleleNomenclatureEvents',
+		fieldsOf: (event) => [event.nomenclatureEvent?.name ?? null, Boolean(event.obsolete)],
+	}),
+	alleleMutationTypes: slotAnnotationList({
+		path: 'mutationtypes',
+		label: 'mutation types',
+		errorField: 'alleleMutationTypes',
+		fieldsOf: (mutationType) => [sortedCuries(mutationType.mutationTypes)],
+	}),
+	alleleFunctionalImpacts: slotAnnotationList({
+		path: 'functionalimpacts',
+		label: 'functional impacts',
+		errorField: 'alleleFunctionalImpacts',
+		fieldsOf: (functionalImpact) => [
+			(functionalImpact.functionalImpacts ?? []).map((term) => term?.name).sort(),
+			functionalImpact.phenotypeTerm?.curie ?? null,
+			functionalImpact.phenotypeStatement || null,
+		],
+	}),
+	alleleInheritanceModes: slotAnnotationList({
+		path: 'inheritancemodes',
+		label: 'inheritance modes',
+		errorField: 'alleleInheritanceModes',
+		fieldsOf: (inheritanceMode) => [
+			inheritanceMode.inheritanceMode?.name ?? null,
+			inheritanceMode.phenotypeTerm?.curie ?? null,
+			inheritanceMode.phenotypeStatement || null,
+		],
+	}),
 };

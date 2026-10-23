@@ -40,6 +40,12 @@ describe('useAlleleSubResources', () => {
 			'crossReferences',
 			'references',
 			'alleleGeneAssociations',
+			'alleleSynonyms',
+			'alleleSecondaryIds',
+			'alleleNomenclatureEvents',
+			'alleleMutationTypes',
+			'alleleFunctionalImpacts',
+			'alleleInheritanceModes',
 		]);
 		expect(result.current.isDirty).toBe(false);
 	});

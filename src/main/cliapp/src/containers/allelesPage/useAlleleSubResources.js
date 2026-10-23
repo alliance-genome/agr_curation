@@ -14,8 +14,24 @@ export const useAlleleSubResources = (alleleId) => {
 	const crossReferences = useAlleleSubResource('crossReferences', alleleId);
 	const references = useAlleleSubResource('references', alleleId);
 	const alleleGeneAssociations = useAlleleSubResource('alleleGeneAssociations', alleleId);
+	const alleleSynonyms = useAlleleSubResource('alleleSynonyms', alleleId);
+	const alleleSecondaryIds = useAlleleSubResource('alleleSecondaryIds', alleleId);
+	const alleleNomenclatureEvents = useAlleleSubResource('alleleNomenclatureEvents', alleleId);
+	const alleleMutationTypes = useAlleleSubResource('alleleMutationTypes', alleleId);
+	const alleleFunctionalImpacts = useAlleleSubResource('alleleFunctionalImpacts', alleleId);
+	const alleleInheritanceModes = useAlleleSubResource('alleleInheritanceModes', alleleId);
 
-	const subResources = { crossReferences, references, alleleGeneAssociations };
+	const subResources = {
+		crossReferences,
+		references,
+		alleleGeneAssociations,
+		alleleSynonyms,
+		alleleSecondaryIds,
+		alleleNomenclatureEvents,
+		alleleMutationTypes,
+		alleleFunctionalImpacts,
+		alleleInheritanceModes,
+	};
 	const lists = Object.entries(subResources);
 
 	/**

@@ -169,12 +169,19 @@ describe('buildDuplicateAllele', () => {
 			(field) => expect(duplicate).not.toHaveProperty(field)
 		);
 		Object.keys(audit).forEach((field) => expect(duplicate).not.toHaveProperty(field));
-		expect(duplicate.alleleSecondaryIds).toBeUndefined();
 		expect(duplicate).not.toHaveProperty('alleleVariantAssociations');
 		expect(duplicate).not.toHaveProperty('alleleConstructAssociations');
-		// References and gene associations are written through their own sub-resources and copied separately.
-		expect(duplicate).not.toHaveProperty('references');
-		expect(duplicate).not.toHaveProperty('alleleGeneAssociations');
+		// The lists written through their own sub-resources are copied separately.
+		[
+			'references',
+			'alleleGeneAssociations',
+			'alleleSynonyms',
+			'alleleSecondaryIds',
+			'alleleMutationTypes',
+			'alleleInheritanceModes',
+			'alleleFunctionalImpacts',
+			'alleleNomenclatureEvents',
+		].forEach((field) => expect(duplicate).not.toHaveProperty(field));
 		expect(duplicate.obsolete).toBe(false);
 	});
 
@@ -188,12 +195,7 @@ describe('buildDuplicateAllele', () => {
 		expect(duplicate.isExtinct).toBe(true);
 		expect(duplicate.alleleSymbol).toEqual({ displayText: 'abc-1', formatText: 'abc-1' });
 		expect(duplicate.alleleFullName).toEqual({ displayText: 'full name', formatText: 'full name' });
-		expect(duplicate.alleleSynonyms).toEqual([{ displayText: 'synonym' }]);
 		expect(duplicate.relatedNotes).toEqual([{ freeText: 'a note' }]);
-		expect(duplicate.alleleMutationTypes).toEqual([{ mutationTypes: [{ curie: 'SO:0001' }] }]);
-		expect(duplicate.alleleInheritanceModes).toEqual([{ inheritanceMode: { name: 'dominant' } }]);
-		expect(duplicate.alleleFunctionalImpacts).toEqual([{ functionalImpacts: [{ name: 'amorph' }] }]);
-		expect(duplicate.alleleNomenclatureEvents).toEqual([{ nomenclatureEvent: { name: 'symbol_updated' } }]);
 		expect(duplicate.alleleGermlineTransmissionStatus).toEqual({ germlineTransmissionStatus: { name: 'cell_line' } });
 		expect(duplicate.alleleDatabaseStatus).toEqual({ databaseStatus: { name: 'approved' } });
 	});
@@ -204,20 +206,18 @@ describe('buildDuplicateAllele', () => {
 		expect(duplicate.taxon).toEqual({ curie: '' });
 		expect(duplicate.inCollection).toEqual({ name: '' });
 		expect(duplicate.alleleSymbol).toBeNull();
-		expect(duplicate.alleleSynonyms).toBeUndefined();
+		expect(duplicate.relatedNotes).toBeUndefined();
 		expect(duplicate.alleleGeneAssociations).toBeUndefined();
 	});
 
 	it('Leaves a list with no rows unset, as the detail endpoint does', () => {
 		const duplicate = buildDuplicateAllele({
-			alleleFunctionalImpacts: [],
+			relatedNotes: [],
 			alleleGeneAssociations: [],
-			alleleMutationTypes: [{ id: 10, mutationTypes: [{ curie: 'SO:0001' }] }],
 		});
 
-		expect(duplicate.alleleFunctionalImpacts).toBeUndefined();
+		expect(duplicate.relatedNotes).toBeUndefined();
 		expect(duplicate.alleleGeneAssociations).toBeUndefined();
-		expect(duplicate.alleleMutationTypes).toEqual([{ mutationTypes: [{ curie: 'SO:0001' }] }]);
 	});
 
 	it('Does not mutate the allele it is given', () => {
