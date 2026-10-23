@@ -8,6 +8,7 @@ import org.alliancegenome.curation_api.interfaces.base.BaseUpsertControllerInter
 import org.alliancegenome.curation_api.model.entities.Variant;
 import org.alliancegenome.curation_api.model.ingest.dto.VariantDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.VariantFmsDTO;
+import org.alliancegenome.curation_api.model.output.VariantHgvs;
 import org.alliancegenome.curation_api.response.APIResponse;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
@@ -45,6 +46,12 @@ public interface VariantCrudInterface extends BaseSubmittedObjectCrudInterface<V
 	@Path("/bulk/{dataProvider}/fmsvariants")
 	@JsonView(CurationView.FieldsAndLists.class)
 	APIResponse updateFmsVariants(@PathParam("dataProvider") String dataProvider, List<VariantFmsDTO> alleleData);
+
+	@Operation(summary = "Export the HGVS of a data provider's variants", description = "A page of the data provider's allele - variant pairs, by allele: the allele's ID, the variant's AGRKB curie, the genomic HGVS (HGVS.g) of its curated location, and the coding (HGVS.c) and protein (HGVS.p) HGVS of its predicted consequences, one per transcript. Obsolete alleles, variants and links are left out. totalResults counts all pairs; page through them with page and limit (at most 10000).")
+	@GET
+	@Path("/{dataProvider}/hgvs")
+	@JsonView(CurationView.VariantHgvsView.class)
+	SearchResponse<VariantHgvs> getVariantHgvs(@PathParam("dataProvider") String dataProvider, @DefaultValue("0") @QueryParam("page") Integer page, @DefaultValue("1000") @QueryParam("limit") Integer limit);
 
 	@Override
 	@GET

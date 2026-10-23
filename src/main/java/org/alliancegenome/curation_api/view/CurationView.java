@@ -149,6 +149,10 @@ public class CurationView {
 	public static class VariantDetailView extends VariantView {
 	}
 
+	// SCRUM-6757: the HGVS export of a data provider's variants (/variant/{dataProvider}/hgvs)
+	public static class VariantHgvsView extends FieldsOnly {
+	}
+
 	public static class SpeciesView extends FieldsOnly {
 	}
 

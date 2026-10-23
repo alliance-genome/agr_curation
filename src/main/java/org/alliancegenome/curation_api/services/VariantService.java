@@ -15,8 +15,10 @@ import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.model.entities.Note;
 import org.alliancegenome.curation_api.model.entities.Variant;
 import org.alliancegenome.curation_api.model.ingest.dto.VariantDTO;
+import org.alliancegenome.curation_api.model.output.VariantHgvs;
 import org.alliancegenome.curation_api.response.ObjectListResponse;
 import org.alliancegenome.curation_api.response.ObjectResponse;
+import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.base.SubmittedObjectCrudService;
 import org.alliancegenome.curation_api.services.validation.VariantValidator;
 import org.alliancegenome.curation_api.services.validation.dto.VariantDTOValidator;
@@ -119,6 +121,20 @@ public class VariantService extends SubmittedObjectCrudService<Variant, VariantD
 
 	public ObjectListResponse<String> findAllVariantNames() {
 		return variantDAO.getAllVariantNames();
+	}
+
+	/** At most this many allele - variant pairs per page of the HGVS export. */
+	public static final int MAX_HGVS_PAGE_SIZE = 10000;
+
+	// SCRUM-6757: a page of a data provider's allele - variant pairs with their HGVS, and the total
+	public SearchResponse<VariantHgvs> getVariantHgvs(String dataProvider, Integer page, Integer limit) {
+		int pageNumber = page == null || page < 0 ? 0 : page;
+		int pageSize = limit == null || limit < 1 ? 1 : Math.min(limit, MAX_HGVS_PAGE_SIZE);
+
+		SearchResponse<VariantHgvs> response = new SearchResponse<>(variantDAO.findVariantHgvs(dataProvider, pageNumber, pageSize));
+		response.setTotalResults(variantDAO.countVariantHgvs(dataProvider));
+		response.setReturnedRecords(response.getResults().size());
+		return response;
 	}
 
 }
