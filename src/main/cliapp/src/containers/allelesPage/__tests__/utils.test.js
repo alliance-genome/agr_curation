@@ -1,4 +1,10 @@
-import { buildCreatePayload, buildDuplicateAllele, getPendingSingleValueFields, processErrors } from '../utils';
+import {
+	buildCreatePayload,
+	buildDuplicateAllele,
+	generateCrossRefSearchField,
+	getPendingSingleValueFields,
+	processErrors,
+} from '../utils';
 
 describe('buildCreatePayload', () => {
 	it('Drops a taxon with no curie', () => {
@@ -343,5 +349,16 @@ describe('getPendingSingleValueFields single-object sections', () => {
 		};
 
 		expect([...getPendingSingleValueFields(allele, saved)]).toEqual(['alleleFullName', 'alleleDatabaseStatus']);
+	});
+});
+
+describe('generateCrossRefSearchField', () => {
+	it('joins the curies of a reference cross references', () => {
+		const reference = { crossReferences: [{ referencedCurie: 'PMID:1' }, { referencedCurie: 'DOI:2' }] };
+		expect(generateCrossRefSearchField(reference)).toBe('PMID:1,DOI:2');
+	});
+
+	it('is empty for a reference without cross references, which the API sends without the key', () => {
+		expect(generateCrossRefSearchField({ curie: 'AGRKB:101' })).toBe('');
 	});
 });
