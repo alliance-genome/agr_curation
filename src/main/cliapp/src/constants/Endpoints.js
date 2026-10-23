@@ -27,6 +27,7 @@ export const Endpoints = Object.freeze({
 		GENE_EXPRESSION_ANNOTATION: 'gene-expression-annotation',
 		GENE_GENETIC_INTERACTION: 'gene-genetic-interaction',
 		GENE_MOLECULAR_INTERACTION: 'gene-molecular-interaction',
+		HTP_EXPRESSION_DATASET_ANNOTATION: 'htpexpressiondatasetannotation',
 		PHENOTYPE_ANNOTATION: 'phenotype-annotation',
 	}),
 

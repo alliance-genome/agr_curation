@@ -1,13 +1,26 @@
 import { Button } from 'primereact/button';
 import { FormTableWrapper } from '../../../components/FormTableWrapper';
-import { NomenclatureEventsFormTable } from '../nomenclatureEvents/NomenclatureEventsFormTable';
+import { NomenclatureEventsFormTable } from './NomenclatureEventsFormTable';
 import { useRef } from 'react';
-import { addDataKey } from '../utils';
+import { addDataKey, KEEP_ROWS_IN_EDIT_MODE } from '../utils';
+import { useAlleleFormStrategy } from '../useAlleleFormStrategy';
+import { TableEditorProvider } from '../../../components/Editors/fields/TableEditorContext';
+import { useControlledVocabularyService } from '../../../service/useControlledVocabularyService';
 
+const ENTITY_TYPE = 'alleleNomenclatureEvents';
+
+/**
+ * The allele detail and create pages' nomenclature events section. Its rows live in the allele
+ * reducer and are saved with the allele.
+ *
+ * @param {object} state - allele reducer state
+ * @param {Function} dispatch - allele reducer dispatch
+ * @returns {JSX.Element}
+ */
 export const NomenclatureEventsForm = ({ state, dispatch }) => {
 	const tableRef = useRef(null);
-	const entityType = 'alleleNomenclatureEvents';
-	const nomenclatureEvents = structuredClone(state.allele?.[entityType]);
+	const strategy = useAlleleFormStrategy({ state, dispatch, entityType: ENTITY_TYPE });
+	const nomenclatureEventTerms = useControlledVocabularyService('allele_nomenclature_event');
 
 	const createNewNomenclatureEventHandler = (e) => {
 		e.preventDefault();
@@ -22,85 +35,34 @@ export const NomenclatureEventsForm = ({ state, dispatch }) => {
 		dispatch({
 			type: 'ADD_ROW',
 			row: newNomenclatureEvent,
-			entityType: entityType,
-		});
-	};
-
-	const onRowEditChange = (e) => {
-		return null;
-	};
-
-	const nomenclatureEventOnChangeHandler = (props, event) => {
-		props.editorCallback(event.target.value);
-		dispatch({
-			type: 'EDIT_ROW',
-			entityType: entityType,
-			index: props.rowIndex,
-			field: 'nomenclatureEvent',
-			value: event.target.value,
-		});
-	};
-
-	const internalOnChangeHandler = (props, event) => {
-		props.editorCallback(event.target.value?.name);
-		dispatch({
-			type: 'EDIT_ROW',
-			entityType: entityType,
-			index: props.rowIndex,
-			field: 'internal',
-			value: event.target?.value?.name,
-		});
-	};
-
-	const obsoleteOnChangeHandler = (props, event) => {
-		props.editorCallback(event.target.value?.name);
-		dispatch({
-			type: 'EDIT_ROW',
-			entityType: entityType,
-			index: props.rowIndex,
-			field: 'obsolete',
-			value: event.target?.value?.name,
-		});
-	};
-
-	const evidenceOnChangeHandler = (event, setFieldValue, props) => {
-		//updates value in table input box
-		setFieldValue(event.target.value);
-		dispatch({
-			type: 'EDIT_ROW',
-			entityType: entityType,
-			index: props.rowIndex,
-			field: 'evidence',
-			value: event.target.value,
+			entityType: ENTITY_TYPE,
 		});
 	};
 
 	const deletionHandler = (e, dataKey) => {
 		e.preventDefault();
-		const updatedErrorMessages = structuredClone(state.entityStates[entityType].errorMessages);
+		const updatedErrorMessages = structuredClone(state.entityStates[ENTITY_TYPE].errorMessages);
 		delete updatedErrorMessages[dataKey];
-		dispatch({ type: 'DELETE_ROW', entityType: entityType, dataKey });
-		dispatch({ type: 'UPDATE_TABLE_ERROR_MESSAGES', entityType: entityType, errorMessages: updatedErrorMessages });
+		dispatch({ type: 'DELETE_ROW', entityType: ENTITY_TYPE, dataKey });
+		dispatch({ type: 'UPDATE_TABLE_ERROR_MESSAGES', entityType: ENTITY_TYPE, errorMessages: updatedErrorMessages });
 	};
 
 	return (
 		<FormTableWrapper
 			table={
-				<NomenclatureEventsFormTable
-					nomenclatureEvents={nomenclatureEvents}
-					editingRows={state.entityStates[entityType].editingRows}
-					onRowEditChange={onRowEditChange}
-					tableRef={tableRef}
-					deletionHandler={deletionHandler}
-					errorMessages={state.entityStates[entityType].errorMessages}
-					nomenclatureEventOnChangeHandler={nomenclatureEventOnChangeHandler}
-					obsoleteOnChangeHandler={obsoleteOnChangeHandler}
-					internalOnChangeHandler={internalOnChangeHandler}
-					evidenceOnChangeHandler={evidenceOnChangeHandler}
-				/>
+				<TableEditorProvider strategy={strategy}>
+					<NomenclatureEventsFormTable
+						nomenclatureEvents={state.allele?.[ENTITY_TYPE]}
+						editingRows={state.entityStates[ENTITY_TYPE].editingRows}
+						onRowEditChange={KEEP_ROWS_IN_EDIT_MODE}
+						tableRef={tableRef}
+						deletionHandler={deletionHandler}
+						nomenclatureEventTerms={nomenclatureEventTerms}
+					/>
+				</TableEditorProvider>
 			}
 			tableName="Nomenclature Events"
-			showTable={state.entityStates[entityType].show}
+			showTable={state.entityStates[ENTITY_TYPE].show}
 			button={
 				<Button
 					label="Add Nomenclature Event"

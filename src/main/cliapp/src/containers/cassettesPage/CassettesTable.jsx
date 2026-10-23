@@ -77,9 +77,6 @@ export const CassettesTable = ({ tableName = 'Cassettes', fixedFilters }) => {
 
 	const searchService = new SearchService();
 
-	const errorMessagesRef = useRef();
-	errorMessagesRef.current = errorMessages;
-
 	const handleFullNameOpen = (cassetteFullName) => {
 		setFullNameData({ originalFullNames: [cassetteFullName], dialog: true });
 	};

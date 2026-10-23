@@ -199,6 +199,14 @@ export const getPendingSingleValueFields = (allele, savedAllele) => {
 	);
 };
 
+/**
+ * DataTable `onRowEditChange` handler for the form tables, which keep every row in
+ * edit mode. PrimeReact ignores the `editingRows` prop unless a handler is supplied,
+ * and every row then falls back to its own internal state and renders read-only body
+ * cells. There is nothing to update, so the handler does nothing.
+ */
+export const KEEP_ROWS_IN_EDIT_MODE = () => null;
+
 export const processErrors = (data, dispatch, allele) => {
 	const errorMap = data?.supplementalData?.errorMap;
 	const errorMessages = data?.errorMessages;

@@ -344,6 +344,14 @@ export const FIELD_SETS = Object.freeze({
 		filterName: 'transgenicToolAggregationFilter',
 		fields: ['dataProvider.abbreviation'],
 	},
+	htpExpressionDatasetAnnotationAggregationFieldSet: {
+		filterName: 'htpExpressionDatasetAnnotationAggregationFilter',
+		fields: ['dataProvider.abbreviation'],
+	},
+	htpExpressionDatasetAnnotationCategoryTagsFieldSet: {
+		filterName: 'htpExpressionDatasetAnnotationCategoryTagsFilter',
+		fields: ['categoryTags.name'],
+	},
 	sequenceTargetingReagentTargetedGenesFieldSet: {
 		filterName: 'sequenceTargetingReagentTargetedGenesFilter',
 		fields: [
@@ -1553,6 +1561,16 @@ export const FILTER_CONFIGS = Object.freeze({
 		fieldSets: [FIELD_SETS.dataProviderFieldSet],
 		aggregationFieldSet: FIELD_SETS.transgenicToolAggregationFieldSet,
 		useKeywordFields: true,
+	},
+	htpExpressionDatasetAnnotationDataProviderFilterConfig: {
+		filterComponentType: 'multiselect',
+		fieldSets: [FIELD_SETS.dataProviderFieldSet],
+		aggregationFieldSet: FIELD_SETS.htpExpressionDatasetAnnotationAggregationFieldSet,
+		useKeywordFields: true,
+	},
+	htpExpressionDatasetAnnotationCategoryTagsFilterConfig: {
+		filterComponentType: 'input',
+		fieldSets: [FIELD_SETS.htpExpressionDatasetAnnotationCategoryTagsFieldSet],
 	},
 	sequenceTargetingReagentTargetedGenesFilterConfig: {
 		filterComponentType: 'input',

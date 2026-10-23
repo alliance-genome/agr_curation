@@ -30,7 +30,7 @@ import { SynonymsEditDialog } from '../nameSlotAnnotations/dialogs/SynonymsEditD
 import { SynonymsReadOnlyDialog } from '../nameSlotAnnotations/dialogs/SynonymsReadOnlyDialog';
 import { RelatedNotesEditDialog } from '../../components/RelatedNotesEditDialog';
 import { RelatedNotesReadOnlyDialog } from '../../components/RelatedNotesReadOnlyDialog';
-import { DialogTriggerEditor } from '../../components/Editors/dialog/DialogTriggerEditor';
+import { DialogTriggerTableEditor } from '../../components/Editors/dialog/DialogTriggerTableEditor';
 import { TaxonTableEditor } from '../../components/Editors/autocomplete/taxon/TaxonTableEditor';
 import { InCollectionTableEditor } from '../../components/Editors/autocomplete/inCollection/InCollectionTableEditor';
 import { ReferencesTableEditor } from '../../components/Editors/autocomplete/references/ReferencesTableEditor';
@@ -55,8 +55,6 @@ import { OntologyTermTemplate } from '../../components/Templates/OntologyTermTem
 export const AllelesTable = () => {
 	const [isInEditMode, setIsInEditMode] = useState(false);
 	const [errorMessages, setErrorMessages] = useState({});
-	const errorMessagesRef = useRef();
-	errorMessagesRef.current = errorMessages;
 
 	const [totalRecords, setTotalRecords] = useState(0);
 	const [alleles, setAlleles] = useState([]);
@@ -483,9 +481,8 @@ export const AllelesTable = () => {
 					/>
 				),
 				editor: (editorOptions) => (
-					<DialogTriggerEditor
+					<DialogTriggerTableEditor
 						editorOptions={editorOptions}
-						errorMessagesRef={errorMessagesRef}
 						onOpenInEdit={handleFullNameOpenInEdit}
 						errorField="alleleFullName"
 						displayHtml={editorOptions.rowData.alleleFullName?.displayText}
@@ -509,9 +506,8 @@ export const AllelesTable = () => {
 					/>
 				),
 				editor: (editorOptions) => (
-					<DialogTriggerEditor
+					<DialogTriggerTableEditor
 						editorOptions={editorOptions}
-						errorMessagesRef={errorMessagesRef}
 						onOpenInEdit={handleSymbolOpenInEdit}
 						errorField="alleleSymbol"
 						displayHtml={editorOptions.rowData.alleleSymbol?.displayText}
@@ -537,9 +533,8 @@ export const AllelesTable = () => {
 				editor: (editorOptions) => {
 					const count = editorOptions.rowData.alleleSynonyms?.length;
 					return (
-						<DialogTriggerEditor
+						<DialogTriggerTableEditor
 							editorOptions={editorOptions}
-							errorMessagesRef={errorMessagesRef}
 							onOpenInEdit={handleSynonymsOpenInEdit}
 							errorField="alleleSynonyms"
 							displayText={count ? `Synonyms(${count}) ` : null}
@@ -565,9 +560,8 @@ export const AllelesTable = () => {
 				editor: (editorOptions) => {
 					const count = editorOptions.rowData.alleleSecondaryIds?.length;
 					return (
-						<DialogTriggerEditor
+						<DialogTriggerTableEditor
 							editorOptions={editorOptions}
-							errorMessagesRef={errorMessagesRef}
 							onOpenInEdit={handleSecondaryIdsOpenInEdit}
 							errorField="alleleSecondaryIds"
 							displayText={count ? `Secondary IDs(${count}) ` : null}
@@ -595,9 +589,8 @@ export const AllelesTable = () => {
 				editor: (editorOptions) => {
 					const count = editorOptions.rowData.alleleNomenclatureEvents?.length;
 					return (
-						<DialogTriggerEditor
+						<DialogTriggerTableEditor
 							editorOptions={editorOptions}
-							errorMessagesRef={errorMessagesRef}
 							onOpenInEdit={handleNomenclatureEventsOpenInEdit}
 							errorField="alleleNomenclatureEvents"
 							displayText={count ? `Nomenclature Events(${count}) ` : null}
@@ -631,9 +624,8 @@ export const AllelesTable = () => {
 				editor: (editorOptions) => {
 					const count = editorOptions.rowData.alleleMutationTypes?.length;
 					return (
-						<DialogTriggerEditor
+						<DialogTriggerTableEditor
 							editorOptions={editorOptions}
-							errorMessagesRef={errorMessagesRef}
 							onOpenInEdit={handleMutationTypesOpenInEdit}
 							errorField="alleleMutationTypes"
 							displayText={count ? `Mutation Types(${count}) ` : null}
@@ -660,9 +652,8 @@ export const AllelesTable = () => {
 				editor: (editorOptions) => {
 					const count = editorOptions.rowData.alleleFunctionalImpacts?.length;
 					return (
-						<DialogTriggerEditor
+						<DialogTriggerTableEditor
 							editorOptions={editorOptions}
-							errorMessagesRef={errorMessagesRef}
 							onOpenInEdit={handleFunctionalImpactsOpenInEdit}
 							errorField="alleleFunctionalImpacts"
 							displayText={count ? `Functional Impacts(${count}) ` : null}
@@ -686,9 +677,8 @@ export const AllelesTable = () => {
 					/>
 				),
 				editor: (editorOptions) => (
-					<DialogTriggerEditor
+					<DialogTriggerTableEditor
 						editorOptions={editorOptions}
-						errorMessagesRef={errorMessagesRef}
 						onOpenInEdit={handleGermlineTransmissionStatusOpenInEdit}
 						errorField="alleleGermlineTransmissionStatus"
 						displayText={editorOptions.rowData.alleleGermlineTransmissionStatus?.germlineTransmissionStatus?.name}
@@ -711,9 +701,8 @@ export const AllelesTable = () => {
 					/>
 				),
 				editor: (editorOptions) => (
-					<DialogTriggerEditor
+					<DialogTriggerTableEditor
 						editorOptions={editorOptions}
-						errorMessagesRef={errorMessagesRef}
 						onOpenInEdit={handleDatabaseStatusOpenInEdit}
 						errorField="alleleDatabaseStatus"
 						displayText={editorOptions.rowData.alleleDatabaseStatus?.databaseStatus?.name}
@@ -755,9 +744,8 @@ export const AllelesTable = () => {
 				editor: (editorOptions) => {
 					const count = editorOptions.rowData.alleleInheritanceModes?.length;
 					return (
-						<DialogTriggerEditor
+						<DialogTriggerTableEditor
 							editorOptions={editorOptions}
-							errorMessagesRef={errorMessagesRef}
 							onOpenInEdit={handleInheritanceModesOpenInEdit}
 							errorField="alleleInheritanceModes"
 							displayText={count ? `Inheritance Modes(${count}) ` : null}
@@ -798,9 +786,8 @@ export const AllelesTable = () => {
 				editor: (editorOptions) => {
 					const count = editorOptions.rowData.relatedNotes?.length;
 					return (
-						<DialogTriggerEditor
+						<DialogTriggerTableEditor
 							editorOptions={editorOptions}
-							errorMessagesRef={errorMessagesRef}
 							onOpenInEdit={handleRelatedNotesOpenInEdit}
 							errorField="relatedNotes"
 							displayText={count ? `Notes(${count}) ` : null}
@@ -829,9 +816,8 @@ export const AllelesTable = () => {
 				editor: (editorOptions) => {
 					const count = editorOptions.rowData.crossReferences?.length;
 					return (
-						<DialogTriggerEditor
+						<DialogTriggerTableEditor
 							editorOptions={editorOptions}
-							errorMessagesRef={errorMessagesRef}
 							onOpenInEdit={handleCrossReferencesOpenInEdit}
 							errorField="crossReferences"
 							displayText={count ? `Cross References(${count}) ` : null}
@@ -892,7 +878,7 @@ export const AllelesTable = () => {
 			},
 		],
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-		[errorMessagesRef]
+		[]
 	);
 
 	const DEFAULT_COLUMN_WIDTH = 10;
@@ -979,7 +965,7 @@ export const AllelesTable = () => {
 			<SynonymsEditDialog
 				name="Allele Synonym"
 				field="alleleSynonyms"
-				endpoint="allelesynonymslotannotation"
+				endpoint={Endpoints.SlotAnnotation.ALLELE_SYNONYM}
 				originalSynonymsData={synonymsData}
 				setOriginalSynonymsData={setSynonymsData}
 				errorMessagesMainRow={errorMessages}

@@ -67,7 +67,7 @@ describe('haveSameGeneAssociations', () => {
 	it.each([
 		['relation', { relation: { name: 'duplication' } }],
 		['gene', { alleleGeneAssociationObject: otherGene }],
-		['gene typed but not picked', { alleleGeneAssociationObject: 'WB:WBGene1' }],
+		['gene typed but not picked', { alleleGeneAssociationObject: { primaryExternalId: 'WB:WBGene1' } }],
 		['evidence code', { evidenceCode: { curie: 'ECO:0000316' } }],
 		['evidence', { evidence: [reference, otherReference] }],
 		['note text', { relatedNote: { ...storedAssociation().relatedNote, freeText: 'changed' } }],
@@ -130,7 +130,7 @@ describe('markRowsMissingGene', () => {
 	it('Marks rows whose gene was typed rather than picked, or not given, keeping their other errors', () => {
 		const rows = [
 			{ dataKey: 'picked', alleleGeneAssociationObject: gene },
-			{ dataKey: 'typed', alleleGeneAssociationObject: 'WB:WBGene1' },
+			{ dataKey: 'typed', alleleGeneAssociationObject: { primaryExternalId: 'WB:WBGene1' } },
 			{ dataKey: 'blank' },
 		];
 		const existing = { blank: { relation: { severity: 'error', message: 'Required' } } };

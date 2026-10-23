@@ -18,6 +18,8 @@ import { autocompleteSearch, buildAutocompleteFilter } from '../../../../utils/u
  *   them when the value is not ready until the search runs
  * @param {Function} [valueDisplay] - custom suggestion renderer
  * @param {string} [initialValue] - overrides the text shown for the current value
+ * @param {(value: object|null) => string} [toDisplay] - derives the text shown from the current
+ *   value, in place of `value[subField]`
  * @returns {JSX.Element}
  */
 export const AutocompleteSingleTableEditor = ({
@@ -30,6 +32,7 @@ export const AutocompleteSingleTableEditor = ({
 	otherFilters,
 	valueDisplay,
 	initialValue,
+	toDisplay,
 }) => {
 	const searchService = new SearchService();
 
@@ -47,7 +50,7 @@ export const AutocompleteSingleTableEditor = ({
 					{...binding}
 					search={search}
 					subField={subField}
-					toDisplay={initialValue === undefined ? undefined : () => initialValue}
+					toDisplay={toDisplay ?? (initialValue === undefined ? undefined : () => initialValue)}
 					valueDisplay={valueDisplay}
 				/>
 			)}

@@ -852,7 +852,6 @@ export const NewAnnotationForm = ({
 											conditionRelations={newAnnotation.conditionRelations}
 											showConditionRelations={showConditionRelations}
 											errorMessages={exConErrorMessages}
-											searchService={searchService}
 											buttonIsDisabled={isConditionRelationButtonEnabled()}
 											editingRows={conditionRelationsEditingRows}
 										/>

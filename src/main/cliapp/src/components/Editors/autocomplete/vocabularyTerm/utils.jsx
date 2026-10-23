@@ -28,6 +28,26 @@ export const buildMemberTermsOtherFilters = (vocabularyName) => ({
 	},
 });
 
+export const functionalImpactsSearchConfig = {
+	endpoint: Endpoints.Vocabulary.TERM,
+	autocompleteFields: getAutocompleteFields(AUTOCOMPLETE_CONFIGS.nameOnlyAutocompleteConfig),
+	filterName: 'functionalImpactFilter',
+	// The vocabulary is fixed rather than read off the row, so the scoping filter belongs in the config.
+	otherFilters: {
+		vocabularyFilter: {
+			'vocabulary.vocabularyLabel': { queryString: 'allele_functional_impact' },
+		},
+	},
+	valueDisplay: (item, setAutocompleteSelectedItem, op, query) => (
+		<VocabTermAutocompleteTemplate
+			item={item}
+			setAutocompleteSelectedItem={setAutocompleteSelectedItem}
+			op={op}
+			query={query}
+		/>
+	),
+};
+
 export const memberTermsSearch = (event, setFiltered, setInputValue, otherFilters) => {
 	const searchService = new SearchService();
 	setInputValue(event.query);

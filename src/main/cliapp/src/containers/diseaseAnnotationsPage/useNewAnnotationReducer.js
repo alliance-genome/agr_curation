@@ -33,8 +33,8 @@ const DEFAULT_ANNOTATION = {
 const initialNewAnnotationState = {
 	newAnnotation: structuredClone(DEFAULT_ANNOTATION),
 	errorMessages: {},
-	relatedNotesErrorMessages: [],
-	exConErrorMessages: [],
+	relatedNotesErrorMessages: {},
+	exConErrorMessages: {},
 	submitted: false,
 	newAnnotationDialog: false,
 	showRelatedNotes: false,
@@ -59,8 +59,10 @@ const buildAnnotation = (rowData) => {
 		evidenceItem: structuredClone(rowData.evidenceItem) || DEFAULT_ANNOTATION.evidenceItem,
 		evidenceCodes: structuredClone(rowData.evidenceCodes) || DEFAULT_ANNOTATION.subject,
 		with: structuredClone(rowData.with) || DEFAULT_ANNOTATION.with,
-		relatedNotes: processDupRelatedNotes(structuredClone(rowData.relatedNotes)) || DEFAULT_ANNOTATION.relatedNotes,
-		conditionRelations: structuredClone(rowData.conditionRelations) || DEFAULT_ANNOTATION.conditionRelations,
+		relatedNotes:
+			withDataKeys(processDupRelatedNotes(structuredClone(rowData.relatedNotes))) || DEFAULT_ANNOTATION.relatedNotes,
+		conditionRelations:
+			withDataKeys(structuredClone(rowData.conditionRelations)) || DEFAULT_ANNOTATION.conditionRelations,
 		geneticSex: structuredClone(rowData.geneticSex) || DEFAULT_ANNOTATION.geneticSex,
 		diseaseQualifiers: structuredClone(rowData.diseaseQualifiers) || DEFAULT_ANNOTATION.diseaseQualifiers,
 		sgdStrainBackground: structuredClone(rowData.sgdStrainBackground) || DEFAULT_ANNOTATION.sgdStrainBackground,
@@ -75,6 +77,20 @@ const buildAnnotation = (rowData) => {
 			structuredClone(rowData.diseaseGeneticModifierGenes) || DEFAULT_ANNOTATION.diseaseGeneticModifierGenes,
 		internal: rowData.internal || DEFAULT_ANNOTATION.internal,
 	};
+};
+
+/**
+ * Gives each copied row a key of its own, which the tables address it by.
+ *
+ * @param {object[]} [rows] - copied rows, keyed in place
+ * @returns {object[]|undefined} the same rows
+ */
+const withDataKeys = (rows) => {
+	if (!rows) return;
+	rows.forEach((row) => {
+		row.dataKey = crypto.randomUUID();
+	});
+	return rows;
 };
 
 const processDupRelatedNotes = (notes) => {
@@ -109,7 +125,7 @@ const newAnnotationReducer = (draft, action) => {
 		case 'SUBMIT':
 			draft.submitted = true;
 			draft.errorMessages = {};
-			draft.relatedNotesErrorMessages = [];
+			draft.relatedNotesErrorMessages = {};
 			draft.isValid = false;
 			break;
 		case 'OPEN_DIALOG':
@@ -120,34 +136,42 @@ const newAnnotationReducer = (draft, action) => {
 			break;
 		case 'CLEAR':
 			return { ...initialNewAnnotationState, newAnnotationDialog: true };
-		case 'ADD_NEW_NOTE':
+		case 'ADD_NEW_NOTE': {
+			const dataKey = crypto.randomUUID();
 			draft.newAnnotation.relatedNotes.push({
-				dataKey: action.count,
+				dataKey,
 				noteType: {
 					name: '',
 				},
 				freeText: '',
 			});
-			draft.relatedNotesEditingRows[`${action.count}`] = true;
+			draft.relatedNotesEditingRows[dataKey] = true;
 			draft.showRelatedNotes = true;
 			break;
-		case 'ADD_NEW_RELATION':
+		}
+		case 'ADD_NEW_RELATION': {
+			const dataKey = crypto.randomUUID();
 			draft.newAnnotation.conditionRelations.push({
-				dataKey: action.count,
+				dataKey,
 				conditions: [],
 			});
-			draft.conditionRelationsEditingRows[`${action.count}`] = true;
+			draft.conditionRelationsEditingRows[dataKey] = true;
 			draft.showConditionRelations = true;
 			break;
+		}
 		case 'DELETE_ROW':
-			draft.newAnnotation[action.tableType].splice(action.index, 1);
+			draft.newAnnotation[action.tableType] = draft.newAnnotation[action.tableType].filter(
+				(row) => row.dataKey !== action.dataKey
+			);
 			if (draft.newAnnotation[action.tableType].length === 0) {
 				draft[action.showType] = false;
 			}
 			break;
-		case 'EDIT_ROW':
-			draft.newAnnotation[action.tableType][action.index][action.field] = action.value;
+		case 'EDIT_ROW': {
+			const row = draft.newAnnotation[action.tableType].find((candidate) => candidate.dataKey === action.dataKey);
+			if (row) row[action.field] = action.value;
 			break;
+		}
 		case 'SET_IS_ENABLED':
 			draft.isEnabled = action.value;
 			break;
@@ -158,13 +182,13 @@ const newAnnotationReducer = (draft, action) => {
 			draft.isAssertedAlleleEnabled = action.value;
 			break;
 		case 'SET_RELATED_NOTES_EDITING_ROWS':
-			action.relatedNotes.forEach((note) => {
+			draft.newAnnotation.relatedNotes.forEach((note) => {
 				draft.relatedNotesEditingRows[`${note.dataKey}`] = true;
 			});
 			draft.showRelatedNotes = true;
 			break;
 		case 'SET_CONDITION_RELATIONS_EDITING_ROWS':
-			action.conditionRelations.forEach((relation) => {
+			draft.newAnnotation.conditionRelations.forEach((relation) => {
 				draft.conditionRelationsEditingRows[`${relation.dataKey}`] = true;
 			});
 			draft.showConditionRelations = true;
