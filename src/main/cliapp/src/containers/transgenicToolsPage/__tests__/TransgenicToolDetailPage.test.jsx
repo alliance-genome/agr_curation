@@ -1,25 +1,36 @@
 import React from 'react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
-import { screen, waitFor } from '@testing-library/react';
+import { act, screen, waitFor, within } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { renderWithClient } from '../../../tools/jest/utils';
-import { Endpoints } from '../../../constants/Endpoints';
 
-const getTransgenicTool = vi.fn();
-const find = vi.fn();
+const { getTransgenicTool, saveTransgenicTool, getTransgenicToolAssociations, replaceTransgenicToolAssociations } =
+	vi.hoisted(() => ({
+		getTransgenicTool: vi.fn(),
+		saveTransgenicTool: vi.fn(),
+		getTransgenicToolAssociations: vi.fn(),
+		replaceTransgenicToolAssociations: vi.fn(),
+	}));
 
 // msw cannot intercept this app's fetch based ApiClient, so stub the services directly.
 vi.mock('../../../service/TransgenicToolService', () => ({
 	TransgenicToolService: class {
 		getTransgenicTool = getTransgenicTool;
+		saveTransgenicTool = saveTransgenicTool;
+		getTransgenicToolAssociations = getTransgenicToolAssociations;
+		replaceTransgenicToolAssociations = replaceTransgenicToolAssociations;
 	},
 }));
 
 vi.mock('../../../service/SearchService', () => ({
 	SearchService: class {
-		find = find;
+		find = vi.fn(() => Promise.resolve({ results: [], totalResults: 0 }));
 		search = vi.fn(() => Promise.resolve({ results: [], totalResults: 0 }));
 	},
 }));
+
+vi.mock('../../../service/useControlledVocabularyService');
+vi.mock('../../../service/useVocabularyTermSetService');
 
 const TransgenicToolDetailPage = (await import('../TransgenicToolDetailPage')).default;
 
@@ -31,34 +42,38 @@ const tool = {
 	uniqueId: 'FB:FBto0000393',
 	curie: 'AGRKB:122000000000393',
 	primaryExternalId: 'FB:FBto0000393',
-	transgenicToolSymbol: { displayText: 'GAL4', formatText: 'GAL4' },
-	transgenicToolFullName: { displayText: 'GAL4 transcription factor', formatText: 'GAL4 <i>transcription factor</i>' },
+	transgenicToolSymbol: { id: 5, displayText: 'GAL4', formatText: 'GAL4' },
+	transgenicToolFullName: {
+		id: 6,
+		displayText: 'GAL4 transcription factor',
+		formatText: 'GAL4 <i>transcription</i> factor',
+	},
 	transgenicToolSynonyms: [{ id: 1, displayText: 'Gal4p', formatText: 'Gal4<sup>p</sup>' }],
 	secondaryIdentifiers: ['FB:FBto9000393'],
-	transgenicToolUses: [{ id: 2, uses: [{ curie: 'FBcv:0005012', name: 'driver' }], evidence: [] }],
-	references: [],
+	transgenicToolUses: [{ id: 2, uses: [{ id: 70, curie: 'FBcv:0005012', name: 'driver' }], evidence: [] }],
+	references: [{ id: 80, curie: 'AGRKB:101000000001', crossReferences: [] }],
 	relatedNotes: [{ id: 3, freeText: 'A yeast transcription factor.', noteType: { name: 'summary' } }],
-	crossReferences: [
-		{ id: 4, referencedCurie: 'FB:FBto0000393', displayName: 'GAL4', resourceDescriptorPage: { name: 'default' } },
-	],
+	crossReferences: [],
 	dataProvider: { abbreviation: 'FB' },
 	placeholder: false,
 	internal: false,
 	obsolete: false,
+	associatedTransgenicTools: [{ relation: 'is_compatible_with', symbol: 'UAS', identifier: 'FB:FBto0000135' }],
 };
 
 const association = {
 	id: 21,
-	relation: { name: 'is_compatible_with' },
+	relation: { id: 31, name: 'is_compatible_with' },
 	transgenicToolTransgenicToolAssociationObject: {
+		id: 12,
 		primaryExternalId: 'FB:FBto0000135',
 		transgenicToolSymbol: { displayText: 'UAS' },
 	},
+	internal: false,
+	obsolete: false,
 };
 
-const renderPage = () => {
-	getTransgenicTool.mockResolvedValue({ data: { entity: tool } });
-	find.mockResolvedValue({ results: [association], totalResults: 1 });
+const renderPage = () =>
 	renderWithClient(
 		<MemoryRouter initialEntries={['/transgenic-tool/FB:FBto0000393']}>
 			<Routes>
@@ -66,34 +81,57 @@ const renderPage = () => {
 			</Routes>
 		</MemoryRouter>
 	);
+
+// The page reads the tool's associations once the tool has loaded, and refuses to save them until that read
+// is done, so the tests wait for it as a curator would.
+const waitForAssociationsToLoad = async () => {
+	await waitFor(() => expect(getTransgenicToolAssociations).toHaveBeenCalledWith(11), PAGE_LOAD_WAIT);
+	await act(async () => {
+		await new Promise((resolve) => setTimeout(resolve, 0));
+	});
 };
 
-describe('<TransgenicToolDetailPage />', () => {
+// Sets a yes/no field from its dropdown, as a curator would.
+const chooseBoolean = async (user, fieldName, value) => {
+	const row = screen.getByRole('heading', { name: fieldName }).closest('.grid');
+	await user.click(row.querySelector('.p-dropdown'));
+	const panel = await waitFor(() => {
+		const openPanel = document.querySelector('.p-dropdown-panel');
+		expect(openPanel).not.toBeNull();
+		return openPanel;
+	});
+	await user.click(within(panel).getByText(value));
+};
+
+describe('<TransgenicToolDetailPage />', { timeout: 30000 }, () => {
 	beforeEach(() => {
-		getTransgenicTool.mockReset();
-		find.mockReset();
+		window.localStorage.removeItem('TransgenicToolDetailFormSettings');
+		[getTransgenicTool, saveTransgenicTool, getTransgenicToolAssociations, replaceTransgenicToolAssociations].forEach(
+			(mock) => mock.mockReset()
+		);
+		getTransgenicTool.mockResolvedValue({ data: { entity: tool } });
+		saveTransgenicTool.mockImplementation((payload) => Promise.resolve({ data: { entity: payload } }));
+		getTransgenicToolAssociations.mockResolvedValue({ data: { entities: [association] } });
+		replaceTransgenicToolAssociations.mockResolvedValue({ data: { entities: [] } });
 	});
 
-	it('loads the tool by the identifier in the URL and shows its fields', async () => {
+	it('loads the tool by the identifier in the URL and shows its fields for editing', async () => {
 		renderPage();
 
-		expect(await screen.findByText('GAL4 transcription factor', {}, PAGE_LOAD_WAIT)).toBeInTheDocument();
+		expect(await screen.findByDisplayValue('GAL4 transcription factor', {}, PAGE_LOAD_WAIT)).toBeInTheDocument();
 		expect(getTransgenicTool).toHaveBeenCalledWith('FB:FBto0000393');
-		expect(screen.getByText('Gal4p')).toBeInTheDocument();
-		expect(screen.getByText('FB:FBto9000393')).toBeInTheDocument();
+		expect(screen.getByDisplayValue('Gal4p')).toBeInTheDocument();
+		expect(screen.getByDisplayValue('FB:FBto9000393')).toBeInTheDocument();
 		expect(screen.getByText('driver (FBcv:0005012)')).toBeInTheDocument();
-		expect(screen.getByText('A yeast transcription factor.')).toBeInTheDocument();
+		expect(screen.getByText('AGRKB:101000000001')).toBeInTheDocument();
 		expect(screen.getByText('AGRKB:122000000000393')).toBeInTheDocument();
 	});
 
-	it("shows the tool's associations, fetched for the tool", async () => {
+	it("reads the tool's associations through their own endpoint", async () => {
 		renderPage();
+		await waitForAssociationsToLoad();
 
-		expect(await screen.findByText('UAS (FB:FBto0000135)', {}, PAGE_LOAD_WAIT)).toBeInTheDocument();
-		expect(screen.getByText('is_compatible_with')).toBeInTheDocument();
-		expect(find).toHaveBeenCalledWith(Endpoints.Entity.TRANSGENIC_TOOL_TRANSGENIC_TOOL_ASSOCIATION, 100, 0, {
-			'transgenicToolAssociationSubject.id': 11,
-		});
+		expect(await screen.findByDisplayValue('UAS (FB:FBto0000135)', {}, PAGE_LOAD_WAIT)).toBeInTheDocument();
 	});
 
 	it('offers the field menu and Show all fields', async () => {
@@ -103,5 +141,56 @@ describe('<TransgenicToolDetailPage />', () => {
 			() => expect(screen.getByRole('button', { name: 'Show all fields' })).toBeInTheDocument(),
 			PAGE_LOAD_WAIT
 		);
+	});
+
+	it('saves an edited field with the tool, leaving the associations alone', async () => {
+		const user = userEvent.setup();
+		renderPage();
+		await waitForAssociationsToLoad();
+
+		await waitFor(() => expect(screen.getByRole('button', { name: 'Save' })).toBeDisabled());
+		await chooseBoolean(user, 'Placeholder', 'true');
+		await user.click(screen.getByRole('button', { name: 'Save' }));
+
+		expect(await screen.findByText('Transgenic Tool Saved')).toBeInTheDocument();
+		const payload = saveTransgenicTool.mock.calls[0][0];
+		expect(payload.placeholder).toBe(true);
+		expect(payload.references).toEqual([{ type: 'Reference', curie: 'AGRKB:101000000001' }]);
+		expect(payload.transgenicToolSynonyms[0]).not.toHaveProperty('dataKey');
+		expect(payload.transgenicToolSymbol).not.toHaveProperty('dataKey');
+		expect(payload).not.toHaveProperty('associatedTransgenicTools');
+		expect(replaceTransgenicToolAssociations).not.toHaveBeenCalled();
+	});
+
+	it('saves a deleted association through its own endpoint, without saving the tool', async () => {
+		const user = userEvent.setup();
+		renderPage();
+		await waitForAssociationsToLoad();
+
+		const row = (await screen.findByDisplayValue('UAS (FB:FBto0000135)', {}, PAGE_LOAD_WAIT)).closest('tr');
+		await user.click(row.querySelector('.pi-trash').closest('button'));
+		await user.click(screen.getByRole('button', { name: 'Save' }));
+
+		expect(await screen.findByText('Transgenic Tool Saved')).toBeInTheDocument();
+		expect(replaceTransgenicToolAssociations).toHaveBeenCalledWith(11, []);
+		expect(saveTransgenicTool).not.toHaveBeenCalled();
+	});
+
+	it('reports a rejected tool', async () => {
+		const user = userEvent.setup();
+		saveTransgenicTool.mockRejectedValue({
+			response: {
+				status: 400,
+				statusText: 'Bad Request',
+				data: { errorMessage: 'Could not update TransgenicTool: [11]', errorMessages: {} },
+			},
+		});
+		renderPage();
+		await waitForAssociationsToLoad();
+
+		await chooseBoolean(user, 'Internal', 'true');
+		await user.click(screen.getByRole('button', { name: 'Save' }));
+
+		expect(await screen.findByText('Could not update TransgenicTool: [11]')).toBeInTheDocument();
 	});
 });

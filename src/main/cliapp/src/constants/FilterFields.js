@@ -1778,6 +1778,18 @@ export const AUTOCOMPLETE_CONFIGS = Object.freeze({
 	resourceDescriptorAutocompleteConfig: {
 		fieldSets: [FIELD_SETS.prefixFieldSet, FIELD_SETS.nameFieldSet],
 	},
+	// Transgenic tools (SCRUM-6655): the tool index has no bridged symbol/name fields, so its own slot
+	// annotation paths are searched.
+	transgenicToolAutocompleteConfig: {
+		fieldSets: [
+			FIELD_SETS.curieFieldSet,
+			FIELD_SETS.primaryExternalIdFieldSet,
+			FIELD_SETS.modInternalIdFieldSet,
+			FIELD_SETS.transgenicToolSymbolFieldSet,
+			FIELD_SETS.transgenicToolFullNameFieldSet,
+			FIELD_SETS.transgenicToolSynonymsFieldSet,
+		],
+	},
 });
 
 export const getAutocompleteFields = (config) => Array.from(new Set(config.fieldSets.flatMap((fs) => fs.fields)));

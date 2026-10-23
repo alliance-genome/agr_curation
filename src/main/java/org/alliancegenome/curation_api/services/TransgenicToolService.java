@@ -1,5 +1,6 @@
 package org.alliancegenome.curation_api.services;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -7,11 +8,15 @@ import java.util.Objects;
 import java.util.Set;
 
 import org.alliancegenome.curation_api.constants.EntityFieldConstants;
+import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.dao.TransgenicToolDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
+import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.model.entities.TransgenicTool;
+import org.alliancegenome.curation_api.model.entities.associations.TransgenicToolTransgenicToolAssociation;
 import org.alliancegenome.curation_api.model.ingest.dto.TransgenicToolDTO;
+import org.alliancegenome.curation_api.response.ObjectListResponse;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.base.SubmittedObjectCrudService;
 import org.alliancegenome.curation_api.services.validation.TransgenicToolValidator;
@@ -62,6 +67,39 @@ public class TransgenicToolService extends SubmittedObjectCrudService<Transgenic
 	public ObjectResponse<TransgenicTool> create(TransgenicTool uiEntity) {
 		TransgenicTool dbEntity = transgenicToolValidator.validateTransgenicToolCreate(uiEntity);
 		return new ObjectResponse<>(transgenicToolDAO.persist(dbEntity));
+	}
+
+	/** SCRUM-6655: the associations the tool is the subject of, for the detail page. */
+	public ObjectListResponse<TransgenicToolTransgenicToolAssociation> getTransgenicToolAssociations(Long id) {
+		List<TransgenicToolTransgenicToolAssociation> associations = findTransgenicToolOrThrow(id).getTransgenicToolTransgenicToolAssociations();
+		return new ObjectListResponse<>(associations == null ? new ArrayList<>() : new ArrayList<>(associations));
+	}
+
+	/**
+	 * SCRUM-6655: replaces the associations the tool is the subject of with the submitted list, see
+	 * TransgenicToolValidator.validateTransgenicToolAssociationReplacement. Nothing is returned, because the
+	 * associations' tools would be serialized after this transaction closes; the caller reads them afresh.
+	 */
+	@Transactional
+	public void replaceTransgenicToolAssociations(Long id, List<TransgenicToolTransgenicToolAssociation> associations) {
+		TransgenicTool transgenicTool = findTransgenicToolOrThrow(id);
+		List<TransgenicToolTransgenicToolAssociation> validatedAssociations = transgenicToolValidator.validateTransgenicToolAssociationReplacement(transgenicTool, associations);
+
+		if (transgenicTool.getTransgenicToolTransgenicToolAssociations() == null) {
+			transgenicTool.setTransgenicToolTransgenicToolAssociations(new ArrayList<>());
+		}
+		transgenicTool.getTransgenicToolTransgenicToolAssociations().clear();
+		transgenicTool.getTransgenicToolTransgenicToolAssociations().addAll(validatedAssociations);
+	}
+
+	private TransgenicTool findTransgenicToolOrThrow(Long id) {
+		TransgenicTool transgenicTool = transgenicToolDAO.find(id);
+		if (transgenicTool == null) {
+			ObjectResponse<TransgenicTool> response = new ObjectResponse<>();
+			response.addErrorMessage("id", ValidationConstants.INVALID_MESSAGE);
+			throw new ApiErrorException(response);
+		}
+		return transgenicTool;
 	}
 
 	/** Ids of the transgenictools a given MOD owns, for the load's cleanup pass. */

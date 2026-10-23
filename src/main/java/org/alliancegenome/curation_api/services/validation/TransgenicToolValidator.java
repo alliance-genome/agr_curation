@@ -1,7 +1,10 @@
 package org.alliancegenome.curation_api.services.validation;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.alliancegenome.curation_api.constants.ValidationConstants;
@@ -11,6 +14,7 @@ import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.Reference;
 import org.alliancegenome.curation_api.model.entities.TransgenicTool;
+import org.alliancegenome.curation_api.model.entities.associations.TransgenicToolTransgenicToolAssociation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.TransgenicToolFullNameSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.TransgenicToolSymbolSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.TransgenicToolSynonymSlotAnnotation;
@@ -19,6 +23,7 @@ import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.CurieMintService;
 import org.alliancegenome.curation_api.services.helpers.TransgenicToolUniqueIdHelper;
+import org.alliancegenome.curation_api.services.validation.associations.TransgenicToolTransgenicToolAssociationValidator;
 import org.alliancegenome.curation_api.services.validation.dto.slotAnnotations.TransgenicToolFullNameSlotAnnotationValidator;
 import org.alliancegenome.curation_api.services.validation.dto.slotAnnotations.TransgenicToolSymbolSlotAnnotationValidator;
 import org.alliancegenome.curation_api.services.validation.dto.slotAnnotations.TransgenicToolSynonymSlotAnnotationValidator;
@@ -45,6 +50,7 @@ public class TransgenicToolValidator extends ReagentValidator {
 	@Inject TransgenicToolFullNameSlotAnnotationValidator transgenicToolFullNameValidator;
 	@Inject TransgenicToolSynonymSlotAnnotationValidator transgenicToolSynonymValidator;
 	@Inject TransgenicToolUseSlotAnnotationValidator transgenicToolUseValidator;
+	@Inject TransgenicToolTransgenicToolAssociationValidator transgenicToolTransgenicToolAssociationValidator;
 
 	private String errorMessage;
 
@@ -154,6 +160,81 @@ public class TransgenicToolValidator extends ReagentValidator {
 		}
 
 		return dbEntity;
+	}
+
+	/**
+	 * SCRUM-6655: the associations the tool is the subject of, as the detail page submits them to replace the stored
+	 * ones. An entry with an id updates that association, one without creates one, and the stored ones the list
+	 * omits are removed with the tool's list (orphan removal); the other tool holds no list of them. An entry's id
+	 * must be one of the tool's associations and named by no other entry, and no two entries may name the same
+	 * relation and tool.
+	 *
+	 * @param dbEntity the tool the associations belong to
+	 * @param incomingAssociations the submitted associations
+	 * @return the validated associations, in submitted order, each with the tool as its subject
+	 * @throws ApiErrorException listing each rejected entry's errors under its index
+	 */
+	public List<TransgenicToolTransgenicToolAssociation> validateTransgenicToolAssociationReplacement(TransgenicTool dbEntity, List<TransgenicToolTransgenicToolAssociation> incomingAssociations) {
+		response = new ObjectResponse<>();
+		String field = "transgenicToolTransgenicToolAssociations";
+		String errorTitle = "Could not update Transgenic Tool Associations for: [" + dbEntity.getId() + "]";
+
+		if (incomingAssociations == null) {
+			addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
+			response.setErrorMessage(errorTitle);
+			throw new ApiErrorException(response);
+		}
+
+		Set<Long> heldIds = new HashSet<>();
+		if (dbEntity.getTransgenicToolTransgenicToolAssociations() != null) {
+			dbEntity.getTransgenicToolTransgenicToolAssociations().forEach(association -> heldIds.add(association.getId()));
+		}
+
+		List<TransgenicToolTransgenicToolAssociation> validatedAssociations = new ArrayList<>();
+		Boolean allValid = true;
+		Set<Long> seenIds = new HashSet<>();
+		Set<String> seenIdentities = new HashSet<>();
+		for (int ix = 0; ix < incomingAssociations.size(); ix++) {
+			TransgenicToolTransgenicToolAssociation association = incomingAssociations.get(ix);
+			if (association == null) {
+				allValid = false;
+				response.addErrorMessages(field, ix, Map.of("transgenicToolTransgenicToolAssociationObject", ValidationConstants.REQUIRED_MESSAGE));
+				continue;
+			}
+			if (association.getId() != null && !heldIds.contains(association.getId())) {
+				allValid = false;
+				response.addErrorMessages(field, ix, Map.of("id", ValidationConstants.INVALID_MESSAGE));
+				continue;
+			}
+			if (association.getId() != null && !seenIds.add(association.getId())) {
+				allValid = false;
+				response.addErrorMessages(field, ix, Map.of("id", ValidationConstants.DUPLICATE_MESSAGE));
+				continue;
+			}
+			ObjectResponse<TransgenicToolTransgenicToolAssociation> associationResponse = transgenicToolTransgenicToolAssociationValidator.validateTransgenicToolTransgenicToolAssociation(association);
+			if (associationResponse.getEntity() == null) {
+				allValid = false;
+				response.addErrorMessages(field, ix, associationResponse.getErrorMessages());
+				continue;
+			}
+			association = associationResponse.getEntity();
+			String identity = association.getRelation().getName() + "|" + association.getTransgenicToolTransgenicToolAssociationObject().getId();
+			if (!seenIdentities.add(identity)) {
+				allValid = false;
+				response.addErrorMessages(field, ix, Map.of("transgenicToolTransgenicToolAssociationObject", ValidationConstants.DUPLICATE_MESSAGE));
+				continue;
+			}
+			association.setTransgenicToolAssociationSubject(dbEntity);
+			validatedAssociations.add(association);
+		}
+
+		if (!allValid) {
+			convertMapToErrorMessages(field);
+			response.setErrorMessage(errorTitle);
+			throw new ApiErrorException(response);
+		}
+
+		return validatedAssociations;
 	}
 
 	private Reference validateReference(Reference uiEntity, List<String> previousCuries) {

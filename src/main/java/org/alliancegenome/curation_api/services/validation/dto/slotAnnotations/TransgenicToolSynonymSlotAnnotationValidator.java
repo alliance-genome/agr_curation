@@ -1,9 +1,11 @@
 package org.alliancegenome.curation_api.services.validation.dto.slotAnnotations;
 
+import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.TransgenicToolDAO;
 import org.alliancegenome.curation_api.dao.slotAnnotations.TransgenicToolSynonymSlotAnnotationDAO;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.TransgenicTool;
+import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.TransgenicToolSynonymSlotAnnotation;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 
@@ -45,6 +47,9 @@ public class TransgenicToolSynonymSlotAnnotationValidator extends NameSlotAnnota
 
 		dbEntity = (TransgenicToolSynonymSlotAnnotation) validateNameSlotAnnotationFields(uiEntity, dbEntity, newEntity);
 
+		// SCRUM-6655: as for the other entities' synonyms; without it an edited name type was dropped
+		VocabularyTerm nameType = validateRequiredTermInVocabulary("nameType", VocabularyConstants.NAME_TYPE_VOCABULARY, uiEntity.getNameType(), dbEntity.getNameType());
+		dbEntity.setNameType(nameType);
 
 		if (validateTransgenicTool) {
 			TransgenicTool singleTransgenicTool = validateRequiredEntity(lTransgenicToolDAO, "singleTransgenicTool", uiEntity.getSingleTransgenicTool(), dbEntity.getSingleTransgenicTool());

@@ -1,7 +1,8 @@
 export const generateCrossRefSearchField = (reference) => {
 	const { crossReferences, curieField } = getCrossReferences(reference);
 
-	let refStrings = crossReferences.map((crossRef) => crossRef[curieField]);
+	// The API leaves an empty list out, so a reference without cross references arrives without the key
+	let refStrings = (crossReferences ?? []).map((crossRef) => crossRef[curieField]);
 
 	return refStrings.join();
 };
