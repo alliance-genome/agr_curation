@@ -1,4 +1,5 @@
 import { getIdentifier } from '../../utils/utils';
+import { copyRow, copyRows } from '../../utils/copyRows';
 
 export const addDataKey = (entity) => {
 	entity.dataKey = crypto.randomUUID();
@@ -10,25 +11,6 @@ export const strLabel = (str) => {
 	if (!str) return '';
 	return str.name ? `${str.name} (${getIdentifier(str)})` : getIdentifier(str);
 };
-
-const ROW_IDENTITY_FIELDS = [
-	'id',
-	'createdBy',
-	'updatedBy',
-	'dateCreated',
-	'dateUpdated',
-	'dbDateCreated',
-	'dbDateUpdated',
-];
-
-const copyRow = (row) => {
-	if (!row) return null;
-	const copy = structuredClone(row);
-	ROW_IDENTITY_FIELDS.forEach((field) => delete copy[field]);
-	return copy;
-};
-
-const copyRows = (rows) => (rows?.length ? rows.map(copyRow) : undefined);
 
 /**
  * A new AGM carrying the fields of a stored one that the create form edits, for the create page
