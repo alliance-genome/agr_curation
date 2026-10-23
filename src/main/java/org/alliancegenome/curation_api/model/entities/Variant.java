@@ -87,11 +87,11 @@ public class Variant extends GenomicEntity {
 			"variantGenomicLocationAssociationObject.curie", "variantGenomicLocationAssociationObject.curie_keyword",
 			"variantGenomicLocationAssociationObject.primaryExternalId", "variantGenomicLocationAssociationObject.primaryExternalId_keyword",
 			"variantGenomicLocationAssociationObject.modInternalId", "variantGenomicLocationAssociationObject.modInternalId_keyword",
-			"start", "end"
+			"start", "end", "hgvs", "hgvs_keyword"
 		}
 	)
 	@OneToMany(mappedBy = "variantAssociationSubject", cascade = CascadeType.ALL, orphanRemoval = true)
-	@JsonView({CurationView.FieldsAndLists.class, CurationView.VariantDetailView.class, CurationView.AlleleSummaryDocument.class, CurationView.VariantSummaryDocument.class, CurationView.SequenceSummaryDocument.class})
+	@JsonView({CurationView.FieldsAndLists.class, CurationView.VariantView.class, CurationView.AlleleSummaryDocument.class, CurationView.VariantSummaryDocument.class, CurationView.SequenceSummaryDocument.class})
 	private List<CuratedVariantGenomicLocationAssociation> curatedVariantGenomicLocations;
 
 	@OneToMany(mappedBy = "alleleVariantAssociationObject", cascade = CascadeType.ALL, orphanRemoval = true)

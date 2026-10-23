@@ -6,8 +6,10 @@ import java.util.List;
 import org.alliancegenome.curation_api.interfaces.base.BaseSubmittedObjectCrudInterface;
 import org.alliancegenome.curation_api.interfaces.base.BaseUpsertControllerInterface;
 import org.alliancegenome.curation_api.model.entities.TransgenicTool;
+import org.alliancegenome.curation_api.model.entities.associations.TransgenicToolTransgenicToolAssociation;
 import org.alliancegenome.curation_api.model.ingest.dto.TransgenicToolDTO;
 import org.alliancegenome.curation_api.response.APIResponse;
+import org.alliancegenome.curation_api.response.ObjectListResponse;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.view.CurationView;
@@ -65,6 +67,18 @@ public interface TransgenicToolCrudInterface extends BaseSubmittedObjectCrudInte
 	@Path("/")
 	@JsonView(CurationView.TransgenicToolView.class)
 	ObjectResponse<TransgenicTool> create(TransgenicTool entity);
+
+	@Operation(summary = "Get transgenic tool associations for transgenic tool", description = "The associations this transgenic tool is the subject of")
+	@GET
+	@Path("/{id}/transgenic-tool-associations")
+	@JsonView(CurationView.TransgenicToolTransgenicToolAssociationView.class)
+	ObjectListResponse<TransgenicToolTransgenicToolAssociation> getTransgenicToolAssociations(@PathParam("id") Long id);
+
+	@Operation(summary = "Replace transgenic tool associations for transgenic tool", description = "Replace the associations this transgenic tool is the subject of with the submitted list, deleting any that are omitted")
+	@PUT
+	@Path("/{id}/transgenic-tool-associations")
+	@JsonView(CurationView.TransgenicToolTransgenicToolAssociationView.class)
+	ObjectListResponse<TransgenicToolTransgenicToolAssociation> updateTransgenicToolAssociations(@PathParam("id") Long id, List<TransgenicToolTransgenicToolAssociation> associations);
 
 	@Operation(summary = "Bulk load transgenic-tool data", description = "Bulk load transgenic-tool records from a data provider submission")
 	@POST

@@ -26,7 +26,7 @@ import { GenesPage } from './containers/genesPage';
 import { VariantsPage, VariantDetailPage, VariantCreatePage } from './containers/variantsPage';
 import { ConstructsPage, ConstructDetailPage } from './containers/constructsPage';
 import { CassettesPage } from './containers/cassettesPage';
-import { TransgenicToolsPage } from './containers/transgenicToolsPage';
+import { TransgenicToolsPage, TransgenicToolDetailPage } from './containers/transgenicToolsPage';
 import { HTPExpressionDatasetAnnotationsPage } from './containers/htpExpressionDatasetAnnotationsPage';
 import { SequenceTargetingReagentsPage } from './containers/sequenceTargetingReagentsPage';
 import { ProfilePage } from './containers/profilePage';
@@ -248,6 +248,14 @@ export default function AppRoutes() {
 						element={
 							<ErrorBoundary>
 								<ConstructsPage />
+							</ErrorBoundary>
+						}
+					/>
+					<Route
+						path="/transgenic-tool/:identifier"
+						element={
+							<ErrorBoundary>
+								<TransgenicToolDetailPage />
 							</ErrorBoundary>
 						}
 					/>

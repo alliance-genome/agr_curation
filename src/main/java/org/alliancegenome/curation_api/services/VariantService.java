@@ -57,14 +57,14 @@ public class VariantService extends SubmittedObjectCrudService<Variant, VariantD
 	@Transactional
 	public ObjectResponse<Variant> update(Variant uiEntity) {
 		Variant dbEntity = variantValidator.validateVariantUpdate(uiEntity);
-		return new ObjectResponse<Variant>(dbEntity);
+		return new ObjectResponse<>(dbEntity);
 	}
 
 	@Override
 	@Transactional
 	public ObjectResponse<Variant> create(Variant uiEntity) {
 		Variant dbEntity = variantValidator.validateVariantCreate(uiEntity);
-		return new ObjectResponse<Variant>(dbEntity);
+		return new ObjectResponse<>(dbEntity);
 	}
 
 	@Override

@@ -6,6 +6,7 @@ import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.enums.MatiSubdomain;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.interfaces.CurieSubdomain;
+import org.alliancegenome.curation_api.model.bridges.IntegerValueBridge;
 import org.alliancegenome.curation_api.model.entities.base.AuditedObject;
 import org.alliancegenome.curation_api.model.entities.interfaces.CurieInterface;
 import org.alliancegenome.curation_api.view.CurationView;
@@ -19,6 +20,7 @@ import org.hibernate.search.engine.backend.types.Projectable;
 import org.hibernate.search.engine.backend.types.Searchable;
 import org.hibernate.search.engine.backend.types.Sortable;
 import org.hibernate.search.mapper.pojo.automaticindexing.ReindexOnUpdate;
+import org.hibernate.search.mapper.pojo.bridge.mapping.annotation.ValueBridgeRef;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.FullTextField;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.GenericField;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
@@ -114,6 +116,7 @@ public class HTPExpressionDatasetAnnotation extends AuditedObject implements Cur
 
 	@JsonView({ CurationView.FieldsOnly.class })
 	@GenericField(projectable = Projectable.YES, sortable = Sortable.YES)
+	@KeywordField(name = "numberOfChannels_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, valueBridge = @ValueBridgeRef(type = IntegerValueBridge.class))
 	private Integer numberOfChannels;
 
 	@IndexedEmbedded(includePaths = {"name", "name_keyword"})
