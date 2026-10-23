@@ -16,9 +16,10 @@ export const strLabel = (str) => {
  * A new AGM carrying the fields of a stored one that the create form edits, for the create page
  * to start from.
  *
- * Left behind: everything that identifies the stored AGM (its ids and secondary IDs), its data
- * provider, cross references, STR associations and audit fields - none of which the create form
- * edits. Each copied row loses its own id and audit fields, so it is created afresh.
+ * Left behind: everything that identifies the stored AGM (its ids, and its secondary IDs, which name
+ * it alone), and its data provider, cross references, STR associations and audit fields, which the
+ * create form does not edit. Each copied row loses its own id and audit fields, so it is created
+ * afresh.
  *
  * @param {Object} agm an AGM as the detail endpoint returns it
  * @returns {Object} an AGM without an id, not obsolete, carrying only the fields the create form edits
@@ -32,7 +33,6 @@ export const buildDuplicateAgm = (agm) => {
 		obsolete: false,
 		agmFullName: copyRow(agm.agmFullName),
 		agmSynonyms: copyRows(agm.agmSynonyms),
-		agmSecondaryIds: copyRows(agm.agmSecondaryIds),
 	};
 };
 

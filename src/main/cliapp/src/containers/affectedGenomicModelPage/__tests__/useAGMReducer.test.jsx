@@ -51,4 +51,36 @@ describe('useAGMReducer', () => {
 			expect(result.current.agmState.agm.agmSynonyms.map((row) => row.displayText)).toEqual(['first', 'second']);
 		});
 	});
+
+	describe('SET', () => {
+		const storedAgm = {
+			agmFullName: { displayText: 'wild isolate 1' },
+			agmSecondaryIds: [{ secondaryId: 'WB:WBStrain00000001' }],
+		};
+
+		it('Shows the sections of the lists and objects the AGM holds', () => {
+			const { result } = renderHook(() => useAGMReducer());
+
+			act(() => result.current.agmDispatch({ type: 'SET', value: storedAgm }));
+
+			const { entityStates, agm } = result.current.agmState;
+			expect(entityStates.agmSecondaryIds.show).toBe(true);
+			expect(entityStates.agmSecondaryIds.editingRows).toEqual({ [agm.agmSecondaryIds[0].dataKey]: true });
+			expect(entityStates.agmFullName.show).toBe(true);
+		});
+
+		it('Closes the sections of the lists and objects a later AGM lacks', () => {
+			const { result } = renderHook(() => useAGMReducer());
+			act(() => result.current.agmDispatch({ type: 'SET', value: storedAgm }));
+
+			act(() => result.current.agmDispatch({ type: 'SET', value: { taxon: { curie: 'NCBITaxon:6239' } } }));
+
+			const { entityStates, agm } = result.current.agmState;
+			expect(agm.agmSecondaryIds).toEqual([]);
+			expect(entityStates.agmSecondaryIds.show).toBe(false);
+			expect(entityStates.agmSecondaryIds.editingRows).toEqual({});
+			expect(entityStates.agmFullName.show).toBe(false);
+			expect(entityStates.agmFullName.editingRows).toEqual({});
+		});
+	});
 });

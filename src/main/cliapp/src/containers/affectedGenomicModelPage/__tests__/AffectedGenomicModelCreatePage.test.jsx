@@ -57,7 +57,7 @@ const savedAgm = {
 		dateCreated: '2026-10-23T00:00:00Z',
 	},
 	agmSynonyms: [],
-	agmSecondaryIds: [],
+	agmSecondaryIds: [{ id: 61, secondaryId: 'WB:WBStrain00000001', internal: false }],
 };
 
 describe('<AffectedGenomicModelCreatePage />', () => {
@@ -103,6 +103,8 @@ describe('<AffectedGenomicModelCreatePage />', () => {
 		expect(payload.agmFullName.displayText).toEqual('wild isolate 1');
 		expect(payload.agmFullName).not.toHaveProperty('id');
 		expect(payload.agmFullName).not.toHaveProperty('dateCreated');
+		// A secondary ID names the saved AGM alone, so it is not copied.
+		expect(payload.agmSecondaryIds).toEqual([]);
 	});
 
 	it('Clears the kept values', async () => {
