@@ -82,8 +82,9 @@ public class IT_0110_CassetteBulkUploadITCase extends BaseITCase {
 
 		// Distinct curies from IT_0109's: the suite shares one database, and creating a term that
 		// already exists is a 500 rather than a no-op.
-		createFbcvTerm("FBcv:0003012", "cassette_enhancer_trap", false);
-		createFbcvTerm("FBcv:0003013", "cassette_protein_trap", false);
+		// A cassette use must be in the experimental_tool_descriptor namespace (SCRUM-6746)
+		createFbcvTerm("FBcv:0003012", "cassette_enhancer_trap", "experimental_tool_descriptor", false);
+		createFbcvTerm("FBcv:0003013", "cassette_protein_trap", "experimental_tool_descriptor", false);
 	}
 
 	@Test
@@ -195,6 +196,8 @@ public class IT_0110_CassetteBulkUploadITCase extends BaseITCase {
 		checkFailedBulkLoad(bulkPostEndpoint, testFilePath + "IV_01_invalid_cassette_component_relation.json");
 		checkFailedBulkLoad(bulkPostEndpoint, testFilePath + "IV_02_invalid_cassette_component_taxon.json");
 		checkFailedBulkLoad(bulkPostEndpoint, testFilePath + "IV_03_invalid_cassette_use_use_curies.json");
+		// FBcv:0003010 (IT_0109) exists but is in no namespace, and a use must be an experimental_tool_descriptor term
+		checkFailedBulkLoad(bulkPostEndpoint, testFilePath + "IV_05_cassette_use_outside_tool_descriptor_namespace.json");
 	}
 
 	@Test

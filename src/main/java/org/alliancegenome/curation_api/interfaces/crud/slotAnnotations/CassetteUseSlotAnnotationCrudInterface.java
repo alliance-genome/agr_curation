@@ -27,7 +27,7 @@ public interface CassetteUseSlotAnnotationCrudInterface extends BaseIdCrudInterf
 	@Operation(summary = "Validate cassette use slot annotation", description = "Validate a cassette use slot annotation entity without persisting it")
 	@POST
 	@Path("/validate")
-	@JsonView(CurationView.FieldsAndLists.class)
+	@JsonView(CurationView.FieldsOnly.class)
 	@APIResponses(
 		@APIResponse(
 			description = "Validate Object",

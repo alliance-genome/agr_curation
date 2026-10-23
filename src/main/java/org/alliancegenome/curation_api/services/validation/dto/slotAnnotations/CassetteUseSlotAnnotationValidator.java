@@ -26,7 +26,8 @@ public class CassetteUseSlotAnnotationValidator extends SlotAnnotationValidator<
 	@Inject CassetteDAO lCassetteDAO;
 	@Inject FbcvTermDAO fbcvTermDAO;
 
-	private static final String USE_NAMESPACE = "experimental_tool_descriptor";
+	// A cassette use is an FBcv term from this namespace, whether curated or loaded
+	public static final String USE_NAMESPACE = "experimental_tool_descriptor";
 
 	public ObjectResponse<CassetteUseSlotAnnotation> validateCassetteUseSlotAnnotation(CassetteUseSlotAnnotation uiEntity) {
 		CassetteUseSlotAnnotation use = validateCassetteUseSlotAnnotation(uiEntity, false, false);
