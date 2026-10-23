@@ -5,19 +5,11 @@ import { getDefaultTableState } from '../../service/TableStateService';
 import { FILTER_CONFIGS } from '../../constants/FilterFields';
 import { useGetTableData } from '../../service/useGetTableData';
 import { useGetUserSettings } from '../../service/useGetUserSettings';
-import { IdTemplate } from '../../components/Templates/IdTemplate';
-import { StringListTemplate } from '../../components/Templates/StringListTemplate';
-import { BooleanTemplate } from '../../components/Templates/BooleanTemplate';
-import { TruncatedReferencesTemplate } from '../../components/Templates/reference/TruncatedReferencesTemplate';
-import { CrossReferencesTemplate } from '../../components/Templates/CrossReferencesTemplate';
-import { StringTemplate } from '../../components/Templates/StringTemplate';
-import { OntologyTermTemplate } from '../../components/Templates/OntologyTermTemplate';
-import { CountDialogTemplate } from '../../components/Templates/dialog/CountDialogTemplate';
 import { RelatedNotesReadOnlyDialog } from '../../components/RelatedNotesReadOnlyDialog';
 import { SearchService } from '../../service/SearchService';
 import { Endpoints } from '../../constants/Endpoints';
-import { TargetedGenesTemplate } from './TargetedGenesTemplate';
 import { TargetedGenesDialog } from './TargetedGenesDialog';
+import { strCells } from './strCells';
 
 export const SequenceTargetingReagentsTable = () => {
 	const toast_topleft = useRef(null);
@@ -46,62 +38,65 @@ export const SequenceTargetingReagentsTable = () => {
 		setTargetedGenesData({ sequenceTargetingReagent, dialog: true });
 	};
 
+	// The cells are shared with the Cassettes table's STR Components pop-up
+	const cells = strCells({ handleTargetedGenesOpen, handleRelatedNotesOpen });
+
 	const columns = useMemo(
 		() => [
 			{
 				field: 'curie',
 				header: 'Curie',
 				sortable: { isInEditMode },
-				body: (rowData) => <IdTemplate id={rowData.curie} />,
+				body: cells.curie,
 				filterConfig: FILTER_CONFIGS.curieFilterConfig,
 			},
 			{
 				field: 'primaryExternalId',
 				header: 'Primary External ID',
 				sortable: { isInEditMode },
-				body: (rowData) => <IdTemplate id={rowData.primaryExternalId} />,
+				body: cells.primaryExternalId,
 				filterConfig: FILTER_CONFIGS.primaryExternalIdFilterConfig,
 			},
 			{
 				field: 'modInternalId',
 				header: 'MOD Internal ID',
 				sortable: { isInEditMode },
-				body: (rowData) => <IdTemplate id={rowData.modInternalId} />,
+				body: cells.modInternalId,
 				filterConfig: FILTER_CONFIGS.modInternalIdFilterConfig,
 			},
 			{
 				field: 'name',
 				header: 'Name',
 				sortable: true,
-				body: (rowData) => <StringTemplate string={rowData.name} />,
+				body: cells.name,
 				filterConfig: FILTER_CONFIGS.nameFilterConfig,
 			},
 			{
 				field: 'synonyms',
 				header: 'Synonyms',
 				sortable: true,
-				body: (rowData) => <StringListTemplate list={rowData.synonyms} />,
+				body: cells.synonyms,
 				filterConfig: FILTER_CONFIGS.synonymsFilterConfig,
 			},
 			{
 				field: 'secondaryIdentifiers',
 				header: 'Secondary IDs',
 				sortable: true,
-				body: (rowData) => <StringListTemplate list={rowData.secondaryIdentifiers} />,
+				body: cells.secondaryIdentifiers,
 				filterConfig: FILTER_CONFIGS.secondaryIdentifiersFilterConfig,
 			},
 			{
 				field: 'crossReferences.displayName',
 				header: 'Cross References',
 				sortable: { isInEditMode },
-				body: (rowData) => <CrossReferencesTemplate list={rowData.crossReferences} />,
+				body: cells.crossReferences,
 				filterConfig: FILTER_CONFIGS.crossReferencesFilterConfig,
 			},
 			{
 				field: 'taxon.name',
 				header: 'Taxon',
 				sortable: { isInEditMode },
-				body: (rowData) => <OntologyTermTemplate term={rowData.taxon} />,
+				body: cells.taxon,
 				filterConfig: FILTER_CONFIGS.taxonFilterConfig,
 			},
 			{
@@ -109,27 +104,21 @@ export const SequenceTargetingReagentsTable = () => {
 					'sequenceTargetingReagentGeneAssociations.sequenceTargetingReagentGeneAssociationObject.geneSymbol.displayText',
 				header: 'Targeted Genes',
 				sortable: { isInEditMode },
-				body: (rowData) => (
-					<TargetedGenesTemplate sequenceTargetingReagent={rowData} handleOpen={handleTargetedGenesOpen} />
-				),
+				body: cells.targetedGenes,
 				filterConfig: FILTER_CONFIGS.sequenceTargetingReagentTargetedGenesFilterConfig,
 			},
 			{
 				field: 'relatedNotes.freeText',
 				header: 'Related Notes',
 				sortable: false,
-				body: (rowData) => (
-					<CountDialogTemplate entities={rowData.relatedNotes} handleOpen={handleRelatedNotesOpen} text={'Notes'} />
-				),
+				body: cells.relatedNotes,
 				filterConfig: FILTER_CONFIGS.relatedNotesFilterConfig,
 			},
 			{
 				field: 'references.primaryCrossReferenceCurie',
 				header: 'References',
 				sortable: { isInEditMode },
-				body: (rowData) => (
-					<TruncatedReferencesTemplate references={rowData.references} identifier={rowData.primaryExternalId} />
-				),
+				body: cells.references,
 				filterConfig: FILTER_CONFIGS.referencesFilterConfig,
 			},
 			{
@@ -142,41 +131,41 @@ export const SequenceTargetingReagentsTable = () => {
 				field: 'updatedBy.uniqueId',
 				header: 'Updated By',
 				sortable: { isInEditMode },
-				body: (rowData) => <StringTemplate string={rowData.updatedBy?.uniqueId} />,
+				body: cells.updatedBy,
 				filterConfig: FILTER_CONFIGS.updatedByFilterConfig,
 			},
 			{
 				field: 'dateUpdated',
 				header: 'Date Updated',
 				sortable: { isInEditMode },
-				body: (rowData) => <StringTemplate string={rowData.dateUpdated} />,
+				body: cells.dateUpdated,
 				filterConfig: FILTER_CONFIGS.dateUpdatedFilterConfig,
 			},
 			{
 				field: 'createdBy.uniqueId',
 				header: 'Created By',
 				sortable: { isInEditMode },
-				body: (rowData) => <StringTemplate string={rowData.createdBy?.uniqueId} />,
+				body: cells.createdBy,
 				filterConfig: FILTER_CONFIGS.createdByFilterConfig,
 			},
 			{
 				field: 'dateCreated',
 				header: 'Date Created',
 				sortable: { isInEditMode },
-				body: (rowData) => <StringTemplate string={rowData.dateCreated} />,
+				body: cells.dateCreated,
 				filterConfig: FILTER_CONFIGS.dateCreatedFilterConfig,
 			},
 			{
 				field: 'internal',
 				header: 'Internal',
-				body: (rowData) => <BooleanTemplate value={rowData.internal} />,
+				body: cells.internal,
 				filterConfig: FILTER_CONFIGS.internalFilterConfig,
 				sortable: { isInEditMode },
 			},
 			{
 				field: 'obsolete',
 				header: 'Obsolete',
-				body: (rowData) => <BooleanTemplate value={rowData.obsolete} />,
+				body: cells.obsolete,
 				filterConfig: FILTER_CONFIGS.obsoleteFilterConfig,
 				sortable: { isInEditMode },
 			},

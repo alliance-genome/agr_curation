@@ -352,6 +352,10 @@ export const FIELD_SETS = Object.freeze({
 		filterName: 'htpExpressionDatasetAnnotationCategoryTagsFilter',
 		fields: ['categoryTags.name'],
 	},
+	htpExpressionDatasetAnnotationNumberOfChannelsFieldSet: {
+		filterName: 'htpExpressionDatasetAnnotationNumberOfChannelsFilter',
+		fields: ['numberOfChannels'],
+	},
 	sequenceTargetingReagentTargetedGenesFieldSet: {
 		filterName: 'sequenceTargetingReagentTargetedGenesFilter',
 		fields: [
@@ -662,6 +666,10 @@ export const FIELD_SETS = Object.freeze({
 	geneTypeFieldSet: {
 		filterName: 'geneTypeFilter',
 		fields: ['geneType.curie', 'geneType.name'],
+	},
+	genomicLocationsFieldSet: {
+		filterName: 'genomicLocationsFilter',
+		fields: ['curatedVariantGenomicLocations.hgvs'],
 	},
 	gmiAggregationFieldSet: {
 		filterName: 'gmiAggregationFilter',
@@ -1322,6 +1330,7 @@ export const FILTER_CONFIGS = Object.freeze({
 	geneSynonymsFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.geneSynonymsFieldSet] },
 	geneSystematicNameFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.geneSystematicNameFieldSet] },
 	geneTypeFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.geneTypeFieldSet] },
+	genomicLocationsFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.genomicLocationsFieldSet] },
 	geneticModifierAgmsFilterConfig: {
 		filterComponentType: 'input',
 		fieldSets: [FIELD_SETS.geneticModifierAgmsFieldSet],
@@ -1567,6 +1576,10 @@ export const FILTER_CONFIGS = Object.freeze({
 		filterComponentType: 'input',
 		fieldSets: [FIELD_SETS.htpExpressionDatasetAnnotationCategoryTagsFieldSet],
 	},
+	htpExpressionDatasetAnnotationNumberOfChannelsFilterConfig: {
+		filterComponentType: 'input',
+		fieldSets: [FIELD_SETS.htpExpressionDatasetAnnotationNumberOfChannelsFieldSet],
+	},
 	sequenceTargetingReagentTargetedGenesFilterConfig: {
 		filterComponentType: 'input',
 		fieldSets: [FIELD_SETS.sequenceTargetingReagentTargetedGenesFieldSet],
@@ -1777,6 +1790,18 @@ export const AUTOCOMPLETE_CONFIGS = Object.freeze({
 	},
 	resourceDescriptorAutocompleteConfig: {
 		fieldSets: [FIELD_SETS.prefixFieldSet, FIELD_SETS.nameFieldSet],
+	},
+	// Transgenic tools (SCRUM-6655): the tool index has no bridged symbol/name fields, so its own slot
+	// annotation paths are searched.
+	transgenicToolAutocompleteConfig: {
+		fieldSets: [
+			FIELD_SETS.curieFieldSet,
+			FIELD_SETS.primaryExternalIdFieldSet,
+			FIELD_SETS.modInternalIdFieldSet,
+			FIELD_SETS.transgenicToolSymbolFieldSet,
+			FIELD_SETS.transgenicToolFullNameFieldSet,
+			FIELD_SETS.transgenicToolSynonymsFieldSet,
+		],
 	},
 });
 

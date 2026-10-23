@@ -51,6 +51,7 @@ export const HTPExpressionDatasetAnnotationsTable = () => {
 				header: 'Dataset Number of Channels',
 				sortable: { isInEditMode },
 				body: (rowData) => <StringTemplate string={rowData.numberOfChannels} />,
+				filterConfig: FILTER_CONFIGS.htpExpressionDatasetAnnotationNumberOfChannelsFilterConfig,
 			},
 			{
 				field: 'references.primaryCrossReferenceCurie',

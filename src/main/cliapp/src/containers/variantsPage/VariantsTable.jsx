@@ -20,6 +20,7 @@ import { CrossReferencesTemplate } from '../../components/Templates/CrossReferen
 import { StringTemplate } from '../../components/Templates/StringTemplate';
 import { OntologyTermTemplate } from '../../components/Templates/OntologyTermTemplate';
 import { CountDialogTemplate } from '../../components/Templates/dialog/CountDialogTemplate';
+import { ListDialogTemplate } from '../../components/Templates/dialog/ListDialogTemplate';
 import { BooleanTemplate } from '../../components/Templates/BooleanTemplate';
 import { IdTemplate } from '../../components/Templates/IdTemplate';
 import { StringListTemplate } from '../../components/Templates/StringListTemplate';
@@ -31,6 +32,7 @@ import { TruncatedReferencesTemplate } from '../../components/Templates/referenc
 import { SearchService } from '../../service/SearchService';
 import { Endpoints } from '../../constants/Endpoints';
 import { NewVariantButton } from './NewVariantButton';
+import { GenomicLocationsReadOnlyDialog } from './genomicLocations/GenomicLocationsReadOnlyDialog';
 
 export const VariantsTable = () => {
 	const [isInEditMode, setIsInEditMode] = useState(false);
@@ -47,6 +49,11 @@ export const VariantsTable = () => {
 		dialog: false,
 		rowIndex: null,
 		mainRowProps: {},
+	});
+
+	const [genomicLocationsData, setGenomicLocationsData] = useState({
+		genomicLocations: [],
+		dialog: false,
 	});
 
 	const toast_topleft = useRef(null);
@@ -87,6 +94,13 @@ export const VariantsTable = () => {
 		setRelatedNotesData(() => ({
 			..._relatedNotesData,
 		}));
+	};
+
+	const handleGenomicLocationsOpen = (genomicLocations) => {
+		setGenomicLocationsData({
+			genomicLocations,
+			dialog: true,
+		});
 	};
 
 	const columns = useMemo(
@@ -193,6 +207,20 @@ export const VariantsTable = () => {
 				body: (rowData) => <OntologyTermTemplate term={rowData.sourceGeneralConsequence} />,
 				filterConfig: FILTER_CONFIGS.sourceGeneralConsequenceFilterConfig,
 				editor: (editorOptions) => <SourceGeneralConsequenceTableEditor editorOptions={editorOptions} />,
+			},
+			{
+				field: 'curatedVariantGenomicLocations',
+				columnKey: 'curatedVariantGenomicLocations.hgvs',
+				header: 'Genomic Locations',
+				sortable: true,
+				filterConfig: FILTER_CONFIGS.genomicLocationsFilterConfig,
+				body: (rowData) => (
+					<ListDialogTemplate
+						entities={rowData.curatedVariantGenomicLocations}
+						handleOpen={handleGenomicLocationsOpen}
+						getTextField={(location) => `Chromosome ${location.variantGenomicLocationAssociationObject?.name}`}
+					/>
+				),
 			},
 			{
 				field: 'synonyms',
@@ -340,6 +368,10 @@ export const VariantsTable = () => {
 			<RelatedNotesReadOnlyDialog
 				originalRelatedNotesData={relatedNotesData}
 				setOriginalRelatedNotesData={setRelatedNotesData}
+			/>
+			<GenomicLocationsReadOnlyDialog
+				genomicLocationsData={genomicLocationsData}
+				setGenomicLocationsData={setGenomicLocationsData}
 			/>
 		</>
 	);
