@@ -663,6 +663,10 @@ export const FIELD_SETS = Object.freeze({
 		filterName: 'geneTypeFilter',
 		fields: ['geneType.curie', 'geneType.name'],
 	},
+	genomicLocationsFieldSet: {
+		filterName: 'genomicLocationsFilter',
+		fields: ['curatedVariantGenomicLocations.hgvs'],
+	},
 	gmiAggregationFieldSet: {
 		filterName: 'gmiAggregationFilter',
 		fields: ['relation.name'],
@@ -1322,6 +1326,7 @@ export const FILTER_CONFIGS = Object.freeze({
 	geneSynonymsFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.geneSynonymsFieldSet] },
 	geneSystematicNameFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.geneSystematicNameFieldSet] },
 	geneTypeFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.geneTypeFieldSet] },
+	genomicLocationsFilterConfig: { filterComponentType: 'input', fieldSets: [FIELD_SETS.genomicLocationsFieldSet] },
 	geneticModifierAgmsFilterConfig: {
 		filterComponentType: 'input',
 		fieldSets: [FIELD_SETS.geneticModifierAgmsFieldSet],
