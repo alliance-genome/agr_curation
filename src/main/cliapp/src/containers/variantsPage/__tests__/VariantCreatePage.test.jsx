@@ -37,6 +37,29 @@ const renderPage = () =>
 const heading = (name) => screen.queryByRole('heading', { name });
 const button = (name) => screen.getByRole('button', { name });
 
+// The variant as the API returns it from create: its own ids and audit fields on it.
+const savedVariant = {
+	id: 4242,
+	curie: 'AGRKB:103000000000001',
+	type: 'Variant',
+	taxon: { id: 9, curie: 'NCBITaxon:6239', name: 'Caenorhabditis elegans' },
+	internal: false,
+	obsolete: false,
+	dateCreated: '2026-10-23T00:00:00Z',
+	createdBy: { uniqueId: 'curator1' },
+	relatedNotes: [
+		{
+			id: 31,
+			freeText: 'a note',
+			noteType: { name: 'comment' },
+			internal: false,
+			dateCreated: '2026-10-23T00:00:00Z',
+		},
+	],
+	references: [{ id: 41, curie: 'AGRKB:101000000000041' }],
+	synonyms: ['var-1'],
+};
+
 describe('<VariantCreatePage />', () => {
 	beforeEach(() => {
 		createVariant.mockReset();
@@ -136,20 +159,74 @@ describe('<VariantCreatePage />', () => {
 		expect(createVariant.mock.calls[0][0].taxon).toEqual({ curie: 'NCBITaxon:6239' });
 	});
 
-	it('Stays on a blank form on save and add another', async () => {
+	it('Keeps the saved values on save and add another', async () => {
 		const user = userEvent.setup();
+		createVariant.mockResolvedValue({ data: { entity: savedVariant } });
 		const { container } = await renderPage();
 
-		const taxon = container.querySelector('input[name="taxon-input"]');
-		await user.type(taxon, 'NCBITaxon:6239');
 		await user.click(button('Save & Add Another'));
 
-		await waitFor(() => expect(createVariant).toHaveBeenCalled());
-
+		await waitFor(() => expect(createVariant).toHaveBeenCalledTimes(1));
 		expect(navigate).not.toHaveBeenCalled();
+		await waitFor(() => {
+			expect(container.querySelector('input[name="taxon-input"]')).toHaveValue('NCBITaxon:6239');
+		});
+		expect(container.querySelector('#synonyms')).toHaveValue('var-1');
+	});
+
+	it('Creates another variant from the kept values, without the saved ids', async () => {
+		const user = userEvent.setup();
+		createVariant.mockResolvedValue({ data: { entity: savedVariant } });
+		await renderPage();
+
+		await user.click(button('Save & Add Another'));
+		await screen.findByText('Variant AGRKB:103000000000001 created');
+
+		await user.click(button('Save & Add Another'));
+		await waitFor(() => expect(createVariant).toHaveBeenCalledTimes(2));
+
+		const payload = createVariant.mock.calls[1][0];
+		expect(payload).not.toHaveProperty('id');
+		expect(payload).not.toHaveProperty('curie');
+		expect(payload).not.toHaveProperty('dateCreated');
+		expect(payload.type).toEqual('Variant');
+		expect(payload.taxon.curie).toEqual('NCBITaxon:6239');
+		expect(payload.synonyms).toEqual(['var-1']);
+		expect(payload.references.map((reference) => reference.curie)).toEqual(['AGRKB:101000000000041']);
+		expect(payload.relatedNotes).toHaveLength(1);
+		expect(payload.relatedNotes[0].freeText).toEqual('a note');
+		expect(payload.relatedNotes[0]).not.toHaveProperty('id');
+		expect(payload.relatedNotes[0]).not.toHaveProperty('dateCreated');
+	});
+
+	it('Clears the kept values', async () => {
+		const user = userEvent.setup();
+		createVariant.mockResolvedValue({ data: { entity: savedVariant } });
+		const { container } = await renderPage();
+
+		await user.click(button('Save & Add Another'));
+		await waitFor(() => {
+			expect(container.querySelector('input[name="taxon-input"]')).toHaveValue('NCBITaxon:6239');
+		});
+		expect(screen.getByText('a note')).toBeInTheDocument();
+
+		// The shown notes and references tables carry column filter buttons also named Clear.
+		await user.click(screen.getByText('Clear').closest('button'));
+
 		await waitFor(() => {
 			expect(container.querySelector('input[name="taxon-input"]')).toHaveValue('');
 		});
+		expect(container.querySelector('#synonyms')).toHaveValue('');
+		expect(screen.queryByText('a note')).not.toBeInTheDocument();
+	});
+
+	it('Names the new variant in the success message', async () => {
+		const user = userEvent.setup();
+		await renderPage();
+
+		await user.click(button('Save & Add Another'));
+
+		expect(await screen.findByText('Variant AGRKB:103000000000001 created')).toBeInTheDocument();
 	});
 
 	it('Returns to the variants table on cancel', async () => {
