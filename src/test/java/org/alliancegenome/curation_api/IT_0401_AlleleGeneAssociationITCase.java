@@ -551,6 +551,6 @@ public class IT_0401_AlleleGeneAssociationITCase extends BaseITCase {
 			then().
 			statusCode(200).
 			extract().jsonPath().getLong("entity.id");
-		return "/api/allele/" + alleleId + "/gene-associations";
+		return "/api/allele/" + alleleId + "/geneassociations";
 	}
 }

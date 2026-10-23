@@ -20,9 +20,9 @@ const {
 
 vi.mock('../../../service/AlleleSubResourceService', async () =>
 	(await import('./alleleServiceMocks')).mockSubResourceService({
-		'cross-references': { get: getCrossReferencesForAllele, replace: replaceCrossReferencesForAllele },
+		crossreferences: { get: getCrossReferencesForAllele, replace: replaceCrossReferencesForAllele },
 		references: { get: getReferencesForAllele, replace: replaceReferencesForAllele },
-		'gene-associations': { get: getGeneAssociationsForAllele, replace: replaceGeneAssociationsForAllele },
+		geneassociations: { get: getGeneAssociationsForAllele, replace: replaceGeneAssociationsForAllele },
 	})
 );
 

@@ -8,7 +8,7 @@ const { getReferencesForAllele, replaceReferencesForAllele, replaceCrossReferenc
 
 vi.mock('../../../service/AlleleSubResourceService', async () =>
 	(await import('./alleleServiceMocks')).mockSubResourceService({
-		'cross-references': { replace: replaceCrossReferencesForAllele },
+		crossreferences: { replace: replaceCrossReferencesForAllele },
 		references: { get: getReferencesForAllele, replace: replaceReferencesForAllele },
 	})
 );

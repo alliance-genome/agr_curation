@@ -20,7 +20,7 @@ import {
  * and the detail endpoints cannot change them.
  *
  * Each entry configures `useAlleleSubResource`:
- * - `path` the list's path segment under the allele, such as `cross-references`
+ * - `path` the list's path segment under the allele, such as `crossreferences`
  * - `label` what the rows are, for messages
  * - `errorField` the field the API keys the rows' errors under
  * - `prepare`, `strip` and `isSame` as `useSubResourceList` takes them
@@ -34,7 +34,7 @@ import {
  */
 export const ALLELE_SUB_RESOURCES = {
 	crossReferences: {
-		path: 'cross-references',
+		path: 'crossreferences',
 		label: 'cross references',
 		errorField: 'crossReferences',
 		prepare: prepareCrossReferences,
@@ -55,7 +55,7 @@ export const ALLELE_SUB_RESOURCES = {
 		buildCopies: prepareReferences,
 	},
 	alleleGeneAssociations: {
-		path: 'gene-associations',
+		path: 'geneassociations',
 		label: 'gene associations',
 		errorField: 'alleleGeneAssociations',
 		prepare: prepareGeneAssociations,

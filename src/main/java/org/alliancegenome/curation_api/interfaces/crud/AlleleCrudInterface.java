@@ -39,13 +39,13 @@ public interface AlleleCrudInterface extends BaseSubmittedObjectCrudInterface<Al
 
 	@Operation(summary = "Get cross references for allele", description = "Retrieve all cross references belonging to this allele")
 	@GET
-	@Path("/{id}/cross-references")
+	@Path("/{id}/crossreferences")
 	@JsonView(CurationView.CrossReferenceView.class)
 	ObjectListResponse<CrossReference> getCrossReferences(@PathParam("id") Long id);
 
 	@Operation(summary = "Replace cross references for allele", description = "Replace this allele's cross references with the submitted list, deleting any that are omitted")
 	@PUT
-	@Path("/{id}/cross-references")
+	@Path("/{id}/crossreferences")
 	@JsonView(CurationView.CrossReferenceView.class)
 	ObjectListResponse<CrossReference> updateCrossReferences(@PathParam("id") Long id, List<CrossReference> crossReferences);
 
@@ -63,13 +63,13 @@ public interface AlleleCrudInterface extends BaseSubmittedObjectCrudInterface<Al
 
 	@Operation(summary = "Get gene associations for allele", description = "Retrieve all gene associations belonging to this allele")
 	@GET
-	@Path("/{id}/gene-associations")
+	@Path("/{id}/geneassociations")
 	@JsonView(CurationView.AlleleGeneAssociationView.class)
 	ObjectListResponse<AlleleGeneAssociation> getGeneAssociations(@PathParam("id") Long id);
 
 	@Operation(summary = "Replace gene associations for allele", description = "Replace this allele's gene associations with the submitted list, deleting any that are omitted")
 	@PUT
-	@Path("/{id}/gene-associations")
+	@Path("/{id}/geneassociations")
 	@JsonView(CurationView.AlleleGeneAssociationView.class)
 	ObjectListResponse<AlleleGeneAssociation> updateGeneAssociations(@PathParam("id") Long id, List<AlleleGeneAssociation> geneAssociations);
 

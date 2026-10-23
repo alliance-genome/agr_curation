@@ -17,7 +17,7 @@ vi.mock('../../../service/SearchService', async () => (await import('./alleleSer
 // The source's other sub-resources are read through their own endpoints; this allele has none.
 vi.mock('../../../service/AlleleSubResourceService', async () =>
 	(await import('./alleleServiceMocks')).mockSubResourceService({
-		'cross-references': { get: getCrossReferencesForAllele, replace: replaceCrossReferencesForAllele },
+		crossreferences: { get: getCrossReferencesForAllele, replace: replaceCrossReferencesForAllele },
 	})
 );
 

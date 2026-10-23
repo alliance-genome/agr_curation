@@ -26,9 +26,9 @@ vi.mock('../../../service/AlleleService', async () =>
 );
 vi.mock('../../../service/AlleleSubResourceService', async () =>
 	(await import('./alleleServiceMocks')).mockSubResourceService({
-		'cross-references': { get: getCrossReferencesForAllele },
+		crossreferences: { get: getCrossReferencesForAllele },
 		references: { get: getReferencesForAllele, replace: replaceReferencesForAllele },
-		'gene-associations': { get: getGeneAssociationsForAllele, replace: replaceGeneAssociationsForAllele },
+		geneassociations: { get: getGeneAssociationsForAllele, replace: replaceGeneAssociationsForAllele },
 	})
 );
 vi.mock('../../../service/SearchService', async () => (await import('./alleleServiceMocks')).mockSearchService());

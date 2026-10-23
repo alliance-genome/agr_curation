@@ -1784,7 +1784,7 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 		assertEquals(reference.getCurie(), storedConstructAssociation.getEvidence().get(0).getCurie());
 		RestAssured.given().
 				when().
-				get("/api/allele/" + allele.getId() + "/gene-associations").
+				get("/api/allele/" + allele.getId() + "/geneassociations").
 				then().
 				statusCode(200).
 				body("entities", hasSize(1)).
@@ -1803,7 +1803,7 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 				contentType("application/json").
 				body(associations).
 				when().
-				put("/api/allele/" + alleleId + "/gene-associations");
+				put("/api/allele/" + alleleId + "/geneassociations");
 	}
 
 	private static String removeAll(Set<String> actual, Set<String> allowed) {

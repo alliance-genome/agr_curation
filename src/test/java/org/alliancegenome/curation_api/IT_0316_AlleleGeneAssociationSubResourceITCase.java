@@ -401,7 +401,7 @@ public class IT_0316_AlleleGeneAssociationSubResourceITCase extends BaseITCase {
 	}
 
 	private String endpoint(Long id) {
-		return "/api/allele/" + id + "/gene-associations";
+		return "/api/allele/" + id + "/geneassociations";
 	}
 
 	private Response put(Long id, AlleleGeneAssociation... associations) {
