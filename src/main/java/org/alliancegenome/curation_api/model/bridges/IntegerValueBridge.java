@@ -6,6 +6,9 @@ import org.hibernate.search.mapper.pojo.bridge.runtime.ValueBridgeToIndexedValue
 public class IntegerValueBridge implements ValueBridge<Integer, String> {
 	@Override
 	public String toIndexedValue(Integer value, ValueBridgeToIndexedValueContext context) {
+		if (value == null) {
+			return null;
+		}
 		return String.format("%1$13s", value.toString()).replace(' ', '0');
 	}
 }

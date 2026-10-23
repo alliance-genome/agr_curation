@@ -352,6 +352,10 @@ export const FIELD_SETS = Object.freeze({
 		filterName: 'htpExpressionDatasetAnnotationCategoryTagsFilter',
 		fields: ['categoryTags.name'],
 	},
+	htpExpressionDatasetAnnotationNumberOfChannelsFieldSet: {
+		filterName: 'htpExpressionDatasetAnnotationNumberOfChannelsFilter',
+		fields: ['numberOfChannels'],
+	},
 	sequenceTargetingReagentTargetedGenesFieldSet: {
 		filterName: 'sequenceTargetingReagentTargetedGenesFilter',
 		fields: [
@@ -1571,6 +1575,10 @@ export const FILTER_CONFIGS = Object.freeze({
 	htpExpressionDatasetAnnotationCategoryTagsFilterConfig: {
 		filterComponentType: 'input',
 		fieldSets: [FIELD_SETS.htpExpressionDatasetAnnotationCategoryTagsFieldSet],
+	},
+	htpExpressionDatasetAnnotationNumberOfChannelsFilterConfig: {
+		filterComponentType: 'input',
+		fieldSets: [FIELD_SETS.htpExpressionDatasetAnnotationNumberOfChannelsFieldSet],
 	},
 	sequenceTargetingReagentTargetedGenesFilterConfig: {
 		filterComponentType: 'input',
