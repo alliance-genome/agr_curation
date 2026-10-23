@@ -47,7 +47,7 @@ public interface VariantCrudInterface extends BaseSubmittedObjectCrudInterface<V
 	@JsonView(CurationView.FieldsAndLists.class)
 	APIResponse updateFmsVariants(@PathParam("dataProvider") String dataProvider, List<VariantFmsDTO> alleleData);
 
-	@Operation(summary = "Export the HGVS of a data provider's variants", description = "A page of the data provider's allele - variant pairs, by allele: the allele's ID, the variant's AGRKB curie, the genomic HGVS (HGVS.g) of its curated location, and the coding (HGVS.c) and protein (HGVS.p) HGVS of its predicted consequences, one per transcript. Obsolete alleles, variants and links are left out. totalResults counts all pairs; page through them with page and limit (at most 10000).")
+	@Operation(summary = "Export the HGVS of a data provider's variants", description = "A page of the data provider's allele - variant pairs, by allele: the allele's ID, the variant's AGRKB curie, the genomic HGVS (HGVS.g) of its curated location, and the coding (HGVS.c) and protein (HGVS.p) HGVS of its predicted consequences, one per transcript. Obsolete alleles, variants and links are left out. page=0&limit=0 returns only totalResults, the number of pairs; page through them with page and limit (at most 10000).")
 	@GET
 	@Path("/{dataProvider}/hgvs")
 	@JsonView(CurationView.VariantHgvsView.class)

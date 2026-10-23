@@ -43,7 +43,6 @@ public class IT_0613_VariantHgvsExportITCase extends BaseITCase {
 			get(ENDPOINT + "?limit=10000").
 			then().
 			statusCode(200).
-			body("totalResults", greaterThanOrEqualTo(1)).
 			body(ALLELE_RESULT + ".hgvsG", is("NC_003279.8:g.1A>T")).
 			body(ALLELE_RESULT + ".hgvsC", is(List.of("WB:Y74C9A.2a.1:c.29M>N"))).
 			body(ALLELE_RESULT + ".hgvsP", is(List.of("WB:CE49439:p.Met10Neo")));
@@ -51,6 +50,18 @@ public class IT_0613_VariantHgvsExportITCase extends BaseITCase {
 
 	@Test
 	@Order(2)
+	public void countsThePairs() {
+		RestAssured.given().
+			when().
+			get(ENDPOINT + "?page=0&limit=0").
+			then().
+			statusCode(200).
+			body("totalResults", greaterThanOrEqualTo(1)).
+			body("returnedRecords", is(0));
+	}
+
+	@Test
+	@Order(3)
 	public void pagesThroughThePairs() {
 		RestAssured.given().
 			when().
@@ -62,14 +73,20 @@ public class IT_0613_VariantHgvsExportITCase extends BaseITCase {
 	}
 
 	@Test
-	@Order(3)
+	@Order(4)
 	public void dataProviderWithoutVariantsExportsNothing() {
+		RestAssured.given().
+			when().
+			get("/api/variant/NOT_A_PROVIDER/hgvs?page=0&limit=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(0));
+
 		RestAssured.given().
 			when().
 			get("/api/variant/NOT_A_PROVIDER/hgvs").
 			then().
 			statusCode(200).
-			body("totalResults", is(0)).
 			body("returnedRecords", is(0));
 	}
 }
