@@ -7,6 +7,7 @@ import org.alliancegenome.curation_api.interfaces.base.BaseSubmittedObjectCrudIn
 import org.alliancegenome.curation_api.interfaces.base.BaseUpsertControllerInterface;
 import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
+import org.alliancegenome.curation_api.model.entities.Note;
 import org.alliancegenome.curation_api.model.entities.Reference;
 import org.alliancegenome.curation_api.model.entities.associations.AlleleGeneAssociation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.AlleleFunctionalImpactSlotAnnotation;
@@ -150,6 +151,18 @@ public interface AlleleCrudInterface extends BaseSubmittedObjectCrudInterface<Al
 	@Path("/{id}/inheritancemodes")
 	@JsonView(CurationView.AlleleDetailView.class)
 	ObjectListResponse<AlleleInheritanceModeSlotAnnotation> updateInheritanceModes(@PathParam("id") Long id, List<AlleleInheritanceModeSlotAnnotation> inheritanceModes);
+
+	@Operation(summary = "Get related notes for allele", description = "Retrieve all related notes belonging to this allele")
+	@GET
+	@Path("/{id}/relatednotes")
+	@JsonView(CurationView.AlleleDetailView.class)
+	ObjectListResponse<Note> getRelatedNotes(@PathParam("id") Long id);
+
+	@Operation(summary = "Replace related notes for allele", description = "Replace this allele's related notes with the submitted list, deleting any that are omitted")
+	@PUT
+	@Path("/{id}/relatednotes")
+	@JsonView(CurationView.AlleleDetailView.class)
+	ObjectListResponse<Note> updateRelatedNotes(@PathParam("id") Long id, List<Note> relatedNotes);
 
 	@Operation(summary = "Bulk load allele data", description = "Bulk load allele records from a data provider submission")
 	@POST

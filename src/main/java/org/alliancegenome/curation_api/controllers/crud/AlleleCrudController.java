@@ -8,6 +8,7 @@ import org.alliancegenome.curation_api.interfaces.crud.AlleleCrudInterface;
 import org.alliancegenome.curation_api.jobs.executors.AlleleExecutor;
 import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
+import org.alliancegenome.curation_api.model.entities.Note;
 import org.alliancegenome.curation_api.model.entities.Reference;
 import org.alliancegenome.curation_api.model.entities.associations.AlleleGeneAssociation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.AlleleFunctionalImpactSlotAnnotation;
@@ -120,6 +121,14 @@ public class AlleleCrudController extends SubmittedObjectCrudController<AlleleSe
 
 	public ObjectListResponse<AlleleInheritanceModeSlotAnnotation> updateInheritanceModes(Long id, List<AlleleInheritanceModeSlotAnnotation> inheritanceModes) {
 		return alleleService.updateInheritanceModes(id, inheritanceModes);
+	}
+
+	public ObjectListResponse<Note> getRelatedNotes(Long id) {
+		return alleleService.getRelatedNotes(id);
+	}
+
+	public ObjectListResponse<Note> updateRelatedNotes(Long id, List<Note> relatedNotes) {
+		return alleleService.updateRelatedNotes(id, relatedNotes);
 	}
 
 }

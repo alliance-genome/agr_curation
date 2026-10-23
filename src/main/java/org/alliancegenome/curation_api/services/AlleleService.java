@@ -215,6 +215,32 @@ public class AlleleService extends SubmittedObjectCrudService<Allele, AlleleDTO,
 		return replaceSlotAnnotations(allele, alleleValidator.validateInheritanceModeReplacement(allele, inheritanceModes), Allele::getAlleleInheritanceModes, Allele::setAlleleInheritanceModes);
 	}
 
+	public ObjectListResponse<Note> getRelatedNotes(Long id) {
+		return copyOf(findAlleleOrThrow(id).getRelatedNotes());
+	}
+
+	@Transactional
+	public ObjectListResponse<Note> updateRelatedNotes(Long id, List<Note> relatedNotes) {
+		Allele allele = findAlleleOrThrow(id);
+		List<Note> validatedNotes = alleleValidator.validateRelatedNoteReplacement(allele, relatedNotes);
+
+		if (allele.getRelatedNotes() == null) {
+			allele.setRelatedNotes(new ArrayList<>());
+		}
+		allele.getRelatedNotes().clear();
+		allele.getRelatedNotes().addAll(validatedNotes);
+
+		// The response is serialized after this transaction closes, so each note reference's cross references are
+		// loaded while it is open.
+		for (Note note : validatedNotes) {
+			if (note.getReferences() != null) {
+				note.getReferences().forEach(reference -> Hibernate.initialize(reference.getCrossReferences()));
+			}
+		}
+
+		return new ObjectListResponse<>(new ArrayList<>(allele.getRelatedNotes()));
+	}
+
 	private <T> ObjectListResponse<T> copyOf(List<T> rows) {
 		return new ObjectListResponse<>(rows == null ? new ArrayList<>() : new ArrayList<>(rows));
 	}

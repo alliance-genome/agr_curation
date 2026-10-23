@@ -17,6 +17,7 @@ import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.Gene;
+import org.alliancegenome.curation_api.model.entities.Note;
 import org.alliancegenome.curation_api.model.entities.Reference;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.associations.AlleleGeneAssociation;
@@ -33,6 +34,7 @@ import org.alliancegenome.curation_api.model.entities.slotAnnotations.AlleleSyno
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.SlotAnnotation;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.helpers.AssociationIdentityHelper;
+import org.alliancegenome.curation_api.services.helpers.NoteIdentityHelper;
 import org.alliancegenome.curation_api.services.validation.associations.AlleleGeneAssociationValidator;
 import org.alliancegenome.curation_api.services.validation.dto.slotAnnotations.AlleleDatabaseStatusSlotAnnotationValidator;
 import org.alliancegenome.curation_api.services.validation.dto.slotAnnotations.AlleleFullNameSlotAnnotationValidator;
@@ -68,6 +70,7 @@ public class AlleleValidator extends GenomicEntityValidator<Allele> {
 	@Inject AlleleDatabaseStatusSlotAnnotationValidator alleleDatabaseStatusValidator;
 	@Inject AlleleGeneAssociationValidator alleleGeneAssociationValidator;
 	@Inject ReferenceValidator referenceValidator;
+	@Inject NoteValidator relatedNoteValidator;
 	
 	private String errorMessage;
 
@@ -771,6 +774,81 @@ public class AlleleValidator extends GenomicEntityValidator<Allele> {
 		}
 
 		return validatedAnnotations;
+	}
+
+	/**
+	 * Validates the notes an allele's related notes sub-resource is to hold, in submitted order, with the same
+	 * rules as notes saved through the allele itself: a note type from the allele note types set, free text, and
+	 * no two notes alike. Every entry must be present; an entry with an id updates that note, which must be one
+	 * the allele holds and no other entry names; an entry without one is a new note. Every entry's errors are
+	 * reported together.
+	 *
+	 * @param dbEntity the allele the notes belong to
+	 * @param incomingNotes the submitted notes
+	 * @return the validated notes, one per submitted entry
+	 * @throws ApiErrorException when the list is missing or any entry is rejected, with each entry's errors keyed
+	 *         by its index
+	 */
+	public List<Note> validateRelatedNoteReplacement(Allele dbEntity, List<Note> incomingNotes) {
+		response = new ObjectResponse<>();
+		String field = "relatedNotes";
+		String errorTitle = "Could not update Related Notes for: [" + dbEntity.getId() + "]";
+
+		if (incomingNotes == null) {
+			addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
+			response.setErrorMessage(errorTitle);
+			throw new ApiErrorException(response);
+		}
+
+		Set<Long> heldIds = new HashSet<>();
+		if (dbEntity.getRelatedNotes() != null) {
+			dbEntity.getRelatedNotes().forEach(note -> heldIds.add(note.getId()));
+		}
+
+		List<Note> validatedNotes = new ArrayList<>();
+		boolean allValid = true;
+		Set<Long> seenIds = new HashSet<>();
+		Set<String> validatedNoteIdentities = new HashSet<>();
+		for (int ix = 0; ix < incomingNotes.size(); ix++) {
+			Note note = incomingNotes.get(ix);
+			if (note == null) {
+				allValid = false;
+				response.addErrorMessages(field, ix, Map.of("freeText", ValidationConstants.REQUIRED_MESSAGE));
+				continue;
+			}
+			if (note.getId() != null && !heldIds.contains(note.getId())) {
+				allValid = false;
+				response.addErrorMessages(field, ix, Map.of("id", ValidationConstants.INVALID_MESSAGE));
+				continue;
+			}
+			if (note.getId() != null && !seenIds.add(note.getId())) {
+				allValid = false;
+				response.addErrorMessages(field, ix, Map.of("id", ValidationConstants.DUPLICATE_MESSAGE));
+				continue;
+			}
+			ObjectResponse<Note> noteResponse = relatedNoteValidator.validateNote(note, VocabularyConstants.ALLELE_NOTE_TYPES_VOCABULARY_TERM_SET);
+			if (noteResponse.getEntity() == null) {
+				allValid = false;
+				response.addErrorMessages(field, ix, noteResponse.getErrorMessages());
+				continue;
+			}
+			Note validatedNote = noteResponse.getEntity();
+			String noteIdentity = NoteIdentityHelper.noteIdentity(validatedNote);
+			if (!validatedNoteIdentities.add(noteIdentity)) {
+				allValid = false;
+				response.addErrorMessages(field, ix, Map.of("freeText", ValidationConstants.DUPLICATE_MESSAGE + " (" + noteIdentity + ")"));
+				continue;
+			}
+			validatedNotes.add(validatedNote);
+		}
+
+		if (!allValid) {
+			convertMapToErrorMessages(field);
+			response.setErrorMessage(errorTitle);
+			throw new ApiErrorException(response);
+		}
+
+		return validatedNotes;
 	}
 
 	/**
