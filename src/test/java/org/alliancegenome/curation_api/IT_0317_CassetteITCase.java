@@ -3,13 +3,17 @@ package org.alliancegenome.curation_api;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 
 import java.util.List;
 
 import org.alliancegenome.curation_api.base.BaseITCase;
+import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.model.entities.Cassette;
+import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.FBCVTerm;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.CassetteSymbolSlotAnnotation;
+import org.alliancegenome.curation_api.model.entities.slotAnnotations.CassetteSynonymSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.CassetteUseSlotAnnotation;
 import org.alliancegenome.curation_api.resources.TestContainerResource;
 import org.alliancegenome.curation_api.response.ObjectResponse;
@@ -172,5 +176,42 @@ public class IT_0317_CassetteITCase extends BaseITCase {
 			then().
 			statusCode(400).
 			body("errorMessages.uses", containsString(USE_NAMESPACE));
+	}
+
+	@Test
+	@Order(4)
+	public void synonymNameTypeIsSaved() {
+		VocabularyTerm systematicName = getVocabularyTerm(getVocabulary(VocabularyConstants.NAME_TYPE_VOCABULARY), "systematic_name");
+		Cassette cassette = getCassette(CASSETTE);
+		CassetteSynonymSlotAnnotation synonym = cassette.getCassetteSynonyms().get(0);
+		synonym.setNameType(systematicName);
+		cassette.setCassetteSynonyms(List.of(synonym));
+
+		RestAssured.given().
+			contentType("application/json").
+			body(cassette).
+			when().
+			put("/api/cassette").
+			then().
+			statusCode(200);
+
+		RestAssured.given().
+			when().
+			get("/api/cassette/" + CASSETTE).
+			then().
+			statusCode(200).
+			body("entity.cassetteSynonyms[0].nameType.name", is("systematic_name"));
+
+		// A synonym's name type is required, as a load requires it
+		Cassette withoutNameType = getCassette(CASSETTE);
+		withoutNameType.getCassetteSynonyms().get(0).setNameType(null);
+		RestAssured.given().
+			contentType("application/json").
+			body(withoutNameType).
+			when().
+			put("/api/cassette").
+			then().
+			statusCode(400).
+			body("errorMessages.cassetteSynonyms", notNullValue());
 	}
 }

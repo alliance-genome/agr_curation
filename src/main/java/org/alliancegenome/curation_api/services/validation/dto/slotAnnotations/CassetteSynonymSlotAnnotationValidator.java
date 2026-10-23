@@ -1,9 +1,11 @@
 package org.alliancegenome.curation_api.services.validation.dto.slotAnnotations;
 
+import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.CassetteDAO;
 import org.alliancegenome.curation_api.dao.slotAnnotations.CassetteSynonymSlotAnnotationDAO;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.Cassette;
+import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.CassetteSynonymSlotAnnotation;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 
@@ -45,6 +47,9 @@ public class CassetteSynonymSlotAnnotationValidator extends NameSlotAnnotationVa
 
 		dbEntity = (CassetteSynonymSlotAnnotation) validateNameSlotAnnotationFields(uiEntity, dbEntity, newEntity);
 
+		// SCRUM-6746: as for the other entities' synonyms; without it an edited name type was dropped
+		VocabularyTerm nameType = validateRequiredTermInVocabulary("nameType", VocabularyConstants.NAME_TYPE_VOCABULARY, uiEntity.getNameType(), dbEntity.getNameType());
+		dbEntity.setNameType(nameType);
 
 		if (validateCassette) {
 			Cassette singleCassette = validateRequiredEntity(lCassetteDAO, "singleCassette", uiEntity.getSingleCassette(), dbEntity.getSingleCassette());
