@@ -2,6 +2,7 @@ import React, { useRef, useState, useMemo } from 'react';
 import { GenericDataTable } from '../../components/GenericDataTable/GenericDataTable';
 import { ComponentsDialog } from '../constructsPage/ComponentsDialog';
 import { GenomicComponentsDialog } from '../constructsPage/GenomicComponentsDialog';
+import { StrComponentsDialog } from './StrComponentsDialog';
 import { SymbolReadOnlyDialog } from '../nameSlotAnnotations/dialogs/SymbolReadOnlyDialog';
 import { FullNameReadOnlyDialog } from '../nameSlotAnnotations/dialogs/FullNameReadOnlyDialog';
 import { SynonymsReadOnlyDialog } from '../nameSlotAnnotations/dialogs/SynonymsReadOnlyDialog';
@@ -22,12 +23,11 @@ import { SearchService } from '../../service/SearchService';
 import { Endpoints } from '../../constants/Endpoints';
 import {
 	relationName,
-	identifierOf,
 	genomicEntityLabel,
 	transgenicToolLabel,
 	transgenicToolDisplayValue,
-	associationStrings,
 	useStrings,
+	strAssociationText,
 } from './utils';
 
 // tableName is the title, and without spaces the key the table's settings are saved under, so a
@@ -70,6 +70,8 @@ export const CassettesTable = ({ tableName = 'Cassettes', fixedFilters }) => {
 		mainRowProps: {},
 	});
 
+	const [strComponentsData, setStrComponentsData] = useState({ dialog: false });
+
 	const [isInEditMode, setIsInEditMode] = useState(false);
 	const [errorMessages, setErrorMessages] = useState({});
 	const [totalRecords, setTotalRecords] = useState(0);
@@ -95,6 +97,10 @@ export const CassettesTable = ({ tableName = 'Cassettes', fixedFilters }) => {
 
 	const handleGenomicEntityComponentsOpen = (cassetteGenomicEntityAssociations) => {
 		setGenomicEntityComponentsData({ originalComponents: cassetteGenomicEntityAssociations, dialog: true });
+	};
+
+	const handleStrComponentsOpen = (cassetteStrAssociations) => {
+		setStrComponentsData({ originalComponents: cassetteStrAssociations, dialog: true });
 	};
 
 	const handleTransgenicToolComponentsOpen = (cassetteTransgenicToolAssociations) => {
@@ -236,12 +242,11 @@ export const CassettesTable = ({ tableName = 'Cassettes', fixedFilters }) => {
 				field: 'cassetteStrAssociations.cassetteStrAssociationObject.primaryExternalId',
 				header: 'Sequence Targeting Reagent Components',
 				body: (rowData) => (
-					<StringListTemplate
-						list={associationStrings(
-							rowData.cassetteStrAssociations,
-							'cassetteStrAssociationObject',
-							(str) => str?.name || identifierOf(str)
-						)}
+					<ListDialogTemplate
+						entities={rowData.cassetteStrAssociations}
+						handleOpen={handleStrComponentsOpen}
+						getTextField={strAssociationText}
+						underline={true}
 					/>
 				),
 				sortable: { isInEditMode },
@@ -405,6 +410,7 @@ export const CassettesTable = ({ tableName = 'Cassettes', fixedFilters }) => {
 				title="Transgenic Tool Components"
 				getComponentLabel={transgenicToolDisplayValue}
 			/>
+			<StrComponentsDialog strComponentsData={strComponentsData} setStrComponentsData={setStrComponentsData} />
 		</>
 	);
 };
