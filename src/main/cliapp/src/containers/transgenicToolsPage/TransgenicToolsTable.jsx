@@ -313,7 +313,7 @@ export const TransgenicToolsTable = () => {
 					setTableState={setTableState}
 					columns={columns}
 					isEditable={false}
-					hasDetails={false}
+					hasDetails={true}
 					isInEditMode={isInEditMode}
 					setIsInEditMode={setIsInEditMode}
 					toasts={{ toast_topleft, toast_topright }}
