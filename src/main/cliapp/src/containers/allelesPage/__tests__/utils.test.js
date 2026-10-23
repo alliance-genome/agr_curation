@@ -174,6 +174,7 @@ describe('buildDuplicateAllele', () => {
 		// The lists written through their own sub-resources are copied separately.
 		[
 			'references',
+			'relatedNotes',
 			'alleleGeneAssociations',
 			'alleleSynonyms',
 			'alleleSecondaryIds',
@@ -195,7 +196,6 @@ describe('buildDuplicateAllele', () => {
 		expect(duplicate.isExtinct).toBe(true);
 		expect(duplicate.alleleSymbol).toEqual({ displayText: 'abc-1', formatText: 'abc-1' });
 		expect(duplicate.alleleFullName).toEqual({ displayText: 'full name', formatText: 'full name' });
-		expect(duplicate.relatedNotes).toEqual([{ freeText: 'a note' }]);
 		expect(duplicate.alleleGermlineTransmissionStatus).toEqual({ germlineTransmissionStatus: { name: 'cell_line' } });
 		expect(duplicate.alleleDatabaseStatus).toEqual({ databaseStatus: { name: 'approved' } });
 	});
@@ -206,17 +206,7 @@ describe('buildDuplicateAllele', () => {
 		expect(duplicate.taxon).toEqual({ curie: '' });
 		expect(duplicate.inCollection).toEqual({ name: '' });
 		expect(duplicate.alleleSymbol).toBeNull();
-		expect(duplicate.relatedNotes).toBeUndefined();
-		expect(duplicate.alleleGeneAssociations).toBeUndefined();
-	});
-
-	it('Leaves a list with no rows unset, as the detail endpoint does', () => {
-		const duplicate = buildDuplicateAllele({
-			relatedNotes: [],
-			alleleGeneAssociations: [],
-		});
-
-		expect(duplicate.relatedNotes).toBeUndefined();
+		expect(duplicate).not.toHaveProperty('relatedNotes');
 		expect(duplicate.alleleGeneAssociations).toBeUndefined();
 	});
 

@@ -127,8 +127,6 @@ export const copyRow = (row) => {
 	return copy;
 };
 
-const copyRows = (rows) => (rows?.length ? rows.map(copyRow) : undefined);
-
 /**
  * A new allele carrying the fields of a stored one that the create form edits, for the create page to
  * start from.
@@ -136,11 +134,10 @@ const copyRows = (rows) => (rows?.length ? rows.map(copyRow) : undefined);
  * Left behind: everything that identifies the stored allele (its ids), its data provider and audit fields,
  * and the variant and construct associations the form does not edit. The lists in ALLELE_SUB_RESOURCES are
  * written through their own sub-resources and copied separately; see useDuplicateAlleleSource. Each copied
- * row loses its own id and audit fields, so it is created afresh. A list with no rows is left unset, as the
- * detail endpoint leaves it, so its section starts hidden.
+ * slot annotation loses its own id and audit fields, so it is created afresh.
  *
  * @param {Object} allele an allele as the detail endpoint returns it
- * @returns {Object} an allele without an id, not obsolete, carrying only the lists that have rows
+ * @returns {Object} an allele without an id, not obsolete
  */
 export const buildDuplicateAllele = (allele) => ({
 	type: 'Allele',
@@ -149,7 +146,6 @@ export const buildDuplicateAllele = (allele) => ({
 	isExtinct: allele.isExtinct ?? false,
 	internal: allele.internal ?? false,
 	obsolete: false,
-	relatedNotes: copyRows(allele.relatedNotes),
 	alleleSymbol: copyRow(allele.alleleSymbol),
 	alleleFullName: copyRow(allele.alleleFullName),
 	alleleGermlineTransmissionStatus: copyRow(allele.alleleGermlineTransmissionStatus),

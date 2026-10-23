@@ -46,6 +46,7 @@ describe('useAlleleSubResources', () => {
 			'alleleMutationTypes',
 			'alleleFunctionalImpacts',
 			'alleleInheritanceModes',
+			'relatedNotes',
 		]);
 		expect(result.current.isDirty).toBe(false);
 	});

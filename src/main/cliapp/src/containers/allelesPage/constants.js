@@ -19,6 +19,12 @@ import {
 	prepareSlotAnnotations,
 	stripSlotAnnotation,
 } from './slotAnnotations/utils';
+import {
+	buildRelatedNoteCopies,
+	haveSameRelatedNotes,
+	prepareRelatedNotes,
+	stripRelatedNote,
+} from './relatedNotes/utils';
 import { sortedCuries } from './utils';
 
 /**
@@ -146,4 +152,13 @@ export const ALLELE_SUB_RESOURCES = {
 			inheritanceMode.phenotypeStatement || null,
 		],
 	}),
+	relatedNotes: {
+		path: 'relatednotes',
+		label: 'related notes',
+		errorField: 'relatedNotes',
+		prepare: prepareRelatedNotes,
+		strip: stripRelatedNote,
+		isSame: haveSameRelatedNotes,
+		buildCopies: buildRelatedNoteCopies,
+	},
 };

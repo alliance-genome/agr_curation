@@ -9,6 +9,8 @@ const getMutationTypesForAllele = vi.fn();
 const replaceMutationTypesForAllele = vi.fn();
 const getSecondaryIdsForAllele = vi.fn();
 const replaceSecondaryIdsForAllele = vi.fn();
+const getRelatedNotesForAllele = vi.fn();
+const replaceRelatedNotesForAllele = vi.fn();
 const navigate = vi.fn();
 
 vi.mock('../../../service/AlleleService', async () =>
@@ -19,6 +21,7 @@ vi.mock('../../../service/AlleleSubResourceService', async () =>
 	(await import('./alleleServiceMocks')).mockSubResourceService({
 		mutationtypes: { get: getMutationTypesForAllele, replace: replaceMutationTypesForAllele },
 		secondaryids: { get: getSecondaryIdsForAllele, replace: replaceSecondaryIdsForAllele },
+		relatednotes: { get: getRelatedNotesForAllele, replace: replaceRelatedNotesForAllele },
 	})
 );
 
@@ -37,6 +40,14 @@ const storedMutationType = {
 	evidence: [{ type: 'Reference', curie: 'AGRKB:101' }],
 };
 
+const storedNote = {
+	id: 11,
+	dateCreated: '2024-01-01T00:00:00Z',
+	internal: false,
+	freeText: 'a note',
+	noteType: { name: 'comment' },
+};
+
 const renderPage = () => renderInRouter(<AlleleCreatePage />, DUPLICATE_SOURCE_ENTRY);
 
 const waitForSourceToLoad = async (container) => {
@@ -48,7 +59,7 @@ const waitForSourceToLoad = async (container) => {
 	);
 };
 
-describe('<AlleleCreatePage /> duplicating slot annotation lists', { timeout: 30000 }, () => {
+describe('<AlleleCreatePage /> duplicating sub-resource lists', { timeout: 30000 }, () => {
 	beforeEach(() => {
 		createAllele.mockReset();
 		createAllele.mockResolvedValue({ data: { entity: { id: 4242, curie: 'AGRKB:101000000000002' } } });
@@ -62,6 +73,10 @@ describe('<AlleleCreatePage /> duplicating slot annotation lists', { timeout: 30
 		getSecondaryIdsForAllele.mockResolvedValue({ data: { entities: [{ id: 8, secondaryId: 'WB:WBVar0' }] } });
 		replaceSecondaryIdsForAllele.mockReset();
 		replaceSecondaryIdsForAllele.mockResolvedValue({ data: { entities: [] } });
+		getRelatedNotesForAllele.mockReset();
+		getRelatedNotesForAllele.mockResolvedValue({ data: { entities: [storedNote] } });
+		replaceRelatedNotesForAllele.mockReset();
+		replaceRelatedNotesForAllele.mockResolvedValue({ data: { entities: [{ ...storedNote, id: 21 }] } });
 		navigate.mockReset();
 		window.localStorage.removeItem('AlleleCreateFormSettings');
 	});
@@ -84,6 +99,21 @@ describe('<AlleleCreatePage /> duplicating slot annotation lists', { timeout: 30
 		]);
 		expect(createAllele.mock.calls[0][0].alleleMutationTypes ?? []).toEqual([]);
 		await waitFor(() => expect(navigate).toHaveBeenCalledWith('/allele/AGRKB:101000000000002'), FORM_LOAD_WAIT);
+	});
+
+	it('Copies the related notes and writes them, as new notes, to the new allele', async () => {
+		const user = userEvent.setup();
+		const { container } = await renderPage();
+		await waitForSourceToLoad(container);
+		await waitFor(() => expect(getRelatedNotesForAllele).toHaveBeenCalledWith(1), FORM_LOAD_WAIT);
+
+		await user.click(screen.getByRole('button', { name: 'Save & Close' }));
+
+		await waitFor(() => expect(replaceRelatedNotesForAllele).toHaveBeenCalled(), FORM_LOAD_WAIT);
+		expect(replaceRelatedNotesForAllele).toHaveBeenCalledWith(4242, [
+			{ internal: false, freeText: 'a note', noteType: { name: 'comment' } },
+		]);
+		expect(createAllele.mock.calls[0][0].relatedNotes ?? []).toEqual([]);
 	});
 
 	it('Copies no secondary IDs, which identify the source allele', async () => {

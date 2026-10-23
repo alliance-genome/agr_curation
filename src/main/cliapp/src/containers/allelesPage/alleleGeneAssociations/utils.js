@@ -1,4 +1,5 @@
 import { addDataKey, copyRow, generateCurieSearchField, sameRowsBy, sortedCuries } from '../utils';
+import { relatedNoteValue } from '../relatedNotes/utils';
 
 /**
  * Readies gene associations for the gene associations table: each gets its own `dataKey` and the evidence
@@ -36,11 +37,6 @@ const autosuggestValue = (value, key) => {
 	if (!value) return null;
 	return value[key] ?? `typed:${JSON.stringify(value)}`;
 };
-
-const relatedNoteValue = (note) =>
-	note
-		? [note.freeText ?? null, note.noteType?.name ?? null, Boolean(note.internal), sortedCuries(note.references)]
-		: null;
 
 // A gene association's curator-editable fields, as a string to compare by.
 const geneAssociationValue = (association) =>

@@ -105,9 +105,9 @@ public class AlleleValidator extends GenomicEntityValidator<Allele> {
 
 		dbEntity = (Allele) validateAuditedObjectFields(uiEntity, dbEntity, true);
 
-		// POST /allele serializes AlleleDetailView, which omits crossReferences, references, the slot annotation lists
-		// and the gene and construct associations, so the create payload never carries them; validateAllele leaves them
-		// to their own endpoints.
+		// POST /allele serializes AlleleDetailView, which omits crossReferences, references, related notes, the slot
+		// annotation lists and the gene and construct associations, so the create payload never carries them;
+		// validateAllele leaves them to their own endpoints.
 		return validateAllele(uiEntity, dbEntity, false);
 	}
 
@@ -115,9 +115,9 @@ public class AlleleValidator extends GenomicEntityValidator<Allele> {
 	 * Gene and construct associations are left as they are stored: gene associations are written through the
 	 * allele's gene associations sub-resource, and construct associations through their own endpoints and loads.
 	 *
-	 * @param manageSubResourceFields whether the calling endpoint's JSON view carries crossReferences, references
-	 *        and the synonym, secondary ID, nomenclature event, mutation type, functional impact and inheritance mode
-	 *        lists. An endpoint whose view omits them leaves the stored ones as they are; they are written through
+	 * @param manageSubResourceFields whether the calling endpoint's JSON view carries crossReferences, references,
+	 *        relatedNotes and the synonym, secondary ID, nomenclature event, mutation type, functional impact and
+	 *        inheritance mode lists. An endpoint whose view omits them leaves the stored ones as they are; they are written through
 	 *        the allele's own sub-resources instead.
 	 */
 	public Allele validateAllele(Allele uiEntity, Allele dbEntity, Boolean manageSubResourceFields) {
@@ -128,7 +128,7 @@ public class AlleleValidator extends GenomicEntityValidator<Allele> {
 		// An allele is identified by its AGRKB curie, minted below for a new allele and already
 		// present on a loaded one, so neither MOD identifier is required. Passed for updates too:
 		// an allele created here has neither, and requiring one would reject its first edit.
-		dbEntity = validateGenomicEntityFields(uiEntity, dbEntity, VocabularyConstants.ALLELE_NOTE_TYPES_VOCABULARY_TERM_SET, false, manageSubResourceFields);
+		dbEntity = validateGenomicEntityFields(uiEntity, dbEntity, VocabularyConstants.ALLELE_NOTE_TYPES_VOCABULARY_TERM_SET, false, manageSubResourceFields, manageSubResourceFields);
 
 		if (manageSubResourceFields) {
 			List<Reference> references = validateReferences(uiEntity, dbEntity);

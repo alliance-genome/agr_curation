@@ -154,9 +154,9 @@ export default function AlleleDetailPage() {
 	};
 
 	/**
-	 * Deprecates the allele as last saved, so the form's unsaved edits, cross references, references and gene
-	 * associations are not written with it. They stay on the form, which then shows the allele as obsolete; a
-	 * refused deprecation leaves the form as it was.
+	 * Deprecates the allele as last saved, so the form's unsaved edits, including those to the lists written through
+	 * their own sub-resources, are not written with it. They stay on the form, which then shows the allele as
+	 * obsolete; a refused deprecation leaves the form as it was.
 	 */
 	const deprecateAllele = async () => {
 		try {

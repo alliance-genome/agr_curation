@@ -70,16 +70,16 @@ public class AlleleService extends SubmittedObjectCrudService<Allele, AlleleDTO,
 	@Override
 	@Transactional
 	public ObjectResponse<Allele> update(Allele uiEntity) {
-		// AlleleView carries crossReferences, references and the slot annotation lists but not the associations, so
-		// this path manages those only.
+		// AlleleView carries crossReferences, references, related notes and the slot annotation lists but not the
+		// associations, so this path manages those only.
 		Allele dbEntity = alleleValidator.validateAlleleUpdate(uiEntity, true);
 		return new ObjectResponse<>(dbEntity);
 	}
 
 	@Transactional
 	public ObjectResponse<Allele> updateDetail(Allele uiEntity) {
-		// AlleleDetailView carries none of crossReferences, references, the slot annotation lists or the gene and
-		// construct associations, so this path manages none of them; all but the construct associations are written
+		// AlleleDetailView carries none of crossReferences, references, related notes, the slot annotation lists or the
+		// gene and construct associations, so this path manages none of them; all but the construct associations are written
 		// through the allele's sub-resources, and construct associations through their own endpoints.
 		Allele dbEntity = alleleValidator.validateAlleleUpdate(uiEntity, false);
 		return new ObjectResponse<>(dbEntity);

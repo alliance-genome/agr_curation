@@ -88,16 +88,6 @@ public class IT_0102_AlleleBulkUploadITCase extends BaseITCase {
 			body("entity.dateUpdated", is(OffsetDateTime.parse("2022-03-10T22:10:12Z").toString())).
 			body("entity.inCollection.name", is("Million_mutations_project")).
 			body("entity.isExtinct", is(false)).
-			body("entity.relatedNotes", hasSize(1)).
-			body("entity.relatedNotes[0].internal", is(false)).
-			body("entity.relatedNotes[0].obsolete", is(true)).
-			body("entity.relatedNotes[0].updatedBy.uniqueId", is("DATEST:Person0002")).
-			body("entity.relatedNotes[0].createdBy.uniqueId", is("DATEST:Person0001")).
-			body("entity.relatedNotes[0].dateUpdated", is(OffsetDateTime.parse("2022-03-10T22:10:12Z").toString())).
-			body("entity.relatedNotes[0].dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").toString())).
-			body("entity.relatedNotes[0].freeText", is("Test note")).
-			body("entity.relatedNotes[0].noteType.name", is("comment")).
-			body("entity.relatedNotes[0].references[0].curie", is(requiredReference)).
 			body("entity.alleleSymbol.displayText", is("Ta1")).
 			body("entity.alleleSymbol.formatText", is("Ta<sup>1</sup>")).
 			body("entity.alleleSymbol.synonymScope.name", is("exact")).
@@ -140,6 +130,18 @@ public class IT_0102_AlleleBulkUploadITCase extends BaseITCase {
 			body("entity.dataProviderCrossReference.referencedCurie", is("TEST:0001")).
 			body("entity.dataProviderCrossReference.displayName", is("TEST:0001")).
 			body("entity.dataProviderCrossReference.resourceDescriptorPage.name", is("homepage"));
+
+		findAlleleResponse("ALLELETEST:Allele0001").
+			body("results[0].relatedNotes", hasSize(1)).
+			body("results[0].relatedNotes[0].internal", is(false)).
+			body("results[0].relatedNotes[0].obsolete", is(true)).
+			body("results[0].relatedNotes[0].updatedBy.uniqueId", is("DATEST:Person0002")).
+			body("results[0].relatedNotes[0].createdBy.uniqueId", is("DATEST:Person0001")).
+			body("results[0].relatedNotes[0].dateUpdated", is(OffsetDateTime.parse("2022-03-10T22:10:12Z").toString())).
+			body("results[0].relatedNotes[0].dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").toString())).
+			body("results[0].relatedNotes[0].freeText", is("Test note")).
+			body("results[0].relatedNotes[0].noteType.name", is("comment")).
+			body("results[0].relatedNotes[0].references[0].curie", is(requiredReference));
 
 		findAlleleResponse("ALLELETEST:Allele0001").
 			body("results[0].alleleSynonyms", hasSize(1)).
@@ -228,16 +230,6 @@ public class IT_0102_AlleleBulkUploadITCase extends BaseITCase {
 			body("entity.dateUpdated", is(OffsetDateTime.parse("2022-03-20T22:10:12Z").toString())).
 			body("entity.inCollection.name", is("WGS_Yanai")).
 			body("entity.isExtinct", is(true)).
-			body("entity.relatedNotes", hasSize(1)).
-			body("entity.relatedNotes[0].internal", is(true)).
-			body("entity.relatedNotes[0].obsolete", is(false)).
-			body("entity.relatedNotes[0].updatedBy.uniqueId", is("DATEST:Person0001")).
-			body("entity.relatedNotes[0].createdBy.uniqueId", is("DATEST:Person0002")).
-			body("entity.relatedNotes[0].dateUpdated", is(OffsetDateTime.parse("2022-03-20T22:10:12Z").toString())).
-			body("entity.relatedNotes[0].dateCreated", is(OffsetDateTime.parse("2022-03-19T22:10:12Z").toString())).
-			body("entity.relatedNotes[0].freeText", is("Test note")).
-			body("entity.relatedNotes[0].noteType.name", is("indel_verification")).
-			body("entity.relatedNotes[0].references[0].curie", is(requiredReference2)).
 			body("entity.alleleSymbol.displayText", is("Ta1a")).
 			body("entity.alleleSymbol.formatText", is("Ta<sup>1a</sup>")).
 			body("entity.alleleSymbol.synonymScope.name", is("broad")).
@@ -281,6 +273,18 @@ public class IT_0102_AlleleBulkUploadITCase extends BaseITCase {
 			body("entity.dataProviderCrossReference.referencedCurie", is("TEST2:0001")).
 			body("entity.dataProviderCrossReference.displayName", is("TEST2:0001")).
 			body("entity.dataProviderCrossReference.resourceDescriptorPage.name", is("homepage2"));
+
+		findAlleleResponse("ALLELETEST:Allele0001").
+			body("results[0].relatedNotes", hasSize(1)).
+			body("results[0].relatedNotes[0].internal", is(true)).
+			body("results[0].relatedNotes[0].obsolete", is(false)).
+			body("results[0].relatedNotes[0].updatedBy.uniqueId", is("DATEST:Person0001")).
+			body("results[0].relatedNotes[0].createdBy.uniqueId", is("DATEST:Person0002")).
+			body("results[0].relatedNotes[0].dateUpdated", is(OffsetDateTime.parse("2022-03-20T22:10:12Z").toString())).
+			body("results[0].relatedNotes[0].dateCreated", is(OffsetDateTime.parse("2022-03-19T22:10:12Z").toString())).
+			body("results[0].relatedNotes[0].freeText", is("Test note")).
+			body("results[0].relatedNotes[0].noteType.name", is("indel_verification")).
+			body("results[0].relatedNotes[0].references[0].curie", is(requiredReference2));
 
 		findAlleleResponse("ALLELETEST:Allele0001").
 			body("results[0].alleleSynonyms", hasSize(1)).
@@ -456,11 +460,13 @@ public class IT_0102_AlleleBulkUploadITCase extends BaseITCase {
 			body("entity", not(hasKey("dateCreated"))).
 			body("entity", not(hasKey("dateUpdated"))).
 			body("entity", not(hasKey("inCollection"))).
-			body("entity", not(hasKey("relatedNotes"))).
 			body("entity", not(hasKey("alleleFullName"))).
 			body("entity", not(hasKey("alleleGermlineTransmissionStatus"))).
 			body("entity", not(hasKey("alleleDatabaseStatus"))).
 			body("entity", not(hasKey("dataProviderCrossReference")));
+
+		findAlleleResponse("ALLELETEST:Allele0001").
+			body("results[0]", not(hasKey("relatedNotes")));
 
 		findAlleleResponse("ALLELETEST:Allele0001").
 			body("results[0]", not(hasKey("alleleMutationTypes"))).
@@ -485,11 +491,6 @@ public class IT_0102_AlleleBulkUploadITCase extends BaseITCase {
 			get(alleleGetEndpoint + "ALLELETEST:Allele0001").then().
 			statusCode(200).
 			body("entity.primaryExternalId", is("ALLELETEST:Allele0001")).
-			body("entity.relatedNotes[0]", not(hasKey("evidence"))).
-			body("entity.relatedNotes[0]", not(hasKey("createdBy"))).
-			body("entity.relatedNotes[0]", not(hasKey("updatedBy"))).
-			body("entity.relatedNotes[0]", not(hasKey("dateCreated"))).
-			body("entity.relatedNotes[0]", not(hasKey("dateUpdated"))).
 			body("entity.alleleSymbol", not(hasKey("synonymScope"))).
 			body("entity.alleleSymbol", not(hasKey("synonymUrl"))).
 			body("entity.alleleSymbol", not(hasKey("evidence"))).
@@ -514,6 +515,13 @@ public class IT_0102_AlleleBulkUploadITCase extends BaseITCase {
 			body("entity.alleleDatabaseStatus", not(hasKey("updatedBy"))).
 			body("entity.alleleDatabaseStatus", not(hasKey("dateCreated"))).
 			body("entity.alleleDatabaseStatus", not(hasKey("dateUpdated")));
+
+		findAlleleResponse("ALLELETEST:Allele0001").
+			body("results[0].relatedNotes[0]", not(hasKey("evidence"))).
+			body("results[0].relatedNotes[0]", not(hasKey("createdBy"))).
+			body("results[0].relatedNotes[0]", not(hasKey("updatedBy"))).
+			body("results[0].relatedNotes[0]", not(hasKey("dateCreated"))).
+			body("results[0].relatedNotes[0]", not(hasKey("dateUpdated")));
 
 		findAlleleResponse("ALLELETEST:Allele0001").
 			body("results[0].alleleMutationTypes[0]", not(hasKey("evidence"))).
@@ -571,11 +579,6 @@ public class IT_0102_AlleleBulkUploadITCase extends BaseITCase {
 			body("entity", not(hasKey("dateUpdated"))).
 			body("entity", not(hasKey("inheritanceMode"))).
 			body("entity", not(hasKey("inCollection"))).
-			body("entity.relatedNotes[0]", not(hasKey("evidence"))).
-			body("entity.relatedNotes[0]", not(hasKey("createdBy"))).
-			body("entity.relatedNotes[0]", not(hasKey("updatedBy"))).
-			body("entity.relatedNotes[0]", not(hasKey("dateCreated"))).
-			body("entity.relatedNotes[0]", not(hasKey("dateUpdated"))).
 			body("entity.alleleSymbol", not(hasKey("synonymScope"))).
 			body("entity.alleleSymbol", not(hasKey("synonymUrl"))).
 			body("entity.alleleSymbol", not(hasKey("evidence"))).
@@ -600,6 +603,13 @@ public class IT_0102_AlleleBulkUploadITCase extends BaseITCase {
 			body("entity.alleleDatabaseStatus", not(hasKey("updatedBy"))).
 			body("entity.alleleDatabaseStatus", not(hasKey("dateCreated"))).
 			body("entity.alleleDatabaseStatus", not(hasKey("dateUpdated")));
+
+		findAlleleResponse("ALLELETEST:Allele0001").
+			body("results[0].relatedNotes[0]", not(hasKey("evidence"))).
+			body("results[0].relatedNotes[0]", not(hasKey("createdBy"))).
+			body("results[0].relatedNotes[0]", not(hasKey("updatedBy"))).
+			body("results[0].relatedNotes[0]", not(hasKey("dateCreated"))).
+			body("results[0].relatedNotes[0]", not(hasKey("dateUpdated")));
 
 		findAlleleResponse("ALLELETEST:Allele0001").
 			body("results[0].alleleMutationTypes[0]", not(hasKey("evidence"))).
@@ -672,8 +682,10 @@ public class IT_0102_AlleleBulkUploadITCase extends BaseITCase {
 			get(alleleGetEndpoint + "ALLELETEST:DN01").
 			then().
 			statusCode(200).
-			body("entity.primaryExternalId", is("ALLELETEST:DN01")).
-			body("entity.relatedNotes", hasSize(1));
+			body("entity.primaryExternalId", is("ALLELETEST:DN01"));
+
+		findAlleleResponse("ALLELETEST:DN01").
+			body("results[0].relatedNotes", hasSize(1));
 	}
 	
 	@Test

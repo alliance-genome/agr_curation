@@ -136,16 +136,6 @@ describe('<AlleleDetailPage /> single-value pending edits', { timeout: 30000 }, 
 		expect(screen.getByRole('button', { name: 'Save' })).toBeDisabled();
 	});
 
-	it('Activates Save for an edit to a field it does not mark', async () => {
-		const user = userEvent.setup();
-		await renderLoadedPage();
-
-		await user.click(screen.getByRole('button', { name: 'Add Related Note' }));
-
-		expect(screen.getByRole('button', { name: 'Save' })).toBeEnabled();
-		expect(screen.queryByText('Pending Edits!')).not.toBeInTheDocument();
-	});
-
 	it('Marks an edited single-object section and activates Save, clearing both when changed back', async () => {
 		const user = userEvent.setup();
 		await renderLoadedPage();
