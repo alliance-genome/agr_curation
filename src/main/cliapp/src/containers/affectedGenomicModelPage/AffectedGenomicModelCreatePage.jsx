@@ -10,7 +10,7 @@ import { useAGMReducer } from './useAGMReducer';
 import { StickyHeader } from '../../components/StickyHeader';
 import { StickyFooter } from '../../components/StickyFooter';
 import { LoadingOverlay } from '../../components/LoadingOverlay';
-import { processErrors } from './utils';
+import { buildDuplicateAgm, processErrors } from './utils';
 import { getIdentifier } from '../../utils/utils';
 import { FormFieldVisibilityMenu, useFormFieldVisibility } from '../../components/FormFieldVisibility';
 import { AGMForm, AGM_CREATE_TOGGLEABLE_FIELDS } from './AGMForm';
@@ -75,19 +75,26 @@ export default function AffectedGenomicModelCreatePage() {
 
 		mutate(payload, {
 			onSuccess: (result) => {
+				const agm = result?.data?.entity;
 				// The table's search query is keyed on 'AffectedGenomicModels' (getDefaultTableState's
 				// tableKeyName), so this is what brings the new row into view without a manual refetch.
 				queryClient.invalidateQueries({ queryKey: ['AffectedGenomicModels'] });
-				toastSuccess.current.show({ severity: 'success', summary: 'Successful', detail: 'AGM Created' });
+				toastSuccess.current.show({
+					severity: 'success',
+					summary: 'Successful',
+					detail: `AGM ${getIdentifier(agm)} created`,
+				});
 
 				if (closeAfterSubmit) {
 					resetForm();
 					// Same as Allele/Variant's create pages: land on the new record's detail page
 					// rather than just closing. A curator-created AGM has no MOD identifier, so this
 					// is its minted AGRKB curie.
-					navigate(`/agm/${getIdentifier(result?.data?.entity)}`);
+					navigate(`/agm/${getIdentifier(agm)}`);
 				} else {
-					resetForm();
+					// The form keeps the saved AGM's values, copied as Duplicate copies them, so the
+					// next AGM can be entered as a small change to this one.
+					agmDispatch({ type: 'SET', value: buildDuplicateAgm(agm) });
 				}
 			},
 			onError: showSaveError,
