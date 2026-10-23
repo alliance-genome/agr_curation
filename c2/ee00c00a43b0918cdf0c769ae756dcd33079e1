@@ -1,0 +1,25 @@
+src/main/cliapp/src/constants/FilterFields.js
+  s_90fe3c66eb3b97::t_4ebcec7cd80701 355-358,1574-1577
+src/main/cliapp/src/containers/htpExpressionDatasetAnnotationsPage/HTPExpressionDatasetAnnotationsTable.jsx
+  s_90fe3c66eb3b97::t_e7db06cb5f6d73 54
+src/main/java/org/alliancegenome/curation_api/model/bridges/IntegerValueBridge.java
+  s_90fe3c66eb3b97::t_e0b5352d9b36bf 9-11
+src/main/java/org/alliancegenome/curation_api/model/entities/HTPExpressionDatasetAnnotation.java
+  s_90fe3c66eb3b97::t_fd32edbe9108e7 9,23,119
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "c2ee00c00a43b0918cdf0c769ae756dcd33079e1",
+  "prompts": {},
+  "sessions": {
+    "s_90fe3c66eb3b97": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "64db8705-0fb3-46f5-be71-5247c76018af",
+        "model": "unknown"
+      },
+      "human_author": "Ketaki Kindre <kkindre@caltech.edu>"
+    }
+  }
+}
