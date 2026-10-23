@@ -9,6 +9,7 @@ import org.alliancegenome.curation_api.jobs.executors.CassetteExecutor;
 import org.alliancegenome.curation_api.model.entities.Cassette;
 import org.alliancegenome.curation_api.model.ingest.dto.CassetteDTO;
 import org.alliancegenome.curation_api.response.APIResponse;
+import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.CassetteService;
 
 import jakarta.annotation.PostConstruct;
@@ -26,6 +27,16 @@ public class CassetteCrudController extends SubmittedObjectCrudController<Casset
 	@PostConstruct
 	protected void init() {
 		setService(cassetteService);
+	}
+
+	// SCRUM-6746: the response is a fresh read made after the update's transaction. The update keeps
+	// the cassette's components and associations as stored, so their lazy collections (evidence, notes,
+	// the associated entities' lists) are not loaded by it, and its session is closed by the time the
+	// response is written; outside a transaction the session lasts the request, as for a GET.
+	@Override
+	public ObjectResponse<Cassette> update(Cassette entity) {
+		ObjectResponse<Cassette> response = cassetteService.update(entity);
+		return cassetteService.getById(response.getEntity().getId());
 	}
 
 	@Override

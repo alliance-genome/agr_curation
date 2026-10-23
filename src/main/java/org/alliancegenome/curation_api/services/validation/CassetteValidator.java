@@ -73,7 +73,7 @@ public class CassetteValidator extends ReagentValidator {
 			throw new ApiErrorException(response);
 		}
 
-		return validateCassette(uiEntity, dbEntity);
+		return validateCassette(uiEntity, dbEntity, true);
 	}
 
 	public Cassette validateCassetteCreate(Cassette uiEntity) {
@@ -82,10 +82,16 @@ public class CassetteValidator extends ReagentValidator {
 
 		Cassette dbEntity = new Cassette();
 
-		return validateCassette(uiEntity, dbEntity);
+		return validateCassette(uiEntity, dbEntity, false);
 	}
 
-	public Cassette validateCassette(Cassette uiEntity, Cassette dbEntity) {
+	/**
+	 * keepComponents (SCRUM-6746): an update keeps the cassette's free text components and its genomic
+	 * entity, transgenic tool and STR associations as stored, whatever the request carries. The
+	 * Cassettes table edits the cassette's own fields only and sends back the trimmed table view of
+	 * those lists, which would otherwise replace the stored ones; editing them is SCRUM-6752.
+	 */
+	public Cassette validateCassette(Cassette uiEntity, Cassette dbEntity, boolean keepComponents) {
 
 		List<String> previousReferenceCuries = new ArrayList<String>();
 		if (CollectionUtils.isNotEmpty(dbEntity.getReferences())) {
@@ -109,12 +115,21 @@ public class CassetteValidator extends ReagentValidator {
 		CassetteSymbolSlotAnnotation symbol = validateCassetteSymbol(uiEntity);
 		CassetteFullNameSlotAnnotation fullName = validateCassetteFullName(uiEntity);
 		List<CassetteSynonymSlotAnnotation> synonyms = validateCassetteSynonyms(uiEntity, dbEntity);
-		List<CassetteComponentSlotAnnotation> components = validateCassetteComponents(uiEntity, dbEntity);
 		List<CassetteUseSlotAnnotation> uses = validateCassetteUses(uiEntity, dbEntity);
 
-		List<CassetteGenomicEntityAssociation> geAssociations = validateCassetteGenomicEntityAssociations(uiEntity, dbEntity);
-		List<CassetteTransgenicToolAssociation> ttAssociations = validateCassetteTransgenicToolAssociations(uiEntity, dbEntity);
-		List<CassetteStrAssociation> strAssociations = validateCassetteStrAssociations(uiEntity, dbEntity);
+		List<CassetteComponentSlotAnnotation> components = null;
+		List<CassetteGenomicEntityAssociation> geAssociations = null;
+		List<CassetteTransgenicToolAssociation> ttAssociations = null;
+		List<CassetteStrAssociation> strAssociations = null;
+		if (keepComponents) {
+			// The unique ID is built from the components too, so it must see the stored ones
+			uiEntity.setCassetteComponents(dbEntity.getCassetteComponents());
+		} else {
+			components = validateCassetteComponents(uiEntity, dbEntity);
+			geAssociations = validateCassetteGenomicEntityAssociations(uiEntity, dbEntity);
+			ttAssociations = validateCassetteTransgenicToolAssociations(uiEntity, dbEntity);
+			strAssociations = validateCassetteStrAssociations(uiEntity, dbEntity);
+		}
 
 		String uniqueId = validateUniqueId(uiEntity, dbEntity);
 		dbEntity.setUniqueId(uniqueId);
@@ -156,15 +171,6 @@ public class CassetteValidator extends ReagentValidator {
 			dbEntity.getCassetteSynonyms().addAll(synonyms);
 		}
 
-		if (dbEntity.getCassetteComponents() != null) {
-			dbEntity.getCassetteComponents().clear();
-		}
-		if (components != null) {
-			if (dbEntity.getCassetteComponents() == null) {
-				dbEntity.setCassetteComponents(new ArrayList<>());
-			}
-			dbEntity.getCassetteComponents().addAll(components);
-		}
 
 		if (dbEntity.getCassetteUses() != null) {
 			dbEntity.getCassetteUses().clear();
@@ -174,6 +180,20 @@ public class CassetteValidator extends ReagentValidator {
 				dbEntity.setCassetteUses(new ArrayList<>());
 			}
 			dbEntity.getCassetteUses().addAll(uses);
+		}
+
+		if (keepComponents) {
+			return dbEntity;
+		}
+
+		if (dbEntity.getCassetteComponents() != null) {
+			dbEntity.getCassetteComponents().clear();
+		}
+		if (components != null) {
+			if (dbEntity.getCassetteComponents() == null) {
+				dbEntity.setCassetteComponents(new ArrayList<>());
+			}
+			dbEntity.getCassetteComponents().addAll(components);
 		}
 
 		if (dbEntity.getCassetteGenomicEntityAssociations() != null) {

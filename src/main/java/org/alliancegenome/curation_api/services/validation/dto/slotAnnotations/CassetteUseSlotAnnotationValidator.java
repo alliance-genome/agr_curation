@@ -2,6 +2,7 @@ package org.alliancegenome.curation_api.services.validation.dto.slotAnnotations;
 
 import java.util.List;
 
+import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.dao.CassetteDAO;
 import org.alliancegenome.curation_api.dao.ontology.FbcvTermDAO;
 import org.alliancegenome.curation_api.dao.slotAnnotations.CassetteUseSlotAnnotationDAO;
@@ -24,6 +25,9 @@ public class CassetteUseSlotAnnotationValidator extends SlotAnnotationValidator<
 	@Inject CassetteUseSlotAnnotationDAO lCassetteUseDAO;
 	@Inject CassetteDAO lCassetteDAO;
 	@Inject FbcvTermDAO fbcvTermDAO;
+
+	// A cassette use is an FBcv term from this namespace, whether curated or loaded
+	public static final String USE_NAMESPACE = "experimental_tool_descriptor";
 
 	public ObjectResponse<CassetteUseSlotAnnotation> validateCassetteUseSlotAnnotation(CassetteUseSlotAnnotation uiEntity) {
 		CassetteUseSlotAnnotation use = validateCassetteUseSlotAnnotation(uiEntity, false, false);
@@ -59,6 +63,14 @@ public class CassetteUseSlotAnnotationValidator extends SlotAnnotationValidator<
 		}
 
 		List<FBCVTerm> uses = validateRequiredEntities(fbcvTermDAO, "uses", uiEntity.getUses(), dbEntity.getUses());
+		// SCRUM-6746: a use is an FBcv term from the 'experimental_tool_descriptor' namespace
+		if (uses != null) {
+			for (FBCVTerm use : uses) {
+				if (!USE_NAMESPACE.equals(use.getNamespace())) {
+					addMessageResponse("uses", ValidationConstants.INVALID_MESSAGE + " (" + use.getCurie() + " is not in the " + USE_NAMESPACE + " namespace)");
+				}
+			}
+		}
 		dbEntity.setUses(uses);
 
 		if (response.hasErrors()) {
