@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.BiConsumer;
+import java.util.function.Function;
 
 import org.alliancegenome.curation_api.constants.EntityFieldConstants;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
@@ -20,6 +22,13 @@ import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.Note;
 import org.alliancegenome.curation_api.model.entities.Reference;
 import org.alliancegenome.curation_api.model.entities.associations.AlleleGeneAssociation;
+import org.alliancegenome.curation_api.model.entities.slotAnnotations.AlleleFunctionalImpactSlotAnnotation;
+import org.alliancegenome.curation_api.model.entities.slotAnnotations.AlleleInheritanceModeSlotAnnotation;
+import org.alliancegenome.curation_api.model.entities.slotAnnotations.AlleleMutationTypeSlotAnnotation;
+import org.alliancegenome.curation_api.model.entities.slotAnnotations.AlleleNomenclatureEventSlotAnnotation;
+import org.alliancegenome.curation_api.model.entities.slotAnnotations.AlleleSecondaryIdSlotAnnotation;
+import org.alliancegenome.curation_api.model.entities.slotAnnotations.AlleleSynonymSlotAnnotation;
+import org.alliancegenome.curation_api.model.entities.slotAnnotations.SlotAnnotation;
 import org.alliancegenome.curation_api.model.ingest.dto.AlleleDTO;
 import org.alliancegenome.curation_api.response.ObjectListResponse;
 import org.alliancegenome.curation_api.response.ObjectResponse;
@@ -144,6 +153,103 @@ public class AlleleService extends SubmittedObjectCrudService<Allele, AlleleDTO,
 		}
 
 		return new ObjectListResponse<>(new ArrayList<>(allele.getAlleleGeneAssociations()));
+	}
+
+	public ObjectListResponse<AlleleSynonymSlotAnnotation> getSynonyms(Long id) {
+		return copyOf(findAlleleOrThrow(id).getAlleleSynonyms());
+	}
+
+	@Transactional
+	public ObjectListResponse<AlleleSynonymSlotAnnotation> updateSynonyms(Long id, List<AlleleSynonymSlotAnnotation> synonyms) {
+		Allele allele = findAlleleOrThrow(id);
+		return replaceSlotAnnotations(allele, alleleValidator.validateSynonymReplacement(allele, synonyms), Allele::getAlleleSynonyms, Allele::setAlleleSynonyms);
+	}
+
+	public ObjectListResponse<AlleleSecondaryIdSlotAnnotation> getSecondaryIds(Long id) {
+		return copyOf(findAlleleOrThrow(id).getAlleleSecondaryIds());
+	}
+
+	@Transactional
+	public ObjectListResponse<AlleleSecondaryIdSlotAnnotation> updateSecondaryIds(Long id, List<AlleleSecondaryIdSlotAnnotation> secondaryIds) {
+		Allele allele = findAlleleOrThrow(id);
+		return replaceSlotAnnotations(allele, alleleValidator.validateSecondaryIdReplacement(allele, secondaryIds), Allele::getAlleleSecondaryIds, Allele::setAlleleSecondaryIds);
+	}
+
+	public ObjectListResponse<AlleleNomenclatureEventSlotAnnotation> getNomenclatureEvents(Long id) {
+		return copyOf(findAlleleOrThrow(id).getAlleleNomenclatureEvents());
+	}
+
+	@Transactional
+	public ObjectListResponse<AlleleNomenclatureEventSlotAnnotation> updateNomenclatureEvents(Long id, List<AlleleNomenclatureEventSlotAnnotation> nomenclatureEvents) {
+		Allele allele = findAlleleOrThrow(id);
+		return replaceSlotAnnotations(allele, alleleValidator.validateNomenclatureEventReplacement(allele, nomenclatureEvents), Allele::getAlleleNomenclatureEvents, Allele::setAlleleNomenclatureEvents);
+	}
+
+	public ObjectListResponse<AlleleMutationTypeSlotAnnotation> getMutationTypes(Long id) {
+		return copyOf(findAlleleOrThrow(id).getAlleleMutationTypes());
+	}
+
+	@Transactional
+	public ObjectListResponse<AlleleMutationTypeSlotAnnotation> updateMutationTypes(Long id, List<AlleleMutationTypeSlotAnnotation> mutationTypes) {
+		Allele allele = findAlleleOrThrow(id);
+		return replaceSlotAnnotations(allele, alleleValidator.validateMutationTypeReplacement(allele, mutationTypes), Allele::getAlleleMutationTypes, Allele::setAlleleMutationTypes);
+	}
+
+	public ObjectListResponse<AlleleFunctionalImpactSlotAnnotation> getFunctionalImpacts(Long id) {
+		return copyOf(findAlleleOrThrow(id).getAlleleFunctionalImpacts());
+	}
+
+	@Transactional
+	public ObjectListResponse<AlleleFunctionalImpactSlotAnnotation> updateFunctionalImpacts(Long id, List<AlleleFunctionalImpactSlotAnnotation> functionalImpacts) {
+		Allele allele = findAlleleOrThrow(id);
+		return replaceSlotAnnotations(allele, alleleValidator.validateFunctionalImpactReplacement(allele, functionalImpacts), Allele::getAlleleFunctionalImpacts, Allele::setAlleleFunctionalImpacts);
+	}
+
+	public ObjectListResponse<AlleleInheritanceModeSlotAnnotation> getInheritanceModes(Long id) {
+		return copyOf(findAlleleOrThrow(id).getAlleleInheritanceModes());
+	}
+
+	@Transactional
+	public ObjectListResponse<AlleleInheritanceModeSlotAnnotation> updateInheritanceModes(Long id, List<AlleleInheritanceModeSlotAnnotation> inheritanceModes) {
+		Allele allele = findAlleleOrThrow(id);
+		return replaceSlotAnnotations(allele, alleleValidator.validateInheritanceModeReplacement(allele, inheritanceModes), Allele::getAlleleInheritanceModes, Allele::setAlleleInheritanceModes);
+	}
+
+	private <T> ObjectListResponse<T> copyOf(List<T> rows) {
+		return new ObjectListResponse<>(rows == null ? new ArrayList<>() : new ArrayList<>(rows));
+	}
+
+	/**
+	 * Replaces one of the allele's slot annotation lists with validated annotations. Annotations the list no
+	 * longer holds are deleted.
+	 *
+	 * @param allele the allele the annotations belong to
+	 * @param validatedAnnotations the annotations the list is to hold, each assigned to the allele
+	 * @param getList reads the list from the allele
+	 * @param setList sets the list on the allele
+	 * @return the annotations the list holds
+	 */
+	private <S extends SlotAnnotation> ObjectListResponse<S> replaceSlotAnnotations(Allele allele, List<S> validatedAnnotations, Function<Allele, List<S>> getList, BiConsumer<Allele, List<S>> setList) {
+		if (getList.apply(allele) == null) {
+			setList.accept(allele, new ArrayList<>());
+		}
+		List<S> annotations = getList.apply(allele);
+		annotations.clear();
+		annotations.addAll(validatedAnnotations);
+
+		// The response is serialized after this transaction closes, so each evidence reference's cross references
+		// are loaded while it is open.
+		for (S annotation : validatedAnnotations) {
+			if (annotation.getEvidence() != null) {
+				annotation.getEvidence().forEach(evidence -> {
+					if (evidence instanceof Reference reference) {
+						Hibernate.initialize(reference.getCrossReferences());
+					}
+				});
+			}
+		}
+
+		return new ObjectListResponse<>(new ArrayList<>(annotations));
 	}
 
 	private Allele findAlleleOrThrow(Long id) {

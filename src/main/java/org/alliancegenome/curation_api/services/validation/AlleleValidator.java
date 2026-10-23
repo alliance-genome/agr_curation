@@ -6,6 +6,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.BiConsumer;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.alliancegenome.curation_api.constants.ValidationConstants;
@@ -28,6 +30,7 @@ import org.alliancegenome.curation_api.model.entities.slotAnnotations.AlleleNome
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.AlleleSecondaryIdSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.AlleleSymbolSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.AlleleSynonymSlotAnnotation;
+import org.alliancegenome.curation_api.model.entities.slotAnnotations.SlotAnnotation;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.helpers.AssociationIdentityHelper;
 import org.alliancegenome.curation_api.services.validation.associations.AlleleGeneAssociationValidator;
@@ -664,6 +667,110 @@ public class AlleleValidator extends GenomicEntityValidator<Allele> {
 		}
 
 		return validatedFunctionalImpacts;
+	}
+
+	public List<AlleleSynonymSlotAnnotation> validateSynonymReplacement(Allele dbEntity, List<AlleleSynonymSlotAnnotation> incomingSynonyms) {
+		return validateSlotAnnotationReplacement(dbEntity, incomingSynonyms, dbEntity.getAlleleSynonyms(), "alleleSynonyms", "displayText", "Synonyms",
+			alleleSynonymValidator::validateAlleleSynonymSlotAnnotation, AlleleSynonymSlotAnnotation::setSingleAllele);
+	}
+
+	public List<AlleleSecondaryIdSlotAnnotation> validateSecondaryIdReplacement(Allele dbEntity, List<AlleleSecondaryIdSlotAnnotation> incomingSecondaryIds) {
+		return validateSlotAnnotationReplacement(dbEntity, incomingSecondaryIds, dbEntity.getAlleleSecondaryIds(), "alleleSecondaryIds", "secondaryId", "Secondary IDs",
+			alleleSecondaryIdValidator::validateAlleleSecondaryIdSlotAnnotation, AlleleSecondaryIdSlotAnnotation::setSingleAllele);
+	}
+
+	public List<AlleleNomenclatureEventSlotAnnotation> validateNomenclatureEventReplacement(Allele dbEntity, List<AlleleNomenclatureEventSlotAnnotation> incomingNomenclatureEvents) {
+		return validateSlotAnnotationReplacement(dbEntity, incomingNomenclatureEvents, dbEntity.getAlleleNomenclatureEvents(), "alleleNomenclatureEvents", "nomenclatureEvent", "Nomenclature Events",
+			alleleNomenclatureEventValidator::validateAlleleNomenclatureEventSlotAnnotation, AlleleNomenclatureEventSlotAnnotation::setSingleAllele);
+	}
+
+	public List<AlleleMutationTypeSlotAnnotation> validateMutationTypeReplacement(Allele dbEntity, List<AlleleMutationTypeSlotAnnotation> incomingMutationTypes) {
+		return validateSlotAnnotationReplacement(dbEntity, incomingMutationTypes, dbEntity.getAlleleMutationTypes(), "alleleMutationTypes", "mutationTypes", "Mutation Types",
+			alleleMutationTypeValidator::validateAlleleMutationTypeSlotAnnotation, AlleleMutationTypeSlotAnnotation::setSingleAllele);
+	}
+
+	public List<AlleleFunctionalImpactSlotAnnotation> validateFunctionalImpactReplacement(Allele dbEntity, List<AlleleFunctionalImpactSlotAnnotation> incomingFunctionalImpacts) {
+		return validateSlotAnnotationReplacement(dbEntity, incomingFunctionalImpacts, dbEntity.getAlleleFunctionalImpacts(), "alleleFunctionalImpacts", "functionalImpacts", "Functional Impacts",
+			alleleFunctionalImpactValidator::validateAlleleFunctionalImpactSlotAnnotation, AlleleFunctionalImpactSlotAnnotation::setSingleAllele);
+	}
+
+	public List<AlleleInheritanceModeSlotAnnotation> validateInheritanceModeReplacement(Allele dbEntity, List<AlleleInheritanceModeSlotAnnotation> incomingInheritanceModes) {
+		return validateSlotAnnotationReplacement(dbEntity, incomingInheritanceModes, dbEntity.getAlleleInheritanceModes(), "alleleInheritanceModes", "inheritanceMode", "Inheritance Modes",
+			alleleInheritanceModeValidator::validateAlleleInheritanceModeSlotAnnotation, AlleleInheritanceModeSlotAnnotation::setSingleAllele);
+	}
+
+	/**
+	 * Validates the slot annotations one of an allele's slot annotation sub-resources is to hold, in submitted
+	 * order, and assigns each to the allele. Every entry must be present; an entry with an id updates that
+	 * annotation, which must be one the allele holds and no other entry names; an entry without one is a new
+	 * annotation.
+	 *
+	 * @param dbEntity the allele the annotations belong to
+	 * @param incomingAnnotations the submitted annotations
+	 * @param heldAnnotations the annotations of this kind the allele holds
+	 * @param field the field the errors are recorded under, each entry's keyed by its index
+	 * @param requiredField the entry field a missing entry is reported against
+	 * @param label the list's name, for the error title
+	 * @param slotAnnotationValidator validates one entry
+	 * @param assignAllele sets an annotation's allele
+	 * @return the validated annotations, one per submitted entry
+	 * @throws ApiErrorException when the list is missing or any entry is rejected, with each entry's errors keyed
+	 *         by its index
+	 */
+	private <S extends SlotAnnotation> List<S> validateSlotAnnotationReplacement(Allele dbEntity, List<S> incomingAnnotations, List<S> heldAnnotations, String field, String requiredField,
+			String label, Function<S, ObjectResponse<S>> slotAnnotationValidator, BiConsumer<S, Allele> assignAllele) {
+		response = new ObjectResponse<>();
+		String errorTitle = "Could not update " + label + " for: [" + dbEntity.getId() + "]";
+
+		if (incomingAnnotations == null) {
+			addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
+			response.setErrorMessage(errorTitle);
+			throw new ApiErrorException(response);
+		}
+
+		Set<Long> heldIds = new HashSet<>();
+		if (heldAnnotations != null) {
+			heldAnnotations.forEach(annotation -> heldIds.add(annotation.getId()));
+		}
+
+		List<S> validatedAnnotations = new ArrayList<>();
+		boolean allValid = true;
+		Set<Long> seenIds = new HashSet<>();
+		for (int ix = 0; ix < incomingAnnotations.size(); ix++) {
+			S annotation = incomingAnnotations.get(ix);
+			if (annotation == null) {
+				allValid = false;
+				response.addErrorMessages(field, ix, Map.of(requiredField, ValidationConstants.REQUIRED_MESSAGE));
+				continue;
+			}
+			if (annotation.getId() != null && !heldIds.contains(annotation.getId())) {
+				allValid = false;
+				response.addErrorMessages(field, ix, Map.of("id", ValidationConstants.INVALID_MESSAGE));
+				continue;
+			}
+			if (annotation.getId() != null && !seenIds.add(annotation.getId())) {
+				allValid = false;
+				response.addErrorMessages(field, ix, Map.of("id", ValidationConstants.DUPLICATE_MESSAGE));
+				continue;
+			}
+			ObjectResponse<S> annotationResponse = slotAnnotationValidator.apply(annotation);
+			if (annotationResponse.getEntity() == null) {
+				allValid = false;
+				response.addErrorMessages(field, ix, annotationResponse.getErrorMessages());
+			} else {
+				S validatedAnnotation = annotationResponse.getEntity();
+				assignAllele.accept(validatedAnnotation, dbEntity);
+				validatedAnnotations.add(validatedAnnotation);
+			}
+		}
+
+		if (!allValid) {
+			convertMapToErrorMessages(field);
+			response.setErrorMessage(errorTitle);
+			throw new ApiErrorException(response);
+		}
+
+		return validatedAnnotations;
 	}
 
 	/**

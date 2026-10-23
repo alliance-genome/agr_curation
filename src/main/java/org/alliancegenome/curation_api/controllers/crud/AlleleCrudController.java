@@ -10,6 +10,12 @@ import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.Reference;
 import org.alliancegenome.curation_api.model.entities.associations.AlleleGeneAssociation;
+import org.alliancegenome.curation_api.model.entities.slotAnnotations.AlleleFunctionalImpactSlotAnnotation;
+import org.alliancegenome.curation_api.model.entities.slotAnnotations.AlleleInheritanceModeSlotAnnotation;
+import org.alliancegenome.curation_api.model.entities.slotAnnotations.AlleleMutationTypeSlotAnnotation;
+import org.alliancegenome.curation_api.model.entities.slotAnnotations.AlleleNomenclatureEventSlotAnnotation;
+import org.alliancegenome.curation_api.model.entities.slotAnnotations.AlleleSecondaryIdSlotAnnotation;
+import org.alliancegenome.curation_api.model.entities.slotAnnotations.AlleleSynonymSlotAnnotation;
 import org.alliancegenome.curation_api.model.ingest.dto.AlleleDTO;
 import org.alliancegenome.curation_api.response.APIResponse;
 import org.alliancegenome.curation_api.response.ObjectListResponse;
@@ -66,6 +72,54 @@ public class AlleleCrudController extends SubmittedObjectCrudController<AlleleSe
 
 	public ObjectListResponse<AlleleGeneAssociation> updateGeneAssociations(Long id, List<AlleleGeneAssociation> geneAssociations) {
 		return alleleService.updateGeneAssociations(id, geneAssociations);
+	}
+
+	public ObjectListResponse<AlleleSynonymSlotAnnotation> getSynonyms(Long id) {
+		return alleleService.getSynonyms(id);
+	}
+
+	public ObjectListResponse<AlleleSynonymSlotAnnotation> updateSynonyms(Long id, List<AlleleSynonymSlotAnnotation> synonyms) {
+		return alleleService.updateSynonyms(id, synonyms);
+	}
+
+	public ObjectListResponse<AlleleSecondaryIdSlotAnnotation> getSecondaryIds(Long id) {
+		return alleleService.getSecondaryIds(id);
+	}
+
+	public ObjectListResponse<AlleleSecondaryIdSlotAnnotation> updateSecondaryIds(Long id, List<AlleleSecondaryIdSlotAnnotation> secondaryIds) {
+		return alleleService.updateSecondaryIds(id, secondaryIds);
+	}
+
+	public ObjectListResponse<AlleleNomenclatureEventSlotAnnotation> getNomenclatureEvents(Long id) {
+		return alleleService.getNomenclatureEvents(id);
+	}
+
+	public ObjectListResponse<AlleleNomenclatureEventSlotAnnotation> updateNomenclatureEvents(Long id, List<AlleleNomenclatureEventSlotAnnotation> nomenclatureEvents) {
+		return alleleService.updateNomenclatureEvents(id, nomenclatureEvents);
+	}
+
+	public ObjectListResponse<AlleleMutationTypeSlotAnnotation> getMutationTypes(Long id) {
+		return alleleService.getMutationTypes(id);
+	}
+
+	public ObjectListResponse<AlleleMutationTypeSlotAnnotation> updateMutationTypes(Long id, List<AlleleMutationTypeSlotAnnotation> mutationTypes) {
+		return alleleService.updateMutationTypes(id, mutationTypes);
+	}
+
+	public ObjectListResponse<AlleleFunctionalImpactSlotAnnotation> getFunctionalImpacts(Long id) {
+		return alleleService.getFunctionalImpacts(id);
+	}
+
+	public ObjectListResponse<AlleleFunctionalImpactSlotAnnotation> updateFunctionalImpacts(Long id, List<AlleleFunctionalImpactSlotAnnotation> functionalImpacts) {
+		return alleleService.updateFunctionalImpacts(id, functionalImpacts);
+	}
+
+	public ObjectListResponse<AlleleInheritanceModeSlotAnnotation> getInheritanceModes(Long id) {
+		return alleleService.getInheritanceModes(id);
+	}
+
+	public ObjectListResponse<AlleleInheritanceModeSlotAnnotation> updateInheritanceModes(Long id, List<AlleleInheritanceModeSlotAnnotation> inheritanceModes) {
+		return alleleService.updateInheritanceModes(id, inheritanceModes);
 	}
 
 }
