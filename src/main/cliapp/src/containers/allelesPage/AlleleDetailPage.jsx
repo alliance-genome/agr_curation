@@ -10,6 +10,7 @@ import ErrorBoundary from '../../components/Error/ErrorBoundary';
 import { useAlleleReducer } from './useAlleleReducer';
 import { StickyHeader } from '../../components/StickyHeader';
 import { DetailPageHeading } from '../../components/DetailPageHeading';
+import { DetailPageNotFound } from '../../components/DetailPageNotFound';
 import { LoadingOverlay } from '../../components/LoadingOverlay';
 import { capitalize, processErrors, getPendingSingleValueFields } from './utils';
 import { errorMessageOf, getIdentifier } from '../../utils/utils';
@@ -40,7 +41,12 @@ export default function AlleleDetailPage() {
 	// The allele as the API last returned it, without the form's unsaved edits.
 	const savedAllele = useRef(null);
 
-	const { isPending: getRequestIsLoading, data: alleleQueryData } = useQuery({
+	const {
+		isPending: getRequestIsLoading,
+		data: alleleQueryData,
+		error: alleleQueryError,
+		isPlaceholderData: showsPreviousResponse,
+	} = useQuery({
 		queryKey: [identifier],
 		queryFn: () => alleleService.getAllele(identifier),
 		placeholderData: (previousData) => previousData,
@@ -199,11 +205,20 @@ export default function AlleleDetailPage() {
 	const pendingFields = getPendingSingleValueFields(alleleState.allele, savedAllele.current);
 	const hasPendingEdits = pendingFields.size > 0 || subResourcesAreDirty;
 
-	if (getRequestIsLoading)
+	const loadedAllele = alleleQueryData?.data?.entity;
+
+	if (getRequestIsLoading || (showsPreviousResponse && !loadedAllele))
 		return (
 			<div className="flex align-items-center justify-content-center h-screen">
 				<ProgressSpinner />
 			</div>
+		);
+
+	// The API answers an identifier no allele has with an empty response rather than an error. A failed refetch
+	// keeps the allele already loaded, so the form stays up.
+	if (!loadedAllele)
+		return (
+			<DetailPageNotFound entityType="Allele" identifier={identifier} listPath="/alleles" error={alleleQueryError} />
 		);
 
 	return (
