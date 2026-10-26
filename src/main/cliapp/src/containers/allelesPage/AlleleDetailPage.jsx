@@ -12,6 +12,8 @@ import { StickyHeader } from '../../components/StickyHeader';
 import { DetailPageHeading } from '../../components/DetailPageHeading';
 import { DetailPageNotFound } from '../../components/DetailPageNotFound';
 import { LoadingOverlay } from '../../components/LoadingOverlay';
+import { SaveProgressOverlay, SaveProgressProvider } from '../../components/SaveProgressOverlay';
+import { useSaveProgress } from '../../hooks/useSaveProgress';
 import { capitalize, processErrors, getPendingSingleValueFields } from './utils';
 import { errorMessageOf, getIdentifier } from '../../utils/utils';
 import { FormFieldVisibilityMenu, useFormFieldVisibility } from '../../components/FormFieldVisibility';
@@ -36,8 +38,9 @@ export default function AlleleDetailPage() {
 		subResources,
 		saveDirty: saveSubResources,
 		isDirty: subResourcesAreDirty,
-		isSaving: subResourcesAreSaving,
+		dirtySteps: dirtySubResourceSteps,
 	} = useAlleleSubResources(alleleState.allele?.id);
+	const saveProgress = useSaveProgress();
 	// The allele as the API last returned it, without the form's unsaved edits.
 	const savedAllele = useRef(null);
 
@@ -97,21 +100,37 @@ export default function AlleleDetailPage() {
 			? alleleState.allele
 			: { ...alleleState.allele, taxon: undefined };
 
-		let alleleResult = null;
+		saveProgress.begin([{ key: 'allele', label: 'Allele' }, ...dirtySubResourceSteps]);
 		let alleleError = null;
+		let subResourceOutcomes;
 		try {
-			alleleResult = await saveAllele(allelePayload);
-		} catch (error) {
-			alleleError = error;
-		}
-		if (!alleleError) {
-			savedAllele.current = alleleResult?.data?.entity;
-			alleleDispatch({ type: 'SET', value: alleleResult?.data?.entity });
-		}
+			saveProgress.start('allele');
+			let alleleResult = null;
+			try {
+				alleleResult = await saveAllele(allelePayload);
+			} catch (error) {
+				alleleError = error;
+			}
+			if (!alleleError) {
+				savedAllele.current = alleleResult?.data?.entity;
+				alleleDispatch({ type: 'SET', value: alleleResult?.data?.entity });
+			}
+			saveProgress.settle(
+				'allele',
+				alleleError ? { isSuccess: false, message: errorMessageOf(alleleError) } : { isSuccess: true }
+			);
 
-		// The sub-resources are written whether or not the allele saved, so the errors of all of them are reported
-		// together.
-		const subResourceOutcomes = await saveSubResources();
+			// The sub-resources are written whether or not the allele saved, so the errors of all of them are
+			// reported together.
+			subResourceOutcomes = await saveSubResources(undefined, {
+				onStart: saveProgress.start,
+				onSettle: saveProgress.settle,
+			});
+		} finally {
+			// Anything the save stopped before writing shows as not saved, and the overlay always closes.
+			saveProgress.skipRemaining();
+			saveProgress.finish();
+		}
 		const savedLabels = subResourceOutcomes.filter(({ outcome }) => outcome.isSuccess).map(({ label }) => label);
 		const failedSubResources = subResourceOutcomes.filter(({ outcome }) => !outcome.isSuccess);
 		const failureToast = ({ label }, detail) => ({
@@ -225,7 +244,8 @@ export default function AlleleDetailPage() {
 		<>
 			<Toast ref={toastError} position="top-left" />
 			<Toast ref={toastSuccess} position="top-right" />
-			<LoadingOverlay isLoading={!!allelePutRequestIsLoading || subResourcesAreSaving} />
+			<SaveProgressOverlay isOpen={saveProgress.isOpen} steps={saveProgress.steps} />
+			<LoadingOverlay isLoading={!!allelePutRequestIsLoading && !saveProgress.isOpen} />
 			<ErrorBoundary>
 				<StickyHeader>
 					<Splitter className="bg-primary-reverse border-none lg:h-5rem" gutterSize={0}>
@@ -250,7 +270,7 @@ export default function AlleleDetailPage() {
 								icon="pi pi-check"
 								severity="success"
 								onClick={handleSubmit}
-								disabled={!hasPendingEdits}
+								disabled={!hasPendingEdits || saveProgress.isSaving}
 							/>
 							<NewAlleleButton className="p-button-text" />
 							<DuplicateAlleleButton
@@ -267,14 +287,16 @@ export default function AlleleDetailPage() {
 						</SplitterPanel>
 					</Splitter>
 				</StickyHeader>
-				<SubResourcesProvider value={subResources}>
-					<AlleleForm
-						state={alleleState}
-						dispatch={alleleDispatch}
-						isVisible={isVisible}
-						pendingFields={pendingFields}
-					/>
-				</SubResourcesProvider>
+				<SaveProgressProvider value={saveProgress}>
+					<SubResourcesProvider value={subResources}>
+						<AlleleForm
+							state={alleleState}
+							dispatch={alleleDispatch}
+							isVisible={isVisible}
+							pendingFields={pendingFields}
+						/>
+					</SubResourcesProvider>
+				</SaveProgressProvider>
 				{deleteOrDeprecateDialogs}
 			</ErrorBoundary>
 		</>

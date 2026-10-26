@@ -1,7 +1,14 @@
 import React from 'react';
 import { act, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { alleleRejection, FORM_LOAD_WAIT, markAlleleExtinct, renderInRouter, storedAllele } from './alleleTestUtils';
+import {
+	alleleRejection,
+	FORM_LOAD_WAIT,
+	markAlleleExtinct,
+	renderInRouter,
+	storedAllele,
+	OUTSIDE_SAVE_PROGRESS,
+} from './alleleTestUtils';
 
 const {
 	getAllele,
@@ -186,7 +193,9 @@ describe('<AlleleDetailPage /> gene associations', { timeout: 30000 }, () => {
 		await user.click(screen.getByRole('button', { name: 'Add Gene Association' }));
 		await user.click(screen.getByRole('button', { name: 'Save' }));
 
-		expect(await screen.findByText('Select each gene from the autosuggest', { exact: false })).toBeInTheDocument();
+		expect(
+			await screen.findByText('Select each gene from the autosuggest', { exact: false, ...OUTSIDE_SAVE_PROGRESS })
+		).toBeInTheDocument();
 		expect(screen.getByText('Must select Gene from autosuggest')).toBeInTheDocument();
 		expect(replaceGeneAssociationsForAllele).not.toHaveBeenCalled();
 	});
@@ -205,7 +214,10 @@ describe('<AlleleDetailPage /> gene associations', { timeout: 30000 }, () => {
 		await user.click(screen.getByRole('button', { name: 'Save' }));
 
 		expect(
-			await screen.findByText('These gene associations have not been read, so they were not saved', { exact: false })
+			await screen.findByText('These gene associations have not been read, so they were not saved', {
+				exact: false,
+				...OUTSIDE_SAVE_PROGRESS,
+			})
 		).toBeInTheDocument();
 		expect(replaceGeneAssociationsForAllele).not.toHaveBeenCalled();
 	});
@@ -291,7 +303,7 @@ describe('<AlleleDetailPage /> gene associations', { timeout: 30000 }, () => {
 		await deleteFirstAssociation(user);
 		await user.click(screen.getByRole('button', { name: /Save Gene Associations/ }));
 
-		expect(await screen.findByText('Could not update Gene Associations')).toBeInTheDocument();
+		expect(await screen.findByText('Could not update Gene Associations', OUTSIDE_SAVE_PROGRESS)).toBeInTheDocument();
 		expect(within(geneAssociationsSection()).getByText('Pending Edits!')).toBeInTheDocument();
 		expect(within(associationRow('WB:WBGene32')).getByText('Not a valid entry')).toBeInTheDocument();
 		expect(screen.getByRole('button', { name: /Save Gene Associations/ })).toBeEnabled();
@@ -318,7 +330,9 @@ describe('<AlleleDetailPage /> gene associations', { timeout: 30000 }, () => {
 		await user.click(screen.getByRole('button', { name: 'Add Gene Association' }));
 		await user.click(screen.getByRole('button', { name: /Save Gene Associations/ }));
 
-		expect(await screen.findByText('Select each gene from the autosuggest', { exact: false })).toBeInTheDocument();
+		expect(
+			await screen.findByText('Select each gene from the autosuggest', { exact: false, ...OUTSIDE_SAVE_PROGRESS })
+		).toBeInTheDocument();
 		expect(screen.getByText('Must select Gene from autosuggest')).toBeInTheDocument();
 		expect(within(geneAssociationsSection()).getByText('Pending Edits!')).toBeInTheDocument();
 		expect(screen.getByRole('button', { name: /Save Gene Associations/ })).toBeEnabled();
@@ -354,7 +368,7 @@ describe('<AlleleDetailPage /> gene associations', { timeout: 30000 }, () => {
 
 		await deleteFirstAssociation(user);
 		await user.click(screen.getByRole('button', { name: /Save Gene Associations/ }));
-		expect(await screen.findByText('Could not update Gene Associations')).toBeInTheDocument();
+		expect(await screen.findByText('Could not update Gene Associations', OUTSIDE_SAVE_PROGRESS)).toBeInTheDocument();
 		expect(within(geneAssociationsSection()).getByText('Pending Edits!')).toBeInTheDocument();
 		expect(screen.getByRole('button', { name: /Save Gene Associations/ })).toBeEnabled();
 

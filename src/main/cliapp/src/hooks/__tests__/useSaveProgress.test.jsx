@@ -50,6 +50,21 @@ describe('useSaveProgress', () => {
 		]);
 	});
 
+	it('Counts as saving until every row has settled, but not through the hold', () => {
+		const { result } = renderHook(() => useSaveProgress());
+		expect(result.current.isSaving).toBe(false);
+
+		act(() => result.current.begin(ROWS));
+		expect(result.current.isSaving).toBe(true);
+
+		act(() => result.current.settle('allele', { isSuccess: true }));
+		expect(result.current.isSaving).toBe(true);
+
+		act(() => result.current.settle('alleleSynonyms', { isSuccess: false, message: 'refused' }));
+		expect(result.current.isOpen).toBe(true);
+		expect(result.current.isSaving).toBe(false);
+	});
+
 	it('Marks the rows not yet written as skipped and leaves settled ones alone', () => {
 		const { result } = renderHook(() => useSaveProgress());
 		act(() => result.current.begin(ROWS));

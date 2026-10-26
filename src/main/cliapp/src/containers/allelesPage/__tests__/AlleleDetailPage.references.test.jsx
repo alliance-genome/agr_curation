@@ -1,7 +1,14 @@
 import React from 'react';
 import { act, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { alleleRejection, FORM_LOAD_WAIT, markAlleleExtinct, renderInRouter, storedAllele } from './alleleTestUtils';
+import {
+	alleleRejection,
+	FORM_LOAD_WAIT,
+	markAlleleExtinct,
+	renderInRouter,
+	storedAllele,
+	OUTSIDE_SAVE_PROGRESS,
+} from './alleleTestUtils';
 
 const { getAllele, saveAlleleDetail, getCrossReferencesForAllele, getReferencesForAllele, replaceReferencesForAllele } =
 	vi.hoisted(() => ({
@@ -222,7 +229,7 @@ describe('<AlleleDetailPage /> references', () => {
 		await deleteFirstReference(user);
 		await user.click(screen.getByRole('button', { name: /Save References/ }));
 
-		expect(await screen.findByText('Could not update References')).toBeInTheDocument();
+		expect(await screen.findByText('Could not update References', OUTSIDE_SAVE_PROGRESS)).toBeInTheDocument();
 		expect(within(referencesSection()).getByText('Pending Edits!')).toBeInTheDocument();
 		expect(within(referenceRow('AGRKB:102')).getByText('Not a valid entry')).toBeInTheDocument();
 		expect(screen.getByRole('button', { name: /Save References/ })).toBeEnabled();

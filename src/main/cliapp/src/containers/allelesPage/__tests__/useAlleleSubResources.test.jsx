@@ -70,6 +70,27 @@ describe('useAlleleSubResources', () => {
 		expect(result.current.isDirty).toBe(false);
 	});
 
+	it('Lists the edited lists as save progress rows and reports each as it is written', async () => {
+		const { result } = await renderLoaded();
+		const onStart = vi.fn();
+		const onSettle = vi.fn();
+
+		act(() => {
+			result.current.subResources.references.setRows([]);
+		});
+		expect(result.current.dirtySteps).toEqual([{ key: 'references', label: 'References' }]);
+
+		await act(async () => {
+			await result.current.saveDirty(undefined, { onStart, onSettle });
+		});
+
+		expect(onStart).toHaveBeenCalledTimes(1);
+		expect(onStart).toHaveBeenCalledWith('references');
+		expect(onSettle).toHaveBeenCalledTimes(1);
+		expect(onSettle).toHaveBeenCalledWith('references', { isSuccess: true });
+		expect(result.current.dirtySteps).toEqual([]);
+	});
+
 	it('Writes to the allele it is given, which is how create saves', async () => {
 		const { result } = renderHook(() => useAlleleSubResources());
 

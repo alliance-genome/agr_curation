@@ -21,6 +21,8 @@ export const FAILURE_HOLD_MS = 5000;
 /**
  * The progress of a save that writes several things, one row per thing, for {@link SaveProgressOverlay}.
  *
+ * `isSaving` is true while any row is queued or being written, before the hold that follows.
+ *
  * `begin` opens the overlay with every row queued; `start` and `settle` move a row through saving to saved or
  * failed; `skipRemaining` marks the rows that will not be written; `finish` closes the overlay after a hold.
  *
@@ -31,6 +33,7 @@ export const FAILURE_HOLD_MS = 5000;
  * @returns {{
  *   steps: SaveStep[],
  *   isOpen: boolean,
+ *   isSaving: boolean,
  *   begin: (steps: Array<{key: string, label: string}>) => void,
  *   start: (key: string) => void,
  *   settle: (key: string, outcome: {isSuccess: boolean, message?: string}) => void,
@@ -128,5 +131,8 @@ export const useSaveProgress = () => {
 		});
 	}, [cancelClose, setOpen]);
 
-	return { steps, isOpen, begin, start, settle, skipRemaining, finish };
+	const isSaving =
+		isOpen && steps.some((step) => step.status === SAVE_STATUS.QUEUED || step.status === SAVE_STATUS.SAVING);
+
+	return { steps, isOpen, isSaving, begin, start, settle, skipRemaining, finish };
 };

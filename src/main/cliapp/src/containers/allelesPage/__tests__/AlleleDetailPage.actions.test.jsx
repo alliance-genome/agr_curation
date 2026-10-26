@@ -111,6 +111,26 @@ describe('<AlleleDetailPage /> header actions', { timeout: 30000 }, () => {
 		expect(navigate).not.toHaveBeenCalled();
 	});
 
+	it('Covers the page with the plain saving overlay while the deprecation is written', async () => {
+		const user = userEvent.setup();
+		let finishDeprecation;
+		await renderLoadedPage();
+		saveAlleleDetail.mockReturnValue(
+			new Promise((resolve) => {
+				finishDeprecation = () => resolve({ data: { entity: { ...loadedAllele, obsolete: true } } });
+			})
+		);
+
+		await user.click(screen.getByRole('button', { name: 'Delete' }));
+		await user.click(within(dialog()).getByRole('button', { name: 'Deprecate' }));
+
+		expect(await screen.findByText('Saving in progress...')).toBeInTheDocument();
+		expect(screen.queryByRole('status', { name: 'Save progress' })).not.toBeInTheDocument();
+
+		finishDeprecation();
+		await waitFor(() => expect(screen.queryByText('Saving in progress...')).not.toBeInTheDocument(), FORM_LOAD_WAIT);
+	});
+
 	it('Deprecates the allele as last saved, leaving unsaved edits on the form', async () => {
 		const user = userEvent.setup();
 		const savedSymbol = alleleDetailData.entity.alleleSymbol.displayText;

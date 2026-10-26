@@ -1,7 +1,13 @@
 import React from 'react';
 import { act, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { FORM_LOAD_WAIT, markAlleleExtinct, renderInRouter, storedAllele } from './alleleTestUtils';
+import {
+	FORM_LOAD_WAIT,
+	markAlleleExtinct,
+	renderInRouter,
+	storedAllele,
+	OUTSIDE_SAVE_PROGRESS,
+} from './alleleTestUtils';
 
 const {
 	getAllele,
@@ -220,7 +226,7 @@ describe('<AlleleDetailPage /> cross references', () => {
 
 		await editCrossReference(user);
 		await user.click(screen.getByRole('button', { name: /Save Cross References/ }));
-		expect(await screen.findByText('Could not update CrossReferences')).toBeInTheDocument();
+		expect(await screen.findByText('Could not update CrossReferences', OUTSIDE_SAVE_PROGRESS)).toBeInTheDocument();
 		expect(within(crossReferencesSection()).getByText('Pending Edits!')).toBeInTheDocument();
 		expect(screen.getByRole('button', { name: /Save Cross References/ })).toBeEnabled();
 
@@ -239,7 +245,7 @@ describe('<AlleleDetailPage /> cross references', () => {
 
 		await editCrossReferenceAndSave(user);
 
-		expect(await screen.findByText(/Could not update CrossReferences/)).toBeInTheDocument();
+		expect(await screen.findByText(/Could not update CrossReferences/, OUTSIDE_SAVE_PROGRESS)).toBeInTheDocument();
 		expect(screen.getByText(/The allele's other changes were saved/)).toBeInTheDocument();
 		expect(saveAlleleDetail).toHaveBeenCalled();
 		expect(screen.queryByText('Allele Saved')).not.toBeInTheDocument();
@@ -274,7 +280,7 @@ describe('<AlleleDetailPage /> cross references', () => {
 
 		expect(await screen.findByText('Cross references not saved:')).toBeInTheDocument();
 		expect(screen.getByText('Allele not saved:')).toBeInTheDocument();
-		expect(screen.getByText('Could not update Allele')).toBeInTheDocument();
+		expect(screen.getByText('Could not update Allele', OUTSIDE_SAVE_PROGRESS)).toBeInTheDocument();
 		expect(screen.getByText('Taxon is not valid')).toBeInTheDocument();
 		expect(within(crossReferenceRow()).getByText('Required field is empty')).toBeInTheDocument();
 		expect(replaceCrossReferencesForAllele).toHaveBeenCalledTimes(1);
@@ -303,7 +309,7 @@ describe('<AlleleDetailPage /> cross references', () => {
 		await markAlleleExtinct(user);
 		await user.click(screen.getByRole('button', { name: 'Save' }));
 
-		expect(await screen.findByText('Could not update Allele')).toBeInTheDocument();
+		expect(await screen.findByText('Could not update Allele', OUTSIDE_SAVE_PROGRESS)).toBeInTheDocument();
 		expect(screen.getByText('Page error:')).toBeInTheDocument();
 		expect(replaceCrossReferencesForAllele).not.toHaveBeenCalled();
 	});
