@@ -1,5 +1,5 @@
 import React from 'react';
-import { act, screen, waitFor, within } from '@testing-library/react';
+import { act, fireEvent, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { alleleRejection, FORM_LOAD_WAIT, markAlleleExtinct, renderInRouter, storedAllele } from './alleleTestUtils';
 import { SUCCESS_HOLD_MS } from '../../../hooks/useSaveProgress';
@@ -46,9 +46,12 @@ const deferred = () => {
 
 const savedSynonyms = { data: { entities: [SYNONYMS[1]] } };
 
-const progress = () => screen.getByRole('status', { name: 'Save progress' });
-const progressRow = (label) =>
-	within(progress())
+// The overlay opens as Save is clicked, so it is read before any request settles. Once a save ends it closes after a
+// short hold, and the detached element keeps its last text, so the tests read the outcome from it however quickly it
+// closes.
+const openedProgress = () => screen.getByRole('status', { name: 'Save progress' });
+const progressRow = (progress, label) =>
+	within(progress)
 		.getByText(new RegExp(`^${label}:`))
 		.closest('li');
 const synonymsSection = () => screen.getByRole('heading', { name: 'Synonyms' }).closest('.grid').parentElement;
@@ -86,35 +89,38 @@ describe('<AlleleDetailPage /> save progress', { timeout: 60000 }, () => {
 
 		await deleteFirstSynonym(user);
 		await markAlleleExtinct(user);
-		await user.click(screen.getByRole('button', { name: 'Save' }));
+		fireEvent.click(screen.getByRole('button', { name: 'Save' }));
+		const progress = openedProgress();
 
-		await waitFor(() => expect(progressRow('Synonyms')).toHaveTextContent('Synonyms: Saving'));
-		expect(progressRow('Allele')).toHaveTextContent('Allele: Saved');
-		expect(within(progress()).getAllByRole('listitem')).toHaveLength(2);
-		expect(within(progress()).getByRole('heading', { level: 1 })).toHaveTextContent('Saving...');
+		await waitFor(() => expect(progressRow(progress, 'Synonyms')).toHaveTextContent('Synonyms: Saving'));
+		expect(progressRow(progress, 'Allele')).toHaveTextContent('Allele: Saved');
+		expect(within(progress).getAllByRole('listitem')).toHaveLength(2);
+		expect(within(progress).getByRole('heading', { level: 1 })).toHaveTextContent('Saving...');
 
 		await act(async () => synonymsWrite.resolve(savedSynonyms));
 
-		await waitFor(() => expect(progressRow('Synonyms')).toHaveTextContent('Synonyms: Saved'));
-		expect(within(progress()).getByRole('heading', { level: 1 })).toHaveTextContent('Saved');
+		await waitFor(() => expect(progressRow(progress, 'Synonyms')).toHaveTextContent('Synonyms: Saved'));
+		expect(within(progress).getByRole('heading', { level: 1 })).toHaveTextContent('Saved');
 		await waitFor(() => expect(screen.queryByRole('status', { name: 'Save progress' })).not.toBeInTheDocument(), {
 			timeout: SUCCESS_HOLD_MS + 2000,
 		});
 	});
 
-	it('Shows a list that failed in red with its message, alongside the allele that saved', async () => {
+	it('Shows a list that failed in red, alongside the allele that saved', async () => {
 		const user = userEvent.setup();
 		replaceRows.mockRejectedValue({ response: { status: 400, data: { errorMessage: 'Could not update Synonyms' } } });
 		await renderInRouter(<AlleleDetailPage />);
 
 		await deleteFirstSynonym(user);
-		await user.click(screen.getByRole('button', { name: 'Save' }));
+		fireEvent.click(screen.getByRole('button', { name: 'Save' }));
+		const progress = openedProgress();
 
-		await waitFor(() => expect(progressRow('Synonyms')).toHaveTextContent('Synonyms: Failed'));
-		expect(progressRow('Synonyms')).toHaveTextContent('Could not update Synonyms');
-		expect(progressRow('Synonyms')).toHaveStyle({ color: 'var(--red-700)' });
-		expect(progressRow('Allele')).toHaveTextContent('Allele: Saved');
-		expect(within(progress()).getByRole('heading', { level: 1 })).toHaveTextContent('Save finished with errors');
+		await waitFor(() => expect(progressRow(progress, 'Synonyms')).toHaveTextContent('Synonyms: Failed'));
+		expect(progressRow(progress, 'Synonyms')).toHaveTextContent(/^Synonyms: Failed$/);
+		expect(progressRow(progress, 'Synonyms')).toHaveStyle({ color: 'var(--red-700)' });
+		expect(progressRow(progress, 'Allele')).toHaveTextContent('Allele: Saved');
+		expect(within(progress).getByRole('heading', { level: 1 })).toHaveTextContent('Save finished with errors');
+		expect(await screen.findByText(/Could not update Synonyms/)).toBeInTheDocument();
 	});
 
 	it('Shows the allele failed while the lists are still written', async () => {
@@ -124,11 +130,12 @@ describe('<AlleleDetailPage /> save progress', { timeout: 60000 }, () => {
 		await renderInRouter(<AlleleDetailPage />);
 
 		await deleteFirstSynonym(user);
-		await user.click(screen.getByRole('button', { name: 'Save' }));
+		fireEvent.click(screen.getByRole('button', { name: 'Save' }));
+		const progress = openedProgress();
 
-		await waitFor(() => expect(progressRow('Synonyms')).toHaveTextContent('Synonyms: Saved'));
-		expect(progressRow('Allele')).toHaveTextContent('Allele: Failed');
-		expect(progressRow('Allele')).toHaveTextContent('Could not update Allele');
+		await waitFor(() => expect(progressRow(progress, 'Synonyms')).toHaveTextContent('Synonyms: Saved'));
+		expect(progressRow(progress, 'Allele')).toHaveTextContent(/^Allele: Failed$/);
+		expect(await screen.findByText(/Could not update Allele/)).toBeInTheDocument();
 	});
 
 	it("Shows one row for a section's own save", async () => {
@@ -138,14 +145,15 @@ describe('<AlleleDetailPage /> save progress', { timeout: 60000 }, () => {
 		await renderInRouter(<AlleleDetailPage />);
 
 		await deleteFirstSynonym(user);
-		await user.click(screen.getByRole('button', { name: 'Save Synonyms' }));
+		fireEvent.click(screen.getByRole('button', { name: 'Save Synonyms' }));
+		const progress = openedProgress();
 
-		await waitFor(() => expect(progressRow('Synonyms')).toHaveTextContent('Synonyms: Saving'));
-		expect(within(progress()).getAllByRole('listitem')).toHaveLength(1);
+		await waitFor(() => expect(progressRow(progress, 'Synonyms')).toHaveTextContent('Synonyms: Saving'));
+		expect(within(progress).getAllByRole('listitem')).toHaveLength(1);
 
 		await act(async () => synonymsWrite.resolve(savedSynonyms));
 
-		await waitFor(() => expect(progressRow('Synonyms')).toHaveTextContent('Synonyms: Saved'));
+		await waitFor(() => expect(progressRow(progress, 'Synonyms')).toHaveTextContent('Synonyms: Saved'));
 		expect(saveAlleleDetail).not.toHaveBeenCalled();
 	});
 });

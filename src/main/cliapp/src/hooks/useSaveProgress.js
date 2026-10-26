@@ -10,13 +10,12 @@ export const SAVE_STATUS = {
 
 /**
  * @typedef {'queued'|'saving'|'saved'|'failed'|'skipped'} SaveStatus one of {@link SAVE_STATUS}
- * @typedef {{key: string, label: string, status: SaveStatus, message?: string}} SaveStep one thing a save writes;
- *   `message` says why it failed
+ * @typedef {{key: string, label: string, status: SaveStatus}} SaveStep one thing a save writes
  */
 
-// How long the finished overlay stays up: briefly when everything saved, longer when there are messages to read.
-export const SUCCESS_HOLD_MS = 750;
-export const FAILURE_HOLD_MS = 2500;
+// How long the finished overlay stays up: briefly when everything saved, longer when something did not.
+export const SUCCESS_HOLD_MS = 375;
+export const FAILURE_HOLD_MS = 1250;
 
 /**
  * The progress of a save that writes several things, one row per thing, for {@link SaveProgressOverlay}.
@@ -36,7 +35,7 @@ export const FAILURE_HOLD_MS = 2500;
  *   isSaving: boolean,
  *   begin: (steps: Array<{key: string, label: string}>) => void,
  *   start: (key: string) => void,
- *   settle: (key: string, outcome: {isSuccess: boolean, message?: string}) => void,
+ *   settle: (key: string, outcome: {isSuccess: boolean}) => void,
  *   skipRemaining: () => void,
  *   finish: () => Promise<boolean>,
  * }}
@@ -96,11 +95,7 @@ export const useSaveProgress = () => {
 		(key, outcome) =>
 			updateSteps((current) =>
 				current.map((step) =>
-					step.key === key
-						? outcome.isSuccess
-							? { key, label: step.label, status: SAVE_STATUS.SAVED }
-							: { key, label: step.label, status: SAVE_STATUS.FAILED, message: outcome.message }
-						: step
+					step.key === key ? { ...step, status: outcome.isSuccess ? SAVE_STATUS.SAVED : SAVE_STATUS.FAILED } : step
 				)
 			),
 		[updateSteps]

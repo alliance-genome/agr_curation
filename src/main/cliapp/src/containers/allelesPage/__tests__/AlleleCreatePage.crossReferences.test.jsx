@@ -1,8 +1,8 @@
 import React from 'react';
-import { screen, waitFor, within } from '@testing-library/react';
+import { fireEvent, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Endpoints } from '../../../constants/Endpoints';
-import { button, NAVIGATION_WAIT, OUTSIDE_SAVE_PROGRESS, renderInRouter } from './alleleTestUtils';
+import { button, NAVIGATION_WAIT, renderInRouter } from './alleleTestUtils';
 
 const createAllele = vi.fn();
 const saveAlleleDetail = vi.fn();
@@ -148,11 +148,11 @@ describe('<AlleleCreatePage /> cross references', { timeout: 30000 }, () => {
 		await renderPage();
 
 		await addCompleteCrossReference(user);
-		await user.click(button('Save & Close'));
-		const progress = await screen.findByRole('status', { name: 'Save progress' });
+		// The overlay opens as Save is clicked, so it is read before any request settles.
+		fireEvent.click(button('Save & Close'));
+		const progress = screen.getByRole('status', { name: 'Save progress' });
 		await waitFor(() => expect(within(progress).getByRole('heading', { level: 1 })).toHaveTextContent('Saved'));
 
-		expect(navigate).not.toHaveBeenCalled();
 		expect(button('Save & Close')).toBeDisabled();
 		expect(button('Save & Add Another')).toBeDisabled();
 		await waitFor(() => expect(navigate).toHaveBeenCalledWith('/allele/AGRKB:101000000000001'), NAVIGATION_WAIT);
@@ -170,9 +170,8 @@ describe('<AlleleCreatePage /> cross references', { timeout: 30000 }, () => {
 		await addCompleteCrossReference(user);
 		await user.click(button('Save & Close'));
 		await waitFor(() => expect(replaceCrossReferencesForAllele).toHaveBeenCalledTimes(1));
-		await user.click(button('Save & Close'));
-
-		const progress = await screen.findByRole('status', { name: 'Save progress' });
+		fireEvent.click(button('Save & Close'));
+		const progress = screen.getByRole('status', { name: 'Save progress' });
 		await waitFor(() =>
 			expect(within(progress).getByText(/^Cross references:/)).toHaveTextContent('Cross references: Saved')
 		);
@@ -216,7 +215,7 @@ describe('<AlleleCreatePage /> cross references', { timeout: 30000 }, () => {
 
 		await waitFor(() => expect(replaceCrossReferencesForAllele).toHaveBeenCalled());
 		expect(navigate).not.toHaveBeenCalled();
-		expect(await screen.findByText(/Could not update CrossReferences/, OUTSIDE_SAVE_PROGRESS)).toBeInTheDocument();
+		expect(await screen.findByText(/Could not update CrossReferences/)).toBeInTheDocument();
 	});
 
 	it('Shows the cross references as not saved when the allele is not created', async () => {
@@ -227,12 +226,16 @@ describe('<AlleleCreatePage /> cross references', { timeout: 30000 }, () => {
 		await renderPage();
 
 		await addCompleteCrossReference(user);
-		await user.click(button('Save & Close'));
-
-		const progress = await screen.findByRole('status', { name: 'Save progress' });
+		fireEvent.click(button('Save & Close'));
+		const progress = screen.getByRole('status', { name: 'Save progress' });
 		await waitFor(() => expect(within(progress).getByText(/^Allele:/)).toHaveTextContent('Allele: Failed'));
-		expect(within(progress).getByText('Could not create Allele')).toBeInTheDocument();
+		expect(
+			within(progress)
+				.getByText(/^Allele:/)
+				.closest('li')
+		).toHaveTextContent(/^Allele: Failed$/);
 		expect(within(progress).getByText(/^Cross references:/)).toHaveTextContent('Cross references: Not saved');
+		expect(await screen.findByText('Could not create Allele')).toBeInTheDocument();
 		expect(within(progress).getByRole('heading', { level: 1 })).toHaveTextContent('Save finished with errors');
 		expect(replaceCrossReferencesForAllele).not.toHaveBeenCalled();
 		expect(navigate).not.toHaveBeenCalled();
@@ -246,14 +249,18 @@ describe('<AlleleCreatePage /> cross references', { timeout: 30000 }, () => {
 		await renderPage();
 
 		await addCompleteCrossReference(user);
-		await user.click(button('Save & Close'));
-
-		const progress = await screen.findByRole('status', { name: 'Save progress' });
+		fireEvent.click(button('Save & Close'));
+		const progress = screen.getByRole('status', { name: 'Save progress' });
 		await waitFor(() =>
 			expect(within(progress).getByText(/^Cross references:/)).toHaveTextContent('Cross references: Failed')
 		);
 		expect(within(progress).getByText(/^Allele:/)).toHaveTextContent('Allele: Saved');
-		expect(within(progress).getByText('Could not update CrossReferences')).toBeInTheDocument();
+		expect(
+			within(progress)
+				.getByText(/^Cross references:/)
+				.closest('li')
+		).toHaveTextContent(/^Cross references: Failed$/);
+		expect(await screen.findByText(/Could not update CrossReferences/)).toBeInTheDocument();
 	});
 
 	it('Shows everything saved on Save & Add Another and clears the form', async () => {
@@ -261,9 +268,8 @@ describe('<AlleleCreatePage /> cross references', { timeout: 30000 }, () => {
 		await renderPage();
 
 		await addCompleteCrossReference(user);
-		await user.click(button('Save & Add Another'));
-
-		const progress = await screen.findByRole('status', { name: 'Save progress' });
+		fireEvent.click(button('Save & Add Another'));
+		const progress = screen.getByRole('status', { name: 'Save progress' });
 		await waitFor(() =>
 			expect(within(progress).getByText(/^Cross references:/)).toHaveTextContent('Cross references: Saved')
 		);

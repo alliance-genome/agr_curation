@@ -41,27 +41,21 @@ describe('<SaveProgressOverlay />', () => {
 		expect(row('Related notes').querySelector('i')).toHaveClass('pi-minus-circle');
 	});
 
-	it('Shows why a failed row failed, and that the save finished with errors', () => {
+	it('Shows a failed row by its status alone, and that the save finished with errors', () => {
 		render(
 			<SaveProgressOverlay
 				isOpen
 				steps={[
 					{ key: 'allele', label: 'Allele', status: SAVE_STATUS.SAVED },
-					{
-						key: 'alleleSynonyms',
-						label: 'Synonyms',
-						status: SAVE_STATUS.FAILED,
-						message: 'Could not update synonyms',
-					},
+					{ key: 'alleleSynonyms', label: 'Synonyms', status: SAVE_STATUS.FAILED },
 				]}
 			/>
 		);
 
 		expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Save finished with errors');
-		expect(row('Synonyms')).toHaveTextContent('Synonyms: Failed');
+		expect(row('Synonyms')).toHaveTextContent(/^Synonyms: Failed$/);
 		expect(row('Synonyms')).toHaveStyle({ color: 'var(--red-700)' });
 		expect(row('Synonyms').querySelector('i')).toHaveClass('pi-times-circle');
-		expect(within(row('Synonyms')).getByText('Could not update synonyms')).toBeInTheDocument();
 	});
 
 	it('Says the save is done once every row saved', () => {

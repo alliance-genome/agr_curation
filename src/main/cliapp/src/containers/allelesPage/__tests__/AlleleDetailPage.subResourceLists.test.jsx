@@ -1,14 +1,7 @@
 import React from 'react';
 import { act, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import {
-	alleleRejection,
-	FORM_LOAD_WAIT,
-	markAlleleExtinct,
-	renderInRouter,
-	storedAllele,
-	OUTSIDE_SAVE_PROGRESS,
-} from './alleleTestUtils';
+import { alleleRejection, FORM_LOAD_WAIT, markAlleleExtinct, renderInRouter, storedAllele } from './alleleTestUtils';
 import { getCellByHeader } from './alleleFormTestUtils';
 
 const { getAllele, saveAlleleDetail, getRows, replaceRows } = vi.hoisted(() => ({
@@ -240,7 +233,7 @@ describe.each(LISTS)('<AlleleDetailPage /> $title', { timeout: 60000 }, ({ path,
 		await deleteFirstRow(user);
 		await user.click(screen.getByRole('button', { name: `Save ${title}` }));
 
-		expect(await screen.findByText(`Could not update ${title}`, OUTSIDE_SAVE_PROGRESS)).toBeInTheDocument();
+		expect(await screen.findByText(`Could not update ${title}`)).toBeInTheDocument();
 		expect(within(tableRows()[0]).getByText('Not a valid entry')).toBeInTheDocument();
 		expect(within(sectionOf(title)).getByText('Pending Edits!')).toBeInTheDocument();
 	});

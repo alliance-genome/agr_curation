@@ -21,8 +21,7 @@ const headingFor = (steps) => {
 };
 
 /**
- * Covers the page while a save runs, listing each thing being written with its status and, for one that failed,
- * why.
+ * Covers the page while a save runs, listing each thing being written with its status.
  *
  * @param {Object} props
  * @param {boolean} props.isOpen
@@ -39,17 +38,14 @@ export const SaveProgressOverlay = ({ isOpen, steps }) => {
 			>
 				<h1>{headingFor(steps)}</h1>
 				<ul aria-label="Saved items" className="list-none p-0 m-0">
-					{steps.map(({ key, label, status, message }) => {
+					{steps.map(({ key, label, status }) => {
 						const { icon, color, text } = STATUS_DISPLAY[status];
 						return (
-							<li key={key} className="py-1" style={{ color }}>
-								<div className="flex align-items-center gap-2 text-xl">
-									<i className={icon} aria-hidden="true" />
-									<span>
-										{label}: {text}
-									</span>
-								</div>
-								{message && <div className="ml-5">{message}</div>}
+							<li key={key} className="flex align-items-center gap-2 py-1 text-xl" style={{ color }}>
+								<i className={icon} aria-hidden="true" />
+								<span>
+									{label}: {text}
+								</span>
 							</li>
 						);
 					})}

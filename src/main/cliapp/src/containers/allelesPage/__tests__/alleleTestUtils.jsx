@@ -22,9 +22,6 @@ export const alleleRejection = {
 // Save & Close moves on once the save progress overlay has shown everything saved for its hold.
 export const NAVIGATION_WAIT = { timeout: SUCCESS_HOLD_MS + 2000 };
 
-// Text queries that skip the save progress overlay, which repeats a failed save's message, so they find the toast.
-export const OUTSIDE_SAVE_PROGRESS = { ignore: 'script, style, [role="status"] *' };
-
 export const SOURCE_CURIE = 'AGRKB:101000000000001';
 
 // The allele a create page fills itself from when opened to duplicate one.

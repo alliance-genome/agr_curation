@@ -66,7 +66,7 @@ export default function AlleleCreatePage() {
 	});
 
 	const showSaveError = (error) => {
-		saveProgress.settle('allele', { isSuccess: false, message: errorMessageOf(error) });
+		saveProgress.settle('allele', { isSuccess: false });
 		saveProgress.skipRemaining();
 		saveProgress.finish();
 		const data = error?.response?.data;

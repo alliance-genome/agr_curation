@@ -29,7 +29,7 @@ describe('useSaveProgress', () => {
 		]);
 	});
 
-	it('Moves a row through saving to saved, or to failed with its message', () => {
+	it('Moves a row through saving to saved or failed, keeping only its status', () => {
 		const { result } = renderHook(() => useSaveProgress());
 		act(() => result.current.begin(ROWS));
 
@@ -41,12 +41,7 @@ describe('useSaveProgress', () => {
 
 		expect(result.current.steps).toEqual([
 			{ key: 'allele', label: 'Allele', status: SAVE_STATUS.SAVED },
-			{
-				key: 'alleleSynonyms',
-				label: 'Synonyms',
-				status: SAVE_STATUS.FAILED,
-				message: 'Could not update synonyms',
-			},
+			{ key: 'alleleSynonyms', label: 'Synonyms', status: SAVE_STATUS.FAILED },
 		]);
 	});
 
@@ -60,7 +55,7 @@ describe('useSaveProgress', () => {
 		act(() => result.current.settle('allele', { isSuccess: true }));
 		expect(result.current.isSaving).toBe(true);
 
-		act(() => result.current.settle('alleleSynonyms', { isSuccess: false, message: 'refused' }));
+		act(() => result.current.settle('alleleSynonyms', { isSuccess: false }));
 		expect(result.current.isOpen).toBe(true);
 		expect(result.current.isSaving).toBe(false);
 	});
@@ -68,7 +63,7 @@ describe('useSaveProgress', () => {
 	it('Marks the rows not yet written as skipped and leaves settled ones alone', () => {
 		const { result } = renderHook(() => useSaveProgress());
 		act(() => result.current.begin(ROWS));
-		act(() => result.current.settle('allele', { isSuccess: false, message: 'refused' }));
+		act(() => result.current.settle('allele', { isSuccess: false }));
 
 		act(() => result.current.skipRemaining());
 
@@ -97,7 +92,7 @@ describe('useSaveProgress', () => {
 	});
 
 	it.each([
-		['failed', (result) => result.current.settle('alleleSynonyms', { isSuccess: false, message: 'refused' })],
+		['failed', (result) => result.current.settle('alleleSynonyms', { isSuccess: false })],
 		['was skipped', (result) => result.current.skipRemaining()],
 	])('Stays open longer when a row %s', async (_case, leaveRowUnsaved) => {
 		const { result } = renderHook(() => useSaveProgress());
@@ -118,10 +113,10 @@ describe('useSaveProgress', () => {
 		expect(closed).toHaveBeenCalledWith(true);
 	});
 
-	it("Clears a failed row's message when it saves on a later try", () => {
+	it('Marks a failed row saved when it saves on a later try', () => {
 		const { result } = renderHook(() => useSaveProgress());
 		act(() => result.current.begin(ROWS));
-		act(() => result.current.settle('allele', { isSuccess: false, message: 'refused' }));
+		act(() => result.current.settle('allele', { isSuccess: false }));
 
 		act(() => result.current.settle('allele', { isSuccess: true }));
 

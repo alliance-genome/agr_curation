@@ -115,10 +115,7 @@ export default function AlleleDetailPage() {
 				savedAllele.current = alleleResult?.data?.entity;
 				alleleDispatch({ type: 'SET', value: alleleResult?.data?.entity });
 			}
-			saveProgress.settle(
-				'allele',
-				alleleError ? { isSuccess: false, message: errorMessageOf(alleleError) } : { isSuccess: true }
-			);
+			saveProgress.settle('allele', { isSuccess: !alleleError });
 
 			// The sub-resources are written whether or not the allele saved, so the errors of all of them are
 			// reported together.
