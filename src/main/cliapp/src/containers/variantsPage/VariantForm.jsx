@@ -12,6 +12,7 @@ import { DetailPageFieldWrapper } from '../../components/DetailPageFieldWrapper'
 import { RelatedNotesForm } from './relatedNotes/RelatedNotesForm';
 import { ReferencesForm } from './references/ReferencesForm';
 import { SynonymsForm } from './synonyms/SynonymsForm';
+import { GenomicLocationsForm } from './genomicLocations/GenomicLocationsForm';
 import { FormSection } from '../../components/FormFieldVisibility';
 import { getEffectiveModAbbreviation } from '../../utils/affiliation';
 
@@ -20,6 +21,7 @@ const FIELDS_OMITTED_ON_CREATE = [
 	'Primary External ID',
 	'MOD Internal ID',
 	'Unique ID',
+	'Genomic Locations',
 	'Cross References',
 	'Updated By',
 	'Date Updated',
@@ -36,6 +38,7 @@ export const VARIANT_DETAIL_TOGGLEABLE_FIELDS = [
 	'Taxon',
 	'Variant Type',
 	'Variant Status',
+	'Genomic Locations',
 	'Related Notes',
 	'References',
 	'Source General Consequence',
@@ -147,7 +150,7 @@ export const VariantForm = ({ state, dispatch, isVisible, mode = 'detail' }) => 
 			<FormSection isVisible={isVisible('Variant Type')}>
 				<VariantTypeDetailPageEditor
 					variantType={state.variant?.variantType}
-					required
+					required={isCreate}
 					onVariantTypeValueChange={onOntologyTermValueChange('variantType')}
 					widgetColumnSize={widgetColumnSize}
 					labelColumnSize={labelColumnSize}
@@ -168,6 +171,10 @@ export const VariantForm = ({ state, dispatch, isVisible, mode = 'detail' }) => 
 					fieldDetailsColumnSize={fieldDetailsColumnSize}
 					errorMessages={state.errorMessages}
 				/>
+			</FormSection>
+
+			<FormSection isVisible={!isCreate && isVisible('Genomic Locations')}>
+				<GenomicLocationsForm state={state} />
 			</FormSection>
 
 			<FormSection isVisible={isVisible('Related Notes')}>
