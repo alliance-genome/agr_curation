@@ -15,11 +15,8 @@ import com.fasterxml.jackson.annotation.JsonView;
  * @param hgvsC the coding HGVS of its predicted consequences, one per transcript, each with its
  *   transcript accession, e.g. NM_131184.2:c.408-2A>G
  * @param hgvsP the protein HGVS of its predicted consequences, for the transcripts that have one
+ * @param transcriptConsequences the VEP result for each transcript, ordered by transcript
  */
-public record VariantHgvs(
-	@JsonView({ CurationView.VariantHgvsView.class }) String alleleId,
-	@JsonView({ CurationView.VariantHgvsView.class }) String variantCurie,
-	@JsonView({ CurationView.VariantHgvsView.class }) String hgvsG,
-	@JsonView({ CurationView.VariantHgvsView.class }) List<String> hgvsC,
-	@JsonView({ CurationView.VariantHgvsView.class }) List<String> hgvsP) {
+@JsonView({ CurationView.VariantHgvsView.class })
+public record VariantHgvs(String alleleId, String variantCurie, String hgvsG, List<String> hgvsC, List<String> hgvsP, List<VariantTranscriptConsequence> transcriptConsequences) {
 }

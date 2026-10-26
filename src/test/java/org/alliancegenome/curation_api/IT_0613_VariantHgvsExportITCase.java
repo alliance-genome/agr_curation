@@ -34,6 +34,7 @@ public class IT_0613_VariantHgvsExportITCase extends BaseITCase {
 
 	private static final String ENDPOINT = "/api/variant/WB/hgvs";
 	private static final String ALLELE_RESULT = "results.find { it.alleleId == 'WB:AlleleWithVar1' }";
+	private static final String TRANSCRIPT_RESULT = ALLELE_RESULT + ".transcriptConsequences[0]";
 
 	@Test
 	@Order(1)
@@ -45,7 +46,20 @@ public class IT_0613_VariantHgvsExportITCase extends BaseITCase {
 			statusCode(200).
 			body(ALLELE_RESULT + ".hgvsG", is("NC_003279.8:g.1A>T")).
 			body(ALLELE_RESULT + ".hgvsC", is(List.of("WB:Y74C9A.2a.1:c.29M>N"))).
-			body(ALLELE_RESULT + ".hgvsP", is(List.of("WB:CE49439:p.Met10Neo")));
+			body(ALLELE_RESULT + ".hgvsP", is(List.of("WB:CE49439:p.Met10Neo"))).
+			// The VEP result for each transcript, as IT_0611's update (11_vep/UD_01_update.json) left it
+			body(TRANSCRIPT_RESULT + ".transcript", is("WB:Y74C9A.2a.1")).
+			body(TRANSCRIPT_RESULT + ".molecularConsequences", is(List.of("splice_donor_5th_base_variant"))).
+			body(TRANSCRIPT_RESULT + ".impact", is("MODIFIER")).
+			body(TRANSCRIPT_RESULT + ".hgvsC", is("WB:Y74C9A.2a.1:c.29M>N")).
+			body(TRANSCRIPT_RESULT + ".hgvsP", is("WB:CE49439:p.Met10Neo")).
+			body(TRANSCRIPT_RESULT + ".siftPrediction", is("deleterious_low_confidence")).
+			body(TRANSCRIPT_RESULT + ".polyphenPrediction", is("possibly_damaging")).
+			body(TRANSCRIPT_RESULT + ".aminoAcidReference", is("M")).
+			body(TRANSCRIPT_RESULT + ".aminoAcidVariant", is("N")).
+			body(TRANSCRIPT_RESULT + ".proteinStart", is(247)).
+			body(TRANSCRIPT_RESULT + ".proteinEnd", is(250)).
+			body(ALLELE_RESULT + ".transcriptConsequences", hasSize(1));
 	}
 
 	@Test

@@ -2,6 +2,7 @@ package org.alliancegenome.curation_api.services;
 
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,12 +17,16 @@ import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.model.entities.Note;
 import org.alliancegenome.curation_api.model.entities.PredictedVariantConsequence;
+import org.alliancegenome.curation_api.model.entities.Transcript;
 import org.alliancegenome.curation_api.model.entities.Variant;
+import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
+import org.alliancegenome.curation_api.model.entities.ontology.SOTerm;
 import org.alliancegenome.curation_api.model.entities.associations.AlleleVariantAssociation;
 import org.alliancegenome.curation_api.model.entities.associations.CuratedVariantGenomicLocationAssociation;
 import org.alliancegenome.curation_api.model.ingest.dto.VariantDTO;
 import org.alliancegenome.curation_api.model.input.Pagination;
 import org.alliancegenome.curation_api.model.output.VariantHgvs;
+import org.alliancegenome.curation_api.model.output.VariantTranscriptConsequence;
 import org.alliancegenome.curation_api.response.ObjectListResponse;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
@@ -161,7 +166,45 @@ public class VariantService extends SubmittedObjectCrudService<Variant, VariantD
 			variant.getCurie(),
 			location == null ? null : location.getHgvs(),
 			distinctSorted(consequences, PredictedVariantConsequence::getHgvsCodingNomenclature),
-			distinctSorted(consequences, PredictedVariantConsequence::getHgvsProteinNomenclature));
+			distinctSorted(consequences, PredictedVariantConsequence::getHgvsProteinNomenclature),
+			consequences.stream().map(VariantService::toTranscriptConsequence).sorted(Comparator.comparing(VariantTranscriptConsequence::transcript, Comparator.nullsLast(Comparator.naturalOrder()))).toList());
+	}
+
+	// One transcript's VEP result, as the predicted consequence holds it
+	private static VariantTranscriptConsequence toTranscriptConsequence(PredictedVariantConsequence c) {
+		return new VariantTranscriptConsequence(
+			transcriptId(c.getVariantTranscript()),
+			c.getVepConsequences() == null ? List.of() : c.getVepConsequences().stream().map(SOTerm::getName).filter(Objects::nonNull).sorted().toList(),
+			termName(c.getVepImpact()),
+			c.getHgvsCodingNomenclature(),
+			c.getHgvsProteinNomenclature(),
+			termName(c.getSiftPrediction()),
+			c.getSiftScore(),
+			termName(c.getPolyphenPrediction()),
+			c.getPolyphenScore(),
+			c.getAminoAcidReference(),
+			c.getAminoAcidVariant(),
+			c.getCodonReference(),
+			c.getCodonVariant(),
+			c.getCalculatedCdnaStart(),
+			c.getCalculatedCdnaEnd(),
+			c.getCalculatedCdsStart(),
+			c.getCalculatedCdsEnd(),
+			c.getCalculatedProteinStart(),
+			c.getCalculatedProteinEnd(),
+			c.getGeneLevelConsequence());
+	}
+
+	// The transcript's accession, e.g. NM_201090.2, or its identifier when it has none
+	private static String transcriptId(Transcript transcript) {
+		if (transcript == null) {
+			return null;
+		}
+		return transcript.getTranscriptId() != null ? transcript.getTranscriptId() : transcript.getIdentifier();
+	}
+
+	private static String termName(VocabularyTerm term) {
+		return term == null ? null : term.getName();
 	}
 
 	private static List<String> distinctSorted(List<PredictedVariantConsequence> consequences, Function<PredictedVariantConsequence, String> hgvs) {
