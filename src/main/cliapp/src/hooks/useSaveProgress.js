@@ -15,8 +15,8 @@ export const SAVE_STATUS = {
  */
 
 // How long the finished overlay stays up: briefly when everything saved, longer when there are messages to read.
-export const SUCCESS_HOLD_MS = 1500;
-export const FAILURE_HOLD_MS = 5000;
+export const SUCCESS_HOLD_MS = 750;
+export const FAILURE_HOLD_MS = 2500;
 
 /**
  * The progress of a save that writes several things, one row per thing, for {@link SaveProgressOverlay}.
