@@ -27,8 +27,8 @@ export const FAILURE_HOLD_MS = 5000;
  * failed; `skipRemaining` marks the rows that will not be written; `finish` closes the overlay after a hold.
  *
  * `finish` resolves `true` once the overlay has closed, at once when it is not open. It resolves `false` when it is
- * superseded before closing - by a later `begin` or `finish`, or by the page unmounting - so a caller waiting to
- * leave the page can tell that the overlay is still in use.
+ * superseded before closing - by a later `begin` or `finish`, or by the page unmounting - and at once after the page
+ * has unmounted, so a caller waiting to leave the page can tell that it should not.
  *
  * @returns {{
  *   steps: SaveStep[],
@@ -48,6 +48,7 @@ export const useSaveProgress = () => {
 	const isOpenRef = useRef(false);
 	const closeTimer = useRef(null);
 	const resolveClose = useRef(null);
+	const isMounted = useRef(true);
 
 	const updateSteps = useCallback((update) => {
 		stepsRef.current = update(stepsRef.current);
@@ -66,7 +67,13 @@ export const useSaveProgress = () => {
 		resolveClose.current = null;
 	}, []);
 
-	useEffect(() => cancelClose, [cancelClose]);
+	useEffect(() => {
+		isMounted.current = true;
+		return () => {
+			isMounted.current = false;
+			cancelClose();
+		};
+	}, [cancelClose]);
 
 	const begin = useCallback(
 		(newSteps) => {
@@ -113,6 +120,7 @@ export const useSaveProgress = () => {
 
 	const finish = useCallback(() => {
 		cancelClose();
+		if (!isMounted.current) return Promise.resolve(false);
 		if (!isOpenRef.current) return Promise.resolve(true);
 
 		const allSaved = stepsRef.current.every((step) => step.status === SAVE_STATUS.SAVED);

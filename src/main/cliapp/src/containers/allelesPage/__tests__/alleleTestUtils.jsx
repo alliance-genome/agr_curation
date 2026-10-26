@@ -3,6 +3,7 @@ import { BrowserRouter, MemoryRouter, Route, Routes } from 'react-router-dom';
 import { screen, waitFor, within } from '@testing-library/react';
 import { renderWithClient } from '../../../tools/jest/utils';
 import { alleleDetailData } from '../mockData/mockData.js';
+import { SUCCESS_HOLD_MS } from '../../../hooks/useSaveProgress';
 
 // each wait follows a stubbed call through a full render of the form, which can outlast the default under load
 export const FORM_LOAD_WAIT = { timeout: 5000 };
@@ -17,6 +18,9 @@ export const alleleRejection = {
 		data: { errorMessage: 'Could not update Allele', errorMessages: { taxon: 'Taxon is not valid' } },
 	},
 };
+
+// Save & Close moves on once the save progress overlay has shown everything saved for its hold.
+export const NAVIGATION_WAIT = { timeout: SUCCESS_HOLD_MS + 2000 };
 
 // Text queries that skip the save progress overlay, which repeats a failed save's message, so they find the toast.
 export const OUTSIDE_SAVE_PROGRESS = { ignore: 'script, style, [role="status"] *' };

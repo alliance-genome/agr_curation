@@ -1,8 +1,8 @@
 import React from 'react';
-import { screen, waitFor } from '@testing-library/react';
+import { screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Endpoints } from '../../../constants/Endpoints';
-import { button, renderInRouter } from './alleleTestUtils';
+import { button, NAVIGATION_WAIT, OUTSIDE_SAVE_PROGRESS, renderInRouter } from './alleleTestUtils';
 
 const createAllele = vi.fn();
 const saveAlleleDetail = vi.fn();
@@ -57,7 +57,7 @@ const addCompleteCrossReference = async (user) => {
 	await user.type(crossReferenceRow().querySelector('[aria-label="displayName"]'), 'PMID:123');
 };
 
-describe('<AlleleCreatePage /> cross references', () => {
+describe('<AlleleCreatePage /> cross references', { timeout: 30000 }, () => {
 	beforeEach(() => {
 		createAllele.mockReset();
 		createAllele.mockResolvedValue({ data: { entity: { id: 4242, curie: 'AGRKB:101000000000001' } } });
@@ -84,7 +84,7 @@ describe('<AlleleCreatePage /> cross references', () => {
 
 		await waitFor(() => expect(replaceCrossReferencesForAllele).toHaveBeenCalled());
 		expect(replaceCrossReferencesForAllele.mock.calls[0][0]).toBe(4242);
-		expect(navigate).toHaveBeenCalledWith('/allele/AGRKB:101000000000001');
+		await waitFor(() => expect(navigate).toHaveBeenCalledWith('/allele/AGRKB:101000000000001'), NAVIGATION_WAIT);
 		expect(validate).not.toHaveBeenCalled();
 	});
 
@@ -98,10 +98,16 @@ describe('<AlleleCreatePage /> cross references', () => {
 		await user.click(button('Save & Close'));
 
 		await waitFor(() => expect(replaceCrossReferencesForAllele).toHaveBeenCalled());
-		expect(screen.getByText('Saving in progress...')).toBeInTheDocument();
+		const progress = screen.getByRole('status', { name: 'Save progress' });
+		expect(within(progress).getByText(/^Allele:/)).toHaveTextContent('Allele: Saved');
+		expect(within(progress).getByText(/^Cross references:/)).toHaveTextContent('Cross references: Saving');
+		expect(navigate).not.toHaveBeenCalled();
 
 		finishWrite({ data: { entities: [] } });
-		await waitFor(() => expect(screen.queryByText('Saving in progress...')).not.toBeInTheDocument());
+		await waitFor(() =>
+			expect(within(progress).getByText(/^Cross references:/)).toHaveTextContent('Cross references: Saved')
+		);
+		await waitFor(() => expect(navigate).toHaveBeenCalledWith('/allele/AGRKB:101000000000001'), NAVIGATION_WAIT);
 	});
 
 	it('Makes no second call when there are no cross references', async () => {
@@ -110,7 +116,7 @@ describe('<AlleleCreatePage /> cross references', () => {
 
 		await user.click(button('Save & Close'));
 
-		await waitFor(() => expect(navigate).toHaveBeenCalled());
+		await waitFor(() => expect(navigate).toHaveBeenCalled(), NAVIGATION_WAIT);
 		expect(replaceCrossReferencesForAllele).not.toHaveBeenCalled();
 		expect(validate).not.toHaveBeenCalled();
 	});
@@ -134,7 +140,44 @@ describe('<AlleleCreatePage /> cross references', () => {
 		await waitFor(() => expect(replaceCrossReferencesForAllele).toHaveBeenCalledTimes(2));
 		expect(createAllele).toHaveBeenCalledTimes(1);
 		expect(replaceCrossReferencesForAllele.mock.calls[1][0]).toBe(4242);
-		expect(navigate).toHaveBeenCalledWith('/allele/AGRKB:101000000000001');
+		await waitFor(() => expect(navigate).toHaveBeenCalledWith('/allele/AGRKB:101000000000001'), NAVIGATION_WAIT);
+	});
+
+	it('Offers no second save while it shows everything saved before moving on', async () => {
+		const user = userEvent.setup();
+		await renderPage();
+
+		await addCompleteCrossReference(user);
+		await user.click(button('Save & Close'));
+		const progress = await screen.findByRole('status', { name: 'Save progress' });
+		await waitFor(() => expect(within(progress).getByRole('heading', { level: 1 })).toHaveTextContent('Saved'));
+
+		expect(navigate).not.toHaveBeenCalled();
+		expect(button('Save & Close')).toBeDisabled();
+		expect(button('Save & Add Another')).toBeDisabled();
+		await waitFor(() => expect(navigate).toHaveBeenCalledWith('/allele/AGRKB:101000000000001'), NAVIGATION_WAIT);
+		expect(createAllele).toHaveBeenCalledTimes(1);
+		expect(saveAlleleDetail).not.toHaveBeenCalled();
+	});
+
+	it('Lists the allele update and the retried rows when saving again after a failure', async () => {
+		const user = userEvent.setup();
+		replaceCrossReferencesForAllele.mockRejectedValueOnce({
+			response: { status: 400, statusText: 'Bad Request', data: { errorMessage: 'Could not update CrossReferences' } },
+		});
+		await renderPage();
+
+		await addCompleteCrossReference(user);
+		await user.click(button('Save & Close'));
+		await waitFor(() => expect(replaceCrossReferencesForAllele).toHaveBeenCalledTimes(1));
+		await user.click(button('Save & Close'));
+
+		const progress = await screen.findByRole('status', { name: 'Save progress' });
+		await waitFor(() =>
+			expect(within(progress).getByText(/^Cross references:/)).toHaveTextContent('Cross references: Saved')
+		);
+		expect(within(progress).getByText(/^Allele:/)).toHaveTextContent('Allele: Saved');
+		expect(saveAlleleDetail).toHaveBeenCalledTimes(1);
 	});
 
 	// The form stays editable while the rows are being fixed, so saving again has to carry whatever was
@@ -173,7 +216,64 @@ describe('<AlleleCreatePage /> cross references', () => {
 
 		await waitFor(() => expect(replaceCrossReferencesForAllele).toHaveBeenCalled());
 		expect(navigate).not.toHaveBeenCalled();
-		expect(await screen.findByText(/Could not update CrossReferences/)).toBeInTheDocument();
+		expect(await screen.findByText(/Could not update CrossReferences/, OUTSIDE_SAVE_PROGRESS)).toBeInTheDocument();
+	});
+
+	it('Shows the cross references as not saved when the allele is not created', async () => {
+		const user = userEvent.setup();
+		createAllele.mockRejectedValue({
+			response: { status: 400, statusText: 'Bad Request', data: { errorMessage: 'Could not create Allele' } },
+		});
+		await renderPage();
+
+		await addCompleteCrossReference(user);
+		await user.click(button('Save & Close'));
+
+		const progress = await screen.findByRole('status', { name: 'Save progress' });
+		await waitFor(() => expect(within(progress).getByText(/^Allele:/)).toHaveTextContent('Allele: Failed'));
+		expect(within(progress).getByText('Could not create Allele')).toBeInTheDocument();
+		expect(within(progress).getByText(/^Cross references:/)).toHaveTextContent('Cross references: Not saved');
+		expect(within(progress).getByRole('heading', { level: 1 })).toHaveTextContent('Save finished with errors');
+		expect(replaceCrossReferencesForAllele).not.toHaveBeenCalled();
+		expect(navigate).not.toHaveBeenCalled();
+	});
+
+	it('Shows the cross references failed after the allele was created', async () => {
+		const user = userEvent.setup();
+		replaceCrossReferencesForAllele.mockRejectedValue({
+			response: { status: 400, statusText: 'Bad Request', data: { errorMessage: 'Could not update CrossReferences' } },
+		});
+		await renderPage();
+
+		await addCompleteCrossReference(user);
+		await user.click(button('Save & Close'));
+
+		const progress = await screen.findByRole('status', { name: 'Save progress' });
+		await waitFor(() =>
+			expect(within(progress).getByText(/^Cross references:/)).toHaveTextContent('Cross references: Failed')
+		);
+		expect(within(progress).getByText(/^Allele:/)).toHaveTextContent('Allele: Saved');
+		expect(within(progress).getByText('Could not update CrossReferences')).toBeInTheDocument();
+	});
+
+	it('Shows everything saved on Save & Add Another and clears the form', async () => {
+		const user = userEvent.setup();
+		await renderPage();
+
+		await addCompleteCrossReference(user);
+		await user.click(button('Save & Add Another'));
+
+		const progress = await screen.findByRole('status', { name: 'Save progress' });
+		await waitFor(() =>
+			expect(within(progress).getByText(/^Cross references:/)).toHaveTextContent('Cross references: Saved')
+		);
+		expect(within(progress).getByText(/^Allele:/)).toHaveTextContent('Allele: Saved');
+		await waitFor(
+			() => expect(screen.queryByRole('status', { name: 'Save progress' })).not.toBeInTheDocument(),
+			NAVIGATION_WAIT
+		);
+		expect(screen.queryByLabelText('resourceDescriptor')).not.toBeInTheDocument();
+		expect(navigate).not.toHaveBeenCalled();
 	});
 
 	// Clicking Save takes focus from the curie cell, and the descriptor it names is set before the save

@@ -1,7 +1,7 @@
 import React from 'react';
 import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { button, renderInRouter } from './alleleTestUtils';
+import { button, NAVIGATION_WAIT, renderInRouter } from './alleleTestUtils';
 
 const createAllele = vi.fn();
 const saveAlleleDetail = vi.fn();
@@ -143,7 +143,7 @@ describe('<AlleleCreatePage />', () => {
 		// the blank inCollection the initial state carries would be rejected by the API
 		expect(payload).not.toHaveProperty('inCollection');
 
-		await waitFor(() => expect(navigate).toHaveBeenCalledWith('/allele/AGRKB:101000000000001'));
+		await waitFor(() => expect(navigate).toHaveBeenCalledWith('/allele/AGRKB:101000000000001'), NAVIGATION_WAIT);
 	});
 
 	it('Stays on a blank form on save and add another', async () => {

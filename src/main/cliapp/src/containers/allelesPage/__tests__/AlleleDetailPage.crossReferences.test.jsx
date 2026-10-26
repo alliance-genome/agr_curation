@@ -60,7 +60,7 @@ const storedCrossReference = {
 
 const renderPage = () => renderInRouter(<AlleleDetailPage />);
 
-describe('<AlleleDetailPage /> cross references', () => {
+describe('<AlleleDetailPage /> cross references', { timeout: 30000 }, () => {
 	beforeEach(() => {
 		window.localStorage.removeItem('AlleleDetailFormSettings');
 		getAllele.mockReset();

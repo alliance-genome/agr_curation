@@ -195,4 +195,19 @@ describe('useSaveProgress', () => {
 		expect(closed).toHaveBeenCalledWith(false);
 		expect(vi.getTimerCount()).toBe(0);
 	});
+
+	it('Resolves false at once when finished after unmounting', async () => {
+		const { result, unmount } = renderHook(() => useSaveProgress());
+		const closed = vi.fn();
+		act(() => result.current.begin(ROWS));
+		const { finish } = result.current;
+
+		unmount();
+		await act(async () => {
+			await finish().then(closed);
+		});
+
+		expect(closed).toHaveBeenCalledWith(false);
+		expect(vi.getTimerCount()).toBe(0);
+	});
 });

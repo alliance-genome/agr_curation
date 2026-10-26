@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import { Toast } from 'primereact/toast';
 import { Splitter, SplitterPanel } from 'primereact/splitter';
 import { Button } from 'primereact/button';
@@ -10,6 +10,8 @@ import { useAlleleReducer } from './useAlleleReducer';
 import { StickyHeader } from '../../components/StickyHeader';
 import { StickyFooter } from '../../components/StickyFooter';
 import { LoadingOverlay } from '../../components/LoadingOverlay';
+import { SaveProgressOverlay } from '../../components/SaveProgressOverlay';
+import { useSaveProgress } from '../../hooks/useSaveProgress';
 import { errorMessageOf, getIdentifier } from '../../utils/utils';
 import { buildCreatePayload, capitalize, processErrors } from './utils';
 import { FormFieldVisibilityMenu, useFormFieldVisibility } from '../../components/FormFieldVisibility';
@@ -31,9 +33,12 @@ export default function AlleleCreatePage() {
 	const {
 		subResources,
 		saveDirty: saveDirtySubResources,
-		isSaving: subResourcesAreSaving,
+		dirtySteps: dirtySubResourceSteps,
 		resetAll: resetSubResources,
 	} = useAlleleSubResources();
+	const saveProgress = useSaveProgress();
+	// Set once Save & Close has saved everything, while the page shows that before moving on to the allele.
+	const [isLeaving, setIsLeaving] = useState(false);
 	// Held so that saving again after a sub-resource failed retries it against the allele that already exists,
 	// rather than creating a second one.
 	const createdAllele = useRef(null);
@@ -44,7 +49,7 @@ export default function AlleleCreatePage() {
 		toastError,
 	});
 
-	const { isPending: allelePostRequestIsLoading, mutate: alleleMutate } = useMutation({
+	const { mutate: alleleMutate } = useMutation({
 		mutationFn: (allele) => {
 			return alleleService.createAllele(allele);
 		},
@@ -54,13 +59,16 @@ export default function AlleleCreatePage() {
 	// than the plain allele endpoint, because that one manages cross references and references from its payload and
 	// this page never carries them there - it would read their absence as an instruction to clear them. Neither
 	// endpoint writes gene associations.
-	const { isPending: allelePutRequestIsLoading, mutate: alleleUpdateMutate } = useMutation({
+	const { mutate: alleleUpdateMutate } = useMutation({
 		mutationFn: (allele) => {
 			return alleleService.saveAlleleDetail(allele);
 		},
 	});
 
 	const showSaveError = (error) => {
+		saveProgress.settle('allele', { isSuccess: false, message: errorMessageOf(error) });
+		saveProgress.skipRemaining();
+		saveProgress.finish();
 		const data = error?.response?.data;
 		toastError.current.show([
 			{ life: 7000, severity: 'error', summary: 'Page error: ', detail: errorMessageOf(error), sticky: false },
@@ -79,10 +87,23 @@ export default function AlleleCreatePage() {
 	// only when it differs from what this allele has stored, so saving again skips a list that already saved and
 	// writes one the curator has since changed or emptied.
 	const saveSubResources = async (allele, closeAfterSubmit) => {
-		const subResourceOutcomes = await saveDirtySubResources(allele?.id);
+		saveProgress.settle('allele', { isSuccess: true });
+		let subResourceOutcomes;
+		try {
+			subResourceOutcomes = await saveDirtySubResources(allele?.id, {
+				onStart: saveProgress.start,
+				onSettle: saveProgress.settle,
+			});
+		} catch (error) {
+			// Anything the save stopped before writing shows as not saved, and the overlay still closes.
+			saveProgress.skipRemaining();
+			saveProgress.finish();
+			throw error;
+		}
 		const failedSubResources = subResourceOutcomes.filter(({ outcome }) => !outcome.isSuccess);
 
 		if (failedSubResources.length > 0) {
+			saveProgress.finish();
 			// The form takes on the saved allele, so the fields carry the ids that saving again needs
 			// and an edit made while fixing the rows is sent as an update rather than dropped.
 			alleleDispatch({ type: 'SET', value: allele });
@@ -101,16 +122,21 @@ export default function AlleleCreatePage() {
 		createdAllele.current = null;
 
 		if (closeAfterSubmit) {
-			navigate(`/allele/${getIdentifier(allele)}`);
+			// The curator sees everything saved before the page moves on; saving again meanwhile is not offered.
+			setIsLeaving(true);
+			if (await saveProgress.finish()) navigate(`/allele/${getIdentifier(allele)}`);
 		} else {
 			alleleDispatch({ type: 'RESET' });
 			resetSubResources();
+			saveProgress.finish();
 		}
 	};
 
 	const handleSubmit = (event, closeAfterSubmit) => {
 		event.preventDefault();
 		alleleDispatch({ type: 'SUBMIT' });
+		saveProgress.begin([{ key: 'allele', label: 'Allele' }, ...dirtySubResourceSteps]);
+		saveProgress.start('allele');
 
 		if (createdAllele.current) {
 			alleleUpdateMutate(alleleState.allele, {
@@ -162,9 +188,7 @@ export default function AlleleCreatePage() {
 		<>
 			<Toast ref={toastError} position="top-left" />
 			<Toast ref={toastSuccess} position="top-right" />
-			<LoadingOverlay
-				isLoading={!!allelePostRequestIsLoading || !!allelePutRequestIsLoading || subResourcesAreSaving}
-			/>
+			<SaveProgressOverlay isOpen={saveProgress.isOpen} steps={saveProgress.steps} />
 			<LoadingOverlay isLoading={duplicateSourceIsLoading} message="Loading allele to duplicate..." />
 			<ErrorBoundary>
 				<StickyHeader>
@@ -194,13 +218,20 @@ export default function AlleleCreatePage() {
 							<Button label="Cancel" icon="pi pi-times" className="p-button-text" onClick={handleCancel} />
 						</SplitterPanel>
 						<SplitterPanel size={50} className="flex justify-content-end mr-5 py-3">
-							<Button label="Save & Close" icon="pi pi-check" severity="success" onClick={handleSubmitAndClose} />
+							<Button
+								label="Save & Close"
+								icon="pi pi-check"
+								severity="success"
+								onClick={handleSubmitAndClose}
+								disabled={saveProgress.isSaving || isLeaving}
+							/>
 							<Button
 								label="Save & Add Another"
 								icon="pi pi-check"
 								severity="success"
 								className="ml-2"
 								onClick={handleSubmitAndAddAnother}
+								disabled={saveProgress.isSaving || isLeaving}
 							/>
 						</SplitterPanel>
 					</Splitter>
