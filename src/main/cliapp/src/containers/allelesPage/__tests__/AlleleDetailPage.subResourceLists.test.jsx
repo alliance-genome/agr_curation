@@ -2,6 +2,7 @@ import React from 'react';
 import { act, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { alleleRejection, FORM_LOAD_WAIT, markAlleleExtinct, renderInRouter, storedAllele } from './alleleTestUtils';
+import { getCellByHeader } from './alleleFormTestUtils';
 
 const { getAllele, saveAlleleDetail, getRows, replaceRows } = vi.hoisted(() => ({
 	getAllele: vi.fn(),
@@ -181,7 +182,7 @@ describe.each(LISTS)('<AlleleDetailPage /> $title', { timeout: 60000 }, ({ path,
 		await renderPage();
 		await waitForRowsToLoad();
 
-		const displayText = tableRows()[1].querySelector('input#displayText');
+		const displayText = getCellByHeader(sectionOf(title), 'Display Text', 1).querySelector('input');
 		await user.type(displayText, 'x');
 		expect(within(sectionOf(title)).getByText('Pending Edits!')).toBeInTheDocument();
 
@@ -195,7 +196,7 @@ describe.each(LISTS)('<AlleleDetailPage /> $title', { timeout: 60000 }, ({ path,
 		await renderPage();
 		await waitForRowsToLoad();
 
-		const displayText = tableRows()[1].querySelector('input#displayText');
+		const displayText = getCellByHeader(sectionOf(title), 'Display Text', 1).querySelector('input');
 		await user.type(displayText, 'x');
 		expect(within(sectionOf(title)).getByText('Pending Edits!')).toBeInTheDocument();
 		await user.type(displayText, '{Backspace}');
