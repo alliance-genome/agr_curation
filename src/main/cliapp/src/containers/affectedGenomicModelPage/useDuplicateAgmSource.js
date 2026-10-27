@@ -46,7 +46,7 @@ export const useDuplicateAgmSource = ({ agmDispatch, toastError }) => {
 				life: 7000,
 				severity: 'error',
 				summary: 'Page error: ',
-				detail: `Could not load AGM ${sourceIdentifier} to duplicate`,
+				detail: `Could not load AGM ${sourceIdentifier} to clone`,
 				sticky: false,
 			});
 			return;

@@ -69,7 +69,7 @@ describe('<AlleleCreatePage /> duplicating cross references', { timeout: 30000 }
 		await waitFor(() => expect(container.querySelector('#displayText')).toHaveValue('abc-1'), FORM_LOAD_WAIT);
 		await waitFor(() => expect(getCrossReferencesForAllele).toHaveBeenCalledWith(1), FORM_LOAD_WAIT);
 		await waitFor(
-			() => expect(screen.queryByText('Loading allele to duplicate...')).not.toBeInTheDocument(),
+			() => expect(screen.queryByText('Loading allele to clone...')).not.toBeInTheDocument(),
 			FORM_LOAD_WAIT
 		);
 

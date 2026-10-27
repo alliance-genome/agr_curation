@@ -92,7 +92,7 @@ export default function AffectedGenomicModelCreatePage() {
 					// is its minted AGRKB curie.
 					navigate(`/agm/${getIdentifier(agm)}`);
 				} else {
-					// The form keeps the saved AGM's values, copied as Duplicate copies them, so the
+					// The form keeps the saved AGM's values, copied as Clone copies them, so the
 					// next AGM can be entered as a small change to this one.
 					agmDispatch({ type: 'SET', value: buildDuplicateAgm(agm) });
 				}
@@ -119,7 +119,7 @@ export default function AffectedGenomicModelCreatePage() {
 			<Toast ref={toastError} position="top-left" />
 			<Toast ref={toastSuccess} position="top-right" />
 			<LoadingOverlay isLoading={!!isPending} />
-			<LoadingOverlay isLoading={duplicateSourceIsLoading} message="Loading AGM to duplicate..." />
+			<LoadingOverlay isLoading={duplicateSourceIsLoading} message="Loading AGM to clone..." />
 			<ErrorBoundary>
 				<StickyHeader>
 					<Splitter className="bg-primary-reverse border-none lg:h-5rem" gutterSize={0}>

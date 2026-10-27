@@ -127,7 +127,7 @@ export default function AlleleCreatePage() {
 			setIsLeaving(true);
 			if (await saveProgress.finish()) navigate(`/allele/${getIdentifier(allele)}`);
 		} else {
-			// The form keeps the saved allele's values and rows, copied as Duplicate copies them, so the next allele
+			// The form keeps the saved allele's values and rows, copied as Clone copies them, so the next allele
 			// can be entered as a small change to this one.
 			alleleDispatch({ type: 'SET', value: buildDuplicateAllele(allele) });
 			try {
@@ -199,7 +199,7 @@ export default function AlleleCreatePage() {
 			<Toast ref={toastError} position="top-left" />
 			<Toast ref={toastSuccess} position="top-right" />
 			<SaveProgressOverlay isOpen={saveProgress.isOpen} steps={saveProgress.steps} />
-			<LoadingOverlay isLoading={duplicateSourceIsLoading} message="Loading allele to duplicate..." />
+			<LoadingOverlay isLoading={duplicateSourceIsLoading} message="Loading allele to clone..." />
 			<ErrorBoundary>
 				<StickyHeader>
 					<Splitter className="bg-primary-reverse border-none lg:h-5rem" gutterSize={0}>

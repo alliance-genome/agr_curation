@@ -65,10 +65,7 @@ const renderPage = () => renderInRouter(<AlleleCreatePage />, DUPLICATE_SOURCE_E
 const waitForSourceToLoad = async (container) => {
 	await waitFor(() => expect(container.querySelector('#displayText')).toHaveValue('abc-1'), FORM_LOAD_WAIT);
 	await waitFor(() => expect(getRelatedNotesForAllele).toHaveBeenCalledWith(1), FORM_LOAD_WAIT);
-	await waitFor(
-		() => expect(screen.queryByText('Loading allele to duplicate...')).not.toBeInTheDocument(),
-		FORM_LOAD_WAIT
-	);
+	await waitFor(() => expect(screen.queryByText('Loading allele to clone...')).not.toBeInTheDocument(), FORM_LOAD_WAIT);
 };
 
 // Save & Add Another starts the next allele once the save progress overlay closes.
