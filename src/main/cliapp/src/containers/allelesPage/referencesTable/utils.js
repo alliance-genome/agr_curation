@@ -4,7 +4,8 @@ import { addDataKey, generateCrossRefSearchField, getShortCitation, sortedCuries
  * Readies references for the references table: each gets its own `dataKey`, the cross reference
  * curies its filter matches on, and a `shortCitation` whichever shape it arrived in.
  *
- * @param {Object[]} references references as the API or the reference search returns them
+ * @param {Object[]} references references as the API or the reference search returns them, or as the table
+ *   holds them
  * @returns {Object[]} copies ready for the table; the argument is not modified
  */
 export const prepareReferences = (references) =>

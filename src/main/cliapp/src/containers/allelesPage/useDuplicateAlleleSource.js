@@ -10,7 +10,7 @@ import { buildDuplicateAllele, capitalize } from './utils';
 /**
  * Fills the allele create form from the allele named by the `from` search parameter, which the Duplicate
  * buttons set. The form takes the source allele once per page load; after that it holds the curator's
- * edits, and a clear or a save and add another starts from a blank form.
+ * edits, and a clear starts from a blank form.
  *
  * @param {Object} params
  * @param {Function} params.alleleDispatch - the create form's reducer dispatch

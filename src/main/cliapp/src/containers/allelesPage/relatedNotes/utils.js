@@ -51,7 +51,7 @@ export const haveSameRelatedNotes = sameRowsBy((note) => JSON.stringify([note.id
  * Copies of an allele's related notes for a new allele. Each copy loses its id and audit fields, so it is created
  * afresh.
  *
- * @param {Object[]} [notes] notes as the API returns them
+ * @param {Object[]} [notes] notes as the API returns them or as the table holds them
  * @returns {Object[]} rows ready for the table, each with its own `dataKey`
  */
 export const buildRelatedNoteCopies = (notes) => prepareRelatedNotes((notes ?? []).map(copyRow));
