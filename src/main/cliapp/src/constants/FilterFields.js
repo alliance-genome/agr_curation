@@ -356,6 +356,22 @@ export const FIELD_SETS = Object.freeze({
 		filterName: 'htpExpressionDatasetAnnotationNumberOfChannelsFilter',
 		fields: ['numberOfChannels'],
 	},
+	htpExpressionDatasetAnnotationExpressionDatasetFieldSet: {
+		filterName: 'htpExpressionDatasetAnnotationExpressionDatasetFilter',
+		fields: ['htpExpressionDataset.curie'],
+	},
+	htpExpressionDatasetAnnotationSubseriesFieldSet: {
+		filterName: 'htpExpressionDatasetAnnotationSubseriesFilter',
+		fields: ['subSeries.curie'],
+	},
+	htpExpressionDatasetAnnotationRelatedNotesFieldSet: {
+		filterName: 'htpExpressionDatasetAnnotationRelatedNotesFilter',
+		fields: ['relatedNote.freeText'],
+	},
+	htpExpressionDatasetAnnotationLaboratoryOfOriginFieldSet: {
+		filterName: 'htpExpressionDatasetAnnotationLaboratoryOfOriginFilter',
+		fields: ['laboratoryOfOrigin'],
+	},
 	sequenceTargetingReagentTargetedGenesFieldSet: {
 		filterName: 'sequenceTargetingReagentTargetedGenesFilter',
 		fields: [
@@ -1579,6 +1595,22 @@ export const FILTER_CONFIGS = Object.freeze({
 	htpExpressionDatasetAnnotationNumberOfChannelsFilterConfig: {
 		filterComponentType: 'input',
 		fieldSets: [FIELD_SETS.htpExpressionDatasetAnnotationNumberOfChannelsFieldSet],
+	},
+	htpExpressionDatasetAnnotationExpressionDatasetFilterConfig: {
+		filterComponentType: 'input',
+		fieldSets: [FIELD_SETS.htpExpressionDatasetAnnotationExpressionDatasetFieldSet],
+	},
+	htpExpressionDatasetAnnotationSubseriesFilterConfig: {
+		filterComponentType: 'input',
+		fieldSets: [FIELD_SETS.htpExpressionDatasetAnnotationSubseriesFieldSet],
+	},
+	htpExpressionDatasetAnnotationRelatedNotesFilterConfig: {
+		filterComponentType: 'input',
+		fieldSets: [FIELD_SETS.htpExpressionDatasetAnnotationRelatedNotesFieldSet],
+	},
+	htpExpressionDatasetAnnotationLaboratoryOfOriginFilterConfig: {
+		filterComponentType: 'input',
+		fieldSets: [FIELD_SETS.htpExpressionDatasetAnnotationLaboratoryOfOriginFieldSet],
 	},
 	sequenceTargetingReagentTargetedGenesFilterConfig: {
 		filterComponentType: 'input',
