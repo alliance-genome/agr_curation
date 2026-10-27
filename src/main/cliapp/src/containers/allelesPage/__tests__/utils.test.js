@@ -1,9 +1,12 @@
 import {
 	buildCreatePayload,
 	buildDuplicateAllele,
+	capitalize,
 	generateCrossRefSearchField,
 	getPendingSingleValueFields,
 	processErrors,
+	sameRowsBy,
+	sortedCuries,
 } from '../utils';
 
 describe('buildCreatePayload', () => {
@@ -166,12 +169,20 @@ describe('buildDuplicateAllele', () => {
 			(field) => expect(duplicate).not.toHaveProperty(field)
 		);
 		Object.keys(audit).forEach((field) => expect(duplicate).not.toHaveProperty(field));
-		expect(duplicate.alleleSecondaryIds).toBeUndefined();
 		expect(duplicate).not.toHaveProperty('alleleVariantAssociations');
 		expect(duplicate).not.toHaveProperty('alleleConstructAssociations');
-		// References and gene associations are written through their own sub-resources and copied separately.
-		expect(duplicate).not.toHaveProperty('references');
-		expect(duplicate).not.toHaveProperty('alleleGeneAssociations');
+		// The lists written through their own sub-resources are copied separately.
+		[
+			'references',
+			'relatedNotes',
+			'alleleGeneAssociations',
+			'alleleSynonyms',
+			'alleleSecondaryIds',
+			'alleleMutationTypes',
+			'alleleInheritanceModes',
+			'alleleFunctionalImpacts',
+			'alleleNomenclatureEvents',
+		].forEach((field) => expect(duplicate).not.toHaveProperty(field));
 		expect(duplicate.obsolete).toBe(false);
 	});
 
@@ -185,12 +196,6 @@ describe('buildDuplicateAllele', () => {
 		expect(duplicate.isExtinct).toBe(true);
 		expect(duplicate.alleleSymbol).toEqual({ displayText: 'abc-1', formatText: 'abc-1' });
 		expect(duplicate.alleleFullName).toEqual({ displayText: 'full name', formatText: 'full name' });
-		expect(duplicate.alleleSynonyms).toEqual([{ displayText: 'synonym' }]);
-		expect(duplicate.relatedNotes).toEqual([{ freeText: 'a note' }]);
-		expect(duplicate.alleleMutationTypes).toEqual([{ mutationTypes: [{ curie: 'SO:0001' }] }]);
-		expect(duplicate.alleleInheritanceModes).toEqual([{ inheritanceMode: { name: 'dominant' } }]);
-		expect(duplicate.alleleFunctionalImpacts).toEqual([{ functionalImpacts: [{ name: 'amorph' }] }]);
-		expect(duplicate.alleleNomenclatureEvents).toEqual([{ nomenclatureEvent: { name: 'symbol_updated' } }]);
 		expect(duplicate.alleleGermlineTransmissionStatus).toEqual({ germlineTransmissionStatus: { name: 'cell_line' } });
 		expect(duplicate.alleleDatabaseStatus).toEqual({ databaseStatus: { name: 'approved' } });
 	});
@@ -201,20 +206,8 @@ describe('buildDuplicateAllele', () => {
 		expect(duplicate.taxon).toEqual({ curie: '' });
 		expect(duplicate.inCollection).toEqual({ name: '' });
 		expect(duplicate.alleleSymbol).toBeNull();
-		expect(duplicate.alleleSynonyms).toBeUndefined();
+		expect(duplicate).not.toHaveProperty('relatedNotes');
 		expect(duplicate.alleleGeneAssociations).toBeUndefined();
-	});
-
-	it('Leaves a list with no rows unset, as the detail endpoint does', () => {
-		const duplicate = buildDuplicateAllele({
-			alleleFunctionalImpacts: [],
-			alleleGeneAssociations: [],
-			alleleMutationTypes: [{ id: 10, mutationTypes: [{ curie: 'SO:0001' }] }],
-		});
-
-		expect(duplicate.alleleFunctionalImpacts).toBeUndefined();
-		expect(duplicate.alleleGeneAssociations).toBeUndefined();
-		expect(duplicate.alleleMutationTypes).toEqual([{ mutationTypes: [{ curie: 'SO:0001' }] }]);
 	});
 
 	it('Does not mutate the allele it is given', () => {
@@ -360,5 +353,34 @@ describe('generateCrossRefSearchField', () => {
 
 	it('is empty for a reference without cross references, which the API sends without the key', () => {
 		expect(generateCrossRefSearchField({ curie: 'AGRKB:101' })).toBe('');
+	});
+});
+
+describe('capitalize', () => {
+	it('Puts the first letter in upper case and leaves the rest', () => {
+		expect(capitalize('gene associations')).toEqual('Gene associations');
+	});
+});
+
+describe('sortedCuries', () => {
+	it('Sorts the curies so lists compare whatever their order', () => {
+		expect(sortedCuries([{ curie: 'AGRKB:2' }, { curie: 'AGRKB:1' }])).toEqual(['AGRKB:1', 'AGRKB:2']);
+	});
+
+	it('Gives none when there is no list', () => {
+		expect(sortedCuries(undefined)).toEqual([]);
+	});
+});
+
+describe('sameRowsBy', () => {
+	const sameNames = sameRowsBy((row) => row.name);
+
+	it('Compares the lists row by row by the given value', () => {
+		expect(sameNames([{ name: 'a', id: 1 }], [{ name: 'a', id: 2 }])).toBe(true);
+		expect(sameNames([{ name: 'a' }, { name: 'b' }], [{ name: 'b' }, { name: 'a' }])).toBe(false);
+	});
+
+	it('Finds lists of different lengths different', () => {
+		expect(sameNames([{ name: 'a' }], [{ name: 'a' }, { name: 'a' }])).toBe(false);
 	});
 });

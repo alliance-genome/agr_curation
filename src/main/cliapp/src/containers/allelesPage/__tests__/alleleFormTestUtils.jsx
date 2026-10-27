@@ -1,5 +1,8 @@
 import { act, fireEvent, screen } from '@testing-library/react';
 import { useAlleleReducer } from '../useAlleleReducer';
+import { useAlleleSubResource } from '../useAlleleSubResource';
+import { ALLELE_SUB_RESOURCES } from '../constants';
+import { SubResourcesProvider } from '../../../components/SubResourcesContext';
 import { renderWithClient } from '../../../tools/jest/utils';
 
 /**
@@ -28,6 +31,41 @@ export const renderAlleleForm = (Form, allele) => {
 		...result,
 		getState: () => handle.state,
 		dispatch: (action) => act(() => handle.dispatch(action)),
+	};
+};
+
+/**
+ * Renders an allele section that reads and writes one of the allele's sub-resource lists, holding `rows` the way
+ * the detail page holds them once read. These sections have no row-save step, so the list's rows are what the
+ * page saves; tests read them back to see what a curator's edit will save.
+ *
+ * @param {Function} Form - the section component
+ * @param {keyof typeof ALLELE_SUB_RESOURCES} type - which list
+ * @param {object[]} rows - the rows to hold, as the API returns them
+ * @returns {object} the render result, plus `getRows()` for the list's current rows, `getErrorMessages()` for
+ *   its rows' errors, and `setErrorMessages(errors)` to mark rows' errors, keyed by `dataKey`, as a rejected save
+ *   does
+ */
+export const renderSubResourceForm = (Form, type, rows) => {
+	const handle = {};
+	const Harness = () => {
+		const subResource = useAlleleSubResource(type);
+		handle.subResource = subResource;
+		return (
+			<SubResourcesProvider value={{ [type]: subResource }}>
+				<Form />
+			</SubResourcesProvider>
+		);
+	};
+
+	const result = renderWithClient(<Harness />);
+	act(() => handle.subResource.setRows(ALLELE_SUB_RESOURCES[type].prepare(rows)));
+
+	return {
+		...result,
+		getRows: () => handle.subResource.rows,
+		getErrorMessages: () => handle.subResource.errorMessages,
+		setErrorMessages: (errorMessages) => act(() => handle.subResource.setErrorMessages(errorMessages)),
 	};
 };
 

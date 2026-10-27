@@ -1,9 +1,10 @@
-import { useMemo, useRef } from 'react';
+import { useRef } from 'react';
 import { Button } from 'primereact/button';
-import { Toast } from 'primereact/toast';
-import { Message } from 'primereact/message';
 import { FormTableWrapper } from '../../../components/FormTableWrapper';
 import { useSubResource } from '../../../components/SubResourcesContext';
+import { useSubResourceRows } from '../../../hooks/useSubResourceRows';
+import { SubResourceSaveButton } from '../SubResourceSaveButton';
+import { SubResourceLoadError } from '../SubResourceLoadError';
 import { CrossReferencesTable } from './CrossReferencesTable';
 import { applyCrossReferenceFieldChange, buildNewCrossReference } from './utils';
 
@@ -18,98 +19,45 @@ import { applyCrossReferenceFieldChange, buildNewCrossReference } from './utils'
  * @param {'detail'|'create'} [props.mode]
  */
 export const CrossReferencesForm = ({ mode = 'detail' }) => {
-	const { crossReferences, setCrossReferences, errorMessages, isLoading, loadError, isSaving, isDirty, save } =
-		useSubResource('crossReferences');
+	const subResource = useSubResource('crossReferences');
+	const { rows: crossReferences, errorMessages, isDirty } = subResource;
+	const { editingRows, addRow, updateRow, deletionHandler, onRowEditChange } = useSubResourceRows(subResource);
 	const tableRef = useRef(null);
-	const toast = useRef(null);
 	const isDetail = mode === 'detail';
 
-	const editingRows = useMemo(
-		() => Object.fromEntries(crossReferences.map((crossReference) => [crossReference.dataKey, true])),
-		[crossReferences]
-	);
-
-	const onRowEditChange = () => {
-		return null;
-	};
-
 	const onFieldChange = (dataKey, field, value) => {
-		setCrossReferences((previous) =>
-			previous.map((crossReference) =>
-				crossReference.dataKey === dataKey
-					? applyCrossReferenceFieldChange(crossReference, field, value)
-					: crossReference
-			)
-		);
+		updateRow(dataKey, (crossReference) => applyCrossReferenceFieldChange(crossReference, field, value));
 	};
 
 	const createNewCrossReferenceHandler = (event) => {
 		event.preventDefault();
-		setCrossReferences((previous) => [...previous, buildNewCrossReference()]);
-	};
-
-	const deletionHandler = (event, dataKey) => {
-		event.preventDefault();
-		setCrossReferences((previous) => previous.filter((crossReference) => crossReference.dataKey !== dataKey));
-	};
-
-	const saveHandler = async (event) => {
-		event.preventDefault();
-		const outcome = await save();
-
-		if (outcome.isSuccess) {
-			toast.current.show({ severity: 'success', summary: 'Successful', detail: 'Cross References Saved' });
-		} else {
-			toast.current.show([
-				{ life: 7000, severity: 'error', summary: 'Cross references: ', detail: outcome.message, sticky: false },
-			]);
-		}
+		addRow(buildNewCrossReference());
 	};
 
 	return (
-		<>
-			<Toast ref={toast} position="top-right" />
-			<FormTableWrapper
-				table={
-					<CrossReferencesTable
-						crossReferences={crossReferences}
-						editingRows={editingRows}
-						onRowEditChange={onRowEditChange}
-						tableRef={tableRef}
-						errorMessages={errorMessages}
-						deletionHandler={deletionHandler}
-						onFieldChange={onFieldChange}
-						showObsolete={isDetail}
-					/>
-				}
-				tableName="Cross References"
-				showTable={crossReferences.length > 0}
-				isPending={isDetail && isDirty}
-				button={
-					<div className="flex gap-2">
-						<Button label="Add Cross Reference" onClick={createNewCrossReferenceHandler} className="p-button-text" />
-						{isDetail && (
-							<Button
-								label="Save Cross References"
-								icon={isSaving ? 'pi pi-spin pi-spinner' : 'pi pi-check'}
-								onClick={saveHandler}
-								// Saving replaces the stored list with what is on screen, so it has to wait for
-								// the read. Saving a table that is still loading, or that failed to load, would
-								// submit an empty list and delete every cross reference the allele has. With nothing
-								// edited there is nothing to save.
-								disabled={!isDirty || isSaving || isLoading || Boolean(loadError)}
-								severity="success"
-							/>
-						)}
-						{loadError && (
-							<Message
-								severity="error"
-								text="Could not load these cross references, so they cannot be saved. Reload the page to try again."
-							/>
-						)}
-					</div>
-				}
-			/>
-		</>
+		<FormTableWrapper
+			table={
+				<CrossReferencesTable
+					crossReferences={crossReferences}
+					editingRows={editingRows}
+					onRowEditChange={onRowEditChange}
+					tableRef={tableRef}
+					errorMessages={errorMessages}
+					deletionHandler={deletionHandler}
+					onFieldChange={onFieldChange}
+					showObsolete={isDetail}
+				/>
+			}
+			tableName="Cross References"
+			showTable={crossReferences.length > 0}
+			isPending={isDetail && isDirty}
+			titleAction={isDetail && <SubResourceSaveButton type="crossReferences" />}
+			button={
+				<div className="flex gap-2">
+					<Button label="Add Cross Reference" onClick={createNewCrossReferenceHandler} className="p-button-text" />
+					<SubResourceLoadError type="crossReferences" />
+				</div>
+			}
+		/>
 	);
 };

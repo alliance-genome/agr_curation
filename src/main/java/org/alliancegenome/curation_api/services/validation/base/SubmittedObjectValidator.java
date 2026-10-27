@@ -17,6 +17,15 @@ public class SubmittedObjectValidator<E extends SubmittedObject> extends Audited
 	}
 
 	public E validateSubmittedObjectFields(E uiEntity, E dbEntity, String noteTypeVocabularyTermSet, boolean requireModIdentifier) {
+		return validateSubmittedObjectFields(uiEntity, dbEntity, noteTypeVocabularyTermSet, requireModIdentifier, true);
+	}
+
+	/**
+	 * @param manageRelatedNotes whether the calling endpoint's JSON view carries relatedNotes. An endpoint whose view
+	 *        omits them leaves the stored ones as they are; they are written through a related notes sub-resource of
+	 *        the entity instead.
+	 */
+	public E validateSubmittedObjectFields(E uiEntity, E dbEntity, String noteTypeVocabularyTermSet, boolean requireModIdentifier, boolean manageRelatedNotes) {
 		Boolean newEntity = false;
 		if (dbEntity.getId() == null) {
 			newEntity = true;
@@ -39,15 +48,17 @@ public class SubmittedObjectValidator<E extends SubmittedObject> extends Audited
 		CrossReference dataProviderXref = validateDataProviderCrossReference(uiEntity.getDataProviderCrossReference(), dbEntity.getDataProviderCrossReference());
 		dbEntity.setDataProviderCrossReference(dataProviderXref);
 		
-		List<Note> relatedNotes = validateRelatedNotes(uiEntity.getRelatedNotes(), noteTypeVocabularyTermSet);
-		if (dbEntity.getRelatedNotes() != null) {
-			dbEntity.getRelatedNotes().clear();
-		}
-		if (relatedNotes != null) {
-			if (dbEntity.getRelatedNotes() == null) {
-				dbEntity.setRelatedNotes(new ArrayList<>());
+		if (manageRelatedNotes) {
+			List<Note> relatedNotes = validateRelatedNotes(uiEntity.getRelatedNotes(), noteTypeVocabularyTermSet);
+			if (dbEntity.getRelatedNotes() != null) {
+				dbEntity.getRelatedNotes().clear();
 			}
-			dbEntity.getRelatedNotes().addAll(relatedNotes);
+			if (relatedNotes != null) {
+				if (dbEntity.getRelatedNotes() == null) {
+					dbEntity.setRelatedNotes(new ArrayList<>());
+				}
+				dbEntity.getRelatedNotes().addAll(relatedNotes);
+			}
 		}
 		
 		return dbEntity;

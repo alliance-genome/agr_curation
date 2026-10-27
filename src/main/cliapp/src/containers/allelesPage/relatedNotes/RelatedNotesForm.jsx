@@ -1,13 +1,33 @@
 import { Button } from 'primereact/button';
 import { FormTableWrapper } from '../../../components/FormTableWrapper';
+import { useSubResource } from '../../../components/SubResourcesContext';
+import { useSubResourceRows } from '../../../hooks/useSubResourceRows';
+import { SubResourceSaveButton } from '../SubResourceSaveButton';
+import { SubResourceLoadError } from '../SubResourceLoadError';
 import { RelatedNotesFormTable } from '../relatedNotes/RelatedNotesFormTable';
 import { useRef } from 'react';
 import { addDataKey } from '../utils';
 
-export const RelatedNotesForm = ({ state, dispatch }) => {
+/**
+ * The allele detail and create pages' related notes section.
+ *
+ * Its rows are saved by the page along with the allele, and on the detail page also by this section's own
+ * button, which saves them alone. Related notes are written through their own sub-resource rather than in the
+ * allele payload, so either save makes that call itself.
+ *
+ * @param {Object} props
+ * @param {'detail'|'create'} [props.mode]
+ */
+export const RelatedNotesForm = ({ mode = 'detail' }) => {
+	const subResource = useSubResource('relatedNotes');
+	const { rows: relatedNotes, errorMessages, isDirty } = subResource;
+	const { editingRows, addRow, updateRow, deletionHandler, onRowEditChange } = useSubResourceRows(subResource, {
+		prepend: true,
+	});
 	const tableRef = useRef(null);
-	const entityType = 'relatedNotes';
-	const relatedNotes = structuredClone(state.allele?.[entityType]);
+	const isDetail = mode === 'detail';
+
+	const changeRow = (dataKey, changes) => updateRow(dataKey, (note) => ({ ...note, ...changes }));
 
 	const createNewRelatedNoteHandler = (e) => {
 		e.preventDefault();
@@ -20,68 +40,28 @@ export const RelatedNotesForm = ({ state, dispatch }) => {
 		};
 
 		addDataKey(newRelatedNote);
-
-		dispatch({
-			type: 'ADD_ROW',
-			row: newRelatedNote,
-			entityType: entityType,
-		});
-	};
-
-	const onRowEditChange = (e) => {
-		return null;
+		addRow(newRelatedNote);
 	};
 
 	const noteTypeOnChangeHandler = (props, event) => {
 		props.editorCallback(event.target.value);
-		dispatch({
-			type: 'EDIT_ROW',
-			entityType: entityType,
-			index: props.rowIndex,
-			field: 'noteType',
-			value: event.target.value,
-		});
+		changeRow(props.rowData?.dataKey, { noteType: event.target.value });
 	};
 
 	const internalOnChangeHandler = (props, event) => {
 		props.editorCallback(event.target.value?.name);
-		dispatch({
-			type: 'EDIT_ROW',
-			entityType: entityType,
-			index: props.rowIndex,
-			field: 'internal',
-			value: event.target?.value?.name,
-		});
+		changeRow(props.rowData?.dataKey, { internal: event.target?.value?.name });
 	};
 
 	const referencesOnChangeHandler = (event, setFieldValue, props) => {
 		//updates value in table input box
 		setFieldValue(event.target.value);
-		dispatch({
-			type: 'EDIT_ROW',
-			entityType: entityType,
-			index: props.rowIndex,
-			field: 'references',
-			value: event.target.value,
-		});
+		changeRow(props.rowData?.dataKey, { references: event.target.value });
 	};
 
+	// The text editor reports the row by its index in the table, which shows the rows in the order held.
 	const textOnChangeHandler = (rowIndex, event, field) => {
-		dispatch({
-			type: 'EDIT_ROW',
-			entityType: entityType,
-			index: rowIndex,
-			field: field,
-			value: event.target.value,
-		});
-	};
-
-	const deletionHandler = (e, dataKey) => {
-		e.preventDefault();
-		const updatedErrorMessages = structuredClone(state.entityStates[entityType].errorMessages);
-		delete updatedErrorMessages[dataKey];
-		dispatch({ type: 'DELETE_ROW', entityType: entityType, dataKey });
-		dispatch({ type: 'UPDATE_TABLE_ERROR_MESSAGES', entityType: entityType, errorMessages: updatedErrorMessages });
+		changeRow(relatedNotes[rowIndex]?.dataKey, { [field]: event.target.value });
 	};
 
 	return (
@@ -89,11 +69,11 @@ export const RelatedNotesForm = ({ state, dispatch }) => {
 			table={
 				<RelatedNotesFormTable
 					relatedNotes={relatedNotes}
-					editingRows={state.entityStates[entityType].editingRows}
+					editingRows={editingRows}
 					onRowEditChange={onRowEditChange}
 					tableRef={tableRef}
 					deletionHandler={deletionHandler}
-					errorMessages={state.entityStates[entityType].errorMessages}
+					errorMessages={errorMessages}
 					noteTypeOnChangeHandler={noteTypeOnChangeHandler}
 					textOnChangeHandler={textOnChangeHandler}
 					internalOnChangeHandler={internalOnChangeHandler}
@@ -101,8 +81,15 @@ export const RelatedNotesForm = ({ state, dispatch }) => {
 				/>
 			}
 			tableName="Related Notes"
-			showTable={state.entityStates[entityType].show}
-			button={<Button label="Add Related Note" onClick={createNewRelatedNoteHandler} className="w-4 p-button-text" />}
+			showTable={relatedNotes.length > 0}
+			isPending={isDetail && isDirty}
+			titleAction={isDetail && <SubResourceSaveButton type="relatedNotes" />}
+			button={
+				<>
+					<Button label="Add Related Note" onClick={createNewRelatedNoteHandler} className="w-4 p-button-text" />
+					<SubResourceLoadError type="relatedNotes" />
+				</>
+			}
 		/>
 	);
 };

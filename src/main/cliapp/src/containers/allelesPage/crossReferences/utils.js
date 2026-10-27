@@ -1,4 +1,4 @@
-import { addDataKey } from '../utils';
+import { addDataKey, copyRow, sameRowsBy } from '../utils';
 import { ResourceDescriptorService } from '../../../service/ResourceDescriptorService';
 
 /**
@@ -21,17 +21,6 @@ export const buildNewCrossReference = () => {
 	return crossReference;
 };
 
-// The fields a stored cross reference carries that belong to it alone, and so cannot be carried onto a copy.
-const DUPLICATE_DROPPED_FIELDS = [
-	'id',
-	'createdBy',
-	'updatedBy',
-	'dateCreated',
-	'dateUpdated',
-	'dbDateCreated',
-	'dbDateUpdated',
-];
-
 /**
  * Copies of an allele's cross references for a new allele. Each keeps its page, and so its resource
  * descriptor, and its internal flag, but not the curie and display name that identify the copied allele,
@@ -42,8 +31,7 @@ const DUPLICATE_DROPPED_FIELDS = [
  */
 export const buildDuplicateCrossReferences = (crossReferences) =>
 	(crossReferences ?? []).map((crossReference) => {
-		const copy = structuredClone(crossReference);
-		DUPLICATE_DROPPED_FIELDS.forEach((field) => delete copy[field]);
+		const copy = copyRow(crossReference);
 		copy.referencedCurie = '';
 		copy.displayName = '';
 		copy.obsolete = false;
@@ -118,6 +106,18 @@ export const seedResourceDescriptors = async (crossReferences) => {
 	});
 };
 
+/**
+ * Readies cross references for the cross references table: each is given its own `dataKey` in place, and
+ * the rows returned carry their full resource descriptors.
+ *
+ * @param {Object[]} crossReferences cross references as the API returns them
+ * @returns {Promise<Object[]>}
+ */
+export const prepareCrossReferences = async (crossReferences) => {
+	crossReferences.forEach(addDataKey);
+	return seedResourceDescriptors(crossReferences);
+};
+
 const DEFAULT_PAGE_NAME = 'default';
 
 // The curie a descriptor starts a row with: its prefix and the colon, ready for the local id.
@@ -181,11 +181,7 @@ const crossReferenceValue = (crossReference) =>
  * @param {Object[]} otherCrossReferences
  * @returns {boolean}
  */
-export const haveSameCrossReferences = (crossReferences, otherCrossReferences) =>
-	crossReferences.length === otherCrossReferences.length &&
-	crossReferences.every(
-		(crossReference, index) => crossReferenceValue(crossReference) === crossReferenceValue(otherCrossReferences[index])
-	);
+export const haveSameCrossReferences = sameRowsBy(crossReferenceValue);
 
 /**
  * Drops the fields the table keeps for itself, leaving what the API reads.

@@ -1,9 +1,7 @@
 import React from 'react';
-import { BrowserRouter } from 'react-router-dom';
 import { act, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { renderWithClient } from '../../../tools/jest/utils';
-import { alleleDetailData } from '../mockData/mockData.js';
+import { alleleRejection, FORM_LOAD_WAIT, markAlleleExtinct, renderInRouter, storedAllele } from './alleleTestUtils';
 
 const {
 	getAllele,
@@ -23,47 +21,19 @@ const {
 	replaceGeneAssociationsForAllele: vi.fn(),
 }));
 
-// BaseAuthService builds no client without a cognito token in local storage, so msw has nothing to
-// intercept here; the services are stubbed directly.
-vi.mock('../../../service/AlleleService', () => ({
-	AlleleService: class {
-		getAllele = getAllele;
-		saveAlleleDetail = saveAlleleDetail;
-	},
-}));
-
-vi.mock('../../../service/CrossReferenceService', () => ({
-	CrossReferenceService: class {
-		getCrossReferencesForAllele = getCrossReferencesForAllele;
-		replaceCrossReferencesForAllele = vi.fn(() => Promise.resolve({ data: { entities: [] } }));
-	},
-}));
-
-vi.mock('../../../service/ReferenceService', () => ({
-	ReferenceService: class {
-		getReferencesForAllele = getReferencesForAllele;
-		replaceReferencesForAllele = replaceReferencesForAllele;
-	},
-}));
-
-vi.mock('../../../service/AlleleGeneAssociationService', () => ({
-	AlleleGeneAssociationService: class {
-		getGeneAssociationsForAllele = getGeneAssociationsForAllele;
-		replaceGeneAssociationsForAllele = replaceGeneAssociationsForAllele;
-	},
-}));
-
-vi.mock('../../../service/SearchService', () => ({
-	SearchService: class {
-		search = vi.fn(() => Promise.resolve({ results: [], totalResults: 0 }));
-		find = vi.fn(() => Promise.resolve({ results: [], totalResults: 0 }));
-	},
-}));
+vi.mock('../../../service/AlleleService', async () =>
+	(await import('./alleleServiceMocks')).mockAlleleService({ getAllele, saveAlleleDetail })
+);
+vi.mock('../../../service/AlleleSubResourceService', async () =>
+	(await import('./alleleServiceMocks')).mockSubResourceService({
+		crossreferences: { get: getCrossReferencesForAllele },
+		references: { get: getReferencesForAllele, replace: replaceReferencesForAllele },
+		geneassociations: { get: getGeneAssociationsForAllele, replace: replaceGeneAssociationsForAllele },
+	})
+);
+vi.mock('../../../service/SearchService', async () => (await import('./alleleServiceMocks')).mockSearchService());
 
 const AlleleDetailPage = (await import('../AlleleDetailPage')).default;
-
-// The shared fixture carries no id, and the page reads and writes gene associations by the allele's id.
-const storedAllele = { ...alleleDetailData.entity, id: 4242 };
 
 const storedAssociations = [
 	{
@@ -79,32 +49,7 @@ const storedAssociations = [
 	},
 ];
 
-const alleleRejection = {
-	response: {
-		status: 400,
-		statusText: 'Bad Request',
-		data: { errorMessage: 'Could not update Allele', errorMessages: { taxon: 'Taxon is not valid' } },
-	},
-};
-
-const renderPage = () =>
-	renderWithClient(
-		<BrowserRouter>
-			<AlleleDetailPage />
-		</BrowserRouter>
-	);
-
-// An edit to the allele alone, so the page's Save has something to write.
-const markAlleleExtinct = async (user) => {
-	const isExtinctRow = screen.getByRole('heading', { name: 'Is Extinct' }).closest('.grid');
-	await user.click(isExtinctRow.querySelector('.p-dropdown'));
-	const panel = await waitFor(() => {
-		const openPanel = document.querySelector('.p-dropdown-panel');
-		expect(openPanel).not.toBeNull();
-		return openPanel;
-	});
-	await user.click(within(panel).getByText('true'));
-};
+const renderPage = () => renderInRouter(<AlleleDetailPage />);
 
 describe('<AlleleDetailPage /> gene associations', { timeout: 30000 }, () => {
 	beforeEach(() => {
@@ -132,7 +77,7 @@ describe('<AlleleDetailPage /> gene associations', { timeout: 30000 }, () => {
 	// The page reads the allele's gene associations once the allele has loaded, and refuses to save them until
 	// that read is done, so the tests wait for it as a curator would.
 	const waitForAssociationsToLoad = async () => {
-		await waitFor(() => expect(getGeneAssociationsForAllele).toHaveBeenCalledWith(4242), { timeout: 5000 });
+		await waitFor(() => expect(getGeneAssociationsForAllele).toHaveBeenCalledWith(storedAllele.id), FORM_LOAD_WAIT);
 		await act(async () => {
 			await new Promise((resolve) => setTimeout(resolve, 0));
 		});
@@ -162,7 +107,7 @@ describe('<AlleleDetailPage /> gene associations', { timeout: 30000 }, () => {
 		await user.click(screen.getByRole('button', { name: 'Save' }));
 
 		expect(await screen.findByText('Allele Saved')).toBeInTheDocument();
-		expect(replaceGeneAssociationsForAllele).toHaveBeenCalledWith(4242, [storedAssociations[1]]);
+		expect(replaceGeneAssociationsForAllele).toHaveBeenCalledWith(storedAllele.id, [storedAssociations[1]]);
 		expect(saveAlleleDetail.mock.calls[0][0]).not.toHaveProperty('alleleGeneAssociations');
 	});
 
@@ -260,7 +205,9 @@ describe('<AlleleDetailPage /> gene associations', { timeout: 30000 }, () => {
 		await user.click(screen.getByRole('button', { name: 'Save' }));
 
 		expect(
-			await screen.findByText('These gene associations have not been read, so they were not saved', { exact: false })
+			await screen.findByText('These gene associations have not been read, so they were not saved', {
+				exact: false,
+			})
 		).toBeInTheDocument();
 		expect(replaceGeneAssociationsForAllele).not.toHaveBeenCalled();
 	});
@@ -317,7 +264,7 @@ describe('<AlleleDetailPage /> gene associations', { timeout: 30000 }, () => {
 		await user.click(screen.getByRole('button', { name: /Save Gene Associations/ }));
 
 		expect(await screen.findByText('Gene Associations Saved')).toBeInTheDocument();
-		expect(replaceGeneAssociationsForAllele).toHaveBeenCalledWith(4242, [storedAssociations[1]]);
+		expect(replaceGeneAssociationsForAllele).toHaveBeenCalledWith(storedAllele.id, [storedAssociations[1]]);
 		expect(saveAlleleDetail).not.toHaveBeenCalled();
 		expect(replaceReferencesForAllele).not.toHaveBeenCalled();
 		expect(within(geneAssociationsSection()).queryByText('Pending Edits!')).not.toBeInTheDocument();

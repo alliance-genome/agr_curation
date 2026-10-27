@@ -11,7 +11,7 @@
  * but shifts when rows are added or deleted, so rows are addressed by `dataKey` instead.
  *
  * Knows nothing about where the rows came from or how they are stored. The caller
- * supplies `write`; see useAlleleFormStrategy for a reducer-backed example.
+ * supplies `write`; see useAGMFormStrategy for a reducer-backed example.
  *
  * @param {object[]} rows - the current rows, each carrying a `dataKey`
  * @param {object} [errors] - errors keyed `{[dataKey]: {[field]: error}}`

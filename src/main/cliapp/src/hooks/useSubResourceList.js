@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { errorMessageOf } from '../utils/utils';
 
 /**
  * Maps the API's index keyed row errors for a field onto the rows they belong to, so a table can
@@ -118,10 +119,7 @@ export const useSubResourceList = ({ ownerId, label, errorField, load, replace, 
 			} catch (error) {
 				const data = error?.response?.data;
 				setErrorMessages(mapErrorsToRows(data, errorField, rows));
-				return {
-					isSuccess: false,
-					message: data?.errorMessage ?? `${error?.response?.status} ${error?.response?.statusText}`,
-				};
+				return { isSuccess: false, message: errorMessageOf(error) };
 			} finally {
 				setIsSaving(false);
 			}

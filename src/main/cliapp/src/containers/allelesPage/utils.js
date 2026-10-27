@@ -48,6 +48,28 @@ export const addDataKey = (entity) => {
 };
 
 /**
+ * @param {string} text such as a sub-resource's label
+ * @returns {string} the text with its first letter in upper case, for the start of a message
+ */
+export const capitalize = (text) => `${text.charAt(0).toUpperCase()}${text.slice(1)}`;
+
+/**
+ * @param {Object[]} [entities]
+ * @returns {string[]} the entities' curies in sorted order, to compare lists by whatever order they are in; none
+ *   when there is no list
+ */
+export const sortedCuries = (entities) =>
+	Array.isArray(entities) ? entities.map((entity) => entity?.curie).sort() : [];
+
+/**
+ * @param {(row: Object) => string} valueOf a row's value to compare by
+ * @returns {(rows: Object[], otherRows: Object[]) => boolean} whether two lists hold rows of the same value,
+ *   row by row
+ */
+export const sameRowsBy = (valueOf) => (rows, otherRows) =>
+	rows.length === otherRows.length && rows.every((row, index) => valueOf(row) === valueOf(otherRows[index]));
+
+/**
  * An empty allele symbol, ready to be edited in the symbol table.
  *
  * @returns {Object} a symbol with blank text fields and no name type
@@ -105,21 +127,17 @@ export const copyRow = (row) => {
 	return copy;
 };
 
-const copyRows = (rows) => (rows?.length ? rows.map(copyRow) : undefined);
-
 /**
  * A new allele carrying the fields of a stored one that the create form edits, for the create page to
  * start from.
  *
- * Left behind: everything that identifies the stored allele (its ids and secondary IDs), its data
- * provider and audit fields, and the variant and construct associations the form does not edit. Cross
- * references, references and gene associations are written through their own sub-resources and copied
- * separately; see buildDuplicateCrossReferences, buildDuplicateGeneAssociations and useDuplicateAlleleSource.
- * Each copied row loses its own id and audit fields, so it is created afresh. A list with no rows is left
- * unset, as the detail endpoint leaves it, so its section starts hidden.
+ * Left behind: everything that identifies the stored allele (its ids), its data provider and audit fields,
+ * and the variant and construct associations the form does not edit. The lists in ALLELE_SUB_RESOURCES are
+ * written through their own sub-resources and copied separately; see useDuplicateAlleleSource. Each copied
+ * slot annotation loses its own id and audit fields, so it is created afresh.
  *
  * @param {Object} allele an allele as the detail endpoint returns it
- * @returns {Object} an allele without an id, not obsolete, carrying only the lists that have rows
+ * @returns {Object} an allele without an id, not obsolete
  */
 export const buildDuplicateAllele = (allele) => ({
 	type: 'Allele',
@@ -128,20 +146,11 @@ export const buildDuplicateAllele = (allele) => ({
 	isExtinct: allele.isExtinct ?? false,
 	internal: allele.internal ?? false,
 	obsolete: false,
-	relatedNotes: copyRows(allele.relatedNotes),
 	alleleSymbol: copyRow(allele.alleleSymbol),
 	alleleFullName: copyRow(allele.alleleFullName),
-	alleleSynonyms: copyRows(allele.alleleSynonyms),
-	alleleMutationTypes: copyRows(allele.alleleMutationTypes),
-	alleleInheritanceModes: copyRows(allele.alleleInheritanceModes),
-	alleleFunctionalImpacts: copyRows(allele.alleleFunctionalImpacts),
-	alleleNomenclatureEvents: copyRows(allele.alleleNomenclatureEvents),
 	alleleGermlineTransmissionStatus: copyRow(allele.alleleGermlineTransmissionStatus),
 	alleleDatabaseStatus: copyRow(allele.alleleDatabaseStatus),
 });
-
-const evidenceCuries = (slotAnnotation) =>
-	Array.isArray(slotAnnotation.evidence) ? slotAnnotation.evidence.map((reference) => reference?.curie).sort() : [];
 
 // A single-object section's curator-editable fields, as a string to compare by, or none when it is unset.
 const nameSlotAnnotationValue = (nameSlotAnnotation) =>
@@ -153,7 +162,7 @@ const nameSlotAnnotationValue = (nameSlotAnnotation) =>
 				nameSlotAnnotation.nameType?.name ?? null,
 				nameSlotAnnotation.synonymScope?.name ?? null,
 				nameSlotAnnotation.internal ?? null,
-				evidenceCuries(nameSlotAnnotation),
+				sortedCuries(nameSlotAnnotation.evidence),
 			])
 		: null;
 
@@ -162,7 +171,7 @@ const statusSlotAnnotationValue = (statusSlotAnnotation, statusField) =>
 		? JSON.stringify([
 				statusSlotAnnotation[statusField]?.name ?? null,
 				statusSlotAnnotation.internal ?? null,
-				evidenceCuries(statusSlotAnnotation),
+				sortedCuries(statusSlotAnnotation.evidence),
 			])
 		: null;
 
@@ -181,7 +190,7 @@ const SINGLE_VALUE_FIELD_VALUES = {
 	alleleDatabaseStatus: (allele) => statusSlotAnnotationValue(allele?.alleleDatabaseStatus, 'databaseStatus'),
 };
 
-export const SINGLE_VALUE_FIELDS = Object.keys(SINGLE_VALUE_FIELD_VALUES);
+const SINGLE_VALUE_FIELDS = Object.keys(SINGLE_VALUE_FIELD_VALUES);
 
 /**
  * The single-value fields and single-object sections whose value on the form differs from the allele as

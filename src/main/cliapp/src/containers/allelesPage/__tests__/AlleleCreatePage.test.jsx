@@ -1,38 +1,22 @@
 import React from 'react';
-import { BrowserRouter } from 'react-router-dom';
 import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { renderWithClient } from '../../../tools/jest/utils';
+import { button, NAVIGATION_WAIT, renderInRouter } from './alleleTestUtils';
 
 const createAllele = vi.fn();
 const saveAlleleDetail = vi.fn();
 const navigate = vi.fn();
 const replaceCrossReferencesForAllele = vi.fn();
 
-// msw cannot intercept this app's fetch based ApiClient, so stub the services directly.
-vi.mock('../../../service/AlleleService', () => ({
-	AlleleService: class {
-		createAllele = createAllele;
-		saveAlleleDetail = saveAlleleDetail;
-	},
-}));
-
-// Typing into an autocomplete fires PrimeReact's debounced completeMethod, which builds its own
-// SearchService. Left unstubbed it reaches ApiClient after the test has finished and throws in a
-// timer, failing whichever test happens to run next.
-vi.mock('../../../service/SearchService', () => ({
-	SearchService: class {
-		search = vi.fn(() => Promise.resolve({ results: [], totalResults: 0 }));
-		find = vi.fn(() => Promise.resolve({ results: [], totalResults: 0 }));
-	},
-}));
-
-vi.mock('../../../service/CrossReferenceService', () => ({
-	CrossReferenceService: class {
-		getCrossReferencesForAllele = vi.fn(() => Promise.resolve({ data: { entities: [] } }));
-		replaceCrossReferencesForAllele = replaceCrossReferencesForAllele;
-	},
-}));
+vi.mock('../../../service/AlleleService', async () =>
+	(await import('./alleleServiceMocks')).mockAlleleService({ createAllele, saveAlleleDetail })
+);
+vi.mock('../../../service/SearchService', async () => (await import('./alleleServiceMocks')).mockSearchService());
+vi.mock('../../../service/AlleleSubResourceService', async () =>
+	(await import('./alleleServiceMocks')).mockSubResourceService({
+		crossreferences: { replace: replaceCrossReferencesForAllele },
+	})
+);
 
 vi.mock('react-router-dom', async (importOriginal) => ({
 	...(await importOriginal()),
@@ -41,15 +25,9 @@ vi.mock('react-router-dom', async (importOriginal) => ({
 
 const AlleleCreatePage = (await import('../AlleleCreatePage')).default;
 
-const renderPage = () =>
-	renderWithClient(
-		<BrowserRouter>
-			<AlleleCreatePage />
-		</BrowserRouter>
-	);
+const renderPage = () => renderInRouter(<AlleleCreatePage />);
 
 const heading = (name) => screen.queryByRole('heading', { name });
-const button = (name) => screen.getByRole('button', { name });
 
 describe('<AlleleCreatePage />', () => {
 	beforeEach(() => {
@@ -165,7 +143,7 @@ describe('<AlleleCreatePage />', () => {
 		// the blank inCollection the initial state carries would be rejected by the API
 		expect(payload).not.toHaveProperty('inCollection');
 
-		await waitFor(() => expect(navigate).toHaveBeenCalledWith('/allele/AGRKB:101000000000001'));
+		await waitFor(() => expect(navigate).toHaveBeenCalledWith('/allele/AGRKB:101000000000001'), NAVIGATION_WAIT);
 	});
 
 	it('Stays on a blank form on save and add another', async () => {

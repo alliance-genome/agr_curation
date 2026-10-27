@@ -1,9 +1,7 @@
 import React from 'react';
-import { BrowserRouter } from 'react-router-dom';
 import { act, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { renderWithClient } from '../../../tools/jest/utils';
-import { alleleDetailData } from '../mockData/mockData.js';
+import { FORM_LOAD_WAIT, markAlleleExtinct, renderInRouter, storedAllele } from './alleleTestUtils';
 
 const {
 	getAllele,
@@ -21,32 +19,19 @@ const {
 	getResourceDescriptor: vi.fn(),
 }));
 
-// BaseAuthService builds no client without a cognito token in local storage, so msw has nothing to
-// intercept here; the services are stubbed directly.
-vi.mock('../../../service/AlleleService', () => ({
-	AlleleService: class {
-		getAllele = getAllele;
-		saveAlleleDetail = saveAlleleDetail;
-	},
-}));
-
-vi.mock('../../../service/CrossReferenceService', () => ({
-	CrossReferenceService: class {
-		getCrossReferencesForAllele = getCrossReferencesForAllele;
-		replaceCrossReferencesForAllele = replaceCrossReferencesForAllele;
-	},
-}));
+vi.mock('../../../service/AlleleService', async () =>
+	(await import('./alleleServiceMocks')).mockAlleleService({ getAllele, saveAlleleDetail })
+);
+vi.mock('../../../service/AlleleSubResourceService', async () =>
+	(await import('./alleleServiceMocks')).mockSubResourceService({
+		crossreferences: { get: getCrossReferencesForAllele, replace: replaceCrossReferencesForAllele },
+	})
+);
+vi.mock('../../../service/SearchService', async () => (await import('./alleleServiceMocks')).mockSearchService());
 
 vi.mock('../../../service/ResourceDescriptorService', () => ({
 	ResourceDescriptorService: class {
 		getResourceDescriptor = getResourceDescriptor;
-	},
-}));
-
-vi.mock('../../../service/SearchService', () => ({
-	SearchService: class {
-		search = vi.fn(() => Promise.resolve({ results: [], totalResults: 0 }));
-		find = vi.fn(() => Promise.resolve({ results: [], totalResults: 0 }));
 	},
 }));
 
@@ -58,9 +43,6 @@ vi.mock('../../../service/ValidationService', () => ({
 
 const AlleleDetailPage = (await import('../AlleleDetailPage')).default;
 
-// The shared fixture carries no id, and the page reads and writes cross references by the allele's id.
-const storedAllele = { ...alleleDetailData.entity, id: 4242 };
-
 const storedCrossReference = {
 	id: 500,
 	displayName: 'PubMed 1',
@@ -70,26 +52,9 @@ const storedCrossReference = {
 	obsolete: false,
 };
 
-// An edit to the allele alone, so the page's Save has something to write.
-const markAlleleExtinct = async (user) => {
-	const isExtinctRow = screen.getByRole('heading', { name: 'Is Extinct' }).closest('.grid');
-	await user.click(isExtinctRow.querySelector('.p-dropdown'));
-	const panel = await waitFor(() => {
-		const openPanel = document.querySelector('.p-dropdown-panel');
-		expect(openPanel).not.toBeNull();
-		return openPanel;
-	});
-	await user.click(within(panel).getByText('true'));
-};
+const renderPage = () => renderInRouter(<AlleleDetailPage />);
 
-const renderPage = () =>
-	renderWithClient(
-		<BrowserRouter>
-			<AlleleDetailPage />
-		</BrowserRouter>
-	);
-
-describe('<AlleleDetailPage /> cross references', () => {
+describe('<AlleleDetailPage /> cross references', { timeout: 30000 }, () => {
 	beforeEach(() => {
 		window.localStorage.removeItem('AlleleDetailFormSettings');
 		getAllele.mockReset();
@@ -111,7 +76,7 @@ describe('<AlleleDetailPage /> cross references', () => {
 	// The page reads the allele's cross references once the allele has loaded, and refuses to save them
 	// until that read is done, so the tests wait for it as a curator would.
 	const waitForCrossReferencesToLoad = async () => {
-		await waitFor(() => expect(getCrossReferencesForAllele).toHaveBeenCalledWith(4242), { timeout: 5000 });
+		await waitFor(() => expect(getCrossReferencesForAllele).toHaveBeenCalledWith(storedAllele.id), FORM_LOAD_WAIT);
 		await act(async () => {
 			await new Promise((resolve) => setTimeout(resolve, 0));
 		});
@@ -200,8 +165,8 @@ describe('<AlleleDetailPage /> cross references', () => {
 
 		await waitFor(() => expect(replaceCrossReferencesForAllele).toHaveBeenCalled());
 		expect(await screen.findByText('Allele Saved')).toBeInTheDocument();
-		expect(getCrossReferencesForAllele).toHaveBeenCalledWith(4242);
-		expect(replaceCrossReferencesForAllele.mock.calls[0][0]).toBe(4242);
+		expect(getCrossReferencesForAllele).toHaveBeenCalledWith(storedAllele.id);
+		expect(replaceCrossReferencesForAllele.mock.calls[0][0]).toBe(storedAllele.id);
 		expect(validate).not.toHaveBeenCalled();
 		expect(saveAlleleDetail.mock.invocationCallOrder[0]).toBeLessThan(
 			replaceCrossReferencesForAllele.mock.invocationCallOrder[0]

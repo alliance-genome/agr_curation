@@ -1,4 +1,5 @@
-import { addDataKey, copyRow, generateCurieSearchField } from '../utils';
+import { addDataKey, copyRow, generateCurieSearchField, sameRowsBy, sortedCuries } from '../utils';
+import { relatedNoteValue } from '../relatedNotes/utils';
 
 /**
  * Readies gene associations for the gene associations table: each gets its own `dataKey` and the evidence
@@ -37,11 +38,6 @@ const autosuggestValue = (value, key) => {
 	return value[key] ?? `typed:${JSON.stringify(value)}`;
 };
 
-const curies = (entities) => (Array.isArray(entities) ? entities.map((entity) => entity?.curie).sort() : []);
-
-const relatedNoteValue = (note) =>
-	note ? [note.freeText ?? null, note.noteType?.name ?? null, Boolean(note.internal), curies(note.references)] : null;
-
 // A gene association's curator-editable fields, as a string to compare by.
 const geneAssociationValue = (association) =>
 	JSON.stringify([
@@ -49,7 +45,7 @@ const geneAssociationValue = (association) =>
 		association.relation?.name ?? null,
 		autosuggestValue(association.alleleGeneAssociationObject, 'id'),
 		autosuggestValue(association.evidenceCode, 'curie'),
-		curies(association.evidence),
+		sortedCuries(association.evidence),
 		relatedNoteValue(association.relatedNote),
 	]);
 
@@ -61,11 +57,7 @@ const geneAssociationValue = (association) =>
  * @param {Object[]} otherAssociations
  * @returns {boolean}
  */
-export const haveSameGeneAssociations = (associations, otherAssociations) =>
-	associations.length === otherAssociations.length &&
-	associations.every(
-		(association, index) => geneAssociationValue(association) === geneAssociationValue(otherAssociations[index])
-	);
+export const haveSameGeneAssociations = sameRowsBy(geneAssociationValue);
 
 /**
  * Copies of an allele's gene associations for a new allele. Each copy, and its note, loses its id and audit
