@@ -3,7 +3,9 @@ import { Dialog } from 'primereact/dialog';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { StringListTemplate } from '../../components/Templates/StringListTemplate';
+import { CrossReferenceTemplate } from '../../components/Templates/CrossReferenceTemplate';
 import { CrossReferencesTemplate } from '../../components/Templates/CrossReferencesTemplate';
+import { BooleanTemplate } from '../../components/Templates/BooleanTemplate';
 
 /**
  * Read-only popup for one or more ExternalDataBaseEntity records (an HTP dataset's own identity,
@@ -28,20 +30,31 @@ export const ExternalDataBaseEntityReadOnlyDialog = ({ originalEntitiesData, set
 	};
 
 	return (
-		<Dialog visible={!!dialog} className="w-8" modal onHide={hideDialog} closable onShow={showDialogHandler}>
+		<Dialog visible={!!dialog} className="w-11" modal onHide={hideDialog} closable onShow={showDialogHandler}>
 			<h3>{title}</h3>
 			<DataTable value={localEntities} dataKey="id" showGridlines>
 				<Column field="curie" header="Curie" />
 				<Column
-					field="secondaryIdentifiers"
-					header="Secondary Identifiers"
-					body={(rowData) => <StringListTemplate list={rowData.secondaryIdentifiers} />}
+					field="preferredCrossReference"
+					header="Preferred Cross Reference"
+					body={(rowData) => <CrossReferenceTemplate xref={rowData.preferredCrossReference} />}
 				/>
 				<Column
 					field="crossReferences"
 					header="Cross References"
 					body={(rowData) => <CrossReferencesTemplate list={rowData.crossReferences} />}
 				/>
+				<Column
+					field="secondaryIdentifiers"
+					header="Secondary Identifiers"
+					body={(rowData) => <StringListTemplate list={rowData.secondaryIdentifiers} />}
+				/>
+				<Column field="updatedBy.uniqueId" header="Updated By" />
+				<Column field="dateUpdated" header="Date Updated" />
+				<Column field="createdBy.uniqueId" header="Created By" />
+				<Column field="dateCreated" header="Date Created" />
+				<Column field="internal" header="Internal" body={(rowData) => <BooleanTemplate value={rowData.internal} />} />
+				<Column field="obsolete" header="Obsolete" body={(rowData) => <BooleanTemplate value={rowData.obsolete} />} />
 			</DataTable>
 		</Dialog>
 	);
