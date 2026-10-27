@@ -43,6 +43,18 @@ describe('<VariantsTable />', () => {
 		expect(tableTitle).toBeInTheDocument();
 	});
 
+	it('Labels the uniqueId column Concatenated ID', async () => {
+		let result = await renderWithClient(
+			<BrowserRouter>
+				<VariantsTable />
+			</BrowserRouter>
+		);
+
+		const header = await result.findByText('Concatenated ID');
+		expect(header).toBeInTheDocument();
+		expect(result.queryByText('Unique ID')).not.toBeInTheDocument();
+	});
+
 	it.skip('Contains Correct Table Data', async () => {
 		let result = await renderWithClient(
 			<BrowserRouter>
