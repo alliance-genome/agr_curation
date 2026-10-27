@@ -20,7 +20,7 @@ const FIELDS_OMITTED_ON_CREATE = [
 	'Curie',
 	'Primary External ID',
 	'MOD Internal ID',
-	'Unique ID',
+	'Concatenated ID',
 	'Genomic Locations',
 	'Cross References',
 	'Updated By',
@@ -34,7 +34,7 @@ export const VARIANT_DETAIL_TOGGLEABLE_FIELDS = [
 	'Curie',
 	'Primary External ID',
 	'MOD Internal ID',
-	'Unique ID',
+	'Concatenated ID',
 	'Taxon',
 	'Variant Type',
 	'Variant Status',
@@ -125,10 +125,10 @@ export const VariantForm = ({ state, dispatch, isVisible, mode = 'detail' }) => 
 				/>
 			</FormSection>
 
-			<FormSection isVisible={!isCreate && isVisible('Unique ID')}>
+			<FormSection isVisible={!isCreate && isVisible('Concatenated ID')}>
 				<IdentifierDetailPageTemplate
 					identifier={state.variant?.uniqueId}
-					label="Unique ID"
+					label="Concatenated ID"
 					widgetColumnSize={widgetColumnSize}
 					labelColumnSize={labelColumnSize}
 					fieldDetailsColumnSize={fieldDetailsColumnSize}

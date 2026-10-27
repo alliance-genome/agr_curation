@@ -128,7 +128,7 @@ export const VariantsTable = () => {
 			},
 			{
 				field: 'uniqueId',
-				header: 'Unique ID',
+				header: 'Concatenated ID',
 				sortable: true,
 				body: (rowData) => <IdTemplate id={rowData.uniqueId} />,
 				filterConfig: FILTER_CONFIGS.uniqueidFilterConfig,
