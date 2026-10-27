@@ -1,4 +1,5 @@
-import { addDataKey, copyRow, sameRowsBy, sortedCuries } from '../utils';
+import { addDataKey, sameRowsBy, sortedCuries } from '../utils';
+import { copyRow } from '../../../utils/copyRows';
 
 /**
  * A note's curator-editable fields, to compare by: its text, type, internal flag and references.

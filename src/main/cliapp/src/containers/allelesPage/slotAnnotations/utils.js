@@ -1,4 +1,5 @@
-import { addDataKey, copyRow, sameRowsBy, sortedCuries } from '../utils';
+import { addDataKey, sameRowsBy, sortedCuries } from '../utils';
+import { copyRow } from '../../../utils/copyRows';
 
 /**
  * Readies an allele's slot annotations for their table: each gets its own `dataKey`.

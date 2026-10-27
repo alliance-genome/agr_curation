@@ -1,3 +1,5 @@
+import { copyRow } from '../../utils/copyRows';
+
 export const generateCrossRefSearchField = (reference) => {
 	const { crossReferences, curieField } = getCrossReferences(reference);
 
@@ -107,24 +109,6 @@ export const buildCreatePayload = (allele) => {
 	}
 
 	return payload;
-};
-
-// The fields a stored row carries that belong to it alone, and so cannot be carried onto a copy.
-const ROW_IDENTITY_FIELDS = [
-	'id',
-	'createdBy',
-	'updatedBy',
-	'dateCreated',
-	'dateUpdated',
-	'dbDateCreated',
-	'dbDateUpdated',
-];
-
-export const copyRow = (row) => {
-	if (!row) return null;
-	const copy = structuredClone(row);
-	ROW_IDENTITY_FIELDS.forEach((field) => delete copy[field]);
-	return copy;
 };
 
 /**
