@@ -1,0 +1,19 @@
+src/main/cliapp/src/containers/htpExpressionDatasetAnnotationsPage/ExternalDataBaseEntityReadOnlyDialog.jsx
+  s_90fe3c66eb3b97::t_e6fcff87bd1a1a 6,8,33,38-40,47-57
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "6fb041ca4250a8b2805ef23e1a4eae66a9119162",
+  "prompts": {},
+  "sessions": {
+    "s_90fe3c66eb3b97": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "64db8705-0fb3-46f5-be71-5247c76018af",
+        "model": "unknown"
+      },
+      "human_author": "Ketaki Kindre <kkindre@caltech.edu>"
+    }
+  }
+}
