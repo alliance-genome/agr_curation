@@ -372,6 +372,42 @@ export const FIELD_SETS = Object.freeze({
 		filterName: 'htpExpressionDatasetAnnotationLaboratoryOfOriginFilter',
 		fields: ['laboratoryOfOrigin'],
 	},
+	htpExpressionDatasetSampleAnnotationAggregationFieldSet: {
+		filterName: 'htpExpressionDatasetSampleAnnotationAggregationFilter',
+		fields: ['dataProvider.abbreviation'],
+	},
+	htpExpressionDatasetSampleAnnotationGeneticSexAggregationFieldSet: {
+		filterName: 'htpExpressionDatasetSampleAnnotationGeneticSexAggregationFilter',
+		fields: ['geneticSex.name'],
+	},
+	htpExpressionDatasetSampleAnnotationTitleFieldSet: {
+		filterName: 'htpExpressionDatasetSampleAnnotationTitleFilter',
+		fields: ['htpExpressionSampleTitle'],
+	},
+	htpExpressionDatasetSampleAnnotationTypeFieldSet: {
+		filterName: 'htpExpressionDatasetSampleAnnotationTypeFilter',
+		fields: ['htpExpressionSampleType.name'],
+	},
+	htpExpressionDatasetSampleAnnotationLocationsFieldSet: {
+		filterName: 'htpExpressionDatasetSampleAnnotationLocationsFilter',
+		fields: ['htpExpressionSampleLocations.anatomicalStructure.name'],
+	},
+	htpExpressionDatasetSampleAnnotationAssemblyVersionsFieldSet: {
+		filterName: 'htpExpressionDatasetSampleAnnotationAssemblyVersionsFilter',
+		fields: ['assemblyVersions'],
+	},
+	htpExpressionDatasetSampleAnnotationAbundanceFieldSet: {
+		filterName: 'htpExpressionDatasetSampleAnnotationAbundanceFilter',
+		fields: ['abundance'],
+	},
+	htpExpressionDatasetSampleAnnotationAssayUsedFieldSet: {
+		filterName: 'htpExpressionDatasetSampleAnnotationAssayUsedFilter',
+		fields: ['expressionAssayUsed.name'],
+	},
+	htpExpressionDatasetSampleAnnotationSequencingFormatFieldSet: {
+		filterName: 'htpExpressionDatasetSampleAnnotationSequencingFormatFilter',
+		fields: ['sequencingFormat.name'],
+	},
 	sequenceTargetingReagentTargetedGenesFieldSet: {
 		filterName: 'sequenceTargetingReagentTargetedGenesFilter',
 		fields: [
@@ -1611,6 +1647,46 @@ export const FILTER_CONFIGS = Object.freeze({
 	htpExpressionDatasetAnnotationLaboratoryOfOriginFilterConfig: {
 		filterComponentType: 'input',
 		fieldSets: [FIELD_SETS.htpExpressionDatasetAnnotationLaboratoryOfOriginFieldSet],
+	},
+	htpExpressionDatasetSampleAnnotationDataProviderFilterConfig: {
+		filterComponentType: 'multiselect',
+		fieldSets: [FIELD_SETS.dataProviderFieldSet],
+		aggregationFieldSet: FIELD_SETS.htpExpressionDatasetSampleAnnotationAggregationFieldSet,
+		useKeywordFields: true,
+	},
+	htpExpressionDatasetSampleAnnotationGeneticSexFilterConfig: {
+		filterComponentType: 'multiselect',
+		fieldSets: [FIELD_SETS.geneticSexFieldSet],
+		aggregationFieldSet: FIELD_SETS.htpExpressionDatasetSampleAnnotationGeneticSexAggregationFieldSet,
+		useKeywordFields: true,
+	},
+	htpExpressionDatasetSampleAnnotationTitleFilterConfig: {
+		filterComponentType: 'input',
+		fieldSets: [FIELD_SETS.htpExpressionDatasetSampleAnnotationTitleFieldSet],
+	},
+	htpExpressionDatasetSampleAnnotationTypeFilterConfig: {
+		filterComponentType: 'input',
+		fieldSets: [FIELD_SETS.htpExpressionDatasetSampleAnnotationTypeFieldSet],
+	},
+	htpExpressionDatasetSampleAnnotationLocationsFilterConfig: {
+		filterComponentType: 'input',
+		fieldSets: [FIELD_SETS.htpExpressionDatasetSampleAnnotationLocationsFieldSet],
+	},
+	htpExpressionDatasetSampleAnnotationAssemblyVersionsFilterConfig: {
+		filterComponentType: 'input',
+		fieldSets: [FIELD_SETS.htpExpressionDatasetSampleAnnotationAssemblyVersionsFieldSet],
+	},
+	htpExpressionDatasetSampleAnnotationAbundanceFilterConfig: {
+		filterComponentType: 'input',
+		fieldSets: [FIELD_SETS.htpExpressionDatasetSampleAnnotationAbundanceFieldSet],
+	},
+	htpExpressionDatasetSampleAnnotationAssayUsedFilterConfig: {
+		filterComponentType: 'input',
+		fieldSets: [FIELD_SETS.htpExpressionDatasetSampleAnnotationAssayUsedFieldSet],
+	},
+	htpExpressionDatasetSampleAnnotationSequencingFormatFilterConfig: {
+		filterComponentType: 'input',
+		fieldSets: [FIELD_SETS.htpExpressionDatasetSampleAnnotationSequencingFormatFieldSet],
 	},
 	sequenceTargetingReagentTargetedGenesFilterConfig: {
 		filterComponentType: 'input',
