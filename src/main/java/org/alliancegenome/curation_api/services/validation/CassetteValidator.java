@@ -1,7 +1,13 @@
 package org.alliancegenome.curation_api.services.validation;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.alliancegenome.curation_api.constants.ValidationConstants;
@@ -10,6 +16,7 @@ import org.alliancegenome.curation_api.dao.CassetteDAO;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.Cassette;
 import org.alliancegenome.curation_api.model.entities.Reference;
+import org.alliancegenome.curation_api.model.entities.base.AuditedObject;
 import org.alliancegenome.curation_api.model.entities.associations.CassetteGenomicEntityAssociation;
 import org.alliancegenome.curation_api.model.entities.associations.CassetteStrAssociation;
 import org.alliancegenome.curation_api.model.entities.associations.CassetteTransgenicToolAssociation;
@@ -227,6 +234,139 @@ public class CassetteValidator extends ReagentValidator {
 		}
 
 		return dbEntity;
+	}
+
+	/**
+	 * SCRUM-6752: the free text components the Cassettes table's pop-up submits to replace the stored ones. Replacing
+	 * them changes the cassette's unique ID, which is built from them, so the new one is checked for uniqueness.
+	 *
+	 * @return the validated components, each assigned to the cassette, with the cassette's new unique ID set
+	 */
+	public List<CassetteComponentSlotAnnotation> validateComponentReplacement(Cassette dbEntity, List<CassetteComponentSlotAnnotation> incoming) {
+		List<CassetteComponentSlotAnnotation> components = validateReplacement(dbEntity, dbEntity.getCassetteComponents(), incoming, "cassetteComponents", "Free Text Components",
+			component -> cassetteComponentValidator.validateCassetteComponentSlotAnnotation(component),
+			component -> component.setSingleCassette(dbEntity),
+			component -> String.join("|", component.getRelation().getName(), component.getComponentSymbol(),
+				component.getTaxon() == null ? "" : component.getTaxon().getCurie(), Objects.toString(component.getTaxonText(), "")),
+			"componentSymbol");
+
+		Cassette replaced = new Cassette();
+		replaced.setCassetteSymbol(dbEntity.getCassetteSymbol());
+		replaced.setCassetteFullName(dbEntity.getCassetteFullName());
+		replaced.setCassetteComponents(components);
+		String uniqueId = validateUniqueId(replaced, dbEntity);
+		if (response.hasErrors()) {
+			response.setErrorMessage("Could not update Free Text Components for: [" + dbEntity.getId() + "]");
+			throw new ApiErrorException(response);
+		}
+		dbEntity.setUniqueId(uniqueId);
+		return components;
+	}
+
+	/** SCRUM-6752: the genomic entity associations the pop-up submits to replace the stored ones. */
+	public List<CassetteGenomicEntityAssociation> validateGenomicEntityAssociationReplacement(Cassette dbEntity, List<CassetteGenomicEntityAssociation> incoming) {
+		return validateReplacement(dbEntity, dbEntity.getCassetteGenomicEntityAssociations(), incoming, "cassetteGenomicEntityAssociations", "Genomic Entity Components",
+			association -> cassetteGenomicEntityAssociationValidator.validateCassetteGenomicEntityAssociation(association),
+			association -> association.setCassetteAssociationSubject(dbEntity),
+			association -> association.getRelation().getName() + "|" + association.getCassetteGenomicEntityAssociationObject().getId(),
+			"cassetteGenomicEntityAssociationObject");
+	}
+
+	/** SCRUM-6752: the transgenic tool associations the pop-up submits to replace the stored ones. */
+	public List<CassetteTransgenicToolAssociation> validateTransgenicToolAssociationReplacement(Cassette dbEntity, List<CassetteTransgenicToolAssociation> incoming) {
+		return validateReplacement(dbEntity, dbEntity.getCassetteTransgenicToolAssociations(), incoming, "cassetteTransgenicToolAssociations", "Transgenic Tool Components",
+			association -> cassetteTransgenicToolAssociationValidator.validateCassetteTransgenicToolAssociation(association),
+			association -> association.setCassetteAssociationSubject(dbEntity),
+			association -> association.getRelation().getName() + "|" + association.getCassetteTransgenicToolAssociationObject().getId(),
+			"cassetteTransgenicToolAssociationObject");
+	}
+
+	/** SCRUM-6752: the STR associations the pop-up submits to replace the stored ones. */
+	public List<CassetteStrAssociation> validateStrAssociationReplacement(Cassette dbEntity, List<CassetteStrAssociation> incoming) {
+		return validateReplacement(dbEntity, dbEntity.getCassetteStrAssociations(), incoming, "cassetteStrAssociations", "Sequence Targeting Reagent Components",
+			association -> cassetteStrAssociationValidator.validateCassetteStrAssociation(association),
+			association -> association.setCassetteAssociationSubject(dbEntity),
+			association -> association.getRelation().getName() + "|" + association.getCassetteStrAssociationObject().getId(),
+			"cassetteStrAssociationObject");
+	}
+
+	/**
+	 * Validates a list submitted to replace one of the cassette's stored lists. An entry with an id updates that row,
+	 * which must be one of the cassette's and named by no other entry; one without creates a row. No two entries may
+	 * share an identity. Rows the list omits are deleted with the cassette's list (orphan removal); the linked entities
+	 * hold no list of them.
+	 *
+	 * @param stored the cassette's stored rows
+	 * @param incoming the submitted rows
+	 * @param field the field each entry's errors are filed under, keyed by its index
+	 * @param label what the rows are, for the error title
+	 * @param validate the row's own validator
+	 * @param attach assigns a validated row to the cassette
+	 * @param identity what makes a row a duplicate of another
+	 * @param identityField the field a duplicate is reported on
+	 * @return the validated rows, in submitted order
+	 * @throws ApiErrorException listing each rejected entry's errors
+	 */
+	private <T extends AuditedObject> List<T> validateReplacement(Cassette dbEntity, List<T> stored, List<T> incoming, String field, String label,
+			Function<T, ObjectResponse<T>> validate, Consumer<T> attach, Function<T, String> identity, String identityField) {
+		response = new ObjectResponse<>();
+		String errorTitle = "Could not update " + label + " for: [" + dbEntity.getId() + "]";
+
+		if (incoming == null) {
+			addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
+			response.setErrorMessage(errorTitle);
+			throw new ApiErrorException(response);
+		}
+
+		Set<Long> heldIds = new HashSet<>();
+		if (stored != null) {
+			stored.forEach(row -> heldIds.add(row.getId()));
+		}
+
+		List<T> validated = new ArrayList<>();
+		boolean allValid = true;
+		Set<Long> seenIds = new HashSet<>();
+		Set<String> seenIdentities = new HashSet<>();
+		for (int ix = 0; ix < incoming.size(); ix++) {
+			T row = incoming.get(ix);
+			if (row == null) {
+				allValid = false;
+				response.addErrorMessages(field, ix, Map.of(identityField, ValidationConstants.REQUIRED_MESSAGE));
+				continue;
+			}
+			if (row.getId() != null && !heldIds.contains(row.getId())) {
+				allValid = false;
+				response.addErrorMessages(field, ix, Map.of("id", ValidationConstants.INVALID_MESSAGE));
+				continue;
+			}
+			if (row.getId() != null && !seenIds.add(row.getId())) {
+				allValid = false;
+				response.addErrorMessages(field, ix, Map.of("id", ValidationConstants.DUPLICATE_MESSAGE));
+				continue;
+			}
+			ObjectResponse<T> rowResponse = validate.apply(row);
+			if (rowResponse.getEntity() == null) {
+				allValid = false;
+				response.addErrorMessages(field, ix, rowResponse.getErrorMessages());
+				continue;
+			}
+			row = rowResponse.getEntity();
+			if (!seenIdentities.add(identity.apply(row))) {
+				allValid = false;
+				response.addErrorMessages(field, ix, Map.of(identityField, ValidationConstants.DUPLICATE_MESSAGE));
+				continue;
+			}
+			attach.accept(row);
+			validated.add(row);
+		}
+
+		if (!allValid) {
+			convertMapToErrorMessages(field);
+			response.setErrorMessage(errorTitle);
+			throw new ApiErrorException(response);
+		}
+
+		return validated;
 	}
 
 	private Reference validateReference(Reference uiEntity, List<String> previousCuries) {

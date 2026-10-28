@@ -7,8 +7,13 @@ import org.alliancegenome.curation_api.dao.CassetteDAO;
 import org.alliancegenome.curation_api.interfaces.crud.CassetteCrudInterface;
 import org.alliancegenome.curation_api.jobs.executors.CassetteExecutor;
 import org.alliancegenome.curation_api.model.entities.Cassette;
+import org.alliancegenome.curation_api.model.entities.associations.CassetteGenomicEntityAssociation;
+import org.alliancegenome.curation_api.model.entities.associations.CassetteStrAssociation;
+import org.alliancegenome.curation_api.model.entities.associations.CassetteTransgenicToolAssociation;
+import org.alliancegenome.curation_api.model.entities.slotAnnotations.CassetteComponentSlotAnnotation;
 import org.alliancegenome.curation_api.model.ingest.dto.CassetteDTO;
 import org.alliancegenome.curation_api.response.APIResponse;
+import org.alliancegenome.curation_api.response.ObjectListResponse;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.CassetteService;
 
@@ -37,6 +42,51 @@ public class CassetteCrudController extends SubmittedObjectCrudController<Casset
 	public ObjectResponse<Cassette> update(Cassette entity) {
 		ObjectResponse<Cassette> response = cassetteService.update(entity);
 		return cassetteService.getById(response.getEntity().getId());
+	}
+
+	// SCRUM-6752: each replacement's response is a fresh read made after its transaction, as for update above
+	@Override
+	public ObjectListResponse<CassetteComponentSlotAnnotation> getComponents(Long id) {
+		return cassetteService.getComponents(id);
+	}
+
+	@Override
+	public ObjectListResponse<CassetteComponentSlotAnnotation> updateComponents(Long id, List<CassetteComponentSlotAnnotation> rows) {
+		cassetteService.replaceComponents(id, rows);
+		return cassetteService.getComponents(id);
+	}
+
+	@Override
+	public ObjectListResponse<CassetteGenomicEntityAssociation> getGenomicEntityAssociations(Long id) {
+		return cassetteService.getGenomicEntityAssociations(id);
+	}
+
+	@Override
+	public ObjectListResponse<CassetteGenomicEntityAssociation> updateGenomicEntityAssociations(Long id, List<CassetteGenomicEntityAssociation> rows) {
+		cassetteService.replaceGenomicEntityAssociations(id, rows);
+		return cassetteService.getGenomicEntityAssociations(id);
+	}
+
+	@Override
+	public ObjectListResponse<CassetteTransgenicToolAssociation> getTransgenicToolAssociations(Long id) {
+		return cassetteService.getTransgenicToolAssociations(id);
+	}
+
+	@Override
+	public ObjectListResponse<CassetteTransgenicToolAssociation> updateTransgenicToolAssociations(Long id, List<CassetteTransgenicToolAssociation> rows) {
+		cassetteService.replaceTransgenicToolAssociations(id, rows);
+		return cassetteService.getTransgenicToolAssociations(id);
+	}
+
+	@Override
+	public ObjectListResponse<CassetteStrAssociation> getStrAssociations(Long id) {
+		return cassetteService.getStrAssociations(id);
+	}
+
+	@Override
+	public ObjectListResponse<CassetteStrAssociation> updateStrAssociations(Long id, List<CassetteStrAssociation> rows) {
+		cassetteService.replaceStrAssociations(id, rows);
+		return cassetteService.getStrAssociations(id);
 	}
 
 	@Override
