@@ -13,7 +13,7 @@ import { LoadingOverlay } from '../../components/LoadingOverlay';
 import { SaveProgressOverlay } from '../../components/SaveProgressOverlay';
 import { useSaveProgress } from '../../hooks/useSaveProgress';
 import { errorMessageOf, getIdentifier } from '../../utils/utils';
-import { buildCreatePayload, capitalize, processErrors } from './utils';
+import { buildCreatePayload, buildDuplicateAllele, capitalize, processErrors } from './utils';
 import { FormFieldVisibilityMenu, useFormFieldVisibility } from '../../components/FormFieldVisibility';
 import { AlleleForm, ALLELE_CREATE_TOGGLEABLE_FIELDS } from './AlleleForm';
 import { useAlleleSubResources } from './useAlleleSubResources';
@@ -35,6 +35,7 @@ export default function AlleleCreatePage() {
 		saveDirty: saveDirtySubResources,
 		dirtySteps: dirtySubResourceSteps,
 		resetAll: resetSubResources,
+		carryOverAll: carryOverSubResources,
 	} = useAlleleSubResources();
 	const saveProgress = useSaveProgress();
 	// Set once Save & Close has saved everything, while the page shows that before moving on to the allele.
@@ -126,9 +127,14 @@ export default function AlleleCreatePage() {
 			setIsLeaving(true);
 			if (await saveProgress.finish()) navigate(`/allele/${getIdentifier(allele)}`);
 		} else {
-			alleleDispatch({ type: 'RESET' });
-			resetSubResources();
-			saveProgress.finish();
+			// The form keeps the saved allele's values and rows, copied as Clone copies them, so the next allele
+			// can be entered as a small change to this one.
+			alleleDispatch({ type: 'SET', value: buildDuplicateAllele(allele) });
+			try {
+				await carryOverSubResources(isVisible);
+			} finally {
+				saveProgress.finish();
+			}
 		}
 	};
 
@@ -156,7 +162,11 @@ export default function AlleleCreatePage() {
 			onSuccess: async (result) => {
 				const allele = result?.data?.entity;
 				createdAllele.current = allele;
-				toastSuccess.current.show({ severity: 'success', summary: 'Successful', detail: 'Allele Created' });
+				toastSuccess.current.show({
+					severity: 'success',
+					summary: 'Successful',
+					detail: `Allele ${getIdentifier(allele)} created`,
+				});
 
 				await saveSubResources(allele, closeAfterSubmit);
 			},
@@ -189,7 +199,7 @@ export default function AlleleCreatePage() {
 			<Toast ref={toastError} position="top-left" />
 			<Toast ref={toastSuccess} position="top-right" />
 			<SaveProgressOverlay isOpen={saveProgress.isOpen} steps={saveProgress.steps} />
-			<LoadingOverlay isLoading={duplicateSourceIsLoading} message="Loading allele to duplicate..." />
+			<LoadingOverlay isLoading={duplicateSourceIsLoading} message="Loading allele to clone..." />
 			<ErrorBoundary>
 				<StickyHeader>
 					<Splitter className="bg-primary-reverse border-none lg:h-5rem" gutterSize={0}>

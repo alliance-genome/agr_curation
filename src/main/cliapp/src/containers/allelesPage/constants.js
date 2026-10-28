@@ -62,9 +62,9 @@ const slotAnnotationList = ({ path, label, errorField, fieldsOf, copy = true }) 
  *   with them marked, or null when there are none; while it marks any, a save is refused with
  *   `unsavableRowsMessage`
  *
- * and `useDuplicateAlleleSource`:
- * - `buildCopies`, optional: turns the rows a source allele holds, as the API returns them, into rows for a new
- *   allele; a list without it is not copied
+ * and `useDuplicateAlleleSource` and `useAlleleSubResources`' `carryOverAll`:
+ * - `buildCopies`, optional: turns the rows an allele holds, as the API returns them or as the table holds them,
+ *   into rows for a new allele; a list without it is not copied
  * - `copyOnlyWhenVisible`, optional: the form field whose section must be shown for the rows to be copied
  */
 export const ALLELE_SUB_RESOURCES = {

@@ -1,3 +1,5 @@
+import { copyRows } from '../../utils/copyRows';
+
 export const addDataKey = (entity) => {
 	entity.dataKey = crypto.randomUUID();
 };
@@ -94,6 +96,31 @@ export const buildSavePayload = (variant) => {
 
 	return payload;
 };
+
+/**
+ * A new variant carrying the fields of a stored one that the create form edits, for the create page
+ * to start from.
+ *
+ * Left behind: everything that identifies the stored variant (its ids), its data provider, cross
+ * references and audit fields - none of which the create form edits. Each copied related note loses
+ * its own id and audit fields, so it is created afresh. References are shared records, so they are
+ * kept as they are.
+ *
+ * @param {Object} variant a variant as the API returns it
+ * @returns {Object} a variant without an id, not obsolete, carrying only the fields the create form edits
+ */
+export const buildDuplicateVariant = (variant) => ({
+	type: 'Variant',
+	taxon: structuredClone(variant.taxon) ?? { curie: '' },
+	variantType: structuredClone(variant.variantType) ?? null,
+	variantStatus: structuredClone(variant.variantStatus) ?? null,
+	sourceGeneralConsequence: structuredClone(variant.sourceGeneralConsequence) ?? null,
+	internal: variant.internal ?? false,
+	obsolete: false,
+	relatedNotes: copyRows(variant.relatedNotes),
+	references: structuredClone(variant.references) ?? [],
+	synonyms: structuredClone(variant.synonyms) ?? [],
+});
 
 export const buildCreatePayload = (variant) => {
 	const payload = buildSavePayload(variant);

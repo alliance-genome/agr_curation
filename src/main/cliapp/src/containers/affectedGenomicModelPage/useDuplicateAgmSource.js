@@ -7,7 +7,7 @@ import { buildDuplicateAgm } from './utils';
 /**
  * Fills the AGM create form from the AGM named by the `from` search parameter, which the
  * Duplicate buttons set. The form takes the source AGM once per page load; after that it holds
- * the curator's edits, and a clear or a save and add another starts from a blank form.
+ * the curator's edits, and a clear starts from a blank form.
  *
  * @param {Object} params
  * @param {Function} params.agmDispatch - the create form's reducer dispatch
@@ -46,7 +46,7 @@ export const useDuplicateAgmSource = ({ agmDispatch, toastError }) => {
 				life: 7000,
 				severity: 'error',
 				summary: 'Page error: ',
-				detail: `Could not load AGM ${sourceIdentifier} to duplicate`,
+				detail: `Could not load AGM ${sourceIdentifier} to clone`,
 				sticky: false,
 			});
 			return;
