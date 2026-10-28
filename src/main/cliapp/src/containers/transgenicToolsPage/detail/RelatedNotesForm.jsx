@@ -50,10 +50,9 @@ export const RelatedNotesForm = ({ state, dispatch }) => {
 					deletionHandler={deletionHandler}
 					errorMessages={state.entityStates[ENTITY_TYPE].errorMessages}
 					noteTypeVocabType={NOTE_TYPE_TERM_SET}
-					noteTypeOnChangeHandler={(props, event) => {
-						props.editorCallback?.(event.target.value);
-						editRow(props, 'noteType', event.target.value);
-					}}
+					// The rows are the reducer's, which freezes them, so the edit goes through dispatch alone:
+					// editorCallback would write into the frozen row and throw before the dispatch (SCRUM-6655)
+					noteTypeOnChangeHandler={(props, event) => editRow(props, 'noteType', event.target.value)}
 					textOnChangeHandler={(rowIndex, event, field) =>
 						dispatch({
 							type: 'EDIT_ROW_BY_KEY',
@@ -63,10 +62,7 @@ export const RelatedNotesForm = ({ state, dispatch }) => {
 							value: event.target.value,
 						})
 					}
-					internalOnChangeHandler={(props, event) => {
-						props.editorCallback?.(event.target.value?.name);
-						editRow(props, 'internal', event.target?.value?.name);
-					}}
+					internalOnChangeHandler={(props, event) => editRow(props, 'internal', event.target?.value?.name)}
 					referencesOnChangeHandler={(event, setFieldValue, props) => {
 						setFieldValue(event.target.value);
 						editRow(props, 'references', event.target.value);
