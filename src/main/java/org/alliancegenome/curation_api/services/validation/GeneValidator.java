@@ -2,6 +2,7 @@ package org.alliancegenome.curation_api.services.validation;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
@@ -11,6 +12,7 @@ import org.alliancegenome.curation_api.dao.ontology.SoTermDAO;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.Gene;
+import org.alliancegenome.curation_api.model.entities.Note;
 import org.alliancegenome.curation_api.model.entities.ontology.SOTerm;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.GeneFullNameSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.GeneSecondaryIdSlotAnnotation;
@@ -76,6 +78,53 @@ public class GeneValidator extends GenomicEntityValidator<Gene> {
 		dbEntity = (Gene) validateAuditedObjectFields(uiEntity, dbEntity, true);
 
 		return validateGene(uiEntity, dbEntity, true);
+	}
+
+	public List<GeneSynonymSlotAnnotation> validateSynonymReplacement(Gene dbEntity, List<GeneSynonymSlotAnnotation> incomingSynonyms) {
+		return validateSlotAnnotationReplacement(dbEntity, incomingSynonyms, dbEntity.getGeneSynonyms(), "geneSynonyms", "displayText", "Synonyms",
+			geneSynonymValidator::validateGeneSynonymSlotAnnotation, GeneSynonymSlotAnnotation::setSingleGene);
+	}
+
+	public List<GeneSecondaryIdSlotAnnotation> validateSecondaryIdReplacement(Gene dbEntity, List<GeneSecondaryIdSlotAnnotation> incomingSecondaryIds) {
+		return validateSlotAnnotationReplacement(dbEntity, incomingSecondaryIds, dbEntity.getGeneSecondaryIds(), "geneSecondaryIds", "secondaryId", "Secondary IDs",
+			geneSecondaryIdValidator::validateGeneSecondaryIdSlotAnnotation, GeneSecondaryIdSlotAnnotation::setSingleGene);
+	}
+
+	public List<Note> validateRelatedNoteReplacement(Gene dbEntity, List<Note> incomingNotes) {
+		return validateRelatedNoteReplacement(dbEntity, incomingNotes, VocabularyConstants.GENE_NOTE_TYPES_VOCABULARY_TERM_SET);
+	}
+
+	/**
+	 * Rejects any entry the gene's cross references sub-resource is to hold that matches the gene's GCRP cross
+	 * reference, which the gene holds on its own rather than among its cross references.
+	 *
+	 * @param dbEntity the gene the cross references belong to
+	 * @param incomingXrefs the submitted cross references
+	 * @throws ApiErrorException when any entry matches the GCRP cross reference, with each such entry's error keyed by
+	 *         its index
+	 */
+	public void validateCrossReferenceReplacement(Gene dbEntity, List<CrossReference> incomingXrefs) {
+		if (dbEntity.getGcrpCrossReference() == null || incomingXrefs == null) {
+			return;
+		}
+
+		response = new ObjectResponse<>();
+		String field = "crossReferences";
+		String gcrpUniqueId = crossReferenceService.getCrossReferenceUniqueId(dbEntity.getGcrpCrossReference());
+		boolean allValid = true;
+		for (int ix = 0; ix < incomingXrefs.size(); ix++) {
+			CrossReference xref = incomingXrefs.get(ix);
+			if (xref != null && gcrpUniqueId.equals(crossReferenceService.getCrossReferenceUniqueId(xref))) {
+				allValid = false;
+				response.addErrorMessages(field, ix, Map.of("referencedCurie", ValidationConstants.DUPLICATE_MESSAGE + " (GCRP cross reference)"));
+			}
+		}
+
+		if (!allValid) {
+			convertMapToErrorMessages(field);
+			response.setErrorMessage("Could not update CrossReferences for: [" + dbEntity.getId() + "]");
+			throw new ApiErrorException(response);
+		}
 	}
 
 	/**

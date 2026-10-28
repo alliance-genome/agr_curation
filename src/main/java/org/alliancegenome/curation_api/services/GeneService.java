@@ -23,16 +23,21 @@ import org.alliancegenome.curation_api.exceptions.KnownIssueValidationException;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
 import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.interfaces.base.BasePopularityInterface;
+import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.Note;
 import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
+import org.alliancegenome.curation_api.model.entities.slotAnnotations.GeneSecondaryIdSlotAnnotation;
+import org.alliancegenome.curation_api.model.entities.slotAnnotations.GeneSynonymSlotAnnotation;
 import org.alliancegenome.curation_api.model.ingest.dto.GeneDTO;
+import org.alliancegenome.curation_api.response.ObjectListResponse;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.associations.AlleleGeneAssociationService;
 import org.alliancegenome.curation_api.services.associations.ConstructGenomicEntityAssociationService;
 import org.alliancegenome.curation_api.services.base.SubmittedObjectCrudService;
 import org.alliancegenome.curation_api.services.helpers.GeneXrefHelper;
+import org.alliancegenome.curation_api.services.helpers.SubResourceListHelper;
 import org.alliancegenome.curation_api.services.ontology.NcbiTaxonTermService;
 import org.alliancegenome.curation_api.services.orthology.GeneToGeneOrthologyService;
 import org.alliancegenome.curation_api.services.validation.GeneValidator;
@@ -52,6 +57,7 @@ public class GeneService extends SubmittedObjectCrudService<Gene, GeneDTO, GeneD
 	@Inject GeneDAO geneDAO;
 	@Inject NoteService noteService;
 	@Inject GeneValidator geneValidator;
+	@Inject CrossReferenceService crossReferenceService;
 	@Inject GeneDTOValidator geneDtoValidator;
 	@Inject DiseaseAnnotationService diseaseAnnotationService;
 	@Inject PersonService personService;
@@ -84,6 +90,57 @@ public class GeneService extends SubmittedObjectCrudService<Gene, GeneDTO, GeneD
 		// path leaves them as they are stored.
 		Gene dbEntity = geneValidator.validateGeneUpdate(uiEntity, false);
 		return new ObjectResponse<Gene>(dbEntity);
+	}
+
+	public ObjectListResponse<CrossReference> getCrossReferences(Long id) {
+		return SubResourceListHelper.listResponse(findGeneOrThrow(id).getCrossReferences());
+	}
+
+	@Transactional
+	public ObjectListResponse<CrossReference> updateCrossReferences(Long id, List<CrossReference> crossReferences) {
+		Gene gene = findGeneOrThrow(id);
+		geneValidator.validateCrossReferenceReplacement(gene, crossReferences);
+		return crossReferenceService.replaceForOwner(gene, crossReferences);
+	}
+
+	public ObjectListResponse<GeneSynonymSlotAnnotation> getSynonyms(Long id) {
+		return SubResourceListHelper.listResponse(findGeneOrThrow(id).getGeneSynonyms());
+	}
+
+	@Transactional
+	public ObjectListResponse<GeneSynonymSlotAnnotation> updateSynonyms(Long id, List<GeneSynonymSlotAnnotation> synonyms) {
+		Gene gene = findGeneOrThrow(id);
+		return SubResourceListHelper.replaceSlotAnnotations(gene, geneValidator.validateSynonymReplacement(gene, synonyms), Gene::getGeneSynonyms, Gene::setGeneSynonyms);
+	}
+
+	public ObjectListResponse<GeneSecondaryIdSlotAnnotation> getSecondaryIds(Long id) {
+		return SubResourceListHelper.listResponse(findGeneOrThrow(id).getGeneSecondaryIds());
+	}
+
+	@Transactional
+	public ObjectListResponse<GeneSecondaryIdSlotAnnotation> updateSecondaryIds(Long id, List<GeneSecondaryIdSlotAnnotation> secondaryIds) {
+		Gene gene = findGeneOrThrow(id);
+		return SubResourceListHelper.replaceSlotAnnotations(gene, geneValidator.validateSecondaryIdReplacement(gene, secondaryIds), Gene::getGeneSecondaryIds, Gene::setGeneSecondaryIds);
+	}
+
+	public ObjectListResponse<Note> getRelatedNotes(Long id) {
+		return SubResourceListHelper.listResponse(findGeneOrThrow(id).getRelatedNotes());
+	}
+
+	@Transactional
+	public ObjectListResponse<Note> updateRelatedNotes(Long id, List<Note> relatedNotes) {
+		Gene gene = findGeneOrThrow(id);
+		return SubResourceListHelper.replaceRelatedNotes(gene, geneValidator.validateRelatedNoteReplacement(gene, relatedNotes));
+	}
+
+	private Gene findGeneOrThrow(Long id) {
+		Gene gene = geneDAO.find(id);
+		if (gene == null) {
+			ObjectResponse<Gene> response = new ObjectResponse<>();
+			response.addErrorMessage("id", ValidationConstants.INVALID_MESSAGE);
+			throw new ApiErrorException(response);
+		}
+		return gene;
 	}
 
 	@Override
