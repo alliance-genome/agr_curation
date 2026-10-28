@@ -46,7 +46,7 @@ public class GeneValidator extends GenomicEntityValidator<Gene> {
 
 	private String errorMessage;
 
-	public Gene validateGeneUpdate(Gene uiEntity) {
+	public Gene validateGeneUpdate(Gene uiEntity, Boolean manageSubResourceFields) {
 		response = new ObjectResponse<>(uiEntity);
 		errorMessage = "Could not update Gene: [" + uiEntity.getIdentifier() + "]";
 
@@ -64,7 +64,7 @@ public class GeneValidator extends GenomicEntityValidator<Gene> {
 
 		dbEntity = (Gene) validateAuditedObjectFields(uiEntity, dbEntity, false);
 
-		return validateGene(uiEntity, dbEntity);
+		return validateGene(uiEntity, dbEntity, manageSubResourceFields);
 	}
 
 	public Gene validateGeneCreate(Gene uiEntity) {
@@ -75,12 +75,16 @@ public class GeneValidator extends GenomicEntityValidator<Gene> {
 
 		dbEntity = (Gene) validateAuditedObjectFields(uiEntity, dbEntity, true);
 
-		return validateGene(uiEntity, dbEntity);
+		return validateGene(uiEntity, dbEntity, true);
 	}
 
-	private Gene validateGene(Gene uiEntity, Gene dbEntity) {
+	/**
+	 * @param manageSubResourceFields whether the calling endpoint's JSON view carries crossReferences, relatedNotes and
+	 *        the synonym and secondary ID lists. An endpoint whose view omits them leaves the stored ones as they are.
+	 */
+	private Gene validateGene(Gene uiEntity, Gene dbEntity, Boolean manageSubResourceFields) {
 
-		dbEntity = validateGenomicEntityFields(uiEntity, dbEntity, VocabularyConstants.GENE_NOTE_TYPES_VOCABULARY_TERM_SET);
+		dbEntity = validateGenomicEntityFields(uiEntity, dbEntity, VocabularyConstants.GENE_NOTE_TYPES_VOCABULARY_TERM_SET, true, manageSubResourceFields, manageSubResourceFields);
 
 		SOTerm geneType = validateRequiredEntity(soTermDAO, "geneType", uiEntity.getGeneType(), dbEntity.getGeneType());
 		dbEntity.setGeneType(geneType);
@@ -88,8 +92,12 @@ public class GeneValidator extends GenomicEntityValidator<Gene> {
 		GeneSymbolSlotAnnotation symbol = validateGeneSymbol(uiEntity, dbEntity);
 		GeneFullNameSlotAnnotation fullName = validateGeneFullName(uiEntity, dbEntity);
 		GeneSystematicNameSlotAnnotation systematicName = validateGeneSystematicName(uiEntity, dbEntity);
-		List<GeneSynonymSlotAnnotation> synonyms = validateGeneSynonyms(uiEntity, dbEntity);
-		List<GeneSecondaryIdSlotAnnotation> secondaryIds = validateGeneSecondaryIds(uiEntity, dbEntity);
+		List<GeneSynonymSlotAnnotation> synonyms = null;
+		List<GeneSecondaryIdSlotAnnotation> secondaryIds = null;
+		if (manageSubResourceFields) {
+			synonyms = validateGeneSynonyms(uiEntity, dbEntity);
+			secondaryIds = validateGeneSecondaryIds(uiEntity, dbEntity);
+		}
 		
 		CrossReference gcrpCrossReference = validateGcrpCrossReference(uiEntity.getGcrpCrossReference(), dbEntity.getGcrpCrossReference());
 		dbEntity.setGcrpCrossReference(gcrpCrossReference);
@@ -148,24 +156,26 @@ public class GeneValidator extends GenomicEntityValidator<Gene> {
 		}
 		dbEntity.setGeneSystematicName(systematicName);
 
-		if (dbEntity.getGeneSynonyms() != null) {
-			dbEntity.getGeneSynonyms().clear();
-		}
-		if (synonyms != null) {
-			if (dbEntity.getGeneSynonyms() == null) {
-				dbEntity.setGeneSynonyms(new ArrayList<>());
+		if (manageSubResourceFields) {
+			if (dbEntity.getGeneSynonyms() != null) {
+				dbEntity.getGeneSynonyms().clear();
 			}
-			dbEntity.getGeneSynonyms().addAll(synonyms);
-		}
+			if (synonyms != null) {
+				if (dbEntity.getGeneSynonyms() == null) {
+					dbEntity.setGeneSynonyms(new ArrayList<>());
+				}
+				dbEntity.getGeneSynonyms().addAll(synonyms);
+			}
 
-		if (dbEntity.getGeneSecondaryIds() != null) {
-			dbEntity.getGeneSecondaryIds().clear();
-		}
-		if (secondaryIds != null) {
-			if (dbEntity.getGeneSecondaryIds() == null) {
-				dbEntity.setGeneSecondaryIds(new ArrayList<>());
+			if (dbEntity.getGeneSecondaryIds() != null) {
+				dbEntity.getGeneSecondaryIds().clear();
 			}
-			dbEntity.getGeneSecondaryIds().addAll(secondaryIds);
+			if (secondaryIds != null) {
+				if (dbEntity.getGeneSecondaryIds() == null) {
+					dbEntity.setGeneSecondaryIds(new ArrayList<>());
+				}
+				dbEntity.getGeneSecondaryIds().addAll(secondaryIds);
+			}
 		}
 
 		return dbEntity;

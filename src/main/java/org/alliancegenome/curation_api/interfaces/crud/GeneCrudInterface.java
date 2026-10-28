@@ -17,6 +17,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DefaultValue;
+import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
@@ -39,10 +40,22 @@ public interface GeneCrudInterface extends BaseSubmittedObjectCrudInterface<Gene
 	APIResponse updateGenes(@PathParam("dataProvider") String dataProvider, List<GeneDTO> geneData);
 
 	@Override
+	@GET
+	@Path("/{identifierString}")
+	@JsonView(CurationView.GeneDetailView.class)
+	ObjectResponse<Gene> getByIdentifier(@PathParam("identifierString") String identifierString);
+
+	@Override
 	@PUT
 	@Path("/")
 	@JsonView(CurationView.GeneView.class)
 	ObjectResponse<Gene> update(Gene entity);
+
+	@Operation(summary = "Update gene with full detail", description = "Update a gene entity and return the detailed view")
+	@PUT
+	@Path("/updateDetail")
+	@JsonView(CurationView.GeneDetailView.class)
+	ObjectResponse<Gene> updateDetail(Gene entity);
 
 	@Override
 	@POST

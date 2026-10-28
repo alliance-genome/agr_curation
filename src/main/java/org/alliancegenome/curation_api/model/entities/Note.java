@@ -46,20 +46,20 @@ public class Note extends AuditedObject {
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer", valueBridge = @ValueBridgeRef(type = FreeTextValueBridge.class))
 	@KeywordField(name = "freeText_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer", valueBridge = @ValueBridgeRef(type = FreeTextValueBridge.class))
-	@JsonView({ CurationView.FieldsOnly.class, CurationView.ForPublic.class, CurationView.AlleleSummaryDocument.class, CurationView.GeneSummaryDocument.class, CurationView.VariantSummaryDocument.class, CurationView.AlleleDetailView.class })
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.ForPublic.class, CurationView.AlleleSummaryDocument.class, CurationView.GeneSummaryDocument.class, CurationView.VariantSummaryDocument.class, CurationView.EntityDetailView.class })
 	@Column(columnDefinition = "TEXT")
 	private String freeText;
 
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@JsonView({ CurationView.FieldsOnly.class, CurationView.ForPublic.class, CurationView.AlleleSummaryDocument.class, CurationView.GeneSummaryDocument.class, CurationView.AlleleDetailView.class })
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.ForPublic.class, CurationView.AlleleSummaryDocument.class, CurationView.GeneSummaryDocument.class, CurationView.EntityDetailView.class })
 	private VocabularyTerm noteType;
 
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
-	@JsonView({ CurationView.FieldsAndLists.class, CurationView.NoteView.class, CurationView.AlleleView.class, CurationView.AlleleDetailView.class, CurationView.ConstructView.class, CurationView.VariantView.class , CurationView.CassetteView.class, CurationView.TransgenicToolView.class})
+	@JsonView({ CurationView.FieldsAndLists.class, CurationView.NoteView.class, CurationView.AlleleView.class, CurationView.EntityDetailView.class, CurationView.ConstructView.class, CurationView.VariantView.class , CurationView.CassetteView.class, CurationView.TransgenicToolView.class})
 	@JoinTable(indexes = {
 		@Index(name = "note_reference_note_index", columnList = "note_id"),
 		@Index(name = "note_reference_references_index", columnList = "references_id")

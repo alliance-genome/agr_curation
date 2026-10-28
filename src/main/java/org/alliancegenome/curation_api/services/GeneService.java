@@ -72,7 +72,17 @@ public class GeneService extends SubmittedObjectCrudService<Gene, GeneDTO, GeneD
 	@Override
 	@Transactional
 	public ObjectResponse<Gene> update(Gene uiEntity) {
-		Gene dbEntity = geneValidator.validateGeneUpdate(uiEntity);
+		// GeneView carries crossReferences, related notes and the synonym and secondary ID lists, so this path
+		// manages them.
+		Gene dbEntity = geneValidator.validateGeneUpdate(uiEntity, true);
+		return new ObjectResponse<Gene>(dbEntity);
+	}
+
+	@Transactional
+	public ObjectResponse<Gene> updateDetail(Gene uiEntity) {
+		// GeneDetailView carries none of crossReferences, related notes or the synonym and secondary ID lists, so this
+		// path leaves them as they are stored.
+		Gene dbEntity = geneValidator.validateGeneUpdate(uiEntity, false);
 		return new ObjectResponse<Gene>(dbEntity);
 	}
 
