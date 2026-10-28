@@ -89,14 +89,14 @@ describe('<AlleleCreatePage /> duplicating an allele', () => {
 		const { container } = await renderPage();
 
 		await waitFor(
-			() => expect(screen.getByRole('heading', { name: 'Loading allele to duplicate...' })).toBeInTheDocument(),
+			() => expect(screen.getByRole('heading', { name: 'Loading allele to clone...' })).toBeInTheDocument(),
 			FORM_LOAD_WAIT
 		);
 		expect(screen.queryByText('Saving in progress...')).not.toBeInTheDocument();
 
 		resolveAllele({ data: { entity: sourceAllele } });
 		await waitFor(() => expect(container.querySelector('#displayText')).toHaveValue('abc-1'), FORM_LOAD_WAIT);
-		expect(screen.queryByText('Loading allele to duplicate...')).not.toBeInTheDocument();
+		expect(screen.queryByText('Loading allele to clone...')).not.toBeInTheDocument();
 	});
 
 	it('Creates a new allele rather than sending the stored one back', async () => {
@@ -159,7 +159,7 @@ describe('<AlleleCreatePage /> duplicating an allele', () => {
 		const { container } = await renderPage('/allele/create?from=AGRKB:missing');
 
 		await waitFor(
-			() => expect(screen.getByText('Could not load allele AGRKB:missing to duplicate')).toBeInTheDocument(),
+			() => expect(screen.getByText('Could not load allele AGRKB:missing to clone')).toBeInTheDocument(),
 			FORM_LOAD_WAIT
 		);
 		expect(container.querySelector('#displayText')).toHaveValue('');

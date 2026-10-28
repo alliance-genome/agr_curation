@@ -19,6 +19,12 @@ vi.mock('../../../service/AlleleService', async () =>
 vi.mock('../../../service/SearchService', async () =>
 	(await import('./alleleServiceMocks')).mockSearchService({ search })
 );
+// A kept row's descriptor is read again when Save & Add Another starts the next allele from it.
+vi.mock('../../../service/ResourceDescriptorService', () => ({
+	ResourceDescriptorService: class {
+		getResourceDescriptor = vi.fn(() => Promise.resolve({ data: { entity: PMID } }));
+	},
+}));
 vi.mock('../../../service/AlleleSubResourceService', async () =>
 	(await import('./alleleServiceMocks')).mockSubResourceService({
 		crossreferences: { replace: replaceCrossReferencesForAllele },
@@ -263,7 +269,7 @@ describe('<AlleleCreatePage /> cross references', { timeout: 30000 }, () => {
 		expect(await screen.findByText(/Could not update CrossReferences/)).toBeInTheDocument();
 	});
 
-	it('Shows everything saved on Save & Add Another and clears the form', async () => {
+	it('Shows everything saved on Save & Add Another and keeps the row, without its curie', async () => {
 		const user = userEvent.setup();
 		await renderPage();
 
@@ -278,7 +284,10 @@ describe('<AlleleCreatePage /> cross references', { timeout: 30000 }, () => {
 			() => expect(screen.queryByRole('status', { name: 'Save progress' })).not.toBeInTheDocument(),
 			NAVIGATION_WAIT
 		);
-		expect(screen.queryByLabelText('resourceDescriptor')).not.toBeInTheDocument();
+		// a cross reference curie names the allele it belongs to, so the next allele's row needs its own
+		expect(crossReferenceRow().querySelector('[aria-label="referencedCurie"]')).toHaveValue('');
+		expect(screen.getByLabelText('resourceDescriptor')).toHaveValue('PMID');
+		expect(crossReferenceRow().querySelector('[aria-label="displayName"]')).toHaveValue('');
 		expect(navigate).not.toHaveBeenCalled();
 	});
 
