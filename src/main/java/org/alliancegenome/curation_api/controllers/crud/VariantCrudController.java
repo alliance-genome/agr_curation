@@ -10,7 +10,9 @@ import org.alliancegenome.curation_api.jobs.executors.VariantFmsExecutor;
 import org.alliancegenome.curation_api.model.entities.Variant;
 import org.alliancegenome.curation_api.model.ingest.dto.VariantDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.VariantFmsDTO;
+import org.alliancegenome.curation_api.model.output.AllModVariants;
 import org.alliancegenome.curation_api.response.APIResponse;
+import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.VariantService;
 
 import jakarta.annotation.PostConstruct;
@@ -43,6 +45,11 @@ public class VariantCrudController extends SubmittedObjectCrudController<Variant
 	@Override
 	public APIResponse updateFmsVariants(String dataProvider, List<VariantFmsDTO> variantData) {
 		return variantFmsExecutor.runLoadApi(dataProvider, variantData);
+	}
+
+	@Override
+	public SearchResponse<AllModVariants> getAllModVariants(String dataProvider, Integer page, Integer limit) {
+		return variantService.getAllModVariants(dataProvider, page, limit);
 	}
 
 }
