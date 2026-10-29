@@ -164,8 +164,14 @@ export const applyCrossReferenceFieldChange = (crossReference, field, value) => 
 	return updated;
 };
 
-// A row's identity and curator-editable fields, as a string to compare by, with a blank value read as none.
-const crossReferenceValue = (crossReference) =>
+/**
+ * A cross reference's identity and curator-editable fields, as a string to compare by, with a blank value read as
+ * none.
+ *
+ * @param {Object} crossReference
+ * @returns {string}
+ */
+export const crossReferenceValue = (crossReference) =>
 	JSON.stringify([
 		crossReference.id ?? null,
 		crossReference.referencedCurie || null,
