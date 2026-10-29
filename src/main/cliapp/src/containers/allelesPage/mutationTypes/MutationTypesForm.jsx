@@ -6,7 +6,7 @@ import { TableEditorProvider } from '../../../components/Editors/fields/TableEdi
 import { useSubResourceRows } from '../../../hooks/useSubResourceRows';
 import { SubResourceSaveButton } from '../SubResourceSaveButton';
 import { SubResourceLoadError } from '../SubResourceLoadError';
-import { useSubResourceFormStrategy } from '../useSubResourceFormStrategy';
+import { useSubResourceFormStrategy } from '../../../hooks/useSubResourceFormStrategy';
 import { addDataKey, KEEP_ROWS_IN_EDIT_MODE } from '../utils';
 import { MutationTypesFormTable } from './MutationTypesFormTable';
 

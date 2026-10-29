@@ -7,7 +7,7 @@ import { useSubResourceRows } from '../../../hooks/useSubResourceRows';
 import { useControlledVocabularyService } from '../../../service/useControlledVocabularyService';
 import { SubResourceSaveButton } from '../SubResourceSaveButton';
 import { SubResourceLoadError } from '../SubResourceLoadError';
-import { useSubResourceFormStrategy } from '../useSubResourceFormStrategy';
+import { useSubResourceFormStrategy } from '../../../hooks/useSubResourceFormStrategy';
 import { addDataKey, KEEP_ROWS_IN_EDIT_MODE } from '../utils';
 import { InheritanceModesFormTable } from './InheritanceModesFormTable';
 

@@ -1,7 +1,7 @@
-import { useDataKeyRowsStrategy } from '../../components/Editors/fields/strategies/useDataKeyRowsStrategy';
+import { useDataKeyRowsStrategy } from '../components/Editors/fields/strategies/useDataKeyRowsStrategy';
 
 /**
- * Table editing strategy for an allele page section whose rows are one of the allele's sub-resource lists: rows
+ * Table editing strategy for a detail page section whose rows are one of an entity's sub-resource lists: rows
  * come from the list and an edit replaces the field on its row there.
  *
  * @param {Object} subResource what `useSubResourceList` returns

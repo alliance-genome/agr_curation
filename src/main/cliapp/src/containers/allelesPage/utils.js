@@ -1,5 +1,7 @@
 import { copyRow } from '../../utils/copyRows';
 
+export { capitalize } from '../../utils/utils';
+
 export const generateCrossRefSearchField = (reference) => {
 	const { crossReferences, curieField } = getCrossReferences(reference);
 
@@ -48,12 +50,6 @@ export const generateCurieSearchField = (entities) => {
 export const addDataKey = (entity) => {
 	entity.dataKey = crypto.randomUUID();
 };
-
-/**
- * @param {string} text such as a sub-resource's label
- * @returns {string} the text with its first letter in upper case, for the start of a message
- */
-export const capitalize = (text) => `${text.charAt(0).toUpperCase()}${text.slice(1)}`;
 
 /**
  * @param {Object[]} [entities]
