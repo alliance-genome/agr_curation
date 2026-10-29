@@ -576,6 +576,7 @@ export const GenesTable = () => {
 					setTableState={setTableState}
 					columns={columns}
 					isEditable={true}
+					hasDetails={true}
 					mutation={mutation}
 					isInEditMode={isInEditMode}
 					setIsInEditMode={setIsInEditMode}
