@@ -8,8 +8,9 @@ import { capitalize } from './utils';
  *
  * @param {number} [alleleId] the allele to read on load. Create passes none and saves once it has one.
  * @returns {{subResources: Object, saveDirty: Function, isDirty: boolean, isSaving: boolean, resetAll: Function,
- *   dirtySteps: Array<{key: string, label: string}>}} the lists keyed as sections read them, a save of the edited
- *   ones, whether any is edited or being written, a reset of them all, and the edited lists as save progress rows
+ *   carryOverAll: Function, dirtySteps: Array<{key: string, label: string}>}} the lists keyed as sections read them,
+ *   a save of the edited ones, whether any is edited or being written, a reset of them all, a start over of them
+ *   all from copies of their rows, and the edited lists as save progress rows
  */
 export const useAlleleSubResources = (alleleId) => {
 	const crossReferences = useAlleleSubResource('crossReferences', alleleId);
@@ -66,6 +67,24 @@ export const useAlleleSubResources = (alleleId) => {
 
 	const resetAll = () => lists.forEach(([, subResource]) => subResource.reset());
 
+	/**
+	 * Starts every list over with copies of the rows it shows, made as a duplicate's are, for the next allele to be
+	 * created from the last one's rows. A list a duplicate does not copy, or whose section is hidden, starts over
+	 * empty.
+	 *
+	 * @param {(fieldName: string) => boolean} isVisible whether the form shows a field's section
+	 * @returns {Promise<void>} settled once every list holds its copies
+	 */
+	const carryOverAll = async (isVisible) => {
+		await Promise.all(
+			lists.map(async ([type, subResource]) => {
+				const { buildCopies, copyOnlyWhenVisible } = ALLELE_SUB_RESOURCES[type];
+				const isCopied = buildCopies && (!copyOnlyWhenVisible || isVisible(copyOnlyWhenVisible));
+				subResource.startOver(isCopied ? await buildCopies(subResource.rows) : []);
+			})
+		);
+	};
+
 	return {
 		subResources,
 		isDirty: lists.some(([, subResource]) => subResource.isDirty),
@@ -75,5 +94,6 @@ export const useAlleleSubResources = (alleleId) => {
 			.map(([type]) => ({ key: type, label: capitalize(ALLELE_SUB_RESOURCES[type].label) })),
 		saveDirty,
 		resetAll,
+		carryOverAll,
 	};
 };

@@ -17,9 +17,9 @@ describe('LoadingOverlay', () => {
 	});
 
 	it('Shows the message it is given', () => {
-		render(<LoadingOverlay isLoading message="Loading allele to duplicate..." />);
+		render(<LoadingOverlay isLoading message="Loading allele to clone..." />);
 
-		expect(screen.getByRole('heading', { name: 'Loading allele to duplicate...' })).toBeInTheDocument();
+		expect(screen.getByRole('heading', { name: 'Loading allele to clone...' })).toBeInTheDocument();
 		expect(screen.queryByText('Saving in progress...')).not.toBeInTheDocument();
 	});
 });

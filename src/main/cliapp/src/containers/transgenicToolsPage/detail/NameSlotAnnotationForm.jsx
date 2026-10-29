@@ -48,18 +48,11 @@ export const NameSlotAnnotationForm = ({ state, dispatch, entityType, tableName,
 					deletionHandler={deletionHandler}
 					errorMessages={entityState.errorMessages}
 					textOnChangeHandler={(rowIndex, event, field) => editName(field, event.target.value)}
-					synonymScopeOnChangeHandler={(props, event) => {
-						props.editorCallback?.(event.target.value);
-						editName('synonymScope', event.target.value);
-					}}
-					nameTypeOnChangeHandler={(props, event) => {
-						props.editorCallback?.(event.target.value);
-						editName('nameType', event.target.value);
-					}}
-					internalOnChangeHandler={(props, event) => {
-						props.editorCallback?.(event.target.value?.name);
-						editName('internal', event.target?.value?.name);
-					}}
+					// The name is the reducer's, which freezes it, so edits go through dispatch alone:
+					// editorCallback would write into the frozen row and throw before the dispatch (SCRUM-6655)
+					synonymScopeOnChangeHandler={(props, event) => editName('synonymScope', event.target.value)}
+					nameTypeOnChangeHandler={(props, event) => editName('nameType', event.target.value)}
+					internalOnChangeHandler={(props, event) => editName('internal', event.target?.value?.name)}
 					evidenceOnChangeHandler={(event, setFieldValue) => {
 						setFieldValue(event.target.value);
 						editName('evidence', event.target.value);

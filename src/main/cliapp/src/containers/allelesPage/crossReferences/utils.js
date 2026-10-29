@@ -1,4 +1,5 @@
-import { addDataKey, copyRow, sameRowsBy } from '../utils';
+import { addDataKey, sameRowsBy } from '../utils';
+import { copyRow } from '../../../utils/copyRows';
 import { ResourceDescriptorService } from '../../../service/ResourceDescriptorService';
 
 /**
@@ -26,7 +27,7 @@ export const buildNewCrossReference = () => {
  * descriptor, and its internal flag, but not the curie and display name that identify the copied allele,
  * nor its id or audit fields. Every copy starts out not obsolete.
  *
- * @param {Object[]} [crossReferences] cross references as the API returns them
+ * @param {Object[]} [crossReferences] cross references as the API returns them or as the table holds them
  * @returns {Object[]} rows with a blank curie and display name, each with its own `dataKey`
  */
 export const buildDuplicateCrossReferences = (crossReferences) =>
@@ -54,7 +55,8 @@ export const curiePrefixOf = (referencedCurie) => {
 
 /**
  * Lifts the descriptor a stored page belongs to onto the row itself, where the descriptor column
- * reads it.
+ * reads it. A row the table built holds a page without its descriptor, so it keeps the descriptor it
+ * already carries.
  *
  * The descriptor arriving this way carries no `resourcePages`: a cross reference is serialized
  * without them, so the page dropdown has nothing to offer until they are fetched. Use
@@ -65,7 +67,8 @@ export const curiePrefixOf = (referencedCurie) => {
  */
 export const seedResourceDescriptor = (crossReference) => ({
 	...crossReference,
-	resourceDescriptor: crossReference.resourceDescriptorPage?.resourceDescriptor ?? null,
+	resourceDescriptor:
+		crossReference.resourceDescriptorPage?.resourceDescriptor ?? crossReference.resourceDescriptor ?? null,
 });
 
 /**

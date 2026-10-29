@@ -13,6 +13,15 @@ vi.mock('../../../service/AlleleSubResourceService', async () =>
 	})
 );
 
+// Starting a cross reference over reads its descriptor again.
+vi.mock('../../../service/ResourceDescriptorService', () => ({
+	ResourceDescriptorService: class {
+		getResourceDescriptor = vi.fn(() =>
+			Promise.resolve({ data: { entity: { id: 3, prefix: 'WB', resourcePages: [{ id: 5, name: 'allele' }] } } })
+		);
+	},
+}));
+
 const { useAlleleSubResources } = await import('../useAlleleSubResources');
 
 const storedReference = { type: 'Reference', id: 901, curie: 'AGRKB:101', crossReferences: [] };
@@ -154,5 +163,68 @@ describe('useAlleleSubResources', () => {
 
 		Object.values(result.current.subResources).forEach((subResource) => expect(subResource.rows).toEqual([]));
 		expect(result.current.isDirty).toBe(false);
+	});
+
+	describe('carryOverAll', () => {
+		const shownCrossReference = {
+			dataKey: 'shown-cross-reference',
+			referencedCurie: 'WB:WBVar1',
+			displayName: 'WBVar1',
+			// a page picked in the table carries no descriptor, so the row holds its own
+			resourceDescriptor: { id: 3, prefix: 'WB', resourcePages: [{ id: 5, name: 'allele' }] },
+			resourceDescriptorPage: { id: 5, name: 'allele' },
+			internal: false,
+			obsolete: false,
+		};
+		const allVisible = () => true;
+
+		it('Starts each list over with copies of its rows, as rows to write to the next allele', async () => {
+			const { result } = await renderLoaded();
+			act(() => {
+				result.current.subResources.crossReferences.setRows([shownCrossReference]);
+			});
+
+			await act(async () => {
+				await result.current.carryOverAll(allVisible);
+			});
+
+			const { references, crossReferences } = result.current.subResources;
+			expect(references.rows.map((reference) => reference.curie)).toEqual(['AGRKB:101']);
+			expect(references.isDirty).toBe(true);
+			// a cross reference curie names the allele it belongs to, so the copy keeps only its page
+			expect(crossReferences.rows).toHaveLength(1);
+			expect(crossReferences.rows[0].referencedCurie).toEqual('');
+			expect(crossReferences.rows[0].resourceDescriptorPage).toEqual({ id: 5, name: 'allele' });
+			expect(crossReferences.rows[0].resourceDescriptor).toEqual(shownCrossReference.resourceDescriptor);
+			expect(crossReferences.rows[0].dataKey).not.toEqual('shown-cross-reference');
+		});
+
+		it('Starts a list Duplicate does not copy over empty', async () => {
+			const { result } = await renderLoaded();
+			act(() => {
+				result.current.subResources.alleleSecondaryIds.setRows([{ dataKey: 'id-row', secondaryId: 'WB:WBVar0' }]);
+			});
+
+			await act(async () => {
+				await result.current.carryOverAll(allVisible);
+			});
+
+			expect(result.current.subResources.alleleSecondaryIds.rows).toEqual([]);
+			expect(result.current.subResources.alleleSecondaryIds.isDirty).toBe(false);
+		});
+
+		it('Starts a list whose section is hidden over empty', async () => {
+			const { result } = await renderLoaded();
+			act(() => {
+				result.current.subResources.crossReferences.setRows([shownCrossReference]);
+			});
+
+			await act(async () => {
+				await result.current.carryOverAll((fieldName) => fieldName !== 'Cross References');
+			});
+
+			expect(result.current.subResources.crossReferences.rows).toEqual([]);
+			expect(result.current.subResources.references.rows).toHaveLength(1);
+		});
 	});
 });

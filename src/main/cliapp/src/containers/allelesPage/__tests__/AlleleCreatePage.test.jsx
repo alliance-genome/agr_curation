@@ -29,6 +29,26 @@ const renderPage = () => renderInRouter(<AlleleCreatePage />);
 
 const heading = (name) => screen.queryByRole('heading', { name });
 
+// The allele as the API returns it from create: its own ids and audit fields on it and on its symbol.
+const savedAllele = {
+	id: 4242,
+	curie: 'AGRKB:101000000000001',
+	type: 'Allele',
+	taxon: { id: 9, curie: 'NCBITaxon:6239', name: 'Caenorhabditis elegans' },
+	internal: false,
+	obsolete: false,
+	dateCreated: '2026-10-27T00:00:00Z',
+	createdBy: { uniqueId: 'curator1' },
+	alleleSymbol: {
+		id: 51,
+		displayText: 'abc-1',
+		formatText: 'abc-1',
+		nameType: { name: 'nomenclature_symbol' },
+		internal: false,
+		dateCreated: '2026-10-27T00:00:00Z',
+	},
+};
+
 describe('<AlleleCreatePage />', () => {
 	beforeEach(() => {
 		createAllele.mockReset();
@@ -146,22 +166,51 @@ describe('<AlleleCreatePage />', () => {
 		await waitFor(() => expect(navigate).toHaveBeenCalledWith('/allele/AGRKB:101000000000001'), NAVIGATION_WAIT);
 	});
 
-	it('Stays on a blank form on save and add another', async () => {
+	it('Keeps the saved values on save and add another', async () => {
 		const user = userEvent.setup();
+		createAllele.mockResolvedValue({ data: { entity: savedAllele } });
 		const { container } = await renderPage();
 
-		const taxon = container.querySelector('input[name="taxon-input"]');
-		await user.type(taxon, 'NCBITaxon:6239');
 		await user.click(button('Save & Add Another'));
 
-		await waitFor(() => expect(createAllele).toHaveBeenCalled());
-
+		await waitFor(() => expect(createAllele).toHaveBeenCalledTimes(1));
 		expect(navigate).not.toHaveBeenCalled();
 		await waitFor(() => {
-			expect(container.querySelector('input[name="taxon-input"]')).toHaveValue('');
+			expect(container.querySelector('input[name="taxon-input"]')).toHaveValue('NCBITaxon:6239');
 		});
-		// a fresh form still carries an empty symbol, ready to edit
-		expect(container.querySelector('#displayText')).toHaveValue('');
+		expect(container.querySelector('#displayText')).toHaveValue('abc-1');
+	});
+
+	it('Creates another allele from the kept values, without the saved ids', async () => {
+		const user = userEvent.setup();
+		createAllele.mockResolvedValue({ data: { entity: savedAllele } });
+		await renderPage();
+
+		await user.click(button('Save & Add Another'));
+		await screen.findByText('Allele AGRKB:101000000000001 created');
+
+		await user.click(button('Save & Add Another'));
+		await waitFor(() => expect(createAllele).toHaveBeenCalledTimes(2));
+
+		expect(saveAlleleDetail).not.toHaveBeenCalled();
+		const payload = createAllele.mock.calls[1][0];
+		expect(payload).not.toHaveProperty('id');
+		expect(payload).not.toHaveProperty('curie');
+		expect(payload).not.toHaveProperty('dateCreated');
+		expect(payload.type).toEqual('Allele');
+		expect(payload.taxon.curie).toEqual('NCBITaxon:6239');
+		expect(payload.alleleSymbol.displayText).toEqual('abc-1');
+		expect(payload.alleleSymbol).not.toHaveProperty('id');
+		expect(payload.alleleSymbol).not.toHaveProperty('dateCreated');
+	});
+
+	it('Names the new allele in the success message', async () => {
+		const user = userEvent.setup();
+		await renderPage();
+
+		await user.click(button('Save & Add Another'));
+
+		expect(await screen.findByText('Allele AGRKB:101000000000001 created')).toBeInTheDocument();
 	});
 
 	it('Opens with an empty symbol and no button to add one', async () => {
