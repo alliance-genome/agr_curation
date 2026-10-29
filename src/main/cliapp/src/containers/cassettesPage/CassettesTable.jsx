@@ -4,6 +4,13 @@ import { GenericDataTable } from '../../components/GenericDataTable/GenericDataT
 import { ComponentsDialog } from '../constructsPage/ComponentsDialog';
 import { GenomicComponentsDialog } from '../constructsPage/GenomicComponentsDialog';
 import { StrComponentsDialog } from './StrComponentsDialog';
+import { ComponentsEditDialog } from './components/ComponentsEditDialog';
+import {
+	FREE_TEXT_COMPONENTS,
+	GENOMIC_ENTITY_COMPONENTS,
+	TRANSGENIC_TOOL_COMPONENTS,
+	STR_COMPONENTS,
+} from './components/componentConfigs';
 import { SymbolReadOnlyDialog } from '../nameSlotAnnotations/dialogs/SymbolReadOnlyDialog';
 import { FullNameReadOnlyDialog } from '../nameSlotAnnotations/dialogs/FullNameReadOnlyDialog';
 import { SynonymsReadOnlyDialog } from '../nameSlotAnnotations/dialogs/SynonymsReadOnlyDialog';
@@ -89,6 +96,12 @@ export const CassettesTable = ({ tableName = 'Cassettes', fixedFilters }) => {
 
 	const [strComponentsData, setStrComponentsData] = useState({ dialog: false });
 
+	// SCRUM-6752: the editable component pop-ups, one per list, opened from the row editor
+	const [componentsEditData, setComponentsEditData] = useState({ dialog: false });
+	const [genomicEntityComponentsEditData, setGenomicEntityComponentsEditData] = useState({ dialog: false });
+	const [transgenicToolComponentsEditData, setTransgenicToolComponentsEditData] = useState({ dialog: false });
+	const [strComponentsEditData, setStrComponentsEditData] = useState({ dialog: false });
+
 	const [isInEditMode, setIsInEditMode] = useState(false);
 	const [errorMessages, setErrorMessages] = useState({});
 	const [totalRecords, setTotalRecords] = useState(0);
@@ -135,6 +148,26 @@ export const CassettesTable = ({ tableName = 'Cassettes', fixedFilters }) => {
 	const handleFullNameOpenInEdit = openInEdit(setFullNameData, 'originalFullNames', (row) => [row.cassetteFullName]);
 	const handleSynonymsOpenInEdit = openInEdit(setSynonymsData, 'originalSynonyms', (row) => row.cassetteSynonyms);
 	const handleUsesOpenInEdit = openInEdit(setUsesData, 'originalUses', (row) => row.cassetteUses);
+
+	const openComponentsEdit = (setData) => (event, editorOptions) => {
+		event.preventDefault();
+		setData({ dialog: true, cassetteId: editorOptions.rowData?.id, mainRowProps: editorOptions });
+	};
+
+	// The trigger for a component list's pop-up in the row editor
+	const componentsEditor = (field, setData, label) => (editorOptions) => {
+		const count = editorOptions.rowData?.[field]?.length;
+		return (
+			<DialogTriggerTableEditor
+				editorOptions={editorOptions}
+				onOpenInEdit={openComponentsEdit(setData)}
+				errorField={field}
+				displayText={count ? `${label}(${count}) ` : null}
+				addText={`Add ${label}`}
+				tooltipObject="cassette"
+			/>
+		);
+	};
 
 	const handleComponentsOpen = (cassetteComponents) => {
 		setComponentsData({ originalComponents: cassetteComponents, dialog: true });
@@ -279,7 +312,8 @@ export const CassettesTable = ({ tableName = 'Cassettes', fixedFilters }) => {
 				editor: (editorOptions) => <StringListTableEditor editorOptions={editorOptions} field="secondaryIdentifiers" />,
 			},
 			{
-				field: 'cassetteComponents.componentSymbol',
+				field: 'cassetteComponents',
+				columnKey: 'cassetteComponents.componentSymbol',
 				header: 'Free Text Components',
 				body: (rowData) => (
 					<ListDialogTemplate
@@ -291,9 +325,11 @@ export const CassettesTable = ({ tableName = 'Cassettes', fixedFilters }) => {
 				),
 				sortable: { isInEditMode },
 				filterConfig: FILTER_CONFIGS.cassetteComponentsFilterConfig,
+				editor: componentsEditor('cassetteComponents', setComponentsEditData, 'Components'),
 			},
 			{
-				field: 'cassetteGenomicEntityAssociations.cassetteGenomicEntityAssociationObject.symbol',
+				field: 'cassetteGenomicEntityAssociations',
+				columnKey: 'cassetteGenomicEntityAssociations.cassetteGenomicEntityAssociationObject.symbol',
 				header: 'Genomic Entity Components',
 				body: (rowData) => (
 					<ListDialogTemplate
@@ -305,9 +341,11 @@ export const CassettesTable = ({ tableName = 'Cassettes', fixedFilters }) => {
 				),
 				sortable: { isInEditMode },
 				filterConfig: FILTER_CONFIGS.cassetteGenomicEntityAssociationsFilterConfig,
+				editor: componentsEditor('cassetteGenomicEntityAssociations', setGenomicEntityComponentsEditData, 'Components'),
 			},
 			{
-				field: 'cassetteTransgenicToolAssociations.cassetteTransgenicToolAssociationObject.primaryExternalId',
+				field: 'cassetteTransgenicToolAssociations',
+				columnKey: 'cassetteTransgenicToolAssociations.cassetteTransgenicToolAssociationObject.primaryExternalId',
 				header: 'Transgenic Tool Components',
 				body: (rowData) => (
 					<ListDialogTemplate
@@ -319,9 +357,15 @@ export const CassettesTable = ({ tableName = 'Cassettes', fixedFilters }) => {
 				),
 				sortable: { isInEditMode },
 				filterConfig: FILTER_CONFIGS.cassetteTransgenicToolAssociationsFilterConfig,
+				editor: componentsEditor(
+					'cassetteTransgenicToolAssociations',
+					setTransgenicToolComponentsEditData,
+					'Components'
+				),
 			},
 			{
-				field: 'cassetteStrAssociations.cassetteStrAssociationObject.primaryExternalId',
+				field: 'cassetteStrAssociations',
+				columnKey: 'cassetteStrAssociations.cassetteStrAssociationObject.primaryExternalId',
 				header: 'Sequence Targeting Reagent Components',
 				body: (rowData) => (
 					<ListDialogTemplate
@@ -333,6 +377,7 @@ export const CassettesTable = ({ tableName = 'Cassettes', fixedFilters }) => {
 				),
 				sortable: { isInEditMode },
 				filterConfig: FILTER_CONFIGS.cassetteStrAssociationsFilterConfig,
+				editor: componentsEditor('cassetteStrAssociations', setStrComponentsEditData, 'Components'),
 			},
 			{
 				field: 'cassetteUses',
@@ -543,6 +588,18 @@ export const CassettesTable = ({ tableName = 'Cassettes', fixedFilters }) => {
 				getComponentLabel={transgenicToolDisplayValue}
 			/>
 			<StrComponentsDialog strComponentsData={strComponentsData} setStrComponentsData={setStrComponentsData} />
+			<ComponentsEditDialog data={componentsEditData} setData={setComponentsEditData} config={FREE_TEXT_COMPONENTS} />
+			<ComponentsEditDialog
+				data={genomicEntityComponentsEditData}
+				setData={setGenomicEntityComponentsEditData}
+				config={GENOMIC_ENTITY_COMPONENTS}
+			/>
+			<ComponentsEditDialog
+				data={transgenicToolComponentsEditData}
+				setData={setTransgenicToolComponentsEditData}
+				config={TRANSGENIC_TOOL_COMPONENTS}
+			/>
+			<ComponentsEditDialog data={strComponentsEditData} setData={setStrComponentsEditData} config={STR_COMPONENTS} />
 		</>
 	);
 };
