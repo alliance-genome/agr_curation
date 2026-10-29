@@ -1,0 +1,19 @@
+src/main/java/org/alliancegenome/curation_api/model/entities/AnatomicalSite.java
+  s_90fe3c66eb3b97::t_9dca10d53c04c1 67-68,97-98,109-110,121-122,133-134,145-146
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "e95783cfaec3c358abf89a7ad3d924381006477e",
+  "prompts": {},
+  "sessions": {
+    "s_90fe3c66eb3b97": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "64db8705-0fb3-46f5-be71-5247c76018af",
+        "model": "unknown"
+      },
+      "human_author": "Ketaki Kindre <kkindre@caltech.edu>"
+    }
+  }
+}
