@@ -10,6 +10,7 @@ import java.util.Objects;
 import java.util.function.Function;
 
 import org.alliancegenome.curation_api.constants.EntityFieldConstants;
+import org.alliancegenome.curation_api.dao.PredictedVariantConsequenceDAO;
 import org.alliancegenome.curation_api.dao.VariantDAO;
 import org.alliancegenome.curation_api.dao.associations.AlleleVariantAssociationDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
@@ -19,14 +20,11 @@ import org.alliancegenome.curation_api.model.entities.Note;
 import org.alliancegenome.curation_api.model.entities.PredictedVariantConsequence;
 import org.alliancegenome.curation_api.model.entities.Transcript;
 import org.alliancegenome.curation_api.model.entities.Variant;
-import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
-import org.alliancegenome.curation_api.model.entities.ontology.SOTerm;
 import org.alliancegenome.curation_api.model.entities.associations.AlleleVariantAssociation;
 import org.alliancegenome.curation_api.model.entities.associations.CuratedVariantGenomicLocationAssociation;
 import org.alliancegenome.curation_api.model.ingest.dto.VariantDTO;
 import org.alliancegenome.curation_api.model.input.Pagination;
-import org.alliancegenome.curation_api.model.output.VariantHgvs;
-import org.alliancegenome.curation_api.model.output.VariantTranscriptConsequence;
+import org.alliancegenome.curation_api.model.output.AllModVariants;
 import org.alliancegenome.curation_api.response.ObjectListResponse;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
@@ -46,6 +44,7 @@ public class VariantService extends SubmittedObjectCrudService<Variant, VariantD
 
 	@Inject VariantDAO variantDAO;
 	@Inject AlleleVariantAssociationDAO alleleVariantAssociationDAO;
+	@Inject PredictedVariantConsequenceDAO predictedVariantConsequenceDAO;
 	@Inject NoteService noteService;
 	@Inject VariantValidator variantValidator;
 	@Inject VariantDTOValidator variantDtoValidator;
@@ -136,23 +135,38 @@ public class VariantService extends SubmittedObjectCrudService<Variant, VariantD
 	}
 
 	/** At most this many allele - variant pairs per page of the HGVS export. */
-	public static final int MAX_HGVS_PAGE_SIZE = 10000;
+	public static final int MAX_ALL_MOD_VARIANTS_PAGE_SIZE = 10000;
 
 	// SCRUM-6757: a page of a data provider's allele - variant pairs with their HGVS; page 0 with limit 0 returns only the total
-	public SearchResponse<VariantHgvs> getVariantHgvs(String dataProvider, Integer page, Integer limit) {
+	public SearchResponse<AllModVariants> getAllModVariants(String dataProvider, Integer page, Integer limit) {
 		Map<String, Object> params = new HashMap<>();
 		params.put("alleleVariantAssociationObject.dataProvider.abbreviation", dataProvider);
 		params.put("obsolete", false);
 		params.put("alleleAssociationSubject.obsolete", false);
 		params.put("alleleVariantAssociationObject.obsolete", false);
 
-		SearchResponse<AlleleVariantAssociation> associations = alleleVariantAssociationDAO.findByParams(new Pagination(page, Math.min(limit, MAX_HGVS_PAGE_SIZE)), params);
-		SearchResponse<VariantHgvs> response = new SearchResponse<>(associations.getResults().stream().map(this::toVariantHgvs).toList());
+		SearchResponse<AlleleVariantAssociation> associations = alleleVariantAssociationDAO.findByParams(new Pagination(page, Math.min(limit, MAX_ALL_MOD_VARIANTS_PAGE_SIZE)), params);
+		List<AllModVariants> results = associations.getResults().stream().map(this::toAllModVariants).toList();
+		populateIntronExonLocations(results);
+		SearchResponse<AllModVariants> response = new SearchResponse<>(results);
 		response.setTotalResults(associations.getTotalResults());
 		return response;
 	}
 
-	private VariantHgvs toVariantHgvs(AlleleVariantAssociation association) {
+	// The exon or intron each consequence falls in is transient, so it is computed for the whole page in one query
+	private void populateIntronExonLocations(List<AllModVariants> results) {
+		Map<Long, PredictedVariantConsequence> pvcById = new HashMap<>();
+		for (AllModVariants result : results) {
+			for (PredictedVariantConsequence pvc : result.predictedVariantConsequences()) {
+				if (pvc.getId() != null && pvc.getVariantTranscript() != null) {
+					pvcById.put(pvc.getId(), pvc);
+				}
+			}
+		}
+		predictedVariantConsequenceDAO.populateIntronExonLocations(pvcById);
+	}
+
+	private AllModVariants toAllModVariants(AlleleVariantAssociation association) {
 		Variant variant = association.getAlleleVariantAssociationObject();
 		CuratedVariantGenomicLocationAssociation location = variant.getCuratedVariantGenomicLocations().stream()
 			.filter(l -> !l.getObsolete())
@@ -161,50 +175,23 @@ public class VariantService extends SubmittedObjectCrudService<Variant, VariantD
 		List<PredictedVariantConsequence> consequences = location == null ? List.of() : location.getPredictedVariantConsequences().stream()
 			.filter(c -> !c.getObsolete())
 			.toList();
-		return new VariantHgvs(
+		return new AllModVariants(
 			association.getAlleleAssociationSubject().getPrimaryExternalId(),
 			variant.getCurie(),
 			location == null ? null : location.getHgvs(),
 			distinctSorted(consequences, PredictedVariantConsequence::getHgvsCodingNomenclature),
 			distinctSorted(consequences, PredictedVariantConsequence::getHgvsProteinNomenclature),
-			consequences.stream().map(VariantService::toTranscriptConsequence).sorted(Comparator.comparing(VariantTranscriptConsequence::transcript, Comparator.nullsLast(Comparator.naturalOrder()))).toList());
+			// a sorted copy: the location's own list is managed, with orphan removal
+			consequences.stream().sorted(Comparator.comparing(VariantService::transcriptId, Comparator.nullsLast(Comparator.naturalOrder()))).toList());
 	}
 
-	// One transcript's VEP result, as the predicted consequence holds it
-	private static VariantTranscriptConsequence toTranscriptConsequence(PredictedVariantConsequence c) {
-		return new VariantTranscriptConsequence(
-			transcriptId(c.getVariantTranscript()),
-			c.getVepConsequences() == null ? List.of() : c.getVepConsequences().stream().map(SOTerm::getName).filter(Objects::nonNull).sorted().toList(),
-			termName(c.getVepImpact()),
-			c.getHgvsCodingNomenclature(),
-			c.getHgvsProteinNomenclature(),
-			termName(c.getSiftPrediction()),
-			c.getSiftScore(),
-			termName(c.getPolyphenPrediction()),
-			c.getPolyphenScore(),
-			c.getAminoAcidReference(),
-			c.getAminoAcidVariant(),
-			c.getCodonReference(),
-			c.getCodonVariant(),
-			c.getCalculatedCdnaStart(),
-			c.getCalculatedCdnaEnd(),
-			c.getCalculatedCdsStart(),
-			c.getCalculatedCdsEnd(),
-			c.getCalculatedProteinStart(),
-			c.getCalculatedProteinEnd(),
-			c.getGeneLevelConsequence());
-	}
-
-	// The transcript's accession, e.g. NM_201090.2, or its identifier when it has none
-	private static String transcriptId(Transcript transcript) {
+	// The consequence's transcript accession, e.g. NM_201090.2, or its identifier when it has none
+	private static String transcriptId(PredictedVariantConsequence consequence) {
+		Transcript transcript = consequence.getVariantTranscript();
 		if (transcript == null) {
 			return null;
 		}
 		return transcript.getTranscriptId() != null ? transcript.getTranscriptId() : transcript.getIdentifier();
-	}
-
-	private static String termName(VocabularyTerm term) {
-		return term == null ? null : term.getName();
 	}
 
 	private static List<String> distinctSorted(List<PredictedVariantConsequence> consequences, Function<PredictedVariantConsequence, String> hgvs) {

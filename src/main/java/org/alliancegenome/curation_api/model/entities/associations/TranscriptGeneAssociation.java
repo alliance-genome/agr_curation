@@ -66,7 +66,7 @@ public class TranscriptGeneAssociation extends EvidenceAssociation {
 		"sequenceTargetingReagentGeneAssociations",
 		"transcriptGeneAssociations"
 	})
-	@JsonView({ CurationView.FieldsOnly.class, CurationView.AlleleSummaryDocument.class, CurationView.VariantSummaryDocument.class, CurationView.SequenceSummaryDocument.class })
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.AlleleSummaryDocument.class, CurationView.VariantSummaryDocument.class, CurationView.SequenceSummaryDocument.class, CurationView.AllModVariantsView.class })
 	private Gene transcriptGeneAssociationObject;
 	
 	@IndexedEmbedded(includePaths = {"name", "name_keyword"})

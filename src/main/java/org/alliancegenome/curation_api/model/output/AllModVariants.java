@@ -2,6 +2,7 @@ package org.alliancegenome.curation_api.model.output;
 
 import java.util.List;
 
+import org.alliancegenome.curation_api.model.entities.PredictedVariantConsequence;
 import org.alliancegenome.curation_api.view.CurationView;
 
 import com.fasterxml.jackson.annotation.JsonView;
@@ -15,8 +16,8 @@ import com.fasterxml.jackson.annotation.JsonView;
  * @param hgvsC the coding HGVS of its predicted consequences, one per transcript, each with its
  *   transcript accession, e.g. NM_131184.2:c.408-2A>G
  * @param hgvsP the protein HGVS of its predicted consequences, for the transcripts that have one
- * @param transcriptConsequences the VEP result for each transcript, ordered by transcript
+ * @param predictedVariantConsequences the VEP result for each transcript, ordered by transcript
  */
-@JsonView({ CurationView.VariantHgvsView.class })
-public record VariantHgvs(String alleleId, String variantCurie, String hgvsG, List<String> hgvsC, List<String> hgvsP, List<VariantTranscriptConsequence> transcriptConsequences) {
+@JsonView({ CurationView.AllModVariantsView.class })
+public record AllModVariants(String alleleId, String variantCurie, String hgvsG, List<String> hgvsC, List<String> hgvsP, List<PredictedVariantConsequence> predictedVariantConsequences) {
 }

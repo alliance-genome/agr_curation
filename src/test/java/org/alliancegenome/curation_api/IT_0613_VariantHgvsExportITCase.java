@@ -32,9 +32,9 @@ import io.restassured.RestAssured;
 @SuppressWarnings("checkstyle:TypeNameCheck")
 public class IT_0613_VariantHgvsExportITCase extends BaseITCase {
 
-	private static final String ENDPOINT = "/api/variant/WB/hgvs";
+	private static final String ENDPOINT = "/api/variant/export/WB";
 	private static final String ALLELE_RESULT = "results.find { it.alleleId == 'WB:AlleleWithVar1' }";
-	private static final String TRANSCRIPT_RESULT = ALLELE_RESULT + ".transcriptConsequences[0]";
+	private static final String TRANSCRIPT_RESULT = ALLELE_RESULT + ".predictedVariantConsequences[0]";
 
 	@Test
 	@Order(1)
@@ -48,18 +48,18 @@ public class IT_0613_VariantHgvsExportITCase extends BaseITCase {
 			body(ALLELE_RESULT + ".hgvsC", is(List.of("WB:Y74C9A.2a.1:c.29M>N"))).
 			body(ALLELE_RESULT + ".hgvsP", is(List.of("WB:CE49439:p.Met10Neo"))).
 			// The VEP result for each transcript, as IT_0611's update (11_vep/UD_01_update.json) left it
-			body(TRANSCRIPT_RESULT + ".transcript", is("WB:Y74C9A.2a.1")).
-			body(TRANSCRIPT_RESULT + ".molecularConsequences", is(List.of("splice_donor_5th_base_variant"))).
-			body(TRANSCRIPT_RESULT + ".impact", is("MODIFIER")).
-			body(TRANSCRIPT_RESULT + ".hgvsC", is("WB:Y74C9A.2a.1:c.29M>N")).
-			body(TRANSCRIPT_RESULT + ".hgvsP", is("WB:CE49439:p.Met10Neo")).
-			body(TRANSCRIPT_RESULT + ".siftPrediction", is("deleterious_low_confidence")).
-			body(TRANSCRIPT_RESULT + ".polyphenPrediction", is("possibly_damaging")).
+			body(TRANSCRIPT_RESULT + ".variantTranscript.transcriptId", is("WB:Y74C9A.2a.1")).
+			body(TRANSCRIPT_RESULT + ".vepConsequences.name", is(List.of("splice_donor_5th_base_variant"))).
+			body(TRANSCRIPT_RESULT + ".vepImpact.name", is("MODIFIER")).
+			body(TRANSCRIPT_RESULT + ".hgvsCodingNomenclature", is("WB:Y74C9A.2a.1:c.29M>N")).
+			body(TRANSCRIPT_RESULT + ".hgvsProteinNomenclature", is("WB:CE49439:p.Met10Neo")).
+			body(TRANSCRIPT_RESULT + ".siftPrediction.name", is("deleterious_low_confidence")).
+			body(TRANSCRIPT_RESULT + ".polyphenPrediction.name", is("possibly_damaging")).
 			body(TRANSCRIPT_RESULT + ".aminoAcidReference", is("M")).
 			body(TRANSCRIPT_RESULT + ".aminoAcidVariant", is("N")).
-			body(TRANSCRIPT_RESULT + ".proteinStart", is(247)).
-			body(TRANSCRIPT_RESULT + ".proteinEnd", is(250)).
-			body(ALLELE_RESULT + ".transcriptConsequences", hasSize(1));
+			body(TRANSCRIPT_RESULT + ".calculatedProteinStart", is(247)).
+			body(TRANSCRIPT_RESULT + ".calculatedProteinEnd", is(250)).
+			body(ALLELE_RESULT + ".predictedVariantConsequences", hasSize(1));
 	}
 
 	@Test
@@ -91,14 +91,14 @@ public class IT_0613_VariantHgvsExportITCase extends BaseITCase {
 	public void dataProviderWithoutVariantsExportsNothing() {
 		RestAssured.given().
 			when().
-			get("/api/variant/NOT_A_PROVIDER/hgvs?page=0&limit=0").
+			get("/api/variant/export/NOT_A_PROVIDER?page=0&limit=0").
 			then().
 			statusCode(200).
 			body("totalResults", is(0));
 
 		RestAssured.given().
 			when().
-			get("/api/variant/NOT_A_PROVIDER/hgvs").
+			get("/api/variant/export/NOT_A_PROVIDER").
 			then().
 			statusCode(200).
 			body("returnedRecords", is(0));
