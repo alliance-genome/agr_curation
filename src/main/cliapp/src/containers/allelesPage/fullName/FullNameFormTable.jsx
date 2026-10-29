@@ -9,6 +9,7 @@ import { EvidenceEditor } from '../../../components/Editors/legacyForm/EvidenceE
 import { ControlledVocabularyEditor } from '../../../components/Editors/legacyForm/ControlledVocabularyEditor';
 import { VocabularyTermSetEditor } from '../../../components/Editors/legacyForm/VocabularyTermSetEditor';
 
+// nameTypeVocabType: the vocabulary term set the name types come from; the full name's by default
 export const FullNameFormTable = ({
 	name,
 	editingRows,
@@ -21,6 +22,7 @@ export const FullNameFormTable = ({
 	nameTypeOnChangeHandler,
 	internalOnChangeHandler,
 	evidenceOnChangeHandler,
+	nameTypeVocabType = 'full_name_type',
 }) => {
 	let headerGroup = (
 		<ColumnGroup>
@@ -122,7 +124,7 @@ export const FullNameFormTable = ({
 							errorMessages={errorMessages}
 							dataKey={props?.rowData?.dataKey}
 							rowIndex={props.rowIndex}
-							vocabType="full_name_type"
+							vocabType={nameTypeVocabType}
 							field="nameType"
 							showClear={false}
 						/>

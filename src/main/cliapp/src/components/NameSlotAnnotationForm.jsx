@@ -1,37 +1,41 @@
 import { useRef } from 'react';
 import { Button } from 'primereact/button';
-import { FormTableWrapper } from '../../../components/FormTableWrapper';
-import { SymbolFormTable } from '../../allelesPage/symbol/SymbolFormTable';
-import { FullNameFormTable } from '../../allelesPage/fullName/FullNameFormTable';
-import { buildEmptyAlleleSymbol } from '../../allelesPage/utils';
+import { FormTableWrapper } from './FormTableWrapper';
+import { SymbolFormTable } from '../containers/allelesPage/symbol/SymbolFormTable';
+import { FullNameFormTable } from '../containers/allelesPage/fullName/FullNameFormTable';
+import { buildEmptyAlleleSymbol } from '../containers/allelesPage/utils';
 
 /**
- * A detail page's symbol or full name section (the transgenic tool's, the cassette's): one name slot annotation
- * held in the page's reducer and saved with the entity. The symbol's table offers no deletion and the full
- * name's does; each offers the name types of its own term set.
+ * A detail page's symbol or name section: one name slot annotation held in the page's reducer and saved with the
+ * entity. The symbol's table offers no deletion and the name's does; the symbol's offers the symbol name types, and
+ * the name's those of `nameTypeVocabType`.
  *
- * @param {object} state - the page's reducer state
- * @param {Function} dispatch - the page's reducer dispatch
- * @param {string} [entityKey] - the key the page's entity is held under
- * @param {string} entityType - the name the section edits, such as `transgenicToolSymbol` or `cassetteFullName`;
- *   a field ending in `Symbol` is edited as a symbol
- * @param {string} tableName - the section's label
- * @param {string} addLabel - the label of the button adding a name when the entity has none
+ * @param {object} props
+ * @param {object} [props.name] - the name the entity holds, if any
+ * @param {object} props.entityState - the reducer's `entityStates` entry for the name
+ * @param {Function} props.dispatch - the reducer's dispatch
+ * @param {string} props.entityType - the name's field on the entity, and its `entityStates` key
+ * @param {boolean} [props.isSymbol] - whether the name is a symbol rather than a full or systematic name
+ * @param {string} [props.nameTypeVocabType] - the term set a full or systematic name's types come from; the full
+ *   name's by default
+ * @param {string} props.tableName - the section's label
+ * @param {string} props.addLabel - the label of the button adding a name when the entity has none
+ * @param {boolean} [props.isPending] - whether to mark the section as having pending edits
  * @returns {JSX.Element}
  */
 export const NameSlotAnnotationForm = ({
-	state,
+	name,
+	entityState,
 	dispatch,
-	entityKey = 'transgenicTool',
 	entityType,
+	isSymbol = false,
+	nameTypeVocabType,
 	tableName,
 	addLabel,
+	isPending = false,
 }) => {
 	const tableRef = useRef(null);
-	const isSymbol = entityType.endsWith('Symbol');
 	const NameFormTable = isSymbol ? SymbolFormTable : FullNameFormTable;
-	const name = state[entityKey]?.[entityType];
-	const entityState = state.entityStates[entityType];
 
 	const editName = (field, value) => dispatch({ type: 'EDIT_OBJECT', entityType, field, value });
 
@@ -66,10 +70,12 @@ export const NameSlotAnnotationForm = ({
 						setFieldValue(event.target.value);
 						editName('evidence', event.target.value);
 					}}
+					nameTypeVocabType={nameTypeVocabType}
 				/>
 			}
 			tableName={tableName}
 			showTable={entityState.show}
+			isPending={isPending}
 			button={
 				<Button label={addLabel} onClick={createNewNameHandler} disabled={!!name} className="w-4 p-button-text" />
 			}

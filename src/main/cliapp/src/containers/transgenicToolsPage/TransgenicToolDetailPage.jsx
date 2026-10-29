@@ -21,7 +21,7 @@ import { processErrors } from '../affectedGenomicModelPage/utils';
 import { useTransgenicToolReducer } from './detail/useTransgenicToolReducer';
 import { useTransgenicToolAssociations } from './detail/useTransgenicToolAssociations';
 import { buildTransgenicToolPayload } from './detail/utils';
-import { NameSlotAnnotationForm } from './detail/NameSlotAnnotationForm';
+import { NameSlotAnnotationForm } from '../../components/NameSlotAnnotationForm';
 import { SynonymsForm } from './detail/SynonymsForm';
 import { SecondaryIdsForm } from './detail/SecondaryIdsForm';
 import { UsesForm } from './detail/UsesForm';
@@ -236,7 +236,8 @@ export default function TransgenicToolDetailPage() {
 					</FormSection>
 					<FormSection isVisible={isVisible('Full Name')}>
 						<NameSlotAnnotationForm
-							state={transgenicToolState}
+							name={transgenicToolState.transgenicTool?.transgenicToolFullName}
+							entityState={transgenicToolState.entityStates.transgenicToolFullName}
 							dispatch={transgenicToolDispatch}
 							entityType="transgenicToolFullName"
 							tableName="Full Name"
@@ -245,9 +246,11 @@ export default function TransgenicToolDetailPage() {
 					</FormSection>
 					<FormSection isVisible={isVisible('Symbol')}>
 						<NameSlotAnnotationForm
-							state={transgenicToolState}
+							name={transgenicToolState.transgenicTool?.transgenicToolSymbol}
+							entityState={transgenicToolState.entityStates.transgenicToolSymbol}
 							dispatch={transgenicToolDispatch}
 							entityType="transgenicToolSymbol"
+							isSymbol
 							tableName="Symbol"
 							addLabel="Add Symbol"
 						/>
