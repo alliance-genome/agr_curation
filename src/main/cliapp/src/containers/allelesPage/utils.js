@@ -132,8 +132,13 @@ export const buildDuplicateAllele = (allele) => ({
 	alleleDatabaseStatus: copyRow(allele.alleleDatabaseStatus),
 });
 
-// A single-object section's curator-editable fields, as a string to compare by, or none when it is unset.
-const nameSlotAnnotationValue = (nameSlotAnnotation) =>
+/**
+ * A name slot annotation's curator-editable fields, as a string to compare by.
+ *
+ * @param {Object} [nameSlotAnnotation]
+ * @returns {string|null} the fields, or none when the name is unset
+ */
+export const nameSlotAnnotationValue = (nameSlotAnnotation) =>
 	nameSlotAnnotation
 		? JSON.stringify([
 				nameSlotAnnotation.displayText || null,
@@ -170,7 +175,21 @@ const SINGLE_VALUE_FIELD_VALUES = {
 	alleleDatabaseStatus: (allele) => statusSlotAnnotationValue(allele?.alleleDatabaseStatus, 'databaseStatus'),
 };
 
-const SINGLE_VALUE_FIELDS = Object.keys(SINGLE_VALUE_FIELD_VALUES);
+/**
+ * The fields of `fieldValues` whose value on the form differs from the entity as last saved.
+ *
+ * @param {Object} entity the entity as the form holds it
+ * @param {Object} [savedEntity] the entity as the API last returned it
+ * @param {Object<string, (entity: Object) => *>} fieldValues for each field, the value it is compared by, with an
+ *   unset or blank value read as none
+ * @returns {Set<string>} the pending fields' names, none while there is no saved entity
+ */
+export const getPendingFields = (entity, savedEntity, fieldValues) => {
+	if (!savedEntity) return new Set();
+	return new Set(
+		Object.keys(fieldValues).filter((field) => fieldValues[field](entity) !== fieldValues[field](savedEntity))
+	);
+};
 
 /**
  * The single-value fields and single-object sections whose value on the form differs from the allele as
@@ -180,14 +199,8 @@ const SINGLE_VALUE_FIELDS = Object.keys(SINGLE_VALUE_FIELD_VALUES);
  * @param {Object} [savedAllele] the allele as the API last returned it
  * @returns {Set<string>} the pending fields' names, none while there is no saved allele
  */
-export const getPendingSingleValueFields = (allele, savedAllele) => {
-	if (!savedAllele) return new Set();
-	return new Set(
-		SINGLE_VALUE_FIELDS.filter(
-			(field) => SINGLE_VALUE_FIELD_VALUES[field](allele) !== SINGLE_VALUE_FIELD_VALUES[field](savedAllele)
-		)
-	);
-};
+export const getPendingSingleValueFields = (allele, savedAllele) =>
+	getPendingFields(allele, savedAllele, SINGLE_VALUE_FIELD_VALUES);
 
 /**
  * DataTable `onRowEditChange` handler for the form tables, which keep every row in
