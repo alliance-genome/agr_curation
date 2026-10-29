@@ -64,6 +64,8 @@ public class AnatomicalSite extends AuditedObject {
 	private GOTerm cellularComponentTerm;
 
 	//celullar compoent ribbon -- slim
+	@IndexedEmbedded(includePaths = {"name", "name_keyword"})
+	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
 	@JsonView({CurationView.FieldsOnly.class, CurationView.ForPublic.class})
 	@JoinTable(
@@ -92,6 +94,8 @@ public class AnatomicalSite extends AuditedObject {
 	@Column(columnDefinition = "boolean default false", nullable = false)
 	private Boolean anatomicalSubStructureUberonTermOther = false;
 
+	@IndexedEmbedded(includePaths = {"name", "name_keyword"})
+	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
 	@JsonView({CurationView.FieldsOnly.class, CurationView.ForPublic.class, CurationView.GeneExpressionDocument.class})
 	@JoinTable(
@@ -102,6 +106,8 @@ public class AnatomicalSite extends AuditedObject {
 	)
 	private List<OntologyTerm> anatomicalStructureQualifiers;
 
+	@IndexedEmbedded(includePaths = {"name", "name_keyword"})
+	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
 	@JsonView({CurationView.FieldsOnly.class, CurationView.ForPublic.class, CurationView.GeneExpressionDocument.class})
 	@JoinTable(
@@ -112,6 +118,8 @@ public class AnatomicalSite extends AuditedObject {
 	)
 	private List<OntologyTerm> anatomicalSubstructureQualifiers;
 
+	@IndexedEmbedded(includePaths = {"name", "name_keyword"})
+	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
 	@JsonView({CurationView.FieldsOnly.class, CurationView.ForPublic.class, CurationView.GeneExpressionDocument.class})
 	@JoinTable(
@@ -122,6 +130,8 @@ public class AnatomicalSite extends AuditedObject {
 	)
 	private List<OntologyTerm> cellularComponentQualifiers;
 
+	@IndexedEmbedded(includePaths = {"name", "name_keyword"})
+	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
 	@JsonView({CurationView.FieldsOnly.class, CurationView.ForPublic.class})
 	@JoinTable(
@@ -132,6 +142,8 @@ public class AnatomicalSite extends AuditedObject {
 	)
 	private List<UBERONTerm> anatomicalStructureUberonTerms;
 
+	@IndexedEmbedded(includePaths = {"name", "name_keyword"})
+	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
 	@JsonView({CurationView.FieldsOnly.class, CurationView.ForPublic.class})
 	@JoinTable(
