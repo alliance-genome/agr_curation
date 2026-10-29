@@ -39,7 +39,8 @@ const renderSubform =
 	() =>
 		renderSubResourceForm(Form, entityType, [{ ...ROW, ...row }]);
 
-const subResource = (rows) => ({
+const subResource = (label, rows) => ({
+	label,
 	rows,
 	setRows: vi.fn(),
 	errorMessages: {},
@@ -55,7 +56,7 @@ const renderGeneAssociations = () =>
 	renderWithClient(
 		<SubResourcesProvider
 			value={{
-				alleleGeneAssociations: subResource([{ ...ROW, dataKey: 'k1' }]),
+				alleleGeneAssociations: subResource('gene associations', [{ ...ROW, dataKey: 'k1' }]),
 			}}
 		>
 			<AlleleGeneAssociationsForm />
@@ -64,8 +65,8 @@ const renderGeneAssociations = () =>
 
 const renderCrossReferences = () =>
 	renderWithClient(
-		<SubResourcesProvider value={{ crossReferences: subResource([{ dataKey: 'k1' }]) }}>
-			<CrossReferencesForm />
+		<SubResourcesProvider value={{ crossReferences: subResource('cross references', [{ dataKey: 'k1' }]) }}>
+			<CrossReferencesForm type="crossReferences" />
 		</SubResourcesProvider>
 	);
 

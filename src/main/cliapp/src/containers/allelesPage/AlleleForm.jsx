@@ -193,11 +193,11 @@ export const AlleleForm = ({ state, dispatch, isVisible, mode = 'detail', pendin
 			</FormSection>
 
 			<FormSection isVisible={isVisible('Synonyms')}>
-				<SynonymsForm mode={mode} />
+				<SynonymsForm type="alleleSynonyms" mode={mode} />
 			</FormSection>
 
 			<FormSection isVisible={isVisible('Secondary IDs')}>
-				<SecondaryIdsForm mode={mode} />
+				<SecondaryIdsForm type="alleleSecondaryIds" mode={mode} />
 			</FormSection>
 
 			<FormSection isVisible={isVisible('Nomenclature Events')}>
@@ -273,7 +273,7 @@ export const AlleleForm = ({ state, dispatch, isVisible, mode = 'detail', pendin
 			</FormSection>
 
 			<FormSection isVisible={isVisible('Related Notes')}>
-				<RelatedNotesForm mode={mode} />
+				<RelatedNotesForm type="relatedNotes" mode={mode} />
 			</FormSection>
 
 			<FormSection isVisible={isVisible('Allele Gene Associations')}>
@@ -290,7 +290,7 @@ export const AlleleForm = ({ state, dispatch, isVisible, mode = 'detail', pendin
 			</FormSection>
 
 			<FormSection isVisible={isVisible('Cross References')}>
-				<CrossReferencesForm mode={mode} />
+				<CrossReferencesForm type="crossReferences" mode={mode} />
 			</FormSection>
 
 			<FormSection isVisible={!isCreate && isVisible('Updated By')}>

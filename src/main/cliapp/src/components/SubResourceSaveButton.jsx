@@ -1,10 +1,9 @@
 import { useRef } from 'react';
 import { Button } from 'primereact/button';
 import { Toast } from 'primereact/toast';
-import { useSubResource } from '../../components/SubResourcesContext';
-import { useSaveProgressContext } from '../../components/SaveProgressOverlay';
-import { ALLELE_SUB_RESOURCES } from './constants';
-import { capitalize } from './utils';
+import { useSubResource } from './SubResourcesContext';
+import { useSaveProgressContext } from './SaveProgressOverlay';
+import { capitalize } from '../utils/utils';
 
 const titleCase = (text) => text.split(' ').map(capitalize).join(' ');
 
@@ -13,11 +12,10 @@ const titleCase = (text) => text.split(' ').map(capitalize).join(' ');
  * progress overlay when the page shows one.
  *
  * @param {Object} props
- * @param {keyof typeof ALLELE_SUB_RESOURCES} props.type which list
+ * @param {string} props.type the name the page provides the list under
  */
 export const SubResourceSaveButton = ({ type }) => {
-	const { isDirty, isSaving, isLoading, loadError, save } = useSubResource(type);
-	const { label } = ALLELE_SUB_RESOURCES[type];
+	const { label, isDirty, isSaving, isLoading, loadError, save } = useSubResource(type);
 	const toast = useRef(null);
 	const saveProgress = useSaveProgressContext();
 
@@ -52,7 +50,7 @@ export const SubResourceSaveButton = ({ type }) => {
 				onClick={saveHandler}
 				// Saving replaces the stored list with what is on screen, so it has to wait for the read. Saving a table
 				// that is still loading, or that failed to load, would submit an empty list and remove every row the
-				// allele has. With nothing edited there is nothing to save, and nothing is started while another save
+				// entity has. With nothing edited there is nothing to save, and nothing is started while another save
 				// is writing.
 				disabled={!isDirty || isSaving || isLoading || Boolean(loadError) || Boolean(saveProgress?.isSaving)}
 				severity="success"

@@ -25,6 +25,7 @@ const row = {
 };
 
 const buildSubResource = (overrides = {}) => ({
+	label: 'cross references',
 	rows: [row],
 	setRows: vi.fn(),
 	errorMessages: {},
@@ -41,7 +42,7 @@ const renderForm = (overrides = {}, mode = 'detail') => {
 	const crossReferences = buildSubResource(overrides);
 	const result = renderWithClient(
 		<SubResourcesProvider value={{ crossReferences }}>
-			<CrossReferencesForm mode={mode} />
+			<CrossReferencesForm type="crossReferences" mode={mode} />
 		</SubResourcesProvider>
 	);
 	return { ...result, crossReferences };

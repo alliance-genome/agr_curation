@@ -2,24 +2,27 @@ import { Button } from 'primereact/button';
 import { FormTableWrapper } from '../../../components/FormTableWrapper';
 import { useSubResource } from '../../../components/SubResourcesContext';
 import { useSubResourceRows } from '../../../hooks/useSubResourceRows';
-import { SubResourceSaveButton } from '../SubResourceSaveButton';
-import { SubResourceLoadError } from '../SubResourceLoadError';
+import { SubResourceSaveButton } from '../../../components/SubResourceSaveButton';
+import { SubResourceLoadError } from '../../../components/SubResourceLoadError';
 import { RelatedNotesFormTable } from '../relatedNotes/RelatedNotesFormTable';
 import { useRef } from 'react';
 import { addDataKey } from '../utils';
 
 /**
- * The allele detail and create pages' related notes section.
+ * A detail or create page's related notes section.
  *
- * Its rows are saved by the page along with the allele, and on the detail page also by this section's own
+ * Its rows are saved by the page along with the entity, and on the detail page also by this section's own
  * button, which saves them alone. Related notes are written through their own sub-resource rather than in the
- * allele payload, so either save makes that call itself.
+ * entity payload, so either save makes that call itself.
  *
  * @param {Object} props
+ * @param {string} props.type the name the page provides the list under
+ * @param {string} [props.noteTypeVocabType] the vocabulary term set the note types come from; the table's own
+ *   default when omitted
  * @param {'detail'|'create'} [props.mode]
  */
-export const RelatedNotesForm = ({ mode = 'detail' }) => {
-	const subResource = useSubResource('relatedNotes');
+export const RelatedNotesForm = ({ type, noteTypeVocabType, mode = 'detail' }) => {
+	const subResource = useSubResource(type);
 	const { rows: relatedNotes, errorMessages, isDirty } = subResource;
 	const { editingRows, addRow, updateRow, deletionHandler, onRowEditChange } = useSubResourceRows(subResource, {
 		prepend: true,
@@ -78,16 +81,17 @@ export const RelatedNotesForm = ({ mode = 'detail' }) => {
 					textOnChangeHandler={textOnChangeHandler}
 					internalOnChangeHandler={internalOnChangeHandler}
 					referencesOnChangeHandler={referencesOnChangeHandler}
+					noteTypeVocabType={noteTypeVocabType}
 				/>
 			}
 			tableName="Related Notes"
 			showTable={relatedNotes.length > 0}
 			isPending={isDetail && isDirty}
-			titleAction={isDetail && <SubResourceSaveButton type="relatedNotes" />}
+			titleAction={isDetail && <SubResourceSaveButton type={type} />}
 			button={
 				<>
 					<Button label="Add Related Note" onClick={createNewRelatedNoteHandler} className="w-4 p-button-text" />
-					<SubResourceLoadError type="relatedNotes" />
+					<SubResourceLoadError type={type} />
 				</>
 			}
 		/>
