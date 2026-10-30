@@ -30,7 +30,13 @@ import lombok.EqualsAndHashCode;
 @AGRCurationSchemaVersion(min = "1.9.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { Association.class })
 public class EvidenceAssociation extends Association {
 
-	@IndexedEmbedded(includeDepth = 2)
+	@IndexedEmbedded(includePaths = {
+		"id", "curie", "curie_keyword",
+		"primaryCrossReferenceCurie", "primaryCrossReferenceCurie_keyword", "crossReferenceCuries", "crossReferenceCuries_keyword",
+		"createdBy.uniqueId", "createdBy.uniqueId_keyword", "updatedBy.uniqueId", "updatedBy.uniqueId_keyword",
+		"dateCreated", "dateCreated_keyword", "dateUpdated", "dateUpdated_keyword", "dbDateCreated", "dbDateCreated_keyword",
+		"dbDateUpdated", "dbDateUpdated_keyword", "internal", "internal_keyword", "obsolete", "obsolete_keyword"
+	})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
 	@Fetch(FetchMode.JOIN)
@@ -43,6 +49,6 @@ public class EvidenceAssociation extends Association {
 			@Index(columnList = "evidence_id")
 		}
 	)
-	private List<InformationContentEntity> evidence;
+	private List<Reference> evidence;
 
 }

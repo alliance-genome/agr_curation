@@ -6,7 +6,7 @@ import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
 import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.GenePhenotypeAnnotation;
-import org.alliancegenome.curation_api.model.entities.InformationContentEntity;
+import org.alliancegenome.curation_api.model.entities.Reference;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.PhenotypeFmsDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
@@ -31,11 +31,11 @@ public class GenePhenotypeAnnotationFmsDTOValidator extends PhenotypeAnnotationF
 		ObjectResponse<GenePhenotypeAnnotation> apaResponse = new ObjectResponse<GenePhenotypeAnnotation>();
 		GenePhenotypeAnnotation annotation = new GenePhenotypeAnnotation();
 
-		ObjectResponse<InformationContentEntity> refResponse = validateReference(dto);
+		ObjectResponse<Reference> refResponse = validateReference(dto);
 		apaResponse.addErrorMessages(refResponse.getErrorMessages());
 
-		InformationContentEntity reference = refResponse.getEntity();
-		String refString = reference == null ? null : reference.getCurie();
+		Reference reference = refResponse.getEntity();
+		String refString = getRefString(dto, reference);
 
 		String uniqueId = AnnotationUniqueIdHelper.getPhenotypeAnnotationUniqueId(dto, subject.getIdentifier(), refString);
 		SearchResponse<GenePhenotypeAnnotation> annotationSearch = genePhenotypeAnnotationDAO.findByField("uniqueId", uniqueId);
@@ -47,6 +47,7 @@ public class GenePhenotypeAnnotationFmsDTOValidator extends PhenotypeAnnotationF
 		
 		annotation.setUniqueId(uniqueId);
 		annotation.setEvidenceItem(reference);
+		setOmimOrphanetCrossReference(annotation, dto);
 		annotation.setPhenotypeAnnotationSubject(subject);
 
 		ObjectResponse<GenePhenotypeAnnotation> paResponse = validatePhenotypeAnnotation(annotation, dto, dataProvider);
