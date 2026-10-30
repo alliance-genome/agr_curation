@@ -67,17 +67,17 @@ describe('<GcrpCrossReferenceForm />', () => {
 		expect(handle.state.gene.gcrpCrossReference.referencedCurie).toBe('UniProtKB:P919319');
 	});
 
-	it('shows the message the API reports for the GCRP cross reference', async () => {
+	it('shows a message for the GCRP cross reference that no cell shows', async () => {
 		const { container, handle } = renderForm();
 		await waitFor(() => expect(curieInput(container)).not.toBeNull());
 
 		act(() =>
 			handle.dispatch({
 				type: 'UPDATE_ERROR_MESSAGES',
-				errorMessages: { gcrpCrossReference: 'referencedCurie - Invalid' },
+				errorMessages: { gcrpCrossReference: 'id - Not a valid entry' },
 			})
 		);
 
-		expect(await screen.findByText('referencedCurie - Invalid')).toBeInTheDocument();
+		expect(await screen.findByText('id - Not a valid entry')).toBeInTheDocument();
 	});
 });

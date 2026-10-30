@@ -16,11 +16,11 @@ import { SubResourcesProvider } from '../../components/SubResourcesContext';
 import { FormFieldVisibilityMenu, useFormFieldVisibility } from '../../components/FormFieldVisibility';
 import { useSaveProgress } from '../../hooks/useSaveProgress';
 import { capitalize, errorMessageOf } from '../../utils/utils';
-import { processErrors } from '../allelesPage/utils';
+import { processErrors, processTableErrors } from '../allelesPage/utils';
 import { seedResourceDescriptors } from '../allelesPage/crossReferences/utils';
 import { useGeneReducer } from './useGeneReducer';
 import { useGeneSubResources } from './useGeneSubResources';
-import { buildGeneDetailPayload, getPendingGeneFields } from './utils';
+import { buildGeneDetailPayload, gcrpCrossReferenceFieldErrors, getPendingGeneFields } from './utils';
 import { GeneForm, GENE_DETAIL_TOGGLEABLE_FIELDS } from './GeneForm';
 
 export default function GeneDetailPage() {
@@ -81,14 +81,23 @@ export default function GeneDetailPage() {
 	});
 
 	/**
-	 * Marks a rejected gene's field errors on the form.
+	 * Marks a rejected gene's field errors on the form. The GCRP cross reference's error arrives as one string naming
+	 * its fields, so it is split onto the row's cells; one that names no field stays with the section.
 	 *
 	 * @param {Object} error the rejected request's error
 	 * @returns {string} the message describing the rejection
 	 */
 	const reportGeneErrors = (error) => {
 		try {
-			processErrors(error?.response?.data, geneDispatch, geneState.gene);
+			const data = error?.response?.data;
+			processErrors(data, geneDispatch, geneState.gene);
+
+			const { gcrpCrossReference: gcrpError, ...otherErrors } = data?.errorMessages ?? {};
+			const gcrpFieldErrors = gcrpCrossReferenceFieldErrors(gcrpError);
+			if (gcrpFieldErrors && geneState.gene.gcrpCrossReference) {
+				processTableErrors(gcrpFieldErrors, geneDispatch, 'gcrpCrossReference', geneState.gene.gcrpCrossReference);
+				geneDispatch({ type: 'UPDATE_ERROR_MESSAGES', errorMessages: otherErrors });
+			}
 		} catch (processingError) {
 			console.error(processingError);
 		}

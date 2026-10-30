@@ -1,4 +1,4 @@
-import { buildGeneDetailPayload, getPendingGeneFields } from '../utils';
+import { buildGeneDetailPayload, gcrpCrossReferenceFieldErrors, getPendingGeneFields } from '../utils';
 import { geneDetailData } from '../mockData/mockData';
 
 const saved = geneDetailData.entity;
@@ -73,5 +73,20 @@ describe('buildGeneDetailPayload', () => {
 
 	it('keeps a gene without a GCRP cross reference without one', () => {
 		expect(buildGeneDetailPayload({ ...saved, gcrpCrossReference: null }).gcrpCrossReference).toBeNull();
+	});
+});
+
+describe('gcrpCrossReferenceFieldErrors', () => {
+	it('splits the error into its messages by field', () => {
+		expect(gcrpCrossReferenceFieldErrors('displayName - Required field | referencedCurie - Invalid')).toEqual({
+			displayName: 'Required field',
+			referencedCurie: 'Invalid',
+		});
+	});
+
+	it('reads none from an error that names no field, a field with no cell, or no error', () => {
+		expect(gcrpCrossReferenceFieldErrors('Something went wrong')).toBeNull();
+		expect(gcrpCrossReferenceFieldErrors('id - Not a valid entry | referencedCurie - Invalid')).toBeNull();
+		expect(gcrpCrossReferenceFieldErrors(undefined)).toBeNull();
 	});
 });

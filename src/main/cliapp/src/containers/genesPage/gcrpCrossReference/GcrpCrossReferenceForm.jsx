@@ -10,8 +10,8 @@ const ENTITY_TYPE = 'gcrpCrossReference';
 
 /**
  * The gene detail page's GCRP cross reference section: the gene's one GCRP cross reference, held in the gene
- * reducer and saved with the gene. A gene has at most one, so it can be added only while there is none. The API
- * reports what is wrong with it as one message for the field, shown beside the Add button.
+ * reducer and saved with the gene. A gene has at most one, so it can be added only while there is none. Errors
+ * naming its fields show on the row's cells; an error naming none shows beside the Add button.
  *
  * @param {Object} props
  * @param {Object} props.state - useGeneReducer state

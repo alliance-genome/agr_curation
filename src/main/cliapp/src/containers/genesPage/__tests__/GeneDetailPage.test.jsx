@@ -101,7 +101,7 @@ describe('<GeneDetailPage />', { timeout: 30000 }, () => {
 		await waitFor(() => expect(saveButton()).toBeDisabled());
 	});
 
-	it('shows why a rejected save failed, keeping the edit', async () => {
+	it('shows why a rejected save failed on the cells at fault, keeping the edit', async () => {
 		const user = userEvent.setup();
 		saveGeneDetail.mockRejectedValue(geneRejection);
 		await renderLoaded();
@@ -111,9 +111,30 @@ describe('<GeneDetailPage />', { timeout: 30000 }, () => {
 		await user.click(saveButton());
 
 		expect(await screen.findByText(/Could not update Gene/)).toBeInTheDocument();
-		expect(within(section('GCRP Cross Reference')).getByText('referencedCurie - Invalid')).toBeInTheDocument();
+		const gcrpSection = within(section('GCRP Cross Reference'));
+		expect(gcrpSection.getByText('Invalid')).toBeInTheDocument();
+		expect(gcrpSection.queryByText('referencedCurie - Invalid')).not.toBeInTheDocument();
 		expect(gcrpCurie()).toHaveValue('UniProtKB:P91931x');
 		expect(saveButton()).toBeEnabled();
+	});
+
+	it('shows a GCRP error naming a field with no cell beside the Add button', async () => {
+		const user = userEvent.setup();
+		saveGeneDetail.mockRejectedValue({
+			response: {
+				status: 400,
+				data: {
+					errorMessage: 'Could not update Gene: [FB:FBgn0019932]',
+					errorMessages: { gcrpCrossReference: 'id - Not a valid entry' },
+				},
+			},
+		});
+		await renderLoaded();
+
+		await user.type(gcrpCurie(), 'x');
+		await user.click(saveButton());
+
+		expect(await within(section('GCRP Cross Reference')).findByText('id - Not a valid entry')).toBeInTheDocument();
 	});
 
 	it('says no gene has an identifier the API does not know', async () => {
