@@ -1,0 +1,33 @@
+src/main/cliapp/src/components/ExternalDataBaseEntityReadOnlyDialog.jsx
+  s_90fe3c66eb3b97::t_daa39a8c711740 5-8,12-13
+src/main/cliapp/src/constants/FilterFields.js
+  s_90fe3c66eb3b97::t_0c31fe1a9ef45b 407-430,1715-1738
+src/main/cliapp/src/constants/SortFields.js
+  s_90fe3c66eb3b97::t_53c20555185091 128-129
+src/main/cliapp/src/containers/htpExpressionDatasetAnnotationsPage/HTPExpressionDatasetAnnotationsTable.jsx
+  s_90fe3c66eb3b97::t_23d6d54751e8dc 15
+src/main/cliapp/src/containers/htpExpressionDatasetSampleAnnotationsPage/BioSampleAgeReadOnlyDialog.jsx
+  s_90fe3c66eb3b97::t_901f8e75830fa9 1-49
+src/main/cliapp/src/containers/htpExpressionDatasetSampleAnnotationsPage/BioSampleGenomicInformationReadOnlyDialog.jsx
+  s_90fe3c66eb3b97::t_887f504797c024 1-63
+src/main/cliapp/src/containers/htpExpressionDatasetSampleAnnotationsPage/HTPExpressionDatasetSampleAnnotationsTable.jsx
+  s_90fe3c66eb3b97::t_4bae7dab08efaa 12-18,30-32,43-53,59-70,73-86,115-127,135-148,170-182,190-202,210-218,297-343,345
+src/main/cliapp/src/containers/htpExpressionDatasetSampleAnnotationsPage/MicroarraySampleDetailsReadOnlyDialog.jsx
+  s_90fe3c66eb3b97::t_4d1bd62b37d749 1-54
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "0b2e003cf8fe5a3b26bc1e5387af6859200e782e",
+  "prompts": {},
+  "sessions": {
+    "s_90fe3c66eb3b97": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "64db8705-0fb3-46f5-be71-5247c76018af",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Ketaki Kindre <kkindre@caltech.edu>"
+    }
+  }
+}
