@@ -29,6 +29,7 @@ import io.quarkus.test.junit.QuarkusIntegrationTest;
 import io.restassured.RestAssured;
 import io.restassured.config.HttpClientConfig;
 import io.restassured.config.RestAssuredConfig;
+import io.restassured.response.ValidatableResponse;
 
 
 @QuarkusIntegrationTest
@@ -63,9 +64,9 @@ public class IT_0201_AlleleGeneAssociationBulkUploadITCase extends BaseITCase {
 
 	private final String alleleGeneAssociationBulkPostEndpoint = "/api/allelegeneassociation/bulk/WB/associationFile";
 	private final String alleleGeneAssociationGetEndpoint = "/api/allelegeneassociation/findBy";
+	private final String alleleGeneAssociationFindEndpoint = "/api/allelegeneassociation/find?limit=10&page=0";
 	private final String alleleGeneAssociationTestFilePath = "src/test/resources/bulk/AA01_allele_gene_association/";
 	private final String alleleGetEndpoint = "/api/allele/";
-	private final String geneGetEndpoint = "/api/gene/";
 
 	private void loadRequiredEntities() throws Exception {
 		Vocabulary noteTypeVocab = getVocabulary("note_type");
@@ -123,15 +124,11 @@ public class IT_0201_AlleleGeneAssociationBulkUploadITCase extends BaseITCase {
 			body("entities[0].alleleGeneAssociationObject.primaryExternalId", is(geneCurie)).
 			body("entities[0].alleleAssociationSubject", nullValue());
 		
-		RestAssured.given().
-			when().
-			get(geneGetEndpoint + geneCurie).
-			then().
-			statusCode(200).
-			body("entity.alleleGeneAssociations", hasSize(1)).
-			body("entity.alleleGeneAssociations[0].relation.name", is(relationName)).
-			body("entity.alleleGeneAssociations[0].alleleGeneAssociationObject.primaryExternalId", is(geneCurie)).
-			body("entity.alleleGeneAssociations[0].alleleGeneAssociationObject", not(hasKey("alleleGeneAssociations")));
+		findGeneAssociationsResponse(geneCurie).
+			body("results", hasSize(1)).
+			body("results[0].relation.name", is(relationName)).
+			body("results[0].alleleGeneAssociationObject.primaryExternalId", is(geneCurie)).
+			body("results[0].alleleGeneAssociationObject", not(hasKey("alleleGeneAssociations")));
 	}
 	
 	@Test
@@ -172,12 +169,8 @@ public class IT_0201_AlleleGeneAssociationBulkUploadITCase extends BaseITCase {
 			statusCode(200).
 			body("entities", hasSize(1));
 		
-		RestAssured.given().
-			when().
-			get(geneGetEndpoint + geneCurie).
-			then().
-			statusCode(200).
-			body("entity.alleleGeneAssociations", hasSize(1));
+		findGeneAssociationsResponse(geneCurie).
+			body("results", hasSize(1));
 	}
 	
 	@Test
@@ -282,5 +275,16 @@ public class IT_0201_AlleleGeneAssociationBulkUploadITCase extends BaseITCase {
 			statusCode(200).
 			extract().jsonPath().getLong("entity.id");
 		return "/api/allele/" + alleleId + "/geneassociations";
+	}
+
+	// The gene's endpoints omit its allele associations, so they are found by the gene as their object.
+	private ValidatableResponse findGeneAssociationsResponse(String genePrimaryExternalId) {
+		return RestAssured.given().
+			contentType("application/json").
+			body("{\"alleleGeneAssociationObject.primaryExternalId\": \"" + genePrimaryExternalId + "\"}").
+			when().
+			post(alleleGeneAssociationFindEndpoint).
+			then().
+			statusCode(200);
 	}
 }
