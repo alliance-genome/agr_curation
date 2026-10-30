@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
-import org.alliancegenome.curation_api.model.entities.InformationContentEntity;
+import org.alliancegenome.curation_api.model.entities.Reference;
 import org.alliancegenome.curation_api.model.entities.base.AuditedObject;
 import org.alliancegenome.curation_api.view.CurationView;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
@@ -59,14 +59,20 @@ import lombok.ToString;
 @AGRCurationSchemaVersion(min = "1.4.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AuditedObject.class })
 public class SlotAnnotation extends AuditedObject {
 
-	@IndexedEmbedded(includeDepth = 2)
+	@IndexedEmbedded(includePaths = {
+		"id", "curie", "curie_keyword",
+		"primaryCrossReferenceCurie", "primaryCrossReferenceCurie_keyword", "crossReferenceCuries", "crossReferenceCuries_keyword",
+		"createdBy.uniqueId", "createdBy.uniqueId_keyword", "updatedBy.uniqueId", "updatedBy.uniqueId_keyword",
+		"dateCreated", "dateCreated_keyword", "dateUpdated", "dateUpdated_keyword", "dbDateCreated", "dbDateCreated_keyword",
+		"dbDateUpdated", "dbDateUpdated_keyword", "internal", "internal_keyword", "obsolete", "obsolete_keyword"
+	})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
 	@JoinTable(indexes = {
-		@Index(name = "slotannotation_informationcontententity_slotannotation_index", columnList = "slotannotation_id"),
-		@Index(name = "slotannotation_informationcontententity_evidence_index", columnList = "evidence_id")
+		@Index(name = "slotannotation_reference_slotannotation_index", columnList = "slotannotation_id"),
+		@Index(name = "slotannotation_reference_evidence_index", columnList = "evidence_id")
 	})
 	@JsonView({ CurationView.FieldsAndLists.class, CurationView.AffectedGenomicModelView.class, CurationView.AlleleView.class, CurationView.AlleleDetailView.class, CurationView.GeneView.class, CurationView.ConstructView.class })
-	private List<InformationContentEntity> evidence;
+	private List<Reference> evidence;
 
 }

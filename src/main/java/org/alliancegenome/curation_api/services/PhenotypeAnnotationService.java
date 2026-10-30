@@ -8,6 +8,7 @@ import java.util.Set;
 
 import org.alliancegenome.curation_api.constants.CrossReferenceConstants;
 import org.alliancegenome.curation_api.constants.EntityFieldConstants;
+import org.alliancegenome.curation_api.constants.ReferenceConstants;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.dao.AGMPhenotypeAnnotationDAO;
 import org.alliancegenome.curation_api.dao.AllelePhenotypeAnnotationDAO;
@@ -26,8 +27,8 @@ import org.alliancegenome.curation_api.model.entities.AllelePhenotypeAnnotation;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.GenePhenotypeAnnotation;
 import org.alliancegenome.curation_api.model.entities.GenomicEntity;
-import org.alliancegenome.curation_api.model.entities.InformationContentEntity;
 import org.alliancegenome.curation_api.model.entities.PhenotypeAnnotation;
+import org.alliancegenome.curation_api.model.entities.Reference;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.PhenotypeFmsDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.base.BaseAnnotationCrudService;
@@ -53,7 +54,6 @@ public class PhenotypeAnnotationService extends BaseAnnotationCrudService<Phenot
 	@Inject PersonDAO personDAO;
 	@Inject GenomicEntityService genomicEntityService;
 	@Inject ReferenceService referenceService;
-	@Inject InformationContentEntityService iceService;
 	@Inject AGMPhenotypeAnnotationService agmPhenotypeAnnotationService;
 	@Inject GenePhenotypeAnnotationService genePhenotypeAnnotationService;
 	@Inject AllelePhenotypeAnnotationService allelePhenotypeAnnotationService;
@@ -123,6 +123,11 @@ public class PhenotypeAnnotationService extends BaseAnnotationCrudService<Phenot
 		agmPhenotypeAnnotationFmsDtoValidator.setGeneIdsWithPhenotypeXref(geneIdsWithPhenotypeXref);
 	}
 
+	public boolean isOmimOrphanetReferenceMissing(List<PhenotypeFmsDTO> dtos) {
+		boolean hasOmimOrphanetEvidence = dtos.stream().anyMatch(dto -> genePhenotypeAnnotationFmsDtoValidator.getOmimOrphanetCurie(dto) != null);
+		return hasOmimOrphanetEvidence && referenceService.retrieveFromDbOrLiteratureService(ReferenceConstants.RGD_OMIM_ORPHANET_REFERENCE) == null;
+	}
+
 	private String resolveIdentifier(String objectId) {
 		return genomicEntityIdentifierCache.computeIfAbsent(objectId, id -> {
 			GenomicEntity entity = genomicEntityService.findByIdentifierString(id);
@@ -142,15 +147,9 @@ public class PhenotypeAnnotationService extends BaseAnnotationCrudService<Phenot
 		}
 
 		// Skip unchanged records by checking pre-loaded uniqueId map
-		if (existingUniqueIds != null && dto.getEvidence() != null && StringUtils.isNotBlank(dto.getEvidence().getPublicationId())) {
-			String refCurie = dto.getEvidence().getPublicationId();
-			if (refCurie.startsWith("OMIM:")) {
-				refCurie = refCurie.substring(1);
-			}
-			InformationContentEntity refEntity = iceService.retrieveFromDbOrLiteratureService(refCurie);
-			String refString = refEntity != null ? refEntity.getCurie() : null;
-			String uniqueId = AnnotationUniqueIdHelper.getPhenotypeAnnotationUniqueId(dto, subjectIdentifier, refString);
-			if (existingUniqueIds.containsKey(uniqueId)) {
+		if (existingUniqueIds != null) {
+			String uniqueId = computeUniqueId(dto, subjectIdentifier);
+			if (uniqueId != null && existingUniqueIds.containsKey(uniqueId)) {
 				return existingUniqueIds.get(uniqueId);
 			}
 		}
@@ -187,12 +186,12 @@ public class PhenotypeAnnotationService extends BaseAnnotationCrudService<Phenot
 		if (dto.getEvidence() == null || StringUtils.isBlank(dto.getEvidence().getPublicationId())) {
 			return null;
 		}
-		String refCurie = dto.getEvidence().getPublicationId();
-		if (refCurie.startsWith("OMIM:")) {
-			refCurie = refCurie.substring(1);
+		// MIM/ORPHA records keep their own curie in the uniqueId, not that of the generic reference they cite
+		String refString = genePhenotypeAnnotationFmsDtoValidator.getOmimOrphanetCurie(dto);
+		if (refString == null) {
+			Reference refEntity = referenceService.retrieveFromDbOrLiteratureService(dto.getEvidence().getPublicationId());
+			refString = refEntity != null ? refEntity.getCurie() : null;
 		}
-		InformationContentEntity refEntity = iceService.retrieveFromDbOrLiteratureService(refCurie);
-		String refString = refEntity != null ? refEntity.getCurie() : null;
 		return AnnotationUniqueIdHelper.getPhenotypeAnnotationUniqueId(dto, subjectIdentifier, refString);
 	}
 

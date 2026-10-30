@@ -23,7 +23,6 @@ import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.Construct;
 import org.alliancegenome.curation_api.model.entities.Gene;
-import org.alliancegenome.curation_api.model.entities.InformationContentEntity;
 import org.alliancegenome.curation_api.model.entities.Note;
 import org.alliancegenome.curation_api.model.entities.Organization;
 import org.alliancegenome.curation_api.model.entities.Person;
@@ -1802,7 +1801,7 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 		return extra.toString();
 	}
 
-	private AlleleMutationTypeSlotAnnotation createAlleleMutationTypeSlotAnnotation(List<InformationContentEntity> evidence, List<SOTerm> mutationTypes) {
+	private AlleleMutationTypeSlotAnnotation createAlleleMutationTypeSlotAnnotation(List<Reference> evidence, List<SOTerm> mutationTypes) {
 		AlleleMutationTypeSlotAnnotation amt = new AlleleMutationTypeSlotAnnotation();
 		amt.setEvidence(evidence);
 		amt.setMutationTypes(mutationTypes);
@@ -1810,7 +1809,7 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 		return amt;
 	}
 
-	private AlleleGermlineTransmissionStatusSlotAnnotation createAlleleGermlineTransmissionStatusSlotAnnotation(List<InformationContentEntity> evidence, VocabularyTerm status) {
+	private AlleleGermlineTransmissionStatusSlotAnnotation createAlleleGermlineTransmissionStatusSlotAnnotation(List<Reference> evidence, VocabularyTerm status) {
 		AlleleGermlineTransmissionStatusSlotAnnotation agts = new AlleleGermlineTransmissionStatusSlotAnnotation();
 		agts.setEvidence(evidence);
 		agts.setGermlineTransmissionStatus(status);
@@ -1818,7 +1817,7 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 		return agts;
 	}
 
-	private AlleleDatabaseStatusSlotAnnotation createAlleleDatabaseStatusSlotAnnotation(List<InformationContentEntity> evidence, VocabularyTerm status) {
+	private AlleleDatabaseStatusSlotAnnotation createAlleleDatabaseStatusSlotAnnotation(List<Reference> evidence, VocabularyTerm status) {
 		AlleleDatabaseStatusSlotAnnotation ads = new AlleleDatabaseStatusSlotAnnotation();
 		ads.setEvidence(evidence);
 		ads.setDatabaseStatus(status);
@@ -1826,7 +1825,7 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 		return ads;
 	}
 
-	private AlleleInheritanceModeSlotAnnotation createAlleleInheritanceModeSlotAnnotation(List<InformationContentEntity> evidence, VocabularyTerm inheritanceMode, PhenotypeTerm phenotypeTerm, String phenotypeStatement) {
+	private AlleleInheritanceModeSlotAnnotation createAlleleInheritanceModeSlotAnnotation(List<Reference> evidence, VocabularyTerm inheritanceMode, PhenotypeTerm phenotypeTerm, String phenotypeStatement) {
 		AlleleInheritanceModeSlotAnnotation imAnnotation = new AlleleInheritanceModeSlotAnnotation();
 		imAnnotation.setEvidence(evidence);
 		imAnnotation.setInheritanceMode(inheritanceMode);
@@ -1836,7 +1835,7 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 		return imAnnotation;
 	}
 
-	private AlleleSymbolSlotAnnotation createAlleleSymbolSlotAnnotation(List<InformationContentEntity> evidence, String name, VocabularyTerm nameType, VocabularyTerm synonymScope, String synonymUrl) {
+	private AlleleSymbolSlotAnnotation createAlleleSymbolSlotAnnotation(List<Reference> evidence, String name, VocabularyTerm nameType, VocabularyTerm synonymScope, String synonymUrl) {
 		AlleleSymbolSlotAnnotation symbol = new AlleleSymbolSlotAnnotation();
 		symbol.setEvidence(evidence);
 		symbol.setDisplayText(name);
@@ -1848,7 +1847,7 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 		return symbol;
 	}
 
-	private AlleleFullNameSlotAnnotation createAlleleFullNameSlotAnnotation(List<InformationContentEntity> evidence, String name, VocabularyTerm nameType, VocabularyTerm synonymScope, String synonymUrl) {
+	private AlleleFullNameSlotAnnotation createAlleleFullNameSlotAnnotation(List<Reference> evidence, String name, VocabularyTerm nameType, VocabularyTerm synonymScope, String synonymUrl) {
 		AlleleFullNameSlotAnnotation fullName = new AlleleFullNameSlotAnnotation();
 		fullName.setEvidence(evidence);
 		fullName.setDisplayText(name);
@@ -1860,7 +1859,7 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 		return fullName;
 	}
 
-	private AlleleSynonymSlotAnnotation createAlleleSynonymSlotAnnotation(List<InformationContentEntity> evidence, String name, VocabularyTerm nameType, VocabularyTerm synonymScope, String synonymUrl) {
+	private AlleleSynonymSlotAnnotation createAlleleSynonymSlotAnnotation(List<Reference> evidence, String name, VocabularyTerm nameType, VocabularyTerm synonymScope, String synonymUrl) {
 		AlleleSynonymSlotAnnotation synonym = new AlleleSynonymSlotAnnotation();
 		synonym.setEvidence(evidence);
 		synonym.setDisplayText(name);
@@ -1872,7 +1871,7 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 		return synonym;
 	}
 
-	private AlleleSecondaryIdSlotAnnotation createAlleleSecondaryIdSlotAnnotation(List<InformationContentEntity> evidence, String id) {
+	private AlleleSecondaryIdSlotAnnotation createAlleleSecondaryIdSlotAnnotation(List<Reference> evidence, String id) {
 		AlleleSecondaryIdSlotAnnotation secondaryId = new AlleleSecondaryIdSlotAnnotation();
 		secondaryId.setSecondaryId(id);
 		secondaryId.setEvidence(evidence);
@@ -1880,7 +1879,7 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 		return secondaryId;
 	}
 
-	private AlleleFunctionalImpactSlotAnnotation createAlleleFunctionalImpactSlotAnnotation(List<InformationContentEntity> evidence, List<VocabularyTerm> functionalImpacts, PhenotypeTerm phenotypeTerm, String phenotypeStatement) {
+	private AlleleFunctionalImpactSlotAnnotation createAlleleFunctionalImpactSlotAnnotation(List<Reference> evidence, List<VocabularyTerm> functionalImpacts, PhenotypeTerm phenotypeTerm, String phenotypeStatement) {
 		AlleleFunctionalImpactSlotAnnotation functionalImpact = new AlleleFunctionalImpactSlotAnnotation();
 		functionalImpact.setEvidence(evidence);
 		functionalImpact.setFunctionalImpacts(functionalImpacts);
@@ -1890,7 +1889,7 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 		return functionalImpact;
 	}
 
-	private AlleleNomenclatureEventSlotAnnotation createAlleleNomenclatureEventSlotAnnotation(List<InformationContentEntity> evidence, VocabularyTerm event) {
+	private AlleleNomenclatureEventSlotAnnotation createAlleleNomenclatureEventSlotAnnotation(List<Reference> evidence, VocabularyTerm event) {
 		AlleleNomenclatureEventSlotAnnotation ane = new AlleleNomenclatureEventSlotAnnotation();
 		ane.setEvidence(evidence);
 		ane.setNomenclatureEvent(event);

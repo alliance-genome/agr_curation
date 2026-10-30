@@ -7,31 +7,35 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.alliancegenome.curation_api.constants.ReferenceConstants;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.ConditionRelationDAO;
-import org.alliancegenome.curation_api.dao.ExternalDatabaseReferenceDAO;
 import org.alliancegenome.curation_api.dao.GeneDAO;
 import org.alliancegenome.curation_api.dao.base.BaseSQLDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.model.entities.ConditionRelation;
-import org.alliancegenome.curation_api.model.entities.ExternalDatabaseReference;
+import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.Gene;
-import org.alliancegenome.curation_api.model.entities.InformationContentEntity;
 import org.alliancegenome.curation_api.model.entities.PhenotypeAnnotation;
+import org.alliancegenome.curation_api.model.entities.Reference;
+import org.alliancegenome.curation_api.model.entities.ResourceDescriptorPage;
 import org.alliancegenome.curation_api.model.entities.ontology.PhenotypeTerm;
 import org.alliancegenome.curation_api.services.helpers.GenePhenotypeAnnotationXrefHelper;
 import org.alliancegenome.curation_api.services.helpers.annotations.AnnotationUniqueIdHelper;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.ConditionRelationFmsDTO;
+import org.alliancegenome.curation_api.model.ingest.dto.fms.CrossReferenceFmsDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.PhenotypeFmsDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.PhenotypeTermIdentifierFmsDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
-import org.alliancegenome.curation_api.services.InformationContentEntityService;
+import org.alliancegenome.curation_api.services.CrossReferenceService;
 import org.alliancegenome.curation_api.services.OrganizationService;
+import org.alliancegenome.curation_api.services.ReferenceService;
 import org.alliancegenome.curation_api.services.ResourceDescriptorPageService;
 import org.alliancegenome.curation_api.services.VocabularyTermService;
 import org.alliancegenome.curation_api.services.ontology.PhenotypeTermService;
@@ -45,14 +49,14 @@ import jakarta.transaction.Transactional;
 @RequestScoped
 public class PhenotypeAnnotationFmsDTOValidator {
 
-	@Inject InformationContentEntityService iceService;
+	@Inject ReferenceService referenceService;
 	@Inject PhenotypeTermService phenotypeTermService;
 	@Inject ConditionRelationFmsDTOValidator conditionRelationFmsDtoValidator;
 	@Inject ConditionRelationDAO conditionRelationDAO;
 	@Inject OrganizationService organizationService;
 	@Inject VocabularyTermService vocabularyTermService;
 	@Inject ResourceDescriptorPageService resourceDescriptorPageService;
-	@Inject ExternalDatabaseReferenceDAO externalDatabaseReferenceDAO;
+	@Inject CrossReferenceService crossReferenceService;
 	@Inject GenePhenotypeAnnotationXrefHelper xrefHelper;
 	@Inject GeneDAO geneDAO;
 
@@ -175,9 +179,9 @@ public class PhenotypeAnnotationFmsDTOValidator {
 	}
 
 	@Transactional
-	public ObjectResponse<InformationContentEntity> validateReference(PhenotypeFmsDTO dto) {
-		ObjectResponse<InformationContentEntity> refResponse = new ObjectResponse<>();
-		InformationContentEntity reference = null;
+	public ObjectResponse<Reference> validateReference(PhenotypeFmsDTO dto) {
+		ObjectResponse<Reference> refResponse = new ObjectResponse<>();
+		Reference reference = null;
 
 		if (dto.getEvidence() == null) {
 			refResponse.addErrorMessage("evidence", ValidationConstants.REQUIRED_MESSAGE);
@@ -186,26 +190,72 @@ public class PhenotypeAnnotationFmsDTOValidator {
 				refResponse.addErrorMessage("evidence - publicationId", ValidationConstants.REQUIRED_MESSAGE);
 			} else {
 				String refCurie = dto.getEvidence().getPublicationId();
-				if (refCurie.startsWith("OMIM:")) {
-					refCurie = refCurie.substring(1);
+				if (getOmimOrphanetCurie(dto) != null) {
+					refCurie = ReferenceConstants.RGD_OMIM_ORPHANET_REFERENCE;
 				}
-				reference = iceService.retrieveFromDbOrLiteratureService(refCurie);
-				
+				reference = referenceService.retrieveFromDbOrLiteratureService(refCurie);
 				if (reference == null) {
-					if (refCurie.startsWith("MIM:") || refCurie.startsWith("ORPHA:")) {
-						ExternalDatabaseReference externalDbRef = new ExternalDatabaseReference();
-						externalDbRef.setCurie(refCurie);
-						externalDbRef.setResourceDescriptorPage(resourceDescriptorPageService.resolvePageForReferenceCurie(refCurie));
-						reference = externalDatabaseReferenceDAO.persist(externalDbRef);
-					} else {
-						refResponse.addErrorMessage("evidence - publicationId", ValidationConstants.INVALID_MESSAGE + " (" + refCurie + ")");
-					}
+					refResponse.addErrorMessage("evidence - publicationId", ValidationConstants.INVALID_MESSAGE + " (" + refCurie + ")");
 				}
 			}
 		}
 
 		refResponse.setEntity(reference);
 		return refResponse;
+	}
+
+	/**
+	 * Returns the MIM or ORPHA curie of an evidence publicationId (OMIM: is read as MIM:), or null
+	 * for any other publicationId. These records cite the generic RGD OMIM/Orphanet reference and
+	 * carry the curie itself in the annotation's crossReference and uniqueId.
+	 */
+	public String getOmimOrphanetCurie(PhenotypeFmsDTO dto) {
+		if (dto.getEvidence() == null || StringUtils.isBlank(dto.getEvidence().getPublicationId())) {
+			return null;
+		}
+		String curie = dto.getEvidence().getPublicationId();
+		if (curie.startsWith("OMIM:")) {
+			curie = curie.substring(1);
+		}
+		if (curie.startsWith("MIM:") || curie.startsWith("ORPHA:")) {
+			return curie;
+		}
+		return null;
+	}
+
+	protected String getRefString(PhenotypeFmsDTO dto, Reference reference) {
+		String omimOrphanetCurie = getOmimOrphanetCurie(dto);
+		if (omimOrphanetCurie != null) {
+			return omimOrphanetCurie;
+		}
+		return reference == null ? null : reference.getCurie();
+	}
+
+	protected void setOmimOrphanetCrossReference(PhenotypeAnnotation annotation, PhenotypeFmsDTO dto) {
+		String curie = getOmimOrphanetCurie(dto);
+		if (curie == null) {
+			return;
+		}
+
+		String prefix = curie.split(":")[0];
+		ResourceDescriptorPage page = null;
+		CrossReferenceFmsDTO xrefDto = dto.getEvidence().getCrossReference();
+		if (xrefDto != null && CollectionUtils.isNotEmpty(xrefDto.getPages())) {
+			page = resourceDescriptorPageService.getPageForResourceDescriptor(prefix, xrefDto.getPages().get(0));
+		}
+		if (page == null) {
+			page = resourceDescriptorPageService.getPageForResourceDescriptor(prefix, "default");
+		}
+
+		CrossReference xref = new CrossReference();
+		xref.setReferencedCurie(curie);
+		xref.setDisplayName(curie);
+		xref.setResourceDescriptorPage(page);
+
+		// Keep an unchanged cross reference so orphanRemoval does not delete and re-insert it
+		if (!Objects.equals(crossReferenceService.getCrossReferenceUniqueId(annotation.getCrossReference()), crossReferenceService.getCrossReferenceUniqueId(xref))) {
+			annotation.setCrossReference(xref);
+		}
 	}
 
 	protected <D extends BaseSQLDAO<E>, E extends PhenotypeAnnotation> List<E> findPrimaryAnnotations(D dao, PhenotypeFmsDTO dto, String primaryAnnotationSubjectIdentifier, String refString) {
@@ -231,7 +281,11 @@ public class PhenotypeAnnotationFmsDTOValidator {
 			return null;
 		}
 		if (StringUtils.isNotBlank(refString)) {
-			params.put("evidenceItem.curie", refString);
+			if (getOmimOrphanetCurie(dto) != null) {
+				params.put("crossReference.referencedCurie", refString);
+			} else {
+				params.put("evidenceItem.curie", refString);
+			}
 		} else {
 			return null;
 		}

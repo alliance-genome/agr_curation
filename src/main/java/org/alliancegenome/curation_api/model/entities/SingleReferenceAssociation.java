@@ -22,10 +22,16 @@ import lombok.EqualsAndHashCode;
 @AGRCurationSchemaVersion(min = "2.10.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { Association.class })
 public class SingleReferenceAssociation extends Association {
 
-	@IndexedEmbedded(includeDepth = 2)
+	@IndexedEmbedded(includePaths = {
+		"id", "curie", "curie_keyword",
+		"primaryCrossReferenceCurie", "primaryCrossReferenceCurie_keyword", "crossReferenceCuries", "crossReferenceCuries_keyword",
+		"createdBy.uniqueId", "createdBy.uniqueId_keyword", "updatedBy.uniqueId", "updatedBy.uniqueId_keyword",
+		"dateCreated", "dateCreated_keyword", "dateUpdated", "dateUpdated_keyword", "dbDateCreated", "dbDateCreated_keyword",
+		"dbDateUpdated", "dbDateUpdated_keyword", "internal", "internal_keyword", "obsolete", "obsolete_keyword"
+	})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
 	@JsonView({ CurationView.FieldsOnly.class, CurationView.ForPublic.class, CurationView.GeneExpressionDocument.class })
-	private InformationContentEntity evidenceItem;
+	private Reference evidenceItem;
 
 }
