@@ -103,7 +103,11 @@ public class CurationView {
 	public static class AlleleView extends FieldsOnly {
 	}
 
-	public static class AlleleDetailView {
+	// The allele and gene detail endpoints: only the fields tagged with this view or a subclass of it
+	public static class EntityDetailView {
+	}
+
+	public static class AlleleDetailView extends EntityDetailView {
 	}
 
 	public static class AlleleGeneAssociationView extends AlleleDetailView {
@@ -128,7 +132,8 @@ public class CurationView {
 	public static class GeneView extends FieldsOnly {
 	}
 
-	public static class GeneDetailView extends GeneView {
+	// The gene detail endpoints: the gene's own single-value fields, but none of its lists or associations
+	public static class GeneDetailView extends EntityDetailView {
 	}
 
 	public static class GeneUpdate extends GeneView {

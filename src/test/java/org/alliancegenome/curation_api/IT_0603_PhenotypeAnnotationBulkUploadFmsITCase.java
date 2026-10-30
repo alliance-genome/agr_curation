@@ -202,12 +202,22 @@ public class IT_0603_PhenotypeAnnotationBulkUploadFmsITCase extends BaseITCase {
 		RestAssured.given().when().get("/api/gene/" + gene).
 				then().
 				statusCode(200).
-				body("entity.primaryExternalId", is(gene)).
-				body("entity.crossReferences", hasSize(1)).
-				body("entity.crossReferences[0].displayName", is("PATEST")).
-				body("entity.crossReferences[0].referencedCurie", is(gene)).
-				body("entity.crossReferences[0].resourceDescriptorPage.name", is("gene/phenotypes")).
-				body("entity.crossReferences[0].resourceDescriptorPage.urlTemplate", is("https://xref_url_test/[%s]"));
+				body("entity.primaryExternalId", is(gene));
+
+		// GET /api/gene/{id} serializes GeneDetailView, which omits crossReferences, so they are read through find,
+		// which serializes GeneView.
+		RestAssured.given().
+				contentType("application/json").
+				body("{\"primaryExternalId\": \"" + gene + "\"}").
+				when().
+				post("/api/gene/find?limit=1&page=0").
+				then().
+				statusCode(200).
+				body("results[0].crossReferences", hasSize(1)).
+				body("results[0].crossReferences[0].displayName", is("PATEST")).
+				body("results[0].crossReferences[0].referencedCurie", is(gene)).
+				body("results[0].crossReferences[0].resourceDescriptorPage.name", is("gene/phenotypes")).
+				body("results[0].crossReferences[0].resourceDescriptorPage.urlTemplate", is("https://xref_url_test/[%s]"));
 	}
 
 	@Test

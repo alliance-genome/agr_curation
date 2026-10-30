@@ -247,7 +247,7 @@ public class Allele extends GenomicEntity {
 		"constructAssociationSubject.constructFullName.displayText_keyword", "constructAssociationSubject.constructFullName.formatText_keyword", "constructAssociationSubject.primaryExternalId_keyword"
 	})
 	@OneToMany(mappedBy = "constructGenomicEntityAssociationObject", cascade = CascadeType.ALL, orphanRemoval = true)
-	@JsonView({ CurationView.FieldsAndLists.class, CurationView.GeneDetailView.class })
+	@JsonView({ CurationView.FieldsAndLists.class })
 	private List<ConstructGenomicEntityAssociation> constructGenomicEntityAssociations;
 
 	@ManyToMany(mappedBy = "assertedAlleles", cascade = CascadeType.ALL)

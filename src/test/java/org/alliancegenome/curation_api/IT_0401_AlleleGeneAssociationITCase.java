@@ -63,8 +63,8 @@ public class IT_0401_AlleleGeneAssociationITCase extends BaseITCase {
 	private Note note2;
 	
 	private final String alleleGeneAssociationGetEndpoint = "/api/allelegeneassociation/findBy";
+	private final String alleleGeneAssociationFindEndpoint = "/api/allelegeneassociation/find?limit=10&page=0";
 	private final String alleleGetEndpoint = "/api/allele/";
-	private final String geneGetEndpoint = "/api/gene/";
 	
 	private void loadRequiredEntities() {
 		Vocabulary nameTypeVocabulary = getVocabulary(VocabularyConstants.NAME_TYPE_VOCABULARY);
@@ -149,15 +149,18 @@ public class IT_0401_AlleleGeneAssociationITCase extends BaseITCase {
 			body("entities[0].alleleGeneAssociationObject.primaryExternalId", is(gene.getPrimaryExternalId())).
 			body("entities[0].alleleAssociationSubject", nullValue());
 		
+		// The gene's endpoints omit its allele associations, so they are found by the gene as their object.
 		RestAssured.given().
+			contentType("application/json").
+			body("{\"alleleGeneAssociationObject.primaryExternalId\": \"" + gene.getPrimaryExternalId() + "\"}").
 			when().
-			get(geneGetEndpoint + gene.getPrimaryExternalId()).
+			post(alleleGeneAssociationFindEndpoint).
 			then().
 			statusCode(200).
-			body("entity.alleleGeneAssociations", hasSize(1)).
-			body("entity.alleleGeneAssociations[0].relation.name", is(relation.getName())).
-			body("entity.alleleGeneAssociations[0].alleleGeneAssociationObject.primaryExternalId", is(gene.getPrimaryExternalId())).
-			body("entity.alleleGeneAssociations[0].alleleGeneAssociationObject", not(hasKey("alleleGeneAssociations")));
+			body("results", hasSize(1)).
+			body("results[0].relation.name", is(relation.getName())).
+			body("results[0].alleleGeneAssociationObject.primaryExternalId", is(gene.getPrimaryExternalId())).
+			body("results[0].alleleGeneAssociationObject", not(hasKey("alleleGeneAssociations")));
 	}
 	
 	@Test

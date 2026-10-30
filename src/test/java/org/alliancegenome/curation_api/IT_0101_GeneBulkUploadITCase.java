@@ -27,6 +27,7 @@ import io.quarkus.test.junit.QuarkusIntegrationTest;
 import io.restassured.RestAssured;
 import io.restassured.config.HttpClientConfig;
 import io.restassured.config.RestAssuredConfig;
+import io.restassured.response.ValidatableResponse;
 
 @QuarkusIntegrationTest
 @QuarkusTestResource(TestContainerResource.Initializer.class)
@@ -60,6 +61,7 @@ public class IT_0101_GeneBulkUploadITCase extends BaseITCase {
 	private final String geneBulkPostEndpointRGD = "/api/gene/bulk/RGD/genes";
 	private final String geneBulkPostEndpointHUMAN = "/api/gene/bulk/HUMAN/genes";
 	private final String geneGetEndpoint = "/api/gene/";
+	private final String geneFindEndpoint = "/api/gene/find?limit=1&page=0";
 	private final String geneTestFilePath = "src/test/resources/bulk/01_gene/";
 	
 	private void loadRequiredEntities() throws Exception {
@@ -132,49 +134,51 @@ public class IT_0101_GeneBulkUploadITCase extends BaseITCase {
 			body("entity.geneSystematicName.updatedBy.uniqueId", is("GENETEST:Person0002")).
 			body("entity.geneSystematicName.dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").toString())).
 			body("entity.geneSystematicName.dateUpdated", is(OffsetDateTime.parse("2022-03-10T22:10:12Z").toString())).
-			body("entity.geneSynonyms", hasSize(1)).
-			body("entity.geneSynonyms[0].displayText", is("Test gene synonym 1")).
-			body("entity.geneSynonyms[0].formatText", is("Test gene synonym <sup>1</sup>")).
-			body("entity.geneSynonyms[0].synonymScope.name", is("exact")).
-			body("entity.geneSynonyms[0].synonymUrl", is("https://alliancegenome.org/test")).
-			body("entity.geneSynonyms[0].nameType.name", is("unspecified")).
-			body("entity.geneSynonyms[0].evidence[0].curie", is(requiredReference)).
-			body("entity.geneSynonyms[0].internal", is(true)).
-			body("entity.geneSynonyms[0].obsolete", is(true)).
-			body("entity.geneSynonyms[0].createdBy.uniqueId", is("GENETEST:Person0001")).
-			body("entity.geneSynonyms[0].updatedBy.uniqueId", is("GENETEST:Person0002")).
-			body("entity.geneSynonyms[0].dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").toString())).
-			body("entity.geneSynonyms[0].dateUpdated", is(OffsetDateTime.parse("2022-03-10T22:10:12Z").toString())).
-			body("entity.geneSecondaryIds", hasSize(1)).
-			body("entity.geneSecondaryIds[0].secondaryId", is("TEST:Secondary")).
-			body("entity.geneSecondaryIds[0].evidence[0].curie", is(requiredReference)).
-			body("entity.geneSecondaryIds[0].internal", is(true)).
-			body("entity.geneSecondaryIds[0].obsolete", is(true)).
-			body("entity.geneSecondaryIds[0].createdBy.uniqueId", is("GENETEST:Person0001")).
-			body("entity.geneSecondaryIds[0].updatedBy.uniqueId", is("GENETEST:Person0002")).
-			body("entity.geneSecondaryIds[0].dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").toString())).
-			body("entity.geneSecondaryIds[0].dateUpdated", is(OffsetDateTime.parse("2022-03-10T22:10:12Z").toString())).
 			body("entity.dataProvider.abbreviation", is(requiredDataProvider)).
 			body("entity.dataProviderCrossReference.referencedCurie", is("TEST:0001")).
 			body("entity.dataProviderCrossReference.displayName", is("TEST:0001")).
 			body("entity.dataProviderCrossReference.resourceDescriptorPage.name", is("homepage")).
-			body("entity.crossReferences", hasSize(1)).
-			body("entity.crossReferences[0].referencedCurie", is("TEST:Xref01")).
-			body("entity.crossReferences[0].displayName", is("TEST:Xref01Display")).
-			body("entity.crossReferences[0].resourceDescriptorPage.name", is("homepage")).
 			body("entity.gcrpCrossReference.referencedCurie", is("TEST:GCRPAF01")).
 			body("entity.gcrpCrossReference.displayName", is("TEST:GCRPAF01Display")).
 			body("entity.gcrpCrossReference.resourceDescriptorPage.name", is("homepage")).
-			body("entity.geneType.curie", is(soTerm)).
-			body("entity.relatedNotes", hasSize(1)).
-			body("entity.relatedNotes[0].internal", is(false)).
-			body("entity.relatedNotes[0].obsolete", is(true)).
-			body("entity.relatedNotes[0].updatedBy.uniqueId", is("DATEST:Person0002")).
-			body("entity.relatedNotes[0].createdBy.uniqueId", is("DATEST:Person0001")).
-			body("entity.relatedNotes[0].dateUpdated", is(OffsetDateTime.parse("2022-03-10T22:10:12Z").toString())).
-			body("entity.relatedNotes[0].dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").toString())).
-			body("entity.relatedNotes[0].freeText", is("Test note")).
-			body("entity.relatedNotes[0].noteType.name", is(noteType));
+			body("entity.geneType.curie", is(soTerm));
+
+		findGeneResponse("GENETEST:Gene0001").
+			body("results[0].geneSynonyms", hasSize(1)).
+			body("results[0].geneSynonyms[0].displayText", is("Test gene synonym 1")).
+			body("results[0].geneSynonyms[0].formatText", is("Test gene synonym <sup>1</sup>")).
+			body("results[0].geneSynonyms[0].synonymScope.name", is("exact")).
+			body("results[0].geneSynonyms[0].synonymUrl", is("https://alliancegenome.org/test")).
+			body("results[0].geneSynonyms[0].nameType.name", is("unspecified")).
+			body("results[0].geneSynonyms[0].evidence[0].curie", is(requiredReference)).
+			body("results[0].geneSynonyms[0].internal", is(true)).
+			body("results[0].geneSynonyms[0].obsolete", is(true)).
+			body("results[0].geneSynonyms[0].createdBy.uniqueId", is("GENETEST:Person0001")).
+			body("results[0].geneSynonyms[0].updatedBy.uniqueId", is("GENETEST:Person0002")).
+			body("results[0].geneSynonyms[0].dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").toString())).
+			body("results[0].geneSynonyms[0].dateUpdated", is(OffsetDateTime.parse("2022-03-10T22:10:12Z").toString())).
+			body("results[0].geneSecondaryIds", hasSize(1)).
+			body("results[0].geneSecondaryIds[0].secondaryId", is("TEST:Secondary")).
+			body("results[0].geneSecondaryIds[0].evidence[0].curie", is(requiredReference)).
+			body("results[0].geneSecondaryIds[0].internal", is(true)).
+			body("results[0].geneSecondaryIds[0].obsolete", is(true)).
+			body("results[0].geneSecondaryIds[0].createdBy.uniqueId", is("GENETEST:Person0001")).
+			body("results[0].geneSecondaryIds[0].updatedBy.uniqueId", is("GENETEST:Person0002")).
+			body("results[0].geneSecondaryIds[0].dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").toString())).
+			body("results[0].geneSecondaryIds[0].dateUpdated", is(OffsetDateTime.parse("2022-03-10T22:10:12Z").toString())).
+			body("results[0].crossReferences", hasSize(1)).
+			body("results[0].crossReferences[0].referencedCurie", is("TEST:Xref01")).
+			body("results[0].crossReferences[0].displayName", is("TEST:Xref01Display")).
+			body("results[0].crossReferences[0].resourceDescriptorPage.name", is("homepage")).
+			body("results[0].relatedNotes", hasSize(1)).
+			body("results[0].relatedNotes[0].internal", is(false)).
+			body("results[0].relatedNotes[0].obsolete", is(true)).
+			body("results[0].relatedNotes[0].updatedBy.uniqueId", is("DATEST:Person0002")).
+			body("results[0].relatedNotes[0].createdBy.uniqueId", is("DATEST:Person0001")).
+			body("results[0].relatedNotes[0].dateUpdated", is(OffsetDateTime.parse("2022-03-10T22:10:12Z").toString())).
+			body("results[0].relatedNotes[0].dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").toString())).
+			body("results[0].relatedNotes[0].freeText", is("Test note")).
+			body("results[0].relatedNotes[0].noteType.name", is(noteType));
 	}
 	
 	@Test
@@ -231,49 +235,51 @@ public class IT_0101_GeneBulkUploadITCase extends BaseITCase {
 			body("entity.geneSystematicName.updatedBy.uniqueId", is("GENETEST:Person0001")).
 			body("entity.geneSystematicName.dateCreated", is(OffsetDateTime.parse("2022-03-19T22:10:12Z").toString())).
 			body("entity.geneSystematicName.dateUpdated", is(OffsetDateTime.parse("2022-03-20T22:10:12Z").toString())).
-			body("entity.geneSynonyms", hasSize(1)).
-			body("entity.geneSynonyms[0].displayText", is("Test gene synonym 1a")).
-			body("entity.geneSynonyms[0].formatText", is("Test gene synonym <sup>1a</sup>")).
-			body("entity.geneSynonyms[0].synonymScope.name", is("broad")).
-			body("entity.geneSynonyms[0].synonymUrl", is("https://alliancegenome.org/test2")).
-			body("entity.geneSynonyms[0].nameType.name", is("systematic_name")).
-			body("entity.geneSynonyms[0].evidence[0].curie", is(requiredReference2)).
-			body("entity.geneSynonyms[0].internal", is(false)).
-			body("entity.geneSynonyms[0].obsolete", is(false)).
-			body("entity.geneSynonyms[0].createdBy.uniqueId", is("GENETEST:Person0002")).
-			body("entity.geneSynonyms[0].updatedBy.uniqueId", is("GENETEST:Person0001")).
-			body("entity.geneSynonyms[0].dateCreated", is(OffsetDateTime.parse("2022-03-19T22:10:12Z").toString())).
-			body("entity.geneSynonyms[0].dateUpdated", is(OffsetDateTime.parse("2022-03-20T22:10:12Z").toString())).
-			body("entity.geneSecondaryIds", hasSize(1)).
-			body("entity.geneSecondaryIds[0].secondaryId", is("TEST:Secondary2")).
-			body("entity.geneSecondaryIds[0].evidence[0].curie", is(requiredReference2)).
-			body("entity.geneSecondaryIds[0].internal", is(false)).
-			body("entity.geneSecondaryIds[0].obsolete", is(false)).
-			body("entity.geneSecondaryIds[0].createdBy.uniqueId", is("GENETEST:Person0002")).
-			body("entity.geneSecondaryIds[0].updatedBy.uniqueId", is("GENETEST:Person0001")).
-			body("entity.geneSecondaryIds[0].dateCreated", is(OffsetDateTime.parse("2022-03-19T22:10:12Z").toString())).
-			body("entity.geneSecondaryIds[0].dateUpdated", is(OffsetDateTime.parse("2022-03-20T22:10:12Z").toString())).
 			body("entity.dataProvider.abbreviation", is(requiredDataProvider2)).
 			body("entity.dataProviderCrossReference.referencedCurie", is("TEST2:0001")).
 			body("entity.dataProviderCrossReference.displayName", is("TEST2:0001")).
 			body("entity.dataProviderCrossReference.resourceDescriptorPage.name", is("homepage2")).
-			body("entity.crossReferences", hasSize(1)).
-			body("entity.crossReferences[0].referencedCurie", is("TEST2:Xref02")).
-			body("entity.crossReferences[0].displayName", is("TEST2:Xref02Display")).
-			body("entity.crossReferences[0].resourceDescriptorPage.name", is("homepage2")).
 			body("entity.gcrpCrossReference.referencedCurie", is("TEST2:GCRPUD01")).
 			body("entity.gcrpCrossReference.displayName", is("TEST2:GCRPUD01Display")).
 			body("entity.gcrpCrossReference.resourceDescriptorPage.name", is("homepage2")).
-			body("entity.geneType.curie", is(soTerm2)).
-			body("entity.relatedNotes", hasSize(1)).
-			body("entity.relatedNotes[0].internal", is(false)).
-			body("entity.relatedNotes[0].obsolete", is(true)).
-			body("entity.relatedNotes[0].updatedBy.uniqueId", is("DATEST:Person0002")).
-			body("entity.relatedNotes[0].createdBy.uniqueId", is("DATEST:Person0001")).
-			body("entity.relatedNotes[0].dateUpdated", is(OffsetDateTime.parse("2022-03-10T22:10:12Z").toString())).
-			body("entity.relatedNotes[0].dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").toString())).
-			body("entity.relatedNotes[0].freeText", is("Test note")).
-			body("entity.relatedNotes[0].noteType.name", is(noteType));
+			body("entity.geneType.curie", is(soTerm2));
+
+		findGeneResponse("GENETEST:Gene0001").
+			body("results[0].geneSynonyms", hasSize(1)).
+			body("results[0].geneSynonyms[0].displayText", is("Test gene synonym 1a")).
+			body("results[0].geneSynonyms[0].formatText", is("Test gene synonym <sup>1a</sup>")).
+			body("results[0].geneSynonyms[0].synonymScope.name", is("broad")).
+			body("results[0].geneSynonyms[0].synonymUrl", is("https://alliancegenome.org/test2")).
+			body("results[0].geneSynonyms[0].nameType.name", is("systematic_name")).
+			body("results[0].geneSynonyms[0].evidence[0].curie", is(requiredReference2)).
+			body("results[0].geneSynonyms[0].internal", is(false)).
+			body("results[0].geneSynonyms[0].obsolete", is(false)).
+			body("results[0].geneSynonyms[0].createdBy.uniqueId", is("GENETEST:Person0002")).
+			body("results[0].geneSynonyms[0].updatedBy.uniqueId", is("GENETEST:Person0001")).
+			body("results[0].geneSynonyms[0].dateCreated", is(OffsetDateTime.parse("2022-03-19T22:10:12Z").toString())).
+			body("results[0].geneSynonyms[0].dateUpdated", is(OffsetDateTime.parse("2022-03-20T22:10:12Z").toString())).
+			body("results[0].geneSecondaryIds", hasSize(1)).
+			body("results[0].geneSecondaryIds[0].secondaryId", is("TEST:Secondary2")).
+			body("results[0].geneSecondaryIds[0].evidence[0].curie", is(requiredReference2)).
+			body("results[0].geneSecondaryIds[0].internal", is(false)).
+			body("results[0].geneSecondaryIds[0].obsolete", is(false)).
+			body("results[0].geneSecondaryIds[0].createdBy.uniqueId", is("GENETEST:Person0002")).
+			body("results[0].geneSecondaryIds[0].updatedBy.uniqueId", is("GENETEST:Person0001")).
+			body("results[0].geneSecondaryIds[0].dateCreated", is(OffsetDateTime.parse("2022-03-19T22:10:12Z").toString())).
+			body("results[0].geneSecondaryIds[0].dateUpdated", is(OffsetDateTime.parse("2022-03-20T22:10:12Z").toString())).
+			body("results[0].crossReferences", hasSize(1)).
+			body("results[0].crossReferences[0].referencedCurie", is("TEST2:Xref02")).
+			body("results[0].crossReferences[0].displayName", is("TEST2:Xref02Display")).
+			body("results[0].crossReferences[0].resourceDescriptorPage.name", is("homepage2")).
+			body("results[0].relatedNotes", hasSize(1)).
+			body("results[0].relatedNotes[0].internal", is(false)).
+			body("results[0].relatedNotes[0].obsolete", is(true)).
+			body("results[0].relatedNotes[0].updatedBy.uniqueId", is("DATEST:Person0002")).
+			body("results[0].relatedNotes[0].createdBy.uniqueId", is("DATEST:Person0001")).
+			body("results[0].relatedNotes[0].dateUpdated", is(OffsetDateTime.parse("2022-03-10T22:10:12Z").toString())).
+			body("results[0].relatedNotes[0].dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").toString())).
+			body("results[0].relatedNotes[0].freeText", is("Test note")).
+			body("results[0].relatedNotes[0].noteType.name", is(noteType));
 	}
 	
 	@Test
@@ -377,17 +383,19 @@ public class IT_0101_GeneBulkUploadITCase extends BaseITCase {
 			then().
 			statusCode(200).
 			body("entity.primaryExternalId", is("GENETEST:Gene0001")).
-			body("entity", not(hasKey("relatedNotes"))).
-			body("entity", not(hasKey("crossReferences"))).
 			body("entity", not(hasKey("gcrpCrossReference"))).
 			body("entity", not(hasKey("createdBy"))).
 			body("entity", not(hasKey("updatedBy"))).
 			body("entity", not(hasKey("dateCreated"))).
 			body("entity", not(hasKey("dateUpdated"))).
 			body("entity", not(hasKey("geneFullName"))).
-			body("entity", not(hasKey("geneSystematicName"))).
-			body("entity", not(hasKey("geneSynonyms"))).
-			body("entity", not(hasKey("geneSecondaryIds")));
+			body("entity", not(hasKey("geneSystematicName")));
+
+		findGeneResponse("GENETEST:Gene0001").
+			body("results[0]", not(hasKey("relatedNotes"))).
+			body("results[0]", not(hasKey("crossReferences"))).
+			body("results[0]", not(hasKey("geneSynonyms"))).
+			body("results[0]", not(hasKey("geneSecondaryIds")));
 	}
 
 	@Test
@@ -401,11 +409,6 @@ public class IT_0101_GeneBulkUploadITCase extends BaseITCase {
 			get(geneGetEndpoint + "GENETEST:Gene0001").then().
 			statusCode(200).
 			body("entity.primaryExternalId", is("GENETEST:Gene0001")).
-			body("entity.relatedNotes[0]", not(hasKey("evidence"))).
-			body("entity.relatedNotes[0]", not(hasKey("createdBy"))).
-			body("entity.relatedNotes[0]", not(hasKey("updatedBy"))).
-			body("entity.relatedNotes[0]", not(hasKey("dateCreated"))).
-			body("entity.relatedNotes[0]", not(hasKey("dateUpdated"))).
 			body("entity.geneSymbol", not(hasKey("synonymScope"))).
 			body("entity.geneSymbol", not(hasKey("synonymUrl"))).
 			body("entity.geneSymbol", not(hasKey("evidence"))).
@@ -427,19 +430,26 @@ public class IT_0101_GeneBulkUploadITCase extends BaseITCase {
 			body("entity.geneSystematicName", not(hasKey("updatedBy"))).
 			body("entity.geneSystematicName", not(hasKey("dateCreated"))).
 			body("entity.geneSystematicName", not(hasKey("dateUpdated"))).
-			body("entity.geneSynonyms[0]", not(hasKey("synonymScope"))).
-			body("entity.geneSynonyms[0]", not(hasKey("synonymUrl"))).
-			body("entity.geneSynonyms[0]", not(hasKey("evidence"))).
-			body("entity.geneSynonyms[0]", not(hasKey("createdBy"))).
-			body("entity.geneSynonyms[0]", not(hasKey("updatedBy"))).
-			body("entity.geneSynonyms[0]", not(hasKey("dateCreated"))).
-			body("entity.geneSynonyms[0]", not(hasKey("dateUpdated"))).
-			body("entity.geneSecondaryIds[0]", not(hasKey("evidence"))).
-			body("entity.geneSecondaryIds[0]", not(hasKey("createdBy"))).
-			body("entity.geneSecondaryIds[0]", not(hasKey("updatedBy"))).
-			body("entity.geneSecondaryIds[0]", not(hasKey("dateCreated"))).
-			body("entity.geneSecondaryIds[0]", not(hasKey("dateUpdated"))).
 			body("entity", not(hasKey("dataProviderCrossReference")));
+
+		findGeneResponse("GENETEST:Gene0001").
+			body("results[0].relatedNotes[0]", not(hasKey("evidence"))).
+			body("results[0].relatedNotes[0]", not(hasKey("createdBy"))).
+			body("results[0].relatedNotes[0]", not(hasKey("updatedBy"))).
+			body("results[0].relatedNotes[0]", not(hasKey("dateCreated"))).
+			body("results[0].relatedNotes[0]", not(hasKey("dateUpdated"))).
+			body("results[0].geneSynonyms[0]", not(hasKey("synonymScope"))).
+			body("results[0].geneSynonyms[0]", not(hasKey("synonymUrl"))).
+			body("results[0].geneSynonyms[0]", not(hasKey("evidence"))).
+			body("results[0].geneSynonyms[0]", not(hasKey("createdBy"))).
+			body("results[0].geneSynonyms[0]", not(hasKey("updatedBy"))).
+			body("results[0].geneSynonyms[0]", not(hasKey("dateCreated"))).
+			body("results[0].geneSynonyms[0]", not(hasKey("dateUpdated"))).
+			body("results[0].geneSecondaryIds[0]", not(hasKey("evidence"))).
+			body("results[0].geneSecondaryIds[0]", not(hasKey("createdBy"))).
+			body("results[0].geneSecondaryIds[0]", not(hasKey("updatedBy"))).
+			body("results[0].geneSecondaryIds[0]", not(hasKey("dateCreated"))).
+			body("results[0].geneSecondaryIds[0]", not(hasKey("dateUpdated")));
 	}
 
 	@Test
@@ -458,12 +468,6 @@ public class IT_0101_GeneBulkUploadITCase extends BaseITCase {
 			body("entity", not(hasKey("updatedBy"))).
 			body("entity", not(hasKey("dateCreated"))).
 			body("entity", not(hasKey("dateUpdated"))).
-			body("entity", not(hasKey("crossReferences"))).
-			body("entity.relatedNotes[0]", not(hasKey("evidence"))).
-			body("entity.relatedNotes[0]", not(hasKey("createdBy"))).
-			body("entity.relatedNotes[0]", not(hasKey("updatedBy"))).
-			body("entity.relatedNotes[0]", not(hasKey("dateCreated"))).
-			body("entity.relatedNotes[0]", not(hasKey("dateUpdated"))).
 			body("entity.geneSymbol", not(hasKey("synonymScope"))).
 			body("entity.geneSymbol", not(hasKey("synonymUrl"))).
 			body("entity.geneSymbol", not(hasKey("evidence"))).
@@ -485,19 +489,27 @@ public class IT_0101_GeneBulkUploadITCase extends BaseITCase {
 			body("entity.geneSystematicName", not(hasKey("updatedBy"))).
 			body("entity.geneSystematicName", not(hasKey("dateCreated"))).
 			body("entity.geneSystematicName", not(hasKey("dateUpdated"))).
-			body("entity.geneSynonyms[0]", not(hasKey("synonymScope"))).
-			body("entity.geneSynonyms[0]", not(hasKey("synonymUrl"))).
-			body("entity.geneSynonyms[0]", not(hasKey("evidence"))).
-			body("entity.geneSynonyms[0]", not(hasKey("createdBy"))).
-			body("entity.geneSynonyms[0]", not(hasKey("updatedBy"))).
-			body("entity.geneSynonyms[0]", not(hasKey("dateCreated"))).
-			body("entity.geneSynonyms[0]", not(hasKey("dateUpdated"))).
-			body("entity.geneSecondaryIds[0]", not(hasKey("evidence"))).
-			body("entity.geneSecondaryIds[0]", not(hasKey("createdBy"))).
-			body("entity.geneSecondaryIds[0]", not(hasKey("updatedBy"))).
-			body("entity.geneSecondaryIds[0]", not(hasKey("dateCreated"))).
-			body("entity.geneSecondaryIds[0]", not(hasKey("dateUpdated"))).
 			body("entity", not(hasKey("dataProviderCrossReference")));
+
+		findGeneResponse("GENETEST:Gene0001").
+			body("results[0]", not(hasKey("crossReferences"))).
+			body("results[0].relatedNotes[0]", not(hasKey("evidence"))).
+			body("results[0].relatedNotes[0]", not(hasKey("createdBy"))).
+			body("results[0].relatedNotes[0]", not(hasKey("updatedBy"))).
+			body("results[0].relatedNotes[0]", not(hasKey("dateCreated"))).
+			body("results[0].relatedNotes[0]", not(hasKey("dateUpdated"))).
+			body("results[0].geneSynonyms[0]", not(hasKey("synonymScope"))).
+			body("results[0].geneSynonyms[0]", not(hasKey("synonymUrl"))).
+			body("results[0].geneSynonyms[0]", not(hasKey("evidence"))).
+			body("results[0].geneSynonyms[0]", not(hasKey("createdBy"))).
+			body("results[0].geneSynonyms[0]", not(hasKey("updatedBy"))).
+			body("results[0].geneSynonyms[0]", not(hasKey("dateCreated"))).
+			body("results[0].geneSynonyms[0]", not(hasKey("dateUpdated"))).
+			body("results[0].geneSecondaryIds[0]", not(hasKey("evidence"))).
+			body("results[0].geneSecondaryIds[0]", not(hasKey("createdBy"))).
+			body("results[0].geneSecondaryIds[0]", not(hasKey("updatedBy"))).
+			body("results[0].geneSecondaryIds[0]", not(hasKey("dateCreated"))).
+			body("results[0].geneSecondaryIds[0]", not(hasKey("dateUpdated")));
 	}
 	
 	@Test
@@ -532,8 +544,10 @@ public class IT_0101_GeneBulkUploadITCase extends BaseITCase {
 			get(geneGetEndpoint + "GENETEST:DX01").
 			then().
 			statusCode(200).
-			body("entity.primaryExternalId", is("GENETEST:DX01")).
-			body("entity.crossReferences", hasSize(1));
+			body("entity.primaryExternalId", is("GENETEST:DX01"));
+
+		findGeneResponse("GENETEST:DX01").
+			body("results[0].crossReferences", hasSize(1));
 		
 		// Check reload also successful
 		checkSuccessfulBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "DX_01_duplicate_xref.json");
@@ -542,8 +556,10 @@ public class IT_0101_GeneBulkUploadITCase extends BaseITCase {
 			get(geneGetEndpoint + "GENETEST:DX01").
 			then().
 			statusCode(200).
-			body("entity.primaryExternalId", is("GENETEST:DX01")).
-			body("entity.crossReferences", hasSize(1));
+			body("entity.primaryExternalId", is("GENETEST:DX01"));
+
+		findGeneResponse("GENETEST:DX01").
+			body("results[0].crossReferences", hasSize(1));
 	}
 
 	@Test
@@ -556,8 +572,10 @@ public class IT_0101_GeneBulkUploadITCase extends BaseITCase {
 			get(geneGetEndpoint + "GENETEST:DN01").
 			then().
 			statusCode(200).
-			body("entity.primaryExternalId", is("GENETEST:DN01")).
-			body("entity.relatedNotes", hasSize(1));
+			body("entity.primaryExternalId", is("GENETEST:DN01"));
+
+		findGeneResponse("GENETEST:DN01").
+			body("results[0].relatedNotes", hasSize(1));
 	}
 
 	@Test
@@ -570,5 +588,17 @@ public class IT_0101_GeneBulkUploadITCase extends BaseITCase {
 		checkWarningBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "IV_19_invalid_gene_secondary_id_evidence.json");
 		checkWarningBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "IV_22_invalid_evidence_curies.json");
 		checkWarningBulkLoad(geneBulkPostEndpoint, geneTestFilePath + "IV_25_invalid_multiple_evidence_fields.json", 3);
+	}
+
+	// GET /api/gene/{id} serializes GeneDetailView, which omits the gene's synonyms, secondary IDs, cross references
+	// and related notes, so the gene with them is read through find, which serializes GeneView.
+	private ValidatableResponse findGeneResponse(String primaryExternalId) {
+		return RestAssured.given().
+			contentType("application/json").
+			body("{\"primaryExternalId\": \"" + primaryExternalId + "\"}").
+			when().
+			post(geneFindEndpoint).
+			then().
+			statusCode(200);
 	}
 }
