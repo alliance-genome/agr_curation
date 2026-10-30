@@ -64,8 +64,8 @@ public class AnatomicalSite extends AuditedObject {
 	private GOTerm cellularComponentTerm;
 
 	//celullar compoent ribbon -- slim
-	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
-	@KeywordField(name = "cellularcomponentribbonterms_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
+	@IndexedEmbedded(includePaths = {"name", "name_keyword"})
+	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
 	@JsonView({CurationView.FieldsOnly.class, CurationView.ForPublic.class})
 	@JoinTable(
@@ -94,8 +94,8 @@ public class AnatomicalSite extends AuditedObject {
 	@Column(columnDefinition = "boolean default false", nullable = false)
 	private Boolean anatomicalSubStructureUberonTermOther = false;
 
-	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
-	@KeywordField(name = "anatomicalstructurequalifiers_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
+	@IndexedEmbedded(includePaths = {"name", "name_keyword"})
+	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
 	@JsonView({CurationView.FieldsOnly.class, CurationView.ForPublic.class, CurationView.GeneExpressionDocument.class})
 	@JoinTable(
@@ -106,8 +106,8 @@ public class AnatomicalSite extends AuditedObject {
 	)
 	private List<OntologyTerm> anatomicalStructureQualifiers;
 
-	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
-	@KeywordField(name = "anatomicalsubstructurequalifiers_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
+	@IndexedEmbedded(includePaths = {"name", "name_keyword"})
+	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
 	@JsonView({CurationView.FieldsOnly.class, CurationView.ForPublic.class, CurationView.GeneExpressionDocument.class})
 	@JoinTable(
@@ -118,8 +118,8 @@ public class AnatomicalSite extends AuditedObject {
 	)
 	private List<OntologyTerm> anatomicalSubstructureQualifiers;
 
-	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
-	@KeywordField(name = "cellularcomponentqualifiers_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
+	@IndexedEmbedded(includePaths = {"name", "name_keyword"})
+	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
 	@JsonView({CurationView.FieldsOnly.class, CurationView.ForPublic.class, CurationView.GeneExpressionDocument.class})
 	@JoinTable(
@@ -130,8 +130,8 @@ public class AnatomicalSite extends AuditedObject {
 	)
 	private List<OntologyTerm> cellularComponentQualifiers;
 
-	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
-	@KeywordField(name = "anatomicalstructureuberonterms_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
+	@IndexedEmbedded(includePaths = {"name", "name_keyword"})
+	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
 	@JsonView({CurationView.FieldsOnly.class, CurationView.ForPublic.class})
 	@JoinTable(
@@ -142,8 +142,8 @@ public class AnatomicalSite extends AuditedObject {
 	)
 	private List<UBERONTerm> anatomicalStructureUberonTerms;
 
-	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
-	@KeywordField(name = "anatomicalsubstructureuberonterms_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
+	@IndexedEmbedded(includePaths = {"name", "name_keyword"})
+	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
 	@JsonView({CurationView.FieldsOnly.class, CurationView.ForPublic.class})
 	@JoinTable(
