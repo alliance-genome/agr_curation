@@ -9,6 +9,13 @@ import { StringTemplate } from '../../components/Templates/StringTemplate';
 import { StringListTemplate } from '../../components/Templates/StringListTemplate';
 import { BooleanTemplate } from '../../components/Templates/BooleanTemplate';
 import { OntologyTermTemplate } from '../../components/Templates/OntologyTermTemplate';
+import { ListDialogTemplate } from '../../components/Templates/dialog/ListDialogTemplate';
+import { CountDialogTemplate } from '../../components/Templates/dialog/CountDialogTemplate';
+import { ExternalDataBaseEntityReadOnlyDialog } from '../../components/ExternalDataBaseEntityReadOnlyDialog';
+import { RelatedNotesReadOnlyDialog } from '../../components/RelatedNotesReadOnlyDialog';
+import { BioSampleAgeReadOnlyDialog } from './BioSampleAgeReadOnlyDialog';
+import { BioSampleGenomicInformationReadOnlyDialog } from './BioSampleGenomicInformationReadOnlyDialog';
+import { MicroarraySampleDetailsReadOnlyDialog } from './MicroarraySampleDetailsReadOnlyDialog';
 import { SearchService } from '../../service/SearchService';
 import { Endpoints } from '../../constants/Endpoints';
 
@@ -20,9 +27,9 @@ const locationText = (site) => {
 };
 
 /**
- * Read-only table of HTP expression dataset sample annotations. First iteration: pop-up fields
- * (Expression Sample, Sample Age, Biological Reference, Genomic Information, Microarray Sample
- * Details, Related Notes) are omitted, per the ticket.
+ * Read-only table of HTP expression dataset sample annotations, including the pop-up fields:
+ * Expression Sample and Biological Reference are both ExternalDataBaseEntity - the same popup
+ * used by the dataset-level table serves both, told apart by title.
  */
 export const HTPExpressionDatasetSampleAnnotationsTable = () => {
 	const toast_topleft = useRef(null);
@@ -33,13 +40,50 @@ export const HTPExpressionDatasetSampleAnnotationsTable = () => {
 	const [totalRecords, setTotalRecords] = useState(0);
 	const [htpExpressionDatasetSampleAnnotations, setHtpExpressionDatasetSampleAnnotations] = useState([]);
 
+	const [expressionSampleData, setExpressionSampleData] = useState({ dialog: false });
+	const [sampleAgeData, setSampleAgeData] = useState({ dialog: false });
+	const [biologicalReferenceData, setBiologicalReferenceData] = useState({ dialog: false });
+	const [genomicInformationData, setGenomicInformationData] = useState({ dialog: false });
+	const [microarrayDetailsData, setMicroarrayDetailsData] = useState({ dialog: false });
+	const [relatedNotesData, setRelatedNotesData] = useState({
+		originalRelatedNotes: [],
+		dialog: false,
+		isInEdit: false,
+	});
+
 	const searchService = new SearchService();
 
 	const errorMessagesRef = useRef();
 	errorMessagesRef.current = errorMessages;
 
+	const handleExpressionSampleOpen = (entities) =>
+		setExpressionSampleData({ originalEntities: entities, dialog: true });
+	const handleSampleAgeOpen = (entities) => setSampleAgeData({ originalEntities: entities, dialog: true });
+	const handleBiologicalReferenceOpen = (entities) =>
+		setBiologicalReferenceData({ originalEntities: entities, dialog: true });
+	const handleGenomicInformationOpen = (entities) =>
+		setGenomicInformationData({ originalEntities: entities, dialog: true });
+	const handleMicroarrayDetailsOpen = (entities) =>
+		setMicroarrayDetailsData({ originalEntities: entities, dialog: true });
+	const handleRelatedNotesOpen = (entities) =>
+		setRelatedNotesData({ originalRelatedNotes: entities, dialog: true, isInEdit: false });
+
 	const columns = useMemo(
 		() => [
+			{
+				field: 'htpExpressionSample.curie',
+				header: 'Expression Sample',
+				sortable: { isInEditMode },
+				body: (rowData) => (
+					<ListDialogTemplate
+						entities={rowData.htpExpressionSample ? [rowData.htpExpressionSample] : []}
+						handleOpen={handleExpressionSampleOpen}
+						getTextField={(entity) => entity?.curie}
+						underline={true}
+					/>
+				),
+				filterConfig: FILTER_CONFIGS.htpExpressionDatasetSampleAnnotationExpressionSampleFilterConfig,
+			},
 			{
 				field: 'curie',
 				header: 'Sample Curie',
@@ -69,11 +113,38 @@ export const HTPExpressionDatasetSampleAnnotationsTable = () => {
 				filterConfig: FILTER_CONFIGS.htpExpressionDatasetSampleAnnotationTypeFilterConfig,
 			},
 			{
+				field: 'htpExpressionSampleAge.age',
+				header: 'Sample Age',
+				sortable: false,
+				body: (rowData) => (
+					<CountDialogTemplate
+						entities={rowData.htpExpressionSampleAge ? [rowData.htpExpressionSampleAge] : []}
+						handleOpen={handleSampleAgeOpen}
+						text={'Age'}
+					/>
+				),
+				filterConfig: FILTER_CONFIGS.htpExpressionDatasetSampleAnnotationSampleAgeFilterConfig,
+			},
+			{
 				field: 'htpExpressionSampleLocations.anatomicalStructure.name',
 				header: 'Sample Locations',
 				sortable: false,
 				body: (rowData) => <StringListTemplate list={rowData.htpExpressionSampleLocations?.map(locationText)} />,
 				filterConfig: FILTER_CONFIGS.htpExpressionDatasetSampleAnnotationLocationsFilterConfig,
+			},
+			{
+				field: 'datasetIds.curie',
+				header: 'Biological Reference',
+				sortable: { isInEditMode },
+				body: (rowData) => (
+					<ListDialogTemplate
+						entities={rowData.datasetIds}
+						handleOpen={handleBiologicalReferenceOpen}
+						getTextField={(entity) => entity?.curie}
+						underline={true}
+					/>
+				),
+				filterConfig: FILTER_CONFIGS.htpExpressionDatasetSampleAnnotationBiologicalReferenceFilterConfig,
 			},
 			{
 				field: 'assemblyVersions',
@@ -97,6 +168,19 @@ export const HTPExpressionDatasetSampleAnnotationsTable = () => {
 				filterConfig: FILTER_CONFIGS.htpExpressionDatasetSampleAnnotationAssayUsedFilterConfig,
 			},
 			{
+				field: 'genomicInformation.bioSampleText',
+				header: 'Sample Genomic Information',
+				sortable: false,
+				body: (rowData) => (
+					<CountDialogTemplate
+						entities={rowData.genomicInformation ? [rowData.genomicInformation] : []}
+						handleOpen={handleGenomicInformationOpen}
+						text={'Genomic Information'}
+					/>
+				),
+				filterConfig: FILTER_CONFIGS.htpExpressionDatasetSampleAnnotationGenomicInformationFilterConfig,
+			},
+			{
 				field: 'geneticSex.name',
 				header: 'Sample Genetic Sex',
 				sortable: { isInEditMode },
@@ -104,11 +188,33 @@ export const HTPExpressionDatasetSampleAnnotationsTable = () => {
 				filterConfig: FILTER_CONFIGS.htpExpressionDatasetSampleAnnotationGeneticSexFilterConfig,
 			},
 			{
+				field: 'microarraySampleDetails.channelId',
+				header: 'Microarray Sample Details',
+				sortable: false,
+				body: (rowData) => (
+					<CountDialogTemplate
+						entities={rowData.microarraySampleDetails ? [rowData.microarraySampleDetails] : []}
+						handleOpen={handleMicroarrayDetailsOpen}
+						text={'Microarray Details'}
+					/>
+				),
+				filterConfig: FILTER_CONFIGS.htpExpressionDatasetSampleAnnotationMicroarrayDetailsFilterConfig,
+			},
+			{
 				field: 'sequencingFormat.name',
 				header: 'Sample Sequencing Format',
 				sortable: { isInEditMode },
 				body: (rowData) => <StringTemplate string={rowData.sequencingFormat?.name} />,
 				filterConfig: FILTER_CONFIGS.htpExpressionDatasetSampleAnnotationSequencingFormatFilterConfig,
+			},
+			{
+				field: 'relatedNotes.freeText',
+				header: 'Sample Related Notes',
+				sortable: false,
+				body: (rowData) => (
+					<CountDialogTemplate entities={rowData.relatedNotes} handleOpen={handleRelatedNotesOpen} text={'Notes'} />
+				),
+				filterConfig: FILTER_CONFIGS.htpExpressionDatasetSampleAnnotationRelatedNotesFilterConfig,
 			},
 			{
 				field: 'dataProvider.abbreviation',
@@ -188,29 +294,54 @@ export const HTPExpressionDatasetSampleAnnotationsTable = () => {
 	});
 
 	return (
-		<div className="card">
-			<Toast ref={toast_topleft} position="top-left" />
-			<Toast ref={toast_topright} position="top-right" />
-			<GenericDataTable
-				dataKey="id"
-				endpoint={SEARCH_ENDPOINT}
-				tableName="HTP Expression Dataset Sample Annotations"
-				entities={htpExpressionDatasetSampleAnnotations}
-				setEntities={setHtpExpressionDatasetSampleAnnotations}
-				totalRecords={totalRecords}
-				setTotalRecords={setTotalRecords}
-				tableState={tableState}
-				setTableState={setTableState}
-				columns={columns}
-				isEditable={false}
-				hasDetails={false}
-				isInEditMode={isInEditMode}
-				setIsInEditMode={setIsInEditMode}
-				toasts={{ toast_topleft, toast_topright }}
-				errorObject={{ errorMessages, setErrorMessages }}
-				defaultColumnWidth={DEFAULT_COLUMN_WIDTH}
-				fetching={isFetching || isLoading}
+		<>
+			<div className="card">
+				<Toast ref={toast_topleft} position="top-left" />
+				<Toast ref={toast_topright} position="top-right" />
+				<GenericDataTable
+					dataKey="id"
+					endpoint={SEARCH_ENDPOINT}
+					tableName="HTP Expression Dataset Sample Annotations"
+					entities={htpExpressionDatasetSampleAnnotations}
+					setEntities={setHtpExpressionDatasetSampleAnnotations}
+					totalRecords={totalRecords}
+					setTotalRecords={setTotalRecords}
+					tableState={tableState}
+					setTableState={setTableState}
+					columns={columns}
+					isEditable={false}
+					hasDetails={false}
+					isInEditMode={isInEditMode}
+					setIsInEditMode={setIsInEditMode}
+					toasts={{ toast_topleft, toast_topright }}
+					errorObject={{ errorMessages, setErrorMessages }}
+					defaultColumnWidth={DEFAULT_COLUMN_WIDTH}
+					fetching={isFetching || isLoading}
+				/>
+			</div>
+			<ExternalDataBaseEntityReadOnlyDialog
+				originalEntitiesData={expressionSampleData}
+				setOriginalEntitiesData={setExpressionSampleData}
+				title="Expression Sample"
 			/>
-		</div>
+			<ExternalDataBaseEntityReadOnlyDialog
+				originalEntitiesData={biologicalReferenceData}
+				setOriginalEntitiesData={setBiologicalReferenceData}
+				title="Biological Reference"
+			/>
+			<BioSampleAgeReadOnlyDialog originalEntitiesData={sampleAgeData} setOriginalEntitiesData={setSampleAgeData} />
+			<BioSampleGenomicInformationReadOnlyDialog
+				originalEntitiesData={genomicInformationData}
+				setOriginalEntitiesData={setGenomicInformationData}
+			/>
+			<MicroarraySampleDetailsReadOnlyDialog
+				originalEntitiesData={microarrayDetailsData}
+				setOriginalEntitiesData={setMicroarrayDetailsData}
+			/>
+			<RelatedNotesReadOnlyDialog
+				originalRelatedNotesData={relatedNotesData}
+				setOriginalRelatedNotesData={setRelatedNotesData}
+			/>
+		</>
 	);
 };

@@ -125,6 +125,8 @@ export const SORT_FIELDS = Object.freeze([
 	'subSeries.curie',
 	'htpExpressionSampleTitle',
 	'htpExpressionSampleType.name',
+	'htpExpressionSample.curie',
+	'datasetIds.curie',
 	'assemblyVersions',
 	'abundance',
 	'expressionAssayUsed.name',
