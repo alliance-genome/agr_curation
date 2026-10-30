@@ -63,6 +63,34 @@ public class VariantService extends SubmittedObjectCrudService<Variant, VariantD
 		return variantDtoValidator.validateVariantDTO(dto, dataProvider);
 	}
 
+	/**
+	 * Hard-deletes a variant on a curator's request. The variant's own genomic locations, with their predicted
+	 * consequences, notes, synonyms and cross references go with it. Alleles associated with it block the deletion.
+	 *
+	 * @param identifierString curie, primary external ID or MOD internal ID of the variant
+	 * @return response holding the deleted variant
+	 * @throws ApiErrorException when no variant matches or the variant is still referenced
+	 */
+	@Override
+	@Transactional
+	public ObjectResponse<Variant> deleteByIdentifier(String identifierString) {
+		Variant variant = findByIdentifierString(identifierString);
+		if (variant == null) {
+			ObjectResponse<Variant> response = new ObjectResponse<>();
+			response.setErrorMessage("Could not find Variant with identifier: " + identifierString);
+			throw new ApiErrorException(response);
+		}
+
+		if (CollectionUtils.isNotEmpty(variant.getAlleleVariantAssociations())) {
+			ObjectResponse<Variant> response = new ObjectResponse<>();
+			response.setErrorMessage("Variant " + variant.getIdentifier() + " is in use and cannot be deleted: Variant has allele association(s)");
+			throw new ApiErrorException(response);
+		}
+
+		variantDAO.remove(variant.getId());
+		return new ObjectResponse<>(variant);
+	}
+
 	@Override
 	@Transactional
 	public Variant deprecateOrDelete(Long id, Boolean throwApiError, String requestSource, Boolean forceDeprecate) {

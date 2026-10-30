@@ -14,6 +14,7 @@ import { getIdentifier } from '../../utils/utils';
 import { buildCreatePayload, buildDuplicateVariant, processErrors } from './utils';
 import { FormFieldVisibilityMenu, useFormFieldVisibility } from '../../components/FormFieldVisibility';
 import { VariantForm, VARIANT_CREATE_TOGGLEABLE_FIELDS } from './VariantForm';
+import { useDuplicateVariantSource } from './useDuplicateVariantSource';
 
 export default function VariantCreatePage() {
 	const navigate = useNavigate();
@@ -25,6 +26,7 @@ export default function VariantCreatePage() {
 	const variantService = useMemo(() => new VariantService(), []);
 	const toastSuccess = useRef(null);
 	const toastError = useRef(null);
+	const { isLoading: duplicateSourceIsLoading } = useDuplicateVariantSource({ variantDispatch, toastError });
 
 	const { isPending: variantPostRequestIsLoading, mutate: variantMutate } = useMutation({
 		mutationFn: (variant) => {
@@ -99,6 +101,7 @@ export default function VariantCreatePage() {
 			<Toast ref={toastError} position="top-left" />
 			<Toast ref={toastSuccess} position="top-right" />
 			<LoadingOverlay isLoading={!!variantPostRequestIsLoading} />
+			<LoadingOverlay isLoading={duplicateSourceIsLoading} message="Loading variant to clone..." />
 			<ErrorBoundary>
 				<StickyHeader>
 					<Splitter className="bg-primary-reverse border-none lg:h-5rem" gutterSize={0}>
