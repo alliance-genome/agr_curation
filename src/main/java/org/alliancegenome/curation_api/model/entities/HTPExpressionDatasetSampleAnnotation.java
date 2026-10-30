@@ -20,6 +20,7 @@ import org.hibernate.search.engine.backend.types.Searchable;
 import org.hibernate.search.engine.backend.types.Sortable;
 import org.hibernate.search.mapper.pojo.automaticindexing.ReindexOnUpdate;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.FullTextField;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmbedded;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexingDependency;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.KeywordField;
@@ -40,6 +41,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
+@Indexed
 @Entity
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
@@ -81,21 +83,21 @@ public class HTPExpressionDatasetSampleAnnotation extends AuditedObject implemen
 	@JsonView({ CurationView.FieldsOnly.class })
 	private ExternalDataBaseEntity htpExpressionSample;
 	
-	@IndexedEmbedded(includePaths = {"curie", "name", "secondaryIdentifiers", "synonyms.name", "abbreviation",
-	"curie_keyword", "name_keyword", "secondaryIdentifiers_keyword", "synonyms.name_keyword", "abbreviation_keyword" })
+	@IndexedEmbedded(includePaths = {"curie", "name", "secondaryIdentifiers", "synonyms.name",
+	"curie_keyword", "name_keyword", "secondaryIdentifiers_keyword", "synonyms.name_keyword" })
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
 	@JsonView(CurationView.FieldsOnly.class)
 	private OBITerm htpExpressionSampleType;
 
-	@IndexedEmbedded(includePaths = {"curie", "name", "secondaryIdentifiers", "synonyms.name", "abbreviation",
-	"curie_keyword", "name_keyword", "secondaryIdentifiers_keyword", "synonyms.name_keyword", "abbreviation_keyword" })
+	@IndexedEmbedded(includePaths = {"curie", "name", "secondaryIdentifiers", "synonyms.name",
+	"curie_keyword", "name_keyword", "secondaryIdentifiers_keyword", "synonyms.name_keyword" })
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
 	@JsonView(CurationView.FieldsOnly.class)
 	private MMOTerm expressionAssayUsed;
 
-	@IndexedEmbedded(includePaths = {"age", "whenExpressedStageName", "age_keyword", "whenExpressedStageName_keyword"})
+	@IndexedEmbedded(includePaths = {"age", "whenExpressedStageName", "age_keyword", "whenexpressedstagename_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonView({ CurationView.FieldsOnly.class })
@@ -103,14 +105,14 @@ public class HTPExpressionDatasetSampleAnnotation extends AuditedObject implemen
 
 	@IndexedEmbedded(includePaths = {"bioSampleAllele.curie", "bioSampleAllele.modInternalId", "bioSampleAllele.primaryExternalId", "bioSampleAllele.primaryExternalId_keyword",
 	"bioSampleAllele.modInternalId_keyword", "bioSampleAgm.curie", "bioSampleAgm.modInternalId", "bioSampleAgm.primaryExternalId", "bioSampleAgm.modInternalId_keyword",
-	"bioSampleAgm.primaryExternalId_keyword", "bioSampleAllele.curie_keyword", "bioSampleAgm.curie_keyword", "bioSampleText", "bioSampleText_keyword"
+	"bioSampleAgm.primaryExternalId_keyword", "bioSampleAllele.curie_keyword", "bioSampleAgm.curie_keyword", "bioSampleText", "biosampletext_keyword"
 	})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonView({ CurationView.FieldsOnly.class })
 	private BioSampleGenomicInformation genomicInformation;
 
-	@IndexedEmbedded(includePaths = {"channelId", "channelId_keyword"})
+	@IndexedEmbedded(includePaths = {"channelId", "channelid_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonView({ CurationView.FieldsOnly.class })
@@ -145,6 +147,12 @@ public class HTPExpressionDatasetSampleAnnotation extends AuditedObject implemen
 	@JsonView({ CurationView.FieldsOnly.class })
 	private VocabularyTerm sequencingFormat;
 
+	// SCRUM-6532: only the two name fields a basic composed display string needs are embedded here -
+	// AnatomicalSite's qualifiers/uberon terms/cellular component are deferred to a future pop-up.
+	@IndexedEmbedded(includePaths = {
+		"anatomicalStructure.name", "anatomicalStructure.name_keyword",
+		"anatomicalSubstructure.name", "anatomicalSubstructure.name_keyword"
+	})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany(cascade = CascadeType.ALL)
 	@JoinTable(indexes = {
@@ -172,7 +180,7 @@ public class HTPExpressionDatasetSampleAnnotation extends AuditedObject implemen
 
 	@JsonView({ CurationView.FieldsOnly.class })
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
-	@KeywordField(name = "htpexpressionsampletitle_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
+	@KeywordField(name = "htpExpressionSampleTitle_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
 	private String htpExpressionSampleTitle;
 
 	@JsonView({ CurationView.FieldsOnly.class })
@@ -183,7 +191,7 @@ public class HTPExpressionDatasetSampleAnnotation extends AuditedObject implemen
 	@JsonView({ CurationView.FieldsOnly.class })
 	@ElementCollection
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
-	@KeywordField(name = "assemblyversions_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
+	@KeywordField(name = "assemblyVersions_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
 	@JoinTable(indexes = @Index(name = "htpdatasample_assemblyversions_htpdatasample_index", columnList = "htpexpressiondatasetsampleannotation_id"))
 	private List<String> assemblyVersions;
 
