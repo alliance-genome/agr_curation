@@ -404,6 +404,30 @@ export const FIELD_SETS = Object.freeze({
 		filterName: 'htpExpressionDatasetSampleAnnotationAssayUsedFilter',
 		fields: ['expressionAssayUsed.name'],
 	},
+	htpExpressionDatasetSampleAnnotationExpressionSampleFieldSet: {
+		filterName: 'htpExpressionDatasetSampleAnnotationExpressionSampleFilter',
+		fields: ['htpExpressionSample.curie'],
+	},
+	htpExpressionDatasetSampleAnnotationSampleAgeFieldSet: {
+		filterName: 'htpExpressionDatasetSampleAnnotationSampleAgeFilter',
+		fields: ['htpExpressionSampleAge.age'],
+	},
+	htpExpressionDatasetSampleAnnotationBiologicalReferenceFieldSet: {
+		filterName: 'htpExpressionDatasetSampleAnnotationBiologicalReferenceFilter',
+		fields: ['datasetIds.curie'],
+	},
+	htpExpressionDatasetSampleAnnotationGenomicInformationFieldSet: {
+		filterName: 'htpExpressionDatasetSampleAnnotationGenomicInformationFilter',
+		fields: ['genomicInformation.bioSampleText'],
+	},
+	htpExpressionDatasetSampleAnnotationMicroarrayDetailsFieldSet: {
+		filterName: 'htpExpressionDatasetSampleAnnotationMicroarrayDetailsFilter',
+		fields: ['microarraySampleDetails.channelId'],
+	},
+	htpExpressionDatasetSampleAnnotationRelatedNotesFieldSet: {
+		filterName: 'htpExpressionDatasetSampleAnnotationRelatedNotesFilter',
+		fields: ['relatedNotes.freeText'],
+	},
 	htpExpressionDatasetSampleAnnotationSequencingFormatFieldSet: {
 		filterName: 'htpExpressionDatasetSampleAnnotationSequencingFormatFilter',
 		fields: ['sequencingFormat.name'],
@@ -1687,6 +1711,30 @@ export const FILTER_CONFIGS = Object.freeze({
 	htpExpressionDatasetSampleAnnotationSequencingFormatFilterConfig: {
 		filterComponentType: 'input',
 		fieldSets: [FIELD_SETS.htpExpressionDatasetSampleAnnotationSequencingFormatFieldSet],
+	},
+	htpExpressionDatasetSampleAnnotationExpressionSampleFilterConfig: {
+		filterComponentType: 'input',
+		fieldSets: [FIELD_SETS.htpExpressionDatasetSampleAnnotationExpressionSampleFieldSet],
+	},
+	htpExpressionDatasetSampleAnnotationSampleAgeFilterConfig: {
+		filterComponentType: 'input',
+		fieldSets: [FIELD_SETS.htpExpressionDatasetSampleAnnotationSampleAgeFieldSet],
+	},
+	htpExpressionDatasetSampleAnnotationBiologicalReferenceFilterConfig: {
+		filterComponentType: 'input',
+		fieldSets: [FIELD_SETS.htpExpressionDatasetSampleAnnotationBiologicalReferenceFieldSet],
+	},
+	htpExpressionDatasetSampleAnnotationGenomicInformationFilterConfig: {
+		filterComponentType: 'input',
+		fieldSets: [FIELD_SETS.htpExpressionDatasetSampleAnnotationGenomicInformationFieldSet],
+	},
+	htpExpressionDatasetSampleAnnotationMicroarrayDetailsFilterConfig: {
+		filterComponentType: 'input',
+		fieldSets: [FIELD_SETS.htpExpressionDatasetSampleAnnotationMicroarrayDetailsFieldSet],
+	},
+	htpExpressionDatasetSampleAnnotationRelatedNotesFilterConfig: {
+		filterComponentType: 'input',
+		fieldSets: [FIELD_SETS.htpExpressionDatasetSampleAnnotationRelatedNotesFieldSet],
 	},
 	sequenceTargetingReagentTargetedGenesFilterConfig: {
 		filterComponentType: 'input',

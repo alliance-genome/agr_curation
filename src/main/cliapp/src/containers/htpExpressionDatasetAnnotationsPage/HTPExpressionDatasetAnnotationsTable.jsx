@@ -12,7 +12,7 @@ import { TruncatedReferencesTemplate } from '../../components/Templates/referenc
 import { ListDialogTemplate } from '../../components/Templates/dialog/ListDialogTemplate';
 import { CountDialogTemplate } from '../../components/Templates/dialog/CountDialogTemplate';
 import { RelatedNotesReadOnlyDialog } from '../../components/RelatedNotesReadOnlyDialog';
-import { ExternalDataBaseEntityReadOnlyDialog } from './ExternalDataBaseEntityReadOnlyDialog';
+import { ExternalDataBaseEntityReadOnlyDialog } from '../../components/ExternalDataBaseEntityReadOnlyDialog';
 import { SearchService } from '../../service/SearchService';
 import { Endpoints } from '../../constants/Endpoints';
 
