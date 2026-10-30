@@ -6,8 +6,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.BiConsumer;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.alliancegenome.curation_api.constants.ValidationConstants;
@@ -31,10 +29,8 @@ import org.alliancegenome.curation_api.model.entities.slotAnnotations.AlleleNome
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.AlleleSecondaryIdSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.AlleleSymbolSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.AlleleSynonymSlotAnnotation;
-import org.alliancegenome.curation_api.model.entities.slotAnnotations.SlotAnnotation;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.helpers.AssociationIdentityHelper;
-import org.alliancegenome.curation_api.services.helpers.NoteIdentityHelper;
 import org.alliancegenome.curation_api.services.validation.associations.AlleleGeneAssociationValidator;
 import org.alliancegenome.curation_api.services.validation.dto.slotAnnotations.AlleleDatabaseStatusSlotAnnotationValidator;
 import org.alliancegenome.curation_api.services.validation.dto.slotAnnotations.AlleleFullNameSlotAnnotationValidator;
@@ -70,7 +66,6 @@ public class AlleleValidator extends GenomicEntityValidator<Allele> {
 	@Inject AlleleDatabaseStatusSlotAnnotationValidator alleleDatabaseStatusValidator;
 	@Inject AlleleGeneAssociationValidator alleleGeneAssociationValidator;
 	@Inject ReferenceValidator referenceValidator;
-	@Inject NoteValidator relatedNoteValidator;
 	
 	private String errorMessage;
 
@@ -716,153 +711,8 @@ public class AlleleValidator extends GenomicEntityValidator<Allele> {
 			alleleInheritanceModeValidator::validateAlleleInheritanceModeSlotAnnotation, AlleleInheritanceModeSlotAnnotation::setSingleAllele);
 	}
 
-	/**
-	 * Validates the slot annotations one of an allele's slot annotation sub-resources is to hold, in submitted
-	 * order, and assigns each to the allele. Every entry must be present; an entry with an id updates that
-	 * annotation, which must be one the allele holds and no other entry names; an entry without one is a new
-	 * annotation.
-	 *
-	 * @param dbEntity the allele the annotations belong to
-	 * @param incomingAnnotations the submitted annotations
-	 * @param heldAnnotations the annotations of this kind the allele holds
-	 * @param field the field the errors are recorded under, each entry's keyed by its index
-	 * @param requiredField the entry field a missing entry is reported against
-	 * @param label the list's name, for the error title
-	 * @param slotAnnotationValidator validates one entry
-	 * @param assignAllele sets an annotation's allele
-	 * @return the validated annotations, one per submitted entry
-	 * @throws ApiErrorException when the list is missing or any entry is rejected, with each entry's errors keyed
-	 *         by its index
-	 */
-	private <S extends SlotAnnotation> List<S> validateSlotAnnotationReplacement(Allele dbEntity, List<S> incomingAnnotations, List<S> heldAnnotations, String field, String requiredField,
-			String label, Function<S, ObjectResponse<S>> slotAnnotationValidator, BiConsumer<S, Allele> assignAllele) {
-		response = new ObjectResponse<>();
-		String errorTitle = "Could not update " + label + " for: [" + dbEntity.getId() + "]";
-
-		if (incomingAnnotations == null) {
-			addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
-			response.setErrorMessage(errorTitle);
-			throw new ApiErrorException(response);
-		}
-
-		Set<Long> heldIds = new HashSet<>();
-		if (heldAnnotations != null) {
-			heldAnnotations.forEach(annotation -> heldIds.add(annotation.getId()));
-		}
-
-		List<S> validatedAnnotations = new ArrayList<>();
-		boolean allValid = true;
-		Set<Long> seenIds = new HashSet<>();
-		for (int ix = 0; ix < incomingAnnotations.size(); ix++) {
-			S annotation = incomingAnnotations.get(ix);
-			if (annotation == null) {
-				allValid = false;
-				response.addErrorMessages(field, ix, Map.of(requiredField, ValidationConstants.REQUIRED_MESSAGE));
-				continue;
-			}
-			if (annotation.getId() != null && !heldIds.contains(annotation.getId())) {
-				allValid = false;
-				response.addErrorMessages(field, ix, Map.of("id", ValidationConstants.INVALID_MESSAGE));
-				continue;
-			}
-			if (annotation.getId() != null && !seenIds.add(annotation.getId())) {
-				allValid = false;
-				response.addErrorMessages(field, ix, Map.of("id", ValidationConstants.DUPLICATE_MESSAGE));
-				continue;
-			}
-			ObjectResponse<S> annotationResponse = slotAnnotationValidator.apply(annotation);
-			if (annotationResponse.getEntity() == null) {
-				allValid = false;
-				response.addErrorMessages(field, ix, annotationResponse.getErrorMessages());
-			} else {
-				S validatedAnnotation = annotationResponse.getEntity();
-				assignAllele.accept(validatedAnnotation, dbEntity);
-				validatedAnnotations.add(validatedAnnotation);
-			}
-		}
-
-		if (!allValid) {
-			convertMapToErrorMessages(field);
-			response.setErrorMessage(errorTitle);
-			throw new ApiErrorException(response);
-		}
-
-		return validatedAnnotations;
-	}
-
-	/**
-	 * Validates the notes an allele's related notes sub-resource is to hold, in submitted order, with the same
-	 * rules as notes saved through the allele itself: a note type from the allele note types set, free text, and
-	 * no two notes alike. Every entry must be present; an entry with an id updates that note, which must be one
-	 * the allele holds and no other entry names; an entry without one is a new note. Every entry's errors are
-	 * reported together.
-	 *
-	 * @param dbEntity the allele the notes belong to
-	 * @param incomingNotes the submitted notes
-	 * @return the validated notes, one per submitted entry
-	 * @throws ApiErrorException when the list is missing or any entry is rejected, with each entry's errors keyed
-	 *         by its index
-	 */
 	public List<Note> validateRelatedNoteReplacement(Allele dbEntity, List<Note> incomingNotes) {
-		response = new ObjectResponse<>();
-		String field = "relatedNotes";
-		String errorTitle = "Could not update Related Notes for: [" + dbEntity.getId() + "]";
-
-		if (incomingNotes == null) {
-			addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
-			response.setErrorMessage(errorTitle);
-			throw new ApiErrorException(response);
-		}
-
-		Set<Long> heldIds = new HashSet<>();
-		if (dbEntity.getRelatedNotes() != null) {
-			dbEntity.getRelatedNotes().forEach(note -> heldIds.add(note.getId()));
-		}
-
-		List<Note> validatedNotes = new ArrayList<>();
-		boolean allValid = true;
-		Set<Long> seenIds = new HashSet<>();
-		Set<String> validatedNoteIdentities = new HashSet<>();
-		for (int ix = 0; ix < incomingNotes.size(); ix++) {
-			Note note = incomingNotes.get(ix);
-			if (note == null) {
-				allValid = false;
-				response.addErrorMessages(field, ix, Map.of("freeText", ValidationConstants.REQUIRED_MESSAGE));
-				continue;
-			}
-			if (note.getId() != null && !heldIds.contains(note.getId())) {
-				allValid = false;
-				response.addErrorMessages(field, ix, Map.of("id", ValidationConstants.INVALID_MESSAGE));
-				continue;
-			}
-			if (note.getId() != null && !seenIds.add(note.getId())) {
-				allValid = false;
-				response.addErrorMessages(field, ix, Map.of("id", ValidationConstants.DUPLICATE_MESSAGE));
-				continue;
-			}
-			ObjectResponse<Note> noteResponse = relatedNoteValidator.validateNote(note, VocabularyConstants.ALLELE_NOTE_TYPES_VOCABULARY_TERM_SET);
-			if (noteResponse.getEntity() == null) {
-				allValid = false;
-				response.addErrorMessages(field, ix, noteResponse.getErrorMessages());
-				continue;
-			}
-			Note validatedNote = noteResponse.getEntity();
-			String noteIdentity = NoteIdentityHelper.noteIdentity(validatedNote);
-			if (!validatedNoteIdentities.add(noteIdentity)) {
-				allValid = false;
-				response.addErrorMessages(field, ix, Map.of("freeText", ValidationConstants.DUPLICATE_MESSAGE + " (" + noteIdentity + ")"));
-				continue;
-			}
-			validatedNotes.add(validatedNote);
-		}
-
-		if (!allValid) {
-			convertMapToErrorMessages(field);
-			response.setErrorMessage(errorTitle);
-			throw new ApiErrorException(response);
-		}
-
-		return validatedNotes;
+		return validateRelatedNoteReplacement(dbEntity, incomingNotes, VocabularyConstants.ALLELE_NOTE_TYPES_VOCABULARY_TERM_SET);
 	}
 
 	/**

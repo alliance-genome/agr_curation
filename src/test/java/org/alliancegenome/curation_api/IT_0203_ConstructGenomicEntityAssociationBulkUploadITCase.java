@@ -24,6 +24,7 @@ import io.quarkus.test.junit.QuarkusIntegrationTest;
 import io.restassured.RestAssured;
 import io.restassured.config.HttpClientConfig;
 import io.restassured.config.RestAssuredConfig;
+import io.restassured.response.ValidatableResponse;
 
 
 @QuarkusIntegrationTest
@@ -55,9 +56,9 @@ public class IT_0203_ConstructGenomicEntityAssociationBulkUploadITCase extends B
 
 	private final String constructGenomicEntityAssociationBulkPostEndpoint = "/api/constructgenomicentityassociation/bulk/WB/associationFile";
 	private final String constructGenomicEntityAssociationGetEndpoint = "/api/constructgenomicentityassociation/findBy";
+	private final String constructGenomicEntityAssociationFindEndpoint = "/api/constructgenomicentityassociation/find?limit=10&page=0";
 	private final String constructGenomicEntityAssociationTestFilePath = "src/test/resources/bulk/CA01_construct_genomic_entity_association/";
 	private final String constructGetEndpoint = "/api/construct/";
-	private final String geneGetEndpoint = "/api/gene/";
 
 	private void loadRequiredEntities() throws Exception {
 		gene = getGene(genePrimaryExternalId);
@@ -108,15 +109,11 @@ public class IT_0203_ConstructGenomicEntityAssociationBulkUploadITCase extends B
 			body("entity.constructGenomicEntityAssociations[0].constructGenomicEntityAssociationObject.primaryExternalId", is(genePrimaryExternalId)).
 			body("entity.constructGenomicEntityAssociations[0].constructAssociationSubject", not(hasKey("constructGenomicEntityAssociations")));
 		
-		RestAssured.given().
-			when().
-			get(geneGetEndpoint + genePrimaryExternalId).
-			then().
-			statusCode(200).
-			body("entity.constructGenomicEntityAssociations", hasSize(1)).
-			body("entity.constructGenomicEntityAssociations[0].relation.name", is(relationName)).
-			body("entity.constructGenomicEntityAssociations[0].constructGenomicEntityAssociationObject.primaryExternalId", is(genePrimaryExternalId)).
-			body("entity.constructGenomicEntityAssociations[0].constructGenomicEntityAssociationObject", not(hasKey("constructGenomicEntityAssociations")));
+		findGeneAssociationsResponse(genePrimaryExternalId).
+			body("results", hasSize(1)).
+			body("results[0].relation.name", is(relationName)).
+			body("results[0].constructGenomicEntityAssociationObject.primaryExternalId", is(genePrimaryExternalId)).
+			body("results[0].constructGenomicEntityAssociationObject", not(hasKey("constructGenomicEntityAssociations")));
 	}
 	
 	@Test
@@ -156,12 +153,8 @@ public class IT_0203_ConstructGenomicEntityAssociationBulkUploadITCase extends B
 			statusCode(200).
 			body("entity.constructGenomicEntityAssociations", hasSize(1));
 		
-		RestAssured.given().
-			when().
-			get(geneGetEndpoint + genePrimaryExternalId).
-			then().
-			statusCode(200).
-			body("entity.constructGenomicEntityAssociations", hasSize(1));
+		findGeneAssociationsResponse(genePrimaryExternalId).
+			body("results", hasSize(1));
 	}
 	
 	@Test
@@ -248,4 +241,14 @@ public class IT_0203_ConstructGenomicEntityAssociationBulkUploadITCase extends B
 			body("entity.relatedNotes[0]", not(hasKey("evidence")));
 	}
 	
+	// The gene's endpoints omit its construct associations, so they are found by the gene as their object.
+	private ValidatableResponse findGeneAssociationsResponse(String genePrimaryExternalId) {
+		return RestAssured.given().
+			contentType("application/json").
+			body("{\"constructGenomicEntityAssociationObject.primaryExternalId\": \"" + genePrimaryExternalId + "\"}").
+			when().
+			post(constructGenomicEntityAssociationFindEndpoint).
+			then().
+			statusCode(200);
+	}
 }

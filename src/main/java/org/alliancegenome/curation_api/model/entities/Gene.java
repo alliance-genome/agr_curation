@@ -84,7 +84,7 @@ public class Gene extends GenomicEntity {
 			"curie_keyword", "name_keyword", "secondaryIdentifiers_keyword", "synonyms.name_keyword", "namespace_keyword" })
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@JsonView({ CurationView.FieldsOnly.class, CurationView.GeneSummaryDocument.class })
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.GeneSummaryDocument.class, CurationView.GeneDetailView.class })
 	private SOTerm geneType;
 
 	@OneToMany(mappedBy = "diseaseAnnotationSubject", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -116,19 +116,19 @@ public class Gene extends GenomicEntity {
 	@IndexedEmbedded(includePaths = { "displayText", "formatText", "nameType.name", "synonymScope.name", "evidence.curie", "displayText_keyword", "formatText_keyword", "nameType.name_keyword", "synonymScope.name_keyword", "evidence.curie_keyword"})
 	@OneToOne(mappedBy = "singleGene", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonManagedReference
-	@JsonView({ CurationView.FieldsOnly.class, CurationView.ForPublic.class, CurationView.GeneToGeneOrthologyDocument.class, CurationView.GeneSummaryDocument.class, CurationView.GeneCacheDocument.class, CurationView.ModelDocument.class, CurationView.TransgenicAllelesDocument.class, CurationView.AlleleSummaryDocument.class, CurationView.GeneExpressionDocument.class, CurationView.VariantSummaryDocument.class, CurationView.SequenceSummaryDocument.class })
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.ForPublic.class, CurationView.GeneToGeneOrthologyDocument.class, CurationView.GeneSummaryDocument.class, CurationView.GeneCacheDocument.class, CurationView.ModelDocument.class, CurationView.TransgenicAllelesDocument.class, CurationView.AlleleSummaryDocument.class, CurationView.GeneExpressionDocument.class, CurationView.VariantSummaryDocument.class, CurationView.SequenceSummaryDocument.class, CurationView.GeneDetailView.class })
 	private GeneSymbolSlotAnnotation geneSymbol;
 
 	@IndexedEmbedded(includePaths = { "displayText", "formatText", "nameType.name", "synonymScope.name", "evidence.curie", "displayText_keyword", "formatText_keyword", "nameType.name_keyword", "synonymScope.name_keyword", "evidence.curie_keyword"})
 	@OneToOne(mappedBy = "singleGene", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonManagedReference
-	@JsonView({ CurationView.FieldsOnly.class, CurationView.ForPublic.class, CurationView.GeneSummaryDocument.class })
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.ForPublic.class, CurationView.GeneSummaryDocument.class, CurationView.GeneDetailView.class })
 	private GeneFullNameSlotAnnotation geneFullName;
 
 	@IndexedEmbedded(includePaths = { "displayText", "formatText", "nameType.name", "synonymScope.name", "evidence.curie", "displayText_keyword", "formatText_keyword", "nameType.name_keyword", "synonymScope.name_keyword", "evidence.curie_keyword"})
 	@OneToOne(mappedBy = "singleGene", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonManagedReference
-	@JsonView({ CurationView.FieldsOnly.class, CurationView.GeneSummaryDocument.class, CurationView.GeneCacheDocument.class, CurationView.VariantSummaryDocument.class })
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.GeneSummaryDocument.class, CurationView.GeneCacheDocument.class, CurationView.VariantSummaryDocument.class, CurationView.GeneDetailView.class })
 	private GeneSystematicNameSlotAnnotation geneSystematicName;
 
 	@IndexedEmbedded(includePaths = { "displayText", "formatText", "nameType.name", "synonymScope.name", "evidence.curie", "displayText_keyword", "formatText_keyword", "nameType.name_keyword", "synonymScope.name_keyword", "evidence.curie_keyword"})
@@ -144,15 +144,15 @@ public class Gene extends GenomicEntity {
 	private List<GeneSecondaryIdSlotAnnotation> geneSecondaryIds;
 
 	@OneToMany(mappedBy = "alleleGeneAssociationObject", cascade = CascadeType.ALL, orphanRemoval = true)
-	@JsonView({ CurationView.FieldsAndLists.class, CurationView.GeneDetailView.class })
+	@JsonView({ CurationView.FieldsAndLists.class })
 	private List<AlleleGeneAssociation> alleleGeneAssociations;
 
 	@OneToMany(mappedBy = "sequenceTargetingReagentGeneAssociationObject", cascade = CascadeType.ALL, orphanRemoval = true)
-	@JsonView({ CurationView.FieldsAndLists.class, CurationView.GeneDetailView.class })
+	@JsonView({ CurationView.FieldsAndLists.class })
 	private List<SequenceTargetingReagentGeneAssociation> sequenceTargetingReagentGeneAssociations;
 
 	@OneToMany(mappedBy = "transcriptGeneAssociationObject", cascade = CascadeType.ALL, orphanRemoval = true)
-	@JsonView({ CurationView.FieldsAndLists.class, CurationView.GeneDetailView.class })
+	@JsonView({ CurationView.FieldsAndLists.class })
 	private List<TranscriptGeneAssociation> transcriptGeneAssociations;
 
 	@IndexedEmbedded(
@@ -165,7 +165,7 @@ public class Gene extends GenomicEntity {
 	)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@OneToMany(mappedBy = "geneAssociationSubject", cascade = CascadeType.ALL, orphanRemoval = true)
-	@JsonView({ CurationView.FieldsAndLists.class, CurationView.GeneDetailView.class, CurationView.GeneSummaryDocument.class, CurationView.GeneCacheDocument.class, CurationView.VariantSummaryDocument.class, CurationView.SequenceSummaryDocument.class })
+	@JsonView({ CurationView.FieldsAndLists.class, CurationView.GeneSummaryDocument.class, CurationView.GeneCacheDocument.class, CurationView.VariantSummaryDocument.class, CurationView.SequenceSummaryDocument.class })
 	private List<GeneGenomicLocationAssociation> geneGenomicLocationAssociations;
 
 
@@ -176,12 +176,12 @@ public class Gene extends GenomicEntity {
 	//	"constructAssociationSubject.constructFullName.displayText_keyword", "constructAssociationSubject.constructFullName.formatText_keyword", "constructAssociationSubject.primaryExternalId_keyword"
 	//})
 	@OneToMany(mappedBy = "constructGenomicEntityAssociationObject", cascade = CascadeType.ALL, orphanRemoval = true)
-	@JsonView({ CurationView.FieldsAndLists.class, CurationView.GeneDetailView.class })
+	@JsonView({ CurationView.FieldsAndLists.class })
 	private List<ConstructGenomicEntityAssociation> constructGenomicEntityAssociations;
 
 	@IndexedEmbedded(includePaths = {"displayName", "referencedCurie", "displayName_keyword", "referencedCurie_keyword", "resourceDescriptorPage.name", "resourceDescriptorPage.name_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-	@JsonView({CurationView.FieldsOnly.class, CurationView.GeneSummaryDocument.class})
+	@JsonView({CurationView.FieldsOnly.class, CurationView.GeneSummaryDocument.class, CurationView.GeneDetailView.class})
 	private CrossReference gcrpCrossReference;
 }
