@@ -146,11 +146,15 @@ public class VariantService extends SubmittedObjectCrudService<Variant, VariantD
 		params.put("alleleVariantAssociationObject.obsolete", false);
 
 		SearchResponse<AlleleVariantAssociation> associations = alleleVariantAssociationDAO.findByParams(new Pagination(page, Math.min(limit, MAX_ALL_MOD_VARIANTS_PAGE_SIZE)), params);
+		// findByParams only counts on the 0, 0 call, and then returns no results
+		if (page == 0 && limit == 0) {
+			SearchResponse<ModVariant> count = new SearchResponse<>();
+			count.setTotalResults(associations.getTotalResults());
+			return count;
+		}
 		List<ModVariant> results = associations.getResults().stream().map(this::toModVariant).toList();
 		populateIntronExonLocations(results);
-		SearchResponse<ModVariant> response = new SearchResponse<>(results);
-		response.setTotalResults(associations.getTotalResults());
-		return response;
+		return new SearchResponse<>(results);
 	}
 
 	// The exon or intron each consequence falls in is transient, so it is computed for the whole page in one query
