@@ -18,6 +18,6 @@ import com.fasterxml.jackson.annotation.JsonView;
  * @param hgvsP the protein HGVS of its predicted consequences, for the transcripts that have one
  * @param predictedVariantConsequences the VEP result for each transcript, ordered by transcript
  */
-@JsonView({ CurationView.AllModVariantsView.class })
-public record AllModVariants(String alleleId, String variantCurie, String hgvsG, List<String> hgvsC, List<String> hgvsP, List<PredictedVariantConsequence> predictedVariantConsequences) {
+@JsonView({ CurationView.ModVariantView.class })
+public record ModVariant(String alleleId, String variantCurie, String hgvsG, List<String> hgvsC, List<String> hgvsP, List<PredictedVariantConsequence> predictedVariantConsequences) {
 }

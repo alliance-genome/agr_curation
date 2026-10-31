@@ -24,7 +24,7 @@ import org.alliancegenome.curation_api.model.entities.associations.AlleleVariant
 import org.alliancegenome.curation_api.model.entities.associations.CuratedVariantGenomicLocationAssociation;
 import org.alliancegenome.curation_api.model.ingest.dto.VariantDTO;
 import org.alliancegenome.curation_api.model.input.Pagination;
-import org.alliancegenome.curation_api.model.output.AllModVariants;
+import org.alliancegenome.curation_api.model.output.ModVariant;
 import org.alliancegenome.curation_api.response.ObjectListResponse;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
@@ -138,7 +138,7 @@ public class VariantService extends SubmittedObjectCrudService<Variant, VariantD
 	public static final int MAX_ALL_MOD_VARIANTS_PAGE_SIZE = 10000;
 
 	// SCRUM-6757: a page of a data provider's allele - variant pairs with their HGVS; page 0 with limit 0 returns only the total
-	public SearchResponse<AllModVariants> getAllModVariants(String dataProvider, Integer page, Integer limit) {
+	public SearchResponse<ModVariant> getAllModVariants(String dataProvider, Integer page, Integer limit) {
 		Map<String, Object> params = new HashMap<>();
 		params.put("alleleVariantAssociationObject.dataProvider.abbreviation", dataProvider);
 		params.put("obsolete", false);
@@ -146,17 +146,17 @@ public class VariantService extends SubmittedObjectCrudService<Variant, VariantD
 		params.put("alleleVariantAssociationObject.obsolete", false);
 
 		SearchResponse<AlleleVariantAssociation> associations = alleleVariantAssociationDAO.findByParams(new Pagination(page, Math.min(limit, MAX_ALL_MOD_VARIANTS_PAGE_SIZE)), params);
-		List<AllModVariants> results = associations.getResults().stream().map(this::toAllModVariants).toList();
+		List<ModVariant> results = associations.getResults().stream().map(this::toModVariant).toList();
 		populateIntronExonLocations(results);
-		SearchResponse<AllModVariants> response = new SearchResponse<>(results);
+		SearchResponse<ModVariant> response = new SearchResponse<>(results);
 		response.setTotalResults(associations.getTotalResults());
 		return response;
 	}
 
 	// The exon or intron each consequence falls in is transient, so it is computed for the whole page in one query
-	private void populateIntronExonLocations(List<AllModVariants> results) {
+	private void populateIntronExonLocations(List<ModVariant> results) {
 		Map<Long, PredictedVariantConsequence> pvcById = new HashMap<>();
-		for (AllModVariants result : results) {
+		for (ModVariant result : results) {
 			for (PredictedVariantConsequence pvc : result.predictedVariantConsequences()) {
 				if (pvc.getId() != null && pvc.getVariantTranscript() != null) {
 					pvcById.put(pvc.getId(), pvc);
@@ -166,7 +166,7 @@ public class VariantService extends SubmittedObjectCrudService<Variant, VariantD
 		predictedVariantConsequenceDAO.populateIntronExonLocations(pvcById);
 	}
 
-	private AllModVariants toAllModVariants(AlleleVariantAssociation association) {
+	private ModVariant toModVariant(AlleleVariantAssociation association) {
 		Variant variant = association.getAlleleVariantAssociationObject();
 		CuratedVariantGenomicLocationAssociation location = variant.getCuratedVariantGenomicLocations().stream()
 			.filter(l -> !l.getObsolete())
@@ -175,7 +175,7 @@ public class VariantService extends SubmittedObjectCrudService<Variant, VariantD
 		List<PredictedVariantConsequence> consequences = location == null ? List.of() : location.getPredictedVariantConsequences().stream()
 			.filter(c -> !c.getObsolete())
 			.toList();
-		return new AllModVariants(
+		return new ModVariant(
 			association.getAlleleAssociationSubject().getPrimaryExternalId(),
 			variant.getCurie(),
 			location == null ? null : location.getHgvs(),

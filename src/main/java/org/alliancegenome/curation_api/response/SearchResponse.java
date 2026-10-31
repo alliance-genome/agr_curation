@@ -35,7 +35,7 @@ import lombok.Data;
 	CurationView.GeneExpressionDocument.class,
 	CurationView.TransgenicAllelesDocument.class,
 	CurationView.OntologyTermClosureView.class,
-	CurationView.AllModVariantsView.class
+	CurationView.ModVariantView.class
 })
 public class SearchResponse<E> extends APIResponse {
 

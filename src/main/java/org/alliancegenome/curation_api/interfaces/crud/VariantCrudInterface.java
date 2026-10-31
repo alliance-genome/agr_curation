@@ -8,7 +8,7 @@ import org.alliancegenome.curation_api.interfaces.base.BaseUpsertControllerInter
 import org.alliancegenome.curation_api.model.entities.Variant;
 import org.alliancegenome.curation_api.model.ingest.dto.VariantDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.VariantFmsDTO;
-import org.alliancegenome.curation_api.model.output.AllModVariants;
+import org.alliancegenome.curation_api.model.output.ModVariant;
 import org.alliancegenome.curation_api.response.APIResponse;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
@@ -50,8 +50,8 @@ public interface VariantCrudInterface extends BaseSubmittedObjectCrudInterface<V
 	@Operation(summary = "Export the HGVS of a data provider's variants", description = "A page of the data provider's allele - variant pairs, by allele: the allele's ID, the variant's AGRKB curie, the genomic HGVS (HGVS.g) of its curated location, the coding (HGVS.c) and protein (HGVS.p) HGVS of its predicted consequences, one per transcript, and its predicted variant consequences, the VEP result for each transcript. Obsolete alleles, variants and links are left out. page=0&limit=0 returns only totalResults, the number of pairs; page through them with page and limit (at most 10000).")
 	@GET
 	@Path("/export/{dataProvider}")
-	@JsonView(CurationView.AllModVariantsView.class)
-	SearchResponse<AllModVariants> getAllModVariants(@PathParam("dataProvider") String dataProvider, @DefaultValue("0") @QueryParam("page") Integer page, @DefaultValue("1000") @QueryParam("limit") Integer limit);
+	@JsonView(CurationView.ModVariantView.class)
+	SearchResponse<ModVariant> getAllModVariants(@PathParam("dataProvider") String dataProvider, @DefaultValue("0") @QueryParam("page") Integer page, @DefaultValue("1000") @QueryParam("limit") Integer limit);
 
 	@Override
 	@GET
