@@ -386,7 +386,7 @@ export const FIELD_SETS = Object.freeze({
 	},
 	htpExpressionDatasetSampleAnnotationTypeFieldSet: {
 		filterName: 'htpExpressionDatasetSampleAnnotationTypeFilter',
-		fields: ['htpExpressionSampleType.name'],
+		fields: ['htpExpressionSampleType.name', 'htpExpressionSampleType.curie'],
 	},
 	htpExpressionDatasetSampleAnnotationLocationsFieldSet: {
 		filterName: 'htpExpressionDatasetSampleAnnotationLocationsFilter',
@@ -402,7 +402,7 @@ export const FIELD_SETS = Object.freeze({
 	},
 	htpExpressionDatasetSampleAnnotationAssayUsedFieldSet: {
 		filterName: 'htpExpressionDatasetSampleAnnotationAssayUsedFilter',
-		fields: ['expressionAssayUsed.name'],
+		fields: ['expressionAssayUsed.name', 'expressionAssayUsed.curie'],
 	},
 	htpExpressionDatasetSampleAnnotationExpressionSampleFieldSet: {
 		filterName: 'htpExpressionDatasetSampleAnnotationExpressionSampleFilter',
