@@ -4,7 +4,7 @@ import {
 	prepareCrossReferences,
 	seedResourceDescriptors,
 	stripUiFields,
-} from './crossReferences/utils';
+} from '../../components/crossReferences/utils';
 import { haveSameReferences, prepareReferences, stripReference } from './referencesTable/utils';
 import {
 	buildDuplicateGeneAssociations,

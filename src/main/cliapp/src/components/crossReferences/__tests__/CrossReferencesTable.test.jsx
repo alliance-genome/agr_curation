@@ -1,13 +1,13 @@
 import React from 'react';
 import { act, fireEvent, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { renderWithClient } from '../../../../tools/jest/utils';
+import { renderWithClient } from '../../../tools/jest/utils';
 
 // The descriptor autocomplete and the descriptor lookup by prefix search through a SearchService. Left
 // unstubbed they reach ApiClient after the test has finished and throw in a timer.
 const { search } = vi.hoisted(() => ({ search: vi.fn() }));
 
-vi.mock('../../../../service/SearchService', () => ({
+vi.mock('../../../service/SearchService', () => ({
 	SearchService: class {
 		search = search;
 		find = vi.fn(() => Promise.resolve({ results: [], totalResults: 0 }));

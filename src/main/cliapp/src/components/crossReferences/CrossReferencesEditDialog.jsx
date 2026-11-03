@@ -2,8 +2,8 @@ import { useRef, useState } from 'react';
 import { Dialog } from 'primereact/dialog';
 import { Button } from 'primereact/button';
 import { Toast } from 'primereact/toast';
-import { ValidationService } from '../../../service/ValidationService';
-import { Endpoints } from '../../../constants/Endpoints';
+import { ValidationService } from '../../service/ValidationService';
+import { Endpoints } from '../../constants/Endpoints';
 import { CrossReferencesTable } from './CrossReferencesTable';
 import {
 	applyCrossReferenceFieldChange,
@@ -13,7 +13,7 @@ import {
 	stripForValidation,
 	stripUiFields,
 } from './utils';
-import { addDataKey } from '../../../utils/rows';
+import { addDataKey } from '../../utils/rows';
 
 /**
  * Stages a row's cross references into its table row. Nothing is written here - the row's own

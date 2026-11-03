@@ -10,7 +10,7 @@ import { FormSection } from '../../components/FormFieldVisibility';
 import { SynonymsForm } from '../allelesPage/synonyms/SynonymsForm';
 import { SecondaryIdsForm } from '../allelesPage/secondaryIds/SecondaryIdsForm';
 import { RelatedNotesForm } from '../allelesPage/relatedNotes/RelatedNotesForm';
-import { CrossReferencesForm } from '../allelesPage/crossReferences/CrossReferencesForm';
+import { CrossReferencesForm } from '../../components/crossReferences/CrossReferencesForm';
 import { GcrpCrossReferenceForm } from './gcrpCrossReference/GcrpCrossReferenceForm';
 
 // Every section on the page, in display order.

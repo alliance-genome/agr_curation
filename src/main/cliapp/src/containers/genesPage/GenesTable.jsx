@@ -13,7 +13,7 @@ import { SymbolReadOnlyDialog } from '../nameSlotAnnotations/dialogs/SymbolReadO
 import { FullNameEditDialog } from '../nameSlotAnnotations/dialogs/FullNameEditDialog';
 import { FullNameReadOnlyDialog } from '../nameSlotAnnotations/dialogs/FullNameReadOnlyDialog';
 import { SystematicNameDialog } from './SystematicNameDialog';
-import { CrossReferencesEditDialog } from '../allelesPage/crossReferences/CrossReferencesEditDialog';
+import { CrossReferencesEditDialog } from '../../components/crossReferences/CrossReferencesEditDialog';
 import { CrossReferencesTemplate } from '../../components/Templates/CrossReferencesTemplate';
 import { CrossReferenceTemplate } from '../../components/Templates/CrossReferenceTemplate';
 import { useGetTableData } from '../../service/useGetTableData';

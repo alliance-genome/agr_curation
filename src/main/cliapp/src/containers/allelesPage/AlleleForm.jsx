@@ -18,7 +18,7 @@ import { GermilineTransmissionStatusForm } from './germlineTransmissionStatus/Ge
 import { ReferencesForm } from './referencesTable/ReferencesForm';
 import { NomenclatureEventsForm } from './nomenclatureEvents/NomenclatureEventsForm';
 import { AlleleGeneAssociationsForm } from './alleleGeneAssociations/AlleleGeneAssociationsForm';
-import { CrossReferencesForm } from './crossReferences/CrossReferencesForm';
+import { CrossReferencesForm } from '../../components/crossReferences/CrossReferencesForm';
 import { FormSection } from '../../components/FormFieldVisibility';
 import { getEffectiveModAbbreviation } from '../../utils/affiliation';
 

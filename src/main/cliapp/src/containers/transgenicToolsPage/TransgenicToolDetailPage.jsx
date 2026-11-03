@@ -16,7 +16,7 @@ import { DataProviderDetailPageTemplate } from '../../components/Templates/DataP
 import { UserDetailPageTemplate } from '../../components/Templates/UserDetailPageTemplate';
 import { DateDetailPageTemplate } from '../../components/Templates/DateDetailPageTemplate';
 import { BooleanDetailPageEditor } from '../../components/Editors/dropdown/boolean/BooleanDetailPageEditor';
-import { seedResourceDescriptors } from '../allelesPage/crossReferences/utils';
+import { seedResourceDescriptors } from '../../components/crossReferences/utils';
 import { processErrors } from '../affectedGenomicModelPage/utils';
 import { useTransgenicToolReducer } from './detail/useTransgenicToolReducer';
 import { useTransgenicToolAssociations } from './detail/useTransgenicToolAssociations';

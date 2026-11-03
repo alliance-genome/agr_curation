@@ -1,5 +1,5 @@
 import { slotAnnotationList, synonymFields, secondaryIdFields } from '../../utils/slotAnnotations';
-import { haveSameCrossReferences, prepareCrossReferences, stripUiFields } from '../allelesPage/crossReferences/utils';
+import { haveSameCrossReferences, prepareCrossReferences, stripUiFields } from '../../components/crossReferences/utils';
 import { haveSameRelatedNotes, prepareRelatedNotes, stripRelatedNote } from '../allelesPage/relatedNotes/utils';
 
 /**

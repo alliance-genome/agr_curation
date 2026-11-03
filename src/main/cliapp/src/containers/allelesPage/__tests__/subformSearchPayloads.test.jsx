@@ -9,7 +9,7 @@ import { SecondaryIdsForm } from '../secondaryIds/SecondaryIdsForm';
 import { NomenclatureEventsForm } from '../nomenclatureEvents/NomenclatureEventsForm';
 import { SynonymsForm } from '../synonyms/SynonymsForm';
 import { AlleleGeneAssociationsForm } from '../alleleGeneAssociations/AlleleGeneAssociationsForm';
-import { CrossReferencesForm } from '../crossReferences/CrossReferencesForm';
+import { CrossReferencesForm } from '../../../components/crossReferences/CrossReferencesForm';
 import { SubResourcesProvider } from '../../../components/SubResourcesContext';
 import { renderWithClient } from '../../../tools/jest/utils';
 import '../../../tools/jest/setupTests';
@@ -17,7 +17,7 @@ import '../../../tools/jest/setupTests';
 vi.mock('../../../service/SearchService');
 vi.mock('../../../service/useControlledVocabularyService');
 vi.mock('../../../service/useVocabularyTermSetService');
-vi.mock('../crossReferences/useResourceDescriptorsByPrefix', () => ({
+vi.mock('../../../components/crossReferences/useResourceDescriptorsByPrefix', () => ({
 	useResourceDescriptorsByPrefix: () => new Map(),
 }));
 

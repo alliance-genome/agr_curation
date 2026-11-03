@@ -1,25 +1,25 @@
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { Dropdown } from 'primereact/dropdown';
-import { DeleteAction } from '../../../components/Actions/DeletionAction';
-import { TableEditorProvider } from '../../../components/Editors/fields/TableEditorContext';
-import { TableField } from '../../../components/Editors/fields/TableField';
-import { useDataKeyRowsStrategy } from '../../../components/Editors/fields/strategies/useDataKeyRowsStrategy';
-import { TextInput } from '../../../components/Editors/widgets/TextInput';
-import { SingleAutocomplete } from '../../../components/Editors/widgets/SingleAutocomplete';
-import { InputTextTableEditor } from '../../../components/Editors/text/InputTextTableEditor';
-import { BooleanTableEditor } from '../../../components/Editors/dropdown/boolean/BooleanTableEditor';
+import { DeleteAction } from '../Actions/DeletionAction';
+import { TableEditorProvider } from '../Editors/fields/TableEditorContext';
+import { TableField } from '../Editors/fields/TableField';
+import { useDataKeyRowsStrategy } from '../Editors/fields/strategies/useDataKeyRowsStrategy';
+import { TextInput } from '../Editors/widgets/TextInput';
+import { SingleAutocomplete } from '../Editors/widgets/SingleAutocomplete';
+import { InputTextTableEditor } from '../Editors/text/InputTextTableEditor';
+import { BooleanTableEditor } from '../Editors/dropdown/boolean/BooleanTableEditor';
 import {
 	resourceDescriptorSearch,
 	resourceDescriptorSearchConfig,
-} from '../../../components/Editors/autocomplete/resourceDescriptor/utils';
-import { RequiredFieldMarker } from '../../../components/RequiredFieldMarker';
+} from '../Editors/autocomplete/resourceDescriptor/utils';
+import { RequiredFieldMarker } from '../RequiredFieldMarker';
 import { curiePrefixOf } from './utils';
 import { useResourceDescriptorsByPrefix } from './useResourceDescriptorsByPrefix';
 
 /**
- * The editable cross references table, rendered by both the Alleles table dialog and the allele
- * detail page section. They differ only in their change handler and whether Obsolete is offered.
+ * The editable cross references table, rendered by the entity tables' dialogs and the detail page sections. They
+ * differ only in their change handler and whether Obsolete is offered.
  *
  * @param {Object} props
  * @param {Array<Object>} props.crossReferences rows, each carrying a `dataKey`

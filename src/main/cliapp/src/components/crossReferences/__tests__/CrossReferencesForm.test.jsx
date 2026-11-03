@@ -1,10 +1,10 @@
 import React from 'react';
 import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { renderWithClient } from '../../../../tools/jest/utils';
-import { SubResourcesProvider } from '../../../../components/SubResourcesContext';
+import { renderWithClient } from '../../../tools/jest/utils';
+import { SubResourcesProvider } from '../../SubResourcesContext';
 
-vi.mock('../../../../service/SearchService', () => ({
+vi.mock('../../../service/SearchService', () => ({
 	SearchService: class {
 		search = vi.fn(() => Promise.resolve({ results: [], totalResults: 0 }));
 		find = vi.fn(() => Promise.resolve({ results: [], totalResults: 0 }));

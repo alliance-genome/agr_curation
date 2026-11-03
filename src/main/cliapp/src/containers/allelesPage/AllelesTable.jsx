@@ -25,7 +25,7 @@ import { FullNameEditDialog } from '../nameSlotAnnotations/dialogs/FullNameEditD
 import { FullNameReadOnlyDialog } from '../nameSlotAnnotations/dialogs/FullNameReadOnlyDialog';
 import { SecondaryIdsEditDialog } from './secondaryIds/SecondaryIdsEditDialog';
 import { SecondaryIdsReadOnlyDialog } from './secondaryIds/SecondaryIdsReadOnlyDialog';
-import { CrossReferencesEditDialog } from './crossReferences/CrossReferencesEditDialog';
+import { CrossReferencesEditDialog } from '../../components/crossReferences/CrossReferencesEditDialog';
 import { SynonymsEditDialog } from '../nameSlotAnnotations/dialogs/SynonymsEditDialog';
 import { SynonymsReadOnlyDialog } from '../nameSlotAnnotations/dialogs/SynonymsReadOnlyDialog';
 import { RelatedNotesEditDialog } from '../../components/RelatedNotesEditDialog';

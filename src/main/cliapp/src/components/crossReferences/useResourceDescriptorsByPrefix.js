@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
-import { SearchService } from '../../../service/SearchService';
-import { Endpoints } from '../../../constants/Endpoints';
+import { SearchService } from '../../service/SearchService';
+import { Endpoints } from '../../constants/Endpoints';
 
 // Comfortably more descriptors than the registry holds, so every one arrives in the single request.
 const DESCRIPTOR_LIMIT = 1000;

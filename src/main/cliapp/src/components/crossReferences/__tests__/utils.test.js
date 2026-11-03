@@ -1,6 +1,6 @@
 const { getResourceDescriptor } = vi.hoisted(() => ({ getResourceDescriptor: vi.fn() }));
 
-vi.mock('../../../../service/ResourceDescriptorService', () => ({
+vi.mock('../../../service/ResourceDescriptorService', () => ({
 	ResourceDescriptorService: class {
 		getResourceDescriptor = getResourceDescriptor;
 	},

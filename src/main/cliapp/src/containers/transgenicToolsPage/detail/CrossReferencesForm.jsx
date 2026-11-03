@@ -1,8 +1,8 @@
 import { useRef } from 'react';
 import { Button } from 'primereact/button';
 import { FormTableWrapper } from '../../../components/FormTableWrapper';
-import { CrossReferencesTable } from '../../allelesPage/crossReferences/CrossReferencesTable';
-import { applyCrossReferenceFieldChange, buildNewCrossReference } from '../../allelesPage/crossReferences/utils';
+import { CrossReferencesTable } from '../../../components/crossReferences/CrossReferencesTable';
+import { applyCrossReferenceFieldChange, buildNewCrossReference } from '../../../components/crossReferences/utils';
 
 const ENTITY_TYPE = 'crossReferences';
 

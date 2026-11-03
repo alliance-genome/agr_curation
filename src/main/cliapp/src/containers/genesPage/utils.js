@@ -1,5 +1,5 @@
 import { getPendingFields, nameSlotAnnotationValue } from '../../utils/pendingFields';
-import { crossReferenceValue, seedResourceDescriptor, stripUiFields } from '../allelesPage/crossReferences/utils';
+import { crossReferenceValue, seedResourceDescriptor, stripUiFields } from '../../components/crossReferences/utils';
 
 // The value each of the gene's single-value fields and single-object sections is compared by, with an unset or
 // blank value read as none.

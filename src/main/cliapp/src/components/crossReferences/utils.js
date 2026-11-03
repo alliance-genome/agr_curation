@@ -1,6 +1,6 @@
-import { addDataKey, sameRowsBy } from '../../../utils/rows';
-import { copyRow } from '../../../utils/copyRows';
-import { ResourceDescriptorService } from '../../../service/ResourceDescriptorService';
+import { addDataKey, sameRowsBy } from '../../utils/rows';
+import { copyRow } from '../../utils/copyRows';
+import { ResourceDescriptorService } from '../../service/ResourceDescriptorService';
 
 /**
  * An empty cross reference, ready to be edited in the cross references table.
@@ -23,8 +23,8 @@ export const buildNewCrossReference = () => {
 };
 
 /**
- * Copies of an allele's cross references for a new allele. Each keeps its page, and so its resource
- * descriptor, and its internal flag, but not the curie and display name that identify the copied allele,
+ * Copies of an entity's cross references for a new entity. Each keeps its page, and so its resource
+ * descriptor, and its internal flag, but not the curie and display name that identify the copied entity,
  * nor its id or audit fields. Every copy starts out not obsolete.
  *
  * @param {Object[]} [crossReferences] cross references as the API returns them or as the table holds them

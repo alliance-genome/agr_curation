@@ -1,8 +1,8 @@
 import React from 'react';
 import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { renderWithClient } from '../../../../tools/jest/utils';
-import { Endpoints } from '../../../../constants/Endpoints';
+import { renderWithClient } from '../../../tools/jest/utils';
+import { Endpoints } from '../../../constants/Endpoints';
 
 const { validate, getResourceDescriptor, search } = vi.hoisted(() => ({
 	validate: vi.fn(),
@@ -10,19 +10,19 @@ const { validate, getResourceDescriptor, search } = vi.hoisted(() => ({
 	search: vi.fn(),
 }));
 
-vi.mock('../../../../service/ValidationService', () => ({
+vi.mock('../../../service/ValidationService', () => ({
 	ValidationService: class {
 		validate = validate;
 	},
 }));
 
-vi.mock('../../../../service/ResourceDescriptorService', () => ({
+vi.mock('../../../service/ResourceDescriptorService', () => ({
 	ResourceDescriptorService: class {
 		getResourceDescriptor = getResourceDescriptor;
 	},
 }));
 
-vi.mock('../../../../service/SearchService', () => ({
+vi.mock('../../../service/SearchService', () => ({
 	SearchService: class {
 		search = search;
 		find = vi.fn(() => Promise.resolve({ results: [], totalResults: 0 }));

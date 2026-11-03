@@ -17,7 +17,7 @@ import { FormFieldVisibilityMenu, useFormFieldVisibility } from '../../component
 import { useSaveProgress } from '../../hooks/useSaveProgress';
 import { capitalize, errorMessageOf } from '../../utils/utils';
 import { processErrors, processTableErrors } from '../../utils/processErrors';
-import { seedResourceDescriptors } from '../allelesPage/crossReferences/utils';
+import { seedResourceDescriptors } from '../../components/crossReferences/utils';
 import { useGeneReducer } from './useGeneReducer';
 import { useGeneSubResources } from './useGeneSubResources';
 import { buildGeneDetailPayload, gcrpCrossReferenceFieldErrors, getPendingGeneFields } from './utils';
