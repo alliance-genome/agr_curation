@@ -22,16 +22,16 @@ WHERE id <> keep_id;
 
 CREATE INDEX ON sqtr_gene_association_copy (id);
 
-INSERT INTO sqtrgeneassociation_informationcontententity (association_id, evidence_id)
+INSERT INTO sqtrgeneassociation_reference (association_id, evidence_id)
 SELECT DISTINCT c.keep_id, e.evidence_id
 FROM sqtr_gene_association_copy c
-JOIN sqtrgeneassociation_informationcontententity e ON e.association_id = c.id
+JOIN sqtrgeneassociation_reference e ON e.association_id = c.id
 WHERE NOT EXISTS (
-	SELECT 1 FROM sqtrgeneassociation_informationcontententity k
+	SELECT 1 FROM sqtrgeneassociation_reference k
 	WHERE k.association_id = c.keep_id AND k.evidence_id = e.evidence_id
 );
 
-DELETE FROM sqtrgeneassociation_informationcontententity e
+DELETE FROM sqtrgeneassociation_reference e
 USING sqtr_gene_association_copy c
 WHERE e.association_id = c.id;
 
@@ -40,4 +40,4 @@ USING sqtr_gene_association_copy c
 WHERE a.id = c.id;
 
 ANALYZE sqtrgeneassociation;
-ANALYZE sqtrgeneassociation_informationcontententity;
+ANALYZE sqtrgeneassociation_reference;

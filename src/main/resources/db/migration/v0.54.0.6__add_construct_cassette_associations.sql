@@ -44,16 +44,16 @@ ALTER TABLE constructcassetteassociation ADD CONSTRAINT constructcassetteassoc_r
 ALTER TABLE constructcassetteassociation ADD CONSTRAINT constructcassetteassoc_createdby_id_fk FOREIGN KEY (createdby_id) REFERENCES person (id);
 ALTER TABLE constructcassetteassociation ADD CONSTRAINT constructcassetteassoc_updatedby_id_fk FOREIGN KEY (updatedby_id) REFERENCES person (id);
 
-CREATE TABLE constructcassetteassociation_informationcontententity (
+CREATE TABLE constructcassetteassociation_reference (
 	association_id bigint NOT NULL,
 	evidence_id bigint NOT NULL
 );
 
-CREATE INDEX constructcassetteassoc_ice_association_index ON constructcassetteassociation_informationcontententity USING btree (association_id);
-CREATE INDEX constructcassetteassoc_ice_evidence_index ON constructcassetteassociation_informationcontententity USING btree (evidence_id);
+CREATE INDEX constructcassetteassoc_reference_association_index ON constructcassetteassociation_reference USING btree (association_id);
+CREATE INDEX constructcassetteassoc_reference_evidence_index ON constructcassetteassociation_reference USING btree (evidence_id);
 
-ALTER TABLE constructcassetteassociation_informationcontententity ADD CONSTRAINT constructcassetteassoc_ice_association_id_fk FOREIGN KEY (association_id) REFERENCES constructcassetteassociation (id);
-ALTER TABLE constructcassetteassociation_informationcontententity ADD CONSTRAINT constructcassetteassoc_ice_evidence_id_fk FOREIGN KEY (evidence_id) REFERENCES informationcontententity (id);
+ALTER TABLE constructcassetteassociation_reference ADD CONSTRAINT constructcassetteassoc_reference_association_id_fk FOREIGN KEY (association_id) REFERENCES constructcassetteassociation (id);
+ALTER TABLE constructcassetteassociation_reference ADD CONSTRAINT constructcassetteassoc_reference_evidence_id_fk FOREIGN KEY (evidence_id) REFERENCES reference (id);
 
 CREATE TABLE constructcassetteassociation_note (
 	constructcassetteassociation_id bigint NOT NULL,

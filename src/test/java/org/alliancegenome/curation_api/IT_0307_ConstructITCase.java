@@ -14,7 +14,6 @@ import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.model.entities.Construct;
 import org.alliancegenome.curation_api.model.entities.Gene;
-import org.alliancegenome.curation_api.model.entities.InformationContentEntity;
 import org.alliancegenome.curation_api.model.entities.Note;
 import org.alliancegenome.curation_api.model.entities.Organization;
 import org.alliancegenome.curation_api.model.entities.Person;
@@ -999,7 +998,7 @@ public class IT_0307_ConstructITCase extends BaseITCase {
 			body("errorMessages.constructGenomicEntityAssociations", is("relation - " + ValidationConstants.INVALID_MESSAGE));
 	}
 	
-	private ConstructComponentSlotAnnotation createConstructComponentSlotAnnotation(VocabularyTerm relation, List<InformationContentEntity> evidence, String symbol, NCBITaxonTerm taxon, String taxonText, List<Note> notes) {
+	private ConstructComponentSlotAnnotation createConstructComponentSlotAnnotation(VocabularyTerm relation, List<Reference> evidence, String symbol, NCBITaxonTerm taxon, String taxonText, List<Note> notes) {
 		ConstructComponentSlotAnnotation cc = new ConstructComponentSlotAnnotation();
 		cc.setComponentSymbol(symbol);
 		cc.setRelation(relation);
@@ -1010,7 +1009,7 @@ public class IT_0307_ConstructITCase extends BaseITCase {
 		return cc;
 	}
 	
-	private ConstructSymbolSlotAnnotation createConstructSymbolSlotAnnotation(List<InformationContentEntity> evidence, String name, VocabularyTerm nameType, VocabularyTerm synonymScope, String synonymUrl) {
+	private ConstructSymbolSlotAnnotation createConstructSymbolSlotAnnotation(List<Reference> evidence, String name, VocabularyTerm nameType, VocabularyTerm synonymScope, String synonymUrl) {
 		ConstructSymbolSlotAnnotation symbol = new ConstructSymbolSlotAnnotation();
 		symbol.setEvidence(evidence);
 		symbol.setDisplayText(name);
@@ -1022,7 +1021,7 @@ public class IT_0307_ConstructITCase extends BaseITCase {
 		return symbol;
 	}
 
-	private ConstructFullNameSlotAnnotation createConstructFullNameSlotAnnotation(List<InformationContentEntity> evidence, String name, VocabularyTerm nameType, VocabularyTerm synonymScope, String synonymUrl) {
+	private ConstructFullNameSlotAnnotation createConstructFullNameSlotAnnotation(List<Reference> evidence, String name, VocabularyTerm nameType, VocabularyTerm synonymScope, String synonymUrl) {
 		ConstructFullNameSlotAnnotation fullName = new ConstructFullNameSlotAnnotation();
 		fullName.setEvidence(evidence);
 		fullName.setDisplayText(name);
@@ -1034,7 +1033,7 @@ public class IT_0307_ConstructITCase extends BaseITCase {
 		return fullName;
 	}
 
-	private ConstructSynonymSlotAnnotation createConstructSynonymSlotAnnotation(List<InformationContentEntity> evidence, String name, VocabularyTerm nameType, VocabularyTerm synonymScope, String synonymUrl) {
+	private ConstructSynonymSlotAnnotation createConstructSynonymSlotAnnotation(List<Reference> evidence, String name, VocabularyTerm nameType, VocabularyTerm synonymScope, String synonymUrl) {
 		ConstructSynonymSlotAnnotation synonym = new ConstructSynonymSlotAnnotation();
 		synonym.setEvidence(evidence);
 		synonym.setDisplayText(name);
