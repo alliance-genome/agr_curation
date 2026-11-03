@@ -16,11 +16,9 @@ import { SubResourcesProvider } from '../../components/SubResourcesContext';
 import { FormFieldVisibilityMenu, useFormFieldVisibility } from '../../components/FormFieldVisibility';
 import { useSaveProgress } from '../../hooks/useSaveProgress';
 import { capitalize, errorMessageOf } from '../../utils/utils';
-import { processErrors, processTableErrors } from '../../utils/processErrors';
-import { seedResourceDescriptors } from '../../components/crossReferences/utils';
 import { useGeneReducer } from './useGeneReducer';
 import { useGeneSubResources } from './useGeneSubResources';
-import { buildGeneDetailPayload, gcrpCrossReferenceFieldErrors, getPendingGeneFields } from './utils';
+import { buildGeneDetailPayload, getPendingGeneFields, processGeneErrors, withSeededGcrpCrossReference } from './utils';
 import { GeneForm, GENE_DETAIL_TOGGLEABLE_FIELDS } from './GeneForm';
 
 export default function GeneDetailPage() {
@@ -63,10 +61,7 @@ export default function GeneDetailPage() {
 	 */
 	const showGene = async (entity) => {
 		if (!entity) return;
-		const [gcrpCrossReference = null] = entity.gcrpCrossReference
-			? await seedResourceDescriptors([entity.gcrpCrossReference])
-			: [];
-		const gene = { ...entity, gcrpCrossReference };
+		const gene = await withSeededGcrpCrossReference(entity);
 		savedGene.current = gene;
 		geneDispatch({ type: 'SET', value: gene });
 	};
@@ -81,23 +76,14 @@ export default function GeneDetailPage() {
 	});
 
 	/**
-	 * Marks a rejected gene's field errors on the form. The GCRP cross reference's error arrives as one string naming
-	 * its fields, so it is split onto the row's cells; one that names no field stays with the section.
+	 * Marks a rejected gene's field errors on the form.
 	 *
 	 * @param {Object} error the rejected request's error
 	 * @returns {string} the message describing the rejection
 	 */
 	const reportGeneErrors = (error) => {
 		try {
-			const data = error?.response?.data;
-			processErrors(data, geneDispatch, geneState.gene);
-
-			const { gcrpCrossReference: gcrpError, ...otherErrors } = data?.errorMessages ?? {};
-			const gcrpFieldErrors = gcrpCrossReferenceFieldErrors(gcrpError);
-			if (gcrpFieldErrors && geneState.gene.gcrpCrossReference) {
-				processTableErrors(gcrpFieldErrors, geneDispatch, 'gcrpCrossReference', geneState.gene.gcrpCrossReference);
-				geneDispatch({ type: 'UPDATE_ERROR_MESSAGES', errorMessages: otherErrors });
-			}
+			processGeneErrors(error?.response?.data, geneDispatch, geneState.gene);
 		} catch (processingError) {
 			console.error(processingError);
 		}

@@ -1,5 +1,11 @@
 import { getPendingFields, nameSlotAnnotationValue } from '../../utils/pendingFields';
-import { crossReferenceValue, seedResourceDescriptor, stripUiFields } from '../../components/crossReferences/utils';
+import { processErrors, processTableErrors } from '../../utils/processErrors';
+import {
+	crossReferenceValue,
+	seedResourceDescriptor,
+	seedResourceDescriptors,
+	stripUiFields,
+} from '../../components/crossReferences/utils';
 
 // The value each of the gene's single-value fields and single-object sections is compared by, with an unset or
 // blank value read as none.
@@ -42,6 +48,29 @@ export const buildGeneDetailPayload = (gene) => ({
 	gcrpCrossReference: gene.gcrpCrossReference ? stripUiFields(gene.gcrpCrossReference) : gene.gcrpCrossReference,
 });
 
+/**
+ * The gene as the create endpoint takes it: as the detail save sends it, with the `type` BiologicalEntity's
+ * polymorphic deserialization reads to build a new gene.
+ *
+ * @param {Object} gene the gene as the form holds it
+ * @returns {Object} a copy to send; the argument is not modified
+ */
+export const buildGeneCreatePayload = (gene) => ({ ...buildGeneDetailPayload(gene), type: 'Gene' });
+
+/**
+ * The gene the API returned, with its GCRP cross reference given its descriptor, so the page dropdown can offer the
+ * descriptor's pages.
+ *
+ * @param {Object} entity the gene as the API returned it
+ * @returns {Promise<Object>} a copy for the form to hold
+ */
+export const withSeededGcrpCrossReference = async (entity) => {
+	const [gcrpCrossReference = null] = entity.gcrpCrossReference
+		? await seedResourceDescriptors([entity.gcrpCrossReference])
+		: [];
+	return { ...entity, gcrpCrossReference };
+};
+
 // The cross reference fields whose cells in the cross references table show an error.
 const CROSS_REFERENCE_CELL_FIELDS = ['displayName', 'referencedCurie', 'resourceDescriptor', 'resourceDescriptorPage'];
 
@@ -65,4 +94,23 @@ export const gcrpCrossReferenceFieldErrors = (errorMessage) => {
 	}
 
 	return fieldErrors;
+};
+
+/**
+ * Marks a rejected gene's field errors on the form. The GCRP cross reference's error arrives as one string naming its
+ * fields, so it is split onto the row's cells; one that names no field stays with the section.
+ *
+ * @param {Object} [data] the rejected request's response body
+ * @param {Function} dispatch useGeneReducer dispatch
+ * @param {Object} gene the gene as the form held it when it was sent
+ */
+export const processGeneErrors = (data, dispatch, gene) => {
+	processErrors(data, dispatch, gene);
+
+	const { gcrpCrossReference: gcrpError, ...otherErrors } = data?.errorMessages ?? {};
+	const gcrpFieldErrors = gcrpCrossReferenceFieldErrors(gcrpError);
+	if (gcrpFieldErrors && gene.gcrpCrossReference) {
+		processTableErrors(gcrpFieldErrors, dispatch, 'gcrpCrossReference', gene.gcrpCrossReference);
+		dispatch({ type: 'UPDATE_ERROR_MESSAGES', errorMessages: otherErrors });
+	}
 };
