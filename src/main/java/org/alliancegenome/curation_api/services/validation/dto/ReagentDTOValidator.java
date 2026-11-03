@@ -11,6 +11,12 @@ public class ReagentDTOValidator<E extends Reagent, D extends ReagentDTO> extend
 		
 		reagent.setSecondaryIdentifiers(handleStringListField(dto.getSecondaryIdentifiers()));
 
+		// Only a submitted placeholder changes the flag. MGI's files leave it out, and the MGI
+		// constructs flagged by v0.43.0.3 must stay hidden; a new reagent starts as false.
+		if (dto.getPlaceholder() != null) {
+			reagent.setPlaceholder(dto.getPlaceholder());
+		}
+
 		return reagent;
 	}
 }

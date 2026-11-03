@@ -13,8 +13,7 @@ public enum BackendBulkDataProvider {
 	WB("NCBITaxon:6239", "WB:", 6239, "WB", "WB", "Caenorhabditis", true, false, false, true),
 	XB("NCBITaxon:8355", "XB:", 8355, "XB", "Xenbase", "Xenopus", true, false, false, false),
 	XBXL("NCBITaxon:8355", "XB:", 8355, "XB", "Xenbase", "Xenopus", true, false, false, false),
-	XBXT("NCBITaxon:8364", "XB:", 8364, "XB", "Xenbase", "Xenopus", true, false, false, false),
-	SARSCoV2("NCBITaxon:2697049", "RefSeq", 2697049, "Alliance", "Alliance of Genome Resources", "Severe acute respiratory syndrome", false, false, false, false);
+	XBXT("NCBITaxon:8364", "XB:", 8364, "XB", "Xenbase", "Xenopus", true, false, false, false);
 
 	public String canonicalTaxonCurie;
 	public String curiePrefix;
@@ -64,11 +63,20 @@ public enum BackendBulkDataProvider {
 		return null;
 	}
 
+	// SCRUM-6678: SGD is keyed to NCBITaxon:559292, but the DIOPT orthology and paralogy files
+	// give yeast genes the species-level taxon 4932 with unprefixed ids (e.g. S000000575).
+	// Without this alias every yeast pair is skipped as an unrecognized gene and then removed
+	// by the load's cleanup.
+	private static final Integer SCE_SPECIES_TAXON_ID = 4932;
+
 	public static String getCuriePrefixFromTaxonId(Integer id) {
 		for (BackendBulkDataProvider provider : values()) {
 			if (id.equals(provider.idPart)) {
 				return provider.curiePrefix;
 			}
+		}
+		if (SCE_SPECIES_TAXON_ID.equals(id)) {
+			return SGD.curiePrefix;
 		}
 		return null;
 	}

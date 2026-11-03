@@ -1,13 +1,19 @@
 import React, { useRef, useState, useMemo } from 'react';
+import { useMutation } from '@tanstack/react-query';
 import { GenericDataTable } from '../../components/GenericDataTable/GenericDataTable';
 import { Toast } from 'primereact/toast';
 import { getDefaultTableState } from '../../service/TableStateService';
 import { FILTER_CONFIGS } from '../../constants/FilterFields';
+import { SecondaryIdsEditDialog } from '../allelesPage/secondaryIds/SecondaryIdsEditDialog';
 import { SecondaryIdsReadOnlyDialog } from '../allelesPage/secondaryIds/SecondaryIdsReadOnlyDialog';
+import { SynonymsEditDialog } from '../nameSlotAnnotations/dialogs/SynonymsEditDialog';
 import { SynonymsReadOnlyDialog } from '../nameSlotAnnotations/dialogs/SynonymsReadOnlyDialog';
+import { SymbolEditDialog } from '../nameSlotAnnotations/dialogs/SymbolEditDialog';
 import { SymbolReadOnlyDialog } from '../nameSlotAnnotations/dialogs/SymbolReadOnlyDialog';
+import { FullNameEditDialog } from '../nameSlotAnnotations/dialogs/FullNameEditDialog';
 import { FullNameReadOnlyDialog } from '../nameSlotAnnotations/dialogs/FullNameReadOnlyDialog';
 import { SystematicNameDialog } from './SystematicNameDialog';
+import { CrossReferencesEditDialog } from '../allelesPage/crossReferences/CrossReferencesEditDialog';
 import { CrossReferencesTemplate } from '../../components/Templates/CrossReferencesTemplate';
 import { CrossReferenceTemplate } from '../../components/Templates/CrossReferenceTemplate';
 import { useGetTableData } from '../../service/useGetTableData';
@@ -15,18 +21,20 @@ import { useGetUserSettings } from '../../service/useGetUserSettings';
 import { IdTemplate } from '../../components/Templates/IdTemplate';
 import { TextDialogTemplate } from '../../components/Templates/dialog/TextDialogTemplate';
 import { ListDialogTemplate } from '../../components/Templates/dialog/ListDialogTemplate';
+import { RelatedNotesEditDialog } from '../../components/RelatedNotesEditDialog';
 import { RelatedNotesReadOnlyDialog } from '../../components/RelatedNotesReadOnlyDialog';
 import { BooleanTemplate } from '../../components/Templates/BooleanTemplate';
 import { OntologyTermTemplate } from '../../components/Templates/OntologyTermTemplate';
 import { StringTemplate } from '../../components/Templates/StringTemplate';
 import { CountDialogTemplate } from '../../components/Templates/dialog/CountDialogTemplate';
-import { ErrorMessageComponent } from '../../components/Error/ErrorMessageComponent';
+import { DialogTriggerEditor } from '../../components/Editors/dialog/DialogTriggerEditor';
+import { GeneTypeTableEditor } from '../../components/Editors/autocomplete/geneType/GeneTypeTableEditor';
+import { TaxonTableEditor } from '../../components/Editors/autocomplete/taxon/TaxonTableEditor';
+import { BooleanTableEditor } from '../../components/Editors/dropdown/boolean/BooleanTableEditor';
 
 import { SearchService } from '../../service/SearchService';
+import { GeneService } from '../../service/GeneService';
 import { Endpoints } from '../../constants/Endpoints';
-
-import { Button } from 'primereact/button';
-import { EditMessageTooltip } from '../../components/EditMessageTooltip';
 
 export const GenesTable = () => {
 	const [isInEditMode, setIsInEditMode] = useState(false);
@@ -37,6 +45,16 @@ export const GenesTable = () => {
 	errorMessagesRef.current = errorMessages;
 
 	const searchService = new SearchService();
+	let geneService = new GeneService();
+
+	const mutation = useMutation({
+		mutationFn: (updatedGene) => {
+			if (!geneService) {
+				geneService = new GeneService();
+			}
+			return geneService.saveGene(updatedGene);
+		},
+	});
 
 	const toast_topleft = useRef(null);
 	const toast_topright = useRef(null);
@@ -65,6 +83,20 @@ export const GenesTable = () => {
 		dialog: false,
 	});
 
+	const [crossReferencesData, setCrossReferencesData] = useState({
+		isInEdit: false,
+		dialog: false,
+		rowIndex: null,
+		mainRowProps: {},
+	});
+
+	const [gcrpCrossReferenceData, setGcrpCrossReferenceData] = useState({
+		isInEdit: false,
+		dialog: false,
+		rowIndex: null,
+		mainRowProps: {},
+	});
+
 	const [systematicNameData, setSystematicNameData] = useState({
 		dialog: false,
 	});
@@ -73,6 +105,7 @@ export const GenesTable = () => {
 		let _fullNameData = {};
 		_fullNameData['originalFullNames'] = [geneFullName];
 		_fullNameData['dialog'] = true;
+		_fullNameData['isInEdit'] = false;
 		setFullNameData(() => ({
 			..._fullNameData,
 		}));
@@ -82,6 +115,7 @@ export const GenesTable = () => {
 		let _synonymsData = {};
 		_synonymsData['originalSynonyms'] = geneSynonyms;
 		_synonymsData['dialog'] = true;
+		_synonymsData['isInEdit'] = false;
 		setSynonymsData(() => ({
 			..._synonymsData,
 		}));
@@ -91,6 +125,7 @@ export const GenesTable = () => {
 		let _symbolData = {};
 		_symbolData['originalSymbols'] = [geneSymbol];
 		_symbolData['dialog'] = true;
+		_symbolData['isInEdit'] = false;
 		setSymbolData(() => ({
 			..._symbolData,
 		}));
@@ -100,6 +135,7 @@ export const GenesTable = () => {
 		let _secondaryIdsData = {};
 		_secondaryIdsData['originalSecondaryIds'] = geneSecondaryIds;
 		_secondaryIdsData['dialog'] = true;
+		_secondaryIdsData['isInEdit'] = false;
 		setSecondaryIdsData(() => ({
 			..._secondaryIdsData,
 		}));
@@ -109,13 +145,13 @@ export const GenesTable = () => {
 		let _systematicNameData = {};
 		_systematicNameData['originalSystematicNames'] = [geneSystematicName];
 		_systematicNameData['dialog'] = true;
+		_systematicNameData['isInEdit'] = false;
 		setSystematicNameData(() => ({
 			..._systematicNameData,
 		}));
 	};
 
 	const handleRelatedNotesOpen = (relatedNotes) => {
-		console.log('relatedNotes', relatedNotes);
 		let _relatedNotesData = {};
 		_relatedNotesData['originalRelatedNotes'] = relatedNotes;
 		_relatedNotesData['dialog'] = true;
@@ -125,72 +161,86 @@ export const GenesTable = () => {
 		}));
 	};
 
-	const handleRelatedNotesOpenInEdit = (event, rowProps, isInEdit) => {
-		const { rowIndex } = rowProps;
-		const index = rowIndex;
-		let _relatedNotesData = {};
-		_relatedNotesData['originalRelatedNotes'] = rowProps.rowData.relatedNotes;
-		_relatedNotesData['dialog'] = true;
-		_relatedNotesData['isInEdit'] = isInEdit;
-		_relatedNotesData['rowIndex'] = index;
-		_relatedNotesData['mainRowProps'] = rowProps;
+	const handleRelatedNotesOpenInEdit = (event, editorOptions, isInEdit) => {
 		setRelatedNotesData(() => ({
-			..._relatedNotesData,
+			originalRelatedNotes: editorOptions.rowData.relatedNotes,
+			dialog: true,
+			isInEdit: isInEdit,
+			rowIndex: editorOptions.rowIndex,
+			mainRowProps: editorOptions,
 		}));
 	};
 
-	const relatedNotesEditor = (props) => {
-		if (props?.rowData?.relatedNotes) {
-			return (
-				<>
-					<div>
-						<Button
-							className="p-button-text"
-							onClick={(event) => {
-								handleRelatedNotesOpenInEdit(event, props, true);
-							}}
-						>
-							<span style={{ textDecoration: 'underline' }}>
-								{`Notes(${props.rowData.relatedNotes.length}) `}
-								<i className="pi pi-user-edit" style={{ fontSize: '1em' }}></i>
-							</span>
-							&nbsp;&nbsp;&nbsp;&nbsp;
-							<EditMessageTooltip object="allele" />
-						</Button>
-					</div>
-					<ErrorMessageComponent
-						errorMessages={errorMessagesRef.current[props.rowIndex]}
-						errorField={'relatedNotes'}
-						style={{ fontSize: '1em' }}
-					/>
-				</>
-			);
-		} else {
-			return (
-				<>
-					<div>
-						<Button
-							className="p-button-text"
-							onClick={(event) => {
-								handleRelatedNotesOpenInEdit(event, props, true);
-							}}
-						>
-							<span style={{ textDecoration: 'underline' }}>
-								Add Note
-								<i className="pi pi-user-edit" style={{ fontSize: '1em' }}></i>
-							</span>
-							&nbsp;&nbsp;&nbsp;&nbsp;
-							<EditMessageTooltip />
-						</Button>
-					</div>
-					<ErrorMessageComponent
-						errorMessages={errorMessagesRef.current[props.rowIndex]}
-						errorField={'relatedNotes'}
-						style={{ fontSize: '1em' }}
-					/>
-				</>
-			);
-		}
+	const handleFullNameOpenInEdit = (event, editorOptions, isInEdit) => {
+		setFullNameData(() => ({
+			originalFullNames: [editorOptions.rowData.geneFullName],
+			dialog: true,
+			isInEdit: isInEdit,
+			rowIndex: editorOptions.rowIndex,
+			mainRowProps: editorOptions,
+		}));
+	};
+
+	const handleSymbolOpenInEdit = (event, editorOptions, isInEdit) => {
+		setSymbolData(() => ({
+			originalSymbols: [editorOptions.rowData.geneSymbol],
+			dialog: true,
+			isInEdit: isInEdit,
+			rowIndex: editorOptions.rowIndex,
+			mainRowProps: editorOptions,
+		}));
+	};
+
+	const handleSynonymsOpenInEdit = (event, editorOptions, isInEdit) => {
+		setSynonymsData(() => ({
+			originalSynonyms: editorOptions.rowData.geneSynonyms,
+			dialog: true,
+			isInEdit: isInEdit,
+			rowIndex: editorOptions.rowIndex,
+			mainRowProps: editorOptions,
+		}));
+	};
+
+	const handleSecondaryIdsOpenInEdit = (event, editorOptions, isInEdit) => {
+		setSecondaryIdsData(() => ({
+			originalSecondaryIds: editorOptions.rowData.geneSecondaryIds,
+			dialog: true,
+			isInEdit: isInEdit,
+			rowIndex: editorOptions.rowIndex,
+			mainRowProps: editorOptions,
+		}));
+	};
+
+	const handleSystematicNameOpenInEdit = (event, editorOptions, isInEdit) => {
+		setSystematicNameData(() => ({
+			originalFullNames: [editorOptions.rowData.geneSystematicName],
+			dialog: true,
+			isInEdit: isInEdit,
+			rowIndex: editorOptions.rowIndex,
+			mainRowProps: editorOptions,
+		}));
+	};
+
+	const handleCrossReferencesOpenInEdit = (event, editorOptions, isInEdit) => {
+		setCrossReferencesData(() => ({
+			originalCrossReferences: editorOptions.rowData.crossReferences,
+			dialog: true,
+			isInEdit: isInEdit,
+			rowIndex: editorOptions.rowIndex,
+			mainRowProps: editorOptions,
+		}));
+	};
+
+	const handleGcrpCrossReferenceOpenInEdit = (event, editorOptions, isInEdit) => {
+		setGcrpCrossReferenceData(() => ({
+			originalCrossReferences: editorOptions.rowData.gcrpCrossReference
+				? [editorOptions.rowData.gcrpCrossReference]
+				: [],
+			dialog: true,
+			isInEdit: isInEdit,
+			rowIndex: editorOptions.rowIndex,
+			mainRowProps: editorOptions,
+		}));
 	};
 
 	const columns = useMemo(
@@ -218,7 +268,8 @@ export const GenesTable = () => {
 				filterConfig: FILTER_CONFIGS.modInternalIdFilterConfig,
 			},
 			{
-				field: 'geneFullName.displayText',
+				field: 'geneFullName',
+				columnKey: 'geneFullName.displayText',
 				header: 'Name',
 				sortable: true,
 				filter: true,
@@ -230,10 +281,22 @@ export const GenesTable = () => {
 						underline={false}
 					/>
 				),
+				editor: (editorOptions) => (
+					<DialogTriggerEditor
+						editorOptions={editorOptions}
+						errorMessagesRef={errorMessagesRef}
+						onOpenInEdit={handleFullNameOpenInEdit}
+						errorField="geneFullName"
+						displayHtml={editorOptions.rowData.geneFullName?.displayText}
+						addText="Add Full Name"
+						tooltipObject="gene"
+					/>
+				),
 				filterConfig: FILTER_CONFIGS.geneNameFilterConfig,
 			},
 			{
-				field: 'geneSymbol.displayText',
+				field: 'geneSymbol',
+				columnKey: 'geneSymbol.displayText',
 				header: 'Symbol',
 				sortable: true,
 				body: (rowData) => (
@@ -246,9 +309,21 @@ export const GenesTable = () => {
 				),
 				filter: true,
 				filterConfig: FILTER_CONFIGS.geneSymbolFilterConfig,
+				editor: (editorOptions) => (
+					<DialogTriggerEditor
+						editorOptions={editorOptions}
+						errorMessagesRef={errorMessagesRef}
+						onOpenInEdit={handleSymbolOpenInEdit}
+						errorField="geneSymbol"
+						displayHtml={editorOptions.rowData.geneSymbol?.displayText}
+						addText="Add Symbol"
+						tooltipObject="gene"
+					/>
+				),
 			},
 			{
-				field: 'geneSynonyms.displayText',
+				field: 'geneSynonyms',
+				columnKey: 'geneSynonyms.displayText',
 				header: 'Synonyms',
 				sortable: true,
 				body: (rowData) => (
@@ -259,10 +334,25 @@ export const GenesTable = () => {
 						underline={false}
 					/>
 				),
+				editor: (editorOptions) => {
+					const count = editorOptions.rowData.geneSynonyms?.length;
+					return (
+						<DialogTriggerEditor
+							editorOptions={editorOptions}
+							errorMessagesRef={errorMessagesRef}
+							onOpenInEdit={handleSynonymsOpenInEdit}
+							errorField="geneSynonyms"
+							displayText={count ? `Synonyms(${count}) ` : null}
+							addText="Add Synonym"
+							tooltipObject="gene"
+						/>
+					);
+				},
 				filterConfig: FILTER_CONFIGS.geneSynonymsFilterConfig,
 			},
 			{
-				field: 'geneSecondaryIds.secondaryId',
+				field: 'geneSecondaryIds',
+				columnKey: 'geneSecondaryIds.secondaryId',
 				header: 'Secondary IDs',
 				body: (rowData) => (
 					<ListDialogTemplate
@@ -273,10 +363,25 @@ export const GenesTable = () => {
 					/>
 				),
 				sortable: true,
+				editor: (editorOptions) => {
+					const count = editorOptions.rowData.geneSecondaryIds?.length;
+					return (
+						<DialogTriggerEditor
+							editorOptions={editorOptions}
+							errorMessagesRef={errorMessagesRef}
+							onOpenInEdit={handleSecondaryIdsOpenInEdit}
+							errorField="geneSecondaryIds"
+							displayText={count ? `Secondary IDs(${count}) ` : null}
+							addText="Add Secondary ID"
+							tooltipObject="gene"
+						/>
+					);
+				},
 				filterConfig: FILTER_CONFIGS.geneSecondaryIdsFilterConfig,
 			},
 			{
-				field: 'geneSystematicName.displayText',
+				field: 'geneSystematicName',
+				columnKey: 'geneSystematicName.displayText',
 				header: 'Systematic Name',
 				sortable: true,
 				body: (rowData) => (
@@ -289,31 +394,60 @@ export const GenesTable = () => {
 				),
 				filter: true,
 				filterConfig: FILTER_CONFIGS.geneSystematicNameFilterConfig,
+				editor: (editorOptions) => (
+					<DialogTriggerEditor
+						editorOptions={editorOptions}
+						errorMessagesRef={errorMessagesRef}
+						onOpenInEdit={handleSystematicNameOpenInEdit}
+						errorField="geneSystematicName"
+						displayHtml={editorOptions.rowData.geneSystematicName?.displayText}
+						addText="Add Systematic Name"
+						tooltipObject="gene"
+					/>
+				),
 			},
 			{
-				field: 'geneType.name',
+				field: 'geneType',
+				columnKey: 'geneType.name',
 				header: 'Gene Type',
 				body: (rowData) => <OntologyTermTemplate term={rowData.geneType} />,
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.geneTypeFilterConfig,
+				editor: (editorOptions) => <GeneTypeTableEditor editorOptions={editorOptions} />,
 			},
 			{
-				field: 'taxon.name',
+				field: 'taxon',
+				columnKey: 'taxon.name',
 				header: 'Taxon',
 				sortable: true,
 				body: (rowData) => <OntologyTermTemplate term={rowData.taxon} />,
 				filter: true,
 				filterConfig: FILTER_CONFIGS.taxonFilterConfig,
+				editor: (editorOptions) => <TaxonTableEditor editorOptions={editorOptions} />,
 			},
 			{
-				field: 'relatedNotes.freeText',
+				field: 'relatedNotes',
+				columnKey: 'relatedNotes.freeText',
 				header: 'Related Notes',
 				body: (rowData) => (
 					<CountDialogTemplate entities={rowData.relatedNotes} handleOpen={handleRelatedNotesOpen} text={'Notes'} />
 				),
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.relatedNotesFilterConfig,
-				editor: relatedNotesEditor,
+				editor: (editorOptions) => {
+					const count = editorOptions.rowData.relatedNotes?.length;
+					return (
+						<DialogTriggerEditor
+							editorOptions={editorOptions}
+							errorMessagesRef={errorMessagesRef}
+							onOpenInEdit={handleRelatedNotesOpenInEdit}
+							errorField="relatedNotes"
+							displayText={count ? `Notes(${count}) ` : null}
+							addText="Add Note"
+							tooltipObject="gene"
+						/>
+					);
+				},
 			},
 			{
 				field: 'dataProvider.abbreviation',
@@ -322,18 +456,45 @@ export const GenesTable = () => {
 				filterConfig: FILTER_CONFIGS.geneDataProviderFilterConfig,
 			},
 			{
-				field: 'crossReferences.displayName',
+				field: 'crossReferences',
+				columnKey: 'crossReferences.displayName',
 				header: 'Cross References',
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.crossReferencesFilterConfig,
 				body: (rowData) => <CrossReferencesTemplate list={rowData.crossReferences} />,
+				editor: (editorOptions) => {
+					const count = editorOptions.rowData.crossReferences?.length;
+					return (
+						<DialogTriggerEditor
+							editorOptions={editorOptions}
+							errorMessagesRef={errorMessagesRef}
+							onOpenInEdit={handleCrossReferencesOpenInEdit}
+							errorField="crossReferences"
+							displayText={count ? `Cross References(${count}) ` : null}
+							addText="Add Cross Reference"
+							tooltipObject="gene"
+						/>
+					);
+				},
 			},
 			{
-				field: 'gcrpCrossReference.displayName',
+				field: 'gcrpCrossReference',
+				columnKey: 'gcrpCrossReference.displayName',
 				header: 'GCRP Cross Reference',
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.gcrpCrossReferenceFilterConfig,
 				body: (rowData) => <CrossReferenceTemplate xref={rowData.gcrpCrossReference} />,
+				editor: (editorOptions) => (
+					<DialogTriggerEditor
+						editorOptions={editorOptions}
+						errorMessagesRef={errorMessagesRef}
+						onOpenInEdit={handleGcrpCrossReferenceOpenInEdit}
+						errorField="gcrpCrossReference"
+						displayText={editorOptions.rowData.gcrpCrossReference?.displayName}
+						addText="Add GCRP Cross Reference"
+						tooltipObject="gene"
+					/>
+				),
 			},
 			{
 				field: 'updatedBy.uniqueId',
@@ -373,6 +534,7 @@ export const GenesTable = () => {
 				filter: true,
 				filterConfig: FILTER_CONFIGS.internalFilterConfig,
 				sortable: true,
+				editor: (editorOptions) => <BooleanTableEditor editorOptions={editorOptions} field={'internal'} />,
 			},
 			{
 				field: 'obsolete',
@@ -381,10 +543,11 @@ export const GenesTable = () => {
 				filter: true,
 				filterConfig: FILTER_CONFIGS.obsoleteFilterConfig,
 				sortable: true,
+				editor: (editorOptions) => <BooleanTableEditor editorOptions={editorOptions} field={'obsolete'} />,
 			},
 		],
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-		[]
+		[errorMessagesRef]
 	);
 
 	const DEFAULT_COLUMN_WIDTH = 10;
@@ -422,7 +585,8 @@ export const GenesTable = () => {
 					tableState={tableState}
 					setTableState={setTableState}
 					columns={columns}
-					isEditable={false}
+					isEditable={true}
+					mutation={mutation}
 					isInEditMode={isInEditMode}
 					setIsInEditMode={setIsInEditMode}
 					toasts={{ toast_topleft, toast_topright }}
@@ -431,16 +595,80 @@ export const GenesTable = () => {
 					fetching={isFetching || isLoading}
 				/>
 			</div>
+			<FullNameEditDialog
+				field="geneFullName"
+				endpoint={Endpoints.SlotAnnotation.GENE_FULL_NAME}
+				originalFullNameData={fullNameData}
+				setOriginalFullNameData={setFullNameData}
+				errorMessagesMainRow={errorMessages}
+				setErrorMessagesMainRow={setErrorMessages}
+			/>
 			<FullNameReadOnlyDialog originalFullNameData={fullNameData} setOriginalFullNameData={setFullNameData} />
+			<SymbolEditDialog
+				field="geneSymbol"
+				endpoint={Endpoints.SlotAnnotation.GENE_SYMBOL}
+				originalSymbolData={symbolData}
+				setOriginalSymbolData={setSymbolData}
+				errorMessagesMainRow={errorMessages}
+				setErrorMessagesMainRow={setErrorMessages}
+			/>
 			<SymbolReadOnlyDialog originalSymbolData={symbolData} setOriginalSymbolData={setSymbolData} />
+			<SynonymsEditDialog
+				field="geneSynonyms"
+				endpoint={Endpoints.SlotAnnotation.GENE_SYNONYM}
+				originalSynonymsData={synonymsData}
+				setOriginalSynonymsData={setSynonymsData}
+				errorMessagesMainRow={errorMessages}
+				setErrorMessagesMainRow={setErrorMessages}
+			/>
 			<SynonymsReadOnlyDialog originalSynonymsData={synonymsData} setOriginalSynonymsData={setSynonymsData} />
+			<SecondaryIdsEditDialog
+				field="geneSecondaryIds"
+				endpoint={Endpoints.SlotAnnotation.GENE_SECONDARY_ID}
+				originalSecondaryIdsData={secondaryIdsData}
+				setOriginalSecondaryIdsData={setSecondaryIdsData}
+				errorMessagesMainRow={errorMessages}
+				setErrorMessagesMainRow={setErrorMessages}
+			/>
 			<SecondaryIdsReadOnlyDialog
 				originalSecondaryIdsData={secondaryIdsData}
 				setOriginalSecondaryIdsData={setSecondaryIdsData}
 			/>
+			<FullNameEditDialog
+				field="geneSystematicName"
+				endpoint={Endpoints.SlotAnnotation.GENE_SYSTEMATIC_NAME}
+				title="Systematic Name"
+				nameTypeVocabularyTermSet="systematic_name_type"
+				originalFullNameData={systematicNameData}
+				setOriginalFullNameData={setSystematicNameData}
+				errorMessagesMainRow={errorMessages}
+				setErrorMessagesMainRow={setErrorMessages}
+			/>
 			<SystematicNameDialog
 				originalSystematicNameData={systematicNameData}
 				setOriginalSystematicNameData={setSystematicNameData}
+			/>
+			<CrossReferencesEditDialog
+				originalCrossReferencesData={crossReferencesData}
+				setOriginalCrossReferencesData={setCrossReferencesData}
+				errorMessagesMainRow={errorMessages}
+				setErrorMessagesMainRow={setErrorMessages}
+			/>
+			<CrossReferencesEditDialog
+				field="gcrpCrossReference"
+				title="GCRP Cross Reference"
+				single
+				originalCrossReferencesData={gcrpCrossReferenceData}
+				setOriginalCrossReferencesData={setGcrpCrossReferenceData}
+				errorMessagesMainRow={errorMessages}
+				setErrorMessagesMainRow={setErrorMessages}
+			/>
+			<RelatedNotesEditDialog
+				originalRelatedNotesData={relatedNotesData}
+				setOriginalRelatedNotesData={setRelatedNotesData}
+				errorMessagesMainRow={errorMessages}
+				setErrorMessagesMainRow={setErrorMessages}
+				noteTypeVocabularyTermSet="gene_note_type"
 			/>
 			<RelatedNotesReadOnlyDialog
 				originalRelatedNotesData={relatedNotesData}

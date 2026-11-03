@@ -12,6 +12,7 @@ import org.alliancegenome.curation_api.model.entities.base.CurieObject;
 import org.alliancegenome.curation_api.view.CurationView;
 import org.apache.commons.collections.CollectionUtils;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 import org.hibernate.search.engine.backend.types.Aggregable;
@@ -70,7 +71,10 @@ public class Reference extends CurieObject {
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@OneToMany(cascade = CascadeType.MERGE, orphanRemoval = true)
-	@Fetch(FetchMode.SUBSELECT)
+	// Not SUBSELECT: that re-embeds the owning query, which the planner scans whole tables for,
+	// taking minutes per mass indexing batch. Batching looks the references up by id instead.
+	@Fetch(FetchMode.SELECT)
+	@BatchSize(size = 500)
 	@JsonView({ CurationView.FieldsOnly.class, CurationView.ForPublic.class, CurationView.AlleleSummaryDocument.class, CurationView.VariantSummaryDocument.class, CurationView.TransgenicAllelesDocument.class, CurationView.AlleleDetailView.class })
 	@JoinTable(
 		indexes = {

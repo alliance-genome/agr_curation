@@ -296,7 +296,13 @@ export const DataLoadsComponent = () => {
 	};
 
 	const downloadFileExceptions = (id) => {
-		dataLoadService.downloadExceptions(id, setIsLoading);
+		dataLoadService.downloadExceptions(id, setIsLoading).catch((error) => {
+			toast.current.show({
+				severity: 'error',
+				summary: 'Error',
+				detail: `Exceptions download failed: ${error.message}`,
+			});
+		});
 	};
 
 	const showUploadConfirmDialog = (rowData) => {
@@ -561,10 +567,9 @@ export const DataLoadsComponent = () => {
 	};
 
 	const countsTemplate = (rowData) => {
-		let countsArray = [];
-		for (let count in rowData.counts) {
-			countsArray.push({ ...rowData.counts[count], name: count });
-		}
+		const countsArray = Object.keys(rowData.counts || {})
+			.sort((a, b) => a.localeCompare(b))
+			.map((count) => ({ ...rowData.counts[count], name: count }));
 
 		return (
 			<DataTable key="countsTable" value={countsArray}>

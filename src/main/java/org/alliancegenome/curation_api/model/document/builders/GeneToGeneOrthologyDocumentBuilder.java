@@ -39,7 +39,7 @@ public class GeneToGeneOrthologyDocumentBuilder {
 
 	private void putGeneInfo(List<Map<String, Object>> list, Gene gene) {
 		Map<String, Object> data = new HashMap<>();
-		data.put("geneIdentifier", gene.getIdentifier());
+		data.put("geneIdentifier", gene.getPrimaryExternalId());
 		list.add(data);
 	}
 }

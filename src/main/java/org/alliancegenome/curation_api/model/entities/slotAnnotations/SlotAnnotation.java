@@ -72,7 +72,7 @@ public class SlotAnnotation extends AuditedObject {
 		@Index(name = "slotannotation_reference_slotannotation_index", columnList = "slotannotation_id"),
 		@Index(name = "slotannotation_reference_evidence_index", columnList = "evidence_id")
 	})
-	@JsonView({ CurationView.FieldsAndLists.class, CurationView.AffectedGenomicModelView.class, CurationView.AlleleView.class, CurationView.AlleleDetailView.class, CurationView.GeneView.class, CurationView.ConstructView.class })
+	@JsonView({ CurationView.FieldsAndLists.class, CurationView.AffectedGenomicModelView.class, CurationView.AlleleView.class, CurationView.AlleleDetailView.class, CurationView.GeneView.class, CurationView.ConstructView.class , CurationView.CassetteView.class, CurationView.TransgenicToolView.class})
 	private List<Reference> evidence;
 
 }

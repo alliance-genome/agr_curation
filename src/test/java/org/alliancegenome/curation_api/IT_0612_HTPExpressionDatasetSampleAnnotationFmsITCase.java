@@ -148,5 +148,65 @@ public class IT_0612_HTPExpressionDatasetSampleAnnotationFmsITCase extends BaseI
 				.body("results[2]", not(hasKey("htpExpressionSampleLocations")));
 	}
 
+	@Test
+	@Order(7)
+	public void htpDatasetSampleBulkUploadTitleOnlyMatchesExisting() throws Exception {
+		// SCRUM-6585 — with no sampleId, a re-load must update the existing record matched on
+		// (dataProvider, sampleTitle, datasetIds, anatomical structure of the sample locations)
+		// rather than insert a new one
+		String titleOnlyFindBody = "{\"htpExpressionSampleTitle\": \"TITLE ONLY SAMPLE\"}";
+
+		checkSuccessfulBulkLoad(htpDatasetSampleBulkPostEndpoint, htpDatasetSampleTestFilePath + "TO_01_title_only.json");
+
+		int id = RestAssured.given().when().header("Content-Type", "application/json").body(titleOnlyFindBody)
+				.post(htpDatasetSampleFindEndpoint).then().statusCode(200)
+				.body("returnedRecords", is(1))
+				.body("results[0]", not(hasKey("htpExpressionSample")))
+				.body("results[0].abundance", is("title only abundance"))
+				.body("results[0].htpExpressionSampleLocations[0].anatomicalStructure.curie", is("ANAT:001"))
+				.extract().path("results[0].id");
+
+		// same structure, changed abundance and UBERON slim term: updated in place (slim terms are not part of the key)
+		checkSuccessfulBulkLoad(htpDatasetSampleBulkPostEndpoint, htpDatasetSampleTestFilePath + "TO_02_title_only_update.json");
+
+		RestAssured.given().when().header("Content-Type", "application/json").body(titleOnlyFindBody)
+				.post(htpDatasetSampleFindEndpoint).then().statusCode(200)
+				.body("returnedRecords", is(1))
+				.body("results[0].id", is(id))
+				.body("results[0].abundance", is("title only abundance updated"))
+				.body("results[0].htpExpressionSampleLocations", hasSize(1))
+				.body("results[0].htpExpressionSampleLocations[0].anatomicalStructure.curie", is("ANAT:001"))
+				.body("results[0].htpExpressionSampleLocations[0].anatomicalStructureUberonTerms[0].curie", is("UBERON:005"));
+
+		// the same title and dataset with a different anatomical structure is a separate record
+		checkSuccessfulBulkLoad(htpDatasetSampleBulkPostEndpoint, htpDatasetSampleTestFilePath + "TO_04_title_only_other_structure.json");
+
+		RestAssured.given().when().header("Content-Type", "application/json").body(titleOnlyFindBody)
+				.post(htpDatasetSampleFindEndpoint).then().statusCode(200)
+				.body("returnedRecords", is(2))
+				.body("results[0].id", is(id))
+				.body("results[0].htpExpressionSampleLocations[0].anatomicalStructure.curie", is("ANAT:001"))
+				.body("results[1].htpExpressionSampleLocations[0].anatomicalStructure.curie", is("ANAT:002"));
+
+		// the same title under a different dataset is a separate record
+		checkSuccessfulBulkLoad(htpDatasetSampleBulkPostEndpoint, htpDatasetSampleTestFilePath + "TO_03_title_only_other_dataset.json");
+
+		RestAssured.given().when().header("Content-Type", "application/json").body(titleOnlyFindBody)
+				.post(htpDatasetSampleFindEndpoint).then().statusCode(200)
+				.body("returnedRecords", is(3))
+				.body("results[0].id", is(id))
+				.body("results[0].datasetIds[0].curie", is("GEO:GSE38764"))
+				.body("results[2].datasetIds[0].curie", is("GEO:TEST1"));
+
+		// the match is scoped to the data provider: the same title, dataset and structure from another MOD is a separate record
+		checkSuccessfulBulkLoad(htpDatasetSampleBulkPostEndpoint.replace("/FB/", "/MGI/"), htpDatasetSampleTestFilePath + "TO_01_title_only.json");
+
+		RestAssured.given().when().header("Content-Type", "application/json").body(titleOnlyFindBody)
+				.post(htpDatasetSampleFindEndpoint).then().statusCode(200)
+				.body("returnedRecords", is(4))
+				.body("results[0].id", is(id))
+				.body("results[0].dataProvider.abbreviation", is("FB"))
+				.body("results[3].dataProvider.abbreviation", is("MGI"));
+	}
 
 }

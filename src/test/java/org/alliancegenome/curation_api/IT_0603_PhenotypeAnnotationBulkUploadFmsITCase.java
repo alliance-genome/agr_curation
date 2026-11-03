@@ -82,8 +82,8 @@ public class IT_0603_PhenotypeAnnotationBulkUploadFmsITCase extends BaseITCase {
 		VocabularyTerm symbolTerm = getVocabularyTerm(nameTypeVocabulary, "nomenclature_symbol");
 		Organization dataProvider = getOrganization("WB");
 		createGene(gene, "NCBITaxon:6239", symbolTerm, false, dataProvider);
-		createAllele(allele, "TestAllele", "NCBITaxon:6239", symbolTerm, false, dataProvider);
-		createAllele(allele2, "TestAllele2", "NCBITaxon:6239", symbolTerm, false, dataProvider);
+		createAllele(allele, "PATestAllele", "NCBITaxon:6239", symbolTerm, false, dataProvider);
+		createAllele(allele2, "PATestAllele2", "NCBITaxon:6239", symbolTerm, false, dataProvider);
 		createAffectedGenomicModel(agm, "NCBITaxon:6239", "strain", false, dataProvider);
 		createAffectedGenomicModel(agm2, "NCBITaxon:6239", "strain", false, dataProvider);
 		createMpTerm(mpTerm, "Test PhenotypeTerm");

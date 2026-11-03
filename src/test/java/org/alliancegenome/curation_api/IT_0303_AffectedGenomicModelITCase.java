@@ -223,27 +223,35 @@ public class IT_0303_AffectedGenomicModelITCase extends BaseITCase {
 			post("/api/agm").
 			then().
 			statusCode(400).
-			body("errorMessages", is(aMapWithSize(3))).
-			body("errorMessages.modInternalId", is(ValidationConstants.REQUIRED_UNLESS_OTHER_FIELD_POPULATED_MESSAGE + " primaryExternalId")).
+			body("errorMessages", is(aMapWithSize(2))).
 			body("errorMessages.taxon", is(ValidationConstants.REQUIRED_MESSAGE)).
 			body("errorMessages.subtype", is(ValidationConstants.REQUIRED_MESSAGE));
 	}
-	
+
 	@Test
 	@Order(4)
 	public void editAGMWithMissingPrimaryExternalId() {
 		AffectedGenomicModel agm = getAffectedGenomicModel(AGM);
 		agm.setPrimaryExternalId(null);
-		
+
+		// An AGM is identified by its AGRKB curie, so neither MOD identifier is required.
 		RestAssured.given().
 			contentType("application/json").
 			body(agm).
 			when().
 			put("/api/agm").
 			then().
-			statusCode(400).
-			body("errorMessages", is(aMapWithSize(1))).
-			body("errorMessages.modInternalId", is(ValidationConstants.REQUIRED_UNLESS_OTHER_FIELD_POPULATED_MESSAGE + " primaryExternalId"));
+			statusCode(200);
+
+		// Restore the identifier the ordered tests that follow look this fixture up by.
+		agm.setPrimaryExternalId(AGM);
+		RestAssured.given().
+			contentType("application/json").
+			body(agm).
+			when().
+			put("/api/agm").
+			then().
+			statusCode(200);
 	}
 	
 	@Test
@@ -281,9 +289,7 @@ public class IT_0303_AffectedGenomicModelITCase extends BaseITCase {
 			when().
 			post("/api/agm").
 			then().
-			statusCode(400).
-			body("errorMessages", is(aMapWithSize(1))).
-			body("errorMessages.modInternalId", is(ValidationConstants.REQUIRED_UNLESS_OTHER_FIELD_POPULATED_MESSAGE + " primaryExternalId"));
+			statusCode(200);
 	}
 
 	@Test
@@ -292,15 +298,24 @@ public class IT_0303_AffectedGenomicModelITCase extends BaseITCase {
 		AffectedGenomicModel agm = getAffectedGenomicModel(AGM);
 		agm.setPrimaryExternalId("");
 
+		// An AGM is identified by its AGRKB curie, so neither MOD identifier is required.
 		RestAssured.given().
 			contentType("application/json").
 			body(agm).
 			when().
 			put("/api/agm").
 			then().
-			statusCode(400).
-			body("errorMessages", is(aMapWithSize(1))).
-			body("errorMessages.modInternalId", is(ValidationConstants.REQUIRED_UNLESS_OTHER_FIELD_POPULATED_MESSAGE + " primaryExternalId"));
+			statusCode(200);
+
+		// Restore the identifier the ordered tests that follow look this fixture up by.
+		agm.setPrimaryExternalId(AGM);
+		RestAssured.given().
+			contentType("application/json").
+			body(agm).
+			when().
+			put("/api/agm").
+			then().
+			statusCode(200);
 	}
 	
 	@Test

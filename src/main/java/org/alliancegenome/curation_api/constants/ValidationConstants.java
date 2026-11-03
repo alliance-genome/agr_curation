@@ -11,11 +11,14 @@ public final class ValidationConstants {
 	public static final String REQUIRED_UNLESS_OTHER_FIELD_POPULATED_MESSAGE = "Field is required unless value is populated for";
 	public static final String DEPENDENCY_MESSAGE_PREFIX = "Invalid without value for";
 	public static final String NON_UNIQUE_MESSAGE = "Field value is not unique";
+	public static final String ALLELE_SYMBOL_NOT_UNIQUE_IN_TAXON_MESSAGE = "Another allele is already using this taxon/symbol combination";
 	public static final String UNSUPPORTED_MESSAGE = "Unsupported value specified";
 	public static final String DUPLICATE_MESSAGE = "Duplicate entries found";
 	public static final String DUPLICATE_RELATION_PREFIX = "Entries found with same relation field -";
 	public static final String UNRECOGNIZED_MESSAGE = "Unrecognized entry"; // To be used instead of INVALID_MESSAGE when entry to be skipped instead of failed
 	public static final String AMBIGUOUS_MESSAGE = "Could not be unambiguously resolved";
+	public static final String CURIE_MINT_FAILED_MESSAGE = "Could not mint an AGRKB curie, please try again";
 	public static final String WARNING_MISSING_MESSAGE = "WARNING: Skipped missing";
+	public static final String CURIE_PATTERN_MISMATCH_MESSAGE = "Does not match the resource descriptor's pattern";
 
 }

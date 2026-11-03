@@ -32,8 +32,6 @@ export const ResourceDescriptorPagesTable = () => {
 
 	const toast_topleft = useRef(null);
 	const toast_topright = useRef(null);
-	const errorMessagesRef = useRef();
-	errorMessagesRef.current = errorMessages;
 
 	let resourceDescriptorPageService = new ResourceDescriptorPageService();
 
@@ -57,9 +55,7 @@ export const ResourceDescriptorPagesTable = () => {
 					<StringTemplate string={`${rowData.resourceDescriptor?.prefix} (${rowData.resourceDescriptor?.name})`} />
 				),
 				filterConfig: FILTER_CONFIGS.resourceDescriptorFilterConfig,
-				editor: (editorOptions) => (
-					<ResourceDescriptorTableEditor editorOptions={editorOptions} errorMessagesRef={errorMessagesRef} />
-				),
+				editor: (editorOptions) => <ResourceDescriptorTableEditor editorOptions={editorOptions} />,
 			},
 			{
 				field: 'name',
@@ -121,9 +117,7 @@ export const ResourceDescriptorPagesTable = () => {
 				sortable: true,
 				body: (rowData) => <BooleanTemplate value={rowData.internal} />,
 				filterConfig: FILTER_CONFIGS.internalFilterConfig,
-				editor: (editorOptions) => (
-					<BooleanTableEditor editorOptions={editorOptions} errorMessagesRef={errorMessagesRef} field="internal" />
-				),
+				editor: (editorOptions) => <BooleanTableEditor editorOptions={editorOptions} field="internal" />,
 			},
 			{
 				field: 'obsolete',
@@ -131,9 +125,7 @@ export const ResourceDescriptorPagesTable = () => {
 				sortable: true,
 				body: (rowData) => <BooleanTemplate value={rowData.obsolete} />,
 				filterConfig: FILTER_CONFIGS.obsoleteFilterConfig,
-				editor: (editorOptions) => (
-					<BooleanTableEditor editorOptions={editorOptions} errorMessagesRef={errorMessagesRef} field="obsolete" />
-				),
+				editor: (editorOptions) => <BooleanTableEditor editorOptions={editorOptions} field="obsolete" />,
 			},
 		],
 		// eslint-disable-next-line react-hooks/exhaustive-deps

@@ -4,7 +4,14 @@ import { useRef } from 'react';
 import { SymbolFormTable } from './SymbolFormTable';
 import { buildEmptyAlleleSymbol } from '../utils';
 
-export const SymbolForm = ({ labelColumnSize, state, dispatch, required = false, showAddButton = true }) => {
+export const SymbolForm = ({
+	labelColumnSize,
+	state,
+	dispatch,
+	required = false,
+	showAddButton = true,
+	isPending = false,
+}) => {
 	const tableRef = useRef(null);
 
 	const symbols = [state.allele?.alleleSymbol];
@@ -96,6 +103,7 @@ export const SymbolForm = ({ labelColumnSize, state, dispatch, required = false,
 			}
 			tableName="Symbol"
 			required={required}
+			isPending={isPending}
 			showTable={state.entityStates.alleleSymbol.show}
 			button={
 				showAddButton ? (

@@ -66,6 +66,8 @@ public class AlleleDAO extends BaseCurieSQLDAO<Allele> {
 	AgmAlleleAssociationDAO agmAlleleAssociationDAO;
 	@Inject
 	HTPExpressionDatasetSampleAnnotationDAO htpExpressionDatasetSampleAnnotationDAO;
+	@Inject
+	GeneGeneticInteractionDAO geneGeneticInteractionDAO;
 
 	protected AlleleDAO() {
 		super(Allele.class);
@@ -129,6 +131,31 @@ public class AlleleDAO extends BaseCurieSQLDAO<Allele> {
 		List<Long> results = htpExpressionDatasetSampleAnnotationDAO.findIdsByParams(params);
 
 		return CollectionUtils.isNotEmpty(results);
+	}
+
+	public Boolean hasReferencingGeneGeneticInteractions(Long alleleId) {
+		Map<String, Object> params = new HashMap<>();
+		params.put("query_operator", "or");
+		params.put("interactorAGeneticPerturbation.id", alleleId);
+		params.put("interactorBGeneticPerturbation.id", alleleId);
+		List<Long> results = geneGeneticInteractionDAO.findIdsByParams(params);
+		return CollectionUtils.isNotEmpty(results);
+	}
+
+	/**
+	 * Whether a non-obsolete allele other than {@code excludeId} has this symbol display text and taxon.
+	 *
+	 * @param displayText symbol display text to match
+	 * @param taxonId id of the taxon to match
+	 * @param excludeId id of the allele being validated, or null for a new allele
+	 */
+	public Boolean hasAlleleWithSymbolAndTaxon(String displayText, Long taxonId, Long excludeId) {
+		Map<String, Object> params = new HashMap<>();
+		params.put("alleleSymbol.displayText", displayText);
+		params.put("taxon.id", taxonId);
+		params.put("obsolete", false);
+		List<Long> results = findIdsByParams(params);
+		return results.stream().anyMatch(id -> !id.equals(excludeId));
 	}
 
 	public List<String> getAllAllelePrimaryExternalIds() {

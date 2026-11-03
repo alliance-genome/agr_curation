@@ -89,8 +89,6 @@ export const DiseaseAnnotationsTable = () => {
 	errorMessagesRef.current = errorMessages;
 
 	const [uiErrorMessages, setUiErrorMessages] = useState([]);
-	const uiErrorMessagesRef = useRef();
-	uiErrorMessagesRef.current = uiErrorMessages;
 
 	const searchService = new SearchService();
 
@@ -256,13 +254,7 @@ export const DiseaseAnnotationsTable = () => {
 				body: (rowData) => <GenomicEntityTemplate genomicEntity={rowData.diseaseAnnotationSubject} />,
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.diseaseAnnotationSubjectFieldConfig,
-				editor: (editorOptions) => (
-					<BiologicalEntityTableEditor
-						editorOptions={editorOptions}
-						errorMessagesRef={errorMessagesRef}
-						uiErrorMessagesRef={uiErrorMessagesRef}
-					/>
-				),
+				editor: (editorOptions) => <BiologicalEntityTableEditor editorOptions={editorOptions} />,
 			},
 			{
 				field: 'relation',
@@ -277,7 +269,6 @@ export const DiseaseAnnotationsTable = () => {
 						field="relation"
 						options={getRelationTermSet(editorOptions)}
 						showClear={false}
-						errorMessagesRef={errorMessagesRef}
 					/>
 				),
 			},
@@ -298,9 +289,7 @@ export const DiseaseAnnotationsTable = () => {
 				body: (rowData) => <OntologyTermTemplate term={rowData.diseaseAnnotationObject} />,
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.diseaseAnnotationObjectFilterConfig,
-				editor: (editorOptions) => (
-					<DiseaseTableEditor editorOptions={editorOptions} errorMessagesRef={errorMessagesRef} />
-				),
+				editor: (editorOptions) => <DiseaseTableEditor editorOptions={editorOptions} />,
 			},
 			{
 				field: 'evidenceItem',
@@ -309,13 +298,7 @@ export const DiseaseAnnotationsTable = () => {
 				body: (rowData) => <SingleReferenceTemplate singleReference={rowData.evidenceItem} />,
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.evidenceItemFilterConfig,
-				editor: (editorOptions) => (
-					<SingleReferenceTableEditor
-						editorOptions={editorOptions}
-						field="evidenceItem"
-						errorMessagesRef={errorMessagesRef}
-					/>
-				),
+				editor: (editorOptions) => <SingleReferenceTableEditor editorOptions={editorOptions} field="evidenceItem" />,
 			},
 			{
 				field: 'evidenceCodes',
@@ -330,9 +313,7 @@ export const DiseaseAnnotationsTable = () => {
 				),
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.evidenceCodesFilterConfig,
-				editor: (editorOptions) => (
-					<EvidenceCodesTableEditor editorOptions={editorOptions} errorMessagesRef={errorMessagesRef} />
-				),
+				editor: (editorOptions) => <EvidenceCodesTableEditor editorOptions={editorOptions} />,
 			},
 			{
 				field: 'with',
@@ -341,9 +322,7 @@ export const DiseaseAnnotationsTable = () => {
 				body: (rowData) => <GenomicEntityListTemplate genomicEntities={rowData.with} />,
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.withFilterConfig,
-				editor: (editorOptions) => (
-					<WithTableEditor editorOptions={editorOptions} errorMessagesRef={errorMessagesRef} />
-				),
+				editor: (editorOptions) => <WithTableEditor editorOptions={editorOptions} />,
 			},
 			{
 				field: 'relatedNotes',
@@ -385,9 +364,7 @@ export const DiseaseAnnotationsTable = () => {
 				},
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.daConditionRelationsHandleFilterConfig,
-				editor: (editorOptions) => (
-					<ConditionHandleTableEditor editorOptions={editorOptions} errorMessagesRef={errorMessagesRef} />
-				),
+				editor: (editorOptions) => <ConditionHandleTableEditor editorOptions={editorOptions} />,
 			},
 			{
 				field: 'conditionRelations',
@@ -432,7 +409,6 @@ export const DiseaseAnnotationsTable = () => {
 						editorOptions={editorOptions}
 						field="geneticSex"
 						options={geneticSexTerms}
-						errorMessagesRef={errorMessagesRef}
 						showClear={true}
 					/>
 				),
@@ -455,7 +431,6 @@ export const DiseaseAnnotationsTable = () => {
 						editorOptions={editorOptions}
 						field="diseaseQualifiers"
 						options={diseaseQualifiersTerms}
-						errorMessagesRef={errorMessagesRef}
 					/>
 				),
 			},
@@ -468,13 +443,7 @@ export const DiseaseAnnotationsTable = () => {
 				filterConfig: FILTER_CONFIGS.sgdStrainBackgroundFilterConfig,
 				editor: (editorOptions) => {
 					if (editorOptions.rowData.type !== 'GeneDiseaseAnnotation') return null;
-					return (
-						<SgdStrainBackgroundTableEditor
-							editorOptions={editorOptions}
-							errorMessagesRef={errorMessagesRef}
-							uiErrorMessagesRef={uiErrorMessagesRef}
-						/>
-					);
+					return <SgdStrainBackgroundTableEditor editorOptions={editorOptions} />;
 				},
 			},
 			{
@@ -489,7 +458,6 @@ export const DiseaseAnnotationsTable = () => {
 						editorOptions={editorOptions}
 						field="annotationType"
 						options={annotationTypeTerms}
-						errorMessagesRef={errorMessagesRef}
 						showClear={true}
 					/>
 				),
@@ -506,7 +474,6 @@ export const DiseaseAnnotationsTable = () => {
 						editorOptions={editorOptions}
 						field="diseaseGeneticModifierRelation"
 						options={geneticModifierRelationTerms}
-						errorMessagesRef={errorMessagesRef}
 						showClear={true}
 					/>
 				),
@@ -518,13 +485,7 @@ export const DiseaseAnnotationsTable = () => {
 				body: (rowData) => <GenomicEntityListTemplate genomicEntities={rowData.diseaseGeneticModifierAgms} />,
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.geneticModifierAgmsFilterConfig,
-				editor: (editorOptions) => (
-					<DiseaseGeneticModifierAgmsTableEditor
-						editorOptions={editorOptions}
-						errorMessagesRef={errorMessagesRef}
-						uiErrorMessagesRef={uiErrorMessagesRef}
-					/>
-				),
+				editor: (editorOptions) => <DiseaseGeneticModifierAgmsTableEditor editorOptions={editorOptions} />,
 			},
 			{
 				field: 'diseaseGeneticModifierAlleles',
@@ -533,13 +494,7 @@ export const DiseaseAnnotationsTable = () => {
 				body: (rowData) => <GenomicEntityListTemplate genomicEntities={rowData.diseaseGeneticModifierAlleles} />,
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.geneticModifierAllelesFilterConfig,
-				editor: (editorOptions) => (
-					<DiseaseGeneticModifierAllelesTableEditor
-						editorOptions={editorOptions}
-						errorMessagesRef={errorMessagesRef}
-						uiErrorMessagesRef={uiErrorMessagesRef}
-					/>
-				),
+				editor: (editorOptions) => <DiseaseGeneticModifierAllelesTableEditor editorOptions={editorOptions} />,
 			},
 			{
 				field: 'diseaseGeneticModifierGenes',
@@ -548,13 +503,7 @@ export const DiseaseAnnotationsTable = () => {
 				body: (rowData) => <GenomicEntityListTemplate genomicEntities={rowData.diseaseGeneticModifierGenes} />,
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.geneticModifierGenesFilterConfig,
-				editor: (editorOptions) => (
-					<DiseaseGeneticModifierGenesTableEditor
-						editorOptions={editorOptions}
-						errorMessagesRef={errorMessagesRef}
-						uiErrorMessagesRef={uiErrorMessagesRef}
-					/>
-				),
+				editor: (editorOptions) => <DiseaseGeneticModifierGenesTableEditor editorOptions={editorOptions} />,
 			},
 			{
 				field: 'inferredGene.geneSymbol.displayText',
@@ -572,7 +521,7 @@ export const DiseaseAnnotationsTable = () => {
 				filterConfig: FILTER_CONFIGS.assertedGenesFilterConfig,
 				editor: (editorOptions) => {
 					if (editorOptions.rowData.type === 'GeneDiseaseAnnotation') return null;
-					return <AssertedGenesTableEditor editorOptions={editorOptions} errorMessagesRef={errorMessagesRef} />;
+					return <AssertedGenesTableEditor editorOptions={editorOptions} />;
 				},
 			},
 			{
@@ -591,7 +540,7 @@ export const DiseaseAnnotationsTable = () => {
 				filterConfig: FILTER_CONFIGS.assertedAllelesFilterConfig,
 				editor: (editorOptions) => {
 					if (editorOptions.rowData.type !== 'AGMDiseaseAnnotation') return null;
-					return <AssertedAllelesTableEditor editorOptions={editorOptions} errorMessagesRef={errorMessagesRef} />;
+					return <AssertedAllelesTableEditor editorOptions={editorOptions} />;
 				},
 			},
 			{
@@ -640,9 +589,7 @@ export const DiseaseAnnotationsTable = () => {
 				body: (rowData) => <BooleanTemplate value={rowData.internal} />,
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.internalFilterConfig,
-				editor: (editorOptions) => (
-					<BooleanTableEditor editorOptions={editorOptions} field="internal" errorMessagesRef={errorMessagesRef} />
-				),
+				editor: (editorOptions) => <BooleanTableEditor editorOptions={editorOptions} field="internal" />,
 			},
 			{
 				field: 'obsolete',
@@ -650,9 +597,7 @@ export const DiseaseAnnotationsTable = () => {
 				body: (rowData) => <BooleanTemplate value={rowData.obsolete} />,
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.obsoleteFilterConfig,
-				editor: (editorOptions) => (
-					<BooleanTableEditor editorOptions={editorOptions} field="obsolete" errorMessagesRef={errorMessagesRef} />
-				),
+				editor: (editorOptions) => <BooleanTableEditor editorOptions={editorOptions} field="obsolete" />,
 			},
 		],
 		// eslint-disable-next-line react-hooks/exhaustive-deps

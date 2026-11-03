@@ -1,4 +1,5 @@
 import React from 'react';
+import { BrowserRouter } from 'react-router-dom';
 import { waitFor } from '@testing-library/react';
 import { renderWithClient } from '../../../tools/jest/utils';
 import { AffectedGenomicModelTable } from '../AffectedGenomicModelTable';
@@ -20,7 +21,11 @@ describe('<AffectedGenomicModelTable />', () => {
 	});
 
 	it('Renders without crashing', async () => {
-		let result = await renderWithClient(<AffectedGenomicModelTable />);
+		let result = await renderWithClient(
+			<BrowserRouter>
+				<AffectedGenomicModelTable />
+			</BrowserRouter>
+		);
 
 		await waitFor(() => {
 			expect(result);
@@ -28,7 +33,11 @@ describe('<AffectedGenomicModelTable />', () => {
 	});
 
 	it('Contains Correct Table Name', async () => {
-		let result = await renderWithClient(<AffectedGenomicModelTable />);
+		let result = await renderWithClient(
+			<BrowserRouter>
+				<AffectedGenomicModelTable />
+			</BrowserRouter>
+		);
 		const tableTitle = await result.findByText(/Affected Genomic Models Table/i);
 		expect(tableTitle).toBeInTheDocument();
 	});

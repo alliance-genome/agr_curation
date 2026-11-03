@@ -1,18 +1,11 @@
 import { AutocompleteSingleTableEditor } from '../base/AutocompleteSingleTableEditor';
 import { vocabularySearchConfig } from './utils';
 
-export const VocabularyTableEditor = ({
-	editorOptions,
-	field = 'vocabularyTermSetVocabulary',
-	errorMessagesRef,
-	uiErrorMessagesRef,
-}) => (
+export const VocabularyTableEditor = ({ editorOptions, field = 'vocabularyTermSetVocabulary' }) => (
 	<AutocompleteSingleTableEditor
 		editorOptions={editorOptions}
 		field={field}
 		subField="name"
-		errorMessagesRef={errorMessagesRef}
-		uiErrorMessagesRef={uiErrorMessagesRef}
 		{...vocabularySearchConfig}
 	/>
 );

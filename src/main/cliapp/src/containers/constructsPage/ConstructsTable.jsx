@@ -1,7 +1,7 @@
 import React, { useRef, useState, useMemo } from 'react';
 import { GenericDataTable } from '../../components/GenericDataTable/GenericDataTable';
-import { ComponentsDialog } from './ComponentsDialog';
-import { GenomicComponentsDialog } from './GenomicComponentsDialog';
+import { CassettesDialog } from './CassettesDialog';
+import { cassetteLabel } from './utils';
 import { SymbolReadOnlyDialog } from '../nameSlotAnnotations/dialogs/SymbolReadOnlyDialog';
 import { FullNameReadOnlyDialog } from '../nameSlotAnnotations/dialogs/FullNameReadOnlyDialog';
 import { SynonymsReadOnlyDialog } from '../nameSlotAnnotations/dialogs/SynonymsReadOnlyDialog';
@@ -47,19 +47,16 @@ export const ConstructsTable = () => {
 	const errorMessagesRef = useRef();
 	errorMessagesRef.current = errorMessages;
 
-	const [componentsData, setComponentsData] = useState({
-		isInEdit: false,
+	const [cassettesData, setCassettesData] = useState({
 		dialog: false,
-		rowIndex: null,
-		mainRowProps: {},
 	});
 
-	const [genomicComponentsData, setGenomicComponentsData] = useState({
-		isInEdit: false,
-		dialog: false,
-		rowIndex: null,
-		mainRowProps: {},
-	});
+	const handleCassettesOpen = (constructCassetteAssociations) => {
+		setCassettesData(() => ({
+			originalCassettes: constructCassetteAssociations,
+			dialog: true,
+		}));
+	};
 
 	const handleFullNameOpen = (constructFullName) => {
 		let _fullNameData = {};
@@ -86,59 +83,6 @@ export const ConstructsTable = () => {
 		setSymbolData(() => ({
 			..._symbolData,
 		}));
-	};
-
-	const handleComponentsOpen = (constructComponents) => {
-		let _componentsData = {};
-		_componentsData['originalComponents'] = constructComponents;
-		_componentsData['dialog'] = true;
-		setComponentsData(() => ({
-			..._componentsData,
-		}));
-	};
-
-	const handleGenomicComponentsOpen = (constructGenomicEntityAssociations) => {
-		let _componentsData = {};
-		_componentsData['originalComponents'] = constructGenomicEntityAssociations;
-		_componentsData['dialog'] = true;
-		setGenomicComponentsData(() => ({
-			..._componentsData,
-		}));
-	};
-
-	const getComponentsTextString = (item) => {
-		let relationName = '';
-		if (item?.relation?.name) {
-			relationName = item.relation.name;
-			if (relationName.indexOf(' (RO:') !== -1) {
-				relationName = relationName.substring(0, relationName.indexOf(' (RO:'));
-			}
-		}
-		return relationName + ': ' + item.componentSymbol;
-	};
-
-	const getComponentsAssociationTextString = (item) => {
-		let symbolValue = '';
-		if (
-			item?.constructGenomicEntityAssociationObject?.geneSymbol ||
-			item?.constructGenomicEntityAssociationObject?.alleleSymbol
-		) {
-			symbolValue = item.constructGenomicEntityAssociationObject.geneSymbol
-				? item.constructGenomicEntityAssociationObject.geneSymbol.displayText
-				: item.constructGenomicEntityAssociationObject.alleleSymbol.displayText;
-		} else if (item?.constructGenomicEntityAssociationObject?.name) {
-			symbolValue = item.constructGenomicEntityAssociationObject.name;
-		} else {
-			symbolValue = item.constructGenomicEntityAssociationObject.curie;
-		}
-		let relationName = '';
-		if (item?.relation?.name) {
-			relationName = item.relation.name;
-			if (relationName.indexOf(' (RO:') !== -1) {
-				relationName = relationName.substring(0, relationName.indexOf(' (RO:'));
-			}
-		}
-		return relationName + ': ' + symbolValue;
 	};
 
 	const columns = useMemo(
@@ -223,32 +167,18 @@ export const ConstructsTable = () => {
 				body: (rowData) => <StringListTemplate list={rowData.secondaryIdentifiers} />,
 			},
 			{
-				field: 'constructComponents.componentSymbol',
-				header: 'Free Text Components',
+				field: 'constructCassetteAssociations.constructCassetteAssociationObject.cassetteSymbol.displayText',
+				header: 'Cassettes',
 				body: (rowData) => (
 					<ListDialogTemplate
-						entities={rowData.constructComponents}
-						handleOpen={handleComponentsOpen}
-						getTextField={getComponentsTextString}
+						entities={rowData.constructCassetteAssociations}
+						handleOpen={handleCassettesOpen}
+						getTextField={(association) => cassetteLabel(association?.constructCassetteAssociationObject)}
 						underline={true}
 					/>
 				),
 				sortable: { isInEditMode },
-				filterConfig: FILTER_CONFIGS.constructComponentsFilterConfig,
-			},
-			{
-				field: 'constructGenomicEntityAssociations.constructGenomicEntityAssociationObject.symbol',
-				header: 'Component Associations',
-				body: (rowData) => (
-					<ListDialogTemplate
-						entities={rowData.constructGenomicEntityAssociations}
-						handleOpen={handleGenomicComponentsOpen}
-						getTextField={getComponentsAssociationTextString}
-						underline={true}
-					/>
-				),
-				sortable: { isInEditMode },
-				filterConfig: FILTER_CONFIGS.constructGenomicComponentsFilterConfig,
+				filterConfig: FILTER_CONFIGS.constructCassettesFilterConfig,
 			},
 			{
 				field: 'references.primaryCrossReferenceCurie',
@@ -370,18 +300,7 @@ export const ConstructsTable = () => {
 			<FullNameReadOnlyDialog originalFullNameData={fullNameData} setOriginalFullNameData={setFullNameData} />
 			<SymbolReadOnlyDialog originalSymbolData={symbolData} setOriginalSymbolData={setSymbolData} />
 			<SynonymsReadOnlyDialog originalSynonymsData={synonymsData} setOriginalSynonymsData={setSynonymsData} />
-			<ComponentsDialog
-				originalComponentsData={componentsData}
-				setOriginalComponentsData={setComponentsData}
-				errorMessagesMainRow={errorMessages}
-				setErrorMessagesMainRow={setErrorMessages}
-			/>
-			<GenomicComponentsDialog
-				originalComponentsData={genomicComponentsData}
-				setOriginalComponentsData={setGenomicComponentsData}
-				errorMessagesMainRow={errorMessages}
-				setErrorMessagesMainRow={setErrorMessages}
-			/>
+			<CassettesDialog originalCassettesData={cassettesData} setOriginalCassettesData={setCassettesData} />
 		</>
 	);
 };

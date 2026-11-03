@@ -30,6 +30,7 @@ import { TruncatedReferencesTemplate } from '../../components/Templates/referenc
 
 import { SearchService } from '../../service/SearchService';
 import { Endpoints } from '../../constants/Endpoints';
+import { NewVariantButton } from './NewVariantButton';
 
 export const VariantsTable = () => {
 	const [isInEditMode, setIsInEditMode] = useState(false);
@@ -120,9 +121,7 @@ export const VariantsTable = () => {
 				sortable: true,
 				body: (rowData) => <OntologyTermTemplate term={rowData.taxon} />,
 				filterConfig: FILTER_CONFIGS.taxonFilterConfig,
-				editor: (editorOptions) => (
-					<TaxonTableEditor editorOptions={editorOptions} errorMessagesRef={errorMessagesRef} />
-				),
+				editor: (editorOptions) => <TaxonTableEditor editorOptions={editorOptions} />,
 			},
 			{
 				field: 'variantType',
@@ -131,9 +130,7 @@ export const VariantsTable = () => {
 				sortable: true,
 				body: (rowData) => <OntologyTermTemplate term={rowData.variantType} />,
 				filterConfig: FILTER_CONFIGS.variantTypeFilterConfig,
-				editor: (editorOptions) => (
-					<VariantTypeTableEditor editorOptions={editorOptions} errorMessagesRef={errorMessagesRef} />
-				),
+				editor: (editorOptions) => <VariantTypeTableEditor editorOptions={editorOptions} />,
 			},
 			{
 				field: 'variantStatus',
@@ -147,7 +144,6 @@ export const VariantsTable = () => {
 						editorOptions={editorOptions}
 						field="variantStatus"
 						options={variantStatusTerms}
-						errorMessagesRef={errorMessagesRef}
 						showClear={true}
 					/>
 				),
@@ -192,9 +188,7 @@ export const VariantsTable = () => {
 				sortable: true,
 				body: (rowData) => <OntologyTermTemplate term={rowData.sourceGeneralConsequence} />,
 				filterConfig: FILTER_CONFIGS.sourceGeneralConsequenceFilterConfig,
-				editor: (editorOptions) => (
-					<SourceGeneralConsequenceTableEditor editorOptions={editorOptions} errorMessagesRef={errorMessagesRef} />
-				),
+				editor: (editorOptions) => <SourceGeneralConsequenceTableEditor editorOptions={editorOptions} />,
 			},
 			{
 				field: 'synonyms',
@@ -256,12 +250,7 @@ export const VariantsTable = () => {
 				filterConfig: FILTER_CONFIGS.internalFilterConfig,
 				sortable: true,
 				editor: (editorOptions) => (
-					<BooleanTableEditor
-						editorOptions={editorOptions}
-						errorMessagesRef={errorMessagesRef}
-						field={'internal'}
-						showClear={false}
-					/>
+					<BooleanTableEditor editorOptions={editorOptions} field={'internal'} showClear={false} />
 				),
 			},
 			{
@@ -272,12 +261,7 @@ export const VariantsTable = () => {
 				filterConfig: FILTER_CONFIGS.obsoleteFilterConfig,
 				sortable: true,
 				editor: (editorOptions) => (
-					<BooleanTableEditor
-						editorOptions={editorOptions}
-						errorMessagesRef={errorMessagesRef}
-						field={'obsolete'}
-						showClear={false}
-					/>
+					<BooleanTableEditor editorOptions={editorOptions} field={'obsolete'} showClear={false} />
 				),
 			},
 		],
@@ -305,6 +289,15 @@ export const VariantsTable = () => {
 		searchService,
 	});
 
+	const headerButtons = (disabled = false) => {
+		return (
+			<>
+				<NewVariantButton disabled={disabled} />
+				&nbsp;&nbsp;
+			</>
+		);
+	};
+
 	return (
 		<>
 			<div className="card">
@@ -314,6 +307,7 @@ export const VariantsTable = () => {
 					dataKey="id"
 					endpoint={SEARCH_ENDPOINT}
 					tableName="Variants"
+					headerButtons={headerButtons}
 					entities={variants}
 					setEntities={setVariants}
 					totalRecords={totalRecords}
@@ -322,7 +316,7 @@ export const VariantsTable = () => {
 					setTableState={setTableState}
 					columns={columns}
 					isEditable={true}
-					hasDetails={false}
+					hasDetails={true}
 					mutation={mutation}
 					isInEditMode={isInEditMode}
 					setIsInEditMode={setIsInEditMode}

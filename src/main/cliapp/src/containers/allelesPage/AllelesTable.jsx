@@ -6,7 +6,7 @@ import { SearchService } from '../../service/SearchService';
 import { Endpoints } from '../../constants/Endpoints';
 import { useGetTableData } from '../../service/useGetTableData';
 import { useGetUserSettings } from '../../service/useGetUserSettings';
-import { NewAlleleButton } from './NewAlleleButton';
+import { NewAlleleButton, useOpenAlleleCreatePage } from './NewAlleleButton';
 import { MutationTypesEditDialog } from './mutationTypes/MutationTypesEditDialog';
 import { MutationTypesReadOnlyDialog } from './mutationTypes/MutationTypesReadOnlyDialog';
 import { FunctionalImpactsEditDialog } from './functionalImpacts/FunctionalImpactsEditDialog';
@@ -25,6 +25,7 @@ import { FullNameEditDialog } from '../nameSlotAnnotations/dialogs/FullNameEditD
 import { FullNameReadOnlyDialog } from '../nameSlotAnnotations/dialogs/FullNameReadOnlyDialog';
 import { SecondaryIdsEditDialog } from './secondaryIds/SecondaryIdsEditDialog';
 import { SecondaryIdsReadOnlyDialog } from './secondaryIds/SecondaryIdsReadOnlyDialog';
+import { CrossReferencesEditDialog } from './crossReferences/CrossReferencesEditDialog';
 import { SynonymsEditDialog } from '../nameSlotAnnotations/dialogs/SynonymsEditDialog';
 import { SynonymsReadOnlyDialog } from '../nameSlotAnnotations/dialogs/SynonymsReadOnlyDialog';
 import { RelatedNotesEditDialog } from '../../components/RelatedNotesEditDialog';
@@ -41,10 +42,11 @@ import { BooleanTemplate } from '../../components/Templates/BooleanTemplate';
 import { TextDialogTemplate } from '../../components/Templates/dialog/TextDialogTemplate';
 import { ListDialogTemplate } from '../../components/Templates/dialog/ListDialogTemplate';
 import { NestedListDialogTemplate } from '../../components/Templates/dialog/NestedListDialogTemplate';
-import { CountDialogTemplate } from '../../components/Templates/dialog/CountDialogTemplate';
 import { CrossReferencesTemplate } from '../../components/Templates/CrossReferencesTemplate';
+import { CountDialogTemplate } from '../../components/Templates/dialog/CountDialogTemplate';
 
 import { Toast } from 'primereact/toast';
+import { getIdentifier } from '../../utils/utils';
 import { getDefaultTableState } from '../../service/TableStateService';
 import { FILTER_CONFIGS } from '../../constants/FilterFields';
 import { StringTemplate } from '../../components/Templates/StringTemplate';
@@ -60,6 +62,11 @@ export const AllelesTable = () => {
 	const [alleles, setAlleles] = useState([]);
 
 	const searchService = new SearchService();
+	const openAlleleCreatePage = useOpenAlleleCreatePage();
+
+	const handleDuplication = (rowData) => {
+		openAlleleCreatePage(rowData.curie || getIdentifier(rowData));
+	};
 
 	const [relatedNotesData, setRelatedNotesData] = useState({
 		relatedNotes: [],
@@ -129,6 +136,13 @@ export const AllelesTable = () => {
 	});
 
 	const [secondaryIdsData, setSecondaryIdsData] = useState({
+		isInEdit: false,
+		dialog: false,
+		rowIndex: null,
+		mainRowProps: {},
+	});
+
+	const [crossReferencesData, setCrossReferencesData] = useState({
 		isInEdit: false,
 		dialog: false,
 		rowIndex: null,
@@ -423,6 +437,16 @@ export const AllelesTable = () => {
 		}));
 	};
 
+	const handleCrossReferencesOpenInEdit = (event, editorOptions, isInEdit) => {
+		setCrossReferencesData(() => ({
+			originalCrossReferences: editorOptions.rowData.crossReferences,
+			dialog: true,
+			isInEdit: isInEdit,
+			rowIndex: editorOptions.rowIndex,
+			mainRowProps: editorOptions,
+		}));
+	};
+
 	const columns = useMemo(
 		() => [
 			{
@@ -590,9 +614,7 @@ export const AllelesTable = () => {
 				sortable: true,
 				body: (rowData) => <OntologyTermTemplate term={rowData.taxon} />,
 				filterConfig: FILTER_CONFIGS.taxonFilterConfig,
-				editor: (editorOptions) => (
-					<TaxonTableEditor editorOptions={editorOptions} errorMessagesRef={errorMessagesRef} />
-				),
+				editor: (editorOptions) => <TaxonTableEditor editorOptions={editorOptions} />,
 			},
 			{
 				field: 'alleleMutationTypes',
@@ -715,9 +737,7 @@ export const AllelesTable = () => {
 				),
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.referencesFilterConfig,
-				editor: (editorOptions) => (
-					<ReferencesTableEditor editorOptions={editorOptions} errorMessagesRef={errorMessagesRef} />
-				),
+				editor: (editorOptions) => <ReferencesTableEditor editorOptions={editorOptions} />,
 			},
 			{
 				field: 'alleleInheritanceModes',
@@ -754,9 +774,7 @@ export const AllelesTable = () => {
 				sortable: true,
 				body: (rowData) => <StringTemplate string={rowData.inCollection?.name} />,
 				filterConfig: FILTER_CONFIGS.inCollectionFilterConfig,
-				editor: (editorOptions) => (
-					<InCollectionTableEditor editorOptions={editorOptions} errorMessagesRef={errorMessagesRef} />
-				),
+				editor: (editorOptions) => <InCollectionTableEditor editorOptions={editorOptions} />,
 			},
 			{
 				field: 'isExtinct',
@@ -765,12 +783,7 @@ export const AllelesTable = () => {
 				filterConfig: FILTER_CONFIGS.isExtinctFilterConfig,
 				sortable: true,
 				editor: (editorOptions) => (
-					<BooleanTableEditor
-						editorOptions={editorOptions}
-						errorMessagesRef={errorMessagesRef}
-						field={'isExtinct'}
-						showClear={true}
-					/>
+					<BooleanTableEditor editorOptions={editorOptions} field={'isExtinct'} showClear={true} />
 				),
 			},
 			{
@@ -804,11 +817,29 @@ export const AllelesTable = () => {
 				filterConfig: FILTER_CONFIGS.alleleDataProviderFilterConfig,
 			},
 			{
-				field: 'crossReferences.displayName',
+				// field names the array the editor replaces, because editorCallback writes through
+				// ObjectUtils.mutateFieldData, which walks a dotted path instead of replacing it. columnKey
+				// keeps the string every persisted sort, filter, width and ordering setting was stored under.
+				field: 'crossReferences',
+				columnKey: 'crossReferences.displayName',
 				header: 'Cross References',
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.crossReferencesFilterConfig,
 				body: (rowData) => <CrossReferencesTemplate list={rowData.crossReferences} />,
+				editor: (editorOptions) => {
+					const count = editorOptions.rowData.crossReferences?.length;
+					return (
+						<DialogTriggerEditor
+							editorOptions={editorOptions}
+							errorMessagesRef={errorMessagesRef}
+							onOpenInEdit={handleCrossReferencesOpenInEdit}
+							errorField="crossReferences"
+							displayText={count ? `Cross References(${count}) ` : null}
+							addText="Add Cross Reference"
+							tooltipObject="allele"
+						/>
+					);
+				},
 			},
 			{
 				field: 'updatedBy.uniqueId',
@@ -848,9 +879,7 @@ export const AllelesTable = () => {
 				filter: true,
 				filterConfig: FILTER_CONFIGS.internalFilterConfig,
 				sortable: true,
-				editor: (editorOptions) => (
-					<BooleanTableEditor editorOptions={editorOptions} errorMessagesRef={errorMessagesRef} field={'internal'} />
-				),
+				editor: (editorOptions) => <BooleanTableEditor editorOptions={editorOptions} field={'internal'} />,
 			},
 			{
 				field: 'obsolete',
@@ -859,9 +888,7 @@ export const AllelesTable = () => {
 				filter: true,
 				filterConfig: FILTER_CONFIGS.obsoleteFilterConfig,
 				sortable: true,
-				editor: (editorOptions) => (
-					<BooleanTableEditor editorOptions={editorOptions} errorMessagesRef={errorMessagesRef} field={'obsolete'} />
-				),
+				editor: (editorOptions) => <BooleanTableEditor editorOptions={editorOptions} field={'obsolete'} />,
 			},
 		],
 		// eslint-disable-next-line react-hooks/exhaustive-deps
@@ -915,6 +942,11 @@ export const AllelesTable = () => {
 					columns={columns}
 					isEditable={true}
 					hasDetails={true}
+					duplicationEnabled={true}
+					handleDuplication={handleDuplication}
+					deletionEnabled={true}
+					deletionMethod={alleleService.deleteAllele}
+					deprecateOption={true}
 					mutation={mutation}
 					isInEditMode={isInEditMode}
 					setIsInEditMode={setIsInEditMode}
@@ -985,6 +1017,8 @@ export const AllelesTable = () => {
 				setOriginalInheritanceModesData={setInheritanceModesData}
 			/>
 			<SecondaryIdsEditDialog
+				field="alleleSecondaryIds"
+				endpoint={Endpoints.SlotAnnotation.ALLELE_SECONDARY_ID}
 				originalSecondaryIdsData={secondaryIdsData}
 				setOriginalSecondaryIdsData={setSecondaryIdsData}
 				errorMessagesMainRow={errorMessages}
@@ -993,6 +1027,12 @@ export const AllelesTable = () => {
 			<SecondaryIdsReadOnlyDialog
 				originalSecondaryIdsData={secondaryIdsData}
 				setOriginalSecondaryIdsData={setSecondaryIdsData}
+			/>
+			<CrossReferencesEditDialog
+				originalCrossReferencesData={crossReferencesData}
+				setOriginalCrossReferencesData={setCrossReferencesData}
+				errorMessagesMainRow={errorMessages}
+				setErrorMessagesMainRow={setErrorMessages}
 			/>
 			<FunctionalImpactsEditDialog
 				originalFunctionalImpactsData={functionalImpactsData}
