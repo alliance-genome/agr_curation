@@ -369,7 +369,10 @@ public class TransgenicToolValidator extends ReagentValidator {
 		return validatedUses;
 	}
 
-	/** SCRUM-6535: mirrors AntibodyValidator.validateCrossReferences, for the curation UI path. */
+	/**
+	 * SCRUM-6535: mirrors AntibodyValidator.validateCrossReferences, for the curation UI path. As for alleles,
+	 * each cross reference must be complete and its curie match its page's resource descriptor (SCRUM-6655).
+	 */
 	private List<CrossReference> validateCrossReferences(TransgenicTool uiEntity, TransgenicTool dbEntity) {
 		String field = "crossReferences";
 
@@ -378,7 +381,7 @@ public class TransgenicToolValidator extends ReagentValidator {
 		if (CollectionUtils.isNotEmpty(uiEntity.getCrossReferences())) {
 			for (int ix = 0; ix < uiEntity.getCrossReferences().size(); ix++) {
 				CrossReference xref = uiEntity.getCrossReferences().get(ix);
-				ObjectResponse<CrossReference> xrefResponse = crossReferenceValidator.validateCrossReference(xref, false);
+				ObjectResponse<CrossReference> xrefResponse = crossReferenceValidator.validateCrossReference(xref, false, true, true);
 				if (xrefResponse.hasErrors()) {
 					allValid = false;
 					response.addErrorMessages(field, ix, xrefResponse.getErrorMessages());

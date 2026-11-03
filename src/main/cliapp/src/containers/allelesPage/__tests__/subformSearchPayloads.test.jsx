@@ -1,7 +1,7 @@
 import { fireEvent, waitFor } from '@testing-library/react';
 import { SearchService } from '../../../service/SearchService';
 import { AUTOCOMPLETE_CONFIGS, getAutocompleteFields } from '../../../constants/FilterFields';
-import { getCellByHeader, renderAlleleForm } from './alleleFormTestUtils';
+import { getCellByHeader, renderSubResourceForm } from './alleleFormTestUtils';
 import { MutationTypesForm } from '../mutationTypes/MutationTypesForm';
 import { FunctionalImpactsForm } from '../functionalImpacts/FunctionalImpactsForm';
 import { InheritanceModesForm } from '../inheritanceModes/InheritanceModesForm';
@@ -37,11 +37,11 @@ const ROW = { internal: false, evidence: [] };
 const renderSubform =
 	(Form, entityType, row = {}) =>
 	() =>
-		renderAlleleForm(Form, { [entityType]: [{ ...ROW, ...row }] });
+		renderSubResourceForm(Form, entityType, [{ ...ROW, ...row }]);
 
-const subResource = (rowsName, setterName, rows) => ({
-	[rowsName]: rows,
-	[setterName]: vi.fn(),
+const subResource = (rows) => ({
+	rows,
+	setRows: vi.fn(),
 	errorMessages: {},
 	setErrorMessages: vi.fn(),
 	isLoading: false,
@@ -55,9 +55,7 @@ const renderGeneAssociations = () =>
 	renderWithClient(
 		<SubResourcesProvider
 			value={{
-				alleleGeneAssociations: subResource('alleleGeneAssociations', 'setAlleleGeneAssociations', [
-					{ ...ROW, dataKey: 'k1' },
-				]),
+				alleleGeneAssociations: subResource([{ ...ROW, dataKey: 'k1' }]),
 			}}
 		>
 			<AlleleGeneAssociationsForm />
@@ -66,9 +64,7 @@ const renderGeneAssociations = () =>
 
 const renderCrossReferences = () =>
 	renderWithClient(
-		<SubResourcesProvider
-			value={{ crossReferences: subResource('crossReferences', 'setCrossReferences', [{ dataKey: 'k1' }]) }}
-		>
+		<SubResourcesProvider value={{ crossReferences: subResource([{ dataKey: 'k1' }]) }}>
 			<CrossReferencesForm />
 		</SubResourcesProvider>
 	);

@@ -15,6 +15,7 @@ import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.Gene;
+import org.alliancegenome.curation_api.model.entities.Note;
 import org.alliancegenome.curation_api.model.entities.Reference;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.associations.AlleleGeneAssociation;
@@ -99,8 +100,9 @@ public class AlleleValidator extends GenomicEntityValidator<Allele> {
 
 		dbEntity = (Allele) validateAuditedObjectFields(uiEntity, dbEntity, true);
 
-		// POST /allele serializes AlleleDetailView, which omits crossReferences, references and the gene and construct
-		// associations, so the create payload never carries them; validateAllele leaves them to their own endpoints.
+		// POST /allele serializes AlleleDetailView, which omits crossReferences, references, related notes, the slot
+		// annotation lists and the gene and construct associations, so the create payload never carries them;
+		// validateAllele leaves them to their own endpoints.
 		return validateAllele(uiEntity, dbEntity, false);
 	}
 
@@ -108,9 +110,10 @@ public class AlleleValidator extends GenomicEntityValidator<Allele> {
 	 * Gene and construct associations are left as they are stored: gene associations are written through the
 	 * allele's gene associations sub-resource, and construct associations through their own endpoints and loads.
 	 *
-	 * @param manageSubResourceFields whether the calling endpoint's JSON view carries crossReferences and
-	 *        references. An endpoint whose view omits them leaves the stored ones as they are; they are written
-	 *        through the allele's cross-references and references sub-resources instead.
+	 * @param manageSubResourceFields whether the calling endpoint's JSON view carries crossReferences, references,
+	 *        relatedNotes and the synonym, secondary ID, nomenclature event, mutation type, functional impact and
+	 *        inheritance mode lists. An endpoint whose view omits them leaves the stored ones as they are; they are written through
+	 *        the allele's own sub-resources instead.
 	 */
 	public Allele validateAllele(Allele uiEntity, Allele dbEntity, Boolean manageSubResourceFields) {
 
@@ -120,7 +123,7 @@ public class AlleleValidator extends GenomicEntityValidator<Allele> {
 		// An allele is identified by its AGRKB curie, minted below for a new allele and already
 		// present on a loaded one, so neither MOD identifier is required. Passed for updates too:
 		// an allele created here has neither, and requiring one would reject its first edit.
-		dbEntity = validateGenomicEntityFields(uiEntity, dbEntity, VocabularyConstants.ALLELE_NOTE_TYPES_VOCABULARY_TERM_SET, false, manageSubResourceFields);
+		dbEntity = validateGenomicEntityFields(uiEntity, dbEntity, VocabularyConstants.ALLELE_NOTE_TYPES_VOCABULARY_TERM_SET, false, manageSubResourceFields, manageSubResourceFields);
 
 		if (manageSubResourceFields) {
 			List<Reference> references = validateReferences(uiEntity, dbEntity);
@@ -165,12 +168,20 @@ public class AlleleValidator extends GenomicEntityValidator<Allele> {
 		AlleleFullNameSlotAnnotation fullName = validateAlleleFullName(uiEntity, dbEntity);
 		AlleleGermlineTransmissionStatusSlotAnnotation germlineTransmissionStatus = validateAlleleGermlineTransmissionStatus(uiEntity, dbEntity);
 		AlleleDatabaseStatusSlotAnnotation databaseStatus = validateAlleleDatabaseStatus(uiEntity, dbEntity);
-		List<AlleleSynonymSlotAnnotation> synonyms = validateAlleleSynonyms(uiEntity, dbEntity);
-		List<AlleleSecondaryIdSlotAnnotation> secondaryIds = validateAlleleSecondaryIds(uiEntity, dbEntity);
-		List<AlleleInheritanceModeSlotAnnotation> inheritanceModes = validateAlleleInheritanceModes(uiEntity, dbEntity);
-		List<AlleleFunctionalImpactSlotAnnotation> functionalImpacts = validateAlleleFunctionalImpacts(uiEntity, dbEntity);
-		List<AlleleMutationTypeSlotAnnotation> mutationTypes = validateAlleleMutationTypes(uiEntity, dbEntity);
-		List<AlleleNomenclatureEventSlotAnnotation> nomenclatureEvents = validateAlleleNomenclatureEvents(uiEntity, dbEntity);
+		List<AlleleSynonymSlotAnnotation> synonyms = null;
+		List<AlleleSecondaryIdSlotAnnotation> secondaryIds = null;
+		List<AlleleInheritanceModeSlotAnnotation> inheritanceModes = null;
+		List<AlleleFunctionalImpactSlotAnnotation> functionalImpacts = null;
+		List<AlleleMutationTypeSlotAnnotation> mutationTypes = null;
+		List<AlleleNomenclatureEventSlotAnnotation> nomenclatureEvents = null;
+		if (manageSubResourceFields) {
+			synonyms = validateAlleleSynonyms(uiEntity, dbEntity);
+			secondaryIds = validateAlleleSecondaryIds(uiEntity, dbEntity);
+			inheritanceModes = validateAlleleInheritanceModes(uiEntity, dbEntity);
+			functionalImpacts = validateAlleleFunctionalImpacts(uiEntity, dbEntity);
+			mutationTypes = validateAlleleMutationTypes(uiEntity, dbEntity);
+			nomenclatureEvents = validateAlleleNomenclatureEvents(uiEntity, dbEntity);
+		}
 
 		response.convertErrorMessagesToMap();
 
@@ -212,6 +223,10 @@ public class AlleleValidator extends GenomicEntityValidator<Allele> {
 			databaseStatus.setSingleAllele(dbEntity);
 		}
 		dbEntity.setAlleleDatabaseStatus(databaseStatus);
+
+		if (!manageSubResourceFields) {
+			return dbEntity;
+		}
 
 		if (dbEntity.getAlleleSynonyms() != null) {
 			dbEntity.getAlleleSynonyms().clear();
@@ -664,6 +679,40 @@ public class AlleleValidator extends GenomicEntityValidator<Allele> {
 		}
 
 		return validatedFunctionalImpacts;
+	}
+
+	public List<AlleleSynonymSlotAnnotation> validateSynonymReplacement(Allele dbEntity, List<AlleleSynonymSlotAnnotation> incomingSynonyms) {
+		return validateSlotAnnotationReplacement(dbEntity, incomingSynonyms, dbEntity.getAlleleSynonyms(), "alleleSynonyms", "displayText", "Synonyms",
+			alleleSynonymValidator::validateAlleleSynonymSlotAnnotation, AlleleSynonymSlotAnnotation::setSingleAllele);
+	}
+
+	public List<AlleleSecondaryIdSlotAnnotation> validateSecondaryIdReplacement(Allele dbEntity, List<AlleleSecondaryIdSlotAnnotation> incomingSecondaryIds) {
+		return validateSlotAnnotationReplacement(dbEntity, incomingSecondaryIds, dbEntity.getAlleleSecondaryIds(), "alleleSecondaryIds", "secondaryId", "Secondary IDs",
+			alleleSecondaryIdValidator::validateAlleleSecondaryIdSlotAnnotation, AlleleSecondaryIdSlotAnnotation::setSingleAllele);
+	}
+
+	public List<AlleleNomenclatureEventSlotAnnotation> validateNomenclatureEventReplacement(Allele dbEntity, List<AlleleNomenclatureEventSlotAnnotation> incomingNomenclatureEvents) {
+		return validateSlotAnnotationReplacement(dbEntity, incomingNomenclatureEvents, dbEntity.getAlleleNomenclatureEvents(), "alleleNomenclatureEvents", "nomenclatureEvent", "Nomenclature Events",
+			alleleNomenclatureEventValidator::validateAlleleNomenclatureEventSlotAnnotation, AlleleNomenclatureEventSlotAnnotation::setSingleAllele);
+	}
+
+	public List<AlleleMutationTypeSlotAnnotation> validateMutationTypeReplacement(Allele dbEntity, List<AlleleMutationTypeSlotAnnotation> incomingMutationTypes) {
+		return validateSlotAnnotationReplacement(dbEntity, incomingMutationTypes, dbEntity.getAlleleMutationTypes(), "alleleMutationTypes", "mutationTypes", "Mutation Types",
+			alleleMutationTypeValidator::validateAlleleMutationTypeSlotAnnotation, AlleleMutationTypeSlotAnnotation::setSingleAllele);
+	}
+
+	public List<AlleleFunctionalImpactSlotAnnotation> validateFunctionalImpactReplacement(Allele dbEntity, List<AlleleFunctionalImpactSlotAnnotation> incomingFunctionalImpacts) {
+		return validateSlotAnnotationReplacement(dbEntity, incomingFunctionalImpacts, dbEntity.getAlleleFunctionalImpacts(), "alleleFunctionalImpacts", "functionalImpacts", "Functional Impacts",
+			alleleFunctionalImpactValidator::validateAlleleFunctionalImpactSlotAnnotation, AlleleFunctionalImpactSlotAnnotation::setSingleAllele);
+	}
+
+	public List<AlleleInheritanceModeSlotAnnotation> validateInheritanceModeReplacement(Allele dbEntity, List<AlleleInheritanceModeSlotAnnotation> incomingInheritanceModes) {
+		return validateSlotAnnotationReplacement(dbEntity, incomingInheritanceModes, dbEntity.getAlleleInheritanceModes(), "alleleInheritanceModes", "inheritanceMode", "Inheritance Modes",
+			alleleInheritanceModeValidator::validateAlleleInheritanceModeSlotAnnotation, AlleleInheritanceModeSlotAnnotation::setSingleAllele);
+	}
+
+	public List<Note> validateRelatedNoteReplacement(Allele dbEntity, List<Note> incomingNotes) {
+		return validateRelatedNoteReplacement(dbEntity, incomingNotes, VocabularyConstants.ALLELE_NOTE_TYPES_VOCABULARY_TERM_SET);
 	}
 
 	/**

@@ -25,9 +25,10 @@ const row = {
 };
 
 const buildSubResource = (overrides = {}) => ({
-	crossReferences: [row],
-	setCrossReferences: vi.fn(),
+	rows: [row],
+	setRows: vi.fn(),
 	errorMessages: {},
+	setErrorMessages: vi.fn(),
 	isLoading: false,
 	loadError: null,
 	isSaving: false,
@@ -75,13 +76,13 @@ describe('CrossReferencesForm', () => {
 	// A save replaces the stored list with what is on screen, so saving a table that has not been read
 	// would submit an empty list and delete every cross reference the allele has.
 	it('Will not save while the rows are still loading', () => {
-		renderForm({ crossReferences: [], isLoading: true });
+		renderForm({ rows: [], isLoading: true });
 
 		expect(saveButton()).toBeDisabled();
 	});
 
 	it('Will not save when the rows failed to load, and says why', () => {
-		renderForm({ crossReferences: [], loadError: new Error('network') });
+		renderForm({ rows: [], loadError: new Error('network') });
 
 		expect(saveButton()).toBeDisabled();
 		expect(screen.getByText(/Could not load these cross references/)).toBeInTheDocument();
@@ -121,7 +122,7 @@ describe('CrossReferencesForm', () => {
 	// Every other section of the form hides its table until it has a row, so an allele with no cross
 	// references shows the heading and the button alone.
 	it('Shows no table until there is a row', () => {
-		const { unmount } = renderForm({ crossReferences: [] });
+		const { unmount } = renderForm({ rows: [] });
 		expect(screen.queryByRole('columnheader', { name: 'Display Name' })).not.toBeInTheDocument();
 		expect(screen.getByRole('button', { name: /Add Cross Reference/ })).toBeInTheDocument();
 		unmount();
@@ -143,18 +144,20 @@ describe('CrossReferencesForm', () => {
 
 		await user.click(screen.getByRole('button', { name: /Add Cross Reference/ }));
 
-		expect(crossReferences.setCrossReferences).toHaveBeenCalled();
-		const updater = crossReferences.setCrossReferences.mock.calls[0][0];
+		expect(crossReferences.setRows).toHaveBeenCalled();
+		const updater = crossReferences.setRows.mock.calls[0][0];
 		expect(updater([row])).toHaveLength(2);
 	});
 
-	it('Removes the row it is asked to delete, by dataKey', async () => {
+	it('Removes the row it is asked to delete, by dataKey, along with its marks', async () => {
 		const user = userEvent.setup();
 		const { crossReferences, container } = renderForm();
 
 		await user.click(container.querySelector('.pi-trash').closest('button'));
 
-		const updater = crossReferences.setCrossReferences.mock.calls[0][0];
+		const updater = crossReferences.setRows.mock.calls[0][0];
 		expect(updater([row, { ...row, dataKey: 'row-2' }])).toEqual([{ ...row, dataKey: 'row-2' }]);
+		const marksUpdater = crossReferences.setErrorMessages.mock.calls[0][0];
+		expect(marksUpdater({ [row.dataKey]: { referencedCurie: {} }, 'row-2': {} })).toEqual({ 'row-2': {} });
 	});
 });

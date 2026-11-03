@@ -50,7 +50,7 @@ public class SequenceTargetingReagentGeneAssociation extends EvidenceAssociation
 	// views, where a nested entity has its fields only
 	@IndexedEmbedded(includePaths = {"name", "synonyms", "secondaryIdentifiers"})
 	@ManyToOne
-	@JsonView({ CurationView.GeneDetailView.class, CurationView.SequenceTargetingReagentGeneAssociationView.class })
+	@JsonView({ CurationView.SequenceTargetingReagentGeneAssociationView.class })
 	@Fetch(FetchMode.JOIN)
 	private SequenceTargetingReagent sequenceTargetingReagentAssociationSubject;
 

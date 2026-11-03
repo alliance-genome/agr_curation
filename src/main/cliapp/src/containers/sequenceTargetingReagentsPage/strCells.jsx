@@ -15,7 +15,9 @@ import { TargetedGenesTemplate } from './TargetedGenesTemplate';
  *
  * @param {Function} handleTargetedGenesOpen - opens the paged targeted genes of an STR
  * @param {Function} handleRelatedNotesOpen - opens the read-only notes of an STR
- * @returns {Object<string, Function>} a cell renderer per STR field, each taking the STR
+ * @returns {Object<string, Function>} a cell renderer per STR field, each taking the STR. The audit field cells
+ *   (updatedBy, dateUpdated, createdBy, dateCreated, internal, obsolete) read only AuditedObject fields, so they
+ *   also show any other audited object, such as the pop-up's cassette - STR association.
  */
 export const strCells = ({ handleTargetedGenesOpen, handleRelatedNotesOpen }) => ({
 	curie: (str) => <IdTemplate id={str?.curie} />,
@@ -39,25 +41,3 @@ export const strCells = ({ handleTargetedGenesOpen, handleRelatedNotesOpen }) =>
 	internal: (str) => <BooleanTemplate value={str?.internal} />,
 	obsolete: (str) => <BooleanTemplate value={str?.obsolete} />,
 });
-
-// The STR columns, in the STR table's order, for tables that show STRs alongside other data
-export const STR_COLUMNS = [
-	{ key: 'curie', header: 'Curie' },
-	{ key: 'primaryExternalId', header: 'Primary External ID' },
-	{ key: 'modInternalId', header: 'MOD Internal ID' },
-	{ key: 'name', header: 'Name' },
-	{ key: 'synonyms', header: 'Synonyms' },
-	{ key: 'secondaryIdentifiers', header: 'Secondary IDs' },
-	{ key: 'crossReferences', header: 'Cross References' },
-	{ key: 'taxon', header: 'Taxon' },
-	{ key: 'targetedGenes', header: 'Targeted Genes' },
-	{ key: 'relatedNotes', header: 'STR Related Notes' },
-	{ key: 'references', header: 'References' },
-	{ key: 'dataProvider', header: 'Data Provider' },
-	{ key: 'updatedBy', header: 'Updated By' },
-	{ key: 'dateUpdated', header: 'Date Updated' },
-	{ key: 'createdBy', header: 'Created By' },
-	{ key: 'dateCreated', header: 'Date Created' },
-	{ key: 'internal', header: 'Internal' },
-	{ key: 'obsolete', header: 'Obsolete' },
-];

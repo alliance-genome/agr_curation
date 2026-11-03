@@ -1,9 +1,7 @@
 import { render } from '@testing-library/react';
 import '../../../tools/jest/setupTests';
-import {
-	GenomicLocationsReadOnlyDialog,
-	getSequenceOfReferenceAccessionNumber,
-} from '../genomicLocations/GenomicLocationsReadOnlyDialog';
+import { GenomicLocationsReadOnlyDialog } from '../genomicLocations/GenomicLocationsReadOnlyDialog';
+import { getSequenceOfReferenceAccessionNumber } from '../genomicLocations/GenomicLocationsTable';
 
 const genomicLocations = [
 	{

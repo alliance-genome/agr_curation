@@ -9,12 +9,38 @@ import { RelatedNotesReadOnlyDialog } from '../../components/RelatedNotesReadOnl
 import { SearchService } from '../../service/SearchService';
 import { Endpoints } from '../../constants/Endpoints';
 import { TargetedGenesDialog } from '../sequenceTargetingReagentsPage/TargetedGenesDialog';
-import { strCells, STR_COLUMNS } from '../sequenceTargetingReagentsPage/strCells';
+import { strCells } from '../sequenceTargetingReagentsPage/strCells';
 import { relationName, strFindParams } from './utils';
+
+// The STR's columns, each named for the STR so it is clear which object the value belongs to. The STR's
+// references, data provider and audit fields are left out; the association's audit fields are shown instead.
+const STR_POPUP_COLUMNS = [
+	{ key: 'curie', header: 'STR Curie' },
+	{ key: 'primaryExternalId', header: 'STR Primary External ID' },
+	{ key: 'modInternalId', header: 'STR MOD Internal ID' },
+	{ key: 'name', header: 'STR Name' },
+	{ key: 'synonyms', header: 'STR Synonyms' },
+	{ key: 'secondaryIdentifiers', header: 'STR Secondary IDs' },
+	{ key: 'crossReferences', header: 'STR Cross References' },
+	{ key: 'taxon', header: 'STR Taxon' },
+	{ key: 'targetedGenes', header: 'STR Targeted Genes' },
+	{ key: 'relatedNotes', header: 'STR Related Notes' },
+];
+
+// The cassette - STR association's own audit fields, shown with the same cells as an STR's
+const ASSOCIATION_AUDIT_COLUMNS = [
+	{ key: 'updatedBy', header: 'Association Updated By' },
+	{ key: 'dateUpdated', header: 'Association Date Updated' },
+	{ key: 'createdBy', header: 'Association Created By' },
+	{ key: 'dateCreated', header: 'Association Date Created' },
+	{ key: 'internal', header: 'Association Internal' },
+	{ key: 'obsolete', header: 'Association Obsolete' },
+];
 
 /**
  * The Sequence Targeting Reagent components of one cassette, read-only (SCRUM-6758): each cassette -
- * STR association's relation, evidence and notes, then its STR as the STR table shows it.
+ * STR association's relation, then its STR as the STR table shows it, then the association's evidence,
+ * notes and audit fields.
  *
  * The cassette row carries only the STR's own fields, so each STR (a cassette has one or two) is
  * fetched in the STR table's view, with its cross references and targeted genes. Until it arrives,
@@ -85,8 +111,11 @@ export const StrComponentsDialog = ({ strComponentsData, setStrComponentsData })
 						headerClassName="surface-0"
 						body={({ association }) => <StringTemplate string={relationName(association)} />}
 					/>
+					{STR_POPUP_COLUMNS.map(({ key, header }) => (
+						<Column key={key} header={header} headerClassName="surface-0" body={({ str }) => cells[key](str)} />
+					))}
 					<Column
-						header="Evidence"
+						header="Association Evidence"
 						headerClassName="surface-0"
 						body={({ association }) => evidenceTemplate(association)}
 					/>
@@ -101,8 +130,13 @@ export const StrComponentsDialog = ({ strComponentsData, setStrComponentsData })
 							/>
 						)}
 					/>
-					{STR_COLUMNS.map(({ key, header }) => (
-						<Column key={key} header={header} headerClassName="surface-0" body={({ str }) => cells[key](str)} />
+					{ASSOCIATION_AUDIT_COLUMNS.map(({ key, header }) => (
+						<Column
+							key={key}
+							header={header}
+							headerClassName="surface-0"
+							body={({ association }) => cells[key](association)}
+						/>
 					))}
 				</DataTable>
 			</Dialog>

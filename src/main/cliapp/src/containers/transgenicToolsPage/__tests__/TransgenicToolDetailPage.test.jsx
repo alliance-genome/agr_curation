@@ -47,6 +47,7 @@ const tool = {
 		id: 6,
 		displayText: 'GAL4 transcription factor',
 		formatText: 'GAL4 <i>transcription</i> factor',
+		nameType: { id: 7, name: 'full_name_type_beta' },
 	},
 	transgenicToolSynonyms: [{ id: 1, displayText: 'Gal4p', formatText: 'Gal4<sup>p</sup>' }],
 	secondaryIdentifiers: ['FB:FBto9000393'],
@@ -174,6 +175,53 @@ describe('<TransgenicToolDetailPage />', { timeout: 30000 }, () => {
 		expect(await screen.findByText('Transgenic Tool Saved')).toBeInTheDocument();
 		expect(replaceTransgenicToolAssociations).toHaveBeenCalledWith(11, []);
 		expect(saveTransgenicTool).not.toHaveBeenCalled();
+	});
+
+	it('saves a new related note with the note type chosen for it', async () => {
+		const user = userEvent.setup();
+		renderPage();
+		await waitForAssociationsToLoad();
+
+		await user.click(screen.getByRole('button', { name: 'Add Related Note' }));
+		const notesTable = screen.getByDisplayValue('A yeast transcription factor.').closest('tbody');
+		const newRow = notesTable.querySelectorAll('tr')[0];
+		await user.click(newRow.querySelector('.p-dropdown'));
+		const panel = await waitFor(() => {
+			const openPanel = document.querySelector('.p-dropdown-panel');
+			expect(openPanel).not.toBeNull();
+			return openPanel;
+		});
+		await user.click(within(panel).getByText('transgenic_tool_note_type_beta'));
+		await user.type(newRow.querySelector('textarea'), 'A new note');
+		await user.click(screen.getByRole('button', { name: 'Save' }));
+
+		expect(await screen.findByText('Transgenic Tool Saved')).toBeInTheDocument();
+		const payload = saveTransgenicTool.mock.calls[0][0];
+		expect(payload.relatedNotes).toHaveLength(2);
+		expect(payload.relatedNotes[0]).toMatchObject({
+			freeText: 'A new note',
+			noteType: { name: 'transgenic_tool_note_type_beta' },
+		});
+	});
+
+	it('saves the name type chosen for the full name', async () => {
+		const user = userEvent.setup();
+		renderPage();
+		await waitForAssociationsToLoad();
+
+		const fullNameRow = screen.getByDisplayValue('GAL4 transcription factor').closest('tr');
+		await user.click(fullNameRow.querySelector('[aria-label="nameType"]').closest('.p-dropdown'));
+		const panel = await waitFor(() => {
+			const openPanel = document.querySelector('.p-dropdown-panel');
+			expect(openPanel).not.toBeNull();
+			return openPanel;
+		});
+		await user.click(within(panel).getByText('full_name_type_alpha'));
+		await user.click(screen.getByRole('button', { name: 'Save' }));
+
+		expect(await screen.findByText('Transgenic Tool Saved')).toBeInTheDocument();
+		const payload = saveTransgenicTool.mock.calls[0][0];
+		expect(payload.transgenicToolFullName.nameType).toMatchObject({ name: 'full_name_type_alpha' });
 	});
 
 	it('reports a rejected tool', async () => {

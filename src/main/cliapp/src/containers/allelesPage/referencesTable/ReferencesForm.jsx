@@ -1,9 +1,9 @@
 import { useRef } from 'react';
-import { Button } from 'primereact/button';
-import { Toast } from 'primereact/toast';
-import { Message } from 'primereact/message';
 import { FormTableWrapper } from '../../../components/FormTableWrapper';
 import { useSubResource } from '../../../components/SubResourcesContext';
+import { useSubResourceRows } from '../../../hooks/useSubResourceRows';
+import { SubResourceSaveButton } from '../SubResourceSaveButton';
+import { SubResourceLoadError } from '../SubResourceLoadError';
 import { ReferencesFormTable } from './ReferencesFormTable';
 import { NewReferenceField } from './NewReferenceField';
 
@@ -18,80 +18,36 @@ import { NewReferenceField } from './NewReferenceField';
  * @param {'detail'|'create'} [props.mode]
  */
 export const ReferencesForm = ({ mode = 'detail' }) => {
-	const { references, setReferences, errorMessages, isLoading, loadError, isSaving, isDirty, save } =
-		useSubResource('references');
+	const subResource = useSubResource('references');
+	const { rows: references, errorMessages, isDirty } = subResource;
+	const { deletionHandler, onRowEditChange } = useSubResourceRows(subResource);
 	const tableRef = useRef(null);
-	const toast = useRef(null);
 	const isDetail = mode === 'detail';
 
-	const onRowEditChange = () => {
-		return null;
-	};
-
-	const deletionHandler = (event, dataKey) => {
-		event.preventDefault();
-		setReferences((previous) => previous.filter((reference) => reference.dataKey !== dataKey));
-	};
-
-	const saveHandler = async (event) => {
-		event.preventDefault();
-		const outcome = await save();
-
-		if (outcome.isSuccess) {
-			toast.current.show({ severity: 'success', summary: 'Successful', detail: 'References Saved' });
-		} else {
-			toast.current.show([
-				{ life: 7000, severity: 'error', summary: 'References: ', detail: outcome.message, sticky: false },
-			]);
-		}
-	};
-
 	return (
-		<>
-			<Toast ref={toast} position="top-right" />
-			<FormTableWrapper
-				table={
-					<ReferencesFormTable
-						references={references}
-						editingRows={{}}
-						errorMessages={errorMessages}
-						onRowEditChange={onRowEditChange}
-						tableRef={tableRef}
-						deletionHandler={deletionHandler}
-						className="w-1"
-					/>
-				}
-				tableName="References"
-				showTable={references.length > 0}
-				isPending={isDetail && isDirty}
-				titleAction={
-					isDetail && (
-						<Button
-							label="Save References"
-							icon={isSaving ? 'pi pi-spin pi-spinner' : 'pi pi-check'}
-							onClick={saveHandler}
-							// Saving replaces the stored list with what is on screen, so it has to wait for
-							// the read. Saving a table that is still loading, or that failed to load, would
-							// submit an empty list and detach every reference the allele has. With nothing
-							// edited there is nothing to save.
-							disabled={!isDirty || isSaving || isLoading || Boolean(loadError)}
-							severity="success"
-						/>
-					)
-				}
-				button={
-					<>
-						<NewReferenceField />
-						{loadError && (
-							<Message
-								severity="error"
-								text="Could not load these references, so they cannot be saved. Reload the page to try again."
-							/>
-						)}
-					</>
-				}
-				includeField={true}
-			/>
-		</>
+		<FormTableWrapper
+			table={
+				<ReferencesFormTable
+					references={references}
+					editingRows={{}}
+					errorMessages={errorMessages}
+					onRowEditChange={onRowEditChange}
+					tableRef={tableRef}
+					deletionHandler={deletionHandler}
+					className="w-1"
+				/>
+			}
+			tableName="References"
+			showTable={references.length > 0}
+			isPending={isDetail && isDirty}
+			titleAction={isDetail && <SubResourceSaveButton type="references" />}
+			button={
+				<>
+					<NewReferenceField />
+					<SubResourceLoadError type="references" />
+				</>
+			}
+			includeField={true}
+		/>
 	);
 };

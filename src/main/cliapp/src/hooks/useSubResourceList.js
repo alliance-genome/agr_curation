@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { errorMessageOf } from '../utils/utils';
 
 /**
  * Maps the API's index keyed row errors for a field onto the rows they belong to, so a table can
@@ -56,13 +57,22 @@ export const useSubResourceList = ({ ownerId, label, errorField, load, replace, 
 	}, []);
 
 	/**
+	 * Shows the given rows as a list with nothing stored, so a save writes every one of them, as a create form
+	 * does when its next entity starts from the last one's rows.
+	 *
+	 * @param {Object[]} startingRows rows ready for the table
+	 */
+	const startOver = useCallback((startingRows) => {
+		setRows(startingRows);
+		setSavedRows([]);
+		setErrorMessages({});
+	}, []);
+
+	/**
 	 * Empties the rows and forgets those last saved, so the list starts over as one with nothing stored,
 	 * as a create form does for its next entity.
 	 */
-	const reset = useCallback(() => {
-		showSavedRows([]);
-		setErrorMessages({});
-	}, [showSavedRows]);
+	const reset = useCallback(() => startOver([]), [startOver]);
 
 	useEffect(() => {
 		if (!ownerId) return undefined;
@@ -118,10 +128,7 @@ export const useSubResourceList = ({ ownerId, label, errorField, load, replace, 
 			} catch (error) {
 				const data = error?.response?.data;
 				setErrorMessages(mapErrorsToRows(data, errorField, rows));
-				return {
-					isSuccess: false,
-					message: data?.errorMessage ?? `${error?.response?.status} ${error?.response?.statusText}`,
-				};
+				return { isSuccess: false, message: errorMessageOf(error) };
 			} finally {
 				setIsSaving(false);
 			}
@@ -138,6 +145,7 @@ export const useSubResourceList = ({ ownerId, label, errorField, load, replace, 
 		isSaving,
 		isDirty,
 		save,
+		startOver,
 		reset,
 		setErrorMessages,
 	};

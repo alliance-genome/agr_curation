@@ -1,51 +1,27 @@
 import React from 'react';
-import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { renderWithClient } from '../../../tools/jest/utils';
 import { alleleDetailData } from '../mockData/mockData.js';
+import { FORM_LOAD_WAIT, renderAtAlleleRoute } from './alleleTestUtils';
 
 const getAllele = vi.fn();
 const saveAlleleDetail = vi.fn();
 
-// msw cannot intercept this app's fetch based ApiClient, so stub the services directly.
-vi.mock('../../../service/AlleleService', () => ({
-	AlleleService: class {
-		getAllele = getAllele;
-		saveAlleleDetail = saveAlleleDetail;
-	},
-}));
-
-vi.mock('../../../service/SearchService', () => ({
-	SearchService: class {
-		search = vi.fn(() => Promise.resolve({ results: [], totalResults: 0 }));
-		find = vi.fn(() => Promise.resolve({ results: [], totalResults: 0 }));
-	},
-}));
-
-vi.mock('../../../service/CrossReferenceService', () => ({
-	CrossReferenceService: class {
-		getCrossReferencesForAllele = vi.fn(() => Promise.resolve({ data: { entities: [] } }));
-		replaceCrossReferencesForAllele = vi.fn(() => Promise.resolve({ data: { entities: [] } }));
-	},
-}));
+vi.mock('../../../service/AlleleService', async () =>
+	(await import('./alleleServiceMocks')).mockAlleleService({ getAllele, saveAlleleDetail })
+);
+vi.mock('../../../service/SearchService', async () => (await import('./alleleServiceMocks')).mockSearchService());
+vi.mock('../../../service/AlleleSubResourceService', async () =>
+	(await import('./alleleServiceMocks')).mockSubResourceService()
+);
 
 const AlleleDetailPage = (await import('../AlleleDetailPage')).default;
-
-// each wait follows a stubbed call through a full render of the form, which can outlast the default under load
-const FORM_LOAD_WAIT = { timeout: 5000 };
 
 const loadedAllele = { ...alleleDetailData.entity, id: 9 };
 const SAVED_TAXON = loadedAllele.taxon.curie;
 
 const renderLoadedPage = async () => {
-	const result = renderWithClient(
-		<MemoryRouter initialEntries={['/allele/MGI:5146840']}>
-			<Routes>
-				<Route path="/allele/:identifier" element={<AlleleDetailPage />} />
-			</Routes>
-		</MemoryRouter>
-	);
+	const result = renderAtAlleleRoute(<AlleleDetailPage />);
 
 	await waitFor(() => expect(getAllele).toHaveBeenCalledWith('MGI:5146840'), FORM_LOAD_WAIT);
 	await waitFor(
@@ -158,16 +134,6 @@ describe('<AlleleDetailPage /> single-value pending edits', { timeout: 30000 }, 
 		await changeTaxon(user, container, SAVED_TAXON);
 
 		expect(screen.getByRole('button', { name: 'Save' })).toBeDisabled();
-	});
-
-	it('Activates Save for an edit to a field it does not mark', async () => {
-		const user = userEvent.setup();
-		await renderLoadedPage();
-
-		await user.click(screen.getByRole('button', { name: 'Add Synonym' }));
-
-		expect(screen.getByRole('button', { name: 'Save' })).toBeEnabled();
-		expect(screen.queryByText('Pending Edits!')).not.toBeInTheDocument();
 	});
 
 	it('Marks an edited single-object section and activates Save, clearing both when changed back', async () => {

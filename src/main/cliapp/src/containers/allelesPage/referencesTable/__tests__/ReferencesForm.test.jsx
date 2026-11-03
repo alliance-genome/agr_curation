@@ -22,9 +22,10 @@ const row = {
 };
 
 const buildSubResource = (overrides = {}) => ({
-	references: [row],
-	setReferences: vi.fn(),
+	rows: [row],
+	setRows: vi.fn(),
 	errorMessages: {},
+	setErrorMessages: vi.fn(),
 	isLoading: false,
 	loadError: null,
 	isSaving: false,

@@ -20,6 +20,12 @@ const association = {
 	evidence: [{ curie: 'AGRKB:101000000000001', referenceID: 'PMID:12345' }],
 	relatedNotes: [{ id: 7, freeText: 'A component note.', noteType: { name: 'comment' } }],
 	cassetteStrAssociationObject: { id: 5, primaryExternalId: 'FB:FBsf0000086447', name: 'dsRNA-JF02416' },
+	updatedBy: { uniqueId: 'association_updater' },
+	dateUpdated: '2026-10-01T00:00:00Z',
+	createdBy: { uniqueId: 'association_creator' },
+	dateCreated: '2026-09-01T00:00:00Z',
+	internal: true,
+	obsolete: false,
 };
 
 // The STR as the STR table's view returns it
@@ -33,10 +39,36 @@ const str = {
 	taxon: { curie: 'NCBITaxon:7227', name: 'Drosophila melanogaster' },
 	targetedGenesPreview: [{ relation: 'targets', geneSymbol: 'croc', geneIdentifier: 'FB:FBgn0014143' }],
 	targetedGeneCount: 1,
+	references: [{ curie: 'AGRKB:101000000000099', primaryCrossReferenceCurie: 'PMID:999' }],
 	dataProvider: { abbreviation: 'FB' },
+	updatedBy: { uniqueId: 'str_updater' },
+	createdBy: { uniqueId: 'str_creator' },
 	internal: false,
 	obsolete: false,
 };
+
+// The pop-up's columns, in the order curators asked for (SCRUM-6758)
+const COLUMN_HEADERS = [
+	'Relation',
+	'STR Curie',
+	'STR Primary External ID',
+	'STR MOD Internal ID',
+	'STR Name',
+	'STR Synonyms',
+	'STR Secondary IDs',
+	'STR Cross References',
+	'STR Taxon',
+	'STR Targeted Genes',
+	'STR Related Notes',
+	'Association Evidence',
+	'Component Related Notes',
+	'Association Updated By',
+	'Association Date Updated',
+	'Association Created By',
+	'Association Date Created',
+	'Association Internal',
+	'Association Obsolete',
+];
 
 const renderDialog = () =>
 	renderWithClient(
@@ -61,6 +93,22 @@ describe('<StrComponentsDialog />', () => {
 		expect(screen.getByText('AGRKB:112000000000005')).toBeInTheDocument();
 		expect(screen.getByText('Drosophila melanogaster (NCBITaxon:7227)')).toBeInTheDocument();
 		expect(find).toHaveBeenCalledWith(Endpoints.Entity.SEQUENCE_TARGETING_REAGENT, 1, 0, { id: 5 });
+	});
+
+	it("shows the columns in order, with the association's audit fields in place of the STR's", async () => {
+		find.mockResolvedValue({ results: [str], totalResults: 1 });
+		renderDialog();
+		await screen.findByText('targets: croc');
+
+		const headers = Array.from(document.querySelectorAll('.p-dialog th')).map((th) => th.textContent.trim());
+		expect(headers).toEqual(COLUMN_HEADERS);
+		expect(screen.getByText('association_updater')).toBeInTheDocument();
+		expect(screen.getByText('association_creator')).toBeInTheDocument();
+		// the STR's own audit fields, references and data provider are not shown
+		expect(screen.queryByText('str_updater')).not.toBeInTheDocument();
+		expect(screen.queryByText('str_creator')).not.toBeInTheDocument();
+		expect(screen.queryByText('PMID:999')).not.toBeInTheDocument();
+		expect(screen.queryByText('FB')).not.toBeInTheDocument();
 	});
 
 	it("shows the row's STR until the STR has been fetched", async () => {

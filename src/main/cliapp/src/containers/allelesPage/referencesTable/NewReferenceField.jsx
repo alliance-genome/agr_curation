@@ -11,7 +11,7 @@ import { prepareReferences } from './utils';
  * already holds it.
  */
 export const NewReferenceField = () => {
-	const { setReferences } = useSubResource('references');
+	const { setRows: setReferences } = useSubResource('references');
 	const [reference, setReference] = useState(null);
 	const [errorMessages, setErrorMessages] = useState({});
 

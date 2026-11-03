@@ -28,6 +28,7 @@ export const Endpoints = Object.freeze({
 		GENE_GENETIC_INTERACTION: 'gene-genetic-interaction',
 		GENE_MOLECULAR_INTERACTION: 'gene-molecular-interaction',
 		HTP_EXPRESSION_DATASET_ANNOTATION: 'htpexpressiondatasetannotation',
+		HTP_EXPRESSION_DATASET_SAMPLE_ANNOTATION: 'htpexpressiondatasetsampleannotation',
 		PHENOTYPE_ANNOTATION: 'phenotype-annotation',
 	}),
 
@@ -45,6 +46,10 @@ export const Endpoints = Object.freeze({
 		ALLELE_SECONDARY_ID: 'allelesecondaryidslotannotation',
 		ALLELE_SYMBOL: 'allelesymbolslotannotation',
 		ALLELE_SYNONYM: 'allelesynonymslotannotation',
+		CASSETTE_FULL_NAME: 'cassettefullnameslotannotation',
+		CASSETTE_SYMBOL: 'cassettesymbolslotannotation',
+		CASSETTE_SYNONYM: 'cassettesynonymslotannotation',
+		CASSETTE_USE: 'cassetteuseslotannotation',
 		GENE_FULL_NAME: 'genefullnameslotannotation',
 		GENE_SECONDARY_ID: 'genesecondaryidslotannotation',
 		GENE_SYMBOL: 'genesymbolslotannotation',

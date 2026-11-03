@@ -1,5 +1,6 @@
 package org.alliancegenome.curation_api;
 
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
@@ -286,6 +287,26 @@ public class IT_0610_VariantFmsITCase extends BaseITCase {
 			body("entity.curatedVariantGenomicLocations", hasSize(1)).
 			body("entity.curatedVariantGenomicLocations[0].hgvs", is("NC_003279.8:g.1A>T")).
 			body("entity.curatedVariantGenomicLocations[0].variantGenomicLocationAssociationObject.name", is("I"));
+	}
+
+	@Test
+	@Order(8)
+	public void deleteVariantWithAlleleAssociation() throws Exception {
+		RestAssured.given().
+			when().
+			delete(variantGetEndpoint + variantId).
+			then().
+			statusCode(400).
+			body("errorMessage", containsString("Variant has allele association(s)"));
+
+		RestAssured.given().
+			when().
+			get(variantGetEndpoint + variantId).
+			then().
+			statusCode(200).
+			body("entity.modInternalId", is(variantId)).
+			body("entity.alleleVariantAssociations", hasSize(2)).
+			body("entity.curatedVariantGenomicLocations", hasSize(1));
 	}
 
 }

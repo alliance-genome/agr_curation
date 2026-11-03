@@ -10,15 +10,16 @@ import ErrorBoundary from '../../components/Error/ErrorBoundary';
 import { useAlleleReducer } from './useAlleleReducer';
 import { StickyHeader } from '../../components/StickyHeader';
 import { DetailPageHeading } from '../../components/DetailPageHeading';
+import { DetailPageNotFound } from '../../components/DetailPageNotFound';
 import { LoadingOverlay } from '../../components/LoadingOverlay';
-import { processErrors, getPendingSingleValueFields } from './utils';
-import { getIdentifier } from '../../utils/utils';
+import { SaveProgressOverlay, SaveProgressProvider } from '../../components/SaveProgressOverlay';
+import { useSaveProgress } from '../../hooks/useSaveProgress';
+import { capitalize, processErrors, getPendingSingleValueFields } from './utils';
+import { errorMessageOf, getIdentifier } from '../../utils/utils';
 import { FormFieldVisibilityMenu, useFormFieldVisibility } from '../../components/FormFieldVisibility';
 import { AlleleForm, ALLELE_DETAIL_TOGGLEABLE_FIELDS } from './AlleleForm';
 import { DuplicateAlleleButton, NewAlleleButton } from './NewAlleleButton';
-import { useAlleleCrossReferences } from './crossReferences/useAlleleCrossReferences';
-import { useAlleleReferences } from './referencesTable/useAlleleReferences';
-import { useAlleleGeneAssociations } from './alleleGeneAssociations/useAlleleGeneAssociations';
+import { useAlleleSubResources } from './useAlleleSubResources';
 import { SubResourcesProvider } from '../../components/SubResourcesContext';
 import { useDeleteOrDeprecateDialogs } from '../../components/DeleteOrDeprecateDialogs';
 
@@ -33,13 +34,22 @@ export default function AlleleDetailPage() {
 	const alleleService = new AlleleService();
 	const toastSuccess = useRef(null);
 	const toastError = useRef(null);
-	const crossReferences = useAlleleCrossReferences(alleleState.allele?.id);
-	const references = useAlleleReferences(alleleState.allele?.id);
-	const alleleGeneAssociations = useAlleleGeneAssociations(alleleState.allele?.id);
+	const {
+		subResources,
+		saveDirty: saveSubResources,
+		isDirty: subResourcesAreDirty,
+		dirtySteps: dirtySubResourceSteps,
+	} = useAlleleSubResources(alleleState.allele?.id);
+	const saveProgress = useSaveProgress();
 	// The allele as the API last returned it, without the form's unsaved edits.
 	const savedAllele = useRef(null);
 
-	const { isPending: getRequestIsLoading, data: alleleQueryData } = useQuery({
+	const {
+		isPending: getRequestIsLoading,
+		data: alleleQueryData,
+		error: alleleQueryError,
+		isPlaceholderData: showsPreviousResponse,
+	} = useQuery({
 		queryKey: [identifier],
 		queryFn: () => alleleService.getAllele(identifier),
 		placeholderData: (previousData) => previousData,
@@ -75,8 +85,7 @@ export default function AlleleDetailPage() {
 			console.error(processingError);
 		}
 
-		//toast will still display even if 500 error and no errorMessages
-		return data.errorMessage ? data.errorMessage : `${error.response.status} ${error.response.statusText}`;
+		return errorMessageOf(error);
 	};
 
 	const handleSubmit = async (event) => {
@@ -91,40 +100,40 @@ export default function AlleleDetailPage() {
 			? alleleState.allele
 			: { ...alleleState.allele, taxon: undefined };
 
-		let alleleResult = null;
+		saveProgress.begin([{ key: 'allele', label: 'Allele' }, ...dirtySubResourceSteps]);
 		let alleleError = null;
+		let subResourceOutcomes;
 		try {
-			alleleResult = await saveAllele(allelePayload);
-		} catch (error) {
-			alleleError = error;
-		}
-		if (!alleleError) {
-			savedAllele.current = alleleResult?.data?.entity;
-			alleleDispatch({ type: 'SET', value: alleleResult?.data?.entity });
-		}
+			saveProgress.start('allele');
+			let alleleResult = null;
+			try {
+				alleleResult = await saveAllele(allelePayload);
+			} catch (error) {
+				alleleError = error;
+			}
+			if (!alleleError) {
+				savedAllele.current = alleleResult?.data?.entity;
+				alleleDispatch({ type: 'SET', value: alleleResult?.data?.entity });
+			}
+			saveProgress.settle('allele', { isSuccess: !alleleError });
 
-		// Cross references, references and gene associations are each written only when their section has been
-		// edited, and then as the whole list, so saving the allele alone leaves the stored ones as they are. They are
-		// written whether or not the allele saved, so the errors of all of them are reported together.
-		const subResourceOutcomes = [];
-		if (crossReferences.isDirty) {
-			subResourceOutcomes.push({ label: 'cross references', outcome: await crossReferences.save() });
-		}
-		if (references.isDirty) {
-			subResourceOutcomes.push({ label: 'references', outcome: await references.save() });
-		}
-		if (alleleGeneAssociations.isDirty) {
-			subResourceOutcomes.push({ label: 'gene associations', outcome: await alleleGeneAssociations.save() });
-		} else {
-			// Unchanged rows are not written, so the marks a past save or a note edit left on them are cleared here.
-			alleleGeneAssociations.setErrorMessages({});
+			// The sub-resources are written whether or not the allele saved, so the errors of all of them are
+			// reported together.
+			subResourceOutcomes = await saveSubResources(undefined, {
+				onStart: saveProgress.start,
+				onSettle: saveProgress.settle,
+			});
+		} finally {
+			// Anything the save stopped before writing shows as not saved, and the overlay always closes.
+			saveProgress.skipRemaining();
+			saveProgress.finish();
 		}
 		const savedLabels = subResourceOutcomes.filter(({ outcome }) => outcome.isSuccess).map(({ label }) => label);
 		const failedSubResources = subResourceOutcomes.filter(({ outcome }) => !outcome.isSuccess);
 		const failureToast = ({ label }, detail) => ({
 			life: 10000,
 			severity: 'error',
-			summary: `${label.charAt(0).toUpperCase()}${label.slice(1)} not saved: `,
+			summary: `${capitalize(label)} not saved: `,
 			detail,
 			sticky: false,
 		});
@@ -167,24 +176,21 @@ export default function AlleleDetailPage() {
 	};
 
 	/**
-	 * Deprecates the allele as last saved, so the form's unsaved edits, cross references, references and gene
-	 * associations are not written with it. They stay on the form, which then shows the allele as obsolete; a
-	 * refused deprecation leaves the form as it was.
+	 * Deprecates the allele as last saved, so the form's unsaved edits, including those to the lists written through
+	 * their own sub-resources, are not written with it. They stay on the form, which then shows the allele as
+	 * obsolete; a refused deprecation leaves the form as it was.
 	 */
 	const deprecateAllele = async () => {
 		try {
 			const result = await saveAllele({ ...savedAllele.current, obsolete: true });
 			savedAllele.current = result?.data?.entity;
 		} catch (error) {
-			const data = error?.response?.data;
 			toastError.current.show([
 				{
 					life: 7000,
 					severity: 'error',
 					summary: 'Allele not deprecated: ',
-					detail:
-						data?.errorMessage ??
-						(error?.response ? `${error.response.status} ${error.response.statusText}`.trim() : error?.message),
+					detail: errorMessageOf(error),
 					sticky: false,
 				},
 			]);
@@ -213,32 +219,30 @@ export default function AlleleDetailPage() {
 	});
 
 	const pendingFields = getPendingSingleValueFields(alleleState.allele, savedAllele.current);
-	const hasPendingEdits =
-		pendingFields.size > 0 ||
-		alleleState.hasOtherPendingEdits ||
-		crossReferences.isDirty ||
-		references.isDirty ||
-		alleleGeneAssociations.isDirty;
+	const hasPendingEdits = pendingFields.size > 0 || subResourcesAreDirty;
 
-	if (getRequestIsLoading)
+	const loadedAllele = alleleQueryData?.data?.entity;
+
+	if (getRequestIsLoading || (showsPreviousResponse && !loadedAllele))
 		return (
 			<div className="flex align-items-center justify-content-center h-screen">
 				<ProgressSpinner />
 			</div>
 		);
 
+	// The API answers an identifier no allele has with an empty response rather than an error. A failed refetch
+	// keeps the allele already loaded, so the form stays up.
+	if (!loadedAllele)
+		return (
+			<DetailPageNotFound entityType="Allele" identifier={identifier} listPath="/alleles" error={alleleQueryError} />
+		);
+
 	return (
 		<>
 			<Toast ref={toastError} position="top-left" />
 			<Toast ref={toastSuccess} position="top-right" />
-			<LoadingOverlay
-				isLoading={
-					!!allelePutRequestIsLoading ||
-					crossReferences.isSaving ||
-					references.isSaving ||
-					alleleGeneAssociations.isSaving
-				}
-			/>
+			<SaveProgressOverlay isOpen={saveProgress.isOpen} steps={saveProgress.steps} />
+			<LoadingOverlay isLoading={!!allelePutRequestIsLoading && !saveProgress.isOpen} />
 			<ErrorBoundary>
 				<StickyHeader>
 					<Splitter className="bg-primary-reverse border-none lg:h-5rem" gutterSize={0}>
@@ -263,7 +267,7 @@ export default function AlleleDetailPage() {
 								icon="pi pi-check"
 								severity="success"
 								onClick={handleSubmit}
-								disabled={!hasPendingEdits}
+								disabled={!hasPendingEdits || saveProgress.isSaving}
 							/>
 							<NewAlleleButton className="p-button-text" />
 							<DuplicateAlleleButton
@@ -280,14 +284,16 @@ export default function AlleleDetailPage() {
 						</SplitterPanel>
 					</Splitter>
 				</StickyHeader>
-				<SubResourcesProvider value={{ crossReferences, references, alleleGeneAssociations }}>
-					<AlleleForm
-						state={alleleState}
-						dispatch={alleleDispatch}
-						isVisible={isVisible}
-						pendingFields={pendingFields}
-					/>
-				</SubResourcesProvider>
+				<SaveProgressProvider value={saveProgress}>
+					<SubResourcesProvider value={subResources}>
+						<AlleleForm
+							state={alleleState}
+							dispatch={alleleDispatch}
+							isVisible={isVisible}
+							pendingFields={pendingFields}
+						/>
+					</SubResourcesProvider>
+				</SaveProgressProvider>
 				{deleteOrDeprecateDialogs}
 			</ErrorBoundary>
 		</>

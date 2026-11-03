@@ -2,20 +2,29 @@ package org.alliancegenome.curation_api;
 
 import static org.hamcrest.Matchers.aMapWithSize;
 import static org.hamcrest.Matchers.hasKey;
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.OffsetDateTime;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.alliancegenome.curation_api.base.BaseITCase;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
+import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.InformationContentEntity;
 import org.alliancegenome.curation_api.model.entities.Organization;
 import org.alliancegenome.curation_api.model.entities.Person;
 import org.alliancegenome.curation_api.model.entities.Reference;
+import org.alliancegenome.curation_api.model.entities.ResourceDescriptor;
+import org.alliancegenome.curation_api.model.entities.ResourceDescriptorPage;
 import org.alliancegenome.curation_api.model.entities.Vocabulary;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
@@ -26,6 +35,7 @@ import org.alliancegenome.curation_api.model.entities.slotAnnotations.GeneSymbol
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.GeneSynonymSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.GeneSystematicNameSlotAnnotation;
 import org.alliancegenome.curation_api.resources.TestContainerResource;
+import org.alliancegenome.curation_api.response.SearchResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
@@ -36,6 +46,8 @@ import org.junit.jupiter.api.TestMethodOrder;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusIntegrationTest;
 import io.restassured.RestAssured;
+import io.restassured.common.mapper.TypeRef;
+import io.restassured.response.ValidatableResponse;
 
 
 @QuarkusIntegrationTest
@@ -48,6 +60,7 @@ import io.restassured.RestAssured;
 public class IT_0301_GeneITCase extends BaseITCase {
 
 	private static final String GENE = "GENE:0001";
+	private static final String DETAIL_GENE = "GENE:DETAIL0001";
 	private Vocabulary nameType;
 	private Vocabulary synonymScope;
 	private VocabularyTerm exactSynonymScope;
@@ -171,27 +184,29 @@ public class IT_0301_GeneITCase extends BaseITCase {
 			body("entity.geneFullName.synonymScope.name", is(geneFullName.getSynonymScope().getName())).
 			body("entity.geneFullName.synonymUrl", is(geneFullName.getSynonymUrl())).
 			body("entity.geneFullName.evidence[0].curie", is(geneFullName.getEvidence().get(0).getCurie())).
-			body("entity.geneSynonyms[0].displayText", is(geneSynonym.getDisplayText())).
-			body("entity.geneSynonyms[0].formatText", is(geneSynonym.getFormatText())).
-			body("entity.geneSynonyms[0].nameType.name", is(geneSynonym.getNameType().getName())).
-			body("entity.geneSynonyms[0].synonymScope.name", is(geneSynonym.getSynonymScope().getName())).
-			body("entity.geneSynonyms[0].synonymUrl", is(geneSynonym.getSynonymUrl())).
-			body("entity.geneSynonyms[0].evidence[0].curie", is(geneSynonym.getEvidence().get(0).getCurie())).
 			body("entity.geneSystematicName.displayText", is(geneSystematicName.getDisplayText())).
 			body("entity.geneSystematicName.formatText", is(geneSystematicName.getFormatText())).
 			body("entity.geneSystematicName.nameType.name", is(geneSystematicName.getNameType().getName())).
 			body("entity.geneSystematicName.synonymScope.name", is(geneSystematicName.getSynonymScope().getName())).
 			body("entity.geneSystematicName.synonymUrl", is(geneSystematicName.getSynonymUrl())).
 			body("entity.geneSystematicName.evidence[0].curie", is(geneSystematicName.getEvidence().get(0).getCurie())).
-			body("entity.geneSecondaryIds[0].secondaryId", is(geneSecondaryId.getSecondaryId())).
-			body("entity.geneSecondaryIds[0].evidence[0].curie", is(geneSecondaryId.getEvidence().get(0).getCurie())).
 			body("entity.dataProvider.abbreviation", is(dataProvider.getAbbreviation()));
+
+		findGeneResponse(GENE).
+			body("results[0].geneSynonyms[0].displayText", is(geneSynonym.getDisplayText())).
+			body("results[0].geneSynonyms[0].formatText", is(geneSynonym.getFormatText())).
+			body("results[0].geneSynonyms[0].nameType.name", is(geneSynonym.getNameType().getName())).
+			body("results[0].geneSynonyms[0].synonymScope.name", is(geneSynonym.getSynonymScope().getName())).
+			body("results[0].geneSynonyms[0].synonymUrl", is(geneSynonym.getSynonymUrl())).
+			body("results[0].geneSynonyms[0].evidence[0].curie", is(geneSynonym.getEvidence().get(0).getCurie())).
+			body("results[0].geneSecondaryIds[0].secondaryId", is(geneSecondaryId.getSecondaryId())).
+			body("results[0].geneSecondaryIds[0].evidence[0].curie", is(geneSecondaryId.getEvidence().get(0).getCurie()));
 	}
 
 	@Test
 	@Order(2)
 	public void editGene() {
-		Gene gene = getGene(GENE);
+		Gene gene = findGene(GENE);
 		gene.setTaxon(taxon2);
 		gene.setGeneType(soTerm2);
 		gene.setInternal(true);
@@ -271,21 +286,23 @@ public class IT_0301_GeneITCase extends BaseITCase {
 			body("entity.geneFullName.synonymScope.name", is(editedFullName.getSynonymScope().getName())).
 			body("entity.geneFullName.synonymUrl", is(editedFullName.getSynonymUrl())).
 			body("entity.geneFullName.evidence[0].curie", is(editedFullName.getEvidence().get(0).getCurie())).
-			body("entity.geneSynonyms[0].displayText", is(editedSynonym.getDisplayText())).
-			body("entity.geneSynonyms[0].formatText", is(editedSynonym.getFormatText())).
-			body("entity.geneSynonyms[0].nameType.name", is(editedSynonym.getNameType().getName())).
-			body("entity.geneSynonyms[0].synonymScope.name", is(editedSynonym.getSynonymScope().getName())).
-			body("entity.geneSynonyms[0].synonymUrl", is(editedSynonym.getSynonymUrl())).
-			body("entity.geneSynonyms[0].evidence[0].curie", is(editedSynonym.getEvidence().get(0).getCurie())).
 			body("entity.geneSystematicName.displayText", is(editedSystematicName.getDisplayText())).
 			body("entity.geneSystematicName.formatText", is(editedSystematicName.getFormatText())).
 			body("entity.geneSystematicName.nameType.name", is(editedSystematicName.getNameType().getName())).
 			body("entity.geneSystematicName.synonymScope.name", is(editedSystematicName.getSynonymScope().getName())).
 			body("entity.geneSystematicName.synonymUrl", is(editedSystematicName.getSynonymUrl())).
 			body("entity.geneSystematicName.evidence[0].curie", is(editedSystematicName.getEvidence().get(0).getCurie())).
-			body("entity.geneSecondaryIds[0].secondaryId", is(editedSecondaryId.getSecondaryId())).
-			body("entity.geneSecondaryIds[0].evidence[0].curie", is(editedSecondaryId.getEvidence().get(0).getCurie())).
 			body("entity.dataProvider.abbreviation", is(dataProvider2.getAbbreviation()));
+
+		findGeneResponse(GENE).
+			body("results[0].geneSynonyms[0].displayText", is(editedSynonym.getDisplayText())).
+			body("results[0].geneSynonyms[0].formatText", is(editedSynonym.getFormatText())).
+			body("results[0].geneSynonyms[0].nameType.name", is(editedSynonym.getNameType().getName())).
+			body("results[0].geneSynonyms[0].synonymScope.name", is(editedSynonym.getSynonymScope().getName())).
+			body("results[0].geneSynonyms[0].synonymUrl", is(editedSynonym.getSynonymUrl())).
+			body("results[0].geneSynonyms[0].evidence[0].curie", is(editedSynonym.getEvidence().get(0).getCurie())).
+			body("results[0].geneSecondaryIds[0].secondaryId", is(editedSecondaryId.getSecondaryId())).
+			body("results[0].geneSecondaryIds[0].evidence[0].curie", is(editedSecondaryId.getEvidence().get(0).getCurie()));
 	}
 	
 	@Test
@@ -311,7 +328,7 @@ public class IT_0301_GeneITCase extends BaseITCase {
 	@Test
 	@Order(4)
 	public void editGeneWithMissingPrimaryExternalId() {
-		Gene gene = getGene(GENE);
+		Gene gene = findGene(GENE);
 		gene.setPrimaryExternalId(null);
 		
 		RestAssured.given().
@@ -328,7 +345,7 @@ public class IT_0301_GeneITCase extends BaseITCase {
 	@Test
 	@Order(5)
 	public void editGeneWithMissingRequiredFieldsLevel1() {
-		Gene gene = getGene(GENE);
+		Gene gene = findGene(GENE);
 		gene.setTaxon(null);
 		gene.setGeneSymbol(null);
 		gene.setDataProvider(null);
@@ -372,7 +389,7 @@ public class IT_0301_GeneITCase extends BaseITCase {
 	@Test
 	@Order(7)
 	public void editGeneWithEmptyPrimaryExternalId() {
-		Gene gene = getGene(GENE);
+		Gene gene = findGene(GENE);
 		gene.setPrimaryExternalId("");
 		
 		RestAssured.given().
@@ -438,7 +455,7 @@ public class IT_0301_GeneITCase extends BaseITCase {
 	@Order(9)
 	public void editGeneWithMissingRequiredFieldsLevel2() {
 
-		Gene gene = getGene(GENE);
+		Gene gene = findGene(GENE);
 		
 		GeneSymbolSlotAnnotation invalidSymbol = gene.getGeneSymbol();
 		invalidSymbol.setDisplayText(null);
@@ -540,7 +557,7 @@ public class IT_0301_GeneITCase extends BaseITCase {
 	@Order(11)
 	public void editGeneWithEmptyRequiredFieldsLevel2() {
 
-		Gene gene = getGene(GENE);
+		Gene gene = findGene(GENE);
 		
 		GeneSymbolSlotAnnotation invalidSymbol = gene.getGeneSymbol();
 		invalidSymbol.setDisplayText("");
@@ -654,7 +671,7 @@ public class IT_0301_GeneITCase extends BaseITCase {
 		SOTerm nonPersistedSoTerm = new SOTerm();
 		nonPersistedSoTerm.setCurie("SO:Invalid");
 		
-		Gene gene = getGene(GENE);
+		Gene gene = findGene(GENE);
 		gene.setTaxon(nonPersistedTaxon);
 		gene.setGeneType(nonPersistedSoTerm);
 		gene.setDataProvider(nonPersistedOrganization);
@@ -768,7 +785,7 @@ public class IT_0301_GeneITCase extends BaseITCase {
 	@Test
 	@Order(15)
 	public void editGeneWithObsoleteFields() {
-		Gene gene = getGene(GENE);
+		Gene gene = findGene(GENE);
 		gene.setTaxon(obsoleteTaxon);
 		gene.setGeneType(obsoleteSoTerm);
 		gene.setDataProvider(obsoleteDataProvider);
@@ -832,7 +849,7 @@ public class IT_0301_GeneITCase extends BaseITCase {
 	@Order(16)
 	public void editGeneWithNullNonRequiredFieldsLevel2() {
 		// Level 2 done before 1 to avoid having to restore nulled fields
-		Gene gene = getGene(GENE);
+		Gene gene = findGene(GENE);
 		
 		GeneSymbolSlotAnnotation editedSymbol = gene.getGeneSymbol();
 		editedSymbol.setEvidence(null);
@@ -878,7 +895,6 @@ public class IT_0301_GeneITCase extends BaseITCase {
 			statusCode(200).
 			body("entity", hasKey("geneSymbol")).
 			body("entity", hasKey("geneFullName")).
-			body("entity", hasKey("geneSynonyms")).
 			body("entity", hasKey("geneSystematicName")).
 			body("entity.geneSymbol", not(hasKey("evidence"))).
 			body("entity.geneSymbol", not(hasKey("synonymScope"))).
@@ -886,19 +902,22 @@ public class IT_0301_GeneITCase extends BaseITCase {
 			body("entity.geneFullName", not(hasKey("evidence"))).
 			body("entity.geneFullName", not(hasKey("synonymScope"))).
 			body("entity.geneFullName", not(hasKey("synonymUrl"))).
-			body("entity.geneSynonyms[0]", not(hasKey("evidence"))).
-			body("entity.geneSynonyms[0]", not(hasKey("synonymScope"))).
-			body("entity.geneSynonyms[0]", not(hasKey("synonymUrl"))).
 			body("entity.geneSystematicName", not(hasKey("evidence"))).
 			body("entity.geneSystematicName", not(hasKey("synonymScope"))).
-			body("entity.geneSystematicName", not(hasKey("synonymUrl"))).
-			body("entity.geneSecondaryIds[0]", not(hasKey("evidence")));
+			body("entity.geneSystematicName", not(hasKey("synonymUrl")));
+
+		findGeneResponse(GENE).
+			body("results[0]", hasKey("geneSynonyms")).
+			body("results[0].geneSynonyms[0]", not(hasKey("evidence"))).
+			body("results[0].geneSynonyms[0]", not(hasKey("synonymScope"))).
+			body("results[0].geneSynonyms[0]", not(hasKey("synonymUrl"))).
+			body("results[0].geneSecondaryIds[0]", not(hasKey("evidence")));
 	}
 	
 	@Test
 	@Order(17)
 	public void editGeneWithNullNonRequiredFieldsLevel1() {
-		Gene gene = getGene(GENE);
+		Gene gene = findGene(GENE);
 		
 		gene.setGeneFullName(null);
 		gene.setGeneSynonyms(null);
@@ -920,10 +939,12 @@ public class IT_0301_GeneITCase extends BaseITCase {
 			then().
 			statusCode(200).
 			body("entity", not(hasKey("geneFullName"))).
-			body("entity", not(hasKey("geneSynonyms"))).
 			body("entity", not(hasKey("geneSystematicName"))).
-			body("entity", not(hasKey("geneSecondaryIds"))).
 			body("entity", not(hasKey("dataProviderCrossReference")));
+
+		findGeneResponse(GENE).
+			body("results[0]", not(hasKey("geneSynonyms"))).
+			body("results[0]", not(hasKey("geneSecondaryIds")));
 	}
 	
 	@Test
@@ -983,6 +1004,142 @@ public class IT_0301_GeneITCase extends BaseITCase {
 				then().
 				statusCode(200);
 	}
+
+	@Test
+	@Order(21)
+	public void geneDetailViewExposesOnlyExpectedTopLevelFields() {
+		createDetailGene();
+
+		// GeneDetailView is an explicit opt-in list. The gene's lists are read through find, and its associations
+		// through their own endpoints.
+		Set<String> allowed = Set.of(
+				"type", "id", "curie", "primaryExternalId", "modInternalId", "taxon", "dataProvider", "dataProviderCrossReference",
+				"geneSymbol", "geneFullName", "geneSystematicName", "geneType", "gcrpCrossReference",
+				"createdBy", "updatedBy", "dateCreated", "dateUpdated", "dbDateCreated", "dbDateUpdated",
+				"internal", "obsolete");
+
+		Map<String, Object> entity = RestAssured.given().
+				when().
+				get("/api/gene/" + DETAIL_GENE).
+				then().
+				statusCode(200).
+				body("entity.geneSymbol.displayText", is("GDT1")).
+				body("entity.geneFullName.displayText", is("Gene detail test 1")).
+				body("entity.geneSystematicName.displayText", is("GDT.1")).
+				body("entity.geneType.curie", is(soTerm.getCurie())).
+				body("entity.taxon.curie", is(taxon.getCurie())).
+				body("entity.dataProvider.abbreviation", is(dataProvider.getAbbreviation())).
+				body("entity.gcrpCrossReference.referencedCurie", is("GENEXRTEST:GCRP0001")).
+				extract().jsonPath().getMap("entity");
+
+		Set<String> unexpected = new HashSet<>(entity.keySet());
+		unexpected.removeAll(allowed);
+		assertTrue(unexpected.isEmpty(), "unexpected fields in GeneDetailView: " + unexpected);
+	}
+
+	@Test
+	@Order(22)
+	public void updateDetailLeavesListsAsStored() {
+		// GeneDetailView omits the synonyms, secondary IDs, cross references and related notes, so the detail
+		// endpoint must leave the stored lists alone rather than read their absence as a deletion.
+		Gene gene = getGene(DETAIL_GENE);
+		gene.getGeneFullName().setDisplayText("Gene detail test renamed");
+		gene.getGeneFullName().setFormatText("Gene detail test renamed");
+		gene.setGeneType(soTerm2);
+
+		RestAssured.given().
+				contentType("application/json").
+				body(gene).
+				when().
+				put("/api/gene/updateDetail").
+				then().
+				statusCode(200).
+				body("entity.geneFullName.displayText", is("Gene detail test renamed")).
+				body("entity.geneType.curie", is(soTerm2.getCurie())).
+				body("entity", not(hasKey("geneSynonyms"))).
+				body("entity", not(hasKey("crossReferences")));
+
+		findGeneResponse(DETAIL_GENE).
+				body("results[0].geneSynonyms", hasSize(1)).
+				body("results[0].geneSynonyms[0].displayText", is("Gene detail synonym 1")).
+				body("results[0].geneSecondaryIds", hasSize(1)).
+				body("results[0].geneSecondaryIds[0].secondaryId", is("GENE:DETAILSECONDARY")).
+				body("results[0].crossReferences", hasSize(1)).
+				body("results[0].crossReferences[0].referencedCurie", is("GENEXRTEST:0001")).
+				body("results[0].relatedNotes", hasSize(1)).
+				body("results[0].relatedNotes[0].freeText", is("Gene detail note"));
+	}
+
+	@Test
+	@Order(23)
+	public void updateDetailRoundTripKeepsDetailFields() {
+		// The detail page PUTs back what it received, so every field the update reads must be in GeneDetailView;
+		// one missing from it would come back empty and be cleared.
+		Gene before = getGene(DETAIL_GENE);
+
+		RestAssured.given().
+				contentType("application/json").
+				body(before).
+				when().
+				put("/api/gene/updateDetail").
+				then().
+				statusCode(200);
+
+		Gene after = getGene(DETAIL_GENE);
+		assertEquals(before.getCurie(), after.getCurie());
+		assertEquals(before.getPrimaryExternalId(), after.getPrimaryExternalId());
+		assertEquals(before.getModInternalId(), after.getModInternalId());
+		assertEquals(before.getTaxon().getCurie(), after.getTaxon().getCurie());
+		assertEquals(before.getDataProvider().getAbbreviation(), after.getDataProvider().getAbbreviation());
+		assertEquals(before.getGeneSymbol().getDisplayText(), after.getGeneSymbol().getDisplayText());
+		assertEquals(before.getGeneFullName().getDisplayText(), after.getGeneFullName().getDisplayText());
+		assertEquals(before.getGeneSystematicName().getDisplayText(), after.getGeneSystematicName().getDisplayText());
+		assertEquals(before.getGeneType().getCurie(), after.getGeneType().getCurie());
+		assertEquals(before.getGcrpCrossReference().getReferencedCurie(), after.getGcrpCrossReference().getReferencedCurie());
+
+		findGeneResponse(DETAIL_GENE).
+				body("results[0].geneSynonyms", hasSize(1)).
+				body("results[0].geneSecondaryIds", hasSize(1)).
+				body("results[0].crossReferences", hasSize(1)).
+				body("results[0].relatedNotes", hasSize(1));
+	}
+
+	// Creates a gene carrying every list GeneDetailView omits, through POST /api/gene, which manages them.
+	private void createDetailGene() {
+		ResourceDescriptor resourceDescriptor = createResourceDescriptor("GENEXRTEST");
+		ResourceDescriptorPage page = createResourceDescriptorPage("default", "http://test.org/[%s]", resourceDescriptor);
+		VocabularyTerm noteType = getVocabularyTerm(getVocabulary(VocabularyConstants.NOTE_TYPE_VOCABULARY), "comment");
+
+		Gene gene = new Gene();
+		gene.setPrimaryExternalId(DETAIL_GENE);
+		gene.setTaxon(taxon);
+		gene.setGeneType(soTerm);
+		gene.setDataProvider(dataProvider);
+		gene.setGeneSymbol(createGeneSymbolSlotAnnotation(List.of(reference), "GDT1", symbolNameType, exactSynonymScope, "https://test.org"));
+		gene.setGeneFullName(createGeneFullNameSlotAnnotation(List.of(reference), "Gene detail test 1", fullNameType, exactSynonymScope, "https://test.org"));
+		gene.setGeneSystematicName(createGeneSystematicNameSlotAnnotation(List.of(reference), "GDT.1", systematicNameType, exactSynonymScope, "https://test.org"));
+		gene.setGeneSynonyms(List.of(createGeneSynonymSlotAnnotation(List.of(reference), "Gene detail synonym 1", symbolNameType, exactSynonymScope, "https://test.org")));
+		gene.setGeneSecondaryIds(List.of(createGeneSecondaryIdSlotAnnotation(List.of(reference), "GENE:DETAILSECONDARY")));
+		gene.setCrossReferences(List.of(buildCrossReference("GENEXRTEST:0001", page)));
+		gene.setGcrpCrossReference(buildCrossReference("GENEXRTEST:GCRP0001", page));
+		gene.setRelatedNotes(List.of(createNote(noteType, "Gene detail note", false, false, null)));
+
+		RestAssured.given().
+				contentType("application/json").
+				body(gene).
+				when().
+				post("/api/gene").
+				then().
+				statusCode(200);
+	}
+
+	private CrossReference buildCrossReference(String referencedCurie, ResourceDescriptorPage page) {
+		CrossReference crossReference = new CrossReference();
+		crossReference.setReferencedCurie(referencedCurie);
+		crossReference.setDisplayName(referencedCurie);
+		crossReference.setResourceDescriptorPage(page);
+		return crossReference;
+	}
 	
 	private GeneSymbolSlotAnnotation createGeneSymbolSlotAnnotation(List<InformationContentEntity> evidence, String name, VocabularyTerm nameType, VocabularyTerm synonymScope, String synonymUrl) {
 		GeneSymbolSlotAnnotation symbol = new GeneSymbolSlotAnnotation();
@@ -1040,4 +1197,20 @@ public class IT_0301_GeneITCase extends BaseITCase {
 		return secondaryIdAnnotation;
 	}
 
+	// GET /api/gene/{id} serializes GeneDetailView, which omits the gene's synonyms and secondary IDs, so the gene
+	// with them is read through find, which serializes GeneView. PUT /api/gene replaces those lists with the
+	// payload's, so a gene that is edited and saved is read the same way.
+	private ValidatableResponse findGeneResponse(String primaryExternalId) {
+		return RestAssured.given().
+			contentType("application/json").
+			body("{\"primaryExternalId\": \"" + primaryExternalId + "\"}").
+			when().
+			post("/api/gene/find?limit=1&page=0").
+			then().
+			statusCode(200);
+	}
+
+	private Gene findGene(String primaryExternalId) {
+		return findGeneResponse(primaryExternalId).extract().body().as(new TypeRef<SearchResponse<Gene>>() { }).getResults().get(0);
+	}
 }

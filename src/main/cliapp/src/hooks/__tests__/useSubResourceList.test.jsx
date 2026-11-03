@@ -129,6 +129,34 @@ describe('useSubResourceList', () => {
 		expect(result.current.isDirty).toBe(true);
 	});
 
+	// A create form's next entity can start from the last one's rows, none of which it has stored yet.
+	it('Starts over from the given rows with nothing stored, so each of them is written', async () => {
+		replace.mockResolvedValue({ data: { entities: [{ curie: 'W:1' }] } });
+
+		const { result } = renderHook(() => useSubResourceList(options));
+		act(() => {
+			result.current.setRows([{ curie: 'W:1', dataKey: 'new-row' }]);
+		});
+		await act(async () => {
+			await result.current.save(9);
+		});
+		act(() => {
+			result.current.setErrorMessages({ 'key-W:1': { curie: { severity: 'error', message: 'Bad' } } });
+		});
+
+		act(() => {
+			result.current.startOver([{ curie: 'W:1', dataKey: 'copied-row' }]);
+		});
+		expect(result.current.rows).toEqual([{ curie: 'W:1', dataKey: 'copied-row' }]);
+		expect(result.current.errorMessages).toEqual({});
+		expect(result.current.isDirty).toBe(true);
+
+		await act(async () => {
+			await result.current.save(10);
+		});
+		expect(replace).toHaveBeenLastCalledWith(10, [{ curie: 'W:1' }]);
+	});
+
 	it('Writes to the owner it is given, and reads nothing without one', async () => {
 		replace.mockResolvedValue({ data: { entities: [] } });
 

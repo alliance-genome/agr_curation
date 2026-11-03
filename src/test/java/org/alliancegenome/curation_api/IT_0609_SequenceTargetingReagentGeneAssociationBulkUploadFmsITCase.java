@@ -37,8 +37,8 @@ public class IT_0609_SequenceTargetingReagentGeneAssociationBulkUploadFmsITCase 
 	private String sqtrPrimaryExternalId = "ZFIN:ZDB-TALEN-180503-1";
 	
 	private final String sqtrGeneAssociationGetEndpoint = "/api/sqtrgeneassociation/findBy";
+	private final String sqtrGeneAssociationFindEndpoint = "/api/sqtrgeneassociation/find?limit=10&page=0";
 	private final String sqtrGeneAssociationTestFilePath = "src/test/resources/bulk/fms/SA01_sequencetargetingreagent_gene_association/";
-	private final String geneGetEndpoint = "/api/gene/";
 	private final String sqtrGetEndpoint = "/api/sqtr/";
 
 	private final String sqtrBulkPostEndpoint = "/api/sqtr/bulk/ZFIN/sqtrfile";
@@ -77,16 +77,16 @@ public class IT_0609_SequenceTargetingReagentGeneAssociationBulkUploadFmsITCase 
 			// the STR of the STR's own associations is the STR itself, so it is not repeated
 			body("entity.sequenceTargetingReagentGeneAssociations[0]", not(hasKey("sequenceTargetingReagentAssociationSubject")));
 		
+		// The gene's endpoints omit its STR associations, so they are found by the gene as their object.
 		RestAssured.given().
+			contentType("application/json").
+			body("{\"sequenceTargetingReagentGeneAssociationObject.primaryExternalId\": \"" + geneCurie + "\"}").
 			when().
-			get(geneGetEndpoint + geneCurie).
+			post(sqtrGeneAssociationFindEndpoint).
 			then().
 			statusCode(200).
-			body("entity.sequenceTargetingReagentGeneAssociations", hasSize(1)).
-			body("entity.sequenceTargetingReagentGeneAssociations[0].relation.name", is(relationName)).
-			// the gene of the gene's own associations is the gene itself, so it is not repeated: the
-			// association's gene is serialized in the STR views only
-			body("entity.sequenceTargetingReagentGeneAssociations[0]", not(hasKey("sequenceTargetingReagentGeneAssociationObject")));
+			body("results", hasSize(1)).
+			body("results[0].relation.name", is(relationName));
 	}
 
 	@Test

@@ -265,6 +265,11 @@ export const SiteLayout = (props) => {
 							icon: 'pi pi-fw pi-home',
 							to: '/htpExpressionDatasetAnnotations',
 						},
+						{
+							label: 'HTP Expression Dataset Sample Annotations',
+							icon: 'pi pi-fw pi-home',
+							to: '/htpExpressionDatasetSampleAnnotations',
+						},
 						{ label: 'Literature References', icon: 'pi pi-fw pi-home', to: '/references' },
 						{ label: 'Molecules', icon: 'pi pi-fw pi-home', to: '/molecules' },
 						{ label: 'Phenotype Annotations', icon: 'pi pi-fw pi-home', to: '/phenotypeAnnotations' },

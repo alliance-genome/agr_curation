@@ -135,6 +135,17 @@ export function getEntityType(entity) {
 	return 'Unknown Entity';
 }
 
+/**
+ * What a failed request says went wrong: the API's error message, or failing that the response's status, or
+ * failing that the error's own message, for a request that got no response.
+ *
+ * @param {Object} error the rejected request's error
+ * @returns {string}
+ */
+export const errorMessageOf = (error) =>
+	error?.response?.data?.errorMessage ||
+	(error?.response ? `${error.response.status} ${error.response.statusText}`.trim() : error?.message);
+
 export function getIdentifier(data) {
 	if (!data) {
 		return null;

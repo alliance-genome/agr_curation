@@ -20,11 +20,18 @@ import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.Note;
 import org.alliancegenome.curation_api.model.entities.Reference;
 import org.alliancegenome.curation_api.model.entities.associations.AlleleGeneAssociation;
+import org.alliancegenome.curation_api.model.entities.slotAnnotations.AlleleFunctionalImpactSlotAnnotation;
+import org.alliancegenome.curation_api.model.entities.slotAnnotations.AlleleInheritanceModeSlotAnnotation;
+import org.alliancegenome.curation_api.model.entities.slotAnnotations.AlleleMutationTypeSlotAnnotation;
+import org.alliancegenome.curation_api.model.entities.slotAnnotations.AlleleNomenclatureEventSlotAnnotation;
+import org.alliancegenome.curation_api.model.entities.slotAnnotations.AlleleSecondaryIdSlotAnnotation;
+import org.alliancegenome.curation_api.model.entities.slotAnnotations.AlleleSynonymSlotAnnotation;
 import org.alliancegenome.curation_api.model.ingest.dto.AlleleDTO;
 import org.alliancegenome.curation_api.response.ObjectListResponse;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.base.SubmittedObjectCrudService;
+import org.alliancegenome.curation_api.services.helpers.SubResourceListHelper;
 import org.alliancegenome.curation_api.services.validation.AlleleValidator;
 import org.alliancegenome.curation_api.services.validation.dto.AlleleDTOValidator;
 import org.apache.commons.collections.CollectionUtils;
@@ -61,17 +68,17 @@ public class AlleleService extends SubmittedObjectCrudService<Allele, AlleleDTO,
 	@Override
 	@Transactional
 	public ObjectResponse<Allele> update(Allele uiEntity) {
-		// AlleleView carries crossReferences and references but not the associations, so this path manages those
-		// only.
+		// AlleleView carries crossReferences, references, related notes and the slot annotation lists but not the
+		// associations, so this path manages those only.
 		Allele dbEntity = alleleValidator.validateAlleleUpdate(uiEntity, true);
 		return new ObjectResponse<>(dbEntity);
 	}
 
 	@Transactional
 	public ObjectResponse<Allele> updateDetail(Allele uiEntity) {
-		// AlleleDetailView carries none of crossReferences, references or the gene and construct associations, so this
-		// path manages none of them; cross references, references and gene associations are written through the
-		// allele's sub-resources, and construct associations through their own endpoints.
+		// AlleleDetailView carries none of crossReferences, references, related notes, the slot annotation lists or the
+		// gene and construct associations, so this path manages none of them; all but the construct associations are written
+		// through the allele's sub-resources, and construct associations through their own endpoints.
 		Allele dbEntity = alleleValidator.validateAlleleUpdate(uiEntity, false);
 		return new ObjectResponse<>(dbEntity);
 	}
@@ -144,6 +151,76 @@ public class AlleleService extends SubmittedObjectCrudService<Allele, AlleleDTO,
 		}
 
 		return new ObjectListResponse<>(new ArrayList<>(allele.getAlleleGeneAssociations()));
+	}
+
+	public ObjectListResponse<AlleleSynonymSlotAnnotation> getSynonyms(Long id) {
+		return SubResourceListHelper.listResponse(findAlleleOrThrow(id).getAlleleSynonyms());
+	}
+
+	@Transactional
+	public ObjectListResponse<AlleleSynonymSlotAnnotation> updateSynonyms(Long id, List<AlleleSynonymSlotAnnotation> synonyms) {
+		Allele allele = findAlleleOrThrow(id);
+		return SubResourceListHelper.replaceSlotAnnotations(allele, alleleValidator.validateSynonymReplacement(allele, synonyms), Allele::getAlleleSynonyms, Allele::setAlleleSynonyms);
+	}
+
+	public ObjectListResponse<AlleleSecondaryIdSlotAnnotation> getSecondaryIds(Long id) {
+		return SubResourceListHelper.listResponse(findAlleleOrThrow(id).getAlleleSecondaryIds());
+	}
+
+	@Transactional
+	public ObjectListResponse<AlleleSecondaryIdSlotAnnotation> updateSecondaryIds(Long id, List<AlleleSecondaryIdSlotAnnotation> secondaryIds) {
+		Allele allele = findAlleleOrThrow(id);
+		return SubResourceListHelper.replaceSlotAnnotations(allele, alleleValidator.validateSecondaryIdReplacement(allele, secondaryIds), Allele::getAlleleSecondaryIds, Allele::setAlleleSecondaryIds);
+	}
+
+	public ObjectListResponse<AlleleNomenclatureEventSlotAnnotation> getNomenclatureEvents(Long id) {
+		return SubResourceListHelper.listResponse(findAlleleOrThrow(id).getAlleleNomenclatureEvents());
+	}
+
+	@Transactional
+	public ObjectListResponse<AlleleNomenclatureEventSlotAnnotation> updateNomenclatureEvents(Long id, List<AlleleNomenclatureEventSlotAnnotation> nomenclatureEvents) {
+		Allele allele = findAlleleOrThrow(id);
+		return SubResourceListHelper.replaceSlotAnnotations(allele, alleleValidator.validateNomenclatureEventReplacement(allele, nomenclatureEvents), Allele::getAlleleNomenclatureEvents, Allele::setAlleleNomenclatureEvents);
+	}
+
+	public ObjectListResponse<AlleleMutationTypeSlotAnnotation> getMutationTypes(Long id) {
+		return SubResourceListHelper.listResponse(findAlleleOrThrow(id).getAlleleMutationTypes());
+	}
+
+	@Transactional
+	public ObjectListResponse<AlleleMutationTypeSlotAnnotation> updateMutationTypes(Long id, List<AlleleMutationTypeSlotAnnotation> mutationTypes) {
+		Allele allele = findAlleleOrThrow(id);
+		return SubResourceListHelper.replaceSlotAnnotations(allele, alleleValidator.validateMutationTypeReplacement(allele, mutationTypes), Allele::getAlleleMutationTypes, Allele::setAlleleMutationTypes);
+	}
+
+	public ObjectListResponse<AlleleFunctionalImpactSlotAnnotation> getFunctionalImpacts(Long id) {
+		return SubResourceListHelper.listResponse(findAlleleOrThrow(id).getAlleleFunctionalImpacts());
+	}
+
+	@Transactional
+	public ObjectListResponse<AlleleFunctionalImpactSlotAnnotation> updateFunctionalImpacts(Long id, List<AlleleFunctionalImpactSlotAnnotation> functionalImpacts) {
+		Allele allele = findAlleleOrThrow(id);
+		return SubResourceListHelper.replaceSlotAnnotations(allele, alleleValidator.validateFunctionalImpactReplacement(allele, functionalImpacts), Allele::getAlleleFunctionalImpacts, Allele::setAlleleFunctionalImpacts);
+	}
+
+	public ObjectListResponse<AlleleInheritanceModeSlotAnnotation> getInheritanceModes(Long id) {
+		return SubResourceListHelper.listResponse(findAlleleOrThrow(id).getAlleleInheritanceModes());
+	}
+
+	@Transactional
+	public ObjectListResponse<AlleleInheritanceModeSlotAnnotation> updateInheritanceModes(Long id, List<AlleleInheritanceModeSlotAnnotation> inheritanceModes) {
+		Allele allele = findAlleleOrThrow(id);
+		return SubResourceListHelper.replaceSlotAnnotations(allele, alleleValidator.validateInheritanceModeReplacement(allele, inheritanceModes), Allele::getAlleleInheritanceModes, Allele::setAlleleInheritanceModes);
+	}
+
+	public ObjectListResponse<Note> getRelatedNotes(Long id) {
+		return SubResourceListHelper.listResponse(findAlleleOrThrow(id).getRelatedNotes());
+	}
+
+	@Transactional
+	public ObjectListResponse<Note> updateRelatedNotes(Long id, List<Note> relatedNotes) {
+		Allele allele = findAlleleOrThrow(id);
+		return SubResourceListHelper.replaceRelatedNotes(allele, alleleValidator.validateRelatedNoteReplacement(allele, relatedNotes));
 	}
 
 	private Allele findAlleleOrThrow(Long id) {

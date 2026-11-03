@@ -11,7 +11,10 @@ import java.util.List;
 import org.alliancegenome.curation_api.base.BaseITCase;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
+import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.Organization;
+import org.alliancegenome.curation_api.model.entities.ResourceDescriptor;
+import org.alliancegenome.curation_api.model.entities.ResourceDescriptorPage;
 import org.alliancegenome.curation_api.model.entities.TransgenicTool;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.associations.TransgenicToolTransgenicToolAssociation;
@@ -33,7 +36,8 @@ import io.restassured.response.Response;
 /**
  * SCRUM-6655: what the transgenic tool detail page writes. The tool itself through PUT /transgenic-tool, and the
  * associations it is the subject of through /transgenic-tool/{id}/transgenic-tool-associations, which replaces
- * them with the submitted list.
+ * them with the submitted list. A tool's cross references are saved with the tool, and each must match its page's
+ * resource descriptor.
  */
 @QuarkusIntegrationTest
 @QuarkusTestResource(TestContainerResource.Initializer.class)
@@ -217,6 +221,46 @@ public class IT_0318_TransgenicToolDetailITCase extends BaseITCase {
 			body("entities", nullValue());
 	}
 
+	@Test
+	@Order(7)
+	public void updateToolCrossReferences() {
+		ResourceDescriptor descriptor = createResourceDescriptor("TTDXR", "^TTDXR:\\d+$");
+		ResourceDescriptorPage page = createResourceDescriptorPage("default", "http://test.org/ttdxr/[%s]", descriptor);
+
+		// The page's descriptor is returned with the tool, so the detail page can show it
+		updateTool(TOOL3, buildCrossReference("TTDXR:0001", page)).
+			then().
+			statusCode(200).
+			body("entity.crossReferences", hasSize(1)).
+			body("entity.crossReferences[0].referencedCurie", is("TTDXR:0001")).
+			body("entity.crossReferences[0].resourceDescriptorPage.resourceDescriptor.prefix", is("TTDXR"));
+
+		RestAssured.given().
+			when().
+			get("/api/transgenic-tool/" + TOOL3).
+			then().
+			statusCode(200).
+			body("entity.crossReferences[0].resourceDescriptorPage.resourceDescriptor.prefix", is("TTDXR"));
+
+		updateTool(TOOL3, buildCrossReference("OTHER:0001", page)).
+			then().
+			statusCode(400).
+			body("supplementalData.errorMap.crossReferences.'0'.referencedCurie", is(ValidationConstants.CURIE_PATTERN_MISMATCH_MESSAGE));
+
+		updateTool(TOOL3, buildCrossReference("TTDXR:0002", null)).
+			then().
+			statusCode(400).
+			body("supplementalData.errorMap.crossReferences.'0'.resourceDescriptorPage", is(ValidationConstants.REQUIRED_MESSAGE));
+
+		RestAssured.given().
+			when().
+			get("/api/transgenic-tool/" + TOOL3).
+			then().
+			statusCode(200).
+			body("entity.crossReferences", hasSize(1)).
+			body("entity.crossReferences[0].referencedCurie", is("TTDXR:0001"));
+	}
+
 	private TransgenicTool createTool(String primaryExternalId) {
 		TransgenicTool newTool = new TransgenicTool();
 		newTool.setPrimaryExternalId(primaryExternalId);
@@ -237,6 +281,28 @@ public class IT_0318_TransgenicToolDetailITCase extends BaseITCase {
 			statusCode(200);
 
 		return getTransgenicTool(primaryExternalId);
+	}
+
+	// Saves the stored tool with its cross references replaced by the given one
+	private Response updateTool(String primaryExternalId, CrossReference crossReference) {
+		TransgenicTool stored = getTransgenicTool(primaryExternalId);
+		stored.setCrossReferences(List.of(crossReference));
+		// The tool's associations are written through their own endpoint only
+		stored.setTransgenicToolTransgenicToolAssociations(null);
+
+		return RestAssured.given().
+			contentType("application/json").
+			body(stored).
+			when().
+			put("/api/transgenic-tool");
+	}
+
+	private CrossReference buildCrossReference(String referencedCurie, ResourceDescriptorPage page) {
+		CrossReference crossReference = new CrossReference();
+		crossReference.setReferencedCurie(referencedCurie);
+		crossReference.setDisplayName(referencedCurie);
+		crossReference.setResourceDescriptorPage(page);
+		return crossReference;
 	}
 
 	private String endpoint(Long id) {

@@ -31,7 +31,8 @@ import { TruncatedReferencesTemplate } from '../../components/Templates/referenc
 
 import { SearchService } from '../../service/SearchService';
 import { Endpoints } from '../../constants/Endpoints';
-import { NewVariantButton } from './NewVariantButton';
+import { NewVariantButton, useOpenVariantCreatePage } from './NewVariantButton';
+import { getIdentifier } from '../../utils/utils';
 import { GenomicLocationsReadOnlyDialog } from './genomicLocations/GenomicLocationsReadOnlyDialog';
 
 export const VariantsTable = () => {
@@ -60,6 +61,11 @@ export const VariantsTable = () => {
 	const toast_topright = useRef(null);
 
 	let variantService = new VariantService();
+	const openVariantCreatePage = useOpenVariantCreatePage();
+
+	const handleDuplication = (rowData) => {
+		openVariantCreatePage(rowData.curie || getIdentifier(rowData));
+	};
 
 	const mutation = useMutation({
 		mutationFn: (updatedVariant) => {
@@ -349,6 +355,11 @@ export const VariantsTable = () => {
 					columns={columns}
 					isEditable={true}
 					hasDetails={true}
+					duplicationEnabled={true}
+					handleDuplication={handleDuplication}
+					deletionEnabled={true}
+					deletionMethod={variantService.deleteVariant}
+					deprecateOption={true}
 					mutation={mutation}
 					isInEditMode={isInEditMode}
 					setIsInEditMode={setIsInEditMode}

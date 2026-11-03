@@ -1,9 +1,10 @@
-import { useMemo, useRef } from 'react';
+import { useRef } from 'react';
 import { Button } from 'primereact/button';
-import { Message } from 'primereact/message';
-import { Toast } from 'primereact/toast';
 import { FormTableWrapper } from '../../../components/FormTableWrapper';
 import { useSubResource } from '../../../components/SubResourcesContext';
+import { useSubResourceRows } from '../../../hooks/useSubResourceRows';
+import { SubResourceSaveButton } from '../SubResourceSaveButton';
+import { SubResourceLoadError } from '../SubResourceLoadError';
 import { AlleleGeneAssociationsFormTable } from './AlleleGeneAssociationsFormTable';
 import { addDataKey, generateCurieSearchField, KEEP_ROWS_IN_EDIT_MODE } from '../utils';
 import { TableEditorProvider } from '../../../components/Editors/fields/TableEditorContext';
@@ -22,45 +23,29 @@ import { useVocabularyTermSetService } from '../../../service/useVocabularyTermS
  * @param {'detail'|'create'} [props.mode]
  */
 export const AlleleGeneAssociationsForm = ({ labelColumnSize, mode = 'detail' }) => {
-	const {
-		alleleGeneAssociations,
-		setAlleleGeneAssociations,
-		errorMessages,
-		setErrorMessages,
-		isLoading,
-		loadError,
-		isSaving,
-		isDirty,
-		save,
-	} = useSubResource('alleleGeneAssociations');
+	const subResource = useSubResource('alleleGeneAssociations');
+	const { rows: alleleGeneAssociations, errorMessages, setErrorMessages, isDirty } = subResource;
+	const { editingRows, addRow, updateRow, deletionHandler } = useSubResourceRows(subResource, {
+		prepend: true,
+	});
 	const tableRef = useRef(null);
-	const toast = useRef(null);
 	const isDetail = mode === 'detail';
 	const relationTerms = useVocabularyTermSetService('allele_gene_relation');
 
-	const editingRows = useMemo(
-		() => Object.fromEntries(alleleGeneAssociations.map((association) => [association.dataKey, true])),
-		[alleleGeneAssociations]
-	);
-
-	const updateRow = (dataKey, changes) => {
-		setAlleleGeneAssociations((previous) =>
-			previous.map((association) => (association.dataKey === dataKey ? { ...association, ...changes } : association))
-		);
-	};
+	const changeRow = (dataKey, changes) => updateRow(dataKey, (association) => ({ ...association, ...changes }));
 
 	const createNewGeneAssociationHandler = (event) => {
 		event.preventDefault();
 		const newAlleleGeneAssociation = {};
 		addDataKey(newAlleleGeneAssociation);
-		setAlleleGeneAssociations((previous) => [newAlleleGeneAssociation, ...previous]);
+		addRow(newAlleleGeneAssociation);
 	};
 
 	const strategy = useDataKeyRowsStrategy({
 		rows: alleleGeneAssociations,
 		errors: errorMessages,
 		write: ({ rowKey, field, value }) =>
-			updateRow(
+			changeRow(
 				rowKey,
 				field === 'evidence'
 					? { evidence: value, evidenceCurieSearchFilter: generateCurieSearchField(value) }
@@ -70,86 +55,41 @@ export const AlleleGeneAssociationsForm = ({ labelColumnSize, mode = 'detail' })
 
 	const relatedNoteOnChangeHandler = (value, props) => {
 		props.editorCallback(value[0]);
-		updateRow(props.rowData?.dataKey, { relatedNote: value[0] });
-	};
-
-	const deletionHandler = (event, dataKey) => {
-		event.preventDefault();
-		setAlleleGeneAssociations((previous) => previous.filter((association) => association.dataKey !== dataKey));
-		setErrorMessages((previous) => {
-			const remaining = { ...previous };
-			delete remaining[dataKey];
-			return remaining;
-		});
-	};
-
-	const saveHandler = async (event) => {
-		event.preventDefault();
-		const outcome = await save();
-
-		if (outcome.isSuccess) {
-			toast.current.show({ severity: 'success', summary: 'Successful', detail: 'Gene Associations Saved' });
-		} else {
-			toast.current.show([
-				{ life: 7000, severity: 'error', summary: 'Gene associations: ', detail: outcome.message, sticky: false },
-			]);
-		}
+		changeRow(props.rowData?.dataKey, { relatedNote: value[0] });
 	};
 
 	return (
-		<>
-			<Toast ref={toast} position="top-right" />
-			<FormTableWrapper
-				labelColumnSize={labelColumnSize}
-				table={
-					<TableEditorProvider strategy={strategy}>
-						<AlleleGeneAssociationsFormTable
-							alleleGeneAssociations={alleleGeneAssociations}
-							editingRows={editingRows}
-							onRowEditChange={KEEP_ROWS_IN_EDIT_MODE}
-							tableRef={tableRef}
-							deletionHandler={deletionHandler}
-							errorMessages={errorMessages}
-							setErrorMessages={setErrorMessages}
-							relatedNoteOnChangeHandler={relatedNoteOnChangeHandler}
-							relationTerms={relationTerms}
-						/>
-					</TableEditorProvider>
-				}
-				tableName="Allele Gene Associations"
-				showTable={alleleGeneAssociations.length > 0}
-				isPending={isDetail && isDirty}
-				titleAction={
-					isDetail && (
-						<Button
-							label="Save Gene Associations"
-							icon={isSaving ? 'pi pi-spin pi-spinner' : 'pi pi-check'}
-							onClick={saveHandler}
-							// Saving replaces the stored list with what is on screen, so it has to wait for the read.
-							// Saving a table that is still loading, or that failed to load, would submit an empty list
-							// and delete every gene association the allele has. With nothing edited there is nothing
-							// to save.
-							disabled={!isDirty || isSaving || isLoading || Boolean(loadError)}
-							severity="success"
-						/>
-					)
-				}
-				button={
-					<>
-						<Button
-							label="Add Gene Association"
-							onClick={createNewGeneAssociationHandler}
-							className="p-button-text -mt-3"
-						/>
-						{loadError && (
-							<Message
-								severity="error"
-								text="Could not load these gene associations, so they cannot be saved. Reload the page to try again."
-							/>
-						)}
-					</>
-				}
-			/>
-		</>
+		<FormTableWrapper
+			labelColumnSize={labelColumnSize}
+			table={
+				<TableEditorProvider strategy={strategy}>
+					<AlleleGeneAssociationsFormTable
+						alleleGeneAssociations={alleleGeneAssociations}
+						editingRows={editingRows}
+						onRowEditChange={KEEP_ROWS_IN_EDIT_MODE}
+						tableRef={tableRef}
+						deletionHandler={deletionHandler}
+						errorMessages={errorMessages}
+						setErrorMessages={setErrorMessages}
+						relatedNoteOnChangeHandler={relatedNoteOnChangeHandler}
+						relationTerms={relationTerms}
+					/>
+				</TableEditorProvider>
+			}
+			tableName="Allele Gene Associations"
+			showTable={alleleGeneAssociations.length > 0}
+			isPending={isDetail && isDirty}
+			titleAction={isDetail && <SubResourceSaveButton type="alleleGeneAssociations" />}
+			button={
+				<>
+					<Button
+						label="Add Gene Association"
+						onClick={createNewGeneAssociationHandler}
+						className="p-button-text -mt-3"
+					/>
+					<SubResourceLoadError type="alleleGeneAssociations" />
+				</>
+			}
+		/>
 	);
 };

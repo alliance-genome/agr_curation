@@ -119,6 +119,12 @@ public class HTPExpressionDatasetAnnotation extends AuditedObject implements Cur
 	@KeywordField(name = "numberOfChannels_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, valueBridge = @ValueBridgeRef(type = IntegerValueBridge.class))
 	private Integer numberOfChannels;
 
+	@JsonView({ CurationView.FieldsOnly.class })
+	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
+	@KeywordField(name = "laboratoryOfOrigin_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
+	@Column(columnDefinition = "TEXT")
+	private String laboratoryOfOrigin;
+
 	@IndexedEmbedded(includePaths = {"name", "name_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany

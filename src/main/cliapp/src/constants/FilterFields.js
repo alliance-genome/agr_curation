@@ -356,6 +356,82 @@ export const FIELD_SETS = Object.freeze({
 		filterName: 'htpExpressionDatasetAnnotationNumberOfChannelsFilter',
 		fields: ['numberOfChannels'],
 	},
+	htpExpressionDatasetAnnotationExpressionDatasetFieldSet: {
+		filterName: 'htpExpressionDatasetAnnotationExpressionDatasetFilter',
+		fields: ['htpExpressionDataset.curie'],
+	},
+	htpExpressionDatasetAnnotationSubseriesFieldSet: {
+		filterName: 'htpExpressionDatasetAnnotationSubseriesFilter',
+		fields: ['subSeries.curie'],
+	},
+	htpExpressionDatasetAnnotationRelatedNotesFieldSet: {
+		filterName: 'htpExpressionDatasetAnnotationRelatedNotesFilter',
+		fields: ['relatedNote.freeText'],
+	},
+	htpExpressionDatasetAnnotationLaboratoryOfOriginFieldSet: {
+		filterName: 'htpExpressionDatasetAnnotationLaboratoryOfOriginFilter',
+		fields: ['laboratoryOfOrigin'],
+	},
+	htpExpressionDatasetSampleAnnotationAggregationFieldSet: {
+		filterName: 'htpExpressionDatasetSampleAnnotationAggregationFilter',
+		fields: ['dataProvider.abbreviation'],
+	},
+	htpExpressionDatasetSampleAnnotationGeneticSexAggregationFieldSet: {
+		filterName: 'htpExpressionDatasetSampleAnnotationGeneticSexAggregationFilter',
+		fields: ['geneticSex.name'],
+	},
+	htpExpressionDatasetSampleAnnotationTitleFieldSet: {
+		filterName: 'htpExpressionDatasetSampleAnnotationTitleFilter',
+		fields: ['htpExpressionSampleTitle'],
+	},
+	htpExpressionDatasetSampleAnnotationTypeFieldSet: {
+		filterName: 'htpExpressionDatasetSampleAnnotationTypeFilter',
+		fields: ['htpExpressionSampleType.name', 'htpExpressionSampleType.curie'],
+	},
+	htpExpressionDatasetSampleAnnotationLocationsFieldSet: {
+		filterName: 'htpExpressionDatasetSampleAnnotationLocationsFilter',
+		fields: ['htpExpressionSampleLocations.anatomicalStructure.name'],
+	},
+	htpExpressionDatasetSampleAnnotationAssemblyVersionsFieldSet: {
+		filterName: 'htpExpressionDatasetSampleAnnotationAssemblyVersionsFilter',
+		fields: ['assemblyVersions'],
+	},
+	htpExpressionDatasetSampleAnnotationAbundanceFieldSet: {
+		filterName: 'htpExpressionDatasetSampleAnnotationAbundanceFilter',
+		fields: ['abundance'],
+	},
+	htpExpressionDatasetSampleAnnotationAssayUsedFieldSet: {
+		filterName: 'htpExpressionDatasetSampleAnnotationAssayUsedFilter',
+		fields: ['expressionAssayUsed.name', 'expressionAssayUsed.curie'],
+	},
+	htpExpressionDatasetSampleAnnotationExpressionSampleFieldSet: {
+		filterName: 'htpExpressionDatasetSampleAnnotationExpressionSampleFilter',
+		fields: ['htpExpressionSample.curie'],
+	},
+	htpExpressionDatasetSampleAnnotationSampleAgeFieldSet: {
+		filterName: 'htpExpressionDatasetSampleAnnotationSampleAgeFilter',
+		fields: ['htpExpressionSampleAge.age'],
+	},
+	htpExpressionDatasetSampleAnnotationBiologicalReferenceFieldSet: {
+		filterName: 'htpExpressionDatasetSampleAnnotationBiologicalReferenceFilter',
+		fields: ['datasetIds.curie'],
+	},
+	htpExpressionDatasetSampleAnnotationGenomicInformationFieldSet: {
+		filterName: 'htpExpressionDatasetSampleAnnotationGenomicInformationFilter',
+		fields: ['genomicInformation.bioSampleText'],
+	},
+	htpExpressionDatasetSampleAnnotationMicroarrayDetailsFieldSet: {
+		filterName: 'htpExpressionDatasetSampleAnnotationMicroarrayDetailsFilter',
+		fields: ['microarraySampleDetails.channelId'],
+	},
+	htpExpressionDatasetSampleAnnotationRelatedNotesFieldSet: {
+		filterName: 'htpExpressionDatasetSampleAnnotationRelatedNotesFilter',
+		fields: ['relatedNotes.freeText'],
+	},
+	htpExpressionDatasetSampleAnnotationSequencingFormatFieldSet: {
+		filterName: 'htpExpressionDatasetSampleAnnotationSequencingFormatFilter',
+		fields: ['sequencingFormat.name'],
+	},
 	sequenceTargetingReagentTargetedGenesFieldSet: {
 		filterName: 'sequenceTargetingReagentTargetedGenesFilter',
 		fields: [
@@ -1580,6 +1656,86 @@ export const FILTER_CONFIGS = Object.freeze({
 		filterComponentType: 'input',
 		fieldSets: [FIELD_SETS.htpExpressionDatasetAnnotationNumberOfChannelsFieldSet],
 	},
+	htpExpressionDatasetAnnotationExpressionDatasetFilterConfig: {
+		filterComponentType: 'input',
+		fieldSets: [FIELD_SETS.htpExpressionDatasetAnnotationExpressionDatasetFieldSet],
+	},
+	htpExpressionDatasetAnnotationSubseriesFilterConfig: {
+		filterComponentType: 'input',
+		fieldSets: [FIELD_SETS.htpExpressionDatasetAnnotationSubseriesFieldSet],
+	},
+	htpExpressionDatasetAnnotationRelatedNotesFilterConfig: {
+		filterComponentType: 'input',
+		fieldSets: [FIELD_SETS.htpExpressionDatasetAnnotationRelatedNotesFieldSet],
+	},
+	htpExpressionDatasetAnnotationLaboratoryOfOriginFilterConfig: {
+		filterComponentType: 'input',
+		fieldSets: [FIELD_SETS.htpExpressionDatasetAnnotationLaboratoryOfOriginFieldSet],
+	},
+	htpExpressionDatasetSampleAnnotationDataProviderFilterConfig: {
+		filterComponentType: 'multiselect',
+		fieldSets: [FIELD_SETS.dataProviderFieldSet],
+		aggregationFieldSet: FIELD_SETS.htpExpressionDatasetSampleAnnotationAggregationFieldSet,
+		useKeywordFields: true,
+	},
+	htpExpressionDatasetSampleAnnotationGeneticSexFilterConfig: {
+		filterComponentType: 'multiselect',
+		fieldSets: [FIELD_SETS.geneticSexFieldSet],
+		aggregationFieldSet: FIELD_SETS.htpExpressionDatasetSampleAnnotationGeneticSexAggregationFieldSet,
+		useKeywordFields: true,
+	},
+	htpExpressionDatasetSampleAnnotationTitleFilterConfig: {
+		filterComponentType: 'input',
+		fieldSets: [FIELD_SETS.htpExpressionDatasetSampleAnnotationTitleFieldSet],
+	},
+	htpExpressionDatasetSampleAnnotationTypeFilterConfig: {
+		filterComponentType: 'input',
+		fieldSets: [FIELD_SETS.htpExpressionDatasetSampleAnnotationTypeFieldSet],
+	},
+	htpExpressionDatasetSampleAnnotationLocationsFilterConfig: {
+		filterComponentType: 'input',
+		fieldSets: [FIELD_SETS.htpExpressionDatasetSampleAnnotationLocationsFieldSet],
+	},
+	htpExpressionDatasetSampleAnnotationAssemblyVersionsFilterConfig: {
+		filterComponentType: 'input',
+		fieldSets: [FIELD_SETS.htpExpressionDatasetSampleAnnotationAssemblyVersionsFieldSet],
+	},
+	htpExpressionDatasetSampleAnnotationAbundanceFilterConfig: {
+		filterComponentType: 'input',
+		fieldSets: [FIELD_SETS.htpExpressionDatasetSampleAnnotationAbundanceFieldSet],
+	},
+	htpExpressionDatasetSampleAnnotationAssayUsedFilterConfig: {
+		filterComponentType: 'input',
+		fieldSets: [FIELD_SETS.htpExpressionDatasetSampleAnnotationAssayUsedFieldSet],
+	},
+	htpExpressionDatasetSampleAnnotationSequencingFormatFilterConfig: {
+		filterComponentType: 'input',
+		fieldSets: [FIELD_SETS.htpExpressionDatasetSampleAnnotationSequencingFormatFieldSet],
+	},
+	htpExpressionDatasetSampleAnnotationExpressionSampleFilterConfig: {
+		filterComponentType: 'input',
+		fieldSets: [FIELD_SETS.htpExpressionDatasetSampleAnnotationExpressionSampleFieldSet],
+	},
+	htpExpressionDatasetSampleAnnotationSampleAgeFilterConfig: {
+		filterComponentType: 'input',
+		fieldSets: [FIELD_SETS.htpExpressionDatasetSampleAnnotationSampleAgeFieldSet],
+	},
+	htpExpressionDatasetSampleAnnotationBiologicalReferenceFilterConfig: {
+		filterComponentType: 'input',
+		fieldSets: [FIELD_SETS.htpExpressionDatasetSampleAnnotationBiologicalReferenceFieldSet],
+	},
+	htpExpressionDatasetSampleAnnotationGenomicInformationFilterConfig: {
+		filterComponentType: 'input',
+		fieldSets: [FIELD_SETS.htpExpressionDatasetSampleAnnotationGenomicInformationFieldSet],
+	},
+	htpExpressionDatasetSampleAnnotationMicroarrayDetailsFilterConfig: {
+		filterComponentType: 'input',
+		fieldSets: [FIELD_SETS.htpExpressionDatasetSampleAnnotationMicroarrayDetailsFieldSet],
+	},
+	htpExpressionDatasetSampleAnnotationRelatedNotesFilterConfig: {
+		filterComponentType: 'input',
+		fieldSets: [FIELD_SETS.htpExpressionDatasetSampleAnnotationRelatedNotesFieldSet],
+	},
 	sequenceTargetingReagentTargetedGenesFilterConfig: {
 		filterComponentType: 'input',
 		fieldSets: [FIELD_SETS.sequenceTargetingReagentTargetedGenesFieldSet],
@@ -1790,6 +1946,16 @@ export const AUTOCOMPLETE_CONFIGS = Object.freeze({
 	},
 	resourceDescriptorAutocompleteConfig: {
 		fieldSets: [FIELD_SETS.prefixFieldSet, FIELD_SETS.nameFieldSet],
+	},
+	// Sequence targeting reagents (SCRUM-6752): their own name and synonyms are plain strings on the STR index
+	sequenceTargetingReagentAutocompleteConfig: {
+		fieldSets: [
+			FIELD_SETS.curieFieldSet,
+			FIELD_SETS.primaryExternalIdFieldSet,
+			FIELD_SETS.modInternalIdFieldSet,
+			FIELD_SETS.nameFieldSet,
+			FIELD_SETS.synonymsFieldSet,
+		],
 	},
 	// Transgenic tools (SCRUM-6655): the tool index has no bridged symbol/name fields, so its own slot
 	// annotation paths are searched.
