@@ -1,6 +1,6 @@
 import { copyRow } from '../../utils/copyRows';
-
-export { capitalize } from '../../utils/utils';
+import { sortedCuries } from '../../utils/rows';
+import { getPendingFields, nameSlotAnnotationValue } from '../../utils/pendingFields';
 
 export const generateCrossRefSearchField = (reference) => {
 	const { crossReferences, curieField } = getCrossReferences(reference);
@@ -46,40 +46,6 @@ export const generateCurieSearchField = (entities) => {
 	let curieStrings = entities.map((entity) => entity.curie);
 	return curieStrings.join();
 };
-
-export const addDataKey = (entity) => {
-	entity.dataKey = crypto.randomUUID();
-};
-
-/**
- * @param {Object[]} [entities]
- * @returns {string[]} the entities' curies in sorted order, to compare lists by whatever order they are in; none
- *   when there is no list
- */
-export const sortedCuries = (entities) =>
-	Array.isArray(entities) ? entities.map((entity) => entity?.curie).sort() : [];
-
-/**
- * @param {(row: Object) => string} valueOf a row's value to compare by
- * @returns {(rows: Object[], otherRows: Object[]) => boolean} whether two lists hold rows of the same value,
- *   row by row
- */
-export const sameRowsBy = (valueOf) => (rows, otherRows) =>
-	rows.length === otherRows.length && rows.every((row, index) => valueOf(row) === valueOf(otherRows[index]));
-
-/**
- * An empty allele symbol, ready to be edited in the symbol table.
- *
- * @returns {Object} a symbol with blank text fields and no name type
- */
-export const buildEmptyAlleleSymbol = () => ({
-	dataKey: 0,
-	synonymUrl: '',
-	internal: false,
-	nameType: null,
-	formatText: '',
-	displayText: '',
-});
 
 /**
  * Shapes a new allele for the create endpoint.
@@ -132,25 +98,6 @@ export const buildDuplicateAllele = (allele) => ({
 	alleleDatabaseStatus: copyRow(allele.alleleDatabaseStatus),
 });
 
-/**
- * A name slot annotation's curator-editable fields, as a string to compare by.
- *
- * @param {Object} [nameSlotAnnotation]
- * @returns {string|null} the fields, or none when the name is unset
- */
-export const nameSlotAnnotationValue = (nameSlotAnnotation) =>
-	nameSlotAnnotation
-		? JSON.stringify([
-				nameSlotAnnotation.displayText || null,
-				nameSlotAnnotation.formatText || null,
-				nameSlotAnnotation.synonymUrl || null,
-				nameSlotAnnotation.nameType?.name ?? null,
-				nameSlotAnnotation.synonymScope?.name ?? null,
-				nameSlotAnnotation.internal ?? null,
-				sortedCuries(nameSlotAnnotation.evidence),
-			])
-		: null;
-
 const statusSlotAnnotationValue = (statusSlotAnnotation, statusField) =>
 	statusSlotAnnotation
 		? JSON.stringify([
@@ -176,22 +123,6 @@ const SINGLE_VALUE_FIELD_VALUES = {
 };
 
 /**
- * The fields of `fieldValues` whose value on the form differs from the entity as last saved.
- *
- * @param {Object} entity the entity as the form holds it
- * @param {Object} [savedEntity] the entity as the API last returned it
- * @param {Object<string, (entity: Object) => *>} fieldValues for each field, the value it is compared by, with an
- *   unset or blank value read as none
- * @returns {Set<string>} the pending fields' names, none while there is no saved entity
- */
-export const getPendingFields = (entity, savedEntity, fieldValues) => {
-	if (!savedEntity) return new Set();
-	return new Set(
-		Object.keys(fieldValues).filter((field) => fieldValues[field](entity) !== fieldValues[field](savedEntity))
-	);
-};
-
-/**
  * The single-value fields and single-object sections whose value on the form differs from the allele as
  * last saved.
  *
@@ -201,56 +132,3 @@ export const getPendingFields = (entity, savedEntity, fieldValues) => {
  */
 export const getPendingSingleValueFields = (allele, savedAllele) =>
 	getPendingFields(allele, savedAllele, SINGLE_VALUE_FIELD_VALUES);
-
-/**
- * DataTable `onRowEditChange` handler for the form tables, which keep every row in
- * edit mode. PrimeReact ignores the `editingRows` prop unless a handler is supplied,
- * and every row then falls back to its own internal state and renders read-only body
- * cells. There is nothing to update, so the handler does nothing.
- */
-export const KEEP_ROWS_IN_EDIT_MODE = () => null;
-
-export const processErrors = (data, dispatch, allele) => {
-	const errorMap = data?.supplementalData?.errorMap;
-	const errorMessages = data?.errorMessages;
-
-	// Dispatched before the row level messages, which are keyed off the allele and can fail on an
-	// unexpected shape. These are the only messages some fields carry, so they go out first.
-	dispatch({
-		type: 'UPDATE_ERROR_MESSAGES',
-		errorMessages: errorMessages || {},
-	});
-
-	processErrorMap(errorMap, dispatch, allele);
-};
-
-export const processErrorMap = (errorMap, dispatch, allele) => {
-	if (!errorMap) return;
-
-	Object.keys(errorMap).forEach((entityType) => {
-		const tableErrors = errorMap[entityType];
-		const table = allele[entityType];
-		// Only an error map keyed by row or by field can be attached to a row. A plain string, or
-		// an entity the allele does not carry, stays in the flat error messages.
-		if (!table || typeof table !== 'object' || !tableErrors || typeof tableErrors !== 'object') {
-			return;
-		}
-		processTableErrors(tableErrors, dispatch, entityType, table);
-	});
-};
-
-export const processTableErrors = (tableErrors, dispatch, entityType, table) => {
-	let errors = {};
-	Object.keys(tableErrors).forEach((index) => {
-		let row = Array.isArray(table) ? table[index] : table;
-		let rowErrors = Array.isArray(table) ? tableErrors[index] : tableErrors;
-		errors[row.dataKey] = {};
-		Object.keys(rowErrors).forEach((field) => {
-			errors[row.dataKey][field] = {
-				severity: 'error',
-				message: rowErrors[field],
-			};
-		});
-	});
-	dispatch({ type: 'UPDATE_TABLE_ERROR_MESSAGES', entityType: entityType, errorMessages: errors });
-};

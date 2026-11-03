@@ -13,7 +13,7 @@ import { InternalEditor } from './Editors/legacyForm/InternalEditor';
 import { ValidationService } from '../service/ValidationService';
 import { VocabularyTermSetEditor } from './Editors/legacyForm/VocabularyTermSetEditor';
 import { validate } from '../utils/utils';
-import { addDataKey } from '../containers/allelesPage/utils';
+import { addDataKey } from '../utils/rows';
 
 export const RelatedNotesDialogEditOnly = ({
 	relatedNotesData,

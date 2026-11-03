@@ -1,6 +1,6 @@
 import { current, isDraft } from 'immer';
 import { useImmerReducer } from 'use-immer';
-import { addDataKey } from '../allelesPage/utils';
+import { addDataKey } from '../../utils/rows';
 
 // The gene's single-object sections, each edited as one row of a table.
 const OBJECT_FIELDS = ['geneSymbol', 'geneFullName', 'geneSystematicName', 'gcrpCrossReference'];
@@ -80,10 +80,10 @@ const geneReducer = (draft, action) => {
 /**
  * Gene detail form state and its dispatch.
  *
- * Actions: `SET` loads a gene, clearing every error; `EDIT` sets a field; `EDIT_OBJECT` sets a field of a single-object section;
- * `UPDATE_OBJECT` replaces a single-object section with `update` applied to it; `ADD_OBJECT` / `DELETE_OBJECT` add
- * or remove one; `UPDATE_ERROR_MESSAGES` / `UPDATE_TABLE_ERROR_MESSAGES` set the page's or a section's errors;
- * `SUBMIT` clears them for a save.
+ * Actions: `SET` loads a gene, clearing every error; `EDIT` sets a field; `EDIT_OBJECT` sets a field of a
+ * single-object section; `UPDATE_OBJECT` replaces a single-object section with `update` applied to it; `ADD_OBJECT` /
+ * `DELETE_OBJECT` add or remove one; `UPDATE_ERROR_MESSAGES` / `UPDATE_TABLE_ERROR_MESSAGES` set the page's or a
+ * section's errors; `SUBMIT` clears them for a save.
  *
  * @returns {{geneState: Object, geneDispatch: Function}}
  */

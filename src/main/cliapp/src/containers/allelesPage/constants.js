@@ -25,7 +25,7 @@ import {
 	prepareRelatedNotes,
 	stripRelatedNote,
 } from './relatedNotes/utils';
-import { sortedCuries } from './utils';
+import { sortedCuries } from '../../utils/rows';
 
 /**
  * A registry entry for one of an entity's slot annotation lists.

@@ -3,7 +3,7 @@ import { Button } from 'primereact/button';
 import { FormTableWrapper } from './FormTableWrapper';
 import { SymbolFormTable } from '../containers/allelesPage/symbol/SymbolFormTable';
 import { FullNameFormTable } from '../containers/allelesPage/fullName/FullNameFormTable';
-import { buildEmptyAlleleSymbol } from '../containers/allelesPage/utils';
+import { buildEmptyNameSlotAnnotation } from '../utils/rows';
 
 /**
  * A detail page's symbol or name section: one name slot annotation held in the page's reducer and saved with the
@@ -41,7 +41,7 @@ export const NameSlotAnnotationForm = ({
 
 	const createNewNameHandler = (event) => {
 		event.preventDefault();
-		dispatch({ type: 'ADD_OBJECT', entityType, value: buildEmptyAlleleSymbol() });
+		dispatch({ type: 'ADD_OBJECT', entityType, value: buildEmptyNameSlotAnnotation() });
 	};
 
 	const deletionHandler = (event) => {

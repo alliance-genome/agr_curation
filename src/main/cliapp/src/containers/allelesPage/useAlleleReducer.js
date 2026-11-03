@@ -1,6 +1,6 @@
 import { useImmerReducer } from 'use-immer';
 import { useCallback, useMemo } from 'react';
-import { addDataKey, buildEmptyAlleleSymbol } from './utils';
+import { addDataKey, buildEmptyNameSlotAnnotation } from '../../utils/rows';
 import { Endpoints } from '../../constants/Endpoints';
 
 const initialAlleleState = {
@@ -70,7 +70,7 @@ const buildInitialAlleleState = (mode) => {
 	const initialState = structuredClone(initialAlleleState);
 
 	if (mode === 'create') {
-		const symbol = buildEmptyAlleleSymbol();
+		const symbol = buildEmptyNameSlotAnnotation();
 		initialState.allele.alleleSymbol = symbol;
 		initialState.entityStates.alleleSymbol.show = true;
 		initialState.entityStates.alleleSymbol.editingRows = { [symbol.dataKey]: true };

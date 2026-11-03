@@ -7,7 +7,7 @@ import { useSubResourceRows } from '../../../hooks/useSubResourceRows';
 import { SubResourceSaveButton } from '../../../components/SubResourceSaveButton';
 import { SubResourceLoadError } from '../../../components/SubResourceLoadError';
 import { useSubResourceFormStrategy } from '../../../hooks/useSubResourceFormStrategy';
-import { addDataKey, KEEP_ROWS_IN_EDIT_MODE } from '../utils';
+import { addDataKey, KEEP_ROWS_IN_EDIT_MODE } from '../../../utils/rows';
 import { MutationTypesFormTable } from './MutationTypesFormTable';
 
 /**

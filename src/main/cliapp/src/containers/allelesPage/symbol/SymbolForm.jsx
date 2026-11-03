@@ -2,7 +2,7 @@ import { Button } from 'primereact/button';
 import { FormTableWrapper } from '../../../components/FormTableWrapper';
 import { useRef } from 'react';
 import { SymbolFormTable } from './SymbolFormTable';
-import { buildEmptyAlleleSymbol } from '../utils';
+import { buildEmptyNameSlotAnnotation } from '../../../utils/rows';
 
 export const SymbolForm = ({
 	labelColumnSize,
@@ -18,7 +18,7 @@ export const SymbolForm = ({
 
 	const createNewSymbolHandler = (e) => {
 		e.preventDefault();
-		const newSymbol = buildEmptyAlleleSymbol();
+		const newSymbol = buildEmptyNameSlotAnnotation();
 
 		dispatch({
 			type: 'ADD_OBJECT',

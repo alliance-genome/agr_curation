@@ -1,4 +1,4 @@
-import { addDataKey } from '../../allelesPage/utils';
+import { addDataKey } from '../../../utils/rows';
 import { stripReference } from '../../allelesPage/referencesTable/utils';
 import { stripUiFields as stripCrossReference } from '../../allelesPage/crossReferences/utils';
 

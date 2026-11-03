@@ -1,4 +1,5 @@
-import { addDataKey, generateCurieSearchField, sameRowsBy, sortedCuries } from '../utils';
+import { addDataKey, sameRowsBy, sortedCuries } from '../../../utils/rows';
+import { generateCurieSearchField } from '../utils';
 import { copyRow } from '../../../utils/copyRows';
 import { relatedNoteValue } from '../relatedNotes/utils';
 

@@ -1,4 +1,4 @@
-import { addDataKey, sameRowsBy } from '../utils';
+import { addDataKey, sameRowsBy } from '../../../utils/rows';
 import { copyRow } from '../../../utils/copyRows';
 import { ResourceDescriptorService } from '../../../service/ResourceDescriptorService';
 

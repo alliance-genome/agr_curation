@@ -13,7 +13,7 @@ import {
 	stripForValidation,
 	stripUiFields,
 } from './utils';
-import { addDataKey } from '../utils';
+import { addDataKey } from '../../../utils/rows';
 
 /**
  * Stages a row's cross references into its table row. Nothing is written here - the row's own

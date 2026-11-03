@@ -3,7 +3,7 @@ import { FormTableWrapper } from '../../../components/FormTableWrapper';
 import { SynonymsFormTable } from '../../allelesPage/synonyms/SynonymsFormTable';
 import { useRef } from 'react';
 import { addDataKey } from '../utils';
-import { KEEP_ROWS_IN_EDIT_MODE } from '../../allelesPage/utils';
+import { KEEP_ROWS_IN_EDIT_MODE } from '../../../utils/rows';
 import { useAGMFormStrategy } from '../useAGMFormStrategy';
 import { TableEditorProvider } from '../../../components/Editors/fields/TableEditorContext';
 import { useControlledVocabularyService } from '../../../service/useControlledVocabularyService';

@@ -6,7 +6,7 @@ import { SubResourceSaveButton } from '../../../components/SubResourceSaveButton
 import { SubResourceLoadError } from '../../../components/SubResourceLoadError';
 import { RelatedNotesFormTable } from '../relatedNotes/RelatedNotesFormTable';
 import { useRef } from 'react';
-import { addDataKey } from '../utils';
+import { addDataKey } from '../../../utils/rows';
 
 /**
  * A detail or create page's related notes section.

@@ -8,7 +8,7 @@ import { ColumnGroup } from 'primereact/columngroup';
 import { Row } from 'primereact/row';
 import { ValidationService } from '../../../service/ValidationService';
 import { DeleteAction } from '../../../components/Actions/DeletionAction';
-import { KEEP_ROWS_IN_EDIT_MODE, addDataKey } from '../utils';
+import { KEEP_ROWS_IN_EDIT_MODE, addDataKey } from '../../../utils/rows';
 import { TableEditorProvider } from '../../../components/Editors/fields/TableEditorContext';
 import { useLocalRowsStrategy } from '../../../components/Editors/fields/strategies/useLocalRowsStrategy';
 import { InputTextTableEditor } from '../../../components/Editors/text/InputTextTableEditor';

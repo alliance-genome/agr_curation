@@ -1,4 +1,4 @@
-import { addDataKey, sameRowsBy, sortedCuries } from '../utils';
+import { addDataKey, sameRowsBy, sortedCuries } from '../../../utils/rows';
 import { copyRow } from '../../../utils/copyRows';
 
 /**

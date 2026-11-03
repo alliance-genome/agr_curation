@@ -4,7 +4,7 @@ import { FormTableWrapper } from '../../../components/FormTableWrapper';
 import { FormErrorMessageComponent } from '../../../components/Error/FormErrorMessageComponent';
 import { CrossReferencesTable } from '../../allelesPage/crossReferences/CrossReferencesTable';
 import { applyCrossReferenceFieldChange, buildNewCrossReference } from '../../allelesPage/crossReferences/utils';
-import { KEEP_ROWS_IN_EDIT_MODE } from '../../allelesPage/utils';
+import { KEEP_ROWS_IN_EDIT_MODE } from '../../../utils/rows';
 
 const ENTITY_TYPE = 'gcrpCrossReference';
 
