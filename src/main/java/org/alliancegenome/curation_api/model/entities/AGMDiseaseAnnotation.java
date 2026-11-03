@@ -147,7 +147,7 @@ public class AGMDiseaseAnnotation extends DiseaseAnnotation {
 		if (diseaseAnnotationSubject == null) {
 			return null;
 		}
-		return diseaseAnnotationSubject.getIdentifier();
+		return diseaseAnnotationSubject.getSubmittedIdentifierOrCurie();
 	}
 
 	@Transient
