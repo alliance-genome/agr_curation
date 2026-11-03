@@ -51,7 +51,7 @@ public interface VariantCrudInterface extends BaseSubmittedObjectCrudInterface<V
 	@GET
 	@Path("/export/{dataProvider}")
 	@JsonView(CurationView.ModVariantView.class)
-	SearchResponse<ModVariant> getAllModVariants(@PathParam("dataProvider") String dataProvider, @DefaultValue("0") @QueryParam("page") Integer page, @DefaultValue("1000") @QueryParam("limit") Integer limit);
+	SearchResponse<ModVariant> exportVariantsByMod(@PathParam("dataProvider") String dataProvider, @DefaultValue("0") @QueryParam("page") Integer page, @DefaultValue("1000") @QueryParam("limit") Integer limit);
 
 	@Override
 	@GET

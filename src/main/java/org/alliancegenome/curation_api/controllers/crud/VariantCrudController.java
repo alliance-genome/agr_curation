@@ -48,8 +48,8 @@ public class VariantCrudController extends SubmittedObjectCrudController<Variant
 	}
 
 	@Override
-	public SearchResponse<ModVariant> getAllModVariants(String dataProvider, Integer page, Integer limit) {
-		return variantService.getAllModVariants(dataProvider, page, limit);
+	public SearchResponse<ModVariant> exportVariantsByMod(String dataProvider, Integer page, Integer limit) {
+		return variantService.exportVariantsByMod(dataProvider, page, limit);
 	}
 
 }

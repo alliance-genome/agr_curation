@@ -166,7 +166,7 @@ public class VariantService extends SubmittedObjectCrudService<Variant, VariantD
 	public static final int MAX_ALL_MOD_VARIANTS_PAGE_SIZE = 10000;
 
 	// SCRUM-6757: a page of a data provider's allele - variant pairs with their HGVS; page 0 with limit 0 returns only the total
-	public SearchResponse<ModVariant> getAllModVariants(String dataProvider, Integer page, Integer limit) {
+	public SearchResponse<ModVariant> exportVariantsByMod(String dataProvider, Integer page, Integer limit) {
 		Map<String, Object> params = new HashMap<>();
 		params.put("alleleVariantAssociationObject.dataProvider.abbreviation", dataProvider);
 		params.put("obsolete", false);
