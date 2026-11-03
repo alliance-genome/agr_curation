@@ -37,7 +37,7 @@ public class GenePhenotypeAnnotationFmsDTOValidator extends PhenotypeAnnotationF
 		Reference reference = refResponse.getEntity();
 		String refString = getRefString(dto, reference);
 
-		String uniqueId = AnnotationUniqueIdHelper.getPhenotypeAnnotationUniqueId(dto, subject.getIdentifier(), refString);
+		String uniqueId = AnnotationUniqueIdHelper.getPhenotypeAnnotationUniqueId(dto, subject.getSubmittedIdentifierOrCurie(), refString);
 		SearchResponse<GenePhenotypeAnnotation> annotationSearch = genePhenotypeAnnotationDAO.findByField("uniqueId", uniqueId);
 		if (annotationSearch != null && annotationSearch.getSingleResult() != null) {
 			annotation = annotationSearch.getSingleResult();
