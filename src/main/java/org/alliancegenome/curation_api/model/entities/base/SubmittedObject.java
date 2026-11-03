@@ -112,4 +112,11 @@ public class SubmittedObject extends CurieObject {
 		}
 		return null;
 	}
+
+	@Transient
+	@JsonIgnore
+	public String getSubmittedIdentifierOrCurie() {
+		String submittedIdentifier = getSubmittedIdentifier();
+		return submittedIdentifier != null ? submittedIdentifier : curie;
+	}
 }

@@ -152,7 +152,7 @@ public class AGMPhenotypeAnnotation extends PhenotypeAnnotation {
 		if (phenotypeAnnotationSubject == null) {
 			return null;
 		}
-		return phenotypeAnnotationSubject.getIdentifier();
+		return phenotypeAnnotationSubject.getSubmittedIdentifierOrCurie();
 	}
 
 	@Transient
