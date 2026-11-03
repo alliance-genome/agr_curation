@@ -6,14 +6,15 @@ import { NewReferenceField } from '../../variantsPage/references/NewReferenceFie
 const ENTITY_TYPE = 'references';
 
 /**
- * The transgenic tool detail page's references section. Its rows live in the tool reducer and are saved with
- * the tool.
+ * A detail page's references section (the transgenic tool's, the cassette's). Its rows live in the page's
+ * reducer and are saved with the entity.
  *
- * @param {object} state - useTransgenicToolReducer state
- * @param {Function} dispatch - useTransgenicToolReducer dispatch
+ * @param {object} state - the page's reducer state
+ * @param {Function} dispatch - the page's reducer dispatch
+ * @param {string} [entityKey] - the key the page's entity is held under
  * @returns {JSX.Element}
  */
-export const ReferencesForm = ({ state, dispatch }) => {
+export const ReferencesForm = ({ state, dispatch, entityKey = 'transgenicTool' }) => {
 	const tableRef = useRef(null);
 
 	const deletionHandler = (event, dataKey) => {
@@ -25,7 +26,7 @@ export const ReferencesForm = ({ state, dispatch }) => {
 		<FormTableWrapper
 			table={
 				<ReferencesFormTable
-					references={state.transgenicTool?.[ENTITY_TYPE]}
+					references={state[entityKey]?.[ENTITY_TYPE]}
 					editingRows={state.entityStates[ENTITY_TYPE].editingRows}
 					errorMessages={state.entityStates[ENTITY_TYPE].errorMessages}
 					onRowEditChange={() => null}

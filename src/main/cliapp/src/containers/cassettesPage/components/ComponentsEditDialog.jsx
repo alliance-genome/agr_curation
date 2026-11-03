@@ -1,19 +1,11 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Dialog } from 'primereact/dialog';
-import { DataTable } from 'primereact/datatable';
-import { Column } from 'primereact/column';
 import { Button } from 'primereact/button';
 import { Toast } from 'primereact/toast';
 import { Message } from 'primereact/message';
-import { DeleteAction } from '../../../components/Actions/DeletionAction';
-import { TableEditorProvider } from '../../../components/Editors/fields/TableEditorContext';
-import { useDataKeyRowsStrategy } from '../../../components/Editors/fields/strategies/useDataKeyRowsStrategy';
-import { RelatedNotesEditDialog } from '../../../components/RelatedNotesEditDialog';
 import { CassetteService } from '../../../service/CassetteService';
-import { useVocabularyTermSetService } from '../../../service/useVocabularyTermSetService';
+import { ComponentsTable } from './ComponentsTable';
 import { prepareComponentRows, stripComponentRow, mapRowErrors, markRowsWithTypedObject } from './utils';
-
-const NO_MAIN_ROW_ERRORS = {};
 
 /**
  * An editable pop-up for one of a cassette's component lists (SCRUM-6752), opened from the list's column while the
@@ -36,10 +28,7 @@ export const ComponentsEditDialog = ({ data, setData, config }) => {
 	const [isLoading, setIsLoading] = useState(false);
 	const [loadError, setLoadError] = useState(null);
 	const [isSaving, setIsSaving] = useState(false);
-	const [relatedNotesData, setRelatedNotesData] = useState({ dialog: false });
 	const toast = useRef(null);
-	const tableRef = useRef(null);
-	const relationTerms = useVocabularyTermSetService(config.relationTermSet);
 
 	useEffect(() => {
 		if (!dialog || !cassetteId) return undefined;
@@ -58,44 +47,9 @@ export const ComponentsEditDialog = ({ data, setData, config }) => {
 		};
 	}, [dialog, cassetteId, config.list, cassetteService]);
 
-	const editingRows = useMemo(() => Object.fromEntries(rows.map((row) => [row.dataKey, true])), [rows]);
-
-	const writeRow = (rowKey, field, value) =>
-		setRows((previous) => previous.map((row) => (row.dataKey === rowKey ? { ...row, [field]: value } : row)));
-
-	const strategy = useDataKeyRowsStrategy({
-		rows,
-		errors: errorMessages,
-		write: ({ rowKey, field, value }) => writeRow(rowKey, field, value),
-	});
-
 	const hideDialog = () => setData((previous) => ({ ...previous, dialog: false }));
 
 	const addRow = () => setRows((previous) => [...prepareComponentRows([config.newRow()]), ...previous]);
-
-	const deleteRow = (event, dataKey) => {
-		event.preventDefault();
-		setRows((previous) => previous.filter((row) => row.dataKey !== dataKey));
-		setErrorMessages((previous) => {
-			const updated = { ...previous };
-			delete updated[dataKey];
-			return updated;
-		});
-	};
-
-	// The notes of one row are edited in the shared notes pop-up, which hands them back through the row's callback
-	const openRelatedNotes = (event, editorOptions) => {
-		event.preventDefault();
-		const rowKey = editorOptions.rowData?.dataKey;
-		const row = rows.find((candidate) => candidate.dataKey === rowKey);
-		setRelatedNotesData({
-			originalRelatedNotes: row?.relatedNotes,
-			dialog: true,
-			isInEdit: true,
-			rowIndex: editorOptions.rowIndex,
-			mainRowProps: { ...editorOptions, editorCallback: (notes) => writeRow(rowKey, 'relatedNotes', notes) },
-		});
-	};
 
 	const save = async () => {
 		const marked = config.objectField ? markRowsWithTypedObject(rows, errorMessages, config.objectField) : null;
@@ -154,46 +108,15 @@ export const ComponentsEditDialog = ({ data, setData, config }) => {
 						text="Could not load these components, so they cannot be saved. Close and reopen to try again."
 					/>
 				)}
-				<TableEditorProvider strategy={strategy}>
-					<DataTable
-						value={rows}
-						dataKey="dataKey"
-						showGridlines
-						editMode="row"
-						size="small"
-						editingRows={editingRows}
-						onRowEditChange={() => null}
-						resizableColumns
-						columnResizeMode="expand"
-						cellMemo={false}
-						loading={isLoading}
-						ref={tableRef}
-					>
-						<Column
-							editor={(editorOptions) => (
-								<DeleteAction deletionHandler={deleteRow} id={editorOptions?.rowData?.dataKey} />
-							)}
-							header="Actions"
-							className="max-w-4rem"
-							bodyClassName="text-center"
-							headerClassName="surface-0"
-							frozen
-						/>
-						{config.columns({ openRelatedNotes, relationTerms }).map(({ field, header, editor }) => (
-							<Column key={field} field={field} header={header} headerClassName="surface-0" editor={editor} />
-						))}
-						<Column field="updatedBy.uniqueId" header="Updated By" headerClassName="surface-0" />
-						<Column field="dateUpdated" header="Date Updated" headerClassName="surface-0" />
-					</DataTable>
-				</TableEditorProvider>
+				<ComponentsTable
+					rows={rows}
+					setRows={setRows}
+					errorMessages={errorMessages}
+					setErrorMessages={setErrorMessages}
+					isLoading={isLoading}
+					config={config}
+				/>
 			</Dialog>
-			<RelatedNotesEditDialog
-				originalRelatedNotesData={relatedNotesData}
-				setOriginalRelatedNotesData={setRelatedNotesData}
-				errorMessagesMainRow={NO_MAIN_ROW_ERRORS}
-				setErrorMessagesMainRow={() => null}
-				noteTypeVocabularyTermSet={config.noteTypeVocabularyTermSet}
-			/>
 		</>
 	);
 };
