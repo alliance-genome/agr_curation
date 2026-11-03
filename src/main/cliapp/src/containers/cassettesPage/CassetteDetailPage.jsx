@@ -17,7 +17,7 @@ import { UserDetailPageTemplate } from '../../components/Templates/UserDetailPag
 import { DateDetailPageTemplate } from '../../components/Templates/DateDetailPageTemplate';
 import { BooleanDetailPageEditor } from '../../components/Editors/dropdown/boolean/BooleanDetailPageEditor';
 import { processErrors } from '../affectedGenomicModelPage/utils';
-import { NameSlotAnnotationForm } from '../../components/NameSlotAnnotationForm';
+import { NameSlotAnnotationForm } from '../../components/nameSlotAnnotations/NameSlotAnnotationForm';
 import { SynonymsForm } from '../transgenicToolsPage/detail/SynonymsForm';
 import { SecondaryIdsForm } from '../transgenicToolsPage/detail/SecondaryIdsForm';
 import { UsesForm } from '../transgenicToolsPage/detail/UsesForm';

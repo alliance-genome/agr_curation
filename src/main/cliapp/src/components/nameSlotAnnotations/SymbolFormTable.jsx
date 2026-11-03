@@ -2,32 +2,27 @@ import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { ColumnGroup } from 'primereact/columngroup';
 import { Row } from 'primereact/row';
-import { DeleteAction } from '../../../components/Actions/DeletionAction';
-import { TableInputTextEditor } from '../../../components/Editors/text/TableInputTextEditor';
-import { InternalEditor } from '../../../components/Editors/legacyForm/InternalEditor';
-import { EvidenceEditor } from '../../../components/Editors/legacyForm/EvidenceEditor';
-import { ControlledVocabularyEditor } from '../../../components/Editors/legacyForm/ControlledVocabularyEditor';
-import { VocabularyTermSetEditor } from '../../../components/Editors/legacyForm/VocabularyTermSetEditor';
+import { TableInputTextEditor } from '../Editors/text/TableInputTextEditor';
+import { InternalEditor } from '../Editors/legacyForm/InternalEditor';
+import { EvidenceEditor } from '../Editors/legacyForm/EvidenceEditor';
+import { ControlledVocabularyEditor } from '../Editors/legacyForm/ControlledVocabularyEditor';
+import { VocabularyTermSetEditor } from '../Editors/legacyForm/VocabularyTermSetEditor';
 
-// nameTypeVocabType: the vocabulary term set the name types come from; the full name's by default
-export const FullNameFormTable = ({
+export const SymbolFormTable = ({
 	name,
 	editingRows,
 	onRowEditChange,
 	tableRef,
-	deletionHandler,
 	errorMessages,
 	textOnChangeHandler,
 	synonymScopeOnChangeHandler,
 	nameTypeOnChangeHandler,
 	internalOnChangeHandler,
 	evidenceOnChangeHandler,
-	nameTypeVocabType = 'full_name_type',
 }) => {
 	let headerGroup = (
 		<ColumnGroup>
 			<Row>
-				<Column header="Actions" />
 				<Column header="Display Text" />
 				<Column header="Format Text" />
 				<Column header="Synonym Scope" />
@@ -57,20 +52,13 @@ export const FullNameFormTable = ({
 			ref={tableRef}
 		>
 			<Column
-				editor={(props) => <DeleteAction deletionHandler={deletionHandler} index={props.rowIndex} />}
-				className="max-w-4rem"
-				bodyClassName="text-center"
-				headerClassName="surface-0"
-				frozen
-			/>
-			<Column
 				editor={(props) => {
 					return (
 						<TableInputTextEditor
 							value={props.value}
 							rowIndex={props.rowIndex}
-							dataKey={props.rowData?.dataKey}
 							errorMessages={errorMessages}
+							dataKey={props?.rowData?.dataKey}
 							textOnChangeHandler={textOnChangeHandler}
 							field="displayText"
 						/>
@@ -86,8 +74,8 @@ export const FullNameFormTable = ({
 						<TableInputTextEditor
 							value={props.value}
 							rowIndex={props.rowIndex}
-							dataKey={props.rowData?.dataKey}
 							errorMessages={errorMessages}
+							dataKey={props?.rowData?.dataKey}
 							textOnChangeHandler={textOnChangeHandler}
 							field="formatText"
 						/>
@@ -104,8 +92,9 @@ export const FullNameFormTable = ({
 							editorOptions={props}
 							onChangeHandler={synonymScopeOnChangeHandler}
 							errorMessages={errorMessages}
-							dataKey={props?.rowData?.dataKey}
+							rowIndex={props.rowIndex}
 							vocabType="synonym_scope"
+							dataKey={props?.rowData?.dataKey}
 							field="synonymScope"
 							showClear={true}
 						/>
@@ -120,11 +109,11 @@ export const FullNameFormTable = ({
 					return (
 						<VocabularyTermSetEditor
 							editorOptions={props}
+							dataKey={props?.rowData?.dataKey}
 							onChangeHandler={nameTypeOnChangeHandler}
 							errorMessages={errorMessages}
-							dataKey={props?.rowData?.dataKey}
 							rowIndex={props.rowIndex}
-							vocabType={nameTypeVocabType}
+							vocabType="symbol_name_type"
 							field="nameType"
 							showClear={false}
 						/>
@@ -140,8 +129,8 @@ export const FullNameFormTable = ({
 						<TableInputTextEditor
 							value={props.value}
 							rowIndex={props.rowIndex}
-							dataKey={props.rowData?.dataKey}
 							errorMessages={errorMessages}
+							dataKey={props?.rowData?.dataKey}
 							textOnChangeHandler={textOnChangeHandler}
 							field="synonymUrl"
 						/>
@@ -157,8 +146,8 @@ export const FullNameFormTable = ({
 						<InternalEditor
 							editorOptions={props}
 							rowIndex={props.rowIndex}
-							dataKey={props.rowData?.dataKey}
 							errorMessages={errorMessages}
+							dataKey={props?.rowData?.dataKey}
 							internalOnChangeHandler={internalOnChangeHandler}
 						/>
 					);
@@ -169,14 +158,7 @@ export const FullNameFormTable = ({
 			/>
 			<Column
 				editor={(props) => {
-					return (
-						<EvidenceEditor
-							props={props}
-							errorMessages={errorMessages}
-							onChange={evidenceOnChangeHandler}
-							dataKey={props.rowData?.dataKey}
-						/>
-					);
+					return <EvidenceEditor props={props} errorMessages={errorMessages} onChange={evidenceOnChangeHandler} />;
 				}}
 				field="evidence.curie"
 				header="Evidence"

@@ -1,7 +1,7 @@
 import { Button } from 'primereact/button';
 import { FormTableWrapper } from '../../../components/FormTableWrapper';
 import { useRef } from 'react';
-import { SymbolFormTable } from './SymbolFormTable';
+import { SymbolFormTable } from '../../../components/nameSlotAnnotations/SymbolFormTable';
 import { buildEmptyNameSlotAnnotation } from '../../../utils/rows';
 
 export const SymbolForm = ({

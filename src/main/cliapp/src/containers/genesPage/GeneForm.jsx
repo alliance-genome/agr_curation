@@ -5,7 +5,7 @@ import { IdentifierDetailPageTemplate } from '../../components/Templates/Identif
 import { DataProviderDetailPageTemplate } from '../../components/Templates/DataProviderDetailPageTemplate';
 import { DateDetailPageTemplate } from '../../components/Templates/DateDetailPageTemplate';
 import { UserDetailPageTemplate } from '../../components/Templates/UserDetailPageTemplate';
-import { NameSlotAnnotationForm } from '../../components/NameSlotAnnotationForm';
+import { NameSlotAnnotationForm } from '../../components/nameSlotAnnotations/NameSlotAnnotationForm';
 import { FormSection } from '../../components/FormFieldVisibility';
 import { SynonymsForm } from '../../components/synonyms/SynonymsForm';
 import { SecondaryIdsForm } from '../../components/secondaryIds/SecondaryIdsForm';

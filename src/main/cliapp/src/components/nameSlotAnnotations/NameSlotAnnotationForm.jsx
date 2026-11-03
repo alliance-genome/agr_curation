@@ -1,9 +1,9 @@
 import { useRef } from 'react';
 import { Button } from 'primereact/button';
-import { FormTableWrapper } from './FormTableWrapper';
-import { SymbolFormTable } from '../containers/allelesPage/symbol/SymbolFormTable';
-import { FullNameFormTable } from '../containers/allelesPage/fullName/FullNameFormTable';
-import { buildEmptyNameSlotAnnotation } from '../utils/rows';
+import { FormTableWrapper } from '../FormTableWrapper';
+import { SymbolFormTable } from './SymbolFormTable';
+import { FullNameFormTable } from './FullNameFormTable';
+import { buildEmptyNameSlotAnnotation } from '../../utils/rows';
 
 /**
  * A detail page's symbol or name section: one name slot annotation held in the page's reducer and saved with the

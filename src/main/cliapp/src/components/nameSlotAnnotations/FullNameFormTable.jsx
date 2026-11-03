@@ -2,27 +2,32 @@ import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { ColumnGroup } from 'primereact/columngroup';
 import { Row } from 'primereact/row';
-import { TableInputTextEditor } from '../../../components/Editors/text/TableInputTextEditor';
-import { InternalEditor } from '../../../components/Editors/legacyForm/InternalEditor';
-import { EvidenceEditor } from '../../../components/Editors/legacyForm/EvidenceEditor';
-import { ControlledVocabularyEditor } from '../../../components/Editors/legacyForm/ControlledVocabularyEditor';
-import { VocabularyTermSetEditor } from '../../../components/Editors/legacyForm/VocabularyTermSetEditor';
+import { DeleteAction } from '../Actions/DeletionAction';
+import { TableInputTextEditor } from '../Editors/text/TableInputTextEditor';
+import { InternalEditor } from '../Editors/legacyForm/InternalEditor';
+import { EvidenceEditor } from '../Editors/legacyForm/EvidenceEditor';
+import { ControlledVocabularyEditor } from '../Editors/legacyForm/ControlledVocabularyEditor';
+import { VocabularyTermSetEditor } from '../Editors/legacyForm/VocabularyTermSetEditor';
 
-export const SymbolFormTable = ({
+// nameTypeVocabType: the vocabulary term set the name types come from; the full name's by default
+export const FullNameFormTable = ({
 	name,
 	editingRows,
 	onRowEditChange,
 	tableRef,
+	deletionHandler,
 	errorMessages,
 	textOnChangeHandler,
 	synonymScopeOnChangeHandler,
 	nameTypeOnChangeHandler,
 	internalOnChangeHandler,
 	evidenceOnChangeHandler,
+	nameTypeVocabType = 'full_name_type',
 }) => {
 	let headerGroup = (
 		<ColumnGroup>
 			<Row>
+				<Column header="Actions" />
 				<Column header="Display Text" />
 				<Column header="Format Text" />
 				<Column header="Synonym Scope" />
@@ -52,13 +57,20 @@ export const SymbolFormTable = ({
 			ref={tableRef}
 		>
 			<Column
+				editor={(props) => <DeleteAction deletionHandler={deletionHandler} index={props.rowIndex} />}
+				className="max-w-4rem"
+				bodyClassName="text-center"
+				headerClassName="surface-0"
+				frozen
+			/>
+			<Column
 				editor={(props) => {
 					return (
 						<TableInputTextEditor
 							value={props.value}
 							rowIndex={props.rowIndex}
+							dataKey={props.rowData?.dataKey}
 							errorMessages={errorMessages}
-							dataKey={props?.rowData?.dataKey}
 							textOnChangeHandler={textOnChangeHandler}
 							field="displayText"
 						/>
@@ -74,8 +86,8 @@ export const SymbolFormTable = ({
 						<TableInputTextEditor
 							value={props.value}
 							rowIndex={props.rowIndex}
+							dataKey={props.rowData?.dataKey}
 							errorMessages={errorMessages}
-							dataKey={props?.rowData?.dataKey}
 							textOnChangeHandler={textOnChangeHandler}
 							field="formatText"
 						/>
@@ -92,9 +104,8 @@ export const SymbolFormTable = ({
 							editorOptions={props}
 							onChangeHandler={synonymScopeOnChangeHandler}
 							errorMessages={errorMessages}
-							rowIndex={props.rowIndex}
-							vocabType="synonym_scope"
 							dataKey={props?.rowData?.dataKey}
+							vocabType="synonym_scope"
 							field="synonymScope"
 							showClear={true}
 						/>
@@ -109,11 +120,11 @@ export const SymbolFormTable = ({
 					return (
 						<VocabularyTermSetEditor
 							editorOptions={props}
-							dataKey={props?.rowData?.dataKey}
 							onChangeHandler={nameTypeOnChangeHandler}
 							errorMessages={errorMessages}
+							dataKey={props?.rowData?.dataKey}
 							rowIndex={props.rowIndex}
-							vocabType="symbol_name_type"
+							vocabType={nameTypeVocabType}
 							field="nameType"
 							showClear={false}
 						/>
@@ -129,8 +140,8 @@ export const SymbolFormTable = ({
 						<TableInputTextEditor
 							value={props.value}
 							rowIndex={props.rowIndex}
+							dataKey={props.rowData?.dataKey}
 							errorMessages={errorMessages}
-							dataKey={props?.rowData?.dataKey}
 							textOnChangeHandler={textOnChangeHandler}
 							field="synonymUrl"
 						/>
@@ -146,8 +157,8 @@ export const SymbolFormTable = ({
 						<InternalEditor
 							editorOptions={props}
 							rowIndex={props.rowIndex}
+							dataKey={props.rowData?.dataKey}
 							errorMessages={errorMessages}
-							dataKey={props?.rowData?.dataKey}
 							internalOnChangeHandler={internalOnChangeHandler}
 						/>
 					);
@@ -158,7 +169,14 @@ export const SymbolFormTable = ({
 			/>
 			<Column
 				editor={(props) => {
-					return <EvidenceEditor props={props} errorMessages={errorMessages} onChange={evidenceOnChangeHandler} />;
+					return (
+						<EvidenceEditor
+							props={props}
+							errorMessages={errorMessages}
+							onChange={evidenceOnChangeHandler}
+							dataKey={props.rowData?.dataKey}
+						/>
+					);
 				}}
 				field="evidence.curie"
 				header="Evidence"

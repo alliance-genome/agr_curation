@@ -21,7 +21,7 @@ import { processErrors } from '../affectedGenomicModelPage/utils';
 import { useTransgenicToolReducer } from './detail/useTransgenicToolReducer';
 import { useTransgenicToolAssociations } from './detail/useTransgenicToolAssociations';
 import { buildTransgenicToolPayload } from './detail/utils';
-import { NameSlotAnnotationForm } from '../../components/NameSlotAnnotationForm';
+import { NameSlotAnnotationForm } from '../../components/nameSlotAnnotations/NameSlotAnnotationForm';
 import { SynonymsForm } from './detail/SynonymsForm';
 import { SecondaryIdsForm } from './detail/SecondaryIdsForm';
 import { UsesForm } from './detail/UsesForm';
