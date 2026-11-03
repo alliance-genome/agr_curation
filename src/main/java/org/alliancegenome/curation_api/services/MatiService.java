@@ -39,18 +39,6 @@ public class MatiService {
 
 	private IdentifierResourceRESTInterface matiApi;
 
-	/**
-	 * Mints {@code n} consecutive curies in the given subdomain. Counts are
-	 * advanced atomically by MaTI; once this method returns successfully, the
-	 * curies are owned by this caller and the MaTI sequence will not hand them
-	 * out again. Callers are responsible for persisting them durably; any
-	 * curies returned but not persisted are lost.
-	 *
-	 * @param subdomain MaTI subdomain name (e.g. "disease_annotation")
-	 * @param n         how many curies to mint; must be &gt; 0
-	 * @return ordered list of {@code n} AGRKB curies
-	 */
-
 	@PostConstruct
 	public void init() {
 		matiApi = RestProxyFactory.createProxy(IdentifierResourceRESTInterface.class, matiURL + "/api");
@@ -67,6 +55,17 @@ public class MatiService {
 		return mintCuries(subdomain, 1).getFirst();
 	}
 
+	/**
+	 * Mints {@code n} consecutive curies in the given subdomain. Counts are
+	 * advanced atomically by MaTI; once this method returns successfully, the
+	 * curies are owned by this caller and the MaTI sequence will not hand them
+	 * out again. Callers are responsible for persisting them durably; any
+	 * curies returned but not persisted are lost.
+	 *
+	 * @param subdomain MaTI subdomain name (e.g. "disease_annotation")
+	 * @param n         how many curies to mint; must be &gt; 0
+	 * @return ordered list of {@code n} AGRKB curies
+	 */
 	public List<String> mintCuries(String subdomain, int n) {
 		if (n <= 0) {
 			return List.of();
