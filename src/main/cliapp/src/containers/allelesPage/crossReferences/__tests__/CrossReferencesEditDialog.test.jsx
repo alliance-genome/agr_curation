@@ -157,8 +157,8 @@ describe('CrossReferencesEditDialog', () => {
 		await waitFor(() =>
 			expect(search.mock.calls.some(([endpoint]) => endpoint === Endpoints.Resource.DESCRIPTOR)).toBe(true)
 		);
-		await user.type(document.querySelectorAll('#referencedCurie')[1], 'PMID:123');
-		await user.type(document.querySelectorAll('#displayName')[1], 'PMID:123');
+		await user.type(document.querySelectorAll('[aria-label="referencedCurie"]')[1], 'PMID:123');
+		await user.type(document.querySelectorAll('[aria-label="displayName"]')[1], 'PMID:123');
 		await user.click(screen.getByRole('button', { name: /Keep Edits/ }));
 
 		await waitFor(() => expect(validate).toHaveBeenCalledTimes(2));

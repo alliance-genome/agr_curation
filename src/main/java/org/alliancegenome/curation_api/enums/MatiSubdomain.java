@@ -12,7 +12,7 @@ package org.alliancegenome.curation_api.enums;
  * The name is what callers must supply and what cannot come from MaTI at compile time, so that is
  * what this enum is for: it stops a mistyped string minting into the wrong subdomain, or into none.
  * The codes are recorded in MaTI's own migrations (V0003__SCRUM-2024.sql, V0004__SCRUM-6210.sql,
- * V0005__SCRUM-6358.sql) if a human needs to look one up.
+ * V0005__SCRUM-6358.sql, V0006__SCRUM-6682.sql) if a human needs to look one up.
  *
  * A subdomain is only mintable once its target class has somewhere to store a curie. SCRUM-6463
  * added one to the last classes that lacked it — GeneGeneAssociation, covering both interaction
@@ -42,7 +42,10 @@ public enum MatiSubdomain {
 	MOLECULAR_INTERACTION("molecular_interaction"),
 	GENETIC_INTERACTION("genetic_interaction"),
 	ASSEMBLY_COMPONENT("assembly_component"),
-	GENOME_ASSEMBLY("genome_assembly");
+	GENOME_ASSEMBLY("genome_assembly"),
+	// SCRUM-6693: MaTI codes 121 and 122 (V0006__SCRUM-6682.sql)
+	CASSETTE("cassette"),
+	TRANSGENIC_TOOL("transgenic_tool");
 
 	private final String subdomainName;
 

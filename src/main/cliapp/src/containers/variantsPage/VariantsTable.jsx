@@ -4,7 +4,7 @@ import { GenericDataTable } from '../../components/GenericDataTable/GenericDataT
 import { VariantService } from '../../service/VariantService';
 import { RelatedNotesEditDialog } from '../../components/RelatedNotesEditDialog';
 import { RelatedNotesReadOnlyDialog } from '../../components/RelatedNotesReadOnlyDialog';
-import { DialogTriggerEditor } from '../../components/Editors/dialog/DialogTriggerEditor';
+import { DialogTriggerTableEditor } from '../../components/Editors/dialog/DialogTriggerTableEditor';
 import { TaxonTableEditor } from '../../components/Editors/autocomplete/taxon/TaxonTableEditor';
 import { VariantTypeTableEditor } from '../../components/Editors/autocomplete/variantType/VariantTypeTableEditor';
 import { SourceGeneralConsequenceTableEditor } from '../../components/Editors/autocomplete/sourceGeneralConsequence/SourceGeneralConsequenceTableEditor';
@@ -20,6 +20,7 @@ import { CrossReferencesTemplate } from '../../components/Templates/CrossReferen
 import { StringTemplate } from '../../components/Templates/StringTemplate';
 import { OntologyTermTemplate } from '../../components/Templates/OntologyTermTemplate';
 import { CountDialogTemplate } from '../../components/Templates/dialog/CountDialogTemplate';
+import { ListDialogTemplate } from '../../components/Templates/dialog/ListDialogTemplate';
 import { BooleanTemplate } from '../../components/Templates/BooleanTemplate';
 import { IdTemplate } from '../../components/Templates/IdTemplate';
 import { StringListTemplate } from '../../components/Templates/StringListTemplate';
@@ -30,13 +31,13 @@ import { TruncatedReferencesTemplate } from '../../components/Templates/referenc
 
 import { SearchService } from '../../service/SearchService';
 import { Endpoints } from '../../constants/Endpoints';
-import { NewVariantButton } from './NewVariantButton';
+import { NewVariantButton, useOpenVariantCreatePage } from './NewVariantButton';
+import { getIdentifier } from '../../utils/utils';
+import { GenomicLocationsReadOnlyDialog } from './genomicLocations/GenomicLocationsReadOnlyDialog';
 
 export const VariantsTable = () => {
 	const [isInEditMode, setIsInEditMode] = useState(false);
 	const [errorMessages, setErrorMessages] = useState({});
-	const errorMessagesRef = useRef();
-	errorMessagesRef.current = errorMessages;
 
 	const [totalRecords, setTotalRecords] = useState(0);
 	const [variants, setVariants] = useState([]);
@@ -51,10 +52,20 @@ export const VariantsTable = () => {
 		mainRowProps: {},
 	});
 
+	const [genomicLocationsData, setGenomicLocationsData] = useState({
+		genomicLocations: [],
+		dialog: false,
+	});
+
 	const toast_topleft = useRef(null);
 	const toast_topright = useRef(null);
 
 	let variantService = new VariantService();
+	const openVariantCreatePage = useOpenVariantCreatePage();
+
+	const handleDuplication = (rowData) => {
+		openVariantCreatePage(rowData.curie || getIdentifier(rowData));
+	};
 
 	const mutation = useMutation({
 		mutationFn: (updatedVariant) => {
@@ -91,6 +102,13 @@ export const VariantsTable = () => {
 		}));
 	};
 
+	const handleGenomicLocationsOpen = (genomicLocations) => {
+		setGenomicLocationsData({
+			genomicLocations,
+			dialog: true,
+		});
+	};
+
 	const columns = useMemo(
 		() => [
 			{
@@ -113,6 +131,13 @@ export const VariantsTable = () => {
 				sortable: true,
 				body: (rowData) => <IdTemplate id={rowData.modInternalId} />,
 				filterConfig: FILTER_CONFIGS.modInternalIdFilterConfig,
+			},
+			{
+				field: 'uniqueId',
+				header: 'Unique ID',
+				sortable: true,
+				body: (rowData) => <IdTemplate id={rowData.uniqueId} />,
+				filterConfig: FILTER_CONFIGS.uniqueidFilterConfig,
 			},
 			{
 				field: 'taxon',
@@ -160,9 +185,8 @@ export const VariantsTable = () => {
 				editor: (editorOptions) => {
 					const count = editorOptions.rowData.relatedNotes?.length;
 					return (
-						<DialogTriggerEditor
+						<DialogTriggerTableEditor
 							editorOptions={editorOptions}
-							errorMessagesRef={errorMessagesRef}
 							onOpenInEdit={handleRelatedNotesOpenInEdit}
 							errorField="relatedNotes"
 							displayText={count ? `Notes(${count}) ` : null}
@@ -189,6 +213,20 @@ export const VariantsTable = () => {
 				body: (rowData) => <OntologyTermTemplate term={rowData.sourceGeneralConsequence} />,
 				filterConfig: FILTER_CONFIGS.sourceGeneralConsequenceFilterConfig,
 				editor: (editorOptions) => <SourceGeneralConsequenceTableEditor editorOptions={editorOptions} />,
+			},
+			{
+				field: 'curatedVariantGenomicLocations',
+				columnKey: 'curatedVariantGenomicLocations.hgvs',
+				header: 'Genomic Locations',
+				sortable: true,
+				filterConfig: FILTER_CONFIGS.genomicLocationsFilterConfig,
+				body: (rowData) => (
+					<ListDialogTemplate
+						entities={rowData.curatedVariantGenomicLocations}
+						handleOpen={handleGenomicLocationsOpen}
+						getTextField={(location) => `Chromosome ${location.variantGenomicLocationAssociationObject?.name}`}
+					/>
+				),
 			},
 			{
 				field: 'synonyms',
@@ -266,7 +304,7 @@ export const VariantsTable = () => {
 			},
 		],
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-		[errorMessagesRef, variantStatusTerms]
+		[variantStatusTerms]
 	);
 
 	const DEFAULT_COLUMN_WIDTH = 10;
@@ -317,6 +355,11 @@ export const VariantsTable = () => {
 					columns={columns}
 					isEditable={true}
 					hasDetails={true}
+					duplicationEnabled={true}
+					handleDuplication={handleDuplication}
+					deletionEnabled={true}
+					deletionMethod={variantService.deleteVariant}
+					deprecateOption={true}
 					mutation={mutation}
 					isInEditMode={isInEditMode}
 					setIsInEditMode={setIsInEditMode}
@@ -336,6 +379,10 @@ export const VariantsTable = () => {
 			<RelatedNotesReadOnlyDialog
 				originalRelatedNotesData={relatedNotesData}
 				setOriginalRelatedNotesData={setRelatedNotesData}
+			/>
+			<GenomicLocationsReadOnlyDialog
+				genomicLocationsData={genomicLocationsData}
+				setGenomicLocationsData={setGenomicLocationsData}
 			/>
 		</>
 	);

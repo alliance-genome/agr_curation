@@ -21,6 +21,15 @@ public class ReferenceValidator extends AuditedObjectValidator<Reference> {
 		return response;
 	}
 
+	/**
+	 * Resolves the stored reference a submitted one names by its curie, or by one of its cross reference curies,
+	 * from the database or the literature service. The submitted entry only names the reference: none of its
+	 * other fields are read, and the stored reference is returned as it is.
+	 *
+	 * @param uiEntity the submitted reference
+	 * @param throwError not consulted: a reference that cannot be resolved is returned as null
+	 * @return the stored reference, or null when none matches
+	 */
 	public Reference validateReference(Reference uiEntity, Boolean throwError) {
 		response = new ObjectResponse<>(uiEntity);
 		String errorTitle = "Could not update Reference: [" + uiEntity.getCurie() + "]";
@@ -35,8 +44,6 @@ public class ReferenceValidator extends AuditedObjectValidator<Reference> {
 			addMessageResponse("curie", ValidationConstants.INVALID_MESSAGE);
 			return null;
 		}
-
-		dbEntity = validateAuditedObjectFields(uiEntity, dbEntity, false);
 
 		if (response.hasErrors()) {
 			if (throwError) {

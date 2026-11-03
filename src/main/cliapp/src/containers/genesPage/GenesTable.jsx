@@ -27,7 +27,7 @@ import { BooleanTemplate } from '../../components/Templates/BooleanTemplate';
 import { OntologyTermTemplate } from '../../components/Templates/OntologyTermTemplate';
 import { StringTemplate } from '../../components/Templates/StringTemplate';
 import { CountDialogTemplate } from '../../components/Templates/dialog/CountDialogTemplate';
-import { DialogTriggerEditor } from '../../components/Editors/dialog/DialogTriggerEditor';
+import { DialogTriggerTableEditor } from '../../components/Editors/dialog/DialogTriggerTableEditor';
 import { GeneTypeTableEditor } from '../../components/Editors/autocomplete/geneType/GeneTypeTableEditor';
 import { TaxonTableEditor } from '../../components/Editors/autocomplete/taxon/TaxonTableEditor';
 import { BooleanTableEditor } from '../../components/Editors/dropdown/boolean/BooleanTableEditor';
@@ -41,8 +41,6 @@ export const GenesTable = () => {
 	const [errorMessages, setErrorMessages] = useState({});
 	const [totalRecords, setTotalRecords] = useState(0);
 	const [genes, setGenes] = useState([]);
-	const errorMessagesRef = useRef();
-	errorMessagesRef.current = errorMessages;
 
 	const searchService = new SearchService();
 	let geneService = new GeneService();
@@ -282,9 +280,8 @@ export const GenesTable = () => {
 					/>
 				),
 				editor: (editorOptions) => (
-					<DialogTriggerEditor
+					<DialogTriggerTableEditor
 						editorOptions={editorOptions}
-						errorMessagesRef={errorMessagesRef}
 						onOpenInEdit={handleFullNameOpenInEdit}
 						errorField="geneFullName"
 						displayHtml={editorOptions.rowData.geneFullName?.displayText}
@@ -310,9 +307,8 @@ export const GenesTable = () => {
 				filter: true,
 				filterConfig: FILTER_CONFIGS.geneSymbolFilterConfig,
 				editor: (editorOptions) => (
-					<DialogTriggerEditor
+					<DialogTriggerTableEditor
 						editorOptions={editorOptions}
-						errorMessagesRef={errorMessagesRef}
 						onOpenInEdit={handleSymbolOpenInEdit}
 						errorField="geneSymbol"
 						displayHtml={editorOptions.rowData.geneSymbol?.displayText}
@@ -337,9 +333,8 @@ export const GenesTable = () => {
 				editor: (editorOptions) => {
 					const count = editorOptions.rowData.geneSynonyms?.length;
 					return (
-						<DialogTriggerEditor
+						<DialogTriggerTableEditor
 							editorOptions={editorOptions}
-							errorMessagesRef={errorMessagesRef}
 							onOpenInEdit={handleSynonymsOpenInEdit}
 							errorField="geneSynonyms"
 							displayText={count ? `Synonyms(${count}) ` : null}
@@ -366,9 +361,8 @@ export const GenesTable = () => {
 				editor: (editorOptions) => {
 					const count = editorOptions.rowData.geneSecondaryIds?.length;
 					return (
-						<DialogTriggerEditor
+						<DialogTriggerTableEditor
 							editorOptions={editorOptions}
-							errorMessagesRef={errorMessagesRef}
 							onOpenInEdit={handleSecondaryIdsOpenInEdit}
 							errorField="geneSecondaryIds"
 							displayText={count ? `Secondary IDs(${count}) ` : null}
@@ -395,9 +389,8 @@ export const GenesTable = () => {
 				filter: true,
 				filterConfig: FILTER_CONFIGS.geneSystematicNameFilterConfig,
 				editor: (editorOptions) => (
-					<DialogTriggerEditor
+					<DialogTriggerTableEditor
 						editorOptions={editorOptions}
-						errorMessagesRef={errorMessagesRef}
 						onOpenInEdit={handleSystematicNameOpenInEdit}
 						errorField="geneSystematicName"
 						displayHtml={editorOptions.rowData.geneSystematicName?.displayText}
@@ -437,9 +430,8 @@ export const GenesTable = () => {
 				editor: (editorOptions) => {
 					const count = editorOptions.rowData.relatedNotes?.length;
 					return (
-						<DialogTriggerEditor
+						<DialogTriggerTableEditor
 							editorOptions={editorOptions}
-							errorMessagesRef={errorMessagesRef}
 							onOpenInEdit={handleRelatedNotesOpenInEdit}
 							errorField="relatedNotes"
 							displayText={count ? `Notes(${count}) ` : null}
@@ -465,9 +457,8 @@ export const GenesTable = () => {
 				editor: (editorOptions) => {
 					const count = editorOptions.rowData.crossReferences?.length;
 					return (
-						<DialogTriggerEditor
+						<DialogTriggerTableEditor
 							editorOptions={editorOptions}
-							errorMessagesRef={errorMessagesRef}
 							onOpenInEdit={handleCrossReferencesOpenInEdit}
 							errorField="crossReferences"
 							displayText={count ? `Cross References(${count}) ` : null}
@@ -485,9 +476,8 @@ export const GenesTable = () => {
 				filterConfig: FILTER_CONFIGS.gcrpCrossReferenceFilterConfig,
 				body: (rowData) => <CrossReferenceTemplate xref={rowData.gcrpCrossReference} />,
 				editor: (editorOptions) => (
-					<DialogTriggerEditor
+					<DialogTriggerTableEditor
 						editorOptions={editorOptions}
-						errorMessagesRef={errorMessagesRef}
 						onOpenInEdit={handleGcrpCrossReferenceOpenInEdit}
 						errorField="gcrpCrossReference"
 						displayText={editorOptions.rowData.gcrpCrossReference?.displayName}
@@ -547,7 +537,7 @@ export const GenesTable = () => {
 			},
 		],
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-		[errorMessagesRef]
+		[]
 	);
 
 	const DEFAULT_COLUMN_WIDTH = 10;

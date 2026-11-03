@@ -1,4 +1,5 @@
-import { addDataKey } from '../utils';
+import { addDataKey, sameRowsBy } from '../utils';
+import { copyRow } from '../../../utils/copyRows';
 import { ResourceDescriptorService } from '../../../service/ResourceDescriptorService';
 
 /**
@@ -21,29 +22,17 @@ export const buildNewCrossReference = () => {
 	return crossReference;
 };
 
-// The fields a stored cross reference carries that belong to it alone, and so cannot be carried onto a copy.
-const DUPLICATE_DROPPED_FIELDS = [
-	'id',
-	'createdBy',
-	'updatedBy',
-	'dateCreated',
-	'dateUpdated',
-	'dbDateCreated',
-	'dbDateUpdated',
-];
-
 /**
  * Copies of an allele's cross references for a new allele. Each keeps its page, and so its resource
  * descriptor, and its internal flag, but not the curie and display name that identify the copied allele,
  * nor its id or audit fields. Every copy starts out not obsolete.
  *
- * @param {Object[]} [crossReferences] cross references as the API returns them
+ * @param {Object[]} [crossReferences] cross references as the API returns them or as the table holds them
  * @returns {Object[]} rows with a blank curie and display name, each with its own `dataKey`
  */
 export const buildDuplicateCrossReferences = (crossReferences) =>
 	(crossReferences ?? []).map((crossReference) => {
-		const copy = structuredClone(crossReference);
-		DUPLICATE_DROPPED_FIELDS.forEach((field) => delete copy[field]);
+		const copy = copyRow(crossReference);
 		copy.referencedCurie = '';
 		copy.displayName = '';
 		copy.obsolete = false;
@@ -66,7 +55,8 @@ export const curiePrefixOf = (referencedCurie) => {
 
 /**
  * Lifts the descriptor a stored page belongs to onto the row itself, where the descriptor column
- * reads it.
+ * reads it. A row the table built holds a page without its descriptor, so it keeps the descriptor it
+ * already carries.
  *
  * The descriptor arriving this way carries no `resourcePages`: a cross reference is serialized
  * without them, so the page dropdown has nothing to offer until they are fetched. Use
@@ -77,7 +67,8 @@ export const curiePrefixOf = (referencedCurie) => {
  */
 export const seedResourceDescriptor = (crossReference) => ({
 	...crossReference,
-	resourceDescriptor: crossReference.resourceDescriptorPage?.resourceDescriptor ?? null,
+	resourceDescriptor:
+		crossReference.resourceDescriptorPage?.resourceDescriptor ?? crossReference.resourceDescriptor ?? null,
 });
 
 /**
@@ -116,6 +107,18 @@ export const seedResourceDescriptors = async (crossReferences) => {
 		const loadedDescriptor = loadedDescriptors.get(row.resourceDescriptor?.id);
 		return loadedDescriptor ? { ...row, resourceDescriptor: loadedDescriptor } : row;
 	});
+};
+
+/**
+ * Readies cross references for the cross references table: each is given its own `dataKey` in place, and
+ * the rows returned carry their full resource descriptors.
+ *
+ * @param {Object[]} crossReferences cross references as the API returns them
+ * @returns {Promise<Object[]>}
+ */
+export const prepareCrossReferences = async (crossReferences) => {
+	crossReferences.forEach(addDataKey);
+	return seedResourceDescriptors(crossReferences);
 };
 
 const DEFAULT_PAGE_NAME = 'default';
@@ -181,23 +184,7 @@ const crossReferenceValue = (crossReference) =>
  * @param {Object[]} otherCrossReferences
  * @returns {boolean}
  */
-export const haveSameCrossReferences = (crossReferences, otherCrossReferences) =>
-	crossReferences.length === otherCrossReferences.length &&
-	crossReferences.every(
-		(crossReference, index) => crossReferenceValue(crossReference) === crossReferenceValue(otherCrossReferences[index])
-	);
-
-/**
- * The row carrying a given key.
- *
- * Rows are looked up by key rather than read from an editor's `rowData`, which PrimeReact snapshots
- * when a row enters edit mode and does not refresh while that row stays open.
- *
- * @param {Array<Object>} rows
- * @param {string} dataKey
- * @returns {Object|undefined} the matching row, or undefined when there is none
- */
-export const findRow = (rows, dataKey) => rows?.find((row) => row.dataKey === dataKey);
+export const haveSameCrossReferences = sameRowsBy(crossReferenceValue);
 
 /**
  * Drops the fields the table keeps for itself, leaving what the API reads.

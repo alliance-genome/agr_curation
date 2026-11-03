@@ -61,7 +61,6 @@ public class BulkLoadJobExecutor {
 	@Inject AlleleExecutor alleleExecutor;
 	@Inject AgmExecutor agmExecutor;
 	@Inject MoleculeExecutor moleculeExecutor;
-	@Inject ResourceDescriptorExecutor resourceDescriptorExecutor;
 	@Inject OrthologyExecutor orthologyExecutor;
 	@Inject OntologyExecutor ontologyExecutor;
 	@Inject ConstructExecutor constructExecutor;
@@ -210,8 +209,6 @@ public class BulkLoadJobExecutor {
 			paralogyExecutor.execLoad(bulkLoadFileHistory);
 		} else if (bulkLoadFileHistory.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.ONTOLOGY) {
 			ontologyExecutor.execLoad(bulkLoadFileHistory);
-		} else if (bulkLoadFileHistory.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.RESOURCE_DESCRIPTOR) {
-			resourceDescriptorExecutor.execLoad(bulkLoadFileHistory);
 		} else if (bulkLoadFileHistory.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.EXPRESSION) {
 			geneExpressionExecutor.execLoad(bulkLoadFileHistory);
 		} else if (bulkLoadFileHistory.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.VARIATION) {

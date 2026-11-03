@@ -143,7 +143,7 @@ public abstract class AnnotationUniqueIdHelper {
 		}
 		if (annotation instanceof GeneDiseaseAnnotation gda) {
 			if (gda.getSgdStrainBackground() != null) {
-				uniqueId.add(gda.getSgdStrainBackground().getIdentifier());
+				uniqueId.add(gda.getSgdStrainBackground().getSubmittedIdentifierOrCurie());
 			}
 		}
 		List<BiologicalEntity> geneticModifiers = new ArrayList<>();

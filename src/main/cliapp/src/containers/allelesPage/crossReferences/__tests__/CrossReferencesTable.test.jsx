@@ -1,11 +1,10 @@
 import React from 'react';
-import { act, screen, waitFor } from '@testing-library/react';
+import { act, fireEvent, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { renderWithClient } from '../../../../tools/jest/utils';
 
-// The Internal and Obsolete editors resolve their boolean terms through a SearchService, and the
-// descriptor autocomplete builds one of its own. Left unstubbed they reach ApiClient after the test
-// has finished and throw in a timer.
+// The descriptor autocomplete and the descriptor lookup by prefix search through a SearchService. Left
+// unstubbed they reach ApiClient after the test has finished and throw in a timer.
 const { search } = vi.hoisted(() => ({ search: vi.fn() }));
 
 vi.mock('../../../../service/SearchService', () => ({
@@ -167,11 +166,19 @@ describe('CrossReferencesTable', () => {
 		expect(onFieldChange).toHaveBeenCalledWith('row-1', 'resourceDescriptorPage', { id: 2, name: 'gene' });
 	});
 
+	it('Stores no page when the page is cleared', async () => {
+		const { onFieldChange } = renderTable();
+
+		fireEvent.pointerUp(pageRoot().querySelector('.p-dropdown-clear-icon'));
+
+		expect(onFieldChange).toHaveBeenCalledWith('row-1', 'resourceDescriptorPage', null);
+	});
+
 	it('Reports a display name edit against the row dataKey', async () => {
 		const user = userEvent.setup();
 		const { container, onFieldChange } = renderTable();
 
-		await user.type(container.querySelector('#displayName'), 'X');
+		await user.type(container.querySelector('[aria-label="displayName"]'), 'X');
 
 		expect(onFieldChange).toHaveBeenCalledWith('row-1', 'displayName', expect.stringContaining('X'));
 	});
@@ -180,22 +187,22 @@ describe('CrossReferencesTable', () => {
 		const user = userEvent.setup();
 		const { container, onFieldChange } = renderTable();
 
-		await user.type(container.querySelector('#referencedCurie'), 'Y');
+		await user.type(container.querySelector('[aria-label="referencedCurie"]'), 'Y');
 
 		expect(onFieldChange).toHaveBeenCalledWith('row-1', 'referencedCurie', expect.stringContaining('Y'));
 	});
 
 	it('Deletes by dataKey rather than row index', async () => {
 		const user = userEvent.setup();
-		const { deletionHandler } = renderTable();
+		const { deletionHandler, container } = renderTable();
 
-		await user.click(screen.getByRole('button', { name: '' }));
+		await user.click(container.querySelector('.pi-trash').closest('button'));
 
 		expect(deletionHandler).toHaveBeenCalledWith(expect.anything(), 'row-1');
 	});
 
-	// BooleanDropdown re-reads its value from editorOptions.rowData every time the dropdown opens, so
-	// handing it the frozen snapshot would show the curator the value they just replaced.
+	// PrimeReact keeps the row data it captured when the row opened, so a select reading that would show
+	// the curator the value they just replaced.
 	it('Shows the live internal value when the dropdown is reopened', async () => {
 		const user = userEvent.setup();
 		const { rerenderWith, container } = renderTable();
@@ -235,17 +242,17 @@ describe('CrossReferencesTable', () => {
 		expect(marksRequired('Display Name')).toBe(true);
 	});
 
-	// The curie editor reads its value only on mount, so without being remounted it would keep showing
-	// an empty curie after choosing a descriptor started it with that descriptor's prefix.
+	// Choosing a descriptor can start the curie with that descriptor's prefix, and the curie input has to
+	// show it.
 	it('Shows the curie a descriptor started once the descriptor changes', () => {
 		const { container, rerenderWith } = renderTable({
 			crossReferences: [buildRow({ referencedCurie: '', resourceDescriptor: null, resourceDescriptorPage: null })],
 		});
-		expect(container.querySelector('#referencedCurie')).toHaveValue('');
+		expect(container.querySelector('[aria-label="referencedCurie"]')).toHaveValue('');
 
 		rerenderWith([buildRow({ referencedCurie: 'ZFIN:', resourceDescriptor: ZFIN, resourceDescriptorPage: null })]);
 
-		expect(container.querySelector('#referencedCurie')).toHaveValue('ZFIN:');
+		expect(container.querySelector('[aria-label="referencedCurie"]')).toHaveValue('ZFIN:');
 	});
 
 	it('Shows the API errors under the curie and page they belong to', () => {
@@ -275,7 +282,7 @@ describe('CrossReferencesTable', () => {
 		};
 
 		const leaveCurieCell = async (user, container) => {
-			await user.click(container.querySelector('#referencedCurie'));
+			await user.click(container.querySelector('[aria-label="referencedCurie"]'));
 			await user.tab();
 		};
 
@@ -307,13 +314,13 @@ describe('CrossReferencesTable', () => {
 			expect(onFieldChange).not.toHaveBeenCalledWith('row-1', 'resourceDescriptor', expect.anything());
 		});
 
-		// Setting it mid-word would remount the curie editor and take the input from the curator. The row
-		// already names ZFIN, so a fill made on each keystroke would show here before the cell is left.
+		// A half-edited prefix can name another descriptor, which would replace the page. The row already
+		// names ZFIN, so a fill made on each keystroke would show here before the cell is left.
 		it('Waits for the curator to leave the cell', async () => {
 			const user = userEvent.setup();
 			const { container, onFieldChange } = await renderWithDescriptors([buildRow({ referencedCurie: 'ZFIN:9' })]);
 
-			await user.type(container.querySelector('#referencedCurie'), '1');
+			await user.type(container.querySelector('[aria-label="referencedCurie"]'), '1');
 			expect(onFieldChange).not.toHaveBeenCalledWith('row-1', 'resourceDescriptor', expect.anything());
 
 			await user.tab();

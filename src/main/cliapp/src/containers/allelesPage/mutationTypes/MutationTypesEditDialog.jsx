@@ -8,12 +8,27 @@ import { ColumnGroup } from 'primereact/columngroup';
 import { Row } from 'primereact/row';
 import { ValidationService } from '../../../service/ValidationService';
 import { DeleteAction } from '../../../components/Actions/DeletionAction';
-import { InternalEditor } from '../../../components/Editors/legacyForm/InternalEditor';
-import { EvidenceEditor } from '../../../components/Editors/legacyForm/EvidenceEditor';
-import { MutationTypesEditor } from '../../../components/Editors/legacyForm/MutationTypesEditor';
 import { Endpoints } from '../../../constants/Endpoints';
-import { multipleAutocompleteOnChange } from '../../../utils/utils';
+import { addDataKey, KEEP_ROWS_IN_EDIT_MODE } from '../utils';
+import { TableEditorProvider } from '../../../components/Editors/fields/TableEditorContext';
+import { TableField } from '../../../components/Editors/fields/TableField';
+import { useLocalRowsStrategy } from '../../../components/Editors/fields/strategies/useLocalRowsStrategy';
+import { MultiAutocomplete } from '../../../components/Editors/widgets/MultiAutocomplete';
+import { BooleanTableEditor } from '../../../components/Editors/dropdown/boolean/BooleanTableEditor';
+import { EvidenceTableEditor } from '../../../components/Editors/autocomplete/references/EvidenceTableEditor';
+import { mutationTypeLabel, mutationTypesSearch } from '../../../components/Editors/autocomplete/ontology/utils';
 
+/**
+ * Dialog for editing a main-table row's mutation types. Edits stay local until Keep Edits
+ * validates every row and hands them back through the row's editor callback.
+ *
+ * @param {object} originalMutationTypesData - the row's mutation types, dialog visibility,
+ *   row index and PrimeReact editor options
+ * @param {Function} setOriginalMutationTypesData - its setter
+ * @param {object} errorMessagesMainRow - the main table's errors, keyed by row index
+ * @param {Function} setErrorMessagesMainRow - its setter
+ * @returns {JSX.Element}
+ */
 export const MutationTypesEditDialog = ({
 	originalMutationTypesData,
 	setOriginalMutationTypesData,
@@ -26,9 +41,14 @@ export const MutationTypesEditDialog = ({
 	const [errorMessages, setErrorMessages] = useState({});
 	const [isValidating, setIsValidating] = useState(false);
 	const validationService = new ValidationService();
-	const dataKeyCounter = useRef(0);
 	const tableRef = useRef(null);
 	const toast_topright = useRef(null);
+
+	const strategy = useLocalRowsStrategy({
+		rows: localMutationTypes,
+		setRows: setLocalMutationTypes,
+		errors: errorMessages,
+	});
 
 	const showDialogHandler = () => {
 		let _localMutationTypes = cloneMutationTypes(originalMutationTypes);
@@ -42,10 +62,6 @@ export const MutationTypesEditDialog = ({
 		}
 		setEditingRows(rowsObject);
 		setErrorMessages({});
-	};
-
-	const onRowEditChange = () => {
-		return null;
 	};
 
 	const hideDialog = () => {
@@ -63,7 +79,7 @@ export const MutationTypesEditDialog = ({
 		let _clonableMutationTypes = structuredClone(clonableMutationTypes);
 		if (_clonableMutationTypes) {
 			_clonableMutationTypes.forEach((mt) => {
-				mt.dataKey = dataKeyCounter.current++;
+				addDataKey(mt);
 			});
 		} else {
 			_clonableMutationTypes = [];
@@ -71,41 +87,14 @@ export const MutationTypesEditDialog = ({
 		return _clonableMutationTypes;
 	};
 
-	const onMutationTypeValueChange = (event, setFieldValue, props) => {
-		multipleAutocompleteOnChange(props, event, 'mutationTypes', setFieldValue);
-		setLocalMutationTypes((prev) => {
-			const updated = [...prev];
-			updated[props.rowIndex] = { ...updated[props.rowIndex], mutationTypes: event.target.value };
-			return updated;
-		});
-	};
-
-	const internalOnChangeHandler = (props, event) => {
-		props.editorCallback(event.target.value?.name);
-		setLocalMutationTypes((prev) => {
-			const updated = [...prev];
-			updated[props.rowIndex] = { ...updated[props.rowIndex], internal: event.target?.value?.name };
-			return updated;
-		});
-	};
-
-	const evidenceOnChangeHandler = (event, setFieldValue, props) => {
-		setFieldValue(event.target.value);
-		setLocalMutationTypes((prev) => {
-			const updated = [...prev];
-			updated[props.rowIndex] = { ...updated[props.rowIndex], evidence: event.target.value };
-			return updated;
-		});
-	};
-
 	const createNewMutationTypeHandler = () => {
-		const newKey = dataKeyCounter.current++;
 		const _localMutationTypes = structuredClone(localMutationTypes);
-		_localMutationTypes.push({
-			dataKey: newKey,
+		const newRow = {
 			internal: false,
-		});
-		let _editingRows = { ...editingRows, ...{ [`${newKey}`]: true } };
+		};
+		addDataKey(newRow);
+		_localMutationTypes.push(newRow);
+		let _editingRows = { ...editingRows, ...{ [`${newRow.dataKey}`]: true } };
 		setEditingRows(_editingRows);
 		setLocalMutationTypes(_localMutationTypes);
 	};
@@ -219,7 +208,7 @@ export const MutationTypesEditDialog = ({
 		);
 	};
 
-	let headerGroup = (
+	const headerGroup = (
 		<ColumnGroup>
 			<Row>
 				<Column header="Actions" />
@@ -243,71 +232,57 @@ export const MutationTypesEditDialog = ({
 				footer={footerTemplate}
 			>
 				<h3>Mutation Types</h3>
-				<DataTable
-					value={localMutationTypes}
-					dataKey="dataKey"
-					showGridlines
-					editMode="row"
-					headerColumnGroup={headerGroup}
-					editingRows={editingRows}
-					onRowEditChange={onRowEditChange}
-					ref={tableRef}
-					cellMemo={false}
-				>
-					<Column
-						editor={(props) => <DeleteAction deletionHandler={handleDeleteMutationType} id={props?.rowData?.dataKey} />}
-						className="max-w-4rem"
-						bodyClassName="text-center"
-						headerClassName="surface-0"
-						frozen
-					/>
-					<Column
-						editor={(props) => {
-							return (
-								<MutationTypesEditor
-									props={props}
-									errorMessages={errorMessages}
-									onChange={onMutationTypeValueChange}
-									dataKey={props?.rowData?.dataKey}
-								/>
-							);
-						}}
-						field="mutationTypes"
-						header="Mutation Types"
-						headerClassName="surface-0"
-					/>
-					<Column
-						editor={(props) => {
-							return (
-								<InternalEditor
-									editorOptions={props}
-									rowIndex={props.rowIndex}
-									errorMessages={errorMessages}
-									dataKey={props?.rowData?.dataKey}
-									internalOnChangeHandler={internalOnChangeHandler}
-								/>
-							);
-						}}
-						field="internal"
-						header="Internal"
-						headerClassName="surface-0"
-					/>
-					<Column
-						editor={(props) => {
-							return (
-								<EvidenceEditor
-									props={props}
-									errorMessages={errorMessages}
-									onChange={evidenceOnChangeHandler}
-									dataKey={props?.rowData?.dataKey}
-								/>
-							);
-						}}
-						field="evidence"
-						header="Evidence"
-						headerClassName="surface-0"
-					/>
-				</DataTable>
+				<TableEditorProvider strategy={strategy}>
+					<DataTable
+						value={localMutationTypes}
+						dataKey="dataKey"
+						showGridlines
+						editMode="row"
+						headerColumnGroup={headerGroup}
+						editingRows={editingRows}
+						onRowEditChange={KEEP_ROWS_IN_EDIT_MODE}
+						ref={tableRef}
+						cellMemo={false}
+					>
+						<Column
+							editor={(editorOptions) => (
+								<DeleteAction deletionHandler={handleDeleteMutationType} id={editorOptions?.rowData?.dataKey} />
+							)}
+							className="max-w-4rem"
+							bodyClassName="text-center"
+							headerClassName="surface-0"
+							frozen
+						/>
+						<Column
+							editor={(editorOptions) => (
+								<TableField editorOptions={editorOptions} field="mutationTypes">
+									{(binding) => (
+										<MultiAutocomplete
+											{...binding}
+											search={mutationTypesSearch}
+											selectedItemTemplate={mutationTypeLabel}
+										/>
+									)}
+								</TableField>
+							)}
+							field="mutationTypes"
+							header="Mutation Types"
+							headerClassName="surface-0"
+						/>
+						<Column
+							editor={(editorOptions) => <BooleanTableEditor editorOptions={editorOptions} field="internal" />}
+							field="internal"
+							header="Internal"
+							headerClassName="surface-0"
+						/>
+						<Column
+							editor={(editorOptions) => <EvidenceTableEditor editorOptions={editorOptions} />}
+							field="evidence"
+							header="Evidence"
+							headerClassName="surface-0"
+						/>
+					</DataTable>
+				</TableEditorProvider>
 			</Dialog>
 		</div>
 	);

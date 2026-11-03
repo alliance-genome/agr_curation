@@ -2,33 +2,28 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { AlleleService } from '../../service/AlleleService';
-import { CrossReferenceService } from '../../service/CrossReferenceService';
+import { AlleleSubResourceService } from '../../service/AlleleSubResourceService';
 import { getIdentifier } from '../../utils/utils';
-import { buildDuplicateAllele } from './utils';
-import { buildDuplicateCrossReferences, seedResourceDescriptors } from './crossReferences/utils';
+import { ALLELE_SUB_RESOURCES } from './constants';
+import { buildDuplicateAllele, capitalize } from './utils';
 
 /**
  * Fills the allele create form from the allele named by the `from` search parameter, which the Duplicate
  * buttons set. The form takes the source allele once per page load; after that it holds the curator's
- * edits, and a clear or a save and add another starts from a blank form.
+ * edits, and a clear starts from a blank form.
  *
  * @param {Object} params
  * @param {Function} params.alleleDispatch - the create form's reducer dispatch
- * @param {Function} params.setCrossReferences - replaces the create form's cross reference rows
- * @param {boolean} params.crossReferencesVisible - whether the form shows its Cross References section
+ * @param {Object} params.subResources - the create form's lists, keyed as in {@link ALLELE_SUB_RESOURCES}
+ * @param {(fieldName: string) => boolean} params.isVisible - whether the form shows a field's section
  * @param {Object} params.toastError - ref to the toast that reports a source that cannot be loaded
- * @returns {{ isLoading: boolean }} `isLoading` is true while the source allele or its cross references load
+ * @returns {{ isLoading: boolean }} `isLoading` is true while the source allele or any of its lists load
  */
-export const useDuplicateAlleleSource = ({
-	alleleDispatch,
-	setCrossReferences,
-	crossReferencesVisible,
-	toastError,
-}) => {
+export const useDuplicateAlleleSource = ({ alleleDispatch, subResources, isVisible, toastError }) => {
 	const [searchParams] = useSearchParams();
 	const sourceIdentifier = searchParams.get('from');
 	const alleleService = useMemo(() => new AlleleService(), []);
-	const crossReferenceService = useMemo(() => new CrossReferenceService(), []);
+	const subResourceService = useMemo(() => new AlleleSubResourceService(), []);
 
 	const {
 		isFetching: sourceAlleleIsLoading,
@@ -45,7 +40,12 @@ export const useDuplicateAlleleSource = ({
 	});
 
 	const sourceAlleleApplied = useRef(false);
-	const [sourceCrossReferencesLoading, setSourceCrossReferencesLoading] = useState(false);
+	const [listsLoading, setListsLoading] = useState(0);
+	// The form's setters and section visibility as of the latest render, read when the source arrives.
+	const formState = useRef({ subResources, isVisible });
+	useEffect(() => {
+		formState.current = { subResources, isVisible };
+	});
 
 	useEffect(() => {
 		if (!sourceIdentifier || sourceAlleleApplied.current) return;
@@ -58,7 +58,7 @@ export const useDuplicateAlleleSource = ({
 				life: 7000,
 				severity: 'error',
 				summary: 'Page error: ',
-				detail: `Could not load allele ${sourceIdentifier} to duplicate`,
+				detail: `Could not load allele ${sourceIdentifier} to clone`,
 				sticky: false,
 			});
 			return;
@@ -66,40 +66,29 @@ export const useDuplicateAlleleSource = ({
 
 		alleleDispatch({ type: 'SET', value: buildDuplicateAllele(sourceAllele) });
 
-		// The copied rows keep the source's pages but not its curies, which the curator fills in for the new
-		// allele. A hidden section could not show them, so it gets none.
-		if (!crossReferencesVisible) return;
+		Object.entries(ALLELE_SUB_RESOURCES).forEach(async ([type, { path, label, buildCopies, copyOnlyWhenVisible }]) => {
+			if (!buildCopies) return;
+			if (copyOnlyWhenVisible && !formState.current.isVisible(copyOnlyWhenVisible)) return;
 
-		const copySourceCrossReferences = async () => {
-			setSourceCrossReferencesLoading(true);
+			setListsLoading((count) => count + 1);
 			try {
-				const response = await crossReferenceService.getCrossReferencesForAllele(sourceAllele.id);
-				const copies = await seedResourceDescriptors(buildDuplicateCrossReferences(response?.data?.entities));
-				if (copies.length > 0) setCrossReferences(copies);
+				const response = await subResourceService.getList(sourceAllele.id, path);
+				const copies = await buildCopies(response?.data?.entities);
+				if (copies.length > 0) formState.current.subResources[type].setRows(copies);
 			} catch (error) {
-				console.warn(`Could not load cross references for allele ${sourceAllele.id}`, error);
+				console.warn(`Could not load ${label} for allele ${sourceAllele.id}`, error);
 				toastError.current?.show({
 					life: 7000,
 					severity: 'warn',
-					summary: 'Cross references not copied: ',
-					detail: `Could not load the cross references of allele ${getIdentifier(sourceAllele)}`,
+					summary: `${capitalize(label)} not copied: `,
+					detail: `Could not load the ${label} of allele ${getIdentifier(sourceAllele)}`,
 					sticky: false,
 				});
 			} finally {
-				setSourceCrossReferencesLoading(false);
+				setListsLoading((count) => count - 1);
 			}
-		};
-		copySourceCrossReferences();
-	}, [
-		sourceIdentifier,
-		sourceAlleleData,
-		sourceAlleleLoadFailed,
-		alleleDispatch,
-		crossReferencesVisible,
-		crossReferenceService,
-		setCrossReferences,
-		toastError,
-	]);
+		});
+	}, [sourceIdentifier, sourceAlleleData, sourceAlleleLoadFailed, alleleDispatch, subResourceService, toastError]);
 
-	return { isLoading: sourceAlleleIsLoading || sourceCrossReferencesLoading };
+	return { isLoading: sourceAlleleIsLoading || listsLoading > 0 };
 };

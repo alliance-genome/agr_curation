@@ -14,7 +14,13 @@ public class ReagentValidator extends SubmittedObjectValidator<Reagent> {
 
 		List<String> secondaryIds = CollectionUtils.isNotEmpty(uiEntity.getSecondaryIdentifiers()) ? uiEntity.getSecondaryIdentifiers() : null;
 		dbEntity.setSecondaryIdentifiers(secondaryIds);
-		
+
+		// SCRUM-6746: an edit that sends placeholder sets it, as a load does; one that leaves it out
+		// keeps the stored flag (the column is not nullable)
+		if (uiEntity.getPlaceholder() != null) {
+			dbEntity.setPlaceholder(uiEntity.getPlaceholder());
+		}
+
 		return dbEntity;
 	}
 }

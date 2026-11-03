@@ -3,22 +3,23 @@ import { Column } from 'primereact/column';
 import { ColumnGroup } from 'primereact/columngroup';
 import { Row } from 'primereact/row';
 import { DeleteAction } from '../../../components/Actions/DeletionAction';
-import { InternalEditor } from '../../../components/Editors/legacyForm/InternalEditor';
-import { EvidenceEditor } from '../../../components/Editors/legacyForm/EvidenceEditor';
-import { TableInputTextEditor } from '../../../components/Editors/text/TableInputTextEditor';
+import { InputTextTableEditor } from '../../../components/Editors/text/InputTextTableEditor';
+import { EvidenceTableEditor } from '../../../components/Editors/autocomplete/references/EvidenceTableEditor';
+import { BooleanTableEditor } from '../../../components/Editors/dropdown/boolean/BooleanTableEditor';
 
-export const SecondaryIdsFormTable = ({
-	secondaryIds,
-	editingRows,
-	onRowEditChange,
-	tableRef,
-	deletionHandler,
-	errorMessages,
-	internalOnChangeHandler,
-	textOnChangeHandler,
-	evidenceOnChangeHandler,
-}) => {
-	let headerGroup = (
+/**
+ * Editable secondary IDs table, every row always in edit mode. Its editors read and write rows
+ * through the table strategy its parent provides.
+ *
+ * @param {object[]} secondaryIds - rows, each carrying a `dataKey`
+ * @param {object} editingRows - PrimeReact editing state, keyed by `dataKey`
+ * @param {Function} onRowEditChange - PrimeReact row-edit handler
+ * @param {object} tableRef - ref to the DataTable
+ * @param {Function} deletionHandler - `(event, dataKey)`
+ * @returns {JSX.Element}
+ */
+export const SecondaryIdsFormTable = ({ secondaryIds, editingRows, onRowEditChange, tableRef, deletionHandler }) => {
+	const headerGroup = (
 		<ColumnGroup>
 			<Row>
 				<Column header="Actions" />
@@ -45,51 +46,30 @@ export const SecondaryIdsFormTable = ({
 			ref={tableRef}
 		>
 			<Column
-				editor={(props) => <DeleteAction deletionHandler={deletionHandler} id={props?.rowData?.dataKey} />}
+				editor={(editorOptions) => (
+					<DeleteAction deletionHandler={deletionHandler} id={editorOptions?.rowData?.dataKey} />
+				)}
 				className="max-w-4rem"
 				bodyClassName="text-center"
 				headerClassName="surface-0"
 				frozen
 			/>
 			<Column
-				editor={(props) => {
-					return (
-						<TableInputTextEditor
-							value={props.value}
-							rowIndex={props.rowIndex}
-							errorMessages={errorMessages}
-							dataKey={props?.rowData?.dataKey}
-							textOnChangeHandler={textOnChangeHandler}
-							field="secondaryId"
-						/>
-					);
-				}}
+				editor={(editorOptions) => <InputTextTableEditor editorOptions={editorOptions} field="secondaryId" />}
 				field="secondaryId"
 				header="Secondary ID"
 				headerClassName="surface-0"
 				className="w-4"
 			/>
 			<Column
-				editor={(props) => {
-					return (
-						<InternalEditor
-							editorOptions={props}
-							rowIndex={props.rowIndex}
-							errorMessages={errorMessages}
-							dataKey={props?.rowData?.dataKey}
-							internalOnChangeHandler={internalOnChangeHandler}
-						/>
-					);
-				}}
+				editor={(editorOptions) => <BooleanTableEditor editorOptions={editorOptions} field="internal" />}
 				field="internal"
 				header="Internal"
 				headerClassName="surface-0"
 			/>
 			<Column
-				editor={(props) => {
-					return <EvidenceEditor props={props} errorMessages={errorMessages} onChange={evidenceOnChangeHandler} />;
-				}}
-				field="evidence.curie"
+				editor={(editorOptions) => <EvidenceTableEditor editorOptions={editorOptions} />}
+				field="evidence"
 				header="Evidence"
 				headerClassName="surface-0"
 			/>

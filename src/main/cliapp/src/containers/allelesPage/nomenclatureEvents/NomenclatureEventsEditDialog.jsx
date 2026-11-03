@@ -8,12 +8,26 @@ import { ColumnGroup } from 'primereact/columngroup';
 import { Row } from 'primereact/row';
 import { ValidationService } from '../../../service/ValidationService';
 import { DeleteAction } from '../../../components/Actions/DeletionAction';
-import { InternalEditor } from '../../../components/Editors/legacyForm/InternalEditor';
-import { ObsoleteEditor } from '../../../components/Editors/legacyForm/ObsoleteEditor';
-import { EvidenceEditor } from '../../../components/Editors/legacyForm/EvidenceEditor';
-import { ControlledVocabularyEditor } from '../../../components/Editors/legacyForm/ControlledVocabularyEditor';
 import { Endpoints } from '../../../constants/Endpoints';
+import { KEEP_ROWS_IN_EDIT_MODE, addDataKey } from '../utils';
+import { useControlledVocabularyService } from '../../../service/useControlledVocabularyService';
+import { TableEditorProvider } from '../../../components/Editors/fields/TableEditorContext';
+import { useLocalRowsStrategy } from '../../../components/Editors/fields/strategies/useLocalRowsStrategy';
+import { ControlledVocabularyTableEditor } from '../../../components/Editors/dropdown/vocabulary/ControlledVocabularyTableEditor';
+import { EvidenceTableEditor } from '../../../components/Editors/autocomplete/references/EvidenceTableEditor';
+import { BooleanTableEditor } from '../../../components/Editors/dropdown/boolean/BooleanTableEditor';
 
+/**
+ * Dialog for editing a main-table row's nomenclature events. Edits stay local until Keep Edits
+ * validates every row and hands them back through the row's editor callback.
+ *
+ * @param {object} originalNomenclatureEventsData - the row's nomenclature events, dialog
+ *   visibility, row index and PrimeReact editor options
+ * @param {Function} setOriginalNomenclatureEventsData - its setter
+ * @param {object} errorMessagesMainRow - the main table's errors, keyed by row index
+ * @param {Function} setErrorMessagesMainRow - its setter
+ * @returns {JSX.Element}
+ */
 export const NomenclatureEventsEditDialog = ({
 	originalNomenclatureEventsData,
 	setOriginalNomenclatureEventsData,
@@ -26,9 +40,15 @@ export const NomenclatureEventsEditDialog = ({
 	const [errorMessages, setErrorMessages] = useState({});
 	const [isValidating, setIsValidating] = useState(false);
 	const validationService = new ValidationService();
-	const dataKeyCounter = useRef(0);
 	const tableRef = useRef(null);
 	const toast_topright = useRef(null);
+
+	const strategy = useLocalRowsStrategy({
+		rows: localNomenclatureEvents,
+		setRows: setLocalNomenclatureEvents,
+		errors: errorMessages,
+	});
+	const nomenclatureEventTerms = useControlledVocabularyService('allele_nomenclature_event');
 
 	const showDialogHandler = () => {
 		let _localNomenclatureEvents = cloneNomenclatureEvents(originalNomenclatureEvents);
@@ -42,10 +62,6 @@ export const NomenclatureEventsEditDialog = ({
 		}
 		setEditingRows(rowsObject);
 		setErrorMessages({});
-	};
-
-	const onRowEditChange = () => {
-		return null;
 	};
 
 	const hideDialog = () => {
@@ -63,7 +79,7 @@ export const NomenclatureEventsEditDialog = ({
 		let _clonableNomenclatureEvents = structuredClone(clonableNomenclatureEvents);
 		if (_clonableNomenclatureEvents) {
 			_clonableNomenclatureEvents.forEach((ne) => {
-				ne.dataKey = dataKeyCounter.current++;
+				addDataKey(ne);
 			});
 		} else {
 			_clonableNomenclatureEvents = [];
@@ -71,51 +87,15 @@ export const NomenclatureEventsEditDialog = ({
 		return _clonableNomenclatureEvents;
 	};
 
-	const nomenclatureEventOnChangeHandler = (props, event) => {
-		props.editorCallback(event.value);
-		setLocalNomenclatureEvents((prev) => {
-			const updated = [...prev];
-			updated[props.rowIndex] = { ...updated[props.rowIndex], nomenclatureEvent: event.value };
-			return updated;
-		});
-	};
-
-	const internalOnChangeHandler = (props, event) => {
-		props.editorCallback(event.target.value?.name);
-		setLocalNomenclatureEvents((prev) => {
-			const updated = [...prev];
-			updated[props.rowIndex] = { ...updated[props.rowIndex], internal: event.target?.value?.name };
-			return updated;
-		});
-	};
-
-	const obsoleteOnChangeHandler = (props, event) => {
-		props.editorCallback(event.target.value?.name);
-		setLocalNomenclatureEvents((prev) => {
-			const updated = [...prev];
-			updated[props.rowIndex] = { ...updated[props.rowIndex], obsolete: event.target?.value?.name };
-			return updated;
-		});
-	};
-
-	const evidenceOnChangeHandler = (event, setFieldValue, props) => {
-		setFieldValue(event.target.value);
-		setLocalNomenclatureEvents((prev) => {
-			const updated = [...prev];
-			updated[props.rowIndex] = { ...updated[props.rowIndex], evidence: event.target.value };
-			return updated;
-		});
-	};
-
 	const createNewNomenclatureEventHandler = () => {
-		const newKey = dataKeyCounter.current++;
 		const _localNomenclatureEvents = structuredClone(localNomenclatureEvents);
-		_localNomenclatureEvents.push({
-			dataKey: newKey,
+		const newRow = {
 			internal: false,
 			obsolete: false,
-		});
-		let _editingRows = { ...editingRows, ...{ [`${newKey}`]: true } };
+		};
+		addDataKey(newRow);
+		_localNomenclatureEvents.push(newRow);
+		let _editingRows = { ...editingRows, ...{ [`${newRow.dataKey}`]: true } };
 		setEditingRows(_editingRows);
 		setLocalNomenclatureEvents(_localNomenclatureEvents);
 	};
@@ -229,7 +209,7 @@ export const NomenclatureEventsEditDialog = ({
 		);
 	};
 
-	let headerGroup = (
+	const headerGroup = (
 		<ColumnGroup>
 			<Row>
 				<Column header="Actions" />
@@ -258,96 +238,65 @@ export const NomenclatureEventsEditDialog = ({
 				footer={footerTemplate}
 			>
 				<h3>Nomenclature Events</h3>
-				<DataTable
-					value={localNomenclatureEvents}
-					dataKey="dataKey"
-					showGridlines
-					editMode="row"
-					headerColumnGroup={headerGroup}
-					editingRows={editingRows}
-					onRowEditChange={onRowEditChange}
-					ref={tableRef}
-					cellMemo={false}
-				>
-					<Column
-						editor={(props) => (
-							<DeleteAction deletionHandler={handleDeleteNomenclatureEvent} id={props?.rowData?.dataKey} />
-						)}
-						className="max-w-4rem"
-						bodyClassName="text-center"
-						headerClassName="surface-0"
-						frozen
-					/>
-					<Column
-						editor={(props) => {
-							return (
-								<ControlledVocabularyEditor
-									editorOptions={props}
-									onChangeHandler={nomenclatureEventOnChangeHandler}
-									errorMessages={errorMessages}
-									dataKey={props?.rowData?.dataKey}
-									rowIndex={props.rowIndex}
-									vocabType="allele_nomenclature_event"
+				<TableEditorProvider strategy={strategy}>
+					<DataTable
+						value={localNomenclatureEvents}
+						dataKey="dataKey"
+						showGridlines
+						editMode="row"
+						headerColumnGroup={headerGroup}
+						editingRows={editingRows}
+						onRowEditChange={KEEP_ROWS_IN_EDIT_MODE}
+						ref={tableRef}
+						cellMemo={false}
+					>
+						<Column
+							editor={(editorOptions) => (
+								<DeleteAction deletionHandler={handleDeleteNomenclatureEvent} id={editorOptions?.rowData?.dataKey} />
+							)}
+							className="max-w-4rem"
+							bodyClassName="text-center"
+							headerClassName="surface-0"
+							frozen
+						/>
+						<Column
+							editor={(editorOptions) => (
+								<ControlledVocabularyTableEditor
+									editorOptions={editorOptions}
 									field="nomenclatureEvent"
+									options={nomenclatureEventTerms}
+									dataKey="id"
 									showClear={false}
 								/>
-							);
-						}}
-						field="nomenclatureEvent"
-						header="Nomenclature Event"
-						headerClassName="surface-0"
-					/>
-					<Column
-						editor={(props) => {
-							return (
-								<EvidenceEditor
-									props={props}
-									errorMessages={errorMessages}
-									onChange={evidenceOnChangeHandler}
-									dataKey={props?.rowData?.dataKey}
-								/>
-							);
-						}}
-						field="evidence"
-						header="Evidence"
-						headerClassName="surface-0"
-					/>
-					<Column
-						editor={(props) => {
-							return (
-								<InternalEditor
-									editorOptions={props}
-									rowIndex={props.rowIndex}
-									errorMessages={errorMessages}
-									dataKey={props?.rowData?.dataKey}
-									internalOnChangeHandler={internalOnChangeHandler}
-								/>
-							);
-						}}
-						field="internal"
-						header="Internal"
-						headerClassName="surface-0"
-					/>
-					<Column
-						editor={(props) => {
-							return (
-								<ObsoleteEditor
-									editorOptions={props}
-									obsoleteOnChangeHandler={obsoleteOnChangeHandler}
-									errorMessages={errorMessages}
-									dataKey={props?.rowData?.dataKey}
-								/>
-							);
-						}}
-						field="obsolete"
-						header="Obsolete"
-						headerClassName="surface-0"
-					/>
-					<Column field="updatedBy.uniqueId" header="Updated By" headerClassName="surface-0" />
-					<Column field="dateUpdated" header="Date Updated" headerClassName="surface-0" />
-					<Column field="createdBy.uniqueId" header="Created By" headerClassName="surface-0" />
-					<Column field="dateCreated" header="Date Created" headerClassName="surface-0" />
-				</DataTable>
+							)}
+							field="nomenclatureEvent"
+							header="Nomenclature Event"
+							headerClassName="surface-0"
+						/>
+						<Column
+							editor={(editorOptions) => <EvidenceTableEditor editorOptions={editorOptions} />}
+							field="evidence"
+							header="Evidence"
+							headerClassName="surface-0"
+						/>
+						<Column
+							editor={(editorOptions) => <BooleanTableEditor editorOptions={editorOptions} field="internal" />}
+							field="internal"
+							header="Internal"
+							headerClassName="surface-0"
+						/>
+						<Column
+							editor={(editorOptions) => <BooleanTableEditor editorOptions={editorOptions} field="obsolete" />}
+							field="obsolete"
+							header="Obsolete"
+							headerClassName="surface-0"
+						/>
+						<Column field="updatedBy.uniqueId" header="Updated By" headerClassName="surface-0" />
+						<Column field="dateUpdated" header="Date Updated" headerClassName="surface-0" />
+						<Column field="createdBy.uniqueId" header="Created By" headerClassName="surface-0" />
+						<Column field="dateCreated" header="Date Created" headerClassName="surface-0" />
+					</DataTable>
+				</TableEditorProvider>
 			</Dialog>
 		</div>
 	);

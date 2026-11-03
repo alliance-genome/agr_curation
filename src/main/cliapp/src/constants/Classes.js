@@ -100,11 +100,19 @@ export const CLASSES = Object.freeze({
 	Reference: { name: 'Literature References', link: '/#/references', type: 'entity', hasTable: true, isIndexed: false },
 	SequenceTargetingReagent: {
 		name: 'Sequence Targeting Reagents',
+		link: '/#/sequenceTargetingReagents',
 		type: 'entity',
-		hasTable: false,
+		hasTable: true,
 		isIndexed: true,
 	},
 	Species: { name: 'Species', link: '/#/species', type: 'entity', hasTable: true, isIndexed: true },
+	TransgenicTool: {
+		name: 'Transgenic Tools',
+		link: '/#/transgenicTools',
+		type: 'entity',
+		hasTable: true,
+		isIndexed: true,
+	},
 	Transcript: { name: 'Transcripts', type: 'entity', hasTable: false, isIndexed: false },
 	Exon: { name: 'Exons', type: 'entity', hasTable: false, isIndexed: false },
 	CodingSequence: {
@@ -141,15 +149,17 @@ export const CLASSES = Object.freeze({
 	},
 	HTPExpressionDatasetAnnotation: {
 		name: 'HTP Expression Dataset Annotations',
+		link: '/#/htpExpressionDatasetAnnotations',
 		type: 'entity',
-		hasTable: false,
-		isIndexed: false,
+		hasTable: true,
+		isIndexed: true,
 	},
 	HTPExpressionDatasetSampleAnnotation: {
 		name: 'HTP Expression Dataset Sample Annotations',
+		link: '/#/htpExpressionDatasetSampleAnnotations',
 		type: 'entity',
-		hasTable: false,
-		isIndexed: false,
+		hasTable: true,
+		isIndexed: true,
 	},
 	GeneOntologyAnnotation: {
 		name: 'Gene Ontology Annotations',

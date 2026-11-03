@@ -1,140 +1,49 @@
-import React, { useRef } from 'react';
+import React from 'react';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { Button } from 'primereact/button';
-import { Toast } from 'primereact/toast';
-import { DialogErrorMessageComponent } from '../../components/Error/DialogErrorMessageComponent';
-import { BooleanDropdown } from '../../components/Editors/dropdown/boolean/BooleanDropdown';
 import { useControlledVocabularyService } from '../../service/useControlledVocabularyService';
-import { ControlledVocabularyDropdown } from '../../components/Editors/dropdown/vocabulary/ControlledVocabularyDropdown';
-import { FormErrorMessageComponent } from '../../components/Error/FormErrorMessageComponent';
-import { ExConAutocompleteTemplate } from '../../components/Editors/autocomplete/base/templates/ExConAutocompleteTemplate';
-import { AutocompleteMultiEditor } from '../../components/Editors/autocomplete/base/AutocompleteMultiEditor';
-import { autocompleteSearch, buildAutocompleteFilter } from '../../utils/utils';
-import { Endpoints } from '../../constants/Endpoints';
-import { AUTOCOMPLETE_CONFIGS, getAutocompleteFields } from '../../constants/FilterFields';
+import { TableEditorProvider } from '../../components/Editors/fields/TableEditorContext';
+import { useDataKeyRowsStrategy } from '../../components/Editors/fields/strategies/useDataKeyRowsStrategy';
+import { ControlledVocabularyTableEditor } from '../../components/Editors/dropdown/vocabulary/ControlledVocabularyTableEditor';
+import { BooleanTableEditor } from '../../components/Editors/dropdown/boolean/BooleanTableEditor';
+import { ConditionsTableEditor } from '../../components/Editors/autocomplete/experimentalCondition/ConditionsTableEditor';
+import { conditionsDetailedSearchConfig } from '../../components/Editors/autocomplete/experimentalCondition/utils';
+import { KEEP_ROWS_IN_EDIT_MODE } from '../allelesPage/utils';
 
+/**
+ * The new disease annotation dialog's condition relations table, every row always in edit mode.
+ * Rows live in the new annotation reducer and are addressed by their `dataKey`.
+ *
+ * @param {Function} dispatch - new annotation reducer dispatch
+ * @param {object[]} conditionRelations - the annotation's condition relations, each carrying a
+ *   `dataKey`
+ * @param {boolean} showConditionRelations - whether the table is shown
+ * @param {object} errorMessages - row errors, keyed by `dataKey` then field
+ * @param {boolean} buttonIsDisabled - whether adding a condition relation is disabled
+ * @param {object} editingRows - PrimeReact editing state, keyed by `dataKey`
+ * @returns {JSX.Element}
+ */
 export const ConditionRelationsForm = ({
 	dispatch,
 	conditionRelations,
 	showConditionRelations,
 	errorMessages,
-	searchService,
 	buttonIsDisabled,
 	editingRows,
 }) => {
-	const booleanTerms = useControlledVocabularyService('generic_boolean_terms');
 	const conditionRelationTypeTerms = useControlledVocabularyService('condition_relation');
-	const tableRef = useRef(null);
-	const toast_topright = useRef(null);
 
-	const onRowEditChange = (e) => {
-		console.log(e);
-	};
+	const strategy = useDataKeyRowsStrategy({
+		rows: conditionRelations,
+		errors: errorMessages,
+		write: ({ rowKey, field, value }) =>
+			dispatch({ type: 'EDIT_ROW', tableType: 'conditionRelations', dataKey: rowKey, field, value }),
+	});
 
 	const createNewRelationHandler = (event) => {
 		event.preventDefault();
-
-		let count = conditionRelations ? conditionRelations.length : 0;
-		dispatch({ type: 'ADD_NEW_RELATION', count });
-	};
-
-	const onConditionRelationTypeEditorValueChange = (editorOptions, event) => {
-		dispatch({
-			type: 'EDIT_ROW',
-			tableType: 'conditionRelations',
-			field: 'conditionRelationType',
-			index: editorOptions.rowIndex,
-			value: event.target.value,
-		});
-	};
-
-	const conditionRelationTypeEditor = (editorOptions) => {
-		return (
-			<>
-				<ControlledVocabularyDropdown
-					field="conditionRelationType"
-					options={conditionRelationTypeTerms}
-					editorChange={onConditionRelationTypeEditorValueChange}
-					editorOptions={editorOptions}
-					showClear={false}
-					dataKey="id"
-				/>
-				<DialogErrorMessageComponent
-					errorMessages={errorMessages[editorOptions.rowIndex]}
-					errorField={'conditionRelationType'}
-				/>
-			</>
-		);
-	};
-
-	const onConditionsEditorValueChange = (event, setValue, editorOptions) => {
-		setValue(event.target.value);
-		dispatch({
-			type: 'EDIT_ROW',
-			tableType: 'conditionRelations',
-			field: 'conditions',
-			index: editorOptions.rowIndex,
-			value: event.target.value,
-		});
-	};
-
-	const conditionSearch = (event, setFiltered, setInputValue) => {
-		const autocompleteFields = getAutocompleteFields(AUTOCOMPLETE_CONFIGS.experimentalConditionAutocompleteConfig);
-		const endpoint = Endpoints.Annotation.EXPERIMENTAL_CONDITION;
-		const filterName = 'conditionSummaryFilter';
-		const filter = buildAutocompleteFilter(event, autocompleteFields);
-
-		setInputValue(event.query);
-		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered);
-	};
-
-	const conditionsEditorTemplate = (editorOptions) => {
-		return (
-			<>
-				<AutocompleteMultiEditor
-					search={conditionSearch}
-					initialValue={editorOptions.rowData.conditions}
-					editorOptions={editorOptions}
-					fieldName="conditions"
-					subField="conditionSummary"
-					valueDisplay={(item, setAutocompleteHoverItem, op, query) => (
-						<ExConAutocompleteTemplate
-							item={item}
-							setAutocompleteHoverItem={setAutocompleteHoverItem}
-							op={op}
-							query={query}
-						/>
-					)}
-					onValueChangeHandler={onConditionsEditorValueChange}
-				/>
-				<DialogErrorMessageComponent errorMessages={errorMessages[editorOptions.rowIndex]} errorField={'conditions'} />
-			</>
-		);
-	};
-
-	const onInternalEditorValueChange = (editorOptions, event) => {
-		dispatch({
-			type: 'EDIT_ROW',
-			tableType: 'conditionRelations',
-			field: 'internal',
-			index: editorOptions.rowIndex,
-			value: event.value.name,
-		});
-	};
-
-	const internalEditor = (editorOptions) => {
-		return (
-			<>
-				<BooleanDropdown
-					options={booleanTerms?.terms || []}
-					editorChange={onInternalEditorValueChange}
-					editorOptions={editorOptions}
-					field={'internal'}
-				/>
-				<FormErrorMessageComponent errorMessages={errorMessages[editorOptions.rowIndex]} errorField={'internal'} />
-			</>
-		);
+		dispatch({ type: 'ADD_NEW_RELATION' });
 	};
 
 	const handleDeleteRelation = (event, editorOptions) => {
@@ -143,7 +52,7 @@ export const ConditionRelationsForm = ({
 			type: 'DELETE_ROW',
 			tableType: 'conditionRelations',
 			showType: 'showConditionRelations',
-			index: editorOptions.rowIndex,
+			dataKey: editorOptions.rowData?.dataKey,
 		});
 	};
 
@@ -161,41 +70,57 @@ export const ConditionRelationsForm = ({
 
 	return (
 		<div>
-			<Toast ref={toast_topright} position="top-right" className="w-10" />
 			{showConditionRelations && (
-				<DataTable
-					value={conditionRelations}
-					dataKey="dataKey"
-					showGridlines
-					editMode="row"
-					editingRows={editingRows}
-					onRowEditChange={onRowEditChange}
-					ref={tableRef}
-					resizableColumns
-					columnResizeMode="expand"
-				>
-					<Column
-						editor={(editorOptions) => deleteAction(editorOptions)}
-						body={(editorOptions) => deleteAction(editorOptions)}
-						style={{ maxWidth: '4rem' }}
-						frozen
-						headerClassName="surface-0"
-						bodyStyle={{ textAlign: 'center' }}
-					/>
-					<Column
-						editor={conditionRelationTypeEditor}
-						field="conditionRelationType.name"
-						header="Relation"
-						headerClassName="surface-0"
-					/>
-					<Column
-						editor={conditionsEditorTemplate}
-						field="conditions.condSummary"
-						header="Conditions"
-						headerClassName="surface-0"
-					/>
-					<Column editor={internalEditor} field="internal" header="Internal" headerClassName="surface-0" />
-				</DataTable>
+				<TableEditorProvider strategy={strategy}>
+					<DataTable
+						value={conditionRelations}
+						dataKey="dataKey"
+						showGridlines
+						editMode="row"
+						editingRows={editingRows}
+						onRowEditChange={KEEP_ROWS_IN_EDIT_MODE}
+						resizableColumns
+						columnResizeMode="expand"
+						cellMemo={false}
+					>
+						<Column
+							editor={(editorOptions) => deleteAction(editorOptions)}
+							body={(rowData) => deleteAction({ rowData })}
+							style={{ maxWidth: '4rem' }}
+							frozen
+							headerClassName="surface-0"
+							bodyStyle={{ textAlign: 'center' }}
+						/>
+						<Column
+							editor={(editorOptions) => (
+								<ControlledVocabularyTableEditor
+									editorOptions={editorOptions}
+									field="conditionRelationType"
+									options={conditionRelationTypeTerms}
+									dataKey="id"
+									showClear={false}
+								/>
+							)}
+							field="conditionRelationType.name"
+							header="Relation"
+							headerClassName="surface-0"
+						/>
+						<Column
+							editor={(editorOptions) => (
+								<ConditionsTableEditor editorOptions={editorOptions} searchConfig={conditionsDetailedSearchConfig} />
+							)}
+							field="conditions.condSummary"
+							header="Conditions"
+							headerClassName="surface-0"
+						/>
+						<Column
+							editor={(editorOptions) => <BooleanTableEditor editorOptions={editorOptions} field="internal" />}
+							field="internal"
+							header="Internal"
+							headerClassName="surface-0"
+						/>
+					</DataTable>
+				</TableEditorProvider>
 			)}
 			<div className={`${showConditionRelations ? 'pt-3' : ''} p-field p-col`}>
 				<Button

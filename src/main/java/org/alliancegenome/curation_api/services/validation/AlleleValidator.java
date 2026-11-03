@@ -13,12 +13,11 @@ import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.AlleleDAO;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.Allele;
-import org.alliancegenome.curation_api.model.entities.Construct;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.Gene;
+import org.alliancegenome.curation_api.model.entities.Note;
 import org.alliancegenome.curation_api.model.entities.Reference;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
-import org.alliancegenome.curation_api.model.entities.associations.AlleleConstructAssociation;
 import org.alliancegenome.curation_api.model.entities.associations.AlleleGeneAssociation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.AlleleDatabaseStatusSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.AlleleFullNameSlotAnnotation;
@@ -32,7 +31,6 @@ import org.alliancegenome.curation_api.model.entities.slotAnnotations.AlleleSymb
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.AlleleSynonymSlotAnnotation;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.helpers.AssociationIdentityHelper;
-import org.alliancegenome.curation_api.services.validation.associations.AlleleConstructAssociationValidator;
 import org.alliancegenome.curation_api.services.validation.associations.AlleleGeneAssociationValidator;
 import org.alliancegenome.curation_api.services.validation.dto.slotAnnotations.AlleleDatabaseStatusSlotAnnotationValidator;
 import org.alliancegenome.curation_api.services.validation.dto.slotAnnotations.AlleleFullNameSlotAnnotationValidator;
@@ -66,13 +64,12 @@ public class AlleleValidator extends GenomicEntityValidator<Allele> {
 	@Inject AlleleSecondaryIdSlotAnnotationValidator alleleSecondaryIdValidator;
 	@Inject AlleleFunctionalImpactSlotAnnotationValidator alleleFunctionalImpactValidator;
 	@Inject AlleleDatabaseStatusSlotAnnotationValidator alleleDatabaseStatusValidator;
-	@Inject AlleleConstructAssociationValidator alleleConstructAssociationValidator;
 	@Inject AlleleGeneAssociationValidator alleleGeneAssociationValidator;
 	@Inject ReferenceValidator referenceValidator;
 	
 	private String errorMessage;
 
-	public Allele validateAlleleUpdate(Allele uiEntity, Boolean updateAllAssociations, Boolean manageCrossReferences) {
+	public Allele validateAlleleUpdate(Allele uiEntity, Boolean manageSubResourceFields) {
 		response = new ObjectResponse<>(uiEntity);
 		errorMessage = "Could not update Allele: [" + uiEntity.getIdentifier() + "]";
 
@@ -90,7 +87,7 @@ public class AlleleValidator extends GenomicEntityValidator<Allele> {
 
 		dbEntity = (Allele) validateAuditedObjectFields(uiEntity, dbEntity, false);
 
-		return validateAllele(uiEntity, dbEntity, updateAllAssociations, manageCrossReferences);
+		return validateAllele(uiEntity, dbEntity, manageSubResourceFields);
 	}
 
 	public Allele validateAlleleCreate(Allele uiEntity) {
@@ -103,12 +100,22 @@ public class AlleleValidator extends GenomicEntityValidator<Allele> {
 
 		dbEntity = (Allele) validateAuditedObjectFields(uiEntity, dbEntity, true);
 
-		// POST /allele serializes AlleleDetailView, which omits crossReferences, so the create payload never
-		// carries them; they are written through the allele's cross-references sub-resource.
-		return validateAllele(uiEntity, dbEntity, true, false);
+		// POST /allele serializes AlleleDetailView, which omits crossReferences, references, related notes, the slot
+		// annotation lists and the gene and construct associations, so the create payload never carries them;
+		// validateAllele leaves them to their own endpoints.
+		return validateAllele(uiEntity, dbEntity, false);
 	}
 
-	public Allele validateAllele(Allele uiEntity, Allele dbEntity, Boolean updateAllAssociations, Boolean manageCrossReferences) {
+	/**
+	 * Gene and construct associations are left as they are stored: gene associations are written through the
+	 * allele's gene associations sub-resource, and construct associations through their own endpoints and loads.
+	 *
+	 * @param manageSubResourceFields whether the calling endpoint's JSON view carries crossReferences, references,
+	 *        relatedNotes and the synonym, secondary ID, nomenclature event, mutation type, functional impact and
+	 *        inheritance mode lists. An endpoint whose view omits them leaves the stored ones as they are; they are written through
+	 *        the allele's own sub-resources instead.
+	 */
+	public Allele validateAllele(Allele uiEntity, Allele dbEntity, Boolean manageSubResourceFields) {
 
 		String storedSymbolText = dbEntity.getAlleleSymbol() == null ? null : dbEntity.getAlleleSymbol().getDisplayText();
 		Long storedTaxonId = dbEntity.getTaxon() == null ? null : dbEntity.getTaxon().getId();
@@ -116,10 +123,12 @@ public class AlleleValidator extends GenomicEntityValidator<Allele> {
 		// An allele is identified by its AGRKB curie, minted below for a new allele and already
 		// present on a loaded one, so neither MOD identifier is required. Passed for updates too:
 		// an allele created here has neither, and requiring one would reject its first edit.
-		dbEntity = validateGenomicEntityFields(uiEntity, dbEntity, VocabularyConstants.ALLELE_NOTE_TYPES_VOCABULARY_TERM_SET, false, manageCrossReferences);
+		dbEntity = validateGenomicEntityFields(uiEntity, dbEntity, VocabularyConstants.ALLELE_NOTE_TYPES_VOCABULARY_TERM_SET, false, manageSubResourceFields, manageSubResourceFields);
 
-		List<Reference> references = validateReferences(uiEntity, dbEntity);
-		dbEntity.setReferences(references);
+		if (manageSubResourceFields) {
+			List<Reference> references = validateReferences(uiEntity, dbEntity);
+			dbEntity.setReferences(references);
+		}
 
 		VocabularyTerm inCollection = validateTermInVocabulary("inCollection", VocabularyConstants.ALLELE_COLLECTION_VOCABULARY, uiEntity.getInCollection(), dbEntity.getInCollection());
 		dbEntity.setInCollection(inCollection);
@@ -159,18 +168,19 @@ public class AlleleValidator extends GenomicEntityValidator<Allele> {
 		AlleleFullNameSlotAnnotation fullName = validateAlleleFullName(uiEntity, dbEntity);
 		AlleleGermlineTransmissionStatusSlotAnnotation germlineTransmissionStatus = validateAlleleGermlineTransmissionStatus(uiEntity, dbEntity);
 		AlleleDatabaseStatusSlotAnnotation databaseStatus = validateAlleleDatabaseStatus(uiEntity, dbEntity);
-		List<AlleleSynonymSlotAnnotation> synonyms = validateAlleleSynonyms(uiEntity, dbEntity);
-		List<AlleleSecondaryIdSlotAnnotation> secondaryIds = validateAlleleSecondaryIds(uiEntity, dbEntity);
-		List<AlleleInheritanceModeSlotAnnotation> inheritanceModes = validateAlleleInheritanceModes(uiEntity, dbEntity);
-		List<AlleleFunctionalImpactSlotAnnotation> functionalImpacts = validateAlleleFunctionalImpacts(uiEntity, dbEntity);
-		List<AlleleMutationTypeSlotAnnotation> mutationTypes = validateAlleleMutationTypes(uiEntity, dbEntity);
-		List<AlleleNomenclatureEventSlotAnnotation> nomenclatureEvents = validateAlleleNomenclatureEvents(uiEntity, dbEntity);
-
-		List<AlleleGeneAssociation> geneAssociations = null;
-		List<AlleleConstructAssociation> constructAssociations = null;
-		if (updateAllAssociations) { // This should contain logic for all fields only returned in AlleleDetailView
-			geneAssociations = validateAlleleGeneAssociations(uiEntity, dbEntity);
-			constructAssociations = validateAlleleConstructAssociations(uiEntity, dbEntity);
+		List<AlleleSynonymSlotAnnotation> synonyms = null;
+		List<AlleleSecondaryIdSlotAnnotation> secondaryIds = null;
+		List<AlleleInheritanceModeSlotAnnotation> inheritanceModes = null;
+		List<AlleleFunctionalImpactSlotAnnotation> functionalImpacts = null;
+		List<AlleleMutationTypeSlotAnnotation> mutationTypes = null;
+		List<AlleleNomenclatureEventSlotAnnotation> nomenclatureEvents = null;
+		if (manageSubResourceFields) {
+			synonyms = validateAlleleSynonyms(uiEntity, dbEntity);
+			secondaryIds = validateAlleleSecondaryIds(uiEntity, dbEntity);
+			inheritanceModes = validateAlleleInheritanceModes(uiEntity, dbEntity);
+			functionalImpacts = validateAlleleFunctionalImpacts(uiEntity, dbEntity);
+			mutationTypes = validateAlleleMutationTypes(uiEntity, dbEntity);
+			nomenclatureEvents = validateAlleleNomenclatureEvents(uiEntity, dbEntity);
 		}
 
 		response.convertErrorMessagesToMap();
@@ -213,6 +223,10 @@ public class AlleleValidator extends GenomicEntityValidator<Allele> {
 			databaseStatus.setSingleAllele(dbEntity);
 		}
 		dbEntity.setAlleleDatabaseStatus(databaseStatus);
+
+		if (!manageSubResourceFields) {
+			return dbEntity;
+		}
 
 		if (dbEntity.getAlleleSynonyms() != null) {
 			dbEntity.getAlleleSynonyms().clear();
@@ -285,77 +299,110 @@ public class AlleleValidator extends GenomicEntityValidator<Allele> {
 			}
 			dbEntity.getAlleleNomenclatureEvents().addAll(nomenclatureEvents);
 		}
-
-		if (updateAllAssociations) { // This should contain logic for all fields only returned in AlleleDetailView
-			if (dbEntity.getAlleleGeneAssociations() != null) {
-				dbEntity.getAlleleGeneAssociations().clear();
-			}
-			if (geneAssociations != null) {
-				if (dbEntity.getAlleleGeneAssociations() == null) {
-					dbEntity.setAlleleGeneAssociations(new ArrayList<>());
-				}
-				dbEntity.getAlleleGeneAssociations().addAll(geneAssociations);
-			}
-			
-			if (dbEntity.getAlleleConstructAssociations() != null) {
-				dbEntity.getAlleleConstructAssociations().clear();
-			}
-			if (constructAssociations != null) {
-				if (dbEntity.getAlleleConstructAssociations() == null) {
-					dbEntity.setAlleleConstructAssociations(new ArrayList<>());
-				}
-				dbEntity.getAlleleConstructAssociations().addAll(constructAssociations);
-			}
-		}
 		return dbEntity;
 	}
 
-	private ObjectResponse<Reference> validateReference(Reference uiEntity, List<String> previousCuries) {
-		ObjectResponse<Reference> singleRefResponse = referenceValidator.validateReference(uiEntity);
-		if (singleRefResponse.getEntity() == null) {
-			return singleRefResponse;
-		}
-
-		if (singleRefResponse.getEntity().getObsolete() && (CollectionUtils.isEmpty(previousCuries) || !previousCuries.contains(singleRefResponse.getEntity().getCurie()))) {
-			singleRefResponse.setEntity(null);
-			singleRefResponse.addErrorMessage("curie", ValidationConstants.OBSOLETE_MESSAGE);
-		}
-
-		return singleRefResponse;
-	}
-
-	public List<Reference> validateReferences(Allele uiEntity, Allele dbEntity) {
+	/**
+	 * Resolves the references an allele's references sub-resource is to hold, in submitted order, with the same
+	 * rules as references saved through the allele itself, and no reference named twice. Two curies can name the
+	 * same reference, so duplicates are found by the reference they resolve to. Duplicates are reported once every
+	 * entry resolves.
+	 *
+	 * @param dbEntity the allele the references belong to
+	 * @param incomingReferences the submitted references
+	 * @return the resolved references, one per submitted entry
+	 * @throws ApiErrorException when the list is missing or any entry cannot be resolved or is a duplicate, with
+	 *         each entry's errors keyed by its index
+	 */
+	public List<Reference> validateReferenceReplacement(Allele dbEntity, List<Reference> incomingReferences) {
+		response = new ObjectResponse<>();
 		String field = "references";
+		String errorTitle = "Could not update References for: [" + dbEntity.getId() + "]";
 
-		List<Reference> validatedReferences = new ArrayList<Reference>();
-		List<String> previousReferenceCuries = new ArrayList<String>();
-		if (CollectionUtils.isNotEmpty(dbEntity.getReferences())) {
-			previousReferenceCuries = dbEntity.getReferences().stream().map(Reference::getCurie).collect(Collectors.toList());
+		if (incomingReferences == null) {
+			addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
+			response.setErrorMessage(errorTitle);
+			throw new ApiErrorException(response);
 		}
 
-		Boolean allValid = true;
-		if (CollectionUtils.isNotEmpty(uiEntity.getReferences())) {
-			for (int ix = 0; ix < uiEntity.getReferences().size(); ix++) {
-				ObjectResponse<Reference> refResponse = validateReference(uiEntity.getReferences().get(ix), previousReferenceCuries);
-				if (refResponse.getEntity() == null) {
+		List<Reference> resolvedReferences = resolveReferences(incomingReferences, dbEntity.getReferences(), field);
+		boolean allValid = resolvedReferences != null;
+		if (allValid) {
+			Set<Long> seenIds = new HashSet<>();
+			for (int ix = 0; ix < resolvedReferences.size(); ix++) {
+				if (!seenIds.add(resolvedReferences.get(ix).getId())) {
 					allValid = false;
-					response.addErrorMessages(field, ix, refResponse.getErrorMessages());
-				} else {
-					validatedReferences.add(refResponse.getEntity());
+					response.addErrorMessages(field, ix, Map.of("curie", ValidationConstants.DUPLICATE_MESSAGE));
 				}
 			}
 		}
 
 		if (!allValid) {
 			convertMapToErrorMessages(field);
+			response.setErrorMessage(errorTitle);
+			throw new ApiErrorException(response);
+		}
+
+		return resolvedReferences;
+	}
+
+	public List<Reference> validateReferences(Allele uiEntity, Allele dbEntity) {
+		String field = "references";
+
+		if (CollectionUtils.isEmpty(uiEntity.getReferences())) {
 			return null;
 		}
 
-		if (CollectionUtils.isEmpty(validatedReferences)) {
+		List<Reference> validatedReferences = resolveReferences(uiEntity.getReferences(), dbEntity.getReferences(), field);
+		if (validatedReferences == null) {
+			convertMapToErrorMessages(field);
 			return null;
 		}
 
 		return validatedReferences;
+	}
+
+	/**
+	 * Resolves each submitted reference to the stored one it names, by its curie or one of its cross reference
+	 * curies. An entry must name a reference that exists, and a reference the allele does not already hold must
+	 * not be obsolete. A cross reference curie does not resolve to an obsolete reference, so an obsolete reference
+	 * the allele already holds is kept only when named by its own curie.
+	 *
+	 * @param incomingReferences the submitted references
+	 * @param heldReferences the references the allele holds now
+	 * @param field the field each entry's errors are recorded under, keyed by its index
+	 * @return the resolved references in submitted order, or null when any entry is rejected
+	 */
+	private List<Reference> resolveReferences(List<Reference> incomingReferences, List<Reference> heldReferences, String field) {
+		Set<Long> heldIds = new HashSet<>();
+		if (heldReferences != null) {
+			heldReferences.forEach(reference -> heldIds.add(reference.getId()));
+		}
+
+		List<Reference> resolvedReferences = new ArrayList<>();
+		boolean allValid = true;
+		for (int ix = 0; ix < incomingReferences.size(); ix++) {
+			Reference incomingReference = incomingReferences.get(ix);
+			if (incomingReference == null || StringUtils.isBlank(incomingReference.getCurie())) {
+				allValid = false;
+				response.addErrorMessages(field, ix, Map.of("curie", ValidationConstants.REQUIRED_MESSAGE));
+				continue;
+			}
+
+			ObjectResponse<Reference> referenceResponse = referenceValidator.validateReference(incomingReference);
+			Reference reference = referenceResponse.getEntity();
+			if (reference == null) {
+				allValid = false;
+				response.addErrorMessages(field, ix, referenceResponse.getErrorMessages());
+			} else if (Boolean.TRUE.equals(reference.getObsolete()) && !heldIds.contains(reference.getId())) {
+				allValid = false;
+				response.addErrorMessages(field, ix, Map.of("curie", ValidationConstants.OBSOLETE_MESSAGE));
+			} else {
+				resolvedReferences.add(reference);
+			}
+		}
+
+		return allValid ? resolvedReferences : null;
 	}
 
 	private List<AlleleMutationTypeSlotAnnotation> validateAlleleMutationTypes(Allele uiEntity, Allele dbEntity) {
@@ -634,137 +681,170 @@ public class AlleleValidator extends GenomicEntityValidator<Allele> {
 		return validatedFunctionalImpacts;
 	}
 
-	private List<AlleleGeneAssociation> validateAlleleGeneAssociations(Allele uiEntity, Allele dbEntity) {
+	public List<AlleleSynonymSlotAnnotation> validateSynonymReplacement(Allele dbEntity, List<AlleleSynonymSlotAnnotation> incomingSynonyms) {
+		return validateSlotAnnotationReplacement(dbEntity, incomingSynonyms, dbEntity.getAlleleSynonyms(), "alleleSynonyms", "displayText", "Synonyms",
+			alleleSynonymValidator::validateAlleleSynonymSlotAnnotation, AlleleSynonymSlotAnnotation::setSingleAllele);
+	}
+
+	public List<AlleleSecondaryIdSlotAnnotation> validateSecondaryIdReplacement(Allele dbEntity, List<AlleleSecondaryIdSlotAnnotation> incomingSecondaryIds) {
+		return validateSlotAnnotationReplacement(dbEntity, incomingSecondaryIds, dbEntity.getAlleleSecondaryIds(), "alleleSecondaryIds", "secondaryId", "Secondary IDs",
+			alleleSecondaryIdValidator::validateAlleleSecondaryIdSlotAnnotation, AlleleSecondaryIdSlotAnnotation::setSingleAllele);
+	}
+
+	public List<AlleleNomenclatureEventSlotAnnotation> validateNomenclatureEventReplacement(Allele dbEntity, List<AlleleNomenclatureEventSlotAnnotation> incomingNomenclatureEvents) {
+		return validateSlotAnnotationReplacement(dbEntity, incomingNomenclatureEvents, dbEntity.getAlleleNomenclatureEvents(), "alleleNomenclatureEvents", "nomenclatureEvent", "Nomenclature Events",
+			alleleNomenclatureEventValidator::validateAlleleNomenclatureEventSlotAnnotation, AlleleNomenclatureEventSlotAnnotation::setSingleAllele);
+	}
+
+	public List<AlleleMutationTypeSlotAnnotation> validateMutationTypeReplacement(Allele dbEntity, List<AlleleMutationTypeSlotAnnotation> incomingMutationTypes) {
+		return validateSlotAnnotationReplacement(dbEntity, incomingMutationTypes, dbEntity.getAlleleMutationTypes(), "alleleMutationTypes", "mutationTypes", "Mutation Types",
+			alleleMutationTypeValidator::validateAlleleMutationTypeSlotAnnotation, AlleleMutationTypeSlotAnnotation::setSingleAllele);
+	}
+
+	public List<AlleleFunctionalImpactSlotAnnotation> validateFunctionalImpactReplacement(Allele dbEntity, List<AlleleFunctionalImpactSlotAnnotation> incomingFunctionalImpacts) {
+		return validateSlotAnnotationReplacement(dbEntity, incomingFunctionalImpacts, dbEntity.getAlleleFunctionalImpacts(), "alleleFunctionalImpacts", "functionalImpacts", "Functional Impacts",
+			alleleFunctionalImpactValidator::validateAlleleFunctionalImpactSlotAnnotation, AlleleFunctionalImpactSlotAnnotation::setSingleAllele);
+	}
+
+	public List<AlleleInheritanceModeSlotAnnotation> validateInheritanceModeReplacement(Allele dbEntity, List<AlleleInheritanceModeSlotAnnotation> incomingInheritanceModes) {
+		return validateSlotAnnotationReplacement(dbEntity, incomingInheritanceModes, dbEntity.getAlleleInheritanceModes(), "alleleInheritanceModes", "inheritanceMode", "Inheritance Modes",
+			alleleInheritanceModeValidator::validateAlleleInheritanceModeSlotAnnotation, AlleleInheritanceModeSlotAnnotation::setSingleAllele);
+	}
+
+	public List<Note> validateRelatedNoteReplacement(Allele dbEntity, List<Note> incomingNotes) {
+		return validateRelatedNoteReplacement(dbEntity, incomingNotes, VocabularyConstants.ALLELE_NOTE_TYPES_VOCABULARY_TERM_SET);
+	}
+
+	/**
+	 * Validates the gene associations an allele's gene associations sub-resource is to hold, in submitted order.
+	 * An entry with an id updates that association, which must be one the allele holds and no other entry names;
+	 * an entry without one is a new association. Associations the list omits are removed from their genes'
+	 * association lists, so replacing the allele's list deletes them.
+	 *
+	 * @param dbEntity the allele the associations belong to
+	 * @param incomingAssociations the submitted associations
+	 * @return the validated associations, one per submitted entry
+	 * @throws ApiErrorException when the list is missing or any entry is rejected, with each entry's errors keyed
+	 *         by its index
+	 */
+	public List<AlleleGeneAssociation> validateGeneAssociationReplacement(Allele dbEntity, List<AlleleGeneAssociation> incomingAssociations) {
+		response = new ObjectResponse<>();
 		String field = "alleleGeneAssociations";
+		String errorTitle = "Could not update Gene Associations for: [" + dbEntity.getId() + "]";
 
-		List<AlleleGeneAssociation> uiAssociations = uiEntity.getAlleleGeneAssociations();
+		if (incomingAssociations == null) {
+			addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
+			response.setErrorMessage(errorTitle);
+			throw new ApiErrorException(response);
+		}
 
+		Set<Long> heldIds = new HashSet<>();
+		if (dbEntity.getAlleleGeneAssociations() != null) {
+			dbEntity.getAlleleGeneAssociations().forEach(association -> heldIds.add(association.getId()));
+		}
+
+		List<AlleleGeneAssociation> validatedAssociations = resolveGeneAssociations(incomingAssociations, dbEntity, heldIds, field);
+		if (validatedAssociations == null) {
+			convertMapToErrorMessages(field);
+			response.setErrorMessage(errorTitle);
+			throw new ApiErrorException(response);
+		}
+
+		detachOmittedGeneAssociations(dbEntity, incomingAssociations);
+
+		return validatedAssociations;
+	}
+
+	/**
+	 * Validates each submitted gene association and assigns it to the allele. Every entry must be present, an
+	 * entry's id must be one of the allele's associations and named by no other entry, the allele has at most one
+	 * association with the is_allele_of relation, and no two of its associations share an identity.
+	 *
+	 * @param incomingAssociations the submitted associations
+	 * @param dbEntity the allele the associations belong to
+	 * @param heldIds the ids of the associations the allele holds
+	 * @param field the field each entry's errors are recorded under, keyed by its index
+	 * @return the validated associations in submitted order, or null when any entry is rejected
+	 */
+	private List<AlleleGeneAssociation> resolveGeneAssociations(List<AlleleGeneAssociation> incomingAssociations, Allele dbEntity, Set<Long> heldIds, String field) {
 		List<AlleleGeneAssociation> validatedGeneAssociations = new ArrayList<AlleleGeneAssociation>();
 		Boolean allValid = true;
 		Boolean hasIsAlleleOfRelation = false;
 		Set<String> validatedAssociationIdentities = new HashSet<>();
-		if (CollectionUtils.isNotEmpty(uiAssociations)) {
-			for (int ix = 0; ix < uiAssociations.size(); ix++) {
-				AlleleGeneAssociation ga = uiAssociations.get(ix);
-				ObjectResponse<AlleleGeneAssociation> gaResponse = alleleGeneAssociationValidator.validateAlleleGeneAssociation(ga);
-				if (gaResponse.getEntity() == null) {
-					allValid = false;
-					response.addErrorMessages(field, ix, gaResponse.getErrorMessages());
-				} else {
-					ga = gaResponse.getEntity();
-					if (ga.getRelation().getName().equals(VocabularyConstants.ALLELE_OF_VOCABULARY_TERM)) {
-						if (hasIsAlleleOfRelation) {
-							Map<String, String> duplicateRelationError = new HashMap<>();
-							duplicateRelationError.put("relation", ValidationConstants.DUPLICATE_RELATION_PREFIX + " " + VocabularyConstants.ALLELE_OF_VOCABULARY_TERM);
-							response.addErrorMessages(field, ix, duplicateRelationError);
-							allValid = false;
-							continue;
-						}
-						hasIsAlleleOfRelation = true;
-					}
-					ga.setAlleleAssociationSubject(dbEntity);
-					String associationIdentity = AssociationIdentityHelper.alleleGeneAssociationIdentity(ga);
-					if (validatedAssociationIdentities.contains(associationIdentity)) {
-						Map<String, String> duplicateError = new HashMap<>();
-						duplicateError.put("relation", ValidationConstants.DUPLICATE_MESSAGE + " (" + associationIdentity + ")");
-						response.addErrorMessages(field, ix, duplicateError);
+		Set<Long> seenIds = new HashSet<>();
+		for (int ix = 0; ix < incomingAssociations.size(); ix++) {
+			AlleleGeneAssociation ga = incomingAssociations.get(ix);
+			if (ga == null) {
+				allValid = false;
+				response.addErrorMessages(field, ix, Map.of("alleleGeneAssociationObject", ValidationConstants.REQUIRED_MESSAGE));
+				continue;
+			}
+			if (ga.getId() != null && !heldIds.contains(ga.getId())) {
+				allValid = false;
+				response.addErrorMessages(field, ix, Map.of("id", ValidationConstants.INVALID_MESSAGE));
+				continue;
+			}
+			if (ga.getId() != null && !seenIds.add(ga.getId())) {
+				allValid = false;
+				response.addErrorMessages(field, ix, Map.of("id", ValidationConstants.DUPLICATE_MESSAGE));
+				continue;
+			}
+			ObjectResponse<AlleleGeneAssociation> gaResponse = alleleGeneAssociationValidator.validateAlleleGeneAssociation(ga);
+			if (gaResponse.getEntity() == null) {
+				allValid = false;
+				response.addErrorMessages(field, ix, gaResponse.getErrorMessages());
+			} else {
+				ga = gaResponse.getEntity();
+				if (ga.getRelation().getName().equals(VocabularyConstants.ALLELE_OF_VOCABULARY_TERM)) {
+					if (hasIsAlleleOfRelation) {
+						Map<String, String> duplicateRelationError = new HashMap<>();
+						duplicateRelationError.put("relation", ValidationConstants.DUPLICATE_RELATION_PREFIX + " " + VocabularyConstants.ALLELE_OF_VOCABULARY_TERM);
+						response.addErrorMessages(field, ix, duplicateRelationError);
 						allValid = false;
 						continue;
 					}
-					validatedAssociationIdentities.add(associationIdentity);
-					validatedGeneAssociations.add(ga);
+					hasIsAlleleOfRelation = true;
 				}
+				ga.setAlleleAssociationSubject(dbEntity);
+				String associationIdentity = AssociationIdentityHelper.alleleGeneAssociationIdentity(ga);
+				if (validatedAssociationIdentities.contains(associationIdentity)) {
+					Map<String, String> duplicateError = new HashMap<>();
+					duplicateError.put("relation", ValidationConstants.DUPLICATE_MESSAGE + " (" + associationIdentity + ")");
+					response.addErrorMessages(field, ix, duplicateError);
+					allValid = false;
+					continue;
+				}
+				validatedAssociationIdentities.add(associationIdentity);
+				validatedGeneAssociations.add(ga);
 			}
 		}
+
+		return allValid ? validatedGeneAssociations : null;
+	}
+
+	/**
+	 * Removes the allele's stored gene associations that the submitted list omits from their genes' association
+	 * lists, so removing them from the allele deletes them.
+	 *
+	 * @param dbEntity the allele the associations belong to
+	 * @param incomingAssociations the submitted associations
+	 */
+	private void detachOmittedGeneAssociations(Allele dbEntity, List<AlleleGeneAssociation> incomingAssociations) {
 		List<AlleleGeneAssociation> dbAssociations = dbEntity.getAlleleGeneAssociations();
 		if (CollectionUtils.isNotEmpty(dbAssociations)) {
 			Set<Long> idsToDelete = new HashSet<>(dbAssociations.stream().map(AlleleGeneAssociation::getId).collect(Collectors.toList()));
-			if (uiAssociations != null) {
-				Set<Long> uiIDs = new HashSet<>(uiAssociations.stream().map(AlleleGeneAssociation::getId).filter(id -> id != null).collect(Collectors.toList()));
-				idsToDelete.removeAll(uiIDs);
-				for (AlleleGeneAssociation ga : dbAssociations) {
-					if (idsToDelete.contains(ga.getId())) {
-						Gene gene = ga.getAlleleGeneAssociationObject();
-						List<AlleleGeneAssociation> geneAssociations = gene.getAlleleGeneAssociations();
-						geneAssociations.removeIf(geneAGA -> {
-							return idsToDelete.contains(geneAGA.getId());
-						});
-					}
+			Set<Long> uiIDs = new HashSet<>(incomingAssociations.stream().map(AlleleGeneAssociation::getId).filter(id -> id != null).collect(Collectors.toList()));
+			idsToDelete.removeAll(uiIDs);
+			for (AlleleGeneAssociation ga : dbAssociations) {
+				if (idsToDelete.contains(ga.getId())) {
+					Gene gene = ga.getAlleleGeneAssociationObject();
+					List<AlleleGeneAssociation> geneAssociations = gene.getAlleleGeneAssociations();
+					geneAssociations.removeIf(geneAGA -> {
+						return idsToDelete.contains(geneAGA.getId());
+					});
 				}
 			}
 		}
-
-		if (!allValid) {
-			convertMapToErrorMessages(field);
-			return null;
-		}
-
-		if (CollectionUtils.isEmpty(validatedGeneAssociations)) {
-			return null;
-		}
-
-		return validatedGeneAssociations;
-	}
-
-	private List<AlleleConstructAssociation> validateAlleleConstructAssociations(Allele uiEntity, Allele dbEntity) {
-		String field = "alleleConstructAssociations";
-
-		List<AlleleConstructAssociation> uiAssociations = uiEntity.getAlleleConstructAssociations();
-
-		List<AlleleConstructAssociation> validatedConstructAssociations = new ArrayList<AlleleConstructAssociation>();
-		Boolean allValid = true;
-		Set<String> validatedAssociationIdentities = new HashSet<>();
-		if (CollectionUtils.isNotEmpty(uiAssociations)) {
-			for (int ix = 0; ix < uiAssociations.size(); ix++) {
-				AlleleConstructAssociation ca = uiAssociations.get(ix);
-				ObjectResponse<AlleleConstructAssociation> caResponse = alleleConstructAssociationValidator.validateAlleleConstructAssociation(ca);
-				if (caResponse.getEntity() == null) {
-					allValid = false;
-					response.addErrorMessages(field, ix, caResponse.getErrorMessages());
-				} else {
-					ca = caResponse.getEntity();
-					ca.setAlleleAssociationSubject(dbEntity);
-					String associationIdentity = AssociationIdentityHelper.alleleConstructAssociationIdentity(ca);
-					if (validatedAssociationIdentities.contains(associationIdentity)) {
-						Map<String, String> duplicateError = new HashMap<>();
-						duplicateError.put("relation", ValidationConstants.DUPLICATE_MESSAGE + " (" + associationIdentity + ")");
-						response.addErrorMessages(field, ix, duplicateError);
-						allValid = false;
-						continue;
-					}
-					validatedAssociationIdentities.add(associationIdentity);
-					validatedConstructAssociations.add(ca);
-				}
-			}
-		}
-		List<AlleleConstructAssociation> dbAssociations = dbEntity.getAlleleConstructAssociations();
-		if (CollectionUtils.isNotEmpty(dbAssociations)) {
-			Set<Long> idsToDelete = new HashSet<>(dbAssociations.stream().map(AlleleConstructAssociation::getId).collect(Collectors.toList()));
-			if (uiAssociations != null) {
-				Set<Long> uiIDs = new HashSet<>(uiAssociations.stream().map(AlleleConstructAssociation::getId).filter(id -> id != null).collect(Collectors.toList()));
-				idsToDelete.removeAll(uiIDs);
-				for (AlleleConstructAssociation ca : dbAssociations) {
-					if (idsToDelete.contains(ca.getId())) {
-						Construct construct = ca.getAlleleConstructAssociationObject();
-						List<AlleleConstructAssociation> constructAssociations = construct.getAlleleConstructAssociations();
-						constructAssociations.removeIf(constructAGA -> {
-							return idsToDelete.contains(constructAGA.getId());
-						});
-					}
-				}
-			}
-		}
-
-		if (!allValid) {
-			convertMapToErrorMessages(field);
-			return null;
-		}
-
-		if (CollectionUtils.isEmpty(validatedConstructAssociations)) {
-			return null;
-		}
-
-		return validatedConstructAssociations;
 	}
 
 	// An allele's cross references must each have a display name, name a page and have a curie that matches

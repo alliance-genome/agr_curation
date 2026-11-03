@@ -1,5 +1,6 @@
 import {
 	buildCreatePayload,
+	buildDuplicateVariant,
 	buildSavePayload,
 	generateCrossRefSearchField,
 	generateCrossRefSearchFields,
@@ -58,6 +59,86 @@ describe('variantsPage utils', () => {
 			buildCreatePayload(variant);
 
 			expect(variant.taxon).toEqual({ curie: '' });
+		});
+	});
+
+	describe('buildDuplicateVariant', () => {
+		const storedVariant = {
+			id: 4242,
+			curie: 'AGRKB:103000000000001',
+			primaryExternalId: 'WB:WBVar00000001',
+			type: 'Variant',
+			taxon: { id: 9, curie: 'NCBITaxon:6239' },
+			variantType: { id: 5, curie: 'SO:1000002' },
+			variantStatus: { id: 6, name: 'public' },
+			sourceGeneralConsequence: { id: 7, curie: 'SO:0001587' },
+			internal: true,
+			obsolete: true,
+			dataProvider: { id: 8, abbreviation: 'WB' },
+			crossReferences: [{ id: 12, referencedCurie: 'WB:WBVar00000001' }],
+			dateCreated: '2026-10-23T00:00:00Z',
+			createdBy: { uniqueId: 'curator1' },
+			relatedNotes: [
+				{
+					id: 31,
+					freeText: 'a note',
+					noteType: { name: 'comment' },
+					references: [{ id: 41, curie: 'AGRKB:101000000000041' }],
+					dateCreated: '2026-10-23T00:00:00Z',
+				},
+			],
+			references: [{ id: 41, curie: 'AGRKB:101000000000041' }],
+			synonyms: ['var-1', 'var-one'],
+		};
+
+		it('Carries the fields the create form edits', () => {
+			const copy = buildDuplicateVariant(storedVariant);
+
+			expect(copy).toEqual({
+				type: 'Variant',
+				taxon: { id: 9, curie: 'NCBITaxon:6239' },
+				variantType: { id: 5, curie: 'SO:1000002' },
+				variantStatus: { id: 6, name: 'public' },
+				sourceGeneralConsequence: { id: 7, curie: 'SO:0001587' },
+				internal: true,
+				obsolete: false,
+				relatedNotes: [
+					{
+						freeText: 'a note',
+						noteType: { name: 'comment' },
+						references: [{ id: 41, curie: 'AGRKB:101000000000041' }],
+					},
+				],
+				references: [{ id: 41, curie: 'AGRKB:101000000000041' }],
+				synonyms: ['var-1', 'var-one'],
+			});
+		});
+
+		it('Copies deeply, leaving the stored variant untouched', () => {
+			const copy = buildDuplicateVariant(storedVariant);
+			copy.taxon.curie = 'NCBITaxon:10090';
+			copy.references[0].curie = 'AGRKB:101000000000042';
+			copy.synonyms.push('var-2');
+
+			expect(storedVariant.taxon.curie).toEqual('NCBITaxon:6239');
+			expect(storedVariant.references[0].curie).toEqual('AGRKB:101000000000041');
+			expect(storedVariant.synonyms).toEqual(['var-1', 'var-one']);
+			expect(storedVariant.relatedNotes[0].id).toEqual(31);
+		});
+
+		it('Fills what a bare variant lacks with the blank form values, leaving related notes unset', () => {
+			expect(buildDuplicateVariant({ id: 4242 })).toEqual({
+				type: 'Variant',
+				taxon: { curie: '' },
+				variantType: null,
+				variantStatus: null,
+				sourceGeneralConsequence: null,
+				internal: false,
+				obsolete: false,
+				relatedNotes: undefined,
+				references: [],
+				synonyms: [],
+			});
 		});
 	});
 

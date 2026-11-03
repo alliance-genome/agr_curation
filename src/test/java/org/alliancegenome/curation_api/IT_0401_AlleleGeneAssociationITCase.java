@@ -5,6 +5,7 @@ import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.nullValue;
 
 import java.util.List;
 
@@ -62,8 +63,8 @@ public class IT_0401_AlleleGeneAssociationITCase extends BaseITCase {
 	private Note note2;
 	
 	private final String alleleGeneAssociationGetEndpoint = "/api/allelegeneassociation/findBy";
+	private final String alleleGeneAssociationFindEndpoint = "/api/allelegeneassociation/find?limit=10&page=0";
 	private final String alleleGetEndpoint = "/api/allele/";
-	private final String geneGetEndpoint = "/api/gene/";
 	
 	private void loadRequiredEntities() {
 		Vocabulary nameTypeVocabulary = getVocabulary(VocabularyConstants.NAME_TYPE_VOCABULARY);
@@ -140,23 +141,26 @@ public class IT_0401_AlleleGeneAssociationITCase extends BaseITCase {
 
 		RestAssured.given().
 			when().
-			get(alleleGetEndpoint + allele.getPrimaryExternalId()).
+			get(alleleGeneAssociationsEndpoint(allele.getPrimaryExternalId())).
 			then().
 			statusCode(200).
-			body("entity.alleleGeneAssociations", hasSize(1)).
-			body("entity.alleleGeneAssociations[0].relation.name", is(relation.getName())).
-			body("entity.alleleGeneAssociations[0].alleleGeneAssociationObject.primaryExternalId", is(gene.getPrimaryExternalId())).
-			body("entity.alleleGeneAssociations[0].alleleAssociationSubject", not(hasKey("alleleGeneAssociations")));
+			body("entities", hasSize(1)).
+			body("entities[0].relation.name", is(relation.getName())).
+			body("entities[0].alleleGeneAssociationObject.primaryExternalId", is(gene.getPrimaryExternalId())).
+			body("entities[0].alleleAssociationSubject", nullValue());
 		
+		// The gene's endpoints omit its allele associations, so they are found by the gene as their object.
 		RestAssured.given().
+			contentType("application/json").
+			body("{\"alleleGeneAssociationObject.primaryExternalId\": \"" + gene.getPrimaryExternalId() + "\"}").
 			when().
-			get(geneGetEndpoint + gene.getPrimaryExternalId()).
+			post(alleleGeneAssociationFindEndpoint).
 			then().
 			statusCode(200).
-			body("entity.alleleGeneAssociations", hasSize(1)).
-			body("entity.alleleGeneAssociations[0].relation.name", is(relation.getName())).
-			body("entity.alleleGeneAssociations[0].alleleGeneAssociationObject.primaryExternalId", is(gene.getPrimaryExternalId())).
-			body("entity.alleleGeneAssociations[0].alleleGeneAssociationObject", not(hasKey("alleleGeneAssociations")));
+			body("results", hasSize(1)).
+			body("results[0].relation.name", is(relation.getName())).
+			body("results[0].alleleGeneAssociationObject.primaryExternalId", is(gene.getPrimaryExternalId())).
+			body("results[0].alleleGeneAssociationObject", not(hasKey("alleleGeneAssociations")));
 	}
 	
 	@Test
@@ -540,5 +544,16 @@ public class IT_0401_AlleleGeneAssociationITCase extends BaseITCase {
 			body("entity", not(hasKey("evidence"))).
 			body("entity", not(hasKey("evidenceCode"))).
 			body("entity", not(hasKey("relatedNote")));
+	}
+
+	// An allele's gene associations are read through its own sub-resource, which is addressed by the allele's id.
+	private String alleleGeneAssociationsEndpoint(String alleleIdentifier) {
+		Long alleleId = RestAssured.given().
+			when().
+			get(alleleGetEndpoint + alleleIdentifier).
+			then().
+			statusCode(200).
+			extract().jsonPath().getLong("entity.id");
+		return "/api/allele/" + alleleId + "/geneassociations";
 	}
 }

@@ -5,6 +5,8 @@ import {
 	useStrings,
 	transgenicToolLabel,
 	transgenicToolDisplayValue,
+	strAssociationText,
+	strFindParams,
 } from '../utils';
 import { data } from '../mockData/mockData.js';
 
@@ -66,5 +68,19 @@ describe('transgenic tool labels', () => {
 	it('shows symbol and identifier in the pop-up', () => {
 		expect(transgenicToolDisplayValue(sfGFP)).toEqual('sfGFP (FB:FBto0000063)');
 		expect(transgenicToolDisplayValue(withoutSymbol)).toEqual('FB:FBto0000001');
+	});
+
+	it('shows an STR component as relation: name, the identifier without a name', () => {
+		expect(strAssociationText(cassette.cassetteStrAssociations[0])).toEqual('expresses: dsRNA-JF02416');
+		expect(
+			strAssociationText({
+				relation: { name: 'expresses (RO:0002292)' },
+				cassetteStrAssociationObject: { primaryExternalId: 'FB:FBsf0000086447' },
+			})
+		).toEqual('expresses: FB:FBsf0000086447');
+	});
+
+	it('finds one STR by its id', () => {
+		expect(strFindParams(42)).toEqual({ id: 42 });
 	});
 });

@@ -56,6 +56,7 @@ import org.alliancegenome.curation_api.model.entities.slotAnnotations.AlleleSymb
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.AlleleSynonymSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.GeneSymbolSlotAnnotation;
 import org.alliancegenome.curation_api.resources.TestContainerResource;
+import org.alliancegenome.curation_api.response.SearchResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
@@ -66,7 +67,9 @@ import org.junit.jupiter.api.TestMethodOrder;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusIntegrationTest;
 import io.restassured.RestAssured;
+import io.restassured.common.mapper.TypeRef;
 import io.restassured.response.Response;
+import io.restassured.response.ValidatableResponse;
 
 @QuarkusIntegrationTest
 @QuarkusTestResource(TestContainerResource.Initializer.class)
@@ -160,9 +163,7 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 	private Organization obsoleteDataProvider;
 	private Organization nonPersistedOrganization;
 	private Gene gene;
-	private Gene gene2;
 	private VocabularyTerm geneAssociationRelation;
-	private VocabularyTerm geneAssociationRelation2;
 	private Construct construct;
 	private VocabularyTerm constructAssociationRelation;
 	private ResourceDescriptorPage crossReferencePage;
@@ -242,10 +243,8 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 		nonPersistedOrganization.setAbbreviation("INV");
 		VocabularyTerm symbolNameType = getVocabularyTerm(nameTypeVocabulary, "nomenclature_symbol");
 		gene = createGene("TEST:AssociatedGene1", "NCBITaxon:6239", symbolNameType, false);
-		gene2 = createGene("TEST:AssociatedGene2", "NCBITaxon:6239", symbolNameType, false);
 		Vocabulary relationVocabulary = getVocabulary(VocabularyConstants.ALLELE_RELATION_VOCABULARY);
 		geneAssociationRelation = getVocabularyTerm(relationVocabulary, "is_allele_of");
-		geneAssociationRelation2 = getVocabularyTerm(relationVocabulary, "duplication");
 		construct = createConstruct("TEST:AssociatedConstruct1", false, symbolNameType);
 		constructAssociationRelation = getVocabularyTerm(relationVocabulary, "contains");
 		ResourceDescriptor crossReferenceResourceDescriptor = createResourceDescriptor("XRTEST");
@@ -286,6 +285,34 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 			then().
 			statusCode(200);
 
+		// The create endpoint leaves the related notes and slot annotation lists to the allele's own sub-resources.
+		Long alleleId = getAllele(ALLELE).getId();
+		Map<String, List<?>> subResourceLists = Map.of(
+			"relatednotes", List.of(relatedNote),
+			"mutationtypes", List.of(alleleMutationType),
+			"inheritancemodes", List.of(alleleInheritanceMode),
+			"synonyms", List.of(alleleSynonym),
+			"secondaryids", List.of(alleleSecondaryId),
+			"functionalimpacts", List.of(alleleFunctionalImpact),
+			"nomenclatureevents", List.of(alleleNomenclatureEvent));
+		subResourceLists.forEach((path, rows) -> {
+			RestAssured.given().
+				when().
+				get("/api/allele/" + alleleId + "/" + path).
+				then().
+				statusCode(200).
+				body("entities", nullValue());
+
+			RestAssured.given().
+				contentType("application/json").
+				body(rows).
+				when().
+				put("/api/allele/" + alleleId + "/" + path).
+				then().
+				statusCode(200).
+				body("entities", hasSize(1));
+		});
+
 		RestAssured.given().
 			when().
 			get("/api/allele/" + ALLELE).
@@ -297,21 +324,10 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 			body("entity.obsolete", is(false)).
 			body("entity.inCollection.name", is(mmpInCollection.getName())).
 			body("entity.isExtinct", is(false)).
-			body("entity.references[0].curie", is(reference.getCurie())).
+			body("entity", not(hasKey("references"))).
 			body("entity.dateCreated", is(datetime.toString())).
 			body("entity.createdBy.uniqueId", is("Local|Dev User|test@alliancegenome.org")).
 			body("entity.updatedBy.uniqueId", is("Local|Dev User|test@alliancegenome.org")).
-			body("entity.relatedNotes", hasSize(1)).
-			body("entity.relatedNotes[0].noteType.name", is(relatedNote.getNoteType().getName())).
-			body("entity.relatedNotes[0].freeText", is(relatedNote.getFreeText())).
-			body("entity.relatedNotes[0].internal", is(false)).
-			body("entity.relatedNotes[0].references[0].curie", is(reference.getCurie())).
-			body("entity.alleleMutationTypes[0].evidence[0].curie", is(reference.getCurie())).
-			body("entity.alleleMutationTypes[0].mutationTypes[0].curie", is(soTerm.getCurie())).
-			body("entity.alleleInheritanceModes[0].evidence[0].curie", is(reference.getCurie())).
-			body("entity.alleleInheritanceModes[0].inheritanceMode.name", is(dominantInheritanceMode.getName())).
-			body("entity.alleleInheritanceModes[0].phenotypeTerm.curie", is(mpTerm.getCurie())).
-			body("entity.alleleInheritanceModes[0].phenotypeStatement", is("Phenotype statement")).
 			body("entity.alleleGermlineTransmissionStatus.evidence[0].curie", is(reference.getCurie())).
 			body("entity.alleleGermlineTransmissionStatus.germlineTransmissionStatus.name", is(cellLineGTS.getName())).
 			body("entity.alleleDatabaseStatus.evidence[0].curie", is(reference.getCurie())).
@@ -328,27 +344,57 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 			body("entity.alleleFullName.synonymScope.name", is(alleleFullName.getSynonymScope().getName())).
 			body("entity.alleleFullName.synonymUrl", is(alleleFullName.getSynonymUrl())).
 			body("entity.alleleFullName.evidence[0].curie", is(alleleFullName.getEvidence().get(0).getCurie())).
-			body("entity.alleleSynonyms[0].displayText", is(alleleSynonym.getDisplayText())).
-			body("entity.alleleSynonyms[0].formatText", is(alleleSynonym.getFormatText())).
-			body("entity.alleleSynonyms[0].nameType.name", is(alleleSynonym.getNameType().getName())).
-			body("entity.alleleSynonyms[0].synonymScope.name", is(alleleSynonym.getSynonymScope().getName())).
-			body("entity.alleleSynonyms[0].synonymUrl", is(alleleSynonym.getSynonymUrl())).
-			body("entity.alleleSynonyms[0].evidence[0].curie", is(alleleSynonym.getEvidence().get(0).getCurie())).
-			body("entity.alleleSecondaryIds[0].secondaryId", is(alleleSecondaryId.getSecondaryId())).
-			body("entity.alleleSecondaryIds[0].evidence[0].curie", is(alleleSecondaryId.getEvidence().get(0).getCurie())).
-			body("entity.alleleFunctionalImpacts[0].evidence[0].curie", is(reference.getCurie())).
-			body("entity.alleleFunctionalImpacts[0].functionalImpacts[0].name", is(hypermorphicFunctionalImpact.getName())).
-			body("entity.alleleFunctionalImpacts[0].phenotypeTerm.curie", is(mpTerm.getCurie())).
-			body("entity.alleleFunctionalImpacts[0].phenotypeStatement", is("Phenotype statement")).
-			body("entity.alleleNomenclatureEvents[0].evidence[0].curie", is(reference.getCurie())).
-			body("entity.alleleNomenclatureEvents[0].nomenclatureEvent.name", is(dataMergedEvent.getName())).
+			body("entity", not(hasKey("relatedNotes"))).
+			body("entity", not(hasKey("alleleMutationTypes"))).
+			body("entity", not(hasKey("alleleInheritanceModes"))).
+			body("entity", not(hasKey("alleleSynonyms"))).
+			body("entity", not(hasKey("alleleSecondaryIds"))).
+			body("entity", not(hasKey("alleleFunctionalImpacts"))).
+			body("entity", not(hasKey("alleleNomenclatureEvents"))).
 			body("entity.dataProvider.abbreviation", is(dataProvider.getAbbreviation()));
+
+		findAlleleResponse(ALLELE).
+			body("results[0].relatedNotes", hasSize(1)).
+			body("results[0].relatedNotes[0].noteType.name", is(relatedNote.getNoteType().getName())).
+			body("results[0].relatedNotes[0].freeText", is(relatedNote.getFreeText())).
+			body("results[0].relatedNotes[0].internal", is(false)).
+			body("results[0].relatedNotes[0].references[0].curie", is(reference.getCurie()));
+
+		findAlleleResponse(ALLELE).
+			body("results[0].alleleMutationTypes[0].evidence[0].curie", is(reference.getCurie())).
+			body("results[0].alleleMutationTypes[0].mutationTypes[0].curie", is(soTerm.getCurie())).
+			body("results[0].alleleInheritanceModes[0].evidence[0].curie", is(reference.getCurie())).
+			body("results[0].alleleInheritanceModes[0].inheritanceMode.name", is(dominantInheritanceMode.getName())).
+			body("results[0].alleleInheritanceModes[0].phenotypeTerm.curie", is(mpTerm.getCurie())).
+			body("results[0].alleleInheritanceModes[0].phenotypeStatement", is("Phenotype statement")).
+			body("results[0].alleleSynonyms[0].displayText", is(alleleSynonym.getDisplayText())).
+			body("results[0].alleleSynonyms[0].formatText", is(alleleSynonym.getFormatText())).
+			body("results[0].alleleSynonyms[0].nameType.name", is(alleleSynonym.getNameType().getName())).
+			body("results[0].alleleSynonyms[0].synonymScope.name", is(alleleSynonym.getSynonymScope().getName())).
+			body("results[0].alleleSynonyms[0].synonymUrl", is(alleleSynonym.getSynonymUrl())).
+			body("results[0].alleleSynonyms[0].evidence[0].curie", is(alleleSynonym.getEvidence().get(0).getCurie())).
+			body("results[0].alleleSecondaryIds[0].secondaryId", is(alleleSecondaryId.getSecondaryId())).
+			body("results[0].alleleSecondaryIds[0].evidence[0].curie", is(alleleSecondaryId.getEvidence().get(0).getCurie())).
+			body("results[0].alleleFunctionalImpacts[0].evidence[0].curie", is(reference.getCurie())).
+			body("results[0].alleleFunctionalImpacts[0].functionalImpacts[0].name", is(hypermorphicFunctionalImpact.getName())).
+			body("results[0].alleleFunctionalImpacts[0].phenotypeTerm.curie", is(mpTerm.getCurie())).
+			body("results[0].alleleFunctionalImpacts[0].phenotypeStatement", is("Phenotype statement")).
+			body("results[0].alleleNomenclatureEvents[0].evidence[0].curie", is(reference.getCurie())).
+			body("results[0].alleleNomenclatureEvents[0].nomenclatureEvent.name", is(dataMergedEvent.getName()));
+
+		// The create endpoint does not write references; they are written through the references sub-resource.
+		RestAssured.given().
+			when().
+			get("/api/allele/" + getAllele(ALLELE).getId() + "/references").
+			then().
+			statusCode(200).
+			body("entities", nullValue());
 	}
 
 	@Test
 	@Order(2)
 	public void editAllele() {
-		Allele allele = getAllele(ALLELE);
+		Allele allele = findAllele(ALLELE);
 		allele.setCreatedBy(person);
 		allele.setPrimaryExternalId(ALLELE);
 		allele.setTaxon(taxon2);
@@ -447,7 +493,6 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 			statusCode(200).
 			body("entity.primaryExternalId", is(ALLELE)).
 			body("entity.inCollection.name", is(wgsInCollection.getName())).
-			body("entity.references[0].curie", is(reference2.getCurie())).
 			body("entity.dateCreated", is(datetime2.toString())).
 			body("entity.createdBy.uniqueId", is(person.getUniqueId())).
 			body("entity.updatedBy.uniqueId", is("Local|Dev User|test@alliancegenome.org")).
@@ -456,21 +501,10 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 			body("entity.obsolete", is(true)).
 			body("entity.isExtinct", is(true)).
 			body("entity.createdBy.uniqueId", is(person.getUniqueId())).
-			body("entity.relatedNotes", hasSize(1)).
-			body("entity.relatedNotes[0].noteType.name", is(editedNote.getNoteType().getName())).
-			body("entity.relatedNotes[0].freeText", is(editedNote.getFreeText())).
-			body("entity.relatedNotes[0].internal", is(true)).
-			body("entity.relatedNotes[0].references[0].curie", is(reference2.getCurie())).
-			body("entity.alleleMutationTypes[0].mutationTypes[0].curie", is(editedMutationType.getMutationTypes().get(0).getCurie())).
-			body("entity.alleleMutationTypes[0].evidence[0].curie", is(editedMutationType.getEvidence().get(0).getCurie())).
 			body("entity.alleleGermlineTransmissionStatus.evidence[0].curie", is(reference2.getCurie())).
 			body("entity.alleleGermlineTransmissionStatus.germlineTransmissionStatus.name", is(germlineGTS.getName())).
 			body("entity.alleleDatabaseStatus.evidence[0].curie", is(reference2.getCurie())).
 			body("entity.alleleDatabaseStatus.databaseStatus.name", is(reservedDatabaseStatus.getName())).
-			body("entity.alleleInheritanceModes[0].evidence[0].curie", is(editedInheritanceMode.getEvidence().get(0).getCurie())).
-			body("entity.alleleInheritanceModes[0].inheritanceMode.name", is(editedInheritanceMode.getInheritanceMode().getName())).
-			body("entity.alleleInheritanceModes[0].phenotypeTerm.curie", is(editedInheritanceMode.getPhenotypeTerm().getCurie())).
-			body("entity.alleleInheritanceModes[0].phenotypeStatement", is(editedInheritanceMode.getPhenotypeStatement())).
 			body("entity.alleleSymbol.displayText", is(editedSymbol.getDisplayText())).
 			body("entity.alleleSymbol.formatText", is(editedSymbol.getFormatText())).
 			body("entity.alleleSymbol.nameType.name", is(editedSymbol.getNameType().getName())).
@@ -483,21 +517,45 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 			body("entity.alleleFullName.synonymScope.name", is(editedFullName.getSynonymScope().getName())).
 			body("entity.alleleFullName.synonymUrl", is(editedFullName.getSynonymUrl())).
 			body("entity.alleleFullName.evidence[0].curie", is(editedFullName.getEvidence().get(0).getCurie())).
-			body("entity.alleleSynonyms[0].displayText", is(editedSynonym.getDisplayText())).
-			body("entity.alleleSynonyms[0].formatText", is(editedSynonym.getFormatText())).
-			body("entity.alleleSynonyms[0].nameType.name", is(editedSynonym.getNameType().getName())).
-			body("entity.alleleSynonyms[0].synonymScope.name", is(editedSynonym.getSynonymScope().getName())).
-			body("entity.alleleSynonyms[0].synonymUrl", is(editedSynonym.getSynonymUrl())).
-			body("entity.alleleSynonyms[0].evidence[0].curie", is(editedSynonym.getEvidence().get(0).getCurie())).
-			body("entity.alleleSecondaryIds[0].secondaryId", is("TEST:Secondary2")).
-			body("entity.alleleSecondaryIds[0].evidence[0].curie", is(editedSecondaryId.getEvidence().get(0).getCurie())).
-			body("entity.alleleFunctionalImpacts[0].evidence[0].curie", is(reference2.getCurie())).
-			body("entity.alleleFunctionalImpacts[0].functionalImpacts[0].name", is(neomorphicFunctionalImpact.getName())).
-			body("entity.alleleFunctionalImpacts[0].phenotypeTerm.curie", is(mpTerm2.getCurie())).
-			body("entity.alleleFunctionalImpacts[0].phenotypeStatement", is("Edited phenotype statement")).
-			body("entity.alleleNomenclatureEvents[0].evidence[0].curie", is(reference2.getCurie())).
-			body("entity.alleleNomenclatureEvents[0].nomenclatureEvent.name", is(symbolUpdatedEvent.getName())).
 			body("entity.dataProvider.abbreviation", is(dataProvider2.getAbbreviation()));
+
+		findAlleleResponse(ALLELE).
+			body("results[0].relatedNotes", hasSize(1)).
+			body("results[0].relatedNotes[0].noteType.name", is(editedNote.getNoteType().getName())).
+			body("results[0].relatedNotes[0].freeText", is(editedNote.getFreeText())).
+			body("results[0].relatedNotes[0].internal", is(true)).
+			body("results[0].relatedNotes[0].references[0].curie", is(reference2.getCurie()));
+
+		findAlleleResponse(ALLELE).
+			body("results[0].alleleMutationTypes[0].mutationTypes[0].curie", is(editedMutationType.getMutationTypes().get(0).getCurie())).
+			body("results[0].alleleMutationTypes[0].evidence[0].curie", is(editedMutationType.getEvidence().get(0).getCurie())).
+			body("results[0].alleleInheritanceModes[0].evidence[0].curie", is(editedInheritanceMode.getEvidence().get(0).getCurie())).
+			body("results[0].alleleInheritanceModes[0].inheritanceMode.name", is(editedInheritanceMode.getInheritanceMode().getName())).
+			body("results[0].alleleInheritanceModes[0].phenotypeTerm.curie", is(editedInheritanceMode.getPhenotypeTerm().getCurie())).
+			body("results[0].alleleInheritanceModes[0].phenotypeStatement", is(editedInheritanceMode.getPhenotypeStatement())).
+			body("results[0].alleleSynonyms[0].displayText", is(editedSynonym.getDisplayText())).
+			body("results[0].alleleSynonyms[0].formatText", is(editedSynonym.getFormatText())).
+			body("results[0].alleleSynonyms[0].nameType.name", is(editedSynonym.getNameType().getName())).
+			body("results[0].alleleSynonyms[0].synonymScope.name", is(editedSynonym.getSynonymScope().getName())).
+			body("results[0].alleleSynonyms[0].synonymUrl", is(editedSynonym.getSynonymUrl())).
+			body("results[0].alleleSynonyms[0].evidence[0].curie", is(editedSynonym.getEvidence().get(0).getCurie())).
+			body("results[0].alleleSecondaryIds[0].secondaryId", is("TEST:Secondary2")).
+			body("results[0].alleleSecondaryIds[0].evidence[0].curie", is(editedSecondaryId.getEvidence().get(0).getCurie())).
+			body("results[0].alleleFunctionalImpacts[0].evidence[0].curie", is(reference2.getCurie())).
+			body("results[0].alleleFunctionalImpacts[0].functionalImpacts[0].name", is(neomorphicFunctionalImpact.getName())).
+			body("results[0].alleleFunctionalImpacts[0].phenotypeTerm.curie", is(mpTerm2.getCurie())).
+			body("results[0].alleleFunctionalImpacts[0].phenotypeStatement", is("Edited phenotype statement")).
+			body("results[0].alleleNomenclatureEvents[0].evidence[0].curie", is(reference2.getCurie())).
+			body("results[0].alleleNomenclatureEvents[0].nomenclatureEvent.name", is(symbolUpdatedEvent.getName()));
+
+		// The allele table's endpoint writes references from its payload.
+		RestAssured.given().
+			when().
+			get("/api/allele/" + allele.getId() + "/references").
+			then().
+			statusCode(200).
+			body("entities", hasSize(1)).
+			body("entities[0].curie", is(reference2.getCurie()));
 	}
 
 	@Test
@@ -520,7 +578,7 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 	@Test
 	@Order(4)
 	public void editAlleleWithMissingPrimaryExternalId() {
-		Allele allele = getAllele(ALLELE);
+		Allele allele = findAllele(ALLELE);
 		allele.setPrimaryExternalId(null);
 
 		// An allele is identified by its AGRKB curie, so neither MOD identifier is required.
@@ -598,7 +656,7 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 	@Test
 	@Order(7)
 	public void editAlleleWithEmptyPrimaryExternalId() {
-		Allele allele = getAllele(ALLELE);
+		Allele allele = findAllele(ALLELE);
 		allele.setPrimaryExternalId("");
 
 		// An allele is identified by its AGRKB curie, so neither MOD identifier is required.
@@ -659,9 +717,7 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 			post("/api/allele").
 			then().
 			statusCode(400).
-			body("errorMessages", is(aMapWithSize(11))).
-			body("errorMessages.alleleMutationTypes", is("mutationTypes - " + ValidationConstants.REQUIRED_MESSAGE)).
-			body("errorMessages.alleleInheritanceModes", is("inheritanceMode - " + ValidationConstants.REQUIRED_MESSAGE)).
+			body("errorMessages", is(aMapWithSize(4))).
 			body("errorMessages.alleleSymbol", is(String.join(" | ", List.of(
 					"displayText - " + ValidationConstants.REQUIRED_MESSAGE,
 					"formatText - " + ValidationConstants.REQUIRED_MESSAGE,
@@ -670,24 +726,14 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 					"displayText - " + ValidationConstants.REQUIRED_MESSAGE,
 					"formatText - " + ValidationConstants.REQUIRED_MESSAGE,
 					"nameType - " + ValidationConstants.REQUIRED_MESSAGE)))).
-			body("errorMessages.alleleSynonyms", is(String.join(" | ", List.of(
-					"displayText - " + ValidationConstants.REQUIRED_MESSAGE,
-					"formatText - " + ValidationConstants.REQUIRED_MESSAGE,
-					"nameType - " + ValidationConstants.REQUIRED_MESSAGE)))).
-			body("errorMessages.alleleSecondaryIds", is("secondaryId - " + ValidationConstants.REQUIRED_MESSAGE)).
-			body("errorMessages.alleleFunctionalImpacts", is("functionalImpacts - " + ValidationConstants.REQUIRED_MESSAGE)).
 			body("errorMessages.alleleGermlineTransmissionStatus", is("germlineTransmissionStatus - " + ValidationConstants.REQUIRED_MESSAGE)).
-			body("errorMessages.alleleDatabaseStatus", is("databaseStatus - " + ValidationConstants.REQUIRED_MESSAGE)).
-			body("errorMessages.alleleNomenclatureEvents", is("nomenclatureEvent - " + ValidationConstants.REQUIRED_MESSAGE)).
-			body("errorMessages.relatedNotes", is(String.join(" | ", List.of(
-					"freeText - " + ValidationConstants.REQUIRED_MESSAGE,
-					"noteType - " + ValidationConstants.REQUIRED_MESSAGE))));
+			body("errorMessages.alleleDatabaseStatus", is("databaseStatus - " + ValidationConstants.REQUIRED_MESSAGE));
 	}
 
 	@Test
 	@Order(9)
 	public void editAlleleWithMissingRequiredFieldsLevel2() {
-		Allele allele = getAllele(ALLELE);
+		Allele allele = findAllele(ALLELE);
 
 		AlleleMutationTypeSlotAnnotation invalidMutationType = allele.getAlleleMutationTypes().get(0);
 		invalidMutationType.setMutationTypes(null);
@@ -792,24 +838,19 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 			post("/api/allele").
 			then().
 			statusCode(400).
-			body("errorMessages", is(aMapWithSize(5))).
+			body("errorMessages", is(aMapWithSize(2))).
 			body("errorMessages.alleleSymbol", is(String.join(" | ", List.of(
 					"displayText - " + ValidationConstants.REQUIRED_MESSAGE,
 					"formatText - " + ValidationConstants.REQUIRED_MESSAGE)))).
 			body("errorMessages.alleleFullName", is(String.join(" | ", List.of(
 					"displayText - " + ValidationConstants.REQUIRED_MESSAGE,
-					"formatText - " + ValidationConstants.REQUIRED_MESSAGE)))).
-			body("errorMessages.alleleSynonyms", is(String.join(" | ", List.of(
-					"displayText - " + ValidationConstants.REQUIRED_MESSAGE,
-					"formatText - " + ValidationConstants.REQUIRED_MESSAGE)))).
-			body("errorMessages.alleleSecondaryIds", is("secondaryId - " + ValidationConstants.REQUIRED_MESSAGE)).
-			body("errorMessages.relatedNotes", is("freeText - " + ValidationConstants.REQUIRED_MESSAGE));
+					"formatText - " + ValidationConstants.REQUIRED_MESSAGE))));
 	}
 
 	@Test
 	@Order(11)
 	public void editAlleleWithEmptyRequiredFieldsLevel2() {
-		Allele allele = getAllele(ALLELE);
+		Allele allele = findAllele(ALLELE);
 
 		AlleleSymbolSlotAnnotation invalidSymbol = allele.getAlleleSymbol();
 		invalidSymbol.setDisplayText("");
@@ -838,18 +879,13 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 			post("/api/allele").
 			then().
 			statusCode(400).
-			body("errorMessages", is(aMapWithSize(5))).
+			body("errorMessages", is(aMapWithSize(2))).
 			body("errorMessages.alleleSymbol", is(String.join(" | ", List.of(
 					"displayText - " + ValidationConstants.REQUIRED_MESSAGE,
 					"formatText - " + ValidationConstants.REQUIRED_MESSAGE)))).
 			body("errorMessages.alleleFullName", is(String.join(" | ", List.of(
 					"displayText - " + ValidationConstants.REQUIRED_MESSAGE,
-					"formatText - " + ValidationConstants.REQUIRED_MESSAGE)))).
-			body("errorMessages.alleleSynonyms", is(String.join(" | ", List.of(
-					"displayText - " + ValidationConstants.REQUIRED_MESSAGE,
-					"formatText - " + ValidationConstants.REQUIRED_MESSAGE)))).
-			body("errorMessages.alleleSecondaryIds", is("secondaryId - " + ValidationConstants.REQUIRED_MESSAGE)).
-			body("errorMessages.relatedNotes", is("freeText - " + ValidationConstants.REQUIRED_MESSAGE));
+					"formatText - " + ValidationConstants.REQUIRED_MESSAGE))));
 	}
 
 	@Test
@@ -908,17 +944,9 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 			post("/api/allele").
 			then().
 			statusCode(400).
-			body("errorMessages", is(aMapWithSize(15))).
+			body("errorMessages", is(aMapWithSize(7))).
 			body("errorMessages.taxon", is(ValidationConstants.INVALID_MESSAGE)).
 			body("errorMessages.inCollection", is(ValidationConstants.INVALID_MESSAGE)).
-			body("errorMessages.references", is("curie - " + ValidationConstants.INVALID_MESSAGE)).
-			body("errorMessages.alleleMutationTypes", is(String.join(" | ", List.of(
-					"evidence - " + ValidationConstants.INVALID_MESSAGE,
-					"mutationTypes - " + ValidationConstants.INVALID_MESSAGE)))).
-			body("errorMessages.alleleInheritanceModes", is(String.join(" | ", List.of(
-					"evidence - " + ValidationConstants.INVALID_MESSAGE,
-					"inheritanceMode - " + ValidationConstants.INVALID_MESSAGE,
-					"phenotypeTerm - " + ValidationConstants.INVALID_MESSAGE)))).
 			body("errorMessages.alleleSymbol", is(String.join(" | ", List.of(
 					"evidence - " + ValidationConstants.INVALID_MESSAGE,
 					"nameType - " + ValidationConstants.INVALID_MESSAGE,
@@ -927,28 +955,13 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 					"evidence - " + ValidationConstants.INVALID_MESSAGE,
 					"nameType - " + ValidationConstants.INVALID_MESSAGE,
 					"synonymScope - " + ValidationConstants.INVALID_MESSAGE)))).
-			body("errorMessages.alleleSynonyms", is(String.join(" | ", List.of(
-					"evidence - " + ValidationConstants.INVALID_MESSAGE,
-					"nameType - " + ValidationConstants.INVALID_MESSAGE,
-					"synonymScope - " + ValidationConstants.INVALID_MESSAGE)))).
-			body("errorMessages.alleleSecondaryIds", is("evidence - " + ValidationConstants.INVALID_MESSAGE)).
 			body("errorMessages.dataProvider", is(ValidationConstants.INVALID_MESSAGE)).
-			body("errorMessages.alleleFunctionalImpacts", is(String.join(" | ", List.of(
-					"evidence - " + ValidationConstants.INVALID_MESSAGE,
-					"functionalImpacts - " + ValidationConstants.INVALID_MESSAGE,
-					"phenotypeTerm - " + ValidationConstants.INVALID_MESSAGE)))).
 			body("errorMessages.alleleGermlineTransmissionStatus", is(String.join(" | ", List.of(
 					"evidence - " + ValidationConstants.INVALID_MESSAGE,
 					"germlineTransmissionStatus - " + ValidationConstants.INVALID_MESSAGE)))).
 			body("errorMessages.alleleDatabaseStatus", is(String.join(" | ", List.of(
 					"databaseStatus - " + ValidationConstants.INVALID_MESSAGE,
-					"evidence - " + ValidationConstants.INVALID_MESSAGE)))).
-			body("errorMessages.alleleNomenclatureEvents", is(String.join(" | ", List.of(
-					"evidence - " + ValidationConstants.INVALID_MESSAGE,
-					"nomenclatureEvent - " + ValidationConstants.INVALID_MESSAGE)))).
-			body("errorMessages.relatedNotes", is(String.join(" | ", List.of(
-					"noteType - " + ValidationConstants.INVALID_MESSAGE,
-					"references - " + ValidationConstants.INVALID_MESSAGE))));
+					"evidence - " + ValidationConstants.INVALID_MESSAGE))));
 	}
 
 	@Test
@@ -963,7 +976,7 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 		MPTerm nonPersistedMpTerm = new MPTerm();
 		nonPersistedMpTerm.setCurie("MP:Invalid");
 
-		Allele allele = getAllele(ALLELE);
+		Allele allele = findAllele(ALLELE);
 		allele.setTaxon(nonPersistedTaxon);
 		allele.setInCollection(dominantInheritanceMode);
 		allele.setReferences(List.of(nonPersistedReference));
@@ -1117,17 +1130,9 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 			post("/api/allele").
 			then().
 			statusCode(400).
-			body("errorMessages", is(aMapWithSize(15))).
+			body("errorMessages", is(aMapWithSize(7))).
 			body("errorMessages.taxon", is(ValidationConstants.OBSOLETE_MESSAGE)).
 			body("errorMessages.inCollection", is(ValidationConstants.OBSOLETE_MESSAGE)).
-			body("errorMessages.references", is("curie - " + ValidationConstants.OBSOLETE_MESSAGE)).
-			body("errorMessages.alleleMutationTypes", is(String.join(" | ", List.of(
-					"evidence - " + ValidationConstants.OBSOLETE_MESSAGE,
-					"mutationTypes - " + ValidationConstants.OBSOLETE_MESSAGE)))).
-			body("errorMessages.alleleInheritanceModes", is(String.join(" | ", List.of(
-					"evidence - " + ValidationConstants.OBSOLETE_MESSAGE,
-					"inheritanceMode - " + ValidationConstants.OBSOLETE_MESSAGE,
-					"phenotypeTerm - " + ValidationConstants.OBSOLETE_MESSAGE)))).
 			body("errorMessages.alleleSymbol", is(String.join(" | ", List.of(
 					"evidence - " + ValidationConstants.OBSOLETE_MESSAGE,
 					"nameType - " + ValidationConstants.OBSOLETE_MESSAGE,
@@ -1136,34 +1141,19 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 					"evidence - " + ValidationConstants.OBSOLETE_MESSAGE,
 					"nameType - " + ValidationConstants.OBSOLETE_MESSAGE,
 					"synonymScope - " + ValidationConstants.OBSOLETE_MESSAGE)))).
-			body("errorMessages.alleleSynonyms", is(String.join(" | ", List.of(
-					"evidence - " + ValidationConstants.OBSOLETE_MESSAGE,
-					"nameType - " + ValidationConstants.OBSOLETE_MESSAGE,
-					"synonymScope - " + ValidationConstants.OBSOLETE_MESSAGE)))).
-			body("errorMessages.alleleSecondaryIds", is("evidence - " + ValidationConstants.OBSOLETE_MESSAGE)).
 			body("errorMessages.dataProvider", is(ValidationConstants.OBSOLETE_MESSAGE)).
-			body("errorMessages.alleleFunctionalImpacts", is(String.join(" | ", List.of(
-					"evidence - " + ValidationConstants.OBSOLETE_MESSAGE,
-					"functionalImpacts - " + ValidationConstants.OBSOLETE_MESSAGE,
-					"phenotypeTerm - " + ValidationConstants.OBSOLETE_MESSAGE)))).
 			body("errorMessages.alleleGermlineTransmissionStatus", is(String.join(" | ", List.of(
 					"evidence - " + ValidationConstants.OBSOLETE_MESSAGE,
 					"germlineTransmissionStatus - " + ValidationConstants.OBSOLETE_MESSAGE)))).
 			body("errorMessages.alleleDatabaseStatus", is(String.join(" | ", List.of(
 					"databaseStatus - " + ValidationConstants.OBSOLETE_MESSAGE,
-					"evidence - " + ValidationConstants.OBSOLETE_MESSAGE)))).
-			body("errorMessages.alleleNomenclatureEvents", is(String.join(" | ", List.of(
-					"evidence - " + ValidationConstants.OBSOLETE_MESSAGE,
-					"nomenclatureEvent - " + ValidationConstants.OBSOLETE_MESSAGE)))).
-			body("errorMessages.relatedNotes", is(String.join(" | ", List.of(
-					"noteType - " + ValidationConstants.OBSOLETE_MESSAGE,
-					"references - " + ValidationConstants.OBSOLETE_MESSAGE))));
+					"evidence - " + ValidationConstants.OBSOLETE_MESSAGE))));
 	}
 
 	@Test
 	@Order(15)
 	public void editAlleleWithObsoleteFields() {
-		Allele allele = getAllele(ALLELE);
+		Allele allele = findAllele(ALLELE);
 		allele.setTaxon(obsoleteTaxon);
 		allele.setInCollection(obsoleteCollection);
 		allele.setReferences(List.of(obsoleteReference));
@@ -1316,7 +1306,7 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 	@Order(17)
 	public void editAlleleWithNullNonRequiredFieldsLevel2() {
 		// Level 2 done before 1 to avoid having to restore nulled fields
-		Allele allele = getAllele(ALLELE);
+		Allele allele = findAllele(ALLELE);
 
 		AlleleMutationTypeSlotAnnotation editedMutationType = allele.getAlleleMutationTypes().get(0);
 		editedMutationType.setEvidence(null);
@@ -1386,42 +1376,56 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 			get("/api/allele/" + ALLELE).
 			then().
 			statusCode(200).
-			body("entity", hasKey("alleleMutationTypes")).
-			body("entity", hasKey("alleleInheritanceModes")).
 			body("entity", hasKey("alleleSymbol")).
 			body("entity", hasKey("alleleFullName")).
-			body("entity", hasKey("alleleSynonyms")).
-			body("entity", hasKey("alleleSecondaryIds")).
-			body("entity", hasKey("alleleFunctionalImpacts")).
 			body("entity", hasKey("alleleGermlineTransmissionStatus")).
 			body("entity", hasKey("alleleDatabaseStatus")).
-			body("entity.alleleMutationTypes[0]", not(hasKey("evidence"))).
-			body("entity.alleleInheritanceModes[0]", not(hasKey("evidence"))).
-			body("entity.alleleInheritanceModes[0]", not(hasKey("phenotypeTerm"))).
-			body("entity.alleleInheritanceModes[0]", not(hasKey("phenotypeStatement"))).
 			body("entity.alleleSymbol", not(hasKey("evidence"))).
 			body("entity.alleleSymbol", not(hasKey("synonymScope"))).
 			body("entity.alleleSymbol", not(hasKey("synonymUrl"))).
 			body("entity.alleleFullName", not(hasKey("evidence"))).
 			body("entity.alleleFullName", not(hasKey("synonymScope"))).
 			body("entity.alleleFullName", not(hasKey("synonymUrl"))).
-			body("entity.alleleSynonyms[0]", not(hasKey("evidence"))).
-			body("entity.alleleSynonyms[0]", not(hasKey("synonymScope"))).
-			body("entity.alleleSynonyms[0]", not(hasKey("synonymUrl"))).
-			body("entity.alleleSecondaryIds[0]", not(hasKey("evidence"))).
-			body("entity.alleleFunctionalImpacts[0]", not(hasKey("evidence"))).
-			body("entity.alleleFunctionalImpacts[0]", not(hasKey("phenotypeTerm"))).
-			body("entity.alleleFunctionalImpacts[0]", not(hasKey("phenotypeStatement"))).
 			body("entity.alleleGermlineTransmissionStatus", not(hasKey("evidence"))).
-			body("entity.alleleDatabaseStatus", not(hasKey("evidence"))).
-			body("entity.alleleNomenclatureEvents[0]", not(hasKey("evidence"))).
-			body("entity.relatedNotes[0]", not(hasKey("references")));
+			body("entity.alleleDatabaseStatus", not(hasKey("evidence")));
+
+		findAlleleResponse(ALLELE).
+			body("results[0].relatedNotes[0]", not(hasKey("references")));
+
+		findAlleleResponse(ALLELE).
+			body("results[0]", hasKey("alleleMutationTypes")).
+			body("results[0]", hasKey("alleleInheritanceModes")).
+			body("results[0]", hasKey("alleleSynonyms")).
+			body("results[0]", hasKey("alleleSecondaryIds")).
+			body("results[0]", hasKey("alleleFunctionalImpacts")).
+			body("results[0].alleleMutationTypes[0]", not(hasKey("evidence"))).
+			body("results[0].alleleInheritanceModes[0]", not(hasKey("evidence"))).
+			body("results[0].alleleInheritanceModes[0]", not(hasKey("phenotypeTerm"))).
+			body("results[0].alleleInheritanceModes[0]", not(hasKey("phenotypeStatement"))).
+			body("results[0].alleleSynonyms[0]", not(hasKey("evidence"))).
+			body("results[0].alleleSynonyms[0]", not(hasKey("synonymScope"))).
+			body("results[0].alleleSynonyms[0]", not(hasKey("synonymUrl"))).
+			body("results[0].alleleSecondaryIds[0]", not(hasKey("evidence"))).
+			body("results[0].alleleFunctionalImpacts[0]", not(hasKey("evidence"))).
+			body("results[0].alleleFunctionalImpacts[0]", not(hasKey("phenotypeTerm"))).
+			body("results[0].alleleFunctionalImpacts[0]", not(hasKey("phenotypeStatement"))).
+			body("results[0].alleleNomenclatureEvents[0]", not(hasKey("evidence")));
 	}
 
 	@Test
 	@Order(18)
 	public void editAlleleWithNullNonRequiredFieldsLevel1() {
 		Allele allele = getAllele(ALLELE);
+
+		// Earlier edits leave the allele with no references, so one is attached for the null payload to clear.
+		RestAssured.given().
+			contentType("application/json").
+			body(new Reference[] { reference2 }).
+			when().
+			put("/api/allele/" + allele.getId() + "/references").
+			then().
+			statusCode(200).
+			body("entities", hasSize(1));
 
 		allele.setInCollection(null);
 		allele.setReferences(null);
@@ -1453,20 +1457,30 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 			then().
 			statusCode(200).
 			body("entity", not(hasKey("inCollection"))).
-			body("entity", not(hasKey("references"))).
 			body("entity", not(hasKey("isExtinct"))).
 			body("entity", not(hasKey("dateCreated"))).
-			body("entity", not(hasKey("alleleMutationTypes"))).
-			body("entity", not(hasKey("alleleInheritanceModes"))).
 			body("entity", not(hasKey("alleleFullName"))).
-			body("entity", not(hasKey("alleleSynonyms"))).
-			body("entity", not(hasKey("alleleSecondaryIds"))).
-			body("entity", not(hasKey("alleleFunctionalImpacts"))).
 			body("entity", not(hasKey("alleleGermlineTransmissionStatus"))).
 			body("entity", not(hasKey("alleleDatabaseStatus"))).
-			body("entity", not(hasKey("alleleNomenclatureEvents"))).
-			body("entity", not(hasKey("relatedNotes"))).
 			body("entity", not(hasKey("dataProviderCrossReference")));
+
+		findAlleleResponse(ALLELE).
+			body("results[0]", not(hasKey("relatedNotes")));
+
+		findAlleleResponse(ALLELE).
+			body("results[0]", not(hasKey("alleleMutationTypes"))).
+			body("results[0]", not(hasKey("alleleInheritanceModes"))).
+			body("results[0]", not(hasKey("alleleSynonyms"))).
+			body("results[0]", not(hasKey("alleleSecondaryIds"))).
+			body("results[0]", not(hasKey("alleleFunctionalImpacts"))).
+			body("results[0]", not(hasKey("alleleNomenclatureEvents")));
+
+		RestAssured.given().
+			when().
+			get("/api/allele/" + allele.getId() + "/references").
+			then().
+			statusCode(200).
+			body("entities", nullValue());
 	}
 
 	@Test
@@ -1529,12 +1543,10 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 
 	@Test
 	@Order(21)
-	public void createAlleleWithDuplicateNote() {
-		Allele allele = new Allele();
-		allele.setPrimaryExternalId("ALLELE:0021");
-		allele.setTaxon(taxon);
-		AlleleSymbolSlotAnnotation alleleSymbol = createAlleleSymbolSlotAnnotation(null, "Test symbol 0021", symbolNameType, null, null);
-		allele.setAlleleSymbol(alleleSymbol);
+	public void editAlleleWithDuplicateNote() {
+		// The allele table's endpoint writes related notes from its payload; the create endpoint leaves them to the
+		// related notes sub-resource.
+		Allele allele = findAllele(ALLELE);
 		Note note1 = createNote(noteType, "Test text", false, false, null);
 		Note note2 = createNote(noteType, "Test text", false, false, null);
 		allele.setRelatedNotes(List.of(note1, note2));
@@ -1543,26 +1555,18 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 			contentType("application/json").
 			body(allele).
 			when().
-			post("/api/allele").
+			put("/api/allele").
 			then().
 			statusCode(400).
 			body("errorMessages", is(aMapWithSize(1))).
 			body("errorMessages.relatedNotes", is("freeText - " + ValidationConstants.DUPLICATE_MESSAGE + " (Test text|comment|false|false)"));
 	}
 
-	//@Test
-	// Ignored because this test is not relevant for the AlleleGeneAssociation Load.
-	@Order(22)
-	public void updateAlleleDetailWithNewAssociations() {
+	@Test
+	@Order(23)
+	public void updateDetailIgnoresConstructAssociationsInItsBody() {
 		Allele allele = getAllele(ALLELE);
 
-		AlleleGeneAssociation geneAssociation = new AlleleGeneAssociation();
-		geneAssociation.setAlleleGeneAssociationObject(gene);
-		geneAssociation.setRelation(geneAssociationRelation);
-		Reference reference = createReference("AGRKB:AssocTest1", false);
-		geneAssociation.setEvidence(List.of(reference));
-		allele.setAlleleGeneAssociations(List.of(geneAssociation));
-		
 		AlleleConstructAssociation constructAssociation = new AlleleConstructAssociation();
 		constructAssociation.setAlleleConstructAssociationObject(construct);
 		constructAssociation.setRelation(constructAssociationRelation);
@@ -1576,116 +1580,7 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 			then().
 			statusCode(200);
 
-		RestAssured.given().
-			when().
-			get("/api/allele/" + ALLELE).
-			then().
-			statusCode(200).
-			body("entity", hasKey("alleleGeneAssociations")).
-			body("entity.alleleGeneAssociations[0].alleleGeneAssociationObject.primaryExternalId", is(gene.getPrimaryExternalId())).
-			body("entity.alleleConstructAssociations[0].alleleConstructAssociationObject.primaryExternalId", is(construct.getPrimaryExternalId()));
-	}
-
-	@Test
-	@Order(23)
-	public void updateAlleleDetailRemoveAssociations() {
-		Allele allele = getAllele(ALLELE);
-
-		allele.setAlleleGeneAssociations(null);
-		allele.setAlleleConstructAssociations(null);
-
-		RestAssured.given().
-			contentType("application/json").
-			body(allele).
-			when().
-			put("/api/allele/updateDetail").
-			then().
-			statusCode(200);
-
-		RestAssured.given().
-			when().
-			get("/api/allele/" + ALLELE).
-			then().
-			statusCode(200).
-			body("entity", not(hasKey("alleleGeneAssociations"))).
-			body("entity", not(hasKey("alleleConstructAssociations")));
-	}
-
-	//@Test
-	@Order(24)
-	public void updateAlleleDetailWithInvalidAssociations() {
-		Allele allele = getAllele(ALLELE);
-
-		AlleleGeneAssociation geneAssociation = new AlleleGeneAssociation();
-		geneAssociation.setAlleleGeneAssociationObject(gene);
-		geneAssociation.setRelation(dominantInheritanceMode);
-		allele.setAlleleGeneAssociations(List.of(geneAssociation));
-
-		RestAssured.given().
-			contentType("application/json").
-			body(allele).
-			when().
-			put("/api/allele/updateDetail").
-			then().
-			statusCode(400).
-			body("errorMessages", is(aMapWithSize(1))).
-			body("errorMessages.alleleGeneAssociations", is("relation - " + ValidationConstants.INVALID_MESSAGE));
-	}
-
-	@Test
-	@Order(25)
-	public void updateAlleleDetailsWithMultipleIsAlleleOfAssociations() {
-		Allele allele = getAllele(ALLELE);
-
-		AlleleGeneAssociation geneAssociation = new AlleleGeneAssociation();
-		geneAssociation.setAlleleGeneAssociationObject(gene);
-		geneAssociation.setRelation(geneAssociationRelation);
-
-		AlleleGeneAssociation geneAssociation2 = new AlleleGeneAssociation();
-		geneAssociation2.setAlleleGeneAssociationObject(gene2);
-		geneAssociation2.setRelation(geneAssociationRelation);
-
-		allele.setAlleleGeneAssociations(List.of(geneAssociation, geneAssociation2));
-
-		RestAssured.given().
-			contentType("application/json").
-			body(allele).
-			when().
-			put("/api/allele/updateDetail").
-			then().
-			statusCode(400).
-			body("errorMessages", is(aMapWithSize(1))).
-			body("errorMessages.alleleGeneAssociations", is("relation - " + ValidationConstants.DUPLICATE_RELATION_PREFIX + " " + VocabularyConstants.ALLELE_OF_VOCABULARY_TERM));
-	}
-
-	@Test
-	@Order(26)
-	public void updateAlleleDetailsWithDuplicateAssociation() {
-		Allele allele = getAllele(ALLELE);
-
-		AlleleGeneAssociation geneAssociation = new AlleleGeneAssociation();
-		geneAssociation.setAlleleGeneAssociationObject(gene);
-		geneAssociation.setRelation(geneAssociationRelation);
-
-		AlleleGeneAssociation geneAssociation2 = new AlleleGeneAssociation();
-		geneAssociation2.setAlleleGeneAssociationObject(gene2);
-		geneAssociation2.setRelation(geneAssociationRelation2);
-
-		AlleleGeneAssociation geneAssociation3 = new AlleleGeneAssociation();
-		geneAssociation3.setAlleleGeneAssociationObject(gene2);
-		geneAssociation3.setRelation(geneAssociationRelation2);
-
-		allele.setAlleleGeneAssociations(List.of(geneAssociation, geneAssociation2, geneAssociation3));
-
-		RestAssured.given().
-			contentType("application/json").
-			body(allele).
-			when().
-			put("/api/allele/updateDetail").
-			then().
-			statusCode(400).
-			body("errorMessages", is(aMapWithSize(1))).
-			body("errorMessages.alleleGeneAssociations", is("relation - " + ValidationConstants.DUPLICATE_MESSAGE + " (Allele:0001|duplication|TEST:AssociatedGene2)"));
+		assertThat(storedConstructAssociations(ALLELE), is(nullValue()));
 	}
 
 	@Test
@@ -1701,11 +1596,10 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 
 	@Test
 	@Order(28)
-	public void updateAlleleDetailWithGeneAssociationEvidenceGraph() {
-		// SCRUM-6434: serializing the updateDetail response hit a lazy load on a closed session via
-		// alleleGeneAssociations -> alleleGeneAssociationObject -> geneSymbol -> evidence ->
-		// crossReferences. AlleleDetailView no longer reaches geneSymbol, which severs that path.
-		// The only active test doing a successful updateDetail with a gene association.
+	public void putGeneAssociationsWithEvidenceGraph() {
+		// SCRUM-6434: serializing a written gene association hit a lazy load on a closed session via
+		// alleleGeneAssociationObject -> geneSymbol -> evidence -> crossReferences. The gene associations
+		// sub-resource serializes a view that does not reach geneSymbol, which severs that path.
 
 		// A null fixture would produce a 400 indistinguishable from the bug under test.
 		assertNotNull(symbolNameType, "symbolNameType fixture is null - loadRequiredEntities did not complete");
@@ -1729,31 +1623,25 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 		AlleleGeneAssociation geneAssociation = new AlleleGeneAssociation();
 		geneAssociation.setAlleleGeneAssociationObject(evidenceGene);
 		geneAssociation.setRelation(geneAssociationRelation);
-		allele.setAlleleGeneAssociations(List.of(geneAssociation));
 
 		// Assert the PUT body; a follow-up GET keeps the session open and never reproduces this.
-		Response response = RestAssured.given().
-				contentType("application/json").
-				body(allele).
-				when().
-				put("/api/allele/updateDetail").
+		Response response = putGeneAssociations(allele.getId(), geneAssociation).
 				then().
 				extract().response();
 
 		// Validation and serialization failures are both 400; only the latter is this bug.
 		String body = response.body().asString();
 		assertNotEquals(SERIALIZATION_FAILURE_BODY, body.trim(),
-				"Response serialization failed - the AlleleDetailView graph hit a LazyInitializationException "
+				"Response serialization failed - the gene association graph hit a LazyInitializationException "
 					+ "after the write transaction closed (SCRUM-6434)");
-		assertEquals(200, response.statusCode(), "updateDetail returned " + response.statusCode() + ": " + body);
+		assertEquals(200, response.statusCode(), "the gene associations PUT returned " + response.statusCode() + ": " + body);
 
-		assertThat(response.jsonPath().getList("entity.alleleGeneAssociations"), hasSize(1));
-		assertThat(response.jsonPath().getString("entity.alleleGeneAssociations[0].alleleGeneAssociationObject.primaryExternalId"),
+		assertThat(response.jsonPath().getList("entities"), hasSize(1));
+		assertThat(response.jsonPath().getString("entities[0].alleleGeneAssociationObject.primaryExternalId"),
 				is(evidenceGene.getPrimaryExternalId()));
 		// The association object is pruned to identifiers: geneSymbol (and the evidence ->
 		// crossReferences chain under it) must NOT be serialized.
-		assertThat(response.jsonPath().get("entity.alleleGeneAssociations[0].alleleGeneAssociationObject.geneSymbol"),
-				is(nullValue()));
+		assertThat(response.jsonPath().get("entities[0].alleleGeneAssociationObject.geneSymbol"), is(nullValue()));
 
 		RestAssured.given().
 				when().
@@ -1769,11 +1657,9 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 		// Fail if it ever widens again - that is how the lazy branch got in (SCRUM-6434).
 		Set<String> allowed = Set.of(
 				"type", "id", "curie", "primaryExternalId", "modInternalId", "taxon", "inCollection", "isExtinct",
-				"references", "relatedNotes", "dataProvider", "dataProviderCrossReference",
-				"alleleSymbol", "alleleFullName", "alleleSynonyms", "alleleSecondaryIds", "alleleMutationTypes",
-				"alleleInheritanceModes", "alleleFunctionalImpacts", "alleleGermlineTransmissionStatus",
-				"alleleDatabaseStatus", "alleleNomenclatureEvents",
-				"alleleGeneAssociations", "alleleVariantAssociations", "alleleConstructAssociations",
+				"dataProvider", "dataProviderCrossReference",
+				"alleleSymbol", "alleleFullName", "alleleGermlineTransmissionStatus", "alleleDatabaseStatus",
+				"alleleVariantAssociations",
 				"createdBy", "updatedBy", "dateCreated", "dateUpdated", "dbDateCreated", "dbDateUpdated",
 				"internal", "obsolete");
 
@@ -1801,26 +1687,59 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 		assertNotNull(constructAssociationRelation, "constructAssociationRelation fixture is null");
 
 		Allele allele = getAllele(ROUND_TRIP_ALLELE);
-		// createAllele leaves references empty; set one so the round trip covers
-		// Reference.crossReferences, the collection this bug is about.
-		allele.setReferences(List.of(reference));
+		// The detail payload never carries references, related notes, slot annotation lists or gene and construct
+		// associations, so both saves must leave these in place.
+		RestAssured.given().
+				contentType("application/json").
+				body(new Reference[] { reference }).
+				when().
+				put("/api/allele/" + allele.getId() + "/references").
+				then().
+				statusCode(200);
 
 		AlleleGeneAssociation ga = new AlleleGeneAssociation();
 		ga.setAlleleGeneAssociationObject(gene);
 		ga.setRelation(geneAssociationRelation);
-		allele.setAlleleGeneAssociations(List.of(ga));
+		putGeneAssociations(allele.getId(), ga).
+				then().
+				statusCode(200);
 
 		AlleleConstructAssociation ca = new AlleleConstructAssociation();
+		ca.setAlleleAssociationSubject(allele);
 		ca.setAlleleConstructAssociationObject(construct);
 		ca.setRelation(constructAssociationRelation);
-		allele.setAlleleConstructAssociations(List.of(ca));
+		ca.setEvidence(List.of(reference));
+		RestAssured.given().
+				contentType("application/json").
+				body(ca).
+				when().
+				post("/api/alleleconstructassociation").
+				then().
+				statusCode(200);
 
-		// reference2 is deliberately not in allele.references, so its crossReferences are reachable
-		// only through SlotAnnotation.evidence. Reusing reference here would hide a regression.
-		allele.setAlleleInheritanceModes(List.of(
-				createAlleleInheritanceModeSlotAnnotation(List.of(reference2), dominantInheritanceMode, mpTerm, "Round trip")));
-		allele.setAlleleSecondaryIds(List.of(
-				createAlleleSecondaryIdSlotAnnotation(List.of(reference2), "TEST:RoundTripSecondary")));
+		// The related notes and slot annotation lists are written through their own sub-resources, so the detail
+		// saves below must leave them in place.
+		RestAssured.given().
+				contentType("application/json").
+				body(List.of(createAlleleInheritanceModeSlotAnnotation(List.of(reference2), dominantInheritanceMode, mpTerm, "Round trip"))).
+				when().
+				put("/api/allele/" + allele.getId() + "/inheritancemodes").
+				then().
+				statusCode(200);
+		RestAssured.given().
+				contentType("application/json").
+				body(List.of(createAlleleSecondaryIdSlotAnnotation(List.of(reference2), "TEST:RoundTripSecondary"))).
+				when().
+				put("/api/allele/" + allele.getId() + "/secondaryids").
+				then().
+				statusCode(200);
+		RestAssured.given().
+				contentType("application/json").
+				body(List.of(createNote(noteType, "Round trip note", false, false, null))).
+				when().
+				put("/api/allele/" + allele.getId() + "/relatednotes").
+				then().
+				statusCode(200);
 
 		RestAssured.given().
 				contentType("application/json").
@@ -1842,22 +1761,61 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 
 		RestAssured.given().
 				when().
-				get("/api/allele/" + ROUND_TRIP_ALLELE).
+				get("/api/allele/" + allele.getId() + "/inheritancemodes").
 				then().
 				statusCode(200).
-				body("entity.alleleGeneAssociations", hasSize(1)).
-				body("entity.alleleConstructAssociations", hasSize(1)).
-				body("entity.alleleInheritanceModes", hasSize(1)).
-				body("entity.alleleSecondaryIds", hasSize(1)).
-				body("entity.alleleSecondaryIds[0].secondaryId", is("TEST:RoundTripSecondary")).
-				body("entity.alleleSecondaryIds[0].evidence[0].curie", is(reference2.getCurie())).
-				body("entity.references", hasSize(1));
+				body("entities", hasSize(1));
+		RestAssured.given().
+				when().
+				get("/api/allele/" + allele.getId() + "/secondaryids").
+				then().
+				statusCode(200).
+				body("entities", hasSize(1)).
+				body("entities[0].secondaryId", is("TEST:RoundTripSecondary")).
+				body("entities[0].evidence[0].curie", is(reference2.getCurie()));
+		RestAssured.given().
+				when().
+				get("/api/allele/" + allele.getId() + "/relatednotes").
+				then().
+				statusCode(200).
+				body("entities", hasSize(1)).
+				body("entities[0].freeText", is("Round trip note"));
+
+		RestAssured.given().
+				when().
+				get("/api/allele/" + allele.getId() + "/references").
+				then().
+				statusCode(200).
+				body("entities", hasSize(1)).
+				body("entities[0].curie", is(reference.getCurie()));
+
+		assertThat(storedConstructAssociations(ROUND_TRIP_ALLELE), hasSize(1));
+		AlleleConstructAssociation storedConstructAssociation =
+				getAlleleConstructAssociation(allele.getId(), constructAssociationRelation.getName(), construct.getId());
+		assertThat(storedConstructAssociation.getEvidence(), hasSize(1));
+		assertEquals(reference.getCurie(), storedConstructAssociation.getEvidence().get(0).getCurie());
+		RestAssured.given().
+				when().
+				get("/api/allele/" + allele.getId() + "/geneassociations").
+				then().
+				statusCode(200).
+				body("entities", hasSize(1)).
+				body("entities[0].alleleGeneAssociationObject.primaryExternalId", is(gene.getPrimaryExternalId()));
 
 		RestAssured.given().
 				when().
 				delete("/api/allele/" + ROUND_TRIP_ALLELE).
 				then().
 				statusCode(200);
+	}
+
+	// Gene associations are written through the allele's own sub-resource, not with the allele.
+	private Response putGeneAssociations(Long alleleId, AlleleGeneAssociation... associations) {
+		return RestAssured.given().
+				contentType("application/json").
+				body(associations).
+				when().
+				put("/api/allele/" + alleleId + "/geneassociations");
 	}
 
 	private static String removeAll(Set<String> actual, Set<String> allowed) {
@@ -2059,6 +2017,19 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 		return crossReference;
 	}
 
+	// The allele's endpoints omit construct associations, so they are found by their subject. Returns null when the
+	// allele has none, because NON_EMPTY drops the key.
+	private List<Map<String, Object>> storedConstructAssociations(String primaryExternalId) {
+		return RestAssured.given().
+				contentType("application/json").
+				body("{\"alleleAssociationSubject.primaryExternalId\": \"" + primaryExternalId + "\"}").
+				when().
+				post("/api/alleleconstructassociation/find?limit=10&page=0").
+				then().
+				statusCode(200).
+				extract().jsonPath().getList("results");
+	}
+
 	// GET /api/allele/{id} serializes AlleleDetailView, which omits crossReferences, so the stored list is
 	// read through find, which serializes AlleleView. Returns null when the allele has none, because
 	// NON_EMPTY drops the key.
@@ -2073,54 +2044,44 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 				extract().jsonPath().getList("results[0].crossReferences");
 	}
 
+	// GET /api/allele/{id} serializes AlleleDetailView, which omits the slot annotation lists written through
+	// the allele's own sub-resources, so the allele with them is read through find, which serializes AlleleView.
+	private ValidatableResponse findAlleleResponse(String primaryExternalId) {
+		return RestAssured.given().
+				contentType("application/json").
+				body("{\"primaryExternalId\": \"" + primaryExternalId + "\"}").
+				when().
+				post("/api/allele/find?limit=1&page=0").
+				then().
+				statusCode(200);
+	}
+
+	private Allele findAllele(String primaryExternalId) {
+		return findAlleleResponse(primaryExternalId).extract().body().as(new TypeRef<SearchResponse<Allele>>() { }).getResults().get(0);
+	}
+
 
 	@Test
 	@Order(33)
-	public void alleleDetailViewOmitsAssociationSubject() {
+	public void geneAssociationsOmitTheirSubject() {
 		Allele allele = getAllele(CROSS_REFERENCE_ALLELE);
 
 		AlleleGeneAssociation geneAssociation = new AlleleGeneAssociation();
 		geneAssociation.setAlleleGeneAssociationObject(gene);
 		geneAssociation.setRelation(geneAssociationRelation);
-		allele.setAlleleGeneAssociations(List.of(geneAssociation));
-
-		AlleleConstructAssociation constructAssociation = new AlleleConstructAssociation();
-		constructAssociation.setAlleleConstructAssociationObject(construct);
-		constructAssociation.setRelation(constructAssociationRelation);
-		allele.setAlleleConstructAssociations(List.of(constructAssociation));
-
-		RestAssured.given().
-				contentType("application/json").
-				body(allele).
-				when().
-				put("/api/allele/updateDetail").
-				then().
-				statusCode(200);
-
-		Response detail = RestAssured.given().
-				when().
-				get("/api/allele/" + CROSS_REFERENCE_ALLELE).
+		Response geneAssociations = putGeneAssociations(allele.getId(), geneAssociation).
 				then().
 				statusCode(200).
 				extract().response();
 
-		assertThat(detail.jsonPath().getList("entity.alleleGeneAssociations"), hasSize(1));
-		assertThat(detail.jsonPath().getList("entity.alleleConstructAssociations"), hasSize(1));
-		assertThat("the allele detail view serialized a second copy of the allele under its own gene association",
-				detail.jsonPath().get("entity.alleleGeneAssociations[0].alleleAssociationSubject"), is(nullValue()));
-		assertThat("the allele detail view serialized a second copy of the allele under its own construct association",
-				detail.jsonPath().get("entity.alleleConstructAssociations[0].alleleAssociationSubject"), is(nullValue()));
+		assertThat("the gene associations sub-resource serialized a second copy of the allele under its own gene association",
+				geneAssociations.jsonPath().get("entities[0].alleleAssociationSubject"), is(nullValue()));
 
 		// The association endpoints serialize FieldsAndLists and still carry the subject, which is what the
 		// Allele Gene Associations table renders from. Scoping the omission by view is what keeps that working.
-		Long alleleId = detail.jsonPath().getLong("entity.id");
-		Long geneId = detail.jsonPath().getLong("entity.alleleGeneAssociations[0].alleleGeneAssociationObject.id");
-		AlleleGeneAssociation storedGeneAssociation = getAlleleGeneAssociation(alleleId, geneAssociationRelation.getName(), geneId);
+		Long geneId = geneAssociations.jsonPath().getLong("entities[0].alleleGeneAssociationObject.id");
+		AlleleGeneAssociation storedGeneAssociation = getAlleleGeneAssociation(allele.getId(), geneAssociationRelation.getName(), geneId);
 		assertThat(storedGeneAssociation.getAlleleAssociationSubject(), notNullValue());
-
-		Long constructId = detail.jsonPath().getLong("entity.alleleConstructAssociations[0].alleleConstructAssociationObject.id");
-		AlleleConstructAssociation storedConstructAssociation = getAlleleConstructAssociation(alleleId, constructAssociationRelation.getName(), constructId);
-		assertThat(storedConstructAssociation.getAlleleAssociationSubject(), notNullValue());
 	}
 
 	@Test
@@ -2177,13 +2138,8 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 		AlleleGeneAssociation geneAssociation = new AlleleGeneAssociation();
 		geneAssociation.setAlleleGeneAssociationObject(gene);
 		geneAssociation.setRelation(geneAssociationRelation);
-		allele.setAlleleGeneAssociations(List.of(geneAssociation));
 
-		RestAssured.given().
-			contentType("application/json").
-			body(allele).
-			when().
-			put("/api/allele/updateDetail").
+		putGeneAssociations(allele.getId(), geneAssociation).
 			then().
 			statusCode(200);
 

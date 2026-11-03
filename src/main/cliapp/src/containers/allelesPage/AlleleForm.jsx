@@ -193,15 +193,15 @@ export const AlleleForm = ({ state, dispatch, isVisible, mode = 'detail', pendin
 			</FormSection>
 
 			<FormSection isVisible={isVisible('Synonyms')}>
-				<SynonymsForm state={state} dispatch={dispatch} />
+				<SynonymsForm mode={mode} />
 			</FormSection>
 
 			<FormSection isVisible={isVisible('Secondary IDs')}>
-				<SecondaryIdsForm state={state} dispatch={dispatch} />
+				<SecondaryIdsForm mode={mode} />
 			</FormSection>
 
 			<FormSection isVisible={isVisible('Nomenclature Events')}>
-				<NomenclatureEventsForm state={state} dispatch={dispatch} />
+				<NomenclatureEventsForm mode={mode} />
 			</FormSection>
 
 			<FormSection isVisible={isVisible('Taxon')}>
@@ -218,11 +218,11 @@ export const AlleleForm = ({ state, dispatch, isVisible, mode = 'detail', pendin
 			</FormSection>
 
 			<FormSection isVisible={isVisible('Mutation Types')}>
-				<MutationTypesForm state={state} dispatch={dispatch} />
+				<MutationTypesForm mode={mode} />
 			</FormSection>
 
 			<FormSection isVisible={isVisible('Functional Impacts')}>
-				<FunctionalImpactsForm state={state} dispatch={dispatch} />
+				<FunctionalImpactsForm mode={mode} />
 			</FormSection>
 
 			<FormSection isVisible={isVisible('Germline Transmission Status')}>
@@ -238,11 +238,11 @@ export const AlleleForm = ({ state, dispatch, isVisible, mode = 'detail', pendin
 			</FormSection>
 
 			<FormSection isVisible={isVisible('Inheritance Modes')}>
-				<InheritanceModesForm state={state} dispatch={dispatch} />
+				<InheritanceModesForm mode={mode} />
 			</FormSection>
 
 			<FormSection isVisible={isVisible('References')}>
-				<ReferencesForm state={state} dispatch={dispatch} />
+				<ReferencesForm mode={mode} />
 			</FormSection>
 
 			<FormSection isVisible={isVisible('In Collection')}>
@@ -273,11 +273,11 @@ export const AlleleForm = ({ state, dispatch, isVisible, mode = 'detail', pendin
 			</FormSection>
 
 			<FormSection isVisible={isVisible('Related Notes')}>
-				<RelatedNotesForm state={state} dispatch={dispatch} />
+				<RelatedNotesForm mode={mode} />
 			</FormSection>
 
 			<FormSection isVisible={isVisible('Allele Gene Associations')}>
-				<AlleleGeneAssociationsForm state={state} dispatch={dispatch} />
+				<AlleleGeneAssociationsForm mode={mode} />
 			</FormSection>
 
 			<FormSection isVisible={isVisible('Data Provider')}>
