@@ -121,4 +121,64 @@ describe('useGeneReducer', () => {
 		expect(result.current.geneState.errorMessages).toEqual({});
 		expect(result.current.geneState.entityStates.geneSymbol.errorMessages).toEqual({});
 	});
+
+	describe('create mode', () => {
+		const renderCreateReducer = () => renderHook(() => useGeneReducer('create'));
+
+		it('starts from a blank gene with an empty symbol open for editing', () => {
+			const { result } = renderCreateReducer();
+			const { gene, entityStates } = result.current.geneState;
+
+			expect(gene).toEqual(
+				expect.objectContaining({
+					taxon: { curie: '' },
+					geneType: { curie: '' },
+					internal: false,
+					obsolete: false,
+				})
+			);
+			expect(gene.geneSymbol.displayText).toBe('');
+			expect(entityStates.geneSymbol.show).toBe(true);
+			expect(entityStates.geneSymbol.editingRows).toEqual({ [gene.geneSymbol.dataKey]: true });
+			expect(entityStates.geneFullName.show).toBe(false);
+		});
+
+		it('returns to the blank gene on reset, with a fresh symbol row and no errors', () => {
+			const { result } = renderCreateReducer();
+			const startingSymbolKey = result.current.geneState.gene.geneSymbol.dataKey;
+
+			act(() => {
+				result.current.geneDispatch({
+					type: 'EDIT_OBJECT',
+					entityType: 'geneSymbol',
+					field: 'displayText',
+					value: 'abc',
+				});
+				result.current.geneDispatch({ type: 'EDIT', field: 'taxon', value: { curie: 'NCBITaxon:7227' } });
+				result.current.geneDispatch({
+					type: 'ADD_OBJECT',
+					entityType: 'geneFullName',
+					value: { dataKey: 'name-row', displayText: 'a name' },
+				});
+				result.current.geneDispatch({ type: 'UPDATE_ERROR_MESSAGES', errorMessages: { taxon: 'required' } });
+				result.current.geneDispatch({
+					type: 'UPDATE_TABLE_ERROR_MESSAGES',
+					entityType: 'geneSymbol',
+					errorMessages: { row: { displayText: 'required' } },
+				});
+			});
+
+			act(() => result.current.geneDispatch({ type: 'RESET' }));
+			const { gene, entityStates, errorMessages } = result.current.geneState;
+
+			expect(gene.taxon).toEqual({ curie: '' });
+			expect(gene.geneSymbol.displayText).toBe('');
+			expect(gene.geneFullName).toBeUndefined();
+			expect(gene.geneSymbol.dataKey).not.toBe(startingSymbolKey);
+			expect(entityStates.geneSymbol.editingRows).toEqual({ [gene.geneSymbol.dataKey]: true });
+			expect(entityStates.geneFullName.show).toBe(false);
+			expect(entityStates.geneSymbol.errorMessages).toEqual({});
+			expect(errorMessages).toEqual({});
+		});
+	});
 });
