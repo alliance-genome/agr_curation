@@ -48,7 +48,7 @@ public class AllelePhenotypeAnnotationFmsDTOValidator extends PhenotypeAnnotatio
 		Reference reference = refResponse.getEntity();
 		String refString = getRefString(dto, reference);
 
-		String uniqueId = AnnotationUniqueIdHelper.getPhenotypeAnnotationUniqueId(dto, subject.getIdentifier(), refString);
+		String uniqueId = AnnotationUniqueIdHelper.getPhenotypeAnnotationUniqueId(dto, subject.getSubmittedIdentifierOrCurie(), refString);
 		SearchResponse<AllelePhenotypeAnnotation> annotationSearch = allelePhenotypeAnnotationDAO.findByField("uniqueId", uniqueId);
 		if (annotationSearch != null && annotationSearch.getSingleResult() != null) {
 			annotation = annotationSearch.getSingleResult();
@@ -81,7 +81,7 @@ public class AllelePhenotypeAnnotationFmsDTOValidator extends PhenotypeAnnotatio
 			ObjectResponse<Reference> quickRefResponse = validateReference(dto);
 			if (!quickRefResponse.hasErrors()) {
 				String quickRefString = getRefString(dto, quickRefResponse.getEntity());
-				String uniqueId = AnnotationUniqueIdHelper.getPhenotypeAnnotationUniqueId(dto, primaryAnnotationSubject.getIdentifier(), quickRefString);
+				String uniqueId = AnnotationUniqueIdHelper.getPhenotypeAnnotationUniqueId(dto, primaryAnnotationSubject.getSubmittedIdentifierOrCurie(), quickRefString);
 				if (existingUniqueIds.containsKey(uniqueId)) {
 					Long existingInferredGeneId = inferredGeneIds.get(uniqueId);
 					Long objectEntityId = genomicEntityIdCache.computeIfAbsent(dto.getObjectId(), id -> {
@@ -105,7 +105,7 @@ public class AllelePhenotypeAnnotationFmsDTOValidator extends PhenotypeAnnotatio
 		Reference reference = refResponse.getEntity();
 		String refString = getRefString(dto, reference);
 
-		List<AllelePhenotypeAnnotation> primaryAnnotations = findPrimaryAnnotations(allelePhenotypeAnnotationDAO, dto, primaryAnnotationSubject.getIdentifier(), refString);
+		List<AllelePhenotypeAnnotation> primaryAnnotations = findPrimaryAnnotations(allelePhenotypeAnnotationDAO, dto, primaryAnnotationSubject.getSubmittedIdentifierOrCurie(), refString);
 		
 		if (CollectionUtils.isEmpty(primaryAnnotations)) {
 

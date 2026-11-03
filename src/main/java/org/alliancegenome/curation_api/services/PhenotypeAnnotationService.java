@@ -131,7 +131,7 @@ public class PhenotypeAnnotationService extends BaseAnnotationCrudService<Phenot
 	private String resolveIdentifier(String objectId) {
 		return genomicEntityIdentifierCache.computeIfAbsent(objectId, id -> {
 			GenomicEntity entity = genomicEntityService.findByIdentifierString(id);
-			return entity != null ? entity.getIdentifier() : null;
+			return entity != null ? entity.getSubmittedIdentifierOrCurie() : null;
 		});
 	}
 

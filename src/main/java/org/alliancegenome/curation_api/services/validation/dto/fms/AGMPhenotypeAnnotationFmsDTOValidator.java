@@ -49,7 +49,7 @@ public class AGMPhenotypeAnnotationFmsDTOValidator extends PhenotypeAnnotationFm
 		Reference reference = refResponse.getEntity();
 		String refString = getRefString(dto, reference);
 
-		String uniqueId = AnnotationUniqueIdHelper.getPhenotypeAnnotationUniqueId(dto, subject.getIdentifier(), refString);
+		String uniqueId = AnnotationUniqueIdHelper.getPhenotypeAnnotationUniqueId(dto, subject.getSubmittedIdentifierOrCurie(), refString);
 		SearchResponse<AGMPhenotypeAnnotation> annotationSearch = agmPhenotypeAnnotationDAO.findByField("uniqueId", uniqueId);
 		if (annotationSearch != null && annotationSearch.getSingleResult() != null) {
 			annotation = annotationSearch.getSingleResult();
@@ -84,7 +84,7 @@ public class AGMPhenotypeAnnotationFmsDTOValidator extends PhenotypeAnnotationFm
 			ObjectResponse<Reference> quickRefResponse = validateReference(dto);
 			if (!quickRefResponse.hasErrors()) {
 				String quickRefString = getRefString(dto, quickRefResponse.getEntity());
-				String uniqueId = AnnotationUniqueIdHelper.getPhenotypeAnnotationUniqueId(dto, primaryAnnotationSubject.getIdentifier(), quickRefString);
+				String uniqueId = AnnotationUniqueIdHelper.getPhenotypeAnnotationUniqueId(dto, primaryAnnotationSubject.getSubmittedIdentifierOrCurie(), quickRefString);
 				if (existingUniqueIds.containsKey(uniqueId)) {
 					Long objectEntityId = genomicEntityIdCache.computeIfAbsent(dto.getObjectId(), id -> {
 						GenomicEntity entity = genomicEntityService.findByIdentifierString(id);
@@ -119,7 +119,7 @@ public class AGMPhenotypeAnnotationFmsDTOValidator extends PhenotypeAnnotationFm
 		Reference reference = refResponse.getEntity();
 		String refString = getRefString(dto, reference);
 
-		List<AGMPhenotypeAnnotation> primaryAnnotations = findPrimaryAnnotations(agmPhenotypeAnnotationDAO, dto, primaryAnnotationSubject.getIdentifier(), refString);
+		List<AGMPhenotypeAnnotation> primaryAnnotations = findPrimaryAnnotations(agmPhenotypeAnnotationDAO, dto, primaryAnnotationSubject.getSubmittedIdentifierOrCurie(), refString);
 		
 		if (CollectionUtils.isEmpty(primaryAnnotations)) {
 			PhenotypeFmsDTO inferredPrimaryDTO = createPrimaryAnnotationDTO(dto, primaryAnnotationSubject.getIdentifier());
