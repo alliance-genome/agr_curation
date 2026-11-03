@@ -2,8 +2,8 @@ import { useState } from 'react';
 import { Dialog } from 'primereact/dialog';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
-import { EllipsisTableCell } from '../../../components/EllipsisTableCell';
-import { evidenceTemplate } from '../../../components/EvidenceComponent';
+import { EllipsisTableCell } from '../EllipsisTableCell';
+import { evidenceTemplate } from '../EvidenceComponent';
 
 export const SecondaryIdsReadOnlyDialog = ({ originalSecondaryIdsData, setOriginalSecondaryIdsData }) => {
 	const { originalSecondaryIds, isInEdit, dialog } = originalSecondaryIdsData;

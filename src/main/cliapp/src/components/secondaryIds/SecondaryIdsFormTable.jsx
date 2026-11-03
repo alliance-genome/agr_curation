@@ -2,10 +2,10 @@ import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { ColumnGroup } from 'primereact/columngroup';
 import { Row } from 'primereact/row';
-import { DeleteAction } from '../../../components/Actions/DeletionAction';
-import { InputTextTableEditor } from '../../../components/Editors/text/InputTextTableEditor';
-import { EvidenceTableEditor } from '../../../components/Editors/autocomplete/references/EvidenceTableEditor';
-import { BooleanTableEditor } from '../../../components/Editors/dropdown/boolean/BooleanTableEditor';
+import { DeleteAction } from '../Actions/DeletionAction';
+import { InputTextTableEditor } from '../Editors/text/InputTextTableEditor';
+import { EvidenceTableEditor } from '../Editors/autocomplete/references/EvidenceTableEditor';
+import { BooleanTableEditor } from '../Editors/dropdown/boolean/BooleanTableEditor';
 
 /**
  * Editable secondary IDs table, every row always in edit mode. Its editors read and write rows

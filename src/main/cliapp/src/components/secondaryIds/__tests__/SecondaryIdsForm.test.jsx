@@ -8,12 +8,12 @@ import {
 	renderSubResourceForm,
 	selectInColumn,
 	typeInColumn,
-} from '../../__tests__/alleleFormTestUtils';
-import { SearchService } from '../../../../service/SearchService';
-import '../../../../tools/jest/setupTests';
+} from '../../../containers/allelesPage/__tests__/alleleFormTestUtils';
+import { SearchService } from '../../../service/SearchService';
+import '../../../tools/jest/setupTests';
 
-vi.mock('../../../../service/SearchService');
-vi.mock('../../../../service/useControlledVocabularyService');
+vi.mock('../../../service/SearchService');
+vi.mock('../../../service/useControlledVocabularyService');
 
 const EVIDENCE = [
 	{ id: 1, curie: 'AGRKB:101' },

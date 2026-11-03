@@ -1,13 +1,13 @@
 import { Button } from 'primereact/button';
 import { useRef } from 'react';
-import { FormTableWrapper } from '../../../components/FormTableWrapper';
-import { useSubResource } from '../../../components/SubResourcesContext';
-import { TableEditorProvider } from '../../../components/Editors/fields/TableEditorContext';
-import { useSubResourceRows } from '../../../hooks/useSubResourceRows';
-import { SubResourceSaveButton } from '../../../components/SubResourceSaveButton';
-import { SubResourceLoadError } from '../../../components/SubResourceLoadError';
-import { useSubResourceFormStrategy } from '../../../hooks/useSubResourceFormStrategy';
-import { addDataKey, KEEP_ROWS_IN_EDIT_MODE } from '../../../utils/rows';
+import { FormTableWrapper } from '../FormTableWrapper';
+import { useSubResource } from '../SubResourcesContext';
+import { TableEditorProvider } from '../Editors/fields/TableEditorContext';
+import { useSubResourceRows } from '../../hooks/useSubResourceRows';
+import { SubResourceSaveButton } from '../SubResourceSaveButton';
+import { SubResourceLoadError } from '../SubResourceLoadError';
+import { useSubResourceFormStrategy } from '../../hooks/useSubResourceFormStrategy';
+import { addDataKey, KEEP_ROWS_IN_EDIT_MODE } from '../../utils/rows';
 import { SecondaryIdsFormTable } from './SecondaryIdsFormTable';
 
 /**

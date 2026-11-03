@@ -7,8 +7,8 @@ import { DateDetailPageTemplate } from '../../components/Templates/DateDetailPag
 import { UserDetailPageTemplate } from '../../components/Templates/UserDetailPageTemplate';
 import { NameSlotAnnotationForm } from '../../components/NameSlotAnnotationForm';
 import { FormSection } from '../../components/FormFieldVisibility';
-import { SynonymsForm } from '../allelesPage/synonyms/SynonymsForm';
-import { SecondaryIdsForm } from '../allelesPage/secondaryIds/SecondaryIdsForm';
+import { SynonymsForm } from '../../components/synonyms/SynonymsForm';
+import { SecondaryIdsForm } from '../../components/secondaryIds/SecondaryIdsForm';
 import { RelatedNotesForm } from '../../components/relatedNotes/RelatedNotesForm';
 import { CrossReferencesForm } from '../../components/crossReferences/CrossReferencesForm';
 import { GcrpCrossReferenceForm } from './gcrpCrossReference/GcrpCrossReferenceForm';

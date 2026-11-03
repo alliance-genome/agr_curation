@@ -5,11 +5,11 @@ import { IdentifierDetailPageTemplate } from '../../components/Templates/Identif
 import { DataProviderDetailPageTemplate } from '../../components/Templates/DataProviderDetailPageTemplate';
 import { DateDetailPageTemplate } from '../../components/Templates/DateDetailPageTemplate';
 import { UserDetailPageTemplate } from '../../components/Templates/UserDetailPageTemplate';
-import { SynonymsForm } from './synonyms/SynonymsForm';
+import { SynonymsForm } from '../../components/synonyms/SynonymsForm';
 import { FullNameForm } from './fullName/FullNameForm';
 import { MutationTypesForm } from './mutationTypes/MutationTypesForm';
 import { InheritanceModesForm } from './inheritanceModes/InheritanceModesForm';
-import { SecondaryIdsForm } from './secondaryIds/SecondaryIdsForm';
+import { SecondaryIdsForm } from '../../components/secondaryIds/SecondaryIdsForm';
 import { FunctionalImpactsForm } from './functionalImpacts/FunctionalImpactsForm';
 import { DatabaseStatusForm } from './databaseStatus/DatabaseStatusForm';
 import { RelatedNotesForm } from '../../components/relatedNotes/RelatedNotesForm';

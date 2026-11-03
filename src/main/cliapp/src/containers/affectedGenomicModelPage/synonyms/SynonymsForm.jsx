@@ -1,6 +1,6 @@
 import { Button } from 'primereact/button';
 import { FormTableWrapper } from '../../../components/FormTableWrapper';
-import { SynonymsFormTable } from '../../allelesPage/synonyms/SynonymsFormTable';
+import { SynonymsFormTable } from '../../../components/synonyms/SynonymsFormTable';
 import { useRef } from 'react';
 import { addDataKey } from '../utils';
 import { KEEP_ROWS_IN_EDIT_MODE } from '../../../utils/rows';

@@ -1,11 +1,16 @@
 import { render, fireEvent, waitFor } from '@testing-library/react';
 import { SecondaryIdsEditDialog } from '../SecondaryIdsEditDialog';
-import { getCellByHeader, typeInColumn, selectInColumn, clickDeleteInRow } from '../../__tests__/alleleFormTestUtils';
+import {
+	getCellByHeader,
+	typeInColumn,
+	selectInColumn,
+	clickDeleteInRow,
+} from '../../../containers/allelesPage/__tests__/alleleFormTestUtils';
 
 // The dialog constructs a ValidationService at render and calls it once per row on
 // "Keep Edits"; the save path cannot be exercised without standing in for it.
 const { validate } = vi.hoisted(() => ({ validate: vi.fn() }));
-vi.mock('../../../../service/ValidationService', () => ({
+vi.mock('../../../service/ValidationService', () => ({
 	ValidationService: class {
 		validate = validate;
 	},

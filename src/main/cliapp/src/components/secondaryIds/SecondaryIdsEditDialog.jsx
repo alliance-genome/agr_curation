@@ -6,14 +6,14 @@ import { Button } from 'primereact/button';
 import { Toast } from 'primereact/toast';
 import { ColumnGroup } from 'primereact/columngroup';
 import { Row } from 'primereact/row';
-import { ValidationService } from '../../../service/ValidationService';
-import { DeleteAction } from '../../../components/Actions/DeletionAction';
-import { KEEP_ROWS_IN_EDIT_MODE, addDataKey } from '../../../utils/rows';
-import { TableEditorProvider } from '../../../components/Editors/fields/TableEditorContext';
-import { useLocalRowsStrategy } from '../../../components/Editors/fields/strategies/useLocalRowsStrategy';
-import { InputTextTableEditor } from '../../../components/Editors/text/InputTextTableEditor';
-import { EvidenceTableEditor } from '../../../components/Editors/autocomplete/references/EvidenceTableEditor';
-import { BooleanTableEditor } from '../../../components/Editors/dropdown/boolean/BooleanTableEditor';
+import { ValidationService } from '../../service/ValidationService';
+import { DeleteAction } from '../Actions/DeletionAction';
+import { KEEP_ROWS_IN_EDIT_MODE, addDataKey } from '../../utils/rows';
+import { TableEditorProvider } from '../Editors/fields/TableEditorContext';
+import { useLocalRowsStrategy } from '../Editors/fields/strategies/useLocalRowsStrategy';
+import { InputTextTableEditor } from '../Editors/text/InputTextTableEditor';
+import { EvidenceTableEditor } from '../Editors/autocomplete/references/EvidenceTableEditor';
+import { BooleanTableEditor } from '../Editors/dropdown/boolean/BooleanTableEditor';
 
 /**
  * Dialog for editing a main-table row's secondary IDs. Edits stay local until Keep Edits

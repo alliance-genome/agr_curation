@@ -4,8 +4,8 @@ import { GenericDataTable } from '../../components/GenericDataTable/GenericDataT
 import { Toast } from 'primereact/toast';
 import { getDefaultTableState } from '../../service/TableStateService';
 import { FILTER_CONFIGS } from '../../constants/FilterFields';
-import { SecondaryIdsEditDialog } from '../allelesPage/secondaryIds/SecondaryIdsEditDialog';
-import { SecondaryIdsReadOnlyDialog } from '../allelesPage/secondaryIds/SecondaryIdsReadOnlyDialog';
+import { SecondaryIdsEditDialog } from '../../components/secondaryIds/SecondaryIdsEditDialog';
+import { SecondaryIdsReadOnlyDialog } from '../../components/secondaryIds/SecondaryIdsReadOnlyDialog';
 import { SynonymsEditDialog } from '../nameSlotAnnotations/dialogs/SynonymsEditDialog';
 import { SynonymsReadOnlyDialog } from '../nameSlotAnnotations/dialogs/SynonymsReadOnlyDialog';
 import { SymbolEditDialog } from '../nameSlotAnnotations/dialogs/SymbolEditDialog';
