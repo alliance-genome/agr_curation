@@ -15,7 +15,6 @@ import java.util.function.Supplier;
 import org.alliancegenome.curation_api.base.BaseITCase;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
-import org.alliancegenome.curation_api.model.entities.InformationContentEntity;
 import org.alliancegenome.curation_api.model.entities.Reference;
 import org.alliancegenome.curation_api.model.entities.Vocabulary;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
@@ -149,7 +148,7 @@ public class IT_0317_AlleleSlotAnnotationSubResourceITCase extends BaseITCase {
 				body("entities", nullValue());
 
 			SlotAnnotation withEvidence = slotList.build().apply(0);
-			withEvidence.setEvidence(List.<InformationContentEntity>of(evidence));
+			withEvidence.setEvidence(List.<Reference>of(evidence));
 
 			// The PUT response is serialized after the write transaction closes, so it is asserted directly.
 			Response response = put(alleleId, slotList, withEvidence, slotList.build().apply(1)).
