@@ -13,12 +13,7 @@ import {
 	prepareGeneAssociations,
 	stripGeneAssociation,
 } from './alleleGeneAssociations/utils';
-import {
-	buildSlotAnnotationCopies,
-	haveSameSlotAnnotationsBy,
-	prepareSlotAnnotations,
-	stripSlotAnnotation,
-} from './slotAnnotations/utils';
+import { secondaryIdFields, slotAnnotationList, synonymFields } from '../../utils/slotAnnotations';
 import {
 	buildRelatedNoteCopies,
 	haveSameRelatedNotes,
@@ -26,45 +21,6 @@ import {
 	stripRelatedNote,
 } from './relatedNotes/utils';
 import { sortedCuries } from '../../utils/rows';
-
-/**
- * A registry entry for one of an entity's slot annotation lists.
- *
- * @param {Object} options
- * @param {string} options.path the list's path segment under the entity
- * @param {string} options.label what the rows are, for messages
- * @param {string} options.errorField the field the API keys the rows' errors under
- * @param {(annotation: Object) => Array} options.fieldsOf the curator-editable fields of the list's own, compared
- *   along with those every slot annotation has
- * @param {boolean} [options.copy] whether a new entity copies the list
- */
-export const slotAnnotationList = ({ path, label, errorField, fieldsOf, copy = true }) => ({
-	path,
-	label,
-	errorField,
-	prepare: prepareSlotAnnotations,
-	strip: stripSlotAnnotation,
-	isSame: haveSameSlotAnnotationsBy(fieldsOf),
-	...(copy && { buildCopies: buildSlotAnnotationCopies }),
-});
-
-/**
- * @param {Object} synonym
- * @returns {Array} a synonym's own curator-editable fields, for comparing synonym lists
- */
-export const synonymFields = (synonym) => [
-	synonym.displayText || null,
-	synonym.formatText || null,
-	synonym.synonymUrl || null,
-	synonym.nameType?.name ?? null,
-	synonym.synonymScope?.name ?? null,
-];
-
-/**
- * @param {Object} secondaryId
- * @returns {Array} a secondary ID's own curator-editable fields, for comparing secondary ID lists
- */
-export const secondaryIdFields = (secondaryId) => [secondaryId.secondaryId || null];
 
 /**
  * The lists an allele holds through sub-resources of its own rather than in its payload, keyed by the name

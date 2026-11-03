@@ -1,8 +1,8 @@
-import { addDataKey, sameRowsBy, sortedCuries } from '../../../utils/rows';
-import { copyRow } from '../../../utils/copyRows';
+import { addDataKey, sameRowsBy, sortedCuries } from './rows';
+import { copyRow } from './copyRows';
 
 /**
- * Readies an allele's slot annotations for their table: each gets its own `dataKey`.
+ * Readies an entity's slot annotations for their table: each gets its own `dataKey`.
  *
  * @param {Object[]} [annotations] slot annotations as the API returns them
  * @returns {Object[]} copies ready for the table; the argument is not modified
@@ -28,7 +28,7 @@ export const stripSlotAnnotation = (annotation) => {
 };
 
 /**
- * Copies of an allele's slot annotations for a new allele. Each copy loses its id and audit fields, so it is
+ * Copies of an entity's slot annotations for a new entity. Each copy loses its id and audit fields, so it is
  * created afresh.
  *
  * @param {Object[]} [annotations] slot annotations as the API returns them or as the table holds them
@@ -51,3 +51,42 @@ export const haveSameSlotAnnotationsBy = (fieldsOf) =>
 			...fieldsOf(annotation),
 		])
 	);
+
+/**
+ * A registry entry for one of an entity's slot annotation lists.
+ *
+ * @param {Object} options
+ * @param {string} options.path the list's path segment under the entity
+ * @param {string} options.label what the rows are, for messages
+ * @param {string} options.errorField the field the API keys the rows' errors under
+ * @param {(annotation: Object) => Array} options.fieldsOf the curator-editable fields of the list's own, compared
+ *   along with those every slot annotation has
+ * @param {boolean} [options.copy] whether a new entity copies the list
+ */
+export const slotAnnotationList = ({ path, label, errorField, fieldsOf, copy = true }) => ({
+	path,
+	label,
+	errorField,
+	prepare: prepareSlotAnnotations,
+	strip: stripSlotAnnotation,
+	isSame: haveSameSlotAnnotationsBy(fieldsOf),
+	...(copy && { buildCopies: buildSlotAnnotationCopies }),
+});
+
+/**
+ * @param {Object} synonym
+ * @returns {Array} a synonym's own curator-editable fields, for comparing synonym lists
+ */
+export const synonymFields = (synonym) => [
+	synonym.displayText || null,
+	synonym.formatText || null,
+	synonym.synonymUrl || null,
+	synonym.nameType?.name ?? null,
+	synonym.synonymScope?.name ?? null,
+];
+
+/**
+ * @param {Object} secondaryId
+ * @returns {Array} a secondary ID's own curator-editable fields, for comparing secondary ID lists
+ */
+export const secondaryIdFields = (secondaryId) => [secondaryId.secondaryId || null];

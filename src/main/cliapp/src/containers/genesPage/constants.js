@@ -1,4 +1,4 @@
-import { slotAnnotationList, synonymFields, secondaryIdFields } from '../allelesPage/constants';
+import { slotAnnotationList, synonymFields, secondaryIdFields } from '../../utils/slotAnnotations';
 import { haveSameCrossReferences, prepareCrossReferences, stripUiFields } from '../allelesPage/crossReferences/utils';
 import { haveSameRelatedNotes, prepareRelatedNotes, stripRelatedNote } from '../allelesPage/relatedNotes/utils';
 
