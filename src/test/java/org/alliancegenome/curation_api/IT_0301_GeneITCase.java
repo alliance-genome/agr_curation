@@ -317,8 +317,7 @@ public class IT_0301_GeneITCase extends BaseITCase {
 			post("/api/gene").
 			then().
 			statusCode(400).
-			body("errorMessages", is(aMapWithSize(4))).
-			body("errorMessages.modInternalId", is(ValidationConstants.REQUIRED_UNLESS_OTHER_FIELD_POPULATED_MESSAGE + " primaryExternalId")).
+			body("errorMessages", is(aMapWithSize(3))).
 			body("errorMessages.taxon", is(ValidationConstants.REQUIRED_MESSAGE)).
 			body("errorMessages.geneSymbol", is(ValidationConstants.REQUIRED_MESSAGE)).
 			body("errorMessages.geneType", is(ValidationConstants.REQUIRED_MESSAGE));
@@ -329,16 +328,25 @@ public class IT_0301_GeneITCase extends BaseITCase {
 	public void editGeneWithMissingPrimaryExternalId() {
 		Gene gene = findGene(GENE);
 		gene.setPrimaryExternalId(null);
-		
+
+		// A gene is identified by its AGRKB curie, so neither MOD identifier is required.
 		RestAssured.given().
 			contentType("application/json").
 			body(gene).
 			when().
 			put("/api/gene").
 			then().
-			statusCode(400).
-			body("errorMessages", is(aMapWithSize(1))).
-			body("errorMessages.modInternalId", is(ValidationConstants.REQUIRED_UNLESS_OTHER_FIELD_POPULATED_MESSAGE + " primaryExternalId"));
+			statusCode(200);
+
+		// Restore the identifier the ordered tests that follow look this fixture up by.
+		gene.setPrimaryExternalId(GENE);
+		RestAssured.given().
+			contentType("application/json").
+			body(gene).
+			when().
+			put("/api/gene").
+			then().
+			statusCode(200);
 	}
 
 	@Test
@@ -380,9 +388,7 @@ public class IT_0301_GeneITCase extends BaseITCase {
 			when().
 			post("/api/gene").
 			then().
-			statusCode(400).
-			body("errorMessages", is(aMapWithSize(1))).
-			body("errorMessages.modInternalId", is(ValidationConstants.REQUIRED_UNLESS_OTHER_FIELD_POPULATED_MESSAGE + " primaryExternalId"));
+			statusCode(200);
 	}
 	
 	@Test
@@ -390,16 +396,25 @@ public class IT_0301_GeneITCase extends BaseITCase {
 	public void editGeneWithEmptyPrimaryExternalId() {
 		Gene gene = findGene(GENE);
 		gene.setPrimaryExternalId("");
-		
+
+		// A gene is identified by its AGRKB curie, so neither MOD identifier is required.
 		RestAssured.given().
 			contentType("application/json").
 			body(gene).
 			when().
 			put("/api/gene").
 			then().
-			statusCode(400).
-			body("errorMessages", is(aMapWithSize(1))).
-			body("errorMessages.modInternalId", is(ValidationConstants.REQUIRED_UNLESS_OTHER_FIELD_POPULATED_MESSAGE + " primaryExternalId"));
+			statusCode(200);
+
+		// Restore the identifier the ordered tests that follow look this fixture up by.
+		gene.setPrimaryExternalId(GENE);
+		RestAssured.given().
+			contentType("application/json").
+			body(gene).
+			when().
+			put("/api/gene").
+			then().
+			statusCode(200);
 	}
 	
 	@Test

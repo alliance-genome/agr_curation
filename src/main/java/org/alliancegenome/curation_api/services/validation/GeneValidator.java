@@ -133,7 +133,9 @@ public class GeneValidator extends GenomicEntityValidator<Gene> {
 	 */
 	private Gene validateGene(Gene uiEntity, Gene dbEntity, Boolean manageSubResourceFields) {
 
-		dbEntity = validateGenomicEntityFields(uiEntity, dbEntity, VocabularyConstants.GENE_NOTE_TYPES_VOCABULARY_TERM_SET, true, manageSubResourceFields, manageSubResourceFields);
+		// A gene is identified by its AGRKB curie, so neither MOD identifier is required, on create or update: a gene
+		// created by a curator has neither.
+		dbEntity = validateGenomicEntityFields(uiEntity, dbEntity, VocabularyConstants.GENE_NOTE_TYPES_VOCABULARY_TERM_SET, false, manageSubResourceFields, manageSubResourceFields);
 
 		SOTerm geneType = validateRequiredEntity(soTermDAO, "geneType", uiEntity.getGeneType(), dbEntity.getGeneType());
 		dbEntity.setGeneType(geneType);
