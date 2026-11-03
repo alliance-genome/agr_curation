@@ -9,7 +9,7 @@ import { NameSlotAnnotationForm } from '../../components/NameSlotAnnotationForm'
 import { FormSection } from '../../components/FormFieldVisibility';
 import { SynonymsForm } from '../allelesPage/synonyms/SynonymsForm';
 import { SecondaryIdsForm } from '../allelesPage/secondaryIds/SecondaryIdsForm';
-import { RelatedNotesForm } from '../allelesPage/relatedNotes/RelatedNotesForm';
+import { RelatedNotesForm } from '../../components/relatedNotes/RelatedNotesForm';
 import { CrossReferencesForm } from '../../components/crossReferences/CrossReferencesForm';
 import { GcrpCrossReferenceForm } from './gcrpCrossReference/GcrpCrossReferenceForm';
 

@@ -19,7 +19,7 @@ import {
 	haveSameRelatedNotes,
 	prepareRelatedNotes,
 	stripRelatedNote,
-} from './relatedNotes/utils';
+} from '../../components/relatedNotes/utils';
 import { sortedCuries } from '../../utils/rows';
 
 /**

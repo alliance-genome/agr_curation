@@ -1,7 +1,7 @@
 import { addDataKey, sameRowsBy, sortedCuries } from '../../../utils/rows';
 import { generateCurieSearchField } from '../utils';
 import { copyRow } from '../../../utils/copyRows';
-import { relatedNoteValue } from '../relatedNotes/utils';
+import { relatedNoteValue } from '../../../components/relatedNotes/utils';
 
 /**
  * Readies gene associations for the gene associations table: each gets its own `dataKey` and the evidence

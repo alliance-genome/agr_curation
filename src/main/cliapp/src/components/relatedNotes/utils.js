@@ -1,5 +1,5 @@
-import { addDataKey, sameRowsBy, sortedCuries } from '../../../utils/rows';
-import { copyRow } from '../../../utils/copyRows';
+import { addDataKey, sameRowsBy, sortedCuries } from '../../utils/rows';
+import { copyRow } from '../../utils/copyRows';
 
 /**
  * A note's curator-editable fields, to compare by: its text, type, internal flag and references.
@@ -13,7 +13,7 @@ export const relatedNoteValue = (note) =>
 		: null;
 
 /**
- * Readies an allele's related notes for their table: each gets its own `dataKey`.
+ * Readies an entity's related notes for their table: each gets its own `dataKey`.
  *
  * @param {Object[]} [notes] notes as the API returns them
  * @returns {Object[]} copies ready for the table; the argument is not modified
@@ -48,7 +48,7 @@ export const stripRelatedNote = (note) => {
 export const haveSameRelatedNotes = sameRowsBy((note) => JSON.stringify([note.id ?? null, relatedNoteValue(note)]));
 
 /**
- * Copies of an allele's related notes for a new allele. Each copy loses its id and audit fields, so it is created
+ * Copies of an entity's related notes for a new entity. Each copy loses its id and audit fields, so it is created
  * afresh.
  *
  * @param {Object[]} [notes] notes as the API returns them or as the table holds them

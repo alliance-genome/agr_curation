@@ -1,6 +1,6 @@
 import { slotAnnotationList, synonymFields, secondaryIdFields } from '../../utils/slotAnnotations';
 import { haveSameCrossReferences, prepareCrossReferences, stripUiFields } from '../../components/crossReferences/utils';
-import { haveSameRelatedNotes, prepareRelatedNotes, stripRelatedNote } from '../allelesPage/relatedNotes/utils';
+import { haveSameRelatedNotes, prepareRelatedNotes, stripRelatedNote } from '../../components/relatedNotes/utils';
 
 /**
  * The lists a gene holds through sub-resources of its own rather than in its payload, keyed by the name the detail

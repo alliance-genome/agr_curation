@@ -2,11 +2,11 @@ import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { ColumnGroup } from 'primereact/columngroup';
 import { Row } from 'primereact/row';
-import { DeleteAction } from '../../../components/Actions/DeletionAction';
-import { InternalEditor } from '../../../components/Editors/legacyForm/InternalEditor';
-import { ReferencesEditor } from '../../../components/Editors/legacyForm/ReferencesEditor';
-import { VocabularyTermSetEditor } from '../../../components/Editors/legacyForm/VocabularyTermSetEditor';
-import { TableInputTextAreaEditor } from '../../../components/Editors/text/TableInputTextAreaEditor';
+import { DeleteAction } from '../Actions/DeletionAction';
+import { InternalEditor } from '../Editors/legacyForm/InternalEditor';
+import { ReferencesEditor } from '../Editors/legacyForm/ReferencesEditor';
+import { VocabularyTermSetEditor } from '../Editors/legacyForm/VocabularyTermSetEditor';
+import { TableInputTextAreaEditor } from '../Editors/text/TableInputTextAreaEditor';
 
 // noteTypeVocabType: the vocabulary term set the note types come from; the allele's by default
 export const RelatedNotesFormTable = ({

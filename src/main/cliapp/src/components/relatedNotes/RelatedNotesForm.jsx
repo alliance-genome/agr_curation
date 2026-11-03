@@ -1,12 +1,12 @@
 import { Button } from 'primereact/button';
-import { FormTableWrapper } from '../../../components/FormTableWrapper';
-import { useSubResource } from '../../../components/SubResourcesContext';
-import { useSubResourceRows } from '../../../hooks/useSubResourceRows';
-import { SubResourceSaveButton } from '../../../components/SubResourceSaveButton';
-import { SubResourceLoadError } from '../../../components/SubResourceLoadError';
-import { RelatedNotesFormTable } from '../relatedNotes/RelatedNotesFormTable';
+import { FormTableWrapper } from '../FormTableWrapper';
+import { useSubResource } from '../SubResourcesContext';
+import { useSubResourceRows } from '../../hooks/useSubResourceRows';
+import { SubResourceSaveButton } from '../SubResourceSaveButton';
+import { SubResourceLoadError } from '../SubResourceLoadError';
+import { RelatedNotesFormTable } from './RelatedNotesFormTable';
 import { useRef } from 'react';
-import { addDataKey } from '../../../utils/rows';
+import { addDataKey } from '../../utils/rows';
 
 /**
  * A detail or create page's related notes section.

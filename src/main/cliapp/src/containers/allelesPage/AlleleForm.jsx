@@ -12,7 +12,7 @@ import { InheritanceModesForm } from './inheritanceModes/InheritanceModesForm';
 import { SecondaryIdsForm } from './secondaryIds/SecondaryIdsForm';
 import { FunctionalImpactsForm } from './functionalImpacts/FunctionalImpactsForm';
 import { DatabaseStatusForm } from './databaseStatus/DatabaseStatusForm';
-import { RelatedNotesForm } from './relatedNotes/RelatedNotesForm';
+import { RelatedNotesForm } from '../../components/relatedNotes/RelatedNotesForm';
 import { SymbolForm } from './symbol/SymbolForm';
 import { GermilineTransmissionStatusForm } from './germlineTransmissionStatus/GermlineTransmissionStatusForm';
 import { ReferencesForm } from './referencesTable/ReferencesForm';

@@ -1,7 +1,7 @@
 import { useRef } from 'react';
 import { Button } from 'primereact/button';
 import { FormTableWrapper } from '../../../components/FormTableWrapper';
-import { RelatedNotesFormTable } from '../../allelesPage/relatedNotes/RelatedNotesFormTable';
+import { RelatedNotesFormTable } from '../../../components/relatedNotes/RelatedNotesFormTable';
 import { addDataKey } from '../../../utils/rows';
 
 const ENTITY_TYPE = 'relatedNotes';
