@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.alliancegenome.curation_api.model.entities.InformationContentEntity;
 import org.alliancegenome.curation_api.model.entities.Note;
 import org.alliancegenome.curation_api.model.entities.Reference;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
@@ -181,13 +180,13 @@ public class SlotAnnotationIdentityHelper {
 		return evidenceIngestIdentity(evidenceCuries);
 	}
 
-	private static String evidenceIdentity(List<InformationContentEntity> evidence) {
+	private static String evidenceIdentity(List<Reference> evidence) {
 		String identity = "";
 		if (CollectionUtils.isEmpty(evidence)) {
 			return identity;
 		}
 
-		List<String> evidenceCuries = evidence.stream().map(InformationContentEntity::getCurie).collect(Collectors.toList());
+		List<String> evidenceCuries = evidence.stream().map(Reference::getCurie).collect(Collectors.toList());
 		Collections.sort(evidenceCuries);
 		identity = StringUtils.join(evidenceCuries, ":");
 
@@ -236,7 +235,7 @@ public class SlotAnnotationIdentityHelper {
 			return identity;
 		}
 
-		List<String> referenceCuries = references.stream().map(InformationContentEntity::getCurie).collect(Collectors.toList());
+		List<String> referenceCuries = references.stream().map(Reference::getCurie).collect(Collectors.toList());
 		Collections.sort(referenceCuries);
 		identity = StringUtils.join(referenceCuries, ":");
 

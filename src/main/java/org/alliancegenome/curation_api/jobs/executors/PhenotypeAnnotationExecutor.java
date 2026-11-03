@@ -7,6 +7,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.zip.GZIPInputStream;
 
+import org.alliancegenome.curation_api.constants.ReferenceConstants;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
@@ -51,6 +52,11 @@ public class PhenotypeAnnotationExecutor extends LoadFileExecutor {
 
 			bulkLoadFileHistory.setCount(phenotypeData.getData().size());
 			updateHistory(bulkLoadFileHistory);
+
+			// MIM/ORPHA records all cite this reference, so abort rather than fail them one by one and then run the cleanup
+			if (phenotypeAnnotationService.isOmimOrphanetReferenceMissing(phenotypeData.getData())) {
+				throw new ObjectUpdateException(null, "Reference " + ReferenceConstants.RGD_OMIM_ORPHANET_REFERENCE + " for MIM/ORPHA evidence not found - load aborted");
+			}
 
 			Set<Long> annotationIdsLoaded = new HashSet<>();
 			List<Long> annotationIdsBefore = phenotypeAnnotationService.getAnnotationIdsByDataProvider(dataProvider);

@@ -1142,10 +1142,9 @@ public class AlleleDAO extends BaseCurieSQLDAO<Allele> {
 		}
 		if (!allVariantIds.isEmpty()) {
 			String variantRefsQueryString = """
-				SELECT vr.variant_id, r.id AS ref_id, be.curie, cr.referencedcurie, cr.displayname, rdp.name AS rdp_name, rdp.urltemplate
+				SELECT vr.variant_id, r.id AS ref_id, r.curie, cr.referencedcurie, cr.displayname, rdp.name AS rdp_name, rdp.urltemplate
 				FROM variant_reference vr
 				JOIN reference r ON r.id = vr.references_id
-				JOIN biologicalentity be ON be.id = r.id
 				LEFT JOIN reference_crossreference rcr ON rcr.reference_id = r.id
 				LEFT JOIN crossreference cr ON cr.id = rcr.crossreferences_id
 				LEFT JOIN resourcedescriptorpage rdp ON rdp.id = cr.resourcedescriptorpage_id
@@ -1226,10 +1225,9 @@ public class AlleleDAO extends BaseCurieSQLDAO<Allele> {
 
 		// Allele references
 		String alleleRefsQueryString = """
-			SELECT ar.allele_id, r.id AS ref_id, ice.curie, r.shortcitation, cr.referencedcurie, cr.displayname, rdp.name AS rdp_name, rdp.urltemplate
+			SELECT ar.allele_id, r.id AS ref_id, r.curie, r.shortcitation, cr.referencedcurie, cr.displayname, rdp.name AS rdp_name, rdp.urltemplate
 			FROM allele_reference ar
 			JOIN reference r ON r.id = ar.references_id
-			JOIN informationcontententity ice ON ice.id = r.id
 			LEFT JOIN reference_crossreference rcr ON rcr.reference_id = r.id
 			LEFT JOIN crossreference cr ON cr.id = rcr.crossreferences_id
 			LEFT JOIN resourcedescriptorpage rdp ON rdp.id = cr.resourcedescriptorpage_id

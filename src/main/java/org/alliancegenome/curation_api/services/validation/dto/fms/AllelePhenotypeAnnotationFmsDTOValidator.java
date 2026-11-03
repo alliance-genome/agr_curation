@@ -15,7 +15,7 @@ import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.AllelePhenotypeAnnotation;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.GenomicEntity;
-import org.alliancegenome.curation_api.model.entities.InformationContentEntity;
+import org.alliancegenome.curation_api.model.entities.Reference;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.PhenotypeFmsDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
@@ -42,11 +42,11 @@ public class AllelePhenotypeAnnotationFmsDTOValidator extends PhenotypeAnnotatio
 		ObjectResponse<AllelePhenotypeAnnotation> apaResponse = new ObjectResponse<AllelePhenotypeAnnotation>();
 		AllelePhenotypeAnnotation annotation = new AllelePhenotypeAnnotation();
 
-		ObjectResponse<InformationContentEntity> refResponse = validateReference(dto);
+		ObjectResponse<Reference> refResponse = validateReference(dto);
 		apaResponse.addErrorMessages(refResponse.getErrorMessages());
 
-		InformationContentEntity reference = refResponse.getEntity();
-		String refString = reference == null ? null : reference.getCurie();
+		Reference reference = refResponse.getEntity();
+		String refString = getRefString(dto, reference);
 
 		String uniqueId = AnnotationUniqueIdHelper.getPhenotypeAnnotationUniqueId(dto, subject.getIdentifier(), refString);
 		SearchResponse<AllelePhenotypeAnnotation> annotationSearch = allelePhenotypeAnnotationDAO.findByField("uniqueId", uniqueId);
@@ -56,6 +56,7 @@ public class AllelePhenotypeAnnotationFmsDTOValidator extends PhenotypeAnnotatio
 
 		annotation.setUniqueId(uniqueId);
 		annotation.setEvidenceItem(reference);
+		setOmimOrphanetCrossReference(annotation, dto);
 		annotation.setPhenotypeAnnotationSubject(subject);
 
 		// Reset implied/asserted fields as secondary annotations loaded separately
@@ -77,9 +78,9 @@ public class AllelePhenotypeAnnotationFmsDTOValidator extends PhenotypeAnnotatio
 	public List<AllelePhenotypeAnnotation> validateInferredOrAssertedEntities(Allele primaryAnnotationSubject, PhenotypeFmsDTO dto, BackendBulkDataProvider dataProvider, Set<Long> idsAdded) throws ValidationException {
 		// Fast skip: check if the inferred gene is already set using pre-loaded maps only
 		if (existingUniqueIds != null && inferredGeneIds != null && dataProvider.hasInferredGenePhenotypeAnnotations && StringUtils.isNotBlank(dto.getObjectId())) {
-			ObjectResponse<InformationContentEntity> quickRefResponse = validateReference(dto);
+			ObjectResponse<Reference> quickRefResponse = validateReference(dto);
 			if (!quickRefResponse.hasErrors()) {
-				String quickRefString = quickRefResponse.getEntity() != null ? quickRefResponse.getEntity().getCurie() : null;
+				String quickRefString = getRefString(dto, quickRefResponse.getEntity());
 				String uniqueId = AnnotationUniqueIdHelper.getPhenotypeAnnotationUniqueId(dto, primaryAnnotationSubject.getIdentifier(), quickRefString);
 				if (existingUniqueIds.containsKey(uniqueId)) {
 					Long existingInferredGeneId = inferredGeneIds.get(uniqueId);
@@ -98,11 +99,11 @@ public class AllelePhenotypeAnnotationFmsDTOValidator extends PhenotypeAnnotatio
 
 		ObjectResponse<AllelePhenotypeAnnotation> apaResponse = new ObjectResponse<AllelePhenotypeAnnotation>();
 
-		ObjectResponse<InformationContentEntity> refResponse = validateReference(dto);
+		ObjectResponse<Reference> refResponse = validateReference(dto);
 		apaResponse.addErrorMessages(refResponse.getErrorMessages());
 
-		InformationContentEntity reference = refResponse.getEntity();
-		String refString = reference == null ? null : reference.getCurie();
+		Reference reference = refResponse.getEntity();
+		String refString = getRefString(dto, reference);
 
 		List<AllelePhenotypeAnnotation> primaryAnnotations = findPrimaryAnnotations(allelePhenotypeAnnotationDAO, dto, primaryAnnotationSubject.getIdentifier(), refString);
 		

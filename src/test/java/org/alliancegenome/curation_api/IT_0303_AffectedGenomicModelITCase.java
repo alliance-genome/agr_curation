@@ -12,7 +12,6 @@ import org.alliancegenome.curation_api.base.BaseITCase;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
-import org.alliancegenome.curation_api.model.entities.InformationContentEntity;
 import org.alliancegenome.curation_api.model.entities.Organization;
 import org.alliancegenome.curation_api.model.entities.Person;
 import org.alliancegenome.curation_api.model.entities.Reference;
@@ -543,7 +542,7 @@ public class IT_0303_AffectedGenomicModelITCase extends BaseITCase {
 				statusCode(200);
 	}
 	
-	private AgmFullNameSlotAnnotation createAgmFullNameSlotAnnotation(List<InformationContentEntity> evidence, String name, VocabularyTerm nameType, VocabularyTerm synonymScope, String synonymUrl) {
+	private AgmFullNameSlotAnnotation createAgmFullNameSlotAnnotation(List<Reference> evidence, String name, VocabularyTerm nameType, VocabularyTerm synonymScope, String synonymUrl) {
 		AgmFullNameSlotAnnotation fullName = new AgmFullNameSlotAnnotation();
 		fullName.setEvidence(evidence);
 		fullName.setDisplayText(name);
@@ -555,7 +554,7 @@ public class IT_0303_AffectedGenomicModelITCase extends BaseITCase {
 		return fullName;
 	}
 
-	private AgmSynonymSlotAnnotation createAgmSynonymSlotAnnotation(List<InformationContentEntity> evidence, String name, VocabularyTerm nameType, VocabularyTerm synonymScope, String synonymUrl) {
+	private AgmSynonymSlotAnnotation createAgmSynonymSlotAnnotation(List<Reference> evidence, String name, VocabularyTerm nameType, VocabularyTerm synonymScope, String synonymUrl) {
 		AgmSynonymSlotAnnotation synonym = new AgmSynonymSlotAnnotation();
 		synonym.setEvidence(evidence);
 		synonym.setDisplayText(name);
@@ -567,7 +566,7 @@ public class IT_0303_AffectedGenomicModelITCase extends BaseITCase {
 		return synonym;
 	}
 	
-	private AgmSecondaryIdSlotAnnotation createAgmSecondaryIdSlotAnnotation(List<InformationContentEntity> evidence, String secondaryId) {
+	private AgmSecondaryIdSlotAnnotation createAgmSecondaryIdSlotAnnotation(List<Reference> evidence, String secondaryId) {
 		AgmSecondaryIdSlotAnnotation secondaryIdAnnotation = new AgmSecondaryIdSlotAnnotation();
 		secondaryIdAnnotation.setEvidence(evidence);
 		secondaryIdAnnotation.setSecondaryId(secondaryId);
