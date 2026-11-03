@@ -24,24 +24,28 @@ import { SynonymsEditDialog } from '../nameSlotAnnotations/dialogs/SynonymsEditD
 import { SynonymsReadOnlyDialog } from '../nameSlotAnnotations/dialogs/SynonymsReadOnlyDialog';
 import { SecondaryIdsEditDialog } from '../allelesPage/secondaryIds/SecondaryIdsEditDialog';
 import { SecondaryIdsReadOnlyDialog } from '../allelesPage/secondaryIds/SecondaryIdsReadOnlyDialog';
-import { DialogTriggerEditor } from '../../components/Editors/dialog/DialogTriggerEditor';
+import { DialogTriggerTableEditor } from '../../components/Editors/dialog/DialogTriggerTableEditor';
 import { TaxonTableEditor } from '../../components/Editors/autocomplete/taxon/TaxonTableEditor';
 import { BooleanTableEditor } from '../../components/Editors/dropdown/boolean/BooleanTableEditor';
 import { ControlledVocabularyTableEditor } from '../../components/Editors/dropdown/vocabulary/ControlledVocabularyTableEditor';
-import { Button } from 'primereact/button';
-import { AffectedGenomicModelCreateDialog } from './AffectedGenomicModelCreateDialog';
+import { AssociatedSTRsReadOnlyDialog } from './associatedSTRs/AssociatedSTRsReadOnlyDialog';
+import { strLabel } from './utils';
+import { NewAGMButton, useOpenAGMCreatePage } from './NewAGMButton';
+import { getIdentifier } from '../../utils/utils';
 
 export const AffectedGenomicModelTable = () => {
 	const [isInEditMode, setIsInEditMode] = useState(false);
 	const [errorMessages, setErrorMessages] = useState({});
-	const errorMessagesRef = useRef();
-	errorMessagesRef.current = errorMessages;
 	const [totalRecords, setTotalRecords] = useState(0);
 	const [agms, setAgms] = useState([]);
-	const [createDialogVisible, setCreateDialogVisible] = useState(false);
 
 	const searchService = new SearchService();
 	let agmService = new AffectedGenomicModelService();
+	const openAGMCreatePage = useOpenAGMCreatePage();
+
+	const handleDuplication = (rowData) => {
+		openAGMCreatePage(rowData.curie || getIdentifier(rowData));
+	};
 
 	const mutation = useMutation({
 		mutationFn: (updatedAgm) => {
@@ -68,6 +72,10 @@ export const AffectedGenomicModelTable = () => {
 	});
 
 	const [fullNameData, setFullNameData] = useState({
+		dialog: false,
+	});
+
+	const [associatedSTRsData, setAssociatedSTRsData] = useState({
 		dialog: false,
 	});
 
@@ -140,6 +148,13 @@ export const AffectedGenomicModelTable = () => {
 		}));
 	};
 
+	const handleAssociatedSTRsOpen = (agmSequenceTargetingReagentAssociations) => {
+		setAssociatedSTRsData({
+			originalAssociatedSTRs: agmSequenceTargetingReagentAssociations,
+			dialog: true,
+		});
+	};
+
 	const columns = useMemo(
 		() => [
 			{
@@ -177,9 +192,8 @@ export const AffectedGenomicModelTable = () => {
 					/>
 				),
 				editor: (editorOptions) => (
-					<DialogTriggerEditor
+					<DialogTriggerTableEditor
 						editorOptions={editorOptions}
-						errorMessagesRef={errorMessagesRef}
 						onOpenInEdit={handleFullNameOpenInEdit}
 						errorField="agmFullName"
 						displayHtml={editorOptions.rowData.agmFullName?.displayText}
@@ -205,9 +219,8 @@ export const AffectedGenomicModelTable = () => {
 				editor: (editorOptions) => {
 					const count = editorOptions.rowData.agmSynonyms?.length;
 					return (
-						<DialogTriggerEditor
+						<DialogTriggerTableEditor
 							editorOptions={editorOptions}
-							errorMessagesRef={errorMessagesRef}
 							onOpenInEdit={handleSynonymsOpenInEdit}
 							errorField="agmSynonyms"
 							displayText={count ? `Synonyms(${count}) ` : null}
@@ -232,9 +245,8 @@ export const AffectedGenomicModelTable = () => {
 				editor: (editorOptions) => {
 					const count = editorOptions.rowData.agmSecondaryIds?.length;
 					return (
-						<DialogTriggerEditor
+						<DialogTriggerTableEditor
 							editorOptions={editorOptions}
-							errorMessagesRef={errorMessagesRef}
 							onOpenInEdit={handleSecondaryIdsOpenInEdit}
 							errorField="agmSecondaryIds"
 							displayText={count ? `Secondary IDs(${count}) ` : null}
@@ -258,7 +270,6 @@ export const AffectedGenomicModelTable = () => {
 						editorOptions={editorOptions}
 						field="subtype"
 						options={subtypeTerms}
-						errorMessagesRef={errorMessagesRef}
 						showClear={false}
 					/>
 				),
@@ -284,6 +295,20 @@ export const AffectedGenomicModelTable = () => {
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.crossReferencesFilterConfig,
 				body: (rowData) => <CrossReferencesTemplate list={rowData.crossReferences} />,
+			},
+			{
+				field: 'agmSequenceTargetingReagentAssociations',
+				columnKey: 'agmSequenceTargetingReagentAssociations.agmSequenceTargetingReagentAssociationObject.name',
+				header: 'Associated STRs',
+				body: (rowData) => (
+					<ListDialogTemplate
+						entities={rowData.agmSequenceTargetingReagentAssociations}
+						handleOpen={handleAssociatedSTRsOpen}
+						getTextField={(association) => strLabel(association?.agmSequenceTargetingReagentAssociationObject)}
+						underline={false}
+					/>
+				),
+				filterConfig: FILTER_CONFIGS.agmSequenceTargetingReagentAssociationsFilterConfig,
 			},
 			{
 				field: 'updatedBy.uniqueId',
@@ -323,9 +348,7 @@ export const AffectedGenomicModelTable = () => {
 				filter: true,
 				filterConfig: FILTER_CONFIGS.internalFilterConfig,
 				sortable: true,
-				editor: (editorOptions) => (
-					<BooleanTableEditor editorOptions={editorOptions} errorMessagesRef={errorMessagesRef} field={'internal'} />
-				),
+				editor: (editorOptions) => <BooleanTableEditor editorOptions={editorOptions} field={'internal'} />,
 			},
 			{
 				field: 'obsolete',
@@ -334,13 +357,11 @@ export const AffectedGenomicModelTable = () => {
 				filter: true,
 				filterConfig: FILTER_CONFIGS.obsoleteFilterConfig,
 				sortable: true,
-				editor: (editorOptions) => (
-					<BooleanTableEditor editorOptions={editorOptions} errorMessagesRef={errorMessagesRef} field={'obsolete'} />
-				),
+				editor: (editorOptions) => <BooleanTableEditor editorOptions={editorOptions} field={'obsolete'} />,
 			},
 		],
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-		[errorMessagesRef, subtypeTerms]
+		[subtypeTerms]
 	);
 
 	const DEFAULT_COLUMN_WIDTH = 100 / columns.length;
@@ -370,7 +391,7 @@ export const AffectedGenomicModelTable = () => {
 	const headerButtons = (disabled = false) => {
 		return (
 			<>
-				<Button label="New AGM" icon="pi pi-plus" disabled={disabled} onClick={() => setCreateDialogVisible(true)} />
+				<NewAGMButton disabled={disabled} />
 				&nbsp;&nbsp;
 			</>
 		);
@@ -401,6 +422,11 @@ export const AffectedGenomicModelTable = () => {
 					errorObject={{ errorMessages, setErrorMessages }}
 					defaultColumnWidth={DEFAULT_COLUMN_WIDTH}
 					fetching={isFetching || isLoading}
+					deletionEnabled={true}
+					deletionMethod={agmService.deleteAGM}
+					deprecateOption={true}
+					duplicationEnabled={true}
+					handleDuplication={handleDuplication}
 				/>
 			</div>
 			<FullNameEditDialog
@@ -435,7 +461,10 @@ export const AffectedGenomicModelTable = () => {
 				originalSecondaryIdsData={secondaryIdsData}
 				setOriginalSecondaryIdsData={setSecondaryIdsData}
 			/>
-			<AffectedGenomicModelCreateDialog visible={createDialogVisible} onHide={() => setCreateDialogVisible(false)} />
+			<AssociatedSTRsReadOnlyDialog
+				originalAssociatedSTRsData={associatedSTRsData}
+				setOriginalAssociatedSTRsData={setAssociatedSTRsData}
+			/>
 		</>
 	);
 };

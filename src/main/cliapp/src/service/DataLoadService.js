@@ -106,16 +106,7 @@ export class DataLoadService extends BaseAuthService {
 				'VEPGENE',
 				'VEPTRANSCRIPT',
 			],
-			BulkURLLoad: [
-				'ONTOLOGY',
-				'GENE',
-				'ALLELE',
-				'AGM',
-				'DISEASE_ANNOTATION',
-				'RESOURCE_DESCRIPTOR',
-				'EXPRESSION_ATLAS',
-				'GAF',
-			],
+			BulkURLLoad: ['ONTOLOGY', 'GENE', 'ALLELE', 'AGM', 'DISEASE_ANNOTATION', 'EXPRESSION_ATLAS', 'GAF'],
 			BulkManualLoad: [
 				'FULL_INGEST',
 				'DISEASE_ANNOTATION',

@@ -100,7 +100,7 @@ export const CrossReferencesEditDialog = ({
 			mainRowProps.editorCallback(single ? crossReferences[0] ?? null : crossReferences);
 		}
 
-		// Keyed to match both DialogTriggerEditor's errorField and the key the API reports cross
+		// Keyed to match both DialogTriggerTableEditor's errorField and the key the API reports cross
 		// reference errors under, so a later save error replaces this warning on the same cell.
 		const errorMessagesCopy = structuredClone(errorMessagesMainRow);
 		errorMessagesCopy[rowIndex] = {

@@ -18,13 +18,12 @@ import { addDataKey } from '../containers/allelesPage/utils';
 export const RelatedNotesDialogEditOnly = ({
 	relatedNotesData,
 	tableErrorMessages,
-	dispatch,
+	setTableErrorMessages,
 	setRelatedNotesData,
 	singleValue = false,
 	onChange,
 	defaultValues,
 	errorField = 'relatedNotes',
-	entityType,
 	noteTypeVocabType,
 }) => {
 	const { originalRelatedNotes, dialogIsVisible, dataKey } = relatedNotesData;
@@ -165,7 +164,7 @@ export const RelatedNotesDialogEditOnly = ({
 			},
 		};
 		tableErrorMessagesCopy[dataKey] = errorMessage;
-		dispatch({ type: 'UPDATE_TABLE_ERROR_MESSAGES', entityType: entityType, errorMessages: tableErrorMessagesCopy });
+		setTableErrorMessages(tableErrorMessagesCopy);
 		setRelatedNotesData((relatedNotesData) => {
 			return {
 				...relatedNotesData,

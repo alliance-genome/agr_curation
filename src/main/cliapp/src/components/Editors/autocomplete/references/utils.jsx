@@ -22,6 +22,11 @@ export const singleReferenceSearchConfig = {
 	filterName: 'singleReferenceFilter',
 };
 
+export const evidenceSearchConfig = {
+	...referenceSearchConfig,
+	filterName: 'evidenceFilter',
+};
+
 export const multiReferenceSearchConfig = {
 	...referenceSearchConfig,
 	filterName: 'multiReferenceFilter',

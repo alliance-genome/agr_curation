@@ -8,6 +8,7 @@ import { ReferencesEditor } from '../../../components/Editors/legacyForm/Referen
 import { VocabularyTermSetEditor } from '../../../components/Editors/legacyForm/VocabularyTermSetEditor';
 import { TableInputTextAreaEditor } from '../../../components/Editors/text/TableInputTextAreaEditor';
 
+// noteTypeVocabType: the vocabulary term set the note types come from; the allele's by default
 export const RelatedNotesFormTable = ({
 	relatedNotes,
 	editingRows,
@@ -19,6 +20,7 @@ export const RelatedNotesFormTable = ({
 	noteTypeOnChangeHandler,
 	textOnChangeHandler,
 	referencesOnChangeHandler,
+	noteTypeVocabType = 'allele_note_type',
 }) => {
 	let headerGroup = (
 		<ColumnGroup>
@@ -63,7 +65,7 @@ export const RelatedNotesFormTable = ({
 							onChangeHandler={noteTypeOnChangeHandler}
 							errorMessages={errorMessages}
 							rowIndex={props.rowIndex}
-							vocabType="allele_note_type"
+							vocabType={noteTypeVocabType}
 							field="noteType"
 							showClear={false}
 						/>

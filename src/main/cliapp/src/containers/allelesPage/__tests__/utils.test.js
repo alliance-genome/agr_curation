@@ -1,4 +1,13 @@
-import { buildCreatePayload, buildDuplicateAllele, getPendingSingleValueFields, processErrors } from '../utils';
+import {
+	buildCreatePayload,
+	buildDuplicateAllele,
+	capitalize,
+	generateCrossRefSearchField,
+	getPendingSingleValueFields,
+	processErrors,
+	sameRowsBy,
+	sortedCuries,
+} from '../utils';
 
 describe('buildCreatePayload', () => {
 	it('Drops a taxon with no curie', () => {
@@ -42,44 +51,6 @@ describe('buildCreatePayload', () => {
 
 		expect(allele.taxon).toEqual({ curie: '' });
 		expect(allele.alleleSynonyms[0].displayText).toEqual('a');
-	});
-});
-
-describe('buildCreatePayload gene associations', () => {
-	const withAssociation = () => ({
-		alleleGeneAssociations: [
-			{
-				dataKey: 'row-1',
-				relation: { name: 'is_allele_of' },
-				alleleGeneAssociationObject: { primaryExternalId: 'GENE:1' },
-				// the form seeds this with the allele being edited; on create it has no `type`, which
-				// Jackson rejects for the polymorphic BiologicalEntity
-				alleleAssociationSubject: { alleleSymbol: { displayText: 'abc-1' } },
-			},
-		],
-	});
-
-	it('Drops the subject the API assigns anyway', () => {
-		const payload = buildCreatePayload(withAssociation());
-
-		expect(payload.alleleGeneAssociations[0]).not.toHaveProperty('alleleAssociationSubject');
-	});
-
-	it('Keeps the rest of the association intact', () => {
-		const payload = buildCreatePayload(withAssociation());
-
-		expect(payload.alleleGeneAssociations[0].relation).toEqual({ name: 'is_allele_of' });
-		expect(payload.alleleGeneAssociations[0].alleleGeneAssociationObject).toEqual({ primaryExternalId: 'GENE:1' });
-	});
-
-	it('Does not mutate the allele the form holds', () => {
-		const allele = withAssociation();
-
-		buildCreatePayload(allele);
-
-		expect(allele.alleleGeneAssociations[0].alleleAssociationSubject).toEqual({
-			alleleSymbol: { displayText: 'abc-1' },
-		});
 	});
 });
 
@@ -198,9 +169,20 @@ describe('buildDuplicateAllele', () => {
 			(field) => expect(duplicate).not.toHaveProperty(field)
 		);
 		Object.keys(audit).forEach((field) => expect(duplicate).not.toHaveProperty(field));
-		expect(duplicate.alleleSecondaryIds).toBeUndefined();
 		expect(duplicate).not.toHaveProperty('alleleVariantAssociations');
 		expect(duplicate).not.toHaveProperty('alleleConstructAssociations');
+		// The lists written through their own sub-resources are copied separately.
+		[
+			'references',
+			'relatedNotes',
+			'alleleGeneAssociations',
+			'alleleSynonyms',
+			'alleleSecondaryIds',
+			'alleleMutationTypes',
+			'alleleInheritanceModes',
+			'alleleFunctionalImpacts',
+			'alleleNomenclatureEvents',
+		].forEach((field) => expect(duplicate).not.toHaveProperty(field));
 		expect(duplicate.obsolete).toBe(false);
 	});
 
@@ -212,27 +194,10 @@ describe('buildDuplicateAllele', () => {
 		expect(duplicate.inCollection).toEqual({ name: 'WB_curated_alleles' });
 		expect(duplicate.internal).toBe(true);
 		expect(duplicate.isExtinct).toBe(true);
-		expect(duplicate.references).toEqual([reference]);
 		expect(duplicate.alleleSymbol).toEqual({ displayText: 'abc-1', formatText: 'abc-1' });
 		expect(duplicate.alleleFullName).toEqual({ displayText: 'full name', formatText: 'full name' });
-		expect(duplicate.alleleSynonyms).toEqual([{ displayText: 'synonym' }]);
-		expect(duplicate.relatedNotes).toEqual([{ freeText: 'a note' }]);
-		expect(duplicate.alleleMutationTypes).toEqual([{ mutationTypes: [{ curie: 'SO:0001' }] }]);
-		expect(duplicate.alleleInheritanceModes).toEqual([{ inheritanceMode: { name: 'dominant' } }]);
-		expect(duplicate.alleleFunctionalImpacts).toEqual([{ functionalImpacts: [{ name: 'amorph' }] }]);
-		expect(duplicate.alleleNomenclatureEvents).toEqual([{ nomenclatureEvent: { name: 'symbol_updated' } }]);
 		expect(duplicate.alleleGermlineTransmissionStatus).toEqual({ germlineTransmissionStatus: { name: 'cell_line' } });
 		expect(duplicate.alleleDatabaseStatus).toEqual({ databaseStatus: { name: 'approved' } });
-	});
-
-	it('Copies gene associations and their notes without ids or the stored allele as subject', () => {
-		const [association] = buildDuplicateAllele(source()).alleleGeneAssociations;
-
-		expect(association).toEqual({
-			alleleGeneAssociationObject: gene,
-			evidence: [reference],
-			relatedNote: { freeText: 'association note' },
-		});
 	});
 
 	it('Starts from the create form defaults for fields the stored allele lacks', () => {
@@ -241,23 +206,8 @@ describe('buildDuplicateAllele', () => {
 		expect(duplicate.taxon).toEqual({ curie: '' });
 		expect(duplicate.inCollection).toEqual({ name: '' });
 		expect(duplicate.alleleSymbol).toBeNull();
-		expect(duplicate.alleleSynonyms).toBeUndefined();
-		expect(duplicate.references).toBeUndefined();
+		expect(duplicate).not.toHaveProperty('relatedNotes');
 		expect(duplicate.alleleGeneAssociations).toBeUndefined();
-	});
-
-	it('Leaves a list with no rows unset, as the detail endpoint does', () => {
-		const duplicate = buildDuplicateAllele({
-			alleleFunctionalImpacts: [],
-			alleleGeneAssociations: [],
-			references: [],
-			alleleMutationTypes: [{ id: 10, mutationTypes: [{ curie: 'SO:0001' }] }],
-		});
-
-		expect(duplicate.alleleFunctionalImpacts).toBeUndefined();
-		expect(duplicate.alleleGeneAssociations).toBeUndefined();
-		expect(duplicate.references).toBeUndefined();
-		expect(duplicate.alleleMutationTypes).toEqual([{ mutationTypes: [{ curie: 'SO:0001' }] }]);
 	});
 
 	it('Does not mutate the allele it is given', () => {
@@ -392,5 +342,45 @@ describe('getPendingSingleValueFields single-object sections', () => {
 		};
 
 		expect([...getPendingSingleValueFields(allele, saved)]).toEqual(['alleleFullName', 'alleleDatabaseStatus']);
+	});
+});
+
+describe('generateCrossRefSearchField', () => {
+	it('joins the curies of a reference cross references', () => {
+		const reference = { crossReferences: [{ referencedCurie: 'PMID:1' }, { referencedCurie: 'DOI:2' }] };
+		expect(generateCrossRefSearchField(reference)).toBe('PMID:1,DOI:2');
+	});
+
+	it('is empty for a reference without cross references, which the API sends without the key', () => {
+		expect(generateCrossRefSearchField({ curie: 'AGRKB:101' })).toBe('');
+	});
+});
+
+describe('capitalize', () => {
+	it('Puts the first letter in upper case and leaves the rest', () => {
+		expect(capitalize('gene associations')).toEqual('Gene associations');
+	});
+});
+
+describe('sortedCuries', () => {
+	it('Sorts the curies so lists compare whatever their order', () => {
+		expect(sortedCuries([{ curie: 'AGRKB:2' }, { curie: 'AGRKB:1' }])).toEqual(['AGRKB:1', 'AGRKB:2']);
+	});
+
+	it('Gives none when there is no list', () => {
+		expect(sortedCuries(undefined)).toEqual([]);
+	});
+});
+
+describe('sameRowsBy', () => {
+	const sameNames = sameRowsBy((row) => row.name);
+
+	it('Compares the lists row by row by the given value', () => {
+		expect(sameNames([{ name: 'a', id: 1 }], [{ name: 'a', id: 2 }])).toBe(true);
+		expect(sameNames([{ name: 'a' }, { name: 'b' }], [{ name: 'b' }, { name: 'a' }])).toBe(false);
+	});
+
+	it('Finds lists of different lengths different', () => {
+		expect(sameNames([{ name: 'a' }], [{ name: 'a' }, { name: 'a' }])).toBe(false);
 	});
 });

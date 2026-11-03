@@ -1,31 +1,31 @@
 import React from 'react';
-import { BrowserRouter, MemoryRouter, Route, Routes } from 'react-router-dom';
 import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { renderWithClient } from '../../../tools/jest/utils';
-import AlleleDetailPage from '../AlleleDetailPage';
 import { setLocalStorage } from '../../../tools/jest/setupTests';
-import {
-	setupGetEntityHandler,
-	setupSaveSettingsHandler,
-	setupSettingsHandler,
-} from '../../../tools/jest/commonMswhandlers';
+import { setupSaveSettingsHandler, setupSettingsHandler } from '../../../tools/jest/commonMswhandlers';
 import { alleleDetailData } from '../mockData/mockData.js';
+import { renderAtAlleleRoute } from './alleleTestUtils';
+
+const getAllele = vi.fn();
+
+vi.mock('../../../service/AlleleService', async () =>
+	(await import('./alleleServiceMocks')).mockAlleleService({ getAllele })
+);
+vi.mock('../../../service/SearchService', async () => (await import('./alleleServiceMocks')).mockSearchService());
+vi.mock('../../../service/AlleleSubResourceService', async () =>
+	(await import('./alleleServiceMocks')).mockSubResourceService()
+);
+
+const AlleleDetailPage = (await import('../AlleleDetailPage')).default;
 
 const FORM_SETTINGS_KEY = 'AlleleDetailFormSettings';
 
-const renderPage = () =>
-	renderWithClient(
-		<BrowserRouter>
-			<AlleleDetailPage />
-		</BrowserRouter>
-	);
+const renderPage = () => renderAtAlleleRoute(<AlleleDetailPage />);
 
 describe('<AlleleDetailPage />', () => {
 	beforeEach(() => {
-		setupGetEntityHandler(alleleDetailData);
-		// Registered after setupGetEntityHandler because its */api/:entity/:curie pattern also
-		// matches the person settings endpoint, and the later handler takes precedence.
+		getAllele.mockReset();
+		getAllele.mockResolvedValue({ data: alleleDetailData });
 		setupSettingsHandler();
 		setupSaveSettingsHandler();
 		window.localStorage.removeItem(FORM_SETTINGS_KEY);
@@ -116,17 +116,21 @@ describe('<AlleleDetailPage />', () => {
 		open.mockRestore();
 	});
 
-	it('Opens the create page for a copy by the identifier in the URL before the allele loads', async () => {
+	it('Opens the create page for a copy by the identifier in the URL when the allele carries none', async () => {
 		const user = userEvent.setup();
 		const open = vi.spyOn(window, 'open').mockImplementation(() => null);
+		getAllele.mockResolvedValue({
+			data: {
+				entity: {
+					...alleleDetailData.entity,
+					curie: undefined,
+					primaryExternalId: undefined,
+					modInternalId: undefined,
+				},
+			},
+		});
 
-		renderWithClient(
-			<MemoryRouter initialEntries={['/allele/MGI:5146840']}>
-				<Routes>
-					<Route path="/allele/:identifier" element={<AlleleDetailPage />} />
-				</Routes>
-			</MemoryRouter>
-		);
+		renderPage();
 
 		const duplicate = await screen.findByRole('button', { name: /Clone/i });
 		await user.click(duplicate);

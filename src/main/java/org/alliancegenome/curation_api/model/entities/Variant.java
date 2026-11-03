@@ -13,10 +13,15 @@ import org.alliancegenome.curation_api.view.CurationView;
 import org.apache.commons.collections.CollectionUtils;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
+import org.hibernate.search.engine.backend.types.Aggregable;
+import org.hibernate.search.engine.backend.types.Searchable;
+import org.hibernate.search.engine.backend.types.Sortable;
 import org.hibernate.search.mapper.pojo.automaticindexing.ReindexOnUpdate;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.FullTextField;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmbedded;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexingDependency;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.KeywordField;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 
@@ -46,10 +51,17 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema;
 @Table(indexes = {
 	@Index(name = "variant_varianttype_index", columnList = "varianttype_id"),
 	@Index(name = "variant_variantstatus_index", columnList = "variantstatus_id"),
-	@Index(name = "variant_sourcegeneralconsequence_index", columnList = "sourcegeneralconsequence_id")
+	@Index(name = "variant_sourcegeneralconsequence_index", columnList = "sourcegeneralconsequence_id"),
+	@Index(name = "variant_uniqueid_index", columnList = "uniqueid")
 })
 @CurieSubdomain(MatiSubdomain.VARIANT)
 public class Variant extends GenomicEntity {
+
+	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
+	@KeywordField(name = "uniqueId_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
+	@Column(columnDefinition = "TEXT")
+	@JsonView({CurationView.FieldsOnly.class})
+	private String uniqueId;
 
 	@IndexedEmbedded(includePaths = {"curie", "name", "curie_keyword", "name_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
@@ -75,11 +87,11 @@ public class Variant extends GenomicEntity {
 			"variantGenomicLocationAssociationObject.curie", "variantGenomicLocationAssociationObject.curie_keyword",
 			"variantGenomicLocationAssociationObject.primaryExternalId", "variantGenomicLocationAssociationObject.primaryExternalId_keyword",
 			"variantGenomicLocationAssociationObject.modInternalId", "variantGenomicLocationAssociationObject.modInternalId_keyword",
-			"start", "end"
+			"start", "end", "hgvs", "hgvs_keyword"
 		}
 	)
 	@OneToMany(mappedBy = "variantAssociationSubject", cascade = CascadeType.ALL, orphanRemoval = true)
-	@JsonView({CurationView.FieldsAndLists.class, CurationView.VariantDetailView.class, CurationView.AlleleSummaryDocument.class, CurationView.VariantSummaryDocument.class, CurationView.SequenceSummaryDocument.class})
+	@JsonView({CurationView.FieldsAndLists.class, CurationView.VariantView.class, CurationView.AlleleSummaryDocument.class, CurationView.VariantSummaryDocument.class, CurationView.SequenceSummaryDocument.class})
 	private List<CuratedVariantGenomicLocationAssociation> curatedVariantGenomicLocations;
 
 	@OneToMany(mappedBy = "alleleVariantAssociationObject", cascade = CascadeType.ALL, orphanRemoval = true)

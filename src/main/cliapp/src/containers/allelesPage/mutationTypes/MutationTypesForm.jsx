@@ -1,95 +1,65 @@
 import { Button } from 'primereact/button';
-import { FormTableWrapper } from '../../../components/FormTableWrapper';
-import { MutationTypesFormTable } from './MutationTypesFormTable';
 import { useRef } from 'react';
-import { addDataKey } from '../utils';
+import { FormTableWrapper } from '../../../components/FormTableWrapper';
+import { useSubResource } from '../../../components/SubResourcesContext';
+import { TableEditorProvider } from '../../../components/Editors/fields/TableEditorContext';
+import { useSubResourceRows } from '../../../hooks/useSubResourceRows';
+import { SubResourceSaveButton } from '../SubResourceSaveButton';
+import { SubResourceLoadError } from '../SubResourceLoadError';
+import { useSubResourceFormStrategy } from '../useSubResourceFormStrategy';
+import { addDataKey, KEEP_ROWS_IN_EDIT_MODE } from '../utils';
+import { MutationTypesFormTable } from './MutationTypesFormTable';
 
-export const MutationTypesForm = ({ state, dispatch }) => {
+/**
+ * The allele detail and create pages' mutation types section.
+ *
+ * Its rows are saved by the page along with the allele, and on the detail page also by this section's own
+ * button, which saves them alone. Mutation types are written through their own sub-resource rather than in the
+ * allele payload, so either save makes that call itself.
+ *
+ * @param {Object} props
+ * @param {'detail'|'create'} [props.mode]
+ */
+export const MutationTypesForm = ({ mode = 'detail' }) => {
+	const subResource = useSubResource('alleleMutationTypes');
+	const { rows: mutationTypes, isDirty } = subResource;
+	const { editingRows, addRow, deletionHandler } = useSubResourceRows(subResource, { prepend: true });
+	const strategy = useSubResourceFormStrategy(subResource);
 	const tableRef = useRef(null);
-	const entityType = 'alleleMutationTypes';
-	const mutationTypes = structuredClone(state.allele?.[entityType]);
+	const isDetail = mode === 'detail';
 
-	const createNewMutationTypeHandler = (e) => {
-		e.preventDefault();
-		const newMutationType = {
+	const createNewRowHandler = (event) => {
+		event.preventDefault();
+		const newRow = {
 			internal: false,
 		};
 
-		addDataKey(newMutationType);
-
-		dispatch({
-			type: 'ADD_ROW',
-			row: newMutationType,
-			entityType: entityType,
-		});
-	};
-
-	const onRowEditChange = (e) => {
-		return null;
-	};
-
-	const mutationTypesOnChangeHandler = (event, setFieldValue, props) => {
-		//updates value in table input box
-		setFieldValue(event.target.value);
-		dispatch({
-			type: 'EDIT_ROW',
-			entityType: entityType,
-			index: props.rowIndex,
-			field: 'mutationTypes',
-			value: event.target.value,
-		});
-	};
-
-	const internalOnChangeHandler = (props, event) => {
-		props.editorCallback(event.target.value?.name);
-		dispatch({
-			type: 'EDIT_ROW',
-			entityType: entityType,
-			index: props.rowIndex,
-			field: 'internal',
-			value: event.target?.value?.name,
-		});
-	};
-
-	const evidenceOnChangeHandler = (event, setFieldValue, props) => {
-		//updates value in table input box
-		setFieldValue(event.target.value);
-		dispatch({
-			type: 'EDIT_ROW',
-			entityType: entityType,
-			index: props.rowIndex,
-			field: 'evidence',
-			value: event.target.value,
-		});
-	};
-
-	const deletionHandler = (e, dataKey) => {
-		e.preventDefault();
-		const updatedErrorMessages = structuredClone(state.entityStates[entityType].errorMessages);
-		delete updatedErrorMessages[dataKey];
-		dispatch({ type: 'DELETE_ROW', entityType: entityType, dataKey });
-		dispatch({ type: 'UPDATE_TABLE_ERROR_MESSAGES', entityType: entityType, errorMessages: updatedErrorMessages });
+		addDataKey(newRow);
+		addRow(newRow);
 	};
 
 	return (
 		<FormTableWrapper
 			table={
-				<MutationTypesFormTable
-					mutationTypes={mutationTypes}
-					editingRows={state.entityStates[entityType].editingRows}
-					onRowEditChange={onRowEditChange}
-					tableRef={tableRef}
-					deletionHandler={deletionHandler}
-					errorMessages={state.entityStates[entityType].errorMessages}
-					mutationTypesOnChangeHandler={mutationTypesOnChangeHandler}
-					internalOnChangeHandler={internalOnChangeHandler}
-					evidenceOnChangeHandler={evidenceOnChangeHandler}
-				/>
+				<TableEditorProvider strategy={strategy}>
+					<MutationTypesFormTable
+						mutationTypes={mutationTypes}
+						editingRows={editingRows}
+						onRowEditChange={KEEP_ROWS_IN_EDIT_MODE}
+						tableRef={tableRef}
+						deletionHandler={deletionHandler}
+					/>
+				</TableEditorProvider>
 			}
 			tableName="Mutation Types"
-			showTable={state.entityStates[entityType].show}
+			showTable={mutationTypes.length > 0}
+			isPending={isDetail && isDirty}
+			titleAction={isDetail && <SubResourceSaveButton type="alleleMutationTypes" />}
 			button={
-				<Button label="Add Mutation Type" onClick={createNewMutationTypeHandler} className="w-4  p-button-text" />
+				<>
+					<Button label="Add Mutation Type" onClick={createNewRowHandler} className="w-4  p-button-text" />
+					<SubResourceLoadError type="alleleMutationTypes" />
+				</>
 			}
 		/>
 	);

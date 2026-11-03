@@ -20,4 +20,11 @@ describe('FormTableWrapper', () => {
 		expect(screen.getByText('Pending Edits!')).toBeInTheDocument();
 		expect(container.firstChild).toHaveClass('border-left-3');
 	});
+
+	it('Shows a title action beside the section title', () => {
+		renderWrapper({ titleAction: <button>Save Section</button> });
+
+		const title = screen.getByRole('heading', { name: 'Cross References' });
+		expect(title.parentElement).toContainElement(screen.getByRole('button', { name: 'Save Section' }));
+	});
 });

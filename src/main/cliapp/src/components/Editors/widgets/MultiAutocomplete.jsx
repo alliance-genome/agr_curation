@@ -25,6 +25,8 @@ const EMPTY_ARRAY = [];
  * @param {string} [subField='curie'] - entity property used as the token label
  * @param {(item: object, setHoverItem: Function, tooltipRef: object, query: string) => JSX.Element} [valueDisplay] -
  *   custom suggestion renderer
+ * @param {(item: object) => React.ReactNode} [selectedItemTemplate] - token label renderer;
+ *   tokens show `subField` without one
  * @param {string} [name] - accessible name for the control
  * @param {boolean} [invalid] - applies invalid styling
  * @param {boolean} [disabled]
@@ -37,6 +39,7 @@ export function MultiAutocomplete({
 	search,
 	subField = 'curie',
 	valueDisplay,
+	selectedItemTemplate,
 	name,
 	invalid,
 	disabled,
@@ -86,6 +89,7 @@ export function MultiAutocomplete({
 				value={displayValue}
 				suggestions={suggestions}
 				itemTemplate={itemTemplate}
+				selectedItemTemplate={selectedItemTemplate}
 				completeMethod={(event) => search(event, setSuggestions, setQuery)}
 				onHide={(event) => tooltip.current?.hide(event)}
 				onChange={handleChange}

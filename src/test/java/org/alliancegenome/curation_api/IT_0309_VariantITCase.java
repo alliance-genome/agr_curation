@@ -783,6 +783,24 @@ public class IT_0309_VariantITCase extends BaseITCase {
 				delete("/api/variant/" + VARIANT).
 				then().
 				statusCode(200);
+
+		RestAssured.given().
+			when().
+			get("/api/variant/" + VARIANT).
+			then().
+			statusCode(200).
+			body("entity", is(nullValue()));
+	}
+
+	@Test
+	@Order(27)
+	public void deleteUnknownVariant() {
+		RestAssured.given().
+			when().
+			delete("/api/variant/Variant:DoesNotExist0001").
+			then().
+			statusCode(400).
+			body("errorMessage", is("Could not find Variant with identifier: Variant:DoesNotExist0001"));
 	}
 
 }

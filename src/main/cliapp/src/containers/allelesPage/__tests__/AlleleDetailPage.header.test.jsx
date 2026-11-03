@@ -1,37 +1,19 @@
 import React from 'react';
-import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { screen, waitFor } from '@testing-library/react';
-import { renderWithClient } from '../../../tools/jest/utils';
 import { alleleDetailData } from '../mockData/mockData.js';
+import { FORM_LOAD_WAIT, renderAtAlleleRoute } from './alleleTestUtils';
 
 const getAllele = vi.fn();
 
-// msw cannot intercept this app's fetch based ApiClient, so stub the services directly.
-vi.mock('../../../service/AlleleService', () => ({
-	AlleleService: class {
-		getAllele = getAllele;
-		saveAlleleDetail = vi.fn();
-	},
-}));
-
-vi.mock('../../../service/SearchService', () => ({
-	SearchService: class {
-		search = vi.fn(() => Promise.resolve({ results: [], totalResults: 0 }));
-		find = vi.fn(() => Promise.resolve({ results: [], totalResults: 0 }));
-	},
-}));
-
-vi.mock('../../../service/CrossReferenceService', () => ({
-	CrossReferenceService: class {
-		getCrossReferencesForAllele = vi.fn(() => Promise.resolve({ data: { entities: [] } }));
-		replaceCrossReferencesForAllele = vi.fn(() => Promise.resolve({ data: { entities: [] } }));
-	},
-}));
+vi.mock('../../../service/AlleleService', async () =>
+	(await import('./alleleServiceMocks')).mockAlleleService({ getAllele })
+);
+vi.mock('../../../service/SearchService', async () => (await import('./alleleServiceMocks')).mockSearchService());
+vi.mock('../../../service/AlleleSubResourceService', async () =>
+	(await import('./alleleServiceMocks')).mockSubResourceService()
+);
 
 const AlleleDetailPage = (await import('../AlleleDetailPage')).default;
-
-// each wait follows a stubbed call through a full render of the form, which can outlast the default under load
-const FORM_LOAD_WAIT = { timeout: 5000 };
 
 const AGRKB_CURIE = 'AGRKB:101000000000001';
 
@@ -42,13 +24,7 @@ const AGRKB_CURIE = 'AGRKB:101000000000001';
  */
 const renderPageFor = (allele) => {
 	getAllele.mockResolvedValue({ data: { entity: allele } });
-	renderWithClient(
-		<MemoryRouter initialEntries={['/allele/MGI:5146840']}>
-			<Routes>
-				<Route path="/allele/:identifier" element={<AlleleDetailPage />} />
-			</Routes>
-		</MemoryRouter>
-	);
+	renderAtAlleleRoute(<AlleleDetailPage />);
 };
 
 describe('<AlleleDetailPage /> header', () => {
