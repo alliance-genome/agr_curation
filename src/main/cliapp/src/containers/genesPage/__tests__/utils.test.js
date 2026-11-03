@@ -1,4 +1,5 @@
 import {
+	buildDuplicateGene,
 	buildGeneCreatePayload,
 	buildGeneDetailPayload,
 	gcrpCrossReferenceFieldErrors,
@@ -6,6 +7,10 @@ import {
 	processGeneErrors,
 } from '../utils';
 import { geneDetailData } from '../mockData/mockData';
+
+vi.mock('../../../service/ResourceDescriptorService', async () =>
+	(await import('./geneServiceMocks')).mockResourceDescriptorService()
+);
 
 const saved = geneDetailData.entity;
 
@@ -163,5 +168,51 @@ describe('processGeneErrors', () => {
 			type: 'UPDATE_ERROR_MESSAGES',
 			errorMessages: { gcrpCrossReference: 'Not a valid entry' },
 		});
+	});
+});
+
+describe('buildDuplicateGene', () => {
+	const alwaysVisible = () => true;
+
+	it("copies the fields the create form edits, without the stored gene's ids, audit fields or data provider", async () => {
+		const copy = await buildDuplicateGene(saved, alwaysVisible);
+
+		expect(copy).not.toHaveProperty('id');
+		expect(copy).not.toHaveProperty('curie');
+		expect(copy).not.toHaveProperty('primaryExternalId');
+		expect(copy).not.toHaveProperty('dataProvider');
+		expect(copy.obsolete).toBe(false);
+		expect(copy.taxon.curie).toBe(saved.taxon.curie);
+		expect(copy.geneType.curie).toBe(saved.geneType.curie);
+		['geneSymbol', 'geneFullName', 'geneSystematicName'].forEach((field) => {
+			expect(copy[field].displayText).toBe(saved[field].displayText);
+			expect(copy[field]).not.toHaveProperty('id');
+			expect(copy[field]).not.toHaveProperty('dateCreated');
+		});
+	});
+
+	it("keeps the GCRP cross reference's page but not its curie", async () => {
+		const { gcrpCrossReference } = await buildDuplicateGene(saved, alwaysVisible);
+
+		expect(gcrpCrossReference.referencedCurie).toBe('');
+		expect(gcrpCrossReference.displayName).toBe('');
+		expect(gcrpCrossReference).not.toHaveProperty('id');
+		expect(gcrpCrossReference.resourceDescriptorPage.id).toBe(saved.gcrpCrossReference.resourceDescriptorPage.id);
+		expect(gcrpCrossReference.dataKey).toBeDefined();
+	});
+
+	it('leaves out the GCRP cross reference while its section is hidden', async () => {
+		const copy = await buildDuplicateGene(saved, (field) => field !== 'GCRP Cross Reference');
+
+		expect(copy.gcrpCrossReference).toBeNull();
+	});
+
+	it('starts blank terms for a gene without a taxon or gene type', async () => {
+		const copy = await buildDuplicateGene({ geneSymbol: { displayText: 'abc' } }, alwaysVisible);
+
+		expect(copy.taxon).toEqual({ curie: '' });
+		expect(copy.geneType).toEqual({ curie: '' });
+		expect(copy.gcrpCrossReference).toBeNull();
+		expect(copy.geneFullName).toBeNull();
 	});
 });

@@ -193,6 +193,42 @@ describe('<GeneCreatePage />', { timeout: 60000 }, () => {
 		await waitFor(() => expect(navigate).toHaveBeenCalledWith(`/gene/${createdGene.curie}`), NAVIGATION_WAIT);
 	});
 
+	it('keeps the saved values on Save & Add Another, and creates the next gene from them without their ids', async () => {
+		const user = userEvent.setup();
+		renderPage();
+
+		await typeSymbol(user, 'abc');
+		await user.click(button('Save & Add Another'));
+
+		// The taxon was never entered, so it shows only once the form takes on the saved gene.
+		await waitFor(() => expect(screen.getByDisplayValue(createdGene.taxon.curie)).toBeInTheDocument());
+		expect(navigate).not.toHaveBeenCalled();
+
+		await waitFor(() => expect(button('Save & Add Another')).toBeEnabled());
+		await user.click(button('Save & Add Another'));
+
+		await waitFor(() => expect(createGene).toHaveBeenCalledTimes(2));
+		const [nextGene] = createGene.mock.calls[1];
+		expect(nextGene.id).toBeUndefined();
+		expect(nextGene.geneSymbol.id).toBeUndefined();
+		expect(nextGene.geneSymbol.displayText).toBe('abc');
+		expect(nextGene.taxon.curie).toBe(createdGene.taxon.curie);
+		expect(saveGeneDetail).not.toHaveBeenCalled();
+	});
+
+	it("starts the next gene's synonyms from the saved gene's, but not its secondary IDs", async () => {
+		const user = userEvent.setup();
+		renderPage();
+
+		await user.click(button('Add Synonym'));
+		await addSecondaryId(user, 'FB:FBgn0000001');
+		await user.click(button('Save & Add Another'));
+
+		await waitFor(() => expect(replaceRows).toHaveBeenCalledTimes(2));
+		await waitFor(() => expect(within(section('Secondary IDs')).queryByRole('table')).not.toBeInTheDocument());
+		expect(within(section('Synonyms')).getAllByRole('row')).toHaveLength(2);
+	});
+
 	it('clears the form', async () => {
 		const user = userEvent.setup();
 		renderPage();

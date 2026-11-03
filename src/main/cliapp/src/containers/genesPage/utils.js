@@ -1,6 +1,8 @@
 import { getPendingFields, nameSlotAnnotationValue } from '../../utils/pendingFields';
 import { processErrors, processTableErrors } from '../../utils/processErrors';
+import { copyRow } from '../../utils/copyRows';
 import {
+	buildDuplicateCrossReferences,
 	crossReferenceValue,
 	seedResourceDescriptor,
 	seedResourceDescriptors,
@@ -69,6 +71,37 @@ export const withSeededGcrpCrossReference = async (entity) => {
 		? await seedResourceDescriptors([entity.gcrpCrossReference])
 		: [];
 	return { ...entity, gcrpCrossReference };
+};
+
+/**
+ * A new gene carrying the fields of a stored one that the create form edits, for the create form to start the next
+ * gene from.
+ *
+ * Left behind: everything that identifies the stored gene (its ids), its data provider and audit fields. Each copied
+ * name loses its own id and audit fields, so it is created afresh. The GCRP cross reference keeps its page, and so its
+ * descriptor, but not the curie and display name that identify the stored gene; a hidden GCRP section could not show
+ * it, so it gets none. The lists in GENE_SUB_RESOURCES are copied separately.
+ *
+ * @param {Object} gene a gene as the API returns it
+ * @param {(fieldName: string) => boolean} isVisible whether the form shows a field's section
+ * @returns {Promise<Object>} a gene without an id, not obsolete
+ */
+export const buildDuplicateGene = async (gene, isVisible) => {
+	const [gcrpCrossReference = null] =
+		gene.gcrpCrossReference && isVisible('GCRP Cross Reference')
+			? await seedResourceDescriptors(buildDuplicateCrossReferences([gene.gcrpCrossReference]))
+			: [];
+
+	return {
+		taxon: structuredClone(gene.taxon) ?? { curie: '' },
+		geneType: structuredClone(gene.geneType) ?? { curie: '' },
+		internal: gene.internal ?? false,
+		obsolete: false,
+		geneSymbol: copyRow(gene.geneSymbol),
+		geneFullName: copyRow(gene.geneFullName),
+		geneSystematicName: copyRow(gene.geneSystematicName),
+		gcrpCrossReference,
+	};
 };
 
 // The cross reference fields whose cells in the cross references table show an error.

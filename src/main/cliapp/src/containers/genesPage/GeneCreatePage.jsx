@@ -16,6 +16,7 @@ import { capitalize, errorMessageOf, getIdentifier } from '../../utils/utils';
 import { useGeneReducer } from './useGeneReducer';
 import { useGeneSubResources } from './useGeneSubResources';
 import {
+	buildDuplicateGene,
 	buildGeneCreatePayload,
 	buildGeneDetailPayload,
 	processGeneErrors,
@@ -38,6 +39,7 @@ export default function GeneCreatePage() {
 		saveDirty: saveDirtySubResources,
 		dirtySteps: dirtySubResourceSteps,
 		resetAll: resetSubResources,
+		carryOverAll: carryOverSubResources,
 	} = useGeneSubResources();
 	const saveProgress = useSaveProgress();
 	// Set once Save & Close has saved everything, while the page shows that before moving on to the gene.
@@ -107,8 +109,10 @@ export default function GeneCreatePage() {
 			setIsLeaving(true);
 			if (await saveProgress.finish()) navigate(`/gene/${getIdentifier(gene)}`);
 		} else {
-			geneDispatch({ type: 'RESET' });
-			resetSubResources();
+			// The form keeps the saved gene's values and rows, so the next gene can be entered as a small change to
+			// this one.
+			geneDispatch({ type: 'SET', value: await buildDuplicateGene(gene, isVisible) });
+			await carryOverSubResources(isVisible);
 			saveProgress.finish();
 		}
 	};
@@ -150,9 +154,9 @@ export default function GeneCreatePage() {
 
 			await saveSubResources(gene, closeAfterSubmit);
 		} catch (error) {
-			// The form takes on the created gene, so saving again updates it. Anything the save stopped before writing
-			// shows as not saved, and the overlay still closes.
-			if (!isRetry) geneDispatch({ type: 'SET', value: gene });
+			// While the created gene is the one saving again will update, the form takes it on. Anything the save
+			// stopped before writing shows as not saved, and the overlay still closes.
+			if (!isRetry && createdGene.current === gene) geneDispatch({ type: 'SET', value: gene });
 			saveProgress.skipRemaining();
 			saveProgress.finish();
 			toastError.current.show([
