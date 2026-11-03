@@ -20,6 +20,7 @@ import { useGeneReducer } from './useGeneReducer';
 import { useGeneSubResources } from './useGeneSubResources';
 import { buildGeneDetailPayload, getPendingGeneFields, processGeneErrors, withSeededGcrpCrossReference } from './utils';
 import { GeneForm, GENE_DETAIL_TOGGLEABLE_FIELDS } from './GeneForm';
+import { NewGeneButton } from './NewGeneButton';
 
 export default function GeneDetailPage() {
 	const { identifier } = useParams();
@@ -196,7 +197,7 @@ export default function GeneDetailPage() {
 			<ErrorBoundary>
 				<StickyHeader>
 					<Splitter className="bg-primary-reverse border-none lg:h-5rem" gutterSize={0}>
-						<SplitterPanel size={50} className="flex justify-content-start min-w-0 ml-5 py-3 ">
+						<SplitterPanel size={40} className="flex justify-content-start min-w-0 ml-5 py-3 ">
 							<DetailPageHeading
 								entityType="Gene"
 								entity={geneState.gene}
@@ -211,7 +212,7 @@ export default function GeneDetailPage() {
 								showAllFields={showAllFields}
 							/>
 						</SplitterPanel>
-						<SplitterPanel size={20} className="flex align-items-center justify-content-start gap-2 pl-2 py-3">
+						<SplitterPanel size={30} className="flex align-items-center justify-content-start gap-2 pl-2 py-3">
 							<Button
 								label="Save"
 								icon="pi pi-check"
@@ -219,6 +220,7 @@ export default function GeneDetailPage() {
 								onClick={handleSubmit}
 								disabled={!hasPendingEdits || saveProgress.isSaving}
 							/>
+							<NewGeneButton className="p-button-text" />
 						</SplitterPanel>
 					</Splitter>
 				</StickyHeader>

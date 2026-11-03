@@ -35,6 +35,7 @@ import { BooleanTableEditor } from '../../components/Editors/dropdown/boolean/Bo
 import { SearchService } from '../../service/SearchService';
 import { GeneService } from '../../service/GeneService';
 import { Endpoints } from '../../constants/Endpoints';
+import { NewGeneButton } from './NewGeneButton';
 
 export const GenesTable = () => {
 	const [isInEditMode, setIsInEditMode] = useState(false);
@@ -560,6 +561,15 @@ export const GenesTable = () => {
 		searchService,
 	});
 
+	const headerButtons = (disabled = false) => {
+		return (
+			<>
+				<NewGeneButton disabled={disabled} />
+				&nbsp;&nbsp;
+			</>
+		);
+	};
+
 	return (
 		<>
 			<div className="card">
@@ -568,6 +578,7 @@ export const GenesTable = () => {
 				<GenericDataTable
 					endpoint={SEARCH_ENDPOINT}
 					tableName="Genes"
+					headerButtons={headerButtons}
 					entities={genes}
 					setEntities={setGenes}
 					totalRecords={totalRecords}
