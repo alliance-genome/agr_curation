@@ -25,7 +25,7 @@ import { AllelesPage, AlleleDetailPage, AlleleCreatePage } from './containers/al
 import { GenesPage } from './containers/genesPage';
 import { VariantsPage, VariantDetailPage, VariantCreatePage } from './containers/variantsPage';
 import { ConstructsPage, ConstructDetailPage } from './containers/constructsPage';
-import { CassettesPage } from './containers/cassettesPage';
+import { CassettesPage, CassetteDetailPage } from './containers/cassettesPage';
 import { TransgenicToolsPage, TransgenicToolDetailPage } from './containers/transgenicToolsPage';
 import { HTPExpressionDatasetAnnotationsPage } from './containers/htpExpressionDatasetAnnotationsPage';
 import { HTPExpressionDatasetSampleAnnotationsPage } from './containers/htpExpressionDatasetSampleAnnotationsPage';
@@ -257,6 +257,14 @@ export default function AppRoutes() {
 						element={
 							<ErrorBoundary>
 								<ConstructsPage />
+							</ErrorBoundary>
+						}
+					/>
+					<Route
+						path="/cassette/:identifier"
+						element={
+							<ErrorBoundary>
+								<CassetteDetailPage />
 							</ErrorBoundary>
 						}
 					/>

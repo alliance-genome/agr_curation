@@ -522,7 +522,7 @@ export const CassettesTable = ({ tableName = 'Cassettes', fixedFilters }) => {
 					columns={columns}
 					isEditable={true}
 					mutation={mutation}
-					hasDetails={false}
+					hasDetails={true}
 					isInEditMode={isInEditMode}
 					setIsInEditMode={setIsInEditMode}
 					toasts={{ toast_topleft, toast_topright }}
