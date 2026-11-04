@@ -28,6 +28,7 @@ import org.alliancegenome.curation_api.services.validation.dto.slotAnnotations.G
 import org.alliancegenome.curation_api.services.validation.dto.slotAnnotations.GeneSystematicNameSlotAnnotationValidator;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import io.quarkus.logging.Log;
 import jakarta.enterprise.context.RequestScoped;
@@ -132,6 +133,8 @@ public class GeneValidator extends GenomicEntityValidator<Gene> {
 	 *        the synonym and secondary ID lists. An endpoint whose view omits them leaves the stored ones as they are.
 	 */
 	private Gene validateGene(Gene uiEntity, Gene dbEntity, Boolean manageSubResourceFields) {
+		String storedSymbolText = dbEntity.getGeneSymbol() == null ? null : dbEntity.getGeneSymbol().getDisplayText();
+		Long storedTaxonId = dbEntity.getTaxon() == null ? null : dbEntity.getTaxon().getId();
 
 		// A gene is identified by its AGRKB curie, so neither MOD identifier is required, on create or update: a gene
 		// created by a curator has neither.
@@ -141,6 +144,7 @@ public class GeneValidator extends GenomicEntityValidator<Gene> {
 		dbEntity.setGeneType(geneType);
 
 		GeneSymbolSlotAnnotation symbol = validateGeneSymbol(uiEntity, dbEntity);
+		validateSymbolUniqueInTaxon(symbol, dbEntity, storedSymbolText, storedTaxonId);
 		GeneFullNameSlotAnnotation fullName = validateGeneFullName(uiEntity, dbEntity);
 		GeneSystematicNameSlotAnnotation systematicName = validateGeneSystematicName(uiEntity, dbEntity);
 		List<GeneSynonymSlotAnnotation> synonyms = null;
@@ -248,6 +252,35 @@ public class GeneValidator extends GenomicEntityValidator<Gene> {
 		}
 
 		return symbolResponse.getEntity();
+	}
+
+	/**
+	 * Rejects a symbol already used by another non-obsolete gene of the same taxon. An existing gene is checked only
+	 * when its symbol or taxon changes, so genes loaded with a shared symbol stay editable.
+	 *
+	 * @param symbol validated symbol, or null when the symbol failed validation
+	 * @param dbEntity gene being validated, with its taxon already validated
+	 * @param storedSymbolText symbol display text stored before this request, or null for a new gene
+	 * @param storedTaxonId taxon id stored before this request, or null for a new gene
+	 */
+	private void validateSymbolUniqueInTaxon(GeneSymbolSlotAnnotation symbol, Gene dbEntity, String storedSymbolText, Long storedTaxonId) {
+		if (symbol == null || StringUtils.isBlank(symbol.getDisplayText()) || dbEntity.getTaxon() == null) {
+			return;
+		}
+
+		Long taxonId = dbEntity.getTaxon().getId();
+		if (dbEntity.getId() != null && symbol.getDisplayText().equals(storedSymbolText) && taxonId.equals(storedTaxonId)) {
+			return;
+		}
+
+		if (geneDAO.hasGeneWithSymbolAndTaxon(symbol.getDisplayText(), taxonId, dbEntity.getId())) {
+			// reported on the taxon and on the symbol's display text, keyed as the symbol's own errors are so the
+			// form shows it on the symbol row
+			String message = ValidationConstants.GENE_SYMBOL_NOT_UNIQUE_IN_TAXON_MESSAGE;
+			addMessageResponse("geneSymbol", "displayText - " + message);
+			response.addErrorMessages("geneSymbol", Map.of("displayText", message));
+			addMessageResponse("taxon", message);
+		}
 	}
 
 	private GeneFullNameSlotAnnotation validateGeneFullName(Gene uiEntity, Gene dbEntity) {

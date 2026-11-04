@@ -127,6 +127,29 @@ describe('<GeneCreatePage />', { timeout: 60000 }, () => {
 		expect(navigate).not.toHaveBeenCalled();
 	});
 
+	it('shows a symbol another gene of the taxon already uses on the symbol row and on Taxon', async () => {
+		const user = userEvent.setup();
+		const message = 'Another gene is already using this taxon/symbol combination';
+		createGene.mockRejectedValue({
+			response: {
+				status: 400,
+				data: {
+					errorMessage: 'Could not create Gene',
+					errorMessages: { geneSymbol: `displayText - ${message}`, taxon: message },
+					supplementalData: { errorMap: { geneSymbol: { displayText: message }, taxon: message } },
+				},
+			},
+		});
+		renderPage();
+
+		await typeSymbol(user, 'abc');
+		await user.click(button('Save & Close'));
+
+		expect(await within(section(/Symbol/)).findByText(message)).toBeInTheDocument();
+		expect(screen.getAllByText(message)).toHaveLength(2);
+		expect(navigate).not.toHaveBeenCalled();
+	});
+
 	it("writes the edited lists to the new gene's id", async () => {
 		const user = userEvent.setup();
 		renderPage();
