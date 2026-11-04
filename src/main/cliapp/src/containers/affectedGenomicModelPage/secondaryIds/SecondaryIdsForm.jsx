@@ -1,9 +1,9 @@
 import { Button } from 'primereact/button';
 import { FormTableWrapper } from '../../../components/FormTableWrapper';
-import { SecondaryIdsFormTable } from '../../allelesPage/secondaryIds/SecondaryIdsFormTable';
+import { SecondaryIdsFormTable } from '../../../components/secondaryIds/SecondaryIdsFormTable';
 import { useRef } from 'react';
 import { addDataKey } from '../utils';
-import { KEEP_ROWS_IN_EDIT_MODE } from '../../allelesPage/utils';
+import { KEEP_ROWS_IN_EDIT_MODE } from '../../../utils/rows';
 import { useAGMFormStrategy } from '../useAGMFormStrategy';
 import { TableEditorProvider } from '../../../components/Editors/fields/TableEditorContext';
 

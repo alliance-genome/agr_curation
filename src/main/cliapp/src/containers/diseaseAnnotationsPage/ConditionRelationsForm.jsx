@@ -9,7 +9,7 @@ import { ControlledVocabularyTableEditor } from '../../components/Editors/dropdo
 import { BooleanTableEditor } from '../../components/Editors/dropdown/boolean/BooleanTableEditor';
 import { ConditionsTableEditor } from '../../components/Editors/autocomplete/experimentalCondition/ConditionsTableEditor';
 import { conditionsDetailedSearchConfig } from '../../components/Editors/autocomplete/experimentalCondition/utils';
-import { KEEP_ROWS_IN_EDIT_MODE } from '../allelesPage/utils';
+import { KEEP_ROWS_IN_EDIT_MODE } from '../../utils/rows';
 
 /**
  * The new disease annotation dialog's condition relations table, every row always in edit mode.

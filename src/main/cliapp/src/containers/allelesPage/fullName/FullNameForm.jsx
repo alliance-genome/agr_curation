@@ -1,6 +1,6 @@
 import { Button } from 'primereact/button';
 import { FormTableWrapper } from '../../../components/FormTableWrapper';
-import { FullNameFormTable } from './FullNameFormTable';
+import { FullNameFormTable } from '../../../components/nameSlotAnnotations/FullNameFormTable';
 import { useRef } from 'react';
 
 export const FullNameForm = ({ labelColumnSize, state, dispatch, isPending = false }) => {

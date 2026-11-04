@@ -1,6 +1,6 @@
-import { addDataKey } from '../../allelesPage/utils';
+import { addDataKey } from '../../../utils/rows';
 import { stripReference } from '../../allelesPage/referencesTable/utils';
-import { stripUiFields as stripCrossReference } from '../../allelesPage/crossReferences/utils';
+import { stripUiFields as stripCrossReference } from '../../../components/crossReferences/utils';
 
 const ROW_FIELDS = ['transgenicToolSynonyms', 'transgenicToolUses', 'relatedNotes'];
 const OBJECT_FIELDS = ['transgenicToolSymbol', 'transgenicToolFullName'];

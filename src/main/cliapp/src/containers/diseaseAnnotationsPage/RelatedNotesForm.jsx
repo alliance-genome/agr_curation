@@ -8,7 +8,7 @@ import { useDataKeyRowsStrategy } from '../../components/Editors/fields/strategi
 import { ControlledVocabularyTableEditor } from '../../components/Editors/dropdown/vocabulary/ControlledVocabularyTableEditor';
 import { BooleanTableEditor } from '../../components/Editors/dropdown/boolean/BooleanTableEditor';
 import { InputTextAreaTableEditor } from '../../components/Editors/text/InputTextAreaTableEditor';
-import { KEEP_ROWS_IN_EDIT_MODE } from '../allelesPage/utils';
+import { KEEP_ROWS_IN_EDIT_MODE } from '../../utils/rows';
 
 /**
  * The new disease annotation dialog's related notes table, every row always in edit mode. Rows live

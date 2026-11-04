@@ -1,4 +1,5 @@
-import { addDataKey, generateCrossRefSearchField, getShortCitation, sortedCuries } from '../utils';
+import { addDataKey, sortedCuries } from '../../../utils/rows';
+import { generateCrossRefSearchField, getShortCitation } from '../utils';
 
 /**
  * Readies references for the references table: each gets its own `dataKey`, the cross reference

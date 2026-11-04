@@ -146,6 +146,12 @@ export const errorMessageOf = (error) =>
 	error?.response?.data?.errorMessage ||
 	(error?.response ? `${error.response.status} ${error.response.statusText}`.trim() : error?.message);
 
+/**
+ * @param {string} text such as a sub-resource's label
+ * @returns {string} the text with its first letter in upper case, for the start of a message
+ */
+export const capitalize = (text) => `${text.charAt(0).toUpperCase()}${text.slice(1)}`;
+
 export function getIdentifier(data) {
 	if (!data) {
 		return null;

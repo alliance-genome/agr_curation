@@ -9,7 +9,7 @@ import { Row } from 'primereact/row';
 import { ValidationService } from '../../../service/ValidationService';
 import { DeleteAction } from '../../../components/Actions/DeletionAction';
 import { Endpoints } from '../../../constants/Endpoints';
-import { KEEP_ROWS_IN_EDIT_MODE, addDataKey } from '../utils';
+import { KEEP_ROWS_IN_EDIT_MODE, addDataKey } from '../../../utils/rows';
 import { useControlledVocabularyService } from '../../../service/useControlledVocabularyService';
 import { TableEditorProvider } from '../../../components/Editors/fields/TableEditorContext';
 import { useLocalRowsStrategy } from '../../../components/Editors/fields/strategies/useLocalRowsStrategy';

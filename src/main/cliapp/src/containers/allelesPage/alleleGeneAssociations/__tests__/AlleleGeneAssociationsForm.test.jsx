@@ -50,6 +50,7 @@ const renderForm = (associations = [association(31, 'first note'), association(3
 		handle.setRows = setRows;
 		handle.setErrorMessages = setErrorMessages;
 		const alleleGeneAssociations = {
+			label: 'gene associations',
 			rows,
 			setRows,
 			errorMessages,

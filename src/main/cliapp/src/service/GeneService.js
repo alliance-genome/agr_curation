@@ -7,6 +7,10 @@ export class GeneService extends BaseAuthService {
 		return this.api.put(`/gene`, updatedGene);
 	}
 
+	saveGeneDetail(updatedGene) {
+		return this.api.put(`/gene/updateDetail`, updatedGene);
+	}
+
 	createGene(newGene) {
 		return this.api.post(`/gene`, newGene);
 	}

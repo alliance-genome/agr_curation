@@ -1,6 +1,6 @@
 import { useCallback, useMemo } from 'react';
 import { useImmerReducer } from 'use-immer';
-import { addDataKey } from '../containers/allelesPage/utils';
+import { addDataKey } from '../utils/rows';
 import { prepareReferences } from '../containers/allelesPage/referencesTable/utils';
 import { getUniqueItemsByProperty } from '../utils/utils';
 

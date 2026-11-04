@@ -1,4 +1,4 @@
-import { errorMessageOf, getRefString, removeInvalidFilters, removeInvalidSorts } from '../utils';
+import { capitalize, errorMessageOf, getRefString, removeInvalidFilters, removeInvalidSorts } from '../utils';
 
 describe('removeInvalidFilters', () => {
 	it('All Valid fields', () => {
@@ -241,5 +241,11 @@ describe('errorMessageOf', () => {
 
 	it("Gives the error's own message when the request got no response", () => {
 		expect(errorMessageOf(new Error('Network Error'))).toEqual('Network Error');
+	});
+});
+
+describe('capitalize', () => {
+	it('Puts the first letter in upper case and leaves the rest', () => {
+		expect(capitalize('gene associations')).toEqual('Gene associations');
 	});
 });

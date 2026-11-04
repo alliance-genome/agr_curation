@@ -22,6 +22,7 @@ const row = {
 };
 
 const buildSubResource = (overrides = {}) => ({
+	label: 'references',
 	rows: [row],
 	setRows: vi.fn(),
 	errorMessages: {},

@@ -2,8 +2,8 @@ import { useRef } from 'react';
 import { FormTableWrapper } from '../../../components/FormTableWrapper';
 import { useSubResource } from '../../../components/SubResourcesContext';
 import { useSubResourceRows } from '../../../hooks/useSubResourceRows';
-import { SubResourceSaveButton } from '../SubResourceSaveButton';
-import { SubResourceLoadError } from '../SubResourceLoadError';
+import { SubResourceSaveButton } from '../../../components/SubResourceSaveButton';
+import { SubResourceLoadError } from '../../../components/SubResourceLoadError';
 import { ReferencesFormTable } from './ReferencesFormTable';
 import { NewReferenceField } from './NewReferenceField';
 

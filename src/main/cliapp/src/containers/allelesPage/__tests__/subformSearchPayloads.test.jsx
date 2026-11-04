@@ -5,11 +5,11 @@ import { getCellByHeader, renderSubResourceForm } from './alleleFormTestUtils';
 import { MutationTypesForm } from '../mutationTypes/MutationTypesForm';
 import { FunctionalImpactsForm } from '../functionalImpacts/FunctionalImpactsForm';
 import { InheritanceModesForm } from '../inheritanceModes/InheritanceModesForm';
-import { SecondaryIdsForm } from '../secondaryIds/SecondaryIdsForm';
+import { SecondaryIdsForm } from '../../../components/secondaryIds/SecondaryIdsForm';
 import { NomenclatureEventsForm } from '../nomenclatureEvents/NomenclatureEventsForm';
-import { SynonymsForm } from '../synonyms/SynonymsForm';
+import { SynonymsForm } from '../../../components/synonyms/SynonymsForm';
 import { AlleleGeneAssociationsForm } from '../alleleGeneAssociations/AlleleGeneAssociationsForm';
-import { CrossReferencesForm } from '../crossReferences/CrossReferencesForm';
+import { CrossReferencesForm } from '../../../components/crossReferences/CrossReferencesForm';
 import { SubResourcesProvider } from '../../../components/SubResourcesContext';
 import { renderWithClient } from '../../../tools/jest/utils';
 import '../../../tools/jest/setupTests';
@@ -17,7 +17,7 @@ import '../../../tools/jest/setupTests';
 vi.mock('../../../service/SearchService');
 vi.mock('../../../service/useControlledVocabularyService');
 vi.mock('../../../service/useVocabularyTermSetService');
-vi.mock('../crossReferences/useResourceDescriptorsByPrefix', () => ({
+vi.mock('../../../components/crossReferences/useResourceDescriptorsByPrefix', () => ({
 	useResourceDescriptorsByPrefix: () => new Map(),
 }));
 
@@ -39,7 +39,8 @@ const renderSubform =
 	() =>
 		renderSubResourceForm(Form, entityType, [{ ...ROW, ...row }]);
 
-const subResource = (rows) => ({
+const subResource = (label, rows) => ({
+	label,
 	rows,
 	setRows: vi.fn(),
 	errorMessages: {},
@@ -55,7 +56,7 @@ const renderGeneAssociations = () =>
 	renderWithClient(
 		<SubResourcesProvider
 			value={{
-				alleleGeneAssociations: subResource([{ ...ROW, dataKey: 'k1' }]),
+				alleleGeneAssociations: subResource('gene associations', [{ ...ROW, dataKey: 'k1' }]),
 			}}
 		>
 			<AlleleGeneAssociationsForm />
@@ -64,8 +65,8 @@ const renderGeneAssociations = () =>
 
 const renderCrossReferences = () =>
 	renderWithClient(
-		<SubResourcesProvider value={{ crossReferences: subResource([{ dataKey: 'k1' }]) }}>
-			<CrossReferencesForm />
+		<SubResourcesProvider value={{ crossReferences: subResource('cross references', [{ dataKey: 'k1' }]) }}>
+			<CrossReferencesForm type="crossReferences" />
 		</SubResourcesProvider>
 	);
 
