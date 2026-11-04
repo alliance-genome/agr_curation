@@ -43,7 +43,7 @@ import lombok.EqualsAndHashCode;
 })
 public class TemporalContext extends AuditedObject {
 
-	@IndexedEmbedded(includePaths = {"name", "name_keyword"})
+	@IndexedEmbedded(includePaths = {"name", "name_keyword", "curie", "curie_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
 	@JsonView({CurationView.FieldsOnly.class, CurationView.ForPublic.class})
@@ -61,8 +61,8 @@ public class TemporalContext extends AuditedObject {
 	@Column(length = 1000)
 	private String age;
 
-	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
-	@KeywordField(name = "temporalqualifiers_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
+	@IndexedEmbedded(includePaths = {"name", "name_keyword"})
+	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
 	@JsonView({CurationView.FieldsOnly.class, CurationView.ForPublic.class})
 	@JoinTable(
@@ -73,8 +73,8 @@ public class TemporalContext extends AuditedObject {
 	)
 	private List<VocabularyTerm> temporalQualifiers;
 
-	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
-	@KeywordField(name = "stageuberonslimterms_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
+	@IndexedEmbedded(includePaths = {"name", "name_keyword"})
+	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
 	@JsonView({CurationView.FieldsOnly.class, CurationView.ForPublic.class, CurationView.GeneExpressionDocument.class })
 	@JoinTable(

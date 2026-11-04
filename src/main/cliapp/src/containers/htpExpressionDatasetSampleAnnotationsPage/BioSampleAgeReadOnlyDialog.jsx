@@ -4,6 +4,7 @@ import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { StringTemplate } from '../../components/Templates/StringTemplate';
 import { BooleanTemplate } from '../../components/Templates/BooleanTemplate';
+import { OntologyTermTemplate } from '../../components/Templates/OntologyTermTemplate';
 
 /**
  * Read-only popup for a sample's BioSampleAge record.
@@ -31,7 +32,11 @@ export const BioSampleAgeReadOnlyDialog = ({ originalEntitiesData, setOriginalEn
 			<h3>Sample Age</h3>
 			<DataTable value={localEntities} dataKey="id" showGridlines>
 				<Column field="age" header="Age" body={(rowData) => <StringTemplate string={rowData.age} />} />
-				<Column field="stage.age" header="Stage" body={(rowData) => <StringTemplate string={rowData.stage?.age} />} />
+				<Column
+					field="stage.developmentalStageStart.name"
+					header="Stage"
+					body={(rowData) => <OntologyTermTemplate term={rowData.stage?.developmentalStageStart} />}
+				/>
 				<Column
 					field="whenExpressedStageName"
 					header="When Expressed Stage Name"

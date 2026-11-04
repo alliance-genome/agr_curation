@@ -36,7 +36,8 @@ import lombok.ToString;
 })
 public class BioSampleAge extends AuditedObject {
 
-	@IndexedEmbedded(includePaths = {"age", "age_keyword"})
+	@IndexedEmbedded(includePaths = {"developmentalStageStart.name", "developmentalStageStart.name_keyword",
+		"developmentalStageStart.curie", "developmentalStageStart.curie_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne(cascade = CascadeType.ALL)
 	@JsonView({ CurationView.FieldsOnly.class })
