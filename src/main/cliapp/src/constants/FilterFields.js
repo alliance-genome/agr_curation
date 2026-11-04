@@ -410,7 +410,12 @@ export const FIELD_SETS = Object.freeze({
 	},
 	htpExpressionDatasetSampleAnnotationSampleAgeFieldSet: {
 		filterName: 'htpExpressionDatasetSampleAnnotationSampleAgeFilter',
-		fields: ['htpExpressionSampleAge.age'],
+		fields: [
+			'htpExpressionSampleAge.age',
+			'htpExpressionSampleAge.whenExpressedStageName',
+			'htpExpressionSampleAge.stage.developmentalStageStart.name',
+			'htpExpressionSampleAge.stage.developmentalStageStart.curie',
+		],
 	},
 	htpExpressionDatasetSampleAnnotationBiologicalReferenceFieldSet: {
 		filterName: 'htpExpressionDatasetSampleAnnotationBiologicalReferenceFilter',

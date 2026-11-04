@@ -4,11 +4,19 @@ import { DetailPageFieldWrapper } from '../../../components/DetailPageFieldWrapp
 import { StringListTemplate } from '../../../components/Templates/StringListTemplate';
 
 /**
- * A transgenic tool's secondary IDs, edited as one comma-separated field. They are plain strings on the
- * tool, not the slot annotations an allele or AGM carries, so there is no per-ID row to edit.
+ * A reagent's secondary IDs (a transgenic tool's, a cassette's), edited as one comma-separated field. They are
+ * plain strings on the reagent, not the slot annotations an allele or AGM carries, so there is no per-ID row to
+ * edit. `entityKey` is the key the page's entity is held under.
  */
-export const SecondaryIdsForm = ({ state, dispatch, widgetColumnSize, labelColumnSize, fieldDetailsColumnSize }) => {
-	const secondaryIdentifiers = state.transgenicTool?.secondaryIdentifiers;
+export const SecondaryIdsForm = ({
+	state,
+	dispatch,
+	entityKey = 'transgenicTool',
+	widgetColumnSize,
+	labelColumnSize,
+	fieldDetailsColumnSize,
+}) => {
+	const secondaryIdentifiers = state[entityKey]?.secondaryIdentifiers;
 
 	return (
 		<DetailPageFieldWrapper

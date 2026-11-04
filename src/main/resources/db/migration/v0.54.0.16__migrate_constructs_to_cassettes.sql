@@ -143,10 +143,10 @@ SELECT new_id, 'CassetteSymbolSlotAnnotation', cassette_id, displaytext, formatt
        createdby_id, updatedby_id, datecreated, dateupdated, now(), now()
 FROM mig_symbol;
 
-INSERT INTO slotannotation_informationcontententity (slotannotation_id, evidence_id)
+INSERT INTO slotannotation_reference (slotannotation_id, evidence_id)
 SELECT ms.new_id, si.evidence_id
 FROM mig_symbol ms
-JOIN slotannotation_informationcontententity si ON si.slotannotation_id = ms.source_id;
+JOIN slotannotation_reference si ON si.slotannotation_id = ms.source_id;
 
 -- ---------------------------------------------------------------------------------------------
 -- 3b. Full name
@@ -176,10 +176,10 @@ SELECT new_id, 'CassetteFullNameSlotAnnotation', cassette_id, displaytext, forma
        createdby_id, updatedby_id, datecreated, dateupdated, now(), now()
 FROM mig_fullname;
 
-INSERT INTO slotannotation_informationcontententity (slotannotation_id, evidence_id)
+INSERT INTO slotannotation_reference (slotannotation_id, evidence_id)
 SELECT mf.new_id, si.evidence_id
 FROM mig_fullname mf
-JOIN slotannotation_informationcontententity si ON si.slotannotation_id = mf.source_id;
+JOIN slotannotation_reference si ON si.slotannotation_id = mf.source_id;
 
 -- ---------------------------------------------------------------------------------------------
 -- 4. Components: copied, with their evidence and clones of their notes, the relation remapped to
@@ -212,10 +212,10 @@ SELECT new_id, 'CassetteComponentSlotAnnotation', cassette_id, componentsymbol, 
        datecreated, dateupdated, now(), now()
 FROM mig_component;
 
-INSERT INTO slotannotation_informationcontententity (slotannotation_id, evidence_id)
+INSERT INTO slotannotation_reference (slotannotation_id, evidence_id)
 SELECT mc.new_id, si.evidence_id
 FROM mig_component mc
-JOIN slotannotation_informationcontententity si ON si.slotannotation_id = mc.source_id;
+JOIN slotannotation_reference si ON si.slotannotation_id = mc.source_id;
 
 CREATE TEMP TABLE mig_component_note ON COMMIT DROP AS
 SELECT mc.new_id AS component_id,
@@ -289,9 +289,9 @@ JOIN note_reference nr ON nr.note_id = mn.source_id;
 INSERT INTO cassettegenomicentityassociation_note (cassettegenomicentityassociation_id, relatednotes_id)
 SELECT association_id, new_id FROM mig_gea_note;
 
-INSERT INTO cassettegenomicentityassociation_informationcontententity (association_id, evidence_id)
+INSERT INTO cassettegenomicentityassociation_reference (association_id, evidence_id)
 SELECT mg.new_id, e.evidence_id
-FROM mig_gea mg JOIN constructgenomicentityassociation_informationcontententity e ON e.association_id = mg.source_id;
+FROM mig_gea mg JOIN constructgenomicentityassociation_reference e ON e.association_id = mg.source_id;
 
 -- ---------------------------------------------------------------------------------------------
 -- 6. Link each construct to its cassette
@@ -430,12 +430,12 @@ ANALYZE reagent;
 ANALYZE cassette;
 ANALYZE crossreference;
 ANALYZE slotannotation;
-ANALYZE slotannotation_informationcontententity;
+ANALYZE slotannotation_reference;
 ANALYZE slotannotation_note;
 ANALYZE cassettecomponentslotannotation_note;
 ANALYZE note;
 ANALYZE note_reference;
 ANALYZE cassettegenomicentityassociation;
 ANALYZE cassettegenomicentityassociation_note;
-ANALYZE cassettegenomicentityassociation_informationcontententity;
+ANALYZE cassettegenomicentityassociation_reference;
 ANALYZE constructcassetteassociation;

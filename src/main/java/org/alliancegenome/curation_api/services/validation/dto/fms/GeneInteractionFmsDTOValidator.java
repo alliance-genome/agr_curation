@@ -15,7 +15,6 @@ import org.alliancegenome.curation_api.enums.PsiMiTabPrefixEnum;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.GeneInteraction;
-import org.alliancegenome.curation_api.model.entities.InformationContentEntity;
 import org.alliancegenome.curation_api.model.entities.Reference;
 import org.alliancegenome.curation_api.model.entities.ontology.MITerm;
 import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
@@ -51,7 +50,7 @@ public class GeneInteractionFmsDTOValidator extends BaseDTOValidator {
 		ObjectResponse<E> giResponse = new ObjectResponse<E>();
 
 		if (CollectionUtils.isNotEmpty(references)) {
-			List<InformationContentEntity> evidence = new ArrayList<>();
+			List<Reference> evidence = new ArrayList<>();
 			evidence.addAll(references);
 			interaction.setEvidence(evidence);
 		} else {

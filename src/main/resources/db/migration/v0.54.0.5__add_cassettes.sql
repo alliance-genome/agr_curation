@@ -114,16 +114,16 @@ ALTER TABLE cassettegenomicentityassociation ADD CONSTRAINT cassettegea_relation
 ALTER TABLE cassettegenomicentityassociation ADD CONSTRAINT cassettegea_createdby_id_fk FOREIGN KEY (createdby_id) REFERENCES person (id);
 ALTER TABLE cassettegenomicentityassociation ADD CONSTRAINT cassettegea_updatedby_id_fk FOREIGN KEY (updatedby_id) REFERENCES person (id);
 
-CREATE TABLE cassettegenomicentityassociation_informationcontententity (
+CREATE TABLE cassettegenomicentityassociation_reference (
 	association_id bigint NOT NULL,
 	evidence_id bigint NOT NULL
 );
 
-CREATE INDEX cassettegea_ice_association_index ON cassettegenomicentityassociation_informationcontententity USING btree (association_id);
-CREATE INDEX cassettegea_ice_evidence_index ON cassettegenomicentityassociation_informationcontententity USING btree (evidence_id);
+CREATE INDEX cassettegea_reference_association_index ON cassettegenomicentityassociation_reference USING btree (association_id);
+CREATE INDEX cassettegea_reference_evidence_index ON cassettegenomicentityassociation_reference USING btree (evidence_id);
 
-ALTER TABLE cassettegenomicentityassociation_informationcontententity ADD CONSTRAINT cassettegea_ice_association_id_fk FOREIGN KEY (association_id) REFERENCES cassettegenomicentityassociation (id);
-ALTER TABLE cassettegenomicentityassociation_informationcontententity ADD CONSTRAINT cassettegea_ice_evidence_id_fk FOREIGN KEY (evidence_id) REFERENCES informationcontententity (id);
+ALTER TABLE cassettegenomicentityassociation_reference ADD CONSTRAINT cassettegea_reference_association_id_fk FOREIGN KEY (association_id) REFERENCES cassettegenomicentityassociation (id);
+ALTER TABLE cassettegenomicentityassociation_reference ADD CONSTRAINT cassettegea_reference_evidence_id_fk FOREIGN KEY (evidence_id) REFERENCES reference (id);
 
 CREATE TABLE cassettegenomicentityassociation_note (
 	cassettegenomicentityassociation_id bigint NOT NULL,
@@ -191,16 +191,16 @@ ALTER TABLE cassettetransgenictoolassociation ADD CONSTRAINT cassettettassoc_rel
 ALTER TABLE cassettetransgenictoolassociation ADD CONSTRAINT cassettettassoc_createdby_id_fk FOREIGN KEY (createdby_id) REFERENCES person (id);
 ALTER TABLE cassettetransgenictoolassociation ADD CONSTRAINT cassettettassoc_updatedby_id_fk FOREIGN KEY (updatedby_id) REFERENCES person (id);
 
-CREATE TABLE cassettetransgenictoolassociation_informationcontententity (
+CREATE TABLE cassettetransgenictoolassociation_reference (
 	association_id bigint NOT NULL,
 	evidence_id bigint NOT NULL
 );
 
-CREATE INDEX cassettettassoc_ice_association_index ON cassettetransgenictoolassociation_informationcontententity USING btree (association_id);
-CREATE INDEX cassettettassoc_ice_evidence_index ON cassettetransgenictoolassociation_informationcontententity USING btree (evidence_id);
+CREATE INDEX cassettettassoc_reference_association_index ON cassettetransgenictoolassociation_reference USING btree (association_id);
+CREATE INDEX cassettettassoc_reference_evidence_index ON cassettetransgenictoolassociation_reference USING btree (evidence_id);
 
-ALTER TABLE cassettetransgenictoolassociation_informationcontententity ADD CONSTRAINT cassettettassoc_ice_association_id_fk FOREIGN KEY (association_id) REFERENCES cassettetransgenictoolassociation (id);
-ALTER TABLE cassettetransgenictoolassociation_informationcontententity ADD CONSTRAINT cassettettassoc_ice_evidence_id_fk FOREIGN KEY (evidence_id) REFERENCES informationcontententity (id);
+ALTER TABLE cassettetransgenictoolassociation_reference ADD CONSTRAINT cassettettassoc_reference_association_id_fk FOREIGN KEY (association_id) REFERENCES cassettetransgenictoolassociation (id);
+ALTER TABLE cassettetransgenictoolassociation_reference ADD CONSTRAINT cassettettassoc_reference_evidence_id_fk FOREIGN KEY (evidence_id) REFERENCES reference (id);
 
 CREATE TABLE cassettetransgenictoolassociation_note (
 	cassettetransgenictoolassociation_id bigint NOT NULL,
@@ -256,16 +256,16 @@ ALTER TABLE cassettestrassociation ADD CONSTRAINT cassettestrassoc_relation_id_f
 ALTER TABLE cassettestrassociation ADD CONSTRAINT cassettestrassoc_createdby_id_fk FOREIGN KEY (createdby_id) REFERENCES person (id);
 ALTER TABLE cassettestrassociation ADD CONSTRAINT cassettestrassoc_updatedby_id_fk FOREIGN KEY (updatedby_id) REFERENCES person (id);
 
-CREATE TABLE cassettestrassociation_informationcontententity (
+CREATE TABLE cassettestrassociation_reference (
 	association_id bigint NOT NULL,
 	evidence_id bigint NOT NULL
 );
 
-CREATE INDEX cassettestrassoc_ice_association_index ON cassettestrassociation_informationcontententity USING btree (association_id);
-CREATE INDEX cassettestrassoc_ice_evidence_index ON cassettestrassociation_informationcontententity USING btree (evidence_id);
+CREATE INDEX cassettestrassoc_reference_association_index ON cassettestrassociation_reference USING btree (association_id);
+CREATE INDEX cassettestrassoc_reference_evidence_index ON cassettestrassociation_reference USING btree (evidence_id);
 
-ALTER TABLE cassettestrassociation_informationcontententity ADD CONSTRAINT cassettestrassoc_ice_association_id_fk FOREIGN KEY (association_id) REFERENCES cassettestrassociation (id);
-ALTER TABLE cassettestrassociation_informationcontententity ADD CONSTRAINT cassettestrassoc_ice_evidence_id_fk FOREIGN KEY (evidence_id) REFERENCES informationcontententity (id);
+ALTER TABLE cassettestrassociation_reference ADD CONSTRAINT cassettestrassoc_reference_association_id_fk FOREIGN KEY (association_id) REFERENCES cassettestrassociation (id);
+ALTER TABLE cassettestrassociation_reference ADD CONSTRAINT cassettestrassoc_reference_evidence_id_fk FOREIGN KEY (evidence_id) REFERENCES reference (id);
 
 CREATE TABLE cassettestrassociation_note (
 	cassettestrassociation_id bigint NOT NULL,

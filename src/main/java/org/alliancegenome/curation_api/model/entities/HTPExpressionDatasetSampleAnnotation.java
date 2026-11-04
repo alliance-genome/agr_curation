@@ -97,7 +97,9 @@ public class HTPExpressionDatasetSampleAnnotation extends AuditedObject implemen
 	@JsonView(CurationView.FieldsOnly.class)
 	private MMOTerm expressionAssayUsed;
 
-	@IndexedEmbedded(includePaths = {"age", "whenExpressedStageName", "age_keyword", "whenexpressedstagename_keyword"})
+	@IndexedEmbedded(includePaths = {"age", "whenExpressedStageName", "age_keyword", "whenexpressedstagename_keyword",
+		"stage.developmentalStageStart.name", "stage.developmentalStageStart.name_keyword",
+		"stage.developmentalStageStart.curie", "stage.developmentalStageStart.curie_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonView({ CurationView.FieldsOnly.class })

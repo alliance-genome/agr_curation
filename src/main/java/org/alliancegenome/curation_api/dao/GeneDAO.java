@@ -215,8 +215,8 @@ public class GeneDAO extends BaseCurieSQLDAO<Gene> {
 	/**
 	 * Collects the comprehensive set of AGRKB reference curies (papers) associated with each gene,
 	 * unioned across every route by which a gene is tied to a Reference, for the gene_summary doc.
-	 * The reference AGRKB curie lives on informationcontententity.curie (Reference extends
-	 * InformationContentEntity, not BiologicalEntity), so join informationcontententity for the curie.
+	 * The reference AGRKB curie lives on reference.curie (Reference extends CurieObject, not
+	 * BiologicalEntity), so it is read from the reference table directly.
 	 */
 	public Map<Long, Set<String>> getReferencesByGeneIds(List<Long> geneIds) {
 		Map<Long, Set<String>> referencesByGene = new HashMap<>();
@@ -275,19 +275,19 @@ public class GeneDAO extends BaseCurieSQLDAO<Gene> {
 				-- Route 5: molecular/genetic interactions the gene takes part in (as subject or object); paper = the interaction's evidence reference
 				UNION SELECT gmi.geneassociationsubject_id, ie.evidence_id
 					FROM genemolecularinteraction gmi
-					JOIN genemolecularinteraction_informationcontententity ie ON ie.association_id = gmi.id
+					JOIN genemolecularinteraction_reference ie ON ie.association_id = gmi.id
 					WHERE gmi.geneassociationsubject_id IN :geneIds AND gmi.obsolete = false AND gmi.internal = false
 				UNION SELECT gmi.genegeneassociationobject_id, ie.evidence_id
 					FROM genemolecularinteraction gmi
-					JOIN genemolecularinteraction_informationcontententity ie ON ie.association_id = gmi.id
+					JOIN genemolecularinteraction_reference ie ON ie.association_id = gmi.id
 					WHERE gmi.genegeneassociationobject_id IN :geneIds AND gmi.obsolete = false AND gmi.internal = false
 				UNION SELECT ggi.geneassociationsubject_id, ie.evidence_id
 					FROM genegeneticinteraction ggi
-					JOIN genegeneticinteraction_informationcontententity ie ON ie.association_id = ggi.id
+					JOIN genegeneticinteraction_reference ie ON ie.association_id = ggi.id
 					WHERE ggi.geneassociationsubject_id IN :geneIds AND ggi.obsolete = false AND ggi.internal = false
 				UNION SELECT ggi.genegeneassociationobject_id, ie.evidence_id
 					FROM genegeneticinteraction ggi
-					JOIN genegeneticinteraction_informationcontententity ie ON ie.association_id = ggi.id
+					JOIN genegeneticinteraction_reference ie ON ie.association_id = ggi.id
 					WHERE ggi.genegeneassociationobject_id IN :geneIds AND ggi.obsolete = false AND ggi.internal = false
 
 				-- Route 6: gene is a construct component; papers via the construct's alleles, the construct's own references, and the gene-construct association's evidence
@@ -302,14 +302,13 @@ public class GeneDAO extends BaseCurieSQLDAO<Gene> {
 					WHERE cga.constructgenomicentityassociationobject_id IN :geneIds AND cga.obsolete = false AND cga.internal = false
 				UNION SELECT cga.constructgenomicentityassociationobject_id, ie.evidence_id
 					FROM constructgenomicentityassociation cga
-					JOIN constructgenomicentityassociation_informationcontententity ie ON ie.association_id = cga.id
+					JOIN constructgenomicentityassociation_reference ie ON ie.association_id = cga.id
 					WHERE cga.constructgenomicentityassociationobject_id IN :geneIds AND cga.obsolete = false AND cga.internal = false
 			)
-			SELECT DISTINCT gr.gene_id, ice.curie
+			SELECT DISTINCT gr.gene_id, r.curie
 			FROM gene_refs gr
 			JOIN reference r ON r.id = gr.ref_id
-			JOIN informationcontententity ice ON ice.id = r.id
-			WHERE ice.curie IS NOT NULL
+			WHERE r.curie IS NOT NULL
 			""";
 		Query referencesQuery = entityManager.createNativeQuery(referencesQueryString);
 		referencesQuery.setParameter("geneIds", geneIds);

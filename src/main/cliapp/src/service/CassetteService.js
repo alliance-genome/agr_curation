@@ -1,6 +1,10 @@
 import { BaseAuthService } from './BaseAuthService';
 
 export class CassetteService extends BaseAuthService {
+	getCassette(identifier) {
+		return this.api.get(`/cassette/${identifier}`);
+	}
+
 	saveCassette(updatedCassette) {
 		return this.api.put(`/cassette`, updatedCassette);
 	}

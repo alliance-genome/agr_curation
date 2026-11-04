@@ -6,19 +6,26 @@ import { TableEditorProvider } from '../../../components/Editors/fields/TableEdi
 import { useTransgenicToolFormStrategy } from './useTransgenicToolFormStrategy';
 import { UsesFormTable } from './UsesFormTable';
 
-const ENTITY_TYPE = 'transgenicToolUses';
-
 /**
- * The transgenic tool detail page's uses section. Its rows live in the tool reducer and are saved with the
- * tool.
+ * A detail page's uses section (the transgenic tool's, the cassette's): FBcv terms with their evidence. Its rows
+ * live in the page's reducer and are saved with the entity.
  *
- * @param {object} state - useTransgenicToolReducer state
- * @param {Function} dispatch - useTransgenicToolReducer dispatch
+ * @param {object} state - the page's reducer state
+ * @param {Function} dispatch - the page's reducer dispatch
+ * @param {string} [entityKey] - the key the page's entity is held under
+ * @param {string} [entityType] - the entity's uses field
+ * @param {string} [tableName] - the section's label
  * @returns {JSX.Element}
  */
-export const UsesForm = ({ state, dispatch }) => {
+export const UsesForm = ({
+	state,
+	dispatch,
+	entityKey = 'transgenicTool',
+	entityType: ENTITY_TYPE = 'transgenicToolUses',
+	tableName = 'Transgenic Tool Uses',
+}) => {
 	const tableRef = useRef(null);
-	const strategy = useTransgenicToolFormStrategy({ state, dispatch, entityType: ENTITY_TYPE });
+	const strategy = useTransgenicToolFormStrategy({ state, dispatch, entityType: ENTITY_TYPE, entityKey });
 
 	const createNewUseHandler = (event) => {
 		event.preventDefault();
@@ -40,7 +47,7 @@ export const UsesForm = ({ state, dispatch }) => {
 			table={
 				<TableEditorProvider strategy={strategy}>
 					<UsesFormTable
-						uses={state.transgenicTool?.[ENTITY_TYPE]}
+						uses={state[entityKey]?.[ENTITY_TYPE]}
 						editingRows={state.entityStates[ENTITY_TYPE].editingRows}
 						onRowEditChange={KEEP_ROWS_IN_EDIT_MODE}
 						tableRef={tableRef}
@@ -48,7 +55,7 @@ export const UsesForm = ({ state, dispatch }) => {
 					/>
 				</TableEditorProvider>
 			}
-			tableName="Transgenic Tool Uses"
+			tableName={tableName}
 			showTable={state.entityStates[ENTITY_TYPE].show}
 			button={<Button label="Add Use" onClick={createNewUseHandler} className="w-4 p-button-text" />}
 		/>

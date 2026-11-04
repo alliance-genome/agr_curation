@@ -10,9 +10,9 @@ import org.alliancegenome.curation_api.dao.ConditionRelationDAO;
 import org.alliancegenome.curation_api.model.entities.Annotation;
 import org.alliancegenome.curation_api.model.entities.ConditionRelation;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
-import org.alliancegenome.curation_api.model.entities.InformationContentEntity;
 import org.alliancegenome.curation_api.model.entities.Note;
 import org.alliancegenome.curation_api.model.entities.Organization;
+import org.alliancegenome.curation_api.model.entities.Reference;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.validation.base.AuditedObjectValidator;
@@ -23,7 +23,7 @@ import jakarta.inject.Inject;
 
 public class AnnotationValidator extends AuditedObjectValidator<Annotation> {
 
-	@Inject InformationContentEntityValidator informationContentEntityValidator;
+	@Inject ReferenceValidator referenceValidator;
 	@Inject ConditionRelationValidator conditionRelationValidator;
 	@Inject ConditionRelationDAO conditionRelationDAO;
 	@Inject AnnotationDAO annotationDAO;
@@ -69,14 +69,14 @@ public class AnnotationValidator extends AuditedObjectValidator<Annotation> {
 		return validatedConditionRelations;
 	}
 
-	public InformationContentEntity validateEvidenceItem(Annotation uiEntity, Annotation dbEntity) {
+	public Reference validateEvidenceItem(Annotation uiEntity, Annotation dbEntity) {
 		String field = "evidenceItem";
 		if (uiEntity.getEvidenceItem() == null || StringUtils.isBlank(uiEntity.getEvidenceItem().getCurie())) {
 			addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
 			return null;
 		}
 
-		ObjectResponse<InformationContentEntity> evidenceItemResponse = informationContentEntityValidator.validateInformationContentEntity(uiEntity.getEvidenceItem());
+		ObjectResponse<Reference> evidenceItemResponse = referenceValidator.validateReference(uiEntity.getEvidenceItem());
 		if (evidenceItemResponse.getEntity() == null) {
 			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
 			return null;
@@ -103,7 +103,7 @@ public class AnnotationValidator extends AuditedObjectValidator<Annotation> {
 		String modInternalId = handleStringField(uiEntity.getModInternalId());
 		dbEntity.setModInternalId(modInternalId);
 
-		InformationContentEntity evidenceItem = validateEvidenceItem(uiEntity, dbEntity);
+		Reference evidenceItem = validateEvidenceItem(uiEntity, dbEntity);
 		dbEntity.setEvidenceItem(evidenceItem);
 
 		Organization dataProvider = validateDataProvider(uiEntity.getDataProvider(), dbEntity.getDataProvider(), newEntity);

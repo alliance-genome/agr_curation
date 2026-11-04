@@ -7,19 +7,24 @@ import { TableEditorProvider } from '../../../components/Editors/fields/TableEdi
 import { useControlledVocabularyService } from '../../../service/useControlledVocabularyService';
 import { useTransgenicToolFormStrategy } from './useTransgenicToolFormStrategy';
 
-const ENTITY_TYPE = 'transgenicToolSynonyms';
-
 /**
- * The transgenic tool detail page's synonyms section. Its rows live in the tool reducer and are saved with
- * the tool.
+ * A detail page's synonyms section (the transgenic tool's, the cassette's). Its rows live in the page's reducer
+ * and are saved with the entity.
  *
- * @param {object} state - useTransgenicToolReducer state
- * @param {Function} dispatch - useTransgenicToolReducer dispatch
+ * @param {object} state - the page's reducer state
+ * @param {Function} dispatch - the page's reducer dispatch
+ * @param {string} [entityKey] - the key the page's entity is held under
+ * @param {string} [entityType] - the entity's synonyms field
  * @returns {JSX.Element}
  */
-export const SynonymsForm = ({ state, dispatch }) => {
+export const SynonymsForm = ({
+	state,
+	dispatch,
+	entityKey = 'transgenicTool',
+	entityType: ENTITY_TYPE = 'transgenicToolSynonyms',
+}) => {
 	const tableRef = useRef(null);
-	const strategy = useTransgenicToolFormStrategy({ state, dispatch, entityType: ENTITY_TYPE });
+	const strategy = useTransgenicToolFormStrategy({ state, dispatch, entityType: ENTITY_TYPE, entityKey });
 	const synonymScopeTerms = useControlledVocabularyService('synonym_scope');
 	// Synonym name types come from the name_type vocabulary, where full name uses a vocabulary term set.
 	const nameTypeTerms = useControlledVocabularyService('name_type');
@@ -51,7 +56,7 @@ export const SynonymsForm = ({ state, dispatch }) => {
 			table={
 				<TableEditorProvider strategy={strategy}>
 					<SynonymsFormTable
-						synonyms={state.transgenicTool?.[ENTITY_TYPE]}
+						synonyms={state[entityKey]?.[ENTITY_TYPE]}
 						editingRows={state.entityStates[ENTITY_TYPE].editingRows}
 						onRowEditChange={KEEP_ROWS_IN_EDIT_MODE}
 						tableRef={tableRef}

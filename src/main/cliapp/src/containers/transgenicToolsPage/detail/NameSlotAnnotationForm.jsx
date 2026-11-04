@@ -6,22 +6,31 @@ import { FullNameFormTable } from '../../allelesPage/fullName/FullNameFormTable'
 import { buildEmptyAlleleSymbol } from '../../allelesPage/utils';
 
 /**
- * The transgenic tool detail page's symbol or full name section: one name slot annotation held in the tool
- * reducer and saved with the tool. The symbol's table offers no deletion and the full name's does; each
- * offers the name types of its own term set.
+ * A detail page's symbol or full name section (the transgenic tool's, the cassette's): one name slot annotation
+ * held in the page's reducer and saved with the entity. The symbol's table offers no deletion and the full
+ * name's does; each offers the name types of its own term set.
  *
- * @param {object} state - useTransgenicToolReducer state
- * @param {Function} dispatch - useTransgenicToolReducer dispatch
- * @param {'transgenicToolSymbol'|'transgenicToolFullName'} entityType - the name the section edits
+ * @param {object} state - the page's reducer state
+ * @param {Function} dispatch - the page's reducer dispatch
+ * @param {string} [entityKey] - the key the page's entity is held under
+ * @param {string} entityType - the name the section edits, such as `transgenicToolSymbol` or `cassetteFullName`;
+ *   a field ending in `Symbol` is edited as a symbol
  * @param {string} tableName - the section's label
- * @param {string} addLabel - the label of the button adding a name when the tool has none
+ * @param {string} addLabel - the label of the button adding a name when the entity has none
  * @returns {JSX.Element}
  */
-export const NameSlotAnnotationForm = ({ state, dispatch, entityType, tableName, addLabel }) => {
+export const NameSlotAnnotationForm = ({
+	state,
+	dispatch,
+	entityKey = 'transgenicTool',
+	entityType,
+	tableName,
+	addLabel,
+}) => {
 	const tableRef = useRef(null);
-	const isSymbol = entityType === 'transgenicToolSymbol';
+	const isSymbol = entityType.endsWith('Symbol');
 	const NameFormTable = isSymbol ? SymbolFormTable : FullNameFormTable;
-	const name = state.transgenicTool?.[entityType];
+	const name = state[entityKey]?.[entityType];
 	const entityState = state.entityStates[entityType];
 
 	const editName = (field, value) => dispatch({ type: 'EDIT_OBJECT', entityType, field, value });
