@@ -1,6 +1,7 @@
 package org.alliancegenome.curation_api;
 
 import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
@@ -12,14 +13,19 @@ import org.alliancegenome.curation_api.base.BaseITCase;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
+import org.alliancegenome.curation_api.model.entities.Note;
 import org.alliancegenome.curation_api.model.entities.Organization;
+import org.alliancegenome.curation_api.model.entities.Reference;
 import org.alliancegenome.curation_api.model.entities.ResourceDescriptor;
 import org.alliancegenome.curation_api.model.entities.ResourceDescriptorPage;
 import org.alliancegenome.curation_api.model.entities.TransgenicTool;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.associations.TransgenicToolTransgenicToolAssociation;
+import org.alliancegenome.curation_api.model.entities.ontology.FBCVTerm;
+import org.alliancegenome.curation_api.model.entities.slotAnnotations.TransgenicToolFullNameSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.TransgenicToolSymbolSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.TransgenicToolSynonymSlotAnnotation;
+import org.alliancegenome.curation_api.model.entities.slotAnnotations.TransgenicToolUseSlotAnnotation;
 import org.alliancegenome.curation_api.resources.TestContainerResource;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.MethodOrderer;
@@ -38,6 +44,9 @@ import io.restassured.response.Response;
  * associations it is the subject of through /transgenic-tool/{id}/transgenic-tool-associations, which replaces
  * them with the submitted list. A tool's cross references are saved with the tool, and each must match its page's
  * resource descriptor.
+ *
+ * SCRUM-6654: the Transgenic Tools table writes the same through a row edit, and its pop-ups check each of the
+ * tool's slot annotations through its /validate endpoint.
  */
 @QuarkusIntegrationTest
 @QuarkusTestResource(TestContainerResource.Initializer.class)
@@ -259,6 +268,101 @@ public class IT_0318_TransgenicToolDetailITCase extends BaseITCase {
 			statusCode(200).
 			body("entity.crossReferences", hasSize(1)).
 			body("entity.crossReferences[0].referencedCurie", is("TTDXR:0001"));
+	}
+
+	@Test
+	@Order(8)
+	public void tableEditOfEachField() {
+		FBCVTerm useTerm = createFbcvTerm("FBcv:0009318", "test_tool_descriptor_318", "experimental_tool_descriptor", false);
+		createReference("AGRKB:6631800001", "PMID:6631800001", false);
+		VocabularyTerm comment = getVocabularyTerm(getVocabulary(VocabularyConstants.NOTE_TYPE_VOCABULARY), "comment");
+		VocabularyTerm fullNameType = getVocabularyTerm(getVocabulary(VocabularyConstants.NAME_TYPE_VOCABULARY), "full_name");
+
+		// The tool as the table's row holds it, from the search results, with each editable column changed
+		TransgenicTool row = getTransgenicTool(TOOL2);
+		row.getTransgenicToolSymbol().setDisplayText("TTD edited symbol");
+		row.getTransgenicToolSymbol().setFormatText("TTD edited symbol");
+		TransgenicToolFullNameSlotAnnotation fullName = new TransgenicToolFullNameSlotAnnotation();
+		fullName.setNameType(fullNameType);
+		fullName.setDisplayText("TTD full name");
+		fullName.setFormatText("TTD full name");
+		row.setTransgenicToolFullName(fullName);
+		TransgenicToolUseSlotAnnotation use = new TransgenicToolUseSlotAnnotation();
+		use.setUses(List.of(useTerm));
+		row.setTransgenicToolUses(List.of(use));
+		Note note = createNote(comment, "A TTD note.", false, false, null);
+		row.setRelatedNotes(List.of(note));
+		Reference reference = new Reference();
+		reference.setCurie("AGRKB:6631800001");
+		row.setReferences(List.of(reference));
+		row.setSecondaryIdentifiers(List.of("TTD_TEST:Secondary0002"));
+		row.setObsolete(true);
+		row.setTransgenicToolTransgenicToolAssociations(null);
+
+		RestAssured.given().
+			contentType("application/json").
+			body(row).
+			when().
+			put("/api/transgenic-tool").
+			then().
+			statusCode(200).
+			body("entity.transgenicToolSymbol.displayText", is("TTD edited symbol")).
+			body("entity.transgenicToolFullName.displayText", is("TTD full name")).
+			body("entity.transgenicToolUses[0].uses[0].curie", is("FBcv:0009318")).
+			body("entity.relatedNotes[0].freeText", is("A TTD note.")).
+			body("entity.references[0].curie", is("AGRKB:6631800001")).
+			body("entity.secondaryIdentifiers", is(List.of("TTD_TEST:Secondary0002"))).
+			body("entity.obsolete", is(true));
+
+		// The association the tool holds is kept by the row's save, which never carries it
+		RestAssured.given().
+			when().
+			get(endpoint(tool2.getId())).
+			then().
+			statusCode(200).
+			body("entities", hasSize(1)).
+			body("entities[0].transgenicToolTransgenicToolAssociationObject.primaryExternalId", is(TOOL3));
+	}
+
+	@Test
+	@Order(9)
+	public void slotAnnotationValidateEndpoints() {
+		TransgenicTool stored = getTransgenicTool(TOOL2);
+		// As the pop-ups send them: without the audit people, which they strip before validating
+		TransgenicToolSymbolSlotAnnotation symbol = stored.getTransgenicToolSymbol();
+		symbol.setCreatedBy(null);
+		symbol.setUpdatedBy(null);
+		TransgenicToolFullNameSlotAnnotation fullName = stored.getTransgenicToolFullName();
+		fullName.setCreatedBy(null);
+		fullName.setUpdatedBy(null);
+		TransgenicToolUseSlotAnnotation use = stored.getTransgenicToolUses().get(0);
+		use.setCreatedBy(null);
+		use.setUpdatedBy(null);
+
+		validate("transgenictoolsymbolslotannotation", symbol).then().statusCode(200);
+		validate("transgenictoolfullnameslotannotation", fullName).then().statusCode(200);
+		validate("transgenictooluseslotannotation", use).then().statusCode(200);
+
+		TransgenicToolSynonymSlotAnnotation synonymWithoutNameType = new TransgenicToolSynonymSlotAnnotation();
+		synonymWithoutNameType.setDisplayText("TTD synonym 2");
+		synonymWithoutNameType.setFormatText("TTD synonym 2");
+		validate("transgenictoolsynonymslotannotation", synonymWithoutNameType).
+			then().
+			statusCode(400).
+			body("errorMessages.nameType", containsString(ValidationConstants.REQUIRED_MESSAGE));
+
+		validate("transgenictooluseslotannotation", new TransgenicToolUseSlotAnnotation()).
+			then().
+			statusCode(400).
+			body("errorMessages.uses", containsString(ValidationConstants.REQUIRED_MESSAGE));
+	}
+
+	private Response validate(String slotAnnotationEndpoint, Object slotAnnotation) {
+		return RestAssured.given().
+			contentType("application/json").
+			body(slotAnnotation).
+			when().
+			post("/api/" + slotAnnotationEndpoint + "/validate");
 	}
 
 	private TransgenicTool createTool(String primaryExternalId) {

@@ -14,13 +14,17 @@ import { UsesEditor } from './UsesEditor';
 import { Endpoints } from '../../../constants/Endpoints';
 import { multipleAutocompleteOnChange } from '../../../utils/utils';
 
-// The uses of one cassette, edited in a pop-up from the Cassettes table: FBcv terms from the
+// The uses of one cassette or transgenic tool, edited in a pop-up from its table: FBcv terms from the
 // 'experimental_tool_descriptor' namespace with their evidence. Adapted from MutationTypesEditDialog.
+// field is the entity's uses field, which the row's errors are filed under, and endpoint the slot
+// annotation each use is validated against (SCRUM-6654).
 export const UsesEditDialog = ({
 	originalUsesData,
 	setOriginalUsesData,
 	errorMessagesMainRow,
 	setErrorMessagesMainRow,
+	field = 'cassetteUses',
+	endpoint = Endpoints.SlotAnnotation.CASSETTE_USE,
 }) => {
 	const { originalUses, isInEdit, dialog, rowIndex, mainRowProps } = originalUsesData;
 	const [localUses, setLocalUses] = useState(null);
@@ -134,7 +138,7 @@ export const UsesEditDialog = ({
 			message: 'Pending Edits!',
 		};
 		errorMessagesCopy[rowIndex] = {};
-		errorMessagesCopy[rowIndex]['cassetteUses'] = messageObject;
+		errorMessagesCopy[rowIndex][field] = messageObject;
 		setErrorMessagesMainRow({ ...errorMessagesCopy });
 
 		setOriginalUsesData((originalUsesData) => {
@@ -171,7 +175,7 @@ export const UsesEditDialog = ({
 
 			for (let i = 0; i < localUses.length; i++) {
 				const _item = cleanForValidation(localUses[i]);
-				const result = await validationService.validate(Endpoints.SlotAnnotation.CASSETTE_USE, _item);
+				const result = await validationService.validate(endpoint, _item);
 				const dataKey = localUses[i].dataKey;
 				if (result.isError) {
 					hasErrors = true;

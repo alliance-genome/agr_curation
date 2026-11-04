@@ -1,4 +1,5 @@
 import React, { useRef, useState, useMemo } from 'react';
+import { useMutation } from '@tanstack/react-query';
 import { GenericDataTable } from '../../components/GenericDataTable/GenericDataTable';
 import { Toast } from 'primereact/toast';
 import { getDefaultTableState } from '../../service/TableStateService';
@@ -17,12 +18,25 @@ import { StringTemplate } from '../../components/Templates/StringTemplate';
 import { SymbolReadOnlyDialog } from '../nameSlotAnnotations/dialogs/SymbolReadOnlyDialog';
 import { FullNameReadOnlyDialog } from '../nameSlotAnnotations/dialogs/FullNameReadOnlyDialog';
 import { SynonymsReadOnlyDialog } from '../nameSlotAnnotations/dialogs/SynonymsReadOnlyDialog';
+import { SymbolEditDialog } from '../nameSlotAnnotations/dialogs/SymbolEditDialog';
+import { FullNameEditDialog } from '../nameSlotAnnotations/dialogs/FullNameEditDialog';
+import { SynonymsEditDialog } from '../nameSlotAnnotations/dialogs/SynonymsEditDialog';
 import { RelatedNotesReadOnlyDialog } from '../../components/RelatedNotesReadOnlyDialog';
+import { RelatedNotesEditDialog } from '../../components/RelatedNotesEditDialog';
+import { CrossReferencesEditDialog } from '../allelesPage/crossReferences/CrossReferencesEditDialog';
 import { GenomicComponentsDialog } from '../constructsPage/GenomicComponentsDialog';
+import { UsesEditDialog } from '../cassettesPage/uses/UsesEditDialog';
+import { DialogTriggerTableEditor } from '../../components/Editors/dialog/DialogTriggerTableEditor';
+import { StringListTableEditor } from '../../components/Editors/text/StringListTableEditor';
+import { ReferencesTableEditor } from '../../components/Editors/autocomplete/references/ReferencesTableEditor';
+import { BooleanTableEditor } from '../../components/Editors/dropdown/boolean/BooleanTableEditor';
 import { SearchService } from '../../service/SearchService';
+import { TransgenicToolService } from '../../service/TransgenicToolService';
 import { Endpoints } from '../../constants/Endpoints';
 import { transgenicToolDisplayValue } from '../cassettesPage/utils';
 import { TransgenicToolUsesDialog } from './TransgenicToolUsesDialog';
+import { TransgenicToolAssociationsEditDialog } from './TransgenicToolAssociationsEditDialog';
+import { buildTransgenicToolPayload } from './detail/utils';
 import { associatedToolText, toolAssociationsFindParams, useTermTexts } from './utils';
 
 // A tool has a dozen associations at most, so the pop-up fetches them in one page.
@@ -47,6 +61,9 @@ export const TransgenicToolsTable = () => {
 		dialog: false,
 		isInEdit: false,
 	});
+	const [crossReferencesData, setCrossReferencesData] = useState({ dialog: false });
+	// SCRUM-6654: the associations are edited in their own pop-up and saved through their own endpoint
+	const [associationsEditData, setAssociationsEditData] = useState({ dialog: false });
 
 	const [isInEditMode, setIsInEditMode] = useState(false);
 	const [errorMessages, setErrorMessages] = useState({});
@@ -54,6 +71,14 @@ export const TransgenicToolsTable = () => {
 	const [transgenicTools, setTransgenicTools] = useState([]);
 
 	const searchService = new SearchService();
+	const transgenicToolService = useMemo(() => new TransgenicToolService(), []);
+
+	// SCRUM-6654: a row edit saves the tool's own fields, sent as the detail page sends them. Its associations
+	// are saved by their pop-up; PUT /transgenic-tool keeps them as stored.
+	const mutation = useMutation({
+		mutationFn: (updatedTransgenicTool) =>
+			transgenicToolService.saveTransgenicTool(buildTransgenicToolPayload(updatedTransgenicTool)),
+	});
 
 	const handleSymbolOpen = (symbol) => setSymbolData({ originalSymbols: [symbol], dialog: true });
 	const handleFullNameOpen = (fullName) => setFullNameData({ originalFullNames: [fullName], dialog: true });
@@ -79,6 +104,52 @@ export const TransgenicToolsTable = () => {
 			);
 	const handleRelatedNotesOpen = (relatedNotes) =>
 		setRelatedNotesData({ originalRelatedNotes: relatedNotes, dialog: true, isInEdit: false });
+
+	// The pop-ups opened from a row in edit mode; they write back through the row's editorCallback
+	const openInEdit = (setData, originalKey, original) => (event, editorOptions, isInEdit) => {
+		setData({
+			[originalKey]: original(editorOptions.rowData),
+			dialog: true,
+			isInEdit: isInEdit,
+			rowIndex: editorOptions.rowIndex,
+			mainRowProps: editorOptions,
+		});
+	};
+	const handleSymbolOpenInEdit = openInEdit(setSymbolData, 'originalSymbols', (row) => [row.transgenicToolSymbol]);
+	const handleFullNameOpenInEdit = openInEdit(setFullNameData, 'originalFullNames', (row) => [
+		row.transgenicToolFullName,
+	]);
+	const handleSynonymsOpenInEdit = openInEdit(setSynonymsData, 'originalSynonyms', (row) => row.transgenicToolSynonyms);
+	const handleUsesOpenInEdit = openInEdit(setUsesData, 'originalUses', (row) => row.transgenicToolUses);
+	const handleRelatedNotesOpenInEdit = openInEdit(
+		setRelatedNotesData,
+		'originalRelatedNotes',
+		(row) => row.relatedNotes
+	);
+	const handleCrossReferencesOpenInEdit = openInEdit(
+		setCrossReferencesData,
+		'originalCrossReferences',
+		(row) => row.crossReferences
+	);
+	const handleAssociationsOpenInEdit = (event, editorOptions) => {
+		event.preventDefault();
+		setAssociationsEditData({ dialog: true, transgenicToolId: editorOptions.rowData?.id, mainRowProps: editorOptions });
+	};
+
+	// The trigger, in the row editor, for a pop-up editing a list
+	const listEditor = (field, onOpenInEdit, label, addText) => (editorOptions) => {
+		const count = editorOptions.rowData?.[field]?.length;
+		return (
+			<DialogTriggerTableEditor
+				editorOptions={editorOptions}
+				onOpenInEdit={onOpenInEdit}
+				errorField={field}
+				displayText={count ? `${label}(${count}) ` : null}
+				addText={addText}
+				tooltipObject="transgenic tool"
+			/>
+		);
+	};
 
 	const columns = useMemo(
 		() => [
@@ -110,8 +181,12 @@ export const TransgenicToolsTable = () => {
 				body: (rowData) => <IdTemplate id={rowData.modInternalId} />,
 				filterConfig: FILTER_CONFIGS.modInternalIdFilterConfig,
 			},
+			// An editable column's field names the object or list its editor replaces, as editorCallback writes
+			// through a dotted path rather than replacing it; columnKey keeps the key the saved sort, filter,
+			// width and order settings are stored under.
 			{
-				field: 'transgenicToolFullName.displayText',
+				field: 'transgenicToolFullName',
+				columnKey: 'transgenicToolFullName.displayText',
 				header: 'Full Name',
 				sortable: true,
 				body: (rowData) => (
@@ -123,9 +198,20 @@ export const TransgenicToolsTable = () => {
 					/>
 				),
 				filterConfig: FILTER_CONFIGS.transgenicToolFullNameFilterConfig,
+				editor: (editorOptions) => (
+					<DialogTriggerTableEditor
+						editorOptions={editorOptions}
+						onOpenInEdit={handleFullNameOpenInEdit}
+						errorField="transgenicToolFullName"
+						displayHtml={editorOptions.rowData.transgenicToolFullName?.displayText}
+						addText="Add Full Name"
+						tooltipObject="transgenic tool"
+					/>
+				),
 			},
 			{
-				field: 'transgenicToolSymbol.displayText',
+				field: 'transgenicToolSymbol',
+				columnKey: 'transgenicToolSymbol.displayText',
 				header: 'Symbol',
 				sortable: true,
 				body: (rowData) => (
@@ -137,9 +223,20 @@ export const TransgenicToolsTable = () => {
 					/>
 				),
 				filterConfig: FILTER_CONFIGS.transgenicToolSymbolFilterConfig,
+				editor: (editorOptions) => (
+					<DialogTriggerTableEditor
+						editorOptions={editorOptions}
+						onOpenInEdit={handleSymbolOpenInEdit}
+						errorField="transgenicToolSymbol"
+						displayHtml={editorOptions.rowData.transgenicToolSymbol?.displayText}
+						addText="Add Symbol"
+						tooltipObject="transgenic tool"
+					/>
+				),
 			},
 			{
-				field: 'transgenicToolSynonyms.displayText',
+				field: 'transgenicToolSynonyms',
+				columnKey: 'transgenicToolSynonyms.displayText',
 				header: 'Synonyms',
 				sortable: true,
 				body: (rowData) => (
@@ -151,6 +248,7 @@ export const TransgenicToolsTable = () => {
 					/>
 				),
 				filterConfig: FILTER_CONFIGS.transgenicToolSynonymsFilterConfig,
+				editor: listEditor('transgenicToolSynonyms', handleSynonymsOpenInEdit, 'Synonyms', 'Add Synonym'),
 			},
 			{
 				field: 'secondaryIdentifiers',
@@ -158,16 +256,25 @@ export const TransgenicToolsTable = () => {
 				sortable: true,
 				body: (rowData) => <StringListTemplate list={rowData.secondaryIdentifiers} />,
 				filterConfig: FILTER_CONFIGS.secondaryIdentifiersFilterConfig,
+				editor: (editorOptions) => <StringListTableEditor editorOptions={editorOptions} field="secondaryIdentifiers" />,
 			},
 			{
-				field: 'crossReferences.displayName',
+				field: 'crossReferences',
+				columnKey: 'crossReferences.displayName',
 				header: 'Cross References',
 				sortable: { isInEditMode },
 				body: (rowData) => <CrossReferencesTemplate list={rowData.crossReferences} />,
 				filterConfig: FILTER_CONFIGS.crossReferencesFilterConfig,
+				editor: listEditor(
+					'crossReferences',
+					handleCrossReferencesOpenInEdit,
+					'Cross References',
+					'Add Cross Reference'
+				),
 			},
 			{
-				field: 'transgenicToolUses.uses.name',
+				field: 'transgenicToolUses',
+				columnKey: 'transgenicToolUses.uses.name',
 				header: 'Transgenic Tool Uses',
 				sortable: { isInEditMode },
 				body: (rowData) => (
@@ -179,9 +286,12 @@ export const TransgenicToolsTable = () => {
 					/>
 				),
 				filterConfig: FILTER_CONFIGS.transgenicToolUsesFilterConfig,
+				editor: listEditor('transgenicToolUses', handleUsesOpenInEdit, 'Uses', 'Add Use'),
 			},
 			{
-				field:
+				// The row holds the associations as summarised, which their pop-up replaces once it has saved them
+				field: 'associatedTransgenicTools',
+				columnKey:
 					'transgenicToolTransgenicToolAssociations.transgenicToolTransgenicToolAssociationObject.transgenicToolSymbol.displayText',
 				header: 'Transgenic Tool Associations',
 				sortable: { isInEditMode },
@@ -194,24 +304,34 @@ export const TransgenicToolsTable = () => {
 					/>
 				),
 				filterConfig: FILTER_CONFIGS.transgenicToolAssociationsFilterConfig,
+				editor: listEditor(
+					'associatedTransgenicTools',
+					handleAssociationsOpenInEdit,
+					'Associations',
+					'Add Association'
+				),
 			},
 			{
-				field: 'relatedNotes.freeText',
+				field: 'relatedNotes',
+				columnKey: 'relatedNotes.freeText',
 				header: 'Related Notes',
 				sortable: false,
 				body: (rowData) => (
 					<CountDialogTemplate entities={rowData.relatedNotes} handleOpen={handleRelatedNotesOpen} text={'Notes'} />
 				),
 				filterConfig: FILTER_CONFIGS.relatedNotesFilterConfig,
+				editor: listEditor('relatedNotes', handleRelatedNotesOpenInEdit, 'Notes', 'Add Note'),
 			},
 			{
-				field: 'references.primaryCrossReferenceCurie',
+				field: 'references',
+				columnKey: 'references.primaryCrossReferenceCurie',
 				header: 'References',
 				sortable: { isInEditMode },
 				body: (rowData) => (
 					<TruncatedReferencesTemplate references={rowData.references} identifier={rowData.primaryExternalId} />
 				),
 				filterConfig: FILTER_CONFIGS.referencesFilterConfig,
+				editor: (editorOptions) => <ReferencesTableEditor editorOptions={editorOptions} />,
 			},
 			{
 				field: 'dataProvider.abbreviation',
@@ -225,6 +345,7 @@ export const TransgenicToolsTable = () => {
 				body: (rowData) => <BooleanTemplate value={rowData.placeholder} />,
 				filterConfig: FILTER_CONFIGS.placeholderFilterConfig,
 				sortable: { isInEditMode },
+				editor: (editorOptions) => <BooleanTableEditor editorOptions={editorOptions} field="placeholder" />,
 			},
 			{
 				field: 'updatedBy.uniqueId',
@@ -260,6 +381,7 @@ export const TransgenicToolsTable = () => {
 				body: (rowData) => <BooleanTemplate value={rowData.internal} />,
 				filterConfig: FILTER_CONFIGS.internalFilterConfig,
 				sortable: { isInEditMode },
+				editor: (editorOptions) => <BooleanTableEditor editorOptions={editorOptions} field="internal" />,
 			},
 			{
 				field: 'obsolete',
@@ -267,6 +389,7 @@ export const TransgenicToolsTable = () => {
 				body: (rowData) => <BooleanTemplate value={rowData.obsolete} />,
 				filterConfig: FILTER_CONFIGS.obsoleteFilterConfig,
 				sortable: { isInEditMode },
+				editor: (editorOptions) => <BooleanTableEditor editorOptions={editorOptions} field="obsolete" />,
 			},
 		],
 		// eslint-disable-next-line react-hooks/exhaustive-deps
@@ -312,7 +435,8 @@ export const TransgenicToolsTable = () => {
 					tableState={tableState}
 					setTableState={setTableState}
 					columns={columns}
-					isEditable={false}
+					isEditable={true}
+					mutation={mutation}
 					hasDetails={true}
 					isInEditMode={isInEditMode}
 					setIsInEditMode={setIsInEditMode}
@@ -322,10 +446,49 @@ export const TransgenicToolsTable = () => {
 					fetching={isFetching || isLoading}
 				/>
 			</div>
+			<SymbolEditDialog
+				field="transgenicToolSymbol"
+				endpoint={Endpoints.SlotAnnotation.TRANSGENIC_TOOL_SYMBOL}
+				originalSymbolData={symbolData}
+				setOriginalSymbolData={setSymbolData}
+				errorMessagesMainRow={errorMessages}
+				setErrorMessagesMainRow={setErrorMessages}
+			/>
 			<SymbolReadOnlyDialog originalSymbolData={symbolData} setOriginalSymbolData={setSymbolData} />
+			<FullNameEditDialog
+				field="transgenicToolFullName"
+				endpoint={Endpoints.SlotAnnotation.TRANSGENIC_TOOL_FULL_NAME}
+				originalFullNameData={fullNameData}
+				setOriginalFullNameData={setFullNameData}
+				errorMessagesMainRow={errorMessages}
+				setErrorMessagesMainRow={setErrorMessages}
+			/>
 			<FullNameReadOnlyDialog originalFullNameData={fullNameData} setOriginalFullNameData={setFullNameData} />
+			<SynonymsEditDialog
+				field="transgenicToolSynonyms"
+				endpoint={Endpoints.SlotAnnotation.TRANSGENIC_TOOL_SYNONYM}
+				originalSynonymsData={synonymsData}
+				setOriginalSynonymsData={setSynonymsData}
+				errorMessagesMainRow={errorMessages}
+				setErrorMessagesMainRow={setErrorMessages}
+			/>
 			<SynonymsReadOnlyDialog originalSynonymsData={synonymsData} setOriginalSynonymsData={setSynonymsData} />
+			<UsesEditDialog
+				field="transgenicToolUses"
+				endpoint={Endpoints.SlotAnnotation.TRANSGENIC_TOOL_USE}
+				originalUsesData={usesData}
+				setOriginalUsesData={setUsesData}
+				errorMessagesMainRow={errorMessages}
+				setErrorMessagesMainRow={setErrorMessages}
+			/>
 			<TransgenicToolUsesDialog usesData={usesData} setUsesData={setUsesData} />
+			<CrossReferencesEditDialog
+				originalCrossReferencesData={crossReferencesData}
+				setOriginalCrossReferencesData={setCrossReferencesData}
+				errorMessagesMainRow={errorMessages}
+				setErrorMessagesMainRow={setErrorMessages}
+			/>
+			<TransgenicToolAssociationsEditDialog data={associationsEditData} setData={setAssociationsEditData} />
 			<GenomicComponentsDialog
 				originalComponentsData={associationsData}
 				setOriginalComponentsData={setAssociationsData}
@@ -334,6 +497,13 @@ export const TransgenicToolsTable = () => {
 				objectField="transgenicToolTransgenicToolAssociationObject"
 				title="Transgenic Tool Associations"
 				getComponentLabel={transgenicToolDisplayValue}
+			/>
+			<RelatedNotesEditDialog
+				originalRelatedNotesData={relatedNotesData}
+				setOriginalRelatedNotesData={setRelatedNotesData}
+				errorMessagesMainRow={errorMessages}
+				setErrorMessagesMainRow={setErrorMessages}
+				noteTypeVocabularyTermSet="transgenic_tool_note_type"
 			/>
 			<RelatedNotesReadOnlyDialog
 				originalRelatedNotesData={relatedNotesData}
