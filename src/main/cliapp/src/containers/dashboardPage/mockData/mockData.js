@@ -67,7 +67,6 @@ export const data = {
 		XBATerm: { esCount: 1677, dbCount: 1677 },
 		GOTerm: { esCount: 47564, dbCount: 47564 },
 		MMUSDVTerm: { esCount: 113, dbCount: 113 },
-		InformationContentEntity: { esCount: 0, dbCount: 311077 },
 		AnatomicalTerm: { esCount: 0, dbCount: 43102 },
 		ExperimentalConditionOntologyTerm: { esCount: 0, dbCount: 1122 },
 		Reference: { esCount: 956237, dbCount: 311077 },
