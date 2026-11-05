@@ -1225,6 +1225,44 @@ public class IT_0301_GeneITCase extends BaseITCase {
 			statusCode(200);
 	}
 
+	@Test
+	@Order(26)
+	public void otherNamesDoNotHoldASymbolInTaxon() {
+		Gene namedGene = new Gene();
+		namedGene.setPrimaryExternalId("GENE:0027");
+		namedGene.setTaxon(taxon);
+		namedGene.setGeneType(soTerm);
+		namedGene.setGeneSymbol(createGeneSymbolSlotAnnotation(null, "GT named", symbolNameType, null, null));
+		namedGene.setGeneFullName(createGeneFullNameSlotAnnotation(null, "GT full name", fullNameType, null, null));
+		namedGene.setGeneSynonyms(List.of(createGeneSynonymSlotAnnotation(null, "GT synonym", symbolNameType, null, null)));
+
+		RestAssured.given().
+			contentType("application/json").
+			body(namedGene).
+			when().
+			post("/api/gene").
+			then().
+			statusCode(200);
+
+		// Another gene's synonym or full name is not its symbol, so a gene of the same taxon may take either as its own
+		Map<String, String> symbolsByGene = Map.of("GENE:0028", "GT synonym", "GENE:0029", "GT full name");
+		for (Map.Entry<String, String> geneSymbol : symbolsByGene.entrySet()) {
+			Gene gene = new Gene();
+			gene.setPrimaryExternalId(geneSymbol.getKey());
+			gene.setTaxon(taxon);
+			gene.setGeneType(soTerm);
+			gene.setGeneSymbol(createGeneSymbolSlotAnnotation(null, geneSymbol.getValue(), symbolNameType, null, null));
+
+			RestAssured.given().
+				contentType("application/json").
+				body(gene).
+				when().
+				post("/api/gene").
+				then().
+				statusCode(200);
+		}
+	}
+
 	// Creates a gene carrying every list GeneDetailView omits, through POST /api/gene, which manages them.
 	private void createDetailGene() {
 		ResourceDescriptor resourceDescriptor = createResourceDescriptor("GENEXRTEST");

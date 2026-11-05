@@ -2196,4 +2196,41 @@ public class IT_0302_AlleleITCase extends BaseITCase {
 			body("errorMessage", containsString("Allele is a component of construct(s)"));
 	}
 
+	@Test
+	@Order(38)
+	public void otherNamesDoNotHoldASymbolInTaxon() {
+		Allele namedAllele = new Allele();
+		namedAllele.setPrimaryExternalId("ALLELE:0038");
+		namedAllele.setTaxon(taxon);
+		namedAllele.setAlleleSymbol(createAlleleSymbolSlotAnnotation(null, "AT named", symbolNameType, null, null));
+		namedAllele.setAlleleFullName(createAlleleFullNameSlotAnnotation(null, "AT full name", fullNameType, null, null));
+		namedAllele.setAlleleSynonyms(List.of(createAlleleSynonymSlotAnnotation(null, "AT synonym", systematicNameType, null, null)));
+
+		RestAssured.given().
+			contentType("application/json").
+			body(namedAllele).
+			when().
+			post("/api/allele").
+			then().
+			statusCode(200);
+
+		// Another allele's synonym or full name is not its symbol, so an allele of the same taxon may take either as its
+		// own
+		Map<String, String> symbolsByAllele = Map.of("ALLELE:0039", "AT synonym", "ALLELE:0040", "AT full name");
+		for (Map.Entry<String, String> alleleSymbol : symbolsByAllele.entrySet()) {
+			Allele allele = new Allele();
+			allele.setPrimaryExternalId(alleleSymbol.getKey());
+			allele.setTaxon(taxon);
+			allele.setAlleleSymbol(createAlleleSymbolSlotAnnotation(null, alleleSymbol.getValue(), symbolNameType, null, null));
+
+			RestAssured.given().
+				contentType("application/json").
+				body(allele).
+				when().
+				post("/api/allele").
+				then().
+				statusCode(200);
+		}
+	}
+
 }
