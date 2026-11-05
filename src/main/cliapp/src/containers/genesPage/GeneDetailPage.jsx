@@ -20,7 +20,7 @@ import { useGeneReducer } from './useGeneReducer';
 import { useGeneSubResources } from './useGeneSubResources';
 import { buildGeneDetailPayload, getPendingGeneFields, processGeneErrors, withSeededGcrpCrossReference } from './utils';
 import { GeneForm, GENE_DETAIL_TOGGLEABLE_FIELDS } from './GeneForm';
-import { NewGeneButton } from './NewGeneButton';
+import { CopyGeneButton, NewGeneButton } from './NewGeneButton';
 import { useDeleteOrDeprecateDialogs } from '../../components/DeleteOrDeprecateDialogs';
 
 export default function GeneDetailPage() {
@@ -267,6 +267,10 @@ export default function GeneDetailPage() {
 								disabled={!hasPendingEdits || saveProgress.isSaving}
 							/>
 							<NewGeneButton className="p-button-text" />
+							<CopyGeneButton
+								className="p-button-text"
+								sourceIdentifier={geneState.gene?.curie || getIdentifier(geneState.gene) || identifier}
+							/>
 							<Button
 								label="Delete"
 								icon="pi pi-trash"

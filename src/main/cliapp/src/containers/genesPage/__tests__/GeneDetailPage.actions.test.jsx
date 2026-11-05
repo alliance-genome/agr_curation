@@ -53,6 +53,17 @@ describe('<GeneDetailPage /> header actions', { timeout: 30000 }, () => {
 		deleteGene.mockResolvedValue({ isSuccess: true, isError: false });
 	});
 
+	it('opens the create page for a copy by the loaded gene curie', async () => {
+		const user = userEvent.setup();
+		const open = vi.spyOn(window, 'open').mockImplementation(() => null);
+		await renderLoaded();
+
+		await user.click(screen.getByRole('button', { name: 'Clone' }));
+
+		expect(open).toHaveBeenCalledWith(`/gene/create?from=${encodeURIComponent(storedGene.curie)}`, '_blank');
+		open.mockRestore();
+	});
+
 	it('deletes the gene once confirmed and returns to the genes table', async () => {
 		const user = userEvent.setup();
 		await renderLoaded();

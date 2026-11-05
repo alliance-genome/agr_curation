@@ -35,7 +35,8 @@ import { BooleanTableEditor } from '../../components/Editors/dropdown/boolean/Bo
 import { SearchService } from '../../service/SearchService';
 import { GeneService } from '../../service/GeneService';
 import { Endpoints } from '../../constants/Endpoints';
-import { NewGeneButton } from './NewGeneButton';
+import { NewGeneButton, useOpenGeneCreatePage } from './NewGeneButton';
+import { getIdentifier } from '../../utils/utils';
 
 export const GenesTable = () => {
 	const [isInEditMode, setIsInEditMode] = useState(false);
@@ -44,6 +45,11 @@ export const GenesTable = () => {
 	const [genes, setGenes] = useState([]);
 
 	const searchService = new SearchService();
+	const openGeneCreatePage = useOpenGeneCreatePage();
+
+	const handleDuplication = (rowData) => {
+		openGeneCreatePage(rowData.curie || getIdentifier(rowData));
+	};
 	let geneService = new GeneService();
 
 	const mutation = useMutation({
@@ -591,6 +597,8 @@ export const GenesTable = () => {
 					deletionEnabled={true}
 					deletionMethod={geneService.deleteGene}
 					deprecateOption={true}
+					duplicationEnabled={true}
+					handleDuplication={handleDuplication}
 					mutation={mutation}
 					isInEditMode={isInEditMode}
 					setIsInEditMode={setIsInEditMode}

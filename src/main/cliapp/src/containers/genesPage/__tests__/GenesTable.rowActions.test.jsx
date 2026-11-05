@@ -50,6 +50,29 @@ describe('<GenesTable /> row actions', () => {
 
 	const latestProps = () => tableProps.mock.calls.at(-1)[0];
 
+	it('opens the create page for a copy of the row, by curie', async () => {
+		const open = vi.spyOn(window, 'open').mockImplementation(() => null);
+		await renderTable();
+
+		await waitFor(() => expect(tableProps).toHaveBeenCalled());
+		expect(latestProps().duplicationEnabled).toBe(true);
+		latestProps().handleDuplication({ id: 1, curie: 'AGRKB:105000000000001', primaryExternalId: 'WB:WBGene00000001' });
+
+		expect(open).toHaveBeenCalledWith(`/gene/create?from=${encodeURIComponent('AGRKB:105000000000001')}`, '_blank');
+		open.mockRestore();
+	});
+
+	it('copies a row without a curie by its MOD identifier', async () => {
+		const open = vi.spyOn(window, 'open').mockImplementation(() => null);
+		await renderTable();
+
+		await waitFor(() => expect(tableProps).toHaveBeenCalled());
+		latestProps().handleDuplication({ id: 1, primaryExternalId: 'WB:WBGene00000001' });
+
+		expect(open).toHaveBeenCalledWith(`/gene/create?from=${encodeURIComponent('WB:WBGene00000001')}`, '_blank');
+		open.mockRestore();
+	});
+
 	it('offers deletion alongside deprecation', async () => {
 		await renderTable();
 
