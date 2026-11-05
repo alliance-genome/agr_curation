@@ -588,6 +588,9 @@ export const GenesTable = () => {
 					columns={columns}
 					isEditable={true}
 					hasDetails={true}
+					deletionEnabled={true}
+					deletionMethod={geneService.deleteGene}
+					deprecateOption={true}
 					mutation={mutation}
 					isInEditMode={isInEditMode}
 					setIsInEditMode={setIsInEditMode}
