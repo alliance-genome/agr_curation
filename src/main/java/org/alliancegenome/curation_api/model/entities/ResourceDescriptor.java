@@ -49,14 +49,14 @@ public class ResourceDescriptor extends AuditedObject {
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "prefix_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({ CurationView.FieldsOnly.class, CurationView.ForPublic.class, CurationView.TransgenicAllelesDocument.class })
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.ForPublic.class, CurationView.TransgenicAllelesDocument.class, CurationView.EntityDetailView.class })
 	@Column(unique = true, nullable = false)
 	@EqualsAndHashCode.Include
 	protected String prefix;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "name_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({ CurationView.FieldsOnly.class, CurationView.ForPublic.class, CurationView.TransgenicAllelesDocument.class })
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.ForPublic.class, CurationView.TransgenicAllelesDocument.class, CurationView.EntityDetailView.class })
 	@EqualsAndHashCode.Include
 	private String name;
 

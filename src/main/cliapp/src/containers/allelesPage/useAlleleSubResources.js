@@ -1,6 +1,6 @@
 import { ALLELE_SUB_RESOURCES } from './constants';
 import { useAlleleSubResource } from './useAlleleSubResource';
-import { capitalize } from './utils';
+import { subResourceSet } from '../../utils/subResourceSet';
 
 /**
  * Every list in {@link ALLELE_SUB_RESOURCES} for one allele, for a page that saves, resets and tracks them
@@ -36,36 +36,6 @@ export const useAlleleSubResources = (alleleId) => {
 		alleleInheritanceModes,
 		relatedNotes,
 	};
-	const lists = Object.entries(subResources);
-
-	/**
-	 * Writes each list that has been edited, one after another, each as its whole list. A list that has not been
-	 * edited is not written, so its stored rows stay as they are, and the marks a past save or a note edit left
-	 * on its rows are cleared.
-	 *
-	 * @param {number} [targetAlleleId] the allele to write to, for create, which has none on load
-	 * @param {Object} [progress] told about each list as it is written, by its type
-	 * @param {(type: string) => void} [progress.onStart]
-	 * @param {(type: string, outcome: {isSuccess: boolean, message?: string}) => void} [progress.onSettle]
-	 * @returns {Promise<Array<{label: string, outcome: {isSuccess: boolean, message?: string}}>>} the outcome of
-	 *   each list written, in registry order
-	 */
-	const saveDirty = async (targetAlleleId, { onStart, onSettle } = {}) => {
-		const outcomes = [];
-		for (const [type, subResource] of lists) {
-			if (subResource.isDirty) {
-				onStart?.(type);
-				const outcome = await subResource.save(targetAlleleId);
-				onSettle?.(type, outcome);
-				outcomes.push({ label: ALLELE_SUB_RESOURCES[type].label, outcome });
-			} else {
-				subResource.setErrorMessages({});
-			}
-		}
-		return outcomes;
-	};
-
-	const resetAll = () => lists.forEach(([, subResource]) => subResource.reset());
 
 	/**
 	 * Starts every list over with copies of the rows it shows, made as a duplicate's are, for the next allele to be
@@ -77,7 +47,7 @@ export const useAlleleSubResources = (alleleId) => {
 	 */
 	const carryOverAll = async (isVisible) => {
 		await Promise.all(
-			lists.map(async ([type, subResource]) => {
+			Object.entries(subResources).map(async ([type, subResource]) => {
 				const { buildCopies, copyOnlyWhenVisible } = ALLELE_SUB_RESOURCES[type];
 				const isCopied = buildCopies && (!copyOnlyWhenVisible || isVisible(copyOnlyWhenVisible));
 				subResource.startOver(isCopied ? await buildCopies(subResource.rows) : []);
@@ -85,15 +55,5 @@ export const useAlleleSubResources = (alleleId) => {
 		);
 	};
 
-	return {
-		subResources,
-		isDirty: lists.some(([, subResource]) => subResource.isDirty),
-		isSaving: lists.some(([, subResource]) => subResource.isSaving),
-		dirtySteps: lists
-			.filter(([, subResource]) => subResource.isDirty)
-			.map(([type]) => ({ key: type, label: capitalize(ALLELE_SUB_RESOURCES[type].label) })),
-		saveDirty,
-		resetAll,
-		carryOverAll,
-	};
+	return { subResources, ...subResourceSet(subResources), carryOverAll };
 };

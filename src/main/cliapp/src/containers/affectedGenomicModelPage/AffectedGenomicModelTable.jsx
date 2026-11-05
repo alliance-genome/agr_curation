@@ -22,8 +22,8 @@ import { FullNameEditDialog } from '../nameSlotAnnotations/dialogs/FullNameEditD
 import { FullNameReadOnlyDialog } from '../nameSlotAnnotations/dialogs/FullNameReadOnlyDialog';
 import { SynonymsEditDialog } from '../nameSlotAnnotations/dialogs/SynonymsEditDialog';
 import { SynonymsReadOnlyDialog } from '../nameSlotAnnotations/dialogs/SynonymsReadOnlyDialog';
-import { SecondaryIdsEditDialog } from '../allelesPage/secondaryIds/SecondaryIdsEditDialog';
-import { SecondaryIdsReadOnlyDialog } from '../allelesPage/secondaryIds/SecondaryIdsReadOnlyDialog';
+import { SecondaryIdsEditDialog } from '../../components/secondaryIds/SecondaryIdsEditDialog';
+import { SecondaryIdsReadOnlyDialog } from '../../components/secondaryIds/SecondaryIdsReadOnlyDialog';
 import { DialogTriggerTableEditor } from '../../components/Editors/dialog/DialogTriggerTableEditor';
 import { TaxonTableEditor } from '../../components/Editors/autocomplete/taxon/TaxonTableEditor';
 import { BooleanTableEditor } from '../../components/Editors/dropdown/boolean/BooleanTableEditor';

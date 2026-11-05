@@ -5,20 +5,20 @@ import { IdentifierDetailPageTemplate } from '../../components/Templates/Identif
 import { DataProviderDetailPageTemplate } from '../../components/Templates/DataProviderDetailPageTemplate';
 import { DateDetailPageTemplate } from '../../components/Templates/DateDetailPageTemplate';
 import { UserDetailPageTemplate } from '../../components/Templates/UserDetailPageTemplate';
-import { SynonymsForm } from './synonyms/SynonymsForm';
+import { SynonymsForm } from '../../components/synonyms/SynonymsForm';
 import { FullNameForm } from './fullName/FullNameForm';
 import { MutationTypesForm } from './mutationTypes/MutationTypesForm';
 import { InheritanceModesForm } from './inheritanceModes/InheritanceModesForm';
-import { SecondaryIdsForm } from './secondaryIds/SecondaryIdsForm';
+import { SecondaryIdsForm } from '../../components/secondaryIds/SecondaryIdsForm';
 import { FunctionalImpactsForm } from './functionalImpacts/FunctionalImpactsForm';
 import { DatabaseStatusForm } from './databaseStatus/DatabaseStatusForm';
-import { RelatedNotesForm } from './relatedNotes/RelatedNotesForm';
+import { RelatedNotesForm } from '../../components/relatedNotes/RelatedNotesForm';
 import { SymbolForm } from './symbol/SymbolForm';
 import { GermilineTransmissionStatusForm } from './germlineTransmissionStatus/GermlineTransmissionStatusForm';
 import { ReferencesForm } from './referencesTable/ReferencesForm';
 import { NomenclatureEventsForm } from './nomenclatureEvents/NomenclatureEventsForm';
 import { AlleleGeneAssociationsForm } from './alleleGeneAssociations/AlleleGeneAssociationsForm';
-import { CrossReferencesForm } from './crossReferences/CrossReferencesForm';
+import { CrossReferencesForm } from '../../components/crossReferences/CrossReferencesForm';
 import { FormSection } from '../../components/FormFieldVisibility';
 import { getEffectiveModAbbreviation } from '../../utils/affiliation';
 
@@ -193,11 +193,11 @@ export const AlleleForm = ({ state, dispatch, isVisible, mode = 'detail', pendin
 			</FormSection>
 
 			<FormSection isVisible={isVisible('Synonyms')}>
-				<SynonymsForm mode={mode} />
+				<SynonymsForm type="alleleSynonyms" mode={mode} />
 			</FormSection>
 
 			<FormSection isVisible={isVisible('Secondary IDs')}>
-				<SecondaryIdsForm mode={mode} />
+				<SecondaryIdsForm type="alleleSecondaryIds" mode={mode} />
 			</FormSection>
 
 			<FormSection isVisible={isVisible('Nomenclature Events')}>
@@ -273,7 +273,7 @@ export const AlleleForm = ({ state, dispatch, isVisible, mode = 'detail', pendin
 			</FormSection>
 
 			<FormSection isVisible={isVisible('Related Notes')}>
-				<RelatedNotesForm mode={mode} />
+				<RelatedNotesForm type="relatedNotes" mode={mode} />
 			</FormSection>
 
 			<FormSection isVisible={isVisible('Allele Gene Associations')}>
@@ -290,7 +290,7 @@ export const AlleleForm = ({ state, dispatch, isVisible, mode = 'detail', pendin
 			</FormSection>
 
 			<FormSection isVisible={isVisible('Cross References')}>
-				<CrossReferencesForm mode={mode} />
+				<CrossReferencesForm type="crossReferences" mode={mode} />
 			</FormSection>
 
 			<FormSection isVisible={!isCreate && isVisible('Updated By')}>

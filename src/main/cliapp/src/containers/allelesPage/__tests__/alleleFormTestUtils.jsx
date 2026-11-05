@@ -39,7 +39,7 @@ export const renderAlleleForm = (Form, allele) => {
  * the detail page holds them once read. These sections have no row-save step, so the list's rows are what the
  * page saves; tests read them back to see what a curator's edit will save.
  *
- * @param {Function} Form - the section component
+ * @param {Function} Form - the section component, given `type`
  * @param {keyof typeof ALLELE_SUB_RESOURCES} type - which list
  * @param {object[]} rows - the rows to hold, as the API returns them
  * @returns {object} the render result, plus `getRows()` for the list's current rows, `getErrorMessages()` for
@@ -53,7 +53,7 @@ export const renderSubResourceForm = (Form, type, rows) => {
 		handle.subResource = subResource;
 		return (
 			<SubResourcesProvider value={{ [type]: subResource }}>
-				<Form />
+				<Form type={type} />
 			</SubResourcesProvider>
 		);
 	};

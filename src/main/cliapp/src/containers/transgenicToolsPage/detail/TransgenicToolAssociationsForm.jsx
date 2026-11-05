@@ -5,7 +5,7 @@ import { FormTableWrapper } from '../../../components/FormTableWrapper';
 import { TableEditorProvider } from '../../../components/Editors/fields/TableEditorContext';
 import { useDataKeyRowsStrategy } from '../../../components/Editors/fields/strategies/useDataKeyRowsStrategy';
 import { useVocabularyTermSetService } from '../../../service/useVocabularyTermSetService';
-import { addDataKey } from '../../allelesPage/utils';
+import { addDataKey } from '../../../utils/rows';
 import { TransgenicToolAssociationsFormTable } from './TransgenicToolAssociationsFormTable';
 
 /**

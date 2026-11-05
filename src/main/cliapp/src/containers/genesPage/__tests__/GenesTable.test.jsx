@@ -1,5 +1,6 @@
 import React from 'react';
 import { waitFor } from '@testing-library/react';
+import { BrowserRouter } from 'react-router-dom';
 import { renderWithClient } from '../../../tools/jest/utils';
 import { GenesPage } from '../index';
 import { setLocalStorage } from '../../../tools/jest/setupTests';
@@ -20,7 +21,11 @@ describe('<GenesPage />', () => {
 	});
 
 	it('Renders without crashing', async () => {
-		let result = await renderWithClient(<GenesPage />);
+		let result = await renderWithClient(
+			<BrowserRouter>
+				<GenesPage />
+			</BrowserRouter>
+		);
 
 		await waitFor(() => {
 			expect(result);
@@ -28,14 +33,22 @@ describe('<GenesPage />', () => {
 	});
 
 	it('Contains Correct Table Name', async () => {
-		let result = await renderWithClient(<GenesPage />);
+		let result = await renderWithClient(
+			<BrowserRouter>
+				<GenesPage />
+			</BrowserRouter>
+		);
 
 		const tableTitle = await result.findByText(/Genes Table/i);
 		expect(tableTitle).toBeInTheDocument();
 	});
 
 	it.skip('The table contains correct data', async () => {
-		let result = await renderWithClient(<GenesPage />);
+		let result = await renderWithClient(
+			<BrowserRouter>
+				<GenesPage />
+			</BrowserRouter>
+		);
 
 		const primaryExternalIdTd = await result.findByText(/WB:WBGene00003771/i);
 		const nameTd = await result.findByText(/LEVamisole resistant 8/i);

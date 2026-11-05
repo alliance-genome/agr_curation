@@ -17,7 +17,7 @@ import { UserDetailPageTemplate } from '../../components/Templates/UserDetailPag
 import { DateDetailPageTemplate } from '../../components/Templates/DateDetailPageTemplate';
 import { BooleanDetailPageEditor } from '../../components/Editors/dropdown/boolean/BooleanDetailPageEditor';
 import { processErrors } from '../affectedGenomicModelPage/utils';
-import { NameSlotAnnotationForm } from '../transgenicToolsPage/detail/NameSlotAnnotationForm';
+import { NameSlotAnnotationForm } from '../../components/nameSlotAnnotations/NameSlotAnnotationForm';
 import { SynonymsForm } from '../transgenicToolsPage/detail/SynonymsForm';
 import { SecondaryIdsForm } from '../transgenicToolsPage/detail/SecondaryIdsForm';
 import { UsesForm } from '../transgenicToolsPage/detail/UsesForm';
@@ -244,14 +244,24 @@ export default function CassetteDetailPage() {
 					</FormSection>
 					<FormSection isVisible={isVisible('Symbol')}>
 						<NameSlotAnnotationForm
-							{...formProps}
+							name={cassetteState[ENTITY_KEY]?.cassetteSymbol}
+							entityState={cassetteState.entityStates.cassetteSymbol}
+							dispatch={cassetteDispatch}
 							entityType="cassetteSymbol"
+							isSymbol
 							tableName="Symbol"
 							addLabel="Add Symbol"
 						/>
 					</FormSection>
 					<FormSection isVisible={isVisible('Name')}>
-						<NameSlotAnnotationForm {...formProps} entityType="cassetteFullName" tableName="Name" addLabel="Add Name" />
+						<NameSlotAnnotationForm
+							name={cassetteState[ENTITY_KEY]?.cassetteFullName}
+							entityState={cassetteState.entityStates.cassetteFullName}
+							dispatch={cassetteDispatch}
+							entityType="cassetteFullName"
+							tableName="Name"
+							addLabel="Add Name"
+						/>
 					</FormSection>
 					<FormSection isVisible={isVisible('Synonyms')}>
 						<SynonymsForm {...formProps} entityType="cassetteSynonyms" />

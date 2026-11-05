@@ -5,10 +5,10 @@ import { useSubResource } from '../../../components/SubResourcesContext';
 import { TableEditorProvider } from '../../../components/Editors/fields/TableEditorContext';
 import { useSubResourceRows } from '../../../hooks/useSubResourceRows';
 import { useControlledVocabularyService } from '../../../service/useControlledVocabularyService';
-import { SubResourceSaveButton } from '../SubResourceSaveButton';
-import { SubResourceLoadError } from '../SubResourceLoadError';
-import { useSubResourceFormStrategy } from '../useSubResourceFormStrategy';
-import { addDataKey, KEEP_ROWS_IN_EDIT_MODE } from '../utils';
+import { SubResourceSaveButton } from '../../../components/SubResourceSaveButton';
+import { SubResourceLoadError } from '../../../components/SubResourceLoadError';
+import { useSubResourceFormStrategy } from '../../../hooks/useSubResourceFormStrategy';
+import { addDataKey, KEEP_ROWS_IN_EDIT_MODE } from '../../../utils/rows';
 import { InheritanceModesFormTable } from './InheritanceModesFormTable';
 
 /**

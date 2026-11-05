@@ -5,7 +5,8 @@ import { AlleleService } from '../../service/AlleleService';
 import { AlleleSubResourceService } from '../../service/AlleleSubResourceService';
 import { getIdentifier } from '../../utils/utils';
 import { ALLELE_SUB_RESOURCES } from './constants';
-import { buildDuplicateAllele, capitalize } from './utils';
+import { buildDuplicateAllele } from './utils';
+import { capitalize } from '../../utils/utils';
 
 /**
  * Fills the allele create form from the allele named by the `from` search parameter, which the Duplicate
