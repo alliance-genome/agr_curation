@@ -23,7 +23,7 @@ import { FullNameEditDialog } from '../nameSlotAnnotations/dialogs/FullNameEditD
 import { SynonymsEditDialog } from '../nameSlotAnnotations/dialogs/SynonymsEditDialog';
 import { RelatedNotesReadOnlyDialog } from '../../components/RelatedNotesReadOnlyDialog';
 import { RelatedNotesEditDialog } from '../../components/RelatedNotesEditDialog';
-import { CrossReferencesEditDialog } from '../allelesPage/crossReferences/CrossReferencesEditDialog';
+import { CrossReferencesEditDialog } from '../../components/crossReferences/CrossReferencesEditDialog';
 import { GenomicComponentsDialog } from '../constructsPage/GenomicComponentsDialog';
 import { UsesEditDialog } from '../cassettesPage/uses/UsesEditDialog';
 import { DialogTriggerTableEditor } from '../../components/Editors/dialog/DialogTriggerTableEditor';
