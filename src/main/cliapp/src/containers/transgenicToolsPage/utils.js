@@ -9,6 +9,18 @@ export const useTermTexts = (transgenicToolUse) =>
 export const associatedToolText = (associatedTool) =>
 	`${relationName({ relation: { name: associatedTool?.relation } })}: ${associatedTool?.symbol || associatedTool?.identifier || ''}`;
 
+// A tool's associations as the search results summarise them (associatedTransgenicTools), as the API's
+// AssociatedTransgenicTool builds them: the relation, and the other tool's symbol and MOD identifier.
+export const toAssociatedTransgenicTools = (associations) =>
+	(associations ?? []).map((association) => {
+		const tool = association?.transgenicToolTransgenicToolAssociationObject;
+		return {
+			relation: association?.relation?.name ?? null,
+			symbol: tool?.transgenicToolSymbol?.displayText ?? null,
+			identifier: tool?.primaryExternalId || tool?.modInternalId || tool?.curie || null,
+		};
+	});
+
 // The find parameters for the associations of one tool, for the associations pop-up.
 export const toolAssociationsFindParams = (transgenicToolId) => ({
 	'transgenicToolAssociationSubject.id': transgenicToolId,
