@@ -33,7 +33,7 @@ const use = {
 // PrimeReact fires the dialog's onShow, which loads its rows, only after the enter transition
 const waitForRows = () => screen.findByText('promoter trap (FBcv:0005073)', {}, { timeout: 5000 });
 
-const renderDialog = (editorCallback, setErrorMessagesMainRow = vi.fn()) => {
+const renderDialog = (editorCallback, setErrorMessagesMainRow = vi.fn(), entityProps = {}) => {
 	const usesData = {
 		originalUses: [use],
 		dialog: true,
@@ -47,6 +47,7 @@ const renderDialog = (editorCallback, setErrorMessagesMainRow = vi.fn()) => {
 			setOriginalUsesData={vi.fn()}
 			errorMessagesMainRow={{}}
 			setErrorMessagesMainRow={setErrorMessagesMainRow}
+			{...entityProps}
 		/>
 	);
 };
@@ -84,6 +85,29 @@ describe('<UsesEditDialog />', () => {
 		// the row shows it has pending edits
 		expect(setErrorMessagesMainRow).toHaveBeenCalledWith({
 			0: { cassetteUses: expect.objectContaining({ message: 'Pending Edits!' }) },
+		});
+	});
+
+	it("validates a transgenic tool's uses against its own endpoint and files the row's state under its field", async () => {
+		const user = userEvent.setup();
+		const editorCallback = vi.fn();
+		const setErrorMessagesMainRow = vi.fn();
+		validate.mockResolvedValue({ isError: false });
+		renderDialog(editorCallback, setErrorMessagesMainRow, {
+			field: 'transgenicToolUses',
+			endpoint: Endpoints.SlotAnnotation.TRANSGENIC_TOOL_USE,
+		});
+
+		await waitForRows();
+		await user.click(screen.getByRole('button', { name: 'Keep Edits' }));
+
+		await waitFor(() => expect(editorCallback).toHaveBeenCalled());
+		expect(validate).toHaveBeenCalledWith(
+			Endpoints.SlotAnnotation.TRANSGENIC_TOOL_USE,
+			expect.objectContaining({ id: 43 })
+		);
+		expect(setErrorMessagesMainRow).toHaveBeenCalledWith({
+			0: { transgenicToolUses: expect.objectContaining({ message: 'Pending Edits!' }) },
 		});
 	});
 

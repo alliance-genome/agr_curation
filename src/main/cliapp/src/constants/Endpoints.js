@@ -55,6 +55,10 @@ export const Endpoints = Object.freeze({
 		GENE_SYMBOL: 'genesymbolslotannotation',
 		GENE_SYNONYM: 'genesynonymslotannotation',
 		GENE_SYSTEMATIC_NAME: 'genesystematicnameslotannotation',
+		TRANSGENIC_TOOL_FULL_NAME: 'transgenictoolfullnameslotannotation',
+		TRANSGENIC_TOOL_SYMBOL: 'transgenictoolsymbolslotannotation',
+		TRANSGENIC_TOOL_SYNONYM: 'transgenictoolsynonymslotannotation',
+		TRANSGENIC_TOOL_USE: 'transgenictooluseslotannotation',
 	}),
 
 	Ontology: Object.freeze({
