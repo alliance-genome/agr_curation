@@ -191,11 +191,11 @@ describe('buildGeneCopy', () => {
 		});
 	});
 
-	it("keeps the GCRP cross reference's page but not its curie", async () => {
+	it("keeps the GCRP cross reference's page, curie and display name, but not its id", async () => {
 		const { gcrpCrossReference } = await buildGeneCopy(saved, alwaysVisible);
 
-		expect(gcrpCrossReference.referencedCurie).toBe('');
-		expect(gcrpCrossReference.displayName).toBe('');
+		expect(gcrpCrossReference.referencedCurie).toBe(saved.gcrpCrossReference.referencedCurie);
+		expect(gcrpCrossReference.displayName).toBe(saved.gcrpCrossReference.displayName);
 		expect(gcrpCrossReference).not.toHaveProperty('id');
 		expect(gcrpCrossReference.resourceDescriptorPage.id).toBe(saved.gcrpCrossReference.resourceDescriptorPage.id);
 		expect(gcrpCrossReference.dataKey).toBeDefined();

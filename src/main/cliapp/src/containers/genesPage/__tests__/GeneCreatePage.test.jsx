@@ -239,8 +239,12 @@ describe('<GeneCreatePage />', { timeout: 60000 }, () => {
 		expect(saveGeneDetail).not.toHaveBeenCalled();
 	});
 
-	it("starts the next gene's synonyms from the saved gene's, but not its secondary IDs", async () => {
+	it("starts the next gene's synonyms and secondary IDs from the saved gene's", async () => {
 		const user = userEvent.setup();
+		// rows come back stored, with their own ids, which the next gene's copies must not carry
+		replaceRows.mockImplementation((path, geneId, rows) =>
+			Promise.resolve({ data: { entities: rows.map((row, index) => ({ ...row, id: 900 + index })) } })
+		);
 		renderPage();
 
 		await user.click(button('Add Synonym'));
@@ -248,8 +252,17 @@ describe('<GeneCreatePage />', { timeout: 60000 }, () => {
 		await user.click(button('Save & Add Another'));
 
 		await waitFor(() => expect(replaceRows).toHaveBeenCalledTimes(2));
-		await waitFor(() => expect(within(section('Secondary IDs')).queryByRole('table')).not.toBeInTheDocument());
-		expect(within(section('Synonyms')).getAllByRole('row')).toHaveLength(2);
+		await waitFor(() => expect(button('Save & Add Another')).toBeEnabled());
+
+		// the next gene's save writes the carried-over rows, as new rows
+		await user.click(button('Save & Add Another'));
+		await waitFor(() => expect(replaceRows).toHaveBeenCalledTimes(4));
+		const nextSave = replaceRows.mock.calls.slice(2);
+		const rowsSentTo = (path) => nextSave.find(([calledPath]) => calledPath === path)[2];
+		expect(rowsSentTo('synonyms')).toHaveLength(1);
+		expect(rowsSentTo('synonyms')[0].id).toBeUndefined();
+		expect(rowsSentTo('secondaryids')).toEqual([expect.objectContaining({ secondaryId: 'FB:FBgn0000001' })]);
+		expect(rowsSentTo('secondaryids')[0].id).toBeUndefined();
 	});
 
 	it('clears the form', async () => {

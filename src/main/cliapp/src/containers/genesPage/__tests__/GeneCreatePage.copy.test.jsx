@@ -84,22 +84,24 @@ describe('<GeneCreatePage /> copying a gene', { timeout: 30000 }, () => {
 			() => expect(container.querySelector('input[name="geneType-input"]')).toHaveValue('SO:0001217'),
 			FORM_LOAD_WAIT
 		);
-		// the GCRP cross reference keeps its page but not its curie
+		// the GCRP cross reference keeps its curie, for the curator to review
 		await waitFor(() =>
-			expect(section('GCRP Cross Reference').querySelector('[aria-label="referencedCurie"]')).toHaveValue('')
+			expect(section('GCRP Cross Reference').querySelector('[aria-label="referencedCurie"]')).toHaveValue(
+				storedGene.gcrpCrossReference.referencedCurie
+			)
 		);
 	});
 
-	it("copies the gene's synonyms and cross references but not its secondary IDs", async () => {
+	it("copies the gene's synonyms, secondary IDs and cross references, keeping their values", async () => {
 		renderPage();
 
 		await waitForCopy();
 		await waitFor(() => expect(bodyRows('Synonyms')).toHaveLength(1), FORM_LOAD_WAIT);
+		await waitFor(() => expect(bodyRows('Secondary IDs')).toHaveLength(1), FORM_LOAD_WAIT);
 		await waitFor(() => expect(bodyRows('Cross References')).toHaveLength(1), FORM_LOAD_WAIT);
 		expect(screen.getAllByDisplayValue('samdc').length).toBeGreaterThan(0);
-		expect(section('Cross References').querySelector('[aria-label="referencedCurie"]')).toHaveValue('');
-		expect(getRows).not.toHaveBeenCalledWith('secondaryids', expect.anything());
-		expect(bodyRows('Secondary IDs')).toHaveLength(0);
+		expect(within(section('Secondary IDs')).getByDisplayValue('FB:FBgn0000001')).toBeInTheDocument();
+		expect(section('Cross References').querySelector('[aria-label="referencedCurie"]')).toHaveValue('NCBI_Gene:34396');
 	});
 
 	it('creates the copy as a new gene, with new list rows', async () => {
@@ -108,11 +110,10 @@ describe('<GeneCreatePage /> copying a gene', { timeout: 30000 }, () => {
 
 		await waitForCopy();
 		await waitFor(() => expect(bodyRows('Synonyms')).toHaveLength(1), FORM_LOAD_WAIT);
+		await waitFor(() => expect(bodyRows('Cross References')).toHaveLength(1), FORM_LOAD_WAIT);
+		await waitFor(() => expect(bodyRows('Secondary IDs')).toHaveLength(1), FORM_LOAD_WAIT);
 		await user.clear(symbolInput());
 		await user.type(symbolInput(), 'SamDC-copy');
-		// the cross reference row is left without a curie, so it is removed before saving
-		await user.click(section('Cross References').querySelector('.pi-trash').closest('button'));
-		await user.click(section('GCRP Cross Reference').querySelector('.pi-trash').closest('button'));
 		await user.click(button('Save & Close'));
 
 		await waitFor(() => expect(createGene).toHaveBeenCalledTimes(1), FORM_LOAD_WAIT);
@@ -122,11 +123,18 @@ describe('<GeneCreatePage /> copying a gene', { timeout: 30000 }, () => {
 		expect(payload.primaryExternalId).toBeUndefined();
 		expect(payload.geneSymbol.id).toBeUndefined();
 		expect(payload.geneSymbol.displayText).toBe('SamDC-copy');
-		await waitFor(() => expect(replaceRows).toHaveBeenCalledWith('synonyms', 4242, expect.any(Array)), FORM_LOAD_WAIT);
-		const synonymRows = replaceRows.mock.calls.find(([path]) => path === 'synonyms')[2];
-		expect(synonymRows).toHaveLength(1);
-		expect(synonymRows[0].id).toBeUndefined();
-		expect(synonymRows[0].displayText).toBe('samdc');
+		expect(payload.gcrpCrossReference.id).toBeUndefined();
+		expect(payload.gcrpCrossReference.referencedCurie).toBe(storedGene.gcrpCrossReference.referencedCurie);
+		await waitFor(() => expect(replaceRows).toHaveBeenCalledTimes(3), FORM_LOAD_WAIT);
+		const rowsSentTo = (path) => replaceRows.mock.calls.find(([calledPath]) => calledPath === path)[2];
+		['synonyms', 'secondaryids', 'crossreferences'].forEach((path) => {
+			expect(rowsSentTo(path)).toHaveLength(1);
+			expect(rowsSentTo(path)[0].id).toBeUndefined();
+			expect(replaceRows).toHaveBeenCalledWith(path, 4242, expect.any(Array));
+		});
+		expect(rowsSentTo('synonyms')[0].displayText).toBe('samdc');
+		expect(rowsSentTo('secondaryids')[0].secondaryId).toBe('FB:FBgn0000001');
+		expect(rowsSentTo('crossreferences')[0].referencedCurie).toBe('NCBI_Gene:34396');
 	});
 
 	it('copies no cross references into a hidden section', async () => {
