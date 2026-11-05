@@ -24,7 +24,8 @@ export const useGeneSubResources = (geneId) => {
 
 	/**
 	 * Starts every list over with copies of the rows it shows, for the next gene to be created from the last one's
-	 * rows. A list that is not copied, or whose section is hidden, starts over empty.
+	 * rows. A list that is not copied starts over empty, as does a list copied only while its section is shown when
+	 * that section is hidden.
 	 *
 	 * @param {(fieldName: string) => boolean} isVisible whether the form shows a field's section
 	 * @returns {Promise<void>} settled once every list holds its copies

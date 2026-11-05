@@ -79,13 +79,13 @@ export const buildCreatePayload = (allele) => {
  *
  * Left behind: everything that identifies the stored allele (its ids), its data provider and audit fields,
  * and the variant and construct associations the form does not edit. The lists in ALLELE_SUB_RESOURCES are
- * written through their own sub-resources and copied separately; see useDuplicateAlleleSource. Each copied
+ * written through their own sub-resources and copied separately; see useCopyAlleleSource. Each copied
  * slot annotation loses its own id and audit fields, so it is created afresh.
  *
  * @param {Object} allele an allele as the detail endpoint returns it
  * @returns {Object} an allele without an id, not obsolete
  */
-export const buildDuplicateAllele = (allele) => ({
+export const buildAlleleCopy = (allele) => ({
 	type: 'Allele',
 	taxon: structuredClone(allele.taxon) ?? { curie: '' },
 	inCollection: structuredClone(allele.inCollection) ?? { name: '' },

@@ -1,6 +1,6 @@
 import {
 	buildCreatePayload,
-	buildDuplicateVariant,
+	buildVariantCopy,
 	buildSavePayload,
 	generateCrossRefSearchField,
 	generateCrossRefSearchFields,
@@ -62,7 +62,7 @@ describe('variantsPage utils', () => {
 		});
 	});
 
-	describe('buildDuplicateVariant', () => {
+	describe('buildVariantCopy', () => {
 		const storedVariant = {
 			id: 4242,
 			curie: 'AGRKB:103000000000001',
@@ -92,7 +92,7 @@ describe('variantsPage utils', () => {
 		};
 
 		it('Carries the fields the create form edits', () => {
-			const copy = buildDuplicateVariant(storedVariant);
+			const copy = buildVariantCopy(storedVariant);
 
 			expect(copy).toEqual({
 				type: 'Variant',
@@ -115,7 +115,7 @@ describe('variantsPage utils', () => {
 		});
 
 		it('Copies deeply, leaving the stored variant untouched', () => {
-			const copy = buildDuplicateVariant(storedVariant);
+			const copy = buildVariantCopy(storedVariant);
 			copy.taxon.curie = 'NCBITaxon:10090';
 			copy.references[0].curie = 'AGRKB:101000000000042';
 			copy.synonyms.push('var-2');
@@ -127,7 +127,7 @@ describe('variantsPage utils', () => {
 		});
 
 		it('Fills what a bare variant lacks with the blank form values, leaving related notes unset', () => {
-			expect(buildDuplicateVariant({ id: 4242 })).toEqual({
+			expect(buildVariantCopy({ id: 4242 })).toEqual({
 				type: 'Variant',
 				taxon: { curie: '' },
 				variantType: null,

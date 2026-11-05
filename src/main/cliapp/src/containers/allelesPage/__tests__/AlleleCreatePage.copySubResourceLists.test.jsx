@@ -1,7 +1,7 @@
 import React from 'react';
 import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { DUPLICATE_SOURCE_ENTRY, FORM_LOAD_WAIT, renderInRouter, sourceAllele } from './alleleTestUtils';
+import { COPY_SOURCE_ENTRY, FORM_LOAD_WAIT, renderInRouter, sourceAllele } from './alleleTestUtils';
 
 const createAllele = vi.fn();
 const getAllele = vi.fn();
@@ -48,7 +48,7 @@ const storedNote = {
 	noteType: { name: 'comment' },
 };
 
-const renderPage = () => renderInRouter(<AlleleCreatePage />, DUPLICATE_SOURCE_ENTRY);
+const renderPage = () => renderInRouter(<AlleleCreatePage />, COPY_SOURCE_ENTRY);
 
 const waitForSourceToLoad = async (container) => {
 	await waitFor(() => expect(container.querySelector('#displayText')).toHaveValue('abc-1'), FORM_LOAD_WAIT);
@@ -56,7 +56,7 @@ const waitForSourceToLoad = async (container) => {
 	await waitFor(() => expect(screen.queryByText('Loading allele to clone...')).not.toBeInTheDocument(), FORM_LOAD_WAIT);
 };
 
-describe('<AlleleCreatePage /> duplicating sub-resource lists', { timeout: 30000 }, () => {
+describe('<AlleleCreatePage /> copying sub-resource lists', { timeout: 30000 }, () => {
 	beforeEach(() => {
 		createAllele.mockReset();
 		createAllele.mockResolvedValue({ data: { entity: { id: 4242, curie: 'AGRKB:101000000000002' } } });

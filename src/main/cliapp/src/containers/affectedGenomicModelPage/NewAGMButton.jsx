@@ -47,7 +47,7 @@ export const NewAGMButton = ({ disabled = false, className }) => {
  * @param {boolean} [props.disabled] - true while there is no AGM to copy
  * @param {string} [props.className] - the button style of the header it sits in
  */
-export const DuplicateAGMButton = ({ sourceIdentifier, disabled = false, className }) => {
+export const CopyAGMButton = ({ sourceIdentifier, disabled = false, className }) => {
 	const openAGMCreatePage = useOpenAGMCreatePage();
 
 	return (

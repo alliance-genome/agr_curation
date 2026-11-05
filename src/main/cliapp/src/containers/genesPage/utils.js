@@ -2,7 +2,7 @@ import { getPendingFields, nameSlotAnnotationValue } from '../../utils/pendingFi
 import { processErrors, processTableErrors } from '../../utils/processErrors';
 import { copyRow } from '../../utils/copyRows';
 import {
-	buildDuplicateCrossReferences,
+	buildCrossReferenceCopies,
 	crossReferenceValue,
 	seedResourceDescriptor,
 	seedResourceDescriptors,
@@ -86,10 +86,10 @@ export const withSeededGcrpCrossReference = async (entity) => {
  * @param {(fieldName: string) => boolean} isVisible whether the form shows a field's section
  * @returns {Promise<Object>} a gene without an id, not obsolete
  */
-export const buildDuplicateGene = async (gene, isVisible) => {
+export const buildGeneCopy = async (gene, isVisible) => {
 	const [gcrpCrossReference = null] =
 		gene.gcrpCrossReference && isVisible('GCRP Cross Reference')
-			? await seedResourceDescriptors(buildDuplicateCrossReferences([gene.gcrpCrossReference]))
+			? await seedResourceDescriptors(buildCrossReferenceCopies([gene.gcrpCrossReference]))
 			: [];
 
 	return {

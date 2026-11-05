@@ -15,7 +15,7 @@ import { processErrors } from './utils';
 import { getIdentifier } from '../../utils/utils';
 import { FormFieldVisibilityMenu, useFormFieldVisibility } from '../../components/FormFieldVisibility';
 import { AGMForm, AGM_DETAIL_TOGGLEABLE_FIELDS } from './AGMForm';
-import { DuplicateAGMButton, NewAGMButton } from './NewAGMButton';
+import { CopyAGMButton, NewAGMButton } from './NewAGMButton';
 import { useDeleteOrDeprecateDialogs } from '../../components/DeleteOrDeprecateDialogs';
 
 export default function AffectedGenomicModelDetailPage() {
@@ -157,7 +157,7 @@ export default function AffectedGenomicModelDetailPage() {
 						<SplitterPanel size={30} className="flex align-items-center justify-content-start gap-2 pl-2 py-3">
 							<Button label="Save" icon="pi pi-check" className="p-button-text" size="large" onClick={handleSubmit} />
 							<NewAGMButton className="p-button-text" />
-							<DuplicateAGMButton
+							<CopyAGMButton
 								className="p-button-text"
 								sourceIdentifier={agmState.agm?.curie || getIdentifier(agmState.agm) || identifier}
 							/>

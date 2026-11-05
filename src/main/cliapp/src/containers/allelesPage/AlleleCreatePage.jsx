@@ -13,13 +13,13 @@ import { LoadingOverlay } from '../../components/LoadingOverlay';
 import { SaveProgressOverlay } from '../../components/SaveProgressOverlay';
 import { useSaveProgress } from '../../hooks/useSaveProgress';
 import { errorMessageOf, getIdentifier } from '../../utils/utils';
-import { buildCreatePayload, buildDuplicateAllele } from './utils';
+import { buildCreatePayload, buildAlleleCopy } from './utils';
 import { capitalize } from '../../utils/utils';
 import { processErrors } from '../../utils/processErrors';
 import { FormFieldVisibilityMenu, useFormFieldVisibility } from '../../components/FormFieldVisibility';
 import { AlleleForm, ALLELE_CREATE_TOGGLEABLE_FIELDS } from './AlleleForm';
 import { useAlleleSubResources } from './useAlleleSubResources';
-import { useDuplicateAlleleSource } from './useDuplicateAlleleSource';
+import { useCopyAlleleSource } from './useCopyAlleleSource';
 import { SubResourcesProvider } from '../../components/SubResourcesContext';
 
 export default function AlleleCreatePage() {
@@ -45,7 +45,7 @@ export default function AlleleCreatePage() {
 	// Held so that saving again after a sub-resource failed retries it against the allele that already exists,
 	// rather than creating a second one.
 	const createdAllele = useRef(null);
-	const { isLoading: duplicateSourceIsLoading } = useDuplicateAlleleSource({
+	const { isLoading: copySourceIsLoading } = useCopyAlleleSource({
 		alleleDispatch,
 		subResources,
 		isVisible,
@@ -131,7 +131,7 @@ export default function AlleleCreatePage() {
 		} else {
 			// The form keeps the saved allele's values and rows, copied as Clone copies them, so the next allele
 			// can be entered as a small change to this one.
-			alleleDispatch({ type: 'SET', value: buildDuplicateAllele(allele) });
+			alleleDispatch({ type: 'SET', value: buildAlleleCopy(allele) });
 			try {
 				await carryOverSubResources(isVisible);
 			} finally {
@@ -201,7 +201,7 @@ export default function AlleleCreatePage() {
 			<Toast ref={toastError} position="top-left" />
 			<Toast ref={toastSuccess} position="top-right" />
 			<SaveProgressOverlay isOpen={saveProgress.isOpen} steps={saveProgress.steps} />
-			<LoadingOverlay isLoading={duplicateSourceIsLoading} message="Loading allele to clone..." />
+			<LoadingOverlay isLoading={copySourceIsLoading} message="Loading allele to clone..." />
 			<ErrorBoundary>
 				<StickyHeader>
 					<Splitter className="bg-primary-reverse border-none lg:h-5rem" gutterSize={0}>

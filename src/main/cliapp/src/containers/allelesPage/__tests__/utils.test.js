@@ -1,6 +1,6 @@
 import {
 	buildCreatePayload,
-	buildDuplicateAllele,
+	buildAlleleCopy,
 	generateCrossRefSearchField,
 	getPendingSingleValueFields,
 } from '../utils';
@@ -50,7 +50,7 @@ describe('buildCreatePayload', () => {
 	});
 });
 
-describe('buildDuplicateAllele', () => {
+describe('buildAlleleCopy', () => {
 	const audit = {
 		createdBy: { uniqueId: 'curator' },
 		updatedBy: { uniqueId: 'curator' },
@@ -102,14 +102,14 @@ describe('buildDuplicateAllele', () => {
 	});
 
 	it('Leaves behind what identifies the stored allele', () => {
-		const duplicate = buildDuplicateAllele(source());
+		const copy = buildAlleleCopy(source());
 
 		['id', 'curie', 'primaryExternalId', 'modInternalId', 'dataProvider', 'dataProviderCrossReference'].forEach(
-			(field) => expect(duplicate).not.toHaveProperty(field)
+			(field) => expect(copy).not.toHaveProperty(field)
 		);
-		Object.keys(audit).forEach((field) => expect(duplicate).not.toHaveProperty(field));
-		expect(duplicate).not.toHaveProperty('alleleVariantAssociations');
-		expect(duplicate).not.toHaveProperty('alleleConstructAssociations');
+		Object.keys(audit).forEach((field) => expect(copy).not.toHaveProperty(field));
+		expect(copy).not.toHaveProperty('alleleVariantAssociations');
+		expect(copy).not.toHaveProperty('alleleConstructAssociations');
 		// The lists written through their own sub-resources are copied separately.
 		[
 			'references',
@@ -121,37 +121,37 @@ describe('buildDuplicateAllele', () => {
 			'alleleInheritanceModes',
 			'alleleFunctionalImpacts',
 			'alleleNomenclatureEvents',
-		].forEach((field) => expect(duplicate).not.toHaveProperty(field));
-		expect(duplicate.obsolete).toBe(false);
+		].forEach((field) => expect(copy).not.toHaveProperty(field));
+		expect(copy.obsolete).toBe(false);
 	});
 
 	it('Copies the fields the create form edits', () => {
-		const duplicate = buildDuplicateAllele(source());
+		const copy = buildAlleleCopy(source());
 
-		expect(duplicate.type).toEqual('Allele');
-		expect(duplicate.taxon).toEqual({ curie: 'NCBITaxon:6239' });
-		expect(duplicate.inCollection).toEqual({ name: 'WB_curated_alleles' });
-		expect(duplicate.internal).toBe(true);
-		expect(duplicate.isExtinct).toBe(true);
-		expect(duplicate.alleleSymbol).toEqual({ displayText: 'abc-1', formatText: 'abc-1' });
-		expect(duplicate.alleleFullName).toEqual({ displayText: 'full name', formatText: 'full name' });
-		expect(duplicate.alleleGermlineTransmissionStatus).toEqual({ germlineTransmissionStatus: { name: 'cell_line' } });
-		expect(duplicate.alleleDatabaseStatus).toEqual({ databaseStatus: { name: 'approved' } });
+		expect(copy.type).toEqual('Allele');
+		expect(copy.taxon).toEqual({ curie: 'NCBITaxon:6239' });
+		expect(copy.inCollection).toEqual({ name: 'WB_curated_alleles' });
+		expect(copy.internal).toBe(true);
+		expect(copy.isExtinct).toBe(true);
+		expect(copy.alleleSymbol).toEqual({ displayText: 'abc-1', formatText: 'abc-1' });
+		expect(copy.alleleFullName).toEqual({ displayText: 'full name', formatText: 'full name' });
+		expect(copy.alleleGermlineTransmissionStatus).toEqual({ germlineTransmissionStatus: { name: 'cell_line' } });
+		expect(copy.alleleDatabaseStatus).toEqual({ databaseStatus: { name: 'approved' } });
 	});
 
 	it('Starts from the create form defaults for fields the stored allele lacks', () => {
-		const duplicate = buildDuplicateAllele({ taxon: null, alleleSymbol: null });
+		const copy = buildAlleleCopy({ taxon: null, alleleSymbol: null });
 
-		expect(duplicate.taxon).toEqual({ curie: '' });
-		expect(duplicate.inCollection).toEqual({ name: '' });
-		expect(duplicate.alleleSymbol).toBeNull();
-		expect(duplicate).not.toHaveProperty('relatedNotes');
-		expect(duplicate.alleleGeneAssociations).toBeUndefined();
+		expect(copy.taxon).toEqual({ curie: '' });
+		expect(copy.inCollection).toEqual({ name: '' });
+		expect(copy.alleleSymbol).toBeNull();
+		expect(copy).not.toHaveProperty('relatedNotes');
+		expect(copy.alleleGeneAssociations).toBeUndefined();
 	});
 
 	it('Does not mutate the allele it is given', () => {
 		const stored = source();
-		buildDuplicateAllele(stored);
+		buildAlleleCopy(stored);
 
 		expect(stored).toEqual(source());
 	});

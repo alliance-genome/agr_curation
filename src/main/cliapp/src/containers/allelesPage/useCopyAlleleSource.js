@@ -5,13 +5,16 @@ import { AlleleService } from '../../service/AlleleService';
 import { AlleleSubResourceService } from '../../service/AlleleSubResourceService';
 import { getIdentifier } from '../../utils/utils';
 import { ALLELE_SUB_RESOURCES } from './constants';
-import { buildDuplicateAllele } from './utils';
+import { buildAlleleCopy } from './utils';
 import { capitalize } from '../../utils/utils';
 
 /**
- * Fills the allele create form from the allele named by the `from` search parameter, which the Duplicate
- * buttons set. The form takes the source allele once per page load; after that it holds the curator's
- * edits, and a clear starts from a blank form.
+ * Fills the allele create form with a copy of the allele named by the `from` search parameter, which the Clone
+ * buttons and the table's copy action set. Loads that allele from the API and sets the form from it, then loads
+ * from the API each of its lists that is copied, through the list's sub-resource, and sets copies of the rows on
+ * the form; a list copied only while its section is shown is left empty when that section is hidden. The form is
+ * filled once per page load, so a clear afterwards starts blank. An allele or list that cannot be loaded is
+ * reported in a toast.
  *
  * @param {Object} params
  * @param {Function} params.alleleDispatch - the create form's reducer dispatch
@@ -20,7 +23,7 @@ import { capitalize } from '../../utils/utils';
  * @param {Object} params.toastError - ref to the toast that reports a source that cannot be loaded
  * @returns {{ isLoading: boolean }} `isLoading` is true while the source allele or any of its lists load
  */
-export const useDuplicateAlleleSource = ({ alleleDispatch, subResources, isVisible, toastError }) => {
+export const useCopyAlleleSource = ({ alleleDispatch, subResources, isVisible, toastError }) => {
 	const [searchParams] = useSearchParams();
 	const sourceIdentifier = searchParams.get('from');
 	const alleleService = useMemo(() => new AlleleService(), []);
@@ -31,7 +34,7 @@ export const useDuplicateAlleleSource = ({ alleleDispatch, subResources, isVisib
 		data: sourceAlleleData,
 		isError: sourceAlleleLoadFailed,
 	} = useQuery({
-		queryKey: ['alleleDuplicateSource', sourceIdentifier],
+		queryKey: ['alleleCopySource', sourceIdentifier],
 		queryFn: () => alleleService.getAllele(sourceIdentifier),
 		enabled: Boolean(sourceIdentifier),
 		staleTime: Infinity,
@@ -65,7 +68,7 @@ export const useDuplicateAlleleSource = ({ alleleDispatch, subResources, isVisib
 			return;
 		}
 
-		alleleDispatch({ type: 'SET', value: buildDuplicateAllele(sourceAllele) });
+		alleleDispatch({ type: 'SET', value: buildAlleleCopy(sourceAllele) });
 
 		Object.entries(ALLELE_SUB_RESOURCES).forEach(async ([type, { path, label, buildCopies, copyOnlyWhenVisible }]) => {
 			if (!buildCopies) return;

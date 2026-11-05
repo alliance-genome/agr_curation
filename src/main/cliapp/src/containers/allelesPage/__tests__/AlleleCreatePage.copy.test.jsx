@@ -3,7 +3,7 @@ import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import {
 	button,
-	DUPLICATE_SOURCE_ENTRY,
+	COPY_SOURCE_ENTRY,
 	FORM_LOAD_WAIT,
 	renderInRouter,
 	SOURCE_CURIE,
@@ -40,12 +40,12 @@ const sourceAllele = {
 	alleleSymbol: { ...sharedSourceAllele.alleleSymbol, internal: false },
 };
 
-const renderPage = (entry = DUPLICATE_SOURCE_ENTRY) => renderInRouter(<AlleleCreatePage />, entry);
+const renderPage = (entry = COPY_SOURCE_ENTRY) => renderInRouter(<AlleleCreatePage />, entry);
 
 // a populated field carries its own clear button, so the footer's is found by its label
 const footerButton = (label) => screen.getByText(label, { selector: '.p-button-label' }).closest('button');
 
-describe('<AlleleCreatePage /> duplicating an allele', () => {
+describe('<AlleleCreatePage /> copying an allele', () => {
 	beforeEach(() => {
 		createAllele.mockReset();
 		createAllele.mockResolvedValue({ data: { entity: { id: 4242, curie: 'AGRKB:101000000000002' } } });
@@ -154,7 +154,7 @@ describe('<AlleleCreatePage /> duplicating an allele', () => {
 		expect(getAllele).toHaveBeenCalledTimes(1);
 	});
 
-	it('Says so when the allele to duplicate cannot be found', async () => {
+	it('Says so when the allele to copy cannot be found', async () => {
 		getAllele.mockResolvedValue({ data: {} });
 		const { container } = await renderPage('/allele/create?from=AGRKB:missing');
 

@@ -16,7 +16,7 @@ import { capitalize, errorMessageOf, getIdentifier } from '../../utils/utils';
 import { useGeneReducer } from './useGeneReducer';
 import { useGeneSubResources } from './useGeneSubResources';
 import {
-	buildDuplicateGene,
+	buildGeneCopy,
 	buildGeneCreatePayload,
 	buildGeneDetailPayload,
 	processGeneErrors,
@@ -111,7 +111,7 @@ export default function GeneCreatePage() {
 		} else {
 			// The form keeps the saved gene's values and rows, so the next gene can be entered as a small change to
 			// this one.
-			geneDispatch({ type: 'SET', value: await buildDuplicateGene(gene, isVisible) });
+			geneDispatch({ type: 'SET', value: await buildGeneCopy(gene, isVisible) });
 			await carryOverSubResources(isVisible);
 			saveProgress.finish();
 		}

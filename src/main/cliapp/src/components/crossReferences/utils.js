@@ -30,7 +30,7 @@ export const buildNewCrossReference = () => {
  * @param {Object[]} [crossReferences] cross references as the API returns them or as the table holds them
  * @returns {Object[]} rows with a blank curie and display name, each with its own `dataKey`
  */
-export const buildDuplicateCrossReferences = (crossReferences) =>
+export const buildCrossReferenceCopies = (crossReferences) =>
 	(crossReferences ?? []).map((crossReference) => {
 		const copy = copyRow(crossReference);
 		copy.referencedCurie = '';

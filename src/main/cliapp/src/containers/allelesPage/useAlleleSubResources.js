@@ -38,9 +38,9 @@ export const useAlleleSubResources = (alleleId) => {
 	};
 
 	/**
-	 * Starts every list over with copies of the rows it shows, made as a duplicate's are, for the next allele to be
-	 * created from the last one's rows. A list a duplicate does not copy, or whose section is hidden, starts over
-	 * empty.
+	 * Starts every list over with copies of the rows it shows, made as Clone makes them, for the next allele to be
+	 * created from the last one's rows. A list Clone does not copy starts over empty, as does a list copied only
+	 * while its section is shown when that section is hidden.
 	 *
 	 * @param {(fieldName: string) => boolean} isVisible whether the form shows a field's section
 	 * @returns {Promise<void>} settled once every list holds its copies

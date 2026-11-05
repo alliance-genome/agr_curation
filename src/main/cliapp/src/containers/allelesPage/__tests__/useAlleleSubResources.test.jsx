@@ -199,7 +199,7 @@ describe('useAlleleSubResources', () => {
 			expect(crossReferences.rows[0].dataKey).not.toEqual('shown-cross-reference');
 		});
 
-		it('Starts a list Duplicate does not copy over empty', async () => {
+		it('Starts a list Clone does not copy over empty', async () => {
 			const { result } = await renderLoaded();
 			act(() => {
 				result.current.subResources.alleleSecondaryIds.setRows([{ dataKey: 'id-row', secondaryId: 'WB:WBVar0' }]);

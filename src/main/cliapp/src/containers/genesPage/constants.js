@@ -1,6 +1,6 @@
 import { slotAnnotationList, synonymFields, secondaryIdFields } from '../../utils/slotAnnotations';
 import {
-	buildDuplicateCrossReferences,
+	buildCrossReferenceCopies,
 	haveSameCrossReferences,
 	prepareCrossReferences,
 	seedResourceDescriptors,
@@ -54,7 +54,7 @@ export const GENE_SUB_RESOURCES = {
 		isSame: haveSameCrossReferences,
 		// The copies keep the source's pages but not its curies, which the curator fills in for the new gene. A hidden
 		// section could not show them, so it gets none.
-		buildCopies: async (crossReferences) => seedResourceDescriptors(buildDuplicateCrossReferences(crossReferences)),
+		buildCopies: async (crossReferences) => seedResourceDescriptors(buildCrossReferenceCopies(crossReferences)),
 		copyOnlyWhenVisible: 'Cross References',
 	},
 };

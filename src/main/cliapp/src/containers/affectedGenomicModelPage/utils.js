@@ -24,7 +24,7 @@ export const strLabel = (str) => {
  * @param {Object} agm an AGM as the detail endpoint returns it
  * @returns {Object} an AGM without an id, not obsolete, carrying only the fields the create form edits
  */
-export const buildDuplicateAgm = (agm) => {
+export const buildAgmCopy = (agm) => {
 	return {
 		type: 'AffectedGenomicModel',
 		taxon: structuredClone(agm.taxon) ?? { curie: '' },
