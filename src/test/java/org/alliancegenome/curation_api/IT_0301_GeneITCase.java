@@ -317,8 +317,7 @@ public class IT_0301_GeneITCase extends BaseITCase {
 			post("/api/gene").
 			then().
 			statusCode(400).
-			body("errorMessages", is(aMapWithSize(4))).
-			body("errorMessages.modInternalId", is(ValidationConstants.REQUIRED_UNLESS_OTHER_FIELD_POPULATED_MESSAGE + " primaryExternalId")).
+			body("errorMessages", is(aMapWithSize(3))).
 			body("errorMessages.taxon", is(ValidationConstants.REQUIRED_MESSAGE)).
 			body("errorMessages.geneSymbol", is(ValidationConstants.REQUIRED_MESSAGE)).
 			body("errorMessages.geneType", is(ValidationConstants.REQUIRED_MESSAGE));
@@ -329,16 +328,25 @@ public class IT_0301_GeneITCase extends BaseITCase {
 	public void editGeneWithMissingPrimaryExternalId() {
 		Gene gene = findGene(GENE);
 		gene.setPrimaryExternalId(null);
-		
+
+		// A gene is identified by its AGRKB curie, so neither MOD identifier is required.
 		RestAssured.given().
 			contentType("application/json").
 			body(gene).
 			when().
 			put("/api/gene").
 			then().
-			statusCode(400).
-			body("errorMessages", is(aMapWithSize(1))).
-			body("errorMessages.modInternalId", is(ValidationConstants.REQUIRED_UNLESS_OTHER_FIELD_POPULATED_MESSAGE + " primaryExternalId"));
+			statusCode(200);
+
+		// Restore the identifier the ordered tests that follow look this fixture up by.
+		gene.setPrimaryExternalId(GENE);
+		RestAssured.given().
+			contentType("application/json").
+			body(gene).
+			when().
+			put("/api/gene").
+			then().
+			statusCode(200);
 	}
 
 	@Test
@@ -371,7 +379,7 @@ public class IT_0301_GeneITCase extends BaseITCase {
 		Gene gene = new Gene();
 		gene.setPrimaryExternalId("");
 		gene.setTaxon(taxon);
-		gene.setGeneSymbol(geneSymbol);
+		gene.setGeneSymbol(createGeneSymbolSlotAnnotation(null, "GT empty identifier", symbolNameType, null, null));
 		gene.setGeneType(soTerm);
 		
 		RestAssured.given().
@@ -380,9 +388,7 @@ public class IT_0301_GeneITCase extends BaseITCase {
 			when().
 			post("/api/gene").
 			then().
-			statusCode(400).
-			body("errorMessages", is(aMapWithSize(1))).
-			body("errorMessages.modInternalId", is(ValidationConstants.REQUIRED_UNLESS_OTHER_FIELD_POPULATED_MESSAGE + " primaryExternalId"));
+			statusCode(200);
 	}
 	
 	@Test
@@ -390,16 +396,25 @@ public class IT_0301_GeneITCase extends BaseITCase {
 	public void editGeneWithEmptyPrimaryExternalId() {
 		Gene gene = findGene(GENE);
 		gene.setPrimaryExternalId("");
-		
+
+		// A gene is identified by its AGRKB curie, so neither MOD identifier is required.
 		RestAssured.given().
 			contentType("application/json").
 			body(gene).
 			when().
 			put("/api/gene").
 			then().
-			statusCode(400).
-			body("errorMessages", is(aMapWithSize(1))).
-			body("errorMessages.modInternalId", is(ValidationConstants.REQUIRED_UNLESS_OTHER_FIELD_POPULATED_MESSAGE + " primaryExternalId"));
+			statusCode(200);
+
+		// Restore the identifier the ordered tests that follow look this fixture up by.
+		gene.setPrimaryExternalId(GENE);
+		RestAssured.given().
+			contentType("application/json").
+			body(gene).
+			when().
+			put("/api/gene").
+			then().
+			statusCode(200);
 	}
 	
 	@Test
@@ -1101,6 +1116,113 @@ public class IT_0301_GeneITCase extends BaseITCase {
 				body("results[0].geneSecondaryIds", hasSize(1)).
 				body("results[0].crossReferences", hasSize(1)).
 				body("results[0].relatedNotes", hasSize(1));
+	}
+
+	@Test
+	@Order(24)
+	public void createOrEditGeneWithDuplicateSymbolInTaxon() {
+		// createGeneWithOnlyRequiredFields left a "GT1" gene in taxon
+		Gene duplicate = new Gene();
+		duplicate.setPrimaryExternalId("GENE:0024");
+		duplicate.setTaxon(taxon);
+		duplicate.setGeneType(soTerm);
+		duplicate.setGeneSymbol(createGeneSymbolSlotAnnotation(null, "GT1", symbolNameType, null, null));
+
+		RestAssured.given().
+			contentType("application/json").
+			body(duplicate).
+			when().
+			post("/api/gene").
+			then().
+			statusCode(400).
+			body("errorMessages", is(aMapWithSize(2))).
+			body("errorMessages.geneSymbol", is("displayText - " + ValidationConstants.GENE_SYMBOL_NOT_UNIQUE_IN_TAXON_MESSAGE)).
+			body("errorMessages.taxon", is(ValidationConstants.GENE_SYMBOL_NOT_UNIQUE_IN_TAXON_MESSAGE)).
+			body("supplementalData.errorMap.geneSymbol.displayText", is(ValidationConstants.GENE_SYMBOL_NOT_UNIQUE_IN_TAXON_MESSAGE));
+
+		duplicate.setTaxon(taxon2);
+
+		RestAssured.given().
+			contentType("application/json").
+			body(duplicate).
+			when().
+			post("/api/gene").
+			then().
+			statusCode(200);
+
+		// A symbol changed to one the taxon already holds
+		Gene renamedGene = findGene("GENE:0021");
+		renamedGene.getGeneSymbol().setDisplayText("GT1");
+
+		RestAssured.given().
+			contentType("application/json").
+			body(renamedGene).
+			when().
+			put("/api/gene").
+			then().
+			statusCode(400).
+			body("errorMessages.geneSymbol", is("displayText - " + ValidationConstants.GENE_SYMBOL_NOT_UNIQUE_IN_TAXON_MESSAGE)).
+			body("errorMessages.taxon", is(ValidationConstants.GENE_SYMBOL_NOT_UNIQUE_IN_TAXON_MESSAGE));
+
+		// A taxon changed to one where the symbol is already held
+		Gene movedGene = findGene("GENE:0024");
+		movedGene.setTaxon(taxon);
+
+		RestAssured.given().
+			contentType("application/json").
+			body(movedGene).
+			when().
+			put("/api/gene").
+			then().
+			statusCode(400).
+			body("errorMessages.geneSymbol", is("displayText - " + ValidationConstants.GENE_SYMBOL_NOT_UNIQUE_IN_TAXON_MESSAGE)).
+			body("errorMessages.taxon", is(ValidationConstants.GENE_SYMBOL_NOT_UNIQUE_IN_TAXON_MESSAGE));
+	}
+
+	@Test
+	@Order(25)
+	public void obsoleteGeneDoesNotHoldItsSymbolInTaxon() {
+		Gene obsoleteGene = new Gene();
+		obsoleteGene.setPrimaryExternalId("GENE:0025");
+		obsoleteGene.setTaxon(taxon);
+		obsoleteGene.setGeneType(soTerm);
+		obsoleteGene.setObsolete(true);
+		obsoleteGene.setGeneSymbol(createGeneSymbolSlotAnnotation(null, "GT shared", symbolNameType, null, null));
+
+		RestAssured.given().
+			contentType("application/json").
+			body(obsoleteGene).
+			when().
+			post("/api/gene").
+			then().
+			statusCode(200);
+
+		Gene currentGene = new Gene();
+		currentGene.setPrimaryExternalId("GENE:0026");
+		currentGene.setTaxon(taxon);
+		currentGene.setGeneType(soTerm);
+		currentGene.setGeneSymbol(createGeneSymbolSlotAnnotation(null, "GT shared", symbolNameType, null, null));
+
+		RestAssured.given().
+			contentType("application/json").
+			body(currentGene).
+			when().
+			post("/api/gene").
+			then().
+			statusCode(200);
+
+		// An edit that leaves the symbol and taxon as stored is not checked, so a gene already sharing them stays
+		// editable.
+		Gene storedGene = findGene("GENE:0025");
+		storedGene.setObsolete(false);
+
+		RestAssured.given().
+			contentType("application/json").
+			body(storedGene).
+			when().
+			put("/api/gene").
+			then().
+			statusCode(200);
 	}
 
 	// Creates a gene carrying every list GeneDetailView omits, through POST /api/gene, which manages them.

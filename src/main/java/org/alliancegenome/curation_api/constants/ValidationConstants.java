@@ -12,6 +12,7 @@ public final class ValidationConstants {
 	public static final String DEPENDENCY_MESSAGE_PREFIX = "Invalid without value for";
 	public static final String NON_UNIQUE_MESSAGE = "Field value is not unique";
 	public static final String ALLELE_SYMBOL_NOT_UNIQUE_IN_TAXON_MESSAGE = "Another allele is already using this taxon/symbol combination";
+	public static final String GENE_SYMBOL_NOT_UNIQUE_IN_TAXON_MESSAGE = "Another gene is already using this taxon/symbol combination";
 	public static final String UNSUPPORTED_MESSAGE = "Unsupported value specified";
 	public static final String DUPLICATE_MESSAGE = "Duplicate entries found";
 	public static final String DUPLICATE_RELATION_PREFIX = "Entries found with same relation field -";

@@ -22,7 +22,7 @@ import {
 	AffectedGenomicModelCreatePage,
 } from './containers/affectedGenomicModelPage';
 import { AllelesPage, AlleleDetailPage, AlleleCreatePage } from './containers/allelesPage';
-import { GenesPage, GeneDetailPage } from './containers/genesPage';
+import { GenesPage, GeneDetailPage, GeneCreatePage } from './containers/genesPage';
 import { VariantsPage, VariantDetailPage, VariantCreatePage } from './containers/variantsPage';
 import { ConstructsPage, ConstructDetailPage } from './containers/constructsPage';
 import { CassettesPage, CassetteDetailPage } from './containers/cassettesPage';
@@ -185,6 +185,14 @@ export default function AppRoutes() {
 						element={
 							<ErrorBoundary>
 								<GenesPage />
+							</ErrorBoundary>
+						}
+					/>
+					<Route
+						path="/gene/create"
+						element={
+							<ErrorBoundary>
+								<GeneCreatePage />
 							</ErrorBoundary>
 						}
 					/>

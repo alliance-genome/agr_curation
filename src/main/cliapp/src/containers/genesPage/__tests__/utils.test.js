@@ -1,5 +1,16 @@
-import { buildGeneDetailPayload, gcrpCrossReferenceFieldErrors, getPendingGeneFields } from '../utils';
+import {
+	buildDuplicateGene,
+	buildGeneCreatePayload,
+	buildGeneDetailPayload,
+	gcrpCrossReferenceFieldErrors,
+	getPendingGeneFields,
+	processGeneErrors,
+} from '../utils';
 import { geneDetailData } from '../mockData/mockData';
+
+vi.mock('../../../service/ResourceDescriptorService', async () =>
+	(await import('./geneServiceMocks')).mockResourceDescriptorService()
+);
 
 const saved = geneDetailData.entity;
 
@@ -88,5 +99,120 @@ describe('gcrpCrossReferenceFieldErrors', () => {
 		expect(gcrpCrossReferenceFieldErrors('Something went wrong')).toBeNull();
 		expect(gcrpCrossReferenceFieldErrors('id - Not a valid entry | referencedCurie - Invalid')).toBeNull();
 		expect(gcrpCrossReferenceFieldErrors(undefined)).toBeNull();
+	});
+});
+
+describe('buildGeneCreatePayload', () => {
+	it('sends the gene as the detail save does, with the type a new gene is built from', () => {
+		const gene = { taxon: { curie: '' }, geneType: { curie: '' }, geneSymbol: { dataKey: 'row', displayText: 'abc' } };
+
+		expect(buildGeneCreatePayload(gene)).toEqual({
+			type: 'Gene',
+			taxon: undefined,
+			geneType: undefined,
+			geneSymbol: { dataKey: 'row', displayText: 'abc' },
+			gcrpCrossReference: undefined,
+		});
+	});
+
+	it('sends the GCRP cross reference without the fields its table keeps for itself', () => {
+		const page = { id: 7, name: 'default' };
+		const gene = {
+			geneSymbol: { displayText: 'abc' },
+			gcrpCrossReference: {
+				dataKey: 'gcrp-row',
+				referencedCurie: 'UniProtKB:P91931',
+				resourceDescriptor: { id: 3, prefix: 'UniProtKB' },
+				resourceDescriptorPage: page,
+			},
+		};
+
+		expect(buildGeneCreatePayload(gene).gcrpCrossReference).toEqual({
+			referencedCurie: 'UniProtKB:P91931',
+			resourceDescriptorPage: page,
+		});
+	});
+});
+
+describe('processGeneErrors', () => {
+	const gcrpRow = { dataKey: 'gcrp-row', referencedCurie: 'UniProtKB:P91931' };
+
+	it("puts the GCRP cross reference's field errors on its row's cells and keeps the others on the page", () => {
+		const dispatch = vi.fn();
+		const data = {
+			errorMessages: { gcrpCrossReference: 'referencedCurie - Invalid', taxon: 'Required field is empty' },
+		};
+
+		processGeneErrors(data, dispatch, { gcrpCrossReference: gcrpRow });
+
+		expect(dispatch).toHaveBeenCalledWith({
+			type: 'UPDATE_TABLE_ERROR_MESSAGES',
+			entityType: 'gcrpCrossReference',
+			errorMessages: { 'gcrp-row': { referencedCurie: { severity: 'error', message: 'Invalid' } } },
+		});
+		expect(dispatch).toHaveBeenLastCalledWith({
+			type: 'UPDATE_ERROR_MESSAGES',
+			errorMessages: { taxon: 'Required field is empty' },
+		});
+	});
+
+	it('keeps a GCRP cross reference error that names no field with the section', () => {
+		const dispatch = vi.fn();
+
+		processGeneErrors({ errorMessages: { gcrpCrossReference: 'Not a valid entry' } }, dispatch, {
+			gcrpCrossReference: gcrpRow,
+		});
+
+		expect(dispatch).toHaveBeenCalledTimes(1);
+		expect(dispatch).toHaveBeenCalledWith({
+			type: 'UPDATE_ERROR_MESSAGES',
+			errorMessages: { gcrpCrossReference: 'Not a valid entry' },
+		});
+	});
+});
+
+describe('buildDuplicateGene', () => {
+	const alwaysVisible = () => true;
+
+	it("copies the fields the create form edits, without the stored gene's ids, audit fields or data provider", async () => {
+		const copy = await buildDuplicateGene(saved, alwaysVisible);
+
+		expect(copy).not.toHaveProperty('id');
+		expect(copy).not.toHaveProperty('curie');
+		expect(copy).not.toHaveProperty('primaryExternalId');
+		expect(copy).not.toHaveProperty('dataProvider');
+		expect(copy.obsolete).toBe(false);
+		expect(copy.taxon.curie).toBe(saved.taxon.curie);
+		expect(copy.geneType.curie).toBe(saved.geneType.curie);
+		['geneSymbol', 'geneFullName', 'geneSystematicName'].forEach((field) => {
+			expect(copy[field].displayText).toBe(saved[field].displayText);
+			expect(copy[field]).not.toHaveProperty('id');
+			expect(copy[field]).not.toHaveProperty('dateCreated');
+		});
+	});
+
+	it("keeps the GCRP cross reference's page but not its curie", async () => {
+		const { gcrpCrossReference } = await buildDuplicateGene(saved, alwaysVisible);
+
+		expect(gcrpCrossReference.referencedCurie).toBe('');
+		expect(gcrpCrossReference.displayName).toBe('');
+		expect(gcrpCrossReference).not.toHaveProperty('id');
+		expect(gcrpCrossReference.resourceDescriptorPage.id).toBe(saved.gcrpCrossReference.resourceDescriptorPage.id);
+		expect(gcrpCrossReference.dataKey).toBeDefined();
+	});
+
+	it('leaves out the GCRP cross reference while its section is hidden', async () => {
+		const copy = await buildDuplicateGene(saved, (field) => field !== 'GCRP Cross Reference');
+
+		expect(copy.gcrpCrossReference).toBeNull();
+	});
+
+	it('starts blank terms for a gene without a taxon or gene type', async () => {
+		const copy = await buildDuplicateGene({ geneSymbol: { displayText: 'abc' } }, alwaysVisible);
+
+		expect(copy.taxon).toEqual({ curie: '' });
+		expect(copy.geneType).toEqual({ curie: '' });
+		expect(copy.gcrpCrossReference).toBeNull();
+		expect(copy.geneFullName).toBeNull();
 	});
 });

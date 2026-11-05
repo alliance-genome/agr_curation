@@ -1,5 +1,6 @@
 import React from 'react';
-import { waitFor } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { BrowserRouter } from 'react-router-dom';
 import { renderWithClient } from '../../../tools/jest/utils';
 import { GenesPage } from '../index';
@@ -41,6 +42,22 @@ describe('<GenesPage />', () => {
 
 		const tableTitle = await result.findByText(/Genes Table/i);
 		expect(tableTitle).toBeInTheDocument();
+	});
+
+	it('Opens the create page in a new tab from the New Gene button', async () => {
+		const user = userEvent.setup();
+		const open = vi.spyOn(window, 'open').mockImplementation(() => null);
+
+		await renderWithClient(
+			<BrowserRouter>
+				<GenesPage />
+			</BrowserRouter>
+		);
+
+		await user.click(await screen.findByRole('button', { name: /New Gene/i }));
+
+		expect(open).toHaveBeenCalledWith('/gene/create', '_blank');
+		open.mockRestore();
 	});
 
 	it.skip('The table contains correct data', async () => {

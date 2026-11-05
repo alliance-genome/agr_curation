@@ -161,6 +161,22 @@ public class GeneDAO extends BaseCurieSQLDAO<Gene> {
 		return CollectionUtils.isNotEmpty(results);
 	}
 
+	/**
+	 * Whether a non-obsolete gene other than {@code excludeId} has this symbol display text and taxon.
+	 *
+	 * @param displayText symbol display text to match
+	 * @param taxonId id of the taxon to match
+	 * @param excludeId id of the gene being validated, or null for a new gene
+	 */
+	public Boolean hasGeneWithSymbolAndTaxon(String displayText, Long taxonId, Long excludeId) {
+		Map<String, Object> params = new HashMap<>();
+		params.put("geneSymbol.displayText", displayText);
+		params.put("taxon.id", taxonId);
+		params.put("obsolete", false);
+		List<Long> results = findIdsByParams(params);
+		return results.stream().anyMatch(id -> !id.equals(excludeId));
+	}
+
 	public List<String> getAllGenePrimaryExternalIds() {
 		String sql = """
 			SELECT be.primaryexternalid
