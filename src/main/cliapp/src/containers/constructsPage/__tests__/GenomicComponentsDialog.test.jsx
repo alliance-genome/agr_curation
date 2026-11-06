@@ -26,6 +26,28 @@ describe('<GenomicComponentsDialog />', () => {
 		expect(await within(dialog).findByText('targets')).toBeInTheDocument();
 		expect(within(dialog).getAllByText('croc (FB:FBgn0014143)').length).toBeGreaterThan(0);
 		expect(within(dialog).getByText('Notes(0)')).toBeInTheDocument();
+		expect(within(dialog).getByText('RelatedNotes')).toBeInTheDocument();
+		expect(within(dialog).getByText('Evidence')).toBeInTheDocument();
+	});
+
+	it('leaves out the Related Notes and Evidence columns when told to', async () => {
+		const sfGFP = { primaryExternalId: 'FB:FBto0000063', transgenicToolSymbol: { displayText: 'sfGFP' } };
+		const result = renderDialog(
+			[{ id: 4, relation: { name: 'is_compatible_with' }, transgenicToolTransgenicToolAssociationObject: sfGFP }],
+			{
+				objectField: 'transgenicToolTransgenicToolAssociationObject',
+				title: 'Transgenic Tool Associations',
+				getComponentLabel: (tool) => tool.transgenicToolSymbol.displayText,
+				showNotesAndEvidence: false,
+			}
+		);
+
+		const dialog = await result.findByRole('dialog');
+		expect(await within(dialog).findByText('is_compatible_with')).toBeInTheDocument();
+		expect(within(dialog).queryByText('RelatedNotes')).not.toBeInTheDocument();
+		expect(within(dialog).queryByText('Evidence')).not.toBeInTheDocument();
+		expect(within(dialog).getByText('Relation')).toBeInTheDocument();
+		expect(within(dialog).getByText('Obsolete')).toBeInTheDocument();
 	});
 
 	it('lists the genomic entity associations of a construct by default', async () => {
