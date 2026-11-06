@@ -32,6 +32,8 @@ const genomicEntityDisplayValue = (genomicEntity) => {
  * @param {string} [props.objectField] - the association's component field
  * @param {string} [props.title] - the pop-up's heading
  * @param {Function} [props.getComponentLabel] - the text shown for a component
+ * @param {boolean} [props.showNotesAndEvidence] - whether to show the Related Notes and Evidence columns; a
+ *        transgenic tool association has neither (SCRUM-6654)
  */
 export const GenomicComponentsDialog = ({
 	originalComponentsData,
@@ -41,6 +43,7 @@ export const GenomicComponentsDialog = ({
 	objectField = 'constructGenomicEntityAssociationObject',
 	title = 'Component Associations',
 	getComponentLabel = genomicEntityDisplayValue,
+	showNotesAndEvidence = true,
 }) => {
 	const { originalComponents, dialog } = originalComponentsData;
 	const [localComponents, setLocalComponents] = useState(null);
@@ -136,8 +139,8 @@ export const GenomicComponentsDialog = ({
 			<Row>
 				<Column header="Relation" />
 				<Column header="Component" />
-				<Column header="RelatedNotes" />
-				<Column header="Evidence" />
+				{showNotesAndEvidence && <Column header="RelatedNotes" />}
+				{showNotesAndEvidence && <Column header="Evidence" />}
 				<Column header="Updated By" />
 				<Column header="Date Updated" />
 				<Column header="Created By" />
@@ -168,18 +171,22 @@ export const GenomicComponentsDialog = ({
 							headerClassName="surface-0"
 							body={componentTemplate}
 						/>
-						<Column
-							field="relatedNotes.freeText"
-							header="Related Notes"
-							headerClassName="surface-0"
-							body={relatedNotesTemplate}
-						/>
-						<Column
-							field="evidence.curie"
-							header="Evidence"
-							headerClassName="surface-0"
-							body={(rowData) => evidenceTemplate(rowData)}
-						/>
+						{showNotesAndEvidence && (
+							<Column
+								field="relatedNotes.freeText"
+								header="Related Notes"
+								headerClassName="surface-0"
+								body={relatedNotesTemplate}
+							/>
+						)}
+						{showNotesAndEvidence && (
+							<Column
+								field="evidence.curie"
+								header="Evidence"
+								headerClassName="surface-0"
+								body={(rowData) => evidenceTemplate(rowData)}
+							/>
+						)}
 						<Column field="updatedBy.uniqueId" header="Updated By" headerClassName="surface-0" />
 						<Column field="dateUpdated" header="Date Updated" headerClassName="surface-0" />
 						<Column field="createdBy.uniqueId" header="Created By" headerClassName="surface-0" />
