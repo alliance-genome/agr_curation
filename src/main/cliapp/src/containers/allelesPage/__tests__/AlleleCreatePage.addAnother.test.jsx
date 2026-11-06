@@ -1,13 +1,7 @@
 import React from 'react';
 import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import {
-	DUPLICATE_SOURCE_ENTRY,
-	FORM_LOAD_WAIT,
-	NAVIGATION_WAIT,
-	renderInRouter,
-	sourceAllele,
-} from './alleleTestUtils';
+import { COPY_SOURCE_ENTRY, FORM_LOAD_WAIT, NAVIGATION_WAIT, renderInRouter, sourceAllele } from './alleleTestUtils';
 
 const createAllele = vi.fn();
 const getAllele = vi.fn();
@@ -59,8 +53,8 @@ const createdAllele = (id, curie) => {
 	return { ...copiedFields, id, curie };
 };
 
-// The page is opened to duplicate an allele, which is the quickest way to fill its lists.
-const renderPage = () => renderInRouter(<AlleleCreatePage />, DUPLICATE_SOURCE_ENTRY);
+// The page is opened to copy an allele, which is the quickest way to fill its lists.
+const renderPage = () => renderInRouter(<AlleleCreatePage />, COPY_SOURCE_ENTRY);
 
 const waitForSourceToLoad = async (container) => {
 	await waitFor(() => expect(container.querySelector('#displayText')).toHaveValue('abc-1'), FORM_LOAD_WAIT);

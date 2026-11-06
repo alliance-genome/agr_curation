@@ -15,7 +15,7 @@ import { buildSavePayload, processErrors } from './utils';
 import { getIdentifier } from '../../utils/utils';
 import { FormFieldVisibilityMenu, useFormFieldVisibility } from '../../components/FormFieldVisibility';
 import { VariantForm, VARIANT_DETAIL_TOGGLEABLE_FIELDS } from './VariantForm';
-import { DuplicateVariantButton, NewVariantButton } from './NewVariantButton';
+import { CopyVariantButton, NewVariantButton } from './NewVariantButton';
 import { useDeleteOrDeprecateDialogs } from '../../components/DeleteOrDeprecateDialogs';
 
 export default function VariantDetailPage() {
@@ -169,7 +169,7 @@ export default function VariantDetailPage() {
 						<SplitterPanel size={30} className="flex align-items-center justify-content-start gap-2 pl-2 py-3">
 							<Button label="Save" icon="pi pi-check" className="p-button-text" size="large" onClick={handleSubmit} />
 							<NewVariantButton className="p-button-text" />
-							<DuplicateVariantButton
+							<CopyVariantButton
 								className="p-button-text"
 								sourceIdentifier={variantState.variant?.curie || getIdentifier(variantState.variant) || identifier}
 							/>

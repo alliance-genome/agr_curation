@@ -69,12 +69,11 @@ describe('<GeneDetailPage />', { timeout: 30000 }, () => {
 		expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Gene: SamDC (FB:FBgn0019932)');
 	});
 
-	it('offers Save and New Gene, with Save only once something is edited', async () => {
+	it('offers Save, New Gene, Clone and Delete, with Save only once something is edited', async () => {
 		await renderLoaded();
 
 		expect(saveButton()).toBeDisabled();
-		expect(screen.getByRole('button', { name: 'New Gene' })).toBeEnabled();
-		['Clone', 'Delete'].forEach((name) => expect(screen.queryByRole('button', { name })).not.toBeInTheDocument());
+		['New Gene', 'Clone', 'Delete'].forEach((name) => expect(screen.getByRole('button', { name })).toBeEnabled());
 		expect(screen.queryByText('Pending Edits!')).not.toBeInTheDocument();
 	});
 

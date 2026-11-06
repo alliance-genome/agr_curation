@@ -109,7 +109,7 @@ export const buildSavePayload = (variant) => {
  * @param {Object} variant a variant as the API returns it
  * @returns {Object} a variant without an id, not obsolete, carrying only the fields the create form edits
  */
-export const buildDuplicateVariant = (variant) => ({
+export const buildVariantCopy = (variant) => ({
 	type: 'Variant',
 	taxon: structuredClone(variant.taxon) ?? { curie: '' },
 	variantType: structuredClone(variant.variantType) ?? null,

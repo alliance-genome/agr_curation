@@ -24,7 +24,7 @@ export const NAVIGATION_WAIT = { timeout: SUCCESS_HOLD_MS + 2000 };
 
 export const SOURCE_CURIE = 'AGRKB:101000000000001';
 
-// The allele a create page fills itself from when opened to duplicate one.
+// The allele a create page fills itself from when opened to copy one.
 export const sourceAllele = {
 	type: 'Allele',
 	id: 1,
@@ -36,13 +36,13 @@ export const sourceAllele = {
 	alleleSymbol: { id: 4, displayText: 'abc-1', formatText: 'abc-1', nameType: { name: 'nomenclature_symbol' } },
 };
 
-export const DUPLICATE_SOURCE_ENTRY = `/allele/create?from=${encodeURIComponent(SOURCE_CURIE)}`;
+export const COPY_SOURCE_ENTRY = `/allele/create?from=${encodeURIComponent(SOURCE_CURIE)}`;
 
 /**
  * Renders a page under a router, at `entry` when one is given.
  *
  * @param {React.ReactElement} page
- * @param {string} [entry] the location to open, such as {@link DUPLICATE_SOURCE_ENTRY}
+ * @param {string} [entry] the location to open, such as {@link COPY_SOURCE_ENTRY}
  */
 export const renderInRouter = (page, entry) =>
 	renderWithClient(

@@ -2,7 +2,7 @@ import React from 'react';
 import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { setLocalStorage } from '../../../tools/jest/setupTests';
-import { DUPLICATE_SOURCE_ENTRY, FORM_LOAD_WAIT, renderInRouter, sourceAllele } from './alleleTestUtils';
+import { COPY_SOURCE_ENTRY, FORM_LOAD_WAIT, renderInRouter, sourceAllele } from './alleleTestUtils';
 
 const createAllele = vi.fn();
 const getAllele = vi.fn();
@@ -46,9 +46,9 @@ const storedCrossReference = {
 	resourceDescriptorPage: { id: 40, name: 'allele', resourceDescriptor: { id: 30, prefix: 'WB', name: 'WormBase' } },
 };
 
-const renderPage = () => renderInRouter(<AlleleCreatePage />, DUPLICATE_SOURCE_ENTRY);
+const renderPage = () => renderInRouter(<AlleleCreatePage />, COPY_SOURCE_ENTRY);
 
-describe('<AlleleCreatePage /> duplicating cross references', { timeout: 30000 }, () => {
+describe('<AlleleCreatePage /> copying cross references', { timeout: 30000 }, () => {
 	beforeEach(() => {
 		createAllele.mockReset();
 		createAllele.mockResolvedValue({ data: { entity: { id: 4242, curie: 'AGRKB:101000000000002' } } });
