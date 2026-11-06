@@ -27,7 +27,10 @@ import { VariantsPage, VariantDetailPage, VariantCreatePage } from './containers
 import { ConstructsPage, ConstructDetailPage } from './containers/constructsPage';
 import { CassettesPage, CassetteDetailPage, CassetteCreatePage } from './containers/cassettesPage';
 import { TransgenicToolsPage, TransgenicToolDetailPage } from './containers/transgenicToolsPage';
-import { HTPExpressionDatasetAnnotationsPage } from './containers/htpExpressionDatasetAnnotationsPage';
+import {
+	HTPExpressionDatasetAnnotationsPage,
+	HTPExpressionDatasetAnnotationDetailPage,
+} from './containers/htpExpressionDatasetAnnotationsPage';
 import { HTPExpressionDatasetSampleAnnotationsPage } from './containers/htpExpressionDatasetSampleAnnotationsPage';
 import { SequenceTargetingReagentsPage } from './containers/sequenceTargetingReagentsPage';
 import { ProfilePage } from './containers/profilePage';
@@ -257,6 +260,14 @@ export default function AppRoutes() {
 						element={
 							<ErrorBoundary>
 								<HTPExpressionDatasetSampleAnnotationsPage />
+							</ErrorBoundary>
+						}
+					/>
+					<Route
+						path="/htp-expression-dataset/:identifier"
+						element={
+							<ErrorBoundary>
+								<HTPExpressionDatasetAnnotationDetailPage />
 							</ErrorBoundary>
 						}
 					/>
