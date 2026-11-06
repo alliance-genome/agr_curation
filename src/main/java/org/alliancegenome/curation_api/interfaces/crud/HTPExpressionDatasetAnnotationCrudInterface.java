@@ -4,12 +4,14 @@ import org.alliancegenome.curation_api.interfaces.base.BaseIdCrudInterface;
 import org.alliancegenome.curation_api.model.entities.HTPExpressionDatasetAnnotation;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.HTPExpressionDatasetAnnotationIngestFmsDTO;
 import org.alliancegenome.curation_api.response.APIResponse;
+import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.view.CurationView;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
 import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
@@ -22,10 +24,19 @@ import org.eclipse.microprofile.openapi.annotations.Operation;
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public interface HTPExpressionDatasetAnnotationCrudInterface extends BaseIdCrudInterface<HTPExpressionDatasetAnnotation> {
-	
+
 	@Operation(summary = "Bulk load HTP expression dataset annotation data", description = "Bulk load HTP expression dataset annotation records from a data provider submission")
 	@POST
 	@Path("/bulk/{dataProvider}/htpexpressiondatasetannotationfile")
 	@JsonView(CurationView.FieldsAndLists.class)
 	APIResponse updateHTPExpressionDatasetAnnotation(@PathParam("dataProvider") String dataProvider, HTPExpressionDatasetAnnotationIngestFmsDTO htpDatasetData);
+
+	// SCRUM-6174: the detail page's stable URL. BaseIdCrudInterface's getById is keyed on the numeric
+	// DB id and @JsonView(FieldsOnly), which would omit subSeries/references/categoryTags
+	// (FieldsAndLists only) - mirrors GeneExpressionAnnotationCrudInterface's own findBy/{identifier}.
+	@Operation(summary = "Get HTP expression dataset annotation by identifier", description = "Retrieve a single HTP expression dataset annotation by its curie")
+	@GET
+	@Path("/findBy/{identifier}")
+	@JsonView(CurationView.FieldsAndLists.class)
+	ObjectResponse<HTPExpressionDatasetAnnotation> getByIdentifier(@PathParam("identifier") String identifier);
 }

@@ -30,8 +30,15 @@ const locationText = (site) => {
  * Read-only table of HTP expression dataset sample annotations, including the pop-up fields:
  * Expression Sample and Biological Reference are both ExternalDataBaseEntity - the same popup
  * used by the dataset-level table serves both, told apart by title.
+ *
+ * tableName is the title, and without spaces the key the table's settings are saved under, so a
+ * table embedded elsewhere (the sample annotations of one dataset) keeps its own columns,
+ * filters and page. fixedFilters restrict every search, see useGetTableData.
  */
-export const HTPExpressionDatasetSampleAnnotationsTable = () => {
+export const HTPExpressionDatasetSampleAnnotationsTable = ({
+	tableName = 'HTP Expression Dataset Sample Annotations',
+	fixedFilters,
+}) => {
 	const toast_topleft = useRef(null);
 	const toast_topright = useRef(null);
 
@@ -274,8 +281,8 @@ export const HTPExpressionDatasetSampleAnnotationsTable = () => {
 	const SEARCH_ENDPOINT = Endpoints.Annotation.HTP_EXPRESSION_DATASET_SAMPLE_ANNOTATION;
 
 	const initialTableState = useMemo(
-		() => getDefaultTableState('HTPExpressionDatasetSampleAnnotations', columns, DEFAULT_COLUMN_WIDTH),
-		[columns]
+		() => getDefaultTableState(tableName.replace(/\s+/g, ''), columns, DEFAULT_COLUMN_WIDTH),
+		[tableName, columns]
 	);
 
 	const { settings: tableState, mutate: setTableState } = useGetUserSettings(
@@ -286,6 +293,7 @@ export const HTPExpressionDatasetSampleAnnotationsTable = () => {
 	const { isFetching, isLoading } = useGetTableData({
 		tableState,
 		endpoint: SEARCH_ENDPOINT,
+		fixedFilters,
 		setIsInEditMode,
 		setEntities: setHtpExpressionDatasetSampleAnnotations,
 		setTotalRecords,
@@ -301,7 +309,7 @@ export const HTPExpressionDatasetSampleAnnotationsTable = () => {
 				<GenericDataTable
 					dataKey="id"
 					endpoint={SEARCH_ENDPOINT}
-					tableName="HTP Expression Dataset Sample Annotations"
+					tableName={tableName}
 					entities={htpExpressionDatasetSampleAnnotations}
 					setEntities={setHtpExpressionDatasetSampleAnnotations}
 					totalRecords={totalRecords}
