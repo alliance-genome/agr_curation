@@ -13,6 +13,7 @@ import org.alliancegenome.curation_api.model.entities.AlleleDiseaseAnnotation;
 import org.alliancegenome.curation_api.model.entities.AllelePhenotypeAnnotation;
 import org.alliancegenome.curation_api.model.entities.Antibody;
 import org.alliancegenome.curation_api.model.entities.AssemblyComponent;
+import org.alliancegenome.curation_api.model.entities.Cassette;
 import org.alliancegenome.curation_api.model.entities.Construct;
 import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation;
 import org.alliancegenome.curation_api.model.entities.Gene;
@@ -25,6 +26,7 @@ import org.alliancegenome.curation_api.model.entities.HTPExpressionDatasetSample
 import org.alliancegenome.curation_api.model.entities.PhenotypeAnnotation;
 import org.alliancegenome.curation_api.model.entities.Reference;
 import org.alliancegenome.curation_api.model.entities.SequenceTargetingReagent;
+import org.alliancegenome.curation_api.model.entities.TransgenicTool;
 import org.alliancegenome.curation_api.model.entities.Variant;
 import org.alliancegenome.curation_api.util.CurieSubdomainResolver;
 import org.junit.jupiter.api.Test;
@@ -62,11 +64,13 @@ class CurieSubdomainTest {
 		Map.entry(GeneMolecularInteraction.class, MatiSubdomain.MOLECULAR_INTERACTION),
 		Map.entry(GeneGeneticInteraction.class, MatiSubdomain.GENETIC_INTERACTION),
 		Map.entry(HTPExpressionDatasetAnnotation.class, MatiSubdomain.HTP_EXPRESSION_DATASET),
-		Map.entry(HTPExpressionDatasetSampleAnnotation.class, MatiSubdomain.HTP_EXPRESSION_SAMPLE));
+		Map.entry(HTPExpressionDatasetSampleAnnotation.class, MatiSubdomain.HTP_EXPRESSION_SAMPLE),
+		Map.entry(Cassette.class, MatiSubdomain.CASSETTE),
+		Map.entry(TransgenicTool.class, MatiSubdomain.TRANSGENIC_TOOL));
 
 	@Test
 	void everyMintedEntityTypeDeclaresTheSubdomainItsCallSiteUsedToName() {
-		assertEquals(15, EXPECTED.size(), "one entry per minted entity type");
+		assertEquals(17, EXPECTED.size(), "one entry per minted entity type");
 		EXPECTED.forEach((entityClass, expected) ->
 			assertEquals(expected, CurieSubdomainResolver.subdomainForClass(entityClass),
 				entityClass.getSimpleName() + " declares the wrong MaTI subdomain"));

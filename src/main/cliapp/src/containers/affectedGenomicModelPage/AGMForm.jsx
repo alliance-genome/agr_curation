@@ -10,6 +10,7 @@ import { DetailPageFieldWrapper } from '../../components/DetailPageFieldWrapper'
 import { AgmFullNameForm } from './agmFullName/AgmFullNameForm';
 import { SynonymsForm } from './synonyms/SynonymsForm';
 import { SecondaryIdsForm } from './secondaryIds/SecondaryIdsForm';
+import { AssociatedSTRsTemplate } from './associatedSTRs/AssociatedSTRsTemplate';
 import { FormSection } from '../../components/FormFieldVisibility';
 
 // Every section on the page, in display order.
@@ -24,6 +25,7 @@ export const AGM_DETAIL_TOGGLEABLE_FIELDS = [
 	'Taxon',
 	'Data Provider',
 	'Cross References',
+	'Associated STRs',
 	'Updated By',
 	'Date Updated',
 	'Created By',
@@ -32,16 +34,17 @@ export const AGM_DETAIL_TOGGLEABLE_FIELDS = [
 	'Obsolete',
 ];
 
-// The sections create mode does not render, so its menu does not offer them. Cross References has
-// no editor here or on the table, so a brand new AGM has nothing to show there either. A
-// curator-created AGM has no MOD of record, so it has neither a Primary External ID nor a MOD
-// Internal ID - AffectedGenomicModelValidator opts out of requiring either (same as Allele), and
-// the AGRKB curie minted on create is its identifier instead.
+// The sections create mode does not render, so its menu does not offer them. Cross References and
+// Associated STRs have no editor here or on the table, so a brand new AGM - which can't yet have
+// either - has nothing to show there. A curator-created AGM has no MOD of record, so it has
+// neither a Primary External ID nor a MOD Internal ID - AffectedGenomicModelValidator opts out of
+// requiring either (same as Allele), and the AGRKB curie minted on create is its identifier instead.
 const FIELDS_OMITTED_ON_CREATE = [
 	'Curie',
 	'Primary External ID',
 	'MOD Internal ID',
 	'Cross References',
+	'Associated STRs',
 	'Updated By',
 	'Date Updated',
 	'Created By',
@@ -177,6 +180,18 @@ export const AGMForm = ({ state, dispatch, isVisible, mode = 'detail' }) => {
 					widgetColumnSize={widgetColumnSize}
 					fieldName="Cross References"
 					formField={<CrossReferencesTemplate list={state.agm?.crossReferences} />}
+					showAdditionalData={false}
+				/>
+			</FormSection>
+
+			{/* Read only: STR associations are system-managed, with no editor here or on the table. */}
+			<FormSection isVisible={!isCreate && isVisible('Associated STRs')}>
+				<DetailPageFieldWrapper
+					labelColumnSize={labelColumnSize}
+					fieldDetailsColumnSize={fieldDetailsColumnSize}
+					widgetColumnSize={widgetColumnSize}
+					fieldName="Associated STRs"
+					formField={<AssociatedSTRsTemplate list={state.agm?.agmSequenceTargetingReagentAssociations} />}
 					showAdditionalData={false}
 				/>
 			</FormSection>

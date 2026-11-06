@@ -13,18 +13,17 @@ import { InternalEditor } from './Editors/legacyForm/InternalEditor';
 import { ValidationService } from '../service/ValidationService';
 import { VocabularyTermSetEditor } from './Editors/legacyForm/VocabularyTermSetEditor';
 import { validate } from '../utils/utils';
-import { addDataKey } from '../containers/allelesPage/utils';
+import { addDataKey } from '../utils/rows';
 
 export const RelatedNotesDialogEditOnly = ({
 	relatedNotesData,
 	tableErrorMessages,
-	dispatch,
+	setTableErrorMessages,
 	setRelatedNotesData,
 	singleValue = false,
 	onChange,
 	defaultValues,
 	errorField = 'relatedNotes',
-	entityType,
 	noteTypeVocabType,
 }) => {
 	const { originalRelatedNotes, dialogIsVisible, dataKey } = relatedNotesData;
@@ -165,7 +164,7 @@ export const RelatedNotesDialogEditOnly = ({
 			},
 		};
 		tableErrorMessagesCopy[dataKey] = errorMessage;
-		dispatch({ type: 'UPDATE_TABLE_ERROR_MESSAGES', entityType: entityType, errorMessages: tableErrorMessagesCopy });
+		setTableErrorMessages(tableErrorMessagesCopy);
 		setRelatedNotesData((relatedNotesData) => {
 			return {
 				...relatedNotesData,

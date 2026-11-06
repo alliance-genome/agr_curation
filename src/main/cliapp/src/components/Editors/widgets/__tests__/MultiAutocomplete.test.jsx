@@ -23,6 +23,19 @@ describe('<MultiAutocomplete />', () => {
 		expect(tokenLabels(container)).toEqual(['AGRKB:1', 'AGRKB:2']);
 	});
 
+	it('labels tokens with selectedItemTemplate when given', () => {
+		const { container } = render(
+			<MultiAutocomplete
+				value={[{ id: 1, curie: 'SO:0000001', name: 'point_mutation' }]}
+				onChange={vi.fn()}
+				search={noSearch}
+				selectedItemTemplate={(item) => `${item.name} (${item.curie})`}
+			/>
+		);
+
+		expect(tokenLabels(container)).toEqual(['point_mutation (SO:0000001)']);
+	});
+
 	it('appends an entity that differs by id', async () => {
 		const onChange = vi.fn();
 		const existing = { id: 1, curie: 'AGRKB:1' };

@@ -3,12 +3,20 @@ import { Column } from 'primereact/column';
 import { DeleteAction } from '../../../components/Actions/DeletionAction';
 import { CrossReferenceTemplate } from '../../../components/Templates/reference/CrossReferenceTemplate';
 import { ShortCitationTemplate } from '../../../components/Templates/reference/ShortCitationTemplate';
+import { DialogErrorMessageComponent } from '../../../components/Error/DialogErrorMessageComponent';
 
-export const ReferencesFormTable = ({ references, editingRows, onRowEditChange, tableRef, deletionHandler }) => {
+export const ReferencesFormTable = ({
+	references,
+	editingRows,
+	errorMessages,
+	onRowEditChange,
+	tableRef,
+	deletionHandler,
+}) => {
 	return (
 		<DataTable
 			value={references}
-			dataKey="crossReferencesFilter"
+			dataKey="dataKey"
 			showGridlines
 			editMode="row"
 			removableSort
@@ -33,7 +41,20 @@ export const ReferencesFormTable = ({ references, editingRows, onRowEditChange, 
 				bodyClassName="text-center"
 				frozen
 			/>
-			<Column field="curie" header="Curie" sortable filter showFilterMenu={false} filterMatchMode="contains" />
+			<Column
+				field="curie"
+				header="Curie"
+				body={(data) => (
+					<>
+						{data.curie}
+						<DialogErrorMessageComponent errorMessages={errorMessages?.[data.dataKey]} errorField="curie" />
+					</>
+				)}
+				sortable
+				filter
+				showFilterMenu={false}
+				filterMatchMode="contains"
+			/>
 			<Column
 				field="crossReferences"
 				header="Cross References"

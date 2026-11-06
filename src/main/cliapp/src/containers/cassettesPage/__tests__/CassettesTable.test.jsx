@@ -41,4 +41,14 @@ describe('<CassettesTable />', () => {
 		const tableTitle = await result.findByText(/Cassettes Table/i);
 		expect(tableTitle).toBeInTheDocument();
 	});
+
+	it('Has a Curie column', async () => {
+		let result = await renderWithClient(
+			<BrowserRouter>
+				<CassettesTable />
+			</BrowserRouter>
+		);
+
+		expect(await result.findByRole('columnheader', { name: /^Curie/ })).toBeInTheDocument();
+	});
 });

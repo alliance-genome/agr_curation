@@ -62,7 +62,7 @@ public class IT_0402_AlleleConstructAssociationITCase extends BaseITCase {
 	private Note note2;
 	
 	private final String alleleConstructAssociationGetEndpoint = "/api/alleleconstructassociation/findBy";
-	private final String alleleGetEndpoint = "/api/allele/";
+	private final String alleleConstructAssociationFindEndpoint = "/api/alleleconstructassociation/find?limit=10&page=0";
 	
 	private void loadRequiredEntities() {
 		Vocabulary nameTypeVocabulary = getVocabulary(VocabularyConstants.NAME_TYPE_VOCABULARY);
@@ -137,15 +137,18 @@ public class IT_0402_AlleleConstructAssociationITCase extends BaseITCase {
 			body("entity.relatedNote.noteType.name", is(noteType.getName())).
 			body("entity.relatedNote.references[0].curie", is(reference.getCurie()));
 
+		// The allele's endpoints omit construct associations, so they are found by their subject.
 		RestAssured.given().
+			contentType("application/json").
+			body("{\"alleleAssociationSubject.primaryExternalId\": \"" + allele.getPrimaryExternalId() + "\"}").
 			when().
-			get(alleleGetEndpoint + allele.getPrimaryExternalId()).
+			post(alleleConstructAssociationFindEndpoint).
 			then().
 			statusCode(200).
-			body("entity.alleleConstructAssociations", hasSize(1)).
-			body("entity.alleleConstructAssociations[0].relation.name", is(relation.getName())).
-			body("entity.alleleConstructAssociations[0].alleleConstructAssociationObject.primaryExternalId", is(construct.getPrimaryExternalId())).
-			body("entity.alleleConstructAssociations[0].alleleAssociationSubject", not(hasKey("alleleConstructAssociations")));
+			body("results", hasSize(1)).
+			body("results[0].relation.name", is(relation.getName())).
+			body("results[0].alleleConstructAssociationObject.primaryExternalId", is(construct.getPrimaryExternalId())).
+			body("results[0].alleleAssociationSubject", not(hasKey("alleleConstructAssociations")));
 	}
 	
 	@Test

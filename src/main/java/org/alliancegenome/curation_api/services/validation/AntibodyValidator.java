@@ -16,6 +16,7 @@ import org.alliancegenome.curation_api.model.entities.Reference;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
+import org.alliancegenome.curation_api.services.CurieMintService;
 import org.alliancegenome.curation_api.services.helpers.AntibodyUniqueIdHelper;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -27,6 +28,7 @@ import jakarta.inject.Inject;
 public class AntibodyValidator extends ReagentValidator {
 
 	@Inject AntibodyDAO antibodyDAO;
+	@Inject CurieMintService curieMintService;
 	@Inject GeneDAO geneDAO;
 	@Inject ReferenceValidator referenceValidator;
 	@Inject CrossReferenceValidator crossReferenceValidator;
@@ -102,6 +104,14 @@ public class AntibodyValidator extends ReagentValidator {
 			throw new ApiErrorException(response);
 		}
 
+		// Mint an AGRKB curie for a NEW antibody that has none, before persist so the insert writes it.
+		// A curator-supplied curie is left alone. The getId() == null guard is load-bearing, as for
+		// constructs: validateAntibody serves create and update, and validateCommonReagentFields ->
+		// SubmittedObjectValidator copies the payload's curie unconditionally, so an update omitting curie
+		// nulls it and an unguarded mint would then silently replace the antibody's AGRKB id.
+		if (dbEntity.getId() == null) {
+			curieMintService.mintCurieIfAbsent(dbEntity);
+		}
 		dbEntity = antibodyDAO.persist(dbEntity);
 
 		return dbEntity;

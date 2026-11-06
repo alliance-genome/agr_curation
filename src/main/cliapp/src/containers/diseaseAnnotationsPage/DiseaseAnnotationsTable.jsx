@@ -27,7 +27,7 @@ import { StringTemplate } from '../../components/Templates/StringTemplate';
 import { NotEditor } from '../../components/Editors/dropdown/not/NotEditor';
 import { ControlledVocabularyTableEditor } from '../../components/Editors/dropdown/vocabulary/ControlledVocabularyTableEditor';
 import { BooleanTableEditor } from '../../components/Editors/dropdown/boolean/BooleanTableEditor';
-import { DialogTriggerEditor } from '../../components/Editors/dialog/DialogTriggerEditor';
+import { DialogTriggerTableEditor } from '../../components/Editors/dialog/DialogTriggerTableEditor';
 import { ConditionHandleTableEditor } from '../../components/Editors/dropdown/conditionHandle/ConditionHandleTableEditor';
 import { BiologicalEntityTableEditor } from '../../components/Editors/autocomplete/biologicalEntity/BiologicalEntityTableEditor';
 import { DiseaseTableEditor } from '../../components/Editors/autocomplete/ontology/DiseaseTableEditor';
@@ -44,7 +44,7 @@ import { ControlledVocabularyMultiSelectTableEditor } from '../../components/Edi
 
 import { useControlledVocabularyService } from '../../service/useControlledVocabularyService';
 import { useVocabularyTermSetService } from '../../service/useVocabularyTermSetService';
-import { ErrorMessageComponent } from '../../components/Error/ErrorMessageComponent';
+import { TableField } from '../../components/Editors/fields/TableField';
 import { Button } from 'primereact/button';
 import { setNewEntity } from '../../utils/utils';
 import { diseaseQualifiersSort, evidenceCodesSort } from '../../components/Templates/utils/sortMethods';
@@ -85,8 +85,6 @@ export const DiseaseAnnotationsTable = () => {
 	const diseaseQualifiersTerms = useControlledVocabularyService('disease_qualifier');
 
 	const [errorMessages, setErrorMessages] = useState({});
-	const errorMessagesRef = useRef();
-	errorMessagesRef.current = errorMessages;
 
 	const [uiErrorMessages, setUiErrorMessages] = useState([]);
 
@@ -130,14 +128,11 @@ export const DiseaseAnnotationsTable = () => {
 		}
 
 		if (rowData.relatedNotes && rowData.relatedNotes.length > 0) {
-			newAnnotationDispatch({ type: 'SET_RELATED_NOTES_EDITING_ROWS', relatedNotes: rowData.relatedNotes });
+			newAnnotationDispatch({ type: 'SET_RELATED_NOTES_EDITING_ROWS' });
 		}
 
 		if (rowData.conditionRelations && rowData.conditionRelations.length > 0) {
-			newAnnotationDispatch({
-				type: 'SET_CONDITION_RELATIONS_EDITING_ROWS',
-				conditionRelations: rowData.conditionRelations,
-			});
+			newAnnotationDispatch({ type: 'SET_CONDITION_RELATIONS_EDITING_ROWS' });
 		}
 
 		handleNewAnnotationOpen();
@@ -204,15 +199,11 @@ export const DiseaseAnnotationsTable = () => {
 
 	const uniqueIdEditorTemplate = (editorOptions) => {
 		return (
-			<>
+			<TableField editorOptions={editorOptions} field="uniqueId">
 				<EllipsisTableCell otherClasses={`c${editorOptions.rowData.id}`}>
 					{editorOptions.rowData.uniqueId}
 				</EllipsisTableCell>
-				<ErrorMessageComponent
-					errorMessages={errorMessagesRef.current[editorOptions.rowIndex]}
-					errorField={'uniqueId'}
-				/>
-			</>
+			</TableField>
 		);
 	};
 
@@ -336,9 +327,8 @@ export const DiseaseAnnotationsTable = () => {
 				editor: (editorOptions) => {
 					const count = editorOptions.rowData.relatedNotes?.length;
 					return (
-						<DialogTriggerEditor
+						<DialogTriggerTableEditor
 							editorOptions={editorOptions}
-							errorMessagesRef={errorMessagesRef}
 							onOpenInEdit={handleRelatedNotesOpenInEdit}
 							errorField="relatedNotes"
 							displayText={count ? `Notes(${count}) ` : null}
@@ -386,9 +376,8 @@ export const DiseaseAnnotationsTable = () => {
 					if (editorOptions.rowData?.conditionRelations?.[0]?.handle) return null;
 					const count = editorOptions.rowData?.conditionRelations?.length;
 					return (
-						<DialogTriggerEditor
+						<DialogTriggerTableEditor
 							editorOptions={editorOptions}
-							errorMessagesRef={errorMessagesRef}
 							onOpenInEdit={handleConditionRelationsOpenInEdit}
 							errorField="conditionRelations"
 							displayText={count ? `Conditions (${count})` : null}

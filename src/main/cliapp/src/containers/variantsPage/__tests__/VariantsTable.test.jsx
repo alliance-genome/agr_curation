@@ -51,6 +51,7 @@ describe('<VariantsTable />', () => {
 		);
 
 		const curieTd = await result.findByText(/WB:WBVarTest0002/i);
+		const uniqueIdTd = await result.findByText('NCBITaxon:6239|SO:0000694|WB');
 		const taxonTd = await result.findByText(/Caenorhabditis elegans/i);
 		const updatedByTd = await result.findByText(/VARIANTTEST:Person0002/i);
 		const createdByTd = await result.findByText(/VARIANTTEST:Person0001/i);
@@ -63,6 +64,7 @@ describe('<VariantsTable />', () => {
 
 		await waitFor(() => {
 			expect(curieTd).toBeInTheDocument();
+			expect(uniqueIdTd).toBeInTheDocument();
 			expect(taxonTd).toBeInTheDocument();
 			expect(dateUpdatedTd).toBeInTheDocument();
 			expect(dateCreatedTd).toBeInTheDocument();

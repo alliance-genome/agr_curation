@@ -135,6 +135,23 @@ export function getEntityType(entity) {
 	return 'Unknown Entity';
 }
 
+/**
+ * What a failed request says went wrong: the API's error message, or failing that the response's status, or
+ * failing that the error's own message, for a request that got no response.
+ *
+ * @param {Object} error the rejected request's error
+ * @returns {string}
+ */
+export const errorMessageOf = (error) =>
+	error?.response?.data?.errorMessage ||
+	(error?.response ? `${error.response.status} ${error.response.statusText}`.trim() : error?.message);
+
+/**
+ * @param {string} text such as a sub-resource's label
+ * @returns {string} the text with its first letter in upper case, for the start of a message
+ */
+export const capitalize = (text) => `${text.charAt(0).toUpperCase()}${text.slice(1)}`;
+
 export function getIdentifier(data) {
 	if (!data) {
 		return null;
@@ -581,15 +598,16 @@ export const validateTable = async (endpoint, errorType, table, dispatch) => {
 	if (!table) return false;
 	const validationService = new ValidationService();
 	const results = await validate(table, endpoint, validationService);
-	const errors = [];
+	const errors = {};
 	let anyErrors = false;
 	results.forEach((result, index) => {
 		const { isError, data } = result;
 		if (isError) {
-			errors[index] = {};
+			const { dataKey } = table[index];
+			errors[dataKey] = {};
 			if (!data) return;
 			Object.keys(data).forEach((field) => {
-				errors[index][field] = {
+				errors[dataKey][field] = {
 					severity: 'error',
 					message: data[field],
 				};
