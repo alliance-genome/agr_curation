@@ -10,18 +10,9 @@ import ErrorBoundary from '../../components/Error/ErrorBoundary';
 import { StickyHeader } from '../../components/StickyHeader';
 import { DetailPageHeading } from '../../components/DetailPageHeading';
 import { LoadingOverlay } from '../../components/LoadingOverlay';
-import { FormFieldVisibilityMenu, FormSection, useFormFieldVisibility } from '../../components/FormFieldVisibility';
-import { IdentifierDetailPageTemplate } from '../../components/Templates/IdentifierDetailPageTemplate';
-import { DataProviderDetailPageTemplate } from '../../components/Templates/DataProviderDetailPageTemplate';
-import { UserDetailPageTemplate } from '../../components/Templates/UserDetailPageTemplate';
-import { DateDetailPageTemplate } from '../../components/Templates/DateDetailPageTemplate';
-import { BooleanDetailPageEditor } from '../../components/Editors/dropdown/boolean/BooleanDetailPageEditor';
+import { FormFieldVisibilityMenu, useFormFieldVisibility } from '../../components/FormFieldVisibility';
 import { processErrors } from '../affectedGenomicModelPage/utils';
-import { NameSlotAnnotationForm } from '../../components/nameSlotAnnotations/NameSlotAnnotationForm';
-import { SynonymsForm } from '../transgenicToolsPage/detail/SynonymsForm';
-import { SecondaryIdsForm } from '../transgenicToolsPage/detail/SecondaryIdsForm';
-import { UsesForm } from '../transgenicToolsPage/detail/UsesForm';
-import { ReferencesForm } from '../transgenicToolsPage/detail/ReferencesForm';
+import { getIdentifier } from '../../utils/utils';
 import {
 	FREE_TEXT_COMPONENTS,
 	GENOMIC_ENTITY_COMPONENTS,
@@ -30,42 +21,9 @@ import {
 } from './components/componentConfigs';
 import { useCassetteReducer } from './detail/useCassetteReducer';
 import { useCassetteComponentList } from './detail/useCassetteComponentList';
-import { CassetteComponentsForm } from './detail/CassetteComponentsForm';
 import { buildCassettePayload } from './detail/utils';
-
-const ENTITY_KEY = 'cassette';
-
-// The fields of the page, in the ticket's order; each can be hidden through the field menu (SCRUM-6747)
-export const CASSETTE_DETAIL_TOGGLEABLE_FIELDS = [
-	'Unique ID',
-	'Curie',
-	'Primary External ID',
-	'MOD Internal ID',
-	'Symbol',
-	'Name',
-	'Synonyms',
-	'Secondary IDs',
-	FREE_TEXT_COMPONENTS.title,
-	GENOMIC_ENTITY_COMPONENTS.title,
-	TRANSGENIC_TOOL_COMPONENTS.title,
-	STR_COMPONENTS.title,
-	'Uses',
-	'References',
-	'Data Provider',
-	'Updated By',
-	'Date Updated',
-	'Created By',
-	'Date Created',
-	'Placeholder',
-	'Internal',
-	'Obsolete',
-];
-
-const labelColumnSize = 'col-3';
-const widgetColumnSize = 'col-4';
-const fieldDetailsColumnSize = 'col-5';
-
-const columnSizes = { labelColumnSize, widgetColumnSize, fieldDetailsColumnSize };
+import { CassetteForm, CASSETTE_DETAIL_TOGGLEABLE_FIELDS } from './CassetteForm';
+import { NewCassetteButton, DuplicateCassetteButton } from './NewCassetteButton';
 
 // The message of a rejected request: the API's, or its status when it gave none.
 const errorDetail = (error) =>
@@ -159,21 +117,6 @@ export default function CassetteDetailPage() {
 			</div>
 		);
 
-	const onBooleanChange = (field) => (event) => cassetteDispatch({ type: 'EDIT', field, value: event.value });
-
-	const booleanField = (field, label) => (
-		<BooleanDetailPageEditor
-			value={cassette?.[field]}
-			name={field}
-			label={label}
-			onValueChange={onBooleanChange(field)}
-			errorMessages={cassetteState.errorMessages}
-			{...columnSizes}
-		/>
-	);
-
-	const formProps = { state: cassetteState, dispatch: cassetteDispatch, entityKey: ENTITY_KEY };
-
 	return (
 		<>
 			<Toast ref={toastError} position="top-left" />
@@ -182,14 +125,14 @@ export default function CassetteDetailPage() {
 			<ErrorBoundary>
 				<StickyHeader>
 					<Splitter className="bg-primary-reverse border-none lg:min-h-5rem" gutterSize={0}>
-						<SplitterPanel size={50} className="flex justify-content-start min-w-0 ml-5 py-3 ">
+						<SplitterPanel size={45} className="flex justify-content-start min-w-0 ml-5 py-3 ">
 							<DetailPageHeading
 								entityType="Cassette"
 								entity={cassette}
 								label={cassette?.cassetteSymbol?.displayText}
 							/>
 						</SplitterPanel>
-						<SplitterPanel size={30} className="flex align-items-center justify-content-end gap-2 py-3">
+						<SplitterPanel size={25} className="flex align-items-center justify-content-end gap-2 py-3">
 							<FormFieldVisibilityMenu
 								toggleableFields={CASSETTE_DETAIL_TOGGLEABLE_FIELDS}
 								visibleFields={visibleFields}
@@ -197,7 +140,7 @@ export default function CassetteDetailPage() {
 								showAllFields={showAllFields}
 							/>
 						</SplitterPanel>
-						<SplitterPanel size={20} className="flex align-items-center justify-content-start gap-2 pl-2 py-3">
+						<SplitterPanel size={30} className="flex align-items-center justify-content-start gap-2 pl-2 py-3">
 							<Button
 								label="Save"
 								icon="pi pi-check"
@@ -205,100 +148,20 @@ export default function CassetteDetailPage() {
 								onClick={handleSubmit}
 								disabled={!hasPendingEdits || isSavingCassette || isSavingComponents}
 							/>
+							<NewCassetteButton className="p-button-text" />
+							<DuplicateCassetteButton
+								className="p-button-text"
+								sourceIdentifier={cassette?.curie || getIdentifier(cassette) || identifier}
+							/>
 						</SplitterPanel>
 					</Splitter>
 				</StickyHeader>
-				{/* Saving is the header's Save; Enter in a table filter or field must not submit and reload the page. */}
-				<form className="mt-8" onSubmit={(event) => event.preventDefault()}>
-					<FormSection isVisible={isVisible('Unique ID')}>
-						<IdentifierDetailPageTemplate
-							identifier={cassette?.uniqueId}
-							label="Unique ID"
-							{...columnSizes}
-							showAdditionalData={false}
-						/>
-					</FormSection>
-					<FormSection isVisible={isVisible('Curie')}>
-						<IdentifierDetailPageTemplate
-							identifier={cassette?.curie}
-							label="Curie"
-							{...columnSizes}
-							showAdditionalData={false}
-						/>
-					</FormSection>
-					<FormSection isVisible={isVisible('Primary External ID')}>
-						<IdentifierDetailPageTemplate
-							identifier={cassette?.primaryExternalId}
-							label="Primary External ID"
-							{...columnSizes}
-							showAdditionalData={false}
-						/>
-					</FormSection>
-					<FormSection isVisible={isVisible('MOD Internal ID')}>
-						<IdentifierDetailPageTemplate
-							identifier={cassette?.modInternalId}
-							label="MOD Internal ID"
-							{...columnSizes}
-							showAdditionalData={false}
-						/>
-					</FormSection>
-					<FormSection isVisible={isVisible('Symbol')}>
-						<NameSlotAnnotationForm
-							name={cassetteState[ENTITY_KEY]?.cassetteSymbol}
-							entityState={cassetteState.entityStates.cassetteSymbol}
-							dispatch={cassetteDispatch}
-							entityType="cassetteSymbol"
-							isSymbol
-							tableName="Symbol"
-							addLabel="Add Symbol"
-						/>
-					</FormSection>
-					<FormSection isVisible={isVisible('Name')}>
-						<NameSlotAnnotationForm
-							name={cassetteState[ENTITY_KEY]?.cassetteFullName}
-							entityState={cassetteState.entityStates.cassetteFullName}
-							dispatch={cassetteDispatch}
-							entityType="cassetteFullName"
-							tableName="Name"
-							addLabel="Add Name"
-						/>
-					</FormSection>
-					<FormSection isVisible={isVisible('Synonyms')}>
-						<SynonymsForm {...formProps} entityType="cassetteSynonyms" />
-					</FormSection>
-					<FormSection isVisible={isVisible('Secondary IDs')}>
-						<SecondaryIdsForm {...formProps} {...columnSizes} />
-					</FormSection>
-					{componentSections.map(({ config, components }) => (
-						<FormSection key={config.list} isVisible={isVisible(config.title)}>
-							<CassetteComponentsForm components={components} config={config} />
-						</FormSection>
-					))}
-					<FormSection isVisible={isVisible('Uses')}>
-						<UsesForm {...formProps} entityType="cassetteUses" tableName="Uses" />
-					</FormSection>
-					<FormSection isVisible={isVisible('References')}>
-						<ReferencesForm {...formProps} />
-					</FormSection>
-					<FormSection isVisible={isVisible('Data Provider')}>
-						<DataProviderDetailPageTemplate dataProvider={cassette?.dataProvider?.abbreviation} {...columnSizes} />
-					</FormSection>
-					<FormSection isVisible={isVisible('Updated By')}>
-						<UserDetailPageTemplate user={cassette?.updatedBy?.uniqueId} fieldName="Updated By" {...columnSizes} />
-					</FormSection>
-					<FormSection isVisible={isVisible('Date Updated')}>
-						<DateDetailPageTemplate date={cassette?.dateUpdated} fieldName="Date Updated" {...columnSizes} />
-					</FormSection>
-					<FormSection isVisible={isVisible('Created By')}>
-						<UserDetailPageTemplate user={cassette?.createdBy?.uniqueId} fieldName="Created By" {...columnSizes} />
-					</FormSection>
-					<FormSection isVisible={isVisible('Date Created')}>
-						<DateDetailPageTemplate date={cassette?.dateCreated} fieldName="Date Created" {...columnSizes} />
-					</FormSection>
-					<FormSection isVisible={isVisible('Placeholder')}>{booleanField('placeholder', 'Placeholder')}</FormSection>
-					<FormSection isVisible={isVisible('Internal')}>{booleanField('internal', 'Internal')}</FormSection>
-					<FormSection isVisible={isVisible('Obsolete')}>{booleanField('obsolete', 'Obsolete')}</FormSection>
-				</form>
+				<CassetteForm
+					state={cassetteState}
+					dispatch={cassetteDispatch}
+					componentSections={componentSections}
+					isVisible={isVisible}
+				/>
 			</ErrorBoundary>
 		</>
 	);

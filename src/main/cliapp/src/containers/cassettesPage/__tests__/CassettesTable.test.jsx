@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter } from 'react-router-dom';
 import { waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { renderWithClient } from '../../../tools/jest/utils';
 import { CassettesTable } from '../CassettesTable';
 import {
@@ -50,5 +51,20 @@ describe('<CassettesTable />', () => {
 		);
 
 		expect(await result.findByRole('columnheader', { name: /^Curie/ })).toBeInTheDocument();
+	});
+
+	it('opens the create page in a new tab from New Cassette', async () => {
+		const user = userEvent.setup();
+		const open = vi.spyOn(window, 'open').mockImplementation(() => null);
+		const result = await renderWithClient(
+			<BrowserRouter>
+				<CassettesTable />
+			</BrowserRouter>
+		);
+
+		await user.click(await result.findByRole('button', { name: 'New Cassette' }));
+
+		expect(open).toHaveBeenCalledWith('/cassette/create', '_blank');
+		open.mockRestore();
 	});
 });

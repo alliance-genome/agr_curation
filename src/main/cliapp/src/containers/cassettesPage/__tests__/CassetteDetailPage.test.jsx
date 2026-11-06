@@ -156,6 +156,20 @@ describe('<CassetteDetailPage />', { timeout: 30000 }, () => {
 		);
 	});
 
+	it('opens the create page in a new tab, blank or cloning this cassette', async () => {
+		const user = userEvent.setup();
+		const open = vi.spyOn(window, 'open').mockImplementation(() => null);
+		renderPage();
+		await screen.findByDisplayValue('UAS green fluorescent protein', {}, PAGE_LOAD_WAIT);
+
+		await user.click(screen.getByRole('button', { name: 'New Cassette' }));
+		await user.click(screen.getByRole('button', { name: 'Clone' }));
+
+		expect(open).toHaveBeenNthCalledWith(1, '/cassette/create', '_blank');
+		expect(open).toHaveBeenNthCalledWith(2, '/cassette/create?from=AGRKB%3A123000000000001', '_blank');
+		open.mockRestore();
+	});
+
 	it('saves an edited field with the cassette, leaving the component lists alone', async () => {
 		const user = userEvent.setup();
 		renderPage();
