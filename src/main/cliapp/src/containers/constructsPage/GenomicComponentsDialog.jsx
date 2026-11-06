@@ -139,8 +139,8 @@ export const GenomicComponentsDialog = ({
 			<Row>
 				<Column header="Relation" />
 				<Column header="Component" />
-				{showNotesAndEvidence && <Column header="RelatedNotes" />}
-				{showNotesAndEvidence && <Column header="Evidence" />}
+				<Column header="RelatedNotes" hidden={!showNotesAndEvidence} />
+				<Column header="Evidence" hidden={!showNotesAndEvidence} />
 				<Column header="Updated By" />
 				<Column header="Date Updated" />
 				<Column header="Created By" />
@@ -171,22 +171,20 @@ export const GenomicComponentsDialog = ({
 							headerClassName="surface-0"
 							body={componentTemplate}
 						/>
-						{showNotesAndEvidence && (
-							<Column
-								field="relatedNotes.freeText"
-								header="Related Notes"
-								headerClassName="surface-0"
-								body={relatedNotesTemplate}
-							/>
-						)}
-						{showNotesAndEvidence && (
-							<Column
-								field="evidence.curie"
-								header="Evidence"
-								headerClassName="surface-0"
-								body={(rowData) => evidenceTemplate(rowData)}
-							/>
-						)}
+						<Column
+							field="relatedNotes.freeText"
+							header="Related Notes"
+							headerClassName="surface-0"
+							body={relatedNotesTemplate}
+							hidden={!showNotesAndEvidence}
+						/>
+						<Column
+							field="evidence.curie"
+							header="Evidence"
+							headerClassName="surface-0"
+							body={(rowData) => evidenceTemplate(rowData)}
+							hidden={!showNotesAndEvidence}
+						/>
 						<Column field="updatedBy.uniqueId" header="Updated By" headerClassName="surface-0" />
 						<Column field="dateUpdated" header="Date Updated" headerClassName="surface-0" />
 						<Column field="createdBy.uniqueId" header="Created By" headerClassName="surface-0" />
