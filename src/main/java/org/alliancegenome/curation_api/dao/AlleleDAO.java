@@ -16,6 +16,7 @@ import org.alliancegenome.curation_api.constants.EntityFieldConstants;
 import org.alliancegenome.curation_api.constants.YeastStrainTaxonConstants;
 import org.alliancegenome.curation_api.dao.associations.AgmAlleleAssociationDAO;
 import org.alliancegenome.curation_api.dao.base.BaseCurieSQLDAO;
+import org.alliancegenome.curation_api.dao.slotAnnotations.AlleleSymbolSlotAnnotationDAO;
 
 
 import org.alliancegenome.curation_api.model.document.es.AlleleSummaryDocument;
@@ -68,6 +69,8 @@ public class AlleleDAO extends BaseCurieSQLDAO<Allele> {
 	HTPExpressionDatasetSampleAnnotationDAO htpExpressionDatasetSampleAnnotationDAO;
 	@Inject
 	GeneGeneticInteractionDAO geneGeneticInteractionDAO;
+	@Inject
+	AlleleSymbolSlotAnnotationDAO alleleSymbolSlotAnnotationDAO;
 
 	protected AlleleDAO() {
 		super(Allele.class);
@@ -143,7 +146,9 @@ public class AlleleDAO extends BaseCurieSQLDAO<Allele> {
 	}
 
 	/**
-	 * Whether a non-obsolete allele other than {@code excludeId} has this symbol display text and taxon.
+	 * Whether a non-obsolete allele other than {@code excludeId} has this symbol display text and taxon. The query
+	 * starts from the symbols themselves, because a path through {@code Allele.alleleSymbol} also reaches the allele's
+	 * synonyms and full name, which are held in the same table.
 	 *
 	 * @param displayText symbol display text to match
 	 * @param taxonId id of the taxon to match
@@ -151,11 +156,11 @@ public class AlleleDAO extends BaseCurieSQLDAO<Allele> {
 	 */
 	public Boolean hasAlleleWithSymbolAndTaxon(String displayText, Long taxonId, Long excludeId) {
 		Map<String, Object> params = new HashMap<>();
-		params.put("alleleSymbol.displayText", displayText);
-		params.put("taxon.id", taxonId);
-		params.put("obsolete", false);
-		List<Long> results = findIdsByParams(params);
-		return results.stream().anyMatch(id -> !id.equals(excludeId));
+		params.put("displayText", displayText);
+		params.put("singleAllele.taxon.id", taxonId);
+		params.put("singleAllele.obsolete", false);
+		return alleleSymbolSlotAnnotationDAO.findByParams(params).getResults().stream()
+			.anyMatch(symbol -> !symbol.getSingleAllele().getId().equals(excludeId));
 	}
 
 	public List<String> getAllAllelePrimaryExternalIds() {

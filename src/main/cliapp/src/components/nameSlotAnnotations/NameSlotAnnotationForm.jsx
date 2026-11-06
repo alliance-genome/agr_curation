@@ -21,6 +21,8 @@ import { buildEmptyNameSlotAnnotation } from '../../utils/rows';
  * @param {string} props.tableName - the section's label
  * @param {string} props.addLabel - the label of the button adding a name when the entity has none
  * @param {boolean} [props.isPending] - whether to mark the section as having pending edits
+ * @param {boolean} [props.required] - whether to mark the section as required
+ * @param {boolean} [props.showAddButton] - whether to offer the button adding a name
  * @returns {JSX.Element}
  */
 export const NameSlotAnnotationForm = ({
@@ -33,6 +35,8 @@ export const NameSlotAnnotationForm = ({
 	tableName,
 	addLabel,
 	isPending = false,
+	required = false,
+	showAddButton = true,
 }) => {
 	const tableRef = useRef(null);
 	const NameFormTable = isSymbol ? SymbolFormTable : FullNameFormTable;
@@ -76,8 +80,11 @@ export const NameSlotAnnotationForm = ({
 			tableName={tableName}
 			showTable={entityState.show}
 			isPending={isPending}
+			required={required}
 			button={
-				<Button label={addLabel} onClick={createNewNameHandler} disabled={!!name} className="w-4 p-button-text" />
+				showAddButton ? (
+					<Button label={addLabel} onClick={createNewNameHandler} disabled={!!name} className="w-4 p-button-text" />
+				) : null
 			}
 		/>
 	);

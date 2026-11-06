@@ -51,6 +51,17 @@ describe('<GeneDetailPage />', { timeout: 30000 }, () => {
 		);
 	});
 
+	it('opens the create page in a new tab from the New Gene button', async () => {
+		const user = userEvent.setup();
+		const open = vi.spyOn(window, 'open').mockImplementation(() => null);
+		await renderLoaded();
+
+		await user.click(screen.getByRole('button', { name: 'New Gene' }));
+
+		expect(open).toHaveBeenCalledWith('/gene/create', '_blank');
+		open.mockRestore();
+	});
+
 	it('reads the gene by the identifier in its route and heads the page with its symbol and identifier', async () => {
 		await renderLoaded();
 
@@ -58,13 +69,12 @@ describe('<GeneDetailPage />', { timeout: 30000 }, () => {
 		expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Gene: SamDC (FB:FBgn0019932)');
 	});
 
-	it('offers Save alone, and only once something is edited', async () => {
+	it('offers Save and New Gene, with Save only once something is edited', async () => {
 		await renderLoaded();
 
 		expect(saveButton()).toBeDisabled();
-		['New', 'Clone', 'Delete'].forEach((name) =>
-			expect(screen.queryByRole('button', { name })).not.toBeInTheDocument()
-		);
+		expect(screen.getByRole('button', { name: 'New Gene' })).toBeEnabled();
+		['Clone', 'Delete'].forEach((name) => expect(screen.queryByRole('button', { name })).not.toBeInTheDocument());
 		expect(screen.queryByText('Pending Edits!')).not.toBeInTheDocument();
 	});
 

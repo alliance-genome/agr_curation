@@ -2,10 +2,14 @@ import React from 'react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { screen } from '@testing-library/react';
 import { renderWithClient } from '../../../tools/jest/utils';
+import { SUCCESS_HOLD_MS } from '../../../hooks/useSaveProgress';
 import { geneDetailData } from '../mockData/mockData.js';
 
 // Each wait follows a stubbed call through a full render of the form, which can outlast the default under load.
 export const FORM_LOAD_WAIT = { timeout: 5000 };
+
+// A save that succeeds holds its progress on screen before the page moves on.
+export const NAVIGATION_WAIT = { timeout: SUCCESS_HOLD_MS + 2000 };
 
 export const storedGene = geneDetailData.entity;
 
@@ -40,3 +44,8 @@ export const renderAtGeneRoute = (page) =>
  * @returns {HTMLElement} the section under it
  */
 export const section = (name) => screen.getByRole('heading', { name }).closest('.grid').parentElement;
+
+/**
+ * @param {string} name the button's accessible name
+ */
+export const button = (name) => screen.getByRole('button', { name });

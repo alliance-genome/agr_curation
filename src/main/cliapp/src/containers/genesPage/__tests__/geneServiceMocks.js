@@ -1,5 +1,5 @@
 /**
- * Module factories for the services the gene detail page builds, for `vi.mock`. The services are stubbed directly
+ * Module factories for the services the gene detail and create pages build, for `vi.mock`. The services are stubbed directly
  * because BaseAuthService builds no client without a token, and each test file makes its own hoisted `vi.mock` call
  * that loads these inside the factory:
  *
@@ -18,11 +18,13 @@ const emptyListResponse = () => Promise.resolve({ data: { entities: [] } });
  * @param {Object} [functions]
  * @param {Function} [functions.getGene]
  * @param {Function} [functions.saveGeneDetail]
+ * @param {Function} [functions.createGene]
  */
-export const mockGeneService = ({ getGene, saveGeneDetail } = {}) => ({
+export const mockGeneService = ({ getGene, saveGeneDetail, createGene } = {}) => ({
 	GeneService: class {
 		getGene = getGene ?? vi.fn();
 		saveGeneDetail = saveGeneDetail ?? vi.fn();
+		createGene = createGene ?? vi.fn();
 	},
 });
 
