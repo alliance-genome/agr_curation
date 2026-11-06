@@ -61,16 +61,15 @@ export const haveSameSlotAnnotationsBy = (fieldsOf) =>
  * @param {string} options.errorField the field the API keys the rows' errors under
  * @param {(annotation: Object) => Array} options.fieldsOf the curator-editable fields of the list's own, compared
  *   along with those every slot annotation has
- * @param {boolean} [options.copy] whether a new entity copies the list
  */
-export const slotAnnotationList = ({ path, label, errorField, fieldsOf, copy = true }) => ({
+export const slotAnnotationList = ({ path, label, errorField, fieldsOf }) => ({
 	path,
 	label,
 	errorField,
 	prepare: prepareSlotAnnotations,
 	strip: stripSlotAnnotation,
 	isSame: haveSameSlotAnnotationsBy(fieldsOf),
-	...(copy && { buildCopies: buildSlotAnnotationCopies }),
+	buildCopies: buildSlotAnnotationCopies,
 });
 
 /**

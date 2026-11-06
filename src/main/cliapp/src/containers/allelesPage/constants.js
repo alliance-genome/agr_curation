@@ -80,13 +80,11 @@ export const ALLELE_SUB_RESOURCES = {
 		errorField: 'alleleSynonyms',
 		fieldsOf: synonymFields,
 	}),
-	// Secondary IDs identify the allele they belong to, so a new allele copies none.
 	alleleSecondaryIds: slotAnnotationList({
 		path: 'secondaryids',
 		label: 'secondary IDs',
 		errorField: 'alleleSecondaryIds',
 		fieldsOf: secondaryIdFields,
-		copy: false,
 	}),
 	alleleNomenclatureEvents: slotAnnotationList({
 		path: 'nomenclatureevents',

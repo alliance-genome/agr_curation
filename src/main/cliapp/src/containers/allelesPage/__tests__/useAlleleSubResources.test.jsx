@@ -198,7 +198,7 @@ describe('useAlleleSubResources', () => {
 			expect(crossReferences.rows[0].dataKey).not.toEqual('shown-cross-reference');
 		});
 
-		it('Starts a list Clone does not copy over empty', async () => {
+		it('Carries the secondary IDs over, as rows to write to the next allele', async () => {
 			const { result } = await renderLoaded();
 			act(() => {
 				result.current.subResources.alleleSecondaryIds.setRows([{ dataKey: 'id-row', secondaryId: 'WB:WBVar0' }]);
@@ -208,8 +208,11 @@ describe('useAlleleSubResources', () => {
 				await result.current.carryOverAll(allVisible);
 			});
 
-			expect(result.current.subResources.alleleSecondaryIds.rows).toEqual([]);
-			expect(result.current.subResources.alleleSecondaryIds.isDirty).toBe(false);
+			const { alleleSecondaryIds } = result.current.subResources;
+			expect(alleleSecondaryIds.rows).toHaveLength(1);
+			expect(alleleSecondaryIds.rows[0].secondaryId).toEqual('WB:WBVar0');
+			expect(alleleSecondaryIds.rows[0].dataKey).not.toEqual('id-row');
+			expect(alleleSecondaryIds.isDirty).toBe(true);
 		});
 
 		it('Starts a list whose section is hidden over empty', async () => {
