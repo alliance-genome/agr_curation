@@ -34,18 +34,22 @@ export const useCassetteComponentList = (cassetteId, config) => {
 	 * Saves the rows as `useSubResourceList` does. An entity typed rather than picked from the autosuggest has no id;
 	 * while any row holds one, the save is refused without calling the API and those rows are marked.
 	 *
+	 * @param {number} [targetCassetteId] the cassette to write to, for create, which has none on load
 	 * @returns {Promise<{isSuccess: boolean, message?: string}>}
 	 */
-	const saveComponents = useCallback(async () => {
-		if (!isLoading && !loadError && config.objectField) {
-			const marked = markRowsWithTypedObject(rows, errorMessages, config.objectField);
-			if (marked) {
-				setErrorMessages(marked);
-				return { isSuccess: false, message: 'Select each entity from the autosuggest' };
+	const saveComponents = useCallback(
+		async (targetCassetteId) => {
+			if (!isLoading && !loadError && config.objectField) {
+				const marked = markRowsWithTypedObject(rows, errorMessages, config.objectField);
+				if (marked) {
+					setErrorMessages(marked);
+					return { isSuccess: false, message: 'Select each entity from the autosuggest' };
+				}
 			}
-		}
-		return save();
-	}, [rows, errorMessages, setErrorMessages, isLoading, loadError, save, config.objectField]);
+			return save(targetCassetteId);
+		},
+		[rows, errorMessages, setErrorMessages, isLoading, loadError, save, config.objectField]
+	);
 
 	return { rows, errorMessages, setErrorMessages, save: saveComponents, isLoading, loadError, ...subResource };
 };
