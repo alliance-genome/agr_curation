@@ -9,6 +9,10 @@ export class CassetteService extends BaseAuthService {
 		return this.api.put(`/cassette`, updatedCassette);
 	}
 
+	createCassette(newCassette) {
+		return this.api.post(`/cassette`, newCassette);
+	}
+
 	/**
 	 * One of the cassette's component lists (SCRUM-6752): `components`, `genomic-entity-associations`,
 	 * `transgenic-tool-associations` or `str-associations`.

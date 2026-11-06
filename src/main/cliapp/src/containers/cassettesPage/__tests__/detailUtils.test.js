@@ -1,4 +1,10 @@
-import { buildCassettePayload, haveSameComponentRows } from '../detail/utils';
+import {
+	buildCassetteCreatePayload,
+	buildCassettePayload,
+	buildDuplicateCassette,
+	copyComponentRows,
+	haveSameComponentRows,
+} from '../detail/utils';
 
 describe('buildCassettePayload', () => {
 	const formCassette = {
@@ -52,5 +58,87 @@ describe('haveSameComponentRows', () => {
 		expect(haveSameComponentRows([row], [{ ...row, componentSymbol: 'RFP' }])).toBe(false);
 		expect(haveSameComponentRows([row], [row, { componentSymbol: 'RFP' }])).toBe(false);
 		expect(haveSameComponentRows([row], [])).toBe(false);
+	});
+});
+
+describe('buildCassetteCreatePayload', () => {
+	it('builds the payload as for an update, with the type the API reads it by', () => {
+		const payload = buildCassetteCreatePayload({
+			cassetteSymbol: { dataKey: 'k1', displayText: 'UAS-GFP' },
+			cassetteComponents: [{ componentSymbol: 'GFP' }],
+		});
+
+		expect(payload.type).toBe('Cassette');
+		expect(payload.cassetteSymbol).toEqual({ displayText: 'UAS-GFP' });
+		expect(payload).not.toHaveProperty('cassetteComponents');
+	});
+});
+
+describe('buildDuplicateCassette', () => {
+	const stored = {
+		id: 11,
+		curie: 'AGRKB:123000000000001',
+		uniqueId: 'FB:FBcs0000001',
+		primaryExternalId: 'FB:FBcs0000001',
+		modInternalId: 'cs1',
+		secondaryIdentifiers: ['FB:FBcs9000001'],
+		dataProvider: { abbreviation: 'FB' },
+		createdBy: { uniqueId: 'curator' },
+		dateCreated: '2026-01-01',
+		relatedNotes: [{ id: 3, freeText: 'note' }],
+		cassetteSymbol: { id: 5, displayText: 'UAS-GFP', createdBy: { uniqueId: 'curator' } },
+		cassetteFullName: null,
+		cassetteSynonyms: [{ id: 1, displayText: 'UAS-EGFP' }],
+		cassetteUses: [{ id: 2, uses: [{ id: 70, curie: 'FBcv:0005012' }] }],
+		references: [{ id: 80, curie: 'AGRKB:101' }],
+		cassetteComponents: [{ id: 41 }],
+		placeholder: true,
+		internal: true,
+		obsolete: true,
+	};
+
+	it('keeps the fields the create form edits, each row without its id or audit fields', () => {
+		expect(buildDuplicateCassette(stored)).toEqual({
+			type: 'Cassette',
+			placeholder: true,
+			internal: true,
+			obsolete: false,
+			cassetteSymbol: { displayText: 'UAS-GFP' },
+			cassetteFullName: null,
+			cassetteSynonyms: [{ displayText: 'UAS-EGFP' }],
+			cassetteUses: [{ uses: [{ id: 70, curie: 'FBcv:0005012' }] }],
+			references: [{ id: 80, curie: 'AGRKB:101' }],
+		});
+	});
+
+	it('leaves the stored cassette unchanged', () => {
+		const before = structuredClone(stored);
+		buildDuplicateCassette(stored);
+		expect(stored).toEqual(before);
+	});
+});
+
+describe('copyComponentRows', () => {
+	it("copies each row and its notes as new ones, without the cassette, ready for the list's table", () => {
+		const rows = [
+			{
+				id: 41,
+				dataKey: 'a',
+				singleCassette: { id: 11 },
+				componentSymbol: 'GFP',
+				relatedNotes: [{ id: 61, freeText: 'From jellyfish.', dateCreated: '2026-01-01' }],
+			},
+			{ id: 42, dataKey: 'b', cassetteAssociationSubject: { id: 11 }, evidence: [{ id: 80, curie: 'AGRKB:101' }] },
+		];
+
+		const copies = copyComponentRows(rows);
+
+		expect(copies.map(({ dataKey, ...row }) => row)).toEqual([
+			{ componentSymbol: 'GFP', relatedNotes: [{ freeText: 'From jellyfish.' }] },
+			{ evidence: [{ id: 80, curie: 'AGRKB:101' }], relatedNotes: [] },
+		]);
+		copies.forEach((copy) => expect(copy.dataKey).toEqual(expect.any(String)));
+		expect(copies[0].dataKey).not.toBe('a');
+		expect(rows[0].id).toBe(41);
 	});
 });

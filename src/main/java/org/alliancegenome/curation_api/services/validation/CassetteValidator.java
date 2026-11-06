@@ -117,7 +117,9 @@ public class CassetteValidator extends ReagentValidator {
 			dbEntity.setReferences(null);
 		}
 
-		dbEntity = (Cassette) validateCommonReagentFields(uiEntity, dbEntity, VocabularyConstants.CASSETTE_AND_TRANSGENIC_TOOL_NOTE_TYPES_VOCABULARY_TERM_SET);
+		// SCRUM-6748: a cassette created on the create page has no MOD identifier, only its minted curie, as for
+		// alleles and AGMs; this serves the curation UI only, the load validates through CassetteDTOValidator
+		dbEntity = (Cassette) validateCommonReagentFields(uiEntity, dbEntity, VocabularyConstants.CASSETTE_AND_TRANSGENIC_TOOL_NOTE_TYPES_VOCABULARY_TERM_SET, false);
 
 		CassetteSymbolSlotAnnotation symbol = validateCassetteSymbol(uiEntity);
 		CassetteFullNameSlotAnnotation fullName = validateCassetteFullName(uiEntity);
