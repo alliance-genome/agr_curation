@@ -269,7 +269,7 @@ describe('<AlleleCreatePage /> cross references', { timeout: 30000 }, () => {
 		expect(await screen.findByText(/Could not update CrossReferences/)).toBeInTheDocument();
 	});
 
-	it('Shows everything saved on Save & Add Another and keeps the row, without its curie', async () => {
+	it('Shows everything saved on Save & Add Another and keeps the row', async () => {
 		const user = userEvent.setup();
 		await renderPage();
 
@@ -284,10 +284,9 @@ describe('<AlleleCreatePage /> cross references', { timeout: 30000 }, () => {
 			() => expect(screen.queryByRole('status', { name: 'Save progress' })).not.toBeInTheDocument(),
 			NAVIGATION_WAIT
 		);
-		// a cross reference curie names the allele it belongs to, so the next allele's row needs its own
-		expect(crossReferenceRow().querySelector('[aria-label="referencedCurie"]')).toHaveValue('');
+		expect(crossReferenceRow().querySelector('[aria-label="referencedCurie"]')).toHaveValue('PMID:123');
 		expect(screen.getByLabelText('resourceDescriptor')).toHaveValue('PMID');
-		expect(crossReferenceRow().querySelector('[aria-label="displayName"]')).toHaveValue('');
+		expect(crossReferenceRow().querySelector('[aria-label="displayName"]')).toHaveValue('PMID:123');
 		expect(navigate).not.toHaveBeenCalled();
 	});
 

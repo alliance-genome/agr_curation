@@ -62,7 +62,7 @@ describe('<AlleleCreatePage /> copying cross references', { timeout: 30000 }, ()
 		window.localStorage.removeItem('AlleleCreateFormSettings');
 	});
 
-	it('Copies each cross reference page, leaving the curie and display name for the new allele', async () => {
+	it('Copies each cross reference with its page, curie and display name', async () => {
 		const user = userEvent.setup();
 		const { container } = await renderPage();
 
@@ -80,8 +80,8 @@ describe('<AlleleCreatePage /> copying cross references', { timeout: 30000 }, ()
 		expect(alleleId).toEqual(4242);
 		expect(savedRows).toHaveLength(1);
 		expect(savedRows[0].resourceDescriptorPage).toEqual(storedCrossReference.resourceDescriptorPage);
-		expect(savedRows[0].referencedCurie).toEqual('');
-		expect(savedRows[0].displayName).toEqual('');
+		expect(savedRows[0].referencedCurie).toEqual('WB:WBVar1');
+		expect(savedRows[0].displayName).toEqual('WB:WBVar1');
 		expect(savedRows[0]).not.toHaveProperty('id');
 		expect(savedRows[0]).not.toHaveProperty('dateCreated');
 	});

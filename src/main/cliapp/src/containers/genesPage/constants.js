@@ -53,8 +53,7 @@ export const GENE_SUB_RESOURCES = {
 		isSame: haveSameCrossReferences,
 		// The copies keep the source's pages and curies, for the curator to review. A hidden section could not show
 		// them, so it gets none.
-		buildCopies: async (crossReferences) =>
-			seedResourceDescriptors(buildCrossReferenceCopies(crossReferences, { keepCurie: true })),
+		buildCopies: async (crossReferences) => seedResourceDescriptors(buildCrossReferenceCopies(crossReferences)),
 		copyOnlyWhenVisible: 'Cross References',
 	},
 };

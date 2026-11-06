@@ -356,23 +356,13 @@ describe('buildCrossReferenceCopies', () => {
 		resourceDescriptorPage: page,
 	});
 
-	it('Keeps the page and internal flag but not the curie, display name, obsolete flag, id or audit fields', () => {
+	it('Keeps the curie, display name, page and internal flag but not the id, audit fields or obsolete flag', () => {
 		const [copy] = buildCrossReferenceCopies([stored()]);
-
-		expect(copy.resourceDescriptorPage).toEqual(page);
-		expect(copy.internal).toBe(true);
-		expect(copy.obsolete).toBe(false);
-		expect(copy.referencedCurie).toEqual('');
-		expect(copy.displayName).toEqual('');
-		['id', 'createdBy', 'dateCreated', 'dbDateUpdated'].forEach((field) => expect(copy).not.toHaveProperty(field));
-	});
-
-	it('Keeps the curie and display name when asked to, still without the id, audit fields or obsolete flag', () => {
-		const [copy] = buildCrossReferenceCopies([stored()], { keepCurie: true });
 
 		expect(copy.referencedCurie).toEqual('WB:WBVar1');
 		expect(copy.displayName).toEqual('WB:WBVar1');
 		expect(copy.resourceDescriptorPage).toEqual(page);
+		expect(copy.internal).toBe(true);
 		expect(copy.obsolete).toBe(false);
 		['id', 'createdBy', 'dateCreated', 'dbDateUpdated'].forEach((field) => expect(copy).not.toHaveProperty(field));
 	});

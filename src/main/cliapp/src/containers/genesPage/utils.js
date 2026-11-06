@@ -89,7 +89,7 @@ export const withSeededGcrpCrossReference = async (entity) => {
 export const buildGeneCopy = async (gene, isVisible) => {
 	const [gcrpCrossReference = null] =
 		gene.gcrpCrossReference && isVisible('GCRP Cross Reference')
-			? await seedResourceDescriptors(buildCrossReferenceCopies([gene.gcrpCrossReference], { keepCurie: true }))
+			? await seedResourceDescriptors(buildCrossReferenceCopies([gene.gcrpCrossReference]))
 			: [];
 
 	return {
