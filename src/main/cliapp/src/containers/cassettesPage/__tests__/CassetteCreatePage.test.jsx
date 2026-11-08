@@ -69,8 +69,44 @@ const sourceComponent = {
 	obsolete: false,
 };
 
-// The new cassette, as POST /cassette returns it with its minted curie
-const created = (payload) => ({ ...payload, id: 99, curie: 'AGRKB:123000000000099' });
+// The new cassette, as POST /cassette returns it with its minted curie and its free text components saved
+const created = (payload) => ({
+	...payload,
+	id: 99,
+	curie: 'AGRKB:123000000000099',
+	cassetteComponents: (payload.cassetteComponents ?? []).map((row, index) => ({ ...row, id: 600 + index })),
+});
+
+// A genomic entity component of the cassette Clone copies from, saved through its own endpoint
+const sourceGenomicEntity = {
+	id: 42,
+	relation: { id: 52, name: 'targets' },
+	cassetteGenomicEntityAssociationObject: {
+		id: 7,
+		type: 'Gene',
+		primaryExternalId: 'FB:FBgn0014143',
+		geneSymbol: { displayText: 'croc' },
+	},
+	componentTypes: [],
+	evidence: [],
+	relatedNotes: [],
+	internal: false,
+	obsolete: false,
+};
+
+const withGenomicEntityComponent = () =>
+	getComponentList.mockImplementation((id, list) =>
+		Promise.resolve({
+			data: {
+				entities:
+					list === 'components'
+						? [sourceComponent]
+						: list === 'genomic-entity-associations'
+							? [sourceGenomicEntity]
+							: [],
+			},
+		})
+	);
 
 const renderPage = (entry = '/cassette/create') =>
 	renderWithClient(
@@ -149,7 +185,7 @@ describe('<CassetteCreatePage />', { timeout: 30000 }, () => {
 		const [payload] = createCassette.mock.calls[0];
 		expect(payload).toMatchObject({ type: 'Cassette', placeholder: false, internal: false });
 		expect(payload).not.toHaveProperty('id');
-		expect(payload).not.toHaveProperty('cassetteComponents');
+		expect(payload.cassetteComponents).toEqual([]);
 		expect(payload).not.toHaveProperty('dataProvider');
 		// no component list was filled in, so none is written
 		expect(replaceComponentList).not.toHaveBeenCalled();
@@ -162,24 +198,25 @@ describe('<CassetteCreatePage />', { timeout: 30000 }, () => {
 		expect(getCassette).toHaveBeenCalledWith('FB:FBcs0000001');
 		expect(getComponentList).toHaveBeenCalledWith(11, 'components');
 		expect(screen.getByDisplayValue('UAS-EGFP')).toBeInTheDocument();
-		expect(screen.queryByDisplayValue('FB:FBcs9000001')).not.toBeInTheDocument();
+		// the field follows a new value one render later
+		expect(await screen.findByDisplayValue('FB:FBcs9000001')).toBeInTheDocument();
 
 		await click(user, 'Save & Close');
 
-		await waitFor(() => expect(replaceComponentList).toHaveBeenCalledTimes(1), PAGE_LOAD_WAIT);
+		expect(await screen.findByText('Detail page', {}, PAGE_LOAD_WAIT)).toBeInTheDocument();
 		const [payload] = createCassette.mock.calls[0];
-		['id', 'curie', 'uniqueId', 'primaryExternalId', 'secondaryIdentifiers', 'dataProvider', 'relatedNotes'].forEach(
-			(field) => expect(payload).not.toHaveProperty(field)
+		['id', 'curie', 'uniqueId', 'primaryExternalId', 'dataProvider', 'relatedNotes'].forEach((field) =>
+			expect(payload).not.toHaveProperty(field)
 		);
+		expect(payload.secondaryIdentifiers).toEqual(['FB:FBcs9000001']);
 		expect(payload.cassetteSymbol).toEqual({ displayText: 'UAS-GFP', formatText: 'UAS-GFP' });
 		expect(payload.cassetteSynonyms).toEqual([{ displayText: 'UAS-EGFP', formatText: 'UAS-<sup>EGFP</sup>' }]);
 		expect(payload.cassetteUses).toEqual([{ uses: [{ id: 70, curie: 'FBcv:0005012', name: 'driver' }], evidence: [] }]);
 		expect(payload.references).toEqual([{ type: 'Reference', curie: 'AGRKB:101000000001' }]);
 		expect(payload.internal).toBe(true);
 
-		const [cassetteId, list, rows] = replaceComponentList.mock.calls[0];
-		expect([cassetteId, list]).toEqual([99, 'components']);
-		expect(rows).toEqual([
+		// the free text components go with the cassette, which the unique ID is built from
+		expect(payload.cassetteComponents).toEqual([
 			{
 				relation: { id: 51, name: 'tagged_with' },
 				componentSymbol: 'GFP',
@@ -189,7 +226,7 @@ describe('<CassetteCreatePage />', { timeout: 30000 }, () => {
 				obsolete: false,
 			},
 		]);
-		expect(await screen.findByText('Detail page', {}, PAGE_LOAD_WAIT)).toBeInTheDocument();
+		expect(replaceComponentList).not.toHaveBeenCalled();
 	});
 
 	it('keeps the saved values for the next cassette on Save & Add Another', async () => {
@@ -197,25 +234,31 @@ describe('<CassetteCreatePage />', { timeout: 30000 }, () => {
 		await renderClone();
 
 		await click(user, 'Save & Add Another');
-		await waitFor(() => expect(replaceComponentList).toHaveBeenCalledTimes(1), PAGE_LOAD_WAIT);
+		await waitFor(() => expect(createCassette).toHaveBeenCalledTimes(1), PAGE_LOAD_WAIT);
 		await waitFor(() => expect(screen.getByRole('button', { name: 'Save & Add Another' })).toBeEnabled());
 
 		expect(screen.getByRole('heading', { name: 'Add Cassette' })).toBeInTheDocument();
 		expect(screen.getByDisplayValue('UAS-EGFP')).toBeInTheDocument();
+		expect(await screen.findByDisplayValue('FB:FBcs9000001')).toBeInTheDocument();
 		expect(screen.getByDisplayValue('Aequorea victoria')).toBeInTheDocument();
 
 		await click(user, 'Save & Add Another');
-		await waitFor(() => expect(replaceComponentList).toHaveBeenCalledTimes(2), PAGE_LOAD_WAIT);
+		await waitFor(() => expect(createCassette).toHaveBeenCalledTimes(2), PAGE_LOAD_WAIT);
 
-		// a second cassette is created, not the first updated, and its rows are new ones
-		expect(createCassette).toHaveBeenCalledTimes(2);
+		// a second cassette is created, not the first updated, with the free text components as new rows
 		expect(saveCassette).not.toHaveBeenCalled();
-		expect(createCassette.mock.calls[1][0]).not.toHaveProperty('id');
-		expect(replaceComponentList.mock.calls[1][2][0]).not.toHaveProperty('id');
+		const next = createCassette.mock.calls[1][0];
+		expect(next).not.toHaveProperty('id');
+		expect(next.secondaryIdentifiers).toEqual(['FB:FBcs9000001']);
+		expect(next.cassetteComponents).toHaveLength(1);
+		expect(next.cassetteComponents[0]).toMatchObject({ componentSymbol: 'GFP' });
+		expect(next.cassetteComponents[0]).not.toHaveProperty('id');
+		expect(replaceComponentList).not.toHaveBeenCalled();
 	});
 
 	it('keeps a created cassette whose component list failed, and saving again updates it', async () => {
 		const user = userEvent.setup();
+		withGenomicEntityComponent();
 		replaceComponentList.mockRejectedValueOnce({
 			response: { status: 400, statusText: 'Bad Request', data: { errorMessage: 'Could not update components' } },
 		});
@@ -232,7 +275,11 @@ describe('<CassetteCreatePage />', { timeout: 30000 }, () => {
 		await waitFor(() => expect(replaceComponentList).toHaveBeenCalledTimes(2), PAGE_LOAD_WAIT);
 		expect(createCassette).toHaveBeenCalledTimes(1);
 		expect(saveCassette).toHaveBeenCalledWith(expect.objectContaining({ id: 99 }));
-		expect(replaceComponentList.mock.calls[1][0]).toBe(99);
+		// only the list that failed is written again; the free text components were saved with the cassette
+		expect(replaceComponentList.mock.calls.map(([id, list]) => [id, list])).toEqual([
+			[99, 'genomic-entity-associations'],
+			[99, 'genomic-entity-associations'],
+		]);
 		expect(await screen.findByText('Detail page', {}, PAGE_LOAD_WAIT)).toBeInTheDocument();
 	});
 
@@ -253,6 +300,59 @@ describe('<CassetteCreatePage />', { timeout: 30000 }, () => {
 		expect(await screen.findByText(/symbol, name and free text components already exists/)).toBeInTheDocument();
 		expect(screen.getByText('Could not create Cassette')).toBeInTheDocument();
 		expect(replaceComponentList).not.toHaveBeenCalled();
+	});
+
+	it('refuses, before saving anything, a Save & Add Another that duplicates the cassette just saved', async () => {
+		const user = userEvent.setup();
+		withGenomicEntityComponent();
+		await renderClone();
+
+		await click(user, 'Save & Add Another');
+		await waitFor(() => expect(replaceComponentList).toHaveBeenCalledTimes(1), PAGE_LOAD_WAIT);
+		await waitFor(() => expect(screen.getByRole('button', { name: 'Save & Add Another' })).toBeEnabled());
+
+		createCassette.mockRejectedValueOnce({
+			response: {
+				status: 400,
+				statusText: 'Bad Request',
+				data: { errorMessage: 'Could not create Cassette', errorMessages: { uniqueId: 'Non-unique value' } },
+			},
+		});
+		await click(user, 'Save & Add Another');
+
+		expect(await screen.findByText(/symbol, name and free text components already exists/)).toBeInTheDocument();
+		// the duplicate carried its free text components, and no component list was written for it
+		expect(createCassette.mock.calls[1][0].cassetteComponents).toHaveLength(1);
+		expect(replaceComponentList).toHaveBeenCalledTimes(1);
+		expect(saveCassette).not.toHaveBeenCalled();
+	});
+
+	it("shows a free text component's error from the create against its row", async () => {
+		const user = userEvent.setup();
+		createCassette.mockRejectedValue({
+			response: {
+				status: 400,
+				statusText: 'Bad Request',
+				data: {
+					errorMessage: 'Could not create Cassette',
+					errorMessages: { cassetteComponents: '0 - relation - Required field is empty' },
+					supplementalData: { errorMap: { cassetteComponents: { 0: { relation: 'Required field is empty' } } } },
+				},
+			},
+		});
+		await renderClone();
+
+		await click(user, 'Save & Close');
+
+		expect(await screen.findByText('Required field is empty', {}, PAGE_LOAD_WAIT)).toBeInTheDocument();
+		expect(replaceComponentList).not.toHaveBeenCalled();
+	});
+
+	it('does not mark the component lists as pending edits', async () => {
+		await renderClone();
+
+		expect(screen.getByDisplayValue('Aequorea victoria')).toBeInTheDocument();
+		expect(screen.queryByText('Pending Edits!')).not.toBeInTheDocument();
 	});
 
 	it('empties the form and the component lists on Clear', async () => {

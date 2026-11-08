@@ -10,9 +10,11 @@ import { prepareComponentRows } from '../components/utils';
  *
  * @param {object} components - the useCassetteComponentList result
  * @param {object} config - the list, from componentConfigs
+ * @param {boolean} [showPending] - whether to mark the list while it has unsaved edits; the create page, where
+ *        everything is unsaved, does not
  * @returns {JSX.Element}
  */
-export const CassetteComponentsForm = ({ components, config }) => {
+export const CassetteComponentsForm = ({ components, config, showPending = true }) => {
 	const { rows, setRows, errorMessages, setErrorMessages, isDirty, isLoading, loadError } = components;
 
 	const createNewRowHandler = (event) => {
@@ -34,7 +36,7 @@ export const CassetteComponentsForm = ({ components, config }) => {
 			}
 			tableName={config.title}
 			showTable={rows.length > 0}
-			isPending={isDirty}
+			isPending={showPending && isDirty}
 			button={
 				<div className="flex gap-2">
 					<Button

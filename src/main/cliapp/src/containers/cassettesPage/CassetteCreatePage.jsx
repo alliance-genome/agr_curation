@@ -31,6 +31,7 @@ import {
 } from './detail/utils';
 import { CassetteForm, CASSETTE_CREATE_TOGGLEABLE_FIELDS } from './CassetteForm';
 import { useDuplicateCassetteSource } from './useDuplicateCassetteSource';
+import { mapRowErrors } from './components/utils';
 
 const CASSETTE_STEP = 'cassette';
 
@@ -38,9 +39,11 @@ const CASSETTE_STEP = 'cassette';
  * The page that creates a cassette (SCRUM-6748), opened in a new tab from the Cassettes table and the Cassette detail
  * page, blank or, through Clone, filled from another cassette. Its fields are edited as on the detail page.
  *
- * Saving creates the cassette, which mints its AGRKB curie, then writes each component list the curator filled in
- * through the list's own endpoint, as the detail page does. A list that fails leaves the cassette created: the page
- * stays, and saving again updates that cassette and writes only the lists not yet saved.
+ * Saving creates the cassette with its free text components, which mints its AGRKB curie. The unique ID is built from
+ * the symbol, the name and the free text components, so a cassette that would duplicate another is refused before
+ * anything is saved. Each other component list the curator filled in is then written through the list's own endpoint,
+ * as the detail page does. A list that fails leaves the cassette created: the page stays, and saving again updates
+ * that cassette and writes only the lists not yet saved.
  */
 export default function CassetteCreatePage() {
 	const navigate = useNavigate();
@@ -101,6 +104,8 @@ export default function CassetteCreatePage() {
 		} catch (processingError) {
 			console.error(processingError);
 		}
+		// A create sends the free text components with the cassette, so their rows' errors come back with it
+		freeTextComponents.setErrorMessages(mapRowErrors(data, FREE_TEXT_COMPONENTS.field, freeTextComponents.rows));
 	};
 
 	// Starts the form over for the next cassette from the one just saved, as Clone would copy it, so it can be entered
@@ -114,7 +119,11 @@ export default function CassetteCreatePage() {
 		event.preventDefault();
 		cassetteDispatch({ type: 'SUBMIT' });
 
-		const editedSections = componentSections.filter(({ components }) => components.isDirty);
+		const isNew = !createdCassette.current;
+		// A new cassette takes its free text components with it; saving again writes them through their endpoint
+		const editedSections = componentSections.filter(
+			({ config, components }) => components.isDirty && !(isNew && config === FREE_TEXT_COMPONENTS)
+		);
 		saveProgress.begin([
 			{ key: CASSETTE_STEP, label: 'Cassette' },
 			...editedSections.map(({ config }) => ({ key: config.list, label: config.title })),
@@ -123,18 +132,19 @@ export default function CassetteCreatePage() {
 
 		let saved;
 		try {
-			const result = createdCassette.current
-				? await cassetteService.saveCassette(buildCassettePayload(cassette))
-				: await cassetteService.createCassette(buildCassetteCreatePayload(cassette));
+			const result = isNew
+				? await cassetteService.createCassette(buildCassetteCreatePayload(cassette, freeTextComponents.rows))
+				: await cassetteService.saveCassette(buildCassettePayload(cassette));
 			saved = result?.data?.entity;
 		} catch (error) {
 			showSaveError(error);
 			return;
 		}
-		const isNew = !createdCassette.current;
 		createdCassette.current = saved;
 		saveProgress.settle(CASSETTE_STEP, { isSuccess: true });
 		if (isNew) {
+			freeTextComponents.setErrorMessages({});
+			await freeTextComponents.showSaved(saved.cassetteComponents);
 			queryClient.invalidateQueries({ queryKey: ['Cassettes'] });
 			toastSuccess.current.show({
 				severity: 'success',
