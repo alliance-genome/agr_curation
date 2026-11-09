@@ -66,11 +66,24 @@ describe('buildCassetteCreatePayload', () => {
 		const payload = buildCassetteCreatePayload({
 			cassetteSymbol: { dataKey: 'k1', displayText: 'UAS-GFP' },
 			cassetteComponents: [{ componentSymbol: 'GFP' }],
+			cassetteGenomicEntityAssociations: [{ relation: { name: 'targets' } }],
 		});
 
 		expect(payload.type).toBe('Cassette');
 		expect(payload.cassetteSymbol).toEqual({ displayText: 'UAS-GFP' });
-		expect(payload).not.toHaveProperty('cassetteComponents');
+		expect(payload.cassetteComponents).toEqual([]);
+		expect(payload).not.toHaveProperty('cassetteGenomicEntityAssociations');
+	});
+
+	it('carries the free text component rows, as the replace endpoint takes them', () => {
+		const rows = [
+			{ dataKey: 'k2', componentSymbol: 'GFP', singleCassette: { id: 11 }, relation: { name: 'tagged_with' } },
+		];
+
+		const payload = buildCassetteCreatePayload({ cassetteSymbol: { displayText: 'UAS-GFP' } }, rows);
+
+		expect(payload.cassetteComponents).toEqual([{ componentSymbol: 'GFP', relation: { name: 'tagged_with' } }]);
+		expect(rows[0].dataKey).toBe('k2');
 	});
 });
 
@@ -106,6 +119,7 @@ describe('buildDuplicateCassette', () => {
 			cassetteSymbol: { displayText: 'UAS-GFP' },
 			cassetteFullName: null,
 			cassetteSynonyms: [{ displayText: 'UAS-EGFP' }],
+			secondaryIdentifiers: ['FB:FBcs9000001'],
 			cassetteUses: [{ uses: [{ id: 70, curie: 'FBcv:0005012' }] }],
 			references: [{ id: 80, curie: 'AGRKB:101' }],
 		});

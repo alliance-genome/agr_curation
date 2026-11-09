@@ -20,6 +20,7 @@ import org.alliancegenome.curation_api.model.entities.slotAnnotations.CassetteSy
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.CassetteUseSlotAnnotation;
 import org.alliancegenome.curation_api.resources.TestContainerResource;
 import org.alliancegenome.curation_api.response.ObjectResponse;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
@@ -355,5 +356,64 @@ public class IT_0317_CassetteITCase extends BaseITCase {
 			then().
 			statusCode(400).
 			body("errorMessages.cassetteSymbol", notNullValue());
+	}
+
+	private int cassetteCount() {
+		return RestAssured.given().
+			contentType("application/json").
+			body("{}").
+			when().
+			post("/api/cassette/find?limit=1&page=0").
+			then().
+			statusCode(200).
+			extract().path("totalResults");
+	}
+
+	@Test
+	@Order(8)
+	public void createTakesTheFreeTextComponentsAndRefusesADuplicateBeforeSavingAnything() {
+		CassetteComponentSlotAnnotation component = new CassetteComponentSlotAnnotation();
+		component.setRelation(getCassette(CASSETTE).getCassetteComponents().get(0).getRelation());
+		component.setComponentSymbol("ITCreatedComponent");
+		component.setTaxonText("Aequorea victoria");
+
+		// As the create page sends it (SCRUM-6748): the free text components with the cassette, as the unique ID is
+		// built from them
+		Cassette first = newCassette("CsWithComponent");
+		first.setModInternalId(CREATED_CASSETTE + "c");
+		first.setCassetteComponents(List.of(component));
+		RestAssured.given().
+			contentType("application/json").
+			body(first).
+			when().
+			post("/api/cassette").
+			then().
+			log().ifValidationFails().
+			statusCode(200).
+			body("entity.cassetteComponents", hasSize(1)).
+			body("entity.uniqueId", containsString("ITCreatedComponent"));
+
+		RestAssured.given().
+			when().
+			get("/api/cassette/" + CREATED_CASSETTE + "c").
+			then().
+			statusCode(200).
+			body("entity.cassetteComponents[0].componentSymbol", is("ITCreatedComponent")).
+			body("entity.uniqueId", containsString("ITCreatedComponent"));
+
+		// Save & Add Another without a change: the same symbol, name and free text components are refused before
+		// anything is saved, not created and then left without the component its unique ID clashes over
+		int before = cassetteCount();
+		Cassette again = newCassette("CsWithComponent");
+		again.setCassetteComponents(List.of(component));
+		RestAssured.given().
+			contentType("application/json").
+			body(again).
+			when().
+			post("/api/cassette").
+			then().
+			statusCode(400).
+			body("errorMessages.uniqueId", notNullValue());
+		Assertions.assertEquals(before, cassetteCount());
 	}
 }

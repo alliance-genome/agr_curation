@@ -44,13 +44,20 @@ export const buildCassettePayload = (cassette) => {
 
 /**
  * The cassette as POST /cassette takes it (SCRUM-6748): as {@link buildCassettePayload} leaves it, with the type
- * Reagent's JSON type info needs to read it. The component lists are saved through their own endpoints once the
- * cassette exists. The data provider is left to the API, which gives a new cassette the curator's MOD.
+ * Reagent's JSON type info needs to read it, and with its free text components. The unique ID is built from those, so
+ * they go with the cassette for the API to check it before creating anything; the other component lists are saved
+ * through their own endpoints once the cassette exists. The data provider is left to the API, which gives a new
+ * cassette the curator's MOD.
  *
  * @param {Object} cassette the cassette as the create form holds it
- * @returns {Object} a copy for the API; the argument is not modified
+ * @param {Object[]} [freeTextRows] the free text component rows as their table holds them
+ * @returns {Object} a copy for the API; the arguments are not modified
  */
-export const buildCassetteCreatePayload = (cassette) => ({ ...buildCassettePayload(cassette), type: 'Cassette' });
+export const buildCassetteCreatePayload = (cassette, freeTextRows = []) => ({
+	...buildCassettePayload(cassette),
+	type: 'Cassette',
+	cassetteComponents: structuredClone(freeTextRows).map(stripComponentRow),
+});
 
 // The cassette's fields a new cassette starts with
 export const NEW_CASSETTE = { type: 'Cassette', placeholder: false, internal: false, obsolete: false };
@@ -59,10 +66,11 @@ export const NEW_CASSETTE = { type: 'Cassette', placeholder: false, internal: fa
  * A new cassette carrying the fields of a stored one that the create form edits, for Clone and for Save & Add
  * Another to start from (SCRUM-6748).
  *
- * Left behind: everything that identifies the stored cassette (its ids, and its secondary IDs, which name it alone),
- * its data provider, related notes and audit fields, which the create form does not edit, and its component lists,
- * which the create page holds apart ({@link copyComponentRows}). Each copied row loses its own id and audit fields,
- * so it is created afresh; the terms and references a row points to are kept.
+ * Left behind: everything that identifies the stored cassette (its ids), its data provider, related notes and audit
+ * fields, which the create form does not edit, and its component lists, which the create page holds apart
+ * ({@link copyComponentRows}). Each copied row loses its own id and audit fields, so it is created afresh; the terms
+ * and references a row points to are kept. Its secondary IDs are kept too, as curators asked, for a run of cassettes
+ * entered one after another (SCRUM-6748).
  *
  * @param {Object} cassette a cassette as the API returns it
  * @returns {Object} a cassette without an id, not obsolete, carrying only the fields the create form edits
@@ -74,6 +82,7 @@ export const buildDuplicateCassette = (cassette) => ({
 	cassetteSymbol: copyRow(cassette.cassetteSymbol),
 	cassetteFullName: copyRow(cassette.cassetteFullName),
 	cassetteSynonyms: copyRows(cassette.cassetteSynonyms) ?? [],
+	secondaryIdentifiers: [...(cassette.secondaryIdentifiers ?? [])],
 	cassetteUses: copyRows(cassette.cassetteUses) ?? [],
 	references: structuredClone(cassette.references ?? []),
 });
