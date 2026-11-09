@@ -121,27 +121,27 @@ export const AlleleForm = ({ state, dispatch, isVisible, mode = 'detail', pendin
 		});
 	};
 
-	const onIsExtinctValueChange = (event) => {
+	const onIsExtinctValueChange = (value) => {
 		dispatch({
 			type: 'EDIT',
 			field: 'isExtinct',
-			value: event.value,
+			value,
 		});
 	};
 
-	const onInternalValueChange = (event) => {
+	const onInternalValueChange = (value) => {
 		dispatch({
 			type: 'EDIT',
 			field: 'internal',
-			value: event.value,
+			value,
 		});
 	};
 
-	const onObsoleteValueChange = (event) => {
+	const onObsoleteValueChange = (value) => {
 		dispatch({
 			type: 'EDIT',
 			field: 'obsolete',
-			value: event.value,
+			value,
 		});
 	};
 
@@ -263,7 +263,7 @@ export const AlleleForm = ({ state, dispatch, isVisible, mode = 'detail', pendin
 					name={'isExtinct'}
 					isPending={pendingFields?.has('isExtinct')}
 					label={'Is Extinct'}
-					onValueChange={onIsExtinctValueChange}
+					onChange={onIsExtinctValueChange}
 					widgetColumnSize={widgetColumnSize}
 					labelColumnSize={labelColumnSize}
 					fieldDetailsColumnSize={fieldDetailsColumnSize}
@@ -339,7 +339,7 @@ export const AlleleForm = ({ state, dispatch, isVisible, mode = 'detail', pendin
 					name={'internal'}
 					isPending={pendingFields?.has('internal')}
 					label={'Internal'}
-					onValueChange={onInternalValueChange}
+					onChange={onInternalValueChange}
 					widgetColumnSize={widgetColumnSize}
 					labelColumnSize={labelColumnSize}
 					fieldDetailsColumnSize={fieldDetailsColumnSize}
@@ -353,7 +353,7 @@ export const AlleleForm = ({ state, dispatch, isVisible, mode = 'detail', pendin
 					name={'obsolete'}
 					isPending={pendingFields?.has('obsolete')}
 					label={'Obsolete'}
-					onValueChange={onObsoleteValueChange}
+					onChange={onObsoleteValueChange}
 					widgetColumnSize={widgetColumnSize}
 					labelColumnSize={labelColumnSize}
 					fieldDetailsColumnSize={fieldDetailsColumnSize}

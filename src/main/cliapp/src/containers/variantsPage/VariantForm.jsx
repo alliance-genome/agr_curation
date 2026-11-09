@@ -89,8 +89,8 @@ export const VariantForm = ({ state, dispatch, isVisible, mode = 'detail' }) => 
 		dispatch({ type: 'EDIT', field, value });
 	};
 
-	const onFieldValueChange = (field) => (event) => {
-		dispatch({ type: 'EDIT', field, value: event.value });
+	const onFieldValueChange = (field) => (value) => {
+		dispatch({ type: 'EDIT', field, value });
 	};
 
 	return (
@@ -165,7 +165,7 @@ export const VariantForm = ({ state, dispatch, isVisible, mode = 'detail' }) => 
 					name="variantStatus"
 					label="Variant Status"
 					vocabularyLabel="variant_status"
-					onValueChange={onFieldValueChange('variantStatus')}
+					onChange={onFieldValueChange('variantStatus')}
 					widgetColumnSize={widgetColumnSize}
 					labelColumnSize={labelColumnSize}
 					fieldDetailsColumnSize={fieldDetailsColumnSize}
@@ -272,7 +272,7 @@ export const VariantForm = ({ state, dispatch, isVisible, mode = 'detail' }) => 
 					value={state.variant?.internal}
 					name={'internal'}
 					label={'Internal'}
-					onValueChange={onFieldValueChange('internal')}
+					onChange={onFieldValueChange('internal')}
 					widgetColumnSize={widgetColumnSize}
 					labelColumnSize={labelColumnSize}
 					fieldDetailsColumnSize={fieldDetailsColumnSize}
@@ -285,7 +285,7 @@ export const VariantForm = ({ state, dispatch, isVisible, mode = 'detail' }) => 
 					value={state.variant?.obsolete}
 					name={'obsolete'}
 					label={'Obsolete'}
-					onValueChange={onFieldValueChange('obsolete')}
+					onChange={onFieldValueChange('obsolete')}
 					widgetColumnSize={widgetColumnSize}
 					labelColumnSize={labelColumnSize}
 					fieldDetailsColumnSize={fieldDetailsColumnSize}

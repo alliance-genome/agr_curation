@@ -87,14 +87,14 @@ export const CassetteForm = ({ state, dispatch, componentSections, isVisible, mo
 	const isDetail = mode === 'detail';
 	const showsField = (field) => (isDetail || CASSETTE_CREATE_TOGGLEABLE_FIELDS.includes(field)) && isVisible(field);
 
-	const onBooleanChange = (field) => (event) => dispatch({ type: 'EDIT', field, value: event.value });
+	const onBooleanChange = (field) => (value) => dispatch({ type: 'EDIT', field, value });
 
 	const booleanField = (field, label) => (
 		<BooleanDetailPageEditor
 			value={cassette?.[field]}
 			name={field}
 			label={label}
-			onValueChange={onBooleanChange(field)}
+			onChange={onBooleanChange(field)}
 			errorMessages={state.errorMessages}
 			{...columnSizes}
 		/>

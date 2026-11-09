@@ -81,7 +81,7 @@ const termFrom = (value) => (typeof value === 'object' ? value : { curie: value 
 export const GeneForm = ({ state, dispatch, isVisible, mode = 'detail', pendingFields }) => {
 	const isCreate = mode === 'create';
 	const gene = state.gene;
-	const edit = (field) => (event) => dispatch({ type: 'EDIT', field, value: event.value });
+	const edit = (field) => (value) => dispatch({ type: 'EDIT', field, value });
 
 	const nameSection = (entityType, props) => (
 		<NameSlotAnnotationForm
@@ -209,7 +209,7 @@ export const GeneForm = ({ state, dispatch, isVisible, mode = 'detail', pendingF
 					name="internal"
 					label="Internal"
 					isPending={pendingFields?.has('internal')}
-					onValueChange={edit('internal')}
+					onChange={edit('internal')}
 					errorMessages={state.errorMessages}
 					{...columnSizes}
 				/>
@@ -221,7 +221,7 @@ export const GeneForm = ({ state, dispatch, isVisible, mode = 'detail', pendingF
 					name="obsolete"
 					label="Obsolete"
 					isPending={pendingFields?.has('obsolete')}
-					onValueChange={edit('obsolete')}
+					onChange={edit('obsolete')}
 					errorMessages={state.errorMessages}
 					{...columnSizes}
 				/>

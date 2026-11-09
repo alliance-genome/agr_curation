@@ -88,8 +88,8 @@ export const AGMForm = ({ state, dispatch, isVisible, mode = 'detail' }) => {
 		dispatch({ type: 'EDIT', field, value });
 	};
 
-	const onFieldValueChange = (field) => (event) => {
-		dispatch({ type: 'EDIT', field, value: event.value });
+	const onFieldValueChange = (field) => (value) => {
+		dispatch({ type: 'EDIT', field, value });
 	};
 
 	return (
@@ -143,7 +143,7 @@ export const AGMForm = ({ state, dispatch, isVisible, mode = 'detail' }) => {
 					label="Sub Type"
 					vocabularyLabel="agm_subtype"
 					required={isCreate}
-					onValueChange={onFieldValueChange('subtype')}
+					onChange={onFieldValueChange('subtype')}
 					widgetColumnSize={widgetColumnSize}
 					labelColumnSize={labelColumnSize}
 					fieldDetailsColumnSize={fieldDetailsColumnSize}
@@ -241,7 +241,7 @@ export const AGMForm = ({ state, dispatch, isVisible, mode = 'detail' }) => {
 					value={state.agm?.internal}
 					name={'internal'}
 					label={'Internal'}
-					onValueChange={onFieldValueChange('internal')}
+					onChange={onFieldValueChange('internal')}
 					widgetColumnSize={widgetColumnSize}
 					labelColumnSize={labelColumnSize}
 					fieldDetailsColumnSize={fieldDetailsColumnSize}
@@ -254,7 +254,7 @@ export const AGMForm = ({ state, dispatch, isVisible, mode = 'detail' }) => {
 					value={state.agm?.obsolete}
 					name={'obsolete'}
 					label={'Obsolete'}
-					onValueChange={onFieldValueChange('obsolete')}
+					onChange={onFieldValueChange('obsolete')}
 					widgetColumnSize={widgetColumnSize}
 					labelColumnSize={labelColumnSize}
 					fieldDetailsColumnSize={fieldDetailsColumnSize}
