@@ -149,7 +149,7 @@ export const CassetteForm = ({ state, dispatch, componentSections, isVisible, mo
 			</FormSection>
 			{componentSections.map(({ config, components }) => (
 				<FormSection key={config.list} isVisible={showsField(config.title)}>
-					<CassetteComponentsForm components={components} config={config} />
+					<CassetteComponentsForm components={components} config={config} showPending={isDetail} />
 				</FormSection>
 			))}
 			<FormSection isVisible={showsField('Uses')}>

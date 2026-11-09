@@ -1,5 +1,6 @@
 package org.alliancegenome.curation_api;
 
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.in;
 import static org.hamcrest.Matchers.is;
@@ -137,10 +138,8 @@ public class IT_0606_ExpressionBulkUploadFmsITCase extends BaseITCase {
 			.body("results[0].expressionPattern.whereExpressed.anatomicalStructureQualifiers[0].curie", is(anatomicalStructureQualifierTermId))
 			.body("results[0].expressionPattern.whereExpressed.anatomicalSubstructureQualifiers[0].curie", is(anatomicalSubstructureQualifierTermId))
 			.body("results[0].expressionPattern.whereExpressed.cellularComponentQualifiers[0].curie", is(cellularComponentQualifierTermId))
-			.body("results[0].expressionPattern.whereExpressed.anatomicalStructureUberonTerms[0].curie", is(anatomicalStructureUberonTermId1))
-			.body("results[0].expressionPattern.whereExpressed.anatomicalStructureUberonTerms[1].curie", is(anatomicalStructureUberonTermId2))
-			.body("results[0].expressionPattern.whereExpressed.anatomicalSubstructureUberonTerms[0].curie", is(anatomicalSubstructureUberonTermId1))
-			.body("results[0].expressionPattern.whereExpressed.anatomicalSubstructureUberonTerms[1].curie", is(anatomicalSubstructureUberonTermId2));
+			.body("results[0].expressionPattern.whereExpressed.anatomicalStructureUberonTerms.curie", containsInAnyOrder(anatomicalStructureUberonTermId1, anatomicalStructureUberonTermId2))
+			.body("results[0].expressionPattern.whereExpressed.anatomicalSubstructureUberonTerms.curie", containsInAnyOrder(anatomicalSubstructureUberonTermId1, anatomicalSubstructureUberonTermId2));
 	}
 
 	@Test

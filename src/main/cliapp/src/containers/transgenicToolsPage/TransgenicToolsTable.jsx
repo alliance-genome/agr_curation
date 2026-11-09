@@ -497,6 +497,7 @@ export const TransgenicToolsTable = () => {
 				objectField="transgenicToolTransgenicToolAssociationObject"
 				title="Transgenic Tool Associations"
 				getComponentLabel={transgenicToolDisplayValue}
+				showNotesAndEvidence={false}
 			/>
 			<RelatedNotesEditDialog
 				originalRelatedNotesData={relatedNotesData}

@@ -74,6 +74,17 @@ export const useSubResourceList = ({ ownerId, label, errorField, load, replace, 
 	 */
 	const reset = useCallback(() => startOver([]), [startOver]);
 
+	/**
+	 * Shows rows the API saved through another request as the stored ones, as a create that writes the list with
+	 * its entity does.
+	 *
+	 * @param {Object[]} apiRows the rows as the API returned them
+	 */
+	const showSaved = useCallback(
+		async (apiRows) => showSavedRows(await prepare(apiRows ?? [])),
+		[prepare, showSavedRows]
+	);
+
 	useEffect(() => {
 		if (!ownerId) return undefined;
 
@@ -147,6 +158,7 @@ export const useSubResourceList = ({ ownerId, label, errorField, load, replace, 
 		save,
 		startOver,
 		reset,
+		showSaved,
 		setErrorMessages,
 	};
 };
