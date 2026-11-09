@@ -134,4 +134,12 @@ describe('<VariantForm /> detail fields', () => {
 
 		expect(fieldRow(label).querySelector('h2').textContent).toMatch(/^\*/);
 	});
+
+	it('shows an error given as an object for Synonyms beside it', () => {
+		const { dispatch } = renderForm();
+
+		dispatch({ type: 'UPDATE_ERROR_MESSAGES', errorMessages: { synonyms: { severity: 'error', message: 'is bad' } } });
+
+		expect(within(fieldRow('Synonyms')).getByText('is bad')).toBeInTheDocument();
+	});
 });

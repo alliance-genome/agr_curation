@@ -1,6 +1,5 @@
 import { StringListInput } from '../../../components/Editors/widgets/StringListInput';
-import { FormErrorMessageComponent } from '../../../components/Error/FormErrorMessageComponent';
-import { DetailPageFieldWrapper } from '../../../components/DetailPageFieldWrapper';
+import { FormField } from '../../../components/Editors/fields/FormField';
 import { StringListTemplate } from '../../../components/Templates/StringListTemplate';
 
 /**
@@ -20,23 +19,18 @@ export const SynonymsForm = ({ state, dispatch, widgetColumnSize, labelColumnSiz
 	};
 
 	return (
-		<DetailPageFieldWrapper
+		<FormField
+			label="Synonyms"
+			name="synonyms"
+			value={synonyms}
+			onChange={onSynonymsValueChange}
+			errors={state.errorMessages}
 			labelColumnSize={labelColumnSize}
-			fieldDetailsColumnSize={fieldDetailsColumnSize}
 			widgetColumnSize={widgetColumnSize}
-			fieldName="Synonyms"
-			formField={
-				<StringListInput
-					id="synonyms"
-					name="synonyms"
-					value={synonyms}
-					onChange={onSynonymsValueChange}
-					multiline={true}
-					rows={3}
-				/>
-			}
-			errorField={<FormErrorMessageComponent errorMessages={state.errorMessages} errorField={'synonyms'} />}
+			fieldDetailsColumnSize={fieldDetailsColumnSize}
 			additionalDataField={<StringListTemplate list={synonyms} />}
-		/>
+		>
+			{(binding) => <StringListInput {...binding} id="synonyms" multiline={true} rows={3} />}
+		</FormField>
 	);
 };

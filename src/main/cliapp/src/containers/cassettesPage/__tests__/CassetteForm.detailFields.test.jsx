@@ -19,10 +19,10 @@ const BOOLEAN_FIELDS = [
 	['Internal', 'internal'],
 	['Obsolete', 'obsolete'],
 ];
-const BOOLEAN_LABELS = BOOLEAN_FIELDS.map(([label]) => label);
+const VISIBLE_FIELDS = [...BOOLEAN_FIELDS.map(([label]) => label), 'Secondary IDs'];
 
 /**
- * Renders the cassette form's boolean fields against the real reducer, loaded with a cassette, and
+ * Renders the cassette form's boolean and secondary ID fields against the real reducer, loaded with a cassette, and
  * returns a reader for the reducer state, which is what the page saves.
  */
 const renderForm = () => {
@@ -36,7 +36,7 @@ const renderForm = () => {
 				state={cassetteState}
 				dispatch={cassetteDispatch}
 				componentSections={[]}
-				isVisible={(field) => BOOLEAN_LABELS.includes(field)}
+				isVisible={(field) => VISIBLE_FIELDS.includes(field)}
 			/>
 		);
 	};
@@ -67,5 +67,13 @@ describe('<CassetteForm /> detail fields', () => {
 
 		expect(within(fieldRow(label)).getByText('is bad')).toBeInTheDocument();
 		expect(screen.getAllByText('is bad')).toHaveLength(1);
+	});
+
+	it('shows an error reported for the secondary identifiers beside them', () => {
+		const { dispatch } = renderForm();
+
+		dispatch({ type: 'UPDATE_ERROR_MESSAGES', errorMessages: { secondaryIdentifiers: 'is bad' } });
+
+		expect(within(fieldRow('Secondary IDs')).getByText('is bad')).toBeInTheDocument();
 	});
 });

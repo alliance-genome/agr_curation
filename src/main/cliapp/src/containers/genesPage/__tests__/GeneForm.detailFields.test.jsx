@@ -139,4 +139,15 @@ describe('<GeneForm /> detail fields', () => {
 
 		expect(fieldRow(label).querySelector('h2').textContent).toMatch(/^\*/);
 	});
+
+	it('shows an error given as an object for GCRP Cross Reference beside it', () => {
+		const { dispatch } = renderForm();
+
+		dispatch({
+			type: 'UPDATE_ERROR_MESSAGES',
+			errorMessages: { gcrpCrossReference: { severity: 'error', message: 'is bad' } },
+		});
+
+		expect(within(fieldRow('GCRP Cross Reference')).getByText('is bad')).toBeInTheDocument();
+	});
 });

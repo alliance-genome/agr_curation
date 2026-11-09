@@ -26,4 +26,15 @@ describe('<SecondaryIdsForm /> on the transgenic tool page', () => {
 		expect(within(fieldRow('Secondary IDs')).getByText('is bad')).toBeInTheDocument();
 		expect(screen.getAllByText('is bad')).toHaveLength(1);
 	});
+
+	it('shows an error given as an object beside the secondary identifiers', () => {
+		const { dispatch } = renderForm();
+
+		dispatch({
+			type: 'UPDATE_ERROR_MESSAGES',
+			errorMessages: { secondaryIdentifiers: { severity: 'error', message: 'is bad' } },
+		});
+
+		expect(within(fieldRow('Secondary IDs')).getByText('is bad')).toBeInTheDocument();
+	});
 });
