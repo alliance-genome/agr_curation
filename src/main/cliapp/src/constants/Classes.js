@@ -93,6 +93,7 @@ export const CLASSES = Object.freeze({
 		hasTable: true,
 		isIndexed: true,
 	},
+	Cassette: { name: 'Cassettes', link: '/#/cassettes', type: 'entity', hasTable: true, isIndexed: true },
 	Construct: { name: 'Constructs', link: '/#/constructs', type: 'entity', hasTable: true, isIndexed: true },
 	Antibody: { name: 'Antibodies', link: '/#/antibodies', type: 'entity', hasTable: true, isIndexed: true },
 	Molecule: { name: 'Molecules', link: '/#/molecules', type: 'entity', hasTable: true, isIndexed: true },

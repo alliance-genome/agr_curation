@@ -12,7 +12,6 @@ import org.alliancegenome.curation_api.base.BaseITCase;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.model.entities.Gene;
-import org.alliancegenome.curation_api.model.entities.InformationContentEntity;
 import org.alliancegenome.curation_api.model.entities.Organization;
 import org.alliancegenome.curation_api.model.entities.Person;
 import org.alliancegenome.curation_api.model.entities.Reference;
@@ -984,7 +983,7 @@ public class IT_0301_GeneITCase extends BaseITCase {
 				statusCode(200);
 	}
 	
-	private GeneSymbolSlotAnnotation createGeneSymbolSlotAnnotation(List<InformationContentEntity> evidence, String name, VocabularyTerm nameType, VocabularyTerm synonymScope, String synonymUrl) {
+	private GeneSymbolSlotAnnotation createGeneSymbolSlotAnnotation(List<Reference> evidence, String name, VocabularyTerm nameType, VocabularyTerm synonymScope, String synonymUrl) {
 		GeneSymbolSlotAnnotation symbol = new GeneSymbolSlotAnnotation();
 		symbol.setEvidence(evidence);
 		symbol.setDisplayText(name);
@@ -996,7 +995,7 @@ public class IT_0301_GeneITCase extends BaseITCase {
 		return symbol;
 	}
 
-	private GeneFullNameSlotAnnotation createGeneFullNameSlotAnnotation(List<InformationContentEntity> evidence, String name, VocabularyTerm nameType, VocabularyTerm synonymScope, String synonymUrl) {
+	private GeneFullNameSlotAnnotation createGeneFullNameSlotAnnotation(List<Reference> evidence, String name, VocabularyTerm nameType, VocabularyTerm synonymScope, String synonymUrl) {
 		GeneFullNameSlotAnnotation fullName = new GeneFullNameSlotAnnotation();
 		fullName.setEvidence(evidence);
 		fullName.setDisplayText(name);
@@ -1008,7 +1007,7 @@ public class IT_0301_GeneITCase extends BaseITCase {
 		return fullName;
 	}
 
-	private GeneSynonymSlotAnnotation createGeneSynonymSlotAnnotation(List<InformationContentEntity> evidence, String name, VocabularyTerm nameType, VocabularyTerm synonymScope, String synonymUrl) {
+	private GeneSynonymSlotAnnotation createGeneSynonymSlotAnnotation(List<Reference> evidence, String name, VocabularyTerm nameType, VocabularyTerm synonymScope, String synonymUrl) {
 		GeneSynonymSlotAnnotation synonym = new GeneSynonymSlotAnnotation();
 		synonym.setEvidence(evidence);
 		synonym.setDisplayText(name);
@@ -1020,7 +1019,7 @@ public class IT_0301_GeneITCase extends BaseITCase {
 		return synonym;
 	}
 
-	private GeneSystematicNameSlotAnnotation createGeneSystematicNameSlotAnnotation(List<InformationContentEntity> evidence, String name, VocabularyTerm nameType, VocabularyTerm synonymScope, String synonymUrl) {
+	private GeneSystematicNameSlotAnnotation createGeneSystematicNameSlotAnnotation(List<Reference> evidence, String name, VocabularyTerm nameType, VocabularyTerm synonymScope, String synonymUrl) {
 		GeneSystematicNameSlotAnnotation systematicName = new GeneSystematicNameSlotAnnotation();
 		systematicName.setEvidence(evidence);
 		systematicName.setDisplayText(name);
@@ -1032,7 +1031,7 @@ public class IT_0301_GeneITCase extends BaseITCase {
 		return systematicName;
 	}
 	
-	private GeneSecondaryIdSlotAnnotation createGeneSecondaryIdSlotAnnotation(List<InformationContentEntity> evidence, String secondaryId) {
+	private GeneSecondaryIdSlotAnnotation createGeneSecondaryIdSlotAnnotation(List<Reference> evidence, String secondaryId) {
 		GeneSecondaryIdSlotAnnotation secondaryIdAnnotation = new GeneSecondaryIdSlotAnnotation();
 		secondaryIdAnnotation.setEvidence(evidence);
 		secondaryIdAnnotation.setSecondaryId(secondaryId);

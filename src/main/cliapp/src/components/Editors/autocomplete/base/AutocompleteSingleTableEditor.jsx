@@ -1,12 +1,27 @@
-import { AutocompleteEditor } from './AutocompleteEditor';
-import { TableEditorErrors } from '../../../Error/TableEditorErrors';
+import { TableField } from '../../fields/TableField';
+import { SingleAutocomplete } from '../../widgets/SingleAutocomplete';
 import { SearchService } from '../../../../service/SearchService';
-import { autocompleteSearch, buildAutocompleteFilter, defaultAutocompleteOnChange } from '../../../../utils/utils';
+import { autocompleteSearch, buildAutocompleteFilter } from '../../../../utils/utils';
 
+/**
+ * Autocomplete over the entities a search config describes, for a row's `field`,
+ * with its validation message. Stores the selected entity, `{ [subField]: text }` for
+ * free text, or null when emptied.
+ *
+ * @param {object} editorOptions - PrimeReact column editor options
+ * @param {string} field - the row property being edited
+ * @param {string} [subField='curie'] - entity property used as the display and free-text key
+ * @param {string} endpoint - search endpoint
+ * @param {string[]} autocompleteFields - fields the query searches
+ * @param {string} filterName - name of the filter group sent to the search
+ * @param {object|(() => object)} [otherFilters] - extra filters, or a function returning
+ *   them when the value is not ready until the search runs
+ * @param {Function} [valueDisplay] - custom suggestion renderer
+ * @param {string} [initialValue] - overrides the text shown for the current value
+ * @returns {JSX.Element}
+ */
 export const AutocompleteSingleTableEditor = ({
 	editorOptions,
-	errorMessagesRef,
-	uiErrorMessagesRef,
 	field,
 	subField = 'curie',
 	endpoint,
@@ -20,32 +35,22 @@ export const AutocompleteSingleTableEditor = ({
 
 	const search = (event, setFiltered, setQuery) => {
 		const filter = buildAutocompleteFilter(event, autocompleteFields);
-		const resolvedOtherFilters = typeof otherFilters === 'function' ? otherFilters(editorOptions) : otherFilters;
+		const resolvedOtherFilters = typeof otherFilters === 'function' ? otherFilters() : otherFilters;
 		setQuery(event.query);
 		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered, resolvedOtherFilters);
 	};
 
-	const onValueChange = (event, setFieldValue, editorOptions) => {
-		defaultAutocompleteOnChange(editorOptions, event, field, setFieldValue, subField);
-	};
-
 	return (
-		<>
-			<AutocompleteEditor
-				search={search}
-				initialValue={initialValue ?? editorOptions.rowData[field]?.[subField]}
-				editorOptions={editorOptions}
-				fieldName={field}
-				subField={subField}
-				valueDisplay={valueDisplay}
-				onValueChangeHandler={onValueChange}
-			/>
-			<TableEditorErrors
-				errorMessagesRef={errorMessagesRef}
-				uiErrorMessagesRef={uiErrorMessagesRef}
-				rowIndex={editorOptions.rowIndex}
-				field={field}
-			/>
-		</>
+		<TableField editorOptions={editorOptions} field={field}>
+			{(binding) => (
+				<SingleAutocomplete
+					{...binding}
+					search={search}
+					subField={subField}
+					toDisplay={initialValue === undefined ? undefined : () => initialValue}
+					valueDisplay={valueDisplay}
+				/>
+			)}
+		</TableField>
 	);
 };

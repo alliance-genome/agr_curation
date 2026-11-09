@@ -12,7 +12,6 @@ import org.alliancegenome.curation_api.base.BaseITCase;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
-import org.alliancegenome.curation_api.model.entities.InformationContentEntity;
 import org.alliancegenome.curation_api.model.entities.Organization;
 import org.alliancegenome.curation_api.model.entities.Person;
 import org.alliancegenome.curation_api.model.entities.Reference;
@@ -224,27 +223,35 @@ public class IT_0303_AffectedGenomicModelITCase extends BaseITCase {
 			post("/api/agm").
 			then().
 			statusCode(400).
-			body("errorMessages", is(aMapWithSize(3))).
-			body("errorMessages.modInternalId", is(ValidationConstants.REQUIRED_UNLESS_OTHER_FIELD_POPULATED_MESSAGE + " primaryExternalId")).
+			body("errorMessages", is(aMapWithSize(2))).
 			body("errorMessages.taxon", is(ValidationConstants.REQUIRED_MESSAGE)).
 			body("errorMessages.subtype", is(ValidationConstants.REQUIRED_MESSAGE));
 	}
-	
+
 	@Test
 	@Order(4)
 	public void editAGMWithMissingPrimaryExternalId() {
 		AffectedGenomicModel agm = getAffectedGenomicModel(AGM);
 		agm.setPrimaryExternalId(null);
-		
+
+		// An AGM is identified by its AGRKB curie, so neither MOD identifier is required.
 		RestAssured.given().
 			contentType("application/json").
 			body(agm).
 			when().
 			put("/api/agm").
 			then().
-			statusCode(400).
-			body("errorMessages", is(aMapWithSize(1))).
-			body("errorMessages.modInternalId", is(ValidationConstants.REQUIRED_UNLESS_OTHER_FIELD_POPULATED_MESSAGE + " primaryExternalId"));
+			statusCode(200);
+
+		// Restore the identifier the ordered tests that follow look this fixture up by.
+		agm.setPrimaryExternalId(AGM);
+		RestAssured.given().
+			contentType("application/json").
+			body(agm).
+			when().
+			put("/api/agm").
+			then().
+			statusCode(200);
 	}
 	
 	@Test
@@ -282,9 +289,7 @@ public class IT_0303_AffectedGenomicModelITCase extends BaseITCase {
 			when().
 			post("/api/agm").
 			then().
-			statusCode(400).
-			body("errorMessages", is(aMapWithSize(1))).
-			body("errorMessages.modInternalId", is(ValidationConstants.REQUIRED_UNLESS_OTHER_FIELD_POPULATED_MESSAGE + " primaryExternalId"));
+			statusCode(200);
 	}
 
 	@Test
@@ -293,15 +298,24 @@ public class IT_0303_AffectedGenomicModelITCase extends BaseITCase {
 		AffectedGenomicModel agm = getAffectedGenomicModel(AGM);
 		agm.setPrimaryExternalId("");
 
+		// An AGM is identified by its AGRKB curie, so neither MOD identifier is required.
 		RestAssured.given().
 			contentType("application/json").
 			body(agm).
 			when().
 			put("/api/agm").
 			then().
-			statusCode(400).
-			body("errorMessages", is(aMapWithSize(1))).
-			body("errorMessages.modInternalId", is(ValidationConstants.REQUIRED_UNLESS_OTHER_FIELD_POPULATED_MESSAGE + " primaryExternalId"));
+			statusCode(200);
+
+		// Restore the identifier the ordered tests that follow look this fixture up by.
+		agm.setPrimaryExternalId(AGM);
+		RestAssured.given().
+			contentType("application/json").
+			body(agm).
+			when().
+			put("/api/agm").
+			then().
+			statusCode(200);
 	}
 	
 	@Test
@@ -543,7 +557,7 @@ public class IT_0303_AffectedGenomicModelITCase extends BaseITCase {
 				statusCode(200);
 	}
 	
-	private AgmFullNameSlotAnnotation createAgmFullNameSlotAnnotation(List<InformationContentEntity> evidence, String name, VocabularyTerm nameType, VocabularyTerm synonymScope, String synonymUrl) {
+	private AgmFullNameSlotAnnotation createAgmFullNameSlotAnnotation(List<Reference> evidence, String name, VocabularyTerm nameType, VocabularyTerm synonymScope, String synonymUrl) {
 		AgmFullNameSlotAnnotation fullName = new AgmFullNameSlotAnnotation();
 		fullName.setEvidence(evidence);
 		fullName.setDisplayText(name);
@@ -555,7 +569,7 @@ public class IT_0303_AffectedGenomicModelITCase extends BaseITCase {
 		return fullName;
 	}
 
-	private AgmSynonymSlotAnnotation createAgmSynonymSlotAnnotation(List<InformationContentEntity> evidence, String name, VocabularyTerm nameType, VocabularyTerm synonymScope, String synonymUrl) {
+	private AgmSynonymSlotAnnotation createAgmSynonymSlotAnnotation(List<Reference> evidence, String name, VocabularyTerm nameType, VocabularyTerm synonymScope, String synonymUrl) {
 		AgmSynonymSlotAnnotation synonym = new AgmSynonymSlotAnnotation();
 		synonym.setEvidence(evidence);
 		synonym.setDisplayText(name);
@@ -567,7 +581,7 @@ public class IT_0303_AffectedGenomicModelITCase extends BaseITCase {
 		return synonym;
 	}
 	
-	private AgmSecondaryIdSlotAnnotation createAgmSecondaryIdSlotAnnotation(List<InformationContentEntity> evidence, String secondaryId) {
+	private AgmSecondaryIdSlotAnnotation createAgmSecondaryIdSlotAnnotation(List<Reference> evidence, String secondaryId) {
 		AgmSecondaryIdSlotAnnotation secondaryIdAnnotation = new AgmSecondaryIdSlotAnnotation();
 		secondaryIdAnnotation.setEvidence(evidence);
 		secondaryIdAnnotation.setSecondaryId(secondaryId);

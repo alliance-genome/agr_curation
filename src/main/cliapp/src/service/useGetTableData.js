@@ -6,14 +6,19 @@ export const useGetTableData = ({
 	endpoint,
 	sortMapping,
 	nonNullFieldsTable,
+	fixedFilters,
 	setIsInEditMode,
 	setEntities,
 	setTotalRecords,
 	toast_topleft,
 	searchService,
 }) => {
+	// fixedFilters are sent with every search but are not part of the table state, so the user can
+	// neither see nor remove them: e.g. a table restricted to the cassettes of one construct.
+	const filters = fixedFilters ? { ...tableState.filters, ...fixedFilters } : tableState.filters;
+
 	const { data, isSuccess, isError, isPending, isFetching, isLoading } = useQuery({
-		queryKey: [tableState.tableKeyName, tableState.rows, tableState.page, tableState.multiSortMeta, tableState.filters],
+		queryKey: [tableState.tableKeyName, tableState.rows, tableState.page, tableState.multiSortMeta, filters],
 
 		queryFn: () =>
 			searchService.search(
@@ -21,7 +26,7 @@ export const useGetTableData = ({
 				tableState.rows,
 				tableState.page,
 				tableState.multiSortMeta,
-				tableState.filters,
+				filters,
 				sortMapping,
 				[],
 				nonNullFieldsTable

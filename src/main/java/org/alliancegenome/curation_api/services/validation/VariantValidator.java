@@ -1,16 +1,22 @@
 package org.alliancegenome.curation_api.services.validation;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.CrossReferenceDAO;
 import org.alliancegenome.curation_api.dao.VariantDAO;
 import org.alliancegenome.curation_api.dao.ontology.SoTermDAO;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
+import org.alliancegenome.curation_api.model.entities.Reference;
 import org.alliancegenome.curation_api.model.entities.Variant;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.SOTerm;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.CurieMintService;
+import org.apache.commons.collections.CollectionUtils;
 
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
@@ -22,6 +28,7 @@ public class VariantValidator extends GenomicEntityValidator<Variant> {
 	@Inject CurieMintService curieMintService;
 	@Inject CrossReferenceDAO crossReferenceDAO;
 	@Inject SoTermDAO soTermDAO;
+	@Inject ReferenceValidator referenceValidator;
 
 	private String errorMessage;
 
@@ -51,6 +58,7 @@ public class VariantValidator extends GenomicEntityValidator<Variant> {
 		errorMessage = "Could not create Variant";
 
 		Variant dbEntity = new Variant();
+		dbEntity.setCurie(validateCurie(uiEntity));
 
 		dbEntity = (Variant) validateAuditedObjectFields(uiEntity, dbEntity, true);
 
@@ -59,7 +67,7 @@ public class VariantValidator extends GenomicEntityValidator<Variant> {
 
 	public Variant validateVariant(Variant uiEntity, Variant dbEntity) {
 
-		dbEntity = (Variant) validateGenomicEntityFields(uiEntity, dbEntity, VocabularyConstants.VARIANT_NOTE_TYPES_VOCABULARY_TERM_SET);
+		dbEntity = (Variant) validateGenomicEntityFields(uiEntity, dbEntity, VocabularyConstants.VARIANT_NOTE_TYPES_VOCABULARY_TERM_SET, false);
 
 		SOTerm variantType = validateRequiredEntity(soTermDAO, "variantType", uiEntity.getVariantType(), dbEntity.getVariantType());
 		dbEntity.setVariantType(variantType);
@@ -69,6 +77,15 @@ public class VariantValidator extends GenomicEntityValidator<Variant> {
 
 		SOTerm sourceGeneralConsequence = validateEntity(soTermDAO, "sourceGeneralConsequence", uiEntity.getSourceGeneralConsequence(), dbEntity.getSourceGeneralConsequence());
 		dbEntity.setSourceGeneralConsequence(sourceGeneralConsequence);
+
+		List<Reference> references = validateReferences(uiEntity, dbEntity);
+		dbEntity.setReferences(references);
+
+		if (CollectionUtils.isNotEmpty(uiEntity.getSynonyms())) {
+			dbEntity.setSynonyms(uiEntity.getSynonyms());
+		} else {
+			dbEntity.setSynonyms(null);
+		}
 
 		if (response.hasErrors()) {
 			response.setErrorMessage(errorMessage);
@@ -87,10 +104,65 @@ public class VariantValidator extends GenomicEntityValidator<Variant> {
 		// the variant's AGRKB id would silently change on every such update.
 		if (dbEntity.getId() == null) {
 			curieMintService.mintCurieIfAbsent(dbEntity);
+			if (dbEntity.getIdentifier() == null) {
+				addMessageResponse("curie", ValidationConstants.CURIE_MINT_FAILED_MESSAGE);
+				response.setErrorMessage(errorMessage + ": " + ValidationConstants.CURIE_MINT_FAILED_MESSAGE);
+				throw new ApiErrorException(response);
+			}
 		}
 		dbEntity = variantDAO.persist(dbEntity);
 
 		return dbEntity;
+	}
+
+	public List<Reference> validateReferences(Variant uiEntity, Variant dbEntity) {
+		String field = "references";
+
+		List<Reference> validatedReferences = new ArrayList<Reference>();
+		List<String> previousReferenceCuries = new ArrayList<String>();
+		if (CollectionUtils.isNotEmpty(dbEntity.getReferences())) {
+			previousReferenceCuries = dbEntity.getReferences().stream().map(Reference::getCurie).collect(Collectors.toList());
+		}
+
+		Boolean allValid = true;
+		if (CollectionUtils.isNotEmpty(uiEntity.getReferences())) {
+			for (int ix = 0; ix < uiEntity.getReferences().size(); ix++) {
+				ObjectResponse<Reference> refResponse = validateReference(uiEntity.getReferences().get(ix), previousReferenceCuries);
+				if (refResponse.getEntity() == null) {
+					allValid = false;
+					response.addErrorMessages(field, ix, refResponse.getErrorMessages());
+				} else {
+					validatedReferences.add(refResponse.getEntity());
+				}
+			}
+		}
+
+		if (!allValid) {
+			convertMapToErrorMessages(field);
+			return null;
+		}
+
+		if (CollectionUtils.isEmpty(validatedReferences)) {
+			return null;
+		}
+
+		return validatedReferences;
+	}
+
+	private ObjectResponse<Reference> validateReference(Reference uiEntity, List<String> previousCuries) {
+		ObjectResponse<Reference> singleRefResponse = referenceValidator.validateReference(uiEntity);
+		if (singleRefResponse.getEntity() == null) {
+			return singleRefResponse;
+		}
+
+		// An obsolete reference already on the variant is kept, so an unrelated edit does not fail
+		// over data the variant carried before. Adding a new obsolete one is rejected.
+		if (singleRefResponse.getEntity().getObsolete() && (CollectionUtils.isEmpty(previousCuries) || !previousCuries.contains(singleRefResponse.getEntity().getCurie()))) {
+			singleRefResponse.setEntity(null);
+			singleRefResponse.addErrorMessage("curie", ValidationConstants.OBSOLETE_MESSAGE);
+		}
+
+		return singleRefResponse;
 	}
 
 }

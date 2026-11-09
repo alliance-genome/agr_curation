@@ -1,0 +1,8 @@
+[
+  {
+    "primary_external_id": "WB:CassetteER03",
+    "cassette_symbol_dto": { "display_text": "Cs7", "format_text": "Cs7", "name_type_name": "nomenclature_symbol" },
+    "cassette_use_dtos": [ { "use_curies": [] } ],
+    "data_provider_dto": { "source_organization_abbreviation": "WB" }
+  }
+]

@@ -54,12 +54,23 @@ public class IT_0604_GeneInteractionBulkUploadFmsITCase extends BaseITCase {
 	private final String geneGeneticInteractionId = "WB:WBInteraction0002";
 	private final String geneInteractionXrefLookupId = "WB:WBInteraction0003";
 	private final String geneInteractionXrefLookupId2 = "WB:WBInteraction0004";
+	private final String fcarPigrInteractionId = "imex:IM-30326-681";
+	private final String islr2PigrInteractionId = "imex:IM-30326-683";
+	private final String aplp2PigrInteractionId = "imex:IM-30342-333";
 	private final String gene1 = "WB:GITestGene0001";
 	private final String gene2 = "WB:GITestGene0002";
 	private final String gene3 = "WB:GITestGene0003";
 	private final String gene3xref = "NCBI_Gene:EZL1";
 	private final String gene4 = "WB:GITestGene0004";
 	private final String gene4xref = "NCBI_Gene:EZL2";
+	private final String fcarGene = "HGNC:3608";
+	private final String fcarGeneGcrpXref = "UniProtKB:P24071";
+	private final String pigrGene = "HGNC:8968";
+	private final String pigrGeneGcrpXref = "UniProtKB:P01833";
+	private final String islr2Gene = "HGNC:29286";
+	private final String islr2GeneGcrpXref = "UniProtKB:Q6UXK2";
+	private final String aplp2Gene = "HGNC:598";
+	private final String aplp2GeneGcrpXref = "UniProtKB:Q06481";
 	private final String reference = "AGRKB:000000002";
 	private final String reference2 = "AGRKB:000000021";
 	private final String miTerm1 = "MI:Test0001";
@@ -83,6 +94,10 @@ public class IT_0604_GeneInteractionBulkUploadFmsITCase extends BaseITCase {
 		createGenes(List.of(gene1, gene2), "NCBITaxon:6239", symbolTerm, false, dataProvider);
 		createGeneWithXref(gene3, "NCBITaxon:6239", symbolTerm, false, dataProvider, gene3xref);
 		createGeneWithXref(gene4, "NCBITaxon:9606", symbolTerm, false, dataProvider2, gene4xref);
+		createGeneWithXref(fcarGene, "NCBITaxon:9606", symbolTerm, false, dataProvider2, null, fcarGeneGcrpXref);
+		createGeneWithXref(pigrGene, "NCBITaxon:9606", symbolTerm, false, dataProvider2, null, pigrGeneGcrpXref);
+		createGeneWithXref(islr2Gene, "NCBITaxon:9606", symbolTerm, false, dataProvider2, null, islr2GeneGcrpXref);
+		createGeneWithXref(aplp2Gene, "NCBITaxon:9606", symbolTerm, false, dataProvider2, null, aplp2GeneGcrpXref);
 		createAllele(allele1, "GGITestVar1", "NCBITaxon:6239", symbolTerm, false, dataProvider);
 		createAllele(allele2, "GGITestVar2", "NCBITaxon:6239", symbolTerm, false, dataProvider);
 		createMiTerm(miTerm1, "Test MITerm 1");
@@ -347,5 +362,35 @@ public class IT_0604_GeneInteractionBulkUploadFmsITCase extends BaseITCase {
 			then().
 			statusCode(200).
 			body("entity.evidence", hasSize(1));
+	}
+
+	@Test
+	@Order(13)
+	public void geneInteractionBulkUploadGcrpXrefLookup() throws Exception {
+		checkSuccessfulBulkLoad(geneMolecularInteractionBulkPostEndpoint, geneInteractionTestFilePath + "XR_03_gcrp_cross_reference_lookup.json", 3);
+
+		RestAssured.given().
+			when().
+			get(geneMolecularInteractionGetEndpoint + fcarPigrInteractionId).
+			then().
+			statusCode(200).
+			body("entity.geneAssociationSubject.primaryExternalId", is(fcarGene)).
+			body("entity.geneGeneAssociationObject.primaryExternalId", is(pigrGene));
+
+		RestAssured.given().
+			when().
+			get(geneMolecularInteractionGetEndpoint + islr2PigrInteractionId).
+			then().
+			statusCode(200).
+			body("entity.geneAssociationSubject.primaryExternalId", is(islr2Gene)).
+			body("entity.geneGeneAssociationObject.primaryExternalId", is(pigrGene));
+
+		RestAssured.given().
+			when().
+			get(geneMolecularInteractionGetEndpoint + aplp2PigrInteractionId).
+			then().
+			statusCode(200).
+			body("entity.geneAssociationSubject.primaryExternalId", is(aplp2Gene)).
+			body("entity.geneGeneAssociationObject.primaryExternalId", is(pigrGene));
 	}
 }

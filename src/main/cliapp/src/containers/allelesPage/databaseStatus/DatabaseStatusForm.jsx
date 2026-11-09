@@ -3,7 +3,7 @@ import { FormTableWrapper } from '../../../components/FormTableWrapper';
 import { DatabaseStatusFormTable } from './DatabaseStatusFormTable';
 import { useRef } from 'react';
 
-export const DatabaseStatusForm = ({ labelColumnSize, state, dispatch }) => {
+export const DatabaseStatusForm = ({ labelColumnSize, state, dispatch, isPending = false }) => {
 	const tableRef = useRef(null);
 	const entityType = 'alleleDatabaseStatus';
 
@@ -83,6 +83,7 @@ export const DatabaseStatusForm = ({ labelColumnSize, state, dispatch }) => {
 				/>
 			}
 			tableName="Database Status"
+			isPending={isPending}
 			showTable={state.entityStates[entityType].show}
 			button={
 				<Button

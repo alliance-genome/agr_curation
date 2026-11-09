@@ -1,0 +1,8 @@
+[
+  {
+    "primary_external_id": "WB:CassetteER02",
+    "cassette_symbol_dto": { "display_text": "Cs6", "format_text": "Cs6", "name_type_name": "nomenclature_symbol" },
+    "cassette_component_dtos": [ { "component_symbol": "ccmp6", "relation_name": "" } ],
+    "data_provider_dto": { "source_organization_abbreviation": "WB" }
+  }
+]

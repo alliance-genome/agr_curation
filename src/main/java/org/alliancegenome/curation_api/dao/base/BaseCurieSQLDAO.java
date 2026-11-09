@@ -18,7 +18,7 @@ import jakarta.transaction.Transactional;
  * Queries are built with the Criteria API over {@code myClass}, not native SQL over a table name.
  * That is deliberate: the curie column lives in nine different tables (biologicalentity, reagent,
  * phenotypeannotation,
- * diseaseannotation, geneexpressionannotation, geneexpressionexperiment, informationcontententity,
+ * diseaseannotation, geneexpressionannotation, geneexpressionexperiment, reference,
  * ontologyterm, externaldatabaseentity) because each entity inherits the field from whichever
  * ancestor declares it, under a JOINED inheritance strategy. Hand-written SQL has to get that
  * mapping right once per class and it has already been got wrong once — the first run of the allele

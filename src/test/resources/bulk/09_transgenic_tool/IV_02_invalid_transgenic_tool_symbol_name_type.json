@@ -1,0 +1,13 @@
+[
+  {
+    "primary_external_id": "WB:TransgenicToolIV02",
+    "transgenic_tool_symbol_dto": {
+      "display_text": "Tt2",
+      "format_text": "Tt2",
+      "name_type_name": "invalid"
+    },
+    "data_provider_dto": {
+      "source_organization_abbreviation": "WB"
+    }
+  }
+]

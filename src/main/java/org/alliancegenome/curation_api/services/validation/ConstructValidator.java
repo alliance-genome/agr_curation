@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.alliancegenome.curation_api.constants.ValidationConstants;
-import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.ConstructDAO;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.Construct;
@@ -17,6 +16,7 @@ import org.alliancegenome.curation_api.model.entities.slotAnnotations.ConstructS
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.ConstructSynonymSlotAnnotation;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
+import org.alliancegenome.curation_api.services.CurieMintService;
 import org.alliancegenome.curation_api.services.helpers.ConstructUniqueIdHelper;
 import org.alliancegenome.curation_api.services.validation.associations.ConstructGenomicEntityAssociationValidator;
 import org.alliancegenome.curation_api.services.validation.dto.slotAnnotations.ConstructComponentSlotAnnotationValidator;
@@ -32,6 +32,7 @@ import jakarta.inject.Inject;
 public class ConstructValidator extends ReagentValidator {
 
 	@Inject ConstructDAO constructDAO;
+	@Inject CurieMintService curieMintService;
 	@Inject ConstructComponentSlotAnnotationValidator constructComponentValidator;
 	@Inject ReferenceValidator referenceValidator;
 	@Inject ConstructSymbolSlotAnnotationValidator constructSymbolValidator;
@@ -89,7 +90,7 @@ public class ConstructValidator extends ReagentValidator {
 			dbEntity.setReferences(null);
 		}
 
-		dbEntity = (Construct) validateCommonReagentFields(uiEntity, dbEntity, VocabularyConstants.CONSTRUCT_NOTE_TYPES_VOCABULARY_TERM_SET);
+		dbEntity = (Construct) validateCommonReagentFields(uiEntity, dbEntity, null);
 
 		ConstructSymbolSlotAnnotation symbol = validateConstructSymbol(uiEntity, dbEntity);
 		ConstructFullNameSlotAnnotation fullName = validateConstructFullName(uiEntity, dbEntity);
@@ -108,6 +109,14 @@ public class ConstructValidator extends ReagentValidator {
 			throw new ApiErrorException(response);
 		}
 
+		// SCRUM-6536: mint an AGRKB curie for a NEW construct that has none, before persist so the insert
+		// writes it. A curator-supplied curie is left alone. The getId() == null guard is load-bearing, as
+		// for genes: validateConstruct serves create and update, and validateCommonReagentFields ->
+		// SubmittedObjectValidator copies the payload's curie unconditionally, so an update omitting curie
+		// nulls it and an unguarded mint would then silently replace the construct's AGRKB id.
+		if (dbEntity.getId() == null) {
+			curieMintService.mintCurieIfAbsent(dbEntity);
+		}
 		dbEntity = constructDAO.persist(dbEntity);
 
 		if (symbol != null) {

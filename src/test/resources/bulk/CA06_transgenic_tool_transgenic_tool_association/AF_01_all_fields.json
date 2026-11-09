@@ -1,0 +1,13 @@
+[
+  {
+    "transgenic_tool_subject_identifier": "WB:TransgenicTool0001",
+    "relation_name": "is_compatible_with",
+    "transgenic_tool_object_identifier": "WB:TransgenicToolMN01",
+    "internal": true,
+    "obsolete": true,
+    "created_by_curie": "ALLELETEST:Person0001",
+    "updated_by_curie": "ALLELETEST:Person0002",
+    "date_created": "2022-03-09T22:10:12+00:00",
+    "date_updated": "2022-03-10T22:10:12+00:00"
+  }
+]

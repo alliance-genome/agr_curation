@@ -47,24 +47,16 @@ jobs:
     needs: [shared-variables]
     permissions:
       contents: write
-    env:
-      tagmessage: ''
     steps:
       - name: Check out repository code
         uses: actions/checkout@v4
-      - name: Generate and store release message
+      - name: Git tag
         shell: bash
         run: |
-          {
-              echo 'tagmessage<<EOF'
-              git log --format=%b -n 1
-              echo EOF
-          } >> "$GITHUB_ENV"
-      - name: Git tag
-        uses: rickstaa/action-create-tag@v1
-        with:
-          tag: ${{ needs.shared-variables.outputs.tagname }}
-          message: ${{ env.tagmessage }}
+          git config --local user.name "${{ github.actor }}"
+          git config --local user.email "${{ github.actor }}@users.noreply.github.com"
+          git log --format=%b -n 1 | git tag -a -F - ${{ needs.shared-variables.outputs.tagname }}
+          git push origin ${{ needs.shared-variables.outputs.tagname }}
       - name: Create github release
         uses: ncipollo/release-action@v1
         with:

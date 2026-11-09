@@ -71,4 +71,97 @@ describe('useAlleleReducer', () => {
 			expect(result.current.alleleState.allele.alleleSynonyms).toHaveLength(1);
 		});
 	});
+
+	describe('hasOtherPendingEdits', () => {
+		const loadedAllele = { id: 9, taxon: { curie: 'NCBITaxon:10090' }, alleleSynonyms: [] };
+
+		const renderLoaded = () => {
+			const hook = renderHook(() => useAlleleReducer());
+			act(() => hook.result.current.alleleDispatch({ type: 'SET', value: loadedAllele }));
+			return hook;
+		};
+
+		it('Starts unset on a loaded allele', () => {
+			const { result } = renderLoaded();
+
+			expect(result.current.alleleState.hasOtherPendingEdits).toBe(false);
+		});
+
+		it('Stays unset for an edit to a single-value field', () => {
+			const { result } = renderLoaded();
+
+			act(() => result.current.alleleDispatch({ type: 'EDIT', field: 'obsolete', value: true }));
+
+			expect(result.current.alleleState.hasOtherPendingEdits).toBe(false);
+		});
+
+		it('Is set by an edit to any other field', () => {
+			const { result } = renderLoaded();
+
+			act(() => result.current.alleleDispatch({ type: 'EDIT', field: 'primaryExternalId', value: 'WB:WBVar1' }));
+
+			expect(result.current.alleleState.hasOtherPendingEdits).toBe(true);
+		});
+
+		it('Is set by a table edit', () => {
+			const { result } = renderLoaded();
+
+			act(() =>
+				result.current.alleleDispatch({
+					type: 'ADD_ROW',
+					entityType: 'alleleSynonyms',
+					row: { dataKey: 'row-1', displayText: 'a synonym' },
+				})
+			);
+
+			expect(result.current.alleleState.hasOtherPendingEdits).toBe(true);
+		});
+
+		it('Stays unset for edits to a single-object section', () => {
+			const { result } = renderLoaded();
+
+			act(() =>
+				result.current.alleleDispatch({
+					type: 'ADD_OBJECT',
+					entityType: 'alleleFullName',
+					value: { dataKey: 'name-1', displayText: '' },
+				})
+			);
+			act(() =>
+				result.current.alleleDispatch({
+					type: 'EDIT_OBJECT',
+					entityType: 'alleleFullName',
+					field: 'displayText',
+					value: 'a name',
+				})
+			);
+			act(() => result.current.alleleDispatch({ type: 'DELETE_OBJECT', entityType: 'alleleFullName' }));
+
+			expect(result.current.alleleState.hasOtherPendingEdits).toBe(false);
+		});
+
+		it('Is cleared when the allele is set again', () => {
+			const { result } = renderLoaded();
+
+			act(() =>
+				result.current.alleleDispatch({
+					type: 'ADD_ROW',
+					entityType: 'alleleSynonyms',
+					row: { dataKey: 'row-1', displayText: 'a synonym' },
+				})
+			);
+			act(() => result.current.alleleDispatch({ type: 'SET', value: loadedAllele }));
+
+			expect(result.current.alleleState.hasOtherPendingEdits).toBe(false);
+		});
+
+		it('Is cleared by a reset', () => {
+			const { result } = renderLoaded();
+
+			act(() => result.current.alleleDispatch({ type: 'EDIT', field: 'primaryExternalId', value: 'WB:WBVar1' }));
+			act(() => result.current.alleleDispatch({ type: 'RESET' }));
+
+			expect(result.current.alleleState.hasOtherPendingEdits).toBe(false);
+		});
+	});
 });

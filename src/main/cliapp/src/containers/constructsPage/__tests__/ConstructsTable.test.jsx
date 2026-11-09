@@ -55,11 +55,10 @@ describe('<ConstructsTable />', () => {
 		const updatedByCreatedByArray = await result.findAllByText('WB:curator');
 		const dateCreatedTd = await result.findByText(/2010-01-02T00:00:00Z/i);
 		const dateUpdatedTd = await result.findByText(/2012-08-03T01:00:00\+01:00/i);
-		const constructComponentTd = await result.findByText(/egl19/i);
 		const symbolTd = await result.findByText(/KP273/);
 		const nameTd = await result.findByText(/King Potato 273/);
 		const synonymTd = await result.findByText(/KPot273/);
-		const constructGenomicComponentTd = await result.findByText(/lin-17/i);
+		const cassetteTd = await result.findByText('KP273', { selector: '.underline' });
 
 		await waitFor(() => {
 			expect(primaryExternalIdTd).toBeInTheDocument();
@@ -70,8 +69,7 @@ describe('<ConstructsTable />', () => {
 			expect(updatedByCreatedByArray.length).toEqual(2);
 			expect(dateUpdatedTd).toBeInTheDocument();
 			expect(dateCreatedTd).toBeInTheDocument();
-			expect(constructComponentTd).toBeInTheDocument();
-			expect(constructGenomicComponentTd).toBeInTheDocument();
+			expect(cassetteTd).toBeInTheDocument();
 		});
 	});
 });

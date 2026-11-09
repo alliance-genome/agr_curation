@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.alliancegenome.curation_api.model.entities.InformationContentEntity;
 import org.alliancegenome.curation_api.model.entities.Note;
 import org.alliancegenome.curation_api.model.entities.Reference;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
@@ -15,6 +14,7 @@ import org.alliancegenome.curation_api.model.entities.slotAnnotations.AlleleGerm
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.AlleleInheritanceModeSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.AlleleMutationTypeSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.AlleleNomenclatureEventSlotAnnotation;
+import org.alliancegenome.curation_api.model.entities.slotAnnotations.CassetteComponentSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.ConstructComponentSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.NameSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.SecondaryIdSlotAnnotation;
@@ -25,6 +25,7 @@ import org.alliancegenome.curation_api.model.ingest.dto.slotAnnotions.AlleleGerm
 import org.alliancegenome.curation_api.model.ingest.dto.slotAnnotions.AlleleInheritanceModeSlotAnnotationDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.slotAnnotions.AlleleMutationTypeSlotAnnotationDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.slotAnnotions.AlleleNomenclatureEventSlotAnnotationDTO;
+import org.alliancegenome.curation_api.model.ingest.dto.slotAnnotions.CassetteComponentSlotAnnotationDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.slotAnnotions.ConstructComponentSlotAnnotationDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.slotAnnotions.NameSlotAnnotationDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.slotAnnotions.SecondaryIdSlotAnnotationDTO;
@@ -146,6 +147,28 @@ public class SlotAnnotationIdentityHelper {
 		return StringUtils.join(List.of(componentSymbol, taxon, taxonText, notesIdentity), "|");
 	}
 
+	/**
+	 * SCRUM-6535. Identical in shape to constructComponentIdentity; the two stay separate because the
+	 * annotation types are unrelated even though their fields line up.
+	 */
+	public static String cassetteComponentIdentity(CassetteComponentSlotAnnotation annotation) {
+		String componentSymbol = StringUtils.isBlank(annotation.getComponentSymbol()) ? "" : annotation.getComponentSymbol();
+		String taxon = annotation.getTaxon() == null ? "" : annotation.getTaxon().getCurie();
+		String taxonText = StringUtils.isBlank(annotation.getTaxonText()) ? "" : annotation.getTaxonText();
+		String notesIdentity = notesIdentity(annotation.getRelatedNotes());
+
+		return StringUtils.join(List.of(componentSymbol, taxon, taxonText, notesIdentity), "|");
+	}
+
+	public String cassetteComponentDtoIdentity(CassetteComponentSlotAnnotationDTO dto) {
+		String componentSymbol = StringUtils.isBlank(dto.getComponentSymbol()) ? "" : dto.getComponentSymbol();
+		String taxon = StringUtils.isBlank(dto.getTaxonCurie()) ? "" : dto.getTaxonCurie();
+		String taxonText = StringUtils.isBlank(dto.getTaxonText()) ? "" : dto.getTaxonText();
+		String notesIdentity = noteDtosIdentity(dto.getNoteDtos());
+
+		return StringUtils.join(List.of(componentSymbol, taxon, taxonText, notesIdentity), "|");
+	}
+
 	public static String nameSlotAnnotationIdentity(NameSlotAnnotation annotation) {
 		String displayText = StringUtils.isBlank(annotation.getDisplayText()) ? "" : annotation.getDisplayText();
 		String formatText = StringUtils.isBlank(annotation.getFormatText()) ? "" : annotation.getFormatText();
@@ -181,13 +204,13 @@ public class SlotAnnotationIdentityHelper {
 		return evidenceIngestIdentity(evidenceCuries);
 	}
 
-	private static String evidenceIdentity(List<InformationContentEntity> evidence) {
+	private static String evidenceIdentity(List<Reference> evidence) {
 		String identity = "";
 		if (CollectionUtils.isEmpty(evidence)) {
 			return identity;
 		}
 
-		List<String> evidenceCuries = evidence.stream().map(InformationContentEntity::getCurie).collect(Collectors.toList());
+		List<String> evidenceCuries = evidence.stream().map(Reference::getCurie).collect(Collectors.toList());
 		Collections.sort(evidenceCuries);
 		identity = StringUtils.join(evidenceCuries, ":");
 
@@ -236,7 +259,7 @@ public class SlotAnnotationIdentityHelper {
 			return identity;
 		}
 
-		List<String> referenceCuries = references.stream().map(InformationContentEntity::getCurie).collect(Collectors.toList());
+		List<String> referenceCuries = references.stream().map(Reference::getCurie).collect(Collectors.toList());
 		Collections.sort(referenceCuries);
 		identity = StringUtils.join(referenceCuries, ":");
 

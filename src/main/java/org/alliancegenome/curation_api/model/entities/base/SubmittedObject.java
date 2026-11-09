@@ -75,7 +75,7 @@ public class SubmittedObject extends CurieObject {
 	@IndexedEmbedded(includePaths = {"freeText", "freeText_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-	@JsonView({ CurationView.FieldsAndLists.class, CurationView.AlleleView.class, CurationView.AlleleDetailView.class, CurationView.GeneView.class, CurationView.AffectedGenomicModelView.class, CurationView.ConstructView.class, CurationView.VariantView.class, CurationView.AlleleSummaryDocument.class, CurationView.GeneSummaryDocument.class, CurationView.VariantSummaryDocument.class })
+	@JsonView({ CurationView.FieldsAndLists.class, CurationView.AlleleView.class, CurationView.AlleleDetailView.class, CurationView.GeneView.class, CurationView.AffectedGenomicModelView.class, CurationView.ConstructView.class, CurationView.VariantView.class, CurationView.AlleleSummaryDocument.class, CurationView.GeneSummaryDocument.class, CurationView.VariantSummaryDocument.class, CurationView.CassetteView.class, CurationView.TransgenicToolView.class })
 	@JoinTable(
 		joinColumns = @JoinColumn(name = "submittedobject_id"),
 		inverseJoinColumns = @JoinColumn(name = "relatednotes_id"),
@@ -111,5 +111,12 @@ public class SubmittedObject extends CurieObject {
 			return modInternalId;
 		}
 		return null;
+	}
+
+	@Transient
+	@JsonIgnore
+	public String getSubmittedIdentifierOrCurie() {
+		String submittedIdentifier = getSubmittedIdentifier();
+		return submittedIdentifier != null ? submittedIdentifier : curie;
 	}
 }

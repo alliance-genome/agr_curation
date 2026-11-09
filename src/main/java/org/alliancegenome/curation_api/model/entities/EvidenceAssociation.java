@@ -30,11 +30,17 @@ import lombok.EqualsAndHashCode;
 @AGRCurationSchemaVersion(min = "1.9.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { Association.class })
 public class EvidenceAssociation extends Association {
 
-	@IndexedEmbedded(includeDepth = 2)
+	@IndexedEmbedded(includePaths = {
+		"id", "curie", "curie_keyword",
+		"primaryCrossReferenceCurie", "primaryCrossReferenceCurie_keyword", "crossReferenceCuries", "crossReferenceCuries_keyword",
+		"createdBy.uniqueId", "createdBy.uniqueId_keyword", "updatedBy.uniqueId", "updatedBy.uniqueId_keyword",
+		"dateCreated", "dateCreated_keyword", "dateUpdated", "dateUpdated_keyword", "dbDateCreated", "dbDateCreated_keyword",
+		"dbDateUpdated", "dbDateUpdated_keyword", "internal", "internal_keyword", "obsolete", "obsolete_keyword"
+	})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
 	@Fetch(FetchMode.JOIN)
-	@JsonView({ CurationView.FieldsAndLists.class, CurationView.AlleleView.class, CurationView.GeneView.class, CurationView.ConstructView.class, CurationView.GeneInteractionView.class, CurationView.ForPublic.class })
+	@JsonView({ CurationView.FieldsAndLists.class, CurationView.AlleleView.class, CurationView.GeneView.class, CurationView.ConstructView.class, CurationView.GeneInteractionView.class, CurationView.ForPublic.class , CurationView.CassetteView.class, CurationView.TransgenicToolView.class})
 	@JoinTable(
 		joinColumns = @JoinColumn(name = "association_id"),
 		inverseJoinColumns = @JoinColumn(name = "evidence_id"),
@@ -43,6 +49,6 @@ public class EvidenceAssociation extends Association {
 			@Index(columnList = "evidence_id")
 		}
 	)
-	private List<InformationContentEntity> evidence;
+	private List<Reference> evidence;
 
 }

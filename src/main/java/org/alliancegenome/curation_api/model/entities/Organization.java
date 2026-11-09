@@ -12,6 +12,7 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmb
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexingDependency;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.KeywordField;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -67,6 +68,11 @@ public class Organization extends Agent {
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@OneToOne
+	// The page's auditing people are dropped here because a person carries this same alliance
+	// member, whose homepage is this page, closing a page -> person -> member -> page loop.
+	// allowSetters keeps them writable: ignoring them in both directions makes Jackson build a
+	// contextual deserializer for a type inside the cycle, leaving its id without a deserializer.
+	@JsonIgnoreProperties(value = { "createdBy", "updatedBy" }, allowSetters = true)
 	@JsonView({ CurationView.FieldsOnly.class, CurationView.ForPublic.class, CurationView.AlleleDetailView.class })
 	private ResourceDescriptorPage homepageResourceDescriptorPage;
 

@@ -86,10 +86,10 @@ public class AntibodyDTOValidator extends ReagentDTOValidator<Antibody, Antibody
 		VocabularyTerm lightChainIsotype = validateTermInVocabulary("light_chain_isotype_name", dto.getLightChainIsotypeName(), VocabularyConstants.ANTIBODY_LIGHT_CHAIN_ISOTYPE_VOCABULARY);
 		antibody.setLightChainIsotype(lightChainIsotype);
 
-		VocabularyTerm antigenTaxonTerm = validateTermInVocabulary("antigen_taxon_term_name", dto.getAntigenTaxonTermName(), VocabularyConstants.ANTIBODY_ANTIGEN_TAXON_VOCABULARY);
+		VocabularyTerm antigenTaxonTerm = validateTermInVocabularyTermSet("antigen_taxon_term_name", dto.getAntigenTaxonTermName(), VocabularyConstants.ANTIBODY_ANTIGEN_TAXON_VOCABULARY_TERM_SET);
 		antibody.setAntigenTaxonTerm(antigenTaxonTerm);
 
-		VocabularyTerm hostTaxonTerm = validateTermInVocabulary("host_taxon_term_name", dto.getHostTaxonTermName(), VocabularyConstants.ANTIBODY_HOST_TAXON_VOCABULARY);
+		VocabularyTerm hostTaxonTerm = validateTermInVocabularyTermSet("host_taxon_term_name", dto.getHostTaxonTermName(), VocabularyConstants.ANTIBODY_HOST_TAXON_VOCABULARY_TERM_SET);
 		antibody.setHostTaxonTerm(hostTaxonTerm);
 
 		List<Gene> targetGenes = validateOptionalEntities("antibody_target_gene_identifiers", dto.getAntibodyTargetGeneIdentifiers(), geneService::findByIdentifierString);

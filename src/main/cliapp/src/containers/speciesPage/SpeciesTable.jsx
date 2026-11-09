@@ -27,8 +27,6 @@ export const SpeciesTable = () => {
 
 	const toast_topleft = useRef(null);
 	const toast_topright = useRef(null);
-	const errorMessagesRef = useRef();
-	errorMessagesRef.current = errorMessages;
 
 	const searchService = new SearchService();
 
@@ -101,7 +99,6 @@ export const SpeciesTable = () => {
 						editorOptions={editorOptions}
 						field="dataProvider"
 						options={organizations}
-						errorMessagesRef={errorMessagesRef}
 						showClear={false}
 						dataKey="id"
 						placeholderField="abbreviation"
@@ -132,7 +129,6 @@ export const SpeciesTable = () => {
 							editorOptions={editorOptions}
 							field="genomeAssembly"
 							options={filteredAssemblies}
-							errorMessagesRef={errorMessagesRef}
 							showClear={true}
 							dataKey="id"
 							placeholderField="primaryExternalId"

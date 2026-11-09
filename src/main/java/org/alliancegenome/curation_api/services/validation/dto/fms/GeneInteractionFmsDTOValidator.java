@@ -15,7 +15,6 @@ import org.alliancegenome.curation_api.enums.PsiMiTabPrefixEnum;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.GeneInteraction;
-import org.alliancegenome.curation_api.model.entities.InformationContentEntity;
 import org.alliancegenome.curation_api.model.entities.Reference;
 import org.alliancegenome.curation_api.model.entities.ontology.MITerm;
 import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
@@ -51,7 +50,7 @@ public class GeneInteractionFmsDTOValidator extends BaseDTOValidator {
 		ObjectResponse<E> giResponse = new ObjectResponse<E>();
 
 		if (CollectionUtils.isNotEmpty(references)) {
-			List<InformationContentEntity> evidence = new ArrayList<>();
+			List<Reference> evidence = new ArrayList<>();
 			evidence.addAll(references);
 			interaction.setEvidence(evidence);
 		} else {
@@ -202,24 +201,29 @@ public class GeneInteractionFmsDTOValidator extends BaseDTOValidator {
 					return response;
 				}
 
-				SearchResponse<Gene> searchResponse = geneService.findByField("crossReferences.referencedCurie", convertedCurie);
-				if (searchResponse != null) {
-					for (Gene searchResult : searchResponse.getResults()) {
-						if (!searchResult.getObsolete()) {
-							String resultDataProviderCoreGenus = BackendBulkDataProvider.getCoreGenus(searchResult.getDataProvider().getAbbreviation());
-							if (taxon.getName().startsWith(resultDataProviderCoreGenus + " ")) {
-								allianceGene = searchResult;
-								break;
-							}
-							if (StringUtils.equals(taxonCurie, "NCBITaxon:9606") && StringUtils.equals(searchResult.getDataProvider().getAbbreviation(), "RGD")) {
-								allianceGene = searchResult;
-								break;
-							}
-							if (StringUtils.equals(taxonCurie, "NCBITaxon:2697049") && StringUtils.equals(searchResult.getDataProvider().getAbbreviation(), "Alliance")) {
-								allianceGene = searchResult;
-								break;
+				for (String xrefField : List.of("crossReferences.referencedCurie", "gcrpCrossReference.referencedCurie")) {
+					SearchResponse<Gene> searchResponse = geneService.findByField(xrefField, convertedCurie);
+					if (searchResponse != null) {
+						for (Gene searchResult : searchResponse.getResults()) {
+							if (!searchResult.getObsolete()) {
+								String resultDataProviderCoreGenus = BackendBulkDataProvider.getCoreGenus(searchResult.getDataProvider().getAbbreviation());
+								if (taxon.getName().startsWith(resultDataProviderCoreGenus + " ")) {
+									allianceGene = searchResult;
+									break;
+								}
+								if (StringUtils.equals(taxonCurie, "NCBITaxon:9606") && StringUtils.equals(searchResult.getDataProvider().getAbbreviation(), "RGD")) {
+									allianceGene = searchResult;
+									break;
+								}
+								if (StringUtils.equals(taxonCurie, "NCBITaxon:2697049") && StringUtils.equals(searchResult.getDataProvider().getAbbreviation(), "Alliance")) {
+									allianceGene = searchResult;
+									break;
+								}
 							}
 						}
+					}
+					if (allianceGene != null) {
+						break;
 					}
 				}
 				if (allianceGene != null) {

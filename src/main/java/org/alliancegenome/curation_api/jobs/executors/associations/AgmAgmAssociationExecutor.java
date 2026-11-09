@@ -11,7 +11,6 @@ import org.alliancegenome.curation_api.model.entities.bulkloads.BulkManualLoad;
 import org.alliancegenome.curation_api.model.ingest.dto.IngestDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.associations.AgmAgmAssociationDTO;
 import org.alliancegenome.curation_api.services.associations.AgmAgmAssociationService;
-import org.apache.commons.collections.CollectionUtils;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -24,21 +23,24 @@ public class AgmAgmAssociationExecutor extends LoadFileExecutor {
 	@Inject
 	AgmAgmAssociationService agmAgmAssociationService;
 
-	public void execLoad(BulkLoadFileHistory bulkLoadFileHistory, Boolean cleanUp) {
+	@Override
+	protected List<?> getIngestSet(IngestDTO ingestDto) {
+		return ingestDto.getAgmAgmAssociationIngestSet();
+	}
+
+	@Override
+	protected Class<?> getIngestDtoClass() {
+		return AgmAgmAssociationDTO.class;
+	}
+
+	@Override
+	protected void loadIngestSet(BulkLoadFileHistory bulkLoadFileHistory, IngestDTO ingestDto, Boolean cleanUp) {
 
 		BulkManualLoad manual = (BulkManualLoad) bulkLoadFileHistory.getBulkLoad();
 		BackendBulkDataProvider dataProvider = manual.getDataProvider();
 		log.info("Running with dataProvider: " + dataProvider.name());
 
-		IngestDTO ingestDto = readIngestFile(bulkLoadFileHistory, AgmAgmAssociationDTO.class);
-		if (ingestDto == null) {
-			return;
-		}
-
 		List<AgmAgmAssociationDTO> associations = ingestDto.getAgmAgmAssociationIngestSet();
-		if (CollectionUtils.isEmpty(associations)) {
-			return;
-		}
 
 		List<Long> associationIdsLoaded = new ArrayList<>();
 		List<Long> associationIdsBefore = new ArrayList<>();

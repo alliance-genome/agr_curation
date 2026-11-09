@@ -66,6 +66,8 @@ public class AlleleDAO extends BaseCurieSQLDAO<Allele> {
 	AgmAlleleAssociationDAO agmAlleleAssociationDAO;
 	@Inject
 	HTPExpressionDatasetSampleAnnotationDAO htpExpressionDatasetSampleAnnotationDAO;
+	@Inject
+	GeneGeneticInteractionDAO geneGeneticInteractionDAO;
 
 	protected AlleleDAO() {
 		super(Allele.class);
@@ -129,6 +131,31 @@ public class AlleleDAO extends BaseCurieSQLDAO<Allele> {
 		List<Long> results = htpExpressionDatasetSampleAnnotationDAO.findIdsByParams(params);
 
 		return CollectionUtils.isNotEmpty(results);
+	}
+
+	public Boolean hasReferencingGeneGeneticInteractions(Long alleleId) {
+		Map<String, Object> params = new HashMap<>();
+		params.put("query_operator", "or");
+		params.put("interactorAGeneticPerturbation.id", alleleId);
+		params.put("interactorBGeneticPerturbation.id", alleleId);
+		List<Long> results = geneGeneticInteractionDAO.findIdsByParams(params);
+		return CollectionUtils.isNotEmpty(results);
+	}
+
+	/**
+	 * Whether a non-obsolete allele other than {@code excludeId} has this symbol display text and taxon.
+	 *
+	 * @param displayText symbol display text to match
+	 * @param taxonId id of the taxon to match
+	 * @param excludeId id of the allele being validated, or null for a new allele
+	 */
+	public Boolean hasAlleleWithSymbolAndTaxon(String displayText, Long taxonId, Long excludeId) {
+		Map<String, Object> params = new HashMap<>();
+		params.put("alleleSymbol.displayText", displayText);
+		params.put("taxon.id", taxonId);
+		params.put("obsolete", false);
+		List<Long> results = findIdsByParams(params);
+		return results.stream().anyMatch(id -> !id.equals(excludeId));
 	}
 
 	public List<String> getAllAllelePrimaryExternalIds() {
@@ -1142,10 +1169,9 @@ public class AlleleDAO extends BaseCurieSQLDAO<Allele> {
 		}
 		if (!allVariantIds.isEmpty()) {
 			String variantRefsQueryString = """
-				SELECT vr.variant_id, r.id AS ref_id, be.curie, cr.referencedcurie, cr.displayname, rdp.name AS rdp_name, rdp.urltemplate
+				SELECT vr.variant_id, r.id AS ref_id, r.curie, cr.referencedcurie, cr.displayname, rdp.name AS rdp_name, rdp.urltemplate
 				FROM variant_reference vr
 				JOIN reference r ON r.id = vr.references_id
-				JOIN biologicalentity be ON be.id = r.id
 				LEFT JOIN reference_crossreference rcr ON rcr.reference_id = r.id
 				LEFT JOIN crossreference cr ON cr.id = rcr.crossreferences_id
 				LEFT JOIN resourcedescriptorpage rdp ON rdp.id = cr.resourcedescriptorpage_id
@@ -1226,10 +1252,9 @@ public class AlleleDAO extends BaseCurieSQLDAO<Allele> {
 
 		// Allele references
 		String alleleRefsQueryString = """
-			SELECT ar.allele_id, r.id AS ref_id, ice.curie, r.shortcitation, cr.referencedcurie, cr.displayname, rdp.name AS rdp_name, rdp.urltemplate
+			SELECT ar.allele_id, r.id AS ref_id, r.curie, r.shortcitation, cr.referencedcurie, cr.displayname, rdp.name AS rdp_name, rdp.urltemplate
 			FROM allele_reference ar
 			JOIN reference r ON r.id = ar.references_id
-			JOIN informationcontententity ice ON ice.id = r.id
 			LEFT JOIN reference_crossreference rcr ON rcr.reference_id = r.id
 			LEFT JOIN crossreference cr ON cr.id = rcr.crossreferences_id
 			LEFT JOIN resourcedescriptorpage rdp ON rdp.id = cr.resourcedescriptorpage_id

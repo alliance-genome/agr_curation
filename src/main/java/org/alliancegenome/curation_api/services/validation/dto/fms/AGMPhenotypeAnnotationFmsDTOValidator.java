@@ -16,7 +16,7 @@ import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
 import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.GenomicEntity;
-import org.alliancegenome.curation_api.model.entities.InformationContentEntity;
+import org.alliancegenome.curation_api.model.entities.Reference;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.PhenotypeFmsDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
@@ -43,13 +43,13 @@ public class AGMPhenotypeAnnotationFmsDTOValidator extends PhenotypeAnnotationFm
 		ObjectResponse<AGMPhenotypeAnnotation> apaResponse = new ObjectResponse<AGMPhenotypeAnnotation>();
 		AGMPhenotypeAnnotation annotation = new AGMPhenotypeAnnotation();
 
-		ObjectResponse<InformationContentEntity> refResponse = validateReference(dto);
+		ObjectResponse<Reference> refResponse = validateReference(dto);
 		apaResponse.addErrorMessages(refResponse.getErrorMessages());
 
-		InformationContentEntity reference = refResponse.getEntity();
-		String refString = reference == null ? null : reference.getCurie();
+		Reference reference = refResponse.getEntity();
+		String refString = getRefString(dto, reference);
 
-		String uniqueId = AnnotationUniqueIdHelper.getPhenotypeAnnotationUniqueId(dto, subject.getIdentifier(), refString);
+		String uniqueId = AnnotationUniqueIdHelper.getPhenotypeAnnotationUniqueId(dto, subject.getSubmittedIdentifierOrCurie(), refString);
 		SearchResponse<AGMPhenotypeAnnotation> annotationSearch = agmPhenotypeAnnotationDAO.findByField("uniqueId", uniqueId);
 		if (annotationSearch != null && annotationSearch.getSingleResult() != null) {
 			annotation = annotationSearch.getSingleResult();
@@ -57,6 +57,7 @@ public class AGMPhenotypeAnnotationFmsDTOValidator extends PhenotypeAnnotationFm
 
 		annotation.setUniqueId(uniqueId);
 		annotation.setEvidenceItem(reference);
+		setOmimOrphanetCrossReference(annotation, dto);
 		annotation.setPhenotypeAnnotationSubject(subject);
 
 		// Reset implied/asserted fields as secondary annotations loaded separately
@@ -80,10 +81,10 @@ public class AGMPhenotypeAnnotationFmsDTOValidator extends PhenotypeAnnotationFm
 	public List<AGMPhenotypeAnnotation> validateInferredOrAssertedEntities(AffectedGenomicModel primaryAnnotationSubject, PhenotypeFmsDTO dto, BackendBulkDataProvider dataProvider, Set<Long> idsAdded) throws ValidationException {
 		// Fast skip: check if the inferred gene/allele is already set using pre-loaded maps only
 		if (existingUniqueIds != null && StringUtils.isNotBlank(dto.getObjectId())) {
-			ObjectResponse<InformationContentEntity> quickRefResponse = validateReference(dto);
+			ObjectResponse<Reference> quickRefResponse = validateReference(dto);
 			if (!quickRefResponse.hasErrors()) {
-				String quickRefString = quickRefResponse.getEntity() != null ? quickRefResponse.getEntity().getCurie() : null;
-				String uniqueId = AnnotationUniqueIdHelper.getPhenotypeAnnotationUniqueId(dto, primaryAnnotationSubject.getIdentifier(), quickRefString);
+				String quickRefString = getRefString(dto, quickRefResponse.getEntity());
+				String uniqueId = AnnotationUniqueIdHelper.getPhenotypeAnnotationUniqueId(dto, primaryAnnotationSubject.getSubmittedIdentifierOrCurie(), quickRefString);
 				if (existingUniqueIds.containsKey(uniqueId)) {
 					Long objectEntityId = genomicEntityIdCache.computeIfAbsent(dto.getObjectId(), id -> {
 						GenomicEntity entity = genomicEntityService.findByIdentifierString(id);
@@ -112,13 +113,13 @@ public class AGMPhenotypeAnnotationFmsDTOValidator extends PhenotypeAnnotationFm
 
 		ObjectResponse<AGMPhenotypeAnnotation> apaResponse = new ObjectResponse<AGMPhenotypeAnnotation>();
 
-		ObjectResponse<InformationContentEntity> refResponse = validateReference(dto);
+		ObjectResponse<Reference> refResponse = validateReference(dto);
 		apaResponse.addErrorMessages(refResponse.getErrorMessages());
 
-		InformationContentEntity reference = refResponse.getEntity();
-		String refString = reference == null ? null : reference.getCurie();
+		Reference reference = refResponse.getEntity();
+		String refString = getRefString(dto, reference);
 
-		List<AGMPhenotypeAnnotation> primaryAnnotations = findPrimaryAnnotations(agmPhenotypeAnnotationDAO, dto, primaryAnnotationSubject.getIdentifier(), refString);
+		List<AGMPhenotypeAnnotation> primaryAnnotations = findPrimaryAnnotations(agmPhenotypeAnnotationDAO, dto, primaryAnnotationSubject.getSubmittedIdentifierOrCurie(), refString);
 		
 		if (CollectionUtils.isEmpty(primaryAnnotations)) {
 			PhenotypeFmsDTO inferredPrimaryDTO = createPrimaryAnnotationDTO(dto, primaryAnnotationSubject.getIdentifier());
