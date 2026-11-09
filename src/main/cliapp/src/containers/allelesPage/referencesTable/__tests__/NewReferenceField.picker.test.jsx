@@ -3,7 +3,6 @@ import { fireEvent, render, screen } from '@testing-library/react';
 import { SubResourcesProvider } from '../../../../components/SubResourcesContext';
 
 const SEARCH_RESULT = {
-	id: 9,
 	curie: 'AGRKB:101',
 	short_citation: 'Doe 2020',
 	cross_references: [{ curie: 'PMID:101' }],

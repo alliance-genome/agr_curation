@@ -23,6 +23,7 @@ import { useSyncedState } from '../../../hooks/useSyncedState';
  * @param {string} [name] - accessible name for the control
  * @param {boolean} [invalid] - applies invalid styling
  * @param {boolean} [disabled]
+ * @param {string} [inputClassName] - classes for the text input, such as a fixed width
  * @returns {JSX.Element}
  */
 export function SingleAutocomplete({
@@ -36,6 +37,7 @@ export function SingleAutocomplete({
 	name,
 	invalid,
 	disabled,
+	inputClassName,
 }) {
 	const [suggestions, setSuggestions] = useState([]);
 	const derive = toDisplay ?? ((modelValue) => modelValue?.[subField] ?? '');
@@ -88,6 +90,7 @@ export function SingleAutocomplete({
 				onChange={handleChange}
 				disabled={disabled}
 				className={invalid ? 'p-invalid' : undefined}
+				inputClassName={inputClassName}
 				panelStyle={{ width: '15%', display: 'flex', maxHeight: '350px' }}
 			/>
 			<EditorTooltip op={tooltip} autocompleteHoverItem={hoverItem} />

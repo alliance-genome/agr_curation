@@ -11,10 +11,10 @@ const searchResult = {
 
 // The autocomplete is replaced by buttons that report what a curator picking or typing would.
 vi.mock('../../../../components/Editors/autocomplete/references/SingleReferenceDetailPageEditor', () => ({
-	SingleReferenceDetailPageEditor: ({ onReferenceValueChange, errorMessages }) => (
+	SingleReferenceDetailPageEditor: ({ onChange, errorMessages }) => (
 		<>
-			<button onClick={() => onReferenceValueChange({ target: { value: searchResult } })}>Pick reference</button>
-			<button onClick={() => onReferenceValueChange({ target: { value: 'typed text' } })}>Type text</button>
+			<button onClick={() => onChange(searchResult)}>Pick reference</button>
+			<button onClick={() => onChange({ curie: 'typed text' })}>Type text</button>
 			<span>{errorMessages?.references}</span>
 		</>
 	),
