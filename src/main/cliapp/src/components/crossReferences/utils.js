@@ -24,21 +24,15 @@ export const buildNewCrossReference = () => {
 
 /**
  * Copies of an entity's cross references for a new entity. Each keeps its page, and so its resource
- * descriptor, and its internal flag, but not its id or audit fields; the curie and display name are kept only
- * when asked for. Every copy starts out not obsolete.
+ * descriptor, its internal flag, its curie and its display name, but not its id or audit fields. Every copy
+ * starts out not obsolete.
  *
  * @param {Object[]} [crossReferences] cross references as the API returns them or as the table holds them
- * @param {Object} [options]
- * @param {boolean} [options.keepCurie] - true to keep each curie and display name rather than blank them
  * @returns {Object[]} rows, each with its own `dataKey`
  */
-export const buildCrossReferenceCopies = (crossReferences, { keepCurie = false } = {}) =>
+export const buildCrossReferenceCopies = (crossReferences) =>
 	(crossReferences ?? []).map((crossReference) => {
 		const copy = copyRow(crossReference);
-		if (!keepCurie) {
-			copy.referencedCurie = '';
-			copy.displayName = '';
-		}
 		copy.obsolete = false;
 		addDataKey(copy);
 		return copy;

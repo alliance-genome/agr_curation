@@ -113,15 +113,16 @@ describe('<AlleleCreatePage /> copying sub-resource lists', { timeout: 30000 }, 
 		expect(createAllele.mock.calls[0][0]).not.toHaveProperty('relatedNotes');
 	});
 
-	it('Copies no secondary IDs, which identify the source allele', async () => {
+	it('Copies the secondary IDs and writes them, as new rows, to the new allele', async () => {
 		const user = userEvent.setup();
 		const { container } = await renderPage();
 		await waitForSourceToLoad(container);
+		await waitFor(() => expect(getSecondaryIdsForAllele).toHaveBeenCalledWith(1), FORM_LOAD_WAIT);
 
 		await user.click(screen.getByRole('button', { name: 'Save & Close' }));
 
-		await waitFor(() => expect(navigate).toHaveBeenCalled(), FORM_LOAD_WAIT);
-		expect(getSecondaryIdsForAllele).not.toHaveBeenCalled();
-		expect(replaceSecondaryIdsForAllele).not.toHaveBeenCalled();
+		await waitFor(() => expect(replaceSecondaryIdsForAllele).toHaveBeenCalled(), FORM_LOAD_WAIT);
+		expect(replaceSecondaryIdsForAllele).toHaveBeenCalledWith(4242, [{ secondaryId: 'WB:WBVar0' }]);
+		expect(createAllele.mock.calls[0][0]).not.toHaveProperty('alleleSecondaryIds');
 	});
 });

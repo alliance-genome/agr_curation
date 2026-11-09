@@ -191,15 +191,14 @@ describe('useAlleleSubResources', () => {
 			const { references, crossReferences } = result.current.subResources;
 			expect(references.rows.map((reference) => reference.curie)).toEqual(['AGRKB:101']);
 			expect(references.isDirty).toBe(true);
-			// a cross reference curie names the allele it belongs to, so the copy keeps only its page
 			expect(crossReferences.rows).toHaveLength(1);
-			expect(crossReferences.rows[0].referencedCurie).toEqual('');
+			expect(crossReferences.rows[0].referencedCurie).toEqual('WB:WBVar1');
 			expect(crossReferences.rows[0].resourceDescriptorPage).toEqual({ id: 5, name: 'allele' });
 			expect(crossReferences.rows[0].resourceDescriptor).toEqual(shownCrossReference.resourceDescriptor);
 			expect(crossReferences.rows[0].dataKey).not.toEqual('shown-cross-reference');
 		});
 
-		it('Starts a list Clone does not copy over empty', async () => {
+		it('Carries the secondary IDs over, as rows to write to the next allele', async () => {
 			const { result } = await renderLoaded();
 			act(() => {
 				result.current.subResources.alleleSecondaryIds.setRows([{ dataKey: 'id-row', secondaryId: 'WB:WBVar0' }]);
@@ -209,8 +208,11 @@ describe('useAlleleSubResources', () => {
 				await result.current.carryOverAll(allVisible);
 			});
 
-			expect(result.current.subResources.alleleSecondaryIds.rows).toEqual([]);
-			expect(result.current.subResources.alleleSecondaryIds.isDirty).toBe(false);
+			const { alleleSecondaryIds } = result.current.subResources;
+			expect(alleleSecondaryIds.rows).toHaveLength(1);
+			expect(alleleSecondaryIds.rows[0].secondaryId).toEqual('WB:WBVar0');
+			expect(alleleSecondaryIds.rows[0].dataKey).not.toEqual('id-row');
+			expect(alleleSecondaryIds.isDirty).toBe(true);
 		});
 
 		it('Starts a list whose section is hidden over empty', async () => {

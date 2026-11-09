@@ -49,8 +49,8 @@ export const ALLELE_SUB_RESOURCES = {
 		prepare: prepareCrossReferences,
 		strip: stripUiFields,
 		isSame: haveSameCrossReferences,
-		// The copies keep the source's pages but not its curies, which the curator fills in for the new allele.
-		// A hidden section could not show them, so it gets none.
+		// The copies keep the source's pages and curies, for the curator to review. A hidden section could not show
+		// them, so it gets none.
 		buildCopies: async (crossReferences) => seedResourceDescriptors(buildCrossReferenceCopies(crossReferences)),
 		copyOnlyWhenVisible: 'Cross References',
 	},
@@ -80,13 +80,11 @@ export const ALLELE_SUB_RESOURCES = {
 		errorField: 'alleleSynonyms',
 		fieldsOf: synonymFields,
 	}),
-	// Secondary IDs identify the allele they belong to, so a new allele copies none.
 	alleleSecondaryIds: slotAnnotationList({
 		path: 'secondaryids',
 		label: 'secondary IDs',
 		errorField: 'alleleSecondaryIds',
 		fieldsOf: secondaryIdFields,
-		copy: false,
 	}),
 	alleleNomenclatureEvents: slotAnnotationList({
 		path: 'nomenclatureevents',
