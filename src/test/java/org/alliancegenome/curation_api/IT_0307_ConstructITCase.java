@@ -12,6 +12,7 @@ import java.util.List;
 import org.alliancegenome.curation_api.base.BaseITCase;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
+import org.alliancegenome.curation_api.model.entities.Cassette;
 import org.alliancegenome.curation_api.model.entities.Construct;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.Note;
@@ -20,8 +21,10 @@ import org.alliancegenome.curation_api.model.entities.Person;
 import org.alliancegenome.curation_api.model.entities.Reference;
 import org.alliancegenome.curation_api.model.entities.Vocabulary;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
+import org.alliancegenome.curation_api.model.entities.associations.ConstructCassetteAssociation;
 import org.alliancegenome.curation_api.model.entities.associations.ConstructGenomicEntityAssociation;
 import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
+import org.alliancegenome.curation_api.model.entities.slotAnnotations.CassetteSymbolSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.ConstructComponentSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.ConstructFullNameSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.ConstructSymbolSlotAnnotation;
@@ -90,6 +93,8 @@ public class IT_0307_ConstructITCase extends BaseITCase {
 	private ConstructSynonymSlotAnnotation constructSynonym;
 	private Gene gene;
 	private VocabularyTerm geAssociationRelation;
+	private Cassette cassette;
+	private VocabularyTerm cassetteAssociationRelation;
 	
 	private void loadRequiredEntities() {
 		noteTypeVocabulary = getVocabulary(VocabularyConstants.NOTE_TYPE_VOCABULARY);
@@ -135,6 +140,9 @@ public class IT_0307_ConstructITCase extends BaseITCase {
 		gene = createGene("TEST:AssociatedGenomicEntity1", "NCBITaxon:6239", symbolNameType, false);
 		Vocabulary relationVocabulary = getVocabulary(VocabularyConstants.CONSTRUCT_RELATION_VOCABULARY);
 		geAssociationRelation = getVocabularyTerm(relationVocabulary, "is_regulated_by");
+		cassette = createCassette("Cassette:0307");
+		Vocabulary cassetteRelationVocabulary = getVocabulary(VocabularyConstants.CONSTRUCT_CASSETTE_RELATION_VOCABULARY_TERM_SET);
+		cassetteAssociationRelation = getVocabularyTerm(cassetteRelationVocabulary, "has_component");
 	}
 	
 	@Test
@@ -998,6 +1006,115 @@ public class IT_0307_ConstructITCase extends BaseITCase {
 			body("errorMessages.constructGenomicEntityAssociations", is("relation - " + ValidationConstants.INVALID_MESSAGE));
 	}
 	
+	@Test
+	@Order(21)
+	public void updateConstructWithNewCassetteAssociation() {
+		Construct construct = getConstruct(CONSTRUCT);
+		construct.setConstructCassetteAssociations(List.of(createConstructCassetteAssociation(cassetteAssociationRelation)));
+
+		RestAssured.given().
+			contentType("application/json").
+			body(construct).
+			when().
+			put("/api/construct").
+			then().
+			statusCode(200);
+
+		RestAssured.given().
+			when().
+			get("/api/construct/" + CONSTRUCT).
+			then().
+			statusCode(200).
+			body("entity.constructCassetteAssociations", hasSize(1)).
+			body("entity.constructCassetteAssociations[0].constructCassetteAssociationObject.primaryExternalId", is(cassette.getPrimaryExternalId())).
+			body("entity.constructCassetteAssociations[0].relation.name", is("has_component"));
+	}
+
+	@Test
+	@Order(22)
+	public void updateConstructKeepsStoredCassetteAssociations() {
+		Construct construct = getConstruct(CONSTRUCT);
+		construct.setConstructCassetteAssociations(null);
+
+		RestAssured.given().
+			contentType("application/json").
+			body(construct).
+			when().
+			put("/api/construct").
+			then().
+			statusCode(200);
+
+		RestAssured.given().
+			when().
+			get("/api/construct/" + CONSTRUCT).
+			then().
+			statusCode(200).
+			body("entity.constructCassetteAssociations", hasSize(1));
+	}
+
+	@Test
+	@Order(23)
+	public void updateConstructWithDuplicateCassetteAssociation() {
+		Construct construct = getConstruct(CONSTRUCT);
+		construct.setConstructCassetteAssociations(List.of(createConstructCassetteAssociation(cassetteAssociationRelation)));
+
+		RestAssured.given().
+			contentType("application/json").
+			body(construct).
+			when().
+			put("/api/construct").
+			then().
+			statusCode(400).
+			body("errorMessages", is(aMapWithSize(1))).
+			body("errorMessages.constructCassetteAssociations", is("constructCassetteAssociationObject - " + ValidationConstants.DUPLICATE_MESSAGE));
+	}
+
+	@Test
+	@Order(24)
+	public void updateConstructWithInvalidCassetteAssociation() {
+		Construct construct = getConstruct(CONSTRUCT);
+		construct.setConstructCassetteAssociations(List.of(createConstructCassetteAssociation(systematicNameType)));
+
+		RestAssured.given().
+			contentType("application/json").
+			body(construct).
+			when().
+			put("/api/construct").
+			then().
+			statusCode(400).
+			body("errorMessages", is(aMapWithSize(1))).
+			body("errorMessages.constructCassetteAssociations", is("relation - " + ValidationConstants.INVALID_MESSAGE));
+	}
+
+	private Cassette createCassette(String primaryExternalId) {
+		CassetteSymbolSlotAnnotation symbol = new CassetteSymbolSlotAnnotation();
+		symbol.setDisplayText("Test cassette");
+		symbol.setFormatText("Test cassette");
+		symbol.setNameType(symbolNameType);
+
+		Cassette newCassette = new Cassette();
+		newCassette.setPrimaryExternalId(primaryExternalId);
+		newCassette.setCassetteSymbol(symbol);
+		newCassette.setDataProvider(dataProvider);
+
+		RestAssured.given().
+			contentType("application/json").
+			body(newCassette).
+			when().
+			post("/api/cassette").
+			then().
+			statusCode(200);
+
+		return getCassette(primaryExternalId);
+	}
+
+	private ConstructCassetteAssociation createConstructCassetteAssociation(VocabularyTerm relation) {
+		ConstructCassetteAssociation association = new ConstructCassetteAssociation();
+		association.setConstructCassetteAssociationObject(cassette);
+		association.setRelation(relation);
+		return association;
+	}
+
 	private ConstructComponentSlotAnnotation createConstructComponentSlotAnnotation(VocabularyTerm relation, List<Reference> evidence, String symbol, NCBITaxonTerm taxon, String taxonText, List<Note> notes) {
 		ConstructComponentSlotAnnotation cc = new ConstructComponentSlotAnnotation();
 		cc.setComponentSymbol(symbol);

@@ -1,7 +1,10 @@
 package org.alliancegenome.curation_api.services.validation;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.alliancegenome.curation_api.constants.ValidationConstants;
@@ -9,6 +12,7 @@ import org.alliancegenome.curation_api.dao.ConstructDAO;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.Construct;
 import org.alliancegenome.curation_api.model.entities.Reference;
+import org.alliancegenome.curation_api.model.entities.associations.ConstructCassetteAssociation;
 import org.alliancegenome.curation_api.model.entities.associations.ConstructGenomicEntityAssociation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.ConstructComponentSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.ConstructFullNameSlotAnnotation;
@@ -18,6 +22,7 @@ import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.CurieMintService;
 import org.alliancegenome.curation_api.services.helpers.ConstructUniqueIdHelper;
+import org.alliancegenome.curation_api.services.validation.associations.ConstructCassetteAssociationValidator;
 import org.alliancegenome.curation_api.services.validation.associations.ConstructGenomicEntityAssociationValidator;
 import org.alliancegenome.curation_api.services.validation.dto.slotAnnotations.ConstructComponentSlotAnnotationValidator;
 import org.alliancegenome.curation_api.services.validation.dto.slotAnnotations.ConstructFullNameSlotAnnotationValidator;
@@ -39,6 +44,7 @@ public class ConstructValidator extends ReagentValidator {
 	@Inject ConstructFullNameSlotAnnotationValidator constructFullNameValidator;
 	@Inject ConstructSynonymSlotAnnotationValidator constructSynonymValidator;
 	@Inject ConstructGenomicEntityAssociationValidator constructGenomicEntityAssociationValidator;
+	@Inject ConstructCassetteAssociationValidator constructCassetteAssociationValidator;
 
 	private String errorMessage;
 
@@ -98,6 +104,7 @@ public class ConstructValidator extends ReagentValidator {
 		List<ConstructComponentSlotAnnotation> components = validateConstructComponents(uiEntity, dbEntity);
 
 		List<ConstructGenomicEntityAssociation> geAssociations = validateConstructGenomicEntityAssociations(uiEntity, dbEntity);
+		List<ConstructCassetteAssociation> newCassetteAssociations = validateNewConstructCassetteAssociations(uiEntity, dbEntity);
 
 		String uniqueId = validateUniqueId(uiEntity, dbEntity);
 		dbEntity.setUniqueId(uniqueId);
@@ -157,6 +164,16 @@ public class ConstructValidator extends ReagentValidator {
 				dbEntity.setConstructGenomicEntityAssociations(new ArrayList<>());
 			}
 			dbEntity.getConstructGenomicEntityAssociations().addAll(geAssociations);
+		}
+
+		if (newCassetteAssociations != null) {
+			if (dbEntity.getConstructCassetteAssociations() == null) {
+				dbEntity.setConstructCassetteAssociations(new ArrayList<>());
+			}
+			for (ConstructCassetteAssociation association : newCassetteAssociations) {
+				association.setConstructAssociationSubject(dbEntity);
+				dbEntity.getConstructCassetteAssociations().add(association);
+			}
 		}
 
 		return dbEntity;
@@ -325,6 +342,60 @@ public class ConstructValidator extends ReagentValidator {
 		}
 
 		return validatedAssociations;
+	}
+
+	private List<ConstructCassetteAssociation> validateNewConstructCassetteAssociations(Construct uiEntity, Construct dbEntity) {
+		String field = "constructCassetteAssociations";
+
+		if (CollectionUtils.isEmpty(uiEntity.getConstructCassetteAssociations())) {
+			return null;
+		}
+
+		Set<String> associationKeys = new HashSet<>();
+		if (CollectionUtils.isNotEmpty(dbEntity.getConstructCassetteAssociations())) {
+			for (ConstructCassetteAssociation stored : dbEntity.getConstructCassetteAssociations()) {
+				associationKeys.add(cassetteAssociationKey(stored));
+			}
+		}
+
+		List<ConstructCassetteAssociation> validatedAssociations = new ArrayList<>();
+		Boolean allValid = true;
+		for (int ix = 0; ix < uiEntity.getConstructCassetteAssociations().size(); ix++) {
+			ConstructCassetteAssociation cca = uiEntity.getConstructCassetteAssociations().get(ix);
+			if (cca.getId() != null) {
+				continue;
+			}
+			ObjectResponse<ConstructCassetteAssociation> ccaResponse = constructCassetteAssociationValidator.validateConstructCassetteAssociation(cca);
+			if (ccaResponse.getEntity() == null) {
+				allValid = false;
+				response.addErrorMessages(field, ix, ccaResponse.getErrorMessages());
+				continue;
+			}
+			cca = ccaResponse.getEntity();
+			if (!associationKeys.add(cassetteAssociationKey(cca))) {
+				allValid = false;
+				response.addErrorMessages(field, ix, Map.of("constructCassetteAssociationObject", ValidationConstants.DUPLICATE_MESSAGE));
+				continue;
+			}
+			validatedAssociations.add(cca);
+		}
+
+		if (!allValid) {
+			convertMapToErrorMessages(field);
+			return null;
+		}
+
+		if (CollectionUtils.isEmpty(validatedAssociations)) {
+			return null;
+		}
+
+		return validatedAssociations;
+	}
+
+	private String cassetteAssociationKey(ConstructCassetteAssociation association) {
+		Long cassetteId = association.getConstructCassetteAssociationObject() == null ? null : association.getConstructCassetteAssociationObject().getId();
+		String relationName = association.getRelation() == null ? null : association.getRelation().getName();
+		return cassetteId + "|" + relationName;
 	}
 
 }

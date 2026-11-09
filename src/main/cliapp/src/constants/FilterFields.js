@@ -1962,6 +1962,17 @@ export const AUTOCOMPLETE_CONFIGS = Object.freeze({
 			FIELD_SETS.synonymsFieldSet,
 		],
 	},
+	cassetteAutocompleteConfig: {
+		fieldSets: [
+			FIELD_SETS.curieFieldSet,
+			FIELD_SETS.primaryExternalIdFieldSet,
+			FIELD_SETS.modInternalIdFieldSet,
+			FIELD_SETS.cassetteSymbolFieldSet,
+			FIELD_SETS.cassetteNameFieldSet,
+			FIELD_SETS.cassetteSynonymsFieldSet,
+			FIELD_SETS.secondaryIdentifiersFieldSet,
+		],
+	},
 	// Transgenic tools (SCRUM-6655): the tool index has no bridged symbol/name fields, so its own slot
 	// annotation paths are searched.
 	transgenicToolAutocompleteConfig: {
