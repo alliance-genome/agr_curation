@@ -68,7 +68,7 @@ export const haveSameGeneAssociations = sameRowsBy(geneAssociationValue);
  * @param {Object[]} [associations] gene associations as the API returns them or as the table holds them
  * @returns {Object[]} rows ready for the table, each with its own `dataKey`
  */
-export const buildDuplicateGeneAssociations = (associations) =>
+export const buildGeneAssociationCopies = (associations) =>
 	prepareGeneAssociations(
 		(associations ?? []).map((association) => {
 			const copy = copyRow(association);

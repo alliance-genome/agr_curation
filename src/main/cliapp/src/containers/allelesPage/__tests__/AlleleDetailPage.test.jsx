@@ -132,8 +132,8 @@ describe('<AlleleDetailPage />', () => {
 
 		renderPage();
 
-		const duplicate = await screen.findByRole('button', { name: /Clone/i });
-		await user.click(duplicate);
+		const cloneButton = await screen.findByRole('button', { name: /Clone/i });
+		await user.click(cloneButton);
 
 		expect(open).toHaveBeenCalledWith('/allele/create?from=MGI%3A5146840', '_blank');
 		open.mockRestore();

@@ -43,11 +43,11 @@ public abstract class InteractionStringHelper {
 		UniqueIdGeneratorHelper uniqueId = new UniqueIdGeneratorHelper();
 		uniqueId.add(interactionId);
 		if (interactorA != null) {
-			uniqueId.add(interactorA.getIdentifier());
+			uniqueId.add(interactorA.getSubmittedIdentifierOrCurie());
 		}
 		uniqueId.add(relation);
 		if (interactorB != null) {
-			uniqueId.add(interactorB.getIdentifier());
+			uniqueId.add(interactorB.getSubmittedIdentifierOrCurie());
 		}
 		if (references != null) {
 			uniqueId.addList(references.stream().map(Reference::getCurie).collect(Collectors.toList()));

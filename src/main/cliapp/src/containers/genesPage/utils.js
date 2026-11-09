@@ -2,7 +2,7 @@ import { getPendingFields, nameSlotAnnotationValue } from '../../utils/pendingFi
 import { processErrors, processTableErrors } from '../../utils/processErrors';
 import { copyRow } from '../../utils/copyRows';
 import {
-	buildDuplicateCrossReferences,
+	buildCrossReferenceCopies,
 	crossReferenceValue,
 	seedResourceDescriptor,
 	seedResourceDescriptors,
@@ -74,22 +74,22 @@ export const withSeededGcrpCrossReference = async (entity) => {
 };
 
 /**
- * A new gene carrying the fields of a stored one that the create form edits, for the create form to start the next
- * gene from.
+ * A new gene carrying the fields of a stored one that the create form edits, for the create form to start a gene
+ * from.
  *
- * Left behind: everything that identifies the stored gene (its ids), its data provider and audit fields. Each copied
- * name loses its own id and audit fields, so it is created afresh. The GCRP cross reference keeps its page, and so its
- * descriptor, but not the curie and display name that identify the stored gene; a hidden GCRP section could not show
- * it, so it gets none. The lists in GENE_SUB_RESOURCES are copied separately.
+ * Left behind: the stored gene's own ids, its data provider and audit fields. Each copied name loses its own id and
+ * audit fields, so it is created afresh. The GCRP cross reference keeps its page, curie and display name, for the
+ * curator to review; a hidden GCRP section could not show it, so it gets none. The lists in GENE_SUB_RESOURCES are
+ * copied separately.
  *
  * @param {Object} gene a gene as the API returns it
  * @param {(fieldName: string) => boolean} isVisible whether the form shows a field's section
  * @returns {Promise<Object>} a gene without an id, not obsolete
  */
-export const buildDuplicateGene = async (gene, isVisible) => {
+export const buildGeneCopy = async (gene, isVisible) => {
 	const [gcrpCrossReference = null] =
 		gene.gcrpCrossReference && isVisible('GCRP Cross Reference')
-			? await seedResourceDescriptors(buildDuplicateCrossReferences([gene.gcrpCrossReference]))
+			? await seedResourceDescriptors(buildCrossReferenceCopies([gene.gcrpCrossReference], { keepCurie: true }))
 			: [];
 
 	return {

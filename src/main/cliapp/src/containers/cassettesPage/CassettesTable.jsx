@@ -37,6 +37,7 @@ import { StringTemplate } from '../../components/Templates/StringTemplate';
 
 import { SearchService } from '../../service/SearchService';
 import { CassetteService } from '../../service/CassetteService';
+import { NewCassetteButton } from './NewCassetteButton';
 import { Endpoints } from '../../constants/Endpoints';
 import {
 	relationName,
@@ -504,6 +505,13 @@ export const CassettesTable = ({ tableName = 'Cassettes', fixedFilters }) => {
 		searchService,
 	});
 
+	const headerButtons = (disabled = false) => (
+		<>
+			<NewCassetteButton disabled={disabled} />
+			&nbsp;&nbsp;
+		</>
+	);
+
 	return (
 		<>
 			<div className="card">
@@ -513,6 +521,7 @@ export const CassettesTable = ({ tableName = 'Cassettes', fixedFilters }) => {
 					dataKey="id"
 					endpoint={SEARCH_ENDPOINT}
 					tableName={tableName}
+					headerButtons={headerButtons}
 					entities={cassettes}
 					setEntities={setCassettes}
 					totalRecords={totalRecords}

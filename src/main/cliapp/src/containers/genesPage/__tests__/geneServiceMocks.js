@@ -19,12 +19,14 @@ const emptyListResponse = () => Promise.resolve({ data: { entities: [] } });
  * @param {Function} [functions.getGene]
  * @param {Function} [functions.saveGeneDetail]
  * @param {Function} [functions.createGene]
+ * @param {Function} [functions.deleteGene]
  */
-export const mockGeneService = ({ getGene, saveGeneDetail, createGene } = {}) => ({
+export const mockGeneService = ({ getGene, saveGeneDetail, createGene, deleteGene } = {}) => ({
 	GeneService: class {
 		getGene = getGene ?? vi.fn();
 		saveGeneDetail = saveGeneDetail ?? vi.fn();
 		createGene = createGene ?? vi.fn();
+		deleteGene = deleteGene ?? vi.fn();
 	},
 });
 

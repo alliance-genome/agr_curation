@@ -3,7 +3,7 @@ import { Toast } from 'primereact/toast';
 import { Splitter, SplitterPanel } from 'primereact/splitter';
 import { Button } from 'primereact/button';
 import { ProgressSpinner } from 'primereact/progressspinner';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { GeneService } from '../../service/GeneService';
 import ErrorBoundary from '../../components/Error/ErrorBoundary';
@@ -15,15 +15,17 @@ import { SaveProgressOverlay, SaveProgressProvider } from '../../components/Save
 import { SubResourcesProvider } from '../../components/SubResourcesContext';
 import { FormFieldVisibilityMenu, useFormFieldVisibility } from '../../components/FormFieldVisibility';
 import { useSaveProgress } from '../../hooks/useSaveProgress';
-import { capitalize, errorMessageOf } from '../../utils/utils';
+import { capitalize, errorMessageOf, getIdentifier } from '../../utils/utils';
 import { useGeneReducer } from './useGeneReducer';
 import { useGeneSubResources } from './useGeneSubResources';
 import { buildGeneDetailPayload, getPendingGeneFields, processGeneErrors, withSeededGcrpCrossReference } from './utils';
 import { GeneForm, GENE_DETAIL_TOGGLEABLE_FIELDS } from './GeneForm';
-import { NewGeneButton } from './NewGeneButton';
+import { CopyGeneButton, NewGeneButton } from './NewGeneButton';
+import { useDeleteOrDeprecateDialogs } from '../../components/DeleteOrDeprecateDialogs';
 
 export default function GeneDetailPage() {
 	const { identifier } = useParams();
+	const navigate = useNavigate();
 	const { geneState, geneDispatch } = useGeneReducer();
 	const { visibleFields, setVisibleFields, showAllFields, isVisible } = useFormFieldVisibility(
 		'GeneDetail',
@@ -166,6 +168,50 @@ export default function GeneDetailPage() {
 		toastSuccess.current.show({ severity: 'success', summary: 'Successful', detail: 'Gene Saved' });
 	};
 
+	/**
+	 * Deprecates the gene as last saved, so the form's unsaved edits, including those to the lists written through
+	 * their own sub-resources, are not written with it. They stay on the form, which then shows the gene as obsolete;
+	 * a refused deprecation leaves the form as it was.
+	 */
+	const deprecateGene = async () => {
+		try {
+			const result = await saveGene(buildGeneDetailPayload({ ...savedGene.current, obsolete: true }));
+			const deprecatedGene = result?.data?.entity;
+			if (deprecatedGene) savedGene.current = await withSeededGcrpCrossReference(deprecatedGene);
+		} catch (error) {
+			toastError.current.show([
+				{
+					life: 7000,
+					severity: 'error',
+					summary: 'Gene not deprecated: ',
+					detail: errorMessageOf(error),
+					sticky: false,
+				},
+			]);
+			return;
+		}
+		geneDispatch({ type: 'EDIT', field: 'obsolete', value: true });
+		toastSuccess.current.show({ severity: 'success', summary: 'Successful', detail: 'Gene Deprecated' });
+	};
+
+	const deleteGene = async (id, gene) => {
+		const result = await geneService.deleteGene(gene);
+		if (result.isError) {
+			toastError.current.show([
+				{ life: 7000, severity: 'error', summary: `Could not delete gene ${getIdentifier(gene)}`, sticky: false },
+			]);
+			return result.message ? result.message : null;
+		}
+		navigate('/genes');
+		return null;
+	};
+
+	const { openDeleteOrDeprecateDialog, deleteOrDeprecateDialogs } = useDeleteOrDeprecateDialogs({
+		deprecateOption: true,
+		onDelete: deleteGene,
+		onDeprecate: deprecateGene,
+	});
+
 	const pendingFields = getPendingGeneFields(geneState.gene, savedGene.current);
 	const hasPendingEdits = pendingFields.size > 0 || subResourcesAreDirty;
 
@@ -221,6 +267,17 @@ export default function GeneDetailPage() {
 								disabled={!hasPendingEdits || saveProgress.isSaving}
 							/>
 							<NewGeneButton className="p-button-text" />
+							<CopyGeneButton
+								className="p-button-text"
+								sourceIdentifier={geneState.gene?.curie || getIdentifier(geneState.gene) || identifier}
+							/>
+							<Button
+								label="Delete"
+								icon="pi pi-trash"
+								className="p-button-text"
+								disabled={!geneState.gene?.id}
+								onClick={() => openDeleteOrDeprecateDialog(geneState.gene.id, geneState.gene)}
+							/>
 						</SplitterPanel>
 					</Splitter>
 				</StickyHeader>
@@ -229,6 +286,7 @@ export default function GeneDetailPage() {
 						<GeneForm state={geneState} dispatch={geneDispatch} isVisible={isVisible} pendingFields={pendingFields} />
 					</SubResourcesProvider>
 				</SaveProgressProvider>
+				{deleteOrDeprecateDialogs}
 			</ErrorBoundary>
 		</>
 	);

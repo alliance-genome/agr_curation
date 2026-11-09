@@ -1,5 +1,5 @@
 import {
-	buildDuplicateGeneAssociations,
+	buildGeneAssociationCopies,
 	haveSameGeneAssociations,
 	markRowsMissingGene,
 	prepareGeneAssociations,
@@ -107,9 +107,9 @@ describe('haveSameGeneAssociations', () => {
 	});
 });
 
-describe('buildDuplicateGeneAssociations', () => {
+describe('buildGeneAssociationCopies', () => {
 	it('Copies each association and its note without ids, audit fields or the stored allele as subject', () => {
-		const [copy] = buildDuplicateGeneAssociations([{ ...storedAssociation(), alleleAssociationSubject: { id: 1 } }]);
+		const [copy] = buildGeneAssociationCopies([{ ...storedAssociation(), alleleAssociationSubject: { id: 1 } }]);
 
 		expect(copy).not.toHaveProperty('id');
 		expect(copy).not.toHaveProperty('dateCreated');
@@ -122,7 +122,7 @@ describe('buildDuplicateGeneAssociations', () => {
 	});
 
 	it('Reads a missing list as empty', () => {
-		expect(buildDuplicateGeneAssociations(undefined)).toEqual([]);
+		expect(buildGeneAssociationCopies(undefined)).toEqual([]);
 	});
 });
 

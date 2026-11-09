@@ -3,6 +3,7 @@ package org.alliancegenome.curation_api;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
 
 import java.util.List;
@@ -12,6 +13,8 @@ import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.model.entities.Cassette;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.FBCVTerm;
+import org.alliancegenome.curation_api.model.entities.slotAnnotations.CassetteComponentSlotAnnotation;
+import org.alliancegenome.curation_api.model.entities.slotAnnotations.CassetteFullNameSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.CassetteSymbolSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.CassetteSynonymSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.CassetteUseSlotAnnotation;
@@ -33,6 +36,10 @@ import io.restassured.RestAssured;
  * cassette slot annotation validate endpoints. Runs on WB:Cassette0001 as the bulk loads left it
  * (IT_0110), with its free text component and its genomic entity and transgenic tool associations
  * (IT_0205, IT_0206).
+ *
+ * SCRUM-6748: creating a cassette as the create page does, through POST /api/cassette and then its
+ * component lists' own endpoints. The test containers have no MaTI, so the new cassette gets no
+ * minted curie here (CurieMintService logs the failure); it is read back by its MOD internal ID.
  */
 @QuarkusIntegrationTest
 @QuarkusTestResource(TestContainerResource.Initializer.class)
@@ -45,6 +52,7 @@ public class IT_0317_CassetteITCase extends BaseITCase {
 
 	private static final String CASSETTE = "WB:Cassette0001";
 	private static final String USE_NAMESPACE = "experimental_tool_descriptor";
+	private static final String CREATED_CASSETTE = "IT:Cassette0317";
 
 	private FBCVTerm toolDescriptor;
 	private int componentCount;
@@ -213,5 +221,139 @@ public class IT_0317_CassetteITCase extends BaseITCase {
 			then().
 			statusCode(400).
 			body("errorMessages.cassetteSynonyms", notNullValue());
+	}
+
+	// A new cassette as the create page sends it: its own fields, without the component lists or a data provider
+	private Cassette newCassette(String symbolText) {
+		Cassette stored = getCassette(CASSETTE);
+		VocabularyTerm fullNameType = getVocabularyTerm(getVocabulary(VocabularyConstants.NAME_TYPE_VOCABULARY), "full_name");
+		VocabularyTerm systematicName = getVocabularyTerm(getVocabulary(VocabularyConstants.NAME_TYPE_VOCABULARY), "systematic_name");
+
+		CassetteSymbolSlotAnnotation symbol = new CassetteSymbolSlotAnnotation();
+		symbol.setNameType(stored.getCassetteSymbol().getNameType());
+		symbol.setDisplayText(symbolText);
+		symbol.setFormatText(symbolText);
+
+		CassetteFullNameSlotAnnotation fullName = new CassetteFullNameSlotAnnotation();
+		fullName.setNameType(fullNameType);
+		fullName.setDisplayText(symbolText + " cassette");
+		fullName.setFormatText(symbolText + " cassette");
+
+		CassetteSynonymSlotAnnotation synonym = new CassetteSynonymSlotAnnotation();
+		synonym.setNameType(systematicName);
+		synonym.setDisplayText(symbolText + "-syn");
+		synonym.setFormatText(symbolText + "-syn");
+
+		CassetteUseSlotAnnotation use = new CassetteUseSlotAnnotation();
+		use.setUses(List.of(toolDescriptor));
+
+		Cassette cassette = new Cassette();
+		cassette.setCassetteSymbol(symbol);
+		cassette.setCassetteFullName(fullName);
+		cassette.setCassetteSynonyms(List.of(synonym));
+		cassette.setCassetteUses(List.of(use));
+		cassette.setSecondaryIdentifiers(List.of("secondary_created"));
+		cassette.setPlaceholder(false);
+		cassette.setInternal(false);
+		return cassette;
+	}
+
+	@Test
+	@Order(5)
+	public void createCassette() {
+		Cassette cassette = newCassette("CsCreated");
+		cassette.setModInternalId(CREATED_CASSETTE);
+
+		RestAssured.given().
+			contentType("application/json").
+			body(cassette).
+			when().
+			post("/api/cassette").
+			then().
+			log().ifValidationFails().
+			statusCode(200).
+			body("entity.id", notNullValue()).
+			body("entity.uniqueId", notNullValue()).
+			// the curator's MOD, or the Alliance for a curator without one
+			body("entity.dataProvider.abbreviation", notNullValue());
+
+		RestAssured.given().
+			when().
+			get("/api/cassette/" + CREATED_CASSETTE).
+			then().
+			statusCode(200).
+			body("entity.cassetteSymbol.displayText", is("CsCreated")).
+			body("entity.cassetteFullName.displayText", is("CsCreated cassette")).
+			body("entity.cassetteSynonyms[0].displayText", is("CsCreated-syn")).
+			body("entity.cassetteUses[0].uses[0].curie", is("FBcv:0009001")).
+			body("entity.secondaryIdentifiers", is(List.of("secondary_created")));
+	}
+
+	@Test
+	@Order(6)
+	public void createdCassetteTakesItsComponentListsThroughTheirOwnEndpoints() {
+		Cassette created = getCassette(CREATED_CASSETTE);
+		String uniqueIdWithoutComponents = created.getUniqueId();
+
+		CassetteComponentSlotAnnotation component = new CassetteComponentSlotAnnotation();
+		component.setRelation(getCassette(CASSETTE).getCassetteComponents().get(0).getRelation());
+		component.setComponentSymbol("ITComponent");
+		component.setTaxonText("Aequorea victoria");
+
+		RestAssured.given().
+			contentType("application/json").
+			body(List.of(component)).
+			when().
+			put("/api/cassette/" + created.getId() + "/components").
+			then().
+			log().ifValidationFails().
+			statusCode(200).
+			body("entities", hasSize(1));
+
+		// The unique ID is built from the free text components too
+		RestAssured.given().
+			when().
+			get("/api/cassette/" + CREATED_CASSETTE).
+			then().
+			statusCode(200).
+			body("entity.cassetteComponents[0].componentSymbol", is("ITComponent")).
+			body("entity.uniqueId", not(is(uniqueIdWithoutComponents)));
+	}
+
+	@Test
+	@Order(7)
+	public void createNeedsNoModIdentifierAndRejectsADuplicateAndAMissingSymbol() {
+		// As the create page sends it, with no MOD internal or primary external ID: its minted curie identifies it
+		Cassette first = newCassette("CsTwice");
+		RestAssured.given().
+			contentType("application/json").
+			body(first).
+			when().
+			post("/api/cassette").
+			then().
+			log().ifValidationFails().
+			statusCode(200);
+
+		// The same symbol and name as a cassette without free text components gives the same unique ID
+
+		RestAssured.given().
+			contentType("application/json").
+			body(newCassette("CsTwice")).
+			when().
+			post("/api/cassette").
+			then().
+			statusCode(400).
+			body("errorMessages.uniqueId", notNullValue());
+
+		Cassette withoutSymbol = newCassette("CsNoSymbol");
+		withoutSymbol.setCassetteSymbol(null);
+		RestAssured.given().
+			contentType("application/json").
+			body(withoutSymbol).
+			when().
+			post("/api/cassette").
+			then().
+			statusCode(400).
+			body("errorMessages.cassetteSymbol", notNullValue());
 	}
 }

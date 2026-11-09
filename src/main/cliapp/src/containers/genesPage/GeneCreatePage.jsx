@@ -9,6 +9,7 @@ import ErrorBoundary from '../../components/Error/ErrorBoundary';
 import { StickyHeader } from '../../components/StickyHeader';
 import { StickyFooter } from '../../components/StickyFooter';
 import { SaveProgressOverlay } from '../../components/SaveProgressOverlay';
+import { LoadingOverlay } from '../../components/LoadingOverlay';
 import { SubResourcesProvider } from '../../components/SubResourcesContext';
 import { FormFieldVisibilityMenu, useFormFieldVisibility } from '../../components/FormFieldVisibility';
 import { useSaveProgress } from '../../hooks/useSaveProgress';
@@ -16,13 +17,14 @@ import { capitalize, errorMessageOf, getIdentifier } from '../../utils/utils';
 import { useGeneReducer } from './useGeneReducer';
 import { useGeneSubResources } from './useGeneSubResources';
 import {
-	buildDuplicateGene,
+	buildGeneCopy,
 	buildGeneCreatePayload,
 	buildGeneDetailPayload,
 	processGeneErrors,
 	withSeededGcrpCrossReference,
 } from './utils';
 import { GeneForm, GENE_CREATE_TOGGLEABLE_FIELDS } from './GeneForm';
+import { useCopyGeneSource } from './useCopyGeneSource';
 
 export default function GeneCreatePage() {
 	const navigate = useNavigate();
@@ -47,6 +49,7 @@ export default function GeneCreatePage() {
 	// Held so that saving again after a list failed retries it against the gene that already exists, rather than
 	// creating a second one.
 	const createdGene = useRef(null);
+	const { isLoading: copySourceIsLoading } = useCopyGeneSource({ geneDispatch, subResources, isVisible, toastError });
 
 	const { mutateAsync: createGene } = useMutation({
 		mutationFn: (gene) => geneService.createGene(gene),
@@ -111,7 +114,7 @@ export default function GeneCreatePage() {
 		} else {
 			// The form keeps the saved gene's values and rows, so the next gene can be entered as a small change to
 			// this one.
-			geneDispatch({ type: 'SET', value: await buildDuplicateGene(gene, isVisible) });
+			geneDispatch({ type: 'SET', value: await buildGeneCopy(gene, isVisible) });
 			await carryOverSubResources(isVisible);
 			saveProgress.finish();
 		}
@@ -185,6 +188,7 @@ export default function GeneCreatePage() {
 			<Toast ref={toastError} position="top-left" />
 			<Toast ref={toastSuccess} position="top-right" />
 			<SaveProgressOverlay isOpen={saveProgress.isOpen} steps={saveProgress.steps} />
+			<LoadingOverlay isLoading={copySourceIsLoading} message="Loading gene to clone..." />
 			<ErrorBoundary>
 				<StickyHeader>
 					<Splitter className="bg-primary-reverse border-none lg:h-5rem" gutterSize={0}>

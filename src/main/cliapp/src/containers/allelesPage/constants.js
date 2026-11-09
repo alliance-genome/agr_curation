@@ -1,5 +1,5 @@
 import {
-	buildDuplicateCrossReferences,
+	buildCrossReferenceCopies,
 	haveSameCrossReferences,
 	prepareCrossReferences,
 	seedResourceDescriptors,
@@ -7,7 +7,7 @@ import {
 } from '../../components/crossReferences/utils';
 import { haveSameReferences, prepareReferences, stripReference } from './referencesTable/utils';
 import {
-	buildDuplicateGeneAssociations,
+	buildGeneAssociationCopies,
 	haveSameGeneAssociations,
 	markRowsMissingGene,
 	prepareGeneAssociations,
@@ -36,7 +36,7 @@ import { sortedCuries } from '../../utils/rows';
  *   with them marked, or null when there are none; while it marks any, a save is refused with
  *   `unsavableRowsMessage`
  *
- * and `useDuplicateAlleleSource` and `useAlleleSubResources`' `carryOverAll`:
+ * and `useCopyAlleleSource` and `useAlleleSubResources`' `carryOverAll`:
  * - `buildCopies`, optional: turns the rows an allele holds, as the API returns them or as the table holds them,
  *   into rows for a new allele; a list without it is not copied
  * - `copyOnlyWhenVisible`, optional: the form field whose section must be shown for the rows to be copied
@@ -51,7 +51,7 @@ export const ALLELE_SUB_RESOURCES = {
 		isSame: haveSameCrossReferences,
 		// The copies keep the source's pages but not its curies, which the curator fills in for the new allele.
 		// A hidden section could not show them, so it gets none.
-		buildCopies: async (crossReferences) => seedResourceDescriptors(buildDuplicateCrossReferences(crossReferences)),
+		buildCopies: async (crossReferences) => seedResourceDescriptors(buildCrossReferenceCopies(crossReferences)),
 		copyOnlyWhenVisible: 'Cross References',
 	},
 	references: {
@@ -70,7 +70,7 @@ export const ALLELE_SUB_RESOURCES = {
 		prepare: prepareGeneAssociations,
 		strip: stripGeneAssociation,
 		isSame: haveSameGeneAssociations,
-		buildCopies: buildDuplicateGeneAssociations,
+		buildCopies: buildGeneAssociationCopies,
 		markUnsavableRows: markRowsMissingGene,
 		unsavableRowsMessage: 'Select each gene from the autosuggest',
 	},

@@ -8,7 +8,7 @@ vi.mock('../../../service/ResourceDescriptorService', () => ({
 
 import {
 	applyCrossReferenceFieldChange,
-	buildDuplicateCrossReferences,
+	buildCrossReferenceCopies,
 	buildNewCrossReference,
 	curiePrefixOf,
 	haveSameCrossReferences,
@@ -342,7 +342,7 @@ describe('curiePrefixOf', () => {
 	});
 });
 
-describe('buildDuplicateCrossReferences', () => {
+describe('buildCrossReferenceCopies', () => {
 	const page = { id: 40, name: 'allele', resourceDescriptor: { id: 30, prefix: 'WB' } };
 	const stored = () => ({
 		id: 50,
@@ -357,7 +357,7 @@ describe('buildDuplicateCrossReferences', () => {
 	});
 
 	it('Keeps the page and internal flag but not the curie, display name, obsolete flag, id or audit fields', () => {
-		const [copy] = buildDuplicateCrossReferences([stored()]);
+		const [copy] = buildCrossReferenceCopies([stored()]);
 
 		expect(copy.resourceDescriptorPage).toEqual(page);
 		expect(copy.internal).toBe(true);
@@ -367,8 +367,18 @@ describe('buildDuplicateCrossReferences', () => {
 		['id', 'createdBy', 'dateCreated', 'dbDateUpdated'].forEach((field) => expect(copy).not.toHaveProperty(field));
 	});
 
+	it('Keeps the curie and display name when asked to, still without the id, audit fields or obsolete flag', () => {
+		const [copy] = buildCrossReferenceCopies([stored()], { keepCurie: true });
+
+		expect(copy.referencedCurie).toEqual('WB:WBVar1');
+		expect(copy.displayName).toEqual('WB:WBVar1');
+		expect(copy.resourceDescriptorPage).toEqual(page);
+		expect(copy.obsolete).toBe(false);
+		['id', 'createdBy', 'dateCreated', 'dbDateUpdated'].forEach((field) => expect(copy).not.toHaveProperty(field));
+	});
+
 	it('Gives every copy its own dataKey', () => {
-		const copies = buildDuplicateCrossReferences([stored(), stored()]);
+		const copies = buildCrossReferenceCopies([stored(), stored()]);
 
 		expect(copies[0].dataKey).toBeTruthy();
 		expect(copies[1].dataKey).toBeTruthy();
@@ -376,13 +386,13 @@ describe('buildDuplicateCrossReferences', () => {
 	});
 
 	it('Copies nothing from an allele without cross references', () => {
-		expect(buildDuplicateCrossReferences(undefined)).toEqual([]);
-		expect(buildDuplicateCrossReferences([])).toEqual([]);
+		expect(buildCrossReferenceCopies(undefined)).toEqual([]);
+		expect(buildCrossReferenceCopies([])).toEqual([]);
 	});
 
 	it('Does not mutate the rows it is given', () => {
 		const rows = [stored()];
-		buildDuplicateCrossReferences(rows);
+		buildCrossReferenceCopies(rows);
 
 		expect(rows).toEqual([stored()]);
 	});

@@ -209,6 +209,84 @@ public class GeneService extends SubmittedObjectCrudService<Gene, GeneDTO, GeneD
 		return ret;
 	}
 
+	/**
+	 * Hard-deletes a gene on a curator's request. The gene's own slot annotations, notes and cross references go with
+	 * it. Anything listed by {@link #getReferencingReasons} blocks the deletion.
+	 *
+	 * @param identifierString curie, primary external ID or MOD internal ID of the gene
+	 * @return response holding the deleted gene
+	 * @throws ApiErrorException when no gene matches or the gene is still referenced
+	 */
+	@Override
+	@Transactional
+	public ObjectResponse<Gene> deleteByIdentifier(String identifierString) {
+		Gene gene = findByIdentifierString(identifierString);
+		if (gene == null) {
+			ObjectResponse<Gene> response = new ObjectResponse<>();
+			response.setErrorMessage("Could not find Gene with identifier: " + identifierString);
+			throw new ApiErrorException(response);
+		}
+
+		List<String> referencingReasons = getReferencingReasons(gene);
+		if (CollectionUtils.isNotEmpty(referencingReasons)) {
+			ObjectResponse<Gene> response = new ObjectResponse<>();
+			response.setErrorMessage("Gene " + gene.getIdentifier() + " is in use and cannot be deleted: " + String.join("; ", referencingReasons));
+			throw new ApiErrorException(response);
+		}
+
+		geneDAO.remove(gene.getId());
+		return new ObjectResponse<>(gene);
+	}
+
+	/**
+	 * The annotations, interactions, orthology and paralogy pairs and associations that reference the gene, each as a
+	 * reason it cannot be deleted.
+	 *
+	 * @param gene the gene to check
+	 * @return the reasons, empty when nothing references the gene
+	 */
+	private List<String> getReferencingReasons(Gene gene) {
+		Long id = gene.getId();
+		List<String> reasons = new ArrayList<>();
+		if (geneDAO.hasReferencingDiseaseAnnotations(id)) {
+			reasons.add("Gene is referenced by disease annotation(s)");
+		}
+		if (geneDAO.hasReferencingPhenotypeAnnotations(id)) {
+			reasons.add("Gene is referenced by phenotype annotation(s)");
+		}
+		if (geneDAO.hasReferencingOrthologyPairs(id)) {
+			reasons.add("Gene is referenced by orthology pair(s)");
+		}
+		if (geneDAO.hasReferencingParalogyPairs(id)) {
+			reasons.add("Gene is referenced by paralogy pair(s)");
+		}
+		if (geneDAO.hasReferencingInteractions(id)) {
+			reasons.add("Gene is referenced by interaction(s)");
+		}
+		if (geneDAO.hasReferencingGeneExpressionAnnotations(id)) {
+			reasons.add("Gene is referenced by expression annotation(s)");
+		}
+		if (CollectionUtils.isNotEmpty(gene.getAlleleGeneAssociations())) {
+			reasons.add("Gene has allele association(s)");
+		}
+		if (CollectionUtils.isNotEmpty(gene.getGeneOntologyAnnotations())) {
+			reasons.add("Gene is referenced by gene ontology annotation(s)");
+		}
+		if (CollectionUtils.isNotEmpty(gene.getSequenceTargetingReagentGeneAssociations())) {
+			reasons.add("Gene has sequence targeting reagent association(s)");
+		}
+		if (CollectionUtils.isNotEmpty(gene.getTranscriptGeneAssociations())) {
+			reasons.add("Gene has transcript association(s)");
+		}
+		if (CollectionUtils.isNotEmpty(gene.getGeneGenomicLocationAssociations())) {
+			reasons.add("Gene has genomic location association(s)");
+		}
+		if (CollectionUtils.isNotEmpty(gene.getConstructGenomicEntityAssociations())) {
+			reasons.add("Gene has construct association(s)");
+		}
+		return reasons;
+	}
+
 	@Override
 	@Transactional
 	public Gene deprecateOrDelete(Long id, Boolean throwApiError, String requestSource, Boolean forceDeprecate) {
@@ -218,42 +296,7 @@ public class GeneService extends SubmittedObjectCrudService<Gene, GeneDTO, GeneD
 			if (forceDeprecate) {
 				deprecationReasons.add("Deprecation instead of deletion rule applied");
 			}
-			if (geneDAO.hasReferencingDiseaseAnnotations(id)) {
-				deprecationReasons.add("Gene is referenced by disease annotation(s)");
-			}
-			if (geneDAO.hasReferencingPhenotypeAnnotations(id)) {
-				deprecationReasons.add("Gene is referenced by phenotype annotation(s)");
-			}
-			if (geneDAO.hasReferencingOrthologyPairs(id)) {
-				deprecationReasons.add("Gene is referenced by orthology pair(s)");
-			}
-			if (geneDAO.hasReferencingParalogyPairs(id)) {
-				deprecationReasons.add("Gene is referenced by paralogy pair(s)");
-			}
-			if (geneDAO.hasReferencingInteractions(id)) {
-				deprecationReasons.add("Gene is referenced by interaction(s)");
-			}
-			if (geneDAO.hasReferencingGeneExpressionAnnotations(id)) {
-				deprecationReasons.add("Gene is referenced by expression annotation(s)");
-			}
-			if (CollectionUtils.isNotEmpty(gene.getAlleleGeneAssociations())) {
-				deprecationReasons.add("Gene has allele association(s)");
-			}
-			if (CollectionUtils.isNotEmpty(gene.getGeneOntologyAnnotations())) {
-				deprecationReasons.add("Gene is referenced by gene ontology annotation(s)");
-			}
-			if (CollectionUtils.isNotEmpty(gene.getSequenceTargetingReagentGeneAssociations())) {
-				deprecationReasons.add("Gene has sequence targeting reagent association(s)");
-			}
-			if (CollectionUtils.isNotEmpty(gene.getTranscriptGeneAssociations())) {
-				deprecationReasons.add("Gene has transcript association(s)");
-			}
-			if (CollectionUtils.isNotEmpty(gene.getGeneGenomicLocationAssociations())) {
-				deprecationReasons.add("Gene has genomic location association(s)");
-			}
-			if (CollectionUtils.isNotEmpty(gene.getConstructGenomicEntityAssociations())) {
-				deprecationReasons.add("Gene has construct association(s)");
-			}
+			deprecationReasons.addAll(getReferencingReasons(gene));
 			if (CollectionUtils.isNotEmpty(deprecationReasons)) {
 				if (!gene.getObsolete()) {
 					gene.setUpdatedBy(personService.fetchByUniqueIdOrCreate(requestSource));

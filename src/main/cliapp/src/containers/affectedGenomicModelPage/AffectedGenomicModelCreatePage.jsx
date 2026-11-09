@@ -10,11 +10,11 @@ import { useAGMReducer } from './useAGMReducer';
 import { StickyHeader } from '../../components/StickyHeader';
 import { StickyFooter } from '../../components/StickyFooter';
 import { LoadingOverlay } from '../../components/LoadingOverlay';
-import { buildDuplicateAgm, processErrors } from './utils';
+import { buildAgmCopy, processErrors } from './utils';
 import { getIdentifier } from '../../utils/utils';
 import { FormFieldVisibilityMenu, useFormFieldVisibility } from '../../components/FormFieldVisibility';
 import { AGMForm, AGM_CREATE_TOGGLEABLE_FIELDS } from './AGMForm';
-import { useDuplicateAgmSource } from './useDuplicateAgmSource';
+import { useCopyAgmSource } from './useCopyAgmSource';
 
 export default function AffectedGenomicModelCreatePage() {
 	const navigate = useNavigate();
@@ -27,7 +27,7 @@ export default function AffectedGenomicModelCreatePage() {
 	const queryClient = useQueryClient();
 	const toastSuccess = useRef(null);
 	const toastError = useRef(null);
-	const { isLoading: duplicateSourceIsLoading } = useDuplicateAgmSource({ agmDispatch, toastError });
+	const { isLoading: copySourceIsLoading } = useCopyAgmSource({ agmDispatch, toastError });
 
 	const { isPending, mutate } = useMutation({
 		mutationFn: (agm) => agmService.createAGM(agm),
@@ -94,7 +94,7 @@ export default function AffectedGenomicModelCreatePage() {
 				} else {
 					// The form keeps the saved AGM's values, copied as Clone copies them, so the
 					// next AGM can be entered as a small change to this one.
-					agmDispatch({ type: 'SET', value: buildDuplicateAgm(agm) });
+					agmDispatch({ type: 'SET', value: buildAgmCopy(agm) });
 				}
 			},
 			onError: showSaveError,
@@ -119,7 +119,7 @@ export default function AffectedGenomicModelCreatePage() {
 			<Toast ref={toastError} position="top-left" />
 			<Toast ref={toastSuccess} position="top-right" />
 			<LoadingOverlay isLoading={!!isPending} />
-			<LoadingOverlay isLoading={duplicateSourceIsLoading} message="Loading AGM to clone..." />
+			<LoadingOverlay isLoading={copySourceIsLoading} message="Loading AGM to clone..." />
 			<ErrorBoundary>
 				<StickyHeader>
 					<Splitter className="bg-primary-reverse border-none lg:h-5rem" gutterSize={0}>

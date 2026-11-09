@@ -20,7 +20,7 @@ import { getPendingSingleValueFields } from './utils';
 import { errorMessageOf, getIdentifier } from '../../utils/utils';
 import { FormFieldVisibilityMenu, useFormFieldVisibility } from '../../components/FormFieldVisibility';
 import { AlleleForm, ALLELE_DETAIL_TOGGLEABLE_FIELDS } from './AlleleForm';
-import { DuplicateAlleleButton, NewAlleleButton } from './NewAlleleButton';
+import { CopyAlleleButton, NewAlleleButton } from './NewAlleleButton';
 import { useAlleleSubResources } from './useAlleleSubResources';
 import { SubResourcesProvider } from '../../components/SubResourcesContext';
 import { useDeleteOrDeprecateDialogs } from '../../components/DeleteOrDeprecateDialogs';
@@ -272,7 +272,7 @@ export default function AlleleDetailPage() {
 								disabled={!hasPendingEdits || saveProgress.isSaving}
 							/>
 							<NewAlleleButton className="p-button-text" />
-							<DuplicateAlleleButton
+							<CopyAlleleButton
 								className="p-button-text"
 								sourceIdentifier={alleleState.allele?.curie || getIdentifier(alleleState.allele) || identifier}
 							/>

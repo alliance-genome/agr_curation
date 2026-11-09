@@ -1,6 +1,7 @@
 package org.alliancegenome.curation_api;
 
 import static org.hamcrest.Matchers.aMapWithSize;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
@@ -19,6 +20,7 @@ import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.Gene;
+import org.alliancegenome.curation_api.model.entities.GeneDiseaseAnnotation;
 import org.alliancegenome.curation_api.model.entities.Organization;
 import org.alliancegenome.curation_api.model.entities.Person;
 import org.alliancegenome.curation_api.model.entities.Reference;
@@ -26,6 +28,8 @@ import org.alliancegenome.curation_api.model.entities.ResourceDescriptor;
 import org.alliancegenome.curation_api.model.entities.ResourceDescriptorPage;
 import org.alliancegenome.curation_api.model.entities.Vocabulary;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
+import org.alliancegenome.curation_api.model.entities.ontology.DOTerm;
+import org.alliancegenome.curation_api.model.entities.ontology.ECOTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.SOTerm;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.GeneFullNameSlotAnnotation;
@@ -34,6 +38,7 @@ import org.alliancegenome.curation_api.model.entities.slotAnnotations.GeneSymbol
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.GeneSynonymSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.GeneSystematicNameSlotAnnotation;
 import org.alliancegenome.curation_api.resources.TestContainerResource;
+import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.MethodOrderer;
@@ -60,6 +65,8 @@ public class IT_0301_GeneITCase extends BaseITCase {
 
 	private static final String GENE = "GENE:0001";
 	private static final String DETAIL_GENE = "GENE:DETAIL0001";
+	private static final String REFERENCED_GENE = "GENE:REFERENCED0001";
+	private static final String REFERENCING_DISEASE_ANNOTATION = "GENE:REFERENCINGDA0001";
 	private Vocabulary nameType;
 	private Vocabulary synonymScope;
 	private VocabularyTerm exactSynonymScope;
@@ -1261,6 +1268,71 @@ public class IT_0301_GeneITCase extends BaseITCase {
 				then().
 				statusCode(200);
 		}
+	}
+
+	@Test
+	@Order(27)
+	public void deleteGeneReferencedByDiseaseAnnotation() {
+		Gene referencedGene = new Gene();
+		referencedGene.setPrimaryExternalId(REFERENCED_GENE);
+		referencedGene.setTaxon(taxon);
+		referencedGene.setGeneType(soTerm);
+		referencedGene.setGeneSymbol(createGeneSymbolSlotAnnotation(null, "GT referenced", symbolNameType, null, null));
+
+		Gene gene = RestAssured.given().
+			contentType("application/json").
+			body(referencedGene).
+			when().
+			post("/api/gene").
+			then().
+			statusCode(200).
+			extract().body().as(new TypeRef<ObjectResponse<Gene>>() { }).getEntity();
+
+		DOTerm doTerm = createDoTerm("DOID:GeneDeleteReferenced0001", false);
+		ECOTerm ecoTerm = createEcoTerm("ECO:GeneDeleteReferenced0001", "Test evidence code", false, true);
+		Vocabulary diseaseRelationVocabulary = getVocabulary(VocabularyConstants.DISEASE_RELATION_VOCABULARY);
+
+		GeneDiseaseAnnotation diseaseAnnotation = new GeneDiseaseAnnotation();
+		diseaseAnnotation.setPrimaryExternalId(REFERENCING_DISEASE_ANNOTATION);
+		diseaseAnnotation.setDiseaseAnnotationSubject(gene);
+		diseaseAnnotation.setRelation(getVocabularyTerm(diseaseRelationVocabulary, "is_implicated_in"));
+		diseaseAnnotation.setNegated(false);
+		diseaseAnnotation.setDiseaseAnnotationObject(doTerm);
+		diseaseAnnotation.setEvidenceCodes(List.of(ecoTerm));
+		diseaseAnnotation.setEvidenceItem(reference);
+
+		RestAssured.given().
+			contentType("application/json").
+			body(diseaseAnnotation).
+			when().
+			post("/api/gene-disease-annotation").
+			then().
+			statusCode(200);
+
+		RestAssured.given().
+			when().
+			delete("/api/gene/" + REFERENCED_GENE).
+			then().
+			statusCode(400).
+			body("errorMessage", containsString("Gene is referenced by disease annotation(s)"));
+
+		RestAssured.given().
+			when().
+			get("/api/gene/" + REFERENCED_GENE).
+			then().
+			statusCode(200).
+			body("entity.primaryExternalId", is(REFERENCED_GENE));
+	}
+
+	@Test
+	@Order(28)
+	public void deleteUnknownGene() {
+		RestAssured.given().
+			when().
+			delete("/api/gene/GENE:DOESNOTEXIST").
+			then().
+			statusCode(400).
+			body("errorMessage", is("Could not find Gene with identifier: GENE:DOESNOTEXIST"));
 	}
 
 	// Creates a gene carrying every list GeneDetailView omits, through POST /api/gene, which manages them.

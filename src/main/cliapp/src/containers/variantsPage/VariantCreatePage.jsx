@@ -11,10 +11,10 @@ import { StickyHeader } from '../../components/StickyHeader';
 import { StickyFooter } from '../../components/StickyFooter';
 import { LoadingOverlay } from '../../components/LoadingOverlay';
 import { getIdentifier } from '../../utils/utils';
-import { buildCreatePayload, buildDuplicateVariant, processErrors } from './utils';
+import { buildCreatePayload, buildVariantCopy, processErrors } from './utils';
 import { FormFieldVisibilityMenu, useFormFieldVisibility } from '../../components/FormFieldVisibility';
 import { VariantForm, VARIANT_CREATE_TOGGLEABLE_FIELDS } from './VariantForm';
-import { useDuplicateVariantSource } from './useDuplicateVariantSource';
+import { useCopyVariantSource } from './useCopyVariantSource';
 
 export default function VariantCreatePage() {
 	const navigate = useNavigate();
@@ -26,7 +26,7 @@ export default function VariantCreatePage() {
 	const variantService = useMemo(() => new VariantService(), []);
 	const toastSuccess = useRef(null);
 	const toastError = useRef(null);
-	const { isLoading: duplicateSourceIsLoading } = useDuplicateVariantSource({ variantDispatch, toastError });
+	const { isLoading: copySourceIsLoading } = useCopyVariantSource({ variantDispatch, toastError });
 
 	const { isPending: variantPostRequestIsLoading, mutate: variantMutate } = useMutation({
 		mutationFn: (variant) => {
@@ -52,7 +52,7 @@ export default function VariantCreatePage() {
 				} else {
 					// The form keeps the saved variant's values, so the next variant can be entered as a
 					// small change to this one.
-					variantDispatch({ type: 'SET', value: buildDuplicateVariant(variant) });
+					variantDispatch({ type: 'SET', value: buildVariantCopy(variant) });
 				}
 			},
 			onError: (error) => {
@@ -101,7 +101,7 @@ export default function VariantCreatePage() {
 			<Toast ref={toastError} position="top-left" />
 			<Toast ref={toastSuccess} position="top-right" />
 			<LoadingOverlay isLoading={!!variantPostRequestIsLoading} />
-			<LoadingOverlay isLoading={duplicateSourceIsLoading} message="Loading variant to clone..." />
+			<LoadingOverlay isLoading={copySourceIsLoading} message="Loading variant to clone..." />
 			<ErrorBoundary>
 				<StickyHeader>
 					<Splitter className="bg-primary-reverse border-none lg:h-5rem" gutterSize={0}>

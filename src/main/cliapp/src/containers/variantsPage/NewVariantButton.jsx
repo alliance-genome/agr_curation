@@ -49,7 +49,7 @@ export const NewVariantButton = ({ disabled = false, className }) => {
  * @param {boolean} [props.disabled] - true while there is no variant to copy
  * @param {string} [props.className] - the button style of the header it sits in
  */
-export const DuplicateVariantButton = ({ sourceIdentifier, disabled = false, className }) => {
+export const CopyVariantButton = ({ sourceIdentifier, disabled = false, className }) => {
 	const openVariantCreatePage = useOpenVariantCreatePage();
 
 	return (

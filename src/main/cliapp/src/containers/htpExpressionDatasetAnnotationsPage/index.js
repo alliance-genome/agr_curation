@@ -1,3 +1,4 @@
 import HTPExpressionDatasetAnnotationsPage from './HTPExpressionDatasetAnnotationsPage';
+import HTPExpressionDatasetAnnotationDetailPage from './HTPExpressionDatasetAnnotationDetailPage';
 
-export { HTPExpressionDatasetAnnotationsPage };
+export { HTPExpressionDatasetAnnotationsPage, HTPExpressionDatasetAnnotationDetailPage };
