@@ -121,14 +121,14 @@ describe('<AlleleCreatePage />', () => {
 		const user = userEvent.setup();
 		const { container } = await renderPage();
 
-		const taxon = container.querySelector('input[name="taxon-input"]');
+		const taxon = container.querySelector('input[aria-label="taxon"]');
 		await user.type(taxon, 'NCBITaxon:6239');
 		expect(taxon).toHaveValue('NCBITaxon:6239');
 
 		await user.click(button('Clear'));
 
 		await waitFor(() => {
-			expect(container.querySelector('input[name="taxon-input"]')).toHaveValue('');
+			expect(container.querySelector('input[aria-label="taxon"]')).toHaveValue('');
 		});
 	});
 
@@ -151,7 +151,7 @@ describe('<AlleleCreatePage />', () => {
 		const user = userEvent.setup();
 		const { container } = await renderPage();
 
-		await user.type(container.querySelector('input[name="taxon-input"]'), 'NCBITaxon:6239');
+		await user.type(container.querySelector('input[aria-label="taxon"]'), 'NCBITaxon:6239');
 		await user.click(button('Save & Close'));
 
 		await waitFor(() => expect(createAllele).toHaveBeenCalled());
@@ -176,7 +176,7 @@ describe('<AlleleCreatePage />', () => {
 		await waitFor(() => expect(createAllele).toHaveBeenCalledTimes(1));
 		expect(navigate).not.toHaveBeenCalled();
 		await waitFor(() => {
-			expect(container.querySelector('input[name="taxon-input"]')).toHaveValue('NCBITaxon:6239');
+			expect(container.querySelector('input[aria-label="taxon"]')).toHaveValue('NCBITaxon:6239');
 		});
 		expect(container.querySelector('#displayText')).toHaveValue('abc-1');
 	});
@@ -240,7 +240,7 @@ describe('<AlleleCreatePage />', () => {
 
 		const { container } = await renderPage();
 
-		await user.type(container.querySelector('input[name="taxon-input"]'), 'NCBITaxon:6239');
+		await user.type(container.querySelector('input[aria-label="taxon"]'), 'NCBITaxon:6239');
 		await user.click(button('Save & Close'));
 
 		await waitFor(() => expect(createAllele).toHaveBeenCalled());

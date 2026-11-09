@@ -75,18 +75,10 @@ const fieldDetailsColumnSize = 'col-5';
 export const VariantForm = ({ state, dispatch, isVisible, mode = 'detail' }) => {
 	const isCreate = mode === 'create';
 
-	// An autosuggest hands back the selected object, or the raw string while the curator is still
-	// typing. The string is kept so the field shows what was typed and the API can reject it.
-	const onOntologyTermValueChange = (field) => (event) => {
-		let value = {};
-		if (typeof event.value === 'object') {
-			value = event.value;
-		} else if (event.value === '') {
-			value = undefined;
-		} else {
-			value.curie = event.value;
-		}
-		dispatch({ type: 'EDIT', field, value });
+	// An autosuggest hands back the picked term, `{curie}` holding typed text so the field shows it and
+	// the API can reject it, or null once emptied, which is held as no value.
+	const onOntologyTermValueChange = (field) => (value) => {
+		dispatch({ type: 'EDIT', field, value: value ?? undefined });
 	};
 
 	const onFieldValueChange = (field) => (value) => {
@@ -139,7 +131,7 @@ export const VariantForm = ({ state, dispatch, isVisible, mode = 'detail' }) => 
 				<TaxonDetailPageEditor
 					taxon={state.variant?.taxon}
 					required={isCreate}
-					onTaxonValueChange={onOntologyTermValueChange('taxon')}
+					onChange={onOntologyTermValueChange('taxon')}
 					widgetColumnSize={widgetColumnSize}
 					labelColumnSize={labelColumnSize}
 					fieldDetailsColumnSize={fieldDetailsColumnSize}
@@ -151,7 +143,7 @@ export const VariantForm = ({ state, dispatch, isVisible, mode = 'detail' }) => 
 				<VariantTypeDetailPageEditor
 					variantType={state.variant?.variantType}
 					required={isCreate}
-					onVariantTypeValueChange={onOntologyTermValueChange('variantType')}
+					onChange={onOntologyTermValueChange('variantType')}
 					widgetColumnSize={widgetColumnSize}
 					labelColumnSize={labelColumnSize}
 					fieldDetailsColumnSize={fieldDetailsColumnSize}
@@ -188,7 +180,7 @@ export const VariantForm = ({ state, dispatch, isVisible, mode = 'detail' }) => 
 			<FormSection isVisible={isVisible('Source General Consequence')}>
 				<SourceGeneralConsequenceDetailPageEditor
 					sourceGeneralConsequence={state.variant?.sourceGeneralConsequence}
-					onSourceGeneralConsequenceValueChange={onOntologyTermValueChange('sourceGeneralConsequence')}
+					onChange={onOntologyTermValueChange('sourceGeneralConsequence')}
 					widgetColumnSize={widgetColumnSize}
 					labelColumnSize={labelColumnSize}
 					fieldDetailsColumnSize={fieldDetailsColumnSize}

@@ -63,7 +63,7 @@ describe('<AlleleCreatePage /> copying an allele', () => {
 		await waitFor(() => expect(container.querySelector('#displayText')).toHaveValue('abc-1'), FORM_LOAD_WAIT);
 		expect(getAllele).toHaveBeenCalledWith(SOURCE_CURIE);
 		await waitFor(
-			() => expect(container.querySelector('input[name="taxon-input"]')).toHaveValue('NCBITaxon:6239'),
+			() => expect(container.querySelector('input[aria-label="taxon"]')).toHaveValue('NCBITaxon:6239'),
 			FORM_LOAD_WAIT
 		);
 	});

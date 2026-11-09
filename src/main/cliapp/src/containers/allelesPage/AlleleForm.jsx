@@ -91,33 +91,20 @@ const fieldDetailsColumnSize = 'col-5';
 export const AlleleForm = ({ state, dispatch, isVisible, mode = 'detail', pendingFields }) => {
 	const isCreate = mode === 'create';
 
-	const onTaxonValueChange = (event) => {
-		let value = {};
-		if (typeof event.value === 'object') {
-			value = event.value;
-		} else {
-			value.curie = event.value;
-		}
+	// An emptied taxon is held as one with a blank curie, the shape the form starts from.
+	const onTaxonValueChange = (value) => {
 		dispatch({
 			type: 'EDIT',
 			field: 'taxon',
-			value,
+			value: value ?? { curie: '' },
 		});
 	};
 
-	const onInCollectionValueChange = (event) => {
-		let value = {};
-		if (typeof event.value === 'object') {
-			value = event.value;
-		} else if (event.value === '') {
-			value = undefined;
-		} else {
-			value.name = event.value;
-		}
+	const onInCollectionValueChange = (value) => {
 		dispatch({
 			type: 'EDIT',
 			field: 'inCollection',
-			value,
+			value: value ?? undefined,
 		});
 	};
 
@@ -209,7 +196,7 @@ export const AlleleForm = ({ state, dispatch, isVisible, mode = 'detail', pendin
 					taxon={state.allele?.taxon}
 					required={isCreate}
 					isPending={pendingFields?.has('taxon')}
-					onTaxonValueChange={onTaxonValueChange}
+					onChange={onTaxonValueChange}
 					widgetColumnSize={widgetColumnSize}
 					labelColumnSize={labelColumnSize}
 					fieldDetailsColumnSize={fieldDetailsColumnSize}
@@ -248,7 +235,7 @@ export const AlleleForm = ({ state, dispatch, isVisible, mode = 'detail', pendin
 			<FormSection isVisible={isVisible('In Collection')}>
 				<InCollectionDetailPageEditor
 					inCollection={state.allele?.inCollection}
-					onInCollectionValueChange={onInCollectionValueChange}
+					onChange={onInCollectionValueChange}
 					isPending={pendingFields?.has('inCollection')}
 					widgetColumnSize={widgetColumnSize}
 					labelColumnSize={labelColumnSize}

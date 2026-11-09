@@ -60,8 +60,8 @@ describe('<GeneForm />', () => {
 	it("shows the gene's values", async () => {
 		const { container } = renderWithClient(<GeneFormHarness />);
 
-		await waitFor(() => expect(container.querySelector('input[name="geneType-input"]')).toHaveValue('SO:0001217'));
-		expect(container.querySelector('input[name="taxon-input"]')).toHaveValue('NCBITaxon:7227');
+		await waitFor(() => expect(container.querySelector('input[aria-label="geneType"]')).toHaveValue('SO:0001217'));
+		expect(container.querySelector('input[aria-label="taxon"]')).toHaveValue('NCBITaxon:7227');
 		expect(screen.getAllByText('AGRKB:105000000356681').length).toBeGreaterThan(0);
 		expect(screen.getAllByText('FB:FBgn0019932').length).toBeGreaterThan(0);
 		// A name shows its display text and its format text.

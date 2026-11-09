@@ -77,7 +77,7 @@ describe('<AffectedGenomicModelCreatePage />', () => {
 		await waitFor(() => expect(createAGM).toHaveBeenCalledTimes(1));
 		expect(navigate).not.toHaveBeenCalled();
 		await waitFor(() => {
-			expect(container.querySelector('input[name="taxon-input"]')).toHaveValue('NCBITaxon:6239');
+			expect(container.querySelector('input[aria-label="taxon"]')).toHaveValue('NCBITaxon:6239');
 		});
 		expect(container.querySelector('#displayText')).toHaveValue('wild isolate 1');
 	});
@@ -113,13 +113,13 @@ describe('<AffectedGenomicModelCreatePage />', () => {
 
 		await user.click(button('Save & Add Another'));
 		await waitFor(() => {
-			expect(container.querySelector('input[name="taxon-input"]')).toHaveValue('NCBITaxon:6239');
+			expect(container.querySelector('input[aria-label="taxon"]')).toHaveValue('NCBITaxon:6239');
 		});
 
 		await user.click(button('Clear'));
 
 		await waitFor(() => {
-			expect(container.querySelector('input[name="taxon-input"]')).toHaveValue('');
+			expect(container.querySelector('input[aria-label="taxon"]')).toHaveValue('');
 		});
 		expect(container.querySelector('#displayText')).not.toBeInTheDocument();
 	});

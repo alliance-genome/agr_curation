@@ -62,9 +62,9 @@ const widgetColumnSize = 'col-4';
 const fieldDetailsColumnSize = 'col-5';
 const columnSizes = { labelColumnSize, widgetColumnSize, fieldDetailsColumnSize };
 
-// An autosuggest hands back the picked term, or the text typed while none is picked, which is held as the term's
-// curie so the field shows it and the API can reject it.
-const termFrom = (value) => (typeof value === 'object' ? value : { curie: value });
+// An autosuggest hands back the picked term, `{curie}` holding typed text so the field shows it and the API can
+// reject it, or null once emptied, which is held as a term with a blank curie.
+const termFrom = (value) => value ?? { curie: '' };
 
 /**
  * The gene form's sections, in display order.
@@ -145,7 +145,7 @@ export const GeneForm = ({ state, dispatch, isVisible, mode = 'detail', pendingF
 			<FormSection isVisible={isVisible('Gene Type')}>
 				<GeneTypeDetailPageEditor
 					geneType={gene?.geneType}
-					onGeneTypeValueChange={(event) => dispatch({ type: 'EDIT', field: 'geneType', value: termFrom(event.value) })}
+					onChange={(value) => dispatch({ type: 'EDIT', field: 'geneType', value: termFrom(value) })}
 					required
 					isPending={pendingFields?.has('geneType')}
 					errorMessages={state.errorMessages}
@@ -156,7 +156,7 @@ export const GeneForm = ({ state, dispatch, isVisible, mode = 'detail', pendingF
 			<FormSection isVisible={isVisible('Taxon')}>
 				<TaxonDetailPageEditor
 					taxon={gene?.taxon}
-					onTaxonValueChange={(event) => dispatch({ type: 'EDIT', field: 'taxon', value: termFrom(event.value) })}
+					onChange={(value) => dispatch({ type: 'EDIT', field: 'taxon', value: termFrom(value) })}
 					required
 					isPending={pendingFields?.has('taxon')}
 					errorMessages={state.errorMessages}

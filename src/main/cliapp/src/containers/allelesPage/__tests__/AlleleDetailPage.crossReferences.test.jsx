@@ -142,7 +142,7 @@ describe('<AlleleDetailPage /> cross references', { timeout: 30000 }, () => {
 			const { container } = await renderPage();
 
 			await editCrossReference(user);
-			const taxon = container.querySelector('input[name="taxon-input"]');
+			const taxon = container.querySelector('input[aria-label="taxon"]');
 			await user.clear(taxon);
 			await user.type(taxon, 'NCBITaxon:6239');
 			await user.click(screen.getByRole('button', { name: /Save Cross References/ }));

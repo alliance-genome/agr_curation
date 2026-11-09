@@ -56,7 +56,7 @@ const renderPage = (entry = `/variant/create?from=${encodeURIComponent(SOURCE_CU
 		</MemoryRouter>
 	);
 
-const taxonInput = (container) => container.querySelector('input[name="taxon-input"]');
+const taxonInput = (container) => container.querySelector('input[aria-label="taxon"]');
 const button = (name) => screen.getByRole('button', { name });
 
 describe('<VariantCreatePage /> cloning a variant', () => {
@@ -74,7 +74,7 @@ describe('<VariantCreatePage /> cloning a variant', () => {
 
 		await waitFor(() => expect(taxonInput(container)).toHaveValue('NCBITaxon:6239'), FORM_LOAD_WAIT);
 		expect(getVariant).toHaveBeenCalledWith(SOURCE_CURIE);
-		expect(container.querySelector('input[name="variantType-input"]')).toHaveValue('SO:1000002');
+		expect(container.querySelector('input[aria-label="variantType"]')).toHaveValue('SO:1000002');
 	});
 
 	it('Does not load a source when none is named', async () => {
