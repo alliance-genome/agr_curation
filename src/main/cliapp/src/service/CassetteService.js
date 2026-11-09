@@ -1,4 +1,7 @@
 import { BaseAuthService } from './BaseAuthService';
+import { DeletionService } from './DeletionService';
+import { Endpoints } from '../constants/Endpoints';
+import { getIdentifier } from '../utils/utils';
 
 export class CassetteService extends BaseAuthService {
 	getCassette(identifier) {
@@ -11,6 +14,16 @@ export class CassetteService extends BaseAuthService {
 
 	createCassette(newCassette) {
 		return this.api.post(`/cassette`, newCassette);
+	}
+
+	/**
+	 * Deletes the cassette (SCRUM-6749). The API refuses a cassette that a construct uses.
+	 *
+	 * @returns {Promise<{isError: boolean, message?: string}>} the outcome, with the API's reason for a refusal
+	 */
+	async deleteCassette(cassette) {
+		const deletionService = new DeletionService();
+		return await deletionService.delete(Endpoints.Entity.CASSETTE, cassette.curie || getIdentifier(cassette));
 	}
 
 	/**

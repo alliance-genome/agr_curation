@@ -5,6 +5,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.nullValue;
 
 import java.util.List;
 
@@ -415,5 +416,80 @@ public class IT_0317_CassetteITCase extends BaseITCase {
 			statusCode(400).
 			body("errorMessages.uniqueId", notNullValue());
 		Assertions.assertEquals(before, cassetteCount());
+	}
+
+	@Test
+	@Order(9)
+	public void deleteRemovesACassetteThatNoConstructUses() {
+		// A cassette as a curator creates it, then gives a free text component
+		Cassette cassette = newCassette("CsToDelete");
+		cassette.setModInternalId(CREATED_CASSETTE + "d");
+		RestAssured.given().
+			contentType("application/json").
+			body(cassette).
+			when().
+			post("/api/cassette").
+			then().
+			log().ifValidationFails().
+			statusCode(200);
+		Cassette created = getCassette(CREATED_CASSETTE + "d");
+
+		CassetteComponentSlotAnnotation component = new CassetteComponentSlotAnnotation();
+		component.setRelation(getCassette(CASSETTE).getCassetteComponents().get(0).getRelation());
+		component.setComponentSymbol("ITDeletedComponent");
+		RestAssured.given().
+			contentType("application/json").
+			body(List.of(component)).
+			when().
+			put("/api/cassette/" + created.getId() + "/components").
+			then().
+			statusCode(200);
+
+		RestAssured.given().
+			when().
+			delete("/api/cassette/" + CREATED_CASSETTE + "d").
+			then().
+			log().ifValidationFails().
+			statusCode(200).
+			body("entity.id", is(created.getId().intValue()));
+
+		// Gone, with the slot annotations it held
+		RestAssured.given().
+			when().
+			get("/api/cassette/" + CREATED_CASSETTE + "d").
+			then().
+			statusCode(200).
+			body("entity", nullValue());
+		RestAssured.given().
+			when().
+			get("/api/cassette/" + created.getId() + "/components").
+			then().
+			statusCode(400);
+	}
+
+	@Test
+	@Order(10)
+	public void deleteRefusesACassetteAConstructUsesAndAnUnknownOne() {
+		// WB:Cassette0001 is the cassette of WB:Construct0001, from IT_0204's construct cassette association load
+		RestAssured.given().
+			when().
+			delete("/api/cassette/" + CASSETTE).
+			then().
+			statusCode(400).
+			body("errorMessage", containsString("is in use and cannot be deleted"));
+
+		RestAssured.given().
+			when().
+			get("/api/cassette/" + CASSETTE).
+			then().
+			statusCode(200).
+			body("entity.id", notNullValue());
+
+		RestAssured.given().
+			when().
+			delete("/api/cassette/IT:NoSuchCassette").
+			then().
+			statusCode(400).
+			body("errorMessage", containsString("Could not find Cassette"));
 	}
 }
