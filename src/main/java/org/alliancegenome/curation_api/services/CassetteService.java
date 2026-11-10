@@ -80,7 +80,10 @@ public class CassetteService extends SubmittedObjectCrudService<Cassette, Casset
 	 * entity, transgenic tool and STR associations go with it. A construct using the cassette blocks the deletion: its
 	 * construct cassette association has to be removed first.
 	 *
-	 * @param identifierString curie, primary external ID or MOD internal ID of the cassette
+	 * A cassette saved without any identifier (one created while MaTI was down) is deleted by its database ID, which is
+	 * tried when no identifier matches.
+	 *
+	 * @param identifierString curie, primary external ID or MOD internal ID of the cassette, else its database ID
 	 * @return response holding the deleted cassette
 	 * @throws ApiErrorException when no cassette matches or the cassette is still in use
 	 */
@@ -88,6 +91,9 @@ public class CassetteService extends SubmittedObjectCrudService<Cassette, Casset
 	@Transactional
 	public ObjectResponse<Cassette> deleteByIdentifier(String identifierString) {
 		Cassette cassette = findByIdentifierString(identifierString);
+		if (cassette == null && identifierString != null && identifierString.matches("\\d+")) {
+			cassette = cassetteDAO.find(Long.valueOf(identifierString));
+		}
 		if (cassette == null) {
 			ObjectResponse<Cassette> response = new ObjectResponse<>();
 			response.setErrorMessage("Could not find Cassette with identifier: " + identifierString);

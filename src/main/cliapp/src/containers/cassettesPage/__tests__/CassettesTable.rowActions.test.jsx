@@ -68,6 +68,17 @@ describe('<CassettesTable /> row actions', () => {
 		remove.mockRestore();
 	});
 
+	it('Deletes a row without any identifier by its database ID', async () => {
+		const remove = vi.spyOn(DeletionService.prototype, 'delete').mockResolvedValue({ isSuccess: true, isError: false });
+		await renderTable();
+
+		await waitFor(() => expect(tableProps).toHaveBeenCalled());
+		await latestProps().deletionMethod({ id: 200338629 });
+
+		expect(remove).toHaveBeenCalledWith('cassette', 200338629);
+		remove.mockRestore();
+	});
+
 	it('Opens the create page for a copy of the row, by curie', async () => {
 		const open = vi.spyOn(window, 'open').mockImplementation(() => null);
 		await renderTable();

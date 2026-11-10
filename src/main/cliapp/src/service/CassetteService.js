@@ -17,13 +17,17 @@ export class CassetteService extends BaseAuthService {
 	}
 
 	/**
-	 * Deletes the cassette (SCRUM-6749). The API refuses a cassette that a construct uses.
+	 * Deletes the cassette (SCRUM-6749). The API refuses a cassette that a construct uses. A cassette without any
+	 * identifier is deleted by its database ID.
 	 *
 	 * @returns {Promise<{isError: boolean, message?: string}>} the outcome, with the API's reason for a refusal
 	 */
 	async deleteCassette(cassette) {
 		const deletionService = new DeletionService();
-		return await deletionService.delete(Endpoints.Entity.CASSETTE, cassette.curie || getIdentifier(cassette));
+		return await deletionService.delete(
+			Endpoints.Entity.CASSETTE,
+			cassette.curie || getIdentifier(cassette) || cassette.id
+		);
 	}
 
 	/**

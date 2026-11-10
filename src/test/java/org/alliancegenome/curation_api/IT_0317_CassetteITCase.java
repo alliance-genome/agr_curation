@@ -492,4 +492,35 @@ public class IT_0317_CassetteITCase extends BaseITCase {
 			statusCode(400).
 			body("errorMessage", containsString("Could not find Cassette"));
 	}
+
+	@Test
+	@Order(11)
+	public void deleteTakesTheDatabaseIdOfACassetteWithoutIdentifier() {
+		// The Delete button sends the database ID of a cassette saved without any identifier
+		Cassette cassette = newCassette("CsToDeleteById");
+		cassette.setModInternalId(CREATED_CASSETTE + "i");
+		RestAssured.given().
+			contentType("application/json").
+			body(cassette).
+			when().
+			post("/api/cassette").
+			then().
+			statusCode(200);
+		Long id = getCassette(CREATED_CASSETTE + "i").getId();
+
+		RestAssured.given().
+			when().
+			delete("/api/cassette/" + id).
+			then().
+			log().ifValidationFails().
+			statusCode(200).
+			body("entity.id", is(id.intValue()));
+
+		RestAssured.given().
+			when().
+			get("/api/cassette/" + CREATED_CASSETTE + "i").
+			then().
+			statusCode(200).
+			body("entity", nullValue());
+	}
 }
