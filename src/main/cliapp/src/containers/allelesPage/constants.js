@@ -1,0 +1,130 @@
+import {
+	buildCrossReferenceCopies,
+	haveSameCrossReferences,
+	prepareCrossReferences,
+	seedResourceDescriptors,
+	stripUiFields,
+} from '../../components/crossReferences/utils';
+import { haveSameReferences, prepareReferences, stripReference } from './referencesTable/utils';
+import {
+	buildGeneAssociationCopies,
+	haveSameGeneAssociations,
+	markRowsMissingGene,
+	prepareGeneAssociations,
+	stripGeneAssociation,
+} from './alleleGeneAssociations/utils';
+import { secondaryIdFields, slotAnnotationList, synonymFields } from '../../utils/slotAnnotations';
+import {
+	buildRelatedNoteCopies,
+	haveSameRelatedNotes,
+	prepareRelatedNotes,
+	stripRelatedNote,
+} from '../../components/relatedNotes/utils';
+import { sortedCuries } from '../../utils/rows';
+
+/**
+ * The lists an allele holds through sub-resources of its own rather than in its payload, keyed by the name
+ * the pages provide each under. The allele reducer never holds them, so the allele payload never carries them
+ * and the detail endpoints cannot change them.
+ *
+ * Each entry configures `useAlleleSubResource`:
+ * - `path` the list's path segment under the allele, such as `crossreferences`
+ * - `label` what the rows are, for messages
+ * - `errorField` the field the API keys the rows' errors under
+ * - `prepare`, `strip` and `isSame` as `useSubResourceList` takes them
+ * - `markUnsavableRows`, optional: marks rows that cannot be saved as they are, returning the rows' errors
+ *   with them marked, or null when there are none; while it marks any, a save is refused with
+ *   `unsavableRowsMessage`
+ *
+ * and `useCopyAlleleSource` and `useAlleleSubResources`' `carryOverAll`:
+ * - `buildCopies`, optional: turns the rows an allele holds, as the API returns them or as the table holds them,
+ *   into rows for a new allele; a list without it is not copied
+ * - `copyOnlyWhenVisible`, optional: the form field whose section must be shown for the rows to be copied
+ */
+export const ALLELE_SUB_RESOURCES = {
+	crossReferences: {
+		path: 'crossreferences',
+		label: 'cross references',
+		errorField: 'crossReferences',
+		prepare: prepareCrossReferences,
+		strip: stripUiFields,
+		isSame: haveSameCrossReferences,
+		// The copies keep the source's pages and curies, for the curator to review. A hidden section could not show
+		// them, so it gets none.
+		buildCopies: async (crossReferences) => seedResourceDescriptors(buildCrossReferenceCopies(crossReferences)),
+		copyOnlyWhenVisible: 'Cross References',
+	},
+	references: {
+		path: 'references',
+		label: 'references',
+		errorField: 'references',
+		prepare: prepareReferences,
+		strip: stripReference,
+		isSame: haveSameReferences,
+		buildCopies: prepareReferences,
+	},
+	alleleGeneAssociations: {
+		path: 'geneassociations',
+		label: 'gene associations',
+		errorField: 'alleleGeneAssociations',
+		prepare: prepareGeneAssociations,
+		strip: stripGeneAssociation,
+		isSame: haveSameGeneAssociations,
+		buildCopies: buildGeneAssociationCopies,
+		markUnsavableRows: markRowsMissingGene,
+		unsavableRowsMessage: 'Select each gene from the autosuggest',
+	},
+	alleleSynonyms: slotAnnotationList({
+		path: 'synonyms',
+		label: 'synonyms',
+		errorField: 'alleleSynonyms',
+		fieldsOf: synonymFields,
+	}),
+	alleleSecondaryIds: slotAnnotationList({
+		path: 'secondaryids',
+		label: 'secondary IDs',
+		errorField: 'alleleSecondaryIds',
+		fieldsOf: secondaryIdFields,
+	}),
+	alleleNomenclatureEvents: slotAnnotationList({
+		path: 'nomenclatureevents',
+		label: 'nomenclature events',
+		errorField: 'alleleNomenclatureEvents',
+		fieldsOf: (event) => [event.nomenclatureEvent?.name ?? null, Boolean(event.obsolete)],
+	}),
+	alleleMutationTypes: slotAnnotationList({
+		path: 'mutationtypes',
+		label: 'mutation types',
+		errorField: 'alleleMutationTypes',
+		fieldsOf: (mutationType) => [sortedCuries(mutationType.mutationTypes)],
+	}),
+	alleleFunctionalImpacts: slotAnnotationList({
+		path: 'functionalimpacts',
+		label: 'functional impacts',
+		errorField: 'alleleFunctionalImpacts',
+		fieldsOf: (functionalImpact) => [
+			(functionalImpact.functionalImpacts ?? []).map((term) => term?.name).sort(),
+			functionalImpact.phenotypeTerm?.curie ?? null,
+			functionalImpact.phenotypeStatement || null,
+		],
+	}),
+	alleleInheritanceModes: slotAnnotationList({
+		path: 'inheritancemodes',
+		label: 'inheritance modes',
+		errorField: 'alleleInheritanceModes',
+		fieldsOf: (inheritanceMode) => [
+			inheritanceMode.inheritanceMode?.name ?? null,
+			inheritanceMode.phenotypeTerm?.curie ?? null,
+			inheritanceMode.phenotypeStatement || null,
+		],
+	}),
+	relatedNotes: {
+		path: 'relatednotes',
+		label: 'related notes',
+		errorField: 'relatedNotes',
+		prepare: prepareRelatedNotes,
+		strip: stripRelatedNote,
+		isSame: haveSameRelatedNotes,
+		buildCopies: buildRelatedNoteCopies,
+	},
+};

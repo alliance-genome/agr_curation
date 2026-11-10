@@ -59,7 +59,7 @@ public class AgmSequenceTargetingReagentAssociation extends Association {
 	@JsonView({ CurationView.FieldsOnly.class })
 	private VocabularyTerm relation;
 
-	@IndexedEmbedded(includePaths = {"name", "synonyms", "secondaryIdentifiers"})
+	@IndexedEmbedded(includePaths = {"name", "synonyms", "secondaryIdentifiers", "primaryExternalId", "primaryExternalId_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
 	@JsonView({ CurationView.FieldsOnly.class })

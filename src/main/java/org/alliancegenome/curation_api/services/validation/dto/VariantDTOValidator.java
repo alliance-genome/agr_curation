@@ -12,6 +12,7 @@ import org.alliancegenome.curation_api.model.entities.ontology.SOTerm;
 import org.alliancegenome.curation_api.model.ingest.dto.VariantDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.CurieMintService;
+import org.alliancegenome.curation_api.services.helpers.VariantUniqueIdHelper;
 import org.alliancegenome.curation_api.services.ontology.SoTermService;
 import org.alliancegenome.curation_api.services.validation.dto.base.GenomicEntityDTOValidator;
 import org.apache.commons.lang3.StringUtils;
@@ -78,6 +79,7 @@ public class VariantDTOValidator extends GenomicEntityDTOValidator<Variant, Vari
 		// Note the cross-reference (allele id) is NOT usable for this: many alleles map to several
 		// variants, as recorded on the ticket.
 		curieMintService.mintCurieIfAbsent(variant);
+		variant.setUniqueId(VariantUniqueIdHelper.getVariantUniqueId(variant));
 		response.setEntity(variantDAO.persist(variant));
 		
 		return response;

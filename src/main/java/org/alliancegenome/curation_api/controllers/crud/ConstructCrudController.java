@@ -9,6 +9,7 @@ import org.alliancegenome.curation_api.jobs.executors.ConstructExecutor;
 import org.alliancegenome.curation_api.model.entities.Construct;
 import org.alliancegenome.curation_api.model.ingest.dto.ConstructDTO;
 import org.alliancegenome.curation_api.response.APIResponse;
+import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.ConstructService;
 
 import jakarta.annotation.PostConstruct;
@@ -27,6 +28,18 @@ public class ConstructCrudController extends SubmittedObjectCrudController<Const
 	@PostConstruct
 	protected void init() {
 		setService(constructService);
+	}
+
+	@Override
+	public ObjectResponse<Construct> update(Construct entity) {
+		ObjectResponse<Construct> response = constructService.update(entity);
+		return constructService.getById(response.getEntity().getId());
+	}
+
+	@Override
+	public ObjectResponse<Construct> create(Construct entity) {
+		ObjectResponse<Construct> response = constructService.create(entity);
+		return constructService.getById(response.getEntity().getId());
 	}
 
 	@Override

@@ -49,7 +49,7 @@ export const NewAlleleButton = ({ disabled = false, className }) => {
  * @param {boolean} [props.disabled] - true while there is no allele to copy
  * @param {string} [props.className] - the button style of the header it sits in
  */
-export const DuplicateAlleleButton = ({ sourceIdentifier, disabled = false, className }) => {
+export const CopyAlleleButton = ({ sourceIdentifier, disabled = false, className }) => {
 	const openAlleleCreatePage = useOpenAlleleCreatePage();
 
 	return (

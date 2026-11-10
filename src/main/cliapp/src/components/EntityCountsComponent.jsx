@@ -1,12 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
+import { Button } from 'primereact/button';
+import { Toast } from 'primereact/toast';
+import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
 import { SystemService } from '../service/SystemService';
 import { CLASSES } from '../constants/Classes';
 import { NumberTemplate } from './Templates/NumberTemplate';
 
 export const EntityCountsComponent = () => {
 	const [tableData, setTableData] = useState({});
+	const [reindexing, setReindexing] = useState({});
+	const toast = useRef(null);
 
 	useEffect(() => {
 		let isMounted = true;
@@ -30,6 +35,7 @@ export const EntityCountsComponent = () => {
 						link: CLASSES[key].link,
 						type: CLASSES[key].type,
 						isIndexed: CLASSES[key].isIndexed,
+						reindexEndpoint: CLASSES[key].reindexEndpoint,
 						dbCount: res.entity[key]['dbCount'],
 						esCount: res.entity[key]['esCount'],
 					});
@@ -50,6 +56,49 @@ export const EntityCountsComponent = () => {
 		return <a href={rowData.link}>{rowData.name}</a>;
 	};
 
+	const reindex = async (rowData) => {
+		const { name, reindexEndpoint } = rowData;
+		setReindexing((prev) => ({ ...prev, [reindexEndpoint]: true }));
+		try {
+			await new SystemService().reindex(reindexEndpoint);
+			toast.current.show({ severity: 'success', summary: 'Reindex Started', detail: name });
+		} catch (error) {
+			toast.current.show({
+				severity: 'error',
+				summary: 'Reindex Failed',
+				detail: `${name}: ${error?.response?.status ?? ''} ${error?.message ?? ''}`,
+			});
+		} finally {
+			setReindexing((prev) => ({ ...prev, [reindexEndpoint]: false }));
+		}
+	};
+
+	const confirmReindex = (rowData) => {
+		confirmDialog({
+			header: 'Reindex',
+			message: `Reindex ${rowData.name}? The search index for this type will be dropped and rebuilt, so search results will be incomplete until it finishes.`,
+			icon: 'pi pi-exclamation-triangle',
+			accept: () => reindex(rowData),
+		});
+	};
+
+	const reindexTemplate = (rowData) => {
+		if (!rowData.reindexEndpoint) {
+			return null;
+		}
+		return (
+			<Button
+				icon="pi pi-refresh"
+				className="p-button-sm p-button-text"
+				tooltip={`Reindex ${rowData.name}`}
+				tooltipOptions={{ position: 'left' }}
+				aria-label={`Reindex ${rowData.name}`}
+				loading={!!reindexing[rowData.reindexEndpoint]}
+				onClick={() => confirmReindex(rowData)}
+			/>
+		);
+	};
+
 	const getRowClass = (rowData) => {
 		console.log(rowData);
 		if (!rowData.isIndexed) return;
@@ -61,6 +110,8 @@ export const EntityCountsComponent = () => {
 
 	return (
 		<>
+			<Toast ref={toast} />
+			<ConfirmDialog />
 			<div className="grid nested dashboard">
 				<div className="col-3">
 					<DataTable
@@ -81,6 +132,7 @@ export const EntityCountsComponent = () => {
 							header="Search index Entity Count"
 							body={(rowData) => <NumberTemplate number={rowData.esCount} />}
 						/>
+						<Column header="Reindex" body={reindexTemplate} />
 					</DataTable>
 				</div>
 				<div className="col-3">
@@ -102,6 +154,7 @@ export const EntityCountsComponent = () => {
 							header="Search index Term Count"
 							body={(rowData) => <NumberTemplate number={rowData.esCount} />}
 						/>
+						<Column header="Reindex" body={reindexTemplate} />
 					</DataTable>
 				</div>
 				<div className="col-3">
@@ -123,6 +176,7 @@ export const EntityCountsComponent = () => {
 							header="Search index Term Count"
 							body={(rowData) => <NumberTemplate number={rowData.esCount} />}
 						/>
+						<Column header="Reindex" body={reindexTemplate} />
 					</DataTable>
 				</div>
 				<div className="col-3">

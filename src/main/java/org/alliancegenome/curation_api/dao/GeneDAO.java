@@ -18,6 +18,7 @@ import javax.sql.DataSource;
 import org.alliancegenome.curation_api.constants.EntityFieldConstants;
 import org.alliancegenome.curation_api.dao.base.BaseCurieSQLDAO;
 import org.alliancegenome.curation_api.dao.orthology.GeneToGeneOrthologyDAO;
+import org.alliancegenome.curation_api.dao.slotAnnotations.GeneSymbolSlotAnnotationDAO;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.apache.commons.collections.CollectionUtils;
 
@@ -36,6 +37,7 @@ public class GeneDAO extends BaseCurieSQLDAO<Gene> {
 	@Inject GeneToGeneParalogyDAO geneToGeneParalogyDAO;
 	@Inject GeneGeneticInteractionDAO geneGeneticInteractionDAO;
 	@Inject GeneMolecularInteractionDAO geneMolecularInteractionDAO;
+	@Inject GeneSymbolSlotAnnotationDAO geneSymbolSlotAnnotationDAO;
 	@Inject AllelePhenotypeAnnotationDAO allelePhenotypeAnnotationDAO;
 	@Inject AGMPhenotypeAnnotationDAO agmPhenotypeAnnotationDAO;
 	@Inject GenePhenotypeAnnotationDAO genePhenotypeAnnotationDAO;
@@ -159,6 +161,24 @@ public class GeneDAO extends BaseCurieSQLDAO<Gene> {
 		params.put(EntityFieldConstants.EA_SUBJECT + ".id", geneId);
 		List<Long> results = geneExpressionAnnotationDAO.findIdsByParams(params);
 		return CollectionUtils.isNotEmpty(results);
+	}
+
+	/**
+	 * Whether a non-obsolete gene other than {@code excludeId} has this symbol display text and taxon. The query starts
+	 * from the symbols themselves, because a path through {@code Gene.geneSymbol} also reaches the gene's synonyms,
+	 * full name and systematic name, which are held in the same table.
+	 *
+	 * @param displayText symbol display text to match
+	 * @param taxonId id of the taxon to match
+	 * @param excludeId id of the gene being validated, or null for a new gene
+	 */
+	public Boolean hasGeneWithSymbolAndTaxon(String displayText, Long taxonId, Long excludeId) {
+		Map<String, Object> params = new HashMap<>();
+		params.put("displayText", displayText);
+		params.put("singleGene.taxon.id", taxonId);
+		params.put("singleGene.obsolete", false);
+		return geneSymbolSlotAnnotationDAO.findByParams(params).getResults().stream()
+			.anyMatch(symbol -> !symbol.getSingleGene().getId().equals(excludeId));
 	}
 
 	public List<String> getAllGenePrimaryExternalIds() {

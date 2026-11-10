@@ -1,7 +1,9 @@
 package org.alliancegenome.curation_api;
 
+import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 
 import java.time.OffsetDateTime;
 
@@ -82,15 +84,18 @@ public class IT_0207_TransgenicToolTransgenicToolAssociationBulkUploadITCase ext
 			body("entity.dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").toString())).
 			body("entity.dateUpdated", is(OffsetDateTime.parse("2022-03-10T22:10:12Z").toString()));
 
-		// The subject tool lists the association; the object tool reaches it only from the other side.
+		// The subject tool lists the associated tool; the object tool reaches it only from the other side.
+		// The tool views carry the associated tools reduced to relation, symbol and identifier, not the
+		// associations, which come from the association endpoints.
 		RestAssured.given().
 			when().
 			get(transgenicToolGetEndpoint + subjectId).
 			then().
 			statusCode(200).
-			body("entity.transgenicToolTransgenicToolAssociations", hasSize(1)).
-			body("entity.transgenicToolTransgenicToolAssociations[0].relation.name", is(relationName)).
-			body("entity.transgenicToolTransgenicToolAssociations[0].transgenicToolTransgenicToolAssociationObject.primaryExternalId", is(objectId));
+			body("entity.associatedTransgenicTools", hasSize(1)).
+			body("entity.associatedTransgenicTools[0].relation", is(relationName)).
+			body("entity.associatedTransgenicTools[0].identifier", is(objectId)).
+			body("entity", not(hasKey("transgenicToolTransgenicToolAssociations")));
 	}
 
 	@Test

@@ -1,10 +1,27 @@
 import React, { useRef, useState, useMemo } from 'react';
+import { useMutation } from '@tanstack/react-query';
 import { GenericDataTable } from '../../components/GenericDataTable/GenericDataTable';
 import { ComponentsDialog } from '../constructsPage/ComponentsDialog';
 import { GenomicComponentsDialog } from '../constructsPage/GenomicComponentsDialog';
+import { StrComponentsDialog } from './StrComponentsDialog';
+import { ComponentsEditDialog } from './components/ComponentsEditDialog';
+import {
+	FREE_TEXT_COMPONENTS,
+	GENOMIC_ENTITY_COMPONENTS,
+	TRANSGENIC_TOOL_COMPONENTS,
+	STR_COMPONENTS,
+} from './components/componentConfigs';
 import { SymbolReadOnlyDialog } from '../nameSlotAnnotations/dialogs/SymbolReadOnlyDialog';
 import { FullNameReadOnlyDialog } from '../nameSlotAnnotations/dialogs/FullNameReadOnlyDialog';
 import { SynonymsReadOnlyDialog } from '../nameSlotAnnotations/dialogs/SynonymsReadOnlyDialog';
+import { SymbolEditDialog } from '../nameSlotAnnotations/dialogs/SymbolEditDialog';
+import { FullNameEditDialog } from '../nameSlotAnnotations/dialogs/FullNameEditDialog';
+import { SynonymsEditDialog } from '../nameSlotAnnotations/dialogs/SynonymsEditDialog';
+import { UsesEditDialog } from './uses/UsesEditDialog';
+import { DialogTriggerTableEditor } from '../../components/Editors/dialog/DialogTriggerTableEditor';
+import { StringListTableEditor } from '../../components/Editors/text/StringListTableEditor';
+import { ReferencesTableEditor } from '../../components/Editors/autocomplete/references/ReferencesTableEditor';
+import { BooleanTableEditor } from '../../components/Editors/dropdown/boolean/BooleanTableEditor';
 import { Toast } from 'primereact/toast';
 import { getDefaultTableState } from '../../service/TableStateService';
 import { FILTER_CONFIGS } from '../../constants/FilterFields';
@@ -19,15 +36,16 @@ import { TruncatedReferencesTemplate } from '../../components/Templates/referenc
 import { StringTemplate } from '../../components/Templates/StringTemplate';
 
 import { SearchService } from '../../service/SearchService';
+import { CassetteService } from '../../service/CassetteService';
+import { NewCassetteButton } from './NewCassetteButton';
 import { Endpoints } from '../../constants/Endpoints';
 import {
 	relationName,
-	identifierOf,
 	genomicEntityLabel,
 	transgenicToolLabel,
 	transgenicToolDisplayValue,
-	associationStrings,
 	useStrings,
+	strAssociationText,
 } from './utils';
 
 // tableName is the title, and without spaces the key the table's settings are saved under, so a
@@ -47,6 +65,13 @@ export const CassettesTable = ({ tableName = 'Cassettes', fixedFilters }) => {
 
 	const [fullNameData, setFullNameData] = useState({
 		dialog: false,
+	});
+
+	const [usesData, setUsesData] = useState({
+		isInEdit: false,
+		dialog: false,
+		rowIndex: null,
+		mainRowProps: {},
 	});
 
 	const [componentsData, setComponentsData] = useState({
@@ -70,15 +95,32 @@ export const CassettesTable = ({ tableName = 'Cassettes', fixedFilters }) => {
 		mainRowProps: {},
 	});
 
+	const [strComponentsData, setStrComponentsData] = useState({ dialog: false });
+
+	// SCRUM-6752: the editable component pop-ups, one per list, opened from the row editor
+	const [componentsEditData, setComponentsEditData] = useState({ dialog: false });
+	const [genomicEntityComponentsEditData, setGenomicEntityComponentsEditData] = useState({ dialog: false });
+	const [transgenicToolComponentsEditData, setTransgenicToolComponentsEditData] = useState({ dialog: false });
+	const [strComponentsEditData, setStrComponentsEditData] = useState({ dialog: false });
+
 	const [isInEditMode, setIsInEditMode] = useState(false);
 	const [errorMessages, setErrorMessages] = useState({});
 	const [totalRecords, setTotalRecords] = useState(0);
 	const [cassettes, setCassettes] = useState([]);
 
 	const searchService = new SearchService();
+	let cassetteService = new CassetteService();
 
-	const errorMessagesRef = useRef();
-	errorMessagesRef.current = errorMessages;
+	// SCRUM-6746: a row edit saves the cassette's own fields; its components and associations are kept
+	// as stored by the backend (editing them is SCRUM-6752)
+	const mutation = useMutation({
+		mutationFn: (updatedCassette) => {
+			if (!cassetteService) {
+				cassetteService = new CassetteService();
+			}
+			return cassetteService.saveCassette(updatedCassette);
+		},
+	});
 
 	const handleFullNameOpen = (cassetteFullName) => {
 		setFullNameData({ originalFullNames: [cassetteFullName], dialog: true });
@@ -92,12 +134,52 @@ export const CassettesTable = ({ tableName = 'Cassettes', fixedFilters }) => {
 		setSymbolData({ originalSymbols: [cassetteSymbol], dialog: true });
 	};
 
+	// The pop-ups opened from a row in edit mode; they write back through the row's editorCallback
+	const openInEdit = (setData, originalKey, original) => (event, editorOptions, isInEdit) => {
+		setData({
+			[originalKey]: original(editorOptions.rowData),
+			dialog: true,
+			isInEdit: isInEdit,
+			rowIndex: editorOptions.rowIndex,
+			mainRowProps: editorOptions,
+		});
+	};
+
+	const handleSymbolOpenInEdit = openInEdit(setSymbolData, 'originalSymbols', (row) => [row.cassetteSymbol]);
+	const handleFullNameOpenInEdit = openInEdit(setFullNameData, 'originalFullNames', (row) => [row.cassetteFullName]);
+	const handleSynonymsOpenInEdit = openInEdit(setSynonymsData, 'originalSynonyms', (row) => row.cassetteSynonyms);
+	const handleUsesOpenInEdit = openInEdit(setUsesData, 'originalUses', (row) => row.cassetteUses);
+
+	const openComponentsEdit = (setData) => (event, editorOptions) => {
+		event.preventDefault();
+		setData({ dialog: true, cassetteId: editorOptions.rowData?.id, mainRowProps: editorOptions });
+	};
+
+	// The trigger for a component list's pop-up in the row editor
+	const componentsEditor = (field, setData, label) => (editorOptions) => {
+		const count = editorOptions.rowData?.[field]?.length;
+		return (
+			<DialogTriggerTableEditor
+				editorOptions={editorOptions}
+				onOpenInEdit={openComponentsEdit(setData)}
+				errorField={field}
+				displayText={count ? `${label}(${count}) ` : null}
+				addText={`Add ${label}`}
+				tooltipObject="cassette"
+			/>
+		);
+	};
+
 	const handleComponentsOpen = (cassetteComponents) => {
 		setComponentsData({ originalComponents: cassetteComponents, dialog: true });
 	};
 
 	const handleGenomicEntityComponentsOpen = (cassetteGenomicEntityAssociations) => {
 		setGenomicEntityComponentsData({ originalComponents: cassetteGenomicEntityAssociations, dialog: true });
+	};
+
+	const handleStrComponentsOpen = (cassetteStrAssociations) => {
+		setStrComponentsData({ originalComponents: cassetteStrAssociations, dialog: true });
 	};
 
 	const handleTransgenicToolComponentsOpen = (cassetteTransgenicToolAssociations) => {
@@ -114,6 +196,13 @@ export const CassettesTable = ({ tableName = 'Cassettes', fixedFilters }) => {
 
 	const columns = useMemo(
 		() => [
+			{
+				field: 'curie',
+				header: 'Curie',
+				sortable: { isInEditMode },
+				body: (rowData) => <IdTemplate id={rowData.curie} />,
+				filterConfig: FILTER_CONFIGS.curieFilterConfig,
+			},
 			{
 				field: 'uniqueId',
 				header: 'Unique ID',
@@ -136,7 +225,8 @@ export const CassettesTable = ({ tableName = 'Cassettes', fixedFilters }) => {
 				filterConfig: FILTER_CONFIGS.modInternalIdFilterConfig,
 			},
 			{
-				field: 'cassetteSymbol.displayText',
+				field: 'cassetteSymbol',
+				columnKey: 'cassetteSymbol.displayText',
 				header: 'Symbol',
 				sortable: true,
 				body: (rowData) => (
@@ -149,9 +239,20 @@ export const CassettesTable = ({ tableName = 'Cassettes', fixedFilters }) => {
 				),
 				filter: true,
 				filterConfig: FILTER_CONFIGS.cassetteSymbolFilterConfig,
+				editor: (editorOptions) => (
+					<DialogTriggerTableEditor
+						editorOptions={editorOptions}
+						onOpenInEdit={handleSymbolOpenInEdit}
+						errorField="cassetteSymbol"
+						displayHtml={editorOptions.rowData.cassetteSymbol?.displayText}
+						addText="Add Symbol"
+						tooltipObject="cassette"
+					/>
+				),
 			},
 			{
-				field: 'cassetteFullName.displayText',
+				field: 'cassetteFullName',
+				columnKey: 'cassetteFullName.displayText',
 				header: 'Name',
 				sortable: true,
 				filter: true,
@@ -164,9 +265,20 @@ export const CassettesTable = ({ tableName = 'Cassettes', fixedFilters }) => {
 					/>
 				),
 				filterConfig: FILTER_CONFIGS.cassetteNameFilterConfig,
+				editor: (editorOptions) => (
+					<DialogTriggerTableEditor
+						editorOptions={editorOptions}
+						onOpenInEdit={handleFullNameOpenInEdit}
+						errorField="cassetteFullName"
+						displayHtml={editorOptions.rowData.cassetteFullName?.displayText}
+						addText="Add Full Name"
+						tooltipObject="cassette"
+					/>
+				),
 			},
 			{
-				field: 'cassetteSynonyms.displayText',
+				field: 'cassetteSynonyms',
+				columnKey: 'cassetteSynonyms.displayText',
 				header: 'Synonyms',
 				body: (rowData) => (
 					<ListDialogTemplate
@@ -178,6 +290,19 @@ export const CassettesTable = ({ tableName = 'Cassettes', fixedFilters }) => {
 				),
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.cassetteSynonymsFilterConfig,
+				editor: (editorOptions) => {
+					const count = editorOptions.rowData.cassetteSynonyms?.length;
+					return (
+						<DialogTriggerTableEditor
+							editorOptions={editorOptions}
+							onOpenInEdit={handleSynonymsOpenInEdit}
+							errorField="cassetteSynonyms"
+							displayText={count ? `Synonyms(${count}) ` : null}
+							addText="Add Synonym"
+							tooltipObject="cassette"
+						/>
+					);
+				},
 			},
 			{
 				field: 'secondaryIdentifiers',
@@ -185,9 +310,11 @@ export const CassettesTable = ({ tableName = 'Cassettes', fixedFilters }) => {
 				sortable: true,
 				filterConfig: FILTER_CONFIGS.secondaryIdentifiersFilterConfig,
 				body: (rowData) => <StringListTemplate list={rowData.secondaryIdentifiers} />,
+				editor: (editorOptions) => <StringListTableEditor editorOptions={editorOptions} field="secondaryIdentifiers" />,
 			},
 			{
-				field: 'cassetteComponents.componentSymbol',
+				field: 'cassetteComponents',
+				columnKey: 'cassetteComponents.componentSymbol',
 				header: 'Free Text Components',
 				body: (rowData) => (
 					<ListDialogTemplate
@@ -199,9 +326,11 @@ export const CassettesTable = ({ tableName = 'Cassettes', fixedFilters }) => {
 				),
 				sortable: { isInEditMode },
 				filterConfig: FILTER_CONFIGS.cassetteComponentsFilterConfig,
+				editor: componentsEditor('cassetteComponents', setComponentsEditData, 'Components'),
 			},
 			{
-				field: 'cassetteGenomicEntityAssociations.cassetteGenomicEntityAssociationObject.symbol',
+				field: 'cassetteGenomicEntityAssociations',
+				columnKey: 'cassetteGenomicEntityAssociations.cassetteGenomicEntityAssociationObject.symbol',
 				header: 'Genomic Entity Components',
 				body: (rowData) => (
 					<ListDialogTemplate
@@ -213,9 +342,11 @@ export const CassettesTable = ({ tableName = 'Cassettes', fixedFilters }) => {
 				),
 				sortable: { isInEditMode },
 				filterConfig: FILTER_CONFIGS.cassetteGenomicEntityAssociationsFilterConfig,
+				editor: componentsEditor('cassetteGenomicEntityAssociations', setGenomicEntityComponentsEditData, 'Components'),
 			},
 			{
-				field: 'cassetteTransgenicToolAssociations.cassetteTransgenicToolAssociationObject.primaryExternalId',
+				field: 'cassetteTransgenicToolAssociations',
+				columnKey: 'cassetteTransgenicToolAssociations.cassetteTransgenicToolAssociationObject.primaryExternalId',
 				header: 'Transgenic Tool Components',
 				body: (rowData) => (
 					<ListDialogTemplate
@@ -227,37 +358,59 @@ export const CassettesTable = ({ tableName = 'Cassettes', fixedFilters }) => {
 				),
 				sortable: { isInEditMode },
 				filterConfig: FILTER_CONFIGS.cassetteTransgenicToolAssociationsFilterConfig,
+				editor: componentsEditor(
+					'cassetteTransgenicToolAssociations',
+					setTransgenicToolComponentsEditData,
+					'Components'
+				),
 			},
 			{
-				field: 'cassetteStrAssociations.cassetteStrAssociationObject.primaryExternalId',
+				field: 'cassetteStrAssociations',
+				columnKey: 'cassetteStrAssociations.cassetteStrAssociationObject.primaryExternalId',
 				header: 'Sequence Targeting Reagent Components',
 				body: (rowData) => (
-					<StringListTemplate
-						list={associationStrings(
-							rowData.cassetteStrAssociations,
-							'cassetteStrAssociationObject',
-							(str) => str?.name || identifierOf(str)
-						)}
+					<ListDialogTemplate
+						entities={rowData.cassetteStrAssociations}
+						handleOpen={handleStrComponentsOpen}
+						getTextField={strAssociationText}
+						underline={true}
 					/>
 				),
 				sortable: { isInEditMode },
 				filterConfig: FILTER_CONFIGS.cassetteStrAssociationsFilterConfig,
+				editor: componentsEditor('cassetteStrAssociations', setStrComponentsEditData, 'Components'),
 			},
 			{
-				field: 'cassetteUses.uses.name',
+				field: 'cassetteUses',
+				columnKey: 'cassetteUses.uses.name',
 				header: 'Uses',
 				body: (rowData) => <StringListTemplate list={useStrings(rowData.cassetteUses)} />,
 				sortable: { isInEditMode },
 				filterConfig: FILTER_CONFIGS.cassetteUsesFilterConfig,
+				editor: (editorOptions) => {
+					const count = editorOptions.rowData.cassetteUses?.length;
+					return (
+						<DialogTriggerTableEditor
+							editorOptions={editorOptions}
+							onOpenInEdit={handleUsesOpenInEdit}
+							errorField="cassetteUses"
+							displayText={count ? `Uses(${count}) ` : null}
+							addText="Add Use"
+							tooltipObject="cassette"
+						/>
+					);
+				},
 			},
 			{
-				field: 'references.primaryCrossReferenceCurie',
+				field: 'references',
+				columnKey: 'references.primaryCrossReferenceCurie',
 				header: 'References',
 				body: (rowData) => (
 					<TruncatedReferencesTemplate references={rowData.references} identifier={rowData.primaryExternalId} />
 				),
 				sortable: { isInEditMode },
 				filterConfig: FILTER_CONFIGS.referencesFilterConfig,
+				editor: (editorOptions) => <ReferencesTableEditor editorOptions={editorOptions} />,
 			},
 			{
 				field: 'placeholder',
@@ -266,6 +419,7 @@ export const CassettesTable = ({ tableName = 'Cassettes', fixedFilters }) => {
 				filter: true,
 				filterConfig: FILTER_CONFIGS.placeholderFilterConfig,
 				sortable: { isInEditMode },
+				editor: (editorOptions) => <BooleanTableEditor editorOptions={editorOptions} field={'placeholder'} />,
 			},
 			{
 				field: 'dataProvider.abbreviation',
@@ -311,6 +465,7 @@ export const CassettesTable = ({ tableName = 'Cassettes', fixedFilters }) => {
 				filter: true,
 				filterConfig: FILTER_CONFIGS.internalFilterConfig,
 				sortable: { isInEditMode },
+				editor: (editorOptions) => <BooleanTableEditor editorOptions={editorOptions} field={'internal'} />,
 			},
 			{
 				field: 'obsolete',
@@ -319,6 +474,7 @@ export const CassettesTable = ({ tableName = 'Cassettes', fixedFilters }) => {
 				filter: true,
 				filterConfig: FILTER_CONFIGS.obsoleteFilterConfig,
 				sortable: { isInEditMode },
+				editor: (editorOptions) => <BooleanTableEditor editorOptions={editorOptions} field={'obsolete'} />,
 			},
 		],
 		// eslint-disable-next-line react-hooks/exhaustive-deps
@@ -349,6 +505,13 @@ export const CassettesTable = ({ tableName = 'Cassettes', fixedFilters }) => {
 		searchService,
 	});
 
+	const headerButtons = (disabled = false) => (
+		<>
+			<NewCassetteButton disabled={disabled} />
+			&nbsp;&nbsp;
+		</>
+	);
+
 	return (
 		<>
 			<div className="card">
@@ -358,6 +521,7 @@ export const CassettesTable = ({ tableName = 'Cassettes', fixedFilters }) => {
 					dataKey="id"
 					endpoint={SEARCH_ENDPOINT}
 					tableName={tableName}
+					headerButtons={headerButtons}
 					entities={cassettes}
 					setEntities={setCassettes}
 					totalRecords={totalRecords}
@@ -365,8 +529,9 @@ export const CassettesTable = ({ tableName = 'Cassettes', fixedFilters }) => {
 					tableState={tableState}
 					setTableState={setTableState}
 					columns={columns}
-					isEditable={false}
-					hasDetails={false}
+					isEditable={true}
+					mutation={mutation}
+					hasDetails={true}
 					isInEditMode={isInEditMode}
 					setIsInEditMode={setIsInEditMode}
 					toasts={{ toast_topleft, toast_topright }}
@@ -375,9 +540,39 @@ export const CassettesTable = ({ tableName = 'Cassettes', fixedFilters }) => {
 					fetching={isFetching || isLoading}
 				/>
 			</div>
+			<FullNameEditDialog
+				field="cassetteFullName"
+				endpoint={Endpoints.SlotAnnotation.CASSETTE_FULL_NAME}
+				originalFullNameData={fullNameData}
+				setOriginalFullNameData={setFullNameData}
+				errorMessagesMainRow={errorMessages}
+				setErrorMessagesMainRow={setErrorMessages}
+			/>
 			<FullNameReadOnlyDialog originalFullNameData={fullNameData} setOriginalFullNameData={setFullNameData} />
+			<SymbolEditDialog
+				field="cassetteSymbol"
+				endpoint={Endpoints.SlotAnnotation.CASSETTE_SYMBOL}
+				originalSymbolData={symbolData}
+				setOriginalSymbolData={setSymbolData}
+				errorMessagesMainRow={errorMessages}
+				setErrorMessagesMainRow={setErrorMessages}
+			/>
 			<SymbolReadOnlyDialog originalSymbolData={symbolData} setOriginalSymbolData={setSymbolData} />
+			<SynonymsEditDialog
+				field="cassetteSynonyms"
+				endpoint={Endpoints.SlotAnnotation.CASSETTE_SYNONYM}
+				originalSynonymsData={synonymsData}
+				setOriginalSynonymsData={setSynonymsData}
+				errorMessagesMainRow={errorMessages}
+				setErrorMessagesMainRow={setErrorMessages}
+			/>
 			<SynonymsReadOnlyDialog originalSynonymsData={synonymsData} setOriginalSynonymsData={setSynonymsData} />
+			<UsesEditDialog
+				originalUsesData={usesData}
+				setOriginalUsesData={setUsesData}
+				errorMessagesMainRow={errorMessages}
+				setErrorMessagesMainRow={setErrorMessages}
+			/>
 			<ComponentsDialog
 				originalComponentsData={componentsData}
 				setOriginalComponentsData={setComponentsData}
@@ -401,6 +596,19 @@ export const CassettesTable = ({ tableName = 'Cassettes', fixedFilters }) => {
 				title="Transgenic Tool Components"
 				getComponentLabel={transgenicToolDisplayValue}
 			/>
+			<StrComponentsDialog strComponentsData={strComponentsData} setStrComponentsData={setStrComponentsData} />
+			<ComponentsEditDialog data={componentsEditData} setData={setComponentsEditData} config={FREE_TEXT_COMPONENTS} />
+			<ComponentsEditDialog
+				data={genomicEntityComponentsEditData}
+				setData={setGenomicEntityComponentsEditData}
+				config={GENOMIC_ENTITY_COMPONENTS}
+			/>
+			<ComponentsEditDialog
+				data={transgenicToolComponentsEditData}
+				setData={setTransgenicToolComponentsEditData}
+				config={TRANSGENIC_TOOL_COMPONENTS}
+			/>
+			<ComponentsEditDialog data={strComponentsEditData} setData={setStrComponentsEditData} config={STR_COMPONENTS} />
 		</>
 	);
 };

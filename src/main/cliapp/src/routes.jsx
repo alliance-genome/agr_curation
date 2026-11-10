@@ -16,12 +16,23 @@ import { GeneGeneticInteractionsPage } from './containers/geneGeneticInteraction
 import { GeneMolecularInteractionsPage } from './containers/geneMolecularInteractionsPage/GeneMolecularInteractionsPage';
 import { ExperimentalConditionsPage } from './containers/experimentalConditionsPage';
 import { ConditionRelationPage } from './containers/conditionRelationPage';
-import { AffectedGenomicModelPage, AffectedGenomicModelDetailPage } from './containers/affectedGenomicModelPage';
+import {
+	AffectedGenomicModelPage,
+	AffectedGenomicModelDetailPage,
+	AffectedGenomicModelCreatePage,
+} from './containers/affectedGenomicModelPage';
 import { AllelesPage, AlleleDetailPage, AlleleCreatePage } from './containers/allelesPage';
-import { GenesPage } from './containers/genesPage';
+import { GenesPage, GeneDetailPage, GeneCreatePage } from './containers/genesPage';
 import { VariantsPage, VariantDetailPage, VariantCreatePage } from './containers/variantsPage';
 import { ConstructsPage, ConstructDetailPage } from './containers/constructsPage';
-import { CassettesPage } from './containers/cassettesPage';
+import { CassettesPage, CassetteDetailPage, CassetteCreatePage } from './containers/cassettesPage';
+import { TransgenicToolsPage, TransgenicToolDetailPage } from './containers/transgenicToolsPage';
+import {
+	HTPExpressionDatasetAnnotationsPage,
+	HTPExpressionDatasetAnnotationDetailPage,
+} from './containers/htpExpressionDatasetAnnotationsPage';
+import { HTPExpressionDatasetSampleAnnotationsPage } from './containers/htpExpressionDatasetSampleAnnotationsPage';
+import { SequenceTargetingReagentsPage } from './containers/sequenceTargetingReagentsPage';
 import { ProfilePage } from './containers/profilePage';
 import { MoleculesPage } from './containers/moleculesPage';
 import { SpeciesPage } from './containers/speciesPage';
@@ -181,6 +192,22 @@ export default function AppRoutes() {
 						}
 					/>
 					<Route
+						path="/gene/create"
+						element={
+							<ErrorBoundary>
+								<GeneCreatePage />
+							</ErrorBoundary>
+						}
+					/>
+					<Route
+						path="/gene/:identifier"
+						element={
+							<ErrorBoundary>
+								<GeneDetailPage />
+							</ErrorBoundary>
+						}
+					/>
+					<Route
 						path="/variants"
 						element={
 							<ErrorBoundary>
@@ -213,10 +240,74 @@ export default function AppRoutes() {
 						}
 					/>
 					<Route
+						path="/transgenicTools"
+						element={
+							<ErrorBoundary>
+								<TransgenicToolsPage />
+							</ErrorBoundary>
+						}
+					/>
+					<Route
+						path="/htpExpressionDatasetAnnotations"
+						element={
+							<ErrorBoundary>
+								<HTPExpressionDatasetAnnotationsPage />
+							</ErrorBoundary>
+						}
+					/>
+					<Route
+						path="/htpExpressionDatasetSampleAnnotations"
+						element={
+							<ErrorBoundary>
+								<HTPExpressionDatasetSampleAnnotationsPage />
+							</ErrorBoundary>
+						}
+					/>
+					<Route
+						path="/htp-expression-dataset/:identifier"
+						element={
+							<ErrorBoundary>
+								<HTPExpressionDatasetAnnotationDetailPage />
+							</ErrorBoundary>
+						}
+					/>
+					<Route
+						path="/sequenceTargetingReagents"
+						element={
+							<ErrorBoundary>
+								<SequenceTargetingReagentsPage />
+							</ErrorBoundary>
+						}
+					/>
+					<Route
 						path="/constructs"
 						element={
 							<ErrorBoundary>
 								<ConstructsPage />
+							</ErrorBoundary>
+						}
+					/>
+					<Route
+						path="/cassette/create"
+						element={
+							<ErrorBoundary>
+								<CassetteCreatePage />
+							</ErrorBoundary>
+						}
+					/>
+					<Route
+						path="/cassette/:identifier"
+						element={
+							<ErrorBoundary>
+								<CassetteDetailPage />
+							</ErrorBoundary>
+						}
+					/>
+					<Route
+						path="/transgenic-tool/:identifier"
+						element={
+							<ErrorBoundary>
+								<TransgenicToolDetailPage />
 							</ErrorBoundary>
 						}
 					/>
@@ -353,6 +444,14 @@ export default function AppRoutes() {
 						element={
 							<ErrorBoundary>
 								<AffectedGenomicModelPage />
+							</ErrorBoundary>
+						}
+					/>
+					<Route
+						path="/agm/create"
+						element={
+							<ErrorBoundary>
+								<AffectedGenomicModelCreatePage />
 							</ErrorBoundary>
 						}
 					/>

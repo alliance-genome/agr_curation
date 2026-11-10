@@ -2,6 +2,7 @@ package org.alliancegenome.curation_api.services.validation;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
@@ -11,6 +12,7 @@ import org.alliancegenome.curation_api.dao.ontology.SoTermDAO;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.Gene;
+import org.alliancegenome.curation_api.model.entities.Note;
 import org.alliancegenome.curation_api.model.entities.ontology.SOTerm;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.GeneFullNameSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.GeneSecondaryIdSlotAnnotation;
@@ -26,6 +28,7 @@ import org.alliancegenome.curation_api.services.validation.dto.slotAnnotations.G
 import org.alliancegenome.curation_api.services.validation.dto.slotAnnotations.GeneSystematicNameSlotAnnotationValidator;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import io.quarkus.logging.Log;
 import jakarta.enterprise.context.RequestScoped;
@@ -46,7 +49,7 @@ public class GeneValidator extends GenomicEntityValidator<Gene> {
 
 	private String errorMessage;
 
-	public Gene validateGeneUpdate(Gene uiEntity) {
+	public Gene validateGeneUpdate(Gene uiEntity, Boolean manageSubResourceFields) {
 		response = new ObjectResponse<>(uiEntity);
 		errorMessage = "Could not update Gene: [" + uiEntity.getIdentifier() + "]";
 
@@ -64,7 +67,7 @@ public class GeneValidator extends GenomicEntityValidator<Gene> {
 
 		dbEntity = (Gene) validateAuditedObjectFields(uiEntity, dbEntity, false);
 
-		return validateGene(uiEntity, dbEntity);
+		return validateGene(uiEntity, dbEntity, manageSubResourceFields);
 	}
 
 	public Gene validateGeneCreate(Gene uiEntity) {
@@ -75,21 +78,81 @@ public class GeneValidator extends GenomicEntityValidator<Gene> {
 
 		dbEntity = (Gene) validateAuditedObjectFields(uiEntity, dbEntity, true);
 
-		return validateGene(uiEntity, dbEntity);
+		return validateGene(uiEntity, dbEntity, true);
 	}
 
-	private Gene validateGene(Gene uiEntity, Gene dbEntity) {
+	public List<GeneSynonymSlotAnnotation> validateSynonymReplacement(Gene dbEntity, List<GeneSynonymSlotAnnotation> incomingSynonyms) {
+		return validateSlotAnnotationReplacement(dbEntity, incomingSynonyms, dbEntity.getGeneSynonyms(), "geneSynonyms", "displayText", "Synonyms",
+			geneSynonymValidator::validateGeneSynonymSlotAnnotation, GeneSynonymSlotAnnotation::setSingleGene);
+	}
 
-		dbEntity = validateGenomicEntityFields(uiEntity, dbEntity, VocabularyConstants.GENE_NOTE_TYPES_VOCABULARY_TERM_SET);
+	public List<GeneSecondaryIdSlotAnnotation> validateSecondaryIdReplacement(Gene dbEntity, List<GeneSecondaryIdSlotAnnotation> incomingSecondaryIds) {
+		return validateSlotAnnotationReplacement(dbEntity, incomingSecondaryIds, dbEntity.getGeneSecondaryIds(), "geneSecondaryIds", "secondaryId", "Secondary IDs",
+			geneSecondaryIdValidator::validateGeneSecondaryIdSlotAnnotation, GeneSecondaryIdSlotAnnotation::setSingleGene);
+	}
+
+	public List<Note> validateRelatedNoteReplacement(Gene dbEntity, List<Note> incomingNotes) {
+		return validateRelatedNoteReplacement(dbEntity, incomingNotes, VocabularyConstants.GENE_NOTE_TYPES_VOCABULARY_TERM_SET);
+	}
+
+	/**
+	 * Rejects any entry the gene's cross references sub-resource is to hold that matches the gene's GCRP cross
+	 * reference, which the gene holds on its own rather than among its cross references.
+	 *
+	 * @param dbEntity the gene the cross references belong to
+	 * @param incomingXrefs the submitted cross references
+	 * @throws ApiErrorException when any entry matches the GCRP cross reference, with each such entry's error keyed by
+	 *         its index
+	 */
+	public void validateCrossReferenceReplacement(Gene dbEntity, List<CrossReference> incomingXrefs) {
+		if (dbEntity.getGcrpCrossReference() == null || incomingXrefs == null) {
+			return;
+		}
+
+		response = new ObjectResponse<>();
+		String field = "crossReferences";
+		String gcrpUniqueId = crossReferenceService.getCrossReferenceUniqueId(dbEntity.getGcrpCrossReference());
+		boolean allValid = true;
+		for (int ix = 0; ix < incomingXrefs.size(); ix++) {
+			CrossReference xref = incomingXrefs.get(ix);
+			if (xref != null && gcrpUniqueId.equals(crossReferenceService.getCrossReferenceUniqueId(xref))) {
+				allValid = false;
+				response.addErrorMessages(field, ix, Map.of("referencedCurie", ValidationConstants.DUPLICATE_MESSAGE + " (GCRP cross reference)"));
+			}
+		}
+
+		if (!allValid) {
+			convertMapToErrorMessages(field);
+			response.setErrorMessage("Could not update CrossReferences for: [" + dbEntity.getId() + "]");
+			throw new ApiErrorException(response);
+		}
+	}
+
+	/**
+	 * @param manageSubResourceFields whether the calling endpoint's JSON view carries crossReferences, relatedNotes and
+	 *        the synonym and secondary ID lists. An endpoint whose view omits them leaves the stored ones as they are.
+	 */
+	private Gene validateGene(Gene uiEntity, Gene dbEntity, Boolean manageSubResourceFields) {
+		String storedSymbolText = dbEntity.getGeneSymbol() == null ? null : dbEntity.getGeneSymbol().getDisplayText();
+		Long storedTaxonId = dbEntity.getTaxon() == null ? null : dbEntity.getTaxon().getId();
+
+		// A gene is identified by its AGRKB curie, so neither MOD identifier is required, on create or update: a gene
+		// created by a curator has neither.
+		dbEntity = validateGenomicEntityFields(uiEntity, dbEntity, VocabularyConstants.GENE_NOTE_TYPES_VOCABULARY_TERM_SET, false, manageSubResourceFields, manageSubResourceFields);
 
 		SOTerm geneType = validateRequiredEntity(soTermDAO, "geneType", uiEntity.getGeneType(), dbEntity.getGeneType());
 		dbEntity.setGeneType(geneType);
 
 		GeneSymbolSlotAnnotation symbol = validateGeneSymbol(uiEntity, dbEntity);
+		validateSymbolUniqueInTaxon(symbol, dbEntity, storedSymbolText, storedTaxonId);
 		GeneFullNameSlotAnnotation fullName = validateGeneFullName(uiEntity, dbEntity);
 		GeneSystematicNameSlotAnnotation systematicName = validateGeneSystematicName(uiEntity, dbEntity);
-		List<GeneSynonymSlotAnnotation> synonyms = validateGeneSynonyms(uiEntity, dbEntity);
-		List<GeneSecondaryIdSlotAnnotation> secondaryIds = validateGeneSecondaryIds(uiEntity, dbEntity);
+		List<GeneSynonymSlotAnnotation> synonyms = null;
+		List<GeneSecondaryIdSlotAnnotation> secondaryIds = null;
+		if (manageSubResourceFields) {
+			synonyms = validateGeneSynonyms(uiEntity, dbEntity);
+			secondaryIds = validateGeneSecondaryIds(uiEntity, dbEntity);
+		}
 		
 		CrossReference gcrpCrossReference = validateGcrpCrossReference(uiEntity.getGcrpCrossReference(), dbEntity.getGcrpCrossReference());
 		dbEntity.setGcrpCrossReference(gcrpCrossReference);
@@ -148,24 +211,26 @@ public class GeneValidator extends GenomicEntityValidator<Gene> {
 		}
 		dbEntity.setGeneSystematicName(systematicName);
 
-		if (dbEntity.getGeneSynonyms() != null) {
-			dbEntity.getGeneSynonyms().clear();
-		}
-		if (synonyms != null) {
-			if (dbEntity.getGeneSynonyms() == null) {
-				dbEntity.setGeneSynonyms(new ArrayList<>());
+		if (manageSubResourceFields) {
+			if (dbEntity.getGeneSynonyms() != null) {
+				dbEntity.getGeneSynonyms().clear();
 			}
-			dbEntity.getGeneSynonyms().addAll(synonyms);
-		}
+			if (synonyms != null) {
+				if (dbEntity.getGeneSynonyms() == null) {
+					dbEntity.setGeneSynonyms(new ArrayList<>());
+				}
+				dbEntity.getGeneSynonyms().addAll(synonyms);
+			}
 
-		if (dbEntity.getGeneSecondaryIds() != null) {
-			dbEntity.getGeneSecondaryIds().clear();
-		}
-		if (secondaryIds != null) {
-			if (dbEntity.getGeneSecondaryIds() == null) {
-				dbEntity.setGeneSecondaryIds(new ArrayList<>());
+			if (dbEntity.getGeneSecondaryIds() != null) {
+				dbEntity.getGeneSecondaryIds().clear();
 			}
-			dbEntity.getGeneSecondaryIds().addAll(secondaryIds);
+			if (secondaryIds != null) {
+				if (dbEntity.getGeneSecondaryIds() == null) {
+					dbEntity.setGeneSecondaryIds(new ArrayList<>());
+				}
+				dbEntity.getGeneSecondaryIds().addAll(secondaryIds);
+			}
 		}
 
 		return dbEntity;
@@ -187,6 +252,35 @@ public class GeneValidator extends GenomicEntityValidator<Gene> {
 		}
 
 		return symbolResponse.getEntity();
+	}
+
+	/**
+	 * Rejects a symbol already used by another non-obsolete gene of the same taxon. An existing gene is checked only
+	 * when its symbol or taxon changes, so genes loaded with a shared symbol stay editable.
+	 *
+	 * @param symbol validated symbol, or null when the symbol failed validation
+	 * @param dbEntity gene being validated, with its taxon already validated
+	 * @param storedSymbolText symbol display text stored before this request, or null for a new gene
+	 * @param storedTaxonId taxon id stored before this request, or null for a new gene
+	 */
+	private void validateSymbolUniqueInTaxon(GeneSymbolSlotAnnotation symbol, Gene dbEntity, String storedSymbolText, Long storedTaxonId) {
+		if (symbol == null || StringUtils.isBlank(symbol.getDisplayText()) || dbEntity.getTaxon() == null) {
+			return;
+		}
+
+		Long taxonId = dbEntity.getTaxon().getId();
+		if (dbEntity.getId() != null && symbol.getDisplayText().equals(storedSymbolText) && taxonId.equals(storedTaxonId)) {
+			return;
+		}
+
+		if (geneDAO.hasGeneWithSymbolAndTaxon(symbol.getDisplayText(), taxonId, dbEntity.getId())) {
+			// reported on the taxon and on the symbol's display text, keyed as the symbol's own errors are so the
+			// form shows it on the symbol row
+			String message = ValidationConstants.GENE_SYMBOL_NOT_UNIQUE_IN_TAXON_MESSAGE;
+			addMessageResponse("geneSymbol", "displayText - " + message);
+			response.addErrorMessages("geneSymbol", Map.of("displayText", message));
+			addMessageResponse("taxon", message);
+		}
 	}
 
 	private GeneFullNameSlotAnnotation validateGeneFullName(Gene uiEntity, Gene dbEntity) {

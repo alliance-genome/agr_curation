@@ -5,7 +5,7 @@ import { constructCassettesFilter } from './utils';
 
 // The Cassettes data table, restricted to the cassettes of one construct.
 export const CassettesDialog = ({ originalCassettesData, setOriginalCassettesData }) => {
-	const { originalCassettes, dialog } = originalCassettesData;
+	const { originalCassettes, dialog, isInEdit } = originalCassettesData;
 	const fixedFilters = constructCassettesFilter(originalCassettes);
 
 	const hideDialog = () => {
@@ -16,7 +16,7 @@ export const CassettesDialog = ({ originalCassettesData, setOriginalCassettesDat
 	};
 
 	return (
-		<Dialog visible={dialog} className="w-11" modal onHide={hideDialog} closable={true}>
+		<Dialog visible={dialog && !isInEdit} className="w-11" modal onHide={hideDialog} closable={true}>
 			{fixedFilters && <CassettesTable tableName="Construct Cassettes" fixedFilters={fixedFilters} />}
 		</Dialog>
 	);

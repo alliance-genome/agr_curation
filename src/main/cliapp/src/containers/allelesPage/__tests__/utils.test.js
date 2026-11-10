@@ -1,4 +1,9 @@
-import { buildCreatePayload, buildDuplicateAllele, getPendingSingleValueFields, processErrors } from '../utils';
+import {
+	buildCreatePayload,
+	buildAlleleCopy,
+	generateCrossRefSearchField,
+	getPendingSingleValueFields,
+} from '../utils';
 
 describe('buildCreatePayload', () => {
 	it('Drops a taxon with no curie', () => {
@@ -45,102 +50,7 @@ describe('buildCreatePayload', () => {
 	});
 });
 
-describe('buildCreatePayload gene associations', () => {
-	const withAssociation = () => ({
-		alleleGeneAssociations: [
-			{
-				dataKey: 'row-1',
-				relation: { name: 'is_allele_of' },
-				alleleGeneAssociationObject: { primaryExternalId: 'GENE:1' },
-				// the form seeds this with the allele being edited; on create it has no `type`, which
-				// Jackson rejects for the polymorphic BiologicalEntity
-				alleleAssociationSubject: { alleleSymbol: { displayText: 'abc-1' } },
-			},
-		],
-	});
-
-	it('Drops the subject the API assigns anyway', () => {
-		const payload = buildCreatePayload(withAssociation());
-
-		expect(payload.alleleGeneAssociations[0]).not.toHaveProperty('alleleAssociationSubject');
-	});
-
-	it('Keeps the rest of the association intact', () => {
-		const payload = buildCreatePayload(withAssociation());
-
-		expect(payload.alleleGeneAssociations[0].relation).toEqual({ name: 'is_allele_of' });
-		expect(payload.alleleGeneAssociations[0].alleleGeneAssociationObject).toEqual({ primaryExternalId: 'GENE:1' });
-	});
-
-	it('Does not mutate the allele the form holds', () => {
-		const allele = withAssociation();
-
-		buildCreatePayload(allele);
-
-		expect(allele.alleleGeneAssociations[0].alleleAssociationSubject).toEqual({
-			alleleSymbol: { displayText: 'abc-1' },
-		});
-	});
-});
-
-describe('processErrors', () => {
-	// The API reports a required single-object slot annotation as a plain string keyed by the
-	// entity, and the entity itself is null when the curator never added one.
-	const symbolRequired = {
-		errorMessage: 'Could not create Allele',
-		errorMessages: { alleleSymbol: 'Required field is empty' },
-		supplementalData: { errorMap: { alleleSymbol: 'Required field is empty' } },
-	};
-
-	it('Survives a string error for an entity the allele does not have', () => {
-		const dispatch = vi.fn();
-
-		expect(() => processErrors(symbolRequired, dispatch, { alleleSymbol: null })).not.toThrow();
-		expect(dispatch).toHaveBeenCalledWith({
-			type: 'UPDATE_ERROR_MESSAGES',
-			errorMessages: { alleleSymbol: 'Required field is empty' },
-		});
-	});
-
-	it('Survives a string error for an entity the allele does have', () => {
-		const dispatch = vi.fn();
-		const allele = { alleleSymbol: { dataKey: 0, displayText: 'a' } };
-
-		expect(() => processErrors(symbolRequired, dispatch, allele)).not.toThrow();
-	});
-
-	it('Dispatches the flat messages before the ones keyed to a row', () => {
-		const dispatch = vi.fn();
-		// a row index the allele's table does not have, which cannot be keyed to a row
-		const data = {
-			errorMessages: { taxon: 'Required field is empty' },
-			supplementalData: { errorMap: { alleleSynonyms: { 3: { displayText: 'Required' } } } },
-		};
-
-		expect(() => processErrors(data, dispatch, { alleleSynonyms: [] })).toThrow();
-
-		expect(dispatch).toHaveBeenCalledWith({
-			type: 'UPDATE_ERROR_MESSAGES',
-			errorMessages: { taxon: 'Required field is empty' },
-		});
-	});
-
-	it('Still routes a per field error map to the row it belongs to', () => {
-		const dispatch = vi.fn();
-		const allele = { alleleSymbol: { dataKey: 'row-1' } };
-		const data = { supplementalData: { errorMap: { alleleSymbol: { nameType: 'Required' } } } };
-
-		processErrors(data, dispatch, allele);
-
-		expect(dispatch).toHaveBeenCalledWith({
-			type: 'UPDATE_TABLE_ERROR_MESSAGES',
-			entityType: 'alleleSymbol',
-			errorMessages: { 'row-1': { nameType: { severity: 'error', message: 'Required' } } },
-		});
-	});
-});
-
-describe('buildDuplicateAllele', () => {
+describe('buildAlleleCopy', () => {
 	const audit = {
 		createdBy: { uniqueId: 'curator' },
 		updatedBy: { uniqueId: 'curator' },
@@ -192,77 +102,56 @@ describe('buildDuplicateAllele', () => {
 	});
 
 	it('Leaves behind what identifies the stored allele', () => {
-		const duplicate = buildDuplicateAllele(source());
+		const copy = buildAlleleCopy(source());
 
 		['id', 'curie', 'primaryExternalId', 'modInternalId', 'dataProvider', 'dataProviderCrossReference'].forEach(
-			(field) => expect(duplicate).not.toHaveProperty(field)
+			(field) => expect(copy).not.toHaveProperty(field)
 		);
-		Object.keys(audit).forEach((field) => expect(duplicate).not.toHaveProperty(field));
-		expect(duplicate.alleleSecondaryIds).toBeUndefined();
-		expect(duplicate).not.toHaveProperty('alleleVariantAssociations');
-		expect(duplicate).not.toHaveProperty('alleleConstructAssociations');
-		expect(duplicate.obsolete).toBe(false);
+		Object.keys(audit).forEach((field) => expect(copy).not.toHaveProperty(field));
+		expect(copy).not.toHaveProperty('alleleVariantAssociations');
+		expect(copy).not.toHaveProperty('alleleConstructAssociations');
+		// The lists written through their own sub-resources are copied separately.
+		[
+			'references',
+			'relatedNotes',
+			'alleleGeneAssociations',
+			'alleleSynonyms',
+			'alleleSecondaryIds',
+			'alleleMutationTypes',
+			'alleleInheritanceModes',
+			'alleleFunctionalImpacts',
+			'alleleNomenclatureEvents',
+		].forEach((field) => expect(copy).not.toHaveProperty(field));
+		expect(copy.obsolete).toBe(false);
 	});
 
 	it('Copies the fields the create form edits', () => {
-		const duplicate = buildDuplicateAllele(source());
+		const copy = buildAlleleCopy(source());
 
-		expect(duplicate.type).toEqual('Allele');
-		expect(duplicate.taxon).toEqual({ curie: 'NCBITaxon:6239' });
-		expect(duplicate.inCollection).toEqual({ name: 'WB_curated_alleles' });
-		expect(duplicate.internal).toBe(true);
-		expect(duplicate.isExtinct).toBe(true);
-		expect(duplicate.references).toEqual([reference]);
-		expect(duplicate.alleleSymbol).toEqual({ displayText: 'abc-1', formatText: 'abc-1' });
-		expect(duplicate.alleleFullName).toEqual({ displayText: 'full name', formatText: 'full name' });
-		expect(duplicate.alleleSynonyms).toEqual([{ displayText: 'synonym' }]);
-		expect(duplicate.relatedNotes).toEqual([{ freeText: 'a note' }]);
-		expect(duplicate.alleleMutationTypes).toEqual([{ mutationTypes: [{ curie: 'SO:0001' }] }]);
-		expect(duplicate.alleleInheritanceModes).toEqual([{ inheritanceMode: { name: 'dominant' } }]);
-		expect(duplicate.alleleFunctionalImpacts).toEqual([{ functionalImpacts: [{ name: 'amorph' }] }]);
-		expect(duplicate.alleleNomenclatureEvents).toEqual([{ nomenclatureEvent: { name: 'symbol_updated' } }]);
-		expect(duplicate.alleleGermlineTransmissionStatus).toEqual({ germlineTransmissionStatus: { name: 'cell_line' } });
-		expect(duplicate.alleleDatabaseStatus).toEqual({ databaseStatus: { name: 'approved' } });
-	});
-
-	it('Copies gene associations and their notes without ids or the stored allele as subject', () => {
-		const [association] = buildDuplicateAllele(source()).alleleGeneAssociations;
-
-		expect(association).toEqual({
-			alleleGeneAssociationObject: gene,
-			evidence: [reference],
-			relatedNote: { freeText: 'association note' },
-		});
+		expect(copy.type).toEqual('Allele');
+		expect(copy.taxon).toEqual({ curie: 'NCBITaxon:6239' });
+		expect(copy.inCollection).toEqual({ name: 'WB_curated_alleles' });
+		expect(copy.internal).toBe(true);
+		expect(copy.isExtinct).toBe(true);
+		expect(copy.alleleSymbol).toEqual({ displayText: 'abc-1', formatText: 'abc-1' });
+		expect(copy.alleleFullName).toEqual({ displayText: 'full name', formatText: 'full name' });
+		expect(copy.alleleGermlineTransmissionStatus).toEqual({ germlineTransmissionStatus: { name: 'cell_line' } });
+		expect(copy.alleleDatabaseStatus).toEqual({ databaseStatus: { name: 'approved' } });
 	});
 
 	it('Starts from the create form defaults for fields the stored allele lacks', () => {
-		const duplicate = buildDuplicateAllele({ taxon: null, alleleSymbol: null });
+		const copy = buildAlleleCopy({ taxon: null, alleleSymbol: null });
 
-		expect(duplicate.taxon).toEqual({ curie: '' });
-		expect(duplicate.inCollection).toEqual({ name: '' });
-		expect(duplicate.alleleSymbol).toBeNull();
-		expect(duplicate.alleleSynonyms).toBeUndefined();
-		expect(duplicate.references).toBeUndefined();
-		expect(duplicate.alleleGeneAssociations).toBeUndefined();
-	});
-
-	it('Leaves a list with no rows unset, as the detail endpoint does', () => {
-		const duplicate = buildDuplicateAllele({
-			alleleFunctionalImpacts: [],
-			alleleGeneAssociations: [],
-			references: [],
-			alleleMutationTypes: [{ id: 10, mutationTypes: [{ curie: 'SO:0001' }] }],
-		});
-
-		expect(duplicate.alleleFunctionalImpacts).toBeUndefined();
-		expect(duplicate.alleleGeneAssociations).toBeUndefined();
-		expect(duplicate.references).toBeUndefined();
-		expect(duplicate.alleleMutationTypes).toEqual([{ mutationTypes: [{ curie: 'SO:0001' }] }]);
+		expect(copy.taxon).toEqual({ curie: '' });
+		expect(copy.inCollection).toEqual({ name: '' });
+		expect(copy.alleleSymbol).toBeNull();
+		expect(copy).not.toHaveProperty('relatedNotes');
+		expect(copy.alleleGeneAssociations).toBeUndefined();
 	});
 
 	it('Does not mutate the allele it is given', () => {
 		const stored = source();
-		buildDuplicateAllele(stored);
+		buildAlleleCopy(stored);
 
 		expect(stored).toEqual(source());
 	});
@@ -392,5 +281,16 @@ describe('getPendingSingleValueFields single-object sections', () => {
 		};
 
 		expect([...getPendingSingleValueFields(allele, saved)]).toEqual(['alleleFullName', 'alleleDatabaseStatus']);
+	});
+});
+
+describe('generateCrossRefSearchField', () => {
+	it('joins the curies of a reference cross references', () => {
+		const reference = { crossReferences: [{ referencedCurie: 'PMID:1' }, { referencedCurie: 'DOI:2' }] };
+		expect(generateCrossRefSearchField(reference)).toBe('PMID:1,DOI:2');
+	});
+
+	it('is empty for a reference without cross references, which the API sends without the key', () => {
+		expect(generateCrossRefSearchField({ curie: 'AGRKB:101' })).toBe('');
 	});
 });
