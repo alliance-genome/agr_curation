@@ -1,6 +1,7 @@
 package org.alliancegenome.curation_api.services.validation;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -104,7 +105,7 @@ public class ConstructValidator extends ReagentValidator {
 		List<ConstructComponentSlotAnnotation> components = validateConstructComponents(uiEntity, dbEntity);
 
 		List<ConstructGenomicEntityAssociation> geAssociations = validateConstructGenomicEntityAssociations(uiEntity, dbEntity);
-		List<ConstructCassetteAssociation> newCassetteAssociations = validateNewConstructCassetteAssociations(uiEntity, dbEntity);
+		List<ConstructCassetteAssociation> cassetteAssociations = validateConstructCassetteAssociations(uiEntity, dbEntity);
 
 		String uniqueId = validateUniqueId(uiEntity, dbEntity);
 		dbEntity.setUniqueId(uniqueId);
@@ -166,11 +167,12 @@ public class ConstructValidator extends ReagentValidator {
 			dbEntity.getConstructGenomicEntityAssociations().addAll(geAssociations);
 		}
 
-		if (newCassetteAssociations != null) {
-			if (dbEntity.getConstructCassetteAssociations() == null) {
-				dbEntity.setConstructCassetteAssociations(new ArrayList<>());
-			}
-			for (ConstructCassetteAssociation association : newCassetteAssociations) {
+		if (dbEntity.getConstructCassetteAssociations() == null) {
+			dbEntity.setConstructCassetteAssociations(new ArrayList<>());
+		}
+		dbEntity.getConstructCassetteAssociations().retainAll(cassetteAssociations);
+		for (ConstructCassetteAssociation association : cassetteAssociations) {
+			if (association.getId() == null) {
 				association.setConstructAssociationSubject(dbEntity);
 				dbEntity.getConstructCassetteAssociations().add(association);
 			}
@@ -344,34 +346,42 @@ public class ConstructValidator extends ReagentValidator {
 		return validatedAssociations;
 	}
 
-	private List<ConstructCassetteAssociation> validateNewConstructCassetteAssociations(Construct uiEntity, Construct dbEntity) {
+	private List<ConstructCassetteAssociation> validateConstructCassetteAssociations(Construct uiEntity, Construct dbEntity) {
 		String field = "constructCassetteAssociations";
 
-		if (CollectionUtils.isEmpty(uiEntity.getConstructCassetteAssociations())) {
-			return null;
-		}
-
-		Set<String> associationKeys = new HashSet<>();
+		Map<Long, ConstructCassetteAssociation> storedById = new HashMap<>();
 		if (CollectionUtils.isNotEmpty(dbEntity.getConstructCassetteAssociations())) {
 			for (ConstructCassetteAssociation stored : dbEntity.getConstructCassetteAssociations()) {
-				associationKeys.add(cassetteAssociationKey(stored));
+				storedById.put(stored.getId(), stored);
 			}
 		}
 
 		List<ConstructCassetteAssociation> validatedAssociations = new ArrayList<>();
+		if (CollectionUtils.isEmpty(uiEntity.getConstructCassetteAssociations())) {
+			return validatedAssociations;
+		}
+
+		Set<String> associationKeys = new HashSet<>();
 		Boolean allValid = true;
 		for (int ix = 0; ix < uiEntity.getConstructCassetteAssociations().size(); ix++) {
 			ConstructCassetteAssociation cca = uiEntity.getConstructCassetteAssociations().get(ix);
 			if (cca.getId() != null) {
-				continue;
+				ConstructCassetteAssociation stored = storedById.get(cca.getId());
+				if (stored == null) {
+					allValid = false;
+					response.addErrorMessages(field, ix, Map.of("id", ValidationConstants.INVALID_MESSAGE));
+					continue;
+				}
+				cca = stored;
+			} else {
+				ObjectResponse<ConstructCassetteAssociation> ccaResponse = constructCassetteAssociationValidator.validateConstructCassetteAssociation(cca);
+				if (ccaResponse.getEntity() == null) {
+					allValid = false;
+					response.addErrorMessages(field, ix, ccaResponse.getErrorMessages());
+					continue;
+				}
+				cca = ccaResponse.getEntity();
 			}
-			ObjectResponse<ConstructCassetteAssociation> ccaResponse = constructCassetteAssociationValidator.validateConstructCassetteAssociation(cca);
-			if (ccaResponse.getEntity() == null) {
-				allValid = false;
-				response.addErrorMessages(field, ix, ccaResponse.getErrorMessages());
-				continue;
-			}
-			cca = ccaResponse.getEntity();
 			if (!associationKeys.add(cassetteAssociationKey(cca))) {
 				allValid = false;
 				response.addErrorMessages(field, ix, Map.of("constructCassetteAssociationObject", ValidationConstants.DUPLICATE_MESSAGE));
@@ -382,11 +392,6 @@ public class ConstructValidator extends ReagentValidator {
 
 		if (!allValid) {
 			convertMapToErrorMessages(field);
-			return null;
-		}
-
-		if (CollectionUtils.isEmpty(validatedAssociations)) {
-			return null;
 		}
 
 		return validatedAssociations;

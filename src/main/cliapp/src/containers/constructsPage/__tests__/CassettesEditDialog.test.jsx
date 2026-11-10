@@ -35,7 +35,7 @@ describe('<CassettesEditDialog />', () => {
 		setupFindHandler();
 	});
 
-	it('lists the stored cassettes read only', async () => {
+	it('lists the stored cassettes without editors', async () => {
 		const result = await renderDialog();
 		const dialog = await result.findByRole('dialog');
 
@@ -63,5 +63,17 @@ describe('<CassettesEditDialog />', () => {
 		fireEvent.click(within(dialog).getByText('Add Cassette'));
 
 		expect(await within(dialog).findAllByRole('combobox')).not.toHaveLength(0);
+	});
+
+	it('removes a stored cassette', async () => {
+		const editorCallback = vi.fn();
+		const result = await renderDialog(editorCallback);
+		const dialog = await result.findByRole('dialog');
+		await within(dialog).findByText('has_component');
+
+		fireEvent.click(dialog.querySelector('.pi-trash').closest('button'));
+		fireEvent.click(within(dialog).getByText('Keep Edits'));
+
+		await vi.waitFor(() => expect(editorCallback).toHaveBeenCalledWith([]));
 	});
 });

@@ -383,6 +383,7 @@ export const ConstructsTable = () => {
 				filter: true,
 				filterConfig: FILTER_CONFIGS.obsoleteFilterConfig,
 				sortable: { isInEditMode },
+				editor: (editorOptions) => <BooleanTableEditor editorOptions={editorOptions} field={'obsolete'} />,
 			},
 		],
 		// eslint-disable-next-line react-hooks/exhaustive-deps
