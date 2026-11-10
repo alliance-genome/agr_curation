@@ -10,6 +10,7 @@ import {
 	setupSettingsHandler,
 } from '../../../tools/jest/commonMswhandlers';
 import { data } from '../mockData/mockData.js';
+import { DeletionService } from '../../../service/DeletionService';
 
 const tableProps = vi.fn();
 
@@ -46,6 +47,25 @@ describe('<CassettesTable /> row actions', () => {
 
 		await waitFor(() => expect(tableProps).toHaveBeenCalled());
 		expect(latestProps().duplicationEnabled).toBe(true);
+	});
+
+	it('Turns on deletion, offering deprecation first', async () => {
+		await renderTable();
+
+		await waitFor(() => expect(tableProps).toHaveBeenCalled());
+		expect(latestProps().deletionEnabled).toBe(true);
+		expect(latestProps().deprecateOption).toBe(true);
+	});
+
+	it('Deletes a row through the cassette delete endpoint, by curie', async () => {
+		const remove = vi.spyOn(DeletionService.prototype, 'delete').mockResolvedValue({ isSuccess: true, isError: false });
+		await renderTable();
+
+		await waitFor(() => expect(tableProps).toHaveBeenCalled());
+		await latestProps().deletionMethod({ curie: 'AGRKB:121000000000001', primaryExternalId: 'FB:FBcs0000001' });
+
+		expect(remove).toHaveBeenCalledWith('cassette', 'AGRKB:121000000000001');
+		remove.mockRestore();
 	});
 
 	it('Opens the create page for a copy of the row, by curie', async () => {

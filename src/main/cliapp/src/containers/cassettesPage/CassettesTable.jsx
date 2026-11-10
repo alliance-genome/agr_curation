@@ -548,6 +548,9 @@ export const CassettesTable = ({ tableName = 'Cassettes', fixedFilters }) => {
 					fetching={isFetching || isLoading}
 					duplicationEnabled={true}
 					handleDuplication={handleDuplication}
+					deletionEnabled={true}
+					deletionMethod={cassetteService.deleteCassette}
+					deprecateOption={true}
 				/>
 			</div>
 			<FullNameEditDialog

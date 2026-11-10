@@ -3,8 +3,8 @@ import { Toast } from 'primereact/toast';
 import { Button } from 'primereact/button';
 import { Splitter, SplitterPanel } from 'primereact/splitter';
 import { ProgressSpinner } from 'primereact/progressspinner';
-import { useParams } from 'react-router-dom';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useNavigate, useParams } from 'react-router-dom';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { CassetteService } from '../../service/CassetteService';
 import ErrorBoundary from '../../components/Error/ErrorBoundary';
 import { StickyHeader } from '../../components/StickyHeader';
@@ -24,6 +24,7 @@ import { useCassetteComponentList } from './detail/useCassetteComponentList';
 import { buildCassettePayload } from './detail/utils';
 import { CassetteForm, CASSETTE_DETAIL_TOGGLEABLE_FIELDS } from './CassetteForm';
 import { NewCassetteButton, DuplicateCassetteButton } from './NewCassetteButton';
+import { useDeleteOrDeprecateDialogs } from '../../components/DeleteOrDeprecateDialogs';
 
 // The message of a rejected request: the API's, or its status when it gave none.
 const errorDetail = (error) =>
@@ -33,11 +34,15 @@ const errorDetail = (error) =>
 /**
  * The detail page of one cassette (SCRUM-6747): the fields of the Cassettes table, each in a section the curator can
  * hide through the field menu. Save writes the cassette, then each of its component lists that has been edited
- * through the list's own endpoint.
+ * through the list's own endpoint. Delete offers to deprecate the cassette, or, once confirmed, deletes it (SCRUM-6749).
  */
 export default function CassetteDetailPage() {
 	const { identifier } = useParams();
+	const navigate = useNavigate();
+	const queryClient = useQueryClient();
 	const cassetteService = useMemo(() => new CassetteService(), []);
+	// The cassette as last read or saved, which deprecation writes rather than the form's unsaved edits
+	const savedCassette = useRef(null);
 	const toastSuccess = useRef(null);
 	const toastError = useRef(null);
 	const { cassetteState, cassetteDispatch } = useCassetteReducer();
@@ -64,7 +69,10 @@ export default function CassetteDetailPage() {
 	});
 
 	useEffect(() => {
-		if (data?.data?.entity) cassetteDispatch({ type: 'SET', value: data.data.entity });
+		if (data?.data?.entity) {
+			savedCassette.current = data.data.entity;
+			cassetteDispatch({ type: 'SET', value: data.data.entity });
+		}
 	}, [data, cassetteDispatch]);
 
 	const { isPending: isSavingCassette, mutateAsync: saveCassette } = useMutation({
@@ -83,7 +91,10 @@ export default function CassetteDetailPage() {
 		if (cassetteState.hasPendingEdits) {
 			try {
 				const result = await saveCassette(buildCassettePayload(cassette));
-				if (result?.data?.entity) cassetteDispatch({ type: 'SET', value: result.data.entity });
+				if (result?.data?.entity) {
+					savedCassette.current = result.data.entity;
+					cassetteDispatch({ type: 'SET', value: result.data.entity });
+				}
 			} catch (error) {
 				failures.push({ summary: 'Cassette not saved: ', detail: errorDetail(error) });
 				try {
@@ -109,6 +120,61 @@ export default function CassetteDetailPage() {
 		}
 		toastSuccess.current.show({ severity: 'success', summary: 'Successful', detail: 'Cassette Saved' });
 	};
+
+	/**
+	 * Deprecates the cassette as last saved, so the form's unsaved edits are not written with it. A form without edits
+	 * then shows the deprecated cassette; one with edits keeps them, now obsolete. A refused deprecation leaves the form
+	 * as it was.
+	 */
+	const deprecateCassette = async () => {
+		try {
+			const result = await saveCassette(buildCassettePayload({ ...savedCassette.current, obsolete: true }));
+			savedCassette.current = result?.data?.entity;
+		} catch (error) {
+			toastError.current.show([
+				{
+					life: 7000,
+					severity: 'error',
+					summary: 'Cassette not deprecated: ',
+					detail: errorDetail(error),
+					sticky: false,
+				},
+			]);
+			return;
+		}
+		if (cassetteState.hasPendingEdits) {
+			cassetteDispatch({ type: 'EDIT', field: 'obsolete', value: true });
+		} else if (savedCassette.current) {
+			cassetteDispatch({ type: 'SET', value: savedCassette.current });
+		}
+		queryClient.invalidateQueries({ queryKey: ['Cassettes'] });
+		toastSuccess.current.show({ severity: 'success', summary: 'Successful', detail: 'Cassette Deprecated' });
+	};
+
+	// Deletes the cassette and returns to the Cassettes table; a refusal returns the API's reason for the dialog to show
+	const deleteCassette = async (id, cassetteToDelete) => {
+		const result = await cassetteService.deleteCassette(cassetteToDelete);
+		if (result.isError) {
+			toastError.current.show([
+				{
+					life: 7000,
+					severity: 'error',
+					summary: `Could not delete cassette ${cassetteToDelete.curie || getIdentifier(cassetteToDelete)}`,
+					sticky: false,
+				},
+			]);
+			return result.message ? result.message : null;
+		}
+		queryClient.invalidateQueries({ queryKey: ['Cassettes'] });
+		navigate('/cassettes');
+		return null;
+	};
+
+	const { openDeleteOrDeprecateDialog, deleteOrDeprecateDialogs } = useDeleteOrDeprecateDialogs({
+		deprecateOption: true,
+		onDelete: deleteCassette,
+		onDeprecate: deprecateCassette,
+	});
 
 	if (isPending)
 		return (
@@ -153,6 +219,13 @@ export default function CassetteDetailPage() {
 								className="p-button-text"
 								sourceIdentifier={cassette?.curie || getIdentifier(cassette) || identifier}
 							/>
+							<Button
+								label="Delete"
+								icon="pi pi-trash"
+								className="p-button-text"
+								disabled={!cassette?.id}
+								onClick={() => openDeleteOrDeprecateDialog(cassette.id, cassette)}
+							/>
 						</SplitterPanel>
 					</Splitter>
 				</StickyHeader>
@@ -163,6 +236,7 @@ export default function CassetteDetailPage() {
 					isVisible={isVisible}
 				/>
 			</ErrorBoundary>
+			{deleteOrDeprecateDialogs}
 		</>
 	);
 }
