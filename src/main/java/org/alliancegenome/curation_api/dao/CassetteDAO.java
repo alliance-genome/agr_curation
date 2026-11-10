@@ -41,18 +41,4 @@ public class CassetteDAO extends BaseCurieSQLDAO<Cassette> {
 		return idMap;
 	}
 
-	/**
-	 * SCRUM-6749: whether a construct uses the cassette, which keeps it from being deleted.
-	 *
-	 * @param cassetteId the cassette's id
-	 * @return true when at least one construct cassette association has the cassette as its object
-	 */
-	public boolean hasReferencingConstructCassetteAssociations(Long cassetteId) {
-		return !entityManager.createQuery("SELECT a.id FROM ConstructCassetteAssociation a WHERE a.constructCassetteAssociationObject.id = :cassetteId")
-			.setParameter("cassetteId", cassetteId)
-			.setMaxResults(1)
-			.getResultList()
-			.isEmpty();
-	}
-
 }

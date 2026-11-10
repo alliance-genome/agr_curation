@@ -27,6 +27,7 @@ import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.base.SubmittedObjectCrudService;
 import org.alliancegenome.curation_api.services.validation.CassetteValidator;
 import org.alliancegenome.curation_api.services.validation.dto.CassetteDTOValidator;
+import org.apache.commons.collections4.CollectionUtils;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.RequestScoped;
@@ -115,7 +116,7 @@ public class CassetteService extends SubmittedObjectCrudService<Cassette, Casset
 	}
 
 	private ObjectResponse<Cassette> delete(Cassette cassette) {
-		if (cassetteDAO.hasReferencingConstructCassetteAssociations(cassette.getId())) {
+		if (CollectionUtils.isNotEmpty(cassette.getConstructCassetteAssociations())) {
 			ObjectResponse<Cassette> response = new ObjectResponse<>();
 			response.setErrorMessage("Cassette " + cassette.getIdentifier() + " is in use and cannot be deleted: Cassette is a cassette of construct(s)");
 			throw new ApiErrorException(response);
