@@ -2,6 +2,39 @@
  
 https://agr-jira.atlassian.net/wiki/spaces/ATEAM/overview
 
+## v0.54.0
+* New features:
+   * Implement the new constructs model: transgenic tools, cassettes and their associations, with loads and API, on LinkML 2.19.0 (SCRUM-6382, SCRUM-6535)
+   * Copy ZFIN, WB and MGI construct data into cassettes (SCRUM-6535)
+   * Add an FMS load for FlyBase sequence targeting reagents (SCRUM-6535)
+   * Load the reagent placeholder flag from submissions (SCRUM-6537)
+   * Load transgenic tool-transgenic tool associations (SCRUM-6543)
+   * Mint AGRKB curies for constructs (SCRUM-6536) and sequence targeting reagents (SCRUM-6535) on load and on curator create
+   * Add a read-only Cassettes table (SCRUM-6384), with genomic entity (SCRUM-6545) and transgenic tool (SCRUM-6546) component pop-ups
+   * Show cassettes in the Constructs table (SCRUM-6544) and on the construct detail page (SCRUM-6386)
+   * Edit allele cross references in the Alleles table and on the allele detail and create pages (SCRUM-6503)
+   * Duplicate, delete and deprecate alleles (SCRUM-6172)
+   * Create curation detail pages for variants (SCRUM-6176) and AGMs (SCRUM-6356)
+   * Enable creation of variants (SCRUM-6175) and AGMs (SCRUM-6354)
+   * Enable table editing of AGMs (SCRUM-6361) and genes (SCRUM-6364)
+   * Show a pending edits indicator on detail page fields (SCRUM-6619)
+   * Show the AGRKB ID and symbol in detail page headers (SCRUM-6625)
+   * Move the tables' vocabulary, boolean (SCRUM-6508) and autocomplete (SCRUM-6562) editors onto TableField
+   * Unify the antibody host and antigen taxon vocabularies with subsets (SCRUM-6565)
+   * Retire the SARS-CoV-2 species, gene load and data provider (SCRUM-6254)
+* Fixes and maintenance
+   * Prefer MOD IDs over AGRKB IDs in disease and phenotype annotation (SCRUM-6751) and gene interaction (SCRUM-6807) unique IDs
+   * Stop orphaning cross reference rows from failed bulk loads (SCRUM-6586) and on preferred cross reference update (SCRUM-6643)
+   * Delete the unprefixed ZFIN gene cross references (SCRUM-6584)
+   * Resolve interactor genes through the GCRP cross reference (SCRUM-6577)
+   * Match title-only HTP sample annotations on data provider, title and datasets (SCRUM-6585)
+   * Stream the bulk load exceptions download (SCRUM-6582)
+   * Sort Antibody Original Reference by primary ID instead of AGRKB curie (SCRUM-6575)
+   * Remove InformationContentEntity and ExternalDatabaseReference (SCRUM-6720)
+   * Batch-fetch reference cross references instead of subselecting them
+   * Create the release tag with git so long tag messages fit
+   * Trim CloudWatch agent metrics, add GC logging and tune autoanalyze on large tables
+
 ## v0.53.0
 * New features:
    * Create new alleles through a create allele page reusing the allele detail form (SCRUM-6076)
