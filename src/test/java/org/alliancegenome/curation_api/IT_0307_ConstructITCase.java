@@ -7,6 +7,7 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.alliancegenome.curation_api.base.BaseITCase;
@@ -1032,9 +1033,9 @@ public class IT_0307_ConstructITCase extends BaseITCase {
 
 	@Test
 	@Order(22)
-	public void updateConstructKeepsStoredCassetteAssociations() {
+	public void updateConstructKeepsStoredCassetteAssociationUnchanged() {
 		Construct construct = getConstruct(CONSTRUCT);
-		construct.setConstructCassetteAssociations(null);
+		construct.getConstructCassetteAssociations().get(0).setRelation(systematicNameType);
 
 		RestAssured.given().
 			contentType("application/json").
@@ -1049,14 +1050,17 @@ public class IT_0307_ConstructITCase extends BaseITCase {
 			get("/api/construct/" + CONSTRUCT).
 			then().
 			statusCode(200).
-			body("entity.constructCassetteAssociations", hasSize(1));
+			body("entity.constructCassetteAssociations", hasSize(1)).
+			body("entity.constructCassetteAssociations[0].relation.name", is("has_component"));
 	}
 
 	@Test
 	@Order(23)
 	public void updateConstructWithDuplicateCassetteAssociation() {
 		Construct construct = getConstruct(CONSTRUCT);
-		construct.setConstructCassetteAssociations(List.of(createConstructCassetteAssociation(cassetteAssociationRelation)));
+		List<ConstructCassetteAssociation> associations = new ArrayList<>(construct.getConstructCassetteAssociations());
+		associations.add(createConstructCassetteAssociation(cassetteAssociationRelation));
+		construct.setConstructCassetteAssociations(associations);
 
 		RestAssured.given().
 			contentType("application/json").
@@ -1084,6 +1088,28 @@ public class IT_0307_ConstructITCase extends BaseITCase {
 			statusCode(400).
 			body("errorMessages", is(aMapWithSize(1))).
 			body("errorMessages.constructCassetteAssociations", is("relation - " + ValidationConstants.INVALID_MESSAGE));
+	}
+
+	@Test
+	@Order(25)
+	public void updateConstructRemovesOmittedCassetteAssociation() {
+		Construct construct = getConstruct(CONSTRUCT);
+		construct.setConstructCassetteAssociations(null);
+
+		RestAssured.given().
+			contentType("application/json").
+			body(construct).
+			when().
+			put("/api/construct").
+			then().
+			statusCode(200);
+
+		RestAssured.given().
+			when().
+			get("/api/construct/" + CONSTRUCT).
+			then().
+			statusCode(200).
+			body("entity", not(hasKey("constructCassetteAssociations")));
 	}
 
 	private Cassette createCassette(String primaryExternalId) {

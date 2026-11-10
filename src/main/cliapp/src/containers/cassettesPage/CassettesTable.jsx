@@ -51,7 +51,7 @@ import {
 // tableName is the title, and without spaces the key the table's settings are saved under, so a
 // table embedded elsewhere (the cassettes of one construct) keeps its own columns, filters and page.
 // fixedFilters restrict every search, see useGetTableData.
-export const CassettesTable = ({ tableName = 'Cassettes', fixedFilters }) => {
+export const CassettesTable = ({ tableName = 'Cassettes', fixedFilters, isEditable = true }) => {
 	const toast_topleft = useRef(null);
 	const toast_topright = useRef(null);
 
@@ -521,7 +521,7 @@ export const CassettesTable = ({ tableName = 'Cassettes', fixedFilters }) => {
 					dataKey="id"
 					endpoint={SEARCH_ENDPOINT}
 					tableName={tableName}
-					headerButtons={headerButtons}
+					headerButtons={isEditable ? headerButtons : undefined}
 					entities={cassettes}
 					setEntities={setCassettes}
 					totalRecords={totalRecords}
@@ -529,7 +529,7 @@ export const CassettesTable = ({ tableName = 'Cassettes', fixedFilters }) => {
 					tableState={tableState}
 					setTableState={setTableState}
 					columns={columns}
-					isEditable={true}
+					isEditable={isEditable}
 					mutation={mutation}
 					hasDetails={true}
 					isInEditMode={isInEditMode}
