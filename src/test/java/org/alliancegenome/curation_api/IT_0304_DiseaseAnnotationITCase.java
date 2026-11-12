@@ -8,6 +8,7 @@ import static org.hamcrest.Matchers.not;
 
 import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.Map;
 
 import org.alliancegenome.curation_api.base.BaseITCase;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
@@ -52,6 +53,7 @@ public class IT_0304_DiseaseAnnotationITCase extends BaseITCase {
 	private static final String GENE_DISEASE_ANNOTATION = "GeneDisease:0001";
 	private static final String ALLELE_DISEASE_ANNOTATION = "AlleleDisease:0001";
 	private static final String AGM_DISEASE_ANNOTATION = "AgmDisease:0001";
+	private static final String NOTE_EVIDENCE_ANNOTATION = "GeneDisease:6825";
 	
 	private DOTerm doTerm;
 	private DOTerm doTerm2;
@@ -2485,6 +2487,46 @@ public class IT_0304_DiseaseAnnotationITCase extends BaseITCase {
 			statusCode(400).
 			body("errorMessages", is(aMapWithSize(1))).
 			body("errorMessages.relatedNotes", is("freeText - " + ValidationConstants.DUPLICATE_MESSAGE + " (Test text|disease_note|false|false)"));
+	}
+	
+	@Test
+	@Order(53)
+	public void savingTheReturnedAnnotationKeepsRelatedNoteEvidence() {
+		GeneDiseaseAnnotation diseaseAnnotation = new GeneDiseaseAnnotation();
+		diseaseAnnotation.setPrimaryExternalId(NOTE_EVIDENCE_ANNOTATION);
+		diseaseAnnotation.setRelation(geneRelation);
+		diseaseAnnotation.setDiseaseAnnotationObject(createDoTerm("DOID:da6825", false));
+		diseaseAnnotation.setDiseaseAnnotationSubject(gene);
+		diseaseAnnotation.setDataProvider(dataProvider);
+		diseaseAnnotation.setEvidenceCodes(List.of(ecoTerm));
+		diseaseAnnotation.setEvidenceItem(reference);
+		diseaseAnnotation.setRelatedNotes(List.of(createNote(noteType, "Note with evidence", false, false, reference)));
+
+		// The table loads annotations in the same view the create returns them in, and a row save sends one back.
+		Map<String, Object> returnedAnnotation = RestAssured.given().
+			contentType("application/json").
+			body(diseaseAnnotation).
+			when().
+			post("/api/gene-disease-annotation").
+			then().
+			statusCode(200).
+			body("entity.relatedNotes[0].references[0].curie", is(reference.getCurie())).
+			extract().jsonPath().getMap("entity");
+
+		RestAssured.given().
+			contentType("application/json").
+			body(returnedAnnotation).
+			when().
+			put("/api/gene-disease-annotation").
+			then().
+			statusCode(200);
+
+		RestAssured.given().
+			when().
+			get("/api/gene-disease-annotation/findBy/" + NOTE_EVIDENCE_ANNOTATION).
+			then().
+			statusCode(200).
+			body("entity.relatedNotes[0].references[0].curie", is(reference.getCurie()));
 	}
 	
 }
