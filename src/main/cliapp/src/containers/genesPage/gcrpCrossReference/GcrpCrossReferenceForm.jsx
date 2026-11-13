@@ -1,7 +1,8 @@
 import { useRef } from 'react';
 import { Button } from 'primereact/button';
 import { FormTableWrapper } from '../../../components/FormTableWrapper';
-import { FormErrorMessageComponent } from '../../../components/Error/FormErrorMessageComponent';
+import { FieldErrors } from '../../../components/Editors/fields/FieldErrors';
+import { normalizeError } from '../../../components/Editors/fields/normalizeError';
 import { CrossReferencesTable } from '../../../components/crossReferences/CrossReferencesTable';
 import { applyCrossReferenceFieldChange, buildNewCrossReference } from '../../../components/crossReferences/utils';
 import { KEEP_ROWS_IN_EDIT_MODE } from '../../../utils/rows';
@@ -67,7 +68,7 @@ export const GcrpCrossReferenceForm = ({ state, dispatch, isPending = false }) =
 						disabled={!!gcrpCrossReference}
 						className="w-4 p-button-text"
 					/>
-					<FormErrorMessageComponent errorMessages={state.errorMessages} errorField={ENTITY_TYPE} />
+					<FieldErrors messages={[normalizeError(state.errorMessages?.[ENTITY_TYPE])]} layout="text" />
 				</>
 			}
 		/>

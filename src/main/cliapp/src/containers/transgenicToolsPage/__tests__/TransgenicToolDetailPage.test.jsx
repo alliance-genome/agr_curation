@@ -3,6 +3,7 @@ import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { act, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { renderWithClient } from '../../../tools/jest/utils';
+import { fieldRow } from '../../../tools/jest/detailFieldTestUtils';
 
 const { getTransgenicTool, saveTransgenicTool, getTransgenicToolAssociations, replaceTransgenicToolAssociations } =
 	vi.hoisted(() => ({
@@ -222,6 +223,40 @@ describe('<TransgenicToolDetailPage />', { timeout: 30000 }, () => {
 		expect(await screen.findByText('Transgenic Tool Saved')).toBeInTheDocument();
 		const payload = saveTransgenicTool.mock.calls[0][0];
 		expect(payload.transgenicToolFullName.nameType).toMatchObject({ name: 'full_name_type_alpha' });
+	});
+
+	it.each([
+		['Internal', 'internal'],
+		['Obsolete', 'obsolete'],
+	])('saves %s as a boolean with the tool', async (label, field) => {
+		const user = userEvent.setup();
+		renderPage();
+		await waitForAssociationsToLoad();
+
+		await chooseBoolean(user, label, 'true');
+		await user.click(screen.getByRole('button', { name: 'Save' }));
+
+		expect(await screen.findByText('Transgenic Tool Saved')).toBeInTheDocument();
+		expect(saveTransgenicTool.mock.calls[0][0][field]).toBe(true);
+	});
+
+	it('shows an error the API reports for a boolean field beside it', async () => {
+		const user = userEvent.setup();
+		saveTransgenicTool.mockRejectedValue({
+			response: {
+				status: 400,
+				statusText: 'Bad Request',
+				data: { errorMessage: 'Could not update TransgenicTool: [11]', errorMessages: { obsolete: 'is bad' } },
+			},
+		});
+		renderPage();
+		await waitForAssociationsToLoad();
+
+		await chooseBoolean(user, 'Obsolete', 'true');
+		await user.click(screen.getByRole('button', { name: 'Save' }));
+
+		expect(await within(fieldRow('Obsolete')).findByText('is bad')).toBeInTheDocument();
+		expect(screen.getAllByText('is bad')).toHaveLength(1);
 	});
 
 	it('reports a rejected tool', async () => {

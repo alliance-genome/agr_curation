@@ -77,11 +77,11 @@ describe('<GeneCreatePage /> copying a gene', { timeout: 30000 }, () => {
 		expect(getGene).toHaveBeenCalledWith(storedGene.curie);
 		// the autosuggests take the copied terms a render after the symbol row does
 		await waitFor(
-			() => expect(container.querySelector('input[name="taxon-input"]')).toHaveValue('NCBITaxon:7227'),
+			() => expect(container.querySelector('input[aria-label="taxon"]')).toHaveValue('NCBITaxon:7227'),
 			FORM_LOAD_WAIT
 		);
 		await waitFor(
-			() => expect(container.querySelector('input[name="geneType-input"]')).toHaveValue('SO:0001217'),
+			() => expect(container.querySelector('input[aria-label="geneType"]')).toHaveValue('SO:0001217'),
 			FORM_LOAD_WAIT
 		);
 		// the GCRP cross reference keeps its curie, for the curator to review

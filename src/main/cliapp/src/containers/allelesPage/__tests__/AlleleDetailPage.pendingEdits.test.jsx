@@ -41,7 +41,7 @@ const sectionOf = (tableName) => screen.getByRole('heading', { name: tableName }
 const symbolDisplayTextInput = () =>
 	within(sectionOf('Symbol')).getAllByDisplayValue(loadedAllele.alleleSymbol.displayText)[0];
 
-const taxonInput = (container) => container.querySelector('input[name="taxon-input"]');
+const taxonInput = (container) => container.querySelector('input[aria-label="taxon"]');
 
 const changeTaxon = async (user, container, curie) => {
 	await user.clear(taxonInput(container));

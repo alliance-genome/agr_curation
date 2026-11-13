@@ -16,11 +16,11 @@ const proteinCodingGene = { curie: 'SO:0001217', name: 'protein_coding_gene' };
 const ncRnaGene = { curie: 'SO:0001263', name: 'ncRNA_gene' };
 
 const renderEditor = (props = {}) => {
-	const onGeneTypeValueChange = vi.fn();
+	const onChange = vi.fn();
 	const result = render(
 		<GeneTypeDetailPageEditor
 			geneType={proteinCodingGene}
-			onGeneTypeValueChange={onGeneTypeValueChange}
+			onChange={onChange}
 			widgetColumnSize="col-4"
 			labelColumnSize="col-3"
 			fieldDetailsColumnSize="col-5"
@@ -28,7 +28,7 @@ const renderEditor = (props = {}) => {
 			{...props}
 		/>
 	);
-	return { ...result, onGeneTypeValueChange, input: result.container.querySelector('input[name="geneType-input"]') };
+	return { ...result, onChange, input: screen.getByRole('combobox', { name: 'geneType' }) };
 };
 
 describe('<GeneTypeDetailPageEditor />', () => {
@@ -46,7 +46,7 @@ describe('<GeneTypeDetailPageEditor />', () => {
 	});
 
 	it('searches SO terms, leaving out obsolete ones, and reports the term picked', async () => {
-		const { input, onGeneTypeValueChange } = renderEditor();
+		const { input, onChange } = renderEditor();
 
 		fireEvent.change(input, { target: { value: 'ncRNA' } });
 		fireEvent.click(
@@ -61,9 +61,29 @@ describe('<GeneTypeDetailPageEditor />', () => {
 		expect(endpoint).toBe('soterm');
 		expect(Object.keys(filters)).toEqual(['geneTypeFilter', 'obsoleteFilter']);
 		expect(filters.obsoleteFilter).toEqual({ obsolete: { queryString: false } });
-		await waitFor(() =>
-			expect(onGeneTypeValueChange).toHaveBeenLastCalledWith(expect.objectContaining({ value: ncRnaGene }))
-		);
+		await waitFor(() => expect(onChange).toHaveBeenLastCalledWith(ncRnaGene));
+	});
+
+	it('reports typed text keyed by curie', () => {
+		const { input, onChange } = renderEditor();
+
+		fireEvent.change(input, { target: { value: 'SO:1' } });
+
+		expect(onChange).toHaveBeenLastCalledWith({ curie: 'SO:1' });
+	});
+
+	it('reports null once the input is emptied', () => {
+		const { input, onChange } = renderEditor();
+
+		fireEvent.change(input, { target: { value: '' } });
+
+		expect(onChange).toHaveBeenLastCalledWith(null);
+	});
+
+	it('shows an error given as an object', () => {
+		renderEditor({ errorMessages: { geneType: { severity: 'error', message: 'Invalid' } } });
+
+		expect(screen.getByText('Invalid')).toBeInTheDocument();
 	});
 
 	it('shows an error reported for the gene type', () => {

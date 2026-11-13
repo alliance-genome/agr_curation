@@ -153,14 +153,14 @@ export default function TransgenicToolDetailPage() {
 			</div>
 		);
 
-	const onBooleanChange = (field) => (event) => transgenicToolDispatch({ type: 'EDIT', field, value: event.value });
+	const onBooleanChange = (field) => (value) => transgenicToolDispatch({ type: 'EDIT', field, value });
 
 	const booleanField = (field, label) => (
 		<BooleanDetailPageEditor
 			value={transgenicTool?.[field]}
 			name={field}
 			label={label}
-			onValueChange={onBooleanChange(field)}
+			onChange={onBooleanChange(field)}
 			errorMessages={transgenicToolState.errorMessages}
 			{...columnSizes}
 		/>

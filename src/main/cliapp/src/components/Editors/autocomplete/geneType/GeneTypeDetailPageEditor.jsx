@@ -1,52 +1,45 @@
-import React from 'react';
-import { AutocompleteFormEditor } from '../base/AutocompleteFormEditor';
+import { FormField } from '../../fields/FormField';
+import { SingleAutocomplete } from '../../widgets/SingleAutocomplete';
 import { geneTypeSearch } from './utils';
-import { FormErrorMessageComponent } from '../../../Error/FormErrorMessageComponent';
 import { OntologyTermAdditionalFieldData } from '../../../FieldData/OntologyTermAdditionalFieldData';
-import { DetailPageFieldWrapper } from '../../../DetailPageFieldWrapper';
 
 /**
  * A detail page's gene type field: an SO term autosuggest.
  *
- * @param {Object} props
- * @param {Object} [props.geneType] - the gene's SO term, or the text typed while no term is picked
- * @param {Function} props.onGeneTypeValueChange - called with the autosuggest's change event
- * @param {string} props.widgetColumnSize
- * @param {string} props.labelColumnSize
- * @param {string} props.fieldDetailsColumnSize
- * @param {Object} [props.errorMessages] - the page's field errors, read under `geneType`
- * @param {boolean} [props.required] - whether to mark the field as required
- * @param {boolean} [props.isPending] - whether to mark the field as having pending edits
+ * @param {object|null} [geneType] - the gene's SO term, or `{curie}` holding text typed while no term is picked
+ * @param {(value: object|null) => void} onChange - called with the picked term, `{curie: <text>}` for
+ *   typed text, or null when the input is emptied
+ * @param {string} [widgetColumnSize]
+ * @param {string} [labelColumnSize]
+ * @param {string} [fieldDetailsColumnSize]
+ * @param {object} [errorMessages] - errors keyed by field, read under `geneType`
+ * @param {boolean} [required=false] - marks the field as required
+ * @param {boolean} [isPending=false] - marks the field as having pending edits
+ * @returns {JSX.Element}
  */
 export const GeneTypeDetailPageEditor = ({
 	geneType,
-	onGeneTypeValueChange,
+	onChange,
 	widgetColumnSize,
 	labelColumnSize,
 	fieldDetailsColumnSize,
 	errorMessages,
 	required = false,
 	isPending = false,
-}) => {
-	return (
-		<DetailPageFieldWrapper
-			labelColumnSize={labelColumnSize}
-			fieldDetailsColumnSize={fieldDetailsColumnSize}
-			widgetColumnSize={widgetColumnSize}
-			isPending={isPending}
-			fieldName="Gene Type"
-			required={required}
-			formField={
-				<AutocompleteFormEditor
-					name="geneType-input"
-					search={geneTypeSearch}
-					initialValue={geneType}
-					fieldName="geneType"
-					onValueChangeHandler={onGeneTypeValueChange}
-				/>
-			}
-			errorField={<FormErrorMessageComponent errorMessages={errorMessages} errorField={'geneType'} />}
-			additionalDataField={<OntologyTermAdditionalFieldData curie={geneType?.curie} name={geneType?.name} />}
-		/>
-	);
-};
+}) => (
+	<FormField
+		label="Gene Type"
+		name="geneType"
+		value={geneType}
+		onChange={onChange}
+		errors={errorMessages}
+		required={required}
+		isPending={isPending}
+		labelColumnSize={labelColumnSize}
+		widgetColumnSize={widgetColumnSize}
+		fieldDetailsColumnSize={fieldDetailsColumnSize}
+		additionalDataField={<OntologyTermAdditionalFieldData curie={geneType?.curie} name={geneType?.name} />}
+	>
+		{(binding) => <SingleAutocomplete {...binding} search={geneTypeSearch} />}
+	</FormField>
+);

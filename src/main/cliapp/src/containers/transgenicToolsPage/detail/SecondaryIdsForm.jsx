@@ -1,6 +1,5 @@
 import { StringListInput } from '../../../components/Editors/widgets/StringListInput';
-import { FormErrorMessageComponent } from '../../../components/Error/FormErrorMessageComponent';
-import { DetailPageFieldWrapper } from '../../../components/DetailPageFieldWrapper';
+import { FormField } from '../../../components/Editors/fields/FormField';
 import { StringListTemplate } from '../../../components/Templates/StringListTemplate';
 
 /**
@@ -19,23 +18,18 @@ export const SecondaryIdsForm = ({
 	const secondaryIdentifiers = state[entityKey]?.secondaryIdentifiers;
 
 	return (
-		<DetailPageFieldWrapper
+		<FormField
+			label="Secondary IDs"
+			name="secondaryIdentifiers"
+			value={secondaryIdentifiers}
+			onChange={(value) => dispatch({ type: 'EDIT', field: 'secondaryIdentifiers', value })}
+			errors={state.errorMessages}
 			labelColumnSize={labelColumnSize}
-			fieldDetailsColumnSize={fieldDetailsColumnSize}
 			widgetColumnSize={widgetColumnSize}
-			fieldName="Secondary IDs"
-			formField={
-				<StringListInput
-					id="secondaryIdentifiers"
-					name="secondaryIdentifiers"
-					value={secondaryIdentifiers}
-					onChange={(value) => dispatch({ type: 'EDIT', field: 'secondaryIdentifiers', value })}
-					multiline={true}
-					rows={3}
-				/>
-			}
-			errorField={<FormErrorMessageComponent errorMessages={state.errorMessages} errorField={'secondaryIdentifiers'} />}
+			fieldDetailsColumnSize={fieldDetailsColumnSize}
 			additionalDataField={<StringListTemplate list={secondaryIdentifiers} />}
-		/>
+		>
+			{(binding) => <StringListInput {...binding} id="secondaryIdentifiers" multiline={true} rows={3} />}
+		</FormField>
 	);
 };

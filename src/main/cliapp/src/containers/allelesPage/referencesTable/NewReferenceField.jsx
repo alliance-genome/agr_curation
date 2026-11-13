@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Button } from 'primereact/button';
+import { isPickedReference } from '../../../components/Editors/autocomplete/references/utils';
 import { SingleReferenceDetailPageEditor } from '../../../components/Editors/autocomplete/references/SingleReferenceDetailPageEditor';
 import { Splitter, SplitterPanel } from 'primereact/splitter';
 import { SingleReferenceAdditionalFieldData } from '../../../components/FieldData/SingleReferenceAdditionalFieldData';
@@ -18,7 +19,7 @@ export const NewReferenceField = () => {
 	const createNewReferenceHandler = (event) => {
 		event.preventDefault();
 
-		if (!reference || typeof reference === 'string') {
+		if (!isPickedReference(reference)) {
 			setErrorMessages({ references: 'Must select reference from dropdown' });
 			return;
 		}
@@ -31,15 +32,15 @@ export const NewReferenceField = () => {
 		setErrorMessages({});
 	};
 
-	const referencesOnChangeHandler = (event) => {
-		setReference(event.target.value);
+	const referencesOnChangeHandler = (value) => {
+		setReference(value);
 	};
 	return (
 		<Splitter gutterSize="0" className="border-none surface-ground">
 			<SplitterPanel size={20}>
 				<SingleReferenceDetailPageEditor
 					reference={reference}
-					onReferenceValueChange={referencesOnChangeHandler}
+					onChange={referencesOnChangeHandler}
 					errorMessages={errorMessages}
 				/>
 			</SplitterPanel>
