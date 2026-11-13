@@ -43,15 +43,17 @@ jobs:
           server-id: ossrh
           server-username: MAVEN_USERNAME
           server-password: MAVEN_PASSWORD
+      - name: Show Maven version (pinned through the Maven wrapper)
+        run: ./mvnw --version
       - name: Set Proper version
-        run: mvn versions:set -ntp -DnewVersion=${{ github.event.release.tag_name }}
+        run: ./mvnw versions:set -ntp -DnewVersion=${{ github.event.release.tag_name }}
       - id: install-secret-key
         name: Install gpg secret key
         run: |
           cat <(echo -e "${{ secrets.OSSRH_GPG_SECRET_KEY }}") | gpg --batch --import
           gpg --list-secret-keys --keyid-format LONG
       - name: Publish package
-        run: mvn --batch-mode -ntp -Dmaven.test.skip=true -Dquarkus.hibernate-search-orm.elasticsearch.version=opensearch:2.16.0 deploy
+        run: ./mvnw --batch-mode -ntp -Dmaven.test.skip=true -Dquarkus.hibernate-search-orm.elasticsearch.version=opensearch:2.16.0 deploy
         env:
           MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
           MAVEN_PASSWORD: ${{ secrets.OSSRH_TOKEN }}
