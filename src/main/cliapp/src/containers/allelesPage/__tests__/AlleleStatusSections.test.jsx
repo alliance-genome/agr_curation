@@ -1,7 +1,7 @@
 import { fireEvent, render, waitFor } from '@testing-library/react';
 import { DatabaseStatusForm } from '../databaseStatus/DatabaseStatusForm';
 import { DatabaseStatusEditDialog } from '../databaseStatus/DatabaseStatusEditDialog';
-import { GermilineTransmissionStatusForm } from '../germlineTransmissionStatus/GermlineTransmissionStatusForm';
+import { GermlineTransmissionStatusForm } from '../germlineTransmissionStatus/GermlineTransmissionStatusForm';
 import { GermlineTransmissionStatusEditDialog } from '../germlineTransmissionStatus/GermlineTransmissionStatusEditDialog';
 import {
 	clickDeleteInRow,
@@ -54,7 +54,7 @@ const SECTIONS = [
 		entityType: 'alleleGermlineTransmissionStatus',
 		field: 'germlineTransmissionStatus',
 		vocabulary: 'allele_germline_transmission_status',
-		Form: GermilineTransmissionStatusForm,
+		Form: GermlineTransmissionStatusForm,
 		renderDialog: (originalStatuses, props) => (
 			<GermlineTransmissionStatusEditDialog
 				originalGermlineTransmissionStatusData={{
@@ -252,5 +252,57 @@ describe.each(SECTIONS)('allele $name', (section) => {
 			expect(getCellByHeader(baseElement, 'Internal').textContent).not.toContain('Not a valid entry');
 			expect(editorCallback).not.toHaveBeenCalled();
 		});
+	});
+});
+
+describe.each(SECTIONS)('allele $name errors', (section) => {
+	const term = (index) => vocabularyTermsFor(section.vocabulary)[index];
+	const status = () => ({ [section.field]: term(0), internal: false, evidence: [EVIDENCE] });
+	const fieldErrors = () => ({
+		[section.field]: 'status is bad',
+		internal: 'internal is bad',
+		evidence: 'evidence is bad',
+	});
+
+	const expectErrorOnEachCell = (container) => {
+		[
+			[section.name, 'status is bad'],
+			['Internal', 'internal is bad'],
+			['Evidence', 'evidence is bad'],
+		].forEach(([header, message]) => {
+			const cell = getCellByHeader(container, header);
+			expect(cell.textContent).toContain(message);
+			expect(cell.querySelector('.p-invalid')).not.toBeNull();
+		});
+	};
+
+	it("shows a rejected save's errors on the detail page cells that caused them", () => {
+		const { container, getState, dispatch } = renderAlleleForm(section.Form, { [section.entityType]: status() });
+
+		processErrors(
+			{ supplementalData: { errorMap: { [section.entityType]: fieldErrors() } } },
+			dispatch,
+			getState().allele
+		);
+
+		expectErrorOnEachCell(container);
+	});
+
+	it('shows validation errors on the pop-up cells that caused them', async () => {
+		validate.mockReset();
+		validate.mockResolvedValue({ isSuccess: false, isError: true, data: fieldErrors() });
+		const { baseElement } = render(
+			section.renderDialog([status()], {
+				data: { isInEdit: true, dialog: true, rowIndex: 0, mainRowProps: { editorCallback: vi.fn() } },
+				setData: vi.fn(),
+				setErrorMessagesMainRow: vi.fn(),
+			})
+		);
+		await waitFor(() => expect(baseElement.querySelector('.p-dialog-enter-done')).not.toBeNull());
+
+		fireEvent.click(getButton(baseElement, 'Keep Edits'));
+
+		await waitFor(() => expect(getCellByHeader(baseElement, 'Evidence').textContent).toContain('evidence is bad'));
+		expectErrorOnEachCell(baseElement);
 	});
 });

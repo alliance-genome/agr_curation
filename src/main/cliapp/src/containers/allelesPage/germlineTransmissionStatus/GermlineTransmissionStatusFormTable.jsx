@@ -3,20 +3,30 @@ import { Column } from 'primereact/column';
 import { ColumnGroup } from 'primereact/columngroup';
 import { Row } from 'primereact/row';
 import { DeleteAction } from '../../../components/Actions/DeletionAction';
-import { InternalEditor } from '../../../components/Editors/legacyForm/InternalEditor';
-import { EvidenceEditor } from '../../../components/Editors/legacyForm/EvidenceEditor';
-import { ControlledVocabularyEditor } from '../../../components/Editors/legacyForm/ControlledVocabularyEditor';
+import { ControlledVocabularyTableEditor } from '../../../components/Editors/dropdown/vocabulary/ControlledVocabularyTableEditor';
+import { BooleanTableEditor } from '../../../components/Editors/dropdown/boolean/BooleanTableEditor';
+import { EvidenceTableEditor } from '../../../components/Editors/autocomplete/references/EvidenceTableEditor';
 
+/**
+ * The allele detail and create pages' Germline Transmission Status table: the allele's one germline transmission
+ * status, always in edit mode. Its editors read and write the row through the table strategy supplied by the
+ * surrounding TableEditorProvider.
+ *
+ * @param {object[]} germlineTransmissionStatuses - the status as the table's only row
+ * @param {object} editingRows - rows in edit mode, keyed by dataKey
+ * @param {Function} onRowEditChange - keeps the row in edit mode
+ * @param {object} tableRef
+ * @param {Function} deletionHandler - removes the status
+ * @param {object[]} [germlineTransmissionStatusTerms] - the germline transmission status vocabulary
+ * @returns {JSX.Element}
+ */
 export const GermlineTransmissionStatusFormTable = ({
-	name,
+	germlineTransmissionStatuses,
 	editingRows,
 	onRowEditChange,
 	tableRef,
 	deletionHandler,
-	errorMessages,
-	germlineTransmissionStatusOnChangeHandler,
-	internalOnChangeHandler,
-	evidenceOnChangeHandler,
+	germlineTransmissionStatusTerms,
 }) => {
 	let headerGroup = (
 		<ColumnGroup>
@@ -31,7 +41,7 @@ export const GermlineTransmissionStatusFormTable = ({
 
 	return (
 		<DataTable
-			value={name}
+			value={germlineTransmissionStatuses}
 			dataKey="dataKey"
 			showGridlines
 			editMode="row"
@@ -52,43 +62,26 @@ export const GermlineTransmissionStatusFormTable = ({
 				frozen
 			/>
 			<Column
-				editor={(props) => {
-					return (
-						<ControlledVocabularyEditor
-							editorOptions={props}
-							onChangeHandler={germlineTransmissionStatusOnChangeHandler}
-							errorMessages={errorMessages}
-							dataKey={props?.rowData?.dataKey}
-							rowIndex={props.rowIndex}
-							vocabType="allele_germline_transmission_status"
-							field="germlineTransmissionStatus"
-						/>
-					);
-				}}
+				editor={(editorOptions) => (
+					<ControlledVocabularyTableEditor
+						editorOptions={editorOptions}
+						field="germlineTransmissionStatus"
+						options={germlineTransmissionStatusTerms}
+						showClear={false}
+					/>
+				)}
 				field="germlineTransmissionStatus"
-				header="Germiline Transmission Status"
+				header="Germline Transmission Status"
 				headerClassName="surface-0"
 			/>
 			<Column
-				editor={(props) => {
-					return (
-						<InternalEditor
-							editorOptions={props}
-							rowIndex={props.rowIndex}
-							errorMessages={errorMessages}
-							dataKey={props?.rowData?.dataKey}
-							internalOnChangeHandler={internalOnChangeHandler}
-						/>
-					);
-				}}
+				editor={(editorOptions) => <BooleanTableEditor editorOptions={editorOptions} field="internal" />}
 				field="internal"
 				header="Internal"
 				headerClassName="surface-0"
 			/>
 			<Column
-				editor={(props) => {
-					return <EvidenceEditor props={props} errorMessages={errorMessages} onChange={evidenceOnChangeHandler} />;
-				}}
+				editor={(editorOptions) => <EvidenceTableEditor editorOptions={editorOptions} />}
 				field="evidence.curie"
 				header="Evidence"
 				headerClassName="surface-0"

@@ -14,7 +14,7 @@ import { FunctionalImpactsForm } from './functionalImpacts/FunctionalImpactsForm
 import { DatabaseStatusForm } from './databaseStatus/DatabaseStatusForm';
 import { RelatedNotesForm } from '../../components/relatedNotes/RelatedNotesForm';
 import { SymbolForm } from './symbol/SymbolForm';
-import { GermilineTransmissionStatusForm } from './germlineTransmissionStatus/GermlineTransmissionStatusForm';
+import { GermlineTransmissionStatusForm } from './germlineTransmissionStatus/GermlineTransmissionStatusForm';
 import { ReferencesForm } from './referencesTable/ReferencesForm';
 import { NomenclatureEventsForm } from './nomenclatureEvents/NomenclatureEventsForm';
 import { AlleleGeneAssociationsForm } from './alleleGeneAssociations/AlleleGeneAssociationsForm';
@@ -213,7 +213,7 @@ export const AlleleForm = ({ state, dispatch, isVisible, mode = 'detail', pendin
 			</FormSection>
 
 			<FormSection isVisible={isVisible('Germline Transmission Status')}>
-				<GermilineTransmissionStatusForm
+				<GermlineTransmissionStatusForm
 					state={state}
 					dispatch={dispatch}
 					isPending={pendingFields?.has('alleleGermlineTransmissionStatus')}
