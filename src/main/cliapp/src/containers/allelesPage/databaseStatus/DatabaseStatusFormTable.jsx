@@ -3,20 +3,30 @@ import { Column } from 'primereact/column';
 import { ColumnGroup } from 'primereact/columngroup';
 import { Row } from 'primereact/row';
 import { DeleteAction } from '../../../components/Actions/DeletionAction';
-import { InternalEditor } from '../../../components/Editors/legacyForm/InternalEditor';
-import { EvidenceEditor } from '../../../components/Editors/legacyForm/EvidenceEditor';
-import { ControlledVocabularyEditor } from '../../../components/Editors/legacyForm/ControlledVocabularyEditor';
+import { ControlledVocabularyTableEditor } from '../../../components/Editors/dropdown/vocabulary/ControlledVocabularyTableEditor';
+import { BooleanTableEditor } from '../../../components/Editors/dropdown/boolean/BooleanTableEditor';
+import { EvidenceTableEditor } from '../../../components/Editors/autocomplete/references/EvidenceTableEditor';
 
+/**
+ * The allele detail and create pages' Database Status table: the allele's one database status, always in edit
+ * mode. Its editors read and write the row through the table strategy supplied by the surrounding
+ * TableEditorProvider.
+ *
+ * @param {object[]} databaseStatuses - the status as the table's only row
+ * @param {object} editingRows - rows in edit mode, keyed by dataKey
+ * @param {Function} onRowEditChange - keeps the row in edit mode
+ * @param {object} tableRef
+ * @param {Function} deletionHandler - removes the status
+ * @param {object[]} [databaseStatusTerms] - the database status vocabulary
+ * @returns {JSX.Element}
+ */
 export const DatabaseStatusFormTable = ({
 	databaseStatuses,
 	editingRows,
 	onRowEditChange,
 	tableRef,
 	deletionHandler,
-	errorMessages,
-	databaseStatusOnChangeHandler,
-	internalOnChangeHandler,
-	evidenceOnChangeHandler,
+	databaseStatusTerms,
 }) => {
 	let headerGroup = (
 		<ColumnGroup>
@@ -52,44 +62,26 @@ export const DatabaseStatusFormTable = ({
 				frozen
 			/>
 			<Column
-				editor={(props) => {
-					return (
-						<ControlledVocabularyEditor
-							editorOptions={props}
-							onChangeHandler={databaseStatusOnChangeHandler}
-							errorMessages={errorMessages}
-							dataKey={props?.rowData?.dataKey}
-							rowIndex={props.rowIndex}
-							vocabType="allele_db_status"
-							field="databaseStatus"
-							showClear={false}
-						/>
-					);
-				}}
+				editor={(editorOptions) => (
+					<ControlledVocabularyTableEditor
+						editorOptions={editorOptions}
+						field="databaseStatus"
+						options={databaseStatusTerms}
+						showClear={false}
+					/>
+				)}
 				field="databaseStatus"
 				header="Database Status"
 				headerClassName="surface-0"
 			/>
 			<Column
-				editor={(props) => {
-					return (
-						<InternalEditor
-							editorOptions={props}
-							rowIndex={props.rowIndex}
-							errorMessages={errorMessages}
-							dataKey={props?.rowData?.dataKey}
-							internalOnChangeHandler={internalOnChangeHandler}
-						/>
-					);
-				}}
+				editor={(editorOptions) => <BooleanTableEditor editorOptions={editorOptions} field="internal" />}
 				field="internal"
 				header="Internal"
 				headerClassName="surface-0"
 			/>
 			<Column
-				editor={(props) => {
-					return <EvidenceEditor props={props} errorMessages={errorMessages} onChange={evidenceOnChangeHandler} />;
-				}}
+				editor={(editorOptions) => <EvidenceTableEditor editorOptions={editorOptions} />}
 				field="evidence.curie"
 				header="Evidence"
 				headerClassName="surface-0"
