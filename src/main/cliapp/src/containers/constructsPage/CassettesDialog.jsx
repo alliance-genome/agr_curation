@@ -17,7 +17,9 @@ export const CassettesDialog = ({ originalCassettesData, setOriginalCassettesDat
 
 	return (
 		<Dialog visible={dialog && !isInEdit} className="w-11" modal onHide={hideDialog} closable={true}>
-			{fixedFilters && <CassettesTable tableName="Construct Cassettes" fixedFilters={fixedFilters} />}
+			{fixedFilters && (
+				<CassettesTable tableName="Construct Cassettes" fixedFilters={fixedFilters} isEditable={false} />
+			)}
 		</Dialog>
 	);
 };

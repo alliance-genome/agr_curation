@@ -180,6 +180,7 @@ export const CassettesEditDialog = ({
 						cellMemo={false}
 					>
 						<Column
+							body={(rowData) => <DeleteAction deletionHandler={handleDeleteCassette} id={rowData?.dataKey} />}
 							editor={(editorOptions) => (
 								<DeleteAction deletionHandler={handleDeleteCassette} id={editorOptions?.rowData?.dataKey} />
 							)}

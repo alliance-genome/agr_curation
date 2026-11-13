@@ -1,5 +1,4 @@
 import { useRef, useState, useMemo } from 'react';
-import { Link } from 'react-router-dom';
 import { GenericDataTable } from '../../components/GenericDataTable/GenericDataTable';
 import { Toast } from 'primereact/toast';
 import { getDefaultTableState } from '../../service/TableStateService';
@@ -69,18 +68,7 @@ export const HTPExpressionDatasetAnnotationsTable = () => {
 				field: 'name',
 				header: 'Dataset Name',
 				sortable: { isInEditMode },
-				// The AGRKB curie is minted after create and backfilled separately (SCRUM-6463), so most
-				// rows have none yet - fall back to the numeric id, which the detail route also accepts.
-				body: (rowData) => {
-					const identifier = rowData.curie || rowData.id;
-					return identifier ? (
-						<Link to={`/htp-expression-dataset/${identifier}`}>
-							<StringTemplate string={rowData.name} />
-						</Link>
-					) : (
-						<StringTemplate string={rowData.name} />
-					);
-				},
+				body: (rowData) => <StringTemplate string={rowData.name} />,
 				filterConfig: FILTER_CONFIGS.nameFilterConfig,
 			},
 			{
