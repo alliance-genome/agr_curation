@@ -37,8 +37,9 @@ import { StringTemplate } from '../../components/Templates/StringTemplate';
 
 import { SearchService } from '../../service/SearchService';
 import { CassetteService } from '../../service/CassetteService';
-import { NewCassetteButton } from './NewCassetteButton';
+import { NewCassetteButton, useOpenCassetteCreatePage } from './NewCassetteButton';
 import { Endpoints } from '../../constants/Endpoints';
+import { getIdentifier } from '../../utils/utils';
 import {
 	relationName,
 	genomicEntityLabel,
@@ -110,6 +111,13 @@ export const CassettesTable = ({ tableName = 'Cassettes', fixedFilters, isEditab
 
 	const searchService = new SearchService();
 	let cassetteService = new CassetteService();
+	const openCassetteCreatePage = useOpenCassetteCreatePage();
+
+	// SCRUM-6749: the row's duplicate action opens the create page in a new tab, filled from the row's cassette, as
+	// Clone does on the detail page
+	const handleDuplication = (rowData) => {
+		openCassetteCreatePage(rowData.curie || getIdentifier(rowData));
+	};
 
 	// SCRUM-6746: a row edit saves the cassette's own fields; its components and associations are kept
 	// as stored by the backend (editing them is SCRUM-6752)
@@ -538,6 +546,11 @@ export const CassettesTable = ({ tableName = 'Cassettes', fixedFilters, isEditab
 					errorObject={{ errorMessages, setErrorMessages }}
 					defaultColumnWidth={DEFAULT_COLUMN_WIDTH}
 					fetching={isFetching || isLoading}
+					duplicationEnabled={true}
+					handleDuplication={handleDuplication}
+					deletionEnabled={true}
+					deletionMethod={cassetteService.deleteCassette}
+					deprecateOption={true}
 				/>
 			</div>
 			<FullNameEditDialog

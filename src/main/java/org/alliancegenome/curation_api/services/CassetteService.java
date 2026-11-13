@@ -27,6 +27,7 @@ import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.base.SubmittedObjectCrudService;
 import org.alliancegenome.curation_api.services.validation.CassetteValidator;
 import org.alliancegenome.curation_api.services.validation.dto.CassetteDTOValidator;
+import org.apache.commons.collections4.CollectionUtils;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.RequestScoped;
@@ -73,6 +74,56 @@ public class CassetteService extends SubmittedObjectCrudService<Cassette, Casset
 	public ObjectResponse<Cassette> create(Cassette uiEntity) {
 		Cassette dbEntity = cassetteValidator.validateCassetteCreate(uiEntity);
 		return new ObjectResponse<>(cassetteDAO.persist(dbEntity));
+	}
+
+	/**
+	 * Hard-deletes a cassette on a curator's request (SCRUM-6749). The cassette's own slot annotations and its genomic
+	 * entity, transgenic tool and STR associations go with it. A construct using the cassette blocks the deletion: its
+	 * construct cassette association has to be removed first.
+	 *
+	 * A cassette saved without any identifier (one created while MaTI was down) is deleted by its database ID, which is
+	 * tried when no identifier matches.
+	 *
+	 * @param identifierString curie, primary external ID or MOD internal ID of the cassette, else its database ID
+	 * @return response holding the deleted cassette
+	 * @throws ApiErrorException when no cassette matches or the cassette is still in use
+	 */
+	@Override
+	@Transactional
+	public ObjectResponse<Cassette> deleteByIdentifier(String identifierString) {
+		Cassette cassette = findByIdentifierString(identifierString);
+		if (cassette == null && identifierString != null && identifierString.matches("\\d+")) {
+			cassette = cassetteDAO.find(Long.valueOf(identifierString));
+		}
+		if (cassette == null) {
+			ObjectResponse<Cassette> response = new ObjectResponse<>();
+			response.setErrorMessage("Could not find Cassette with identifier: " + identifierString);
+			throw new ApiErrorException(response);
+		}
+		return delete(cassette);
+	}
+
+	@Override
+	@Transactional
+	public ObjectResponse<Cassette> deleteById(Long id) {
+		Cassette cassette = cassetteDAO.find(id);
+		if (cassette == null) {
+			ObjectResponse<Cassette> response = new ObjectResponse<>();
+			response.setErrorMessage("Could not find Cassette with id: " + id);
+			throw new ApiErrorException(response);
+		}
+		return delete(cassette);
+	}
+
+	private ObjectResponse<Cassette> delete(Cassette cassette) {
+		if (CollectionUtils.isNotEmpty(cassette.getConstructCassetteAssociations())) {
+			ObjectResponse<Cassette> response = new ObjectResponse<>();
+			response.setErrorMessage("Cassette " + cassette.getIdentifier() + " is in use and cannot be deleted: Cassette is a cassette of construct(s)");
+			throw new ApiErrorException(response);
+		}
+
+		cassetteDAO.remove(cassette.getId());
+		return new ObjectResponse<>(cassette);
 	}
 
 	// SCRUM-6752: the cassette's four component lists, each read and replaced through a sub-resource of its own for

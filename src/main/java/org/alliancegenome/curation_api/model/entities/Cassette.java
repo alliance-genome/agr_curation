@@ -9,6 +9,7 @@ import org.alliancegenome.curation_api.interfaces.CurieSubdomain;
 import org.alliancegenome.curation_api.model.entities.associations.CassetteGenomicEntityAssociation;
 import org.alliancegenome.curation_api.model.entities.associations.CassetteStrAssociation;
 import org.alliancegenome.curation_api.model.entities.associations.CassetteTransgenicToolAssociation;
+import org.alliancegenome.curation_api.model.entities.associations.ConstructCassetteAssociation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.CassetteComponentSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.CassetteFullNameSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.CassetteSymbolSlotAnnotation;
@@ -21,6 +22,7 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmbedded;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexingDependency;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
 
@@ -48,7 +50,7 @@ import lombok.ToString;
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @Schema(name = "cassette", description = "Cassette: a segment of a construct")
-@ToString(exclude = {"cassetteSymbol", "cassetteFullName", "cassetteSynonyms", "cassetteComponents", "cassetteUses", "cassetteGenomicEntityAssociations", "cassetteTransgenicToolAssociations", "cassetteStrAssociations"}, callSuper = true)
+@ToString(exclude = {"cassetteSymbol", "cassetteFullName", "cassetteSynonyms", "cassetteComponents", "cassetteUses", "cassetteGenomicEntityAssociations", "cassetteTransgenicToolAssociations", "cassetteStrAssociations", "constructCassetteAssociations"}, callSuper = true)
 @AGRCurationSchemaVersion(min = "2.19.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { Reagent.class })
 @CurieSubdomain(MatiSubdomain.CASSETTE)
 public class Cassette extends Reagent {
@@ -127,4 +129,10 @@ public class Cassette extends Reagent {
 	@OneToMany(mappedBy = "cassetteAssociationSubject", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonView({ CurationView.FieldsAndLists.class, CurationView.CassetteView.class })
 	private List<CassetteStrAssociation> cassetteStrAssociations;
+
+	// The constructs using this cassette, which block its deletion (SCRUM-6749). Not cascaded: the associations belong to
+	// the construct.
+	@OneToMany(mappedBy = "constructCassetteAssociationObject")
+	@JsonIgnore
+	private List<ConstructCassetteAssociation> constructCassetteAssociations;
 }
