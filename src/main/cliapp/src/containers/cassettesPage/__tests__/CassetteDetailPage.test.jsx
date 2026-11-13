@@ -4,18 +4,23 @@ import { act, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { renderWithClient } from '../../../tools/jest/utils';
 
-const { getCassette, saveCassette, getComponentList, replaceComponentList } = vi.hoisted(() => ({
-	getCassette: vi.fn(),
-	saveCassette: vi.fn(),
-	getComponentList: vi.fn(),
-	replaceComponentList: vi.fn(),
-}));
+const { getCassette, saveCassette, deleteCassette, getComponentList, replaceComponentList, navigate } = vi.hoisted(
+	() => ({
+		getCassette: vi.fn(),
+		saveCassette: vi.fn(),
+		deleteCassette: vi.fn(),
+		getComponentList: vi.fn(),
+		replaceComponentList: vi.fn(),
+		navigate: vi.fn(),
+	})
+);
 
 // msw cannot intercept this app's fetch based ApiClient, so stub the services directly.
 vi.mock('../../../service/CassetteService', () => ({
 	CassetteService: class {
 		getCassette = getCassette;
 		saveCassette = saveCassette;
+		deleteCassette = deleteCassette;
 		getComponentList = getComponentList;
 		replaceComponentList = replaceComponentList;
 	},
@@ -26,6 +31,11 @@ vi.mock('../../../service/SearchService', () => ({
 		find = vi.fn(() => Promise.resolve({ results: [], totalResults: 0 }));
 		search = vi.fn(() => Promise.resolve({ results: [], totalResults: 0 }));
 	},
+}));
+
+vi.mock('react-router-dom', async (importOriginal) => ({
+	...(await importOriginal()),
+	useNavigate: () => navigate,
 }));
 
 vi.mock('../../../service/useControlledVocabularyService');
@@ -107,6 +117,15 @@ const chooseBoolean = async (user, fieldName, value) => {
 	await user.click(within(panel).getByText(value));
 };
 
+const dialog = () => screen.getByRole('dialog');
+
+// Opens the Delete dialog and either deprecates, or ticks the confirmation and deletes.
+const deleteOrDeprecate = async (user, choice) => {
+	await user.click(screen.getByRole('button', { name: 'Delete' }));
+	if (choice === 'Delete') await user.click(within(dialog()).getByRole('checkbox'));
+	await user.click(within(dialog()).getByRole('button', { name: choice }));
+};
+
 const deleteFreeTextComponent = async (user) => {
 	const row = (await screen.findByDisplayValue('Aequorea victoria', {}, PAGE_LOAD_WAIT)).closest('tr');
 	await user.click(row.querySelector('.pi-trash').closest('button'));
@@ -115,7 +134,10 @@ const deleteFreeTextComponent = async (user) => {
 describe('<CassetteDetailPage />', { timeout: 30000 }, () => {
 	beforeEach(() => {
 		window.localStorage.removeItem('CassetteDetailFormSettings');
-		[getCassette, saveCassette, getComponentList, replaceComponentList].forEach((mock) => mock.mockReset());
+		[getCassette, saveCassette, deleteCassette, getComponentList, replaceComponentList, navigate].forEach((mock) =>
+			mock.mockReset()
+		);
+		deleteCassette.mockResolvedValue({ isSuccess: true, isError: false });
 		getCassette.mockResolvedValue({ data: { entity: cassette } });
 		saveCassette.mockImplementation((payload) => Promise.resolve({ data: { entity: payload } }));
 		getComponentList.mockImplementation((id, list) =>
@@ -237,5 +259,92 @@ describe('<CassetteDetailPage />', { timeout: 30000 }, () => {
 		await user.click(screen.getByRole('button', { name: 'Save' }));
 
 		expect(await screen.findByText('Could not update Cassette: [11]')).toBeInTheDocument();
+	});
+	it('deletes the cassette once confirmed and returns to the Cassettes table', async () => {
+		const user = userEvent.setup();
+		renderPage();
+		await waitForComponentsToLoad();
+
+		await deleteOrDeprecate(user, 'Delete');
+
+		await waitFor(() => expect(navigate).toHaveBeenCalledWith('/cassettes'), PAGE_LOAD_WAIT);
+		expect(deleteCassette.mock.calls[0][0].curie).toEqual('AGRKB:123000000000001');
+		expect(saveCassette).not.toHaveBeenCalled();
+	});
+
+	it('stays on the cassette and says why when the deletion is refused', async () => {
+		const user = userEvent.setup();
+		deleteCassette.mockResolvedValue({
+			isSuccess: false,
+			isError: true,
+			message: 'Cassette AGRKB:123000000000001 is in use and cannot be deleted: Cassette is a cassette of construct(s)',
+		});
+		renderPage();
+		await waitForComponentsToLoad();
+
+		await deleteOrDeprecate(user, 'Delete');
+
+		expect(
+			await screen.findByText(
+				'Cassette AGRKB:123000000000001 is in use and cannot be deleted: Cassette is a cassette of construct(s)',
+				{},
+				PAGE_LOAD_WAIT
+			)
+		).toBeInTheDocument();
+		expect(screen.getByText('Could not delete cassette AGRKB:123000000000001')).toBeInTheDocument();
+		expect(navigate).not.toHaveBeenCalled();
+	});
+
+	it('deprecates the cassette by saving it as obsolete, without its component lists', async () => {
+		const user = userEvent.setup();
+		renderPage();
+		await waitForComponentsToLoad();
+
+		await deleteOrDeprecate(user, 'Deprecate');
+
+		expect(await screen.findByText('Cassette Deprecated', {}, PAGE_LOAD_WAIT)).toBeInTheDocument();
+		const payload = saveCassette.mock.calls[0][0];
+		expect(payload.obsolete).toBe(true);
+		expect(payload.curie).toEqual('AGRKB:123000000000001');
+		expect(payload).not.toHaveProperty('cassetteComponents');
+		expect(deleteCassette).not.toHaveBeenCalled();
+		expect(navigate).not.toHaveBeenCalled();
+		// the form now holds the deprecated cassette, with nothing left to save
+		expect(screen.getByRole('button', { name: 'Save' })).toBeDisabled();
+	});
+
+	it('deprecates the cassette as last saved, leaving unsaved edits on the form', async () => {
+		const user = userEvent.setup();
+		renderPage();
+		await waitForComponentsToLoad();
+
+		await chooseBoolean(user, 'Placeholder', 'true');
+		await deleteOrDeprecate(user, 'Deprecate');
+
+		expect(await screen.findByText('Cassette Deprecated', {}, PAGE_LOAD_WAIT)).toBeInTheDocument();
+		const deprecated = saveCassette.mock.calls[0][0];
+		expect(deprecated.obsolete).toBe(true);
+		expect(deprecated.placeholder).toBe(false);
+
+		// the edit is still on the form, now alongside the obsolete flag
+		await user.click(screen.getByRole('button', { name: 'Save' }));
+		await waitFor(() => expect(saveCassette).toHaveBeenCalledTimes(2), PAGE_LOAD_WAIT);
+		const saved = saveCassette.mock.calls[1][0];
+		expect(saved.obsolete).toBe(true);
+		expect(saved.placeholder).toBe(true);
+	});
+
+	it('leaves the form as it was when the deprecation is refused', async () => {
+		const user = userEvent.setup();
+		saveCassette.mockRejectedValueOnce({ response: { data: { errorMessage: 'Cassette could not be saved' } } });
+		renderPage();
+		await waitForComponentsToLoad();
+
+		await deleteOrDeprecate(user, 'Deprecate');
+
+		expect(await screen.findByText('Cassette not deprecated:', {}, PAGE_LOAD_WAIT)).toBeInTheDocument();
+		expect(screen.getByText('Cassette could not be saved')).toBeInTheDocument();
+		expect(screen.queryByText('Cassette Deprecated')).not.toBeInTheDocument();
+		expect(screen.getByRole('button', { name: 'Save' })).toBeDisabled();
 	});
 });
