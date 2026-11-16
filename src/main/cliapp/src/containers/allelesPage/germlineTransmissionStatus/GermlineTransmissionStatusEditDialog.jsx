@@ -8,11 +8,26 @@ import { ColumnGroup } from 'primereact/columngroup';
 import { Row } from 'primereact/row';
 import { ValidationService } from '../../../service/ValidationService';
 import { DeleteAction } from '../../../components/Actions/DeletionAction';
-import { InternalEditor } from '../../../components/Editors/legacyForm/InternalEditor';
-import { EvidenceEditor } from '../../../components/Editors/legacyForm/EvidenceEditor';
-import { ControlledVocabularyEditor } from '../../../components/Editors/legacyForm/ControlledVocabularyEditor';
 import { Endpoints } from '../../../constants/Endpoints';
+import { KEEP_ROWS_IN_EDIT_MODE } from '../../../utils/rows';
+import { TableEditorProvider } from '../../../components/Editors/fields/TableEditorContext';
+import { useLocalRowsStrategy } from '../../../components/Editors/fields/strategies/useLocalRowsStrategy';
+import { useControlledVocabularyService } from '../../../service/useControlledVocabularyService';
+import { ControlledVocabularyTableEditor } from '../../../components/Editors/dropdown/vocabulary/ControlledVocabularyTableEditor';
+import { BooleanTableEditor } from '../../../components/Editors/dropdown/boolean/BooleanTableEditor';
+import { EvidenceTableEditor } from '../../../components/Editors/autocomplete/references/EvidenceTableEditor';
 
+/**
+ * Dialog for editing a main-table row's germline transmission status. Edits stay local until Keep Edits validates the
+ * status and hands it back, or null once deleted, through the row's editor callback.
+ *
+ * @param {object} originalGermlineTransmissionStatusData - the row's germline transmission status as a one-item list,
+ *   dialog visibility, row index and PrimeReact editor options
+ * @param {Function} setOriginalGermlineTransmissionStatusData - its setter
+ * @param {object} errorMessagesMainRow - the main table's errors, keyed by row index
+ * @param {Function} setErrorMessagesMainRow - its setter
+ * @returns {JSX.Element}
+ */
 export const GermlineTransmissionStatusEditDialog = ({
 	originalGermlineTransmissionStatusData,
 	setOriginalGermlineTransmissionStatusData,
@@ -30,6 +45,13 @@ export const GermlineTransmissionStatusEditDialog = ({
 	const tableRef = useRef(null);
 	const toast_topright = useRef(null);
 
+	const strategy = useLocalRowsStrategy({
+		rows: localGermlineTransmissionStatuses,
+		setRows: setLocalGermlineTransmissionStatuses,
+		errors: errorMessages,
+	});
+	const germlineTransmissionStatusTerms = useControlledVocabularyService('allele_germline_transmission_status');
+
 	const showDialogHandler = () => {
 		let _localGermlineTransmissionStatuses = cloneGermlineTransmissionStatuses(originalGermlineTransmissionStatuses);
 		setLocalGermlineTransmissionStatuses(_localGermlineTransmissionStatuses);
@@ -42,10 +64,6 @@ export const GermlineTransmissionStatusEditDialog = ({
 		}
 		setEditingRows(rowsObject);
 		setErrorMessages({});
-	};
-
-	const onRowEditChange = () => {
-		return null;
 	};
 
 	const hideDialog = () => {
@@ -70,33 +88,6 @@ export const GermlineTransmissionStatusEditDialog = ({
 			}
 		}
 		return _clonableGermlineTransmissionStatuses;
-	};
-
-	const germlineTransmissionStatusOnChangeHandler = (props, event) => {
-		props.editorCallback(event.value);
-		setLocalGermlineTransmissionStatuses((prev) => {
-			const updated = [...prev];
-			updated[props.rowIndex] = { ...updated[props.rowIndex], germlineTransmissionStatus: event.value };
-			return updated;
-		});
-	};
-
-	const internalOnChangeHandler = (props, event) => {
-		props.editorCallback(event.target.value?.name);
-		setLocalGermlineTransmissionStatuses((prev) => {
-			const updated = [...prev];
-			updated[props.rowIndex] = { ...updated[props.rowIndex], internal: event.target?.value?.name };
-			return updated;
-		});
-	};
-
-	const evidenceOnChangeHandler = (event, setFieldValue, props) => {
-		setFieldValue(event.target.value);
-		setLocalGermlineTransmissionStatuses((prev) => {
-			const updated = [...prev];
-			updated[props.rowIndex] = { ...updated[props.rowIndex], evidence: event.target.value };
-			return updated;
-		});
 	};
 
 	const createNewGermlineTransmissionStatusHandler = () => {
@@ -252,77 +243,54 @@ export const GermlineTransmissionStatusEditDialog = ({
 				footer={footerTemplate}
 			>
 				<h3>Germline Transmission Status</h3>
-				<DataTable
-					value={localGermlineTransmissionStatuses}
-					dataKey="dataKey"
-					showGridlines
-					editMode="row"
-					headerColumnGroup={headerGroup}
-					editingRows={editingRows}
-					onRowEditChange={onRowEditChange}
-					ref={tableRef}
-					cellMemo={false}
-				>
-					<Column
-						editor={(props) => (
-							<DeleteAction deletionHandler={handleDeleteGermlineTransmissionStatus} id={props?.rowData?.dataKey} />
-						)}
-						className="max-w-4rem"
-						bodyClassName="text-center"
-						headerClassName="surface-0"
-						frozen
-					/>
-					<Column
-						editor={(props) => {
-							return (
-								<ControlledVocabularyEditor
-									editorOptions={props}
-									onChangeHandler={germlineTransmissionStatusOnChangeHandler}
-									errorMessages={errorMessages}
-									dataKey={props?.rowData?.dataKey}
-									rowIndex={props.rowIndex}
-									vocabType="allele_germline_transmission_status"
+				<TableEditorProvider strategy={strategy}>
+					<DataTable
+						value={localGermlineTransmissionStatuses}
+						dataKey="dataKey"
+						showGridlines
+						editMode="row"
+						headerColumnGroup={headerGroup}
+						editingRows={editingRows}
+						onRowEditChange={KEEP_ROWS_IN_EDIT_MODE}
+						ref={tableRef}
+						cellMemo={false}
+					>
+						<Column
+							editor={(props) => (
+								<DeleteAction deletionHandler={handleDeleteGermlineTransmissionStatus} id={props?.rowData?.dataKey} />
+							)}
+							className="max-w-4rem"
+							bodyClassName="text-center"
+							headerClassName="surface-0"
+							frozen
+						/>
+						<Column
+							editor={(editorOptions) => (
+								<ControlledVocabularyTableEditor
+									editorOptions={editorOptions}
 									field="germlineTransmissionStatus"
+									options={germlineTransmissionStatusTerms}
 									showClear={true}
 								/>
-							);
-						}}
-						field="germlineTransmissionStatus"
-						header="Germline Transmission Status"
-						headerClassName="surface-0"
-					/>
-					<Column
-						editor={(props) => {
-							return (
-								<InternalEditor
-									editorOptions={props}
-									rowIndex={props.rowIndex}
-									errorMessages={errorMessages}
-									dataKey={props?.rowData?.dataKey}
-									internalOnChangeHandler={internalOnChangeHandler}
-								/>
-							);
-						}}
-						field="internal"
-						header="Internal"
-						headerClassName="surface-0"
-					/>
-					<Column
-						editor={(props) => {
-							return (
-								<EvidenceEditor
-									props={props}
-									errorMessages={errorMessages}
-									onChange={evidenceOnChangeHandler}
-									dataKey={props?.rowData?.dataKey}
-								/>
-							);
-						}}
-						field="evidence"
-						header="Evidence"
-						headerClassName="surface-0"
-					/>
-				</DataTable>
+							)}
+							field="germlineTransmissionStatus"
+							header="Germline Transmission Status"
+							headerClassName="surface-0"
+						/>
+						<Column
+							editor={(editorOptions) => <BooleanTableEditor editorOptions={editorOptions} field="internal" />}
+							field="internal"
+							header="Internal"
+							headerClassName="surface-0"
+						/>
+						<Column
+							editor={(editorOptions) => <EvidenceTableEditor editorOptions={editorOptions} />}
+							field="evidence"
+							header="Evidence"
+							headerClassName="surface-0"
+						/>
+					</DataTable>
+				</TableEditorProvider>
 			</Dialog>
 		</div>
 	);
