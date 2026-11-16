@@ -140,7 +140,6 @@ const SECTIONS = [
 		field: 'agmFullName',
 		nameTypeSet: 'full_name_type',
 		deletable: true,
-		termPickThrows: true,
 	},
 ];
 
@@ -174,169 +173,155 @@ const pickEvidence = async (container) => {
 	await waitFor(() => expect(document.querySelector('.p-autocomplete-panel')).toBeNull());
 };
 
-describe.each(SECTIONS)(
-	'$entity $title section',
-	({ entity, title, field, nameTypeSet, deletable, termPickThrows }) => {
-		const config = ENTITIES[entity];
-		const renderSection = () => {
-			const loaded = { id: 1, curie: 'AGRKB:100000000000001', [field]: name('loaded', nameTypeSet) };
-			const result = renderEntityForm({ ...config, entity: loaded });
-			return { ...result, saved: () => result.getEntity()[field] };
-		};
+describe.each(SECTIONS)('$entity $title section', ({ entity, title, field, nameTypeSet, deletable }) => {
+	const config = ENTITIES[entity];
+	const renderSection = () => {
+		const loaded = { id: 1, curie: 'AGRKB:100000000000001', [field]: name('loaded', nameTypeSet) };
+		const result = renderEntityForm({ ...config, entity: loaded });
+		return { ...result, saved: () => result.getEntity()[field] };
+	};
 
-		it('shows the loaded name', () => {
+	it('shows the loaded name', () => {
+		renderSection();
+
+		expect(textIn(section(title), 'Display Text')).toBe('loaded');
+		expect(textIn(section(title), 'Format Text')).toBe('loaded format');
+		expect(textIn(section(title), 'Synonym URL')).toBe('https://example.org');
+		expect(dropdownLabel(section(title), 'Synonym Scope')).toBe('synonym_scope_alpha');
+		expect(dropdownLabel(section(title), 'Name Type')).toBe(`${nameTypeSet}_alpha`);
+		expect(dropdownLabel(section(title), 'Internal')).toBe('false');
+		expect(getCellByHeader(section(title), 'Evidence').textContent).toContain(EVIDENCE.curie);
+	});
+
+	it.each([
+		['Display Text', 'displayText'],
+		['Format Text', 'formatText'],
+		['Synonym URL', 'synonymUrl'],
+	])('saves typed %s', (header, property) => {
+		const { saved } = renderSection();
+
+		typeInColumn(section(title), header, 'typed');
+
+		expect(saved()[property]).toBe('typed');
+	});
+
+	it('replaces the synonym scope with the whole picked term', () => {
+		const { saved } = renderSection();
+
+		selectInColumn(section(title), 'Synonym Scope', 'synonym_scope_beta');
+
+		expect(saved().synonymScope).toEqual(vocabularyTermsFor('synonym_scope')[1]);
+	});
+
+	it('offers the name types of its term set and saves the whole picked term', () => {
+		const { saved } = renderSection();
+
+		selectInColumn(section(title), 'Name Type', `${nameTypeSet}_beta`);
+
+		expect(saved().nameType).toEqual(termSetTermsFor(nameTypeSet)[1]);
+	});
+
+	it('saves internal as a boolean', () => {
+		const { saved } = renderSection();
+
+		selectInColumn(section(title), 'Internal', 'true');
+
+		expect(saved().internal).toBe(true);
+	});
+
+	it('saves a picked evidence alongside the existing one', async () => {
+		const { saved } = renderSection();
+
+		await pickEvidence(section(title));
+
+		expect(saved().evidence).toEqual([EVIDENCE, NEW_EVIDENCE]);
+	});
+
+	it("shows a rejected save's error on the cell that caused it", () => {
+		const { getEntity, dispatch } = renderSection();
+
+		processErrors(
+			{ supplementalData: { errorMap: { [field]: { displayText: 'Required field is empty' } } } },
+			dispatch,
+			getEntity()
+		);
+
+		expect(getCellByHeader(section(title), 'Display Text').textContent).toContain('Required field is empty');
+		expect(getCellByHeader(section(title), 'Format Text').textContent).not.toContain('Required field is empty');
+	});
+
+	if (deletable) {
+		it('removes the name on delete, then adds an empty one', () => {
+			const { saved } = renderSection();
+
+			clickDeleteInRow(section(title));
+
+			expect(saved()).toBeNull();
+
+			fireEvent.click(getButton(section(title), title === 'Name' ? 'Add Full Name' : `Add ${title}`));
+
+			expect(saved()).toMatchObject({ displayText: '', formatText: '', nameType: null, internal: false });
+			expect(textIn(section(title), 'Display Text')).toBe('');
+		});
+	} else {
+		it('offers no delete and no second symbol', () => {
 			renderSection();
 
-			expect(textIn(section(title), 'Display Text')).toBe('loaded');
-			expect(textIn(section(title), 'Format Text')).toBe('loaded format');
-			expect(textIn(section(title), 'Synonym URL')).toBe('https://example.org');
-			expect(dropdownLabel(section(title), 'Synonym Scope')).toBe('synonym_scope_alpha');
-			expect(dropdownLabel(section(title), 'Name Type')).toBe(`${nameTypeSet}_alpha`);
-			expect(dropdownLabel(section(title), 'Internal')).toBe('false');
-			expect(getCellByHeader(section(title), 'Evidence').textContent).toContain(EVIDENCE.curie);
-		});
-
-		it.each([
-			['Display Text', 'displayText'],
-			['Format Text', 'formatText'],
-			['Synonym URL', 'synonymUrl'],
-		])('saves typed %s', (header, property) => {
-			const { saved } = renderSection();
-
-			typeInColumn(section(title), header, 'typed');
-
-			expect(saved()[property]).toBe('typed');
-		});
-
-		// The AGM name section passes a picked term to PrimeReact's editorCallback, which writes its name
-		// into the term already on the row. That term is frozen reducer state, so the write throws and the pick is
-		// lost.
-		const pickTerm = termPickThrows ? it.skip : it;
-
-		pickTerm('replaces the synonym scope with the whole picked term', () => {
-			const { saved } = renderSection();
-
-			selectInColumn(section(title), 'Synonym Scope', 'synonym_scope_beta');
-
-			expect(saved().synonymScope).toEqual(vocabularyTermsFor('synonym_scope')[1]);
-		});
-
-		pickTerm('offers the name types of its term set and saves the whole picked term', () => {
-			const { saved } = renderSection();
-
-			selectInColumn(section(title), 'Name Type', `${nameTypeSet}_beta`);
-
-			expect(saved().nameType).toEqual(termSetTermsFor(nameTypeSet)[1]);
-		});
-
-		it('saves internal as a boolean', () => {
-			const { saved } = renderSection();
-
-			selectInColumn(section(title), 'Internal', 'true');
-
-			expect(saved().internal).toBe(true);
-		});
-
-		it('saves a picked evidence alongside the existing one', async () => {
-			const { saved } = renderSection();
-
-			await pickEvidence(section(title));
-
-			expect(saved().evidence).toEqual([EVIDENCE, NEW_EVIDENCE]);
-		});
-
-		it("shows a rejected save's error on the cell that caused it", () => {
-			const { getEntity, dispatch } = renderSection();
-
-			processErrors(
-				{ supplementalData: { errorMap: { [field]: { displayText: 'Required field is empty' } } } },
-				dispatch,
-				getEntity()
-			);
-
-			expect(getCellByHeader(section(title), 'Display Text').textContent).toContain('Required field is empty');
-			expect(getCellByHeader(section(title), 'Format Text').textContent).not.toContain('Required field is empty');
-		});
-
-		if (deletable) {
-			it('removes the name on delete, then adds an empty one', () => {
-				const { saved } = renderSection();
-
-				clickDeleteInRow(section(title));
-
-				expect(saved()).toBeNull();
-
-				fireEvent.click(getButton(section(title), title === 'Name' ? 'Add Full Name' : `Add ${title}`));
-
-				expect(saved()).toMatchObject({ displayText: '', formatText: '', nameType: null, internal: false });
-				expect(textIn(section(title), 'Display Text')).toBe('');
-			});
-		} else {
-			it('offers no delete and no second symbol', () => {
-				renderSection();
-
-				expect(columnHeaders(section(title))).not.toContain('Actions');
-				expect(section(title).querySelector('tbody button')).toBeNull();
-				expect(getButton(section(title), `Add ${title}`)).toBeDisabled();
-			});
-		}
-	}
-);
-
-/** The sections rendered by NameSlotAnnotationForm, whose cells each show their own error with invalid styling. */
-const SHARED_SECTIONS = SECTIONS.filter((candidate) => candidate.entity !== 'AGM');
-
-describe.each(SHARED_SECTIONS)(
-	'$entity $title section on the shared editors',
-	({ entity, title, field, nameTypeSet }) => {
-		const FIELD_ERRORS = {
-			displayText: 'display text is bad',
-			formatText: 'format text is bad',
-			synonymScope: 'scope is bad',
-			nameType: 'name type is bad',
-			synonymUrl: 'url is bad',
-			internal: 'internal is bad',
-			evidence: 'evidence is bad',
-		};
-		const CELLS = [
-			['Display Text', 'display text is bad'],
-			['Format Text', 'format text is bad'],
-			['Synonym Scope', 'scope is bad'],
-			['Name Type', 'name type is bad'],
-			['Synonym URL', 'url is bad'],
-			['Internal', 'internal is bad'],
-			['Evidence', 'evidence is bad'],
-		];
-		const loaded = (displayText) => ({
-			id: 1,
-			curie: 'AGRKB:100000000000001',
-			[field]: name(displayText, nameTypeSet),
-		});
-
-		it("shows a rejected save's errors on the cells that caused them, with invalid styling", () => {
-			const { getEntity, dispatch } = renderEntityForm({ ...ENTITIES[entity], entity: loaded('loaded') });
-
-			processErrors({ supplementalData: { errorMap: { [field]: FIELD_ERRORS } } }, dispatch, getEntity());
-
-			CELLS.forEach(([header, message]) => {
-				const cell = getCellByHeader(section(title), header);
-				expect(cell.textContent).toContain(message);
-				expect(cell.querySelector('.p-invalid')).not.toBeNull();
-			});
-		});
-
-		// The row keeps its dataKey, so its cells stay mounted and must read the name the reducer now holds.
-		it('shows a name changed in the reducer in its text cells', () => {
-			const { dispatch } = renderEntityForm({ ...ENTITIES[entity], entity: loaded('loaded') });
-
-			dispatch({ type: 'EDIT_OBJECT', entityType: field, field: 'displayText', value: 'changed' });
-			dispatch({ type: 'EDIT_OBJECT', entityType: field, field: 'formatText', value: 'changed format' });
-
-			expect(textIn(section(title), 'Display Text')).toBe('changed');
-			expect(textIn(section(title), 'Format Text')).toBe('changed format');
+			expect(columnHeaders(section(title))).not.toContain('Actions');
+			expect(section(title).querySelector('tbody button')).toBeNull();
+			expect(getButton(section(title), `Add ${title}`)).toBeDisabled();
 		});
 	}
-);
+});
+
+describe.each(SECTIONS)('$entity $title section on the shared editors', ({ entity, title, field, nameTypeSet }) => {
+	const FIELD_ERRORS = {
+		displayText: 'display text is bad',
+		formatText: 'format text is bad',
+		synonymScope: 'scope is bad',
+		nameType: 'name type is bad',
+		synonymUrl: 'url is bad',
+		internal: 'internal is bad',
+		evidence: 'evidence is bad',
+	};
+	const CELLS = [
+		['Display Text', 'display text is bad'],
+		['Format Text', 'format text is bad'],
+		['Synonym Scope', 'scope is bad'],
+		['Name Type', 'name type is bad'],
+		['Synonym URL', 'url is bad'],
+		['Internal', 'internal is bad'],
+		['Evidence', 'evidence is bad'],
+	];
+	const loaded = (displayText) => ({
+		id: 1,
+		curie: 'AGRKB:100000000000001',
+		[field]: name(displayText, nameTypeSet),
+	});
+
+	it("shows a rejected save's errors on the cells that caused them, with invalid styling", () => {
+		const { getEntity, dispatch } = renderEntityForm({ ...ENTITIES[entity], entity: loaded('loaded') });
+
+		processErrors({ supplementalData: { errorMap: { [field]: FIELD_ERRORS } } }, dispatch, getEntity());
+
+		CELLS.forEach(([header, message]) => {
+			const cell = getCellByHeader(section(title), header);
+			expect(cell.textContent).toContain(message);
+			expect(cell.querySelector('.p-invalid')).not.toBeNull();
+		});
+	});
+
+	// The row keeps its dataKey, so its cells stay mounted and must read the name the reducer now holds.
+	it('shows a name changed in the reducer in its text cells', () => {
+		const { dispatch } = renderEntityForm({ ...ENTITIES[entity], entity: loaded('loaded') });
+
+		dispatch({ type: 'EDIT_OBJECT', entityType: field, field: 'displayText', value: 'changed' });
+		dispatch({ type: 'EDIT_OBJECT', entityType: field, field: 'formatText', value: 'changed format' });
+
+		expect(textIn(section(title), 'Display Text')).toBe('changed');
+		expect(textIn(section(title), 'Format Text')).toBe('changed format');
+	});
+});
 
 describe.each([
 	{ entity: 'gene', field: 'geneSymbol' },
