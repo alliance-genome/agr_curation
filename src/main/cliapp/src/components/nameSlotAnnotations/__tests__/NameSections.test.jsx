@@ -132,7 +132,6 @@ const SECTIONS = [
 		field: 'alleleFullName',
 		nameTypeSet: 'full_name_type',
 		deletable: true,
-		termPickThrows: true,
 	},
 	{ entity: 'allele', title: 'Symbol', field: 'alleleSymbol', nameTypeSet: 'symbol_name_type', deletable: false },
 	{
@@ -209,7 +208,7 @@ describe.each(SECTIONS)(
 			expect(saved()[property]).toBe('typed');
 		});
 
-		// The allele and AGM name sections pass a picked term to PrimeReact's editorCallback, which writes its name
+		// The AGM name section passes a picked term to PrimeReact's editorCallback, which writes its name
 		// into the term already on the row. That term is frozen reducer state, so the write throws and the pick is
 		// lost.
 		const pickTerm = termPickThrows ? it.skip : it;
@@ -281,6 +280,61 @@ describe.each(SECTIONS)(
 				expect(getButton(section(title), `Add ${title}`)).toBeDisabled();
 			});
 		}
+	}
+);
+
+/** The sections rendered by NameSlotAnnotationForm, whose cells each show their own error with invalid styling. */
+const SHARED_SECTIONS = SECTIONS.filter((candidate) => candidate.entity !== 'AGM');
+
+describe.each(SHARED_SECTIONS)(
+	'$entity $title section on the shared editors',
+	({ entity, title, field, nameTypeSet }) => {
+		const FIELD_ERRORS = {
+			displayText: 'display text is bad',
+			formatText: 'format text is bad',
+			synonymScope: 'scope is bad',
+			nameType: 'name type is bad',
+			synonymUrl: 'url is bad',
+			internal: 'internal is bad',
+			evidence: 'evidence is bad',
+		};
+		const CELLS = [
+			['Display Text', 'display text is bad'],
+			['Format Text', 'format text is bad'],
+			['Synonym Scope', 'scope is bad'],
+			['Name Type', 'name type is bad'],
+			['Synonym URL', 'url is bad'],
+			['Internal', 'internal is bad'],
+			['Evidence', 'evidence is bad'],
+		];
+		const loaded = (displayText) => ({
+			id: 1,
+			curie: 'AGRKB:100000000000001',
+			[field]: name(displayText, nameTypeSet),
+		});
+
+		it("shows a rejected save's errors on the cells that caused them, with invalid styling", () => {
+			const { getEntity, dispatch } = renderEntityForm({ ...ENTITIES[entity], entity: loaded('loaded') });
+
+			processErrors({ supplementalData: { errorMap: { [field]: FIELD_ERRORS } } }, dispatch, getEntity());
+
+			CELLS.forEach(([header, message]) => {
+				const cell = getCellByHeader(section(title), header);
+				expect(cell.textContent).toContain(message);
+				expect(cell.querySelector('.p-invalid')).not.toBeNull();
+			});
+		});
+
+		// The row keeps its dataKey, so its cells stay mounted and must read the name the reducer now holds.
+		it('shows a name changed in the reducer in its text cells', () => {
+			const { dispatch } = renderEntityForm({ ...ENTITIES[entity], entity: loaded('loaded') });
+
+			dispatch({ type: 'EDIT_OBJECT', entityType: field, field: 'displayText', value: 'changed' });
+			dispatch({ type: 'EDIT_OBJECT', entityType: field, field: 'formatText', value: 'changed format' });
+
+			expect(textIn(section(title), 'Display Text')).toBe('changed');
+			expect(textIn(section(title), 'Format Text')).toBe('changed format');
+		});
 	}
 );
 

@@ -5,6 +5,7 @@ import userEvent from '@testing-library/user-event';
 import { renderWithClient } from '../../../tools/jest/utils';
 import { setLocalStorage } from '../../../tools/jest/setupTests';
 import { button, FORM_LOAD_WAIT, section, storedGene } from './geneTestUtils';
+import { getCellByHeader } from '../../allelesPage/__tests__/alleleFormTestUtils';
 
 const { getGene, createGene, getRows, replaceRows, navigate } = vi.hoisted(() => ({
 	getGene: vi.fn(),
@@ -55,8 +56,7 @@ const renderPage = () =>
 
 const bodyRows = (name) => within(section(name)).queryAllByRole('row').slice(1);
 
-// The copy fills the full name too, whose row comes first and shares the symbol's input ids.
-const symbolInput = () => section(/Symbol/).querySelector('#displayText');
+const symbolInput = () => getCellByHeader(section(/Symbol/), 'Display Text').querySelector('input');
 
 const waitForCopy = () => waitFor(() => expect(symbolInput()).toHaveValue('SamDC'), FORM_LOAD_WAIT);
 

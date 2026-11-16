@@ -2,7 +2,7 @@ import React from 'react';
 import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { setLocalStorage } from '../../../tools/jest/setupTests';
-import { COPY_SOURCE_ENTRY, FORM_LOAD_WAIT, renderInRouter, sourceAllele } from './alleleTestUtils';
+import { COPY_SOURCE_ENTRY, FORM_LOAD_WAIT, renderInRouter, sourceAllele, symbolInput } from './alleleTestUtils';
 
 const createAllele = vi.fn();
 const getAllele = vi.fn();
@@ -64,9 +64,9 @@ describe('<AlleleCreatePage /> copying cross references', { timeout: 30000 }, ()
 
 	it('Copies each cross reference with its page, curie and display name', async () => {
 		const user = userEvent.setup();
-		const { container } = await renderPage();
+		await renderPage();
 
-		await waitFor(() => expect(container.querySelector('#displayText')).toHaveValue('abc-1'), FORM_LOAD_WAIT);
+		await waitFor(() => expect(symbolInput()).toHaveValue('abc-1'), FORM_LOAD_WAIT);
 		await waitFor(() => expect(getCrossReferencesForAllele).toHaveBeenCalledWith(1), FORM_LOAD_WAIT);
 		await waitFor(
 			() => expect(screen.queryByText('Loading allele to clone...')).not.toBeInTheDocument(),
@@ -93,9 +93,9 @@ describe('<AlleleCreatePage /> copying cross references', { timeout: 30000 }, ()
 			formSettingsKeyName: 'AlleleCreateFormSettings',
 		});
 		const user = userEvent.setup();
-		const { container } = await renderPage();
+		await renderPage();
 
-		await waitFor(() => expect(container.querySelector('#displayText')).toHaveValue('abc-1'), FORM_LOAD_WAIT);
+		await waitFor(() => expect(symbolInput()).toHaveValue('abc-1'), FORM_LOAD_WAIT);
 		await user.click(screen.getByRole('button', { name: 'Save & Close' }));
 
 		await waitFor(() => expect(createAllele).toHaveBeenCalled(), FORM_LOAD_WAIT);
@@ -105,12 +105,12 @@ describe('<AlleleCreatePage /> copying cross references', { timeout: 30000 }, ()
 
 	it('Still starts from the copy when the cross references cannot be loaded', async () => {
 		getCrossReferencesForAllele.mockRejectedValue(new Error('unavailable'));
-		const { container } = await renderPage();
+		await renderPage();
 
 		await waitFor(
 			() => expect(screen.getByText('Could not load the cross references of allele WB:WBVar1')).toBeInTheDocument(),
 			FORM_LOAD_WAIT
 		);
-		expect(container.querySelector('#displayText')).toHaveValue('abc-1');
+		expect(symbolInput()).toHaveValue('abc-1');
 	});
 });
