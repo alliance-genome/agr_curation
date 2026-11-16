@@ -408,6 +408,54 @@ public class IT_0319_GeneSubResourceITCase extends BaseITCase {
 			body("entities", nullValue());
 	}
 
+	@Test
+	@Order(13)
+	public void findCarriesRelatedNoteEvidence() {
+		put(geneId, "relatednotes", createNote(commentType, FIRST_NOTE, false, false, evidence)).
+			then().
+			statusCode(200);
+
+		findGene().
+			then().
+			body("results[0].relatedNotes", hasSize(1)).
+			body("results[0].relatedNotes[0].references[0].curie", is(EVIDENCE)).
+			body("results[0].relatedNotes[0].references[0].crossReferences[0].referencedCurie", is(EVIDENCE_XREF));
+	}
+
+	@Test
+	@Order(14)
+	public void savingTheFoundGeneKeepsRelatedNoteEvidence() {
+		// A table row save sends back the gene as the search returned it.
+		Map<String, Object> foundGene = findGene().jsonPath().getMap("results[0]");
+
+		RestAssured.given().
+			contentType("application/json").
+			body(foundGene).
+			when().
+			put("/api/gene").
+			then().
+			statusCode(200);
+
+		RestAssured.given().
+			when().
+			get(endpoint(geneId, "relatednotes")).
+			then().
+			statusCode(200).
+			body("entities", hasSize(1)).
+			body("entities[0].references[0].curie", is(EVIDENCE));
+	}
+
+	private Response findGene() {
+		return RestAssured.given().
+			contentType("application/json").
+			body("{\"primaryExternalId\": \"" + GENE + "\"}").
+			when().
+			post("/api/gene/find?limit=1&page=0").
+			then().
+			statusCode(200).
+			extract().response();
+	}
+
 	private String endpoint(Long id, String path) {
 		return "/api/gene/" + id + "/" + path;
 	}
