@@ -31,7 +31,10 @@ import {
 	HTPExpressionDatasetAnnotationsPage,
 	HTPExpressionDatasetAnnotationDetailPage,
 } from './containers/htpExpressionDatasetAnnotationsPage';
-import { HTPExpressionDatasetSampleAnnotationsPage } from './containers/htpExpressionDatasetSampleAnnotationsPage';
+import {
+	HTPExpressionDatasetSampleAnnotationsPage,
+	HTPExpressionDatasetSampleAnnotationDetailPage,
+} from './containers/htpExpressionDatasetSampleAnnotationsPage';
 import { SequenceTargetingReagentsPage } from './containers/sequenceTargetingReagentsPage';
 import { ProfilePage } from './containers/profilePage';
 import { MoleculesPage } from './containers/moleculesPage';
@@ -268,6 +271,14 @@ export default function AppRoutes() {
 						element={
 							<ErrorBoundary>
 								<HTPExpressionDatasetAnnotationDetailPage />
+							</ErrorBoundary>
+						}
+					/>
+					<Route
+						path="/htp-expression-dataset-sample/:identifier"
+						element={
+							<ErrorBoundary>
+								<HTPExpressionDatasetSampleAnnotationDetailPage />
 							</ErrorBoundary>
 						}
 					/>
