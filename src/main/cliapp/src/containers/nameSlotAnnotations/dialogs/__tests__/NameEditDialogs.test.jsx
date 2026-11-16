@@ -256,3 +256,56 @@ describe.each(DIALOGS)('$label pop-up', (dialog) => {
 		});
 	}
 });
+
+describe.each(DIALOGS)('$label pop-up errors', (dialog) => {
+	const FIELD_ERRORS = {
+		displayText: 'display text is bad',
+		formatText: 'format text is bad',
+		synonymScope: 'scope is bad',
+		nameType: 'name type is bad',
+		synonymUrl: 'url is bad',
+		internal: 'internal is bad',
+		evidence: 'evidence is bad',
+	};
+	const CELLS = [
+		['Display Text', 'display text is bad'],
+		['Format Text', 'format text is bad'],
+		['Synonym Scope', 'scope is bad'],
+		['Name Type', 'name type is bad'],
+		['Synonym URL', 'url is bad'],
+		['Internal', 'internal is bad'],
+		['Evidence', 'evidence is bad'],
+	];
+
+	it('shows each validation error on the cell that caused it, with invalid styling', async () => {
+		validate.mockReset();
+		validate.mockResolvedValue({ isSuccess: false, isError: true, data: FIELD_ERRORS });
+		const name = {
+			displayText: 'loaded',
+			formatText: 'loaded',
+			synonymScope: null,
+			nameType: termSetTermsFor(dialog.nameTypeSet)[0],
+			synonymUrl: '',
+			internal: false,
+			evidence: [EVIDENCE],
+		};
+		const { baseElement } = render(
+			dialog.render([name], {
+				field: dialog.field,
+				endpoint: dialog.endpoint,
+				data: { isInEdit: true, dialog: true, rowIndex: 0, mainRowProps: { editorCallback: vi.fn() } },
+				setErrorMessagesMainRow: vi.fn(),
+			})
+		);
+		await waitFor(() => expect(baseElement.querySelectorAll('tbody tr td').length).toBeGreaterThan(1));
+
+		fireEvent.click(getButton(baseElement, 'Keep Edits'));
+
+		await waitFor(() => expect(getCellByHeader(baseElement, 'Evidence').textContent).toContain('evidence is bad'));
+		CELLS.forEach(([header, message]) => {
+			const cell = getCellByHeader(baseElement, header);
+			expect(cell.textContent).toContain(message);
+			expect(cell.querySelector('.p-invalid')).not.toBeNull();
+		});
+	});
+});

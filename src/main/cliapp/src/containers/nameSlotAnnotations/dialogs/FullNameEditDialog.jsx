@@ -6,16 +6,34 @@ import { Button } from 'primereact/button';
 import { Toast } from 'primereact/toast';
 import { ColumnGroup } from 'primereact/columngroup';
 import { Row } from 'primereact/row';
-import { DialogErrorMessageComponent } from '../../../components/Error/DialogErrorMessageComponent';
 import { ValidationService } from '../../../service/ValidationService';
 import { DeleteAction } from '../../../components/Actions/DeletionAction';
-import { TableInputTextEditor } from '../../../components/Editors/text/TableInputTextEditor';
-import { InternalEditor } from '../../../components/Editors/legacyForm/InternalEditor';
-import { EvidenceEditor } from '../../../components/Editors/legacyForm/EvidenceEditor';
-import { ControlledVocabularyEditor } from '../../../components/Editors/legacyForm/ControlledVocabularyEditor';
 import { useVocabularyTermSetService } from '../../../service/useVocabularyTermSetService';
-import { ControlledVocabularyDropdown } from '../../../components/Editors/dropdown/vocabulary/ControlledVocabularyDropdown';
+import { useControlledVocabularyService } from '../../../service/useControlledVocabularyService';
+import { KEEP_ROWS_IN_EDIT_MODE } from '../../../utils/rows';
+import { TableEditorProvider } from '../../../components/Editors/fields/TableEditorContext';
+import { useLocalRowsStrategy } from '../../../components/Editors/fields/strategies/useLocalRowsStrategy';
+import { InputTextTableEditor } from '../../../components/Editors/text/InputTextTableEditor';
+import { ControlledVocabularyTableEditor } from '../../../components/Editors/dropdown/vocabulary/ControlledVocabularyTableEditor';
+import { BooleanTableEditor } from '../../../components/Editors/dropdown/boolean/BooleanTableEditor';
+import { EvidenceTableEditor } from '../../../components/Editors/autocomplete/references/EvidenceTableEditor';
 
+/**
+ * Dialog for editing a main-table row's full name, or, given a title and term set, another name held the same
+ * way, such as a gene's systematic name. Edits stay local until Keep Edits validates the name and hands it back,
+ * or null once deleted, through the row's editor callback.
+ *
+ * @param {string} field - the row's field holding the name, under which Pending Edits is marked
+ * @param {string} endpoint - the slot annotation endpoint the name is validated against
+ * @param {string} [title='Full Name'] - the dialog's heading
+ * @param {string} [nameTypeVocabularyTermSet='full_name_type'] - the term set the name types come from
+ * @param {object} originalFullNameData - the row's name as a one-item list, dialog visibility, row index and
+ *   PrimeReact editor options
+ * @param {Function} setOriginalFullNameData - its setter
+ * @param {object} errorMessagesMainRow - the main table's errors, keyed by row index
+ * @param {Function} setErrorMessagesMainRow - its setter
+ * @returns {JSX.Element}
+ */
 export const FullNameEditDialog = ({
 	field,
 	endpoint,
@@ -37,6 +55,13 @@ export const FullNameEditDialog = ({
 	const toast_topright = useRef(null);
 
 	const fullNameTypeTerms = useVocabularyTermSetService(nameTypeVocabularyTermSet);
+	const synonymScopeTerms = useControlledVocabularyService('synonym_scope');
+
+	const strategy = useLocalRowsStrategy({
+		rows: localFullNames,
+		setRows: setLocalFullNames,
+		errors: errorMessages,
+	});
 
 	const showDialogHandler = () => {
 		let _localFullNames = cloneFullNames(originalFullNames);
@@ -50,10 +75,6 @@ export const FullNameEditDialog = ({
 		}
 		setEditingRows(rowsObject);
 		setErrorMessages({});
-	};
-
-	const onRowEditChange = () => {
-		return null;
 	};
 
 	const hideDialog = () => {
@@ -78,50 +99,6 @@ export const FullNameEditDialog = ({
 			}
 		}
 		return _clonableFullNames;
-	};
-
-	const textOnChangeHandler = (rowIndex, event, field) => {
-		setLocalFullNames((prev) => {
-			const updated = [...prev];
-			updated[rowIndex] = { ...updated[rowIndex], [field]: event.target.value };
-			return updated;
-		});
-	};
-
-	const nameTypeOnChangeHandler = (props, event) => {
-		props.editorCallback(event.value);
-		setLocalFullNames((prev) => {
-			const updated = [...prev];
-			updated[props.rowIndex] = { ...updated[props.rowIndex], nameType: event.value };
-			return updated;
-		});
-	};
-
-	const synonymScopeOnChangeHandler = (props, event) => {
-		props.editorCallback(event.target.value);
-		setLocalFullNames((prev) => {
-			const updated = [...prev];
-			updated[props.rowIndex] = { ...updated[props.rowIndex], synonymScope: event.target.value };
-			return updated;
-		});
-	};
-
-	const internalOnChangeHandler = (props, event) => {
-		props.editorCallback(event.target.value?.name);
-		setLocalFullNames((prev) => {
-			const updated = [...prev];
-			updated[props.rowIndex] = { ...updated[props.rowIndex], internal: event.target?.value?.name };
-			return updated;
-		});
-	};
-
-	const evidenceOnChangeHandler = (event, setFieldValue, props) => {
-		setFieldValue(event.target.value);
-		setLocalFullNames((prev) => {
-			const updated = [...prev];
-			updated[props.rowIndex] = { ...updated[props.rowIndex], evidence: event.target.value };
-			return updated;
-		});
 	};
 
 	const createNewFullNameHandler = () => {
@@ -233,22 +210,6 @@ export const FullNameEditDialog = ({
 		}
 	};
 
-	const nameTypeEditor = (props) => {
-		return (
-			<>
-				<ControlledVocabularyDropdown
-					field="nameType"
-					options={fullNameTypeTerms}
-					editorChange={nameTypeOnChangeHandler}
-					editorOptions={props}
-					showClear={false}
-					dataKey="id"
-				/>
-				<DialogErrorMessageComponent errorMessages={errorMessages[props?.rowData?.dataKey]} errorField={'nameType'} />
-			</>
-		);
-	};
-
 	const footerTemplate = () => {
 		return (
 			<div>
@@ -299,132 +260,85 @@ export const FullNameEditDialog = ({
 				footer={footerTemplate}
 			>
 				<h3>{title}</h3>
-				<DataTable
-					value={localFullNames}
-					dataKey="dataKey"
-					showGridlines
-					editMode="row"
-					headerColumnGroup={headerGroup}
-					editingRows={editingRows}
-					onRowEditChange={onRowEditChange}
-					ref={tableRef}
-					cellMemo={false}
-				>
-					<Column
-						editor={(props) => <DeleteAction deletionHandler={handleDeleteFullName} id={props?.rowData?.dataKey} />}
-						className="max-w-4rem"
-						bodyClassName="text-center"
-						headerClassName="surface-0"
-						frozen
-					/>
-					<Column
-						editor={(props) => {
-							return (
-								<TableInputTextEditor
-									value={props.value}
-									rowIndex={props.rowIndex}
-									errorMessages={errorMessages}
-									dataKey={props?.rowData?.dataKey}
-									textOnChangeHandler={textOnChangeHandler}
-									editorCallback={props.editorCallback}
-									field="displayText"
-								/>
-							);
-						}}
-						field="displayText"
-						header="Display Text"
-						headerClassName="surface-0"
-					/>
-					<Column
-						editor={(props) => {
-							return (
-								<TableInputTextEditor
-									value={props.value}
-									rowIndex={props.rowIndex}
-									errorMessages={errorMessages}
-									dataKey={props?.rowData?.dataKey}
-									textOnChangeHandler={textOnChangeHandler}
-									editorCallback={props.editorCallback}
-									field="formatText"
-								/>
-							);
-						}}
-						field="formatText"
-						header="Format Text"
-						headerClassName="surface-0"
-					/>
-					<Column
-						editor={(props) => {
-							return (
-								<ControlledVocabularyEditor
-									editorOptions={props}
-									onChangeHandler={synonymScopeOnChangeHandler}
-									errorMessages={errorMessages}
-									dataKey={props?.rowData?.dataKey}
-									rowIndex={props.rowIndex}
-									vocabType="synonym_scope"
+				<TableEditorProvider strategy={strategy}>
+					<DataTable
+						value={localFullNames}
+						dataKey="dataKey"
+						showGridlines
+						editMode="row"
+						headerColumnGroup={headerGroup}
+						editingRows={editingRows}
+						onRowEditChange={KEEP_ROWS_IN_EDIT_MODE}
+						ref={tableRef}
+						cellMemo={false}
+					>
+						<Column
+							editor={(props) => <DeleteAction deletionHandler={handleDeleteFullName} id={props?.rowData?.dataKey} />}
+							className="max-w-4rem"
+							bodyClassName="text-center"
+							headerClassName="surface-0"
+							frozen
+						/>
+						<Column
+							editor={(editorOptions) => <InputTextTableEditor editorOptions={editorOptions} field="displayText" />}
+							field="displayText"
+							header="Display Text"
+							headerClassName="surface-0"
+						/>
+						<Column
+							editor={(editorOptions) => <InputTextTableEditor editorOptions={editorOptions} field="formatText" />}
+							field="formatText"
+							header="Format Text"
+							headerClassName="surface-0"
+						/>
+						<Column
+							editor={(editorOptions) => (
+								<ControlledVocabularyTableEditor
+									editorOptions={editorOptions}
 									field="synonymScope"
+									options={synonymScopeTerms}
 									showClear={true}
 								/>
-							);
-						}}
-						field="synonymScope"
-						header="Synonym Scope"
-						headerClassName="surface-0"
-					/>
-					<Column editor={nameTypeEditor} field="nameType" header="Name Type" headerClassName="surface-0" />
-					<Column
-						editor={(props) => {
-							return (
-								<TableInputTextEditor
-									value={props.value}
-									rowIndex={props.rowIndex}
-									errorMessages={errorMessages}
-									dataKey={props?.rowData?.dataKey}
-									textOnChangeHandler={textOnChangeHandler}
-									editorCallback={props.editorCallback}
-									field="synonymUrl"
+							)}
+							field="synonymScope"
+							header="Synonym Scope"
+							headerClassName="surface-0"
+						/>
+						<Column
+							editor={(editorOptions) => (
+								<ControlledVocabularyTableEditor
+									editorOptions={editorOptions}
+									field="nameType"
+									options={fullNameTypeTerms}
+									showClear={false}
 								/>
-							);
-						}}
-						field="synonymUrl"
-						header="Synonym URL"
-						headerClassName="surface-0"
-					/>
-					<Column
-						editor={(props) => {
-							return (
-								<InternalEditor
-									editorOptions={props}
-									rowIndex={props.rowIndex}
-									errorMessages={errorMessages}
-									dataKey={props?.rowData?.dataKey}
-									internalOnChangeHandler={internalOnChangeHandler}
-								/>
-							);
-						}}
-						field="internal"
-						header="Internal"
-						headerClassName="surface-0"
-					/>
-					<Column
-						editor={(props) => {
-							return (
-								<EvidenceEditor
-									props={props}
-									errorMessages={errorMessages}
-									onChange={evidenceOnChangeHandler}
-									dataKey={props?.rowData?.dataKey}
-								/>
-							);
-						}}
-						field="evidence"
-						header="Evidence"
-						headerClassName="surface-0"
-					/>
-					<Column field="updatedBy.uniqueId" header="Updated By" />
-					<Column field="dateUpdated" header="Date Updated" />
-				</DataTable>
+							)}
+							field="nameType"
+							header="Name Type"
+							headerClassName="surface-0"
+						/>
+						<Column
+							editor={(editorOptions) => <InputTextTableEditor editorOptions={editorOptions} field="synonymUrl" />}
+							field="synonymUrl"
+							header="Synonym URL"
+							headerClassName="surface-0"
+						/>
+						<Column
+							editor={(editorOptions) => <BooleanTableEditor editorOptions={editorOptions} field="internal" />}
+							field="internal"
+							header="Internal"
+							headerClassName="surface-0"
+						/>
+						<Column
+							editor={(editorOptions) => <EvidenceTableEditor editorOptions={editorOptions} />}
+							field="evidence"
+							header="Evidence"
+							headerClassName="surface-0"
+						/>
+						<Column field="updatedBy.uniqueId" header="Updated By" />
+						<Column field="dateUpdated" header="Date Updated" />
+					</DataTable>
+				</TableEditorProvider>
 			</Dialog>
 		</div>
 	);
