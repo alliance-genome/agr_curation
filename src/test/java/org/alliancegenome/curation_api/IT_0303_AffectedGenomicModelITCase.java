@@ -7,6 +7,7 @@ import static org.hamcrest.Matchers.not;
 
 import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.Map;
 
 import org.alliancegenome.curation_api.base.BaseITCase;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
@@ -32,6 +33,7 @@ import org.junit.jupiter.api.TestMethodOrder;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusIntegrationTest;
 import io.restassured.RestAssured;
+import io.restassured.response.Response;
 
 @QuarkusIntegrationTest
 @QuarkusTestResource(TestContainerResource.Initializer.class)
@@ -43,6 +45,7 @@ import io.restassured.RestAssured;
 public class IT_0303_AffectedGenomicModelITCase extends BaseITCase {
 
 	private static final String AGM = "AGM:0001";
+	private static final String NOTE_AGM = "AGM:6825";
 	
 	private NCBITaxonTerm taxon;
 	private NCBITaxonTerm taxon2;
@@ -557,6 +560,57 @@ public class IT_0303_AffectedGenomicModelITCase extends BaseITCase {
 				statusCode(200);
 	}
 	
+	@Test
+	@Order(15)
+	public void savingTheFoundAGMKeepsRelatedNoteEvidence() {
+		Vocabulary noteTypeVocabulary = getVocabulary(VocabularyConstants.NOTE_TYPE_VOCABULARY);
+		VocabularyTerm commentType = getVocabularyTerm(noteTypeVocabulary, "comment");
+		createVocabularyTermSet(VocabularyConstants.AGM_NOTE_TYPES_VOCABULARY_TERM_SET, noteTypeVocabulary, List.of(commentType));
+
+		AffectedGenomicModel agm = new AffectedGenomicModel();
+		agm.setPrimaryExternalId(NOTE_AGM);
+		agm.setTaxon(taxon);
+		agm.setSubtype(subtype);
+		agm.setRelatedNotes(List.of(createNote(commentType, "AGM note with evidence", false, false, reference)));
+
+		RestAssured.given().
+			contentType("application/json").
+			body(agm).
+			when().
+			post("/api/agm").
+			then().
+			statusCode(200);
+
+		// A table row save sends back the AGM as the search returned it.
+		Map<String, Object> foundAgm = findNoteAgm().
+			then().
+			body("results[0].relatedNotes[0].references[0].curie", is(reference.getCurie())).
+			extract().jsonPath().getMap("results[0]");
+
+		RestAssured.given().
+			contentType("application/json").
+			body(foundAgm).
+			when().
+			put("/api/agm").
+			then().
+			statusCode(200);
+
+		findNoteAgm().
+			then().
+			body("results[0].relatedNotes[0].references[0].curie", is(reference.getCurie()));
+	}
+
+	private Response findNoteAgm() {
+		return RestAssured.given().
+			contentType("application/json").
+			body("{\"primaryExternalId\": \"" + NOTE_AGM + "\"}").
+			when().
+			post("/api/agm/find?limit=1&page=0").
+			then().
+			statusCode(200).
+			extract().response();
+	}
+
 	private AgmFullNameSlotAnnotation createAgmFullNameSlotAnnotation(List<Reference> evidence, String name, VocabularyTerm nameType, VocabularyTerm synonymScope, String synonymUrl) {
 		AgmFullNameSlotAnnotation fullName = new AgmFullNameSlotAnnotation();
 		fullName.setEvidence(evidence);

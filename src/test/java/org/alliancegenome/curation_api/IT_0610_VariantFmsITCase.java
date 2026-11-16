@@ -1,5 +1,6 @@
 package org.alliancegenome.curation_api;
 
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
@@ -11,6 +12,7 @@ import java.util.List;
 import org.alliancegenome.curation_api.base.BaseITCase;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.model.entities.Organization;
+import org.alliancegenome.curation_api.model.entities.Variant;
 import org.alliancegenome.curation_api.model.entities.Vocabulary;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.resources.TestContainerResource;
@@ -96,6 +98,7 @@ public class IT_0610_VariantFmsITCase extends BaseITCase {
 			body("entity.taxon.curie", is("NCBITaxon:6239")).
 			body("entity.dataProvider.abbreviation", is("WB")).
 			body("entity.variantType.curie", is("SO:1000002")).
+			body("entity.uniqueId", is("NCBITaxon:6239|SO:1000002|WB|RefSeq:NC_003279.8|WBcel235|1|1000|T")).
 			body("entity.synonyms", is(List.of("Syn 1", "Syn 2"))).
 			body("entity.sourceGeneralConsequence.curie", is("SO:0001587")).
 			body("entity.curatedVariantGenomicLocations", hasSize(1)).
@@ -138,6 +141,7 @@ public class IT_0610_VariantFmsITCase extends BaseITCase {
 			body("entity.taxon.curie", is("NCBITaxon:6239")).
 			body("entity.dataProvider.abbreviation", is("WB")).
 			body("entity.variantType.curie", is("SO:1000008")).
+			body("entity.uniqueId", is("NCBITaxon:6239|SO:1000008|WB|RefSeq:NC_003279.8|WBcel235|1|1000|T")).
 			body("entity.synonyms", is(List.of("Syn 3", "Syn 4"))).
 			body("entity.sourceGeneralConsequence.curie", is("SO:0001578")).
 			body("entity.curatedVariantGenomicLocations", hasSize(1)).
@@ -265,6 +269,44 @@ public class IT_0610_VariantFmsITCase extends BaseITCase {
 			body("entity.crossReferences[0].displayName", is("TEST:WBVar00252637")).
 			body("entity.crossReferences[0].resourceDescriptorPage.name", is("homepage")).
 			body("entity.references", is(nullValue()));
+	}
+
+	@Test
+	@Order(7)
+	public void variantWithGenomicLocationUpdateReturnsLocations() throws Exception {
+		Variant variant = getVariant(variantId);
+
+		RestAssured.given().
+			contentType("application/json").
+			body(variant).
+			when().
+			put("/api/variant").
+			then().
+			statusCode(200).
+			body("entity.modInternalId", is(variantId)).
+			body("entity.curatedVariantGenomicLocations", hasSize(1)).
+			body("entity.curatedVariantGenomicLocations[0].hgvs", is("NC_003279.8:g.1A>T")).
+			body("entity.curatedVariantGenomicLocations[0].variantGenomicLocationAssociationObject.name", is("I"));
+	}
+
+	@Test
+	@Order(8)
+	public void deleteVariantWithAlleleAssociation() throws Exception {
+		RestAssured.given().
+			when().
+			delete(variantGetEndpoint + variantId).
+			then().
+			statusCode(400).
+			body("errorMessage", containsString("Variant has allele association(s)"));
+
+		RestAssured.given().
+			when().
+			get(variantGetEndpoint + variantId).
+			then().
+			statusCode(200).
+			body("entity.modInternalId", is(variantId)).
+			body("entity.alleleVariantAssociations", hasSize(2)).
+			body("entity.curatedVariantGenomicLocations", hasSize(1));
 	}
 
 }

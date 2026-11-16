@@ -4,8 +4,8 @@ import { GenericDataTable } from '../../components/GenericDataTable/GenericDataT
 import { Toast } from 'primereact/toast';
 import { getDefaultTableState } from '../../service/TableStateService';
 import { FILTER_CONFIGS } from '../../constants/FilterFields';
-import { SecondaryIdsEditDialog } from '../allelesPage/secondaryIds/SecondaryIdsEditDialog';
-import { SecondaryIdsReadOnlyDialog } from '../allelesPage/secondaryIds/SecondaryIdsReadOnlyDialog';
+import { SecondaryIdsEditDialog } from '../../components/secondaryIds/SecondaryIdsEditDialog';
+import { SecondaryIdsReadOnlyDialog } from '../../components/secondaryIds/SecondaryIdsReadOnlyDialog';
 import { SynonymsEditDialog } from '../nameSlotAnnotations/dialogs/SynonymsEditDialog';
 import { SynonymsReadOnlyDialog } from '../nameSlotAnnotations/dialogs/SynonymsReadOnlyDialog';
 import { SymbolEditDialog } from '../nameSlotAnnotations/dialogs/SymbolEditDialog';
@@ -13,7 +13,7 @@ import { SymbolReadOnlyDialog } from '../nameSlotAnnotations/dialogs/SymbolReadO
 import { FullNameEditDialog } from '../nameSlotAnnotations/dialogs/FullNameEditDialog';
 import { FullNameReadOnlyDialog } from '../nameSlotAnnotations/dialogs/FullNameReadOnlyDialog';
 import { SystematicNameDialog } from './SystematicNameDialog';
-import { CrossReferencesEditDialog } from '../allelesPage/crossReferences/CrossReferencesEditDialog';
+import { CrossReferencesEditDialog } from '../../components/crossReferences/CrossReferencesEditDialog';
 import { CrossReferencesTemplate } from '../../components/Templates/CrossReferencesTemplate';
 import { CrossReferenceTemplate } from '../../components/Templates/CrossReferenceTemplate';
 import { useGetTableData } from '../../service/useGetTableData';
@@ -27,7 +27,7 @@ import { BooleanTemplate } from '../../components/Templates/BooleanTemplate';
 import { OntologyTermTemplate } from '../../components/Templates/OntologyTermTemplate';
 import { StringTemplate } from '../../components/Templates/StringTemplate';
 import { CountDialogTemplate } from '../../components/Templates/dialog/CountDialogTemplate';
-import { DialogTriggerEditor } from '../../components/Editors/dialog/DialogTriggerEditor';
+import { DialogTriggerTableEditor } from '../../components/Editors/dialog/DialogTriggerTableEditor';
 import { GeneTypeTableEditor } from '../../components/Editors/autocomplete/geneType/GeneTypeTableEditor';
 import { TaxonTableEditor } from '../../components/Editors/autocomplete/taxon/TaxonTableEditor';
 import { BooleanTableEditor } from '../../components/Editors/dropdown/boolean/BooleanTableEditor';
@@ -35,16 +35,21 @@ import { BooleanTableEditor } from '../../components/Editors/dropdown/boolean/Bo
 import { SearchService } from '../../service/SearchService';
 import { GeneService } from '../../service/GeneService';
 import { Endpoints } from '../../constants/Endpoints';
+import { NewGeneButton, useOpenGeneCreatePage } from './NewGeneButton';
+import { getIdentifier } from '../../utils/utils';
 
 export const GenesTable = () => {
 	const [isInEditMode, setIsInEditMode] = useState(false);
 	const [errorMessages, setErrorMessages] = useState({});
 	const [totalRecords, setTotalRecords] = useState(0);
 	const [genes, setGenes] = useState([]);
-	const errorMessagesRef = useRef();
-	errorMessagesRef.current = errorMessages;
 
 	const searchService = new SearchService();
+	const openGeneCreatePage = useOpenGeneCreatePage();
+
+	const handleDuplication = (rowData) => {
+		openGeneCreatePage(rowData.curie || getIdentifier(rowData));
+	};
 	let geneService = new GeneService();
 
 	const mutation = useMutation({
@@ -282,9 +287,8 @@ export const GenesTable = () => {
 					/>
 				),
 				editor: (editorOptions) => (
-					<DialogTriggerEditor
+					<DialogTriggerTableEditor
 						editorOptions={editorOptions}
-						errorMessagesRef={errorMessagesRef}
 						onOpenInEdit={handleFullNameOpenInEdit}
 						errorField="geneFullName"
 						displayHtml={editorOptions.rowData.geneFullName?.displayText}
@@ -310,9 +314,8 @@ export const GenesTable = () => {
 				filter: true,
 				filterConfig: FILTER_CONFIGS.geneSymbolFilterConfig,
 				editor: (editorOptions) => (
-					<DialogTriggerEditor
+					<DialogTriggerTableEditor
 						editorOptions={editorOptions}
-						errorMessagesRef={errorMessagesRef}
 						onOpenInEdit={handleSymbolOpenInEdit}
 						errorField="geneSymbol"
 						displayHtml={editorOptions.rowData.geneSymbol?.displayText}
@@ -337,9 +340,8 @@ export const GenesTable = () => {
 				editor: (editorOptions) => {
 					const count = editorOptions.rowData.geneSynonyms?.length;
 					return (
-						<DialogTriggerEditor
+						<DialogTriggerTableEditor
 							editorOptions={editorOptions}
-							errorMessagesRef={errorMessagesRef}
 							onOpenInEdit={handleSynonymsOpenInEdit}
 							errorField="geneSynonyms"
 							displayText={count ? `Synonyms(${count}) ` : null}
@@ -366,9 +368,8 @@ export const GenesTable = () => {
 				editor: (editorOptions) => {
 					const count = editorOptions.rowData.geneSecondaryIds?.length;
 					return (
-						<DialogTriggerEditor
+						<DialogTriggerTableEditor
 							editorOptions={editorOptions}
-							errorMessagesRef={errorMessagesRef}
 							onOpenInEdit={handleSecondaryIdsOpenInEdit}
 							errorField="geneSecondaryIds"
 							displayText={count ? `Secondary IDs(${count}) ` : null}
@@ -395,9 +396,8 @@ export const GenesTable = () => {
 				filter: true,
 				filterConfig: FILTER_CONFIGS.geneSystematicNameFilterConfig,
 				editor: (editorOptions) => (
-					<DialogTriggerEditor
+					<DialogTriggerTableEditor
 						editorOptions={editorOptions}
-						errorMessagesRef={errorMessagesRef}
 						onOpenInEdit={handleSystematicNameOpenInEdit}
 						errorField="geneSystematicName"
 						displayHtml={editorOptions.rowData.geneSystematicName?.displayText}
@@ -437,9 +437,8 @@ export const GenesTable = () => {
 				editor: (editorOptions) => {
 					const count = editorOptions.rowData.relatedNotes?.length;
 					return (
-						<DialogTriggerEditor
+						<DialogTriggerTableEditor
 							editorOptions={editorOptions}
-							errorMessagesRef={errorMessagesRef}
 							onOpenInEdit={handleRelatedNotesOpenInEdit}
 							errorField="relatedNotes"
 							displayText={count ? `Notes(${count}) ` : null}
@@ -465,9 +464,8 @@ export const GenesTable = () => {
 				editor: (editorOptions) => {
 					const count = editorOptions.rowData.crossReferences?.length;
 					return (
-						<DialogTriggerEditor
+						<DialogTriggerTableEditor
 							editorOptions={editorOptions}
-							errorMessagesRef={errorMessagesRef}
 							onOpenInEdit={handleCrossReferencesOpenInEdit}
 							errorField="crossReferences"
 							displayText={count ? `Cross References(${count}) ` : null}
@@ -485,9 +483,8 @@ export const GenesTable = () => {
 				filterConfig: FILTER_CONFIGS.gcrpCrossReferenceFilterConfig,
 				body: (rowData) => <CrossReferenceTemplate xref={rowData.gcrpCrossReference} />,
 				editor: (editorOptions) => (
-					<DialogTriggerEditor
+					<DialogTriggerTableEditor
 						editorOptions={editorOptions}
-						errorMessagesRef={errorMessagesRef}
 						onOpenInEdit={handleGcrpCrossReferenceOpenInEdit}
 						errorField="gcrpCrossReference"
 						displayText={editorOptions.rowData.gcrpCrossReference?.displayName}
@@ -547,7 +544,7 @@ export const GenesTable = () => {
 			},
 		],
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-		[errorMessagesRef]
+		[]
 	);
 
 	const DEFAULT_COLUMN_WIDTH = 10;
@@ -570,6 +567,15 @@ export const GenesTable = () => {
 		searchService,
 	});
 
+	const headerButtons = (disabled = false) => {
+		return (
+			<>
+				<NewGeneButton disabled={disabled} />
+				&nbsp;&nbsp;
+			</>
+		);
+	};
+
 	return (
 		<>
 			<div className="card">
@@ -578,6 +584,7 @@ export const GenesTable = () => {
 				<GenericDataTable
 					endpoint={SEARCH_ENDPOINT}
 					tableName="Genes"
+					headerButtons={headerButtons}
 					entities={genes}
 					setEntities={setGenes}
 					totalRecords={totalRecords}
@@ -586,6 +593,12 @@ export const GenesTable = () => {
 					setTableState={setTableState}
 					columns={columns}
 					isEditable={true}
+					hasDetails={true}
+					deletionEnabled={true}
+					deletionMethod={geneService.deleteGene}
+					deprecateOption={true}
+					duplicationEnabled={true}
+					handleDuplication={handleDuplication}
 					mutation={mutation}
 					isInEditMode={isInEditMode}
 					setIsInEditMode={setIsInEditMode}

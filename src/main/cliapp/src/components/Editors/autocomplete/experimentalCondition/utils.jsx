@@ -13,6 +13,14 @@ export const conditionsSearchConfig = {
 	),
 };
 
+// Searches every condition field set, so a chemical, anatomy or other term matches as well as the
+// summary.
+export const conditionsDetailedSearchConfig = {
+	...conditionsSearchConfig,
+	autocompleteFields: getAutocompleteFields(AUTOCOMPLETE_CONFIGS.experimentalConditionDetailedAutocompleteConfig),
+	filterName: 'conditionSummaryFilter',
+};
+
 export const conditionsSearch = (event, setFiltered, setInputValue) => {
 	const searchService = new SearchService();
 	setInputValue(event.query);

@@ -43,6 +43,9 @@ public class CurationView {
 	public static class CrossReferenceView extends FieldsOnly {
 	}
 
+	public static class ReferenceView extends FieldsOnly {
+	}
+
 	public static class NoteView extends FieldsAndLists {
 	}
 
@@ -66,6 +69,11 @@ public class CurationView {
 	}
 
 	public static class TransgenicToolDetailView extends TransgenicToolView {
+	}
+
+	// Transgenic tool - transgenic tool associations on their own (/transgenictooltransgenictoolassociation/find
+	// and /findBy), with both tools, which have their fields only
+	public static class TransgenicToolTransgenicToolAssociationView extends FieldsOnly {
 	}
 
 	public static class DiseaseAnnotation extends FieldsOnly {
@@ -95,13 +103,24 @@ public class CurationView {
 	public static class AlleleView extends FieldsOnly {
 	}
 
-	public static class AlleleDetailView {
+	// The allele and gene detail endpoints: only the fields tagged with this view or a subclass of it
+	public static class EntityDetailView {
+	}
+
+	public static class AlleleDetailView extends EntityDetailView {
+	}
+
+	public static class AlleleGeneAssociationView extends AlleleDetailView {
 	}
 
 	public static class SequenceTargetingReagentView extends FieldsOnly {
 	}
 
 	public static class SequenceTargetingReagentDetailView extends SequenceTargetingReagentView {
+	}
+
+	// STR gene associations on their own (/sqtrgeneassociation/find and /findBy), with their STR and gene
+	public static class SequenceTargetingReagentGeneAssociationView extends SequenceTargetingReagentView {
 	}
 
 	public static class AlleleUpdate extends AlleleView {
@@ -113,7 +132,8 @@ public class CurationView {
 	public static class GeneView extends FieldsOnly {
 	}
 
-	public static class GeneDetailView extends GeneView {
+	// The gene detail endpoints: the gene's own single-value fields, but none of its lists or associations
+	public static class GeneDetailView extends EntityDetailView {
 	}
 
 	public static class GeneUpdate extends GeneView {
@@ -132,6 +152,10 @@ public class CurationView {
 	}
 
 	public static class VariantDetailView extends VariantView {
+	}
+
+	// SCRUM-6757: the HGVS export of a data provider's variants (/variant/export/{dataProvider})
+	public static class ModVariantView {
 	}
 
 	public static class SpeciesView extends FieldsOnly {

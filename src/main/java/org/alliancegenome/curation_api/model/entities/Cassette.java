@@ -3,10 +3,13 @@ package org.alliancegenome.curation_api.model.entities;
 import java.util.List;
 
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
+import org.alliancegenome.curation_api.enums.MatiSubdomain;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
+import org.alliancegenome.curation_api.interfaces.CurieSubdomain;
 import org.alliancegenome.curation_api.model.entities.associations.CassetteGenomicEntityAssociation;
 import org.alliancegenome.curation_api.model.entities.associations.CassetteStrAssociation;
 import org.alliancegenome.curation_api.model.entities.associations.CassetteTransgenicToolAssociation;
+import org.alliancegenome.curation_api.model.entities.associations.ConstructCassetteAssociation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.CassetteComponentSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.CassetteFullNameSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.CassetteSymbolSlotAnnotation;
@@ -19,6 +22,7 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmbedded;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexingDependency;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
 
@@ -40,17 +44,15 @@ import lombok.ToString;
  * the three association lists below, for components that are themselves curated entities with a
  * curie, and cassetteComponents, for components named only by symbol. LinkML requires at least one
  * of cassetteGenomicEntityAssociations or cassetteComponents to be populated.
- *
- * No {@code @CurieSubdomain}: MaTI has no subdomain for cassettes, so AGRKB minting does not apply
- * to this class, as it does not to {@link TransgenicTool}.
  */
 @Indexed
 @Entity
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @Schema(name = "cassette", description = "Cassette: a segment of a construct")
-@ToString(exclude = {"cassetteSymbol", "cassetteFullName", "cassetteSynonyms", "cassetteComponents", "cassetteUses", "cassetteGenomicEntityAssociations", "cassetteTransgenicToolAssociations", "cassetteStrAssociations"}, callSuper = true)
+@ToString(exclude = {"cassetteSymbol", "cassetteFullName", "cassetteSynonyms", "cassetteComponents", "cassetteUses", "cassetteGenomicEntityAssociations", "cassetteTransgenicToolAssociations", "cassetteStrAssociations", "constructCassetteAssociations"}, callSuper = true)
 @AGRCurationSchemaVersion(min = "2.19.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { Reagent.class })
+@CurieSubdomain(MatiSubdomain.CASSETTE)
 public class Cassette extends Reagent {
 
 	@IndexedEmbedded(includePaths = { "displayText", "formatText", "nameType.name", "synonymScope.name", "evidence.curie", "displayText_keyword", "formatText_keyword", "nameType.name_keyword", "synonymScope.name_keyword", "evidence.curie_keyword"})
@@ -127,4 +129,10 @@ public class Cassette extends Reagent {
 	@OneToMany(mappedBy = "cassetteAssociationSubject", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonView({ CurationView.FieldsAndLists.class, CurationView.CassetteView.class })
 	private List<CassetteStrAssociation> cassetteStrAssociations;
+
+	// The constructs using this cassette, which block its deletion (SCRUM-6749). Not cascaded: the associations belong to
+	// the construct.
+	@OneToMany(mappedBy = "constructCassetteAssociationObject")
+	@JsonIgnore
+	private List<ConstructCassetteAssociation> constructCassetteAssociations;
 }

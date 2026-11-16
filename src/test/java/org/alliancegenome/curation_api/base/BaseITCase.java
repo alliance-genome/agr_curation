@@ -875,9 +875,14 @@ public class BaseITCase {
 
 	/** SCRUM-6535: FBcv 'experimental_tool_descriptor' terms, the range of the uses slot. */
 	public FBCVTerm createFbcvTerm(String curie, String name, Boolean obsolete) {
+		return createFbcvTerm(curie, name, null, obsolete);
+	}
+
+	public FBCVTerm createFbcvTerm(String curie, String name, String namespace, Boolean obsolete) {
 		FBCVTerm term = new FBCVTerm();
 		term.setCurie(curie);
 		term.setName(name);
+		term.setNamespace(namespace);
 		term.setObsolete(obsolete);
 		term.setSecondaryIdentifiers(List.of(curie + "secondary"));
 

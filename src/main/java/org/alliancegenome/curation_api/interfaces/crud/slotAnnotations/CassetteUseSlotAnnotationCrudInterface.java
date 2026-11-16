@@ -1,0 +1,40 @@
+package org.alliancegenome.curation_api.interfaces.crud.slotAnnotations;
+
+import org.alliancegenome.curation_api.interfaces.base.BaseIdCrudInterface;
+import org.alliancegenome.curation_api.model.entities.slotAnnotations.CassetteUseSlotAnnotation;
+import org.alliancegenome.curation_api.response.ObjectResponse;
+import org.alliancegenome.curation_api.view.CurationView;
+import org.eclipse.microprofile.openapi.annotations.media.Content;
+import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
+import org.eclipse.microprofile.openapi.annotations.responses.APIResponses;
+import org.eclipse.microprofile.openapi.annotations.tags.Tag;
+
+import com.fasterxml.jackson.annotation.JsonView;
+
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.MediaType;
+import org.eclipse.microprofile.openapi.annotations.Operation;
+
+@Path("/cassetteuseslotannotation")
+@Tag(name = "CRUD - Cassette Use Slot Annotations")
+@Produces(MediaType.APPLICATION_JSON)
+@Consumes(MediaType.APPLICATION_JSON)
+public interface CassetteUseSlotAnnotationCrudInterface extends BaseIdCrudInterface<CassetteUseSlotAnnotation> {
+
+	@Operation(summary = "Validate cassette use slot annotation", description = "Validate a cassette use slot annotation entity without persisting it")
+	@POST
+	@Path("/validate")
+	@JsonView(CurationView.FieldsOnly.class)
+	@APIResponses(
+		@APIResponse(
+			description = "Validate Object",
+			content = @Content(
+				mediaType = "application/json"
+			)
+		)
+	)
+	ObjectResponse<CassetteUseSlotAnnotation> validate(CassetteUseSlotAnnotation entity);
+}

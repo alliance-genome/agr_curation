@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Button } from 'primereact/button';
+import { isPickedReference } from '../../../components/Editors/autocomplete/references/utils';
 import { addDataKey, generateCrossRefSearchField } from '../utils';
 import { SingleReferenceDetailPageEditor } from '../../../components/Editors/autocomplete/references/SingleReferenceDetailPageEditor';
 import { Splitter, SplitterPanel } from 'primereact/splitter';
@@ -11,7 +12,7 @@ export const NewReferenceField = ({ state, dispatch }) => {
 	const createNewReferenceHandler = (event) => {
 		event.preventDefault();
 
-		if (!reference || typeof reference === 'string') {
+		if (!isPickedReference(reference)) {
 			dispatch({
 				type: 'UPDATE_TABLE_ERROR_MESSAGES',
 				entityType: 'references',
@@ -44,8 +45,8 @@ export const NewReferenceField = ({ state, dispatch }) => {
 		});
 	};
 
-	const referencesOnChangeHandler = (event) => {
-		setReference(event.target.value);
+	const referencesOnChangeHandler = (value) => {
+		setReference(value);
 	};
 
 	return (
@@ -53,7 +54,7 @@ export const NewReferenceField = ({ state, dispatch }) => {
 			<SplitterPanel size={20}>
 				<SingleReferenceDetailPageEditor
 					reference={reference}
-					onReferenceValueChange={referencesOnChangeHandler}
+					onChange={referencesOnChangeHandler}
 					errorMessages={state.entityStates.references.errorMessages}
 				/>
 			</SplitterPanel>

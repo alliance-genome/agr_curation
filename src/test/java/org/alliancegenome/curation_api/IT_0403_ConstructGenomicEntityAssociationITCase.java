@@ -59,8 +59,8 @@ public class IT_0403_ConstructGenomicEntityAssociationITCase extends BaseITCase 
 	private Note note2;
 	
 	private final String constructGenomicEntityAssociationGetEndpoint = "/api/constructgenomicentityassociation/findBy";
+	private final String constructGenomicEntityAssociationFindEndpoint = "/api/constructgenomicentityassociation/find?limit=10&page=0";
 	private final String constructGetEndpoint = "/api/construct/";
-	private final String geneGetEndpoint = "/api/gene/";
 	
 	private void loadRequiredEntities() {
 		Vocabulary nameTypeVocabulary = getVocabulary(VocabularyConstants.NAME_TYPE_VOCABULARY);
@@ -140,15 +140,18 @@ public class IT_0403_ConstructGenomicEntityAssociationITCase extends BaseITCase 
 			body("entity.constructGenomicEntityAssociations[0].constructGenomicEntityAssociationObject.primaryExternalId", is(gene.getPrimaryExternalId())).
 			body("entity.constructGenomicEntityAssociations[0].constructAssociationSubject", not(hasKey("constructGeneAssociations")));
 		
+		// The gene's endpoints omit its construct associations, so they are found by the gene as their object.
 		RestAssured.given().
+			contentType("application/json").
+			body("{\"constructGenomicEntityAssociationObject.primaryExternalId\": \"" + gene.getPrimaryExternalId() + "\"}").
 			when().
-			get(geneGetEndpoint + gene.getPrimaryExternalId()).
+			post(constructGenomicEntityAssociationFindEndpoint).
 			then().
 			statusCode(200).
-			body("entity.constructGenomicEntityAssociations", hasSize(1)).
-			body("entity.constructGenomicEntityAssociations[0].relation.name", is(relation.getName())).
-			body("entity.constructGenomicEntityAssociations[0].constructGenomicEntityAssociationObject.primaryExternalId", is(gene.getPrimaryExternalId())).
-			body("entity.constructGenomicEntityAssociations[0].constructAssociationSubject", not(hasKey("constructGeneAssociations")));
+			body("results", hasSize(1)).
+			body("results[0].relation.name", is(relation.getName())).
+			body("results[0].constructGenomicEntityAssociationObject.primaryExternalId", is(gene.getPrimaryExternalId())).
+			body("results[0].constructAssociationSubject", not(hasKey("constructGeneAssociations")));
 	}
 	
 	@Test

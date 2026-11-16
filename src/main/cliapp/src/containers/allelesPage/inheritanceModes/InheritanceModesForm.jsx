@@ -1,18 +1,38 @@
 import { Button } from 'primereact/button';
-import { FormTableWrapper } from '../../../components/FormTableWrapper';
-import { InheritanceModesFormTable } from '../inheritanceModes/InheritanceModesFormTable';
 import { useRef } from 'react';
-import { processOptionalField } from '../../../utils/utils';
-import { addDataKey } from '../utils';
+import { FormTableWrapper } from '../../../components/FormTableWrapper';
+import { useSubResource } from '../../../components/SubResourcesContext';
+import { TableEditorProvider } from '../../../components/Editors/fields/TableEditorContext';
+import { useSubResourceRows } from '../../../hooks/useSubResourceRows';
+import { useControlledVocabularyService } from '../../../service/useControlledVocabularyService';
+import { SubResourceSaveButton } from '../../../components/SubResourceSaveButton';
+import { SubResourceLoadError } from '../../../components/SubResourceLoadError';
+import { useSubResourceFormStrategy } from '../../../hooks/useSubResourceFormStrategy';
+import { addDataKey, KEEP_ROWS_IN_EDIT_MODE } from '../../../utils/rows';
+import { InheritanceModesFormTable } from './InheritanceModesFormTable';
 
-export const InheritanceModesForm = ({ state, dispatch }) => {
+/**
+ * The allele detail and create pages' inheritance modes section.
+ *
+ * Its rows are saved by the page along with the allele, and on the detail page also by this section's own
+ * button, which saves them alone. Inheritance modes are written through their own sub-resource rather than in the
+ * allele payload, so either save makes that call itself.
+ *
+ * @param {Object} props
+ * @param {'detail'|'create'} [props.mode]
+ */
+export const InheritanceModesForm = ({ mode = 'detail' }) => {
+	const subResource = useSubResource('alleleInheritanceModes');
+	const { rows: inheritanceModes, isDirty } = subResource;
+	const { editingRows, addRow, deletionHandler } = useSubResourceRows(subResource, { prepend: true });
+	const strategy = useSubResourceFormStrategy(subResource);
 	const tableRef = useRef(null);
-	const entityType = 'alleleInheritanceModes';
-	const inheritanceModes = structuredClone(state.allele?.[entityType]);
+	const isDetail = mode === 'detail';
+	const inheritanceModeTerms = useControlledVocabularyService('allele_inheritance_mode');
 
-	const createNewInheritanceModeHandler = (e) => {
-		e.preventDefault();
-		const newInheritanceMode = {
+	const createNewRowHandler = (event) => {
+		event.preventDefault();
+		const newRow = {
 			internal: false,
 			obsolete: false,
 			inheritanceMode: null,
@@ -20,106 +40,33 @@ export const InheritanceModesForm = ({ state, dispatch }) => {
 			phenotypeStatement: '',
 		};
 
-		addDataKey(newInheritanceMode);
-
-		dispatch({
-			type: 'ADD_ROW',
-			row: newInheritanceMode,
-			entityType: entityType,
-		});
-	};
-
-	const onRowEditChange = (e) => {
-		return null;
-	};
-
-	const inheritanceModeOnChangeHandler = (props, event) => {
-		props.editorCallback(event.target.value);
-		dispatch({
-			type: 'EDIT_ROW',
-			entityType: entityType,
-			index: props.rowIndex,
-			field: 'inheritanceMode',
-			value: event.target.value,
-		});
-	};
-
-	const phenotypeTermOnChangeHandler = (event, setFieldValue, props) => {
-		const value = processOptionalField(event.target.value);
-
-		//updates value in table input box
-		setFieldValue(value);
-		dispatch({
-			type: 'EDIT_ROW',
-			entityType: entityType,
-			index: props.rowIndex,
-			field: 'phenotypeTerm',
-			value: value,
-		});
-	};
-
-	const internalOnChangeHandler = (props, event) => {
-		props.editorCallback(event.target.value?.name);
-		dispatch({
-			type: 'EDIT_ROW',
-			entityType: entityType,
-			index: props.rowIndex,
-			field: 'internal',
-			value: event.target?.value?.name,
-		});
-	};
-
-	const evidenceOnChangeHandler = (event, setFieldValue, props) => {
-		//updates value in table input box
-		setFieldValue(event.target.value);
-		dispatch({
-			type: 'EDIT_ROW',
-			entityType: entityType,
-			index: props.rowIndex,
-			field: 'evidence',
-			value: event.target.value,
-		});
-	};
-
-	const textOnChangeHandler = (rowIndex, event, field) => {
-		dispatch({
-			type: 'EDIT_ROW',
-			entityType: entityType,
-			index: rowIndex,
-			field: field,
-			value: event.target.value,
-		});
-	};
-
-	const deletionHandler = (e, dataKey) => {
-		e.preventDefault();
-		const updatedErrorMessages = structuredClone(state.entityStates[entityType].errorMessages);
-		delete updatedErrorMessages[dataKey];
-		dispatch({ type: 'DELETE_ROW', entityType: entityType, dataKey });
-		dispatch({ type: 'UPDATE_TABLE_ERROR_MESSAGES', entityType: entityType, errorMessages: updatedErrorMessages });
+		addDataKey(newRow);
+		addRow(newRow);
 	};
 
 	return (
 		<FormTableWrapper
 			table={
-				<InheritanceModesFormTable
-					inheritanceModes={inheritanceModes}
-					editingRows={state.entityStates[entityType].editingRows}
-					onRowEditChange={onRowEditChange}
-					tableRef={tableRef}
-					deletionHandler={deletionHandler}
-					errorMessages={state.entityStates[entityType].errorMessages}
-					inheritanceModeOnChangeHandler={inheritanceModeOnChangeHandler}
-					phenotypeTermOnChangeHandler={phenotypeTermOnChangeHandler}
-					textOnChangeHandler={textOnChangeHandler}
-					internalOnChangeHandler={internalOnChangeHandler}
-					evidenceOnChangeHandler={evidenceOnChangeHandler}
-				/>
+				<TableEditorProvider strategy={strategy}>
+					<InheritanceModesFormTable
+						inheritanceModes={inheritanceModes}
+						editingRows={editingRows}
+						onRowEditChange={KEEP_ROWS_IN_EDIT_MODE}
+						tableRef={tableRef}
+						deletionHandler={deletionHandler}
+						inheritanceModeTerms={inheritanceModeTerms}
+					/>
+				</TableEditorProvider>
 			}
 			tableName="Inheritance Modes"
-			showTable={state.entityStates[entityType].show}
+			showTable={inheritanceModes.length > 0}
+			isPending={isDetail && isDirty}
+			titleAction={isDetail && <SubResourceSaveButton type="alleleInheritanceModes" />}
 			button={
-				<Button label="Add Inheritance Mode" onClick={createNewInheritanceModeHandler} className="w-4  p-button-text" />
+				<>
+					<Button label="Add Inheritance Mode" onClick={createNewRowHandler} className="w-4  p-button-text" />
+					<SubResourceLoadError type="alleleInheritanceModes" />
+				</>
 			}
 		/>
 	);

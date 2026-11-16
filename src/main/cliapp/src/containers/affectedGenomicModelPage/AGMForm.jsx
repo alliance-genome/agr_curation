@@ -10,6 +10,7 @@ import { DetailPageFieldWrapper } from '../../components/DetailPageFieldWrapper'
 import { AgmFullNameForm } from './agmFullName/AgmFullNameForm';
 import { SynonymsForm } from './synonyms/SynonymsForm';
 import { SecondaryIdsForm } from './secondaryIds/SecondaryIdsForm';
+import { AssociatedSTRsTemplate } from './associatedSTRs/AssociatedSTRsTemplate';
 import { FormSection } from '../../components/FormFieldVisibility';
 
 // Every section on the page, in display order.
@@ -24,6 +25,7 @@ export const AGM_DETAIL_TOGGLEABLE_FIELDS = [
 	'Taxon',
 	'Data Provider',
 	'Cross References',
+	'Associated STRs',
 	'Updated By',
 	'Date Updated',
 	'Created By',
@@ -32,16 +34,17 @@ export const AGM_DETAIL_TOGGLEABLE_FIELDS = [
 	'Obsolete',
 ];
 
-// The sections create mode does not render, so its menu does not offer them. Cross References has
-// no editor here or on the table, so a brand new AGM has nothing to show there either. A
-// curator-created AGM has no MOD of record, so it has neither a Primary External ID nor a MOD
-// Internal ID - AffectedGenomicModelValidator opts out of requiring either (same as Allele), and
-// the AGRKB curie minted on create is its identifier instead.
+// The sections create mode does not render, so its menu does not offer them. Cross References and
+// Associated STRs have no editor here or on the table, so a brand new AGM - which can't yet have
+// either - has nothing to show there. A curator-created AGM has no MOD of record, so it has
+// neither a Primary External ID nor a MOD Internal ID - AffectedGenomicModelValidator opts out of
+// requiring either (same as Allele), and the AGRKB curie minted on create is its identifier instead.
 const FIELDS_OMITTED_ON_CREATE = [
 	'Curie',
 	'Primary External ID',
 	'MOD Internal ID',
 	'Cross References',
+	'Associated STRs',
 	'Updated By',
 	'Date Updated',
 	'Created By',
@@ -71,22 +74,14 @@ const fieldDetailsColumnSize = 'col-5';
  */
 export const AGMForm = ({ state, dispatch, isVisible, mode = 'detail' }) => {
 	const isCreate = mode === 'create';
-	// An autosuggest hands back the selected object, or the raw string while the curator is still
-	// typing. The string is kept so the field shows what was typed and the API can reject it.
-	const onOntologyTermValueChange = (field) => (event) => {
-		let value = {};
-		if (typeof event.value === 'object') {
-			value = event.value;
-		} else if (event.value === '') {
-			value = undefined;
-		} else {
-			value.curie = event.value;
-		}
-		dispatch({ type: 'EDIT', field, value });
+	// An autosuggest hands back the picked term, `{curie}` holding typed text so the field shows it and
+	// the API can reject it, or null once emptied, which is held as no value.
+	const onOntologyTermValueChange = (field) => (value) => {
+		dispatch({ type: 'EDIT', field, value: value ?? undefined });
 	};
 
-	const onFieldValueChange = (field) => (event) => {
-		dispatch({ type: 'EDIT', field, value: event.value });
+	const onFieldValueChange = (field) => (value) => {
+		dispatch({ type: 'EDIT', field, value });
 	};
 
 	return (
@@ -140,7 +135,7 @@ export const AGMForm = ({ state, dispatch, isVisible, mode = 'detail' }) => {
 					label="Sub Type"
 					vocabularyLabel="agm_subtype"
 					required={isCreate}
-					onValueChange={onFieldValueChange('subtype')}
+					onChange={onFieldValueChange('subtype')}
 					widgetColumnSize={widgetColumnSize}
 					labelColumnSize={labelColumnSize}
 					fieldDetailsColumnSize={fieldDetailsColumnSize}
@@ -152,7 +147,7 @@ export const AGMForm = ({ state, dispatch, isVisible, mode = 'detail' }) => {
 				<TaxonDetailPageEditor
 					taxon={state.agm?.taxon}
 					required={isCreate}
-					onTaxonValueChange={onOntologyTermValueChange('taxon')}
+					onChange={onOntologyTermValueChange('taxon')}
 					widgetColumnSize={widgetColumnSize}
 					labelColumnSize={labelColumnSize}
 					fieldDetailsColumnSize={fieldDetailsColumnSize}
@@ -177,6 +172,18 @@ export const AGMForm = ({ state, dispatch, isVisible, mode = 'detail' }) => {
 					widgetColumnSize={widgetColumnSize}
 					fieldName="Cross References"
 					formField={<CrossReferencesTemplate list={state.agm?.crossReferences} />}
+					showAdditionalData={false}
+				/>
+			</FormSection>
+
+			{/* Read only: STR associations are system-managed, with no editor here or on the table. */}
+			<FormSection isVisible={!isCreate && isVisible('Associated STRs')}>
+				<DetailPageFieldWrapper
+					labelColumnSize={labelColumnSize}
+					fieldDetailsColumnSize={fieldDetailsColumnSize}
+					widgetColumnSize={widgetColumnSize}
+					fieldName="Associated STRs"
+					formField={<AssociatedSTRsTemplate list={state.agm?.agmSequenceTargetingReagentAssociations} />}
 					showAdditionalData={false}
 				/>
 			</FormSection>
@@ -226,7 +233,7 @@ export const AGMForm = ({ state, dispatch, isVisible, mode = 'detail' }) => {
 					value={state.agm?.internal}
 					name={'internal'}
 					label={'Internal'}
-					onValueChange={onFieldValueChange('internal')}
+					onChange={onFieldValueChange('internal')}
 					widgetColumnSize={widgetColumnSize}
 					labelColumnSize={labelColumnSize}
 					fieldDetailsColumnSize={fieldDetailsColumnSize}
@@ -239,7 +246,7 @@ export const AGMForm = ({ state, dispatch, isVisible, mode = 'detail' }) => {
 					value={state.agm?.obsolete}
 					name={'obsolete'}
 					label={'Obsolete'}
-					onValueChange={onFieldValueChange('obsolete')}
+					onChange={onFieldValueChange('obsolete')}
 					widgetColumnSize={widgetColumnSize}
 					labelColumnSize={labelColumnSize}
 					fieldDetailsColumnSize={fieldDetailsColumnSize}

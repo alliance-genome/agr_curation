@@ -471,7 +471,7 @@ export const DataLoadsComponent = () => {
 	};
 
 	const showModRelease = (load) => {
-		if (load.backendBulkLoadType === 'RESOURCE_DESCRIPTOR' || load.backendBulkLoadType === 'ONTOLOGY') {
+		if (load.backendBulkLoadType === 'ONTOLOGY') {
 			return null;
 		}
 		return <Column field="bulkLoadFile.allianceMemberReleaseVersion" header="MOD Release" />;

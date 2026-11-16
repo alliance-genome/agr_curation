@@ -563,7 +563,22 @@ the new version of the application can function in a consistent state upon and a
    before the code causing it would get deployed to the production environment.  
    The restore function automatically prevents users from writing to the database while it is being reloaded,
    by temporarily making the target database read-only and restoring in a separated database before renaming.
-    1. For instructions on how to trigger the restore, see the [agr_db_backups README](https://github.com/alliance-genome/agr_db_backups#manual-invocation)
+    1. For instructions on how to trigger the restore, see the [agr_db_backups README](https://github.com/alliance-genome/agr_db_backups#manual-invocation).
+       Roll down both the curation DB and the MaTI DB (production MaTI is the `mati` database on the `curation-db` RDS instance,
+       beta MaTI lives on `mati-db-beta`):
+       ```bash
+       # curation: production => beta
+       > aws lambda invoke --function-name agr_db_backups --cli-binary-format raw-in-base64-out \
+          --payload '{"action": "restore", "target_env": "beta", "src_env": "production", "identifier": "curation", "region": "us-east-1", "s3_bucket": "agr-db-backups"}' \
+          lambda.output && jq . lambda.output
+
+       # MaTI: production => beta
+       > aws lambda invoke --function-name agr_db_backups --cli-binary-format raw-in-base64-out \
+          --payload '{"action": "restore", "target_env": "beta", "src_env": "production", "identifier": "mati", "region": "us-east-1", "s3_bucket": "agr-db-backups"}' \
+          lambda.output && jq . lambda.output
+       ```
+       The lambda only starts the restore and returns within seconds; the restore itself runs as an ECS task
+       (its ARN is returned as `initiated_task_arn`), so follow the ECS task logs rather than the lambda logs.
     2. After the restore completed, restart the beta environment app-server to re-apply all flyway migrations
        that were not yet present in the restored (production) database.
        ```bash
