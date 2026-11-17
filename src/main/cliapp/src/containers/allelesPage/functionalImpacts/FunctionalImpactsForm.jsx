@@ -1,126 +1,66 @@
 import { Button } from 'primereact/button';
-import { FormTableWrapper } from '../../../components/FormTableWrapper';
 import { useRef } from 'react';
+import { FormTableWrapper } from '../../../components/FormTableWrapper';
+import { useSubResource } from '../../../components/SubResourcesContext';
+import { TableEditorProvider } from '../../../components/Editors/fields/TableEditorContext';
+import { useSubResourceRows } from '../../../hooks/useSubResourceRows';
+import { SubResourceSaveButton } from '../../../components/SubResourceSaveButton';
+import { SubResourceLoadError } from '../../../components/SubResourceLoadError';
+import { useSubResourceFormStrategy } from '../../../hooks/useSubResourceFormStrategy';
+import { addDataKey, KEEP_ROWS_IN_EDIT_MODE } from '../../../utils/rows';
 import { FunctionalImpactsFormTable } from './FunctionalImpactsFormTable';
-import { processOptionalField } from '../../../utils/utils';
-import { addDataKey } from '../utils';
 
-export const FunctionalImpactsForm = ({ state, dispatch }) => {
+/**
+ * The allele detail and create pages' functional impacts section.
+ *
+ * Its rows are saved by the page along with the allele, and on the detail page also by this section's own
+ * button, which saves them alone. Functional impacts are written through their own sub-resource rather than in the
+ * allele payload, so either save makes that call itself.
+ *
+ * @param {Object} props
+ * @param {'detail'|'create'} [props.mode]
+ */
+export const FunctionalImpactsForm = ({ mode = 'detail' }) => {
+	const subResource = useSubResource('alleleFunctionalImpacts');
+	const { rows: functionalImpacts, isDirty } = subResource;
+	const { editingRows, addRow, deletionHandler } = useSubResourceRows(subResource, { prepend: true });
+	const strategy = useSubResourceFormStrategy(subResource);
 	const tableRef = useRef(null);
-	const entityType = 'alleleFunctionalImpacts';
-	const functionalImpacts = structuredClone(state.allele?.[entityType]);
+	const isDetail = mode === 'detail';
 
-	const createNewFunctionalImpactsHandler = (e) => {
-		e.preventDefault();
-		const newFunctionalImpact = {
+	const createNewRowHandler = (event) => {
+		event.preventDefault();
+		const newRow = {
 			phenotypeStatement: '',
 			internal: false,
 		};
 
-		addDataKey(newFunctionalImpact);
-
-		dispatch({
-			type: 'ADD_ROW',
-			row: newFunctionalImpact,
-			entityType: entityType,
-		});
-	};
-
-	const onRowEditChange = (e) => {
-		return null;
-	};
-
-	const functionalImpactsOnChangeHandler = (event, setFieldValue, props) => {
-		//updates value in table input box
-		setFieldValue(event.target.value);
-		dispatch({
-			type: 'EDIT_ROW',
-			entityType: entityType,
-			index: props.rowIndex,
-			field: 'functionalImpacts',
-			value: event.target.value,
-		});
-	};
-
-	const phenotypeTermOnChangeHandler = (event, setFieldValue, props) => {
-		const value = processOptionalField(event.target.value);
-
-		//updates value in table input box
-		setFieldValue(value);
-		dispatch({
-			type: 'EDIT_ROW',
-			entityType: entityType,
-			index: props.rowIndex,
-			field: 'phenotypeTerm',
-			value: value,
-		});
-	};
-
-	const phenotypeStatementOnChangeHandler = (rowIndex, event) => {
-		dispatch({
-			type: 'EDIT_ROW',
-			entityType: entityType,
-			index: rowIndex,
-			field: 'phenotypeStatement',
-			value: event.target.value,
-		});
-	};
-	const internalOnChangeHandler = (props, event) => {
-		props.editorCallback(event.target.value?.name);
-		dispatch({
-			type: 'EDIT_ROW',
-			entityType: entityType,
-			index: props.rowIndex,
-			field: 'internal',
-			value: event.target?.value?.name,
-		});
-	};
-
-	const evidenceOnChangeHandler = (event, setFieldValue, props) => {
-		//updates value in table input box
-		setFieldValue(event.target.value);
-		dispatch({
-			type: 'EDIT_ROW',
-			entityType: entityType,
-			index: props.rowIndex,
-			field: 'evidence',
-			value: event.target.value,
-		});
-	};
-
-	const deletionHandler = (e, dataKey) => {
-		e.preventDefault();
-		const updatedErrorMessages = structuredClone(state.entityStates[entityType].errorMessages);
-		delete updatedErrorMessages[dataKey];
-		dispatch({ type: 'DELETE_ROW', entityType: entityType, dataKey });
-		dispatch({ type: 'UPDATE_TABLE_ERROR_MESSAGES', entityType: entityType, errorMessages: updatedErrorMessages });
+		addDataKey(newRow);
+		addRow(newRow);
 	};
 
 	return (
 		<FormTableWrapper
 			table={
-				<FunctionalImpactsFormTable
-					functionalImpacts={functionalImpacts}
-					editingRows={state.entityStates[entityType].editingRows}
-					onRowEditChange={onRowEditChange}
-					tableRef={tableRef}
-					deletionHandler={deletionHandler}
-					errorMessages={state.entityStates[entityType].errorMessages}
-					functionalImpactsOnChangeHandler={functionalImpactsOnChangeHandler}
-					phenotypeTermOnChangeHandler={phenotypeTermOnChangeHandler}
-					phenotypeStatementOnChangeHandler={phenotypeStatementOnChangeHandler}
-					internalOnChangeHandler={internalOnChangeHandler}
-					evidenceOnChangeHandler={evidenceOnChangeHandler}
-				/>
+				<TableEditorProvider strategy={strategy}>
+					<FunctionalImpactsFormTable
+						functionalImpacts={functionalImpacts}
+						editingRows={editingRows}
+						onRowEditChange={KEEP_ROWS_IN_EDIT_MODE}
+						tableRef={tableRef}
+						deletionHandler={deletionHandler}
+					/>
+				</TableEditorProvider>
 			}
 			tableName="Functional Impacts"
-			showTable={state.entityStates[entityType].show}
+			showTable={functionalImpacts.length > 0}
+			isPending={isDetail && isDirty}
+			titleAction={isDetail && <SubResourceSaveButton type="alleleFunctionalImpacts" />}
 			button={
-				<Button
-					label="Add Functional Impact"
-					onClick={createNewFunctionalImpactsHandler}
-					className="w-4 p-button-text"
-				/>
+				<>
+					<Button label="Add Functional Impact" onClick={createNewRowHandler} className="w-4 p-button-text" />
+					<SubResourceLoadError type="alleleFunctionalImpacts" />
+				</>
 			}
 		/>
 	);

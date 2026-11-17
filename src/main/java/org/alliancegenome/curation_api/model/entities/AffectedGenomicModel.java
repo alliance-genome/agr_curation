@@ -77,7 +77,7 @@ public class AffectedGenomicModel extends GenomicEntity {
 		"constructAssociationSubject.constructFullName.displayText_keyword", "constructAssociationSubject.constructFullName.formatText_keyword", "constructAssociationSubject.primaryExternalId_keyword"
 	})
 	@OneToMany(mappedBy = "constructGenomicEntityAssociationObject", cascade = CascadeType.ALL, orphanRemoval = true)
-	@JsonView({CurationView.FieldsAndLists.class, CurationView.GeneDetailView.class})
+	@JsonView({CurationView.FieldsAndLists.class})
 	private List<ConstructGenomicEntityAssociation> constructGenomicEntityAssociations;
 
 	@IndexedEmbedded(includePaths = { "displayText", "formatText", "nameType.name", "synonymScope.name", "evidence.curie", "displayText_keyword", "formatText_keyword", "nameType.name_keyword", "synonymScope.name_keyword", "evidence.curie_keyword"})
@@ -98,10 +98,12 @@ public class AffectedGenomicModel extends GenomicEntity {
 		"agmSequenceTargetingReagentAssociationObject.synonyms",
 		"agmSequenceTargetingReagentAssociationObject.synonyms_keyword",
 		"agmSequenceTargetingReagentAssociationObject.secondaryIdentifiers",
-		"agmSequenceTargetingReagentAssociationObject.secondaryIdentifiers_keyword"
+		"agmSequenceTargetingReagentAssociationObject.secondaryIdentifiers_keyword",
+		"agmSequenceTargetingReagentAssociationObject.primaryExternalId",
+		"agmSequenceTargetingReagentAssociationObject.primaryExternalId_keyword"
 	})
 	@OneToMany(mappedBy = "agmAssociationSubject", cascade = CascadeType.ALL, orphanRemoval = true)
-	@JsonView({CurationView.FieldsAndLists.class, CurationView.AffectedGenomicModelDetailView.class})
+	@JsonView({CurationView.FieldsAndLists.class, CurationView.AffectedGenomicModelView.class, CurationView.AffectedGenomicModelDetailView.class})
 	private List<AgmSequenceTargetingReagentAssociation> agmSequenceTargetingReagentAssociations;
 
 	@OneToMany(mappedBy = "agmAssociationSubject", cascade = CascadeType.ALL, orphanRemoval = true)

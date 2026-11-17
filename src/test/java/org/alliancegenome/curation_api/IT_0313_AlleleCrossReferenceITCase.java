@@ -71,7 +71,7 @@ public class IT_0313_AlleleCrossReferenceITCase extends BaseITCase {
 		// createAllele leaves the allele with none, and NON_EMPTY drops the key rather than sending [].
 		RestAssured.given().
 			when().
-			get("/api/allele/" + alleleId + "/cross-references").
+			get("/api/allele/" + alleleId + "/crossreferences").
 			then().
 			statusCode(200).
 			body("entities", nullValue());
@@ -80,14 +80,14 @@ public class IT_0313_AlleleCrossReferenceITCase extends BaseITCase {
 			contentType("application/json").
 			body(List.of(buildXref(XREF_KEPT, defaultPage), buildXref(XREF_DROPPED, genePage))).
 			when().
-			put("/api/allele/" + alleleId + "/cross-references").
+			put("/api/allele/" + alleleId + "/crossreferences").
 			then().
 			statusCode(200).
 			body("entities", hasSize(2));
 
 		RestAssured.given().
 			when().
-			get("/api/allele/" + alleleId + "/cross-references").
+			get("/api/allele/" + alleleId + "/crossreferences").
 			then().
 			statusCode(200).
 			body("entities", hasSize(2)).
@@ -100,7 +100,7 @@ public class IT_0313_AlleleCrossReferenceITCase extends BaseITCase {
 	public void replaceRemovesOmittedCrossReference() {
 		Long droppedId = RestAssured.given().
 			when().
-			get("/api/allele/" + alleleId + "/cross-references").
+			get("/api/allele/" + alleleId + "/crossreferences").
 			then().
 			statusCode(200).
 			extract().
@@ -111,7 +111,7 @@ public class IT_0313_AlleleCrossReferenceITCase extends BaseITCase {
 			contentType("application/json").
 			body(List.of(buildXref(XREF_KEPT, defaultPage))).
 			when().
-			put("/api/allele/" + alleleId + "/cross-references").
+			put("/api/allele/" + alleleId + "/crossreferences").
 			then().
 			statusCode(200).
 			body("entities", hasSize(1)).
@@ -131,7 +131,7 @@ public class IT_0313_AlleleCrossReferenceITCase extends BaseITCase {
 	public void resourceDescriptorIsVisibleThroughBothViews() {
 		RestAssured.given().
 			when().
-			get("/api/allele/" + alleleId + "/cross-references").
+			get("/api/allele/" + alleleId + "/crossreferences").
 			then().
 			statusCode(200).
 			body("entities[0].resourceDescriptorPage.resourceDescriptor.prefix", is("XRSUB")).
@@ -162,7 +162,7 @@ public class IT_0313_AlleleCrossReferenceITCase extends BaseITCase {
 			contentType("application/json").
 			body(List.of(buildXref(XREF_REJECTED, defaultPage), missingCurie)).
 			when().
-			put("/api/allele/" + alleleId + "/cross-references").
+			put("/api/allele/" + alleleId + "/crossreferences").
 			then().
 			statusCode(400).
 			body("errorMessages.crossReferences", notNullValue()).
@@ -171,7 +171,7 @@ public class IT_0313_AlleleCrossReferenceITCase extends BaseITCase {
 		// The existing entry must survive.
 		RestAssured.given().
 			when().
-			get("/api/allele/" + alleleId + "/cross-references").
+			get("/api/allele/" + alleleId + "/crossreferences").
 			then().
 			statusCode(200).
 			body("entities", hasSize(1)).
@@ -199,14 +199,14 @@ public class IT_0313_AlleleCrossReferenceITCase extends BaseITCase {
 			contentType("application/json").
 			body(List.of(buildXref(XREF_FOREIGN, defaultPage))).
 			when().
-			put("/api/allele/" + otherAlleleId + "/cross-references").
+			put("/api/allele/" + otherAlleleId + "/crossreferences").
 			then().
 			statusCode(200).
 			body("entities", hasSize(1));
 
 		Long foreignId = RestAssured.given().
 			when().
-			get("/api/allele/" + otherAlleleId + "/cross-references").
+			get("/api/allele/" + otherAlleleId + "/crossreferences").
 			then().
 			statusCode(200).
 			extract().
@@ -223,7 +223,7 @@ public class IT_0313_AlleleCrossReferenceITCase extends BaseITCase {
 			contentType("application/json").
 			body(List.of(claimed)).
 			when().
-			put("/api/allele/" + alleleId + "/cross-references").
+			put("/api/allele/" + alleleId + "/crossreferences").
 			then().
 			statusCode(400).
 			body("supplementalData.errorMap.crossReferences.'0'.id", is(ValidationConstants.INVALID_MESSAGE));
@@ -236,7 +236,7 @@ public class IT_0313_AlleleCrossReferenceITCase extends BaseITCase {
 			contentType("application/json").
 			body(List.of(unknown)).
 			when().
-			put("/api/allele/" + alleleId + "/cross-references").
+			put("/api/allele/" + alleleId + "/crossreferences").
 			then().
 			statusCode(400).
 			body("supplementalData.errorMap.crossReferences.'0'.id", is(ValidationConstants.INVALID_MESSAGE));
@@ -244,7 +244,7 @@ public class IT_0313_AlleleCrossReferenceITCase extends BaseITCase {
 		// Both alleles keep what they had.
 		RestAssured.given().
 			when().
-			get("/api/allele/" + alleleId + "/cross-references").
+			get("/api/allele/" + alleleId + "/crossreferences").
 			then().
 			statusCode(200).
 			body("entities", hasSize(1)).
@@ -252,7 +252,7 @@ public class IT_0313_AlleleCrossReferenceITCase extends BaseITCase {
 
 		RestAssured.given().
 			when().
-			get("/api/allele/" + otherAlleleId + "/cross-references").
+			get("/api/allele/" + otherAlleleId + "/crossreferences").
 			then().
 			statusCode(200).
 			body("entities", hasSize(1)).
@@ -267,14 +267,14 @@ public class IT_0313_AlleleCrossReferenceITCase extends BaseITCase {
 			contentType("application/json").
 			body("null").
 			when().
-			put("/api/allele/" + alleleId + "/cross-references").
+			put("/api/allele/" + alleleId + "/crossreferences").
 			then().
 			statusCode(400).
 			body("errorMessages.crossReferences", is(ValidationConstants.REQUIRED_MESSAGE));
 
 		RestAssured.given().
 			when().
-			get("/api/allele/" + alleleId + "/cross-references").
+			get("/api/allele/" + alleleId + "/crossreferences").
 			then().
 			statusCode(200).
 			body("entities", hasSize(1)).
@@ -286,7 +286,7 @@ public class IT_0313_AlleleCrossReferenceITCase extends BaseITCase {
 	public void clearingThePageIsRejected() {
 		CrossReference withoutPage = RestAssured.given().
 			when().
-			get("/api/allele/" + alleleId + "/cross-references").
+			get("/api/allele/" + alleleId + "/crossreferences").
 			then().
 			statusCode(200).
 			extract().
@@ -298,14 +298,14 @@ public class IT_0313_AlleleCrossReferenceITCase extends BaseITCase {
 			contentType("application/json").
 			body(List.of(withoutPage)).
 			when().
-			put("/api/allele/" + alleleId + "/cross-references").
+			put("/api/allele/" + alleleId + "/crossreferences").
 			then().
 			statusCode(400).
 			body("supplementalData.errorMap.crossReferences.'0'.resourceDescriptorPage", is(ValidationConstants.REQUIRED_MESSAGE));
 
 		RestAssured.given().
 			when().
-			get("/api/allele/" + alleleId + "/cross-references").
+			get("/api/allele/" + alleleId + "/crossreferences").
 			then().
 			statusCode(200).
 			body("entities[0].resourceDescriptorPage.name", is("default"));
@@ -318,14 +318,14 @@ public class IT_0313_AlleleCrossReferenceITCase extends BaseITCase {
 			contentType("application/json").
 			body(List.of()).
 			when().
-			put("/api/allele/" + alleleId + "/cross-references").
+			put("/api/allele/" + alleleId + "/crossreferences").
 			then().
 			statusCode(200).
 			body("entities", nullValue());
 
 		RestAssured.given().
 			when().
-			get("/api/allele/" + alleleId + "/cross-references").
+			get("/api/allele/" + alleleId + "/crossreferences").
 			then().
 			statusCode(200).
 			body("entities", nullValue());
@@ -336,7 +336,7 @@ public class IT_0313_AlleleCrossReferenceITCase extends BaseITCase {
 	public void unknownAlleleIsRejected() {
 		RestAssured.given().
 			when().
-			get("/api/allele/-1/cross-references").
+			get("/api/allele/-1/crossreferences").
 			then().
 			statusCode(400).
 			body("errorMessages.id", is(ValidationConstants.INVALID_MESSAGE));
@@ -345,7 +345,7 @@ public class IT_0313_AlleleCrossReferenceITCase extends BaseITCase {
 			contentType("application/json").
 			body(List.of(buildXref("XRSUB:0004", defaultPage))).
 			when().
-			put("/api/allele/-1/cross-references").
+			put("/api/allele/-1/crossreferences").
 			then().
 			statusCode(400).
 			body("errorMessages.id", is(ValidationConstants.INVALID_MESSAGE));
@@ -359,7 +359,7 @@ public class IT_0313_AlleleCrossReferenceITCase extends BaseITCase {
 			contentType("application/json").
 			body(List.of(buildXref("XRSUB0006", defaultPage))).
 			when().
-			put("/api/allele/" + alleleId + "/cross-references").
+			put("/api/allele/" + alleleId + "/crossreferences").
 			then().
 			statusCode(400).
 			body("supplementalData.errorMap.crossReferences.'0'.referencedCurie", is(ValidationConstants.CURIE_PATTERN_MISMATCH_MESSAGE));
@@ -372,7 +372,7 @@ public class IT_0313_AlleleCrossReferenceITCase extends BaseITCase {
 			contentType("application/json").
 			body(List.of(buildXref("WB:0007", defaultPage))).
 			when().
-			put("/api/allele/" + alleleId + "/cross-references").
+			put("/api/allele/" + alleleId + "/crossreferences").
 			then().
 			statusCode(400).
 			body("supplementalData.errorMap.crossReferences.'0'.referencedCurie", is(ValidationConstants.CURIE_PATTERN_MISMATCH_MESSAGE));
@@ -398,7 +398,7 @@ public class IT_0313_AlleleCrossReferenceITCase extends BaseITCase {
 		// Order 8 left the allele with none, and the rejected save must not have added one.
 		RestAssured.given().
 			when().
-			get("/api/allele/" + alleleId + "/cross-references").
+			get("/api/allele/" + alleleId + "/crossreferences").
 			then().
 			statusCode(200).
 			body("entities", nullValue());
@@ -436,7 +436,7 @@ public class IT_0313_AlleleCrossReferenceITCase extends BaseITCase {
 			contentType("application/json").
 			body(List.of(buildXref("XRSUB:", defaultPage))).
 			when().
-			put("/api/allele/" + alleleId + "/cross-references").
+			put("/api/allele/" + alleleId + "/crossreferences").
 			then().
 			statusCode(400).
 			body("supplementalData.errorMap.crossReferences.'0'.referencedCurie", is(ValidationConstants.CURIE_PATTERN_MISMATCH_MESSAGE));
@@ -453,7 +453,7 @@ public class IT_0313_AlleleCrossReferenceITCase extends BaseITCase {
 			contentType("application/json").
 			body(List.of(withoutDisplayName)).
 			when().
-			put("/api/allele/" + alleleId + "/cross-references").
+			put("/api/allele/" + alleleId + "/crossreferences").
 			then().
 			statusCode(400).
 			body("supplementalData.errorMap.crossReferences.'0'.displayName", is(ValidationConstants.REQUIRED_MESSAGE));
@@ -468,7 +468,7 @@ public class IT_0313_AlleleCrossReferenceITCase extends BaseITCase {
 			contentType("application/json").
 			body(List.of(buildXref("XRPAT:abc", patternPage))).
 			when().
-			put("/api/allele/" + alleleId + "/cross-references").
+			put("/api/allele/" + alleleId + "/crossreferences").
 			then().
 			statusCode(400).
 			body("supplementalData.errorMap.crossReferences.'0'.referencedCurie", is(ValidationConstants.CURIE_PATTERN_MISMATCH_MESSAGE));
@@ -477,7 +477,7 @@ public class IT_0313_AlleleCrossReferenceITCase extends BaseITCase {
 			contentType("application/json").
 			body(List.of(buildXref("xrpat:0016", patternPage))).
 			when().
-			put("/api/allele/" + alleleId + "/cross-references").
+			put("/api/allele/" + alleleId + "/crossreferences").
 			then().
 			statusCode(200).
 			body("entities[0].referencedCurie", is("xrpat:0016"));
@@ -491,7 +491,7 @@ public class IT_0313_AlleleCrossReferenceITCase extends BaseITCase {
 			contentType("application/json").
 			body(List.of(buildXref("XRSUB:0017", unusablePatternPage))).
 			when().
-			put("/api/allele/" + alleleId + "/cross-references").
+			put("/api/allele/" + alleleId + "/crossreferences").
 			then().
 			statusCode(400).
 			body("supplementalData.errorMap.crossReferences.'0'.referencedCurie", is(ValidationConstants.CURIE_PATTERN_MISMATCH_MESSAGE));
@@ -500,7 +500,7 @@ public class IT_0313_AlleleCrossReferenceITCase extends BaseITCase {
 			contentType("application/json").
 			body(List.of(buildXref("XRBAD:0017", unusablePatternPage))).
 			when().
-			put("/api/allele/" + alleleId + "/cross-references").
+			put("/api/allele/" + alleleId + "/crossreferences").
 			then().
 			statusCode(200).
 			body("entities[0].referencedCurie", is("XRBAD:0017"));

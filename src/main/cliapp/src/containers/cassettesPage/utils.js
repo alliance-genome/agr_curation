@@ -25,6 +25,13 @@ export const transgenicToolDisplayValue = (transgenicTool) => {
 export const associationStrings = (associations, objectField, label) =>
 	(associations || []).map((association) => `${relationName(association)}: ${label(association?.[objectField])}`);
 
+// "relation: name" of a cassette - STR association, the STR's identifier when it has no name.
+export const strAssociationText = (association) =>
+	`${relationName(association)}: ${association?.cassetteStrAssociationObject?.name || identifierOf(association?.cassetteStrAssociationObject)}`;
+
+// Restricts an STR find to one STR.
+export const strFindParams = (sequenceTargetingReagentId) => ({ id: sequenceTargetingReagentId });
+
 export const useStrings = (cassetteUses) =>
 	(cassetteUses || []).flatMap((cassetteUse) =>
 		(cassetteUse?.uses || []).map((use) => (use?.name ? `${use.name} (${use.curie})` : use?.curie))

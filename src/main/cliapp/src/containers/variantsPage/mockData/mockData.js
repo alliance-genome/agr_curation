@@ -25,6 +25,7 @@ export const data = {
 			dbDateCreated: '2023-10-12T13:36:42.837428+01:00',
 			dbDateUpdated: '2023-10-12T13:43:19.34603+01:00',
 			curie: 'WB:WBVarTest0002',
+			uniqueId: 'NCBITaxon:6239|SO:0000694|WB',
 			taxon: {
 				internal: false,
 				obsolete: false,

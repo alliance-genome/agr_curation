@@ -9,9 +9,12 @@ import { getIdentifier } from '../utils/utils';
  * @param {string} props.entityType - the entity's type as shown in the heading, e.g. "Allele"
  * @param {Object} props.entity - the entity the page shows
  * @param {string} [props.label] - the entity's symbol or name, as HTML
+ * @param {string} [props.identifier] - overrides the identifier shown in parentheses instead of
+ *   the one `getIdentifier(entity)` would resolve (e.g. an external id more meaningful to a
+ *   curator than the entity's own curie)
  */
-export const DetailPageHeading = ({ entityType, entity, label }) => {
-	const entityIdentifier = getIdentifier(entity);
+export const DetailPageHeading = ({ entityType, entity, label, identifier }) => {
+	const entityIdentifier = identifier ?? getIdentifier(entity);
 
 	let headingHtml = `${entityType} Detail Page`;
 	if (label && entityIdentifier) {

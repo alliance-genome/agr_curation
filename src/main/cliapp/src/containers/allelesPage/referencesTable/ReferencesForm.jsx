@@ -1,28 +1,36 @@
-import { FormTableWrapper } from '../../../components/FormTableWrapper';
-import { ReferencesFormTable } from './ReferencesFormTable';
 import { useRef } from 'react';
+import { FormTableWrapper } from '../../../components/FormTableWrapper';
+import { useSubResource } from '../../../components/SubResourcesContext';
+import { useSubResourceRows } from '../../../hooks/useSubResourceRows';
+import { SubResourceSaveButton } from '../../../components/SubResourceSaveButton';
+import { SubResourceLoadError } from '../../../components/SubResourceLoadError';
+import { ReferencesFormTable } from './ReferencesFormTable';
 import { NewReferenceField } from './NewReferenceField';
 
-export const ReferencesForm = ({ state, dispatch }) => {
+/**
+ * The allele detail and create pages' references section.
+ *
+ * Its rows are saved by the page along with the allele, and on the detail page also by this section's
+ * own button, which saves them alone. References are written through their own sub-resource rather than
+ * in the allele payload, so either save makes that call itself.
+ *
+ * @param {Object} props
+ * @param {'detail'|'create'} [props.mode]
+ */
+export const ReferencesForm = ({ mode = 'detail' }) => {
+	const subResource = useSubResource('references');
+	const { rows: references, errorMessages, isDirty } = subResource;
+	const { deletionHandler, onRowEditChange } = useSubResourceRows(subResource);
 	const tableRef = useRef(null);
-	const entityType = 'references';
-
-	const onRowEditChange = (e) => {
-		return null;
-	};
-
-	const deletionHandler = (e, dataKey) => {
-		e.preventDefault();
-		dispatch({ type: 'DELETE_ROW', entityType: entityType, dataKey });
-	};
+	const isDetail = mode === 'detail';
 
 	return (
 		<FormTableWrapper
 			table={
 				<ReferencesFormTable
-					references={state.allele[entityType]}
-					editingRows={state.entityStates[entityType].editingRows}
-					errorMessages={state.entityStates[entityType].errorMessages}
+					references={references}
+					editingRows={{}}
+					errorMessages={errorMessages}
 					onRowEditChange={onRowEditChange}
 					tableRef={tableRef}
 					deletionHandler={deletionHandler}
@@ -30,8 +38,15 @@ export const ReferencesForm = ({ state, dispatch }) => {
 				/>
 			}
 			tableName="References"
-			showTable={state.entityStates[entityType].show}
-			button={<NewReferenceField state={state} dispatch={dispatch} />}
+			showTable={references.length > 0}
+			isPending={isDetail && isDirty}
+			titleAction={isDetail && <SubResourceSaveButton type="references" />}
+			button={
+				<>
+					<NewReferenceField />
+					<SubResourceLoadError type="references" />
+				</>
+			}
 			includeField={true}
 		/>
 	);

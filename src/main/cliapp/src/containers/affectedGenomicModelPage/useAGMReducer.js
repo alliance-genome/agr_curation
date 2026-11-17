@@ -56,8 +56,11 @@ const initialAGMState = {
 const processTable = (field, agm, draft) => {
 	if (!agm) return;
 
+	// A list the AGM lacks has no rows to edit, so its section closes as it is on a blank form.
 	if (!agm[field]) {
 		agm[field] = [];
+		draft.entityStates[field].show = false;
+		draft.entityStates[field].editingRows = {};
 		return;
 	}
 
@@ -85,7 +88,12 @@ const processDisplayTable = (field, agm, draft) => {
 const processObject = (field, agm, draft) => {
 	if (!agm) return;
 
-	if (!agm[field]) return;
+	// An object the AGM lacks has nothing to edit, so its section closes as it is on a blank form.
+	if (!agm[field]) {
+		draft.entityStates[field].show = false;
+		draft.entityStates[field].editingRows = {};
+		return;
+	}
 
 	addDataKey(agm[field]);
 	draft.entityStates[field].editingRows[agm[field].dataKey] = true;
@@ -125,6 +133,11 @@ const agmReducer = (draft, action, initialState) => {
 		case 'EDIT_ROW':
 			draft.agm[action.entityType][action.index][action.field] = action.value;
 			break;
+		case 'EDIT_ROW_BY_KEY': {
+			const row = draft.agm[action.entityType].find((candidate) => candidate.dataKey === action.dataKey);
+			if (row) row[action.field] = action.value;
+			break;
+		}
 		case 'EDIT_OBJECT':
 			draft.agm[action.entityType][action.field] = action.value;
 			break;

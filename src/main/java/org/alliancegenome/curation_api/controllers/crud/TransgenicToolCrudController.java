@@ -7,8 +7,10 @@ import org.alliancegenome.curation_api.dao.TransgenicToolDAO;
 import org.alliancegenome.curation_api.interfaces.crud.TransgenicToolCrudInterface;
 import org.alliancegenome.curation_api.jobs.executors.TransgenicToolExecutor;
 import org.alliancegenome.curation_api.model.entities.TransgenicTool;
+import org.alliancegenome.curation_api.model.entities.associations.TransgenicToolTransgenicToolAssociation;
 import org.alliancegenome.curation_api.model.ingest.dto.TransgenicToolDTO;
 import org.alliancegenome.curation_api.response.APIResponse;
+import org.alliancegenome.curation_api.response.ObjectListResponse;
 import org.alliancegenome.curation_api.services.TransgenicToolService;
 
 import jakarta.annotation.PostConstruct;
@@ -26,6 +28,19 @@ public class TransgenicToolCrudController extends SubmittedObjectCrudController<
 	@PostConstruct
 	protected void init() {
 		setService(transgenicToolService);
+	}
+
+	@Override
+	public ObjectListResponse<TransgenicToolTransgenicToolAssociation> getTransgenicToolAssociations(Long id) {
+		return transgenicToolService.getTransgenicToolAssociations(id);
+	}
+
+	// SCRUM-6655: the response is a fresh read made after the replacement's transaction, whose session is closed
+	// by the time the response is written; outside a transaction the session lasts the request, as for a GET.
+	@Override
+	public ObjectListResponse<TransgenicToolTransgenicToolAssociation> updateTransgenicToolAssociations(Long id, List<TransgenicToolTransgenicToolAssociation> associations) {
+		transgenicToolService.replaceTransgenicToolAssociations(id, associations);
+		return transgenicToolService.getTransgenicToolAssociations(id);
 	}
 
 	@Override

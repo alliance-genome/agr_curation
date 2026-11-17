@@ -33,6 +33,10 @@ export const GenericDataTable = (props) => {
 		handleDuplication,
 		duplicationEnabled,
 		hasDetails = false,
+		// Overrides for a table whose detail-page route differs from its REST search endpoint, or
+		// whose entities need a different identifier resolution than getIdentifier's default.
+		detailsEndpoint = endpoint,
+		getDetailsIdentifier = getIdentifier,
 		dataKey = 'id',
 		deprecateOption = false,
 		modReset = false,
@@ -307,10 +311,18 @@ export const GenericDataTable = (props) => {
 						<Column
 							field="details"
 							editor={(props) => (
-								<EntityDetailsAction endpoint={endpoint} identifier={getIdentifier(props.rowData)} disabled={true} />
+								<EntityDetailsAction
+									endpoint={detailsEndpoint}
+									identifier={getDetailsIdentifier(props.rowData)}
+									disabled={true}
+								/>
 							)}
 							body={(props) => (
-								<EntityDetailsAction endpoint={endpoint} identifier={getIdentifier(props)} disabled={isInEditMode} />
+								<EntityDetailsAction
+									endpoint={detailsEndpoint}
+									identifier={getDetailsIdentifier(props)}
+									disabled={isInEditMode}
+								/>
 							)}
 							showFilterMenu={false}
 							className="text-center p-0 action-column"

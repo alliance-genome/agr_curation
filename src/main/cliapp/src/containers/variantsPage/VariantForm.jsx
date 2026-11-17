@@ -12,6 +12,7 @@ import { DetailPageFieldWrapper } from '../../components/DetailPageFieldWrapper'
 import { RelatedNotesForm } from './relatedNotes/RelatedNotesForm';
 import { ReferencesForm } from './references/ReferencesForm';
 import { SynonymsForm } from './synonyms/SynonymsForm';
+import { GenomicLocationsForm } from './genomicLocations/GenomicLocationsForm';
 import { FormSection } from '../../components/FormFieldVisibility';
 import { getEffectiveModAbbreviation } from '../../utils/affiliation';
 
@@ -19,6 +20,8 @@ const FIELDS_OMITTED_ON_CREATE = [
 	'Curie',
 	'Primary External ID',
 	'MOD Internal ID',
+	'Unique ID',
+	'Genomic Locations',
 	'Cross References',
 	'Updated By',
 	'Date Updated',
@@ -31,9 +34,11 @@ export const VARIANT_DETAIL_TOGGLEABLE_FIELDS = [
 	'Curie',
 	'Primary External ID',
 	'MOD Internal ID',
+	'Unique ID',
 	'Taxon',
 	'Variant Type',
 	'Variant Status',
+	'Genomic Locations',
 	'Related Notes',
 	'References',
 	'Source General Consequence',
@@ -70,22 +75,14 @@ const fieldDetailsColumnSize = 'col-5';
 export const VariantForm = ({ state, dispatch, isVisible, mode = 'detail' }) => {
 	const isCreate = mode === 'create';
 
-	// An autosuggest hands back the selected object, or the raw string while the curator is still
-	// typing. The string is kept so the field shows what was typed and the API can reject it.
-	const onOntologyTermValueChange = (field) => (event) => {
-		let value = {};
-		if (typeof event.value === 'object') {
-			value = event.value;
-		} else if (event.value === '') {
-			value = undefined;
-		} else {
-			value.curie = event.value;
-		}
-		dispatch({ type: 'EDIT', field, value });
+	// An autosuggest hands back the picked term, `{curie}` holding typed text so the field shows it and
+	// the API can reject it, or null once emptied, which is held as no value.
+	const onOntologyTermValueChange = (field) => (value) => {
+		dispatch({ type: 'EDIT', field, value: value ?? undefined });
 	};
 
-	const onFieldValueChange = (field) => (event) => {
-		dispatch({ type: 'EDIT', field, value: event.value });
+	const onFieldValueChange = (field) => (value) => {
+		dispatch({ type: 'EDIT', field, value });
 	};
 
 	return (
@@ -120,11 +117,21 @@ export const VariantForm = ({ state, dispatch, isVisible, mode = 'detail' }) => 
 				/>
 			</FormSection>
 
+			<FormSection isVisible={!isCreate && isVisible('Unique ID')}>
+				<IdentifierDetailPageTemplate
+					identifier={state.variant?.uniqueId}
+					label="Unique ID"
+					widgetColumnSize={widgetColumnSize}
+					labelColumnSize={labelColumnSize}
+					fieldDetailsColumnSize={fieldDetailsColumnSize}
+				/>
+			</FormSection>
+
 			<FormSection isVisible={isVisible('Taxon')}>
 				<TaxonDetailPageEditor
 					taxon={state.variant?.taxon}
 					required={isCreate}
-					onTaxonValueChange={onOntologyTermValueChange('taxon')}
+					onChange={onOntologyTermValueChange('taxon')}
 					widgetColumnSize={widgetColumnSize}
 					labelColumnSize={labelColumnSize}
 					fieldDetailsColumnSize={fieldDetailsColumnSize}
@@ -135,8 +142,8 @@ export const VariantForm = ({ state, dispatch, isVisible, mode = 'detail' }) => 
 			<FormSection isVisible={isVisible('Variant Type')}>
 				<VariantTypeDetailPageEditor
 					variantType={state.variant?.variantType}
-					required
-					onVariantTypeValueChange={onOntologyTermValueChange('variantType')}
+					required={isCreate}
+					onChange={onOntologyTermValueChange('variantType')}
 					widgetColumnSize={widgetColumnSize}
 					labelColumnSize={labelColumnSize}
 					fieldDetailsColumnSize={fieldDetailsColumnSize}
@@ -150,12 +157,16 @@ export const VariantForm = ({ state, dispatch, isVisible, mode = 'detail' }) => 
 					name="variantStatus"
 					label="Variant Status"
 					vocabularyLabel="variant_status"
-					onValueChange={onFieldValueChange('variantStatus')}
+					onChange={onFieldValueChange('variantStatus')}
 					widgetColumnSize={widgetColumnSize}
 					labelColumnSize={labelColumnSize}
 					fieldDetailsColumnSize={fieldDetailsColumnSize}
 					errorMessages={state.errorMessages}
 				/>
+			</FormSection>
+
+			<FormSection isVisible={!isCreate && isVisible('Genomic Locations')}>
+				<GenomicLocationsForm state={state} />
 			</FormSection>
 
 			<FormSection isVisible={isVisible('Related Notes')}>
@@ -169,7 +180,7 @@ export const VariantForm = ({ state, dispatch, isVisible, mode = 'detail' }) => 
 			<FormSection isVisible={isVisible('Source General Consequence')}>
 				<SourceGeneralConsequenceDetailPageEditor
 					sourceGeneralConsequence={state.variant?.sourceGeneralConsequence}
-					onSourceGeneralConsequenceValueChange={onOntologyTermValueChange('sourceGeneralConsequence')}
+					onChange={onOntologyTermValueChange('sourceGeneralConsequence')}
 					widgetColumnSize={widgetColumnSize}
 					labelColumnSize={labelColumnSize}
 					fieldDetailsColumnSize={fieldDetailsColumnSize}
@@ -253,7 +264,7 @@ export const VariantForm = ({ state, dispatch, isVisible, mode = 'detail' }) => 
 					value={state.variant?.internal}
 					name={'internal'}
 					label={'Internal'}
-					onValueChange={onFieldValueChange('internal')}
+					onChange={onFieldValueChange('internal')}
 					widgetColumnSize={widgetColumnSize}
 					labelColumnSize={labelColumnSize}
 					fieldDetailsColumnSize={fieldDetailsColumnSize}
@@ -266,7 +277,7 @@ export const VariantForm = ({ state, dispatch, isVisible, mode = 'detail' }) => 
 					value={state.variant?.obsolete}
 					name={'obsolete'}
 					label={'Obsolete'}
-					onValueChange={onFieldValueChange('obsolete')}
+					onChange={onFieldValueChange('obsolete')}
 					widgetColumnSize={widgetColumnSize}
 					labelColumnSize={labelColumnSize}
 					fieldDetailsColumnSize={fieldDetailsColumnSize}
