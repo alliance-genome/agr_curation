@@ -106,9 +106,11 @@ const variantReducer = (draft, action, initialState) => {
 		case 'EDIT':
 			draft.variant[action.field] = action.value;
 			break;
-		case 'EDIT_ROW':
-			draft.variant[action.entityType][action.index][action.field] = action.value;
+		case 'EDIT_ROW_BY_KEY': {
+			const row = draft.variant[action.entityType].find((candidate) => candidate.dataKey === action.dataKey);
+			if (row) row[action.field] = action.value;
 			break;
+		}
 		case 'ADD_ROW':
 			draft.variant[action.entityType].unshift(action.row);
 			if (action.entityType === 'references') {

@@ -67,7 +67,6 @@ const renderReducerSection = ({ useReducer, stateKey, dispatchKey, entityKey, Fo
 const SECTIONS = [
 	{
 		label: 'allele',
-		marksInvalidCells: true,
 		noteTypeSet: 'allele_note_type',
 		render: (notes) => {
 			const result = renderSubResourceForm(RelatedNotesForm, 'relatedNotes', notes);
@@ -76,7 +75,6 @@ const SECTIONS = [
 	},
 	{
 		label: 'gene',
-		marksInvalidCells: true,
 		noteTypeSet: 'gene_note_type',
 		render: (notes) => {
 			const GeneRelatedNotesForm = (props) => <RelatedNotesForm {...props} noteTypeVocabType="gene_note_type" />;
@@ -86,7 +84,6 @@ const SECTIONS = [
 	},
 	{
 		label: 'transgenic tool',
-		marksInvalidCells: true,
 		noteTypeSet: 'transgenic_tool_note_type',
 		render: (notes) =>
 			renderReducerSection({
@@ -102,8 +99,6 @@ const SECTIONS = [
 	{
 		label: 'variant',
 		noteTypeSet: 'variant_note_type',
-		// The variant section keeps its own copy of the table, whose editors mark no cell invalid.
-		marksInvalidCells: false,
 		render: (notes) =>
 			renderReducerSection({
 				useReducer: useVariantReducer,
@@ -237,9 +232,7 @@ describe.each(SECTIONS)('the $label related notes section', (section) => {
 
 		COLUMN_MESSAGES.forEach(([header, message]) => {
 			expect(getCellByHeader(container, header, 1).textContent).toContain(message);
-			if (section.marksInvalidCells) {
-				expect(getCellByHeader(container, header, 1).querySelector('.p-invalid')).not.toBeNull();
-			}
+			expect(getCellByHeader(container, header, 1).querySelector('.p-invalid')).not.toBeNull();
 			expect(getCellByHeader(container, header, 0).textContent).not.toContain(message);
 			expect(getCellByHeader(container, header, 0).querySelector('.p-invalid')).toBeNull();
 		});
