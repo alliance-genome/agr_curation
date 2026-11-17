@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
+import org.alliancegenome.curation_api.dao.CrossReferenceDAO;
 import org.alliancegenome.curation_api.dao.HTPExpressionDatasetAnnotationDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
@@ -47,6 +48,7 @@ public class HTPExpressionDatasetAnnotationDTOValidator extends AuditedObjectDTO
 	@Inject CurieMintService curieMintService;
 	@Inject OrganizationService organizationService;
 	@Inject CrossReferenceDTOValidator crossReferenceDtoValidator;
+	@Inject CrossReferenceDAO crossReferenceDAO;
 
 	@Transactional
 	public ObjectResponse<HTPExpressionDatasetAnnotation> validateHTPExpressionDatasetAnnotationDTO(HTPExpressionDatasetAnnotationDTO dto, BackendBulkDataProvider backendBulkDataProvider) throws ValidationException {
@@ -139,7 +141,9 @@ public class HTPExpressionDatasetAnnotationDTOValidator extends AuditedObjectDTO
 			if (xrefResponse.hasErrors()) {
 				response.addErrorMessage("data_provider_cross_reference_dto", xrefResponse.errorMessagesString());
 			} else {
-				htpAnnotation.setDataProviderCrossReference(xrefResponse.getEntity());
+				// dataProviderCrossReference has no cascade at all, so a brand new CrossReference
+				// needs persisting explicitly before it's assigned.
+				htpAnnotation.setDataProviderCrossReference(crossReferenceDAO.persist(xrefResponse.getEntity()));
 			}
 		} else {
 			htpAnnotation.setDataProviderCrossReference(null);

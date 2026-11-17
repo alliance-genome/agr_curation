@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.alliancegenome.curation_api.constants.ValidationConstants;
+import org.alliancegenome.curation_api.dao.CrossReferenceDAO;
 import org.alliancegenome.curation_api.model.entities.Analysis;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.Note;
@@ -29,6 +30,7 @@ public class AnalysisDTOValidator extends AuditedObjectDTOValidator<Analysis, An
 	@Inject FbcvTermService fbcvTermService;
 	@Inject OrganizationService organizationService;
 	@Inject CrossReferenceDTOValidator crossReferenceDtoValidator;
+	@Inject CrossReferenceDAO crossReferenceDAO;
 
 	public ObjectResponse<Analysis> validateAnalysisDTO(AnalysisDTO dto, Analysis analysis) {
 		response = new ObjectResponse<>();
@@ -57,7 +59,10 @@ public class AnalysisDTOValidator extends AuditedObjectDTOValidator<Analysis, An
 			if (xrefResponse.hasErrors()) {
 				response.addErrorMessage("data_provider_cross_reference_dto", xrefResponse.errorMessagesString());
 			} else {
-				analysis.setDataProviderCrossReference(xrefResponse.getEntity());
+				// dataProviderCrossReference has no cascade at all, so a brand new CrossReference
+				// needs persisting explicitly before it's assigned, even though Analysis itself is
+				// cascade-persisted from its parent.
+				analysis.setDataProviderCrossReference(crossReferenceDAO.persist(xrefResponse.getEntity()));
 			}
 		} else {
 			analysis.setDataProviderCrossReference(null);

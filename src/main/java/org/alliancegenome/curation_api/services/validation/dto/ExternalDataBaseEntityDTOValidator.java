@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.alliancegenome.curation_api.constants.ValidationConstants;
+import org.alliancegenome.curation_api.dao.CrossReferenceDAO;
 import org.alliancegenome.curation_api.dao.ExternalDataBaseEntityDAO;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.ExternalDataBaseEntity;
@@ -30,6 +31,7 @@ public class ExternalDataBaseEntityDTOValidator extends AuditedObjectDTOValidato
 	@Inject ExternalDataBaseEntityDAO externalDataBaseEntityDAO;
 	@Inject ExternalDataBaseEntityService externalDataBaseEntityService;
 	@Inject CrossReferenceDTOValidator crossReferenceDtoValidator;
+	@Inject CrossReferenceDAO crossReferenceDAO;
 
 	@Transactional
 	public ObjectResponse<ExternalDataBaseEntity> validateExternalDataBaseEntityDTO(ExternalDataBaseEntityDTO dto) {
@@ -55,7 +57,10 @@ public class ExternalDataBaseEntityDTOValidator extends AuditedObjectDTOValidato
 			if (xrefResponse.hasErrors()) {
 				response.addErrorMessage("preferred_cross_reference_dto", xrefResponse.errorMessagesString());
 			} else {
-				entity.setPreferredCrossReference(xrefResponse.getEntity());
+				// crossReferences/preferredCrossReference aren't cascade-PERSIST, so a brand new
+				// CrossReference needs persisting explicitly before it's assigned - otherwise
+				// Hibernate rejects it as an unsaved transient reference at flush time.
+				entity.setPreferredCrossReference(crossReferenceDAO.persist(xrefResponse.getEntity()));
 			}
 		} else {
 			entity.setPreferredCrossReference(null);
@@ -68,7 +73,7 @@ public class ExternalDataBaseEntityDTOValidator extends AuditedObjectDTOValidato
 				if (xrefResponse.hasErrors()) {
 					response.addErrorMessage("cross_reference_dtos", xrefResponse.errorMessagesString());
 				} else {
-					crossReferences.add(xrefResponse.getEntity());
+					crossReferences.add(crossReferenceDAO.persist(xrefResponse.getEntity()));
 				}
 			}
 			entity.setCrossReferences(crossReferences);

@@ -158,4 +158,35 @@ public class IT_0111_HTPExpressionDatasetAnnotationBulkUploadITCase extends Base
 			body("results[0]", not(hasKey("subSeries"))).
 			body("results[0]", not(hasKey("symbol")));
 	}
+
+	@Test
+	@Order(7)
+	public void htpDatasetBulkUploadCleanup() throws Exception {
+		// IT_0610_HTPExpressionDatasetAnnotationFmsITCase (run later, sharing this same database)
+		// finds its own record via a blanket /find with no filter and asserts exactly one result -
+		// delete this test's leftover row so it doesn't inflate that count.
+		int id = RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post(htpDatasetFindEndpoint).
+			then().
+			statusCode(200).
+			extract().path("results[0].id");
+
+		RestAssured.given().
+			when().
+			delete("/api/htpexpressiondatasetannotation/" + id).
+			then().
+			statusCode(200);
+
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post(htpDatasetFindEndpoint).
+			then().
+			statusCode(200).
+			body("returnedRecords", is(0));
+	}
 }
