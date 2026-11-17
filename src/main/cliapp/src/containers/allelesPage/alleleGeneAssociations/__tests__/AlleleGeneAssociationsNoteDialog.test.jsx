@@ -159,8 +159,11 @@ describe('the allele gene associations note pop-up', () => {
 		expect(getRows()[0].relatedNote).not.toHaveProperty('id');
 	});
 
-	it('keeps the edits back when the note fails validation', async () => {
-		validate.mockResolvedValue({ isSuccess: false, isError: true, data: { freeText: 'text is bad' } });
+	it.each([
+		['with field errors', { freeText: 'text is bad' }],
+		['without saying why', undefined],
+	])('keeps the edits back and says so when the note fails validation %s', async (_description, data) => {
+		validate.mockResolvedValue({ isSuccess: false, isError: true, data });
 		const { container, getRows } = renderForm();
 
 		await openNote(container, 0);
@@ -173,16 +176,14 @@ describe('the allele gene associations note pop-up', () => {
 		expect(getRows()[0].relatedNote.freeText).toBe('first note');
 		expect(dialogRows()).toHaveLength(1);
 		expect(getCellByHeader(container, 'Note', 0).textContent).not.toContain('Pending Edits!');
+		expect(document.body.textContent).toContain('Please fix validation errors before saving');
 	});
 
-	// The pop-up's table memoizes its cells, so none re-renders with the validation errors and no error shows.
-	// Were it to re-render, the note type and internal editors would still miss theirs: neither is given the row's
-	// key, so each looks its error up under none.
-	it.skip.each([
+	it.each([
 		['Text', 'freeText'],
 		['Note Type', 'noteType'],
 		['Internal', 'internal'],
-	])('shows a validation error on the %s cell', async (header, field) => {
+	])('shows a validation error on the %s cell, with invalid styling', async (header, field) => {
 		validate.mockResolvedValue({ isSuccess: false, isError: true, data: { [field]: `${field} is bad` } });
 		const { container } = renderForm();
 
@@ -190,6 +191,7 @@ describe('the allele gene associations note pop-up', () => {
 		keepEdits();
 
 		await waitFor(() => expect(getCellByHeader(dialog(), header).textContent).toContain(`${field} is bad`));
+		expect(getCellByHeader(dialog(), header).querySelector('.p-invalid')).not.toBeNull();
 		const otherHeaders = ['Text', 'Note Type', 'Internal'].filter((other) => other !== header);
 		otherHeaders.forEach((other) => expect(getCellByHeader(dialog(), other).textContent).not.toContain('is bad'));
 	});
