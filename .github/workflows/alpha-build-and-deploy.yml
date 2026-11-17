@@ -9,7 +9,7 @@ jobs:
     if: github.event.pull_request.merged == true && !contains(github.event.pull_request.labels.*.name, 'no-deploy')
     permissions:
       id-token: write # This is required for requesting the JWT for gaining permissions to assume the IAM role to perform AWS actions
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-24.04-arm
     steps:
     - name: Check out repository code
       uses: actions/checkout@v3
