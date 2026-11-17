@@ -357,6 +357,88 @@ public class IT_0318_TransgenicToolDetailITCase extends BaseITCase {
 			body("errorMessages.uses", containsString(ValidationConstants.REQUIRED_MESSAGE));
 	}
 
+	@Test
+	@Order(10)
+	public void createNeedsNoModIdentifierTakesItsAssociationsAndRejectsADuplicate() {
+		ResourceDescriptor descriptor = createResourceDescriptor("TTDCR", "^TTDCR:\\d+$");
+		ResourceDescriptorPage page = createResourceDescriptorPage("default", "http://test.org/ttdcr/[%s]", descriptor);
+		FBCVTerm useTerm = createFbcvTerm("FBcv:0009319", "test_created_tool_descriptor_318", "experimental_tool_descriptor", false);
+
+		// SCRUM-6691: as the create page sends it, with no MOD internal or primary external ID and no data provider:
+		// its minted curie identifies it, and the API gives it the curator's MOD. Its associations follow through their
+		// own endpoint once it exists.
+		Response response = RestAssured.given().
+			contentType("application/json").
+			body(newToolAsCreatePageSendsIt(page, useTerm)).
+			when().
+			post("/api/transgenic-tool").
+			then().
+			log().ifValidationFails().
+			statusCode(200).
+			body("entity.id", notNullValue()).
+			body("entity.uniqueId", notNullValue()).
+			body("entity.dataProvider", notNullValue()).
+			body("entity.transgenicToolSymbol.displayText", is("TTD created symbol")).
+			body("entity.transgenicToolFullName.displayText", is("TTD created full name")).
+			body("entity.transgenicToolSynonyms[0].displayText", is("TTD created synonym")).
+			body("entity.transgenicToolUses[0].uses[0].curie", is("FBcv:0009319")).
+			body("entity.references[0].curie", is("AGRKB:6631800001")).
+			body("entity.relatedNotes[0].freeText", is("A TTD created note.")).
+			body("entity.crossReferences[0].referencedCurie", is("TTDCR:0001")).
+			extract().response();
+		Long createdId = response.jsonPath().getLong("entity.id");
+
+		put(createdId, buildAssociation(null, tool3, isCompatibleWith)).
+			then().
+			statusCode(200).
+			body("entities", hasSize(1)).
+			body("entities[0].transgenicToolTransgenicToolAssociationObject.primaryExternalId", is(TOOL3)).
+			body("entities[0].transgenicToolAssociationSubject.id", is(createdId.intValue()));
+
+		// The same symbol and full name give the same unique ID
+		RestAssured.given().
+			contentType("application/json").
+			body(newToolAsCreatePageSendsIt(page, useTerm)).
+			when().
+			post("/api/transgenic-tool").
+			then().
+			statusCode(400).
+			body("errorMessages.uniqueId", notNullValue());
+	}
+
+	private TransgenicTool newToolAsCreatePageSendsIt(ResourceDescriptorPage page, FBCVTerm useTerm) {
+		VocabularyTerm fullNameType = getVocabularyTerm(getVocabulary(VocabularyConstants.NAME_TYPE_VOCABULARY), "full_name");
+		VocabularyTerm synonymType = getVocabularyTerm(getVocabulary(VocabularyConstants.NAME_TYPE_VOCABULARY), "systematic_name");
+		VocabularyTerm comment = getVocabularyTerm(getVocabulary(VocabularyConstants.NOTE_TYPE_VOCABULARY), "comment");
+
+		TransgenicTool newTool = new TransgenicTool();
+		TransgenicToolSymbolSlotAnnotation symbol = new TransgenicToolSymbolSlotAnnotation();
+		symbol.setNameType(symbolNameType);
+		symbol.setDisplayText("TTD created symbol");
+		symbol.setFormatText("TTD created symbol");
+		newTool.setTransgenicToolSymbol(symbol);
+		TransgenicToolFullNameSlotAnnotation fullName = new TransgenicToolFullNameSlotAnnotation();
+		fullName.setNameType(fullNameType);
+		fullName.setDisplayText("TTD created full name");
+		fullName.setFormatText("TTD created full name");
+		newTool.setTransgenicToolFullName(fullName);
+		TransgenicToolSynonymSlotAnnotation synonym = new TransgenicToolSynonymSlotAnnotation();
+		synonym.setNameType(synonymType);
+		synonym.setDisplayText("TTD created synonym");
+		synonym.setFormatText("TTD created synonym");
+		newTool.setTransgenicToolSynonyms(List.of(synonym));
+		TransgenicToolUseSlotAnnotation use = new TransgenicToolUseSlotAnnotation();
+		use.setUses(List.of(useTerm));
+		newTool.setTransgenicToolUses(List.of(use));
+		// Created by tableEditOfEachField
+		Reference reference = new Reference();
+		reference.setCurie("AGRKB:6631800001");
+		newTool.setReferences(List.of(reference));
+		newTool.setRelatedNotes(List.of(createNote(comment, "A TTD created note.", false, false, null)));
+		newTool.setCrossReferences(List.of(buildCrossReference("TTDCR:0001", page)));
+		return newTool;
+	}
+
 	private Response validate(String slotAnnotationEndpoint, Object slotAnnotation) {
 		return RestAssured.given().
 			contentType("application/json").

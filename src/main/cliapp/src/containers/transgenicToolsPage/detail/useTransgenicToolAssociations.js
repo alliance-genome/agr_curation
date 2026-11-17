@@ -34,28 +34,47 @@ export const useTransgenicToolAssociations = (transgenicToolId) => {
 	});
 
 	/**
-	 * Saves the rows as `useSubResourceList` does. A tool typed rather than picked from the autosuggest has no
-	 * id; while any row holds one, the save is refused without calling the API and those rows are marked.
+	 * A tool typed rather than picked from the autosuggest has no id. While any row holds one, those rows are marked
+	 * and a refusal is returned; otherwise null. The create page checks this before it creates the tool, so a tool
+	 * is not created whose associations could only fail.
 	 *
+	 * @returns {{isSuccess: false, message: string}|null}
+	 */
+	const refuseTypedTools = useCallback(() => {
+		if (isLoading || loadError) return null;
+		const typedRows = rows.filter((row) => row[OBJECT_FIELD] && !row[OBJECT_FIELD].id);
+		if (typedRows.length === 0) return null;
+		const marked = structuredClone(errorMessages);
+		typedRows.forEach((row) => {
+			marked[row.dataKey] = {
+				...marked[row.dataKey],
+				[OBJECT_FIELD]: { severity: 'error', message: 'Select the tool from the autosuggest' },
+			};
+		});
+		setErrorMessages(marked);
+		return { isSuccess: false, message: 'Select each tool from the autosuggest' };
+	}, [rows, errorMessages, setErrorMessages, isLoading, loadError]);
+
+	/**
+	 * Saves the rows as `useSubResourceList` does, unless {@link refuseTypedTools} refuses them, in which case the
+	 * API is not called.
+	 *
+	 * @param {number} [targetToolId] the tool to write to; the create page passes the tool it has just created
 	 * @returns {Promise<{isSuccess: boolean, message?: string}>}
 	 */
-	const saveAssociations = useCallback(async () => {
-		if (!isLoading && !loadError) {
-			const typedRows = rows.filter((row) => row[OBJECT_FIELD] && !row[OBJECT_FIELD].id);
-			if (typedRows.length > 0) {
-				const marked = structuredClone(errorMessages);
-				typedRows.forEach((row) => {
-					marked[row.dataKey] = {
-						...marked[row.dataKey],
-						[OBJECT_FIELD]: { severity: 'error', message: 'Select the tool from the autosuggest' },
-					};
-				});
-				setErrorMessages(marked);
-				return { isSuccess: false, message: 'Select each tool from the autosuggest' };
-			}
-		}
-		return save();
-	}, [rows, errorMessages, setErrorMessages, isLoading, loadError, save]);
+	const saveAssociations = useCallback(
+		async (targetToolId) => refuseTypedTools() ?? save(targetToolId),
+		[refuseTypedTools, save]
+	);
 
-	return { rows, errorMessages, setErrorMessages, save: saveAssociations, isLoading, loadError, ...subResource };
+	return {
+		rows,
+		errorMessages,
+		setErrorMessages,
+		save: saveAssociations,
+		refuseTypedTools,
+		isLoading,
+		loadError,
+		...subResource,
+	};
 };
