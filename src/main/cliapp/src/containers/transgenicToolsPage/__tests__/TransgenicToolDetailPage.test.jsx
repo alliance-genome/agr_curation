@@ -276,4 +276,15 @@ describe('<TransgenicToolDetailPage />', { timeout: 30000 }, () => {
 
 		expect(await screen.findByText('Could not update TransgenicTool: [11]')).toBeInTheDocument();
 	});
+
+	it('opens the create page in a new tab from New Transgenic Tool', async () => {
+		const user = userEvent.setup();
+		const open = vi.spyOn(window, 'open').mockImplementation(() => null);
+		renderPage();
+
+		await user.click(await screen.findByRole('button', { name: 'New Transgenic Tool' }, PAGE_LOAD_WAIT));
+
+		expect(open).toHaveBeenCalledWith('/transgenic-tool/create', '_blank');
+		open.mockRestore();
+	});
 });

@@ -26,12 +26,19 @@ import { GenesPage, GeneDetailPage, GeneCreatePage } from './containers/genesPag
 import { VariantsPage, VariantDetailPage, VariantCreatePage } from './containers/variantsPage';
 import { ConstructsPage, ConstructDetailPage } from './containers/constructsPage';
 import { CassettesPage, CassetteDetailPage, CassetteCreatePage } from './containers/cassettesPage';
-import { TransgenicToolsPage, TransgenicToolDetailPage } from './containers/transgenicToolsPage';
+import {
+	TransgenicToolsPage,
+	TransgenicToolDetailPage,
+	TransgenicToolCreatePage,
+} from './containers/transgenicToolsPage';
 import {
 	HTPExpressionDatasetAnnotationsPage,
 	HTPExpressionDatasetAnnotationDetailPage,
 } from './containers/htpExpressionDatasetAnnotationsPage';
-import { HTPExpressionDatasetSampleAnnotationsPage } from './containers/htpExpressionDatasetSampleAnnotationsPage';
+import {
+	HTPExpressionDatasetSampleAnnotationsPage,
+	HTPExpressionDatasetSampleAnnotationDetailPage,
+} from './containers/htpExpressionDatasetSampleAnnotationsPage';
 import { SequenceTargetingReagentsPage } from './containers/sequenceTargetingReagentsPage';
 import { ProfilePage } from './containers/profilePage';
 import { MoleculesPage } from './containers/moleculesPage';
@@ -272,6 +279,14 @@ export default function AppRoutes() {
 						}
 					/>
 					<Route
+						path="/htp-expression-dataset-sample/:identifier"
+						element={
+							<ErrorBoundary>
+								<HTPExpressionDatasetSampleAnnotationDetailPage />
+							</ErrorBoundary>
+						}
+					/>
+					<Route
 						path="/sequenceTargetingReagents"
 						element={
 							<ErrorBoundary>
@@ -300,6 +315,14 @@ export default function AppRoutes() {
 						element={
 							<ErrorBoundary>
 								<CassetteDetailPage />
+							</ErrorBoundary>
+						}
+					/>
+					<Route
+						path="/transgenic-tool/create"
+						element={
+							<ErrorBoundary>
+								<TransgenicToolCreatePage />
 							</ErrorBoundary>
 						}
 					/>

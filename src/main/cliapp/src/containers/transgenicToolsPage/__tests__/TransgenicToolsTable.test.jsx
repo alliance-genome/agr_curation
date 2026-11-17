@@ -100,4 +100,15 @@ describe('<TransgenicToolsTable />', () => {
 		await waitFor(() => expect(getTransgenicToolAssociations).toHaveBeenCalledWith(tool.id));
 		expect(await screen.findByRole('button', { name: 'Add Association' })).toBeInTheDocument();
 	});
+
+	it('opens the create page in a new tab from New Transgenic Tool', async () => {
+		const user = userEvent.setup();
+		const open = vi.spyOn(window, 'open').mockImplementation(() => null);
+		renderTable();
+
+		await user.click(await screen.findByRole('button', { name: 'New Transgenic Tool' }));
+
+		expect(open).toHaveBeenCalledWith('/transgenic-tool/create', '_blank');
+		open.mockRestore();
+	});
 });

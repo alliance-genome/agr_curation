@@ -5,6 +5,10 @@ export class TransgenicToolService extends BaseAuthService {
 		return this.api.get(`/transgenic-tool/${identifier}`);
 	}
 
+	async createTransgenicTool(transgenicTool) {
+		return this.api.post(`/transgenic-tool`, transgenicTool);
+	}
+
 	async saveTransgenicTool(transgenicTool) {
 		return this.api.put(`/transgenic-tool`, transgenicTool);
 	}
