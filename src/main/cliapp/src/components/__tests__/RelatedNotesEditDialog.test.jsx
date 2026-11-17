@@ -11,7 +11,6 @@ import {
 import { SearchService } from '../../service/SearchService';
 
 vi.mock('../../service/SearchService');
-vi.mock('../../service/useControlledVocabularyService');
 vi.mock('../../service/useVocabularyTermSetService');
 
 // The pop-up constructs a ValidationService at render and calls it once per note on Keep Edits.
@@ -202,7 +201,7 @@ describe('<RelatedNotesEditDialog />', () => {
 		]);
 	});
 
-	it('shows each validation error on its own cell of the note that caused it', async () => {
+	it('shows each validation error on its own cell of the note that caused it, with invalid styling', async () => {
 		validate.mockResolvedValueOnce(VALID).mockResolvedValueOnce({
 			isSuccess: false,
 			isError: true,
@@ -215,7 +214,9 @@ describe('<RelatedNotesEditDialog />', () => {
 		await waitFor(() => expect(getCellByHeader(baseElement, 'Text', 1).textContent).toContain('text is bad'));
 		COLUMN_ERRORS.forEach(([header, , message]) => {
 			expect(getCellByHeader(baseElement, header, 1).textContent).toContain(message);
+			expect(getCellByHeader(baseElement, header, 1).querySelector('.p-invalid')).not.toBeNull();
 			expect(getCellByHeader(baseElement, header, 0).textContent).not.toContain(message);
+			expect(getCellByHeader(baseElement, header, 0).querySelector('.p-invalid')).toBeNull();
 			COLUMN_ERRORS.filter(([otherHeader]) => otherHeader !== header).forEach(([, , otherMessage]) =>
 				expect(getCellByHeader(baseElement, header, 1).textContent).not.toContain(otherMessage)
 			);
