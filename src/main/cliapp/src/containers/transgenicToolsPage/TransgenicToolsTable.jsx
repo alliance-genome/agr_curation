@@ -38,6 +38,7 @@ import { TransgenicToolUsesDialog } from './TransgenicToolUsesDialog';
 import { TransgenicToolAssociationsEditDialog } from './TransgenicToolAssociationsEditDialog';
 import { buildTransgenicToolPayload } from './detail/utils';
 import { associatedToolText, toolAssociationsFindParams, useTermTexts } from './utils';
+import { NewTransgenicToolButton } from './NewTransgenicToolButton';
 
 // A tool has a dozen associations at most, so the pop-up fetches them in one page.
 const ASSOCIATIONS_LIMIT = 100;
@@ -419,6 +420,14 @@ export const TransgenicToolsTable = () => {
 		searchService,
 	});
 
+	// SCRUM-6691: the create page opens in a new tab; it is not offered while a row is being edited
+	const headerButtons = (disabled = false) => (
+		<>
+			<NewTransgenicToolButton disabled={disabled} />
+			&nbsp;&nbsp;
+		</>
+	);
+
 	return (
 		<>
 			<div className="card">
@@ -435,6 +444,7 @@ export const TransgenicToolsTable = () => {
 					tableState={tableState}
 					setTableState={setTableState}
 					columns={columns}
+					headerButtons={headerButtons}
 					isEditable={true}
 					mutation={mutation}
 					hasDetails={true}
