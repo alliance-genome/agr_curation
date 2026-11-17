@@ -108,6 +108,7 @@ export const DataLoadsComponent = () => {
 		],
 		['ALLELE_ASSOCIATION', ['AlleleGeneAssociationDTO']],
 		['CONSTRUCT_ASSOCIATION', ['ConstructGenomicEntityAssociationDTO']],
+		['HTP_EXPRESSION_DATASET_ANNOTATION', ['HTPExpressionDatasetAnnotationDTO']],
 	]);
 
 	const { data: bulkloadData, isSuccess: bulkloadIsSuccess } = useQuery({

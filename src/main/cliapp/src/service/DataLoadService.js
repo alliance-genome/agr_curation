@@ -122,6 +122,7 @@ export class DataLoadService extends BaseAuthService {
 				'ALLELE_ASSOCIATION',
 				'CONSTRUCT_ASSOCIATION',
 				'AGM_ASSOCIATION',
+				'HTP_EXPRESSION_DATASET_ANNOTATION',
 			],
 			BulkGoogleAnalyticsLoad: ['GOOGLE_ANALYTICS'],
 		};

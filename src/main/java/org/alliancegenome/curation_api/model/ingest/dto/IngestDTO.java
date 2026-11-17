@@ -71,6 +71,10 @@ public class IngestDTO {
 	private List<AntibodyDTO> antibodyIngestSet;
 
 	@JsonView({CurationView.FieldsAndLists.class})
+	@JsonProperty("high_throughput_expression_dataset_annotation_ingest_set")
+	private List<HTPExpressionDatasetAnnotationDTO> highThroughputExpressionDatasetAnnotationIngestSet;
+
+	@JsonView({CurationView.FieldsAndLists.class})
 	@JsonProperty("variant_ingest_set")
 	private List<VariantDTO> variantIngestSet;
 

@@ -15,6 +15,9 @@ import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.entities.HTPExpressionDatasetAnnotation;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkFMSLoad;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
+import org.alliancegenome.curation_api.model.entities.bulkloads.BulkManualLoad;
+import org.alliancegenome.curation_api.model.ingest.dto.HTPExpressionDatasetAnnotationDTO;
+import org.alliancegenome.curation_api.model.ingest.dto.IngestDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.HTPExpressionDatasetAnnotationFmsDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.HTPExpressionDatasetAnnotationIngestFmsDTO;
 import org.alliancegenome.curation_api.response.APIResponse;
@@ -32,11 +35,51 @@ import jakarta.inject.Inject;
 @ApplicationScoped
 public class HTPExpressionDatasetAnnotationExecutor extends LoadFileExecutor {
 
+	private static final String INGEST_SET = "high_throughput_expression_dataset_annotation_ingest_set";
+
 	@Inject ExternalDataBaseEntityService externalDataBaseEntityService;
 	@Inject ExternalDataBaseEntityDAO externalDataBaseEntityDAO;
 	@Inject HTPExpressionDatasetAnnotationService htpExpressionDatasetAnnotationService;
 	@Inject HTPExpressionDatasetAnnotationDAO htpExpressionDatasetAnnotationDAO;
-	
+
+	// SCRUM-6714: direct LinkML DQM submission path, alongside the FMS path below.
+	@Override
+	protected List<?> getIngestSet(IngestDTO ingestDto) {
+		return ingestDto.getHighThroughputExpressionDatasetAnnotationIngestSet();
+	}
+
+	@Override
+	protected Class<?> getIngestDtoClass() {
+		return HTPExpressionDatasetAnnotationDTO.class;
+	}
+
+	@Override
+	protected void loadIngestSet(BulkLoadFileHistory bulkLoadFileHistory, IngestDTO ingestDto, Boolean cleanUp) {
+		BulkManualLoad manual = (BulkManualLoad) bulkLoadFileHistory.getBulkLoad();
+		BackendBulkDataProvider dataProvider = manual.getDataProvider();
+
+		List<HTPExpressionDatasetAnnotationDTO> htpAnnotations = ingestDto.getHighThroughputExpressionDatasetAnnotationIngestSet();
+
+		List<Long> htpAnnotationIdsLoaded = new ArrayList<>();
+		List<Long> htpAnnotationIdsBefore = new ArrayList<>();
+		if (cleanUp) {
+			htpAnnotationIdsBefore.addAll(htpExpressionDatasetAnnotationService.getAnnotationIdsByDataProvider(dataProvider.name()));
+		}
+
+		bulkLoadFileHistory.getBulkLoadFile().setRecordCount(htpAnnotations.size() + bulkLoadFileHistory.getBulkLoadFile().getRecordCount());
+		bulkLoadFileDAO.merge(bulkLoadFileHistory.getBulkLoadFile());
+
+		updateHistory(bulkLoadFileHistory);
+
+		boolean success = runLoad(htpExpressionDatasetAnnotationService::upsert, bulkLoadFileHistory, dataProvider, htpAnnotations, htpAnnotationIdsLoaded, countLabel(INGEST_SET));
+		if (success && cleanUp) {
+			runCleanup(htpExpressionDatasetAnnotationService, bulkLoadFileHistory, dataProvider.name(), htpAnnotationIdsBefore, htpAnnotationIdsLoaded, countLabel(INGEST_SET));
+		}
+		bulkLoadFileHistory.finishLoad();
+		updateHistory(bulkLoadFileHistory);
+		updateExceptions(bulkLoadFileHistory);
+	}
+
 	public void execLoad(BulkLoadFileHistory bulkLoadFileHistory) {
 		try {
 			BulkFMSLoad fms = (BulkFMSLoad) bulkLoadFileHistory.getBulkLoad();
