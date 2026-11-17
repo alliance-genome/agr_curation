@@ -4,6 +4,7 @@ import userEvent from '@testing-library/user-event';
 import { BrowserRouter } from 'react-router-dom';
 import { renderWithClient } from '../../../tools/jest/utils';
 import { button, FORM_LOAD_WAIT, NAVIGATION_WAIT, section } from './geneTestUtils';
+import { getCellByHeader } from '../../allelesPage/__tests__/alleleFormTestUtils';
 
 const { createGene, saveGeneDetail, replaceRows, navigate } = vi.hoisted(() => ({
 	createGene: vi.fn(),
@@ -274,9 +275,9 @@ describe('<GeneCreatePage />', { timeout: 60000 }, () => {
 		await user.click(button('Clear'));
 
 		await waitFor(() =>
-			within(section(/Symbol/))
-				.getAllByRole('textbox')
-				.forEach((textbox) => expect(textbox).toHaveValue(''))
+			['Display Text', 'Format Text', 'Synonym URL'].forEach((header) =>
+				expect(getCellByHeader(section(/Symbol/), header).querySelector('input')).toHaveValue('')
+			)
 		);
 		expect(within(section('Secondary IDs')).queryByRole('table')).not.toBeInTheDocument();
 	});

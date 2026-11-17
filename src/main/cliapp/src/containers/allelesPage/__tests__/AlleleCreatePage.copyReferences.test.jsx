@@ -1,7 +1,7 @@
 import React from 'react';
 import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { COPY_SOURCE_ENTRY, FORM_LOAD_WAIT, renderInRouter, sourceAllele } from './alleleTestUtils';
+import { COPY_SOURCE_ENTRY, FORM_LOAD_WAIT, renderInRouter, sourceAllele, symbolInput } from './alleleTestUtils';
 
 const createAllele = vi.fn();
 const getAllele = vi.fn();
@@ -40,7 +40,7 @@ const storedReference = {
 const renderPage = () => renderInRouter(<AlleleCreatePage />, COPY_SOURCE_ENTRY);
 
 const waitForSourceToLoad = async (container) => {
-	await waitFor(() => expect(container.querySelector('#displayText')).toHaveValue('abc-1'), FORM_LOAD_WAIT);
+	await waitFor(() => expect(symbolInput()).toHaveValue('abc-1'), FORM_LOAD_WAIT);
 	await waitFor(() => expect(getReferencesForAllele).toHaveBeenCalledWith(1), FORM_LOAD_WAIT);
 	await waitFor(() => expect(screen.queryByText('Loading allele to clone...')).not.toBeInTheDocument(), FORM_LOAD_WAIT);
 };
@@ -130,12 +130,12 @@ describe('<AlleleCreatePage /> copying references', { timeout: 30000 }, () => {
 
 	it('Still starts from the copy when the references cannot be loaded', async () => {
 		getReferencesForAllele.mockRejectedValue(new Error('unavailable'));
-		const { container } = await renderPage();
+		await renderPage();
 
 		await waitFor(
 			() => expect(screen.getByText('Could not load the references of allele WB:WBVar1')).toBeInTheDocument(),
 			FORM_LOAD_WAIT
 		);
-		expect(container.querySelector('#displayText')).toHaveValue('abc-1');
+		expect(symbolInput()).toHaveValue('abc-1');
 	});
 });
