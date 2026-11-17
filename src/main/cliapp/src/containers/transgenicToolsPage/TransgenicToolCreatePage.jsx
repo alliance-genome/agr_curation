@@ -28,11 +28,14 @@ import { TransgenicToolForm, TRANSGENIC_TOOL_CREATE_TOGGLEABLE_FIELDS } from './
 const TOOL_STEP = 'transgenicTool';
 const ASSOCIATIONS_STEP = 'transgenicToolAssociations';
 
+// How the messages name a saved tool: by its identifier, or, when none could be minted, by its symbol or unique ID
+const toolLabel = (tool) => getIdentifier(tool) || tool?.transgenicToolSymbol?.displayText || tool?.uniqueId;
+
 const errorToast = (message) => ({ life: 10000, severity: 'error', sticky: false, ...message });
 
 /**
  * The page that creates a transgenic tool (SCRUM-6691), opened in a new tab from the Transgenic Tools table and the
- * Transgenic Tool detail page. Its fields are edited as on the detail page.
+ * Transgenic Tool detail page. Its fields are edited as on the detail page. Save & Close goes back to the table.
  *
  * Saving creates the tool with its own fields and lists, which mints its AGRKB curie; the unique ID is built from the
  * symbol and the full name, so a tool that would duplicate another is refused before anything is saved. The tool
@@ -53,7 +56,7 @@ export default function TransgenicToolCreatePage() {
 		TRANSGENIC_TOOL_CREATE_TOGGLEABLE_FIELDS
 	);
 	const saveProgress = useSaveProgress();
-	// Set once Save & Close has saved everything, while the page shows that before moving on to the tool.
+	// Set once Save & Close has saved everything, while the page shows that before going back to the table.
 	const [isLeaving, setIsLeaving] = useState(false);
 	// Held so that saving again after the associations failed updates the tool that already exists, rather than
 	// creating a second one.
@@ -128,7 +131,7 @@ export default function TransgenicToolCreatePage() {
 			toastSuccess.current.show({
 				severity: 'success',
 				summary: 'Successful',
-				detail: `Transgenic Tool ${getIdentifier(saved)} created`,
+				detail: `Transgenic Tool ${toolLabel(saved)} created`,
 			});
 		}
 
@@ -143,7 +146,7 @@ export default function TransgenicToolCreatePage() {
 				toastError.current.show(
 					errorToast({
 						summary: 'Tool associations not saved: ',
-						detail: `${outcome.message}. Transgenic Tool ${getIdentifier(saved)} was created - fix the rows and save again, or finish them on its detail page.`,
+						detail: `${outcome.message}. Transgenic Tool ${toolLabel(saved)} was created - fix the rows and save again, or finish them on its detail page.`,
 					})
 				);
 				return;
@@ -154,7 +157,7 @@ export default function TransgenicToolCreatePage() {
 		if (closeAfterSubmit) {
 			// The curator sees everything saved before the page moves on; saving again meanwhile is not offered.
 			setIsLeaving(true);
-			if (await saveProgress.finish()) navigate(`/transgenic-tool/${getIdentifier(saved)}`);
+			if (await saveProgress.finish()) navigate('/transgenicTools');
 		} else {
 			// The form starts over for the next tool from the one just saved, so it can be entered as a small change to it
 			await showTransgenicTool(buildDuplicateTransgenicTool(saved));
