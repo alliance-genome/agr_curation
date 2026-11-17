@@ -10,56 +10,14 @@ import ErrorBoundary from '../../components/Error/ErrorBoundary';
 import { StickyHeader } from '../../components/StickyHeader';
 import { DetailPageHeading } from '../../components/DetailPageHeading';
 import { LoadingOverlay } from '../../components/LoadingOverlay';
-import { FormFieldVisibilityMenu, FormSection, useFormFieldVisibility } from '../../components/FormFieldVisibility';
-import { IdentifierDetailPageTemplate } from '../../components/Templates/IdentifierDetailPageTemplate';
-import { DataProviderDetailPageTemplate } from '../../components/Templates/DataProviderDetailPageTemplate';
-import { UserDetailPageTemplate } from '../../components/Templates/UserDetailPageTemplate';
-import { DateDetailPageTemplate } from '../../components/Templates/DateDetailPageTemplate';
-import { BooleanDetailPageEditor } from '../../components/Editors/dropdown/boolean/BooleanDetailPageEditor';
+import { FormFieldVisibilityMenu, useFormFieldVisibility } from '../../components/FormFieldVisibility';
 import { seedResourceDescriptors } from '../../components/crossReferences/utils';
 import { processErrors } from '../affectedGenomicModelPage/utils';
 import { useTransgenicToolReducer } from './detail/useTransgenicToolReducer';
 import { useTransgenicToolAssociations } from './detail/useTransgenicToolAssociations';
 import { buildTransgenicToolPayload } from './detail/utils';
-import { NameSlotAnnotationForm } from '../../components/nameSlotAnnotations/NameSlotAnnotationForm';
-import { SynonymsForm } from './detail/SynonymsForm';
-import { SecondaryIdsForm } from './detail/SecondaryIdsForm';
-import { UsesForm } from './detail/UsesForm';
-import { TransgenicToolAssociationsForm } from './detail/TransgenicToolAssociationsForm';
-import { ReferencesForm } from './detail/ReferencesForm';
-import { RelatedNotesForm } from './detail/RelatedNotesForm';
-import { CrossReferencesForm } from './detail/CrossReferencesForm';
-
-// The fields of the page, in order; each can be hidden through the field menu (SCRUM-6655)
-export const TRANSGENIC_TOOL_DETAIL_TOGGLEABLE_FIELDS = [
-	'Unique ID',
-	'Curie',
-	'Primary External ID',
-	'MOD Internal ID',
-	'Full Name',
-	'Symbol',
-	'Synonyms',
-	'Secondary IDs',
-	'Transgenic Tool Uses',
-	'Transgenic Tool Associations',
-	'References',
-	'Related Notes',
-	'Data Provider',
-	'Cross References',
-	'Updated By',
-	'Date Updated',
-	'Created By',
-	'Date Created',
-	'Placeholder',
-	'Internal',
-	'Obsolete',
-];
-
-const labelColumnSize = 'col-3';
-const widgetColumnSize = 'col-4';
-const fieldDetailsColumnSize = 'col-5';
-
-const columnSizes = { labelColumnSize, widgetColumnSize, fieldDetailsColumnSize };
+import { TransgenicToolForm, TRANSGENIC_TOOL_DETAIL_TOGGLEABLE_FIELDS } from './TransgenicToolForm';
+import { NewTransgenicToolButton } from './NewTransgenicToolButton';
 
 // The message of a rejected request: the API's, or its status when it gave none.
 const errorDetail = (error) =>
@@ -69,7 +27,8 @@ const errorDetail = (error) =>
 /**
  * The detail page of one transgenic tool (SCRUM-6655): the fields of the Transgenic Tools table, each in a
  * section the curator can hide through the field menu. Save writes the tool, and its tool associations
- * through their own endpoint when they have been edited.
+ * through their own endpoint when they have been edited. New Transgenic Tool opens the create page in a new
+ * tab (SCRUM-6691).
  */
 export default function TransgenicToolDetailPage() {
 	const { identifier } = useParams();
@@ -153,19 +112,6 @@ export default function TransgenicToolDetailPage() {
 			</div>
 		);
 
-	const onBooleanChange = (field) => (value) => transgenicToolDispatch({ type: 'EDIT', field, value });
-
-	const booleanField = (field, label) => (
-		<BooleanDetailPageEditor
-			value={transgenicTool?.[field]}
-			name={field}
-			label={label}
-			onChange={onBooleanChange(field)}
-			errorMessages={transgenicToolState.errorMessages}
-			{...columnSizes}
-		/>
-	);
-
 	return (
 		<>
 			<Toast ref={toastError} position="top-left" />
@@ -174,14 +120,14 @@ export default function TransgenicToolDetailPage() {
 			<ErrorBoundary>
 				<StickyHeader>
 					<Splitter className="bg-primary-reverse border-none lg:min-h-5rem" gutterSize={0}>
-						<SplitterPanel size={50} className="flex justify-content-start min-w-0 ml-5 py-3 ">
+						<SplitterPanel size={45} className="flex justify-content-start min-w-0 ml-5 py-3 ">
 							<DetailPageHeading
 								entityType="Transgenic Tool"
 								entity={transgenicTool}
 								label={transgenicTool?.transgenicToolSymbol?.displayText}
 							/>
 						</SplitterPanel>
-						<SplitterPanel size={30} className="flex align-items-center justify-content-end gap-2 py-3">
+						<SplitterPanel size={25} className="flex align-items-center justify-content-end gap-2 py-3">
 							<FormFieldVisibilityMenu
 								toggleableFields={TRANSGENIC_TOOL_DETAIL_TOGGLEABLE_FIELDS}
 								visibleFields={visibleFields}
@@ -189,7 +135,7 @@ export default function TransgenicToolDetailPage() {
 								showAllFields={showAllFields}
 							/>
 						</SplitterPanel>
-						<SplitterPanel size={20} className="flex align-items-center justify-content-start gap-2 pl-2 py-3">
+						<SplitterPanel size={30} className="flex align-items-center justify-content-start gap-2 pl-2 py-3">
 							<Button
 								label="Save"
 								icon="pi pi-check"
@@ -197,115 +143,16 @@ export default function TransgenicToolDetailPage() {
 								onClick={handleSubmit}
 								disabled={!hasPendingEdits || isSavingTool || associations.isSaving}
 							/>
+							<NewTransgenicToolButton className="p-button-text" />
 						</SplitterPanel>
 					</Splitter>
 				</StickyHeader>
-				{/* Saving is the header's Save; Enter in a table filter or field must not submit and reload the page. */}
-				<form className="mt-8" onSubmit={(event) => event.preventDefault()}>
-					<FormSection isVisible={isVisible('Unique ID')}>
-						<IdentifierDetailPageTemplate
-							identifier={transgenicTool?.uniqueId}
-							label="Unique ID"
-							{...columnSizes}
-							showAdditionalData={false}
-						/>
-					</FormSection>
-					<FormSection isVisible={isVisible('Curie')}>
-						<IdentifierDetailPageTemplate
-							identifier={transgenicTool?.curie}
-							label="Curie"
-							{...columnSizes}
-							showAdditionalData={false}
-						/>
-					</FormSection>
-					<FormSection isVisible={isVisible('Primary External ID')}>
-						<IdentifierDetailPageTemplate
-							identifier={transgenicTool?.primaryExternalId}
-							label="Primary External ID"
-							{...columnSizes}
-							showAdditionalData={false}
-						/>
-					</FormSection>
-					<FormSection isVisible={isVisible('MOD Internal ID')}>
-						<IdentifierDetailPageTemplate
-							identifier={transgenicTool?.modInternalId}
-							label="MOD Internal ID"
-							{...columnSizes}
-							showAdditionalData={false}
-						/>
-					</FormSection>
-					<FormSection isVisible={isVisible('Full Name')}>
-						<NameSlotAnnotationForm
-							name={transgenicToolState.transgenicTool?.transgenicToolFullName}
-							entityState={transgenicToolState.entityStates.transgenicToolFullName}
-							dispatch={transgenicToolDispatch}
-							entityType="transgenicToolFullName"
-							tableName="Full Name"
-							addLabel="Add Full Name"
-						/>
-					</FormSection>
-					<FormSection isVisible={isVisible('Symbol')}>
-						<NameSlotAnnotationForm
-							name={transgenicToolState.transgenicTool?.transgenicToolSymbol}
-							entityState={transgenicToolState.entityStates.transgenicToolSymbol}
-							dispatch={transgenicToolDispatch}
-							entityType="transgenicToolSymbol"
-							isSymbol
-							tableName="Symbol"
-							addLabel="Add Symbol"
-						/>
-					</FormSection>
-					<FormSection isVisible={isVisible('Synonyms')}>
-						<SynonymsForm state={transgenicToolState} dispatch={transgenicToolDispatch} />
-					</FormSection>
-					<FormSection isVisible={isVisible('Secondary IDs')}>
-						<SecondaryIdsForm state={transgenicToolState} dispatch={transgenicToolDispatch} {...columnSizes} />
-					</FormSection>
-					<FormSection isVisible={isVisible('Transgenic Tool Uses')}>
-						<UsesForm state={transgenicToolState} dispatch={transgenicToolDispatch} />
-					</FormSection>
-					<FormSection isVisible={isVisible('Transgenic Tool Associations')}>
-						<TransgenicToolAssociationsForm associations={associations} />
-					</FormSection>
-					<FormSection isVisible={isVisible('References')}>
-						<ReferencesForm state={transgenicToolState} dispatch={transgenicToolDispatch} />
-					</FormSection>
-					<FormSection isVisible={isVisible('Related Notes')}>
-						<RelatedNotesForm state={transgenicToolState} dispatch={transgenicToolDispatch} />
-					</FormSection>
-					<FormSection isVisible={isVisible('Data Provider')}>
-						<DataProviderDetailPageTemplate
-							dataProvider={transgenicTool?.dataProvider?.abbreviation}
-							{...columnSizes}
-						/>
-					</FormSection>
-					<FormSection isVisible={isVisible('Cross References')}>
-						<CrossReferencesForm state={transgenicToolState} dispatch={transgenicToolDispatch} />
-					</FormSection>
-					<FormSection isVisible={isVisible('Updated By')}>
-						<UserDetailPageTemplate
-							user={transgenicTool?.updatedBy?.uniqueId}
-							fieldName="Updated By"
-							{...columnSizes}
-						/>
-					</FormSection>
-					<FormSection isVisible={isVisible('Date Updated')}>
-						<DateDetailPageTemplate date={transgenicTool?.dateUpdated} fieldName="Date Updated" {...columnSizes} />
-					</FormSection>
-					<FormSection isVisible={isVisible('Created By')}>
-						<UserDetailPageTemplate
-							user={transgenicTool?.createdBy?.uniqueId}
-							fieldName="Created By"
-							{...columnSizes}
-						/>
-					</FormSection>
-					<FormSection isVisible={isVisible('Date Created')}>
-						<DateDetailPageTemplate date={transgenicTool?.dateCreated} fieldName="Date Created" {...columnSizes} />
-					</FormSection>
-					<FormSection isVisible={isVisible('Placeholder')}>{booleanField('placeholder', 'Placeholder')}</FormSection>
-					<FormSection isVisible={isVisible('Internal')}>{booleanField('internal', 'Internal')}</FormSection>
-					<FormSection isVisible={isVisible('Obsolete')}>{booleanField('obsolete', 'Obsolete')}</FormSection>
-				</form>
+				<TransgenicToolForm
+					state={transgenicToolState}
+					dispatch={transgenicToolDispatch}
+					associations={associations}
+					isVisible={isVisible}
+				/>
 			</ErrorBoundary>
 		</>
 	);
