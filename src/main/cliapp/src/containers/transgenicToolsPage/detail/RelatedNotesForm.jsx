@@ -2,7 +2,10 @@ import { useRef } from 'react';
 import { Button } from 'primereact/button';
 import { FormTableWrapper } from '../../../components/FormTableWrapper';
 import { RelatedNotesFormTable } from '../../../components/relatedNotes/RelatedNotesFormTable';
-import { addDataKey } from '../../../utils/rows';
+import { addDataKey, KEEP_ROWS_IN_EDIT_MODE } from '../../../utils/rows';
+import { TableEditorProvider } from '../../../components/Editors/fields/TableEditorContext';
+import { useVocabularyTermSetService } from '../../../service/useVocabularyTermSetService';
+import { useTransgenicToolFormStrategy } from './useTransgenicToolFormStrategy';
 
 const ENTITY_TYPE = 'relatedNotes';
 
@@ -21,8 +24,8 @@ export const RelatedNotesForm = ({ state, dispatch }) => {
 	const tableRef = useRef(null);
 	const relatedNotes = state.transgenicTool?.[ENTITY_TYPE];
 
-	const editRow = (props, field, value) =>
-		dispatch({ type: 'EDIT_ROW_BY_KEY', entityType: ENTITY_TYPE, dataKey: props.rowData?.dataKey, field, value });
+	const noteTypeTerms = useVocabularyTermSetService(NOTE_TYPE_TERM_SET);
+	const strategy = useTransgenicToolFormStrategy({ state, dispatch, entityType: ENTITY_TYPE });
 
 	const createNewRelatedNoteHandler = (event) => {
 		event.preventDefault();
@@ -42,32 +45,16 @@ export const RelatedNotesForm = ({ state, dispatch }) => {
 	return (
 		<FormTableWrapper
 			table={
-				<RelatedNotesFormTable
-					relatedNotes={relatedNotes}
-					editingRows={state.entityStates[ENTITY_TYPE].editingRows}
-					onRowEditChange={() => null}
-					tableRef={tableRef}
-					deletionHandler={deletionHandler}
-					errorMessages={state.entityStates[ENTITY_TYPE].errorMessages}
-					noteTypeVocabType={NOTE_TYPE_TERM_SET}
-					// The rows are the reducer's, which freezes them, so the edit goes through dispatch alone:
-					// editorCallback would write into the frozen row and throw before the dispatch (SCRUM-6655)
-					noteTypeOnChangeHandler={(props, event) => editRow(props, 'noteType', event.target.value)}
-					textOnChangeHandler={(rowIndex, event, field) =>
-						dispatch({
-							type: 'EDIT_ROW_BY_KEY',
-							entityType: ENTITY_TYPE,
-							dataKey: relatedNotes[rowIndex]?.dataKey,
-							field,
-							value: event.target.value,
-						})
-					}
-					internalOnChangeHandler={(props, event) => editRow(props, 'internal', event.target?.value?.name)}
-					referencesOnChangeHandler={(event, setFieldValue, props) => {
-						setFieldValue(event.target.value);
-						editRow(props, 'references', event.target.value);
-					}}
-				/>
+				<TableEditorProvider strategy={strategy}>
+					<RelatedNotesFormTable
+						relatedNotes={relatedNotes}
+						editingRows={state.entityStates[ENTITY_TYPE].editingRows}
+						onRowEditChange={KEEP_ROWS_IN_EDIT_MODE}
+						tableRef={tableRef}
+						deletionHandler={deletionHandler}
+						noteTypeTerms={noteTypeTerms}
+					/>
+				</TableEditorProvider>
 			}
 			tableName="Related Notes"
 			showTable={state.entityStates[ENTITY_TYPE].show}

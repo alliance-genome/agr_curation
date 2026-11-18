@@ -6,7 +6,10 @@ import { SubResourceSaveButton } from '../SubResourceSaveButton';
 import { SubResourceLoadError } from '../SubResourceLoadError';
 import { RelatedNotesFormTable } from './RelatedNotesFormTable';
 import { useRef } from 'react';
-import { addDataKey } from '../../utils/rows';
+import { addDataKey, KEEP_ROWS_IN_EDIT_MODE } from '../../utils/rows';
+import { TableEditorProvider } from '../Editors/fields/TableEditorContext';
+import { useDataKeyRowsStrategy } from '../Editors/fields/strategies/useDataKeyRowsStrategy';
+import { useVocabularyTermSetService } from '../../service/useVocabularyTermSetService';
 
 /**
  * A detail or create page's related notes section.
@@ -17,20 +20,26 @@ import { addDataKey } from '../../utils/rows';
  *
  * @param {Object} props
  * @param {string} props.type the name the page provides the list under
- * @param {string} [props.noteTypeVocabType] the vocabulary term set the note types come from; the table's own
- *   default when omitted
+ * @param {string} [props.noteTypeVocabType] the vocabulary term set the note types come from; the allele's when
+ *   omitted
  * @param {'detail'|'create'} [props.mode]
  */
 export const RelatedNotesForm = ({ type, noteTypeVocabType, mode = 'detail' }) => {
 	const subResource = useSubResource(type);
 	const { rows: relatedNotes, errorMessages, isDirty } = subResource;
-	const { editingRows, addRow, updateRow, deletionHandler, onRowEditChange } = useSubResourceRows(subResource, {
+	const { editingRows, addRow, updateRow, deletionHandler } = useSubResourceRows(subResource, {
 		prepend: true,
 	});
 	const tableRef = useRef(null);
 	const isDetail = mode === 'detail';
 
-	const changeRow = (dataKey, changes) => updateRow(dataKey, (note) => ({ ...note, ...changes }));
+	const noteTypeTerms = useVocabularyTermSetService(noteTypeVocabType ?? 'allele_note_type');
+
+	const strategy = useDataKeyRowsStrategy({
+		rows: relatedNotes,
+		errors: errorMessages,
+		write: ({ rowKey, field, value }) => updateRow(rowKey, (note) => ({ ...note, [field]: value })),
+	});
 
 	const createNewRelatedNoteHandler = (e) => {
 		e.preventDefault();
@@ -46,43 +55,19 @@ export const RelatedNotesForm = ({ type, noteTypeVocabType, mode = 'detail' }) =
 		addRow(newRelatedNote);
 	};
 
-	const noteTypeOnChangeHandler = (props, event) => {
-		props.editorCallback(event.target.value);
-		changeRow(props.rowData?.dataKey, { noteType: event.target.value });
-	};
-
-	const internalOnChangeHandler = (props, event) => {
-		props.editorCallback(event.target.value?.name);
-		changeRow(props.rowData?.dataKey, { internal: event.target?.value?.name });
-	};
-
-	const referencesOnChangeHandler = (event, setFieldValue, props) => {
-		//updates value in table input box
-		setFieldValue(event.target.value);
-		changeRow(props.rowData?.dataKey, { references: event.target.value });
-	};
-
-	// The text editor reports the row by its index in the table, which shows the rows in the order held.
-	const textOnChangeHandler = (rowIndex, event, field) => {
-		changeRow(relatedNotes[rowIndex]?.dataKey, { [field]: event.target.value });
-	};
-
 	return (
 		<FormTableWrapper
 			table={
-				<RelatedNotesFormTable
-					relatedNotes={relatedNotes}
-					editingRows={editingRows}
-					onRowEditChange={onRowEditChange}
-					tableRef={tableRef}
-					deletionHandler={deletionHandler}
-					errorMessages={errorMessages}
-					noteTypeOnChangeHandler={noteTypeOnChangeHandler}
-					textOnChangeHandler={textOnChangeHandler}
-					internalOnChangeHandler={internalOnChangeHandler}
-					referencesOnChangeHandler={referencesOnChangeHandler}
-					noteTypeVocabType={noteTypeVocabType}
-				/>
+				<TableEditorProvider strategy={strategy}>
+					<RelatedNotesFormTable
+						relatedNotes={relatedNotes}
+						editingRows={editingRows}
+						onRowEditChange={KEEP_ROWS_IN_EDIT_MODE}
+						tableRef={tableRef}
+						deletionHandler={deletionHandler}
+						noteTypeTerms={noteTypeTerms}
+					/>
+				</TableEditorProvider>
 			}
 			tableName="Related Notes"
 			showTable={relatedNotes.length > 0}
