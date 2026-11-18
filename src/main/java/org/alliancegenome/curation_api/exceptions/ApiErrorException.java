@@ -1,6 +1,7 @@
 package org.alliancegenome.curation_api.exceptions;
 
 import org.alliancegenome.curation_api.response.ObjectResponse;
+import org.apache.commons.lang3.StringUtils;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -18,7 +19,11 @@ public class ApiErrorException extends RuntimeException {
 	}
 
 	public ApiErrorException(ObjectResponse<?> error) {
-		// super(String.join(", ", error.getErrors()));
+		this(error, null);
+	}
+
+	public ApiErrorException(ObjectResponse<?> error, Throwable cause) {
+		super(error == null ? null : StringUtils.defaultIfBlank(error.getErrorMessage(), error.errorMessagesString()), cause);
 		this.objectResponse = error;
 	}
 
