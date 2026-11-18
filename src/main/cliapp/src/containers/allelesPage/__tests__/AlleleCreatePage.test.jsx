@@ -1,7 +1,7 @@
 import React from 'react';
 import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { button, NAVIGATION_WAIT, renderInRouter } from './alleleTestUtils';
+import { button, NAVIGATION_WAIT, renderInRouter, symbolInput } from './alleleTestUtils';
 
 const createAllele = vi.fn();
 const saveAlleleDetail = vi.fn();
@@ -134,16 +134,16 @@ describe('<AlleleCreatePage />', () => {
 
 	it('Blanks the symbol editors on clear', async () => {
 		const user = userEvent.setup();
-		const { container } = await renderPage();
+		await renderPage();
 
-		await user.type(container.querySelector('#displayText'), 'abc-1');
-		expect(container.querySelector('#displayText')).toHaveValue('abc-1');
+		await user.type(symbolInput(), 'abc-1');
+		expect(symbolInput()).toHaveValue('abc-1');
 
 		await user.click(button('Clear'));
 
 		// The row stays mounted across a reset, so its editors only blank if the row remounts.
 		await waitFor(() => {
-			expect(container.querySelector('#displayText')).toHaveValue('');
+			expect(symbolInput()).toHaveValue('');
 		});
 	});
 
@@ -178,7 +178,7 @@ describe('<AlleleCreatePage />', () => {
 		await waitFor(() => {
 			expect(container.querySelector('input[aria-label="taxon"]')).toHaveValue('NCBITaxon:6239');
 		});
-		expect(container.querySelector('#displayText')).toHaveValue('abc-1');
+		expect(symbolInput()).toHaveValue('abc-1');
 	});
 
 	it('Creates another allele from the kept values, without the saved ids', async () => {
@@ -214,10 +214,10 @@ describe('<AlleleCreatePage />', () => {
 	});
 
 	it('Opens with an empty symbol and no button to add one', async () => {
-		const { container } = await renderPage();
+		await renderPage();
 
 		expect(screen.getByRole('columnheader', { name: 'Display Text' })).toBeInTheDocument();
-		expect(container.querySelector('#displayText')).toHaveValue('');
+		expect(symbolInput()).toHaveValue('');
 		// every allele carries exactly one symbol, so it is seeded rather than added
 		expect(screen.queryByRole('button', { name: 'Add Symbol' })).not.toBeInTheDocument();
 	});
