@@ -127,6 +127,11 @@ public class HTPExpressionDatasetAnnotationDTOValidator extends AuditedObjectDTO
 
 		if (StringUtils.isBlank(dto.getDataProvider())) {
 			response.addErrorMessage("data_provider", ValidationConstants.REQUIRED_MESSAGE);
+		} else if (!dto.getDataProvider().equals(backendBulkDataProvider.sourceOrganization)) {
+			// A submitted data_provider that doesn't match the load's own provider would escape this
+			// provider's cleanup tracking (getAnnotationIdsByDataProvider matches on this field), and
+			// could then be deleted by a different provider's cleanup instead.
+			response.addErrorMessage("data_provider", ValidationConstants.INVALID_MESSAGE + " (" + dto.getDataProvider() + " does not match the load's data provider " + backendBulkDataProvider.sourceOrganization + ")");
 		} else {
 			ObjectResponse<Organization> dataProviderResponse = organizationService.getByAbbr(dto.getDataProvider());
 			if (dataProviderResponse == null || dataProviderResponse.getEntity() == null) {

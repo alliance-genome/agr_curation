@@ -32,6 +32,13 @@ import io.quarkus.logging.Log;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
+// SCRUM-6714: loadIngestSet (direct) and execLoad (FMS) both scope their cleanup to the same
+// per-provider "before" set (getAnnotationIdsByDataProvider(dataProvider.name())), matching the
+// existing VariantExecutor/VariantFmsExecutor precedent for a provider that has both an FMS and a
+// direct path. That means a provider must not have both loads active at once: a record added by
+// one path and absent from the other's next run looks "removed" to that run's cleanup and gets
+// deleted. A provider should run either HTPDATASET (FMS) or HTP_EXPRESSION_DATASET_ANNOTATION
+// (direct), never both, for the duration it's on that path.
 @ApplicationScoped
 public class HTPExpressionDatasetAnnotationExecutor extends LoadFileExecutor {
 
