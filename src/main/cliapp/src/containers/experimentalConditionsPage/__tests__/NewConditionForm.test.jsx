@@ -39,7 +39,6 @@ vi.mock('../../../service/SearchService', () => ({
 
 const { NewConditionForm } = await import('../NewConditionForm');
 const { useNewConditionReducer } = await import('../useNewConditionReducer');
-const { ontologyTermAutocompleteFields } = await import('../../../components/Editors/autocomplete/ontology/utils');
 
 const ONTOLOGY_FIELDS = [
 	'conditionClass',
@@ -58,9 +57,7 @@ const renderForm = (onCreated = vi.fn()) => {
 			<NewConditionForm
 				newConditionState={newConditionState}
 				newConditionDispatch={newConditionDispatch}
-				searchService={{ search }}
 				setNewExperimentalCondition={onCreated}
-				ontologyTermAutocompleteFields={ontologyTermAutocompleteFields}
 			/>
 		);
 	};
@@ -81,6 +78,7 @@ describe('<NewConditionForm />', () => {
 		const onCreated = vi.fn();
 		renderForm(onCreated);
 		await waitForForm();
+		expect(screen.getByText('Add Condition')).toBeInTheDocument();
 
 		await pickSuggestionInField('Condition Class', 'chem', /chemical treatment/);
 		await pickSuggestionInField('Condition Term', 'exp', /experimental condition/);
@@ -91,10 +89,11 @@ describe('<NewConditionForm />', () => {
 
 		await waitFor(() => expect(onCreated).toHaveBeenCalledWith(created, expect.anything()));
 		expect(await screen.findByText('Successful')).toBeInTheDocument();
+		expect(screen.getByText('New Condition Added')).toBeInTheDocument();
 		expect(createExperimentalCondition).toHaveBeenCalledWith(
 			expect.objectContaining({
-				conditionClass: expect.objectContaining({ curie: CONDITION_CLASS.curie }),
-				conditionId: expect.objectContaining({ curie: CONDITION_TERM.curie }),
+				conditionClass: CONDITION_CLASS,
+				conditionId: CONDITION_TERM,
 				conditionQuantity: '5 mg',
 				internal: false,
 				conditionFreeText: 'given daily',
@@ -137,9 +136,7 @@ describe('<NewConditionForm />', () => {
 		);
 	});
 
-	// Blank ontology fields are sent as { curie: '' }; the server answers Invalid for each one it looks up by curie,
-	// which is every one except Taxon.
-	it.skip('leaves blank ontology fields out of the request', async () => {
+	it('leaves blank ontology fields out of the request', async () => {
 		createExperimentalCondition.mockImplementation(() => resolvedCreate({ id: 99 }));
 		renderForm();
 		await waitForForm();
@@ -167,6 +164,12 @@ describe('<NewConditionForm />', () => {
 
 		expect(await within(getField('Condition Class')).findByText('Invalid')).toBeInTheDocument();
 		expect(within(getField('Condition Term')).queryByText('Invalid')).not.toBeInTheDocument();
+		expect(screen.getByRole('combobox', { name: 'conditionClass' }).closest('.p-autocomplete')).toHaveClass(
+			'p-invalid'
+		);
+		expect(screen.getByRole('combobox', { name: 'conditionId' }).closest('.p-autocomplete')).not.toHaveClass(
+			'p-invalid'
+		);
 		expect(screen.getByText('Unable to create condition')).toBeInTheDocument();
 		expect(onCreated).not.toHaveBeenCalled();
 	});
@@ -212,8 +215,7 @@ describe('<NewConditionForm />', () => {
 		expect(await within(getField('Condition Class')).findByText('Invalid')).toBeInTheDocument();
 	});
 
-	// Five of the six autocompletes pass `fieldname` rather than `fieldName`, so only Condition Class is named.
-	it.skip('names every ontology autocomplete', async () => {
+	it('names every ontology autocomplete', async () => {
 		renderForm();
 		await waitForForm();
 

@@ -4,24 +4,12 @@ const initialNewConditionState = {
 	newCondition: {
 		internal: null,
 		obsolete: 'false',
-		conditionClass: {
-			curie: '',
-		},
-		conditionId: {
-			curie: '',
-		},
-		conditionTaxon: {
-			curie: '',
-		},
-		conditionGeneOntology: {
-			curie: '',
-		},
-		conditionChemical: {
-			curie: '',
-		},
-		conditionAnatomy: {
-			curie: '',
-		},
+		conditionClass: null,
+		conditionId: null,
+		conditionTaxon: null,
+		conditionGeneOntology: null,
+		conditionChemical: null,
+		conditionAnatomy: null,
 		conditionQuantity: '',
 		conditionFreeText: '',
 	},
