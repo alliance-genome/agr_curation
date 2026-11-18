@@ -72,6 +72,17 @@ describe.each(SECTIONS)('the $label references table', (section) => {
 		expect(getCellByHeader(container, 'Curie', 1 - secondRow).textContent).not.toContain('this reference is bad');
 	});
 
+	it('shows nothing under the curie for an error on another field', () => {
+		const { container, getRows, setErrors } = section.render(twoReferences());
+
+		setErrors({ [getRows()[0].dataKey]: { shortCitation: ERROR } });
+
+		getRows().forEach((row) => {
+			const rowIndex = bodyRows(container).findIndex((element) => element.textContent.includes(row.curie));
+			expect(getCellByHeader(container, 'Curie', rowIndex).querySelector('.p-inline-message')).toBeNull();
+		});
+	});
+
 	it("keeps a rejected save's error on its reference after the reference above it is deleted", async () => {
 		const { container, getRows, setErrors } = section.render(twoReferences());
 		const shownFirst = getRows().find((row) => bodyRows(container)[0].textContent.includes(row.curie));
