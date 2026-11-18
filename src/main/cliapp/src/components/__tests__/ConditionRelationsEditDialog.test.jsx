@@ -226,7 +226,7 @@ describe('<ConditionRelationsEditDialog />', () => {
 		expect(dropdownLabel(baseElement, 'Internal')).toBe('true');
 	});
 
-	it('shows each validation error on its own cell of the relation that caused it', async () => {
+	it('shows each validation error on its own cell of the relation that caused it, with invalid styling', async () => {
 		const columnErrors = [
 			['Relation', 'conditionRelationType', 'relation is bad'],
 			['Conditions', 'conditions', 'conditions are bad'],
@@ -246,7 +246,9 @@ describe('<ConditionRelationsEditDialog />', () => {
 		);
 		columnErrors.forEach(([header, , message]) => {
 			expect(getCellByHeader(baseElement, header, 1).textContent).toContain(message);
+			expect(getCellByHeader(baseElement, header, 1).querySelector('.p-invalid')).not.toBeNull();
 			expect(getCellByHeader(baseElement, header, 0).textContent).not.toContain(message);
+			expect(getCellByHeader(baseElement, header, 0).querySelector('.p-invalid')).toBeNull();
 			columnErrors
 				.filter(([otherHeader]) => otherHeader !== header)
 				.forEach(([, , otherMessage]) =>
