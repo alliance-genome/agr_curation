@@ -277,7 +277,7 @@ describe('<UsesEditDialog /> edits', () => {
 		]);
 	});
 
-	it('shows each validation error on its own cell of the use that caused it', async () => {
+	it('shows each validation error on its own cell of the use that caused it, with invalid styling', async () => {
 		const columnErrors = [
 			['Uses', 'uses', 'uses are bad'],
 			['Internal', 'internal', 'internal is bad'],
@@ -295,7 +295,9 @@ describe('<UsesEditDialog /> edits', () => {
 		await waitFor(() => expect(getCellByHeader(baseElement, 'Uses', 1).textContent).toContain('uses are bad'));
 		columnErrors.forEach(([header, , message]) => {
 			expect(getCellByHeader(baseElement, header, 1).textContent).toContain(message);
+			expect(getCellByHeader(baseElement, header, 1).querySelector('.p-invalid')).not.toBeNull();
 			expect(getCellByHeader(baseElement, header, 0).textContent).not.toContain(message);
+			expect(getCellByHeader(baseElement, header, 0).querySelector('.p-invalid')).toBeNull();
 		});
 		expect(editorCallback).not.toHaveBeenCalled();
 		expect(setErrorMessagesMainRow).not.toHaveBeenCalled();
