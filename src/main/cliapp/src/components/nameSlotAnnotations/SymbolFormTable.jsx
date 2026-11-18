@@ -2,24 +2,24 @@ import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { ColumnGroup } from 'primereact/columngroup';
 import { Row } from 'primereact/row';
-import { TableInputTextEditor } from '../Editors/text/TableInputTextEditor';
-import { InternalEditor } from '../Editors/legacyForm/InternalEditor';
-import { EvidenceEditor } from '../Editors/legacyForm/EvidenceEditor';
-import { ControlledVocabularyEditor } from '../Editors/legacyForm/ControlledVocabularyEditor';
-import { VocabularyTermSetEditor } from '../Editors/legacyForm/VocabularyTermSetEditor';
+import { InputTextTableEditor } from '../Editors/text/InputTextTableEditor';
+import { ControlledVocabularyTableEditor } from '../Editors/dropdown/vocabulary/ControlledVocabularyTableEditor';
+import { BooleanTableEditor } from '../Editors/dropdown/boolean/BooleanTableEditor';
+import { EvidenceTableEditor } from '../Editors/autocomplete/references/EvidenceTableEditor';
 
-export const SymbolFormTable = ({
-	name,
-	editingRows,
-	onRowEditChange,
-	tableRef,
-	errorMessages,
-	textOnChangeHandler,
-	synonymScopeOnChangeHandler,
-	nameTypeOnChangeHandler,
-	internalOnChangeHandler,
-	evidenceOnChangeHandler,
-}) => {
+/**
+ * A detail page's symbol table: the entity's one symbol, always in edit mode. A symbol cannot be deleted. Its
+ * editors read and write the row through the table strategy supplied by the surrounding TableEditorProvider.
+ *
+ * @param {object[]} name - the name as the table's only row
+ * @param {object} editingRows - rows in edit mode, keyed by dataKey
+ * @param {Function} onRowEditChange - keeps the row in edit mode
+ * @param {object} tableRef
+ * @param {object[]} [synonymScopeTerms] - the synonym scope vocabulary
+ * @param {object[]} [nameTypeTerms] - the name types the name can take
+ * @returns {JSX.Element}
+ */
+export const SymbolFormTable = ({ name, editingRows, onRowEditChange, tableRef, synonymScopeTerms, nameTypeTerms }) => {
 	let headerGroup = (
 		<ColumnGroup>
 			<Row>
@@ -52,114 +52,57 @@ export const SymbolFormTable = ({
 			ref={tableRef}
 		>
 			<Column
-				editor={(props) => {
-					return (
-						<TableInputTextEditor
-							value={props.value}
-							rowIndex={props.rowIndex}
-							errorMessages={errorMessages}
-							dataKey={props?.rowData?.dataKey}
-							textOnChangeHandler={textOnChangeHandler}
-							field="displayText"
-						/>
-					);
-				}}
+				editor={(editorOptions) => <InputTextTableEditor editorOptions={editorOptions} field="displayText" />}
 				field="displayText"
 				header="Display Text"
 				headerClassName="surface-0"
 			/>
 			<Column
-				editor={(props) => {
-					return (
-						<TableInputTextEditor
-							value={props.value}
-							rowIndex={props.rowIndex}
-							errorMessages={errorMessages}
-							dataKey={props?.rowData?.dataKey}
-							textOnChangeHandler={textOnChangeHandler}
-							field="formatText"
-						/>
-					);
-				}}
+				editor={(editorOptions) => <InputTextTableEditor editorOptions={editorOptions} field="formatText" />}
 				field="formatText"
 				header="Format Text"
 				headerClassName="surface-0"
 			/>
 			<Column
-				editor={(props) => {
-					return (
-						<ControlledVocabularyEditor
-							editorOptions={props}
-							onChangeHandler={synonymScopeOnChangeHandler}
-							errorMessages={errorMessages}
-							rowIndex={props.rowIndex}
-							vocabType="synonym_scope"
-							dataKey={props?.rowData?.dataKey}
-							field="synonymScope"
-							showClear={true}
-						/>
-					);
-				}}
+				editor={(editorOptions) => (
+					<ControlledVocabularyTableEditor
+						editorOptions={editorOptions}
+						field="synonymScope"
+						options={synonymScopeTerms}
+						showClear={true}
+					/>
+				)}
 				field="synonymScope.name"
 				header="Synonym Scope"
 				headerClassName="surface-0"
 			/>
 			<Column
-				editor={(props) => {
-					return (
-						<VocabularyTermSetEditor
-							editorOptions={props}
-							dataKey={props?.rowData?.dataKey}
-							onChangeHandler={nameTypeOnChangeHandler}
-							errorMessages={errorMessages}
-							rowIndex={props.rowIndex}
-							vocabType="symbol_name_type"
-							field="nameType"
-							showClear={false}
-						/>
-					);
-				}}
+				editor={(editorOptions) => (
+					<ControlledVocabularyTableEditor
+						editorOptions={editorOptions}
+						field="nameType"
+						options={nameTypeTerms}
+						showClear={false}
+					/>
+				)}
 				field="nameType.name"
 				header="Name Type"
 				headerClassName="surface-0"
 			/>
 			<Column
-				editor={(props) => {
-					return (
-						<TableInputTextEditor
-							value={props.value}
-							rowIndex={props.rowIndex}
-							errorMessages={errorMessages}
-							dataKey={props?.rowData?.dataKey}
-							textOnChangeHandler={textOnChangeHandler}
-							field="synonymUrl"
-						/>
-					);
-				}}
+				editor={(editorOptions) => <InputTextTableEditor editorOptions={editorOptions} field="synonymUrl" />}
 				field="synonymUrl"
 				header="Synonym URL"
 				headerClassName="surface-0"
 			/>
 			<Column
-				editor={(props) => {
-					return (
-						<InternalEditor
-							editorOptions={props}
-							rowIndex={props.rowIndex}
-							errorMessages={errorMessages}
-							dataKey={props?.rowData?.dataKey}
-							internalOnChangeHandler={internalOnChangeHandler}
-						/>
-					);
-				}}
+				editor={(editorOptions) => <BooleanTableEditor editorOptions={editorOptions} field="internal" />}
 				field="internal"
 				header="Internal"
 				headerClassName="surface-0"
 			/>
 			<Column
-				editor={(props) => {
-					return <EvidenceEditor props={props} errorMessages={errorMessages} onChange={evidenceOnChangeHandler} />;
-				}}
+				editor={(editorOptions) => <EvidenceTableEditor editorOptions={editorOptions} />}
 				field="evidence.curie"
 				header="Evidence"
 				headerClassName="surface-0"

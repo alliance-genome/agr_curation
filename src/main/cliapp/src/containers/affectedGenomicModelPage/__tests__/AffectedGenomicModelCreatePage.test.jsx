@@ -3,6 +3,7 @@ import { BrowserRouter } from 'react-router-dom';
 import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { renderWithClient } from '../../../tools/jest/utils';
+import { getCellByHeader } from '../../allelesPage/__tests__/alleleFormTestUtils';
 
 const createAGM = vi.fn();
 const navigate = vi.fn();
@@ -36,6 +37,13 @@ const renderPage = () =>
 	);
 
 const button = (name) => screen.getByRole('button', { name });
+
+// The full name's section: its heading, Add button and, while the AGM has a full name, its table.
+const nameSection = () =>
+	screen
+		.getAllByRole('heading', { level: 2 })
+		.find((heading) => heading.textContent.trim().replace(/^\*/, '') === 'Name')
+		.closest('.col-12');
 
 // The AGM as the API returns it from create: its own ids and audit fields on it and on its rows.
 const savedAgm = {
@@ -79,7 +87,7 @@ describe('<AffectedGenomicModelCreatePage />', () => {
 		await waitFor(() => {
 			expect(container.querySelector('input[aria-label="taxon"]')).toHaveValue('NCBITaxon:6239');
 		});
-		expect(container.querySelector('#displayText')).toHaveValue('wild isolate 1');
+		expect(getCellByHeader(nameSection(), 'Display Text').querySelector('input')).toHaveValue('wild isolate 1');
 	});
 
 	it('Creates another AGM from the kept values, without the saved ids', async () => {
@@ -121,7 +129,7 @@ describe('<AffectedGenomicModelCreatePage />', () => {
 		await waitFor(() => {
 			expect(container.querySelector('input[aria-label="taxon"]')).toHaveValue('');
 		});
-		expect(container.querySelector('#displayText')).not.toBeInTheDocument();
+		expect(nameSection().querySelector('table')).toBeNull();
 	});
 
 	it('Opens the new AGM on save and close', async () => {
