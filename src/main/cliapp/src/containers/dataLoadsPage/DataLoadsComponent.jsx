@@ -878,7 +878,8 @@ export const DataLoadsComponent = () => {
 
 	const ProgressIndicator = ({ load }) => {
 		if (load.currentCount && load.totalSize) {
-			return <ProgressBar value={parseInt((load.currentCount / load.totalSize) * 10000) / 100} />;
+			// Whole percent only; rounded down so a load still running never shows 100%.
+			return <ProgressBar value={Math.floor((load.currentCount / load.totalSize) * 100)} />;
 		} else if (load.currentCount && load.lastCount && load.lastTime && load.nowTime) {
 			let rate = Math.ceil(((load.currentCount - load.lastCount) / (load.nowTime - load.lastTime)) * 1000);
 			return (

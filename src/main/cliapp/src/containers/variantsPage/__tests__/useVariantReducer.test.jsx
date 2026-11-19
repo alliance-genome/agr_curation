@@ -74,6 +74,51 @@ describe('useVariantReducer', () => {
 		});
 	});
 
+	describe('EDIT_ROW_BY_KEY', () => {
+		it('Edits the row holding the key, wherever it sits', () => {
+			const { result } = renderHook(() => useVariantReducer());
+			act(() =>
+				result.current.variantDispatch({
+					type: 'SET',
+					value: { relatedNotes: [{ freeText: 'first' }, { freeText: 'second' }] },
+				})
+			);
+			const secondKey = result.current.variantState.variant.relatedNotes[1].dataKey;
+
+			act(() =>
+				result.current.variantDispatch({
+					type: 'EDIT_ROW_BY_KEY',
+					entityType: 'relatedNotes',
+					dataKey: secondKey,
+					field: 'freeText',
+					value: 'second edited',
+				})
+			);
+
+			expect(result.current.variantState.variant.relatedNotes.map((note) => note.freeText)).toEqual([
+				'first',
+				'second edited',
+			]);
+		});
+
+		it('Ignores a key no row holds', () => {
+			const { result } = renderHook(() => useVariantReducer());
+			act(() => result.current.variantDispatch({ type: 'SET', value: { relatedNotes: [{ freeText: 'first' }] } }));
+
+			act(() =>
+				result.current.variantDispatch({
+					type: 'EDIT_ROW_BY_KEY',
+					entityType: 'relatedNotes',
+					dataKey: 'missing',
+					field: 'freeText',
+					value: 'edited',
+				})
+			);
+
+			expect(result.current.variantState.variant.relatedNotes[0].freeText).toBe('first');
+		});
+	});
+
 	describe('ADD_ROW / DELETE_ROW', () => {
 		it('Adds a row, shows its table, and marks it for editing', () => {
 			const { result } = renderHook(() => useVariantReducer());

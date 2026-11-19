@@ -382,7 +382,7 @@ public class LoadFileExecutor {
 					}
 				} catch (Exception batchEx) {
 					// FK constraint or other error — fall back to per-row for this batch
-					Log.warn("Batch delete failed, falling back to per-row: " + batchEx.getMessage());
+					Log.warn("Batch delete failed, falling back to per-row: " + unwrapExceptionMessage(batchEx), batchEx);
 					for (Long id : batch) {
 						try {
 							service.deprecateOrDelete(id, false, loadDescription, false);
@@ -390,7 +390,7 @@ public class LoadFileExecutor {
 						} catch (Exception e) {
 							e.printStackTrace();
 							history.incrementFailed(countType);
-							addException(history, new ObjectUpdateExceptionData(new IdObject(id), e.getMessage(), e.getStackTrace()));
+							addException(history, new ObjectUpdateExceptionData(new IdObject(id), unwrapExceptionMessage(e), e.getStackTrace()));
 						}
 					}
 				}
@@ -418,7 +418,7 @@ public class LoadFileExecutor {
 				} catch (Exception e) {
 					e.printStackTrace();
 					history.incrementFailed(countType);
-					addException(history, new ObjectUpdateExceptionData(new IdObject(id), e.getMessage(), e.getStackTrace()));
+					addException(history, new ObjectUpdateExceptionData(new IdObject(id), unwrapExceptionMessage(e), e.getStackTrace()));
 				}
 				if (history.getErrorRate(countType) > 0.25) {
 					Log.error(countType + " failure rate > 25% aborting load");

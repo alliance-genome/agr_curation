@@ -69,6 +69,20 @@ export const renderAtAlleleRoute = (page) =>
 export const button = (name) => screen.getByRole('button', { name });
 
 /**
+ * The symbol's Display Text input, in the Symbol section, whose heading carries a required marker on create. It
+ * finds the column itself: importing the form test helpers here would load the allele reducer and services before
+ * the page tests' mocks are in place.
+ */
+export const symbolInput = () => {
+	const heading = screen
+		.getAllByRole('heading', { level: 2 })
+		.find((candidate) => candidate.textContent.trim().replace(/^\*/, '') === 'Symbol');
+	const table = heading.closest('.col-12');
+	const headers = [...table.querySelectorAll('thead tr:first-child th')].map((header) => header.textContent.trim());
+	return table.querySelectorAll('tbody tr td')[headers.indexOf('Display Text')].querySelector('input');
+};
+
+/**
  * Makes an edit to the allele alone, so the page's Save has something to write.
  *
  * @param {Object} user a `userEvent.setup()` instance

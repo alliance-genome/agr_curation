@@ -6,15 +6,30 @@ import { Button } from 'primereact/button';
 import { Toast } from 'primereact/toast';
 import { ColumnGroup } from 'primereact/columngroup';
 import { Row } from 'primereact/row';
-import { DialogErrorMessageComponent } from '../../../components/Error/DialogErrorMessageComponent';
 import { ValidationService } from '../../../service/ValidationService';
-import { TableInputTextEditor } from '../../../components/Editors/text/TableInputTextEditor';
-import { InternalEditor } from '../../../components/Editors/legacyForm/InternalEditor';
-import { EvidenceEditor } from '../../../components/Editors/legacyForm/EvidenceEditor';
-import { ControlledVocabularyEditor } from '../../../components/Editors/legacyForm/ControlledVocabularyEditor';
 import { useVocabularyTermSetService } from '../../../service/useVocabularyTermSetService';
-import { ControlledVocabularyDropdown } from '../../../components/Editors/dropdown/vocabulary/ControlledVocabularyDropdown';
+import { useControlledVocabularyService } from '../../../service/useControlledVocabularyService';
+import { KEEP_ROWS_IN_EDIT_MODE } from '../../../utils/rows';
+import { TableEditorProvider } from '../../../components/Editors/fields/TableEditorContext';
+import { useLocalRowsStrategy } from '../../../components/Editors/fields/strategies/useLocalRowsStrategy';
+import { InputTextTableEditor } from '../../../components/Editors/text/InputTextTableEditor';
+import { ControlledVocabularyTableEditor } from '../../../components/Editors/dropdown/vocabulary/ControlledVocabularyTableEditor';
+import { BooleanTableEditor } from '../../../components/Editors/dropdown/boolean/BooleanTableEditor';
+import { EvidenceTableEditor } from '../../../components/Editors/autocomplete/references/EvidenceTableEditor';
 
+/**
+ * Dialog for editing a main-table row's symbol. Edits stay local until Keep Edits validates the symbol and hands
+ * it back through the row's editor callback. An entity always has a symbol, so none can be added or deleted here.
+ *
+ * @param {string} field - the row's field holding the symbol, under which Pending Edits is marked
+ * @param {string} endpoint - the slot annotation endpoint the symbol is validated against
+ * @param {object} originalSymbolData - the row's symbol as a one-item list, dialog visibility, row index and
+ *   PrimeReact editor options
+ * @param {Function} setOriginalSymbolData - its setter
+ * @param {object} errorMessagesMainRow - the main table's errors, keyed by row index
+ * @param {Function} setErrorMessagesMainRow - its setter
+ * @returns {JSX.Element}
+ */
 export const SymbolEditDialog = ({
 	field,
 	endpoint,
@@ -34,6 +49,13 @@ export const SymbolEditDialog = ({
 	const toast_topright = useRef(null);
 
 	const symbolNameTypeTerms = useVocabularyTermSetService('symbol_name_type');
+	const synonymScopeTerms = useControlledVocabularyService('synonym_scope');
+
+	const strategy = useLocalRowsStrategy({
+		rows: localSymbols,
+		setRows: setLocalSymbols,
+		errors: errorMessages,
+	});
 
 	const showDialogHandler = () => {
 		let _localSymbols = cloneSymbols(originalSymbols);
@@ -47,10 +69,6 @@ export const SymbolEditDialog = ({
 		}
 		setEditingRows(rowsObject);
 		setErrorMessages({});
-	};
-
-	const onRowEditChange = () => {
-		return null;
 	};
 
 	const hideDialog = () => {
@@ -75,50 +93,6 @@ export const SymbolEditDialog = ({
 			}
 		}
 		return _clonableSymbols;
-	};
-
-	const textOnChangeHandler = (rowIndex, event, field) => {
-		setLocalSymbols((prev) => {
-			const updated = [...prev];
-			updated[rowIndex] = { ...updated[rowIndex], [field]: event.target.value };
-			return updated;
-		});
-	};
-
-	const nameTypeOnChangeHandler = (props, event) => {
-		props.editorCallback(event.value);
-		setLocalSymbols((prev) => {
-			const updated = [...prev];
-			updated[props.rowIndex] = { ...updated[props.rowIndex], nameType: event.value };
-			return updated;
-		});
-	};
-
-	const synonymScopeOnChangeHandler = (props, event) => {
-		props.editorCallback(event.target.value);
-		setLocalSymbols((prev) => {
-			const updated = [...prev];
-			updated[props.rowIndex] = { ...updated[props.rowIndex], synonymScope: event.target.value };
-			return updated;
-		});
-	};
-
-	const internalOnChangeHandler = (props, event) => {
-		props.editorCallback(event.target.value?.name);
-		setLocalSymbols((prev) => {
-			const updated = [...prev];
-			updated[props.rowIndex] = { ...updated[props.rowIndex], internal: event.target?.value?.name };
-			return updated;
-		});
-	};
-
-	const evidenceOnChangeHandler = (event, setFieldValue, props) => {
-		setFieldValue(event.target.value);
-		setLocalSymbols((prev) => {
-			const updated = [...prev];
-			updated[props.rowIndex] = { ...updated[props.rowIndex], evidence: event.target.value };
-			return updated;
-		});
 	};
 
 	const saveDataHandler = () => {
@@ -209,22 +183,6 @@ export const SymbolEditDialog = ({
 		}
 	};
 
-	const nameTypeEditor = (props) => {
-		return (
-			<>
-				<ControlledVocabularyDropdown
-					field="nameType"
-					options={symbolNameTypeTerms}
-					editorChange={nameTypeOnChangeHandler}
-					editorOptions={props}
-					showClear={false}
-					dataKey="id"
-				/>
-				<DialogErrorMessageComponent errorMessages={errorMessages[props?.rowData?.dataKey]} errorField={'nameType'} />
-			</>
-		);
-	};
-
 	const footerTemplate = () => {
 		return (
 			<div>
@@ -268,125 +226,78 @@ export const SymbolEditDialog = ({
 				footer={footerTemplate}
 			>
 				<h3>Symbol</h3>
-				<DataTable
-					value={localSymbols}
-					dataKey="dataKey"
-					showGridlines
-					editMode="row"
-					headerColumnGroup={headerGroup}
-					editingRows={editingRows}
-					onRowEditChange={onRowEditChange}
-					ref={tableRef}
-					cellMemo={false}
-				>
-					<Column
-						editor={(props) => {
-							return (
-								<TableInputTextEditor
-									value={props.value}
-									rowIndex={props.rowIndex}
-									errorMessages={errorMessages}
-									dataKey={props?.rowData?.dataKey}
-									textOnChangeHandler={textOnChangeHandler}
-									editorCallback={props.editorCallback}
-									field="displayText"
-								/>
-							);
-						}}
-						field="displayText"
-						header="Display Text"
-						headerClassName="surface-0"
-					/>
-					<Column
-						editor={(props) => {
-							return (
-								<TableInputTextEditor
-									value={props.value}
-									rowIndex={props.rowIndex}
-									errorMessages={errorMessages}
-									dataKey={props?.rowData?.dataKey}
-									textOnChangeHandler={textOnChangeHandler}
-									editorCallback={props.editorCallback}
-									field="formatText"
-								/>
-							);
-						}}
-						field="formatText"
-						header="Format Text"
-						headerClassName="surface-0"
-					/>
-					<Column
-						editor={(props) => {
-							return (
-								<ControlledVocabularyEditor
-									editorOptions={props}
-									onChangeHandler={synonymScopeOnChangeHandler}
-									errorMessages={errorMessages}
-									dataKey={props?.rowData?.dataKey}
-									rowIndex={props.rowIndex}
-									vocabType="synonym_scope"
+				<TableEditorProvider strategy={strategy}>
+					<DataTable
+						value={localSymbols}
+						dataKey="dataKey"
+						showGridlines
+						editMode="row"
+						headerColumnGroup={headerGroup}
+						editingRows={editingRows}
+						onRowEditChange={KEEP_ROWS_IN_EDIT_MODE}
+						ref={tableRef}
+						cellMemo={false}
+					>
+						<Column
+							editor={(editorOptions) => <InputTextTableEditor editorOptions={editorOptions} field="displayText" />}
+							field="displayText"
+							header="Display Text"
+							headerClassName="surface-0"
+						/>
+						<Column
+							editor={(editorOptions) => <InputTextTableEditor editorOptions={editorOptions} field="formatText" />}
+							field="formatText"
+							header="Format Text"
+							headerClassName="surface-0"
+						/>
+						<Column
+							editor={(editorOptions) => (
+								<ControlledVocabularyTableEditor
+									editorOptions={editorOptions}
 									field="synonymScope"
+									options={synonymScopeTerms}
 									showClear={true}
 								/>
-							);
-						}}
-						field="synonymScope"
-						header="Synonym Scope"
-						headerClassName="surface-0"
-					/>
-					<Column editor={nameTypeEditor} field="nameType" header="Name Type" headerClassName="surface-0" />
-					<Column
-						editor={(props) => {
-							return (
-								<TableInputTextEditor
-									value={props.value}
-									rowIndex={props.rowIndex}
-									errorMessages={errorMessages}
-									dataKey={props?.rowData?.dataKey}
-									textOnChangeHandler={textOnChangeHandler}
-									editorCallback={props.editorCallback}
-									field="synonymUrl"
+							)}
+							field="synonymScope"
+							header="Synonym Scope"
+							headerClassName="surface-0"
+						/>
+						<Column
+							editor={(editorOptions) => (
+								<ControlledVocabularyTableEditor
+									editorOptions={editorOptions}
+									field="nameType"
+									options={symbolNameTypeTerms}
+									showClear={false}
 								/>
-							);
-						}}
-						field="synonymUrl"
-						header="Synonym URL"
-						headerClassName="surface-0"
-					/>
-					<Column
-						editor={(props) => {
-							return (
-								<InternalEditor
-									editorOptions={props}
-									rowIndex={props.rowIndex}
-									errorMessages={errorMessages}
-									dataKey={props?.rowData?.dataKey}
-									internalOnChangeHandler={internalOnChangeHandler}
-								/>
-							);
-						}}
-						field="internal"
-						header="Internal"
-						headerClassName="surface-0"
-					/>
-					<Column
-						editor={(props) => {
-							return (
-								<EvidenceEditor
-									props={props}
-									errorMessages={errorMessages}
-									onChange={evidenceOnChangeHandler}
-									dataKey={props?.rowData?.dataKey}
-								/>
-							);
-						}}
-						field="evidence"
-						header="Evidence"
-						headerClassName="surface-0"
-					/>
-					<Column field="updatedBy.uniqueId" header="Updated By" />
-					<Column field="dateUpdated" header="Date Updated" />
-				</DataTable>
+							)}
+							field="nameType"
+							header="Name Type"
+							headerClassName="surface-0"
+						/>
+						<Column
+							editor={(editorOptions) => <InputTextTableEditor editorOptions={editorOptions} field="synonymUrl" />}
+							field="synonymUrl"
+							header="Synonym URL"
+							headerClassName="surface-0"
+						/>
+						<Column
+							editor={(editorOptions) => <BooleanTableEditor editorOptions={editorOptions} field="internal" />}
+							field="internal"
+							header="Internal"
+							headerClassName="surface-0"
+						/>
+						<Column
+							editor={(editorOptions) => <EvidenceTableEditor editorOptions={editorOptions} />}
+							field="evidence"
+							header="Evidence"
+							headerClassName="surface-0"
+						/>
+						<Column field="updatedBy.uniqueId" header="Updated By" />
+						<Column field="dateUpdated" header="Date Updated" />
+					</DataTable>
+				</TableEditorProvider>
 			</Dialog>
 		</div>
 	);

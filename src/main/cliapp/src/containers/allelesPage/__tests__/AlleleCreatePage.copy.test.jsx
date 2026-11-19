@@ -8,6 +8,7 @@ import {
 	renderInRouter,
 	SOURCE_CURIE,
 	sourceAllele as sharedSourceAllele,
+	symbolInput,
 } from './alleleTestUtils';
 
 const createAllele = vi.fn();
@@ -60,7 +61,7 @@ describe('<AlleleCreatePage /> copying an allele', () => {
 	it('Starts from the allele named in the URL', async () => {
 		const { container } = await renderPage();
 
-		await waitFor(() => expect(container.querySelector('#displayText')).toHaveValue('abc-1'), FORM_LOAD_WAIT);
+		await waitFor(() => expect(symbolInput()).toHaveValue('abc-1'), FORM_LOAD_WAIT);
 		expect(getAllele).toHaveBeenCalledWith(SOURCE_CURIE);
 		await waitFor(
 			() => expect(container.querySelector('input[aria-label="taxon"]')).toHaveValue('NCBITaxon:6239'),
@@ -74,9 +75,9 @@ describe('<AlleleCreatePage /> copying an allele', () => {
 				entities: [{ id: 10, internal: false, mutationTypes: [{ curie: 'SO:0001', name: 'point_mutation' }] }],
 			},
 		});
-		const { container } = await renderPage();
+		await renderPage();
 
-		await waitFor(() => expect(container.querySelector('#displayText')).toHaveValue('abc-1'), FORM_LOAD_WAIT);
+		await waitFor(() => expect(symbolInput()).toHaveValue('abc-1'), FORM_LOAD_WAIT);
 		expect(await screen.findByRole('columnheader', { name: 'Mutation Types' }, FORM_LOAD_WAIT)).toBeInTheDocument();
 		expect(screen.queryByRole('columnheader', { name: 'Functional Impacts' })).not.toBeInTheDocument();
 		expect(screen.queryByRole('columnheader', { name: 'Inheritance Mode' })).not.toBeInTheDocument();
@@ -86,7 +87,7 @@ describe('<AlleleCreatePage /> copying an allele', () => {
 	it('Says the copy is loading, not saving, while the allele is fetched', async () => {
 		let resolveAllele;
 		getAllele.mockReturnValue(new Promise((resolve) => (resolveAllele = resolve)));
-		const { container } = await renderPage();
+		await renderPage();
 
 		await waitFor(
 			() => expect(screen.getByRole('heading', { name: 'Loading allele to clone...' })).toBeInTheDocument(),
@@ -95,15 +96,15 @@ describe('<AlleleCreatePage /> copying an allele', () => {
 		expect(screen.queryByText('Saving in progress...')).not.toBeInTheDocument();
 
 		resolveAllele({ data: { entity: sourceAllele } });
-		await waitFor(() => expect(container.querySelector('#displayText')).toHaveValue('abc-1'), FORM_LOAD_WAIT);
+		await waitFor(() => expect(symbolInput()).toHaveValue('abc-1'), FORM_LOAD_WAIT);
 		expect(screen.queryByText('Loading allele to clone...')).not.toBeInTheDocument();
 	});
 
 	it('Creates a new allele rather than sending the stored one back', async () => {
 		const user = userEvent.setup();
-		const { container } = await renderPage();
+		await renderPage();
 
-		await waitFor(() => expect(container.querySelector('#displayText')).toHaveValue('abc-1'), FORM_LOAD_WAIT);
+		await waitFor(() => expect(symbolInput()).toHaveValue('abc-1'), FORM_LOAD_WAIT);
 		await user.click(button('Save & Close'));
 
 		await waitFor(() => expect(createAllele).toHaveBeenCalled(), FORM_LOAD_WAIT);
@@ -133,9 +134,9 @@ describe('<AlleleCreatePage /> copying an allele', () => {
 				},
 			},
 		});
-		const { container } = await renderPage();
+		await renderPage();
 
-		await waitFor(() => expect(container.querySelector('#displayText')).toHaveValue('abc-1'), FORM_LOAD_WAIT);
+		await waitFor(() => expect(symbolInput()).toHaveValue('abc-1'), FORM_LOAD_WAIT);
 		await user.click(button('Save & Close'));
 
 		// once beside the symbol's display text, once under the taxon
@@ -145,30 +146,30 @@ describe('<AlleleCreatePage /> copying an allele', () => {
 
 	it('Stays blank after clearing the copy', async () => {
 		const user = userEvent.setup();
-		const { container } = await renderPage();
+		await renderPage();
 
-		await waitFor(() => expect(container.querySelector('#displayText')).toHaveValue('abc-1'), FORM_LOAD_WAIT);
+		await waitFor(() => expect(symbolInput()).toHaveValue('abc-1'), FORM_LOAD_WAIT);
 		await user.click(footerButton('Clear'));
 
-		await waitFor(() => expect(container.querySelector('#displayText')).toHaveValue(''), FORM_LOAD_WAIT);
+		await waitFor(() => expect(symbolInput()).toHaveValue(''), FORM_LOAD_WAIT);
 		expect(getAllele).toHaveBeenCalledTimes(1);
 	});
 
 	it('Says so when the allele to copy cannot be found', async () => {
 		getAllele.mockResolvedValue({ data: {} });
-		const { container } = await renderPage('/allele/create?from=AGRKB:missing');
+		await renderPage('/allele/create?from=AGRKB:missing');
 
 		await waitFor(
 			() => expect(screen.getByText('Could not load allele AGRKB:missing to clone')).toBeInTheDocument(),
 			FORM_LOAD_WAIT
 		);
-		expect(container.querySelector('#displayText')).toHaveValue('');
+		expect(symbolInput()).toHaveValue('');
 	});
 
 	it('Does not look an allele up without one in the URL', async () => {
-		const { container } = await renderPage('/allele/create');
+		await renderPage('/allele/create');
 
-		expect(container.querySelector('#displayText')).toHaveValue('');
+		expect(symbolInput()).toHaveValue('');
 		expect(getAllele).not.toHaveBeenCalled();
 	});
 });
