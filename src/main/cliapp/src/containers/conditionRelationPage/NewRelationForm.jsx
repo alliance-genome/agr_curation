@@ -11,6 +11,7 @@ import { SingleAutocomplete } from '../../components/Editors/widgets/SingleAutoc
 import { MultiAutocomplete } from '../../components/Editors/widgets/MultiAutocomplete';
 import { VocabularySelect } from '../../components/Editors/widgets/VocabularySelect';
 import {
+	isPickedReference,
 	singleReferenceSearch,
 	singleReferenceSearchConfig,
 } from '../../components/Editors/autocomplete/references/utils';
@@ -21,9 +22,22 @@ import {
 import ErrorBoundary from '../../components/Error/ErrorBoundary';
 
 /**
+ * Why the reference can't be sent: none given, or text typed without picking a reference from the suggestions, which
+ * the server can't read as a reference.
+ *
+ * @param {object|null} reference - the Reference field's value
+ * @returns {string|null} the message to show beside Reference, or null when a picked reference is held
+ */
+const findReferenceError = (reference) => {
+	if (!reference?.curie?.trim()) return 'Reference is required.';
+	if (!isPickedReference(reference)) return 'Must select reference from dropdown';
+	return null;
+};
+
+/**
  * The New Relation dialog on the Condition Relations table: handle, reference, relation type and conditions. Save
- * with no reference says beside it that it is required and sends nothing; otherwise it creates the relation, and a
- * rejected save shows each field's error beside it.
+ * with no reference, or with reference text that was not picked from the suggestions, says so beside Reference and
+ * sends nothing; otherwise it creates the relation, and a rejected save shows each field's error beside it.
  *
  * @param {object} newRelationState - the form's reducer state: `newRelation`, `errorMessages`, `submitted`,
  *   `newRelationDialog`
@@ -45,9 +59,8 @@ export const NewRelationForm = ({
 	const toast_success = useRef(null);
 	const toast_error = useRef(null);
 	const { newRelation, errorMessages, submitted, newRelationDialog } = newRelationState;
-	const isReferenceMissing = !newRelation.singleReference?.curie?.trim();
-	const errors =
-		submitted && isReferenceMissing ? { ...errorMessages, singleReference: 'Reference is required.' } : errorMessages;
+	const referenceError = findReferenceError(newRelation.singleReference);
+	const errors = submitted && referenceError ? { ...errorMessages, singleReference: referenceError } : errorMessages;
 
 	const hideDialog = () => {
 		newRelationDispatch({ type: 'RESET' });
@@ -65,7 +78,7 @@ export const NewRelationForm = ({
 	const handleSubmit = (event) => {
 		event.preventDefault();
 		newRelationDispatch({ type: 'SUBMIT' });
-		if (isReferenceMissing) return;
+		if (referenceError) return;
 		mutation.mutate(newRelation, {
 			onSuccess: (data) => {
 				setNewConditionRelation(data.data.entity, queryClient);

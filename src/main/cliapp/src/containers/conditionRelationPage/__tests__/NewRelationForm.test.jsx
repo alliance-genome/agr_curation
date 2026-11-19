@@ -196,17 +196,26 @@ describe('<NewRelationForm />', () => {
 		).toBeInTheDocument();
 	});
 
-	it('sends a typed reference that was never picked as an unknown reference', async () => {
-		createConditionRelation.mockImplementation(() => rejectedCreate({ singleReference: 'Invalid' }));
+	it('asks for a reference picked from the suggestions when one is only typed, and sends nothing', async () => {
 		renderForm();
 		await waitForForm();
 
 		typeInField('Reference', 'AGRKB:999');
 		clickSave();
 
-		await waitFor(() => expect(createConditionRelation).toHaveBeenCalled());
-		expect(createConditionRelation.mock.calls[0][0].singleReference).toEqual({ curie: 'AGRKB:999' });
-		expect(await within(getField('Reference')).findByText('Invalid')).toBeInTheDocument();
+		expect(await within(getField('Reference')).findByText('Must select reference from dropdown')).toBeInTheDocument();
+		expect(createConditionRelation).not.toHaveBeenCalled();
+	});
+
+	it('says a reference of only spaces is required', async () => {
+		renderForm();
+		await waitForForm();
+
+		typeInField('Reference', '   ');
+		clickSave();
+
+		expect(await within(getField('Reference')).findByText('Reference is required.')).toBeInTheDocument();
+		expect(createConditionRelation).not.toHaveBeenCalled();
 	});
 
 	it('names the reference and conditions autocompletes', async () => {
