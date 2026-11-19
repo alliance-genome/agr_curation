@@ -197,8 +197,13 @@ public class HTPExpressionDatasetSampleAnnotation extends AuditedObject implemen
 	// proxy whenever an entity is loaded outside of a request that itself reads this field (e.g. the
 	// generic delete-by-id endpoint, which only returns the deleted entity after its transaction has
 	// closed), and Jackson can't serialize an uninitialized lazy collection with no open session.
+	// Explicit FetchMode.SELECT (a second query) rather than Hibernate's default join fetch for an
+	// eager collection - htpExpressionSampleLocations and datasetIds below are both already
+	// FetchMode.JOIN, and joining a third collection in the same query multiplies the row count by
+	// every collection's size (a Cartesian product), not just loads it eagerly.
 	@JsonView({ CurationView.FieldsOnly.class })
 	@ElementCollection(fetch = FetchType.EAGER)
+	@Fetch(FetchMode.SELECT)
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "assemblyVersions_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
 	@JoinTable(indexes = @Index(name = "htpdatasample_assemblyversions_htpdatasample_index", columnList = "htpexpressiondatasetsampleannotation_id"))
@@ -228,10 +233,18 @@ public class HTPExpressionDatasetSampleAnnotation extends AuditedObject implemen
 	@JsonView({ CurationView.FieldsOnly.class })
 	private Analysis analysis;
 
+	// @ManyToOne, not @OneToOne(cascade=ALL, orphanRemoval=true) like htpExpressionSample above -
+	// ExternalDataBaseEntityDTOValidator finds-or-creates by curie and reuses existing rows, so unlike
+	// a sample's own (unique-per-annotation) external id, the same biological reference row can
+	// legitimately be shared across multiple sample annotations (e.g. several FB scRNA-seq clusters
+	// pointing at the same biological sample). Owning it here would delete that shared row - or fail
+	// on its FK - the next time any one sample dropped or changed its biological_reference_dto, or
+	// whenever runCleanup removes an obsolete sample. The validator already persists the entity
+	// explicitly, so no cascade is needed from this side either.
 	@IndexedEmbedded(includePaths = {"curie", "preferredCrossReference.referencedCurie", "secondaryIdentifiers",
 	"curie_keyword", "preferredCrossReference.referencedCurie_keyword", "secondaryIdentifiers_keyword" })
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
-	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+	@ManyToOne
 	@JsonView({ CurationView.FieldsOnly.class })
 	private ExternalDataBaseEntity biologicalReference;
 

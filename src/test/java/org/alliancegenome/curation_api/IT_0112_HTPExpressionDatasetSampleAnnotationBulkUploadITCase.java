@@ -188,26 +188,33 @@ public class IT_0112_HTPExpressionDatasetSampleAnnotationBulkUploadITCase extend
 	@Test
 	@Order(5)
 	public void htpDatasetSampleBulkUploadUpdateOmittingOptionalFields() throws Exception {
+		// AF_03 shares AF_01's biological_reference_dto.curie (HTPSAMPLETEST:BioRef0001) - both rows
+		// reference the same ExternalDataBaseEntity before UM_01 clears it from AF_01 below. Now 2
+		// rows, so filter by sample curie rather than relying on results[0].
+		checkSuccessfulBulkLoad(htpDatasetSampleBulkPostEndpointFb, testFilePath + "AF_03_shares_biological_reference.json");
+
 		// Same htp_expression_sample_dto.curie as AF_01 - must update that same record (matched by
-		// sample id, same as the FMS path), not create a second one. Still exactly 1 row at this
-		// point (tests 2-4 all failed), so results[0] is unambiguous.
+		// sample id, same as the FMS path), not create a second one.
 		checkSuccessfulBulkLoad(htpDatasetSampleBulkPostEndpointFb, testFilePath + "UM_01_update_no_optional_fields.json");
 
 		RestAssured.given().when().header("Content-Type", "application/json").body("{}").post(htpDatasetSampleFindEndpoint)
-			.then().statusCode(200).body("returnedRecords", is(1)).body("results", hasSize(1))
-			.body("results[0]", not(hasKey("symbol")))
-			.body("results[0]", not(hasKey("analysis")))
-			.body("results[0]", not(hasKey("biologicalReference")))
-			.body("results[0]", not(hasKey("genomicInformation")))
-			.body("results[0]", not(hasKey("microarraySampleDetails")))
-			.body("results[0]", not(hasKey("dataProviderCrossReference")))
-			.body("results[0]", not(hasKey("htpExpressionSampleAge")))
-			.body("results[0]", not(hasKey("htpExpressionSampleLocations")))
-			.body("results[0]", not(hasKey("assemblyVersions")))
-			.body("results[0]", not(hasKey("taxon")))
-			.body("results[0]", not(hasKey("geneticSex")))
-			.body("results[0]", not(hasKey("sequencingFormat")))
-			.body("results[0]", not(hasKey("abundance")));
+			.then().statusCode(200).body("returnedRecords", is(2))
+			.body("results.find { it.htpExpressionSample.curie == 'HTPSAMPLETEST:Sample0001' }", not(hasKey("symbol")))
+			.body("results.find { it.htpExpressionSample.curie == 'HTPSAMPLETEST:Sample0001' }", not(hasKey("analysis")))
+			.body("results.find { it.htpExpressionSample.curie == 'HTPSAMPLETEST:Sample0001' }", not(hasKey("biologicalReference")))
+			.body("results.find { it.htpExpressionSample.curie == 'HTPSAMPLETEST:Sample0001' }", not(hasKey("genomicInformation")))
+			.body("results.find { it.htpExpressionSample.curie == 'HTPSAMPLETEST:Sample0001' }", not(hasKey("microarraySampleDetails")))
+			.body("results.find { it.htpExpressionSample.curie == 'HTPSAMPLETEST:Sample0001' }", not(hasKey("dataProviderCrossReference")))
+			.body("results.find { it.htpExpressionSample.curie == 'HTPSAMPLETEST:Sample0001' }", not(hasKey("htpExpressionSampleAge")))
+			.body("results.find { it.htpExpressionSample.curie == 'HTPSAMPLETEST:Sample0001' }", not(hasKey("htpExpressionSampleLocations")))
+			.body("results.find { it.htpExpressionSample.curie == 'HTPSAMPLETEST:Sample0001' }", not(hasKey("assemblyVersions")))
+			.body("results.find { it.htpExpressionSample.curie == 'HTPSAMPLETEST:Sample0001' }", not(hasKey("taxon")))
+			.body("results.find { it.htpExpressionSample.curie == 'HTPSAMPLETEST:Sample0001' }", not(hasKey("geneticSex")))
+			.body("results.find { it.htpExpressionSample.curie == 'HTPSAMPLETEST:Sample0001' }", not(hasKey("sequencingFormat")))
+			.body("results.find { it.htpExpressionSample.curie == 'HTPSAMPLETEST:Sample0001' }", not(hasKey("abundance")))
+			// AF_03's own row still references the same, shared ExternalDataBaseEntity row - it must
+			// not have been deleted (orphanRemoval) or hit its FK constraint when AF_01 dropped it.
+			.body("results.find { it.htpExpressionSample.curie == 'HTPSAMPLETEST:Sample0003' }.biologicalReference.curie", is("HTPSAMPLETEST:BioRef0001"));
 	}
 
 	@Test
@@ -220,19 +227,19 @@ public class IT_0112_HTPExpressionDatasetSampleAnnotationBulkUploadITCase extend
 		// resolves through this same AGM fallback, not the Allele branch AF_01 exercises).
 		checkSuccessfulBulkLoad(htpDatasetSampleBulkPostEndpointMgi, testFilePath + "AF_02_sample_title_match.json");
 		RestAssured.given().when().header("Content-Type", "application/json").body("{}").post(htpDatasetSampleFindEndpoint)
-			.then().statusCode(200).body("returnedRecords", is(2))
+			.then().statusCode(200).body("returnedRecords", is(3))
 			.body("results.find { it.htpExpressionSampleTitle == 'TEST TITLE MATCH SAMPLE' }.genomicInformation.bioSampleAgm.primaryExternalId", is("HTPSAMPLETEST:Agm0001"))
 			.body("results.find { it.htpExpressionSampleTitle == 'TEST TITLE MATCH SAMPLE' }.genomicInformation.bioSampleAgmType.name", is("fish"));
 
 		checkSuccessfulBulkLoad(htpDatasetSampleBulkPostEndpointMgi, testFilePath + "AF_02_sample_title_match.json");
 		RestAssured.given().when().header("Content-Type", "application/json").body("{}").post(htpDatasetSampleFindEndpoint)
-			.then().statusCode(200).body("returnedRecords", is(2));
+			.then().statusCode(200).body("returnedRecords", is(3));
 
 		// TO_04 (FMS fixture naming) - same title/provider/dataset but a different anatomical
-		// structure is a different identity, so this must create a third row, not match the above.
+		// structure is a different identity, so this must create a new row, not match the above.
 		checkSuccessfulBulkLoad(htpDatasetSampleBulkPostEndpointMgi, testFilePath + "AF_02b_sample_title_different_structure.json");
 		RestAssured.given().when().header("Content-Type", "application/json").body("{}").post(htpDatasetSampleFindEndpoint)
-			.then().statusCode(200).body("returnedRecords", is(3));
+			.then().statusCode(200).body("returnedRecords", is(4));
 	}
 
 	@Test
@@ -244,7 +251,7 @@ public class IT_0112_HTPExpressionDatasetSampleAnnotationBulkUploadITCase extend
 		// Fetch both ids up front rather than re-querying the search index between deletes - doing so
 		// risks a stale/empty result if the index hasn't caught up with the previous delete yet.
 		List<Integer> ids = RestAssured.given().when().header("Content-Type", "application/json").body("{}")
-			.post(htpDatasetSampleFindEndpoint).then().statusCode(200).body("returnedRecords", is(3))
+			.post(htpDatasetSampleFindEndpoint).then().statusCode(200).body("returnedRecords", is(4))
 			.extract().jsonPath().getList("results.id", Integer.class);
 		for (Integer id : ids) {
 			RestAssured.given().when().delete("/api/htpexpressiondatasetsampleannotation/" + id).then().statusCode(200);

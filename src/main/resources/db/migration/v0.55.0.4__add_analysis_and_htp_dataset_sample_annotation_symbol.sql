@@ -1,8 +1,8 @@
 -- SCRUM-6715: FB scRNA-seq additions to HTPExpressionDatasetSampleAnnotation - a plain symbol
 -- column, a cascade-owned Analysis sub-object (reuses the analysis table SCRUM-6714 already
--- created - one row per sample annotation, not independently curatable), and a cascade-owned
--- biologicalReference ExternalDataBaseEntity (one row per sample annotation, same pattern as the
--- existing htpExpressionSample column).
+-- created - one row per sample annotation, not independently curatable), and a biologicalReference
+-- ExternalDataBaseEntity reference (a plain FK, not cascade-owned - the same row can be shared
+-- across multiple sample annotations, so this entity doesn't own its lifecycle).
 
 ALTER TABLE htpexpressiondatasetsampleannotation ADD COLUMN symbol character varying(255);
 ALTER TABLE htpexpressiondatasetsampleannotation ADD COLUMN analysis_id bigint;
