@@ -51,7 +51,6 @@ const renderForm = (onCreated = vi.fn()) => {
 			<NewRelationForm
 				newRelationState={newRelationState}
 				newRelationDispatch={newRelationDispatch}
-				searchService={{ search }}
 				conditionRelationTypeTerms={vocabularyTermsFor('condition_relation')}
 				setNewConditionRelation={onCreated}
 			/>
@@ -86,12 +85,39 @@ describe('<NewRelationForm />', () => {
 		expect(createConditionRelation).toHaveBeenCalledWith(
 			expect.objectContaining({
 				handle: 'aspirin_daily',
-				singleReference: expect.objectContaining({ curie: REFERENCE.curie }),
-				conditionRelationType: expect.objectContaining({ name: 'condition_relation_beta' }),
-				conditions: [expect.objectContaining({ id: CONDITION.id })],
+				singleReference: REFERENCE,
+				conditionRelationType: vocabularyTermsFor('condition_relation')[1],
+				conditions: [CONDITION],
 			})
 		);
 		await waitFor(() => expect(screen.queryByText('Handle')).not.toBeInTheDocument());
+	});
+
+	it('searches references and conditions at their own endpoints', async () => {
+		renderForm();
+		await waitForForm();
+
+		typeInField('Reference', 'Smith');
+		typeInField('Conditions', 'aspirin');
+
+		await waitFor(() =>
+			expect(search).toHaveBeenCalledWith(
+				Endpoints.Document.LITERATURE_REFERENCE,
+				15,
+				0,
+				[],
+				expect.objectContaining({ singleReferenceFilter: expect.any(Object) })
+			)
+		);
+		await waitFor(() =>
+			expect(search).toHaveBeenCalledWith(
+				Endpoints.Annotation.EXPERIMENTAL_CONDITION,
+				15,
+				0,
+				[],
+				expect.objectContaining({ experimentalConditionFilter: expect.any(Object) })
+			)
+		);
 	});
 
 	it('shows a rejected field error beside its field and stays open', async () => {
@@ -107,6 +133,9 @@ describe('<NewRelationForm />', () => {
 
 		expect(await within(getField('Reference')).findByText('Invalid')).toBeInTheDocument();
 		expect(within(getField('Handle')).queryByText('Invalid')).not.toBeInTheDocument();
+		expect(screen.getByRole('combobox', { name: 'singleReference' }).closest('.p-autocomplete')).toHaveClass(
+			'p-invalid'
+		);
 		expect(screen.getByText('Unable to create relation')).toBeInTheDocument();
 		expect(onCreated).not.toHaveBeenCalled();
 	});
@@ -124,6 +153,36 @@ describe('<NewRelationForm />', () => {
 		expect(onCreated).not.toHaveBeenCalled();
 	});
 
+	it('says an empty reference is required, beside it, and sends nothing', async () => {
+		renderForm();
+		await waitForForm();
+
+		typeInField('Handle', 'aspirin_daily');
+		selectInField('Relation', 'condition_relation_beta');
+		clickSave();
+
+		expect(await within(getField('Reference')).findByText('Reference is required.')).toBeInTheDocument();
+		expect(screen.getByRole('combobox', { name: 'singleReference' }).closest('.p-autocomplete')).toHaveClass(
+			'p-invalid'
+		);
+		expect(createConditionRelation).not.toHaveBeenCalled();
+	});
+
+	it('clears the required message once a reference is picked', async () => {
+		createConditionRelation.mockImplementation(() => resolvedCreate({ id: 99 }));
+		renderForm();
+		await waitForForm();
+
+		expect(within(getField('Reference')).queryByText('Reference is required.')).not.toBeInTheDocument();
+		clickSave();
+		expect(await within(getField('Reference')).findByText('Reference is required.')).toBeInTheDocument();
+		await pickSuggestionInField('Reference', 'Smith', /Smith 2020/);
+
+		expect(within(getField('Reference')).queryByText('Reference is required.')).not.toBeInTheDocument();
+		clickSave();
+		await waitFor(() => expect(createConditionRelation).toHaveBeenCalled());
+	});
+
 	it('says a duplicate relation is a duplicate', async () => {
 		createConditionRelation.mockImplementation(() => rejectedCreate({ uniqueId: 'Non-unique value' }));
 		renderForm();
@@ -137,8 +196,7 @@ describe('<NewRelationForm />', () => {
 		).toBeInTheDocument();
 	});
 
-	// A reference typed but never picked is sent as the plain string, not as a reference.
-	it.skip('sends a typed reference that was never picked as an unknown reference', async () => {
+	it('sends a typed reference that was never picked as an unknown reference', async () => {
 		createConditionRelation.mockImplementation(() => rejectedCreate({ singleReference: 'Invalid' }));
 		renderForm();
 		await waitForForm();
