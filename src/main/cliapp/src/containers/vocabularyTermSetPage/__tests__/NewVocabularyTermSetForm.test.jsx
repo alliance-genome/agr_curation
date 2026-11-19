@@ -47,7 +47,6 @@ const renderForm = (onCreated = vi.fn()) => {
 			<NewVocabularyTermSetForm
 				newVocabularyTermSetState={newVocabularyTermSetState}
 				newVocabularyTermSetDispatch={newVocabularyTermSetDispatch}
-				searchService={{ search }}
 				setNewVocabularyTermSet={onCreated}
 			/>
 		);
@@ -85,8 +84,8 @@ describe('<NewVocabularyTermSetForm />', () => {
 				name: 'Note types',
 				vocabularyLabel: 'note_types',
 				vocabularyTermSetDescription: 'The note types',
-				vocabularyTermSetVocabulary: expect.objectContaining({ name: VOCABULARY.name }),
-				memberTerms: [expect.objectContaining({ id: TERM.id })],
+				vocabularyTermSetVocabulary: VOCABULARY,
+				memberTerms: [TERM],
 			})
 		);
 		await waitFor(() => expect(screen.queryByText('Vocabulary Terms')).not.toBeInTheDocument());
@@ -108,8 +107,7 @@ describe('<NewVocabularyTermSetForm />', () => {
 		);
 	});
 
-	// AutocompleteMultiEditor takes `disabled`, not the `isEnabled` the form passes, so Vocabulary Terms is never disabled.
-	it.skip('keeps Vocabulary Terms disabled until a vocabulary is picked', async () => {
+	it('keeps Vocabulary Terms disabled until a vocabulary is picked', async () => {
 		renderForm();
 		await waitForForm();
 
@@ -118,8 +116,17 @@ describe('<NewVocabularyTermSetForm />', () => {
 		expect(memberTermsInput()).toBeEnabled();
 	});
 
-	// Vocabulary Terms is never disabled (see above), and the form counts typed vocabulary text as a vocabulary.
-	it.skip('keeps Vocabulary Terms disabled while the vocabulary is only typed', async () => {
+	it('disables Vocabulary Terms again when the picked vocabulary is edited', async () => {
+		renderForm();
+		await waitForForm();
+
+		await pickSuggestionInField('Vocabulary', 'allele', /allele_note_type/);
+		typeInField('Vocabulary', 'allele_note');
+
+		expect(memberTermsInput()).toBeDisabled();
+	});
+
+	it('keeps Vocabulary Terms disabled while the vocabulary is only typed', async () => {
 		renderForm();
 		await waitForForm();
 
@@ -128,8 +135,7 @@ describe('<NewVocabularyTermSetForm />', () => {
 		expect(memberTermsInput()).toBeDisabled();
 	});
 
-	// A vocabulary typed but never picked is sent as the plain string, not as a vocabulary.
-	it.skip('sends a typed vocabulary that was never picked as an unknown vocabulary', async () => {
+	it('sends a typed vocabulary that was never picked as an unknown vocabulary', async () => {
 		createVocabularyTermSet.mockImplementation(() => rejectedCreate({ vocabularyTermSetVocabulary: 'Invalid' }));
 		renderForm();
 		await waitForForm();
@@ -157,6 +163,8 @@ describe('<NewVocabularyTermSetForm />', () => {
 
 		expect(await within(getField('Name')).findByText('Required field is empty')).toBeInTheDocument();
 		expect(within(getField('Label')).queryByText('Required field is empty')).not.toBeInTheDocument();
+		expect(getField('Name').querySelector('input')).toHaveClass('p-invalid');
+		expect(getField('Label').querySelector('input')).not.toHaveClass('p-invalid');
 		expect(screen.getByText('Unable to create term set')).toBeInTheDocument();
 		expect(onCreated).not.toHaveBeenCalled();
 	});
