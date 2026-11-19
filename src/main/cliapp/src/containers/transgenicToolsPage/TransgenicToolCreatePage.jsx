@@ -35,7 +35,7 @@ const errorToast = (message) => ({ life: 10000, severity: 'error', sticky: false
 
 /**
  * The page that creates a transgenic tool (SCRUM-6691), opened in a new tab from the Transgenic Tools table and the
- * Transgenic Tool detail page. Its fields are edited as on the detail page. Save & Close goes back to the table.
+ * Transgenic Tool detail page. Its fields are edited as on the detail page. Save & Close opens the new tool's detail page.
  *
  * Saving creates the tool with its own fields and lists, which mints its AGRKB curie; the unique ID is built from the
  * symbol and the full name, so a tool that would duplicate another is refused before anything is saved. The tool
@@ -56,7 +56,7 @@ export default function TransgenicToolCreatePage() {
 		TRANSGENIC_TOOL_CREATE_TOGGLEABLE_FIELDS
 	);
 	const saveProgress = useSaveProgress();
-	// Set once Save & Close has saved everything, while the page shows that before going back to the table.
+	// Set once Save & Close has saved everything, while the page shows that before moving on to the tool.
 	const [isLeaving, setIsLeaving] = useState(false);
 	// Held so that saving again after the associations failed updates the tool that already exists, rather than
 	// creating a second one.
@@ -157,7 +157,10 @@ export default function TransgenicToolCreatePage() {
 		if (closeAfterSubmit) {
 			// The curator sees everything saved before the page moves on; saving again meanwhile is not offered.
 			setIsLeaving(true);
-			if (await saveProgress.finish()) navigate('/transgenicTools');
+			// As on the other create pages, Save & Close opens the new tool's detail page. A tool whose curie could not
+			// be minted has no identifier to open it by, so the curator goes back to the table instead.
+			const identifier = getIdentifier(saved);
+			if (await saveProgress.finish()) navigate(identifier ? `/transgenic-tool/${identifier}` : '/transgenicTools');
 		} else {
 			// The form starts over for the next tool from the one just saved, so it can be entered as a small change to it
 			await showTransgenicTool(buildDuplicateTransgenicTool(saved));
