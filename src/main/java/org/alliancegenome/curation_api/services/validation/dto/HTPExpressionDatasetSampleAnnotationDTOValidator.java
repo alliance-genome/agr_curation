@@ -31,8 +31,6 @@ import org.alliancegenome.curation_api.model.entities.MicroarraySampleDetails;
 import org.alliancegenome.curation_api.model.entities.Note;
 import org.alliancegenome.curation_api.model.entities.Organization;
 import org.alliancegenome.curation_api.model.entities.ontology.AnatomicalTerm;
-import org.alliancegenome.curation_api.model.entities.ontology.MMOTerm;
-import org.alliancegenome.curation_api.model.entities.ontology.OBITerm;
 import org.alliancegenome.curation_api.model.ingest.dto.AnatomicalSiteDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.HTPExpressionDatasetSampleAnnotationDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
