@@ -5,7 +5,7 @@ import { useCookies } from 'react-cookie';
 import { Button } from 'primereact/button';
 
 const CALLBACK_RETRIED_KEY = 'cognito-callback-retried';
-const CALLBACK_TIMEOUT_MS = 10000;
+const CALLBACK_TIMEOUT_MS = 4000;
 
 let pendingCallbackFailure = false;
 let callbackFailureHandler = null;
@@ -194,6 +194,9 @@ export const Login = ({ children }) => {
 	}, [loading, user, callbackStatus]);
 
 	if (loading) {
+		if (window.location.search.includes('code=') || callbackStatus) {
+			return <div>Completing login...</div>;
+		}
 		return <div>Loading authentication...</div>;
 	}
 

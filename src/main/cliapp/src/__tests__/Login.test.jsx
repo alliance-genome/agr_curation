@@ -30,7 +30,7 @@ vi.mock('react-cookie', () => ({
 }));
 
 const CALLBACK_RETRIED_KEY = 'cognito-callback-retried';
-const CALLBACK_TIMEOUT_MS = 10000;
+const CALLBACK_TIMEOUT_MS = 4000;
 
 const dispatchAuthEvent = (event) => {
 	act(() => {
@@ -93,6 +93,12 @@ describe('Login', () => {
 			expect(mockAuth.signInWithRedirect).not.toHaveBeenCalled();
 		});
 
+		it('shows the loading message while the session check runs', async () => {
+			await renderLogin();
+
+			expect(screen.getByText('Loading authentication...')).toBeInTheDocument();
+		});
+
 		it('clears a retry marker left by an earlier callback', async () => {
 			sessionStorage.setItem(CALLBACK_RETRIED_KEY, 'true');
 
@@ -123,7 +129,7 @@ describe('Login', () => {
 			await renderLogin();
 			await settle();
 
-			expect(screen.getByText('Loading authentication...')).toBeInTheDocument();
+			expect(screen.getByText('Completing login...')).toBeInTheDocument();
 			expect(mockAuth.getCurrentUser).not.toHaveBeenCalled();
 			expect(mockAuth.signInWithRedirect).not.toHaveBeenCalled();
 		});
@@ -151,7 +157,7 @@ describe('Login', () => {
 			expect(window.location.search).toBe('?other=1');
 			expect(window.location.hash).toBe('#section');
 			expect(sessionStorage.getItem(CALLBACK_RETRIED_KEY)).toBe('true');
-			expect(screen.getByText('Loading authentication...')).toBeInTheDocument();
+			expect(screen.getByText('Completing login...')).toBeInTheDocument();
 		});
 
 		it('shows the retry prompt when Amplify refuses to restart login', async () => {
