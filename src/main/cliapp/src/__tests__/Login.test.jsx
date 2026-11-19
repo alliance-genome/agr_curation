@@ -30,6 +30,7 @@ vi.mock('react-cookie', () => ({
 }));
 
 const CALLBACK_RETRIED_KEY = 'cognito-callback-retried';
+const CALLBACK_TIMEOUT_MS = 10000;
 
 const dispatchAuthEvent = (event) => {
 	act(() => {
@@ -205,6 +206,78 @@ describe('Login', () => {
 
 			expect(mockAuth.signInWithRedirect).toHaveBeenCalledTimes(1);
 			expect(sessionStorage.getItem(CALLBACK_RETRIED_KEY)).toBe('true');
+		});
+
+		describe('when Amplify does not resolve the callback', () => {
+			beforeEach(() => {
+				vi.useFakeTimers({ shouldAdvanceTime: true });
+			});
+
+			afterEach(() => {
+				vi.useRealTimers();
+			});
+
+			const advancePastCallbackTimeout = () =>
+				act(async () => {
+					await vi.advanceTimersByTimeAsync(CALLBACK_TIMEOUT_MS);
+				});
+
+			it('restarts login after the timeout when there is no user', async () => {
+				await renderLogin();
+				await act(async () => {
+					await vi.advanceTimersByTimeAsync(CALLBACK_TIMEOUT_MS - 1000);
+				});
+				expect(mockAuth.signInWithRedirect).not.toHaveBeenCalled();
+
+				await advancePastCallbackTimeout();
+
+				expect(mockAuth.signInWithRedirect).toHaveBeenCalledTimes(1);
+				expect(window.location.search).toBe('');
+				expect(sessionStorage.getItem(CALLBACK_RETRIED_KEY)).toBe('true');
+			});
+
+			it('renders the app after the timeout when tokens already exist', async () => {
+				await renderLogin();
+				mockSignedInUser();
+
+				await advancePastCallbackTimeout();
+
+				expect(screen.getByText('App content')).toBeInTheDocument();
+				expect(window.location.search).toBe('');
+				expect(mockAuth.signInWithRedirect).not.toHaveBeenCalled();
+			});
+
+			it('shows the retry prompt after the timeout when login was already retried', async () => {
+				sessionStorage.setItem(CALLBACK_RETRIED_KEY, 'true');
+				await renderLogin();
+
+				await advancePastCallbackTimeout();
+
+				expect(screen.getByText("Login didn't complete.")).toBeInTheDocument();
+				expect(mockAuth.signInWithRedirect).not.toHaveBeenCalled();
+			});
+
+			it('does not fire after sign-in completes', async () => {
+				await renderLogin();
+				mockSignedInUser();
+				dispatchAuthEvent('signedIn');
+				await screen.findByText('App content');
+
+				await advancePastCallbackTimeout();
+
+				expect(mockAuth.getCurrentUser).toHaveBeenCalledTimes(1);
+				expect(mockAuth.signInWithRedirect).not.toHaveBeenCalled();
+			});
+
+			it('does not fire after a reported failure', async () => {
+				await renderLogin();
+				dispatchAuthEvent('signInWithRedirect_failure');
+
+				await advancePastCallbackTimeout();
+
+				expect(mockAuth.signInWithRedirect).toHaveBeenCalledTimes(1);
+				expect(mockAuth.getCurrentUser).not.toHaveBeenCalled();
+			});
 		});
 	});
 });

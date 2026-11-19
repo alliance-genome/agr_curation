@@ -1,10 +1,11 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { signInWithRedirect, getCurrentUser, fetchAuthSession } from 'aws-amplify/auth';
 import { Hub } from 'aws-amplify/utils';
 import { useCookies } from 'react-cookie';
 import { Button } from 'primereact/button';
 
 const CALLBACK_RETRIED_KEY = 'cognito-callback-retried';
+const CALLBACK_TIMEOUT_MS = 10000;
 
 let pendingCallbackFailure = false;
 let callbackFailureHandler = null;
@@ -40,6 +41,8 @@ export const Login = ({ children }) => {
 	const [loggingOut, setLoggingOut] = useState(false);
 	const [callbackStatus, setCallbackStatus] = useState(null);
 	const [, setCookie] = useCookies(['cognito-token-cookie']);
+	const callbackTimeoutRef = useRef(null);
+	const handleCallbackTimeoutRef = useRef(null);
 
 	const checkUser = useCallback(async () => {
 		try {
@@ -48,6 +51,7 @@ export const Login = ({ children }) => {
 
 			if (currentUser && session.tokens?.accessToken) {
 				sessionStorage.removeItem(CALLBACK_RETRIED_KEY);
+				setCallbackStatus(null);
 				setUser(currentUser);
 				setCookie('cognito-token-cookie', session.tokens.accessToken.toString(), {
 					maxAge: 60 * 60 * 12,
@@ -68,6 +72,7 @@ export const Login = ({ children }) => {
 						: null,
 				};
 				localStorage.setItem('cognito-token-storage', JSON.stringify(cognitoTokenStorage));
+				return true;
 			} else {
 				setUser(null);
 			}
@@ -76,6 +81,7 @@ export const Login = ({ children }) => {
 		} finally {
 			setLoading(false);
 		}
+		return false;
 	}, [setCookie]);
 
 	/**
@@ -94,6 +100,7 @@ export const Login = ({ children }) => {
 	 * attempt, shows the retry prompt instead.
 	 */
 	const recoverFromFailedCallback = useCallback(() => {
+		clearTimeout(callbackTimeoutRef.current);
 		stripCallbackParams();
 		if (sessionStorage.getItem(CALLBACK_RETRIED_KEY)) {
 			setCallbackStatus('failed');
@@ -101,9 +108,25 @@ export const Login = ({ children }) => {
 			return;
 		}
 		sessionStorage.setItem(CALLBACK_RETRIED_KEY, 'true');
-		setCallbackStatus('redirecting');
+		setCallbackStatus('recovering');
 		restartLogin();
 	}, [restartLogin]);
+
+	/**
+	 * Handles a callback that Amplify has not resolved in time: clears the callback parameters, signs
+	 * the user in if tokens exist, and otherwise recovers as from a failed callback.
+	 */
+	const handleCallbackTimeout = useCallback(async () => {
+		setCallbackStatus('recovering');
+		stripCallbackParams();
+		if (!(await checkUser())) {
+			recoverFromFailedCallback();
+		}
+	}, [checkUser, recoverFromFailedCallback]);
+
+	useEffect(() => {
+		handleCallbackTimeoutRef.current = handleCallbackTimeout;
+	}, [handleCallbackTimeout]);
 
 	useEffect(() => {
 		const isCallback = window.location.search.includes('code=');
@@ -112,6 +135,7 @@ export const Login = ({ children }) => {
 			switch (payload.event) {
 				case 'signedIn':
 				case 'tokenRefresh':
+					clearTimeout(callbackTimeoutRef.current);
 					checkUser();
 					break;
 				case 'signedOut':
@@ -141,6 +165,14 @@ export const Login = ({ children }) => {
 			callbackFailureHandler = null;
 		};
 	}, [recoverFromFailedCallback]);
+
+	useEffect(() => {
+		if (!window.location.search.includes('code=')) {
+			return;
+		}
+		callbackTimeoutRef.current = setTimeout(() => handleCallbackTimeoutRef.current(), CALLBACK_TIMEOUT_MS);
+		return () => clearTimeout(callbackTimeoutRef.current);
+	}, []);
 
 	useEffect(() => {
 		const isCallback = window.location.search.includes('code=');
