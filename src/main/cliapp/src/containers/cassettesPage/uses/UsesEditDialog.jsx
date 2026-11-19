@@ -8,16 +8,28 @@ import { ColumnGroup } from 'primereact/columngroup';
 import { Row } from 'primereact/row';
 import { ValidationService } from '../../../service/ValidationService';
 import { DeleteAction } from '../../../components/Actions/DeletionAction';
-import { InternalEditor } from '../../../components/Editors/legacyForm/InternalEditor';
-import { EvidenceEditor } from '../../../components/Editors/legacyForm/EvidenceEditor';
-import { UsesEditor } from './UsesEditor';
 import { Endpoints } from '../../../constants/Endpoints';
-import { multipleAutocompleteOnChange } from '../../../utils/utils';
+import { KEEP_ROWS_IN_EDIT_MODE } from '../../../utils/rows';
+import { TableEditorProvider } from '../../../components/Editors/fields/TableEditorContext';
+import { useLocalRowsStrategy } from '../../../components/Editors/fields/strategies/useLocalRowsStrategy';
+import { UsesTableEditor } from '../../../components/Editors/autocomplete/ontology/UsesTableEditor';
+import { BooleanTableEditor } from '../../../components/Editors/dropdown/boolean/BooleanTableEditor';
+import { EvidenceTableEditor } from '../../../components/Editors/autocomplete/references/EvidenceTableEditor';
 
-// The uses of one cassette or transgenic tool, edited in a pop-up from its table: FBcv terms from the
-// 'experimental_tool_descriptor' namespace with their evidence. Adapted from MutationTypesEditDialog.
-// field is the entity's uses field, which the row's errors are filed under, and endpoint the slot
-// annotation each use is validated against (SCRUM-6654).
+/**
+ * Dialog for editing the uses of a main-table row's cassette or transgenic tool: FBcv terms from the
+ * experimental tool descriptor namespace, with their evidence. Edits stay local until Keep Edits validates every
+ * use and hands the list back through the row's editor callback.
+ *
+ * @param {object} originalUsesData - the row's uses, dialog visibility, row index and PrimeReact editor options
+ * @param {Function} setOriginalUsesData - its setter
+ * @param {object} errorMessagesMainRow - the main table's errors, keyed by row index
+ * @param {Function} setErrorMessagesMainRow - its setter
+ * @param {string} [field='cassetteUses'] - the row's field holding the uses, under which Pending Edits is marked
+ * @param {string} [endpoint] - the slot annotation endpoint each use is validated against; the cassette use's by
+ *   default
+ * @returns {JSX.Element}
+ */
 export const UsesEditDialog = ({
 	originalUsesData,
 	setOriginalUsesData,
@@ -36,6 +48,12 @@ export const UsesEditDialog = ({
 	const tableRef = useRef(null);
 	const toast_topright = useRef(null);
 
+	const strategy = useLocalRowsStrategy({
+		rows: localUses,
+		setRows: setLocalUses,
+		errors: errorMessages,
+	});
+
 	const showDialogHandler = () => {
 		let _localUses = cloneUses(originalUses);
 		setLocalUses(_localUses);
@@ -48,10 +66,6 @@ export const UsesEditDialog = ({
 		}
 		setEditingRows(rowsObject);
 		setErrorMessages({});
-	};
-
-	const onRowEditChange = () => {
-		return null;
 	};
 
 	const hideDialog = () => {
@@ -75,33 +89,6 @@ export const UsesEditDialog = ({
 			_clonableUses = [];
 		}
 		return _clonableUses;
-	};
-
-	const onUseValueChange = (event, setFieldValue, props) => {
-		multipleAutocompleteOnChange(props, event, 'uses', setFieldValue);
-		setLocalUses((prev) => {
-			const updated = [...prev];
-			updated[props.rowIndex] = { ...updated[props.rowIndex], uses: event.target.value };
-			return updated;
-		});
-	};
-
-	const internalOnChangeHandler = (props, event) => {
-		props.editorCallback(event.target.value?.name);
-		setLocalUses((prev) => {
-			const updated = [...prev];
-			updated[props.rowIndex] = { ...updated[props.rowIndex], internal: event.target?.value?.name };
-			return updated;
-		});
-	};
-
-	const evidenceOnChangeHandler = (event, setFieldValue, props) => {
-		setFieldValue(event.target.value);
-		setLocalUses((prev) => {
-			const updated = [...prev];
-			updated[props.rowIndex] = { ...updated[props.rowIndex], evidence: event.target.value };
-			return updated;
-		});
 	};
 
 	const createNewUseHandler = () => {
@@ -249,71 +236,47 @@ export const UsesEditDialog = ({
 				footer={footerTemplate}
 			>
 				<h3>Uses</h3>
-				<DataTable
-					value={localUses}
-					dataKey="dataKey"
-					showGridlines
-					editMode="row"
-					headerColumnGroup={headerGroup}
-					editingRows={editingRows}
-					onRowEditChange={onRowEditChange}
-					ref={tableRef}
-					cellMemo={false}
-				>
-					<Column
-						editor={(props) => <DeleteAction deletionHandler={handleDeleteUse} id={props?.rowData?.dataKey} />}
-						className="max-w-4rem"
-						bodyClassName="text-center"
-						headerClassName="surface-0"
-						frozen
-					/>
-					<Column
-						editor={(props) => {
-							return (
-								<UsesEditor
-									props={props}
-									errorMessages={errorMessages}
-									onChange={onUseValueChange}
-									dataKey={props?.rowData?.dataKey}
-								/>
-							);
-						}}
-						field="uses"
-						header="Uses"
-						headerClassName="surface-0"
-					/>
-					<Column
-						editor={(props) => {
-							return (
-								<InternalEditor
-									editorOptions={props}
-									rowIndex={props.rowIndex}
-									errorMessages={errorMessages}
-									dataKey={props?.rowData?.dataKey}
-									internalOnChangeHandler={internalOnChangeHandler}
-								/>
-							);
-						}}
-						field="internal"
-						header="Internal"
-						headerClassName="surface-0"
-					/>
-					<Column
-						editor={(props) => {
-							return (
-								<EvidenceEditor
-									props={props}
-									errorMessages={errorMessages}
-									onChange={evidenceOnChangeHandler}
-									dataKey={props?.rowData?.dataKey}
-								/>
-							);
-						}}
-						field="evidence"
-						header="Evidence"
-						headerClassName="surface-0"
-					/>
-				</DataTable>
+				<TableEditorProvider strategy={strategy}>
+					<DataTable
+						value={localUses}
+						dataKey="dataKey"
+						showGridlines
+						editMode="row"
+						headerColumnGroup={headerGroup}
+						editingRows={editingRows}
+						onRowEditChange={KEEP_ROWS_IN_EDIT_MODE}
+						ref={tableRef}
+						cellMemo={false}
+					>
+						<Column
+							editor={(editorOptions) => (
+								<DeleteAction deletionHandler={handleDeleteUse} id={editorOptions?.rowData?.dataKey} />
+							)}
+							className="max-w-4rem"
+							bodyClassName="text-center"
+							headerClassName="surface-0"
+							frozen
+						/>
+						<Column
+							editor={(editorOptions) => <UsesTableEditor editorOptions={editorOptions} />}
+							field="uses"
+							header="Uses"
+							headerClassName="surface-0"
+						/>
+						<Column
+							editor={(editorOptions) => <BooleanTableEditor editorOptions={editorOptions} field="internal" />}
+							field="internal"
+							header="Internal"
+							headerClassName="surface-0"
+						/>
+						<Column
+							editor={(editorOptions) => <EvidenceTableEditor editorOptions={editorOptions} />}
+							field="evidence"
+							header="Evidence"
+							headerClassName="surface-0"
+						/>
+					</DataTable>
+				</TableEditorProvider>
 			</Dialog>
 		</div>
 	);
