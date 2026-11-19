@@ -1,5 +1,5 @@
 import React from 'react';
-import { MemoryRouter, Route, Routes } from 'react-router-dom';
+import { MemoryRouter, Route, Routes, useParams } from 'react-router-dom';
 import { screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { renderWithClient } from '../../../tools/jest/utils';
@@ -55,11 +55,15 @@ const nonUnique = {
 	},
 };
 
+// Save & Close opens the new tool's detail page by its identifier
+const DetailPage = () => <div>Detail page of {useParams().identifier}</div>;
+
 const renderPage = () =>
 	renderWithClient(
 		<MemoryRouter initialEntries={['/transgenic-tool/create']}>
 			<Routes>
 				<Route path="/transgenic-tool/create" element={<TransgenicToolCreatePage />} />
+				<Route path="/transgenic-tool/:identifier" element={<DetailPage />} />
 				<Route path="/transgenicTools" element={<div>Transgenic Tools table</div>} />
 			</Routes>
 		</MemoryRouter>
@@ -147,14 +151,14 @@ describe('<TransgenicToolCreatePage />', { timeout: 30000 }, () => {
 		expect(getTransgenicToolAssociations).not.toHaveBeenCalled();
 	});
 
-	it('creates the tool without associations, then goes back to the Transgenic Tools table', async () => {
+	it('creates the tool without associations, then opens its detail page', async () => {
 		const user = userEvent.setup();
 		await renderReadyPage();
 
 		await chooseBoolean(user, 'Internal', 'true');
 		await click(user, 'Save & Close');
 
-		expect(await screen.findByText('Transgenic Tools table', {}, PAGE_LOAD_WAIT)).toBeInTheDocument();
+		expect(await screen.findByText(/^Detail page of AGRKB:/, {}, PAGE_LOAD_WAIT)).toBeInTheDocument();
 		const [payload] = createTransgenicTool.mock.calls[0];
 		expect(payload).toMatchObject({ type: 'TransgenicTool', placeholder: false, internal: true });
 		['id', 'dataProvider', 'associatedTransgenicTools'].forEach((field) => expect(payload).not.toHaveProperty(field));
@@ -169,7 +173,7 @@ describe('<TransgenicToolCreatePage />', { timeout: 30000 }, () => {
 		await addAssociation(user);
 		await click(user, 'Save & Close');
 
-		expect(await screen.findByText('Transgenic Tools table', {}, PAGE_LOAD_WAIT)).toBeInTheDocument();
+		expect(await screen.findByText(/^Detail page of AGRKB:/, {}, PAGE_LOAD_WAIT)).toBeInTheDocument();
 		expect(createTransgenicTool).toHaveBeenCalledTimes(1);
 		expect(createTransgenicTool.mock.calls[0][0]).not.toHaveProperty('transgenicToolTransgenicToolAssociations');
 		expect(replaceTransgenicToolAssociations).toHaveBeenCalledTimes(1);
@@ -222,7 +226,7 @@ describe('<TransgenicToolCreatePage />', { timeout: 30000 }, () => {
 		await waitFor(() => expect(screen.getByRole('button', { name: 'Save & Close' })).toBeEnabled());
 		await click(user, 'Save & Close');
 
-		expect(await screen.findByText('Transgenic Tools table', {}, PAGE_LOAD_WAIT)).toBeInTheDocument();
+		expect(await screen.findByText(/^Detail page of AGRKB:/, {}, PAGE_LOAD_WAIT)).toBeInTheDocument();
 		expect(createTransgenicTool).toHaveBeenCalledTimes(1);
 		expect(saveTransgenicTool).toHaveBeenCalledWith(expect.objectContaining({ id: 99, type: 'TransgenicTool' }));
 		expect(replaceTransgenicToolAssociations.mock.calls.map(([id]) => id)).toEqual([99, 99]);
@@ -264,8 +268,21 @@ describe('<TransgenicToolCreatePage />', { timeout: 30000 }, () => {
 		await click(user, 'Clear');
 		await click(user, 'Save & Close');
 
-		expect(await screen.findByText('Transgenic Tools table', {}, PAGE_LOAD_WAIT)).toBeInTheDocument();
+		expect(await screen.findByText(/^Detail page of AGRKB:/, {}, PAGE_LOAD_WAIT)).toBeInTheDocument();
 		expect(replaceTransgenicToolAssociations).not.toHaveBeenCalled();
+	});
+
+	it('goes back to the Transgenic Tools table on Save & Close when no curie could be minted', async () => {
+		createTransgenicTool.mockImplementation((payload) =>
+			Promise.resolve({ data: { entity: { ...created(payload), curie: null } } })
+		);
+		const user = userEvent.setup();
+		await renderReadyPage();
+
+		await click(user, 'Save & Close');
+
+		expect(await screen.findByText('Transgenic Tools table', {}, PAGE_LOAD_WAIT)).toBeInTheDocument();
+		expect(createTransgenicTool).toHaveBeenCalledTimes(1);
 	});
 
 	it('goes back to the Transgenic Tools table on Cancel', async () => {
