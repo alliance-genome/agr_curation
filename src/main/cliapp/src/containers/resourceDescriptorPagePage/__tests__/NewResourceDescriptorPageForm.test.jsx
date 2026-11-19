@@ -30,8 +30,6 @@ vi.mock('../../../service/SearchService', () => ({
 	},
 }));
 
-vi.mock('../../../service/useControlledVocabularyService');
-
 const { NewResourceDescriptorPageForm } = await import('../NewResourceDescriptorPageForm');
 
 const renderForm = (onCreated = vi.fn(), setDialog = vi.fn()) =>
@@ -74,7 +72,7 @@ describe('<NewResourceDescriptorPageForm />', () => {
 		expect(await screen.findByText('Successful')).toBeInTheDocument();
 		expect(createResourceDescriptorPage).toHaveBeenCalledWith(
 			expect.objectContaining({
-				resourceDescriptor: expect.objectContaining({ id: RESOURCE_DESCRIPTOR.id }),
+				resourceDescriptor: RESOURCE_DESCRIPTOR,
 				name: 'gene',
 				urlTemplate: 'https://zfin.org/[%s]',
 				pageDescription: 'Gene page',
@@ -96,6 +94,32 @@ describe('<NewResourceDescriptorPageForm />', () => {
 		expect(within(getField('Name')).getByText('Name is required.')).toBeInTheDocument();
 		expect(within(getField('URL Template')).getByText('URL Template is required.')).toBeInTheDocument();
 		expect(createResourceDescriptorPage).not.toHaveBeenCalled();
+	});
+
+	it('says a name or URL template of only spaces is required', async () => {
+		renderForm();
+		await waitForForm();
+
+		await pickSuggestionInField('Resource Descriptor', 'ZF', /ZFIN/);
+		typeInField('Name', '   ');
+		typeInField('URL Template', '  ');
+		clickSave();
+
+		expect(await within(getField('Name')).findByText('Name is required.')).toBeInTheDocument();
+		expect(within(getField('URL Template')).getByText('URL Template is required.')).toBeInTheDocument();
+		expect(createResourceDescriptorPage).not.toHaveBeenCalled();
+	});
+
+	it('clears a required message once the field is filled', async () => {
+		renderForm();
+		await waitForForm();
+
+		clickSave();
+		expect(await within(getField('Name')).findByText('Name is required.')).toBeInTheDocument();
+		typeInField('Name', 'gene');
+
+		expect(within(getField('Name')).queryByText('Name is required.')).not.toBeInTheDocument();
+		expect(within(getField('URL Template')).getByText('URL Template is required.')).toBeInTheDocument();
 	});
 
 	it('treats a descriptor typed but never picked as missing', async () => {
@@ -140,8 +164,7 @@ describe('<NewResourceDescriptorPageForm />', () => {
 		expect(setDialog).not.toHaveBeenCalled();
 	});
 
-	// The server's field errors show only in the toast.
-	it.skip('shows a rejected field error beside its field', async () => {
+	it('shows a rejected field error beside its field', async () => {
 		createResourceDescriptorPage.mockImplementation(() => rejectedCreate({ urlTemplate: 'Invalid' }));
 		renderForm();
 		await waitForForm();
@@ -154,8 +177,67 @@ describe('<NewResourceDescriptorPageForm />', () => {
 		expect(within(getField('Name')).queryByText('Invalid')).not.toBeInTheDocument();
 	});
 
-	// The resource descriptor autocomplete has no accessible name.
-	it.skip('names the resource descriptor autocomplete', async () => {
+	it('clears a rejected field error when saving again, and sends Internal as false by default', async () => {
+		createResourceDescriptorPage
+			.mockImplementationOnce(() => rejectedCreate({ urlTemplate: 'Invalid' }))
+			.mockImplementationOnce(() => new Promise(() => {}));
+		renderForm();
+		await waitForForm();
+
+		await pickSuggestionInField('Resource Descriptor', 'ZF', /ZFIN/);
+		fillRequiredText();
+		clickSave();
+		expect(await within(getField('URL Template')).findByText('Invalid')).toBeInTheDocument();
+		clickSave();
+
+		await waitFor(() => expect(within(getField('URL Template')).queryByText('Invalid')).not.toBeInTheDocument());
+		expect(createResourceDescriptorPage).toHaveBeenLastCalledWith(expect.objectContaining({ internal: false }));
+	});
+
+	it('clears rejected field errors and required messages on Cancel', async () => {
+		createResourceDescriptorPage.mockImplementation(() => rejectedCreate({ urlTemplate: 'Invalid' }));
+		renderForm();
+		await waitForForm();
+
+		await pickSuggestionInField('Resource Descriptor', 'ZF', /ZFIN/);
+		typeInField('URL Template', 'https://zfin.org/[%s]');
+		typeInField('Name', 'gene');
+		clickSave();
+		expect(await within(getField('URL Template')).findByText('Invalid')).toBeInTheDocument();
+		typeInField('Name', '');
+		expect(within(getField('Name')).getByText('Name is required.')).toBeInTheDocument();
+
+		fireEvent.click(screen.getByRole('button', { name: 'Cancel' }));
+
+		await waitFor(() => expect(within(getField('URL Template')).queryByText('Invalid')).not.toBeInTheDocument());
+		expect(within(getField('Name')).queryByText('Name is required.')).not.toBeInTheDocument();
+	});
+
+	it('leaves no field errors from a save rejected after Cancel', async () => {
+		let rejectSave;
+		createResourceDescriptorPage.mockImplementation(
+			() =>
+				new Promise((resolve, reject) => {
+					rejectSave = reject;
+				})
+		);
+		renderForm();
+		await waitForForm();
+
+		await pickSuggestionInField('Resource Descriptor', 'ZF', /ZFIN/);
+		fillRequiredText();
+		clickSave();
+		await waitFor(() => expect(createResourceDescriptorPage).toHaveBeenCalled());
+		fireEvent.click(screen.getByRole('button', { name: 'Cancel' }));
+		rejectSave({
+			response: { data: { errorMessage: 'Validation failed', errorMessages: { urlTemplate: 'Invalid' } } },
+		});
+
+		expect(await screen.findByText('urlTemplate: Invalid')).toBeInTheDocument();
+		expect(within(getField('URL Template')).queryByText('Invalid')).not.toBeInTheDocument();
+	});
+
+	it('names the resource descriptor autocomplete', async () => {
 		renderForm();
 		await waitForForm();
 
