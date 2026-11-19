@@ -1,0 +1,183 @@
+package org.alliancegenome.curation_api.services.validation.dto;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.alliancegenome.curation_api.constants.ValidationConstants;
+import org.alliancegenome.curation_api.constants.VocabularyConstants;
+import org.alliancegenome.curation_api.dao.CrossReferenceDAO;
+import org.alliancegenome.curation_api.dao.HTPExpressionDatasetAnnotationDAO;
+import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
+import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
+import org.alliancegenome.curation_api.exceptions.ValidationException;
+import org.alliancegenome.curation_api.model.entities.Analysis;
+import org.alliancegenome.curation_api.model.entities.CrossReference;
+import org.alliancegenome.curation_api.model.entities.ExternalDataBaseEntity;
+import org.alliancegenome.curation_api.model.entities.HTPExpressionDatasetAnnotation;
+import org.alliancegenome.curation_api.model.entities.Organization;
+import org.alliancegenome.curation_api.model.entities.Reference;
+import org.alliancegenome.curation_api.model.ingest.dto.HTPExpressionDatasetAnnotationDTO;
+import org.alliancegenome.curation_api.response.ObjectResponse;
+import org.alliancegenome.curation_api.response.SearchResponse;
+import org.alliancegenome.curation_api.services.CurieMintService;
+import org.alliancegenome.curation_api.services.ExternalDataBaseEntityService;
+import org.alliancegenome.curation_api.services.OrganizationService;
+import org.alliancegenome.curation_api.services.validation.dto.base.AuditedObjectDTOValidator;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
+
+/**
+ * SCRUM-6714: direct-submission validator for HTPExpressionDatasetAnnotation, alongside the
+ * existing FMS validator (HTPExpressionDatasetAnnotationFmsDTOValidator). Keeps the same matching
+ * key the FMS path already uses - the resolved htp_expression_dataset ExternalDataBaseEntity id -
+ * so records loaded from the FMS are updated, not duplicated, and keep their AGRKB curie.
+ */
+@RequestScoped
+public class HTPExpressionDatasetAnnotationDTOValidator extends AuditedObjectDTOValidator<HTPExpressionDatasetAnnotation, HTPExpressionDatasetAnnotationDTO> {
+
+	@Inject HTPExpressionDatasetAnnotationDAO htpExpressionDatasetAnnotationDAO;
+	@Inject ExternalDataBaseEntityService externalDataBaseEntityService;
+	@Inject ExternalDataBaseEntityDTOValidator externalDataBaseEntityDtoValidator;
+	@Inject AnalysisDTOValidator analysisDtoValidator;
+	@Inject CurieMintService curieMintService;
+	@Inject OrganizationService organizationService;
+	@Inject CrossReferenceDTOValidator crossReferenceDtoValidator;
+	@Inject CrossReferenceDAO crossReferenceDAO;
+
+	@Transactional
+	public ObjectResponse<HTPExpressionDatasetAnnotation> validateHTPExpressionDatasetAnnotationDTO(HTPExpressionDatasetAnnotationDTO dto, BackendBulkDataProvider backendBulkDataProvider) throws ValidationException {
+		response = new ObjectResponse<>();
+
+		HTPExpressionDatasetAnnotation htpAnnotation;
+
+		if (dto.getHtpExpressionDatasetDto() == null) {
+			response.addErrorMessage("htp_expression_dataset_dto", ValidationConstants.REQUIRED_MESSAGE);
+			htpAnnotation = new HTPExpressionDatasetAnnotation();
+		} else {
+			ObjectResponse<ExternalDataBaseEntity> datasetResponse = externalDataBaseEntityDtoValidator.validateExternalDataBaseEntityDTO(dto.getHtpExpressionDatasetDto());
+			if (datasetResponse.hasErrors()) {
+				response.addErrorMessage("htp_expression_dataset_dto", datasetResponse.errorMessagesString());
+				htpAnnotation = new HTPExpressionDatasetAnnotation();
+			} else {
+				ExternalDataBaseEntity htpExpressionDataset = datasetResponse.getEntity();
+				Map<String, Object> params = new HashMap<>();
+				params.put("htpExpressionDataset.id", htpExpressionDataset.getId());
+				SearchResponse<HTPExpressionDatasetAnnotation> searchResponse = htpExpressionDatasetAnnotationDAO.findByParams(params);
+				if (searchResponse == null || searchResponse.getSingleResult() == null) {
+					htpAnnotation = new HTPExpressionDatasetAnnotation();
+					htpAnnotation.setHtpExpressionDataset(htpExpressionDataset);
+				} else {
+					htpAnnotation = searchResponse.getSingleResult();
+				}
+			}
+		}
+
+		htpAnnotation = validateAuditedObjectDTO(htpAnnotation, dto);
+
+		if (StringUtils.isBlank(dto.getName())) {
+			response.addErrorMessage("name", ValidationConstants.REQUIRED_MESSAGE);
+		}
+		htpAnnotation.setName(dto.getName());
+
+		if (CollectionUtils.isNotEmpty(dto.getReferenceCuries())) {
+			List<Reference> references = new ArrayList<>();
+			for (String referenceCurie : dto.getReferenceCuries()) {
+				Reference reference = validateReference("reference_curies", referenceCurie);
+				if (reference != null) {
+					references.add(reference);
+				}
+			}
+			htpAnnotation.setReferences(references);
+		} else {
+			htpAnnotation.setReferences(null);
+		}
+
+		htpAnnotation.setRelatedNote(validateNote(dto.getRelatedNoteDto(), VocabularyConstants.HTP_DATASET_NOTE_TYPE_VOCABULARY_TERM_SET));
+
+		if (dto.getNumberOfChannels() != null && dto.getNumberOfChannels() != 1 && dto.getNumberOfChannels() != 2) {
+			response.addErrorMessage("number_of_channels", ValidationConstants.INVALID_MESSAGE);
+		} else {
+			htpAnnotation.setNumberOfChannels(dto.getNumberOfChannels());
+		}
+
+		if (CollectionUtils.isNotEmpty(dto.getSubSeries())) {
+			List<ExternalDataBaseEntity> subSeries = new ArrayList<>();
+			for (String subSeriesCurie : dto.getSubSeries()) {
+				if (StringUtils.isNotBlank(subSeriesCurie)) {
+					ExternalDataBaseEntity subSeriesEntity = externalDataBaseEntityService.findByCurie(subSeriesCurie);
+					if (subSeriesEntity == null) {
+						response.addErrorMessage("sub_series", ValidationConstants.INVALID_MESSAGE + " (" + subSeriesCurie + ")");
+					} else {
+						subSeries.add(subSeriesEntity);
+					}
+				}
+			}
+			htpAnnotation.setSubSeries(subSeries);
+		} else {
+			htpAnnotation.setSubSeries(null);
+		}
+
+		htpAnnotation.setCategoryTags(validateRequiredTermsInVocabulary("category_tags", dto.getCategoryTags(), VocabularyConstants.HTP_DATASET_CATEGORY_TAGS_VOCABULARY));
+
+		if (StringUtils.isBlank(dto.getDataProvider())) {
+			response.addErrorMessage("data_provider", ValidationConstants.REQUIRED_MESSAGE);
+		} else if (!dto.getDataProvider().equals(backendBulkDataProvider.sourceOrganization)) {
+			// A submitted data_provider that doesn't match the load's own provider would escape this
+			// provider's cleanup tracking (getAnnotationIdsByDataProvider matches on this field), and
+			// could then be deleted by a different provider's cleanup instead.
+			response.addErrorMessage("data_provider", ValidationConstants.INVALID_MESSAGE + " (" + dto.getDataProvider() + " does not match the load's data provider " + backendBulkDataProvider.sourceOrganization + ")");
+		} else {
+			ObjectResponse<Organization> dataProviderResponse = organizationService.getByAbbr(dto.getDataProvider());
+			if (dataProviderResponse == null || dataProviderResponse.getEntity() == null) {
+				response.addErrorMessage("data_provider", ValidationConstants.INVALID_MESSAGE + " (" + dto.getDataProvider() + ")");
+			} else {
+				htpAnnotation.setDataProvider(dataProviderResponse.getEntity());
+			}
+		}
+
+		if (dto.getDataProviderCrossReferenceDto() != null) {
+			ObjectResponse<CrossReference> xrefResponse = crossReferenceDtoValidator.validateCrossReferenceDTO(dto.getDataProviderCrossReferenceDto(), htpAnnotation.getDataProviderCrossReference());
+			if (xrefResponse.hasErrors()) {
+				response.addErrorMessage("data_provider_cross_reference_dto", xrefResponse.errorMessagesString());
+			} else {
+				// dataProviderCrossReference has no cascade at all, so a brand new CrossReference
+				// needs persisting explicitly before it's assigned.
+				htpAnnotation.setDataProviderCrossReference(crossReferenceDAO.persist(xrefResponse.getEntity()));
+			}
+		} else {
+			htpAnnotation.setDataProviderCrossReference(null);
+		}
+
+		htpAnnotation.setSymbol(handleStringField(dto.getSymbol()));
+
+		if (dto.getAnalysisDto() != null) {
+			ObjectResponse<Analysis> analysisResponse = analysisDtoValidator.validateAnalysisDTO(dto.getAnalysisDto(), htpAnnotation.getAnalysis());
+			if (analysisResponse.hasErrors()) {
+				response.addErrorMessage("analysis_dto", analysisResponse.errorMessagesString());
+			} else {
+				htpAnnotation.setAnalysis(analysisResponse.getEntity());
+			}
+		} else {
+			htpAnnotation.setAnalysis(null);
+		}
+
+		if (response.hasErrors()) {
+			throw new ObjectValidationException(dto, response.errorMessagesString());
+		}
+
+		// SCRUM-6463 — mint an AGRKB curie for a record that has none, same as the FMS path. A record
+		// previously loaded via FMS (or an earlier direct submission) already has one by the time it's
+		// matched above, so this is a no-op there.
+		curieMintService.mintCurieIfAbsent(htpAnnotation);
+		response.setEntity(htpExpressionDatasetAnnotationDAO.persist(htpAnnotation));
+
+		return response;
+	}
+
+}

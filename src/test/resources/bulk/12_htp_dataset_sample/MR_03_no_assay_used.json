@@ -1,0 +1,12 @@
+[
+  {
+    "htp_expression_sample_dto": {
+      "curie": "HTPSAMPLETEST:SampleMRTest"
+    },
+    "htp_expression_sample_type_curie": "HTPSAMPLETEST:Obi0001",
+    "dataset_ids": [
+      "HTPDATASETTEST:SampleTestDataset0001"
+    ],
+    "data_provider": "FB"
+  }
+]
