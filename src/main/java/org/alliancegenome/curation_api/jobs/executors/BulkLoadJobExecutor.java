@@ -21,6 +21,7 @@ import static org.alliancegenome.curation_api.enums.BackendBulkLoadType.FULL_ING
 import static org.alliancegenome.curation_api.enums.BackendBulkLoadType.GENE;
 import static org.alliancegenome.curation_api.enums.BackendBulkLoadType.GENE_DISEASE_ANNOTATION;
 import static org.alliancegenome.curation_api.enums.BackendBulkLoadType.HTP_EXPRESSION_DATASET_ANNOTATION;
+import static org.alliancegenome.curation_api.enums.BackendBulkLoadType.HTP_EXPRESSION_DATASET_SAMPLE_ANNOTATION;
 import static org.alliancegenome.curation_api.enums.BackendBulkLoadType.VARIANT;
 
 import java.util.List;
@@ -109,7 +110,7 @@ public class BulkLoadJobExecutor {
 
 		BackendBulkLoadType loadType = bulkLoadFileHistory.getBulkLoad().getBackendBulkLoadType();
 
-		List<BackendBulkLoadType> ingestTypes = List.of(AGM_DISEASE_ANNOTATION, ALLELE_DISEASE_ANNOTATION, GENE_DISEASE_ANNOTATION, DISEASE_ANNOTATION, AGM, ALLELE, GENE, VARIANT, CONSTRUCT, ANTIBODY, CASSETTE, TRANSGENIC_TOOL, FULL_INGEST, ALLELE_ASSOCIATION, AGM_ASSOCIATION, AGM_AGM_ASSOCIATION, CONSTRUCT_ASSOCIATION, CONSTRUCT_CASSETTE_ASSOCIATION, CASSETTE_GENOMIC_ENTITY_ASSOCIATION, CASSETTE_TRANSGENIC_TOOL_ASSOCIATION, CASSETTE_STR_ASSOCIATION, HTP_EXPRESSION_DATASET_ANNOTATION);
+		List<BackendBulkLoadType> ingestTypes = List.of(AGM_DISEASE_ANNOTATION, ALLELE_DISEASE_ANNOTATION, GENE_DISEASE_ANNOTATION, DISEASE_ANNOTATION, AGM, ALLELE, GENE, VARIANT, CONSTRUCT, ANTIBODY, CASSETTE, TRANSGENIC_TOOL, FULL_INGEST, ALLELE_ASSOCIATION, AGM_ASSOCIATION, AGM_AGM_ASSOCIATION, CONSTRUCT_ASSOCIATION, CONSTRUCT_CASSETTE_ASSOCIATION, CASSETTE_GENOMIC_ENTITY_ASSOCIATION, CASSETTE_TRANSGENIC_TOOL_ASSOCIATION, CASSETTE_STR_ASSOCIATION, HTP_EXPRESSION_DATASET_ANNOTATION, HTP_EXPRESSION_DATASET_SAMPLE_ANNOTATION);
 
 		if (ingestTypes.contains(loadType)) {
 
@@ -146,6 +147,9 @@ public class BulkLoadJobExecutor {
 			}
 			if (loadType == HTP_EXPRESSION_DATASET_ANNOTATION || loadTypeOwnsIngestSet(loadType, "high_throughput_expression_dataset_annotation_ingest_set")) {
 				htpExpressionDatasetAnnotationExecutor.execLoad(bulkLoadFileHistory, ingestDto, cleanUp);
+			}
+			if (loadType == HTP_EXPRESSION_DATASET_SAMPLE_ANNOTATION || loadTypeOwnsIngestSet(loadType, "high_throughput_expression_dataset_sample_annotation_ingest_set")) {
+				htpExpressionDatasetSampleAnnotationExecutor.execLoad(bulkLoadFileHistory, ingestDto, cleanUp);
 			}
 			if (loadType == VARIANT || loadTypeOwnsIngestSet(loadType, "variant_ingest_set")) {
 				// TODO: re-enable once accepting direct submissions of variants by DQMs again and FMS load turned off

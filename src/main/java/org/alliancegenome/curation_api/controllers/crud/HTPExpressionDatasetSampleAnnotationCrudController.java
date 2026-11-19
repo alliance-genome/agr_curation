@@ -1,10 +1,13 @@
 package org.alliancegenome.curation_api.controllers.crud;
 
+import java.util.List;
+
 import org.alliancegenome.curation_api.controllers.base.BaseEntityCrudController;
 import org.alliancegenome.curation_api.dao.HTPExpressionDatasetSampleAnnotationDAO;
 import org.alliancegenome.curation_api.interfaces.crud.HTPExpressionDatasetSampleAnnotationCrudInterface;
 import org.alliancegenome.curation_api.jobs.executors.HTPExpressionDatasetSampleAnnotationExecutor;
 import org.alliancegenome.curation_api.model.entities.HTPExpressionDatasetSampleAnnotation;
+import org.alliancegenome.curation_api.model.ingest.dto.HTPExpressionDatasetSampleAnnotationDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.HTPExpressionDatasetSampleAnnotationIngestFmsDTO;
 import org.alliancegenome.curation_api.response.APIResponse;
 import org.alliancegenome.curation_api.response.ObjectResponse;
@@ -31,6 +34,13 @@ public class HTPExpressionDatasetSampleAnnotationCrudController extends BaseEnti
 	@Override
 	public APIResponse updateHTPExpressionDatasetSampleAnnotation(String dataProvider, HTPExpressionDatasetSampleAnnotationIngestFmsDTO htpDatasetSampleData) {
 		return htpExpressionDatasetSampleAnnotationExecutor.runLoadApi(htpExpressionDatasetSampleAnnotationService, dataProvider, htpDatasetSampleData.getData());
+	}
+
+	// SCRUM-6715: direct LinkML DQM submission, alongside the FMS endpoint above. Mirrors
+	// HTPExpressionDatasetAnnotationCrudController's own updateHTPExpressionDatasetAnnotations.
+	@Override
+	public APIResponse updateHTPExpressionDatasetSampleAnnotations(String dataProvider, List<HTPExpressionDatasetSampleAnnotationDTO> htpDatasetSampleData) {
+		return htpExpressionDatasetSampleAnnotationExecutor.runLoadApi(htpExpressionDatasetSampleAnnotationService::upsert, dataProvider, htpDatasetSampleData);
 	}
 
 	// SCRUM-6534: the entity has no primaryExternalId/modInternalId (it extends AuditedObject, not

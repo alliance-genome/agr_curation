@@ -1,7 +1,10 @@
 package org.alliancegenome.curation_api.interfaces.crud;
 
+import java.util.List;
+
 import org.alliancegenome.curation_api.interfaces.base.BaseIdCrudInterface;
 import org.alliancegenome.curation_api.model.entities.HTPExpressionDatasetSampleAnnotation;
+import org.alliancegenome.curation_api.model.ingest.dto.HTPExpressionDatasetSampleAnnotationDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.HTPExpressionDatasetSampleAnnotationIngestFmsDTO;
 import org.alliancegenome.curation_api.response.APIResponse;
 import org.alliancegenome.curation_api.response.ObjectResponse;
@@ -30,6 +33,14 @@ public interface HTPExpressionDatasetSampleAnnotationCrudInterface extends BaseI
 	@Path("/bulk/{dataProvider}/htpexpressiondatasetsampleannotationfile")
 	@JsonView(CurationView.FieldsAndLists.class)
 	APIResponse updateHTPExpressionDatasetSampleAnnotation(@PathParam("dataProvider") String dataProvider, HTPExpressionDatasetSampleAnnotationIngestFmsDTO htpDatasetSampleData);
+
+	// SCRUM-6715: direct LinkML DQM submission, alongside the FMS endpoint above. Mirrors
+	// HTPExpressionDatasetAnnotationCrudInterface's own bulk/{dataProvider}/htpexpressiondatasetannotations endpoint.
+	@Operation(summary = "Bulk load HTP expression dataset sample annotation data via direct LinkML submission", description = "Bulk load HTP expression dataset sample annotation records submitted directly as LinkML DTOs")
+	@POST
+	@Path("/bulk/{dataProvider}/htpexpressiondatasetsampleannotations")
+	@JsonView(CurationView.FieldsAndLists.class)
+	APIResponse updateHTPExpressionDatasetSampleAnnotations(@PathParam("dataProvider") String dataProvider, List<HTPExpressionDatasetSampleAnnotationDTO> htpDatasetSampleData);
 
 	// SCRUM-6534: the detail page's stable URL. BaseIdCrudInterface's getById is keyed on the numeric
 	// DB id and @JsonView(FieldsOnly), which would omit htpExpressionSampleLocations/relatedNotes/

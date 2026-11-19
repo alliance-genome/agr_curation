@@ -30,6 +30,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Index;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
@@ -63,7 +64,9 @@ import lombok.ToString;
 	@Index(name = "htpdatasample_dataprovider_index", columnList = "dataprovider_id"),
 	@Index(name = "htpdatasample_dataproviderxref_index", columnList = "dataprovidercrossreference_id"),
 	@Index(name = "htpdatasample_createdby_index", columnList = "createdby_id"),
-	@Index(name = "htpdatasample_updatedby_index", columnList = "updatedby_id")
+	@Index(name = "htpdatasample_updatedby_index", columnList = "updatedby_id"),
+	@Index(name = "htpdatasample_analysis_index", columnList = "analysis_id"),
+	@Index(name = "htpdatasample_biologicalreference_index", columnList = "biologicalreference_id")
 })
 @CurieSubdomain(MatiSubdomain.HTP_EXPRESSION_SAMPLE)
 public class HTPExpressionDatasetSampleAnnotation extends AuditedObject implements CurieInterface {
@@ -190,8 +193,12 @@ public class HTPExpressionDatasetSampleAnnotation extends AuditedObject implemen
 	@KeywordField(name = "abundance_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
 	private String abundance;
 
+	// SCRUM-6715: fetch = EAGER - without it, this collection is a lazy, uninitialized Hibernate
+	// proxy whenever an entity is loaded outside of a request that itself reads this field (e.g. the
+	// generic delete-by-id endpoint, which only returns the deleted entity after its transaction has
+	// closed), and Jackson can't serialize an uninitialized lazy collection with no open session.
 	@JsonView({ CurationView.FieldsOnly.class })
-	@ElementCollection
+	@ElementCollection(fetch = FetchType.EAGER)
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "assemblyVersions_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
 	@JoinTable(indexes = @Index(name = "htpdatasample_assemblyversions_htpdatasample_index", columnList = "htpexpressiondatasetsampleannotation_id"))
@@ -208,5 +215,24 @@ public class HTPExpressionDatasetSampleAnnotation extends AuditedObject implemen
 	})
 	@JsonView({ CurationView.FieldsAndLists.class })
 	private List<ExternalDataBaseEntity> datasetIds;
+
+	// SCRUM-6715: FB scRNA-seq additions.
+	@JsonView({ CurationView.FieldsOnly.class })
+	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
+	@KeywordField(name = "symbol_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
+	private String symbol;
+
+	@IndexedEmbedded(includePaths = { "analysisType.name", "analysisType.name_keyword", "analysisType.curie", "analysisType.curie_keyword" })
+	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
+	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+	@JsonView({ CurationView.FieldsOnly.class })
+	private Analysis analysis;
+
+	@IndexedEmbedded(includePaths = {"curie", "preferredCrossReference.referencedCurie", "secondaryIdentifiers",
+	"curie_keyword", "preferredCrossReference.referencedCurie_keyword", "secondaryIdentifiers_keyword" })
+	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
+	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+	@JsonView({ CurationView.FieldsOnly.class })
+	private ExternalDataBaseEntity biologicalReference;
 
 }

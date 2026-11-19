@@ -11,10 +11,12 @@ import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.interfaces.crud.BaseUpsertServiceInterface;
 import org.alliancegenome.curation_api.model.entities.HTPExpressionDatasetSampleAnnotation;
+import org.alliancegenome.curation_api.model.ingest.dto.HTPExpressionDatasetSampleAnnotationDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.HTPExpressionDatasetSampleAnnotationFmsDTO;
 import org.alliancegenome.curation_api.response.ObjectListResponse;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
+import org.alliancegenome.curation_api.services.validation.dto.HTPExpressionDatasetSampleAnnotationDTOValidator;
 import org.alliancegenome.curation_api.services.validation.dto.fms.HTPExpressionDatasetSampleAnnotationFmsDTOValidator;
 
 import jakarta.annotation.PostConstruct;
@@ -27,6 +29,7 @@ public class HTPExpressionDatasetSampleAnnotationService extends BaseEntityCrudS
 	
 	@Inject HTPExpressionDatasetSampleAnnotationDAO htpExpressionDatasetSampleAnnotationDAO;
 	@Inject HTPExpressionDatasetSampleAnnotationFmsDTOValidator htpExpressionDatasetSampleAnnotationFmsDtoValidator;
+	@Inject HTPExpressionDatasetSampleAnnotationDTOValidator htpExpressionDatasetSampleAnnotationDtoValidator;
 	@Inject CurieMintService curieMintService;
 
 	@Override
@@ -38,6 +41,12 @@ public class HTPExpressionDatasetSampleAnnotationService extends BaseEntityCrudS
 	@Transactional
 	public ObjectResponse<HTPExpressionDatasetSampleAnnotation> upsert(HTPExpressionDatasetSampleAnnotationFmsDTO htpExpressionDatasetSampleAnnotationData, BackendBulkDataProvider backendBulkDataProvider) throws ValidationException {
 		return htpExpressionDatasetSampleAnnotationFmsDtoValidator.validateHTPExpressionDatasetSampleAnnotationFmsDTO(htpExpressionDatasetSampleAnnotationData, backendBulkDataProvider);
+	}
+
+	// SCRUM-6715: the direct-submission counterpart of the FMS upsert above. A plain overload rather
+	// than a second `implements`, same reasoning as HTPExpressionDatasetAnnotationService.
+	public ObjectResponse<HTPExpressionDatasetSampleAnnotation> upsert(HTPExpressionDatasetSampleAnnotationDTO htpExpressionDatasetSampleAnnotationData, BackendBulkDataProvider backendBulkDataProvider) throws ValidationException {
+		return htpExpressionDatasetSampleAnnotationDtoValidator.validateHTPExpressionDatasetSampleAnnotationDTO(htpExpressionDatasetSampleAnnotationData, backendBulkDataProvider);
 	}
 
 	public List<Long> getAnnotationIdsByDataProvider(String dataProvider) {
