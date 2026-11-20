@@ -7,6 +7,8 @@
     "dataset_ids": [
       "HTPDATASETTEST:SampleTestDataset0001"
     ],
-    "data_provider": "FB"
+    "data_provider_dto": {
+      "source_organization_abbreviation": "FB"
+    }
   }
 ]

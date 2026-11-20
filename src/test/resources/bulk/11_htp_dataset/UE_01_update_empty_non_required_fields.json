@@ -4,12 +4,14 @@
       "curie": "HTPDATASETTEST:HtpDataset0001"
     },
     "name": "TEST HTP DATASET TITLE",
-    "category_tags": [
-      "age"
-    ],
-    "data_provider": "FB",
     "reference_curies": [],
     "sub_series": [],
-    "symbol": ""
+    "symbol": "",
+    "category_tag_names": [
+      "age"
+    ],
+    "data_provider_dto": {
+      "source_organization_abbreviation": "FB"
+    }
   }
 ]
