@@ -72,6 +72,7 @@ const { NewAnnotationForm } = await import('../NewAnnotationForm');
 const { useNewAnnotationReducer } = await import('../useNewAnnotationReducer');
 const { vocabularyTermsFor } = await import('../../../service/__mocks__/useControlledVocabularyService');
 const { termSetTermsFor } = await import('../../../service/__mocks__/useVocabularyTermSetService');
+const { setSpeciesTaxaCache } = await import('../../../constants/speciesTaxa');
 
 const FORM_SETTINGS_KEY = 'DiseaseAnnotationsFormSettings';
 const ALL_OPTIONAL_FIELDS = [
@@ -123,7 +124,6 @@ const renderForm = (onCreated = vi.fn(), { open = true } = {}) => {
 			<NewAnnotationForm
 				newAnnotationState={newAnnotationState}
 				newAnnotationDispatch={newAnnotationDispatch}
-				searchService={{ search }}
 				relationsTerms={vocabularyTermsFor('disease_relation')}
 				setNewDiseaseAnnotation={onCreated}
 			/>
@@ -171,10 +171,12 @@ const fillRequiredFields = async (relationName) => {
 describe('<NewAnnotationForm />', () => {
 	beforeEach(() => {
 		localStorage.clear();
+		setSpeciesTaxaCache([]);
 		createDiseaseAnnotation.mockReset();
 		findExperiments.mockReset();
 		findExperiments.mockResolvedValue({ results: [EXPERIMENT] });
-		search.mockClear();
+		// Drops any one-off result a test queued but didn't use
+		search.mockReset();
 	});
 
 	describe('saving', () => {
@@ -253,6 +255,28 @@ describe('<NewAnnotationForm />', () => {
 				expect(relationOptions()).toEqual(termSetTermsFor(relationTermSet).map((term) => term.name));
 			}
 		);
+
+		it("searches the curator's species' genes, alleles and AGMs for the subject", async () => {
+			setSpeciesTaxaCache([{ dataProvider: { abbreviation: 'MGI' }, taxon: { curie: 'NCBITaxon:10090' } }]);
+			signInAs('MGIStaff');
+			renderForm();
+			await waitForForm();
+
+			await pickSubject(/Pax6/);
+
+			expect(search).toHaveBeenCalledWith(
+				Endpoints.Entity.BIOLOGICAL_ENTITY,
+				15,
+				0,
+				[],
+				expect.objectContaining({
+					diseaseAnnotationSubjectFilter: expect.any(Object),
+					speciesFilter: {
+						'taxon.curie': { queryString: 'NCBITaxon:10090', tokenOperator: 'OR', useKeywordFields: true },
+					},
+				})
+			);
+		});
 
 		it('offers every disease relation before a subject is picked', async () => {
 			renderForm();
@@ -335,21 +359,28 @@ describe('<NewAnnotationForm />', () => {
 			expect(createDiseaseAnnotation).not.toHaveBeenCalled();
 		});
 
-		// The picked-subject check replaces the required-field messages with its own.
-		it.skip('reports a typed subject alongside the empty required fields', async () => {
+		it('reports a typed subject alongside the empty required fields', async () => {
+			search.mockImplementationOnce(() => Promise.resolve({ results: [], totalResults: 0 }));
 			renderForm();
 			await waitForForm();
 
 			typeInField('Subject', 'MGI:999');
+			await waitFor(() =>
+				expect(search).toHaveBeenCalledWith(
+					Endpoints.Entity.BIOLOGICAL_ENTITY,
+					expect.anything(),
+					expect.anything(),
+					expect.anything(),
+					expect.any(Object)
+				)
+			);
 			saveAndClose();
 
 			expect(await within(getField('Subject')).findByText('Must select from autosuggest')).toBeInTheDocument();
 			expect(within(getField('Disease')).getByText('This is a required field')).toBeInTheDocument();
 		});
 
-		// The SGD Strain Background check reads the Subject's keys, so typed strain text passes once a subject is
-		// picked.
-		it.skip('refuses a typed SGD Strain Background that was never picked', async () => {
+		it('refuses a typed SGD Strain Background that was never picked', async () => {
 			createDiseaseAnnotation.mockImplementation(() => resolvedCreate({ id: 99 }));
 			renderForm();
 			await waitForForm();
@@ -365,8 +396,7 @@ describe('<NewAnnotationForm />', () => {
 			expect(createDiseaseAnnotation).not.toHaveBeenCalled();
 		});
 
-		// A typed reference is kept as the typed text, and Save sends it.
-		it.skip('asks for a reference picked from the suggestions when one is only typed', async () => {
+		it('asks for a reference picked from the suggestions when one is only typed', async () => {
 			createDiseaseAnnotation.mockImplementation(() => resolvedCreate({ id: 99 }));
 			renderForm();
 			await waitForForm();
@@ -374,7 +404,17 @@ describe('<NewAnnotationForm />', () => {
 			await pickSubject(/Pax6/);
 			selectInField('Disease Relation', 'gene_disease_relation_alpha');
 			await pick('Disease', 'dis', /disease \(DOID:4\)/);
+			search.mockImplementationOnce(() => Promise.resolve({ results: [], totalResults: 0 }));
 			typeInField('Reference', 'AGRKB:999');
+			await waitFor(() =>
+				expect(search).toHaveBeenCalledWith(
+					Endpoints.Document.LITERATURE_REFERENCE,
+					expect.anything(),
+					expect.anything(),
+					expect.anything(),
+					expect.any(Object)
+				)
+			);
 			await pick('Evidence Code', 'TAS', /TAS - author statement/);
 			expect(getField('Experiments').querySelector('.p-dropdown')).toHaveClass('p-disabled');
 			saveAndClose();
@@ -566,9 +606,7 @@ describe('<NewAnnotationForm />', () => {
 			expect(createDiseaseAnnotation.mock.calls[0][0].relatedNotes[0].id).toBeUndefined();
 		});
 
-		// Duplicate leaves the relations offered as they were (every relation, or the last picked subject's), not the
-		// duplicated subject's.
-		it.skip("offers the duplicated subject's relations", async () => {
+		it("offers the duplicated subject's relations", async () => {
 			const { dispatch } = renderForm(vi.fn(), { open: false });
 
 			duplicate(dispatch);
@@ -609,8 +647,7 @@ describe('<NewAnnotationForm />', () => {
 			expect(relationOptions()).toEqual(vocabularyTermsFor('disease_relation').map((term) => term.name));
 		});
 
-		// Save & Close resets the form but keeps the relations of the subject just saved.
-		it.skip('offers every relation when reopened after Save & Close', async () => {
+		it('offers every relation when reopened after Save & Close', async () => {
 			createDiseaseAnnotation.mockImplementation(() => resolvedCreate({ id: 99 }));
 			const { dispatch } = renderForm();
 			await waitForForm();
@@ -626,8 +663,7 @@ describe('<NewAnnotationForm />', () => {
 		});
 	});
 
-	// The autocompletes and the Disease Relation dropdown have no accessible names, and NOT's dropdown is named
-	// "dropdown".
+	// The Disease Relation dropdown has no accessible name, and NOT's dropdown is named "dropdown".
 	it.skip('names every field by its key', async () => {
 		renderForm();
 		await waitForForm();

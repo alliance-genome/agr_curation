@@ -1,21 +1,13 @@
 import { useImmerReducer } from 'use-immer';
 
 const DEFAULT_ANNOTATION = {
-	diseaseAnnotationSubject: {
-		primaryExternalId: '',
-	},
+	diseaseAnnotationSubject: null,
 	assertedGenes: [],
 	assertedAlleles: [],
-	relation: {
-		name: '',
-	},
+	relation: null,
 	negated: false,
-	diseaseAnnotationObject: {
-		curie: '',
-	},
-	evidenceItem: {
-		curie: '',
-	},
+	diseaseAnnotationObject: null,
+	evidenceItem: null,
 	evidenceCodes: [],
 	with: [],
 	relatedNotes: [],
