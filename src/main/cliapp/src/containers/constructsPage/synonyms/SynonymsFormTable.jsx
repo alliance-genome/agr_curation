@@ -1,12 +1,7 @@
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
-import {
-	synonymScopeTemplate,
-	nameTypeTemplate,
-	synonymUrlTemplate,
-	displayTextTemplate,
-	formatTextTemplate,
-} from '../../../components/NameSlotAnnotationComponent';
+import { StringTemplate } from '../../../components/Templates/StringTemplate';
+import { EllipsisTableCell } from '../../../components/EllipsisTableCell';
 import { StringListTemplate } from '../../../components/Templates/StringListTemplate';
 import { getRefStrings } from '../../../utils/utils';
 
@@ -40,7 +35,7 @@ export const SynonymsFormTable = ({ synonyms, tableRef }) => {
 				filter
 				showFilterMenu={false}
 				filterMatchMode="contains"
-				body={displayTextTemplate}
+				body={(rowData) => <StringTemplate string={rowData.displayText} />}
 			/>
 			<Column
 				field="formatText"
@@ -49,9 +44,13 @@ export const SynonymsFormTable = ({ synonyms, tableRef }) => {
 				filter
 				showFilterMenu={false}
 				filterMatchMode="contains"
-				body={formatTextTemplate}
+				body={(rowData) => <EllipsisTableCell>{rowData.formatText}</EllipsisTableCell>}
 			/>
-			<Column field="synonymScope" header="Synonym Scope" body={synonymScopeTemplate} />
+			<Column
+				field="synonymScope"
+				header="Synonym Scope"
+				body={(rowData) => <StringTemplate string={rowData.synonymScope?.name} />}
+			/>
 			<Column
 				field="nameType.name"
 				header="Name Type"
@@ -59,7 +58,7 @@ export const SynonymsFormTable = ({ synonyms, tableRef }) => {
 				filter
 				showFilterMenu={false}
 				filterMatchMode="contains"
-				body={nameTypeTemplate}
+				body={(rowData) => <StringTemplate string={rowData.nameType?.name} />}
 			/>
 			<Column
 				field="synonymUrl"
@@ -68,7 +67,7 @@ export const SynonymsFormTable = ({ synonyms, tableRef }) => {
 				filter
 				showFilterMenu={false}
 				filterMatchMode="contains"
-				body={synonymUrlTemplate}
+				body={(rowData) => <StringTemplate string={rowData.synonymUrl} />}
 			/>
 			<Column
 				field="internal"

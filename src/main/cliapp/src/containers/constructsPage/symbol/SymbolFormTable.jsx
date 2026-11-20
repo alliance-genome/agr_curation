@@ -2,13 +2,8 @@ import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { ColumnGroup } from 'primereact/columngroup';
 import { Row } from 'primereact/row';
-import {
-	synonymScopeTemplate,
-	nameTypeTemplate,
-	synonymUrlTemplate,
-	displayTextTemplate,
-	formatTextTemplate,
-} from '../../../components/NameSlotAnnotationComponent';
+import { StringTemplate } from '../../../components/Templates/StringTemplate';
+import { EllipsisTableCell } from '../../../components/EllipsisTableCell';
 import { StringListTemplate } from '../../../components/Templates/StringListTemplate';
 import { getRefStrings } from '../../../utils/utils';
 
@@ -44,11 +39,36 @@ export const SymbolFormTable = ({ symbol, tableRef }) => {
 			columnResizeMode="expand"
 			ref={tableRef}
 		>
-			<Column field="displayText" header="Display Text" headerClassName="surface-0" body={displayTextTemplate} />
-			<Column field="formatText" header="Format Text" headerClassName="surface-0" body={formatTextTemplate} />
-			<Column field="synonymScope" header="Synonym Scope" headerClassName="surface-0" body={synonymScopeTemplate} />
-			<Column field="nameType" header="Name Type" headerClassName="surface-0" body={nameTypeTemplate} />
-			<Column field="synonymUrl" header="Synonym URL" headerClassName="surface-0" body={synonymUrlTemplate} />
+			<Column
+				field="displayText"
+				header="Display Text"
+				headerClassName="surface-0"
+				body={(rowData) => <StringTemplate string={rowData.displayText} />}
+			/>
+			<Column
+				field="formatText"
+				header="Format Text"
+				headerClassName="surface-0"
+				body={(rowData) => <EllipsisTableCell>{rowData.formatText}</EllipsisTableCell>}
+			/>
+			<Column
+				field="synonymScope"
+				header="Synonym Scope"
+				headerClassName="surface-0"
+				body={(rowData) => <StringTemplate string={rowData.synonymScope?.name} />}
+			/>
+			<Column
+				field="nameType"
+				header="Name Type"
+				headerClassName="surface-0"
+				body={(rowData) => <StringTemplate string={rowData.nameType?.name} />}
+			/>
+			<Column
+				field="synonymUrl"
+				header="Synonym URL"
+				headerClassName="surface-0"
+				body={(rowData) => <StringTemplate string={rowData.synonymUrl} />}
+			/>
 			<Column field="internal" header="Internal" body={internalTemplate} headerClassName="surface-0" />
 			<Column
 				field="evidence.curie"
