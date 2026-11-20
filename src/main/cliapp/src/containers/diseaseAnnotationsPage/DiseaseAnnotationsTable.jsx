@@ -674,7 +674,6 @@ export const DiseaseAnnotationsTable = () => {
 			<NewAnnotationForm
 				newAnnotationState={newAnnotationState}
 				newAnnotationDispatch={newAnnotationDispatch}
-				searchService={searchService}
 				relationsTerms={relationsTerms}
 				negatedTerms={booleanTerms?.terms || []}
 				setNewDiseaseAnnotation={(newAnnotation, queryClient) =>
