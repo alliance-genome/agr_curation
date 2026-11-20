@@ -21,7 +21,7 @@ import lombok.EqualsAndHashCode;
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
-@AGRCurationSchemaVersion(min = "2.19.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AuditedObjectDTO.class, ExternalDataBaseEntityDTO.class, NoteDTO.class, CrossReferenceDTO.class, AnalysisDTO.class })
+@AGRCurationSchemaVersion(min = "2.19.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AuditedObjectDTO.class, ExternalDataBaseEntityDTO.class, NoteDTO.class, CrossReferenceDTO.class, AnalysisDTO.class }, submitted = true)
 public class HTPExpressionDatasetAnnotationDTO extends AuditedObjectDTO {
 
 	@JsonView({ CurationView.FieldsOnly.class })
