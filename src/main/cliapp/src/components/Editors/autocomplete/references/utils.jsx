@@ -32,19 +32,6 @@ export const multiReferenceSearchConfig = {
 	filterName: 'multiReferenceFilter',
 };
 
-export const multiReferenceSearch = (event, setFiltered, setInputValue) => {
-	const searchService = new SearchService();
-	const filter = buildAutocompleteFilter(event, multiReferenceSearchConfig.autocompleteFields);
-	setInputValue(event.query);
-	autocompleteSearch(
-		searchService,
-		multiReferenceSearchConfig.endpoint,
-		multiReferenceSearchConfig.filterName,
-		filter,
-		setFiltered
-	);
-};
-
 /**
  * Whether a reference autosuggest value is a reference picked from the suggestions. The autosuggest
  * reports typed text as an object holding only `curie`; a picked reference carries the search
