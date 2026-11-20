@@ -5,7 +5,8 @@ import { Column } from 'primereact/column';
 import { ColumnGroup } from 'primereact/columngroup';
 import { Row } from 'primereact/row';
 import { EllipsisTableCell } from '../../components/EllipsisTableCell';
-import { evidenceTemplate } from '../../components/EvidenceComponent';
+import { StringListTemplate } from '../../components/Templates/StringListTemplate';
+import { getRefStrings } from '../../utils/utils';
 import {
 	synonymScopeTemplate,
 	nameTypeTemplate,
@@ -68,7 +69,7 @@ export const SystematicNameDialog = ({ originalSystematicNameData, setOriginalSy
 						field="evidence.curie"
 						header="Evidence"
 						headerClassName="surface-0"
-						body={(rowData) => evidenceTemplate(rowData)}
+						body={(rowData) => <StringListTemplate list={getRefStrings(rowData.evidence)} />}
 					/>
 					<Column field="updatedBy.uniqueId" header="Updated By" />
 					<Column field="dateUpdated" header="Date Updated" />

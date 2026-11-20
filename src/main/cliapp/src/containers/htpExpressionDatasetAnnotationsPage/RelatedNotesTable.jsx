@@ -1,7 +1,7 @@
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { EllipsisTableCell } from '../../components/EllipsisTableCell';
-import { ListTableCell } from '../../components/ListTableCell';
+import { StringListTemplate } from '../../components/Templates/StringListTemplate';
 import { getRefStrings } from '../../utils/utils';
 
 /**
@@ -11,12 +11,7 @@ import { getRefStrings } from '../../utils/utils';
 export const RelatedNotesTable = ({ relatedNotes }) => {
 	const noteTypeTemplate = (rowData) => <EllipsisTableCell>{rowData.noteType?.name}</EllipsisTableCell>;
 	const textTemplate = (rowData) => <EllipsisTableCell>{rowData.freeText}</EllipsisTableCell>;
-	const evidenceTemplate = (rowData) => {
-		if (!rowData?.references) return null;
-		const refStrings = getRefStrings(rowData.references);
-		const listTemplate = (item) => <EllipsisTableCell>{item}</EllipsisTableCell>;
-		return <ListTableCell template={listTemplate} listData={refStrings} />;
-	};
+	const evidenceTemplate = (rowData) => <StringListTemplate list={getRefStrings(rowData?.references)} />;
 	const internalTemplate = (rowData) => <EllipsisTableCell>{JSON.stringify(rowData.internal)}</EllipsisTableCell>;
 
 	return (
