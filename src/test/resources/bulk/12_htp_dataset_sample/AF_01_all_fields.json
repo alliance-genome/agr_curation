@@ -22,7 +22,7 @@
     },
     "htp_expression_sample_title": "TEST SAMPLE TITLE",
     "htp_expression_sample_type_curie": "HTPSAMPLETEST:Obi0001",
-    "expression_assay_used_curie": "HTPSAMPLETEST:Mmo0001",
+    "expression_assay_curie": "HTPSAMPLETEST:Mmo0001",
     "htp_expression_sample_age_dto": {
       "age": "P14D",
       "when_expressed_stage_name": "test stage",
@@ -86,17 +86,9 @@
       "channel_id": "TEST:channel1",
       "channel_number": 1
     },
-    "data_provider": "FB",
-    "data_provider_cross_reference_dto": {
-      "referenced_curie": "HTPSAMPLETEST:0001",
-      "page_area": "homepage",
-      "display_name": "HTPSAMPLETEST:0001",
-      "prefix": "HTPSAMPLETEST"
-    },
     "symbol": "htp-sample-test-symbol",
     "analysis_dto": {
       "analysis_type_curie": "HTPSAMPLETEST:Fbcv0001",
-      "data_provider": "FB",
       "related_note_dtos": [
         {
           "free_text": "Test analysis note",
@@ -104,12 +96,24 @@
           "internal": false,
           "obsolete": false
         }
-      ]
+      ],
+      "data_provider_dto": {
+        "source_organization_abbreviation": "FB"
+      }
     },
     "biological_reference_dto": {
       "curie": "HTPSAMPLETEST:BioRef0001"
     },
     "internal": true,
-    "obsolete": true
+    "obsolete": true,
+    "data_provider_dto": {
+      "source_organization_abbreviation": "FB",
+      "cross_reference_dto": {
+        "referenced_curie": "HTPSAMPLETEST:0001",
+        "page_area": "homepage",
+        "display_name": "HTPSAMPLETEST:0001",
+        "prefix": "HTPSAMPLETEST"
+      }
+    }
   }
 ]

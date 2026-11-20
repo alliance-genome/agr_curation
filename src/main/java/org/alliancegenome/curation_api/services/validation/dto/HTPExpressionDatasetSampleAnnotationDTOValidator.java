@@ -37,12 +37,12 @@ import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.CurieMintService;
 import org.alliancegenome.curation_api.services.ExternalDataBaseEntityService;
-import org.alliancegenome.curation_api.services.OrganizationService;
 import org.alliancegenome.curation_api.services.ontology.MmoTermService;
 import org.alliancegenome.curation_api.services.ontology.ObiTermService;
 import org.alliancegenome.curation_api.services.validation.dto.base.AuditedObjectDTOValidator;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.ImmutablePair;
 
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
@@ -70,8 +70,6 @@ public class HTPExpressionDatasetSampleAnnotationDTOValidator extends AuditedObj
 	@Inject AnalysisDTOValidator analysisDtoValidator;
 	@Inject ObiTermService obiTermService;
 	@Inject MmoTermService mmoTermService;
-	@Inject OrganizationService organizationService;
-	@Inject CrossReferenceDTOValidator crossReferenceDtoValidator;
 	@Inject CrossReferenceDAO crossReferenceDAO;
 	@Inject CurieMintService curieMintService;
 
@@ -88,7 +86,7 @@ public class HTPExpressionDatasetSampleAnnotationDTOValidator extends AuditedObj
 		}
 
 		htpSampleAnnotation.setHtpExpressionSampleType(validateRequiredOntologyTerm(obiTermService, "htp_expression_sample_type_curie", dto.getHtpExpressionSampleTypeCurie()));
-		htpSampleAnnotation.setExpressionAssayUsed(validateRequiredOntologyTerm(mmoTermService, "expression_assay_used_curie", dto.getExpressionAssayUsedCurie()));
+		htpSampleAnnotation.setExpressionAssayUsed(validateRequiredOntologyTerm(mmoTermService, "expression_assay_curie", dto.getExpressionAssayUsedCurie()));
 
 		if (dto.getHtpExpressionSampleAgeDto() != null) {
 			ObjectResponse<BioSampleAge> ageResponse = bioSampleAgeDtoValidator.validateBioSampleAgeDTO(dto.getHtpExpressionSampleAgeDto(), htpSampleAnnotation.getHtpExpressionSampleAge());
@@ -169,34 +167,29 @@ public class HTPExpressionDatasetSampleAnnotationDTOValidator extends AuditedObj
 			htpSampleAnnotation.setMicroarraySampleDetails(null);
 		}
 
-		if (StringUtils.isBlank(dto.getDataProvider())) {
-			response.addErrorMessage("data_provider", ValidationConstants.REQUIRED_MESSAGE);
-		} else if (!dto.getDataProvider().equals(backendBulkDataProvider.sourceOrganization)) {
+		String submittedDataProvider = dto.getDataProviderDto() == null ? null : dto.getDataProviderDto().getSourceOrganizationAbbreviation();
+		if (StringUtils.isBlank(submittedDataProvider)) {
+			response.addErrorMessage("data_provider_dto", ValidationConstants.REQUIRED_MESSAGE);
+		} else if (!submittedDataProvider.equals(backendBulkDataProvider.sourceOrganization)) {
 			// Same reasoning as the sibling HTPExpressionDatasetAnnotationDTOValidator fix: a
 			// mismatched data_provider would escape this provider's cleanup tracking
 			// (getAnnotationIdsByDataProvider matches on this field) and could be deleted by a
 			// different provider's cleanup instead.
-			response.addErrorMessage("data_provider", ValidationConstants.INVALID_MESSAGE + " (" + dto.getDataProvider() + " does not match the load's data provider " + backendBulkDataProvider.sourceOrganization + ")");
+			response.addErrorMessage("data_provider_dto", ValidationConstants.INVALID_MESSAGE + " (" + submittedDataProvider + " does not match the load's data provider " + backendBulkDataProvider.sourceOrganization + ")");
 		} else {
-			ObjectResponse<Organization> dataProviderResponse = organizationService.getByAbbr(dto.getDataProvider());
-			if (dataProviderResponse == null || dataProviderResponse.getEntity() == null) {
-				response.addErrorMessage("data_provider", ValidationConstants.INVALID_MESSAGE + " (" + dto.getDataProvider() + ")");
+			ObjectResponse<ImmutablePair<Organization, CrossReference>> dpResponse = validateDataProviderDTO(dto.getDataProviderDto(), htpSampleAnnotation.getDataProviderCrossReference());
+			if (dpResponse.hasErrors()) {
+				response.addErrorMessage("data_provider_dto", dpResponse.errorMessagesString());
 			} else {
-				htpSampleAnnotation.setDataProvider(dataProviderResponse.getEntity());
+				htpSampleAnnotation.setDataProvider(dpResponse.getEntity().getLeft());
+				if (dpResponse.getEntity().getRight() != null) {
+					// dataProviderCrossReference has no cascade at all, so a brand new CrossReference
+					// needs persisting explicitly before it's assigned.
+					htpSampleAnnotation.setDataProviderCrossReference(crossReferenceDAO.persist(dpResponse.getEntity().getRight()));
+				} else {
+					htpSampleAnnotation.setDataProviderCrossReference(null);
+				}
 			}
-		}
-
-		if (dto.getDataProviderCrossReferenceDto() != null) {
-			ObjectResponse<CrossReference> xrefResponse = crossReferenceDtoValidator.validateCrossReferenceDTO(dto.getDataProviderCrossReferenceDto(), htpSampleAnnotation.getDataProviderCrossReference());
-			if (xrefResponse.hasErrors()) {
-				response.addErrorMessage("data_provider_cross_reference_dto", xrefResponse.errorMessagesString());
-			} else {
-				// dataProviderCrossReference has no cascade at all, so a brand new CrossReference
-				// needs persisting explicitly before it's assigned.
-				htpSampleAnnotation.setDataProviderCrossReference(crossReferenceDAO.persist(xrefResponse.getEntity()));
-			}
-		} else {
-			htpSampleAnnotation.setDataProviderCrossReference(null);
 		}
 
 		htpSampleAnnotation.setSymbol(handleStringField(dto.getSymbol()));

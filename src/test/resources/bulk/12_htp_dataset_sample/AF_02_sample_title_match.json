@@ -2,7 +2,7 @@
   {
     "htp_expression_sample_title": "TEST TITLE MATCH SAMPLE",
     "htp_expression_sample_type_curie": "HTPSAMPLETEST:Obi0001",
-    "expression_assay_used_curie": "HTPSAMPLETEST:Mmo0001",
+    "expression_assay_curie": "HTPSAMPLETEST:Mmo0001",
     "htp_expression_sample_location_dtos": [
       {
         "anatomical_structure_curie": "HTPSAMPLETEST:Anat0001"
@@ -15,6 +15,8 @@
     "dataset_ids": [
       "HTPDATASETTEST:SampleTestDataset0001"
     ],
-    "data_provider": "MGI"
+    "data_provider_dto": {
+      "source_organization_abbreviation": "MGI"
+    }
   }
 ]

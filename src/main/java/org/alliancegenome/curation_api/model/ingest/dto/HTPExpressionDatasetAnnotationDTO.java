@@ -21,7 +21,7 @@ import lombok.EqualsAndHashCode;
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
-@AGRCurationSchemaVersion(min = "2.19.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AuditedObjectDTO.class, ExternalDataBaseEntityDTO.class, NoteDTO.class, CrossReferenceDTO.class, AnalysisDTO.class })
+@AGRCurationSchemaVersion(min = "2.19.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AuditedObjectDTO.class, ExternalDataBaseEntityDTO.class, NoteDTO.class, DataProviderDTO.class, AnalysisDTO.class }, submitted = true)
 public class HTPExpressionDatasetAnnotationDTO extends AuditedObjectDTO {
 
 	@JsonView({ CurationView.FieldsOnly.class })
@@ -51,19 +51,12 @@ public class HTPExpressionDatasetAnnotationDTO extends AuditedObjectDTO {
 	private List<String> subSeries;
 
 	@JsonView({ CurationView.FieldsAndLists.class })
-	@JsonProperty("category_tags")
-	private List<String> categoryTags;
-
-	// Plain abbreviation, not a DataProviderDTO wrapper: the LinkML schema models data_provider as a
-	// direct, required Organization slot on this class (unlike SubmittedObjectDTO's data_provider_dto
-	// pattern), matching the entity's own separate dataProvider/dataProviderCrossReference fields.
-	@JsonView({ CurationView.FieldsOnly.class })
-	@JsonProperty("data_provider")
-	private String dataProvider;
+	@JsonProperty("category_tag_names")
+	private List<String> categoryTagNames;
 
 	@JsonView({ CurationView.FieldsOnly.class })
-	@JsonProperty("data_provider_cross_reference_dto")
-	private CrossReferenceDTO dataProviderCrossReferenceDto;
+	@JsonProperty("data_provider_dto")
+	private DataProviderDTO dataProviderDto;
 
 	@JsonView({ CurationView.FieldsOnly.class })
 	private String symbol;

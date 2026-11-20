@@ -19,22 +19,16 @@ import lombok.EqualsAndHashCode;
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
-@AGRCurationSchemaVersion(min = "2.19.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AuditedObjectDTO.class, NoteDTO.class, CrossReferenceDTO.class })
+@AGRCurationSchemaVersion(min = "2.19.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AuditedObjectDTO.class, NoteDTO.class, DataProviderDTO.class })
 public class AnalysisDTO extends AuditedObjectDTO {
 
 	@JsonView({ CurationView.FieldsOnly.class })
 	@JsonProperty("analysis_type_curie")
 	private String analysisTypeCurie;
 
-	// Plain abbreviation, not a DataProviderDTO wrapper - see HTPExpressionDatasetAnnotationDTO's
-	// own data_provider field for why.
 	@JsonView({ CurationView.FieldsOnly.class })
-	@JsonProperty("data_provider")
-	private String dataProvider;
-
-	@JsonView({ CurationView.FieldsOnly.class })
-	@JsonProperty("data_provider_cross_reference_dto")
-	private CrossReferenceDTO dataProviderCrossReferenceDto;
+	@JsonProperty("data_provider_dto")
+	private DataProviderDTO dataProviderDto;
 
 	@JsonView({ CurationView.FieldsAndLists.class })
 	@JsonProperty("related_note_dtos")

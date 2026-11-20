@@ -4,9 +4,11 @@
       "curie": "HTPDATASETTEST:SampleTestDataset0001"
     },
     "name": "TEST DATASET FOR SAMPLE ANNOTATION TESTS",
-    "category_tags": [
+    "category_tag_names": [
       "age"
     ],
-    "data_provider": "FB"
+    "data_provider_dto": {
+      "source_organization_abbreviation": "FB"
+    }
   }
 ]
