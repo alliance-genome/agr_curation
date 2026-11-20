@@ -19,7 +19,7 @@ import { normalizeError } from './normalizeError';
  *   render function, or a plain node that is rendered as is
  * @param {object} [wrapperProps] - the remaining props go to DetailPageFieldWrapper:
  *   `required`, `isPending`, `labelColumnSize`, `widgetColumnSize`, `fieldDetailsColumnSize`,
- *   `additionalDataField` and `showAdditionalData`
+ *   `labelClassName`, `additionalDataField` and `showAdditionalData`
  * @returns {JSX.Element}
  */
 export function FormField({ label, name, value, onChange, errors, errorField, children, ...wrapperProps }) {

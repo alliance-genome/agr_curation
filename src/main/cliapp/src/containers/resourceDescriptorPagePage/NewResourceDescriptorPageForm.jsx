@@ -1,16 +1,19 @@
 import { useRef, useState } from 'react';
 import { Dialog } from 'primereact/dialog';
-import { InputText } from 'primereact/inputtext';
-import { InputTextarea } from 'primereact/inputtextarea';
-import { Dropdown } from 'primereact/dropdown';
 import { Button } from 'primereact/button';
 import { Toast } from 'primereact/toast';
-import { classNames } from 'primereact/utils';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { ResourceDescriptorPageService } from '../../service/ResourceDescriptorPageService';
-import { useControlledVocabularyService } from '../../service/useControlledVocabularyService';
-import { AutocompleteFormEditor } from '../../components/Editors/autocomplete/base/AutocompleteFormEditor';
-import { resourceDescriptorSearch } from '../../components/Editors/autocomplete/resourceDescriptor/utils';
+import { FormField } from '../../components/Editors/fields/FormField';
+import { DIALOG_FIELD_LAYOUT } from '../../components/Editors/fields/dialogFieldLayout';
+import { TextInput } from '../../components/Editors/widgets/TextInput';
+import { TextArea } from '../../components/Editors/widgets/TextArea';
+import { BooleanSelect } from '../../components/Editors/widgets/BooleanSelect';
+import { SingleAutocomplete } from '../../components/Editors/widgets/SingleAutocomplete';
+import {
+	resourceDescriptorSearch,
+	resourceDescriptorSearchConfig,
+} from '../../components/Editors/autocomplete/resourceDescriptor/utils';
 import ErrorBoundary from '../../components/Error/ErrorBoundary';
 
 const emptyResourceDescriptorPage = {
@@ -21,6 +24,32 @@ const emptyResourceDescriptorPage = {
 	internal: false,
 };
 
+/**
+ * The messages for the required fields left empty: a resource descriptor must be picked from the suggestions, and
+ * the name and URL template must hold more than spaces.
+ *
+ * @param {object} resourceDescriptorPage - the page being created
+ * @returns {object} messages keyed by field, empty when every required field is filled
+ */
+const findMissingRequiredFields = (resourceDescriptorPage) => {
+	const missing = {};
+	if (!resourceDescriptorPage.resourceDescriptor?.id) missing.resourceDescriptor = 'Resource Descriptor is required.';
+	if (!resourceDescriptorPage.name?.trim()) missing.name = 'Name is required.';
+	if (!resourceDescriptorPage.urlTemplate?.trim()) missing.urlTemplate = 'URL Template is required.';
+	return missing;
+};
+
+/**
+ * The New Resource Descriptor Page dialog on the Resource Descriptor Pages table: resource descriptor, name, URL
+ * template, page description and internal. Save checks the required fields first and says beside each empty one
+ * that it is required; a rejected save shows each field's error beside it and lists them in a toast.
+ *
+ * @param {boolean} newResourceDescriptorPageDialog - whether the dialog is open
+ * @param {(open: boolean) => void} setNewResourceDescriptorPageDialog - opens or closes the dialog
+ * @param {(page: object, queryClient: object) => void} [setNewResourceDescriptorPage] - called with the created
+ *   page; without it the pages query is refetched
+ * @returns {JSX.Element}
+ */
 export const NewResourceDescriptorPageForm = ({
 	newResourceDescriptorPageDialog,
 	setNewResourceDescriptorPageDialog,
@@ -29,12 +58,13 @@ export const NewResourceDescriptorPageForm = ({
 	const queryClient = useQueryClient();
 	const [resourceDescriptorPage, setResourceDescriptorPage] = useState({ ...emptyResourceDescriptorPage });
 	const [submitted, setSubmitted] = useState(false);
+	const [rejectedFieldErrors, setRejectedFieldErrors] = useState({});
+	// Counts form resets, so a save answered after the form was reset leaves no field errors in it
+	const formResetCount = useRef(0);
 	const toast_success = useRef(null);
 	const toast_error = useRef(null);
 
 	let resourceDescriptorPageService = null;
-
-	const booleanTerms = useControlledVocabularyService('generic_boolean_terms');
 
 	const getService = () => {
 		if (!resourceDescriptorPageService) {
@@ -49,36 +79,28 @@ export const NewResourceDescriptorPageForm = ({
 		},
 	});
 
-	const onTextChange = (event, field) => {
-		const value = event.target?.value ?? '';
-		setResourceDescriptorPage((prev) => ({ ...prev, [field]: value }));
-	};
+	const errors = submitted
+		? { ...rejectedFieldErrors, ...findMissingRequiredFields(resourceDescriptorPage) }
+		: rejectedFieldErrors;
 
-	const onResourceDescriptorChange = (event) => {
-		setResourceDescriptorPage((prev) => ({ ...prev, resourceDescriptor: event.target?.value }));
-	};
-
-	const onInternalChange = (value) => {
-		if (value === undefined || value === null) return;
-		setResourceDescriptorPage((prev) => ({ ...prev, internal: value }));
+	const resetForm = () => {
+		formResetCount.current += 1;
+		setSubmitted(false);
+		setRejectedFieldErrors({});
+		setResourceDescriptorPage({ ...emptyResourceDescriptorPage });
 	};
 
 	const hideDialog = () => {
 		setNewResourceDescriptorPageDialog(false);
-		setSubmitted(false);
-		setResourceDescriptorPage({ ...emptyResourceDescriptorPage });
+		resetForm();
 	};
 
 	const saveResourceDescriptorPage = (event) => {
 		event.preventDefault();
 		setSubmitted(true);
-		if (
-			resourceDescriptorPage.resourceDescriptor?.id &&
-			resourceDescriptorPage.name &&
-			resourceDescriptorPage.name.trim() &&
-			resourceDescriptorPage.urlTemplate &&
-			resourceDescriptorPage.urlTemplate.trim()
-		) {
+		setRejectedFieldErrors({});
+		if (Object.keys(findMissingRequiredFields(resourceDescriptorPage)).length === 0) {
+			const resetCountAtSave = formResetCount.current;
 			mutation.mutate(resourceDescriptorPage, {
 				onSuccess: (data) => {
 					if (setNewResourceDescriptorPage) {
@@ -91,12 +113,12 @@ export const NewResourceDescriptorPageForm = ({
 						summary: 'Successful',
 						detail: 'New Resource Descriptor Page Added',
 					});
-					setSubmitted(false);
 					setNewResourceDescriptorPageDialog(false);
-					setResourceDescriptorPage({ ...emptyResourceDescriptorPage });
+					resetForm();
 				},
 				onError: (error) => {
 					const fieldErrors = error.response?.data?.errorMessages;
+					if (resetCountAtSave === formResetCount.current) setRejectedFieldErrors(fieldErrors ?? {});
 					const fieldDetail =
 						fieldErrors && Object.keys(fieldErrors).length > 0
 							? Object.entries(fieldErrors)
@@ -117,6 +139,14 @@ export const NewResourceDescriptorPageForm = ({
 			});
 		}
 	};
+
+	const fieldProps = (field) => ({
+		name: field,
+		value: resourceDescriptorPage[field],
+		onChange: (value) => setResourceDescriptorPage((previous) => ({ ...previous, [field]: value })),
+		errors,
+		...DIALOG_FIELD_LAYOUT,
+	});
 
 	const dialogFooter = (
 		<>
@@ -145,78 +175,28 @@ export const NewResourceDescriptorPageForm = ({
 				onHide={hideDialog}
 			>
 				<ErrorBoundary>
-					<div className="field">
-						<label htmlFor="resourceDescriptor">
-							<font color="red">*</font>Resource Descriptor
-						</label>
-						<AutocompleteFormEditor
-							name="resourceDescriptor"
-							fieldName="resourceDescriptor"
-							subField="prefix"
-							initialValue={resourceDescriptorPage.resourceDescriptor}
-							search={resourceDescriptorSearch}
-							onValueChangeHandler={onResourceDescriptorChange}
-							valueDisplay={(item) => (
-								<div>
-									{item.prefix} ({item.name})
-								</div>
-							)}
-							classNames={classNames({
-								'p-invalid': submitted && !resourceDescriptorPage.resourceDescriptor?.id,
-							})}
-						/>
-						{submitted && !resourceDescriptorPage.resourceDescriptor?.id && (
-							<small className="p-error">Resource Descriptor is required.</small>
+					<FormField label="Resource Descriptor" required {...fieldProps('resourceDescriptor')}>
+						{(binding) => (
+							<SingleAutocomplete
+								{...binding}
+								search={resourceDescriptorSearch}
+								subField="prefix"
+								valueDisplay={resourceDescriptorSearchConfig.valueDisplay}
+							/>
 						)}
-					</div>
-					<div className="field">
-						<label htmlFor="name">
-							<font color="red">*</font>Name
-						</label>
-						<InputText
-							id="name"
-							value={resourceDescriptorPage.name}
-							onChange={(e) => onTextChange(e, 'name')}
-							required
-							className={classNames({ 'p-invalid': submitted && !resourceDescriptorPage.name })}
-						/>
-						{submitted && !resourceDescriptorPage.name && <small className="p-error">Name is required.</small>}
-					</div>
-					<div className="field">
-						<label htmlFor="urlTemplate">
-							<font color="red">*</font>URL Template
-						</label>
-						<InputText
-							id="urlTemplate"
-							value={resourceDescriptorPage.urlTemplate}
-							onChange={(e) => onTextChange(e, 'urlTemplate')}
-							required
-							className={classNames({ 'p-invalid': submitted && !resourceDescriptorPage.urlTemplate })}
-						/>
-						{submitted && !resourceDescriptorPage.urlTemplate && (
-							<small className="p-error">URL Template is required.</small>
-						)}
-					</div>
-					<div className="field">
-						<label htmlFor="pageDescription">Page Description</label>
-						<InputTextarea
-							id="pageDescription"
-							value={resourceDescriptorPage.pageDescription}
-							onChange={(e) => onTextChange(e, 'pageDescription')}
-							rows={3}
-						/>
-					</div>
-					<div className="field">
-						<label htmlFor="internal">Internal</label>
-						<Dropdown
-							id="internal"
-							value={resourceDescriptorPage.internal}
-							options={booleanTerms?.terms || []}
-							optionLabel="text"
-							optionValue="name"
-							onChange={(e) => onInternalChange(e.target?.value)}
-						/>
-					</div>
+					</FormField>
+					<FormField label="Name" required {...fieldProps('name')}>
+						{(binding) => <TextInput {...binding} />}
+					</FormField>
+					<FormField label="URL Template" required {...fieldProps('urlTemplate')}>
+						{(binding) => <TextInput {...binding} />}
+					</FormField>
+					<FormField label="Page Description" {...fieldProps('pageDescription')}>
+						{(binding) => <TextArea {...binding} rows={3} />}
+					</FormField>
+					<FormField label="Internal" {...fieldProps('internal')}>
+						{(binding) => <BooleanSelect {...binding} />}
+					</FormField>
 				</ErrorBoundary>
 			</Dialog>
 		</div>
