@@ -1,5 +1,4 @@
-import { buildAutocompleteFilter, autocompleteSearch } from '../../../../utils/utils';
-import { SearchService } from '../../../../service/SearchService';
+import { buildSearchFn } from '../base/buildSearchFn';
 import { Endpoints } from '../../../../constants/Endpoints';
 import { LiteratureAutocompleteTemplate } from '../base/templates/LiteratureAutocompleteTemplate';
 import { AUTOCOMPLETE_CONFIGS, getAutocompleteFields } from '../../../../constants/FilterFields';
@@ -43,15 +42,4 @@ export const multiReferenceSearchConfig = {
 export const isPickedReference = (reference) =>
 	Boolean(reference?.curie) && Object.keys(reference).some((key) => key !== 'curie');
 
-export const singleReferenceSearch = (event, setFiltered, setInputValue) => {
-	const searchService = new SearchService();
-	const filter = buildAutocompleteFilter(event, singleReferenceSearchConfig.autocompleteFields);
-	setInputValue(event.query);
-	autocompleteSearch(
-		searchService,
-		singleReferenceSearchConfig.endpoint,
-		singleReferenceSearchConfig.filterName,
-		filter,
-		setFiltered
-	);
-};
+export const singleReferenceSearch = buildSearchFn(singleReferenceSearchConfig);

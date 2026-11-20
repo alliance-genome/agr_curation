@@ -1,5 +1,4 @@
-import { buildAutocompleteFilter, autocompleteSearch } from '../../../../utils/utils';
-import { SearchService } from '../../../../service/SearchService';
+import { buildSearchFn } from '../base/buildSearchFn';
 import { Endpoints } from '../../../../constants/Endpoints';
 import { AUTOCOMPLETE_CONFIGS, getAutocompleteFields } from '../../../../constants/FilterFields';
 
@@ -14,15 +13,4 @@ export const resourceDescriptorSearchConfig = {
 	),
 };
 
-export const resourceDescriptorSearch = (event, setFiltered, setInputValue) => {
-	const searchService = new SearchService();
-	setInputValue(event.query);
-	const filter = buildAutocompleteFilter(event, resourceDescriptorSearchConfig.autocompleteFields);
-	autocompleteSearch(
-		searchService,
-		resourceDescriptorSearchConfig.endpoint,
-		resourceDescriptorSearchConfig.filterName,
-		filter,
-		setFiltered
-	);
-};
+export const resourceDescriptorSearch = buildSearchFn(resourceDescriptorSearchConfig);
