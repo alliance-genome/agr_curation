@@ -27,7 +27,9 @@ vi.mock('../../../../service/useVocabularyTermSetService');
 vi.mock('../../../../service/useControlledVocabularyService');
 
 const { ComponentsEditDialog } = await import('../ComponentsEditDialog');
-const { TRANSGENIC_TOOL_COMPONENTS, FREE_TEXT_COMPONENTS } = await import('../componentConfigs');
+const { TRANSGENIC_TOOL_COMPONENTS, FREE_TEXT_COMPONENTS, GENOMIC_ENTITY_COMPONENTS } = await import(
+	'../componentConfigs'
+);
 
 const toolAssociation = {
 	id: 21,
@@ -41,6 +43,26 @@ const toolAssociation = {
 	evidence: [],
 	cassetteAssociationSubject: { id: 7 },
 };
+
+// A genomic entity component with the component types a MOD submission loaded (SCRUM-6895)
+const promoter = { id: 51, curie: 'SO:0000167', name: 'promoter' };
+const cds = { id: 52, curie: 'SO:0000316', name: 'CDS' };
+const genomicEntityAssociation = {
+	id: 22,
+	relation: { id: 32, name: 'has_reg_region' },
+	cassetteGenomicEntityAssociationObject: {
+		type: 'Gene',
+		id: 13,
+		primaryExternalId: 'FB:FBgn0014143',
+		geneSymbol: { displayText: 'croc' },
+	},
+	componentTypes: [promoter, cds],
+	evidence: [],
+	relatedNotes: [],
+	cassetteAssociationSubject: { id: 7 },
+};
+
+const tokenLabels = () => [...document.querySelectorAll('.p-autocomplete-token-label')].map((node) => node.textContent);
 
 const editorCallback = vi.fn();
 
@@ -152,5 +174,43 @@ describe('<ComponentsEditDialog />', () => {
 		expect(await screen.findByDisplayValue('GAL4')).toBeInTheDocument();
 		expect(screen.getByDisplayValue('Saccharomyces cerevisiae')).toBeInTheDocument();
 		expect(getComponentList).toHaveBeenCalledWith(7, 'components');
+	});
+
+	// SCRUM-6895
+	it('shows the loaded component types of a genomic entity component by name and curie', async () => {
+		getComponentList.mockResolvedValue({ data: { entities: [genomicEntityAssociation] } });
+		renderDialog(GENOMIC_ENTITY_COMPONENTS);
+
+		await waitFor(() => expect(tokenLabels()).toEqual(['promoter (SO:0000167)', 'CDS (SO:0000316)']));
+		expect(getComponentList).toHaveBeenCalledWith(7, 'genomic-entity-associations');
+	});
+
+	it('saves a component with the component types it was loaded with', async () => {
+		const user = userEvent.setup();
+		getComponentList.mockResolvedValue({ data: { entities: [genomicEntityAssociation] } });
+		replaceComponentList.mockResolvedValue({ data: { entities: [genomicEntityAssociation] } });
+		renderDialog(GENOMIC_ENTITY_COMPONENTS);
+
+		await waitFor(() => expect(tokenLabels()).toHaveLength(2));
+		await user.click(screen.getByRole('button', { name: 'Save' }));
+
+		await waitFor(() => expect(replaceComponentList).toHaveBeenCalled());
+		const [sent] = replaceComponentList.mock.calls[0][2];
+		expect(sent.componentTypes).toEqual([promoter, cds]);
+	});
+
+	it('saves a component without a component type that was removed', async () => {
+		const user = userEvent.setup();
+		getComponentList.mockResolvedValue({ data: { entities: [genomicEntityAssociation] } });
+		replaceComponentList.mockResolvedValue({ data: { entities: [] } });
+		renderDialog(GENOMIC_ENTITY_COMPONENTS);
+
+		await waitFor(() => expect(tokenLabels()).toHaveLength(2));
+		await user.click(document.querySelector('.p-autocomplete-token-icon'));
+		await waitFor(() => expect(tokenLabels()).toEqual(['CDS (SO:0000316)']));
+		await user.click(screen.getByRole('button', { name: 'Save' }));
+
+		await waitFor(() => expect(replaceComponentList).toHaveBeenCalled());
+		expect(replaceComponentList.mock.calls[0][2][0].componentTypes).toEqual([cds]);
 	});
 });
