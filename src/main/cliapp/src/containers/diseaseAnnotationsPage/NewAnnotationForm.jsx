@@ -1,25 +1,25 @@
 import React, { useRef, useState } from 'react';
 import { Dialog } from 'primereact/dialog';
 import { Button } from 'primereact/button';
-import { Dropdown } from 'primereact/dropdown';
 import { Toast } from 'primereact/toast';
 import { MultiSelect } from 'primereact/multiselect';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { FormErrorMessageComponent } from '../../components/Error/FormErrorMessageComponent';
-import { NotEditor } from '../../components/Editors/dropdown/not/NotEditor';
 import { classNames } from 'primereact/utils';
 import { DiseaseAnnotationService } from '../../service/DiseaseAnnotationService';
 import { Splitter, SplitterPanel } from 'primereact/splitter';
 import { RelatedNotesForm } from './RelatedNotesForm';
 import { ConditionRelationsForm } from './ConditionRelationsForm';
-import { ConditionHandleFormDropdown } from '../../components/Editors/dropdown/conditionHandle/ConditionHandleFormDropdown';
-import { ControlledVocabularyFormDropdown } from '../../components/Editors/dropdown/vocabulary/ControlledVocabularyFormDropdown';
 import { useControlledVocabularyService } from '../../service/useControlledVocabularyService';
-import { ControlledVocabularyFormMultiSelectDropdown } from '../../components/Editors/dropdown/vocabulary/ControlledVocabularyFormMultiSelectDropdown';
 import { validateTable } from '../../utils/utils';
 import { FormField } from '../../components/Editors/fields/FormField';
 import { SingleAutocomplete } from '../../components/Editors/widgets/SingleAutocomplete';
 import { MultiAutocomplete } from '../../components/Editors/widgets/MultiAutocomplete';
+import { VocabularySelect } from '../../components/Editors/widgets/VocabularySelect';
+import { VocabularyMultiSelect } from '../../components/Editors/widgets/VocabularyMultiSelect';
+import { BooleanSelect } from '../../components/Editors/widgets/BooleanSelect';
+import { FieldErrors } from '../../components/Editors/fields/FieldErrors';
+import { normalizeError } from '../../components/Editors/fields/normalizeError';
+import { ExperimentsSearchService } from '../../service/ExperimentsSearchService';
 import {
 	diseaseAnnotationSubjectSearch,
 	diseaseAnnotationSubjectSearchConfig,
@@ -78,6 +78,9 @@ const labelColumnSize = 'col-2';
 const widgetColumnSize = 'col-4';
 const fieldDetailsColumnSize = 'col-5';
 
+// NOT's one option; clearing it leaves the annotation un-negated
+const NOT_OPTIONS = [{ name: 'NOT', value: true }];
+
 // FormField layout for this dialog's fields: label, widget, then the field's additional data.
 const ANNOTATION_FIELD_LAYOUT = {
 	labelColumnSize,
@@ -111,7 +114,6 @@ export const NewAnnotationForm = ({
 	const queryClient = useQueryClient();
 	const toast_success = useRef(null);
 	const toast_error = useRef(null);
-	const experimentsRef = useRef(null);
 	const {
 		newAnnotation,
 		errorMessages,
@@ -130,7 +132,6 @@ export const NewAnnotationForm = ({
 	const geneticSexTerms = useControlledVocabularyService('genetic_sex');
 	const diseaseQualifiersTerms = useControlledVocabularyService('disease_qualifier');
 	const annotationTypeTerms = useControlledVocabularyService('annotation_type');
-	const booleanTerms = useControlledVocabularyService('generic_boolean_terms');
 	const geneticModifierRelationTerms = useControlledVocabularyService('disease_genetic_modifier_relation');
 	const agmRelationTerms = useVocabularyTermSetService('agm_disease_relation');
 	const alleleRelationTerms = useVocabularyTermSetService('allele_disease_relation');
@@ -138,6 +139,7 @@ export const NewAnnotationForm = ({
 	const [uiErrorMessages, setUiErrorMessages] = useState({});
 	// Changes on Clear, so the fields start again with no typed text left in them
 	const [formKey, setFormKey] = useState(0);
+	const [experimentOptions, setExperimentOptions] = useState([]);
 	let newAnnotationOptionalFields = [
 		'Asserted Genes',
 		'Asserted Alleles',
@@ -188,6 +190,7 @@ export const NewAnnotationForm = ({
 		newAnnotationDispatch({ type: 'SET_IS_ASSERTED_ALLELE_ENABLED', value: false });
 		newAnnotationDispatch({ type: 'SET_IS_ASSERTED_GENE_ENABLED', value: false });
 		setUiErrorMessages({});
+		setExperimentOptions([]);
 	};
 
 	const handleSubmit = async (event, closeAfterSubmit = true) => {
@@ -259,6 +262,7 @@ export const NewAnnotationForm = ({
 		newAnnotationDispatch({ type: 'SET_IS_ASSERTED_ALLELE_ENABLED', value: false });
 
 		setUiErrorMessages({});
+		setExperimentOptions([]);
 		setFormKey((key) => key + 1);
 	};
 
@@ -274,6 +278,12 @@ export const NewAnnotationForm = ({
 		editField(field)(value);
 	};
 
+	// A new reference has its own experiments, loaded when Experiments is opened
+	const onReferenceChange = (reference) => {
+		setExperimentOptions([]);
+		editFieldClearingUiErrors('evidenceItem')(reference);
+	};
+
 	const onSubjectChange = (subject) => {
 		const subjectType = subject?.type;
 		newAnnotationDispatch({ type: 'SET_IS_ENABLED', value: subject != null });
@@ -285,29 +295,25 @@ export const NewAnnotationForm = ({
 		editFieldClearingUiErrors('diseaseAnnotationSubject')(subject);
 	};
 
-	const onDropdownFieldChange = (event) => {
-		newAnnotationDispatch({
-			type: 'EDIT',
-			field: event.target.name,
-			value: event.target.value,
-		});
+	const isExperimentRequired = mod?.includes('ZFINStaff');
+
+	// The reference whose experiments were last asked for, so a late answer for another reference is ignored
+	const experimentsReferenceCurie = useRef(null);
+
+	const loadExperimentOptions = () => {
+		const referenceCurie = newAnnotation.evidenceItem?.curie;
+		experimentsReferenceCurie.current = referenceCurie;
+		setExperimentOptions([]);
+		new ExperimentsSearchService()
+			.findExperiments(Endpoints.Annotation.CONDITION_RELATION, 15, 0, { 'singleReference.curie': referenceCurie })
+			.then((data) => {
+				if (experimentsReferenceCurie.current === referenceCurie) setExperimentOptions(data.results ?? []);
+			})
+			.catch(() => {
+				if (experimentsReferenceCurie.current === referenceCurie) setExperimentOptions([]);
+			});
 	};
 
-	const onDropdownExperimentsFieldChange = (event) => {
-		newAnnotationDispatch({
-			type: 'EDIT_EXPERIMENT',
-			field: event.target.name,
-			value: event.target.value,
-		});
-	};
-
-	const onControlledVocabChange = (event) => {
-		newAnnotationDispatch({
-			type: 'EDIT',
-			field: event.target.name,
-			value: event.target.value,
-		});
-	};
 	const isExperimentEnabled = () => {
 		return (
 			//only enabled if a reference is selected from suggestions and condition relation table isn't visible
@@ -401,9 +407,6 @@ export const NewAnnotationForm = ({
 		</>
 	);
 
-	const requiredfield = <font color={'red'}>*</font>;
-	let required = '';
-
 	return (
 		<div>
 			<Toast ref={toast_error} position="top-left" />
@@ -472,48 +475,22 @@ export const NewAnnotationForm = ({
 							</FormField>
 						)}
 
-						<div className="grid">
-							<div className={labelColumnSize}>
-								<label htmlFor="relation">
-									<font color={'red'}>*</font>Disease Relation
-								</label>
-							</div>
-							<div className={widgetColumnSize}>
-								<Dropdown
-									options={relationTerms || []}
-									value={newAnnotation.relation}
-									name="relation"
-									optionLabel="name"
-									onChange={onDropdownFieldChange}
-									className={classNames({ 'p-invalid': submitted && errorMessages.relation })}
-									placeholder={newAnnotation.relation?.name}
-								/>
-							</div>
-							<div className={fieldDetailsColumnSize}>
-								<FormErrorMessageComponent errorMessages={errorMessages} errorField={'relation'} />
-								<FormErrorMessageComponent errorMessages={uiErrorMessages} errorField={'relation'} />
-							</div>
-						</div>
+						<FormField label="Disease Relation" required {...fieldProps('relation')}>
+							{(binding) => <VocabularySelect {...binding} options={relationTerms} dataKey="name" />}
+						</FormField>
 
 						{selectedFormFields?.includes('NOT') && (
-							<>
-								<div className="grid">
-									<div className={labelColumnSize}>
-										<label htmlFor="negated">NOT</label>
-									</div>
-									<div className={widgetColumnSize}>
-										<NotEditor
-											value={newAnnotation.negated}
-											editorChange={(newValue) =>
-												onDropdownFieldChange({ target: { name: 'negated', value: newValue } })
-											}
-										/>
-									</div>
-									<div className={fieldDetailsColumnSize}>
-										<FormErrorMessageComponent errorMessages={errorMessages} errorField={'negated'} />
-									</div>
-								</div>
-							</>
+							<FormField label="NOT" {...fieldProps('negated', (value) => editField('negated')(value ?? false))}>
+								{(binding) => (
+									<VocabularySelect
+										{...binding}
+										value={binding.value || null}
+										options={NOT_OPTIONS}
+										optionValue="value"
+										showClear
+									/>
+								)}
+							</FormField>
 						)}
 
 						<FormField
@@ -528,7 +505,7 @@ export const NewAnnotationForm = ({
 						<FormField
 							label="Reference"
 							required
-							{...fieldProps('evidenceItem', editFieldClearingUiErrors('evidenceItem'))}
+							{...fieldProps('evidenceItem', onReferenceChange)}
 							additionalDataField={<SingleReferenceAdditionalFieldData fieldData={newAnnotation.evidenceItem} />}
 						>
 							{(binding) => (
@@ -576,7 +553,7 @@ export const NewAnnotationForm = ({
 							<>
 								<div className="grid">
 									<div className={labelColumnSize}>
-										<label>Related Notes</label>
+										<h2 className={ANNOTATION_FIELD_LAYOUT.labelClassName}>Related Notes</h2>
 									</div>
 									<div
 										className={classNames('col-9', {
@@ -591,8 +568,7 @@ export const NewAnnotationForm = ({
 											errorMessages={relatedNotesErrorMessages}
 											editingRows={relatedNotesEditingRows}
 										/>
-										<FormErrorMessageComponent errorMessages={errorMessages} errorField={'relatedNotes'} />
-										<FormErrorMessageComponent errorMessages={uiErrorMessages} errorField={'relatedNotes'} />
+										<FieldErrors messages={[normalizeError(fieldErrors.relatedNotes)]} layout="text" />
 									</div>
 								</div>
 							</>
@@ -602,7 +578,7 @@ export const NewAnnotationForm = ({
 							<>
 								<div className="grid">
 									<div className={labelColumnSize}>
-										<label>Experimental Conditions</label>
+										<h2 className={ANNOTATION_FIELD_LAYOUT.labelClassName}>Experimental Conditions</h2>
 									</div>
 									<div className={classNames('col-9')}>
 										<ConditionRelationsForm
@@ -618,78 +594,42 @@ export const NewAnnotationForm = ({
 							</>
 						)}
 
-						{(mod?.includes('ZFINStaff')
-							? (required = requiredfield)
-							: selectedFormFields?.includes('Experiments')) && (
-							<>
-								<div className="grid">
-									<div className={labelColumnSize}>
-										<label htmlFor="experiments">{required}Experiments</label>
-									</div>
-									<div className={widgetColumnSize}>
-										<ConditionHandleFormDropdown
-											name="experiments"
-											customRef={experimentsRef}
-											editorChange={onDropdownExperimentsFieldChange}
-											referenceCurie={newAnnotation.evidenceItem?.curie}
-											value={newAnnotation.conditionRelations?.[0]?.handle}
-											showClear={true}
-											placeholderText={newAnnotation.conditionRelations?.[0]?.handle}
-											isEnabled={isExperimentEnabled()}
-										/>
-									</div>
-									<div className={fieldDetailsColumnSize}>
-										<FormErrorMessageComponent errorMessages={errorMessages} errorField={'conditionRelations'} />
-										<FormErrorMessageComponent errorMessages={uiErrorMessages} errorField={'conditionRelations'} />
-									</div>
-								</div>
-							</>
+						{(isExperimentRequired || selectedFormFields?.includes('Experiments')) && (
+							<FormField
+								label="Experiments"
+								required={isExperimentRequired}
+								name="experiments"
+								value={newAnnotation.conditionRelations?.[0] ?? null}
+								onChange={(experiment) => newAnnotationDispatch({ type: 'EDIT_EXPERIMENT', value: experiment })}
+								errors={fieldErrors}
+								errorField="conditionRelations"
+								{...ANNOTATION_FIELD_LAYOUT}
+							>
+								{(binding) => (
+									<VocabularySelect
+										{...binding}
+										options={experimentOptions}
+										optionLabel="handle"
+										dataKey="handle"
+										placeholder={newAnnotation.conditionRelations?.[0]?.handle}
+										onShow={loadExperimentOptions}
+										disabled={!isExperimentEnabled()}
+										showClear
+									/>
+								)}
+							</FormField>
 						)}
 
 						{selectedFormFields?.includes('Genetic Sex') && (
-							<>
-								<div className="grid">
-									<div className={labelColumnSize}>
-										<label htmlFor="geneticSex">Genetic Sex</label>
-									</div>
-									<div className={widgetColumnSize}>
-										<ControlledVocabularyFormDropdown
-											name="geneticSex"
-											options={geneticSexTerms || []}
-											editorChange={onDropdownFieldChange}
-											value={newAnnotation.geneticSex}
-											showClear={true}
-											className={classNames({ 'p-invalid': submitted && errorMessages.geneticSex })}
-											placeholderText={newAnnotation.geneticSex?.name}
-										/>
-									</div>
-									<div className={fieldDetailsColumnSize}>
-										<FormErrorMessageComponent errorMessages={errorMessages} errorField={'geneticSex'} />
-									</div>
-								</div>
-							</>
+							<FormField label="Genetic Sex" {...fieldProps('geneticSex')}>
+								{(binding) => <VocabularySelect {...binding} options={geneticSexTerms} dataKey="name" showClear />}
+							</FormField>
 						)}
 
 						{selectedFormFields?.includes('Disease Qualifiers') && (
-							<>
-								<div className="grid">
-									<div className={labelColumnSize}>
-										<label htmlFor="diseaseQualifiers">Disease Qualifiers</label>
-									</div>
-									<div className={widgetColumnSize}>
-										<ControlledVocabularyFormMultiSelectDropdown
-											name="diseaseQualifiers"
-											options={diseaseQualifiersTerms}
-											editorChange={onControlledVocabChange}
-											value={newAnnotation.diseaseQualifiers}
-											className={classNames({ 'p-invalid': submitted && errorMessages.diseaseQualifiers })}
-										/>
-									</div>
-									<div className={fieldDetailsColumnSize}>
-										<FormErrorMessageComponent errorMessages={errorMessages} errorField={'diseaseQualifiers'} />
-									</div>
-								</div>
-							</>
+							<FormField label="Disease Qualifiers" {...fieldProps('diseaseQualifiers')}>
+								{(binding) => <VocabularyMultiSelect {...binding} options={diseaseQualifiersTerms} dataKey="name" />}
+							</FormField>
 						)}
 
 						{selectedFormFields?.includes('SGD Strain Background') && (
@@ -712,60 +652,17 @@ export const NewAnnotationForm = ({
 						)}
 
 						{selectedFormFields?.includes('Annotation Type') && (
-							<>
-								<div className="grid">
-									<div className={labelColumnSize}>
-										<label htmlFor="annotationType">Annotation Type</label>
-									</div>
-									<div className={widgetColumnSize}>
-										<ControlledVocabularyFormDropdown
-											name="annotationType"
-											field="annotationType"
-											options={annotationTypeTerms}
-											editorChange={onDropdownFieldChange}
-											showClear={true}
-											value={newAnnotation.annotationType}
-											className={classNames({ 'p-invalid': submitted && errorMessages.annotationType })}
-											placeholderText={newAnnotation.annotationType?.name}
-										/>
-									</div>
-									<div className={fieldDetailsColumnSize}>
-										<FormErrorMessageComponent errorMessages={errorMessages} errorField={'annotationType'} />
-									</div>
-								</div>
-							</>
+							<FormField label="Annotation Type" {...fieldProps('annotationType')}>
+								{(binding) => <VocabularySelect {...binding} options={annotationTypeTerms} dataKey="name" showClear />}
+							</FormField>
 						)}
 
 						{selectedFormFields?.includes('Genetic Modifier Relation') && (
-							<>
-								<div className="grid">
-									<div className={labelColumnSize}>
-										<label htmlFor="diseaseGeneticModifierRelation">Genetic Modifier Relation</label>
-									</div>
-									<div className={widgetColumnSize}>
-										<ControlledVocabularyFormDropdown
-											name="diseaseGeneticModifierRelation"
-											field="diseaseGeneticModifierRelation"
-											options={geneticModifierRelationTerms}
-											editorChange={onDropdownFieldChange}
-											showClear={true}
-											value={newAnnotation.diseaseGeneticModifierRelation}
-											className={classNames({ 'p-invalid': submitted && errorMessages.diseaseGeneticModifierRelation })}
-											placeholderText={newAnnotation.diseaseGeneticModifierRelation?.name}
-										/>
-									</div>
-									<div className={fieldDetailsColumnSize}>
-										<FormErrorMessageComponent
-											errorMessages={errorMessages}
-											errorField={'diseaseGeneticModifierRelation'}
-										/>
-										<FormErrorMessageComponent
-											errorMessages={uiErrorMessages}
-											errorField={'diseaseGeneticModifierRelation'}
-										/>
-									</div>
-								</div>
-							</>
+							<FormField label="Genetic Modifier Relation" {...fieldProps('diseaseGeneticModifierRelation')}>
+								{(binding) => (
+									<VocabularySelect {...binding} options={geneticModifierRelationTerms} dataKey="name" showClear />
+								)}
+							</FormField>
 						)}
 
 						{selectedFormFields?.includes('Genetic Modifier AGMs') && (
@@ -826,29 +723,9 @@ export const NewAnnotationForm = ({
 						)}
 
 						{selectedFormFields?.includes('Internal') && (
-							<>
-								<div className="grid">
-									<div className={labelColumnSize}>
-										<label htmlFor="internal">
-											<font color={'red'}>*</font>Internal
-										</label>
-									</div>
-									<div className={widgetColumnSize}>
-										<Dropdown
-											name="internal"
-											value={newAnnotation.internal}
-											options={booleanTerms?.terms || []}
-											optionLabel="text"
-											optionValue="name"
-											onChange={onDropdownFieldChange}
-											className={classNames({ 'p-invalid': submitted && errorMessages.internal })}
-										/>
-									</div>
-									<div className={fieldDetailsColumnSize}>
-										<FormErrorMessageComponent errorMessages={errorMessages} errorField={'internal'} />
-									</div>
-								</div>
-							</>
+							<FormField label="Internal" required {...fieldProps('internal')}>
+								{(binding) => <BooleanSelect {...binding} />}
+							</FormField>
 						)}
 					</form>
 				</ErrorBoundary>

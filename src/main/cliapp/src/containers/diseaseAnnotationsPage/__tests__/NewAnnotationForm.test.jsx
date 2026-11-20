@@ -226,6 +226,29 @@ describe('<NewAnnotationForm />', () => {
 			expect(getField('Subject').querySelector('input')).toHaveValue('MGI:101');
 		});
 
+		it('sends NOT and Internal as chosen, and NOT as false once cleared', async () => {
+			createDiseaseAnnotation.mockImplementation(() => resolvedCreate({ id: 99 }));
+			renderForm();
+			await waitForForm();
+
+			await pickSubject(/Pax6/);
+			await fillRequiredFields('gene_disease_relation_alpha');
+			selectInField('NOT', 'NOT');
+			selectInField('Internal', 'true');
+			fireEvent.click(screen.getByRole('button', { name: 'Save & Add Another' }));
+
+			await waitFor(() => expect(createDiseaseAnnotation).toHaveBeenCalledTimes(1));
+			expect(createDiseaseAnnotation.mock.calls[0][0]).toEqual(
+				expect.objectContaining({ negated: true, internal: true })
+			);
+
+			fireEvent.pointerUp(getField('NOT').querySelector('.p-dropdown-clear-icon'));
+			fireEvent.click(screen.getByRole('button', { name: 'Save & Add Another' }));
+
+			await waitFor(() => expect(createDiseaseAnnotation).toHaveBeenCalledTimes(2));
+			expect(createDiseaseAnnotation.mock.calls[1][0].negated).toBe(false);
+		});
+
 		it('keeps Save off until a subject is given', async () => {
 			renderForm();
 			await waitForForm();
@@ -448,6 +471,27 @@ describe('<NewAnnotationForm />', () => {
 			]);
 		});
 
+		it('offers no experiments from an earlier reference after Clear', async () => {
+			renderForm();
+			await waitForForm();
+
+			await pick('Reference', 'Smith', /Smith 2020/);
+			fireEvent.click(getField('Experiments').querySelector('.p-dropdown'));
+			expect(
+				await screen.findByText('heat_shock', { selector: '.p-dropdown-item, .p-dropdown-item *' })
+			).toBeInTheDocument();
+			fireEvent.click(getField('Experiments').querySelector('.p-dropdown'));
+			await waitFor(() => expect(document.querySelector('.p-dropdown-panel')).toBeNull());
+			fireEvent.click(screen.getByRole('button', { name: 'Clear' }));
+			findExperiments.mockReturnValue(new Promise(() => {}));
+			await pick('Reference', 'Smith', /Smith 2020/);
+			fireEvent.click(getField('Experiments').querySelector('.p-dropdown'));
+
+			expect(
+				screen.queryByText('heat_shock', { selector: '.p-dropdown-item, .p-dropdown-item *' })
+			).not.toBeInTheDocument();
+		});
+
 		it('keeps Experiments off until a reference is picked', async () => {
 			renderForm();
 			await waitForForm();
@@ -457,8 +501,7 @@ describe('<NewAnnotationForm />', () => {
 			expect(getField('Experiments').querySelector('.p-dropdown')).not.toHaveClass('p-disabled');
 		});
 
-		// Clearing Experiments keeps the chosen experiment's condition relation in the payload, with its handle emptied.
-		it.skip('sends no condition relation once the chosen experiment is cleared', async () => {
+		it('sends no condition relation once the chosen experiment is cleared', async () => {
 			createDiseaseAnnotation.mockImplementation(() => resolvedCreate({ id: 99 }));
 			renderForm();
 			await waitForForm();
@@ -575,6 +618,7 @@ describe('<NewAnnotationForm />', () => {
 			expect(dropdownLabel('Annotation Type')).toBe('annotation_type_alpha');
 			expect(dropdownLabel('Genetic Modifier Relation')).toBe('disease_genetic_modifier_relation_alpha');
 			expect(dropdownLabel('Internal')).toBe('true');
+			expect(getField('Disease Qualifiers').textContent).toContain('disease_qualifier_beta');
 			saveAndClose();
 
 			await waitFor(() => expect(createDiseaseAnnotation).toHaveBeenCalled());
@@ -663,8 +707,7 @@ describe('<NewAnnotationForm />', () => {
 		});
 	});
 
-	// The Disease Relation dropdown has no accessible name, and NOT's dropdown is named "dropdown".
-	it.skip('names every field by its key', async () => {
+	it('names every field by its key', async () => {
 		renderForm();
 		await waitForForm();
 
@@ -682,8 +725,14 @@ describe('<NewAnnotationForm />', () => {
 			'diseaseGeneticModifierAgms',
 			'diseaseGeneticModifierAlleles',
 			'diseaseGeneticModifierGenes',
+			'experiments',
+			'geneticSex',
+			'diseaseQualifiers',
+			'annotationType',
+			'diseaseGeneticModifierRelation',
+			'internal',
 		]) {
-			expect(screen.getByRole('combobox', { name: fieldKey })).toBeInTheDocument();
+			expect(screen.getAllByLabelText(fieldKey).length).toBeGreaterThan(0);
 		}
 	});
 });

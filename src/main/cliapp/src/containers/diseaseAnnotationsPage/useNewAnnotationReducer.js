@@ -103,12 +103,8 @@ const newAnnotationReducer = (draft, action) => {
 			draft.newAnnotation[action.field] = action.value;
 			break;
 		case 'EDIT_EXPERIMENT':
-			if (typeof action.value === 'object') {
-				draft.newAnnotation.conditionRelations[0] = action.value;
-			} else {
-				if (draft.newAnnotation.conditionRelations && draft.newAnnotation.conditionRelations[0])
-					draft.newAnnotation.conditionRelations[0].handle = action.value;
-			}
+			// A chosen experiment becomes the annotation's condition relation; clearing it removes the relation
+			draft.newAnnotation.conditionRelations = action.value ? [action.value] : [];
 			break;
 		case 'UPDATE_ERROR_MESSAGES':
 			draft[action.errorType] = action.errorMessages;
