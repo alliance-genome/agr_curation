@@ -9,7 +9,8 @@ import {
 	displayTextTemplate,
 	formatTextTemplate,
 } from '../../../components/NameSlotAnnotationComponent';
-import { evidenceTemplate } from '../../../components/EvidenceComponent';
+import { StringListTemplate } from '../../../components/Templates/StringListTemplate';
+import { getRefStrings } from '../../../utils/utils';
 
 export const SymbolFormTable = ({ symbol, tableRef }) => {
 	const headerGroup = (
@@ -49,7 +50,12 @@ export const SymbolFormTable = ({ symbol, tableRef }) => {
 			<Column field="nameType" header="Name Type" headerClassName="surface-0" body={nameTypeTemplate} />
 			<Column field="synonymUrl" header="Synonym URL" headerClassName="surface-0" body={synonymUrlTemplate} />
 			<Column field="internal" header="Internal" body={internalTemplate} headerClassName="surface-0" />
-			<Column field="evidence.curie" header="Evidence" headerClassName="surface-0" body={evidenceTemplate} />
+			<Column
+				field="evidence.curie"
+				header="Evidence"
+				headerClassName="surface-0"
+				body={(rowData) => <StringListTemplate list={getRefStrings(rowData.evidence)} />}
+			/>
 			<Column field="updatedBy.uniqueId" header="Updated By" headerClassName="surface-0" />
 			<Column field="dateUpdated" header="Date Updated" headerClassName="surface-0" />
 		</DataTable>

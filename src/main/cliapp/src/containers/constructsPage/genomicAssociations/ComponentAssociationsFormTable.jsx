@@ -1,8 +1,8 @@
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { Tooltip } from 'primereact/tooltip';
-import { getIdentifier } from '../../../utils/utils';
-import { evidenceTemplate } from '../../../components/EvidenceComponent';
+import { getIdentifier, getRefStrings } from '../../../utils/utils';
+import { StringListTemplate } from '../../../components/Templates/StringListTemplate';
 
 export const ComponentAssociationsFormTable = ({ associations, tableRef }) => {
 	const relationTemplate = (rowData) => {
@@ -93,7 +93,7 @@ export const ComponentAssociationsFormTable = ({ associations, tableRef }) => {
 				body={componentTemplate}
 			/>
 			<Column header="Related Notes" body={relatedNotesTemplate} />
-			<Column header="Evidence" body={evidenceTemplate} />
+			<Column header="Evidence" body={(rowData) => <StringListTemplate list={getRefStrings(rowData.evidence)} />} />
 			<Column
 				field="updatedBy.uniqueId"
 				header="Updated By"

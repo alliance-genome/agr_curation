@@ -3,7 +3,8 @@ import { Dialog } from 'primereact/dialog';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { EllipsisTableCell } from '../EllipsisTableCell';
-import { evidenceTemplate } from '../EvidenceComponent';
+import { StringListTemplate } from '../Templates/StringListTemplate';
+import { getRefStrings } from '../../utils/utils';
 
 export const SecondaryIdsReadOnlyDialog = ({ originalSecondaryIdsData, setOriginalSecondaryIdsData }) => {
 	const { originalSecondaryIds, isInEdit, dialog } = originalSecondaryIdsData;
@@ -45,7 +46,11 @@ export const SecondaryIdsReadOnlyDialog = ({ originalSecondaryIdsData, setOrigin
 			<DataTable value={localSecondaryIds} dataKey="dataKey" showGridlines>
 				<Column field="secondaryId" header="Secondary ID" body={secondaryIdTemplate} />
 				<Column field="internal" header="Internal" body={internalTemplate} />
-				<Column field="evidence.curie" header="Evidence" body={(rowData) => evidenceTemplate(rowData)} />
+				<Column
+					field="evidence.curie"
+					header="Evidence"
+					body={(rowData) => <StringListTemplate list={getRefStrings(rowData.evidence)} />}
+				/>
 			</DataTable>
 		</Dialog>
 	);

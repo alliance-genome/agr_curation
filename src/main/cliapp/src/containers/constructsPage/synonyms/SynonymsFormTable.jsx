@@ -7,7 +7,8 @@ import {
 	displayTextTemplate,
 	formatTextTemplate,
 } from '../../../components/NameSlotAnnotationComponent';
-import { evidenceTemplate } from '../../../components/EvidenceComponent';
+import { StringListTemplate } from '../../../components/Templates/StringListTemplate';
+import { getRefStrings } from '../../../utils/utils';
 
 export const SynonymsFormTable = ({ synonyms, tableRef }) => {
 	const internalTemplate = (rowData) => {
@@ -78,7 +79,11 @@ export const SynonymsFormTable = ({ synonyms, tableRef }) => {
 				filterMatchMode="contains"
 				body={internalTemplate}
 			/>
-			<Column field="evidence.curie" header="Evidence" body={evidenceTemplate} />
+			<Column
+				field="evidence.curie"
+				header="Evidence"
+				body={(rowData) => <StringListTemplate list={getRefStrings(rowData.evidence)} />}
+			/>
 			<Column field="updatedBy.uniqueId" header="Updated By" sortable />
 			<Column field="dateUpdated" header="Date Updated" sortable />
 		</DataTable>
