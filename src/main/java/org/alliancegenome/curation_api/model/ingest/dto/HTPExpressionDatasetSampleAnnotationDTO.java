@@ -23,7 +23,7 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @AGRCurationSchemaVersion(min = "2.19.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AuditedObjectDTO.class, ExternalDataBaseEntityDTO.class, BioSampleAgeDTO.class,
-	AnatomicalSiteDTO.class, BioSampleGenomicInformationDTO.class, NoteDTO.class, MicroarraySampleDetailsDTO.class, AnalysisDTO.class, CrossReferenceDTO.class })
+	AnatomicalSiteDTO.class, BioSampleGenomicInformationDTO.class, NoteDTO.class, MicroarraySampleDetailsDTO.class, AnalysisDTO.class, CrossReferenceDTO.class }, submitted = true)
 public class HTPExpressionDatasetSampleAnnotationDTO extends AuditedObjectDTO {
 
 	@JsonView({ CurationView.FieldsOnly.class })
