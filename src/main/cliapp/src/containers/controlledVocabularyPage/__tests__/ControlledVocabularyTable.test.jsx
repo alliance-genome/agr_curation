@@ -10,7 +10,7 @@ import {
 	setupSearchHandler,
 	setupSaveSettingsHandler,
 } from '../../../tools/jest/commonMswhandlers';
-import { data, termData, vocabularyData } from '../mockData/mockData.js';
+import { data, vocabularyData } from '../mockData/mockData.js';
 
 describe('<ControlledVocabularyPage />', () => {
 	beforeEach(() => {
@@ -18,7 +18,6 @@ describe('<ControlledVocabularyPage />', () => {
 		setupSettingsHandler();
 		setupSaveSettingsHandler();
 		setupVocabularyHandler(vocabularyData);
-		setupSearchHandler(termData);
 		setupSearchHandler(data);
 	});
 
