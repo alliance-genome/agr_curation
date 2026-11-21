@@ -59,7 +59,6 @@ jobs:
       contents: read
       pull-requests: write
       issues: write
-      id-token: write
       actions: read
     needs: authorize
     if: needs.authorize.outputs.review-sha != ''
@@ -68,6 +67,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@main
         with:
+          persist-credentials: false
           fetch-depth: 0
           ref: ${{ needs.authorize.outputs.review-sha }}
 
@@ -99,149 +99,6 @@ jobs:
               body: `**Claude Code Review Skipped** — only **${{ steps.pr_size.outputs.total_changes }}** lines changed (<= 3). Comment \`@claude review my changes\` to request one.`
             })
 
-      - name: Check if review needed
-        id: should_review
-        run: |
-          if [[ "${{ github.event_name }}" == "issue_comment" ]]; then
-            echo "run=true" >> $GITHUB_OUTPUT
-          elif [[ "${{ github.event_name }}" == "pull_request" && "${{ steps.pr_size.outputs.skip_review }}" != "true" ]]; then
-            echo "run=true" >> $GITHUB_OUTPUT
-          else
-            echo "run=false" >> $GITHUB_OUTPUT
-          fi
-
-      - name: Configure AWS credentials (OIDC)
-        if: steps.should_review.outputs.run == 'true'
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          role-to-assume: ${{ secrets.CLAUDE_CODE_PR_ROLE_ARN }}
-          aws-region: us-east-1
-          role-duration-seconds: 1800
-
-      - name: Get database configuration from AWS
-        if: steps.should_review.outputs.run == 'true'
-        id: db-config
-        run: |
-          set -euo pipefail
-          CONFIG=$(aws secretsmanager get-secret-value \
-            --secret-id /claude-code-pr/config \
-            --query SecretString --output text)
-          echo "::add-mask::$CONFIG"
-          SSM_INSTANCE_ID=$(echo "$CONFIG" | jq -r .ssm_instance_id)
-          DB_HOST=$(echo "$CONFIG" | jq -r .db_host)
-          DB_PORT=$(echo "$CONFIG" | jq -r .db_port)
-          DB_NAME=$(echo "$CONFIG" | jq -r .db_name)
-          DB_USER=$(echo "$CONFIG" | jq -r .db_user)
-          for var in SSM_INSTANCE_ID DB_HOST DB_PORT DB_NAME DB_USER; do
-            if [ -z "${!var}" ] || [ "${!var}" = "null" ]; then
-              echo "::error::Missing config field: $var"
-              exit 1
-            fi
-          done
-          echo "::add-mask::$DB_HOST"
-          echo "::add-mask::$DB_PORT"
-          echo "::add-mask::$SSM_INSTANCE_ID"
-          echo "::add-mask::$DB_USER"
-          echo "::add-mask::$DB_NAME"
-          echo "ssm_instance_id=$SSM_INSTANCE_ID" >> $GITHUB_OUTPUT
-          echo "db_host=$DB_HOST" >> $GITHUB_OUTPUT
-          echo "db_port=$DB_PORT" >> $GITHUB_OUTPUT
-          echo "db_name=$DB_NAME" >> $GITHUB_OUTPUT
-          echo "db_user=$DB_USER" >> $GITHUB_OUTPUT
-
-      - name: Cache SSM Plugin
-        id: cache-ssm-plugin
-        if: steps.should_review.outputs.run == 'true'
-        uses: actions/cache@v4
-        with:
-          path: /tmp/session-manager-plugin.deb
-          key: ${{ runner.os }}-ssm-plugin
-
-      - name: Install SSM Plugin and PostgreSQL client
-        if: steps.should_review.outputs.run == 'true'
-        run: |
-          set -euo pipefail
-          if [ "${{ steps.cache-ssm-plugin.outputs.cache-hit }}" != 'true' ]; then
-            curl -fsSL -o /tmp/session-manager-plugin.deb \
-              https://s3.amazonaws.com/session-manager-downloads/plugin/latest/ubuntu_64bit/session-manager-plugin.deb
-          fi
-          sudo apt-get update -y
-          sudo apt-get install -y postgresql-client
-          sudo dpkg -i /tmp/session-manager-plugin.deb || {
-            sudo apt-get install -f -y
-            sudo dpkg -i /tmp/session-manager-plugin.deb
-          }
-          session-manager-plugin --version
-          pg_isready --version
-
-      - name: Start database tunnel
-        if: steps.should_review.outputs.run == 'true'
-        id: tunnel
-        run: |
-          set -euo pipefail
-          LOCAL_PORT=$(comm -23 <(seq 5500 6500) <(ss -lnt | awk 'NR>1{print $4}' | awk -F: '{print $NF}' | sort -n) | shuf -n1)
-          if nc -z localhost $LOCAL_PORT 2>/dev/null; then
-            LOCAL_PORT=$(comm -23 <(seq 5500 6500) <(ss -lnt | awk 'NR>1{print $4}' | awk -F: '{print $NF}' | sort -n) | shuf -n1)
-          fi
-          echo "local_port=$LOCAL_PORT" >> $GITHUB_OUTPUT
-
-          timeout --foreground 30m \
-            aws ssm start-session \
-            --reason "gh-${GITHUB_REPOSITORY_ID}-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-${GITHUB_JOB}" \
-            --target ${{ steps.db-config.outputs.ssm_instance_id }} \
-            --document-name AWS-StartPortForwardingSessionToRemoteHost \
-            --parameters '{"host":["${{ steps.db-config.outputs.db_host }}"],"portNumber":["${{ steps.db-config.outputs.db_port }}"],"localPortNumber":["'$LOCAL_PORT'"]}' &
-          SSM_PID=$!
-          echo "pid=$SSM_PID" >> $GITHUB_OUTPUT
-          sleep 1
-
-          if ! ps -p $SSM_PID >/dev/null 2>&1; then
-            echo "::error::SSM session failed to start"
-            exit 1
-          fi
-
-          for i in $(seq 1 60); do
-            if ! ps -p $SSM_PID >/dev/null 2>&1; then
-              echo "::error::SSM process crashed"
-              exit 1
-            fi
-            if pg_isready -h localhost -p $LOCAL_PORT -t 2 >/dev/null 2>&1; then
-              echo "Database tunnel established on port $LOCAL_PORT"
-              break
-            fi
-            if [ $i -eq 60 ]; then
-              echo "::error::Tunnel timeout after 120s"
-              kill $SSM_PID || true
-              exit 1
-            fi
-            sleep 2
-          done
-
-      - name: Get database password
-        if: steps.should_review.outputs.run == 'true'
-        uses: aws-actions/aws-secretsmanager-get-secrets@v2.0.6
-        with:
-          secret-ids: |
-            DB_CREDS,curation-db-readonly
-          parse-json-secrets: true
-
-      - name: Verify database connection
-        if: steps.should_review.outputs.run == 'true'
-        run: |
-          set -euo pipefail
-          if [ -z "${DB_CREDS_PASSWORD:-}" ]; then
-            echo "::error::Failed to retrieve database password"
-            exit 1
-          fi
-          echo "::add-mask::$DB_CREDS_PASSWORD"
-          echo "DB_PASSWORD=$DB_CREDS_PASSWORD" >> $GITHUB_ENV
-          PGPASSWORD="$DB_CREDS_PASSWORD" psql -h localhost -p ${{ steps.tunnel.outputs.local_port }} \
-            -U "${{ steps.db-config.outputs.db_user }}" -d "${{ steps.db-config.outputs.db_name }}" \
-            -c "SELECT 1;" >/dev/null 2>&1 || {
-              echo "::error::Database connection failed"
-              exit 1
-            }
-
       # Install Claude Code ourselves instead of using the version bundled with the
       # action, which can lag behind new models (e.g. claude-opus-5-5 needs >= 2.1.280).
       # CLAUDE_CODE_VERSION org/repo variable: latest | stable | exact version (e.g. 2.1.280).
@@ -260,9 +117,8 @@ jobs:
       - name: Claude Code Review (auto-review)
         uses: anthropics/claude-code-action@main
         if: github.event_name == 'pull_request' && steps.pr_size.outputs.skip_review != 'true'
-        env:
-          PGPASSWORD: ${{ env.DB_PASSWORD }}
         with:
+          github_token: ${{ github.token }}
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
           path_to_claude_code_executable: ${{ steps.claude_install.outputs.path }}
           prompt: |
@@ -282,43 +138,11 @@ jobs:
             If the changes look correct, say so briefly. Do NOT invent issues.
             Do NOT pad reviews with trivial suggestions or stylistic preferences.
 
-            An SSM tunnel is open to the Alliance production curation PostgreSQL database (read-only).
-            Query the database through the tunnel using:
-            psql -h localhost -p ${{ steps.tunnel.outputs.local_port }} -U ${{ steps.db-config.outputs.db_user }} -d ${{ steps.db-config.outputs.db_name }} -c 'YOUR SQL HERE'
-            (PGPASSWORD is set in the environment.)
-
-            When the PR touches queries, models, or migrations, use the database to:
-            - Check table schemas and indexes relevant to the changes
-            - Run EXPLAIN on new or modified queries to flag performance issues
-            - Verify referenced tables and columns exist
+            Review database changes using versioned migrations, schemas, queries, and tests.
 
             Use `gh pr comment` for top-level feedback.
             Only post GitHub comments — do not submit review text as messages.
 
-          # Permission strategy:
-          #   The GitHub Actions runner is an ephemeral, isolated VM. The scoped GITHUB_TOKEN
-          #   has `contents: read, pull-requests: write, issues: write` and dies with the job.
-          #   A narrow --allowedTools allowlist caused Claude to burn turns and budget on
-          #   permission-denied tool calls (per anthropics/claude-code-action#957 the
-          #   allowlist only restricts Bash subcommands anyway — Read/Write/Grep/Glob are
-          #   always free).
-          #
-          #   We use --permission-mode bypassPermissions with a --disallowedTools blocklist
-          #   to close the obvious exfiltration and mutation paths while letting Claude
-          #   freely run read-only exploration commands. psql is intentionally NOT blocked:
-          #   the SSM tunnel above provides read-only access to the curation DB, which is
-          #   the whole point of this workflow.
-          #
-          #   See anthropics/claude-code#12232: --allowedTools is ignored in bypass mode,
-          #   so the blocklist is the only effective restriction here.
-          #
-          #   Note: workflow-level steps (curl, apt-get, nc, aws) above run at the runner
-          #   level, not via Claude, so the blocklist does not affect them.
-          #
-          #   This is NOT a hardened security boundary — a determined prompt-injection
-          #   attack could exfiltrate via interpreters (python -c, node -e, /dev/tcp, etc).
-          #   The model is: ephemeral runner + trusted-contributor repo + scoped token.
-          #   If the repo ever opens to untrusted contributors, revisit this config.
           claude_args: |
             --model ${{ vars.CLAUDE_PR_REVIEW_MODEL }}
             --max-turns 60
@@ -331,13 +155,11 @@ jobs:
       - name: Claude Code Review (interactive)
         uses: anthropics/claude-code-action@main
         if: github.event_name == 'issue_comment'
-        env:
-          PGPASSWORD: ${{ env.DB_PASSWORD }}
         with:
+          github_token: ${{ github.token }}
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
           path_to_claude_code_executable: ${{ steps.claude_install.outputs.path }}
           trigger_phrase: "@claude"
-          # See the permission strategy comment on the auto-review step above.
           # Same blocklist applies to @claude interactive mentions.
           claude_args: |
             --model ${{ vars.CLAUDE_PR_REVIEW_MODEL }}
@@ -346,17 +168,3 @@ jobs:
             --permission-mode bypassPermissions
             --disallowedTools "WebFetch,WebSearch,Edit,Write,NotebookEdit,Bash(curl:*),Bash(wget:*),Bash(nc:*),Bash(ssh:*),Bash(scp:*),Bash(rsync:*),Bash(gh pr close:*),Bash(gh pr edit:*),Bash(gh pr review:*),Bash(gh api:*),Bash(env),Bash(printenv:*),Bash(sudo:*)"
             --append-system-prompt "When re-reviewing a PR after being asked to check again, ALWAYS run git log --oneline to check if new commits were pushed since your previous review. Read through all PR comments to find your earlier review(s) and note when they were posted. If new commits were pushed after your previous review, check whether those commits addressed the feedback from your earlier review. Frame your updated review accordingly — for example, note which issues from your earlier review have been addressed by the new commit(s) and which (if any) remain. Do NOT retract or call previous reviews inaccurate when subsequent commits fixed the issues that were flagged."
-
-      - name: Cleanup
-        if: always() && steps.tunnel.outputs.pid != ''
-        run: |
-          if [ -n "${{ steps.tunnel.outputs.pid }}" ] && ps -p ${{ steps.tunnel.outputs.pid }} >/dev/null 2>&1; then
-            kill -TERM -- -${{ steps.tunnel.outputs.pid }} 2>/dev/null || true
-          fi
-          SESSIONS=$(aws ssm describe-sessions --state Active \
-            --filters "key=Target,value=${{ steps.db-config.outputs.ssm_instance_id }}" \
-            --query "Sessions[?Reason=='gh-${GITHUB_REPOSITORY_ID}-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-${GITHUB_JOB}' && DocumentName=='AWS-StartPortForwardingSessionToRemoteHost'].SessionId" \
-            --output text 2>/dev/null || true)
-          for session in $SESSIONS; do
-            aws ssm terminate-session --session-id $session 2>/dev/null || true
-          done
