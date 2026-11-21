@@ -12,12 +12,13 @@ const BOOLEAN_OPTIONS = [
  * @param {boolean|null} value - the current value
  * @param {(value: boolean|null) => void} onChange - called with a boolean, or null when cleared
  * @param {boolean} [showClear=false] - whether to offer a clear affordance
+ * @param {string} [placeholder] - text shown when nothing is selected
  * @param {string} [name] - accessible name for the control
  * @param {boolean} [invalid] - applies invalid styling
  * @param {boolean} [disabled]
  * @returns {JSX.Element}
  */
-export function BooleanSelect({ id, value, onChange, showClear = false, name, invalid, disabled }) {
+export function BooleanSelect({ id, value, onChange, showClear = false, placeholder, name, invalid, disabled }) {
 	return (
 		<VocabularySelect
 			id={id}
@@ -27,6 +28,7 @@ export function BooleanSelect({ id, value, onChange, showClear = false, name, in
 			optionLabel="text"
 			optionValue="name"
 			showClear={showClear}
+			placeholder={placeholder}
 			name={name}
 			invalid={invalid}
 			disabled={disabled}

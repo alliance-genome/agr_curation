@@ -2,13 +2,12 @@ import { useRef, useState } from 'react';
 import { Dialog } from 'primereact/dialog';
 import { InputText } from 'primereact/inputtext';
 import { InputTextarea } from 'primereact/inputtextarea';
-import { Dropdown } from 'primereact/dropdown';
 import { Button } from 'primereact/button';
 import { Toast } from 'primereact/toast';
 import { classNames } from 'primereact/utils';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { ResourceDescriptorService } from '../../service/ResourceDescriptorService';
-import { useControlledVocabularyService } from '../../service/useControlledVocabularyService';
+import { BooleanSelect } from '../../components/Editors/widgets/BooleanSelect';
 import ErrorBoundary from '../../components/Error/ErrorBoundary';
 
 const emptyResourceDescriptor = {
@@ -34,8 +33,6 @@ export const NewResourceDescriptorForm = ({
 	const toast_error = useRef(null);
 
 	let resourceDescriptorService = null;
-
-	const booleanTerms = useControlledVocabularyService('generic_boolean_terms');
 
 	const getService = () => {
 		if (!resourceDescriptorService) {
@@ -221,13 +218,11 @@ export const NewResourceDescriptorForm = ({
 					</div>
 					<div className="field">
 						<label htmlFor="internal">Internal</label>
-						<Dropdown
+						<BooleanSelect
 							id="internal"
 							value={resourceDescriptor.internal}
-							options={booleanTerms?.terms || []}
-							optionLabel="text"
-							optionValue="name"
-							onChange={(e) => onInternalChange(e.target?.value)}
+							name="Internal"
+							onChange={onInternalChange}
 						/>
 					</div>
 				</ErrorBoundary>
