@@ -9,6 +9,49 @@ on:
     types: [created]
 
 jobs:
+  authorize:
+    if: |
+      github.actor != 'pjhale' &&
+      github.actor != 'claude[bot]' && (
+        github.event_name == 'pull_request' ||
+        (github.event_name == 'issue_comment' && github.event.issue.pull_request && contains(github.event.comment.body, '@claude'))
+      )
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: read
+    outputs:
+      review-sha: ${{ steps.verify.outputs.result }}
+    steps:
+      - name: Verify repository permission and PR source
+        id: verify
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8
+        with:
+          result-encoding: string
+          script: |
+            const repo = context.repo;
+            const actors = new Set([context.actor, process.env.GITHUB_TRIGGERING_ACTOR]);
+            for (const username of actors) {
+              if (!username) return '';
+              const {data} = await github.rest.repos.getCollaboratorPermissionLevel({...repo, username});
+              if (!['admin', 'write', 'maintain'].includes(data.permission)) {
+                core.notice('Review skipped because the requester lacks write access.');
+                return '';
+              }
+            }
+            const pr = context.eventName === 'pull_request' ? context.payload.pull_request :
+              (await github.rest.pulls.get({...repo, pull_number: context.issue.number})).data;
+            if (pr.state !== 'open' || pr.head.repo?.id !== context.payload.repository.id) {
+              core.notice('Privileged reviews require an open PR from this repository.');
+              return '';
+            }
+            // Bind checkout to the reviewed merge commit, including for comment events.
+            const sha = context.eventName === 'pull_request' ? context.sha : pr.merge_commit_sha;
+            if (!/^[0-9a-f]{40}$/.test(sha)) {
+              core.setFailed('GitHub has no merge commit available for this PR.');
+              return '';
+            }
+            return sha;
+
   claude-review:
     runs-on: ubuntu-latest
     timeout-minutes: 30
@@ -18,22 +61,15 @@ jobs:
       issues: write
       id-token: write
       actions: read
-    if: |
-      github.actor != 'pjhale' &&
-      github.actor != 'claude[bot]' && (
-        github.event_name == 'pull_request' ||
-        (github.event_name == 'issue_comment' && contains(github.event.comment.body, '@claude'))
-      )
+    needs: authorize
+    if: needs.authorize.outputs.review-sha != ''
 
     steps:
-      # For issue_comment events, actions/checkout defaults to the default branch.
-      # Explicitly check out the PR's merge ref so diff/log commands see the PR,
-      # matching pull_request event behavior.
       - name: Checkout repository
         uses: actions/checkout@main
         with:
           fetch-depth: 0
-          ref: ${{ github.event_name == 'issue_comment' && format('refs/pull/{0}/merge', github.event.issue.number) || '' }}
+          ref: ${{ needs.authorize.outputs.review-sha }}
 
       - name: Calculate PR size and skip trivial changes
         id: pr_size
