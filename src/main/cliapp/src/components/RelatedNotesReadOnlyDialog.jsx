@@ -3,7 +3,7 @@ import { Dialog } from 'primereact/dialog';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { EllipsisTableCell } from './EllipsisTableCell';
-import { ListTableCell } from './ListTableCell';
+import { StringListTemplate } from './Templates/StringListTemplate';
 import { getRefStrings } from '../utils/utils';
 
 export const RelatedNotesReadOnlyDialog = ({
@@ -44,15 +44,7 @@ export const RelatedNotesReadOnlyDialog = ({
 		return <EllipsisTableCell>{rowData.freeText}</EllipsisTableCell>;
 	};
 
-	const evidenceTemplate = (rowData) => {
-		if (rowData && rowData.references) {
-			const refStrings = getRefStrings(rowData.references);
-			const listTemplate = (item) => {
-				return <EllipsisTableCell>{item}</EllipsisTableCell>;
-			};
-			return <ListTableCell template={listTemplate} listData={refStrings} />;
-		}
-	};
+	const evidenceTemplate = (rowData) => <StringListTemplate list={getRefStrings(rowData?.references)} />;
 
 	const internalTemplate = (rowData) => {
 		return <EllipsisTableCell>{JSON.stringify(rowData.internal)}</EllipsisTableCell>;

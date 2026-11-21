@@ -60,9 +60,6 @@ export const HTPExpressionDatasetSampleAnnotationsTable = ({
 
 	const searchService = new SearchService();
 
-	const errorMessagesRef = useRef();
-	errorMessagesRef.current = errorMessages;
-
 	const handleExpressionSampleOpen = (entities) =>
 		setExpressionSampleData({ originalEntities: entities, dialog: true });
 	const handleSampleAgeOpen = (entities) => setSampleAgeData({ originalEntities: entities, dialog: true });

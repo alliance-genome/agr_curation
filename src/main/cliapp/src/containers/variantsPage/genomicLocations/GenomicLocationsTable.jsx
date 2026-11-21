@@ -1,7 +1,8 @@
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { EllipsisTableCell } from '../../../components/EllipsisTableCell';
-import { evidenceTemplate } from '../../../components/EvidenceComponent';
+import { StringListTemplate } from '../../../components/Templates/StringListTemplate';
+import { getRefStrings } from '../../../utils/utils';
 
 export const getSequenceOfReferenceAccessionNumber = (hgvs) => {
 	if (!hgvs || !hgvs.includes(':')) return null;
@@ -95,7 +96,11 @@ export const GenomicLocationsTable = ({ genomicLocations, emptyMessage }) => {
 				header="Gene Localization Type"
 				body={(rowData) => textTemplate(soTermText(rowData.geneLocalizationType))}
 			/>
-			<Column field="evidence.curie" header="Evidence" body={(rowData) => evidenceTemplate(rowData)} />
+			<Column
+				field="evidence.curie"
+				header="Evidence"
+				body={(rowData) => <StringListTemplate list={getRefStrings(rowData.evidence)} />}
+			/>
 		</DataTable>
 	);
 };

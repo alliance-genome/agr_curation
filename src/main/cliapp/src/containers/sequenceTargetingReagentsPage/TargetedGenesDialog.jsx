@@ -3,9 +3,9 @@ import { Dialog } from 'primereact/dialog';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { EllipsisTableCell } from '../../components/EllipsisTableCell';
-import { evidenceTemplate } from '../../components/EvidenceComponent';
+import { StringListTemplate } from '../../components/Templates/StringListTemplate';
 import { SearchService } from '../../service/SearchService';
-import { getIdentifier } from '../../utils/utils';
+import { getIdentifier, getRefStrings } from '../../utils/utils';
 import { targetedGenesFindParams } from './utils';
 
 const ROWS = 10;
@@ -73,7 +73,7 @@ export const TargetedGenesDialog = ({ targetedGenesData, setTargetedGenesData })
 					field="evidence.curie"
 					header="Evidence"
 					headerClassName="surface-0"
-					body={(rowData) => evidenceTemplate(rowData)}
+					body={(rowData) => <StringListTemplate list={getRefStrings(rowData.evidence)} />}
 				/>
 				<Column field="updatedBy.uniqueId" header="Updated By" headerClassName="surface-0" />
 				<Column field="dateUpdated" header="Date Updated" headerClassName="surface-0" />

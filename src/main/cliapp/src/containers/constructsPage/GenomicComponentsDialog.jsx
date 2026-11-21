@@ -6,10 +6,10 @@ import { Tooltip } from 'primereact/tooltip';
 import { ColumnGroup } from 'primereact/columngroup';
 import { Row } from 'primereact/row';
 import { EllipsisTableCell } from '../../components/EllipsisTableCell';
-import { evidenceTemplate } from '../../components/EvidenceComponent';
+import { StringListTemplate } from '../../components/Templates/StringListTemplate';
 import { Button } from 'primereact/button';
 import { RelatedNotesReadOnlyDialog } from '../../components/RelatedNotesReadOnlyDialog';
-import { getIdentifier } from '../../utils/utils';
+import { getIdentifier, getRefStrings } from '../../utils/utils';
 
 // "symbol (identifier)" of a gene or allele, "name (identifier)" of another genomic entity.
 const genomicEntityDisplayValue = (genomicEntity) => {
@@ -182,7 +182,7 @@ export const GenomicComponentsDialog = ({
 							field="evidence.curie"
 							header="Evidence"
 							headerClassName="surface-0"
-							body={(rowData) => evidenceTemplate(rowData)}
+							body={(rowData) => <StringListTemplate list={getRefStrings(rowData.evidence)} />}
 							hidden={!showNotesAndEvidence}
 						/>
 						<Column field="updatedBy.uniqueId" header="Updated By" headerClassName="surface-0" />

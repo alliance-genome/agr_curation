@@ -1,6 +1,7 @@
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
-import { evidenceTemplate } from '../../../components/EvidenceComponent';
+import { StringListTemplate } from '../../../components/Templates/StringListTemplate';
+import { getRefStrings } from '../../../utils/utils';
 
 export const FreeTextComponentsFormTable = ({ components, tableRef }) => {
 	const relationTemplate = (rowData) => {
@@ -78,7 +79,7 @@ export const FreeTextComponentsFormTable = ({ components, tableRef }) => {
 			/>
 			<Column field="taxonText" header="Taxon Text" sortable filter showFilterMenu={false} filterMatchMode="contains" />
 			<Column header="Related Notes" body={relatedNotesTemplate} />
-			<Column header="Evidence" body={evidenceTemplate} />
+			<Column header="Evidence" body={(rowData) => <StringListTemplate list={getRefStrings(rowData.evidence)} />} />
 			<Column
 				field="internal"
 				header="Internal"
