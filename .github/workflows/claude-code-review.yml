@@ -44,10 +44,10 @@ jobs:
               core.notice('Privileged reviews require an open PR from this repository.');
               return '';
             }
-            // Bind checkout to the reviewed merge commit, including for comment events.
-            const sha = context.eventName === 'pull_request' ? context.sha : pr.merge_commit_sha;
+            // PR events provide a merge SHA. For comments, pin the current PR head.
+            const sha = context.eventName === 'pull_request' ? context.sha : pr.head.sha;
             if (!/^[0-9a-f]{40}$/.test(sha)) {
-              core.setFailed('GitHub has no merge commit available for this PR.');
+              core.setFailed('GitHub did not provide a valid commit for this PR.');
               return '';
             }
             return sha;
@@ -187,6 +187,7 @@ jobs:
 
           timeout --foreground 30m \
             aws ssm start-session \
+            --reason "gh-${GITHUB_REPOSITORY_ID}-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-${GITHUB_JOB}" \
             --target ${{ steps.db-config.outputs.ssm_instance_id }} \
             --document-name AWS-StartPortForwardingSessionToRemoteHost \
             --parameters '{"host":["${{ steps.db-config.outputs.db_host }}"],"portNumber":["${{ steps.db-config.outputs.db_port }}"],"localPortNumber":["'$LOCAL_PORT'"]}' &
@@ -354,7 +355,7 @@ jobs:
           fi
           SESSIONS=$(aws ssm describe-sessions --state Active \
             --filters "key=Target,value=${{ steps.db-config.outputs.ssm_instance_id }}" \
-            --query "Sessions[?DocumentName=='AWS-StartPortForwardingSessionToRemoteHost'].SessionId" \
+            --query "Sessions[?Reason=='gh-${GITHUB_REPOSITORY_ID}-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-${GITHUB_JOB}' && DocumentName=='AWS-StartPortForwardingSessionToRemoteHost'].SessionId" \
             --output text 2>/dev/null || true)
           for session in $SESSIONS; do
             aws ssm terminate-session --session-id $session 2>/dev/null || true
