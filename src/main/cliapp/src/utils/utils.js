@@ -398,20 +398,6 @@ export function buildCuratorSpeciesFilter() {
 	};
 }
 
-export function multipleAutocompleteOnChange(rowProps, event, fieldName, setFieldValue) {
-	if (!event.target.value) {
-		rowProps.editorCallback([]);
-		setFieldValue([]);
-		return;
-	}
-	let nonDuplicateRows = [];
-	if (event.target.value.length > 0) {
-		nonDuplicateRows = getUniqueItemsByProperty(event.target.value, 'id');
-	}
-	rowProps.editorCallback(nonDuplicateRows);
-	setFieldValue(nonDuplicateRows);
-}
-
 const isPropValuesEqual = (subject, target, propName) => {
 	return subject[propName] === target[propName];
 };
