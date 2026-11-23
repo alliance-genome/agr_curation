@@ -1,0 +1,18 @@
+[
+  {
+    "htp_expression_sample_dto": {
+      "curie": "HTPSAMPLETEST:SampleIVTest05"
+    },
+    "htp_expression_sample_type_curie": "HTPSAMPLETEST:Obi0001",
+    "expression_assay_curie": "HTPSAMPLETEST:Mmo0001",
+    "genomic_information_dto": {
+      "biosample_allele_curie": "HTPSAMPLETEST:DoesNotExist0001"
+    },
+    "dataset_ids": [
+      "HTPDATASETTEST:SampleTestDataset0001"
+    ],
+    "data_provider_dto": {
+      "source_organization_abbreviation": "FB"
+    }
+  }
+]

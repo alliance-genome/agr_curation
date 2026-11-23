@@ -1,6 +1,7 @@
 import React from 'react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
-import { screen, waitFor } from '@testing-library/react';
+import { screen, waitFor, within } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { renderWithClient } from '../../../tools/jest/utils';
 import {
 	setupSettingsHandler,
@@ -10,14 +11,19 @@ import {
 } from '../../../tools/jest/commonMswhandlers';
 import { data } from '../../cassettesPage/mockData/mockData.js';
 
-const getConstruct = vi.fn();
-
-// msw cannot intercept this app's fetch based ApiClient, so stub the service directly.
-vi.mock('../../../service/ConstructService', () => ({
-	ConstructService: class {
-		getConstruct = getConstruct;
-	},
+const { getConstruct, getRows, replaceRows } = vi.hoisted(() => ({
+	getConstruct: vi.fn(),
+	getRows: vi.fn(),
+	replaceRows: vi.fn(),
 }));
+
+// msw cannot intercept this app's fetch based ApiClient, so stub the services directly.
+vi.mock('../../../service/ConstructService', async () =>
+	(await import('./constructServiceMocks')).mockConstructService({ getConstruct })
+);
+vi.mock('../../../service/ConstructSubResourceService', async () =>
+	(await import('./constructServiceMocks')).mockConstructSubResourceService({ getRows, replaceRows })
+);
 
 const ConstructDetailPage = (await import('../ConstructDetailPage')).default;
 
@@ -29,21 +35,22 @@ const construct = {
 	curie: 'AGRKB:102000000000001',
 	primaryExternalId: 'FB:FBtp0000001',
 	constructSymbol: { displayText: 'P{KK102259}', formatText: 'P{KK102259}' },
-	references: [],
-	constructComponents: [{ id: 1, componentSymbol: 'croc', relation: { name: 'expresses' } }],
-	constructGenomicEntityAssociations: [],
-	constructCassetteAssociations: [
-		{ id: 3, relation: { name: 'has_transcriptional_unit' }, constructCassetteAssociationObject: { id: 200133829 } },
-	],
 };
 
+const CASSETTE_ASSOCIATIONS = [
+	{ id: 3, relation: { name: 'has_transcriptional_unit' }, constructCassetteAssociationObject: { id: 200133829 } },
+];
+
 /**
- * Renders the detail page for the given construct.
+ * Renders the detail page for the construct, holding the given cassette associations.
  *
- * @param {Object} constructEntity the construct the page loads
+ * @param {Object[]} cassetteAssociations the associations the cassette associations sub-resource returns
  */
-const renderPageFor = (constructEntity) => {
-	getConstruct.mockResolvedValue({ data: { entity: constructEntity } });
+const renderPageWith = (cassetteAssociations) => {
+	getConstruct.mockResolvedValue({ data: { entity: construct } });
+	getRows.mockImplementation((path) =>
+		Promise.resolve({ data: { entities: path === 'cassetteassociations' ? cassetteAssociations : [] } })
+	);
 	renderWithClient(
 		<MemoryRouter initialEntries={['/construct/FB:FBtp0000001']}>
 			<Routes>
@@ -56,6 +63,9 @@ const renderPageFor = (constructEntity) => {
 describe('<ConstructDetailPage /> cassettes', () => {
 	beforeEach(() => {
 		getConstruct.mockReset();
+		getRows.mockReset();
+		replaceRows.mockReset();
+		replaceRows.mockImplementation((path, constructId, rows) => Promise.resolve({ data: { entities: rows } }));
 		setupFindHandler();
 		setupSettingsHandler();
 		setupSaveSettingsHandler();
@@ -63,7 +73,7 @@ describe('<ConstructDetailPage /> cassettes', () => {
 	});
 
 	it('Shows the Cassettes table instead of the component tables', async () => {
-		renderPageFor(construct);
+		renderPageWith(CASSETTE_ASSOCIATIONS);
 
 		await waitFor(() => expect(screen.getByRole('heading', { name: 'Cassettes' })).toBeInTheDocument(), PAGE_LOAD_WAIT);
 		expect(await screen.findByText(/Construct Cassettes Table/i)).toBeInTheDocument();
@@ -72,9 +82,35 @@ describe('<ConstructDetailPage /> cassettes', () => {
 	});
 
 	it('Shows no table when the construct has no cassettes', async () => {
-		renderPageFor({ ...construct, constructCassetteAssociations: [] });
+		renderPageWith([]);
 
 		await waitFor(() => expect(screen.getByRole('heading', { name: 'Cassettes' })).toBeInTheDocument(), PAGE_LOAD_WAIT);
 		expect(screen.queryByText(/Construct Cassettes Table/i)).not.toBeInTheDocument();
+	});
+
+	it('removes a cassette in the pop-up, keeping it pending until its own Save writes the list', async () => {
+		const user = userEvent.setup();
+		renderPageWith(CASSETTE_ASSOCIATIONS);
+
+		const editButton = await screen.findByRole('button', { name: 'Edit Cassettes' }, PAGE_LOAD_WAIT);
+		await waitFor(() => expect(getRows).toHaveBeenCalledWith('cassetteassociations', construct.id));
+		await user.click(editButton);
+		const dialog = await screen.findByRole('dialog');
+		const removeButton = await waitFor(() => {
+			const trash = dialog.querySelector('tbody .pi-trash');
+			expect(trash).not.toBeNull();
+			return trash.closest('button');
+		});
+		await user.click(removeButton);
+		await user.click(within(dialog).getByRole('button', { name: 'Keep Edits' }));
+
+		const cassettesSection = screen.getByRole('button', { name: 'Save Cassettes' }).closest('.grid');
+		expect(within(cassettesSection).getByText('Pending Edits!')).toBeInTheDocument();
+		expect(screen.getByRole('button', { name: 'Save' })).toBeEnabled();
+
+		await user.click(screen.getByRole('button', { name: 'Save Cassettes' }));
+
+		await waitFor(() => expect(replaceRows).toHaveBeenCalledWith('cassetteassociations', construct.id, []));
+		await waitFor(() => expect(within(cassettesSection).queryByText('Pending Edits!')).not.toBeInTheDocument());
 	});
 });

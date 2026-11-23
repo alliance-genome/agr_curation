@@ -1,7 +1,14 @@
 import React from 'react';
 import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { COPY_SOURCE_ENTRY, FORM_LOAD_WAIT, NAVIGATION_WAIT, renderInRouter, sourceAllele } from './alleleTestUtils';
+import {
+	COPY_SOURCE_ENTRY,
+	FORM_LOAD_WAIT,
+	NAVIGATION_WAIT,
+	renderInRouter,
+	sourceAllele,
+	symbolInput,
+} from './alleleTestUtils';
 
 const createAllele = vi.fn();
 const getAllele = vi.fn();
@@ -57,7 +64,7 @@ const createdAllele = (id, curie) => {
 const renderPage = () => renderInRouter(<AlleleCreatePage />, COPY_SOURCE_ENTRY);
 
 const waitForSourceToLoad = async (container) => {
-	await waitFor(() => expect(container.querySelector('#displayText')).toHaveValue('abc-1'), FORM_LOAD_WAIT);
+	await waitFor(() => expect(symbolInput()).toHaveValue('abc-1'), FORM_LOAD_WAIT);
 	await waitFor(() => expect(getRelatedNotesForAllele).toHaveBeenCalledWith(1), FORM_LOAD_WAIT);
 	await waitFor(() => expect(screen.queryByText('Loading allele to clone...')).not.toBeInTheDocument(), FORM_LOAD_WAIT);
 };
@@ -131,12 +138,12 @@ describe('<AlleleCreatePage /> save and add another', { timeout: 30000 }, () => 
 		await screen.findByText('Allele AGRKB:101000000000002 created');
 		await waitForSaveToFinish();
 		expect(screen.getByText('a note')).toBeInTheDocument();
-		expect(container.querySelector('#displayText')).toHaveValue('abc-1');
+		expect(symbolInput()).toHaveValue('abc-1');
 
 		// The shown tables carry column filter buttons also named Clear.
 		await user.click(screen.getByText('Clear').closest('button'));
 
 		await waitFor(() => expect(screen.queryByText('a note')).not.toBeInTheDocument());
-		expect(container.querySelector('#displayText')).toHaveValue('');
+		expect(symbolInput()).toHaveValue('');
 	});
 });

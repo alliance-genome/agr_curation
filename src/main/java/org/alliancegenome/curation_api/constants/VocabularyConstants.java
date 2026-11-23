@@ -98,6 +98,7 @@ public final class VocabularyConstants {
 	public static final String DISEASE_ANNOTATION_NOTE_TYPES_VOCABULARY_TERM_SET = "da_note_type";
 	public static final String GENE_NOTE_TYPES_VOCABULARY_TERM_SET = "gene_note_type";
 	public static final String CONSTRUCT_COMPONENT_NOTE_TYPES_VOCABULARY_TERM_SET = "construct_component_note_type";
+	public static final String CONSTRUCT_NOTE_TYPES_VOCABULARY_TERM_SET = "construct_note_type";
 	/**
 	 * SCRUM-6535: note type sets for the new Constructs model. The labels are the ones curators
 	 * already created on alpha through the UI, not names invented here, so that v0.54.0.7 adds only

@@ -171,7 +171,6 @@ export const ConditionRelationTable = () => {
 			<NewRelationForm
 				newRelationState={newRelationState}
 				newRelationDispatch={newRelationDispatch}
-				searchService={searchService}
 				conditionRelationService={conditionRelationService}
 				conditionRelationTypeTerms={conditionRelationTypeTerms}
 				setNewConditionRelation={(newConditionRelation, queryClient) =>

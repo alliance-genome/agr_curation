@@ -47,8 +47,10 @@ public enum BackendBulkLoadType {
 	PARALOGY("json"),
 	SEQUENCE_TARGETING_REAGENT("json"),
 	EXPRESSION("json"),
-	HTPDATASET("json"),
-	HTPDATASAMPLE("json"),
+	HTPDATASET("json"), // FMS HTP expression dataset annotations, as opposed to direct submission for HTP_EXPRESSION_DATASET_ANNOTATION
+	HTPDATASAMPLE("json"), // FMS HTP expression dataset sample annotations, as opposed to direct submission for HTP_EXPRESSION_DATASET_SAMPLE_ANNOTATION
+	HTP_EXPRESSION_DATASET_ANNOTATION("json"),
+	HTP_EXPRESSION_DATASET_SAMPLE_ANNOTATION("json"),
 	GOOGLE_ANALYTICS("data"),
 	;
 

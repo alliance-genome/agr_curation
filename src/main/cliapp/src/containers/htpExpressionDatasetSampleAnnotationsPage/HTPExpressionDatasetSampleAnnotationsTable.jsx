@@ -318,7 +318,9 @@ export const HTPExpressionDatasetSampleAnnotationsTable = ({
 					setTableState={setTableState}
 					columns={columns}
 					isEditable={false}
-					hasDetails={false}
+					hasDetails={true}
+					detailsEndpoint="htp-expression-dataset-sample"
+					getDetailsIdentifier={(rowData) => rowData.curie || rowData.id?.toString()}
 					isInEditMode={isInEditMode}
 					setIsInEditMode={setIsInEditMode}
 					toasts={{ toast_topleft, toast_topright }}

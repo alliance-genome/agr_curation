@@ -54,10 +54,7 @@ export const AlleleGeneAssociationsForm = ({ labelColumnSize, mode = 'detail' })
 			),
 	});
 
-	const relatedNoteOnChangeHandler = (value, props) => {
-		props.editorCallback(value[0]);
-		changeRow(props.rowData?.dataKey, { relatedNote: value[0] });
-	};
+	const relatedNoteOnChangeHandler = (value, props) => changeRow(props.rowData?.dataKey, { relatedNote: value[0] });
 
 	return (
 		<FormTableWrapper

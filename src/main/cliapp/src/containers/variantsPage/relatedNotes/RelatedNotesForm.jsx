@@ -1,107 +1,69 @@
+import { useRef } from 'react';
 import { Button } from 'primereact/button';
 import { FormTableWrapper } from '../../../components/FormTableWrapper';
-import { RelatedNotesFormTable } from './RelatedNotesFormTable';
-import { useRef } from 'react';
-import { addDataKey } from '../utils';
+import { RelatedNotesFormTable } from '../../../components/relatedNotes/RelatedNotesFormTable';
+import { TableEditorProvider } from '../../../components/Editors/fields/TableEditorContext';
+import { useDataKeyRowsStrategy } from '../../../components/Editors/fields/strategies/useDataKeyRowsStrategy';
+import { useVocabularyTermSetService } from '../../../service/useVocabularyTermSetService';
+import { addDataKey, KEEP_ROWS_IN_EDIT_MODE } from '../../../utils/rows';
 
+const ENTITY_TYPE = 'relatedNotes';
+
+// The note types a variant takes
+const NOTE_TYPE_TERM_SET = 'variant_note_type';
+
+/**
+ * The variant detail and create pages' related notes section. Its rows live in the variant reducer and are
+ * saved with the variant.
+ *
+ * @param {object} state - useVariantReducer state
+ * @param {Function} dispatch - useVariantReducer dispatch
+ * @returns {JSX.Element}
+ */
 export const RelatedNotesForm = ({ state, dispatch }) => {
 	const tableRef = useRef(null);
-	const entityType = 'relatedNotes';
-	const relatedNotes = structuredClone(state.variant?.[entityType]);
+	const relatedNotes = state.variant?.[ENTITY_TYPE];
+	const entityState = state.entityStates[ENTITY_TYPE];
+	const noteTypeTerms = useVocabularyTermSetService(NOTE_TYPE_TERM_SET);
 
-	const createNewRelatedNoteHandler = (e) => {
-		e.preventDefault();
-		const newRelatedNote = {
-			internal: false,
-			obsolete: false,
-			noteType: null,
-			freeText: '',
-			references: null,
-		};
+	const strategy = useDataKeyRowsStrategy({
+		rows: relatedNotes,
+		errors: entityState.errorMessages,
+		write: ({ rowKey, field, value }) =>
+			dispatch({ type: 'EDIT_ROW_BY_KEY', entityType: ENTITY_TYPE, dataKey: rowKey, field, value }),
+	});
 
+	const createNewRelatedNoteHandler = (event) => {
+		event.preventDefault();
+		const newRelatedNote = { internal: false, obsolete: false, noteType: null, freeText: '', references: null };
 		addDataKey(newRelatedNote);
-
-		dispatch({
-			type: 'ADD_ROW',
-			row: newRelatedNote,
-			entityType: entityType,
-		});
+		dispatch({ type: 'ADD_ROW', row: newRelatedNote, entityType: ENTITY_TYPE });
 	};
 
-	const onRowEditChange = () => {
-		return null;
-	};
-
-	const noteTypeOnChangeHandler = (props, event) => {
-		props.editorCallback(event.target.value);
-		dispatch({
-			type: 'EDIT_ROW',
-			entityType: entityType,
-			index: props.rowIndex,
-			field: 'noteType',
-			value: event.target.value,
-		});
-	};
-
-	const internalOnChangeHandler = (props, event) => {
-		props.editorCallback(event.target.value?.name);
-		dispatch({
-			type: 'EDIT_ROW',
-			entityType: entityType,
-			index: props.rowIndex,
-			field: 'internal',
-			value: event.target?.value?.name,
-		});
-	};
-
-	const referencesOnChangeHandler = (event, setFieldValue, props) => {
-		//updates value in table input box
-		setFieldValue(event.target.value);
-		dispatch({
-			type: 'EDIT_ROW',
-			entityType: entityType,
-			index: props.rowIndex,
-			field: 'references',
-			value: event.target.value,
-		});
-	};
-
-	const textOnChangeHandler = (rowIndex, event, field) => {
-		dispatch({
-			type: 'EDIT_ROW',
-			entityType: entityType,
-			index: rowIndex,
-			field: field,
-			value: event.target.value,
-		});
-	};
-
-	const deletionHandler = (e, dataKey) => {
-		e.preventDefault();
-		const updatedErrorMessages = structuredClone(state.entityStates[entityType].errorMessages);
+	const deletionHandler = (event, dataKey) => {
+		event.preventDefault();
+		const updatedErrorMessages = structuredClone(entityState.errorMessages);
 		delete updatedErrorMessages[dataKey];
-		dispatch({ type: 'DELETE_ROW', entityType: entityType, dataKey });
-		dispatch({ type: 'UPDATE_TABLE_ERROR_MESSAGES', entityType: entityType, errorMessages: updatedErrorMessages });
+		dispatch({ type: 'DELETE_ROW', entityType: ENTITY_TYPE, dataKey });
+		dispatch({ type: 'UPDATE_TABLE_ERROR_MESSAGES', entityType: ENTITY_TYPE, errorMessages: updatedErrorMessages });
 	};
 
 	return (
 		<FormTableWrapper
 			table={
-				<RelatedNotesFormTable
-					relatedNotes={relatedNotes}
-					editingRows={state.entityStates[entityType].editingRows}
-					onRowEditChange={onRowEditChange}
-					tableRef={tableRef}
-					deletionHandler={deletionHandler}
-					errorMessages={state.entityStates[entityType].errorMessages}
-					noteTypeOnChangeHandler={noteTypeOnChangeHandler}
-					textOnChangeHandler={textOnChangeHandler}
-					internalOnChangeHandler={internalOnChangeHandler}
-					referencesOnChangeHandler={referencesOnChangeHandler}
-				/>
+				<TableEditorProvider strategy={strategy}>
+					<RelatedNotesFormTable
+						relatedNotes={relatedNotes}
+						editingRows={entityState.editingRows}
+						onRowEditChange={KEEP_ROWS_IN_EDIT_MODE}
+						tableRef={tableRef}
+						deletionHandler={deletionHandler}
+						noteTypeTerms={noteTypeTerms}
+					/>
+				</TableEditorProvider>
 			}
 			tableName="Related Notes"
-			showTable={state.entityStates[entityType].show}
+			showTable={entityState.show}
 			button={<Button label="Add Related Note" onClick={createNewRelatedNoteHandler} className="w-4 p-button-text" />}
 		/>
 	);

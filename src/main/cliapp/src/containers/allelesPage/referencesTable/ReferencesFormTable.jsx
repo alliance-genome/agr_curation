@@ -3,8 +3,20 @@ import { Column } from 'primereact/column';
 import { DeleteAction } from '../../../components/Actions/DeletionAction';
 import { CrossReferenceTemplate } from '../../../components/Templates/reference/CrossReferenceTemplate';
 import { ShortCitationTemplate } from '../../../components/Templates/reference/ShortCitationTemplate';
-import { DialogErrorMessageComponent } from '../../../components/Error/DialogErrorMessageComponent';
+import { FieldErrors } from '../../../components/Editors/fields/FieldErrors';
 
+/**
+ * A detail or create page's references table: the entity's references shown, not edited, each with a delete
+ * button, and each row's error under its curie. Paged and filterable.
+ *
+ * @param {object[]} references - the references, each carrying a `dataKey`
+ * @param {object} editingRows - rows in edit mode, keyed by dataKey
+ * @param {object} errorMessages - row errors, keyed by `dataKey` then field
+ * @param {Function} onRowEditChange - PrimeReact row-edit handler
+ * @param {object} tableRef - ref forwarded to the DataTable
+ * @param {(event: object, dataKey: string) => void} deletionHandler - removes a reference
+ * @returns {JSX.Element}
+ */
 export const ReferencesFormTable = ({
 	references,
 	editingRows,
@@ -47,7 +59,7 @@ export const ReferencesFormTable = ({
 				body={(data) => (
 					<>
 						{data.curie}
-						<DialogErrorMessageComponent errorMessages={errorMessages?.[data.dataKey]} errorField="curie" />
+						<FieldErrors messages={[errorMessages?.[data.dataKey]?.curie]} layout="inline" />
 					</>
 				)}
 				sortable

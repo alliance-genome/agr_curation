@@ -7,7 +7,7 @@ import { DateDetailPageTemplate } from '../../components/Templates/DateDetailPag
 import { UserDetailPageTemplate } from '../../components/Templates/UserDetailPageTemplate';
 import { CrossReferencesTemplate } from '../../components/Templates/CrossReferencesTemplate';
 import { DetailPageFieldWrapper } from '../../components/DetailPageFieldWrapper';
-import { AgmFullNameForm } from './agmFullName/AgmFullNameForm';
+import { NameSlotAnnotationForm } from '../../components/nameSlotAnnotations/NameSlotAnnotationForm';
 import { SynonymsForm } from './synonyms/SynonymsForm';
 import { SecondaryIdsForm } from './secondaryIds/SecondaryIdsForm';
 import { AssociatedSTRsTemplate } from './associatedSTRs/AssociatedSTRsTemplate';
@@ -117,7 +117,14 @@ export const AGMForm = ({ state, dispatch, isVisible, mode = 'detail' }) => {
 			</FormSection>
 
 			<FormSection isVisible={isVisible('Name')}>
-				<AgmFullNameForm labelColumnSize={labelColumnSize} state={state} dispatch={dispatch} />
+				<NameSlotAnnotationForm
+					name={state.agm?.agmFullName}
+					entityState={state.entityStates.agmFullName}
+					dispatch={dispatch}
+					entityType="agmFullName"
+					tableName="Name"
+					addLabel="Add Full Name"
+				/>
 			</FormSection>
 
 			<FormSection isVisible={isVisible('Synonyms')}>
