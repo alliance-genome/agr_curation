@@ -1,20 +1,40 @@
-import React, { useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { Dialog } from 'primereact/dialog';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { Button } from 'primereact/button';
+import { Toast } from 'primereact/toast';
 import { Endpoints } from '../constants/Endpoints';
 import { ColumnGroup } from 'primereact/columngroup';
 import { Row } from 'primereact/row';
 import { DeleteAction } from './Actions/DeletionAction';
-import { InputTextAreaEditor } from './Editors/text/InputTextAreaEditor';
-import { DialogErrorMessageComponent } from './Error/DialogErrorMessageComponent';
-import { InternalEditor } from './Editors/legacyForm/InternalEditor';
 import { ValidationService } from '../service/ValidationService';
-import { VocabularyTermSetEditor } from './Editors/legacyForm/VocabularyTermSetEditor';
+import { useVocabularyTermSetService } from '../service/useVocabularyTermSetService';
 import { validate } from '../utils/utils';
-import { addDataKey } from '../utils/rows';
+import { addDataKey, KEEP_ROWS_IN_EDIT_MODE } from '../utils/rows';
+import { TableEditorProvider } from './Editors/fields/TableEditorContext';
+import { useLocalRowsStrategy } from './Editors/fields/strategies/useLocalRowsStrategy';
+import { ControlledVocabularyTableEditor } from './Editors/dropdown/vocabulary/ControlledVocabularyTableEditor';
+import { InputTextAreaTableEditor } from './Editors/text/InputTextAreaTableEditor';
+import { BooleanTableEditor } from './Editors/dropdown/boolean/BooleanTableEditor';
 
+/**
+ * Dialog for editing the note held by a row of an editable table, such as an allele's gene association. Edits
+ * stay local until Keep Edits validates every note and hands them to `onChange`; the row's note cell is then
+ * marked as having pending edits.
+ *
+ * @param {object} relatedNotesData - the row's notes, dialog visibility, the row's dataKey and PrimeReact editor
+ *   options
+ * @param {Function} setRelatedNotesData - its setter
+ * @param {object} tableErrorMessages - the table's errors, keyed by dataKey
+ * @param {Function} setTableErrorMessages - their setter
+ * @param {boolean} [singleValue=false] - whether the row holds at most one note
+ * @param {(notes: object[], editorOptions: object) => void} onChange - stores the kept notes on the row
+ * @param {{noteType: string}} defaultValues - the name of the note type a new note starts with
+ * @param {string} [errorField='relatedNotes'] - the row field the notes are held under
+ * @param {string} noteTypeVocabType - the term set the note types come from
+ * @returns {JSX.Element}
+ */
 export const RelatedNotesDialogEditOnly = ({
 	relatedNotesData,
 	tableErrorMessages,
@@ -27,11 +47,19 @@ export const RelatedNotesDialogEditOnly = ({
 	noteTypeVocabType,
 }) => {
 	const { originalRelatedNotes, dialogIsVisible, dataKey } = relatedNotesData;
-	const [errorMessages, setErrorMessages] = useState([]);
+	const [errorMessages, setErrorMessages] = useState({});
 	const validationService = new ValidationService();
 	const tableRef = useRef(null);
+	const toastRef = useRef(null);
 	const [editingRows, setEditingRows] = useState({});
 	const [localRelatedNotes, setLocalRelatedNotes] = useState([]);
+	const noteTypeTerms = useVocabularyTermSetService(noteTypeVocabType);
+
+	const strategy = useLocalRowsStrategy({
+		rows: localRelatedNotes,
+		setRows: setLocalRelatedNotes,
+		errors: errorMessages,
+	});
 
 	const cloneNotes = (clonableNotes) => {
 		if (!clonableNotes) {
@@ -63,94 +91,42 @@ export const RelatedNotesDialogEditOnly = ({
 		setEditingRows(rowsObject);
 	};
 
-	const deletionHandler = (e, dataKey) => {
-		e.preventDefault();
-		let _localRelatedNotes = structuredClone(localRelatedNotes);
-		let _errorMessages = structuredClone(errorMessages);
-		const index = _localRelatedNotes.findIndex((relatedNote) => relatedNote.dataKey === dataKey);
-		if (index !== -1) {
-			_localRelatedNotes.splice(index, 1);
-			_errorMessages.splice(index, 1);
-		}
-		setLocalRelatedNotes(_localRelatedNotes);
-		setErrorMessages(_errorMessages);
-	};
-
-	const updateLocalRelatedNotes = (index, field, value) => {
-		const _localRelatedNotes = structuredClone(localRelatedNotes);
-		_localRelatedNotes[index][field] = value;
-		setLocalRelatedNotes(_localRelatedNotes);
-	};
-	const onNoteTypeEditorValueChange = (props, event) => {
-		props.editorCallback(event.target.value);
-		updateLocalRelatedNotes(props.rowIndex, 'noteType', event.target.value);
-	};
-
-	const noteTypeEditor = (props) => {
-		return (
-			<>
-				<VocabularyTermSetEditor
-					editorOptions={props}
-					onChangeHandler={onNoteTypeEditorValueChange}
-					errorMessages={errorMessages}
-					rowIndex={props.rowIndex}
-					vocabType={noteTypeVocabType}
-					field="noteType"
-					showClear={false}
-					placeholder={defaultValues.noteType}
-				/>
-			</>
-		);
-	};
-
-	const onFreeTextEditorValueChange = (event, props) => {
-		props.editorCallback(event.target.value);
-		updateLocalRelatedNotes(props.rowIndex, 'freeText', event.target.value);
-	};
-
-	const freeTextEditor = (props, fieldName, errorMessages) => {
-		return (
-			<>
-				<InputTextAreaEditor
-					initalValue={props.value}
-					editorChange={(e) => onFreeTextEditorValueChange(e, props)}
-					rows={5}
-					columns={30}
-				/>
-				<DialogErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={fieldName} />
-			</>
-		);
-	};
-
-	const internalOnChangeHandler = (props, event) => {
-		props.editorCallback(event.target.value);
-		updateLocalRelatedNotes(props.rowIndex, 'internal', event.target.value.name);
+	const deletionHandler = (event, dataKey) => {
+		event.preventDefault();
+		setLocalRelatedNotes((previous) => previous.filter((relatedNote) => relatedNote.dataKey !== dataKey));
+		setErrorMessages((previous) => {
+			const remaining = { ...previous };
+			delete remaining[dataKey];
+			return remaining;
+		});
 	};
 
 	const validateTable = async () => {
 		const results = await validate(localRelatedNotes, Endpoints.Entity.NOTE, validationService);
-		const errors = [];
-		let anyErrors = false;
+		const errors = {};
 		results.forEach((result, index) => {
-			const { isError, data } = result;
-			if (isError) {
-				errors[index] = {};
-				if (!data) return;
-				Object.keys(data).forEach((field) => {
-					errors[index][field] = {
-						severity: 'error',
-						message: data[field],
-					};
-				});
-				anyErrors = true;
-			}
+			if (!result.isError) return;
+			const rowErrors = {};
+			Object.entries(result.data ?? {}).forEach(([field, message]) => {
+				rowErrors[field] = { severity: 'error', message };
+			});
+			errors[localRelatedNotes[index].dataKey] = rowErrors;
 		});
 		setErrorMessages(errors);
+		const anyErrors = Object.keys(errors).length > 0;
+		if (anyErrors) {
+			toastRef.current?.show({
+				life: 7000,
+				severity: 'error',
+				summary: 'Validation error',
+				detail: 'Please fix validation errors before saving',
+			});
+		}
 		return anyErrors;
 	};
 
 	const saveDataHandler = async () => {
-		setErrorMessages([]);
+		setErrorMessages({});
 		const anyErrors = await validateTable();
 		if (anyErrors) return;
 		onChange(localRelatedNotes, relatedNotesData.rowProps);
@@ -193,7 +169,7 @@ export const RelatedNotesDialogEditOnly = ({
 	};
 
 	const hideDialog = () => {
-		setErrorMessages([]);
+		setErrorMessages({});
 		setRelatedNotesData((relatedNotesData) => {
 			return {
 				...relatedNotesData,
@@ -230,12 +206,9 @@ export const RelatedNotesDialogEditOnly = ({
 		</ColumnGroup>
 	);
 
-	const onRowEditChange = (e) => {
-		return null;
-	};
-
 	return (
 		<div>
+			<Toast ref={toastRef} position="top-right" />
 			<Dialog
 				visible={dialogIsVisible}
 				className="w-8"
@@ -246,48 +219,58 @@ export const RelatedNotesDialogEditOnly = ({
 				footer={footerTemplate}
 			>
 				<h3>Related Notes</h3>
-				<DataTable
-					value={localRelatedNotes}
-					dataKey="dataKey"
-					showGridlines
-					editMode="row"
-					headerColumnGroup={headerGroup}
-					size="small"
-					editingRows={editingRows}
-					onRowEditChange={onRowEditChange}
-					ref={tableRef}
-				>
-					<Column
-						editor={(props) => <DeleteAction deletionHandler={deletionHandler} id={props?.rowData?.dataKey} />}
-						className="max-w-4rem"
-						bodyClassName="text-center"
-						headerClassName="surface-0"
-						frozen
-					/>
-					<Column editor={noteTypeEditor} field="noteType.name" header="Note Type" headerClassName="surface-0" />
-					<Column
-						editor={(props) => freeTextEditor(props, 'freeText', errorMessages)}
-						field="freeText"
-						header="Text"
-						headerClassName="surface-0"
-						className="wrap-word max-w-35rem"
-					/>
-					<Column
-						editor={(props) => {
-							return (
-								<InternalEditor
-									editorOptions={props}
-									errorMessages={errorMessages}
-									internalOnChangeHandler={internalOnChangeHandler}
-									rowIndex={props.rowData.rowIndex}
+				<TableEditorProvider strategy={strategy}>
+					<DataTable
+						value={localRelatedNotes}
+						dataKey="dataKey"
+						showGridlines
+						editMode="row"
+						headerColumnGroup={headerGroup}
+						size="small"
+						editingRows={editingRows}
+						onRowEditChange={KEEP_ROWS_IN_EDIT_MODE}
+						ref={tableRef}
+						cellMemo={false}
+					>
+						<Column
+							editor={(editorOptions) => (
+								<DeleteAction deletionHandler={deletionHandler} id={editorOptions?.rowData?.dataKey} />
+							)}
+							className="max-w-4rem"
+							bodyClassName="text-center"
+							headerClassName="surface-0"
+							frozen
+						/>
+						<Column
+							editor={(editorOptions) => (
+								<ControlledVocabularyTableEditor
+									editorOptions={editorOptions}
+									field="noteType"
+									options={noteTypeTerms}
+									showClear={false}
 								/>
-							);
-						}}
-						field="internal"
-						header="Internal"
-						headerClassName="surface-0"
-					/>
-				</DataTable>
+							)}
+							field="noteType.name"
+							header="Note Type"
+							headerClassName="surface-0"
+						/>
+						<Column
+							editor={(editorOptions) => (
+								<InputTextAreaTableEditor editorOptions={editorOptions} field="freeText" rows={5} cols={30} />
+							)}
+							field="freeText"
+							header="Text"
+							headerClassName="surface-0"
+							className="wrap-word max-w-35rem"
+						/>
+						<Column
+							editor={(editorOptions) => <BooleanTableEditor editorOptions={editorOptions} field="internal" />}
+							field="internal"
+							header="Internal"
+							headerClassName="surface-0"
+						/>
+					</DataTable>
+				</TableEditorProvider>
 			</Dialog>
 		</div>
 	);

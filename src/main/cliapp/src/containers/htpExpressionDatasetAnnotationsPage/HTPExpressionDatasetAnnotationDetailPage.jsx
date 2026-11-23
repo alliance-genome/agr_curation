@@ -12,7 +12,7 @@ import { FormFieldVisibilityMenu, FormSection, useFormFieldVisibility } from '..
 import { StringTemplate } from '../../components/Templates/StringTemplate';
 import { StringListTemplate } from '../../components/Templates/StringListTemplate';
 import { BooleanTemplate } from '../../components/Templates/BooleanTemplate';
-import { ReferencesFormTable } from '../constructsPage/references/ReferencesFormTable';
+import { ReferencesFormTable } from './ReferencesFormTable';
 import { ExternalDataBaseEntityTable } from './ExternalDataBaseEntityTable';
 import { RelatedNotesTable } from './RelatedNotesTable';
 import { HTPExpressionDatasetSampleAnnotationsTable } from '../htpExpressionDatasetSampleAnnotationsPage/HTPExpressionDatasetSampleAnnotationsTable';
@@ -100,7 +100,7 @@ export default function HTPExpressionDatasetAnnotationDetailPage() {
 					<FormSection isVisible={isVisible('Expression Dataset')}>
 						<FormTableWrapper
 							tableName="Expression Dataset"
-							showTable={true}
+							showTable={!!dataset?.htpExpressionDataset}
 							table={
 								<ExternalDataBaseEntityTable
 									entities={dataset?.htpExpressionDataset ? [dataset.htpExpressionDataset] : []}
@@ -122,7 +122,7 @@ export default function HTPExpressionDatasetAnnotationDetailPage() {
 					<FormSection isVisible={isVisible('Dataset Subseries')}>
 						<FormTableWrapper
 							tableName="Dataset Subseries"
-							showTable={true}
+							showTable={dataset?.subSeries?.length > 0}
 							table={<ExternalDataBaseEntityTable entities={dataset?.subSeries} />}
 						/>
 					</FormSection>
@@ -160,7 +160,7 @@ export default function HTPExpressionDatasetAnnotationDetailPage() {
 					<FormSection isVisible={isVisible('Dataset Related Notes')}>
 						<FormTableWrapper
 							tableName="Dataset Related Notes"
-							showTable={true}
+							showTable={!!dataset?.relatedNote}
 							table={<RelatedNotesTable relatedNotes={dataset?.relatedNote ? [dataset.relatedNote] : []} />}
 						/>
 					</FormSection>
@@ -168,7 +168,7 @@ export default function HTPExpressionDatasetAnnotationDetailPage() {
 					<FormSection isVisible={isVisible('Dataset References')}>
 						<FormTableWrapper
 							tableName="Dataset References"
-							showTable={true}
+							showTable={dataset?.references?.length > 0}
 							table={<ReferencesFormTable references={dataset?.references || []} />}
 						/>
 					</FormSection>

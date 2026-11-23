@@ -1,0 +1,22 @@
+[
+  {
+    "htp_expression_sample_title": "TEST TITLE MATCH SAMPLE",
+    "htp_expression_sample_type_curie": "HTPSAMPLETEST:Obi0001",
+    "expression_assay_curie": "HTPSAMPLETEST:Mmo0001",
+    "htp_expression_sample_location_dtos": [
+      {
+        "anatomical_structure_curie": "HTPSAMPLETEST:Anat0001"
+      }
+    ],
+    "genomic_information_dto": {
+      "biosample_agm_curie": "HTPSAMPLETEST:Agm0001",
+      "biosample_agm_type": "fish"
+    },
+    "dataset_ids": [
+      "HTPDATASETTEST:SampleTestDataset0001"
+    ],
+    "data_provider_dto": {
+      "source_organization_abbreviation": "MGI"
+    }
+  }
+]

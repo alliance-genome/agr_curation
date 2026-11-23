@@ -8,16 +8,27 @@ import { ColumnGroup } from 'primereact/columngroup';
 import { Row } from 'primereact/row';
 import { ValidationService } from '../service/ValidationService';
 import { DeleteAction } from './Actions/DeletionAction';
-import { InternalEditor } from './Editors/legacyForm/InternalEditor';
-import { ControlledVocabularyEditor } from './Editors/legacyForm/ControlledVocabularyEditor';
-import { DialogErrorMessageComponent } from './Error/DialogErrorMessageComponent';
-import { ExConAutocompleteTemplate } from './Editors/autocomplete/base/templates/ExConAutocompleteTemplate';
-import { SearchService } from '../service/SearchService';
-import { autocompleteSearch, buildAutocompleteFilter, multipleAutocompleteOnChange } from '../utils/utils';
-import { AutocompleteMultiEditor } from './Editors/autocomplete/base/AutocompleteMultiEditor';
 import { Endpoints } from '../constants/Endpoints';
-import { AUTOCOMPLETE_CONFIGS, getAutocompleteFields } from '../constants/FilterFields';
+import { useControlledVocabularyService } from '../service/useControlledVocabularyService';
+import { KEEP_ROWS_IN_EDIT_MODE } from '../utils/rows';
+import { TableEditorProvider } from './Editors/fields/TableEditorContext';
+import { useLocalRowsStrategy } from './Editors/fields/strategies/useLocalRowsStrategy';
+import { ControlledVocabularyTableEditor } from './Editors/dropdown/vocabulary/ControlledVocabularyTableEditor';
+import { ConditionsTableEditor } from './Editors/autocomplete/experimentalCondition/ConditionsTableEditor';
+import { conditionsDetailedSearchConfig } from './Editors/autocomplete/experimentalCondition/utils';
+import { BooleanTableEditor } from './Editors/dropdown/boolean/BooleanTableEditor';
 
+/**
+ * Dialog for editing a disease annotation row's condition relations. Edits stay local until Keep Edits validates
+ * every relation and hands the list back through the row's editor callback.
+ *
+ * @param {object} originalConditionRelationsData - the row's condition relations, dialog visibility, row index and
+ *   PrimeReact editor options
+ * @param {Function} setOriginalConditionRelationsData - its setter
+ * @param {object} errorMessagesMainRow - the main table's errors, keyed by row index
+ * @param {Function} setErrorMessagesMainRow - its setter
+ * @returns {JSX.Element}
+ */
 export const ConditionRelationsEditDialog = ({
 	originalConditionRelationsData,
 	setOriginalConditionRelationsData,
@@ -30,10 +41,17 @@ export const ConditionRelationsEditDialog = ({
 	const [errorMessages, setErrorMessages] = useState({});
 	const [isValidating, setIsValidating] = useState(false);
 	const validationService = new ValidationService();
-	const searchService = new SearchService();
 	const dataKeyCounter = useRef(0);
 	const tableRef = useRef(null);
 	const toast_topright = useRef(null);
+
+	const conditionRelationTypeTerms = useControlledVocabularyService('condition_relation');
+
+	const strategy = useLocalRowsStrategy({
+		rows: localConditionRelations,
+		setRows: setLocalConditionRelations,
+		errors: errorMessages,
+	});
 
 	const showDialogHandler = () => {
 		let _localConditionRelations = cloneRelations(originalConditionRelations);
@@ -47,10 +65,6 @@ export const ConditionRelationsEditDialog = ({
 		}
 		setEditingRows(rowsObject);
 		setErrorMessages({});
-	};
-
-	const onRowEditChange = () => {
-		return null;
 	};
 
 	const hideDialog = () => {
@@ -74,45 +88,6 @@ export const ConditionRelationsEditDialog = ({
 			_clonableRelations = [];
 		}
 		return _clonableRelations;
-	};
-
-	const conditionRelationTypeOnChangeHandler = (editorOptions, event) => {
-		editorOptions.editorCallback(event.value);
-		setLocalConditionRelations((prev) => {
-			const updated = [...prev];
-			updated[editorOptions.rowIndex] = { ...updated[editorOptions.rowIndex], conditionRelationType: event.value };
-			return updated;
-		});
-	};
-
-	const onConditionRelationValueChange = (event, setFieldValue, editorOptions) => {
-		multipleAutocompleteOnChange(editorOptions, event, 'conditions', setFieldValue);
-		setLocalConditionRelations((prev) => {
-			const updated = [...prev];
-			updated[editorOptions.rowIndex] = { ...updated[editorOptions.rowIndex], conditions: event.target.value };
-			return updated;
-		});
-	};
-
-	const conditionSearch = (event, setFiltered, setInputValue) => {
-		const autocompleteFields = getAutocompleteFields(
-			AUTOCOMPLETE_CONFIGS.experimentalConditionDetailedAutocompleteConfig
-		);
-		const endpoint = Endpoints.Annotation.EXPERIMENTAL_CONDITION;
-		const filterName = 'conditionSummaryFilter';
-		const filter = buildAutocompleteFilter(event, autocompleteFields);
-
-		setInputValue(event.query);
-		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered);
-	};
-
-	const internalOnChangeHandler = (editorOptions, event) => {
-		editorOptions.editorCallback(event.target.value?.name);
-		setLocalConditionRelations((prev) => {
-			const updated = [...prev];
-			updated[editorOptions.rowIndex] = { ...updated[editorOptions.rowIndex], internal: event.target?.value?.name };
-			return updated;
-		});
 	};
 
 	const createNewRelationHandler = () => {
@@ -252,93 +227,56 @@ export const ConditionRelationsEditDialog = ({
 				footer={footerTemplate}
 			>
 				<h3>Experimental Conditions</h3>
-				<DataTable
-					value={localConditionRelations}
-					dataKey="dataKey"
-					showGridlines
-					editMode="row"
-					headerColumnGroup={headerGroup}
-					editingRows={editingRows}
-					onRowEditChange={onRowEditChange}
-					ref={tableRef}
-					cellMemo={false}
-				>
-					<Column
-						editor={(editorOptions) => (
-							<DeleteAction deletionHandler={handleDeleteConditionRelation} id={editorOptions?.rowData?.dataKey} />
-						)}
-						className="max-w-4rem"
-						bodyClassName="text-center"
-						headerClassName="surface-0"
-						frozen
-					/>
-					<Column
-						editor={(editorOptions) => {
-							return (
-								<ControlledVocabularyEditor
+				<TableEditorProvider strategy={strategy}>
+					<DataTable
+						value={localConditionRelations}
+						dataKey="dataKey"
+						showGridlines
+						editMode="row"
+						headerColumnGroup={headerGroup}
+						editingRows={editingRows}
+						onRowEditChange={KEEP_ROWS_IN_EDIT_MODE}
+						ref={tableRef}
+						cellMemo={false}
+					>
+						<Column
+							editor={(editorOptions) => (
+								<DeleteAction deletionHandler={handleDeleteConditionRelation} id={editorOptions?.rowData?.dataKey} />
+							)}
+							className="max-w-4rem"
+							bodyClassName="text-center"
+							headerClassName="surface-0"
+							frozen
+						/>
+						<Column
+							editor={(editorOptions) => (
+								<ControlledVocabularyTableEditor
 									editorOptions={editorOptions}
-									onChangeHandler={conditionRelationTypeOnChangeHandler}
-									errorMessages={errorMessages}
-									dataKey={editorOptions?.rowData?.dataKey}
-									rowIndex={editorOptions.rowIndex}
-									vocabType="condition_relation"
 									field="conditionRelationType"
+									options={conditionRelationTypeTerms}
 									showClear={false}
 								/>
-							);
-						}}
-						field="conditionRelationType"
-						header="Relation"
-						headerClassName="surface-0"
-					/>
-					<Column
-						editor={(editorOptions) => {
-							return (
-								<>
-									<AutocompleteMultiEditor
-										search={conditionSearch}
-										initialValue={editorOptions.rowData.conditions}
-										editorOptions={editorOptions}
-										fieldName="conditions"
-										subField="conditionSummary"
-										valueDisplay={(item, setAutocompleteHoverItem, op, query) => (
-											<ExConAutocompleteTemplate
-												item={item}
-												setAutocompleteHoverItem={setAutocompleteHoverItem}
-												op={op}
-												query={query}
-											/>
-										)}
-										onValueChangeHandler={onConditionRelationValueChange}
-									/>
-									<DialogErrorMessageComponent
-										errorMessages={errorMessages[editorOptions?.rowData?.dataKey]}
-										errorField={'conditions'}
-									/>
-								</>
-							);
-						}}
-						field="conditions"
-						header="Conditions"
-						headerClassName="surface-0"
-					/>
-					<Column
-						editor={(editorOptions) => {
-							return (
-								<InternalEditor
-									editorOptions={editorOptions}
-									rowIndex={editorOptions.rowIndex}
-									errorMessages={errorMessages}
-									dataKey={editorOptions?.rowData?.dataKey}
-									internalOnChangeHandler={internalOnChangeHandler}
-								/>
-							);
-						}}
-						field="internal"
-						header="Internal"
-						headerClassName="surface-0"
-					/>
-				</DataTable>
+							)}
+							field="conditionRelationType"
+							header="Relation"
+							headerClassName="surface-0"
+						/>
+						<Column
+							editor={(editorOptions) => (
+								<ConditionsTableEditor editorOptions={editorOptions} searchConfig={conditionsDetailedSearchConfig} />
+							)}
+							field="conditions"
+							header="Conditions"
+							headerClassName="surface-0"
+						/>
+						<Column
+							editor={(editorOptions) => <BooleanTableEditor editorOptions={editorOptions} field="internal" />}
+							field="internal"
+							header="Internal"
+							headerClassName="surface-0"
+						/>
+					</DataTable>
+				</TableEditorProvider>
 			</Dialog>
 		</div>
 	);

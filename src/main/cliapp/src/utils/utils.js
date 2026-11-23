@@ -476,56 +476,6 @@ export function validateBioEntityFields(
 	});
 }
 
-export function validateRequiredFields(newAnnotationForm, uiErrorMessages, setUiErrorMessages, areUiErrors, mod) {
-	const fields = ['relation', 'diseaseAnnotationObject', 'evidenceItem', 'evidenceCodes'];
-
-	const isEmptyObject = (field) => {
-		if (Object.keys(newAnnotationForm[field]).length !== 0) {
-			for (let key in newAnnotationForm[field]) {
-				if (newAnnotationForm[field][key] === '') {
-					return true;
-				} else {
-					return false;
-				}
-			}
-		}
-	};
-
-	let _uiErrorMessages = {};
-	fields.forEach((field) => {
-		if (newAnnotationForm[field] === null || newAnnotationForm[field].length === 0 || isEmptyObject(field)) {
-			_uiErrorMessages[field] = 'This is a required field';
-			setUiErrorMessages({ ..._uiErrorMessages });
-			areUiErrors.current = true;
-		}
-	});
-	if (mod.includes('ZFINStaff')) {
-		if (newAnnotationForm.conditionRelations.length === 0 || !newAnnotationForm.conditionRelations[0]['handle']) {
-			_uiErrorMessages['conditionRelations'] = 'This is a required field';
-			setUiErrorMessages({ ..._uiErrorMessages });
-			areUiErrors.current = true;
-		}
-	}
-}
-
-export function validateFormBioEntityFields(newAnnotationForm, uiErrorMessages, setUiErrorMessages, areUiErrors) {
-	const bioEntityFieldNames = ['diseaseAnnotationSubject', 'sgdStrainBackground'];
-
-	bioEntityFieldNames.forEach((field) => {
-		if (
-			newAnnotationForm[field] &&
-			!Object.keys(newAnnotationForm['diseaseAnnotationSubject']).includes('curie') &&
-			!Object.keys(newAnnotationForm['diseaseAnnotationSubject']).includes('primaryExternalId') &&
-			!Object.keys(newAnnotationForm['diseaseAnnotationSubject']).includes('modInternalId')
-		) {
-			const _uiErrorMessages = {};
-			_uiErrorMessages[field] = 'Must select from autosuggest';
-			setUiErrorMessages({ ..._uiErrorMessages });
-			areUiErrors.current = true;
-		}
-	});
-}
-
 export const removeInvalidFilters = (currentFilters) => {
 	const currentFiltersCopy = structuredClone(currentFilters);
 

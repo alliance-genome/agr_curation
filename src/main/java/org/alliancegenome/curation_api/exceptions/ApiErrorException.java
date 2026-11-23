@@ -19,6 +19,12 @@ public class ApiErrorException extends RuntimeException {
 	}
 
 	public ApiErrorException(ObjectResponse<?> error) {
+		this(error, null);
+	}
+
+	public ApiErrorException(ObjectResponse<?> error, Throwable cause) {
+		// no message of its own: getMessage() reads it from the response, which may be filled in later
+		super(null, cause);
 		this.objectResponse = error;
 	}
 

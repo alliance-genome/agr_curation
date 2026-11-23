@@ -8,13 +8,29 @@ import { ColumnGroup } from 'primereact/columngroup';
 import { Row } from 'primereact/row';
 import { ValidationService } from '../service/ValidationService';
 import { DeleteAction } from './Actions/DeletionAction';
-import { InternalEditor } from './Editors/legacyForm/InternalEditor';
-import { ReferencesEditor } from './Editors/legacyForm/ReferencesEditor';
-import { VocabularyTermSetEditor } from './Editors/legacyForm/VocabularyTermSetEditor';
-import { TableInputTextAreaEditor } from './Editors/text/TableInputTextAreaEditor';
 import { Endpoints } from '../constants/Endpoints';
-import { multipleAutocompleteOnChange } from '../utils/utils';
+import { useVocabularyTermSetService } from '../service/useVocabularyTermSetService';
+import { KEEP_ROWS_IN_EDIT_MODE } from '../utils/rows';
+import { TableEditorProvider } from './Editors/fields/TableEditorContext';
+import { useLocalRowsStrategy } from './Editors/fields/strategies/useLocalRowsStrategy';
+import { ControlledVocabularyTableEditor } from './Editors/dropdown/vocabulary/ControlledVocabularyTableEditor';
+import { InputTextAreaTableEditor } from './Editors/text/InputTextAreaTableEditor';
+import { ReferencesTableEditor } from './Editors/autocomplete/references/ReferencesTableEditor';
+import { BooleanTableEditor } from './Editors/dropdown/boolean/BooleanTableEditor';
 
+/**
+ * Dialog for editing a main-table row's related notes. Edits stay local until Keep Edits validates every note
+ * and hands the list back through the row's editor callback.
+ *
+ * @param {object} originalRelatedNotesData - the row's notes, dialog visibility, row index and PrimeReact editor
+ *   options
+ * @param {Function} setOriginalRelatedNotesData - its setter
+ * @param {object} errorMessagesMainRow - the main table's errors, keyed by row index
+ * @param {Function} setErrorMessagesMainRow - its setter
+ * @param {string} noteTypeVocabularyTermSet - the term set the note types come from
+ * @param {boolean} [showReferences=true] - whether to offer the references column
+ * @returns {JSX.Element}
+ */
 export const RelatedNotesEditDialog = ({
 	originalRelatedNotesData,
 	setOriginalRelatedNotesData,
@@ -33,6 +49,14 @@ export const RelatedNotesEditDialog = ({
 	const tableRef = useRef(null);
 	const toast_topright = useRef(null);
 
+	const noteTypeTerms = useVocabularyTermSetService(noteTypeVocabularyTermSet);
+
+	const strategy = useLocalRowsStrategy({
+		rows: localRelatedNotes,
+		setRows: setLocalRelatedNotes,
+		errors: errorMessages,
+	});
+
 	const showDialogHandler = () => {
 		let _localRelatedNotes = cloneNotes(originalRelatedNotes);
 		setLocalRelatedNotes(_localRelatedNotes);
@@ -45,10 +69,6 @@ export const RelatedNotesEditDialog = ({
 		}
 		setEditingRows(rowsObject);
 		setErrorMessages({});
-	};
-
-	const onRowEditChange = () => {
-		return null;
 	};
 
 	const hideDialog = () => {
@@ -72,41 +92,6 @@ export const RelatedNotesEditDialog = ({
 			_clonableNotes = [];
 		}
 		return _clonableNotes;
-	};
-
-	const noteTypeOnChangeHandler = (editorOptions, event) => {
-		editorOptions.editorCallback(event.value);
-		setLocalRelatedNotes((prev) => {
-			const updated = [...prev];
-			updated[editorOptions.rowIndex] = { ...updated[editorOptions.rowIndex], noteType: event.value };
-			return updated;
-		});
-	};
-
-	const textOnChangeHandler = (rowIndex, event, field) => {
-		setLocalRelatedNotes((prev) => {
-			const updated = [...prev];
-			updated[rowIndex] = { ...updated[rowIndex], [field]: event.target.value };
-			return updated;
-		});
-	};
-
-	const referencesOnChangeHandler = (event, setFieldValue, editorOptions) => {
-		multipleAutocompleteOnChange(editorOptions, event, 'references', setFieldValue);
-		setLocalRelatedNotes((prev) => {
-			const updated = [...prev];
-			updated[editorOptions.rowIndex] = { ...updated[editorOptions.rowIndex], references: event.target.value };
-			return updated;
-		});
-	};
-
-	const internalOnChangeHandler = (editorOptions, event) => {
-		editorOptions.editorCallback(event.target.value?.name);
-		setLocalRelatedNotes((prev) => {
-			const updated = [...prev];
-			updated[editorOptions.rowIndex] = { ...updated[editorOptions.rowIndex], internal: event.target?.value?.name };
-			return updated;
-		});
 	};
 
 	const createNewNoteHandler = () => {
@@ -258,99 +243,66 @@ export const RelatedNotesEditDialog = ({
 				footer={footerTemplate}
 			>
 				<h3>Related Notes</h3>
-				<DataTable
-					value={localRelatedNotes}
-					dataKey="dataKey"
-					showGridlines
-					editMode="row"
-					headerColumnGroup={headerGroup}
-					editingRows={editingRows}
-					onRowEditChange={onRowEditChange}
-					ref={tableRef}
-					cellMemo={false}
-				>
-					<Column
-						editor={(editorOptions) => (
-							<DeleteAction deletionHandler={handleDeleteRelatedNote} id={editorOptions?.rowData?.dataKey} />
-						)}
-						className="max-w-4rem"
-						bodyClassName="text-center"
-						headerClassName="surface-0"
-						frozen
-					/>
-					<Column
-						editor={(editorOptions) => {
-							return (
-								<VocabularyTermSetEditor
+				<TableEditorProvider strategy={strategy}>
+					<DataTable
+						value={localRelatedNotes}
+						dataKey="dataKey"
+						showGridlines
+						editMode="row"
+						headerColumnGroup={headerGroup}
+						editingRows={editingRows}
+						onRowEditChange={KEEP_ROWS_IN_EDIT_MODE}
+						ref={tableRef}
+						cellMemo={false}
+					>
+						<Column
+							editor={(editorOptions) => (
+								<DeleteAction deletionHandler={handleDeleteRelatedNote} id={editorOptions?.rowData?.dataKey} />
+							)}
+							className="max-w-4rem"
+							bodyClassName="text-center"
+							headerClassName="surface-0"
+							frozen
+						/>
+						<Column
+							editor={(editorOptions) => (
+								<ControlledVocabularyTableEditor
 									editorOptions={editorOptions}
-									onChangeHandler={noteTypeOnChangeHandler}
-									errorMessages={errorMessages}
-									dataKey={editorOptions?.rowData?.dataKey}
-									vocabType={noteTypeVocabularyTermSet}
 									field="noteType"
+									options={noteTypeTerms}
 									showClear={false}
 								/>
-							);
-						}}
-						field="noteType"
-						header="Note Type"
-						headerClassName="surface-0"
-					/>
-					<Column
-						editor={(editorOptions) => {
-							return (
-								<TableInputTextAreaEditor
-									value={editorOptions.value}
-									rowIndex={editorOptions.rowIndex}
-									errorMessages={errorMessages}
-									dataKey={editorOptions?.rowData?.dataKey}
-									textOnChangeHandler={textOnChangeHandler}
-									field="freeText"
-									rows={5}
-									columns={30}
-								/>
-							);
-						}}
-						field="freeText"
-						header="Text"
-						headerClassName="surface-0"
-						className="wrap-word max-w-35rem"
-					/>
-					{showReferences && (
-						<Column
-							editor={(editorOptions) => {
-								return (
-									<ReferencesEditor
-										editorOptions={editorOptions}
-										errorMessages={errorMessages}
-										onChange={referencesOnChangeHandler}
-										dataKey={editorOptions?.rowData?.dataKey}
-									/>
-								);
-							}}
-							field="evidence"
-							header="Evidence"
+							)}
+							field="noteType"
+							header="Note Type"
 							headerClassName="surface-0"
-							className="wrap-word max-w-25rem"
 						/>
-					)}
-					<Column
-						editor={(editorOptions) => {
-							return (
-								<InternalEditor
-									editorOptions={editorOptions}
-									rowIndex={editorOptions.rowIndex}
-									errorMessages={errorMessages}
-									dataKey={editorOptions?.rowData?.dataKey}
-									internalOnChangeHandler={internalOnChangeHandler}
-								/>
-							);
-						}}
-						field="internal"
-						header="Internal"
-						headerClassName="surface-0"
-					/>
-				</DataTable>
+						<Column
+							editor={(editorOptions) => (
+								<InputTextAreaTableEditor editorOptions={editorOptions} field="freeText" rows={5} cols={30} />
+							)}
+							field="freeText"
+							header="Text"
+							headerClassName="surface-0"
+							className="wrap-word max-w-35rem"
+						/>
+						{showReferences && (
+							<Column
+								editor={(editorOptions) => <ReferencesTableEditor editorOptions={editorOptions} />}
+								field="evidence"
+								header="Evidence"
+								headerClassName="surface-0"
+								className="wrap-word max-w-25rem"
+							/>
+						)}
+						<Column
+							editor={(editorOptions) => <BooleanTableEditor editorOptions={editorOptions} field="internal" />}
+							field="internal"
+							header="Internal"
+							headerClassName="surface-0"
+						/>
+					</DataTable>
+				</TableEditorProvider>
 			</Dialog>
 		</div>
 	);

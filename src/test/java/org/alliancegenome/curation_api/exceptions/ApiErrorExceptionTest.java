@@ -2,6 +2,7 @@ package org.alliancegenome.curation_api.exceptions;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.junit.jupiter.api.Test;
@@ -43,5 +44,16 @@ class ApiErrorExceptionTest {
 
 		response.setErrorMessage("Entity not found");
 		assertEquals("Entity not found", exception.getMessage());
+	}
+
+	@Test
+	void keepsItsCauseAndReadsTheMessageOfItsResponse() {
+		ObjectResponse<Object> response = new ObjectResponse<>();
+		response.setErrorMessage("Violates database constraint constructcassetteassoc_object_id_fk");
+		RuntimeException cause = new RuntimeException("ERROR: update or delete on table \"cassette\" violates foreign key constraint");
+
+		ApiErrorException exception = new ApiErrorException(response, cause);
+		assertSame(cause, exception.getCause());
+		assertEquals("Violates database constraint constructcassetteassoc_object_id_fk", exception.getMessage());
 	}
 }

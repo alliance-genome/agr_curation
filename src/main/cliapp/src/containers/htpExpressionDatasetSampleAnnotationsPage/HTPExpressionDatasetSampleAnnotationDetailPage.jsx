@@ -113,7 +113,7 @@ export default function HTPExpressionDatasetSampleAnnotationDetailPage() {
 					<FormSection isVisible={isVisible('Expression Sample')}>
 						<FormTableWrapper
 							tableName="Expression Sample"
-							showTable={true}
+							showTable={!!sample?.htpExpressionSample}
 							table={
 								<ExternalDataBaseEntityTable
 									entities={sample?.htpExpressionSample ? [sample.htpExpressionSample] : []}
@@ -165,7 +165,7 @@ export default function HTPExpressionDatasetSampleAnnotationDetailPage() {
 					<FormSection isVisible={isVisible('Sample Age')}>
 						<FormTableWrapper
 							tableName="Sample Age"
-							showTable={true}
+							showTable={!!sample?.htpExpressionSampleAge}
 							table={
 								<BioSampleAgeTable entities={sample?.htpExpressionSampleAge ? [sample.htpExpressionSampleAge] : []} />
 							}
@@ -185,7 +185,7 @@ export default function HTPExpressionDatasetSampleAnnotationDetailPage() {
 					<FormSection isVisible={isVisible('Biological Reference')}>
 						<FormTableWrapper
 							tableName="Biological Reference"
-							showTable={true}
+							showTable={sample?.datasetIds?.length > 0}
 							table={<ExternalDataBaseEntityTable entities={sample?.datasetIds} />}
 						/>
 					</FormSection>
@@ -223,7 +223,7 @@ export default function HTPExpressionDatasetSampleAnnotationDetailPage() {
 					<FormSection isVisible={isVisible('Sample Genomic Information')}>
 						<FormTableWrapper
 							tableName="Sample Genomic Information"
-							showTable={true}
+							showTable={!!sample?.genomicInformation}
 							table={
 								<BioSampleGenomicInformationTable
 									entities={sample?.genomicInformation ? [sample.genomicInformation] : []}
@@ -245,7 +245,7 @@ export default function HTPExpressionDatasetSampleAnnotationDetailPage() {
 					<FormSection isVisible={isVisible('Microarray Sample Details')}>
 						<FormTableWrapper
 							tableName="Microarray Sample Details"
-							showTable={true}
+							showTable={!!sample?.microarraySampleDetails}
 							table={
 								<MicroarraySampleDetailsTable
 									entities={sample?.microarraySampleDetails ? [sample.microarraySampleDetails] : []}
@@ -267,7 +267,7 @@ export default function HTPExpressionDatasetSampleAnnotationDetailPage() {
 					<FormSection isVisible={isVisible('Sample Related Notes')}>
 						<FormTableWrapper
 							tableName="Sample Related Notes"
-							showTable={true}
+							showTable={sample?.relatedNotes?.length > 0}
 							table={<RelatedNotesTable relatedNotes={sample?.relatedNotes || []} />}
 						/>
 					</FormSection>

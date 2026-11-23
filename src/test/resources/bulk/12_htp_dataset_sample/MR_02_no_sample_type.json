@@ -1,0 +1,14 @@
+[
+  {
+    "htp_expression_sample_dto": {
+      "curie": "HTPSAMPLETEST:SampleMRTest"
+    },
+    "expression_assay_curie": "HTPSAMPLETEST:Mmo0001",
+    "dataset_ids": [
+      "HTPDATASETTEST:SampleTestDataset0001"
+    ],
+    "data_provider_dto": {
+      "source_organization_abbreviation": "FB"
+    }
+  }
+]

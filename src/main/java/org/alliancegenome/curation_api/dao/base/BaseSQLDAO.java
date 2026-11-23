@@ -352,7 +352,7 @@ public class BaseSQLDAO<E extends AuditedObject> extends BaseEntityDAO<E> {
 		} else {
 			response.setErrorMessage(rootCause.getMessage());
 		}
-		throw new ApiErrorException(response);
+		throw new ApiErrorException(response, e);
 	}
 
 	// DB Count

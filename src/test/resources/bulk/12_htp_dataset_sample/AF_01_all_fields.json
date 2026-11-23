@@ -1,0 +1,119 @@
+[
+  {
+    "htp_expression_sample_dto": {
+      "curie": "HTPSAMPLETEST:Sample0001",
+      "secondary_identifiers": [
+        "GEO:GSM00001"
+      ],
+      "preferred_cross_reference_dto": {
+        "referenced_curie": "HTPSAMPLETEST:0001",
+        "page_area": "homepage",
+        "display_name": "HTPSAMPLETEST:0001",
+        "prefix": "HTPSAMPLETEST"
+      },
+      "cross_reference_dtos": [
+        {
+          "referenced_curie": "HTPSAMPLETEST:0001",
+          "page_area": "homepage",
+          "display_name": "HTPSAMPLETEST:0001",
+          "prefix": "HTPSAMPLETEST"
+        }
+      ]
+    },
+    "htp_expression_sample_title": "TEST SAMPLE TITLE",
+    "htp_expression_sample_type_curie": "HTPSAMPLETEST:Obi0001",
+    "expression_assay_curie": "HTPSAMPLETEST:Mmo0001",
+    "htp_expression_sample_age_dto": {
+      "age": "P14D",
+      "when_expressed_stage_name": "test stage",
+      "stage_dto": {
+        "developmental_stage_start_curie": "HTPSAMPLETEST:Stage0001",
+        "developmental_stage_stop_curie": "HTPSAMPLETEST:Stage0002",
+        "stage_uberon_slim_terms": [
+          "UBERON:0000113"
+        ]
+      }
+    },
+    "htp_expression_sample_location_dtos": [
+      {
+        "anatomical_structure_curie": "HTPSAMPLETEST:Anat0001",
+        "anatomical_substructure_curie": "HTPSAMPLETEST:Anat0002",
+        "cellular_component_curie": "HTPSAMPLETEST:Go0001",
+        "cellular_component_ribbon_term_curies": [
+          "HTPSAMPLETEST:Go0002"
+        ],
+        "anatomical_structure_qualifier_curies": [
+          "HTPSAMPLETEST:Ont0001"
+        ],
+        "anatomical_substructure_qualifier_curies": [
+          "HTPSAMPLETEST:Ont0001"
+        ],
+        "cellular_component_qualifier_curies": [
+          "HTPSAMPLETEST:Ont0001"
+        ],
+        "anatomical_structure_uberon_term_curies": [
+          "HTPSAMPLETEST:Uberon0001"
+        ],
+        "anatomical_substructure_uberon_term_curies": [
+          "HTPSAMPLETEST:Uberon0002"
+        ],
+        "anatomical_structure_uberon_term_other": true,
+        "anatomical_sub_structure_uberon_term_other": true,
+        "cellular_component_other": true
+      }
+    ],
+    "abundance": "test abundance",
+    "genomic_information_dto": {
+      "biosample_allele_curie": "HTPSAMPLETEST:Allele0001"
+    },
+    "taxon_curie": "NCBITaxon:7227",
+    "sequencing_format": "single",
+    "assembly_versions": [
+      "Zv9"
+    ],
+    "related_note_dtos": [
+      {
+        "free_text": "Test sample note",
+        "note_type_name": "htp_expression_dataset_sample_note",
+        "internal": false,
+        "obsolete": false
+      }
+    ],
+    "dataset_ids": [
+      "HTPDATASETTEST:SampleTestDataset0001"
+    ],
+    "microarray_sample_details_dto": {
+      "channel_id": "TEST:channel1",
+      "channel_number": 1
+    },
+    "symbol": "htp-sample-test-symbol",
+    "analysis_dto": {
+      "analysis_type_curie": "HTPSAMPLETEST:Fbcv0001",
+      "related_note_dtos": [
+        {
+          "free_text": "Test analysis note",
+          "note_type_name": "htp_expression_dataset_sample_note",
+          "internal": false,
+          "obsolete": false
+        }
+      ],
+      "data_provider_dto": {
+        "source_organization_abbreviation": "FB"
+      }
+    },
+    "biological_reference_dto": {
+      "curie": "HTPSAMPLETEST:BioRef0001"
+    },
+    "internal": true,
+    "obsolete": true,
+    "data_provider_dto": {
+      "source_organization_abbreviation": "FB",
+      "cross_reference_dto": {
+        "referenced_curie": "HTPSAMPLETEST:0001",
+        "page_area": "homepage",
+        "display_name": "HTPSAMPLETEST:0001",
+        "prefix": "HTPSAMPLETEST"
+      }
+    }
+  }
+]

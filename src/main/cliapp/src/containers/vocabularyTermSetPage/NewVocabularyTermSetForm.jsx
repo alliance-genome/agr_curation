@@ -2,30 +2,44 @@ import React, { useRef } from 'react';
 import { VocabularyTermSetService } from '../../service/VocabularyTermSetService';
 import { Dialog } from 'primereact/dialog';
 import { Button } from 'primereact/button';
-import { InputText } from 'primereact/inputtext';
 import { Toast } from 'primereact/toast';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { VocabTermAutocompleteTemplate } from '../../components/Editors/autocomplete/base/templates/VocabTermAutocompleteTemplate';
-import { FormErrorMessageComponent } from '../../components/Error/FormErrorMessageComponent';
-import { classNames } from 'primereact/utils';
-import { AutocompleteMultiEditor } from '../../components/Editors/autocomplete/base/AutocompleteMultiEditor';
-import { AutocompleteEditor } from '../../components/Editors/autocomplete/base/AutocompleteEditor';
-import { autocompleteSearch, buildAutocompleteFilter } from '../../utils/utils';
-import { Endpoints } from '../../constants/Endpoints';
-import { AUTOCOMPLETE_CONFIGS, getAutocompleteFields } from '../../constants/FilterFields';
+import { FormField } from '../../components/Editors/fields/FormField';
+import { DIALOG_FIELD_LAYOUT } from '../../components/Editors/fields/dialogFieldLayout';
+import { TextInput } from '../../components/Editors/widgets/TextInput';
+import { SingleAutocomplete } from '../../components/Editors/widgets/SingleAutocomplete';
+import { MultiAutocomplete } from '../../components/Editors/widgets/MultiAutocomplete';
+import { vocabularySearch, vocabularySearchConfig } from '../../components/Editors/autocomplete/vocabulary/utils';
+import {
+	buildMemberTermsOtherFilters,
+	memberTermsSearch,
+	memberTermsSearchConfig,
+} from '../../components/Editors/autocomplete/vocabularyTerm/utils';
 import ErrorBoundary from '../../components/Error/ErrorBoundary';
 
+/**
+ * The New Vocabulary Term Set dialog on the Vocabulary Term Sets table: name, label, vocabulary, description and
+ * the vocabulary's terms in the set. Vocabulary Terms is enabled once a vocabulary is picked, and offers only that
+ * vocabulary's terms. Save creates the term set; a rejected save shows each field's error beside it.
+ *
+ * @param {object} newVocabularyTermSetState - the form's reducer state: `newVocabularyTermSet`, `errorMessages`,
+ *   `newVocabularyTermSetDialog`
+ * @param {Function} newVocabularyTermSetDispatch - the form's reducer dispatch
+ * @param {object} [vocabularyTermSetService] - the service that creates the term set
+ * @param {(termSet: object, queryClient: object) => void} setNewVocabularyTermSet - called with the created term set
+ * @returns {JSX.Element}
+ */
 export const NewVocabularyTermSetForm = ({
 	newVocabularyTermSetState,
 	newVocabularyTermSetDispatch,
-	searchService,
 	vocabularyTermSetService,
 	setNewVocabularyTermSet,
 }) => {
 	const toast_success = useRef(null);
 	const toast_error = useRef(null);
-	const { newVocabularyTermSet, errorMessages, submitted, newVocabularyTermSetDialog } = newVocabularyTermSetState;
+	const { newVocabularyTermSet, errorMessages, newVocabularyTermSetDialog } = newVocabularyTermSetState;
 	const queryClient = useQueryClient();
+	const vocabulary = newVocabularyTermSet.vocabularyTermSetVocabulary;
 
 	const hideDialog = () => {
 		newVocabularyTermSetDispatch({ type: 'RESET' });
@@ -45,7 +59,6 @@ export const NewVocabularyTermSetForm = ({
 		newVocabularyTermSetDispatch({ type: 'SUBMIT' });
 		mutation.mutate(newVocabularyTermSet, {
 			onSuccess: (data) => {
-				//TODO: check this data object
 				setNewVocabularyTermSet(data.data.entity, queryClient);
 				toast_success.current.show({
 					severity: 'success',
@@ -72,80 +85,16 @@ export const NewVocabularyTermSetForm = ({
 		});
 	};
 
-	const onNameChange = (event) => {
-		newVocabularyTermSetDispatch({
-			type: 'EDIT',
-			field: event.target.name,
-			value: event.target.value,
-		});
-	};
+	const searchVocabularyTerms = (event, setSuggestions, setQuery) =>
+		memberTermsSearch(event, setSuggestions, setQuery, buildMemberTermsOtherFilters(vocabulary?.name));
 
-	const onLabelChange = (event) => {
-		newVocabularyTermSetDispatch({
-			type: 'EDIT',
-			field: event.target.name,
-			value: event.target.value,
-		});
-	};
-
-	const onVocabularyChange = (event, setFieldValue) => {
-		setFieldValue(event.target.value);
-		newVocabularyTermSetDispatch({
-			type: 'EDIT',
-			field: event.target.name,
-			value: event.value,
-		});
-	};
-	const vocabularySearch = (event, setFiltered, setQuery) => {
-		const autocompleteFields = getAutocompleteFields(AUTOCOMPLETE_CONFIGS.nameOnlyAutocompleteConfig);
-		const endpoint = Endpoints.Vocabulary.VOCABULARY;
-		const filterName = 'vocabularyFilter';
-		const filter = buildAutocompleteFilter(event, autocompleteFields);
-
-		setQuery(event.query);
-		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered);
-	};
-
-	const onMemberTermsChange = (event, setFieldValue) => {
-		setFieldValue(event.value);
-		newVocabularyTermSetDispatch({
-			type: 'EDIT',
-			field: event.target.name,
-			value: event.value,
-		});
-	};
-
-	const memberTermSearch = (event, setFiltered, setInputValue, props) => {
-		const autocompleteFields = getAutocompleteFields(AUTOCOMPLETE_CONFIGS.nameOnlyAutocompleteConfig);
-		const endpoint = Endpoints.Vocabulary.TERM;
-		const filterName = 'memberTermsFilter';
-		const filter = buildAutocompleteFilter(event, autocompleteFields);
-		const otherFilters = {
-			vocabularyFilter: {
-				'vocabulary.name': {
-					queryString: newVocabularyTermSet?.vocabularyTermSetVocabulary?.name,
-				},
-			},
-		};
-
-		setInputValue(event.query);
-		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered, otherFilters);
-	};
-
-	const onDescriptionChange = (event) => {
-		newVocabularyTermSetDispatch({
-			type: 'EDIT',
-			field: event.target.name,
-			value: event.target.value,
-		});
-	};
-
-	const isMemberTermsEnabled = () => {
-		return (
-			//only enabled if a vocabulary is selected
-			newVocabularyTermSet.vocabularyTermSetVocabulary != null
-		);
-	};
+	const fieldProps = (field) => ({
+		name: field,
+		value: newVocabularyTermSet[field],
+		onChange: (value) => newVocabularyTermSetDispatch({ type: 'EDIT', field, value }),
+		errors: errorMessages,
+		...DIALOG_FIELD_LAYOUT,
+	});
 
 	const dialogFooter = (
 		<>
@@ -168,95 +117,38 @@ export const NewVocabularyTermSetForm = ({
 				onHide={hideDialog}
 			>
 				<ErrorBoundary>
-					<div className="p-justify-center">
-						<form>
-							<div className="field">
-								<label htmlFor="name">
-									<font color={'red'}>*</font>Name
-								</label>
-								<InputText
-									id="name"
-									name="name"
-									value={newVocabularyTermSet.name}
-									onChange={onNameChange}
-									required
-									className={classNames({ 'p-invalid': submitted && !newVocabularyTermSet.name })}
-								/>
-								<FormErrorMessageComponent errorMessages={errorMessages} errorField={'name'} />
-							</div>
-							<div className="field">
-								<label htmlFor="vocabularyLabel">
-									<font color={'red'}>*</font>Label
-								</label>
-								<InputText
-									id="vocabularyLabel"
-									name="vocabularyLabel"
-									value={newVocabularyTermSet.vocabularyLabel}
-									onChange={onLabelChange}
-									required
-									className={classNames({ 'p-invalid': submitted && !newVocabularyTermSet.vocabularyLabel })}
-								/>
-								<FormErrorMessageComponent errorMessages={errorMessages} errorField={'vocabularyLabel'} />
-							</div>
-							<div className="field">
-								<label htmlFor="vocabularyTermSetVocabulary">
-									<font color={'red'}>*</font>Vocabulary
-								</label>
-								<AutocompleteEditor
-									name="vocabularyTermSetVocabulary"
-									label="Vocabulary"
-									fieldName="vocabularyTermSetVocabulary"
-									subField={'name'}
-									initialValue={newVocabularyTermSet?.vocabularyTermSetVocabulary?.name}
+					<form>
+						<FormField label="Name" required {...fieldProps('name')}>
+							{(binding) => <TextInput {...binding} />}
+						</FormField>
+						<FormField label="Label" required {...fieldProps('vocabularyLabel')}>
+							{(binding) => <TextInput {...binding} />}
+						</FormField>
+						<FormField label="Vocabulary" required {...fieldProps('vocabularyTermSetVocabulary')}>
+							{(binding) => (
+								<SingleAutocomplete
+									{...binding}
 									search={vocabularySearch}
-									onValueChangeHandler={onVocabularyChange}
-									classNames={classNames({ 'p-invalid': submitted && errorMessages?.vocabularyTermSetVocabulary })}
-									valueDisplay={(item, setAutocompleteSelectedItem, op, query) => (
-										<VocabTermAutocompleteTemplate
-											item={item}
-											setAutocompleteSelectedItem={setAutocompleteSelectedItem}
-											op={op}
-											query={query}
-										/>
-									)}
-								/>
-								<FormErrorMessageComponent errorMessages={errorMessages} errorField={'vocabularyTermSetVocabulary'} />
-							</div>
-							<div className="field">
-								<label htmlFor="vocabularyTermSetDescription">Description</label>
-								<InputText
-									id="vocabularyTermSetDescription"
-									name="vocabularyTermSetDescription"
-									//placeholder={"Description"}
-									value={newVocabularyTermSet.vocabularyTermSetDescription}
-									onChange={onDescriptionChange}
-								/>
-								<FormErrorMessageComponent errorMessages={errorMessages} errorField={'vocabularyTermSetDescription'} />
-							</div>
-							<div className="field">
-								<label htmlFor="memberTerms">Vocabulary Terms</label>
-								<AutocompleteMultiEditor
-									name="memberTerms"
-									fieldName="memberTerms"
 									subField="name"
-									isEnabled={isMemberTermsEnabled()}
-									initialValue={newVocabularyTermSet.memberTerms}
-									search={memberTermSearch}
-									onValueChangeHandler={onMemberTermsChange}
-									valueDisplay={(item, setAutocompleteSelectedItem, op, query) => (
-										<VocabTermAutocompleteTemplate
-											item={item}
-											setAutocompleteSelectedItem={setAutocompleteSelectedItem}
-											op={op}
-											query={query}
-										/>
-									)}
-									classNames={classNames({ 'p-invalid': submitted && errorMessages?.memberTerms })}
+									valueDisplay={vocabularySearchConfig.valueDisplay}
 								/>
-								<FormErrorMessageComponent errorMessages={errorMessages} errorField={'memberTerms'} />
-							</div>
-						</form>
-					</div>
+							)}
+						</FormField>
+						<FormField label="Description" {...fieldProps('vocabularyTermSetDescription')}>
+							{(binding) => <TextInput {...binding} />}
+						</FormField>
+						<FormField label="Vocabulary Terms" {...fieldProps('memberTerms')}>
+							{(binding) => (
+								<MultiAutocomplete
+									{...binding}
+									search={searchVocabularyTerms}
+									subField="name"
+									valueDisplay={memberTermsSearchConfig.valueDisplay}
+									disabled={!vocabulary?.id}
+								/>
+							)}
+						</FormField>
+					</form>
 				</ErrorBoundary>
 			</Dialog>
 		</div>
