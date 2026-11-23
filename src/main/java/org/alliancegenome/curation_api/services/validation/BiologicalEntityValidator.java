@@ -11,8 +11,12 @@ public class BiologicalEntityValidator<E extends BiologicalEntity> extends Submi
 	}
 
 	public E validateBiologicalEntityFields(E uiEntity, E dbEntity, String noteTypeVocabularyTermSet, boolean requireModIdentifier) {
+		return validateBiologicalEntityFields(uiEntity, dbEntity, noteTypeVocabularyTermSet, requireModIdentifier, true);
+	}
 
-		dbEntity = validateSubmittedObjectFields(uiEntity, dbEntity, noteTypeVocabularyTermSet, requireModIdentifier);
+	public E validateBiologicalEntityFields(E uiEntity, E dbEntity, String noteTypeVocabularyTermSet, boolean requireModIdentifier, boolean manageRelatedNotes) {
+
+		dbEntity = validateSubmittedObjectFields(uiEntity, dbEntity, noteTypeVocabularyTermSet, requireModIdentifier, manageRelatedNotes);
 
 		NCBITaxonTerm taxon = validateRequiredTaxon(uiEntity.getTaxon(), dbEntity.getTaxon());
 		dbEntity.setTaxon(taxon);

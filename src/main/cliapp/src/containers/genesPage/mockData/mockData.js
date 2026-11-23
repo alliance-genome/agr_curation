@@ -224,3 +224,59 @@ export const data = {
 		},
 	],
 };
+
+// A gene as GET /gene/{identifier} returns it: its own fields, without its lists or associations.
+export const geneDetailData = {
+	entity: {
+		type: 'Gene',
+		id: 4636168,
+		curie: 'AGRKB:105000000356681',
+		primaryExternalId: 'FB:FBgn0019932',
+		internal: false,
+		obsolete: false,
+		dateCreated: '2023-04-14T22:58:06.51117Z',
+		dateUpdated: '2024-02-01T10:00:00.00000Z',
+		createdBy: { id: 10975049, uniqueId: 'FB:curator' },
+		updatedBy: { id: 10975049, uniqueId: 'FB:curator' },
+		taxon: { curie: 'NCBITaxon:7227', name: 'Drosophila melanogaster' },
+		dataProvider: { id: 78176049, abbreviation: 'FB' },
+		geneType: { curie: 'SO:0001217', name: 'protein_coding_gene' },
+		geneSymbol: {
+			id: 70154801,
+			internal: false,
+			obsolete: false,
+			nameType: { id: 20308690, name: 'nomenclature_symbol' },
+			formatText: 'SamDC',
+			displayText: 'SamDC',
+		},
+		geneFullName: {
+			id: 70154802,
+			internal: false,
+			obsolete: false,
+			nameType: { id: 20308691, name: 'full_name' },
+			formatText: 'S-adenosylmethionine decarboxylase',
+			displayText: 'S-adenosylmethionine decarboxylase',
+		},
+		geneSystematicName: {
+			id: 70154803,
+			internal: false,
+			obsolete: false,
+			nameType: { id: 20308692, name: 'systematic_name' },
+			formatText: 'CG5029',
+			displayText: 'CG5029',
+		},
+		gcrpCrossReference: {
+			id: 242242243,
+			internal: false,
+			obsolete: false,
+			referencedCurie: 'UniProtKB:P91931',
+			displayName: 'UniProtKB:P91931',
+			resourceDescriptorPage: {
+				id: 41750700,
+				name: 'default',
+				urlTemplate: 'https://www.uniprot.org/uniprot/[%s]',
+				resourceDescriptor: { id: 41750690, prefix: 'UniProtKB', name: 'UniProt Knowledgebase' },
+			},
+		},
+	},
+};

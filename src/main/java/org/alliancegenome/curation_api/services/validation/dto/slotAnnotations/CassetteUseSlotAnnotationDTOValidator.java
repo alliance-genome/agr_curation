@@ -37,6 +37,15 @@ public class CassetteUseSlotAnnotationDTOValidator extends SlotAnnotationDTOVali
 			response.addErrorMessage("use_curies", ValidationConstants.REQUIRED_MESSAGE);
 		} else {
 			List<FBCVTerm> uses = validateRequiredOntologyTerms(fbcvTermService, "use_curies", dto.getUseCuries());
+			// SCRUM-6746: the same rule as a curator's edit (CassetteUseSlotAnnotationValidator), so a loaded use
+			// cannot block later edits of its cassette
+			if (uses != null) {
+				for (FBCVTerm use : uses) {
+					if (!CassetteUseSlotAnnotationValidator.USE_NAMESPACE.equals(use.getNamespace())) {
+						response.addErrorMessage("use_curies", ValidationConstants.INVALID_MESSAGE + " (" + use.getCurie() + " is not in the " + CassetteUseSlotAnnotationValidator.USE_NAMESPACE + " namespace)");
+					}
+				}
+			}
 			annotation.setUses(uses);
 		}
 

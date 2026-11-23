@@ -5,20 +5,20 @@ import { IdentifierDetailPageTemplate } from '../../components/Templates/Identif
 import { DataProviderDetailPageTemplate } from '../../components/Templates/DataProviderDetailPageTemplate';
 import { DateDetailPageTemplate } from '../../components/Templates/DateDetailPageTemplate';
 import { UserDetailPageTemplate } from '../../components/Templates/UserDetailPageTemplate';
-import { SynonymsForm } from './synonyms/SynonymsForm';
+import { SynonymsForm } from '../../components/synonyms/SynonymsForm';
 import { FullNameForm } from './fullName/FullNameForm';
 import { MutationTypesForm } from './mutationTypes/MutationTypesForm';
 import { InheritanceModesForm } from './inheritanceModes/InheritanceModesForm';
-import { SecondaryIdsForm } from './secondaryIds/SecondaryIdsForm';
+import { SecondaryIdsForm } from '../../components/secondaryIds/SecondaryIdsForm';
 import { FunctionalImpactsForm } from './functionalImpacts/FunctionalImpactsForm';
 import { DatabaseStatusForm } from './databaseStatus/DatabaseStatusForm';
-import { RelatedNotesForm } from './relatedNotes/RelatedNotesForm';
+import { RelatedNotesForm } from '../../components/relatedNotes/RelatedNotesForm';
 import { SymbolForm } from './symbol/SymbolForm';
 import { GermilineTransmissionStatusForm } from './germlineTransmissionStatus/GermlineTransmissionStatusForm';
 import { ReferencesForm } from './referencesTable/ReferencesForm';
 import { NomenclatureEventsForm } from './nomenclatureEvents/NomenclatureEventsForm';
 import { AlleleGeneAssociationsForm } from './alleleGeneAssociations/AlleleGeneAssociationsForm';
-import { CrossReferencesForm } from './crossReferences/CrossReferencesForm';
+import { CrossReferencesForm } from '../../components/crossReferences/CrossReferencesForm';
 import { FormSection } from '../../components/FormFieldVisibility';
 import { getEffectiveModAbbreviation } from '../../utils/affiliation';
 
@@ -91,57 +91,44 @@ const fieldDetailsColumnSize = 'col-5';
 export const AlleleForm = ({ state, dispatch, isVisible, mode = 'detail', pendingFields }) => {
 	const isCreate = mode === 'create';
 
-	const onTaxonValueChange = (event) => {
-		let value = {};
-		if (typeof event.value === 'object') {
-			value = event.value;
-		} else {
-			value.curie = event.value;
-		}
+	// An emptied taxon is held as one with a blank curie, the shape the form starts from.
+	const onTaxonValueChange = (value) => {
 		dispatch({
 			type: 'EDIT',
 			field: 'taxon',
-			value,
+			value: value ?? { curie: '' },
 		});
 	};
 
-	const onInCollectionValueChange = (event) => {
-		let value = {};
-		if (typeof event.value === 'object') {
-			value = event.value;
-		} else if (event.value === '') {
-			value = undefined;
-		} else {
-			value.name = event.value;
-		}
+	const onInCollectionValueChange = (value) => {
 		dispatch({
 			type: 'EDIT',
 			field: 'inCollection',
+			value: value ?? undefined,
+		});
+	};
+
+	const onIsExtinctValueChange = (value) => {
+		dispatch({
+			type: 'EDIT',
+			field: 'isExtinct',
 			value,
 		});
 	};
 
-	const onIsExtinctValueChange = (event) => {
-		dispatch({
-			type: 'EDIT',
-			field: 'isExtinct',
-			value: event.value,
-		});
-	};
-
-	const onInternalValueChange = (event) => {
+	const onInternalValueChange = (value) => {
 		dispatch({
 			type: 'EDIT',
 			field: 'internal',
-			value: event.value,
+			value,
 		});
 	};
 
-	const onObsoleteValueChange = (event) => {
+	const onObsoleteValueChange = (value) => {
 		dispatch({
 			type: 'EDIT',
 			field: 'obsolete',
-			value: event.value,
+			value,
 		});
 	};
 
@@ -193,15 +180,15 @@ export const AlleleForm = ({ state, dispatch, isVisible, mode = 'detail', pendin
 			</FormSection>
 
 			<FormSection isVisible={isVisible('Synonyms')}>
-				<SynonymsForm state={state} dispatch={dispatch} />
+				<SynonymsForm type="alleleSynonyms" mode={mode} />
 			</FormSection>
 
 			<FormSection isVisible={isVisible('Secondary IDs')}>
-				<SecondaryIdsForm state={state} dispatch={dispatch} />
+				<SecondaryIdsForm type="alleleSecondaryIds" mode={mode} />
 			</FormSection>
 
 			<FormSection isVisible={isVisible('Nomenclature Events')}>
-				<NomenclatureEventsForm state={state} dispatch={dispatch} />
+				<NomenclatureEventsForm mode={mode} />
 			</FormSection>
 
 			<FormSection isVisible={isVisible('Taxon')}>
@@ -209,7 +196,7 @@ export const AlleleForm = ({ state, dispatch, isVisible, mode = 'detail', pendin
 					taxon={state.allele?.taxon}
 					required={isCreate}
 					isPending={pendingFields?.has('taxon')}
-					onTaxonValueChange={onTaxonValueChange}
+					onChange={onTaxonValueChange}
 					widgetColumnSize={widgetColumnSize}
 					labelColumnSize={labelColumnSize}
 					fieldDetailsColumnSize={fieldDetailsColumnSize}
@@ -218,11 +205,11 @@ export const AlleleForm = ({ state, dispatch, isVisible, mode = 'detail', pendin
 			</FormSection>
 
 			<FormSection isVisible={isVisible('Mutation Types')}>
-				<MutationTypesForm state={state} dispatch={dispatch} />
+				<MutationTypesForm mode={mode} />
 			</FormSection>
 
 			<FormSection isVisible={isVisible('Functional Impacts')}>
-				<FunctionalImpactsForm state={state} dispatch={dispatch} />
+				<FunctionalImpactsForm mode={mode} />
 			</FormSection>
 
 			<FormSection isVisible={isVisible('Germline Transmission Status')}>
@@ -238,17 +225,17 @@ export const AlleleForm = ({ state, dispatch, isVisible, mode = 'detail', pendin
 			</FormSection>
 
 			<FormSection isVisible={isVisible('Inheritance Modes')}>
-				<InheritanceModesForm state={state} dispatch={dispatch} />
+				<InheritanceModesForm mode={mode} />
 			</FormSection>
 
 			<FormSection isVisible={isVisible('References')}>
-				<ReferencesForm state={state} dispatch={dispatch} />
+				<ReferencesForm mode={mode} />
 			</FormSection>
 
 			<FormSection isVisible={isVisible('In Collection')}>
 				<InCollectionDetailPageEditor
 					inCollection={state.allele?.inCollection}
-					onInCollectionValueChange={onInCollectionValueChange}
+					onChange={onInCollectionValueChange}
 					isPending={pendingFields?.has('inCollection')}
 					widgetColumnSize={widgetColumnSize}
 					labelColumnSize={labelColumnSize}
@@ -263,7 +250,7 @@ export const AlleleForm = ({ state, dispatch, isVisible, mode = 'detail', pendin
 					name={'isExtinct'}
 					isPending={pendingFields?.has('isExtinct')}
 					label={'Is Extinct'}
-					onValueChange={onIsExtinctValueChange}
+					onChange={onIsExtinctValueChange}
 					widgetColumnSize={widgetColumnSize}
 					labelColumnSize={labelColumnSize}
 					fieldDetailsColumnSize={fieldDetailsColumnSize}
@@ -273,11 +260,11 @@ export const AlleleForm = ({ state, dispatch, isVisible, mode = 'detail', pendin
 			</FormSection>
 
 			<FormSection isVisible={isVisible('Related Notes')}>
-				<RelatedNotesForm state={state} dispatch={dispatch} />
+				<RelatedNotesForm type="relatedNotes" mode={mode} />
 			</FormSection>
 
 			<FormSection isVisible={isVisible('Allele Gene Associations')}>
-				<AlleleGeneAssociationsForm state={state} dispatch={dispatch} />
+				<AlleleGeneAssociationsForm mode={mode} />
 			</FormSection>
 
 			<FormSection isVisible={isVisible('Data Provider')}>
@@ -290,7 +277,7 @@ export const AlleleForm = ({ state, dispatch, isVisible, mode = 'detail', pendin
 			</FormSection>
 
 			<FormSection isVisible={isVisible('Cross References')}>
-				<CrossReferencesForm mode={mode} />
+				<CrossReferencesForm type="crossReferences" mode={mode} />
 			</FormSection>
 
 			<FormSection isVisible={!isCreate && isVisible('Updated By')}>
@@ -339,7 +326,7 @@ export const AlleleForm = ({ state, dispatch, isVisible, mode = 'detail', pendin
 					name={'internal'}
 					isPending={pendingFields?.has('internal')}
 					label={'Internal'}
-					onValueChange={onInternalValueChange}
+					onChange={onInternalValueChange}
 					widgetColumnSize={widgetColumnSize}
 					labelColumnSize={labelColumnSize}
 					fieldDetailsColumnSize={fieldDetailsColumnSize}
@@ -353,7 +340,7 @@ export const AlleleForm = ({ state, dispatch, isVisible, mode = 'detail', pendin
 					name={'obsolete'}
 					isPending={pendingFields?.has('obsolete')}
 					label={'Obsolete'}
-					onValueChange={onObsoleteValueChange}
+					onChange={onObsoleteValueChange}
 					widgetColumnSize={widgetColumnSize}
 					labelColumnSize={labelColumnSize}
 					fieldDetailsColumnSize={fieldDetailsColumnSize}

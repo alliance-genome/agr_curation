@@ -23,14 +23,10 @@ export const GeneExpressionAnnotationsTable = () => {
 	const [errorMessages, setErrorMessages] = useState({});
 	const [totalRecords, setTotalRecords] = useState(0);
 	const [geneExpressionAnnotations, setGeneExpressionAnnotations] = useState([]);
-	const errorMessagesRef = useRef();
-	errorMessagesRef.current = errorMessages;
 
 	const searchService = new SearchService();
 
 	const [uiErrorMessages, setUiErrorMessages] = useState([]);
-	const uiErrorMessagesRef = useRef();
-	uiErrorMessagesRef.current = uiErrorMessages;
 
 	const toast_topleft = useRef(null);
 	const toast_topright = useRef(null);

@@ -1,37 +1,43 @@
-import React from 'react';
-import { AutocompleteFormEditor } from '../base/AutocompleteFormEditor';
+import { FormField } from '../../fields/FormField';
+import { SingleAutocomplete } from '../../widgets/SingleAutocomplete';
 import { variantTypeSearch } from './utils';
-import { FormErrorMessageComponent } from '../../../Error/FormErrorMessageComponent';
 import { OntologyTermAdditionalFieldData } from '../../../FieldData/OntologyTermAdditionalFieldData';
-import { DetailPageFieldWrapper } from '../../../DetailPageFieldWrapper';
 
+/**
+ * A detail page's variant type field: an SO term autosuggest.
+ *
+ * @param {object|null} variantType - the variant's SO term, or `{curie}` holding text typed while no term
+ *   is picked
+ * @param {(value: object|null) => void} onChange - called with the picked term, `{curie: <text>}` for
+ *   typed text, or null when the input is emptied
+ * @param {string} [widgetColumnSize]
+ * @param {string} [labelColumnSize]
+ * @param {string} [fieldDetailsColumnSize]
+ * @param {object} [errorMessages] - errors keyed by field, read under `variantType`
+ * @param {boolean} [required=false] - marks the field as required
+ * @returns {JSX.Element}
+ */
 export const VariantTypeDetailPageEditor = ({
 	variantType,
-	onVariantTypeValueChange,
+	onChange,
 	widgetColumnSize,
 	labelColumnSize,
 	fieldDetailsColumnSize,
 	errorMessages,
 	required = false,
-}) => {
-	return (
-		<DetailPageFieldWrapper
-			labelColumnSize={labelColumnSize}
-			fieldDetailsColumnSize={fieldDetailsColumnSize}
-			widgetColumnSize={widgetColumnSize}
-			fieldName="Variant Type"
-			required={required}
-			formField={
-				<AutocompleteFormEditor
-					name="variantType-input"
-					search={variantTypeSearch}
-					initialValue={variantType}
-					fieldName="variantType"
-					onValueChangeHandler={onVariantTypeValueChange}
-				/>
-			}
-			errorField={<FormErrorMessageComponent errorMessages={errorMessages} errorField={'variantType'} />}
-			additionalDataField={<OntologyTermAdditionalFieldData curie={variantType?.curie} name={variantType?.name} />}
-		/>
-	);
-};
+}) => (
+	<FormField
+		label="Variant Type"
+		name="variantType"
+		value={variantType}
+		onChange={onChange}
+		errors={errorMessages}
+		required={required}
+		labelColumnSize={labelColumnSize}
+		widgetColumnSize={widgetColumnSize}
+		fieldDetailsColumnSize={fieldDetailsColumnSize}
+		additionalDataField={<OntologyTermAdditionalFieldData curie={variantType?.curie} name={variantType?.name} />}
+	>
+		{(binding) => <SingleAutocomplete {...binding} search={variantTypeSearch} />}
+	</FormField>
+);

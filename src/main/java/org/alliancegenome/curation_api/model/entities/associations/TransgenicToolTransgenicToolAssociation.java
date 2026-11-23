@@ -13,7 +13,6 @@ import org.hibernate.search.mapper.pojo.automaticindexing.ReindexOnUpdate;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmbedded;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexingDependency;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonView;
 
 import jakarta.persistence.Entity;
@@ -55,9 +54,10 @@ public class TransgenicToolTransgenicToolAssociation extends Association {
 	@IndexedEmbedded(includePaths = {
 		"curie", "transgenicToolSymbol.displayText", "transgenicToolSymbol.formatText", "primaryExternalId", "modInternalId",
 		"curie_keyword", "transgenicToolSymbol.displayText_keyword", "transgenicToolSymbol.formatText_keyword", "primaryExternalId_keyword", "modInternalId_keyword"})
+	// The tools are in the association view only (/find and /findBy): a tool's own associations
+	// (FieldsAndLists) have neither, so they cannot loop through the tool they point to
 	@ManyToOne
-	@JsonView({ CurationView.FieldsOnly.class })
-	@JsonIgnoreProperties({"transgenicToolTransgenicToolAssociations"})
+	@JsonView({ CurationView.TransgenicToolTransgenicToolAssociationView.class })
 	@Fetch(FetchMode.JOIN)
 	private TransgenicTool transgenicToolAssociationSubject;
 
@@ -72,7 +72,6 @@ public class TransgenicToolTransgenicToolAssociation extends Association {
 		"curie_keyword", "transgenicToolSymbol.displayText_keyword", "transgenicToolSymbol.formatText_keyword", "primaryExternalId_keyword", "modInternalId_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@JsonView({ CurationView.FieldsOnly.class })
-	@JsonIgnoreProperties({"transgenicToolTransgenicToolAssociations"})
+	@JsonView({ CurationView.TransgenicToolTransgenicToolAssociationView.class })
 	private TransgenicTool transgenicToolTransgenicToolAssociationObject;
 }

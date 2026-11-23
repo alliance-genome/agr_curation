@@ -59,7 +59,7 @@ public class Reagent extends SubmittedObject {
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "uniqueId_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
 	@Column(length = 2000)
-	@JsonView({ CurationView.FieldsOnly.class, CurationView.AlleleDetailView.class })
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.EntityDetailView.class })
 	@EqualsAndHashCode.Include
 	protected String uniqueId;
 
@@ -72,7 +72,7 @@ public class Reagent extends SubmittedObject {
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer", valueBridge = @ValueBridgeRef(type = BooleanValueBridge.class))
 	@KeywordField(name = "placeholder_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, valueBridge = @ValueBridgeRef(type = BooleanValueBridge.class))
-	@JsonView({ CurationView.FieldsOnly.class, CurationView.ForPublic.class, CurationView.TransgenicAllelesDocument.class, CurationView.AlleleDetailView.class })
+	@JsonView({ CurationView.FieldsOnly.class, CurationView.ForPublic.class, CurationView.TransgenicAllelesDocument.class, CurationView.EntityDetailView.class })
 	@Column(columnDefinition = "boolean default false", nullable = false)
 	private Boolean placeholder = false;
 }

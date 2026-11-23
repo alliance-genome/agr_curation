@@ -3,7 +3,7 @@ import { screen } from '@testing-library/react';
 import { renderWithClient } from '../../../tools/jest/utils';
 import { AlleleForm, ALLELE_CREATE_TOGGLEABLE_FIELDS, ALLELE_DETAIL_TOGGLEABLE_FIELDS } from '../AlleleForm';
 import { useAlleleReducer } from '../useAlleleReducer';
-import { useAlleleCrossReferences } from '../crossReferences/useAlleleCrossReferences';
+import { useAlleleSubResources } from '../useAlleleSubResources';
 import { SubResourcesProvider } from '../../../components/SubResourcesContext';
 
 const alwaysVisible = () => true;
@@ -11,9 +11,9 @@ const alwaysVisible = () => true;
 // AlleleForm reads reducer state, so drive it through the real reducer rather than a literal.
 const AlleleFormHarness = ({ mode }) => {
 	const { alleleState, alleleDispatch } = useAlleleReducer();
-	const crossReferences = useAlleleCrossReferences();
+	const { subResources } = useAlleleSubResources();
 	return (
-		<SubResourcesProvider value={{ crossReferences }}>
+		<SubResourcesProvider value={subResources}>
 			<AlleleForm state={alleleState} dispatch={alleleDispatch} isVisible={alwaysVisible} mode={mode} />
 		</SubResourcesProvider>
 	);
@@ -68,6 +68,17 @@ describe('<AlleleForm />', () => {
 			expect(screen.queryByLabelText('primaryExternalId')).not.toBeInTheDocument();
 			expect(heading('MOD Internal ID')).not.toBeInTheDocument();
 			expect(screen.queryByLabelText('modInternalId')).not.toBeInTheDocument();
+		});
+
+		it('Offers no section saves, which need an allele to save against', async () => {
+			await renderWithClient(<AlleleFormHarness mode="create" />);
+
+			expect(screen.queryByRole('button', { name: /Save References/ })).not.toBeInTheDocument();
+			expect(screen.queryByRole('button', { name: /Save Cross References/ })).not.toBeInTheDocument();
+			expect(screen.queryByRole('button', { name: /Save Gene Associations/ })).not.toBeInTheDocument();
+			expect(screen.getByRole('button', { name: 'Add Reference' })).toBeInTheDocument();
+			expect(screen.getByRole('button', { name: 'Add Cross Reference' })).toBeInTheDocument();
+			expect(screen.getByRole('button', { name: 'Add Gene Association' })).toBeInTheDocument();
 		});
 
 		it('Keeps the curatable fields, Internal and Obsolete', async () => {
@@ -153,9 +164,9 @@ describe('<AlleleForm />', () => {
 
 const AlleleFormHarnessWithoutMode = () => {
 	const { alleleState, alleleDispatch } = useAlleleReducer();
-	const crossReferences = useAlleleCrossReferences();
+	const { subResources } = useAlleleSubResources();
 	return (
-		<SubResourcesProvider value={{ crossReferences }}>
+		<SubResourcesProvider value={subResources}>
 			<AlleleForm state={alleleState} dispatch={alleleDispatch} isVisible={alwaysVisible} />
 		</SubResourcesProvider>
 	);
@@ -163,9 +174,9 @@ const AlleleFormHarnessWithoutMode = () => {
 
 const AlleleFormHarnessWithVisibility = ({ mode, isVisible }) => {
 	const { alleleState, alleleDispatch } = useAlleleReducer();
-	const crossReferences = useAlleleCrossReferences();
+	const { subResources } = useAlleleSubResources();
 	return (
-		<SubResourcesProvider value={{ crossReferences }}>
+		<SubResourcesProvider value={subResources}>
 			<AlleleForm state={alleleState} dispatch={alleleDispatch} isVisible={isVisible} mode={mode} />
 		</SubResourcesProvider>
 	);

@@ -50,6 +50,7 @@ public class IT_0608_Gff3BulkUploadITCase extends BaseITCase {
 	private final String exonGetEndpoint = "/api/exon/";
 	private final String cdsGetEndpoint = "/api/cds/";
 	private final String geneGetEndpoint = "/api/gene/";
+	private final String geneGenomicLocationAssociationFindEndpoint = "/api/genegenomiclocation/find?limit=10&page=0";
 	private final String transcriptId = "WB:Y74C9A.2a.1";
 	private final String exonUniqueId = "WB:Y74C9A.2a_exon|WB:Y74C9A.2a.1|I|1|100|+";
 	private final String cdsUniqueId = "WB:Y74C9A.2a|WB:Y74C9A.2a.1|I|10|100|+";
@@ -285,15 +286,24 @@ public class IT_0608_Gff3BulkUploadITCase extends BaseITCase {
 			get(geneGetEndpoint + geneCurie).
 			then().
 			statusCode(200).
-			body("entity.primaryExternalId", is(geneCurie)).
-			body("entity.geneGenomicLocationAssociations", hasSize(1)).
-			body("entity.geneGenomicLocationAssociations[0].relation.name", is("located_on")).
-			body("entity.geneGenomicLocationAssociations[0].geneGenomicLocationAssociationObject.name", is("I")).
-			body("entity.geneGenomicLocationAssociations[0].geneGenomicLocationAssociationObject.primaryExternalId", is("RefSeq:NC_003279.8")).
-			body("entity.geneGenomicLocationAssociations[0].geneGenomicLocationAssociationObject.taxon.curie", is("NCBITaxon:6239")).
-			body("entity.geneGenomicLocationAssociations[0].start", is(1)).
-			body("entity.geneGenomicLocationAssociations[0].end", is(1005)).
-			body("entity.geneGenomicLocationAssociations[0].strand", is("+"));
+			body("entity.primaryExternalId", is(geneCurie));
+
+		// The gene's endpoints omit its genomic location associations, so they are found by the gene as their subject.
+		RestAssured.given().
+			contentType("application/json").
+			body("{\"geneAssociationSubject.primaryExternalId\": \"" + geneCurie + "\"}").
+			when().
+			post(geneGenomicLocationAssociationFindEndpoint).
+			then().
+			statusCode(200).
+			body("results", hasSize(1)).
+			body("results[0].relation.name", is("located_on")).
+			body("results[0].geneGenomicLocationAssociationObject.name", is("I")).
+			body("results[0].geneGenomicLocationAssociationObject.primaryExternalId", is("RefSeq:NC_003279.8")).
+			body("results[0].geneGenomicLocationAssociationObject.taxon.curie", is("NCBITaxon:6239")).
+			body("results[0].start", is(1)).
+			body("results[0].end", is(1005)).
+			body("results[0].strand", is("+"));
 
 	}
 	

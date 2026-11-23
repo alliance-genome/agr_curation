@@ -1,112 +1,70 @@
 import { Button } from 'primereact/button';
-import { FormTableWrapper } from '../../../components/FormTableWrapper';
-import { NomenclatureEventsFormTable } from '../nomenclatureEvents/NomenclatureEventsFormTable';
 import { useRef } from 'react';
-import { addDataKey } from '../utils';
+import { FormTableWrapper } from '../../../components/FormTableWrapper';
+import { useSubResource } from '../../../components/SubResourcesContext';
+import { TableEditorProvider } from '../../../components/Editors/fields/TableEditorContext';
+import { useSubResourceRows } from '../../../hooks/useSubResourceRows';
+import { useControlledVocabularyService } from '../../../service/useControlledVocabularyService';
+import { SubResourceSaveButton } from '../../../components/SubResourceSaveButton';
+import { SubResourceLoadError } from '../../../components/SubResourceLoadError';
+import { useSubResourceFormStrategy } from '../../../hooks/useSubResourceFormStrategy';
+import { addDataKey, KEEP_ROWS_IN_EDIT_MODE } from '../../../utils/rows';
+import { NomenclatureEventsFormTable } from './NomenclatureEventsFormTable';
 
-export const NomenclatureEventsForm = ({ state, dispatch }) => {
+/**
+ * The allele detail and create pages' nomenclature events section.
+ *
+ * Its rows are saved by the page along with the allele, and on the detail page also by this section's own
+ * button, which saves them alone. Nomenclature events are written through their own sub-resource rather than in the
+ * allele payload, so either save makes that call itself.
+ *
+ * @param {Object} props
+ * @param {'detail'|'create'} [props.mode]
+ */
+export const NomenclatureEventsForm = ({ mode = 'detail' }) => {
+	const subResource = useSubResource('alleleNomenclatureEvents');
+	const { rows: nomenclatureEvents, isDirty } = subResource;
+	const { editingRows, addRow, deletionHandler } = useSubResourceRows(subResource, { prepend: true });
+	const strategy = useSubResourceFormStrategy(subResource);
 	const tableRef = useRef(null);
-	const entityType = 'alleleNomenclatureEvents';
-	const nomenclatureEvents = structuredClone(state.allele?.[entityType]);
+	const isDetail = mode === 'detail';
+	const nomenclatureEventTerms = useControlledVocabularyService('allele_nomenclature_event');
 
-	const createNewNomenclatureEventHandler = (e) => {
-		e.preventDefault();
-		const newNomenclatureEvent = {
+	const createNewRowHandler = (event) => {
+		event.preventDefault();
+		const newRow = {
 			internal: false,
 			obsolete: false,
 			nomenclatureEvent: null,
 		};
 
-		addDataKey(newNomenclatureEvent);
-
-		dispatch({
-			type: 'ADD_ROW',
-			row: newNomenclatureEvent,
-			entityType: entityType,
-		});
-	};
-
-	const onRowEditChange = (e) => {
-		return null;
-	};
-
-	const nomenclatureEventOnChangeHandler = (props, event) => {
-		props.editorCallback(event.target.value);
-		dispatch({
-			type: 'EDIT_ROW',
-			entityType: entityType,
-			index: props.rowIndex,
-			field: 'nomenclatureEvent',
-			value: event.target.value,
-		});
-	};
-
-	const internalOnChangeHandler = (props, event) => {
-		props.editorCallback(event.target.value?.name);
-		dispatch({
-			type: 'EDIT_ROW',
-			entityType: entityType,
-			index: props.rowIndex,
-			field: 'internal',
-			value: event.target?.value?.name,
-		});
-	};
-
-	const obsoleteOnChangeHandler = (props, event) => {
-		props.editorCallback(event.target.value?.name);
-		dispatch({
-			type: 'EDIT_ROW',
-			entityType: entityType,
-			index: props.rowIndex,
-			field: 'obsolete',
-			value: event.target?.value?.name,
-		});
-	};
-
-	const evidenceOnChangeHandler = (event, setFieldValue, props) => {
-		//updates value in table input box
-		setFieldValue(event.target.value);
-		dispatch({
-			type: 'EDIT_ROW',
-			entityType: entityType,
-			index: props.rowIndex,
-			field: 'evidence',
-			value: event.target.value,
-		});
-	};
-
-	const deletionHandler = (e, dataKey) => {
-		e.preventDefault();
-		const updatedErrorMessages = structuredClone(state.entityStates[entityType].errorMessages);
-		delete updatedErrorMessages[dataKey];
-		dispatch({ type: 'DELETE_ROW', entityType: entityType, dataKey });
-		dispatch({ type: 'UPDATE_TABLE_ERROR_MESSAGES', entityType: entityType, errorMessages: updatedErrorMessages });
+		addDataKey(newRow);
+		addRow(newRow);
 	};
 
 	return (
 		<FormTableWrapper
 			table={
-				<NomenclatureEventsFormTable
-					nomenclatureEvents={nomenclatureEvents}
-					editingRows={state.entityStates[entityType].editingRows}
-					onRowEditChange={onRowEditChange}
-					tableRef={tableRef}
-					deletionHandler={deletionHandler}
-					errorMessages={state.entityStates[entityType].errorMessages}
-					nomenclatureEventOnChangeHandler={nomenclatureEventOnChangeHandler}
-					obsoleteOnChangeHandler={obsoleteOnChangeHandler}
-					internalOnChangeHandler={internalOnChangeHandler}
-					evidenceOnChangeHandler={evidenceOnChangeHandler}
-				/>
+				<TableEditorProvider strategy={strategy}>
+					<NomenclatureEventsFormTable
+						nomenclatureEvents={nomenclatureEvents}
+						editingRows={editingRows}
+						onRowEditChange={KEEP_ROWS_IN_EDIT_MODE}
+						tableRef={tableRef}
+						deletionHandler={deletionHandler}
+						nomenclatureEventTerms={nomenclatureEventTerms}
+					/>
+				</TableEditorProvider>
 			}
 			tableName="Nomenclature Events"
-			showTable={state.entityStates[entityType].show}
+			showTable={nomenclatureEvents.length > 0}
+			isPending={isDetail && isDirty}
+			titleAction={isDetail && <SubResourceSaveButton type="alleleNomenclatureEvents" />}
 			button={
-				<Button
-					label="Add Nomenclature Event"
-					onClick={createNewNomenclatureEventHandler}
-					className="w-4 p-button-text"
-				/>
+				<>
+					<Button label="Add Nomenclature Event" onClick={createNewRowHandler} className="w-4 p-button-text" />
+					<SubResourceLoadError type="alleleNomenclatureEvents" />
+				</>
 			}
 		/>
 	);

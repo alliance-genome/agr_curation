@@ -6,6 +6,7 @@ import { RequiredFieldMarker } from './RequiredFieldMarker';
  *
  * @param {Object} props
  * @param {boolean} [props.isPending] - highlights the section and says it has pending edits
+ * @param {import('react').ReactNode} [props.titleAction] - rendered beside the section title
  */
 export const FormTableWrapper = ({
 	table,
@@ -15,6 +16,7 @@ export const FormTableWrapper = ({
 	includeField = false,
 	required = false,
 	isPending = false,
+	titleAction,
 }) => {
 	return (
 		<div className={isPending ? 'grid border-left-3 border-yellow-500' : 'grid'}>
@@ -22,10 +24,13 @@ export const FormTableWrapper = ({
 				<div className="mb-3 grid">
 					{/* The grid's gutter, so the title lines up with the table's left edge below it. */}
 					<div className="px-2">
-						<h2>
-							{required && <RequiredFieldMarker />}
-							{tableName}
-						</h2>
+						<div className="flex align-items-baseline">
+							<h2>
+								{required && <RequiredFieldMarker />}
+								{tableName}
+							</h2>
+							{titleAction && <div className="ml-3">{titleAction}</div>}
+						</div>
 						{isPending && <Message severity="warn" text="Pending Edits!" />}
 					</div>
 					<div className={`${showTable ? 'pt-3' : ''} p-field p-col ${includeField ? 'col-12' : 'col-4'} col-4`}>

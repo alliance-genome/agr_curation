@@ -41,6 +41,12 @@ export const generateComponentSearchField = (association) => {
 // The cassette's symbol, or its identifier when it has none: the text of the Cassettes column.
 export const cassetteLabel = (cassette) => cassette?.cassetteSymbol?.displayText || getIdentifier(cassette) || '';
 
+export const cassetteDisplayValue = (cassette) => {
+	const symbol = cassette?.cassetteSymbol?.displayText;
+	const identifier = getIdentifier(cassette) || '';
+	return symbol && symbol !== identifier ? `${symbol} (${identifier})` : identifier;
+};
+
 // Restricts a cassette search to the cassettes of the given construct cassette associations.
 export const constructCassettesFilter = (constructCassetteAssociations) => {
 	const ids = (constructCassetteAssociations || [])

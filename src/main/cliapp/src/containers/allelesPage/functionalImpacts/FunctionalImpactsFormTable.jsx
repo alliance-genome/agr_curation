@@ -3,26 +3,31 @@ import { Column } from 'primereact/column';
 import { ColumnGroup } from 'primereact/columngroup';
 import { Row } from 'primereact/row';
 import { DeleteAction } from '../../../components/Actions/DeletionAction';
-import { InternalEditor } from '../../../components/Editors/legacyForm/InternalEditor';
-import { EvidenceEditor } from '../../../components/Editors/legacyForm/EvidenceEditor';
-import { FunctionalImpactsEditor } from '../../../components/Editors/legacyForm/FunctionalImpactsEditor';
-import { PhenotypeTermEditor } from '../../../components/Editors/legacyForm/PhenotypeTermEditor';
-import { TableInputTextEditor } from '../../../components/Editors/text/TableInputTextEditor';
+import { FunctionalImpactsTableEditor } from '../../../components/Editors/autocomplete/vocabularyTerm/FunctionalImpactsTableEditor';
+import { PhenotypeTermTableEditor } from '../../../components/Editors/autocomplete/ontology/PhenotypeTermTableEditor';
+import { InputTextTableEditor } from '../../../components/Editors/text/InputTextTableEditor';
+import { EvidenceTableEditor } from '../../../components/Editors/autocomplete/references/EvidenceTableEditor';
+import { BooleanTableEditor } from '../../../components/Editors/dropdown/boolean/BooleanTableEditor';
 
+/**
+ * Editable functional impacts table, every row always in edit mode. Its editors read and write
+ * rows through the table strategy its parent provides.
+ *
+ * @param {object[]} functionalImpacts - rows, each carrying a `dataKey`
+ * @param {object} editingRows - PrimeReact editing state, keyed by `dataKey`
+ * @param {Function} onRowEditChange - PrimeReact row-edit handler
+ * @param {object} tableRef - ref to the DataTable
+ * @param {Function} deletionHandler - `(event, dataKey)`
+ * @returns {JSX.Element}
+ */
 export const FunctionalImpactsFormTable = ({
 	functionalImpacts,
 	editingRows,
 	onRowEditChange,
 	tableRef,
 	deletionHandler,
-	errorMessages,
-	functionalImpactsOnChangeHandler,
-	phenotypeTermOnChangeHandler,
-	phenotypeStatementOnChangeHandler,
-	internalOnChangeHandler,
-	evidenceOnChangeHandler,
 }) => {
-	let headerGroup = (
+	const headerGroup = (
 		<ColumnGroup>
 			<Row>
 				<Column header="Actions" />
@@ -51,80 +56,41 @@ export const FunctionalImpactsFormTable = ({
 			ref={tableRef}
 		>
 			<Column
-				editor={(props) => <DeleteAction deletionHandler={deletionHandler} id={props?.rowData?.dataKey} />}
+				editor={(editorOptions) => (
+					<DeleteAction deletionHandler={deletionHandler} id={editorOptions?.rowData?.dataKey} />
+				)}
 				className="max-w-4rem"
 				bodyClassName="text-center"
 				headerClassName="surface-0"
 				frozen
 			/>
 			<Column
-				editor={(props) => {
-					return (
-						<FunctionalImpactsEditor
-							props={props}
-							errorMessages={errorMessages}
-							onChange={functionalImpactsOnChangeHandler}
-							dataKey={props?.rowData?.dataKey}
-						/>
-					);
-				}}
+				editor={(editorOptions) => <FunctionalImpactsTableEditor editorOptions={editorOptions} />}
 				field="functionalImpacts"
 				header="Functional Impacts"
 				headerClassName="surface-0"
 			/>
 			<Column
-				editor={(props) => {
-					return (
-						<PhenotypeTermEditor
-							props={props}
-							errorMessages={errorMessages}
-							dataKey={props?.rowData?.dataKey}
-							onChange={phenotypeTermOnChangeHandler}
-						/>
-					);
-				}}
+				editor={(editorOptions) => <PhenotypeTermTableEditor editorOptions={editorOptions} />}
 				field="phenotypeTerm"
 				header="Phenotype Term"
 				headerClassName="surface-0"
 			/>
 			<Column
-				editor={(props) => {
-					return (
-						<TableInputTextEditor
-							value={props.value}
-							rowIndex={props.rowIndex}
-							errorMessages={errorMessages}
-							dataKey={props?.rowData?.dataKey}
-							textOnChangeHandler={phenotypeStatementOnChangeHandler}
-							field="phenotypeStatement"
-						/>
-					);
-				}}
+				editor={(editorOptions) => <InputTextTableEditor editorOptions={editorOptions} field="phenotypeStatement" />}
 				field="phenotypeStatement"
 				header="Phenotype Statement"
 				headerClassName="surface-0"
 			/>
 			<Column
-				editor={(props) => {
-					return (
-						<InternalEditor
-							editorOptions={props}
-							rowIndex={props.rowIndex}
-							errorMessages={errorMessages}
-							dataKey={props?.rowData?.dataKey}
-							internalOnChangeHandler={internalOnChangeHandler}
-						/>
-					);
-				}}
+				editor={(editorOptions) => <BooleanTableEditor editorOptions={editorOptions} field="internal" />}
 				field="internal"
 				header="Internal"
 				headerClassName="surface-0"
 			/>
 			<Column
-				editor={(props) => {
-					return <EvidenceEditor props={props} errorMessages={errorMessages} onChange={evidenceOnChangeHandler} />;
-				}}
-				field="evidence.curie"
+				editor={(editorOptions) => <EvidenceTableEditor editorOptions={editorOptions} />}
+				field="evidence"
 				header="Evidence"
 				headerClassName="surface-0"
 			/>

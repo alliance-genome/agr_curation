@@ -21,6 +21,7 @@ import { ConditionAnatomyTableEditor } from '../ontology/ConditionAnatomyTableEd
 import { ConditionTaxonTableEditor } from '../ontology/ConditionTaxonTableEditor';
 import { WithTableEditor } from '../gene/WithTableEditor';
 import { ReferencesTableEditor } from '../references/ReferencesTableEditor';
+import { EvidenceTableEditor } from '../references/EvidenceTableEditor';
 import { MemberTermsTableEditor } from '../vocabularyTerm/MemberTermsTableEditor';
 import { EvidenceCodesTableEditor } from '../ontology/EvidenceCodesTableEditor';
 import { DiseaseGeneticModifierGenesTableEditor } from '../gene/DiseaseGeneticModifierGenesTableEditor';
@@ -193,6 +194,12 @@ const CASES = [
 		Editor: ReferencesTableEditor,
 		endpoint: 'literature-reference/document',
 		groups: { multiReferenceFilter: fieldGroup('referenceAutocompleteConfig') },
+	},
+	{
+		name: 'Evidence',
+		Editor: EvidenceTableEditor,
+		endpoint: 'literature-reference/document',
+		groups: { evidenceFilter: fieldGroup('referenceAutocompleteConfig') },
 	},
 	{
 		name: 'Member terms with no vocabulary on the row',

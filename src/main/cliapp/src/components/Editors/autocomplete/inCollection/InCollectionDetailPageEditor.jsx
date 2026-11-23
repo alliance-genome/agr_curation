@@ -1,49 +1,57 @@
-import React from 'react';
-import { AutocompleteFormEditor } from '../base/AutocompleteFormEditor';
+import { FormField } from '../../fields/FormField';
+import { SingleAutocomplete } from '../../widgets/SingleAutocomplete';
 import { inCollectionSearch } from './utils';
-import { FormErrorMessageComponent } from '../../../Error/FormErrorMessageComponent';
 import { InCollectionAdditionalFieldData } from '../../../FieldData/InCollectionAdditionalFieldData';
 import { VocabTermAutocompleteTemplate } from '../base/templates/VocabTermAutocompleteTemplate';
-import { DetailPageFieldWrapper } from '../../../DetailPageFieldWrapper';
 
+/**
+ * A detail page in-collection autosuggest over vocabulary terms.
+ *
+ * @param {object|null} inCollection - the selected term, or `{name}` holding text typed while none is picked
+ * @param {(value: object|null) => void} onChange - called with the picked term, `{name: <text>}` for
+ *   typed text, or null when the input is emptied
+ * @param {string} [widgetColumnSize]
+ * @param {string} [labelColumnSize]
+ * @param {string} [fieldDetailsColumnSize]
+ * @param {object} [errorMessages] - errors keyed by field, read under `inCollection`
+ * @param {boolean} [isPending=false] - marks the field as having pending edits
+ * @returns {JSX.Element}
+ */
 export const InCollectionDetailPageEditor = ({
 	inCollection,
-	onInCollectionValueChange,
+	onChange,
 	widgetColumnSize,
 	labelColumnSize,
 	fieldDetailsColumnSize,
 	errorMessages,
 	isPending = false,
-}) => {
-	return (
-		<>
-			<DetailPageFieldWrapper
-				labelColumnSize={labelColumnSize}
-				fieldDetailsColumnSize={fieldDetailsColumnSize}
-				widgetColumnSize={widgetColumnSize}
-				isPending={isPending}
-				fieldName="In Collection"
-				formField={
-					<AutocompleteFormEditor
-						name="inCollection-input"
-						search={inCollectionSearch}
-						initialValue={inCollection}
-						fieldName="inCollection"
-						subField="name"
-						onValueChangeHandler={onInCollectionValueChange}
-						valueDisplay={(item, setAutocompleteSelectedItem, op, query) => (
-							<VocabTermAutocompleteTemplate
-								item={item}
-								op={op}
-								query={query}
-								setAutocompleteSelectedItem={setAutocompleteSelectedItem}
-							/>
-						)}
+}) => (
+	<FormField
+		label="In Collection"
+		name="inCollection"
+		value={inCollection}
+		onChange={onChange}
+		errors={errorMessages}
+		isPending={isPending}
+		labelColumnSize={labelColumnSize}
+		widgetColumnSize={widgetColumnSize}
+		fieldDetailsColumnSize={fieldDetailsColumnSize}
+		additionalDataField={<InCollectionAdditionalFieldData name={inCollection?.name} />}
+	>
+		{(binding) => (
+			<SingleAutocomplete
+				{...binding}
+				search={inCollectionSearch}
+				subField="name"
+				valueDisplay={(item, setHoverItem, tooltip, query) => (
+					<VocabTermAutocompleteTemplate
+						item={item}
+						op={tooltip}
+						query={query}
+						setAutocompleteSelectedItem={setHoverItem}
 					/>
-				}
-				errorField={<FormErrorMessageComponent errorMessages={errorMessages} errorField={'inCollection'} />}
-				additionalDataField={<InCollectionAdditionalFieldData name={inCollection?.name} />}
+				)}
 			/>
-		</>
-	);
-};
+		)}
+	</FormField>
+);
