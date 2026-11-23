@@ -106,7 +106,8 @@ Ready-made editors for a column or a detail-page field. Prefer one of these when
 
 ## Searches (`autocomplete/<entity>/utils.jsx` or `utils.js`)
 
-Each folder's `utils` file holds its **search configs** and searches. Most searches are built from a config:
+Each folder's `utils` file holds its **search configs** and, where the folder needs one, the searches built from
+them:
 
 ```js
 export const diseaseSearchConfig = {
@@ -124,11 +125,12 @@ export const diseaseSearch = buildSearchFn(diseaseSearchConfig);
 - Every search goes through `autocompleteSearch` (`utils/utils.js`), which always excludes obsolete entries (except
   for literature references) and overrides any `obsoleteFilter` in `otherFilters`. The one in the example above is
   therefore redundant.
-- A few searches are written by hand around `autocompleteSearch`: those in `geneType/`, `taxon/`, `variantType/` and
-  `sourceGeneralConsequence/`, and `memberTermsSearch` (`vocabularyTerm/`), which takes its filters as a fourth
-  argument from the caller.
 - `otherFilters` can be a function, worked out on each search, for filters that aren't ready until then, such as
   the curator's species (`() => buildCuratorSpeciesFilter()`).
+- When the filter depends on something on screen, build the search where that value is known, spreading the config:
+  `NewVocabularyTermSetForm` builds its term search with
+  `otherFilters: () => buildMemberTermsOtherFilters(vocabulary?.name)`, so it offers only the chosen vocabulary's
+  terms.
 - The same config can be spread onto `AutocompleteSingleTableEditor` / `AutocompleteMultiTableEditor`, so a table
   column and a form field search the same way.
 - A config may also carry `valueDisplay`, the suggestion template.
