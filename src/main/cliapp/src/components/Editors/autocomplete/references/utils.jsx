@@ -1,5 +1,4 @@
-import { buildAutocompleteFilter, autocompleteSearch } from '../../../../utils/utils';
-import { SearchService } from '../../../../service/SearchService';
+import { buildSearchFn } from '../base/buildSearchFn';
 import { Endpoints } from '../../../../constants/Endpoints';
 import { LiteratureAutocompleteTemplate } from '../base/templates/LiteratureAutocompleteTemplate';
 import { AUTOCOMPLETE_CONFIGS, getAutocompleteFields } from '../../../../constants/FilterFields';
@@ -32,19 +31,6 @@ export const multiReferenceSearchConfig = {
 	filterName: 'multiReferenceFilter',
 };
 
-export const multiReferenceSearch = (event, setFiltered, setInputValue) => {
-	const searchService = new SearchService();
-	const filter = buildAutocompleteFilter(event, multiReferenceSearchConfig.autocompleteFields);
-	setInputValue(event.query);
-	autocompleteSearch(
-		searchService,
-		multiReferenceSearchConfig.endpoint,
-		multiReferenceSearchConfig.filterName,
-		filter,
-		setFiltered
-	);
-};
-
 /**
  * Whether a reference autosuggest value is a reference picked from the suggestions. The autosuggest
  * reports typed text as an object holding only `curie`; a picked reference carries the search
@@ -56,15 +42,4 @@ export const multiReferenceSearch = (event, setFiltered, setInputValue) => {
 export const isPickedReference = (reference) =>
 	Boolean(reference?.curie) && Object.keys(reference).some((key) => key !== 'curie');
 
-export const singleReferenceSearch = (event, setFiltered, setInputValue) => {
-	const searchService = new SearchService();
-	const filter = buildAutocompleteFilter(event, singleReferenceSearchConfig.autocompleteFields);
-	setInputValue(event.query);
-	autocompleteSearch(
-		searchService,
-		singleReferenceSearchConfig.endpoint,
-		singleReferenceSearchConfig.filterName,
-		filter,
-		setFiltered
-	);
-};
+export const singleReferenceSearch = buildSearchFn(singleReferenceSearchConfig);

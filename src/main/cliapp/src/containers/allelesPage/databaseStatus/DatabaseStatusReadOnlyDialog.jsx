@@ -3,7 +3,8 @@ import { Dialog } from 'primereact/dialog';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { EllipsisTableCell } from '../../../components/EllipsisTableCell';
-import { evidenceTemplate } from '../../../components/EvidenceComponent';
+import { StringListTemplate } from '../../../components/Templates/StringListTemplate';
+import { getRefStrings } from '../../../utils/utils';
 
 export const DatabaseStatusReadOnlyDialog = ({ originalDatabaseStatusData, setOriginalDatabaseStatusData }) => {
 	const { originalDatabaseStatuses, isInEdit, dialog } = originalDatabaseStatusData;
@@ -45,7 +46,11 @@ export const DatabaseStatusReadOnlyDialog = ({ originalDatabaseStatusData, setOr
 			<DataTable value={localDatabaseStatuses} dataKey="dataKey" showGridlines>
 				<Column field="databaseStatus" header="Database Status" body={databaseStatusTemplate} />
 				<Column field="internal" header="Internal" body={internalTemplate} />
-				<Column field="evidence.curie" header="Evidence" body={(rowData) => evidenceTemplate(rowData)} />
+				<Column
+					field="evidence.curie"
+					header="Evidence"
+					body={(rowData) => <StringListTemplate list={getRefStrings(rowData.evidence)} />}
+				/>
 			</DataTable>
 		</Dialog>
 	);

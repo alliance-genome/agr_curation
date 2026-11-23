@@ -1,7 +1,6 @@
 import { TableField } from '../../fields/TableField';
 import { SingleAutocomplete } from '../../widgets/SingleAutocomplete';
-import { SearchService } from '../../../../service/SearchService';
-import { autocompleteSearch, buildAutocompleteFilter } from '../../../../utils/utils';
+import { buildSearchFn } from './buildSearchFn';
 
 /**
  * Autocomplete over the entities a search config describes, for a row's `field`,
@@ -34,14 +33,7 @@ export const AutocompleteSingleTableEditor = ({
 	initialValue,
 	toDisplay,
 }) => {
-	const searchService = new SearchService();
-
-	const search = (event, setFiltered, setQuery) => {
-		const filter = buildAutocompleteFilter(event, autocompleteFields);
-		const resolvedOtherFilters = typeof otherFilters === 'function' ? otherFilters() : otherFilters;
-		setQuery(event.query);
-		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered, resolvedOtherFilters);
-	};
+	const search = buildSearchFn({ endpoint, autocompleteFields, filterName, otherFilters });
 
 	return (
 		<TableField editorOptions={editorOptions} field={field}>

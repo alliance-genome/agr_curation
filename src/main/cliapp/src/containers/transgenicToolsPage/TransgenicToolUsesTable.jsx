@@ -2,7 +2,8 @@ import React from 'react';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { EllipsisTableCell } from '../../components/EllipsisTableCell';
-import { evidenceTemplate } from '../../components/EvidenceComponent';
+import { StringListTemplate } from '../../components/Templates/StringListTemplate';
+import { getRefStrings } from '../../utils/utils';
 import { useTermTexts } from './utils';
 
 // The uses of a transgenic tool, one row per use slot annotation: its terms, evidence and audit
@@ -25,7 +26,7 @@ export const TransgenicToolUsesTable = ({ uses }) => {
 				field="evidence.curie"
 				header="Evidence"
 				headerClassName="surface-0"
-				body={(rowData) => evidenceTemplate(rowData)}
+				body={(rowData) => <StringListTemplate list={getRefStrings(rowData.evidence)} />}
 			/>
 			<Column field="updatedBy.uniqueId" header="Updated By" headerClassName="surface-0" />
 			<Column field="dateUpdated" header="Date Updated" headerClassName="surface-0" />

@@ -39,9 +39,6 @@ export const HTPExpressionDatasetAnnotationsTable = () => {
 
 	const searchService = new SearchService();
 
-	const errorMessagesRef = useRef();
-	errorMessagesRef.current = errorMessages;
-
 	const handleExpressionDatasetOpen = (entities) =>
 		setExpressionDatasetData({ originalEntities: entities, dialog: true });
 	const handleSubseriesOpen = (entities) => setSubseriesData({ originalEntities: entities, dialog: true });

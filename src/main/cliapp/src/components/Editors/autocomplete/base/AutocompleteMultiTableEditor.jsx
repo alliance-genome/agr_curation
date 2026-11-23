@@ -1,7 +1,6 @@
 import { TableField } from '../../fields/TableField';
 import { MultiAutocomplete } from '../../widgets/MultiAutocomplete';
-import { SearchService } from '../../../../service/SearchService';
-import { autocompleteSearch, buildAutocompleteFilter } from '../../../../utils/utils';
+import { buildSearchFn } from './buildSearchFn';
 
 /**
  * Multi-select autocomplete over the entities a search config describes, for a row's
@@ -32,14 +31,7 @@ export const AutocompleteMultiTableEditor = ({
 	valueDisplay,
 	selectedItemTemplate,
 }) => {
-	const searchService = new SearchService();
-
-	const search = (event, setFiltered, setQuery) => {
-		const filter = buildAutocompleteFilter(event, autocompleteFields);
-		const resolvedOtherFilters = typeof otherFilters === 'function' ? otherFilters() : otherFilters;
-		setQuery(event.query);
-		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered, resolvedOtherFilters);
-	};
+	const search = buildSearchFn({ endpoint, autocompleteFields, filterName, otherFilters });
 
 	return (
 		<TableField editorOptions={editorOptions} field={field}>

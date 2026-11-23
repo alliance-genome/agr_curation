@@ -2,14 +2,9 @@ import { useState } from 'react';
 import { Dialog } from 'primereact/dialog';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
-import { evidenceTemplate } from '../../../components/EvidenceComponent';
-import {
-	synonymScopeTemplate,
-	nameTypeTemplate,
-	synonymUrlTemplate,
-	displayTextTemplate,
-	formatTextTemplate,
-} from '../../../components/NameSlotAnnotationComponent';
+import { StringListTemplate } from '../../../components/Templates/StringListTemplate';
+import { getRefStrings } from '../../../utils/utils';
+import { StringTemplate } from '../../../components/Templates/StringTemplate';
 import { EllipsisTableCell } from '../../../components/EllipsisTableCell';
 
 export const FullNameReadOnlyDialog = ({ originalFullNameData, setOriginalFullNameData }) => {
@@ -53,13 +48,37 @@ export const FullNameReadOnlyDialog = ({ originalFullNameData, setOriginalFullNa
 		>
 			<h3>Full Name</h3>
 			<DataTable value={localFullNames} dataKey="dataKey" showGridlines>
-				<Column field="displayText" header="Display Text" body={displayTextTemplate} />
-				<Column field="formatText" header="Format Text" body={formatTextTemplate} />
-				<Column field="synonymScope" header="Synonym Scope" body={synonymScopeTemplate} />
-				<Column field="nameType" header="Name Type" body={nameTypeTemplate} />
-				<Column field="synonymUrl" header="Synonym URL" body={synonymUrlTemplate} />
+				<Column
+					field="displayText"
+					header="Display Text"
+					body={(rowData) => <StringTemplate string={rowData.displayText} />}
+				/>
+				<Column
+					field="formatText"
+					header="Format Text"
+					body={(rowData) => <EllipsisTableCell>{rowData.formatText}</EllipsisTableCell>}
+				/>
+				<Column
+					field="synonymScope"
+					header="Synonym Scope"
+					body={(rowData) => <StringTemplate string={rowData.synonymScope?.name} />}
+				/>
+				<Column
+					field="nameType"
+					header="Name Type"
+					body={(rowData) => <StringTemplate string={rowData.nameType?.name} />}
+				/>
+				<Column
+					field="synonymUrl"
+					header="Synonym URL"
+					body={(rowData) => <StringTemplate string={rowData.synonymUrl} />}
+				/>
 				<Column field="internal" header="Internal" body={internalTemplate} />
-				<Column field="evidence.curie" header="Evidence" body={(rowData) => evidenceTemplate(rowData)} />
+				<Column
+					field="evidence.curie"
+					header="Evidence"
+					body={(rowData) => <StringListTemplate list={getRefStrings(rowData.evidence)} />}
+				/>
 				<Column field="updatedBy.uniqueId" header="Updated By" />
 				<Column field="dateUpdated" header="Date Updated" />
 			</DataTable>
