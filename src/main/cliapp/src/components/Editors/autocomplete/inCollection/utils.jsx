@@ -1,5 +1,4 @@
-import { buildAutocompleteFilter, autocompleteSearch } from '../../../../utils/utils';
-import { SearchService } from '../../../../service/SearchService';
+import { buildSearchFn } from '../base/buildSearchFn';
 import { Endpoints } from '../../../../constants/Endpoints';
 import { VocabTermAutocompleteTemplate } from '../base/templates/VocabTermAutocompleteTemplate';
 import { AUTOCOMPLETE_CONFIGS, getAutocompleteFields } from '../../../../constants/FilterFields';
@@ -25,16 +24,4 @@ export const inCollectionSearchConfig = {
 	),
 };
 
-export const inCollectionSearch = (event, setFiltered, setQuery) => {
-	const searchService = new SearchService();
-	setQuery(event.query);
-	const filter = buildAutocompleteFilter(event, inCollectionSearchConfig.autocompleteFields);
-	autocompleteSearch(
-		searchService,
-		inCollectionSearchConfig.endpoint,
-		inCollectionSearchConfig.filterName,
-		filter,
-		setFiltered,
-		inCollectionSearchConfig.otherFilters
-	);
-};
+export const inCollectionSearch = buildSearchFn(inCollectionSearchConfig);

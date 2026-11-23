@@ -6,7 +6,8 @@ import { Tooltip } from 'primereact/tooltip';
 import { ColumnGroup } from 'primereact/columngroup';
 import { Row } from 'primereact/row';
 import { EllipsisTableCell } from '../../components/EllipsisTableCell';
-import { evidenceTemplate } from '../../components/EvidenceComponent';
+import { StringListTemplate } from '../../components/Templates/StringListTemplate';
+import { getRefStrings } from '../../utils/utils';
 import { Button } from 'primereact/button';
 import { RelatedNotesReadOnlyDialog } from '../../components/RelatedNotesReadOnlyDialog';
 
@@ -177,7 +178,7 @@ export const ComponentsDialog = ({
 							field="evidence.curie"
 							header="Evidence"
 							headerClassName="surface-0"
-							body={(rowData) => evidenceTemplate(rowData)}
+							body={(rowData) => <StringListTemplate list={getRefStrings(rowData.evidence)} />}
 						/>
 						<Column field="internal" header="Internal" body={internalTemplate} headerClassName="surface-0" />
 					</DataTable>

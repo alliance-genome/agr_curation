@@ -3,7 +3,8 @@ import { Dialog } from 'primereact/dialog';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { EllipsisTableCell } from '../../../components/EllipsisTableCell';
-import { evidenceTemplate } from '../../../components/EvidenceComponent';
+import { StringListTemplate } from '../../../components/Templates/StringListTemplate';
+import { getRefStrings } from '../../../utils/utils';
 
 export const InheritanceModesReadOnlyDialog = ({ originalInheritanceModesData, setOriginalInheritanceModesData }) => {
 	const { originalInheritanceModes, isInEdit, dialog } = originalInheritanceModesData;
@@ -61,7 +62,11 @@ export const InheritanceModesReadOnlyDialog = ({ originalInheritanceModesData, s
 				<Column field="phenotypeTerm.curie" header="Phenotype Term" body={phenotypeTermTemplate} />
 				<Column field="phenotypeStatement" header="Phenotype Statement" body={phenotypeStatementTemplate} />
 				<Column field="internal" header="Internal" body={internalTemplate} />
-				<Column field="evidence.curie" header="Evidence" body={(rowData) => evidenceTemplate(rowData)} />
+				<Column
+					field="evidence.curie"
+					header="Evidence"
+					body={(rowData) => <StringListTemplate list={getRefStrings(rowData.evidence)} />}
+				/>
 			</DataTable>
 		</Dialog>
 	);
