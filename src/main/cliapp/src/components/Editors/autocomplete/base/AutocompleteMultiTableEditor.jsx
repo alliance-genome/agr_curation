@@ -17,6 +17,8 @@ import { autocompleteSearch, buildAutocompleteFilter } from '../../../../utils/u
  * @param {object|(() => object)} [otherFilters] - extra filters, or a function returning
  *   them when the value is not ready until the search runs
  * @param {Function} [valueDisplay] - custom suggestion renderer
+ * @param {(item: object) => React.ReactNode} [selectedItemTemplate] - token label renderer; tokens show `subField`
+ *   without one
  * @returns {JSX.Element}
  */
 export const AutocompleteMultiTableEditor = ({
@@ -28,6 +30,7 @@ export const AutocompleteMultiTableEditor = ({
 	filterName,
 	otherFilters,
 	valueDisplay,
+	selectedItemTemplate,
 }) => {
 	const searchService = new SearchService();
 
@@ -40,7 +43,15 @@ export const AutocompleteMultiTableEditor = ({
 
 	return (
 		<TableField editorOptions={editorOptions} field={field}>
-			{(binding) => <MultiAutocomplete {...binding} search={search} subField={subField} valueDisplay={valueDisplay} />}
+			{(binding) => (
+				<MultiAutocomplete
+					{...binding}
+					search={search}
+					subField={subField}
+					valueDisplay={valueDisplay}
+					selectedItemTemplate={selectedItemTemplate}
+				/>
+			)}
 		</TableField>
 	);
 };

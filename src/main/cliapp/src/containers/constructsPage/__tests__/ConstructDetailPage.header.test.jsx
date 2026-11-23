@@ -3,14 +3,15 @@ import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { screen, waitFor } from '@testing-library/react';
 import { renderWithClient } from '../../../tools/jest/utils';
 
-const getConstruct = vi.fn();
+const { getConstruct } = vi.hoisted(() => ({ getConstruct: vi.fn() }));
 
-// msw cannot intercept this app's fetch based ApiClient, so stub the service directly.
-vi.mock('../../../service/ConstructService', () => ({
-	ConstructService: class {
-		getConstruct = getConstruct;
-	},
-}));
+// msw cannot intercept this app's fetch based ApiClient, so stub the services directly.
+vi.mock('../../../service/ConstructService', async () =>
+	(await import('./constructServiceMocks')).mockConstructService({ getConstruct })
+);
+vi.mock('../../../service/ConstructSubResourceService', async () =>
+	(await import('./constructServiceMocks')).mockConstructSubResourceService()
+);
 
 const ConstructDetailPage = (await import('../ConstructDetailPage')).default;
 
@@ -27,8 +28,6 @@ const construct = {
 		displayText: 'Tg(hsp70l:GFP)',
 		formatText: 'Tg(hsp70l:GFP)',
 	},
-	references: [],
-	constructGenomicEntityAssociations: [],
 };
 
 /**

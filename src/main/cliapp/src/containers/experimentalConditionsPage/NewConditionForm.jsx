@@ -2,29 +2,55 @@ import React, { useRef } from 'react';
 import { ExperimentalConditionService } from '../../service/ExperimentalConditionService';
 import { Dialog } from 'primereact/dialog';
 import { Button } from 'primereact/button';
-import { InputText } from 'primereact/inputtext';
-import { Dropdown } from 'primereact/dropdown';
 import { Toast } from 'primereact/toast';
-import { InputTextarea } from 'primereact/inputtextarea';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { AutocompleteEditor } from '../../components/Editors/autocomplete/base/AutocompleteEditor';
-import { FormErrorMessageComponent } from '../../components/Error/FormErrorMessageComponent';
-import { classNames } from 'primereact/utils';
-import { autocompleteSearch, buildAutocompleteFilter } from '../../utils/utils';
-import { Endpoints } from '../../constants/Endpoints';
+import { FormField } from '../../components/Editors/fields/FormField';
+import { DIALOG_FIELD_LAYOUT } from '../../components/Editors/fields/dialogFieldLayout';
+import { SingleAutocomplete } from '../../components/Editors/widgets/SingleAutocomplete';
+import { TextInput } from '../../components/Editors/widgets/TextInput';
+import { TextArea } from '../../components/Editors/widgets/TextArea';
+import { BooleanSelect } from '../../components/Editors/widgets/BooleanSelect';
+import {
+	conditionAnatomySearch,
+	conditionChemicalSearch,
+	conditionClassSearch,
+	conditionGeneOntologySearch,
+	conditionIdSearch,
+	conditionTaxonSearch,
+} from '../../components/Editors/autocomplete/ontology/utils';
 import ErrorBoundary from '../../components/Error/ErrorBoundary';
 
+const ONTOLOGY_FIELDS = [
+	{ field: 'conditionClass', label: 'Condition Class', search: conditionClassSearch },
+	{ field: 'conditionId', label: 'Condition Term', search: conditionIdSearch },
+	{ field: 'conditionGeneOntology', label: 'Gene Ontology', search: conditionGeneOntologySearch },
+	{ field: 'conditionChemical', label: 'Chemical', search: conditionChemicalSearch },
+	{ field: 'conditionAnatomy', label: 'Anatomy', search: conditionAnatomySearch },
+	{ field: 'conditionTaxon', label: 'Taxon', search: conditionTaxonSearch },
+];
+
+/**
+ * The New Condition dialog on the Experimental Conditions table: an ontology term autocomplete for each condition
+ * field, quantity, internal and free text. Save creates the condition; a rejected save shows each field's error
+ * beside it.
+ *
+ * @param {object} newConditionState - the form's reducer state: `newCondition`, `errorMessages`,
+ *   `newConditionDialog`
+ * @param {Function} newConditionDispatch - the form's reducer dispatch
+ * @param {object} [experimentalConditionService] - the service that creates the condition
+ * @param {(condition: object, queryClient: object) => void} setNewExperimentalCondition - called with the created
+ *   condition
+ * @returns {JSX.Element}
+ */
 export const NewConditionForm = ({
 	newConditionState,
 	newConditionDispatch,
-	searchService,
 	experimentalConditionService,
 	setNewExperimentalCondition,
-	ontologyTermAutocompleteFields,
 }) => {
 	const toast_success = useRef(null);
 	const toast_error = useRef(null);
-	const { newCondition, errorMessages, submitted, newConditionDialog } = newConditionState;
+	const { newCondition, errorMessages, newConditionDialog } = newConditionState;
 	const queryClient = useQueryClient();
 
 	const mutation = useMutation({
@@ -45,9 +71,8 @@ export const NewConditionForm = ({
 		newConditionDispatch({ type: 'SUBMIT' });
 		mutation.mutate(newCondition, {
 			onSuccess: (data) => {
-				//TODO: check this data object
 				setNewExperimentalCondition(data.data.entity, queryClient);
-				toast_success.current.show({ severity: 'success', summary: 'Successful', detail: 'New Relation Added' });
+				toast_success.current.show({ severity: 'success', summary: 'Successful', detail: 'New Condition Added' });
 				newConditionDispatch({ type: 'RESET' });
 			},
 			onError: (error) => {
@@ -63,89 +88,13 @@ export const NewConditionForm = ({
 		});
 	};
 
-	const onCurieFieldChange = (event, setFieldValue) => {
-		const curie = event.value.curie;
-		const stringValue = event.value;
-		const value = typeof event.value === 'string' ? { curie: stringValue } : { curie };
-		setFieldValue(event.target.value);
-		newConditionDispatch({
-			type: 'EDIT',
-			field: event.target.name,
-			value,
-		});
-	};
-
-	const conditionClassSearch = (event, setFiltered, setQuery) => {
-		const endpoint = Endpoints.Ontology.ZECO;
-		const filterName = 'conditionClassEditorFilter';
-		const filter = buildAutocompleteFilter(event, ontologyTermAutocompleteFields);
-		const otherFilters = {
-			subsetFilter: {
-				subsets: {
-					queryString: 'ZECO_0000267',
-				},
-			},
-		};
-		setQuery(event.query);
-		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered, otherFilters);
-	};
-
-	const conditionIdSearch = (event, setFiltered, setQuery) => {
-		const endpoint = Endpoints.Ontology.EXPERIMENTAL_CONDITION;
-		const filterName = 'singleOntologyFilter';
-		const filter = buildAutocompleteFilter(event, ontologyTermAutocompleteFields);
-		setQuery(event.query);
-		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered);
-	};
-
-	const conditionGeneOntologySearch = (event, setFiltered, setQuery) => {
-		const endpoint = Endpoints.Ontology.GO;
-		const filterName = 'singleOntologyFilter';
-		const filter = buildAutocompleteFilter(event, ontologyTermAutocompleteFields);
-
-		setQuery(event.query);
-		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered);
-	};
-
-	const conditionChemicalSearch = (event, setFiltered, setQuery) => {
-		const endpoint = Endpoints.Ontology.CHEMICAL;
-		const filterName = 'singleOntologyFilter';
-		const filter = buildAutocompleteFilter(event, ontologyTermAutocompleteFields);
-		setQuery(event.query);
-		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered);
-	};
-
-	const conditionAnatomySearch = (event, setFiltered, setQuery) => {
-		const endpoint = Endpoints.Ontology.ANATOMICAL;
-		const filterName = 'singleOntologyFilter';
-		const filter = buildAutocompleteFilter(event, ontologyTermAutocompleteFields);
-		setQuery(event.query);
-		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered);
-	};
-
-	const conditionTaxonSearch = (event, setFiltered, setQuery) => {
-		const endpoint = Endpoints.Ontology.NCBI_TAXON;
-		const filterName = 'singleOntologyFilter';
-		const filter = buildAutocompleteFilter(event, ontologyTermAutocompleteFields);
-		setQuery(event.query);
-		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered);
-	};
-
-	const onInternalChange = (event) => {
-		newConditionDispatch({
-			type: 'EDIT',
-			field: event.target.name,
-			value: event.value,
-		});
-	};
-
-	const onTextChange = (event) => {
-		newConditionDispatch({
-			type: 'EDIT',
-			field: event.target.name,
-			value: event.target.value,
-		});
-	};
+	const fieldProps = (field) => ({
+		name: field,
+		value: newCondition[field],
+		onChange: (value) => newConditionDispatch({ type: 'EDIT', field, value }),
+		errors: errorMessages,
+		...DIALOG_FIELD_LAYOUT,
+	});
 
 	const dialogFooter = (
 		<>
@@ -161,130 +110,29 @@ export const NewConditionForm = ({
 			<Dialog
 				visible={newConditionDialog}
 				style={{ width: '450px' }}
-				header="Add Relation"
+				header="Add Condition"
 				modal
 				className="p-fluid"
 				footer={dialogFooter}
 				onHide={hideDialog}
 			>
 				<ErrorBoundary>
-					<div className="p-justify-center">
-						<form>
-							<div className="field">
-								<label htmlFor="conditionClass">Condition Class</label>
-								<AutocompleteEditor
-									name="conditionClass"
-									search={conditionClassSearch}
-									initialValue={newCondition.conditionClass.curie}
-									fieldName="conditionClass"
-									onValueChangeHandler={onCurieFieldChange}
-									classNames={classNames({ 'p-invalid': submitted && errorMessages.conditionClass })}
-								/>
-								<FormErrorMessageComponent errorMessages={errorMessages} errorField={'conditionClass'} />
-							</div>
-							<div className="field">
-								<label htmlFor="conditionId">Condition Term</label>
-								<AutocompleteEditor
-									name="conditionId"
-									search={conditionIdSearch}
-									initialValue={newCondition.conditionId.curie}
-									fieldname={'conditionId'}
-									onValueChangeHandler={onCurieFieldChange}
-									classNames={classNames({ 'p-invalid': submitted && errorMessages.conditionId })}
-								/>
-								<FormErrorMessageComponent errorMessages={errorMessages} errorField={'conditionId'} />
-							</div>
-							<div className="field">
-								<label htmlFor="conditionGeneOntology">Gene Ontology</label>
-								<AutocompleteEditor
-									name="conditionGeneOntology"
-									search={conditionGeneOntologySearch}
-									initialValue={newCondition.conditionGeneOntology.curie}
-									onValueChangeHandler={onCurieFieldChange}
-									fieldname={'conditionGeneOntology'}
-									classNames={classNames({ 'p-invalid': submitted && errorMessages.conditionGeneOntology })}
-								/>
-								<FormErrorMessageComponent errorMessages={errorMessages} errorField={'conditionGeneOntology'} />
-							</div>
-							<div className="field">
-								<label htmlFor="conditionChemical">Chemical</label>
-								<AutocompleteEditor
-									name="conditionChemical"
-									search={conditionChemicalSearch}
-									initialValue={newCondition.conditionChemical.curie}
-									fieldname={'conditionChemical'}
-									classNames={classNames({ 'p-invalid': submitted && errorMessages.conditionChemical })}
-									onValueChangeHandler={onCurieFieldChange}
-								/>
-								<FormErrorMessageComponent errorMessages={errorMessages} errorField={'conditionChemical'} />
-							</div>
-							<div className="field">
-								<label htmlFor="conditionAnatomy">Anatomy</label>
-								<AutocompleteEditor
-									name="conditionAnatomy"
-									initialValue={newCondition.conditionAnatomy.curie}
-									search={conditionAnatomySearch}
-									onValueChangeHandler={onCurieFieldChange}
-									fieldname={'conditionAnatomy'}
-									classNames={classNames({ 'p-invalid': submitted && errorMessages.conditionAnatomy })}
-								/>
-								<FormErrorMessageComponent errorMessages={errorMessages} errorField={'conditionAnatomy'} />
-							</div>
-
-							<div className="field">
-								<label htmlFor="conditionTaxon">Taxon</label>
-								<AutocompleteEditor
-									name="conditionTaxon"
-									initialValue={newCondition.conditionTaxon.curie}
-									search={conditionTaxonSearch}
-									onValueChangeHandler={onCurieFieldChange}
-									fieldname={'conditionTaxon'}
-									classNames={classNames({ 'p-invalid': submitted && errorMessages.conditionTaxon })}
-								/>
-								<FormErrorMessageComponent errorMessages={errorMessages} errorField={'conditionTaxon'} />
-							</div>
-
-							<div className="field">
-								<label htmlFor="conditionQuantity">Quantity</label>
-								<InputText
-									id="conditionQuantity"
-									name="conditionQuantity"
-									value={newCondition.conditionQuantity}
-									onChange={onTextChange}
-									className={classNames({ 'p-invalid': submitted && errorMessages.conditionQuantity })}
-								/>
-								<FormErrorMessageComponent errorMessages={errorMessages} errorField={'conditionQuantity'} />
-							</div>
-
-							<div className="field">
-								<label htmlFor="internal">Internal</label>
-								<Dropdown
-									id="internal"
-									name="internal"
-									value={newCondition.internal}
-									options={[
-										{ label: 'true', value: true },
-										{ label: 'false', value: false },
-									]}
-									onChange={onInternalChange}
-									className={classNames({ 'p-invalid': submitted && errorMessages.internal })}
-								/>
-								<FormErrorMessageComponent errorMessages={errorMessages} errorField={'internal'} />
-							</div>
-
-							<div className="field">
-								<label htmlFor="conditionFreeText">Free Text</label>
-								<InputTextarea
-									id="conditionFreeText"
-									name="conditionFreeText"
-									value={newCondition.conditionFreeText}
-									onChange={onTextChange}
-									className={classNames({ 'p-invalid': submitted && errorMessages.conditionFreeText })}
-								/>
-								<FormErrorMessageComponent errorMessages={errorMessages} errorField={'conditionFreeText'} />
-							</div>
-						</form>
-					</div>
+					<form>
+						{ONTOLOGY_FIELDS.map(({ field, label, search }) => (
+							<FormField key={field} label={label} {...fieldProps(field)}>
+								{(binding) => <SingleAutocomplete {...binding} search={search} />}
+							</FormField>
+						))}
+						<FormField label="Quantity" {...fieldProps('conditionQuantity')}>
+							{(binding) => <TextInput {...binding} />}
+						</FormField>
+						<FormField label="Internal" {...fieldProps('internal')}>
+							{(binding) => <BooleanSelect {...binding} />}
+						</FormField>
+						<FormField label="Free Text" {...fieldProps('conditionFreeText')}>
+							{(binding) => <TextArea {...binding} rows={3} />}
+						</FormField>
+					</form>
 				</ErrorBoundary>
 			</Dialog>
 		</div>

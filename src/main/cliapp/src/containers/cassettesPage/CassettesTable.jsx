@@ -599,6 +599,7 @@ export const CassettesTable = ({ tableName = 'Cassettes', fixedFilters, isEditab
 				setErrorMessagesMainRow={setErrorMessages}
 				objectField="cassetteGenomicEntityAssociationObject"
 				title="Genomic Entity Components"
+				showComponentTypes
 			/>
 			<GenomicComponentsDialog
 				originalComponentsData={transgenicToolComponentsData}

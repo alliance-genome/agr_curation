@@ -1,13 +1,48 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { signInWithRedirect, getCurrentUser, fetchAuthSession } from 'aws-amplify/auth';
 import { Hub } from 'aws-amplify/utils';
 import { useCookies } from 'react-cookie';
+import { Button } from 'primereact/button';
+
+const CALLBACK_RETRIED_KEY = 'cognito-callback-retried';
+const CALLBACK_TIMEOUT_MS = 4000;
+
+let pendingCallbackFailure = false;
+let callbackFailureHandler = null;
+
+/**
+ * Registered at module load, ahead of App's Amplify.configure(). Passes a sign-in redirect failure on
+ * an OAuth callback URL to the mounted Login, or holds it until Login mounts.
+ */
+Hub.listen('auth', ({ payload }) => {
+	if (payload.event !== 'signInWithRedirect_failure' || !window.location.search.includes('code=')) {
+		return;
+	}
+	if (callbackFailureHandler) {
+		callbackFailureHandler();
+	} else {
+		pendingCallbackFailure = true;
+	}
+});
+
+/**
+ * Removes the OAuth `code` and `state` query parameters from the current URL without reloading.
+ */
+const stripCallbackParams = () => {
+	const url = new URL(window.location.href);
+	url.searchParams.delete('code');
+	url.searchParams.delete('state');
+	window.history.replaceState(window.history.state, '', url.pathname + url.search + url.hash);
+};
 
 export const Login = ({ children }) => {
 	const [user, setUser] = useState(null);
 	const [loading, setLoading] = useState(true);
 	const [loggingOut, setLoggingOut] = useState(false);
+	const [callbackStatus, setCallbackStatus] = useState(null);
 	const [, setCookie] = useCookies(['cognito-token-cookie']);
+	const callbackTimeoutRef = useRef(null);
+	const handleCallbackTimeoutRef = useRef(null);
 
 	const checkUser = useCallback(async () => {
 		try {
@@ -15,6 +50,8 @@ export const Login = ({ children }) => {
 			const session = await fetchAuthSession();
 
 			if (currentUser && session.tokens?.accessToken) {
+				sessionStorage.removeItem(CALLBACK_RETRIED_KEY);
+				setCallbackStatus(null);
 				setUser(currentUser);
 				setCookie('cognito-token-cookie', session.tokens.accessToken.toString(), {
 					maxAge: 60 * 60 * 12,
@@ -35,6 +72,7 @@ export const Login = ({ children }) => {
 						: null,
 				};
 				localStorage.setItem('cognito-token-storage', JSON.stringify(cognitoTokenStorage));
+				return true;
 			} else {
 				setUser(null);
 			}
@@ -43,7 +81,52 @@ export const Login = ({ children }) => {
 		} finally {
 			setLoading(false);
 		}
+		return false;
 	}, [setCookie]);
+
+	/**
+	 * Starts a new hosted-UI login. If Amplify refuses to start one, shows the retry prompt and
+	 * re-checks the session so existing tokens still sign the user in.
+	 */
+	const restartLogin = useCallback(() => {
+		signInWithRedirect().catch(() => {
+			setCallbackStatus('failed');
+			checkUser();
+		});
+	}, [checkUser]);
+
+	/**
+	 * Clears the callback parameters from the URL, then restarts login once per tab; after that
+	 * attempt, shows the retry prompt instead.
+	 */
+	const recoverFromFailedCallback = useCallback(() => {
+		clearTimeout(callbackTimeoutRef.current);
+		stripCallbackParams();
+		if (sessionStorage.getItem(CALLBACK_RETRIED_KEY)) {
+			setCallbackStatus('failed');
+			setLoading(false);
+			return;
+		}
+		sessionStorage.setItem(CALLBACK_RETRIED_KEY, 'true');
+		setCallbackStatus('recovering');
+		restartLogin();
+	}, [restartLogin]);
+
+	/**
+	 * Handles a callback that Amplify has not resolved in time: clears the callback parameters, signs
+	 * the user in if tokens exist, and otherwise recovers as from a failed callback.
+	 */
+	const handleCallbackTimeout = useCallback(async () => {
+		setCallbackStatus('recovering');
+		stripCallbackParams();
+		if (!(await checkUser())) {
+			recoverFromFailedCallback();
+		}
+	}, [checkUser, recoverFromFailedCallback]);
+
+	useEffect(() => {
+		handleCallbackTimeoutRef.current = handleCallbackTimeout;
+	}, [handleCallbackTimeout]);
 
 	useEffect(() => {
 		const isCallback = window.location.search.includes('code=');
@@ -52,6 +135,7 @@ export const Login = ({ children }) => {
 			switch (payload.event) {
 				case 'signedIn':
 				case 'tokenRefresh':
+					clearTimeout(callbackTimeoutRef.current);
 					checkUser();
 					break;
 				case 'signedOut':
@@ -64,11 +148,31 @@ export const Login = ({ children }) => {
 		});
 
 		if (!isCallback) {
+			sessionStorage.removeItem(CALLBACK_RETRIED_KEY);
 			checkUser();
 		}
 
 		return () => hubListener();
 	}, [checkUser]);
+
+	useEffect(() => {
+		callbackFailureHandler = recoverFromFailedCallback;
+		if (pendingCallbackFailure) {
+			pendingCallbackFailure = false;
+			recoverFromFailedCallback();
+		}
+		return () => {
+			callbackFailureHandler = null;
+		};
+	}, [recoverFromFailedCallback]);
+
+	useEffect(() => {
+		if (!window.location.search.includes('code=')) {
+			return;
+		}
+		callbackTimeoutRef.current = setTimeout(() => handleCallbackTimeoutRef.current(), CALLBACK_TIMEOUT_MS);
+		return () => clearTimeout(callbackTimeoutRef.current);
+	}, []);
 
 	useEffect(() => {
 		const isCallback = window.location.search.includes('code=');
@@ -84,13 +188,25 @@ export const Login = ({ children }) => {
 			return;
 		}
 
-		if (!loading && !user && !isCallback) {
+		if (!loading && !user && !isCallback && !callbackStatus) {
 			signInWithRedirect();
 		}
-	}, [loading, user]);
+	}, [loading, user, callbackStatus]);
 
 	if (loading) {
+		if (window.location.search.includes('code=') || callbackStatus) {
+			return <div>Completing login...</div>;
+		}
 		return <div>Loading authentication...</div>;
+	}
+
+	if (callbackStatus === 'failed' && !user) {
+		return (
+			<div>
+				<p>Login didn't complete.</p>
+				<Button label="Try again" onClick={restartLogin} />
+			</div>
+		);
 	}
 
 	if (loggingOut) {

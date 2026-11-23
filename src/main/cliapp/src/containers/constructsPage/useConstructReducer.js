@@ -1,28 +1,19 @@
-import { useImmerReducer } from 'use-immer';
-import { generateCrossRefSearchFields, generateComponentSearchFields } from './utils';
+import { useDetailFormReducer } from '../../hooks/useDetailFormReducer';
 
-const initialConstructState = {
-	construct: {},
-	errorMessages: {},
-	submitted: false,
+// The construct's sections whose rows are edited in a table: 'object' holds one row. Its lists are not among them:
+// each is a sub-resource of its own (useConstructSubResources).
+const ENTITY_TYPES = {
+	constructSymbol: 'object',
+	constructFullName: 'object',
 };
 
-const constructReducer = (draft, action) => {
-	switch (action.type) {
-		case 'SET':
-			// Clone so generateCrossRefSearchFields (in-place mutation) doesn't run
-			// on a frozen object (immer freezes draft.construct after produce).
-			const construct = structuredClone(action.value);
-			generateCrossRefSearchFields(construct.references);
-			generateComponentSearchFields(construct.constructGenomicEntityAssociations);
-			draft.construct = construct;
-			break;
-		default:
-			throw Error('Unknown action: ' + action.type);
-	}
-};
-
+/**
+ * Construct detail page form state and its dispatch. The construct's own fields are held here and saved with the
+ * construct.
+ *
+ * @returns {{constructState: Object, constructDispatch: Function}}
+ */
 export const useConstructReducer = () => {
-	const [constructState, constructDispatch] = useImmerReducer(constructReducer, initialConstructState);
+	const [constructState, constructDispatch] = useDetailFormReducer('construct', ENTITY_TYPES);
 	return { constructState, constructDispatch };
 };

@@ -1,0 +1,14 @@
+[
+  {
+    "htp_expression_dataset_dto": {
+      "curie": "HTPDATASETTEST:SampleTestDataset0001"
+    },
+    "name": "TEST DATASET FOR SAMPLE ANNOTATION TESTS",
+    "category_tag_names": [
+      "age"
+    ],
+    "data_provider_dto": {
+      "source_organization_abbreviation": "FB"
+    }
+  }
+]

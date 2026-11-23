@@ -1,42 +1,26 @@
 import { getIdentifier } from '../../utils/utils';
+import { getPendingFields, nameSlotAnnotationValue } from '../../utils/pendingFields';
 
-export const generateCrossRefSearchFields = (references) => {
-	if (references) {
-		references.forEach((reference) => {
-			reference.crossReferencesFilter = generateCrossRefSearchField(reference);
-		});
-	}
+// The value each of the construct's single-value fields and single-object sections is compared by, with an unset
+// value read as none.
+const CONSTRUCT_FIELD_VALUES = {
+	constructSymbol: (construct) => nameSlotAnnotationValue(construct?.constructSymbol),
+	constructFullName: (construct) => nameSlotAnnotationValue(construct?.constructFullName),
+	placeholder: (construct) => construct?.placeholder ?? null,
+	internal: (construct) => construct?.internal ?? null,
+	obsolete: (construct) => construct?.obsolete ?? null,
 };
 
-export const generateCrossRefSearchField = (reference) => {
-	const crossReferences = reference.crossReferences || [];
-
-	let refStrings = crossReferences.map((crossRef) => crossRef.referencedCurie);
-
-	return refStrings.join();
-};
-
-export const generateComponentSearchFields = (associations) => {
-	if (associations) {
-		associations.forEach((association) => {
-			association.componentSearchField = generateComponentSearchField(association);
-		});
-	}
-};
-
-export const generateComponentSearchField = (association) => {
-	const obj = association?.constructGenomicEntityAssociationObject;
-	if (!obj) return '';
-
-	const searchParts = [
-		obj.primaryExternalId,
-		obj.alleleSymbol?.displayText,
-		obj.geneSymbol?.displayText,
-		obj.name,
-	].filter(Boolean);
-
-	return searchParts.join(' ');
-};
+/**
+ * The construct's single-value fields and single-object sections whose value on the form differs from the construct
+ * as last saved.
+ *
+ * @param {Object} construct the construct as the form holds it
+ * @param {Object} [savedConstruct] the construct as the API last returned it
+ * @returns {Set<string>} the pending fields' names, none while there is no saved construct
+ */
+export const getPendingConstructFields = (construct, savedConstruct) =>
+	getPendingFields(construct, savedConstruct, CONSTRUCT_FIELD_VALUES);
 
 // The cassette's symbol, or its identifier when it has none: the text of the Cassettes column.
 export const cassetteLabel = (cassette) => cassette?.cassetteSymbol?.displayText || getIdentifier(cassette) || '';

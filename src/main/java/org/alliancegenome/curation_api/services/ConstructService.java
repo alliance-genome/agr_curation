@@ -9,6 +9,7 @@ import java.util.Objects;
 import java.util.Set;
 
 import org.alliancegenome.curation_api.constants.EntityFieldConstants;
+import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.dao.ConstructDAO;
 import org.alliancegenome.curation_api.enums.BackendBulkDataProvider;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
@@ -16,13 +17,19 @@ import org.alliancegenome.curation_api.exceptions.ValidationException;
 import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
 import org.alliancegenome.curation_api.model.entities.Construct;
 import org.alliancegenome.curation_api.model.entities.Note;
+import org.alliancegenome.curation_api.model.entities.Reference;
+import org.alliancegenome.curation_api.model.entities.associations.ConstructCassetteAssociation;
+import org.alliancegenome.curation_api.model.entities.slotAnnotations.ConstructSynonymSlotAnnotation;
 import org.alliancegenome.curation_api.model.ingest.dto.ConstructDTO;
+import org.alliancegenome.curation_api.response.ObjectListResponse;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.base.SubmittedObjectCrudService;
+import org.alliancegenome.curation_api.services.helpers.SubResourceListHelper;
 import org.alliancegenome.curation_api.services.validation.ConstructValidator;
 import org.alliancegenome.curation_api.services.validation.dto.ConstructDTOValidator;
 import org.apache.commons.collections.CollectionUtils;
+import org.hibernate.Hibernate;
 
 import io.quarkus.logging.Log;
 import jakarta.annotation.PostConstruct;
@@ -65,8 +72,84 @@ public class ConstructService extends SubmittedObjectCrudService<Construct, Cons
 	@Override
 	@Transactional
 	public ObjectResponse<Construct> update(Construct uiEntity) {
-		Construct dbEntity = constructValidator.validateConstructUpdate(uiEntity);
+		// ConstructView carries the construct's lists and associations, so this path manages them.
+		Construct dbEntity = constructValidator.validateConstructUpdate(uiEntity, true);
 		return new ObjectResponse<>(constructDAO.persist(dbEntity));
+	}
+
+	@Transactional
+	public ObjectResponse<Construct> updateDetail(Construct uiEntity) {
+		// ConstructDetailView carries none of the construct's lists or associations, so this path leaves them as they
+		// are stored; the detail page writes them through the construct's sub-resources.
+		Construct dbEntity = constructValidator.validateConstructUpdate(uiEntity, false);
+		return new ObjectResponse<>(constructDAO.persist(dbEntity));
+	}
+
+	public ObjectListResponse<ConstructSynonymSlotAnnotation> getSynonyms(Long id) {
+		return SubResourceListHelper.listResponse(findConstructOrThrow(id).getConstructSynonyms());
+	}
+
+	@Transactional
+	public ObjectListResponse<ConstructSynonymSlotAnnotation> updateSynonyms(Long id, List<ConstructSynonymSlotAnnotation> synonyms) {
+		Construct construct = findConstructOrThrow(id);
+		return SubResourceListHelper.replaceSlotAnnotations(construct, constructValidator.validateSynonymReplacement(construct, synonyms), Construct::getConstructSynonyms, Construct::setConstructSynonyms);
+	}
+
+	public ObjectListResponse<String> getSecondaryIds(Long id) {
+		return SubResourceListHelper.listResponse(findConstructOrThrow(id).getSecondaryIdentifiers());
+	}
+
+	@Transactional
+	public ObjectListResponse<String> updateSecondaryIds(Long id, List<String> secondaryIds) {
+		Construct construct = findConstructOrThrow(id);
+		return SubResourceListHelper.replaceList(construct, constructValidator.validateSecondaryIdReplacement(construct, secondaryIds), Construct::getSecondaryIdentifiers, Construct::setSecondaryIdentifiers);
+	}
+
+	public ObjectListResponse<Note> getRelatedNotes(Long id) {
+		return SubResourceListHelper.listResponse(findConstructOrThrow(id).getRelatedNotes());
+	}
+
+	@Transactional
+	public ObjectListResponse<Note> updateRelatedNotes(Long id, List<Note> relatedNotes) {
+		Construct construct = findConstructOrThrow(id);
+		return SubResourceListHelper.replaceRelatedNotes(construct, constructValidator.validateRelatedNoteReplacement(construct, relatedNotes));
+	}
+
+	public ObjectListResponse<Reference> getReferences(Long id) {
+		return SubResourceListHelper.listResponse(findConstructOrThrow(id).getReferences());
+	}
+
+	@Transactional
+	public ObjectListResponse<Reference> updateReferences(Long id, List<Reference> references) {
+		Construct construct = findConstructOrThrow(id);
+		List<Reference> resolvedReferences = constructValidator.validateReferenceReplacement(construct, references);
+		ObjectListResponse<Reference> response = SubResourceListHelper.replaceList(construct, resolvedReferences, Construct::getReferences, Construct::setReferences);
+
+		// The response is serialized after this transaction closes, so each reference's cross references are
+		// loaded while it is open.
+		resolvedReferences.forEach(reference -> Hibernate.initialize(reference.getCrossReferences()));
+
+		return response;
+	}
+
+	public ObjectListResponse<ConstructCassetteAssociation> getCassetteAssociations(Long id) {
+		return SubResourceListHelper.listResponse(findConstructOrThrow(id).getConstructCassetteAssociations());
+	}
+
+	@Transactional
+	public void updateCassetteAssociations(Long id, List<ConstructCassetteAssociation> cassetteAssociations) {
+		Construct construct = findConstructOrThrow(id);
+		constructValidator.replaceCassetteAssociations(construct, constructValidator.validateCassetteAssociationReplacement(construct, cassetteAssociations));
+	}
+
+	private Construct findConstructOrThrow(Long id) {
+		Construct construct = constructDAO.find(id);
+		if (construct == null) {
+			ObjectResponse<Construct> response = new ObjectResponse<>();
+			response.addErrorMessage("id", ValidationConstants.INVALID_MESSAGE);
+			throw new ApiErrorException(response);
+		}
+		return construct;
 	}
 
 	@Override

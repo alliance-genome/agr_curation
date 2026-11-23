@@ -92,6 +92,10 @@ public class BulkLoadFileHistoryService extends BaseEntityCrudService<BulkLoadFi
 		BulkLoad load = bulkLoadDAO.find(id);
 		if (load != null && load.getBulkloadStatus().isNotRunning()) {
 			load.setBulkloadStatus(JobStatus.FORCED_PENDING);
+			load.getHistory().size();
+			if (load.getSpecies() != null) {
+				load.getSpecies().getCommonNames().size();
+			}
 			return new ObjectResponse<BulkLoad>(load);
 		}
 		return null;
