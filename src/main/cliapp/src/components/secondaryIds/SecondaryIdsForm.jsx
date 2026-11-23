@@ -20,8 +20,10 @@ import { SecondaryIdsFormTable } from './SecondaryIdsFormTable';
  * @param {Object} props
  * @param {string} props.type the name the page provides the list under
  * @param {'detail'|'create'} [props.mode]
+ * @param {boolean} [props.plainIds] - whether the entity holds its secondary IDs as plain strings, as a reagent
+ *   does, rather than as slot annotations with an internal flag and evidence
  */
-export const SecondaryIdsForm = ({ type, mode = 'detail' }) => {
+export const SecondaryIdsForm = ({ type, mode = 'detail', plainIds = false }) => {
 	const subResource = useSubResource(type);
 	const { rows: secondaryIds, isDirty } = subResource;
 	const { editingRows, addRow, deletionHandler } = useSubResourceRows(subResource, { prepend: true });
@@ -31,11 +33,7 @@ export const SecondaryIdsForm = ({ type, mode = 'detail' }) => {
 
 	const createNewRowHandler = (event) => {
 		event.preventDefault();
-		const newRow = {
-			internal: false,
-			obsolete: false,
-			secondaryId: '',
-		};
+		const newRow = plainIds ? { secondaryId: '' } : { internal: false, obsolete: false, secondaryId: '' };
 
 		addDataKey(newRow);
 		addRow(newRow);
@@ -51,6 +49,7 @@ export const SecondaryIdsForm = ({ type, mode = 'detail' }) => {
 						onRowEditChange={KEEP_ROWS_IN_EDIT_MODE}
 						tableRef={tableRef}
 						deletionHandler={deletionHandler}
+						plainIds={plainIds}
 					/>
 				</TableEditorProvider>
 			}

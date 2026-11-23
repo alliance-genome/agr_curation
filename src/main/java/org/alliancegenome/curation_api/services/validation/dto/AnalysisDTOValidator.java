@@ -11,11 +11,10 @@ import org.alliancegenome.curation_api.model.entities.Note;
 import org.alliancegenome.curation_api.model.entities.Organization;
 import org.alliancegenome.curation_api.model.ingest.dto.AnalysisDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
-import org.alliancegenome.curation_api.services.OrganizationService;
 import org.alliancegenome.curation_api.services.ontology.FbcvTermService;
 import org.alliancegenome.curation_api.services.validation.dto.base.AuditedObjectDTOValidator;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.ImmutablePair;
 
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
@@ -28,8 +27,6 @@ import jakarta.inject.Inject;
 public class AnalysisDTOValidator extends AuditedObjectDTOValidator<Analysis, AnalysisDTO> {
 
 	@Inject FbcvTermService fbcvTermService;
-	@Inject OrganizationService organizationService;
-	@Inject CrossReferenceDTOValidator crossReferenceDtoValidator;
 	@Inject CrossReferenceDAO crossReferenceDAO;
 
 	public ObjectResponse<Analysis> validateAnalysisDTO(AnalysisDTO dto, Analysis analysis) {
@@ -43,29 +40,23 @@ public class AnalysisDTOValidator extends AuditedObjectDTOValidator<Analysis, An
 
 		analysis.setAnalysisType(validateOntologyTerm(fbcvTermService, "analysis_type_curie", dto.getAnalysisTypeCurie()));
 
-		if (StringUtils.isBlank(dto.getDataProvider())) {
-			response.addErrorMessage("data_provider", ValidationConstants.REQUIRED_MESSAGE);
+		if (dto.getDataProviderDto() == null) {
+			response.addErrorMessage("data_provider_dto", ValidationConstants.REQUIRED_MESSAGE);
 		} else {
-			ObjectResponse<Organization> dataProviderResponse = organizationService.getByAbbr(dto.getDataProvider());
-			if (dataProviderResponse == null || dataProviderResponse.getEntity() == null) {
-				response.addErrorMessage("data_provider", ValidationConstants.INVALID_MESSAGE + " (" + dto.getDataProvider() + ")");
+			ObjectResponse<ImmutablePair<Organization, CrossReference>> dpResponse = validateDataProviderDTO(dto.getDataProviderDto(), analysis.getDataProviderCrossReference());
+			if (dpResponse.hasErrors()) {
+				response.addErrorMessage("data_provider_dto", dpResponse.errorMessagesString());
 			} else {
-				analysis.setDataProvider(dataProviderResponse.getEntity());
+				analysis.setDataProvider(dpResponse.getEntity().getLeft());
+				if (dpResponse.getEntity().getRight() != null) {
+					// dataProviderCrossReference has no cascade at all, so a brand new CrossReference
+					// needs persisting explicitly before it's assigned, even though Analysis itself is
+					// cascade-persisted from its parent.
+					analysis.setDataProviderCrossReference(crossReferenceDAO.persist(dpResponse.getEntity().getRight()));
+				} else {
+					analysis.setDataProviderCrossReference(null);
+				}
 			}
-		}
-
-		if (dto.getDataProviderCrossReferenceDto() != null) {
-			ObjectResponse<CrossReference> xrefResponse = crossReferenceDtoValidator.validateCrossReferenceDTO(dto.getDataProviderCrossReferenceDto(), analysis.getDataProviderCrossReference());
-			if (xrefResponse.hasErrors()) {
-				response.addErrorMessage("data_provider_cross_reference_dto", xrefResponse.errorMessagesString());
-			} else {
-				// dataProviderCrossReference has no cascade at all, so a brand new CrossReference
-				// needs persisting explicitly before it's assigned, even though Analysis itself is
-				// cascade-persisted from its parent.
-				analysis.setDataProviderCrossReference(crossReferenceDAO.persist(xrefResponse.getEntity()));
-			}
-		} else {
-			analysis.setDataProviderCrossReference(null);
 		}
 
 		// Mutate the existing managed collection in place rather than replacing its reference -

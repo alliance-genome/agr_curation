@@ -23,7 +23,7 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @AGRCurationSchemaVersion(min = "2.19.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AuditedObjectDTO.class, ExternalDataBaseEntityDTO.class, BioSampleAgeDTO.class,
-	AnatomicalSiteDTO.class, BioSampleGenomicInformationDTO.class, NoteDTO.class, MicroarraySampleDetailsDTO.class, AnalysisDTO.class, CrossReferenceDTO.class })
+	AnatomicalSiteDTO.class, BioSampleGenomicInformationDTO.class, NoteDTO.class, MicroarraySampleDetailsDTO.class, AnalysisDTO.class, DataProviderDTO.class }, submitted = true)
 public class HTPExpressionDatasetSampleAnnotationDTO extends AuditedObjectDTO {
 
 	@JsonView({ CurationView.FieldsOnly.class })
@@ -42,7 +42,7 @@ public class HTPExpressionDatasetSampleAnnotationDTO extends AuditedObjectDTO {
 	private String htpExpressionSampleTypeCurie;
 
 	@JsonView({ CurationView.FieldsOnly.class })
-	@JsonProperty("expression_assay_used_curie")
+	@JsonProperty("expression_assay_curie")
 	private String expressionAssayUsedCurie;
 
 	@JsonView({ CurationView.FieldsOnly.class })
@@ -88,15 +88,9 @@ public class HTPExpressionDatasetSampleAnnotationDTO extends AuditedObjectDTO {
 	@JsonProperty("microarray_sample_details_dto")
 	private MicroarraySampleDetailsDTO microarraySampleDetailsDto;
 
-	// Plain abbreviation, not a DataProviderDTO wrapper - see HTPExpressionDatasetAnnotationDTO's
-	// own data_provider field for why.
 	@JsonView({ CurationView.FieldsOnly.class })
-	@JsonProperty("data_provider")
-	private String dataProvider;
-
-	@JsonView({ CurationView.FieldsOnly.class })
-	@JsonProperty("data_provider_cross_reference_dto")
-	private CrossReferenceDTO dataProviderCrossReferenceDto;
+	@JsonProperty("data_provider_dto")
+	private DataProviderDTO dataProviderDto;
 
 	@JsonView({ CurationView.FieldsOnly.class })
 	private String symbol;
