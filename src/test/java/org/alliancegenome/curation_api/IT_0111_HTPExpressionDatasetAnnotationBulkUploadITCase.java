@@ -161,6 +161,27 @@ public class IT_0111_HTPExpressionDatasetAnnotationBulkUploadITCase extends Base
 
 	@Test
 	@Order(7)
+	public void htpDatasetBulkUploadCategoryTagSynonymMatch() throws Exception {
+		// SCRUM-6714: category_tag_names must resolve by synonym, not just exact term name - DQMs
+		// submit either interchangeably. "gene expression - general" is a seeded synonym of the
+		// "baseline" term (v0.35.0.9__add_htp_tags.sql).
+		checkSuccessfulBulkLoad(htpDatasetBulkPostEndpoint, htpDatasetTestFilePath + "UM_02_category_tag_synonym_match.json");
+
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post(htpDatasetFindEndpoint).
+			then().
+			statusCode(200).
+			body("returnedRecords", is(1)).
+			body("results", hasSize(1)).
+			body("results[0].categoryTags", hasSize(1)).
+			body("results[0].categoryTags[0].name", is("baseline"));
+	}
+
+	@Test
+	@Order(8)
 	public void htpDatasetBulkUploadCleanup() throws Exception {
 		// IT_0610_HTPExpressionDatasetAnnotationFmsITCase (run later, sharing this same database)
 		// finds its own record via a blanket /find with no filter and asserts exactly one result -
