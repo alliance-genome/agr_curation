@@ -77,4 +77,49 @@ describe('<GenomicComponentsDialog />', () => {
 		expect(await within(dialog).findByText('tagged_with')).toBeInTheDocument();
 		expect(within(dialog).getAllByText('sfGFP (FB:FBto0000063)').length).toBeGreaterThan(0);
 	});
+
+	// SCRUM-6895
+	it('shows the component types of a cassette genomic entity component, one per line, after the component', async () => {
+		const componentTypes = [
+			{ id: 41, curie: 'SO:0000167', name: 'promoter' },
+			{ id: 42, curie: 'SO:0000316', name: 'CDS' },
+		];
+		const result = renderDialog(
+			[
+				{
+					id: 5,
+					relation: { name: 'expresses' },
+					cassetteGenomicEntityAssociationObject: croc,
+					componentTypes,
+					relatedNotes: [],
+				},
+			],
+			{
+				objectField: 'cassetteGenomicEntityAssociationObject',
+				title: 'Genomic Entity Components',
+				showComponentTypes: true,
+			}
+		);
+
+		const dialog = await result.findByRole('dialog');
+		await within(dialog).findByText('expresses');
+		const headers = [...dialog.querySelectorAll('thead th')].map((th) => th.textContent);
+		expect(headers.indexOf('Component Types')).toBe(headers.indexOf('Component') + 1);
+		expect(within(dialog).getAllByText('promoter (SO:0000167)').length).toBeGreaterThan(0);
+		expect(within(dialog).getAllByText('CDS (SO:0000316)').length).toBeGreaterThan(0);
+		// each term is a line of its own in the cell
+		const cell = dialog.querySelectorAll('tbody tr:first-child td')[headers.indexOf('Component Types')];
+		expect(cell.querySelectorAll('li')).toHaveLength(2);
+	});
+
+	it('leaves out the Component Types column unless told to show it', async () => {
+		const result = renderDialog(
+			[{ id: 6, relation: { name: 'targets' }, cassetteGenomicEntityAssociationObject: croc, relatedNotes: [] }],
+			{ objectField: 'cassetteGenomicEntityAssociationObject' }
+		);
+
+		const dialog = await result.findByRole('dialog');
+		await within(dialog).findByText('targets');
+		expect(within(dialog).queryByText('Component Types')).not.toBeInTheDocument();
+	});
 });
